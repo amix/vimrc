@@ -49,9 +49,6 @@
 [submodule "sources_plugins/ctrlp.vim"]
 	path = sources_plugins/ctrlp.vim
 	url = git://github.com/kien/ctrlp.vim.git
-[submodule "sources_plugins/vim-peepopen"]
-	path = sources_plugins/vim-peepopen
-	url = git://github.com/shemerey/vim-peepopen.git
 [submodule "sources_misc/vim-bundle-mako"]
 	path = sources_misc/vim-bundle-mako
 	url = git://github.com/sophacles/vim-bundle-mako.git
