@@ -38,11 +38,11 @@ endif
 " => Fast editing and reloading of vimrc configs
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has("win16") || has("win32")
-    map <leader>e :e! ~/_vim_runtime/vimrcs/vimrc_my_configs.vim<cr>
-    autocmd! bufwritepost vimrc source ~/_vim_runtime/vimrcs/vimrc_my_configs.vim
+    map <leader>e :e! ~/_vim_runtime/my_configs.vim<cr>
+    autocmd! bufwritepost vimrc source ~/_vim_runtime/my_configs.vim
 else
-    map <leader>e :e! ~/.vim_runtime/vimrcs/vimrc_my_configs.vim<cr>
-    autocmd! bufwritepost vimrc source ~/.vim_runtime/vimrcs/vimrc_my_configs.vim
+    map <leader>e :e! ~/.vim_runtime/my_configs.vim<cr>
+    autocmd! bufwritepost vimrc source ~/.vim_runtime/my_configs.vim
 endif
 
 

@@ -26,6 +26,18 @@ The awesome version includes a lot of great plugins, configurations and color sc
 	sh ~/.vim_runtime/install_awesome_vimrc.sh
 
 
+## Some screenshots
+
+Colors when editing a Python file:
+![Screenshot 1](http://files1.wedoist.com/e952fdb343b1e617b90d256e474d0370/as/screenshot_1.png)
+
+Opening recently opened files [mru.vim](https://github.com/vim-scripts/mru.vim):
+![Screenshot 2](http://files1.wedoist.com/1967b0e48af40e513d1a464e08196990/as/screenshot_2.png)
+
+Seeing opened buffers [bufexplorer.zip](https://github.com/vim-scripts/bufexplorer.zip):
+![Screenshot 3](http://files1.wedoist.com/88eeb6ff36cf88d062e73c87af482d9c/as/screenshot_3.png )
+
+
 ## What plugins are included?
 
 I recommend reading the docs of each of these plugins to understand them better. Each of them provide a much better Vim experience!
