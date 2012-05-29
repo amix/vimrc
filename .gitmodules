@@ -1,0 +1,63 @@
+[submodule "sources_plugins/vim-snipmate"]
+	path = sources_plugins/vim-snipmate
+	url = git://github.com/garbas/vim-snipmate.git
+[submodule "sources_plugins/vim-addon-mw-utils"]
+	path = sources_plugins/vim-addon-mw-utils
+	url = git://github.com/MarcWeber/vim-addon-mw-utils.git
+[submodule "sources_plugins/tlib"]
+	path = sources_plugins/tlib
+	url = git://github.com/vim-scripts/tlib.git
+[submodule "sources_plugins/vim-snippets"]
+	path = sources_plugins/vim-snippets
+	url = git://github.com/acustodioo/vim-snippets.git
+[submodule "sources_colors/vim-irblack"]
+	path = sources_colors/vim-irblack
+	url = git://github.com/wgibbs/vim-irblack.git
+[submodule "sources_colors/mayansmoke"]
+	path = sources_colors/mayansmoke
+	url = git://github.com/vim-scripts/mayansmoke.git
+[submodule "sources_colors/peaksea"]
+	path = sources_colors/peaksea
+	url = git://github.com/vim-scripts/peaksea.git
+[submodule "sources_colors/vim-pyte"]
+	path = sources_colors/vim-pyte
+	url = git://github.com/therubymug/vim-pyte.git
+[submodule "sources_plugins/bufexplorer.zip"]
+	path = sources_plugins/bufexplorer.zip
+	url = git://github.com/vim-scripts/bufexplorer.zip.git
+[submodule "sources_plugins/nerdtree"]
+	path = sources_plugins/nerdtree
+	url = git://github.com/scrooloose/nerdtree.git
+[submodule "sources_plugins/vim-surround"]
+	path = sources_plugins/vim-surround
+	url = git://github.com/tpope/vim-surround.git
+[submodule "sources_plugins/YankRing"]
+	path = sources_plugins/YankRing
+	url = git://github.com/vim-scripts/YankRing.vim.git
+[submodule "sources_misc/vim-coffee-script"]
+	path = sources_misc/vim-coffee-script
+	url = git://github.com/kchmck/vim-coffee-script.git
+[submodule "sources_misc/vim-less"]
+	path = sources_misc/vim-less
+	url = git://github.com/groenewege/vim-less.git
+[submodule "sources_plugins/ack.vim"]
+	path = sources_plugins/ack.vim
+	url = git://github.com/mileszs/ack.vim.git
+[submodule "sources_plugins/open_file_under_cursor.vim"]
+	path = sources_plugins/open_file_under_cursor.vim
+	url = git://github.com/amix/open_file_under_cursor.vim.git
+[submodule "sources_plugins/ctrlp.vim"]
+	path = sources_plugins/ctrlp.vim
+	url = git://github.com/kien/ctrlp.vim.git
+[submodule "sources_plugins/vim-peepopen"]
+	path = sources_plugins/vim-peepopen
+	url = git://github.com/shemerey/vim-peepopen.git
+[submodule "sources_misc/vim-bundle-mako"]
+	path = sources_misc/vim-bundle-mako
+	url = git://github.com/sophacles/vim-bundle-mako.git
+[submodule "sources_plugins/vim-powerline"]
+	path = sources_plugins/vim-powerline
+	url = git://github.com/Lokaltog/vim-powerline.git
+[submodule "sources_colors/vim-colors-solarized"]
+	path = sources_colors/vim-colors-solarized
+	url = git://github.com/altercation/vim-colors-solarized.git
