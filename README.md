@@ -88,6 +88,9 @@ You can also install your own plugins, for instance, via pathogen:
 	
 Now you have vim-rails installed ;-)
 
+
+## Key Mappings
+
 ### Plugin related mappings
 
 Open bufexplorer and see and manage the current buffers:
