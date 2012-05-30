@@ -17,13 +17,18 @@ This is useful to install on remote servers where you don't need many plugins an
 
 	git clone git://github.com/amix/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_basic_vimrc.sh
-	
+
 
 ## How to install the Awesome version
 The awesome version includes a lot of great plugins, configurations and color schemes that make Vim a lot better. To install it simply do following:
 
 	git clone git://github.com/amix/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_awesome_vimrc.sh
+
+
+## How to install on Windows
+
+
 
 
 ## Some screenshots
@@ -36,9 +41,9 @@ Opening recently opened files [mru.vim](https://github.com/vim-scripts/mru.vim):
 
 ![Screenshot 2](http://files1.wedoist.com/1967b0e48af40e513d1a464e08196990/as/screenshot_2.png)
 
-Seeing opened buffers [bufexplorer.zip](https://github.com/vim-scripts/bufexplorer.zip):
+[NERD Tree](https://github.com/scrooloose/nerdtree) plugin in a terminal window:
 
-![Screenshot 3](http://files1.wedoist.com/88eeb6ff36cf88d062e73c87af482d9c/as/screenshot_3.png )
+![Screenshot 3](http://files1.wedoist.com/b1509d7ed9e9f357e8d04797f9fad67b/as/screenshot3.png)
 
 
 ## What plugins are included?
@@ -93,23 +98,23 @@ Now you have vim-rails installed ;-)
 
 ### Plugin related mappings
 
-Open bufexplorer and see and manage the current buffers:
+Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) and see and manage the current buffers:
     
     map <leader>o :BufExplorer<cr>
 
-Open MRU.vim and see the recently open files:
+Open [MRU.vim](https://github.com/vim-scripts/mru.vim) and see the recently open files:
 
     map <leader>f :MRU<CR>
 
-Open ctrlp.vim plugin:
+Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin:
     
     let g:ctrlp_map = '<c-f>'
 
-Open peepopen plugin:
+Open [PeepOpen](https://peepcode.com/products/peepopen) plugin:
 
     map <leader>j :PeepOpen<cr>
 
-NERDTree:
+Managing the [NERD Tree](https://github.com/scrooloose/nerdtree) plugin:
 
     map <leader>nn :NERDTreeToggle<cr>
     map <leader>nb :NERDTreeFromBookmark 
@@ -125,7 +130,7 @@ Treat long lines as break lines (useful when moving around in them):
 	map j gj
 	map k gk
 	
-Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search):
+Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
 	
 	map <space> /
 	map <c-space> ?
@@ -205,7 +210,7 @@ Insert the current date and time (useful for timestamps):
 
 ### Visual mode mappings
 
-Visual mode pressing * or # searches for the current selection:
+Visual mode pressing `*` or `#` searches for the current selection:
 
 	vnoremap <silent> * :call VisualSelection('f')<CR>
 	vnoremap <silent> # :call VisualSelection('b')<CR>
@@ -230,11 +235,11 @@ Surround the visual selection in parenthesis/brackets/etc.:
 
 ### Command line mappings
 
-$q is super useful when browsing on the command line. It deletes everything until the last slash.
+$q is super useful when browsing on the command line. It deletes everything until the last slash:
 
     cno $q <C-\>eDeleteTillSlash()<cr>
 
-Bash like keys for the command line
+Bash like keys for the command line:
 
     cnoremap <C-A>		<Home>
     cnoremap <C-E>		<End>
@@ -249,7 +254,7 @@ Pressing `<leader>ss` will toggle and untoggle spell checking
 
     map <leader>ss :setlocal spell!<cr>
 
-Shortcuts using <leader> instead of special chars
+Shortcuts using `<leader>` instead of special chars
 
     map <leader>sn ]s
     map <leader>sp [s
@@ -260,13 +265,15 @@ Shortcuts using <leader> instead of special chars
 Do :help cope if you are unsure what cope is. It's super useful!
 
 When you search with vimgrep, display your results in cope by doing:
-* `<leader>cc`
+`<leader>cc`
 
 To go to the next search result do:
-* `<leader>n`
+`<leader>n`
 
 To go to the previous search results do:
-* `<leader>p`
+`<leader>p`
+
+Vimscript mappings:
 
     map <leader>cc :botright cope<cr>
     map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
