@@ -48,7 +48,7 @@ This vimrc even works on Windows!
 
 ## What plugins are included?
 
-I recommend reading the docs of each of these plugins to understand them better. Each of them provide a much better Vim experience!
+I recommend reading the docs of these plugins to understand them better. Each of them provide a much better Vim experience!
 
 * [pathogen.vim](https://github.com/tpope/vim-pathogen): Manages the runtime path of the plugins (this and git submodules)
 * [YankRing](https://github.com/vim-scripts/YankRing.vim): Maintains a history of previous yanks, changes and deletes
@@ -81,13 +81,13 @@ I recommend reading the docs of each of these plugins to understand them better.
 
 ## How to include your own stuff?
 
-After you have installed the setup you can create **~/.vim_runtime/my_configs.vim** to fill in any configurations that are important for for. For instance, my **my_configs.vim** looks like this:
+After you have installed the setup you can create **~/.vim_runtime/my_configs.vim** to fill in any configurations that are important for you. For instance, my **my_configs.vim** looks like this:
 
 	~/.vim_runtime (master)> cat my_configs.vim
 	map <leader>ct :cd ~/Desktop/Todoist/todoist<cr>
 	map <leader>cw :cd ~/Desktop/Wedoist/wedoist<cr> 
 
-You can also install your own plugins, for instance, via pathogen:
+You can also install your own plugins, for instance, via pathogen we can install [vim-rails](https://github.com/tpope/vim-rails):
 
 	cd ~/.vim_runtime
 	git clone git://github.com/tpope/vim-rails.git sources_plugins/vim-rails
