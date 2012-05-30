@@ -2,7 +2,7 @@ cd ~/.vim_runtime
 git submodule init
 git submodule update
 
-echo 'set runtimepath=~/.vim_runtime,~/.vim_runtime/after,\$VIMRUNTIME
+echo 'set runtimepath+=~/.vim_runtime
 
 source ~/.vim_runtime/vimrcs/basic.vim
 source ~/.vim_runtime/vimrcs/filetypes.vim
