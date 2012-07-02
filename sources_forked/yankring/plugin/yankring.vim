@@ -1,8 +1,8 @@
 " yankring.vim - Yank / Delete Ring for Vim
 " ---------------------------------------------------------------
-" Version:  12.0
+" Version:  10.0
 " Authors:  David Fishburn <dfishburn.vim@gmail.com>
-" Last Modified: 2011 Jun 14
+" Last Modified: 2010 Jan 24
 " Script:   http://www.vim.org/scripts/script.php?script_id=1234
 " Based On: Mocked up version by Yegappan Lakshmanan
 "           http://groups.yahoo.com/group/vim/post?act=reply&messageNum=34406
@@ -18,7 +18,7 @@ if v:version < 700
   finish
 endif
 
-let loaded_yankring = 120
+let loaded_yankring = 100
 
 let s:yr_has_voperator     = 0
 if v:version > 701 || ( v:version == 701 && has("patch205") )
@@ -50,11 +50,6 @@ endif
 " Specify the maximum length of 1 entry (1MB default)
 if !exists('g:yankring_max_element_length')
     let g:yankring_max_element_length = 1048576
-endif
-
-" Warn if truncation occurs
-if !exists('g:yankring_warn_on_truncate')
-    let g:yankring_warn_on_truncate = 1
 endif
 
 " Allow the user to specify if the plugin is enabled or not
@@ -328,11 +323,6 @@ function! s:YRShow(...)
         let toggle = matchstr(a:1, '\d\+')
     endif
 
-    let show_registers = 0
-    if a:0 > 1 && a:2 ==# 'R'
-        let show_registers = 1
-    endif
-
     if toggle == 1
         if bufwinnr(s:yr_buffer_id) > -1
             " If the YankRing window is already open close it
@@ -361,9 +351,9 @@ function! s:YRShow(...)
     " show the contents (or when it is refreshed).
     if g:yankring_paste_check_default_buffer == 1 
         let save_reg = 0
-        let register = ((&clipboard=~'unnamed')?'+':'"')
+        let register = ((&clipboard=='unnamed')?'+':'"')
 
-        if &clipboard =~ 'unnamed' && getreg('+') != s:yr_prev_clipboard
+        if &clipboard == 'unnamed' && getreg('+') != s:yr_prev_clipboard
             let save_reg = 1
         endif
         if register == '"' && getreg('"') != s:yr_prev_reg_unnamed
@@ -381,23 +371,14 @@ function! s:YRShow(...)
     " List is shown in order of replacement
     " assuming using previous yanks
     let output = "--- YankRing ---\n"
-    let output = output . (show_registers == 1 ? 'Reg ' : 'Elem')."  Content\n"
+    let output = output . "Elem  Content\n"
 
-    if show_registers == 1
-        for reg_name in map( range(char2nr('0'), char2nr('9')) +
-                    \ (range(char2nr('a'), char2nr('z')))
-                    \, 'nr2char(v:val)' 
-                    \ )
-            let output  = output . s:YRDisplayElem(reg_name, getreg(reg_name).',') . "\n"
-        endfor
-    else
-        call s:YRHistoryRead()
-        let disp_item_nr = 1
-        for elem in s:yr_history_list
-            let output  = output . s:YRDisplayElem(disp_item_nr, elem) . "\n"
-            let disp_item_nr   += 1
-        endfor
-    endif
+    call s:YRHistoryRead()
+    let disp_item_nr = 1
+    for elem in s:yr_history_list
+        let output  = output . s:YRDisplayElem(disp_item_nr, elem) . "\n"
+        let disp_item_nr   += 1
+    endfor
 
     if g:yankring_window_use_separate == 1
         call s:YRWindowOpen(output)
@@ -457,7 +438,7 @@ function! s:YRGetElem(...)
         return -1
     endif
 
-    let default_buffer = ((&clipboard=~'unnamed')?'+':'"')
+    let default_buffer = ((&clipboard=='unnamed')?'+':'"')
 
     let direction = 'p'
     if a:0 > 1
@@ -502,7 +483,7 @@ function! s:YRGetElem(...)
         return -1
     endif
 
-    let default_buffer = ((&clipboard=~'unnamed')?'+':'"')
+    let default_buffer = ((&clipboard=='unnamed')?'+':'"')
     call setreg(default_buffer
                 \ , s:YRGetValElemNbr((elem), 'v')
                 \ , s:YRGetValElemNbr((elem), 't')
@@ -651,7 +632,7 @@ endfunction
 
 " Resets the common script variables for managing the ring.
 function! s:YRReset()
-    call s:YRHistoryDelete()
+    let s:yr_history_list          = []
     " Update the history file
     call s:YRHistorySave()
 endfunction
@@ -715,7 +696,7 @@ function! s:YRRegister()
     " so test for this condition and return the 
     " default register
     let user_register = ((v:register=='')?('"'):(v:register))
-    if &clipboard =~ 'unnamed' && user_register == '"'
+    if &clipboard == 'unnamed' && user_register == '"'
         let user_register = '+'
     endif
     return user_register
@@ -737,7 +718,7 @@ function! s:YRPush(...)
     " If we are pushing something on to the yankring, add it to
     " the default buffer as well so the next item pasted will
     " be the item pushed
-    let default_buffer = ((&clipboard=~'unnamed')?'+':'"')
+    let default_buffer = ((&clipboard=='unnamed')?'+':'"')
     call setreg(default_buffer, getreg(user_register), 
                 \ getregtype(user_register))
 
@@ -800,7 +781,7 @@ function! YRRecord(...)
         return ""
     endif
 
-    let register = ((&clipboard=~'unnamed')?'+':register)
+    let register = ((&clipboard=='unnamed')?'+':register)
 
     " let s:yr_prev_changenr    = changenr()
     if register == '"'
@@ -823,15 +804,13 @@ function! YRRecord(...)
         let s:yr_prev_clipboard = @+
     endif
 
-    " Manage the numbered registers
-    if g:yankring_manage_numbered_reg == 1
-        " Allow the user to define an autocmd to dynamically
-        " setup their connection information.
-        silent! doautocmd User YRSetNumberedReg
-    endif
-
     " If the yankring window is open, refresh it
     call s:YRWindowUpdate()
+
+    " Manage the numbered registers
+    if g:yankring_manage_numbered_reg == 1
+        call s:YRSetNumberedReg()
+    endif
 
     return ""
 endfunction
@@ -848,7 +827,7 @@ function! YRRecord3()
         return ""
     endif
 
-    let register = ((&clipboard=~'unnamed')?'+':register)
+    let register = ((&clipboard=='unnamed')?'+':register)
 
     if register == '"'
         " If the change has occurred via an omap, we must delay
@@ -874,15 +853,13 @@ function! YRRecord3()
         let s:yr_prev_clipboard = @+
     endif
 
-    " Manage the numbered registers
-    if g:yankring_manage_numbered_reg == 1
-        " Allow the user to define an autocmd to dynamically
-        " setup their connection information.
-        silent! doautocmd User YRSetNumberedReg
-    endif
-
     " If the yankring window is open, refresh it
     call s:YRWindowUpdate()
+
+    " Manage the numbered registers
+    if g:yankring_manage_numbered_reg == 1
+        call s:YRSetNumberedReg()
+    endif
 
     return ""
 endfunction
@@ -1035,27 +1012,19 @@ endfunction
 " Manages the Vim's numbered registers
 function! s:YRSetNumberedReg() 
 
-    let i = 0
+    let i = 1
 
     while i <= 10
         if i > s:yr_count
             break
         endif
 
-        call setreg( (i)
-                    \ , s:YRGetValElemNbr((i),'v')
-                    \ , s:YRGetValElemNbr((i),'t')
+        call setreg( (i-1)
+                    \ , s:YRGetValElemNbr((i-1),'v')
+                    \ , s:YRGetValElemNbr((i-1),'t')
                     \ )
         let i += 1
     endwhile
-
-    " There are a few actions that Vim automatically takes
-    " when modifying the numbered registers.
-    " Modifying register 1 - changes the named register.
-    " It is impossible to set register 2 to a value, since Vim will change it.
-
-    " This will at least preserve the default register
-    let @" = @0
 endfunction
 
 
@@ -1159,7 +1128,7 @@ endfunction
 function! s:YRYankRange(do_delete_selection, ...) range
 
     let user_register  = s:YRRegister()
-    let default_buffer = ((&clipboard=~'unnamed')?'+':'"')
+    let default_buffer = ((&clipboard=='unnamed')?'+':'"')
 
     " Default command mode to normal mode 'n'
     let cmd_mode = 'n'
@@ -1216,7 +1185,7 @@ function! s:YRPaste(replace_last_paste_selection, nextvalue, direction, ...)
     
 
     let user_register  = s:YRRegister()
-    let default_buffer = ((&clipboard =~ 'unnamed')?'+':'"')
+    let default_buffer = ((&clipboard == 'unnamed')?'+':'"')
     let v_count        = v:count
 
     " Default command mode to normal mode 'n'
@@ -1387,7 +1356,7 @@ function! YRMapsExpression(sid, motion, ...)
     " echomsg "YRMapsE:".localtime()
     " echomsg "YRMapsE 1:".cmds.":".v:operator.":".s:yr_maps_created_zap
 
-    if (a:motion =~ '\.' && s:yr_remove_omap_dot == 1) || a:motion =~ '@'
+    if  (a:motion =~ '\.' && s:yr_remove_omap_dot == 1) || a:motion =~ '@'
         " If we are repeating a series of commands we must
         " unmap the _zap_ keys so that the user is not
         " prompted when a command is replayed.
@@ -1438,11 +1407,6 @@ function! YRMapsExpression(sid, motion, ...)
             let cmds .= a:sid. "yrrecord"
         endif
     endif
- 
-    " This will not work since we are already executing an expression
-    " if a:motion =~ '@'
-    "     let cmds = 'normal! ' . cmds
-    " endif
 
     " echomsg "YRMapsE 5:".a:motion.":'".cmds."':".s:yr_maps_created_zap
     return cmds
@@ -1450,43 +1414,41 @@ function! YRMapsExpression(sid, motion, ...)
 endfunction
  
 
-" Handle macros (@).
-" This routine is not used, YRMapsExpression is used to
-" handle the @ symbol.
-" function! s:YRMapsMacro(bang, ...) range
-"     " If we are repeating a series of commands we must
-"     " unmap the _zap_ keys so that the user is not
-"     " prompted when a command is replayed.
-"     " These maps must be re-instated in YRRecord3()
-"     " after the action of the replay is completed.
-"     call s:YRMapsDelete('remove_only_zap_keys')
-" 
-"     " let zapto = (a:0==0 ? "" : s:YRGetChar())
-"     let zapto = s:YRGetChar()
-" 
-"     if zapto == "\<C-C>"
-"         " Abort if the user hits Control C
-"         call s:YRWarningMsg( "YR:Aborting command:".v:operator.a:motion )
-"         return ""
-"     endif
-" 
-"     let v_count    = v:count
-"     " If no count was specified it will have a value of 0
-"     " so set it to at least 1
-"     let v_count = ((v_count > 0)?(v_count):'')
-" 
-"     let range = ''
-"     if a:firstline != a:lastline
-"         let rannge = a:firstline.','.a:lastline
-"     endif
-" 
-"     let cmd = range."normal! ".v_count.'@'.zapto
-"     " DEBUG
-"     " echomsg cmd
-"     exec cmd
-" 
-"     call s:YRMapsCreate('add_only_zap_keys')
-" endfunction
+" Handle any the @
+function! s:YRMapsMacro(bang, ...) range
+    " If we are repeating a series of commands we must
+    " unmap the _zap_ keys so that the user is not
+    " prompted when a command is replayed.
+    " These maps must be re-instated in YRRecord3()
+    " after the action of the replay is completed.
+    call s:YRMapsDelete('remove_only_zap_keys')
+
+    " let zapto = (a:0==0 ? "" : s:YRGetChar())
+    let zapto = s:YRGetChar()
+
+    if zapto == "\<C-C>"
+        " Abort if the user hits Control C
+        call s:YRWarningMsg( "YR:Aborting command:".v:operator.a:motion )
+        return ""
+    endif
+
+    let v_count    = v:count
+    " If no count was specified it will have a value of 0
+    " so set it to at least 1
+    let v_count = ((v_count > 0)?(v_count):'')
+
+    let range = ''
+    if a:firstline != a:lastline
+        let rannge = a:firstline.','.a:lastline
+    endif
+
+    let cmd = range."normal! ".v_count.'@'.zapto
+    " DEBUG
+    " echomsg cmd
+    exec cmd
+
+    call s:YRMapsCreate('add_only_zap_keys')
+endfunction
  
 
 " Create the default maps
@@ -1587,11 +1549,6 @@ function! s:YRMapsCreate(...)
 
     let g:yankring_enabled    = 1
     let s:yr_maps_created     = 1
-
-    if exists('*YRRunAfterMaps') 
-        " This will allow you to override the default maps if necessary
-        call YRRunAfterMaps()
-    endif
 endfunction
  
 
@@ -1635,79 +1592,84 @@ function! s:YRMapsDelete(...)
         endtry
     endfor
 
-    if g:yankring_map_dot == 1 
-        silent! exec "nunmap ."
+    if g:yankring_map_dot == 1
+        exec "nunmap ."
     endif
     if g:yankring_v_key != ''
-        silent! exec 'vunmap '.g:yankring_v_key
+        exec 'vunmap '.g:yankring_v_key
     endif
     if g:yankring_del_v_key != ''
         for v_map in split(g:yankring_del_v_key)
             if strlen(v_map) > 0
                 try
-                    silent! exec 'vunmap '.v_map
+                    exec 'vunmap '.v_map
                 catch
                 endtry
             endif
         endfor
     endif
     if g:yankring_paste_n_bkey != ''
-        silent! exec 'nunmap '.g:yankring_paste_n_bkey
+        exec 'nunmap '.g:yankring_paste_n_bkey
         if g:yankring_paste_using_g == 1
-            silent! exec 'nunmap g'.g:yankring_paste_n_bkey
+            exec 'nunmap g'.g:yankring_paste_n_bkey
         endif
     endif
     if g:yankring_paste_n_akey != ''
-        silent! exec 'nunmap '.g:yankring_paste_n_akey
+        exec 'nunmap '.g:yankring_paste_n_akey
         if g:yankring_paste_using_g == 1
-            silent! exec 'nunmap g'.g:yankring_paste_n_akey
+            exec 'nunmap g'.g:yankring_paste_n_akey
         endif
     endif
     if g:yankring_paste_v_bkey != ''
-        silent! exec 'vunmap '.g:yankring_paste_v_bkey
+        exec 'vunmap '.g:yankring_paste_v_bkey
     endif
     if g:yankring_paste_v_akey != ''
-        silent! exec 'vunmap '.g:yankring_paste_v_akey
+        exec 'vunmap '.g:yankring_paste_v_akey
     endif
     if g:yankring_replace_n_pkey != ''
-        silent! exec 'nunmap '.g:yankring_replace_n_pkey
+        exec 'nunmap '.g:yankring_replace_n_pkey
     endif
     if g:yankring_replace_n_nkey != ''
-        silent! exec 'nunmap '.g:yankring_replace_n_nkey
+        exec 'nunmap '.g:yankring_replace_n_nkey
     endif
-
-    silent! exec 'nunmap @'
 
     let g:yankring_enabled    = 0
     let s:yr_maps_created     = 0
 endfunction
 
 function! s:YRGetValElemNbr( position, type )
+
     let needed_elem = a:position
 
     " The List which contains the items in the yankring
     " history is also ordered, most recent at the top
     let elem = s:YRMRUGet('s:yr_history_list', needed_elem)
 
-    if a:type == 't'
-        let elem = matchstr(elem, '^.*,\zs.*$')
-    else
-        let elem = matchstr(elem, '^.*\ze,.*$')
-        if s:yr_history_version == 'v1'
-            " Match three @@@ in a row as long as it is not
-            " preceeded by a @@@            
-            " v1
-            let elem = substitute(elem, s:yr_history_v1_nl_pat, "\n", 'g')
-            let elem = substitute(elem, '\\@', '@', 'g')
+    if elem >= 0
+        if a:type == 't'
+            return matchstr(elem, '^.*,\zs.*$')
         else
-            let elem = substitute(elem, s:yr_history_v2_nl_pat, "\n", 'g')
+            let elem = matchstr(elem, '^.*\ze,.*$')
+            if s:yr_history_version == 'v1'
+                " Match three @@@ in a row as long as it is not
+                " preceeded by a @@@            
+                " v1
+                let elem = substitute(elem, s:yr_history_v1_nl_pat, "\n", 'g')
+                let elem = substitute(elem, '\\@', '@', 'g')
+            else
+                let elem = substitute(elem, s:yr_history_v2_nl_pat, "\n", 'g')
+            endif
+            return elem
         endif
+    else
+        return -1
     endif
 
-    return elem
+    return ""
 endfunction
 
 function! s:YRMRUReset( mru_list )
+
     let {a:mru_list} = []
 
     return 1
@@ -1721,16 +1683,6 @@ function! s:YRMRUElemFormat( element, element_type )
     let elem    = a:element
     if g:yankring_max_element_length != 0
         let elem    = strpart(a:element, 0, g:yankring_max_element_length)
-        if (g:yankring_warn_on_truncate > 0)
-            let bytes = len (a:element) - len(elem)
-            if (bytes > 0)
-                call s:YRWarningMsg("Yankring truncated its element by ".
-                                        \ bytes.
-                                        \ " bytes due to a g:yankring_max_element_length of ".
-                                        \ g:yankring_max_element_length
-                                        \ )
-            endif
-        endif
     endif
     if s:yr_history_version == 'v1'
         let elem    = escape(elem, '@')
@@ -1802,6 +1754,7 @@ function! s:YRMRUAdd( mru_list, element, element_type )
 endfunction
 
 function! s:YRMRUDel( mru_list, elem_nbr )
+
     if a:elem_nbr >= 0 && a:elem_nbr < s:yr_count 
         call remove({a:mru_list}, a:elem_nbr)
         call s:YRHistorySave()
@@ -1809,23 +1762,6 @@ function! s:YRMRUDel( mru_list, elem_nbr )
 
     return 1
 endfunction
-
-function! s:YRHistoryDelete()
-    let s:yr_history_list = []
-    let yr_filename       = s:yr_history_file_{s:yr_history_version}
-
-    if filereadable(yr_filename)
-        let rc = delete(yr_filename)
-        if rc != 0
-            call s:YRErrorMsg(
-                        \ 'YRHistoryDelete: Unable to delete the yankring history file: '.
-                        \ yr_filename
-                        \ )
-        endif
-    endif
-
-    return 0
-endfunction 
 
 function! s:YRHistoryRead()
     let refresh_needed  = 1
@@ -1865,22 +1801,20 @@ function! s:YRHistoryRead()
 endfunction 
 
 function! s:YRHistorySave()
-    let yr_filename     = s:yr_history_file_{s:yr_history_version}
-
     if len(s:yr_history_list) > g:yankring_max_history
         " Remove items which exceed the max # specified
         call remove(s:yr_history_list, g:yankring_max_history)
     endif
 
-    let rc = writefile(s:yr_history_list, yr_filename)
+    let rc = writefile(s:yr_history_list, s:yr_history_file_{s:yr_history_version})
 
     if rc == 0
-        let s:yr_history_last_upd = getftime(yr_filename)
+        let s:yr_history_last_upd = getftime(s:yr_history_file_{s:yr_history_version})
         let s:yr_count = len(s:yr_history_list)
     else
         call s:YRErrorMsg(
                     \ 'YRHistorySave: Unable to save yankring history file: '.
-                    \ yr_filename
+                    \ s:yr_history_file_{s:yr_history_version}
                     \ )
     endif
 endfunction 
@@ -1945,7 +1879,7 @@ function! s:YRWindowStatus(show_help)
 
     let msg = 'AutoClose='.g:yankring_window_auto_close.
                 \ ';ClipboardMonitor='.g:yankring_clipboard_monitor.
-                \ ';Cmds:<enter>,[g]p,[g]P,d,r,s,a,c,u,R,q,<space>;Help=?'.
+                \ ';Cmds:<enter>,[g]p,[g]P,d,r,s,a,c,u,q,<space>;Help=?'.
                 \ (s:yr_search==""?"":';SearchRegEx='.s:yr_search)
 
     if s:yr_has_voperator == 0
@@ -1962,8 +1896,7 @@ function! s:YRWindowStatus(show_help)
                     \ '" [g]P         : [g][P]aste selection'."\n".
                     \ '" r            : [p]aste selection in reverse order'."\n".
                     \ '" s            : [s]earch the yankring for text'."\n".
-                    \ '" u            : [u]pdate display show YankRing'."\n".
-                    \ '" R            : [R]egisters display'."\n".
+                    \ '" u            : [u]pdate display'."\n".
                     \ '" a            : toggle [a]utoclose setting'."\n".
                     \ '" c            : toggle [c]lipboard monitor setting'."\n".
                     \ '" q            : [q]uit / close the yankring window'."\n".
@@ -2151,7 +2084,6 @@ function! s:YRWindowOpen(results)
     nnoremap <buffer> <silent> ?             :call <SID>YRWindowAction ('?' ,'n')<CR>
     nnoremap <buffer> <silent> u             :call <SID>YRWindowAction ('u' ,'n')<CR>
     nnoremap <buffer> <silent> q             :call <SID>YRWindowAction ('q' ,'n')<CR>
-    nnoremap <buffer> <silent> R             :call <SID>YRWindowAction ('R' ,'n')<CR>
     nnoremap <buffer> <silent> <space>     \|:silent exec 'vertical resize '.
                 \ (
                 \ g:yankring_window_use_horiz!=1 && winwidth('.') > g:yankring_window_width
@@ -2219,7 +2151,7 @@ function! s:YRWindowActionN(op, cmd_mode)
 endfunction
 
 function! s:YRWindowAction(op, cmd_mode) range
-    let default_buffer = ((&clipboard=~'unnamed')?'+':'"')
+    let default_buffer = ((&clipboard=='unnamed')?'+':'"')
     let opcode     = a:op
     let lines      = []
     let v_count    = v:count
@@ -2287,12 +2219,6 @@ function! s:YRWindowAction(op, cmd_mode) range
         exec s:yr_buffer_last_winnr . "wincmd w"
     
         call s:YRShow(0)
-        return
-    elseif opcode ==# 'R'
-        " Switch back to the original buffer
-        exec s:yr_buffer_last_winnr . "wincmd w"
-    
-        call s:YRShow(0, 'R')
         return
     elseif opcode ==# 'a'
         let l:curr_line = line(".")
@@ -2473,8 +2399,6 @@ augroup YankRing
     autocmd WinLeave    * :call <SID>YRWinLeave()
     autocmd FocusGained * :if has('clipboard') | call <SID>YRFocusGained() | endif
     autocmd InsertLeave * :call <SID>YRInsertLeave()
-    autocmd User        YRSetNumberedReg :call <SID>YRSetNumberedReg()
-    " autocmd User        YRSetNumberedReg :let i = 0 | while i <= 10 | if i > s:yr_count | break | endif | call setreg( (i), s:YRGetValElemNbr((i),'v'), s:YRGetValElemNbr((i),'t') ) | let i += 1 | endwhile
 augroup END
 
 
@@ -2507,35 +2431,28 @@ command! -range -bang     -nargs=? YRYankRange    <line1>,<line2>call s:YRYankRa
 if has("gui_running") && has("menu") && g:yankring_default_menu_mode != 0
     if g:yankring_default_menu_mode == 1
         let menuRoot = 'YankRing'
-        let menuPriority = ''
     elseif g:yankring_default_menu_mode == 2
         let menuRoot = '&YankRing'
-        let menuPriority = ''
-    elseif g:yankring_default_menu_mode == 3 
-        let menuRoot = exists("g:yankring_menu_root") ? g:yankring_menu_root : '&Plugin.&YankRing'
-        let menuPriority = exists("g:yankring_menu_priority") ? yankring_menu_priority : ''
     else
         let menuRoot = '&Plugin.&YankRing'
-        let menuPriority = ''
     endif
 
-    let leader = '\'
-    if exists('g:mapleader')
-        let leader = g:mapleader
-    endif
-    let leader = escape(leader, '\')
-
-    exec 'noremenu  <script> '.menuPriority.' '.menuRoot.'.YankRing\ Window  :YRShow<CR>'
-    exec 'noremenu  <script> '.menuPriority.' '.menuRoot.'.YankRing\ Search  :YRSearch<CR>'
-    exec 'noremenu  <script> '.menuPriority.' '.menuRoot.'.Replace\ with\ Previous<TAB>'.leader.'<C-P> :YRReplace ''-1'', ''P''<CR>'
-    exec 'noremenu  <script> '.menuPriority.' '.menuRoot.'.Replace\ with\ Next<TAB>'.leader.'<C-N> :YRReplace ''1'', ''P''<CR>'
-    exec 'noremenu  <script> '.menuPriority.' '.menuRoot.'.Clear  :YRClear<CR>'
-    exec 'noremenu  <script> '.menuPriority.' '.menuRoot.'.Toggle :YRToggle<CR>'
+    exec 'noremenu  <script> '.menuRoot.'.YankRing\ Window  :YRShow<CR>'
+    exec 'noremenu  <script> '.menuRoot.'.YankRing\ Search  :YRSearch<CR>'
+    exec 'noremenu  <script> '.menuRoot.'.Replace\ with\ Previous  :YRReplace ''-1'', ''P''<CR>'
+    exec 'noremenu  <script> '.menuRoot.'.Replace\ with\ Next  :YRReplace ''1'', ''P''<CR>'
+    exec 'noremenu  <script> '.menuRoot.'.Clear  :YRClear<CR>'
+    exec 'noremenu  <script> '.menuRoot.'.Toggle :YRToggle<CR>'
 endif
 
 if g:yankring_enabled == 1
     " Create YankRing Maps
     call s:YRMapsCreate()
+endif
+
+if exists('*YRRunAfterMaps') 
+    " This will allow you to override the default maps if necessary
+    call YRRunAfterMaps()
 endif
 
 call s:YRInit()

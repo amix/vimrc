@@ -47,9 +47,6 @@
 [submodule "sources_colors/vim-colors-solarized"]
 	path = sources_colors/vim-colors-solarized
 	url = git://github.com/altercation/vim-colors-solarized.git
-[submodule "sources_colors/vim-irblack"]
-	path = sources_colors/vim-irblack
-	url = git://github.com/wgibbs/vim-irblack.git
 [submodule "sources_colors/mayansmoke"]
 	path = sources_colors/mayansmoke
 	url = git://github.com/vim-scripts/mayansmoke.git

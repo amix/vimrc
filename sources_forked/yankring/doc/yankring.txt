@@ -1,13 +1,11 @@
 *yankring.txt*      For Vim version 7.0. 
 
-Author:	        David Fishburn                             September 16, 2011
-Version:        12.0
+Author:	        David Fishburn                             August 29, 2009
+Version:        10.0
 
 For instructions on installing this file, type
 	:help add-local-help |add-local-help| inside Vim.
     
-Homepage: http://vim.sourceforge.net/script.php?script_id=1234
-
 
 ==============================================================================
 1. Contents                                      *yankring* *yankring-contents*
@@ -18,7 +16,6 @@ Homepage: http://vim.sourceforge.net/script.php?script_id=1234
        3.1 Global Variables...................: |yankring-globals|
        3.2 Default Keys.......................: |yankring-mappings|
        3.3 Customizing Maps...................: |yankring-custom-maps|
-       3.4 Customizing Menus..................: |yankring-custom-menus|
     4. Using the YankRing Window..............: |yankring-window|
     5. Commands...............................: |yankring-commands|
        5.1  YRToggle..........................: |YRToggle|
@@ -48,7 +45,6 @@ Homepage: http://vim.sourceforge.net/script.php?script_id=1234
        6.11 :global...........................: |global-example|
        6.12 YRSearch..........................: |YRSearch-example|
     7. History................................: |yankring-history|
-
 
 ==============================================================================
 2. Description                                   *yankring-description*
@@ -81,7 +77,6 @@ yankring.vim file for my email address.  Suggestions / bug reports are
 always welcome.
 
 For details on the changes between versions see |yankring-history|.
-
 
 ==============================================================================
 3. Configuration                                 *yankring-configure*
@@ -274,33 +269,6 @@ your |.vimrc|.
 		no way to noticing.  To disable this feature you can put the following
 		in your |vimrc| >
             let g:yankring_paste_check_default_buffer = 0
-    yankring_default_menu_mode
-<       - Menus are useful for a number of reasons:
-              See a list of available commands.
-              Remember what the shortcut maps are.
-              Have a floating menu when using the plugin a lot.
-              Quick reference guide.
-          There are four settings that will control the placement
-          of the menu: 
-              "0": Turns the menu off.
-              "1": Turns the 'Yankring' menu on with no menu shortcut.
-              "2": Turns the 'Yankring 'menu on with <alt>-y as the shortcut.
-              "3": Turns the 'Plugin -> YankRing' menu on with <alt>-y as 
-                   the shortcut.
-          This option defaults to a value of 3 and can be changed
-          by adding the following to your vimrc: >
-            :let  g:yankring_default_menu_mode = 3
-    yankring_menu_root
-<       - Can be used in conjuction with g:yankring_default_menu_mode = 3 but 
-          it also allows you to control the fullname and location of the
-          YankRing menu.  To create the menu: 'MyPlugins -> YankRing' you 
-          can create the following variable: >
-            :let  g:yankring_menu_root = 'MyPlugin.&YankRing'
-    yankring_menu_priority
-<       - Menus are created in a documented order by Vim (|menu-priority|).
-          This option allows you to override the setting and shift the 
-          YankRing menu item to the left between the Edit and Tools menu. >
-            :let  g:yankring_menu_priority = 30
 
 <
 3.2 Default Keys                                 *yankring-mappings*
@@ -498,15 +466,6 @@ You can do anything you need in this function.  >
 This line remaps Y (which the user presses) to the YRYankCount command.  The
 YRYankCount tells Vim to execute y$ instead.
 
-3.4 Customizing Menus                            *yankring-custom-menus*
-
-There are several global variables which can be created in your vimrc to
-allow you to customize where and what is displayed for the YankRing menu. 
-Simply look up the following global variables: >
-    yankring_default_menu_mode
-    yankring_menu_root
-    yankring_menu_priority
-
 
 ==============================================================================
 4. Using the YankRing Window:                    *yankring-window*
@@ -566,6 +525,8 @@ in the YankRing window.
   <Space>       Toggles the width of the vertical window by the
                 g:yankring_window_increment setting.
   ?             Toggles the display of the help.
+
+ 
 
 
 ==============================================================================
@@ -1169,30 +1130,6 @@ mapping: >
 
 ==============================================================================
 7. History                                       *yankring-history*
-
-  12.0: September 16, 2011
-         NF: Added support for the clipboard option "unnamedplus" which was
-             added after 7.3 (Hong Xu).
-         NF: When displaying the YankRing using YRShow, a new command "R"
-             has been added to display all of Vim's registers [0-9a-z].
-         BF: YRMapsDelete did not remove the normal mode @ map, which 
-             interfers with recorded macros (Philippe Vaucher ).
-
-  11.0: August 09, 2010
-         NF: Documented the global variables to customize the location
-             of the YankRing menu.
-         NF: The YankRing menu now shows the maps used for the default 
-             actions to help learn them more easily.
-         NF: Added g:yankring_menu_root and g:yankring_menu_priority 
-             (David Barsam).
-         NF: Added a warning indicating a stored value has been truncated 
-             based on g:yankring_max_element_length and a new option to
-             suppress this warning, g:yankring_warn_on_truncate (Hans-Günter).
-         BF: The YRAfterMaps() function (if it exists) was not re-run if 
-             YRToggle was used to disable and enable the YankRing.
-         BF: Multibyte strings may not have been pasted correctly (Dr. Chip).
-         BF: When pasting a string of 1111's, and additional -1 could also 
-             be included in the output.
 
   10.0: January 31, 2010
          NF: Change the buffer name to [YankRing] to resemble other

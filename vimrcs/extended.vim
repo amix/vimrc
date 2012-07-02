@@ -11,8 +11,6 @@
 set background=dark
 
 if has("gui_running")
-    colorscheme peaksea
-else
     colorscheme ir_black
 endif
 
