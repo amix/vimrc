@@ -43,7 +43,6 @@
 [submodule "sources_misc/vim-bundle-mako"]
 	path = sources_misc/vim-bundle-mako
 	url = git://github.com/sophacles/vim-bundle-mako.git
-
 [submodule "sources_colors/vim-colors-solarized"]
 	path = sources_colors/vim-colors-solarized
 	url = git://github.com/altercation/vim-colors-solarized.git
