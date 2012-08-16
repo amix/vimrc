@@ -1,6 +1,4 @@
 cd ~/.vim_runtime
-git submodule init
-git submodule update
 
 echo 'set runtimepath+=~/.vim_runtime
 
