@@ -45,7 +45,12 @@ endif
 " => CTRL-P
 """"""""""""""""""""""""""""""
 let g:ctrlp_working_path_mode = 0
+
 let g:ctrlp_map = '<c-f>'
+map <c-b> :CtrlPBuffer<cr>
+
+let g:ctrlp_max_height = 20
+let g:ctrlp_custom_ignore = 'node_modules\|^\.DS_Store\|^\.git\|^\.coffee'
 
 
 """"""""""""""""""""""""""""""
@@ -80,5 +85,5 @@ map <leader>nf :NERDTreeFind<cr>
 " => surround.vim config
 " Annotate strings with gettext http://amix.dk/blog/post/19678
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-au FileType mako vmap <buffer> Si S"i${ _(<esc>2f"a) }<esc>
-vmap Si S)i_<esc>f)
+vmap Si S(i_<esc>f)
+au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
