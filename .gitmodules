@@ -58,3 +58,6 @@
 [submodule "sources_misc/vim-markdown"]
 	path = sources_misc/vim-markdown
 	url = https://github.com/tpope/vim-markdown.git
+[submodule "sources_plugins/snipmate-snippets"]
+	path = sources_plugins/snipmate-snippets
+	url = git://github.com/honza/snipmate-snippets.git
