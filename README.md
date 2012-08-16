@@ -31,6 +31,14 @@ The awesome version includes a lot of great plugins, configurations and color sc
 Use [msysgit](http://msysgit.github.com/) to checkout the repository and run the installation instructions above. No special instructions needed ;-)
 
 
+## How to update to latest version?
+
+Simply just do a git rebase!
+
+    cd ~/.vim_runtime
+    git pull --rebase
+
+
 ## Some screenshots
 
 Colors when editing a Python file:
