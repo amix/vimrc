@@ -1,0 +1,62 @@
+# #!/bin/zsh
+snippet #!
+	#!/bin/zsh
+
+snippet if
+	if ${1:condition}; then
+		${2:# statements}
+	fi
+snippet ife
+	if ${1:condition}; then
+		${2:# statements}
+	else
+		${3:# statements}
+	fi
+snippet elif
+	elif ${1:condition} ; then
+		${2:# statements}
+snippet for
+	for (( ${2:i} = 0; $2 < ${1:count}; $2++ )); do
+		${3:# statements}
+	done
+snippet fori
+	for ${1:needle} in ${2:haystack} ; do
+		${3:#statements}
+	done
+snippet fore
+	for ${1:item} in ${2:list}; do
+		${3:# statements}
+	done
+snippet wh
+	while ${1:condition}; do
+		${2:# statements}
+	done
+snippet until
+	until ${1:condition}; do
+		${2:# statements}
+	done
+snippet repeat
+	repeat ${1:integer}; do
+		${2:# statements}
+	done
+snippet case
+	case ${1:word} in
+		${2:pattern})
+			${3};;
+	esac
+snippet select
+	select ${1:answer} in ${2:choices}; do
+		${3:# statements}
+	done
+snippet (
+	( ${1:#statements} )
+snippet {
+	{ ${1:#statements} }
+snippet [
+	[[ ${1:test} ]]
+snippet always
+	{ ${1:try} } always { ${2:always} }
+snippet fun
+	function ${1:name} (${2:args}) {
+		${3:# body}
+	}

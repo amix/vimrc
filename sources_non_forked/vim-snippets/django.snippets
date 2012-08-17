@@ -1,0 +1,236 @@
+# Generic Tags
+snippet %
+{% ${1} %}${2}
+endsnippet
+
+snippet %%
+{% ${1:tag_name} %}
+  ${2}
+{% end$1 %}
+endsnippet
+
+snippet {
+{{ ${1} }}${2}
+endsnippet
+
+# Template Tags
+
+snippet autoescape
+{% autoescape ${1:off} %}
+  ${2}
+{% endautoescape %}
+endsnippet
+
+snippet block
+{% block ${1} %}
+  ${2}
+{% endblock %}
+endsnippet
+
+snippet #
+{# ${1:comment} #}
+endsnippet
+
+snippet comment
+{% comment %}
+  ${1}
+{% endcomment %}
+endsnippet
+
+snippet cycle
+{% cycle ${1:val1} ${2:val2} ${3:as ${4}} %}
+endsnippet
+
+snippet debug
+{% debug %}
+endsnippet
+
+snippet extends
+{% extends "${1:base.html}" %}
+endsnippet
+
+snippet filter
+{% filter ${1} %}
+  ${2}
+{% endfilter %}
+endsnippet
+
+snippet firstof
+{% firstof ${1} %}
+endsnippet
+
+snippet for
+{% for ${1} in ${2} %}
+  ${3}
+{% endfor %}
+endsnippet
+
+snippet empty
+{% empty %}
+  ${1}
+endsnippet
+
+snippet if
+{% if ${1} %}
+  ${2}
+{% endif %}
+endsnippet
+
+snippet else
+{% else %}
+  ${1}
+endsnippet
+
+snippet ifchanged
+{% ifchanged %}${1}{% endifchanged %}
+endsnippet
+
+snippet ifequal
+{% ifequal ${1} ${2} %}
+  ${3}
+{% endifequal %}
+endsnippet
+
+snippet ifnotequal
+{% ifnotequal ${1} ${2} %}
+  ${3}
+{% endifnotequal %}
+endsnippet
+
+snippet include
+{% include "${1}" %}
+endsnippet
+
+snippet load
+{% load ${1} %}
+endsnippet
+
+snippet now
+{% now "${1:jS F Y H:i}" %}
+endsnippet
+
+snippet regroup
+{% regroup ${1} by ${2} as ${3} %}
+endsnippet
+
+snippet spaceless
+{% spaceless %}${1}{% endspaceless %}
+endsnippet
+
+snippet ssi
+{% ssi ${1} %}
+endsnippet
+
+snippet trans
+{% trans "${1:string}" %}
+endsnippet
+
+snippet url
+{% url ${1} as ${2} %}
+endsnippet
+
+snippet widthratio
+{% widthratio ${1:this_value} ${2:max_value} ${3:100} %}
+endsnippet
+
+snippet with
+{% with ${1} as ${2} %}
+endsnippet
+
+# Template Filters
+
+# Note: Since SnipMate can't determine which template filter you are
+# expanding without the "|" character, these do not add the "|"
+# character.  These save a few keystrokes still.
+
+# Note: Template tags that take no arguments are not implemented.
+
+snippet add
+add:"${1}"
+endsnippet
+
+snippet center
+center:"${1}"
+endsnippet
+
+snippet cut
+cut:"${1}"
+endsnippet
+
+snippet date
+date:"${1}"
+endsnippet
+
+snippet default
+default:"${1}"
+endsnippet
+
+snippet defaultifnone
+default_if_none:"${1}"
+endsnippet
+
+snippet dictsort
+dictsort:"${1}"
+endsnippet
+
+snippet dictsortrev
+dictsortreversed:"${1}"
+endsnippet
+
+snippet divisibleby
+divisibleby:"${1}"
+endsnippet
+
+snippet floatformat
+floatformat:"${1}"
+endsnippet
+
+snippet getdigit
+get_digit:"${1}"
+endsnippet
+
+snippet join
+join:"${1}"
+endsnippet
+
+snippet lengthis
+length_is:"${1}"
+endsnippet
+
+snippet pluralize
+pluralize:"${1}"
+endsnippet
+
+snippet removetags
+removetags:"${1}"
+endsnippet
+
+snippet slice
+slice:"${1}"
+endsnippet
+
+snippet stringformat
+stringformat:"${1}"
+endsnippet
+
+snippet time
+time:"${1}"
+endsnippet
+
+snippet truncatewords
+truncatewords:${1}
+endsnippet
+
+snippet truncatewordshtml
+truncatewords_html:${1}
+endsnippet
+
+snippet urlizetrunc
+urlizetrunc:${1}
+endsnippet
+
+snippet wordwrap
+wordwrap:${1}
+endsnippet
+
+# vim:ft=snippets:

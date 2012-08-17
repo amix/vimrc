@@ -1,0 +1,50 @@
+###########################################################################
+#                            TEXTMATE SNIPPETS                            #
+###########################################################################
+snippet for "for... (for)" b
+for {${1:set i 0}} {${2:\$i < \$n}} {${3:incr i}} {
+	${4}
+}
+
+endsnippet
+
+snippet foreach "foreach... (foreach)"
+foreach ${1:var} ${2:\$list} {
+	${3}
+}
+
+endsnippet
+
+snippet if "if... (if)" b
+if {${1:condition}} {
+	${2}
+}
+
+endsnippet
+
+snippet proc "proc... (proc)" b
+proc ${1:name} {${2:args}} \
+{
+	${3}
+}
+
+endsnippet
+
+snippet switch "switch... (switch)" b
+switch ${1:-exact} -- ${2:\$var} {
+	${3:match} {
+		${4}
+	}
+	default {${5}}
+}
+
+endsnippet
+
+snippet while "while... (while)" b
+while {${1:condition}} {
+	${2}
+}
+
+endsnippet
+
+# vim:ft=snippets:

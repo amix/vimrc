@@ -1,0 +1,61 @@
+snippet if "if ... then ... else ..."
+if ${1:condition}
+   then ${2:expression}
+   else ${3:expression}
+endsnippet
+
+snippet case "case ... of ..."
+case ${1:expression} of
+     ${2:pattern} -> ${3:expression}
+     ${4:pattern} -> ${5:expression}
+endsnippet
+
+snippet :: "Type signature"
+${1:name} :: ${2:Type} -> ${3:Type}
+endsnippet
+
+snippet => "Type constraint"
+(${1:Class} ${2:Type var}) => ${3:$2}
+endsnippet
+
+snippet def "Function definition"
+${1:name} :: ${2:Type} -> ${3:Type}
+endsnippet
+
+snippet def[] "Function definition for list patterns"
+${1:name} :: [${2:Type}] -> ${3:Type}
+$1 [] = ${4:undefined}
+$1 ${5:(x:xs)} = ${6:undefined}
+endsnippet
+
+snippet = "Function clause"
+${1:name} ${2:pattern} = ${3:undefined}
+endsnippet
+
+snippet 2= "Function clause"
+${1:name} ${2:pattern} = ${3:undefined}
+$1 ${4:pattern} = ${5:undefined}
+endsnippet
+
+snippet 3= "Function clause"
+${1:name} ${2:pattern} = ${3:undefined}
+$1 ${4:pattern} = ${5:undefined}
+$1 ${6:pattern} = ${7:undefined}
+endsnippet
+
+snippet | "Guard"
+| ${1:predicate} = ${2:undefined}
+endsnippet
+
+snippet \ "Lambda expression"
+\ ${1:pattern} -> ${2:expression}
+endsnippet
+
+snippet [|] "List comprehension"
+[${3:foo }$1 | ${1:x} <- ${2:xs} ]
+endsnippet
+
+snippet let "let ... in ..."
+let ${1:name} = ${2:expression}
+in ${3:expression}
+endsnippet

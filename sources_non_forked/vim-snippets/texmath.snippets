@@ -1,0 +1,54 @@
+##############
+# MATH STUFF #
+##############
+snippet eq "Equation" b
+\begin{equation}
+	$0
+\end{equation}
+endsnippet
+
+snippet eqnn "Equation without number" b
+\begin{equation*}
+	$0
+\end{equation*}
+endsnippet
+
+snippet eqa "Equation array" b
+\begin{eqnarray}
+	$1 & $2 & $0
+\end{eqnarray}
+endsnippet
+
+snippet eqann "Equation array without numbers" b
+\begin{eqnarray*}
+	$1 & $2 & $0
+\end{eqnarray*}
+
+endsnippet
+snippet frac "Fraction" w
+\frac{${1:${VISUAL:nom}}}{${2:denom}}
+endsnippet
+
+snippet mat "Smart Matrix"
+\begin{${1:p/b/v/V/B/small}matrix}
+	$0
+\end{$1matrix}
+endsnippet
+
+snippet lr( "left( right)" w
+\left( ${1:${VISUAL}} \right)
+endsnippet
+
+snippet lr| "left| right|" w
+\left| ${1:${VISUAL}} \right|
+endsnippet
+
+snippet lr{ "left\{ right\}" w
+\left\\{ ${1:${VISUAL}} \right\\}
+endsnippet
+
+snippet lr[ "left[ right]" w
+\left[ ${1:${VISUAL}} \right]
+endsnippet
+
+# vim:ft=snippets:

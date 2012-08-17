@@ -1,0 +1,1256 @@
+*ctrlp.txt*       Fuzzy file, buffer, mru, tag, ... finder. v1.78
+*CtrlP* *ControlP* *'ctrlp'* *'ctrl-p'*
+===============================================================================
+#                                                                             #
+#          :::::::: ::::::::::: :::::::::  :::             :::::::::          #
+#         :+:    :+:    :+:     :+:    :+: :+:             :+:    :+:         #
+#         +:+           +:+     +:+    +:+ +:+             +:+    +:+         #
+#         +#+           +#+     +#++:++#:  +#+             +#++:++#+          #
+#         +#+           +#+     +#+    +#+ +#+             +#+                #
+#         #+#    #+#    #+#     #+#    #+# #+#             #+#                #
+#          ########     ###     ###    ### ##########      ###                #
+#                                                                             #
+===============================================================================
+CONTENTS                                                       *ctrlp-contents*
+
+    1. Intro........................................|ctrlp-intro|
+    2. Options......................................|ctrlp-options|
+    3. Commands.....................................|ctrlp-commands|
+    4. Mappings.....................................|ctrlp-mappings|
+    5. Input Formats................................|ctrlp-input-formats|
+    6. Extensions...................................|ctrlp-extensions|
+
+===============================================================================
+INTRO                                                             *ctrlp-intro*
+
+Full path fuzzy file, buffer, mru, tag, ... finder with an intuitive interface.
+Written in pure Vimscript for MacVim, gVim and Vim version 7.0+. Has full
+support for Vim's |regexp| as search pattern, built-in MRU files monitoring,
+project's root finder, and more.
+
+To enable optional extensions (tag, dir, rtscript...), see |ctrlp-extensions|.
+
+===============================================================================
+OPTIONS                                                         *ctrlp-options*
+
+Overview:~
+
+  |loaded_ctrlp|                Disable the plugin.
+  |ctrlp_map|                   Default mapping.
+  |ctrlp_cmd|                   Default command used for the default mapping.
+  |ctrlp_by_filename|           Default to filename mode or not.
+  |ctrlp_regexp|                Default to regexp mode or not.
+  |ctrlp_match_window_bottom|   Where to show the match window.
+  |ctrlp_match_window_reversed| Sort order in the match window.
+  |ctrlp_max_height|            Max height of the match window.
+  |ctrlp_switch_buffer|         Jump to an open buffer if already opened.
+  |ctrlp_reuse_window|          Reuse special windows (help, quickfix, etc).
+  |ctrlp_tabpage_position|      Where to put the new tab page.
+  |ctrlp_working_path_mode|     How to set CtrlP's local working directory.
+  |ctrlp_root_markers|          Additional, high priority root markers.
+  |ctrlp_use_caching|           Use per-session caching or not.
+  |ctrlp_clear_cache_on_exit|   Keep cache after exiting Vim or not.
+  |ctrlp_cache_dir|             Location of the cache directory.
+  |ctrlp_dotfiles|              Ignore dotfiles and dotdirs or not.
+  |ctrlp_custom_ignore|         Hide stuff when using |globpath()|.
+  |ctrlp_max_files|             Number of files to scan initially.
+  |ctrlp_max_depth|             Directory depth to recurse into when scanning.
+  |ctrlp_user_command|          Use an external scanner.
+  |ctrlp_max_history|           Number of entries saved in the prompt history.
+  |ctrlp_open_new_file|         How to open a file created by <c-y>.
+  |ctrlp_open_multiple_files|   How to open files selected by <c-z>.
+  |ctrlp_arg_map|               Intercept <c-y> and <c-o> or not.
+  |ctrlp_follow_symlinks|       Follow symbolic links or not.
+  |ctrlp_lazy_update|           Only update when typing has stopped.
+  |ctrlp_default_input|         Seed the prompt with an initial string.
+  |ctrlp_use_migemo|            Use Migemo patterns for Japanese filenames.
+  |ctrlp_prompt_mappings|       Change the mappings in the prompt.
+
+  MRU mode:
+  |ctrlp_mruf_max|              Max MRU entries to remember.
+  |ctrlp_mruf_exclude|          Files that shouldn't be remembered.
+  |ctrlp_mruf_include|          Files to be remembered.
+  |ctrlp_mruf_relative|         Show only MRU files in the working directory.
+  |ctrlp_mruf_default_order|    Disable sorting.
+  |ctrlp_mruf_case_sensitive|   MRU files are case sensitive or not.
+
+  Advanced options:
+  |ctrlp_open_func|             Use custom file opening functions.
+  |ctrlp_status_func|           Change CtrlP's two statuslines.
+  |ctrlp_buffer_func|           Call custom functions in the CtrlP buffer.
+  |ctrlp_match_func|            Replace the built-in matching algorithm.
+
+-------------------------------------------------------------------------------
+Detailed descriptions and default values:~
+
+                                                                *'g:ctrlp_map'*
+Use this option to change the mapping to invoke CtrlP in |Normal| mode: >
+  let g:ctrlp_map = '<c-p>'
+<
+
+                                                                *'g:ctrlp_cmd'*
+Set the default opening command to use when pressing the above mapping: >
+  let g:ctrlp_cmd = 'CtrlP'
+<
+
+                                                             *'g:loaded_ctrlp'*
+Use this to disable the plugin completely: >
+  let g:loaded_ctrlp = 1
+<
+
+                                                        *'g:ctrlp_by_filename'*
+Set this to 1 to set searching by filename (as opposed to full path) as the
+default: >
+  let g:ctrlp_by_filename = 0
+<
+Can be toggled on/off by pressing <c-d> inside the prompt.
+
+                                                             *'g:ctrlp_regexp'*
+Set this to 1 to set regexp search as the default: >
+  let g:ctrlp_regexp = 0
+<
+Can be toggled on/off by pressing <c-r> inside the prompt.
+
+                                                *'g:ctrlp_match_window_bottom'*
+Set this to 0 to show the match window at the top of the screen: >
+  let g:ctrlp_match_window_bottom = 1
+<
+
+                                              *'g:ctrlp_match_window_reversed'*
+Change the listing order of the files in the match window. The default setting
+(1) is from bottom to top: >
+  let g:ctrlp_match_window_reversed = 1
+<
+
+                                                         *'g:ctrlp_max_height'*
+Set the maximum height of the match window: >
+  let g:ctrlp_max_height = 10
+<
+
+                                                      *'g:ctrlp_switch_buffer'*
+When opening a file with <cr> or <c-t>, if the file's already opened somewhere
+CtrlP will try to jump to it instead of opening a new instance: >
+  let g:ctrlp_switch_buffer = 2
+<
+  1 - only jump to the buffer if it's opened in the current tab.
+  2 - jump tab as well if the buffer's opened in another tab.
+  0 - disable this feature.
+
+                                                       *'g:ctrlp_reuse_window'*
+When opening a file with <cr>, CtrlP avoids opening it in windows created by
+plugins, help and quickfix. Use this to setup some exceptions: >
+  let g:ctrlp_reuse_window = 'netrw'
+<
+Acceptable values are partial name, filetype or buftype of the special buffers.
+Use regexp to specify the pattern.
+Example: >
+  let g:ctrlp_reuse_window = 'netrw\|help\|quickfix'
+<
+
+                                                   *'g:ctrlp_tabpage_position'*
+Where to put the new tab page when opening one: >
+  let g:ctrlp_tabpage_position = 'ac'
+<
+  a - after.
+  b - before.
+  c - the current tab page.
+  l - the last tab page.
+  f - the first tab page.
+
+                                                  *'g:ctrlp_working_path_mode'*
+When starting up, CtrlP sets its local working directory according to this
+variable: >
+  let g:ctrlp_working_path_mode = 'rc'
+<
+  c - the directory of the current file.
+  r - the nearest ancestor that contains one of these directories or files:
+      .git .hg .svn .bzr _darcs
+  {empty-string} - don't manage working directory.
+
+Note #1: you can use b:ctrlp_working_path_mode (a |b:var|) to set this option
+on a per buffer basis.
+
+Note #2: with both 'r' and 'c' in the option, when a root isn't found, use the
+directory of the current file.
+
+                                                       *'g:ctrlp_root_markers'*
+Use this to set your own root markers in addition to the default ones (.git,
+.hg, .svn, .bzr, and _darcs). Your markers will take precedence: >
+  let g:ctrlp_root_markers = ['']
+<
+
+                                                        *'g:ctrlp_use_caching'*
+Enable/Disable per-session caching: >
+  let g:ctrlp_use_caching = 1
+<
+  0 - Disable caching.
+  1 - Enable caching.
+  n - When bigger than 1, disable caching and use the number as the limit to
+      enable caching again.
+Note: you can quickly purge the cache by pressing <F5> while inside CtrlP.
+
+                                                *'g:ctrlp_clear_cache_on_exit'*
+Set this to 0 to enable cross-session caching by not deleting the cache files
+upon exiting Vim: >
+  let g:ctrlp_clear_cache_on_exit = 1
+<
+
+                                                          *'g:ctrlp_cache_dir'*
+Set the directory to store the cache files: >
+  let g:ctrlp_cache_dir = $HOME.'/.cache/ctrlp'
+<
+
+                                                           *'g:ctrlp_dotfiles'*
+Set this to 0 if you don't want CtrlP to scan for dotfiles and dotdirs: >
+  let g:ctrlp_dotfiles = 1
+<
+
+                                                           *'ctrlp-wildignore'*
+You can use Vim's |'wildignore'| to exclude files and directories from the
+results.
+Examples: >
+  " Excluding version control directories
+  set wildignore+=*/.git/*,*/.hg/*,*/.svn/*  " Linux/MacOSX
+  set wildignore+=.git\*,.hg\*,.svn\*        " Windows
+<
+Note #1: the `*/` in front of each directory glob is required.
+
+Note #2: |wildignore| influences the result of |expand()|, |globpath()| and
+|glob()| which many plugins use to find stuff on the system (e.g. VCS related
+plugins look for .git/, .hg/,... some other plugins look for external *.exe
+tools on Windows). So be a little mindful of what you put in your |wildignore|.
+
+                                                      *'g:ctrlp_custom_ignore'*
+In addition to |'wildignore'|, use this for files and directories you want only
+CtrlP to not show. Use regexp to specify the patterns: >
+  let g:ctrlp_custom_ignore = ''
+<
+Examples: >
+  let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
+  let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\.git$\|\.hg$\|\.svn$',
+    \ 'file': '\.exe$\|\.so$\|\.dll$',
+    \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
+    \ }
+<
+Note: ignoring only applies when |globpath()| is used to scan for files.
+
+                                                          *'g:ctrlp_max_files'*
+The maximum number of files to scan, set to 0 for no limit: >
+  let g:ctrlp_max_files = 10000
+<
+
+                                                          *'g:ctrlp_max_depth'*
+The maximum depth of a directory tree to recurse into: >
+  let g:ctrlp_max_depth = 40
+<
+Note: the larger these values, the more memory Vim uses.
+
+                                                       *'g:ctrlp_user_command'*
+Specify an external tool to use for listing files instead of using Vim's
+|globpath()|. Use %s in place of the target directory: >
+  let g:ctrlp_user_command = ''
+<
+Examples: >
+  let g:ctrlp_user_command = 'find %s -type f'       " MacOSX/Linux
+  let g:ctrlp_user_command = 'dir %s /-n /b /s /a-d' " Windows
+<
+You can also use 'grep', 'findstr' or something else to filter the results.
+Examples: >
+  let g:ctrlp_user_command = 'find %s -type f | grep (?!tmp/.*)'
+  let g:ctrlp_user_command = 'dir %s /-n /b /s /a-d | findstr .*\.py$'
+<
+Use a version control listing command when inside a repository, this is faster
+when scanning large projects: >
+  let g:ctrlp_user_command = [root_marker, listing_command, fallback_command]
+  let g:ctrlp_user_command = {
+    \ 'types': {
+      \ 1: [root_marker_1, listing_command_1],
+      \ n: [root_marker_n, listing_command_n],
+      \ },
+    \ 'fallback': fallback_command
+    \ }
+<
+Examples: >
+  let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files']
+  let g:ctrlp_user_command = ['.hg', 'hg --cwd %s locate -I .']
+  let g:ctrlp_user_command = {
+    \ 'types': {
+      \ 1: ['.git', 'cd %s && git ls-files'],
+      \ 2: ['.hg', 'hg --cwd %s locate -I .'],
+      \ },
+    \ 'fallback': 'find %s -type f'
+    \ }
+<
+If the fallback_command is empty or not defined, |globpath()| will then be used
+when searching outside a repo.
+
+                                                        *'g:ctrlp_max_history'*
+The maximum number of input strings you want CtrlP to remember. The default
+value mirrors Vim's global |'history'| option: >
+  let g:ctrlp_max_history = &history
+<
+Set to 0 to disable prompt's history. Browse the history with <c-n> and <c-p>.
+
+                                                      *'g:ctrlp_open_new_file'*
+Use this option to specify how the newly created file is to be opened when
+pressing <c-y>:
+  t - in a new tab
+  h - in a new horizontal split
+  v - in a new vertical split
+  r - in the current window
+>
+  let g:ctrlp_open_new_file = 'v'
+<
+
+                                                *'g:ctrlp_open_multiple_files'*
+If non-zero, this will enable opening multiple files with <c-z> and <c-o>: >
+  let g:ctrlp_open_multiple_files = 'v'
+<
+Example: >
+  let g:ctrlp_open_multiple_files = '2vjr'
+<
+For the number:
+  - If given, it'll be used as the maximum number of windows or tabs to create
+    when opening the files (the rest will be opened as hidden buffers).
+  - If not given, <c-o> will open all files, each in a new window or new tab.
+
+For the letters:
+  t - each file in a new tab.
+  h - each file in a new horizontal split.
+  v - each file in a new vertical split.
+  i - all files as hidden buffers.
+  j - after opening, jump to the first opened tab or window.
+  r - open the first file in the current window, then the remaining files in
+      new splits or new tabs depending on which of h, v and t is also present.
+
+                                                            *'g:ctrlp_arg_map'*
+When this is set to 1, the <c-o> and <c-y> mappings will accept one extra key
+as an argument to override their default behavior: >
+  let g:ctrlp_arg_map = 0
+<
+Pressing <c-o> or <c-y> will then prompt for a keypress. The key can be:
+  t - open in tab(s)
+  h - open in horizontal split(s)
+  v - open in vertical split(s)
+  i - open as hidden buffers (for <c-o> only)
+  c - clear the marked files (for <c-o> only)
+  r - open in the current window (for <c-y> only)
+  <esc>, <c-c>, <c-u> - cancel and go back to the prompt.
+  <cr> - use the default behavior specified with |g:ctrlp_open_new_file| and
+  |g:ctrlp_open_multiple_files|.
+
+                                                    *'g:ctrlp_follow_symlinks'*
+If non-zero, CtrlP will follow symbolic links when listing files: >
+  let g:ctrlp_follow_symlinks = 0
+<
+  0 - don't follow symbolic links.
+  1 - follow but ignore looped internal symlinks to avoid duplicates.
+  2 - follow all symlinks indiscriminately.
+
+                                                        *'g:ctrlp_lazy_update'*
+Set this to 1 to enable the lazy-update feature: only update the match window
+after typing's been stopped for a certain amount of time: >
+  let g:ctrlp_lazy_update = 0
+<
+If is 1, update after 250ms. If bigger than 1, the number will be used as the
+delay time in milliseconds.
+
+                                                      *'g:ctrlp_default_input'*
+Set this to 1 to enable seeding the prompt with the current file's relative
+path: >
+  let g:ctrlp_default_input = 0
+<
+Instead of 1 or 0, if the value of the option is a string, it'll be used as-is
+as the default input: >
+  let g:ctrlp_default_input = 'anystring'
+<
+
+                                                         *'g:ctrlp_use_migemo'*
+Set this to 1 to use Migemo Pattern for Japanese filenames. Migemo Search only
+works in regexp mode. To split the pattern, separate words with space: >
+  let g:ctrlp_use_migemo = 0
+<
+
+                                                    *'g:ctrlp_prompt_mappings'*
+Use this to customize the mappings inside CtrlP's prompt to your liking. You
+only need to keep the lines that you've changed the values (inside []): >
+  let g:ctrlp_prompt_mappings = {
+    \ 'PrtBS()':              ['<bs>', '<c-]>'],
+    \ 'PrtDelete()':          ['<del>'],
+    \ 'PrtDeleteWord()':      ['<c-w>'],
+    \ 'PrtClear()':           ['<c-u>'],
+    \ 'PrtSelectMove("j")':   ['<c-j>', '<down>'],
+    \ 'PrtSelectMove("k")':   ['<c-k>', '<up>'],
+    \ 'PrtSelectMove("t")':   ['<Home>', '<kHome>'],
+    \ 'PrtSelectMove("b")':   ['<End>', '<kEnd>'],
+    \ 'PrtSelectMove("u")':   ['<PageUp>', '<kPageUp>'],
+    \ 'PrtSelectMove("d")':   ['<PageDown>', '<kPageDown>'],
+    \ 'PrtHistory(-1)':       ['<c-n>'],
+    \ 'PrtHistory(1)':        ['<c-p>'],
+    \ 'AcceptSelection("e")': ['<cr>', '<2-LeftMouse>'],
+    \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-s>'],
+    \ 'AcceptSelection("t")': ['<c-t>'],
+    \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>'],
+    \ 'ToggleFocus()':        ['<s-tab>'],
+    \ 'ToggleRegex()':        ['<c-r>'],
+    \ 'ToggleByFname()':      ['<c-d>'],
+    \ 'ToggleType(1)':        ['<c-f>', '<c-up>'],
+    \ 'ToggleType(-1)':       ['<c-b>', '<c-down>'],
+    \ 'PrtExpandDir()':       ['<tab>'],
+    \ 'PrtInsert("c")':       ['<MiddleMouse>', '<insert>'],
+    \ 'PrtInsert()':          ['<c-\>'],
+    \ 'PrtCurStart()':        ['<c-a>'],
+    \ 'PrtCurEnd()':          ['<c-e>'],
+    \ 'PrtCurLeft()':         ['<c-h>', '<left>', '<c-^>'],
+    \ 'PrtCurRight()':        ['<c-l>', '<right>'],
+    \ 'PrtClearCache()':      ['<F5>'],
+    \ 'PrtDeleteEnt()':       ['<F7>'],
+    \ 'CreateNewFile()':      ['<c-y>'],
+    \ 'MarkToOpen()':         ['<c-z>'],
+    \ 'OpenMulti()':          ['<c-o>'],
+    \ 'PrtExit()':            ['<esc>', '<c-c>', '<c-g>'],
+    \ }
+<
+Note: In some terminals, it's not possible to remap <c-h> without also changing
+<bs> (|keycodes|). So if pressing <bs> moves the cursor to the left instead of
+deleting a char for you, add this to your |.vimrc| to disable the plugin's
+default <c-h> mapping: >
+  let g:ctrlp_prompt_mappings = { 'PrtCurLeft()': ['<left>', '<c-^>'] }
+<
+
+----------------------------------------
+MRU mode options:~
+
+                                                           *'g:ctrlp_mruf_max'*
+Specify the number of recently opened files you want CtrlP to remember: >
+  let g:ctrlp_mruf_max = 250
+<
+
+                                                       *'g:ctrlp_mruf_exclude'*
+Files you don't want CtrlP to remember. Use regexp to specify the patterns: >
+  let g:ctrlp_mruf_exclude = ''
+<
+Examples: >
+  let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*' " MacOSX/Linux
+  let g:ctrlp_mruf_exclude = '^C:\\dev\\tmp\\.*' " Windows
+<
+
+                                                       *'g:ctrlp_mruf_include'*
+And if you want CtrlP to only remember some files, specify them here: >
+  let g:ctrlp_mruf_include = ''
+<
+Example: >
+  let g:ctrlp_mruf_include = '\.py$\|\.rb$'
+<
+
+                                                      *'g:ctrlp_mruf_relative'*
+Set this to 1 to show only MRU files in the current working directory: >
+  let g:ctrlp_mruf_relative = 0
+<
+
+                                                 *'g:ctrlp_mruf_default_order'*
+Set this to 1 to disable sorting when searching in MRU mode: >
+  let g:ctrlp_mruf_default_order = 0
+<
+
+                                                *'g:ctrlp_mruf_case_sensitive'*
+Match this with your file system case-sensitivity setting to avoid duplicate
+MRU entries: >
+  let g:ctrlp_mruf_case_sensitive = 1
+<
+
+----------------------------------------
+Advanced options:~
+
+                                                          *'g:ctrlp_open_func'*
+Define a custom function to open the selected file: >
+  let g:ctrlp_open_func = {}
+<
+Example: >
+  let g:ctrlp_open_func = {
+    \ 'files'     : 'Function_Name_1',
+    \ 'buffers'   : 'Function_Name_2',
+    \ 'mru files' : 'Function_Name_3',
+    \ }
+<
+Structure of the functions: >
+  function! Function_Name(action, line)
+    " Arguments:
+    " |
+    " +- a:action : The opening action:
+    " |             + 'e' : user pressed <cr>  (default)
+    " |             + 'h' : user pressed <c-x> (default)
+    " |             + 'v' : user pressed <c-v> (default)
+    " |             + 't' : user pressed <c-t> (default)
+    " |             + 'x' : user used the <c-o> console dialog (default) and
+    " |                     chose "e[x]ternal".
+    " |
+    " +- a:line   : The selected line.
+
+  endfunction
+<
+Note: does not apply when opening multiple files with <c-z> and <c-o>.
+
+Example: open HTML files in the default web browser when <c-t> is pressed and
+in Vim otherwise >
+  function! HTMLOpenFunc(action, line)
+    if a:action =~ '^[tx]$' && fnamemodify(a:line, ':e') =~? '^html\?$'
+
+      " Get the filename
+      let filename = fnameescape(fnamemodify(a:line, ':p'))
+
+      " Close CtrlP
+      call ctrlp#exit()
+
+      " Open the file
+      silent! execute '!xdg-open' filename
+
+    elseif a:action == 'x' && fnamemodify(a:line, ':e') !~? '^html\?$'
+
+      " Not a HTML file, simulate pressing <c-o> again and wait for new input
+      call feedkeys("\<c-o>")
+
+    else
+
+      " Use CtrlP's default file opening function
+      call call('ctrlp#acceptfile', [a:action, a:line])
+
+    endif
+  endfunction
+
+  let g:ctrlp_open_func = { 'files': 'HTMLOpenFunc' }
+<
+
+                                                        *'g:ctrlp_status_func'*
+Use this to customize the statuslines for the CtrlP window: >
+  let g:ctrlp_status_func = {}
+<
+Example: >
+  let g:ctrlp_status_func = {
+    \ 'main': 'Function_Name_1',
+    \ 'prog': 'Function_Name_2',
+    \ }
+<
+Structure of the functions: >
+  " Main statusline
+  function! Function_Name_1(focus, byfname, regex, prev, item, next, marked)
+    " Arguments:
+    " |
+    " +- a:focus   : The focus of the prompt: "prt" or "win".
+    " |
+    " +- a:byfname : In filename mode or in full path mode: "file" or "path".
+    " |
+    " +- a:regex   : In regex mode: 1 or 0.
+    " |
+    " +- a:prev    : The previous search mode.
+    " |
+    " +- a:item    : The current search mode.
+    " |
+    " +- a:next    : The next search mode.
+    " |
+    " +- a:marked  : The number of marked files, or a comma separated list of
+    "                the marked filenames.
+
+    return full_statusline
+  endfunction
+
+  " Progress statusline
+  function! Function_Name_2(str)
+    " a:str : Either the number of files scanned so far, or a string indicating
+    "         the current directory is being scanned with a user_command.
+
+    return full_statusline
+  endfunction
+<
+See https://gist.github.com/1610859 for a working example.
+
+                                                        *'g:ctrlp_buffer_func'*
+Specify the functions that will be called after entering and before exiting the
+CtrlP buffer: >
+  let g:ctrlp_buffer_func = {}
+<
+Example: >
+  let g:ctrlp_buffer_func = {
+    \ 'enter': 'Function_Name_1',
+    \ 'exit':  'Function_Name_2',
+    \ }
+<
+
+                                                         *'g:ctrlp_match_func'*
+Set an external fuzzy matching function for CtrlP to use: >
+  let g:ctrlp_match_func = {}
+<
+Example: >
+  let g:ctrlp_match_func = { 'match': 'Function_Name' }
+<
+Structure of the function: >
+  function! Function_Name(items, str, limit, mmode, ispath, crfile, regex)
+    " Arguments:
+    " |
+    " +- a:items  : The full list of items to search in.
+    " |
+    " +- a:str    : The string entered by the user.
+    " |
+    " +- a:limit  : The max height of the match window. Can be used to limit
+    " |             the number of items to return.
+    " |
+    " +- a:mmode  : The match mode. Can be one of these strings:
+    " |             + "full-line": match the entire line.
+    " |             + "filename-only": match only the filename.
+    " |             + "first-non-tab": match until the first tab char.
+    " |             + "until-last-tab": match until the last tab char.
+    " |
+    " +- a:ispath : Is 1 when searching in file, buffer, mru, mixed, dir, and
+    " |             rtscript modes. Is 0 otherwise.
+    " |
+    " +- a:crfile : The file in the current window. Should be excluded from the
+    " |             results when a:ispath == 1.
+    " |
+    " +- a:regex  : In regex mode: 1 or 0.
+
+    return list_of_matched_items
+  endfunction
+<
+
+===============================================================================
+COMMANDS                                                       *ctrlp-commands*
+
+                                                                       *:CtrlP*
+:CtrlP [starting-directory]
+   Open CtrlP in find file mode.
+
+   If no argument is given, the value of |g:ctrlp_working_path_mode| will be
+   used to determine the starting directory.
+
+   You can use <tab> to auto-complete the [starting-directory] when typing it.
+
+                                                                 *:CtrlPBuffer*
+:CtrlPBuffer
+   Open CtrlP in find buffer mode.
+
+                                                                    *:CtrlPMRU*
+:CtrlPMRU
+   Open CtrlP in find Most-Recently-Used file mode.
+
+                                                               *:CtrlPLastMode*
+:CtrlPLastMode
+   Open CtrlP in the last mode used.
+
+                                                                   *:CtrlPRoot*
+:CtrlPRoot
+    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = 'rc' and ignores
+    the variable's current value.
+
+                                                             *:CtrlPClearCache*
+:CtrlPClearCache
+   Flush the cache for the current working directory. The same as pressing <F5>
+   inside CtrlP.
+   To enable or disable caching, use the |g:ctrlp_use_caching| option.
+
+                                                         *:CtrlPClearAllCaches*
+:CtrlPClearAllCaches
+   Delete all the cache files saved in |g:ctrlp_cache_dir| location.
+
+-------------------------------------------------------------------------------
+For commands provided by bundled extensions, see |ctrlp-extensions|.
+
+===============================================================================
+MAPPINGS                                                       *ctrlp-mappings*
+
+                                                                *'ctrlp-<c-p>'*
+<c-p>
+   Default |Normal| mode mapping to open the CtrlP prompt in find file mode.
+
+----------------------------------------
+Once inside the prompt:~
+
+  <c-d>
+    Toggle between full-path search and filename only search.
+    Note: in filename mode, the prompt's base is '>d>' instead of '>>>'
+
+  <c-r>                                                    *'ctrlp-fullregexp'*
+    Toggle between the string mode and full regexp mode.
+    Note: in full regexp mode, the prompt's base is 'r>>' instead of '>>>'
+
+    See also: |input-formats| (guide) and |g:ctrlp_regexp_search| (option).
+
+  <c-f>, 'forward'
+  <c-up>
+    Scroll to the 'next' search mode in the sequence.
+
+  <c-b>, 'backward'
+  <c-down>
+    Scroll to the 'previous' search mode in the sequence.
+
+  <tab>                                                *'ctrlp-autocompletion'*
+    Auto-complete directory names under the current working directory inside
+    the prompt.
+
+  <s-tab>
+    Toggle the focus between the match window and the prompt.
+
+  <esc>,
+  <c-c>
+    Exit CtrlP.
+
+Moving:~
+
+  <c-j>,
+  <down>
+    Move selection down.
+
+  <c-k>,
+  <up>
+    Move selection up.
+
+  <c-a>
+    Move the cursor to the 'start' of the prompt.
+
+  <c-e>
+    Move the cursor to the 'end' of the prompt.
+
+  <c-h>,
+  <left>,
+  <c-^>
+    Move the cursor one character to the 'left'.
+
+  <c-l>,
+  <right>
+    Move the cursor one character to the 'right'.
+
+Editing:~
+
+  <c-]>,
+  <bs>
+    Delete the preceding character.
+
+  <del>
+    Delete the current character.
+
+  <c-w>
+    Delete a preceding inner word.
+
+  <c-u>
+    Clear the input field.
+
+Browsing input history:~
+
+  <c-n>
+    Next string in the prompt's history.
+
+  <c-p>
+    Previous string in the prompt's history.
+
+Opening/Creating a file:~
+
+  <cr>
+    Open the selected file in the 'current' window if possible.
+
+  <c-t>
+    Open the selected file in a new 'tab'.
+
+  <c-v>
+    Open the selected file in a 'vertical' split.
+
+  <c-x>,
+  <c-cr>,
+  <c-s>
+    Open the selected file in a 'horizontal' split.
+
+  <c-y>
+    Create a new file and its parent directories.
+
+Opening multiple files:~
+
+  <c-z>
+    - Mark/unmark a file to be opened with <c-o>.
+    - Mark/unmark a file to create a new file in its directory using <c-y>.
+
+  <c-o>
+    Open files marked by <c-z>.
+
+Function keys:~
+
+  <F5>
+    - Refresh the match window and purge the cache for the current directory.
+    - Remove deleted files from the MRU list.
+
+  <F7>
+    - Wipe the MRU list.
+    - Delete MRU entries marked by <c-z>.
+
+Pasting:~
+
+  <Insert>,                                                   *'ctrlp-pasting'*
+  <MiddleMouse>
+    Paste the clipboard content into the prompt.
+
+  <c-\>
+    Open a console dialog to paste <cword>, <cfile>, the content of the search
+    register, the last visual selection, the clipboard or any register into the
+    prompt.
+
+Choose your own mappings with |g:ctrlp_prompt_mappings|.
+
+----------------------------------------
+When inside the match window (press <s-tab> to switch):~
+
+  a-z
+  0-9
+  ~^-=;`',.+!@#$%&_(){}[]
+    Cycle through the lines which have the matching first character.
+
+===============================================================================
+INPUT FORMATS                                             *ctrlp-input-formats*
+
+Formats for inputting in the prompt:~
+
+a)  Simple string.
+
+    E.g. 'abc' is understood internally as 'a[^a]\{-}b[^b]\{-}c'
+
+b)  When in regexp mode, the input string's treated as a Vim's regexp |pattern|
+    without any modification.
+
+    E.g. 'abc\d*efg' will be read as 'abc\d*efg'.
+
+    See |ctrlp-fullregexp| (keymap) and |g:ctrlp_regexp_search| (option) for
+    how to enable regexp mode.
+
+c)  End the string with a colon ':' followed by a Vim command to execute that
+    command after opening the file. If you need to use ':' literally, escape it
+    with a backslash: '\:'. When opening multiple files, the command will be
+    executed on each opening file.
+
+    E.g. Use ':45' to jump to line 45.
+
+         Use ':/any\:string' to jump to the first instance of 'any:string'.
+
+         Use ':+setf\ myfiletype|50' to set the filetype to 'myfiletype', then
+         jump to line 50.
+
+         Use ':diffthis' when opening multiple files to run |:diffthis| on the
+         first 4 files.
+
+    See also: Vim's |++opt| and |+cmd|.
+
+d)  Submit two dots '..' to go upward the directory tree by 1 level. To go up
+    multiple levels, use one extra dot for each extra level:
+>
+         Raw input    Interpreted as
+         ..           ../
+         ...          ../../
+         ....         ../../../
+<
+    Note: if the parent directories are large and uncached, this can be slow.
+
+    You can also use '@cd path/' to change CtrlP's local working directory.
+    Use '@cd %:h' to change to the directory of the current file.
+
+e)  Similarly, submit '/' or '\' to find and go to the project's root.
+
+    If the project is large, using a VCS listing command to look for files
+    might help speeding up the intial scan (see |g:ctrlp_user_command| for more
+    details).
+
+    Note: d) and e) only work in file, directory and mixed modes.
+
+f)  Type the name of a non-existent file and press <c-y> to create it. Mark a
+    file with <c-z> to create the new file in the same directory as the marked
+    file.
+
+    E.g. Using 'newdir/newfile.txt' will create a directory named 'newdir' as
+         well as a file named 'newfile.txt'.
+
+         If an entry 'some/old/dirs/oldfile.txt' is marked with <c-z>, then
+         'newdir' and 'newfile.txt' will be created under 'some/old/dirs'. The
+         final path will then be 'some/old/dirs/newdir/newfile.txt'.
+
+    Note: use '\' in place of '/' on Windows (if |'shellslash'| is not set).
+
+g)  In filename mode (toggle with <c-d>), you can use one primary pattern and
+    one refining pattern separated by a semicolon. Both patterns work like (a),
+    or (b) when in regexp mode.
+
+h)  Submit ? to open this help file.
+
+===============================================================================
+EXTENSIONS                                                   *ctrlp-extensions*
+
+Extensions are optional. To enable an extension, add its name to the variable
+g:ctrlp_extensions: >
+  let g:ctrlp_extensions = ['tag', 'buffertag', 'quickfix', 'dir', 'rtscript',
+                          \ 'undo', 'line', 'changes', 'mixed', 'bookmarkdir']
+<
+The order of the items will be the order they appear on the statusline and when
+using <c-f>, <c-b>.
+
+Available extensions:~
+
+                                                                    *:CtrlPTag*
+  * Tag mode:~
+    - Name: 'tag'
+    - Command: ':CtrlPTag'
+    - Search for a tag within a generated central tags file, and jump to the
+      definition. Use the Vim's option |'tags'| to specify the names and the
+      locations of the tags file(s).
+      E.g. set tags+=doc/tags
+
+                                                                 *:CtrlPBufTag*
+                                                              *:CtrlPBufTagAll*
+  * Buffer Tag mode:~
+    - Name: 'buffertag'
+    - Commands: ':CtrlPBufTag [buffer]',
+                ':CtrlPBufTagAll'.
+    - Search for a tag within the current buffer or all listed buffers and jump
+      to the definition. Requires |exuberant_ctags| or compatible programs.
+
+                                                               *:CtrlPQuickfix*
+  * Quickfix mode:~
+    - Name: 'quickfix'
+    - Command: ':CtrlPQuickfix'
+    - Search for an entry in the current quickfix errors and jump to it.
+
+                                                                    *:CtrlPDir*
+  * Directory mode:~
+    - Name: 'dir'
+    - Command: ':CtrlPDir [starting-directory]'
+    - Search for a directory and change the working directory to it.
+    - Mappings:
+      + <cr> change the local working directory for CtrlP and keep it open.
+      + <c-t> change the global working directory (exit).
+      + <c-v> change the local working directory for the current window (exit).
+      + <c-x> change the global working directory to CtrlP's current local
+        working directory (exit).
+
+                                                                    *:CtrlPRTS*
+  * Runtime script mode:~
+    - Name: 'rtscript'
+    - Command: ':CtrlPRTS'
+    - Search for files (vimscripts, docs, snippets...) in runtimepath.
+
+                                                                   *:CtrlPUndo*
+  * Undo mode:~
+    - Name: 'undo'
+    - Command: ':CtrlPUndo'
+    - Browse undo history.
+
+                                                                   *:CtrlPLine*
+  * Line mode:~
+    - Name: 'line'
+    - Command: ':CtrlPLine'
+    - Search for a line in all listed buffers.
+
+                                                                 *:CtrlPChange*
+                                                              *:CtrlPChangeAll*
+  * Change list mode:~
+    - Name: 'changes'
+    - Commands: ':CtrlPChange [buffer]',
+                ':CtrlPChangeAll'.
+    - Search for and jump to a recent change in the current buffer or in all
+      listed buffers.
+
+                                                                  *:CtrlPMixed*
+  * Mixed mode:~
+    - Name: 'mixed'
+    - Command: ':CtrlPMixed'
+    - Search in files, buffers and MRU files at the same time.
+
+                                                            *:CtrlPBookmarkDir*
+                                                         *:CtrlPBookmarkDirAdd*
+  * BookmarkDir mode:~
+    - Name: 'bookmarkdir'
+    - Commands: ':CtrlPBookmarkDir',
+                ':CtrlPBookmarkDirAdd [directory]'.
+    - Search for a bookmarked directory and change the working directory to it.
+    - Mappings:
+      + <cr> change the local working directory for CtrlP, keep it open and
+        switch to find file mode.
+      + <c-x> change the global working directory (exit).
+      + <c-v> change the local working directory for the current window (exit).
+      + <F7>
+        - Wipe bookmark list.
+        - Delete entries marked by <c-z>.
+
+----------------------------------------
+Buffer Tag mode options:~
+
+                                                   *'g:ctrlp_buftag_ctags_bin'*
+If ctags isn't in your $PATH, use this to set its location: >
+  let g:ctrlp_buftag_ctags_bin = ''
+<
+
+                                                   *'g:ctrlp_buftag_systemenc'*
+Match this with your OS's encoding (not Vim's). The default value mirrors Vim's
+global |'encoding'| option: >
+  let g:ctrlp_buftag_systemenc = &encoding
+<
+
+                                                       *'g:ctrlp_buftag_types'*
+Use this to set the arguments for ctags, jsctags... for a given filetype: >
+  let g:ctrlp_buftag_types = ''
+<
+Examples: >
+  let g:ctrlp_buftag_types = {
+    \ 'erlang'     : '--language-force=erlang --erlang-types=drmf',
+    \ 'javascript' : {
+      \ 'bin': 'jsctags',
+      \ 'args': '-f -',
+      \ },
+    \ }
+<
+
+===============================================================================
+CUSTOMIZATION                                             *ctrlp-customization*
+
+Highlighting:~
+  * For the CtrlP buffer:
+    CtrlPNoEntries : the message when no match is found (Error)
+    CtrlPMatch     : the matched pattern (Identifier)
+    CtrlPLinePre   : the line prefix '>' in the match window
+    CtrlPPrtBase   : the prompt's base (Comment)
+    CtrlPPrtText   : the prompt's text (|hl-Normal|)
+    CtrlPPrtCursor : the prompt's cursor when moving over the text (Constant)
+
+  * In extensions:
+    CtrlPTabExtra  : the part of each line that's not matched against (Comment)
+    CtrlPBufName   : the buffer name an entry belongs to (|hl-Directory|)
+    CtrlPTagKind   : the kind of the tag in buffer-tag mode (|hl-Title|)
+    CtrlPqfLineCol : the line and column numbers in quickfix mode (Comment)
+    CtrlPUndoT     : the elapsed time in undo mode (|hl-Directory|)
+    CtrlPUndoBr    : the square brackets [] in undo mode (Comment)
+    CtrlPUndoNr    : the undo number inside [] in undo mode (String)
+    CtrlPUndoSv    : the point where the file was saved (Comment)
+    CtrlPUndoPo    : the current position in the undo tree (|hl-Title|)
+    CtrlPBookmark  : the name of the bookmark (Identifier)
+
+Statuslines:~
+  * Highlight groups:
+    CtrlPMode1 : 'prt' or 'win', also for 'regex' (Character)
+    CtrlPMode2 : 'file' or 'path', also for the local working dir (|hl-LineNr|)
+    CtrlPStats : the scanning status (Function)
+
+  For rebuilding the statuslines, see |g:ctrlp_status_func|.
+
+===============================================================================
+MISCELLANEOUS CONFIGS                             *ctrlp-miscellaneous-configs*
+
+* Using |wildignore| for |g:ctrlp_user_command|:
+>
+  function! s:wig2cmd()
+    " Change wildignore into space or | separated groups
+    " e.g. .aux .out .toc .jpg .bmp .gif
+    " or   .aux$\|.out$\|.toc$\|.jpg$\|.bmp$\|.gif$
+    let pats = ['[*\/]*\([?_.0-9A-Za-z]\+\)\([*\/]*\)\(\\\@<!,\|$\)','\\\@<!,']
+    let subs = has('win32') || has('win64') ? ['\1\3', ' '] : ['\1\2\3', '\\|']
+    let expr = substitute(&wig, pats[0], subs[0], 'g')
+    let expr = substitute(expr, pats[1], subs[1], 'g')
+    let expr = substitute(expr, '\\,', ',', 'g')
+
+    " Set the user_command option
+    let g:ctrlp_user_command = has('win32') || has('win64')
+      \ ? 'dir %s /-n /b /s /a-d | findstr /V /l "'.expr.'"'
+      \ : 'find %s -type f | grep -v "'.expr .'"'
+  endfunction
+
+  call s:wig2cmd()
+<
+(submitted by Rich Alesi <github.com/ralesi>)
+
+* A standalone function to set the working directory to the project's root, or
+  to the parent directory of the current file if a root can't be found:
+>
+  function! s:setcwd()
+    let cph = expand('%:p:h', 1)
+    if cph =~ '^.\+://' | retu | en
+    for mkr in ['.git/', '.hg/', '.svn/', '.bzr/', '_darcs/', '.vimprojects']
+      let wd = call('find'.(mkr =~ '/$' ? 'dir' : 'file'), [mkr, cph.';'])
+      if wd != '' | let &acd = 0 | brea | en
+    endfo
+    exe 'lc!' fnameescape(wd == '' ? cph : substitute(wd, mkr.'$', '.', ''))
+  endfunction
+
+  autocmd BufEnter * call s:setcwd()
+<
+(requires Vim 7.1.299+)
+
+* Using a |count| to invoke different commands using the same mapping:
+>
+  let g:ctrlp_cmd = 'exe "CtrlP".get(["", "Buffer", "MRU"], v:count)'
+<
+
+===============================================================================
+CREDITS                                                         *ctrlp-credits*
+
+Developed by Kien Nguyen <github.com/kien>.
+
+Project's homepage:   http://kien.github.com/ctrlp.vim
+Git repository:       https://github.com/kien/ctrlp.vim
+Mercurial repository: https://bitbucket.org/kien/ctrlp.vim
+
+-------------------------------------------------------------------------------
+Thanks to everyone that has submitted ideas, bug reports or helped debugging on
+gibhub, bitbucket, and through email.
+
+Special thanks:~
+
+    * Woojong Koh <github.com/wjkoh>
+    * Simon Ruderich
+    * Yasuhiro Matsumoto <github.com/mattn>
+    * Ken Earley <github.com/kenearley>
+    * Kyo Nagashima <github.com/hail2u>
+    * Zak Johnson <github.com/zakj>
+    * Diego Viola <github.com/diegoviola>
+    * Piet Delport <github.com/pjdelport>
+    * Thibault Duplessis <github.com/ornicar>
+    * Kent Sibilev <github.com/datanoise>
+    * Tacahiroy <github.com/tacahiroy>
+    * Luca Pette <github.com/lucapette>
+    * Seth Fowler <github.com/sfowler>
+    * Lowe Thiderman <github.com/thiderman>
+
+===============================================================================
+CHANGELOG                                                     *ctrlp-changelog*
+
+    + New options: |g:ctrlp_open_func|.
+                   |g:ctrlp_tabpage_position|.
+
+Before 2012/06/15~
+
+    + New value for |g:ctrlp_follow_symlinks|: 2.
+    + New value for |g:ctrlp_open_multiple_files|: 'j'.
+    + Allow using <c-t>, <c-x>, <c-v> to open files marked by <c-z>.
+    + Extend '..' (|ctrlp-input-formats| (d))
+    + New input format: '@cd' (|ctrlp-input-formats| (d))
+
+Before 2012/04/30~
+
+    + New option: |g:ctrlp_mruf_default_order|
+    + New feature: Bookmarked directories extension.
+    + New commands: |:CtrlPBookmarkDir|
+                    |:CtrlPBookmarkDirAdd|
+
+Before 2012/04/15~
+
+    + New option: |g:ctrlp_buffer_func|, callback functions for CtrlP buffer.
+    + Remove: g:ctrlp_mruf_last_entered, make it a default for MRU mode.
+    + New commands: |:CtrlPLastMode|, open CtrlP in the last mode used.
+                    |:CtrlPMixed|, search in files, buffers and MRU files.
+
+Before 2012/03/31~
+
+    + New options: |g:ctrlp_default_input|, default input when entering CtrlP.
+                   |g:ctrlp_match_func|, allow using a custom fuzzy matcher.
+    + Rename:
+        *ClearCtrlPCache* -> |CtrlPClearCache|
+        *ClearAllCtrlPCaches* -> |CtrlPClearAllCaches|
+        *ResetCtrlP* -> |CtrlPReload|
+
+Before 2012/03/02~
+
+    + Rename:
+        *g:ctrlp_regexp_search* -> |g:ctrlp_regexp|,
+        *g:ctrlp_dont_split* -> |g:ctrlp_reuse_window|,
+        *g:ctrlp_jump_to_buffer* -> |g:ctrlp_switch_buffer|.
+    + Rename and tweak:
+        *g:ctrlp_open_multi* -> |g:ctrlp_open_multiple_files|.
+    + Deprecate *g:ctrlp_highlight_match*
+    + Extend |g:ctrlp_user_command| to support multiple commands.
+    + New option: |g:ctrlp_mruf_last_entered| change MRU to Recently-Entered.
+
+Before 2012/01/15~
+
+    + New mapping: Switch <tab> and <s-tab>. <tab> is now used for completion
+                   of directory names under the current working directory.
+    + New options: |g:ctrlp_arg_map| for <c-y>, <c-o> to accept an argument.
+                   |g:ctrlp_status_func| custom statusline.
+                   |g:ctrlp_mruf_relative| show only MRU files inside cwd.
+    + Extend g:ctrlp_open_multi with new optional values: tr, hr, vr.
+    + Extend |g:ctrlp_custom_ignore| to specifically filter dir, file and link.
+
+Before 2012/01/05~
+
+    + New feature: Buffer Tag extension.
+    + New commands: |:CtrlPBufTag|, |:CtrlPBufTagAll|.
+    + New options: |g:ctrlp_cmd|,
+                   |g:ctrlp_custom_ignore|
+
+Before 2011/11/30~
+
+    + New features: Tag, Quickfix and Directory extensions.
+    + New commands: |:CtrlPTag|, |:CtrlPQuickfix|, |:CtrlPDir|.
+    + New options: |g:ctrlp_use_migemo|,
+                   |g:ctrlp_lazy_update|,
+                   |g:ctrlp_follow_symlinks|
+
+Before 2011/11/13~
+
+    + New special input: '/' and '\' find root (|ctrlp-input-formats| (e))
+    + Remove ctrlp#SetWorkingPath().
+    + Remove *g:ctrlp_mru_files* and make MRU mode permanent.
+    + Extend g:ctrlp_open_multi, add new ways to open files.
+    + New option: g:ctrlp_dont_split,
+                  |g:ctrlp_mruf_case_sensitive|
+
+Before 2011/10/30~
+
+    + New feature: Support for custom extensions.
+                   <F5> also removes non-existent files from MRU list.
+    + New option: g:ctrlp_jump_to_buffer
+
+Before 2011/10/12~
+
+    + New features: Open multiple files.
+                    Pass Vim's |++opt| and |+cmd| to the opening file
+                    (|ctrlp-input-formats| (c))
+                    Auto-complete each dir for |:CtrlP| [starting-directory]
+    + New mappings: <c-z> mark/unmark a file to be opened with <c-o>.
+                    <c-o> open all marked files.
+    + New option: g:ctrlp_open_multi
+    + Remove *g:ctrlp_persistent_input* *g:ctrlp_live_update* and <c-^>.
+
+Before 2011/09/29~
+
+    + New mappings: <c-n>, <c-p> next/prev string in the input history.
+                    <c-y> create a new file and its parent dirs.
+    + New options: |g:ctrlp_open_new_file|,
+                   |g:ctrlp_max_history|
+    + Added a new open-in-horizontal-split mapping: <c-x>
+
+Before 2011/09/19~
+
+    + New command: ResetCtrlP
+    + New options: |g:ctrlp_max_files|,
+                   |g:ctrlp_max_depth|,
+                   g:ctrlp_live_update
+    + New mapping: <c-^>
+
+Before 2011/09/12~
+
+    + Ability to cycle through matched lines in the match window.
+    + Extend the behavior of g:ctrlp_persistent_input
+    + Extend the behavior of |:CtrlP|
+    + New options: |g:ctrlp_dotfiles|,
+                   |g:ctrlp_clear_cache_on_exit|,
+                   g:ctrlp_highlight_match,
+                   |g:ctrlp_user_command|
+    + New special input: '..' (|ctrlp-input-formats| (d))
+    + New mapping: <F5>.
+    + New commands: |:CtrlPCurWD|,
+                    |:CtrlPCurFile|,
+                    |:CtrlPRoot|
+
+    + New feature: Search in most recently used (MRU) files
+    + New mapping: <c-b>.
+    + Extended the behavior of <c-f>.
+    + New options: g:ctrlp_mru_files,
+                   |g:ctrlp_mruf_max|,
+                   |g:ctrlp_mruf_exclude|,
+                   |g:ctrlp_mruf_include|
+    + New command: |:CtrlPMRU|
+
+First public release: 2011/09/06~
+
+===============================================================================
+vim:ft=help:et:ts=2:sw=2:sts=2:norl

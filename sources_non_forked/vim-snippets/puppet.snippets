@@ -1,0 +1,78 @@
+# Snippets for Puppet
+
+snippet /^class/ "Class declaration" r
+class ${1:name} {
+    ${0:# body}
+}
+endsnippet
+
+snippet File "Defaults for file" b
+File {
+    owner => ${1:username},
+    group => ${2:groupname},
+}
+endsnippet
+
+# Resource types
+snippet package "Package resource type" b
+package { "${1:name}":
+    ensure => ${2:installed},
+}
+endsnippet
+
+snippet file "File resource type" b
+file { "${1:name}":
+    source => "puppet://${2:path}",
+    mode   => ${3:mode},
+endsnippet
+
+snippet group "Group resource type" b
+group { "${1:groupname}":
+    ensure => ${3:present},
+    gid    => ${2:gid},
+endsnippet
+
+snippet user "user resource type" b
+group { "${1:username}":
+    ensure     => ${2:present},
+    uid        => ${3:uid},
+    gid        => ${4:gid},
+    comment    => ${5:gecos},
+    home       => ${6:homedirectory},
+    managehome => false,
+    require    => Group["${7:group"],
+endsnippet
+
+snippet exec "Exec resource type" b
+exec { "${1:command}":
+    refreshonly => true,
+}
+endsnippet
+
+snippet cron "Cron resource type" b
+cron { "${1:name}":
+    user    => ${2:user},
+    command => "${3:command}",
+    minute  => ${3:minute},
+    hour    => ${4:hour},
+}
+endsnippet
+
+snippet mount "Mount resource type" b
+mount { "${1:path}":
+    device  => "${2:/dev}",
+    fstype  => "${3:filesystem}",
+    ensure  => mounted,
+    options => "rw,errors=remount-ro",
+}
+endsnippet
+
+snippet service "Service resource type" b
+service { "${1:name}":
+    hasstatus => true,
+    enable    => true,
+    ensure    => running,
+}
+endsnippet
+
+# vim:ft=snippets:

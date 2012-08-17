@@ -1,0 +1,22 @@
+# rst
+
+snippet :
+	:${1:Text}: ${2:blah blah}
+snippet *
+	*${1:Emphasis}*
+snippet **
+	**${1:Strong emphasis}**
+snippet _
+	\`${1:Text}\`_
+	.. _\`$1\`: ${2:blah blah}
+snippet =
+	${1:Title}
+	=====${2:=}
+	${3}
+snippet -
+	${1:Title}
+	-----${2:-}
+	${3}
+snippet cont:
+	.. contents::
+	

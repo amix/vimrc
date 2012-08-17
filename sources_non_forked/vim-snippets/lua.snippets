@@ -1,0 +1,37 @@
+#################################
+# Snippets for the Lua language #
+#################################
+snippet #! "Shebang header" b
+#!/usr/bin/env lua
+$0
+endsnippet
+
+snippet !fun(ction)?! "New function" br
+function ${1:new_function}(${2:args})
+   $0
+end
+endsnippet
+
+snippet forp "pair for loop" b
+for ${1:name},${2:val} in pairs(${3:table_name}) do
+   $0
+end
+endsnippet
+
+snippet fori "ipair for foop" b
+for ${1:idx},${2:val} in ipairs(${3:table_name}) do
+   $0
+end
+endsnippet
+
+snippet for "numeric for loop" b
+for ${1:i}=${2:first},${3:last}${4/^..*/(?0:,:)/}${4:step} do
+   $0
+end
+endsnippet
+
+snippet local "local x = 1"
+local ${1:x} = ${0:1}
+endsnippet
+
+# vim:ft=snippets:

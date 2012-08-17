@@ -1,0 +1,19 @@
+This project is a colleciton of vim scripts that relate  to the Mako templating
+engine for python. Most of thse are not at all written by me, just packaged
+here from the vim-script site. The purpose is to make them easy to use with
+pathogen.vim.
+
+About mako: http://www.makotemplates.org/
+
+Original scripts:
+
+Externally sourced scripts:
+
+* indent/mako.vim (vim script 2663) by Scott Torborg
+    http://www.vim.org/scripts/script.php?script_id=2663
+    version used here: 0.4
+
+* syntax/mako.vim (vim script 1858) by Armin Ronacher
+    http://www.vim.org/scripts/script.php?script_id=1858
+    version used here: 0.6.1
+

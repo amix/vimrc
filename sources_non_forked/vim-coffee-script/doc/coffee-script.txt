@@ -1,0 +1,143 @@
+*coffee-script.txt*                                         For Vim version 7.3
+
+=============================================================================
+Author:  Mick Koch <kchmck@gmail.com>		*coffee-script-author*
+License: WTFPL (see |coffee-script-license|)
+=============================================================================
+
+CONTENTS					*coffee-script-contents*
+
+|coffee-script-introduction|		Introduction and Feature Summary
+|coffee-script-commands|			Commands
+|coffee-script-settings|			Settings
+|compiler-coffee-script|			Compiler
+
+{Vi does not have any of this}
+
+=============================================================================
+
+INTRODUCTION					*coffee-script*
+						*coffee-script-introduction*
+
+This plugin adds support for CoffeeScript syntax, indenting, and compiling.
+Also included is an eco syntax and support for CoffeeScript in Haml and HTML.
+
+COMMANDS					*coffee-script-commands*
+
+						*:CoffeeMake*
+:CoffeeMake[!] {opts}	Wrapper around |:make| that also passes options in
+                        |g:coffee_make_options| to the compiler. Use |:silent|
+                        to hide compiler output. See |:make| for more
+                        information about [!] and other helpful commands.
+
+						*:CoffeeCompile*
+:[range]CoffeeCompile [vertical] [{win-size}]
+			Shows how the current file or [range] is compiled
+			to JavaScript. [vertical] (or vert) splits the
+			compile buffer vertically instead of horizontally, and
+			{win-size} sets the initial size of the buffer. It can
+			be closed quickly with the "q" key.
+
+:CoffeeCompile {watch} [vertical] [{win-size}]
+			The watch mode of :CoffeeCompile emulates the "Try
+			CoffeeScript" live preview on the CoffeeScript web
+			site. After making changes to the source file,
+			exiting insert mode will cause the preview buffer to
+			update automatically. {watch} should be given as
+                        "watch" or "unwatch," where the latter will stop the
+                        automatic updating. [vertical] is recommended, and
+                        'scrollbind' is useful.
+
+						*:CoffeeLint*
+:[range]CoffeeLint[!] {opts}
+                        Run {coffeelint} on the current file and add any
+                        errors to the quickfix list. The first error is jumped
+                        to if [!] isn't given. Options in
+                        |g:coffee_lint_options| and {opts} are passed along to
+                        {coffeelint}. Although the whole file is linted, if a
+                        [range] is given, only errors within those lines will
+                        be considered.
+
+						*:CoffeeRun*
+:[range]CoffeeRun	Compiles the file or [range] and runs the resulting
+			JavaScript, displaying the output.
+
+SETTINGS					*coffee-script-settings*
+
+You can configure plugin behavior using global variables and syntax commands
+in your |vimrc|.
+
+Global Settings~
+						*g:coffee_compiler*
+Set the path to the compiler used by |CoffeeMake| and |CoffeeCompile| (it's
+{coffee} by default.)
+>
+	let coffee_compiler = '/usr/bin/coffee'
+<
+						*g:coffee_make_options*
+Set default options |CoffeeMake| should pass to the compiler.
+>
+	let coffee_make_options = '--bare'
+<
+						*g:coffee_compile_vert*
+Split the CoffeeCompile buffer vertically by default.
+>
+	let coffee_compile_vert = 1
+<
+						*g:coffee_linter*
+Set the path to the {coffeelint} executable (it's {coffeelint} by default.)
+>
+	let coffee_linter = '/usr/bin/coffeelint'
+<
+						*g:coffee_lint_options*
+Set default options |CoffeeLint| should pass to {coffeelint}.
+>
+	let coffee_lint_options = '-f lint.json'
+<
+
+Syntax Highlighting~
+						*ft-coffee-script-syntax*
+Trailing whitespace is highlighted as an error by default. This can be
+disabled with:
+>
+	hi link coffeeSpaceError NONE
+
+Trailing semicolons are also considered an error (for help transitioning from
+JavaScript.) This can be disabled with:
+>
+	hi link coffeeSemicolonError NONE
+
+Reserved words like {function} and {var} are highlighted where they're not
+allowed in CoffeeScript. This can be disabled with:
+>
+        hi link coffeeReservedError NONE
+
+COMPILER					*compiler-coffee-script*
+
+A CoffeeScript compiler is provided as a wrapper around {coffee} and can be
+loaded with;
+>
+    compiler coffee
+
+This is done automatically when a CoffeeScript file is opened if no other
+compiler is loaded.
+
+=============================================================================
+
+LICENSE							*coffee-script-license*
+
+		DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+			Version 2, December 2004
+
+     Copyright (C) 2010 to 2012 Mick Koch <kchmck@gmail.com>
+
+     Everyone is permitted to copy and distribute verbatim or modified
+     copies of this license document, and changing it is allowed as long
+     as the name is changed.
+
+		DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+       TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+      0. You just DO WHAT THE FUCK YOU WANT TO.
+
+ vim:tw=78:ts=8:ft=help:norl:

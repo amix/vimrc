@@ -1,0 +1,90 @@
+# From the TextMate bundle
+
+snippet fun "Function" b
+${1:name} = (${2:args}) ->
+	${0:# body...}
+endsnippet
+
+snippet bfun "Function (bound)" b
+${1:(${2:args}) }=>
+	${0:# body...}
+endsnippet
+
+snippet if "If" b
+if ${1:condition}
+	${0:# body...}
+endsnippet
+
+snippet ife "If .. Else" b
+if ${1:condition}
+	${2:# body...}
+else
+	${3:# body...}
+endsnippet
+
+snippet elif "Else if" b
+else if ${1:condition}
+	${0:# body...}
+endsnippet
+
+snippet ifte "Ternary if" b
+if ${1:condition} then ${2:value} else ${3:other}
+endsnippet
+
+snippet unl "Unless" b
+${1:action} unless ${2:condition}
+endsnippet
+
+snippet fora "Array Comprehension" b
+for ${1:name} in ${2:array}
+	${0:# body...}
+endsnippet
+
+snippet foro "Object Comprehension" b
+for ${1:key}, ${2:value} of ${3:Object}
+	${0:# body...}
+endsnippet
+
+snippet forr "Range Comprehension (inclusive)" b
+for ${1:name} in [${2:start}..${3:finish}]${4: by ${5:step}}
+	${0:# body...}
+endsnippet
+
+snippet forrex "Range Comprehension (exclusive)" b
+for ${1:name} in [${2:start}...${3:finish}]${4: by ${5:step}}
+	${0:# body...}
+endsnippet
+
+snippet swi "Switch" b
+switch ${1:object}
+	when ${2:value}
+		${0:# body...}
+endsnippet
+
+snippet cla "Class" b
+class ${1:ClassName}${2: extends ${3:Ancestor}}
+
+	${4:constructor: (${5:args}) ->
+		${6:# body...}}
+	$7
+endsnippet
+
+snippet try "Try .. Catch" b
+try
+	$1
+catch ${2:error}
+	$3
+endsnippet
+
+snippet req "Require" b
+${1/^'?(\w+)'?$/\L$1\E/} = require(${1:'${2:sys}'})
+endsnippet
+
+snippet # "Interpolated Code"
+#{$1}$0
+endsnippet
+
+snippet log "Log" b
+console.log ${1:"${2:msg}"}
+endsnippet
+

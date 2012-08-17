@@ -1,0 +1,45 @@
+snippet header
+	" File: ${1:`expand('%:t')`}
+	" Author: ${2:`g:snips_author`}
+	" Description: ${3}
+	${4:" Last Modified: `strftime("%B %d, %Y")`}
+snippet guard
+	if exists('${1:did_`Filename()`}') || &cp${2: || version < 700}
+		finish
+	endif
+	let $1 = 1${3}
+snippet f
+	fun! ${1:`expand('%') =~ 'autoload' ? substitute(matchstr(expand('%:p'),'autoload/\zs.*\ze.vim'),'[/\\]','#','g').'#' : ''`}${2:function_name}(${3})
+		${4:" code}
+	endf
+snippet t
+	try
+		${1}
+	catch ${2}
+		${3}
+	endtry
+snippet for
+	for ${1:needle} in ${2:haystack}
+		${3:" code}
+	endfor
+snippet wh
+	while ${1:condition}
+		${2:" code}
+	endw
+snippet if
+	if ${1:condition}
+		${2:" code}
+	endif
+snippet ife
+	if ${1:condition}
+		${2}
+	else
+		${3}
+	endif
+snippet au
+	augroup ${1:AU_NAME}
+		" this one is which you're most likely to use?
+		autocmd ${2:BufRead,BufNewFile} ${3:*.ext,*.ext3|<buffer[=N]>} ${4}
+	augroup end
+snippet bun
+	Bundle '${1}'

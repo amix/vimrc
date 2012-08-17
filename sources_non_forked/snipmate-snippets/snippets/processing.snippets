@@ -1,0 +1,784 @@
+#BASICS
+# doc
+snippet doc
+	/**
+	 *  ${1:Description}
+	 *
+	 *	@author ${2:name}
+	 *	@since  ${3:`strftime("%d/%m/%y %H:%M:%S")`}
+	 */
+	${4}
+# doc comment
+snippet docc
+	/**
+	 *	${1:@private}$0
+	 */
+	${2}
+# class
+snippet class
+	${1:public }class ${2:`fnamemodify(bufname("%"),":t:r")`} ${3:extends}
+	{
+
+		//--------------------------------------
+		//  CONSTRUCTOR
+		//--------------------------------------
+
+		public $2 (${4:arguments}) {
+			${0:// expression}
+		}
+	}
+# package
+snippet package
+	/**
+	 *  ${1:Description}
+	 *
+	 *	@author ${2:$TM_FULLNAME}
+	 *	@since  ${3:`strftime("%d/%m/%y %H:%M:%S")`}
+	 */
+
+	package ${4:package};
+# function
+snippet fun
+	${1:void/private/protected/public}${2: static} ${3:name}(${4}) {
+		${5://if not void return null;}
+	}
+	${6}
+snippet fn
+	${1:void }${2:name}(${3}) {
+		${4://if not void return null;}
+	}
+	${5}
+#	constant
+snippet const
+	static final ${1:Object} ${2:VAR_NAM} = ${3};
+# var
+snippet var
+	${1:private/public }${2:static }${3:String} ${4:str}${5: =}${6:value};
+# var objects
+snippet obj
+	${1:private/public }${2:Object} ${3:o}${4: = new }$2(${5});
+#loop for
+snippet for
+	for (int ${2:i} = 0; $2 < ${1:Things}.length; $2${3:++}) {
+		${4:$1[$2]}
+	};
+#loop while
+snippet while
+	while (${1:/* condition */}) {
+		${2:/* code */}
+	}
+#break
+snippet break
+	break ${1:label};
+#case
+snippet case
+	case ${1:expression} :
+		${2}
+	break;
+#default
+snippet default
+	default :
+		${1}
+	break;
+#switch
+snippet switch
+	switch(${1:expression}) {
+		case '${3:case}':
+			${4:// code}
+			break;
+		${5}
+		default:
+			${2:// code}
+	}
+#try
+snippet try
+	try {
+		${3}
+	} catch(${1:Exception} ${2:e}) {
+	}
+#try catch finally
+snippet tryf
+	try {
+		${3}
+	} catch(${1:Exception} ${2:e}) {
+	} finally {
+	}
+#throw
+snippet throw
+	throw new ("${1:Exception()}");
+#ternary
+snippet ?
+	? ${1:trueExpression} : ${2:falseExpression}
+	${3}
+snippet if
+	if (${1:true}) {${2}}
+# if ... else
+snippet ife
+	if (${1:true}) {${2}}
+	else{${3}}
+#get
+snippet get
+	public ${1:String} get${2}() {
+		return ${2:fieldName};
+	}
+#set
+snippet set
+	public void set${1}(${2:String} new${1}) {
+		${1:fieldName} = new${1};
+	}
+#printIn
+snippet println
+	println("${1:`fnamemodify(bufname("%"),":t:r")`}::${2:method}() "${3: +} ${4});
+#println string
+snippet pr
+	println("${1}");
+#setup draw
+snippet setup
+	void setup(){
+		${1}
+	}
+
+	void draw(){
+		${2}
+	}
+#setup OPENGL
+snippet opengl
+	import processing.opengl.*;
+	import javax.media.opengl.*;
+
+	PGraphicsOpenGL pgl;
+	GL gl;
+
+	void setup(){
+		size( ${1:300}, ${2:300}, OPENGL );
+		colorMode( RGB, 1.0 );
+		hint( ENABLE_OPENGL_4X_SMOOTH );
+		pgl = (PGraphicsOpenGL) g;
+		gl = pgl.gl;
+		gl.setSwapInterval(1);
+		initGL();
+		${3}
+	}
+
+	void draw(){
+		pgl.beginGL();
+			${4}
+		pgl.endGL();
+		getOpenGLErrors();
+	}
+
+	void initGL(){
+		${5}
+	}
+
+	void getOpenGLErrors(){
+		int error = gl.glGetError();
+		switch (error){
+			case 1280 :
+				println("GL_INVALID_ENUM - An invalid enumerant was passed to an OpenGL command.");
+			break;
+			case 1282 :
+				println("GL_INVALID_OPERATION - An OpenGL command was issued that was invalid or inappropriate for the current state.");
+			break;
+			case 1281 :
+				println("GL_INVALID_VALUE - A value was passed to OpenGL that was outside the allowed range.");
+			break;
+			case 1285 :
+				println("GL_OUT_OF_MEMORY - OpenGL was unable to allocate enough memory to process a command.");
+			break;
+			case 1283 :
+				println("GL_STACK_OVERFLOW - A command caused an OpenGL stack to overflow.");
+			break;
+			case 1284 :
+				println("GL_STACK_UNDERFLOW - A command caused an OpenGL stack to underflow.");
+			break;
+			case 32817 :
+				println("GL_TABLE_TOO_LARGE");
+			break;
+		}
+	}
+
+#GL Functions
+snippet gl begin gl
+	pgl.beginGL();
+		${1}
+	pgl.endGL();
+snippet gl gl swap interval
+	// specify the minimum swap interval for buffer swaps.
+	gl.setSwapInterval(${1:interval});
+snippet gl gl call list
+	// execute a display list
+	gl.glCallList(${1:list});
+snippet gl gl gen buffers
+	// import java.nio.IntBuffer;
+	// import java.nio.FloatBuffer;
+	// import com.sun.opengl.util.BufferUtil;
+
+	// You might need to create four buffers to store vertext data, normal data, texture coordinate data, and indices in vertex arrays
+	IntBuffer bufferObjects = IntBuffer.allocate(${1:4});
+	gl.glGenBuffers($1, bufferObjects);
+
+	int vertexCount = ${2:3};
+	int numCoordinates = ${3:3};
+	// vertexCount * numCoordinates
+	FloatBuffer vertices = BufferUtil.newFloatBuffer(vertexCount * numCoordinates);
+	float[] v = {0.0f, 0.0f, 0.0f,
+							 1.0f, 0.0f, 0.0f,
+							 0.0f, 1.0f, 1.0f};
+	vertices.put(v);
+
+	// Bind the first buffer object ID for use with vertext array data
+	gl.glBindBuffer(GL.GL_ARRAY_BUFFER, bufferObjects.get(0));
+	gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexCount * numCoordinates * BufferUtil.SIZEOF_FLOAT, vertices, GL.GL_STATIC_DRAW);
+snippet gl gl bind buffer
+	${2:// A buffer ID of zero unbinds a buffer object}
+	gl.glBindBuffer(GL.GL_ARRAY_BUFFER, ${1:0});
+snippet gl gl delete buffers
+	${3:// Parameters are the same for glGenBuffers}
+	gl.glDeleteBuffers(${1:4}, ${2:bufferObjects});
+snippet gl gl depth mask
+	// enable or disable writing into the depth buffer
+	gl.glDepthMask(${1:flag});
+snippet gl gl load identity
+	// replaces the top of the active matrix stack with the identity matrix
+	gl.glLoadIdentity();
+snippet gl gl tex coord 2f
+	// set the current texture coordinates - 2 floats
+	gl.glTexCoord2f(${1:0.0f}, ${2:0.0f});
+snippet gl gl vertex 2f
+	gl.glVertex2f(${1:0.0f}, ${2:0.0f});
+snippet gl gl vertex 3f
+	gl.glVertex3f(${1:0.0f}, ${2:0.0f}, ${3:0.0f});
+snippet gl gl translate f
+	// multiply the current matrix by a translation matrix
+	gl.glTranslatef(${1:x}, ${2:y}, ${3:z});
+snippet gl gl rotate f
+	// rotate, x-axis, y-axis, z-axiz
+	gl.glRotatef(${1:angle}, ${2:x}, ${3:y}, ${4:z});
+snippet gl gl scale f
+	// multiply the current matrix by a general scaling matrix
+	gl.glScalef(${1:x}, ${2:y}, ${3:z});
+snippet gl gl color 4f
+	gl.glColor4f(${1:red}, ${2:green}, ${3:blue}, ${4:alpha});
+snippet gl gl clear color
+	gl.glClearColor(${1:red}, ${2:green}, ${3:blue}, ${4:alpha});
+snippet gl gl color 3f
+	gl.glColor3f(${1:red}, ${2:green}, ${3:blue});
+snippet gl gl push matrix
+	// spush and pop the current matrix stack
+	gl.glPushMatrix();
+	${1}
+	gl.glPopMatrix();
+snippet gl gl gen lists
+	gl.glGenLists(${1:1})
+snippet gl gl flush
+	// Empties buffers. Call this when all previous issues commands completed
+	gl.glFlush();
+	${1}
+snippet gl gl get error
+	println(gl.glGetError());
+snippet gl gl clear
+	gl.glClear(${1:GL.GL_COLOR_BUFFER_BIT}${2: | }${3:GL.GL_DEPTH_BUFFER_BIT});
+
+#frame operations
+snippet fr framerate
+	frameRate(${1:30});
+	${2}
+snippet fr frameRate
+	frameRate
+snippet fr frameCount
+	frameCount
+snippet fr saveFrame
+	saveFrame("${1:filename-####}${2:.ext}");
+
+#size
+snippet size normal size
+	size(${1:200}, ${2:200}${3:, P3D});
+snippet size opengl size
+	size(${1:200}, ${2:200}${3:, OPENGL});
+
+#PRIMITIVES
+#color
+snippet color
+	color ${1:c}${2: = color(}${3:value1, }${4:value2, }${5:value3)};
+#char
+snippet char
+	char ${1:m}${2: = "}${3:char"};
+#float
+snippet float
+	float ${1:f}${2: = }${3:0.0f};
+#int
+snippet int
+	int ${1:f}${2: = }${3:0};
+#boolean
+snippet boolean
+	boolean ${1:b}${2: = }${3:true};
+#byte
+snippet byte
+	byte ${1:b}${2: = }${3:127};
+#string
+snippet string
+	String ${1:str}${2: = "}${3:CCCP"};
+#array
+snippet array
+	${1:int}[] ${2:numbers}${3: = new $1}[${4:length}];
+#object
+snippet object
+	${1:Object} ${2:o}${3: = new $1}(${4});
+
+#curve
+snippet curve curve
+	curve(${1:x1}, ${2:y1}, ${3:x2}, ${4:y2}, ${5:x3}, ${6:y3}, ${7:x4}, ${8:y4});
+snippet curve curve 3D
+	curve(${1:x1}, ${2:y1}, ${3:z1}, ${4:x2}, ${5:y2}, ${6:z2}, ${7:x3}, ${8:y3}, ${9:z3}, ${10:x4}, ${11:y4}, ${12:z4});
+snippet curve curve Detail
+	curveDetail(${1:detail});
+snippet curve curve point
+	curvePoint(${1:a}, ${2:b}, ${3:c}, ${4:d}, ${5:t});
+snippet curve curve tightness
+	curveTightness(${1:squishy});
+
+#bezier
+snippet bezier bezier
+	bezier(${1:x1}, ${2:y1}, ${3:cx1}, ${4:cy1}, ${5:cx2}, ${6:cy2}, ${7:x2}, ${8:y2});
+snippet bezier bezier 3D
+	bezier(${1:x1}, ${2:y1}, ${3:z1}, ${4:cx1}, ${5:cy1}, ${6:cz1}, ${7:cx2}, ${8:cy2}, ${9:cz2}, ${10:x2}, ${11:y2}, ${12:z2});
+snippet bezier bezier detail
+	bezierDetail(${1:detail});
+snippet bezier bezier tangent
+	bezierTangent(${1:a}, ${2:b}, ${3:c}, ${4:d}, ${5:t});
+snippet bezier bezier point
+	bezierPoint(${1:a}, ${2:b}, ${3:c}, ${4:d}, ${5:t});
+
+#vertex
+snippet vertex vertex
+	vertex(${1:x}, ${2:y}${3:, }${4:u}${5:, }${6:v});
+snippet vertex vertex 3D
+	vertex(${1:x}, ${2:y}, ${3:z}${4:, }${5:u}${6:, }${7:v});
+snippet vertex vertex bezier
+	bezierVertex(${1:cx1}, ${2:cy1}, ${3:cx2}, ${4:cy2}, ${5:x}, ${6:y});
+snippet vertex vertex bezier 3D
+	bezierVertex(${1:cx1}, ${2:cy1}, ${3:cz1}, ${4:cx2}, ${5:cy2}, ${6:cz2}, ${7:x}, ${8:y}, ${9:z});
+snippet vertex vertex curve
+	curveVertex(${1:x}, ${2:y});
+snippet vertex vertex curve 3D
+	curveVertex(${1:x}, ${2:y}, ${3:z});
+
+#stroke
+snippet stroke stroke
+	stroke(${1:value1}, ${2:value2}, ${3:value3}${4:, }${5:alpha});
+snippet stroke stroke weight
+	strokeWeight(${1:1});
+snippet stroke no stroke
+	noStroke();
+
+#mouse
+snippet mouse mouse x
+	mouseX
+snippet mouse mouse y
+	mouseY
+snippet mouse mouse drag
+	void mouseDragged(){
+		${1}
+	}
+snippet mouse mouse move
+	void mouseMoved(){
+		${1}
+	}
+snippet mouse mouse release
+	void mouseReleased(){
+		${1}
+	}
+snippet mouse mouse pressed
+	void mousePressed(){
+		${1}
+	}
+snippet mouse mouse pressed?
+	mousePressed
+snippet mouse mouse button?
+	mouseButton
+snippet mouse pmouse X
+	pmouseX
+snippet mouse pmouse Y
+	pmouseY
+
+#key
+snippet key keycode?
+	keyCode
+snippet key key
+	key
+snippet key key released
+	void keyReleased(){
+		${1}
+	}
+snippet key key typed
+	void keyTyped(){
+		${1}
+	}
+snippet key key pressed
+	void keyPressed(){
+		${1}
+	}
+snippet key key pressed?
+	keyPressed
+
+#file
+snippet file load string
+	loadStrings("${1:filename}");
+snippet file save string
+	saveStrings(${1:filename}, ${2:strings});
+snippet file load bytes
+	loadBytes("${1:filename}");
+snippet file begin record
+	beginRecord(${1:renderer}, ${2:filename});
+snippet file end record
+	endRecord();
+snippet file save bytes
+	saveBytes(${1:filename}, ${2:bytes});
+snippet file create writer
+	createWriter(${1:filename});
+snippet file create reader
+	createReader(${1:filename});
+
+#time
+snippet time hour
+	hour()
+snippet time milliseconds
+	millis()
+snippet time year
+	year()
+snippet time minutes
+	minutes()
+snippet time month
+	month()
+snippet time second
+	second()
+
+#matrix
+snippet matrix reset matrix
+	translate(${1:x}, ${2:y}, ${3:z});
+snippet matrix print matrix
+	printMatrix();
+snippet matrix push matrix
+	pushMatrix();
+	${1:};
+	popMatrix();
+
+
+#text
+snippet txt text data
+	text(${1:data}, ${2:x}, ${3:y}${4:, }${5:z});
+snippet txt text string data
+	text(${1:stringdata}, ${2:x}, ${3:y}, ${4:width}, ${5:height}${6:, }${7:z});
+snippet txt text size
+	textSize(${1:size});
+snippet txt text leading
+	textLeading(${1:size});
+snippet txt text width
+	textWidth(${1:data});
+snippet txt text descent
+	textDescent();
+snippet txt text ascent
+	textAscent();
+snippet txt font
+	PFont ${1:font};
+	$1 = loadFont("${2:FFScala-32.vlw}");
+#load font
+snippet txt load font
+	${1:font} = loadFont("${2:FFScala-32.vlw}");
+snippet txt text font
+	textFont(${1:font}${2:, }${3:size});
+
+#math
+snippet math tangent
+	tan(${1:rad});
+snippet math atan
+	atan(${1:rad});
+snippet math atan2
+	atan2(${1:rad});
+snippet math sin
+	sin(${1:rad});
+snippet math asin
+	asin(${1:rad});
+snippet math cos
+	cos(${1:rad});
+snippet math acos
+	acos(${1:rad});
+snippet math degrees
+	degrees(${1:rad});
+snippet math radians
+	radians(${1:deg});
+snippet math random seed
+	randomSeed(${1:value});
+snippet math random
+	random(${1:value1}${2:, }${3:value2});
+snippet math half PI
+	HALF_PI
+snippet math 2 PI
+	TWO_PI
+snippet math PI
+	PI
+snippet math pow
+	pow(${1:num}, ${2:exponent});
+snippet math floor
+	floor(${1:value});
+snippet math sqrt
+	sqrt(${1:value});
+snippet math abs
+	abs(${1:value});
+snippet math sq
+	sq(${1:value});
+snippet math ceil
+	ceil(${1:value});
+snippet math exp
+	exp(${1:value});
+snippet math round
+	round(${1:value}};
+snippet math min
+	min(${1:value1}, ${2:value2}${3:, }${4:value3});
+snippet math max
+	max(${1:value1}, ${2:value2}${3:, }${4:value3});
+snippet math array max
+	max(${1:array});
+snippet math array min
+	min(${1:array});
+snippet math logarithm
+	log(${1:value});
+snippet math map
+	map(${1:value}, ${2:low1}, ${4:high1}, ${5:low2}, ${6:high2});
+snippet math normalize
+	norm(${1:value}, ${2:low}, ${3:high});
+snippet math constrain
+	constrain(${1:value}, ${2:min}, ${3:max});
+snippet math magnitude of a vector
+	mag(${1:a}, ${2:b}${3:, }${4:c});
+snippet math distance
+	dist(${1:x1}, ${2:y1}, ${4:x2}, ${5:y2});
+snippet math distance 3D
+	dist(${1:x1}, ${2:y1}, ${3:z1}, ${4:x2}, ${5:y2}, ${6:z2});
+
+#noise math
+snippet noise set noise
+	noise(${1:x}${2:, }${3:y}${4:, }${5:z});
+snippet noise noise detail
+	noiseDetail(${1:octaves}${2:, }${3:falloff});
+snippet noise noise seed
+	noiseSeed(${1:x});
+
+#material
+snippet material shininess
+	shininess(${1:shine});
+snippet material specular
+	specular(${1:value1}, ${2:value2}, ${3:value3}${4:, }${5:alpha});
+snippet material ambient
+	ambient(${1:value1}, ${2:value2}, ${3:value3});
+snippet material emissive
+	emissive(${1:value1}, ${2:value2}, ${3:value3});
+
+#light
+snippet light no light
+	noLights();
+snippet light light
+	lights();
+snippet light diretional light
+	directionalLight(${1:v1}, ${2:v2}, ${3:v3}, ${4:nx}, ${5:ny}, ${6:nz});
+snippet light point light
+	pointLight(${1:v1}, ${2:v2}, ${3:v3}, ${4:nx}, ${5:ny}, ${6:nz});
+snippet light falloff light
+	lightFalloff(${1:constant}, ${2:linear}, ${3:quadratic});
+snippet light normal light
+	normal(${1:nx}, ${2:ny}, ${3:nz});
+snippet light specular light
+	lightFalloff(${1:v1}, ${2:v2}, ${3:v3});
+snippet light ambient light
+	ambientLight(${1:v1}, ${2:v2}, ${3:v3}${7:, ${4:x}, ${5:y}, ${6:z}});
+snippet light spot light
+	spotLight(${1:v1}, ${2:v2}, ${3:v3}, ${4:x}, ${5:y}, ${6:z}, ${7:nx}, ${8:ny}, ${9:nz}, ${10:angle}, ${11:concentration});
+
+#camera
+snippet cam camera
+	camera(${1:eyeX}, ${2:eyeY}, ${3:eyeZ}, ${4:centerX}, ${5:centerY}, ${6:centerZ}, ${7:upX}, ${8:upY}, ${9:upZ});
+snippet cam ortho
+	ortho(${1:left}, ${2:right}, ${3:bottom}, ${4:top}, ${5:near}, ${6:far});
+snippet cam begin camera
+	beginCamera();
+snippet cam end camera
+	endCamera();
+snippet cam print camera
+	printCamera();
+snippet cam print camera projection
+	printProjection();
+snippet cam perspective camera
+	perspective(${1:fov}, ${2:aspect}, ${3:zNear}, ${4:zFar});
+snippet cam frustrum
+	frustrum(${1:left}, ${2:right}, ${3:bottom}, ${4:top}, ${5:near}, ${6:far});
+
+#transformations
+snippet trans rotate
+	rotate${1:X}(${1:angle});
+snippet trans translate
+	translate(${1:x}, ${2:y}${3:, }${4:z});
+snippet trans scale size
+	scale(${1:size});
+snippet trans scale
+	scale(${1:x}, ${2:y}${3:, }${4:z});
+
+#coordinates
+snippet coord
+	${1:model/screen}${2:X}(${3:x}, ${4:y}, ${5:z});
+
+#effects
+snippet fx brightness
+	brightness(${1:color});
+snippet fx lerp color
+	lerpColor(${1:c1}, ${2:c2}, ${3:amt});
+snippet fx saturation
+	saturation(${1:color});
+snippet fx hue
+	hue(${1:color});
+snippet fx alpha
+	alpha(${1:color});
+snippet fx tint
+	tint(${1:value1}, ${2:value2}, ${3:value3}${4:, }${5:alpha});
+snippet fx notint
+	noTint();
+
+#pixel
+snippet px set pixel
+	set(${1:x}, ${2:y}, ${3:color/image});
+snippet px update pixel
+	updatePixels();
+snippet px load pixel
+	loadPixels();
+snippet px pixels
+	pixels[${1:index}]
+snippet px get pixel
+	get(${1:x}, ${2:y}${3:, }${4:width}${5:, }${6:height});
+
+#geometric figures
+snippet geof triangle
+	triangle(${1:x1}, ${2:y1}, ${3:x2}, ${4:y2}, ${5:x3}, ${6:y3});
+snippet geof line
+	line(${1:x1}, ${2:y1}, ${3:x2}, ${4:y2});
+snippet geof line 3D
+	line(${1:x1}, ${2:y1}, ${3:z1}, ${4:x2}, ${5:y2}, ${6:z2});
+snippet geof arc
+	arc(${1:x}, ${2:y}, ${3:width}, ${4:height}, ${5:start}, ${6:stop});
+snippet geof point
+	point(${1:x}, ${2:y}${3:, }${4:z});
+snippet geof quad
+	quad(${1:x1}, ${2:y1}, ${3:x2}, ${4:y2}, ${5:x3}, ${6:y3}, ${7:x4}, ${8:y4});
+snippet geof ellipse
+	ellipse(${1:x}, ${2:y}, ${3:width}, ${4:height});
+snippet geof rect
+	rect(${1:x}, ${2:y}, ${3:width}, ${4:height});
+snippet geof box
+	box(${1:width}, ${2:height}, ${3:depth});
+snippet geof sphere
+	sphere(${1:radius});
+snippet geof sphere details
+	sphereDetail(${1:n});
+snippet geof set smooth
+	smooth();
+snippet geof set no smooth
+	noSmooth();
+
+#array operations
+snippet arrop normal split
+	split("${1:str}"${2: , }${3:delimiter});
+snippet arrop split Tokens
+	splitTokens(${1:str}${2:, }${3:tokens});
+snippet arrop join
+	join(${1:strgArray}${2: , }${3:seperator});
+snippet arrop shorten
+	shorten(${1:array});
+snippet arrop concat
+	concat(${1:array1}, ${2:array2});
+snippet arrop subset
+	subset(${1:array}, ${2:offset});
+snippet arrop append
+	append(${1:array}, ${2:element});
+snippet arrop reverse
+	reverse(${1:array});
+snippet arrop splice
+	splice(${1:array}, ${2:value/array2}, ${3:index});
+snippet arrop sort
+	sort(${1:dataArray}${2:, }${3:count});
+snippet arrop expand
+	expand(${1:array}${2:, }${3:newSize});
+snippet arrop array copy
+	arrayCopy(${1:src}, ${2:dest}, ${3:, }${3:length});
+
+#string operations
+snippet strop str
+	str("${1:str}");
+snippet strop match
+	match(${1:str}, ${2:regexp});
+snippet strop trim
+	trim(${1:str});
+snippet strop nf
+	nf(${2:value}, ${3:left}${4:, }${5:right});
+snippet strop nfs
+	nfs(${2:value}, ${3:left}${4:, }${5:right});
+snippet strop nfp
+	nfp(${2:value}, ${3:left}${4:, }${5:right});
+snippet strop nfc
+	nfc(${1:value}${2:, }${3:right});
+
+#convert
+snippet convert unbinary
+	unbinary("${1:str}"});
+snippet convert hexadecimal
+	hex(${1:c});
+snippet convert unhex
+	unhex(${1:c});
+snippet convert binary
+	binary(${1:value}${2:, }${3:digits});
+
+#image operations
+snippet image load image
+	loadImage(${1:filename});
+snippet image image
+	image(${1:img}, ${2:x}, ${3:y}${4:, }${5:width}${6:, }${7:height});
+snippet copy copy
+	copy(${1:srcImg}${2:, }${3:x}, ${4:y}, ${5:width}, ${6:height}, ${7:dx}, ${8:dy}, ${9:dwidth}, ${10:dheight});
+
+
+
+#containers
+snippet bg
+	background(${1:value1}, ${2:value2}, ${3:value3}${4:, }${5:alpha});
+snippet pg
+	PGraphics pg;
+	pg = createGraphics(${1:width}, ${2:height}${3:, }${4:applet});
+snippet pimage
+	PImage(${1:width}, ${2:height});
+
+#UTILS
+#nofill
+snippet nofill
+	noFill();
+#fill
+snippet fill
+	fill(${1:value1}, ${2:value2}, ${3:value3}${4:, }${5:alpha});
+#red
+snippet red
+	red(${1:color});
+#green
+snippet green
+	green(${1:color});
+#blue
+snippet blue
+	blue(${1:color});
+#status
+snippet status
+	status(${1:text});
+#param
+snippet param
+	param(${1:s});
+#link
+snippet link
+	link(${1:url}${2:, }${3:target});
+#@param
+snippet @
+	@${1:param/return/private/public}  ${1:parameter}  ${2:description}

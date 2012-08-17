@@ -1,0 +1,212 @@
+###########################################################################
+#                            TEXTMATE SNIPPETS                            #
+###########################################################################
+
+# Many of the snippets here use a global option called
+# "g:ultisnips_java_brace_style" which, if set to "nl" will put a newline
+# before '{' braces.
+
+global !p
+def nl(snip):
+    if snip.opt("g:ultisnips_java_brace_style", "") == "nl":
+        snip += ""
+    else:
+        snip.rv += " "
+endglobal
+
+snippet ab "abstract" b
+abstract 
+endsnippet
+
+snippet as "assert" b
+assert ${1:test}${2/(.+)/(?1: \: ")/}${2:Failure message}${2/(.+)/(?1:")/};$0
+endsnippet
+
+snippet br "break"
+break;
+
+endsnippet
+
+snippet cs "case" b
+case $1:
+	$2
+$0
+endsnippet
+
+snippet ca "catch" b
+catch (${1:Exception} ${2:e})`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet cl "class" b
+class ${1:`!p
+snip.rv = snip.basename or "untitled"`} ${2:extends ${3:Parent} }${4:implements ${5:Interface} }{
+	$0
+}
+endsnippet
+
+snippet cos "constant string" b
+static public final String ${1:var} = "$2";$0
+endsnippet
+
+snippet co "constant" b
+static public final ${1:String} ${2:var} = $3;$0
+endsnippet
+
+snippet de "default" b
+default:
+	$0
+endsnippet
+
+snippet elif "else if" b
+else if ($1)`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet /el(se)?/ "else" br
+else`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet fi "final" b
+final 
+endsnippet
+
+snippet fore "for (each)" b
+for ($1 : $2)`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet for "for" b
+for ($1; $2; $3)`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet if "if" b
+if ($1)`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet imt "import junit_framework_TestCase;"  b
+import junit.framework.TestCase;
+$0
+endsnippet
+
+snippet im "import"  b
+import 
+endsnippet
+
+snippet in "interface" b
+interface ${1:`!p snip.rv = snip.basename or "untitled"`} ${2:extends ${3:Parent} }{
+	$0
+}
+endsnippet
+
+snippet j.b "java_beans_" i
+java.beans.
+endsnippet
+
+snippet j.i "java_io" i
+java.io.
+endsnippet
+
+snippet j.m "java_math" i
+java.math.
+endsnippet
+
+snippet j.n "java_net_" i
+java.net.
+endsnippet
+
+snippet j.u "java_util_"  i
+java.util.
+endsnippet
+
+snippet main "method (main)" b
+public static void main(String[] args)`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet m "method" b
+${1:void} ${2:method}($3) ${4:throws $5 }{
+	$0
+}
+
+endsnippet
+
+snippet pa "package" b
+package 
+endsnippet
+
+snippet p "print" b
+System.out.print($1);$0
+endsnippet
+
+snippet pl "println"  b
+System.out.println($1);$0
+endsnippet
+
+snippet pr "private" b
+private 
+endsnippet
+
+snippet po "protected" b
+protected 
+endsnippet
+
+snippet pu "public" b
+public 
+endsnippet
+
+snippet re "return" b
+return 
+endsnippet
+
+snippet st "static"
+static 
+endsnippet
+
+snippet sw "switch" b
+switch ($1)`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet sy "synchronized"
+synchronized 
+endsnippet
+
+snippet tc "test case"
+public class ${1:`!p snip.rv = snip.basename or "untitled"`} extends ${2:TestCase}`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet t "test" b
+public void test${1:Name}() throws Exception`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+snippet th "throw" b
+throw $0
+endsnippet
+
+snippet v "variable" b
+${1:String} ${2:var}${3: = ${0:null}};
+endsnippet
+
+snippet wh "while" b
+while ($1)`!p nl(snip)`{
+	$0
+}
+endsnippet
+
+# vim:ft=snippets:

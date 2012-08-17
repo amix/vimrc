@@ -1,0 +1,236 @@
+## Snippets from SnipMate, taken from
+## https://github.com/scrooloose/snipmate-snippets.git
+
+
+##############
+#  Comments  #
+##############
+snippet /* "docblock"
+/**
+ * ${1}
+ */
+${2}
+endsnippet
+
+snippet doc_f "doc_f"
+/**
+ * $2
+ * @return ${4:void}
+ * @author ${5:`!v g:snips_author`}
+ **/
+${1:public }function ${2:someFunc}(${3})
+{
+    ${6}
+}$0
+endsnippet
+
+snippet doc_i "doc_i"
+/**
+ * $1
+ * @package ${2:default}
+ * @author ${3:`!v g:snips_author`}
+ **/
+interface ${1:someClass}
+{
+	${4}
+} // END interface $1"
+endsnippet
+
+###########
+#  Array  #
+###########
+snippet array "PHP array"
+$${1:var} = array(${2});${3}
+endsnippet
+
+snippet key "PHP array key"
+'${1}' => ${2}
+endsnippet
+
+############
+#  CLasss  #
+############
+snippet class "PHP class"
+/**
+ * ${1}
+ */
+class ${2:ClassName}
+{
+	${3}
+	function ${4:__construct}(${5:argument})
+	{
+		${6:// code...}
+	}
+}
+endsnippet
+
+snippet . "PHP $this->" w
+$this->${1:name}
+endsnippet
+
+##############################
+# constant                   #
+##############################
+snippet def "PHP define"
+define('${1}', ${2});${3}
+endsnippet
+
+snippet def? "PHP definied" w
+defined('${1}')${2}
+endsnippet
+
+##############################
+# ties                       #
+##############################
+snippet wh
+while (${1:/* condition */}) {
+    ${2:// code...}
+}
+endsnippet
+
+snippet do "PHP do"
+do {
+	${2:// code... }
+} while (${1:/* condition */});"
+endsnippet
+
+snippet foreach "PHP foreach"
+foreach ($${1:variable} as $${2:value}){
+	${3:// code...}
+}
+endsnippet
+
+snippet foreachk "PHP foreachk"
+foreach ($${1:variable} as $${2:key} => $${3:value}){
+	${4:// code...}
+}
+endsnippet
+
+snippet for "PHP for"
+for ($${2:i} = 0; $$2 < ${1:count}; $$2${3:++}) {
+	${4:// code...}
+}
+endsnippet
+
+##############################
+# condition                  #
+##############################
+snippet ife "PHP if else"
+if (${1:/* condition */}) {
+    ${2:// code...}
+}
+else {
+    ${3:// code...}
+}
+${4}
+endsnippet
+
+snippet if "PHP if"
+if (${1:/* condition */}) {
+	${2:// code...}
+}
+endsnippet
+
+snippet el "PHP else"
+else {
+    ${1:// code...}
+}${2}
+endsnippet
+
+snippet elf "PHP elseif"
+elseif (${1:/* condition */}) {
+    ${2:// code...}
+}${3}
+endsnippet
+
+snippet t "PHP t"
+$${1:retVal} = (${2:condition}) ? ${3:a} : ${4:b};${5}
+endsnippet
+
+snippet inc "PHP include"
+include '${1:file}';${2}
+endsnippet
+
+snippet inc1 "PHP include_once"
+include_once '${1:file}';${2}
+endsnippet
+
+snippet req "PHP require"
+require_once '${1:file}';${2}
+endsnippet
+
+snippet req1 "PHP require_once"
+require_once '${1:file}';${2}
+endsnippet
+
+snippet log "PHP error_log"
+error_log(var_export(${1}, true));${2}
+endsnippet
+
+snippet G "PHP GLOBALS"
+$GLOBALS['${1:variable}']${2}
+endsnippet
+
+snippet $_ "PHP COOKIE['...']"
+$_COOKIE['${1:variable}']${2}
+endsnippet
+
+snippet $_ "PHP ENV['...']"
+$_ENV['${1:variable}']${2}
+endsnippet
+
+snippet $_ "PHP FILES['...']"
+$_FILES['${1:variable}']${2}
+endsnippet
+
+snippet $_ "PHP GET['...']"
+$_GET['${1:variable}']${2}
+endsnippet
+
+snippet $_ "PHP POST['...']"
+$_POST['${1:variable}']${2}
+endsnippet
+
+snippet $_ "PHP REQUEST['...']"
+$_REQUEST['${1:variable}']${2}
+endsnippet
+
+snippet $_ "PHP SERVER['...']"
+$_SERVER['${1:variable}']${2}
+endsnippet
+
+snippet $_ "PHP SESSION['...']"
+$_SESSION['${1:variable}']${2}
+endsnippet
+
+snippet try "PHP try catch"
+try {
+    ${2}
+} catch (${1:Exception} $e) {
+}
+endsnippet
+
+snippet vare "PHP var_export"
+var_export(${1});${2}
+endsnippet
+
+##############################
+# write                      #
+##############################
+snippet ec "PHP echo"
+echo ${1}
+endsnippet
+
+snippet pr "PHP print"
+print ${1:$var};
+endsnippet
+
+snippet prf "PHP printf"
+printf('${1:%s}', ${2});${3}
+endsnippet
+
+snippet sprf "PHP sprintf"
+sprintf('${1:%s}', ${2});${3}
+endsnippet
+
+# :vim:ft=snippets:

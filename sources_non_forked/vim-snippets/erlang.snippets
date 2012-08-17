@@ -1,0 +1,98 @@
+###########################################################################
+#                            TEXTMATE SNIPPETS                            #
+###########################################################################
+
+snippet pat "Case:Receive:Try Clause"
+${1:pattern}${2: when ${3:guard}} ->;
+	${4:body}
+endsnippet
+
+snippet beh "Behaviour Directive"
+-behaviour (${1:behaviour}).
+endsnippet
+
+snippet case "Case Expression"
+case ${1:expression} of
+	${2:pattern}${3: when ${4:guard}} ->
+		${5:body}
+end
+endsnippet
+
+snippet def "Define Directive"
+-define (${1:macro}${2: (${3:param})}, ${4:body}).
+endsnippet
+
+snippet exp "Export Directive"
+-export ([${1:function}/${2:arity}]).
+endsnippet
+
+snippet fun "Fun Expression"
+fun
+	(${1:pattern})${2: when ${3:guard}} ->
+		${4:body}
+end
+endsnippet
+
+snippet fu "Function"
+${1:function} (${2:param})${3: when ${4:guard}} ->
+	${5:body}
+endsnippet
+
+snippet if "If Expression"
+if
+	${1:guard} ->
+		${2:body}
+end
+endsnippet
+
+snippet ifdef "Ifdef Directive"
+-ifdef (${1:macro}).
+endsnippet
+
+snippet ifndef "Ifndef Directive"
+-ifndef (${1:macro}).
+endsnippet
+
+snippet imp "Import Directive"
+-import (${1:module}, [${2:function}/${3:arity}]).
+endsnippet
+
+snippet inc "Include Directive"
+-include ("${1:file}").
+endsnippet
+
+snippet mod "Module Directive"
+-module (${1:`!p snip.rv = snip.basename or "module"`}).
+endsnippet
+
+snippet rcv "Receive Expression"
+receive
+${1:	${2:pattern}${3: when ${4:guard}} ->
+		${5:body}}
+${6:after
+	${7:expression} ->
+		${8:body}}
+end
+endsnippet
+
+snippet rec "Record Directive"
+-record (${1:record}, {${2:field}${3: = ${4:value}}}).
+endsnippet
+
+snippet try "Try Expression"
+try${1: ${2:expression}${3: of
+	${4:pattern}${5: when ${6:guard}} ->
+		${7:body}}}
+${8:catch
+	${9:pattern}${10: when ${11:guard}} ->
+		${12:body}}
+${13:after
+	${14:body}}
+end
+endsnippet
+
+snippet undef "Undef Directive"
+-undef (${1:macro}).
+endsnippet
+
+# vim:ft=snippets:

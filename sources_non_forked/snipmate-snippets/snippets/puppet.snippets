@@ -1,0 +1,155 @@
+# Snippets for use with VIM and http://www.vim.org/scripts/script.php?script_id=2540
+#
+# Please contact R.I.Pienaar <rip@devco.net> for additions and feedback, 
+# see it in action @ http://www.devco.net/archives/2009/09/22/vim_and_puppet.php
+
+# Language Constructs
+snippet class
+	class ${1:`Filename('', 'name')`} {
+		${2}
+	}
+snippet node
+	node "${1:`Filename('', 'fqdn')`}" {
+		${2}
+	}
+snippet case
+	case $${1:variable} {
+		default: { ${2} }
+	}
+snippet ife
+	if $${1:variable} {
+		${2}
+	} else {
+		${3}
+	}
+snippet if
+	if $${1:variable} {
+		${2}
+	} 
+snippet else
+	else {
+		${1}
+	}
+snippet ?
+	? {
+		'${1}'	=> ${2}
+	  }
+# 
+# blocks etc and general syntax sugar
+snippet [
+	[ ${1} ]${2}
+snippet >
+	${1}	=> ${2}
+snippet p:
+	"puppet://puppet/${1:module name}/${2:file name}"
+#
+# Functions
+snippet alert
+	alert("${1:message}")${2}
+snippet crit
+	crit("${1:message}")${2}
+snippet debug
+	debug("${1:message}")${2}
+snippet defined
+	defined(${1:Resource}["${2:name}"])${3}
+snippet emerg
+	emerg("${1:message}")${2}
+snippet extlookup Simple extlookup 
+	extlookup("${1:variable}")${2}
+snippet extlookup Extlookup with defaults
+	extlookup("${1:variable}", "${2:default}")${3}
+snippet extlookup Extlookup with defaults and custom data file
+	extlookup("${1:variable}", "${2:default}", "${3:data source}")${4}
+snippet fail
+	fail("${1:message}")${2}
+snippet info
+	info("${1:message}")${2}
+snippet inline_template
+	inline_template("<%= ${1} %>")${2}
+snippet notice
+	notice("${1:message}")${2}
+snippet realize
+	realize(${1:Resource}[${2:name}])${3}
+snippet regsubst
+	regsubst(${1:hay stack}, ${2:needle}, "${3:replacement}")${4}
+snippet inc
+	include ${1:classname}${2}
+snippet split
+	split(${1:hay stack}, "${2:patten}")${3}
+snippet versioncmp
+	versioncmp("${1:version}", "${2:version}")${3}
+snippet warning
+	warning("${1:message}")${2}
+#
+# Types
+snippet cron
+	cron{ "${1:name}":
+		command	=> "${2}",
+		user	=> "${3:root}",
+		${4}	=> ${5}
+	}
+
+snippet exec
+	exec{ "${1:name}":
+		command	=> "${2:$1}",
+		user	=> "${3:root}",
+		${4}	=> ${5}
+	}
+
+snippet user
+	user{ "${1:user}":
+		comment		=> "${2:$1}",
+		ensure		=> present,
+		managehome	=> true,
+		home		=> "${3:/home/$1}"
+	}
+
+snippet group
+	group{ "${1:group}":
+		ensure	=> ${2:present}
+	}
+
+snippet host
+	host{ "${1:hostname}":
+		ip	=> ${2:127.0.0.1}
+	}
+
+snippet mailalias
+	mailalias{ "${1:localpart}":
+		recipient	=> "${2:recipient}"
+	}
+
+snippet mount
+	mount{ "${1:destination path}":
+		ensure	=> ${2:mounted},
+		device	=> "${3:device name or path}"
+	}
+
+snippet package
+	package{ "${1:package name}":
+		ensure	=> ${2:present}
+	}
+
+snippet yumrepo
+	yumrepo{ "${1:repo name}":
+		descr	=> "${2:$1}",
+		enabled	=> ${3:1}
+	}
+
+snippet define
+	define ${1} (${2}) {
+		${3}
+	}
+
+snippet service
+	service{ "${1:service}":
+		enable		=> ${2:true},
+		ensure		=> ${3:running},
+		hasstatus	=> true,
+	}
+
+snippet file
+	file{ "${1:path}":
+		${2}	=> ${3}
+	}
+

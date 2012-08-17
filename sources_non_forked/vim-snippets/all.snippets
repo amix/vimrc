@@ -1,0 +1,112 @@
+# This file contains snippets that are always defined. I personally
+# have snippets for signatures and often needed texts
+
+##############
+# NICE BOXES #
+##############
+global !p
+import string, vim
+
+""" Maps a filetype to comment format used for boxes.
+Automatically filled during usage"""
+_commentDict = { }
+
+def _parse_comments(s):
+    """ Parses vim's comments option to extract comment format """
+    i = iter(s.split(","))
+
+    rv = []
+    try:
+        while True:
+            # get the flags and text of a comment part
+            flags,text = i.next().split(':', 1)
+
+            if len(flags) == 0:
+                if len(text) == 1:
+                    rv.append((text,text,text, ""))
+            # parse 3-part comment, but ignore those with O flag
+            elif flags[0] == 's' and 'O' not in flags:
+                ctriple = []
+                indent = ""
+
+                if flags[-1] in string.digits:
+                    indent = " " * int(flags[-1])
+                ctriple.append(text)
+
+                flags,text = i.next().split(':', 1)
+                assert(flags[0] == 'm')
+                ctriple.append(text)
+
+                flags,text = i.next().split(':', 1)
+                assert(flags[0] == 'e')
+                ctriple.append(text)
+                ctriple.append(indent)
+
+                rv.append(ctriple)
+
+            elif flags[0] == 'b':
+                if len(text) == 1:
+                    rv.insert(0, (text,text,text, ""))
+
+    except StopIteration:
+       return rv
+
+def _get_comment_format():
+    """ Returns a 4-element tuple representing the comment format for
+    the current file. """
+
+    ft = vim.eval("&filetype")
+    # check if the comment dict has the format for the current file
+    if _commentDict.has_key(ft):
+        return _commentDict[ft]
+
+    # otherwise parse vim's comments and add it for later use
+    commentformat = _parse_comments(vim.eval("&comments"))[0]
+    _commentDict[ft] = commentformat
+
+    return commentformat
+
+
+def make_box(twidth, bwidth = None):
+   if bwidth is None:
+      bwidth = twidth + 2
+   b,m,e,i = _get_comment_format()
+   sline = b + m + bwidth*m + 2*m
+   nspaces = (bwidth - twidth)//2 
+   mlines = i + m + " " + " "*nspaces
+   mlinee = " " + " "*(bwidth-twidth-nspaces) + m
+   eline = i + 2*m + bwidth*m + m + e
+   return sline, mlines, mlinee, eline
+endglobal
+
+snippet box "A nice box with the current comment symbol" b
+`!p
+box = make_box(len(t[1]))
+snip.rv = box[0] + '\n' + box[1]
+`${1:content}`!p
+box = make_box(len(t[1]))
+snip.rv = box[2] + '\n' + box[3]`
+$0
+endsnippet
+
+snippet bbox "A nice box over the full width" b
+`!p
+box = make_box(len(t[1]), 71)
+snip.rv = box[0] + '\n' + box[1]
+`${1:content}`!p
+box = make_box(len(t[1]), 71)
+snip.rv = box[2] + '\n' + box[3]`
+$0
+endsnippet
+
+##########################
+# LOREM IPSUM GENERATORS #
+##########################
+snippet lorem "Lorem Ipsum - 50 Words" b
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+endsnippet
+
+# vim:ft=snippets:

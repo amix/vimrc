@@ -1,0 +1,65 @@
+###########################################################################
+#                            TextMate Snippets                            #
+###########################################################################
+snippet get "Get Elements"
+getElement${1/(T)|.*/(?1:s)/}By${1:T}${1/(T)|(I)|.*/(?1:agName)(?2:d)/}('$2')
+endsnippet
+
+snippet '':f "object method string"
+'${1:${2:#thing}:${3:click}}': function(element){
+	$0
+}${10:,}
+endsnippet
+
+snippet :f "Object Method"
+${1:method_name}: function(${3:attribute}){
+	$0
+}${10:,}
+endsnippet
+
+snippet :, "Object Value JS"
+${1:value_name}:${0:value},
+endsnippet
+
+snippet : "Object key key: 'value'"
+${1:key}: ${2:"${3:value}"}${4:, }
+endsnippet
+
+snippet proto "Prototype (proto)"
+${1:class_name}.prototype.${2:method_name} = function(${3:first_argument}) ,,{
+	${0:// body...}
+};
+ 
+endsnippet
+
+snippet for "for (...) {...} (faster)"
+for (var ${2:i} = ${1:Things}.length - 1; $2 >= 0; $2--){
+	${3:$1[$2]}$0
+};
+endsnippet
+
+snippet for "for (...) {...}"
+for (var ${2:i}=0; $2 < ${1:Things}.length; $2++) {
+	${3:$1[$2]}$0
+};
+endsnippet
+
+snippet fun "function (fun)"
+function ${1:function_name} (${2:argument}) {
+	${0:// body...}
+}
+endsnippet
+
+snippet ife "if ___ else"
+if (${1:true}) {$0} else{};
+endsnippet
+
+snippet if "if"
+if (${1:true}) {$0};
+endsnippet
+
+snippet timeout "setTimeout function"
+setTimeout(function() {$0}${2:}, ${1:10});
+endsnippet
+
+# vim:ft=snippets:
