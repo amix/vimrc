@@ -8,10 +8,8 @@
 """"""""""""""""""""""""""""""
 " => Load pathogen paths
 """"""""""""""""""""""""""""""
-call pathogen#infect('~/.vim_runtime/sources_plugins')
 call pathogen#infect('~/.vim_runtime/sources_forked')
-call pathogen#infect('~/.vim_runtime/sources_colors')
-call pathogen#infect('~/.vim_runtime/sources_misc')
+call pathogen#infect('~/.vim_runtime/sources_non_forked')
 call pathogen#helptags()
 
 """"""""""""""""""""""""""""""
