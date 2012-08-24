@@ -289,7 +289,7 @@ elseif &background=='dark'
   hi WarningMsg		guifg=#f08060	guibg=NONE	gui=NONE
   hi WildMenu		guifg=#000000	guibg=#d0d090	gui=NONE
   hi Folded		guifg=#aaaaaa	guibg=#333333	gui=NONE
-  hi FoldColumn		guifg=#e0e0e0	guibg=#333333	gui=NONE
+  hi FoldColumn		guifg=#e0e0e0	guibg=#1f1f1f	gui=NONE
   hi DiffAdd		guifg=NONE	guibg=#000080	gui=NONE
   hi DiffChange		guifg=NONE	guibg=#800080	gui=NONE
   hi DiffDelete		guifg=#6080f0	guibg=#202020	gui=NONE
