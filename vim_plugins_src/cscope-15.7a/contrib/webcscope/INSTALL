@@ -1,0 +1,31 @@
+WebCScope Installation
+
+Quick Install
+
+0. Create a directory called cscope under your /cgi-bin (virtual) directory.
+	Copy all the files in the distribution to this directory.
+
+1. Edit the 'cscope' file and change the following items:
+	- Location to the perl interpreter
+	- Location of the cscope database and other modifiable parameters
+	- Feedback name and email
+	- Location of the syntax highlighter, if you wish to use it
+
+2. Syntax highlighter
+	- The syntax highlighter must be built if you decide to use it.  If you
+		do not want syntax highlighting, you can ignore this step and set the
+		highlighter to /bin/cat.
+	- Compile 'hilite.c' using 'gcc -o hilite hilite.c'
+
+3. Icons
+	- Copy the images from the icons directory into the /icons (virtual)
+		directory on the web server.  You can also replace these images with
+		whatever you choose.
+
+4. Organizing your CScope databases
+	- WebCScope supports multiple databases in $cscopedir
+	- Create a directory for each project or sub-source in $cscopedir and, 
+		generate your cscope database using the following commands.
+		- find /some/source/dir -name '*.[chyls]' -print > cscope.files
+		- cscope -b -q
+	- Repeat the above step for each database you wish to create

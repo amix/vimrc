@@ -1,0 +1,16 @@
+let TeX_package_option_amsthm = ''
+
+let TeX_package_amsthm = 
+\ 'env:proof,'
+\.'nor:swapnumbers,'
+\.'brd:newtheorem,'
+\.'brd:newtheorem*,'
+\.'nor:theoremstyle{plain},'
+\.'nor:theoremstyle{definition},'
+\.'nor:theoremstyle{remark},'
+\.'nor:newtheoremstyle,'
+\.'nor:qedsymbol,'
+\.'nor:qed,'
+\.'nor:qedhere'
+
+" vim:ft=vim:ff=unix:

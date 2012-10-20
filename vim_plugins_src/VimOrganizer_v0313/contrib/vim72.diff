@@ -1,0 +1,79 @@
+=== (+2,-1) src/eval.c ===
+@@ -355,6 +355,7 @@
+     {VV_NAME("operator",	 VAR_STRING), VV_RO},
+     {VV_NAME("searchforward",	 VAR_NUMBER), 0},
+     {VV_NAME("oldfiles",	 VAR_LIST), 0},
++    {VV_NAME("foldhighlight",	 VAR_NUMBER), 0},
+ };
+ 
+ /* shorthand */
+=== (+18,-9) src/screen.c ===
+@@ -2179,9 +2179,17 @@
+ # define RL_MEMSET(p, v, l)   for (ri = 0; ri < l; ++ri) \
+ 				 ScreenAttrs[off + (p) + ri] = v
+ #endif
++    /*
++     * 4. Compose the folded-line string with 'foldtext', if set.
++     */
++    text = get_foldtext(wp, lnum, lnume, foldinfo, buf);
++
++    txtcol = col;	/* remember where text starts */
+ 
+     /* Set all attributes of the 'number' column and the text */
+-    RL_MEMSET(col, hl_attr(HLF_FL), W_WIDTH(wp) - col);
++    //RL_MEMSET(col, hl_attr(HLF_FL), W_WIDTH(wp) - col);
++    RL_MEMSET(col, hl_attr(get_vim_var_nr(VV_FOLDHIGHLIGHT)), W_WIDTH(wp) - col);
++    
+ 
+ #ifdef FEAT_SIGNS
+     /* If signs are being displayed, add two spaces. */
+@@ -2196,10 +2204,11 @@
+ 	    if (wp->w_p_rl)
+ 		/* the line number isn't reversed */
+ 		copy_text_attr(off + W_WIDTH(wp) - len - col,
+-					(char_u *)"  ", len, hl_attr(HLF_FL));
++					(char_u *)"  ", len, hl_attr(get_vim_var_nr(VV_FOLDHIGHLIGHT)));
++	    
+ 	    else
+ # endif
+-		copy_text_attr(off + col, (char_u *)"  ", len, hl_attr(HLF_FL));
++		copy_text_attr(off + col, (char_u *)"  ", len, hl_attr(get_vim_var_nr(VV_FOLDHIGHLIGHT)));
+ 	    col += len;
+ 	}
+     }
+@@ -2222,10 +2231,10 @@
+ 	    if (wp->w_p_rl)
+ 		/* the line number isn't reversed */
+ 		copy_text_attr(off + W_WIDTH(wp) - len - col, buf, len,
+-							     hl_attr(HLF_FL));
++							     hl_attr(get_vim_var_nr(VV_FOLDHIGHLIGHT)));
+ 	    else
+ #endif
+-		copy_text_attr(off + col, buf, len, hl_attr(HLF_FL));
++		copy_text_attr(off + col, buf, len, hl_attr(get_vim_var_nr(VV_FOLDHIGHLIGHT)));
+ 	    col += len;
+ 	}
+     }
+@@ -2233,9 +2242,9 @@
+     /*
+      * 4. Compose the folded-line string with 'foldtext', if set.
+      */
+-    text = get_foldtext(wp, lnum, lnume, foldinfo, buf);
+-
+-    txtcol = col;	/* remember where text starts */
++    //text = get_foldtext(wp, lnum, lnume, foldinfo, buf);
++// moved up above to heappen earlier h.s.
++    // txtcol = col;	/* remember where text starts */
+ 
+     /*
+      * 5. move the text to current_ScreenLine.  Fill up with "fill_fold".
+=== (+3,-2) src/vim.h ===
+@@ -1767,7 +1767,8 @@
+ #define VV_OP		52
+ #define VV_SEARCHFORWARD 53
+ #define VV_OLDFILES	54
+-#define VV_LEN		55	/* number of v: vars */
++#define VV_FOLDHIGHLIGHT  55
++#define VV_LEN		56	/* number of v: vars */
+ 
+ #ifdef FEAT_CLIPBOARD

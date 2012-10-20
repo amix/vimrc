@@ -1,0 +1,82 @@
+Installation instructions for VimOrganizer v. 0.30, November 2011
+=================================================================
+
+1.  Install VimOrganizer files as you would any other ftplugin, with downloaded
+files going in their respective directories under your .vim (Linux/Mac) 
+or vimfiles (Windows) directory.  
+
+2.  Run helptags on the help file in the /doc directory, vimorg.txt,
+so hep items can be accessed using the Vim help system. 
+
+3.  Make sure your vimrc has these lines:
+-------------------------------------
+    filetype plugin indent on
+
+    [...and then somewhere below that:]
+
+    au! BufRead,BufWrite,BufWritePost,BufNewFile *.org 
+    au BufEnter *.org            call org#SetOrgFileType()
+------------------------------------
+
+If you use VimOrganizer much you will also want to configure variables
+and/or functions in your vimrc.  A sample vimrc has been included
+in the download.
+
+ALSO, you will want to install the plugins listed below.  VimOrganizer
+will work without them, but some functionality will be unavailable:
+
+4.  Make sure you have Calendar.vim installed.  
+    (Calendar.vim comes included in the /plugin/ directory as part of 
+    the Vim runtime in some Vim installs, otherwise available at: 
+    http://www.vim.org/scripts/script.php?script_id=52)
+
+Second, here are two plugins that you will want to download to 
+take advantage of Org-mode-like narrowing and link features that have been built
+into VimOrganizer: 
+
+5.  Christian Brabandt's NarrowRegion plugin.  Find and install it from here:
+    http://www.vim.org/scripts/script.php?script_id=3075
+6.  The Utl "Universal Text Linking" plugin.  Find and install it from here:
+    http://www.vim.org/scripts/script.php?script_id=293
+
+If you are running on Windows another plugin will be useful:
+
+7.  If you're running on Windows then you may want to get Peter Rodding's 
+    shell.vim plugin.  It's not necessary, but if you have installed
+    it VimOrganizer will use it to ensure that you don't see  
+    the annoying Windows command prompt window pop up when VimOrganizer 
+    calls out to Emacs/Org-mode.
+    http://www.vim.org/scripts/script.php?script_id=3123
+
+8.  FINALLY, install Emacs.  Not necessary for basic outlining, agenda
+searches, and other basic stuff, but it is necessary to do exports
+to html and PDF (which you will definitely want) as well as other
+advanced stuff.  Don't be afraid, install is simply and configuration
+is not hard.  Find Emacs here:
+http://www.gnu.org/software/emacs/
+
+Vimorg uses a variable, g:org_command_for_emacsclient, to hold the
+command that will start the emacsclient on your system.  If you are
+not on Linux or OSX you will need to set this explicitly in your
+vimrc file.  
+
+Also, please note that emacsclient works slightly differently on
+Windows and Linux/OSX systems.  You must manually start 
+Emacs on Linux/OSX or calls to emacsclient will not work.  Please see
+:h vimorg-emacs-setup
+
+For Emacs you should also install a hook function in the .emacs file,
+which will automatically make minor conversions when you export and/or
+open a VimOrganizer .org file in Emacs. You can find the text for that 
+function in the VimOrganizer help file:
+:h vimorg-orgmode-conversion
+
+If you're scared of Emacs, don't worry.  You don't ever need to edit
+a document using Emacs.  The most you will need to do is open up
+the .emacs configuration file (in Vim) to make some configuration
+changes, and that is required only if you're doing more advanced stuff.
+Having said, that, if there are problems it can sometimes be easiest to
+open Emacs and diagnose an issue there.  Still, you don't ever need
+to edit a document in Emacs, just think of Emacs as your "application
+server".
+

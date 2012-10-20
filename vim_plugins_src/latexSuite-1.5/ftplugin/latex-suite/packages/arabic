@@ -1,0 +1,5 @@
+let g:TeX_package_option_arabic = ''
+
+let g:TeX_package_arabic = 'bra:arabicnumeral'
+
+" vim:ft=vim:ff=unix:

@@ -1,0 +1,5 @@
+let g:TeX_package_option_bm = ''
+
+let g:TeX_package_bm = 'bra:bm'
+
+" vim:ft=vim:ff=unix:

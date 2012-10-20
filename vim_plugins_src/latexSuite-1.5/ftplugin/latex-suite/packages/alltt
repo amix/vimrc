@@ -1,0 +1,7 @@
+let g:TeX_package_option_alltt = ''
+
+let g:TeX_package_alltt = 'env:alltt'
+
+syn region texZone   start="\\begin{alltt}"  end="\\end{alltt}\|%stopzone\>" fold
+
+" vim:ft=vim:ff=unix:

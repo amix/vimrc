@@ -1,0 +1,22 @@
+let g:TeX_package_option_bar = ''
+
+let g:TeX_package_bar =
+\ 'env:barenv,'
+\.'brs:bar{<+height+>}{<+index+>}[<+desc+>],'
+\.'hlineon,'
+\.'brs:legend{<+index+>}{<+text+>},'
+\.'bra:setdepth,'
+\.'bra:sethspace,'
+\.'brs:setlinestyle{<+solid-dotted+>},'
+\.'brs:setnumberpos{<+empty-axis-down-inside-outside-up+>},'
+\.'bra:setprecision,'
+\.'bra:setstretch,'
+\.'bra:setstyle,'
+\.'bra:setwidth,'
+\.'brs:setxaxis{<+w1+>}{<+w2+>}{<+step+>},'
+\.'brs:setyaxis[<+n+>]{<+w1+>}{<+w2+>}{<+step+>},'
+\.'brs:setxname[<+lrbt+>]{<+etiquette+>},'
+\.'brs:setyname[<+lrbt+>]{<+etiquette+>},'
+\.'brs:setxvaluetyp{<+day-month+>}'
+
+" vim:ft=vim:ff=unix:

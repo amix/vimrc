@@ -1,0 +1,5 @@
+let g:TeX_package_option_multibox = ''
+
+let g:TeX_package_multibox = 'multimake,multiframe'
+
+" vim:ft=vim:ff=unix:

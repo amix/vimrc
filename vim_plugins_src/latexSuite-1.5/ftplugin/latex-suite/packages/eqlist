@@ -1,0 +1,14 @@
+let g:TeX_package_option_eqlist = '' 
+
+let g:TeX_package_eqlist = 
+\ 'env:eqlist,'
+\.'env:eqlist*,'
+\.'env:Eqlist,'
+\.'env:Eqlist*,'
+\.'sep:modificators,'
+\.'eqlistinit,'
+\.'eqliststarinit,'
+\.'eqlistinitpar,'
+\.'eqlistlabel'
+
+" vim:ft=vim:ff=unix:

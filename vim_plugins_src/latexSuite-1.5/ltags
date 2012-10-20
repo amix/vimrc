@@ -1,0 +1,78 @@
+#!/usr/bin/perl
+# Author: Dimitri Antoniou <dimitri@risc2.aecom.yu.edu>
+# usage: ltags filename
+# handles: \label and \cite{ } with one or more arguments
+#          fails if arguments of cite spread over more than one line
+# also searches in files that are \include or \input in the main file
+
+# get main LaTeX source file from command line:
+$mainfile = shift;
+
+# get names of included files and store them in an array
+open MAIN, $mainfile or die "$!" ;
+@mainfile=<MAIN>;
+@allsrcfiles = map{ /^\\(?:input|include){(.*?)}/ } @mainfile;
+unshift @allsrcfiles, $mainfile;
+
+# loop over all source files
+for $srcfile (@allsrcfiles) {
+    # if \input{fname} append .tex to fname
+    unless ( $srcfile =~ m/\.tex/ ) { $srcfile = $srcfile . "\.tex" }
+    open SRC, $srcfile or die "$!" ;
+    # store contents of source file in array @texfile
+    @texfile=<SRC>;
+
+    # store lines with \label and \cite (or \citeonline) in arrays
+    @labelList  = grep{ /\\label{/ } @texfile;
+    @citeList = grep{ /\\(cite|citeonline){/ } @texfile;
+
+    # see if we use an external database; if yes, store its name in $bibfile
+    ($dbase) = grep{ /^\\bibliography{/ } @texfile;
+    if ($dbase) {
+       $dbase =~ m/\\bibliography{(.*?)}/;
+       $bibfile = $1;
+    }
+
+    # write \bibitem in tags file 
+    @mrefs=();
+    @refs=();
+    @multirefs=();
+    foreach (@citeList) {
+        while ( m/\\(?:cite|citeonline){(.*?)}/g ) {
+            $refs = $1;
+            # if \cite has more than one argument, split them:
+            if ($refs =~ /,/) {
+                @mrefs = split /,/, $refs;
+                # there might be more than one \cite in a line:
+                push (@multirefs, @mrefs);
+            }
+            else {
+                @refs = ($refs);
+                push (@multirefs, @refs);
+            }
+        }
+        # in BibTeX, format is @ARTICLE{Name, }; in source file, \bibitem{Name}
+        for $ref (@multirefs) {
+           if ( $dbase ) {
+               push @unsorttag, "$ref\t$bibfile\t/{$ref,/\n"
+           }
+           else {
+               push @unsorttag, "$ref\t$srcfile\t/bibitem{$ref}/\n"
+           }
+        }
+    }
+
+    # write \label in tag file
+    foreach (@labelList) {
+         m/\\label{(.*?)}/;
+         push @unsorttag, "$1\t$srcfile\t/label{$1}/\n";
+    }
+}
+
+# sort tag file; then, eliminate duplicates
+@sortedtag = sort @unsorttag;
+%seen = ();
+@uniqtag = grep { ! $seen{$_} ++ } @sortedtag;
+
+open(TAGS, "> tags");
+print TAGS @uniqtag;

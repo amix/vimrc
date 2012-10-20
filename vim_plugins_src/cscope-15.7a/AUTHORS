@@ -1,0 +1,34 @@
+Joe Steffen - Creator of Cscope
+Hans-Bernhard Broeker <broeker@physik.rwth-aachen.de> - Maintainer
+Petr Sorfa <petr@users.sourceforge.net> - Initial OpenSource Maintainer
+Simon Cozens - autoconf setup
+garp@digi.com - .cc .hh support
+jens persson <cscope@persson.cx> - new man page
+Edgar Toernig - cscope stability
+Martin Kraemer - various improvments
+Joshua Uziel <uzi@linuxcare.com>  - code clean up, -h and -k options, and lots more (including autoconf)
+Mike Hopkirk <hops@sco.com> - osr5 build, ocs
+Darrylo Okahata <darrylo@users.sourceforge.net> - code quality improvements
+Brent Verner <brent@rcfile.org> - -R option to recurse sub directories
+Thomas Klausner - NetBSD support
+Andrew Sharpe - progress bar, tab between line selection and prompts and more
+Carl Mascott - FreeBSD support
+Rich Salz - Allow -i accept stdio as input as "-"
+Stephane Fritsch - BeOS support
+Andy Newman <atrn> - FreeBSD support patch
+Sascha Blank - FreeBSD support
+Bruce Frost - Stability
+Chuck Marco and Wilfredo Sanchez - Darwin support
+Jason Duell - CSCOPE_EDITOR and CSCOPE_LINEFLAG*, invname database
+Tom Hull - Similar work to CSCOPE_EDITOR and friends
+Donald Slutz - Various fixes
+OGAWA Hirofumi - line mode fixes
+Garret Hade - Various ocs fixes
+Nick Dixon - Improvement in key handling
+Triet H. Lai <thlai@mail.usyd.edu.au> - GNU Emacs fixes for xcscope.el
+Steven Elliott <selliott4@austin.rr.com> - Fuzzy pattern matching for xcscope.el
+Ragho Mahalingam <ragho@mahalingam.com> - webcscope
+Dmitry Obukhov - Hilight code in webcscope
+David Cohrs - LEX and SUNOS scanner fix
+Valentin Podlovchenko - Overflow prevention and link recursion fix patch
+Neil Horman <nhorman@gmail.com>  - Various Bug Fixes

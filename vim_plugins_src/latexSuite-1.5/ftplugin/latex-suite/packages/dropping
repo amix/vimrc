@@ -1,0 +1,7 @@
+let g:TeX_package_option_dropping = ''
+
+let g:TeX_package_dropping = 
+\ 'brs:bigdrop{<+indent+>}{<+big+>}{<+font+>}{<+text+>},'
+\.'brs:dropping[<+indent+>]{<+big+>}{<+text+>}'
+
+" vim:ft=vim:ff=unix:

@@ -1,0 +1,6 @@
+all_files_in_repos :=          Makefile autoload/fakeclip.vim doc/fakeclip.txt plugin/fakeclip.vim test/clipboard-cygwin.expected test/clipboard-cygwin.input test/clipboard-mac.expected test/clipboard-mac.input test/clipboard-x.expected test/clipboard-x.input test/misc.expected test/misc.input test/pastebuffer-gnuscreen.expected test/pastebuffer-gnuscreen.input test/pastebuffer-tmux.expected test/pastebuffer-tmux.input test/ui.expected test/ui.input
+current_branch := master
+origin_name := origin
+origin_uri := ../.
+repos_name := vim-fakeclip
+version := 0.2.10

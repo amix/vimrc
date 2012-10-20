@@ -1,0 +1,21 @@
+let g:TeX_package_option_moreverbatim = ''
+
+let g:TeX_package_moreverbatim = 
+\ 'ens:verbatimwrite:{<++>},'
+\.'ens:verbatimtab:[<++>],'
+\.'ens:listing:[<+step+>]{<+number+>},'
+\.'ens:listing*:[<+step+>]{<+number+>},'
+\.'env:boxedverbatim,'
+\.'bra:verbatimtabsize,'
+\.'bra:listingoffset,'
+\.'brs:listinginput[<++>]{<++>}{<++>},'
+\.'brs:verbatimtabinput[<++>]{<++>}'
+
+syn region texZone   start="\\begin{verbatimwrite}"  end="\\end{verbatimwrite}\|%stopzone\>" fold
+syn region texZone   start="\\begin{verbatimtab}"    end="\\end{verbatimtab}\|%stopzone\>" fold
+syn region texZone   start="\\begin{boxedverbatim}"  end="\\end{boxedverbatim}\|%stopzone\>" fold
+syn region texZone   start="\\begin{listing}"  end="\\end{listing}\|%stopzone\>" fold
+syn region texZone   start="\\begin{listing*}"  end="\\end{listing*}\|%stopzone\>" fold
+
+
+" vim:ft=vim:ff=unix:

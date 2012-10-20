@@ -1,0 +1,24 @@
+Open
+
++ Display the current case mode (^C) onscreen
+
++ emacs like key bindings
+    ^S for searching (^Y)
+    Up/dwn Arrow support Next/Prev field. ??
+    Inline editing on Input fields ( ??^B/^F )
+    ^X^C to quit ( ^Q ??)
+    Pagdwn/PageUp/+/- 
+
++ Same capabilities as interactive in non interactive (one shot) mode
+
++ Provide some how-do-I-use-this-thing doc.
+
++ Replace invlib.[ch] by real database.  Failing that, at least sanitize it.
+
+Possible changes:
+
+? Change to full screen target display and use bottom line for command,
+    control or fn keys for operations (cf pine)
+
+? Apply added capability from osr5 codebase
+

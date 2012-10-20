@@ -1,0 +1,16 @@
+let g:TeX_package_option_footmisc = 
+\ 'bottom,'
+\.'flushmargin,'
+\.'marginal,'
+\.'multiple,'
+\.'norule,'
+\.'para,'
+\.'perpage,'
+\.'splitrule,'
+\.'stable,'
+\.'symbol,'
+\.'symbol+'
+
+let g:TeX_package_footmisc = ''
+
+" vim:ft=vim:ff=unix:

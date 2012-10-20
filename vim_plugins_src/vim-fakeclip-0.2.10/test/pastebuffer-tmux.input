@@ -1,0 +1,36 @@
+" Test: vim-fakeclip pastebuffer-tmux
+runtime! plugin/fakeclip.vim
+call vspec#hint({
+\   'scope': 'fakeclip#_local_variables()',
+\   'sid': 'fakeclip#_sid_prefix()',
+\ })
+function s:describe__s_read_pastebuffer_tmux()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_write_pastebuffer_tmux()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_read_pastebuffer()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_write_pastebuffer()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+" __END__  "{{{1
+" vim: filetype=vim foldmethod=marker

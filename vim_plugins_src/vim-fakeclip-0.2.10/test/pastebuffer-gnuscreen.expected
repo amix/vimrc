@@ -1,0 +1,42 @@
+==== s_read_pastebuffer 
+---- It should read the paste buffer which contains empty string 
+..
+---- It should read the paste buffer which contains string without newline 
+..
+---- It should read the paste buffer which contains single-line string 
+..
+---- It should read the paste buffer which contains multi-line string 
+..
+---- It should read the paste buffer which contains multi-line string w/o last LF 
+..
+---- It should read the paste buffer which is emptied by "register . ''" 
+..
+
+==== s_read_pastebuffer_gnuscreen 
+---- It should read the paste buffer which contains empty string 
+..
+---- It should read the paste buffer which contains string without newline 
+..
+---- It should read the paste buffer which contains single-line string 
+..
+---- It should read the paste buffer which contains multi-line string 
+..
+---- It should read the paste buffer which contains multi-line string w/o last LF 
+..
+---- It should read the paste buffer which is emptied by "register . ''" 
+..
+
+==== s_write_pastebuffer 
+---- It should succeed 
+.....
+
+==== s_write_pastebuffer_gnuscreen 
+---- It should succeed 
+.....
+
+
+
+**** Result ****
+
+
+34 examples, 0 failures

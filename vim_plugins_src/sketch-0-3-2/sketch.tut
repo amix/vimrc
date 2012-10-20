@@ -1,0 +1,590 @@
+
+
+   /// Sketch -- a tutorial        Antony Scriven 2003-11-24
+
+
+-- Cribsheet
+
+   +---------------------+-----------------------------------------+
+   |       Action        |                  Effect                 |
+   |  -----------------  |  -------------------------------------  |
+   |      Click/drag-+   |                                         |
+   |           Btn-+ |   |                                         |
+   |         Key-+ | |   |   Normal mode       Visual block        |
+   |    Clicks-+ | | |   |                                         |
+   +---------------------+-----------------------------------------+
+   |  Lines        L c   |  - or +          Transparent box/line   |
+   |               L d   |  ---                                    |
+   |           2   L c   |  > < ^ v         Box/line with arrow    |
+   |           3   L c   |  |                                      |
+   |             S L c   |  Round/square    Opaque box/line        |
+   |- - - - - - - - - - -|- - - - - - - - - - - - - - - - - - - - -|
+   |  Paint      C L cd  |  Brush           Brush fill             |
+   |             M L c   |  . -> : -> #                            |
+   |- - - - - - - - - - -|- - - - - - - - - - - - - - - - - - - - -|
+   |  Select       R c   |  Select          Erase                  |
+   |               R d   |  Select          Transparent copy+move  |
+   |             S R d   |                  Opaque copy+move       |
+   |- - - - - - - - - - -|- - - - - - - - - - - - - - - - - - - - -|
+   |  Erase      C R cd  |  Eraser                                 |
+   |             M R cd  |  Fat eraser                             |
+   +---------------------+-----------------------------------------+
+   |        Map          |                  Effect                 |
+   |  ----------------   |  -------------------------------------  |
+   |  <leader>f          |  Flood fill (any character)             |
+   +---------------------+-----------------------------------------+
+
+
+-- Overview
+
+   Sketch is a plugin for Vim. Sketch can help with creating
+   simple drawings and diagrams using the mouse. You need at
+   least a two-button mouse to get the most of this package.
+   The shift and control keys are used to modify the mouse's
+   actions. The alt/meta key is also used but I have avoided
+   it for the most part: I realise that some keyboards don't
+   have this key or it isn't easily accessible.
+
+   Sketch is most useful for line diagrams. It is useful for
+   drawing boxes, lines, and arrows in a quick and hopefully
+   intuitive way. You can draw freehand by clicking and
+   dragging with the mouse. You can also make a visual
+   selection and fill it with a line or a box. Arrowheads
+   can be added easily; the direction is automatic. An
+   eraser is provided. Also there are three different brush
+   tips for painting or for fills.
+
+
+-- Requirements
+
+   Sketch requires a vim that can handle mouse input. I have
+   incorporated all the drawing functions into the mouse
+   buttons + modifier keys. So you may struggle with a
+   one-button mouse. Also, double-clicks and triple-clicks
+   are used, so these must be supported.
+
+   Please bear in mind that I have only tested this plugin
+   on gvim 6.1 on Windows. I am unlikely to test on other
+   platforms any time soon. So bug reports or patches for
+   problems encountered on other systems are welcome.
+
+
+-- Getting started
+
+   This tutorial involves modifying this file. So you may
+   wish to save your own copy before you start editing, e.g.
+
+      :save my_sketch.tut
+
+   I haven't included any maps to start the plugin. I feel
+   that each user should define the maps that they see fit.
+   The function to start and stop drawing is called
+   ToggleSketch(). So I have in my vimrc:
+
+      map <F1> :call ToggleSketch()<CR>
+
+   You should try something similar. When you start Sketch
+   two things should happen. First, a message should appear
+   in the status line telling you that sketch is turned on.
+   Second, if you don't normally display scrollbars in gvim,
+   these will be turned on for you.
+
+   Note that Sketch implements buffer-local maps. This means
+   that you need to turn Sketch on/off for each individual
+   buffer you draw in. This is not as convenient as
+   having it work globally on all buffers. I implemented it
+   this way because sometimes my mouse would stray into
+   another buffer make unwanted drawings there.
+
+   Note however that although I have implemented Sketch with
+   buffer-local maps, it is still possible to accidentally
+   draw in another window. I don't think I can avoid this
+   because of the way that Vim handles mouse actions. But
+   the buffer-local maps keep any drawing to a minimum
+   (hopefully just one character). So either make sure that
+   only one window is open, or be careful!
+
+   Final warning: don't try to size the window by dragging
+   the status line while Sketch is turned on. You will just
+   end up drawing instead. Any fixes for this are most
+   welcome. And don't forget, you can always undo.
+
+                  *           *           *
+
+   Throughout this tutorial bear the following in mind. The
+   left mouse button is used for drawing. The right mouse
+   button is used for selecting and erasing.
+
+
+   Tip: Get into the habit of 1. turning Sketch on,
+        2. drawing your diagrams, 3. immediately turning
+        Sketch off.
+
+
+-- Freehand line drawing
+
+   Turn sketch on. To draw a line like this:
+   +-------------------------------------------------------+
+   |                                                       |
+   |   --------------------                                |
+   |                                                       |
+   +-------------------------------------------------------+
+   simply click with the left mouse button and drag. Here's
+   some space for you to try it. All line drawing is done
+   with the left mouse button. Try it out.
+   +-------------------------------------------------------+
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   +-------------------------------------------------------+
+   Now try an L-shape.
+   +-------------------------------------------------------+
+   |                                                       |
+   |   |                                                   |
+   |   |                                                   |
+   |   +----                                               |
+   |                                                       |
+   +-------------------------------------------------------+
+   Sketch automatically selects a `-' or a `|' depending on
+   the direction you are drawing in. Corners automatically
+   become a cross, as do intersections:
+   +-------------------------------------------------------+
+   |     +-----------+                                     |
+   |     |      |    |                                     |
+   | ----+------+----+----+                                |
+   |     |      |    |    |                                |
+   |     +------+    +----+                                |
+   +-------------------------------------------------------+
+   Now try just a single click.
+   +-------------------------------------------------------+
+   |                                                       |
+   |   -                                                   |
+   |                                                       |
+   +-------------------------------------------------------+
+   Note that it is a horizontal line. When you first click,
+   Sketch can't know which direction you are going in. It
+   assumes horizontal. If you actually move vertically, it
+   will correct this initial `-' to a `|'. But what if you
+   really want just a single `|'? This is pretty rare, but I
+   have provided for this. Use a triple-click.
+   +-------------------------------------------------------+
+   |                                                       |
+   |   |                                                   |
+   |                                                       |
+   +-------------------------------------------------------+
+   Note that if you single-click on an existing character it
+   turns into a cross.
+   +-------------------------------------------------------+
+   |                                                       |
+   |  Click on these:      -     |                         |
+   |  They will become:    +     +                         |
+   |                                                       |
+   +-------------------------------------------------------+
+   It is often useful to be able to draw arrows. The
+   direction is automatically selected for you. You use a
+   double-click to do this.
+   +-------------------------------------------------------+
+   | --------------->                                      |
+   | ^|            |^                                      |
+   | |+------------>|                                      |
+   | |     Drag     |                                      |
+   | Click          Double-click                           |
+   +-------------------------------------------------------+
+   (To select the arrowhead direction without drawing a
+   line, see the section on erasing below.)
+
+
+-- Painting
+
+   To paint, you need to hold down the control key while
+   using the left mouse button. The current brush tip is
+   displayed in the command line: [.] or [:] or [#].
+   (Sometimes you can't see it, but I try to display it as
+   much as possible.) If you want to change the brush tip,
+   hold down the meta/alt key and click the left mouse
+   button.
+   +-------------------------------------------------------+
+   | Ctrl+LeftMouse   Meta+LeftMouse,    Meta+LeftMouse,   |
+   |                  Ctrl+LeftMouse     Ctrl+LeftMouse    |
+   |     ......                                            |
+   |   ...    ..        :::::::::         ##########       |
+   |   .      ..        ::     :::        ##########       |
+   |   .    ..                 :::        ###   ####       |
+   |      ......            ::::              ######       |
+   |           ..          ::::::             #######      |
+   |            .              :::               ####      |
+   |  .        ..      ::      :::       ###     ####      |
+   |  ...    ...       :::    :::        ############      |
+   |     .....          :::::::          ##########        |
+   +-------------------------------------------------------+
+   Have a go.
+   +-------------------------------------------------------+
+   | Ctrl+LeftMouse   Meta+LeftMouse,    Meta+LeftMouse,   |
+   |                  Ctrl+LeftMouse     Ctrl+LeftMouse    |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   |                                                       |
+   +-------------------------------------------------------+
+
+
+-- Erasing
+
+   This uses the right mouse button. Don't use just a single
+   rightclick, I'll show you that in the next section. To
+   erase one character, use Control+RightMouse. For a fatter
+   erase, drag with Meta+Rightmouse.
+   +-------------------------------------------------------+
+   |  Ctrl+RightMouse            Meta+RightMouse           |
+   |  #######################    #######################   |
+   |  #######################    #####              ####   |
+   |  ####              #####    #####              ####   |
+   |  ################# #####    #####              ####   |
+   |  ####              #####    #############      ####   |
+   |  #### ##################    #########          ####   |
+   |  #### ##################    #######            ####   |
+   |  ####             ######    #######         #######   |
+   |  #######################    #######################   |
+   +-------------------------------------------------------+
+   Your turn.
+   +-------------------------------------------------------+
+   |  Ctrl+RightMouse            Meta+RightMouse           |
+   |  #######################    #######################   |
+   |  #######################    #######################   |
+   |  #######################    #######################   |
+   |  #######################    #######################   |
+   |  #######################    #######################   |
+   |  #######################    #######################   |
+   |  #######################    #######################   |
+   |  #######################    #######################   |
+   |  #######################    #######################   |
+   +-------------------------------------------------------+
+   (If you need to move the cursor out of the way of a
+   drawing, I recommend using Ctrl+RightMouse.)
+
+   Tip: to select the direction of an arrowhead without
+        drawing a line, you can use the eraser to drag a
+        direction with Control+RightMouse.
+
+   Tip: Need to make more room for your diagram? Jump to the
+        end of this file (use G) for an example, then use
+        Ctrl-O to jump back here.
+
+
+-- Selection: erasing, boxes, lines, fills
+
+   Like erasing, this uses the right mouse button. Click and
+   drag to get a visual block selection. Then another right
+   click to erase.
+   +-------------------------------------------------------+
+   |  Right drag over the        Then rightclick.          |
+   |  area marked out by the                               |
+   |  box below.                                           |
+   |                                                       |
+   |  ######################     #######################   |
+   |  ##+----------------+##     ##                   ##   |
+   |  ##|################|##     ##                   ##   |
+   |  ##|################|##     ##                   ##   |
+   |  ##|################|##     ##                   ##   |
+   |  ##|################|##     ##                   ##   |
+   |  ##|################|##     ##                   ##   |
+   |  ##|################|##     ##                   ##   |
+   |  ##+----------------+##     ##                   ##   |
+   |  ######################     #######################   |
+   |                                                       |
+   +-------------------------------------------------------+
+   This is the most useful way to erase parts of a drawing:
+   Rightdrag, rightclick. To cancel a selection, use <Esc>.
+
+   Tip: :help gv
+
+   You can also use a selection for drawing boxes, lines,
+   and fills. Remember that we drew lines earlier with the
+   leftmouse button, and painted with control+LeftMouse. You
+   can probably guess how these work when a visual block
+   selection is active.
+   +-------------------------------------------------------+
+   |                                                       |
+   | Select from                   Then leftclick          |
+   | here >                         >+---------+           |
+   |                                 |         |           |
+   |                                 |         |           |
+   |                                 |         |           |
+   |                                 |         |           |
+   |                                 |         |           |
+   |                                 |         |           |
+   |                                 |         |           |
+   |                  < to           +---------+<          |
+   |                    here                               |
+   |                                                       |
+   +-------------------------------------------------------+
+   Or with a brush:
+   +-------------------------------------------------------+
+   |                                                       |
+   | Select from                   Then control+leftclick  |
+   | here >                         >...........           |
+   |                                 ...........           |
+   |                                 ...........           |
+   |                                 ...........           |
+   |                                 ...........           |
+   |                                 ...........           |
+   |                                 ...........           |
+   |                                 ...........           |
+   |                  < to           ...........<          |
+   |                    here                               |
+   |                                                       |
+   +-------------------------------------------------------+
+   Boxes are by default transparent. Use shift+leftclick for
+   an opaque box.
+   +-------------------------------------------------------+
+   |  Rightdrag,                    Rightdrag,             |
+   |  Leftclick                     Shift+leftclick        |
+   |  +------------+                +-------------+        |
+   |  |            |                |             |        |
+   |  |     +-------------+         |      +-------------+ |
+   |  |     |      |      |         |      |             | |
+   |  |     |      |      |         |      |             | |
+   |  +-----|------+      |         +------|             | |
+   |        |             |                |             | |
+   |        +-------------+                +-------------+ |
+   |                                                       |
+   +-------------------------------------------------------+
+   Tip: if you want your boxes the same size, make sure you
+        have :set showcmd. The size of your selection will
+        be displayed at the right in the command line.
+
+   To draw a line, just make sure the selection is one line
+   high, or one line wide.
+   +-------------------------------------------------------+
+   |                                                       |
+   |  Select from here >             < to here             |
+   |  Left click       >-------------<                     |
+   |                                                       |
+   +-------------------------------------------------------+
+   When you draw a free hand line, you are drawing through
+   other lines. Intersections became a cross. When you draw
+   a line by dragging a selection, and then left-clicking,
+   the line is above other lines.
+   +-------------------------------------------------------+
+   | Select   +------+              then     +------+      |
+   | from     |      |              left     |      |      |
+   | here  >  |      |  < to here   click  ------------    |
+   |          +------+                       +------+      |
+   +-------------------------------------------------------+
+   However, should you want to join a line to a box, for
+   example, this will also work.
+   +-------------------------------------------------------+
+   |                                                       |
+   |              +---------+         +---------+          |
+   |              |         |         |         |          |
+   |              |         |         |         |          |
+   |              +---------+         +----+----+          |
+   | Select from here /                    |               |
+   | (on the line)                         |               |
+   |                                       |               |
+   |          to here >                    |               |
+   |                                                       |
+   +-------------------------------------------------------+
+   The line becomes joined to the box.
+
+   Tip: want to use a character other than `-' or `|'?
+        Highlight as normal then press r<character>
+
+   Tip: when drawing an arrow using this method you do not
+        need to click to create the line, and then double
+        click to create the arrowhead. You can vis select
+        and then just double click to create the line and
+        the arrowhead in one go.
+
+   By default, boxes have square corners. This is indicated
+   by the `[Square]' in the command line. If you would like
+   rounded corners, use shift+left-click (similar to meta
+   + left-click to change the paint brush). This is the
+   result.
+   +-------------------------------------------------------+
+   |                                                       |
+   |    With a            After Shift +    After Shift +   |
+   |    selection,        Left-Click       Left-Click,     |
+   |    Left-Click        draw the box     draw the box    |
+   |                                                       |
+   |    +----------+      .----------.     +----------+    |
+   |    |          |      |          |     |          |    |
+   |    |          |      |          |     |          |    |
+   |    |          |      |          |     |          |    |
+   |    +----------+      '----------'     +----------+    |
+   |                                                       |
+   +-------------------------------------------------------+
+   This also effects freehand lines you draw by dragging
+   with the left mouse button.
+
+
+-- Dragging objects
+
+   This is classed as a selection, and so it uses the right
+   mouse button. If you right drag on a highlighted region,
+   it is copied, and you can move the copy with the mouse.
+   +-------------------------------------------------------+
+   |                                                       |
+   |  +--------------------+                               |
+   |  |                    |                               |
+   |  |          --->      |                               |
+   |  |                    |                               |
+   |  +--------------------+                               |
+   |                                                       |
+   |                                                       |
+   |  Highlight the square, then right drag until          |
+   |  the cursor is where the arrow indicates.             |
+   |                                                       |
+   |  +--------------------+                               |
+   |  |                    |                               |
+   |  |          --->+--------------------+                |
+   |  |              |     |              |                |
+   |  +--------------|-----+    --->      |                |
+   |                 |                    |                |
+   |                 +--------------------+                |
+   +-------------------------------------------------------+
+   Note that the selection is transparent by default. Use
+   Shift + RightDrag to get an opaque selection. This is
+   similar to the way that Shift + LeftClick draws an opaque
+   box. I've tried to make the mouse actions consistent in
+   this way. Also note that the mouse is always at the top
+   lefthand corner of the selection.
+
+   Screen updates when moving transparent objects can either
+   be
+
+      slow,          :set lazyredraw
+      or flickery,   :set nolazyredraw
+
+   the choice is yours! (I like to :se lz myself).
+
+   Because a copy is always created, you can easily use a
+   few shapes as a template to build up a more complicated
+   diagram. I selected a shape from the `Templates' then
+   right-dragged it to form the diagram on the left.
+   +-------------------------------------------------------+
+   |                                   |    Templates      |
+   |  .------------.      +-----+      |    .------------. |
+   |  |            |----->|     |      |    |            | |
+   |  |            |      |     |      |    |            | |
+   |  '------------'      +-----+      |    '------------' |
+   |                      |     |      | +-----+   .---.   |
+   |                      |     |      | |     |  /     \  |
+   |                      +-----+      | |     | :       : |
+   |  .------------.      |     |      | +-----+  \     /  |
+   |  |            |<-----|     |      |           '---'   |
+   |  |            |      +-----+       -------------------|
+   |  '------------'                                       |
+   |    |                                                  |
+   |    v                                                  |
+   |  +-----+       .---.         .---.                    |
+   |  |     |      /     \       /     \                   |
+   |  |     |---->:       :<--->:       :                  |
+   |  +-----+      \     /       \     /                   |
+   |                '---'         '---'                    |
+   +-------------------------------------------------------+
+   Tip: naturally you can also select and drag text, so you
+        can move, for example, labels about.
+   Tip: Once a diagram has been started, it is probably
+        quicker to select and drag parts of the diagram
+        about, rather than to keep using your templates box.
+
+   Using transparent copying, complex diagrams become easy.
+   +-------------------------------------------------------+
+   |                                                       |
+   |    .---------.           .---------.                  |
+   |    |\    A    \          |\    B    \                 |
+   |    | \         \         | \         \                |
+   |    |  .---------.        |  .---------.               |
+   |    |  |      |  |        |  |      |  |               |
+   |    '  |------'  |        '  |------'  |               |
+   |     \ |       \ |         \ |       \ |               |
+   |      \|      .---------.   \|      .---------.        |
+   |       '------|\    E    \   '------|\    F    \       |
+   |              | \         \         | \         \      |
+   |    .---------|  .---------.--------|  .---------.     |
+   |    |\    D   |  |      |  |    C   |  |      |  |     |
+   |    | \       '  |------'  |\       '  |------'  |     |
+   |    |  .-------\ |       \ | .-------\ |       \ |     |
+   |    |  |      | \|        \| |      | \|        \|     |
+   |    '  |------'  '---------' |------'  '---------'     |
+   |     \ |       \ |         \ |       \ |               |
+   |      \|      .---------.   \|      .---------.        |
+   |       '------|\    H    \   '------|\    G    \       |
+   |              | \         \         | \         \      |
+   |              |  .---------.        |  .---------.     |
+   |              |  |      |  |        |  |      |  |     |
+   |              '  |------'  |        '  |------'  |     |
+   |               \ |       \ |         \ |       \ |     |
+   |                \|        \|          \|        \|     |
+   |                 '---------'           '---------'     |
+   |                                                       |
+   +-------------------------------------------------------+
+   To create this diagram:
+
+      1. Draw a square. This is the back of the box.
+
+      2. Transparent drag to create the front of the box.
+
+      3. Manually add the connecting diagonals and rub out
+         lines to make the sides opaque. We now have a box
+         with the front open.
+
+      4. Drag copies of this box to make the four boxes at
+         the back.
+
+      5. Select all four boxes and transparent drag to
+         create the four at the front.
+
+      6. Manually rub out any lines showing through these
+         boxes.
+
+   Alternatively, you could fill the initial box like this:
+
+     .---------.
+     |\#########\
+     |#\#########\
+     |##.---------.
+     |##|######|##|   Now after you drag the four boxes at
+     '##|------'##|   the back to the front, you can search
+      \#|#######\#|   for #s and replace with spaces, to
+       \|########\|   create the same effect.
+        '---------'
+
+   Sketch isn't meant to be a serious diagramming tool, but
+   if you do need to jot something down in your notes and
+   you don't want to leave the comfort of Vim or plain text
+   format, then it can be useful.
+
+   Still not convinced of the benefits of this package?
+   Delete all the pictures from the tutorial and give it to
+   someone else to try :-)
+
+
+-- Making more room for your diagram
+
+   Finally I'll show you how to make some more space for
+   your drawing. Move the cursor here -> <- and then press
+   z<Enter> to make this paragraph at the top of your
+   screen. We are now at the end of the file and you can
+   probably see some tilde's below indicating this. If you
+   try to draw past the end of the file, new lines will
+   automatically be added. So an easy way to make some more
+   room is to erase past the end of the file. Try it, and
+   watch the tildes disappear. Unfortunately, you cannot
+   select a visual block past the end of a file.
+   Have fun --Antony

@@ -1,0 +1,127 @@
+" Test: vim-fakeclip misc
+runtime! plugin/fakeclip.vim
+call vspec#hint({
+\   'scope': 'fakeclip#_local_variables()',
+\   'sid': 'fakeclip#_sid_prefix()',
+\ })
+function s:describe__fakeclip_clipboard_yank()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__fakeclip_content()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__fakeclip_put()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__fakeclip_screen_yank()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__fakeclip_yank()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__fakeclip_yank_Y()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_count()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_read_clipboard_unknown()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_read_screen__if_unavailable()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_restore_register()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_save_register()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_select_last_motion__with_char()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_select_last_motion__with_line()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_select_last_motion__with_block()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_select_last_motion__with_visual()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_write_clipboard_unknown()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+function s:describe__s_write_screen__if_unavailable()  "{{{1
+  " FIXME: NIY
+endfunction
+
+
+
+
+" __END__  "{{{1
+" vim: filetype=vim foldmethod=marker

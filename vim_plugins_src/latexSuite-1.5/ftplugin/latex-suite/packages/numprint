@@ -1,0 +1,13 @@
+let g:TeX_package_option_numprint = ''
+
+let g:TeX_package_numprint =
+\ 'bra:numprint,'
+\.'nob:numprint,'
+\.'bra:thousandsep,'
+\.'bra:decimalsign,'
+\.'bra:productsign,'
+\.'bra:unitseparator,'
+\.'brd:expnumprint,'
+\.'global'
+
+" vim:ft=vim:ff=unix:

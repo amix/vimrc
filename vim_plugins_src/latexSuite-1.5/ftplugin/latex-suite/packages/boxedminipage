@@ -1,0 +1,5 @@
+let g:TeX_package_option_boxedminipage = ''
+
+let g:TeX_package_boxedminipage = 'ens:boxedminipage:[<+pos+>]{<+size+>}'
+
+" vim:ft=vim:ff=unix:

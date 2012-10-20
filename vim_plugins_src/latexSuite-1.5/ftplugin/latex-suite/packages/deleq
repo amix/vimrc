@@ -1,0 +1,31 @@
+let g:TeX_package_option_deleq = ''
+
+let g:TeX_package_deleq = 
+\.'env:deqn,'
+\.'env:ddeqn,'
+\.'env:deqarr,'
+\.'env:ddeqar,'
+\.'env:deqrarr,'
+\.'nor:nydeqno,'
+\.'nor:heqno,'
+\.'bra:reqno,'
+\.'bra:rndeqno,'
+\.'bra:rdeqno,'
+\.'nob:eqreqno,'
+\.'nob:deqreqno,'
+\.'nob:ddeqreqno,'
+\.'bra:arrlabel,'
+\.'nor:where,'
+\.'bra:remtext,'
+\.'nor:nydeleqno,'
+\.'nor:deleqno,'
+\.'nor:jotbaseline'
+
+if !exists("tex_no_math")
+	syn region texMathZoneA      start="\\begin\s*{\s*deqn\*\s*}"        end="\\end\s*{\s*deqn\*\s*}"                keepend fold   contains=@texMathZoneGroup
+	syn region texMathZoneB      start="\\begin\s*{\s*ddeqn\*\s*}"       end="\\end\s*{\s*ddeqn\*\s*}"              keepend fold   contains=@texMathZoneGroup
+	syn region texMathZoneC      start="\\begin\s*{\s*deqarr\s*}"        end="\\end\s*{\s*deqarr\s*}"                keepend fold   contains=@texMathZoneGroup
+	syn region texMathZoneD      start="\\begin\s*{\s*ddeqar\s*}"        end="\\end\s*{\s*ddeqar\s*}"                  keepend fold   contains=@texMathZoneGroup
+	syn region texMathZoneE      start="\\begin\s*{\s*deqrarr\*\s*}"     end="\\end\s*{\s*deqrarr\*\s*}"             keepend fold   contains=@texMathZoneGroup
+endif
+" vim:ft=vim:ff=unix:noet:ts=4:

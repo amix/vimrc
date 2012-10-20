@@ -1,0 +1,16 @@
+let g:TeX_package_option_ulem = 
+\ 'normalem,'
+\.'ULforem,'
+\.'normalbf,'
+\.'UWforbf'
+
+let g:TeX_package_ulem = 
+\ 'bra:uwave,'
+\.'bra:uline,'
+\.'bra:uuline,'
+\.'bra:sout,'
+\.'bra:xout,'
+\.'ULthickness,'
+\.'ULdepth'
+
+" vim:ft=vim:ff=unix:

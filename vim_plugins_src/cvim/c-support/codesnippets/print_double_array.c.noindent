@@ -1,0 +1,35 @@
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  print_double_array
+ *  Description:  Print a double-array with one dimension.
+ *                Use
+ *                  print_double_array( *matrix, n1*n2, n2, "matrix" ); 
+ *                for
+ *                  double matrix[n1][n2];   
+ * =====================================================================================
+ */
+static void
+print_double_array (  double  array[],          /* array to print              */
+                      int     n,                /* number of elements to print */
+                      int     nrow,             /* number of elements per row  */
+                      char   *arrayname         /* array name                  */
+                      )
+{
+  int   i, width  = 8, precision = 4;
+  char  frmt[10];
+  sprintf( frmt, " %%%d.%dlf", width, precision );
+  printf ("\n\n  array \"%s\", length %d\n", arrayname, n );
+  printf ("\n index | content\n" );
+    printf ( " ------+-" );
+  for ( i = 0; i < nrow*( 1+width ); i += 1 )
+    putchar('-');
+  for ( i=0; i<n; i+=1 )
+  {
+    if( i%nrow == 0 )
+      printf ("\n%6d | ", i );
+    printf ( frmt, array[i] );
+  }
+  printf ("\n\n");
+  return ;
+}       /* ----------  end of function print_double_array  ---------- */

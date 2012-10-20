@@ -1,0 +1,21 @@
+let g:TeX_package_option_newalg = ''
+
+let g:TeX_package_newalg = 
+\ 'ens:algorithm:{<+name+>}{<++>},'
+\.'ens:IF:{<+cond+>},'
+\.'ens:FOR:{<+loop+>},'
+\.'ens:WHILE:{<+cond+>},'
+\.'bra:ERROR,'
+\.'nor:ELSE,'
+\.'nor:RETURN,'
+\.'nor:NIL,'
+\.'nor:TO,'
+\.'bra:CALL,'
+\.'bra:text,'
+\.'env:REPEAT,'
+\.'env:SWITCH,'
+\.'nor:=,'
+\.'bra:item,'
+\.'nor:algkey'
+
+" vim:ft=vim:ff=unix:

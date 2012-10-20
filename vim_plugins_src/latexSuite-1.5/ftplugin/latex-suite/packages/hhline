@@ -1,0 +1,16 @@
+let g:TeX_package_option_hhline = ''
+
+let g:TeX_package_hhline =
+\ 'bra:hhline,'
+\.'sep:a,'
+\.'spe:=,'
+\.'spe:-,'
+\.'spe:~,'
+\."spe:\\\|,"
+\.'spe::,'
+\.'spe:#,'
+\.'spe:t,'
+\.'spe:b,'
+\.'spe:*'
+
+" vim:ft=vim:ff=unix:

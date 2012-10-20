@@ -1,0 +1,30 @@
+let g:TeX_package_option_longtable = 
+\ 'errorshow,'
+\.'pausing,'
+\.'set,'
+\.'final'
+
+let g:TeX_package_longtable =
+\ 'sbr:Commands,'
+\.'nor:setlongtables,'
+\.'bra:LTleft,'
+\.'bra:LTright,'
+\.'bra:LTpre,'
+\.'bra:LTpost,'
+\.'bra:LTchunksize,'
+\.'bra:LTcapwidth,'
+\.'bra:LTcapwidth,'
+\.'sbr:Longtable,'
+\.'env:longtable,'
+\.'sep:lt,'
+\.'nor:endhead,'
+\.'nor:endfirsthead,'
+\.'nor:endfoot,'
+\.'nor:endlastfoot,'
+\.'nor:kill,'
+\.'bra:caption,'
+\.'nob:caption,'
+\.'bra:caption*,'
+\.'nor:newpage'
+
+" vim:ft=vim:ts=4:sw=4:noet:ff=unix:

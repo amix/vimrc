@@ -1,0 +1,5 @@
+let g:TeX_package_option_acromake = ''
+
+let g:TeX_package_acromake = 'brs:acromake{<++>}{<++>}{<++>}'
+
+" vim:ft=vim:ff=unix:

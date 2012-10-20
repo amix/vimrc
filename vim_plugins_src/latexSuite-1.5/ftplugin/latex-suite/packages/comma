@@ -1,0 +1,7 @@
+let g:TeX_package_option_comma = ''
+
+let g:TeX_package_comma =
+\ 'bra:commaform,'
+\.'bra:commaformtoken'
+
+" vim:ft=vim:ff=unix:

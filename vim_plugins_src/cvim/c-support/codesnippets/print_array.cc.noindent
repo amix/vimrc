@@ -1,0 +1,28 @@
+// ===  FUNCTION  ======================================================================
+//         Name:  print_array
+//  Description:  Print an array with one dimension.
+//                Use
+//                  print_array<T,width,precision>( *matrix, n1*n2, n2, "matrix" ); 
+//                for
+//                  T matrix[n1][n2];   
+// =====================================================================================
+  template < class T, unsigned width, unsigned precision >
+void print_array ( T      *array,               // array to print
+                   int     n,                   // number of elements to print
+                   int     nrow,                // number of elements per row
+                   string  arrayname            // array name
+                   )
+{
+  string line(" index | content\n ------+-");
+
+  cout  << "\n\n  array \"" << arrayname << "\", length " << n << endl << endl;
+  cout  << line.append(width*nrow, '-');
+  for ( int i=0; i<n; i+=1 ) {
+    if( i%nrow == 0 )
+      cout  << endl << setw(6) << i << " | ";
+    cout  << setw(width) << fixed << setprecision(precision) << array[i];
+  }
+  cout  << endl << endl;
+  return ;
+}       // ----------  end of function print_double_array  ----------
+

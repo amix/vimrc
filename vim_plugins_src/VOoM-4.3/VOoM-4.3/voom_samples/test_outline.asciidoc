@@ -1,0 +1,433 @@
+  :Voom asciidoc
+  This is VOoM markup mode test file. Converted from **test_outline.txt**.
+
+findme findme2
+
+
+h 1
+===
+   1 body
+NEXT LINE IS FOR TESTS -- DO NOT MOVE OR EDIT
+VO.levels=[1, 1, 2, 2, 1, 1, 2, 2, 3, 4, 3, 4, 5, 6, 7, 2, 1, 2, 1, 2, 2, 3, 3, 4, 5, 5, 3, 2, 3, 2, 3, 2, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 2, 3, 4, 4, 4, 4, 5, 5, 4, 4, 5, 5, 3, 3, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 2, 3, 3]
+
+
+[[X2]]
+h 1.1
+-----
+   1.1 body
+
+[[X2]]
+h 1.2
+-----
+   1.2 body
+
+
+h 2
+===
+   2 body
+
+
+h 3
+===
+   3 body
+
+[[X2]]
+h 3.1
+-----
+   3.1 body
+
+[[X2]]
+h 3.2
+-----
+   3.2 body
+
+[[X3]]
+[ATTR]
+h 3.2.1
+~~~~~~~
+   3.2.1 body
+
+
+h 3.2.1.1
+^^^^^^^^^
+   3.2.1.1 body
+  xxxx findme findme
+
+[[X3]]
+[ATTR]
+h 3.2.2
+~~~~~~~
+   3.2.2 body
+
+
+h 3.2.2.1
+^^^^^^^^^
+   3.2.2.1 body
+
+
+h 3.2.2.1.1
++++++++++++
+   3.2.2.1.1 body
+
+
+====== h 3.2.2.1.2.1 ======
+   3.2.2.1.2.1 body
+
+
+======= h 3.2.2.1.2.1.1 =======
+   3.2.2.1.2.1.1 body
+
+[[X2]]
+h 3.3
+-----
+   3.3 body
+
+
+h 4
+===
+   4 body
+
+[[X2]]
+h 4.1
+-----
+   4.1 body findme
+
+
+h 5
+===
+   5 body
+
+[[X2]]
+h 5.1
+-----
+   5.1 body
+
+[[X2]]
+h 5.2
+-----
+   5.2 body
+
+[[X3]]
+[ATTR]
+h 5.2.1
+~~~~~~~
+   5.2.1 body
+
+[[X3]]
+[ATTR]
+h 5.2.2
+~~~~~~~
+   5.2.2 body
+
+
+h 5.2.2.1
+^^^^^^^^^
+   5.2.2.1 body
+
+
+h 5.2.2.1.1
++++++++++++
+   5.2.2.1.1 body
+
+
+h 5.2.2.1.2
++++++++++++
+   5.2.2.1.2 body
+
+
+[[X3]]
+[ATTR]
+h 5.2.3
+~~~~~~~
+   5.2.3 body
+
+[[X2]]
+h AA
+----
+a a a a
+
+[[X3]]
+[ATTR]
+h AA.1
+~~~~~~
+a1 a1 a1 a1
+
+[[X2]]
+h BB
+----
+b b b b
+
+[[X3]]
+[ATTR]
+h BB.1
+~~~~~~
+b1 b1 b1 b1 b1
+
+[[X2]]
+h 5.3
+-----
+   5.3 body
+findme
+
+
+h tests
+=======
+
+[[X2]]
+h syntax tests
+--------------
+Since v2.1 comment chars before foldmarker are stripped according to filetype.
+Some Body filetypes have their own Tree syntax hi.
+
+
+[[X3]]
+[ATTR]
+h //---TODO comment--- //
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[[X3]]
+[ATTR]
+h "---comment--- "
+~~~~~~~~~~~~~~~~~~
+echo 'vim ok'
+
+[[X3]]
+[ATTR]
+h #---comment--- #
+~~~~~~~~~~~~~~~~~~
+print 'py ok'
+
+[[X3]]
+[ATTR]
+h %---comment--- %
+~~~~~~~~~~~~~~~~~~
+
+[[X3]]
+[ATTR]
+h /*---comment--- /*
+~~~~~~~~~~~~~~~~~~~~
+
+[[X3]]
+[ATTR]
+h <!-- Comment
+~~~~~~~~~~~~~~
+ft=html,xml
+
+[[X3]]
+[ATTR]
+h html head <!
+~~~~~~~~~~~~~~
+
+[[X3]]
+[ATTR]
+h /organizer node/
+~~~~~~~~~~~~~~~~~~
+
+[[X3]]
+[ATTR]
+h !warning mark
+~~~~~~~~~~~~~~~
+
+[[X2]]
+h Voomgrep tests
+----------------
+:Voomg Spam and ham not bacon
+:Voomg Spam and\ ham not\ bacon
+:Voomg Spam and\\ ham not\\ bacon
+\Spam// ' "
+
+[[X3]]
+[ATTR]
+h n44 breakfast
+~~~~~~~~~~~~~~~
+eggs
+bacon
+
+[[X3]]
+[ATTR]
+h n45 lunch
+~~~~~~~~~~~
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+ham
+
+[[X3]]
+[ATTR]
+h n46 dinner
+~~~~~~~~~~~~
+eggs
+Spam
+ham
+
+[[X3]]
+[ATTR]
+h n47 snack
+~~~~~~~~~~~
+bacon
+spam
+HAM
+beef
+
+[[X2]]
+h sort tests
+------------
+
+[[X3]]
+[ATTR]
+h node 2
+~~~~~~~~
+
+
+h dddd
+^^^^^^
+d1
+
+
+h eeee
+^^^^^^
+
+
+h dddd
+^^^^^^
+d2
+
+
+
+h bbbb
+^^^^^^
+b
+
+
+h b_yyy
++++++++
+
+
+h b_xxx
++++++++
+
+
+h cccc
+^^^^^^
+c
+
+
+h aaaa
+^^^^^^
+a
+
+h a_nnn
++++++++
+
+
+h a_mmm
++++++++
+
+[[X3]]
+[ATTR]
+h node 22
+~~~~~~~~~
+
+
+[[X3]]
+[ATTR]
+h ñ
+~~~
+
+[[X3]]
+[ATTR]
+h Ñ
+~~~
+unicode tests
+
+
+h э
+^^^
+1
+
+h Я
+^^^
+2
+
+h ю
+^^^
+3
+
+h Э
+^^^
+4
+
+h я
+^^^
+5
+
+h Ю
+^^^
+6
+
+[[X3]]
+[ATTR]
+h node 1
+~~~~~~~~
+
+
+h bbbb
+^^^^^^
+b
+
+
+h dddd
+^^^^^^
+d1
+
+
+h DDDD
+^^^^^^
+ingorecase test
+
+
+h aaaa
+^^^^^^
+a
+
+h dddd
+^^^^^^
+d2
+
+
+
+h cccc
+^^^^^^
+c
+
+[[X3]]
+[ATTR]
+h z
+~~~
+
+[[X2]]
+h special chars tests
+---------------------
+
+[[X3]]
+[ATTR]
+h '" /\\/
+~~~~~~~~~
+" "" """
+' '' """
+\ \\ \\\
+/ // ///
+\//\
+
+[[X3]]
+[ATTR]
+h Брожу ли я
+~~~~~~~~~~~~
+    Брожу. Чего ж не побродить.
+
+Чебурашка CHeburashka
+u'\u0427\u0435\u0431\u0443\u0440\u0430\u0448\u043a\u0430'
+utf-8
+'\xd0\xa7\xd0\xb5\xd0\xb1\xd1\x83\xd1\x80\xd0\xb0\xd1\x88\xd0\xba\xd0\xb0'
+
+

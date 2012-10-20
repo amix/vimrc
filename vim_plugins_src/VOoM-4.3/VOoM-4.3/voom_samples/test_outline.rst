@@ -1,0 +1,408 @@
+  :Voom rest
+  This is VOoM markup mode test file. Converted from **test_outline.txt**.
+  NOTE: no gotchas, suitable for test suite
+
+findme findme2
+
+=
+1    
+=
+   1 body
+NEXT LINE IS FOR TESTS -- DO NOT MOVE OR EDIT
+VO.levels=[1, 1, 2, 2, 1, 1, 2, 2, 3, 4, 3, 4, 5, 6, 7, 2, 1, 2, 1, 2, 2, 3, 3, 4, 5, 5, 3, 2, 3, 2, 3, 2, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 2, 3, 4, 4, 4, 4, 5, 5, 4, 4, 5, 5, 3, 3, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 2, 3, 3]
+
+
+---
+1.1    
+---
+   1.1 body
+
+---
+1.2    
+---
+   1.2 body
+
+=
+2    
+=
+   2 body
+
+=
+3    
+=
+   3 body
+
+---
+3.1    
+---
+   3.1 body
+
+---
+3.2    
+---
+   3.2 body
+
+
+3.2.1  
+=====
+   3.2.1 body
+
+
+3.2.1.1  
+-------
+   3.2.1.1 body
+  xxxx findme findme
+
+
+3.2.2  
+=====
+   3.2.2 body
+
+
+3.2.2.1  
+-------
+   3.2.2.1 body
+
+
+3.2.2.1.1  
+*********
+   3.2.2.1.1 body
+
+
+3.2.2.1.2.1  
+"""""""""""
+   3.2.2.1.2.1 body
+
+
+3.2.2.1.2.1.1  
+'''''''''''''
+   3.2.2.1.2.1.1 body
+
+---
+3.3    
+---
+   3.3 body
+
+=
+4    
+=
+   4 body
+
+---
+4.1    
+---
+   4.1 body findme
+
+=
+5    
+=
+   5 body
+
+---
+5.1    
+---
+   5.1 body
+
+---
+5.2    
+---
+   5.2 body
+
+
+5.2.1  
+=====
+   5.2.1 body
+
+
+5.2.2  
+=====
+   5.2.2 body
+
+
+5.2.2.1  
+-------
+   5.2.2.1 body
+
+
+5.2.2.1.1  
+*********
+   5.2.2.1.1 body
+
+
+5.2.2.1.2  
+*********
+   5.2.2.1.2 body
+
+
+
+5.2.3  
+=====
+   5.2.3 body
+
+--
+AA    
+--
+a a a a
+
+
+AA.1  
+====
+a1 a1 a1 a1
+
+--
+BB    
+--
+b b b b
+
+
+BB.1  
+====
+b1 b1 b1 b1 b1
+
+---
+5.3    
+---
+   5.3 body
+findme
+
+=====
+tests    
+=====
+
+------------
+syntax tests    
+------------
+Since v2.1 comment chars before foldmarker are stripped according to filetype.
+Some Body filetypes have their own Tree syntax hi.
+
+
+
+//---TODO comment--- //  
+=======================
+
+
+"---comment--- "  
+================
+echo 'vim ok'
+
+
+#---comment--- #  
+================
+print 'py ok'
+
+
+%---comment--- %  
+================
+
+
+/*---comment--- /*  
+==================
+
+
+<!-- Comment  
+============
+ft=html,xml
+
+
+html head <!  
+============
+
+
+/organizer node/  
+================
+
+
+!warning mark  
+=============
+
+--------------
+Voomgrep tests    
+--------------
+:Voomg Spam and ham not bacon
+:Voomg Spam and\ ham not\ bacon
+:Voomg Spam and\\ ham not\\ bacon
+\Spam// ' "
+
+
+n44 breakfast  
+=============
+eggs
+bacon
+
+
+n45 lunch  
+=========
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+ham
+
+
+n46 dinner  
+==========
+eggs
+Spam
+ham
+
+
+n47 snack  
+=========
+bacon
+spam
+HAM
+beef
+
+----------
+sort tests    
+----------
+
+
+node 2  
+======
+
+
+dddd  
+----
+d1
+
+
+eeee  
+----
+
+
+dddd  
+----
+d2
+
+
+
+bbbb  
+----
+b
+
+
+b_yyy  
+*****
+
+
+b_xxx  
+*****
+
+
+cccc  
+----
+c
+
+
+aaaa  
+----
+a
+
+a_nnn  
+*****
+
+
+a_mmm  
+*****
+
+
+node 22  
+=======
+
+
+
+ñ  
+=
+
+
+Ñ  
+=
+unicode tests
+
+
+э  
+-
+1
+
+Я  
+-
+2
+
+ю  
+-
+3
+
+Э  
+-
+4
+
+я  
+-
+5
+
+Ю  
+-
+6
+
+
+node 1  
+======
+
+
+bbbb  
+----
+b
+
+
+dddd  
+----
+d1
+
+
+DDDD  
+----
+ingorecase test
+
+
+aaaa  
+----
+a
+
+dddd  
+----
+d2
+
+
+
+cccc  
+----
+c
+
+
+z  
+=
+
+-------------------
+special chars tests    
+-------------------
+
+
+'" /\\/  
+=======
+" "" """
+' '' """
+\ \\ \\\
+/ // ///
+\//\
+
+
+Брожу ли я  
+==========
+    Брожу. Чего ж не побродить.
+
+Чебурашка CHeburashka
+u'\u0427\u0435\u0431\u0443\u0440\u0430\u0448\u043a\u0430'
+utf-8
+'\xd0\xa7\xd0\xb5\xd0\xb1\xd1\x83\xd1\x80\xd0\xb0\xd1\x88\xd0\xba\xd0\xb0'
+
+

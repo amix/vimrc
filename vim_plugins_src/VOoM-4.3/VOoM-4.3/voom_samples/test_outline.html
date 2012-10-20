@@ -1,0 +1,249 @@
+  :Voom html
+  This is VOoM markup mode test file. Converted from **test_outline.txt**.
+
+findme findme2
+
+<h1>1</h1> <!--{{{1-->
+   1 body
+NEXT LINE IS FOR TESTS -- DO NOT MOVE OR EDIT
+VO.levels=[1, 1, 2, 2, 1, 1, 2, 2, 3, 4, 3, 4, 5, 6, 7, 2, 1, 2, 1, 2, 2, 3, 3, 4, 5, 5, 3, 2, 3, 2, 3, 2, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 2, 3, 4, 4, 4, 4, 5, 5, 4, 4, 5, 5, 3, 3, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 2, 3, 3]
+
+
+<h2>1.1</h2> <!--{{{2-->
+   1.1 body
+
+<h2>1.2</h2> <!--{{{2-->
+   1.2 body
+
+<h1>2</h1> <!--{{{1-->
+   2 body
+
+<h1>3</h1> <!--{{{1o=-->
+   3 body
+
+<h2>3.1</h2> <!--{{{2x-->
+   3.1 body
+
+<h2>3.2</h2> <!--{{{2x-->
+   3.2 body
+
+<h3>3.2.1</h3> <!--{{{3-->
+   3.2.1 body
+
+<h4>3.2.1.1</h4> <!--{{{4-->
+   3.2.1.1 body
+  xxxx findme findme
+
+<h3>3.2.2</h3> <!--{{{3-->
+   3.2.2 body
+
+<h4>3.2.2.1</h4> <!--{{{4x-->
+   3.2.2.1 body
+
+<h5>3.2.2.1.1</h5> <!--{{{5x-->
+   3.2.2.1.1 body
+
+<h6>3.2.2.1.2.1</h6> <!--{{{6-->
+   3.2.2.1.2.1 body
+
+<h7>3.2.2.1.2.1.1</h7> <!--{{{7x-->
+   3.2.2.1.2.1.1 body
+
+<h2>3.3</h2> <!--{{{2-->
+   3.3 body
+
+<h1>4</h1> <!--{{{1-->
+   4 body
+
+<h2>4.1</h2> <!--{{{2-->
+   4.1 body findme
+
+<h1>5</h1> <!--{{{1o-->
+   5 body
+
+<h2>5.1</h2> <!--{{{2-->
+   5.1 body
+
+<h2>5.2</h2> <!--{{{2o-->
+   5.2 body
+
+<h3>5.2.1</h3> <!--{{{3-->
+   5.2.1 body
+
+<h3>5.2.2</h3> <!--{{{3-->
+   5.2.2 body
+
+<h4>5.2.2.1</h4> <!--{{{4o-->
+   5.2.2.1 body
+
+<h5>5.2.2.1.1</h5> <!--{{{5-->
+   5.2.2.1.1 body
+
+<h5>5.2.2.1.2</h5> <!--{{{5-->
+   5.2.2.1.2 body
+
+
+<h3>5.2.3</h3> <!--{{{3-->
+   5.2.3 body
+
+<h2>AA</h2> <!--{{{2-->
+a a a a
+
+<h3>AA.1</h3> <!--{{{3-->
+a1 a1 a1 a1
+
+<h2>BB</h2> <!--{{{2-->
+b b b b
+
+<h3>BB.1</h3> <!--{{{3-->
+b1 b1 b1 b1 b1
+
+<h2>5.3</h2> <!--{{{2-->
+   5.3 body
+findme
+
+<h1>tests</h1> <!--{{{1o-->
+
+<h2>syntax tests</h2> <!--{{{2-->
+Since v2.1 comment chars before foldmarker are stripped according to filetype.
+Some Body filetypes have their own Tree syntax hi.
+
+
+<h3>//---TODO comment--- //</h3> <!--{{{3-->
+
+<h3>"---comment--- "</h3> <!--{{{3-->
+echo 'vim ok'
+
+<h3>#---comment--- #</h3> <!--{{{3-->
+print 'py ok'
+
+<h3>%---comment--- %</h3> <!--{{{3-->
+
+<h3>/*---comment--- /*</h3> <!--{{{3*/-->
+
+<h3>&lt;!-- Comment</h3> <!--{{{3 --&gt;-->
+ft=html,xml
+
+<h3>html head &lt;!</h3> <!--{{{3--&gt;-->
+
+<h3>/organizer node/</h3> <!--{{{3-->
+
+<h3>!warning mark</h3> <!--{{{3-->
+
+<h2>Voomgrep tests</h2> <!--{{{2-->
+:Voomg Spam and ham not bacon
+:Voomg Spam and\ ham not\ bacon
+:Voomg Spam and\\ ham not\\ bacon
+\Spam// ' "
+
+<h3>n44 breakfast</h3> <!--{{{3-->
+eggs
+bacon
+
+<h3>n45 lunch</h3> <!--{{{3-->
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+ham
+
+<h3>n46 dinner</h3> <!--{{{3-->
+eggs
+Spam
+ham
+
+<h3>n47 snack</h3> <!--{{{3-->
+bacon
+spam
+HAM
+beef
+
+<h2>sort tests</h2> <!--{{{2-->
+
+<h3>node 2</h3> <!--{{{3-->
+
+<h4>dddd</h4> <!--{{{4x-->
+d1
+
+<h4>eeee</h4> <!--{{{4-->
+
+<h4>dddd</h4> <!--{{{4-->
+d2
+
+
+<h4>bbbb</h4> <!--{{{4o-->
+b
+
+<h5>b_yyy</h5> <!--{{{5-->
+
+<h5>b_xxx</h5> <!--{{{5-->
+
+<h4>cccc</h4> <!--{{{4-->
+c
+
+<h4>aaaa</h4> <!--{{{4-->
+a
+<h5>a_nnn</h5> <!--{{{5-->
+
+<h5>a_mmm</h5> <!--{{{5-->
+
+<h3>node 22</h3> <!--{{{3-->
+
+
+<h3>ñ</h3> <!--{{{3-->
+
+<h3>Ñ</h3> <!--{{{3-->
+unicode tests
+
+<h4>э</h4> <!--{{{4-->
+1
+<h4>Я</h4> <!--{{{4-->
+2
+<h4>ю</h4> <!--{{{4-->
+3
+<h4>Э</h4> <!--{{{4-->
+4
+<h4>я</h4> <!--{{{4-->
+5
+<h4>Ю</h4> <!--{{{4-->
+6
+
+<h3>node 1</h3> <!--{{{3-->
+
+<h4>bbbb</h4> <!--{{{4-->
+b
+
+<h4>dddd</h4> <!--{{{4-->
+d1
+
+<h4>DDDD</h4> <!--{{{4-->
+ingorecase test
+
+<h4>aaaa</h4> <!--{{{4-->
+a
+<h4>dddd</h4> <!--{{{4-->
+d2
+
+
+<h4>cccc</h4> <!--{{{4-->
+c
+
+<h3>z</h3> <!--{{{3-->
+
+<h2>special chars tests</h2> <!--{{{2-->
+
+<h3>'" /\\/</h3> <!--{{{3 '" /\\/-->
+" "" """
+' '' """
+\ \\ \\\
+/ // ///
+\//\
+
+<h3>Брожу ли я</h3> <!--{{{3 вдоль улиц шумных? (utf-8)-->
+    Брожу. Чего ж не побродить.
+
+Чебурашка CHeburashka
+u'\u0427\u0435\u0431\u0443\u0440\u0430\u0448\u043a\u0430'
+utf-8
+'\xd0\xa7\xd0\xb5\xd0\xb1\xd1\x83\xd1\x80\xd0\xb0\xd1\x88\xd0\xba\xd0\xb0'
+
+

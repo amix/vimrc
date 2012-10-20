@@ -1,0 +1,5 @@
+
+- Better error checking and the like
+- Add a more robust cookie mechanism
+- More efficient way of searching 'all' databases
+- Fix bugs

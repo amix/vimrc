@@ -1,0 +1,168 @@
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.end-of-line-comment == append ==
+// <CURSOR>
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.frame ==
+//----------------------------------------------------------------------
+//  <CURSOR>
+//----------------------------------------------------------------------
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.function ==
+// ===  FUNCTION  ======================================================================
+//         Name:  |?FUNCTION_NAME|
+//  Description:  <CURSOR>
+// =====================================================================================
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.method ==
+//--------------------------------------------------------------------------------------
+//       Class:  |?CLASSNAME|
+//      Method:  |?METHODNAME|
+// Description:  <CURSOR>
+//--------------------------------------------------------------------------------------
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.class ==
+// =====================================================================================
+//        Class:  |?CLASSNAME|
+//  Description:  <CURSOR>
+// =====================================================================================
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-description == start ==
+// =====================================================================================
+// 
+//       Filename:  |FILENAME|
+// 
+//    Description:  <CURSOR>
+// 
+//        Version:  1.0
+//        Created:  |DATE| |TIME|
+//       Revision:  none
+//       Compiler:  g++
+// 
+//         Author:  |AUTHOR| (|AUTHORREF|), |EMAIL|
+//        Company:  |ORGANIZATION|
+// 
+// =====================================================================================
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-description-header == start ==
+// =====================================================================================
+// 
+//       Filename:  |FILENAME|
+// 
+//    Description:  <CURSOR>
+// 
+//        Version:  1.0
+//        Created:  |DATE| |TIME|
+//       Revision:  none
+//       Compiler:  g++
+// 
+//         Author:  |AUTHOR| (|AUTHORREF|), |EMAIL|
+//        Company:  |ORGANIZATION|
+// 
+// =====================================================================================
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-header-includes  == 
+// #####   HEADER FILE INCLUDES   ###################################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-macros  == 
+// #####   MACROS  -  LOCAL TO THIS SOURCE FILE   ###################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-typedefs  == 
+// #####   TYPE DEFINITIONS  -  LOCAL TO THIS SOURCE FILE   #########################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-data-types  == 
+// #####   DATA TYPES  -  LOCAL TO THIS SOURCE FILE   ###############################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-class-defs  == 
+// #####   CLASS DEFINITIONS  -  LOCAL TO THIS SOURCE FILE   ########################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-local-variables  == 
+// #####   VARIABLES  -  LOCAL TO THIS SOURCE FILE   ################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-prototypes  == 
+// #####   PROTOTYPES  -  LOCAL TO THIS SOURCE FILE   ###############################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-function-defs-exported  == 
+// #####   FUNCTION DEFINITIONS  -  EXPORTED FUNCTIONS   ############################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-function-defs-local  == 
+// #####   FUNCTION DEFINITIONS  -  LOCAL TO THIS SOURCE FILE   #####################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-class-implementations-exported  == 
+// #####   CLASS IMPLEMENTATIONS  -  EXPORTED CLASSES   #############################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-cpp-class-implementations-local  == 
+// #####   CLASS IMPLEMENTATIONS  -  LOCAL CLASSES   ################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-hpp-header-includes  == 
+// #####   HEADER FILE INCLUDES   ###################################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-hpp-macros  ==
+// #####   EXPORTED MACROS   ########################################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-hpp-exported-typedefs  ==
+// #####   EXPORTED TYPE DEFINITIONS   ##############################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-hpp-exported-data-types  ==
+// #####   EXPORTED DATA TYPES   ####################################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-hpp-exported-class-defs  ==
+// #####   EXPORTED CLASS DEFINITIONS   #############################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-hpp-exported-variables  ==
+// #####   EXPORTED VARIABLES   #####################################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.file-section-hpp-exported-function-declarations  ==
+// #####   EXPORTED FUNCTION DECLARATIONS   #########################################
+
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.keyword-bug == append ==
+ // :BUG:|DATE| |TIME|:|AUTHORREF|: <CURSOR>
+== comment.keyword-compiler == append ==
+ // :COMPILER:|DATE| |TIME|:|AUTHORREF|: <CURSOR>
+== comment.keyword-todo == append ==
+ // :TODO:|DATE| |TIME|:|AUTHORREF|: <CURSOR>
+== comment.keyword-tricky == append ==
+ // :TRICKY:|DATE| |TIME|:|AUTHORREF|: <CURSOR>
+== comment.keyword-warning == append ==
+ // :WARNING:|DATE| |TIME|:|AUTHORREF|: <CURSOR>
+== comment.keyword-workaround == append ==
+ // :WORKAROUND:|DATE| |TIME|:|AUTHORREF|: <CURSOR>
+== comment.keyword-keyword == append ==
+ // :|?KEYWORD:u|:|DATE| |TIME|:|AUTHORREF|: <CURSOR>
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== comment.special-empty == append ==
+ // EMPTY<CURSOR>
+== comment.special-fall-through == append ==
+ // FALL THROUGH<CURSOR>
+== comment.special-implicit-type-conversion == append ==
+ // IMPLICIT TYPE CONVERSION<CURSOR>
+== comment.special-no-return == append ==
+ // NO RETURN<CURSOR>
+== comment.special-not-reached == append ==
+ // NOT REACHED<CURSOR>
+== comment.special-remains-to-be-implemented == append ==
+ // REMAINS TO BE IMPLEMENTED<CURSOR>
+== comment.special-constant-type-is-long == append ==
+ // constant type is long<CURSOR>
+== comment.special-constant-type-is-unsigned == append ==
+ // constant type is unsigned<CURSOR>
+== comment.special-constant-type-is-unsigned-long == append ==
+ // constant type is unsigned long<CURSOR>
+$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

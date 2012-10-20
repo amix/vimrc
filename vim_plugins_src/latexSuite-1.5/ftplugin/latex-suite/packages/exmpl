@@ -1,0 +1,50 @@
+" Author: Mikolaj Machowski
+" Date: 10.04.2002
+" Example plugin for packages in latexSuite
+"
+
+" This variable creates Options submenu in package menu. Even when no options are
+" given for this package it HAS to exist in form
+" let TeX_package_option_exmpl = ""
+" Options and commands are delimited with comma ,
+
+let g:TeX_package_option_exmpl = "OpcjaA=,OpcjaB,OpcjaC"
+
+" Most command should have some definition before. Package menu system can
+" recognize type of command and behave in good manner:
+" env: (environment) creates simple environment template
+"   \begin{command}
+"     x          <- cursor here
+"   \end{command}  
+" 
+" bra: (brackets) useful when inserting brackets commands
+"   \command{x}<<>> <- cursor at x, and placeholders as in other menu entries
+"
+" nor: (normal)             nor: and pla: are `highlighted' in menu with `''
+"   \command<Space>
+"
+" pla: (plain)
+"   command<Space>
+" 
+" spe: (special)
+"   command   <-literal insertion of command, in future here should go
+"               commands with special characters
+" 
+" sep: (separator) creates separator. Good for aesthetics and usability :)
+"   
+" Command can be also given with no prefix:. The result is
+"   \command   (as in nor: but without <Space>)
+
+
+let g:TeX_package_exmpl = "env:AEnvFirst,env:aEnvSec,env:BThi,"
+                    \ . "sep:a,env:zzzz,"
+                    \ . "bra:aBraFirst,bra:bBraSec,bra:cBraThi,"
+                    \ . "sep:b,"
+                    \ . "nor:aNorPri,nor:bNorSec,nor:cNorTer,"
+                    \ . "sep:c,"
+                    \ . "pla:aPla1,pla:bPla2,pla:cPla3,"
+                    \ . "sep:d,"
+                    \ . "spe:aSpe1,spe:bSpe2,spe:cSpe3,"
+                    \ . "sep:e,"
+                    \ . "aNo1,bNo2,cNo3"
+" vim:ft=vim

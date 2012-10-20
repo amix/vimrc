@@ -1,0 +1,7 @@
+let g:TeX_package_option_cases = ''
+
+let g:TeX_package_cases = 
+\ 'ens:numcases:{<+label+>},'
+\.'ens:subnumcases:{<+label+>}'
+
+" vim:ft=vim:ff=unix:

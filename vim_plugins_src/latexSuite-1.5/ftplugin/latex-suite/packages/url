@@ -1,0 +1,16 @@
+let g:TeX_package_option_url =
+\ 'hyphens,'
+\.'obeyspaces,'
+\.'spaces,'
+\.'T1'
+
+let g:TeX_package_url = 
+\ 'bra:urlstyle,'
+\.'bra:url,'
+\.'bra:path,'
+\.'bra:urldef'
+
+syn region texZone    start="\\url\z([^ \ta-zA-Z]\)"   end="\z1\|%stopzone\>"
+syn region texZone    start="\\path\z([^ \ta-zA-Z]\)"   end="\z1\|%stopzone\>"
+
+" vim:ft=vim:ff=unix:

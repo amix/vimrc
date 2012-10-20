@@ -1,0 +1,93 @@
+" This package sets some language specific options.
+" Since it needs to find out which options the user used with the babel
+" package, it needs to wait till latex-suite is done scanning packages. It
+" then catches the LatexSuiteScannedPackages event which
+" Tex_pack_updateall() throws at which time g:Tex_pack_detected and
+" g:Tex_babel_options contain the necessary information.
+
+let g:TeX_package_option_babel = 
+\ 'afrikaans,'
+\.'bahasa,'
+\.'basque,'
+\.'breton,'
+\.'bulgarian,'
+\.'catalan,'
+\.'croatian,'
+\.'chech,'
+\.'danish,'
+\.'dutch,'
+\.'english,USenglish,american,UKenglish,british,canadian,'
+\.'esperanto,'
+\.'estonian,'
+\.'finnish,'
+\.'french,francais,canadien,acadian,'
+\.'galician,'
+\.'austrian,german,germanb,ngerman,naustrian,'
+\.'greek,polutonikogreek,'
+\.'hebrew,'
+\.'magyar,hungarian,'
+\.'icelandic,'
+\.'irish,'
+\.'italian,'
+\.'latin,'
+\.'lowersorbian,'
+\.'samin,'
+\.'norsk,nynorsk,'
+\.'polish,'
+\.'portuges,portuguese,brazilian,brazil,'
+\.'romanian,'
+\.'russian,'
+\.'scottish,'
+\.'spanish,'
+\.'slovak,'
+\.'slovene,'
+\.'swedish,'
+\.'serbian,'
+\.'turkish,'
+\.'ukrainian,'
+\.'uppersorbian,'
+\.'welsh'
+
+let g:TeX_package_babel = 
+\ 'bra:selectlanguage,'
+\.'env:otherlanguage,'
+\.'env:otherlanguage*,'
+\.'env:hyphenrules,'
+\.'brd:foreignlanguage,'
+\.'spe:iflanguage{<+name+>}{<+true+>}{<+false+>},'
+\.'languagename,'
+\.'bra:useshorthands,'
+\.'brd:defineshorthand,'
+\.'brd:aliasshorthand,'
+\.'bra:languageshorthans,'
+\.'bra:shorthandon,'
+\.'bra:shorthandoff,'
+\.'brd:languageattribute'
+
+" vim:ft=vim:ff=unix:
+if exists('s:doneOnce')
+    finish
+endif
+let s:doneOnce = 1
+
+augroup LatexSuite
+    au LatexSuite User LatexSuiteScannedPackages 
+        \ call Tex_Debug('babel: catching LatexSuiteScannedPackages event') |
+        \ call s:SetQuotes()
+augroup END
+
+let s:path = expand('<sfile>:p:h')
+
+" SetQuotes: sets quotes for various languages {{{
+" Description: 
+function! <SID>SetQuotes()
+    if g:Tex_package_detected =~ '\<babel\>'
+        if g:Tex_babel_options =~ '\<german\>'
+            exec 'so '.s:path.'/german'
+		elseif g:Tex_babel_options =~ '\<ngerman\>'
+            exec 'so '.s:path.'/ngerman'
+        endif
+    endif
+endfunction " }}}
+
+" vim:ft=vim:ff=unix:

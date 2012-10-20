@@ -1,0 +1,11 @@
+let g:TeX_package_option_plates = 'figures,onefloatperpage,memoir'
+
+let g:TeX_package_plates = 
+\ 'env:plate,'
+\.'listofplates,'
+\.'ProcessPlates,'
+\.'bra:setplatename,'
+\.'bra:setplatename,'
+\.'bra:atBeginPlates'
+
+" vim:ft=vim:ff=unix:

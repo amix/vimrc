@@ -1,0 +1,74 @@
+
+------------------------------------
+    cscope for DOS using DJGPP
+------------------------------------
+
+*) You need a rather recent DJGPP version and tools
+   installed. For running cscope on DOS, be sure you
+   have:
+
+   * GNU ed for cscope's automated editing of files. It's quite likely
+     you didn't have this installed, unless you're a collector of Unix 
+     tools. 
+
+   * an editor or viewer to be used as a child program when you open
+     a match, inside cscope. DJGPP-compiled versions, if possible.
+     
+     Choose either
+
+     -- `less' if you're content with viewing the file
+     -- some version of `vi' (VIM, Elvis, or NVI) use cscope in it's
+        "classical" way
+     -- GNU Emacs for the full glory :-)
+
+     Set the environment variable CSCOPE_EDITOR or EDITOR to the name
+     of the editor you want to use. You may want to create a [cscope]
+     section in your djgpp.env file, if you know how to do it.
+
+   For more details what cscope is, and how to use it, see the
+   documentation in the root directory of the cscope sources, or the
+   man page.
+
+*) For compiling cscope from sources, you need a much more complete
+   collection of GNU development and commandline tools, in addition
+   to the above, and the obvious GCC and binutils:
+
+   * bash
+   * make
+   * flex
+   * bison
+   * sed
+   * patch
+   * fileutils (cp, ln, ...)
+   * textutils (cat)
+   
+   Optionally, if you plan to modify the sources.
+  
+   * autoconf
+   * automake
+   * Perl
+
+   These are the ones I'm sure you need --- I may have overlooked some.
+
+   The DJGPP source packages is already configured, so you can just
+   run 'make' to get the package. Then 
+
+	make install prefix=d:/djgpp"
+
+   (or wherever else your DJGPP is) to install it.
+
+   Or cd to the top source directory and execute the supplied
+   djmake.bat:
+
+	cd d:\djgpp\contrib\cscope
+	packages\msdos\djmake.bat
+
+   and watch it compile. This will be necessary if you made any
+   substantial changes to the sources.
+
+Have fun with it. In case of problem, mail to djgpp@delorie.com (or the
+attached Usenet newsgroup) or file a bug report at cscope's page on
+Sourceforge.net.
+
+Hans-Bernhard Br"oker (broeker@physik.rwth-aachen.de)
+                      (Hans-Bernhard.Broeker@epost.de)

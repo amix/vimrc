@@ -1,0 +1,5 @@
+let g:TeX_package_option_flafter = ''
+
+let g:TeX_package_flafter = 'noo:suppressfloats,noo:suppress'
+
+" vim:ft=vim:ff=unix:

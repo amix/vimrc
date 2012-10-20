@@ -1,0 +1,29 @@
+" Test: vim-fakeclip ui
+runtime! plugin/fakeclip.vim
+call vspec#hint({
+\   'scope': 'fakeclip#_local_variables()',
+\   'sid': 'fakeclip#_sid_prefix()',
+\ })
+function s:describe__commands()  "{{{1
+  " FIXME
+endfunction
+
+
+
+
+function s:describe__named_key_mappings()  "{{{1
+  " FIXME
+endfunction
+
+
+
+
+function s:describe__ui_key_mappings()  "{{{1
+  " FIXME
+endfunction
+
+
+
+
+" __END__  "{{{1
+" vim: filetype=vim foldmethod=marker

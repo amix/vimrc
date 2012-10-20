@@ -1,0 +1,11 @@
+% my long complicated macro. This is an example of how to set up a
+% tex-macro for latex-suite. simply type in the lines as you would in
+% latex. Place holders are allowed.
+% NOTE: if you have filetype indentation turned on, then do not do
+%       formatting here. the indentation will follow automatically...
+\begin{mycomplicatedenvironment}
+\mycommand1{<++>}
+\mycommand2{<+hint2+>}
+\mycommand3{<++>}
+\mycommand4{<++>}
+\end{mycomplicatedenvironment}<++>

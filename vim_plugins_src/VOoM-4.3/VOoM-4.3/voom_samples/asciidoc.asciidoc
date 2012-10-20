@@ -1,0 +1,355 @@
+﻿// :Voom asciidoc
+// Tests for VOoM asciidoc mode. This file is in utf-8 encoding.
+// vim: ft=asciidoc list fdm=manual
+
+
+
+// Two-line style, levels 1 to 5 only
+Level 1
+=======
+
+Level 2
+-------
+
+Level 3
+~~~~~~~
+
+Level 4
+^^^^^^^
+
+Level 5
++++++++
+
+
+
+// One-line style
+= Level 1 =
+== Level 2 ==
+=== Level 3 ===
+==== Level 4 ====
+===== Level 5 =====
+====== Level 6 ======
+======= Level 7 =======
+
+// Closing ='s are optional
+= Level 1
+== Level 2
+=== Level 3
+==== Level 4
+===== Level 5
+====== Level 6
+======= Level 7
+
+There must be a whitespace between headline text and ='s. The number of closing
+='s must match the number of opening ='s.
+   
+//One-line style overrides two-line style:
+===== Level 5
+-------------
+listing
+-------------
+
+
+
+
+UNDERLINE SIZE
+==============
+
+The underline must be of the same size as the title line +/- 2 chars.
+Both the underline and the title line must be at least 2 chars long.
+Trailing whitespace is always ignored and is not counted.
+
+not headlines
+-------------
+
+headline
+~~~~~
+
+headline
+~~~~~~~~~~~
+
+заголовок
+~~~~~~
+
+заголовок
+~~~~~~~~~~~~
+
+A
+---
+
+
+headlines, 5 of each
+--------------------
+
+headline                                            
+~~~~~~
+headline
+~~~~~~~                                                        
+headline
+~~~~~~~~
+headline
+~~~~~~~~~
+headline
+~~~~~~~~~~
+
+заголовок
+~~~~~~~
+заголовок
+~~~~~~~~
+заголовок
+~~~~~~~~~
+заголовок
+~~~~~~~~~~
+заголовок
+~~~~~~~~~~~
+
+
+
+
+BLOCKID, ATTRIBUTELIST
+======================
+
+[[AAA]]
+== headline 1 ==
+
+[AAA]
+== headline 2 ==
+
+[[AAA]]
+[AAA]
+== headline 3 ==
+
+[AAA]
+[[AAA]]
+== headline 4 ==
+
+[AAA]
+[[AAA]]
+[AAA]
+== headline 5 ==
+text
+[AAA]
+== headline 6 ==
+
+
+
+
+
+DELIMITED BLOCKS
+================
+
+////
+== not headline ==
+not headline
+------------
+////
+
+++++
+== not headline ==
+not headline
+------------
+++++
+
+----
+== not headline ==
+not headline
+------------
+
+....
+== not headline ==
+not headline
+------------
+....
+
+****
+== not headline ==
+not headline
+------------
+****
+____
+== not headline ==
+not headline
+------------
+____
+
+====
+== not headline ==
+not headline
+------------
+====
+
+// ambiguious cases
+headline
+--------
+--------
+listing, not headline
+---------------------
+
+
+
+
+DISALLOWED UNDERLINED HEADLINES
+===============================
+
+No headlines here. The underline starts Delimited Block.
+
+//BlockID
+
+[[AAA]]
+-------
+== not headline
+-------
+
+//Attribute List
+
+[AAA]
+-----
+== not headline
+-----
+
+//Comment line (exactly two // at start)
+
+//AAA
+-----
+== not headline
+-----
+
+//Block Title, one dot is enough
+
+.AAA
+----
+== not headline
+-----
+
+//Tab at start of title line is also not allowed, don't know why
+
+	not headline
+------------
+== not headline
+-----
+
+//An underlined headline cannot be just one character. They can in AsciiDoc.
+
+A
+--
+
+B
+---
+
+//An underlined title cannot look like an underline or a Delimited Block line,
+//that is a line of only =,-,+, etc.
+
+===
+---
+===
+
++++
+===
+^^^
++++
+
+
+++
+==
+^^
+~~
+
+
+
+BLANK LINES
+===========
+
+A blank separator line is required in front of most headlines.
+But preceding [[]] and/or [] lines are treated as part of the headline.
+
+// Wrong:
+
+== headline ==
+text
+== not headline ==
+[[X1]]
+[blah]
+== not headline ==
+
+// Correct:
+
+== headline 1 ==
+text
+
+== headline 2 ==
+
+[[X1]]
+[blah]
+== headline 3 ==
+
+// The second underline starts Delimited Block
+headline
+--------
+text
+not headline
+------------
+
+not headline
+------------
+
+// Comment lines before the headline are ignored
+
+== headline 1 ==
+text
+// comment
+== not headline ==
+
+// comment
+== headline 2 ==
+text
+
+// comment
+// comment
+[blah]
+== headline 3 ==
+
+// Blank line is NOT required between adjacent headlines
+
+== headline 1 ==
+== headline 2 ==
+// comment
+== headline 3 ==
+headline 4
+----------
+[blah]
+headline 5
+----------
+
+// after the end of a Delimited Block
+
+== headline 1 ==
+----------------------------
+listing
+----------------------------
+== headline 2 ==
+
+
+GOTCHAS
+=======
+
+There must be a blank line between a macro, an :atrrbute:, etc. and the
+following headline.
+The underline can be mistaken for a DelimitedBlock, which will kill subsequent
+headlines.
+
+== headline
+
+:numbered:
+== not headline
+
+ifdef::something[]
+not headline
+------------
+== not headline
+---------------
+
+== headline
+
+
+
+

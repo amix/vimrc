@@ -1,0 +1,5 @@
+let g:TeX_package_option_graphpap = ''
+
+let g:TeX_package_graphpap = 'brs:graphpaper[<+step+>](<+x1,y1+>)(<+x2,y2+>)'
+
+" vim:ft=vim:ff=unix:

@@ -1,0 +1,30 @@
+let g:TeX_package_option_changebar =
+\ 'DVItoLN03,'
+\.'dvitoln03,'
+\.'DVItoPS,'
+\.'dvitops,'
+\.'DVIps,'
+\.'dvips,'
+\.'emTeX,'
+\.'emtex,'
+\.'textures,'
+\.'Textures,'
+\.'outerbars,'
+\.'innerbars,'
+\.'leftbars,'
+\.'rightbars,'
+\.'traceon,'
+\.'traceoff'
+
+let g:TeX_package_changebar =
+\ 'ens:changebar:[<+thickness+>],'
+\.'noo:cbstart,'
+\.'cbend,'
+\.'cbdelete,'
+\.'changebarwidth,'
+\.'deletebarwidth,'
+\.'changebarsep,'
+\.'spe:changebargrey,'
+\.'nochangebars'
+
+" vim:ft=vim:ff=unix:
