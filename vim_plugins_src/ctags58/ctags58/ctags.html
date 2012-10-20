@@ -1,0 +1,2087 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Thu Jul  9 17:03:58 2009 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>CTAGS</title>
+
+</head>
+<body>
+
+<h1 align=center>CTAGS</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#SOURCE FILES">SOURCE FILES</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#OPERATIONAL DETAILS">OPERATIONAL DETAILS</a><br>
+<a href="#TAG FILE FORMAT">TAG FILE FORMAT</a><br>
+<a href="#HOW TO USE WITH VI">HOW TO USE WITH VI</a><br>
+<a href="#HOW TO USE WITH GNU EMACS">HOW TO USE WITH GNU EMACS</a><br>
+<a href="#HOW TO USE WITH NEDIT">HOW TO USE WITH NEDIT</a><br>
+<a href="#CAVEATS">CAVEATS</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#ENVIRONMENT VARIABLES">ENVIRONMENT VARIABLES</a><br>
+<a href="#FILES">FILES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+<a href="#MOTIVATION">MOTIVATION</a><br>
+<a href="#CREDITS">CREDITS</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">ctags &minus;
+Generate tag files for source code</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ctags</b>
+[<b>options</b>] [<i>file(s)</i>] <b><br>
+etags</b> [<b>options</b>] [<i>file(s)</i>]</p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>ctags</b> and <b>etags</b> programs (hereinafter
+collectively referred to as <b>ctags</b>, except where
+distinguished) generate an index (or &quot;tag&quot;) file
+for a variety of language objects found in <i>file(s)</i>.
+This tag file allows these items to be quickly and easily
+located by a text editor or other utility. A &quot;tag&quot;
+signifies a language object for which an index entry is
+available (or, alternatively, the index entry created for
+that object).</p>
+
+<p style="margin-left:11%; margin-top: 1em">Alternatively,
+<b>ctags</b> can generate a cross reference file which
+lists, in human readable form, information about the various
+source objects found in a set of language files.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Tag index files
+are supported by numerous editors, which allow the user to
+locate the object associated with a name appearing in a
+source file and jump to the file and line which defines the
+name. Those known about at the time of this release are:</p>
+
+<p style="margin-left:17%; margin-top: 1em"><b>Vi</b>(1)
+and its derivatives (e.g. Elvis, Vim, Vile, Lemmy),
+<b>CRiSP</b>, <b>Emacs</b>, <b>FTE</b> (Folding Text
+Editor), <b>JED</b>, <b>jEdit</b>, <b>Mined</b>,
+<b>NEdit</b> (Nirvana Edit), <b>TSE</b> (The SemWare
+Editor), <b>UltraEdit</b>, <b>WorkSpace</b>, <b>X2</b>,
+<b>Zeus</b></p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Ctags</b> is
+capable of generating different kinds of tags for each of
+many different languages. For a complete list of supported
+languages, the names by which they are recognized, and the
+kinds of tags which are generated for each, see the
+<b>&minus;&minus;list&minus;languages</b> and
+<b>&minus;&minus;list&minus;kinds</b> options.</p>
+
+<a name="SOURCE FILES"></a>
+<h2>SOURCE FILES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Unless the
+<b>&minus;&minus;language&minus;force</b> option is
+specified, the language of each source file is automatically
+selected based upon a mapping of file names to languages.
+The mappings in effect for each language may be display
+using the <b>&minus;&minus;list&minus;maps</b> option and
+may be changed using the <b>&minus;&minus;langmap</b>
+option. On platforms which support it, if the name of a file
+is not mapped to a language and the file is executable, the
+first line of the file is checked to see if the file is a
+&quot;#!&quot; script for a recognized language.</p>
+
+<p style="margin-left:11%; margin-top: 1em">By default, all
+other files names are ignored. This permits running
+<b>ctags</b> on all files in either a single directory (e.g.
+&quot;ctags *&quot;), or on all files in an entire source
+directory tree (e.g. &quot;ctags &minus;R&quot;), since only
+those files whose names are mapped to languages will be
+scanned.</p>
+
+<p style="margin-left:11%; margin-top: 1em">[The reason
+that .h extensions are mapped to C++ files rather than C
+files is because it is common to use .h extensions in C++,
+and no harm results in treating them as C++ files.]</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Despite the
+wealth of available options, defaults are set so that
+<b>ctags</b> is most commonly executed without any options
+(e.g. &quot;ctags *&quot;, or &quot;ctags &minus;R&quot;),
+which will create a tag file in the current directory for
+all recognized source files. The options described below are
+provided merely to allow custom tailoring to meet special
+needs.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Note that
+spaces separating the single-letter options from their
+parameters are optional.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Note also that
+the boolean parameters to the long form options (those
+beginning with &quot;&minus;&minus;&quot; and that take a
+&quot;<i>[=yes</i>|<i>no]</i>&quot; parameter) may be
+omitted, in which case &quot;<b>=</b><i>yes</i>&quot; is
+implied. (e.g. <b>&minus;&minus;sort</b> is equivalent to
+<b>&minus;&minus;sort</b>=<i>yes</i>). Note further that
+&quot;=<i>1</i>&quot; and &quot;=<i>on</i>&quot; are
+considered synonyms for &quot;=<i>yes</i>&quot;, and that
+&quot;=<i>0</i>&quot; and &quot;=<i>off</i>&quot; are
+considered synonyms for &quot;=<i>no</i>&quot;.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Some options
+are either ignored or useful only when used while running in
+etags mode (see <b>&minus;e</b> option). Such options will
+be noted.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Most options
+may appear anywhere on the command line, affecting only
+those files which follow the option. A few options, however,
+must appear before the first file name and will be noted as
+such.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Options taking
+language names will accept those names in either upper or
+lower case. See the
+<b>&minus;&minus;list&minus;languages</b> option for a
+complete list of the built-in language names.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;a</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Equivalent to
+<b>&minus;&minus;append</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;B</b></p></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p>Use backward searching patterns (e.g. ?pattern?).
+[Ignored in etags mode]</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;e</b></p></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p>Enable etags mode, which will create a tag file for use
+with the Emacs editor. Alternatively, if <b>ctags</b> is
+invoked by a name containing the string &quot;etags&quot;
+(either by renaming, or creating a link to, the executable),
+etags mode will be enabled. This option must appear before
+the first file name.</p></td>
+</table>
+
+<p style="margin-left:11%;"><b>&minus;f</b>
+<i>tagfile</i></p>
+
+<p style="margin-left:18%;">Use the name specified by
+<i>tagfile</i> for the tag file (default is
+&quot;tags&quot;, or &quot;TAGS&quot; when running in etags
+mode). If <i>tagfile</i> is specified as
+&quot;&minus;&quot;, then the tag file is written to
+standard output instead. <b>Ctags</b> will stubbornly refuse
+to take orders if <i>tagfile</i> exists and its first line
+contains something other than a valid tags line. This will
+save your neck if you mistakenly type &quot;ctags &minus;f
+*.c&quot;, which would otherwise overwrite your first C file
+with the tags generated by the rest! It will also refuse to
+accept a multi-character file name which begins with a
+&rsquo;&minus;&rsquo; (dash) character, since this most
+likely means that you left out the tag file name and this
+option tried to grab the next option as the file name. If
+you really want to name your output tag file
+&quot;&minus;ugly&quot;, specify it as
+&quot;./&minus;ugly&quot;. This option must appear before
+the first file name. If this option is specified more than
+once, only the last will apply.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;F</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Use forward
+searching patterns (e.g. /pattern/) (default). [Ignored in
+etags mode]</p></td>
+</table>
+
+<p style="margin-left:11%;"><b>&minus;h</b> <i>list</i></p>
+
+<p style="margin-left:18%;">Specifies a list of file
+extensions, separated by periods, which are to be
+interpreted as include (or header) files. To indicate files
+having no extension, use a period not followed by a
+non-period character (e.g. &quot;.&quot;, &quot;..x&quot;,
+&quot;.x.&quot;). This option only affects how the scoping
+of a particular kinds of tags is interpreted (i.e. whether
+or not they are considered as globally visible or visible
+only within the file in which they are defined); it does not
+map the extension to any particular language. Any tag which
+is located in a non-include file and cannot be seen (e.g.
+linked to) from another file is considered to have
+file-limited (e.g. static) scope. No kind of tag appearing
+in an include file will be considered to have file-limited
+scope. If the first character in the list is a plus sign,
+then the extensions in the list will be appended to the
+current list; otherwise, the list will replace the current
+list. See, also, the <b>&minus;&minus;file&minus;scope</b>
+option. The default list is
+&quot;.h.H.hh.hpp.hxx.h++.inc.def&quot;. To restore the
+default list, specify <b>&minus;h</b> <i>default</i>. Note
+that if an extension supplied to this option is not already
+mapped to a particular language (see <b>SOURCE FILES</b>,
+above), you will also need to use either the
+<b>&minus;&minus;langmap</b> or
+<b>&minus;&minus;language&minus;force</b> option.</p>
+
+<p style="margin-left:11%;"><b>&minus;I</b>
+<i>identifier&minus;list</i></p>
+
+<p style="margin-left:18%;">Specifies a list of identifiers
+which are to be specially handled while parsing C and C++
+source files. This option is specifically provided to handle
+special cases arising through the use of preprocessor
+macros. When the identifiers listed are simple identifiers,
+these identifiers will be ignored during parsing of the
+source files. If an identifier is suffixed with a
+&rsquo;+&rsquo; character, <b>ctags</b> will also ignore any
+parenthesis-enclosed argument list which may immediately
+follow the identifier in the source files. If two
+identifiers are separated with the &rsquo;=&rsquo;
+character, the first identifiers is replaced by the second
+identifiers for parsing purposes. The list of identifiers
+may be supplied directly on the command line or read in from
+a separate file. If the first character of
+<i>identifier&minus;list</i> is &rsquo;@&rsquo;,
+&rsquo;.&rsquo; or a pathname separator (&rsquo;/&rsquo; or
+&rsquo;\&rsquo;), or the first two characters specify a
+drive letter (e.g. &quot;C:&quot;), the parameter
+<i>identifier&minus;list</i> will be interpreted as a
+filename from which to read a list of identifiers, one per
+input line. Otherwise, <i>identifier&minus;list</i> is a
+list of identifiers (or identifier pairs) to be specially
+handled, each delimited by a either a comma or by white
+space (in which case the list should be quoted to keep the
+entire list as one command line argument). Multiple
+<b>&minus;I</b> options may be supplied. To clear the list
+of ignore identifiers, supply a single dash
+(&quot;&minus;&quot;) for <i>identifier&minus;list</i>.</p>
+
+<p style="margin-left:18%; margin-top: 1em">This feature is
+useful when preprocessor macros are used in such a way that
+they cause syntactic confusion due to their presence.
+Indeed, this is the best way of working around a number of
+problems caused by the presence of syntax-busting macros in
+source files (see <b>CAVEATS</b>, below). Some examples will
+illustrate this point.</p>
+
+<p style="margin-left:23%; margin-top: 1em">int foo
+ARGDECL4(void *, ptr, long int, nbytes)</p>
+
+<p style="margin-left:18%; margin-top: 1em">In the above
+example, the macro &quot;ARGDECL4&quot; would be mistakenly
+interpreted to be the name of the function instead of the
+correct name of &quot;foo&quot;. Specifying <b>&minus;I</b>
+<i>ARGDECL4</i> results in the correct behavior.</p>
+
+<p style="margin-left:23%; margin-top: 1em">/* creates an
+RCS version string in module */ <br>
+MODULE_VERSION(&quot;$Revision: 690 $&quot;)</p>
+
+<p style="margin-left:18%; margin-top: 1em">In the above
+example the macro invocation looks too much like a function
+definition because it is not followed by a semicolon
+(indeed, it could even be followed by a global variable
+definition that would look much like a K&amp;R style
+function parameter declaration). In fact, this seeming
+function definition could possibly even cause the rest of
+the file to be skipped over while trying to complete the
+definition. Specifying <b>&minus;I</b>
+<i>MODULE_VERSION+</i> would avoid such a problem.</p>
+
+<p style="margin-left:23%; margin-top: 1em">CLASS Example {
+<br>
+// your content here <br>
+};</p>
+
+<p style="margin-left:18%; margin-top: 1em">The example
+above uses &quot;CLASS&quot; as a preprocessor macro which
+expands to something different for each platform. For
+instance CLASS may be defined as &quot;class
+__declspec(dllexport)&quot; on Win32 platforms and simply
+&quot;class&quot; on UNIX. Normally, the absence of the C++
+keyword &quot;class&quot; would cause the source file to be
+incorrectly parsed. Correct behavior can be restored by
+specifying <b>&minus;I</b> <i>CLASS=class</i>.</p>
+
+<p style="margin-left:11%;"><b>&minus;L</b> <i>file</i></p>
+
+<p style="margin-left:18%;">Read from <i>file</i> a list of
+file names for which tags should be generated. If
+<i>file</i> is specified as &quot;&minus;&quot;, then file
+names are read from standard input. File names read using
+this option are processed following file names appearing on
+the command line. Options are also accepted in this input.
+If this option is specified more than once, only the last
+will apply. <b>Note:</b> <i>file</i> is read in
+line-oriented mode, where a new line is the only delimiter
+and non-trailing white space is considered significant, in
+order that file names containing spaces may be supplied
+(however, trailing white space is stripped from lines); this
+can affect how options are parsed if included in the
+input.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;n</b></p> </td>
+<td width="4%"></td>
+<td width="47%">
+
+
+<p style="margin-top: 1em" valign="top">Equivalent to
+<b>&minus;&minus;excmd</b>=<i>number</i>.</p> </td>
+<td width="35%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;N</b></p></td>
+<td width="4%"></td>
+<td width="47%">
+
+
+<p>Equivalent to
+<b>&minus;&minus;excmd</b>=<i>pattern</i>.</p> </td>
+<td width="35%">
+</td>
+</table>
+
+<p style="margin-left:11%;"><b>&minus;o</b>
+<i>tagfile</i></p>
+
+<p style="margin-left:18%;">Equivalent to <b>&minus;f</b>
+<i>tagfile</i>.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;R</b></p> </td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p style="margin-top: 1em" valign="top">Equivalent to
+<b>&minus;&minus;recurse</b>.</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;u</b></p></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p>Equivalent to <b>&minus;&minus;sort</b>=<i>no</i> (i.e.
+&quot;unsorted&quot;).</p> </td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;V</b></p></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p>Equivalent to <b>&minus;&minus;verbose</b>.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;w</b></p></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p>This option is silently ignored for
+backward-compatibility with the ctags of SVR4 Unix.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;x</b></p></td>
+<td width="4%"></td>
+<td width="82%">
+
+
+<p>Print a tabular, human-readable cross reference (xref)
+file to standard output instead of generating a tag file.
+The information contained in the output includes: the tag
+name; the kind of tag; the line number, file name, and
+source line (with extra white space condensed) of the file
+which defines the tag. No tag file is written and all
+options affecting tag file output will be ignored. Example
+applications for this feature are generating a listing of
+all functions located in a source file (e.g. <b>ctags
+&minus;x &minus;&minus;c&minus;kinds</b>=<i>f file</i>), or
+generating a list of all externally visible global variables
+located in a source file (e.g. <b>ctags &minus;x
+&minus;&minus;c&minus;kinds</b>=<i>v</i>
+<b>&minus;&minus;file&minus;scope</b>=<i>no file</i>). This
+option must appear before the first file name.</p></td>
+</table>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;append</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Indicates whether tags
+generated from the specified files should be appended to
+those already present in the tag file or should replace
+them. This option is off by default. This option must appear
+before the first file name.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;etags&minus;include</b>=<i>file</i></p>
+
+<p style="margin-left:18%;">Include a reference to
+<i>file</i> in the tag file. This option may be specified as
+many times as desired. This supports Emacs&rsquo; capability
+to use a tag file which &quot;includes&quot; other tag
+files. [Available only in etags mode]</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;exclude</b>=[<i>pattern</i>]</p>
+
+<p style="margin-left:18%;">Add <i>pattern</i> to a list of
+excluded files and directories. This option may be specified
+as many times as desired. For each file name considered by
+<b>ctags</b>, each <i>pattern</i> specified using this
+option will be compared against both the complete path (e.g.
+some/path/base.ext) and the base name (e.g. base.ext) of the
+file, thus allowing patterns which match a given file name
+irrespective of its path, or match only a specific path. If
+appropriate support is available from the runtime library of
+your C compiler, then <i>pattern</i> may contain the usual
+shell wildcards (not regular expressions) common on Unix (be
+sure to quote the option parameter to protect the wildcards
+from being expanded by the shell before being passed to
+<b>ctags</b>; also be aware that wildcards can match the
+slash character, &rsquo;/&rsquo;). You can determine if
+shell wildcards are available on your platform by examining
+the output of the <b>&minus;&minus;version</b> option, which
+will include &quot;+wildcards&quot; in the compiled feature
+list; otherwise, <i>pattern</i> is matched against file
+names using a simple textual comparison.</p>
+
+<p style="margin-left:18%; margin-top: 1em">If
+<i>pattern</i> begins with the character &rsquo;@&rsquo;,
+then the rest of the string is interpreted as a file name
+from which to read exclusion patterns, one per line. If
+<i>pattern</i> is empty, the list of excluded patterns is
+cleared. Note that at program startup, the default exclude
+list contains &quot;EIFGEN&quot;, &quot;SCCS&quot;,
+&quot;RCS&quot;, and &quot;CVS&quot;, which are names of
+directories for which it is generally not desirable to
+descend while processing the <b>&minus;&minus;recurse</b>
+option.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;excmd</b>=<i>type</i></p>
+
+<p style="margin-left:18%;">Determines the type of EX
+command used to locate tags in the source file. [Ignored in
+etags mode]</p>
+
+<p style="margin-left:18%; margin-top: 1em">The valid
+values for <i>type</i> (either the entire word or the first
+letter is accepted) are:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="10%">
+
+
+<p style="margin-top: 1em" valign="top"><i>number</i></p></td>
+<td width="4%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Use only line
+numbers in the tag file for locating tags. This has four
+advantages:</p> </td>
+</table>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="3%">
+
+
+<p valign="top">1.</p></td>
+<td width="3%"></td>
+<td width="62%">
+
+
+<p valign="top">Significantly reduces the size of the
+resulting tag file.</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="3%">
+
+
+<p valign="top">2.</p></td>
+<td width="3%"></td>
+<td width="62%">
+
+
+<p valign="top">Eliminates failures to find tags because
+the line defining the tag has changed, causing the pattern
+match to fail (note that some editors, such as <b>vim</b>,
+are able to recover in many such instances).</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="3%">
+
+
+<p valign="top">3.</p></td>
+<td width="3%"></td>
+<td width="62%">
+
+
+<p valign="top">Eliminates finding identical matching, but
+incorrect, source lines (see <b>BUGS</b>, below).</p></td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="3%">
+
+
+<p valign="top">4.</p></td>
+<td width="3%"></td>
+<td width="62%">
+
+
+<p valign="top">Retains separate entries in the tag file
+for lines which are identical in content. In <i>pattern</i>
+mode, duplicate entries are dropped because the search
+patterns they generate are identical, making the duplicate
+entries useless.</p></td>
+</table>
+
+<p style="margin-left:32%; margin-top: 1em">However, this
+option has one significant drawback: changes to the source
+files can cause the line numbers recorded in the tag file to
+no longer correspond to the lines in the source file,
+causing jumps to some tags to miss the target definition by
+one or more lines. Basically, this option is best used when
+the source code to which it is applied is not subject to
+change. Selecting this option type causes the following
+options to be ignored: <b>&minus;BF</b>.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="11%">
+
+
+<p style="margin-top: 1em" valign="top"><i>pattern</i></p></td>
+<td width="3%"></td>
+<td width="68%">
+
+
+<p style="margin-top: 1em" valign="top">Use only search
+patterns for all tags, rather than the line numbers usually
+used for macro definitions. This has the advantage of not
+referencing obsolete line numbers when lines have been added
+or removed since the tag file was generated.</p></td>
+<tr valign="top" align="left">
+<td width="18%"></td>
+<td width="11%">
+
+
+<p><i>mixed</i></p></td>
+<td width="3%"></td>
+<td width="68%">
+
+
+<p>In this mode, patterns are generally used with a few
+exceptions. For C, line numbers are used for macro
+definition tags. This was the default format generated by
+the original <b>ctags</b> and is, therefore, retained as the
+default for this option. For Fortran, line numbers are used
+for common blocks because their corresponding source lines
+are generally identical, making pattern searches useless for
+finding all matches.</p></td>
+</table>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;extra</b>=<i>[+|&minus;]flags</i></p>
+
+<p style="margin-left:18%;">Specifies whether to include
+extra tag entries for certain kinds of information. The
+parameter <i>flags</i> is a set of one-letter flags, each
+representing one kind of extra tag entry to include in the
+tag file. If <i>flags</i> is preceded by by either the
+&rsquo;+&rsquo; or &rsquo;&minus;&rsquo; character, the
+effect of each flag is added to, or removed from, those
+currently enabled; otherwise the flags replace any current
+settings. The meaning of each flag is as follows:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p style="margin-top: 1em" valign="top"><i>f</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">Include an entry
+for the base file name of every source file (e.g.
+&quot;example.c&quot;), which addresses the first line of
+the file.</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p style="margin-top: 1em" valign="top"><i>q</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">Include an extra
+class-qualified tag entry for each tag which is a member of
+a class (for languages for which this information is
+extracted; currently C++, Eiffel, and Java). The actual form
+of the qualified tag depends upon the language from which
+the tag was derived (using a form that is most natural for
+how qualified calls are specified in the language). For C++,
+it is in the form &quot;class::member&quot;; for Eiffel and
+Java, it is in the form &quot;class.member&quot;. This may
+allow easier location of a specific tags when multiple
+occurrences of a tag name occur in the tag file. Note,
+however, that this could potentially more than double the
+size of the tag file.</p></td>
+</table>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;fields</b>=<i>[+|&minus;]flags</i></p>
+
+<p style="margin-left:18%;">Specifies the available
+extension fields which are to be included in the entries of
+the tag file (see <b>TAG FILE FORMAT</b>, below, for more
+information). The parameter <i>flags</i> is a set of
+one-letter flags, each representing one type of extension
+field to include, with the following meanings (disabled by
+default unless indicated):</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p style="margin-top: 1em" valign="top"><i>a</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">Access (or export)
+of class members</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>f</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">File-restricted scoping [enabled]</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>i</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Inheritance information</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>k</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Kind of tag as a single letter
+[enabled]</p> </td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>K</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Kind of tag as full name</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>l</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Language of source file containing tag</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>m</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Implementation information</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>n</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Line number of tag definition</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>s</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Scope of tag definition [enabled]</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>S</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Signature of routine (e.g. prototype or
+parameter list)</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>z</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Include the &quot;kind:&quot; key in kind
+field</p> </td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p valign="top"><i>t</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p valign="top">Type and name of a variable or typedef as
+&quot;typeref:&quot; field [enabled]</p></td>
+</table>
+
+<p style="margin-left:18%; margin-top: 1em">Each letter or
+group of letters may be preceded by either &rsquo;+&rsquo;
+to add it to the default set, or &rsquo;&minus;&rsquo; to
+exclude it. In the absence of any preceding &rsquo;+&rsquo;
+or &rsquo;&minus;&rsquo; sign, only those kinds explicitly
+listed in <i>flags</i> will be included in the output (i.e.
+overriding the default set). This option is ignored if the
+option <b>&minus;&minus;format</b>=<i>1</i> has been
+specified. The default value of this option is
+<i>fkst</i>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;file&minus;scope</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Indicates whether tags scoped
+only for a single file (i.e. tags which cannot be seen
+outside of the file in which they are defined, such as
+&quot;static&quot; tags) should be included in the output.
+See, also, the <b>&minus;h</b> option. This option is
+enabled by default.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;filter</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Causes <b>ctags</b> to behave
+as a filter, reading source file names from standard input
+and printing their tags to standard output on a file-by-file
+basis. If <b>&minus;&minus;sorted</b> is enabled, tags are
+sorted only within the source file in which they are
+defined. File names are read from standard input in
+line-oriented input mode (see note for <b>&minus;L</b>
+option) and only after file names listed on the command line
+or from any file supplied using the <b>&minus;L</b> option.
+When this option is enabled, the options <b>&minus;f</b>,
+<b>&minus;o</b>, and <b>&minus;&minus;totals</b> are
+ignored. This option is quite esoteric and is disabled by
+default. This option must appear before the first file
+name.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;filter&minus;terminator</b>=<i>string</i></p>
+
+<p style="margin-left:18%;">Specifies a string to print to
+standard output following the tags for each file name parsed
+when the <b>&minus;&minus;filter</b> option is enabled. This
+may permit an application reading the output of ctags to
+determine when the output for each file is finished. Note
+that if the file name read is a directory and
+<b>&minus;&minus;recurse</b> is enabled, this string will be
+printed only one once at the end of all tags found for by
+descending the directory. This string will always be
+separated from the last tag line for the file by its
+terminating newline. This option is quite esoteric and is
+empty by default. This option must appear before the first
+file name.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;format</b>=<i>level</i></p>
+
+<p style="margin-left:18%;">Change the format of the output
+tag file. Currently the only valid values for <i>level</i>
+are <i>1</i> or <i>2</i>. Level 1 specifies the original tag
+file format and level 2 specifies a new extended format
+containing extension fields (but in a manner which retains
+backward-compatibility with original <b>vi</b>(1)
+implementations). The default level is 2. This option must
+appear before the first file name. [Ignored in etags
+mode]</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;help</b></p>
+
+<p style="margin-left:18%;">Prints to standard output a
+detailed usage description, and then exits.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;if0</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Indicates a preference as to
+whether code within an &quot;#if 0&quot; branch of a
+preprocessor conditional should be examined for non-macro
+tags (macro tags are always included). Because the intent of
+this construct is to disable code, the default value of this
+option is <i>no</i>. Note that this indicates a preference
+only and does not guarantee skipping code within an
+&quot;#if 0&quot; branch, since the fall-back algorithm used
+to generate tags when preprocessor conditionals are too
+complex follows all branches of a conditional. This option
+is disabled by default.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;&lt;LANG&gt;&minus;kinds</b>=<i>[+|&minus;]kinds</i></p>
+
+<p style="margin-left:18%;">Specifies a list of
+language-specific kinds of tags (or kinds) to include in the
+output file for a particular language, where
+<b>&lt;LANG&gt;</b> is case-insensitive and is one of the
+built-in language names (see the
+<b>&minus;&minus;list&minus;languages</b> option for a
+complete list). The parameter <i>kinds</i> is a group of
+one-letter flags designating kinds of tags (particular to
+the language) to either include or exclude from the output.
+The specific sets of flags recognized for each language,
+their meanings and defaults may be list using the
+<b>&minus;&minus;list&minus;kinds</b> option. Each letter or
+group of letters may be preceded by either &rsquo;+&rsquo;
+to add it to, or &rsquo;&minus;&rsquo; to remove it from,
+the default set. In the absence of any preceding
+&rsquo;+&rsquo; or &rsquo;&minus;&rsquo; sign, only those
+kinds explicitly listed in <i>kinds</i> will be included in
+the output (i.e. overriding the default for the specified
+language).</p>
+
+<p style="margin-left:18%; margin-top: 1em">As an example
+for the C language, in order to add prototypes and external
+variable declarations to the default set of tag kinds, but
+exclude macros, use
+<b>&minus;&minus;c&minus;kinds</b>=<i>+px&minus;d</i>; to
+include only tags for functions, use
+<b>&minus;&minus;c&minus;kinds</b>=<i>f</i>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;langdef</b>=<i>name</i></p>
+
+<p style="margin-left:18%;">Defines a new user-defined
+language, <i>name</i>, to be parsed with regular
+expressions. Once defined, <i>name</i> may be used in other
+options taking language names. The typical use of this
+option is to first define the language, then map file names
+to it using <i>&minus;&minus;langmap</i>, then specify
+regular expressions using
+<i>&minus;&minus;regex&minus;&lt;LANG&gt;</i> to define how
+its tags are found.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;langmap</b>=<i>map[,map[...]]</i></p>
+
+<p style="margin-left:18%;">Controls how file names are
+mapped to languages (see the
+<b>&minus;&minus;list&minus;maps</b> option). Each
+comma-separated <i>map</i> consists of the language name
+(either a built-in or user-defined language), a colon, and a
+list of file extensions and/or file name patterns. A file
+extension is specified by preceding the extension with a
+period (e.g. &quot;.c&quot;). A file name pattern is
+specified by enclosing the pattern in parentheses (e.g.
+&quot;([Mm]akefile)&quot;). If appropriate support is
+available from the runtime library of your C compiler, then
+the file name pattern may contain the usual shell wildcards
+common on Unix (be sure to quote the option parameter to
+protect the wildcards from being expanded by the shell
+before being passed to <b>ctags</b>). You can determine if
+shell wildcards are available on your platform by examining
+the output of the <b>&minus;&minus;version</b> option, which
+will include &quot;+wildcards&quot; in the compiled feature
+list; otherwise, the file name patterns are matched against
+file names using a simple textual comparison. When mapping a
+file extension, it will first be unmapped from any other
+languages.</p>
+
+<p style="margin-left:18%; margin-top: 1em">If the first
+character in a map is a plus sign, then the extensions and
+file name patterns in that map will be appended to the
+current map for that language; otherwise, the map will
+replace the current map. For example, to specify that only
+files with extensions of .c and .x are to be treated as C
+language files, use
+&quot;<b>&minus;&minus;langmap</b>=<i>c:.c.x</i>&quot;; to
+also add files with extensions of .j as Java language files,
+specify
+&quot;<b>&minus;&minus;langmap</b>=<i>c:.c.x,java:+.j</i>&quot;.
+To map makefiles (e.g. files named either
+&quot;Makefile&quot;, &quot;makefile&quot;, or having the
+extension &quot;.mak&quot;) to a language called
+&quot;make&quot;, specify
+&quot;<b>&minus;&minus;langmap</b>=<i>make:([Mm]akefile).mak</i>&quot;.
+To map files having no extension, specify a period not
+followed by a non-period character (e.g. &quot;.&quot;,
+&quot;..x&quot;, &quot;.x.&quot;). To clear the mapping for
+a particular language (thus inhibiting automatic generation
+of tags for that language), specify an empty extension list
+(e.g.
+&quot;<b>&minus;&minus;langmap</b>=<i>fortran:</i>&quot;).
+To restore the default language mappings for all a
+particular language, supply the keyword &quot;default&quot;
+for the mapping. To specify restore the default language
+mappings for all languages, specify
+&quot;<b>&minus;&minus;langmap</b>=<i>default</i>&quot;.
+Note that file extensions are tested before file name
+patterns when inferring the language of a file.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;language&minus;force</b>=<i>language</i></p>
+
+<p style="margin-left:18%;">By default, <b>ctags</b>
+automatically selects the language of a source file,
+ignoring those files whose language cannot be determined
+(see <b>SOURCE FILES</b>, above). This option forces the
+specified <i>language</i> (case-insensitive; either built-in
+or user-defined) to be used for every supplied file instead
+of automatically selecting the language based upon its
+extension. In addition, the special value <i>auto</i>
+indicates that the language should be automatically selected
+(which effectively disables this option).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;languages</b>=<i>[+|&minus;]list</i></p>
+
+<p style="margin-left:18%;">Specifies the languages for
+which tag generation is enabled, with <i>list</i> containing
+a comma-separated list of language names (case-insensitive;
+either built-in or user-defined). If the first language of
+<i>list</i> is not preceded by either a &rsquo;+&rsquo; or
+&rsquo;&minus;&rsquo;, the current list will be cleared
+before adding or removing the languages in <i>list</i>.
+Until a &rsquo;&minus;&rsquo; is encountered, each language
+in the list will be added to the current list. As either the
+&rsquo;+&rsquo; or &rsquo;&minus;&rsquo; is encountered in
+the list, the languages following it are added or removed
+from the current list, respectively. Thus, it becomes simple
+to replace the current list with a new one, or to add or
+remove languages from the current list. The actual list of
+files for which tags will be generated depends upon the
+language extension mapping in effect (see the
+<b>&minus;&minus;langmap</b> option). Note that all
+languages, including user-defined languages are enabled
+unless explicitly disabled using this option. Language names
+included in <i>list</i> may be any built-in language or one
+previously defined with <b>&minus;&minus;langdef</b>. The
+default is &quot;all&quot;, which is also accepted as a
+valid argument. See the
+<b>&minus;&minus;list&minus;languages</b> option for a
+complete list of the built-in language names.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;license</b></p>
+
+<p style="margin-left:18%;">Prints a summary of the
+software license to standard output, and then exits.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;line&minus;directives</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Specifies whether
+&quot;#line&quot; directives should be recognized. These are
+present in the output of preprocessors and contain the line
+number, and possibly the file name, of the original source
+file(s) from which the preprocessor output file was
+generated. When enabled, this option will cause <b>ctags</b>
+to generate tag entries marked with the file names and line
+numbers of their locations original source file(s), instead
+of their actual locations in the preprocessor output. The
+actual file names placed into the tag file will have the
+same leading path components as the preprocessor output
+file, since it is assumed that the original source files are
+located relative to the preprocessor output file (unless, of
+course, the #line directive specifies an absolute path).
+This option is off by default. <b>Note:</b> This option is
+generally only useful when used together with the
+<b>&minus;&minus;excmd</b>=<i>number</i> (<b>&minus;n</b>)
+option. Also, you may have to use either the
+<b>&minus;&minus;langmap</b> or
+<b>&minus;&minus;language&minus;force</b> option if the
+extension of the preprocessor output file is not known to
+<b>ctags</b>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;links</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Indicates whether symbolic
+links (if supported) should be followed. When disabled,
+symbolic links are ignored. This option is on by
+default.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;list&minus;kinds</b>[=<i>language</i>|<i>all</i>]</p>
+
+<p style="margin-left:18%;">Lists the tag kinds recognized
+for either the specified language or all languages, and then
+exits. Each kind of tag recorded in the tag file is
+represented by a one-letter flag, which is also used to
+filter the tags placed into the output through use of the
+<b>&minus;&minus;&lt;LANG&gt;&minus;kinds</b> option. Note
+that some languages and/or tag kinds may be implemented
+using regular expressions and may not be available if regex
+support is not compiled into <b>ctags</b> (see the
+<b>&minus;&minus;regex&minus;&lt;LANG&gt;</b> option). Each
+kind listed is enabled unless followed by
+&quot;[off]&quot;.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;list&minus;maps</b>[=<i>language</i>|<i>all</i>]</p>
+
+<p style="margin-left:18%;">Lists the file extensions and
+file name patterns which associate a file name with a
+language for either the specified language or all languages,
+and then exits. See the <b>&minus;&minus;langmap</b> option,
+and <b>SOURCE FILES</b>, above.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;list&minus;languages</b></p>
+
+<p style="margin-left:18%;">Lists the names of the
+languages understood by <b>ctags</b>, and then exits. These
+language names are case insensitive and may be used in the
+<b>&minus;&minus;language&minus;force</b>,
+<b>&minus;&minus;languages</b>,
+<b>&minus;&minus;&lt;LANG&gt;&minus;kinds</b>, and
+<b>&minus;&minus;regex&minus;&lt;LANG&gt;</b> options.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;options</b>=<i>file</i></p>
+
+<p style="margin-left:18%;">Read additional options from
+<i>file</i>. The file should contain one option per line. As
+a special case, if <b>&minus;&minus;options</b>=<i>NONE</i>
+is specified as the first option on the command line, it
+will disable the automatic reading of any configuration
+options from either a file or the environment (see
+<b>FILES</b>).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;recurse</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Recurse into directories
+encountered in the list of supplied files. If the list of
+supplied files is empty and no file list is specified with
+the <b>&minus;L</b> option, then the current directory (i.e.
+&quot;.&quot;) is assumed. Symbolic links are followed. If
+you don&rsquo;t like these behaviors, either explicitly
+specify the files or pipe the output of <b>find</b>(1) into
+<b>ctags &minus;L&minus;</b> instead. <b>Note:</b> This
+option is not supported on all platforms at present. It is
+available if the output of the <b>&minus;&minus;help</b>
+option includes this option. See, also, the
+<b>&minus;&minus;exclude</b> to limit recursion.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;regex&minus;&lt;LANG&gt;</b>=<i>/regexp/replacement/[kind&minus;spec/][flags]</i></p>
+
+<p style="margin-left:18%;">The <i>/regexp/replacement/</i>
+pair define a regular expression replacement pattern,
+similar in style to <b>sed</b> substitution commands, with
+which to generate tags from source files mapped to the named
+language, <b>&lt;LANG&gt;</b>, (case-insensitive; either a
+built-in or user-defined language). The regular expression,
+<i>regexp</i>, defines an extended regular expression
+(roughly that used by <b>egrep</b>(1)), which is used to
+locate a single source line containing a tag and may specify
+tab characters using \t. When a matching line is found, a
+tag will be generated for the name defined by
+<i>replacement</i>, which generally will contain the special
+back-references \1 through \9 to refer to matching
+sub-expression groups within <i>regexp</i>. The
+&rsquo;/&rsquo; separator characters shown in the parameter
+to the option can actually be replaced by any character.
+Note that whichever separator character is used will have to
+be escaped with a backslash (&rsquo;\&rsquo;) character
+wherever it is used in the parameter as something other than
+a separator. The regular expression defined by this option
+is added to the current list of regular expressions for the
+specified language unless the parameter is omitted, in which
+case the current list is cleared.</p>
+
+<p style="margin-left:18%; margin-top: 1em">Unless modified
+by <i>flags</i>, <i>regexp</i> is interpreted as a Posix
+extended regular expression. The <i>replacement</i> should
+expand for all matching lines to a non-empty string of
+characters, or a warning message will be reported. An
+optional kind specifier for tags matching <i>regexp</i> may
+follow <i>replacement</i>, which will determine what kind of
+tag is reported in the &quot;kind&quot; extension field (see
+<b>TAG FILE FORMAT</b>, below). The full form of
+<i>kind&minus;spec</i> is in the form of a single letter, a
+comma, a name (without spaces), a comma, a description,
+followed by a separator, which specify the short and long
+forms of the kind value and its textual description
+(displayed using <b>&minus;&minus;list&minus;kinds</b>).
+Either the kind name and/or the description may be omitted.
+If <i>kind&minus;spec</i> is omitted, it defaults to
+&quot;<i>r,regex</i>&quot;. Finally, <i>flags</i> are one or
+more single-letter characters having the following effect
+upon the interpretation of <i>regexp</i>:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p style="margin-top: 1em" valign="top"><i>b</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">The pattern is
+interpreted as a Posix basic regular expression.</p></td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p style="margin-top: 1em" valign="top"><i>e</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">The pattern is
+interpreted as a Posix extended regular expression
+(default).</p> </td>
+<tr valign="top" align="left">
+<td width="23%"></td>
+<td width="2%">
+
+
+<p style="margin-top: 1em" valign="top"><i>i</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">The regular
+expression is to be applied in a case-insensitive
+manner.</p> </td>
+</table>
+
+<p style="margin-left:18%; margin-top: 1em">Note that this
+option is available only if <b>ctags</b> was compiled with
+support for regular expressions, which depends upon your
+platform. You can determine if support for regular
+expressions is compiled in by examining the output of the
+<b>&minus;&minus;version</b> option, which will include
+&quot;+regex&quot; in the compiled feature list.</p>
+
+<p style="margin-left:18%; margin-top: 1em">For more
+information on the regular expressions used by <b>ctags</b>,
+see either the <b>regex(5,7)</b> man page, or the GNU info
+documentation for regex (e.g. &quot;info regex&quot;).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;sort</b>[=<i>yes</i>|<i>no</i>|<i>foldcase</i>]</p>
+
+<p style="margin-left:18%;">Indicates whether the tag file
+should be sorted on the tag name (default is <i>yes</i>).
+Note that the original <b>vi</b>(1) required sorted tags.
+The <i>foldcase</i> value specifies case insensitive (or
+case-folded) sorting. Fast binary searches of tag files
+sorted with case-folding will require special support from
+tools using tag files, such as that found in the ctags
+readtags library, or Vim version 6.2 or higher (using
+&quot;set ignorecase&quot;). This option must appear before
+the first file name. [Ignored in etags mode]</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;tag&minus;relative</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Indicates that the file paths
+recorded in the tag file should be relative to the directory
+containing the tag file, rather than relative to the current
+directory, unless the files supplied on the command line are
+specified with absolute paths. This option must appear
+before the first file name. The default is <i>yes</i> when
+running in etags mode (see the <b>&minus;e</b> option),
+<i>no</i> otherwise.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;totals</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Prints statistics about the
+source files read and the tag file written during the
+current invocation of <b>ctags</b>. This option is off by
+default. This option must appear before the first file
+name.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;verbose</b>[=<i>yes</i>|<i>no</i>]</p>
+
+<p style="margin-left:18%;">Enable verbose mode. This
+prints out information on option processing and a brief
+message describing what action is being taken for each file
+considered by <b>ctags</b>. Normally, <b>ctags</b> does not
+read command line arguments until after options are read
+from the configuration files (see <b>FILES</b>, below) and
+the <b>CTAGS</b> environment variable. However, if this
+option is the first argument on the command line, it will
+take effect before any options are read from these sources.
+The default is <i>no</i>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;version</b></p>
+
+<p style="margin-left:18%;">Prints a version identifier for
+<b>ctags</b> to standard output, and then exits. This is
+guaranteed to always contain the string &quot;Exuberant
+Ctags&quot;.</p>
+
+<a name="OPERATIONAL DETAILS"></a>
+<h2>OPERATIONAL DETAILS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">As <b>ctags</b>
+considers each file name in turn, it tries to determine the
+language of the file by applying the following three tests
+in order: if the file extension has been mapped to a
+language, if the file name matches a shell pattern mapped to
+a language, and finally if the file is executable and its
+first line specifies an interpreter using the Unix-style
+&quot;#!&quot; specification (if supported on the platform).
+If a language was identified, the file is opened and then
+the appropriate language parser is called to operate on the
+currently open file. The parser parses through the file and
+adds an entry to the tag file for each language object it is
+written to handle. See <b>TAG FILE FORMAT</b>, below, for
+details on these entries.</p>
+
+<p style="margin-left:11%; margin-top: 1em">This
+implementation of <b>ctags</b> imposes no formatting
+requirements on C code as do legacy implementations. Older
+implementations of ctags tended to rely upon certain
+formatting assumptions in order to help it resolve coding
+dilemmas caused by preprocessor conditionals.</p>
+
+<p style="margin-left:11%; margin-top: 1em">In general,
+<b>ctags</b> tries to be smart about conditional
+preprocessor directives. If a preprocessor conditional is
+encountered within a statement which defines a tag,
+<b>ctags</b> follows only the first branch of that
+conditional (except in the special case of &quot;#if
+0&quot;, in which case it follows only the last branch). The
+reason for this is that failing to pursue only one branch
+can result in ambiguous syntax, as in the following
+example:</p>
+
+<p style="margin-left:22%; margin-top: 1em">#ifdef
+TWO_ALTERNATIVES <br>
+struct { <br>
+#else <br>
+union { <br>
+#endif</p>
+
+<p style="margin-left:28%;">short a; <br>
+long b;</p>
+
+<p style="margin-left:22%;">}</p>
+
+<p style="margin-left:11%; margin-top: 1em">Both branches
+cannot be followed, or braces become unbalanced and
+<b>ctags</b> would be unable to make sense of the
+syntax.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If the
+application of this heuristic fails to properly parse a
+file, generally due to complicated and inconsistent pairing
+within the conditionals, <b>ctags</b> will retry the file
+using a different heuristic which does not selectively
+follow conditional preprocessor branches, but instead falls
+back to relying upon a closing brace (&quot;}&quot;) in
+column 1 as indicating the end of a block once any brace
+imbalance results from following a #if conditional
+branch.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Ctags</b>
+will also try to specially handle arguments lists enclosed
+in double sets of parentheses in order to accept the
+following conditional construct:</p>
+
+<p style="margin-left:22%; margin-top: 1em">extern void foo
+__ARGS((int one, char two));</p>
+
+<p style="margin-left:11%; margin-top: 1em">Any name
+immediately preceding the &quot;((&quot; will be
+automatically ignored and the previous name will be
+used.</p>
+
+<p style="margin-left:11%; margin-top: 1em">C++ operator
+definitions are specially handled. In order for consistency
+with all types of operators (overloaded and conversion), the
+operator name in the tag file will always be preceded by the
+string &quot;operator &quot; (i.e. even if the actual
+operator definition was written as
+&quot;operator&lt;&lt;&quot;).</p>
+
+<p style="margin-left:11%; margin-top: 1em">After creating
+or appending to the tag file, it is sorted by the tag name,
+removing identical tag lines.</p>
+
+<a name="TAG FILE FORMAT"></a>
+<h2>TAG FILE FORMAT</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">When not
+running in etags mode, each entry in the tag file consists
+of a separate line, each looking like this in the most
+general case:</p>
+
+
+<p style="margin-left:12%; margin-top: 1em">tag_name&lt;TAB&gt;file_name&lt;TAB&gt;ex_cmd;&quot;&lt;TAB&gt;extension_fields</p>
+
+<p style="margin-left:11%; margin-top: 1em">The fields and
+separators of these lines are specified as follows:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="17%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em" valign="top">1.</p></td>
+<td width="3%"></td>
+<td width="77%">
+
+
+<p style="margin-top: 1em" valign="top">tag name</p></td>
+<tr valign="top" align="left">
+<td width="17%"></td>
+<td width="3%">
+
+
+<p valign="top">2.</p></td>
+<td width="3%"></td>
+<td width="77%">
+
+
+<p valign="top">single tab character</p></td>
+<tr valign="top" align="left">
+<td width="17%"></td>
+<td width="3%">
+
+
+<p valign="top">3.</p></td>
+<td width="3%"></td>
+<td width="77%">
+
+
+<p valign="top">name of the file in which the object
+associated with the tag is located</p></td>
+<tr valign="top" align="left">
+<td width="17%"></td>
+<td width="3%">
+
+
+<p valign="top">4.</p></td>
+<td width="3%"></td>
+<td width="77%">
+
+
+<p valign="top">single tab character</p></td>
+<tr valign="top" align="left">
+<td width="17%"></td>
+<td width="3%">
+
+
+<p valign="top">5.</p></td>
+<td width="3%"></td>
+<td width="77%">
+
+
+<p valign="top">EX command used to locate the tag within
+the file; generally a search pattern (either /pattern/ or
+?pattern?) or line number (see <b>&minus;&minus;excmd</b>).
+Tag file format 2 (see <b>&minus;&minus;format</b>) extends
+this EX command under certain circumstances to include a set
+of extension fields (described below) embedded in an EX
+comment immediately appended to the EX command, which leaves
+it backward-compatible with original <b>vi</b>(1)
+implementations.</p> </td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">A few special
+tags are written into the tag file for internal purposes.
+These tags are composed in such a way that they always sort
+to the top of the file. Therefore, the first two characters
+of these tags are used a magic number to detect a tag file
+for purposes of determining whether a valid tag file is
+being overwritten rather than a source file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Note that the
+name of each source file will be recorded in the tag file
+exactly as it appears on the command line. Therefore, if the
+path you specified on the command line was relative to the
+current directory, then it will be recorded in that same
+manner in the tag file. See, however, the
+<b>&minus;&minus;tag&minus;relative</b> option for how this
+behavior can be modified.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Extension
+fields are tab-separated key-value pairs appended to the end
+of the EX command as a comment, as described above. These
+key value pairs appear in the general form
+&quot;<i>key</i>:<i>value</i>&quot;. Their presence in the
+lines of the tag file are controlled by the
+<b>&minus;&minus;fields</b> option. The possible keys and
+the meaning of their values are as follows:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><i>access</i></p></td>
+<td width="9%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">Indicates the
+visibility of this class member, where <i>value</i> is
+specific to the language.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><i>file</i></p></td>
+<td width="9%"></td>
+<td width="71%">
+
+
+<p>Indicates that the tag has file-limited visibility. This
+key has no corresponding value.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><i>kind</i></p></td>
+<td width="9%"></td>
+<td width="71%">
+
+
+<p>Indicates the type, or kind, of tag. Its value is either
+one of the corresponding one-letter flags described under
+the various <b>&minus;&minus;&lt;LANG&gt;&minus;kinds</b>
+options above, or a full name. It is permitted (and is, in
+fact, the default) for the key portion of this field to be
+omitted. The optional behaviors are controlled with the
+<b>&minus;&minus;fields</b> option.</p></td>
+</table>
+
+<p style="margin-left:11%;"><i>implementation</i></p>
+
+<p style="margin-left:29%;">When present, this indicates a
+limited implementation (abstract vs. concrete) of a routine
+or class, where <i>value</i> is specific to the language
+(&quot;virtual&quot; or &quot;pure virtual&quot; for C++;
+&quot;abstract&quot; for Java).</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="14%">
+
+
+
+<p style="margin-top: 1em" valign="top"><i>inherits</i></p> </td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">When present,
+<i>value</i>. is a comma-separated list of classes from
+which this class is derived (i.e. inherits from).</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="14%">
+
+
+<p><i>signature</i></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p>When present, <i>value</i> is a language-dependent
+representation of the signature of a routine. A routine
+signature in its complete form specifies the return type of
+a routine and its formal argument list. This extension field
+is presently supported only for C-based languages and does
+not include the return type.</p></td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">In addition,
+information on the scope of the tag definition may be
+available, with the key portion equal to some
+language-dependent construct name and its value the name
+declared for that construct in the program. This scope entry
+indicates the scope in which the tag was found. For example,
+a tag generated for a C structure member would have a scope
+looking like &quot;struct:myStruct&quot;.</p>
+
+<a name="HOW TO USE WITH VI"></a>
+<h2>HOW TO USE WITH VI</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Vi will, by
+default, expect a tag file by the name &quot;tags&quot; in
+the current directory. Once the tag file is built, the
+following commands exercise the tag indexing feature:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="14%">
+
+
+<p style="margin-top: 1em" valign="top"><b>vi &minus;t
+tag</b></p> </td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">Start vi and
+position the cursor at the file and line where
+&quot;tag&quot; is defined.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="14%">
+
+
+<p style="margin-top: 1em" valign="top"><b>:ta tag</b></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">Find a tag.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="14%">
+
+
+<p style="margin-top: 1em" valign="top"><b>Ctrl-]</b></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">Find the tag under
+the cursor.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="14%">
+
+
+<p style="margin-top: 1em" valign="top"><b>Ctrl-T</b></p></td>
+<td width="4%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em" valign="top">Return to previous
+location before jump to tag (not widely implemented).</p></td>
+</table>
+
+<a name="HOW TO USE WITH GNU EMACS"></a>
+<h2>HOW TO USE WITH GNU EMACS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Emacs will, by
+default, expect a tag file by the name &quot;TAGS&quot; in
+the current directory. Once the tag file is built, the
+following commands exercise the tag indexing feature:
+<b><br>
+M-x visit&minus;tags&minus;table &lt;RET&gt; FILE
+&lt;RET&gt;</b></p>
+
+<p style="margin-left:26%;">Select the tag file,
+&quot;FILE&quot;, to use.</p>
+
+<p style="margin-left:11%;"><b>M-. [TAG]
+&lt;RET&gt;</b></p>
+
+<p style="margin-left:26%;">Find the first definition of
+TAG. The default tag is the identifier under the cursor.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="11%">
+
+
+<p style="margin-top: 1em" valign="top"><b>M-*</b></p></td>
+<td width="4%"></td>
+<td width="72%">
+
+
+<p style="margin-top: 1em" valign="top">Pop back to where
+you previously invoked &quot;M-.&quot;.</p></td>
+<td width="2%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="11%">
+
+
+<p style="margin-top: 1em" valign="top"><b>C-u M-.</b></p></td>
+<td width="4%"></td>
+<td width="72%">
+
+
+<p style="margin-top: 1em" valign="top">Find the next
+definition for the last tag.</p></td>
+<td width="2%">
+</td>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">For more
+commands, see the <i>Tags</i> topic in the Emacs info
+document.</p>
+
+<a name="HOW TO USE WITH NEDIT"></a>
+<h2>HOW TO USE WITH NEDIT</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">NEdit version
+5.1 and later can handle the new extended tag file format
+(see <b>&minus;&minus;format</b>). To make NEdit use the tag
+file, select &quot;File&minus;&gt;Load Tags File&quot;. To
+jump to the definition for a tag, highlight the word, the
+press Ctrl-D. NEdit 5.1 can can read multiple tag files from
+different directories. Setting the X resource nedit.tagFile
+to the name of a tag file instructs NEdit to automatically
+load that tag file at startup time.</p>
+
+<a name="CAVEATS"></a>
+<h2>CAVEATS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Because
+<b>ctags</b> is neither a preprocessor nor a compiler, use
+of preprocessor macros can fool <b>ctags</b> into either
+missing tags or improperly generating inappropriate tags.
+Although <b>ctags</b> has been designed to handle certain
+common cases, this is the single biggest cause of reported
+problems. In particular, the use of preprocessor constructs
+which alter the textual syntax of C can fool <b>ctags</b>.
+You can work around many such problems by using the
+<b>&minus;I</b> option.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Note that since
+<b>ctags</b> generates patterns for locating tags (see the
+<b>&minus;&minus;excmd</b> option), it is entirely possible
+that the wrong line may be found by your editor if there
+exists another source line which is identical to the line
+containing the tag. The following example demonstrates this
+condition:</p>
+
+<p style="margin-left:22%; margin-top: 1em">int
+variable;</p>
+
+<p style="margin-left:22%; margin-top: 1em">/* ... */ <br>
+void foo(variable) <br>
+int variable; <br>
+{</p>
+
+<p style="margin-left:28%;">/* ... */</p>
+
+<p style="margin-left:22%;">}</p>
+
+<p style="margin-left:11%; margin-top: 1em">Depending upon
+which editor you use and where in the code you happen to be,
+it is possible that the search pattern may locate the local
+parameter declaration in foo() before it finds the actual
+global variable definition, since the lines (and therefore
+their search patterns are identical). This can be avoided by
+use of the <b>&minus;&minus;excmd</b>=<i>n</i> option.</p>
+
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Ctags</b>
+has more options than <b>ls</b>(1).</p>
+
+<p style="margin-left:11%; margin-top: 1em">When parsing a
+C++ member function definition (e.g.
+&quot;className::function&quot;), <b>ctags</b> cannot
+determine whether the scope specifier is a class name or a
+namespace specifier and always lists it as a class name in
+the scope portion of the extension fields. Also, if a C++
+function is defined outside of the class declaration (the
+usual case), the access specification (i.e. public,
+protected, or private) and implementation information (e.g.
+virtual, pure virtual) contained in the function declaration
+are not known when the tag is generated for the function
+definition. It will, however be available for prototypes
+(e.g <b>&minus;&minus;c++&minus;kinds</b>=<i>+p</i>).</p>
+
+<p style="margin-left:11%; margin-top: 1em">No qualified
+tags are generated for language objects inherited into a
+class.</p>
+
+<a name="ENVIRONMENT VARIABLES"></a>
+<h2>ENVIRONMENT VARIABLES</h2>
+
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em" valign="top"><b>CTAGS</b></p></td>
+<td width="3%"></td>
+<td width="77%">
+
+
+<p style="margin-top: 1em" valign="top">If this environment
+variable exists, it will be expected to contain a set of
+default options which are read when <b>ctags</b> starts,
+after the configuration files listed in <b>FILES</b>, below,
+are read, but before any command line options are read.
+Options appearing on the command line will override options
+specified in this variable. Only options will be read from
+this variable. Note that all white space in this variable is
+considered a separator, making it impossible to pass an
+option parameter containing an embedded space. If this is a
+problem, use a configuration file instead.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>ETAGS</b></p></td>
+<td width="3%"></td>
+<td width="77%">
+
+
+<p>Similar to the <b>CTAGS</b> variable above, this
+variable, if found, will be read when <b>etags</b> starts.
+If this variable is not found, <b>etags</b> will try to use
+<b>CTAGS</b> instead.</p></td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>TMPDIR</b></p></td>
+<td width="3%"></td>
+<td width="77%">
+
+
+<p>On Unix-like hosts where mkstemp() is available, the
+value of this variable specifies the directory in which to
+place temporary files. This can be useful if the size of a
+temporary file becomes too large to fit on the partition
+holding the default temporary directory defined at
+compilation time. <b>ctags</b> creates temporary files only
+if either (1) an emacs-style tag file is being generated,
+(2) the tag file is being sent to standard output, or (3)
+the program was compiled to use an internal sort algorithm
+to sort the tag files instead of the the sort utility of the
+operating system. If the sort utility of the operating
+system is being used, it will generally observe this
+variable also. Note that if <b>ctags</b> is setuid, the
+value of TMPDIR will be ignored.</p></td>
+</table>
+
+<a name="FILES"></a>
+<h2>FILES</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>/ctags.cnf
+(on MSDOS, MSWindows only) <br>
+/etc/ctags.conf <br>
+/usr/local/etc/ctags.conf <br>
+$HOME/.ctags <br>
+$HOME/ctags.cnf (on MSDOS, MSWindows only) <br>
+.ctags <br>
+ctags.cnf (on MSDOS, MSWindows only)</i></p>
+
+<p style="margin-left:22%;">If any of these configuration
+files exist, each will be expected to contain a set of
+default options which are read in the order listed when
+<b>ctags</b> starts, but before the <b>CTAGS</b> environment
+variable is read or any command line options are read. This
+makes it possible to set up site-wide, personal or
+project-level defaults. It is possible to compile
+<b>ctags</b> to read an additional configuration file before
+any of those shown above, which will be indicated if the
+output produced by the <b>&minus;&minus;version</b> option
+lists the &quot;custom-conf&quot; feature. Options appearing
+in the <b>CTAGS</b> environment variable or on the command
+line will override options specified in these files. Only
+options will be read from these files. Note that the option
+files are read in line-oriented mode in which spaces are
+significant (since shell quoting is not possible). Each line
+of the file is read as one command line parameter (as if it
+were quoted with single quotes). Therefore, use new lines to
+indicate separate command-line arguments.</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p style="margin-top: 1em" valign="top"><i>tags</i></p></td>
+<td width="5%"></td>
+<td width="58%">
+
+
+<p style="margin-top: 1em" valign="top">The default tag
+file created by <b>ctags</b>.</p></td>
+<td width="20%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p style="margin-top: 1em" valign="top"><i>TAGS</i></p></td>
+<td width="5%"></td>
+<td width="58%">
+
+
+<p style="margin-top: 1em" valign="top">The default tag
+file created by <b>etags</b>.</p></td>
+<td width="20%">
+</td>
+</table>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The official
+Exuberant Ctags web site at:</p>
+
+
+<p style="margin-left:22%; margin-top: 1em">http://ctags.sourceforge.net</p>
+
+<p style="margin-left:11%; margin-top: 1em">Also
+<b>ex</b>(1), <b>vi</b>(1), <b>elvis</b>, or, better yet,
+<b>vim</b>, the official editor of <b>ctags</b>. For more
+information on <b>vim</b>, see the VIM Pages web site
+at:</p>
+
+
+<p style="margin-left:22%; margin-top: 1em">http://www.vim.org/</p>
+
+<a name="AUTHOR"></a>
+<h2>AUTHOR</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Darren Hiebert
+&lt;dhiebert at users.sourceforge.net&gt; <br>
+http://DarrenHiebert.com/</p>
+
+<a name="MOTIVATION"></a>
+<h2>MOTIVATION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">&quot;Think ye
+at all times of rendering some service to every member of
+the human race.&quot;</p>
+
+<p style="margin-left:11%; margin-top: 1em">&quot;All
+effort and exertion put forth by man from the fullness of
+his heart is worship, if it is prompted by the highest
+motives and the will to do service to humanity.&quot;</p>
+
+<p style="margin-left:22%; margin-top: 1em">&minus;&minus;
+From the Baha&rsquo;i Writings</p>
+
+<a name="CREDITS"></a>
+<h2>CREDITS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">This version of
+<b>ctags</b> was originally derived from and inspired by the
+ctags program by Steve Kirkendall
+&lt;kirkenda@cs.pdx.edu&gt; that comes with the Elvis vi
+clone (though virtually none of the original code
+remains).</p>
+
+<p style="margin-left:11%; margin-top: 1em">Credit is also
+due Bram Moolenaar &lt;Bram@vim.org&gt;, the author of
+<b>vim</b>, who has devoted so much of his time and energy
+both to developing the editor as a service to others, and to
+helping the orphans of Uganda.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The section
+entitled &quot;HOW TO USE WITH GNU EMACS&quot; was
+shamelessly stolen from the info page for GNU
+<b>etags</b>.</p>
+<hr>
+</body>
+</html>

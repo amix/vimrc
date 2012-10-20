@@ -1,0 +1,14 @@
+Contributed addons and wrappers for cscope
+$Id: README,v 1.4 2011/05/26 17:47:25 nhorman Exp $
+
+ocs - wrapper for cscope providing database generation through recursive
+       directory set (among other things) - docced in script itself.
+        contributed from SCO osr5.
+
+webcscope - a web cgi interface to cscope. Contributed by Ragho Mahalingam,
+		using code from Dmitry Obukhovi and Steven E. Brenner.
+
+xcscope - An (X)Emacs interface to cscope.
+
+cctree.vim - A Vim plugin to allow you to do some powerful searching of cscope
+	     databases from within vi, see cctree.txt for usage details

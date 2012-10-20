@@ -1,0 +1,73 @@
+If you are attempting to install Exuberant Ctags on a Unix-like platform
+(one that can at least run a Bourne shell script) see the file INSTALL.
+
+Installation Notes
+==================
+
+For non-Unix platforms, simple makefiles are provided:
+
+    descrip.mms   For VMS using either DEC C or VAX C
+    mk_bc3.mak    For MSDOS using Borland C/C++ 3.x
+    mk_bc5.mak    For Win32 using Borland C++ 5.5
+    mk_djg.mak    For MSDOS using DJGPP Gnu GCC (better to follow Unix install)
+    mk_manx.mak   For Amiga using Aztec/Manx C 5.0
+    mk_mingw.mak  For Win32 using MinGW
+    mk_mpw.mak    For Macintosh using MPW
+    mk_mvc.mak    For Win32 using Microsoft Visual C++
+    mk_os2.mak    For OS/2 using GCC (EMX)
+    mk_qdos.mak   For QDOS using C68
+    mk_riscos.mak For RISC OS using the GCC SDK <http://hard-mofo.dsvr.net>
+    mk_sas.mak    For Amiga using SAS/C
+
+
+Special Notes
+=============
+
+DJGPP:
+------
+
+  It is better to follow the standard Unix install on DJGPP, but this requires
+  that you use BASH and requires a fairly complete installation of GJGPP
+  packages. You can use mk_djg.mak if you can't run configure.
+
+Macintosh with MPW:
+-------------------
+
+  To build Ctags on MPW you will have to have the Metrowerks compilers
+  or you will have to edit the makefiles yourself.
+  
+  Since the makefile for MPW is called mk_mpw.mak you will have to give
+  the command: `Make -f mk_mpw.mak CTags` and then select the output
+  and execute it. Alternatively you could rename this makefile to
+  CTags.make and issue the command `Build CTags`.
+  
+  If the build process goes wrong make sure the line endings for the
+  makefile are set to MacOS (CR instead of LF).
+
+  This version of Ctags only accepts and emits unix style paths. This was
+  done since it was easier to implement (few changes in main source files)
+  and since I ported Ctags to MPW to use with Pepper which also works with
+  unix style paths internally. Besides, since we're now moving to MacOS X
+  anyway, Mac programmers are getting used to unix style paths anyway.
+  
+  Example, suppose you have a project using PowerPlant which is located in
+  'HD20:tools:PowerPlant:' and you want a tags file for all powerplant
+  sources and your projects sources. Go to the root directory of your
+  project and type:
+
+    CTags -R . '/HD20/tools/PowerPlant/'
+
+  The '.' in this command means current directory. You will also have to
+  put quotes around the full unix style path since / has a special meaning
+  in MPW.
+  
+RISC OS:
+--------
+
+  Regex support on RISC OS is available when compiled to use the RISC OS port
+  of the GNU regex library, which can be obtained from:
+ 
+    <http://www.sbellon.de/software.html>
+ 
+  Using 'Set RexEx$Path <Obey$Dir>.' in the regex-0/12 directory will ensure
+  it can be found.

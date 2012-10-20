@@ -1,0 +1,386 @@
+<!-- $Id: EXTENDING.html 198 2002-09-04 01:17:32Z darren $ -->
+<html>
+<head>
+<title>Exuberant Ctags: Adding support for a new language</title>
+</head>
+<body>
+
+<h1>How to Add Support for a New Language to Exuberant Ctags</h1>
+
+<p>
+<b>Exuberant Ctags</b> has been designed to make it very easy to add your own
+custom language parser. As an exercise, let us assume that I want to add
+support for my new language, <em>Swine</em>, the successor to Perl (i.e. Perl
+before Swine &lt;wince&gt;). This language consists of simple definitions of
+labels in the form "<code>def my_label</code>". Let us now examine the various
+ways to do this.
+</p>
+
+<h2>Operational background</h2>
+
+<p>
+As ctags considers each file name, it tries to determine the language of the
+file by applying the following three tests in order: if the file extension has
+been mapped to a language, if the file name matches a shell pattern mapped to
+a language, and finally if the file is executable and its first line specifies
+an interpreter using the Unix-style "#!" specification (if supported on the
+platform). If a language was identified, the file is opened and then the
+appropriate language parser is called to operate on the currently open file.
+The parser parses through the file and whenever it finds some interesting
+token, calls a function to define a tag entry.
+</p>
+
+<h2>Creating a user-defined language</h2>
+
+<p>
+The quickest and easiest way to do this is by defining a new language using
+the program options. In order to have Swine support available every time I
+start ctags, I will place the following lines into the file
+<code>$HOME/.ctags</code>, which is read in every time ctags starts:
+
+<code>
+<pre>
+  --langdef=swine
+  --langmap=swine:.swn
+  --regex-swine=/^def[ \t]*([a-zA-Z0-9_]+)/\1/d,definition/
+</pre>
+</code>
+The first line defines the new language, the second maps a file extension to
+it, and the third defines a regular expression to identify a language
+definition and generate a tag file entry for it.
+</p>
+
+<h2>Integrating a new language parser</h2>
+
+<p>
+Now suppose that I want to truly integrate compiled-in support for Swine into
+ctags. First, I create a new module, <code>swine.c</code>, and add one
+externally visible function to it, <code>extern parserDefinition
+*SwineParser(void)</code>, and add its name to the table in
+<code>parsers.h</code>. The job of this parser definition function is to
+create an instance of the <code>parserDefinition</code> structure (using
+<code>parserNew()</code>) and populate it with information defining how files
+of this language are recognized, what kinds of tags it can locate, and the
+function used to invoke the parser on the currently open file.
+</p>
+
+<p>
+The structure <code>parserDefinition</code> allows assignment of the following
+fields:
+
+<code>
+<pre>
+  const char *name;               /* name of language */
+  kindOption *kinds;              /* tag kinds handled by parser */
+  unsigned int kindCount;         /* size of `kinds' list */
+  const char *const *extensions;  /* list of default extensions */
+  const char *const *patterns;    /* list of default file name patterns */
+  parserInitialize initialize;    /* initialization routine, if needed */
+  simpleParser parser;            /* simple parser (common case) */
+  rescanParser parser2;           /* rescanning parser (unusual case) */
+  boolean regex;                  /* is this a regex parser? */
+</pre>
+</code>
+</p>
+
+<p>
+The <code>name</code> field must be set to a non-empty string. Also, unless
+<code>regex</code> is set true (see below), either <code>parser</code> or
+<code>parser2</code> must set to point to a parsing routine which will
+generate the tag entries. All other fields are optional.
+
+<p>
+Now all that is left is to implement the parser. In order to do its job, the
+parser should read the file stream using using one of the two I/O interfaces:
+either the character-oriented <code>fileGetc()</code>, or the line-oriented
+<code>fileReadLine()</code>. When using <code>fileGetc()</code>, the parser
+can put back a character using <code>fileUngetc()</code>. How our Swine parser
+actually parses the contents of the file is entirely up to the writer of the
+parser--it can be as crude or elegant as desired. You will note a variety of
+examples from the most complex (c.c) to the simplest (make.c).
+</p>
+
+<p>
+When the Swine parser identifies an interesting token for which it wants to
+add a tag to the tag file, it should create a <code>tagEntryInfo</code>
+structure and initialize it by calling <code>initTagEntry()</code>, which
+initializes defaults and fills information about the current line number and
+the file position of the beginning of the line. After filling in information
+defining the current entry (and possibly overriding the file position or other
+defaults), the parser passes this structure to <code>makeTagEntry()</code>.
+</p>
+
+<p>
+Instead of writing a character-oriented parser, it may be possible to specify
+regular expressions which define the tags. In this case, instead of defining a
+parsing function, <code>SwineParser()</code>, sets <code>regex</code> to true,
+and points <code>initialize</code> to a function which calls
+<code>addTagRegex()</code> to install the regular expressions which define its
+tags. The regular expressions thus installed are compared against each line 
+of the input file and generate a specified tag when matched. It is usually
+much easier to write a regex-based parser, although they can be slower (one
+parser example was 4 times slower). Whether the speed difference matters to
+you depends upon how much code you have to parse. It is probably a good
+strategy to implement a regex-based parser first, and if it is too slow for
+you, then invest the time and effort to write a character-based parser.
+</p>
+
+<p>
+A regex-based parser is inherently line-oriented (i.e. the entire tag must be
+recognizable from looking at a single line) and context-insensitive (i.e the
+generation of the tag is entirely based upon when the regular expression
+matches a single line). However, a regex-based callback mechanism is also
+available, installed via the function <code>addCallbackRegex()</code>. This
+allows a specified function to be invoked whenever a specific regular
+expression is matched. This allows a character-oriented parser to operate
+based upon context of what happened on a previous line (e.g. the start or end
+of a multi-line comment). Note that regex callbacks are called just before the
+first character of that line can is read via either <code>fileGetc()</code> or
+using <code>fileGetc()</code>. The effect of this is that before either of
+these routines return, a callback routine may be invoked because the line
+matched a regex callback. A callback function to be installed is defined by
+these types:
+
+<code>
+<pre>
+  typedef void (*regexCallback) (const char *line, const regexMatch *matches, unsigned int count);
+
+  typedef struct {
+      size_t start;   /* character index in line where match starts */
+      size_t length;  /* length of match */
+  } regexMatch;
+</pre>
+</code>
+</p>
+
+<p>
+The callback function is passed the line matching the regular expression and
+an array of <code>count</code> structures defining the subexpression matches
+of the regular expression, starting from \0 (the entire line).
+</p>
+
+<p>
+Lastly, be sure to add your the name of the file containing your parser (e.g.
+swine.c) to the macro <code>SOURCES</code> in the file <code>source.mak</code>
+and an entry for the object file to the macro <code>OBJECTS</code> in the same
+file, so that your new module will be compiled into the program.
+</p>
+
+<p>
+This is all there is to it. All other details are specific to the parser and
+how it wants to do its job. There are some support functions which can take
+care of some commonly needed parsing tasks, such as keyword table lookups (see
+keyword.c), which you can make use of if desired (examples of its use can be
+found in c.c, eiffel.c, and fortran.c). Almost everything is already taken care
+of automatically for you by the infrastructure.  Writing the actual parsing
+algorithm is the hardest part, but is not constrained by any need to conform
+to anything in ctags other than that mentioned above.
+</p>
+
+<p>
+There are several different approaches used in the parsers inside <b>Exuberant
+Ctags</b> and you can browse through these as examples of how to go about
+creating your own.
+</p>
+
+<h2>Examples</h2>
+
+<p>
+Below you will find several example parsers demonstrating most of the
+facilities available. These include three alternative implementations
+of a Swine parser, which generate tags for lines beginning with
+"<CODE>def</CODE>" followed by some name.
+</p>
+
+<code>
+<pre>
+/***************************************************************************
+ * swine.c
+ * Character-based parser for Swine definitions
+ **************************************************************************/
+/* INCLUDE FILES */
+#include "general.h"    /* always include first */
+
+#include &lt;string.h&gt;     /* to declare strxxx() functions */
+#include &lt;ctype.h&gt;      /* to define isxxx() macros */
+
+#include "parse.h"      /* always include */
+#include "read.h"       /* to define file fileReadLine() */
+
+/* DATA DEFINITIONS */
+typedef enum eSwineKinds {
+    K_DEFINE
+} swineKind;
+
+static kindOption SwineKinds [] = {
+    { TRUE, 'd', "definition", "pig definition" }
+};
+
+/* FUNCTION DEFINITIONS */
+
+static void findSwineTags (void)
+{
+    vString *name = vStringNew ();
+    const unsigned char *line;
+
+    while ((line = fileReadLine ()) != NULL)
+    {
+        /* Look for a line beginning with "def" followed by name */
+        if (strncmp ((const char*) line, "def", (size_t) 3) == 0  &amp;&amp;
+            isspace ((int) line [3]))
+        {
+            const unsigned char *cp = line + 4;
+            while (isspace ((int) *cp))
+                ++cp;
+            while (isalnum ((int) *cp)  ||  *cp == '_')
+            {
+                vStringPut (name, (int) *cp);
+                ++cp;
+            }
+            vStringTerminate (name);
+            makeSimpleTag (name, SwineKinds, K_DEFINE);
+            vStringClear (name);
+        }
+    }
+    vStringDelete (name);
+}
+
+/* Create parser definition stucture */
+extern parserDefinition* SwineParser (void)
+{
+    static const char *const extensions [] = { "swn", NULL };
+    parserDefinition* def = parserNew ("Swine");
+    def-&gt;kinds      = SwineKinds;
+    def-&gt;kindCount  = KIND_COUNT (SwineKinds);
+    def-&gt;extensions = extensions;
+    def-&gt;parser     = findSwineTags;
+    return def;
+}
+</pre>
+</code>
+
+<p>
+<pre>
+<code>
+/***************************************************************************
+ * swine.c
+ * Regex-based parser for Swine
+ **************************************************************************/
+/* INCLUDE FILES */
+#include "general.h"    /* always include first */
+#include "parse.h"      /* always include */
+
+/* FUNCTION DEFINITIONS */
+
+static void installSwineRegex (const langType language)
+{
+    addTagRegex (language, "^def[ \t]*([a-zA-Z0-9_]+)", "\\1", "d,definition", NULL);
+}
+
+/* Create parser definition stucture */
+extern parserDefinition* SwineParser (void)
+{
+    static const char *const extensions [] = { "swn", NULL };
+    parserDefinition* def = parserNew ("Swine");
+    parserDefinition* const def = parserNew ("Makefile");
+    def-&gt;patterns   = patterns;
+    def-&gt;extensions = extensions;
+    def-&gt;initialize = installMakefileRegex;
+    def-&gt;regex      = TRUE;
+    return def;
+}
+</code>
+</pre>
+
+<p>
+<pre>
+/***************************************************************************
+ * swine.c
+ * Regex callback-based parser for Swine definitions
+ **************************************************************************/
+/* INCLUDE FILES */
+#include "general.h"    /* always include first */
+
+#include "parse.h"      /* always include */
+#include "read.h"       /* to define file fileReadLine() */
+
+/* DATA DEFINITIONS */
+typedef enum eSwineKinds {
+    K_DEFINE
+} swineKind;
+
+static kindOption SwineKinds [] = {
+    { TRUE, 'd', "definition", "pig definition" }
+};
+
+/* FUNCTION DEFINITIONS */
+
+static void definition (const char *const line, const regexMatch *const matches,
+                       const unsigned int count)
+{
+    if (count &gt; 1)    /* should always be true per regex */
+    {
+        vString *const name = vStringNew ();
+        vStringNCopyS (name, line + matches [1].start, matches [1].length);
+        makeSimpleTag (name, SwineKinds, K_DEFINE);
+    }
+}
+
+static void findSwineTags (void)
+{
+    while (fileReadLine () != NULL)
+        ;  /* don't need to do anything here since callback is sufficient */
+}
+
+static void installSwine (const langType language)
+{
+    addCallbackRegex (language, "^def[ \t]+([a-zA-Z0-9_]+)", NULL, definition);
+}
+
+/* Create parser definition stucture */
+extern parserDefinition* SwineParser (void)
+{
+    static const char *const extensions [] = { "swn", NULL };
+    parserDefinition* def = parserNew ("Swine");
+    def-&gt;kinds      = SwineKinds;
+    def-&gt;kindCount  = KIND_COUNT (SwineKinds);
+    def-&gt;extensions = extensions;
+    def-&gt;parser     = findSwineTags;
+    def-&gt;initialize = installSwine;
+    return def;
+}
+</pre>
+
+<p>
+<pre>
+/***************************************************************************
+ * make.c
+ * Regex-based parser for makefile macros
+ **************************************************************************/
+/* INCLUDE FILES */
+#include "general.h"    /* always include first */
+#include "parse.h"      /* always include */
+
+/* FUNCTION DEFINITIONS */
+
+static void installMakefileRegex (const langType language)
+{
+    addTagRegex (language, "(^|[ \t])([A-Z0-9_]+)[ \t]*:?=", "\\2", "m,macro", "i");
+}
+
+/* Create parser definition stucture */
+extern parserDefinition* MakefileParser (void)
+{
+    static const char *const patterns [] = { "[Mm]akefile", NULL };
+    static const char *const extensions [] = { "mak", NULL };
+    parserDefinition* const def = parserNew ("Makefile");
+    def-&gt;patterns   = patterns;
+    def-&gt;extensions = extensions;
+    def-&gt;initialize = installMakefileRegex;
+    def-&gt;regex      = TRUE;
+    return def;
+}
+</pre>
+
+</body>
+</html>
