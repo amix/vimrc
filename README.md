@@ -1,7 +1,6 @@
 # The Ultimate vimrc of hustcalm forked from amix
 
 **Below is the original readme post of amix**
-**/**********************************************************************/**
 
 Over the last 8 years I have used and tweaked Vim. This is my Ultimate vimrc.
 
@@ -303,7 +302,6 @@ Vimscript mappings:
 * [Vim tips: Visual Search](http://amix.dk/blog/post/19334#Vim-tips-Visual-Search)
 * [Folding in Vim](http://amix.dk/blog/post/19132#Folding-in-Vim)
 
-**/**********************************************************************/**
 **Above is the original readme post of amix**
 
 # My Updates to The Ultimate vimrc
