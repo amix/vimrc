@@ -1,7 +1,7 @@
 # The Ultimate vimrc of hustcalm forked from amix
 
-Below is the original readme post of amix
-/**********************************************************************/
+**Below is the original readme post of amix**
+**/**********************************************************************/**
 
 Over the last 8 years I have used and tweaked Vim. This is my Ultimate vimrc.
 
@@ -303,12 +303,13 @@ Vimscript mappings:
 * [Vim tips: Visual Search](http://amix.dk/blog/post/19334#Vim-tips-Visual-Search)
 * [Folding in Vim](http://amix.dk/blog/post/19132#Folding-in-Vim)
 
-/**********************************************************************/
-Above is the original readme post of amix
+**/**********************************************************************/**
+**Above is the original readme post of amix**
 
 # My Updates to The Ultimate vimrc
 
 ## Add some useful plugins to the repo
-See them in [vim_plugins_src](https://github.com/hustcalm/vimrc/tree/master/vim_plugins_src).And I will give some details about them later. 
+See them in [vim_plugins_src](https://github.com/hustcalm/vimrc/tree/master/vim_plugins_src).And I will give some details about them later.
+
 You can also add your own favorite script from [vim-scripts.org](http://vim-scripts.org/) or install from [github](http://github.com/vim-scripts).
 
