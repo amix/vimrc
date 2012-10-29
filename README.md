@@ -100,7 +100,7 @@ After you have installed the setup you can create **~/.vim_runtime/my_configs.vi
 You can also install your own plugins, for instance, via pathogen we can install [vim-rails](https://github.com/tpope/vim-rails):
 
 	cd ~/.vim_runtime
-	git clone git://github.com/tpope/vim-rails.git sources_plugins/vim-rails
+	git clone git://github.com/tpope/vim-rails.git bundle/vim-rails
 	
 Now you have vim-rails installed ;-)
 
@@ -325,12 +325,12 @@ After this,you got vim-rails under sources_plugins/vim-rails as a git local repo
 
 ### Manage with git submodule
 
-Instead I'm using git submodule to manage vim plugins now(Alternately you can use [git subtree](https://github.com/apenwarr/git-subtree.git)), clone them from github and install,config,update,delete,etc...
+Instead I'm using git submodule to manage vim plugins now(Alternately you can use [git subtree](https://github.com/apenwarr/git-subtree.git)), clone them from github and install,config,update,delete,etc... And as a vimer, I prefer to drop the plugins to bundle rather than sources_plugins.
 
 As we want to install vim-rails:
 
     cd ~/.vim_runtime
-    git submodule add git://github.com/tpope/vim-rails.git sources_plugins/vim-rails
+    git submodule add git://github.com/tpope/vim-rails.git bundle/vim-rails
     git commit -a -m 'first commit with submodule vim-rails'
     git submodule init
 
@@ -355,8 +355,8 @@ after you clone my repo.
 
 ### Remove Sub Module
 
-    git rm --cached sources_plugins/vim-rails
-    git rm sources_plugins/vim-rails
+    git rm --cached bundle/vim-rails
+    git rm bundle/vim-rails
     vi .gitmoudles
     vi .git/config
     git add . && git commit -m 'Remove Submodule vim-rails'
@@ -371,7 +371,7 @@ Just to add a line to plugins_config.vim and it may look like this:
 
     call pathogen#infect('~/.vim_runtime/sources_forked')
     call pathogen#infect('~/.vim_runtime/sources_non_forked')
-    **call pathogen#infect('~/.vim_runtime/sources_plugins')**
+    **call pathogen#infect('~/.vim_runtime/bundle')**
     call pathogen#helptags()
 
 The line **bold** is added. Then pathogen will get everything done.
