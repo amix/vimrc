@@ -318,6 +318,7 @@ As amix mentioned, you can isntall your own plugins via pathogen,for instance vi
     git clone git://github.com/tpope/vim-rails.git sources_plugins/vim-rails
 
 After this,you got vim-rails under sources_plugins/vim-rails as a git local repo.       
+
 **But** maybe amix forgot to mention that you have to change plugins_config.vim under ~/.vim_runtime/vimrcs to make the plugin work.            
 Just to add a line to plugins_config.vim and it may look like this:
 
