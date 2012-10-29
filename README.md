@@ -325,7 +325,7 @@ After this,you got vim-rails under sources_plugins/vim-rails as a git local repo
 
 ### Manage with git submodule
 
-Instead I'm using git submodule to manage vim plugins now(Alternately you can use [git subtree](https://github.com/apenwarr/git-subtree.git)), clone them from github and install,config,update,delete,etc... And as a vimer, I prefer to drop the plugins to bundle rather than sources_plugins.
+Instead I'm using git submodule to manage vim plugins now(Alternately you can use [git subtree](https://github.com/apenwarr/git-subtree.git)), clone them from github and install,config,update,delete,etc... And as a vimer, I prefer to drop the plugins to bundle rather than sources_plugins thus pathogen can find it automatically.
 
 As we want to install vim-rails:
 
@@ -366,15 +366,17 @@ Above we use vi to edit .gitmoudles and .git/config to remove references to spec
 
 ### To make new plugin work
 
+**If you drop your plugins to bunle, you can ignore this.**
+
 **Also** maybe amix forgot to mention that you have to change plugins_config.vim under ~/.vim_runtime/vimrcs to make the plugin work.            
 Just to add a line to plugins_config.vim and it may look like this:
 
     call pathogen#infect('~/.vim_runtime/sources_forked')
     call pathogen#infect('~/.vim_runtime/sources_non_forked')
-    **call pathogen#infect('~/.vim_runtime/bundle')**
+    call pathogen#infect('~/.vim_runtime/sources_plugins')
     call pathogen#helptags()
 
-The line **bold** is added. Then pathogen will get everything done.
+The line **3rd line** is added. Then pathogen will get everything done.
 
 ### git submodule reference
 
