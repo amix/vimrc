@@ -312,6 +312,8 @@ See them in [vim_plugin_candintes_src](https://github.com/hustcalm/vimrc/tree/ma
 You can also add your own favorite script from [vim-scripts.org](http://vim-scripts.org/) or install from [github](http://github.com/vim-scripts).
 
 ## Use git and pathogen to manage vim plugins
+### Amix's method
+
 As amix mentioned, you can isntall your own plugins via pathogen,for instance vim-rails:
 
     cd ~/.vim_runtime
@@ -319,7 +321,52 @@ As amix mentioned, you can isntall your own plugins via pathogen,for instance vi
 
 After this,you got vim-rails under sources_plugins/vim-rails as a git local repo.       
 
-**But** maybe amix forgot to mention that you have to change plugins_config.vim under ~/.vim_runtime/vimrcs to make the plugin work.            
+**But** all you got at this time is a local repo and you may get upset if you want to share your very super plugin together with Ultimate vimrc. 
+
+### Manage with git submodule
+
+Instead I'm using git submodule to manage vim plugins now(Alternately you can use [git subtree](https://github.com/apenwarr/git-subtree.git)), clone them from github and install,config,update,delete,etc...
+
+As we want to install vim-rails:
+
+    cd ~/.vim_runtime
+    git submodule add git://github.com/tpope/vim-rails.git sources_plugins/vim-rails
+    git commit -a -m 'first commit with submodule vim-rails'
+    git submodule init
+
+### Clone repo with Git Submodule
+
+If you want to clone my repo and favor the vim plugins managed with submodule, you need to run:
+
+    git submodule init
+    git submmodule update
+
+after you clone my repo.
+
+### Update Installed module
+
+    cd vim-rails
+    git pull origin master
+    cd ~/.vim_runtime
+    git status
+    git commit -a -m 'update vim-rails'
+    git push
+    git submodule status
+
+### Remove Sub Module
+
+    git rm --cached sources_plugins/vim-rails
+    git rm sources_plugins/vim-rails
+    vi .gitmoudles
+    vi .git/config
+    git add . && git commit -m 'Remove Submodule vim-rails'
+    git submoudule sync
+
+Above we use vi to edit .gitmoudles and .git/config to remove references to specific submoudle.
+
+### To make new plugin work
+
+**Also** maybe amix forgot to mention that you have to change plugins_config.vim under ~/.vim_runtime/vimrcs to make the plugin work.            
 Just to add a line to plugins_config.vim and it may look like this:
 
     call pathogen#infect('~/.vim_runtime/sources_forked')
@@ -329,5 +376,10 @@ Just to add a line to plugins_config.vim and it may look like this:
 
 The line **bold** is added. Then pathogen will get everything done.
 
-**Note:** I don't use subtree or submodule to manage vim plugins at this time, so you'd better know what you are doing with your plugins.
+### git submodule reference
+
+*   [Tips-Using git submodule keep your vim plugin up-to-date](http://www.allenwei.cn/tips-using-git-submodule-keep-your-plugin-up-to-date/)
+*   [Git Submodule介绍与使用](http://blog.wu-boy.com/2011/09/introduction-to-git-submodule/)     
+
+**Note:** We are using subtree or submodule to manage vim plugins at this time, so you'd better know what you are doing with your plugins.
 
