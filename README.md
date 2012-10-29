@@ -306,8 +306,23 @@ Vimscript mappings:
 
 # My Updates to The Ultimate vimrc
 
-## Add some useful plugins to the repo
-See them in [vim_plugins_src](https://github.com/hustcalm/vimrc/tree/master/vim_plugins_src).And I will give some details about them later.
+## Add some useful candinate plugins to the repo
+See them in [vim_plugin_candintes_src](https://github.com/hustcalm/vimrc/tree/master/vim_plugin_candinates_src).All these plugins will be candinates to be added to my Ultimate vimrc. 
 
 You can also add your own favorite script from [vim-scripts.org](http://vim-scripts.org/) or install from [github](http://github.com/vim-scripts).
+
+## Use git and pathogen to manage vim plugins
+As amix mentioned, you can isntall your own plugins via pathogen,for instance vim-rails:
+    cd ~/.vim_runtime
+    git clone git://github.com/tpope/vim-rails.git sources_plugins/vim-rails
+After this,you got vim-rails under sources_plugins/vim-rails as a git local repo.       
+**But** maybe amix forgot to mention that you have to change plugins_config.vim under ~/.vim_runtime/vimrcs to make the plugin work.        
+Just to add a line to plugins_config.vim and it may look like this:
+    call pathogen#infect('~/.vim_runtime/sources_forked')
+    call pathogen#infect('~/.vim_runtime/sources_non_forked')
+    **call pathogen#infect('~/.vim_runtime/sources_plugins')**
+    call pathogen#helptags()
+The line **bold** is added. Then pathogen will get everything done.
+
+**Note:** I don't use subtree or submodule to manage vim plugins at this time, so you'd better know what you are doing with your plugins.
 
