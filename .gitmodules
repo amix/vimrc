@@ -4,3 +4,6 @@
 [submodule "bundle/vim-rails"]
 	path = bundle/vim-rails
 	url = git://github.com/tpope/vim-rails.git
+[submodule "bundle/vimwiki"]
+	path = bundle/vimwiki
+	url = git://github.com/vim-scripts/vimwiki.git
