@@ -149,13 +149,16 @@ fu! s:esctagscmd(bin, args, ...)
 	if exists('+ssl')
 		let [ssl, &ssl] = [&ssl, 0]
 	en
-	let fname = a:0 == 1 ? shellescape(a:1) : ''
+	let fname = a:0 ? shellescape(a:1) : ''
 	let cmd = shellescape(a:bin).' '.a:args.' '.fname
+	if &sh =~ 'cmd\.exe'
+		let cmd = substitute(cmd, '[&()@^<>|]', '^\0', 'g')
+	en
 	if exists('+ssl')
 		let &ssl = ssl
 	en
 	if has('iconv')
-		let last = s:enc != &enc ? s:enc : !empty($LANG) ? $LANG : &enc
+		let last = s:enc != &enc ? s:enc : !empty( $LANG ) ? $LANG : &enc
 		let cmd = iconv(cmd, &enc, last)
 	en
 	retu cmd
@@ -170,12 +173,14 @@ fu! s:process(fname, ftype)
 	el
 		let data = s:exectagsonfile(a:fname, a:ftype)
 		let [raw, lines] = [split(data, '\n\+'), []]
-		for line in raw | if len(split(line, ';"')) == 2
-			let parsed_line = s:parseline(line)
-			if parsed_line != ''
-				cal add(lines, parsed_line)
+		for line in raw
+			if line !~# '^!_TAG_' && len(split(line, ';"')) == 2
+				let parsed_line = s:parseline(line)
+				if parsed_line != ''
+					cal add(lines, parsed_line)
+				en
 			en
-		en | endfo
+		endfo
 		let cache = { a:fname : { 'time': ftime, 'lines': lines } }
 		cal extend(g:ctrlp_buftags, cache)
 	en
@@ -183,8 +188,8 @@ fu! s:process(fname, ftype)
 endf
 
 fu! s:parseline(line)
-	let eval = '\v^([^\t]+)\t(.+)\t\/\^(.+)\$\/\;\"\t(.+)\tline(no)?\:(\d+)'
-	let vals = matchlist(a:line, eval)
+	let vals = matchlist(a:line,
+		\ '\v^([^\t]+)\t(.+)\t[?/]\^?(.{-1,})\$?[?/]\;\"\t(.+)\tline(no)?\:(\d+)')
 	if vals == [] | retu '' | en
 	let [bufnr, bufname] = [bufnr('^'.vals[2].'$'), fnamemodify(vals[2], ':p:t')]
 	retu vals[1].'	'.vals[4].'|'.bufnr.':'.bufname.'|'.vals[6].'| '.vals[3]
@@ -200,6 +205,19 @@ fu! s:syntax()
 		sy match CtrlPTabExtra '\zs\t.*\ze$' contains=CtrlPBufName,CtrlPTagKind
 	en
 endf
+
+fu! s:chknearby(pat)
+	if match(getline('.'), a:pat) < 0
+		let [int, forw, maxl] = [1, 1, line('$')]
+		wh !search(a:pat, 'W'.( forw ? '' : 'b' ))
+			if !forw
+				if int > maxl | brea | en
+				let int += int
+			en
+			let forw = !forw
+		endw
+	en
+endf
 " Public {{{1
 fu! ctrlp#buffertag#init(fname)
 	let bufs = exists('s:btmode') && s:btmode
@@ -208,7 +226,7 @@ fu! ctrlp#buffertag#init(fname)
 	let lines = []
 	for each in bufs
 		let bname = fnamemodify(each, ':p')
-		let tftype = get(split(getbufvar(bname, '&ft'), '\.'), 0, '')
+		let tftype = get(split(getbufvar('^'.bname.'$', '&ft'), '\.'), 0, '')
 		cal extend(lines, s:process(bname, tftype))
 	endfo
 	cal s:syntax()
@@ -216,10 +234,14 @@ fu! ctrlp#buffertag#init(fname)
 endf
 
 fu! ctrlp#buffertag#accept(mode, str)
-	let vals = matchlist(a:str, '\v^[^\t]+\t+[^\t|]+\|(\d+)\:[^\t|]+\|(\d+)\|')
+	let vals = matchlist(a:str,
+		\ '\v^[^\t]+\t+[^\t|]+\|(\d+)\:[^\t|]+\|(\d+)\|\s(.+)$')
 	let bufnr = str2nr(get(vals, 1))
 	if bufnr
-		cal ctrlp#acceptfile(a:mode, bufname(bufnr), get(vals, 2))
+		cal ctrlp#acceptfile(a:mode, bufnr)
+		exe 'norm!' str2nr(get(vals, 2, line('.'))).'G'
+		cal s:chknearby('\V\C'.get(vals, 3, ''))
+		sil! norm! zvzz
 	en
 endf
 

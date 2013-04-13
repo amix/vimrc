@@ -1,6 +1,6 @@
 " surround.vim - Surroundings
 " Author:       Tim Pope <http://tpo.pe/>
-" Version:      1.90
+" Version:      2.0
 " GetLatestVimScripts: 1697 1 :AutoInstall: surround.vim
 
 if exists("g:loaded_surround") || &cp || v:version < 700
@@ -159,6 +159,12 @@ function! s:wrap(string,char,type,...)
   elseif newchar ==# "p"
     let before = "\n"
     let after  = "\n\n"
+  elseif newchar ==# 's'
+    let before = ' '
+    let after  = ''
+  elseif newchar ==# ':'
+    let before = ':'
+    let after = ''
   elseif newchar =~# "[tT\<C-T><,]"
     let dounmapp = 0
     let dounmapb = 0
@@ -218,6 +224,10 @@ function! s:wrap(string,char,type,...)
         let after = ' ' . after
       endif
     endif
+  elseif newchar ==# "\<C-F>"
+    let fnc = input('function: ')
+    let before = '('.fnc.' '
+    let after = ')'
   elseif idx >= 0
     let spc = (idx % 3) == 1 ? " " : ""
     let idx = idx / 3 * 3
@@ -330,7 +340,7 @@ function! s:insert(...) " {{{1
 endfunction " }}}1
 
 function! s:reindent() " {{{1
-  if exists("b:surround_indent") ? b:surround_indent : (exists("g:surround_indent") && g:surround_indent)
+  if exists("b:surround_indent") ? b:surround_indent : (!exists("g:surround_indent") || g:surround_indent)
     silent norm! '[=']
   endif
 endfunction " }}}1
@@ -415,7 +425,7 @@ function! s:dosurround(...) " {{{1
   else
     let pcmd = "P"
   endif
-  if line('.') < oldlnum && regtype ==# "V"
+  if line('.') + 1 < oldlnum && regtype ==# "V"
     let pcmd = "p"
   endif
   call setreg('"',keeper,regtype)
@@ -557,11 +567,13 @@ if !exists("g:surround_no_mappings") || ! g:surround_no_mappings
   nmap ySS <Plug>YSsurround
   xmap S   <Plug>VSurround
   xmap gS  <Plug>VgSurround
-  if !hasmapto("<Plug>Isurround","i") && "" == mapcheck("<C-S>","i")
-    imap    <C-S> <Plug>Isurround
+  if !exists("g:surround_no_insert_mappings") || ! g:surround_no_insert_mappings
+    if !hasmapto("<Plug>Isurround","i") && "" == mapcheck("<C-S>","i")
+      imap    <C-S> <Plug>Isurround
+    endif
+    imap      <C-G>s <Plug>Isurround
+    imap      <C-G>S <Plug>ISurround
   endif
-  imap      <C-G>s <Plug>Isurround
-  imap      <C-G>S <Plug>ISurround
 endif
 
 " vim:set ft=vim sw=2 sts=2 et:

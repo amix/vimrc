@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-24.
-" @Last Change: 2010-11-20.
-" @Revision:    0.1.185
+" @Last Change: 2012-10-03.
+" @Revision:    0.1.208
 
 
 " :filedoc:
@@ -14,11 +14,16 @@
 " General {{{1
 
 function! tlib#agent#Exit(world, selected) "{{{3
-    call a:world.CloseScratch()
-    let a:world.state = 'exit empty escape'
-    let a:world.list = []
-    " let a:world.base = []
-    call a:world.ResetSelected()
+    if a:world.key_mode == 'default'
+        call a:world.CloseScratch()
+        let a:world.state = 'exit empty escape'
+        let a:world.list = []
+        " let a:world.base = []
+        call a:world.ResetSelected()
+    else
+        let a:world.key_mode = 'default'
+        let a:world.state = 'redisplay'
+    endif
     return a:world
 endf
 
@@ -156,17 +161,14 @@ function! tlib#agent#Suspend(world, selected) "{{{3
         " TLogDBG bufnr('%')
         let br = tlib#buffer#Set(a:world.scratch)
         " TLogVAR br, a:world.bufnr, a:world.scratch
-        " TLogDBG bufnr('%')
+        if bufnr('%') != a:world.scratch
+            echohl WarningMsg
+            echom "tlib#agent#Suspend: Internal error: Not a scratch buffer:" bufname('%')
+            echohl NONE
+        endif
+        " TLogVAR bufnr('%'), bufname('%'), a:world.scratch
         call tlib#autocmdgroup#Init()
-        autocmd TLib InsertEnter,InsertChange <buffer> call tlib#input#Resume("world", 0)
-        let b:tlib_suspend = {
-                    \ '<m-z>': 0, '<c-z>': 0, '<space>': 0, 
-                    \ '<cr>': 1, 
-                    \ '<LeftMouse>': 1, '<MiddleMouse>': 0, '<RightMouse>': 0, '<c-LeftMouse>': 0,
-                    \ '<': 2}
-        for [m, pick] in items(b:tlib_suspend)
-            exec 'noremap <buffer> '. m .' :call tlib#input#Resume("world", '. pick .')<cr>'
-        endfor
+        exec 'autocmd TLib BufEnter <buffer='. a:world.scratch .'> call tlib#input#Resume("world", 0, '. a:world.scratch .')'
         let b:tlib_world = a:world
         exec br
         let a:world.state = 'exit suspend'
@@ -373,6 +375,7 @@ function! tlib#agent#ViewFile(world, selected) "{{{3
             let cmd1 = 'buffer'
         endif
         call tlib#file#With(cmd0, cmd1, a:selected, a:world)
+        " TLogVAR &filetype
         exec back
         let a:world.state = 'display'
     endif
@@ -510,5 +513,51 @@ function! tlib#agent#Wildcard(world, selected) "{{{3
     endif
     let a:world.state = 'redisplay'
     return a:world
+endf
+
+
+function! tlib#agent#Null(world, selected) "{{{3
+    let a:world.state = 'redisplay'
+    return a:world
+endf
+
+
+function! tlib#agent#ExecAgentByName(world, selected) "{{{3
+    let s:agent_names_world = a:world
+    let agent_names = {}
+    for def in values(a:world.key_map[a:world.key_mode])
+        if has_key(def, 'help') && !empty(def.help) && has_key(def, 'agent') && !empty(def.agent)
+            let agent_names[def.help] = def.agent
+        endif
+    endfor
+    let s:agent_names = join(sort(keys(agent_names)), "\n")
+    let command = input('Command: ', '', 'custom,tlib#agent#CompleteAgentNames')
+    " TLogVAR command
+    if !has_key(agent_names, command)
+        " TLogVAR command
+        silent! let matches = filter(keys(agent_names), 'v:val =~ command')
+        " TLogVAR matches
+        if len(matches) == 1
+            let command = matches[0]
+        endif
+    endif
+    if has_key(agent_names, command)
+        let agent = agent_names[command]
+        return call(agent, [a:world, a:selected])
+    else
+        if !empty(command)
+            echohl WarningMsg
+            echom "Unknown command:" command
+            echohl NONE
+            sleep 1
+        endif
+        let a:world.state = 'display'
+        return a:world
+    endif
+endf
+
+
+function! tlib#agent#CompleteAgentNames(ArgLead, CmdLine, CursorPos)
+    return s:agent_names
 endf
 

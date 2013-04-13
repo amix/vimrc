@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2010-09-23.
-" @Revision:    0.0.334
+" @Last Change: 2012-02-09.
+" @Revision:    0.0.351
 
 
 let s:bmru = []
@@ -351,6 +351,7 @@ function! tlib#buffer#InsertText(text, ...) "{{{3
             exec 'norm! '. posshift .'h'
         endif
     endif
+    " TLogDBG getline(lineno)
     " TLogDBG string(getline(1, '$'))
     return grow
 endf

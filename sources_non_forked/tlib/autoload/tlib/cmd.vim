@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-08-23.
-" @Last Change: 2011-04-28.
-" @Revision:    0.0.31
+" @Last Change: 2012-02-10.
+" @Revision:    0.0.35
 
 if &cp || exists("loaded_tlib_cmd_autoload")
     finish
@@ -12,12 +12,18 @@ endif
 let loaded_tlib_cmd_autoload = 1
 
 
+let g:tlib#cmd#last_output = []
+
+
 function! tlib#cmd#OutputAsList(command) "{{{3
+    " TLogVAR a:command
     " let lines = ''
     redir => lines
     silent! exec a:command
     redir END
-    return split(lines, '\n')
+    " TLogVAR lines
+    let g:tlib#cmd#last_output = split(lines, '\n')
+    return g:tlib#cmd#last_output
 endf
 
 

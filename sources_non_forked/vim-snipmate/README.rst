@@ -2,8 +2,17 @@
 snipmate.vim
 ============
 
+IMPORTANT: comment on: [What about merging whith Ultisnip using its engine](https://github.com/garbas/vim-snipmate/issues/114)
+status: snipmate-snippet files are read by Ultisnip flawlessly. See
+snipmate-snippets readme about how to configure and use Ultisnips as alternative
+That branch also supports completion menu now
+Thus there is only one reason left to keep using snipmate from my point of
+view: not having python support.
+In other words: upstream of snipmate is almost dead. (Better to say Marc Weber is not going to fix any bugs anymore)
+
+
 :Author: `Michael Sanders`_
-:Maintainer: `Rok Garbas`_
+:Maintainer: `Adnan Zafar`_ & `Rok Garbas`_ & `Marc Weber`_
 :Homepage: http://www.vim.org/scripts/script.php?script_id=2540
 :Contributors: `MarcWeber`_, `lilydjwg`_, `henrik`_, `steveno`_, `asymmetric`_, `jherdman`_, `ironcamel`_, `honza`_, `jb55`_, `robhudson`_, `kozo2`_, `MicahElliott`_, `darkwise`_, `redpill`_, `thisgeek`_, `sickill`_, `pose`_, `marutanm`_, `r00k`_, `jbernard`_, `holizz`_, `muffinresearch`_, `statik`_, `taq`_, `alderz`_, `pielgrzym`_
 
@@ -11,79 +20,46 @@ snipmate.vim
 .. contents::
 
 
-Changelog
+ChangeLog
 =========
 
 
-1.0 [Unreleased]
-----------------
+0.85 [2013-04-03]
+-----------------
 
-    * Split snippet files into separate git repository (github/honza/snipmate-snippets). [2011-06-20, `honza`_]
-      See 'Snippets repository' below.
+* Allow trigger key customization
+* Enable undoing of snippet expansion
+* Support backslash escaping in snippets
+* Add support for {VISUAL}
+* Expand filetype extension with scope_aliases
+* Add expansion guards
+* Enable per-buffer expansion of snippets
+* Fix 'cpo' compatibility
+* Update supertab compatibility
+* Enable customization of various things through g:snipMate
 
-    * Adding general snippets to ``css.snippets`` and ``htmldjango.snippets``
-      [2011-06-10, `pielgrzym`_]
+* Disable spelling in snippet files
+* Highlight trigger names in .snippets files
 
-    * Adding ``css.snippets`` from `tisho`_
-      (https://github.com/tisho/css-snippets-snipmate)
-      [2011-04-17, `garbas`_]
+* Update many snippets
+* Separate sample snippets into separate repository
 
-    * Lots of updates to snippets.
+0.84
+----
 
-    * Made the trigger key configurable, https://github.com/garbas/vim-snipmate/pull/4.
-      [2011-04-13, `thenoseman`_]
-
-    * Handle single-line or multiline snippets.
-      [2011-03-22, `johnbintz`_]
-
-    * If there is only one snippet choose it directly.
-      [2011-03-16, `blueyed`_]
-
-    * Add snippets file for "diff" filetype and add bang to function
-      definitons, allowing for reload.
-      [2011-03-06, `blueyed`_]
-
-    * Update snipmate to handle latest supertab version.
-      [2011-02-09, `ervandew`_]
-
-    * Updated README: added contributors, instructions how to install snipMate,
-      some spellchecking of my wonderful English, added this Changelog
-      [2011-02-07, `garbas`_]
-
-    * Fixed bug: When leaving a placeholder unchanged and trying to jump to the
-      next placeholder, the text of the first placeholder would get cleared.
-      [2011-06-16, `jgosmann`_]
-
-    * From below mentioned merges I must specially mention `MarcWeber`_'s patch
-      which brought quite a few functionalities/improvements:
-        - snippets are loaded lazily.
-        - snippets are no longer cached. Thus you always get the snippets you
-          just wrote to a file without reloading anything.
-        - When visually selecting a snippet in a .snippets file you can press
-          <cr> to replace spaces by tabs automatically in a smart way.
-      Big +1 to `MarcWeber`_ for this. Important to note is that we now depend
-      on `vim-addon-mw-utils`_ and `tlib`_.
-      [2011-02-02, `garbas`_]
-
-    * Merged pull requests of `MarcWeber`_, `lilydjwg`_, `henrik`_, `steveno`_,
-      `asymmetric`_, `jherdman`_, `ironcamel`_, `honza`_, `jb55`_,
-      `robhudson`_, `kozo2`_, `MicahElliott`_, `darkwise`_, `redpill`_,
-      `thisgeek`_, `sickill`_, `pose`_,
-      [2011-02-02, `garbas`_]
-
+* Unreleased version by `Michael Sanders`_. Available on `GitHub`_.
 
 0.83 [2009-07-13]
 -----------------
 
-    * last release done by `Michael Sanders`_, you can find it here:
-        http://www.vim.org/scripts/download_script.php?src_id=11006
+* Last release done by `Michael Sanders`_. Available on `vim.org`_.
 
 
 How to install
 ==============
 
-Unfortunately there are many ways to how to install vim plugins. If you don't
-see your preferred way of installation plugins please consider updating
+Unfortunately there are many ways to install vim plugins. If you don't
+see your preferred way of installation, please consider updating
 this section. Basically, installation consists of 2 simple steps:
 
 1. Install vim-snipmate
@@ -92,7 +68,7 @@ this section. Basically, installation consists of 2 simple steps:
 
 snipmate dependencies
 ==============
-Important to note is that since version 1.0 we depend on this 2 vim plugins:
+Important to note is that since version 0.85 we depend on 2 vim plugins:
     * `vim-addon-mw-utils`_ providing the implementation for caching parsed
       .snippets files.
 
@@ -106,12 +82,11 @@ Important to note is that since version 1.0 we depend on this 2 vim plugins:
 Using `VAM`_ (recommended)
 ------------
 
-::
+- Add `snipmate-snippets` to the names to be installed. Or use
+  "github:name/repo" if you want to use a non standard upstream.
 
-    Add snipmate-snippets to the names to be installed. Or use
-    "github:name/repo" if you want to use a non standard upstream.
-    The default snippets depend on "snipmate" so VAM will fetch the core along
-    with its dependencies automatically
+The default snippets depend on "snipmate" so VAM will fetch the core along
+with its dependencies automatically.
 
 Using `pathogen`_
 --------------------------------------
@@ -126,7 +101,7 @@ Using `pathogen`_
     # Install dependencies:
     % git clone https://github.com/tomtom/tlib_vim.git
     % git clone https://github.com/MarcWeber/vim-addon-mw-utils.git
-    % git clone https://github.com/honza/snipmate-snippets.git
+    % git clone https://github.com/honza/vim-snippets.git
 
 Using `Vundle`_
 ---------------
@@ -136,7 +111,7 @@ Using `Vundle`_
     Install dependencies:
     Bundle "MarcWeber/vim-addon-mw-utils"
     Bundle "tomtom/tlib_vim"
-    Bundle "honza/snipmate-snippets"
+    Bundle "honza/vim-snippets"
 
     Install:
     Bundle "garbas/vim-snipmate"
@@ -150,7 +125,7 @@ Manually (not recommended!)
 
 ::
 
-    % git clone git://github.com/honza/snipmate-snippets.git
+    % git clone git://github.com/honza/vim-snippets.git
     % git clone git://github.com/garbas/vim-snipmate.git
     % cd snipmate.vim
     % cp -R * ~/.vim
@@ -166,19 +141,12 @@ Snippets repository
 There is now one snippet repo containing almost all snippets. You are
 encouraged to submit any fixes and new snippets there.
 
-https://github.com/honza/snipmate-snippets
+https://github.com/honza/vim-snippets
 
-We also encourage people to maintain sets of snippets for particular use cases.
-That all users can benefit from them people can list their snippet repositories here:
-
-     * https://github.com/rbonvall/snipmate-snippets-bib (snippets for BibTeX files)
-
-Installation using VAM: "github:rbonvall/snipmate-snippets-bib"
+More snippet repositories are listed at that repository's README file.
 
 Why forking snipMate?
 =====================
-
-::
 
     After several unsuccessful attempts of contacting Michael Sanders, no
     commits in last half year and long pull request line on github (none of
@@ -197,17 +165,21 @@ Why forking snipMate?
     Maybe I will only maintain it for a while until Michael Sanders takes things
     back into his hand or until some other super-hero shows up.
 
-    Tnx and happy snipmating, Rok Garbas, 2011-02-02
+    Tnx and happy snipmating, Rok Garbas & Marc Weber, 2011-02-02
 
 
+
+related work
+=============
+See doc/snipMate.txt
 
 Known Bugs
 =============
 
-
     * Set one value default as input of another value.
       https://github.com/garbas/vim-snipmate/issues/59
       [2011-10-18, `bogdan`_]
+
 
 TODO / Future
 =============
@@ -230,8 +202,17 @@ TODO / Future
       If you volunteer tell me so that I can reference the link.
       [2011-02-02, `MarcWeber`_]
 
+    * tcomment claims to know which language mode you're editing in even if its
+      JS in PHP or HTML within PHP. It would be great if that functionality could be
+      moved into its own plugirn (vim-detect-language-at-cursor) or such.
+      Then a lot of the scoped_aliases (which causes collisions easily) could
+      be enhanced.
+
+
 .. _`Michael Sanders`: http://www.vim.org/account/profile.php?user_id=16544
+.. _`Adnan Zafar`: https://github.com/ajzafar
 .. _`Rok Garbas`: rok@garbas.si
+.. _`Marc Weber`: marco-oweber@gmx.de
 .. _`VAM`: https://github.com/MarcWeber/vim-addon-manager
 .. _`pathogen`: http://www.vim.org/scripts/script.php?script_id=2332
 .. _`vim-addon-mw-utils`: https://github.com/MarcWeber/vim-addon-mw-utils
@@ -270,4 +251,6 @@ TODO / Future
 .. _`tisho`: https://github.com/tisho
 .. _`pielgrzym`: https://github.com/pielgrzym
 .. _`jgosmann`: https://github.com/jgosmann
-.. _`taq': https://github.com/taq
+.. _`taq`: https://github.com/taq
+.. _`vim.org`: http://www.vim.org/scripts/script.php?script_id=2540
+.. _`GitHub`: http://github.com/msanders/snipmate.vim

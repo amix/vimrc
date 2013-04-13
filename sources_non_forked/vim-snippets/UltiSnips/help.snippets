@@ -1,0 +1,30 @@
+# Snippets for VIM Help Files
+
+global !p
+def sec_title(snip, t):
+    file_start = snip.fn.split('.')[0]
+    sec_name = t[1].strip("1234567890. ").lower().replace(' ', '-')
+    return ("*%s-%s*" % (file_start, sec_name)).rjust(78-len(t[1]))
+endglobal
+
+snippet sec "Section marker" b
+==============================================================================
+${1:SECTION}`!p snip.rv = sec_title(snip, t)`
+
+$0
+endsnippet
+
+snippet ssec "Sub section marker" b
+${1:Subsection}`!p snip.rv = sec_title(snip, t)
+snip += "-"*len(t[1])`
+
+$0
+endsnippet
+
+snippet sssec "Subsub Section marker" b
+${1:SubSubsection}:`!p snip.rv = sec_title(snip, t)`
+
+$0
+endsnippet
+
+# vim:ft=snippets:

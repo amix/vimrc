@@ -257,6 +257,10 @@ Bash like keys for the command line:
     cnoremap <C-P> <Up>
     cnoremap <C-N> <Down>
 
+Write the file as sudo (only on Unix). [Vim tip](http://vim.wikia.com/wiki/Su-write):
+
+    :W 
+
 
 ### Spell checking
 Pressing `<leader>ss` will toggle and untoggle spell checking

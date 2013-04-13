@@ -15,6 +15,11 @@ if exists("g:loaded_nerdtree_fs_menu")
 endif
 let g:loaded_nerdtree_fs_menu = 1
 
+"Automatically delete the buffer after deleting or renaming a file
+if !exists("g:NERDTreeAutoDeleteBuffer")
+    let g:NERDTreeAutoDeleteBuffer = 0
+endif
+
 call NERDTreeAddMenuItem({'text': '(a)dd a childnode', 'shortcut': 'a', 'callback': 'NERDTreeAddNode'})
 call NERDTreeAddMenuItem({'text': '(m)ove the current node', 'shortcut': 'm', 'callback': 'NERDTreeMoveNode'})
 call NERDTreeAddMenuItem({'text': '(d)elete the current node', 'shortcut': 'd', 'callback': 'NERDTreeDeleteNode'})
@@ -26,7 +31,7 @@ if has("gui_mac") || has("gui_macvim")
 endif
 
 if g:NERDTreePath.CopyingSupported()
-    call NERDTreeAddMenuItem({'text': '(c)copy the current node', 'shortcut': 'c', 'callback': 'NERDTreeCopyNode'})
+    call NERDTreeAddMenuItem({'text': '(c)opy the current node', 'shortcut': 'c', 'callback': 'NERDTreeCopyNode'})
 endif
 
 "FUNCTION: s:echo(msg){{{1
@@ -52,11 +57,44 @@ endfunction
 "     del the buffer
 function! s:promptToDelBuffer(bufnum, msg)
     echo a:msg
-    if nr2char(getchar()) ==# 'y'
-        exec "silent bdelete! " . a:bufnum
+    if g:NERDTreeAutoDeleteBuffer || nr2char(getchar()) ==# 'y'
+        " 1. ensure that all windows which display the just deleted filename
+        " now display an empty buffer (so a layout is preserved).
+        " Is not it better to close single tabs with this file only ?
+        let s:originalTabNumber = tabpagenr()
+        let s:originalWindowNumber = winnr()
+        exec "tabdo windo if winbufnr(0) == " . a:bufnum . " | exec ':enew! ' | endif"
+        exec "tabnext " . s:originalTabNumber
+        exec s:originalWindowNumber . "wincmd w"
+        " 3. We don't need a previous buffer anymore
+        exec "bwipeout! " . a:bufnum
     endif
 endfunction
 
+"FUNCTION: s:promptToRenameBuffer(bufnum, msg){{{1
+"prints out the given msg and, if the user responds by pushing 'y' then the
+"buffer with the given bufnum is replaced with a new one
+"
+"Args:
+"bufnum: the buffer that may be deleted
+"msg: a message that will be echoed to the user asking them if they wish to
+"     del the buffer
+function! s:promptToRenameBuffer(bufnum, msg, newFileName)
+    echo a:msg
+    if g:NERDTreeAutoDeleteBuffer || nr2char(getchar()) ==# 'y'
+        " 1. ensure that a new buffer is loaded
+        exec "badd " . a:newFileName
+        " 2. ensure that all windows which display the just deleted filename
+        " display a buffer for a new filename. 
+        let s:originalTabNumber = tabpagenr()
+        let s:originalWindowNumber = winnr()
+        exec "tabdo windo if winbufnr(0) == " . a:bufnum . " | exec ':e! " . a:newFileName . "' | endif"
+        exec "tabnext " . s:originalTabNumber
+        exec s:originalWindowNumber . "wincmd w"
+        " 3. We don't need a previous buffer anymore
+        exec "bwipeout! " . a:bufnum
+    endif
+endfunction
 "FUNCTION: NERDTreeAddNode(){{{1
 function! NERDTreeAddNode()
     let curDirNode = g:NERDTreeDirNode.GetSelected()
@@ -108,8 +146,8 @@ function! NERDTreeMoveNode()
         "if the node is open in a buffer, ask the user if they want to
         "close that buffer
         if bufnum != -1
-            let prompt = "\nNode renamed.\n\nThe old file is open in buffer ". bufnum . (bufwinnr(bufnum) ==# -1 ? " (hidden)" : "") .". Delete this buffer? (yN)"
-            call s:promptToDelBuffer(bufnum, prompt)
+            let prompt = "\nNode renamed.\n\nThe old file is open in buffer ". bufnum . (bufwinnr(bufnum) ==# -1 ? " (hidden)" : "") .". Replace this buffer with a new file? (yN)"
+            call s:promptToRenameBuffer(bufnum,  prompt, newNodePath)
         endif
 
         call curNode.putCursorHere(1, 0)

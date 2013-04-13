@@ -137,6 +137,10 @@ The following features and functionality are provided by the NERD tree:
 
     In any case, the current file is revealed and the cursor is placed on it.
 
+:NERDTreeCWD                                                    *:NERDTreeCWD*
+    Change tree root to current directory. If no NERD tree exists for this
+    tab, a new tree will be opened.
+
 ------------------------------------------------------------------------------
 2.2. Bookmarks                                             *NERDTreeBookmarks*
 
@@ -247,6 +251,7 @@ r.......Recursively refresh the current directory................|NERDTree-r|
 R.......Recursively refresh the current root.....................|NERDTree-R|
 m.......Display the NERD tree menu...............................|NERDTree-m|
 cd......Change the CWD to the dir of the selected node...........|NERDTree-cd|
+CD......Change tree root to the CWD..............................|NERDTree-CD|
 
 I.......Toggle whether hidden files displayed....................|NERDTree-I|
 f.......Toggle whether the file filters are used.................|NERDTree-f|
@@ -515,6 +520,14 @@ Applies to: files and directories.
 Change vims current working directory to that of the selected node.
 
 ------------------------------------------------------------------------------
+                                                                 *NERDTree-CD*
+Default key: CD
+Map option: NERDTreeMapCWD
+Applies to: no restrictions.
+
+Change tree root to vims current working directory.
+
+------------------------------------------------------------------------------
                                                                   *NERDTree-I*
 Default key: I
 Map option: NERDTreeMapToggleHidden
@@ -657,6 +670,10 @@ NERD tree. These options should be set in your vimrc.
 |'NERDTreeCasadeOpenSingleChildDir'|
                                 Casade open while selected directory has only
                                 one child that also is a directory.
+
+|'NERDTreeAutoDeleteBuffer'|    Tells the NERD tree to automatically remove 
+                                a buffer when a file is being deleted or renamed
+                                via a context menu command.
 
 ------------------------------------------------------------------------------
 3.2. Customisation details                             *NERDTreeOptionDetails*
@@ -980,6 +997,20 @@ a dir that contains anything but another single dir. This option may be useful
 for Java projects.  Use one of the follow lines to set this option: >
     let NERDTreeCasadeOpenSingleChildDir=0
     let NERDTreeCasadeOpenSingleChildDir=1
+<
+
+------------------------------------------------------------------------------
+                                          *'NERDTreeAutoDeleteBuffer'*
+Values: 0 or 1
+Default: 0.
+
+When using a context menu to delete or rename a file you may also want to delete
+the buffer which is no more valid. If the option is not set you will see a
+confirmation if you really want to delete an old buffer. If you always press 'y'
+then it worths to set this option to 1. Use one of the follow lines to set this
+option: >
+    let NERDTreeAutoDeleteBuffer=0
+    let NERDTreeAutoDeleteBuffer=1
 <
 
 ==============================================================================

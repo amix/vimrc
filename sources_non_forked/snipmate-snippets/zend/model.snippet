@@ -1,0 +1,32 @@
+<?php
+class ${1:Model} extends Doctrine_Record implements Zend_Auth_Adapter_Interface, Zend_Acl_Role_Interface
+{
+	protected  $searchconditions = array();
+
+	/**
+	 * Enter description here...
+	 *
+	 * @var ${2:Model}
+	 */
+	protected static $_identity = null;
+
+	/**
+	 * Zend_Auth
+	 *
+	 * @var Zend_Auth
+	 */
+	protected static $_auth;
+
+
+	/**
+	 * Doctrine
+	 */
+	public function setTableDefinition()
+	{
+		$this->hasColumn('id', 'integer', 4, array('notnull' => true, 
+												   'primary' => true, 
+												   'autoincrement' => true));
+		${3}
+	}
+
+}

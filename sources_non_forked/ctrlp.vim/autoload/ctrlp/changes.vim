@@ -59,7 +59,8 @@ fu! ctrlp#changes#init(original_bufnr, bufnr)
 	let [swb, &swb] = [&swb, '']
 	let lines = []
 	for each in bufs
-		let fnamet = fnamemodify(bufname(each), ':t')
+		let bname = bufname(each)
+		let fnamet = fnamemodify(bname == '' ? '[No Name]' : bname, ':t')
 		cal extend(lines, s:process(s:changelist(each), each, fnamet))
 	endfo
 	sil! exe 'noa hid b' a:original_bufnr
@@ -73,7 +74,7 @@ fu! ctrlp#changes#accept(mode, str)
 	let info = matchlist(a:str, '\t|\(\d\+\):[^|]\+|\(\d\+\):\(\d\+\)|$')
 	let bufnr = str2nr(get(info, 1))
 	if bufnr
-		cal ctrlp#acceptfile(a:mode, bufname(bufnr))
+		cal ctrlp#acceptfile(a:mode, bufnr)
 		cal cursor(get(info, 2), get(info, 3))
 		sil! norm! zvzz
 	en

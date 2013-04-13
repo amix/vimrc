@@ -41,7 +41,11 @@ fu! s:getnewmix(cwd, clim)
 	if exists('+ssl') && &ssl
 		cal map(mrufs, 'tr(v:val, "\\", "/")')
 	en
-	let bufs = map(ctrlp#buffers('id'), 'fnamemodify(bufname(v:val), ":p")')
+	let allbufs = map(ctrlp#buffers(), 'fnamemodify(v:val, ":p")')
+	let [bufs, ubufs] = [[], []]
+	for each in allbufs
+		cal add(filereadable(each) ? bufs : ubufs, each)
+	endfo
 	let mrufs = bufs + filter(mrufs, 'index(bufs, v:val) < 0')
 	if len(mrufs) > len(g:ctrlp_lines)
 		cal filter(mrufs, 'stridx(v:val, a:cwd)')
@@ -53,6 +57,7 @@ fu! s:getnewmix(cwd, clim)
 			if id >= 0 | cal remove(g:ctrlp_lines, id) | en
 		endfo
 	en
+	let mrufs += ubufs
 	cal map(mrufs, 'fnamemodify(v:val, ":.")')
 	let g:ctrlp_lines = len(mrufs) > len(g:ctrlp_lines)
 		\ ? g:ctrlp_lines + mrufs : mrufs + g:ctrlp_lines

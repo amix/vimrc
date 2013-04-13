@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-04-10.
-" @Last Change: 2011-04-28.
-" @Revision:    672
+" @Last Change: 2012-10-03.
+" @Revision:    725
 " GetLatestVimScripts: 1863 1 tlib.vim
 
 if &cp || exists("loaded_tlib")
@@ -14,7 +14,7 @@ if v:version < 700 "{{{2
     echoerr "tlib requires Vim >= 7"
     finish
 endif
-let loaded_tlib = 41
+let loaded_tlib = 102
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -26,7 +26,7 @@ set cpo&vim
 
 " Commands~ {{{1
 
-" :display: TRequire NAME [VERSION [FILE]]
+" :display: :TRequire NAME [VERSION [FILE]]
 " Make a certain vim file is loaded.
 "
 " Conventions: If FILE isn't defined, plugin/NAME.vim is loaded. The 
@@ -84,7 +84,7 @@ command! -nargs=+ TVarArg exec tlib#arg#Let([<args>])
 command! -nargs=+ TKeyArg exec tlib#arg#Key([<args>])
 
 
-" :display: TBrowseOutput COMMAND
+" :display: :TBrowseOutput COMMAND
 " Ever wondered how to efficiently browse the output of a command 
 " without redirecting it to a file? This command takes a command as 
 " argument and presents the output via |tlib#input#List()| so that you 
@@ -98,7 +98,7 @@ command! -nargs=+ TKeyArg exec tlib#arg#Key([<args>])
 "   TBrowseOutput 20verb TeaseTheCulprit
 command! -nargs=1 -complete=command TBrowseOutput call tlib#cmd#BrowseOutput(<q-args>)
 
-" :display: TBrowseScriptnames
+" :display: :TBrowseScriptnames
 " List all sourced script names (the output of ':scriptnames').
 "
 " When you press enter, the selected script will be opened in the current
@@ -109,58 +109,96 @@ command! -nargs=1 -complete=command TBrowseOutput call tlib#cmd#BrowseOutput(<q-
 command! -nargs=0 -complete=command TBrowseScriptnames call
             \ tlib#cmd#BrowseOutputWithCallback("tlib#cmd#ParseScriptname", "scriptnames")
 
-" :display: TTimeCommand CMD
+" :display: :TTimeCommand CMD
 " Time the execution time of CMD.
 command! -nargs=1 -complete=command TTimeCommand call tlib#cmd#Time(<q-args>)
 
 
 
+" :doc:
 " Variables~ {{{1
 
 " When 1, automatically select the last remaining item only if the list 
 " had only one item to begin with.
 " When 2, automatically select a last remaining item after applying 
 " any filters.
+" See |tlib#input#List()|.
 TLet g:tlib_pick_last_item = 1
 
 " If a list is bigger than this value, don't try to be smart when 
 " selecting an item. Be slightly faster instead.
+" See |tlib#input#List()|.
 TLet g:tlib_sortprefs_threshold = 200
 
 " Scratch window position. By default the list window is opened on the 
 " bottom. Set this variable to 'topleft' or '' to change this behaviour.
+" See |tlib#input#List()|.
 TLet g:tlib_scratch_pos = 'botright'
 
 " Size of the input list window (in percent) from the main size (of &lines).
+" See |tlib#input#List()|.
 TLet g:tlib_inputlist_pct = 50
 
 " Size of filename columns when listing filenames.
+" See |tlib#input#List()|.
 TLet g:tlib_inputlist_width_filename = '&co / 3'
 " TLet g:tlib_inputlist_width_filename = 25
 
-" The highlight group to use for showing matches in the input list window.
+" The highlight group to use for showing matches in the input list 
+" window.
+" See |tlib#input#List()|.
 TLet g:tlib_inputlist_higroup = 'IncSearch'
 
-" If a list contains more items, don't do an incremental "live search", 
-" but use |input()| to query the user for a filter. This is useful on 
-" slower machines or with very long lists.
+" If a list contains more items, |tlib#input#List()| does not perform an 
+" incremental "live search" but uses |input()| to query the user for a 
+" filter. This is useful on slower machines or with very long lists.
 TLet g:tlib_inputlist_livesearch_threshold = 1000
 
-" If true, show some indicators about the status of a filename (e.g. 
-" buflisted(), bufloaded() etc.).
+" If true, |tlib#input#List()| will show some indicators about the 
+" status of a filename (e.g. buflisted(), bufloaded() etc.).
 " This is disabled by default because vim checks also for the file on 
 " disk when doing this.
 TLet g:tlib_inputlist_filename_indicators = 0
 
-" Can be "cnf", "cnfd", "seq", or "fuzzy". See:
-"   cnf :: Match substrings
-"     - |tlib#Filter_cnf#New()| (this is the default method)
-"     - |tlib#Filter_cnfd#New()|
-"   seq :: Match sequences of characters
+" Determine how |tlib#input#List()| and related functions work.
+" Can be "cnf", "cnfd", "cnfx", "seq", or "fuzzy". See:
+"   cnfx ... Like cnfd but |g:tlib#Filter_cnfx#expander| is interpreted 
+"            as a wildcard (this is the default method)
+"     - A plus character ("+") acts as a wildcard as if ".\{-}" (see 
+"       |/\{-|) were entered.
+"     - Examples:
+"         - "f+o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
+"           "far".
+"     - Otherwise it is a derivate of the cnf method (see below).
+"     - See also |tlib#Filter_cnfx#New()|.
+"   cnfd ... Like cnf but "." is interpreted as a wildcard, i.e. it is 
+"            expanded to "\.\{-}"
+"     - A period character (".") acts as a wildcard as if ".\{-}" (see 
+"       |/\{-|) were entered.
+"     - Examples:
+"         - "f.o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
+"           "far".
+"     - Otherwise it is a derivate of the cnf method (see below).
+"     - See also |tlib#Filter_cnfd#New()|.
+"   cnf .... Match substrings
+"     - A blank creates an AND conjunction, i.e. the next pattern has to 
+"       match too.
+"     - A pipe character ("|") creates an OR conjunction, either this or 
+"       the next next pattern has to match.
+"     - Patterns are very 'nomagic' |regexp| with a |\V| prefix.
+"     - A pattern starting with "-" makes the filter exclude items 
+"       matching that pattern.
+"     - Examples:
+"         - "foo bar" matches items that contain the strings "foo" AND 
+"           "bar".
+"         - "foo|bar boo|far" matches items that contain either ("foo" OR 
+"           "bar") AND ("boo" OR "far").
+"     - See also |tlib#Filter_cnf#New()|.
+"   seq .... Match sequences of characters
 "     - |tlib#Filter_seq#New()|
-"   fuzzy :: Match fuzzy character sequences
+"   fuzzy .. Match fuzzy character sequences
 "     - |tlib#Filter_fuzzy#New()|
-TLet g:tlib_inputlist_match = 'cnf'
+TLet g:tlib_inputlist_match = 'cnfx'
 
 " If not null, display only a short info about the filter.
 TLet g:tlib_inputlist_shortmessage = 0
@@ -265,6 +303,8 @@ TLet g:tlib_keyagents_InputList_s = {
             \ 15:            'tlib#agent#SuspendToParentWindow',  
             \ 63:            'tlib#agent#Help',
             \ "\<F1>":       'tlib#agent#Help',
+            \ "\<F10>":      'tlib#agent#ExecAgentByName',
+            \ "\<S-Esc>":    'tlib#agent#ExecAgentByName',
             \ "\<bs>":       'tlib#agent#ReduceFilter',
             \ "\<del>":      'tlib#agent#ReduceFilter',
             \ "\<c-bs>":     'tlib#agent#PopFilter',
@@ -306,13 +346,8 @@ TLet g:tlib_handlers_EditList = [
             \ ]},
             \ ]
 
-
-
-" " TEST:
-" TRequire tselectbuffer 6
-" echo loaded_tselectbuffer
-
-
+" :nodefault:
+TLet g:tlib_debug = 0
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

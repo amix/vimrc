@@ -32,12 +32,13 @@ fu! s:globdirs(dirs, depth)
 	let nr = len(g:ctrlp_alldirs)
 	if !empty(dirs) && !s:max(nr, s:maxfiles) && depth <= s:maxdepth
 		sil! cal ctrlp#progress(nr)
+		cal map(dirs, 'ctrlp#utils#fnesc(v:val, "g", ",")')
 		cal s:globdirs(join(dirs, ','), depth)
 	en
 endf
 
 fu! s:max(len, max)
-	retu a:max && a:len > a:max ? 1 : 0
+	retu a:max && a:len > a:max
 endf
 
 fu! s:nocache()
@@ -53,7 +54,9 @@ fu! ctrlp#dir#init(...)
 	let cafile = cadir.ctrlp#utils#lash().ctrlp#utils#cachefile('dir')
 	if g:ctrlp_newdir || s:nocache() || !filereadable(cafile)
 		let [s:initcwd, g:ctrlp_alldirs] = [s:cwd, []]
-		cal s:globdirs(s:cwd, 0)
+		if !ctrlp#igncwd(s:cwd)
+			cal s:globdirs(ctrlp#utils#fnesc(s:cwd, 'g', ','), 0)
+		en
 		cal ctrlp#rmbasedir(g:ctrlp_alldirs)
 		if len(g:ctrlp_alldirs) <= s:compare_lim
 			cal sort(g:ctrlp_alldirs, 'ctrlp#complen')

@@ -1,0 +1,53 @@
+# 0/*
+snippet fv
+	type		fixedValue;
+	value		uniform ${1};
+snippet zg
+	type		zeroGradient;
+snippet sym
+	type		symmetryPlane;
+# system/controlDict
+snippet forces
+	forces
+	{
+		type				forces;
+		functionObjectLibs	("libforces.so");
+		enabled				true;
+		outputControl		${1:timeStep};
+		outputInterval		${2:1};
+		patches				(${3});
+		log					${4:true};
+		CofR				(${5:0 0 0});
+	}
+# system/fvSolution
+# solvers
+snippet gamg
+	${1:p}
+	{
+		solver          GAMG;
+		tolerance       1e-${2:6};
+		relTol          ${3:0.0};
+		smoother        GaussSeidel;
+		cacheAgglomeration true;
+		nCellsInCoarsestLevel 10;
+		agglomerator    faceAreaPair;
+		mergeLevels     1;
+	}
+snippet pbicg
+	${1:U}
+	{
+		solver          PBiCG;
+		preconditioner  DILU;
+		tolerance       1e-${2:6};
+		relTol          ${3:0.0};
+	}
+# PIMPLE
+snippet pimple
+	PIMPLE
+	{
+		nOuterCorrectors 	${1:outer};
+		nCorrectors     	${2:inner};
+		nNonOrthogonalCorrectors ${3:nonOrtho};
+		pRefCell        	${4:cell};
+		pRefValue       	${5:value for $4};
+	}

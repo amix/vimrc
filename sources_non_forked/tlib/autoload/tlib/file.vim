@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2010-04-03.
-" @Revision:    0.0.74
+" @Last Change: 2012-03-23.
+" @Revision:    0.0.106
 
 if &cp || exists("loaded_tlib_file_autoload")
     finish
@@ -97,22 +97,34 @@ endf
 function! tlib#file#With(fcmd, bcmd, files, ...) "{{{3
     " TLogVAR a:fcmd, a:bcmd, a:files
     exec tlib#arg#Let([['world', {}]])
+    call tlib#autocmdgroup#Init()
+    augroup TLibFileRead
+        autocmd!
+    augroup END
     for f in a:files
         let bn = bufnr('^'.f.'$')
         " TLogVAR f, bn
+        let bufloaded = bufloaded(bn)
+        let ok = 0
+        let s:bufread = ""
         if bn != -1 && buflisted(bn)
             if !empty(a:bcmd)
                 " TLogDBG a:bcmd .' '. bn
                 exec a:bcmd .' '. bn
+                let ok = 1
                 call s:SetScrollBind(world)
             endif
         else
             if filereadable(f)
                 if !empty(a:fcmd)
-                    " TLogDBG a:fcmd .' '. escape(f, '%#\ ')
-                    " exec a:fcmd .' '. escape(f, '%#\ ')
-                    " exec a:fcmd .' '. escape(f, '%# ')
-                    exec a:fcmd .' '. tlib#arg#Ex(f)
+                    " TLogDBG a:fcmd .' '. tlib#arg#Ex(f)
+                    exec 'autocmd TLibFileRead BufRead' escape(f, ' ') 'let s:bufread=expand("<afile>:p")'
+                    try 
+                        exec a:fcmd .' '. tlib#arg#Ex(f)
+                    finally
+                        exec 'autocmd! TLibFileRead BufRead'
+                    endtry
+                    let ok = 1
                     call s:SetScrollBind(world)
                 endif
             else
@@ -121,7 +133,14 @@ function! tlib#file#With(fcmd, bcmd, files, ...) "{{{3
                 echohl NONE
             endif
         endif
+        " TLogVAR ok, bufloaded, &filetype
+        if empty(s:bufread) && ok && !bufloaded && empty(&filetype)
+            doautocmd BufRead
+        endif
     endfor
+    augroup! TLibFileRead
+    unlet! s:bufread
+    " TLogDBG "done"
 endf
 
 

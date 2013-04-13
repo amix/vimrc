@@ -4,6 +4,9 @@ if !exists('loaded_snips') || exists('s:did_snips_mappings')
 	finish
 endif
 let s:did_snips_mappings = 1
+" save and reset 'cpo'
+let s:save_cpo = &cpo
+set cpo&vim
 
 " This is put here in the 'after' directory in order for snipMate to override
 " other plugin mappings (e.g., supertab).
@@ -15,13 +18,13 @@ if !exists('g:snips_trigger_key')
 endif
 
 if !exists('g:snips_trigger_key_backwards')
-  let g:snips_trigger_key_backwards = '<s-' . substitute(g:snips_trigger_key, '[<>]', '', 'g')
+  let g:snips_trigger_key_backwards = '<s-' . substitute(g:snips_trigger_key, '[<>]', '', 'g') . '>'
 endif
 
-exec 'ino <silent> ' . g:snips_trigger_key . ' <c-g>u<c-r>=snipMate#TriggerSnippet()<cr>'
+exec 'ino <silent> ' . g:snips_trigger_key . ' <c-r>=snipMate#TriggerSnippet()<cr>'
 exec 'snor <silent> ' . g:snips_trigger_key . ' <esc>i<right><c-r>=snipMate#TriggerSnippet()<cr>'
-exec 'ino <silent> ' . g:snips_trigger_key_backwards . '> <c-r>=snipMate#BackwardsSnippet()<cr>'
-exec 'snor <silent> ' . g:snips_trigger_key_backwards . '> <esc>i<right><c-r>=snipMate#BackwardsSnippet()<cr>'
+exec 'ino <silent> ' . g:snips_trigger_key_backwards . ' <c-r>=snipMate#BackwardsSnippet()<cr>'
+exec 'snor <silent> ' . g:snips_trigger_key_backwards . ' <esc>i<right><c-r>=snipMate#BackwardsSnippet()<cr>'
 exec 'ino <silent> <c-r>' . g:snips_trigger_key . ' <c-r>=snipMate#ShowAvailableSnips()<cr>'
 
 " maybe there is a better way without polluting registers ?
@@ -44,5 +47,8 @@ snor <c-x> b<bs><c-x>
 if empty(snippets_dir)
 	finish
 endif
+
+" restore 'cpo'
+let &cpo = s:save_cpo
 
 " vim:noet:sw=4:ts=4:ft=vim

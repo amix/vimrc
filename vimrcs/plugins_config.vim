@@ -57,6 +57,14 @@ let g:ctrlp_custom_ignore = 'node_modules\|^\.DS_Store\|^\.git\|^\.coffee'
 map <leader>j :PeepOpen<cr>
 
 
+
+""""""""""""""""""""""""""""""
+" => ZenCoding
+""""""""""""""""""""""""""""""
+" Enable all functions in all modes
+let g:user_zen_mode='a'
+
+
 """"""""""""""""""""""""""""""
 " => snipMate (beside <TAB> support <CTRL-j>)
 """"""""""""""""""""""""""""""
