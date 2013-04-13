@@ -1,0 +1,429 @@
+*Powerline.txt*	For Vim version 7.3.	Last change: 2011 Nov 23
+
+                                            ______
+         _________                          \    /__
+         \_____   \______  _  _____________ /   /'__' ___   ____
+          |    ___/  _ \ \/ \/ / __ \_  ___\   / |  |/   \_/ __ \
+          |   |  |  (_) \  _  /  ___/|  |  /  /__|  |  |  \  ___/
+          '___'   \____/ \/ \/ \___  |__' /___  /'__'__|  /\___ \
+                                   \/        / /        \/     \/
+                                            | /
+                                            |/
+                                            '
+
+==============================================================================
+CONTENTS                                                  *Powerline-contents*
+
+    1. Introduction ....................... |Powerline-introduction|
+    2. Usage .............................. |Powerline-usage|
+    3. Requirements ....................... |Powerline-requirements|
+       3.1 Recommended settings ........... |Powerline-recommended-settings|
+    4. Configuration ...................... |Powerline-configuration|
+       4.1 Powerline_cache_file ........... |Powerline_cache_file|
+           4.1.1 Clearing the cache ....... |:PowerlineClearCache|
+       4.2 Powerline_cache_enabled ........ |Powerline_cache_enabled|
+       4.3 Powerline_symbols .............. |Powerline_symbols|
+           4.3.1 Compatible symbols ....... |Powerline-symbols-compatible|
+           4.3.2 Fancy symbols ............ |Powerline-symbols-fancy|
+           4.3.3 Overriding symbols ....... |Powerline_symbols_override|
+           4.3.4 Overriding dividers ...... |Powerline_dividers_override|
+       4.4 Powerline_theme ................ |Powerline_theme|
+       4.5 Powerline_colorscheme .......... |Powerline_colorscheme|
+       4.6 Powerline_stl_path_style ....... |Powerline_stl_path_style|
+    5. Fonts .............................. |Powerline-fonts|
+    6. Customization ...................... |Powerline-customization|
+       6.1 Basic customization ............ |Powerline-basic-customization|
+       6.2 Advanced customization ......... |Powerline-advanced-customization|
+           6.2.1 Colorschemes ............. |Powerline-cust-colorschemes|
+           6.2.2 Functions ................ |Powerline-cust-functions|
+           6.2.3 Segments ................. |Powerline-cust-segments|
+           6.2.4 Themes ................... |Powerline-cust-themes|
+    7. License ............................ |Powerline-license|
+    8. Known issues ....................... |Powerline-known-issues|
+    9. Contributing ....................... |Powerline-contributing|
+
+==============================================================================
+1. Introduction                           *Powerline* *Powerline-introduction*
+
+Powerline is a utility plugin which allows you to create better-looking, more 
+functional Vim statuslines.
+
+==============================================================================
+2. Usage                                                     *Powerline-usage*
+
+Powerline is automatically enabled when it's installed, either by unzipping 
+the provided archive or by adding it as a Pathogen/Vundle bundle.
+
+Powerline replaces the standard Vim 'statusline' with a custom statusline made 
+up of Powerline segments.
+
+Powerline ignores any 'statusline' customizations you have defined in your 
+|vimrc|. If you remove Powerline, your 'statusline' customizations are 
+restored.
+
+==============================================================================
+3. Requirements                                       *Powerline-requirements*
+
+Powerline has been developed and tested in Vim 7.3, but it should run without 
+any problems in Vim 7.2. The default configuration requires a Unix-like system 
+to work properly.
+
+The plugin only works with Vim running in an 88/256-color terminal or Gvim.
+
+Vi-compatible mode must be disabled.
+
+------------------------------------------------------------------------------
+3.1 Recommended settings                      *Powerline-recommended-settings*
+
+The following configuration options should be set in your |vimrc|: >
+
+    set nocompatible   " Disable vi-compatibility
+    set laststatus=2   " Always show the statusline
+    set encoding=utf-8 " Necessary to show Unicode glyphs
+
+Note: If you're using an 88/256-color terminal but still don't see the colored 
+statusline, you may have to set the following option as well: >
+
+    set t_Co=256 " Explicitly tell Vim that the terminal supports 256 colors
+
+==============================================================================
+4. Configuration                                     *Powerline-configuration*
+
+Powerline will work fine without any user configuration, but default behavior 
+can be overridden by setting configuration variables globally in your |vimrc| 
+file.
+
+------------------------------------------------------------------------------
+4.1 Powerline_cache_file                                *Powerline_cache_file*
+
+By default Powerline caches all the statuslines and colors in a cache file in 
+the plugin's directory (or the Vim directory, depending on the installation 
+method used).
+
+It's recommended that you enable the cache, as this dramatically improves Vim 
+startup time after the cache file has been generated (the plugin usually loads 
+within ~100ms without the cache and ~1ms with the cache).
+
+Note: The default cache filename includes the current theme, colorscheme and 
+symbol settings in order to tie the cache file to your current configuration, 
+so the cache file will be regenerated when you change any settings. This may 
+leave several old cache files in your Vim folder, and these may safely be 
+deleted.
+
+Defaults: "<plugin_directory>/Powerline_<theme>_<colorscheme>_<symbols>.cache"
+
+------------------------------------------------------------------------------
+4.1.1 Clearing the cache                                *:PowerlineClearCache*
+
+Powerline provides a command to easily clear the cache after changing your 
+settings or updating your theme. Simply run the following command to clear 
+your cache, and restart Vim afterwards: >
+
+    :PowerlineClearCache
+<
+------------------------------------------------------------------------------
+4.2 Powerline_cache_enabled                          *Powerline_cache_enabled*
+
+It's possible to disable statusline caching by setting this option to 0. This 
+is mostly useful when developing statuslines.
+
+Example: >
+
+    let g:Powerline_cache_enabled = 0
+<
+
+Default: 1
+
+------------------------------------------------------------------------------
+4.3 Powerline_symbols                                      *Powerline_symbols*
+
+This option defines which set of symbols and dividers you want to use. There 
+are currently three available options: "compatible", "unicode" and "fancy".
+
+    TYPE           DESCRIPTION ~
+    compatible     Doesn't use any special characters.
+    unicode        Simulates icons and arrows using similar Unicode glyphs.
+    fancy          Custom icons and arrows. Requires a patched font.
+
+Example: >
+
+    let g:Powerline_symbols = 'fancy'
+<
+
+Default: "compatible"
+
+Symbols can be inserted into statuslines by using the following variables 
+(just insert the variables as text in your segments):
+
+    VARIABLE       DESCRIPTION ~
+    $BRANCH        Inserts a branch symbol
+    $RO            Inserts a read-only symbol
+    $FT            Inserts a filetype symbol
+    $LINE          Inserts a line number symbol
+
+------------------------------------------------------------------------------
+4.3.1 Compatible symbols                        *Powerline-symbols-compatible*
+
+These symbols will work in any configuration, and do not require a special 
+font to work. This option will replace the fancy icons with plain text, and 
+the pointy dividers with straight lines.
+
+------------------------------------------------------------------------------
+4.3.2 Fancy symbols                                  *Powerline-symbols-fancy*
+
+These symbols require a custom font to work. A font patcher is provided for 
+adding the required symbols to any outline font and some bitmap fonts, see 
+|Powerline-fonts| and the provided README file for usage details.
+
+------------------------------------------------------------------------------
+4.3.3 Overriding symbols                          *Powerline_symbols_override*
+
+You can override symbols by adding your symbols to the 
+g:Powerline_symbols_override dictionary. Example: If you want the branch 
+symbol to be "∓" (hex code 0x2213) and the line symbol to be "L" you can add 
+the following to your |vimrc|: >
+
+    let g:Powerline_symbols_override = {
+        \ 'BRANCH': [0x2213],
+        \ 'LINE': 'L',
+        \ }
+<
+------------------------------------------------------------------------------
+4.3.4 Overriding dividers                        *Powerline_dividers_override*
+
+If you for some reason want to override the dividers then you can set 
+g:Powerline_dividers_override to a list with exactly four elements:
+
+    1: Hard right-pointing arrow
+    2: Soft right-pointing arrow
+    3: Hard left-pointing arrow
+    4: Soft left-pointing arrow
+
+Example: >
+
+    let g:Powerline_dividers_override = ['>>', '>', '<<', '<']
+<
+
+------------------------------------------------------------------------------
+4.3.5 Overriding mode names                                   *Powerline_mode*
+
+You can change the names used for modes at the far left by setting some
+variables in your |vimrc|. For example you can change "N" to "NORMAL" with: >
+
+    let g:Powerline_mode_n = 'NORMAL'
+<
+The variables are all named beginning with 'g:Powerline_mode_', as follows:
+
+mode                name    default       note ~
+Normal              n       ' N '         (surrounded by spaces)
+Insert              i       INSERT
+Replace             R       REPLACE       |Replace-mode|
+Visual              v       VISUAL        |Visual-mode|
+Visual linewise     V       V⋅LINE
+Visual blockwise    cv      V⋅BLOCK
+Select              s       SELECT        |Select-mode|
+Select linewise     S       S⋅LINE
+Select blockwise    cs      S⋅BLOCK
+
+-----------------------------------------------------------------------------
+4.4 Powerline_theme                                          *Powerline_theme*
+
+This option defines the theme Powerline uses. The available themes are located 
+in autoload/Powerline/Themes/. A theme is a pre-defined set of Powerline 
+segments which make up the statusline.
+
+Example: >
+
+    let g:Powerline_theme = 'skwp'
+<
+
+Default: "default"
+
+------------------------------------------------------------------------------
+4.5 Powerline_colorscheme                              *Powerline_colorscheme*
+
+This option defines the colorscheme Powerline uses. The available colorschemes 
+are located in autoload/Powerline/Colorschemes/.
+
+Example: >
+
+    let g:Powerline_colorscheme = 'skwp'
+<
+
+Default: "default"
+
+------------------------------------------------------------------------------
+4.6 Powerline_stl_path_style                        *Powerline_stl_path_style*
+
+There are currently four ways to display the current path and file name. The 
+default is to only display the file name like the %t statusline item. By 
+setting this configuration value you can choose from the following ways 
+display the current path and file name:
+
+    VALUE      DESCRIPTION ~
+    filename   Display only the file name using the %t statusline item.
+    short      Display a short path. The home directory is substituted with
+               "~", the first directory is displayed with its full name, and
+               subsequent directories are shortened to their first letter.
+               I.e. "/home/user/foo/bar/baz.vim" becomes "~/f/b/baz.vim" and
+               "long/relative/path/foo/bar/baz.vim becomes
+               "long/r/p/f/b/baz.vim".
+    relative   Display a relative path, similar to the %f statusline item.
+    full       Display the full path, similar to the %F statusline item.
+
+Example: >
+
+    let g:Powerline_stl_path_style = 'full'
+<
+
+Default: "relative"
+
+==============================================================================
+5. Fonts                                                     *Powerline-fonts*
+
+TODO
+
+==============================================================================
+6. Customization                                     *Powerline-customization*
+
+There are currently two ways of customizing Powerline: Basic customization 
+using a couple of functions to insert and remove existing segments from the 
+statusline, and advanced customization using your own autoload files. The 
+customization features of Powerline allow you to create your own statuslines 
+without ever touching the original source code.
+
+------------------------------------------------------------------------------
+6.1 Basic customization                        *Powerline-basic-customization*
+
+Powerline provides the following functions to alter the default statusline 
+look. These functions should be called from your |vimrc| file or another file 
+which is sourced at Vim startup.
+
+Note: These functions are currently applied to all statuslines, so if you 
+insert a segment after a segment which is present in many statuslines (e.g.  
+the "filename" segment), all the statuslines will have the inserted segment.  
+This behavior may be changed in a future version of Powerline.
+
+Note: Remember to clear your cache with |:PowerlineClearCache| after changing 
+your statusline!
+
+Example: >
+
+    " Insert the charcode segment after the filetype segment
+    call Pl#Theme#InsertSegment('charcode', 'after', 'filetype')
+
+    " Replace the scrollpercent segment with the charcode segment
+    call Pl#Theme#ReplaceSegment('scrollpercent', 'fileinfo')
+<
+                                                      *Pl#Theme#InsertSegment*
+Pl#Theme#InsertSegment({newsegment}, {location}, {targetsegment})
+
+This function inserts {newsegment} before or after {targetsegment}. The 
+{location} parameter specifies the location of the new segment, valid values 
+are "before" and "after". You can see all the available segments in 
+autoload/Powerline/Segments.vim and the files specified in 
+|Powerline-cust-segments|.
+
+Pl#Theme#RemoveSegment({targetsegment})               *Pl#Theme#RemoveSegment*
+
+This function removes the {targetsegment} segment entirely.
+
+Pl#Theme#ReplaceSegment({oldsegment}, {newsegment})  *Pl#Theme#ReplaceSegment*
+
+This function replaces {oldsegment} with {newsegment}.
+
+------------------------------------------------------------------------------
+6.2 Advanced customization                  *Powerline-advanced-customization*
+
+Because Powerline utilizes Vim's autoload functionality, you can easily create 
+your own segments, themes, functions and colorschemes without touching the 
+original source code. This is a bit more complex than using the utility 
+functions, but it allows you to do a lot more with your statusline.
+
+Your custom autoload files should be stored in your |runtimepath| (usually in 
+"~/.vim/autoload/Powerline/*").
+
+Note: Remember to clear your cache with |:PowerlineClearCache| after changing 
+your statusline!
+
+6.2.1 Colorschemes                               *Powerline-cust-colorschemes*
+------------------------------------------------------------------------------
+
+Colorschemes should be stored as separate files in 
+{runtimepath}/autoload/Powerline/Colorschemes/.
+
+SYNTAX ~
+
+TODO
+
+EXAMPLE ~
+
+TODO
+
+6.2.2 Functions                                     *Powerline-cust-functions*
+------------------------------------------------------------------------------
+
+Functions should be stored as separate files in 
+{runtimepath}/autoload/Powerline/Functions/.
+
+SYNTAX ~
+
+TODO
+
+EXAMPLE ~
+
+TODO
+
+6.2.3 Segments                                       *Powerline-cust-segments*
+------------------------------------------------------------------------------
+
+Segments should be stored as separate files in 
+{runtimepath}/autoload/Powerline/Segments/.
+
+SYNTAX ~
+
+TODO
+
+EXAMPLE ~
+
+TODO
+
+6.2.4 Themes                                           *Powerline-cust-themes*
+------------------------------------------------------------------------------
+
+Themes should be stored as separate files in 
+{runtimepath}/autoload/Powerline/Themes/.
+
+SYNTAX ~
+
+TODO
+
+EXAMPLE ~
+
+TODO
+
+==============================================================================
+7. License                                                 *Powerline-license*
+
+Creative Commons Attribution-ShareAlike 3.0 Unported
+
+http://creativecommons.org/licenses/by-sa/3.0/
+
+==============================================================================
+8. Known issues                                       *Powerline-known-issues*
+
+See the issue tracker at
+https://github.com/Lokaltog/vim-powerline/issues
+
+==============================================================================
+9. Contributing                                       *Powerline-contributing*
+
+If you experience any bugs or have feature requests, please open an issue on
+GitHub. Fork the source repository on GitHub and send a pull request if you
+have any code improvements.
+
+Author: Kim Silkebækken <kim.silkebaekken+vim@gmail.com>
+Source repository: https://github.com/Lokaltog/vim-powerline
+
+==============================================================================
+vim:tw=78:sw=4:ts=8:ft=help:norl:

@@ -1,0 +1,319 @@
+SplineFontDB: 3.0
+FontName: PowerlineSymbols
+FullName: PowerlineSymbols
+FamilyName: PowerlineSymbols
+Weight: Medium
+Copyright: 
+UComments: "2011-11-21: Created." 
+Version: 001.000
+ItalicAngle: 0
+UnderlinePosition: -98.6328
+UnderlineWidth: 48.8281
+Ascent: 800
+Descent: 200
+LayerCount: 2
+Layer: 0 0 "Back"  1
+Layer: 1 0 "Fore"  0
+XUID: [1021 211 26716215 11021609]
+FSType: 0
+OS2Version: 0
+OS2_WeightWidthSlopeOnly: 0
+OS2_UseTypoMetrics: 1
+CreationTime: 1321867751
+ModificationTime: 1326665029
+OS2TypoAscent: 0
+OS2TypoAOffset: 1
+OS2TypoDescent: 0
+OS2TypoDOffset: 1
+OS2TypoLinegap: 90
+OS2WinAscent: 0
+OS2WinAOffset: 1
+OS2WinDescent: 0
+OS2WinDOffset: 1
+HheadAscent: 0
+HheadAOffset: 1
+HheadDescent: 0
+HheadDOffset: 1
+OS2Vendor: 'PfEd'
+MarkAttachClasses: 1
+DEI: 91125
+Encoding: UnicodeFull
+Compacted: 1
+UnicodeInterp: none
+NameList: Adobe Glyph List
+DisplaySize: -24
+AntiAlias: 1
+FitToEm: 1
+WinInfo: 0 31 18
+BeginPrivate: 0
+EndPrivate
+BeginChars: 1114112 9
+
+StartChar: uni2B80
+Encoding: 11136 11136 0
+Width: 621
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+0 1000 m 1
+ 621 379 l 1
+ 0 -243 l 1
+ 0 1000 l 1
+EndSplineSet
+EndChar
+
+StartChar: uni2B81
+Encoding: 11137 11137 1
+Width: 621
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+10 991 m 0
+ 16 997 23 1000 32 1000 c 0
+ 41 1000 48 996 54 990 c 2
+ 613 400 l 2
+ 619 394 621 386 621 378 c 0
+ 621 370 618 362 613 357 c 2
+ 54 -233 l 2
+ 48 -239 41 -242 32 -242 c 0
+ 23 -242 16 -240 10 -234 c 0
+ 4 -228 0 -221 0 -212 c 0
+ 0 -203 3 -196 8 -190 c 2
+ 547 379 l 1
+ 8 948 l 2
+ 3 954 0 961 0 970 c 0
+ 0 979 4 985 10 991 c 0
+EndSplineSet
+EndChar
+
+StartChar: uni2B82
+Encoding: 11138 11138 2
+Width: 621
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+621 1000 m 5
+ 621 -243 l 5
+ 0 379 l 5
+ 621 1000 l 5
+EndSplineSet
+EndChar
+
+StartChar: uni2B83
+Encoding: 11139 11139 3
+Width: 621
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+612 991 m 0
+ 618 985 621 979 621 970 c 0
+ 621 961 619 954 613 948 c 2
+ 74 379 l 1
+ 613 -190 l 2
+ 619 -196 621 -203 621 -212 c 0
+ 621 -221 618 -228 612 -234 c 0
+ 606 -240 598 -242 589 -242 c 0
+ 580 -242 574 -239 568 -233 c 2
+ 8 357 l 2
+ 3 362 0 370 0 378 c 0
+ 0 386 3 394 8 400 c 2
+ 568 990 l 2
+ 574 996 580 1000 589 1000 c 0
+ 598 1000 606 997 612 991 c 0
+EndSplineSet
+EndChar
+
+StartChar: uni2B61
+Encoding: 11105 11105 4
+Width: 555
+VWidth: 0
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+0 800 m 5
+ 92 800 l 5
+ 92 513 l 5
+ 253 513 l 5
+ 253 444 l 5
+ 0 444 l 5
+ 0 800 l 5
+236 312 m 5
+ 339 312 l 5
+ 468 67 l 5
+ 468 312 l 5
+ 555 312 l 5
+ 555 -44 l 5
+ 453 -44 l 5
+ 323 200 l 5
+ 323 -44 l 5
+ 236 -44 l 5
+ 236 312 l 5
+EndSplineSet
+EndChar
+
+StartChar: uni2B60
+Encoding: 11104 11104 5
+Width: 676
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+0 197 m 1
+ 94 207 419 279 419 384 c 2
+ 419 537 l 1
+ 278 501 l 1
+ 478 794 l 1
+ 677 501 l 1
+ 536 537 l 1
+ 536 384 l 2
+ 536 196 208 126 208 21 c 2
+ 208 -244 l 1
+ 0 -244 l 1
+ 0 197 l 1
+0 288 m 1
+ 0 405 0 944 0 944 c 1
+ 208 944 l 1
+ 208 944 208 451 208 334 c 1
+ 185 311 12 288 0 288 c 1
+EndSplineSet
+EndChar
+
+StartChar: uni2B62
+Encoding: 11106 11106 6
+Width: 428
+VWidth: 0
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+88 677 m 2
+ 429 677 l 1
+ 429 589 l 1
+ 88 589 l 1
+ 88 162 l 1
+ 198 162 l 1
+ 198 343 l 1
+ 374 343 l 1
+ 374 427 l 1
+ 198 427 l 1
+ 198 506 l 1
+ 429 506 l 1
+ 429 274 l 1
+ 416 263 391 255 374 255 c 2
+ 286 255 l 1
+ 286 162 l 2
+ 286 114 246 74 198 74 c 2
+ 88 74 l 2
+ 40 74 0 114 0 162 c 2
+ 0 589 l 2
+ 0 637 40 677 88 677 c 2
+EndSplineSet
+EndChar
+
+StartChar: uni2B63
+Encoding: 11107 11107 7
+Width: 428
+VWidth: 0
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+0 677 m 5
+ 341 677 l 6
+ 389 677 429 637 429 589 c 6
+ 429 506 l 6
+ 429 458 389 418 341 418 c 6
+ 287 418 l 5
+ 287 162 l 6
+ 287 114 247 74 199 74 c 6
+ 89 74 l 6
+ 41 74 1 114 1 162 c 6
+ 1 274 l 6
+ 0 274 l 6
+ 0 506 l 5
+ 89 506 l 5
+ 89 162 l 5
+ 199 162 l 5
+ 199 506 l 5
+ 341 506 l 5
+ 341 589 l 5
+ 0 589 l 5
+ 0 677 l 5
+EndSplineSet
+EndChar
+
+StartChar: uni2B64
+Encoding: 11108 11108 8
+Width: 546
+VWidth: 0
+Flags: HMW
+LayerCount: 2
+Fore
+SplineSet
+273 733 m 4
+ 429 733 430 538 430 538 c 5
+ 430 420 l 5
+ 547 420 l 5
+ 547 303 l 5
+ 547 303 546 -9 273 -9 c 4
+ 0 -9 0 303 0 303 c 5
+ 0 420 l 5
+ 117 420 l 5
+ 117 538 l 5
+ 117 538 117 733 273 733 c 4
+273 655 m 4
+ 195 655 195 576 195 420 c 5
+ 352 420 l 5
+ 352 576 351 655 273 655 c 4
+273 342 m 4
+ 195 342 195 147 273 147 c 4
+ 351 147 351 342 273 342 c 4
+EndSplineSet
+EndChar
+EndChars
+BitmapFont: 10 10 8 2 1 
+BDFChar: 0 11136 6 0 4 -2 7
+JAC+4q"X@:^jlCb
+BDFChar: 1 11137 6 0 4 -2 7
+J3Y4g#RCta5_&h7
+BDFChar: 2 11138 6 1 5 -2 7
+#T,OGq"T(n(^L*A
+BDFChar: 3 11139 6 1 5 -2 7
+#S8+DJ:Km-&-r79
+BDFChar: 4 11105 6 1 4 -1 7
+J:N1>!0GR3O8o7\
+BDFChar: 5 11104 7 0 5 -2 7
+^rY<PaN2`d^q]pM
+BDFChar: 6 11106 4 1 5 -1 6
+G^u0KJ=)F+
+BDFChar: 7 11107 4 0 5 -1 6
+p]QtGOH>Q3
+BDFChar: 8 11108 5 0 5 0 6
+0M"b4bku\c
+EndBitmapFont
+BitmapFont: 12 10 10 2 1 
+BDFChar: 0 11136 7 0 6 -2 11
+!!%Pbi:-O>r:od>^jlCb
+BDFChar: 1 11137 7 0 6 -3 11
+!!%O7+:ne]":,P]5_&h7
+BDFChar: 2 11138 7 0 6 -2 11
+!!!-1*'AWHr-UUH$j6P1
+BDFChar: 3 11139 7 0 6 -2 11
+!!!--&0O5gJ3Y4g#Qt,-
+BDFChar: 4 11105 7 0 5 0 8
+J:N1>!$jBP,QIfE
+BDFChar: 5 11104 8 0 8 -3 11
+z^];.Ma8juqa8j9]a8jQehuLOm^];.Mz
+BDFChar: 6 11106 5 1 6 0 8
+!-j$]R"1Qc?iU0,
+BDFChar: 7 11107 5 0 5 0 7
+p]QtGOH>Q3
+BDFChar: 8 11108 7 0 5 0 8
+0M"`*r63C_GQ7^D
+EndBitmapFont
+EndSplineFont
