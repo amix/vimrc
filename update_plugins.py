@@ -30,6 +30,7 @@ vim-snipmate https://github.com/garbas/vim-snipmate
 vim-snippets https://github.com/honza/vim-snippets
 vim-surround https://github.com/tpope/vim-surround
 vim-expand-region https://github.com/terryma/vim-expand-region
+vim-multiple-cursors https://github.com/terryma/vim-multiple-cursors
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'
