@@ -104,7 +104,7 @@ After you have installed the setup you can create **~/.vim_runtime/my_configs.vi
 You can also install your own plugins, for instance, via pathogen we can install [vim-rails](https://github.com/tpope/vim-rails):
 
 	cd ~/.vim_runtime
-	git clone git://github.com/tpope/vim-rails.git sources_plugins/vim-rails
+	git clone git://github.com/tpope/vim-rails.git sources_non_forked/vim-rails
 	
 Now you have vim-rails installed ;-)
 
