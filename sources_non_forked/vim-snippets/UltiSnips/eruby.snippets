@@ -14,9 +14,9 @@ def textmate_var(var, snip):
     lookup = dict(
        TM_RAILS_TEMPLATE_START_RUBY_EXPR = snip.opt('g:tm_rails_template_start_ruby_expr', '<%= '),
        TM_RAILS_TEMPLATE_END_RUBY_EXPR = snip.opt('g:tm_rails_template_end_ruby_expr', ' %>'),
-       TM_RAILS_TEMPLATE_START_RUBY_INLINE = snip.opt('g:tm_rails_template_start_ruby_inline', ' %>'),
+       TM_RAILS_TEMPLATE_START_RUBY_INLINE = snip.opt('g:tm_rails_template_start_ruby_inline', '<% '),
        TM_RAILS_TEMPLATE_END_RUBY_INLINE = snip.opt('g:tm_rails_template_end_ruby_inline', ' %>'),
-       TM_RAILS_TEMPLATE_END_RUBY_BLOCK = 'end'
+       TM_RAILS_TEMPLATE_END_RUBY_BLOCK = '<% end %>'
     )
 
     snip.rv = lookup[var]

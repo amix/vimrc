@@ -5,8 +5,8 @@ Snipmate & UltiSnip Snippets
 
 This repository contains snippets files for various programming languages.
 
-It is community-maintained and many people have contributed snippet files and other
-improvements already.
+It is community-maintained and many people have contributed snippet files and
+other improvements already.
 
 Contents
 ========
@@ -82,6 +82,7 @@ to maintain snippets for a language, please get in touch.
 * Markdown - [honza](http://github.com/honza)
 * Ruby - [taq](http://github.com/taq)
 * PHP - [chrisyue](http://github.com/chrisyue)
+* Scala - [gorodinskiy](https://github.com/gorodinskiy)
 
 Contributing notes
 ------------------

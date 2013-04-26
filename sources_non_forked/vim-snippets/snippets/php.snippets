@@ -9,6 +9,18 @@ snippet <?e
 # this one is for php5.4
 snippet <?=
 	<?=${1}?>
+snippet ?=
+	<?= ${1} ?>
+snippet ?
+	<?php ${1} ?>
+snippet ?f
+	<?php foreach ($${1:vars} as $${2:$var}): ?>
+		${3}
+	<?php endforeach ?>
+snippet ?i
+	<?php if ($${1:var}): ?>
+		${2}
+	<?php endif ?>
 snippet ns
 	namespace ${1:Foo\Bar\Baz};
 	${2}
@@ -16,9 +28,9 @@ snippet use
 	use ${1:Foo\Bar\Baz};
 	${2}
 snippet	c
-	${1:abstract }class ${2:`Filename()`}
+	class ${1:`Filename()`}
 	{
-		${3}
+		${2}
 	}
 snippet i
 	interface ${1:`Filename()`}
@@ -34,12 +46,12 @@ snippet f
 	}
 # method
 snippet m
-	${1:abstract }${2:protected}${3: static} function ${4:foo}(${5:array }${6:$bar})
+	${1:protected} function ${2:foo}()
 	{
-		${7}
+		${3}
 	}
 # setter method
-snippet sm 
+snippet sm
 	/**
 	 * Sets the value of ${1:foo}
 	 *
@@ -92,7 +104,7 @@ snippet S
 	$_SERVER['${1:variable}']${2}
 snippet SS
 	$_SESSION['${1:variable}']${2}
-	
+
 # the following are old ones
 snippet inc
 	include '${1:file}';${2}
@@ -193,7 +205,7 @@ snippet doc_h
 	 * @copyright ${4:$2}, `strftime('%d %B, %Y')`
 	 * @package ${5:default}
 	 */
-	
+
 # Interface
 snippet interface
 	/**
@@ -332,8 +344,8 @@ snippet vd
 snippet vdd
 	var_dump(${1}); die(${2:});
 snippet http_redirect
-	header ("HTTP/1.1 301 Moved Permanently"); 
-	header ("Location: ".URL); 
+	header ("HTTP/1.1 301 Moved Permanently");
+	header ("Location: ".URL);
 	exit();
 # Getters & Setters
 snippet gs
@@ -363,7 +375,7 @@ snippet gs
 snippet ags
 	/**
 	 * ${1:description}
-	 * 
+	 *
 	 * @${7}
 	 */
 	${2:protected} $${3:foo};
@@ -382,3 +394,12 @@ snippet rett
 	return true;
 snippet retf
 	return false;
+snippet am
+	$${1:foo} = array_map(function($${2:v}) {
+		${3}
+		return $$2;
+	}, $$1);
+snippet aw
+	array_walk($${1:foo}, function(&$${2:v}, $${3:k}) {
+		$$2 = ${4};
+	});

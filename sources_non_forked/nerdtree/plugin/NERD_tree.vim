@@ -136,15 +136,7 @@ call s:initVariable("g:NERDTreeMapUpdirKeepOpen", "U")
 call s:initVariable("g:NERDTreeMapCWD", "CD")
 
 "SECTION: Load class files{{{2
-runtime plugin/nerdtree/path.vim
-runtime plugin/nerdtree/menu_controller.vim
-runtime plugin/nerdtree/menu_item.vim
-runtime plugin/nerdtree/key_map.vim
-runtime plugin/nerdtree/bookmark.vim
-runtime plugin/nerdtree/tree_file_node.vim
-runtime plugin/nerdtree/tree_dir_node.vim
-runtime plugin/nerdtree/opener.vim
-runtime plugin/nerdtree/creator.vim
+call nerdtree#loadClassFiles()
 
 " SECTION: Commands {{{1
 "============================================================

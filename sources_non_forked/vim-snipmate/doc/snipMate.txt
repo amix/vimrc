@@ -356,18 +356,28 @@ If you would like your snippets to be expanded using spaces instead of tabs,
 just enable 'expandtab' and set 'softtabstop' to your preferred amount of
 spaces. If 'softtabstop' is not set, 'shiftwidth' is used instead.
 
-                                                              *snipMate-trigger*
-snipMate comes with a setting to configure the key that is used to trigger
-snipMate. To configure the key set g:snips_trigger_key to something other than
-<tab>,e.g. <c-space> use:
+                                                           *snipMate-mappings*
+The mappings snipMate uses can be customized with the |:map| commands. For
+example, to change the key that triggers snippets and moves to the next
+tabstop, >
 
- let g:snips_trigger_key='<c-space>'
+	:imap <C-J> <Plug>snipMateNextOrTrigger
+	:smap <C-J> <Plug>snipMateNextOrTrigger
+<
+The list of possible <Plug> mappings is as follows:
 
-snipMate will try to automatically configure backwards trigger to prepend shift
-key infront, e.g. <s-tab> or <s-c-space>. You can manually configure backward
-trigger using:
+<Plug>snipMateNextOrTrigger	Jumps to the next tab stop or, if none exists,
+				try to expand a snippet. Use in both insert
+				and select modes.
 
- let g:snips_trigger_key_backwards='<c-space>'
+<Plug>snipMateBack		Jump to the previous tab stop, if it exists.
+				Use in both insert and select modes.
+
+<Plug>snipMateShow		Show all available snippets (that start with
+				the previous text, if it exists). Use in
+				insert mode.
+
+<Plug>snipMateVisual		|snipMate-visual-selection-support|
 
 ==============================================================================
 FEATURES                                                   *snipMate-features*
