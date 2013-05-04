@@ -1,3 +1,11 @@
+## 2.1 (04/26/2013)
+
+Bugfixes:
+  - Fix 1 regression where cursors could potentially get out of sync in insert mode
+
+Features:
+  - Added some logic to debug latency. Fanning out to 30 cursors in insert mode with my vimrc took over 300ms. It's like than 20ms with a plain vimrc. Need to debug what setting is causing the slowing down in insert mode and inform users.
+
 ## 2.0 (04/24/2013)
 
 Bugfixes:

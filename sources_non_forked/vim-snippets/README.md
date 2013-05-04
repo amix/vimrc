@@ -69,12 +69,52 @@ Historical notes
 unfortunately abandoned the project. [Rok Garbas][3] is now maintaining a
 [fork][4] of the project in hopes of improving the existing code base.
 
+Versions / dialects / ..
+========================
+There are some issues, such as newer language versions may require other
+snippets than older. If this exists we currently recommend doing this:
+
+add snippets/ruby.snippets (common snippets)
+add snippets/ruby-1.8.snippets (1.8 only)
+add snippets/ruby-1.9.snippets (1.9 only)
+
+then configure github.com/garbas/vim-snipmate this way:
+
+    let g:snipMate = {}
+    let g:snipMate.scope_aliases = {}
+    let g:snipMate.scope_aliases['ruby'] = 'ruby,ruby-rails,ruby-1.9'
+
+or github.com/MarcWeber/UltiSnips this way:
+
+
+    let g:UltiSnips = {}
+
+    let g:UltiSnips.snipmate_ft_filter = {
+                \ 'default' : {'filetypes': ["FILETYPE"] },
+                \ 'ruby'    : {'filetypes': ["ruby", "ruby-rails", "ruby-1.9"] },
+
+
+If it happens that you work on a project requiring ruby-1.8 snippets instead,
+consider using vim-addon-local-vimrc and override the filetypes.
+
+Well - of course it may not make sense to create a new file for each
+ruby-library-version triplet. Sometimes postfixing a name such as
+
+    migrate_lib_20_down
+    migrate_lib_20_up
+
+will do it then if syntax has changed.
 
 Language maintainers
 --------------------
 
 No one can really be proficient in all programming languages. If you would like
 to maintain snippets for a language, please get in touch.
+
+Notes: People are interested in snippets - and their interest may stop again
+at will. So its ok if people maintain a language only for a short period of
+time - or jump in and get things done - don't let the flow stop :)
+vim-snippets is not like the "linux kernel".
 
 * Python - [honza](http://github.com/honza)
 * Javascript - [honza](http://github.com/honza)

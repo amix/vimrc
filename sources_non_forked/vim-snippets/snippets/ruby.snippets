@@ -589,6 +589,8 @@ snippet bf
 	before_filter :${1:method}
 snippet bt
 	belongs_to :${1:association}
+snippet btp
+	belongs_to :${1:association}, :polymorphic => true${2}
 snippet crw
 	cattr_accessor :${1:attr_names}
 snippet defcreate
@@ -890,22 +892,27 @@ snippet mrnc
 	rename_column :${1:table_name}, :${2:old_column_name}, :${3:new_column_name}
 snippet mcc
 	change_column :${1:table}, :${2:column}, :${3:type}
-snippet mccc
-	t.column :${1:title}, :${2:string}
+snippet mnc
+	t.${1:string} :${2:title}${3:, null: false}${4}
 snippet mct
 	create_table :${1:table_name} do |t|
-		t.column :${2:name}, :${3:type}
+		${2}
 	end
-snippet migration
+snippet migration class .. < ActiveRecord::Migration .. def up .. def down .. end
 	class ${1:class_name} < ActiveRecord::Migration
-		def self.up
+		def up
 			${2}
 		end
 
-		def self.down
+		def down
 		end
 	end
-
+snippet migration class .. < ActiveRecord::Migration .. def change .. end
+	class ${1:class_name} < ActiveRecord::Migration
+		def change
+			${2}
+		end
+	end
 snippet trc
 	t.remove :${1:column}
 snippet tre
@@ -913,7 +920,6 @@ snippet tre
 	${3}
 snippet tref
 	t.references :${1:model}
-
 #rspec
 snippet it
 	it "${1:spec_name}" do
@@ -944,7 +950,9 @@ snippet aft
 		${2}
 	end
 snippet let
-	let(:${1:method}) { ${2} }
+	let(:${1:object}) ${2:block}
+snippet let!
+	let!(:${1:object}) ${2:block}
 snippet subj
 	subject { ${1} }
 snippet spec

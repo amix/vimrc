@@ -87,8 +87,8 @@ highlight link multiple_cursors_visual Visual
 
 ## Issues
 - Multi key commands like `ciw` do not work at the moment
+- Insert mode can be slow. If you are using Neobundle and have many plugins, try switching to Vundle to see if it helps. See https://github.com/Shougo/neobundle.vim/issues/84 for additional info.
 - All user input typed before Vim is able to fan out the last operation to all cursors is lost. This is a implementation decision to keep the input perfectly synced in all locations, at the cost of potentially losing user input.
-- Performance in terminal vim degrades significantly with more cursors
 - Select mode is not implemented
 
 ## Changelog

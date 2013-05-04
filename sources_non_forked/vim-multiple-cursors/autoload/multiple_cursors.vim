@@ -82,6 +82,10 @@ function! multiple_cursors#debug()
   call s:cm.debug()
 endfunction
 
+function! multiple_cursors#get_latency_debug_file()
+  return s:latency_debug_file
+endfunction
+
 " Creates a new cursor. Different logic applies depending on the mode the user
 " is in and the current state of the buffer.
 " 1. In normal mode, a new cursor is created at the end of the word under Vim's
@@ -352,6 +356,7 @@ function! s:CursorManager.reset(restore_view) dict
   let self.starting_index = -1
   let self.saved_winview = []
   let self.start_from_find = 0
+  let s:char = ''
   call self.restore_user_settings()
 endfunction
 
@@ -425,7 +430,7 @@ function! s:CursorManager.update_current() dict
     " Sets the cursor at the right place
     exec "normal! gv\<Esc>"
     call cur.update_visual_selection(s:get_visual_region(s:pos('.')))
-  else
+  elseif s:from_mode ==# 'v' || s:from_mode ==# 'V'
     call cur.remove_visual_selection()
   endif
   let vdelta = line('$') - s:saved_linecount
@@ -714,9 +719,6 @@ function! s:revert_mode(from, to)
     call s:cm.reapply_visual_selection()
     normal! V
   endif
-  if a:to ==# 'i'
-    startinsert
-  endif
   if a:to ==# 'n' && a:from ==# 'i'
     stopinsert
   endif
@@ -768,9 +770,9 @@ function! s:process_user_inut()
   " FIXME(terryma): Undo always places the cursor at the beginning of the line.
   " Figure out why.
   if s:from_mode ==# 'i' || s:to_mode ==# 'i'
-    silent! undojoin | call feedkeys(s:char."\<Plug>(a)")
+    silent! undojoin | call s:feedkeys(s:char."\<Plug>(a)")
   else
-    call feedkeys(s:char."\<Plug>(a)")
+    call s:feedkeys(s:char."\<Plug>(a)")
   endif
   
   " Even when s:char produces invalid input, this method is always called. The
@@ -808,9 +810,6 @@ function! s:apply_user_input_next(mode)
 
   " Advance the cursor index
   call s:cm.next()
-
-  " Update Vim's cursor
-  call cursor(s:cm.get_current().position)
 
   " We're done if we're made the full round
   if s:cm.loop_done()
@@ -941,6 +940,37 @@ function! s:display_error()
   let s:bad_input = 0
 endfunction
 
+let s:latency_debug_file = ''
+function! s:start_latency_measure()
+  if g:multi_cursor_debug_latency
+    let s:start_time = reltime()
+  endif
+endfunction
+
+function! s:skip_latency_measure()
+  if g:multi_cursor_debug_latency
+    let s:skip_latency_measure = 1
+  endif
+endfunction
+
+function! s:end_latency_measure()
+  if g:multi_cursor_debug_latency && !empty(s:char)
+    if empty(s:latency_debug_file)
+      let s:latency_debug_file = tempname()
+      exec 'redir >> '.s:latency_debug_file
+        silent! echom "Starting latency debug at ".reltimestr(reltime())
+      redir END
+    endif
+    
+    if !s:skip_latency_measure
+      exec 'redir >> '.s:latency_debug_file
+        silent! echom "Processing '".s:char."' took ".string(str2float(reltimestr(reltime(s:start_time)))*1000).' ms in '.s:cm.size().' cursors. mode = '.s:from_mode
+      redir END
+    endif
+  endif
+  let s:skip_latency_measure = 0
+endfunction
+
 function! s:wait_for_user_input(mode)
   let s:from_mode = a:mode
   if empty(a:mode)
@@ -958,7 +988,11 @@ function! s:wait_for_user_input(mode)
   " Immediately revert the change to leave the user's buffer unchanged
   call s:revert_highlight_fix()
 
+  call s:end_latency_measure()
+
   let s:char = s:get_char()
+
+  call s:start_latency_measure()
 
   " Clears any echoes we might've added
   normal! :<Esc>
@@ -970,6 +1004,7 @@ function! s:wait_for_user_input(mode)
   " If the key is a special key and we're in the right mode, handle it
   if index(get(s:special_keys, s:from_mode, []), s:char) != -1
     call s:handle_special_key(s:char, s:from_mode)
+    call s:skip_latency_measure()
   else
     call s:cm.start_loop()
     call s:feedkeys("\<Plug>(i)")

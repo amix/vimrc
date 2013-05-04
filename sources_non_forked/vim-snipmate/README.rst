@@ -14,7 +14,7 @@ In other words: upstream of snipmate is almost dead. (Better to say Marc Weber i
 :Author: `Michael Sanders`_
 :Maintainer: `Adnan Zafar`_ & `Rok Garbas`_ & `Marc Weber`_
 :Homepage: http://www.vim.org/scripts/script.php?script_id=2540
-:Contributors: `MarcWeber`_, `lilydjwg`_, `henrik`_, `steveno`_, `asymmetric`_, `jherdman`_, `ironcamel`_, `honza`_, `jb55`_, `robhudson`_, `kozo2`_, `MicahElliott`_, `darkwise`_, `redpill`_, `thisgeek`_, `sickill`_, `pose`_, `marutanm`_, `r00k`_, `jbernard`_, `holizz`_, `muffinresearch`_, `statik`_, `taq`_, `alderz`_, `radicalbit`_, `pielgrzym`_
+:Contributors: `MarcWeber`_, `lilydjwg`_, `henrik`_, `steveno`_, `asymmetric`_, `jherdman`_, `ironcamel`_, `honza`_, `jb55`_, `robhudson`_, `kozo2`_, `MicahElliott`_, `darkwise`_, `redpill`_, `thisgeek`_, `sickill`_, `pose`_, `marutanm`_, `r00k`_, `jbernard`_, `holizz`_, `muffinresearch`_, `statik`_, `taq`_, `alderz`_, `radicalbit`_, `pielgrzym`_, `hpesoj`_
 
 
 .. contents::
@@ -255,3 +255,4 @@ TODO / Future
 .. _`vim.org`: http://www.vim.org/scripts/script.php?script_id=2540
 .. _`GitHub`: http://github.com/msanders/snipmate.vim
 .. _`radicalbit`: https://github.com/radicalbit
+.. _`hpesoj`: https://github.com/hpesoj

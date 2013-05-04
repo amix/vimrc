@@ -324,9 +324,7 @@ function! s:state_proto.update_changes()
 	let col = col('.')
 	if line('.') != self.cur_stop[0] || col < self.start_col || col > self.end_col
 		call self.remove()
-	endif
-
-	if self.has_vars
+	elseif self.has_vars
 		call self.update_vars(change_len)
 	endif
 

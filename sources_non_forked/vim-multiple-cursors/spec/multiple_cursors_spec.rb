@@ -256,4 +256,18 @@ describe "Multiple Cursors" do
       hell
     EOF
   end
+
+  specify "#multiline visual mode" do
+    before <<-EOF
+      hello
+      hello
+    EOF
+
+    type 'Vj<C-n>A world<Esc>'
+
+    after <<-EOF
+      hello world
+      hello world
+    EOF
+  end
 end
