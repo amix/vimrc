@@ -345,7 +345,7 @@ after you clone my repo.
 
 ### Update Installed module
 
-    cd vim-rails
+    cd bundle/vim-rails
     git pull origin master
     cd ~/.vim_runtime
     git status
@@ -366,7 +366,7 @@ Above we use vi to edit .gitmoudles and .git/config to remove references to spec
 
 ### To make new plugin work
 
-**If you drop your plugins to bunle, you can ignore this.**
+**If you drop your plugins to bundle, you can ignore this.**
 
 **Also** maybe amix forgot to mention that you have to change plugins_config.vim under ~/.vim_runtime/vimrcs to make the plugin work.            
 Just to add a line to plugins_config.vim and it may look like this:
