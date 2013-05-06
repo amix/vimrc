@@ -375,20 +375,6 @@ after you clone my repo.
 
 Above we use vi to edit .gitmoudles and .git/config to remove references to specific submoudle.
 
-### To make new plugin work
-
-**If you drop your plugins to bundle, you can ignore this.**
-
-**Also** maybe amix forgot to mention that you have to change plugins_config.vim under ~/.vim_runtime/vimrcs to make the plugin work.            
-Just to add a line to plugins_config.vim and it may look like this:
-
-    call pathogen#infect('~/.vim_runtime/sources_forked')
-    call pathogen#infect('~/.vim_runtime/sources_non_forked')
-    call pathogen#infect('~/.vim_runtime/sources_plugins')
-    call pathogen#helptags()
-
-The line **3rd line** is added. Then pathogen will get everything done.
-
 ### git submodule reference
 
 *   [Tips-Using git submodule keep your vim plugin up-to-date](http://www.allenwei.cn/tips-using-git-submodule-keep-your-plugin-up-to-date/)
