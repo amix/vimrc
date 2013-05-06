@@ -328,9 +328,9 @@ You can also add your own favorite script from [vim-scripts.org](http://vim-scri
 As amix mentioned, you can isntall your own plugins via pathogen,for instance vim-rails:
 
     cd ~/.vim_runtime
-    git clone git://github.com/tpope/vim-rails.git sources_plugins/vim-rails
+    git clone git://github.com/tpope/vim-rails.git sources_non_forked/vim-rails
 
-After this,you got vim-rails under sources_plugins/vim-rails as a git local repo.       
+After this,you got vim-rails under sources_non_forked/vim-rails as a git local repo.       
 
 **But** all you got at this time is a local repo and you may get upset if you want to share your very super plugin together with Ultimate vimrc. 
 
