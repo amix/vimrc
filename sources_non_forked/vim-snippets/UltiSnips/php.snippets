@@ -1,0 +1,258 @@
+## Snippets from SnipMate, taken from
+## https://github.com/scrooloose/snipmate-snippets.git
+
+snippet array "array"
+$${1:arrayName} = array('${2}' => ${3});${4}
+endsnippet
+
+snippet def "def"
+define('${1}'${2});${3}
+endsnippet
+
+snippet do "do"
+do {
+	${2:// code... }
+} while (${1:/* condition */});"
+endsnippet
+
+snippet doc_f "doc_f"
+/**
+ * $2
+ * @return ${4:void}
+ * @author ${5:`!v g:snips_author`}
+ **/
+${1:public }function ${2:someFunc}(${3})
+{${6}
+}
+endsnippet
+
+snippet doc_i "doc_i"
+/**
+ * $1
+ * @package ${2:default}
+ * @author ${3:`!v g:snips_author`}
+ **/
+interface ${1:someClass}
+{${4}
+} // END interface $1"
+endsnippet
+
+snippet else "else"
+else {
+	${1:// code...}
+}
+endsnippet
+
+snippet for "for"
+for ($${2:i} = 0; $$2 < ${1:count}; $$2${3:++}) {
+	${4:// code...}
+}
+endsnippet
+
+snippet foreachk "foreachk"
+foreach ($${1:variable} as $${2:key} => $${3:value}){
+	${4:// code...}
+}
+endsnippet
+
+snippet get "get"
+$_GET['${1}']${2}
+endsnippet
+
+snippet if "if"
+if (${1:/* condition */}) {
+	${2:// code...}
+}
+endsnippet
+
+snippet inc "inc"
+include '${1:file}';${2}
+endsnippet
+
+snippet log "log"
+error_log(var_export(${1}, true));${2}
+endsnippet
+
+snippet post "post"
+$_POST['${1}']${2}
+endsnippet
+
+snippet req1 "req1"
+require_once '${1:file}';${2}
+endsnippet
+
+snippet session "session"
+$_SESSION['${1}']${2}
+endsnippet
+
+snippet t "t"
+$${1:retVal} = (${2:condition}) ? ${3:a} : ${4:b};${5}
+endsnippet
+
+snippet var "var"
+var_export(${1});${2}
+endsnippet
+
+snippet getter "PHP Class Getter" !b
+/*
+ * Getter for $1
+ */
+public function get${1/\w+\s*/\u$0/}() 
+{
+    return $this->$1;$2
+}
+$4
+endsnippet
+
+snippet setter "PHP Class Setter" !b
+/*
+ * Setter for $1
+ */
+public function set${1/\w+\s*/\u$0/}($$1)
+{
+    $this->$1 = $$1;$3
+    ${4:return $this;}
+}
+$0
+endsnippet
+
+snippet gs "PHP Class Getter Setter" !b
+protected $$1
+
+/*
+ * Getter for $1
+ */
+public function get${1/\w+\s*/\u$0/}() 
+{
+    return $this->$1;$2
+}
+
+/*
+ * Setter for $1
+ */
+public function set${1/\w+\s*/\u$0/}($$1)
+{
+    $this->$1 = $$1;$3
+    ${4:return $this;}
+}
+$0
+endsnippet
+
+snippet pub "Public function" !b
+public function ${1:name}(${2:$param})
+{
+    ${VISUAL}${3:return null;}
+}
+$0
+endsnippet
+
+snippet pro "Protected function" !b
+protected function ${1:name}(${2:$param})
+{
+    ${VISUAL}${3:return null;}
+}
+$0
+endsnippet
+
+snippet pri "Private function" !b
+private function ${1:name}(${2:$param})
+{
+    ${VISUAL}${3:return null;}
+}
+$0
+endsnippet
+
+snippet pubs "Public static function" !b
+public static function ${1:name}(${2:$param})
+{
+    ${VISUAL}${3:return null;}
+}
+$0
+endsnippet
+
+snippet pros "Protected static function" !b
+protected static function ${1:name}(${2:$param})
+{
+    ${VISUAL}${3:return null;}
+}
+$0
+endsnippet
+
+snippet pris "Private static function" !b
+private static function ${1:name}(${2:$param})
+{
+    ${VISUAL}${3:return null;}
+}
+$0
+endsnippet
+
+snippet fu "Function snip" !b
+function ${1:name}(${2:$param}) 
+{
+    ${VISUAL}${3:return null;}
+}
+$0
+endsnippet
+# :vim:ft=snippets
+
+snippet fore "Foreach loop"
+foreach ($${1:variable} as $${3:value}){
+    ${VISUAL}${4}
+}
+$0
+endsnippet
+
+snippet new "New class instance" !b
+$$1 = new $1($2);
+$0
+endsnippet
+
+
+snippet ife "if else"
+if (${1:/* condition */}) {
+    ${2:// code...}
+} else {
+    ${3:// code...}
+}
+$0
+endsnippet
+
+
+snippet class "Class declaration template" !b
+/**
+ * Class ${1:`!p snip.rv=snip.fn.capitalize().split('.')[0]`} 
+ * @author $2
+ */
+class $1
+{
+    public function ${3:__construct}(${4:$options})
+    {
+        ${4:// code}
+    }
+}
+$0
+endsnippet
+
+snippet pr "Dumb debug helper in HTML"
+echo '<pre>' . var_export($1, 1) . '</pre>';$0
+endsnippet
+
+snippet pc "Dumb debug helper in cli"
+var_export($1);$0
+endsnippet
+
+# Symfony 2 based snippets
+snippet sfa "Symfony 2 Controller action"
+/**
+* @Route("/${1:route_name}", name="$1")
+* @Template()
+*/
+public function $1Action($2)
+{
+    $3
+    return ${4:array();}$0
+}
+endsnippet
+
+# :vim:ft=snippets:
+

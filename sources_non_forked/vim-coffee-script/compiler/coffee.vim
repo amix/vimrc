@@ -3,11 +3,20 @@
 " URL:         http://github.com/kchmck/vim-coffee-script
 " License:     WTFPL
 
+" All this is needed to support compiling filenames with spaces, quotes, and
+" such. The filename is escaped and embedded into the `makeprg` setting.
+"
+" Because of this, `makeprg` must be updated on every file rename. And because
+" of that, `CompilerSet` can't be used because it doesn't exist when the
+" rename autocmd is ran. So, we have to do some checks to see whether `compiler`
+" was called locally or globally, and respect that in the rest of the script.
+
 if exists('current_compiler')
   finish
+else
+  let current_compiler = 'coffee'
 endif
 
-let current_compiler = 'coffee'
 " Pattern to check if coffee is the compiler
 let s:pat = '^' . current_compiler
 
@@ -16,21 +25,12 @@ if !exists('coffee_compiler')
   let coffee_compiler = 'coffee'
 endif
 
-if exists('coffee_make_compiler')
-  echohl WarningMsg
-    echom '`coffee_make_compiler` is deprecated: use `coffee_compiler` instead'
-  echohl None
-
-  let coffee_compiler = coffee_make_compiler
-endif
-
 " Extra options passed to CoffeeMake
 if !exists('coffee_make_options')
   let coffee_make_options = ''
 endif
 
-" Get a `makeprg` for the current filename. This is needed to support filenames
-" with spaces and quotes, but also not break generic `make`.
+" Get a `makeprg` for the current filename.
 function! s:GetMakePrg()
   return g:coffee_compiler . ' -c ' . g:coffee_make_options . ' $* '
   \                        . fnameescape(expand('%'))

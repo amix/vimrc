@@ -3,15 +3,15 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2008-11-25.
-" @Last Change: 2010-09-15.
-" @Revision:    0.0.38
+" @Last Change: 2012-09-20.
+" @Revision:    0.0.46
 
 let s:prototype = tlib#Filter_cnf#New({'_class': ['Filter_fuzzy'], 'name': 'fuzzy'}) "{{{2
-let s:prototype.highlight = ''
+let s:prototype.highlight = g:tlib_inputlist_higroup
 
 
 " Support for "fuzzy" pattern matching in |tlib#input#List()|. 
-" Characters are interpreted as if connected with '.\{-}'.
+" Patterns are interpreted as if characters were connected with '.\{-}'.
 "
 " In "fuzzy" mode, the pretty printing of filenames is disabled.
 function! tlib#Filter_fuzzy#New(...) "{{{3
@@ -23,13 +23,23 @@ endf
 " :nodoc:
 function! s:prototype.Init(world) dict "{{{3
     " TLogVAR a:world.display_format
-    function! a:world.Set_display_format(value) dict "{{{3
+    " :nodoc:
+    function! a:world.Set_display_format(value) dict
         if a:value == 'filename'
             let self.display_format = ''
         else
             let self.display_format = a:value
         endif
     endf
+endf
+
+
+let s:Help = s:prototype.Help
+
+" :nodoc:
+function! s:prototype.Help(world) dict "{{{3
+    call call(s:Help, [a:world], self)
+    call a:world.PushHelp('Patterns are interpreted as if characters were connected with .\{-}')
 endf
 
 

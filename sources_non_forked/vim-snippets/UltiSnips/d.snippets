@@ -1,0 +1,583 @@
+# Simple shortcuts
+
+snippet imp "import (imp)" b
+import ${1:std.stdio};
+endsnippet
+
+snippet pimp "public import (pimp)" b
+public import ${1:/*module*/};
+endsnippet
+
+snippet over "override (over)" b
+override ${1:/*function*/}
+endsnippet
+
+snippet al "alias (al)"
+alias ${1:/*orig*/} ${2:/*alias*/};
+endsnippet
+
+snippet mixin "mixin (mixin)" b
+mixin ${1:/*mixed_in*/} ${2:/*name*/};
+endsnippet
+
+snippet new "new (new)"
+new ${1}(${2});
+endsnippet
+
+snippet scpn "@safe const pure nothrow (scpn)"
+@safe const pure nothrow
+endsnippet
+
+snippet spn "@safe pure nothrow (spn)"
+@safe pure nothrow
+endsnippet
+
+snippet cont "continue (cont)"
+continue;
+endsnippet
+
+snippet dis "@disable (dis)" b
+@disable ${1:/*method*/};
+endsnippet
+
+snippet pub "public (pub)" b
+public:
+    ${1:/*members*/}
+endsnippet
+
+snippet priv "private (priv)" b
+private:
+    ${1:/*members*/}
+endsnippet
+
+snippet prot "protected (prot)" b
+protected:
+    ${1:/*members*/}
+endsnippet
+
+snippet pack "package (pack)" b
+package:
+    ${1:/*members*/}
+endsnippet
+
+snippet ret "return (ret)"
+return ${1:/*value to return*/};
+endsnippet
+
+snippet auto "auto (auto)" b
+auto ${1:/*variable*/} = ${2:/*value*/};
+endsnippet
+
+snippet con "const (con)" b
+const ${1:/*variable*/} = ${2:/*value*/};
+endsnippet
+
+snippet siz "size_t (siz)" b
+size_t ${1:/*variable*/} = ${2:/*value*/};
+endsnippet
+
+snippet sup "super (sup)" b
+super(${1:/*args*/});
+endsnippet
+
+# Phobos
+
+snippet tup "tuple (tup)"
+tuple(${1:/*args*/})
+endsnippet
+
+snippet wr "writeln (wr)"
+writeln(${1:/*args*/});
+endsnippet
+
+snippet to "to (to)"
+to!(${1:/*type*/})(${2:/*arg*/})
+endsnippet
+
+snippet enf "enforce (enf)" b
+enforce(${1:/*condition*/},
+        new ${2}Exception(${3:/*args*/}));
+endsnippet
+
+# Branches
+
+snippet if "if .. (if)"
+if(${1:/*condition*/})
+{
+    ${VISUAL}${0:/*code*/}
+}
+endsnippet
+
+snippet ife "if .. else (ife)" b
+if(${1:/*condition*/})
+{
+    ${2:/*code*/}
+}
+else
+{
+    ${3:/*else*/}
+}
+endsnippet
+
+snippet el "else (el)" b
+else
+{
+    ${VISUAL}${1:/*code*/}
+}
+endsnippet
+
+snippet elif "else if (elif)" b
+else if(${1:/*condition*/})
+{
+    ${VISUAL}${0:/*code*/}
+}
+endsnippet
+
+snippet sw "switch (sw)"
+switch(${1:/*var*/})
+{
+    case ${2:/*value*/}:
+        ${3:/*code*/}
+        break;
+    case ${4:/*value*/}:
+        ${5:/*code*/}
+        break;
+    ${7:/*more cases*/}
+    default:
+        ${6:assert(false);}
+}
+endsnippet
+
+snippet fsw "final switch (fsw)"
+switch(${1:/*var*/})
+{
+    case ${2:/*value*/}:
+        ${3:/*code*/}
+        break;
+    case ${4:/*value*/}:
+        ${5:/*code*/}
+        break;
+    ${7:/*more cases*/}
+}
+endsnippet
+
+snippet case "case (case)" b
+case ${1:/*value*/}:
+    ${2:/*code*/}
+    break;
+endsnippet
+
+snippet ?: "ternary operator (?:)"
+${1:/*condition*/} ? ${2:/*then*/} : ${3:/*else*/}$4
+endsnippet
+
+# Loops
+
+snippet do "do while (do)" b
+do
+{
+    ${VISUAL}${2:/*code*/}
+} while(${1:/*condition*/});
+endsnippet
+
+snippet wh "while (wh)" b
+while(${1:/*condition*/})
+{
+    ${VISUAL}${2:/*code*/}
+}
+endsnippet
+
+snippet for "for (for)" b
+for (${4:size_t} ${2:i} = 0; $2 < ${1:count}; ${3:++$2})
+{
+    ${VISUAL}${0:/*code*/}
+}
+endsnippet
+
+snippet forever "forever (forever)" b
+for(;;)
+{
+    ${VISUAL}${0:/*code*/}
+}
+endsnippet
+
+snippet fore "foreach (fore)"
+foreach(${1:/*elem*/}; ${2:/*range*/})
+{
+    ${VISUAL}${3:/*code*/}
+}
+endsnippet
+
+snippet forif "foreach if (forif)" b
+foreach(${1:/*elem*/}; ${2:/*range*/}) if(${3:/*condition*/})
+{
+    ${VISUAL}${4:/*code*/}
+}
+endsnippet
+
+# Contracts
+snippet in "in contract (in)" b
+in
+{
+    assert(${1:/*condition*/}, "${2:error message}");
+    ${3}
+}
+body
+endsnippet
+
+snippet out "out contract (out)" b
+out${1:(result)}
+{
+    assert(${2:/*condition*/}, "${3:error message}");
+    ${4}
+}
+body
+endsnippet
+
+snippet inv "invariant (inv)" b
+invariant()
+{
+    assert(${1:/*condition*/}, "${2:error message}");
+    ${3}
+}
+endsnippet
+
+# Functions (generic)
+
+snippet fun "function definition (fun)"
+${1:void} ${2:/*function name*/}(${3:/*args*/}) ${4:@safe pure nothrow}
+{
+    ${VISUAL}${5:/*code*/}
+}
+endsnippet
+
+snippet void "void function definition (void)"
+void ${1:/*function name*/}(${2:/*args*/}) ${3:@safe pure nothrow}
+{
+    ${VISUAL}${4:/*code*/}
+}
+endsnippet
+
+snippet this "ctor (this)" w
+this(${1:/*args*/})
+{
+    ${VISUAL}${2:/*code*/}
+}
+endsnippet
+
+snippet get "getter property (get)" !
+@property ${1:/*type*/} ${2:/*member_name*/}() const pure nothrow {return ${3:$2_};}
+endsnippet
+
+snippet set "setter property (set)" !
+@property void ${1:/*member_name*/}(${2:/*type*/} rhs) pure nothrow {${3:$1_} = rhs;}
+endsnippet
+
+# Functions (concrete)
+
+snippet main "Main" b
+void main(string[] args)
+{
+    ${VISUAL}${0: /*code*/}
+}
+endsnippet
+
+# Mixins
+
+snippet signal "signal (signal)" b
+mixin Signal!(${1:/*args*/}) ${2:/*name*/};
+endsnippet
+
+# Scope
+
+snippet scope "scope (scope)" b
+scope(${1:exit})
+{
+    ${VISUAL}${2:/*code*/}
+}
+endsnippet
+
+# With
+
+snippet with "with (with)"
+with(${1})
+{
+    ${VISUAL}${2:/*code*/}
+}
+endsnippet
+
+# Exception handling
+
+snippet try "try/catch (try)" b
+try
+{
+    ${VISUAL}${1:/*code to try*/}
+}
+catch(${2}Exception e)
+{
+    ${3:/*handle exception*/}
+}
+endsnippet
+
+snippet tryf "try/catch/finally (tryf)" b
+try
+{
+    ${VISUAL}${1:/*code to try*/}
+}
+catch(${2}Exception e)
+{
+    ${3:/*handle exception*/}
+}
+finally
+{
+    ${4:/*cleanup*/}
+}
+endsnippet
+
+snippet catch "catch (catch)" b
+catch(${1}Exception e)
+{
+    ${2:/*handle exception*/}
+}
+endsnippet
+
+snippet thr "throw (thr)"
+throw new ${1}Exception("${2}");
+endsnippet
+
+
+# Type declarations
+
+snippet struct "struct (struct)"
+struct ${1:`!p snip.rv = (snip.basename or "name")`}
+{
+    ${2}
+}
+endsnippet
+
+snippet union "union (union)"
+union ${1:`!p snip.rv = (snip.basename or "name")`}
+{
+    ${2}
+}
+endsnippet
+
+snippet class "class (class)"
+class ${1:`!p snip.rv = (snip.basename or "name")`}
+{
+    ${2}
+}
+endsnippet
+
+snippet inter "interface (inter)"
+interface ${1:`!p snip.rv = (snip.basename or "name")`}
+{
+    ${2}
+}
+endsnippet
+
+snippet enum "enum (enum)"
+enum ${1:`!p snip.rv = (snip.basename or "name")`}
+{
+    ${2}
+}
+endsnippet
+
+
+# Exception declarations
+
+snippet exc "exception declaration (exc)" b
+/// ${3:/*documentation*/}
+class ${1}Exception : ${2}Exception 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}
+endsnippet
+
+
+# Conditional compilation
+
+snippet version "version (version)" b
+version(${1:/*version name*/})
+{
+    ${VISUAL}${2:/*code*/}
+}
+endsnippet
+
+snippet debug "debug" b
+debug
+{
+    ${VISUAL}${1:/*code*/}
+}
+endsnippet
+
+
+# Templates
+
+snippet temp "template (temp)" b
+template ${2:/*name*/}(${1:/*args*/})
+{
+    ${3:/*code*/}
+}
+endsnippet
+
+
+# Asserts
+
+snippet ass "assert (ass)" b
+assert(${1:false}, "${2:TODO}");
+
+endsnippet
+
+
+# Unittests
+
+snippet unittest "unittest (unittest)" b
+unittest
+{
+    ${1:/*code*/}
+}
+endsnippet
+
+
+# Common member functions
+
+snippet opDis "opDispatch (opDis)" b
+${1:/*return type*/} opDispatch(string s)()
+{
+    ${2:/*code*/};
+}
+endsnippet
+
+snippet op= "opAssign (op=)" b
+void opAssign(${1} rhs) ${2:@safe pure nothrow}
+{
+    ${2:/*code*/}
+}
+endsnippet
+
+snippet opCmp "opCmp (opCmp)" b
+int opCmp(${1} rhs) @safe const pure nothrow
+{
+    ${2:/*code*/}
+}
+endsnippet
+
+snippet opApply "opApply (opApply)" b
+int opApply(int delegate(ref ${1:/*iterated type/s*/}) dg)
+{
+    int result = 0;
+    ${2:/*loop*/}
+    {
+        result = dg(${3:/*arg/s*/});
+        if(result){break;}
+    }
+    return result;
+}
+endsnippet
+
+snippet toString "toString (toString)" b
+string toString() @safe const pure nothrow
+{
+    ${1:/*code*/}
+}
+endsnippet
+
+
+# Comments
+
+
+snippet todo "TODO (todo)" !
+// TODO: ${1}
+endsnippet
+
+
+
+# DDoc
+
+snippet doc "generic ddoc block (doc)" b
+/// ${1:description}
+///
+/// ${2:details}
+endsnippet
+
+snippet fdoc "function ddoc block (fdoc)" b
+/// ${1:description}
+///
+/// ${2:Params:  ${3:param} = ${4:param description}
+///          ${5}}
+///
+/// ${6:Returns: ${7:return value}}
+///
+/// ${8:Throws:  ${9}Exception ${10}}
+endsnippet
+
+snippet Par "Params (Par)"
+Params:  ${1:param} = ${2:param description}
+///         ${3}
+endsnippet
+
+snippet Ret "Returns (Ret)"
+Returns:  ${1:return value/s}
+endsnippet
+
+snippet Thr "Throws (Thr)"
+Throws:  ${1}Exception ${2}
+endsnippet
+
+snippet Example "Examples (Example)"
+Examples:
+/// --------------------
+/// ${1:example code}
+/// --------------------
+endsnippet
+
+
+# License blocks
+
+snippet gpl "GPL (gpl)" b
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// Copyright (C) ${1:Author}, `!v strftime("%Y")`
+
+${2}
+endsnippet
+
+snippet boost "Boost (boost)" b
+//          Copyright ${1:Author} `!v strftime("%Y")`.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
+${2}
+endsnippet
+
+
+# New module
+
+snippet module "New module (module)" b
+//          Copyright ${1:Author} `!v strftime("%Y")`.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
+module ${2}.`!v Filename('$1', 'name')`;
+
+
+${3}
+endsnippet

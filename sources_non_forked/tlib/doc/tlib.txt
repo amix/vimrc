@@ -61,32 +61,35 @@ Contents~
         g:tlib_scroll_lines ..................... |g:tlib_scroll_lines|
         g:tlib_keyagents_InputList_m ............ |g:tlib_keyagents_InputList_m|
         g:tlib_handlers_EditList ................ |g:tlib_handlers_EditList|
-        tlib#autocmdgroup#Init .................. |tlib#autocmdgroup#Init()|
-        tlib#tab#BufMap ......................... |tlib#tab#BufMap()|
-        tlib#tab#TabWinNr ....................... |tlib#tab#TabWinNr()|
-        tlib#tab#Set ............................ |tlib#tab#Set()|
-        tlib#paragraph#GetMetric ................ |tlib#paragraph#GetMetric()|
-        tlib#paragraph#Move ..................... |tlib#paragraph#Move()|
-        tlib#scratch#UseScratch ................. |tlib#scratch#UseScratch()|
-        tlib#scratch#CloseScratch ............... |tlib#scratch#CloseScratch()|
+        g:tlib_debug ............................ |g:tlib_debug|
+        tlib#notify#Echo ........................ |tlib#notify#Echo()|
+        tlib#notify#TrimMessage ................. |tlib#notify#TrimMessage()|
+        g:tlib_persistent ....................... |g:tlib_persistent|
+        tlib#persistent#Dir ..................... |tlib#persistent#Dir()|
+        tlib#persistent#Filename ................ |tlib#persistent#Filename()|
+        tlib#persistent#Get ..................... |tlib#persistent#Get()|
+        tlib#persistent#Save .................... |tlib#persistent#Save()|
+        g:tlib#vim#simalt_maximize .............. |g:tlib#vim#simalt_maximize|
+        g:tlib#vim#simalt_restore ............... |g:tlib#vim#simalt_restore|
+        g:tlib#vim#use_vimtweak ................. |g:tlib#vim#use_vimtweak|
+        tlib#vim#Maximize ....................... |tlib#vim#Maximize()|
+        tlib#vim#RestoreWindow .................. |tlib#vim#RestoreWindow()|
+        g:tlib#vim#use_wmctrl ................... |g:tlib#vim#use_wmctrl|
         tlib#progressbar#Init ................... |tlib#progressbar#Init()|
         tlib#progressbar#Display ................ |tlib#progressbar#Display()|
         tlib#progressbar#Restore ................ |tlib#progressbar#Restore()|
-        tlib#Object#New ......................... |tlib#Object#New()|
-        prototype.New
-        prototype.Inherit
-        prototype.Extend
-        prototype.IsA
-        prototype.IsRelated
-        prototype.RespondTo
-        prototype.Super
-        tlib#Object#Methods ..................... |tlib#Object#Methods()|
-        tlib#win#Set ............................ |tlib#win#Set()|
-        tlib#win#GetLayout ...................... |tlib#win#GetLayout()|
-        tlib#win#SetLayout ...................... |tlib#win#SetLayout()|
-        tlib#win#List ........................... |tlib#win#List()|
-        tlib#win#Width .......................... |tlib#win#Width()|
-        tlib#win#WinDo .......................... |tlib#win#WinDo()|
+        tlib#eval#FormatValue ................... |tlib#eval#FormatValue()|
+        tlib#list#Inject ........................ |tlib#list#Inject()|
+        tlib#list#Compact ....................... |tlib#list#Compact()|
+        tlib#list#Flatten ....................... |tlib#list#Flatten()|
+        tlib#list#FindAll ....................... |tlib#list#FindAll()|
+        tlib#list#Find .......................... |tlib#list#Find()|
+        tlib#list#Any ........................... |tlib#list#Any()|
+        tlib#list#All ........................... |tlib#list#All()|
+        tlib#list#Remove ........................ |tlib#list#Remove()|
+        tlib#list#RemoveAll ..................... |tlib#list#RemoveAll()|
+        tlib#list#Zip ........................... |tlib#list#Zip()|
+        tlib#list#Uniq .......................... |tlib#list#Uniq()|
         tlib#cmd#OutputAsList ................... |tlib#cmd#OutputAsList()|
         tlib#cmd#BrowseOutput ................... |tlib#cmd#BrowseOutput()|
         tlib#cmd#BrowseOutputWithCallback ....... |tlib#cmd#BrowseOutputWithCallback()|
@@ -94,89 +97,45 @@ Contents~
         tlib#cmd#ParseScriptname ................ |tlib#cmd#ParseScriptname()|
         tlib#cmd#UseVertical .................... |tlib#cmd#UseVertical()|
         tlib#cmd#Time ........................... |tlib#cmd#Time()|
-        tlib#comments#Comments .................. |tlib#comments#Comments()|
+        tlib#syntax#Collect ..................... |tlib#syntax#Collect()|
+        tlib#syntax#Names ....................... |tlib#syntax#Names()|
+        tlib#balloon#Register ................... |tlib#balloon#Register()|
+        tlib#balloon#Remove ..................... |tlib#balloon#Remove()|
+        tlib#balloon#Expr ....................... |tlib#balloon#Expr()|
+        g:tlib#vcs#def .......................... |g:tlib#vcs#def|
+        g:tlib#vcs#executables .................. |g:tlib#vcs#executables|
+        g:tlib#vcs#check ........................ |g:tlib#vcs#check|
+        tlib#vcs#FindVCS ........................ |tlib#vcs#FindVCS()|
+        tlib#vcs#Ls ............................. |tlib#vcs#Ls()|
+        tlib#vcs#Diff ........................... |tlib#vcs#Diff()|
         tlib#char#Get ........................... |tlib#char#Get()|
         tlib#char#IsAvailable ................... |tlib#char#IsAvailable()|
         tlib#char#GetWithTimeout ................ |tlib#char#GetWithTimeout()|
-        tlib#World#New .......................... |tlib#World#New()|
-        prototype.Reset
+        tlib#scratch#UseScratch ................. |tlib#scratch#UseScratch()|
+        tlib#scratch#CloseScratch ............... |tlib#scratch#CloseScratch()|
+        tlib#autocmdgroup#Init .................. |tlib#autocmdgroup#Init()|
+        g:tlib#cache#purge_days ................. |g:tlib#cache#purge_days|
+        g:tlib#cache#purge_every_days ........... |g:tlib#cache#purge_every_days|
+        g:tlib#cache#script_encoding ............ |g:tlib#cache#script_encoding|
+        g:tlib#cache#run_script ................. |g:tlib#cache#run_script|
+        g:tlib#cache#silent ..................... |g:tlib#cache#silent|
+        g:tlib#cache#dont_purge ................. |g:tlib#cache#dont_purge|
+        tlib#cache#Dir .......................... |tlib#cache#Dir()|
+        tlib#cache#Filename ..................... |tlib#cache#Filename()|
+        tlib#cache#Save ......................... |tlib#cache#Save()|
+        tlib#cache#Get .......................... |tlib#cache#Get()|
+        tlib#cache#MaybePurge ................... |tlib#cache#MaybePurge()|
+        tlib#cache#Purge ........................ |tlib#cache#Purge()|
+        tlib#cache#ListFilesInCache ............. |tlib#cache#ListFilesInCache()|
+        tlib#normal#WithRegister ................ |tlib#normal#WithRegister()|
         tlib#time#MSecs ......................... |tlib#time#MSecs()|
         tlib#time#Now ........................... |tlib#time#Now()|
         tlib#time#Diff .......................... |tlib#time#Diff()|
         tlib#time#DiffMSecs ..................... |tlib#time#DiffMSecs()|
-        tlib#textobjects#StandardParagraph ...... |standard-paragraph|
-        tlib#textobjects#Init ................... |tlib#textobjects#Init()|
-        v_sp .................................... |v_sp|
-        o_sp .................................... |o_sp|
-        tlib#Filter_fuzzy#New ................... |tlib#Filter_fuzzy#New()|
-        tlib#file#Split ......................... |tlib#file#Split()|
-        tlib#file#Join .......................... |tlib#file#Join()|
-        tlib#file#Relative ...................... |tlib#file#Relative()|
-        tlib#file#With .......................... |tlib#file#With()|
-        tlib#Filter_seq#New ..................... |tlib#Filter_seq#New()|
-        tlib#date#DiffInDays .................... |tlib#date#DiffInDays()|
-        tlib#date#Parse ......................... |tlib#date#Parse()|
-        tlib#date#SecondsSince1970 .............. |tlib#date#SecondsSince1970()|
-        tlib#balloon#Register ................... |tlib#balloon#Register()|
-        tlib#balloon#Remove ..................... |tlib#balloon#Remove()|
-        tlib#balloon#Expr ....................... |tlib#balloon#Expr()|
-        tlib#buffer#EnableMRU ................... |tlib#buffer#EnableMRU()|
-        tlib#buffer#DisableMRU .................. |tlib#buffer#DisableMRU()|
-        tlib#buffer#Set ......................... |tlib#buffer#Set()|
-        tlib#buffer#Eval ........................ |tlib#buffer#Eval()|
-        tlib#buffer#GetList ..................... |tlib#buffer#GetList()|
-        tlib#buffer#ViewLine .................... |tlib#buffer#ViewLine()|
-        tlib#buffer#HighlightLine ............... |tlib#buffer#HighlightLine()|
-        tlib#buffer#DeleteRange ................. |tlib#buffer#DeleteRange()|
-        tlib#buffer#ReplaceRange ................ |tlib#buffer#ReplaceRange()|
-        tlib#buffer#ScratchStart ................ |tlib#buffer#ScratchStart()|
-        tlib#buffer#ScratchEnd .................. |tlib#buffer#ScratchEnd()|
-        tlib#buffer#BufDo ....................... |tlib#buffer#BufDo()|
-        tlib#buffer#InsertText .................. |tlib#buffer#InsertText()|
-        tlib#buffer#InsertText0 ................. |tlib#buffer#InsertText0()|
-        tlib#buffer#CurrentByte ................. |tlib#buffer#CurrentByte()|
-        tlib#buffer#KeepCursorPosition .......... |tlib#buffer#KeepCursorPosition()|
-        tlib#Filter_cnfd#New .................... |tlib#Filter_cnfd#New()|
-        tlib#type#IsNumber ...................... |tlib#type#IsNumber()|
-        tlib#type#IsString ...................... |tlib#type#IsString()|
-        tlib#type#IsFuncref ..................... |tlib#type#IsFuncref()|
-        tlib#type#IsList ........................ |tlib#type#IsList()|
-        tlib#type#IsDictionary .................. |tlib#type#IsDictionary()|
-        tlib#syntax#Collect ..................... |tlib#syntax#Collect()|
-        tlib#syntax#Names ....................... |tlib#syntax#Names()|
-        g:tlib#vim#simalt_maximize .............. |g:tlib#vim#simalt_maximize|
-        g:tlib#vim#simalt_restore ............... |g:tlib#vim#simalt_restore|
-        g:tlib#vim#use_vimtweak ................. |g:tlib#vim#use_vimtweak|
-        tlib#vim#Maximize ....................... |tlib#vim#Maximize()|
-        tlib#vim#RestoreWindow .................. |tlib#vim#RestoreWindow()|
-        g:tlib#vim#use_wmctrl ................... |g:tlib#vim#use_wmctrl|
-        tlib#hook#Run ........................... |tlib#hook#Run()|
-        tlib#eval#FormatValue ................... |tlib#eval#FormatValue()|
-        tlib#arg#Get ............................ |tlib#arg#Get()|
-        tlib#arg#Let ............................ |tlib#arg#Let()|
-        tlib#arg#Key ............................ |tlib#arg#Key()|
-        tlib#arg#StringAsKeyArgs ................ |tlib#arg#StringAsKeyArgs()|
-        tlib#arg#Ex ............................. |tlib#arg#Ex()|
         tlib#var#Let ............................ |tlib#var#Let()|
         tlib#var#EGet ........................... |tlib#var#EGet()|
         tlib#var#Get ............................ |tlib#var#Get()|
         tlib#var#List ........................... |tlib#var#List()|
-        tlib#Filter_cnf#New ..................... |tlib#Filter_cnf#New()|
-        tlib#rx#Escape .......................... |tlib#rx#Escape()|
-        tlib#rx#EscapeReplace ................... |tlib#rx#EscapeReplace()|
-        tlib#rx#Suffixes ........................ |tlib#rx#Suffixes()|
-        tlib#url#Decode ......................... |tlib#url#Decode()|
-        tlib#url#DecodeChar ..................... |tlib#url#DecodeChar()|
-        tlib#url#EncodeChar ..................... |tlib#url#EncodeChar()|
-        tlib#url#Encode ......................... |tlib#url#Encode()|
-        tlib#input#List ......................... |tlib#input#List()|
-        tlib#input#ListD ........................ |tlib#input#ListD()|
-        tlib#input#ListW ........................ |tlib#input#ListW()|
-        tlib#input#EditList ..................... |tlib#input#EditList()|
-        tlib#input#Resume ....................... |tlib#input#Resume()|
-        tlib#input#CommandSelect ................ |tlib#input#CommandSelect()|
-        tlib#input#Edit ......................... |tlib#input#Edit()|
-        tlib#input#Dialog ....................... |tlib#input#Dialog()|
         tlib#agent#Exit ......................... |tlib#agent#Exit()|
         tlib#agent#CopyItems .................... |tlib#agent#CopyItems()|
         tlib#agent#PageUp ....................... |tlib#agent#PageUp()|
@@ -220,26 +179,66 @@ Contents~
         tlib#agent#GotoLine ..................... |tlib#agent#GotoLine()|
         tlib#agent#DoAtLine ..................... |tlib#agent#DoAtLine()|
         tlib#agent#Wildcard ..................... |tlib#agent#Wildcard()|
-        tlib#tag#Retrieve ....................... |tlib#tag#Retrieve()|
-        tlib#tag#Collect ........................ |tlib#tag#Collect()|
-        tlib#tag#Format ......................... |tlib#tag#Format()|
+        tlib#agent#Null ......................... |tlib#agent#Null()|
+        tlib#agent#ExecAgentByName .............. |tlib#agent#ExecAgentByName()|
+        tlib#agent#CompleteAgentNames ........... |tlib#agent#CompleteAgentNames()|
+        g:tlib#Filter_cnfx#expander ............. |g:tlib#Filter_cnfx#expander|
+        tlib#Filter_cnfx#New .................... |tlib#Filter_cnfx#New()|
+        tlib#url#Decode ......................... |tlib#url#Decode()|
+        tlib#url#DecodeChar ..................... |tlib#url#DecodeChar()|
+        tlib#url#EncodeChar ..................... |tlib#url#EncodeChar()|
+        tlib#url#Encode ......................... |tlib#url#Encode()|
         tlib#signs#ClearAll ..................... |tlib#signs#ClearAll()|
         tlib#signs#ClearBuffer .................. |tlib#signs#ClearBuffer()|
         tlib#signs#Mark ......................... |tlib#signs#Mark()|
-        g:tlib#cache#purge_days ................. |g:tlib#cache#purge_days|
-        g:tlib#cache#purge_every_days ........... |g:tlib#cache#purge_every_days|
-        g:tlib#cache#script_encoding ............ |g:tlib#cache#script_encoding|
-        g:tlib#cache#run_script ................. |g:tlib#cache#run_script|
-        g:tlib#cache#dont_purge ................. |g:tlib#cache#dont_purge|
-        tlib#cache#Dir .......................... |tlib#cache#Dir()|
-        tlib#cache#Filename ..................... |tlib#cache#Filename()|
-        tlib#cache#Save ......................... |tlib#cache#Save()|
-        tlib#cache#Get .......................... |tlib#cache#Get()|
-        tlib#cache#MaybePurge ................... |tlib#cache#MaybePurge()|
-        tlib#cache#Purge ........................ |tlib#cache#Purge()|
-        tlib#cache#ListFilesInCache ............. |tlib#cache#ListFilesInCache()|
+        tlib#rx#Escape .......................... |tlib#rx#Escape()|
+        tlib#rx#EscapeReplace ................... |tlib#rx#EscapeReplace()|
+        tlib#rx#Suffixes ........................ |tlib#rx#Suffixes()|
+        tlib#tag#Retrieve ....................... |tlib#tag#Retrieve()|
+        tlib#tag#Collect ........................ |tlib#tag#Collect()|
+        tlib#tag#Format ......................... |tlib#tag#Format()|
         tlib#map#PumAccept ...................... |tlib#map#PumAccept()|
-        tlib#normal#WithRegister ................ |tlib#normal#WithRegister()|
+        tlib#Filter_cnfd#New .................... |tlib#Filter_cnfd#New()|
+        g:tlib#input#use_popup .................. |g:tlib#input#use_popup|
+        g:tlib#input#format_filename ............ |g:tlib#input#format_filename|
+        g:tlib#input#filename_padding_r ......... |g:tlib#input#filename_padding_r|
+        g:tlib#input#filename_max_width ......... |g:tlib#input#filename_max_width|
+        tlib#input#List ......................... |tlib#input#List()|
+        tlib#input#ListD ........................ |tlib#input#ListD()|
+        tlib#input#ListW ........................ |tlib#input#ListW()|
+        tlib#input#EditList ..................... |tlib#input#EditList()|
+        tlib#input#Resume ....................... |tlib#input#Resume()|
+        tlib#input#CommandSelect ................ |tlib#input#CommandSelect()|
+        tlib#input#Edit ......................... |tlib#input#Edit()|
+        tlib#input#Dialog ....................... |tlib#input#Dialog()|
+        tlib#file#Split ......................... |tlib#file#Split()|
+        tlib#file#Join .......................... |tlib#file#Join()|
+        tlib#file#Relative ...................... |tlib#file#Relative()|
+        tlib#file#With .......................... |tlib#file#With()|
+        tlib#paragraph#GetMetric ................ |tlib#paragraph#GetMetric()|
+        tlib#paragraph#Move ..................... |tlib#paragraph#Move()|
+        tlib#World#New .......................... |tlib#World#New()|
+        tlib#tab#BufMap ......................... |tlib#tab#BufMap()|
+        tlib#tab#TabWinNr ....................... |tlib#tab#TabWinNr()|
+        tlib#tab#Set ............................ |tlib#tab#Set()|
+        tlib#date#DiffInDays .................... |tlib#date#DiffInDays()|
+        tlib#date#Parse ......................... |tlib#date#Parse()|
+        tlib#date#SecondsSince1970 .............. |tlib#date#SecondsSince1970()|
+        tlib#type#IsNumber ...................... |tlib#type#IsNumber()|
+        tlib#type#IsString ...................... |tlib#type#IsString()|
+        tlib#type#IsFuncref ..................... |tlib#type#IsFuncref()|
+        tlib#type#IsList ........................ |tlib#type#IsList()|
+        tlib#type#IsDictionary .................. |tlib#type#IsDictionary()|
+        tlib#Filter_fuzzy#New ................... |tlib#Filter_fuzzy#New()|
+        tlib#textobjects#StandardParagraph ...... |standard-paragraph|
+        tlib#textobjects#Init ................... |tlib#textobjects#Init()|
+        v_sp .................................... |v_sp|
+        o_sp .................................... |o_sp|
+        tlib#arg#Get ............................ |tlib#arg#Get()|
+        tlib#arg#Let ............................ |tlib#arg#Let()|
+        tlib#arg#Key ............................ |tlib#arg#Key()|
+        tlib#arg#StringAsKeyArgs ................ |tlib#arg#StringAsKeyArgs()|
+        tlib#arg#Ex ............................. |tlib#arg#Ex()|
         tlib#dir#CanonicName .................... |tlib#dir#CanonicName()|
         tlib#dir#PlainName ...................... |tlib#dir#PlainName()|
         tlib#dir#Ensure ......................... |tlib#dir#Ensure()|
@@ -247,19 +246,41 @@ Contents~
         tlib#dir#CD ............................. |tlib#dir#CD()|
         tlib#dir#Push ........................... |tlib#dir#Push()|
         tlib#dir#Pop ............................ |tlib#dir#Pop()|
-        tlib#notify#Echo ........................ |tlib#notify#Echo()|
-        tlib#notify#TrimMessage ................. |tlib#notify#TrimMessage()|
-        tlib#list#Inject ........................ |tlib#list#Inject()|
-        tlib#list#Compact ....................... |tlib#list#Compact()|
-        tlib#list#Flatten ....................... |tlib#list#Flatten()|
-        tlib#list#FindAll ....................... |tlib#list#FindAll()|
-        tlib#list#Find .......................... |tlib#list#Find()|
-        tlib#list#Any ........................... |tlib#list#Any()|
-        tlib#list#All ........................... |tlib#list#All()|
-        tlib#list#Remove ........................ |tlib#list#Remove()|
-        tlib#list#RemoveAll ..................... |tlib#list#RemoveAll()|
-        tlib#list#Zip ........................... |tlib#list#Zip()|
-        tlib#list#Uniq .......................... |tlib#list#Uniq()|
+        tlib#win#Set ............................ |tlib#win#Set()|
+        tlib#win#GetLayout ...................... |tlib#win#GetLayout()|
+        tlib#win#SetLayout ...................... |tlib#win#SetLayout()|
+        tlib#win#List ........................... |tlib#win#List()|
+        tlib#win#Width .......................... |tlib#win#Width()|
+        tlib#win#WinDo .......................... |tlib#win#WinDo()|
+        tlib#comments#Comments .................. |tlib#comments#Comments()|
+        tlib#Filter_cnf#New ..................... |tlib#Filter_cnf#New()|
+        prototype.Pretty
+        tlib#Object#New ......................... |tlib#Object#New()|
+        prototype.New
+        prototype.Inherit
+        prototype.Extend
+        prototype.IsA
+        prototype.IsRelated
+        prototype.RespondTo
+        prototype.Super
+        tlib#Object#Methods ..................... |tlib#Object#Methods()|
+        tlib#buffer#EnableMRU ................... |tlib#buffer#EnableMRU()|
+        tlib#buffer#DisableMRU .................. |tlib#buffer#DisableMRU()|
+        tlib#buffer#Set ......................... |tlib#buffer#Set()|
+        tlib#buffer#Eval ........................ |tlib#buffer#Eval()|
+        tlib#buffer#GetList ..................... |tlib#buffer#GetList()|
+        tlib#buffer#ViewLine .................... |tlib#buffer#ViewLine()|
+        tlib#buffer#HighlightLine ............... |tlib#buffer#HighlightLine()|
+        tlib#buffer#DeleteRange ................. |tlib#buffer#DeleteRange()|
+        tlib#buffer#ReplaceRange ................ |tlib#buffer#ReplaceRange()|
+        tlib#buffer#ScratchStart ................ |tlib#buffer#ScratchStart()|
+        tlib#buffer#ScratchEnd .................. |tlib#buffer#ScratchEnd()|
+        tlib#buffer#BufDo ....................... |tlib#buffer#BufDo()|
+        tlib#buffer#InsertText .................. |tlib#buffer#InsertText()|
+        tlib#buffer#InsertText0 ................. |tlib#buffer#InsertText0()|
+        tlib#buffer#CurrentByte ................. |tlib#buffer#CurrentByte()|
+        tlib#buffer#KeepCursorPosition .......... |tlib#buffer#KeepCursorPosition()|
+        tlib#hook#Run ........................... |tlib#hook#Run()|
         tlib#string#RemoveBackslashes ........... |tlib#string#RemoveBackslashes()|
         tlib#string#Chomp ....................... |tlib#string#Chomp()|
         tlib#string#Format ...................... |tlib#string#Format()|
@@ -274,9 +295,9 @@ Contents~
 plugin/02tlib.vim~
 
                                                     *:TRequire*
-TRequire NAME [VERSION [FILE]]
+:TRequire NAME [VERSION [FILE]]
     Make a certain vim file is loaded.
-    
+
     Conventions: If FILE isn't defined, plugin/NAME.vim is loaded. The 
     file must provide a variable loaded_{NAME} that represents the version 
     number.
@@ -325,34 +346,37 @@ TRequire NAME [VERSION [FILE]]
 <
 
                                                     *:TBrowseOutput*
-TBrowseOutput COMMAND
+:TBrowseOutput COMMAND
     Ever wondered how to efficiently browse the output of a command 
     without redirecting it to a file? This command takes a command as 
     argument and presents the output via |tlib#input#List()| so that you 
     can easily search for a keyword (e.g. the name of a variable or 
     function) and the like.
-    
+
     If you press enter, the selected line will be copied to the command 
     line. Press ESC to cancel browsing.
-    
+
     EXAMPLES: >
       TBrowseOutput 20verb TeaseTheCulprit
 <
 
                                                     *:TBrowseScriptnames*
-TBrowseScriptnames
+:TBrowseScriptnames
     List all sourced script names (the output of ':scriptnames').
-    
+
     When you press enter, the selected script will be opened in the current
     window. Press ESC to cancel.
-    
+
     EXAMPLES: >
       TBrowseScriptnames 
 <
 
                                                     *:TTimeCommand*
-TTimeCommand CMD
+:TTimeCommand CMD
     Time the execution time of CMD.
+
+
+Variables~
 
                                                     *g:tlib_pick_last_item*
 g:tlib_pick_last_item          (default: 1)
@@ -360,51 +384,88 @@ g:tlib_pick_last_item          (default: 1)
     had only one item to begin with.
     When 2, automatically select a last remaining item after applying 
     any filters.
+    See |tlib#input#List()|.
 
                                                     *g:tlib_sortprefs_threshold*
 g:tlib_sortprefs_threshold     (default: 200)
     If a list is bigger than this value, don't try to be smart when 
     selecting an item. Be slightly faster instead.
+    See |tlib#input#List()|.
 
                                                     *g:tlib_scratch_pos*
 g:tlib_scratch_pos             (default: 'botright')
     Scratch window position. By default the list window is opened on the 
     bottom. Set this variable to 'topleft' or '' to change this behaviour.
+    See |tlib#input#List()|.
 
                                                     *g:tlib_inputlist_pct*
 g:tlib_inputlist_pct           (default: 50)
     Size of the input list window (in percent) from the main size (of &lines).
+    See |tlib#input#List()|.
 
                                                     *g:tlib_inputlist_width_filename*
 g:tlib_inputlist_width_filename (default: '&co / 3')
     Size of filename columns when listing filenames.
+    See |tlib#input#List()|.
 
                                                     *g:tlib_inputlist_higroup*
 g:tlib_inputlist_higroup       (default: 'IncSearch')
-    The highlight group to use for showing matches in the input list window.
+    The highlight group to use for showing matches in the input list 
+    window.
+    See |tlib#input#List()|.
 
                                                     *g:tlib_inputlist_livesearch_threshold*
 g:tlib_inputlist_livesearch_threshold (default: 1000)
-    If a list contains more items, don't do an incremental "live search", 
-    but use |input()| to query the user for a filter. This is useful on 
-    slower machines or with very long lists.
+    If a list contains more items, |tlib#input#List()| does not perform an 
+    incremental "live search" but uses |input()| to query the user for a 
+    filter. This is useful on slower machines or with very long lists.
 
                                                     *g:tlib_inputlist_filename_indicators*
 g:tlib_inputlist_filename_indicators (default: 0)
-    If true, show some indicators about the status of a filename (e.g. 
-    buflisted(), bufloaded() etc.).
+    If true, |tlib#input#List()| will show some indicators about the 
+    status of a filename (e.g. buflisted(), bufloaded() etc.).
     This is disabled by default because vim checks also for the file on 
     disk when doing this.
 
                                                     *g:tlib_inputlist_match*
-g:tlib_inputlist_match         (default: 'cnf')
-    Can be "cnf", "cnfd", "seq", or "fuzzy". See:
-      cnf :: Match substrings
-        - |tlib#Filter_cnf#New()| (this is the default method)
-        - |tlib#Filter_cnfd#New()|
-      seq :: Match sequences of characters
+g:tlib_inputlist_match         (default: 'cnfx')
+    Determine how |tlib#input#List()| and related functions work.
+    Can be "cnf", "cnfd", "cnfx", "seq", or "fuzzy". See:
+      cnfx ... Like cnfd but |g:tlib#Filter_cnfx#expander| is interpreted 
+               as a wildcard (this is the default method)
+        - A plus character ("+") acts as a wildcard as if ".\{-}" (see 
+          |/\{-|) were entered.
+        - Examples:
+            - "f+o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
+              "far".
+        - Otherwise it is a derivate of the cnf method (see below).
+        - See also |tlib#Filter_cnfx#New()|.
+      cnfd ... Like cnf but "." is interpreted as a wildcard, i.e. it is 
+               expanded to "\.\{-}"
+        - A period character (".") acts as a wildcard as if ".\{-}" (see 
+          |/\{-|) were entered.
+        - Examples:
+            - "f.o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
+              "far".
+        - Otherwise it is a derivate of the cnf method (see below).
+        - See also |tlib#Filter_cnfd#New()|.
+      cnf .... Match substrings
+        - A blank creates an AND conjunction, i.e. the next pattern has to 
+          match too.
+        - A pipe character ("|") creates an OR conjunction, either this or 
+          the next next pattern has to match.
+        - Patterns are very 'nomagic' |regexp| with a |\V| prefix.
+        - A pattern starting with "-" makes the filter exclude items 
+          matching that pattern.
+        - Examples:
+            - "foo bar" matches items that contain the strings "foo" AND 
+              "bar".
+            - "foo|bar boo|far" matches items that contain either ("foo" OR 
+              "bar") AND ("boo" OR "far").
+        - See also |tlib#Filter_cnf#New()|.
+      seq .... Match sequences of characters
         - |tlib#Filter_seq#New()|
-      fuzzy :: Match fuzzy character sequences
+      fuzzy .. Match fuzzy character sequences
         - |tlib#Filter_fuzzy#New()|
 
                                                     *g:tlib_inputlist_shortmessage*
@@ -464,7 +525,7 @@ g:tlib_keyagents_InputList_s
     The default key bindings for single-item-select list views. If you 
     want to use <c-j>, <c-k> to move the cursor up and down, add these two 
     lines to after/plugin/02tlib.vim: >
-    
+
       let g:tlib_keyagents_InputList_s[10] = 'tlib#agent#Down'  " <c-j>
       let g:tlib_keyagents_InputList_s[11] = 'tlib#agent#Up'    " <c-k>
 <
@@ -479,67 +540,90 @@ g:tlib_keyagents_InputList_m
                                                     *g:tlib_handlers_EditList*
 g:tlib_handlers_EditList
 
-
-========================================================================
-autoload/tlib/autocmdgroup.vim~
-
-                                                    *tlib#autocmdgroup#Init()*
-tlib#autocmdgroup#Init()
+                                                    *g:tlib_debug*
+g:tlib_debug
 
 
 ========================================================================
-autoload/tlib/tab.vim~
+autoload/tlib/notify.vim~
 
-                                                    *tlib#tab#BufMap()*
-tlib#tab#BufMap()
-    Return a dictionary of bufnumbers => [[tabpage, winnr] ...]
+                                                    *tlib#notify#Echo()*
+tlib#notify#Echo(text, ?style='')
+    Print text in the echo area. Temporarily disable 'ruler' and 'showcmd' 
+    in order to prevent |press-enter| messages.
 
-                                                    *tlib#tab#TabWinNr()*
-tlib#tab#TabWinNr(buffer)
-    Find a buffer's window at some tab page.
-
-                                                    *tlib#tab#Set()*
-tlib#tab#Set(tabnr)
-
-
-========================================================================
-autoload/tlib/paragraph.vim~
-
-                                                    *tlib#paragraph#GetMetric()*
-tlib#paragraph#GetMetric()
-    Return an object describing a |paragraph|.
-
-                                                    *tlib#paragraph#Move()*
-tlib#paragraph#Move(direction, count)
-    This function can be used with the tinymode plugin to move around 
-    paragraphs.
-    
-    Example configuration: >
-    
-      call tinymode#EnterMap("para_move", "gp")
-      call tinymode#ModeMsg("para_move", "Move paragraph: j/k")
-      call tinymode#Map("para_move", "j", "silent call tlib#paragraph#Move('Down', '[N]')")
-      call tinymode#Map("para_move", "k", "silent call tlib#paragraph#Move('Up', '[N]')")
-      call tinymode#ModeArg("para_move", "owncount", 1)
-<
+                                                    *tlib#notify#TrimMessage()*
+tlib#notify#TrimMessage(message)
+    Contributed by Erik Falor:
+    If the line containing the message is too long, echoing it will cause 
+    a 'Hit ENTER' prompt to appear.  This function cleans up the line so 
+    that does not happen.
+    The echoed line is too long if it is wider than the width of the 
+    window, minus cmdline space taken up by the ruler and showcmd 
+    features.
 
 
 ========================================================================
-autoload/tlib/scratch.vim~
+autoload/tlib/persistent.vim~
 
-                                                    *tlib#scratch#UseScratch()*
-tlib#scratch#UseScratch(?keyargs={})
-    Display a scratch buffer (a buffer with no file). See :TScratch for an 
-    example.
-    Return the scratch buffer's number.
-    Values for keyargs:
-      scratch_split ... 1: split, 0: window, -1: tab
+                                                    *g:tlib_persistent*
+g:tlib_persistent              (default: '')
+    The directory for persistent data files. If empty, use 
+    |tlib#dir#MyRuntime|.'/share'.
 
-                                                    *tlib#scratch#CloseScratch()*
-tlib#scratch#CloseScratch(keyargs, ...)
-    Close a scratch buffer as defined in keyargs (usually a World).
-    Return 1 if the scratch buffer is closed (or if it already was 
-    closed).
+                                                    *tlib#persistent#Dir()*
+tlib#persistent#Dir(?mode = 'bg')
+    Return the full directory name for persistent data files.
+
+                                                    *tlib#persistent#Filename()*
+tlib#persistent#Filename(type, ?file=%, ?mkdir=0)
+
+                                                    *tlib#persistent#Get()*
+tlib#persistent#Get(cfile)
+
+                                                    *tlib#persistent#Save()*
+tlib#persistent#Save(cfile, dictionary)
+
+
+========================================================================
+autoload/tlib/vim.vim~
+
+                                                    *g:tlib#vim#simalt_maximize*
+g:tlib#vim#simalt_maximize     (default: 'x')
+    The alt-key for maximizing the window.
+    CAUTION: The value of this paramter depends on your locale and 
+    maybe the windows version you are running.
+
+                                                    *g:tlib#vim#simalt_restore*
+g:tlib#vim#simalt_restore      (default: 'r')
+    The alt-key for restoring the window.
+    CAUTION: The value of this paramter depends on your locale and 
+    maybe the windows version you are running.
+
+                                                    *g:tlib#vim#use_vimtweak*
+g:tlib#vim#use_vimtweak        (default: 0)
+    If true, use the vimtweak.dll for windows. This will enable 
+    tlib to remove the caption for fullscreen windows.
+
+                                                    *tlib#vim#Maximize()*
+tlib#vim#Maximize(fullscreen)
+    Maximize the window.
+    You might need to redefine |g:tlib#vim#simalt_maximize| if it doesn't 
+    work for you.
+
+                                                    *tlib#vim#RestoreWindow()*
+tlib#vim#RestoreWindow()
+    Restore the original vimsize after having called |tlib#vim#Maximize()|.
+
+                                                    *g:tlib#vim#use_wmctrl*
+g:tlib#vim#use_wmctrl          (default: executable('wmctrl'))
+    If true, use wmctrl for X windows to make a window 
+    maximized/fullscreen.
+
+    This is the preferred method for maximizing windows under X 
+    windows. Some window managers have problem coping with the 
+    default method of setting 'lines' and 'columns' to a large 
+    value.
 
 
 ========================================================================
@@ -567,91 +651,90 @@ tlib#progressbar#Restore()
 
 
 ========================================================================
-autoload/tlib/Object.vim~
-Provides a prototype plus some OO-like methods.
+autoload/tlib/eval.vim~
 
-                                                    *tlib#Object#New()*
-tlib#Object#New(?fields={})
-    This function creates a prototype that provides some kind of 
-    inheritance mechanism and a way to call parent/super methods.
-    
-    The usage demonstrated in the following example works best when every 
-    class/prototype is defined in a file of its own.
-    
-    The reason for why there is a dedicated constructor function is that 
-    this layout facilitates the use of templates and that methods are 
-    hidden from the user. Other solutions are possible.
-    
-    EXAMPLES: >
-        let s:prototype = tlib#Object#New({
-                    \ '_class': ['FooBar'],
-                    \ 'foo': 1, 
-                    \ 'bar': 2, 
-                    \ })
-        " Constructor
-        function! FooBar(...)
-            let object = s:prototype.New(a:0 >= 1 ? a:1 : {})
-            return object
-        endf
-        function! s:prototype.babble() {
-          echo "I think, therefore I am ". (self.foo * self.bar) ." months old."
-        }
-    
-<   This could now be used like this: >
-        let myfoo = FooBar({'foo': 3})
-        call myfoo.babble()
-        => I think, therefore I am 6 months old.
-        echo myfoo.IsA('FooBar')
-        => 1
-        echo myfoo.IsA('object')
-        => 1
-        echo myfoo.IsA('Foo')
-        => 0
-        echo myfoo.RespondTo('babble')
-        => 1
-        echo myfoo.RespondTo('speak')
-        => 0
-<
-
-prototype.New
-
-prototype.Inherit
-
-prototype.Extend
-
-prototype.IsA
-
-prototype.IsRelated
-
-prototype.RespondTo
-
-prototype.Super
-
-                                                    *tlib#Object#Methods()*
-tlib#Object#Methods(object, ...)
+                                                    *tlib#eval#FormatValue()*
+tlib#eval#FormatValue(value, ...)
 
 
 ========================================================================
-autoload/tlib/win.vim~
+autoload/tlib/list.vim~
 
-                                                    *tlib#win#Set()*
-tlib#win#Set(winnr)
-    Return vim code to jump back to the original window.
+                                                    *tlib#list#Inject()*
+tlib#list#Inject(list, initial_value, funcref)
+    EXAMPLES: >
+      echo tlib#list#Inject([1,2,3], 0, function('Add')
+      => 6
+<
 
-                                                    *tlib#win#GetLayout()*
-tlib#win#GetLayout(?save_view=0)
+                                                    *tlib#list#Compact()*
+tlib#list#Compact(list)
+    EXAMPLES: >
+      tlib#list#Compact([0,1,2,3,[], {}, ""])
+      => [1,2,3]
+<
 
-                                                    *tlib#win#SetLayout()*
-tlib#win#SetLayout(layout)
+                                                    *tlib#list#Flatten()*
+tlib#list#Flatten(list)
+    EXAMPLES: >
+      tlib#list#Flatten([0,[1,2,[3,""]]])
+      => [0,1,2,3,""]
+<
 
-                                                    *tlib#win#List()*
-tlib#win#List()
+                                                    *tlib#list#FindAll()*
+tlib#list#FindAll(list, filter, ?process_expr="")
+    Basically the same as filter()
 
-                                                    *tlib#win#Width()*
-tlib#win#Width(wnr)
+    EXAMPLES: >
+      tlib#list#FindAll([1,2,3], 'v:val >= 2')
+      => [2, 3]
+<
 
-                                                    *tlib#win#WinDo()*
-tlib#win#WinDo(ex)
+                                                    *tlib#list#Find()*
+tlib#list#Find(list, filter, ?default="", ?process_expr="")
+
+    EXAMPLES: >
+      tlib#list#Find([1,2,3], 'v:val >= 2')
+      => 2
+<
+
+                                                    *tlib#list#Any()*
+tlib#list#Any(list, expr)
+    EXAMPLES: >
+      tlib#list#Any([1,2,3], 'v:val >= 2')
+      => 1
+<
+
+                                                    *tlib#list#All()*
+tlib#list#All(list, expr)
+    EXAMPLES: >
+      tlib#list#All([1,2,3], 'v:val >= 2')
+      => 0
+<
+
+                                                    *tlib#list#Remove()*
+tlib#list#Remove(list, element)
+    EXAMPLES: >
+      tlib#list#Remove([1,2,1,2], 2)
+      => [1,1,2]
+<
+
+                                                    *tlib#list#RemoveAll()*
+tlib#list#RemoveAll(list, element)
+    EXAMPLES: >
+      tlib#list#RemoveAll([1,2,1,2], 2)
+      => [1,1]
+<
+
+                                                    *tlib#list#Zip()*
+tlib#list#Zip(lists, ?default='')
+    EXAMPLES: >
+      tlib#list#Zip([[1,2,3], [4,5,6]])
+      => [[1,4], [2,5], [3,6]]
+<
+
+                                                    *tlib#list#Uniq()*
+tlib#list#Uniq(list, ...)
 
 
 ========================================================================
@@ -669,16 +752,16 @@ tlib#cmd#BrowseOutputWithCallback(callback, command)
     Execute COMMAND and present its output in a |tlib#input#List()|;
     when a line is selected, execute the function named as the CALLBACK
     and pass in that line as an argument.
-    
+
     The CALLBACK function gives you an opportunity to massage the COMMAND output
     and possibly act on it in a meaningful way. For example, if COMMAND listed
     all URIs found in the current buffer, CALLBACK could validate and then open
     the selected URI in the system's default browser.
-    
+
     This function is meant to be a tool to help compose the implementations of
     powerful commands that use |tlib#input#List()| as a common interface. See
     |TBrowseScriptnames| as an example.
-    
+
     EXAMPLES: >
       call tlib#cmd#BrowseOutputWithCallback('tlib#cmd#ParseScriptname', 'scriptnames')
 <
@@ -702,11 +785,56 @@ tlib#cmd#Time(cmd)
 
 
 ========================================================================
-autoload/tlib/comments.vim~
+autoload/tlib/syntax.vim~
 
-                                                    *tlib#comments#Comments()*
-tlib#comments#Comments(...)
-    function! tlib#comments#Comments(?rx='')
+                                                    *tlib#syntax#Collect()*
+tlib#syntax#Collect()
+
+                                                    *tlib#syntax#Names()*
+tlib#syntax#Names(?rx='')
+
+
+========================================================================
+autoload/tlib/balloon.vim~
+
+                                                    *tlib#balloon#Register()*
+tlib#balloon#Register(expr)
+
+                                                    *tlib#balloon#Remove()*
+tlib#balloon#Remove(expr)
+
+                                                    *tlib#balloon#Expr()*
+tlib#balloon#Expr()
+
+
+========================================================================
+autoload/tlib/vcs.vim~
+
+                                                    *g:tlib#vcs#def*
+g:tlib#vcs#def                 {...}
+    A dictionarie of supported VCS (currently: git, hg, svn, bzr).
+
+                                                    *g:tlib#vcs#executables*
+g:tlib#vcs#executables         {...}
+    A dictionary of custom executables for VCS commands. If the value is 
+    empty, support for that VCS will be removed. If no key is present, it 
+    is assumed that the VCS "type" is the name of the executable.
+
+                                                    *g:tlib#vcs#check*
+g:tlib#vcs#check               (default: has('win16') || has('win32') || has('win64') ? '%s.exe' : '%s')
+    If non-empty, use it as a format string to check whether a VCS is 
+    installed on your computer.
+
+                                                    *tlib#vcs#FindVCS()*
+tlib#vcs#FindVCS(filename)
+
+                                                    *tlib#vcs#Ls()*
+tlib#vcs#Ls(?filename=bufname('%'), ?vcs=[type, dir])
+    Return the files under VCS.
+
+                                                    *tlib#vcs#Diff()*
+tlib#vcs#Diff(filename, ?vcs=[type, dir])
+    Return the diff for "filename"
 
 
 ========================================================================
@@ -715,7 +843,7 @@ autoload/tlib/char.vim~
                                                     *tlib#char#Get()*
 tlib#char#Get(?timeout=0)
     Get a character.
-    
+
     EXAMPLES: >
       echo tlib#char#Get()
       echo tlib#char#Get(5)
@@ -729,14 +857,97 @@ tlib#char#GetWithTimeout(timeout, ...)
 
 
 ========================================================================
-autoload/tlib/World.vim~
-A prototype used by |tlib#input#List|.
-Inherits from |tlib#Object#New|.
+autoload/tlib/scratch.vim~
 
-                                                    *tlib#World#New()*
-tlib#World#New(...)
+                                                    *tlib#scratch#UseScratch()*
+tlib#scratch#UseScratch(?keyargs={})
+    Display a scratch buffer (a buffer with no file). See :TScratch for an 
+    example.
+    Return the scratch buffer's number.
+    Values for keyargs:
+      scratch_split ... 1: split, 0: window, -1: tab
 
-prototype.Reset
+                                                    *tlib#scratch#CloseScratch()*
+tlib#scratch#CloseScratch(keyargs, ...)
+    Close a scratch buffer as defined in keyargs (usually a World).
+    Return 1 if the scratch buffer is closed (or if it already was 
+    closed).
+
+
+========================================================================
+autoload/tlib/autocmdgroup.vim~
+
+                                                    *tlib#autocmdgroup#Init()*
+tlib#autocmdgroup#Init()
+
+
+========================================================================
+autoload/tlib/cache.vim~
+
+                                                    *g:tlib#cache#purge_days*
+g:tlib#cache#purge_days        (default: 31)
+    |tlib#cache#Purge()|: Remove cache files older than N days.
+
+                                                    *g:tlib#cache#purge_every_days*
+g:tlib#cache#purge_every_days  (default: 31)
+    Purge the cache every N days. Disable automatic purging by setting 
+    this value to a negative value.
+
+                                                    *g:tlib#cache#script_encoding*
+g:tlib#cache#script_encoding   (default: &enc)
+    The encoding used for the purge-cache script.
+    Default: 'enc'
+
+                                                    *g:tlib#cache#run_script*
+g:tlib#cache#run_script        (default: 1)
+    Whether to run the directory removal script:
+       0 ... No
+       1 ... Query user
+       2 ... Yes
+
+                                                    *g:tlib#cache#silent*
+g:tlib#cache#silent            (default: 0)
+    If non-nil, don't display a message that files were deleted from the 
+    cache.
+
+                                                    *g:tlib#cache#dont_purge*
+g:tlib#cache#dont_purge        (default: ['[\/]\.last_purge$'])
+    A list of regexps that are matched against partial filenames of the 
+    cached files. If a regexp matches, the file won't be removed by 
+    |tlib#cache#Purge()|.
+
+                                                    *tlib#cache#Dir()*
+tlib#cache#Dir(?mode = 'bg')
+    The default cache directory.
+
+                                                    *tlib#cache#Filename()*
+tlib#cache#Filename(type, ?file=%, ?mkdir=0, ?dir='')
+
+                                                    *tlib#cache#Save()*
+tlib#cache#Save(cfile, dictionary)
+
+                                                    *tlib#cache#Get()*
+tlib#cache#Get(cfile)
+
+                                                    *tlib#cache#MaybePurge()*
+tlib#cache#MaybePurge()
+    Call |tlib#cache#Purge()| if the last purge was done before 
+    |g:tlib#cache#purge_every_days|.
+
+                                                    *tlib#cache#Purge()*
+tlib#cache#Purge()
+    Delete old files.
+
+                                                    *tlib#cache#ListFilesInCache()*
+tlib#cache#ListFilesInCache(...)
+
+
+========================================================================
+autoload/tlib/normal.vim~
+
+                                                    *tlib#normal#WithRegister()*
+tlib#normal#WithRegister(cmd, ?register='t', ?norm_cmd='norm!')
+    Execute a normal command while maintaining all registers.
 
 
 ========================================================================
@@ -756,312 +967,13 @@ tlib#time#DiffMSecs(a, b, ...)
 
 
 ========================================================================
-autoload/tlib/textobjects.vim~
-
-                                                    *standard-paragraph*
-tlib#textobjects#StandardParagraph()
-    Select a "Standard Paragraph", i.e. a text block followed by blank 
-    lines. Other than |ap|, the last paragraph in a document is handled 
-    just the same.
-    
-    The |text-object| can be accessed as "sp". Example: >
-    
-      vsp ... select the current standard paragraph
-    
-<   Return 1, if the paragraph is the last one in the document.
-
-                                                    *tlib#textobjects#Init()*
-tlib#textobjects#Init()
-
-                                                    *v_sp*
-v_sp ... <Esc>:call tlib#textobjects#StandardParagraph()<CR>
-    sp ... Standard paragraph (for use as |text-objects|).
-
-                                                    *o_sp*
-o_sp ... :<C-u>normal Vsp<CR>
-
-
-========================================================================
-autoload/tlib/Filter_fuzzy.vim~
-
-                                                    *tlib#Filter_fuzzy#New()*
-tlib#Filter_fuzzy#New(...)
-    Support for "fuzzy" pattern matching in |tlib#input#List()|. 
-    Characters are interpreted as if connected with '.\{-}'.
-    
-    In "fuzzy" mode, the pretty printing of filenames is disabled.
-
-
-    TLogVAR a:world.display_format
-
-
-========================================================================
-autoload/tlib/file.vim~
-
-                                                    *tlib#file#Split()*
-tlib#file#Split(filename)
-    EXAMPLES: >
-      tlib#file#Split('foo/bar/filename.txt')
-      => ['foo', 'bar', 'filename.txt']
-<
-
-                                                    *tlib#file#Join()*
-tlib#file#Join(filename_parts, ?strip_slashes=0)
-    EXAMPLES: >
-      tlib#file#Join(['foo', 'bar', 'filename.txt'])
-      => 'foo/bar/filename.txt'
-<
-
-                                                    *tlib#file#Relative()*
-tlib#file#Relative(filename, basedir)
-    EXAMPLES: >
-      tlib#file#Relative('foo/bar/filename.txt', 'foo')
-      => 'bar/filename.txt'
-<
-
-                                                    *tlib#file#With()*
-tlib#file#With(fcmd, bcmd, files, ?world={})
-
-
-========================================================================
-autoload/tlib/Filter_seq.vim~
-
-                                                    *tlib#Filter_seq#New()*
-tlib#Filter_seq#New(...)
-    The search pattern for |tlib#input#List()| is interpreted as a 
-    disjunction of 'magic' regular expressions with the exception of a dot 
-    ".", which is interpreted as ".\{-}".
-    The pattern is a '/magic' regexp pattern.
-
-
-========================================================================
-autoload/tlib/date.vim~
-
-                                                    *tlib#date#DiffInDays()*
-tlib#date#DiffInDays(date1, ?date2=localtime(), ?allow_zero=0)
-
-                                                    *tlib#date#Parse()*
-tlib#date#Parse(date, ?allow_zero=0) "{{{3
-
-                                                    *tlib#date#SecondsSince1970()*
-tlib#date#SecondsSince1970(date, ...)
-    tlib#date#SecondsSince1970(date, ?daysshift=0, ?allow_zero=0)
-
-
-========================================================================
-autoload/tlib/balloon.vim~
-
-                                                    *tlib#balloon#Register()*
-tlib#balloon#Register(expr)
-
-                                                    *tlib#balloon#Remove()*
-tlib#balloon#Remove(expr)
-
-                                                    *tlib#balloon#Expr()*
-tlib#balloon#Expr()
-
-
-========================================================================
-autoload/tlib/buffer.vim~
-
-                                                    *tlib#buffer#EnableMRU()*
-tlib#buffer#EnableMRU()
-
-                                                    *tlib#buffer#DisableMRU()*
-tlib#buffer#DisableMRU()
-
-                                                    *tlib#buffer#Set()*
-tlib#buffer#Set(buffer)
-    Set the buffer to buffer and return a command as string that can be 
-    evaluated by |:execute| in order to restore the original view.
-
-                                                    *tlib#buffer#Eval()*
-tlib#buffer#Eval(buffer, code)
-    Evaluate CODE in BUFFER.
-    
-    EXAMPLES: >
-      call tlib#buffer#Eval('foo.txt', 'echo b:bar')
-<
-
-                                                    *tlib#buffer#GetList()*
-tlib#buffer#GetList(?show_hidden=0, ?show_number=0, " ?order='bufnr')
-    Possible values for the "order" argument:
-      bufnr    :: Default behaviour
-      mru      :: Sort buffers according to most recent use
-      basename :: Sort by the file's basename (last component)
-    
-    NOTE: MRU order works on second invocation only. If you want to always 
-    use MRU order, call tlib#buffer#EnableMRU() in your ~/.vimrc file.
-
-                                                    *tlib#buffer#ViewLine()*
-tlib#buffer#ViewLine(line, ?position='z')
-    line is either a number or a string that begins with a number.
-    For possible values for position see |scroll-cursor|.
-    See also |g:tlib_viewline_position|.
-
-                                                    *tlib#buffer#HighlightLine()*
-tlib#buffer#HighlightLine(...)
-
-                                                    *tlib#buffer#DeleteRange()*
-tlib#buffer#DeleteRange(line1, line2)
-    Delete the lines in the current buffer. Wrapper for |:delete|.
-
-                                                    *tlib#buffer#ReplaceRange()*
-tlib#buffer#ReplaceRange(line1, line2, lines)
-    Replace a range of lines.
-
-                                                    *tlib#buffer#ScratchStart()*
-tlib#buffer#ScratchStart()
-    Initialize some scratch area at the bottom of the current buffer.
-
-                                                    *tlib#buffer#ScratchEnd()*
-tlib#buffer#ScratchEnd()
-    Remove the in-buffer scratch area.
-
-                                                    *tlib#buffer#BufDo()*
-tlib#buffer#BufDo(exec)
-    Run exec on all buffers via bufdo and return to the original buffer.
-
-                                                    *tlib#buffer#InsertText()*
-tlib#buffer#InsertText(text, keyargs)
-    Keyargs:
-      'shift': 0|N
-      'col': col('.')|N
-      'lineno': line('.')|N
-      'indent': 0|1
-      'pos': 'e'|'s' ... Where to locate the cursor (somewhat like s and e in {offset})
-    Insert text (a string) in the buffer.
-
-                                                    *tlib#buffer#InsertText0()*
-tlib#buffer#InsertText0(text, ...)
-
-                                                    *tlib#buffer#CurrentByte()*
-tlib#buffer#CurrentByte()
-
-                                                    *tlib#buffer#KeepCursorPosition()*
-tlib#buffer#KeepCursorPosition(cmd)
-    Evaluate cmd while maintaining the cursor position and jump registers.
-
-
-========================================================================
-autoload/tlib/Filter_cnfd.vim~
-
-                                                    *tlib#Filter_cnfd#New()*
-tlib#Filter_cnfd#New(...)
-    The same as |tlib#FilterCNF#New()| but a dot is expanded to '\.\{-}'. 
-    As a consequence, patterns cannot match dots.
-    The pattern is a '/\V' very no-'/magic' regexp pattern.
-
-
-========================================================================
-autoload/tlib/type.vim~
-
-                                                    *tlib#type#IsNumber()*
-tlib#type#IsNumber(expr)
-
-                                                    *tlib#type#IsString()*
-tlib#type#IsString(expr)
-
-                                                    *tlib#type#IsFuncref()*
-tlib#type#IsFuncref(expr)
-
-                                                    *tlib#type#IsList()*
-tlib#type#IsList(expr)
-
-                                                    *tlib#type#IsDictionary()*
-tlib#type#IsDictionary(expr)
-
-
-========================================================================
-autoload/tlib/syntax.vim~
-
-                                                    *tlib#syntax#Collect()*
-tlib#syntax#Collect()
-
-                                                    *tlib#syntax#Names()*
-tlib#syntax#Names(?rx='')
-
-
-========================================================================
-autoload/tlib/vim.vim~
-
-                                                    *g:tlib#vim#simalt_maximize*
-g:tlib#vim#simalt_maximize     (default: 'x')
-
-                                                    *g:tlib#vim#simalt_restore*
-g:tlib#vim#simalt_restore      (default: 'r')
-
-                                                    *g:tlib#vim#use_vimtweak*
-g:tlib#vim#use_vimtweak        (default: 0)
-
-                                                    *tlib#vim#Maximize()*
-tlib#vim#Maximize(fullscreen)
-    Maximize the window.
-    You might need to redefine |g:tlib#vim#simalt_maximize| if it doesn't 
-    work for you.
-
-                                                    *tlib#vim#RestoreWindow()*
-tlib#vim#RestoreWindow()
-    Restore the original vimsize after having called |tlib#vim#Maximize()|.
-
-                                                    *g:tlib#vim#use_wmctrl*
-g:tlib#vim#use_wmctrl          (default: executable('wmctrl'))
-
-
-========================================================================
-autoload/tlib/hook.vim~
-
-                                                    *tlib#hook#Run()*
-tlib#hook#Run(hook, ?dict={})
-    Execute dict[hook], w:{hook}, b:{hook}, or g:{hook} if existent.
-
-
-========================================================================
-autoload/tlib/eval.vim~
-
-                                                    *tlib#eval#FormatValue()*
-tlib#eval#FormatValue(value, ...)
-
-
-========================================================================
-autoload/tlib/arg.vim~
-
-                                                    *tlib#arg#Get()*
-tlib#arg#Get(n, var, ?default="", ?test='')
-    Set a positional argument from a variable argument list.
-    See tlib#string#RemoveBackslashes() for an example.
-
-                                                    *tlib#arg#Let()*
-tlib#arg#Let(list, ?default='')
-    Set a positional arguments from a variable argument list.
-    See tlib#input#List() for an example.
-
-                                                    *tlib#arg#Key()*
-tlib#arg#Key(dict, list, ?default='')
-    See |:TKeyArg|.
-
-                                                    *tlib#arg#StringAsKeyArgs()*
-tlib#arg#StringAsKeyArgs(string, ?keys=[], ?evaluate=0)
-
-                                                    *tlib#arg#Ex()*
-tlib#arg#Ex(arg, ?chars='%#! ')
-    Escape some characters in a string.
-    
-    Use |fnamescape()| if available.
-    
-    EXAMPLES: >
-      exec 'edit '. tlib#arg#Ex('foo%#bar.txt')
-<
-
-
-========================================================================
 autoload/tlib/var.vim~
 
                                                     *tlib#var#Let()*
 tlib#var#Let(name, val)
     Define a variable called NAME if yet undefined.
     You can also use the :TLLet command.
-    
+
     EXAMPLES: >
       exec tlib#var#Let('g:foo', 1)
       TLet g:foo = 1
@@ -1070,7 +982,7 @@ tlib#var#Let(name, val)
                                                     *tlib#var#EGet()*
 tlib#var#EGet(var, namespace, ?default='')
     Retrieve a variable by searching several namespaces.
-    
+
     EXAMPLES: >
       let g:foo = 1
       let b:foo = 2
@@ -1083,7 +995,7 @@ tlib#var#EGet(var, namespace, ?default='')
                                                     *tlib#var#Get()*
 tlib#var#Get(var, namespace, ?default='')
     Retrieve a variable by searching several namespaces.
-    
+
     EXAMPLES: >
       let g:foo = 1
       let b:foo = 2
@@ -1098,151 +1010,6 @@ tlib#var#List(rx, ?prefix='')
     Get a list of variables matching rx.
     EXAMPLE:
       echo tlib#var#List('tlib_', 'g:')
-
-
-========================================================================
-autoload/tlib/Filter_cnf.vim~
-
-                                                    *tlib#Filter_cnf#New()*
-tlib#Filter_cnf#New(...)
-    The search pattern for |tlib#input#List()| is in conjunctive normal 
-    form: (P1 OR P2 ...) AND (P3 OR P4 ...) ...
-    The pattern is a '/\V' very no-'/magic' regexp pattern.
-    
-    Pressing <space> joins two patterns with AND.
-    Pressing | joins two patterns with OR.
-    I.e. In order to get "lala AND (foo OR bar)", you type 
-    "lala foo|bar".
-    
-    This is also the base class for other filters.
-
-
-========================================================================
-autoload/tlib/rx.vim~
-
-                                                    *tlib#rx#Escape()*
-tlib#rx#Escape(text, ?magic='m')
-    magic can be one of: m, M, v, V
-    See :help 'magic'
-
-                                                    *tlib#rx#EscapeReplace()*
-tlib#rx#EscapeReplace(text, ?magic='m')
-    Escape return |sub-replace-special|.
-
-                                                    *tlib#rx#Suffixes()*
-tlib#rx#Suffixes(...)
-
-
-========================================================================
-autoload/tlib/url.vim~
-
-                                                    *tlib#url#Decode()*
-tlib#url#Decode(url)
-    Decode an encoded URL.
-
-                                                    *tlib#url#DecodeChar()*
-tlib#url#DecodeChar(char)
-    Decode a single character.
-
-                                                    *tlib#url#EncodeChar()*
-tlib#url#EncodeChar(char)
-    Encode a single character.
-
-                                                    *tlib#url#Encode()*
-tlib#url#Encode(url, ...)
-    Encode an URL.
-
-
-========================================================================
-autoload/tlib/input.vim~
-Input-related, select from a list etc.
-
-                                                    *tlib#input#List()*
-tlib#input#List(type. ?query='', ?list=[], ?handlers=[], ?default="", ?timeout=0)
-    Select a single or multiple items from a list. Return either the list 
-    of selected elements or its indexes.
-    
-    By default, typing numbers will select an item by its index. See 
-    |g:tlib_numeric_chars| to find out how to change this.
-    
-    The item is automatically selected if the numbers typed equals the 
-    number of digits of the list length. I.e. if a list contains 20 items, 
-    typing 1 will first highlight item 1 but it won't select/use it 
-    because 1 is an ambiguous input in this context. If you press enter, 
-    the first item will be selected. If you press another digit (e.g. 0), 
-    item 10 will be selected. Another way to select item 1 would be to 
-    type 01. If the list contains only 9 items, typing 1 would select the 
-    first item right away.
-    
-    type can be:
-        s  ... Return one selected element
-        si ... Return the index of the selected element
-        m  ... Return a list of selected elements
-        mi ... Return a list of indexes
-    
-    Several pattern matching styles are supported. See 
-    |g:tlib_inputlist_match|.
-    
-    EXAMPLES: >
-      echo tlib#input#List('s', 'Select one item', [100,200,300])
-      echo tlib#input#List('si', 'Select one item', [100,200,300])
-      echo tlib#input#List('m', 'Select one or more item(s)', [100,200,300])
-      echo tlib#input#List('mi', 'Select one or more item(s)', [100,200,300])
-    
-<   See ../samples/tlib/input/tlib_input_list.vim (move the cursor over 
-    the filename and press gf) for a more elaborated example.
-
-                                                    *tlib#input#ListD()*
-tlib#input#ListD(dict)
-    A wrapper for |tlib#input#ListW()| that builds |tlib#World#New| from 
-    dict.
-
-                                                    *tlib#input#ListW()*
-tlib#input#ListW(world, ?command='')
-    The second argument (command) is meant for internal use only.
-    The same as |tlib#input#List| but the arguments are packed into world 
-    (an instance of tlib#World as returned by |tlib#World#New|).
-
-                                                    *tlib#input#EditList()*
-tlib#input#EditList(query, list, ?timeout=0)
-    Edit a list.
-    
-    EXAMPLES: >
-      echo tlib#input#EditList('Edit:', [100,200,300])
-<
-
-                                                    *tlib#input#Resume()*
-tlib#input#Resume(name, pick)
-
-                                                    *tlib#input#CommandSelect()*
-tlib#input#CommandSelect(command, ?keyargs={})
-    Take a command, view the output, and let the user select an item from 
-    its output.
-    
-    EXAMPLE: >
-        command! TMarks exec 'norm! `'. matchstr(tlib#input#CommandSelect('marks'), '^ \+\zs.')
-        command! TAbbrevs exec 'norm i'. matchstr(tlib#input#CommandSelect('abbrev'), '^\S\+\s\+\zs\S\+')
-<
-
-                                                    *tlib#input#Edit()*
-tlib#input#Edit(name, value, callback, ?cb_args=[])
-    
-    Edit a value (asynchronously) in a scratch buffer. Use name for 
-    identification. Call callback when done (or on cancel).
-    In the scratch buffer:
-    Press <c-s> or <c-w><cr> to enter the new value, <c-w>c to cancel 
-    editing.
-    EXAMPLES: >
-      fun! FooContinue(success, text)
-          if a:success
-              let b:var = a:text
-          endif
-      endf
-      call tlib#input#Edit('foo', b:var, 'FooContinue')
-<
-
-                                                    *tlib#input#Dialog()*
-tlib#input#Dialog(text, options, default)
 
 
 ========================================================================
@@ -1388,6 +1155,86 @@ tlib#agent#DoAtLine(world, selected)
                                                     *tlib#agent#Wildcard()*
 tlib#agent#Wildcard(world, selected)
 
+                                                    *tlib#agent#Null()*
+tlib#agent#Null(world, selected)
+
+                                                    *tlib#agent#ExecAgentByName()*
+tlib#agent#ExecAgentByName(world, selected)
+
+                                                    *tlib#agent#CompleteAgentNames()*
+tlib#agent#CompleteAgentNames(ArgLead, CmdLine, CursorPos)
+
+
+========================================================================
+autoload/tlib/Filter_cnfx.vim~
+
+                                                    *g:tlib#Filter_cnfx#expander*
+g:tlib#Filter_cnfx#expander    (default: '+')
+    A character that should be expanded to '\.\{-}'.
+
+                                                    *tlib#Filter_cnfx#New()*
+tlib#Filter_cnfx#New(...)
+    The same as |tlib#Filter_cnfd#New()| but a a customizable character 
+    |see tlib#Filter_cnfx#expander| is expanded to '\.\{-}'. 
+    The pattern is a '/\V' very no-'/magic' regexp pattern.
+
+
+========================================================================
+autoload/tlib/url.vim~
+
+                                                    *tlib#url#Decode()*
+tlib#url#Decode(url)
+    Decode an encoded URL.
+
+                                                    *tlib#url#DecodeChar()*
+tlib#url#DecodeChar(char)
+    Decode a single character.
+
+                                                    *tlib#url#EncodeChar()*
+tlib#url#EncodeChar(char)
+    Encode a single character.
+
+                                                    *tlib#url#Encode()*
+tlib#url#Encode(url, ...)
+    Encode an URL.
+
+
+========================================================================
+autoload/tlib/signs.vim~
+
+                                                    *tlib#signs#ClearAll()*
+tlib#signs#ClearAll(sign)
+    Clear all signs with name SIGN.
+
+                                                    *tlib#signs#ClearBuffer()*
+tlib#signs#ClearBuffer(sign, bufnr)
+    Clear all signs with name SIGN in buffer BUFNR.
+
+                                                    *tlib#signs#Mark()*
+tlib#signs#Mark(sign, list)
+    Add signs for all locations in LIST. LIST must adhere with the 
+    quickfix list format (see |getqflist()|; only the fields lnum and 
+    bufnr are required).
+
+    list:: a quickfix or location list
+    sign:: a sign defined with |:sign-define|
+
+
+========================================================================
+autoload/tlib/rx.vim~
+
+                                                    *tlib#rx#Escape()*
+tlib#rx#Escape(text, ?magic='m')
+    magic can be one of: m, M, v, V
+    See :help 'magic'
+
+                                                    *tlib#rx#EscapeReplace()*
+tlib#rx#EscapeReplace(text, ?magic='m')
+    Escape return |sub-replace-special|.
+
+                                                    *tlib#rx#Suffixes()*
+tlib#rx#Suffixes(...)
+
 
 ========================================================================
 autoload/tlib/tag.vim~
@@ -1397,7 +1244,7 @@ tlib#tag#Retrieve(rx, ?extra_tags=0)
     Get all tags matching rx. Basically, this function simply calls 
     |taglist()|, but when extra_tags is true, the list of the tag files 
     (see 'tags') is temporarily expanded with |g:tlib_tags_extra|.
-    
+
     Example use:
     If you want to include tags for, eg, JDK, normal tags use can become 
     slow. You could proceed as follows:
@@ -1430,83 +1277,6 @@ tlib#tag#Format(tag)
 
 
 ========================================================================
-autoload/tlib/signs.vim~
-
-                                                    *tlib#signs#ClearAll()*
-tlib#signs#ClearAll(sign)
-    Clear all signs with name SIGN.
-
-                                                    *tlib#signs#ClearBuffer()*
-tlib#signs#ClearBuffer(sign, bufnr)
-    Clear all signs with name SIGN in buffer BUFNR.
-
-                                                    *tlib#signs#Mark()*
-tlib#signs#Mark(sign, list)
-    Add signs for all locations in LIST. LIST must adhere with the 
-    quickfix list format (see |getqflist()|; only the fields lnum and 
-    bufnr are required).
-    
-    list:: a quickfix or location list
-    sign:: a sign defined with |:sign-define|
-
-
-========================================================================
-autoload/tlib/cache.vim~
-
-                                                    *g:tlib#cache#purge_days*
-g:tlib#cache#purge_days        (default: 31)
-    |tlib#cache#Purge()|: Remove cache files older than N days.
-
-                                                    *g:tlib#cache#purge_every_days*
-g:tlib#cache#purge_every_days  (default: 31)
-    Purge the cache every N days. Disable automatic purging by setting 
-    this value to a negative value.
-
-                                                    *g:tlib#cache#script_encoding*
-g:tlib#cache#script_encoding   (default: &enc)
-    The encoding used for the purge-cache script.
-    Default: 'enc'
-
-                                                    *g:tlib#cache#run_script*
-g:tlib#cache#run_script        (default: 1)
-    Whether to run the directory removal script:
-       0 ... No
-       1 ... Query user
-       2 ... Yes
-
-                                                    *g:tlib#cache#dont_purge*
-g:tlib#cache#dont_purge        (default: ['[\/]\.last_purge$'])
-    A list of regexps that are matched against partial filenames of the 
-    cached files. If a regexp matches, the file won't be removed by 
-    |tlib#cache#Purge()|.
-
-                                                    *tlib#cache#Dir()*
-tlib#cache#Dir(?mode = 'bg')
-    The default cache directory.
-
-                                                    *tlib#cache#Filename()*
-tlib#cache#Filename(type, ?file=%, ?mkdir=0)
-
-                                                    *tlib#cache#Save()*
-tlib#cache#Save(cfile, dictionary)
-
-                                                    *tlib#cache#Get()*
-tlib#cache#Get(cfile)
-
-                                                    *tlib#cache#MaybePurge()*
-tlib#cache#MaybePurge()
-    Call |tlib#cache#Purge()| if the last purge was done before 
-    |g:tlib#cache#purge_every_days|.
-
-                                                    *tlib#cache#Purge()*
-tlib#cache#Purge()
-    Delete old files.
-
-                                                    *tlib#cache#ListFilesInCache()*
-tlib#cache#ListFilesInCache(...)
-
-
-========================================================================
 autoload/tlib/map.vim~
 
                                                     *tlib#map#PumAccept()*
@@ -1518,11 +1288,302 @@ tlib#map#PumAccept(key)
 
 
 ========================================================================
-autoload/tlib/normal.vim~
+autoload/tlib/Filter_cnfd.vim~
 
-                                                    *tlib#normal#WithRegister()*
-tlib#normal#WithRegister(cmd, ?register='t', ?norm_cmd='norm!')
-    Execute a normal command while maintaining all registers.
+                                                    *tlib#Filter_cnfd#New()*
+tlib#Filter_cnfd#New(...)
+    The same as |tlib#Filter_cnf#New()| but a dot is expanded to '\.\{-}'. 
+    As a consequence, patterns cannot match dots.
+    The pattern is a '/\V' very no-'/magic' regexp pattern.
+
+
+========================================================================
+autoload/tlib/input.vim~
+Input-related, select from a list etc.
+
+                                                    *g:tlib#input#use_popup*
+g:tlib#input#use_popup         (default: has('menu') && (has('gui_gtk') || has('gui_gtk2') || has('gui_win32')))
+    If true, define a popup menu for |tlib#input#List()| and related 
+    functions.
+
+                                                    *g:tlib#input#format_filename*
+g:tlib#input#format_filename   (default: 'l')
+    How to format filenames:
+        l ... Show basenames on the left side, separated from the 
+              directory names
+        r ... Show basenames on the right side
+
+                                                    *g:tlib#input#filename_padding_r*
+g:tlib#input#filename_padding_r (default: '&co / 10')
+    If g:tlib#input#format_filename == 'r', how much space should be kept 
+    free on the right side.
+
+                                                    *g:tlib#input#filename_max_width*
+g:tlib#input#filename_max_width (default: '&co / 2')
+    If g:tlib#input#format_filename == 'l', an expression that 
+    |eval()|uates to the maximum display width of filenames.
+
+                                                    *tlib#input#List()*
+tlib#input#List(type. ?query='', ?list=[], ?handlers=[], ?default="", ?timeout=0)
+    Select a single or multiple items from a list. Return either the list 
+    of selected elements or its indexes.
+
+    By default, typing numbers will select an item by its index. See 
+    |g:tlib_numeric_chars| to find out how to change this.
+
+    The item is automatically selected if the numbers typed equals the 
+    number of digits of the list length. I.e. if a list contains 20 items, 
+    typing 1 will first highlight item 1 but it won't select/use it 
+    because 1 is an ambiguous input in this context. If you press enter, 
+    the first item will be selected. If you press another digit (e.g. 0), 
+    item 10 will be selected. Another way to select item 1 would be to 
+    type 01. If the list contains only 9 items, typing 1 would select the 
+    first item right away.
+
+    type can be:
+        s  ... Return one selected element
+        si ... Return the index of the selected element
+        m  ... Return a list of selected elements
+        mi ... Return a list of indexes
+
+    Several pattern matching styles are supported. See 
+    |g:tlib_inputlist_match|.
+
+    EXAMPLES: >
+      echo tlib#input#List('s', 'Select one item', [100,200,300])
+      echo tlib#input#List('si', 'Select one item', [100,200,300])
+      echo tlib#input#List('m', 'Select one or more item(s)', [100,200,300])
+      echo tlib#input#List('mi', 'Select one or more item(s)', [100,200,300])
+
+<   See ../samples/tlib/input/tlib_input_list.vim (move the cursor over 
+    the filename and press gf) for a more elaborated example.
+
+                                                    *tlib#input#ListD()*
+tlib#input#ListD(dict)
+    A wrapper for |tlib#input#ListW()| that builds |tlib#World#New| from 
+    dict.
+
+                                                    *tlib#input#ListW()*
+tlib#input#ListW(world, ?command='')
+    The second argument (command) is meant for internal use only.
+    The same as |tlib#input#List| but the arguments are packed into world 
+    (an instance of tlib#World as returned by |tlib#World#New|).
+
+                                                    *tlib#input#EditList()*
+tlib#input#EditList(query, list, ?timeout=0)
+    Edit a list.
+
+    EXAMPLES: >
+      echo tlib#input#EditList('Edit:', [100,200,300])
+<
+
+                                                    *tlib#input#Resume()*
+tlib#input#Resume(name, pick, bufnr)
+
+                                                    *tlib#input#CommandSelect()*
+tlib#input#CommandSelect(command, ?keyargs={})
+    Take a command, view the output, and let the user select an item from 
+    its output.
+
+    EXAMPLE: >
+        command! TMarks exec 'norm! `'. matchstr(tlib#input#CommandSelect('marks'), '^ \+\zs.')
+        command! TAbbrevs exec 'norm i'. matchstr(tlib#input#CommandSelect('abbrev'), '^\S\+\s\+\zs\S\+')
+<
+
+                                                    *tlib#input#Edit()*
+tlib#input#Edit(name, value, callback, ?cb_args=[])
+
+    Edit a value (asynchronously) in a scratch buffer. Use name for 
+    identification. Call callback when done (or on cancel).
+    In the scratch buffer:
+    Press <c-s> or <c-w><cr> to enter the new value, <c-w>c to cancel 
+    editing.
+    EXAMPLES: >
+      fun! FooContinue(success, text)
+          if a:success
+              let b:var = a:text
+          endif
+      endf
+      call tlib#input#Edit('foo', b:var, 'FooContinue')
+<
+
+                                                    *tlib#input#Dialog()*
+tlib#input#Dialog(text, options, default)
+
+
+========================================================================
+autoload/tlib/file.vim~
+
+                                                    *tlib#file#Split()*
+tlib#file#Split(filename)
+    EXAMPLES: >
+      tlib#file#Split('foo/bar/filename.txt')
+      => ['foo', 'bar', 'filename.txt']
+<
+
+                                                    *tlib#file#Join()*
+tlib#file#Join(filename_parts, ?strip_slashes=0)
+    EXAMPLES: >
+      tlib#file#Join(['foo', 'bar', 'filename.txt'])
+      => 'foo/bar/filename.txt'
+<
+
+                                                    *tlib#file#Relative()*
+tlib#file#Relative(filename, basedir)
+    EXAMPLES: >
+      tlib#file#Relative('foo/bar/filename.txt', 'foo')
+      => 'bar/filename.txt'
+<
+
+                                                    *tlib#file#With()*
+tlib#file#With(fcmd, bcmd, files, ?world={})
+
+
+========================================================================
+autoload/tlib/paragraph.vim~
+
+                                                    *tlib#paragraph#GetMetric()*
+tlib#paragraph#GetMetric()
+    Return an object describing a |paragraph|.
+
+                                                    *tlib#paragraph#Move()*
+tlib#paragraph#Move(direction, count)
+    This function can be used with the tinymode plugin to move around 
+    paragraphs.
+
+    Example configuration: >
+
+      call tinymode#EnterMap("para_move", "gp")
+      call tinymode#ModeMsg("para_move", "Move paragraph: j/k")
+      call tinymode#Map("para_move", "j", "silent call tlib#paragraph#Move('Down', '[N]')")
+      call tinymode#Map("para_move", "k", "silent call tlib#paragraph#Move('Up', '[N]')")
+      call tinymode#ModeArg("para_move", "owncount", 1)
+<
+
+
+========================================================================
+autoload/tlib/World.vim~
+A prototype used by |tlib#input#List|.
+Inherits from |tlib#Object#New|.
+
+                                                    *tlib#World#New()*
+tlib#World#New(...)
+
+
+========================================================================
+autoload/tlib/tab.vim~
+
+                                                    *tlib#tab#BufMap()*
+tlib#tab#BufMap()
+    Return a dictionary of bufnumbers => [[tabpage, winnr] ...]
+
+                                                    *tlib#tab#TabWinNr()*
+tlib#tab#TabWinNr(buffer)
+    Find a buffer's window at some tab page.
+
+                                                    *tlib#tab#Set()*
+tlib#tab#Set(tabnr)
+
+
+========================================================================
+autoload/tlib/date.vim~
+
+                                                    *tlib#date#DiffInDays()*
+tlib#date#DiffInDays(date1, ?date2=localtime(), ?allow_zero=0)
+
+                                                    *tlib#date#Parse()*
+tlib#date#Parse(date, ?allow_zero=0) "{{{3
+
+                                                    *tlib#date#SecondsSince1970()*
+tlib#date#SecondsSince1970(date, ...)
+    tlib#date#SecondsSince1970(date, ?daysshift=0, ?allow_zero=0)
+
+
+========================================================================
+autoload/tlib/type.vim~
+
+                                                    *tlib#type#IsNumber()*
+tlib#type#IsNumber(expr)
+
+                                                    *tlib#type#IsString()*
+tlib#type#IsString(expr)
+
+                                                    *tlib#type#IsFuncref()*
+tlib#type#IsFuncref(expr)
+
+                                                    *tlib#type#IsList()*
+tlib#type#IsList(expr)
+
+                                                    *tlib#type#IsDictionary()*
+tlib#type#IsDictionary(expr)
+
+
+========================================================================
+autoload/tlib/Filter_fuzzy.vim~
+
+                                                    *tlib#Filter_fuzzy#New()*
+tlib#Filter_fuzzy#New(...)
+    Support for "fuzzy" pattern matching in |tlib#input#List()|. 
+    Patterns are interpreted as if characters were connected with '.\{-}'.
+
+    In "fuzzy" mode, the pretty printing of filenames is disabled.
+
+
+========================================================================
+autoload/tlib/textobjects.vim~
+
+                                                    *standard-paragraph*
+tlib#textobjects#StandardParagraph()
+    Select a "Standard Paragraph", i.e. a text block followed by blank 
+    lines. Other than |ap|, the last paragraph in a document is handled 
+    just the same.
+
+    The |text-object| can be accessed as "sp". Example: >
+
+      vsp ... select the current standard paragraph
+
+<   Return 1, if the paragraph is the last one in the document.
+
+                                                    *tlib#textobjects#Init()*
+tlib#textobjects#Init()
+
+                                                    *v_sp*
+v_sp ... <Esc>:call tlib#textobjects#StandardParagraph()<CR>
+    sp ... Standard paragraph (for use as |text-objects|).
+
+                                                    *o_sp*
+o_sp ... :<C-u>normal Vsp<CR>
+
+
+========================================================================
+autoload/tlib/arg.vim~
+
+                                                    *tlib#arg#Get()*
+tlib#arg#Get(n, var, ?default="", ?test='')
+    Set a positional argument from a variable argument list.
+    See tlib#string#RemoveBackslashes() for an example.
+
+                                                    *tlib#arg#Let()*
+tlib#arg#Let(list, ?default='')
+    Set a positional arguments from a variable argument list.
+    See tlib#input#List() for an example.
+
+                                                    *tlib#arg#Key()*
+tlib#arg#Key(dict, list, ?default='')
+    See |:TKeyArg|.
+
+                                                    *tlib#arg#StringAsKeyArgs()*
+tlib#arg#StringAsKeyArgs(string, ?keys=[], ?evaluate=0)
+
+                                                    *tlib#arg#Ex()*
+tlib#arg#Ex(arg, ?chars='%#! ')
+    Escape some characters in a string.
+
+    Use |fnamescape()| if available.
+
+    EXAMPLES: >
+      exec 'edit '. tlib#arg#Ex('foo%#bar.txt')
+<
 
 
 ========================================================================
@@ -1561,102 +1622,208 @@ tlib#dir#Pop()
 
 
 ========================================================================
-autoload/tlib/notify.vim~
+autoload/tlib/win.vim~
 
-                                                    *tlib#notify#Echo()*
-tlib#notify#Echo(text, ...)
-    Print text in the echo area. Temporarily disable 'ruler' and 'showcmd' 
-    in order to prevent |press-enter| messages.
+                                                    *tlib#win#Set()*
+tlib#win#Set(winnr)
+    Return vim code to jump back to the original window.
 
-                                                    *tlib#notify#TrimMessage()*
-tlib#notify#TrimMessage(message)
-    Contributed by Erik Falor:
-    If the line containing the message is too long, echoing it will cause 
-    a 'Hit ENTER' prompt to appear.  This function cleans up the line so 
-    that does not happen.
-    The echoed line is too long if it is wider than the width of the 
-    window, minus cmdline space taken up by the ruler and showcmd 
-    features.
+                                                    *tlib#win#GetLayout()*
+tlib#win#GetLayout(?save_view=0)
+
+                                                    *tlib#win#SetLayout()*
+tlib#win#SetLayout(layout)
+
+                                                    *tlib#win#List()*
+tlib#win#List()
+
+                                                    *tlib#win#Width()*
+tlib#win#Width(wnr)
+
+                                                    *tlib#win#WinDo()*
+tlib#win#WinDo(ex)
 
 
 ========================================================================
-autoload/tlib/list.vim~
+autoload/tlib/comments.vim~
 
-                                                    *tlib#list#Inject()*
-tlib#list#Inject(list, initial_value, funcref)
+                                                    *tlib#comments#Comments()*
+tlib#comments#Comments(...)
+    function! tlib#comments#Comments(?rx='')
+
+
+========================================================================
+autoload/tlib/Filter_cnf.vim~
+
+                                                    *tlib#Filter_cnf#New()*
+tlib#Filter_cnf#New(...)
+    The search pattern for |tlib#input#List()| is in conjunctive normal 
+    form: (P1 OR P2 ...) AND (P3 OR P4 ...) ...
+    The pattern is a '/\V' very no-'/magic' regexp pattern.
+
+    Pressing <space> joins two patterns with AND.
+    Pressing | joins two patterns with OR.
+    I.e. In order to get "lala AND (foo OR bar)", you type 
+    "lala foo|bar".
+
+    This is also the base class for other filters.
+
+prototype.Pretty
+
+
+========================================================================
+autoload/tlib/Object.vim~
+Provides a prototype plus some OO-like methods.
+
+                                                    *tlib#Object#New()*
+tlib#Object#New(?fields={})
+    This function creates a prototype that provides some kind of 
+    inheritance mechanism and a way to call parent/super methods.
+
+    The usage demonstrated in the following example works best when every 
+    class/prototype is defined in a file of its own.
+
+    The reason for why there is a dedicated constructor function is that 
+    this layout facilitates the use of templates and that methods are 
+    hidden from the user. Other solutions are possible.
+
     EXAMPLES: >
-      echo tlib#list#Inject([1,2,3], 0, function('Add')
-      => 6
+        let s:prototype = tlib#Object#New({
+                    \ '_class': ['FooBar'],
+                    \ 'foo': 1, 
+                    \ 'bar': 2, 
+                    \ })
+        " Constructor
+        function! FooBar(...)
+            let object = s:prototype.New(a:0 >= 1 ? a:1 : {})
+            return object
+        endf
+        function! s:prototype.babble() {
+          echo "I think, therefore I am ". (self.foo * self.bar) ." months old."
+        }
+
+<   This could now be used like this: >
+        let myfoo = FooBar({'foo': 3})
+        call myfoo.babble()
+        => I think, therefore I am 6 months old.
+        echo myfoo.IsA('FooBar')
+        => 1
+        echo myfoo.IsA('object')
+        => 1
+        echo myfoo.IsA('Foo')
+        => 0
+        echo myfoo.RespondTo('babble')
+        => 1
+        echo myfoo.RespondTo('speak')
+        => 0
 <
 
-                                                    *tlib#list#Compact()*
-tlib#list#Compact(list)
+prototype.New
+
+prototype.Inherit
+
+prototype.Extend
+
+prototype.IsA
+
+prototype.IsRelated
+
+prototype.RespondTo
+
+prototype.Super
+
+                                                    *tlib#Object#Methods()*
+tlib#Object#Methods(object, ...)
+
+
+========================================================================
+autoload/tlib/buffer.vim~
+
+                                                    *tlib#buffer#EnableMRU()*
+tlib#buffer#EnableMRU()
+
+                                                    *tlib#buffer#DisableMRU()*
+tlib#buffer#DisableMRU()
+
+                                                    *tlib#buffer#Set()*
+tlib#buffer#Set(buffer)
+    Set the buffer to buffer and return a command as string that can be 
+    evaluated by |:execute| in order to restore the original view.
+
+                                                    *tlib#buffer#Eval()*
+tlib#buffer#Eval(buffer, code)
+    Evaluate CODE in BUFFER.
+
     EXAMPLES: >
-      tlib#list#Compact([0,1,2,3,[], {}, ""])
-      => [1,2,3]
+      call tlib#buffer#Eval('foo.txt', 'echo b:bar')
 <
 
-                                                    *tlib#list#Flatten()*
-tlib#list#Flatten(list)
-    EXAMPLES: >
-      tlib#list#Flatten([0,[1,2,[3,""]]])
-      => [0,1,2,3,""]
-<
+                                                    *tlib#buffer#GetList()*
+tlib#buffer#GetList(?show_hidden=0, ?show_number=0, " ?order='bufnr')
+    Possible values for the "order" argument:
+      bufnr    :: Default behaviour
+      mru      :: Sort buffers according to most recent use
+      basename :: Sort by the file's basename (last component)
 
-                                                    *tlib#list#FindAll()*
-tlib#list#FindAll(list, filter, ?process_expr="")
-    Basically the same as filter()
-    
-    EXAMPLES: >
-      tlib#list#FindAll([1,2,3], 'v:val >= 2')
-      => [2, 3]
-<
+    NOTE: MRU order works on second invocation only. If you want to always 
+    use MRU order, call tlib#buffer#EnableMRU() in your ~/.vimrc file.
 
-                                                    *tlib#list#Find()*
-tlib#list#Find(list, filter, ?default="", ?process_expr="")
-    
-    EXAMPLES: >
-      tlib#list#Find([1,2,3], 'v:val >= 2')
-      => 2
-<
+                                                    *tlib#buffer#ViewLine()*
+tlib#buffer#ViewLine(line, ?position='z')
+    line is either a number or a string that begins with a number.
+    For possible values for position see |scroll-cursor|.
+    See also |g:tlib_viewline_position|.
 
-                                                    *tlib#list#Any()*
-tlib#list#Any(list, expr)
-    EXAMPLES: >
-      tlib#list#Any([1,2,3], 'v:val >= 2')
-      => 1
-<
+                                                    *tlib#buffer#HighlightLine()*
+tlib#buffer#HighlightLine(...)
 
-                                                    *tlib#list#All()*
-tlib#list#All(list, expr)
-    EXAMPLES: >
-      tlib#list#All([1,2,3], 'v:val >= 2')
-      => 0
-<
+                                                    *tlib#buffer#DeleteRange()*
+tlib#buffer#DeleteRange(line1, line2)
+    Delete the lines in the current buffer. Wrapper for |:delete|.
 
-                                                    *tlib#list#Remove()*
-tlib#list#Remove(list, element)
-    EXAMPLES: >
-      tlib#list#Remove([1,2,1,2], 2)
-      => [1,1,2]
-<
+                                                    *tlib#buffer#ReplaceRange()*
+tlib#buffer#ReplaceRange(line1, line2, lines)
+    Replace a range of lines.
 
-                                                    *tlib#list#RemoveAll()*
-tlib#list#RemoveAll(list, element)
-    EXAMPLES: >
-      tlib#list#RemoveAll([1,2,1,2], 2)
-      => [1,1]
-<
+                                                    *tlib#buffer#ScratchStart()*
+tlib#buffer#ScratchStart()
+    Initialize some scratch area at the bottom of the current buffer.
 
-                                                    *tlib#list#Zip()*
-tlib#list#Zip(lists, ?default='')
-    EXAMPLES: >
-      tlib#list#Zip([[1,2,3], [4,5,6]])
-      => [[1,4], [2,5], [3,6]]
-<
+                                                    *tlib#buffer#ScratchEnd()*
+tlib#buffer#ScratchEnd()
+    Remove the in-buffer scratch area.
 
-                                                    *tlib#list#Uniq()*
-tlib#list#Uniq(list, ...)
+                                                    *tlib#buffer#BufDo()*
+tlib#buffer#BufDo(exec)
+    Run exec on all buffers via bufdo and return to the original buffer.
+
+                                                    *tlib#buffer#InsertText()*
+tlib#buffer#InsertText(text, keyargs)
+    Keyargs:
+      'shift': 0|N
+      'col': col('.')|N
+      'lineno': line('.')|N
+      'indent': 0|1
+      'pos': 'e'|'s' ... Where to locate the cursor (somewhat like s and e in {offset})
+    Insert text (a string) in the buffer.
+
+                                                    *tlib#buffer#InsertText0()*
+tlib#buffer#InsertText0(text, ...)
+
+                                                    *tlib#buffer#CurrentByte()*
+tlib#buffer#CurrentByte()
+
+                                                    *tlib#buffer#KeepCursorPosition()*
+tlib#buffer#KeepCursorPosition(cmd)
+    Evaluate cmd while maintaining the cursor position and jump registers.
+
+
+========================================================================
+autoload/tlib/hook.vim~
+
+                                                    *tlib#hook#Run()*
+tlib#hook#Run(hook, ?dict={})
+    Execute dict[hook], w:{hook}, b:{hook}, or g:{hook} if existent.
 
 
 ========================================================================

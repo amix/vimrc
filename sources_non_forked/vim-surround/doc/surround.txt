@@ -133,15 +133,9 @@ attributes here and they will be stripped from the closing tag.  End your
 input by pressing <CR> or >.  If <C-T> is used, the tags will appear on lines
 by themselves.
 
-A deprecated replacement of a LaTeX environment is provided on \ and l.  The
-name of the environment and any arguments will be input from a prompt.  This
-will be removed once a more fully functional customization system is
-implemented.  The following shows the resulting environment from
-csp\tabular}{lc<CR>
->
-  \begin{tabular}{lc}
-  \end{tabular}
-<
+If s is used, a leading but not trailing space is added.  This is useful for
+removing parentheses from a function call with csbs.
+
 CUSTOMIZING                                     *surround-customizing*
 
 The following adds a potential replacement on "-" (ASCII 45) in PHP files.

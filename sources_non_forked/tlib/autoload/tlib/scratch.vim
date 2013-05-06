@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-07-18.
-" @Last Change: 2011-03-10.
-" @Revision:    0.0.166
+" @Last Change: 2012-02-08.
+" @Revision:    0.0.167
 
 if &cp || exists("loaded_tlib_scratch_autoload")
     finish
@@ -29,7 +29,7 @@ function! tlib#scratch#UseScratch(...) "{{{3
     " TLogDBG bufnr('%')
     if id =~ '^\d\+$' && bufwinnr(id) != -1
         if bufnr('%') != id
-            exec 'buffer! '. id
+            exec 'noautocmd buffer! '. id
         endif
         " let ft = &ft
         let ft = '*'
@@ -47,29 +47,29 @@ function! tlib#scratch#UseScratch(...) "{{{3
             let wn = bufwinnr(bn)
             if wn != -1
                 " TLogVAR wn
-                exec wn .'wincmd w'
+                exec 'noautocmd' (wn .'wincmd w')
             else
                 if scratch_split == 1
-                    let cmd = wpos.' sbuffer! '
+                    let cmd = wpos.' sbuffer!'
                 elseif scratch_split == -1
-                    let cmd = wpos.' tab sbuffer! '
+                    let cmd = wpos.' tab sbuffer!'
                 else
-                    let cmd = 'buffer! '
+                    let cmd = 'buffer!'
                 endif
                 " TLogVAR cmd
-                silent exec cmd . bn
+                silent exec 'noautocmd' cmd bn
             endif
         else
             " TLogVAR id
             if scratch_split == 1
-                let cmd = wpos.' split '
+                let cmd = wpos.' split'
             elseif scratch_split == -1
-                let cmd = wpos.' tab split '
+                let cmd = wpos.' tab split'
             else
-                let cmd = 'edit '
+                let cmd = 'edit'
             endif
             " TLogVAR cmd
-            silent exec cmd . escape(id, '%#\ ')
+            silent exec 'noautocmd' cmd escape(id, '%#\ ')
             " silent exec 'split '. id
         endif
         let ft = get(keyargs, 'scratch_filetype', '')

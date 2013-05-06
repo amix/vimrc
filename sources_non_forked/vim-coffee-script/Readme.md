@@ -1,11 +1,10 @@
 This project adds [CoffeeScript] support to the vim editor. It handles syntax,
-indenting, compiling, and more. Also included is an [eco] syntax and support for
-CoffeeScript in Haml and HTML.
+indenting, compiling, and more. Also included is support for CoffeeScript in
+Haml and HTML.
 
 ![Screenshot](http://i.imgur.com/eUBvm.png)
 
 [CoffeeScript]: http://jashkenas.github.com/coffee-script/
-[eco]: https://github.com/sstephenson/eco
 
 ### Install from a Zipball
 

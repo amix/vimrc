@@ -70,6 +70,11 @@ I recommend reading the docs of these plugins to understand them better. Each of
 * [ctrlp.vim](https://github.com/kien/ctrlp.vim): Fuzzy file, buffer, mru and tag finder. In my config it's mapped to `<Ctrl+F>`, because `<Ctrl+P>` is used by YankRing
 * [mru.vim](https://github.com/vim-scripts/mru.vim): Plugin to manage Most Recently Used (MRU) files. Includes my own fork which adds syntax highlighting to MRU. This plugin can be opened with `<leader+f>`
 * [open_file_under_cursor.vim](https://github.com/amix/open_file_under_cursor.vim): Open file under cursor when pressing `gf`
+* [zencoding](https://github.com/mattn/zencoding-vim): Expanding abbreviation like zen-coding, very useful for editing XML, HTML.
+* [vim-indent-object](https://github.com/michaeljsmith/vim-indent-object): Defines a new text object representing lines of code at the same indent level. Useful for python/vim scripts
+* [taglist.vim](https://github.com/vim-scripts/taglist.vim): Source code browser (supports C/C++, java, perl, python, tcl, sql, php, etc)
+* [vim-multiple-cursors](https://github.com/terryma/vim-multiple-cursors): Sublime Text style multiple selections for Vim, CTRL+N is remapped to CTRL+S (due to YankRing)
+* [vim-expand-region](https://github.com/terryma/vim-expand-region): Allows you to visually select increasingly larger regions of text using the same key combination.
 
 
 ## What color schemes are included?
@@ -87,6 +92,7 @@ I recommend reading the docs of these plugins to understand them better. Each of
 * [vim-less](https://github.com/groenewege/vim-less)
 * [vim-bundle-mako](https://github.com/sophacles/vim-bundle-mako)
 * [vim-markdown](https://github.com/tpope/vim-markdown)
+* [nginx.vim](https://github.com/vim-scripts/nginx.vim): Highlights configuration files for nginx
 
 
 ## How to include your own stuff?
@@ -100,7 +106,11 @@ After you have installed the setup you can create **~/.vim_runtime/my_configs.vi
 You can also install your own plugins, for instance, via pathogen we can install [vim-rails](https://github.com/tpope/vim-rails):
 
 	cd ~/.vim_runtime
+<<<<<<< HEAD
 	git clone git://github.com/tpope/vim-rails.git bundle/vim-rails
+=======
+	git clone git://github.com/tpope/vim-rails.git sources_non_forked/vim-rails
+>>>>>>> 630b4622081635fec42a0d787e9ae110157ac01e
 	
 Now you have vim-rails installed ;-)
 
@@ -132,6 +142,7 @@ Managing the [NERD Tree](https://github.com/scrooloose/nerdtree) plugin:
     map <leader>nf :NERDTreeFind<cr>
 
 ### Normal mode mappings
+
 Fast saving of a buffer:
 
 	nmap <leader>w :w!<cr>
@@ -258,6 +269,10 @@ Bash like keys for the command line:
 
     cnoremap <C-P> <Up>
     cnoremap <C-N> <Down>
+
+Write the file as sudo (only on Unix). Super useful when you open a file and you don't have permissions to save your changes. [Vim tip](http://vim.wikia.com/wiki/Su-write):
+
+    :W 
 
 
 ### Spell checking

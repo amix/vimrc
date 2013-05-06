@@ -54,11 +54,11 @@ fu! s:filter(tags)
 	let nr = 0
 	wh 0 < 1
 		if a:tags == [] | brea | en
-		if a:tags[nr] =~ '^!' && a:tags[nr] !~ '^!_TAG_'
+		if a:tags[nr] =~ '^!' && a:tags[nr] !~# '^!_TAG_'
 			let nr += 1
 			con
 		en
-		if a:tags[nr] =~ '^!_TAG_' && len(a:tags) > nr
+		if a:tags[nr] =~# '^!_TAG_' && len(a:tags) > nr
 			cal remove(a:tags, nr)
 		el
 			brea
@@ -97,15 +97,19 @@ fu! ctrlp#tag#accept(mode, str)
 		\ 'e': ['', 'tj'],
 		\ }
 	let cmd = fnd[0] == 1 ? cmds[a:mode][0] : cmds[a:mode][1]
-	let cmd = cmd == 'tj' && &mod ? 'hid '.cmd : cmd
+	let cmd = a:mode == 'e' && ctrlp#modfilecond(!&aw)
+		\ ? ( cmd == 'tj' ? 'stj' : 'sp' ) : cmd
 	let cmd = a:mode == 't' ? ctrlp#tabcount().cmd : cmd
 	if fnd[0] == 1
 		if cmd != ''
 			exe cmd
 		en
-		exe fnd[1].'ta' tg
+		let save_cst = &cst
+		set cst&
+		cal feedkeys(":".fnd[1]."ta ".tg."\r", 'nt')
+		let &cst = save_cst
 	el
-		exe cmd tg
+		cal feedkeys(":".cmd." ".tg."\r", 'nt')
 	en
 	cal ctrlp#setlcdir()
 endf

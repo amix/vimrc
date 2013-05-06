@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-05-01.
-" @Last Change: 2011-04-01.
-" @Revision:    0.1.915
+" @Last Change: 2012-10-03.
+" @Revision:    0.1.1203
 
 " :filedoc:
 " A prototype used by |tlib#input#List|.
@@ -24,6 +24,7 @@ let s:prototype = tlib#Object#New({
             \ 'fileencoding': &fileencoding,
             \ 'fmt_display': {},
             \ 'fmt_filter': {},
+            \ 'fmt_options': {},
             \ 'filetype': '',
             \ 'filter': [['']],
             \ 'filter_format': '',
@@ -62,6 +63,7 @@ let s:prototype = tlib#Object#New({
             \ 'state': 'display', 
             \ 'state_handlers': [],
             \ 'sticky': 0,
+            \ 'temp_prompt': [],
             \ 'timeout': 0,
             \ 'timeout_resolution': 2,
             \ 'type': '', 
@@ -94,71 +96,115 @@ endf
 " :nodoc:
 function! s:prototype.Set_highlight_filename() dict "{{{3
     let self.tlib_UseInputListScratch = 'call world.Highlight_filename()'
-    "             \ 'syntax match TLibMarker /\%>'. (1 + eval(g:tlib_inputlist_width_filename)) .'c |.\{-}| / | hi def link TLibMarker Special'
-    " let self.tlib_UseInputListScratch .= '| syntax match TLibDir /\%>'. (4 + eval(g:tlib_inputlist_width_filename)) .'c\S\{-}[\/].*$/ | hi def link TLibDir Directory'
 endf
 
 
-" :nodoc:
-function! s:prototype.Highlight_filename() dict "{{{3
-    " exec 'syntax match TLibDir /\%>'. (3 + eval(g:tlib_inputlist_width_filename)) .'c \(\S:\)\?[\/].*$/ contained containedin=TLibMarker'
-    exec 'syntax match TLibDir /\(\a:\|\.\.\..\{-}\)\?[\/][^&<>*|]*$/ contained containedin=TLibMarker'
-    exec 'syntax match TLibMarker /\%>'. (1 + eval(g:tlib_inputlist_width_filename)) .'c |\( \|[[:alnum:]%*+-]*\)| \S.*$/ contains=TLibDir'
-    hi def link TLibMarker Special
-    hi def link TLibDir Directory
-endf
+if g:tlib#input#format_filename == 'r'
+
+    " :nodoc:
+    function! s:prototype.Highlight_filename() dict "{{{3
+        syntax match TLibDir /\s\+\zs.\{-}[\/]\ze[^\/]\+$/
+        hi def link TLibDir Directory
+        syntax match TLibFilename /[^\/]\+$/
+        hi def link TLibFilename Normal
+    endf
+
+    " :nodoc:
+    function! s:prototype.FormatFilename(file) dict "{{{3
+        if !has_key(self.fmt_options, 'maxlen')
+            let maxco = &co - len(len(self.base)) - eval(g:tlib#input#filename_padding_r)
+            let maxfi = max(map(copy(self.base), 'len(v:val)'))
+            let self.fmt_options.maxlen = min([maxco, maxfi])
+            " TLogVAR maxco, maxfi, self.fmt_options.maxlen
+        endif
+        let max = self.fmt_options.maxlen
+        if len(a:file) > max
+            let filename = '...' . strpart(a:file, len(a:file) - max + 3)
+        else
+            let filename = printf('% '. max .'s', a:file)
+        endif
+        return filename
+    endf
+
+else
+
+    " :nodoc:
+    function! s:prototype.Highlight_filename() dict "{{{3
+        " let self.width_filename = 1 + eval(g:tlib_inputlist_width_filename)
+        " TLogVAR self.base
+        let self.width_filename = min([
+                    \ get(self, 'width_filename', &co),
+                    \ empty(g:tlib#input#filename_max_width) ? &co : eval(g:tlib#input#filename_max_width),
+                    \ max(map(copy(self.base), 'len(fnamemodify(v:val, ":t"))'))
+                    \ ])
+        " TLogVAR self.width_filename
+        exec 'syntax match TLibFilename /[^\/]\+$/ contained containedin=TLibDir'
+        exec 'syntax match TLibDir /\%>'. (1 + self.width_filename) .'c \(|\|\[[^]]*\]\) \zs\(\(\a:\|\.\.\..\{-}\)\?[\/][^&<>*|]\{-}\)\?[^\/]\+$/ contained containedin=TLibMarker contains=TLibFilename'
+        exec 'syntax match TLibMarker /\%>'. (1 + self.width_filename) .'c \(|\|\[[^]]*\]\) \S.*$/ contains=TLibDir'
+        hi def link TLibMarker Special
+        hi def link TLibDir Directory
+        hi def link TLibFilename NonText
+        " :nodoc:
+        function! self.Highlighter(rx) dict
+            let rx = '/\c\%>'. (1 + self.width_filename) .'c \(|\|\[[^]]*\]\) .\{-}\zs'. escape(a:rx, '/') .'/'
+            exec 'match' self.matcher.highlight rx
+        endf
+    endf
 
 
-" :nodoc:
-function! s:prototype.FormatFilename(file) dict "{{{3
-    let width = eval(g:tlib_inputlist_width_filename)
-    let split = match(a:file, '[/\\]\zs[^/\\]\+$')
-    if split == -1
-        let fname = ''
-        let dname = a:file
-    else
-        let fname = strpart(a:file, split)
-        let dname = strpart(a:file, 0, split - 1)
-    endif
-    " let fname = fnamemodify(a:file, ":p:t")
-    " " let fname = fnamemodify(a:file, ":t")
-    " " if isdirectory(a:file)
-    " "     let fname .='/'
-    " " endif
-    " let dname = fnamemodify(a:file, ":h")
-    " let dname = pathshorten(fnamemodify(a:file, ":h"))
-    let dnmax = &co - max([width, len(fname)]) - 11 - self.index_width - &fdc
-    if len(dname) > dnmax
-        let dname = '...'. strpart(dname, len(dname) - dnmax)
-    endif
-    let marker = []
-    if g:tlib_inputlist_filename_indicators
-        let bnr = bufnr(a:file)
-        " TLogVAR a:file, bnr, self.bufnr
-        if bnr != -1
-            if bnr == self.bufnr
-                call add(marker, '%')
+    " :nodoc:
+    function! s:prototype.FormatFilename(file) dict "{{{3
+        let width = self.width_filename
+        let split = match(a:file, '[/\\]\zs[^/\\]\+$')
+        if split == -1
+            let fname = ''
+            let dname = a:file
+        else
+            let fname = strpart(a:file, split)
+            " let dname = strpart(a:file, 0, split - 1)
+            let dname = a:file
+        endif
+        if strwidth(fname) > width
+            let fname = strpart(fname, 0, width - 3) .'...'
+        endif
+        let dnmax = &co - max([width, len(fname)]) - 10 - self.index_width - &fdc
+        if g:tlib_inputlist_filename_indicators
+            let dnmax -= 2
+        endif
+        if len(dname) > dnmax
+            let dname = '...'. strpart(dname, len(dname) - dnmax)
+        endif
+        let marker = []
+        if g:tlib_inputlist_filename_indicators
+            call insert(marker, '[')
+            let bnr = bufnr(a:file)
+            " TLogVAR a:file, bnr, self.bufnr
+            if bnr != -1
+                if bnr == self.bufnr
+                    call add(marker, '%')
+                else
+                    call add(marker, bnr)
+                endif
+                if getbufvar(bnr, '&modified')
+                    call add(marker, '+')
+                endif
+                if getbufvar(bnr, '&bufhidden') == 'hide'
+                    call add(marker, 'h')
+                endif
+                " if !buflisted(bnr)
+                "     call add(marker, 'u')
+                " endif
             else
                 call add(marker, ' ')
-                " elseif buflisted(a:file)
-                "     if getbufvar(a:file, "&mod")
-                "         call add(marker, '+')
-                "     else
-                "         call add(marker, 'B')
-                "     endif
-                " elseif bufloaded(a:file)
-                "     call add(marker, 'h')
-                " else
-                "     call add(marker, 'u')
             endif
+            call add(marker, ']')
         else
-            call add(marker, ' ')
+            call add(marker, '|')
         endif
-    endif
-    call insert(marker, '|')
-    call add(marker, '|')
-    return printf("%-". eval(g:tlib_inputlist_width_filename) ."s %s %s", fname, join(marker, ''), dname)
-endf
+        return printf("%-". self.width_filename ."s %s %s", fname, join(marker, ''), dname)
+    endf
+
+endif
 
 
 " :nodoc:
@@ -312,7 +358,11 @@ endf
 
 " :nodoc:
 function! s:prototype.GetBaseIdx0(idx) dict "{{{3
-    return self.GetBaseIdx(a:idx) - 1
+    let idx0 = self.GetBaseIdx(a:idx) - 1
+    if idx0 < 0
+        call tlib#notify#Echo('TLIB: Internal Error: GetBaseIdx0: idx0 < 0', 'WarningMsg')
+    endif
+    return idx0
 endf
 
 
@@ -416,22 +466,25 @@ function! s:prototype.SetFilter() dict "{{{3
     let mrx = self.FilterRxPrefix() . self.filter_options
     let self.filter_pos = []
     let self.filter_neg = []
-    " TLogVAR self.filter
+    " TLogVAR mrx, self.filter
     for filter in self.filter
         " TLogVAR filter
         let rx = join(reverse(filter(copy(filter), '!empty(v:val)')), '\|')
-        if rx =~ '\u'
-            let mrx1 = mrx .'\C'
-        else
-            let mrx1 = mrx
-        endif
         " TLogVAR rx
-        if rx[0] == g:tlib_inputlist_not
-            if len(rx) > 1
-                call add(self.filter_neg, mrx1 .'\('. rx[1:-1] .'\)')
+        if !empty(rx)
+            if rx =~ '\u'
+                let mrx1 = mrx .'\C'
+            else
+                let mrx1 = mrx
             endif
-        else
-            call add(self.filter_pos, mrx1 .'\('. rx .'\)')
+            " TLogVAR rx
+            if rx[0] == g:tlib_inputlist_not
+                if len(rx) > 1
+                    call add(self.filter_neg, mrx1 .'\('. rx[1:-1] .'\)')
+                endif
+            else
+                call add(self.filter_pos, mrx1 .'\('. rx .'\)')
+            endif
         endif
     endfor
     " TLogVAR self.filter_pos, self.filter_neg
@@ -485,14 +538,22 @@ endf
 
 " :nodoc:
 function! s:prototype.BuildTableList() dict "{{{3
+    " let time0 = str2float(reltimestr(reltime()))  " DBG
+    " TLogVAR time0
     call self.SetFilter()
     " TLogVAR self.filter_neg, self.filter_pos
     if empty(self.filter_pos) && empty(self.filter_neg)
         let self.table = range(1, len(self.base))
         let self.list = copy(self.base)
     else
+        " let time1 = str2float(reltimestr(reltime()))  " DBG
+        " TLogVAR time1, time1 - time0
         let self.table = filter(range(1, len(self.base)), 'self.MatchBaseIdx(v:val)')
+        " let time2 = str2float(reltimestr(reltime()))  " DBG
+        " TLogVAR time2, time2 - time0
         let self.list  = map(copy(self.table), 'self.GetBaseItem(v:val)')
+        " let time3 = str2float(reltimestr(reltime()))  " DBG
+        " TLogVAR time3, time3 - time0
     endif
 endf
 
@@ -623,25 +684,32 @@ endf
 " :nodoc:
 function! s:prototype.UseInputListScratch() dict "{{{3
     let scratch = self.UseScratch()
-    " TLogVAR scratch
-    syntax match InputlListIndex /^\d\+:/
-    syntax match InputlListCursor /^\d\+\* .*$/ contains=InputlListIndex
-    syntax match InputlListSelected /^\d\+# .*$/ contains=InputlListIndex
-    hi def link InputlListIndex Constant
-    hi def link InputlListCursor Search
-    hi def link InputlListSelected IncSearch
-    " exec "au BufEnter <buffer> call tlib#input#Resume(". string(self.name) .")"
-    setlocal nowrap
-    " hi def link InputlListIndex Special
-    " let b:tlibDisplayListMarks = {}
-    let b:tlibDisplayListMarks = []
-    let b:tlibDisplayListWorld = self
-    call tlib#hook#Run('tlib_UseInputListScratch', self)
+    if !exists('b:tlib_list_init')
+        call tlib#autocmdgroup#Init()
+        autocmd TLib VimResized <buffer> call feedkeys("\<c-j>", 't')
+        let b:tlib_list_init = 1
+    endif
+    if !exists('w:tlib_list_init')
+        " TLogVAR scratch
+        syntax match InputlListIndex /^\d\+:/
+        syntax match InputlListCursor /^\d\+\* .*$/ contains=InputlListIndex
+        syntax match InputlListSelected /^\d\+# .*$/ contains=InputlListIndex
+        hi def link InputlListIndex Constant
+        hi def link InputlListCursor Search
+        hi def link InputlListSelected IncSearch
+        setlocal nowrap
+        " hi def link InputlListIndex Special
+        " let b:tlibDisplayListMarks = {}
+        let b:tlibDisplayListMarks = []
+        let b:tlibDisplayListWorld = self
+        call tlib#hook#Run('tlib_UseInputListScratch', self)
+        let w:tlib_list_init = 1
+    endif
     return scratch
 endf
 
 
-" :def: function! s:prototype.Reset(?initial=0)
+" s:prototype.Reset(?initial=0)
 " :nodoc:
 function! s:prototype.Reset(...) dict "{{{3
     TVarArg ['initial', 0]
@@ -687,56 +755,158 @@ function! s:prototype.Retrieve(anyway) dict "{{{3
 endf
 
 
+function! s:FormatHelp(help) "{{{3
+    " TLogVAR a:help
+    let max = [0, 0]
+    for item in a:help
+        " TLogVAR item
+        if type(item) == 3
+            let itemlen = map(copy(item), 'strwidth(v:val)')
+            " TLogVAR itemlen
+            let max = map(range(2), 'max[v:val] >= itemlen[v:val] ? max[v:val] : itemlen[v:val]')
+        endif
+        unlet item
+    endfor
+    " TLogVAR max
+    let cols = float2nr((winwidth(0) - &foldcolumn - 1) / (max[0] + max[1] + 2))
+    if cols < 1
+        let cols = 1
+    endif
+    let fmt = printf('%%%ds: %%-%ds', max[0], max[1])
+    " TLogVAR cols, fmt
+    let help = []
+    let idx = -1
+    let maxidx = len(a:help)
+    while idx < maxidx
+        let push_item = 0
+        let accum = []
+        for i in range(cols)
+            let idx += 1
+            if idx >= maxidx
+                break
+            endif
+            let item = a:help[idx]
+            if type(item) == 3
+                call add(accum, item)
+            else
+                let push_item = 1
+                break
+            endif
+            unlet item
+        endfor
+        if !empty(accum)
+            call add(help, s:FormatHelpItem(accum, fmt))
+        endif
+        if push_item
+            call add(help, a:help[idx])
+        endif
+    endwh
+    " TLogVAR help
+    return help
+endf
+
+
+function! s:FormatHelpItem(item, fmt) "{{{3
+    let args = [join(repeat([a:fmt], len(a:item)), '  ')]
+    for item in a:item
+        " TLogVAR item
+        let args += item
+    endfor
+    " TLogVAR args
+    return call('printf', args)
+endf
+
+
+" :nodoc:
+function! s:prototype.InitHelp() dict "{{{3
+    return []
+endf
+
+
+" :nodoc:
+function! s:prototype.PushHelp(...) dict "{{{3
+    " TLogVAR a:000
+    if a:0 == 1
+        if type(a:1) == 3
+            let self._help += a:1
+        else
+            call add(self._help, a:1)
+        endif
+    elseif a:0 == 2
+        call add(self._help, a:000)
+    else
+        throw "TLIB: PushHelp: Wrong number of arguments: ". string(a:000)
+    endif
+    " TLogVAR helpstring
+endf
+
+
 " :nodoc:
 function! s:prototype.DisplayHelp() dict "{{{3
-    " \ 'Help:',
-    let help = [
-                \ 'Mouse        ... Pick an item            Letter          ... Filter the list',
-                \ printf('<m-Number>   ... Pick an item            "%s", "%s", %sWORD ... AND, OR, NOT',
-                \   g:tlib_inputlist_and, g:tlib_inputlist_or, g:tlib_inputlist_not),
-                \ 'Enter        ... Pick the current item   <bs>, <c-bs>    ... Reduce filter',
-                \ '<c|m-r>      ... Reset the display       Up/Down         ... Next/previous item',
-                \ '<c|m-q>      ... Edit top filter string  Page Up/Down    ... Scroll',
-                \ '<Esc>        ... Abort',
-                \ ]
+    let self._help = self.InitHelp()
+    call self.PushHelp('<Esc>', self.key_mode == 'default' ? 'Abort' : 'Reset keymap')
+    call self.PushHelp('Enter, <cr>', 'Pick the current item')
+    call self.PushHelp('<M-Number>',  'Pick an item')
+    call self.PushHelp('Mouse', 'L: Pick item, R: Show menu')
+    call self.PushHelp('<BS>, <C-BS>', 'Reduce filter')
+    call self.PushHelp('<S-Esc>, <F10>', 'Enter command')
 
-    if self.allow_suspend
-        call add(help,
-                \ '<c|m-z>      ... Suspend/Resume          <c-o>           ... Switch to origin')
+    if self.key_mode == 'default'
+        call self.PushHelp('<C|M-r>',     'Reset the display')
+        call self.PushHelp('Up/Down',      'Next/previous item')
+        call self.PushHelp('<C|M-q>',     'Edit top filter string')
+        call self.PushHelp('Page Up/Down', 'Scroll')
+        if self.allow_suspend
+            call self.PushHelp('<C|M-z>', 'Suspend/Resume')
+            call self.PushHelp('<C-o>', 'Switch to origin')
+        endif
+        if stridx(self.type, 'm') != -1
+            call self.PushHelp('<S-up/down>', '(Un)Select items')
+            call self.PushHelp('#, <C-Space>', '(Un)Select the current item')
+            call self.PushHelp('<C|M-a>', '(Un)Select all items')
+            " \ '<c-\>        ... Show only selected',
+        endif
     endif
 
-    if stridx(self.type, 'm') != -1
-        let help += [
-                \ '#, <c-space> ... (Un)Select the current item',
-                \ '<c|m-a>      ... (Un)Select all currently visible items',
-                \ '<s-up/down>  ... (Un)Select items',
-                \ ]
-                    " \ '<c-\>        ... Show only selected',
-    endif
-    for handler in self.key_handlers
+    " TLogVAR len(self._help)
+    call self.matcher.Help(self)
+
+    " TLogVAR self.key_mode
+    for handler in values(self.key_map[self.key_mode])
+        " TLogVAR handler
         let key = get(handler, 'key_name', '')
+        " TLogVAR key
         if !empty(key)
             let desc = get(handler, 'help', '')
-            call add(help, printf('%-12s ... %s', key, desc))
+            if empty(desc)
+                let desc = get(handler, 'agent', '')
+            endif
+            call self.PushHelp(key, desc)
         endif
     endfor
-    if !empty(self.help_extra)
-        let help += self.help_extra
+
+    if !has_key(self.key_map[self.key_mode], 'unknown_key')
+        call self.PushHelp('Letter', 'Filter the list')
     endif
-    let help += [
+
+    if self.key_mode == 'default' && !empty(self.help_extra)
+        call self.PushHelp(self.help_extra)
+    endif
+
+    " TLogVAR len(self._help)
+    call self.PushHelp([
                 \ '',
-                \ 'Exact matches and matches at word boundaries is given more weight.',
-                \ 'Warning: Please don''t resize the window with the mouse.',
-                \ '',
-                \ 'Press any key to continue.',
-                \ ]
+                \ 'Matches at word boundaries are prioritized.',
+                \ ])
+    let self._help = s:FormatHelp(self._help)
+    let self.temp_prompt = ['Press any key to continue.', 'Question']
     " call tlib#normal#WithRegister('gg"tdG', 't')
     call tlib#buffer#DeleteRange('1', '$')
-    call append(0, help)
+    call append(0, self._help)
     " call tlib#normal#WithRegister('G"tddgg', 't')
     call tlib#buffer#DeleteRange('$', '$')
     1
-    call self.Resize(len(help), 0)
+    call self.Resize(len(self._help), 0)
 endf
 
 
@@ -785,12 +955,13 @@ function! s:prototype.GetResize(size) dict "{{{3
 endf
 
 
-" function! s:prototype.DisplayList(query, ?list)
+" function! s:prototype.DisplayList(?query=self.Query(), ?list=[])
 " :nodoc:
-function! s:prototype.DisplayList(query, ...) dict "{{{3
-    " TLogVAR a:query
+function! s:prototype.DisplayList(...) dict "{{{3
     " TLogVAR self.state
-    let list = a:0 >= 1 ? a:1 : []
+    let query = a:0 >= 1 ? a:1 : self.Query()
+    let list = a:0 >= 2 ? a:2 : []
+    " TLogVAR query, len(list)
     " TLogDBG 'len(list) = '. len(list)
     call self.UseScratch()
     " TLogVAR self.scratch
@@ -799,6 +970,7 @@ function! s:prototype.DisplayList(query, ...) dict "{{{3
         call self.ScrollToOffset()
     elseif self.state == 'help'
         call self.DisplayHelp()
+        call self.SetStatusline(query)
     else
         " TLogVAR query
         " let ll = len(list)
@@ -832,7 +1004,7 @@ function! s:prototype.DisplayList(query, ...) dict "{{{3
         call add(b:tlibDisplayListMarks, base_pref)
         call self.DisplayListMark(x, base_pref, '*')
         call self.SetOffset()
-        call self.SetStatusline(a:query)
+        call self.SetStatusline(query)
         " TLogVAR self.offset
         call self.ScrollToOffset()
         let rx0 = self.GetRx0()
@@ -841,7 +1013,11 @@ function! s:prototype.DisplayList(query, ...) dict "{{{3
             if empty(rx0)
                 match none
             elseif self.IsValidFilter()
-                exec 'match '. self.matcher.highlight .' /\c'. escape(rx0, '/') .'/'
+                if has_key(self, 'Highlighter')
+                    call self.Highlighter(rx0)
+                else
+                    exec 'match '. self.matcher.highlight .' /\c'. escape(rx0, '/') .'/'
+                endif
             endif
         endif
     endif
@@ -849,22 +1025,51 @@ function! s:prototype.DisplayList(query, ...) dict "{{{3
 endf
 
 
+" :nodoc:
 function! s:prototype.SetStatusline(query) dict "{{{3
-    let query   = a:query
-    let options = [self.matcher.name]
-    if self.sticky
-        call add(options, '#')
+    " TLogVAR a:query
+    if !empty(self.temp_prompt)
+        let echo = get(self.temp_prompt, 0, '')
+        let hl = get(self.temp_prompt, 1, 'Normal')
+        let self.temp_prompt = []
+    else
+        let hl = 'Normal'
+        let query   = a:query
+        let options = [self.matcher.name]
+        if self.sticky
+            call add(options, '#')
+        endif
+        if self.key_mode != 'default'
+            call add(options, 'map:'. self.key_mode)
+        endif
+        if !empty(options)
+            let sopts = printf('[%s]', join(options, ', '))
+            " let echo  = query . repeat(' ', &columns - len(sopts) - len(query) - 20) . sopts
+            let echo  = query . '  ' . sopts
+            " let query .= '%%='. sopts .' '
+        endif
+        " TLogVAR &l:statusline, query
+        " let &l:statusline = query
     endif
-    if !empty(options)
-        let sopts = printf('[%s]', join(options, ', '))
-        " let echo  = query . repeat(' ', &columns - len(sopts) - len(query) - 20) . sopts
-        let echo  = query . '  ' . sopts
-        " let query .= '%%='. sopts .' '
-    endif
-    " TLogVAR &l:statusline, query
-    " let &l:statusline = query
     echo
-    echo echo
+    if hl != 'Normal'
+        exec 'echohl' hl
+        echo echo
+        echohl None
+    else
+        echo echo
+    endif
+endf
+
+
+" :nodoc:
+function! s:prototype.Query() dict "{{{3
+    if g:tlib_inputlist_shortmessage
+        let query = 'Filter: '. self.DisplayFilter()
+    else
+        let query = self.query .' (filter: '. self.DisplayFilter() .'; press "?" for help)'
+    endif
+    return query
 endf
 
 

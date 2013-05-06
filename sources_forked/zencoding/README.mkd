@@ -1,0 +1,103 @@
+# ZenCoding-vim
+
+[zencoding-vim](http://mattn.github.com/zencoding-vim) is vim script support for expanding abbreviation like zen-coding(emmet).
+
+## Installation
+
+[Download zip file](http://www.vim.org/scripts/script.php?script_id=2981):
+
+    cd ~/.vim
+    unzip zencoding-vim.zip
+
+If you install pathogen.vim:
+
+    cd ~/.vim/bundle # or make directory
+    unzip /path/to/zencoding-vim.zip
+
+If you get source from repository:
+
+    cd ~/.vim/bundle # or make directory
+    git clone http://github.com/mattn/zencoding-vim.git
+
+or:
+
+    git clone http://github.com/mattn/zencoding-vim.git
+    cd zencoding-vim
+    cp plugin/zencoding.vim ~/.vim/plugin/
+    cp autoload/zencoding.vim ~/.vim/autoload/
+    cp -a autoload/zencoding ~/.vim/autoload/
+
+
+## Quick Tutorial
+
+Open or create New File:
+    
+    vim index.html
+
+Type ("_" is the cursor position):
+
+    html:5_
+
+Then type "<c-y>," (Ctrl + y + ','), you should see:
+
+    <!DOCTYPE HTML>
+    <html lang="en">
+    <head>
+    	<meta charset="UTF-8">
+    	<title></title>
+    </head>
+    <body>
+    	_
+    </body>
+    </html>
+
+[More Tutorials](https://raw.github.com/mattn/zencoding-vim/master/TUTORIAL)
+
+
+## Enable in different mode
+
+If you don't want enable zencoding in all mode,
+you can use set a option in `vimrc`:
+   
+    let g:user_zen_mode='n'    "only enable normal mode functions.
+    let g:user_zen_mode='inv'  "enable all functions, which is equal to
+    let g:user_zen_mode='a'    "enable all function in all mode.
+
+## Project Authors
+
+[Yasuhiro Matsumoto](http://mattn.kaoriya.net/)
+
+## Links
+
+### zen-coding official site:
+
+> <http://code.google.com/p/zen-coding/>
+
+### zencoding.vim:
+
+> <http://mattn.github.com/zencoding-vim>
+
+### development repository:
+
+> <https://github.com/mattn/zencoding-vim>
+
+### my blog posts about zencoding-vim:
+
+> <http://mattn.kaoriya.net/software/vim/20100222103327.htm>
+
+> <http://mattn.kaoriya.net/software/vim/20100306021632.htm>
+  
+### japanese blog posts about zencoding-vim:
+
+> <http://d.hatena.ne.jp/idesaku/20100424/1272092255>
+
+> <http://d.hatena.ne.jp/griefworker/20110118/vim_zen_coding>
+
+> <http://d.hatena.ne.jp/sakurako_s/20110126/1295988873>
+
+> <http://looxu.blogspot.jp/2010/02/zencodingvimhtml.html>
+
+### tutorial traslated in chinese:
+
+> <http://www.zfanw.com/blog/zencoding-vim-tutorial-chinese.html>
+

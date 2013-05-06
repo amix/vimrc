@@ -3,16 +3,17 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2008-09-19.
-" @Last Change: 2011-03-10.
-" @Revision:    0.0.15
+" @Last Change: 2012-01-02.
+" @Revision:    0.0.19
 
 let s:save_cpo = &cpo
 set cpo&vim
 
 
+" :display: tlib#notify#Echo(text, ?style='')
 " Print text in the echo area. Temporarily disable 'ruler' and 'showcmd' 
 " in order to prevent |press-enter| messages.
-function! tlib#notify#Echo(text, ...) "{{{3
+function! tlib#notify#Echo(text, ...)
     TVarArg 'style'
     let ruler = &ruler
     let showcmd = &showcmd

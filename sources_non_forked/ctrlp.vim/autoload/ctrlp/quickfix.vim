@@ -40,18 +40,15 @@ fu! ctrlp#quickfix#init()
 endf
 
 fu! ctrlp#quickfix#accept(mode, str)
-	let items = matchlist(a:str, '^\([^|]\+\ze\)|\(\d\+\):\(\d\+\)|')
-	if items == [] | retu | en
-	let [md, filpath] = [a:mode, fnamemodify(items[1], ':p')]
-	if empty(filpath) | retu | en
-	cal ctrlp#exit()
-	let cmd = md == 't' ? 'tabe' : md == 'h' ? 'new' : md == 'v' ? 'vne'
-		\ : ctrlp#normcmd('e')
-	let cmd = cmd == 'e' && &modified ? 'hid e' : cmd
-	exe cmd ctrlp#fnesc(filpath)
-	cal cursor(items[2], items[3])
+	let vals = matchlist(a:str, '^\([^|]\+\ze\)|\(\d\+\):\(\d\+\)|')
+	if vals == [] || vals[1] == '' | retu | en
+	cal ctrlp#acceptfile(a:mode, vals[1])
+	let cur_pos = getpos('.')[1:2]
+	if cur_pos != [1, 1] && cur_pos != map(vals[2:3], 'str2nr(v:val)')
+		mark '
+	en
+	cal cursor(vals[2], vals[3])
 	sil! norm! zvzz
-	cal ctrlp#setlcdir()
 endf
 
 fu! ctrlp#quickfix#id()

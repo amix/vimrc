@@ -49,6 +49,8 @@ There are some alternatives:
 - ultisnips (python based)
 - xptemplate which is probably a much more powerful
   but also more complex
+- neosnippets - which seems to be able to read snippet
+files when swiching on compatible mode
 - (..?)
 
 snipmate is not perfect - however it gets its job done perfectly and gets out
@@ -113,8 +115,8 @@ The parsed .snippets files are cached.
 
 in the current buffer to show a list via.
 
-------------------------------------------------------------------------------
-SNIPPET SOURCES                                      *snippet-sources*
+==============================================================================
+SNIPPET SOURCES                                     *snipMate-snippet-sources*
 
 snipMate is configurable.
 
@@ -178,7 +180,7 @@ More details about all possible relative locations to |rtp| can be found in
 SYNTAX                                      *snippet-syntax* *snipMate-syntax*
 
 Default snippet sources [1], you can add your own as illustrated in
-|snippet-sources|.
+|snipMate-snippet-sources|.
 
 trigger: the snippet's name.
 |rtp|  : Vim's |runtimepath| path list
@@ -354,18 +356,28 @@ If you would like your snippets to be expanded using spaces instead of tabs,
 just enable 'expandtab' and set 'softtabstop' to your preferred amount of
 spaces. If 'softtabstop' is not set, 'shiftwidth' is used instead.
 
-                                                              *snipMate-trigger*
-snipMate comes with a setting to configure the key that is used to trigger
-snipMate. To configure the key set g:snips_trigger_key to something other than
-<tab>,e.g. <c-space> use:
+                                                           *snipMate-mappings*
+The mappings snipMate uses can be customized with the |:map| commands. For
+example, to change the key that triggers snippets and moves to the next
+tabstop, >
 
- let g:snips_trigger_key='<c-space>'
+	:imap <C-J> <Plug>snipMateNextOrTrigger
+	:smap <C-J> <Plug>snipMateNextOrTrigger
+<
+The list of possible <Plug> mappings is as follows:
 
-snipMate will try to automatically configure backwards trigger to prepend shift
-key infront, e.g. <s-tab> or <s-c-space>. You can manually configure backward
-trigger using:
+<Plug>snipMateNextOrTrigger	Jumps to the next tab stop or, if none exists,
+				try to expand a snippet. Use in both insert
+				and select modes.
 
- let g:snips_trigger_key_backwards='<c-space>'
+<Plug>snipMateBack		Jump to the previous tab stop, if it exists.
+				Use in both insert and select modes.
+
+<Plug>snipMateShow		Show all available snippets (that start with
+				the previous text, if it exists). Use in
+				insert mode.
+
+<Plug>snipMateVisual		|snipMate-visual-selection-support|
 
 ==============================================================================
 FEATURES                                                   *snipMate-features*
@@ -409,6 +421,7 @@ Perhaps some of these features will be added in a later release.
 CONTACT                                   *snipMate-contact* *snipMate-author*
 
 current maintainers:
+  - Adnan Zafar
   - garbas
   - Marc Weber (marco-oweber@gmx.de)
 You should consider creating a github ticket or contacting us because the

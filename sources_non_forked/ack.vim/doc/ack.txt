@@ -43,6 +43,16 @@ shows the results in a split window.
     directory) for filenames matching the {pattern}.  Behaves just like the
     |:grep| command, but will open the |Quickfix| window for you.
 
+:AckHelp[!] [options] {pattern}                                      *:AckHelp*
+
+    Search vim documentation files for the {pattern}.  Behaves just like the 
+    |:Ack| command, but searches only vim documentation .txt files
+
+:LAckHelp [options] {pattern}                                        *:LAckHelp*
+
+    Just like |:AckHelp| but instead of the |quickfix| list, matches are placed
+    in the current |location-list|.
+
 Files containing the search term will be listed in the split window, along
 with the line number of the occurrence, once for each occurrence.  <Enter> on
 a line in this window will open the file, and place the cursor on the matching
@@ -62,6 +72,10 @@ go                  preview file (open but maintain focus on ack.vim results).
 t                   open in a new tab.
 
 T                   open in new tab silently.
+
+h                   open in horizontal split.
+
+H                  open in horizontal split silently.
 
 v                   open in vertical split.
 
