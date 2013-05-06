@@ -106,11 +106,7 @@ After you have installed the setup you can create **~/.vim_runtime/my_configs.vi
 You can also install your own plugins, for instance, via pathogen we can install [vim-rails](https://github.com/tpope/vim-rails):
 
 	cd ~/.vim_runtime
-<<<<<<< HEAD
-	git clone git://github.com/tpope/vim-rails.git bundle/vim-rails
-=======
 	git clone git://github.com/tpope/vim-rails.git sources_non_forked/vim-rails
->>>>>>> 630b4622081635fec42a0d787e9ae110157ac01e
 	
 Now you have vim-rails installed ;-)
 
@@ -398,5 +394,8 @@ The line **3rd line** is added. Then pathogen will get everything done.
 *   [Tips-Using git submodule keep your vim plugin up-to-date](http://www.allenwei.cn/tips-using-git-submodule-keep-your-plugin-up-to-date/)
 *   [Git Submodule介绍与使用](http://blog.wu-boy.com/2011/09/introduction-to-git-submodule/)     
 
-**Note:** We are using subtree or submodule to manage vim plugins at this time, so you'd better know what you are doing with your plugins.
+**Note:** 
+
+You can either use git submodule to manage your vim plugins as I do now, or you can manage using Amix's approach cause ha has provided a python script to get all the plugins updated with one single command.
+
 
