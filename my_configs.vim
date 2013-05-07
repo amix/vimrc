@@ -6,6 +6,9 @@ set nu
 " the color I used to
 colorscheme desert
 
+let tmpcolumn=$COLUMNS
+execute "set columns=".tmpcolumn
+
 """"""""""""""""""""""""
 " [my plugin setup]
 "
