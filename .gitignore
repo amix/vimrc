@@ -3,4 +3,8 @@ sources_non_forked/ack.vim/.netrwhist
 temp_dirs/yankring_history_v2.txt
 sources_forked/yankring/doc/tags
 sources_non_forked/tlib/doc/tags
+sources_non_forked/bufexplorer/doc/tags
+sources_non_forked/taglist.vim/doc/tags
+sources_non_forked/vim-expand-region/doc/tags
+sources_non_forked/vim-multiple-cursors/doc/tags
 my_configs.vim
