@@ -1,0 +1,10 @@
+expand-region-about	expand_region.txt	/*expand-region-about*
+expand-region-contents	expand_region.txt	/*expand-region-contents*
+expand-region-global-options	expand_region.txt	/*expand-region-global-options*
+expand-region-intro	expand_region.txt	/*expand-region-intro*
+expand-region-mappings	expand_region.txt	/*expand-region-mappings*
+expand-region-usage	expand_region.txt	/*expand-region-usage*
+expand_region_text_objects	expand_region.txt	/*expand_region_text_objects*
+expand_region_use_select_mode	expand_region.txt	/*expand_region_use_select_mode*
+vim-expand-region.txt	expand_region.txt	/*vim-expand-region.txt*
+vim-expand-regions	expand_region.txt	/*vim-expand-regions*
