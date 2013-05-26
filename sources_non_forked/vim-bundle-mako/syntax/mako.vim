@@ -2,8 +2,8 @@
 " Language:     Mako
 " Maintainer:   Armin Ronacher <armin.ronacher@active-4.com>
 " URL:          http://lucumr.pocoo.org/
-" Last Change:  2008 September 12
-" Version:      0.6.1
+" Last Change:  2013-05-01
+" Version:      0.6.1+
 "
 " Thanks to Brine Rue <brian@lolapps.com> who noticed a bug in the
 " delimiter handling.
@@ -26,6 +26,9 @@ endif
 "Source the html syntax file
 ru! syntax/html.vim
 unlet b:current_syntax
+
+" tell html.vim what syntax groups should take precedence (see :help html.vim)
+syn cluster htmlPreproc add=makoLine,makoVariable,makoTag,makoDocComment,makoDefEnd,makoText,makoDelim,makoEnd,makoComment,makoEscape
 
 "Put the python syntax file in @pythonTop
 syn include @pythonTop syntax/python.vim
@@ -54,8 +57,8 @@ syn region makoAttributeValue containedin=makoTag contained start=/"/ skip=/\\"/
 syn region makoAttributeValue containedin=MakoTag contained start=/'/ skip=/\\'/ end=/'/
 
 " Tags
-syn region makoTag matchgroup=makoDelim start="<%\(def\|call\|page\|include\|namespace\|inherit\|block\)\>" end="/\?>"
-syn match makoDelim "</%\(def\|call\|namespace\|block\)>"
+syn region makoTag matchgroup=makoDelim start="<%\(def\|call\|page\|include\|namespace\|inherit\|block\|[a-zA-Z_][a-zA-Z0-9_]*:[a-zA-Z_][a-zA-Z0-9_]*\)\>" end="/\?>"
+syn match makoDelim "</%\(def\|call\|namespace\|block\|[a-zA-Z_][a-zA-Z0-9_]*:[a-zA-Z_][a-zA-Z0-9_]*\)>"
 
 " Newline Escapes
 syn match makoEscape /\\$/
@@ -83,4 +86,4 @@ if version >= 508 || !exists("did_mako_syn_inits")
   delc HiLink
 endif
 
-let b:current_syntax = "eruby"
+let b:current_syntax = "html"

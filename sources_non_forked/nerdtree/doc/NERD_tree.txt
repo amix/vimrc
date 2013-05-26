@@ -83,12 +83,12 @@ The following features and functionality are provided by the NERD tree:
       as you left it
     * You can have a separate NERD tree for each tab, share trees across tabs,
       or a mix of both.
-    * By default the script overrides the default file browser (netw), so if
-      you :edit a directory a (slighly modified) NERD tree will appear in the
+    * By default the script overrides the default file browser (netrw), so if
+      you :edit a directory a (slightly modified) NERD tree will appear in the
       current window
     * A programmable menu system is provided (simulates right clicking on a
       node)
-        * one default menu plugin is provided to perform basic filesytem
+        * one default menu plugin is provided to perform basic filesystem
           operations (create/delete/move/copy files/directories)
     * There's an API for adding your own keymappings
 
@@ -228,7 +228,7 @@ gs......Same as s, but leave the cursor on the NERDTree..........|NERDTree-gs|
 O.......Recursively open the selected directory..................|NERDTree-O|
 x.......Close the current nodes parent...........................|NERDTree-x|
 X.......Recursively close all children of the current node.......|NERDTree-X|
-e.......Edit the current dif.....................................|NERDTree-e|
+e.......Edit the current dir.....................................|NERDTree-e|
 
 <CR>...............same as |NERDTree-o|.
 double-click.......same as the |NERDTree-o| map.
@@ -780,7 +780,7 @@ If set to 1, doing a >
 <
 will open up a "secondary" NERD tree instead of a netrw in the target window.
 
-Secondary NERD trees behaves slighly different from a regular trees in the
+Secondary NERD trees behaves slightly different from a regular trees in the
 following respects:
     1. 'o' will open the selected file in the same window as the tree,
        replacing it.

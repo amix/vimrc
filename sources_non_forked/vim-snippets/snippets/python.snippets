@@ -79,7 +79,7 @@ snippet clatin1
 snippet cascii
 	# -*- coding: ascii -*-
 # Lambda
-snippet ld
+snippet lda
 	${1:var} = lambda ${2:vars} : ${3:action}
 snippet .
 	self.
@@ -162,3 +162,18 @@ snippet getopt
 			${4}
 		elif option in ("-v", "--verbose"):
 			verbose = argument
+# logging
+# glog = get log
+snippet glog
+	import logging
+	logger = logging.getLogger(${1:__name__})
+snippet le
+	logger.error(${1:msg})
+snippet ld
+	logger.debug(${1:msg})
+snippet lw
+	logger.warning(${1:msg})
+snippet lc
+	logger.critical(${1:msg})
+snippet li
+	logger.info(${1:msg})

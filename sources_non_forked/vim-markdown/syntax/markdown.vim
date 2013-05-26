@@ -126,5 +126,8 @@ hi def link markdownEscape                Special
 hi def link markdownError                 Error
 
 let b:current_syntax = "markdown"
+if main_syntax ==# 'markdown'
+  unlet main_syntax
+endif
 
 " vim:set sw=2:

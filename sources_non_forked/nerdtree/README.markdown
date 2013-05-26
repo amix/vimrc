@@ -44,11 +44,11 @@ The following features and functionality are provided by the NERD tree:
     as you left it
   * You can have a separate NERD tree for each tab, share trees across tabs,
     or a mix of both.
-  * By default the script overrides the default file browser (netw), so if
-    you :edit a directory a (slighly modified) NERD tree will appear in the
+  * By default the script overrides the default file browser (netrw), so if
+    you :edit a directory a (slightly modified) NERD tree will appear in the
     current window
   * A programmable menu system is provided (simulates right clicking on a node)
-    * one default menu plugin is provided to perform basic filesytem
+    * one default menu plugin is provided to perform basic filesystem
       operations (create/delete/move/copy files/directories)
   * There's an API for adding your own keymappings
 

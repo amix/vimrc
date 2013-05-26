@@ -418,6 +418,41 @@ snipMate.vim currently has the following disadvantages to TextMate's snippets:
 Perhaps some of these features will be added in a later release.
 
 ==============================================================================
+CHANGELOG                                                  *snipMate-changelog*
+
+0.85 - 2013-04-03
+-----------------
+
+* Allow trigger key customization
+* Enable undoing of snippet expansion
+* Support backslash escaping in snippets
+* Add support for {VISUAL}
+* Expand filetype extension with scope_aliases
+* Add expansion guards
+* Enable per-buffer expansion of snippets
+* Fix 'cpo' compatibility
+* Update supertab compatibility
+* Enable customization of various things through g:snipMate
+
+* Disable spelling in snippet files
+* Highlight trigger names in .snippets files
+
+* Update many snippets
+* Separate sample snippets into separate repository
+
+0.84
+----
+
+* Unreleased version by Michael Sanders, available on his GitHub,
+  <https://github.com/msanders/snipmate.vim>
+
+0.83 - 2009-07-13
+-----------------
+
+* Last release done by Michael Sanders, available at
+  <http://www.vim.org/scripts/script.php?script_id=2540>
+
+==============================================================================
 CONTACT                                   *snipMate-contact* *snipMate-author*
 
 current maintainers:

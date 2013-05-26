@@ -161,3 +161,40 @@ snippet obj
 		F.prototype = o;
 		return new F();
 	}
+# Define multiple properties
+snippet props
+	var ${1:my_object} = Object.defineProperties(
+		${2:new Object()}, 
+		{
+			${3:property} : {
+				get : function $1_$3_getter() {
+					// getter code
+				},
+				set : function $1_$3_setter(value) {
+					// setter code
+				},
+				value        : ${4:value},
+				writeable    : ${5:boolean},
+				enumerable   : ${6:boolean},
+				configurable : ${7:boolean}
+			}
+		}
+	);
+# Define single property
+snippet prop
+	Object.defineProperty( 
+		${1:object},
+		"${2:property}", 
+		{
+			get : function $1_$2_getter() {
+				// getter code
+			},
+			set : function $1_$2_setter(value) {
+				// setter code
+			},
+			value        : ${3:value},
+			writeable    : ${4:boolean},
+			enumerable   : ${5:boolean},
+			configurable : ${6:boolean}
+		}
+	);

@@ -447,27 +447,9 @@ fun! s:AddScopeAliases(list)
   return keys(did)
 endf
 
-" don't ask me wy searching for trigger { is soo slow.
-fun! s:Glob(dir,  file)
-	let f = a:dir.a:file
-	if a:dir =~ '\*' || isdirectory(a:dir)
-		" vim's glob() is somewhat unreliable since it uses the
-		" user's current shell which may accept different patterns
-		" (POSIX vs. zsh vs. bash vs. ...). On my system, that
-		" leads to glob() sometimes returning files that don't
-		" exist, so filter the returned list to make sure that the
-		" files really exist in the filesystem.
-		let res = split(glob(escape(f,"{}")), "\n")
-
-		if !empty(res)
-			return filter(res, 'filereadable(v:val)')
-		else
-			return []
-		endif
-	else
-		return filereadable(f) ? [f] : []
-	endif
-endf
+function! s:Glob(path, expr)
+	return filter(split(globpath(a:path, a:expr), "\n"), 'filereadable(v:val)')
+endfunction
 
 " returns dict of
 " { path: { 'type': one of 'snippet' 'snippets',
@@ -481,54 +463,41 @@ endf
 " use mustExist = 1 to return existing files only
 "
 "     mustExist = 0 is used by OpenSnippetFiles
-fun! snipMate#GetSnippetFiles(mustExist, scopes, trigger)
-  let paths = funcref#Call(s:c.snippet_dirs)
+function! snipMate#GetSnippetFiles(mustExist, scopes, trigger)
+	let paths = join(funcref#Call(s:c.snippet_dirs), ',')
+	let result = {}
+	let scopes = s:AddScopeAliases(a:scopes)
+	let trigger = escape(a:trigger, '{}*[]`')
 
-  let result = {}
-  let scopes = s:AddScopeAliases(a:scopes)
+	" collect existing files
+	for scope in scopes
 
-  " collect existing files
-  for scope in scopes
+		for f in s:Glob(paths, 'snippets/' . scope . '.snippets') +
+					\ s:Glob(paths, 'snippets/' . scope . '/*.snippets')
+			let result[f] = { 'exists' : 1, 'type' : 'snippets',
+						\ 'name_prefix' : fnamemodify(f, ':t:r') }
+		endfor
 
-	for r in paths
-	  let rtp_last = fnamemodify(r,':t')
+		for f in s:Glob(paths, 'snippets/'.scope.'/'.trigger.'.snippet')
+			let result[f] = {'exists': 1, 'type': 'snippet', 'name': 'default',
+						\ 'trigger': a:trigger, 'name_prefix' : scope }
+		endfor
 
-	  " .snippets files (many snippets per file).
-	  let glob_p = r.'/snippets/'.scope.'.snippets'
-	  for snippetsF in split(glob(glob_p),"\n")
-		let scope = fnamemodify(snippetsF,':t:r')
-		let result[snippetsF] = {'exists': 1, 'type': 'snippets', 'name_prefix': rtp_last.' '.scope }
-	  endfor
+		for f in s:Glob(paths, 'snippets/'.scope.'/'.trigger.'/*.snippet')
+			let result[f] = {'exists': 1, 'type': 'snippet', 'name' : fnamemodify(f, ':t:r'),
+						\ 'trigger': a:trigger, 'name_prefix' : scope }
+		endfor
 
-	  if !a:mustExist && !has_key(result, glob_p)
-		" name_prefix not used
-		let result[glob_p] = {'exists': 0, 'type': 'snippets'}
-	  endif
+		if !a:mustExist
+			for p in split(paths, ',')
+				let p .= '/' . scope . '.snippets'
+				let result[p] = get(result, p, {'exists': 0, 'type': 'snippets'})
+			endfor
+		endif
 
-	  let glob_p = r.'/snippets/'.scope.'/*.snippets'
-	  for snippetsF in split(glob(glob_p),"\n")
-		let result[snippetsF] = {'exists': 1, 'type': 'snippets', 'name_prefix' : rtp_last.' '.fnamemodify(snippetsF,':t:r')}
-	  endfor
-
-	  " == one file per snippet: ==
-
-	  " without name snippets/<filetype>/<trigger>.snippet
-	  for f in s:Glob(r.'/snippets/'.scope,'/'.a:trigger.'.snippet')
-		let trigger = fnamemodify(f,':t:r')
-		let result[f] = {'exists': 1, 'type': 'snippet', 'name': 'default', 'trigger': trigger, 'name_prefix' : rtp_last.' '.scope}
-	  endfor
-	  " add /snippets/trigger/*.snippet files (TODO)
-
-	  " with name (multi-snip) snippets/<filetype>/<trigger>/<name>.snippet
-	  for f in s:Glob(r.'/snippets/'.scope.'/'.a:trigger,'/*.snippet')
-		let name = fnamemodify(f,':t:r')
-		let trigger = fnamemodify(f,':h:t')
-		let result[f] = {'exists': 1, 'type': 'snippet', 'name': name, 'trigger': trigger, 'name_prefix' : rtp_last.' '.scope}
-	  endfor
 	endfor
-  endfor
-  return result
-endf
+	return result
+endfunction
 
 fun! snipMate#EvalGuard(guard)
 	" left: everything left of expansion 
@@ -546,6 +515,7 @@ endf
 fun! snipMate#DefaultPool(scopes, trigger, result)
 	let triggerR = substitute(a:trigger,'*','.*','g')
 	for [f,opts] in items(snipMate#GetSnippetFiles(1, a:scopes, a:trigger))
+		let opts.name_prefix = matchstr(f, '\v[^/]+\ze/snippets') . ' ' . opts.name_prefix
 		if opts.type == 'snippets'
 			for [trigger, name, contents, guard] in cached_file_contents#CachedFileContents(f, s:c.read_snippets_cached, 0)
 				if trigger !~ escape(triggerR,'~') | continue | endif

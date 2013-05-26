@@ -680,6 +680,8 @@ snippet hmt
 	has_many :${1:object}, :through => :${2:object}
 snippet ho
 	has_one :${1:object}
+snippet hod
+	has_one :${1:object}, dependent: :${2:destroy}
 snippet i18
 	I18n.t('${1:type.key}')${2}
 snippet ist
@@ -967,3 +969,5 @@ snippet shared
 	shared_examples "${1:shared examples name}" ${2}
 snippet itb
 	it_behaves_like "${1:shared examples name}"${2}
+snippet ana
+	accepts_nested_attributes_for :${1:association}

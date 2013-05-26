@@ -67,7 +67,7 @@ function! s:Bookmark.BookmarkNames()
 endfunction
 
 " FUNCTION: Bookmark.CacheBookmarks(silent) {{{1
-" Class method to read all bookmarks from the bookmarks file intialize
+" Class method to read all bookmarks from the bookmarks file initialize
 " bookmark objects for each one.
 "
 " Args:
