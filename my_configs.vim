@@ -4,7 +4,10 @@
 set nu
 
 " the color I used to
-colorscheme desert
+"colorscheme desert
+
+" change current directory when switching files
+set autochdir
 
 let tmpcolumn=$COLUMNS
 execute "set columns=".tmpcolumn
@@ -15,7 +18,6 @@ execute "set columns=".tmpcolumn
 " ctags
 set tags=tags;
 set tags+=~/.vim/systags
-set autochdir
 
 " cscope
 if has("cscope")
