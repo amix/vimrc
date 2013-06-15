@@ -4,20 +4,17 @@
 set nu
 
 " the color I used to
-"colorscheme desert
+colorscheme desert
 
 " change current directory when switching files
 set autochdir
-
-let tmpcolumn=$COLUMNS
-execute "set columns=".tmpcolumn
 
 """"""""""""""""""""""""
 " [my plugin setup]
 "
 " ctags
 set tags=tags;
-set tags+=~/.vim/systags
+set tags+=~/.systags
 
 " cscope
 if has("cscope")
@@ -54,3 +51,7 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
 let g:miniBufExplMapCTabSwitchBufs = 1
 let g:miniBufExplMapWindowNavVim = 1
 let g:miniBufExplMapWindowNavArrows = 1
+
+let tmpcolumn=$COLUMNS
+execute "set columns=".tmpcolumn
+
