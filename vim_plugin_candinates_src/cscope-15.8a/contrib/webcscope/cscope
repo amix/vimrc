@@ -1,0 +1,450 @@
+#!/usr/bin/perl
+
+# $Id: cscope,v 1.2 2007/01/07 12:34:01 broeker Exp $
+#
+# WebCscope: A web interface to the cscope application
+# Copyright (C) 2001, Ragho Mahalingam <ragho@mahalingam.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# Change History:
+# 
+# $Log: cscope,v $
+# Revision 1.2  2007/01/07 12:34:01  broeker
+# Direct attention to security issues with webcscope.
+#
+# Revision 1.1  2001/06/29 14:20:16  petr
+# Added webcscope to contribs.
+#
+# Revision 1.3.4.1  2001/02/05 15:14:34  rmahalin
+# initial release with some bug fixes
+#
+# Revision 1.3.3.1  2001/01/22 22:21:23  rmahalin
+# added multi-database support
+# fixed cookie support for trivial functions; removed global trivials
+# added syntax highlighting for files displayed on browser
+#
+# Revision 1.3.1.1  2001/01/11 22:17:30  rmahalin
+# added direct download with mime-type 'text/c-source' and made cosmetic changes
+#
+# Revision 1.3  2001/01/11 21:36:39  rmahalin
+# *** empty log message ***
+#
+# Revision 1.2  2001/01/11 21:34:13  rmahalin
+# incorporated draft feedback changes
+#
+# Revision 1.1  2001/01/11 21:19:32  rmahalin
+# Initial revision
+#
+
+require "cgi-lib.pl";
+
+# current code version being used
+$version = "iSOS 2.5/int16";
+# full path to the cscope binary
+$cscopecmd = "/usr/global/bin/cscope";
+# cscope working directory, where all the in/out and db files are stored
+$cscopedir = "/usr/local/cscope";
+# trivial functions not to display, one per line in the trivs file
+$trivs = "/usr/local/htdocs/cscope/trivials";
+# temporary storage directory
+$tmpdir = "/tmp";
+$tmpinfile = $tmpdir . "/cscopein.$$";
+$tmpoutfile = $tmpdir . "/cscopeout.$$";
+$showfile = $tmpdir . "/showfile.$$";
+# C syntax highlighting application or uncomment the line beneath to just cat
+#$hiliter = "/bin/cat";
+$hiliter = "/usr/local/cgi-bin/cscope/hilite";
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday) = gmtime(time+1000000);
+$cookie_exp = sprintf("%s %02d-%s-%s %02d:%02d:%02d GMT", $wday, $mday, $mon, $year, $hour, $min, $sec);
+
+# standard images, from the apache distribution
+$img{openfile} = "/icons/folder.gif";
+$img{downloadfile} = "/icons/folder.open.gif";
+$img{csymbol} = "/icons/c.gif";
+$img{upfunc} = "/icons/up.gif";
+$img{downfunc} = "/icons/down.gif";
+$img{globalfunc} = "/icons/world2.gif";
+$img{trashfunc} = "/icons/bomb.gif";
+$img{untrashfunc} = "/icons/back.gif";
+$img{back} = "/icons/left.gif";
+
+# feedback details
+$comment{name} = "Ragho Mahalingam";
+$comment{email} = "ragho\@mahalingam.com";
+
+# operations allowed
+@oper = ( "Find this C symbol",
+"Find this global symbol",
+"Find functions called by",
+"Find functions calling",
+"Find this text string",
+"---------------------",
+"Find this egrep pattern",
+"Find this file",
+"Find files #including this file" );
+
+# -- removed global trivial function list in favor of customized trivials
+#open(TRIVIAL_FUNC, $trivs);
+#@trivial = <TRIVIAL_FUNC>;
+#close(TRIVIAL_FUNC);
+@trivial = ();
+
+MAIN:
+
+{
+   $starttime = time;
+
+	if (&ReadParse(*input)) {
+		&ProcessCookie;
+		&ProcessForm;
+	} else {
+		&PrintForm;
+	}
+}
+
+sub ProcessCookie {
+
+	if ( defined $ENV{HTTP_COOKIE} ) {
+		($var, $val) = split('=',$ENV{HTTP_COOKIE});
+		$Cookie{$var} = $val;
+      if ( defined $Cookie{'cs-trivf'} ) {
+         # do nothing, else initialize it to null
+      } else {
+         $Cookie{'cs-trivf'} = "defined";
+      }
+      @loc_trivial = split(',', $Cookie{'cs-trivf'});
+      @trivial = ( @loc_trivial );
+
+	}
+}
+
+sub ProcessTrashForm {
+
+		if ( defined $input{'trash'} ) {
+				@trivial = (@trivial, $input{'func'});
+      } else {
+				@tmptriv = ();
+				for ($i=0; $i <= $#trivial; $i++) {
+          		$fhash = unpack('H*', $input{'func'});
+          		$thash = unpack('H*', $trivial[$i]);
+          		if ( $fhash != $thash ) { 
+						@tmptriv = ( @tmptriv, $trivial[$i] );
+					}
+				}
+				@trivial = @tmptriv;
+		}
+
+		$Cookie{'cs-trivf'} = join(',',@trivial);
+
+		print "Content-type: text/html\n";
+		print "Set-Cookie: cs-trivf=$Cookie{'cs-trivf'}; path=$ENV{SCRIPT_NAME}; expires $cookie_exp\n\n";
+		print &HtmlTop("Your WebCScope Trivial Functions");
+		print "<ul>";
+		for ($i=0; $i <= $#trivial; $i++) {
+			print "<li><a href=\"$ENV{SCRIPT_NAME}?untrash=&func=$trivial[$i]\"><img src=$img{untrashfunc} border=0></a>&nbsp; $trivial[$i]";
+		}
+		print "</ul><hr>\n";
+		print "Click <a href=\"#\" onClick=\"history.back();\"><img src=$img{back} border=0></a> to go back.\n";
+		print &HtmlBot;
+
+}
+
+sub ProcessForm {
+   
+   chdir $cscopedir;
+   opendir(DIRLIST,$cscopedir);
+   @dirlist = readdir(DIRLIST);
+   closedir(DIRLIST);
+
+	if ( $input{'db'} eq "all" ) {
+		@csdirs = ();
+  	 	for ($i=0; $i <= $#dirlist; $i++ ) {
+        if ( ($dirlist[$i] ne ".") && ($dirlist[$i] ne "..") && ( -d $dirlist[$i] ) ) {
+	     @csdirs = ( @csdirs, $dirlist[$i] );
+        }
+      }
+	} else {
+		@csdirs = ( $input{'db'} );
+	}
+
+   $op = $input{'op'};
+   $arg = $input{'arg'};
+   $shtriv = $input{'triv'};
+	$db = $input{'db'};
+
+   if ( defined $input{'fshow'} ) { &ShowFileForm; exit; }
+   if ( defined $input{'load'} ) { &DownloadFileForm; exit; }
+   if ( (defined $input{'trash'}) || (defined $input{'untrash'}) ) { 
+			&ProcessTrashForm; exit; }
+
+	print &PrintHeader;
+	print &HtmlTop ("WebCscope");
+   print <<ENDOFHDR;
+<h3>Instructions</h3><p>
+<ul>
+<li><img src=$img{csymbol}> will find a symbol with this name<br>
+<li><img src=$img{upfunc}> will find functions <i>calling</i> this function<br>
+<li><img src=$img{downfunc}> will find functions <i>called</i> by this 
+function<br>
+<li><img src=$img{globalfunc}> will locate a global definition of this name<br>
+<li><img src=$img{openfile}> will display this file and highlight 
+the fragment line<br>
+<li><img src=$img{downloadfile}> will download this file with mimetype "text/c-source"<br>
+<li><img src=$img{trashfunc}> will add this symbol/function to your trivial list<br>
+</ul>
+<p><hr>
+ENDOFHDR
+
+ foreach $index ( 0 .. $#csdirs ) {
+
+	unlink $tmpinfile, $tmpoutfile;
+	open(CSCOPEIN, ">$tmpinfile");
+	print CSCOPEIN "$op$arg\n";
+	print CSCOPEIN "exit\n";
+	close(CSCOPEIN);
+
+	$dbdir = $cscopedir . "/" . $csdirs[$index];
+	chdir($dbdir);
+
+	$syscmd = "cd $dbdir; $cscopecmd -d -l < $tmpinfile > $tmpoutfile;";
+	system($syscmd);
+
+   $count = 1;
+	open(CSCOPEIN, "$tmpoutfile");
+
+	$line = <CSCOPEIN>;
+	@temp =  split(' ',$line);
+	$numresult = $temp[2];
+
+	print <<ENDOFHDRs;
+<h2>Search Results from <b>$csdirs[$index]</b></h2>
+<font size=+1>$oper[$op]: <b>$arg</b></font><br>
+Matches: $numresult<p>
+<table border=1 cellpadding=2 cellspacing=2>
+<tr><td><b>Num</b></td><td><b>File</b></td><td><b>Function</b></td>
+<td><b>Line</b></td><td><b>Fragment</b></td></tr>
+ENDOFHDRs
+
+	$trivs_rm = 0;
+
+   for ($i=0; $i < $numresult; $i++ ) {
+       $line = <CSCOPEIN>;
+       @fields = split(' ',$line);
+       $file = shift @fields;
+       $fshowfile = $file;
+       $func = shift @fields;
+       $lnum = shift @fields;
+       @filef = split('/',$file);
+       $file = $filef[$#filef];
+       $frag = join(' ',@fields);
+
+	 if ( ! $shtriv ) {
+		for ( $j=0; $j <= $#trivial; $j++ )
+      {
+          $fhash = unpack('H*', $func);
+          $thash = unpack('H*', $trivial[$j]);
+          if ( $fhash == $thash ) { $trivs_rm++; goto done; }
+      }
+    }
+
+    if ( $func ne "<global>" && $func ne "<unknown>" ) {
+	       print <<ENDOFBODY1;
+<tr><td>$count</td>
+<td><a href="$ENV{SCRIPT_NAME}?fshow=1&fshowfile=$fshowfile&line=$lnum&db=$db">
+<img src=$img{openfile} border=0></a> $file
+ <a href="$ENV{SCRIPT_NAME}?load=1&file=$fshowfile&db=$db">
+<img src=$img{downloadfile} border=0></a>
+</td>
+<td><a href="$ENV{SCRIPT_NAME}?op=0&triv=$shtriv&arg=$func&db=$db">
+<img src=$img{csymbol} border=0></a>
+<a href="$ENV{SCRIPT_NAME}?op=3&triv=$shtriv&arg=$func&db=$db">
+<img src=$img{upfunc} border=0></a>
+$func
+<a href="$ENV{SCRIPT_NAME}?op=2&triv=$shtriv&arg=$func&db=$db">
+<img src=$img{downfunc} border=0></a>
+<a href="$ENV{SCRIPT_NAME}?op=1&triv=$shtriv&arg=$func&db=$db">
+<img src=$img{globalfunc} border=0></a>
+<a href="$ENV{SCRIPT_NAME}?trash=&func=$func&db=$db">
+<img src=$img{trashfunc} border=0></a>
+</td>
+<td>$lnum</td>
+<td>$frag</td></tr>
+ENDOFBODY1
+
+} else {
+			 $func =~ tr/<>/[]/;
+	       print <<ENDOFBODY2;
+<tr><td>$count</td>
+<td><a href="$ENV{SCRIPT_NAME}?fshow=1&fshowfile=$fshowfile&line=$lnum&db=$db">
+<img src=$img{openfile} border=0></a> $file
+ <a href="$ENV{SCRIPT_NAME}?load=1&file=$fshowfile&db=$db">
+<img src=$img{downloadfile} border=0></a>
+</td>
+<td>$func</td>
+<td>$lnum</td>
+<td><$frag</td></tr>
+ENDOFBODY2
+
+}
+
+       $count++;
+done:
+   
+   }
+
+	close(CSCOPEIN);
+   print "</table>\n";
+   print "<br>Eliminated $trivs_rm line item(s) as trivial functions<p><hr>\n";
+   unlink $tmpinfile, $tmpoutfile;
+
+}
+
+   print &OperationTime;
+   print &Feedback;
+   print &HtmlBot;
+
+}
+
+sub DownloadFileForm {
+    $file = $input{'file'};
+    print "Content-type: text/c-source\n\n";
+    open(SHOWFILE, $file);
+    while (<SHOWFILE>) { print; }
+    close(SHOWFILE);
+}
+
+sub ShowFileForm {
+
+    $file = $input{'fshowfile'};
+    $lnum = $input{'line'};
+   
+	print &PrintHeader;
+	print &HtmlTop ("WebCscope");
+   print "<b>Note</b>: Click <a href=#ref><img src=$img{downfunc} border=0></a> to go to the reference line<p><hr>\n";
+   print "<hr>";
+
+	unlink $showfile;
+   system("$hiliter $file > $showfile");
+	open(SHOWFILE, $showfile);
+
+   $curline = 1;  
+   while ( <SHOWFILE> ) {
+       $line = $_;
+       if ( $curline == $lnum ) {
+          print "<a name=ref><blink>$line</blink>";
+       } else {
+          print $line;
+       }
+       $curline++;
+   }
+
+   close (SHOWFILE);
+
+   
+
+   print &OperationTime;
+   print &Feedback;
+   print &HtmlBot;
+}
+
+sub PrintForm {
+
+   chdir $cscopedir;
+   opendir(DIRLIST,$cscopedir);
+   @dirlist = readdir(DIRLIST);
+   closedir(DIRLIST);
+
+	@csdirs = ();
+   for ($i=0; $i <= $#dirlist; $i++ ) {
+       if ( ($dirlist[$i] ne ".") && ($dirlist[$i] ne "..") && ( -d $dirlist[$i] ) ) {
+	   @csdirs = ( @csdirs, $dirlist[$i] );
+       }
+   }
+
+	print &PrintHeader;
+	print &HtmlTop ("Web-CScope");
+
+	print <<ENDOFTEXTA;
+<p style="color:red">Be aware that this webfrontend is insecure and allows viewing ALL apache readable files, including your configuration!</p>   
+Select an operation below and enter a symbol, function or text to search in
+the database.  The active version is $version.  Input is case-sensitive,
+so if your search returns no results, check the case and the symbol name.<hr>
+<form method="get" action="$ENV{SCRIPT_NAME}">
+<table border=0 cellpadding=2 cellspacing=2>
+<tr>
+<td>Operation:</td>
+<td>
+<select name="op">
+ENDOFTEXTA
+
+  	foreach $opi ( 0 .. $#oper ) {
+  	   print "<option value=$opi>$oper[$opi]";
+  	}
+
+	print <<ENDOFTEXTB;
+</select>
+</td>
+</tr>
+<tr>
+<td>CScope Database:</td>
+<td>
+<select name="db">
+	<option selected value="all">All Databases
+ENDOFTEXTB
+
+	for ($i=0; $i <= $#csdirs; $i++) {
+		print "   <option value=\"$csdirs[$i]\">$csdirs[$i]\n";
+	}
+
+	print <<ENDOFTEXT2;
+</select>
+<tr>
+<td>Symbol, function or text:</td>
+<td><input name="arg" size=30></td>
+</tr>
+<tr>
+<td></td>
+<td halign=center>Show trivial functions: 
+<input type=radio name="triv" value=1>Yes
+<input type=radio name="triv" value=0 checked>No
+<br><br>
+<input type="submit" value="Scope It!"></td>
+</tr>
+</table>
+<hr>
+</form>
+ENDOFTEXT2
+
+   print &Feedback;  
+	print &HtmlBot;
+}
+
+sub Feedback {
+
+  $feedback  = "<font size=-1>";
+  $feedback .= '$Id: cscope,v 1.2 2007/01/07 12:34:01 broeker Exp $<br>';
+  $feedback .= "$comment{name}<i>&lt;";
+  $feedback .= "<a href=\"mailto:$comment{email}\">";
+  $feedback .= "$comment{email}</a>&gt;</i></font>";
+  return $feedback;
+}
+
+sub OperationTime {
+
+   $deltime = time - $starttime;
+   return "Operation took $deltime second(s)<br>";
+
+}

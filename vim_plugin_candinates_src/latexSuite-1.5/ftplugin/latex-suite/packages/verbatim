@@ -1,0 +1,13 @@
+let g:TeX_package_option_verbatim = ''
+
+let g:TeX_package_verbatim = 
+\ 'env:comment,'
+\.'env:verbatim,'
+\.'env:verbatim*,'
+\.'bra:verbatiminput,'
+\.'bra:verbatiminput'
+
+syn region texZone   start="\\begin{comment}"  end="\\end{comment}\|%stopzone\>" fold
+syn region texZone   start="\\begin{verbatim}"    end="\\end{verbatim}\|%stopzone\>" fold
+
+" vim:ft=vim:ff=unix:

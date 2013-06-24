@@ -1,0 +1,13 @@
+let g:TeX_package_option_harpoon = ''
+
+let g:TeX_package_harpoon =
+\ 'bra:overleftharp,'
+\.'bra:overrightharp,'
+\.'bra:overleftharpdown,'
+\.'bra:overrightharpdown,'
+\.'bra:underleftharp,'
+\.'bra:underrightharp,'
+\.'bra:underleftharpdown,'
+\.'bra:underrightharpdown'
+
+" vim:ft=vim:ff=unix:

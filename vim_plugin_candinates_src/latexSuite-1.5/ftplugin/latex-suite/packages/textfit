@@ -1,0 +1,7 @@
+let g:TeX_package_option_textfit = ''
+
+let g:TeX_package_textfit = 
+\ 'brd:scaletowidth,'
+\.'brd:scaletoheight'
+
+" vim:ft=vim:ff=unix:

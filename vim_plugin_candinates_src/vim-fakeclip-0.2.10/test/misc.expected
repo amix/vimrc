@@ -1,0 +1,40 @@
+==== fakeclip_clipboard_yank 
+
+==== fakeclip_content 
+
+==== fakeclip_put 
+
+==== fakeclip_screen_yank 
+
+==== fakeclip_yank 
+
+==== fakeclip_yank_Y 
+
+==== s_count 
+
+==== s_read_clipboard_unknown 
+
+==== s_read_screen if unavailable
+
+==== s_restore_register 
+
+==== s_save_register 
+
+==== s_select_last_motion with block
+
+==== s_select_last_motion with char
+
+==== s_select_last_motion with line
+
+==== s_select_last_motion with visual
+
+==== s_write_clipboard_unknown 
+
+==== s_write_screen if unavailable
+
+
+
+**** Result ****
+
+
+0 examples, 0 failures

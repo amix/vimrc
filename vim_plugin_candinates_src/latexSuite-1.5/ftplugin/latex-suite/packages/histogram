@@ -1,0 +1,8 @@
+let g:TeX_package_option_histogram = ''
+
+let g:TeX_package_histogram = 
+\ 'histogram,'
+\.'noverticallines,'
+\.'verticallines'
+
+" vim:ft=vim:ff=unix:

@@ -1,0 +1,537 @@
+*CCTree.txt*	Plugin for C Call-Tree Explorer *CCTree*
+
+Author: Hari Rangarajan (First.Last AT gmail DOT com)
+Last Change: 20 May 2011
+
+CCTree version 1.51
+
+For Vim version 7.0 and above
+
+==============================================================================
+
+1. Overview                                     |CCTree-overview|
+2. Downloads                                    |CCTree-download|
+3. Installation                                 |CCTree-installation|
+4. Configuration				|CCTree-configuration|
+5. Features                                     |CCTree-features|
+6. Limitations                                  |CCTree-limitations|
+7. FAQ & TIPS                                   |CCTree-faq|
+8. History                                      |CCTree-history|
+9. Thanks                                       |CCTree-thanks|
+ 
+==============================================================================
+1. Overview~
+                                                *CCTree-overview*
+
+Plugin generates dependency-trees for symbols using a cscope database in Vim.
+Basic cross-referencing includes functions and macros. Enhanced symbol
+processing covers macros, typedefs, enums, and global variables.
+
+Requires Cscope and works best with C code.
+
+==============================================================================
+2. Downloads~
+                                                *CCTree-download*
+
+You can download the latest release of the script from this url :
+    http://www.vim.org/scripts/script.php?script_id=2368
+
+
+Cscope packages can be found here:
+    http://cscope.sourceforge.net/
+    http://code.google.com/p/cscope-win32/
+    
+
+==============================================================================
+3. Installation~
+                                                *CCTree-installation*
+
+Copy this file to ~/.vim/plugins/ or to /vimfiles/plugins/  (on Win32
+platforms) 
+
+It should also be possible to load it as a filetype plugin ~/.vim/ftplugin/c/
+Need to set :filetype plugin on 
+
+
+==============================================================================
+CONFIGURATION					*CCTree-configuration*
+4. Options~
+
+You can customize behavior by changing the following variable settings
+                    
+4.1.1 Cscope Symbol Database~
+                                                *CCTreeCscopeDb*
+
+Cscope database file, g:CCTreeCscopeDb = "cscope.out"
+
+4.1.2 Call-tree Depth~
+                                                *CCTreeRecursiveDepth* 
+Maximum call levels,   g:CCTreeRecursiveDepth = 3
+
+4.1.3 Call-tree Minimum Visible Depth~
+                                                *CCTreeMinVisibleDepth*
+Maximum visible(unfolded) level, g:CCTreeMinVisibleDepth = 3
+
+4.1.4 Call-tree window display~
+
+4.4.1 Orientation~
+                                                *CCTreeOrientation*
+Orientation of window,  g:CCTreeOrientation = "leftabove"
+ (standard vim options for split: [right|left][above|below])
+
+4.5 Direction~
+                                                *CCTreeWindowVertical* 
+Use Vertical window, g:CCTreeWindowVertical = 1
+
+4.5.1 Dimensions~
+
+These settings determine the layout of the CCTree preview window.
+
+4.5.2 Horizontal Window Settings~
+                                                *CCTreeWindowHeight* 
+ Horizontal window, g:CCTreeWindowHeight, default is -1.
+
+4.5.2 Vertical Window Settings~
+                                                *CCTreeWindowMinWidth* 
+                                                *CCTreeWindowWidth* 
+ Minimum width for window, g:CCTreeWindowMinWidth = 40.
+ g:CCTreeWindowWidth = -1, auto-select best width to fit.
+
+
+4.6 Call-tree display format~
+                                                *CCTreeDisplayMode*
+Display format, g:CCTreeDisplayMode, default: 1
+
+Values: 1 -- Ultra-compact (takes minimum screen width)
+        2 -- Compact       (Takes little more space)
+        3 -- Wide          (Takes copious amounts of space)
+
+For vertical splits, 1 and 2 are good, while 3 is good for horizontal
+displays.
+
+4.7. Dynamic Call-tree highlighting~
+                                                *CCTreeHilightCallTree*
+
+Enable/disable dynamic call-tree highlighting, default: 1
+
+
+4.7.1 Syntax items~
+                                               *CCTreeSymbol* *CCTreeHiSymbol*
+CCTreeSymbol is the symbol name.
+CCTreeHiSymbol is the highlighted call tree functions.
+
+                                               *CCTreeMarkers* *CCTreeHiMarkers*
+CCTreeMarkers include  "|","+--->".
+CCTreeHiMarkers is the same as CCTreeMarkers except these denote the 
+highlighted call-tree.
+
+    
+   
+==============================================================================
+COMMAND LIST 						*CCTree-commands-list*
+
+Database Management~
+      CCTreeLoadDB                <dbname>
+      CCTreeAppendDB              <dbname>
+      CCTreeUnLoadDB             
+      CCTreeShowLoadedDBs
+				Refer to |CCTree-usage|
+
+Native Xref Database~
+      CCTreeLoadXRefDB		 <dbname>
+      CCTreeSaveXRefDB		 <dbname>
+				
+				Refer to |CCTree-fast-loading|
+	
+Symbol tracing~
+      CCTreeTraceForward          <symbolname>
+      CCTreeTraceReverse          <symbolname>     
+      CCTreeRecurseDepthPlus     
+      CCTreeRecurseDepthMinus    
+				Refer to |CCTree-explore-source|
+Trace Management~
+      CCTreeWindowSaveCopy
+      CCTreeWindowHiCallTree   
+				Refer to |CCTree-preview-window|
+
+Dynamic configuration~
+      CCTreeOptsEnable <option>    (<tab> for auto-complete)
+      CCTreeOptsDisable <option>   (<tab> for auto-complete)
+      CCTreeOptsToggle <option>    (<tab> for auto-complete)
+      Options~
+            DynamicTreeHiLights: Control dynamic tree highlighting
+	    UseUnicodeSymbols: 	 Use of UTF-8 special characters for tree
+            UseConceal: Use (+Conceal) feature instead of 'ignore'
+                    syntax highlighting. Allows CCTree window
+                    to be exported in HTML without syntax markup
+                    characters. (Vim 7.3+ only)
+                                            *CCTree-Enhanced-Symbol-Processing*
+            EnhancedSymbolProcessing: Cross-reference enums, macros,
+                    global variables, typedefs (WARNING: Database
+                    processing speeds will be slow).
+ 
+SHORTCUT KEYS						*CCTree-Key-Map*	
+Default Mappings~
+							*CCTree-Default-Key-Map*   
+      Get reverse call tree for symbol  <C-\><
+      Get forward call tree for symbol  <C-\>>
+      Increase depth of tree and update <C-\>=
+      Decrease depth of tree and update <C-\>-
+
+      Open symbol in other window       <CR>
+      Preview symbol in other window    <Ctrl-P>
+
+      Save copy of preview window       <C-\>y
+      Highlight current call-tree flow  <C-l>
+      Compress(Fold) call tree view     zs
+      (This is useful for viewing long
+       call trees which span across
+       multiple pages)
+
+Custom user-mappings	
+							*CCTree-Custom-Key-Map*
+    Users can custom-map the short-cut keys by 
+    overriding the following variables in their
+    Vim start-up configuration            
+>
+     let g:CCTreeKeyTraceForwardTree = '<C-\>>' 
+     let g:CCTreeKeyTraceReverseTree = '<C-\><' 
+     let g:CCTreeKeyHilightTree = '<C-l>'        " Static highlighting
+     let g:CCTreeKeySaveWindow = '<C-\>y' 
+     let g:CCTreeKeyToggleWindow = '<C-\>w' 
+     let g:CCTreeKeyCompressTree = 'zs'     " Compress call-tree 
+     let g:CCTreeKeyDepthPlus = '<C-\>=' 
+     let g:CCTreeKeyDepthMinus = '<C-\>-'
+<  
+
+==============================================================================
+FEATURES 						*CCTree-features*
+
+5.1. Symbol database~
+							*CCTree-usage*
+Build cscope database, for example:
+> cscope -b -i cscope.files
+ [Tip: add -c option to build uncompressed databases for faster
+    load speeds]
+
+Load database~
+>
+	:CCTreeLoadDB
+<
+	(Please note that it might take a while depending on the 
+	 database size)
+
+A database name, i.e., my_cscope.out, can be specified with the command. If
+not provided, a prompt will ask for the filename; default is cscope.out.
+	
+Unload database ~
+ >
+ 	:CCTreeUnLoadDB
+<
+Append database~
+ >
+	:CCTreeAppendDB
+<
+    Allows multiple cscope files to be loaded and cross-referenced
+    Illustration: >
+    :CCTreeAppendDB ./cscope.out
+    :CCTreeAppendDB ./dir1/cscope.out
+    :CCTreeAppendDB ./dir2/cscope.out
+<
+    A database name, i.e., my_cscope.out, can be specified with 
+    the command. If not provided, a prompt will ask for the 
+    filename; default is cscope.out.
+
+FASTER DATABASE LOADING					*CCTree-fast-loading*
+
+Save native Xref Db~
+>
+	:CCTreeSaveXRefDb  cctree.out
+<
+This command will save the cross-referenced symbols currently loaded into 
+memory into a serialized format  for faster loading.
+
+Load native XRef Db~
+>
+	:CCTreeLoadXRefDb  cctree.out
+<
+This command will load cross-referenced symbols from the previously saved
+native format database.
+
+ccglue~
+                                                       *CCTree-ccglue*
+
+Check out the ccglue project at http://ccglue.sourceforge.net for an external
+tool that can build cctree-compatible xref databases.
+
+
+5.2. Exploring source-code~
+							*CCTree-explore-source*
+
+Get reverse call tree for symbol  <C-\><
+>
+	:CCTreeTraceReverse <symbolname>     
+<
+
+Get forward call tree for symbol  <C-\>>
+>
+	:CCTreeTraceForward <symbolname>
+<
+Increase depth of tree and update <C-\>=
+>
+	:CCTreeRecurseDepthPlus     
+<
+Decrease depth of tree and update <C-\>-
+>
+	:CCTreeRecurseDepthMinus    
+<
+5.3. Preview Window~
+						 *CCTree-preview-window*
+Open symbol in other window       <CR>
+Preview symbol in other window    <Ctrl-P>
+
+5.4. Syntax Coloring~
+						 *CCTree-Syntax*
+CCTreeHiXXXX allows dynamic highlighting of the call-tree.  To observe the
+effect, move the cursor to the function to highlight the current call-tree.
+This option can be turned off using the setting, *CCTreeHilightCallTree* . 
+
+For faster highlighting, the value of 'updatetime' can be changed.
+
+5.5 Support for large database files~
+				*CCTree-LargeDatabase* *CCTree-LargeFile*
+Vimscript does not have an API for reading files line-by-line. This
+becomes a problem when parsing large databases. CCTree can overcome
+the limitation using an external utility (i.e., GNU coreutils: split)
+or VimScript's perl interpreter interface (:version must indicate +perl)
+
+5.5.1 Using GNU Coreutils (split/cat)~
+				*CCTree-Tools-split* *CCTree-Tools-cat*
+	The following settings are tailored to suit GNU coreutils split; the
+default settings should work with no changes on typical linux/unix distros.
+Monopoly OSes will require installation of unixutils or equivalent.
+
+External command is setup with the following parameters~
+>
+	let g:CCTreeSplitProgCmd = 
+		'PROG_SPLIT SPLIT_OPT SPLIT_SIZE IN_FILE OUT_FILE_PREFIX'
+<
+
+Break-down of individual parameters~
+The split utility is assumed to be on the path; otherwise, specify full path
+	g:CCTreeSplitProg = 'split'
+
+Option for splitting files (-C or -l)~
+>
+	let g:CCTreeSplitProgOption = '-C'
+<
+If split program does not support -C, then this parameter must be set to 
+the number of lines in the split files
+>
+	let g:CCTreeDbFileSplitLines = -1
+<
+Largest filesize Vimscript can handle; file sizes greater than this will
+be temporarily split
+>
+	let g:CCTreeDbFileMaxSize  = 40000000 (40 Mbytes)
+<
+Sample system command~
+Typical:
+>
+	split -C 40000000 inputFile outputFilePrefix
+<
+ When g:CCTreeDbFileSplitLines is set to 10000 (-C options will be ignored)
+>
+	split -l 10000 inputFile outputFilePrefix
+<
+						*CCTree-Tools-Perl*
+						*CCTree-Tools-Perl-LargeFile*
+Enabling perl interface~
+
+	By default, perl usage is disabled. Set
+>
+	let g:CCTreeUsePerl = 1 
+<		 to enable the perl interface.
+
+	Perl interface is typically faster than native Vimscript.
+	This option can be used independent of the file size
+
+	For more info on setting up perl interface
+	:help |perl-using| or :help |perl-dynamic|
+
+5.6.	Miscellaneous				*CCTree-Miscellaneous*
+
+	UTF-8 usage				*CCTree-UTF8-Symbols*
+            UTF-8 symbols should work fine on the majority of
+        X11 systems; however, some terminals might cause problems.
+
+        To use symbols for drawing the tree, this option can be enabled.
+>
+            let g:CCTreeUseUTF8Symbols = 1 
+<
+        The options interface (CCTreeOptsxxx) can be used to 
+        modify options on-the-fly.
+
+==============================================================================
+6. Limitations~
+                                                *CCTree-limitations*
+
+The following are known limitations:
+
+Basic Symbol Processing:
+  (1) The accuracy of the call-tree will only be as good as the cscope database
+generation.  (NOTE: Different flavors of Cscope have some known limitations
+due to the lexical analysis engine. This results in incorrectly identified
+function blocks, etc.)
+
+Enhanced Symbol Processing:
+  (1) Cscope does not mark-up nameless enums correctly; hence,
+CCTree cannot recognize nameless enum symbols.
+
+
+==============================================================================
+7. FAQ~
+                                                *CCTree-faq*
+
++ I see strange characters "!#@" on my screen when dynamic highlighting is
+enabled. Why do I see them?
+  
+Check :hi ignore. You will see something like
+hi ignore ctermfg=white guifg=bg
+    
+  For console, white must be your background color; for GUI, guifg must be set
+to bg.
+
+==============================================================================
+8. History~
+                                                *CCTree-history*
+Version 1.51: May 18, 2011
+      1. Robust error reporting when external (split/cat) utils fail
+
+Version 1.50: May 6, 2011
+      1. Support cross-referencing of global variables, macros,
+         enums, and typedefs.
+
+Version 1.40: April 22, 2011
+      1. Maintain order of functions called during forward tracing
+
+Version 1.39: April 18, 2011
+      1. Use +Conceal feature for highlighting (only Vim 7.3)
+
+Version 1.33: April 5, 2011
+      1. Load and trace CCTree native XRefDb directly from disk
+      2. Fix AppendDB command when 'ignorecase' is set
+
+Version 1.26: March 28, 2011
+      1. Fix macro cross-referencing limitation
+      2. Correct native xref file format
+
+Version 1.21: March 21, 2011
+      1. Support serialization of loaded
+                cscope databases (for faster loading)
+
+Version 1.07: March 09, 2011
+      1. Fix new keymaps incorrectly applied to buffer
+      2. CCTreeOptsToggle command for toggling options
+
+Version 1.04: March 06, 2011
+      1. Customization for key mappings
+      2. Dynamic configuration of UI variables
+      3. Folding long call-trees to show current path dynamically
+
+Version 1.01: March 04, 2011
+      1. Make UTF-8 symbols for tree optional
+
+Version 1.00: March 02, 2011
+      1. Staging release for upcoming features
+         - Complete refactoring of code to take 
+                advantage of VimScript's OO features
+      2. Faster decompression of symbols
+      3. Display related changes
+         - Use of unicode symbols for tree
+      4. Bugfixes related to multi-database loading
+               
+Version 0.90: February 18, 2011
+      1. Support for large databases using external split utility or perl
+         interface
+
+Version 0.85: February 9, 2011
+      1. Significant increase in database loading and decompression speeds
+
+Version 0.80: February 4, 2011
+      1. Reduce memory usage by removing unused xref symbols
+
+Version 0.75: June 23, 2010
+	  1. Support for saving CCTree preview window; multiple 
+    	CCTree windows can now be open
+
+ersion 0.71: May 11, 2010
+	  1. Fix script bug
+
+Version 0.70: May 8, 2010
+	  1. Functionality to load multiple cscope databases
+
+Version 0.65: July 12, 2009
+	  1. Toggle preview window
+
+Version 0.61: December 24, 2008
+      1. Fixed bug when processing include files
+      2. Remove 'set ruler' option
+
+Version 0.60: November 26, 2008
+      1. Added support for source-file dependency tree
+
+Version 0.50: October 17, 2008
+      1. Optimizations for compact memory foot-print and 
+         improved compressed-database load speeds
+
+Version 0.41: October 6, 2008
+       1. Minor fix: Compressed cscope databases will load
+       incorrectly if encoding is not 8-bit
+
+Version 0.4: September 28, 2008
+      1. Rewrite of display-related code
+      2. New syntax hightlighting
+      3. Dynamic highlighting for call-trees
+      4. Support for new window modes (vertical, horizontal)  
+      5. New display format option for compact or wide call-trees
+      6. Preview window fix
+
+Version 0.3: September 21, 2008
+      1. Support compressed cscope databases
+      2. Display window related bugs fixed
+      3. More intuitive display and folding capabilities
+    
+Version 0.2: September 12, 2008
+      (Patches from Yegappan Lakshmanan, thanks!)
+      1. Support for using the plugin in Vi-compatible mode
+      2. Filtering out unwanted lines before processing the db
+      3. Command-line completion for the commands
+      4. Using the cscope db from any directory
+
+Version 0.1: August 31,2008
+      1. Cross-referencing support for only functions and macros
+         (Note: Functions inside macro definitions will be incorrectly
+         attributed to the top level calling function)
+
+
+==============================================================================
+9. Thanks~
+                                                 *CCTree-thanks*
+
+
+   Qaiser Durrani                 (ver 1.51 -- Reporting issues with SunOS)
+   Ben Fritz                      (ver 1.39 -- Suggestion/Testing for 
+                                                        conceal feature)
+   Ben Fritz                      (ver 1.26 -- Bug report)
+   Frank Chang                    (ver 1.0x -- testing/UI enhancement 
+                                                            ideas/bug fixes)
+   Arun Chaganty/Timo Tiefel	  (Ver 0.60 -- bug report)
+   Michael Wookey                 (Ver 0.40 -- Testing/bug report/patches)
+   Yegappan Lakshmanan            (Ver 0.20 -- Patches)
+
+   The Vim Community, ofcourse :)
+
+
+vim:tw=78:fo=tcq2:isk=!-~,^*,^\|,^\":ts=8:ft=help:norl:
+

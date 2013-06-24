@@ -1,0 +1,7 @@
+let g:TeX_package_option_floatflt = 'rflt,lflt,vflt'
+
+let g:TeX_package_floatflt =
+\ 'ens:floatingfigure:[<+loc+>]{<+spec+>},'
+\.'ens:floatingtable:[<+loc+>]{<+spec+>}'
+
+" vim:ft=vim:ff=unix:

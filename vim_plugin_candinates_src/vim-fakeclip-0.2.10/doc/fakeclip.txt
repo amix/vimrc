@@ -1,0 +1,384 @@
+*fakeclip.txt*	pseudo clipboard register for non-GUI version of Vim
+
+Version 0.2.10
+Script ID: 2098
+Copyright (C) 2007-2012 Kana Natsuno <http://whileimautomaton.net/>
+License: So-called MIT/X license  {{{
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}}}
+
+CONTENTS					*fakeclip-contents*
+
+Introduction		|fakeclip-introduction|
+Interface		|fakeclip-interface|
+  Key Mappings		  |fakeclip-key-mappings|
+  Variables		  |fakeclip-variables|
+Bugs			|fakeclip-bugs|
+Changelog		|fakeclip-changelog|
+
+
+
+
+==============================================================================
+INTRODUCTION					*fakeclip-introduction*
+
+*fakeclip* is a Vim plugin to provide a pseudo |clipboard| register for
+several versions of Vim without |+clipboard| support, especially for non-GUI
+version of Vim on the following platforms:
+
+- Cygwin
+- Mac OS X
+- X Window System (by xclip <http://sourceforge.net/projects/xclip/>)
+
+
+fakeclip also provides a pseudo register to access a "paste buffer" if one of
+the following applications is available:
+
+- GNU screen
+- tmux
+
+
+FAQ: If you can't copy/paste multibyte characters with the clipboard
+     on Mac OS X, see |fakeclip-multibyte-on-mac|.
+
+Note for Mac OS users: Though Vim supports clipboard for the console version
+since version 7.3, fakeclip is still useful to access a "paste buffer".
+
+
+Requirements:
+- Vim 7.0 or later
+
+Latest version:
+http://github.com/kana/vim-fakeclip
+
+Document in HTML format:
+http://kana.github.com/config/vim/fakeclip.html
+
+
+
+
+==============================================================================
+INTERFACE					*fakeclip-interface*
+
+------------------------------------------------------------------------------
+KEY MAPPINGS					*fakeclip-key-mappings*
+
+[count]<Plug>(fakeclip-y){motion}		*<Plug>(fakeclip-y)*
+[count]<Plug>(fakeclip-Y)			*<Plug>(fakeclip-Y)*
+{Visual}<Plug>(fakeclip-y)			*v_<Plug>(fakeclip-y)*
+{Visual}<Plug>(fakeclip-Y)			*v_<Plug>(fakeclip-Y)*
+			Like |y| or |Y|, but yank into the clipboard.
+
+[count]<Plug>(fakeclip-d){motion}		*<Plug>(fakeclip-d)*
+[count]<Plug>(fakeclip-dd)			*<Plug>(fakeclip-dd)*
+[count]<Plug>(fakeclip-D)			*<Plug>(fakeclip-D)*
+{Visual}<Plug>(fakeclip-d)			*v_<Plug>(fakeclip-d)*
+{Visual}<Plug>(fakeclip-D)			*v_<Plug>(fakeclip-D)*
+			Like |d|, |dd| or |D|, but cut into the clipboard.
+
+[count]<Plug>(fakeclip-p)			*<Plug>(fakeclip-p)*
+[count]<Plug>(fakeclip-P)			*<Plug>(fakeclip-P)*
+[count]<Plug>(fakeclip-gp)			*<Plug>(fakeclip-gp)*
+[count]<Plug>(fakeclip-gP)			*<Plug>(fakeclip-gP)*
+[count]<Plug>(fakeclip-]p)			*<Plug>(fakeclip-]p)*
+[count]<Plug>(fakeclip-]P)			*<Plug>(fakeclip-]P)*
+[count]<Plug>(fakeclip-[p)			*<Plug>(fakeclip-[p)*
+[count]<Plug>(fakeclip-[P)			*<Plug>(fakeclip-[P)*
+			Like |p|, |P|, |gp|, |gP|, |]p|, |]P|, |[p| or
+			|[P|, but put from the clipboard.
+						*c_<Plug>(fakeclip-insert)*
+<Plug>(fakeclip-insert)				*i_<Plug>(fakeclip-insert)*
+						*c_<Plug>(fakeclip-insert-r)*
+<Plug>(fakeclip-insert-r)			*i_<Plug>(fakeclip-insert-r)*
+						*c_<Plug>(fakeclip-insert-o)*
+<Plug>(fakeclip-insert-o)			*i_<Plug>(fakeclip-insert-o)*
+<Plug>(fakeclip-insert-p)			*i_<Plug>(fakeclip-insert-p)*
+			Like |i_CTRL-R|, |i_CTRL-R_CTRL-R|, |i_CTRL-R_CTRL-O|,
+			|i_CTRL-R_CTRL-P|, |c_CTRL-R|, |c_CTRL-R_CTRL-R| or
+			|c_CTRL-R_CTRL-O|, but insert the content of the
+			clipboard.
+	
+
+[count]<Plug>(fakeclip-screen-y){motion}	*<Plug>(fakeclip-screen-y)*
+[count]<Plug>(fakeclip-screen-Y)		*<Plug>(fakeclip-screen-Y)*
+{Visual}<Plug>(fakeclip-screen-y)		*v_<Plug>(fakeclip-screen-y)*
+{Visual}<Plug>(fakeclip-screen-Y)		*v_<Plug>(fakeclip-screen-Y)*
+			Like |y| or |Y|, but yank into the paste buffer.
+
+[count]<Plug>(fakeclip-screen-d){motion}	*<Plug>(fakeclip-screen-d)*
+[count]<Plug>(fakeclip-screen-dd)		*<Plug>(fakeclip-screen-dd)*
+[count]<Plug>(fakeclip-screen-D)		*<Plug>(fakeclip-screen-D)*
+{Visual}<Plug>(fakeclip-screen-d)		*v_<Plug>(fakeclip-screen-d)*
+{Visual}<Plug>(fakeclip-screen-D)		*v_<Plug>(fakeclip-screen-D)*
+			Like |d|, |dd| or |D|, but cut into the pastebuffer.
+
+[count]<Plug>(fakeclip-screen-p)		*<Plug>(fakeclip-screen-p)*
+[count]<Plug>(fakeclip-screen-P)		*<Plug>(fakeclip-screen-P)*
+[count]<Plug>(fakeclip-screen-gp)		*<Plug>(fakeclip-screen-gp)*
+[count]<Plug>(fakeclip-screen-gP)		*<Plug>(fakeclip-screen-gP)*
+[count]<Plug>(fakeclip-screen-]p)		*<Plug>(fakeclip-screen-]p)*
+[count]<Plug>(fakeclip-screen-]P)		*<Plug>(fakeclip-screen-]P)*
+[count]<Plug>(fakeclip-screen-[p)		*<Plug>(fakeclip-screen-[p)*
+[count]<Plug>(fakeclip-screen-[P)		*<Plug>(fakeclip-screen-[P)*
+			Like |p|, |P|, |gp|, |gP|, |]p|, |]P|, |[p| or |[P|,
+			but put from the paste buffer.
+					*c_<Plug>(fakeclip-screen-insert)*
+<Plug>(fakeclip-screen-insert)		*i_<Plug>(fakeclip-screen-insert)*
+					*c_<Plug>(fakeclip-screen-insert-r)*
+<Plug>(fakeclip-screen-insert-r)	*i_<Plug>(fakeclip-screen-insert-r)*
+					*c_<Plug>(fakeclip-screen-insert-o)*
+<Plug>(fakeclip-screen-insert-o)	*i_<Plug>(fakeclip-screen-insert-o)*
+<Plug>(fakeclip-screen-insert-p)	*i_<Plug>(fakeclip-screen-insert-p)*
+			Like |i_CTRL-R|, |i_CTRL-R_CTRL-R|, |i_CTRL-R_CTRL-O|,
+			|i_CTRL-R_CTRL-P|, |c_CTRL-R|, |c_CTRL-R_CTRL-R| or
+			|c_CTRL-R_CTRL-O|, but insert the content of the
+			paste buffer.
+	
+
+					  *g:fakeclip_no_default_key_mappings*
+						*:FakeclipDefaultKeyMappings*
+Fakeclip will define the following key mappings.  If you don't want to define
+these default key mappings, define |g:fakeclip_no_default_key_mappings| before
+this plugin is loaded (e.g. in your |vimrc|).  You can also use
+|:FakeclipDefaultKeyMappings| to redefine these key mappings.  This command
+doesn't override existing {lhs}s unless [!] is given.
+
+	modes	{lhs}		{rhs}					~
+	-----	-----------	--------------------------------	~
+	nv	"+y		<Plug>(fakeclip-y)
+	nv	"*y		<Plug>(fakeclip-y)
+	n	"+yy		<Plug>(fakeclip-Y)
+	n	"*yy		<Plug>(fakeclip-Y)
+	nv	"+Y		<Plug>(fakeclip-Y)
+	nv	"*Y		<Plug>(fakeclip-Y)
+	nv	"+d		<Plug>(fakeclip-d)
+	nv	"*d		<Plug>(fakeclip-d)
+	n	"+dd		<Plug>(fakeclip-dd)
+	n	"*dd		<Plug>(fakeclip-dd)
+	nv	"+D		<Plug>(fakeclip-D)
+	nv	"*D		<Plug>(fakeclip-D)
+	nv	"+p		<Plug>(fakeclip-p)
+	nv	"*p		<Plug>(fakeclip-p)
+	nv	"+P		<Plug>(fakeclip-P)
+	nv	"*P		<Plug>(fakeclip-P)
+	nv	"+gp		<Plug>(fakeclip-gp)
+	nv	"*gp		<Plug>(fakeclip-gp)
+	nv	"+gP		<Plug>(fakeclip-gP)
+	nv	"*gP		<Plug>(fakeclip-gP)
+	nv	"+]p		<Plug>(fakeclip-]p)
+	nv	"*]p		<Plug>(fakeclip-]p)
+	nv	"+]P		<Plug>(fakeclip-]P)
+	nv	"*]P		<Plug>(fakeclip-]P)
+	nv	"+[p		<Plug>(fakeclip-[p)
+	nv	"*[p		<Plug>(fakeclip-[p)
+	nv	"+[P		<Plug>(fakeclip-[P)
+	nv	"*[P		<Plug>(fakeclip-[P)
+	ic	<C-r>+		<Plug>(fakeclip-insert)
+	ic	<C-r>*		<Plug>(fakeclip-insert)
+	ic	<C-r><C-r>+	<Plug>(fakeclip-insert-r)
+	ic	<C-r><C-r>*	<Plug>(fakeclip-insert-r)
+	ic	<C-r><C-o>+	<Plug>(fakeclip-insert-o)
+	ic	<C-r><C-o>*	<Plug>(fakeclip-insert-o)
+	i	<C-r><C-p>+	<Plug>(fakeclip-insert-p)
+	i	<C-r><C-p>*	<Plug>(fakeclip-insert-p)
+	nv	"&y		<Plug>(fakeclip-screen-y)
+	n	"&yy		<Plug>(fakeclip-screen-Y)
+	nv	"&Y		<Plug>(fakeclip-screen-Y)
+	nv	"&d		<Plug>(fakeclip-screen-d)
+	n	"&dd		<Plug>(fakeclip-screen-dd)
+	nv	"&D		<Plug>(fakeclip-screen-D)
+	nv	"&p		<Plug>(fakeclip-screen-p)
+	nv	"&P		<Plug>(fakeclip-screen-P)
+	nv	"&gp		<Plug>(fakeclip-screen-gp)
+	nv	"&gP		<Plug>(fakeclip-screen-gP)
+	nv	"&]p		<Plug>(fakeclip-screen-]p)
+	nv	"&]P		<Plug>(fakeclip-screen-]P)
+	nv	"&[p		<Plug>(fakeclip-screen-[p)
+	nv	"&[P		<Plug>(fakeclip-screen-[P)
+	ic	<C-r>&		<Plug>(fakeclip-screen-insert)
+	ic	<C-r><C-r>&	<Plug>(fakeclip-screen-insert-r)
+	ic	<C-r><C-o>&	<Plug>(fakeclip-screen-insert-o)
+	i	<C-r><C-p>&	<Plug>(fakeclip-screen-insert-p)
+
+
+------------------------------------------------------------------------------
+VARIABLES					*fakeclip-variables*
+
+g:fakeclip_no_default_key_mappings
+	See |g:fakeclip_no_default_key_mappings|.
+
+g:fakeclip_terminal_multiplexer_type	*g:fakeclip_terminal_multiplexer_type*
+	A string to specify your favorite terminal multiplexer.  One of the
+	following values can be specified:
+
+	"gnuscreen"
+		Use GNU screen.
+	"tmux"
+		Use tmux.
+	"unknown"
+		Use no terminal multiplexer.
+
+	The default value is determined as follows:
+
+	1. "tmux" will be used if Vim is running in a tmux session.
+	2. "gnuscreen" will be used if Vim is running in a GNU screen session.
+	3. User-defined value (via |vimrc| etc) will be used if both tmux and
+	   GNU screen are installed.  "tmux" will be used if user does not
+	   define the value.
+	4. "tmux" will be used if only tmux is installed.
+	5. "gnuscreen" will be used if only GNU screen is installed.
+	6. "unknown" will be used otherwise.
+
+
+
+
+==============================================================================
+BUGS						*fakeclip-bugs*
+
+(a) This plugin just provide pseudo clipboard register for ordinary editing.
+So |getreg()|, |setreg()|, |expr-register| and other interface on clipboard
+register are not supported.
+
+(b) The characteristic (i.e., characterwise, linewise or blockwise) of the
+clipboard content is not remembered.  It will be linewise if each line of the
+clipboard content ends with a newline, otherwise it will be characterwise.
+
+(c) Executing <Plug>(fakeclip-y) in Normal mode, the display of 'showcmd' is
+different from the ordinary one.
+
+(d) <Plug>(fakeclip-y) in Normal mode doesn't accept "y" as a linewise
+{motion} like the built-in |y|.
+						*fakeclip-multibyte-on-mac*
+(e) On Mac OS X, you have to set a proper value to the environment variable
+__CF_USER_TEXT_ENCODING.  It contins :-separated values:
+
+    - The 1st value means a user id.  It must be the same as the result of the
+      following command:
+>
+          printf '0x%X\n' `id -u`
+<
+    - The 2nd value means the character encoding which is used to translate
+      string data between GUI and Terminal.  For example, if you work on
+      Terminal with UTF-8, the 2nd value of __CF_USER_TEXT_ENCODING must be
+      set to "0x08000100".  See the following URI for the magic values to
+      specify character encodings:
+
+http://developer.apple.com/documentation/CoreFoundation/Reference/CFStringRef/
+
+    For example, the valaue of __CF_USER_TEXT_ENCODING on the author's
+    environment is as follows:
+>
+        0x1F5:0x08000100:0
+<
+(f) On Mac OS X, if you use Vim on GNU screen and you can't copy/paste text
+    with the clipboard, try installing GNU screen from MacPorts with "+darwin"
+    variants.
+
+(g) There is a race condition problem to read the paste buffer of GNU screen.
+
+
+
+
+==============================================================================
+CHANGELOG					*fakeclip-changelog*
+
+0.2.10	2012-01-22T01:50:21+09:00		*fakeclip-changelog-0.2.10*
+	- Improve the detection of terminal multiplexers.  In other words,
+	  (a) use a more suitable one according to the current environment;
+	  (b) support using the pastebuffer from Vim not in a tmux session.
+	  See also |g:fakeclip_terminal_multiplexer_type| for the details.
+	  (Thanks m4i for reporting the problem via
+	   https://github.com/kana/vim-fakeclip/pull/5)
+
+0.2.9	2011-10-07T20:50:58+09:00		*fakeclip-changelog-0.2.9*
+	- Add support for |d|, |dd| and |D| operation for the clipboard and
+	  the pastebuffer.  (Thanks for Suan-Aik Yeo)
+
+0.2.8	2010-08-31T20:19:51+09:00		*fakeclip-changelog-0.2.8*
+	- |:FakeclipDefaultKeyMappings|: Fix to regard a given bang.
+
+0.2.7	2010-04-02T21:27:16+09:00		*fakeclip-changelog-0.2.7*
+	- Fix to read/write the paste buffer of GNU screen outside a session.
+	  Old versions allow to read/write the paste buffer only if Vim is
+	  running in a session of GNU screen.
+
+0.2.6	2009-11-16T20:49:35+09:00		*fakeclip-changelog-0.2.6*
+	- Fix improper error message on putting to paste buffer.  (Thanks
+	  to @thinca for reporting)
+	- Fix a bug that there is a possibility to fail to read the paste
+	  buffer of GNU screen if it is emptied by "register . ''".  (Thanks
+	  to @thinca for reporting)
+	- Revise for race condition problem to read the paste buffer of GNU
+	  screen, though it's not perfect yet.
+
+0.2.5	2009-11-11T21:51:50+09:00		*fakeclip-changelog-0.2.5*
+	- Revise the way to detect whether GNU screen is available or not.
+	- Fix a bug to yank to string with newline character into paste buffer
+	  register.
+	- Support X Window System by xclip.  (Thanks for @thinca)
+	- Support tmux.  (Thanks for @thinca)
+
+0.2.4	2009-06-13T18:22:01+09:00		*fakeclip-changelog-0.2.4*
+	- Revise on platforms where |+clipboard| is available:
+	  - Define all stuffs such as |fakeclip-key-mappings| on all
+	    platforms.  Without this, the pseudo register for GNU screen's
+	    paste buffer is not available if |+clipboard| is available.
+	  - |:FakeclipDefaultKeyMappings|: Don't define the default key
+	    mappings for clipboard to avoid confusion with the built-in key
+	    mappings.  For example, "*y and "+y are not mapped to
+	    |<Plug>(fakeclip-y)|.
+
+0.2.3	2009-05-06T03:03:25+09:00		*fakeclip-changelog-0.2.3*
+	- Revise the documents on Mac OS X specific problems.  See
+	  |fakeclip-multibyte-on-mac| if you can't copy/paste with the
+	  clipboard on Mac OS X.
+	- Fix a bug that fakeclip uses wrong function to escape file-like
+	  arguments to shells.  Thanks @thinca for reporting this.
+
+0.2.2	2009-03-25T21:17:25+09:00		*fakeclip-changelog-0.2.2*
+	- Add equivalents for the following commands:
+	  |]p|, |]P|, |[p|, |[P|, |i_CTRL-R_CTRL-R|, |i_CTRL-R_CTRL-O|,
+	  |i_CTRL-R_CTRL-P|, |c_CTRL-R_CTRL-R|, |c_CTRL-R_CTRL-O|.
+	- Fix the way to detect the current platform.  For Mac OS X, it
+	  depended on some assumptions.  Thanks for someone who wrote about
+	  this bug at the Vim Tips Wiki.
+
+0.2.1	2008-10-24T16:18:32+09:00		*fakeclip-changelog-0.2.1*
+	- Refactor.
+	- Support the paste buffer of GNU screen as a pseudo register.
+
+0.2.0	2008-07-14T14:09:49+09:00		*fakeclip-changelog-0.2.0*
+	- Rename as "fakeclip" (the old name is "cygclip").
+	- Support Mac OS X.
+	- Autoloaded.
+
+0.1	2007-12-27T22:47:34+09:00		*fakeclip-changelog-0.1*
+	- Modify to automatically define the default key mappings as this
+	  plugin is loaded.  See |g:fakeclip_no_default_key_mappings| for how
+	  to suppress this behavior.
+
+0.0	2007-08-13				*fakeclip-changelog-0.0*
+	- First release.
+
+
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:fen:fdl=0:fdm=marker:

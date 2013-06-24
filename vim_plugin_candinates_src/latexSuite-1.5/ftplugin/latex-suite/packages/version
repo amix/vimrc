@@ -1,0 +1,7 @@
+let g:TeX_package_option_version = ''
+
+let g:TeX_package_version =
+\ 'bra:includeversion,'
+\.'bra:excludeversion'
+
+" vim:ft=vim:ff=unix:

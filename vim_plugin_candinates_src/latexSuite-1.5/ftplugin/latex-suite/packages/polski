@@ -1,0 +1,160 @@
+" Author: Mikolaj Machowski <mikmach@wp.pl>
+" (c) Copyright by Mikolaj Machowski 2002-2003
+" License: Vim Charityware
+" Version: 1.6 
+"
+" Plik jest w kodowaniu iso-8859-2. Je¶li chcesz go uzywac w MS-Windows musisz
+" go przekonwertowac na cp-1250. 
+"
+" Plik ten jest czê¶ci± vim-latexSuite, ale:
+" Nie u¿ywaj±cy vim-latexSuite (http://vim-latex.sourceforge.net) mog± wyci±æ
+" oznaczon± czê¶æ. Reszta mo¿e byæ kopiowana jako osobny plik pod warunkiem
+" niezmieniania tej notki i informacji o prawach autorskich.
+"
+" This file is in iso-8859-2 encoding. If you want to use it in MS-Windows you
+" have to convert it to cp-1250.
+"
+" This file is part of vim-latexSuite but:
+" Those who do not use vim-latexSuite (http://vim-latex.sourceforge.net) can
+" cut off marked part. Rest of the file can be copied as separate file under
+" condition of leaving this notice and information about copyrights unchanged.
+
+" --------8<-------------
+" Czesc odpowiedzialna za menu
+let g:TeX_package_option_polski =
+\'OT1,OT4,T1,QX,plmath,nomathsymbols,MeX,prefixingverb,noprefixingverb'
+let g:TeX_package_polski = 
+\'sbr:Dywiz&Ska,'.
+\'nor:dywiz,'.
+\'nor:ppauza,'.
+\'nor:pauza,'.
+\'nor:prefixing,'.
+\'nor:nonprefixing,'.
+\'nor:PLdateending,'.
+\'sbr:Matematyka,'.
+\'nor:arccos,'.
+\'nor:arcctan,'.
+\'nor:arcsin,'.
+\'nor:arctan,'.
+\'nor:cot,'.
+\'nor:ctanh,'.
+\'nor:tan,'.
+\'nor:tanh,'.
+\'bra:arc,'.
+\'nor:ctg,'.
+\'nor:ctgh,'.
+\'nor:tg,'.
+\'nor:tgh,'.
+\'nor:nwd'
+
+" To wymaga calego pakietu vim-latexSuite - zakomentuj lub wytnij je¶li nie
+" u¿ywasz (albo go ¶ci±gnij z http://vim-latex.sf.net)
+function! TPackagePolskiTylda()
+	call IMAP (" ---", "~---", "tex")
+endfunction
+call TPackagePolskiTylda()
+" --------8<-------------
+
+" Polskie znaki cudzyslowow 
+TexLet g:Tex_SmartQuoteOpen = ",,"
+TexLet g:Tex_SmartQuoteClose = "''"
+ 
+" Zmodyfikowana i rozwinieta funkcja Andrzeja Ostruszki
+" Z dodatkiem od Benjiego Fishera (sprawdzanie sk³adni)
+"
+" Spacja
+inoremap <buffer> <silent> <Space> <C-R>=<SID>Tex_polish_space()<CR>
+inoremap <buffer> <silent> <CR> <C-R>=<SID>Tex_polish_space()<CR><BS><CR>
+
+" Wymuszenie tyldy
+inoremap <buffer> <silent> <S-Space> ~
+
+" Wymuszenie zwyklej spacji
+inoremap <buffer> <silent> <C-Space> <Space>
+
+" Latwe przelaczanie sie miedzy magiczna spacja a zwykla
+inoremap <buffer> <silent> <F8> <C-R>=<SID>TogglePolishSpace()<CR>
+
+function! s:TogglePolishSpace()
+    if !exists("b:polishspace")
+        iunmap <buffer> <Space>
+        iunmap <buffer> <CR>
+        let b:polishspace = 1
+		return ''
+    else
+        inoremap <buffer> <silent> <Space> <C-R>=<SID>Tex_polish_space()<CR>
+        inoremap <buffer> <silent> <CR> <C-R>=<SID>Tex_polish_space()<CR><BS><CR>
+        unlet b:polishspace
+		return ''
+    endif
+endfunction
+
+
+function! s:Tex_polish_space()
+	"Nic magicznego w matematyce
+	 if synIDattr(synID(line('.'),col('.')-1,0),"name") =~ '^texMath\|^texZone\^texRefZone'
+		 return ' '
+	 else
+		let s:col = col('.')
+		let s:linelength = strlen(getline('.')) + 1
+		" Wstaw tylde po spojnikach
+		if strpart(getline('.'), col('.') - 3, 2) =~? '^[[:space:]~(\[{]\?[aiouwz]$'
+			return '~'
+	    " Wstaw tylde po inicjalach - konkretnie po pojedynczych wielkich
+		" literach i kropce. Obs³uguje poprawnie wiekszosc sytuacji.
+		elseif strpart(getline('.'), col('.') - 4, 3) =~? '^[[:space:]~(\[{]\?\u\.$'
+			return '~'
+		" Wstaw tylde po tytulach, skrotach bibliograficznych, podpisach
+		elseif strpart(getline('.'), col('.') - 9, 8) =~? '\(\s\|^\|\~\)\(str\.\|ryc\.\|rys\.\|tab\.\|art\.\|vol\.\|nr\|tabl\.\|rozdz\.\|ss\.\|s\.\|t\.\|z\.\|sir\|prof\.\|hab\.\|red\.\|min\.\|gen\.\|kpt\.\|przew\.\|p³k\|mjr\|mgr\|bp\|ks\.\|o\+\.\|¶w\.\|dr\)$'
+			return '~'
+		" Wstaw tylde miedzy rokiem, wiekiem, a odpowiednim skrotem
+		elseif strpart(getline('.'), col('.') - 8, 7) =~? '[0-9IVXLCM]\s\+\(r\|w\)\.[^a-z±æê³ñó¶¿¼]\{-}$'
+			s/[0-9IVXLCM]\zs\s\+\ze\(w\|r\)\.[^a-z±æê³ñó¶¿¼]\{-}\%#/\~/ei
+			exe 'normal '.s:col.'|'
+			if s:col == s:linelength
+				startinsert!
+			else
+				startinsert
+			endif
+			return ' '
+		" Wstaw tylde miedzy liczba a miara, itd.
+		elseif strpart(getline('.'), col('.') - 10, 9) =~? '\(\d\|mln\|mld\|tys\.\)\s\+\(z³\|gr\|ha\|t\|mies\|godz\|min\|sek\|cm\|km\|mln\|mld\|tys\.\)[^a-z±æê³ñó¶¿¼]\{-}$'
+			s/\(\d\|mln\|mld\|tys\.\)\zs\s\+\ze\(z³\|gr\|ha\|m\|t\|mies\|godz\|min\|sek\|cm\|km\|mln\|mld\|tys\.\)[^a-z±æê³ñó¶¿¼]\{-}\%#/\~/ei
+			exe 'normal '.s:col.'|'
+			if s:col == s:linelength
+				startinsert!
+			else
+				startinsert
+			endif
+			return ' '
+		" Rozwin myslnik w zbitkach w '\dywiz ':
+		" bialo-czerwony -> bialo\dywiz czerwony
+		elseif strpart(getline('.'), col('.') - 20, 19) =~? '[a-z±æê³ñó¶¿¼]-[a-z±æê³ñó¶¿¼]\{-}[^a-z±æê³ñó¶¿¼]\{-}$'
+			s/[a-z±æê³ñó¶¿¼]\zs-\ze[a-z±æê³ñó¶¿¼]\{-}[^a-z±æê³ñó¶¿¼]\{-}\%#/\\dywiz /ei
+			let colb = s:col + 6
+			exe 'normal '.colb.'|'
+			if s:col == s:linelength
+				startinsert!
+			else
+				startinsert
+			endif
+			return ' '
+		" Rozwin '--' miedzy liczbami w '\ppauza ':
+		" 39--45 -> 39\ppauza 45
+		elseif strpart(getline('.'), col('.') - 10, 9) =~? '[0-9IVXLCM]--[0-9IVXLCM]\{-}[^0-9IVXLCM]\{-}$'
+			s/[0-9IVXLCM]\zs--\ze[0-9IVXLCM]\{-}[^0-9IVXLCM]\{-}\%#/\\ppauza /ei
+			let colb = s:col + 6
+			exe 'normal '.colb.'|'
+			if s:col == s:linelength
+				startinsert!
+			else
+				startinsert
+			endif
+			return ' '
+		endif
+		" Tu koncz komentowanie ostatniej sekcji
+	endif
+	return " "
+endfunction 
+
+" vim:ft=vim:ff=unix:

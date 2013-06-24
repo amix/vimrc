@@ -1,0 +1,5 @@
+let g:TeX_package_option_afterpage = ''
+
+let g:TeX_package_afterpage = 'bra:afterpage'
+
+" vim:ft=vim:ff=unix:

@@ -1,0 +1,23 @@
+let g:TeX_package_option_accents = 
+\ 'nonscript,'
+\.'single'
+
+let g:TeX_package_accents = 
+\ 'bra:grave,'
+\.'bra:acute,'
+\.'bra:check,'
+\.'bra:breve,'
+\.'bra:bar,'
+\.'bra:ring,'
+\.'bra:hat,'
+\.'bra:dot,'
+\.'bra:tilde,'
+\.'bra:undertilde,'
+\.'bra:ddot,'
+\.'bra:dddot,'
+\.'bra:ddddot,'
+\.'bra:vec,'
+\.'brd:accentset,'
+\.'brd:underaccent'
+
+" vim:ft=vim:ff=unix:

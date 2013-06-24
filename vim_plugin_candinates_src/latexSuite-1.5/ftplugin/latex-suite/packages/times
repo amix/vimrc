@@ -1,0 +1,5 @@
+let g:TeX_package_option_times = ''
+
+let g:TeX_package_times = ''
+
+" vim:ft=vim:ff=unix:

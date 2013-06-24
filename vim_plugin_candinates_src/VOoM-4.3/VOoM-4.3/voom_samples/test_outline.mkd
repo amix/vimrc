@@ -1,0 +1,270 @@
+  :Voom markdown
+  This is VOoM markup mode test file. Converted from **test_outline.txt**.
+
+findme findme2
+
+h1
+==
+   1 body
+NEXT LINE IS FOR TESTS -- DO NOT MOVE OR EDIT
+VO.levels=[1, 1, 2, 2, 1, 1, 2, 2, 3, 4, 3, 4, 5, 6, 7, 2, 1, 2, 1, 2, 2, 3, 3, 4, 5, 5, 3, 2, 3, 2, 3, 2, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 2, 3, 4, 4, 4, 4, 5, 5, 4, 4, 5, 5, 3, 3, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 2, 3, 3]
+
+
+h1.1
+----
+   1.1 body
+
+h1.2
+----
+   1.2 body
+
+h2
+==
+   2 body
+
+h3
+==
+   3 body
+
+h3.1
+----
+   3.1 body
+
+h3.2
+----
+   3.2 body
+
+### h3.2.1 ###
+   3.2.1 body
+
+#### h3.2.1.1 ####
+   3.2.1.1 body
+  xxxx findme findme
+
+### h3.2.2 ###
+   3.2.2 body
+
+#### h3.2.2.1 ####
+   3.2.2.1 body
+
+##### h3.2.2.1.1 #####
+   3.2.2.1.1 body
+
+###### h3.2.2.1.2.1 ######
+   3.2.2.1.2.1 body
+
+####### h3.2.2.1.2.1.1 #######
+   3.2.2.1.2.1.1 body
+
+h3.3
+----
+   3.3 body
+
+h4
+==
+   4 body
+
+h4.1
+----
+   4.1 body findme
+
+h5
+==
+   5 body
+
+h5.1
+----
+   5.1 body
+
+h5.2
+----
+   5.2 body
+
+### h5.2.1 ###
+   5.2.1 body
+
+### h5.2.2 ###
+   5.2.2 body
+
+#### h5.2.2.1 ####
+   5.2.2.1 body
+
+##### h5.2.2.1.1 #####
+   5.2.2.1.1 body
+
+##### h5.2.2.1.2 #####
+   5.2.2.1.2 body
+
+
+### h5.2.3 ###
+   5.2.3 body
+
+hAA
+---
+a a a a
+
+### hAA.1 ###
+a1 a1 a1 a1
+
+hBB
+---
+b b b b
+
+### hBB.1 ###
+b1 b1 b1 b1 b1
+
+h5.3
+----
+   5.3 body
+findme
+
+htests
+======
+
+hsyntax tests
+-------------
+Since v2.1 comment chars before foldmarker are stripped according to filetype.
+Some Body filetypes have their own Tree syntax hi.
+
+
+### h//---TODO comment--- // ###
+
+### h"---comment--- " ###
+echo 'vim ok'
+
+### h#---comment--- # ###
+print 'py ok'
+
+### h%---comment--- % ###
+
+### h/*---comment--- /* ###
+
+### h&lt;!-- Comment ###
+ft=html,xml
+
+### hhtml head &lt;! ###
+
+### h/organizer node/ ###
+
+### h!warning mark ###
+
+hVoomgrep tests
+---------------
+:Voomg Spam and ham not bacon
+:Voomg Spam and\ ham not\ bacon
+:Voomg Spam and\\ ham not\\ bacon
+\Spam// ' "
+
+### hn44 breakfast ###
+eggs
+bacon
+
+### hn45 lunch ###
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+ham
+
+### hn46 dinner ###
+eggs
+Spam
+ham
+
+### hn47 snack ###
+bacon
+spam
+HAM
+beef
+
+hsort tests
+-----------
+
+### hnode 2 ###
+
+#### hdddd ####
+d1
+
+#### heeee ####
+
+#### hdddd ####
+d2
+
+
+#### hbbbb ####
+b
+
+##### hb_yyy #####
+
+##### hb_xxx #####
+
+#### hcccc ####
+c
+
+#### haaaa ####
+a
+##### ha_nnn #####
+
+##### ha_mmm #####
+
+### hnode 22 ###
+
+
+### hñ ###
+
+### hÑ ###
+unicode tests
+
+#### hэ ####
+1
+#### hЯ ####
+2
+#### hю ####
+3
+#### hЭ ####
+4
+#### hя ####
+5
+#### hЮ ####
+6
+
+### hnode 1 ###
+
+#### hbbbb ####
+b
+
+#### hdddd ####
+d1
+
+#### hDDDD ####
+ingorecase test
+
+#### haaaa ####
+a
+#### hdddd ####
+d2
+
+
+#### hcccc ####
+c
+
+### hz ###
+
+hspecial chars tests
+--------------------
+
+### h'" /\\/ ###
+" "" """
+' '' """
+\ \\ \\\
+/ // ///
+\//\
+
+### hБрожу ли я ###
+    Брожу. Чего ж не побродить.
+
+Чебурашка CHeburashka
+u'\u0427\u0435\u0431\u0443\u0440\u0430\u0448\u043a\u0430'
+utf-8
+'\xd0\xa7\xd0\xb5\xd0\xb1\xd1\x83\xd1\x80\xd0\xb0\xd1\x88\xd0\xba\xd0\xb0'
+
+

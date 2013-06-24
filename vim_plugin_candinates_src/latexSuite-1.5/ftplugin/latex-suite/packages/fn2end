@@ -1,0 +1,5 @@
+let g:TeX_package_option_fn2end = ''
+
+let g:TeX_package_fn2end = 'makeendnotes,theendnotes'
+
+" vim:ft=vim:ff=unix:

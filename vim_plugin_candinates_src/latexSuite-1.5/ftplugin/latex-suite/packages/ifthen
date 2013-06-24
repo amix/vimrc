@@ -1,0 +1,16 @@
+let g:TeX_package_option_ifthen = ''
+
+let g:TeX_package_ifthen = 
+\ 'brs:ifthenelse{<++>}{<++>}{<++>},'
+\.'brd:equal,'
+\.'bra:boolean,'
+\.'bra:lengthtest,'
+\.'bra:isodd,'
+\.'brd:whiledo,'
+\.'bra:newboolean,'
+\.'brd:setboolean,'
+\.'nor:and,'
+\.'nor:or,'
+\.'nor:not'
+
+" vim:ft=vim:ff=unix:

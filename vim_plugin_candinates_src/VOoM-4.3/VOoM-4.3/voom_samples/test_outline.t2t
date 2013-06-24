@@ -1,0 +1,249 @@
+  :Voom txt2tags
+  This is VOoM markup mode test file. Converted from **test_outline.txt**.
+
+findme findme2
+
+ = 1 =[ref]
+   1 body
+NEXT LINE IS FOR TESTS -- DO NOT MOVE OR EDIT
+VO.levels=[1, 1, 2, 2, 1, 1, 2, 2, 3, 4, 3, 4, 5, 6, 7, 2, 1, 2, 1, 2, 2, 3, 3, 4, 5, 5, 3, 2, 3, 2, 3, 2, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 2, 3, 4, 4, 4, 4, 5, 5, 4, 4, 5, 5, 3, 3, 3, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 3, 2, 3, 3]
+
+
+ == 1.1 ==[ref]
+   1.1 body
+
+ == 1.2 ==[ref]
+   1.2 body
+
+ = 2 =[ref]
+   2 body
+
+ = 3 =[ref]
+   3 body
+
+ == 3.1 ==[ref]
+   3.1 body
+
+ == 3.2 ==[ref]
+   3.2 body
+
+ +++ 3.2.1 +++[ref]
+   3.2.1 body
+
+ ++++ 3.2.1.1 ++++[ref]
+   3.2.1.1 body
+  xxxx findme findme
+
+ +++ 3.2.2 +++[ref]
+   3.2.2 body
+
+ ++++ 3.2.2.1 ++++[ref]
+   3.2.2.1 body
+
+ +++++ 3.2.2.1.1 +++++[ref]
+   3.2.2.1.1 body
+
+ ++++++ 3.2.2.1.2.1 ++++++[ref]
+   3.2.2.1.2.1 body
+
+ +++++++ 3.2.2.1.2.1.1 +++++++[ref]
+   3.2.2.1.2.1.1 body
+
+ == 3.3 ==[ref]
+   3.3 body
+
+ = 4 =[ref]
+   4 body
+
+ == 4.1 ==[ref]
+   4.1 body findme
+
+ = 5 =[ref]
+   5 body
+
+ == 5.1 ==[ref]
+   5.1 body
+
+ == 5.2 ==[ref]
+   5.2 body
+
+ +++ 5.2.1 +++[ref]
+   5.2.1 body
+
+ +++ 5.2.2 +++[ref]
+   5.2.2 body
+
+ ++++ 5.2.2.1 ++++[ref]
+   5.2.2.1 body
+
+ +++++ 5.2.2.1.1 +++++[ref]
+   5.2.2.1.1 body
+
+ +++++ 5.2.2.1.2 +++++[ref]
+   5.2.2.1.2 body
+
+
+ +++ 5.2.3 +++[ref]
+   5.2.3 body
+
+ == AA ==[ref]
+a a a a
+
+ +++ AA.1 +++[ref]
+a1 a1 a1 a1
+
+ == BB ==[ref]
+b b b b
+
+ +++ BB.1 +++[ref]
+b1 b1 b1 b1 b1
+
+ == 5.3 ==[ref]
+   5.3 body
+findme
+
+ = tests =[ref]
+
+ == syntax tests ==[ref]
+Since v2.1 comment chars before foldmarker are stripped according to filetype.
+Some Body filetypes have their own Tree syntax hi.
+
+
+ +++ //---TODO comment--- // +++[ref]
+
+ +++ "---comment--- " +++[ref]
+echo 'vim ok'
+
+ +++ #---comment--- # +++[ref]
+print 'py ok'
+
+ +++ %---comment--- % +++[ref]
+
+ +++ /*---comment--- /* +++[ref]
+
+ +++ <!-- Comment +++[ref]
+ft=html,xml
+
+ +++ html head <! +++[ref]
+
+ +++ /organizer node/ +++[ref]
+
+ +++ !warning mark +++[ref]
+
+ == Voomgrep tests ==[ref]
+:Voomg Spam and ham not bacon
+:Voomg Spam and\ ham not\ bacon
+:Voomg Spam and\\ ham not\\ bacon
+\Spam// ' "
+
+ +++ n44 breakfast +++[ref]
+eggs
+bacon
+
+ +++ n45 lunch +++[ref]
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+Spam Spam Spam Spam Spam Spam Spam Spam Spam 
+ham
+
+ +++ n46 dinner +++[ref]
+eggs
+Spam
+ham
+
+ +++ n47 snack +++[ref]
+bacon
+spam
+HAM
+beef
+
+ == sort tests ==[ref]
+
+ +++ node 2 +++[ref]
+
+ ++++ dddd ++++[ref]
+d1
+
+ ++++ eeee ++++[ref]
+
+ ++++ dddd ++++[ref]
+d2
+
+
+ ++++ bbbb ++++[ref]
+b
+
+ +++++ b_yyy +++++[ref]
+
+ +++++ b_xxx +++++[ref]
+
+ ++++ cccc ++++[ref]
+c
+
+ ++++ aaaa ++++[ref]
+a
+ +++++ a_nnn +++++[ref]
+
+ +++++ a_mmm +++++[ref]
+
+ +++ node 22 +++[ref]
+
+
+ +++ ñ +++[ref]
+
+ +++ Ñ +++[ref]
+unicode tests
+
+ ++++ э ++++[ref]
+1
+ ++++ Я ++++[ref]
+2
+ ++++ ю ++++[ref]
+3
+ ++++ Э ++++[ref]
+4
+ ++++ я ++++[ref]
+5
+ ++++ Ю ++++[ref]
+6
+
+ +++ node 1 +++[ref]
+
+ ++++ bbbb ++++[ref]
+b
+
+ ++++ dddd ++++[ref]
+d1
+
+ ++++ DDDD ++++[ref]
+ingorecase test
+
+ ++++ aaaa ++++[ref]
+a
+ ++++ dddd ++++[ref]
+d2
+
+
+ ++++ cccc ++++[ref]
+c
+
+ +++ z +++[ref]
+
+ == special chars tests ==[ref]
+
+ +++ '" /\\/ +++[ref]
+" "" """
+' '' """
+\ \\ \\\
+/ // ///
+\//\
+
+ +++ Брожу ли я +++[ref]
+    Брожу. Чего ж не побродить.
+
+Чебурашка CHeburashka
+u'\u0427\u0435\u0431\u0443\u0440\u0430\u0448\u043a\u0430'
+utf-8
+'\xd0\xa7\xd0\xb5\xd0\xb1\xd1\x83\xd1\x80\xd0\xb0\xd1\x88\xd0\xba\xd0\xb0'
+
+

@@ -1,0 +1,113 @@
+* VimOrganizer CheatSheet
+** Outline Navigation
+   TAB                  cycle visibilty of single headline/subtree
+
+   Shift-TAB            cycle visibility of entire outline
+
+   ,1                   show level 1 heads only
+
+   ,2                   show up to level 2 headings
+
+   ...
+
+    ,,3                   show up to level 3 heads for current heading only
+
+    ,,5                   show up to level 5 heads for current heading only
+    . . .
+** Basic Outline Editing
+   Name your file with a '.org' extension and then just start adding 
+   headings with asterisk to indicate heading level.  NOTE:  asterisks must
+   be in the leftmost column and must be separate from heading text by a 
+   space.  This document is an example showing headings, subheadings,
+   and text underneath each.
+*** Adding new headlines
+****   Enter, shift+Enter   
+        add another headline of same level
+        <enter> works only in normal mode
+****   Ctrl+Enter 
+        add another headline of lower-level
+****   Ctrl+Shift+Enter 
+        add another headline of higher-level
+** Time Stamps/Date-time prompt
+   The following commands may be issued anywhere within a headline and will 
+   enter or edit the corresponding date for the headline.  One date of 
+   each type may be defined per headline (i.e, 'deadline', 'scheduled', 
+   'closed', and 'regular'.  You can enter more dates anywhere you want, but 
+   this editing mechanism is currently restricted to dealing with only these
+   "primary" dates.
+
+ enter DEADLINE date for headline      ,dd
+ enter SCHEDULED date for headline     ,ds
+ enter CLOSED date for headline        ,dc
+ enter regular date TIMESTAMP (i.e., no indicator) for headline
+                                       ,dt
+ enter timestamp into text             ,dg
+
+    The command-line prompt and calendar that appear when you enter a ,d<x>  
+    command operate nearly the same as the date-time prompt in Emacs' 
+    Org-mode.  A few options are not yet implemented (e.g., the 'w'eek 
+    options), but most should work just the same.  For excellent documentation 
+    on Org-mode's date-time prompt see:
+    :http://orgmode.org/manual/The-date_002ftime-prompt.html#The-date_002ftime-prompt
+** Agenda Dashboard
+   Type ,ag to bring up the Agenda Dashboard, which allows you to launch 
+   some searches. 
+** Set Agenda Files
+   Agenda files are held in a list:  g:agenda_files.  You can enter values for 
+   g:agenda_files in your vimrc, e.g.,
+
+            :let g:agenda_files = ['myfile.org','c:/path/myfile.org']
+
+   You can also use Vimscript to assign multiple files at a time to 
+   g:agenda_files.  For example, putting the line below in your vimrc would
+   put all .org files in the org_files directory into g:agenda_files:
+
+        :let g:agenda_files = split(glob("~\desktop\org_files\*.org"),"\n")
+
+   User Interface for runtime editing of g:agenda_files:
+
+   There is a also a bare-bones agenda-editing mechanism that works like this:
+   (1) Put your .org working directories in list g:agenda_dirs.  Mine is in my
+   vimrc and looks like this:
+
+    :let g:agenda_dirs=["c:/users/herbert/documents/my\ dropbox","c:/users/herbert/desktop/org_Files"]
+   
+   (2) Then to edit your agenda files issue this command 
+   
+        :call EditAgendaFiles()
+   
+   This will open a new tab and show your current agenda files along with a list
+   of all org files in your agenda dirs.  Simply copy or move lines from the 
+   agenda dirs list to the top and when done press :W (that's a capital 'W').  
+   Order of agenda files is sometimes important, e.g., it is used when ordering 
+   some agenda results.
+   
+** Tags
+   Tags for a file are defined using the SetupTags(<tag-setup-string>) function.  There is an 
+   example in the project's vimrc file.  General structure of the 
+   tag-setup-string is: (1) tags followed by the single-key access in parens, 
+   (2) brackets (i.e., {} ) around sets of tags that are mutually exclusive.  
+   For now you must place the single-key-access parens with character after the 
+   tag, no letter is automatically assigned.  The tags set up by SetupTags() are 
+   used in the menu accessed by ,et .
+
+   edit tags                        --  ,et
+   view items with tag in agenda    -- double-click tag, 
+
+   (Note: The 'RunSearch' searches below can all be entered now
+   by accessing Agenda Dashboard (,ag) and pressing 'm')
+   view entries having both tag1 and tag2:
+    :call RunSearch('+tag1+tag2')
+   view entries having tag1  but not tag2:  
+            :call RunSearch('+tag1-tag2')
+   view entries having tag1 or tag2:  
+            :call RunSearch('+tag1|tag2')
+   view entries having tag1 that are also TODO:  
+            :call RunSearch('+TODO+tag1')
+   view entries having tag1 that are also DONE:
+            :call RunSearch('+DONE+tag1')
+   view entries having tag1 that have any todo:
+            :call RunSearch('+ANY_TODO+tag1')
+
+ 
+ 

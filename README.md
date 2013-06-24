@@ -1,4 +1,6 @@
-# The Ultimate vimrc
+# The Ultimate vimrc of hustcalm forked from amix
+
+**Below is the original readme post of amix**
 
 Over the last 8 years I have used and tweaked Vim. This is my Ultimate vimrc.
 
@@ -310,3 +312,101 @@ Vimscript mappings:
 * [Vim 7.3: Persistent undo and encryption!](http://amix.dk/blog/post/19548#Vim-7-3-Persistent-undo-and-encryption)
 * [Vim tips: Visual Search](http://amix.dk/blog/post/19334#Vim-tips-Visual-Search)
 * [Folding in Vim](http://amix.dk/blog/post/19132#Folding-in-Vim)
+
+**Above is the original readme post of amix**
+
+
+# My Updates to The Ultimate vimrc
+
+## Add some useful candinate plugins to the repo
+See them in [vim_plugin_candintes_src](https://github.com/hustcalm/vimrc/tree/master/vim_plugin_candinates_src).All these plugins will be candinates to be added to my Ultimate vimrc. 
+
+You can also add your own favorite script from [vim-scripts.org](http://vim-scripts.org/) or install from [github](http://github.com/vim-scripts).
+
+## Use git and pathogen to manage vim plugins
+### Amix's method
+
+As amix mentioned, you can isntall your own plugins via pathogen,for instance vim-rails:
+
+    cd ~/.vim_runtime
+    git clone git://github.com/tpope/vim-rails.git sources_non_forked/vim-rails
+
+After this,you got vim-rails under sources_non_forked/vim-rails as a git local repo.       
+
+**But** all you got at this time is a local repo and you may get upset if you want to share your very super plugin together with Ultimate vimrc. 
+
+### Manage with git submodule
+
+Instead I'm using git submodule to manage vim plugins now(Alternately you can use [git subtree](https://github.com/apenwarr/git-subtree.git)), clone them from github and install,config,update,delete,etc... And as a vimer, I prefer to drop the plugins to bundle rather than sources_plugins thus pathogen can find it automatically.
+
+As we want to install vim-rails:
+
+    cd ~/.vim_runtime
+    git submodule add git://github.com/tpope/vim-rails.git bundle/vim-rails
+    git commit -a -m 'first commit with submodule vim-rails'
+    git submodule init
+
+### Clone repo with Git Submodule
+
+If you want to clone my repo and favor the vim plugins managed with submodule, you need to run:
+
+    git submodule init
+    git submmodule update
+
+after you clone my repo.
+
+### Update Installed module
+
+    cd bundle/vim-rails
+    git pull origin master
+    cd ~/.vim_runtime
+    git status
+    git commit -a -m 'update vim-rails'
+    git push
+    git submodule status
+
+### Remove Sub Module
+
+    git rm --cached bundle/vim-rails
+    git rm bundle/vim-rails
+    vi .gitmoudles
+    vi .git/config
+    git add . && git commit -m 'Remove Submodule vim-rails'
+    git submoudule sync
+
+Above we use vi to edit .gitmoudles and .git/config to remove references to specific submoudle.
+
+### git submodule reference
+
+*   [Tips-Using git submodule keep your vim plugin up-to-date](http://www.allenwei.cn/tips-using-git-submodule-keep-your-plugin-up-to-date/)
+*   [Git Submodule介绍与使用](http://blog.wu-boy.com/2011/09/introduction-to-git-submodule/)     
+
+## Use Vundle to make life easier managing plugins
+
+[Vundle](https://github.com/gmarik/vundle) is short for _Vim bundle_ and is a [Vim](http://www.vim.org/) plugin manager.
+
+[Vundle](https://github.com/gmarik/vundle) allows to:
+
+- keep track and configure your scripts right in `.vimrc`
+- [install] configured scripts (aka bundle) 
+- [update] configured scripts
+- [search] by name [all available vim scripts]
+- [clean] unused scripts up
+- run above actions in a *single keypress* with [interactive mode]
+
+Also [Vundle](https://github.com/gmarik/vundle):
+
+- manages runtime path of your installed scripts
+- regenerates helptag automatically
+
+Simple commands like BundleInstall, BundleSearch, BundleClean get everything done! 
+
+For more info, please refer to the [offcial repository](https://github.com/gmarik/vundle).
+
+Currently, I install Vundle as a git submodule and managed by pathogen, but for other plugins management, I'm happy to play with [Vundle](https://github.com/gmarik/vundle).
+
+**Note:** 
+
+You can either use git submodule to manage your vim plugins as I do now, or you can manage using Amix's approach cause ha has provided a python script to get all the plugins updated with one single command.
+
+

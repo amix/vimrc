@@ -1,0 +1,11 @@
+let g:TeX_package_option_float = ''
+
+let g:TeX_package_float = 
+\ 'bra:floatstyle,'
+\.'brs:newfloat{<++>}{<++>}{<++>}[<++>],'
+\.'brd:floatname,'
+\.'brd:listof,'
+\.'bra:restylefloat,'
+\.'brd:floatplacement'
+
+" vim:ft=vim:ff=unix:

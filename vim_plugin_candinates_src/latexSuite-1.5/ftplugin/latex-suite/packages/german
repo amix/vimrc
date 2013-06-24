@@ -1,0 +1,7 @@
+let g:TeX_package_german = ''
+let g:TeX_package_option_german = ''
+" For now just define the smart quotes.
+let b:Tex_SmartQuoteOpen = '"`'
+let b:Tex_SmartQuoteClose = "\"'"
+
+" vim:ft=vim:ff=unix:

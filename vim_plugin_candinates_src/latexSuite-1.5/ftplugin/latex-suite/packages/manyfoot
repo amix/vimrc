@@ -1,0 +1,10 @@
+let g:TeX_package_option_manyfoot = 'para'
+
+let g:TeX_package_manyfoot = 
+\ 'bra:newfootnote,bra:newfootnote[para],'
+\.'bra:footnoteA,bra:footnoteB,'
+\.'bra:FootnoteA,bra:FootnoteB,'
+\.'bra:Footnotemark,bra:Footnotetext,'
+\.'SplitNote'
+
+" vim:ft=vim:ff=unix:

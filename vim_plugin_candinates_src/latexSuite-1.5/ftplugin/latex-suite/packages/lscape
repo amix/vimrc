@@ -1,0 +1,5 @@
+let g:TeX_package_option_lscape = ''
+
+let g:TeX_package_lscape = 'env:landscape'
+
+" vim:ft=vim:ff=unix:

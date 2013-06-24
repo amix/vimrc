@@ -1,0 +1,7 @@
+let g:TeX_package_option_amsxtra = ''
+
+let g:TeX_package_amsxtra = 
+\ 'nor:sphat,'
+\.'nor:sptilde'
+
+" vim:ft=vim:ff=unix:

@@ -1,0 +1,88 @@
+The following individuals are registered as developers for the maintenance of
+Exuberant Ctags. They are listed by their SourgeForge username and by the
+To send email to any one of them, send it to <username@users.sourceforge.net>.
+
+Ctags           SourgeForge     Full
+Parser          username        Name
+----------      -----------     -----
+Ant             dfishburn       David Fishburn
+AWK             jkoshy          Joseph Koshy
+Basic           elias           Elias Pschernig
+C#              elliotth        Elliott Hughes
+DosBatch        dfishburn       David Fishburn
+Flex            dfishburn       David Fishburn
+Java            elliotth        Elliott Hughes
+JavaScript      dfishburn       David Fishburn
+MATlAB          dfishburn       David Fishburn
+OCaml           vberthoux       Vincent Berthoux
+Perl            perlguy0        Dmitri Tikhonov
+PHP             jafl            John Lindal
+Python          elias           Elias Pschernig
+Ruby            elliotth        Elliott Hughes
+SML             jkoshy          Joseph Koshy
+SQL             dfishburn       David Fishburn
+TeX             dfishburn       David Fishburn
+Vim             dfishburn       David Fishburn
+All else        dhiebert        Darren Hiebert
+
+How To Build & Test Like A Maintainer
+=====================================
+
+Prerequisites
+-------------
+
+  Debian/Ubuntu:
+
+    sudo apt-get install build-essential subversion autoconf
+
+  Mac OS:
+
+    Install the Xcode developer tools, available here:
+    http://developer.apple.com/tools/download/
+
+  RedHat:
+
+    up2date --nosig subversion autoheader autoconf
+
+  Windows:
+
+    Install Cygwin plus its Subversion and GNU Make packages.
+
+Building
+--------
+
+  First time:
+
+    svn co https://ctags.svn.sourceforget.net/svnroot/ctags/trunk ctags
+    # Miss off the "/trunk" above if you want access to old releases or the
+    # web site.
+    cd ctags
+    autoheader
+    autoconf
+    ./configure --enable-maintainer-mode
+    make -j
+
+  Later:
+
+    cd ctags
+    svn update
+    make -j
+
+Testing
+-------
+
+  First time:
+
+    cd ctags
+    cp /usr/bin/ctags ctags.ref
+    # Edit "testing.mak" so CTAGS_TEST = ./dctags
+    # Edit "testing.mak" so CTAGS_REF = ./ctags.ref
+    make test
+
+  Later:
+
+    make test
+
+  Whenever you're happy with the results and update/commit:
+
+    cp ./dctags ./ctags.ref

@@ -1,0 +1,22 @@
+let g:TeX_package_option_psgo = ''
+
+let g:TeX_package_psgo = 
+\ 'env:psgogoard,'
+\.'env:psgoboard*,'
+\.'brs:stone{<+color+>}{<+letter+>}{<+number+>},'
+\.'brs:stone[<+marker+>]{<+color+>}{<+letter+>}{<+number+>},'
+\.'brs:move{<+letter+>}{<+number+>},'
+\.'brs:move*{<+letter+>}{<+number+>},'
+\.'brs:goline{<+letter1+>}{<+number1+>}{<+letter2+>}{<+number2+>},'
+\.'brs:goarrow{<+letter1+>}{<+number1+>}{<+letter2+>}{<+number2+>},'
+\.'sbr:Markers,'
+\.'brs:markpos{<+marker+>}{<+letter+>}{<+number+>},'
+\.'markma,'
+\.'marktr,'
+\.'markcr,'
+\.'marksq,'
+\.'bra:marklb,'
+\.'marksl,'
+\.'markdd'
+
+" vim:ft=vim:ff=unix:

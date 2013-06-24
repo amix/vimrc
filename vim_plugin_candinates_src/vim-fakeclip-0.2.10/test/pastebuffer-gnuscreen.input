@@ -1,0 +1,145 @@
+" Test: vim-fakeclip pastebuffer-gnuscreen
+runtime! plugin/fakeclip.vim
+call vspec#hint({
+\   'scope': 'fakeclip#_local_variables()',
+\   'sid': 'fakeclip#_sid_prefix()',
+\ })
+function! s:write(...)  "{{{1
+  let _ = tempname()
+  call writefile(a:000, _, 'b')
+  call system('screen -X readbuf ' . shellescape(_))
+  call delete(_)
+endfunction
+let g:fakeclip_delay_to_read_pastebuffer_gnuscreen = '3'
+
+
+
+
+function s:describe__s_read_pastebuffer_gnuscreen()  "{{{1
+  It should read the paste buffer which contains empty string
+
+  call s:write('')
+  Should Call('s:read_pastebuffer_gnuscreen') ==# ''
+  Should Call('s:read_pastebuffer_gnuscreen') ==# ''
+
+  It should read the paste buffer which contains string without newline
+
+  call s:write('A')
+  Should Call('s:read_pastebuffer_gnuscreen') ==# 'A'
+  Should Call('s:read_pastebuffer_gnuscreen') ==# 'A'
+
+  It should read the paste buffer which contains single-line string
+
+  call s:write('B', '')
+  Should Call('s:read_pastebuffer_gnuscreen') ==# "B\n"
+  Should Call('s:read_pastebuffer_gnuscreen') ==# "B\n"
+
+  It should read the paste buffer which contains multi-line string
+
+  call s:write('C', 'D', '')
+  Should Call('s:read_pastebuffer_gnuscreen') ==# "C\nD\n"
+  Should Call('s:read_pastebuffer_gnuscreen') ==# "C\nD\n"
+
+  It should read the paste buffer which contains multi-line string w/o last LF
+
+  call s:write('E', 'F')
+  Should Call('s:read_pastebuffer_gnuscreen') ==# "E\nF"
+  Should Call('s:read_pastebuffer_gnuscreen') ==# "E\nF"
+
+  It should read the paste buffer which is emptied by "register . ''"
+
+  silent !screen -X register . ''
+  Should Call('s:read_pastebuffer_gnuscreen') ==# ''
+  Should Call('s:read_pastebuffer_gnuscreen') ==# ''
+endfunction
+
+
+
+
+function s:describe__s_write_pastebuffer_gnuscreen()  "{{{1
+  It should succeed
+
+  call Call('s:write_pastebuffer_gnuscreen', [''])
+  Should Call('s:read_pastebuffer_gnuscreen') ==# ''
+
+  call Call('s:write_pastebuffer_gnuscreen', ['A'])
+  Should Call('s:read_pastebuffer_gnuscreen') ==# 'A'
+
+  call Call('s:write_pastebuffer_gnuscreen', ['B', ''])
+  Should Call('s:read_pastebuffer_gnuscreen') ==# "B\n"
+
+  call Call('s:write_pastebuffer_gnuscreen', ['C', 'D', ''])
+  Should Call('s:read_pastebuffer_gnuscreen') ==# "C\nD\n"
+
+  call Call('s:write_pastebuffer_gnuscreen', ['E', 'F'])
+  Should Call('s:read_pastebuffer_gnuscreen') ==# "E\nF"
+endfunction
+
+
+
+
+function s:describe__s_read_pastebuffer()  "{{{1
+  It should read the paste buffer which contains empty string
+
+  call s:write('')
+  Should Call('s:read_pastebuffer') ==# ''
+  Should Call('s:read_pastebuffer') ==# ''
+
+  It should read the paste buffer which contains string without newline
+
+  call s:write('A')
+  Should Call('s:read_pastebuffer') ==# 'A'
+  Should Call('s:read_pastebuffer') ==# 'A'
+
+  It should read the paste buffer which contains single-line string
+
+  call s:write('B', '')
+  Should Call('s:read_pastebuffer') ==# "B\n"
+  Should Call('s:read_pastebuffer') ==# "B\n"
+
+  It should read the paste buffer which contains multi-line string
+
+  call s:write('C', 'D', '')
+  Should Call('s:read_pastebuffer') ==# "C\nD\n"
+  Should Call('s:read_pastebuffer') ==# "C\nD\n"
+
+  It should read the paste buffer which contains multi-line string w/o last LF
+
+  call s:write('E', 'F')
+  Should Call('s:read_pastebuffer') ==# "E\nF"
+  Should Call('s:read_pastebuffer') ==# "E\nF"
+
+  It should read the paste buffer which is emptied by "register . ''"
+
+  silent !screen -X register . ''
+  Should Call('s:read_pastebuffer') ==# ''
+  Should Call('s:read_pastebuffer') ==# ''
+endfunction
+
+
+
+
+function s:describe__s_write_pastebuffer()  "{{{1
+  It should succeed
+
+  call Call('s:write_pastebuffer', '')
+  Should Call('s:read_pastebuffer') ==# ''
+
+  call Call('s:write_pastebuffer', 'A')
+  Should Call('s:read_pastebuffer') ==# 'A'
+
+  call Call('s:write_pastebuffer', "B\n")
+  Should Call('s:read_pastebuffer') ==# "B\n"
+
+  call Call('s:write_pastebuffer', "C\nD\n")
+  Should Call('s:read_pastebuffer') ==# "C\nD\n"
+
+  call Call('s:write_pastebuffer', "E\nF")
+  Should Call('s:read_pastebuffer') ==# "E\nF"
+endfunction
+
+
+
+
+" __END__  "{{{1
+" vim: filetype=vim foldmethod=marker

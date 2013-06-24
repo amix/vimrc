@@ -1,0 +1,73 @@
+Exuberant Ctags
+===============
+Author: Darren Hiebert <dhiebert at users.sourceforge.net>
+        http://ctags.sourceforge.net
+        Instant Messaging:
+          Yahoo! ID     : dbhiebert
+          AIM ScreenName: darrenhiebert
+
+Exuberant Ctags is a multilanguage reimplementation of the much-underused
+ctags(1) program and is intended to be the mother of all ctags programs. It
+generates indexes of source code definitions which are used by a number of
+editors and tools. The motivation which drove the development of Exuberant
+Ctags was the need for a ctags program which supported generation of tags
+for all possible C language constructs (which no other ctags offers), and
+because most were easily fooled by a number of preprocessor contructs.
+
+
+Exuberant Ctags offers the following features:
+
+1.  It supports the following languages: Assembler, AWK, ASP, BETA,
+    Bourne/Korn/Z Shell, C, C++, C#, COBOL, Eiffel, Erlang, Fortran, Java, Lisp,
+    Lua, Makefile, Pascal, Perl, PHP, PL/SQL, Python, REXX, Ruby, Scheme,
+    S-Lang, SML (Standard ML), Tcl, Vera, Verilog, VHDL, Vim, and YACC.
+
+2.  It is capable of generating tags for virtually all C language constructs.
+
+3.  It is very robust in parsing code. In particular, the C/C++ parser is
+    far less easily fooled by code containing #if preprocessor conditional
+    constructs, using a conditional path selection algorithm to resolve
+    complicated situations, and a fall-back algorithm when this one fails.
+
+4.  Supports output of Emacs-style TAGS files (i.e. "etags").
+
+5.  User-defined languages, using Posix regular expressions.
+
+6.  Supports UNIX, MSDOS, Windows 95/98/NT/2000/XP, OS/2, QNX, Amiga, QDOS,
+    RISC OS, VMS, Macintosh, and Cray. Some pre-compiled binaries are
+    available on the web site.
+
+
+Visit the Exuberant Ctags web site:
+
+    http://ctags.sourceforge.net
+
+
+Which brings us to the most obvious question:
+
+  Q: Why is it called "Exuberant" ctags?
+  A: Because one of the meanings of the word is:
+
+     exuberant : produced in extreme abundance : PLENTIFUL syn see PROFUSE
+
+Compare the tag file produced by Exuberant Ctags with that produced by any
+other ctags and you will see how appropriate the name is.
+
+
+This source code is distributed according to the terms of the GNU General
+Public License. It is provided on an as-is basis and no responsibility is
+accepted for its failure to perform as expected. It is worth at least as
+much as you paid for it!
+
+Exuberant Ctags was originally derived from and inspired by the ctags
+program by Steve Kirkendall (kirkenda@cs.pdx.edu) that comes with the Elvis
+vi clone (though almost none of the original code remains). This, too, is
+freely available.
+
+Please report any problems you find. The two problems I expect to be most
+likely are either a tag which you expected but is missing, or a tag created
+in error (shouldn't really be a tag). Please include a sample of code (the
+definition) for the object which misbehaves.
+
+--
+vim:tw=76:sw=4:et:

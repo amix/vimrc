@@ -1,0 +1,54 @@
+$-------------------------------------------------------------------------
+== preprocessor.include-global ==
+#include <<CURSOR>>
+$-------------------------------------------------------------------------
+== preprocessor.include-local ==
+#include "<CURSOR>"
+$-------------------------------------------------------------------------
+== preprocessor.define ==
+#define	<CURSOR>			//
+$-------------------------------------------------------------------------
+== preprocessor.undefine ==
+#undef	<CURSOR>			//
+$-------------------------------------------------------------------------
+== preprocessor.if-endif ==
+#if  |?CONDITION:u|
+<CURSOR><SPLIT>
+#endif     // -----  |CONDITION|  -----
+$-------------------------------------------------------------------------
+== preprocessor.if-else-endif ==
+#if  |?CONDITION:u|
+<CURSOR><SPLIT>
+#else      // -----  not |CONDITION|  -----
+<+ELSE PART+>
+#endif     // -----  not |CONDITION|  -----
+$-------------------------------------------------------------------------
+== preprocessor.ifdef-else-endif ==
+#ifdef  |?CONDITION:u|
+<CURSOR><SPLIT>
+#else      // -----  not |CONDITION|  -----
+<+ELSE PART+>
+#endif     // -----  not |CONDITION|  -----
+$-------------------------------------------------------------------------
+== preprocessor.ifndef-else-endif ==
+#ifndef  |?CONDITION:u|
+<CURSOR><SPLIT>
+#else      // -----  not |CONDITION|  -----
+<+ELSE PART+>
+#endif     // -----  not |CONDITION|  -----
+$-------------------------------------------------------------------------
+== preprocessor.ifndef-def-endif ==
+#ifndef  |?BASENAME:L|_INC
+#define  |BASENAME|_INC
+<CURSOR><SPLIT>
+#endif   // ----- #ifndef |BASENAME|_INC  -----
+$-------------------------------------------------------------------------
+== preprocessor.error ==
+#error	"<CURSOR>"			//
+$-------------------------------------------------------------------------
+== preprocessor.line ==
+#line	<CURSOR>			//
+$-------------------------------------------------------------------------
+== preprocessor.pragma ==
+#pragma	<CURSOR>			//
+$-------------------------------------------------------------------------

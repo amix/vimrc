@@ -1,0 +1,15 @@
+let g:TeX_package_option_ccaption = ''
+
+let g:TeX_package_ccaption = 
+\ 'bra:contcaption,'
+\.'bra:legend,'
+\.'bra:namedlegend,'
+\.'abovelegendskip,'
+\.'belowlegendskip,'
+\.'brd:newfixedcaption,'
+\.'brd:renewfixedcaption,'
+\.'brd:providefixedcaption,'
+\.'brs:newfloatenv[<+counter+>]{<+name+>}{<+ext+>}{<+etiq+>},'
+\.'brd:listfloats'
+
+" vim:ft=vim:ff=unix:

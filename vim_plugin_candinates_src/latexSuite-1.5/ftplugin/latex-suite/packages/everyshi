@@ -1,0 +1,5 @@
+let g:TeX_package_option_everyshi = ''
+
+let g:TeX_package_everyshi = 'bra:EveryShipOut'
+
+" vim:ft=vim:ff=unix:

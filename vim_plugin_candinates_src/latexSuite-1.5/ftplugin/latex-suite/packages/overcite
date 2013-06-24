@@ -1,0 +1,29 @@
+let g:TeX_package_option_overcite = 
+\ 'verbose,'
+\.'ref,'
+\.'nospace,'
+\.'space,'
+\.'nosort,'
+\.'sort,'
+\.'nomove,'
+\.'noadjust'
+
+let g:TeX_package_overcite = 
+\ 'bra:cite,'
+\.'bra:citen,'
+\.'bra:citenum,'
+\.'bra:citeonline,'
+\.'bra:nocite,'
+\.'sep:redefine,'
+\.'bra:citeform,'
+\.'bra:citepunct,'
+\.'bra:citeleft,'
+\.'bra:citeright,'
+\.'bra:citemid,'
+\.'bra:citedash'
+
+syn region texRefZone         matchgroup=texStatement start="\\citen\([tp]\*\=\)\={"   keepend end="}\|%stopzone\>"  contains=texComment,texDelimiter
+syn region texRefZone         matchgroup=texStatement start="\\citenum\([tp]\*\=\)\={"   keepend end="}\|%stopzone\>"  contains=texComment,texDelimiter
+syn region texRefZone         matchgroup=texStatement start="\\citeonline\([tp]\*\=\)\={"   keepend end="}\|%stopzone\>"  contains=texComment,texDelimiter
+
+" vim:ft=vim:ff=unix:

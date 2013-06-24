@@ -1,0 +1,5 @@
+let g:TeX_package_option_letterspace = ''
+
+let g:TeX_package_letterspace = 'nor:letterspace'
+
+" vim:ft=vim:ff=unix:

@@ -1,0 +1,5 @@
+let g:TeX_package_option_plain = ''
+
+let g:TeX_package_plain = 'env:plain'
+
+" vim:ft=vim:ff=unix:

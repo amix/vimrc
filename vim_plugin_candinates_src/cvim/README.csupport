@@ -1,0 +1,242 @@
+README for c.vim (Version 5.17) / December 27 2011
+
+  *  DESCRIPTION
+  *  INSTALLATION
+  *  RELEASE NOTES 
+  *  FILES
+  *  ADDITIONAL TIPS
+  *  CREDITS
+
+================================================================================
+  DESCRIPTION
+================================================================================
+C/C++-IDE for Vim/gVim. It is written to considerably speed up writing code in
+a consistent style.  This is done by inserting complete statements, idioms,
+code snippets, templates, and comments.  Syntax checking, compiling,  running a
+program, running indent or code checkers can be done with a keystroke.  There
+are many additional hints and options which can improve speed and comfort when
+writing C/C++. See the help file csupport.txt for more information.
+
+================================================================================
+  INSTALLATION
+================================================================================
+
+(1)  LINUX
+----------
+
+The subdirectories in the zip archive  cvim.zip  mirror the directory structure
+which is needed below the local installation directory $HOME/.vim/ (find the
+value of $HOME with ":echo $HOME" from inside Vim).
+
+(1.0) Save the template files in '$HOME/.vim/c-support/templates/Templates' if
+    you have changed any of them.
+
+(1.1) Copy the zip archive cvim.zip to $HOME/.vim and run
+
+      unzip cvim.zip
+
+    If you have already an older version of c-support and you have modified
+    the template files you may want to save your templates first and suppress
+    overwriting them with
+
+      unzip cvim.zip  -x *Templates *.template
+
+(1.2) Loading of plugin files must be enabled. If not use
+
+      :filetype plugin on
+
+    This is the minimal content of the file '$HOME/.vimrc'. Create one if there
+    is none or use the files in $HOME/.vim/c-support/rc as a starting point.
+
+(1.3) Set at least some personal details in the file 
+    '$HOME/.vim/c-support/templates/Templates' 
+    Here is the minimal personalization (my settings as an example):
+
+      |AUTHOR|    = Dr. Fritz Mehner 
+      |AUTHORREF| = fgm
+      |EMAIL|     = mehner@fh-swf.de
+      |COMPANY|   = FH Südwestfalen, Iserlohn
+      |COPYRIGHT| = Copyright (c) |YEAR|, |AUTHOR|
+
+    (Read more about the template system in the plugin documentation)
+
+(1.4) Make the plugin help accessable by typing the following command on the
+    Vim command line:
+
+    :helptags $HOME/.vim/doc/
+  
+(1.5) Consider additional settings in the file '$HOME/.vimrc'.  The files
+    customization.vimrc and customization.gvimrc are replacements or extensions
+    for your .vimrc and .gvimrc.  You may want to use parts of them. The files
+    are documented. 
+
+
+(2)  WINDOWS
+------------
+
+The subdirectories in the zip archive  cvim.zip  mirror the directory structure
+which is needed below the local installation directory $HOME/vimfiles/ (find
+the value of $HOME with ":echo $HOME" from inside Vim).
+
+(2.0) Save the template files in '$HOME/vimfiles/c-support/templates/Templates' if
+    you have changed any of them.
+
+(2.1) Copy the zip archive cvim.zip to $HOME/vimfiles and run
+
+      unzip cvim.zip
+
+    If you have already an older version of c-support and you have modified
+    the template files you may want to save your templates first and suppress
+    overwriting them with
+
+      unzip cvim.zip  -x *Templates *.template
+
+(2.2) Loading of plugin files must be enabled. If not use
+
+      :filetype plugin on
+
+    This is the minimal content of the file '$HOME/_vimrc'. Create one if there
+    is none or use the files in $HOME/vimfiles/c-support/rc as a starting point.
+
+(2.3) Set at least some personal details in the file 
+    '$HOME/vimfiles/c-support/templates/Templates' 
+    Here is the minimal personalization (my settings as an example):
+
+      |AUTHOR|    = Dr. Fritz Mehner 
+      |AUTHORREF| = fgm
+      |EMAIL|     = mehner@fh-swf.de
+      |COMPANY|   = FH Südwestfalen, Iserlohn
+      |COPYRIGHT| = Copyright (c) |YEAR|, |AUTHOR|
+
+    (Read more about the template system in the plugin documentation)
+
+(2.4) Make the plugin help accessable by typing the following command on the
+    Vim command line:
+
+    :helptags $HOME\vimfiles\doc\
+  
+(2.5) Consider additional settings in the file '$HOME/_vimrc'.  The files
+    customization.vimrc and customization.gvimrc are replacements or extensions
+    for your _vimrc and _gvimrc. You may want to use parts of them.  The files
+    are documented. 
+
+There are a lot of features and options which can be used and influenced:
+
+  *  use of template files and tags
+  *  surround marked blocks with statements
+  *  using and managing personal code snippets
+  *  generate/remove multiline comments 
+  *  picking up prototypes
+  *  C/C++ dictionaries for keyword completion
+  *  (re)moving the root menu
+
+Look at csupport help with
+
+  :help csupport 
+
+or use the 'help' item in the root menu of this plug-in.
+
+             +-----------------------------------------------+
+             | +-------------------------------------------+ |
+             | |    ** PLEASE READ THE DOCUMENTATION **    | |
+             | |    Actions differ for different modes!    | |
+             | +-------------------------------------------+ |
+             +-----------------------------------------------+
+
+Any problems ? See the TROUBLESHOOTING section at the end of the help file
+'doc/csupport.txt'.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.17
+================================================================================
+- Two new plugin tags: LICENSE,ORGANIZATION
+- System-wide installation: minimal Template file for a user will automatically
+  be added.
+- New menu item and hotkey: choose a makefile.
+- New idiom: realloc.
+- New preprocessor item: #if #endif.
+- New hotkeys: \ire, \ifs, \ifp, \pif.
+
+  OLDER RELEASE NOTES : see file 'ChangeLog'
+
+================================================================================
+  FILES
+================================================================================
+
+README.csupport                This file.
+
+doc/csupport.txt               The help file for the local on-line help. 
+                          
+ftplugin/c.vim                 A file type plug-in. Define hotkeys, creates a
+                               local dictionary for each C/C++ file.
+ftplugin/make.vim              Access hotkeys for make(1) in makefiles.
+
+plugin/c.vim                   The C/C++ plug-in for GVIM.
+
+c-support/scripts/wrapper.sh   The wrapper script for the use of a xterm.
+c-support/templates/*          C-style and C++-style template files 
+                               (see csupport.txt on how to adapt the templates).
+
+
+c-support/wordlists/c-c++-keywords.list All C and C++ keywords (also in word.list).
+c-support/wordlists/k+r.list            K&R-Book: Words from the table of content.
+                                        They appear frequently in comments.
+c-support/wordlists/stl_index.list      STL: method and type names.
+
+
+--------------------------   ---------------------------------------------------
+                             The following files and extensions are for
+                             convenience only.  c.vim will work without them.
+                             ---------------------------------------------------
+c-support/doc/c-hotkeys.pdf  Hotkey reference card.
+c-support/doc/ChangeLog      The change log.
+
+rc/customization.ctags       Additional settings I use in  .ctags to enable
+                             navigation through makefiles ans qmake files with
+                             the plug-in taglist.vim.
+
+rc/customization.gvimrc      Additional settings I use in .gvimrc :
+                             hot keys, mouse settings, ...  The file is
+                             commented. Append it to your .gvimrc if you like.
+
+rc/customization.indent.pro  Additional settings I use in .indent.pro :
+                             See the indent manual.
+
+rc/customization.vimrc       Additional settings I use in .vimrc :  incremental
+                             search, tabstop, hot keys, font, use of
+                             dictionaries, ...  The file is commented. Append
+                             it to your .vimrc if you like.
+
+================================================================================
+  CREDITS
+================================================================================
+
+	Most of the people who have contributed ideas, patches,  and bug reports, is
+	thanked in the file ChangeLog.
+  I would like to especially thank my son Wolfgang Mehner, who has repeatedly
+  proposed improvements and introduced new ideas.
+
+  Some ideas are taken from the following documents:
+  1. Recommended C Style and Coding Standards (Indian Hill Style Guide)
+      www.doc.ic.ac.uk/lab/secondyear/cstyle/cstyle.html
+  2. Programming in C++, Ellemtel Telecommunication Systems Laboratories
+      www.it.bton.ac.uk/burks/burks/language/cpp/cppstyle/ellhome.htm
+  3. C++ Coding Standard, Todd Hoff
+     www.possibility.com/Cpp/CppCodingStandard.html
+
+  The splint error format is taken from the file splint.vim (Vim standard
+  distribution).  
+
+------------------
+
+  ... finally
+
+Johann Wolfgang von Goethe (1749-1832), the greatest of the German poets,
+about LINUX, Vim/gVim and other great tools (Ok, almost.) :
+
+ Ein Mann, der recht zu wirken denkt,     Who on efficient work is bent, 
+ Muß auf das beste Werkzeug halten.       Must choose the fittest instrument.
+
+Faust, Teil 1, Vorspiel auf dem Theater  Faust, Part 1, Prologue for the Theatre
+
+================================================================================

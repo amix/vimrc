@@ -1,0 +1,116 @@
+                      IMAP -- A fluid replacement for :imap
+                                   *imaps.txt*
+                 Srinath Avadhanula <srinath AT fastmail DOT fm>
+                                        
+
+
+                                    Abstract
+                                    ========
+This plugin provides a function IMAP() which emulates vims |:imap| function. The
+motivation for providing this plugin is that |:imap| sufffers from problems
+which get increasingly annoying with a large number of mappings.
+
+Consider an example. If you do >
+    imap lhs something
+
+
+then a mapping is set up. However, there will be the following problems:
+1. The 'ttimeout' option will generally limit how easily you can type the lhs.
+   if you type the left hand side too slowly, then the mapping will not be
+   activated.
+
+2. If you mistype one of the letters of the lhs, then the mapping is deactivated
+   as soon as you backspace to correct the mistake.
+
+3. The characters in lhs are shown on top of each other. This is fairly
+   distracting. This becomes a real annoyance when a lot of characters initiate
+   mappings.
+
+This script provides a function IMAP() which does not suffer from these
+problems.
+
+
+
+                                                                 *imaps.txt-toc*
+|im_1| Using IMAP
+
+================================================================================
+Viewing this file
+
+This file can be viewed with all the sections and subsections folded to ease
+navigation. By default, vim does not fold help documents. To create the folds,
+press za now. The folds are created via a foldexpr which can be seen in the
+last section of this file.
+
+See |usr_28.txt| for an introduction to folding and |fold-commands| for key
+sequences and commands to work with folds.
+
+================================================================================
+Using IMAP                                                  *im_1* *imaps-usage*
+
+
+
+Each call to IMAP is made using the sytax: >
+    call IMAP (lhs, rhs, ft [, phs, phe])
+
+
+This is equivalent to having <lhs> map to <rhs> for all files of type <ft>.
+
+Some characters in the <rhs> have special meaning which help in cursor placement
+as described in |imaps-placeholders|. The optional arguments define these
+special characters.
+
+Example One: >
+    call IMAP ("bit`", "\\begin{itemize}\<cr>\\item <++>\<cr>\\end{itemize}<++>", "tex")
+
+
+This effectively sets up the map for "bit`" whenever you edit a latex file. When
+you type in this sequence of letters, the following text is inserted: >
+    \begin{itemize}
+        \item *
+    \end{itemize}<++>
+       
+where * shows the cursor position. The cursor position after inserting the text
+is decided by the position of the first "place-holder". Place holders are
+special characters which decide cursor placement and movement. In the example
+above, the place holder characters are <+ and +>. After you have typed in the
+item, press <C-j> and you will be taken to the next set of <++>'s. Therefore by
+placing the <++> characters appropriately, you can minimize the use of movement
+keys.
+
+Set g:Imap_UsePlaceHolders to 0 to disable placeholders altogether.
+
+Set g:Imap_PlaceHolderStart and g:Imap_PlaceHolderEnd to something else if you
+want different place holder characters. Also, b:Imap_PlaceHolderStart and
+b:Imap_PlaceHolderEnd override the values of g:Imap_PlaceHolderStart and
+g:Imap_PlaceHolderEnd respectively. This is useful for setting buffer specific
+place hoders.
+
+Example Two: You can use the <C-r> command to insert dynamic elements such as
+dates. >
+    call IMAP ('date`', "\<c-r>=strftime('%b %d %Y')\<cr>", '')
+       
+
+
+With this mapping, typing date` will insert the present date into the file.
+
+================================================================================
+About this file
+
+This file was created automatically from its XML variant using db2vim. db2vim is
+a python script which understands a very limited subset of the Docbook XML 4.2
+DTD and outputs a plain text file in vim help format.
+
+db2vim can be obtained via anonymous CVS from sourceforge.net. Use
+
+cvs -d:pserver:anonymous@cvs.vim-latex.sf.net:/cvsroot/vim-latex co db2vim
+
+Or you can visit the web-interface to sourceforge CVS at:
+http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/vim-latex/db2vim/
+
+The following modelines should nicely fold up this help manual.
+
+vim:ft=help:fdm=expr:nowrap
+vim:foldexpr=getline(v\:lnum-1)=~'-\\{80}'?'>2'\:getline(v\:lnum-1)=~'=\\{80}'?'>1'\:getline(v\:lnum)=~'=\\{80}'?'0'\:getline(v\:lnum)=~'-\\{80}'?'1'\:'='
+vim:foldtext=substitute(v\:folddashes.substitute(getline(v\:foldstart),'\\s*\\*.*',"",""),'^--','--\ \ \ \ ','')
+================================================================================

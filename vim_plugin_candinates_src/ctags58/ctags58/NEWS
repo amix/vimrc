@@ -1,0 +1,871 @@
+Current Version: 5.8
+
+ctags-5.8 (09 Jul 2009)
+* Removed ".ml" as a Lisp extension (now OCaml) [Lisp].
+* Added support for Ant language, contributed by David Fishburn.
+* Added support for DOS Batch language, contributed by David Fishburn.
+* Added support for Flex (Adobe) language, contributed by David Fishburn.
+* Added support for MATLAB language, contributed by David Fishburn.
+* Added support for Objective Camel (OCaml), provided by Vincent Berthoux [Patch #2738723].
+* Added support for TeX language, contributed by David Fishburn.
+* Added support for VHDL language, contributed by Nicolas Vincent [Bug #1943306].
+* Added support for Pyrex/Cython declarations [Python].
+* Added support for "v" kind, for variables [Python].
+* Added support for class and member variables [PHP, Bug #1037086].
+* Added support for recent enhancements to Eiffel language [Eiffel].
+* Added support for ASP classes, contributed by Zendhi Nagao; changes meaning of 'c' kind flag [ASP].
+* Added regex support when compiling with MinGW. Gnu regex module now included in all distributions.
+* Fixed detection of triple strings inside other strings [Python, Bug #1988130].
+* Fixed an endless loop with comments in triple strings [Python, Bug #1988027].
+* Fixed bug where functions were sometimes seen as methods [Python, Bug #1988026].
+* Fixed parsing of method parameter annotations, fix contributed by Paolo "blaisorblade" Giarrusso [Java, Bug #2049723, #2117073].
+* Fixed parsing of global scope qualifiers in base class lists [C++, Bug #1799343].
+* Fixed bug where namespace members were given kinds corresponding to globals [C++, Bug #1924919, #1575055].
+* Fixed parsing of "else" [C#, Bug #1830344].
+* Fixed parsing of derived enums [C#, Bug #1515910].
+* Fixed parsing of "foreach" [C#, Bug #1830343].
+* Fixed parsing of simple generic classes [C#, Bug #1515910].
+* Fixed bug with detecting identifiers inside variables [Python, Bug #1809024].
+* Fixed bug with detecting identifiers at the start of variables [Python, Bug #1856363].
+* Fixed parsing of triple single-quoted multi-line strings [Python, Bug #1906062].
+* Changed to newer version of autoconf, changing configure.in to configure.ac.
+
+ctags-5.7 (04 Sep 2007)
+* Added support for DIM AS [Freebasic, Bug #1741778].
+* Added support for arbitrary nesting depth [Python, Bug #1684786, Debian bug #409078].
+* Added support for verbatim string literals [C#, Bug #1515910].
+* Added support for .ctags as well as ctags.cnf on Windows [Bug #1246506].
+* Added support for non-extern, non-static functions returning wchar_t, contributed by Aaron Peromsik [C++, Patch #1458930].
+* Added support for numerous revision control systems including Bazaar and Mercurial [Bug #1472894].
+* Added support for enums [Java, Bug #1730485, Bug #1517143, Patch #1027395, Patch #1528507].
+* Added support for multiple-level namespace declarations [C#].
+* Added .svn to list of directories ignored during recursion (--recurse).
+* Added support for BlitzBasic, PureBasic and FreeBasic [FR #1100506].
+* Added support for interfaces and static/public/protected/private functions [PHP].
+* Added support for 'package' keyword [Perl].
+* Added support for multi-line subroutine, package, and constant definitions [Perl].
+* Added support for optional subroutine declarations [Perl].
+* Added support for formats [Perl].
+* Added support for new convert keyword [Eiffel].
+* Added optional tags for forward variable declarations (e.g. 'struct C;') [C, C++].
+* Changed parsing of option input file (-L) to strip trailing white space.
+* Ignore comments mixed into definitions and declarations [Perl].
+* Fixed detecting labels with whitespace after label name [Perl, Bug #1752361]
+* Fixed parsing of generic classes/interfaces [Java, Bug #1447756].
+* Fixed misidentification of fully qualified function calls as labels [Perl].
+* Fixed parsing of inner classes [Python, Bug #1411963].
+* Fixed line continuation [Python, Bug #928001, Patch #819471].
+* Fixed parsing of annotations [Java, Bug #1691412].
+* Fixed block-comment parsing [Verilog, Patch #1458042, Bugs #960316, #1111214, #1606569, #1615060].
+* Fixed typo in man page [Debian bug #366412].
+* Fixed missing chunk of text in man page and over-use of hyphens in UTF-8 locales [Debian bug #271323].
+* Fixed parsing of ` as a method name [Ruby].
+* Fixed parsing of keywords in string literals [Ruby, Bug #1742588].
+* Fixed potential segmentation violation [Bug #1672834, Bug #1222926].
+* Fixed parsing of destructors with whitespace after the '~' [C++, Bug #1585745].
+* Fixed default access of unions to be public [C++, Bug #1548443].
+* Fixed various memory leaks, mostly contributed by Dmitry Antipov.
+* Fixed parsing of `define [Verilog, Bug #961001].
+* Fixed crashes involving '/' [Verilog, Bug #1743330].
+* Fixed compilation problem on MinGW [Bug #1517424].
+* Fixed generation of HTML-formatted man page [Bug #1645864].
+* Fixed recognition of Python scripts having '#!/usr/bin/python' as first line [Bug #1764148].
+* Fixed parsing of Fortran comment-to-end-of-line with no newline before EOF [Debian bug #432872].
+* Fixed parsing of << [C/C++, Bugs #1020715, #1093123, #1770479, #1770607].
+* Fixed parsing of fully-qualified type names [Java, Bug #814263].
+* Fixed handling of lone carriage-return characters in file [Bug #1773926].
+
+ctags-5.6 (Mon May 29 2006)
+* Reformatted code for independence of tab stop setting.
+* Changed default configuration to disable installation of etags links.
+* Changed --langmap to first unmap each supplied extension from other languages.
+* Added support for ASP constants [ASP, Patch #961842].
+* Added support for GNU make extensions [Make].
+* Added .mk as extension recognized as a make language file [Make].
+* Added missing help for list-maps options [Bug #1201826].
+* Added new extension field "typeref" [thanks to Bram Moolenaar].
+* Extended functionality of Ruby parser with patch from Elliott Hughes [Ruby].
+* Fixed creation of TAGS file with etags-include but no files [Bug #941233].
+* Fixed problem reading last line of list file (-L) without final newline.
+* Fixed infinite loop that could occur on files without final newline [C, Java].
+* Fixed incorrect tag for first field of table [SQL].
+* Fixed missing tags for functions beginning with underscore [Sh].
+* Fixed missing tags for functions with variable arg list [C, Bug #1201689].
+* Fixed parsing problem with parentheses in argument list [C, Bug #1085585].
+* Fixed problem in preprocessor directive handling [C, Bug #1086609].
+
+ctags-5.5.4 (Thu Mar 25 2004)
+* Fixed broken -R option.
+
+ctags-5.5.3 (Sun Mar 14 2004)
+* Removed forgotten debug statement [Bug #811704].
+* Added support for Perl labels.
+* Added support for Perl "use constant" [Perl, Patch #853704, Feature Request
+  #710017].
+* Added support for package qualification of tags, removing useless "package"
+  tag kind [Perl, Feature Request #448887].
+* Added support for "and" keyword [SML, Bug #816636].
+* Added support for variables [PHP].
+* Fixed problem destroying tag file with certain info options [Bug #845502].
+* Fixed portability problem [DJGPP].
+* Fixed problem of double characters in signature field [C, Bug #852368].
+* Fixed problem manifested by errant preprocessor conditionals [Bug #839162].
+* Fixed incorrect line address in tag file for SQL tags [SQL, Bug #823000].
+* Fixed incorrect recognition of POD paragraph [Perl, Bug #842077].
+* Fixed spurious tags for for C++ member templtates [C++, Bug #849591].
+* Fixed missing tags related to template specializations [C++, Bug #872494].
+* Fixed spurious local tags for statements following labels [C].
+* Fixed missing tags for certain scoped functions [Vim].
+* Fixed infinite loop in Fortran parser.
+* Fixed missing tags for certain initializers [Fortran, Bug #877956].
+* Fixed problem with comment line after continuation character [Fortran,
+  Bug #858165].
+
+ctags-5.5.2 (Wed Sep 17 2003)
+* Added tags for local variables for C-based languages [C/C++/C#/Java/Vera,
+  Feature Request #449503].
+* Fixed compilation problem due to type change made to accomodate change of
+  return type of _findfirst() in VisualStudio.Net [Win32, Bug #775789].
+* Fixed problems with certain bit fields.
+
+ctags-5.5.1 (Wed Jul 30 2003)
+* Changed supported tag kinds for Verilog parser during overhaul.
+* Restored exit of program after --help, --license, and --version options [Bug
+  #717311, #751240].
+* Removed inclusion of general.h (GPL) from readtags.c (public domain).
+* Added support for tags for labels [PL/SQL].
+* Added support for tags for constant definitions [PHP].
+* Fixed redundant parsing of configuration file [Windows, Bug #768814].
+* Fixed missing tags for definitions spanning lines [Verilog, Bug #762027].
+* Fixed compilation error for uncommon hosts.
+* Fixed missing tags for Korn shell specific function definitions. [Sh,
+  Bug #769184]
+* Fixed missing tags when semicolon separator appears [Fortran, Bug #734933].
+* Fixed missing tags when endsubroutine keyword appears [Fortran, Bug #726712].
+* Fixed problem with fixed-form line continuation following comment [Fortran,
+  Bug #726875].
+* Fixed missing tags for nested blocks [PL/SQL, Bug #722501].
+* Fixed missing tags for function typedefs [C].
+* Fixed inability to map empty extension when path contained dot [Bug #742689].
+
+ctags-5.5 (Tue Apr 1 2003)
+* Changed kind indicator for methods from 'f' to 'm' [Tcl].
+* Changed tags within interfaces to be disabled by default (like prototypes in
+  C/C++) [Fortran].
+* Removed explicit descriptions of individual --<LANG>-types options from
+  --help output. See new --list-languages and --list-kinds options.
+* Removed explicit list of supported languages and supported tag kinds and
+  mapping patterns from man page. See new --list-languages, --list-kinds, and
+  --list-maps options.
+* Renamed --<LANG>-types option to --<LANG>-kinds (still accepts old name).
+* Added --list-kinds option.
+* Added --list-maps option.
+* Added --list-languages option.
+* Added support for dimensioned variables, contributed by Simon Bohlin [ASP].
+* Added support for C# language.
+* Added support for Erlang language, contributed by Brent Fulgham.
+* Added support for HTML language files.
+* Added support for JavaScript language files.
+* Added support for SML (Standard ML) language, contributed by Venkatesh Prasad.
+* Added mapping for .plx to Perl.
+* Added tags for autocommand groups [Vim, Patch #664685].
+* Added support for numerous language extensions [Fortran].
+* Added '$', 'D', and 'd' in column 1 as comment characters [Fortran].
+* Added special handling of --options=NONE to disable automatic reading of
+  options from configuration files or environment.
+* Added check for case-insensitive filenames to configure.
+* Fixed problem with lower case <SID> tag [Vim, Bug #657327].
+* Fixed problem recognizing indented code [Vim, Patch #664685].
+* Fixed problem with infinite loop in certain comments [PL/SQL, Bug #629115].
+* Fixed problem of incorrect extension field [C, Bug #639639].
+* Fixed problem of empty scoping extension field [C, Bug #639644].
+* Fixed missing tags for functions split across lines [PHP, Bug #681824].
+* Fixed missing tags for nested subprograms using 'contains' [Fortran,
+  Bug #670433].
+* Fixed missing tags when variable has same name as keyword [Fortran].
+* Fixed spurious tag when an array-spec occurs within an entity-decl [Fortran].
+* Fixed mishandling of multiline raw strings [Python, Bug #699171].
+* Fixed missing scope extension field on namespaces [C++, C#, Bug #665086].
+* Fixed several bugs causing missed tags [Fortran].
+* Fixed problem with --langmap option preventing clearing of map [Bug #688442].
+* Fixed recognition of Unicode-8 characters [Java].
+* Fixed man page errors and omissions.
+* Fixed bug in readFieldValue() in readtags library.
+* Fixed bug in option parsing in readtags command-line program.
+* Fixed portability problems with DJGPP [Bug #692569].
+* Fixed portability problems with Cygwin.
+
+ctags-5.4 (Thu Oct 17 2002)
+* Improved ability for tagsOpen() in readtags library to report failure to
+  open tag file, adding new fields to tagFileInfo structure.
+* Improved Cobol support to include data, files, groups, and sections [Cobol].
+* Added '$' a valid character for C identifier [VMS].
+* Added support for recording routine argument declarations for C-like
+  languages. See the --fields option and man page section TAG FILE FORMAT for
+  more information [C, C++, Java].
+* Added class and method support to TCL parser [TCL].
+* Added support for PL/SQL language.
+* Added support for Vera language, inspired by Dave Eggum [Vera].
+* Fixed problem terminating Perl POD block [Perl, Bug #612621].
+* Fixed problem re whitespace preceding subprogram name [Pascal, Bug #612019].
+* Fixed problem with leading spaces before instruction [TCL, Bug #615928].
+* Fixed problem with double precision functions [Fortran, Bug #620288].
+* Fixed inverted test causing TMPDIR to be used for temporary files when
+  ctags is setuid instead of when not setuid [Bug #623713].
+
+ctags-5.3.1 (Thu Sep 12 2002)
+* Renamed tagsSetSorted() to tagsSetSortType() and "sorted" member of
+  tagFileInfo structure of readtags library to "sort".
+* Added new function, tagsFirst() to readtags library.
+* Fixed incorrect tag kinds [Verilog].
+* Fixed null tags for unnamed BLOCK DATA statements [Fortran].
+* Fixed missing tags for function preceded by "<SID>" [Vim].
+* Fixed missing tags for equate statements not in column 1 [Asm, Bug #538629].
+* Fixed Ruby parser (why didn't the compiler report my screw-up?) [Ruby].
+
+ctags-5.3 (Wed Jul 17 2002)
+* Allowed --etags-include option without input files.
+* Changed Asm parser to back to C-based parser to remove redundant tags,
+  and extending its support for more variants [Asm].
+* Changed to using _tempnam() to create temporary files on Windows, allowing
+  "TMP" environment variable to set temporary directory.
+* Changed the -x output to match that of traditional ctags when the --format=1
+  option is supplied. The new format was also changed slightly to conform more
+  closely to the original format, with the addition of the extra tag type field.
+* Added support for Verilog language, submitted by Nam SungHyun.
+* Added support for RISC OS platform, contributed by Andrew Wingate.
+* Added support for "#pragma weak", generating macro tags for weak symbols [C].
+* Added support for mixins and class methods to Ruby parser, submitted by
+  Matthias Veit [Ruby].
+* Added support to ctags and readtags library for case-folded sorting of tag
+  files, submitted by Flemming Madsen.
+* Added identification of class methods [Python].
+* Fixed portability problems [Bugs #541997, #571240].
+* Fixed bug in configure script [Solaris, Bug #542966].
+* Fixed invalid package name tags [Perl, Bug #535068].
+* Fixed failure to output relative paths into etags TAGS files on Win32
+  [Bug #568365].
+* Fixed incorrect line address in cases of line continuation [Fortran].
+* Fixed missing tags for certain cases of invalid syntax [C].
+* Fixed missing tags in Fortran with HPF extensions [Fortran, Bug #565813].
+* Fixed spurious tag for clients portion of feature clause when following
+  an empty feature clause [Eiffel].
+
+ctags-5.2.3 (Sun Feb 24 2002)
+* Fixed portability problem in makefile [Solaris, FreeBSD].
+* Fixed infinite loop for certain cases of invalid syntax [Eiffel].
+* Changed Asm parser to regex, extending its support for more variants [Asm].
+
+ctags-5.2.2 (Sat Feb 16 2002)
+* Fixed spurious tags following empty feature clause [Eiffel].
+* Fixed missing tags for classes specifying generic creation routine [Eiffel].
+* Fixed missing tags when label not followed by white space [YACC].
+* Fixed for portability [Solaris, MacOS X].
+* Added support for type reference tool [Eiffel].
+
+ctags-5.2.1 (Sun Jan 20 2002)
+* Portability fixes [Mingw32].
+* Added "RCS" and "CVS" to list of directories excluded by default.
+* Fixed missing tags for function pointers declared const or volatile
+  [C, Bug #503764].
+
+ctags-5.2 (Sun Dec 23 2001)
+* Portability fixes [HP-UX, Solaris, VMS, OS/2].
+* Made code compilable by a C++ compiler.
+* Changed reading of option files to ignore blank lines.
+* Changed and enhanced interface to readtags library (see readtags.h).
+* Changed from using addLanguageRegex() to addTagRegex() in regex-based
+  parsers.
+* Added support for Lua language, submitted by Max Ischenko.
+* Added instructions to man page on using tags with NEdit.
+* Added setargv.obj to link for wildcard expansion [MSVC].
+* Added capability to have regex invoke a callback in a regex parser.
+* Fixed regex tag problem which left newlines in back-references.
+* Fixed missing class-qualified tags [Eiffel].
+* Fixed spurious tags for entries in final indexing clause [Eiffel].
+* Fixed problem with invalid filenames in preprocessor line directives.
+* Fixed bug parsing scoped variables (e.g. "b:variable") [Vim, Bug #487608].
+* Fixed problem compiling readtags.c on some hosts.
+* Fixed memory overwrite problem in readtags library.
+
+ctags-5.1 (Tue Nov 06 2001)
+* Changed name of option configuration files for MSDOS, MSWindows, and OS/2.
+* Changed regex support to enforce REG_NEWLINE. This fixes problem where the
+  newline character was explicity being matched by user patterns [Bug #431477].
+* Added new public domain library for reading tag files (see readtags.h).
+* Added support for variables and namespaces, provided by Jay Glanville [Vim].
+* Added report of non-options in option configuration files and CTAGS
+  environment variable.
+* Added support for YACC language, submitted by Nick Hibma [YACC].
+* Added support for Perl packages, submitted by Nick Hibma [Perl].
+* Added '$' as valid identifier character for DEC C compiler [VMS, Bug #425147].
+* Added compilation date and time to --version output.
+* Added configure check for HP-UX to determine if ANSI options needed [HP-UX].
+* Removed tags for forward class/struct declarations [C/C++, Bug #432563].
+* Eliminated ;" separator from end of tag line when no extension fields are
+  present.
+* Fixed segmentation violation for some Lisp files [Lisp].
+* Fixed segmentation violation occurring when file referenced in #line
+  directive was from an unknown language.
+* Fixed loss of sync when parsing bit fields named with C++ reserved word [C].
+* Fixed compilation problem on gcc-2.7.2.
+* Fixed problem parsing verbatim strings [Eiffel].
+* Fixed problem with PHP references [PHP].
+* Fixed handling of Perl __DATA__ sections [Perl].
+* Fixed problem resulting from white space in tag name due to regex name
+  specifier.
+* Fixed double reading of $HOME/.ctags when current directory is $HOME.
+* Fixed problem reading option configuration files using CR-LF newlines.
+* Fixed problem preventing output control over tag kinds of regex patterns
+  [Bug #429869]
+* Fixed incorrect parsing of Vim functions with ':' modifiers [Bug #466517].
+
+ctags-5.0.1 (Sun Apr 15 2001)
+* Fixed problem checking recursive links [SunOS 4.x].
+* Improved security on hosts where mkstemp() is not available.
+
+ctags-5.0 (Sun Mar 18 2001)
+* Restructured code to simplify support for new language parsers.
+* Changed source code to use ANSI-style function definitions.
+* Changed scope-qualified tag entries to omit enumeration name [C/C++].
+* Changed reading of files supplied to -I option to read one token per line.
+* Changed reading of option files to read one argument per line.
+* Changed default extension fields, now controlled by new option --fields.
+* Changed detection of etags invocation to accept any name containing "etags".
+* Removed -p option, which only caused confusion and is rendered obsolete by
+  the change immediately above.
+* Removed 'A' flag to the --c-types, --eiffel-types, and --java-types
+  options, replacing its functionality with the new --fields option.
+* Removed 'C' flag to the --c-types, --eiffel-types, and --java-types
+  options, replacing its functionality with the new --extra option.
+* Deprecated -i option, which was long ago replaced with the --c-types option.
+* Deprecated --file-tags option, now incorporated into new --extra option.
+* Deprecated --kind-long option, now incorporated into new --fields option.
+* Renamed --lang[uage] option to --language-force.
+* Renamed makefiles for non-Unix platforms.
+* Improved parsing of assembly language files [Asm].
+* Improved parsing of Fortran language files, adding new tag kinds [Fortran].
+* Added documentation explaining how to extend ctags with new parsers.
+* Added support for regular expressions, using either Posix or Gnu interface.
+* Added support for mapping file names to languages using shell patterns.
+* Added support for ASP scripts, submitted by Patrick Dehne [ASP].
+* Added support for Makefiles [Make].
+* Added support for Pascal language [Pascal].
+* Added support for PHP scripts, submitted by Jesus Castagnetto [PHP].
+* Added support for REXX language [REXX], based on submission by Alexaner Mai.
+* Added support for Ruby, submitted by Thaddeus Covert [Ruby].
+* Added support for S-Lang, submitted by Francesc Rocher [SLang].
+* Added support for Macintosh platform using MPW (by Maarten Hekkelman).
+* Added .tk as recognized extension [Tcl].
+* Added .cp and .hp as C++ extensions [C++].
+* Added .zsh as shell script extension [Sh].
+* Added support for trigraphs for C-based languages [C/C++].
+* Added language recognition for shell scripts using "#!/usr/bin/env command".
+* Added check for recursive directory links.
+* Added support for "[" form of verbatim strings [Eiffel].
+* Added --exclude option to exclude directories while recursing.
+* Added --fields option to specify extension fields to include in output.
+* Added --extra option to allow control over extra tags.
+* Added --regex-<LANG> option to define language-specific regular expressions.
+* Added --<LANG>-types options for all supported languages.
+* Added --langdef option to define new languages to be parsed with regex.
+* Added --languages option to restrict set of languages scanned for tags.
+* Added --tag-relative option to make file paths recorded in tag file relative
+  to location of tag file itself instead of the current working directory when
+  file arguments are specified using relative paths.
+* Added restriction of permissions of created temporary files when mkstemp()
+  is not available for security.
+* Reimplemented line directive handling to work for all languages.
+* Fixed tag generation for packages [Java].
+* Fixed Lisp parser [Lisp].
+* Fixed Mingw32 port [Win32].
+* Fixed bug in procedure name parsing [Tcl].
+* Fixed bug resulting in wrong column being checked for paragraphs [Cobol].
+* Fixed bug in language dispatch for executable "#!" scripts [Unix].
+* Fixed bugs resulting in incorrect scope entries in tag file [C++/Java].
+* Fixed warning caused by reinstallation of etags link [Unix].
+* Fixed destruction of existing tag file when no files supplied on invocation.
+* Fixed problem in Makefile.in which prevented configuring and building in
+  non-source directory. Also changed Makefile.in to generate and use correct
+  object and executable file extensions when run on Win32.
+
+ctags-4.0.3 (Sun Jul 16 2000)
+* Fixed compiler warnings [Amiga].
+* Fixed problem in configure.in causing struct stat st_ino member test to fail.
+* Fixed problem with TAGS entries for files using DOS-style (CR-LF) new lines.
+* Improved algorithm for locating Perl functions and skipping pods.
+* Improved algorithm for locating shell functions [Sh].
+* Renamed Makefile.amiga to Makefile.manx [Amiga].
+* Added Makefile.sas for SAS C compiler [Amiga].
+* Updated Makefile.qdos [QDOS].
+* Improved support for DECC compiler [VAX].
+
+ctags-4.0.2 (Mon Jul 10 2000)
+* Now silently ignore -w option for backwards compatibility with SVR4 ctags.
+* Fixed bug resulting in no extension flags when using --kind-long option.
+
+ctags-4.0.1 (Wed Jun 28 2000)
+* Fixed segmentation violation when using --file-tags.
+
+ctags-4.0 (Thu Jun 22 2000)
+* Fixed infinite loop on certain syntactically invalid class constructs [C++].
+* Fixed problem of incorrect tags for some pure virtual functions [C++].
+* Fixed inability to clear all tag types when using --c-types= (all languages).
+* Fixed problem of arguments to parameterized class being reported as
+  ancestors in the "inherits" extension flag.
+* Fixed missed tags for typedef-ed function pointers having a PROTO((a,b))
+  style argument list.
+* Fixed missing file tags for referenced files when using --line-directives
+  option [C/C++].
+* Fixed failure to recognize drive-qualified file name as a file name when
+  supplied as argument to -I option [Win32].
+* Fixed problem with missing comma in "inherits" extension flag [Java].
+* Fixed problem with incorrect or redundant parents listed for "inherits"
+  extension flag [Java].
+* Added check to avoid recursive symbolic links to directories.
+* Added warning message for -i option, which is deprecated and being dropped.
+* Added support for Assembler, COBOL, LISP, PERL, and Scheme, taken from Gnu
+  etags.
+* Added support for AWK, Bourne/Korn/Z Shell, Python, TCL, and Vim scripts.
+* Added support for the BETA language, submitted by Erik Corry.
+* Added ability to determine language from interpreter specified in first line
+  of executable files if they are not recognized by their extension.
+* Added --options option.
+* Added ability to specify files having no extension with -h and --langmap
+  options.
+* Added compile time option to separate path components with a unix-style path
+  separator for sharing tag file across platforms, enabled by defining the
+  label UNIX_PATH_SEPARATOR [Win32].
+* Fixed portability issues [VMS].
+
+ctags-3.5.2 (Mon Apr 24 2000)
+* Fixed problem preventing Emacs-style tags from being written to stdout.
+
+ctags-3.5.1 (Sun Apr 23 2000)
+* Fixed infinite loop in writing Emacs-style TAGS file on platforms using
+  tmpnam() instead of mkstemp() [Win32].
+* Fixed minor problems in Borland makefiles [Win32].
+* Fixed compiler warning [DJGPP].
+
+ctags-3.5 (Fri Apr 14 2000)
+* Fixed core dump when including access field in tag file [Java].
+* Fixed failure to identify end of statement for block statements [Java].
+* Fixed bug with lone "end" in feature adaptation part of inheritance clause
+  [Eiffel].
+* Fixed problem preventing const functions from being recognized as pure
+  virtual [C/C++].
+* Fixed problem with no tags found after certain macro calls [C/C++].
+* Fixed bug in descrip.mms build file [VMS].
+* Changed to use mkstemp() (when available) to create temporary files for
+  security reasons and allow configuring default temporary directory, and to
+  override this directory at run-time by setting TMPDIR environment variable.
+* Added support for extracting inheritance information into new "inherits"
+  extension flag [C++, Java].
+* Added Makefile.bc5 for Borland C++ version 5.5 compiler (free version).
+* Added new question to FAQ regarding Xemacs.
+* Updated FAQ regarding new release of NEdit.
+* Renamed Borland 3.1 makefile from Makefile.bcc to Makefile.bc3.
+* Renamed Microsoft Visual C++ makefile from Makefile.w32 to Makefile.mvc.
+
+ctags-3.4 (Thu Jan 13 2000)
+* Fixed sorting problems when LC_ALL environment variable was set to foreign
+  locale (not fixed by previous release).
+* Fixed nested scoping reported in extension flags and class-qualified tags.
+* Eliminated generation of class-qualified tag entries when --c-types=+C
+  option is in effect but scope is empty (e.g. "::main").
+* Added support for default access of class members in Java.
+* Added new extension flag "implementation", which indicates if a routine or
+  class is virtual or abstract.
+* Minor changes for OS/2 compilation.
+
+ctags-3.3.3 (Thu Dec 16 1999)
+* Changed how input is read for -L and --filter options to permit file names
+  containing spaces (see man page).
+* Fixed scope recorded for C++ class elements, especially in namespaces.
+* Fixed spurious tag generated for MODULE PROCEDURE in interfaces [Fortran].
+* Fixed sorting problems when LC_ALL environment variable was set to foreign
+  locale.
+* Fixed crash on Windows when compiled with Mingw32 gcc compiler.
+* Fixed compilation problems on Cray.
+
+ctags-3.3.2 (Fri Sep 24 1999)
+* Fixed compile problem on AIX 4.1.
+* Improved recovery from syntax error [Fortran].
+* Changed name of configure option (now --enable-custom-config).
+* Changed Makefile.bcc to optimize for space, since code size exceeded 64KB.
+
+ctags-3.3.1 (Mon Sep 20 1999)
+* Fixed segmentation violation occurring when directory recursion was selected.
+* Fixed misleading message when out of memory during internal sort.
+
+ctags-3.3 (Fri Sep 17 1999)
+* Fixed missing class-qualified tags [Java].
+* Fixed missing tag for functions having function pointer argument [C].
+* Fixed parsing of conversion functions [C++].
+* Added missing space following "operator" keyword to the tag names generated
+  for function call operators [C++].
+* Fixed string parsing to retry file as free source form upon EOF [Fortran].
+* Fixed missing tags following comments [Fortran].
+* Fixed missing labels for free source form [Fortran].
+* Removed 72 character limit for fixed form source lines, since many compilers
+  relax this limit and it is commonly taken advantage of. This was sometimes
+  causing fixed form source to be parsed as free form source [Fortran].
+* Changed misleading message when file could not be accessed.
+* Changed behavior of --verbose option to display option processing.
+* Changed -I option to permit clearing the token list with "-I-".
+* Changed --lang option to accept new "auto" parameter.
+* Changed --langmap option to accept new "default" parameter.
+* Changed --eiffel-types option to accept new 'C' flag to generate
+  class-qualified tags.
+* Changed -h option to accept new "default" parameter.
+* Changed option processing. Most options may now appear anywhere on the
+  command line, affecting only those files which follow them.
+* Added ability to specify default options in any of the files /etc/ctags.conf,
+  /usr/local/etc/ctags.conf, $HOME/.ctags, .ctags, and one optional file,
+  which can be supplied at configure time.
+* Added --filter option.
+* Added --filter-terminator option.
+
+ctags-3.2.4 (Thu Jul 01 1999)
+* Changed name of macro in Makefile.in to avoid being overriden by CTAGS
+  environment variable.
+
+ctags-3.2.3 (Mon Jun 21 1999)
+* Small portability change for EMX compiler on OS/2.
+* Slight change to W32 and BCC makefiles.
+
+ctags-3.2.2 (Sat May 29 1999)
+* Fixed endless error loop in the case of unreadable file.
+* Fixed redundant include entries in TAGS file when using --etags-include.
+
+ctags-3.2.1 (Wed May 09 1999)
+* Fixed problem reading -I token list from file.
+* Fixed with "using" declarations which corrupted tag file [C++].
+* Fixed configure.in to more reliably recognize existing prototypes.
+* Added ability to ignore preprocessor directives in Fortran files.
+* Added support for egcs/MingW32 compiler [Win32].
+
+ctags-3.2 (Wed Mar 03 1999)
+* Fixed spurious tags related to export specifiers of feature clauses [Eiffel].
+* Fixed problem with template in ctor-initialer [C++].
+* Fixed typo causing compiler error [MSVC].
+* Extended -I option to allow token replacement [thanks to Flemming Madsen].
+* Added --etags-include option to support TAGS file includes.
+* Added support for QDOS [thanks to Thierry Godefroy].
+
+ctags-3.1.2 (Tue Jan 26 1999)
+* Changed extension flags to eliminate space between label and value to remain
+  true to the intent of the agreement on the extended format made with editor
+  authors.
+* Added --links option to permit ignoring symbolic links.
+* Fixed missing tags upon ANSI style variable function argument lists.
+* Fixed missing tags for methods with fully qualified type names in argument
+  list [Java].
+* Fixed double tags generated for enumerators followed by comma.
+* Fixed missing path prefix for -p option [Win 95/NT].
+
+ctags-3.1 (Wed Jan 20 1999)
+* Changed -h and -langmap options to accept a plus sign as the first character
+  of their arguments to indicate that arguments should be added to current.
+* Changed default for member tags to 'on' [C/C++].
+* Changed default for local entities to 'off' [Eiffel].
+* Added tags for forward class/struct/union/enum declarations when using
+  -c-types=+x [C/C++].
+* Fixed memory overwrite bug causing general protection fault [Win 95/NT].
+* Fixed missing tags for methods with throws clause [Java].
+* Fixed bad tags generated for null macro names [C].
+* Fixed spurious tag for features and entities of BIT type [Eiffel].
+* Fixed spurious tags when local entity declaration list was empty [Eiffel].
+* Fixed missing tags for contructors and destructors [C++].
+* Fixed failure to recognize function when declaration for first argument
+  was of template type [C++].
+
+ctags-3.0.3 (Mon Dec 21 1998)
+* Fixed mistake made in previous version which caused macro tags to be missed.
+* Fixed parsing of --langmap option.
+
+ctags-3.0.2 (Mon Dec 21 1998)
+* Added tags for names undefined with #undef [C/C++].
+* Added tags for renamed features (Eiffel).
+* Improved Emacs-style tag file contents (per Ian Zimmerman).
+* Fixed problem handling deferred, external, once, obsolete features in Eiffel.
+* Fixed porting problem [OSF1 V4.0].
+
+ctags-3.0.1 (Sat Dec 12 1998)
+* Fixed problem with certain macros and functions with no declared return type.
+* Fixed problem causing endless loop on MSDOS/Win32 by restoring use of binary
+  mode on opening of source files.
+* Fixed porting problems [SunOS 4.1.x and MSVC++ 5.0].
+
+ctags-3.0 (Sun Dec 06 1998)
+* Added support for the Eiffel language (everyone should learn Eiffel).
+* Added support for the Fortran language.
+* Added --c-types option to specify tag types to be included for C/C++.
+* Added --eiffel-types option to specify tag types to be included for Eiffel.
+* Added --fortran-types option to specify tag types to be included for Fortran.
+* Added --file-scope option to place verbose tag description into tag file.
+* Added --file-tags option to place tags for source file names into tag file.
+* Added --java-types option to specify tag types to be included for Java.
+* Added --kind-long option to place verbose tag description into tag file.
+* Added --linedirectives option to enable processing of #line directives so
+  that running ctags on preprocessor output can generate line numbers and file
+  names which correspond to the original source files.
+* Added -V option to enable verbose message for each file considered.
+* Added special handling for macros of form "INIT(= value)".
+* Added ability to suffix an ignored identifier (-I option) with the '+'
+  character, thus instructing ctags to also ignore any argument list which
+  may follow the identifier.
+* Changed the -i option, moving Java language options to the new --java-types
+  option. The -i option is now deprecated in favor of the new language
+  specific tag type options.
+* Changed behavior of handling of ignored identifiers (-I option) to still
+  generate a tag for any macro definition for that identifier.
+* Changed handling of -h option so that include files are no longer assumed to
+  be C++ files.
+* Changed tags for operators to always precede the operator with the string
+  "operator ", thus making it consistent for all operators. [C++]
+* Changed C/C++ parsing, catching many more tricky constructs.
+* Changed extension flags to place a space between the label and the value for
+  readability.
+* Fixed core dump which occurred when using -iF (now --file-tags) together
+  with -e (etags) on a zero-length file.
+* Fixed missing or incorrect tags for conversions operators or operator "()".
+* Fixed incorrect parent class in extension flags for type declarations of the
+  form "class Bar { OtherClass::sometype foo; }".
+* Fixed missing tags for "friend" and "static" prototypes in header files.
+* Fixed problem of external "sort" reporting locale not available on HPUX.
+* Fixed -p option.
+* Fixed VMS support. It should now work for any source file type.
+
+ctags-2.3.2 (Wed Sep 09 1998)
+* Fixed -h option; broken since version 1.7, yet only just reported.
+
+ctags-2.3.1 (Sun Aug 30 1998)
+* Fixed improper handling of derived structs.
+* Fixed wrong class name tag when a nested-name-specifier was present in class
+  declaration.
+* Added parent information into tag extension flags for data structures to
+  match that already present for members.
+* Add missing documentation for --langmap option in the --help output.
+* Eliminated compiler warning [gcc 2.8.1].
+
+ctags-2.3 (Thu Aug 20 1998)
+* Eliminated compiler warnings [SGI MIPSpro].
+
+ctags-2.2.7 (Mon Aug 17 1998)
+* Fixed porting problem [Borland C++].
+
+ctags-2.2.6 (Wed Aug 12 1998)
+* Fixed core dump encountered on some platforms when the CTAGS environment
+  variable was set but empty.
+* Fixed porting problem [MSVC].
+* Added directory recursion support for Amiga.
+
+ctags-2.2.3 (Sun Aug 02 1998)
+ctags-2.2.2 (Fri Jul 24 1998)
+* Fixed porting problems [AIX, HP-UX, OSF/1, SunOS, MSVC].
+
+ctags-2.2.1 (Fri Jul 24 1998)
+* Now uses a default directory name of "." when using -R or --recurse option
+  (e.g. "ctags -R" is equivalent to "ctags -R .").
+* Directories named "SCCS" are skipped when using the -R or --recurse option
+  under Unix.
+* Fixed porting problems [HP-UX, IRIX, SunOS, MSDOS/Windows].
+
+ctags-2.2 (Mon Jul 20 1998)
+* Added the --recurse and -R options to allow recursing into directories.
+  This allows running ctags on an entire source directory tree using the
+  single command "ctags -R <dir>". Currently, this option is only supported on
+  UNIX, MSDOS, Windows 95/NT, and OS/2. Other platforms will have to wait.
+* Changed writing of Emacs-style TAGS file to binary mode [MSDOS/Windows].
+* Fixed porting problems [HP-UX, OSF/1].
+
+ctags-2.1.1 (Mon Jul 06 1998)
+* Changed -h option to allow only periods to separate extensions.
+* Added the --langmap option to allow overriding the default associations
+  between source language and file extension.
+* Added configuration check and code work-around for putenv() prototypes
+  missing the const from the argument declaration [IRIX 5.2 and CRAY J90].
+* Added makefile for VMS.
+* Fixed porting problem [HP-UX].
+
+ctags-2.1 (Wed Jul 01 1998)
+* Added Java support.
+* Eliminated the --keywords option introduced in the 2.0.4, replacing it with
+  automatic detection of the language (i.e. recognized keywords) based upon
+  the file extension.
+* Added the --lang option for manually overriding the automatic selection of
+  the language.
+* Added new flag 'i' to the -i option to allow generating tags for Java
+  interfaces.
+* Added new flag 'n' to the -i option to allow generating tags for C++
+  namespaces.
+* Added new flag 'x' to the -i option to allow generating tags for extern
+  variable declarations.
+* Added new extension flags, "private", "protected", and "public", which
+  indicate the visibility of class members when it can be determined.
+* Changed behavior of flag 'C' of the -i option to add tags of form
+  "class.member" for Java.
+* Changed how files on command line are handled. Ctags will now only scan
+  those files whose extensions it knows about unless the --lang option is
+  specified. This allows running ctags on all files in a directory without
+  having to be specific (e.g. "ctags *").
+* Removed support for duplicate tag warnings and the -w and -W options. These
+  options are silently ignored for now.
+
+ctags-2.0.4 (Sat May 23 1998)
+* Added sorting time to the output of the --totals option.
+* Added the --keywords option to allow restricting the recognized
+  declaration keywords in order to handle legacy source code which uses
+  newer keywords for variable and parameter names.
+* Ignore list now also applies to macro tags.
+* /dev/stdout now properly handled as parameter to -f/-o option.
+* Fixed problem handling an operator definition in C++ when white space
+  appeared between the "operator" keyword and the operator (e.g. "=").
+* Fixed handling of non-symbolic operators (e.g. "new", "delete", etc.).
+* Fixed sort order problem for some locale settings.
+* Fixed segmentation violation when using ignore list (-I) on SunOS 4.x.
+* Fixed a segmentation violation caused by a stack overwrite when testing a
+  particular kind of non-standard tag file format.
+
+ctags-2.0.3 (Sun Mar 12 1998)
+* Added configure check for "strip" program.
+* Added new flag 'C' to the -i option to allow adding extra tags to the tag
+  file in the form "class::member" for class methods and members.
+
+ctags-2.0.2 (Wed Feb 25 1998)
+* Added stripping of installed binary for "install" target.
+
+ctags-2.0.1 (Thu Feb 19 1998)
+* Added support for C++.
+* Added new flag 'F' to the -i option to allow adding an extra tag for the
+  basename of each source file supplied to ctags. This provides the ability to
+  jump to a source file in Vi using ":tag file.c".
+* Added new flag 'm' to generate tags for class, structure, and union members
+  (disabled by default).
+* Added several new flags to the -i option to allow finer specification of
+  which types of tags to include/exclude.
+* Added ".hh" extension to the default list of files recognized as header
+  files.
+* Added explicit handling of special gcc construct __attribute((..)),
+  which could lead to incorrect tag generation.
+* Added configure option --disable-extended-format to allow building ctags
+  with the extended format disabled by default.
+* Added configure option --enable-macro-patterns to change the default
+  behavior of ctags to generate patterns instead of line numbers for macro
+  (define) tags.
+* Changed configure option --enable-internal-sort to --disable-external-sort.
+* Changed makefile for OS/2.
+* Removed support for the -d, -t and -T options which had been deprecated
+  for some time.
+* Removed ANNOUNCE file in distribution, consolidating it with the README
+  file.
+* Replaced CHANGES file with NEWS for more GNU-like standard distribution.
+* Improved the detection of macros of the type generated by Microsoft Visual C
+  when generating source code. These caused subsequent statements to fail to
+  have tags generated for them. Still not bullet proof, though.
+* Fixed a problem which prevented the use of / as a path separator under MSDOS
+  and Win 95/NT.
+* Fixed problem of blank lines occuring in the tag file.
+* Fixed recognition of declarations with parentheses.
+* Fixed problem of missing tags for objects within extern "C" blocks.
+* Fixed problem in source file counts when using --totals option.
+* Extended the length of tag type field in -x output to be more verbose.
+* Fixed option initialization error which caused static tags to be excluded.
+
+ctags-1.7 (Mon Oct 13 1997)
+* Tag files now use a new extended format which is backwards compatible with
+  existing Vi implementations, yet provides extended information which can be
+  used by supporting editors.
+* Added documentation pseudo-tags (e.g. !_TAG_FILE_FORMAT) to tag file.
+* Added the --excmd option as alternative to the -n and -N options.
+* Added the --format option to allow forcing the old-style tag file format.
+* Added the --if0 to control how "#if 0" branches are handled.
+* Added the --sort option as alternative to -u option.
+* Added the --totals option to print statistics of tag generation.
+* Added the --version option.
+* Improved handling of preprocessor conditionals.
+* Code within an #if 0 is now never scanned for non-macro tags by default
+  since tags within that code could conceivably be overridden by more
+  desirable tags in the #else branch to follow. Macro tags in these branches
+  are always included.
+* Fixed problem which could leave invalid tag entries in tag file when an
+  internal re-scan of a source file occurred.
+* Fixed problem with internal sort mechanism when appending tags to existing
+  file.
+* Changed external sort command to filter out duplicate identical tags lines
+  (including the pattern) unless warnings for duplicate tags are enabled.
+* Added data to emacs style tag entries to more closely match that produced by
+  the GNU etags.
+* Removed fixed limits on maximum tag line length.
+* Correction to Amiga makefile.
+* Improvements to Win32 portability with changes to Makefile.w32.
+
+ctags-1.6 (Tue May 13 1997)
+* Now using GNU autoconf to permit automatic host configuration.
+* Added the -e option to generate Emacs style tag files
+* Added ETAGS environment variable to be used when -e option is in effect.
+* Added the -p option to supply a default path for source files.
+* Fixed problem of incorrect line numbers in tag file when form feeds and
+  vertical tabs occured in the source file.
+* Fixed problem preventing ignoring of identifiers specified via the -I option
+  when the identifiers were followed by a parameter list in the source code.
+* Changed the search patterns generated for #define macros when using -N
+  option. It now includes the character following the name (or "$" if end of
+  line) instead of the "\>" used previously. Some editors did not support this
+  metacharacter for tag searches.
+* Removed -u (unique) flag from sort command line invocation to retain exactly
+  indentical tag patterns in the same file. This is in preparation for editor
+  support of duplicate tags.
+* Fixed problem resulting in no tags generated following a function-like
+  macro reference outside of a function block.
+* Fixed problem of no tags generated for typedef for function or function
+  pointer.
+* Fixed problem of no tags generated after encountering strange function
+  declarations (e.g. "foo(params) saywhat (void);")
+
+ctags-1.5 (Sat Oct 5 1996)
+* Added generation of tags for objects inside C++ extern blocks (e.g.
+  'extern "C" {...}' construct).
+* Added generation of tags for function definitions inside brace-enclosed
+  ("{}") blocks, since function definitions are allowed inside classes and
+  extern blocks.
+* Added the -N option to force patterns to be used for all tags (including
+  macro tags).
+* Changed the search patterns generated for macro definitions to be terminated
+  with "\>", which allows the pattern to still match even when the #define
+  line beyond the macro name is changed.
+* Fixed problem resulting in no tags generated for files containing a
+  function-like macro, such as 'MODULE_ID("$Id")', even when ignoring the
+  keyword. This also fixed a problem that caused tags to be missed for
+  initialized function pointer definitions.
+* Redirected error messages to stdout for MSDOS version.
+
+ctags-1.4 (Sun Aug 18 1996)
+* Added recursive parsing of class/struct/enum blocks to look for
+  class/struct/enum tags and enumeration values.
+* Added the -I option to specify keywords to ignore in the source files.
+* Fixed problem resulting in no tag generated when declaring a pointer const
+  or volatile.
+* Fixed problem resulting in no tag generated for comma terminated function
+  declarations.
+
+ctags-1.3 (Sun Jun 16 1996)
+* Fixed problem problem which caused "struct tag;" to be misinterpreted as a
+  variable definition.
+* Added the -n option to use line numbers in the tag file instead of patterns.
+* Added the -? option as an alternative for the --help option.
+
+ctags-1.2 (Wed Jun 5 1996)
+* Fixed a problem caused by an unitialized variable.
+
+ctags-1.1 (Tue Jun 4 1996)
+* Fixed problem reading parameter list to the -h option.
+
+ctags-1.0a (Mon Jun 3 1996)
+* Added ctags.lsm to distribution
+
+ctags-1.0 (Fri May 31 1996)
+* First public release.
+
+vim:tw=78

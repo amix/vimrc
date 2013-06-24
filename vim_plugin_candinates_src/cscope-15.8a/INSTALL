@@ -1,0 +1,60 @@
+***** BUILDING:
+
+This program's build procedure is fairly standard.  Try:
+
+	./configure
+	make
+	make install
+
+Options to the configure script are up to you.  For details, run:
+
+	./configure --help
+
+Please report build problems at:
+
+	http://sourceforge.net/bugs/?func=addbug&group_id=4664
+
+(yes, even non-Linux problems).
+
+
+***** TIPS AND PROBLEMS:
+
+- Try to use flex as the lexical analyzer.  The lex scanner is now
+separated from the flex version to allow the flex scanner to be
+optimized.  It's also a lot harder to diagnose and debug problems
+without having full access to the particular platform and its version of
+lex being used.  flex is available everywhere --- AT&T lex is not.
+
+- On Solaris, the native lex fails to catch our redefinition of YYLMAX
+early enough, which leads to possible buffer overflows.
+
+- On Linux systems (and possibly others) configure may fail if lex is
+  a synomyn for flex.  To fix, do the following:
+
+	make distclean
+	./configure --with-flex
+	make
+
+- On HP-UX several problems exist when using configure. Try the following
+  to solve this:
+
+	CFLAGS='-Ae -DYYCHAR_ARRAY' CURSES_LIBS=-lHcurses ./configure
+
+- On Tru64, formerly known as Digital Unix, formerly known as DEC OSF/1,
+  the system-supplied libcurses causes cscope to terminate itself
+  immediately as it comes back to foreground after being suspended by
+  the user (Ctrl-Z). Using GNU Ncurses instead of OSF1 curses works
+  around the problem. According to the lynx and ncurses people, this
+  is a design problem of curses vs. signal handling, at the heart of it.
+
+- Solaris 2.8 on Intel hardware may not work using the vendor's curses
+  implementation.  Using the free NCurses should help.
+
+- Some ancient Unix filesytems supported only 14 characters in 
+  filenames.  cscope no longer cares for that by default.  If you want
+  to run it on such a system, #define the macro SHORT_NAMES_ONLY manually
+  (there's a definition in global.h you can uncomment).
+
+Browse to http://cscope.sourceforge.net for more current information,
+like reported bugs whose solutions haven't been put into this source
+distribution yet.

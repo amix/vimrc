@@ -1,0 +1,130 @@
+VimOrganizer version 0.30, November 2, 2011.  Requires Vim version that 
+is compiled with support for folding and tabs.  Conceal will
+be taken advantage of if working with Vim73 supporting conceal.  
+(Also, I STRONGLY suggest that you apply a patch to Vim so that 
+folded headings can have level-dependent highlighting, 
+patch for Vim73 is in contrib directory of the download.  If you're on
+Windows contact me and I should be able to provide you with an 
+executable.  If I hadn't been able to make Vim do this I would have 
+bitten the bullet and moved to Emacs, as much as I hate editing in Emacs.)
+ 
+VimOrganizer is a Vim filetype plugin that attempts to clone Emacs' Org-mode.  
+It is currently (November 2011) in an alpha-stage, both in terms of (1) the 
+breadth and depth of Org-mode features it clones and (2) the stability of its
+operation.  It is nevertheless very usable.
+
+Some of the ADDITIONS AND IMPROVEMENTS since previous (December 2010) version:
+   -- Adjusts to any colorscheme
+   -- Org menu in gvim.
+   -- "Dashboards" to assist with Date entry, Columns, Tables,
+      Agenda searches, and exporting.
+   -- VimOrganizer help file to install in Vim.
+   -- Better compatibility with Org-mode files.  Open, edit, and save same 
+      files in Org-mode and/or VimOrganizer with (some) of the functionality and
+      configuration-specific options of Org-mode supported in VimOrganizer.
+   -- Support for Org-mode style links (as well as use of 'Conceal' in Vim73
+                                        to hide link brackets and 
+                                        descriptions)
+   -- Easy to use Org-like column mode, including column headings,
+      inherited columns, support for Org column blocks, and ability to 
+      specify a list of custom column specs to apply in any buffer.
+   -- Org-like narrowing of code blocks and subtrees
+   -- Support for Org-like specifications of TODOS, tags, dates,
+      including support for Org-compatible config lines in a file.
+   -- Support for Org-like CATEGORIES, both in specification and in 
+      their inherited behavior.
+   -- Search specification in Agenda searches is now nearly identical
+      to specification of searches in Org-mode.
+   -- User can specify list of commonly used custom agenda searches.
+   -- Clockin, clockout, and (when a running Emacs server is available,
+      clocktable block creation and updates.
+   -- Org-like "refiling"
+   -- Easy creation and editing of tables, as well as (when a running Emacs 
+      server is available) manipulation and evaluation of tables, including
+      all spreadsheet functionality in Org-mode.
+   -- "Live" block evaluation (when a running Emacs server is available) 
+   -- Support for nearly all the export types and export options 
+      available in Org-mode (when running Emacs server is available)
+   -- Call out to an Emacs server to do "tangling" (literate programming).
+   -- Many bug fixes and small improvements
+
+Org-mode, and thus VimOrganizer, is a text-editor plugin/application that can 
+be used for (1) keeping notes, (2) maintaining TODO lists, (3) planning 
+projects, and/or (4) authoring and publishing documents, including support for 
+literate programming and "reproducible research".  Like Org-mode, VimOrganizer
+does this by implementing a flexible plain-text system with a lightly 
+structured document format.  Org-mode has been in constant development for 
+seven or eight years, and continues to be developed.  Work on VimOrganizer is 
+likewise ongoing, but VimOrganizer is at present a smaller and less ambitious 
+project than Org-mode.
+
+File formats and basic workflows for VimOrganizer and Org-mode are very 
+similar (files auto-convert as part of loading process) and VimOrganizer 
+actually calls out to an Emacs' Org-mode server to 
+implement important features, e.g., exporting to pdf format for printing.
+
+Thus, to make full use of VimOrganizer you will want to have an Emacs' 
+server running alongside.  In most cases this requires little knowledge of 
+Emacs other than how to start it up and add a few lines to the '.emacs' file, 
+Emacs' counterpart to Vim's '.vimrc'.  (You can even edit the .emacs file in 
+Vim.)  VimOrganizer is focused on leveraging Org-mode by accessing it via
+an Emacs server, and re-implementing in Vim only what is necessary and makes 
+sense. 
+
+VimOrganizer also lets Vim users access Org-babel, a subproject of 
+Org-mode that allows execution of source-code blocks in org-format 
+documents.  Uses for Org-babel range from writing technical research papers to 
+simply using a VimOrganizer document as a "language-scratchpad".  Over 
+twenty languages are supported, including C, R, Lisp, Python, Perl, Ruby, 
+and others.  VimOrganizer calls out to a running Emacs server for Org-babel 
+processing; functionality and speed are essentially the same as 
+when editing with Org-mode in Emacs.
+
+VimOrganizer has a first draft of a Vim help file, but the best first step in
+learning about VimOrganizer is to learn about Emacs' Org-mode.  VimOrganizer 
+uses the same basic concepts but implements them within the context of Vim 
+(and with a reduced feature set).  Org-mode's main documentation and 
+support newsgroup are found here:
+Org-mode Main Manual:  http://orgmode.org/manual/index.html
+Org-mode Compact Guide: http://orgmode.org/guide/index.html
+Org-mode support:  http://news.gmane.org/gmane.emacs.orgmode 
+Org-babel information: http://orgmode.org/worg/org-contrib/babel/ 
+
+VimOrganizer help can be found here:
+https://github.com/hsitz/VimOrganizer/blob/master/doc/vimorg.txt
+
+==========================
+INSTALLATION INSTRUCTIONS
+===========================
+https://github.com/hsitz/VimOrganizer/blob/master/INSTALL.txt
+
+
+QUESTIONS, COMMENTS, SUGGESTIONS
+================================
+Questions, comments, and suggestions regarding VimOrganizer are always 
+appreciated.  The preferred place for those is in the VimOrganizer newsgroup 
+here:
+http://groups.google.com/group/vimorganizer/topics
+
+VimOrganizer project files are maintained at github and the version 
+there may be more recent than the files at vim.org:
+https://github.com/hsitz/VimOrganizer
+
+----------------------------------------------------------------
+NOTE:  some code from other Vim plugins has been incorporated into the
+VimOrganizer script files.  Do NOT download these plugins to use them 
+with VimOrganizer; since VimOrganizer does not call out to them in any way:
+
+1.  Charles Campbell's great calendar utilities 
+2.  Table editing routines from Maxim Kim's excellent vimwiki plugin. 
+    These are really quite nice (seem to be inspired by Org-mode's
+    own table-editing stuff) and deserve to be offered as a separate
+    plugin of their own, not dependent on any larger project. (If
+    VimOrganizer is not quite the sort of plugin you're looking for then
+    vimwiki may be.) 
+----------------------------------------------------------------
+
+VimOrganizer page at vim.org:
+http://www.vim.org/scripts/script.php?script_id=3342
+
+

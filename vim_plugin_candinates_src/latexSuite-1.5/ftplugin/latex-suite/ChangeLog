@@ -1,0 +1,229 @@
+After 6 Jun 2003
+
+10 Aug 2003
+    Changes
+    * texrc, compiler.vim:
+        Make g:Tex_IgnoredWarnings use "\n" as the pattern seperator instead
+        of the inverted exclamation mark to avoid i18n issues. (Pan Shizhu,
+        SA)
+    * main.vim:
+        Use :runtime instead of :source in order to avoid problems when
+        latex-suite is installed in places other than ~/vimfiles or ~/.vim.
+        (Chris Greenwood, SA)
+
+    Bugfixes
+    * texproject.vim, main.vim:
+        Escape ' ' in a couple of places when defining filenames and dirnames
+        in order to avoid problems while issuing :cd etc. (Diego Carafini)
+    * texmenuconf.vim:
+        A couple of bug-fixes in the main latex-suite menu (SA)
+    * latex-suite.txt:
+        Fixed documentation about folding (SA)
+
+17 Jul 2003
+    Features
+    * packages.vim:
+        Add custom completion to TPackage command.
+        It works only for Vim 6.2 or later. (MM)
+
+    Changes
+    * main.vim:
+        make Tex_GetMainFile() recursively search upwards for a *.latexmain
+        file. (SA)
+    * texmenuconf.vim:
+        Peter Heslin (maintaining the cream port of latex-suite says that the
+        Windows menu from cream appears in the middle of the latex-suite
+        menus). A new variable g:Tex_MainMenuLocation is used to find the
+        location of the latex-suite menus. (SA)
+    * packages/polski:
+        Update to cover version 1.3 of package. (MM)
+
+    Bugfixes
+    * main.vim:
+        Bug: If g:Tex_SmartQuoteOpen/Close contain the '~' character (french quotes
+             are "«~" and "~»", then we get an error in quotations (Mathieu
+             CLABAUT).
+        Solution: escape ~ in the search() function (Mathieu CLABAUT).
+    * compiler.vim:
+        Bug: Sometimes moving up and down in the error list window causes a regexp
+             error.
+        Solution: properly escape backslashes in the regexp. (SA)
+
+28 Jun 2003
+    Features
+    * latex-suite.txt:
+        vastly improved the latex-suite documentation. Now all documentation
+        is first written in docbook xml and then converted into html and
+        vim-help using saxon and db2vim respectively.
+    * bib_latexSuite.vim:
+        A new ftplugin file to trigger the bibtex mappings. (SA)
+
+    Changes
+    * compiler.vim:
+        change the behavior of the part compilation and viewing as documented.
+        Remove the "part view" feature because it does not make sense. (SA)
+    * packages.vim:
+        change the behavior of finding custom packages. Use vim's native :find
+        command instead of some complicated parsing of $TEXINPUTS. Introduce a
+        new g:Tex_TEXINPUTS variable which should be set in the same format as
+        vim's 'path' setting. (SA)
+    * texviewer.vim:
+        Change the way <F9> works for \cite completion. Change the way
+        g:Tex_BIBINPUTS variable has to be set. The new \cite completion
+        method is described in detail in the manual.
+    * envmacros.vim:
+        changed ETR to insert a more complete template using Tex_SpecialMacros
+        (Mathieu CLABAUT)
+
+    Bugfixes
+    * packages.vim:
+        Bug: When a \usepackage{} line is inside a fold, then we go into an
+             infinite loop. (Lin-bo Zhang)
+        Solution: A temporary hack of first opening up all folds before scanning
+                  and then closing them. This needs to be robustified in the future
+                  using mkview.vim (SA)
+    * envmacros.vim:
+        Bug: <F5> did not work for inserting environments which latex-suite
+             does not recognize. (bug introduced in version 1.32)
+        Solution: make <F5> insert at least a minimal environment template if
+                  all other methods fail. (SA)
+    * texviewer.vim:
+        Bug: Pressing <F9> at the end of a line like
+             This is a \ref{eqn:something} and this is a comp
+             would cause errors.
+        Why: The substitute() command returns the original string if the pattern
+             does not match causing us to wrongly infer a match.
+        Fix: Therefore first check if there is a match.
+
+        Bug: Once we complete an equation, we can never complete a word.
+        Why: s:type is never unlet
+        Fix: unlet! s:type if there is no match on current line to any known
+             command.
+
+        Bug: Pressing <CR> during word completion does not take us to the location
+             of the match, as claimed.
+        Why: <CR> does "cc <num> | pclose! | cclose!". Because the preview window
+             with the match is open, therefore cc will take us to the match in
+             the preview window, after which pclose closes it up!
+        Fix: Do 'pclose! cc <num> | cclose' instead...
+    * compiler.vim:
+        Bug: If we used :TTarget ps, then the compiler would be called as:
+                dvips -o file.tex.ps file.tex.dvi
+             instead of
+                dvips -o file.ps file.dvi
+        Why: In a recent change, we made RunLaTeX() use filenames with extension.
+             However, some compilation rules might require filenames w/o extensions
+             (such as Tex_CompileRule_ps which is 'dvips -o $*.ps $*.dvi')
+        Fix: Try to guess if the &makeprg requires files w/o extensions by seeing
+             if it matches '\$\*\.\w\+'. If so, use file-name w/o extension.
+             Otherwise, retain extension in 'make '.fname
+    * imaps.vim:
+        Bug: IMAP_Jumpfunc() and VEnclose() do not work with &selection =
+             'exclusive' (Jannie Hofmeyr, Pierre Antoine Champin)
+        Fix: Select one more character in 'exclusive' mode. (suggested by Pierre
+             Antoine Champin).
+    * texviewer.vim:
+        Bug: On windows gvim +cygwin, \cite completion does not work when the bib
+             file is in a completeley different location.
+        Cause: gvim calls grep as "grep -nH @.*{ /path/to/file"
+               which does not work because grep thinks / corresponds to something
+               like c:/cygwin, so it looks for the file in the wrong place.
+        Fix: Always lcd to the current directory of the bib file being searched.
+             This avoids any path issues.
+
+13 Jun 2003
+    Features
+    * remoteOpen.vim:
+        Add a command :RemoteOpen which is to be used in applications such as
+        YAP to make vim use the same session to open files. (SA)
+
+    Bugfixes
+    * texviewer.vim:
+        Problem: <F9> did not work in standard vim + cygwin combination.
+        Solution: Use single quotes instead of double-quotes when issuing
+                  shell commands. (SA)
+    * texviewer.vim:
+        Problem: <F9> did not work for \includegraphics[0.8\columnwidth]{}
+                 because it would confuse \columnwidth for a command instead
+                 of an option.
+        Solution: improve regexp for extracting command from a line. (SA)
+    * envmacros.vim:
+        Problem: the maps in envmacros.vim got applied only to the first file
+                 which latex-suite sees.
+        Solution: fix a typo in the autocommand line. (SA)
+    * compiler.vim,wizardfuncs.vim:
+        Problem: the log preview window did not appear during part
+                 compilation.
+        Solution: rearranged code in the files so the main filename was
+                  defined even for part compilation. (SA)
+    * texviewer.vim:
+        Problem: <F9> only works for the first file.
+        Solution: call the function to set the maps every time. (SA)
+    * compiler.vim:
+        Problem: sometimes, <F9> would try to search for completions in /*.tex
+                 and would therefore fail.
+        Solution: use expand('%:p:h') instead of expand('%;h') to calculate
+                  directory because the latter can sometimes evaluate to ''. (SA)
+    * texviewer.vim:
+        Problem: 'scrolloff' remains at 1000 even after <F9> returns (Jakub
+                 Turski)
+        Solution: reset 'scrolloff' before quitting any of the windows created
+                  during searching.
+    * packages.vim:
+        Problem: A spurious '{' is sometimes inserted into the search history.
+                 ... (A. S. Budden, Mpiktas)
+        Solution: call histdel once at the end of Tex_pack_all.
+
+
+After 8 May 2003
+
+    Features
+    * texviewer.vim:
+        Look for bibfiles in $BIBINPUTS env variable (Soren Debois)
+    * envmacros.vim:
+        Check in package variables for templates for environments inserted
+        from line with <F5> (MM)
+    * packages/amsmath:
+        Templates for alignat and alignat* envs in amsmath package file (MM)
+    * compiler.vim:
+        Added support for regular viewing and forward searching for kdvi (KDE
+        viewer of .dvi files) (MM)
+    * compiler.vim:
+        Show default target enclosed in [] after calling :TTarget, :TCTarget
+        or :TVTarget. Allow no argument for :TTarget.
+    * mathmacros.vim, main.vim, texrc, latex-suite.txt:
+        Added utf-8 menus for math (MM)
+    * ChangeLog:
+        Add ChangeLog file in ftplugin/latex-suite directory (MM)
+    * wizardfuncs.vim, latex-suite.txt:
+        Tshortcuts - new command show various shortcuts (MM, SA)
+    * latex-suite.txt:
+        More cross-references with main Vim help, corrected mispells (MM)
+    * texmenuconf.vim:
+        Show value of <mapleader> in General menu instead of hardcoded \ (it
+        caused confusion) (MM, SA)
+    * texmenuconf.vim, mathmacros.vim:
+        Add accels for for Suite, Elements end Environments menus.
+        Changed accel in Math (Animesh Nerurkar)
+
+    Bugfixes
+    * compiler.vim:
+        Problem: Compile file with current file expansion, not always .tex
+            file (Animesh N Nerurkar)
+        Solution: When looking for file to compile don't remove extension (if
+            *.latexmain doesn't exist) (MM)
+    * texviewer.vim:
+        Problem: :TLook doesn't work (Animesh N Nerurkar)
+        Solution: Check if s:type exists in UpdateViewerWindow (MM)
+    * compiler.vim:
+        Problem: Text is messed after calling external command in terminal
+            version of Vim (Jess Thrysoee)
+        Solution: Add redraw! after calling compilers and viewers (partial
+            implementation of JT patch, MM)
+    * texrc:
+        Problem: Compiling pdf didn't succed because of double file extension,
+            eg. myfile.tex.tex (Animesh N Nerurkar)
+        Solution: Remove hardcoded .tex in CompilerRule_pdf. NOTE: Update of
+            personal texrc is required! (Animesh N Nerurkar)
+
+vim: et:sts=4:tw=78

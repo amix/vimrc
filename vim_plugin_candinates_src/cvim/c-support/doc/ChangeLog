@@ -1,0 +1,470 @@
+================================================================================
+  RELEASE NOTES FOR VERSION 5.16.1
+================================================================================
+- Bugfix: problem with a system-wide installation under Windows (thanks to Ricardo Vrech).
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.16
+================================================================================
+- Plugin loads faster: loading the templates is delayed until the first use.
+- Plugin now works with pathogen.vim.
+- Menus will always be generated (for the use with :emenu).
+- Bugfix: no local templates available with a system-wide installation (thanks to Iain Arnell).
+- Several improvements.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.15
+================================================================================
+- New hotkey \cx C to C++ comments and vice versa.
+- Several hotkeys allow a range, e.g. '3\cl' (see help text and c-hotkey.pdf).
+- Improved prototype picking: \nf, \np picks up a function prototype, 
+  \nm picks up a method prototype (see documentation for more).
+- include-statements will now be inserted in the actual line (before: new line
+  below the actual line).
+- Several minor improvements.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.14
+================================================================================
+- A makefile can be run with C-F9
+- Linking ( Run menu, \rl, \rr ) will be suppressed if buffer contains no main function.
+- Bugfix: correctly deactivate unwanted compiler messages in a quickfix buffer.
+- Several minor improvements
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.13
+================================================================================
+- New hotkeys \rmc (run 'make clean') and \rme (executable to run).
+- Hotkeys for make are working when in a makefile.
+- Linker errors and errors during a make will be shown in a quickfix buffer.
+- Bugfix: detection of a systemwide installation can fail.
+- Bugfix: preprocessor directive '#if 0 #endif' not working.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.12
+================================================================================
+- New hotkeys \+" .
+- Windows: user installation now possible.
+- Bugfixe: for-idiom shows part of type definition as variable name in some cases.
+- Bugfixe: wrong cursor position for some templates.
+================================================================================
+  RELEASE NOTES FOR VERSION 5.11
+================================================================================
+- New tag {CURSOR} to avoid indent problems in a few cases.
+- Three hotkeys renamed \rg -> \rma , \ri -> \rpa ,  \re -> \rka (better to remember).
+- 'long long' added to the for-idioms.
+- Bugfixes: for-idiom shows type as variable name if no variable name was given.
+- Bugfixes: for-idiom inserts standard types with 2+ words wrong.
+- Bugfixes: multiline end-of-line comments have wrong position in some cases.
+- Bugfixes: local installation looks like a system-wide installation in seldom cases.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.10
+================================================================================
+- The plugin now handles different template styles without editing and
+  reloading the main template file.
+- The number of template styles is not limited. 
+- New hotkey and ex-command to switch template styles.
+- Template styles can automatically be related to file extensions.
+- indent(1) errors will be presented in a quickfix error window.
+- Comment alignment improved.
+- Minor improvements.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.9
+================================================================================
++ Two additional hotkeys (+ ex commands) for preprocessor statements.
++ Compile-link-run: improved error detection.
++ Menu Run: hardcopy can print any buffer.
++ Several minor improvements and bugfixes.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.8
+================================================================================
++ Hotkeys are shown in the menus.
++ File browser for code snippets and templates choosable (2 global variables).
++ Two new hotkeys: include file description (implementation, header).
++ New menu item: namespace alias
++ Bugfix: wrapper script for use of a xterm could not handle parameters containing blanks.
++ Several minor improvements.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.7
+================================================================================
++ 4 new hotkeys : insert file section comments (C/C++/H), special comments,
+  keyword comments.
++ Adjusting end-of-line comment adjustment improved.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.6
+================================================================================
++ Jump targets (templates) and mapping Ctrl-j can be switched off.
++ Yet unused jump targets will be highlighted after a file is opened.
++ Statements menu: else block (key mapping \se).
++ Handling of <SPLIT> improved (templates).
++ Minor improvements.
+
+================================================================================
+  RELEASE NOTES FOR VERSION 5.5
+================================================================================
++ Additional plugin-tags (jump targets in templates): <+text+>, <-text->.
++ Additional mapping Ctrl-j : jump to these new targets.
++ Template-file: additional macro |STYLE| and IF-ENDIF-construct to easily
+  choose between sets of templates.
++ Additional mapping: auto-complete classical C comment (also multi-line).
++ Additional mapping: auto-complete open block starting with {<CR> .
++ Visual mode for date and time insertion (menu 'Comments').
++ Visual mode for tags (submenu 'Comments->tags (plugin)').
++ Bugfix: hotkey \ica not working
++ Bugfix: hotkey Shift-F2 for the alternate-plugin disappeared. 
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.4
+=======================================================================================
++ New hotkey \+co inserts ' cout <<  << endl;'
++ New menu item C++-menu: 'cout' replaces 'cout variable' and 'cout string'.
++ Hotkey \c/ removed ( \cc does the same).
++ Bugfix: after an unsuccessful compilation screen sometimes garbled.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.3
+=======================================================================================
++ Insertions work properly when folding is used.
++ Menu items Idioms->for(...) : type declaration for loop variable possible (tab completion).
++ Specification of command line arguments (Run->cmd. line arg.): filename completion active.
++ New main menu item 'show manual' (hotkey \hm): read manual for word under cursor. 
++ One hotkey renamed: \h -> \hp (help plugin)
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.2.1
+=======================================================================================
++ Bugfix: stray characters whith three dialogs
++ Bugfix: Missing parameter in 2 internal function calls
++ Menu items 'Snippets->edit local/global templates' start an file browser (convenience).
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.2
+=======================================================================================
++ Superfluous control characters for mode switching (menus, hotkeys) removed. Caused beeps.
++ Template files (local/global) can be opened from the snippet menu.
++ Three new preprocessor statements.
++ v-mode for RTTI-entries.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.1
+=======================================================================================
++ Definition and implementation of classes have now different templates and menu entries.
++ Accessor methods (get/set) can be generated.
++ New templates: everything other than language keywords comes from a template 
+  (and is user changeable).
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.0.5
+=======================================================================================
++ Bugfix: on a few systems doubling of path components in the run command (F9).
+  Skip this upgrade if you do not have this problem.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.0.4
+=======================================================================================
++ Format for the macros |DATE|, |TIME|, and |YEAR| can be defined by the user.
++ Help text improved.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.0.3
+=======================================================================================
++ Code snippets can now be used in the console mode (Vim without GUI).
++ Bugfix: Possible conflict with 'indent' removed when inserting templates.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.0.2
+=======================================================================================
++ Bugfix: Prototype picker did not alway delete no longer used prototypes.
++ Bugfix: Prototype picker removed template specializations from parameter lists.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.0.1
+=======================================================================================
++ Bugfix: autocmd setting can influence autocmd settings of OTHER plugins.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 5.0
+=======================================================================================
++ Completely new template system. Now every menu item is user definable.
++ Changes to allow a system-wide installation.
++ A few hotkeys added and renamed.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 4.6.1
+=======================================================================================
++ New global variable to control the filetype of *.h header files (default is now 'cpp').
++ Bugfix: properly resetting 'compiler' after using make, splint, and CodeCheck.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 4.6
+=======================================================================================
++ New insert mode mappings (comments, statements, preprocessing, idioms, C++).
++ Some mappings renamed (easier to remember). 
++ New tag (basename of a file reduced to characters allowed in names).
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 4.5
+=======================================================================================
++ New menu item and hotkey for the (re)alignement of end-of-line comments.
++ Hotkey \cn removed. Only one menu item for end-of-line comments left.
++ Changed hotkeys: \ce -> \cl and \cl -> \cs .
++ Three new tags (giving the basename of a file) for writing template files.
++ Prototype picker handles template methods.
++ Bugfix: splint works now under Windows.
++ Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 4.4
+=======================================================================================
++ Plugin directories rearranged.
++ main- and for-idiom have a visual mode now.
++ Four new commands (command line) to control the comment style.
++ Comment style (C/C++) can automatically follow the filetype.
++ Bugfix: empty new file after removing the header template can't be closed.
++ Bugfix : Tools entry missing when root menu not shown from the start.
++ Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 4.3
+=======================================================================================
++ CodeCheck (TM) integrated (source code analysing tool).
++ New key mappings for preprocessor statements. 
++ New preprocessor menu.
++ Bugfix: indent under Windows.
++ Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 4.2.1
+=======================================================================================
++ Bugfix: change needed for some menu names after patch 7.0.054 .
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 4.2
+=======================================================================================
++ Setting the starting column for trailing comments improved.
++ Small bug in block uncommenting fixed.
++ Mac OS X : circumvent a Vim bug which caused a crash when loading plugin version 4.1.
++ File syntax/c.vim removed (but see help in csupport.txt).
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 4.1
+=======================================================================================
++ A complete switch statement can be made from a list of labels.
++ Additional cases can be made from a list of labels.
++ Small bug in line end commenting fixed.
++ Some minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 4.0
+=======================================================================================
+
++ Kernighan & Ritchie style for block statements can be enabled.
++ Changes to make it compatible with Vim 7.
++ Set C/C++ file type for source files which should not be preprocessed (*.i, *.ii).
++ Some minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.11
+=======================================================================================
+
++ Hotkeys and an accompanying reference card added.
++ Preparation for syntax based folding.
++ Some minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.10
+=======================================================================================
+
++ Remove "#if 0 ... #endif" from the inside. 
++ Change C comments to C++ comments and vice versa.
++ try..catch / catch / catch(...)  now can be set surround a marked area.
++ Prototype picking improved (for C++).
++ A hardcopy shows the localized date and time in the header line.
++ New help menu entry in the main menu of this plugin (shows the plugin documentation).
++ Switch between corresponding source and header files with <S-F2> if the plugin a.vim
+  is present.
++ Plugin can be used with autocompletion for (, [, and { .
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.9.1
+=======================================================================================
+
++ Doubling of file header for new c- and h-files under Windows fixed (Thanks to
+   Fabricio C A Oliveira).
++ Tiny bug in the file open idioms fixed.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.9
+=======================================================================================
+
++ Formatter 'indent' integrated.
++ Bugfix in the automatic header insertion.
++ Assert idiom added.
++ #if 0 ... #endif statement for blocking out code added.
++ Minor stylistic improvements in some idioms.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.8.2
+=======================================================================================
+
++ Screen update problem solved: color inversion under FC4 (Thanks to Bernie Barton).
++ RTTI menu : additional v-mode.
++ Statement menu and C++ menu rearranged.
++ Include guard : name generation improved.
++ File header templates will be included for additional file extensions (cp, cxx, c++, ...).
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.8.1
+=======================================================================================
+
++ More C++ output manipulators, manipulator insertion more intuitive.
++ Output into buffer: cursor goes to top of file.
++ Makefile template improved (code snippet).
++ Some internal improvements. 
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.8
+=======================================================================================
+
++ Windows support. Most features are now available under Windows.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.7.2
+=======================================================================================
+
++ Run buffer through splint (A tool for statically checking C programs; see
+  http://www.splint.org). An error window will be opened; quickfix commands can be used.
++ Set buffer related command line arguments for splint.
++ Line end comments start in a fixed column (can be set from the menu).
++ Spaces in path names and file names are now possible.
++ Template files and snippet files are no longer kept in the list of alternate files.
++ Some minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.7.1
+=======================================================================================
+
++ Bug fixed (command line arguments not passed to the executable).
++ File extension for executables can be set.
++ Minor improvements.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.7
+=======================================================================================
+
++ Running a program:
+  (1) Run program from the gVim command line.
+  (2) Run program and direct the output into a window with name "C-Output". 
+      This buffer and its content will disappear when closing the window. 
+      The buffer is reused when still open.
+  (3) Run program in an xterm (adjustable).
++ Command line arguments are now buffer related (each buffer can have its own arguments).
++ Code snippets can be protected from being indented during insertion. 
++ Picked up prototypes will be deleted after insertion.
++ A code snippet with the file name extension "ni" or "noindent" will not be
+  indented on insertion.
++ for- and calloc-/malloc-idioms improved.
++ Bug fixed (word list handling).
+
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.6
+=======================================================================================
+
++ Installation simplified. 
++ for-loop-idiom asks for control variable, initial value, ...
++ malloc-idiom asks for pointer variable and size.
++ Toggling the comment style works correct again.
++ Empty error windows will be closed.
++ Prototype picker removes trailing parts of the function body if marked.
++ The dialog windows (GUI) have been replaced by more flexible command line inputs.
++ The undocumented and unnecessary hot key F12 has been removed.
++ Extension to ctags + taglist shows makefile targets and qmake targets.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.5
+=======================================================================================
+
++ Aligned line end comments for consecutive lines.
++ Improved prototype picker removes comments.
++ Picked up prototypes can be shown.
++ Uncomment more than one block at once.
++ 3 new idioms.
++ Help file improved .
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.4
+=======================================================================================
+
++ Two new global variables: C_Dictionary_File, C_MenuHeader .
++ The preprocessor statements #if... and the function idiom include marked 
+  lines when invoked in visual mode.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.3
+=======================================================================================
+
++ The C/C++ root menu can be disabled.
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.2
+=======================================================================================
+
++ Only one C/C++ entry in the gVim root menu.
++ All hotkeys are only defined for C/C++ files (file type plugin added).
++ The following constructs are now read as templates from files:
+   class, class using new, 
+   template class, template class using new,
+   error class
++ Install script added.
++ Customization improved. 
++ Documentation improved (help file added).
++ Bug fix (template file handling)
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.1
+=======================================================================================
+
++ When the comment style "C" is active the menu entry "Comments.code->comment"
+  turns a marked region in one multiline C-comment.
++ The menu entry "Comments.comment->code"  turns marked multiline C-comment 
+  back into code.
++ A marked region can be surrounded by a for-, if, if-else, while-, do-while-statement
+  (with indentation).
++ The menu entry "Snippets.make prototype" makes a C- or C++-prototype from 
+  the current line or marked region and puts it in an internal buffer.
++ The menu entry "Snippets.add prototype" also makes a C- or C++-prototype from 
+  the current line or a marked region and adds it to the internal buffer.
++ The menu entry "Snippets.put prototype" inserts all gathered prototypes 
+  below the current line. 
++ Tag substitution rewritten (Some characters in a substitution text for a tag 
+  prevented the tag from being substituted).
+
+=======================================================================================
+  RELEASE NOTES FOR VERSION 3.0
+=======================================================================================
+
++ C-style comments AND C++-style comments are supported now.
++ The menu entry 'Comments->Comment style ..' switches the styles (toggle).
++ Block comments are now read as templates or skeletons from files:
+    Frame Block,        Function Description,  Method Description,
+    Class Description,  H+file header,         C/C++-file header
++ These templates can contain tags like |FILENAME|, |AUTHOR| etc. which are replaced
+  after reading (KDevelop templates can be used without any change).
++ indentation: multiline inserts and code snippets will be indented after insertion.
++ Most menu entries are now also active in normal mode.
++ new menu items: 
+    includes for the C99 header, 
+    includes for the standard C++ header,
+    includes for the C++ version of the Standard C Library header,
+    multiline C comment
+    vim modeline
++ Reading the templates is done in one function which can be called in an autocmd.
++ Code cleanup: register z no longer used. Most function calls are silent now.
+
+

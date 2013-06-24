@@ -1,0 +1,7 @@
+let g:TeX_package_option_bophook = ''
+
+let g:TeX_package_bophook = 
+\ 'bra:AtBeginPage,'
+\.'bra:PageLayout'
+
+" vim:ft=vim:ff=unix:

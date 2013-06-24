@@ -1,0 +1,7 @@
+let g:TeX_package_option_oldstyle = ''
+
+let g:TeX_package_oldstyle =
+\ 'bra:textos,'
+\.'bra:mathos'
+
+" vim:ft=vim:ff=unix:

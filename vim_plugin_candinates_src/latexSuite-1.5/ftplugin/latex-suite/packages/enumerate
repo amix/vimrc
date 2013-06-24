@@ -1,0 +1,5 @@
+let g:TeX_package_option_enumerate = ''
+
+let g:TeX_package_enumerate = 'ens:enumerate:[<+prefix+>]'
+
+" vim:ft=vim:ff=unix:

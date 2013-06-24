@@ -1,0 +1,146 @@
+<+	+>	!comp!	!exe!
+%% Based on <bare_jrnl.tex> in the ieee package available from CTAN,
+%% I have changed the options so that most useful ones are clubbed together,
+%% Have a look at <bare_jrnl.tex> to understand the function of each package. 
+
+%% This code is offered as-is - no warranty - user assumes all risk.
+%% Free to use, distribute and modify.
+
+% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
+% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
+% *** with production work. IEEE's font choices can trigger bugs that do  ***
+% *** not appear when using other class files.                            ***
+% Testflow can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/contrib/supported/IEEEtran/testflow
+
+%        File: !comp!expand("%:p:t")!comp!
+%     Created: !comp!strftime("%a %b %d %I:00 %p %Y ").substitute(strftime('%Z'), '\<\(\w\)\(\w*\)\>\(\W\|$\)', '\1', 'g')!comp!
+% Last Change: !comp!strftime("%a %b %d %I:00 %p %Y ").substitute(strftime('%Z'), '\<\(\w\)\(\w*\)\>\(\W\|$\)', '\1', 'g')!comp!
+%
+\documentclass[journal]{IEEEtran}
+\begin{document}
+
+
+\usepackage{cite, graphicx, subfigure, amsmath} 
+\interdisplaylinepenalty=2500
+
+% *** Do not adjust lengths that control margins, column widths, etc. ***
+% *** Do not use packages that alter fonts (such as pslatex).         ***
+% There should be no need to do such things with IEEEtran.cls V1.6 and later.
+
+
+% correct bad hyphenation here
+\hyphenation{<+op-tical net-works semi-conduc-tor+>}
+
+
+\begin{document}
+%
+% paper title
+\title{<+Skeleton of IEEEtran.cls for Journals in VIM-Latex+>}
+%
+%
+% author names and IEEE memberships
+% note positions of commas and nonbreaking spaces ( ~ ) LaTeX will not break
+% a structure at a ~ so this keeps an author's name from being broken across
+% two lines.
+% use \thanks{} to gain access to the first footnote area
+% a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
+% was not built to handle multiple paragraphs
+\author{<+Sumit Bhardwaj+>~\IEEEmembership{<+Student~Member,~IEEE,+>}
+        <+John~Doe+>,~\IEEEmembership{<+Fellow,~OSA,+>}
+        <+and~Jane~Doe,+>~\IEEEmembership{<+Life~Fellow,~IEEE+>}% <-this % stops a space
+\thanks{<+Manuscript received January 20, 2002; revised August 13, 2002.
+        This work was supported by the IEEE.+>}% <-this % stops a space
+\thanks{<+S. Bhardwaj is with the Indian Institute of Technology, Delhi.+>}}
+%
+% The paper headers
+\markboth{<+Journal of VIM-\LaTeX\ Class Files,~Vol.~1, No.~8,~August~2002+>}{
+<+Bhardwaj \MakeLowercase{\textit{et al.}+>}: <+Skeleton of IEEEtran.cls for Journals in VIM-Latex+>}
+% The only time the second header will appear is for the odd numbered pages
+% after the title page when using the twoside option.
+
+
+% If you want to put a publisher's ID mark on the page
+% (can leave text blank if you just want to see how the
+% text height on the first page will be reduced by IEEE)
+%\pubid{0000--0000/00\$00.00~\copyright~2002 IEEE}
+
+% use only for invited papers
+%\specialpapernotice{(Invited Paper)}
+
+% make the title area
+\maketitle
+
+
+\begin{abstract}
+<+The abstract goes here.+>
+\end{abstract}
+
+\begin{keywords}
+<+IEEEtran, journal, \LaTeX, paper, template, VIM, VIM-\LaTeX+>.
+\end{keywords}
+
+\section{Introduction}
+\PARstart{<+T+>}{<+his+>} <+demo file is intended to serve as a ``starter file"
+for IEEE journal papers produced under \LaTeX\ using IEEEtran.cls version
+1.6 and later.+>
+% You must have at least 2 lines in the paragraph with the drop letter
+% (should never be an issue)
+<+May all your publication endeavors be successful.+>
+
+% needed in second column of first page if using \pubid
+%\pubidadjcol
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+%\bibliographystyle{IEEEtran.bst}
+%\bibliography{IEEEabrv,../bib/paper}
+\begin{thebibliography}{1}
+
+\bibitem{IEEEhowto:kopka}
+H.~Kopka and P.~W. Daly, \emph{A Guide to {\LaTeX}}, 3rd~ed.\hskip 1em plus
+  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+
+\end{thebibliography}
+
+% biography section
+% 
+\begin{biography}{Sumit Bhardwaj}
+Biography text here.
+\end{biography}
+
+% if you will not have a photo
+\begin{biographynophoto}{John Doe}
+Biography text here.
+\end{biographynophoto}
+
+% insert where needed to balance the two columns on the last page
+%\newpage
+
+\begin{biographynophoto}{Jane Doe}
+Biography text here.
+\end{biographynophoto}
+
+% You can push biographies down or up by placing
+% a \vfill before or after them. The appropriate
+% use of \vfill depends on what kind of text is
+% on the last page and whether or not the columns
+% are being equalized.
+
+%\vfill
+
+% Can be used to pull up biographies so that the bottom of the last one
+% is flush with the other column.
+%\enlargethispage{-5in}
+
+\end{document}
+
+

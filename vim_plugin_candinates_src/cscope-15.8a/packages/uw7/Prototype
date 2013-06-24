@@ -1,0 +1,11 @@
+i pkginfo
+d none /usr ? ? ?
+d none /usr/local 0755 root bin
+d none /usr/local/bin 0755 root bin
+d none /usr/local/man 0755 root bin
+d none /usr/local/man/man1 0755 root bin
+! search /usr/local/bin
+f none /usr/local/bin/cscope 0755 root bin
+f none /usr/local/bin/ocs 0755 root bin
+! search /usr/local/man/man1
+f none /usr/local/man/man1/cscope.1 0644 root bin
