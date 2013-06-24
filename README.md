@@ -380,6 +380,28 @@ Above we use vi to edit .gitmoudles and .git/config to remove references to spec
 *   [Tips-Using git submodule keep your vim plugin up-to-date](http://www.allenwei.cn/tips-using-git-submodule-keep-your-plugin-up-to-date/)
 *   [Git Submodule介绍与使用](http://blog.wu-boy.com/2011/09/introduction-to-git-submodule/)     
 
+## Use Vundle to make life easier managing plugins
+
+[Vundle](https://github.com/gmarik/vundle) is short for _Vim bundle_ and is a [Vim](http://www.vim.org/) plugin manager.
+
+[Vundle](https://github.com/gmarik/vundle) allows to:
+
+- keep track and configure your scripts right in `.vimrc`
+- [install] configured scripts (aka bundle) 
+- [update] configured scripts
+- [search] by name [all available vim scripts]
+- [clean] unused scripts up
+- run above actions in a *single keypress* with [interactive mode]
+
+Also [Vundle](https://github.com/gmarik/vundle):
+
+- manages runtime path of your installed scripts
+- regenerates helptag automatically
+
+Simple commands like BundleInstall, BundleSearch, BundleClean get everything done! 
+
+For more info, please refer to the [offcial repository](https://github.com/gmarik/vundle).
+
 **Note:** 
 
 You can either use git submodule to manage your vim plugins as I do now, or you can manage using Amix's approach cause ha has provided a python script to get all the plugins updated with one single command.
