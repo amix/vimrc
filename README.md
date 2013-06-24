@@ -315,6 +315,7 @@ Vimscript mappings:
 
 **Above is the original readme post of amix**
 
+
 # My Updates to The Ultimate vimrc
 
 ## Add some useful candinate plugins to the repo
@@ -401,6 +402,8 @@ Also [Vundle](https://github.com/gmarik/vundle):
 Simple commands like BundleInstall, BundleSearch, BundleClean get everything done! 
 
 For more info, please refer to the [offcial repository](https://github.com/gmarik/vundle).
+
+Currently, I install Vundle as a git submodule and managed by pathogen, but for other plugins management, I'm happy to play with [Vundle](https://github.com/gmarik/vundle).
 
 **Note:** 
 
