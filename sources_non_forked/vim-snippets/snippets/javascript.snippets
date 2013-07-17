@@ -17,7 +17,7 @@ snippet f
 # Immediate function
 snippet (f
 	(function (${1}) {
-		${3:/* code */}
+		${3}
 	}(${2}));
 # if
 snippet if
@@ -38,16 +38,16 @@ snippet ter
 snippet switch
 	switch (${1:expression}) {
 		case '${3:case}':
-			${4:// code}
+			${4}
 			break;
 		${5}
 		default:
-			${2:// code}
+			${2}
 	}
 # case
 snippet case
 	case '${1:case}':
-		${2:// code}
+		${2}
 		break;
 	${3}
 # for (...) {...}
@@ -63,19 +63,19 @@ snippet forr
 # while (...) {...}
 snippet wh
 	while (${1:/* condition */}) {
-		${2:/* code */}
+		${2}
 	}
 # try
 snippet try
 	try {
-		${1:/* code */}
+		${1}
 	} catch (${2:e}) {
 		${3:/* handle error */}
 	}
 # do...while
 snippet do
 	do {
-		${2:/* code */}
+		${2}
 	} while (${1:/* condition */});
 # Object Method
 snippet :f
@@ -124,10 +124,10 @@ snippet jsons
 # self-defining function
 snippet sdf
 	var ${1:function_name} = function (${2:argument}) {
-		${3:// initial code ...}
+		${3}
 
 		$1 = function ($2) {
-			${4:// main code}
+			${4}
 		};
 	};
 # singleton
@@ -140,7 +140,7 @@ snippet sing
 		$1 = function $1($2) {
 			return instance;
 		};
-		
+
 		// carry over the prototype properties
 		$1.prototype = this;
 
@@ -150,11 +150,11 @@ snippet sing
 		// reset the constructor pointer
 		instance.constructor = $1;
 
-		${3:// code ...}
+		${3}
 
 		return instance;
 	}
-# Crockford's object function 
+# Crockford's object function
 snippet obj
 	function object(o) {
 		function F() {}
@@ -164,7 +164,7 @@ snippet obj
 # Define multiple properties
 snippet props
 	var ${1:my_object} = Object.defineProperties(
-		${2:new Object()}, 
+		${2:new Object()},
 		{
 			${3:property} : {
 				get : function $1_$3_getter() {
@@ -182,9 +182,9 @@ snippet props
 	);
 # Define single property
 snippet prop
-	Object.defineProperty( 
+	Object.defineProperty(
 		${1:object},
-		"${2:property}", 
+		"${2:property}",
 		{
 			get : function $1_$2_getter() {
 				// getter code

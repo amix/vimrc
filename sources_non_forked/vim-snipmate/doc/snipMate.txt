@@ -1,7 +1,6 @@
 *snipMate.txt*  Plugin for using TextMate-style snippets in Vim.
 
 snipMate                                       *snippet* *snippets* *snipMate*
-Last Change: December 27, 2009
 
 |snipMate-installation|  Installation
 |snipMate-description|   Description
@@ -306,6 +305,15 @@ TextMates's functionality, use the |system()| function. E.g.: >
 will insert the current date, assuming you are on a Unix system. Note that you
 can also (and should) use |strftime()| for this example.
 
+                                                            *snipMate-extends*
+Borrowing from UltiSnips, .snippets files can also contain an extends
+directive, for example: >
+
+ extends html, javascript, css
+
+will tell SnipMate to also read html, javascript, and css snippets.
+
+
 Filename([{expr}] [, {defaultText}])             *snipMate-filename* *Filename()*
 
 Since the current filename is used often in snippets, a default function
@@ -419,6 +427,15 @@ Perhaps some of these features will be added in a later release.
 
 ==============================================================================
 CHANGELOG                                                  *snipMate-changelog*
+
+0.86 - 2013-06-15
+-----------------
+* Use more idiomatic <Plug> maps
+
+* Fix disappearing variables bug (hpesoj)
+* Fix cursor position bug when a variable is on the same line as the stop
+* Fix undo point creation causing problems with Supertab
+* Fix bug where SnipMate would use a typed trigger as a regular expression
 
 0.85 - 2013-04-03
 -----------------

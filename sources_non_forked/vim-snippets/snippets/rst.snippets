@@ -3,9 +3,9 @@
 snippet :
 	:${1:field name}: ${2:field body}
 snippet *
-	*${1:Emphasis}*
+	*${1:Emphasis}* ${2}
 snippet **
-	**${1:Strong emphasis}**
+	**${1:Strong emphasis}** ${2}
 snippet _
 	\`${1:hyperlink-name}\`_
 	.. _\`$1\`: ${2:link-block}
@@ -17,6 +17,53 @@ snippet -
 	${1:Title}
 	-----${2:-}
 	${3}
+#some directive
+snippet img:
+	.. |${2:alias}| image:: ${1:img}
+snippet fig:
+	.. figure:: ${1:img}
+		:alt: ${2:alter text}
+
+		$2
 snippet cont:
 	.. contents::
-	
+		${1:content}
+snippet code:
+	.. code:: ${1:type}
+
+		${2:write some code}
+snippet tip:
+	.. tip::
+		${1:my tips}
+snippet not:
+	.. note::
+		${1:my notes}
+snippet	war:
+	.. warning::
+		${1:attention!}
+snippet imp:
+	.. important::
+		${1:this is importatnt}
+snippet att:
+	.. attention::
+		${1:hey!}
+snippet dan:
+	.. danger::
+		${1:ah!}
+snippet err:
+	.. error::
+		${1:Error occur}
+snippet cau:
+	.. caution::
+		${1:Watch out!}
+#Spinx only
+snippet sid:
+	.. sidebar:: ${1:Title}
+
+		${2}
+# CJK optimize, CJK has no space between charaters
+snippet *c
+	\ *${1:Emphasis}*\ ${2}
+snippet **c
+	\ **${1:Strong emphasis}**\ ${2}
+

@@ -69,7 +69,7 @@ let g:multi_cursor_start_key='<F6>'
 
 ## Setting
 Currently there're two additional global settings one can tweak:
-### ```g:multi_cursor_exit_from_visual_mode``` (Defaut: 1)
+### ```g:multi_cursor_exit_from_visual_mode``` (Default: 1)
 
 If set to 0, then pressing `g:multi_cursor_quit_key` in _Visual_ mode will not quit and delete all existing cursors. This is useful if you want to press Escape and go back to Normal mode, and still be able to operate on all the cursors.
 
@@ -87,7 +87,6 @@ highlight link multiple_cursors_visual Visual
 
 ## Issues
 - Multi key commands like `ciw` do not work at the moment
-- Insert mode can be slow. If you are using Neobundle and have many plugins, try switching to Vundle to see if it helps. See https://github.com/Shougo/neobundle.vim/issues/84 for additional info.
 - All user input typed before Vim is able to fan out the last operation to all cursors is lost. This is a implementation decision to keep the input perfectly synced in all locations, at the cost of potentially losing user input.
 - Select mode is not implemented
 

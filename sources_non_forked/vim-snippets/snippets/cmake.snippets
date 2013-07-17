@@ -39,7 +39,7 @@ snippet link
 	TARGET_LINK_LIBRARIES(${1:bin}
 		${2:somelib}
 	)
-	
+
 snippet bin
 	ADD_EXECUTABLE(${1:bin})
 
@@ -52,7 +52,7 @@ snippet dep
 	)
 
 snippet props
-	SET_TARGET_PROPERTIES(${1:target} 
-		${2:PROPERTIES} ${3:COMPILE_FLAGS} 
+	SET_TARGET_PROPERTIES(${1:target}
+		${2:PROPERTIES} ${3:COMPILE_FLAGS}
 		${4:"-O3 -Wall -pedantic"}
 	)

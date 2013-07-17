@@ -1,13 +1,13 @@
-snippet if "if ... then ... else ..."
+snippet ife "if ... then ... else ..."
 if ${1:condition}
    then ${2:expression}
    else ${3:expression}
 endsnippet
 
 snippet case "case ... of ..."
-case ${1:expression} of
-     ${2:pattern} -> ${3:expression}
-     ${4:pattern} -> ${5:expression}
+case ${1} of
+     ${2} -> ${3}
+     ${4} -> ${5}
 endsnippet
 
 snippet :: "Type signature"

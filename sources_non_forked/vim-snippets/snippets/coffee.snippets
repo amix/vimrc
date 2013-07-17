@@ -35,19 +35,19 @@ snippet bfun
 		${2:# body...}
 # Class
 snippet cla class ..
-	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		${2}
 snippet cla class .. constructor: ..
-	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		constructor: (${2:args}) ->
 			${3}
 
 		${4}
 snippet cla class .. extends ..
-	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} extends ${2:ParentClass}
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} extends ${2:ParentClass}
 		${3}
 snippet cla class .. extends .. constructor: ..
-	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} extends ${2:ParentClass}
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} extends ${2:ParentClass}
 		constructor: (${3:args}) ->
 			${4}
 
@@ -63,7 +63,7 @@ snippet ife
 	else
 		${3:# body...}
 # Else if
-snippet elif
+snippet eif
 	else if ${1:condition}
 		${2:# body...}
 # Ternary If

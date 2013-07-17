@@ -11,8 +11,8 @@ endsnippet
 
 snippet do "do"
 do {
-	${2:// code... }
-} while (${1:/* condition */});"
+	${2}
+} while (${1});"
 endsnippet
 
 snippet doc_f "doc_f"
@@ -37,21 +37,21 @@ interface ${1:someClass}
 } // END interface $1"
 endsnippet
 
-snippet else "else"
+snippet el "else"
 else {
-	${1:// code...}
+	${1}
 }
 endsnippet
 
 snippet for "for"
 for ($${2:i} = 0; $$2 < ${1:count}; $$2${3:++}) {
-	${4:// code...}
+	${4}
 }
 endsnippet
 
 snippet foreachk "foreachk"
 foreach ($${1:variable} as $${2:key} => $${3:value}){
-	${4:// code...}
+	${4}
 }
 endsnippet
 
@@ -60,8 +60,8 @@ $_GET['${1}']${2}
 endsnippet
 
 snippet if "if"
-if (${1:/* condition */}) {
-	${2:// code...}
+if (${1}) {
+	${2}
 }
 endsnippet
 
@@ -210,9 +210,9 @@ endsnippet
 
 snippet ife "if else"
 if (${1:/* condition */}) {
-    ${2:// code...}
+    ${2}
 } else {
-    ${3:// code...}
+    ${3}
 }
 $0
 endsnippet
@@ -227,7 +227,7 @@ class $1
 {
     public function ${3:__construct}(${4:$options})
     {
-        ${4:// code}
+        ${4}
     }
 }
 $0

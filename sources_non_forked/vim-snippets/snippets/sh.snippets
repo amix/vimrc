@@ -1,7 +1,7 @@
 # Shebang. Executing bash via /usr/bin/env makes scripts more portable.
 snippet #!
 	#!/usr/bin/env bash
-	
+
 snippet if
 	if [[ ${1:condition} ]]; then
 		${2:#statements}
@@ -30,9 +30,9 @@ snippet case
 		${2:pattern})
 			${3};;
 	esac
-snippet go 
-	while getopts '${1:o}' ${2:opts} 
-	do 
+snippet go
+	while getopts '${1:o}' ${2:opts}
+	do
 		case $$2 in
 		${3:o0})
 			${4:#staments};;
@@ -53,9 +53,9 @@ snippet getopt
 	{
 			cat <<- EOT
 
-	  Usage :  $${0:0} [options] [--] 
+	  Usage :  $${0:0} [options] [--]
 
-	  Options: 
+	  Options:
 	  -h|help       Display this message
 	  -v|version    Display script version
 
@@ -80,7 +80,5 @@ snippet getopt
 	  esac    # --- end of case ---
 	done
 	shift $(($OPTIND-1))
-
-
 snippet root
 	if [ $(id -u) -ne 0 ]; then exec sudo $0; fi

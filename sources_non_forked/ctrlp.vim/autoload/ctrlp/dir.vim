@@ -74,7 +74,7 @@ fu! ctrlp#dir#init(...)
 endf
 
 fu! ctrlp#dir#accept(mode, str)
-	let path = a:mode == 'h' ? getcwd() : s:cwd.ctrlp#utils#lash().a:str
+	let path = a:mode == 'h' ? getcwd() : s:cwd.ctrlp#call('s:lash', s:cwd).a:str
 	if a:mode =~ 't\|v\|h'
 		cal ctrlp#exit()
 	en

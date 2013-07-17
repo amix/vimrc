@@ -16,14 +16,14 @@ foreach ${1:var} ${2:\$list} {
 endsnippet
 
 snippet if "if... (if)" b
-if {${1:condition}} {
+if {${1}} {
 	${2}
 }
 
 endsnippet
 
 snippet proc "proc... (proc)" b
-proc ${1:name} {${2:args}} \
+proc ${1} {${2}} \
 {
 	${3}
 }
@@ -41,7 +41,7 @@ switch ${1:-exact} -- ${2:\$var} {
 endsnippet
 
 snippet while "while... (while)" b
-while {${1:condition}} {
+while {${1}} {
 	${2}
 }
 

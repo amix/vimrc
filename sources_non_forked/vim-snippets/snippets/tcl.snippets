@@ -1,11 +1,11 @@
 # #!/usr/bin/env tclsh
 snippet #!
 	#!/usr/bin/env tclsh
-	
+
 # Process
 snippet pro
 	proc ${1:function_name} {${2:args}} {
-		${3:#body ...}
+		${3}
 	}
 #xif
 snippet xif
@@ -13,19 +13,23 @@ snippet xif
 # Conditional
 snippet if
 	if {${1}} {
-		${2:# body...}
+		${2}
 	}
 # Conditional if..else
 snippet ife
 	if {${1}} {
-		${2:# body...}
+		${2}
 	} else {
 		${3:# else...}
+	}
+snippet eif
+	elseif {${1}} {
+		${2}
 	}
 # Conditional if..elsif..else
 snippet ifee
 	if {${1}} {
-		${2:# body...}
+		${2}
 	} elseif {${3}} {
 		${4:# elsif...}
 	} else {
@@ -42,17 +46,17 @@ snippet catch
 # While Loop
 snippet wh
 	while {${1}} {
-		${2:# body...}
+		${2}
 	}
 # For Loop
 snippet for
 	for {set ${2:var} 0} {$$2 < ${1:count}} {${3:incr} $2} {
-		${4:# body...}
+		${4}
 	}
 # Foreach Loop
 snippet fore
 	foreach ${1:x} {${2:#list}} {
-		${3:# body...}
+		${3}
 	}
 # after ms script...
 snippet af

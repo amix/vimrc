@@ -16,6 +16,14 @@ snippet =b
 	=begin rdoc
 		${1}
 	=end
+snippet prot
+	protected
+
+	${1}
+snippet priv
+	private
+
+	${1}
 snippet y
 	:yields: ${1:arguments}
 snippet rb
@@ -60,7 +68,7 @@ snippet ife
 	else
 		${3}
 	end
-snippet elsif
+snippet eif
 	elsif ${1:condition}
 		${2}
 snippet unless
@@ -80,23 +88,23 @@ snippet until
 		${2}
 	end
 snippet cla class .. end
-	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		${2}
 	end
 snippet cla class .. initialize .. end
-	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		def initialize(${2:args})
 			${3}
 		end
 	end
 snippet cla class .. < ParentClass .. initialize .. end
-	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} < ${2:ParentClass}
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} < ${2:ParentClass}
 		def initialize(${3:args})
 			${4}
 		end
 	end
 snippet cla ClassName = Struct .. do .. end
-	${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} = Struct.new(:${2:attr_names}) do
+	${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} = Struct.new(:${2:attr_names}) do
 		def ${3:method_name}
 			${4}
 		end
@@ -111,7 +119,7 @@ snippet cla class << self .. end
 	end
 # class .. < DelegateClass .. initialize .. end
 snippet cla-
-	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} < DelegateClass(${2:ParentClass})
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} < DelegateClass(${2:ParentClass})
 		def initialize(${3:args})
 			super(${4:del_obj})
 
@@ -119,17 +127,17 @@ snippet cla-
 		end
 	end
 snippet mod module .. end
-	module ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+	module ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		${2}
 	end
 snippet mod module .. module_function .. end
-	module ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+	module ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		module_function
 
 		${2}
 	end
 snippet mod module .. ClassMethods .. end
-	module ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+	module ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		module ClassMethods
 			${2}
 		end
@@ -156,6 +164,11 @@ snippet atp
 	attr_protected :${1:attr_names}
 snippet ata
 	attr_accessible :${1:attr_names}
+snippet ana
+	accepts_nested_attributes_for :${1:association}
+# ivc == instance variable cache
+snippet ivc
+	@${1:variable_name} ||= ${2:chached_value}
 # include Enumerable
 snippet Enum
 	include Enumerable
@@ -176,6 +189,11 @@ snippet Forw-
 # def self
 snippet defs
 	def self.${1:class_method_name}
+		${2}
+	end
+# def initialize
+snippet definit
+	def initialize(${1:args})
 		${2}
 	end
 # def method_missing
@@ -309,6 +327,12 @@ snippet injd
 	inject(${1:init}) do |${2:mem}, ${3:var}|
 		${4}
 	end
+snippet red
+	reduce(${1:init}) { |${2:mem}, ${3:var}| ${4} }
+snippet redd
+	reduce(${1:init}) do |${2:mem}, ${3:var}|
+		${4}
+	end
 snippet map
 	map { |${1:e}| ${2} }
 snippet mapd
@@ -389,13 +413,17 @@ snippet seld
 	end
 snippet lam
 	lambda { |${1:args}| ${2} }
-snippet doo
+# I'm pretty sure that ruby users expect do to expand to do .. end
+snippet do
 	do
 		${1}
 	end
+# this is for one or more variables. typing a ", " is that cheap that it may
+# not be worth adding another snippet. should 0/1 placeholders change order?
+# its a good idea to think about the var name, so use it first
 snippet dov
-	do |${1:variable}|
-		${2}
+	do |${0:v}|
+		${1}
 	end
 snippet :
 	:${1:key} => ${2:"value"}${3}
@@ -529,7 +557,7 @@ snippet clafn
 snippet sinc
 	class << self; self end
 snippet nam
-	namespace :${1:`Filename()`} do
+	namespace :${1:`vim_snippets#Filename()`} do
 		${2}
 	end
 snippet tas
@@ -572,8 +600,8 @@ snippet artp
 snippet artpp
 	assert_redirected_to ${1:model}s_path
 snippet asd
-	assert_difference "${1:Model}.${2:count}", $1 do
-		${3}
+	assert_difference "${1:Model}.${2:count}", ${3:1} do
+		${4}
 	end
 snippet asnd
 	assert_no_difference "${1:Model}.${2:count}" do
@@ -597,14 +625,14 @@ snippet defcreate
 	def create
 		@${1:model_class_name} = ${2:ModelClassName}.new(params[:$1])
 
-		respond_to do |wants|
+		respond_to do |format|
 			if @$1.save
 				flash[:notice] = '$2 was successfully created.'
-				wants.html { redirect_to(@$1) }
-				wants.xml  { render :xml => @$1, :status => :created, :location => @$1 }
+				format.html { redirect_to(@$1) }
+				format.xml  { render :xml => @$1, :status => :created, :location => @$1 }
 			else
-				wants.html { render :action => "new" }
-				wants.xml  { render :xml => @$1.errors, :status => :unprocessable_entity }
+				format.html { render :action => "new" }
+				format.xml  { render :xml => @$1.errors, :status => :unprocessable_entity }
 			end
 		end
 	end${3}
@@ -613,9 +641,9 @@ snippet defdestroy
 		@${1:model_class_name} = ${2:ModelClassName}.find(params[:id])
 		@$1.destroy
 
-		respond_to do |wants|
-			wants.html { redirect_to($1s_url) }
-			wants.xml  { head :ok }
+		respond_to do |format|
+			format.html { redirect_to($1s_url) }
+			format.xml  { head :ok }
 		end
 	end${3}
 snippet defedit
@@ -626,41 +654,41 @@ snippet defindex
 	def index
 		@${1:model_class_name} = ${2:ModelClassName}.all
 
-		respond_to do |wants|
-			wants.html # index.html.erb
-			wants.xml  { render :xml => @$1s }
+		respond_to do |format|
+			format.html # index.html.erb
+			format.xml  { render :xml => @$1s }
 		end
 	end${3}
 snippet defnew
 	def new
 		@${1:model_class_name} = ${2:ModelClassName}.new
 
-		respond_to do |wants|
-			wants.html # new.html.erb
-			wants.xml  { render :xml => @$1 }
+		respond_to do |format|
+			format.html # new.html.erb
+			format.xml  { render :xml => @$1 }
 		end
 	end${3}
 snippet defshow
 	def show
 		@${1:model_class_name} = ${2:ModelClassName}.find(params[:id])
 
-		respond_to do |wants|
-			wants.html # show.html.erb
-			wants.xml  { render :xml => @$1 }
+		respond_to do |format|
+			format.html # show.html.erb
+			format.xml  { render :xml => @$1 }
 		end
 	end${3}
 snippet defupdate
 	def update
 		@${1:model_class_name} = ${2:ModelClassName}.find(params[:id])
 
-		respond_to do |wants|
+		respond_to do |format|
 			if @$1.update_attributes(params[:$1])
 				flash[:notice] = '$2 was successfully updated.'
-				wants.html { redirect_to(@$1) }
-				wants.xml  { head :ok }
+				format.html { redirect_to(@$1) }
+				format.xml  { head :ok }
 			else
-				wants.html { render :action => "edit" }
-				wants.xml  { render :xml => @$1.errors, :status => :unprocessable_entity }
+				format.html { render :action => "edit" }
+				format.xml  { render :xml => @$1.errors, :status => :unprocessable_entity }
 			end
 		end
 	end${3}
@@ -733,8 +761,8 @@ snippet ra
 snippet ral
 	render :action => "${1:action}", :layout => "${2:layoutname}"
 snippet rest
-	respond_to do |wants|
-		wants.${1:html} { ${2} }
+	respond_to do |format|
+		format.${1:html} { ${2} }
 	end
 snippet rf
 	render :file => "${1:filepath}"
@@ -779,7 +807,7 @@ snippet ru
 snippet rxml
 	render :xml => ${1:text to render}
 snippet sc
-	scope :${1:name}, :where(:@${2:field} => ${3:value})
+	scope :${1:name}, -> { where(${2:field}: ${3:value}) }
 snippet sl
 	scope :${1:name}, lambda do |${2:value}|
 		where("${3:field = ?}", ${4:bind var})
@@ -802,6 +830,85 @@ snippet sweeper
 			expire_page
 		end
 	end
+snippet va validates_associated
+	validates_associated :${1:attribute}
+snippet va validates .., :acceptance => true
+	validates :${1:terms}, :acceptance => true
+snippet vc
+	validates :${1:attribute}, :confirmation => true
+snippet ve
+	validates :${1:attribute}, :exclusion => { :in => ${2:%w( mov avi )} }
+snippet vf
+	validates :${1:attribute}, :format => { :with => /${2:regex}/ }
+snippet vi
+	validates :${1:attribute}, :inclusion => { :in => %w(${2: mov avi }) }
+snippet vl
+	validates :${1:attribute}, :length => { :in => ${2:3}..${3:20} }
+snippet vn
+	validates :${1:attribute}, :numericality => true
+snippet vp
+	validates :${1:attribute}, :presence => true
+snippet vu
+	validates :${1:attribute}, :uniqueness => true
+snippet format
+	format.${1:js|xml|html} { ${2} }
+snippet wc
+	where(${1:"conditions"}${2:, bind_var})
+snippet wh
+	where(${1:field} => ${2:value})
+snippet xdelete
+	xhr :delete, :${1:destroy}, :id => ${2:1}${3}
+snippet xget
+	xhr :get, :${1:show}, :id => ${2:1}${3}
+snippet xpost
+	xhr :post, :${1:create}, :${2:object} => { ${3} }
+snippet xput
+	xhr :put, :${1:update}, :id => ${2:1}, :${3:object} => { ${4} }${5}
+snippet test
+	test "should ${1:do something}" do
+		${2}
+	end
+###########################
+#   migrations snippets   #
+###########################
+snippet mac
+	add_column :${1:table_name}, :${2:column_name}, :${3:data_type}
+snippet mai
+	add_index :${1:table_name}, :${2:column_name}
+snippet mrc
+	remove_column :${1:table_name}, :${2:column_name}
+snippet mrnc
+	rename_column :${1:table_name}, :${2:old_column_name}, :${3:new_column_name}
+snippet mcc
+	change_column :${1:table}, :${2:column}, :${3:type}
+snippet mnc
+	t.${1:string} :${2:title}${3:, null: false}${4}
+snippet mct
+	create_table :${1:table_name} do |t|
+		${2}
+	end
+snippet migration class .. < ActiveRecord::Migration .. def up .. def down .. end
+	class ${1:class_name} < ActiveRecord::Migration
+		def up
+			${2}
+		end
+
+		def down
+		end
+	end
+snippet migration class .. < ActiveRecord::Migration .. def change .. end
+	class ${1:class_name} < ActiveRecord::Migration
+		def change
+			${2}
+		end
+	end
+snippet trc
+	t.remove :${1:column}
+snippet tre
+	t.rename :${1:old_column_name}, :${2:new_column_name}
+	${3}
+snippet tref
+	t.references :${1:model}
 snippet tcb
 	t.boolean :${1:title}
 	${2}
@@ -847,97 +954,16 @@ snippet tcts
 snippet tctss
 	t.timestamps
 	${1}
-snippet va
-	validates_associated :${1:attribute}
-snippet vao
-	validates_acceptance_of :${1:terms}
-snippet vc
-	validates_confirmation_of :${1:attribute}
-snippet ve
-	validates_exclusion_of :${1:attribute}, :in => ${2:%w( mov avi )}
-snippet vf
-	validates_format_of :${1:attribute}, :with => /${2:regex}/
-snippet vi
-	validates_inclusion_of :${1:attribute}, :in => %w(${2: mov avi })
-snippet vl
-	validates_length_of :${1:attribute}, :within => ${2:3}..${3:20}
-snippet vn
-	validates_numericality_of :${1:attribute}
-snippet vpo
-	validates_presence_of :${1:attribute}
-snippet vu
-	validates_uniqueness_of :${1:attribute}
-snippet wants
-	wants.${1:js|xml|html} { ${2} }
-snippet wc
-	where(${1:"conditions"}${2:, bind_var})
-snippet wh
-	where(${1:field} => ${2:value})
-snippet xdelete
-	xhr :delete, :${1:destroy}, :id => ${2:1}${3}
-snippet xget
-	xhr :get, :${1:show}, :id => ${2:1}${3}
-snippet xpost
-	xhr :post, :${1:create}, :${2:object} => { ${3} }
-snippet xput
-	xhr :put, :${1:update}, :id => ${2:1}, :${3:object} => { ${4} }${5}
-snippet test
-	test "should ${1:do something}" do
-		${2}
-	end
-#migrations
-snippet mac
-	add_column :${1:table_name}, :${2:column_name}, :${3:data_type}
-snippet mrc
-	remove_column :${1:table_name}, :${2:column_name}
-snippet mrnc
-	rename_column :${1:table_name}, :${2:old_column_name}, :${3:new_column_name}
-snippet mcc
-	change_column :${1:table}, :${2:column}, :${3:type}
-snippet mnc
-	t.${1:string} :${2:title}${3:, null: false}${4}
-snippet mct
-	create_table :${1:table_name} do |t|
-		${2}
-	end
-snippet migration class .. < ActiveRecord::Migration .. def up .. def down .. end
-	class ${1:class_name} < ActiveRecord::Migration
-		def up
-			${2}
-		end
-
-		def down
-		end
-	end
-snippet migration class .. < ActiveRecord::Migration .. def change .. end
-	class ${1:class_name} < ActiveRecord::Migration
-		def change
-			${2}
-		end
-	end
-snippet trc
-	t.remove :${1:column}
-snippet tre
-	t.rename :${1:old_column_name}, :${2:new_column_name}
-	${3}
-snippet tref
-	t.references :${1:model}
-#rspec
-snippet it
-	it "${1:spec_name}" do
-		${2}
-	end
-snippet itp
-	it "${1:spec_name}"
-	${2}
-snippet its
-	its(:${1:method}) { should ${2} }
-snippet itsn
-	its(:${1:method}) { should_not ${2} }
-
+##########################
+#     Rspec snippets     #
+##########################
 snippet desc
 	describe ${1:class_name} do
 		${2}
+	end
+snippet descm
+	describe "${1:#method}" do
+		${2:pending "Not implemented"}
 	end
 snippet cont
 	context "${1:message}" do
@@ -952,22 +978,101 @@ snippet aft
 		${2}
 	end
 snippet let
-	let(:${1:object}) ${2:block}
+	let(:${1:object}) ${2}
 snippet let!
-	let!(:${1:object}) ${2:block}
+	let!(:${1:object}) ${2}
 snippet subj
 	subject { ${1} }
+snippet s.
+	subject.${1:method}
 snippet spec
 	specify { subject.${1} }
 snippet exp
-	expect(${1:object}).to ${2}
-snippet btr
-	be_true
-snippet bfa
-	be_false
+	expect { ${1:object} }.to ${2}
+snippet raise
+	expect { ${1:object} }.to raise_error ${2:StandardError}, /${3:message_regex}/
 snippet shared
-	shared_examples "${1:shared examples name}" ${2}
-snippet itb
-	it_behaves_like "${1:shared examples name}"${2}
-snippet ana
-	accepts_nested_attributes_for :${1:association}
+	shared_examples ${1:"shared examples name"}
+snippet ibl
+	it_behaves_like ${1:"shared examples name"}
+snippet it
+	it "${1:spec_name}" do
+		${2}
+	end
+snippet its
+	its(:${1:method}) { should ${2} }
+snippet is
+	it { should ${1} }
+snippet isn
+	it { should_not ${1} }
+#ShouldaMatchers#ActionController
+snippet isfp
+	it { should filter_param :${1:key} }
+snippet isrt
+	it { should redirect_to ${1:url} }
+snippet isrtp
+	it { should render_template ${1} }
+snippet isrwl
+	it { should render_with_layout ${1} }
+snippet isrf
+	it { should rescue_from ${1:exception} }
+snippet isrw
+	it { should respond_with ${1:status} }
+snippet isr
+	it { should route(:${1:method}, '${2:path}') }
+snippet isss
+	it { should set_session :${1:key} }
+snippet issf
+	it { should set_the_flash('${1}') }
+#ShouldaMatchers#ActiveModel
+snippet isama
+	it { should allow_mass_assignment_of :${1} }
+snippet isav
+	it { should allow_value(${1}).for :${2} }
+snippet isee
+	it { should ensure_exclusion_of :${1} }
+snippet isei
+	it { should ensure_inclusion_of :${1} }
+snippet isel
+	it { should ensure_length_of :${1} }
+snippet isva
+	it { should validate_acceptance_of :${1} }
+snippet isvc
+	it { should validate_confirmation_of :${1} }
+snippet isvn
+	it { should validate_numericality_of :${1} }
+snippet isvp
+	it { should validate_presence_of :${1} }
+snippet isvu
+	it { should validate_uniqueness_of :${1} }
+#ShouldaMatchers#ActiveRecord
+snippet isana
+	it { should accept_nested_attributes_for :${1} }
+snippet isbt
+	it { should belong_to :${1} }
+snippet isbtcc
+	it { should belong_to(:${1}).counter_cache ${2:true} }
+snippet ishbtm
+	it { should have_and_belong_to_many :${1} }
+snippet isbv
+	it { should be_valid }${1}
+snippet ishc
+	it { should have_db_column :${1} }
+snippet ishi
+	it { should have_db_index :${1} }
+snippet ishm
+	it { should have_many :${1} }
+snippet ishmt
+	it { should have_many(:${1}).through :${2} }
+snippet isho
+	it { should have_one :${1} }
+snippet ishro
+	it { should have_readonly_attribute :${1} }
+snippet iss
+	it { should serialize :${1} }
+snippet isres
+	it { should respond_to :${1} }
+snippet isresw
+	it { should respond_to(:${1}).with(${2}).arguments }
+snippet super_call
+      ${1:super_class}.instance_method(:${2:method}).bind(self).call

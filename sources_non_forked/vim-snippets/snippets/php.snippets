@@ -28,12 +28,12 @@ snippet use
 	use ${1:Foo\Bar\Baz};
 	${2}
 snippet	c
-	class ${1:`Filename()`}
+	class ${1:`vim_snippets#Filename()`}
 	{
 		${2}
 	}
 snippet i
-	interface ${1:`Filename()`}
+	interface ${1:`vim_snippets#Filename()`}
 	{
 		${2}
 	}
@@ -57,7 +57,7 @@ snippet sm
 	 *
 	 * @param ${2:$1} $$1 ${3:description}
 	 *
-	 * @return ${4:`Filename()`}
+	 * @return ${4:`vim_snippets#Filename()`}
 	 */
 	${5:public} function set${6:$2}(${7:$2 }$$1)
 	{
@@ -214,7 +214,7 @@ snippet interface
 	 * @package ${3:default}
 	 * @author ${4:`g:snips_author`}
 	 */
-	interface ${1:`Filename()`}
+	interface ${1:`vim_snippets#Filename()`}
 	{
 		${5}
 	}
@@ -223,7 +223,7 @@ snippet class
 	/**
 	 * ${1}
 	 */
-	class ${2:`Filename()`}
+	class ${2:`vim_snippets#Filename()`}
 	{
 		${3}
 		/**
@@ -231,13 +231,13 @@ snippet class
 		 */
 		${5:public} function ${6:__construct}(${7:argument})
 		{
-			${8:// code...}
+			${8}
 		}
 	}
 snippet nc
 	namespace ${1:`substitute(substitute(expand("%:h"), '\v^\w+\/(\u)', '\1', ''), '\/', '\\\', 'g')`};
 
-	${2:abstract }class ${3:`Filename()`}
+	${2:abstract }class ${3:`vim_snippets#Filename()`}
 	{
 		${4}
 	}
@@ -249,26 +249,26 @@ snippet def?
 	${1}defined('${2}')${3}
 snippet wh
 	while (${1:/* condition */}) {
-		${2:// code...}
+		${2}
 	}
 # do ... while
 snippet do
 	do {
-		${2:// code... }
+		${2}
 	} while (${1:/* condition */});
 snippet if
 	if (${1:/* condition */}) {
-		${2:// code...}
+		${2}
 	}
 snippet ifil
 	<?php if (${1:/* condition */}): ?>
-		${2:<!-- code... -->}
+		${2}
 	<?php endif; ?>
 snippet ife
 	if (${1:/* condition */}) {
-		${2:// code...}
+		${2}
 	} else {
-		${3:// code...}
+		${3}
 	}
 	${4}
 snippet ifeil
@@ -278,35 +278,35 @@ snippet ifeil
 		${3:<!-- html... -->}
 	<?php endif; ?>
 	${4}
-snippet else
+snippet el
 	else {
-		${1:// code...}
+		${1}
 	}
-snippet elseif
+snippet eif
 	elseif (${1:/* condition */}) {
-		${2:// code...}
+		${2}
 	}
 snippet switch
 	switch ($${1:variable}) {
 		case '${2:value}':
-			${3:// code...}
+			${3}
 			break;
 		${5}
 		default:
-			${4:// code...}
+			${4}
 			break;
 	}
 snippet case
 	case '${1:value}':
-		${2:// code...}
+		${2}
 		break;${3}
 snippet for
 	for ($${2:i} = 0; $$2 < ${1:count}; $$2${3:++}) {
-		${4: // code...}
+		${4}
 	}
 snippet foreach
 	foreach ($${1:variable} as $${2:value}) {
-		${3:// code...}
+		${3}
 	}
 snippet foreachil
 	<?php foreach ($${1:variable} as $${2:value}): ?>
@@ -314,7 +314,7 @@ snippet foreachil
 	<?php endforeach; ?>
 snippet foreachk
 	foreach ($${1:variable} as $${2:key} => $${3:value}) {
-		${4:// code...}
+		${4}
 	}
 snippet foreachkil
 	<?php foreach ($${1:variable} as $${2:key} => $${3:value}): ?>
@@ -343,6 +343,8 @@ snippet vd
 	var_dump(${1});
 snippet vdd
 	var_dump(${1}); die(${2:});
+snippet vdf
+	error_log(print_r($${1:foo}, true), 3, '${2:/tmp/debug.log}');${3}
 snippet http_redirect
 	header ("HTTP/1.1 301 Moved Permanently");
 	header ("Location: ".URL);
@@ -364,7 +366,7 @@ snippet gs
 	 *
 	 * @param $2 $$1 ${5:description}
 	 *
-	 * @return ${6:`Filename()`}
+	 * @return ${6:`vim_snippets#Filename()`}
 	 */
 	public function set$3(${7:$2 }$$1)
 	{

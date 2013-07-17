@@ -5,17 +5,17 @@ snippet if
 snippet el
 	Else
 		${1}
-snippet elif
+snippet eif
 	ElseIf ${1:condition} Then
 		${2:; True code}
 # If/Else block
-snippet ifel
+snippet ife
 	If ${1:condition} Then
 		${2:; True code}
 	Else
 		${3:; Else code}
 	EndIf
-# If/ElseIf/Else block
+# If/ElseIf/Else block - because there is eif this is not really neccessary
 snippet ifelif
 	If ${1:condition 1} Then
 		${2:; True code}

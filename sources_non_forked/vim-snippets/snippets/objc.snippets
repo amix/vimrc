@@ -3,7 +3,7 @@ snippet Imp
 	#import <${1:Cocoa/Cocoa.h}>${2}
 # #import "..."
 snippet imp
-	#import "${1:`Filename()`.h}"${2}
+	#import "${1:`vim_snippets#Filename()`.h}"${2}
 # @selector(...)
 snippet sel
 	@selector(${1:method}:)${3}
@@ -18,7 +18,7 @@ snippet log
 	NSLog(@"${1:%@}"${2});${3}
 # Class
 snippet objc
-	@interface ${1:`Filename('', 'someClass')`} : ${2:NSObject}
+	@interface ${1:`vim_snippets#Filename('', 'someClass')`} : ${2:NSObject}
 	{
 	}
 	@end
@@ -28,33 +28,33 @@ snippet objc
 	@end
 # Class Interface
 snippet int
-	@interface ${1:`Filename('', 'someClass')`} : ${2:NSObject}
+	@interface ${1:`vim_snippets#Filename('', 'someClass')`} : ${2:NSObject}
 	{${3}
 	}
 	${4}
 	@end
 snippet @interface
-	@interface ${1:`Filename('', 'someClass')`} : ${2:NSObject}
+	@interface ${1:`vim_snippets#Filename('', 'someClass')`} : ${2:NSObject}
 	{${3}
 	}
 	${4}
 	@end
 # Class Implementation
 snippet impl
-	@implementation ${1:`Filename('', 'someClass')`}
+	@implementation ${1:`vim_snippets#Filename('', 'someClass')`}
 	${2}
 	@end
 snippet @implementation
-	@implementation ${1:`Filename('', 'someClass')`}
+	@implementation ${1:`vim_snippets#Filename('', 'someClass')`}
 	${2}
 	@end
 # Protocol
 snippet pro
-	@protocol ${1:`Filename('$1Delegate', 'MyProtocol')`} ${2:<NSObject>}
+	@protocol ${1:`vim_snippets#Filename('$1Delegate', 'MyProtocol')`} ${2:<NSObject>}
 	${3}
 	@end
 snippet @protocol
-	@protocol ${1:`Filename('$1Delegate', 'MyProtocol')`} ${2:<NSObject>}
+	@protocol ${1:`vim_snippets#Filename('$1Delegate', 'MyProtocol')`} ${2:<NSObject>}
 	${3}
 	@end
 # init Definition
@@ -87,7 +87,7 @@ snippet cat
 	@end
 # Category Interface
 snippet cath
-	@interface ${1:`Filename('$1', 'NSObject')`} (${2:MyCategory})
+	@interface ${1:`vim_snippets#Filename('$1', 'NSObject')`} (${2:MyCategory})
 	${3}
 	@end
 # Method
@@ -207,7 +207,7 @@ snippet arel
 # autorelease pool
 snippet pool
 	NSAutoreleasePool *${1:pool} = [[NSAutoreleasePool alloc] init];
-	${2:/* code */}
+	${2}
 	[$1 drain];
 # Throw an exception
 snippet except

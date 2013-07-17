@@ -2,22 +2,22 @@ snippet main
 	package {
 		import flash.display.*;
 		import flash.Events.*;
-	
+
 		public class Main extends Sprite {
 			public function Main (	) {
 				trace("start");
 				stage.scaleMode = StageScaleMode.NO_SCALE;
 				stage.addEventListener(Event.RESIZE, resizeListener);
 			}
-	
+
 			private function resizeListener (e:Event):void {
 				trace("The application window changed size!");
 				trace("New width:  " + stage.stageWidth);
 				trace("New height: " + stage.stageHeight);
 			}
-	
+
 		}
-	
+
 	}
 snippet class
 	${1:public|internal} class ${2:name} ${3:extends } {
@@ -109,17 +109,17 @@ snippet try
 # For Loop (same as c.snippet)
 snippet for for (..) {..}
 	for (${2:i} = 0; $2 < ${1:count}; $2${3:++}) {
-		${4:/* code */}
+		${4}
 	}
 # Custom For Loop
 snippet forr
 	for (${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++}) {
-		${5:/* code */}
+		${5}
 	}
 # If Condition
 snippet if
 	if (${1:/* condition */}) {
-		${2:/* code */}
+		${2}
 	}
 snippet el
 	else {
@@ -131,7 +131,7 @@ snippet t
 snippet fun
 	function ${1:function_name}(${2})${3}
 	{
-		${4:/* code */}
+		${4}
 	}
 # FlxSprite (usefull when using the flixel library)
 snippet FlxSprite
@@ -144,13 +144,13 @@ snippet FlxSprite
 			public function $1(${3: X:Number, Y:Number}):void
 			{
 				super(X,Y);
-				${4: //code...}
+				${4}
 			}
 
 			override public function update():void
 			{
 				super.update();
-				${5: //code...}
+				${5}
 			}
 		}
 	}

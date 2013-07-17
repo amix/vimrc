@@ -1,0 +1,74 @@
+# file containing most useful mappings only
+# when editing this file please be aware that there is ZenCoding and sparkup
+
+# html 5 is recommended from now on
+snippet html5
+	<!doctype html>
+	<html>
+	<head>
+		<title>$2</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		$3
+	</head>
+	<body>
+	$4
+	</body>
+	</html>
+
+# ==== TAGS
+# you always need these:
+snippet .
+	class="${1}"${2}
+snippet n
+	name="${1}"${2}
+snippet r
+	rel="${1}"${2}
+snippet t
+	title="${1}"${2}
+
+# not using # because id is faster to type
+snippet id
+	id="${1}"${2}
+snippet idn
+	id="${1}" name="${2:$1}"
+
+snippet label_and_input
+	<label for="${2:$1}">${1}</label>
+	<input type="${3:text}" name="${4:$2}" id="${5:$2}" value="${6}" />${7}
+
+
+# FORMS
+# use idn . or n to add id
+snippet input
+	<input type="${1:text}" value="${2}" ${3}/>${7}
+snippet submit
+	<input type="submit" value="${2}" ${3}/>${7}
+snippet textarea
+	<textarea $1>$2</textarea>
+
+# if you need id or class use snippets above
+snippet form
+	<form method="${1:post/get}" action="$2">
+        $3
+	</form>
+
+# other tags
+snippet br
+	<br/>
+snippet a
+	<a href="#" $2>$3</a>
+snippet img
+	<img src="$1" alt="$2"/>
+# JS/CSS
+snippet css_file
+	<link rel="stylesheet" href="${1:style.css}" type="text/css" media="${2:all}" />${3}
+snippet css_block
+	<link rel="stylesheet" href="${1:style.css}" type="text/css" media="${2:all}">
+        </link>
+
+snippet script_block
+	<script type="text/javascript" charset="utf-8">
+	</script>
+snippet script_file
+	<script type="text/javascript" charset="utf-8">
+	</script>

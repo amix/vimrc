@@ -9,7 +9,7 @@ snippet so
 	${2}
 snippet main
 	static void main() {
-	  ${1:/* code */}
+	  ${1}
 	}
 snippet st
 	static ${1}
@@ -22,9 +22,9 @@ snippet br
 snippet th
 	throw ${1}
 snippet cl
-	class ${1:`Filename("", "untitled")`} ${2}
+	class ${1:`vim_snippets#Filename("", "untitled")`} ${2}
 snippet in
-	interface ${1:`Filename("", "untitled")`} ${2}
+	interface ${1:`vim_snippets#Filename("", "untitled")`} ${2}
 snippet imp
 	implements ${1}
 snippet ext
@@ -57,15 +57,15 @@ snippet for
 	}
 snippet fore
 	for (final ${2:item} in ${1:itemList}) {
-	  ${3:/* code */}
+	  ${3}
 	}
 snippet wh
 	while (${1:/* condition */}) {
-	  ${2:/* code */}
+	  ${2}
 	}
 snippet dowh
 	do {
-	  ${2:/* code */}
+	  ${2}
 	} while (${1:/* condition */});
 snippet as
 	assert(${1:/* condition */});

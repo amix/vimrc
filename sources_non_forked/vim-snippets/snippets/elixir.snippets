@@ -1,0 +1,122 @@
+snippet do
+	do
+		${1}
+	end
+snippet if if .. do .. end
+	if ${1} do
+		${2}
+	end
+
+snippet if if .. do: ..
+	if ${1:condition}, do: ${2}
+
+snippet ife if .. do .. else .. end
+	if ${1:condition} do
+		${2}
+	else
+		${3}
+	end
+
+snippet ife if .. do: .. else:
+	if ${1:condition}, do: ${2}, else: ${3}
+
+snippet unless unless .. do .. end
+	unless ${1} do
+		${2}
+	end
+
+snippet unless unless .. do: ..
+	unless ${1:condition}, do: ${2}
+
+snippet unlesse unless .. do .. else .. end
+	unless ${1:condition} do
+		${2}
+	else
+		${3}
+	end
+
+snippet unlesse unless .. do: .. else:
+	unless ${1:condition}, do: ${2}, else: ${3}
+
+snippet cond
+	cond do
+	${1} ->
+		${2}
+	end
+
+snippet case
+	case ${1} do
+	${2} ->
+		${3}
+	end
+
+snippet def
+	def ${1:name} do
+		${2}
+	end
+
+snippet defim
+	defimpl ${1:protocol_name}, for: ${2:data_type} do
+		${3}
+	end
+
+snippet defma
+	defmacro ${1:name} do
+		${2}
+	end
+
+snippet defmo
+	defmodule ${1:module_name} do
+		${2}
+	end
+
+snippet defp
+	defp ${1:name} do
+		${2}
+	end
+
+snippet defpr
+	defprotocol ${1:name}, [${2:function}]
+
+snippet defr
+	defrecord ${1:record_name}, ${2:fields}
+
+snippet doc
+	@doc """
+	${1}
+	"""
+
+snippet fn
+	fn(${1:args}) -> ${2} end
+
+snippet mdoc
+	@moduledoc """
+	${1}
+	"""
+
+snippet rec
+	receive do
+	${1} ->
+		${2}
+	end
+
+snippet req
+	require ${1:module_name}
+
+snippet imp
+	import ${1:module_name}
+
+snippet ali
+	alias ${1:module_name}
+
+snippet test
+	test "${1:test_name}" do
+		${2}
+	end
+
+snippet try try .. rescue .. end
+	try do
+		${1}
+	rescue
+		${2} -> ${3}
+	end

@@ -64,11 +64,11 @@ snippet fr
 # mutable
 snippet mu
 	mutable
-## 
+##
 ## Class
 # class
 snippet cl
-	class ${1:`Filename('$1', 'name')`} 
+	class ${1:`vim_snippets#Filename('$1', 'name')`}
 	{
 	public:
 		$1(${2});
@@ -79,12 +79,12 @@ snippet cl
 	};
 # member function implementation
 snippet mfun
-	${4:void} ${1:`Filename('$1', 'ClassName')`}::${2:memberFunction}(${3}) {
-		${5:/* code */}
+	${4:void} ${1:`vim_snippets#Filename('$1', 'ClassName')`}::${2:memberFunction}(${3}) {
+		${5}
 	}
 # namespace
 snippet ns
-	namespace ${1:`Filename('', 'my')`} {
+	namespace ${1:`vim_snippets#Filename('', 'my')`} {
 		${2}
 	} /* namespace $1 */
 ##
@@ -97,16 +97,16 @@ snippet cin
 	std::cin >> ${1};${2}
 ##
 ## Iteration
-# for i 
+# for i
 snippet fori
 	for (int ${2:i} = 0; $2 < ${1:count}; $2${3:++}) {
-		${4:/* code */}
+		${4}
 	}${5}
 
 # foreach
 snippet fore
 	for (${1:auto} ${2:i} : ${3:container}) {
-		${4:/* code */}
+		${4}
 	}${5}
 # iterator
 snippet iter
@@ -123,9 +123,9 @@ snippet itera
 ## Lambdas
 # lamda (one line)
 snippet ld
-	[${1}](${2}){${3:/* code */}}${4}
+	[${1}](${2}){${3}}${4}
 # lambda (multi-line)
 snippet lld
 	[${1}](${2}){
-		${3:/* code */}
+		${3}
 	}${4}

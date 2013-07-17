@@ -77,11 +77,10 @@ fun! snipMate#expandSnip(snip, col)
 		endif
 	endif
 
-	call setline(lnum, line.snipLines[0])
-
-	" Autoindent snippet according to previous indentation
-	let indent = matchend(line, '^.\{-}\ze\(\S\|$\)') + 1
-	call append(lnum, map(snipLines[1:], "'".strpart(line, 0, indent - 1)."'.v:val"))
+	" Insert snippet with proper indentation
+	let indent = indent(lnum) + 1
+	call setline(lnum, line . snipLines[0])
+	call append(lnum, map(snipLines[1:], "empty(v:val) ? v:val : '" . strpart(line, 0, indent - 1) . "' . v:val"))
 
 	" Open any folds snippet expands into
 	if &fen | sil! exe lnum.','.(lnum + len(snipLines) - 1).'foldopen' | endif
@@ -391,7 +390,8 @@ endf
 " if triggername is not set 'default' is assumed
 fun! snipMate#ReadSnippetsFile(file)
 	let result = []
-	if !filereadable(a:file) | return result | endif
+	let new_scopes = []
+	if !filereadable(a:file) | return [result, new_scopes] | endif
 	let r_guard = '^guard\s\+\zs.*'
 	let inSnip = 0
 	let guard = 1
@@ -421,9 +421,12 @@ fun! snipMate#ReadSnippetsFile(file)
 				let trigger = strpart(trigger, 0, space - 1)
 			endif
 			let content = ''
+		elseif line[:6] == 'extends'
+			call extend(new_scopes, map(split(strpart(line, 8)),
+						\ "substitute(v:val, ',*$', '', '')"))
 		endif
 	endfor
-	return result
+	return [result, new_scopes]
 endf
 
 " adds scope aliases to list.
@@ -448,7 +451,14 @@ fun! s:AddScopeAliases(list)
 endf
 
 function! s:Glob(path, expr)
-	return filter(split(globpath(a:path, a:expr), "\n"), 'filereadable(v:val)')
+	let res = []
+	for p in split(a:path, ',')
+		let h = fnamemodify(a:expr, ':h')
+		if isdirectory(p . '/' . h)
+			call extend(res, split(glob(p . '/' . a:expr), "\n"))
+		endif
+	endfor
+	return filter(res, 'filereadable(v:val)')
 endfunction
 
 " returns dict of
@@ -467,7 +477,7 @@ function! snipMate#GetSnippetFiles(mustExist, scopes, trigger)
 	let paths = join(funcref#Call(s:c.snippet_dirs), ',')
 	let result = {}
 	let scopes = s:AddScopeAliases(a:scopes)
-	let trigger = escape(a:trigger, '{}*[]`')
+	let trigger = escape(a:trigger, "*[]?{}`'$")
 
 	" collect existing files
 	for scope in scopes
@@ -490,7 +500,7 @@ function! snipMate#GetSnippetFiles(mustExist, scopes, trigger)
 
 		if !a:mustExist
 			for p in split(paths, ',')
-				let p .= '/' . scope . '.snippets'
+				let p .= '/snippets/' . scope . '.snippets'
 				let result[p] = get(result, p, {'exists': 0, 'type': 'snippets'})
 			endfor
 		endif
@@ -514,21 +524,27 @@ endf
 " default triggers based on paths
 fun! snipMate#DefaultPool(scopes, trigger, result)
 	let triggerR = substitute(a:trigger,'*','.*','g')
+	let extra_scopes = []
 	for [f,opts] in items(snipMate#GetSnippetFiles(1, a:scopes, a:trigger))
 		let opts.name_prefix = matchstr(f, '\v[^/]+\ze/snippets') . ' ' . opts.name_prefix
 		if opts.type == 'snippets'
-			for [trigger, name, contents, guard] in cached_file_contents#CachedFileContents(f, s:c.read_snippets_cached, 0)
+			let [snippets, extension] = cached_file_contents#CachedFileContents(f, s:c.read_snippets_cached, 0)
+			for [trigger, name, contents, guard] in snippets
 				if trigger !~ escape(triggerR,'~') | continue | endif
 				if snipMate#EvalGuard(guard)
 					call snipMate#SetByPath(a:result, [trigger, opts.name_prefix.' '.name], contents)
 				endif
 			endfor
+			call extend(extra_scopes, extension)
 		elseif opts.type == 'snippet'
 			call snipMate#SetByPath(a:result, [opts.trigger, opts.name_prefix.' '.opts.name], funcref#Function('return readfile('.string(f).')'))
 		else
 			throw "unexpected"
 		endif
 	endfor
+	if !empty(extra_scopes)
+		call snipMate#DefaultPool(extra_scopes, a:trigger, a:result)
+	endif
 endf
 
 " return a dict of snippets found in runtimepath matching trigger

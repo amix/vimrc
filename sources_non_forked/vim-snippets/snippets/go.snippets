@@ -4,7 +4,7 @@ snippet ap
 # bool
 snippet bl
 	bool
-# byte 
+# byte
 snippet bt
 	byte
 # break
@@ -16,7 +16,7 @@ snippet ch
 # case
 snippet cs
 	case ${1:value}:
-		${2:/* code */}
+		${2}
 # const
 snippet c
 	const ${1:NAME} = ${2:0}
@@ -29,14 +29,14 @@ snippet co
 # continue
 snippet cn
 	continue
-# defer 
+# defer
 snippet df
 	defer ${1:func}()
 # defer recover
 snippet dfr
 	defer func() {
 		if err := recover(); err != nil {
-			${1:/* code */}
+			${1}
 		}
 	}()
 # gpl
@@ -57,20 +57,20 @@ snippet gpl
 	 *
 	 * Copyright (C) ${1:Author}, `strftime("%Y")`
 	 */
-	
+
 	${2}
 # int
 snippet i
 	int
-# import 
+# import
 snippet im
 	import (
-		"${1:package}" 
+		"${1:package}"
 	)${2}
-# interface 
+# interface
 snippet in
 	interface{}
-# full interface snippet 
+# full interface snippet
 snippet inf
 	interface ${1:name} {
 		${2:/* methods */}
@@ -78,8 +78,8 @@ snippet inf
 # if condition
 snippet if
 	if ${1:/* condition */} {
-		${2:/* code */}
-	}${2}
+		${2}
+	}${3}
 # else snippet
 snippet el
 	else {
@@ -109,7 +109,7 @@ snippet f6
 # if else
 snippet ie
 	if ${1:/* condition */} {
-		${2:/* code */}
+		${2}
 	} else {
 		${3}
 	}
@@ -117,25 +117,25 @@ snippet ie
 # for loop
 snippet fo
 	for ${2:i} := 0; $2 < ${1:count}; $2${3:++} {
-		${4:/* code */}
+		${4}
 	}
 	${5}
 # for range loop
 snippet fr
 	for ${1:k}, ${2:v} := range ${3} {
-		${4:/* code */}
+		${4}
 	}
 	${5}
-# function simple 
+# function simple
 snippet fun
 	func ${1:funcName}(${2}) ${3:error} {
-		${4:/* code */}
+		${4}
 	}
 	${5}
-# function on receiver 
+# function on receiver
 snippet fum
 	func (self ${1:type}) ${2:funcName}(${3}) ${4:error} {
-		${5:/* code */}
+		${5}
 	}
 	${6}
 # log printf
@@ -147,42 +147,42 @@ snippet lp
 # make
 snippet mk
 	make(${1:[]string}, ${2:0})
-# map 
+# map
 snippet mp
 	map[${1:string}]${2:int}
 # main()
 snippet main
 	func main() {
-		${1:/* code */}
+		${1}
 	}
 	${2}
 # new
 snippet nw
 	new(${1:type})
-# panic 
+# panic
 snippet pn
 	panic("${1:msg}")
 # print
 snippet pr
 	fmt.Printf("%${1:s}\n", ${2:var})${3}
-# range 
+# range
 snippet rn
 	range ${1}
-# return 
+# return
 snippet rt
 	return ${1}
-# result 
+# result
 snippet rs
 	result
 # select
 snippet sl
 	select {
 	case ${1:v1} := <-${2:chan1}
-		${3:/* code */}
+		${3}
 	case ${4:v2} := <-${5:chan2}
-		${6:/* code */}
+		${6}
 	default:
-		${7:/* code */}
+		${7}
 	}
 # string
 snippet sr
@@ -193,19 +193,19 @@ snippet st
 		${2:/* data */}
 	}
 	${3}
-# switch 
+# switch
 snippet sw
 	switch ${1:var} {
 	case ${2:value1}:
-		${3:/* code */}
+		${3}
 	case ${4:value2}:
-		${5:/* code */}
+		${5}
 	default:
-		${6:/* code */}
+		${6}
 	}
 snippet sp
 	fmt.Sprintf("%${1:s}", ${2:var})${3}
-# true 
+# true
 snippet t
 	true
 # variable declaration

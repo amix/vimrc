@@ -1,12 +1,12 @@
 # cs.snippets
 # ===========
-# 
+#
 # Standard C-Sharp snippets for snipmate.
 #
 # Largely ported over from Visual Studio 2010 snippets plus
 # a few snippets from Resharper plus a few widely known snippets.
 #
-# Most snippets on elements (i.e. classes, properties) 
+# Most snippets on elements (i.e. classes, properties)
 # follow suffix conventions. The order of suffixes to a snippet
 # is fixed.
 #
@@ -55,13 +55,13 @@
 # * Events
 #
 # Feedback is welcome!
-# 
+#
 # entry point
 snippet sim
 	public static int Main(string[] args) {
 		${1}
 		return 0;
-	} 
+	}
 snippet simc
 	public class Application {
 		public static int Main(string[] args) {
@@ -73,13 +73,13 @@ snippet simc
 snippet if
 	if (${1}) {
 		${2}
-	} 
+	}
 snippet el
 	else {
 		${1}
-	} 
+	}
 snippet ifs
-	if (${1}) 
+	if (${1})
 		${2}
 # ternary conditional
 snippet t
@@ -116,49 +116,49 @@ snippet each
 	}
 # interfaces
 snippet interface
-	public interface ${1:`Filename()`} {
+	public interface ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 snippet if+
-	public interface ${1:`Filename()`} {
+	public interface ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 # class bodies
 snippet class
-	public class ${1:`Filename()`} {
+	public class ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 snippet cls
-	${2:public} class ${1:`Filename()`} {
+	${2:public} class ${1:`vim_snippets#Filename()`} {
 		${3}
 	}
 snippet cls+
-	public class ${1:`Filename()`} {
+	public class ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 snippet cls+^
-	public static class ${1:`Filename()`} {
+	public static class ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 snippet cls&
-	internal class ${1:`Filename()`} {
+	internal class ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 snippet cls&^
-	internal static class ${1:`Filename()`} {
+	internal static class ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 snippet cls|
-	protected class ${1:`Filename()`} {
+	protected class ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 snippet cls|%
-	protected abstract class ${1:`Filename()`} {
+	protected abstract class ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 # constructor
 snippet ctor
-	public ${1:`Filename()`}() {
+	public ${1:`vim_snippets#Filename()`}() {
 		${2}
 	}
 # properties - auto properties by default.
@@ -342,7 +342,7 @@ snippet ms-
 	}
 # structure
 snippet struct
-	public struct ${1:`Filename()`} {
+	public struct ${1:`vim_snippets#Filename()`} {
 		${2}
 	}
 # enumeration

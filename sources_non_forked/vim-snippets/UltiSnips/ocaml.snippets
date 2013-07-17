@@ -4,17 +4,17 @@ endsnippet
 
 snippet open "open"
 let open ${1:module} in
-${2:e}
+${2}
 endsnippet
 
 snippet try "try"
-try ${1:e}
+try ${1}
 with ${2:Not_found} -> ${3:()}
 endsnippet
 
 snippet ref "ref"
-let ${1:name} = ref ${2:val} in
-${3:e}
+let ${1} = ref ${2} in
+${3}
 endsnippet
 
 snippet matchl "pattern match on a list"
@@ -24,88 +24,83 @@ match ${1:list} with
 endsnippet
 
 snippet matcho "pattern match on an option type"
-match ${1:x} with
-| Some(${2:y}) -> ${3:()}
+match ${1} with
+| Some(${2}) -> ${3:()}
 | None -> ${4:()}
 endsnippet
 
 snippet fun "anonymous function"
-(fun ${1:x} -> ${2:x})
+(fun ${1} -> ${2})
 endsnippet
 
 snippet cc "commment"
-(* ${1:comment} *)
+(* ${1} *)
 endsnippet
 
 snippet let "let .. in binding"
-let ${1:x} = ${2:v} in
-${3:e}
+let ${1} = ${2} in
+${3}
 endsnippet
 
 snippet lr "let rec"
-let rec ${1:f} =
-  ${2:expr}
+let rec ${1} =
+  ${2}
 endsnippet
 
-snippet if "if"
-if ${1:(* condition *)} then
-  ${2:(* A *)}
+snippet ife "if"
+if ${1} then
+  ${2}
 else
-  ${3:(* B *)}
+  ${3}
 endsnippet
 
-snippet If "If"
-if ${1:(* condition *)} then
-  ${2:(* A *)}
+snippet if "If"
+if ${1} then
+  ${2}
 endsnippet
 
 snippet while "while"
-while ${1:(* condition *)} do
-  ${2:(* A *)}
+while ${1} do
+  ${2}
 done
 endsnippet
 
 snippet for "for"
 for ${1:i} = ${2:1} to ${3:10} do
-  ${4:(* BODY *)}
+  ${4}
 done
 endsnippet
 
 snippet match "match"
-match ${1:(* e1 *)} with
-| ${2:p} -> ${3:e2}
-endsnippet
-
-snippet Match "match"
-match ${1:(* e1 *)} with
-| ${2:p} -> ${3:e2}
+match ${1} with
+| ${2} -> ${3}
 endsnippet
 
 snippet class "class"
 class ${1:name} = object
-  ${2:methods}
+  ${2}
 end
 endsnippet
 
 snippet obj "obj"
 object
-  ${2:methods}
+  ${2}
 end
 endsnippet
 
 snippet Obj "object"
 object (self)
-  ${2:methods}
+  ${2}
 end
 endsnippet
 
 snippet {{ "object functional update"
-{< ${1:x} = ${2:y} >}
+{< ${1} = ${2} >}
 endsnippet
 
 snippet beg "beg"
 begin
-  ${1:block}
+  ${1}${VISUAL}
 end
 endsnippet
 
@@ -115,19 +110,19 @@ endsnippet
 
 snippet mod "module - no signature"
 module ${1:(* Name *)} = struct
-  ${2:(* BODY *)}
+  ${2}
 end
 endsnippet
 
 snippet Mod "module with signature"
 module ${1:(* Name *)} : ${2:(* SIG *)} = struct
-  ${3:(* BODY *)}
+  ${3}
 end
 endsnippet
 
 snippet sig "anonymous signature"
 sig
-  ${2:(* BODY *)}
+  ${2}
 end
 endsnippet
 
@@ -137,32 +132,32 @@ endsnippet
 
 snippet func "define functor - no signature"
 module ${1:M} (${2:Arg} : ${3:ARG}) = struct
-  ${4:(* BODY *)}
+  ${4}
 end
 endsnippet
 
 snippet Func "define functor - with signature"
 module ${1:M} (${2:Arg} : ${3:ARG}) : ${4:SIG} = struct
-  ${5:(* BODY *)}
+  ${5}
 end
 endsnippet
 
 snippet mot "Declare module signature"
 module type ${1:(* Name *)} = sig
-  ${2:(* BODY *)}
+  ${2}
 end
 endsnippet
 
 snippet module "Module with anonymous signature"
 module ${1:(* Name *)} : sig
-  ${2:(* SIGNATURE *)}
+  ${2}
 end = struct
-  ${3:(* BODY *)}
+  ${3}
 end
 endsnippet
 
 snippet oo "odoc"
-(** ${1:odoc} *)
+(** ${1} *)
 endsnippet
 
 snippet qt "inline qtest"

@@ -73,16 +73,16 @@ snippet model
 	class ${1:ModelName}(models.Model):
 		"""${2:docstring}"""
 		${3}
-		
+
 		class Meta:
 			${4}
-		
+
 		def __unicode__(self):
 			${5}
-		
+
 		def save(self, force_insert=False, force_update=False):
 			${6}
-		
+
 		@models.permalink
 		def get_absolute_url(self):
 			return ('${7:view_or_url_name}' ${8})
@@ -90,9 +90,9 @@ snippet model
 snippet modeladmin
 	class ${1:ModelName}Admin(admin.ModelAdmin):
 		${2}
-	
+
 	admin.site.register($1, $1Admin)
-	
+
 snippet tabularinline
 	class ${1:ModelName}Inline(admin.TabularInline):
 		model = $1

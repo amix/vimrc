@@ -25,7 +25,7 @@ endsnippet
 
 snippet if "if <condition> ... end"
 if ${1:condition}
-	${2:# TODO}
+	${2}
 end
 endsnippet
 
@@ -33,9 +33,9 @@ endsnippet
 
 snippet ife "if <condition> ... else ... end"
 if ${1:condition}
-	${2:# TODO}
+	${2}
 else
-	${3:# TODO}
+	${3}
 end
 endsnippet
 
@@ -43,11 +43,11 @@ endsnippet
 
 snippet ifee "if <condition> ... elseif <condition> ... else ... end"
 if ${1:condition}
-	${2:# TODO}
+	${2}
 elsif ${3:condition}
-	${4:# TODO}
+	${4}
 else
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -55,7 +55,7 @@ endsnippet
 
 snippet unless "unless <condition> ... end"
 unless ${1:condition}
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -63,9 +63,9 @@ endsnippet
 
 snippet unlesse "unless <condition> ... else ... end"
 unless ${1:condition}
-	${2:# TODO}
+	${2}
 else
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -73,11 +73,11 @@ endsnippet
 
 snippet unlesee "unless <condition> ... elseif <condition> ... else ... end"
 unless ${1:condition}
-	${2:# TODO}
+	${2}
 elsif ${3:condition}
-	${4:# TODO}
+	${4}
 else
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -85,7 +85,7 @@ endsnippet
 
 snippet "\b(de)?f" "def <name>..." r
 def ${1:function_name}${2: ${3:*args}}
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -93,7 +93,7 @@ endsnippet
 
 snippet defi "def initialize ..."
 def initialize${1: ${2:*args}}
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -101,23 +101,23 @@ endsnippet
 
 snippet defr "def <name> ... rescue ..."
 def ${1:function_name}${2: ${3:*args}}
-	${4:# TODO}
+	${4}
 rescue
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
 
 
 snippet For "(<from>..<to>).each { |<i>| <block> }"
-(${1:from}..${2:to}).each { |${3:i}| ${4:# TODO} }
+(${1:from}..${2:to}).each { |${3:i}| ${4} }
 endsnippet
 
 
 
 snippet for "(<from>..<to>).each do |<i>| <block> end"
 (${1:from}..${2:to}).each do |${3:i}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -138,42 +138,42 @@ endsnippet
 
 
 snippet "(\S+)\.Del(ete)?_?if" ".delete_if { |<key>,<value>| <block> }" r
-`!p snip.rv=match.group(1)`.delete_if { |${1:key},${2:value}| ${3:# TODO} }
+`!p snip.rv=match.group(1)`.delete_if { |${1:key},${2:value}| ${3} }
 endsnippet
 
 
 
 snippet "(\S+)\.del(ete)?_?if" ".delete_if do |<key>,<value>| <block> end" r
 `!p snip.rv=match.group(1)`.delete_if do |${1:key},${2:value}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
 
 
 snippet "(\S+)\.Keep_?if" ".keep_if { |<key>,<value>| <block> }" r
-`!p snip.rv=match.group(1)`.keep_if { |${1:key},${2:value}| ${3:# TODO} }
+`!p snip.rv=match.group(1)`.keep_if { |${1:key},${2:value}| ${3} }
 endsnippet
 
 
 
 snippet "(\S+)\.keep_?if" ".keep_if do <key>,<value>| <block> end" r
 `!p snip.rv=match.group(1)`.keep_if do |${1:key},${2:value}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
 
 
 snippet "(\S+)\.Reject" ".reject { |<key>,<value>| <block> }" r
-`!p snip.rv=match.group(1)`.reject { |${1:key},${2:value}| ${3:# TODO} }
+`!p snip.rv=match.group(1)`.reject { |${1:key},${2:value}| ${3} }
 endsnippet
 
 
 
 snippet "(\S+)\.reject" ".reject do <key>,<value>| <block> end" r
 `!p snip.rv=match.group(1)`.reject do |${1:key},${2:value}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -194,56 +194,56 @@ endsnippet
 
 
 snippet "(\S+)\.Sort" ".sort { |<a>,<b>| <block> }" r
-`!p snip.rv=match.group(1)`.sort { |${1:a},${2:b}| ${3:# TODO} }
+`!p snip.rv=match.group(1)`.sort { |${1:a},${2:b}| ${3} }
 endsnippet
 
 
 
 snippet "(\S+)\.sort" ".sort do |<a>,<b>| <block> end" r
 `!p snip.rv=match.group(1)`.sort do |${1:a},${2:b}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
 
 
 snippet "(\S+)\.Each_?k(ey)?" ".each_key { |<key>| <block> }" r
-`!p snip.rv=match.group(1)`.each_key { |${1:key}| ${2:# TODO} }
+`!p snip.rv=match.group(1)`.each_key { |${1:key}| ${2} }
 endsnippet
 
 
 
 snippet "(\S+)\.each_?k(ey)?" ".each_key do |key| <block> end" r
 `!p snip.rv=match.group(1)`.each_key do |${1:key}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
 
 
 snippet "(\S+)\.Each_?val(ue)?" ".each_value { |<value>| <block> }" r
-`!p snip.rv=match.group(1)`.each_value { |${1:value}| ${2:# TODO} }
+`!p snip.rv=match.group(1)`.each_value { |${1:value}| ${2} }
 endsnippet
 
 
 
 snippet "(\S+)\.each_?val(ue)?" ".each_value do |<value>| <block> end" r
 `!p snip.rv=match.group(1)`.each_value do |${1:value}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
 
 
 snippet Each "<elements>.each { |<element>| <block> }"
-${1:elements}.each { |${2:${1/s$//}}| ${3:# TODO} }
+${1:elements}.each { |${2:${1/s$//}}| ${3} }
 endsnippet
 
 
 
 snippet each "<elements>.each do |<element>| <block> end"
 ${1:elements}.each do |${2:${1/s$//}}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -251,14 +251,14 @@ endsnippet
 
 snippet each_?s(lice)? "<array>.each_slice(n) do |slice| <block> end"
 each_slice(${1:2}) do |${2:slice}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
 
 
 snippet Each_?s(lice)? "<array>.each_slice(n) { |slice| <block> }"
-each_slice(${1:2}) { |${2:slice}| ${3:# TODO} }
+each_slice(${1:2}) { |${2:slice}| ${3} }
 endsnippet
 
 
@@ -273,7 +273,7 @@ try:
 	snip.rv = wmatch.group(1).lower()
 except:
 	snip.rv = 'element'
-`}| ${2:# TODO} }
+`}| ${2} }
 endsnippet
 
 
@@ -288,7 +288,7 @@ try:
 except:
 	snip.rv = 'element'
 `}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -303,7 +303,7 @@ try:
 	snip.rv = wmatch.group(1).lower()
 except:
 	snip.rv = 'element'
-`}| ${2:# TODO} }
+`}| ${2} }
 endsnippet
 
 
@@ -318,7 +318,7 @@ try:
 except:
 	snip.rv = 'element'
 `}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -333,7 +333,7 @@ try:
 	snip.rv = wmatch.group(1).lower()
 except:
 	snip.rv = 'element'
-`}| ${2:# TODO} }
+`}| ${2} }
 endsnippet
 
 
@@ -348,7 +348,7 @@ try:
 except:
 	snip.rv = 'element'
 `}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -364,7 +364,7 @@ try:
 	snip.rv = wmatch.group(1).lower()
 except:
 	snip.rv = 'element'
-`},${2:i}| ${3:# TODO} }$0
+`},${2:i}| ${3} }$0
 endsnippet
 
 
@@ -379,7 +379,7 @@ try:
 except:
 	snip.rv = 'element'
 `},${2:i}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -387,14 +387,14 @@ endsnippet
 
 
 snippet "(\S+)\.Each_?p(air)?"  ".each_pair { |<key>,<value>| <block> }" r
-`!p snip.rv=match.group(1)`.each_pair { |${1:key},${2:value}| ${3:# TODO} }
+`!p snip.rv=match.group(1)`.each_pair { |${1:key},${2:value}| ${3} }
 endsnippet
 
 
 
 snippet "(\S+)\.each_?p(air)?" ".each_pair do |<key>,<value>| <block> end" r
 `!p snip.rv=match.group(1)`.each_pair do |${1:key},${2:value}|
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -424,26 +424,24 @@ snippet "(\S+)\.Index" ".index do |item| ... end" r
 end
 endsnippet
 
-
-
-snippet do "do |<key>| ... end" i
-do ${1:|${2:key}|}
-	$0
-end
-endsnippet
-
-
-
-snippet Do "do ... end" i
+# comments about do and dov see snippets/ruby.snippets
+snippet do "do ... end" i
 do
 	$0
 end
 endsnippet
 
+snippet dov "do |<key>| ... end" i
+do |${0:v}|
+	$1
+end
+endsnippet
+
+
 
 snippet until "until <expression> ... end"
 until ${1:expression}
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -451,7 +449,7 @@ endsnippet
 
 snippet Until "begin ... end until <expression>"
 begin
-	${0:# TODO}
+	${0}
 end until ${1:expression}
 endsnippet
 
@@ -459,7 +457,7 @@ endsnippet
 
 snippet while "while <expression> ... end"
 while ${1:expression}
-	${0:# TODO}
+	${0}
 end
 endsnippet
 
@@ -467,7 +465,7 @@ endsnippet
 
 snippet While "begin ... end while <expression>"
 begin
-	${0:# TODO}
+	${0}
 end while ${1:expression}
 endsnippet
 
@@ -493,9 +491,9 @@ endsnippet
 
 snippet begin "begin ... rescue ... end"
 begin
-	${1:# TODO}
+	${1}
 rescue
-	${0:# TODO}
+	${0}
 end
 endsnippet
 

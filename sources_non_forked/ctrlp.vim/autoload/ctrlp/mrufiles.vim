@@ -126,6 +126,10 @@ fu! ctrlp#mrufiles#bufs()
 	retu s:mrbs
 endf
 
+fu! ctrlp#mrufiles#tgrel()
+	let {s:re} = !{s:re}
+endf
+
 fu! ctrlp#mrufiles#cachefile()
 	if !exists('s:cadir') || !exists('s:cafile')
 		let s:cadir = ctrlp#utils#cachedir().ctrlp#utils#lash().'mru'

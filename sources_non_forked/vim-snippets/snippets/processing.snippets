@@ -65,7 +65,7 @@ snippet for
 #loop while
 snippet while
 	while (${1:/* condition */}) {
-		${2:/* code */}
+		${2}
 	}
 #break
 snippet break
@@ -84,11 +84,11 @@ snippet default
 snippet switch
 	switch(${1:expression}) {
 		case '${3:case}':
-			${4:// code}
+			${4}
 			break;
 		${5}
 		default:
-			${2:// code}
+			${2}
 	}
 #try
 snippet try

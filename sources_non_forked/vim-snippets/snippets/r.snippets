@@ -12,24 +12,24 @@ snippet source
 # conditionals
 snippet if
 	if (${1:condition}) {
-		${2:code}
+		${2}
 	}
 snippet el
 	else {
-		${1:code}
+		${1}
 	}
 snippet ei
 	else if (${1:condition}) {
-		${2:code}
+		${2}
 	}
 
 # functions
 snippet fun
 	${1:name} = function (${2:variables}) {
-		${3:code}
+		${3}
 	}
 snippet ret
-	return(${1:code})
+	return(${1})
 
 # dataframes, lists, etc
 snippet df
@@ -117,5 +117,5 @@ snippet cor
 	cor.test(${1:x}, ${2:y})
 snippet fte
 	var.test(${1:x}, ${2:y})
-snippet kvt 
+snippet kvt
 	kv.test(${1:x}, ${2:y})
