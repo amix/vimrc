@@ -4,7 +4,7 @@
 set nu
 
 " the color I used to
-colorscheme desert
+"colorscheme desert
 
 " change current directory when switching files
 set autochdir
