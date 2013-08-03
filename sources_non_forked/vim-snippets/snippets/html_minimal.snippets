@@ -6,8 +6,8 @@ snippet html5
 	<!doctype html>
 	<html>
 	<head>
+		<meta charset="utf-8">
 		<title>$2</title>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		$3
 	</head>
 	<body>
@@ -34,15 +34,15 @@ snippet idn
 
 snippet label_and_input
 	<label for="${2:$1}">${1}</label>
-	<input type="${3:text}" name="${4:$2}" id="${5:$2}" value="${6}" />${7}
+	<input type="${3:text}" name="${4:$2}" id="${5:$2}" value="${6}">${7}
 
 
 # FORMS
 # use idn . or n to add id
 snippet input
-	<input type="${1:text}" value="${2}" ${3}/>${7}
+	<input type="${1:text}" value="${2}" ${3}>${7}
 snippet submit
-	<input type="submit" value="${2}" ${3}/>${7}
+	<input type="submit" value="${2}" ${3}>${7}
 snippet textarea
 	<textarea $1>$2</textarea>
 
@@ -61,7 +61,7 @@ snippet img
 	<img src="$1" alt="$2"/>
 # JS/CSS
 snippet css_file
-	<link rel="stylesheet" href="${1:style.css}" type="text/css" media="${2:all}" />${3}
+	<link rel="stylesheet" href="${1:style.css}" type="text/css" media="${2:all}">${3}
 snippet css_block
 	<link rel="stylesheet" href="${1:style.css}" type="text/css" media="${2:all}">
         </link>

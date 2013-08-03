@@ -62,6 +62,7 @@ let s:types = {
 	\ 'lisp'   : '%slisp%slisp%sf',
 	\ 'lua'    : '%slua%slua%sf',
 	\ 'make'   : '%smake%smake%sm',
+	\ 'ocaml'  : '%socaml%socaml%scmMvtfCre',
 	\ 'pascal' : '%spascal%spascal%sfp',
 	\ 'perl'   : '%sperl%sperl%sclps',
 	\ 'php'    : '%sphp%sphp%scdvf',

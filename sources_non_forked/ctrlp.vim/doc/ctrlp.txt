@@ -123,7 +123,7 @@ heights of the match window: >
   let g:ctrlp_match_window = ''
 <
 Example: >
-  let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:10'
+  let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:10,results:10'
 <
 The position: (default: bottom)
   top - show the match window at the top of the screen.
@@ -136,6 +136,9 @@ The listing order of results: (default: btt)
 The minimum and maximum heights:
   min:{n} - show minimum {n} lines (default: 1).
   max:{n} - show maximum {n} lines (default: 10).
+
+The maximum number of results:
+  results:{n} - list maximum {n} results (default: sync with max height).
 
 Note: When a setting isn't set, its default value will be used.
 
@@ -1285,6 +1288,8 @@ Special thanks:~
     * Christopher Fredén <github.com/icetan>
     * Zahary Karadjov <github.com/zah>
     * Jo De Boeck <github.com/grimpy>
+    * Rudi Grinberg <github.com/rgrinberg>
+    * Timothy Mellor <github.com/mellort>
 
 ===============================================================================
 CHANGELOG                                                     *ctrlp-changelog*

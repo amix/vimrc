@@ -30,6 +30,7 @@ additional contributions from:
 * [radicalbit](https://github.com/radicalbit)
 * [redpill](https://github.com/redpill)
 * [robhudson](https://github.com/robhudson)
+* [Shraymonks](https://github.com/shraymonks)
 * [sickill](https://github.com/sickill)
 * [statik](https://github.com/statik)
 * [steveno](https://github.com/steveno)

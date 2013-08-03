@@ -259,6 +259,10 @@ fu! s:match_window_opts()
 		\ s:mw =~ 'min:[^,]\+' ? str2nr(matchstr(s:mw, 'min:\zs\d\+')) : 1
 	let [s:mw_max, s:mw_min] = [max([s:mw_max, 1]), max([s:mw_min, 1])]
 	let s:mw_min = min([s:mw_min, s:mw_max])
+	let s:mw_res =
+		\ s:mw =~ 'results:[^,]\+' ? str2nr(matchstr(s:mw, 'results:\zs\d\+'))
+		\ : min([s:mw_max, &lines])
+	let s:mw_res = max([s:mw_res, 1])
 endf
 "}}}1
 " * Open & Close {{{1
@@ -576,7 +580,7 @@ fu! s:Update(str)
 	let s:martcs = &scs && str =~ '\u' ? '\C' : ''
 	let pat = s:matcher == {} ? s:SplitPattern(str) : str
 	let lines = s:nolim == 1 && empty(str) ? copy(g:ctrlp_lines)
-		\ : s:MatchedItems(g:ctrlp_lines, pat, s:winmaxh)
+		\ : s:MatchedItems(g:ctrlp_lines, pat, s:mw_res)
 	cal s:Render(lines, pat)
 endf
 
@@ -1605,8 +1609,7 @@ endf
 fu! ctrlp#syntax()
 	if ctrlp#nosy() | retu | en
 	for [ke, va] in items(s:hlgrps) | cal ctrlp#hicheck('CtrlP'.ke, va) | endfo
-	if !hlexists('CtrlPLinePre')
-		\ && synIDattr(synIDtrans(hlID('Normal')), 'bg') !~ '^-1$\|^$'
+	if synIDattr(synIDtrans(hlID('Normal')), 'bg') !~ '^-1$\|^$'
 		sil! exe 'hi CtrlPLinePre '.( has("gui_running") ? 'gui' : 'cterm' ).'fg=bg'
 	en
 	sy match CtrlPNoEntries '^ == NO ENTRIES ==$'

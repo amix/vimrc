@@ -211,3 +211,11 @@ snippet t
 # variable declaration
 snippet v
 	var ${1:t} ${2:string}
+# goroutine named function
+snippet g
+	go ${1:funcName}(${2})
+# goroutine anonymous function 
+snippet ga
+	go func(${1} ${2:type}) {
+		${3:/* code */}
+	}(${4})

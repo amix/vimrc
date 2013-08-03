@@ -185,3 +185,15 @@ snippet lc
 	logger.critical(${1:msg})
 snippet li
 	logger.info(${1:msg})
+snippet epydoc
+	"""
+	${1:Description}
+
+	@param ${2:param}: ${3: Description}
+	@type  $2: ${4: Type}
+
+	@return: ${5: Description}
+	@rtype : ${6: Type}
+
+	@raise e: ${7: Description}
+	"""

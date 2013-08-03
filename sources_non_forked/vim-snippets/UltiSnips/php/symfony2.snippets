@@ -1,0 +1,75 @@
+snippet contr "symfony2 controller" b
+namespace `!p 
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+
+/**
+ * ${1:@author `whoami`}${2}
+ */
+class `!p
+snip.rv = re.match(r'.*(?=\.)', fn).group()
+` extends Controller
+{
+}
+endsnippet
+
+snippet act "symfony2 action" b
+/**
+ * @Route("${3}", name="${4}")
+ * @Method({${5:"GET"}})
+ * @Template()
+ */
+public function ${1}Action(${2})
+{
+	${6}
+	return [];
+}
+endsnippet
+
+snippet comm "symfony2 command" b
+namespace `!p 
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`;
+
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+/**
+ * ${3:@author `whoami`}${4}
+ */
+class `!p
+snip.rv = re.match(r'.*(?=\.)', fn).group()
+` extends ContainerAwareCommand
+{
+	protected function configure()
+	{
+		$this
+			->setName('${1}')
+			->setDescription('${2}')
+			->setDefinition([
+				new InputArgument('', InputArgument::REQUIRED, ''),
+				new InputOption('', null, InputOption::VALUE_NONE, ''),
+			])
+		;
+	}
+
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
+	}
+}
+endsnippet

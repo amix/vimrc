@@ -21,7 +21,7 @@ set cpo&vim
 try
 	call funcref#Function('')
 catch /.*/
-	echoe "you're missing vim-addon-mw-utils. See install instructions at ".expand('<sfile>:h:h').'/README.rst'
+	echoe "you're missing vim-addon-mw-utils. See install instructions at ".expand('<sfile>:h:h').'/README.md'
 endtry
 
 if (!exists('g:snipMateSources'))
@@ -41,8 +41,7 @@ snoremap <silent> <Plug>snipMateNextOrTrigger  <Esc>a<C-R>=snipMate#TriggerSnipp
 inoremap <silent> <Plug>snipMateBack           <C-R>=snipMate#BackwardsSnippet()<CR>
 snoremap <silent> <Plug>snipMateBack           <Esc>a<C-R>=snipMate#BackwardsSnippet()<CR>
 inoremap <silent> <Plug>snipMateShow           <C-R>=snipMate#ShowAvailableSnips()<CR>
-" FIXME: <Plug>snipMateVisual pollutes register(s)
-xnoremap <silent> <Plug>snipMateVisual         s<C-O>:let g:snipmate_content_visual=getreg('1')<CR>
+xnoremap <silent> <Plug>snipMateVisual         :<C-U>call <SID>grab_visual()<CR>i
 
 " config which can be overridden (shared lines)
 if !exists('g:snipMate')
@@ -75,6 +74,18 @@ fun! BackwardSnippet()
 	echoe "replace BackwardSnippet by snipMate#BackwardsSnippet, please!"
 	return snipMate#BackwardsSnippet()
 endf
+
+" Modified from Luc Hermitte's function on StackOverflow
+" <http://stackoverflow.com/a/1534347>
+function! s:grab_visual()
+	let a_save = @a
+	try
+		normal! gv"ad
+		let b:snipmate_content_visual = @a
+	finally
+		let @a = a_save
+	endtry
+endfunction
 
 " restore 'cpo'
 let &cpo = s:save_cpo

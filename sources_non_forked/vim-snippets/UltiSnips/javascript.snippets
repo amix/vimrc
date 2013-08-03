@@ -27,46 +27,46 @@ endsnippet
 
 snippet proto "Prototype (proto)"
 ${1:class_name}.prototype.${2:method_name} = function(${3:first_argument}) ,,{
-	${0:// body...}
-};
+	${0}
+}
  
 endsnippet
 
 snippet for "for (...) {...} (faster)"
 for (var ${2:i} = ${1:Things}.length - 1; $2 >= 0; $2--){
 	${3:$1[$2]}$0
-};
+}
 endsnippet
 
 snippet for "for (...) {...}"
 for (var ${2:i}=0; $2 < ${1:Things}.length; $2++) {
 	${3:$1[$2]}$0
-};
+}
 endsnippet
 
 snippet fun "function (fun)"
 function ${1:function_name} (${2:argument}) {
-	${0:// body...}
+	${0}
 }
 endsnippet
 
 # for one line if .. else you usually use a ? b : c
 snippet ife "if ___ else"
 if (${1}) {
-	{$2}
+	${2}
 } else {
-	{$3}
-};
+	${3}
+}
 endsnippet
 
 snippet if "if"
 if (${1}) {
-	{$2}
-};
+	${2}
+}
 endsnippet
 
 snippet timeout "setTimeout function"
-setTimeout(function() {$0}${2:}, ${1:10});
+setTimeout(function() {$0}${2:}, ${1:10})
 endsnippet
 
 # vim:ft=snippets:
