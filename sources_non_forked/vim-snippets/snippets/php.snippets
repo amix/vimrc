@@ -405,3 +405,10 @@ snippet aw
 	array_walk($${1:foo}, function(&$${2:v}, $${3:k}) {
 		$$2 = ${4};
 	});
+
+# static var assign once
+snippet static_var
+	static $${1} = null;
+	if (is_null($$1)){
+		$$1 = ${2};
+	}

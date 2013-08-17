@@ -75,7 +75,7 @@ snippet unless
 	unless ${1:condition}
 		${2}
 	end
-snippet while
+snippet wh
 	while ${1:condition}
 		${2}
 	end
@@ -422,8 +422,8 @@ snippet do
 # not be worth adding another snippet. should 0/1 placeholders change order?
 # its a good idea to think about the var name, so use it first
 snippet dov
-	do |${0:v}|
-		${1}
+	do |${1:v}|
+		${2}
 	end
 snippet :
 	:${1:key} => ${2:"value"}${3}
@@ -854,7 +854,7 @@ snippet format
 	format.${1:js|xml|html} { ${2} }
 snippet wc
 	where(${1:"conditions"}${2:, bind_var})
-snippet wh
+snippet wf
 	where(${1:field} => ${2:value})
 snippet xdelete
 	xhr :delete, :${1:destroy}, :id => ${2:1}${3}

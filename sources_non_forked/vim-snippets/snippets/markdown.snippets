@@ -23,11 +23,11 @@ snippet ![:*
 	![${1:id}]: ${2:`@*`} "${3:title}"
 
 snippet ===
-	`repeat('=', strlen(getline(line(".") - 1)))`
+	`repeat('=', strlen(getline(line(".") - 1)) - strlen(getline('.')))`
 
 	${1}
 snippet ---
-	`repeat('-', strlen(getline(line(".") - 1)))`
+	`repeat('-', strlen(getline(line(".") - 1)) - strlen(getline('.')))`
 
 	${1}
 
