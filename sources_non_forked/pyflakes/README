@@ -1,0 +1,18 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=3161
+
+Usage
+-----
+1. Open a Python file
+2. Press `<F7>` to run `pyflakes` on it
+
+It shows the errors inside a quickfix window, which will allow your to quickly
+jump to the error locations by simply pressing [Enter].
+
+Customization
+-------------
+If you don't want to use the `<F7>` key for pyflakes-checking, simply remap it to
+another key.  It autodetects whether it has been remapped and won't register
+the `<F7>` key if so.  For example, to remap it to `<F3>` instead, use:
+
+    autocmd FileType python map <buffer> <F3> :call Pyflakes()<CR>
+

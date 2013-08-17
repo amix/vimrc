@@ -1,0 +1,88 @@
+###################################################################
+#                        Ember snippets                           #
+###################################################################
+
+# Application
+snippet eapp "App.Name = Ember.Application.create({});"
+${1:App.Name} = Ember.Application.create({});
+endsnippet
+
+# Models
+snippet emod "App.ModelName = Ember.Model.extend({...});"
+${1:model_name} = Ember.Model.extend({
+     ${0://Properties here...}
+});
+endsnippet
+
+# View
+snippet eview "App.ViewName = Ember.Model.extend({...});"
+${1:view_name} = Ember.View.extend({
+     ${0://Properties here...}
+});
+endsnippet
+
+# Controller
+snippet econtroller "App.ControllerName = Ember.Model.extend({...});"
+${1:controller_name} = Ember.ObjectController.extend({
+     ${0://Properties here...}
+});
+endsnippet
+
+# Route
+snippet eroute "App.RouteName = Ember.Route.extend({...});"
+${1:route_name} = Ember.Route.extend({
+     ${0://Properties here...}
+});
+endsnippet
+
+snippet eview "App.ViewName = Ember.Model.create({...});"
+${1:view_name} = Ember.View.create({
+     ${0://Properties here...}
+});
+endsnippet
+
+# Object
+snippet eobj "App.ObjectName = Ember.Object.extend({...});"
+${1:object_name} = Ember.Object.create({
+     ${0://Properties here...}
+});
+endsnippet
+
+# Mixin
+snippet emix "App.MixinName = Ember.Model.extend({...});"
+${1:view_name} = Ember.Mixin.create({
+     ${0://Properties here...}
+});
+endsnippet
+
+# Ember getter and setter
+snippet eget "this.get('property');"
+${1:this}.get('${2:property}');
+endsnippet
+
+snippet eset "this.set('property', value);"
+${1:this}.set('${2:property}', ${3:value});
+endsnippet
+
+# Computer properties
+snippet cpro "property_name: function() {...}.property(),"
+${1:property_name}: function() {
+    ${0://body...}
+}.property('${3:argumenet}'),
+endsnippet
+
+snippet cpro ": function() {...}.property('property'),"
+${1:property_name}: function() {
+    ${0://body...}
+}.property(),
+endsnippet
+
+
+# Observes
+snippet proo "property_name: function() {...}.property()"
+${1:property_name}: function() {
+    ${0://body...}
+}.observes('${3:property}'),
+endsnippet
+
+# vim:ft=snippets:

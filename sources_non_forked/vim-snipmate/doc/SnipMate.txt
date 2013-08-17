@@ -1,0 +1,455 @@
+*SnipMate.txt*  Plugin for using TextMate-style snippets in Vim.
+
+SnipMate                                       *snippet* *snippets* *SnipMate*
+Last Change: December 27, 2009
+
+1. Description                        |SnipMate-description|
+2. Usage                              |SnipMate-usage|
+3. Interface and Settings             |SnipMate-interface| |SnipMate-settings|
+4. Snippet syntax                     |SnipMate-syntax|
+5. Snippet sources                    |SnipMate-snippet-sources|
+6. Disadvantages to TextMate          |SnipMate-disadvantages|
+7. Contact                            |SnipMate-contact|
+8. License                            |SnipMate-license|
+
+For Vim version 7.0 or later.
+This plugin only works if 'compatible' is not set.
+{Vi does not have any of these features.}
+
+SnipMate depends on vim-addon-mw-utils and tlib.
+
+==============================================================================
+DESCRIPTION                                             *SnipMate-description*
+
+SnipMate implements snippet features in Vim. A snippet is like a template,
+reducing repetitive insertion of pieces of text. Snippets can contain
+placeholders for modifying the text if necessary or interpolated code for
+evaluation. For example, in C, typing "for" then pushing <Tab> could expand
+to: >
+
+    for (i = 0; i < count; i++) {
+        /* code */
+    }
+
+SnipMate is inspired by TextMate's snippet features.
+
+==============================================================================
+USAGE                                                         *SnipMate-usage*
+
+Every snippet consists of an expansion and a trigger. Typing a trigger into
+your buffer and then hitting your trigger key (<Tab> by default, see
+|SnipMate-mappings|) will replace the trigger with the expansion text.
+
+The expansion text can optionally include tab stops. When it does, upon
+expansion of the snippet, the cursor is placed at the first one, and the user
+can jump between each tab stop. Each of these tab stops can be represented by
+default placeholder text. If such a placeholder is provided, then the text of
+the placeholder can be repeated in the snippet at specified mirrors. Any edits
+to the placeholder are instantly updated at every mirror.
+
+SnipMate allows multiple snippets to use the same trigger. When triggered,
+a list of all snippets with that trigger is provided and prompts for which
+snippet to use.
+
+                                                             *SnipMate-scopes*
+SnipMate searches for snippets inside a directory named "snippets" inside each
+entry in 'runtimepath'. Which files are loaded depends on 'filetype' and
+'syntax'; see |SnipMate-syntax| for more information. Snippets are loaded and
+refreshed automatically on demand.
+
+Note: SnipMate does not ship with any snippets. In order to use it, the user
+must either write their own snippets or obtain some from a repository like
+https://github.com/honza/vim-snippets
+
+==============================================================================
+INTERFACE AND SETTINGS                *SnipMate-interface* *SnipMate-settings*
+
+                                                           *SnipMate-commands*
+Commands~
+
+                                                   *:SnipMateOpenSnippetFiles*
+:SnipMateOpenSnippetFiles       Opens a list of all valid snippet locations
+                                based on the current scope |SnipMate-scopes|.
+                                Only existing files and non-existing .snippets
+                                files will be shown, with the existing files
+                                shown first.
+
+                                                            *SnipMate-options*
+Options~
+
+g:snips_author                  A variable used in some snippets in place of
+                                the author's (your) name. Similar to
+                                $TM_FULLNAME in TextMate. For example, >
+                                    snippet name
+                                        `g:snips_author`
+<                               creates a snippet "name" that expands to your
+                                name.
+
+g:snipMate                      This |Dictionary| contains other SnipMate
+                                options. In short add >
+                                    let g:snipMate = {}
+<                               to your .vimrc before setting other SnipMate
+                                options.
+
+g:snipMate.scope_aliases        A |Dictionary| associating certain filetypes
+                                with other scopes |SnipMate-scopes|. The
+                                entries consist of a filetype as the key and
+                                a comma-separated list of aliases as the
+                                value. For example, >
+                                    let g:snipMate.scope_aliases = {}
+                                    let g:snipMate.scope_aliases['ruby']
+                                                \ = 'ruby,ruby-rails'
+<                               tells SnipMate that "ruby-rails" snippets in
+                                addition to "ruby" snippets should be loaded
+                                when editing files with 'filetype' set to
+                                "ruby" or contains "ruby" as an entry in the
+                                case of dotted filetypes.
+
+g:snipMate['no_match_completion_feedkeys_chars']
+                                A string inserted when no match for a trigger
+                                is found. By default a tab is inserted
+                                according to 'expandtab', 'tabstop', and
+                                'softtabstop'. Set it to the empty string to
+                                prevent anything from being inserted.
+
+                                                           *SnipMate-mappings*
+Mappings~
+
+The mappings SnipMate uses can be customized with the |:map| commands. For
+example, to change the key that triggers snippets and moves to the next
+tabstop, >
+
+        :imap <C-J> <Plug>SnipMateNextOrTrigger
+        :smap <C-J> <Plug>SnipMateNextOrTrigger
+
+The list of possible <Plug> mappings is as follows:
+
+<Plug>SnipMateNextOrTrigger     Default: <Tab>          Mode: Insert, Select
+                                Jumps to the next tab stop or, if none exists,
+                                try to expand a snippet. Use in both insert
+                                and select modes.
+
+<Plug>SnipMateBack              Default: <S-Tab>        Mode: Insert, Select
+                                Jump to the previous tab stop, if it exists.
+                                Use in both insert and select modes.
+
+<Plug>SnipMateShow              Default: <C-R><Tab>     Mode: Insert
+                                Show all available snippets (that start with
+                                the previous text, if it exists). Use in
+                                insert mode.
+
+<Plug>SnipMateVisual            Default: <Tab>          Mode: Visual
+                                See |SnipMate-visual|.
+
+Additionally, <CR> is mapped in visual mode in .snippets files for retabbing
+snippets.
+
+==============================================================================
+SYNTAX                                      *snippet-syntax* *SnipMate-syntax*
+
+SnipMate looks inside of each entry of 'rtp' (or |SnipMate-snippet-sources|)
+for a directory named /snippets/. Based on the 'filetype' and 'syntax'
+settings (taking into account the dotted syntax), the following files are read
+for snippets: >
+
+    .../snippets/<scope>.snippets
+    .../snippets/<scope>/<name>.snippets
+    .../snippets/<scope>/<trigger>.snippet
+    .../snippets/<scope>/<trigger>/<description>.snippet
+
+where <scope> is an entry in 'filetype' or 'syntax', <name> is an arbitrary
+name, <trigger> is the trigger for a snippet, and <description> is
+a description used for |SnipMate-multisnip|.
+
+A .snippet file defines a single snippet with the trigger (and description)
+determined by the filename. The entire contents of the file are used as the
+snippet expansion text.
+
+Multiple snippets can be defined in *.snippets files. Each snippet definition
+looks something like: >
+
+    snippet trigger optional description
+    guard left_from_cursor='^\s*'
+        expanded text
+        more expanded text
+
+<                                                         *SnipMate-multisnip*
+The description is optional. If it is left out and a second snippet inside the
+same .snippets file uses the same trigger, the second one will overwrite the
+first. Otherwise multisnip is used.
+
+The guard condition line is also optional. It can be used to make a snippet
+available only in some cases. The value should be a VimL expression.
+
+Note: Hard tabs in the expansion text are required. When the snippet is
+expanded in the text and 'expandtab' is set, each tab will be replaced with
+spaces based on 'softtabstop' if nonzero or 'shiftwidth' otherwise.
+
+Comments can be made in .snippets files by starting a line with a # character.
+However these can't be used inside of snippet definitions: >
+
+    # this is a correct comment
+    snippet trigger
+        expanded text
+    snippet another_trigger
+        # this isn't a comment!
+        expanded text
+
+This should hopefully be clear with the included syntax highlighting.
+
+                                                            *snipMate-extends*
+Borrowing from UltiSnips, .snippets files can also contain an extends
+directive, for example: >
+
+ extends html, javascript, css
+
+will tell SnipMate to also read html, javascript, and css snippets.
+
+                                                          *SnipMate-tabstops*
+Tab stops~
+
+A tab stop, specified by ${#} where # is a number, tells SnipMate where to
+position the cursor next. The special tab stop ${0} denotes the last cursor
+position; in its absence, the cursor is placed at the end of the snippet.
+
+For example, to place the cursor first on the id of a <div> tag, allow
+the user to press <tab> to go to the middle of it, and finally end after
+</div>: >
+
+    snippet div
+        <div id="${1}">
+            ${2}
+        </div>
+
+<                                   *SnipMate-placeholders* *SnipMate-mirrors*
+Placeholders and Mirrors~
+
+Placeholder text can be supplied using "${#:text}", where # is the number of
+the tab stop. This text then can be copied throughout the snippet using "$#",
+given # is the same number as used before. So, to make a C for loop: >
+
+    snippet for
+        for (${2:i}; $2 < ${1:count}; $1++) {
+            ${4}
+        }
+
+This will cause "count" to first be selected and change if the user starts
+typing. When <tab> is pressed, the "i" in ${2}'s position will be selected;
+all $2 variables will default to "i" and automatically be updated if the user
+starts typing.
+
+NOTE: "$#" syntax is used only for mirrors, not for tab stops as in TextMate.
+
+Mirrors can also be used inside of placeholders. For instance: >
+
+ snippet opt
+        <option value="${1:option}">${2:$1}</option>
+
+Will, as usual, cause "option" to first be selected and update all the $1
+variables if the user starts typing. Since one of these variables is inside of
+${2}, this text will then be used as a placeholder for the next tab stop,
+allowing the user to change it if he wishes.
+
+To copy a value throughout a snippet without supplying default text, simply
+use the "${#:}" construct without the text, e.g.: >
+
+ snippet foo
+        ${1:}bar$1
+
+<                                                            *SnipMate-visual*
+There is a special placeholder called {VISUAL}. If you visually select text,
+then press <Tab> Vim switches to insert mode. The next snippet you'll expand
+will replace {VISUAL} by the text which was selected previously.
+
+                                                               *SnipMate-eval*
+Interpolated Vim Script~
+
+Snippets can also contain Vim script commands that are executed (via |eval()|)
+when the snippet is inserted. Commands are given inside backticks (`...`); for
+TextMates's functionality, use the |system()| function. E.g.: >
+
+ snippet date
+        `system("date +%Y-%m-%d")`
+
+will insert the current date, assuming you are on a Unix system. Note that you
+can also (and should) use |strftime()| for this example.
+
+Filename([{expr}] [, {defaultText}])                     *SnipMate-Filename()*
+
+Since the current filename is used often in snippets, a default function
+has been defined for it in SnipMate.vim, appropriately called Filename().
+
+With no arguments, the default filename without an extension is returned;
+the first argument specifies what to place before or after the filename,
+and the second argument supplies the default text to be used if the file
+has not been named. "$1" in the first argument is replaced with the filename;
+if you only want the filename to be returned, the first argument can be left
+blank. Examples: >
+
+ snippet filename
+        `Filename()`
+ snippet filename_with_default
+        `Filename('', 'name')`
+ snippet filename_foo
+        `Filename('$1_foo')`
+
+The first example returns the filename if it the file has been named, and an
+empty string if it hasn't. The second returns the filename if it's been named,
+and "name" if it hasn't. The third returns the filename followed by "_foo" if
+it has been named, and an empty string if it hasn't.
+
+==============================================================================
+SNIPPET SOURCES                                     *SnipMate-snippet-sources*
+
+SnipMate is configurable.
+
+plugin/SnipMate.vim assigns three important keys: >
+
+    " default implementation collecting snippets by handlers
+    let g:SnipMate['get_snippets'] = SnipMate#GetSnippets
+    " default handler:
+    let g:SnipMateSources['default'] = SnipMate#DefaultPool
+    " default directories containing snippets:
+    let g:SnipMate['snippet_dirs']
+                \ = funcref#Function('return split(&runtimepath,",")')
+
+You can override all of those settings.
+
+You can see that the default set of snippets is determined by Vim's 'rtp'.
+
+Example 1:~
+autoload/SnipMate_python_demo.vim shows how you can register additional
+sources such as creating snippets on the fly representing python function
+definitions found in the current file.
+
+Example 2:~
+Add to your ~/.vimrc: For each know snippet add a second version ending in _
+adding folding markers >
+
+    let g:commentChar = {
+                \   'vim': '"',
+                \   'c': '//',
+                \   'cpp': '//',
+                \   'sh': '#',
+                \   'python': '#'
+                \ }
+    " url https://github.com/garbas/vim-snipmate/issues/49
+    fun! AddFolding(text)
+        return substitute(a:text,'\n'," ".g:commentChar[&ft]." {{{\n",1)."\n".g:commentChar[&ft]." }}}"
+    endf
+
+    fun! SnippetsWithFolding(scopes, trigger, result)
+        " hacky: temporarely remove this function to prevent infinite recursion:
+        call remove(g:SnipMateSources, 'with_folding')
+        " get list of snippets:
+        let result = SnipMate#GetSnippets(a:scopes, substitute(a:trigger,'_\(\*\)\?$','\1',''))
+        let g:SnipMateSources['with_folding'] = funcref#Function('SnippetsWithFolding')
+
+        " add folding:
+        for k in keys(result)
+        let a:result[k.'_'] = map(result[k],'AddFolding(v:val)')
+        endfor
+    endf
+
+    " force setting default:
+    runtime plugin/SnipMate.vim
+    " add our own source
+    let g:SnipMateSources['with_folding'] = funcref#Function('SnippetsWithFolding')
+
+See |SnipMate-syntax| for more details about all possible relative locations
+to 'rtp' can be found in.
+
+==============================================================================
+DISADVANTAGES                                         *SnipMate-disadvantages*
+
+SnipMate.vim currently has the following disadvantages to TextMate's snippets:
+    - Nested placeholders are not currently possible. E.g.: >
+        '<div${1: id="${2:some_id}}">${3}</div>'
+<     In TextMate this would first highlight ' id="some_id"', and if
+      you hit delete it would automatically skip ${2} and go to ${3}
+      on the next <tab>, but if you didn't delete it it would highlight
+      "some_id" first. You cannot do this in SnipMate.vim.
+    - Regex cannot be performed on variables, such as "${1/.*/\U&}"
+    - Placeholders cannot span multiple lines.
+    - Activating snippets in different scopes of the same file is
+      not possible.
+
+Perhaps some of these features will be added in a later release.
+
+==============================================================================
+CHANGELOG                                                 *SnipMate-changelog*
+
+0.85 - 2013-04-03
+-----------------
+
+* Allow trigger key customization
+* Enable undoing of snippet expansion
+* Support backslash escaping in snippets
+* Add support for {VISUAL}
+* Expand filetype extension with scope_aliases
+* Add expansion guards
+* Enable per-buffer expansion of snippets
+* Fix 'cpo' compatibility
+* Update supertab compatibility
+* Enable customization of various things through g:SnipMate
+
+* Disable spelling in snippet files
+* Highlight trigger names in .snippets files
+
+* Update many snippets
+* Separate sample snippets into separate repository
+
+0.84
+----
+
+* Unreleased version by Michael Sanders, available on his GitHub,
+  <https://github.com/msanders/snipmate.vim>
+
+0.83 - 2009-07-13
+-----------------
+
+* Last release done by Michael Sanders, available at
+  <http://www.vim.org/scripts/script.php?script_id=2540>
+
+==============================================================================
+CONTACT                                   *SnipMate-contact* *SnipMate-author*
+
+SnipMate is currently maintained by:
+  - Rok Garbas
+  - Marc Weber (marco-oweber@gmx.de)
+  - Adnan Zafar
+
+For bug reports, issues, or questions, check out the Issues page on GitHub:
+https://github.com/garbas/vim-snipmate/issues
+
+The original author, Michael Sanders, can be reached at:
+msanders42+snipmate <at> gmail <dot> com
+
+
+==============================================================================
+LICENSE                                                     *SnipMate-license*
+
+SnipMate is released under the MIT license:
+
+Copyright 2009-2010 Michael Sanders. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+The software is provided "as is", without warranty of any kind, express or
+implied, including but not limited to the warranties of merchantability,
+fitness for a particular purpose and noninfringement. In no event shall the
+authors or copyright holders be liable for any claim, damages or other
+liability, whether in an action of contract, tort or otherwise, arising from,
+out of or in connection with the software or the use or other dealings in the
+software.
+
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:
