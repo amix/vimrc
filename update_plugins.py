@@ -38,8 +38,7 @@ vim-surround https://github.com/tpope/vim-surround
 
 GITHUB_ZIP = '%s/archive/master.zip'
 
-SOURCE_DIR = path.join( path.dirname(__file__), 'sources_non_forked' )
-
+SOURCE_DIR = path.join(path.dirname(__file__), 'sources_non_forked')
 
 
 def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
@@ -53,7 +52,7 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     zip_f.extractall(temp_dir)
 
     plugin_temp_path = path.join(temp_dir,
-                                 path.join(temp_dir, '%s-master' % plugin_name))
+            path.join(temp_dir, '%s-master' % plugin_name))
 
     # Remove the current plugin and replace it with the extracted
     plugin_dest_path = path.join(source_dir, plugin_name)
