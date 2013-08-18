@@ -7,6 +7,8 @@ from os import path
 
 
 #--- Globals ----------------------------------------------
+### ctags https://github.com/vim-scripts/ctags.vim
+
 PLUGINS = """
 bufexplorer https://github.com/corntrace/bufexplorer
 ctrlp.vim https://github.com/kien/ctrlp.vim
@@ -16,21 +18,22 @@ nginx.vim https://github.com/vim-scripts/nginx.vim
 open_file_under_cursor.vim https://github.com/amix/open_file_under_cursor.vim
 pyflakes https://github.com/vim-scripts/pyflakes
 snipmate-snippets https://github.com/scrooloose/snipmate-snippets
+syntastic https://github.com/scrooloose/syntastic
 taglist.vim https://github.com/vim-scripts/taglist.vim
 tlib https://github.com/vim-scripts/tlib
 vim-addon-mw-utils https://github.com/MarcWeber/vim-addon-mw-utils
 vim-bundle-mako https://github.com/sophacles/vim-bundle-mako
 vim-colors-solarized https://github.com/altercation/vim-colors-solarized
+vim-expand-region https://github.com/terryma/vim-expand-region
 vim-less https://github.com/groenewege/vim-less
 vim-markdown https://github.com/tpope/vim-markdown
+vim-multiple-cursors https://github.com/terryma/vim-multiple-cursors
+vim-pep8 https://github.com/xiaocao/vim-pep8
 vim-pyte https://github.com/therubymug/vim-pyte
 vim-snipmate https://github.com/garbas/vim-snipmate
 vim-snippets https://github.com/honza/vim-snippets
 vim-statline https://github.com/millermedeiros/vim-statline
 vim-surround https://github.com/tpope/vim-surround
-vim-expand-region https://github.com/terryma/vim-expand-region
-vim-multiple-cursors https://github.com/terryma/vim-multiple-cursors
-vim-pep8 https://github.com/xiaocao/vim-pep8
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'
