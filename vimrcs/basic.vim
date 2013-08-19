@@ -44,7 +44,7 @@
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
-set history=700
+set history=2048
 
 " Enable filetype plugins
 filetype plugin on
@@ -70,7 +70,7 @@ command W w !sudo tee % > /dev/null
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set 7 lines to the cursor - when moving vertically using j/k
-set so=7
+set so=10
 
 " Turn on the WiLd menu
 set wildmenu
@@ -87,7 +87,7 @@ endif
 set ruler
 
 " Height of the command bar
-set cmdheight=2
+set cmdheight=1
 
 " A buffer becomes hidden when it is abandoned
 set hid
@@ -117,7 +117,7 @@ set magic
 " Show matching brackets when text indicator is over them
 set showmatch 
 " How many tenths of a second to blink when matching brackets
-set mat=2
+set mat=3
 
 " No annoying sound on errors
 set noerrorbells
@@ -126,7 +126,7 @@ set t_vb=
 set tm=500
 
 " Add a bit extra margin to the left
-set foldcolumn=1
+set foldcolumn=0
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -136,7 +136,10 @@ set foldcolumn=1
 syntax enable 
 
 try
-    colorscheme desert
+    "colorscheme desert
+    colorscheme peaksea
+    "colorscheme solarized
+    "colorscheme mayansmoke
 catch
 endtry
 
@@ -204,6 +207,10 @@ vnoremap <silent> # :call VisualSelection('b', '')<CR>
 map j gj
 map k gk
 
+" Turn off vim'S horroble REgex
+nnoremap / /\v
+vnoremap / /\v
+
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
 map <space> /
 map <c-space> ?
@@ -211,38 +218,43 @@ map <c-space> ?
 " Disable highlight when <leader><cr> is pressed
 map <silent> <leader><cr> :noh<cr>
 
-" Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
 
-" Close the current buffer
-map <leader>bd :Bclose<cr>
+"" ###Taps
+"" ###
+"" Smart way to move between windows
+"map <C-j> <C-W>j
+"map <C-k> <C-W>k
+"map <C-h> <C-W>h
+"map <C-l> <C-W>l
 
-" Close all the buffers
-map <leader>ba :1,1000 bd!<cr>
+"" Close the current buffer
+"map <leader>bd :Bclose<cr>
 
-" Useful mappings for managing tabs
-map <leader>tn :tabnew<cr>
-map <leader>to :tabonly<cr>
-map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove 
-map <leader>t<leader> :tabnext 
+"" Close all the buffers
+"map <leader>ba :1,1000 bd!<cr>
 
-" Opens a new tab with the current buffer's path
-" Super useful when editing files in the same directory
-map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
+"" Useful mappings for managing tabs
+"map <leader>tn :tabnew<cr>
+"map <leader>to :tabonly<cr>
+"map <leader>tc :tabclose<cr>
+"map <leader>tm :tabmove 
+"map <leader>t<leader> :tabnext 
 
-" Switch CWD to the directory of the open buffer
-map <leader>cd :cd %:p:h<cr>:pwd<cr>
+"" Opens a new tab with the current buffer's path
+"" Super useful when editing files in the same directory
+"map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 
-" Specify the behavior when switching between buffers 
-try
-  set switchbuf=useopen,usetab,newtab
-  set stal=2
-catch
-endtry
+"" Switch CWD to the directory of the open buffer
+"map <leader>cd :cd %:p:h<cr>:pwd<cr>
+
+"" Specify the behavior when switching between buffers 
+"try
+"  set switchbuf=useopen,usetab,newtab
+"  set stal=2
+"catch
+"endtry
+
+""### Taps ENd
 
 " Return to last edit position when opening files (You want this!)
 autocmd BufReadPost *
@@ -259,9 +271,18 @@ set viminfo^=%
 " Always show the status line
 set laststatus=2
 
-" Format the status line
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l
 
+"set statusline=   " clear the statusline for when vimrc is reloaded
+"set statusline+=%-3.3n\                      " buffer number
+"set statusline+=%F\                          " file name
+"set statusline+=%h%m%r%w                     " flags
+""set statusline+=[%{strlen(&ft)?&ft:'none'},  " filetype
+""set statusline+=%{strlen(&fenc)?&fenc:&enc}, " encoding
+""set statusline+=%{&fileformat}]              " file format
+"set statusline+=%=                           " right align
+"set statusline+=%{synIDattr(synID(line('.'),col('.'),1),'name')}\  " highlight
+"set statusline+=%b,0x%-8B\                   " current char
+"set statusline+=%-14.(%l,%c%V%)\ %<%P        " offset
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
@@ -269,18 +290,6 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 " Remap VIM 0 to first non-blank character
 map 0 ^
 
-" Move a line of text using ALT+[jk] or Comamnd+[jk] on mac
-nmap <M-j> mz:m+<cr>`z
-nmap <M-k> mz:m-2<cr>`z
-vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
-vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
-
-if has("mac") || has("macunix")
-  nmap <D-j> <M-j>
-  nmap <D-k> <M-k>
-  vmap <D-j> <M-j>
-  vmap <D-k> <M-k>
-endif
 
 " Delete trailing white space on save, useful for Python and CoffeeScript ;)
 func! DeleteTrailingWS()
@@ -288,40 +297,11 @@ func! DeleteTrailingWS()
   %s/\s\+$//ge
   exe "normal `z"
 endfunc
+
 autocmd BufWrite *.py :call DeleteTrailingWS()
 autocmd BufWrite *.coffee :call DeleteTrailingWS()
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vimgrep searching and cope displaying
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" When you press gv you vimgrep after the selected text
-vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
-
-" Open vimgrep and put the cursor in the right position
-map <leader>g :vimgrep // **/*.<left><left><left><left><left><left><left>
-
-" Vimgreps in the current file
-map <leader><space> :vimgrep // <C-R>%<C-A><right><right><right><right><right><right><right><right><right>
-
-" When you press <leader>r you can search and replace the selected text
-vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
-
-" Do :help cope if you are unsure what cope is. It's super useful!
-"
-" When you search with vimgrep, display your results in cope by doing:
-"   <leader>cc
-"
-" To go to the next search result do:
-"   <leader>n
-"
-" To go to the previous search results do:
-"   <leader>p
-"
-map <leader>cc :botright cope<cr>
-map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
-map <leader>n :cn<cr>
-map <leader>p :cp<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -343,12 +323,15 @@ map <leader>s? z=
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
-" Quickly open a buffer for scripbble
-map <leader>q :e ~/buffer<cr>
 
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
+"folding settings (with <z-a> <z-M> <z-R>
+set foldmethod=indent   "fold based on indent
+set foldnestmax=10      "deepest fold is 10 levels
+set nofoldenable        "dont fold by default
+set foldlevel=1         "this is just what i use
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -390,23 +373,4 @@ function! HasPaste()
     return ''
 endfunction
 
-" Don't close window, when deleting a buffer
-command! Bclose call <SID>BufcloseCloseIt()
-function! <SID>BufcloseCloseIt()
-   let l:currentBufNum = bufnr("%")
-   let l:alternateBufNum = bufnr("#")
 
-   if buflisted(l:alternateBufNum)
-     buffer #
-   else
-     bnext
-   endif
-
-   if bufnr("%") == l:currentBufNum
-     new
-   endif
-
-   if buflisted(l:currentBufNum)
-     execute("bdelete! ".l:currentBufNum)
-   endif
-endfunction

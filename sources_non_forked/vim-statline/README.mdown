@@ -1,0 +1,56 @@
+# statline.vim : Improved status line for Vim
+
+[https://github.com/millermedeiros/vim-statline](https://github.com/millermedeiros/vim-statline)
+
+Add useful informations to the `statusline`.
+
+Based on [gf3/.vimrc](https://github.com/gf3/dotfiles) and the statusline
+from [factorylabs/vimfiles](https://github.com/factorylabs/vimfiles).
+
+
+## Screenshots
+
+### Details
+
+![detail 01](https://github.com/millermedeiros/vim-statline/raw/dd9529564a/_assets/statline_details_01.png "statline description #1")
+![detail 02](https://github.com/millermedeiros/vim-statline/raw/dd9529564a/_assets/statline_details_02.png "statline description #2")
+
+### It automatically adapts to color schemes
+
+#### molokai
+![colorscheme example 1](https://github.com/millermedeiros/vim-statline/raw/dd9529564a/_assets/ss_01.png "colorscheme example 1")
+
+#### solarized
+![colorscheme example 2](https://github.com/millermedeiros/vim-statline/raw/dd9529564a/_assets/ss_02.png "colorscheme example 2")
+
+#### darkblue
+![mixed indenting](https://github.com/millermedeiros/vim-statline/raw/dd9529564a/_assets/ss_mi.png "mixed indenting example")
+
+
+
+## Settings
+
+Statline have a few settings to toggle the display of items, check
+`help statline` for all the available options.
+
+
+
+## Installation
+
+If you don't have a preferred installation method, I recommend
+installing [pathogen.vim](https://github.com/tpope/vim-pathogen), and
+then simply copy and paste:
+
+    cd ~/.vim/bundle
+    git clone git://github.com/millermedeiros/vim-statline.git
+
+Once help tags have been generated, you can view the manual with
+`:help statline`.
+
+
+
+
+## License
+
+Released under the [WTFPL](http://sam.zoy.org/wtfpl/).
+

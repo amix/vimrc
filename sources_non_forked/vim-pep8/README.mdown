@@ -1,0 +1,35 @@
+vim-pep8 ![Project status](http://stillmaintained.com/nvie/vim-pep8.png)
+========
+
+Installation
+------------
+1. Install [pep8](http://pypi.python.org/pypi/pep8/)
+2. Copy the file `ftplugin/python_pep8.vim` to your `~/.vim/ftplugin` directory
+
+
+Usage
+-----
+1. Open a Python file
+2. Press `<F6>` to run `pep8` on it
+
+It shows the errors inside a quickfix window, which will allow your to quickly
+jump to the error locations by simply pressing [Enter].
+
+
+Customization
+-------------
+If you don't want to use the `<F6>` key for PEP8-checking, simply remap it to
+another key.  It autodetects whether it has been remapped and won't register
+the `<F6>` key if so.  For example, to remap it to `<F3>` instead, use:
+
+    autocmd FileType python map <buffer> <F3> :call Pep8()<CR>
+
+
+Tips
+----
+This plugin goes well together with the following plugins:
+
+- [PyFlakes](http://github.com/nvie/vim-pyflakes) (Python static syntax checker
+  under `<F7>`)
+- [PyUnit](http://github.com/nvie/vim-pyunit) (unit test helper under `<F8>`
+  and `<F9>`)

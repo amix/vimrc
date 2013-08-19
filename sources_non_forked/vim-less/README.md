@@ -1,4 +1,4 @@
-# VIM-LESS #
+# VIM-LESS
 
 This vim bundle adds syntax highlighting, indenting and autocompletion for the dynamic stylesheet language [LESS](http://lesscss.org).
 
@@ -8,7 +8,8 @@ in `after/syntax/css.vim` or `after/syntax/css/*.vim`.
 
 ![vim-less with vim-css-color and vim-css3-syntax (colorscheme solarized)](https://github.com/lenniboy/vim-less/raw/master/screenshot.png)
 
-## Installing and Using ##
+
+## Installing and Using
 
 - Install [pathogen](http://www.vim.org/scripts/script.php?script_id=2332) into `~/.vim/autoload/` and add the
    following line to your `~/.vimrc`:
@@ -23,19 +24,21 @@ in `after/syntax/css.vim` or `after/syntax/css/*.vim`.
 
 - OR use [vundle](https://github.com/gmarik/vundle), adding this line to your `~/.vimrc`:
 
-        Bundle 'lunaru/vim-less'
+        Bundle 'groenewege/vim-less'
 
 - OR use git submodules:
 
         $ git submodule add https://github.com/groenewege/vim-less.git bundle/vim-less
         $ git submodule init
 
+
 ### Map
 .less to .css , lessc is required.
 
     nnoremap ,m :w <BAR> !lessc % > %:t:r.css<CR><space>
 
-## Credits ##
+
+## Credits
 
 Inspiration from [vim-haml](https://github.com/tpope/vim-haml),
 [scss-syntax.vim](https://github.com/cakebaker/scss-syntax.vim) and

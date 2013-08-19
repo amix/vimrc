@@ -1,3 +1,4 @@
+sudo apt-get install pip ctags
 cd ~/.vim_runtime
 
 echo 'set runtimepath+=~/.vim_runtime

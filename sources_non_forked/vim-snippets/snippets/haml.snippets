@@ -19,6 +19,12 @@ snippet rpl
 	= render :partial => "${1:item}", :locals => { :${2:$1} => ${3:@$1}
 snippet rpo
 	= render :partial => "${1:item}", :object => ${2:@$1}
+snippet lt
+	= link_to ${1:name}, ${2:dest}
+snippet mt
+	= mail_to ${1:email_address}, ${2:name}
+snippet mts
+	= mail_to ${1:email_address}, ${2:name}, :subject => ${3}, :body => ${4}
 snippet ife
 	- if ${1:condition}
 		${2}

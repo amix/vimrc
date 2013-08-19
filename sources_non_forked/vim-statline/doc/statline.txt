@@ -1,0 +1,255 @@
+*statline.txt*  Improved status line for Vim
+
+==============================================================================
+CONTENTS                                                            *statline*
+
+    1.Intro........................................|statline-intro|
+    2.Options......................................|statline-options|
+    3.Credits......................................|statline-credits|
+    4.License......................................|statline-license|
+    5.Changelog....................................|statline-changelog|
+
+
+==============================================================================
+1. Introduction                                               *statline-intro*
+
+Statline is just a set of settings for the |statusline| to enhance the normal
+functionality, providing useful information about the current file and buffer.
+
+The latest dev versions are on github
+    https://github.com/millermedeiros/vim-statline
+
+==============================================================================
+2. Options                                                  *statline-options*
+
+------------------------------------------------------------------------------
+                                                        *'statline_syntastic'*
+
+|syntastic| integration is enabled by default, to disable it: >
+    let g:statline_syntastic = 0
+<
+
+See |'syntastic_stl_format'| for customization info.
+
+------------------------------------------------------------------------------
+                                                         *'statline_fugitive'*
+
+|fugitive| integration is disabled by default, to enable it: >
+    let g:statline_fugitive = 1
+<
+
+------------------------------------------------------------------------------
+                                                              *'statline_rvm'*
+
+|rvm| integration is disabled by default, to enable it: >
+    let g:statline_rvm = 1
+<
+
+------------------------------------------------------------------------------
+                                                            *'statline_rbenv'*
+
+|rbenv| integration is disabled by default, to enable it: >
+    let g:statline_rbenv = 1
+<
+
+------------------------------------------------------------------------------
+                                                   *'statline_show_n_buffers'*
+
+If it should show the number of active buffers before the buffer number
+(default is on). Set the following to disable it: >
+    let g:statline_show_n_buffers = 0
+<
+
+------------------------------------------------------------------------------
+                                                    *'statline_show_encoding'*
+
+Whether or not to show the file format and encoding type (default is on)
+Set the following to disable it: >
+
+    let g:statline_show_encoding = 0
+<
+
+------------------------------------------------------------------------------
+                                               *'statline_no_encoding_string'*
+
+The text to show in the status line when the encoding is unknown (default is
+'No Encoding').
+Set it to your liking: >
+
+    let g:statline_no_encoding_string = 'NONE'
+<
+
+------------------------------------------------------------------------------
+                                                *'statline_filename_relative'*
+
+If set, will show the relative path (from cwd) to the file, otherwise it will
+only show the filename. Set the following to show by relative paths: >
+
+    let g:statline_filename_relative = 1
+<
+
+------------------------------------------------------------------------------
+                                                   *'statline_trailing_space'*
+
+Some languages are sensitive about trailing spaces, statline will check for
+trailing spaces at the end of the lines during file save and also if buffer
+becomes idle. To disable this feature set: >
+    let g:statline_trailing_space = 0
+<
+
+                                                               *statline-[\s]*
+Trailing space errors:~
+    [\s]                Warns that file contain trailing white spaces.
+
+------------------------------------------------------------------------------
+                                                     *'statline_mixed_indent'*
+
+Some languages are sensitive about indenting, statline will check for mixed
+indenting during file save and also if buffer becomes idle. To disable this
+feature set: >
+    let g:statline_mixed_indent = 0
+<
+
+                                            *statline-[&et]*  *statline-[mix]*
+Mixed indent errors:~
+    [&et]               Warn if using different tab format than the one
+                        specified by |expandtab| or |noet|.
+
+    [mix]               Warn if mixed tabs & spaces are used for indenting on
+                        the same line.
+                        PS: it will ignore spaces just before `*` to avoid
+                        marking JavaDoc style comments as mixed indent.
+
+------------------------------------------------------------------------------
+                                              *'statline_mixed_indent_string'*
+
+Message shown when file contains mixed tabs & spaces. Defaults to
+'[mix]'. To edit it: >
+    let g:statline_mixed_indent_string = '[mixed-indenting]'
+<
+
+------------------------------------------------------------------------------
+                                                    *'statline_show_charcode'*
+
+If set, will show the code of the character currently under the cursor. It is
+disabled by default. Set the following to enable it: >
+    let g:statline_show_charcode = 1
+<
+
+------------------------------------------------------------------------------
+                                                             *statline-colors*
+
+Statline adapts to your colorcheme without any extra settings but if you want
+to customize it it's very simple.
+
+The colors are set by |hl-User1..9| and linked to your colorcheme colors, here
+are the default settings: >
+    " filename
+    hi link User1 Identifier
+    " flags
+    hi link User2 Statement
+    " errors
+    hi link User3 Error
+    " fugitive
+    hi link User4 Special
+<
+
+You can change these colors inside your .vimrc file, eg: >
+    hi link User2 Constant
+    hi User3 guifg=#FFFFFF guibg=#FF0000 gui=bold ctermfg=15 ctermbg=1
+<
+
+To check the existing Syntax highlighting groups and their colors use the
+command >
+    :so $VIMRUNTIME/syntax/hitest.vim
+<
+
+If you want to disable all colors the easiest way is to link the |hl-User1..9|
+groups to the |hl-StatusLine| group: >
+    hi link User1 StatusLine
+    hi link User2 StatusLine
+    hi link User3 StatusLine
+    hi link User4 StatusLine
+<
+
+The |hl-StatusLine| and |hl-StatusLineNC| groups usually set the colors with
+`term=reverse` which means the foreground color will be used as background
+color, you can change the colors like this: >
+    " greyscale statusline
+    hi StatusLine guifg=#000000 guibg=#FFFFFF ctermfg=0 ctermbg=15
+    hi StatusLineNC guifg=#808080 guibg=#000000 ctermfg=8 ctermbg=0
+<
+
+==============================================================================
+3. Credits                                                  *statline-credits*
+
+This plugin was originally assembled by @millermedeiros (Miller Medeiros).
+
+It was heavily inspired by the Vim settings from @factorylabs, @gf3 (Gianni
+Chiappetta) and @scrooloose whitespace flags (Martin Grengell).
+
+Other contributors:
+
+ - Matthew Kitt (@mkitt)
+ - @Idx
+ - Nikola Knežević (@knl)
+ - Martin Grengell (@scrooloose)
+
+==============================================================================
+4. License                                                  *statline-license*
+
+statline is released under the wtfpl http://sam.zoy.org/wtfpl/COPYING
+
+
+==============================================================================
+5. Changelog                                              *statline-changelog*
+
+
+Next
+
+    - Add |'statline_mixed_indent_string'| and change default string to
+      "[mix]" for brevity. [#19]
+
+
+------------------------------------------------------------------------------
+
+v0.3.0 (2011/12/27)
+
+    - Add |'statline_show_charcode'| (@knl)
+    - Add |'statline_no_encoding_string'| (@knl)
+    - Add |'statline_show_n_buffers'| [#2]
+    - Add |'statline_rbenv'| [#15]
+    - Fix problem with non-utf8 encoding. [#13]
+    - Create |augroup| to wrap all |autocmd| and make sure commands are cleared
+      before adding new ones, avoids setting same command multiple times.
+    - Add safe checks to all plugins to make sure they aren't called if they
+      don't exist, make it more portable since users may copy vimrc files that
+      enable plugin integration.
+    - Improve whitespace checks. (@scrooloose)
+
+
+------------------------------------------------------------------------------
+
+v0.2.1 (2011/10/17)
+
+    - Fix expand-tab RegExp [#8]
+    - Always display statusline. [#3]
+    - Check if syntastic exists before calling it. [#6]
+
+
+------------------------------------------------------------------------------
+
+v0.2.0 (2011/10/17)
+
+    - RVM integration |'statline_rvm'| (@mkitt)
+    - Toggle file format and encoding |'statline_show_encoding'| (@mkitt)
+    - Relative path on filename |'statline_filename_relative'| (@mkitt)
+
+
+------------------------------------------------------------------------------
+
+v0.1.0 (2011/10/06)
+
+    - initial release
+
+

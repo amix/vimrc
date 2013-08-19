@@ -2,7 +2,7 @@
 
 Over the last 8 years I have used and tweaked Vim. This is my Ultimate vimrc.
 
-There are two versions:
+There are two(2 versions:
 
 * **Basic**: If you want something small just copy [basic.vim](https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim) into your ~/.vimrc and you will have a great basic setup
 * **Awesome**: This includes a ton of useful plugins, color schemes and configurations
@@ -15,14 +15,14 @@ The basic version is basically just one file and no plugins. You can check out [
 
 This is useful to install on remote servers where you don't need many plugins and you don't do many edits.
 
-	git clone git://github.com/amix/vimrc.git ~/.vim_runtime
+	git clone git://github.com/pypsde/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_basic_vimrc.sh
 
 
 ## How to install the Awesome version?
 The awesome version includes a lot of great plugins, configurations and color schemes that make Vim a lot better. To install it simply do following:
 
-	git clone git://github.com/amix/vimrc.git ~/.vim_runtime
+	git clone git://github.com/pypsde/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_awesome_vimrc.sh
 
 

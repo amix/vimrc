@@ -7,35 +7,38 @@ from os import path
 
 
 #--- Globals ----------------------------------------------
+### ctags https://github.com/vim-scripts/ctags.vim
+
 PLUGINS = """
-ack.vim https://github.com/mileszs/ack.vim
 bufexplorer https://github.com/corntrace/bufexplorer
 ctrlp.vim https://github.com/kien/ctrlp.vim
 mayansmoke https://github.com/vim-scripts/mayansmoke
 nerdtree https://github.com/scrooloose/nerdtree
 nginx.vim https://github.com/vim-scripts/nginx.vim
 open_file_under_cursor.vim https://github.com/amix/open_file_under_cursor.vim
+pyflakes https://github.com/vim-scripts/pyflakes
 snipmate-snippets https://github.com/scrooloose/snipmate-snippets
+syntastic https://github.com/scrooloose/syntastic
 taglist.vim https://github.com/vim-scripts/taglist.vim
 tlib https://github.com/vim-scripts/tlib
 vim-addon-mw-utils https://github.com/MarcWeber/vim-addon-mw-utils
 vim-bundle-mako https://github.com/sophacles/vim-bundle-mako
-vim-coffee-script https://github.com/kchmck/vim-coffee-script
 vim-colors-solarized https://github.com/altercation/vim-colors-solarized
-vim-indent-object https://github.com/michaeljsmith/vim-indent-object
+vim-expand-region https://github.com/terryma/vim-expand-region
 vim-less https://github.com/groenewege/vim-less
 vim-markdown https://github.com/tpope/vim-markdown
+vim-multiple-cursors https://github.com/terryma/vim-multiple-cursors
+vim-pep8 https://github.com/xiaocao/vim-pep8
 vim-pyte https://github.com/therubymug/vim-pyte
 vim-snipmate https://github.com/garbas/vim-snipmate
 vim-snippets https://github.com/honza/vim-snippets
+vim-statline https://github.com/millermedeiros/vim-statline
 vim-surround https://github.com/tpope/vim-surround
-vim-expand-region https://github.com/terryma/vim-expand-region
-vim-multiple-cursors https://github.com/terryma/vim-multiple-cursors
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'
 
-SOURCE_DIR = path.join( path.dirname(__file__), 'sources_non_forked' )
+SOURCE_DIR = path.join(path.dirname(__file__), 'sources_non_forked')
 
 
 def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
@@ -49,7 +52,7 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     zip_f.extractall(temp_dir)
 
     plugin_temp_path = path.join(temp_dir,
-                                 path.join(temp_dir, '%s-master' % plugin_name))
+            path.join(temp_dir, '%s-master' % plugin_name))
 
     # Remove the current plugin and replace it with the extracted
     plugin_dest_path = path.join(source_dir, plugin_name)
