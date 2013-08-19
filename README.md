@@ -2,7 +2,7 @@
 
 Over the last 8 years I have used and tweaked Vim. This is my Ultimate vimrc.
 
-There are two(2) versions:
+There are two(2 versions:
 
 * **Basic**: If you want something small just copy [basic.vim](https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim) into your ~/.vimrc and you will have a great basic setup
 * **Awesome**: This includes a ton of useful plugins, color schemes and configurations
