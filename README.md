@@ -31,6 +31,40 @@ The awesome version includes a lot of great plugins, configurations and color sc
 Use [msysgit](http://msysgit.github.com/) to checkout the repository and run the installation instructions above. No special instructions needed ;-)
 
 
+## How to enable 256 color mode in Ubuntu/Debian terminal?
+
+By default, Ubuntu/Debian terminals are set to 8 to 16 colors.  This makes vim ugly!  To see what color mode you're in, type:
+
+    tput colors
+
+If you get 256, you're good to go.  Otherwise, type the following:
+
+    sudo apt-get install ncurses-term
+    vim ~/.bashrc
+    
+At the bottom of the file, put:
+
+    export TERM=xterm-256color
+
+Save and close the file.  Then force Bash to reload the config file:
+
+    source ~/.bashrc
+
+Now make sure it loads the .bashrc on login
+
+    vim ~/.bash_profile
+
+add the following line:
+	
+    source "$HOME/.bashrc"
+
+Save and close the file. Now check if everything is all good:
+
+    tput colors
+
+SOURCE: @josh_earl [tumblr](http://whiletruecode.tumblr.com/post/13358288098/enabling-256-color-mode-in-ubuntus-bash-terminal)
+
+
 ## How to update to latest version?
 
 Simply just do a git rebase!
