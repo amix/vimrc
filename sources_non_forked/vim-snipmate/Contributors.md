@@ -10,6 +10,8 @@ additional contributions from:
 
 * [alderz](https://github.com/alderz)
 * [asymmetric](https://github.com/asymmetric)
+* [bpugh](https://github.com/bpugh)
+* [bruno-](https://github.com/bruno-)
 * [darkwise](https://github.com/darkwise)
 * [henrik](https://github.com/henrik)
 * [holizz](https://github.com/holizz)
@@ -36,3 +38,4 @@ additional contributions from:
 * [steveno](https://github.com/steveno)
 * [taq](https://github.com/taq)
 * [thisgeek](https://github.com/thisgeek)
+* [Xandaros](https://github.com/Xandaros)

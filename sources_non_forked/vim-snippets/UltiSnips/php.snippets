@@ -18,7 +18,7 @@ if m:
 
 endsnippet
 
-snippet nc "php namespace and class" b
+snippet nc "php namespace and class or interface" b
 namespace ${1:`!p 
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
@@ -29,7 +29,18 @@ if m:
 /**
  * ${3:@author `whoami`}${4}
  */
-class ${2:`!p
+`!p
+m = re.search(r'Abstract', path)
+if m:
+	snip.rv = 'abstract '
+``!p
+if re.search(r'Interface', path):
+	snip.rv = 'interface'
+elif re.search(r'Trait', path):
+	snip.rv = 'trait'
+else:
+	snip.rv = 'class'
+` ${2:`!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
 `}
 {
@@ -51,14 +62,15 @@ ${1:public} function __construct($2)
 endsnippet
 
 snippet sg "Setter and Getter" b
-
 /**
- * @var ${3:`!p snip.rv = t[2].capitalize()`}${4}
+ * @var ${3:`!p snip.rv = t[2][0:1].upper() + t[2][1:]`}
+ * 
+ * ${4}
  */
-${1:protected} $$2;
+${1:protected} $${2};
 
-public function set`!p snip.rv = t[2].capitalize()`(`!p
-if re.match(r'[A-Z].*', t[3]):
+public function set`!p snip.rv = t[2][0:1].upper() + t[2][1:]`(`!p
+if re.match(r'^(\\|[A-Z]).*', t[3]):
 	snip.rv = t[3] + ' '
 else:
 	snip.rv = ''
@@ -69,7 +81,7 @@ else:
 	return $this;
 }
 
-public function get`!p snip.rv = t[2].capitalize()`()
+public function get`!p snip.rv = t[2][0:1].upper() + t[2][1:]`()
 {
 	return $this->$2;
 }
@@ -79,4 +91,18 @@ snippet if "php if" !b
 if (${1}) {
 	${2}
 }
+endsnippet
+
+snippet ife "php ife" !b
+if (${1}) {
+	${2}
+} else {
+
+}
+endsnippet
+
+snippet /** "php comment block" b
+/**
+ * @${1}
+ */
 endsnippet

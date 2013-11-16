@@ -1,6 +1,20 @@
+# shorthand variable declaration
+snippet v
+	${1} := ${2}
+# variable initialization
+snippet vr
+	var ${1:t} ${0:string}
+# variable declaration
+snippet var
+	var ${1} ${2} = ${3}
+# variables declaration
+snippet vars
+	var (
+		${1} ${2} = ${3}
+	)
 # append
 snippet ap
-	append(${1:slice}, ${2:value})
+	append(${1:slice}, ${0:value})
 # bool
 snippet bl
 	bool
@@ -12,31 +26,31 @@ snippet br
 	break
 # channel
 snippet ch
-	chan ${1:int}
+	chan ${0:int}
 # case
 snippet cs
 	case ${1:value}:
-		${2}
+		${0}
 # const
 snippet c
-	const ${1:NAME} = ${2:0}
+	const ${1:NAME} = ${0:0}
 # constants with iota
 snippet co
 	const (
 		${1:NAME1} = iota
-		${2:NAME2}
+		${0:NAME2}
 	)
 # continue
 snippet cn
 	continue
 # defer
 snippet df
-	defer ${1:func}()
+	defer ${0:func}()
 # defer recover
 snippet dfr
 	defer func() {
 		if err := recover(); err != nil {
-			${1}
+			${0}
 		}
 	}()
 # gpl
@@ -58,7 +72,7 @@ snippet gpl
 	 * Copyright (C) ${1:Author}, `strftime("%Y")`
 	 */
 
-	${2}
+	${0}
 # int
 snippet i
 	int
@@ -66,7 +80,7 @@ snippet i
 snippet im
 	import (
 		"${1:package}"
-	)${2}
+	)
 # interface
 snippet in
 	interface{}
@@ -74,23 +88,23 @@ snippet in
 snippet inf
 	interface ${1:name} {
 		${2:/* methods */}
-	}${3}
+	}
 # if condition
 snippet if
 	if ${1:/* condition */} {
 		${2}
-	}${3}
+	}
 # else snippet
 snippet el
 	else {
 		${1}
-	}${2}
+	}
 # error snippet
 snippet ir
 	if err != nil {
 		return err
 	}
-	${1}
+	${0}
 # false
 snippet f
 	false
@@ -113,64 +127,64 @@ snippet ie
 	} else {
 		${3}
 	}
-	${4}
+	${0}
 # for loop
 snippet fo
 	for ${2:i} := 0; $2 < ${1:count}; $2${3:++} {
 		${4}
 	}
-	${5}
+	${0}
 # for range loop
 snippet fr
 	for ${1:k}, ${2:v} := range ${3} {
 		${4}
 	}
-	${5}
+	${0}
 # function simple
 snippet fun
 	func ${1:funcName}(${2}) ${3:error} {
 		${4}
 	}
-	${5}
+	${0}
 # function on receiver
 snippet fum
 	func (self ${1:type}) ${2:funcName}(${3}) ${4:error} {
 		${5}
 	}
-	${6}
+	${0}
 # log printf
 snippet lf
-	log.Printf("%${1:s}", ${2:var})${3}
+	log.Printf("%${1:s}", ${2:var})
 # log printf
 snippet lp
-	log.Println("${1}")${2}
+	log.Println("${1}")
 # make
 snippet mk
-	make(${1:[]string}, ${2:0})
+	make(${1:[]string}, ${0:0})
 # map
 snippet mp
-	map[${1:string}]${2:int}
+	map[${1:string}]${0:int}
 # main()
 snippet main
 	func main() {
 		${1}
 	}
-	${2}
+	${0}
 # new
 snippet nw
-	new(${1:type})
+	new(${0:type})
 # panic
 snippet pn
-	panic("${1:msg}")
+	panic("${0:msg}")
 # print
 snippet pr
-	fmt.Printf("%${1:s}\n", ${2:var})${3}
+	fmt.Printf("%${1:s}\n", ${2:var})
 # range
 snippet rn
-	range ${1}
+	range ${0}
 # return
 snippet rt
-	return ${1}
+	return ${0}
 # result
 snippet rs
 	result
@@ -182,7 +196,7 @@ snippet sl
 	case ${4:v2} := <-${5:chan2}
 		${6}
 	default:
-		${7}
+		${0}
 	}
 # string
 snippet sr
@@ -192,7 +206,7 @@ snippet st
 	struct ${1:name} {
 		${2:/* data */}
 	}
-	${3}
+	${0}
 # switch
 snippet sw
 	switch ${1:var} {
@@ -201,21 +215,18 @@ snippet sw
 	case ${4:value2}:
 		${5}
 	default:
-		${6}
+		${0}
 	}
 snippet sp
-	fmt.Sprintf("%${1:s}", ${2:var})${3}
+	fmt.Sprintf("%${1:s}", ${2:var})
 # true
 snippet t
 	true
-# variable declaration
-snippet v
-	var ${1:t} ${2:string}
 # goroutine named function
 snippet g
-	go ${1:funcName}(${2})
+	go ${1:funcName}(${0})
 # goroutine anonymous function 
 snippet ga
 	go func(${1} ${2:type}) {
 		${3:/* code */}
-	}(${4})
+	}(${0})

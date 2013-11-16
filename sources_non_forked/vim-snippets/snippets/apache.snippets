@@ -2,34 +2,34 @@
 # <Directory>
 snippet dir
 	<Directory ${1:/}>
-		DirectoryIndex ${2:index.html}
+		DirectoryIndex ${0:index.html}
 		Order Deny,Allow
 		Deny from All
 	</Directory>
 # <FilesMatch>
 snippet filesmatch
 	<FilesMatch "${1:regex}">
-		${2}
+		${0}
 	</FilesMatch>
 # <IfModule>
 snippet ifmodule
 	<IfModule ${1:mod_example.c}>
-		${2}
+		${0}
 	</IfModule>
 # <LimitExcept>
 snippet limitexcept
 	<LimitExcept ${1:POST GET}>
-		${2}
+		${0}
 	</LimitExcept>
 # <Proxy>
 snippet proxy
 	<Proxy ${1:*}>
-		${2}
+		${0}
 	</Proxy>
 # <VirtualHost>
 snippet virtualhost
 	<VirtualHost ${1:*}:${2:80}>
 		ServerAdmin ${3:webmaster@example.com}
 		DocumentRoot ${4:/www/example.com}
-		ServerName ${5:www.example.com}
+		ServerName ${0:www.example.com}
 	</VirtualHost>

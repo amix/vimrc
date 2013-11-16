@@ -1,4 +1,4 @@
-IMPORTANT: comment on: [What about merging whith Ultisnip using its engine](https://github.com/garbas/vim-snipmate/issues/114)
+IMPORTANT: comment on: [What about merging with Ultisnip using its engine](https://github.com/garbas/vim-snipmate/issues/114)
 
 Snipmate & UltiSnip Snippets
 ============================
@@ -61,6 +61,7 @@ if : if without else
 ife: if $1 else $2
 eif : else if ($1) { .. }
 el  : else ..
+wh  : while (cond) ...
 ```
 
 If you're not satisfied with these defaults, open a ticket that we implement
@@ -89,7 +90,7 @@ Thus for conditions (while, if ..) and block bodies just use ${N} - Thanks
 
 Open questions:
 What about one line if ee then .. else .. vs if \n .. then \n ... \n else \n .. ?
-What about wh(ile), which trigger?
+Which additional policies to add?
 Discuss at: https://github.com/honza/vim-snippets/issues/230
 
 

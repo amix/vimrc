@@ -9,16 +9,16 @@ snippet pr
 ## Annotations
 snippet before
 	@Before
-	static void ${1:intercept}(${2:args}) { ${3} }
+	static void ${1:intercept}(${2:args}) { ${0} }
 snippet mm
 	@ManyToMany
-	${1}
+	${0}
 snippet mo
 	@ManyToOne
-	${1}
+	${0}
 snippet om
 	@OneToMany${1:(cascade=CascadeType.ALL)}
-	${2}
+	${0}
 snippet oo
 	@OneToOne
 	${1}
@@ -39,11 +39,11 @@ snippet j.u
 ##
 ## Class
 snippet cl
-	class ${1:`vim_snippets#Filename("", "untitled")`} ${2}
+	class ${1:`vim_snippets#Filename("", "untitled")`} ${0}
 snippet in
-	interface ${1:`vim_snippets#Filename("", "untitled")`} ${2:extends Parent}${3}
+	interface ${1:`vim_snippets#Filename("", "untitled")`} ${2:extends Parent}
 snippet tc
-	public class ${1:`vim_snippets#Filename()`} extends ${2:TestCase}
+	public class ${1:`vim_snippets#Filename()`} extends ${0:TestCase}
 ##
 ## Class Enhancements
 snippet ext
@@ -54,40 +54,40 @@ snippet imp
 ## Comments
 snippet /*
 	/*
-	 * ${1}
+	 * ${0}
 	 */
 ##
 ## Constants
 snippet co
-	static public final ${1:String} ${2:var} = ${3};${4}
+	static public final ${1:String} ${2:var} = ${3};
 snippet cos
-	static public final String ${1:var} = "${2}";${3}
+	static public final String ${1:var} = "${2}";
 ##
 ## Control Statements
 snippet case
 	case ${1}:
-		${2}
+		${0}
 snippet def
 	default:
-		${2}
+		${0}
 snippet el
 	else
 snippet eif
-	else if (${1}) ${2}
+	else if (${1}) ${0}
 snippet if
-	if (${1}) ${2}
+	if (${1}) ${0}
 snippet sw
 	switch (${1}) {
-		${2}
+		${0}
 	}
 ##
 ## Create a Method
 snippet m
-	${1:void} ${2:method}(${3}) ${4:throws }${5}
+	${1:void} ${2:method}(${3}) ${4:throws }
 ##
 ## Create a Variable
 snippet v
-	${1:String} ${2:var}${3: = null}${4};${5}
+	${1:String} ${2:var}${3: = null}${4};
 ##
 ## Enhancements to Methods, variables, classes, etc.
 snippet ab
@@ -101,107 +101,107 @@ snippet sy
 ##
 ## Error Methods
 snippet err
-	System.err.print("${1:Message}");
+	System.err.print("${0:Message}");
 snippet errf
-	System.err.printf("${1:Message}", ${2:exception});
+	System.err.printf("${1:Message}", ${0:exception});
 snippet errln
-	System.err.println("${1:Message}");
+	System.err.println("${0:Message}");
 ##
 ## Exception Handling
 snippet as
-	assert ${1:test} : "${2:Failure message}";${3}
+	assert ${1:test} : "${2:Failure message}";
 snippet ca
-	catch(${1:Exception} ${2:e}) ${3}
+	catch(${1:Exception} ${2:e}) ${0}
 snippet thr
 	throw
 snippet ths
 	throws
 snippet try
 	try {
-		${3}
+		${0}
 	} catch(${1:Exception} ${2:e}) {
 	}
 snippet tryf
 	try {
-		${3}
+		${0}
 	} catch(${1:Exception} ${2:e}) {
 	} finally {
 	}
 ##
 ## Find Methods
 snippet findall
-	List<${1:listName}> ${2:items} = ${1}.findAll();${3}
+	List<${1:listName}> ${2:items} = ${1}.findAll();
 snippet findbyid
-	${1:var} ${2:item} = ${1}.findById(${3});${4}
+	${1:var} ${2:item} = ${1}.findById(${3});
 ##
 ## Javadocs
 snippet /**
 	/**
-	 * ${1}
+	 * ${0}
 	 */
 snippet @au
 	@author `system("grep \`id -un\` /etc/passwd | cut -d \":\" -f5 | cut -d \",\" -f1")`
 snippet @br
-	@brief ${1:Description}
+	@brief ${0:Description}
 snippet @fi
-	@file ${1:`vim_snippets#Filename()`}.java
+	@file ${0:`vim_snippets#Filename()`}.java
 snippet @pa
-	@param ${1:param}
+	@param ${0:param}
 snippet @re
-	@return ${1:param}
+	@return ${0:param}
 ##
 ## Logger Methods
 snippet debug
-	Logger.debug(${1:param});${2}
+	Logger.debug(${1:param});
 snippet error
-	Logger.error(${1:param});${2}
+	Logger.error(${1:param});
 snippet info
-	Logger.info(${1:param});${2}
+	Logger.info(${1:param});
 snippet warn
-	Logger.warn(${1:param});${2}
+	Logger.warn(${1:param});
 ##
 ## Loops
 snippet enfor
-	for (${1} : ${2}) ${3}
+	for (${1} : ${2}) ${0}
 snippet for
-	for (${1}; ${2}; ${3}) ${4}
+	for (${1}; ${2}; ${3}) ${0}
 snippet wh
-	while (${1}) ${2}
+	while (${1}) ${0}
 ##
 ## Main method
 snippet main
 	public static void main (String[] args) {
-		${1}
+		${0}
 	}
 ##
 ## Print Methods
 snippet print
-	System.out.print("${1:Message}");
+	System.out.print("${0:Message}");
 snippet printf
-	System.out.printf("${1:Message}", ${2:args});
+	System.out.printf("${1:Message}", ${0:args});
 snippet println
-	System.out.println(${1});
+	System.out.println(${0});
 ##
 ## Render Methods
 snippet ren
-	render(${1:param});${2}
+	render(${1:param});
 snippet rena
-	renderArgs.put("${1}", ${2});${3}
+	renderArgs.put("${1}", ${2});
 snippet renb
-	renderBinary(${1:param});${2}
+	renderBinary(${1:param});
 snippet renj
-	renderJSON(${1:param});${2}
+	renderJSON(${1:param});
 snippet renx
-	renderXml(${1:param});${2}
+	renderXml(${1:param});
 ##
 ## Setter and Getter Methods
 snippet set
-	${1:public} void set${3:}(${2:String} ${4:}){
+	${1:public} void set${3:}(${2:String} ${0:}){
 		this.$4 = $4;
 	}
 snippet get
 	${1:public} ${2:String} get${3:}(){
-		return this.${4:};
+		return this.${0:};
 	}
 ##
 ## Terminate Methods or Loops
@@ -213,12 +213,12 @@ snippet br
 ## Test Methods
 snippet t
 	public void test${1:Name}() throws Exception {
-		${2}
+		${0}
 	}
 snippet test
 	@Test
 	public void test${1:Name}() throws Exception {
-		${2}
+		${0}
 	}
 ##
 ## Utils
@@ -227,14 +227,14 @@ snippet Sc
 ##
 ## Miscellaneous
 snippet action
-	public static void ${1:index}(${2:args}) { ${3} }
+	public static void ${1:index}(${2:args}) { ${0} }
 snippet rnf
-	notFound(${1:param});${2}
+	notFound(${1:param});
 snippet rnfin
-	notFoundIfNull(${1:param});${2}
+	notFoundIfNull(${1:param});
 snippet rr
-	redirect(${1:param});${2}
+	redirect(${1:param});
 snippet ru
-	unauthorized(${1:param});${2}
+	unauthorized(${1:param});
 snippet unless
-	(unless=${1:param});${2}
+	(unless=${1:param});

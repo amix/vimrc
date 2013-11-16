@@ -2,7 +2,7 @@
 
 # (c) holds no legal value ;)
 snippet c)
-	Copyright `&enc[:2] == "utf" ? "©" : "(c)"` `strftime("%Y")` ${1:`g:snips_author`}. All Rights Reserved.${2}
+	Copyright `&enc[:2] == "utf" ? "©" : "(c)"` `strftime("%Y")` ${1:`g:snips_author`}. All Rights Reserved.
 snippet date
 	`strftime("%Y-%m-%d")`
 snippet ddate
@@ -30,7 +30,7 @@ snippet GPL2
 	You should have received a copy of the GNU General Public License
 	along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-	${3}
+	${0}
 snippet LGPL2
 	${1:One line to give the program's name and a brief description.}
 	Copyright (C) `strftime("%Y")` ${2:copyright holder}
@@ -48,7 +48,7 @@ snippet LGPL2
 	You should have received a copy of the GNU Lesser General Public License
 	along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-	${3}
+	${0}
 snippet GPL3
 	${1:one line to give the program's name and a brief description.}
 	Copyright (C) `strftime("%Y")` ${2:copyright holder}
@@ -66,7 +66,7 @@ snippet GPL3
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-	${3}
+	${0}
 snippet LGPL3
 	${1:One line to give the program's name and a brief description.}
 	Copyright (C) `strftime("%Y")` ${2:copyright holder}
@@ -84,7 +84,7 @@ snippet LGPL3
 	You should have received a copy of the GNU Lesser General Public License
 	along with this library; if not, see <http://www.gnu.org/licenses/>.
 
-	${3}
+	${0}
 snippet BSD2
 	${1:one line to give the program's name and a brief description}
 	Copyright (C) `strftime("%Y")` ${2:copyright holder}
@@ -114,7 +114,7 @@ snippet BSD2
 	are those of the authors and should not be interpreted as representing
 	official policies, either expressedor implied, of $2.
 
-	${4}
+	${0}
 snippet BSD3
 	${1:one line to give the program's name and a brief description}
 	Copyright (C) `strftime("%Y")` ${2:copyright holder}
@@ -142,7 +142,7 @@ snippet BSD3
 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-	${4}
+	${0}
 snippet BSD4
 	${1:one line to give the program's name and a brief description}
 	Copyright (C) `strftime("%Y")` ${2:copyright holder}
@@ -173,7 +173,7 @@ snippet BSD4
 	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-	${4}
+	${0}
 snippet MIT
 	${1:one line to give the program's name and a brief description}
 	Copyright (C) `strftime("%Y")` ${2:copyright holder}
@@ -196,7 +196,7 @@ snippet MIT
 	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 	OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-	${3}
+	${0}
 snippet APACHE
 	${1:one line to give the program's name and a brief description}
 	Copyright `strftime("%Y")` ${2:copyright holder}
@@ -213,7 +213,7 @@ snippet APACHE
 	See the License for the specific language governing permissions and
 	limitations under the License.
 
-	${3}
+	${0}
 snippet BEERWARE
 	${2:one line to give the program's name and a brief description}
 	Copyright `strftime("%Y")` ${3:copyright holder}
@@ -223,13 +223,13 @@ snippet BEERWARE
 	can do whatever you want with this stuff. If we meet some day, and you think
 	this stuff is worth it, you can buy me a beer or coffee in return
 
-	${4}
+	${0}
 
 snippet WTFPL
 			DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 					Version 2, December 2004
 
-	Copyright `strftime("%Y")` ${1:copyright holder}
+	Copyright `strftime("%Y")` ${0:copyright holder}
 
 	Everyone is permitted to copy and distribute verbatim or modified
 	copies of this license document, and changing it is allowed as long

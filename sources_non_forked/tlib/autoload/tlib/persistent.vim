@@ -3,7 +3,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2012-05-11.
 " @Last Change: 2012-05-11.
-" @Revision:    6
+" @Revision:    7
 
 " The directory for persistent data files. If empty, use 
 " |tlib#dir#MyRuntime|.'/share'.
@@ -36,6 +36,10 @@ function! tlib#persistent#Get(cfile) "{{{3
     else
         return {}
     endif
+endf
+
+function! tlib#persistent#Value(...) "{{{3
+    return call('tlib#cache#Value', a:000)
 endf
 
 function! tlib#persistent#Save(cfile, dictionary) "{{{3

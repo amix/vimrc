@@ -3,11 +3,11 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2008-11-25.
-" @Last Change: 2012-09-26.
-" @Revision:    0.0.90
+" @Last Change: 2013-09-25.
+" @Revision:    0.0.92
 
 let s:prototype = tlib#Object#New({'_class': ['Filter_cnf'], 'name': 'cnf'}) "{{{2
-let s:prototype.highlight = g:tlib_inputlist_higroup
+let s:prototype.highlight = g:tlib#input#higroup
 
 " The search pattern for |tlib#input#List()| is in conjunctive normal 
 " form: (P1 OR P2 ...) AND (P3 OR P4 ...) ...
@@ -33,7 +33,7 @@ endf
 " :nodoc:
 function! s:prototype.Help(world) dict "{{{3
     call a:world.PushHelp(
-                \ printf('"%s", "%s", "%sWORD"', g:tlib_inputlist_and, g:tlib_inputlist_or, g:tlib_inputlist_not),
+                \ printf('"%s", "%s", "%sWORD"', g:tlib#input#and, g:tlib#input#or, g:tlib#input#not),
                 \ 'AND, OR, NOT')
 endf
 

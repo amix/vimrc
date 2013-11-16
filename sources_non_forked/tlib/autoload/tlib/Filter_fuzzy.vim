@@ -3,11 +3,11 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2008-11-25.
-" @Last Change: 2012-09-20.
-" @Revision:    0.0.46
+" @Last Change: 2013-09-25.
+" @Revision:    0.0.47
 
 let s:prototype = tlib#Filter_cnf#New({'_class': ['Filter_fuzzy'], 'name': 'fuzzy'}) "{{{2
-let s:prototype.highlight = g:tlib_inputlist_higroup
+let s:prototype.highlight = g:tlib#input#higroup
 
 
 " Support for "fuzzy" pattern matching in |tlib#input#List()|. 

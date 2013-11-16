@@ -13,27 +13,22 @@
 
 if exists('current_compiler')
   finish
-else
-  let current_compiler = 'coffee'
 endif
+
+let current_compiler = 'coffee'
+call coffee#CoffeeSetUpVariables()
 
 " Pattern to check if coffee is the compiler
 let s:pat = '^' . current_compiler
 
-" Path to CoffeeScript compiler
-if !exists('coffee_compiler')
-  let coffee_compiler = 'coffee'
-endif
-
-" Extra options passed to CoffeeMake
-if !exists('coffee_make_options')
-  let coffee_make_options = ''
-endif
-
 " Get a `makeprg` for the current filename.
 function! s:GetMakePrg()
-  return g:coffee_compiler . ' -c ' . g:coffee_make_options . ' $* '
-  \                        . fnameescape(expand('%'))
+  return g:coffee_compiler .
+  \      ' -c' .
+  \      ' ' . b:coffee_litcoffee .
+  \      ' ' . g:coffee_make_options .
+  \      ' $*' .
+  \      ' ' . fnameescape(expand('%'))
 endfunction
 
 " Set `makeprg` and return 1 if coffee is still the compiler, else return 0.
@@ -50,16 +45,21 @@ function! s:SetMakePrg()
 endfunction
 
 " Set a dummy compiler so we can check whether to set locally or globally.
-CompilerSet makeprg=coffee
+exec 'CompilerSet makeprg=' . current_compiler
+" Then actually set the compiler.
 call s:SetMakePrg()
+call coffee#CoffeeSetUpErrorFormat()
 
-CompilerSet errorformat=Error:\ In\ %f\\,\ %m\ on\ line\ %l,
-                       \Error:\ In\ %f\\,\ Parse\ error\ on\ line\ %l:\ %m,
-                       \SyntaxError:\ In\ %f\\,\ %m,
-                       \%-G%.%#
+function! s:CoffeeMakeDeprecated(bang, args)
+  echoerr 'CoffeeMake is deprecated! Please use :make instead, its behavior ' .
+  \       'is identical.'
+  sleep 5
+  exec 'make' . a:bang a:args
+endfunction
 
 " Compile the current file.
-command! -bang -bar -nargs=* CoffeeMake make<bang> <args>
+command! -bang -bar -nargs=* CoffeeMake
+\        call s:CoffeeMakeDeprecated(<q-bang>, <q-args>)
 
 " Set `makeprg` on rename since we embed the filename in the setting.
 augroup CoffeeUpdateMakePrg

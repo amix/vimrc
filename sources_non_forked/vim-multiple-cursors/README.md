@@ -106,3 +106,7 @@ Obviously inspired by Sublime Text's [multiple selection][sublime-multiple-selec
 [Neobundle]:http://github.com/Shougo/neobundle.vim
 [emacs-multiple-cursors]:https://github.com/magnars/multiple-cursors.el
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/terryma/vim-multiple-cursors/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+

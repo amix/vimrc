@@ -8,7 +8,7 @@ snippet cmake
 		${$2_INCLUDE_DIR}
 	)
 
-	ADD_SUBDIRECTORY(${3:src})
+	ADD_SUBDIRECTORY(${0:src})
 
 	ADD_EXECUTABLE($1)
 
@@ -18,41 +18,41 @@ snippet cmake
 
 snippet include
 	INCLUDE_DIRECTORIES(
-		${${1:INCLUDE_DIR}}
+		${${0:INCLUDE_DIR}}
 	)
 
 snippet find
-	FIND_PACKAGE(${1:LIBRARY})
+	FIND_PACKAGE(${0:LIBRARY})
 
 snippet glob
-	FILE(GLOB ${1:SRCS} *.${2:cpp})
+	FILE(GLOB ${1:SRCS} *.${0:cpp})
 
 snippet subdir
-	ADD_SUBDIRECTORY(${1:src})
+	ADD_SUBDIRECTORY(${0:src})
 
 snippet lib
 	ADD_LIBRARY(${1:lib} ${2:STATIC}
-		${${3:SRCS}}
+		${${0:SRCS}}
 	)
 
 snippet link
 	TARGET_LINK_LIBRARIES(${1:bin}
-		${2:somelib}
+		${0:somelib}
 	)
 
 snippet bin
 	ADD_EXECUTABLE(${1:bin})
 
 snippet set
-	SET(${1:var} ${2:val})
+	SET(${1:var} ${0:val})
 
 snippet dep
 	ADD_DEPENDENCIES(${1:target}
-		${2:dep}
+		${0:dep}
 	)
 
 snippet props
 	SET_TARGET_PROPERTIES(${1:target}
 		${2:PROPERTIES} ${3:COMPILE_FLAGS}
-		${4:"-O3 -Wall -pedantic"}
+		${0:"-O3 -Wall -pedantic"}
 	)

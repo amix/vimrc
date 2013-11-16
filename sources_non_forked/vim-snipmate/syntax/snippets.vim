@@ -17,7 +17,6 @@ hi link snipComment   Comment
 hi link multiSnipText String
 hi link snipKeyword   Keyword
 hi link snipEscape    SpecialChar
-hi link snipComment   Comment
 hi link placeHolder   Special
 hi link tabStop       Special
 hi link snipCommand   String

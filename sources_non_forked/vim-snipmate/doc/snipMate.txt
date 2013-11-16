@@ -105,6 +105,25 @@ g:snipMate.scope_aliases        A |Dictionary| associating certain filetypes
                                 "ruby" or contains "ruby" as an entry in the
                                 case of dotted filetypes.
 
+g:snipMate_no_default_aliases
+                                When set to 1, prevents SnipMate from loading
+                                default scope aliases. The defaults are:
+                                    Filetype    Alias ~
+                                    cpp         c
+                                    cu          c
+                                    eruby       eruby-rails,html
+                                    html        javascript
+                                    mxml        actionscript
+                                    objc        c
+                                    php         php,html,javascript
+                                    ur          html,javascript
+                                    xhtml       html
+                                Note: Setting this option does not disable
+                                scope aliases entirely, only those made by
+                                SnipMate itself. Any scope aliases created by
+                                the user or someone else will still be in
+                                effect.
+
 g:snipMate['no_match_completion_feedkeys_chars']
                                 A string inserted when no match for a trigger
                                 is found. By default a tab is inserted
@@ -119,26 +138,32 @@ The mappings SnipMate uses can be customized with the |:map| commands. For
 example, to change the key that triggers snippets and moves to the next
 tabstop, >
 
-        :imap <C-J> <Plug>SnipMateNextOrTrigger
-        :smap <C-J> <Plug>SnipMateNextOrTrigger
+        :imap <C-J> <Plug>snipMateNextOrTrigger
+        :smap <C-J> <Plug>snipMateNextOrTrigger
 
 The list of possible <Plug> mappings is as follows:
 
-<Plug>SnipMateNextOrTrigger     Default: <Tab>          Mode: Insert, Select
+<Plug>snipMateNextOrTrigger     Default: <Tab>          Mode: Insert, Select
                                 Jumps to the next tab stop or, if none exists,
                                 try to expand a snippet. Use in both insert
                                 and select modes.
 
-<Plug>SnipMateBack              Default: <S-Tab>        Mode: Insert, Select
+<Plug>snipMateTrigger           Default: unmapped       Mode: Insert
+                                Try to expand a snippet regardless of any
+                                existing snippet expansion. If done within an
+                                expanded snippet, the outer snippet's tab
+                                stops are lost, unless expansion failed.
+
+<Plug>snipMateBack              Default: <S-Tab>        Mode: Insert, Select
                                 Jump to the previous tab stop, if it exists.
                                 Use in both insert and select modes.
 
-<Plug>SnipMateShow              Default: <C-R><Tab>     Mode: Insert
+<Plug>snipMateShow              Default: <C-R><Tab>     Mode: Insert
                                 Show all available snippets (that start with
                                 the previous text, if it exists). Use in
                                 insert mode.
 
-<Plug>SnipMateVisual            Default: <Tab>          Mode: Visual
+<Plug>snipMateVisual            Default: <Tab>          Mode: Visual
                                 See |SnipMate-visual|.
 
 Additionally, <CR> is mapped in visual mode in .snippets files for retabbing
