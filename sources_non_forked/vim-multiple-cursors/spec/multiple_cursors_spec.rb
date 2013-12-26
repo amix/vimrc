@@ -270,4 +270,19 @@ describe "Multiple Cursors" do
       hello world
     EOF
   end
+
+  specify "#set paste mode" do
+    before <<-EOF
+      hello
+      hello
+    EOF
+
+    type ':set paste<CR><C-n><C-n>cworld<Esc>:set nopaste<CR>'
+
+    after <<-EOF
+      world
+      world
+    EOF
+  end
+
 end

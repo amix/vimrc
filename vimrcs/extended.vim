@@ -17,7 +17,7 @@ if has("mac") || has("macunix")
     set gfn=Menlo:h15
 elseif has("win16") || has("win32")
     set gfn=Bitstream\ Vera\ Sans\ Mono:h11
-elseif has("linux")
+elseif has("unix")
     set gfn=Monospace\ 11
 endif
 

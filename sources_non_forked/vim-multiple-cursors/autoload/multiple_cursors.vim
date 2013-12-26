@@ -50,9 +50,9 @@ endif
 " Internal Mappings
 "===============================================================================
 
-inoremap <silent> <Plug>(i) <C-o>:call <SID>process_user_inut()<CR>
-nnoremap <silent> <Plug>(i) :call <SID>process_user_inut()<CR>
-xnoremap <silent> <Plug>(i) :<C-u>call <SID>process_user_inut()<CR>
+inoremap <silent> <Plug>(i) <C-o>:call <SID>process_user_input()<CR>
+nnoremap <silent> <Plug>(i) :call <SID>process_user_input()<CR>
+xnoremap <silent> <Plug>(i) :<C-u>call <SID>process_user_input()<CR>
 
 inoremap <silent> <Plug>(a) <C-o>:call <SID>apply_user_input_next('i')<CR>
 nnoremap <silent> <Plug>(a) :call <SID>apply_user_input_next('n')<CR>
@@ -97,8 +97,8 @@ endfunction
 " attempted to be created at the next occurrence of the visual selection
 function! multiple_cursors#new(mode)
   if a:mode ==# 'n'
-    " Reset all existing cursors, don't restore view
-    call s:cm.reset(0)
+    " Reset all existing cursors, don't restore view and setting
+    call s:cm.reset(0, 0)
 
     " Select the word under cursor to set the '< and '> marks
     exec "normal! viw"
@@ -113,7 +113,7 @@ function! multiple_cursors#new(mode)
     let start = line("'<")
     let finish = line("'>")
     if start != finish
-      call s:cm.reset(0)
+      call s:cm.reset(0, 0)
       let col = col("'<")
       for line in range(line("'<"), line("'>"))
         let pos = [line, col]
@@ -124,7 +124,7 @@ function! multiple_cursors#new(mode)
     else
       " Came directly from visual mode
       if s:cm.is_empty()
-        call s:cm.reset(0)
+        call s:cm.reset(0, 0)
 
         if visualmode() ==# 'V'
           let left = [line('.'), 1]
@@ -133,7 +133,7 @@ function! multiple_cursors#new(mode)
             return
           endif
           call s:cm.add(right, [left, right])
-        else 
+        else
           call s:cm.add(s:pos("'>"), s:region("'<", "'>"))
         endif
       endif
@@ -219,7 +219,7 @@ function! multiple_cursors#find(start, end, pattern)
     call winrestview(s:cm.saved_winview)
     echohl ErrorMsg | echo 'No match found' | echohl None
     return
-  else 
+  else
     echohl Normal | echo 'Added '.s:cm.size().' cursor'.(s:cm.size()>1?'s':'') | echohl None
     call s:wait_for_user_input('v')
   endif
@@ -318,6 +318,7 @@ function! s:CursorManager.new()
         \ 'virtualedit': &virtualedit,
         \ 'cursorline': &cursorline,
         \ 'lazyredraw': &lazyredraw,
+        \ 'paste': &paste,
         \ }
   " We save the window view when multicursor mode is entered
   let obj.saved_winview = []
@@ -327,7 +328,7 @@ function! s:CursorManager.new()
 endfunction
 
 " Clear all cursors and their highlights
-function! s:CursorManager.reset(restore_view) dict
+function! s:CursorManager.reset(restore_view, restore_setting) dict
   if a:restore_view
     " Return the view back to the beginning
     if !empty(self.saved_winview)
@@ -357,7 +358,9 @@ function! s:CursorManager.reset(restore_view) dict
   let self.saved_winview = []
   let self.start_from_find = 0
   let s:char = ''
-  call self.restore_user_settings()
+  if a:restore_setting
+    call self.restore_user_settings()
+  endif
 endfunction
 
 " Returns 0 if it's not managing any cursors at the moment
@@ -513,10 +516,17 @@ endfunction
 " where the real vim cursor is
 " lazyredraw needs to be turned on to prevent jerky screen behavior with many
 " cursors on screen
+" paste mode needs to be switched off since it turns off a bunch of features
+" that's critical for the plugin to function
 function! s:CursorManager.initialize() dict
+  let self.saved_settings['virtualedit'] = &virtualedit
+  let self.saved_settings['cursorline'] = &cursorline
+  let self.saved_settings['lazyredraw'] = &lazyredraw
+  let self.saved_settings['paste'] = &paste
   let &virtualedit = "onemore"
   let &cursorline = 0
   let &lazyredraw = 1
+  let &paste = 0
   " We could have already saved the view from multiple_cursors#find
   if !self.start_from_find
     let self.saved_winview = winsaveview()
@@ -529,6 +539,7 @@ function! s:CursorManager.restore_user_settings() dict
     let &virtualedit = self.saved_settings['virtualedit']
     let &cursorline = self.saved_settings['cursorline']
     let &lazyredraw = self.saved_settings['lazyredraw']
+    let &paste = self.saved_settings['paste']
   endif
 endfunction
 
@@ -742,7 +753,7 @@ function! s:feedkeys(keys)
 endfunction
 
 " Take the user input and apply it at every cursor
-function! s:process_user_inut()
+function! s:process_user_input()
   " Grr this is frustrating. In Insert mode, between the feedkey call and here,
   " the current position could actually CHANGE for some odd reason. Forcing a
   " position reset here
@@ -876,7 +887,7 @@ function! s:exit()
     let exit = 1
   endif
   if exit
-    call s:cm.reset(1)
+    call s:cm.reset(1, 1)
     return 1
   endif
   return 0
@@ -923,7 +934,7 @@ function! s:revert_highlight_fix()
   if type(s:saved_line) == 1
     if s:from_mode ==# 'i'
       silent! undojoin | call setline('.', s:saved_line)
-    else 
+    else
       call setline('.', s:saved_line)
     endif
   endif
@@ -961,7 +972,7 @@ function! s:end_latency_measure()
         silent! echom "Starting latency debug at ".reltimestr(reltime())
       redir END
     endif
-    
+
     if !s:skip_latency_measure
       exec 'redir >> '.s:latency_debug_file
         silent! echom "Processing '".s:char."' took ".string(str2float(reltimestr(reltime(s:start_time)))*1000).' ms in '.s:cm.size().' cursors. mode = '.s:from_mode
@@ -1000,7 +1011,7 @@ function! s:wait_for_user_input(mode)
   if s:exit()
     return
   endif
-  
+
   " If the key is a special key and we're in the right mode, handle it
   if index(get(s:special_keys, s:from_mode, []), s:char) != -1
     call s:handle_special_key(s:char, s:from_mode)

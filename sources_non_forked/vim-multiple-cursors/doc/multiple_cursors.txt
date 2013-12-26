@@ -160,7 +160,6 @@ like the following in your vimrc: >
   cursors is lost. This is a implementation decision to keep the input
   perfectly synced in all locations, at the cost of potentially losing user
   input.
-- Performance in terminal vim degrades significantly with more cursors
 - Select mode is not implemented
 
 ==============================================================================

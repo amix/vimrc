@@ -2,25 +2,25 @@ snippet main
 	package {
 		import flash.display.*;
 		import flash.Events.*;
-	
+
 		public class Main extends Sprite {
 			public function Main (	) {
 				trace("start");
 				stage.scaleMode = StageScaleMode.NO_SCALE;
 				stage.addEventListener(Event.RESIZE, resizeListener);
 			}
-	
+
 			private function resizeListener (e:Event):void {
 				trace("The application window changed size!");
 				trace("New width:  " + stage.stageWidth);
 				trace("New height: " + stage.stageHeight);
 			}
-	
+
 		}
-	
+
 	}
 snippet class
-	${1:public|internal} class ${2:name} ${3:extends } {
+	${1:public|internal} class ${2:name} ${0:extends } {
 		public function $2 (	) {
 			("start");
 		}
@@ -28,7 +28,7 @@ snippet class
 snippet all
 	package name {
 
-		${1:public|internal|final} class ${2:name} ${3:extends } {
+		${1:public|internal|final} class ${2:name} ${0:extends } {
 			private|public| static const FOO = "abc";
 			private|public| static var BAR = "abc";
 
@@ -55,48 +55,48 @@ snippet all
 snippet switch
 	switch(${1}){
 		case ${2}:
-			${3}
+			${0}
 		break;
 		default:
 	}
 snippet case
 		case ${1}:
-			${2}
+			${0}
 		break;
 snippet package
 	package ${1:package}{
-		${2}
+		${0}
 	}
 snippet wh
 	while ${1:cond}{
-		${2}
+		${0}
 	}
 snippet do
 	do {
-		${2}
+		${0}
 	} while (${1:cond})
-snippet while
+snippet wh
 	while ${1:cond}{
-		${2}
+		${0}
 	}
 snippet for enumerate names
 	for (${1:var} in ${2:object}){
-		${3}
+		${0}
 	}
 snippet for enumerate values
 	for each (${1:var} in ${2:object}){
-		${3}
+		${0}
 	}
 snippet get_set
 	function get ${1:name} {
 		return ${2}
 	}
 	function set $1 (newValue) {
-		${3}
+		${0}
 	}
 snippet interface
 	interface name {
-		function method(${1}):${2:returntype};
+		function method(${1}):${0:returntype};
 	}
 snippet try
 	try {
@@ -104,34 +104,34 @@ snippet try
 	} catch (error:ErrorType) {
 		${2}
 	} finally {
-		${3}
+		${0}
 	}
 # For Loop (same as c.snippet)
 snippet for for (..) {..}
 	for (${2:i} = 0; $2 < ${1:count}; $2${3:++}) {
-		${4:/* code */}
+		${0}
 	}
 # Custom For Loop
 snippet forr
 	for (${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++}) {
-		${5:/* code */}
+		${0}
 	}
 # If Condition
 snippet if
 	if (${1:/* condition */}) {
-		${2:/* code */}
+		${0}
 	}
 snippet el
 	else {
-		${1}
+		${0}
 	}
 # Ternary conditional
 snippet t
-	${1:/* condition */} ? ${2:a} : ${3:b}
+	${1:/* condition */} ? ${2:a} : ${0:b}
 snippet fun
 	function ${1:function_name}(${2})${3}
 	{
-		${4:/* code */}
+		${0}
 	}
 # FlxSprite (usefull when using the flixel library)
 snippet FlxSprite
@@ -144,13 +144,13 @@ snippet FlxSprite
 			public function $1(${3: X:Number, Y:Number}):void
 			{
 				super(X,Y);
-				${4: //code...}
+				${4}
 			}
 
 			override public function update():void
 			{
 				super.update();
-				${5: //code...}
+				${0}
 			}
 		}
 	}

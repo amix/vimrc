@@ -3,119 +3,119 @@ snippet #!
 
 # includes
 snippet lib
-	library(${1:package})
+	library(${0:package})
 snippet req
-	require(${1:package})
+	require(${0:package})
 snippet source
-	source('${1:file}')
+	source('${0:file}')
 
 # conditionals
 snippet if
 	if (${1:condition}) {
-		${2:code}
+		${0}
 	}
 snippet el
 	else {
-		${1:code}
+		${0}
 	}
 snippet ei
 	else if (${1:condition}) {
-		${2:code}
+		${0}
 	}
 
 # functions
 snippet fun
 	${1:name} = function (${2:variables}) {
-		${3:code}
+		${0}
 	}
 snippet ret
-	return(${1:code})
+	return(${0})
 
 # dataframes, lists, etc
 snippet df
-	${1:name}[${2:rows}, ${3:cols}]
+	${1:name}[${2:rows}, ${0:cols}]
 snippet c
-	c(${1:items})
+	c(${0:items})
 snippet li
-	list(${1:items})
+	list(${0:items})
 snippet mat
-	matrix(${1:data}, nrow=${2:rows}, ncol=${3:cols})
+	matrix(${1:data}, nrow=${2:rows}, ncol=${0:cols})
 
 # apply functions
 snippet apply
-	apply(${1:array}, ${2:margin}, ${3:function})
+	apply(${1:array}, ${2:margin}, ${0:function})
 snippet lapply
-	lapply(${1:list}, ${2:function})
+	lapply(${1:list}, ${0:function})
 snippet sapply
-	lapply(${1:list}, ${2:function})
+	lapply(${1:list}, ${0:function})
 snippet vapply
-	vapply(${1:list}, ${2:function}, ${3:type})
+	vapply(${1:list}, ${2:function}, ${0:type})
 snippet mapply
-	mapply(${1:function}, ${2:...})
+	mapply(${1:function}, ${0:...})
 snippet tapply
-	tapply(${1:vector}, ${2:index}, ${3:function})
+	tapply(${1:vector}, ${2:index}, ${0:function})
 snippet rapply
-	rapply(${1:list}, ${2:function})
+	rapply(${1:list}, ${0:function})
 
 # plyr functions
 snippet dd
-	ddply(${1:frame}, ${2:variables}, ${3:function})
+	ddply(${1:frame}, ${2:variables}, ${0:function})
 snippet dl
-	dlply(${1:frame}, ${2:variables}, ${3:function})
+	dlply(${1:frame}, ${2:variables}, ${0:function})
 snippet da
-	daply(${1:frame}, ${2:variables}, ${3:function})
+	daply(${1:frame}, ${2:variables}, ${0:function})
 snippet d_
-	d_ply(${1:frame}, ${2:variables}, ${3:function})
+	d_ply(${1:frame}, ${2:variables}, ${0:function})
 
 snippet ad
-	adply(${1:array}, ${2:margin}, ${3:function})
+	adply(${1:array}, ${2:margin}, ${0:function})
 snippet al
-	alply(${1:array}, ${2:margin}, ${3:function})
+	alply(${1:array}, ${2:margin}, ${0:function})
 snippet aa
-	aaply(${1:array}, ${2:margin}, ${3:function})
+	aaply(${1:array}, ${2:margin}, ${0:function})
 snippet a_
-	a_ply(${1:array}, ${2:margin}, ${3:function})
+	a_ply(${1:array}, ${2:margin}, ${0:function})
 
 snippet ld
-	ldply(${1:list}, ${2:function})
+	ldply(${1:list}, ${0:function})
 snippet ll
-	llply(${1:list}, ${2:function})
+	llply(${1:list}, ${0:function})
 snippet la
-	laply(${1:list}, ${2:function})
+	laply(${1:list}, ${0:function})
 snippet l_
-	l_ply(${1:list}, ${2:function})
+	l_ply(${1:list}, ${0:function})
 
 snippet	md
-	mdply(${1:matrix}, ${2:function})
+	mdply(${1:matrix}, ${0:function})
 snippet	ml
-	mlply(${1:matrix}, ${2:function})
+	mlply(${1:matrix}, ${0:function})
 snippet	ma
-	maply(${1:matrix}, ${2:function})
+	maply(${1:matrix}, ${0:function})
 snippet	m_
-	m_ply(${1:matrix}, ${2:function})
+	m_ply(${1:matrix}, ${0:function})
 
 # plot functions
 snippet pl
-	plot(${1:x}, ${2:y})
+	plot(${1:x}, ${0:y})
 snippet ggp
-	ggplot(${1:data}, aes(${2:aesthetics}))
+	ggplot(${1:data}, aes(${0:aesthetics}))
 snippet img
 	${1:(jpeg,bmp,png,tiff)}(filename="${2:filename}", width=${3}, height=${4}, unit="${5}")
-	${6:plot}
+	${0:plot}
 	dev.off()
 
 # statistical test functions
 snippet fis
-	fisher.test(${1:x}, ${2:y})
+	fisher.test(${1:x}, ${0:y})
 snippet chi
-	chisq.test(${1:x}, ${2:y})
+	chisq.test(${1:x}, ${0:y})
 snippet tt
-	t.test(${1:x}, ${2:y})
+	t.test(${1:x}, ${0:y})
 snippet wil
-	wilcox.test(${1:x}, ${2:y})
+	wilcox.test(${1:x}, ${0:y})
 snippet cor
-	cor.test(${1:x}, ${2:y})
+	cor.test(${1:x}, ${0:y})
 snippet fte
-	var.test(${1:x}, ${2:y})
-snippet kvt 
-	kv.test(${1:x}, ${2:y})
+	var.test(${1:x}, ${0:y})
+snippet kvt
+	kv.test(${1:x}, ${0:y})

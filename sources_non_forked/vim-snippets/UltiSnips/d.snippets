@@ -126,7 +126,7 @@ else
 }
 endsnippet
 
-snippet elif "else if (elif)" b
+snippet eif "else if (elif)" b
 else if(${1:/*condition*/})
 {
     ${VISUAL}${0:/*code*/}
@@ -576,7 +576,7 @@ snippet module "New module (module)" b
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-module ${2}.`!v Filename('$1', 'name')`;
+module ${2}.`!v vim_snippets#Filename('$1', 'name')`;
 
 
 ${3}

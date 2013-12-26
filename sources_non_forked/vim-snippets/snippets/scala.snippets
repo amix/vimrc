@@ -7,96 +7,100 @@
 #if
 snippet if
 	if(${1:obj}) {
-		${2:/* code */}
+		${0}
 	}
 #if not
 snippet ifn
 	if(!${1:obj}) {
-		${2:/* code */}
+		${0}
 	}
 #if-else
-snippet ifel
+snippet ife
 	if(${1:obj}) {
-		${2:/* code */}
+		${2}
 	} else {
-		${3:/* code */}
+		${0}
 	}
 #if-else-if
 snippet ifelif
 	if(${1:obj}) {
-		${2:/* code */}
+		${2}
 	} else if(${3:obj}) {
-		${4:/* code */}
+		${0}
+	}
+snippet eif
+	else if(${3:obj}) {
+		${0}
 	}
 #while loop
-snippet while
+snippet wh
 	while (${1:obj}) {
-		${2:/* code */}
+		${0}
 	}
 #for loop(classic)
 snippet for
 	for (${1:item} <- ${2:obj}) {
-		${3:/* code */}
+		${0}
 	}
 #for loop(indexed)
 snippet fori
 	for (${1:i} <- ${2:0} to ${3:obj}.length) {
-		${4:/* code */}
+		${0}
 	}
 #exceptions
 snippet try
 	try {
-		${1:/* code */}
+		${1}
 	} catch {
-		case e: FileNotFoundException => ${2:/* code */}
-		case e: IOException => ${3:/* code */}
+		case e: FileNotFoundException => ${2}
+		case e: IOException => ${3}
 	} finally {
-		${4:/* code */}
+		${0}
 	}
 #match
 snippet match
 	${1: obj} match {
-		case ${2:e} => ${3:/* code */}
-		case _ => ${4:/* code */}
+		case ${2:e} => ${3}
+		case _ => ${0}
 	}
 #case
 snippet case
-	case ${1:value} => ${2:/* code */}
+	case ${1:value} => ${0}
 ############################
 # methods and arguments
 #
 #arg
 snippet arg
-	${1:a}: ${2:T}${3:, arg}
+	${1:a}: ${2:T}${0:, arg}
 #args
 snippet args
-	${1:args}: ${2:T}*
+	${1:args}: ${0:T}*
 #def
 snippet def
-	def ${1:name}(${2:arg}) = ${3:}
+	def ${1:name}(${2:arg}) = ${0:}
 #private def
 snippet prdef
-	private def ${1:name}(${2:arg}) = ${3:}
+	private def ${1:name}(${2:arg}) = ${0:}
 #override def
 snippet ovdef
-	override def ${1:name}(${2:arg}) = ${3:}
+	override def ${1:name}(${2:arg}) = ${0:}
 #first class function(see scalabook p 188)
 snippet fcf
-	(${1:a}: ${2:T}) => $1 ${3:/* code */}
+	(${1:a}: ${2:T}) => $1 ${0}
 snippet =>
-	${1:name} => ${2:/* code */}
+	${1:name} => ${0}
 #recursion
 snippet rec
-	def ${1:name}(${2:arg}) =
+	def ${1:name}(${0:arg}) =
 		if($2) $2
 		else $1($2)
 #curried method
 snippet crdef
-	def ${1:name}(${2:arg})(${3:arg}) = ${4:}
+	def ${1:name}(${2:arg})(${3:arg}) = ${0:}
 #main method
 #check validity of T
 snippet main
-	def main(args: Array[String]):${1:T} = ${2:}
+	def main(args: Array[String]):${1:T} = ${0:}
 ############################
 # basic types(general purpose)
 # you might want to use basic types snippets
@@ -161,30 +165,30 @@ snippet chr
 snippet lng
 	Long
 snippet arr
-	Array${1:[T]}${2:()}
+	Array${1:[T]}${0:()}
 snippet buf
-	Buffer${1:[T]}${2:()}
+	Buffer${1:[T]}${0:()}
 snippet list
-	List${1:[T]}${2:()}
+	List${1:[T]}${0:()}
 snippet tpl
-	Tuple${1:2}[${2:T},${3:T}]
+	Tuple${1:2}[${2:T},${0:T}]
 snippet set
-	Set${1:[T]}${2:()}
+	Set${1:[T]}${0:()}
 snippet hset
-	HashSet${1:[T]}${2:()}
+	HashSet${1:[T]}${0:()}
 snippet mhset
-	mutable.HashSet${1:[T]}${2:()}
+	mutable.HashSet${1:[T]}${0:()}
 #for maps
 snippet keyval
-	${1:key}->${2:val}${3:, keyval}
+	${1:key}->${2:val}${0:, keyval}
 snippet map
-	Map[${1:T},${2:T}]${3:(keyval)}
+	Map[${1:T},${2:T}]${0:(keyval)}
 snippet hmap
-	HashMap[${1:T},${2:T}]${3:(keyval)}
+	HashMap[${1:T},${2:T}]${0:(keyval)}
 snippet mmap
-	mutable.Map[${1:T},${2:T}]${3:(keyval)}
+	mutable.Map[${1:T},${2:T}]${0:(keyval)}
 snippet mhmap
-	mutable.HashMap[${1:T},${2:T}]${3:(keyval)}
+	mutable.HashMap[${1:T},${2:T}]${0:(keyval)}
 #TODO add TreeMap and TreeSet
 #asInstanceOf[]
 snippet as
@@ -196,61 +200,61 @@ snippet as
 
 #scope() with one arg
 snippet (a
-	(${1:a} => ${2:/* code */})
+	(${1:a} => ${0})
 #scope() with two args
 snippet {(
 	{(${1:a},${2:b}) =>
-		${3:/* code */}
+		${0}
 	}
 #filter
 snippet filter
-	${1:name}.filter (a
+	${0:name}.filter (a
 #map function
 snippet mapf
-	${1:name}.map (a
+	${0:name}.map (a
 #flatmap
 snippet flatmap
-	${1:name}.flatMap${2:[T]}(a
+	${1:name}.flatMap${0:[T]}(a
 #fold left
 snippet fldl
-	${1:name}.foldLeft(${2:first}) {(
+	${1:name}.foldLeft(${0:first}) {(
 #fold right
 snippet fldr
-	${1:name}.foldRight(${2:first}) {(
+	${1:name}.foldRight(${0:first}) {(
 #fold left operator(if u wanna reduce readability of ur code)
 #use wildcard symbols
 snippet /:
-	(${1:first}/:${2:name})(${3:/* code */})
+	(${1:first}/:${2:name})(${0})
 #fold right operator
 snippet :\
-	(${1:first}:\${2:name})(${3:/* code */})
+	(${1:first}:\${2:name})(${0})
 #reduce left
 snippet redl
-	${1:name}.reduceLeft[${2:T}] {(
+	${1:name}.reduceLeft[${0:T}] {(
 #reduce right
 snippet redr
-	${1:name}.reduceRight[${2:T}] {(
+	${1:name}.reduceRight[${0:T}] {(
 #zipWithIndex(safe way).
 #see http://daily-scala.blogspot.com/2010/05/zipwithindex.html
 snippet zipwi
-	${1:name}.view.zipWithIndex
+	${0:name}.view.zipWithIndex
 #split
 snippet spl
-	${1:name}.split("${2:,}")
+	${1:name}.split("${0:,}")
 #end
 snippet val
-	val ${1:name}${2:: T} = ${3:value}
+	val ${1:name}${2:: T} = ${0:value}
 snippet var
-	var ${1:name}${2:: T} = ${3:value}
+	var ${1:name}${2:: T} = ${0:value}
 ############################
 # classes
 #
 #extends
 snippet extends
-	extends ${1:what}
+	extends ${0:what}
 #with
 snippet with
-	with ${1:what}${2: with}
+	with ${1:what}${0: with}
 #auxiliary constructor(a. this)
 snippet athis
 	def this(arg) = this(arg)
@@ -258,63 +262,63 @@ snippet athis
 snippet abstract
 	abstract class ${1:name}${2:(arg)}${3: extends }${4: with} {
 		${5:override def toString = "$1"}
-		${6:/* code */}
+		${0}
 	}
 #class
 snippet class
 	class ${1:name}${2:(arg)}${3: extends }${4: with} {
 		${5:override def toString = "$1"}
-		${6:/* code */}
+		${0}
 	}
 #object
 snippet object
-	object ${1:name}${2:(arg)}${3: extends }${4: with} ${5:}
+	object ${1:name}${2:(arg)}${3: extends }${4: with} ${0:}
 #trait
 snippet trait
 	trait ${1:name}${2: extends }${3: with} {
-		${4:}
+		${0:}
 	}
 #class with trait Ordered(page 265)
 snippet ordered
 	class ${1:name}${2:(arg)} extends Ordered[$1] ${3: with} {
 		${4:override def toString = "$1"}
 		def compare(that: $1) = ${5:this - that}
-		${6:/* code */}
+		${0}
 	}
 #case class
 snippet casecl
-	case class ${1:name}${2:(arg)}${3: extends }${4: with} ${5:}
+	case class ${1:name}${2:(arg)}${3: extends }${4: with} ${0:}
 ############################
 # testing
 #
 #scalatest imports
 snippet scalatest
 	${1:import org.scalatest.Suite}
-	${2:import org.scalatest.FunSuite}
+	${0:import org.scalatest.FunSuite}
 #assert
 snippet assert
-	assert(${1:a}==${2:b})
+	assert(${1:a}==${0:b})
 #ensuring(p 296)
 snippet ensuring
-	ifel ensuring(${1:a}==${2:b})
+	ifel ensuring(${1:a}==${0:b})
 #expect
 snippet expect
-	expect(${1:what}) {
+	expect(${0:what}) {
 #intercept
 snippet intercept
-	intercept[${1:IllegalArgumentException}] {
+	intercept[${0:IllegalArgumentException}] {
 #test
 snippet test
-	test("${1:description}") {
+	test("${0:description}") {
 #suite
 snippet suite
-	class ${1:name} extends Suite {
+	class ${0:name} extends Suite {
 		def test() {
 	}
 #funsuite
 snippet fsuite
 	class ${1:name} extends FunSuite {
-		test("${2:description}") {
+		test("${0:description}") {
 	}
 ############################
 # SBT
@@ -323,7 +327,7 @@ snippet webproject
 	import sbt._
 
 	class ${1:Name}(info: ProjectInfo) extends DefaultWebProject(info) {
-		val liftVersion = "${2:2.3}"
+		val liftVersion = "${0:2.3}"
 
 		override def libraryDependencies = Set(
 
@@ -333,9 +337,9 @@ snippet webproject
 	}
 #depencies
 snippet liftjar
-	"net.liftweb" %% "${1:lib}" % liftVersion % "compile->default",
+	"net.liftweb" %% "${0:lib}" % liftVersion % "compile->default",
 snippet jettyjar
-	"org.mortbay.jetty" % "jetty" % "${1:version}" % "test->default",
+	"org.mortbay.jetty" % "jetty" % "${0:version}" % "test->default",
 ############################
 # Lift
 #

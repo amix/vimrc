@@ -1,79 +1,83 @@
 # #!/usr/bin/env tclsh
 snippet #!
 	#!/usr/bin/env tclsh
-	
+
 # Process
 snippet pro
 	proc ${1:function_name} {${2:args}} {
-		${3:#body ...}
+		${0}
 	}
 #xif
 snippet xif
-	${1:expr}? ${2:true} : ${3:false}
+	${1:expr}? ${2:true} : ${0:false}
 # Conditional
 snippet if
 	if {${1}} {
-		${2:# body...}
+		${0}
 	}
 # Conditional if..else
 snippet ife
 	if {${1}} {
-		${2:# body...}
+		${2}
 	} else {
-		${3:# else...}
+		${0:# else...}
+	}
+snippet eif
+	elseif {${1}} {
+		${0}
 	}
 # Conditional if..elsif..else
 snippet ifee
 	if {${1}} {
-		${2:# body...}
+		${2}
 	} elseif {${3}} {
 		${4:# elsif...}
 	} else {
-		${5:# else...}
+		${0:# else...}
 	}
 # If catch then
 snippet ifc
 	if { [catch {${1:#do something...}} ${2:err}] } {
-		${3:# handle failure...}
+		${0:# handle failure...}
 	}
 # Catch
 snippet catch
-	catch {${1}} ${2:err} ${3:options}
+	catch {${1}} ${2:err} ${0:options}
 # While Loop
 snippet wh
 	while {${1}} {
-		${2:# body...}
+		${0}
 	}
 # For Loop
 snippet for
 	for {set ${2:var} 0} {$$2 < ${1:count}} {${3:incr} $2} {
-		${4:# body...}
+		${0}
 	}
 # Foreach Loop
 snippet fore
 	foreach ${1:x} {${2:#list}} {
-		${3:# body...}
+		${0}
 	}
 # after ms script...
 snippet af
-	after ${1:ms} ${2:#do something}
+	after ${1:ms} ${0:#do something}
 # after cancel id
 snippet afc
-	after cancel ${1:id or script}
+	after cancel ${0:id or script}
 # after idle
 snippet afi
-	after idle ${1:script}
+	after idle ${0:script}
 # after info id
 snippet afin
-	after info ${1:id}
+	after info ${0:id}
 # Expr
 snippet exp
-	expr {${1:#expression here}}
+	expr {${0:#expression here}}
 # Switch
 snippet sw
 	switch ${1:var} {
 		${3:pattern 1} {
-			${4:#do something}
+			${0:#do something}
 		}
 		default {
 			${2:#do something}
@@ -83,10 +87,10 @@ snippet sw
 snippet ca
 	${1:pattern} {
 		${2:#do something}
-	}${3}
+	}
 # Namespace eval
 snippet ns
-	namespace eval ${1:path} {${2:#script...}}
+	namespace eval ${1:path} {${0:#script...}}
 # Namespace current
 snippet nsc
 	namespace current
