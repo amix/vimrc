@@ -557,3 +557,44 @@ snippet CSVIterator
 
 snippet is
 	isset($1{VISUAL})
+
+# phpunit	
+snippet ase
+	$this->assertEquals(${1:expected}, ${2:actual});
+
+snippet asne
+	$this->assertNotEquals(${1:expected}, ${2:actual});
+
+snippet asf
+	$this->assertFalse(${1:Something});
+
+snippet ast
+	$this->assertTrue(${1:Something});
+
+snippet asfex
+	$this->assertFileExists(${1:path/to/file});
+
+snippet asfnex
+	$this->assertFileNotExists(${1:path/to/file});
+
+snippet ascon
+	$this->assertContains(${1:Search Value}, ${2:Array or Iterator});
+
+snippet ashk
+	$this->assertArrayHasKey(${1:key}, ${2:array});
+
+snippet asnhk
+	this->assertArrayNotHasKey(${1:value}, ${2:array});
+
+snippet ascha
+	$this->assertClassHasAttribute('${1:Attribute Name}', '${2:ClassName}');
+
+snippet asi
+	$this->assertInstanceOf(${1:expected}, ${2:actual});
+
+snippet tc
+	public function test${1:name_of_the_test}()
+	{
+		${0:code}
+	}
+

@@ -130,6 +130,12 @@ function! fugitive#extract_git_dir(path) abort
   let root = s:shellslash(simplify(fnamemodify(a:path, ':p:s?[\/]$??')))
   let previous = ""
   while root !=# previous
+    if root =~# '\v^//%([^/]+/?)?$'
+      " This is for accessing network shares from Cygwin Vim. There won't be
+      " any git directory called //.git or //serverName/.git so let's avoid
+      " checking for them since such checks are extremely slow.
+      break
+    endif
     let dir = s:sub(root, '[\/]$', '') . '/.git'
     let type = getftype(dir)
     if type ==# 'dir' && fugitive#is_git_dir(dir)
@@ -163,7 +169,7 @@ function! fugitive#detect(path)
     endif
   endif
   if exists('b:git_dir')
-    silent doautocmd User Fugitive
+    silent doautocmd User FugitiveBoot
     cnoremap <buffer> <expr> <C-R><C-G> fnameescape(<SID>recall())
     nnoremap <buffer> <silent> y<C-G> :call setreg(v:register, <SID>recall())<CR>
     let buffer = fugitive#buffer()
@@ -176,6 +182,7 @@ function! fugitive#detect(path)
         call buffer.setvar('&tags', escape(b:git_dir.'/'.&filetype.'.tags', ', ').','.buffer.getvar('&tags'))
       endif
     endif
+    silent doautocmd User Fugitive
   endif
 endfunction
 

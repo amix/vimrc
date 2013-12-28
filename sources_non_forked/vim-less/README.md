@@ -35,7 +35,7 @@ in `after/syntax/css.vim` or `after/syntax/css/*.vim`.
 ### Map
 .less to .css , lessc is required.
 
-    nnoremap ,m :w <BAR> !lessc % > %:t:r.css<CR><space>
+    nnoremap <Leader>m :w <BAR> !lessc % > %:t:r.css<CR><space>
 
 
 ## Credits

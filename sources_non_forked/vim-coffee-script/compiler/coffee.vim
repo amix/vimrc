@@ -75,8 +75,8 @@ augroup CoffeeUpdateMakePrg
 
   " Set autocmd locally if compiler was set locally.
   if &l:makeprg =~ s:pat
-    autocmd BufFilePost,BufWritePost <buffer> call s:UpdateMakePrg()
+    autocmd BufWritePre,BufFilePost <buffer> call s:UpdateMakePrg()
   else
-    autocmd BufFilePost,BufWritePost          call s:UpdateMakePrg()
+    autocmd BufWritePre,BufFilePost          call s:UpdateMakePrg()
   endif
 augroup END

@@ -257,6 +257,7 @@ endif
 
 " [-- <Mako Elements> --]
 call <SID>MakoIndentPush('%def')
+call <SID>MakoIndentPush('%block')
 call <SID>MakoIndentPush('%call')
 call <SID>MakoIndentPush('%doc')
 call <SID>MakoIndentPush('%text')

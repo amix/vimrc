@@ -16,8 +16,12 @@ function! s:get_hunks_signify()
   return []
 endfunction
 
+function! s:is_branch_empty()
+  return exists('*airline#extensions#branch#head') && empty(airline#extensions#branch#head())
+endfunction
+
 function! s:get_hunks_gitgutter()
-  if !get(g:, 'gitgutter_enabled', 0)
+  if !get(g:, 'gitgutter_enabled', 0) || s:is_branch_empty()
     return ''
   endif
   return GitGutterGetHunkSummary()

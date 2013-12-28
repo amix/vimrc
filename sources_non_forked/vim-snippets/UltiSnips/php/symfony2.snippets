@@ -1,7 +1,7 @@
 # sugguestion? report bugs? 
 # go to https://github.com/chrisyue/vim-snippets/issues
 
-snippet contr "symfony2 controller" b
+snippet contr "Symfony2 controller" b
 namespace `!p 
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
@@ -25,19 +25,19 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 }
 endsnippet
 
-snippet act "symfony2 action" b
+snippet act "Symfony2 action" b
 /**
  * @Route("${3}", name="${4}")
  * @Method({${5:"POST"}})
+ * @Template()
  */
 public function ${1}Action(${2})
 {
 	${6}
-	return $this->redirect($this->generateUrl('home', [], false));
 }
 endsnippet
 
-snippet actt "symfony2 action and template" b
+snippet actt "Symfony2 action and template" b
 /**
  * @Route("${3}", name="${4}")
  * @Method({${5:"GET"}})
@@ -51,7 +51,7 @@ public function ${1}Action(${2})
 abspath = os.path.abspath(path)`
 endsnippet
 
-snippet comm "symfony2 command" b
+snippet comm "Symfony2 command" b
 namespace `!p 
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
@@ -74,14 +74,12 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 {
 	protected function configure()
 	{
-		$this
-			->setName('${1}')
+		$this->setName('${1}')
 			->setDescription('${2}')
 			->setDefinition([
 				new InputArgument('', InputArgument::REQUIRED, ''),
 				new InputOption('', null, InputOption::VALUE_NONE, ''),
-			])
-		;
+			]);
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output)
@@ -90,7 +88,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 }
 endsnippet
 
-snippet subs "symfony2 subscriber" b
+snippet subs "Symfony2 subscriber" b
 namespace `!p 
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
@@ -121,7 +119,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 }
 endsnippet
 
-snippet transf "symfony2 form data transformer" b
+snippet transf "Symfony2 form data transformer" b
 namespace `!p 
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
@@ -155,7 +153,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 }
 endsnippet
 
-snippet ent "symfony2 doctrine entity" b
+snippet ent "Symfony2 doctrine entity" b
 namespace `!p 
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
@@ -192,7 +190,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 }
 endsnippet
 
-snippet form "symfony2 form type" b
+snippet form "Symfony2 form type" b
 namespace `!p 
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
@@ -234,4 +232,28 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 		return '${1}';
 	}
 }
+endsnippet
+
+snippet ev "Symfony2 event" b
+namespace `!p 
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`;
+
+use Symfony\Component\EventDispatcher\Event;
+
+/**
+ * ${2:@author `whoami`}
+ */
+class `!p
+snip.rv = re.match(r'.*(?=\.)', fn).group()
+` extends Event
+{
+}
+endsnippet
+
+snippet redir "Symfony2 redirect"
+$this->redirect($this->generateUrl('${1}', ${2}));
 endsnippet

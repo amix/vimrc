@@ -1,6 +1,7 @@
 " Vim filetype plugin
 " Language:		Markdown
 " Maintainer:		Tim Pope <vimNOSPAM@tpope.org>
+" Last Change:		2013 May 30
 
 if exists("b:did_ftplugin")
   finish

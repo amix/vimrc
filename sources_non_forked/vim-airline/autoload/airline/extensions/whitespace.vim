@@ -16,10 +16,12 @@ let s:default_checks = ['indent', 'trailing']
 let s:trailing_format = get(g:, 'airline#extensions#whitespace#trailing_format', 'trailing[%s]')
 let s:mixed_indent_format = get(g:, 'airline#extensions#whitespace#mixed_indent_format', 'mixed-indent[%s]')
 
+let s:max_lines = get(g:, 'airline#extensions#whitespace#max_lines', 20000)
+
 let s:enabled = 1
 
 function! airline#extensions#whitespace#check()
-  if &readonly || !&modifiable || !s:enabled
+  if &readonly || !&modifiable || !s:enabled || line('$') > s:max_lines
     return ''
   endif
 

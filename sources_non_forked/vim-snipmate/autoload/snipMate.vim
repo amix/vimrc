@@ -706,12 +706,25 @@ fun! s:ChooseSnippet(snippets)
 	return funcref#Call(a:snippets[keys(a:snippets)[idx]])
 endf
 
-fun! snipMate#ShowAvailableSnips()
-	let col   = col('.')
-	let word  = matchstr(getline('.'), '\S\+\%'.col.'c')
+fun! snipMate#WordBelowCursor()
+	return matchstr(getline('.'), '\S\+\%' . col('.') . 'c')
+endf
 
-	let snippets = map(snipMate#GetSnippetsForWordBelowCursor(word, '*', 0),'v:val[0]')
-	let matches = filter(snippets, "v:val =~# '\\V\\^" . escape(word, '\') . "'")
+fun! snipMate#GetSnippetsForWordBelowCursorForComplete(word)
+	let snippets = map(snipMate#GetSnippetsForWordBelowCursor(a:word, '*', 0), 'v:val[0]')
+	return filter(snippets, "v:val =~# '\\V\\^" . escape(a:word, '\') . "'")
+endf
+
+fun! snipMate#CanBeTriggered()
+	let word    = snipMate#WordBelowCursor()
+	let matches = snipMate#GetSnippetsForWordBelowCursorForComplete(word)
+	return len(matches) > 0
+endf
+
+fun! snipMate#ShowAvailableSnips()
+	let col     = col('.')
+	let word    = snipMate#WordBelowCursor()
+	let matches = snipMate#GetSnippetsForWordBelowCursorForComplete(word)
 
 	" Pretty hacky, but really can't have the tab swallowed!
 	if len(matches) == 0

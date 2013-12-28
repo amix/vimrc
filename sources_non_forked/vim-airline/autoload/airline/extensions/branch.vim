@@ -14,7 +14,7 @@ let s:empty_message = get(g:, 'airline#extensions#branch#empty_message',
       \ get(g:, 'airline_branch_empty_message', ''))
 let s:symbol = get(g:, 'airline#extensions#branch#symbol', g:airline_symbols.branch)
 
-function! airline#extensions#branch#get_head()
+function! airline#extensions#branch#head()
   let head = ''
 
   if s:has_fugitive && !exists('b:mercurial_dir')
@@ -42,6 +42,13 @@ function! airline#extensions#branch#get_head()
   endif
 
   return empty(head) || !s:check_in_path()
+        \ ? ''
+        \ : head
+endfunction
+
+function! airline#extensions#branch#get_head()
+  let head = airline#extensions#branch#head()
+  return empty(head)
         \ ? s:empty_message
         \ : printf('%s%s', empty(s:symbol) ? '' : s:symbol.(g:airline_symbols.space), head)
 endfunction

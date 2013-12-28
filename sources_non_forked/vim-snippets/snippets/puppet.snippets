@@ -223,14 +223,22 @@ snippet define
 	}
 
 snippet service
-	service{ "${1:service}":
-		enable		=> ${2:true},
-		ensure		=> ${0:running},
-		hasstatus	=> true,
+	service { '${1:service}' :
+		ensure    => running,
+		enable    => true,
+		require   => [ Package['${2:package}'], File['${3:file}'], ],
+		subscribe => [ File['${4:configfile1}'], File['${5:configfile2}'], Package['${6:package}'], ]
 	}
 
 snippet file
-	file{ "${1:path}":
-		${2}	=> ${0}
+	file { '${1:filename}' :
+		ensure  => ${2:present},
+		owner   => '${3:root}',
+		group   => '${4:root}',
+		mode    => '${5:0644}',
+		source  => 'puppet:///modules/${6:module}/${7:source}',
+		content => template('/etc/puppet/templates/${8:template}'),
+		alias   => '${9:alias}',
+		require => [ Package['${10:package}'], File['${11:file}'], ],
 	}
 
