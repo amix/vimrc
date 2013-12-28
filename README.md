@@ -74,6 +74,8 @@ I recommend reading the docs of these plugins to understand them better. Each of
 * [vim-expand-region](https://github.com/terryma/vim-expand-region): Allows you to visually select increasingly larger regions of text using the same key combination.
 * [vim-airline](https://github.com/bling/vim-airline): Lean & mean status/tabline for vim that's light as air (replacing powerline)
 * [vim-fugitive](https://github.com/tpope/vim-fugitive): A Git wrapper so awesome, it should be illegal
+* [vim-zenroom](https://github.com/amix/vim-zenroom): 
+Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room [Read more here](http://amix.dk/blog/post/19744#zenroom-for-Vim-Focsuing-only-on-the-essential)
 
 
 ## What color schemes are included?
@@ -311,3 +313,5 @@ Vimscript mappings:
 * [Vim 7.3: Persistent undo and encryption!](http://amix.dk/blog/post/19548#Vim-7-3-Persistent-undo-and-encryption)
 * [Vim tips: Visual Search](http://amix.dk/blog/post/19334#Vim-tips-Visual-Search)
 * [Folding in Vim](http://amix.dk/blog/post/19132#Folding-in-Vim)
+* [
+Zen room for Vim: Focsuing only on the essential](http://amix.dk/blog/post/19744#zenroom-for-Vim-Focsuing-only-on-the-essential)

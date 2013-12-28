@@ -109,4 +109,4 @@ let g:airline_theme="luna"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vimroom
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-nnoremap <silent> <leader>vv :VimroomToggle<cr>
+nnoremap <silent> <leader>z :VimroomToggle<cr>

@@ -1,0 +1,12 @@
+g:vimroom_background	vimroom.txt	/*g:vimroom_background*
+g:vimroom_min_sidebar_width	vimroom.txt	/*g:vimroom_min_sidebar_width*
+g:vimroom_navigational_keys	vimroom.txt	/*g:vimroom_navigational_keys*
+g:vimroom_scrolloff	vimroom.txt	/*g:vimroom_scrolloff*
+g:vimroom_sidebar_height	vimroom.txt	/*g:vimroom_sidebar_height*
+g:vimroom_width	vimroom.txt	/*g:vimroom_width*
+vimroom	vimroom.txt	/*vimroom*
+vimroom-about	vimroom.txt	/*vimroom-about*
+vimroom-configuration	vimroom.txt	/*vimroom-configuration*
+vimroom-installation	vimroom.txt	/*vimroom-installation*
+vimroom-toc	vimroom.txt	/*vimroom-toc*
+vimroom.txt	vimroom.txt	/*vimroom.txt*
