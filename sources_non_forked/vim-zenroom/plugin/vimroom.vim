@@ -104,7 +104,7 @@ if exists( "&background" )
 endif
 
 " Save the current `textwidth'` value for reset later
-let s:save_textwidth' = ""
+let s:save_textwidth = ""
 if exists( "&textwidth'" )
     let s:save_textwidth' = &textwidth'
 endif
