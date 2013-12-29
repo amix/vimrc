@@ -139,6 +139,10 @@ Managing the [NERD Tree](https://github.com/scrooloose/nerdtree) plugin:
     map <leader>nb :NERDTreeFromBookmark 
     map <leader>nf :NERDTreeFind<cr>
 
+[vim-zenroom](https://github.com/mikewest/vimroom) (my fork of [vimroom](https://github.com/mikewest/vimroom)) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It only has one mapping.
+
+    map <leader>z :VimroomToggle<cr>
+
 ### Normal mode mappings
 
 Fast saving of a buffer:
@@ -303,10 +307,6 @@ Vimscript mappings:
     map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
     map <leader>n :cn<cr>
     map <leader>p :cp<cr>
-
-### vim-zenroom
-vim-zenroom (my fork of [vimroom](https://github.com/mikewest/vimroom)) lets you only focus on one thing at a time. It removes all the distractions and centers the content. You can open it by typing:
-`<leader>z`
 
 ## Useful blog tips regarding my Vim setup
 
