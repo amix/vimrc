@@ -5,12 +5,14 @@ It requires [goyo.vim](https://github.com/junegunn/goyo.vim) and it works by set
 This is an improvement of my initial version called [vim-zenroom](https://github.com/amix/vim-zenroom). Please read more here [
 zenroom for Vim: Focusing only on the essential](http://amix.dk/blog/post/19744#zenroom-for-Vim-Focsuing-only-on-the-essential).
 
+Please note that this might not work perfectly with your colorscheme. Patches are welcome to fix this :-)
+
 
 ## Inspirations/Similar
+* [Writing Markdown With Style in Vim](http://astrails.com/blog/2013/8/12/writing-markdown-with-style-in-vim)
 * [lite-dfm](https://github.com/bilalq/lite-dfm)
 * [vimroom](https://github.com/mikewest/vimroom)
 * [vim-zenroom](https://github.com/amix/vim-zenroom)
-* [Writing Markdown With Style in Vim](http://astrails.com/blog/2013/8/12/writing-markdown-with-style-in-vim)
 
 
 ## How it looks like in action
