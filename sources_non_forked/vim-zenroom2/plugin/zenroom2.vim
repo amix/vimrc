@@ -3,7 +3,7 @@
 "Description: Emulates iA Writer environment when editing Markdown, reStructuredText
 "             or text files.
 "Maintainer:  Amir Salihefendic <amix@doist.io>
-"Version:     0.2
+"Version:     0.1
 "Last Change: 2013-12-29
 "License:     BSD
 "==============================================================================
@@ -19,27 +19,24 @@ let g:loaded_zenroom2_plugin = 1
 "
 " Save the current `background` value for reset later
 let s:save_background = ""
+if exists( "&background" )
+    let s:save_background = &background
+endif
 
 " Save the current `textwidth'` value for reset later
 let s:save_textwidth = ""
+if exists( "&textwidth'" )
+    let s:save_textwidth' = &textwidth'
+endif
 
 function! s:markdown_room()
-    if exists( "&background" )
-        let s:save_background = &background
-    endif
-
-    if exists( "&textwidth'" )
-        let s:save_textwidth' = &textwidth'
-    endif
-
     set background=light
-
     set linespace=8
     set textwidth=80
 
     hi Normal guibg=gray95
     hi NonText guifg=gray95
-    hi FoldColumn guibg=gray95 ctermbg=bg
+    hi FoldColumn guibg=gray95
     hi CursorLine guibg=gray90
     hi Title gui=bold guifg=gray25
     hi MarkdownHeadingDelimiter gui=bold guifg=gray25
@@ -76,8 +73,9 @@ function! g:zenroom_goyo_before()
     if !has("gui_running")
         return
     endif
+    let is_mark_or_rst = &filetype == "markdown" || &filetype == "rst" || &filetype == "text"
 
-    if &filetype == "markdown" || &filetype == "rst" || &filetype == "text"
+    if is_mark_or_rst
         call s:markdown_room()
     endif
 endfunction
@@ -86,8 +84,8 @@ function! g:zenroom_goyo_after()
     if !has("gui_running")
         return
     endif
-
-    if &filetype == "markdown" || &filetype == "rst" || &filetype == "text"
+    let is_mark_or_rst = &filetype == "markdown" || &filetype == "rst" || &filetype == "text"
+    if is_mark_or_rst
         set linespace=0
 
         if s:save_textwidth != ""
@@ -101,4 +99,3 @@ function! g:zenroom_goyo_after()
 endfunction
 
 let g:goyo_callbacks = [ function('g:zenroom_goyo_before'), function('g:zenroom_goyo_after') ]
-
