@@ -36,7 +36,7 @@ if exists("syntax_on")
   syntax reset
 endif
 
-let g:colors_name = expand("<sfile>:t:r")
+let g:colors_name = "peaksea"
 
 " I don't want to abuse folding, but here folding is used to avoid confusion. 
 if &background=='light' 
