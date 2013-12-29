@@ -283,7 +283,7 @@ syntastic <https://github.com/scrooloose/syntastic>
   let g:airline#extensions#syntastic#enabled = 1
 <
 -------------------------------------                       *airline-tagbar*
-tagbar <https://github.com/majutsushi/>
+tagbar <https://github.com/majutsushi/tagbar>
 
 * enable/disable tagbar integration >
   let g:airline#extensions#tagbar#enabled = 1

@@ -33,7 +33,7 @@ vim-expand-region https://github.com/terryma/vim-expand-region
 vim-multiple-cursors https://github.com/terryma/vim-multiple-cursors
 vim-fugitive https://github.com/tpope/vim-fugitive
 vim-airline https://github.com/bling/vim-airline
-vim-zenroom https://github.com/amix/vim-zenroom
+vim-zenroom2 https://github.com/amix/vim-zenroom2
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'

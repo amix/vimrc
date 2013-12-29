@@ -75,8 +75,8 @@ I recommend reading the docs of these plugins to understand them better. Each of
 * [vim-expand-region](https://github.com/terryma/vim-expand-region): Allows you to visually select increasingly larger regions of text using the same key combination.
 * [vim-airline](https://github.com/bling/vim-airline): Lean & mean status/tabline for vim that's light as air (replacing powerline)
 * [vim-fugitive](https://github.com/tpope/vim-fugitive): A Git wrapper so awesome, it should be illegal
-* [vim-zenroom](https://github.com/amix/vim-zenroom): 
-Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room [Read more here](http://amix.dk/blog/post/19744#zenroom-for-Vim-Focsuing-only-on-the-essential)
+* [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2): 
+Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room [Read more here](http://amix.dk/blog/post/19744)
 
 
 ## What color schemes are included?
@@ -139,9 +139,9 @@ Managing the [NERD Tree](https://github.com/scrooloose/nerdtree) plugin:
     map <leader>nb :NERDTreeFromBookmark 
     map <leader>nf :NERDTreeFind<cr>
 
-[vim-zenroom](https://github.com/mikewest/vimroom) (my fork of [vimroom](https://github.com/mikewest/vimroom)) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It only has one mapping.
+[goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It has a special look when editing Markdown, reStructuredText and textfiles. It only has one mapping.
 
-    map <leader>z :VimroomToggle<cr>
+    map <leader>z :Goyo<cr>
 
 ### Normal mode mappings
 
