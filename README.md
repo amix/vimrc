@@ -58,7 +58,7 @@ Distraction free mode (using goyo.vim and vim-zenroom2):
 ![Screenshot 5](https://d2dq6e731uoz0t.cloudfront.net/a5182977c3d6c2a6cd3f9e97398ca8ca/as/zen_mode.jpg)
 
 
-## What plugins are included?
+## Included Plugins
 
 I recommend reading the docs of these plugins to understand them better. Each of them provide a much better Vim experience!
 
@@ -82,7 +82,7 @@ I recommend reading the docs of these plugins to understand them better. Each of
 Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room [Read more here](http://amix.dk/blog/post/19744)
 
 
-## What color schemes are included?
+## Included color schemes
 
 * [peaksea](https://github.com/vim-scripts/peaksea): My favorite!
 * [vim-colors-solarized](https://github.com/altercation/vim-colors-solarized)
@@ -91,7 +91,7 @@ Remove all clutter and focus only on the essential. Similar to iA Writer or Writ
 * [vim-pyte](https://github.com/therubymug/vim-pyte)
 
 
-## What modes are included?
+## Included modes
 
 * [vim-coffee-script](https://github.com/kchmck/vim-coffee-script)
 * [vim-less](https://github.com/groenewege/vim-less)
