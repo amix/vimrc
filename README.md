@@ -304,6 +304,9 @@ Vimscript mappings:
     map <leader>n :cn<cr>
     map <leader>p :cp<cr>
 
+### vim-zenroom
+vim-zenroom (my fork of [vimroom](https://github.com/mikewest/vimroom)) lets you only focus on one thing at a time. It removes all the distractions and centers the content. You can open it by typing:
+`<leader>z`
 
 ## Useful blog tips regarding my Vim setup
 
@@ -315,4 +318,4 @@ Vimscript mappings:
 * [Vim tips: Visual Search](http://amix.dk/blog/post/19334#Vim-tips-Visual-Search)
 * [Folding in Vim](http://amix.dk/blog/post/19132#Folding-in-Vim)
 * [
-Zen room for Vim: Focsuing only on the essential](http://amix.dk/blog/post/19744#zenroom-for-Vim-Focsuing-only-on-the-essential)
+Zen room for Vim: Focusing only on the essential](http://amix.dk/blog/post/19744#zenroom-for-Vim-Focsuing-only-on-the-essential)
