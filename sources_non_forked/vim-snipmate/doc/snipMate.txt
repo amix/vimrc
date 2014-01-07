@@ -404,6 +404,28 @@ Perhaps some of these features will be added in a later release.
 ==============================================================================
 CHANGELOG                                                 *SnipMate-changelog*
 
+0.87 - 2014-01-04
+-----------------
+
+* Stop indenting empty lines when expanding snippets
+* Support extends keyword in .snippets files
+* Fix visual placeholder support
+* Add zero tabstop support
+* Support negative 'softtabstop'
+* Add g:snipMate_no_default_aliases option
+* Add <Plug>snipMateTrigger for triggering an expansion inside a snippet
+* Add snipMate#CanBeTriggered() function
+
+0.86 - 2013-06-15
+-----------------
+* Use more idiomatic <Plug> maps
+* Remove most select mode mappings
+
+* Fix disappearing variables bug (hpesoj)
+* Fix cursor position bug when a variable is on the same line as the stop
+* Fix undo point creation causing problems with Supertab
+* Fix bug where SnipMate would use a typed trigger as a regular expression
+
 0.85 - 2013-04-03
 -----------------
 

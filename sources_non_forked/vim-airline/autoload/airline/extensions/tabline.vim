@@ -183,10 +183,13 @@ endfunction
 let s:current_bufnr = -1
 let s:current_tabnr = -1
 let s:current_tabline = ''
+let s:current_modified = 0
 function! s:get_buffers()
   let cur = bufnr('%')
   if cur == s:current_bufnr
-    return s:current_tabline
+    if !g:airline_detect_modified || getbufvar(cur, '&modified') == s:current_modified
+      return s:current_tabline
+    endif
   endif
 
   let b = airline#builder#new(s:builder_context)
@@ -202,6 +205,7 @@ function! s:get_buffers()
       else
         let group = 'airline_tabsel'
       endif
+      let s:current_modified = (group == 'airline_tabmod') ? 1 : 0
     else
       if index(tab_bufs, nr) > -1
         let group = 'airline_tab'
@@ -225,7 +229,9 @@ function! s:get_tabs()
   let curbuf = bufnr('%')
   let curtab = tabpagenr()
   if curbuf == s:current_bufnr && curtab == s:current_tabnr
-    return s:current_tabline
+    if !g:airline_detect_modified || getbufvar(curbuf, '&modified') == s:current_modified
+      return s:current_tabline
+    endif
   endif
 
   let b = airline#builder#new(s:builder_context)
@@ -239,6 +245,7 @@ function! s:get_tabs()
           endif
         endfor
       endif
+      let s:current_modified = (group == 'airline_tabmod') ? 1 : 0
     else
       let group = 'airline_tab'
     endif

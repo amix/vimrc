@@ -23,16 +23,9 @@ if exists( "&background" )
     let s:save_background = &background
 endif
 
-" Save the current `textwidth'` value for reset later
-let s:save_textwidth = ""
-if exists( "&textwidth'" )
-    let s:save_textwidth' = &textwidth'
-endif
-
 function! s:markdown_room()
     set background=light
     set linespace=8
-    set textwidth=80
 
     hi Normal guibg=gray95
     hi NonText guifg=gray95
@@ -87,10 +80,6 @@ function! g:zenroom_goyo_after()
     let is_mark_or_rst = &filetype == "markdown" || &filetype == "rst" || &filetype == "text"
     if is_mark_or_rst
         set linespace=0
-
-        if s:save_textwidth != ""
-            exec( "set textwidth=" . s:save_textwidth )
-        endif
 
         if s:save_background != ""
             exec( "set background=" . s:save_background )

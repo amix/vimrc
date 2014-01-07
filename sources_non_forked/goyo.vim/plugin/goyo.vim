@@ -126,6 +126,7 @@ function! s:goyo_on(width)
     \   'showtabline':    &showtabline,
     \   'fillchars':      &fillchars,
     \   'winwidth':       &winwidth,
+    \   'winminheight':   &winminheight,
     \   'winheight':      &winheight,
     \   'statusline':     &statusline,
     \   'ruler':          &ruler,
@@ -139,7 +140,7 @@ function! s:goyo_on(width)
   " vim-gitgutter
   let t:goyo_disabled_gitgutter = get(g:, 'gitgutter_enabled', 0)
   if t:goyo_disabled_gitgutter
-    GitGutterDisable
+    silent! GitGutterDisable
   endif
 
   " vim-airline
@@ -157,6 +158,12 @@ function! s:goyo_on(width)
     augroup! PowerlineMain
   endif
 
+  " lightline.vim
+  let t:goyo_disabled_lightline = exists('#LightLine')
+  if t:goyo_disabled_lightline
+    silent! call lightline#disable()
+  endif
+
   if !get(g:, 'goyo_linenr', 0)
     setlocal nonu
     if exists('&rnu')
@@ -169,6 +176,8 @@ function! s:goyo_on(width)
 
   " Global options
   set winwidth=1
+  let &winheight = max([&winminheight, 1])
+  set winminheight=1
   set winheight=1
   set laststatus=0
   set showtabline=0
@@ -185,8 +194,8 @@ function! s:goyo_on(width)
     set guioptions-=L
   endif
 
-  let t:goyo_pads.l = s:init_pad('vertical new')
-  let t:goyo_pads.r = s:init_pad('vertical rightbelow new')
+  let t:goyo_pads.l = s:init_pad('vertical topleft new')
+  let t:goyo_pads.r = s:init_pad('vertical botright new')
   let t:goyo_pads.t = s:init_pad('topleft new')
   let t:goyo_pads.b = s:init_pad('botright new')
 
@@ -195,10 +204,6 @@ function! s:goyo_on(width)
 
   let &statusline = repeat(' ', winwidth(0))
 
-  if exists('g:goyo_callbacks[0]')
-    call g:goyo_callbacks[0]()
-  endif
-
   augroup goyo
     autocmd!
     autocmd BufWinLeave <buffer> call s:goyo_off()
@@ -206,6 +211,10 @@ function! s:goyo_on(width)
     autocmd VimResized  *        call s:resize_pads()
     autocmd ColorScheme *        call s:tranquilize()
   augroup END
+
+  if exists('g:goyo_callbacks[0]')
+    call g:goyo_callbacks[0]()
+  endif
 endfunction
 
 function! s:goyo_off()
@@ -232,6 +241,7 @@ function! s:goyo_off()
   let goyo_disabled_gitgutter = t:goyo_disabled_gitgutter
   let goyo_disabled_airline   = t:goyo_disabled_airline
   let goyo_disabled_powerline = t:goyo_disabled_powerline
+  let goyo_disabled_lightline = t:goyo_disabled_lightline
 
   if tabpagenr() == 1
     tabnew
@@ -240,13 +250,19 @@ function! s:goyo_off()
   endif
   tabclose
 
+  let wmh = remove(goyo_revert, 'winminheight')
+  let wh  = remove(goyo_revert, 'winheight')
+  let &winheight    = max([wmh, 1])
+  let &winminheight = wmh
+  let &winheight    = wh
+
   for [k, v] in items(goyo_revert)
     execute printf("let &%s = %s", k, string(v))
   endfor
   execute 'colo '. g:colors_name
 
   if goyo_disabled_gitgutter
-    GitGutterEnable
+    silent! GitGutterEnable
   endif
 
   if goyo_disabled_airline && !exists("#airline")
@@ -257,6 +273,10 @@ function! s:goyo_off()
   if goyo_disabled_powerline && !exists("#PowerlineMain")
     doautocmd PowerlineStartup VimEnter
     silent! PowerlineReloadColorscheme
+  endif
+
+  if goyo_disabled_lightline
+    silent! call lightline#enable()
   endif
 
   if exists('#Powerline')

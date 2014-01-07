@@ -44,6 +44,18 @@ looking at the [vim-snippets][vim-snippets] repository.
         " Optional:
         Bundle "honza/vim-snippets"
 
+## Release Notes ##
+
+### 0.87 - 2014-01-04 ###
+
+* Stop indenting empty lines when expanding snippets
+* Support extends keyword in .snippets files
+* Fix visual placeholder support
+* Add zero tabstop support
+* Support negative 'softtabstop'
+* Add g:snipMate_no_default_aliases option
+* Add <Plug>snipMateTrigger for triggering an expansion inside a snippet
+* Add snipMate#CanBeTriggered() function
 
 [ultisnips]: https://github.com/sirver/ultisnips
 [msanders]: https://github.com/msanders
