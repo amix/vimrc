@@ -79,7 +79,7 @@ fun! snipMate#expandSnip(snip, col)
 	endif
 
 	" Insert snippet with proper indentation
-	let indent = indent(lnum) + 1
+	let indent = match(line, '\S\|$') + 1
 	call setline(lnum, line . snipLines[0])
 	call append(lnum, map(snipLines[1:], "empty(v:val) ? v:val : '" . strpart(line, 0, indent - 1) . "' . v:val"))
 
@@ -375,10 +375,14 @@ function! s:state_proto.update_vars(change)
 			let i += 1
 		endif
 
+		" Split the line into three parts: the mirror, what's before it, and
+		" what's after it. Then combine them using the new mirror string.
+		" Subtract one to go from column index to byte index
 		let theline = getline(lnum)
-		" subtract -1 to go from column byte index to string byte index
-		" subtract another -1 to exclude the col'th element
-		call setline(lnum, theline[0:(col-2)] . newWord . theline[(col+self.end_col-self.start_col-a:change-1):])
+		let update  = strpart(theline, 0, col - 1)
+		let update .= newWord
+		let update .= strpart(theline, col + self.end_col - self.start_col - a:change - 1)
+		call setline(lnum, update)
 	endfor
 
 	" Reposition the cursor in case a var updates on the same line but before

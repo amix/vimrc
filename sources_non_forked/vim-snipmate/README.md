@@ -22,6 +22,8 @@ dependencies. SnipMate depends on [vim-addon-mw-utils][mw-utils] and
 [tlib][tlib]. Since SnipMate does not ship with any snippets, we suggest
 looking at the [vim-snippets][vim-snippets] repository.
 
+* Using [VAM][vam], add `vim-snippets` to the list of packages to be installed.
+
 * Using [Pathogen][pathogen], run the following commands:
 
         % cd ~/.vim/bundle
@@ -31,8 +33,6 @@ looking at the [vim-snippets][vim-snippets] repository.
 
         # Optional:
         % git clone https://github.com/honza/vim-snippets.git
-
-* Using [VAM][vam], add `vim-snippets` to the list of packages to be installed.
 
 * Using [Vundle][vundle], add the following to your `vimrc` then run
   `:BundleInstall`
@@ -45,6 +45,11 @@ looking at the [vim-snippets][vim-snippets] repository.
         Bundle "honza/vim-snippets"
 
 ## Release Notes ##
+
+### Master ###
+
+* Fix bug with mirrors in the first column
+* Fix bug with tabs in indents ([#143][143])
 
 ### 0.87 - 2014-01-04 ###
 
@@ -68,3 +73,5 @@ looking at the [vim-snippets][vim-snippets] repository.
 [vam]: https://github.com/marcweber/vim-addon-manager
 [pathogen]: https://github.com/tpope/vim-pathogen
 [vundle]: https://github.com/gmarik/vundle
+
+[143]: https://github.com/garbas/vim-snipmate/issues/143

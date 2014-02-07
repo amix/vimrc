@@ -1495,7 +1495,7 @@ tlib#file#Split(filename)
 <
 
                                                     *tlib#file#Join()*
-tlib#file#Join(filename_parts, ?strip_slashes=0)
+tlib#file#Join(filename_parts, ?strip_slashes=1)
     EXAMPLES: >
       tlib#file#Join(['foo', 'bar', 'filename.txt'])
       => 'foo/bar/filename.txt'

@@ -259,7 +259,7 @@ function! s:goyo_off()
   for [k, v] in items(goyo_revert)
     execute printf("let &%s = %s", k, string(v))
   endfor
-  execute 'colo '. g:colors_name
+  execute 'colo '. get(g:, 'colors_name', 'default')
 
   if goyo_disabled_gitgutter
     silent! GitGutterEnable
@@ -267,7 +267,7 @@ function! s:goyo_off()
 
   if goyo_disabled_airline && !exists("#airline")
     AirlineToggle
-    AirlineRefresh
+    silent! AirlineRefresh
   endif
 
   if goyo_disabled_powerline && !exists("#PowerlineMain")

@@ -14,6 +14,7 @@ additional contributions from:
 * [bpugh](https://github.com/bpugh)
 * [bruno-](https://github.com/bruno-)
 * [darkwise](https://github.com/darkwise)
+* [fish-face](https://github.com/fish-face)
 * [henrik](https://github.com/henrik)
 * [holizz](https://github.com/holizz)
 * [honza](https://github.com/honza)

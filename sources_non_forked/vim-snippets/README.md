@@ -51,6 +51,32 @@ If you have VimL only (vim without python support) your best option is using
 garbas/vim-snipmate and cope with the minor bugs found in the engine.
 
 
+Installation
+============
+First be aware that there are many options, see "Snippet engines" above.
+Second be aware than there are [tons of plugin managers](http://vim-wiki.mawercer.de/wiki/topic/vim%20plugin%20managment.html)
+which is why Marc Weber thinks that it doesn't make sense to repeat the same
+repetitive information everywhere.
+
+*Recommended way:*
+[vim-addon-manager](vim-addon-manager) (because Marc Weber wrote it for exactly
+this reason, it supports simple dependency management). Eg you're done by this
+line in your .vimrc:
+
+```
+" assuming you want to use snipmate snippet engine
+ActivateAddons vim-snippets snipmate
+```
+
+[vim-pi](https://bitbucket.org/vimcommunity/vim-pi/issue/90/we-really-need-a-web-interface)
+Is the place to discuss plugin managers and repository resources.
+
+About how to install snipate see [snipmate@garbas](https://github.com/garbas/vim-snipmate)
+
+(Bundle, Pathogen, git clone - keywords to make people find this link by ctrl-f search)
+I know that I should be reading the docs of the snippet engine, just let me copy paste into my .vmirc:
+(See this pull request)[https://github.com/honza/vim-snippets/pull/307/files].
+
 Policies / for contributors
 ===========================
 Some snippets are useful for almost all languages, so let's try to have the same

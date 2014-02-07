@@ -433,7 +433,7 @@ eclim <https://eclim.org>
 <
 Note: Enabling this extension will modify 'showtabline' and 'guioptions'.
 
--------------------------------------                    *airline-tmuxline*
+-------------------------------------                     *airline-tmuxline*
 tmuxline <https://github.com/edkolev/tmuxline.vim>
 
 * enable/disable tmuxline integration >
@@ -449,6 +449,26 @@ tmuxline <https://github.com/edkolev/tmuxline.vim>
   airline theme is applied, i.e. when :AirlineTheme is executed and on vim
   startup >
   airline#extensions#tmuxline#snapshot_file = "~/.tmux-statusline-colors.conf"
+<
+-------------------------------------                   *airline-promptline*
+promptline <https://github.com/edkolev/promptline.vim>
+
+* configure the path to the snapshot .sh file. Mandatory option. The created
+  file should be sourced by the shell on login >
+  " in .vimrc
+  airline#extensions#promptline#snapshot_file = "~/.shell_prompt.sh"
+
+  " in .bashrc/.zshrc
+  [ -f ~/.shell_prompt.sh ] && source ~/.shell_prompt.sh
+<
+* enable/disable promptline integration >
+  let g:airline#extensions#promptline#enabled = 0
+<
+* configure which mode colors should be used in prompt >
+  let airline#extensions#promptline#color_template = 'normal' (default)
+  let airline#extensions#promptline#color_template = 'insert'
+  let airline#extensions#promptline#color_template = 'visual'
+  let airline#extensions#promptline#color_template = 'replace'
 <
 
 ==============================================================================
@@ -699,7 +719,7 @@ Contributions and pull requests are welcome.
 ==============================================================================
 LICENSE                                                    *airline-license*
 
-MIT License.  Copyright © 2013 Bailey Ling.
+MIT License.  Copyright © 2013-2014 Bailey Ling.
 
 
  vim:tw=78:ts=8:ft=help:norl:

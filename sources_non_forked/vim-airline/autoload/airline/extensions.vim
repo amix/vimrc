@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013 Bailey Ling.
+" MIT License. Copyright (c) 2013-2014 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 let s:ext = {}
@@ -20,7 +20,6 @@ endfunction
 let s:script_path = tolower(resolve(expand('<sfile>:p:h')))
 
 let s:filetype_overrides = {
-      \ 'netrw': [ 'netrw', '%f' ],
       \ 'nerdtree': [ 'NERD', '' ],
       \ 'gundo': [ 'Gundo', '' ],
       \ 'diff': [ 'diff', '' ],
@@ -128,6 +127,10 @@ function! airline#extensions#load()
     call airline#extensions#unite#init(s:ext)
   endif
 
+  if exists(':NetrwSettings')
+    call airline#extensions#netrw#init(s:ext)
+  endif
+
   if get(g:, 'loaded_vimfiler', 0)
     let g:vimfiler_force_overwrite_statusline = 0
   endif
@@ -197,6 +200,10 @@ function! airline#extensions#load()
 
   if get(g:, 'airline#extensions#tmuxline#enabled', 1) && exists(':Tmuxline')
     call airline#extensions#tmuxline#init(s:ext)
+  endif
+
+  if get(g:, 'airline#extensions#promptline#enabled', 1) && exists(':PromptlineSnapshot') && len(get(g:, 'airline#extensions#promptline#snapshot_file', ''))
+    call airline#extensions#promptline#init(s:ext)
   endif
 
   " load all other extensions not part of the default distribution

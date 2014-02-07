@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-07-18.
-" @Last Change: 2013-10-16.
-" @Revision:    0.0.242
+" @Last Change: 2013-11-11.
+" @Revision:    0.0.251
 
 if &cp || exists("loaded_tlib_scratch_autoload")
     finish
@@ -65,7 +65,7 @@ function! tlib#scratch#UseScratch(...) "{{{3
                 else
                     let cmd = 'buffer!'
                 endif
-                " TLogVAR cmd
+                " TLogVAR cmd, bn
                 silent exec 'noautocmd keepalt keepj' cmd bn
             endif
         else
@@ -77,7 +77,7 @@ function! tlib#scratch#UseScratch(...) "{{{3
             else
                 let cmd = 'edit'
             endif
-            " TLogVAR cmd
+            " TLogVAR cmd, id
             silent exec 'noautocmd keepalt keepj' cmd escape(id, '%#\ ')
             " silent exec 'split '. id
         endif
@@ -100,7 +100,7 @@ function! tlib#scratch#UseScratch(...) "{{{3
         endif
     endif
     let keyargs.scratch = bufnr('%')
-    " TLogVAR 2, winnr(), bufnr('%'), bufname("%")
+    " TLogVAR 2, winnr(), bufnr('%'), bufname("%"), keyargs.scratch
     return keyargs.scratch
 endf
 

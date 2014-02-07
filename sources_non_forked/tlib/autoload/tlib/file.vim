@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
 " @Last Change: 2013-09-25.
-" @Revision:    0.0.141
+" @Revision:    0.0.142
 
 if &cp || exists("loaded_tlib_file_autoload")
     finish
@@ -36,12 +36,12 @@ function! tlib#file#Split(filename) "{{{3
 endf
 
 
-" :display: tlib#file#Join(filename_parts, ?strip_slashes=0)
+" :display: tlib#file#Join(filename_parts, ?strip_slashes=1)
 " EXAMPLES: >
 "   tlib#file#Join(['foo', 'bar', 'filename.txt'])
 "   => 'foo/bar/filename.txt'
 function! tlib#file#Join(filename_parts, ...) "{{{3
-    TVarArg 'strip_slashes'
+    TVarArg ['strip_slashes', 1]
     " TLogVAR a:filename_parts, strip_slashes
     if strip_slashes
         " let rx    = tlib#rx#Escape(g:tlib#dir#sep) .'$'

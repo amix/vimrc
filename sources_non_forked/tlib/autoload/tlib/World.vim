@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-05-01.
-" @Last Change: 2013-09-26.
-" @Revision:    0.1.1297
+" @Last Change: 2013-12-03.
+" @Revision:    0.1.1310
 
 " :filedoc:
 " A prototype used by |tlib#input#List|.
@@ -161,12 +161,14 @@ else
         let self.width_filename = min([
                     \ get(self, 'width_filename', &co),
                     \ empty(g:tlib#input#filename_max_width) ? &co : eval(g:tlib#input#filename_max_width),
-                    \ max(map(copy(self.base), 'strwidth(fnamemodify(v:val, ":t"))'))
+                    \ max(map(copy(self.base), 'strwidth(matchstr(v:val, "[^\\/]*$"))'))
                     \ ])
-        " TLogVAR self.width_filename
+       "  TLogVAR self.width_filename
+         exec 'syntax match TLibDir /\%>'. (1 + self.width_filename) .'c \(|\|\[[^]]*\]\) \zs\(\(\a:\|\.\.\|\.\.\..\{-}\)\?[\/][^&<>*|]\{-}\)\?[^\/]\+$/ contained containedin=TLibMarker contains=TLibFilename'
+         exec 'syntax match TLibMarker /\%>'. (1 + self.width_filename) .'c \(|\|\[[^]]*\]\) \S.*$/ contains=TLibDir'
+       "  exec 'syntax match TLibDir /\(|\|\[.\{-}\]\) \zs\(\(\a:\|\.\.\|\.\.\..\{-}\)\?[\/][^&<>*|]\{-}\)\?[^\/]\+$/ contained containedin=TLibMarker contains=TLibFilename'
+       "  exec 'syntax match TLibMarker /\(|\|\[.\{-}\]\) \S.*$/ contains=TLibDir'
         exec 'syntax match TLibFilename /[^\/]\+$/ contained containedin=TLibDir'
-        exec 'syntax match TLibDir /\%>'. (1 + self.width_filename) .'c \(|\|\[[^]]*\]\) \zs\(\(\a:\|\.\.\|\.\.\..\{-}\)\?[\/][^&<>*|]\{-}\)\?[^\/]\+$/ contained containedin=TLibMarker contains=TLibFilename'
-        exec 'syntax match TLibMarker /\%>'. (1 + self.width_filename) .'c \(|\|\[[^]]*\]\) \S.*$/ contains=TLibDir'
         hi def link TLibMarker Special
         hi def link TLibDir Directory
         hi def link TLibFilename NonText
@@ -206,24 +208,26 @@ else
         " TLogVAR use_indicators
         if use_indicators
             call insert(marker, '[')
-            let bnr = bufnr(a:file)
-            " TLogVAR a:file, bnr, self.bufnr
-            if bnr != -1
-                if bnr == self.bufnr
-                    call add(marker, '%')
-                else
-                    call add(marker, bnr)
+            if g:tlib_inputlist_filename_indicators
+                let bnr = bufnr(a:file)
+                TLogVAR a:file, bnr, self.bufnr
+                if bnr != -1
+                    if bnr == self.bufnr
+                        call add(marker, '%')
+                    else
+                        call add(marker, bnr)
+                    endif
+                    if getbufvar(bnr, '&modified')
+                        call add(marker, '+')
+                    endif
+                    if getbufvar(bnr, '&bufhidden') == 'hide'
+                        call add(marker, 'h')
+                    endif
+                    " if !buflisted(bnr)
+                    "     call add(marker, 'u')
+                    " endif
+                    " echom "DBG" a:file string(get(self,'filename_indicators'))
                 endif
-                if getbufvar(bnr, '&modified')
-                    call add(marker, '+')
-                endif
-                if getbufvar(bnr, '&bufhidden') == 'hide'
-                    call add(marker, 'h')
-                endif
-                " if !buflisted(bnr)
-                "     call add(marker, 'u')
-                " endif
-                " echom "DBG" a:file string(get(self,'filename_indicators'))
             endif
             if has_key(self, 'filename_indicators') && has_key(self.filename_indicators, a:file)
                 if len(marker) > 1

@@ -136,6 +136,9 @@ function! fugitive#extract_git_dir(path) abort
       " checking for them since such checks are extremely slow.
       break
     endif
+    if index(split($GIT_CEILING_DIRECTORIES, ':'), root) >= 0
+      break
+    endif
     let dir = s:sub(root, '[\/]$', '') . '/.git'
     let type = getftype(dir)
     if type ==# 'dir' && fugitive#is_git_dir(dir)

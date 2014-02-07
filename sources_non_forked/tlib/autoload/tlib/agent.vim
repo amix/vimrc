@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-24.
-" @Last Change: 2013-09-26.
-" @Revision:    0.1.240
+" @Last Change: 2013-11-05.
+" @Revision:    0.1.242
 
 
 " :filedoc:
@@ -444,6 +444,7 @@ endf
 
 
 function! tlib#agent#EditFileInTab(world, selected) "{{{3
+    " TLogVAR a:selected
     call a:world.CloseScratch()
     call tlib#file#With('tabedit', 'tab sbuffer', a:selected, a:world)
     return tlib#agent#Exit(a:world, a:selected)
