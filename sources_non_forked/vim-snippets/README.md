@@ -14,32 +14,33 @@ Contents
     snippets/*: snippets using snipmate format
     UltiSnips/*: snippets using UltiSnips format
 
-Snippet engines
-===============
+Snippet engines supporting vim-snippets
+========================================
 
 There are different forks of snippet engines which allow the user to insert
-sippets by typing the name of a snippet hitting the expansion mapping.
+snippets by typing the name of a snippet hitting the expansion mapping.
 
-    garbas/vim-snipmate [4]:
+    github.com/garbas/vim-snipmate:
       VimL, snipmate-snippets, engine sometimes behaves strange, supports
       rewriting snippets on the fly (eg adding a second version with folding
       markers)
 
-    MarcWeber/UltiSnips [6]:
+    github.com/MarcWeber/UltiSnips:
       python, snipmate-snippets and UltiSnips-snippets
 
-    SirVer/ultisnips [7]:
+    github.com/SirVer/ultisnips:
       python, UltiSnips-snippets
 
-    github.com/Shougo/neosnippet [5]:
+    github.com/Shougo/neosnippet:
       viml, has a compatible mode allowing to reuse most snipmate snippets ?
 
-    XPTemplate:
-      totally different syntax, does not read snippets contained in this file,
-      but it is also very powerful
+    github.com/drmingdrmer/xptemplate:
+      Totally different syntax, does not read snippets contained in this file,
+      but it is also very powerful. It does not support vim-snippets (just
+      listing it here for completness)
 
-    ... there are some more, but they have less features which is why I don't
-    mention them here
+    This tries to be a more comprehensive list (which still is incomplete)
+    http://vim-wiki.mawercer.de/wiki/topic/text-snippets-skeletons-templates.html
 
 UltiSnips engine has additional features such as "nested snippets".
 
@@ -76,6 +77,11 @@ About how to install snipate see [snipmate@garbas](https://github.com/garbas/vim
 (Bundle, Pathogen, git clone - keywords to make people find this link by ctrl-f search)
 I know that I should be reading the docs of the snippet engine, just let me copy paste into my .vmirc:
 (See this pull request)[https://github.com/honza/vim-snippets/pull/307/files].
+
+TROUBLE
+=======
+If you still have trouble getting this to work create a github ticket, ask on
+irc or the mailinglist.
 
 Policies / for contributors
 ===========================
@@ -237,6 +243,5 @@ terms of the MIT license.
 [2]: http://github.com/msanders
 [3]: http://github.com/garbas
 [4]: http://github.com/garbas/vim-snipmate
-[5]: http://github.com/Shougo/neosnippet
 [6]: http://github.com/MarcWeber/UltiSnips
 [7]: http://github.com/SirVer/ultisnips
