@@ -67,7 +67,8 @@ function! syntastic#c#GetLocList(filetype, subchecker, options)
         return []
     endtry
 
-    let makeprg = expand(g:syntastic_{a:filetype}_compiler) . ' ' . flags . ' ' . syntastic#util#shexpand('%')
+    let makeprg = syntastic#util#shexpand(g:syntastic_{a:filetype}_compiler) .
+        \ ' ' . flags . ' ' . syntastic#util#shexpand('%')
 
     let errorformat = s:GetCheckerVar('g', a:filetype, a:subchecker, 'errorformat', a:options['errorformat'])
 

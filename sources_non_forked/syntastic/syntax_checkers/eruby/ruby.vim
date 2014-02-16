@@ -15,19 +15,18 @@ if exists("g:loaded_syntastic_eruby_ruby_checker")
 endif
 let g:loaded_syntastic_eruby_ruby_checker = 1
 
-if !exists("g:syntastic_ruby_exec")
-    let g:syntastic_ruby_exec = "ruby"
-endif
-
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_eruby_ruby_IsAvailable() dict
+    if !exists("g:syntastic_ruby_exec")
+        let g:syntastic_ruby_exec = self.getExec()
+    endif
     return executable(expand(g:syntastic_ruby_exec))
 endfunction
 
 function! SyntaxCheckers_eruby_ruby_GetLocList() dict
-    let exe = expand(g:syntastic_ruby_exec)
+    let exe = syntastic#util#shexpand(g:syntastic_ruby_exec)
     if !syntastic#util#isRunningWindows()
         let exe = 'RUBYOPT= ' . exe
     endif
@@ -35,7 +34,7 @@ function! SyntaxCheckers_eruby_ruby_GetLocList() dict
     let fname = "'" . escape(expand('%'), "\\'") . "'"
 
     " TODO: encodings became useful in ruby 1.9 :)
-    if syntastic#util#versionIsAtLeast(syntastic#util#getVersion('ruby --version'), [1, 9])
+    if syntastic#util#versionIsAtLeast(syntastic#util#getVersion(exe . ' --version'), [1, 9])
         let enc = &fileencoding != '' ? &fileencoding : &encoding
         let encoding_spec = ', :encoding => "' . (enc ==? 'utf-8' ? 'UTF-8' : 'BINARY') . '"'
     else

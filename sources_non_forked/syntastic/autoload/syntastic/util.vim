@@ -52,6 +52,13 @@ function! syntastic#util#parseShebang()
     return { 'exe': '', 'args': [] }
 endfunction
 
+" Get the value of a variable.  Allow local variables to override global ones.
+function! syntastic#util#var(name)
+    return
+        \ exists('b:syntastic_' . a:name) ? b:syntastic_{a:name} :
+        \ exists('g:syntastic_' . a:name) ? g:syntastic_{a:name} : ''
+endfunction
+
 " Parse a version string.  Return an array of version components.
 function! syntastic#util#parseVersion(version)
     return split(matchstr( a:version, '\v^\D*\zs\d+(\.\d+)+\ze' ), '\m\.')
@@ -214,11 +221,11 @@ endfunction
 
 function! s:translateFilter(filters)
     let conditions = []
-    for [k, v] in items(a:filters)
-        if type(v) == type([])
-            call extend(conditions, map(copy(v), 's:translateElement(k, v:val)'))
+    for k in keys(a:filters)
+        if type(a:filters[k]) == type([])
+            call extend(conditions, map(copy(a:filters[k]), 's:translateElement(k, v:val)'))
         else
-            call add(conditions, s:translateElement(k, v))
+            call add(conditions, s:translateElement(k, a:filters[k]))
         endif
     endfor
     return len(conditions) == 1 ? conditions[0] : join(map(conditions, '"(" . v:val . ")"'), ' && ')

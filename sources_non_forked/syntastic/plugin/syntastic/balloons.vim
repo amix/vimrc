@@ -21,9 +21,7 @@ function! g:SyntasticBalloonsNotifier.New()
 endfunction
 
 function! g:SyntasticBalloonsNotifier.enabled()
-    return
-        \ has('balloon_eval') &&
-        \ (exists('b:syntastic_enable_balloons') ? b:syntastic_enable_balloons : g:syntastic_enable_balloons)
+    return has('balloon_eval') && syntastic#util#var('enable_balloons')
 endfunction
 
 " Update the error balloons

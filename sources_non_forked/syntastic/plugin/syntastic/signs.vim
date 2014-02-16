@@ -48,9 +48,7 @@ function! g:SyntasticSignsNotifier.New()
 endfunction
 
 function! g:SyntasticSignsNotifier.enabled()
-    return
-        \ has('signs') &&
-        \ exists('b:syntastic_enable_signs') ? b:syntastic_enable_signs : g:syntastic_enable_signs
+    return has('signs') && syntastic#util#var('enable_signs')
 endfunction
 
 function! g:SyntasticSignsNotifier.refresh(loclist)

@@ -80,7 +80,7 @@ function! s:vimlintOutput(filename, pos, ev, eid, mes, obj)
         \ 'vcol': 0,
         \ 'type': a:ev[0],
         \ 'text': '[' . a:eid . '] ' . a:mes,
-        \ 'valid': 1 })
+        \ 'valid': a:pos.lnum > 0 })
 endfunction
 " @vimlint(EVL103, 0, a:filename)
 

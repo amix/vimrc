@@ -15,10 +15,6 @@ if exists('g:loaded_syntastic_objc_gcc_checker')
 endif
 let g:loaded_syntastic_objc_gcc_checker = 1
 
-if !exists('g:syntastic_objc_compiler')
-    let g:syntastic_objc_compiler = executable('gcc') ? 'gcc' : 'clang'
-endif
-
 if !exists('g:syntastic_objc_compiler_options')
     let g:syntastic_objc_compiler_options = '-std=gnu99'
 endif
@@ -27,6 +23,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_objc_gcc_IsAvailable() dict
+    if !exists('g:syntastic_objc_compiler')
+        let g:syntastic_objc_compiler = executable(self.getExec()) ? self.getExec() : 'clang'
+    endif
     return executable(expand(g:syntastic_objc_compiler))
 endfunction
 

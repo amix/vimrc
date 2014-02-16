@@ -15,20 +15,19 @@ if exists('g:loaded_syntastic_haml_haml_checker')
 endif
 let g:loaded_syntastic_haml_haml_checker = 1
 
-if !exists('g:syntastic_haml_interpreter')
-    let g:syntastic_haml_interpreter = 'haml'
-endif
-
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haml_haml_IsAvailable() dict
+    if !exists('g:syntastic_haml_interpreter')
+        let g:syntastic_haml_interpreter = self.getExec()
+    endif
     return executable(expand(g:syntastic_haml_interpreter))
 endfunction
 
 function! SyntaxCheckers_haml_haml_GetLocList() dict
     let makeprg = self.makeprgBuild({
-        \ 'exe': expand(g:syntastic_haml_interpreter),
+        \ 'exe': syntastic#util#shexpand(g:syntastic_haml_interpreter),
         \ 'args_after': '-c' })
 
     let errorformat =

@@ -26,9 +26,9 @@ endif
 function! SyntaxCheckers_puppet_puppetlint_IsAvailable() dict
     return
         \ executable("puppet") &&
-        \ executable("puppet-lint") &&
-        \ syntastic#util#versionIsAtLeast(syntastic#util#getVersion('puppet-lint --version 2>' .
-        \     syntastic#util#DevNull()), [0,1,10])
+        \ executable(self.getExec()) &&
+        \ syntastic#util#versionIsAtLeast(syntastic#util#getVersion(
+        \       self.getExecEscaped() . ' --version 2>' . syntastic#util#DevNull()), [0,1,10])
 endfunction
 
 function! SyntaxCheckers_puppet_puppetlint_GetLocList() dict

@@ -17,7 +17,7 @@ function! g:SyntasticCursorNotifier.New()
 endfunction
 
 function! g:SyntasticCursorNotifier.enabled()
-    return exists('b:syntastic_echo_current_error') ? b:syntastic_echo_current_error : g:syntastic_echo_current_error
+    return syntastic#util#var('echo_current_error')
 endfunction
 
 function! g:SyntasticCursorNotifier.refresh(loclist)

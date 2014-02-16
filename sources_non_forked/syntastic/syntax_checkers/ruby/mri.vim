@@ -15,10 +15,6 @@ if exists("g:loaded_syntastic_ruby_mri_checker")
 endif
 let g:loaded_syntastic_ruby_mri_checker = 1
 
-if !exists("g:syntastic_ruby_exec")
-    let g:syntastic_ruby_exec = "ruby"
-endif
-
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -32,7 +28,11 @@ function! SyntaxCheckers_ruby_mri_GetHighlightRegex(i)
 endfunction
 
 function! SyntaxCheckers_ruby_mri_GetLocList() dict
-    let exe = expand(g:syntastic_ruby_exec)
+    if !exists('g:syntastic_ruby_exec')
+        let g:syntastic_ruby_exec = self.getExec()
+    endif
+
+    let exe = syntastic#util#shexpand(g:syntastic_ruby_exec)
     if !syntastic#util#isRunningWindows()
         let exe = 'RUBYOPT= ' . exe
     endif

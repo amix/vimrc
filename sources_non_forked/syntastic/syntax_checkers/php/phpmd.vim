@@ -58,7 +58,9 @@ function! SyntaxCheckers_php_phpmd_GetHighlightRegex(item)
 endfunction
 
 function! SyntaxCheckers_php_phpmd_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'post_args_before': 'text codesize,design,unusedcode,naming' })
+    let makeprg = self.makeprgBuild({
+        \ 'post_args_before': 'text',
+        \ 'post_args': 'codesize,design,unusedcode,naming' })
 
     let errorformat = '%E%f:%l%\s%#%m'
 

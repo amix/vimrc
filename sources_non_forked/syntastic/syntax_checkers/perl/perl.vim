@@ -40,7 +40,7 @@ set cpo&vim
 function! SyntaxCheckers_perl_perl_IsAvailable() dict
     " don't call executable() here, to allow things like
     " let g:syntastic_perl_interpreter='/usr/bin/env perl'
-    silent! call system(expand(g:syntastic_perl_interpreter) . ' -e ' . syntastic#util#shescape('exit(0)'))
+    silent! call system(syntastic#util#shexpand(g:syntastic_perl_interpreter) . ' -e ' . syntastic#util#shescape('exit(0)'))
     return v:shell_error == 0
 endfunction
 
@@ -63,7 +63,7 @@ function! SyntaxCheckers_perl_perl_GetLocList() dict
         call syntastic#log#deprecationWarn('variable g:syntastic_perl_lib_path should be a list')
         let includes = split(g:syntastic_perl_lib_path, ',')
     else
-        let includes = copy(exists('b:syntastic_perl_lib_path') ? b:syntastic_perl_lib_path : g:syntastic_perl_lib_path)
+        let includes = copy(syntastic#util#var('perl_lib_path'))
     endif
     let shebang = syntastic#util#parseShebang()
     let extra = join(map(includes, '"-I" . v:val')) .

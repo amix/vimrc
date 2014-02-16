@@ -105,6 +105,20 @@ if exists("g:syntastic_quiet_warnings")
     endif
 endif
 
+let s:debug_dump_options = [
+        \ 'shell',
+        \ 'shellcmdflag',
+        \ 'shellpipe',
+        \ 'shellquote',
+        \ 'shellredir',
+        \ 'shellslash',
+        \ 'shelltemp',
+        \ 'shellxquote'
+    \ ]
+if v:version > 703 || (v:version == 703 && has('patch446'))
+    call add(s:debug_dump_options, 'shellxescape')
+endif
+
 
 " debug constants
 let g:SyntasticDebugTrace         = 1
@@ -283,24 +297,21 @@ function! s:CacheErrors(checkers)
         let active_checkers = 0
         let names = []
 
-        call syntastic#log#debugShowOptions(g:SyntasticDebugTrace, [
-            \ 'shell', 'shellcmdflag', 'shellquote', 'shellxquote', 'shellredir',
-            \ 'shellslash', 'shellpipe', 'shelltemp', 'shellxescape', 'shellxquote' ])
+        call syntastic#log#debugShowOptions(g:SyntasticDebugTrace, s:debug_dump_options)
         call syntastic#log#debugDump(g:SyntasticDebugVariables)
         call syntastic#log#debugShowVariables(g:SyntasticDebugTrace, 'syntastic_aggregate_errors')
+        call syntastic#log#debug(g:SyntasticDebugTrace, 'getcwd() = ' . getcwd())
 
         let filetypes = s:ResolveFiletypes()
-        let aggregate_errors =
-            \ exists('b:syntastic_aggregate_errors') ? b:syntastic_aggregate_errors : g:syntastic_aggregate_errors
-        let decorate_errors = (aggregate_errors || len(filetypes) > 1) &&
-            \ (exists('b:syntastic_id_checkers') ? b:syntastic_id_checkers : g:syntastic_id_checkers)
+        let aggregate_errors = syntastic#util#var('aggregate_errors')
+        let decorate_errors = (aggregate_errors || len(filetypes) > 1) && syntastic#util#var('id_checkers')
 
         for ft in filetypes
             let clist = empty(a:checkers) ? s:registry.getActiveCheckers(ft) : s:registry.getCheckers(ft, a:checkers)
 
             for checker in clist
                 let active_checkers += 1
-                call syntastic#log#debug(g:SyntasticDebugTrace, "CacheErrors: Invoking checker: " . checker.getName())
+                call syntastic#log#debug(g:SyntasticDebugTrace, 'CacheErrors: Invoking checker: ' . checker.getName())
 
                 let loclist = checker.getLocList()
 
@@ -342,11 +353,11 @@ function! s:CacheErrors(checkers)
             endif
         endif
 
-        call syntastic#log#debug(g:SyntasticDebugLoclist, "aggregated:", newLoclist)
+        call syntastic#log#debug(g:SyntasticDebugLoclist, 'aggregated:', newLoclist)
 
         if type(g:syntastic_quiet_messages) == type({}) && !empty(g:syntastic_quiet_messages)
             call newLoclist.quietMessages(g:syntastic_quiet_messages)
-            call syntastic#log#debug(g:SyntasticDebugLoclist, "filtered by g:syntastic_quiet_messages:", newLoclist)
+            call syntastic#log#debug(g:SyntasticDebugLoclist, 'filtered by g:syntastic_quiet_messages:', newLoclist)
         endif
     endif
 
@@ -456,11 +467,11 @@ function! SyntasticMake(options)
     let $LC_ALL = old_lc_all
     let $LC_MESSAGES = old_lc_messages
 
-    call syntastic#log#debug(g:SyntasticDebugLoclist, "checker output:", err_lines)
+    call syntastic#log#debug(g:SyntasticDebugLoclist, 'checker output:', err_lines)
 
     if has_key(a:options, 'preprocess')
         let err_lines = call(a:options['preprocess'], [err_lines])
-        call syntastic#log#debug(g:SyntasticDebugLoclist, "preprocess:", err_lines)
+        call syntastic#log#debug(g:SyntasticDebugLoclist, 'preprocess:', err_lines)
     endif
     lgetexpr err_lines
 
@@ -480,7 +491,7 @@ function! SyntasticMake(options)
         call syntastic#util#redraw(g:syntastic_full_redraws)
     endif
 
-    call syntastic#log#debug(g:SyntasticDebugLoclist, "raw loclist:", errors)
+    call syntastic#log#debug(g:SyntasticDebugLoclist, 'raw loclist:', errors)
 
     if has_key(a:options, 'returns') && index(a:options['returns'], v:shell_error) == -1
         throw 'Syntastic: checker error'
@@ -499,7 +510,7 @@ function! SyntasticMake(options)
         for rule in a:options['postprocess']
             let errors = call('syntastic#postprocess#' . rule, [errors])
         endfor
-        call syntastic#log#debug(g:SyntasticDebugLoclist, "postprocess:", errors)
+        call syntastic#log#debug(g:SyntasticDebugLoclist, 'postprocess:', errors)
     endif
 
     return errors

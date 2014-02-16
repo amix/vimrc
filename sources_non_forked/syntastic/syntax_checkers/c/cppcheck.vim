@@ -28,6 +28,10 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! SyntaxCheckers_c_cppcheck_Preprocess(errors)
+    return map(copy(a:errors), 'substitute(v:val, ''\v^\[[^]]+\]\zs( -\> \[[^]]+\])+\ze:'', "", "")')
+endfunction
+
 function! SyntaxCheckers_c_cppcheck_GetLocList() dict
     let makeprg = self.makeprgBuild({
         \ 'args': syntastic#c#ReadConfig(g:syntastic_cppcheck_config_file),
@@ -46,6 +50,7 @@ function! SyntaxCheckers_c_cppcheck_GetLocList() dict
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'preprocess': 'SyntaxCheckers_c_cppcheck_Preprocess',
         \ 'returns': [0] })
 
     for e in loclist

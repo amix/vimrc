@@ -28,9 +28,7 @@ function! g:SyntasticHighlightingNotifier.New()
 endfunction
 
 function! g:SyntasticHighlightingNotifier.enabled()
-    return
-        \ s:has_highlighting &&
-        \ (exists('b:syntastic_enable_highlighting') ? b:syntastic_enable_highlighting : g:syntastic_enable_highlighting)
+    return s:has_highlighting && syntastic#util#var('enable_highlighting')
 endfunction
 
 " Sets error highlights in the cuirrent window
