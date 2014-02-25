@@ -1,0 +1,455 @@
+*syntastic.txt*   Syntax checking on the fly has never been so pimp.
+*syntastic*
+
+
+                    It's a bird! It's a plane! ZOMG It's ... ~
+
+                   _____             __             __  _      ~
+                  / ___/__  ______  / /_____ ______/ /_(_)____ ~
+                  \__ \/ / / / __ \/ __/ __ `/ ___/ __/ / ___/ ~
+                 ___/ / /_/ / / / / /_/ /_/ (__  ) /_/ / /__   ~
+                /____/\__, /_/ /_/\__/\__,_/____/\__/_/\___/   ~
+                     /____/                                    ~
+
+
+
+                              Reference Manual~
+
+
+==============================================================================
+CONTENTS                                                  *syntastic-contents*
+
+    1.Intro...................................|syntastic-intro|
+    2.Functionality provided..................|syntastic-functionality|
+        2.1.The statusline flag...............|syntastic-statusline-flag|
+        2.2.Error signs.......................|syntastic-error-signs|
+        2.3.Error window......................|syntastic-error-window|
+    3.Commands................................|syntastic-commands|
+    4.Global Options..........................|syntastic-global-options|
+    5.Checker Options.........................|syntastic-checker-options|
+    6.About...................................|syntastic-about|
+    7.License.................................|syntastic-license|
+
+
+==============================================================================
+1. Intro                                                     *syntastic-intro*
+
+Note: This doc only deals with using syntastic. To learn how to write syntax
+checker integrations, see the guide on the github wiki:
+
+    https://github.com/scrooloose/syntastic/wiki/Syntax-Checker-Guide
+
+Syntastic is a syntax checking plugin that runs files through external syntax
+checkers. This can be done on demand, or automatically as files are saved and
+opened.  If syntax errors are detected, the user is notified and is happy
+because they didn't have to compile their code or execute their script to find
+them.
+
+Syntastic comes in two parts: the syntax checker plugins, and the core. The
+syntax checker plugins are defined on a per-filetype basis where each one wraps
+up an external syntax checking program. The core script delegates off to these
+plugins and uses their output to provide the syntastic functionality.
+
+Take a look in the syntax_checkers directory for a list of supported filetypes
+and checkers.
+
+
+==============================================================================
+2. Functionality provided                            *syntastic-functionality*
+
+Syntax checking can be done automatically or on demand (see
+|'syntastic_mode_map'| for configuring this).
+
+When syntax checking is done, the features below can be used to notify the
+user of errors. See |syntastic-options| for how to configure and
+activate/deactivate these features.
+
+    * A statusline flag
+    * Signs beside lines with errors
+    * The |location-list| can be populated with the errors for the associated
+      buffer.
+    * Erroneous parts of lines can be highlighted (this functionality is only
+      provided by some syntax checkers).
+    * Balloons (if compiled in) can be used to display error messages for
+      erroneous lines when hovering the mouse over them.
+
+
+------------------------------------------------------------------------------
+2.1. The statusline flag                           *syntastic-statusline-flag*
+
+To use the statusline flag, this must appear in your |'statusline'| setting >
+    %{SyntasticStatuslineFlag()}
+<
+Something like this could be more useful: >
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+<
+When syntax errors are detected a flag will be shown. The content of the flag
+is derived from the |syntastic_stl_format| option
+------------------------------------------------------------------------------
+2.2. Error signs                                       *syntastic-error-signs*
+
+Syntastic uses the |:sign| commands to mark lines with errors and warnings in
+the sign column. To enable this feature, use the |'syntastic_enable_signs'|
+option.
+
+Signs are colored using the Error and Todo syntax highlight groups by default.
+If you wish to customize the colors for the signs, you can use the following
+groups:
+    SyntasticErrorSign - For syntax errors, links to 'error' by default
+    SyntasticWarningSign - For syntax warnings, links to 'todo' by default
+    SyntasticStyleErrorSign - For style errors, links to 'SyntasticErrorSign'
+                              by default
+    SyntasticStyleWarningSign - For style warnings, links to
+                                'SyntasticWarningSign' by default
+
+Example: >
+    highlight SyntasticErrorSign guifg=white guibg=red
+<
+To set up highlighting for the line where a sign resides, you can use the
+following highlight groups:
+    SyntasticErrorLine
+    SyntasticWarningLine
+    SyntasticStyleErrorLine - Links to 'SyntasticErrorLine' by default
+    SyntasticStyleWarningLine - Links to 'SyntasticWarningLine' by default
+
+Example: >
+    highlight SyntasticErrorLine guibg=#2f0000
+<
+
+------------------------------------------------------------------------------
+2.3. The error window                       *:Errors* *syntastic-error-window*
+
+You can use the :Errors command to display the errors for the current buffer
+in the |location-list|.
+
+Note that when you use :Errors, the current location list is overwritten with
+Syntastic's own location list.
+
+
+==============================================================================
+3. Commands                                               *syntastic-commands*
+
+:Errors                                                     *:SyntasticErrors*
+
+When errors have been detected, use this command to pop up the |location-list|
+and display the error messages.
+
+
+:SyntasticToggleMode                                    *:SyntasticToggleMode*
+
+Toggles syntastic between active and passive mode. See |'syntastic_mode_map'|
+for more info.
+
+
+:SyntasticCheck                                              *:SyntasticCheck*
+
+Manually cause a syntax check to be done. Useful in passive mode, or if the
+current filetype is set to passive. See |'syntastic_mode_map'| for more info.
+
+:SyntasticInfo                                               *:SyntasticInfo*
+
+Output info about what checkers are available and in use for the current
+filetype.
+
+
+==============================================================================
+4. Global Options                                   *syntastic-global-options*
+
+
+                                                   *'syntastic_check_on_open'*
+Default: 0
+If enabled, syntastic will do syntax checks when buffers are first loaded as
+well as on saving >
+    let g:syntastic_check_on_open=1
+<
+
+                                                     *'syntastic_check_on_wq'*
+Default: 1
+Normally syntastic runs syntax checks whenever buffers are written to disk.
+If you want to skip these checks when you issue |:wq|, |:x|, and |:ZZ|, set this
+variable to 0. >
+    let g:syntastic_check_on_wq=0
+<
+
+                                              *'syntastic_echo_current_error'*
+Default: 1
+If enabled, syntastic will echo the error associated with the current line to
+the command window. If multiple errors are found, the first will be used. >
+    let g:syntastic_echo_current_error=1
+<
+
+                                                    *'syntastic_enable_signs'*
+Default: 1
+Use this option to tell syntastic whether to use the |:sign| interface to mark
+syntax errors: >
+    let g:syntastic_enable_signs=1
+<
+
+                     *'syntastic_error_symbol'* *'syntastic_style_error_symbol'*
+                 *'syntastic_warning_symbol'* *'syntastic_style_warning_symbol'*
+Use this option to control what the syntastic |:sign| text contains. Several
+error symobls can be customized:
+    syntastic_error_symbol - For syntax errors, defaults to '>>'
+    syntastic_style_error_symbol - For style errors, defaults to 'S>'
+    syntastic_warning_symbol - For syntax warnings, defaults to '>>'
+    syntastic_style_warning_symbol - For style warnings, defaults to 'S>'
+
+Example: >
+    let g:syntastic_error_symbol='✗'
+    let g:syntastic_warning_symbol='⚠'
+<
+
+                                                 *'syntastic_enable_balloons'*
+Default: 1
+Use this option to tell syntastic whether to display error messages in balloons
+when the mouse is hovered over erroneous lines: >
+    let g:syntastic_enable_balloons = 1
+<
+Note that vim must be compiled with |+balloon_eval|.
+
+                                             *'syntastic_enable_highlighting'*
+Default: 1
+Use this option to tell syntastic whether to use syntax highlighting to mark
+errors (where possible). Highlighting can be turned off with the following >
+    let g:syntastic_enable_highlighting = 0
+<
+
+                                        *'syntastic_always_populate_loc_list'*
+Default: 0
+Enable this option to tell syntastic to always stick any detected errors into
+the loclist: >
+    let g:syntastic_always_populate_loc_list=1
+<
+                                                       *'syntastic_auto_jump'*
+Default: 0
+Enable this option if you want the cursor to jump to the first detected error
+when saving or opening a file: >
+    let g:syntastic_auto_jump=1
+<
+
+                                                   *'syntastic_auto_loc_list'*
+Default: 2
+Use this option to tell syntastic to automatically open and/or close the
+|location-list| (see |syntastic-error-window|).
+
+When set to 0 the error window will not be opened or closed automatically. >
+    let g:syntastic_auto_loc_list=0
+<
+
+When set to 1 the error window will be automatically opened when errors are
+detected, and closed when none are detected. >
+    let g:syntastic_auto_loc_list=1
+<
+When set to 2 the error window will be automatically closed when no errors are
+detected, but not opened automatically. >
+    let g:syntastic_auto_loc_list=2
+<
+
+                                                 *'syntastic_loc_list_height'*
+Default: 10
+Use this option to specify the height of the location lists that syntastic
+opens. >
+    let g:syntastic_loc_list_height=5
+<
+
+                                                    *'syntastic_ignore_files'*
+Default: []
+Use this option to specify files that syntastic should neither check, nor
+include in error lists. It has to be a list of |regular-expression| patterns.
+The full paths of files (see |::p|) are matched against these patterns, and
+the matches are case sensitive. Use |\c| if you need case insensitive
+patterns. >
+    let g:syntastic_ignore_files=['^/usr/include/', '\c\.h$']
+<
+
+                                                    *'syntastic_filetype_map'*
+Default: {}
+Use this option to map non-standard filetypes to standard ones.  Corresponding
+checkers are mapped accordingly, which allows syntastic to check files with
+non-standard filetypes: >
+    let g:syntastic_filetype_map = { 'latex': 'tex',
+                                   \ 'gentoo-metadata': 'xml' }
+<
+
+                                                        *'syntastic_mode_map'*
+Default: { "mode": "active",
+           "active_filetypes": [],
+           "passive_filetypes": [] }
+
+Use this option to fine tune when automatic syntax checking is done (or not
+done).
+
+The option should be set to something like: >
+
+    let g:syntastic_mode_map = { 'mode': 'active',
+                               \ 'active_filetypes': ['ruby', 'php'],
+                               \ 'passive_filetypes': ['puppet'] }
+<
+
+"mode" can be mapped to one of two values - "active" or "passive". When set to
+active, syntastic does automatic checking whenever a buffer is saved or
+initially opened.  When set to "passive" syntastic only checks when the user
+calls :SyntasticCheck.
+
+The exceptions to these rules are defined with "active_filetypes" and
+"passive_filetypes". In passive mode, automatic checks are still done
+for all filetypes in the "active_filetypes" array. In active mode,
+automatic checks are not done for any filetypes in the
+"passive_filetypes" array.
+
+At runtime, the |:SyntasticToggleMode| command can be used to switch between
+active and passive mode.
+
+If any of "mode", "active_filetypes", or "passive_filetypes" are not specified
+then they will default to their default value as above.
+
+                                                  *'syntastic_quiet_warnings'*
+
+Use this option if you only care about syntax errors, not warnings. When set,
+this option has the following effects:
+    * no |signs| appear unless there is at least one error, whereupon both
+      errors and warnings are displayed
+    * the |'syntastic_auto_loc_list'| option only pops up the error window if
+      there's at least one error, whereupon both errors and warnings are
+      displayed
+>
+    let g:syntastic_quiet_warnings=1
+<
+
+                                                      *'syntastic_stl_format'*
+
+Default: [Syntax: line:%F (%t)]
+Use this option to control what the syntastic statusline text contains. Several
+magic flags are available to insert information:
+    %e - number of errors
+    %w - number of warnings
+    %t - total number of warnings and errors
+    %fe - line number of first error
+    %fw - line number of first warning
+    %F - line number of first warning or error
+
+Several additional flags are available to hide text under certain conditions:
+    %E{...} - hide the text in the brackets unless there are errors
+    %W{...} - hide the text in the brackets unless there are warnings
+    %B{...} - hide the text in the brackets unless there are both warnings AND
+              errors
+These flags cant be nested.
+
+Example: >
+    let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
+<
+If this format is used and the current buffer has 5 errors and 1 warning
+starting on lines 20 and 10 respectively then this would appear on the
+statusline: >
+    [Err: 20 #5, Warn: 10 #1]
+<
+If the buffer had 2 warnings, starting on line 5 then this would appear: >
+    [Warn: 5 #2]
+<
+                                                    *'syntastic_full_redraws'*
+Default: 0 in GUI Vim and MacVim, 1 otherwise
+Controls whether syntastic calls |:redraw| or |:redraw!| for screen redraws.
+Changing it can in principle make screen redraws smoother, but it can also
+cause screen flicker, or ghost characters.  Leaving it to the default should
+be safe.
+
+                                                           *'syntastic_debug'*
+Default: 0
+Set this to 1 to enable debugging: >
+    let g:syntastic_debug = 1
+<
+Checkers will then add debugging messages to Vim's |message-history|. You can
+examine these messages with |:mes|.
+
+
+==============================================================================
+5. Checker Options                                 *syntastic-checker-options*
+
+------------------------------------------------------------------------------
+5.1 Telling syntastic which checker to use.
+
+Stick a line like this in your vimrc: >
+    let g:syntastic_<filetype>_checkers = ['<checker-name>']
+<
+e.g. >
+    let g:syntastic_python_checkers = ['flake8']
+<
+
+There's also a per-buffer version of this setting, b:syntastic_checkers. Use
+this in an autocmd to configure specific checkers for particular paths: >
+    autocmd FileType python if stridx(expand('%:p'), '/some/path/') == 0 |
+        \ let b:syntastic_checkers = ['pylint'] | endif
+<
+
+To see the list of available checkers for your filetype, look in
+`syntax_checkers/<filetype>/`. The names of the files here correspond to
+'<checker-name>' above.
+
+e.g. Python has the following checkers: flake8, pyflakes, pylint and a
+native python checker.
+
+Some filetypes, like PHP, have style checkers as well as syntax checkers. These
+can be chained together like this: >
+    let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']`
+<
+This is telling syntastic to run the 'php' checker first, and if no errors are
+found, run 'phpcs', and then 'phpmd'.
+
+------------------------------------------------------------------------------
+5.2 Configuring specific checkers                   *syntastic-config-makeprg*
+
+Most checkers use the 'syntastic#makeprg#build()' function and provide many
+options by default - in fact you can customise every part of the command
+that gets called.
+
+Checkers that use 'syntastic#makeprg#build()' look like this: >
+    let makeprg = syntastic#makeprg#build({
+                \ 'exe': 'ruby',
+                \ 'args': '-a -b -c',
+                \ 'post_args': '--more --args',
+                \ 'tail': '> /tmp/output',
+                \ 'filetype': 'ruby',
+                \ 'subchecker': 'mri' })
+<
+
+The 'filetype' and 'subchecker' parameters are mandatory.  All of the other
+parameters above are optional (well, you probably need at least 'exe'), and
+can be overriden by setting global variables - even parameters not specified
+in the call to syntastic#makeprg#build().
+
+E.g. To override the checker exe above, you could do this: >
+    let g:syntastic_ruby_mri_exe="another_ruby_checker_exe.rb"
+<
+To override the args and the tail: >
+    let g:syntastic_ruby_mri_args="--my --args --here"
+    let g:syntastic_ruby_mri_tail="> /tmp/my-output-file-biatch"
+<
+
+The general form of the override options is: >
+    syntastic_[filetype]_[subchecker]_[option-name]
+<
+
+For checkers that do not use the 'syntastic#makeprg#build()' function you
+will have to look at the source code of the checker in question. If there are
+specific options that can be set, these are usually documented at the top of
+the script.
+
+==============================================================================
+6. About                                                     *syntastic-about*
+
+The core maintainers of syntastic are:
+    Martin Grenfell (github: scrooloose)
+    Gregor Uhlenheuer (github: kongo2002)
+
+Find the latest version of syntastic here:
+    http://github.com/scrooloose/syntastic
+
+==============================================================================
+7. License                                                 *syntastic-license*
+
+Syntastic is released under the wtfpl.
+See http://sam.zoy.org/wtfpl/COPYING.
+
+ vim:tw=78:sw=4:ft=help:norl:
