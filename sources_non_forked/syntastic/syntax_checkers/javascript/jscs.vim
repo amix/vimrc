@@ -17,9 +17,6 @@ let g:loaded_syntastic_javascript_jscs_checker = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-" we borrow SyntaxCheckers_java_checkstyle_Preprocess() from java/checkstyle
-runtime! syntax_checkers/java/*.vim
-
 function! SyntaxCheckers_javascript_jscs_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': '--no-colors --reporter checkstyle' })
     let errorformat = '%f:%t:%l:%c:%m'
@@ -27,9 +24,9 @@ function! SyntaxCheckers_javascript_jscs_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'subtype': 'Style',
-        \ 'preprocess': 'SyntaxCheckers_java_checkstyle_Preprocess',
+        \ 'preprocess': 'checkstyle',
         \ 'postprocess': ['sort'],
-        \ 'returns': [0] })
+        \ 'returns': [0, 2] })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

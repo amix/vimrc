@@ -48,8 +48,10 @@ function! airline#themes#solarized#refresh()
   let s:NW = [s:base3, s:orange, '']
   if s:background == 'dark'
     let s:NM = [s:base1, s:N3[1], '']
+    let s:NMi = [s:base2, s:N3[1], '']
   else
     let s:NM = [s:base01, s:N3[1], '']
+    let s:NMi = [s:base02, s:N3[1], '']
   endif
 
   " Insert mode
@@ -73,11 +75,12 @@ function! airline#themes#solarized#refresh()
   let s:RM = s:NM
   let s:RF = s:NF
 
-  " Inactive
+  " Inactive, according to VertSplit in solarized
+  " (bg dark: base00; bg light: base0)
   if s:background == 'dark'
-    let s:IA = [s:base00, s:base02, '']
+    let s:IA = [s:base02, s:base00, '']
   else
-    let s:IA = [s:base1, s:base2, '']
+    let s:IA = [s:base2, s:base0, '']
   endif
 
   """"""""""""""""""""""""""""""""""""""""""""""""
@@ -98,7 +101,7 @@ function! airline#themes#solarized#refresh()
         \ [s:IA[0].g, s:IA[1].g, s:IA[0].t, s:IA[1].t, s:IA[2]],
         \ [s:IA[0].g, s:IA[1].g, s:IA[0].t, s:IA[1].t, s:IA[2]])
   let g:airline#themes#solarized#palette.inactive_modified = {
-        \ 'airline_c': [s:NM[0].g, '', s:NM[0].t, '', s:NM[2]]}
+        \ 'airline_c': [s:NMi[0].g, '', s:NMi[0].t, '', s:NMi[2]]}
 
   let g:airline#themes#solarized#palette.normal = airline#themes#generate_color_map(
         \ [s:N1[0].g, s:N1[1].g, s:N1[0].t, s:N1[1].t, s:N1[2]],

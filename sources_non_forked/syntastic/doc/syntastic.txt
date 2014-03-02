@@ -417,17 +417,16 @@ Default: {}
 
 Use this option to filter out some of the messages produced by checkers.  The
 option should be set to something like: >
-
     let g:syntastic_quiet_messages = { "level": "warnings",
                                      \ "type":  "style",
                                      \ "regex": '\m\[C03\d\d\]',
                                      \ "file":  ['\m^/usr/include/', '\m\c\.h$'] }
 <
-
 Each element turns off messages matching the patterns specified by the
 corresponding value. Values are lists, but if a list consist of a single
-element you can omit adding the brackets (e.g. you can write "style" instead of
-["style"]).
+element you can omit adding the brackets (e.g. you can write "style" instead
+of ["style"]). Elements with values [] or '' are ignored (this is useful for
+overriding filters, cf. |filter-overrides|).
 
     "level" - takes one of two values, "warnings" or "errors"
     "type"  - can be either "syntax" or "style"
@@ -436,9 +435,26 @@ element you can omit adding the brackets (e.g. you can write "style" instead of
     "file"  - is matched against the filename the error refers to, as a case
               sensitive |regular-expression|.
 
+If |'syntastic_id_checkers'| is set, filters are applied before error messages
+are labeled with the names of the checkers that created them.
+
 There are also checker-specific variants of this option, providing finer
 control. They are named |'syntastic_<filetype>_<checker>_quiet_messages'|.
 
+For a particular checker, if both a |'syntastic_quiet_messages'| filter and
+a checker-specific filter are present, they are both applied (to the list of
+errors produced by the said checker). In case of conflicting values for the
+same keys, the values of the checker-specific filters take precedence.
+
+                                                            *filter-overrides*
+Since filter elements with values [] or '' are ignored, you can disable global
+filters for particular checkers, by setting the values of the corresponding
+elements in |'syntastic_<filetype>_<checker>_quiet_messages'| to [] or ''. For
+example, the following setting will silence all warnings, except for the
+ones produced by 'pylint': >
+    let g:syntastic_quiet_messages = { "level": "warnings" }
+    let g:syntastic_python_pylint_quiet_messages = { "level" : [] }
+<
                                                       *'syntastic_stl_format'*
 Default: [Syntax: line:%F (%t)]
 Use this option to control what the syntastic statusline text contains. Several

@@ -1,11 +1,7 @@
-if exists("g:loaded_syntastic_notifier_balloons")
+if exists("g:loaded_syntastic_notifier_balloons") || !exists("g:loaded_syntastic_plugin")
     finish
 endif
 let g:loaded_syntastic_notifier_balloons = 1
-
-if !exists("g:syntastic_enable_balloons")
-    let g:syntastic_enable_balloons = 1
-endif
 
 if !has('balloon_eval')
     let g:syntastic_enable_balloons = 0
@@ -15,17 +11,17 @@ let g:SyntasticBalloonsNotifier = {}
 
 " Public methods {{{1
 
-function! g:SyntasticBalloonsNotifier.New()
+function! g:SyntasticBalloonsNotifier.New() " {{{2
     let newObj = copy(self)
     return newObj
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticBalloonsNotifier.enabled()
+function! g:SyntasticBalloonsNotifier.enabled() " {{{2
     return has('balloon_eval') && syntastic#util#var('enable_balloons')
-endfunction
+endfunction " }}}2
 
 " Update the error balloons
-function! g:SyntasticBalloonsNotifier.refresh(loclist)
+function! g:SyntasticBalloonsNotifier.refresh(loclist) " {{{2
     let b:syntastic_balloons = {}
     if self.enabled() && !a:loclist.isEmpty()
         call syntastic#log#debug(g:SyntasticDebugNotifications, 'balloons: refresh')
@@ -42,25 +38,29 @@ function! g:SyntasticBalloonsNotifier.refresh(loclist)
             set beval bexpr=SyntasticBalloonsExprNotifier()
         endif
     endif
-endfunction
+endfunction " }}}2
 
 " Reset the error balloons
 " @vimlint(EVL103, 1, a:loclist)
-function! g:SyntasticBalloonsNotifier.reset(loclist)
+function! g:SyntasticBalloonsNotifier.reset(loclist) " {{{2
     if has('balloon_eval')
         call syntastic#log#debug(g:SyntasticDebugNotifications, 'balloons: reset')
         set nobeval
     endif
-endfunction
+endfunction " }}}2
 " @vimlint(EVL103, 0, a:loclist)
+
+" }}}1
 
 " Private functions {{{1
 
-function! SyntasticBalloonsExprNotifier()
+function! SyntasticBalloonsExprNotifier() " {{{2
     if !exists('b:syntastic_balloons')
         return ''
     endif
     return get(b:syntastic_balloons, v:beval_lnum, '')
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 " vim: set sw=4 sts=4 et fdm=marker:

@@ -40,7 +40,7 @@ function! SyntaxCheckers_vim_vimlint_IsAvailable() dict
     try
         call vimlint#vimlint(syntastic#util#DevNull(), { 'output': [], 'quiet': 1 })
         let ret = 1
-    catch /^Vim\%((\a\+)\)\=:E117/
+    catch /\m^Vim\%((\a\+)\)\=:E117/
         " do nothing
     endtry
     return ret

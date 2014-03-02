@@ -194,7 +194,6 @@ Multiple snippets can be defined in *.snippets files. Each snippet definition
 looks something like: >
 
     snippet trigger optional description
-    guard left_from_cursor='^\s*'
         expanded text
         more expanded text
 
@@ -202,9 +201,6 @@ looks something like: >
 The description is optional. If it is left out and a second snippet inside the
 same .snippets file uses the same trigger, the second one will overwrite the
 first. Otherwise multisnip is used.
-
-The guard condition line is also optional. It can be used to make a snippet
-available only in some cases. The value should be a VimL expression.
 
 Note: Hard tabs in the expansion text are required. When the snippet is
 expanded in the text and 'expandtab' is set, each tab will be replaced with
@@ -254,7 +250,7 @@ the tab stop. This text then can be copied throughout the snippet using "$#",
 given # is the same number as used before. So, to make a C for loop: >
 
     snippet for
-        for (${2:i}; $2 < ${1:count}; $1++) {
+        for (${2:i}=0; $2 < ${1:count}; $2++) {
             ${4}
         }
 

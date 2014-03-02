@@ -31,6 +31,7 @@ function! airline#extensions#tabline#init(ext)
 
   autocmd User AirlineToggledOn call s:toggle_on()
   autocmd User AirlineToggledOff call s:toggle_off()
+  autocmd BufDelete * let s:current_bufnr = -1
 
   call s:toggle_on()
   call a:ext.add_theme_func('airline#extensions#tabline#load_theme')

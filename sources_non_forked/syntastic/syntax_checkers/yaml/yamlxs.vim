@@ -69,7 +69,8 @@ endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'yaml',
-    \ 'name': 'yamlxs' })
+    \ 'name': 'yamlxs',
+    \ 'exec': 'perl' })
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

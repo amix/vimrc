@@ -36,6 +36,8 @@ vim-airline https://github.com/bling/vim-airline
 goyo.vim https://github.com/junegunn/goyo.vim
 vim-zenroom2 https://github.com/amix/vim-zenroom2
 syntastic https://github.com/scrooloose/syntastic
+vim-repeat https://github.com/tpope/vim-repeat
+vim-commentary https://github.com/tpope/vim-commentary
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'

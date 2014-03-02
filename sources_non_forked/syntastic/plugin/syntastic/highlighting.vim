@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_notifier_highlighting")
+if exists("g:loaded_syntastic_notifier_highlighting") || !exists("g:loaded_syntastic_plugin")
     finish
 endif
 let g:loaded_syntastic_notifier_highlighting = 1
@@ -6,17 +6,13 @@ let g:loaded_syntastic_notifier_highlighting = 1
 " Highlighting requires getmatches introduced in 7.1.040
 let s:has_highlighting = v:version > 701 || (v:version == 701 && has('patch040'))
 
-if !exists("g:syntastic_enable_highlighting")
-    let g:syntastic_enable_highlighting = 1
-endif
-
 let g:SyntasticHighlightingNotifier = {}
 
 let s:setup_done = 0
 
 " Public methods {{{1
 
-function! g:SyntasticHighlightingNotifier.New()
+function! g:SyntasticHighlightingNotifier.New() " {{{2
     let newObj = copy(self)
 
     if !s:setup_done
@@ -25,14 +21,14 @@ function! g:SyntasticHighlightingNotifier.New()
     endif
 
     return newObj
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticHighlightingNotifier.enabled()
+function! g:SyntasticHighlightingNotifier.enabled() " {{{2
     return s:has_highlighting && syntastic#util#var('enable_highlighting')
-endfunction
+endfunction " }}}2
 
 " Sets error highlights in the cuirrent window
-function! g:SyntasticHighlightingNotifier.refresh(loclist)
+function! g:SyntasticHighlightingNotifier.refresh(loclist) " {{{2
     if self.enabled()
         call self.reset(a:loclist)
         call syntastic#log#debug(g:SyntasticDebugNotifications, 'highlighting: refresh')
@@ -59,11 +55,11 @@ function! g:SyntasticHighlightingNotifier.refresh(loclist)
             endif
         endfor
     endif
-endfunction
+endfunction " }}}2
 
 " Remove all error highlights from the window
 " @vimlint(EVL103, 1, a:loclist)
-function! g:SyntasticHighlightingNotifier.reset(loclist)
+function! g:SyntasticHighlightingNotifier.reset(loclist) " {{{2
     if s:has_highlighting
         call syntastic#log#debug(g:SyntasticDebugNotifications, 'highlighting: reset')
         for match in getmatches()
@@ -72,13 +68,15 @@ function! g:SyntasticHighlightingNotifier.reset(loclist)
             endif
         endfor
     endif
-endfunction
+endfunction " }}}2
 " @vimlint(EVL103, 0, a:loclist)
+
+" }}}1
 
 " Private methods {{{1
 
 " One time setup: define our own highlighting
-function! g:SyntasticHighlightingNotifier._setup()
+function! g:SyntasticHighlightingNotifier._setup() " {{{2
     if s:has_highlighting
         if !hlexists('SyntasticError')
             highlight link SyntasticError SpellBad
@@ -88,6 +86,8 @@ function! g:SyntasticHighlightingNotifier._setup()
             highlight link SyntasticWarning SpellCap
         endif
     endif
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 " vim: set sw=4 sts=4 et fdm=marker:

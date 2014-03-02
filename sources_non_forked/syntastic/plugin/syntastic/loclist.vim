@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_loclist")
+if exists("g:loaded_syntastic_loclist") || !exists("g:loaded_syntastic_plugin")
     finish
 endif
 let g:loaded_syntastic_loclist = 1
@@ -7,7 +7,7 @@ let g:SyntasticLoclist = {}
 
 " Public methods {{{1
 
-function! g:SyntasticLoclist.New(rawLoclist)
+function! g:SyntasticLoclist.New(rawLoclist) " {{{2
     let newObj = copy(self)
 
     let llist = filter(copy(a:rawLoclist), 'v:val["valid"] == 1')
@@ -22,34 +22,34 @@ function! g:SyntasticLoclist.New(rawLoclist)
     let newObj._name = ''
 
     return newObj
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.current()
+function! g:SyntasticLoclist.current() " {{{2
     if !exists("b:syntastic_loclist")
         let b:syntastic_loclist = g:SyntasticLoclist.New([])
     endif
     return b:syntastic_loclist
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.extend(other)
+function! g:SyntasticLoclist.extend(other) " {{{2
     let list = self.copyRaw()
     call extend(list, a:other.copyRaw())
     return g:SyntasticLoclist.New(list)
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.isEmpty()
+function! g:SyntasticLoclist.isEmpty() " {{{2
     return empty(self._rawLoclist)
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.copyRaw()
+function! g:SyntasticLoclist.copyRaw() " {{{2
     return copy(self._rawLoclist)
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.getRaw()
+function! g:SyntasticLoclist.getRaw() " {{{2
     return self._rawLoclist
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.getStatuslineFlag()
+function! g:SyntasticLoclist.getStatuslineFlag() " {{{2
     if !exists("self._stl_format")
         let self._stl_format = ''
     endif
@@ -100,52 +100,48 @@ function! g:SyntasticLoclist.getStatuslineFlag()
     endif
 
     return self._stl_flag
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.getFirstIssue()
+function! g:SyntasticLoclist.getFirstIssue() " {{{2
     return get(self._rawLoclist, 0, {})
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.getName()
+function! g:SyntasticLoclist.getName() " {{{2
     return len(self._name)
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.setName(name)
+function! g:SyntasticLoclist.setName(name) " {{{2
     let self._name = a:name
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.decorate(name, filetype)
+function! g:SyntasticLoclist.decorate(filetype, name) " {{{2
     for e in self._rawLoclist
         let e['text'] .= ' [' . a:filetype . '/' . a:name . ']'
     endfor
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.quietMessages(filters)
-    call syntastic#util#dictFilter(self._rawLoclist, a:filters)
-endfunction
-
-function! g:SyntasticLoclist.errors()
+function! g:SyntasticLoclist.errors() " {{{2
     if !exists("self._cachedErrors")
         let self._cachedErrors = self.filter({'type': "E"})
     endif
     return self._cachedErrors
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.warnings()
+function! g:SyntasticLoclist.warnings() " {{{2
     if !exists("self._cachedWarnings")
         let self._cachedWarnings = self.filter({'type': "W"})
     endif
     return self._cachedWarnings
-endfunction
+endfunction " }}}2
 
 " Legacy function.  Syntastic no longer calls it, but we keep it
 " around because other plugins (f.i. powerline) depend on it.
-function! g:SyntasticLoclist.hasErrorsOrWarningsToDisplay()
+function! g:SyntasticLoclist.hasErrorsOrWarningsToDisplay() " {{{2
     return !self.isEmpty()
-endfunction
+endfunction " }}}2
 
 " cache used by EchoCurrentError()
-function! g:SyntasticLoclist.messages(buf)
+function! g:SyntasticLoclist.messages(buf) " {{{2
     if !exists("self._cachedMessages")
         let self._cachedMessages = {}
         let errors = self.errors() + self.warnings()
@@ -165,7 +161,7 @@ function! g:SyntasticLoclist.messages(buf)
     endif
 
     return get(self._cachedMessages, a:buf, {})
-endfunction
+endfunction " }}}2
 
 "Filter the list and return new native loclist
 "e.g.
@@ -174,14 +170,14 @@ endfunction
 "would return all errors for buffer 10.
 "
 "Note that all comparisons are done with ==?
-function! g:SyntasticLoclist.filter(filters)
+function! g:SyntasticLoclist.filter(filters) " {{{2
     let conditions = values(map(copy(a:filters), 's:translate(v:key, v:val)'))
     let filter = len(conditions) == 1 ?
         \ conditions[0] : join(map(conditions, '"(" . v:val . ")"'), ' && ')
     return filter(copy(self._rawLoclist), filter)
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticLoclist.setloclist()
+function! g:SyntasticLoclist.setloclist() " {{{2
     if !exists('w:syntastic_loclist_set')
         let w:syntastic_loclist_set = 0
     endif
@@ -189,16 +185,16 @@ function! g:SyntasticLoclist.setloclist()
     call syntastic#log#debug(g:SyntasticDebugNotifications, 'loclist: setloclist ' . (replace ? '(replace)' : '(new)'))
     call setloclist(0, self.getRaw(), replace ? 'r' : ' ')
     let w:syntastic_loclist_set = 1
-endfunction
+endfunction " }}}2
 
 "display the cached errors for this buf in the location list
-function! g:SyntasticLoclist.show()
+function! g:SyntasticLoclist.show() " {{{2
     call syntastic#log#debug(g:SyntasticDebugNotifications, 'loclist: show')
     call self.setloclist()
 
     if !self.isEmpty()
         let num = winnr()
-        execute "lopen " . g:syntastic_loc_list_height
+        execute "lopen " . syntastic#util#var('loc_list_height')
         if num != winnr()
             wincmd p
         endif
@@ -220,19 +216,25 @@ function! g:SyntasticLoclist.show()
             endif
         endfor
     endif
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 " Non-method functions {{{1
 
-function! g:SyntasticLoclistHide()
+function! g:SyntasticLoclistHide() " {{{2
     call syntastic#log#debug(g:SyntasticDebugNotifications, 'loclist: hide')
     silent! lclose
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 " Private functions {{{1
 
-function! s:translate(key, val)
+function! s:translate(key, val) " {{{2
     return 'get(v:val, ' . string(a:key) . ', "") ==? ' . string(a:val)
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 " vim: set sw=4 sts=4 et fdm=marker:

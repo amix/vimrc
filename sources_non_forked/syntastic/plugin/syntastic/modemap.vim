@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_modemap")
+if exists("g:loaded_syntastic_modemap") || !exists("g:loaded_syntastic_plugin")
     finish
 endif
 let g:loaded_syntastic_modemap = 1
@@ -7,16 +7,16 @@ let g:SyntasticModeMap = {}
 
 " Public methods {{{1
 
-function! g:SyntasticModeMap.Instance()
+function! g:SyntasticModeMap.Instance() " {{{2
     if !exists('s:SyntasticModeMapInstance')
         let s:SyntasticModeMapInstance = copy(self)
         call s:SyntasticModeMapInstance.synch()
     endif
 
     return s:SyntasticModeMapInstance
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticModeMap.synch()
+function! g:SyntasticModeMap.synch() " {{{2
     if exists('g:syntastic_mode_map')
         let self._mode = get(g:syntastic_mode_map, 'mode', 'active')
         let self._activeFiletypes = get(g:syntastic_mode_map, 'active_filetypes', [])
@@ -26,9 +26,9 @@ function! g:SyntasticModeMap.synch()
         let self._activeFiletypes = []
         let self._passiveFiletypes = []
     endif
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticModeMap.allowsAutoChecking(filetype)
+function! g:SyntasticModeMap.allowsAutoChecking(filetype) " {{{2
     let fts = split(a:filetype, '\m\.')
 
     if self.isPassive()
@@ -36,13 +36,13 @@ function! g:SyntasticModeMap.allowsAutoChecking(filetype)
     else
         return self._noFiletypesArePassive(fts)
     endif
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticModeMap.isPassive()
+function! g:SyntasticModeMap.isPassive() " {{{2
     return self._mode ==# 'passive'
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticModeMap.toggleMode()
+function! g:SyntasticModeMap.toggleMode() " {{{2
     call self.synch()
 
     if self._mode ==# 'active'
@@ -56,20 +56,24 @@ function! g:SyntasticModeMap.toggleMode()
         let g:syntastic_mode_map = {}
     endif
     let g:syntastic_mode_map['mode'] = self._mode
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticModeMap.echoMode()
+function! g:SyntasticModeMap.echoMode() " {{{2
     echo "Syntastic: " . self._mode . " mode enabled"
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 " Private methods {{{1
 
-function! g:SyntasticModeMap._isOneFiletypeActive(filetypes)
+function! g:SyntasticModeMap._isOneFiletypeActive(filetypes) " {{{2
     return !empty(filter(copy(a:filetypes), 'index(self._activeFiletypes, v:val) != -1'))
-endfunction
+endfunction " }}}2
 
-function! g:SyntasticModeMap._noFiletypesArePassive(filetypes)
+function! g:SyntasticModeMap._noFiletypesArePassive(filetypes) " {{{2
     return empty(filter(copy(a:filetypes), 'index(self._passiveFiletypes, v:val) != -1'))
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 " vim: set sw=4 sts=4 et fdm=marker:

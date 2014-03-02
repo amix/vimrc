@@ -44,19 +44,6 @@ function! SyntaxCheckers_perl_perl_IsAvailable() dict
     return v:shell_error == 0
 endfunction
 
-function! SyntaxCheckers_perl_perl_Preprocess(errors)
-    let out = []
-
-    for e in a:errors
-        let parts = matchlist(e, '\v^(.*)\sat\s(.*)\sline\s(\d+)(.*)$')
-        if !empty(parts)
-            call add(out, parts[2] . ':' . parts[3] . ':' . parts[1] . parts[4])
-        endif
-    endfor
-
-    return syntastic#util#unique(out)
-endfunction
-
 function! SyntaxCheckers_perl_perl_GetLocList() dict
     let exe = expand(g:syntastic_perl_interpreter)
     if type(g:syntastic_perl_lib_path) == type('')
@@ -78,7 +65,7 @@ function! SyntaxCheckers_perl_perl_GetLocList() dict
     let errors = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'preprocess': 'SyntaxCheckers_perl_perl_Preprocess',
+        \ 'preprocess': 'perl',
         \ 'defaults': {'type': 'E'} })
     if !empty(errors)
         return errors
@@ -91,7 +78,7 @@ function! SyntaxCheckers_perl_perl_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'preprocess': 'SyntaxCheckers_perl_perl_Preprocess',
+        \ 'preprocess': 'perl',
         \ 'defaults': {'type': 'W'} })
 endfunction
 

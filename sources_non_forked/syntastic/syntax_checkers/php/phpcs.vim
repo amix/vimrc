@@ -23,7 +23,8 @@ set cpo&vim
 
 function! SyntaxCheckers_php_phpcs_GetLocList() dict
     let makeprg = self.makeprgBuild({
-        \ 'args_after': '--report=csv --tab-width=' . &tabstop })
+        \ 'args': '--tab-width=' . &tabstop,
+        \ 'args_after': '--report=csv' })
 
     let errorformat =
         \ '%-GFile\,Line\,Column\,Type\,Message\,Source\,Severity,'.
@@ -37,7 +38,7 @@ endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'php',
-    \ 'name': 'phpcs'})
+    \ 'name': 'phpcs' })
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

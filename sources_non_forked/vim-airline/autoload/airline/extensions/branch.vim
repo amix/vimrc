@@ -55,7 +55,7 @@ endfunction
 function! s:check_in_path()
   if !exists('b:airline_branch_path')
     let root = get(b:, 'git_dir', get(b:, 'mercurial_dir', ''))
-    let bufferpath = resolve(fnamemodify(expand('%'), ':p:h'))
+    let bufferpath = resolve(fnamemodify(expand('%'), ':p'))
 
     if !filereadable(root) "not a file
       " if .git is a directory, it's the old submodule format

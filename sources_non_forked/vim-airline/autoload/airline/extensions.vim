@@ -168,7 +168,8 @@ function! airline#extensions#load()
   endif
 
   if (get(g:, 'airline#extensions#branch#enabled', 1) && get(g:, 'airline_enable_branch', 1))
-        \ && (exists('*fugitive#head') || exists('*lawrencium#statusline'))
+        \ && (exists('*fugitive#head') || exists('*lawrencium#statusline') ||
+        \     (get(g:, 'airline#extensions#branch#use_vcscommand', 0) && exists('*VCSCommandGetStatusLine')))
     call airline#extensions#branch#init(s:ext)
   endif
 

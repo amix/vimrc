@@ -41,12 +41,11 @@ endfunction
 
 function! s:ForwardToZshChecker()
     let registry = g:SyntasticRegistry.Instance()
-    if registry.checkable('zsh')
+    if registry.isCheckable('zsh')
         return registry.getCheckers('zsh', ['zsh'])[0].getLocListRaw()
     else
         return []
     endif
-
 endfunction
 
 function! s:IsShellValid()

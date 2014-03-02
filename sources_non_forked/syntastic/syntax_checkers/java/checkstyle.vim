@@ -27,33 +27,6 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_java_checkstyle_Preprocess(errors)
-    let out = []
-    let fname = expand('%')
-    for err in a:errors
-        if match(err, '\m<error\>') > -1
-            let line = str2nr(matchstr(err, '\m\<line="\zs\d\+\ze"'))
-            if line == 0
-                continue
-            endif
-
-            let col = str2nr(matchstr(err, '\m\<column="\zs\d\+\ze"'))
-
-            let type = matchstr(err, '\m\<severity="\zs.\ze')
-            if type !~? '^[EW]'
-                let type = 'E'
-            endif
-
-            let message = syntastic#util#decodeXMLEntities(matchstr(err, '\m\<message="\zs[^"]\+\ze"'))
-
-            call add(out, join([fname, type, line, col, message], ':'))
-        elseif match(err, '\m<file name="') > -1
-            let fname = syntastic#util#decodeXMLEntities(matchstr(err, '\v\<file name\="\zs[^"]+\ze"'))
-        endif
-    endfor
-    return out
-endfunction
-
 function! SyntaxCheckers_java_checkstyle_GetLocList() dict
 
     let fname = syntastic#util#shescape( expand('%:p:h') . '/' . expand('%:t') )
@@ -73,8 +46,8 @@ function! SyntaxCheckers_java_checkstyle_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'subtype': 'Style',
-        \ 'preprocess': 'SyntaxCheckers_java_checkstyle_Preprocess' })
+        \ 'preprocess': 'checkstyle',
+        \ 'subtype': 'Style' })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

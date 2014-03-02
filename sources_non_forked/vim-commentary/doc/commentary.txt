@@ -1,0 +1,28 @@
+*commentary.txt*  Comment stuff out
+
+Author:  Tim Pope <http://tpo.pe/>
+License: Same terms as Vim itself (see |license|)
+
+Comment stuff out.  Then uncomment it later.  Relies on 'commentstring' to be
+correctly set.
+
+The gc mappings are preferred, while the \\ mappings are provided for
+backwards compatibility.
+
+                                                *gc* *\\*
+gc{motion}              Comment or uncomment lines that {motion} moves over.
+\\{motion}
+
+                                                *gcc* *\\\*
+gcc                     Comment or uncomment [count] lines.
+\\\
+
+                                                *v_gc* *v_\\*
+{Visual}gc              Comment or uncomment the highlighted lines.
+{Visual}\\
+
+                                                *gcu* *\\u*
+gcu                     Uncomment the current and adjacent commented lines.
+\\u
+
+ vim:tw=78:et:ft=help:norl:
