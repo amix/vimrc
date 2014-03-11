@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-04-10.
 " @Last Change: 2013-09-25.
-" @Revision:    748
+" @Revision:    749
 " GetLatestVimScripts: 1863 1 tlib.vim
 
 if &cp || exists("loaded_tlib")
@@ -14,7 +14,7 @@ if v:version < 700 "{{{2
     echoerr "tlib requires Vim >= 7"
     finish
 endif
-let loaded_tlib = 107
+let loaded_tlib = 108
 
 let s:save_cpo = &cpo
 set cpo&vim

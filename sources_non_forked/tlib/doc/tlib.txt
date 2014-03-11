@@ -38,6 +38,13 @@ Contents~
         :TBrowseOutput ......................... |:TBrowseOutput|
         :TBrowseScriptnames .................... |:TBrowseScriptnames|
         :TTimeCommand .......................... |:TTimeCommand|
+        Add .................................... |Add()|
+        TestGetArg ............................. |TestGetArg()|
+        TestGetArg1 ............................ |TestGetArg1()|
+        TestArgs ............................... |TestArgs()|
+        TestArgs1 .............................. |TestArgs1()|
+        TestArgs2 .............................. |TestArgs2()|
+        TestArgs3 .............................. |TestArgs3()|
         g:tlib#debug ........................... |g:tlib#debug|
         tlib#notify#Echo ....................... |tlib#notify#Echo()|
         tlib#notify#TrimMessage ................ |tlib#notify#TrimMessage()|
@@ -53,6 +60,7 @@ Contents~
         tlib#vim#Maximize ...................... |tlib#vim#Maximize()|
         tlib#vim#RestoreWindow ................. |tlib#vim#RestoreWindow()|
         g:tlib#vim#use_wmctrl .................. |g:tlib#vim#use_wmctrl|
+        tlib#vim#CopyFunction .................. |tlib#vim#CopyFunction()|
         tlib#progressbar#Init .................. |tlib#progressbar#Init()|
         tlib#progressbar#Display ............... |tlib#progressbar#Display()|
         tlib#progressbar#Restore ............... |tlib#progressbar#Restore()|
@@ -89,6 +97,9 @@ Contents~
         tlib#char#Get .......................... |tlib#char#Get()|
         tlib#char#IsAvailable .................. |tlib#char#IsAvailable()|
         tlib#char#GetWithTimeout ............... |tlib#char#GetWithTimeout()|
+        g:tlib#Filter_glob#seq ................. |g:tlib#Filter_glob#seq|
+        g:tlib#Filter_glob#char ................ |g:tlib#Filter_glob#char|
+        tlib#Filter_glob#New ................... |tlib#Filter_glob#New()|
         g:tlib_scratch_pos ..................... |g:tlib_scratch_pos|
         g:tlib#scratch#hidden .................. |g:tlib#scratch#hidden|
         tlib#scratch#UseScratch ................ |tlib#scratch#UseScratch()|
@@ -124,6 +135,8 @@ Contents~
         tlib#agent#CopyItems ................... |tlib#agent#CopyItems()|
         tlib#agent#PageUp ...................... |tlib#agent#PageUp()|
         tlib#agent#PageDown .................... |tlib#agent#PageDown()|
+        tlib#agent#Home ........................ |tlib#agent#Home()|
+        tlib#agent#End ......................... |tlib#agent#End()|
         tlib#agent#Up .......................... |tlib#agent#Up()|
         tlib#agent#Down ........................ |tlib#agent#Down()|
         tlib#agent#UpN ......................... |tlib#agent#UpN()|
@@ -178,8 +191,6 @@ Contents~
         tlib#bitwise#ShiftLeft ................. |tlib#bitwise#ShiftLeft()|
         tlib#bitwise#Add ....................... |tlib#bitwise#Add()|
         tlib#bitwise#Sub ....................... |tlib#bitwise#Sub()|
-        g:tlib#Filter_cnfx#expander ............ |g:tlib#Filter_cnfx#expander|
-        tlib#Filter_cnfx#New ................... |tlib#Filter_cnfx#New()|
         tlib#url#Decode ........................ |tlib#url#Decode()|
         tlib#url#DecodeChar .................... |tlib#url#DecodeChar()|
         tlib#url#EncodeChar .................... |tlib#url#EncodeChar()|
@@ -235,6 +246,7 @@ Contents~
         g:tlib_inputlist_shortmessage .......... |g:tlib_inputlist_shortmessage|
         tlib#World#New ......................... |tlib#World#New()|
         prototype.PrintLines
+        prototype.Suspend
         tlib#tab#BufMap ........................ |tlib#tab#BufMap()|
         tlib#tab#TabWinNr ...................... |tlib#tab#TabWinNr()|
         tlib#tab#Set ........................... |tlib#tab#Set()|
@@ -410,6 +422,33 @@ plugin/02tlib.vim~
 
 
 ========================================================================
+test/tlib.vim~
+
+                                                    *Add()*
+Add(a,b)
+    List
+
+                                                    *TestGetArg()*
+TestGetArg(...)
+    Optional arguments
+
+                                                    *TestGetArg1()*
+TestGetArg1(...)
+
+                                                    *TestArgs()*
+TestArgs(...)
+
+                                                    *TestArgs1()*
+TestArgs1(...)
+
+                                                    *TestArgs2()*
+TestArgs2(...)
+
+                                                    *TestArgs3()*
+TestArgs3(...)
+
+
+========================================================================
 autoload/tlib.vim~
 
                                                     *g:tlib#debug*
@@ -451,7 +490,7 @@ tlib#persistent#Dir(?mode = 'bg')
 tlib#persistent#Filename(type, ?file=%, ?mkdir=0)
 
                                                     *tlib#persistent#Get()*
-tlib#persistent#Get(cfile)
+tlib#persistent#Get(...)
 
                                                     *tlib#persistent#Value()*
 tlib#persistent#Value(...)
@@ -499,6 +538,9 @@ g:tlib#vim#use_wmctrl          (default: executable('wmctrl'))
     windows. Some window managers have problem coping with the 
     default method of setting 'lines' and 'columns' to a large 
     value.
+
+                                                    *tlib#vim#CopyFunction()*
+tlib#vim##CopyFunction(old, new, overwrite=0)
 
 
 ========================================================================
@@ -732,6 +774,25 @@ tlib#char#GetWithTimeout(timeout, ...)
 
 
 ========================================================================
+autoload/tlib/Filter_glob.vim~
+
+                                                    *g:tlib#Filter_glob#seq*
+g:tlib#Filter_glob#seq         (default: '*')
+    A character that should be expanded to '\.\{-}'.
+
+                                                    *g:tlib#Filter_glob#char*
+g:tlib#Filter_glob#char        (default: '?')
+    A character that should be expanded to '\.\?'.
+
+                                                    *tlib#Filter_glob#New()*
+tlib#Filter_glob#New(...)
+    The same as |tlib#Filter_cnf#New()| but a a customizable character 
+    |see tlib#Filter_glob#seq| is expanded to '\.\{-}' and 
+    |g:tlib#Filter_glob#char| is expanded to '\.'.
+    The pattern is a '/\V' very no-'/magic' regexp pattern.
+
+
+========================================================================
 autoload/tlib/scratch.vim~
 
                                                     *g:tlib_scratch_pos*
@@ -829,7 +890,7 @@ tlib#cache#Filename(type, ?file=%, ?mkdir=0, ?dir='')
 tlib#cache#Save(cfile, dictionary)
 
                                                     *tlib#cache#Get()*
-tlib#cache#Get(cfile)
+tlib#cache#Get(cfile, ...)
 
                                                     *tlib#cache#Value()*
 tlib#cache#Value(cfile, generator, ftime, ...)
@@ -938,6 +999,12 @@ tlib#agent#PageUp(world, selected)
 
                                                     *tlib#agent#PageDown()*
 tlib#agent#PageDown(world, selected)
+
+                                                    *tlib#agent#Home()*
+tlib#agent#Home(world, selected)
+
+                                                    *tlib#agent#End()*
+tlib#agent#End(world, selected)
 
                                                     *tlib#agent#Up()*
 tlib#agent#Up(world, selected, ...)
@@ -1117,20 +1184,6 @@ tlib#bitwise#Sub(num1, num2, ...)
 
 
 ========================================================================
-autoload/tlib/Filter_cnfx.vim~
-
-                                                    *g:tlib#Filter_cnfx#expander*
-g:tlib#Filter_cnfx#expander    (default: '+')
-    A character that should be expanded to '\.\{-}'.
-
-                                                    *tlib#Filter_cnfx#New()*
-tlib#Filter_cnfx#New(...)
-    The same as |tlib#Filter_cnfd#New()| but a a customizable character 
-    |see tlib#Filter_cnfx#expander| is expanded to '\.\{-}'. 
-    The pattern is a '/\V' very no-'/magic' regexp pattern.
-
-
-========================================================================
 autoload/tlib/url.vim~
 
                                                     *tlib#url#Decode()*
@@ -1274,18 +1327,17 @@ g:tlib#input#livesearch_threshold (default: 1000)
     filter. This is useful on slower machines or with very long lists.
 
                                                     *g:tlib#input#filter_mode*
-g:tlib#input#filter_mode       (default: 'cnfx')
+g:tlib#input#filter_mode       (default: 'glob')
     Determine how |tlib#input#List()| and related functions work.
-    Can be "cnf", "cnfd", "cnfx", "seq", or "fuzzy". See:
-      cnfx ... Like cnfd but |g:tlib#Filter_cnfx#expander| is interpreted 
-               as a wildcard (this is the default method)
-        - A plus character ("+") acts as a wildcard as if ".\{-}" (see 
-          |/\{-|) were entered.
+    Can be "glob", "cnf", "cnfd", "seq", or "fuzzy". See:
+      glob ... Like cnf but "*" and "?" (see |g:tlib#Filter_glob#seq|, 
+          |g:tlib#Filter_glob#char|) are interpreted as glob-like 
+          |wildcards| (this is the default method)
         - Examples:
-            - "f+o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
+            - "f*o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
               "far".
         - Otherwise it is a derivate of the cnf method (see below).
-        - See also |tlib#Filter_cnfx#New()|.
+        - See also |tlib#Filter_glob#New()|.
       cnfd ... Like cnf but "." is interpreted as a wildcard, i.e. it is 
                expanded to "\.\{-}"
         - A period character (".") acts as a wildcard as if ".\{-}" (see 
@@ -1567,6 +1619,8 @@ g:tlib_inputlist_shortmessage  (default: 0)
 tlib#World#New(...)
 
 prototype.PrintLines
+
+prototype.Suspend
 
 
 ========================================================================

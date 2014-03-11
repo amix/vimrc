@@ -3,7 +3,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2012-05-11.
 " @Last Change: 2012-05-11.
-" @Revision:    7
+" @Revision:    9
 
 " The directory for persistent data files. If empty, use 
 " |tlib#dir#MyRuntime|.'/share'.
@@ -29,13 +29,8 @@ function! tlib#persistent#Filename(type, ...) "{{{3
     return tlib#cache#Filename(a:type, file, mkdir, tlib#persistent#Dir())
 endf
 
-function! tlib#persistent#Get(cfile) "{{{3
-    if !empty(a:cfile) && filereadable(a:cfile)
-        let val = readfile(a:cfile, 'b')
-        return eval(join(val, "\n"))
-    else
-        return {}
-    endif
+function! tlib#persistent#Get(...) "{{{3
+    return call('tlib#cache#Get', a:000)
 endf
 
 function! tlib#persistent#Value(...) "{{{3

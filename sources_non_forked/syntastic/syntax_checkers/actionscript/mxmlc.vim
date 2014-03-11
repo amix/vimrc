@@ -41,7 +41,7 @@ function! SyntaxCheckers_actionscript_mxmlc_GetHighlightRegex(item)
 
     endif
 
-    return term != '' ? '\V\<' . term . '\>' : ''
+    return term != '' ? '\V\<' . escape(term, '\') . '\>' : ''
 endfunction
 
 function! SyntaxCheckers_actionscript_mxmlc_GetLocList() dict

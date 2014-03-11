@@ -1,8 +1,10 @@
-# sugguestion? report bugs? 
+# sugguestion? report bugs?
 # go to https://github.com/chrisyue/vim-snippets/issues
 
+priority -50
+
 snippet contr "Symfony2 controller" b
-namespace `!p 
+namespace `!p
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
 if m:
@@ -52,7 +54,7 @@ abspath = os.path.abspath(path)`
 endsnippet
 
 snippet comm "Symfony2 command" b
-namespace `!p 
+namespace `!p
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
 if m:
@@ -89,7 +91,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet subs "Symfony2 subscriber" b
-namespace `!p 
+namespace `!p
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
 if m:
@@ -120,7 +122,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet transf "Symfony2 form data transformer" b
-namespace `!p 
+namespace `!p
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
 if m:
@@ -154,7 +156,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet ent "Symfony2 doctrine entity" b
-namespace `!p 
+namespace `!p
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
 if m:
@@ -167,7 +169,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ${3:@author `whoami`}
  *
  * @ORM\Entity()
- * @ORM\Table(name="`!p 
+ * @ORM\Table(name="`!p
 tmp = re.match(r'.*(?=\.)', fn).group()
 tmp = re.sub(r'\B([A-Z])', r'_\1', tmp)
 snip.rv = tmp.lower()
@@ -191,7 +193,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet form "Symfony2 form type" b
-namespace `!p 
+namespace `!p
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
 if m:
@@ -209,33 +211,33 @@ class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
 ` extends AbstractType
 {
-	/** 
-     * {@inheritDoc}
+	/**
+	 * {@inheritDoc}
 	 */
 	public function buildForm(FormBuilderInterface $builder, array $options)
-	{   
+	{
 	}
 
-	/** 
-     * {@inheritDoc}
+	/**
+	 * {@inheritDoc}
 	 */
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{   
-	    $resolver->setDefaults(); 
-	} 
+	{
+		$resolver->setDefaults();
+	}
 
-	/** 
-     * {@inheritDoc}
+	/**
+	 * {@inheritDoc}
 	 */
 	public function getName()
-	{   
+	{
 		return '${1}';
 	}
 }
 endsnippet
 
 snippet ev "Symfony2 event" b
-namespace `!p 
+namespace `!p
 abspath = os.path.abspath(path)
 m = re.search(r'[A-Z].+(?=/)', abspath)
 if m:

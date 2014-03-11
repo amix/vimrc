@@ -20,7 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_texinfo_makeinfo_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], "\\m`\\zs[^']\\+\\ze'")
-    return term != '' ? '\V' . term : ''
+    return term != '' ? '\V' . escape(term, '\') : ''
 endfunction
 
 function! SyntaxCheckers_texinfo_makeinfo_GetLocList() dict

@@ -1,21 +1,25 @@
+priority -50
+
 global !p
 import vim
 
 # Tests for the existence of a variable declared by Vim's filetype detection
 # suggesting the type of shell script of the current file
 def testShell(scope, shell):
-    return vim.eval("exists('" + scope + ":is_" + shell + "')")
+	return vim.eval("exists('" + scope + ":is_" + shell + "')")
 
 # Loops over the possible variables, checking for global variables
 # first since they indicate an override by the user.
 def getShell():
-    for scope in ["g", "b"]:
-        for shell in ["bash", "sh", "kornshell"]:
-            if testShell(scope, shell) == "1":
-                if shell == "kornshell":
-                    return "ksh"
-                return shell
-    return "sh"
+	for scope in ["g", "b"]:
+		for shell in ["bash", "posix", "sh", "kornshell"]:
+			if testShell(scope, shell) == "1":
+				if shell == "kornshell":
+					return "ksh"
+				if shell == "posix":
+					return "sh"
+				return shell
+	return "sh"
 endglobal
 
 ###########################################################################
@@ -79,7 +83,7 @@ until ${2:[[ ${1:condition} ]]}; do
 done
 endsnippet
 
-snippet wh "while ... (done)"
+snippet while "while ... (done)"
 while ${2:[[ ${1:condition} ]]}; do
 	${0:#statements}
 done

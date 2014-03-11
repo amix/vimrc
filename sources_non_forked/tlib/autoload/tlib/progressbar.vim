@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-09-30.
 " @Last Change: 2010-01-07.
-" @Revision:    0.0.66
+" @Revision:    0.0.69
 
 if &cp || exists("loaded_tlib_progressbar_autoload")
     finish
@@ -57,6 +57,7 @@ function! tlib#progressbar#Display(value, ...) "{{{3
         let pbr = repeat('.', s:width[0] - val)
         let txt = printf(s:format[0], '['.pbl.pbr.']') . extra
         let &l:statusline = txt
+        " TLogDBG txt
         redrawstatus
         " redraw
         " call tlib#notify#Echo(txt)

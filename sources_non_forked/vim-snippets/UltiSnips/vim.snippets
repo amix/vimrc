@@ -1,3 +1,5 @@
+priority -50
+
 ###########################################################################
 #                            SnipMate Snippets                            #
 ###########################################################################
@@ -25,30 +27,30 @@ endsnippet
 
 snippet f
 fun ${1:function_name}(${2})
-	${3}
+	${3:" code}
 endf
 endsnippet
 
 snippet for
-for ${1} in ${2}
-	${3}
+for ${1:needle} in ${2:haystack}
+	${3:" code}
 endfor
 endsnippet
 
 snippet wh
-while ${1}
-	${2}
+while ${1:condition}
+	${2:" code}
 endw
 endsnippet
 
 snippet if
-if ${1}
-	${2}
+if ${1:condition}
+	${2:" code}
 endif
 endsnippet
 
 snippet ife
-if ${1}
+if ${1:condition}
 	${2}
 else
 	${3}

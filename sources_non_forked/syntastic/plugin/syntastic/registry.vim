@@ -20,7 +20,7 @@ let s:defaultCheckers = {
         \ 'coq':         ['coqtop'],
         \ 'cpp':         ['gcc'],
         \ 'cs':          ['mcs'],
-        \ 'css':         ['csslint', 'phpcs'],
+        \ 'css':         ['csslint'],
         \ 'cucumber':    ['cucumber'],
         \ 'cuda':        ['nvcc'],
         \ 'd':           ['dmd'],
@@ -54,7 +54,7 @@ let s:defaultCheckers = {
         \ 'objc':        ['gcc'],
         \ 'objcpp':      ['gcc'],
         \ 'ocaml':       ['camlp4o'],
-        \ 'perl':        ['perl', 'perlcritic'],
+        \ 'perl':        ['perlcritic'],
         \ 'php':         ['php', 'phpcs', 'phpmd'],
         \ 'po':          ['msgfmt'],
         \ 'pod':         ['podchecker'],
@@ -142,14 +142,14 @@ function! g:SyntasticRegistry.getCheckers(ftalias, list) " {{{2
     let ft = s:normaliseFiletype(a:ftalias)
     call self._checkDeprecation(ft)
 
-    let ft_list =
+    let names =
         \ !empty(a:list) ? a:list :
         \ exists('b:syntastic_checkers') ? b:syntastic_checkers :
         \ exists('g:syntastic_' . ft . '_checkers') ? g:syntastic_{ft}_checkers :
-        \ get(s:defaultCheckers, ft, [])
+        \ get(s:defaultCheckers, ft, 0)
 
-    return !empty(ft_list) ?
-        \ self._filterCheckersByName(checkers_map, ft_list) : [checkers_map[keys(checkers_map)[0]]]
+    return type(names) == type([]) ?
+        \ self._filterCheckersByName(checkers_map, names) : [checkers_map[keys(checkers_map)[0]]]
 endfunction " }}}2
 
 function! g:SyntasticRegistry.getKnownFiletypes() " {{{2

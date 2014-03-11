@@ -1,5 +1,7 @@
 # Snippets for Go
 
+priority -50
+
 # when to abbriviate and when not?
 # b doesn't work here, because it ignores whitespace
 # optional local name?
@@ -31,37 +33,55 @@ const (
 )
 endsnippet
 
+snippet struct "Struct declaration" b
+type ${1:Struct} struct {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet interface "Interface declaration" b
+type ${1:Interface} interface {
+	${0:${VISUAL}}
+}
+endsnippet
+
 # statements
-snippet for "For loop" !b
+snippet for "For loop" b
 for ${1:condition}${1/(.+)/ /}{
 	${0:${VISUAL}}
 }
 endsnippet
 
-snippet forr "For range loop" !b
+snippet forr "For range loop" b
 for ${2:name} := range ${1:collection} {
 	${0:${VISUAL}}
 }
 endsnippet
 
-snippet if "If statement" !b
+snippet if "If statement" b
 if ${1:condition}${1/(.+)/ /}{
 	${0:${VISUAL}}
 }
 endsnippet
 
-snippet switch "Switch statement" !b
+snippet switch "Switch statement" b
 switch ${1:expression}${1/(.+)/ /}{
 case${0}
 }
 endsnippet
 
-snippet case "Case clause" !b
+snippet select "Select statement" b
+select {
+case${0}
+}
+endsnippet
+
+snippet case "Case clause" b
 case ${1:condition}:
 	${0:${VISUAL}}
 endsnippet
 
-snippet default "Default clause" !b
+snippet default "Default clause" b
 default:
 	${0:${VISUAL}}
 endsnippet
@@ -86,22 +106,26 @@ func ${1:name}(${2:params})${3/(.+)/ /}${3:type} {
 endsnippet
 
 # types and variables
-snippet map "Map type" !b
+snippet map "Map type" b
 map[${1:keytype}]${2:valtype}
 endsnippet
 
-snippet : "Variable declaration :=" !b
+snippet : "Variable declaration :=" b
 ${1:name} := ${0:value}
 endsnippet
 
-snippet var "Variable declaration" !b
+snippet var "Variable declaration" b
 var ${1:name}${2/(.+)/ /}${2:type}${3: = ${0:value}}
 endsnippet
 
-snippet vars "Variables declaration" !b
+snippet vars "Variables declaration" b
 var (
 	${1:name}${2/(.+)/ /}${2:type}${3: = ${0:value} }
 )
+endsnippet
+
+snippet json "JSON field"
+\`json:"${1:displayName}"\`
 endsnippet
 
 # vim:ft=snippets:

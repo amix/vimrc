@@ -28,7 +28,7 @@ function! SyntaxCheckers_lua_luac_GetHighlightRegex(pos)
             let a:pos['col'] = p[2]
             let result = '\%' . p[2] . 'c'
         else
-            let result = '\V' . near
+            let result = '\V' . escape(near, '\')
         endif
 
         " XXX the following piece of code is evil, and is likely to break
@@ -38,7 +38,7 @@ function! SyntaxCheckers_lua_luac_GetHighlightRegex(pos)
         "if open != ''
         "    let line = str2nr(matchstr(a:pos['text'], '\m(to close ''[^'']\+'' at line \zs[0-9]\+\ze)'))
         "    let group = a:pos['type'] ==? 'E' ? 'SyntasticError' : 'SyntasticWarning'
-        "    call matchadd(group, '\%' . line . 'l\V' . open)
+        "    call matchadd(group, '\%' . line . 'l\V' . escape(open, '\'))
         "endif
     endif
     return result

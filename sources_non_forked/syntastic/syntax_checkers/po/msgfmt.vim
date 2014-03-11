@@ -20,7 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_po_msgfmt_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], '\mkeyword "\zs[^"]\+\ze" unknown')
-    return term != '' ? '\V' . term : ''
+    return term != '' ? '\V' . escape(term, '\') : ''
 endfunction
 
 function! SyntaxCheckers_po_msgfmt_GetLocList() dict

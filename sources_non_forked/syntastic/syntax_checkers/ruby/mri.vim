@@ -21,7 +21,7 @@ set cpo&vim
 function! SyntaxCheckers_ruby_mri_GetHighlightRegex(i)
     if stridx(a:i['text'], 'assigned but unused variable') >= 0
         let term = split(a:i['text'], ' - ')[1]
-        return '\V\<'.term.'\>'
+        return '\V\<' . escape(term, '\') . '\>'
     endif
 
     return ''

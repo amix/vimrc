@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2010-07-19.
 " @Last Change: 2012-06-08.
-" @Revision:    35
+" @Revision:    37
 
 
 let s:restoreframecmd = ''
@@ -118,5 +118,35 @@ function! s:RestoreFrameParams() "{{{3
         exec s:restoreframecmd
         let s:restoreframecmd = ''
     endif
+endf
+
+
+" :display: tlib#vim##CopyFunction(old, new, overwrite=0)
+function! tlib#vim#CopyFunction(old, new, ...) "{{{3
+    let overwrite = a:0 >= 1 ? a:1 : 0
+    redir => oldfn
+    exec 'silent function' a:old
+    redir END
+    if exists('*'. a:new)
+        if overwrite > 0
+            exec 'delfunction' a:new
+        elseif overwrite < 0
+            throw 'tlib#vim##CopyFunction: Function already exists: '. a:old .' -> '. a:new
+        else
+            return
+        endif
+    endif
+    let fn = split(oldfn, '\n')
+    let fn = map(fn, 'substitute(v:val, ''^\d\+'', "", "")')
+    let fn[0] = substitute(fn[0], '\V\^\s\*fu\%[nction]!\?\s\+\zs'. a:old, a:new, '')
+    let t = @t
+    try
+        let @t = join(fn, "\n")
+        redir => out
+        @t
+        redir END
+    finally
+        let @t = t
+    endtry
 endf
 

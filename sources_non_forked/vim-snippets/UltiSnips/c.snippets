@@ -2,6 +2,8 @@
 #                            TextMate Snippets                            #
 ###########################################################################
 
+priority -50
+
 snippet def "#define ..."
 #define ${1}
 endsnippet
@@ -12,9 +14,9 @@ snippet ifndef "#ifndef ... #define ... #endif"
 #endif
 endsnippet
 
-snippet #if "#if #endif" !b
+snippet #if "#if #endif" b
 #if ${1:0}
-${VISUAL:code}$0
+${VISUAL}${0:${VISUAL/(.*)/(?1::code)/}}
 #endif
 endsnippet
 
@@ -36,17 +38,24 @@ $0
 endsnippet
 
 snippet main "main() (main)"
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
-	${0:/* code */}
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
 	return 0;
 }
 endsnippet
 
-snippet for "for int loop (fori)"
-for (${4:size_t} ${2:i} = 0; $2 < ${1:count}; ${3:++$2})
+snippet for "for loop (for)"
+for (${2:i} = 0; $2 < ${1:count}; ${3:++$2})
 {
-	${0:/* code */}
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+}
+endsnippet
+
+snippet fori "for int loop (fori)"
+for (${4:int} ${2:i} = 0; $2 < ${1:count}; ${3:++$2})
+{
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
 }
 endsnippet
 
@@ -62,7 +71,7 @@ if not snip.c:
 	rand = ''.join(random.sample(string.ascii_letters+string.digits, 8))
 	snip.rv = ('%s_%s' % (name,rand)).upper()
 else:
-    snip.rv = snip.c`}
+	snip.rv = snip.c`}
 #define $1
 
 ${0}
@@ -75,9 +84,15 @@ snippet td "Typedef"
 typedef ${1:int} ${2:MyCustomType};
 endsnippet
 
+snippet wh "while loop"
+while(${1:/* condition */}) {
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+}
+endsnippet
+
 snippet do "do...while loop (do)"
 do {
-	${0:/* code */}
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
 } while(${1:/* condition */});
 endsnippet
 
@@ -88,18 +103,30 @@ endsnippet
 snippet if "if .. (if)"
 if (${1:/* condition */})
 {
-	${0:/* code */}
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+}
+endsnippet
+
+snippet el "else .. (else)"
+else {
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+}
+endsnippet
+
+snippet eli "else if .. (eli)"
+else if (${1:/* condition */}) {
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
 }
 endsnippet
 
 snippet ife "if .. else (ife)"
 if (${1:/* condition */})
 {
-        ${2:/* code */}
+	${2:/* code */}
 }
 else
 {
-        ${3:/* else */}
+	${3:/* else */}
 }
 endsnippet
 
@@ -112,6 +139,17 @@ struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`}
 {
 	${0:/* data */}
 };
+endsnippet
+
+snippet fun "function" b
+${1:void} ${2:function_name}(${3})
+{
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+}
+endsnippet
+
+snippet fund "function declaration" b
+${1:void} ${2:function_name}(${3});
 endsnippet
 
 # vim:ft=snippets:

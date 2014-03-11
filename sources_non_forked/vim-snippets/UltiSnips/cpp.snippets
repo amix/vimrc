@@ -1,3 +1,10 @@
+priority -50
+
+extends c
+
+# We want to overwrite everything in parent ft.
+priority -49
+
 ###########################################################################
 #                            TextMate Snippets                            #
 ###########################################################################
@@ -20,7 +27,7 @@ endsnippet
 snippet ns "namespace .. (namespace)"
 namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`}
 {
-	$0
+	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
 }${1/.+/ \/* /m}$1${1/.+/ *\/ /m}
 endsnippet
 

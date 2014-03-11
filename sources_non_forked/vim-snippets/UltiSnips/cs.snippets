@@ -1,0 +1,328 @@
+#######################################################################
+#                      C# Snippets for UltiSnips                      #
+#######################################################################
+
+priority -50
+
+#########################
+#  classes and structs  #
+#########################
+
+snippet namespace "namespace" b
+namespace ${1:MyNamespace}
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet class "class" w
+class ${1:MyClass}
+{
+	$0
+}
+endsnippet
+
+snippet struct "struct" w
+struct ${1:MyStruct}
+{
+	$0
+}
+endsnippet
+
+snippet interface "interface" w
+interface I${1:Interface}
+{
+	$0
+}
+endsnippet
+
+snippet enum "enumeration" b
+enum ${1:MyEnum} { ${2:Item} };
+endsnippet
+
+
+############
+#  Main()  #
+############
+
+snippet sim "static int main" b
+static int Main(string[] args)
+{
+	$0
+}
+endsnippet
+
+snippet svm "static void main" b
+static void Main(string[] args)
+{
+	$0
+}
+endsnippet
+
+
+################
+#  properties  #
+################
+
+snippet prop "Simple property declaration" b
+public ${1:int} ${2:MyProperty} { get; set; }
+endsnippet
+
+snippet propfull "Full property declaration" b
+private ${1:int} ${2:_myProperty};
+
+public $1 ${3:MyProperty}
+{
+	get { return $2; }
+	set { $2 = value; }
+}
+endsnippet
+
+snippet propg "Property with a private setter" b
+public ${1:int} ${2:MyProperty} { get; private set; }
+endsnippet
+
+
+############
+#  blocks  #
+############
+
+snippet #if "#if #endif" b
+#if ${1:DEBUG}
+${VISUAL}$0
+#endif
+endsnippet
+
+snippet #region "#region #endregion" b
+#region ${1:Region}
+${VISUAL}$0
+#endregion
+endsnippet
+
+
+###########
+#  loops  #
+###########
+
+snippet for "for loop" b
+for (int ${1:i} = 0; $1 < ${2:10}; $1++)
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet forr "for loop (reverse)" b
+for (int ${1:i} = ${2:10}; $1 >= 0; $1--)
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet foreach "foreach loop" b
+foreach (${3:var} ${2:item} in ${1:items})
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet while "while loop" b
+while (${1:true})
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet do "do loop" b
+do
+{
+	${VISUAL}$0
+} while (${1:true});
+endsnippet
+
+
+###############
+#  branching  #
+###############
+
+snippet if "if statement" b
+if ($1)
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet ife "if else statement" b
+if ($1)
+{
+	${VISUAL}$0
+}
+else
+{
+}
+endsnippet
+
+snippet elif "else if" b
+else if ($1)
+{
+	$0
+}
+endsnippet
+
+snippet elseif "else if" b
+else if ($1)
+{
+	$0
+}
+endsnippet
+
+snippet ifnn "if not null" b
+if ($1 != null)
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet switch "switch statement" b
+switch (${1:statement})
+{
+	case ${2:value}:
+		break;
+
+	default:
+		$0break;
+}
+endsnippet
+
+snippet case "case" b
+case ${1:value}:
+	$2
+	break;
+endsnippet
+
+
+##############
+#  wrappers  #
+##############
+
+snippet using "using statement" b
+using (${1:resource})
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet unchecked "unchecked block" b
+unchecked
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet checked "checked block" b
+checked
+{
+	${VISUAL}$0
+}
+endsnippet
+
+snippet unsafe "unsafe" b
+unsafe
+{
+	${VISUAL}$0
+}
+endsnippet
+
+
+########################
+#  exception handling  #
+########################
+
+snippet try "try catch block" b
+try
+{
+	${VISUAL}$0
+}
+catch (${1:Exception} ${2:e})
+{
+	throw;
+}
+endsnippet
+
+snippet tryf "try finally block" b
+try
+{
+	${VISUAL}$0
+}
+finally
+{
+}
+endsnippet
+
+snippet throw "throw"
+throw new ${1}Exception("${2}");
+endsnippet
+
+
+##########
+#  LINQ  #
+##########
+
+snippet from "LINQ syntax" b
+var ${1:seq} =
+	from ${2:item1} in ${3:items1}
+	join ${4:item2} in ${5:items2} on $2.${6:prop1} equals $4.${7:prop2}
+	select ${8:$2.prop3}
+	where ${9:clause}
+endsnippet
+
+
+############################
+#  feedback and debugging  #
+############################
+
+snippet da "Debug.Assert" b
+Debug.Assert(${1:true});
+endsnippet
+
+snippet cw "Console.WriteLine" b
+Console.WriteLine("$1");
+endsnippet
+
+# as you first type comma-separated parameters on the right, {n} values appear in the format string
+snippet cwp "Console.WriteLine with parameters" b
+Console.WriteLine("${2:`!p
+snip.rv = ' '.join(['{' + str(i) + '}' for i in range(t[1].count(','))])
+`}"${1:, something});
+endsnippet
+
+snippet mbox "Message box" b
+MessageBox.Show("${1:message}");
+endsnippet
+
+
+##################
+#  full methods  #
+##################
+
+snippet equals "Equals method" b
+public override bool Equals(object obj)
+{
+	if (obj == null || GetType() != obj.GetType())
+	{
+		return false;
+	}
+	$0
+	return base.Equals(obj);
+}
+endsnippet
+
+
+##############
+#  comments  #
+##############
+
+snippet /// "XML comment" b
+/// <summary>
+/// $1
+/// </summary>
+endsnippet

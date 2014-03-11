@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2008-11-25.
-" @Last Change: 2013-09-25.
-" @Revision:    0.0.92
+" @Last Change: 2014-01-23.
+" @Revision:    0.0.108
 
 let s:prototype = tlib#Object#New({'_class': ['Filter_cnf'], 'name': 'cnf'}) "{{{2
 let s:prototype.highlight = g:tlib#input#higroup
@@ -147,7 +147,16 @@ endf
 
 " :nodoc:
 function! s:prototype.ReduceFrontFilter(world) dict "{{{3
-    let a:world.filter[0][0] = a:world.filter[0][0][0:-2]
+    let filter = a:world.filter[0][0]
+    " TLogVAR filter
+    let str = matchstr(filter, '\(\\\(\.\\{-}\|[.?*+$^]\)\|\)$')
+    if empty(str)
+        let filter = filter[0 : -2]
+    else
+        let filter = strpart(filter, 0, len(filter) - len(str))
+    endif
+    " TLogVAR str, filter
+    let a:world.filter[0][0] = filter
 endf
 
 

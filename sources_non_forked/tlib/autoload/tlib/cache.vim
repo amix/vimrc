@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
 " @Last Change: 2013-09-25.
-" @Revision:    0.1.220
+" @Revision:    0.1.230
 
 
 " The cache directory. If empty, use |tlib#dir#MyRuntime|.'/cache'.
@@ -109,13 +109,20 @@ endf
 
 
 function! tlib#cache#Save(cfile, dictionary) "{{{3
+    " TLogVAR a:cfile, a:dictionary
     call tlib#persistent#Save(a:cfile, a:dictionary)
 endf
 
 
-function! tlib#cache#Get(cfile) "{{{3
+function! tlib#cache#Get(cfile, ...) "{{{3
     call tlib#cache#MaybePurge()
-    return tlib#persistent#Get(a:cfile)
+    if !empty(a:cfile) && filereadable(a:cfile)
+        let val = readfile(a:cfile, 'b')
+        return eval(join(val, "\n"))
+    else
+        let default = a:0 >= 1 ? a:1 : {}
+        return default
+    endif
 endf
 
 
@@ -123,10 +130,18 @@ endf
 " or does not exist, create it calling a generator function.
 function! tlib#cache#Value(cfile, generator, ftime, ...) "{{{3
     if !filereadable(a:cfile) || (a:ftime != 0 && getftime(a:cfile) < a:ftime)
-        let args = a:0 >= 1 ? a:1 : []
-        let val = call(a:generator, args)
-        " TLogVAR a:generator, args, val
-        call tlib#cache#Save(a:cfile, {'val': val})
+        if empty(a:generator) && a:0 >= 1
+            " TLogVAR a:1
+            let val = a:1
+        else
+            let args = a:0 >= 1 ? a:1 : []
+            " TLogVAR a:generator, args
+            let val = call(a:generator, args)
+        endif
+        " TLogVAR val
+        let cval = {'val': val}
+        " TLogVAR cval
+        call tlib#cache#Save(a:cfile, cval)
         return val
     else
         let val = tlib#cache#Get(a:cfile)

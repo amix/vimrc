@@ -4,7 +4,7 @@ Author:  Tim Pope <http://tpo.pe/>
 License: Same terms as Vim itself (see |license|)
 
 Comment stuff out.  Then uncomment it later.  Relies on 'commentstring' to be
-correctly set.
+correctly set, or uses b:commentary_format if it is set.
 
 The gc mappings are preferred, while the \\ mappings are provided for
 backwards compatibility.
@@ -24,5 +24,8 @@ gcc                     Comment or uncomment [count] lines.
                                                 *gcu* *\\u*
 gcu                     Uncomment the current and adjacent commented lines.
 \\u
+
+The |User| CommentaryPost autocommand fires after a successful operation and
+can be used for advanced customization.
 
  vim:tw=78:et:ft=help:norl:

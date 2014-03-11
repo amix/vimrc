@@ -1,3 +1,5 @@
+priority -50
+
 # TextMate added these variables to cope with changes in ERB handling
 # in different versions of Rails -- for instance, Rails 3 automatically
 # strips whitespace so that it's no longer necessary to use a form like
@@ -11,16 +13,15 @@
 #
 global !p
 def textmate_var(var, snip):
-    lookup = dict(
-       TM_RAILS_TEMPLATE_START_RUBY_EXPR = snip.opt('g:tm_rails_template_start_ruby_expr', '<%= '),
-       TM_RAILS_TEMPLATE_END_RUBY_EXPR = snip.opt('g:tm_rails_template_end_ruby_expr', ' %>'),
-       TM_RAILS_TEMPLATE_START_RUBY_INLINE = snip.opt('g:tm_rails_template_start_ruby_inline', '<% '),
-       TM_RAILS_TEMPLATE_END_RUBY_INLINE = snip.opt('g:tm_rails_template_end_ruby_inline', ' %>'),
-       TM_RAILS_TEMPLATE_END_RUBY_BLOCK = '<% end %>'
-    )
-
-    snip.rv = lookup[var]
-    return
+	lookup = dict(
+		TM_RAILS_TEMPLATE_START_RUBY_EXPR = snip.opt('g:tm_rails_template_start_ruby_expr', '<%= '),
+		TM_RAILS_TEMPLATE_END_RUBY_EXPR = snip.opt('g:tm_rails_template_end_ruby_expr', ' %>'),
+		TM_RAILS_TEMPLATE_START_RUBY_INLINE = snip.opt('g:tm_rails_template_start_ruby_inline', '<% '),
+		TM_RAILS_TEMPLATE_END_RUBY_INLINE = snip.opt('g:tm_rails_template_end_ruby_inline', ' %>'),
+		TM_RAILS_TEMPLATE_END_RUBY_BLOCK = '<% end %>'
+	)
+	snip.rv = lookup[var]
+	return
 endglobal
 
 
@@ -42,7 +43,7 @@ endsnippet
 
 snippet ft "form_tag"
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`form_tag(${1::action => "${5:update}"}${6:, {:${8:class} => "${9:form}"\}}) do`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
-  $0
+	$0
 `!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
 endsnippet
 
@@ -52,11 +53,11 @@ endsnippet
 
 snippet for "for loop (ERB)"
 <% if !${1:list}.blank? %>
-  <% for ${2:item} in ${1} %>
-    $3
-  <% end %>
+	<% for ${2:item} in ${1} %>
+		$3
+	<% end %>
 <% else %>
-  $4
+	$4
 <% end %>
 
 endsnippet
@@ -74,7 +75,7 @@ snippet ffhf "form_for hidden_field 2"
 endsnippet
 
 snippet ffl "form_for label 2"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR}f.label :${1:attribute', snip)`${2:, "${3:${1/[[:alpha:]]+|(_)/(?1: :\u$0)/g}}"}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.label :${1:attribute}${2:, "${3:${1/[[:alpha:]]+|(_)/(?1: :\u$0)/g}}"}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
 snippet ffpf "form_for password_field 2"
@@ -99,7 +100,7 @@ endsnippet
 
 snippet fields "fields_for"
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`fields_for :${1:model}, @${2:$1} do |$1|`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_INLINE', snip)`
-  $0
+	$0
 `!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
 endsnippet
 
@@ -122,7 +123,7 @@ snippet f. "f.hidden_field"
 endsnippet
 
 snippet f. "f.label"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR}f.label :${1:attribute', snip)`${2:, "${3:${1/[[:alpha:]]+|(_)/(?1: :\u$0)/g}}"}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.label :${1:attribute}${2:, "${3:${1/[[:alpha:]]+|(_)/(?1: :\u$0)/g}}"}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
 snippet f. "f.password_field"
@@ -148,14 +149,14 @@ endsnippet
 snippet ffe "form_for with errors"
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`error_messages_for :${1:model}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`form_for @${2:$1} do |f|`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_INLINE', snip)`
-  $0
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`form_for @${2:$1} do |f|`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+	$0
 `!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
 endsnippet
 
 snippet ff "form_for"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`form_for @${1:model} do |f|`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_INLINE', snip)`
-  $0
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`form_for @${1:model} do |f|`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+	$0
 `!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
 endsnippet
 
@@ -271,9 +272,9 @@ snippet st "submit_tag"
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`submit_tag "${1:Save changes}"${2:, :id => "${3:submit}"}${4:, :name => "${5:$3}"}${6:, :class => "${7:form_$3}"}${8:, :disabled => ${9:false}}${10:, :disable_with => "${11:Please wait...}"}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet el "else (ERB)"
+snippet else "else (ERB)"
 <% else %>
-  
+	$0
 endsnippet
 
 snippet if "if (ERB)"

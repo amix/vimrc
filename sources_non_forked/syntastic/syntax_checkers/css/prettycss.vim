@@ -26,7 +26,7 @@ set cpo&vim
 function! SyntaxCheckers_css_prettycss_GetHighlightRegex(item)
     let term = matchstr(a:item["text"], '\m (\zs[^)]\+\ze)$')
     if term != ''
-        let term = '\V' . term
+        let term = '\V' . escape(term, '\')
     endif
     return term
 endfunction

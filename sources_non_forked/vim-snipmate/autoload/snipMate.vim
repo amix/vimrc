@@ -640,27 +640,30 @@ fun! snipMate#ScopesByFile()
 endf
 
 " used by both: completion and insert snippet
-fun! snipMate#GetSnippetsForWordBelowCursor(word, suffix, break_on_first_match)
+fun! snipMate#GetSnippetsForWordBelowCursor(word, exact)
 	" Setup lookups: '1.2.3' becomes [1.2.3] + [3, 2.3]
 	let parts = split(a:word, '\W\zs')
 	if len(parts) > 2
 		let parts = parts[-2:] " max 2 additional items, this might become a setting
 	endif
-	let lookups = [a:word.a:suffix]
+	let lookups = [a:word]
 	let lookup = ''
 	for w in reverse(parts)
 		let lookup = w . lookup
 		if index(lookups, lookup) == -1
-			call add(lookups, lookup.a:suffix)
+			call add(lookups, lookup)
 		endif
 	endfor
 
 	" allow matching '.'
 	if a:word =~ '\.$'
-		call add(lookups, '.'.a:suffix)
+		call add(lookups, '.')
 	endif
 
-	call filter(lookups, 'v:val != ""')
+	" Remove empty lookup entries, but only if there are other nonempty lookups
+	if len(lookups) > 1
+		call filter(lookups, 'v:val != ""')
+	endif
 
 	let matching_snippets = []
 	let snippet = ''
@@ -668,12 +671,14 @@ fun! snipMate#GetSnippetsForWordBelowCursor(word, suffix, break_on_first_match)
 	for word in lookups
 		let s:c.word = word
 		for [k,snippetD] in items(funcref#Call(s:c['get_snippets'], [snipMate#ScopesByFile(), word]))
-			if a:suffix == ''
-				" hack: require exact match
-				if k !=# word | continue | endif
+			" hack: require exact match
+			if a:exact && k !=# word
+				continue
 			endif
 			call add(matching_snippets, [k, snippetD])
-			if a:break_on_first_match | break| endif
+			if a:exact
+				break
+			endif
 		endfor
 	endfor
 	return matching_snippets
@@ -708,7 +713,7 @@ fun! snipMate#WordBelowCursor()
 endf
 
 fun! snipMate#GetSnippetsForWordBelowCursorForComplete(word)
-	let snippets = map(snipMate#GetSnippetsForWordBelowCursor(a:word, '*', 0), 'v:val[0]')
+	let snippets = map(snipMate#GetSnippetsForWordBelowCursor(a:word, 0), 'v:val[0]')
 	return filter(snippets, 'v:val =~# "\\V\\^' . escape(a:word, '"\') . '"')
 endf
 
@@ -769,7 +774,7 @@ function! snipMate#TriggerSnippet(...)
 	endif
 
 	let word = matchstr(getline('.'), '\S\+\%'.col('.').'c')
-	let list = snipMate#GetSnippetsForWordBelowCursor(word, '',  1)
+	let list = snipMate#GetSnippetsForWordBelowCursor(word, 1)
 	if empty(list)
 		let snippet = ''
 	else

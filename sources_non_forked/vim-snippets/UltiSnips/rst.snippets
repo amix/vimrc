@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+priority -50
+
 ###########################################################################
-#                              General Stuff                              #
+#							   General Stuff							  #
 ###########################################################################
 global !p
 import vim
@@ -12,25 +14,25 @@ from collections import Counter
 
 #http://docutils.sourceforge.net/docs/ref/rst/roles.html
 TEXT_ROLES = ['emphasis','literal','code','math',
-              'pep-reference','rfc-reference',
-              'strong','subscript','superscript',
-              'title-reference','raw'] 
+			  'pep-reference','rfc-reference',
+			  'strong','subscript','superscript',
+			  'title-reference','raw']
 TEXT_ROLES_REGEX = r'\.\.\srole::?\s(w+)'
 
 #http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
-SPECIFIC_ADMONITIONS = ["attention", "caution", "danger", 
-                        "error", "hint", "important", "note", 
-                        "tip", "warning"]
+SPECIFIC_ADMONITIONS = ["attention", "caution", "danger",
+						"error", "hint", "important", "note",
+						"tip", "warning"]
 #http://docutils.sourceforge.net/docs/ref/rst/directives.html
 DIRECTIVES = ['topic','sidebar','math','epigraph',
-              'parsed-literal','code','highlights',
-              'pull-quote','compound','container',
-              'list-table','class','sectnum',
-              'role','default-role','unicode',
-              'raw']
+			  'parsed-literal','code','highlights',
+			  'pull-quote','compound','container',
+			  'list-table','class','sectnum',
+			  'role','default-role','unicode',
+			  'raw']
 
 NONE_CONTENT_DIRECTIVES = ['rubric', 'contents', 'header',
-                           'footer', 'date', 'include', 'title']
+						   'footer', 'date', 'include', 'title']
 
 INCLUDABLE_DIRECTIVES = ['image', 'figure', 'include']
 # CJK chars
@@ -39,115 +41,115 @@ CJK_RE = re.compile(u'[⺀-⺙⺛-⻳⼀-⿕々〇〡-〩〸-〺〻㐀-䶵一-�
 
 
 def has_cjk(char):
-    """
-    Detect char contains CJK character
-    
-    :param char: characters needs to be detect 
-    """
-    try:
-        CJK_RE.finditer(char).next()
-    except StopIteration:
-        return False
-    else:
-        return True
+	"""
+	Detect char contains CJK character
+
+	:param char: characters needs to be detect
+	"""
+	try:
+		CJK_RE.finditer(char).next()
+	except StopIteration:
+		return False
+	else:
+		return True
 
 def real_filename(filename):
-    """peal extension name off if possible
-    # i.e. "foo.bar.png will return "foo.bar"
+	"""pealeextension name off if possible
+	# i.e. "foo.bar.png will return "foo.bar"
 	"""
-    return ospath.splitext(filename)[0]
+	return ospath.splitext(filename)[0]
 
 def check_file_exist(rst_path, relative_path):
-    """
-    For RST file, it can just include files as relative path.
-    
-    :param rst_path: absolute path to rst file
-    :param relative_path: path related to rst file
-    :return: relative file's absolute path if file exist
-    """
-    abs_path = ospath.join(ospath.dirname(rst_path), relative_path)
-    if ospath.isfile(abs_path):
-        return abs_path
+	"""
+	For RST file, it can just include files as relative path.
+
+	:param rst_path: absolute path to rst file
+	:param relative_path: path related to rst file
+	:return: relative file's absolute path if file exist
+	"""
+	abs_path = ospath.join(ospath.dirname(rst_path), relative_path)
+	if ospath.isfile(abs_path):
+		return abs_path
 
 
 def rst_char_len(char):
-    """ 
-    return len of string which fit in rst
-    For instance:chinese "我" decode as only one character, 
-    However, the rst interpreter needs 2 "=" instead of 1.
+	"""
+	return len of string which fit in rst
+	For instance:chinese "我" decode as only one character,
+	However, the rst interpreter needs 2 "=" instead of 1.
 
-    :param: char needs to be count
-    """
-    return len(re.findall(r'[^\u4e00-\u9fff\s]', char))+len(char)
+	:param: char needs to be count
+	"""
+	return len(re.findall(r'[^\u4e00-\u9fff\s]', char))+len(char)
 
 def	make_items(times, leading='+'):
-    """
-    make lines with leading char multitimes
-    
-    :param: times, how many times you need
-    :param: leading, leading character
-    """
-    times = int(times)
-    if leading == 1:
-        msg = ""
-        for x in xrange(1, times+1):
-            msg += "%s. Item\n" % x
-        return msg
-    else:
-        return ("%s Item\n" % leading) * times
+	"""
+	make lines with leading char multitimes
+
+	:param: times, how many times you need
+	:param: leading, leading character
+	"""
+	times = int(times)
+	if leading == 1:
+		msg = ""
+		for x in xrange(1, times+1):
+			msg += "%s. Item\n" % x
+		return msg
+	else:
+		return ("%s Item\n" % leading) * times
 
 
 def look_up_directives(regex, fpath):
-    """
-    find all directive args in given file
-    :param: regex, the regex that needs to match
-    :param: path, to path to rst file
+	"""
+	find all directive args in given file
+	:param: regex, the regex that needs to match
+	:param: path, to path to rst file
 
-    :return: list, empty list if nothing match
-    """
-    try:
-        with open(fpath) as source:
-            match = re.findall(regex, source.read())
-    except IOError:
-        match = []
-    return match
+	:return: list, empty list if nothing match
+	"""
+	try:
+		with open(fpath) as source:
+			match = re.findall(regex, source.read())
+	except IOError:
+		match = []
+	return match
 
 
 def get_popular_code_type():
-    """
-    find most popular code type in the given rst
+	"""
+	find most popular code type in the given rst
 
-    :param path: file to detect
+	:param path: file to detect
 
-    :return: string, most popular code type in file
-    """
-    buf = "".join(vim.current.buffer)
-    types = re.findall(r'[:|\.\.\s]code::?\s(\w+)', buf)
-    try:
-        popular_type = Counter(types).most_common()[0][0]
-    except IndexError:
-        popular_type = "lua" # Don't break default
-    return popular_type
- 
+	:return: string, most popular code type in file
+	"""
+	buf = "".join(vim.current.buffer)
+	types = re.findall(r'[:|\.\.\s]code::?\s(\w+)', buf)
+	try:
+		popular_type = Counter(types).most_common()[0][0]
+	except IndexError:
+		popular_type = "lua" # Don't break default
+	return popular_type
+
 
 def complete(t, opts):
-    """
-    get options that start with t
+	"""
+	get options that start with t
 
-    :param t: query string
-    :param opts: list that needs to be completed
+	:param t: query string
+	:param opts: list that needs to be completed
 
-    :return: a string that start with t
-    """
-    msg = "({0})"
-    if t:
-        opts = [ m[len(t):] for m in opts if m.startswith(t) ]
-    if len(opts) == 1:
-        return opts[0]
+	:return: a string that start with t
+	"""
+	msg = "({0})"
+	if t:
+		opts = [ m[len(t):] for m in opts if m.startswith(t) ]
+	if len(opts) == 1:
+		return opts[0]
 
-    if not len(opts):
-        msg = "{0}"
-    return msg.format("|".join(opts))
+	if not len(opts):
+		msg = "{0}"
+	return msg.format("|".join(opts))
 
 endglobal
 
@@ -199,22 +201,22 @@ snippet em "Emphasize string" i
 `!p
 # dirty but works with CJK charactor detection
 if has_cjk(vim.current.line):
-    snip.rv ="\ "`*${1:${VISUAL:Em}}*`!p
-if has_cjk(vim.current.line): 
-    snip.rv ="\ "
+	snip.rv ="\ "`*${1:${VISUAL:Em}}*`!p
+if has_cjk(vim.current.line):
+	snip.rv ="\ "
 else:
-    snip.rv = " "
+	snip.rv = " "
 `$0
 endsnippet
 
 snippet st "Strong string" i
-`!p 
+`!p
 if has_cjk(vim.current.line):
-    snip.rv ="\ "`**${1:${VISUAL:Strong}}**`!p
-if has_cjk(vim.current.line): 
-    snip.rv ="\ "
+	snip.rv ="\ "`**${1:${VISUAL:Strong}}**`!p
+if has_cjk(vim.current.line):
+	snip.rv ="\ "
 else:
-    snip.rv = " "
+	snip.rv = " "
 `$0
 endsnippet
 
@@ -236,12 +238,12 @@ snip.rv = make_items(match.groupdict()['num'], 1)
 `
 endsnippet
 ###########################################################################
-#                         More Specialized Stuff.                         #
+#						  More Specialized Stuff.						  #
 ###########################################################################
 snippet cb "Code Block" b
 .. code-block:: ${1:`!p snip.rv = get_popular_code_type()`}
 
-   ${2:code}
+	${2:code}
 
 $0
 endsnippet
@@ -249,7 +251,7 @@ endsnippet
 # match snippets :
 # img, inc, fig
 snippet id "Includable Directives" b
-`!p 
+`!p
 real_name=real_filename(ospath.basename(t[2]))
 di=t[1][:2]
 
@@ -257,28 +259,28 @@ link=""
 content=""
 
 if di == 'im':
-    link = "|{0}|".format(real_name)
+	link = "|{0}|".format(real_name)
 
 if di == 'fi':
-    content="""
-    :alt: {0}
-    {0}""".format(real_name)
+	content="""
+	:alt: {0}
+	{0}""".format(real_name)
 `
 ..`!p snip.rv = " %s" % link if link else ""` $1`!p snip.rv=complete(t[1], INCLUDABLE_DIRECTIVES)`:: ${2:file}`!p if content:
-    snip.rv +="    "+content`
+	snip.rv +="    "+content`
 `!p
 # Tip of whether file is exist in comment type
 if not check_file_exist(path, t[2]):
-    snip.rv='.. FILE {0} does not exist'.format(t[2])
+	snip.rv='.. FILE {0} does not exist'.format(t[2])
 else:
-    snip.rv=""
+	snip.rv=""
 `$0
 endsnippet
 
 snippet di "Directives" b
 .. $1`!p snip.rv=complete(t[1], DIRECTIVES)`:: $2
 
-    ${3:Content}
+	${3:Content}
 $0
 endsnippet
 
@@ -289,8 +291,8 @@ endsnippet
 
 snippet sa "Specific Admonitions" b
 .. $1`!p snip.rv =complete(t[1], SPECIFIC_ADMONITIONS)`::
-    
-    ${2:Content}
+
+	${2:Content}
 
 $0
 endsnippet
@@ -298,8 +300,8 @@ endsnippet
 #it will be trigger at start of line or after a word
 snippet ro "Text Roles" w
 \ :$1`!p snip.rv=complete(t[1],
-                          TEXT_ROLES+look_up_directives(TEXT_ROLES_REGEX,
-                                                        path))`:\`$2\`\ 
+						  TEXT_ROLES+look_up_directives(TEXT_ROLES_REGEX,
+														path))`:\`$2\`\
 endsnippet
 
 ############
@@ -309,6 +311,6 @@ endsnippet
 snippet sid "SideBar" b
 .. sidebar:: ${1:SideBar Title}
 
-    ${2:SideBar Content}
+	${2:SideBar Content}
 endsnippet
 # vim:ft=snippets:

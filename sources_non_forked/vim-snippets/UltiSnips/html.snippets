@@ -1,13 +1,15 @@
+priority -50
+
 ###########################################################################
 #                            TextMate Snippets                            #
 ###########################################################################
 
 global !p
 def x(snip):
-    if snip.ft.startswith("x"):
-        snip.rv = '/'
-    else:
-        snip.rv = ""
+	if snip.ft.startswith("x"):
+		snip.rv = '/'
+	else:
+		snip.rv = ""
 endglobal
 
 ############
@@ -123,21 +125,21 @@ endsnippet
 #############
 # HTML TAGS #
 #############
-snippet input "Input with Label"
+snippet input "Input with Label" w
 <label for="${2:${1/[[:alpha:]]+|( )/(?1:_:\L$0)/g}}">$1</label><input type="${3:text/submit/hidden/button}" name="${4:$2}" value="$5"${6: id="${7:$2}"}`!p x(snip)`>
 
 endsnippet
 
-snippet input "XHTML   <input>"
+snippet input "XHTML   <input>" w
 <input type="${1:text/submit/hidden/button}" name="${2:some_name}" value="$3"${4: id="${5:$2}"}`!p x(snip)`>
 endsnippet
 
 
-snippet opt "Option"
+snippet opt "Option" w
 <option${1: value="${2:option}"}>${3:$2}</option>
 endsnippet
 
-snippet select "Select Box"
+snippet select "Select Box" w
 <select name="${1:some_name}" id="${2:$1}"${3:${4: multiple}${5: onchange="${6:}"}${7: size="${8:1}"}}>
 	<option${9: value="${10:option1}"}>${11:$10}</option>
 	<option${12: value="${13:option2}"}>${14:$13}</option>${15:}
@@ -146,16 +148,20 @@ snippet select "Select Box"
 endsnippet
 
 
-snippet textarea "XHTML   <textarea>"
+snippet textarea "XHTML   <textarea>" w
 <textarea name="${1:Name}" rows="${2:8}" cols="${3:40}">$0</textarea>
 endsnippet
 
-snippet mailto "XHTML <a mailto: >"
+snippet mailto "XHTML <a mailto: >" w
 <a href="mailto:${1:joe@example.com}?subject=${2:feedback}">${3:email me}</a>
 endsnippet
 
-snippet base "XHTML <base>"
+snippet base "XHTML <base>" w
 <base href="$1"${2: target="$3"}`!p x(snip)`>
+endsnippet
+
+snippet img "XHTML <img>" w
+<img src="${1:imgsrc}">
 endsnippet
 
 snippet body "XHTML <body>"
@@ -166,13 +172,13 @@ snip.rv = snip.fn and 'Hallo' or 'Nothin'
 </body>
 endsnippet
 
-snippet div "XHTML <div>"
-<div`!p snip.rv=' id="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""`>
-   $0
+snippet div "XHTML <div>" w
+<div`!p snip.rv=' id="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""``!p snip.rv=' class="' if t[2] else ""`${2:name}`!p snip.rv = '"' if t[2] else ""`>
+	$0
 </div>
 endsnippet
 
-snippet form "XHTML <form>"
+snippet form "XHTML <form>" w
 <form action="${1:`!p
 snip.rv = (snip.basename or 'unnamed') + '_submit'
 `}" method="${2:get}" accept-charset="utf-8">
@@ -182,7 +188,7 @@ snip.rv = (snip.basename or 'unnamed') + '_submit'
 </form>
 endsnippet
 
-snippet h1 "XHTML <h1>"
+snippet h1 "XHTML <h1>" w
 <h1 id="${1/[\w\d]+|( )/(?1:_:\L$0\E)/g}">${1}</h1>
 endsnippet
 
@@ -194,71 +200,70 @@ snippet head "XHTML <head>"
 </head>
 endsnippet
 
-snippet link "XHTML <link>"
+snippet link "XHTML <link>" w
 <link rel="${1:stylesheet}" href="${2:/css/master.css}" type="text/css" media="${3:screen}" title="${4:no title}" charset="${5:utf-8}"`!p x(snip)`>
 endsnippet
 
-snippet meta "XHTML <meta>"
+snippet meta "XHTML <meta>" w
 <meta name="${1:name}" content="${2:content}"`!p x(snip)`>
 endsnippet
 
-snippet scriptsrc "XHTML <script src...>"
+snippet scriptsrc "XHTML <script src...>" w
 <script src="$1" type="text/javascript" charset="${3:utf-8}"></script>
 endsnippet
 
-snippet script "XHTML <script>"
+snippet script "XHTML <script>" w
 <script type="text/javascript" charset="utf-8">
 	$0
 </script>
 endsnippet
 
-snippet style "XHTML <style>"
+snippet style "XHTML <style>" w
 <style type="text/css" media="screen">
 	$0
 </style>
 endsnippet
 
-snippet table "XHTML <table>"
+snippet table "XHTML <table>" w
 <table border="${1:0}"${2: cellspacing="${3:5}" cellpadding="${4:5}"}>
 	<tr><th>${5:Header}</th></tr>
 	<tr><td>${0:Data}</td></tr>
 </table>
 endsnippet
 
-snippet a "Link"
+snippet a "Link" w
 <a href="${1:http://www.${2:url.com}}"${3: target="_blank"}>${4:Anchor Text}</a>
 endsnippet
 
-snippet p "paragraph"
+snippet p "paragraph" w
 <p>$0</p>
 endsnippet
 
-snippet li "list item"
-<li></li>
+snippet li "list item" w
+<li>$0</li>
 endsnippet
 
-snippet ul "unordered list"
+snippet ul "unordered list" w
 <ul>
 $0
 </ul>
 endsnippet
 
-snippet td "table cell"
+snippet td "table cell" w
 <td>$0</td>
 endsnippet
 
-snippet tr "table row"
+snippet tr "table row" w
 <tr>$0</tr>
 endsnippet
 
-snippet title "XHTML <title>"
+snippet title "XHTML <title>" w
 <title>${1:`!p snip.rv = snip.basename or "Page Title"`}</title>
 endsnippet
 
-snippet fieldset "Fieldset"
+snippet fieldset "Fieldset" w
 <fieldset id="${1/[\w\d]+|( )/(?1:_:\L$0\E)/g}" ${2:class="${3:}"}>
 	<legend>$1</legend>
-	
 	$0
 </fieldset>
 endsnippet
@@ -282,7 +287,7 @@ snippet html5 "HTML5 Template"
 <html>
 <head>
 	<title>${1}</title>
-	<meta charset="utf-8">
+	<meta charset="utf-8" />
 </head>
 <body>
 	<header>

@@ -114,9 +114,9 @@ function! g:SyntasticLoclist.setName(name) " {{{2
     let self._name = a:name
 endfunction " }}}2
 
-function! g:SyntasticLoclist.decorate(filetype, name) " {{{2
+function! g:SyntasticLoclist.decorate(tag) " {{{2
     for e in self._rawLoclist
-        let e['text'] .= ' [' . a:filetype . '/' . a:name . ']'
+        let e['text'] .= ' [' . a:tag . ']'
     endfor
 endfunction " }}}2
 

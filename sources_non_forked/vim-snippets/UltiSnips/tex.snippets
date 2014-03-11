@@ -1,28 +1,12 @@
+priority -50
 
-###########################################################################
-#                             LATEX SNIPPETS                              #
-###########################################################################
+extends texmath
 
-snippet r "\ref{}" w
-\ref{$1}
-endsnippet
-
-###########################################################################
-#                            TEXTMATE SNIPPETS                            #
-###########################################################################
-
-#################
-# GENERAL STUFF #
-#################
 snippet "b(egin)?" "begin{} / end{}" br
 \begin{${1:something}}
 	${0:${VISUAL}}
 \end{$1}
 endsnippet
-
-####################
-# TABULARS, ARRAYS #
-####################
 
 snippet tab
 \begin{${1:t}${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${2:c}}
@@ -30,9 +14,15 @@ $0${2/((?<=.)c|l|r)|./(?1: & )/g}
 \end{$1${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}
 endsnippet
 
-########################
-# ENUM, DESCR, ITEMIZE #
-########################
+snippet fig "Figure environment" b
+\begin{figure}${2:[htpb]}
+	\centering
+	\includegraphics[width=${3:0.8}\linewidth]{${4:name.ext}}
+	\caption{${4/(\w+)\.\w+/\u$1/}$0}
+	\label{fig:${4/(\w+)\.\w+/$1/}}
+\end{figure}
+endsnippet
+
 snippet enum "Enumerate" b
 \begin{enumerate}
 	\item $0
@@ -51,74 +41,70 @@ snippet desc "Description" b
 \end{description}
 endsnippet
 
-#####################################
-# SECTIONS, CHAPTERS AND THERE LIKE #
-#####################################
+snippet it "Individual item" b
+\item ${1}
+$0
+endsnippet
 
 snippet part "Part" b
 \part{${1:part name}}
-\label{prt:${2:${1/(\w+)|\W+/(?1:\L$0\E:_)/g}}}
+\label{prt:${2:${1/(\w+)|\W+/(?1:\L$0\E:_)/ga}}}
 
 ${0}
-
-% part $2 (end)
 endsnippet
 
 snippet cha "Chapter" b
 \chapter{${1:chapter name}}
-\label{cha:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/g}}}
+\label{cha:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 ${0}
-
-% chapter $2 (end)
 endsnippet
 
 snippet sec "Section" b
 \section{${1:section name}}
-\label{sec:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/g}}}
+\label{sec:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 ${0}
-
-% section $2 (end)
 endsnippet
-
 
 snippet sub "Subsection" b
 \subsection{${1:subsection name}}
-\label{sub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/g}}}
+\label{sub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 ${0}
-
-% subsection $2 (end)
 endsnippet
 
 snippet ssub "Subsubsection" b
 \subsubsection{${1:subsubsection name}}
-\label{ssub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/g}}}
+\label{ssub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 ${0}
-
-% subsubsection $2 (end)
-
 endsnippet
 
 snippet par "Paragraph" b
 \paragraph{${1:paragraph name}}
-\label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/g}}}
+\label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 ${0}
-
-% paragraph $2 (end)
 endsnippet
-
 
 snippet subp "Subparagraph" b
 \subparagraph{${1:subparagraph name}}
-\label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/g}}}
+\label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 ${0}
-
-% subparagraph $2 (end)
 endsnippet
 
+snippet ni "Non-indented paragraph" b
+\noindent
+${0}
+endsnippet
+
+snippet pac "Package" b
+\usepackage[${1:options}]{${2:package}}$0
+endsnippet
+
+snippet lp "Long parenthesis"
+\left(${1:${VISUAL:contents}}\right)$0
+endsnippet
 # vim:ft=snippets:
