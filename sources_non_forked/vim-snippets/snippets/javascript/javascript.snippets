@@ -1,0 +1,200 @@
+# Prototype
+snippet proto
+	${1:class_name}.prototype.${2:method_name} =
+	function(${3:first_argument}) {
+		${0:// body...}
+	};
+# Function
+snippet fun
+	function ${1:function_name}(${2:argument}) {
+		${0:// body...}
+	}
+# Anonymous Function
+snippet f
+	function (${1}) {
+		${0}
+	}${2:;}
+# Immediate function
+snippet (f
+	(function (${1}) {
+		${0}
+	}(${2}));
+# if
+snippet if
+	if (${1:true}) {
+		${0}
+	}
+# if ... else
+snippet ife
+	if (${1:true}) {
+		${2}
+	} else {
+		${0}
+	}
+# tertiary conditional
+snippet ter
+	${1:/* condition */} ? ${2:a} : ${0:b}
+# switch
+snippet switch
+	switch (${1:expression}) {
+		case '${3:case}':
+			${4}
+			break;
+		${0}
+		default:
+			${2}
+	}
+# case
+snippet case
+	case '${1:case}':
+		${2}
+		break;
+	${0}
+# for (...) {...}
+snippet for
+	for (var ${2:i} = 0, l = ${1:arr}.length; $2 < l; $2 ++) {
+		var ${3:v} = $1[$2];${0:}
+	}
+# for (...) {...} (Improved Native For-Loop)
+snippet forr
+	for (var ${2:i} = ${1:arr}.length - 1; $2 >= 0; $2 --) {
+		var ${3:v} = $1[$2];${0:}
+	}
+# while (...) {...}
+snippet wh
+	while (${1:/* condition */}) {
+		${0}
+	}
+# try
+snippet try
+	try {
+		${1}
+	} catch (${2:e}) {
+		${0:/* handle error */}
+	}
+# do...while
+snippet do
+	do {
+		${0}
+	} while (${1:/* condition */});
+# Object Method
+snippet :f
+	${1:method_name}: function (${2:attribute}) {
+		${0}
+	}${3:,}
+# setTimeout function
+snippet timeout
+	setTimeout(function () {${0}}${2}, ${1:10});
+# Get Elements
+snippet get
+	getElementsBy${1:TagName}('${2}')
+# Get Element
+snippet gett
+	getElementBy${1:Id}('${2}')
+# console.log (Firebug)
+snippet cl
+	console.log(${0});
+# return
+snippet ret
+	return ${0:result}
+# for (property in object ) { ... }
+snippet fori
+	for (var ${1:prop} in ${2:Things}) {
+		${0:$2[$1]}
+	}
+# hasOwnProperty
+snippet has
+	hasOwnProperty(${0})
+# docstring
+snippet /**
+	/**
+	 * ${0:description}
+	 *
+	 */
+snippet @par
+	@param {${1:type}} ${2:name} ${0:description}
+snippet @ret
+	@return {${1:type}} ${0:description}
+# JSON.parse
+snippet jsonp
+	JSON.parse(${0:jstr});
+# JSON.stringify
+snippet jsons
+	JSON.stringify(${0:object});
+# self-defining function
+snippet sdf
+	var ${1:function_name} = function (${2:argument}) {
+		${3}
+
+		$1 = function ($2) {
+			${0}
+		};
+	};
+# singleton
+snippet sing
+	function ${1:Singleton} (${2:argument}) {
+		// the cached instance
+		var instance;
+
+		// rewrite the constructor
+		$1 = function $1($2) {
+			return instance;
+		};
+
+		// carry over the prototype properties
+		$1.prototype = this;
+
+		// the instance
+		instance = new $1();
+
+		// reset the constructor pointer
+		instance.constructor = $1;
+
+		${0}
+
+		return instance;
+	}
+# Crockford's object function
+snippet obj
+	function object(o) {
+		function F() {}
+		F.prototype = o;
+		return new F();
+	}
+# Define multiple properties
+snippet props
+	var ${1:my_object} = Object.defineProperties(
+		${2:new Object()},
+		{
+			${3:property} : {
+				get : function $1_$3_getter() {
+					// getter code
+				},
+				set : function $1_$3_setter(value) {
+					// setter code
+				},
+				value        : ${4:value},
+				writeable    : ${5:boolean},
+				enumerable   : ${6:boolean},
+				configurable : ${0:boolean}
+			}
+		}
+	);
+# Define single property
+snippet prop
+	Object.defineProperty(
+		${1:object},
+		"${2:property}",
+		{
+			get : function $1_$2_getter() {
+				// getter code
+			},
+			set : function $1_$2_setter(value) {
+				// setter code
+			},
+			value        : ${3:value},
+			writeable    : ${4:boolean},
+			enumerable   : ${5:boolean},
+			configurable : ${0:boolean}
+		}
+	);
