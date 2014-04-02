@@ -411,3 +411,8 @@ function! <SID>BufcloseCloseIt()
      execute("bdelete! ".l:currentBufNum)
    endif
 endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => custom settings 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set number
