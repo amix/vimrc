@@ -14,16 +14,18 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haskell_hlint_GetLocList() dict
-    let makeprg = self.makeprgBuild({})
+    let makeprg = self.makeprgBuild({
+        \ 'fname': syntastic#util#shexpand('%:p')})
 
     let errorformat =
-        \ '%E%f:%l:%c: Error: %m,' .
-        \ '%W%f:%l:%c: Warning: %m,' .
+        \ '%E%f:%l:%v: Error: %m,' .
+        \ '%W%f:%l:%v: Warning: %m,' .
         \ '%C%m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'defaults': {'vcol': 1},
         \ 'postprocess': ['compressWhitespace'] })
 endfunction
 

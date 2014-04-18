@@ -38,12 +38,13 @@ function! SyntaxCheckers_racket_code_ayatollah_GetLocList() dict
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'subtype': 'Style',
-        \ 'postprocess': ['sort'] })
+        \ 'subtype': 'Style' })
 
     for e in loclist
         let e['col'] += 1
     endfor
+
+    call self.setWantSort(1)
 
     return loclist
 endfunction

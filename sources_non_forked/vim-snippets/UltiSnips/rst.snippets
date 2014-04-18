@@ -12,6 +12,8 @@ from string import Template
 import re
 from collections import Counter
 
+from vimsnippets import complete
+
 #http://docutils.sourceforge.net/docs/ref/rst/roles.html
 TEXT_ROLES = ['emphasis','literal','code','math',
 			  'pep-reference','rfc-reference',
@@ -130,27 +132,6 @@ def get_popular_code_type():
 	except IndexError:
 		popular_type = "lua" # Don't break default
 	return popular_type
-
-
-def complete(t, opts):
-	"""
-	get options that start with t
-
-	:param t: query string
-	:param opts: list that needs to be completed
-
-	:return: a string that start with t
-	"""
-	msg = "({0})"
-	if t:
-		opts = [ m[len(t):] for m in opts if m.startswith(t) ]
-	if len(opts) == 1:
-		return opts[0]
-
-	if not len(opts):
-		msg = "{0}"
-	return msg.format("|".join(opts))
-
 endglobal
 
 snippet part "Part" b

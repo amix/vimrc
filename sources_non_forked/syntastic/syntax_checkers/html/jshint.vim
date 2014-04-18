@@ -34,7 +34,8 @@ endfunction
 function! SyntaxCheckers_html_jshint_GetLocList() dict
     let makeprg = self.makeprgBuild({
         \ 'exe': expand(g:syntastic_jshint_exec),
-        \ 'args': (g:syntastic_html_jshint_conf != '' ? '--config ' . g:syntastic_html_jshint_conf : ''),
+        \ 'args': (g:syntastic_html_jshint_conf != '' ?
+        \       '--config ' . syntastic#util#shexpand(g:syntastic_html_jshint_conf) : ''),
         \ 'args_after': '--verbose --extract always' })
 
     let errorformat = '%A%f: line %l\, col %v\, %m \(%t%*\d\)'

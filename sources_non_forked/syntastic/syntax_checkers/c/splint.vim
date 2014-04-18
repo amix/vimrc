@@ -35,8 +35,11 @@ function! SyntaxCheckers_c_splint_GetLocList() dict
 
     let errorformat =
         \ '%-G%f:%l:%v: %[%#]%[%#]%[%#] Internal Bug %.%#,' .
+        \ '%-G%f(%l\,%v): %[%#]%[%#]%[%#] Internal Bug %.%#,' .
         \ '%W%f:%l:%v: %m,' .
+        \ '%W%f(%l\,%v): %m,' .
         \ '%W%f:%l: %m,' .
+        \ '%W%f(%l): %m,' .
         \ '%-C %\+In file included from %.%#,' .
         \ '%-C %\+from %.%#,' .
         \ '%+C %.%#'

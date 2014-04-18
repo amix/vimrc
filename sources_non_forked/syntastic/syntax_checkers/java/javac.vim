@@ -43,7 +43,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! s:CygwinPath(path)
-    return substitute(system("cygpath -m " . a:path), '\n', '', 'g')
+    return substitute(system("cygpath -m " . syntastic#util#shescape(a:path)), '\n', '', 'g')
 endfunction
 
 if !exists("g:syntastic_java_javac_temp_dir")
@@ -123,8 +123,8 @@ function! s:SplitClasspath(classpath)
 endfunction
 
 function! s:LoadConfigFile()
-    if filereadable(g:syntastic_java_javac_config_file)
-        exe 'source '.g:syntastic_java_javac_config_file
+    if filereadable(expand(g:syntastic_java_javac_config_file))
+        exe 'source ' . fnameescape(expand(g:syntastic_java_javac_config_file))
     endif
 endfunction
 
@@ -137,9 +137,9 @@ function! s:SaveClasspath()
     endfor
     " save classpath to config file
     if g:syntastic_java_javac_config_file_enabled
-        if filereadable(g:syntastic_java_javac_config_file)
+        if filereadable(expand(g:syntastic_java_javac_config_file))
             " load lines from config file
-            let lines = readfile(g:syntastic_java_javac_config_file)
+            let lines = readfile(expand(g:syntastic_java_javac_config_file))
             " strip g:syntastic_java_javac_classpath options from config file lines
             let i = 0
             while i < len(lines)
@@ -155,7 +155,7 @@ function! s:SaveClasspath()
         " add new g:syntastic_java_javac_classpath option to config
         call add(lines, 'let g:syntastic_java_javac_classpath = "'.path.'"')
         " save config file lines
-        call writefile(lines, g:syntastic_java_javac_config_file)
+        call writefile(lines, expand(g:syntastic_java_javac_config_file))
     endif
     " set new classpath
     let g:syntastic_java_javac_classpath = path
@@ -192,7 +192,7 @@ function! s:SaveConfig()
     let lines = getline(1, line('$'))
     if g:syntastic_java_javac_config_file_enabled
         " save config file lines
-        call writefile(lines, g:syntastic_java_javac_config_file)
+        call writefile(lines, expand(g:syntastic_java_javac_config_file))
     endif
     let &modified = 0
 endfunction
@@ -202,8 +202,8 @@ function! s:EditConfig()
     let winnr = bufwinnr('^' . command . '$')
     if winnr < 0
         let lines = []
-        if filereadable(g:syntastic_java_javac_config_file)
-            let lines = readfile(g:syntastic_java_javac_config_file)
+        if filereadable(expand(g:syntastic_java_javac_config_file))
+            let lines = readfile(expand(g:syntastic_java_javac_config_file))
         endif
         execute (len(lines) + 5) . 'sp ' . fnameescape(command)
 
@@ -329,7 +329,7 @@ function! s:MavenOutputDirectory()
         endif
 
         if has('win32unix')
-            let output_dir=s:CygwinPath(output_dir)
+            let output_dir = s:CygwinPath(output_dir)
         endif
         return output_dir
     endif
@@ -408,7 +408,7 @@ function! SyntaxCheckers_java_javac_GetLocList() dict
     let fname = fnameescape(expand ( '%:p:h' ) . sep . expand ( '%:t' ))
 
     if has('win32unix')
-        let fname =  s:CygwinPath(fname)
+        let fname = s:CygwinPath(fname)
     endif
 
     let makeprg = self.makeprgBuild({

@@ -46,7 +46,7 @@ function! s:init_pad(command)
   execute a:command
 
   setlocal buftype=nofile bufhidden=wipe nomodifiable nobuflisted noswapfile
-        \ nonu nocursorline winfixwidth winfixheight statusline=\ 
+      \ nonu nocursorline nocursorcolumn winfixwidth winfixheight statusline=\ 
   if exists('&rnu')
     setlocal nornu
   endif
@@ -115,6 +115,8 @@ function! s:tranquilize()
 endfunction
 
 function! s:goyo_on(width)
+  let s:orig_tab = tabpagenr()
+
   " New tab
   tab split
 
@@ -249,6 +251,7 @@ function! s:goyo_off()
     bd
   endif
   tabclose
+  execute 'normal! '.s:orig_tab.'gt'
 
   let wmh = remove(goyo_revert, 'winminheight')
   let wh  = remove(goyo_revert, 'winheight')

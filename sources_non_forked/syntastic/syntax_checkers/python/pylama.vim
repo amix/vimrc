@@ -32,8 +32,7 @@ function! SyntaxCheckers_python_pylama_GetLocList() dict
 
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat,
-        \ 'postprocess': ['sort'] })
+        \ 'errorformat': errorformat })
 
     " adjust for weirdness in each checker
     for e in loclist
@@ -52,6 +51,8 @@ function! SyntaxCheckers_python_pylama_GetLocList() dict
             let e['subtype'] = 'Style'
         endif
     endfor
+
+    call self.setWantSort(1)
 
     return loclist
 endfunction

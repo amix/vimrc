@@ -29,7 +29,7 @@ Following the coding conventions/styles used in the syntastic core:
 * Use 4 space indents.
 * Don't use abbreviated keywords - e.g. use `endfunction`, not `endfun` (there's always room for more fun!).
 * Don't use `l:` prefixes for variables unless actually required (i.e. almost never).
-* Code for maintainability. We would rather a function be a couple of lines longer and have (for example) some [explaining variables](http://www.refactoring.com/catalog/introduceExplainingVariable.html) to aid readability.
+* Code for maintainability. We would rather a function be a couple of lines longer and have (for example) some [explaining variables](http://www.refactoring.com/catalog/extractVariable.html) to aid readability.
 
 # Syntax checker style notes
 

@@ -120,19 +120,19 @@ endsnippet
 
 snippet gs "PHP Class Getter Setter" b
 /*
- * Getter for ${1/(\w+)\s*;/$1/}
+ * Getter for $1
  */
-public function get${1/(\w+)\s*;/\u$1/}()
+public function get${1/\w+\s*/\u$0/}()
 {
-	return $this->${1/(\w+)\s*;/$1/};$2
+	return $this->$1;$2
 }
 
 /*
- * Setter for ${1/(\w+)\s*;/$1/}
+ * Setter for $1
  */
-public function set${1/(\w+)\s*;/\u$1/}($${1/(\w+)\s*;/$1/})
+public function set${1/\w+\s*/\u$0/}($$1)
 {
-	$this->${1/(\w+)\s*;/$1/} = $${1/(\w+)\s*;/$1/};$3
+	$this->$1 = $$1;$3
 	${4:return $this;}
 }
 $0

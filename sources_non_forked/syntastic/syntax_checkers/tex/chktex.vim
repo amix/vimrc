@@ -45,11 +45,14 @@ function! SyntaxCheckers_tex_chktex_GetLocList() dict
         \ '%Z%p^,' .
         \ '%-G%.%#'
 
-    return SyntasticMake({
+    let loclist =  SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'subtype': 'Style',
-        \ 'postprocess': ['sort'] })
+        \ 'subtype': 'Style' })
+
+    call self.setWantSort(1)
+
+    return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

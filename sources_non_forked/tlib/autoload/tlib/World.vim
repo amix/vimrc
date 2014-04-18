@@ -1,7 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    1389
+" @Revision:    1391
 
 " :filedoc:
 " A prototype used by |tlib#input#List|.
@@ -985,7 +985,7 @@ function! s:prototype.DisplayHelp() dict "{{{3
         endif
         if stridx(self.type, 'm') != -1
             call self.PushHelp('<S-Up/Down>', '(Un)Select items')
-            call self.PushHelp('#, <C-Space>', '(Un)Select the current item')
+            call self.PushHelp('#', '(Un)Select the current item')
             call self.PushHelp('<C|M-a>', '(Un)Select all items')
             call self.PushHelp('<F9>', '(Un)Restrict view to selection')
             " \ '<c-\>        ... Show only selected',

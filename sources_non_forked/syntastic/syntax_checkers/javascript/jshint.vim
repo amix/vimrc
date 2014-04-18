@@ -25,19 +25,22 @@ function! SyntaxCheckers_javascript_jshint_IsAvailable() dict
     if !exists('g:syntastic_jshint_exec')
         let g:syntastic_jshint_exec = self.getExec()
     endif
-    return executable(expand(g:syntastic_jshint_exec))
+    if !executable(expand(g:syntastic_jshint_exec))
+        return 0
+    endif
+    let s:jshint_version = syntastic#util#getVersion(syntastic#util#shexpand(g:syntastic_jshint_exec) . ' --version')
+    return syntastic#util#versionIsAtLeast(s:jshint_version, [1])
 endfunction
 
 function! SyntaxCheckers_javascript_jshint_GetLocList() dict
-    let exe = syntastic#util#shexpand(g:syntastic_jshint_exec)
     if !exists('s:jshint_new')
-        let s:jshint_new =
-            \ syntastic#util#versionIsAtLeast(syntastic#util#getVersion(exe . ' --version'), [1, 1])
+        let s:jshint_new = syntastic#util#versionIsAtLeast(s:jshint_version, [1, 1])
     endif
 
     let makeprg = self.makeprgBuild({
-        \ 'exe': exe,
-        \ 'args': (g:syntastic_javascript_jshint_conf != '' ? '--config ' . g:syntastic_javascript_jshint_conf : ''),
+        \ 'exe': syntastic#util#shexpand(g:syntastic_jshint_exec),
+        \ 'args': (g:syntastic_javascript_jshint_conf != '' ?
+        \       '--config ' . syntastic#util#shexpand(g:syntastic_javascript_jshint_conf) : ''),
         \ 'args_after': (s:jshint_new ? '--verbose ' : '') })
 
     let errorformat = s:jshint_new ?

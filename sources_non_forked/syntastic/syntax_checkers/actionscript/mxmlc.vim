@@ -47,7 +47,7 @@ endfunction
 function! SyntaxCheckers_actionscript_mxmlc_GetLocList() dict
     let makeprg = self.makeprgBuild({
         \ 'args_before': (g:syntastic_actionscript_mxmlc_conf != '' ?
-        \   ' -load-config+=' . g:syntastic_actionscript_mxmlc_conf : ''),
+        \   ' -load-config+=' . syntastic#util#shexpand(g:syntastic_actionscript_mxmlc_conf) : ''),
         \ 'args_after': '-output=' . syntastic#util#DevNull() })
 
     let errorformat =

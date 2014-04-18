@@ -74,6 +74,14 @@ Commands~
                                 files will be shown, with the existing files
                                 shown first.
 
+:SnipMateLoadScope[!] scope [scope ...]
+                                Load snippets from additional scopes. Without
+                                [!] the additional scopes are loaded only in
+                                the current buffer. For example >
+                                    :SnipMateLoadScopes rails
+<                               will load all rails.snippets in the current
+                                buffer.
+
                                                             *SnipMate-options*
 Options~
 
@@ -103,7 +111,9 @@ g:snipMate.scope_aliases        A |Dictionary| associating certain filetypes
                                 addition to "ruby" snippets should be loaded
                                 when editing files with 'filetype' set to
                                 "ruby" or contains "ruby" as an entry in the
-                                case of dotted filetypes.
+                                case of dotted filetypes. A buffer local
+                                variant b:snipMate_scope_aliases is merged
+                                with the global variant.
 
 g:snipMate_no_default_aliases
                                 When set to 1, prevents SnipMate from loading
@@ -178,6 +188,7 @@ settings (taking into account the dotted syntax), the following files are read
 for snippets: >
 
     .../snippets/<scope>.snippets
+    .../snippets/<scope>_<name>.snippets
     .../snippets/<scope>/<name>.snippets
     .../snippets/<scope>/<trigger>.snippet
     .../snippets/<scope>/<trigger>/<description>.snippet

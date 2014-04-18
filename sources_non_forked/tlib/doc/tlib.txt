@@ -52,6 +52,7 @@ Contents~
         tlib#persistent#Dir .................... |tlib#persistent#Dir()|
         tlib#persistent#Filename ............... |tlib#persistent#Filename()|
         tlib#persistent#Get .................... |tlib#persistent#Get()|
+        tlib#persistent#MTime .................. |tlib#persistent#MTime()|
         tlib#persistent#Value .................. |tlib#persistent#Value()|
         tlib#persistent#Save ................... |tlib#persistent#Save()|
         g:tlib#vim#simalt_maximize ............. |g:tlib#vim#simalt_maximize|
@@ -116,6 +117,7 @@ Contents~
         tlib#cache#Dir ......................... |tlib#cache#Dir()|
         tlib#cache#Filename .................... |tlib#cache#Filename()|
         tlib#cache#Save ........................ |tlib#cache#Save()|
+        tlib#cache#MTime ....................... |tlib#cache#MTime()|
         tlib#cache#Get ......................... |tlib#cache#Get()|
         tlib#cache#Value ....................... |tlib#cache#Value()|
         tlib#cache#MaybePurge .................. |tlib#cache#MaybePurge()|
@@ -491,6 +493,9 @@ tlib#persistent#Filename(type, ?file=%, ?mkdir=0)
 
                                                     *tlib#persistent#Get()*
 tlib#persistent#Get(...)
+
+                                                    *tlib#persistent#MTime()*
+tlib#persistent#MTime(cfile)
 
                                                     *tlib#persistent#Value()*
 tlib#persistent#Value(...)
@@ -888,6 +893,9 @@ tlib#cache#Filename(type, ?file=%, ?mkdir=0, ?dir='')
 
                                                     *tlib#cache#Save()*
 tlib#cache#Save(cfile, dictionary)
+
+                                                    *tlib#cache#MTime()*
+tlib#cache#MTime(cfile)
 
                                                     *tlib#cache#Get()*
 tlib#cache#Get(cfile, ...)

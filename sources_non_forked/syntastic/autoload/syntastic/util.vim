@@ -101,7 +101,7 @@ function! syntastic#util#wideMsg(msg) " {{{2
     "convert tabs to spaces so that the tabs count towards the window
     "width as the proper amount of characters
     let chunks = split(msg, "\t", 1)
-    let msg = join(map(chunks[:-2], 'v:val . repeat(" ", &ts - s:width(v:val) % &ts)'), '') . chunks[-1]
+    let msg = join(map(chunks[:-2], 'v:val . repeat(" ", &tabstop - s:width(v:val) % &tabstop)'), '') . chunks[-1]
     let msg = strpart(msg, 0, &columns - 1)
 
     set noruler noshowcmd
@@ -218,6 +218,13 @@ function! syntastic#util#dictFilter(errors, filter) " {{{2
     endtry
 endfunction " }}}2
 
+function! syntastic#util#sortLoclist(errors) " {{{2
+    for e in a:errors
+        call s:setScreenColumn(e)
+    endfor
+    call sort(a:errors, 's:compareErrorItems')
+endfunction " }}}2
+
 " }}}1
 
 " Private functions {{{1
@@ -252,6 +259,49 @@ function! s:translateElement(key, term) " {{{2
         let ret = "1"
     endif
     return ret
+endfunction " }}}2
+
+function! s:screenWidth(str, tabstop) " {{{2
+    let chunks = split(a:str, "\t", 1)
+    let width = s:width(chunks[-1])
+    for c in chunks[:-2]
+        let cwidth = s:width(c)
+        let width += cwidth + a:tabstop - cwidth % a:tabstop
+    endfor
+    return width
+endfunction " }}}2
+
+function! s:setScreenColumn(item) " {{{2
+    if !has_key(a:item, 'scol')
+        let col = get(a:item, 'col', 0)
+        if col != 0 && a:item['vcol'] == 0
+            let buf = str2nr(a:item['bufnr'])
+            try
+                let line = getbufline(buf, a:item['lnum'])[0]
+            catch  /\m^Vim\%((\a\+)\)\=:E684/
+                let line = ''
+            endtry
+            let a:item['scol'] = s:screenWidth(strpart(line, 0, col), getbufvar(buf, '&tabstop'))
+        else
+            let a:item['scol'] = col
+        endif
+    endif
+endfunction " }}}2
+
+function! s:compareErrorItems(a, b) " {{{2
+    if a:a['bufnr'] != a:b['bufnr']
+        " group by file
+        return a:a['bufnr'] - a:b['bufnr']
+    elseif a:a['lnum'] != a:b['lnum']
+        " sort by line
+        return a:a['lnum'] - a:b['lnum']
+    elseif a:a['type'] !=? a:b['type']
+        " errors take precedence over warnings
+        return a:a['type'] ==? 'E' ? -1 : 1
+    else
+        " sort by screen column
+        return a:a['scol'] - a:b['scol']
+    endif
 endfunction " }}}2
 
 " }}}1

@@ -207,7 +207,8 @@ function! airline#extensions#load()
     call airline#extensions#promptline#init(s:ext)
   endif
 
-  " load all other extensions not part of the default distribution
+  " Load all other extensions, which are not part of the default distribution.
+  " (autoload/airline/extensions/*.vim outside of our s:script_path).
   for file in split(globpath(&rtp, "autoload/airline/extensions/*.vim"), "\n")
     " we have to check both resolved and unresolved paths, since it's possible
     " that they might not get resolved properly (see #187)

@@ -9,21 +9,22 @@ correctly set, or uses b:commentary_format if it is set.
 The gc mappings are preferred, while the \\ mappings are provided for
 backwards compatibility.
 
-                                                *gc* *\\*
+                                                *gc*
 gc{motion}              Comment or uncomment lines that {motion} moves over.
-\\{motion}
 
-                                                *gcc* *\\\*
+                                                *gcc*
 gcc                     Comment or uncomment [count] lines.
-\\\
 
-                                                *v_gc* *v_\\*
+                                                *v_gc*
 {Visual}gc              Comment or uncomment the highlighted lines.
-{Visual}\\
 
-                                                *gcu* *\\u*
-gcu                     Uncomment the current and adjacent commented lines.
-\\u
+                                                *o_gc*
+gc                      Text object for a comment (operator pending mode
+                        only.)
+
+                                                *gcgc* *gcu*
+gcgc                    Uncomment the current and adjacent commented lines.
+gcu
 
 The |User| CommentaryPost autocommand fires after a successful operation and
 can be used for advanced customization.

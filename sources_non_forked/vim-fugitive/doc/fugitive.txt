@@ -34,6 +34,7 @@ that are part of Git repositories).
                         window.  The following maps, which work on the cursor
                         line file where sensible, are provided:
 
+                        g?    show this help
                         <C-N> next file
                         <C-P> previous file
                         <CR>  |:Gedit|
@@ -177,6 +178,7 @@ that are part of Git repositories).
                         along to git-blame.  The following maps, which work on
                         the cursor line commit where sensible, are provided:
 
+                        g?    show this help
                         A     resize to end of author column
                         C     resize to end of commit column
                         D     resize to end of date/time column

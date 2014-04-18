@@ -36,14 +36,9 @@ function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item)
 endfunction
 
 function! SyntaxCheckers_vim_vimlint_IsAvailable() dict
-    let ret = 0
-    try
-        call vimlint#vimlint(syntastic#util#DevNull(), { 'output': [], 'quiet': 1 })
-        let ret = 1
-    catch /\m^Vim\%((\a\+)\)\=:E117/
-        " do nothing
-    endtry
-    return ret
+    return
+        \ globpath(&runtimepath, 'autoload/vimlparser.vim') != '' &&
+        \ globpath(&runtimepath, 'autoload/vimlint.vim') != ''
 endfunction
 
 function! SyntaxCheckers_vim_vimlint_GetLocList() dict

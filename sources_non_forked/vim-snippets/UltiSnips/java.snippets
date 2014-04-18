@@ -25,7 +25,12 @@ def getArgs(group):
 	return [i.split(" ") for i in word.findall(group) ]
 
 def camel(word):
+	if not word: return ''
 	return word[0].upper() + word[1:]
+
+def mixedCase(word):
+	if not word: return ''
+	return word[0].lower() + word[1:]
 
 endglobal
 
@@ -173,13 +178,13 @@ default:
 	$0
 endsnippet
 
-snippet elif "else if" b
+snippet elif "else if"
 else if ($1)`!p nl(snip)`{
 	$0
 }
 endsnippet
 
-snippet /el(se)?/ "else" br
+snippet /el(se)?/ "else" r
 else`!p nl(snip)`{
 	$0
 }
@@ -338,23 +343,23 @@ endsnippet
 
 snippet /get(ter)?/ "getter" br
 public ${1:String} get${2:Name}() {
-	return `!p snip.rv = t[2].lower()`;
+	return `!p snip.rv = mixedCase(t[2])`;
 }
 endsnippet
 
 snippet /set(ter)?/ "setter" br
-public void set${1:Name}(${2:String} $1) {
-	return this.`!p snip.rv = t[1].lower()` = `!p snip.rv = t[1].lower()`;
+public void set${1:Name}(${2:String} `!p snip.rv = mixedCase(t[1])`) {
+	this.`!p snip.rv = mixedCase(t[1])` = `!p snip.rv = mixedCase(t[1])`;
 }
 endsnippet
 
 snippet /se?tge?t|ge?tse?t|gs/ "setter and getter" br
-public void set${1:Name}(${2:String} `!p snip.rv = t[1].lower()`) {
-	this.`!p snip.rv = t[1].lower()` = `!p snip.rv = t[1].lower()`;
+public void set${1:Name}(${2:String} `!p snip.rv = mixedCase(t[1])`) {
+	this.`!p snip.rv = mixedCase(t[1])` = `!p snip.rv = mixedCase(t[1])`;
 }
 
 public $2 get$1() {
-	return `!p snip.rv = t[1].lower()`;
+	return `!p snip.rv = mixedCase(t[1])`;
 }
 endsnippet
 

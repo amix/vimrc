@@ -2,7 +2,6 @@
 if !exists('g:snipMate')
   let g:snipMate = {}
 endif
-let s:c = g:snipMate
 
 try
 	call tlib#input#List('mi', '', [])
@@ -12,26 +11,6 @@ endtry
 
 " match $ which doesn't follow a \
 let s:d = '\%([\\]\@<!\$\)'
-
-" if filetype is objc, cpp, cs or cu also append snippets from scope 'c'
-" you can add multiple by separating scopes by ',', see s:AddScopeAliases
-let s:c.scope_aliases = get(s:c, 'scope_aliases', {})
-if !exists('g:snipMate_no_default_aliases') || !g:snipMate_no_default_aliases
-	let s:c.scope_aliases.objc = get(s:c.scope_aliases, 'objc', 'c')
-	let s:c.scope_aliases.cpp = get(s:c.scope_aliases, 'cpp', 'c')
-	let s:c.scope_aliases.cu = get(s:c.scope_aliases, 'cu', 'c')
-	let s:c.scope_aliases.xhtml = get(s:c.scope_aliases, 'xhtml', 'html')
-	let s:c.scope_aliases.html = get(s:c.scope_aliases, 'html', 'javascript')
-	let s:c.scope_aliases.php = get(s:c.scope_aliases, 'php', 'php,html,javascript')
-	let s:c.scope_aliases.ur = get(s:c.scope_aliases, 'ur', 'html,javascript')
-	let s:c.scope_aliases.mxml = get(s:c.scope_aliases, 'mxml', 'actionscript')
-	let s:c.scope_aliases.eruby = get(s:c.scope_aliases, 'eruby', 'eruby-rails,html')
-endif
-
-" set this to "\<tab>" to make snipmate not swallow tab (make sure to not have
-" expandtab set). Remember that you can always enter tabs by <c-v> <tab> then
-" you don't need this
-let s:c['no_match_completion_feedkeys_chars'] = get(s:c, 'no_match_completion_feedkeys_chars', "\t")
 
 fun! Filename(...)
 	let filename = expand('%:t:r')
@@ -85,11 +64,20 @@ fun! snipMate#expandSnip(snip, col)
 
 	if b:snip_state.stop_count
 		aug snipmate_changes
-			au CursorMoved,CursorMovedI <buffer> call b:snip_state.update_changes()
+			au CursorMoved,CursorMovedI <buffer> if exists('b:snip_state') |
+						\     call b:snip_state.update_changes() |
+						\ else |
+						\     silent! au! snipmate_changes * <buffer> |
+						\ endif
 		aug END
 		call b:snip_state.set_stop(0)
+		let ret = b:snip_state.select_word()
 
-		return b:snip_state.select_word()
+		if b:snip_state.stop_count == 1
+			call b:snip_state.remove()
+		endif
+
+		return ret
 	else
 		unlet b:snip_state
 		" Place cursor at end of snippet if no tab stop is given
@@ -426,12 +414,26 @@ fun! snipMate#ReadSnippetsFile(file)
 	return [result, new_scopes]
 endf
 
+function! s:GetScopes()
+	let ret = exists('b:snipMate_scope_aliases') ? copy(b:snipMate.scope_aliases) : {}
+	let global = get(g:snipMate, 'scope_aliases', {})
+	for alias in keys(global)
+		if has_key(ret, alias)
+			let ret[alias] = join(split(ret[alias], ',')
+						\ + split(global[alias], ','), ',')
+		else
+			let ret[alias] = global[alias]
+		endif
+	endfor
+	return ret
+endfunction
+
 " adds scope aliases to list.
 " returns new list
 " the aliases of aliases are added recursively
 fun! s:AddScopeAliases(list)
   let did = {}
-  let scope_aliases = get(s:c,'scope_aliases', {})
+  let scope_aliases = s:GetScopes()
   let new = a:list
   let new2 =  []
   while !empty(new)
@@ -447,16 +449,22 @@ fun! s:AddScopeAliases(list)
   return keys(did)
 endf
 
-function! s:Glob(path, expr)
-	let res = []
-	for p in split(a:path, ',')
-		let h = fnamemodify(a:expr, ':h')
-		if isdirectory(p . '/' . h)
-			call extend(res, split(glob(p . '/' . a:expr), "\n"))
-		endif
-	endfor
-	return filter(res, 'filereadable(v:val)')
-endfunction
+if v:version >= 704
+	function! s:Glob(path, expr)
+		return split(globpath(a:path, a:expr), "\n")
+	endfunction
+else
+	function! s:Glob(path, expr)
+		let res = []
+		for p in split(a:path, ',')
+			let h = split(fnamemodify(a:expr, ':h'), '/')[0]
+			if isdirectory(p . '/' . h)
+				call extend(res, split(glob(p . '/' . a:expr), "\n"))
+			endif
+		endfor
+		return filter(res, 'filereadable(v:val)')
+	endfunction
+endif
 
 " returns dict of
 " { path: { 'type': one of 'snippet' 'snippets',
@@ -466,12 +474,11 @@ endfunction
 "           'trigger': trigger of snippet
 "         }
 " }
-" use trigger = '*' to match all snippet files
 " use mustExist = 1 to return existing files only
 "
 "     mustExist = 0 is used by OpenSnippetFiles
 function! snipMate#GetSnippetFiles(mustExist, scopes, trigger)
-	let paths = join(funcref#Call(s:c.snippet_dirs), ',')
+	let paths = join(funcref#Call(g:snipMate.snippet_dirs), ',')
 	let result = {}
 	let scopes = s:AddScopeAliases(a:scopes)
 	let trigger = escape(a:trigger, "*[]?{}`'$")
@@ -480,19 +487,22 @@ function! snipMate#GetSnippetFiles(mustExist, scopes, trigger)
 	for scope in scopes
 
 		for f in s:Glob(paths, 'snippets/' . scope . '.snippets') +
+					\ s:Glob(paths, 'snippets/' . scope . '_*.snippets') +
 					\ s:Glob(paths, 'snippets/' . scope . '/*.snippets')
 			let result[f] = { 'exists' : 1, 'type' : 'snippets',
 						\ 'name_prefix' : fnamemodify(f, ':t:r') }
 		endfor
 
-		for f in s:Glob(paths, 'snippets/'.scope.'/'.trigger.'.snippet')
+		" We check for trigger* in the next two loops. In the case of an exact
+		" match, that'll be handled in snipMate#GetSnippetsForWordBelowCursor.
+		for f in s:Glob(paths, 'snippets/' . scope . '/' . trigger . '*.snippet')
 			let result[f] = {'exists': 1, 'type': 'snippet', 'name': 'default',
-						\ 'trigger': a:trigger, 'name_prefix' : scope }
+						\ 'trigger': fnamemodify(f, ':t:r'), 'name_prefix' : scope }
 		endfor
 
-		for f in s:Glob(paths, 'snippets/'.scope.'/'.trigger.'/*.snippet')
+		for f in s:Glob(paths, 'snippets/' . scope . '/' . trigger . '*/*.snippet')
 			let result[f] = {'exists': 1, 'type': 'snippet', 'name' : fnamemodify(f, ':t:r'),
-						\ 'trigger': a:trigger, 'name_prefix' : scope }
+						\ 'trigger': fnamemodify(f, ':h:t'), 'name_prefix' : scope }
 		endfor
 
 		if !a:mustExist
@@ -507,21 +517,12 @@ function! snipMate#GetSnippetFiles(mustExist, scopes, trigger)
 endfunction
 
 " should be moved to utils or such?
-function! snipMate#SetByPath(dict, path, value)
+function! snipMate#SetByPath(dict, trigger, path, snippet)
 	let d = a:dict
-	for p in a:path[:-2]
-		if !has_key(d,p) | let d[p] = {} | endif
-		let d = d[p]
-	endfor
-	let d[a:path[-1]] = a:value
-endfunction
-
-function! s:ReadFile(file)
-	if a:file =~ '\.snippet$'
-		return [['', '', readfile(a:file), '1']]
-	else
-		return snipMate#ReadSnippetsFile(a:file)
+	if !has_key(d, a:trigger)
+		let d[a:trigger] = {}
 	endif
+	let d[a:trigger][a:path] = a:snippet
 endfunction
 
 function! s:CachedSnips(file)
@@ -545,13 +546,13 @@ function! snipMate#DefaultPool(scopes, trigger, result)
 			call extend(extra_scopes, new_scopes)
 			for [trigger, name, contents] in snippets
 				if trigger =~ '\V\^' . escape(a:trigger, '\')
-					call snipMate#SetByPath(a:result,
-								\ [trigger, opts.name_prefix . ' ' . name],
-								\ contents)
+					call snipMate#SetByPath(a:result, trigger,
+								\ opts.name_prefix . ' ' . name, contents)
 				endif
 			endfor
 		elseif opts.type == 'snippet'
-			call snipMate#SetByPath(a:result, [opts.trigger, opts.name_prefix.' '.opts.name], readfile(f))
+			call snipMate#SetByPath(a:result, opts.trigger,
+						\ opts.name_prefix . ' ' . opts.name, readfile(f))
 		else
 			throw "unexpected"
 		endif
@@ -636,7 +637,7 @@ endf
 
 fun! snipMate#ScopesByFile()
 	" duplicates are removed in AddScopeAliases
-	return filter(funcref#Call(s:c.get_scopes), "v:val != ''")
+	return filter(funcref#Call(g:snipMate.get_scopes), "v:val != ''")
 endf
 
 " used by both: completion and insert snippet
@@ -669,8 +670,8 @@ fun! snipMate#GetSnippetsForWordBelowCursor(word, exact)
 	let snippet = ''
 	" prefer longest word
 	for word in lookups
-		let s:c.word = word
-		for [k,snippetD] in items(funcref#Call(s:c['get_snippets'], [snipMate#ScopesByFile(), word]))
+		let g:snipMate.word = word
+		for [k,snippetD] in items(funcref#Call(g:snipMate['get_snippets'], [snipMate#ScopesByFile(), word]))
 			" hack: require exact match
 			if a:exact && k !=# word
 				continue
@@ -730,7 +731,7 @@ fun! snipMate#ShowAvailableSnips()
 
 	" Pretty hacky, but really can't have the tab swallowed!
 	if len(matches) == 0
-		call feedkeys(s:c['no_match_completion_feedkeys_chars'], 'n')
+		call feedkeys(g:snipMate['no_match_completion_feedkeys_chars'], 'n')
 		return ""
 	endif
 

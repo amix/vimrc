@@ -56,6 +56,45 @@ function! syntastic#preprocess#perl(errors) " {{{2
     return syntastic#util#unique(out)
 endfunction " }}}2
 
+function! syntastic#preprocess#rparse(errors) " {{{2
+    let errlist = copy(a:errors)
+
+    " remove uninteresting lines and handle continuations
+    let i = 0
+    while i < len(errlist)
+        if i > 0 && errlist[i][:1] == '  ' && errlist[i] !~ '\m\s\+\^$'
+            let errlist[i-1] .= errlist[i][1:]
+            call remove(errlist, i)
+        elseif errlist[i] !~ '\m^\(Lint:\|Lint checking:\|Error in\) '
+            call remove(errlist, i)
+        else
+            let i += 1
+        endif
+    endwhile
+
+    let out = []
+    let fname = ''
+    for e in errlist
+        if match(e, '\m^Lint: ') == 0
+            let parts = matchlist(e, '\m^Lint: \(.*\): found on lines \([0-9, ]\+\)\(+\(\d\+\) more\)\=')
+            if len(parts) >= 3
+                for line in split(parts[2], '\m,\s*')
+                    call add(out, 'E:' . fname . ':' . line . ': ' . parts[1])
+                endfor
+            endif
+            if len(parts) >= 5 && parts[4] != ''
+                call add(out, 'E:' . fname . ':0: ' . parts[1] . ' - ' . parts[4] . ' messages not shown')
+            endif
+        elseif match(e, '\m^Lint checking: ') == 0
+            let fname = matchstr(e, '\m^Lint checking: \zs.*')
+        elseif match(e, '\m^Error in ') == 0
+            call add(out, substitute(e, '\m^Error in .\+ : .\+\ze:\d\+:\d\+: ', 'E:' . fname, ''))
+        endif
+    endfor
+
+    return out
+endfunction " }}}2
+
 function! syntastic#preprocess#validator(errors) " {{{2
     let out = []
     for e in a:errors

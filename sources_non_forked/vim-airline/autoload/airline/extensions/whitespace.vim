@@ -31,12 +31,18 @@ function! airline#extensions#whitespace#check()
 
     let trailing = 0
     if index(checks, 'trailing') > -1
-      let trailing = search(' $', 'nw')
+      let trailing = search('\s$', 'nw')
     endif
 
     let mixed = 0
     if index(checks, 'indent') > -1
-      let mixed = search('\v(^\t+ +)|(^ +\t+)', 'nw')
+      " [<tab>]<space><tab>
+      " Spaces before or between tabs are not allowed
+      let t_s_t = '(^\t* +\t\s*\S)'
+      " <tab>(<space> x count)
+      " Count of spaces at the end of tabs should be less then tabstop value
+      let t_l_s = '(^\t+ {' . &ts . ',}' . '\S)'
+      let mixed = search('\v' . t_s_t . '|' . t_l_s, 'nw')
     endif
 
     if trailing != 0 || mixed != 0

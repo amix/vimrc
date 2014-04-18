@@ -382,6 +382,9 @@ eclim <https://eclim.org>
 * enable/disable displaying tab number in tabs mode. >
   let g:airline#extensions#tabline#show_tab_nr = 1
 
+* enable/disable displaying tab type (far right)
+  let g:airline#extensions#tabline#show_tab_type = 1
+
 * defines the name of a formatter for how buffer names are displayed. >
   let g:airline#extensions#tabline#formatter = 'default'
 
@@ -430,6 +433,10 @@ eclim <https://eclim.org>
   let g:airline#extensions#tabline#left_alt_sep = ''
   let g:airline#extensions#tabline#right_sep = ''
   let g:airline#extensions#tabline#right_alt_sep = ''
+
+* configure symbol used to represent close button
+  let g:airline#extensions#tabline#close_symbol = 'X'
+
 <
 Note: Enabling this extension will modify 'showtabline' and 'guioptions'.
 
@@ -616,7 +623,7 @@ to your liking.  Here is an example: >
     return 1
   endfunction
 <
-The above example uses various some example highlight groups to demonstrate
+The above example uses various example highlight groups to demonstrate
 that you can use any combination from the loaded colorscheme. However, if
 you want colors to change between modes, you should use one of the section
 highlight groups, e.g. `airline_a` and `airline_b`.

@@ -34,13 +34,30 @@ global !p
 NORMAL  = 0x1
 DOXYGEN = 0x2
 SPHINX  = 0x3
+GOOGLE  = 0x4
 
 SINGLE_QUOTES = 0x1
 DOUBLE_QUOTES = 0x2
 
+
+class Arg(object):
+	def __init__(self, arg):
+		self.arg = arg
+		self.name = arg.split('=')[0].strip()
+
+	def __str__(self):
+		return self.name
+	
+	def __unicode__(self):
+		return self.name
+	
+	def is_kwarg(self):
+		return '=' in self.arg
+
+
 def get_args(arglist):
-	args = [arg.split('=')[0].strip() for arg in arglist.split(',') if arg]
-	args = [arg for arg in args if arg and arg != "self"]
+	args = [Arg(arg) for arg in arglist.split(',') if arg]
+	args = [arg for arg in args if arg.name != 'self']
 
 	return args
 
@@ -51,7 +68,7 @@ def get_quoting_style(snip):
 		return SINGLE_QUOTES
 	return DOUBLE_QUOTES
 
-def tripple_quotes(snip):
+def triple_quotes(snip):
 	if get_quoting_style(snip) == SINGLE_QUOTES:
 		return "'''"
 	return '"""'
@@ -61,6 +78,7 @@ def get_style(snip):
 
 	if    style == "doxygen": return DOXYGEN
 	elif  style == "sphinx": return SPHINX
+	elif  style == "google": return GOOGLE
 	else: return NORMAL
 
 
@@ -71,6 +89,8 @@ def format_arg(arg, style):
 		return ":param %s: @todo" % arg
 	elif style == NORMAL:
 		return ":%s: @todo" % arg
+	elif style == GOOGLE:
+		return "%s (@todo): @todo" % arg
 
 
 def format_return(style):
@@ -78,19 +98,45 @@ def format_return(style):
 		return "@return: @todo"
 	elif style in (NORMAL, SPHINX):
 		return ":returns: @todo"
+	elif style == GOOGLE:
+		return "Returns: @todo"
 
 
 def write_docstring_args(args, snip):
 	if not args:
-		snip.rv += ' {0}'.format(tripple_quotes(snip))
+		snip.rv += ' {0}'.format(triple_quotes(snip))
 		return
 
 	snip.rv += '\n' + snip.mkline('', indent='')
 
 	style = get_style(snip)
 
-	for arg in args:
-		snip += format_arg(arg, style)
+	if style == GOOGLE:
+		write_google_docstring_args(args, snip)
+	else:
+		for arg in args:
+			snip += format_arg(arg, style)
+
+
+def write_google_docstring_args(args, snip):
+	kwargs = [arg for arg in args if arg.is_kwarg()]
+	args = [arg for arg in args if not arg.is_kwarg()]
+
+	if args:
+		snip += "Args:"
+		snip.shift()
+		for arg in args:
+			snip += format_arg(arg, GOOGLE)
+		snip.unshift()
+		snip.rv += '\n' + snip.mkline('', indent='')
+
+	if kwargs:
+		snip += "Kwargs:"
+		snip.shift()
+		for kwarg in kwargs:
+			snip += format_arg(kwarg, GOOGLE)
+		snip.unshift()
+		snip.rv += '\n' + snip.mkline('', indent='')
 
 
 def write_init_body(args, parents, snip):
@@ -120,10 +166,10 @@ endglobal
 snippet class "class with docstrings" b
 class ${1:MyClass}(${2:object}):
 
-	`!p snip.rv = tripple_quotes(snip)`${3:Docstring for $1. }`!p snip.rv = tripple_quotes(snip)`
+	`!p snip.rv = triple_quotes(snip)`${3:Docstring for $1. }`!p snip.rv = triple_quotes(snip)`
 
 	def __init__(self$4):
-		`!p snip.rv = tripple_quotes(snip)`${5:@todo: to be defined1.}`!p
+		`!p snip.rv = triple_quotes(snip)`${5:@todo: to be defined1.}`!p
 snip.rv = ""
 snip >> 2
 
@@ -132,7 +178,7 @@ args = get_args(t[4])
 write_docstring_args(args, snip)
 if args:
 	snip.rv += '\n' + snip.mkline('', indent='')
-	snip += '{0}'.format(tripple_quotes(snip))
+	snip += '{0}'.format(triple_quotes(snip))
 
 write_init_body(args, t[2], snip)
 `
@@ -143,7 +189,7 @@ endsnippet
 snippet slotclass "class with slots and docstrings" b
 class ${1:MyClass}(${2:object}):
 
-	`!p snip.rv = tripple_quotes(snip)`${3:Docstring for $1. }`!p snip.rv = tripple_quotes(snip)`
+	`!p snip.rv = triple_quotes(snip)`${3:Docstring for $1. }`!p snip.rv = triple_quotes(snip)`
 `!p
 snip >> 1
 args = get_args(t[4])
@@ -151,7 +197,7 @@ write_slots_args(args, snip)
 `
 
 	def __init__(self$4):
-		`!p snip.rv = tripple_quotes(snip)`${5:@todo: to be defined.}`!p
+		`!p snip.rv = triple_quotes(snip)`${5:@todo: to be defined.}`!p
 snip.rv = ""
 snip >> 2
 
@@ -160,7 +206,7 @@ args = get_args(t[4])
 write_docstring_args(args, snip)
 if args:
 	snip.rv += '\n' + snip.mkline('', indent='')
-	snip += tripple_quotes(snip)
+	snip += triple_quotes(snip)
 
 write_init_body(args, t[2], snip)
 `
@@ -353,7 +399,7 @@ snippet def "function with docstrings" b
 def ${1:function}(`!p
 if snip.indent:
 	snip.rv = 'self' + (", " if len(t[2]) else "")`${2:arg1}):
-	`!p snip.rv = tripple_quotes(snip)`${4:@todo: Docstring for $1.}`!p
+	`!p snip.rv = triple_quotes(snip)`${4:@todo: Docstring for $1.}`!p
 snip.rv = ""
 snip >> 1
 
@@ -364,7 +410,7 @@ if args:
 style = get_style(snip)
 snip += format_return(style)
 snip.rv += '\n' + snip.mkline('', indent='')
-snip += tripple_quotes(snip) `
+snip += triple_quotes(snip) `
 	${0:pass}
 endsnippet
 
@@ -390,7 +436,7 @@ endsnippet
 
 snippet rwprop "Read write property" b
 def ${1:name}():
-	`!p snip.rv = tripple_quotes(snip) if t[2] else ''
+	`!p snip.rv = triple_quotes(snip) if t[2] else ''
 `${2:@todo: Docstring for $1.}`!p
 if t[2]:
 	snip >> 1
@@ -399,7 +445,7 @@ if t[2]:
 	snip.rv += '\n' + snip.mkline('', indent='')
 	snip += format_return(style)
 	snip.rv += '\n' + snip.mkline('', indent='')
-	snip += tripple_quotes(snip)
+	snip += triple_quotes(snip)
 else:
 	snip.rv = ""`
 	def fget(self):
@@ -518,7 +564,7 @@ endsnippet
 snippet testcase "pyunit testcase" b
 class Test${1:Class}(${2:unittest.TestCase}):
 
-	`!p snip.rv = tripple_quotes(snip)`${3:Test case docstring.}`!p snip.rv = tripple_quotes(snip)`
+	`!p snip.rv = triple_quotes(snip)`${3:Test case docstring.}`!p snip.rv = triple_quotes(snip)`
 
 	def setUp(self):
 		${4:pass}

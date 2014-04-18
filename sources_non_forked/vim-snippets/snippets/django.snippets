@@ -10,6 +10,10 @@
 
 snippet auto
 	${1:FIELDNAME} = models.AutoField(${0})
+snippet bigint
+	${1:FIELDNAME} = models.BigIntegerField(${0})
+snippet binary
+	${1:FIELDNAME} = models.BinaryField(${0})
 snippet bool
 	${1:FIELDNAME} = models.BooleanField(${0:default=True})
 snippet char
@@ -80,7 +84,7 @@ snippet model
 		def __unicode__(self):
 			${5}
 
-		def save(self, force_insert=False, force_update=False):
+		def save(self, *args, **kwargs):
 			${6}
 
 		@models.permalink
