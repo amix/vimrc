@@ -1,0 +1,9 @@
+This plugin causes all trailing whitespace to be highlighted in red.
+
+To fix the whitespace errors, just call :FixWhitespace.  By default it
+operates on the entire file.  Pass a range (or use V to select some lines)
+to restrict the portion of the file that gets fixed.
+
+The repo is at http://github.com/bronson/vim-trailing-whitespace
+
+Originally based on http://vim.wikia.com/wiki/Highlight_unwanted_spaces
