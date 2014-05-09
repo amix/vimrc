@@ -416,3 +416,5 @@ endfunction
 " => custom settings 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set number
+set nocompatible                " choose no compatibility with legacy vi
+set nowrap                      " don't wrap lines
