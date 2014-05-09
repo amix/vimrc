@@ -8,8 +8,8 @@
 """"""""""""""""""""""""""""""
 " => Load pathogen paths
 """"""""""""""""""""""""""""""
-call pathogen#infect('~/.vim_runtime/sources_forked/{}')
-call pathogen#infect('~/.vim_runtime/bundle/{}')
+call pathogen#infect('~/.vim/sources_forked/{}')
+call pathogen#infect('~/.vim/bundle/{}')
 call pathogen#helptags()
 
 """"""""""""""""""""""""""""""
@@ -35,7 +35,7 @@ map <leader>f :MRU<CR>
 if has("win16") || has("win32")
     " Don't do anything
 else
-    let g:yankring_history_dir = '~/.vim_runtime/temp_dirs/'
+    let g:yankring_history_dir = '~/.vim/temp_dirs/'
 endif
 
 
