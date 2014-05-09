@@ -411,10 +411,3 @@ function! <SID>BufcloseCloseIt()
      execute("bdelete! ".l:currentBufNum)
    endif
 endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => custom settings 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set number
-set nocompatible                " choose no compatibility with legacy vi
-set nowrap                      " don't wrap lines
