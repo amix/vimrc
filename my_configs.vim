@@ -1,8 +1,11 @@
 set mouse=a
-colorscheme molokai
+"colorscheme molokai
+"set background=dark
+"let g:molokai_original = 1
+colorscheme solarized
+syntax enable
 set background=dark
 let g:airline_theme = 'molokai'
-let g:molokai_original = 1
 set smartindent
 autocmd BufWritePre * :FixWhitespace
 set timeoutlen=2000
