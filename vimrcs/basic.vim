@@ -72,6 +72,12 @@ command W w !sudo tee % > /dev/null
 " Set 7 lines to the cursor - when moving vertically using j/k
 set so=7
 
+" Avoid garbled characters in Chinese language windows OS
+let $LANG='en' 
+set langmenu=en
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+
 " Turn on the WiLd menu
 set wildmenu
 
