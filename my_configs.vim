@@ -5,6 +5,20 @@ set number                      " line numbers
 set nocompatible                " choose no compatibility with legacy vi
 set nowrap                      " don't wrap lines
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => custom key maps
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" breaking the habits
+noremap <Up> <NOP>
+noremap <Down> <NOP>
+noremap <Left> <NOP>
+noremap <Right> <NOP>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => custom ... WTF, don't remember ;)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 augroup VimCSS3Syntax
   autocmd!
   autocmd FileType css setlocal iskeyword+=-
@@ -16,9 +30,9 @@ augroup reload_vimrc " {
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
 augroup END " }
 
-""""""""""""""""""""""""""""""
-" => my custom filetypes
-"""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => custom filetypes
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " ruby
 au FileType ruby,eruby setl ofu=rubycomplete#Complete
