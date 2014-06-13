@@ -1,6 +1,8 @@
 let node#suffixesadd = [".js", ".json"]
 let node#filetypes = ["javascript", "json"]
 
+set sw=2
+
 function! node#initialize(root)
 	let b:node_root = a:root
 	call s:initializeCommands()
