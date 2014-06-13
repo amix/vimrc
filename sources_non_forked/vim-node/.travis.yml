@@ -1,0 +1,7 @@
+language: ruby
+rvm:
+  - 1.9.3
+
+before_install: sudo apt-get install vim-gtk
+install: bundle install --deployment --without development
+script: xvfb-run make test
