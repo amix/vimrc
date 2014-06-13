@@ -1,0 +1,59 @@
+GIT
+  remote: https://github.com/moll/vimrunner.git
+  revision: 4b1ee072e52dea871a0c3370f215f54fe596a9dc
+  specs:
+    vimrunner (0.3.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ansi (1.4.3)
+    builder (3.2.2)
+    coderay (1.0.9)
+    ffi (1.9.0)
+    formatador (0.2.4)
+    guard (1.8.2)
+      formatador (>= 0.2.4)
+      listen (>= 1.0.0)
+      lumberjack (>= 1.0.2)
+      pry (>= 0.9.10)
+      thor (>= 0.14.6)
+    guard-minitest (1.0.1)
+      guard (>= 1.8)
+      minitest (>= 2.1)
+    hashie (2.0.5)
+    listen (1.2.2)
+      rb-fsevent (>= 0.9.3)
+      rb-inotify (>= 0.9)
+      rb-kqueue (>= 0.2)
+    lumberjack (1.0.4)
+    method_source (0.8.2)
+    minitest (4.7.5)
+    minitest-reporters (0.14.20)
+      ansi
+      builder
+      minitest (>= 2.12, < 5.0)
+      powerbar
+    powerbar (1.0.11)
+      ansi (~> 1.4.0)
+      hashie (>= 1.1.0)
+    pry (0.9.12.2)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+    rb-fsevent (0.9.3)
+    rb-inotify (0.9.0)
+      ffi (>= 0.5.0)
+    rb-kqueue (0.2.0)
+      ffi (>= 0.5.0)
+    slop (3.4.6)
+    thor (0.18.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  guard-minitest
+  minitest (< 5)
+  minitest-reporters
+  vimrunner!
