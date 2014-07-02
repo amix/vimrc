@@ -217,6 +217,14 @@ EXTENSIONS                                              *airline-extensions*
 Most extensions are enabled by default and lazily loaded when the
 corresponding plugin (if any) is detected.
 
+By default, airline will attempt to load any extension it can find in the
+'runtimepath'.  On some systems this can result in an undersirable startup
+cost.  You can disable the check with the following flag. >
+  let g:airline#extensions#disable_rtp_load = 1
+<
+  Note: Third party plugins that rely on this behavior will be affected. You
+  will need to manually load them.
+
 -------------------------------------                      *airline-default*
 The default extension understands all of the `g:` variables in the
 |airline-configuration| section, however it also has some more fine-tuned
@@ -228,7 +236,7 @@ configuration values that you can use.
       \ 'x': 60,
       \ 'y': 88,
       \ 'z': 45,
-      \ })
+      \ }
 
   " Note: set to an empty dictionary to disable truncation.
   let g:airline#extensions#default#section_truncate_width = {}
@@ -238,9 +246,8 @@ configuration values that you can use.
   let g:airline#extensions#default#layout = [
       \ [ 'a', 'b', 'c' ],
       \ [ 'x', 'y', 'z', 'warning' ]
-      \ ])
+      \ ]
 <
-
 -------------------------------------                     *airline-quickfix*
 The quickfix extension is a simple built-in extension which determines
 whether the buffer is a quickfix or location list buffer, and adjusts the
@@ -275,7 +282,10 @@ vcscommand   <http://www.vim.org/scripts/script.php?script_id=90>
 
 * use vcscommand.vim if available >
   let g:airline#extensions#branch#use_vcscommand = 0
-<
+
+* truncate long branch names to a fixed length >
+  let g:airline#extensions#branch#displayed_head_limit = 10
+
 -------------------------------------                    *airline-syntastic*
 syntastic <https://github.com/scrooloose/syntastic>
 
@@ -289,7 +299,7 @@ tagbar <https://github.com/majutsushi/tagbar>
   let g:airline#extensions#tagbar#enabled = 1
 <
 * change how tags are displayed (:help tagbar-statusline) >
-  let g:airline#extensions#tagbar#flags = ''  "default
+  let g:airline#extensions#tagbar#flags = ''  (default)
   let g:airline#extensions#tagbar#flags = 'f'
   let g:airline#extensions#tagbar#flags = 's'
   let g:airline#extensions#tagbar#flags = 'p'
@@ -307,6 +317,7 @@ csv.vim <https://github.com/chrisbra/csv.vim>
 -------------------------------------                        *airline-hunks*
 vim-gitgutter <https://github.com/airblade/vim-gitgutter>
 vim-signify <https://github.com/mhinz/vim-signify>
+changesPlugin <https://github.com/chrisbra/changesPlugin>
 
 * enable/disable showing a summary of changed hunks under source control. >
   let g:airline#extensions#hunks#enabled = 1
@@ -348,6 +359,14 @@ eclim <https://eclim.org>
 -------------------------------------                   *airline-whitespace*
 * enable/disable detection of whitespace errors. >
   let g:airline#extensions#whitespace#enabled = 1
+<
+* customize the type of mixed indent checking to perform. >
+  " must be all spaces or all tabs before the first non-whitespace character
+  let g:airline#extensions#whitespace#mixed_indent_algo = 0 (default)
+
+  " certain number of spaces are allowed after tabs, but not in between
+  " this algorithm works well for /** */ style comments in a tab-indented file
+  let g:airline#extensions#whitespace#mixed_indent_algo = 1
 <
 * customize the whitespace symbol. >
   let g:airline#extensions#whitespace#symbol = '!'
@@ -477,6 +496,11 @@ promptline <https://github.com/edkolev/promptline.vim>
   let airline#extensions#promptline#color_template = 'visual'
   let airline#extensions#promptline#color_template = 'replace'
 <
+-------------------------------------                    *airline-nrrwrgn*
+NrrwRgn <https://github.com/chrisbra/NrrwRgn>
+
+* enable/disable NrrwRgn integration >
+  let g:airline#extensions#nrrwrgn#enabled = 1
 
 ==============================================================================
 ADVANCED CUSTOMIZATION                      *airline-advanced-customization*

@@ -262,7 +262,7 @@ function! s:state_proto.update_stops()
 
 		for pos in self.stops
 			if pos == self.cur_stop | continue | endif
-			let changed = pos[0] == curLine && pos[1] > self.start_col
+			let changed = pos[0] == curLine && pos[1] > self.cur_stop[1]
 			let changedVars = 0
 			let endPlaceholder = pos[2] - 1 + pos[1]
 			" Subtract changeLen from each tab stop that was after any of
@@ -321,10 +321,13 @@ function! s:state_proto.update_changes()
 	let self.end_col += change_len
 
 	let col = col('.')
-	if line('.') != self.cur_stop[0] || col < self.start_col || col > self.end_col
-		call self.remove()
-	elseif self.has_vars
-		call self.update_vars(change_len)
+	if mode() == 'i'
+		if line('.') != self.cur_stop[0]
+					\ || col < self.start_col || col > self.end_col
+			call self.remove()
+		elseif self.has_vars
+			call self.update_vars(change_len)
+		endif
 	endif
 
 	let self.prev_len = col('$')
@@ -336,6 +339,7 @@ function! s:state_proto.update_vars(change)
 	let newWord = strpart(getline('.'), self.start_col - 1, newWordLen)
 	let changeLen = a:change
 	let curLine = line('.')
+	let curCol = col('.')
 	let oldStartSnip = self.start_col
 	let updateTabStops = changeLen != 0
 	let i = 0
@@ -374,7 +378,7 @@ function! s:state_proto.update_vars(change)
 	" Reposition the cursor in case a var updates on the same line but before
 	" the current tabstop
 	if oldStartSnip != self.start_col || mode() == 'i'
-		call cursor(0, col('.') + self.start_col - oldStartSnip)
+		call cursor(0, curCol + self.start_col - oldStartSnip)
 	endif
 endfunction
 
@@ -382,12 +386,16 @@ endfunction
 " returns list of
 " ['triggername', 'name', 'contents']
 " if triggername is not set 'default' is assumed
+" TODO: better error checking
 fun! snipMate#ReadSnippetsFile(file)
 	let result = []
 	let new_scopes = []
 	if !filereadable(a:file) | return [result, new_scopes] | endif
 	let inSnip = 0
+	let line_no = 0
 	for line in readfile(a:file) + ["\n"]
+		let line_no += 1
+
 		if inSnip && (line[0] == "\t" || line == '')
 			let content .= strpart(line, 1)."\n"
 			continue
@@ -406,6 +414,10 @@ fun! snipMate#ReadSnippetsFile(file)
 				let trigger = strpart(trigger, 0, space - 1)
 			endif
 			let content = ''
+			if trigger =~ '^\s*$' " discard snippets with empty triggers
+				echom 'Invalid snippet in' a:file 'near line' line_no
+				let inSnip = 0
+			endif
 		elseif line[:6] == 'extends'
 			call extend(new_scopes, map(split(strpart(line, 8)),
 						\ "substitute(v:val, ',*$', '', '')"))
@@ -415,7 +427,7 @@ fun! snipMate#ReadSnippetsFile(file)
 endf
 
 function! s:GetScopes()
-	let ret = exists('b:snipMate_scope_aliases') ? copy(b:snipMate.scope_aliases) : {}
+	let ret = exists('b:snipMate.scope_aliases') ? copy(b:snipMate.scope_aliases) : {}
 	let global = get(g:snipMate, 'scope_aliases', {})
 	for alias in keys(global)
 		if has_key(ret, alias)
@@ -449,11 +461,7 @@ fun! s:AddScopeAliases(list)
   return keys(did)
 endf
 
-if v:version >= 704
-	function! s:Glob(path, expr)
-		return split(globpath(a:path, a:expr), "\n")
-	endfunction
-else
+if v:version < 704 || has('win32')
 	function! s:Glob(path, expr)
 		let res = []
 		for p in split(a:path, ',')
@@ -463,6 +471,10 @@ else
 			endif
 		endfor
 		return filter(res, 'filereadable(v:val)')
+	endfunction
+else
+	function! s:Glob(path, expr)
+		return split(globpath(a:path, a:expr), "\n")
 	endfunction
 endif
 
@@ -517,7 +529,7 @@ function! snipMate#GetSnippetFiles(mustExist, scopes, trigger)
 endfunction
 
 " should be moved to utils or such?
-function! snipMate#SetByPath(dict, trigger, path, snippet)
+function! snipMate#SetByPath(dict, trigger, path, snippet) abort
 	let d = a:dict
 	if !has_key(d, a:trigger)
 		let d[a:trigger] = {}

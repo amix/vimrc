@@ -229,7 +229,7 @@ function! s:TreeDirNode._initChildren(silent)
     let globDir = dir.str({'format': 'Glob'})
 
     if version >= 703
-        let filesStr = globpath(globDir, '*', 1) . "\n" . globpath(globDir, '.*', 1)
+        let filesStr = globpath(globDir, '*', !g:NERDTreeRespectWildIgnore) . "\n" . globpath(globDir, '.*', !g:NERDTreeRespectWildIgnore)
     else
         let filesStr = globpath(globDir, '*') . "\n" . globpath(globDir, '.*')
     endif
@@ -500,7 +500,7 @@ function! s:TreeDirNode.toggleOpen(...)
     if self.isOpen ==# 1
         call self.close()
     else
-        if g:NERDTreeCasadeOpenSingleChildDir == 0
+        if g:NERDTreeCascadeOpenSingleChildDir == 0
             call self.open(opts)
         else
             call self.openAlong(opts)

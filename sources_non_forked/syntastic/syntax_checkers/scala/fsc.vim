@@ -15,19 +15,16 @@ if exists('g:loaded_syntastic_scala_fsc_checker')
 endif
 let g:loaded_syntastic_scala_fsc_checker = 1
 
-if !exists('g:syntastic_scala_options')
-    let g:syntastic_scala_options = ''
-endif
-
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_scala_fsc_GetLocList() dict
+    call syntastic#log#deprecationWarn('scala_options', 'scala_fsc_args')
+
     " fsc has some serious problems with the
     " working directory changing after being started
     " that's why we better pass an absolute path
     let makeprg = self.makeprgBuild({
-        \ 'args': g:syntastic_scala_options,
         \ 'args_after': '-Ystop-after:parser',
         \ 'fname': syntastic#util#shexpand('%:p') })
 

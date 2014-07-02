@@ -55,7 +55,7 @@ that are part of Git repositories).
                         p     |:Git| add --patch
                         p     |:Git| reset --patch (staged files)
                         q     close status
-                        R     reload status
+                        r     reload status
                         S     |:Gvsplit|
 
                                                 *fugitive-:Gcommit*
@@ -63,12 +63,32 @@ that are part of Git repositories).
                         to commit, |:Gstatus| is called instead.  Unless the
                         arguments given would skip the invocation of an editor
                         (e.g., -m), a split window will be used to obtain a
-                        commit message.  Write and close that window (:wq or
-                        |:Gwrite|) to finish the commit.  Unlike when running
-                        the actual git-commit command, it is possible (but
-                        unadvisable) to muck with the index with commands like
-                        git-add and git-reset while a commit message is
-                        pending.
+                        commit message, or a new tab if -v is given.  Write
+                        and close that window (:wq or |:Gwrite|) to finish the
+                        commit.  Unlike when running the actual git-commit
+                        command, it is possible (but unadvisable) to alter the
+                        index with commands like git-add and git-reset while a
+                        commit message is pending.
+
+                                                *fugitive-:Gmerge*
+:Gmerge [args]          Calls git-merge and loads errors and conflicted files
+                        into the quickfix list.  Opens a |:Gcommit| style
+                        split window for the commit message if the merge
+                        succeeds.  If called during a merge conflict, the
+                        conflicted files from the current index are loaded
+                        into the quickfix list.
+
+                                                *fugitive-:Gpull*
+:Gpull [args]           Like |:Gmerge|, but for git-pull.
+
+                                                *fugitive-:Gpush*
+:Gpush [args]           Invoke git-push, load the results into the quickfix
+                        list, and invoke |:cwindow| to reveal any errors.
+                        |:Dispatch| is used if available for asynchronous
+                        invocation.
+
+                                                *fugitive-:Gfetch*
+:Gfetch [args]          Like |:Gpush|, but for git-fetch.
 
                                                 *fugitive-:Ggrep*
 :Ggrep [args]           |:grep| with git-grep as 'grepprg'.
@@ -83,6 +103,11 @@ that are part of Git repositories).
                         an argument, no file specific filtering is done, and
                         previous commits rather than previous file revisions
                         are loaded.
+
+:{range}Glog [args]     Use git-log -L to load previous revisions of the given
+                        range of the current file into the quickfix list.  The
+                        cursor is positioned on the first line of the first
+                        diff hunk for each commit.
 
                                                 *fugitive-:Gllog*
 :Gllog [args]           Like |:Glog|, but use the location list instead of the
@@ -149,14 +174,16 @@ that are part of Git repositories).
                         index is used (which means a three-way diff during a
                         merge conflict, making it a git-mergetool
                         alternative).  The newer of the two files is placed
-                        to the right.  Use |do| and |dp| and write to the
-                        index file to simulate "git add --patch".
+                        to the right or bottom, depending on 'diffopt' and
+                        the width of the window relative to 'textwidth'.  Use
+                        |do| and |dp| and write to the index file to simulate
+                        "git add --patch".
 
                                                 *fugitive-:Gsdiff*
-:Gsdiff [revision]      Like |:Gdiff|, but split horizontally.
+:Gsdiff [revision]      Like |:Gdiff|, but always split horizontally.
 
                                                 *fugitive-:Gvdiff*
-:Gvdiff [revision]      Identical to |:Gdiff|.  For symmetry with |:Gsdiff|.
+:Gvdiff [revision]      Like |:Gdiff|, but always split vertically.
 
                                                 *fugitive-:Gmove*
 :Gmove {destination}    Wrapper around git-mv that renames the buffer
@@ -172,11 +199,10 @@ that are part of Git repositories).
 
                                                 *fugitive-:Gblame*
 :Gblame [flags]         Run git-blame on the file and open the results in a
-                        scroll bound vertical split.  Press enter on a line to
-                        reblame the file as it was in that commit.  You can
-                        give any of ltfnsewMC as flags and they will be passed
-                        along to git-blame.  The following maps, which work on
-                        the cursor line commit where sensible, are provided:
+                        scroll bound vertical split.  You can give any of
+                        ltfnsewMC as flags and they will be passed along to
+                        git-blame.  The following maps, which work on the
+                        cursor line commit where sensible, are provided:
 
                         g?    show this help
                         A     resize to end of author column

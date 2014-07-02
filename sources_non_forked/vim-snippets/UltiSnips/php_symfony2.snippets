@@ -3,6 +3,28 @@
 
 priority -50
 
+snippet classn "Basic class with namespace snippet" b
+namespace `!p
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`;
+
+/**
+ * ${1:@author `whoami`}
+ */
+class `!p
+snip.rv = re.match(r'.*(?=\.)', fn).group()
+`$2
+{
+    public function __construct(${3:$options})
+    {
+        ${4:// code}
+    }$0
+}
+endsnippet
+
 snippet contr "Symfony2 controller" b
 namespace `!p
 abspath = os.path.abspath(path)

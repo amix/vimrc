@@ -19,7 +19,7 @@ set cpo&vim
 
 function! SyntaxCheckers_ruby_macruby_GetLocList() dict
     let makeprg = self.makeprgBuild({
-        \ 'exe': 'RUBYOPT= ' . self.getExecEscaped(),
+        \ 'exe_before': 'RUBYOPT=',
         \ 'args_after': '-W1 -c' })
 
     let errorformat =

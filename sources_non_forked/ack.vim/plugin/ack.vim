@@ -22,12 +22,16 @@ if !exists("g:ack_apply_lmappings")
   let g:ack_apply_lmappings = !exists("g:ack_lhandler")
 endif
 
+if !exists("g:ack_use_dispatch")
+  let g:ack_use_dispatch = 0
+end
+
 let s:ack_mappings = {
       \ "t": "<C-W><CR><C-W>T",
       \ "T": "<C-W><CR><C-W>TgT<C-W>j",
       \ "o": "<CR>",
-      \ "O": "<CR><C-W><C-W>:ccl<CR>",
-      \ "go": "<CR><C-W>j",
+      \ "O": "<CR><C-W>p<C-W>c",
+      \ "go": "<CR><C-W>p",
       \ "h": "<C-W><CR><C-W>K",
       \ "H": "<C-W><CR><C-W>K<C-W>b",
       \ "v": "<C-W><CR><C-W>H<C-W>b<C-W>J<C-W>t",

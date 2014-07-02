@@ -14,7 +14,8 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_python_py3kwarn_GetLocList() dict
-    let makeprg = self.makeprgBuild({})
+    let makeprg = self.makeprgBuild({
+        \ 'exe_before': (syntastic#util#isRunningWindows() ? '' : 'TERM=dumb') })
 
     let errorformat = '%W%f:%l:%c: %m'
 

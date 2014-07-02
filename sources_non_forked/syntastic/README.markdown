@@ -35,16 +35,16 @@ the user is notified and is happy because they didn't have to compile their
 code or execute their script to find them.
 
 At the time of this writing, syntax checking plugins exist for ActionScript,
-Ada, AppleScript, AsciiDoc, ASM, BEMHTML, Bourne shell, C, C++, C#, Chef,
-CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart, DocBook, Dust, Elixir,
-Erlang, eRuby, Fortran, Gentoo metadata, GLSL, Go, Haml, Haskell, Haxe,
+Ada, AppleScript, AsciiDoc, ASM, BEMHTML, Bro, Bourne shell, C, C++, C#, Cabal,
+Chef, CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart, DocBook, Dust,
+Elixir, Erlang, eRuby, Fortran, Gentoo metadata, GLSL, Go, Haml, Haskell, Haxe,
 Handlebars, HSS, HTML, Java, JavaScript, JSON, JSX, LESS, Lex, Limbo, LISP,
 LLVM intermediate language, Lua, MATLAB, NASM, Objective-C, Objective-C++,
 OCaml, Perl, Perl POD, PHP, gettext Portable Object, OS X and iOS property
-lists, Puppet, Python, Racket, R, reStructuredText, Ruby, Rust, SASS/SCSS,
-Scala, Slim, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog, VHDL, VimL,
-xHtml, XML, XSLT, YACC, YAML, z80, Zope page templates, and zsh.  See the
-[wiki][3] for details about the corresponding supported checkers.
+lists, Puppet, Python, Racket, R, reStructuredText, Ruby, SASS/SCSS, Scala,
+Slim, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog, VHDL, VimL, xHtml,
+XML, XSLT, YACC, YAML, z80, Zope page templates, and zsh.  See the [wiki][3]
+for details about the corresponding supported checkers.
 
 Below is a screenshot showing the methods that Syntastic uses to display syntax
 errors.  Note that, in practise, you will only have a subset of these methods
@@ -76,9 +76,8 @@ First I'll show you how to install Tim Pope's [pathogen][1] so that it's easy to
 install syntastic.  Do this in your terminal so that you get the `pathogen.vim`
 file and the directories it needs:
 ```sh
-mkdir -p ~/.vim/autoload ~/.vim/bundle; \
-curl -so ~/.vim/autoload/pathogen.vim \
-    https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim
+mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 ```
 Next you *need* to add this to your `~/.vimrc`:
 ```vim
@@ -92,7 +91,7 @@ execute pathogen#infect()
 You now have pathogen installed and can put syntastic into `~/.vim/bundle` like
 this:
 ```sh
-cd ~/.vim/bundle
+cd ~/.vim/bundle && \
 git clone https://github.com/scrooloose/syntastic.git
 ```
 Quit vim and start it back up to reload it, then type:
@@ -142,6 +141,14 @@ still producing useful results, the checker is now disabled by default.  To
 ```vim
 let g:syntastic_enable_perl_checker = 1
 ```
+
+<a name="faqrust"></a>
+
+__Q. What happened to the `rustc` checker?__
+
+A. It has been included in the [Rust compiler package][12].  If you have
+a recent version of the Rust compiler, the checker should be picked up
+automatically by syntastic.
 
 <a name="faqloclist"></a>
 
@@ -272,8 +279,10 @@ cabbrev <silent> bd lclose\|bdelete
 ## 4\. Other resources
 
 The preferred place for posting suggestions, reporting bugs, and general
-discussions related to syntastic is the [issue tracker at GitHub][4].  There
-are also a [google group][5], and a [syntastic tag at StackOverflow][6].
+discussions related to syntastic is the [issue tracker at GitHub][4].
+A guide for writing syntax checkers can be found in the [wiki][11].
+There are also a dedicated [google group][5], and a
+[syntastic tag at StackOverflow][6].
 
 Syntastic aims to provide a common interface to syntax checkers for as many
 languages as possible.  For particular languages, there are, of course, other
@@ -291,3 +300,5 @@ a look at [jedi-vim][7], [python-mode][8], or [YouCompleteMe][9].
 [8]: https://github.com/klen/python-mode
 [9]: http://valloric.github.io/YouCompleteMe/
 [10]: http://perldoc.perl.org/perlrun.html#*-c*
+[11]: https://github.com/scrooloose/syntastic/wiki/Syntax-Checker-Guide
+[12]: https://github.com/rust-lang/rust/

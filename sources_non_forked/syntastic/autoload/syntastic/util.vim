@@ -88,6 +88,7 @@ endfunction " }}}2
 " strwidth() was added in Vim 7.3; if it doesn't exist, we use strlen()
 " and hope for the best :)
 let s:width = function(exists('*strwidth') ? 'strwidth' : 'strlen')
+lockvar s:width
 
 "print as much of a:msg as possible without "Press Enter" prompt appearing
 function! syntastic#util#wideMsg(msg) " {{{2

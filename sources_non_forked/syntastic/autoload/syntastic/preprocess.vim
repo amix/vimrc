@@ -8,6 +8,26 @@ set cpo&vim
 
 " Public functions {{{1
 
+function! syntastic#preprocess#cabal(errors) " {{{2
+    let out = []
+    let star = 0
+    for err in a:errors
+        if star
+            if err == ''
+                let star = 0
+            else
+                let out[-1] .= ' ' . err
+            endif
+        else
+            call add(out, err)
+            if err =~ '\m^*\s'
+                let star = 1
+            endif
+        endif
+    endfor
+    return out
+endfunction " }}}2
+
 function! syntastic#preprocess#checkstyle(errors) " {{{2
     let out = []
     let fname = expand('%')
@@ -93,6 +113,10 @@ function! syntastic#preprocess#rparse(errors) " {{{2
     endfor
 
     return out
+endfunction " }}}2
+
+function! syntastic#preprocess#tslint(errors) " {{{2
+    return map(copy(a:errors), 'substitute(v:val, ''\m^\(([^)]\+)\)\s\(.\+\)$'', ''\2 \1'', "")')
 endfunction " }}}2
 
 function! syntastic#preprocess#validator(errors) " {{{2

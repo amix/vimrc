@@ -279,8 +279,8 @@ function! s:Creator._setCommonBufOptions()
     let b:NERDTreeShowFiles = g:NERDTreeShowFiles
     let b:NERDTreeShowHidden = g:NERDTreeShowHidden
     let b:NERDTreeShowBookmarks = g:NERDTreeShowBookmarks
-    setfiletype nerdtree
     call self._bindMappings()
+    setlocal filetype=nerdtree
 endfunction
 
 "FUNCTION: s:Creator._setupStatusline() {{{1

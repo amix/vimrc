@@ -19,7 +19,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haskell_hdevtools_GetLocList() dict
-    if exists('g:hdevtools_options')
+    if !exists('g:syntastic_haskell_hdevtools_args') && exists('g:hdevtools_options')
+        call syntastic#log#oneTimeWarn('variable g:hdevtools_options is deprecated, ' .
+            \ 'please use g:syntastic_haskell_hdevtools_args instead')
         let g:syntastic_haskell_hdevtools_args = g:hdevtools_options
     endif
 

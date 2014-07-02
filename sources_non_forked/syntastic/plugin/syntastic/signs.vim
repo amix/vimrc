@@ -25,6 +25,7 @@ function! g:SyntasticSignsNotifier.New() " {{{2
     if !s:setup_done
         call self._setup()
         let s:setup_done = 1
+        lockvar s:setup_done
     endif
 
     return newObj
@@ -41,7 +42,7 @@ function! g:SyntasticSignsNotifier.refresh(loclist) " {{{2
         call self._signErrors(a:loclist)
     endif
     call self._removeSigns(old_signs)
-    let s:first_sign_id = s:next_sign_id
+    let s:first_sign_id = exists('s:next_sign_id') ? s:next_sign_id : 5000
 endfunction " }}}2
 
 " }}}1
@@ -98,13 +99,15 @@ function! g:SyntasticSignsNotifier._signErrors(loclist) " {{{2
             if !has_key(seen, i['lnum'])
                 let seen[i['lnum']] = 1
 
-                let sign_severity = i['type'] ==? 'W' ? 'Warning' : 'Error'
-                let sign_subtype = get(i, 'subtype', '')
-                let sign_type = 'Syntastic' . sign_subtype . sign_severity
+                if i['lnum'] > 0
+                    let sign_severity = i['type'] ==? 'W' ? 'Warning' : 'Error'
+                    let sign_subtype = get(i, 'subtype', '')
+                    let sign_type = 'Syntastic' . sign_subtype . sign_severity
 
-                execute "sign place " . s:next_sign_id . " line=" . i['lnum'] . " name=" . sign_type . " buffer=" . i['bufnr']
-                call add(self._bufSignIds(), s:next_sign_id)
-                let s:next_sign_id += 1
+                    execute "sign place " . s:next_sign_id . " line=" . i['lnum'] . " name=" . sign_type . " buffer=" . i['bufnr']
+                    call add(self._bufSignIds(), s:next_sign_id)
+                    let s:next_sign_id += 1
+                endif
             endif
         endfor
     endif
@@ -113,9 +116,9 @@ endfunction " }}}2
 " Remove the signs with the given ids from this buffer
 function! g:SyntasticSignsNotifier._removeSigns(ids) " {{{2
     if has('signs')
-        for i in a:ids
-            execute "sign unplace " . i
-            call remove(self._bufSignIds(), index(self._bufSignIds(), i))
+        for s in reverse(copy(a:ids))
+            execute "sign unplace " . s
+            call remove(self._bufSignIds(), index(self._bufSignIds(), s))
         endfor
     endif
 endfunction " }}}2

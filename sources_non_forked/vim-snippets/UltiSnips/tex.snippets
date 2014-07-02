@@ -8,7 +8,7 @@ snippet "b(egin)?" "begin{} / end{}" br
 \end{$1}
 endsnippet
 
-snippet tab
+snippet tab "tabular / array environment" b
 \begin{${1:t}${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${2:c}}
 $0${2/((?<=.)c|l|r)|./(?1: & )/g}
 \end{$1${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}

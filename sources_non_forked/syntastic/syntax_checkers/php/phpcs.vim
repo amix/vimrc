@@ -27,8 +27,8 @@ function! SyntaxCheckers_php_phpcs_GetLocList() dict
         \ 'args_after': '--report=csv' })
 
     let errorformat =
-        \ '%-GFile\,Line\,Column\,Type\,Message\,Source\,Severity,'.
-        \ '"%f"\,%l\,%v\,%t%*[a-zA-Z]\,"%m"\,%*[a-zA-Z0-9_.-]\,%*[0-9]'
+        \ '%-GFile\,Line\,Column\,Type\,Message\,Source\,Severity%.%#,'.
+        \ '"%f"\,%l\,%v\,%t%*[a-zA-Z]\,"%m"\,%*[a-zA-Z0-9_.-]\,%*[0-9]%.%#'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,

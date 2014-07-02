@@ -38,9 +38,10 @@ CONTENTS                                                  *syntastic-contents*
         6.1.Handling of composite filetypes........|syntastic-composite|
         6.2.Interaction with python-mode...........|syntastic-pymode|
         6.3.Interaction with the fish shell........|syntastic-fish|
-        6.4.Using syntastic with the fizsh shell...|syntastic-fizsh|
-        6.5.Interaction with Eclim.................|syntastic-eclim|
-        6.6.Interaction with vim-virtualenv........|syntastic-vim-virtualenv|
+        6.4.Interaction with PowerShell............|syntastic-powershell|
+        6.5.Using syntastic with the fizsh shell...|syntastic-fizsh|
+        6.6.Interaction with Eclim.................|syntastic-eclim|
+        6.7.Interaction with vim-virtualenv........|syntastic-vim-virtualenv|
     7.About........................................|syntastic-about|
     8.License......................................|syntastic-license|
 
@@ -83,7 +84,7 @@ see |syntastic-checker-options| for details. You can also change the arguments
 passed to a specific checker as well.
 
 Use |:SyntasticCheck| to manually check right now. Use |:SyntasticToggleMode|
-to switch between active (checking on writting the buffer) and passive (manual)
+to switch between active (checking on writing the buffer) and passive (manual)
 checking.
 
 ==============================================================================
@@ -93,7 +94,7 @@ Syntax checking can be done automatically or on demand (see
 |'syntastic_mode_map'| and |:SyntasticToggleMode| for configuring this).
 
 When syntax checking is done, the features below can be used to notify the
-user of errors. See |syntastic-options| for how to configure and
+user of errors. See |syntastic-global-options| for how to configure and
 activate/deactivate these features.
 
     * A statusline flag
@@ -169,6 +170,8 @@ and the SpellCap group is used for warnings. If you wish to customize the
 colors for highlighting you can use the following groups:
     SyntasticError - Links to 'SpellBad' by default
     SyntasticWarning - Links to 'SpellCap' by default
+    SyntasticStyleError - Links to SyntasticError by default
+    SyntasticStyleWarning - Links to SyntasticWarning by default
 
 Example: >
     highlight SyntasticError guibg=#2f0000
@@ -288,10 +291,12 @@ to label error messages with the names of the checkers that created them. >
 <
                                           *'syntastic_sort_aggregated_errors'*
 Default: 1
-By default, when |syntastic_aggregate_errors| is enabled, errors are grouped
-by file, then sorted by line number, then grouped by type (namely, errors take
-precedence over warnings), then they are sorted by column number.  If you want
-to leave messages grouped by checker output, set this variable to 0. >
+By default, when results from multiple checkers are aggregated in a single
+error list (that is either when |syntastic_aggregate_errors| is enabled, or
+when checking a file with a composite filetype), errors are grouped by file,
+then sorted by line number, then grouped by type (namely errors take precedence
+over warnings), then they are sorted by column number.  If you want to leave
+messages grouped by checker output, set this variable to 0. >
     let g:syntastic_sort_aggregated_errors = 0
 <
                                               *'syntastic_echo_current_error'*
@@ -593,7 +598,7 @@ Checkers that use 'makeprgBuild()' construct a 'makeprg' like this: >
                 \ 'tail': '> /tmp/output' })
 <
 The result is a 'makeprg' of the form: >
-    <exe> <args> <filename> <post_args> <tail>
+    <exe> <args> <fname> <post_args> <tail>
 <
                                         *'syntastic_<filetype>_<checker>_exe'*
 All arguments above are optional, and can be overridden by setting global
@@ -666,7 +671,16 @@ traditional shell, such as 'zsh', 'bash', 'ksh', or even the original Bourne
     set shell=bash
 <
 ------------------------------------------------------------------------------
-6.4. Using syntastic with the fizsh shell                    *syntastic-fizsh*
+6.4. Interaction with PowerShell                        *syntastic-powershell*
+
+At the time of this writing, syntastic is not compatible with using 'Windows
+PowerShell' (http://technet.microsoft.com/en-us/library/bb978526.aspx) as Vim's
+'shell'.  You may still run Vim from 'PowerShell', but you do have to point
+Vim's 'shell' to a more traditional program, such as 'cmd.exe': >
+    set shell=cmd.exe
+<
+------------------------------------------------------------------------------
+6.5. Using syntastic with the fizsh shell                    *syntastic-fizsh*
 
 Using syntastic with the 'fizsh' shell (see https://github.com/zsh-users/fizsh)
 is possible, but potentially problematic. In order to do it you'll need to set
@@ -679,7 +693,7 @@ interactive features of 'fizsh'. Using a more traditional shell such as 'zsh',
     set shell=zsh
 <
 ------------------------------------------------------------------------------
-6.5. Interaction with Eclim                                  *syntastic-eclim*
+6.6. Interaction with Eclim                                  *syntastic-eclim*
 
 As far as syntastic is concerned there shouldn't be any compatibility problems
 with the 'Eclim' Vim plugin (see http://eclim.org/). However, at the time of
@@ -688,7 +702,7 @@ makes syntastic forget some of its configuration parameters. No solutions or
 workarounds are known for now.
 
 ------------------------------------------------------------------------------
-6.6. Interaction with vim-virtualenv                *syntastic-vim-virtualenv*
+6.7. Interaction with vim-virtualenv                *syntastic-vim-virtualenv*
 
 At the time of this writing, syntastic can't run checkers installed
 in Python virtual environments activated by 'vim-virtualenv' (see

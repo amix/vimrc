@@ -60,7 +60,7 @@ abstract $0
 endsnippet
 
 snippet as "assert" b
-assert ${1:test}${2/(.+)/(?1: \: ")/}${2:Failure message}${2/(.+)/(?1:")/};$0
+assert ${1:test}${2/(.+)/(?1: \: ")/}${2:Failure message}${2/(.+)/(?1:")/};
 endsnippet
 
 snippet at "assert true" b
@@ -68,7 +68,7 @@ assertTrue(${1:actual});
 endsnippet
 
 snippet af "assert false" b
-assertFalse(${1:actual});$0
+assertFalse(${1:actual});
 endsnippet
 
 snippet ae "assert equals" b
@@ -141,7 +141,7 @@ if len(args) > 0:
 	public `!p snip.rv = snip.basename or "unknown"`($1) { `!p
 args = getArgs(t[1])
 for i in args:
-	snip.rv += "\n\t\tthis." + i[1] + " = " + i[1]
+	snip.rv += "\n\t\tthis.%s = %s;" % (i[1], i[1])
 if len(args) == 0:
 	snip.rv += "\n"`
 	}
@@ -224,7 +224,7 @@ $0
 endsnippet
 
 snippet im "import"  b
-import ${1:java}.${2:util}.$0
+import ${1:java}.${2:util}.$0;
 endsnippet
 
 snippet in "interface" b
@@ -269,7 +269,7 @@ if len(args) > 0:
 public `!p snip.rv = snip.basename or "unknown"`($1) { `!p
 args = getArgs(t[1])
 for i in args:
-	snip.rv += "\n\t\tthis." + i[1] + " = " + i[1]
+	snip.rv += "\n\t\tthis.%s = %s;" % (i[1], i[1])
 if len(args) == 0:
 	snip.rv += "\n"`
 }

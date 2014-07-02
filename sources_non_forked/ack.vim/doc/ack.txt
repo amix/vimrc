@@ -86,7 +86,7 @@ Example:
         let g:ackprg = "other-bin-ack"
 <
 
-                                                        g:ack_default_options*
+                                                       *g:ack_default_options*
 g:ack_default_options
 Default: " -s -H --nocolor --nogroup --column"
 
@@ -94,7 +94,7 @@ Use this option to specify the options used by ack
 
 Example:
 >
-        let g:ackprg =
+        let g:ack_default_options =
               \ " -s -H --nocolor --nogroup --column --smart-case --follow"
 <
 
@@ -201,6 +201,18 @@ Use this option to automagically open the file with 'j' or 'k'.
 Example:
 >
         let g:ackpreview = 1
+<
+
+                                                          *g:ack_use_dispatch*
+
+g:ack_use_dispatch
+Default: 0
+
+Use this option to use vim-dispatch to search the results in background
+
+Example:
+>
+        let g:ack_use_dispatch = 1
 <
 
 ==============================================================================

@@ -56,16 +56,31 @@ let g:snipMate['no_match_completion_feedkeys_chars'] =
 
 " Add default scope aliases, without overriding user settings
 let g:snipMate.scope_aliases = get(g:snipMate, 'scope_aliases', {})
-if !exists('g:snipMate_no_default_aliases') || !g:snipMate_no_default_aliases
-	let g:snipMate.scope_aliases.objc = get(g:snipMate.scope_aliases, 'objc', 'c')
-	let g:snipMate.scope_aliases.cpp = get(g:snipMate.scope_aliases, 'cpp', 'c')
-	let g:snipMate.scope_aliases.cu = get(g:snipMate.scope_aliases, 'cu', 'c')
-	let g:snipMate.scope_aliases.xhtml = get(g:snipMate.scope_aliases, 'xhtml', 'html')
-	let g:snipMate.scope_aliases.html = get(g:snipMate.scope_aliases, 'html', 'javascript')
-	let g:snipMate.scope_aliases.php = get(g:snipMate.scope_aliases, 'php', 'php,html,javascript')
-	let g:snipMate.scope_aliases.ur = get(g:snipMate.scope_aliases, 'ur', 'html,javascript')
-	let g:snipMate.scope_aliases.mxml = get(g:snipMate.scope_aliases, 'mxml', 'actionscript')
-	let g:snipMate.scope_aliases.eruby = get(g:snipMate.scope_aliases, 'eruby', 'eruby-rails,html')
+if exists('g:snipMate_no_default_aliases')
+	echom 'The g:snipMate_no_default_aliases option has been renamed.'
+				\ 'See :h snipMate-options.'
+endif
+if (!exists('g:snipMate_no_default_aliases') || !g:snipMate_no_default_aliases)
+			\ && (!exists('g:snipMate.no_default_aliases')
+				\ || !g:snipMate.no_default_aliases)
+	let g:snipMate.scope_aliases.objc =
+				\ get(g:snipMate.scope_aliases, 'objc', 'c')
+	let g:snipMate.scope_aliases.cpp =
+				\ get(g:snipMate.scope_aliases, 'cpp', 'c')
+	let g:snipMate.scope_aliases.cu =
+				\ get(g:snipMate.scope_aliases, 'cu', 'c')
+	let g:snipMate.scope_aliases.xhtml =
+				\ get(g:snipMate.scope_aliases, 'xhtml', 'html')
+	let g:snipMate.scope_aliases.html =
+				\ get(g:snipMate.scope_aliases, 'html', 'javascript')
+	let g:snipMate.scope_aliases.php =
+				\ get(g:snipMate.scope_aliases, 'php', 'php,html,javascript')
+	let g:snipMate.scope_aliases.ur =
+				\ get(g:snipMate.scope_aliases, 'ur', 'html,javascript')
+	let g:snipMate.scope_aliases.mxml =
+				\ get(g:snipMate.scope_aliases, 'mxml', 'actionscript')
+	let g:snipMate.scope_aliases.eruby =
+				\ get(g:snipMate.scope_aliases, 'eruby', 'eruby-rails,html')
 endif
 
 let g:snipMate['get_snippets'] = get(g:snipMate, 'get_snippets', funcref#Function("snipMate#GetSnippets"))
@@ -94,6 +109,7 @@ function! s:grab_visual()
 	endtry
 endfunction
 
+" TODO: Allow specifying an arbitrary snippets file
 function! s:load_scopes(bang, ...)
 	let gb = a:bang ? g: : b:
 	let gb.snipMate = get(gb, 'snipMate', {})

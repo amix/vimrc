@@ -20,7 +20,11 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_ruby_rubylint_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args': 'analyze --presenter=syntastic' })
+    if !exists('s:rubylint_new')
+        let s:rubylint_new = syntastic#util#versionIsAtLeast(syntastic#util#getVersion(
+            \ self.getExecEscaped() . ' --version'), [2])
+    endif
+    let makeprg = self.makeprgBuild({ 'args': (s:rubylint_new ? '' : 'analyze ') . '--presenter=syntastic' })
 
     let errorformat = '%f:%t:%l:%c: %m'
 

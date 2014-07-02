@@ -1,7 +1,40 @@
 priority -50
 
+global !p
+import os
+from vimsnippets import complete
+
+FIELD_TYPES = [
+'character',
+'data.frame',
+'integer',
+'list',
+'logical',
+'matrix',
+'numeric',
+'vector']
+endglobal
+
 snippet #! "Hashbang for Rscript (#!)" b
 #!/usr/bin/env Rscript
+endsnippet
+
+snippet setwd "Set workingdir" b
+setwd("${1:`!p snip.rv = os.getcwd()`}")
+endsnippet
+
+snippet as "Apply type on variable" w
+as.$1`!p snip.rv = complete(t[1], FIELD_TYPES)`(${2}${VISUAL})
+endsnippet
+
+snippet is "Test type on variable" w
+is.$1`!p snip.rv = complete(t[1], FIELD_TYPES)`(${2}${VISUAL})
+endsnippet
+
+snippet dl "Download and install a package" b
+download.file("${1:${VISUAL:url to package}}", destfile = "${2:${1/.*\/(\S*)$/(?1:$1)/ga}}")
+install.packages("$2", type = "source", repos = NULL)
+library("${3:${2/^(\w+)_.*$/(?1:$1)/ga}}")
 endsnippet
 
 snippet lib "Import a library"
@@ -48,7 +81,7 @@ while(${1}) {
 endsnippet
 
 snippet for "for loop"
-for ({${1:item} in ${2:list}) {
+for (${1:item} in ${2:list}) {
 	${3}
 }
 endsnippet
@@ -88,7 +121,7 @@ lapply(${1:list}, ${0:function})
 endsnippet
 
 snippet sapply "sapply function"
-lapply(${1:list}, ${0:function})
+sapply(${1:list}, ${0:function})
 endsnippet
 
 snippet vapply "vapply function"

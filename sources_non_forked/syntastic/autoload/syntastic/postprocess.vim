@@ -14,6 +14,8 @@ function! syntastic#postprocess#compressWhitespace(errors) " {{{2
         let e['text'] = substitute(e['text'], "\001", '', 'g')
         let e['text'] = substitute(e['text'], '\n', ' ', 'g')
         let e['text'] = substitute(e['text'], '\m\s\{2,}', ' ', 'g')
+        let e['text'] = substitute(e['text'], '\m^\s\+', '', '')
+        let e['text'] = substitute(e['text'], '\m\s\+$', '', '')
     endfor
 
     return a:errors

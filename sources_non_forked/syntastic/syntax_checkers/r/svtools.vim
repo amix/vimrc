@@ -51,8 +51,9 @@ function! SyntaxCheckers_r_svtools_GetLocList() dict
         return []
     endif
 
+    let setwd = syntastic#util#isRunningWindows() ? 'setwd("' . escape(getcwd(), '"\') . '"); ' : ''
     let makeprg = self.getExecEscaped() . ' --slave --restore --no-save' .
-        \ ' -e ' . syntastic#util#shescape('library(svTools); ' .
+        \ ' -e ' . syntastic#util#shescape(setwd . 'library(svTools); ' .
         \       'try(lint(commandArgs(TRUE), filename = commandArgs(TRUE), type = "flat", sep = ":"))') .
         \ ' --args ' . syntastic#util#shexpand('%')
 

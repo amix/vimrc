@@ -1,7 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    1391
+" @Revision:    1393
 
 " :filedoc:
 " A prototype used by |tlib#input#List|.
@@ -500,6 +500,7 @@ function! s:prototype.SetPrefIdx() dict "{{{3
     let pref_idx = -1
     let pref_weight = -1
     " TLogVAR self.filter_pos, self.filter_neg
+    " let t0 = localtime() " DBG
     for idx in range(1, self.llen)
         let item = self.GetItem(idx)
         let weight = self.matcher.AssessName(self, item)
@@ -509,6 +510,7 @@ function! s:prototype.SetPrefIdx() dict "{{{3
             let pref_weight = weight
         endif
     endfor
+    " TLogVAR localtime() - t0
     " TLogVAR pref_idx
     " TLogDBG self.GetItem(pref_idx)
     if pref_idx == -1

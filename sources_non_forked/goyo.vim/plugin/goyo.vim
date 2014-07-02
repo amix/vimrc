@@ -104,13 +104,13 @@ function! s:tranquilize()
             \ 'StatusLine', 'StatusLineNC', 'SignColumn']
     " -1 on Vim / '' on GVim
     if bg == -1 || empty(bg)
-      call s:set_color(grp, '', 'NONE')
       call s:set_color(grp, 'fg', get(g:, 'goyo_bg', 'black'))
       call s:set_color(grp, 'bg', 'NONE')
     else
       call s:set_color(grp, 'fg', bg)
       call s:set_color(grp, 'bg', bg)
     endif
+    call s:set_color(grp, '', 'NONE')
   endfor
 endfunction
 
@@ -244,6 +244,8 @@ function! s:goyo_off()
   let goyo_disabled_airline   = t:goyo_disabled_airline
   let goyo_disabled_powerline = t:goyo_disabled_powerline
   let goyo_disabled_lightline = t:goyo_disabled_lightline
+  let goyo_orig_buffer        = t:goyo_master
+  let [line, col]             = [line('.'), col('.')]
 
   if tabpagenr() == 1
     tabnew
@@ -252,6 +254,9 @@ function! s:goyo_off()
   endif
   tabclose
   execute 'normal! '.s:orig_tab.'gt'
+  if winbufnr(0) == goyo_orig_buffer
+    execute printf('normal! %dG%d|', line, col)
+  endif
 
   let wmh = remove(goyo_revert, 'winminheight')
   let wh  = remove(goyo_revert, 'winheight')

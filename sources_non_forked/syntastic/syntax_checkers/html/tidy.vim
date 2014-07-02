@@ -123,6 +123,7 @@ let s:ignore_errors = [
         \ "proprietary attribute \"aria-valuenow\"",
         \ "proprietary attribute \"aria-valuetext\""
     \ ]
+lockvar! s:ignore_errors
 
 let s:blocklevel_tags = [
         \ "main",
@@ -135,6 +136,7 @@ let s:blocklevel_tags = [
         \ "figure",
         \ "figcaption"
     \ ]
+lockvar! s:blocklevel_tags
 
 let s:inline_tags = [
         \ "video",
@@ -153,11 +155,13 @@ let s:inline_tags = [
         \ "details",
         \ "datalist"
     \ ]
+lockvar! s:inline_tags
 
 let s:empty_tags = [
         \ "wbr",
         \ "keygen"
     \ ]
+lockvar! s:empty_tags
 
 function! s:IgnoreError(text)
     for i in s:ignore_errors + g:syntastic_html_tidy_ignore_errors

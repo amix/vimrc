@@ -2066,7 +2066,7 @@ tlib#string#RemoveBackslashes(text, ?chars=' ')
     chars).
 
                                                     *tlib#string#Chomp()*
-tlib#string#Chomp(string)
+tlib#string#Chomp(string, ?max=0)
 
                                                     *tlib#string#Format()*
 tlib#string#Format(template, dict)
@@ -2092,4 +2092,4 @@ tlib#string#Count(string, rx)
 
 
 
-vim:tw=78:fo=tcq2:isk=!-~,^*,^|,^":ts=8:ft=help:norl:
+vim:tw=78:fo=w2croql:isk=!-~,^*,^|,^":ts=8:ft=help:norl:

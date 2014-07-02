@@ -103,6 +103,10 @@ function! s:Path.compareTo(path)
     elseif thisSS > thatSS
         return 1
     else
+        if !g:NERDTreeSortHiddenFirst
+            let thisPath = substitute(thisPath, '^[._]', '', '')
+            let thatPath = substitute(thatPath, '^[._]', '', '')
+        endif
         "if the sort sequences are the same then compare the paths
         "alphabetically
         let pathCompare = g:NERDTreeCaseSensitiveSort ? thisPath <# thatPath : thisPath <? thatPath
@@ -141,6 +145,7 @@ function! s:Path.Create(fullpath)
 
         "assume its a file and create
         else
+            call s:Path.createParentDirectories(a:fullpath)
             call writefile([], a:fullpath)
         endif
     catch
@@ -160,6 +165,8 @@ function! s:Path.copy(dest)
     if !s:Path.CopyingSupported()
         throw "NERDTree.CopyingNotSupportedError: Copying is not supported on this OS"
     endif
+
+    call s:Path.createParentDirectories(a:dest)
 
     let dest = s:Path.WinToUnixPath(a:dest)
 
@@ -194,6 +201,20 @@ function! s:Path.copyingWillOverwrite(dest)
         if filereadable(path)
             return 1
         endif
+    endif
+endfunction
+
+"FUNCTION: Path.createParentDirectories(path) {{{1
+"
+"create parent directories for this path if needed
+"without throwing any errors is those directories already exist
+"
+"Args:
+"path: full path of the node whose parent directories may need to be created
+function! s:Path.createParentDirectories(path)
+    let dir_path = fnamemodify(a:path, ':h')
+    if !isdirectory(dir_path)
+        call mkdir(dir_path, 'p')
     endif
 endfunction
 

@@ -148,14 +148,16 @@ function! airline#check_mode(winnr)
     let w:airline_current_mode = get(g:airline_mode_map, '__')
   endif
 
-  if g:airline_detect_modified
-    if &modified
-      call add(l:mode, 'modified')
-    endif
+  if g:airline_detect_modified && &modified
+    call add(l:mode, 'modified')
   endif
 
   if g:airline_detect_paste && &paste
     call add(l:mode, 'paste')
+  endif
+
+  if &readonly
+    call add(l:mode, 'readonly')
   endif
 
   let mode_string = join(l:mode)

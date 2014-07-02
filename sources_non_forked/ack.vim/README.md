@@ -9,7 +9,7 @@ ack from vim, and shows the results in a split window.
 
 ### Ack
 
-You will need the ack, of course, to install it follow the
+You will need the ack(>= 2.0), of course, to install it follow the
 [manual](http://beyondgrep.com/install/)
 
 ### The Plugin
@@ -75,8 +75,8 @@ check out the docs for the Perl script 'ack', for obvious reasons:
 ### Gotchas
 
 Some characters have special meaning, and need to be escaped your search
-pattern. For instance, '#'. You have to escape it like this :Ack '\\\#define
-foo' to search for #define foo. (From blueyed in issue #5.)
+pattern. For instance, '#'. You have to escape it like this `:Ack '\\\#define
+foo'` to search for '#define foo'. (From blueyed in issue #5.)
 
 ## Changelog
 
@@ -91,3 +91,41 @@ foo' to search for #define foo. (From blueyed in issue #5.)
 * Add g:ack_mapping
 * Add g:ack_default_options
 * Add a help toggle `?`(like NERDTree)
+
+### 1.0.1
+
+* Fixes #124. Bug with `g:ack_autofold_results`
+
+### 1.0.2
+
+* Add compatibility with [vim-dispatch](https://github.com/tpope/vim-dispatch)
+
+### 1.0.3
+
+* Fixes #127. Use `&l:hlsearch` instead of `v:hlsearch` to keep compatibility
+with versions that does not have this variable.
+
+### 1.0.4
+
+* Fixes #128. Always apply mappings, even when using vim-dispatch.
+
+### 1.0.5
+
+* Fixes #128. Fixes the `errorformat` for ack when using vim-dispatch.
+* Do not use vim-dispatch by default. To use vim-dispath must set
+`g:ack_use_dispatch`
+
+### 1.0.6
+
+* Fixes highlight function to work when user passes options. Ex.: Ack -i test
+  Thank's @mannih. (#131, #134)
+
+### 1.0.7
+
+* Fixes highlight function to work when passes more than one option, or options
+with double dashes(--option) Thank's to @MiguelLatorre and @mannih
+
+### 1.0.8
+
+* Fixes (again) highlight, now using negative look behind.
+* Change mappings `o` and `O` to behave as documented

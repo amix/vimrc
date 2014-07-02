@@ -26,6 +26,9 @@ gc                      Text object for a comment (operator pending mode
 gcgc                    Uncomment the current and adjacent commented lines.
 gcu
 
+                                                *:Commentary*
+:[range]Commentary      Comment or uncomment [range] lines
+
 The |User| CommentaryPost autocommand fires after a successful operation and
 can be used for advanced customization.
 

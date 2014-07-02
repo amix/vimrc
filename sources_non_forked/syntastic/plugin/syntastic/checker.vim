@@ -69,7 +69,6 @@ function! g:SyntasticChecker.getLocListRaw() " {{{2
     call self._populateHighlightRegexes(list)
     call syntastic#log#debug(g:SyntasticDebugLoclist, name . ' raw:', list)
     call self._quietMessages(list)
-    call self._sortMessages(list)
     return list
 endfunction " }}}2
 
@@ -99,7 +98,10 @@ function! g:SyntasticChecker.makeprgBuild(opts) " {{{2
 endfunction " }}}2
 
 function! g:SyntasticChecker.isAvailable() " {{{2
-    return self._isAvailableFunc()
+    if !has_key(self, '_available')
+        let self._available = self._isAvailableFunc()
+    endif
+    return self._available
 endfunction " }}}2
 
 " }}}1
@@ -131,20 +133,12 @@ function! g:SyntasticChecker._quietMessages(errors) " {{{2
     endif
 endfunction " }}}2
 
-function! g:SyntasticChecker._sortMessages(errors) " {{{2
-    " don't sort now if we're going to sort the aggregated list later
-    if self._sort && !(syntastic#util#var('aggregate_errors') && syntastic#util#var('sort_aggregated_errors'))
-        call syntastic#util#sortLoclist(a:errors)
-        call syntastic#log#debug(g:SyntasticDebugLoclist, 'sorted:', a:errors)
-    endif
-endfunction " }}}2
-
 function! g:SyntasticChecker._populateHighlightRegexes(errors) " {{{2
     if has_key(self, '_highlightRegexFunc')
         for e in a:errors
             if e['valid']
                 let term = self._highlightRegexFunc(e)
-                if len(term) > 0
+                if term != ''
                     let e['hl'] = term
                 endif
             endif

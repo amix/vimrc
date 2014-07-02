@@ -180,7 +180,7 @@ endfunction " }}}2
 function! s:getIncludeDirs(filetype) " {{{2
     let include_dirs = []
 
-    if a:filetype =~# '\v^%(c|cpp|d|objc|objcpp)$' &&
+    if a:filetype =~# '\v^%(c|cpp|objc|objcpp)$' &&
                 \ (!exists('g:syntastic_'.a:filetype.'_no_default_include_dirs') ||
                 \ !g:syntastic_{a:filetype}_no_default_include_dirs)
         let include_dirs = copy(s:default_includes)

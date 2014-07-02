@@ -115,7 +115,9 @@ g:snipMate.scope_aliases        A |Dictionary| associating certain filetypes
                                 variant b:snipMate_scope_aliases is merged
                                 with the global variant.
 
-g:snipMate_no_default_aliases
+g:snipMate_no_default_aliases   Note: This has been renamed to the following.
+
+g:snipMate.no_default_aliases
                                 When set to 1, prevents SnipMate from loading
                                 default scope aliases. The defaults are:
                                     Filetype    Alias ~
@@ -128,6 +130,10 @@ g:snipMate_no_default_aliases
                                     php         php,html,javascript
                                     ur          html,javascript
                                     xhtml       html
+                                Individual defaults can be disabled by setting
+                                them to an empty value: >
+                                    let g:snipMate.scope_aliases.php = ''
+<                                will disable the default PHP alias.
                                 Note: Setting this option does not disable
                                 scope aliases entirely, only those made by
                                 SnipMate itself. Any scope aliases created by

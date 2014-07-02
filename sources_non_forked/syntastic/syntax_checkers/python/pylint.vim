@@ -23,6 +23,7 @@ endfunction
 
 function! SyntaxCheckers_python_pylint_GetLocList() dict
     let makeprg = self.makeprgBuild({
+        \ 'exe_before': (syntastic#util#isRunningWindows() ? '' : 'TERM=dumb'),
         \ 'args_after': (s:pylint_new ? '-f text --msg-template="{path}:{line}:{column}:{C}: [{symbol}] {msg}" -r n' : '-f parseable -r n -i y') })
 
     let errorformat =

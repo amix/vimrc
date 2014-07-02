@@ -6,6 +6,7 @@ let g:loaded_syntastic_notifiers = 1
 let g:SyntasticNotifiers = {}
 
 let s:notifier_types = ['signs', 'balloons', 'highlighting', 'cursor', 'autoloclist']
+lockvar! s:notifier_types
 
 " Public methods {{{1
 
