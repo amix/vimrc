@@ -52,3 +52,8 @@ function! CoffeeScriptFold()
     setl foldlevelstart=1
 endfunction
 au FileType coffee call CoffeeScriptFold()
+
+"""""""""""""""""""""""""""""""
+" => JSON section
+"""""""""""""""""""""""""""""""
+au BufRead,BufNewFile *.json set filetype=json
