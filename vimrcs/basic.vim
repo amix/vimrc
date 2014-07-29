@@ -154,7 +154,7 @@ endif
 set encoding=utf8
 
 " Use Unix as the standard file type
-set ffs=dos,mac,unix
+set ffs=mac,unix,dos
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
