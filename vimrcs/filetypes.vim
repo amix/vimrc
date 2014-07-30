@@ -57,3 +57,6 @@ au FileType coffee call CoffeeScriptFold()
 " => JSON section
 """""""""""""""""""""""""""""""
 au BufRead,BufNewFile *.json set filetype=json
+" sth not working here http://visibletrap.blogspot.com/2010/05/vim-how-to-format-and-syntax-highlight.html
+" sudo cpan JSON::XS
+" au Filetype.json map <leader>jt  <Esc>:%!json_xs -f json -t json-pretty<CR>
