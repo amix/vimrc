@@ -154,16 +154,9 @@ function! s:logRedirect(on) " {{{2
     endif
 endfunction " }}}2
 
-function! s:logTimestamp_smart() " {{{2
+function! s:logTimestamp() " {{{2
     return 'syntastic: ' . split(reltimestr(reltime(g:syntastic_start)))[0] . ': '
 endfunction " }}}2
-
-function! s:logTimestamp_dumb() " {{{2
-    return 'syntastic: debug: '
-endfunction " }}}2
-
-let s:logTimestamp = function(has('reltime') ? 's:logTimestamp_smart' : 's:logTimestamp_dumb')
-lockvar s:logTimestamp
 
 function! s:formatVariable(name) " {{{2
     let vals = []

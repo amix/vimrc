@@ -1,8 +1,6 @@
 let s:tree_up_dir_line = '.. (up a dir)'
-"NERDTreeFlags are syntax items that should be invisible, but give clues as to
-"how things should be highlighted
-syn match NERDTreeFlag #\~#
-syn match NERDTreeFlag #\[RO\]#
+syn match NERDTreeIgnore #\~#
+syn match NERDTreeIgnore #\[RO\]#
 
 "highlighting for the .. (up dir) line at the top of the tree
 execute "syn match NERDTreeUp #\\V". s:tree_up_dir_line ."#"
@@ -14,7 +12,7 @@ syn match NERDTreeHelpTitle #" .*\~#ms=s+2,me=e-1
 syn match NERDTreeToggleOn #(on)#ms=s+1,he=e-1
 syn match NERDTreeToggleOff #(off)#ms=e-3,me=e-1
 syn match NERDTreeHelpCommand #" :.\{-}\>#hs=s+3
-syn match NERDTreeHelp  #^".*# contains=NERDTreeHelpKey,NERDTreeHelpTitle,NERDTreeFlag,NERDTreeToggleOff,NERDTreeToggleOn,NERDTreeHelpCommand
+syn match NERDTreeHelp  #^".*# contains=NERDTreeHelpKey,NERDTreeHelpTitle,NERDTreeIgnore,NERDTreeToggleOff,NERDTreeToggleOn,NERDTreeHelpCommand
 
 "highlighting for sym links
 syn match NERDTreeLinkTarget #->.*# containedin=NERDTreeDir,NERDTreeFile
@@ -33,7 +31,10 @@ if g:NERDTreeDirArrows
     syn match NERDTreeFile  #^[^"\.▾▸] *[^▾▸]*# contains=NERDTreeLink,NERDTreeRO,NERDTreeBookmark,NERDTreeExecFile
 
     "highlighting for readonly files
-    syn match NERDTreeRO # *\zs.*\ze \[RO\]# contains=NERDTreeFlag,NERDTreeBookmark,NERDTreeFile
+    syn match NERDTreeRO # *\zs.*\ze \[RO\]# contains=NERDTreeIgnore,NERDTreeBookmark,NERDTreeFile
+
+    syn match NERDTreeFlags #^ *\zs\[.\]# containedin=NERDTreeFile
+    syn match NERDTreeFlags #\[.\]# containedin=NERDTreeDir
 else
     "highlighting for the ~/+ symbols for the directory nodes
     syn match NERDTreeClosable #\~\<#
@@ -52,7 +53,10 @@ else
     syn match NERDTreeFile  #`-.*# contains=NERDTreeLink,NERDTreePart,NERDTreePartFile,NERDTreeBookmark,NERDTreeExecFile
 
     "highlighting for readonly files
-    syn match NERDTreeRO #|-.*\[RO\]#he=e-5 contains=NERDTreeFlag,NERDTreeBookmark,NERDTreePart,NERDTreePartFile
+    syn match NERDTreeRO #|-.*\[RO\]#he=e-5 contains=NERDTreeIgnore,NERDTreeBookmark,NERDTreePart,NERDTreePartFile
+
+    syn match NERDTreeFlags #-\[.\]# containedin=NERDTreeFile,NERDTreePartFile
+    syn match NERDTreeFlags #[+~]\zs\[.\]# containedin=NERDTreeDir
 endif
 
 syn match NERDTreeCWD #^[</].*$#
@@ -93,8 +97,9 @@ hi def link NERDTreeFile Normal
 hi def link NERDTreeCWD Statement
 hi def link NERDTreeOpenable Title
 hi def link NERDTreeClosable Title
-hi def link NERDTreeFlag ignore
+hi def link NERDTreeIgnore ignore
 hi def link NERDTreeRO WarningMsg
 hi def link NERDTreeBookmark Statement
+hi def link NERDTreeFlags Number
 
 hi def link NERDTreeCurrentNode Search

@@ -1,15 +1,8 @@
-" arg.vim
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-06-30.
-" @Last Change: 2009-02-15.
-" @Revision:    0.0.50
-
-if &cp || exists("loaded_tlib_arg_autoload")
-    finish
-endif
-let loaded_tlib_arg_autoload = 1
+" @Last Change: 2014-07-01.
+" @Revision:    63
 
 
 " :def: function! tlib#arg#Get(n, var, ?default="", ?test='')
@@ -50,29 +43,37 @@ function! tlib#arg#Key(list, ...) "{{{3
 endf
 
 
-" :def: function! tlib#arg#StringAsKeyArgs(string, ?keys=[], ?evaluate=0)
+" :def: function! tlib#arg#StringAsKeyArgs(string, ?keys=[], ?evaluate=0, ?sep=':')
 function! tlib#arg#StringAsKeyArgs(string, ...) "{{{1
-    TVarArg ['keys', {}], ['evaluate', 0]
+    TVarArg ['keys', {}], ['evaluate', 0], ['sep', ':']
     let keyargs = {}
     let args = split(a:string, '\\\@<! ')
-    let arglist = map(args, 'matchlist(v:val, ''^\(\w\+\):\(.*\)$'')')
+    let arglist = map(args, 'matchlist(v:val, ''^\%(\(\w\+\)'. sep .'\(.*\)\|\(.*\)\)$'')')
     " TLogVAR a:string, args, arglist
+    let pos = 0
     for matchlist in arglist
-        if len(matchlist) < 3
-            throw 'Malformed key arguments: '. string(matchlist) .' in '. a:string
-        endif
-        let [match, key, val; rest] = matchlist
-        if empty(keys) || has_key(keys, key)
-            let val = substitute(val, '\\\\', '\\', 'g')
-            if evaluate
-                let val = eval(val)
-            endif
-            let keyargs[key] = val
+        if !empty(matchlist[3])
+            let keyargs[pos] = matchlist[3]
+            let pos += 1
         else
-            echom 'Unknown key: '. key .'='. val
+            let [match, key, val; rest] = matchlist
+            if empty(keys) || has_key(keys, key)
+                let val = substitute(val, '\\\\', '\\', 'g')
+                if evaluate
+                    let val = eval(val)
+                endif
+                let keyargs[key] = val
+            else
+                echom 'Unknown key: '. key .'='. val
+            endif
         endif
     endfor
     return keyargs
+endf
+
+
+function! tlib#arg#StringAsKeyArgsEqual(string) "{{{1
+    return tlib#arg#StringAsKeyArgs(a:string, [], 0, '=')
 endf
 
 

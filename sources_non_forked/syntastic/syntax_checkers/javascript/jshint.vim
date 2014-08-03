@@ -40,6 +40,8 @@ function! SyntaxCheckers_javascript_jshint_GetLocList() dict
         \ '%A%f: line %l\, col %v\, %m \(%t%*\d\)' :
         \ '%E%f: line %l\, col %v\, %m'
 
+    call self.setWantSort(1)
+
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,

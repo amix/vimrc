@@ -47,10 +47,10 @@ class Arg(object):
 
 	def __str__(self):
 		return self.name
-	
+
 	def __unicode__(self):
 		return self.name
-	
+
 	def is_kwarg(self):
 		return '=' in self.arg
 
@@ -560,6 +560,13 @@ snippet ar "Assert raises" b
 self.assertRaises(${1:exception}, ${2:func}${3/.+/, /}${3:arguments})
 endsnippet
 
+snippet an "Assert is None" b
+self.assertIsNone(${0:expression})
+endsnippet
+
+snippet ann "Assert is not None" b
+self.assertIsNotNone(${0:expression})
+endsnippet
 
 snippet testcase "pyunit testcase" b
 class Test${1:Class}(${2:unittest.TestCase}):

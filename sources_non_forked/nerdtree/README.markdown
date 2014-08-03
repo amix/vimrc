@@ -83,7 +83,7 @@ __Q. How can I open a NERDTree automatically when vim starts up if no files were
 A. Stick this in your vimrc
 
     autocmd StdinReadPre * let s:std_in=1
-    autocmd VimEnter * if !argc() == 0 && !exists("s:std_in") | NERDTree | endif
+    autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 __Q. How can I map a specific key or shortcut to open NERDTree?__
 

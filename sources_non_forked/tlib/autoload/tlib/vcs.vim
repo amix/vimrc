@@ -2,8 +2,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2012-03-08.
-" @Last Change: 2012-09-10.
-" @Revision:    122
+" @Last Change: 2014-07-01.
+" @Revision:    131
 
 
 " A dictionarie of supported VCS (currently: git, hg, svn, bzr).
@@ -49,16 +49,21 @@ if !empty(g:tlib#vcs#check)
             let g:tlib#vcs#executables[s:cmd] = executable(s:cmd1) ? s:cmd1 : ''
         endif
     endfor
+    unlet! s:cmd s:def s:cmd1
 endif
+
+
+function! tlib#vcs#Executable(type) "{{{3
+    return get(g:tlib#vcs#executables, a:type, '')
+endf
 
 
 function! tlib#vcs#FindVCS(filename) "{{{3
     let type = ''
     let dir  = ''
-    " let path = escape(fnamemodify(a:filename, ':p'), ',:') .';'
-    let filename = fnamemodify(a:filename, isdirectory(a:filename) ? ':p:h' : ':p')
-    let path = escape(filename, ';') .';'
-    " TLogVAR a:filename, path
+    let dirname = fnamemodify(a:filename, isdirectory(a:filename) ? ':p' : ':p:h')
+    let path = escape(dirname, ';') .';'
+    " TLogVAR a:filename, dirname, path
     let depth = -1
     for vcs in keys(g:tlib#vcs#def)
         let subdir = g:tlib#vcs#def[vcs].dir

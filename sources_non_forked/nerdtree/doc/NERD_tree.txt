@@ -1060,6 +1060,9 @@ NERDTreeAddKeyMap({options})                             *NERDTreeAddKeyMap()*
     "callback" - the function the new mapping will be bound to
     "quickhelpText" - the text that will appear in the quickhelp (see
     |NERDTree-?|)
+    "override" - if 1 then this new mapping will override whatever previous
+    mapping was defined for the key/scope combo. Useful for overriding the
+    default mappings.
 
     Additionally, a "scope" argument may be supplied. This constrains the
     mapping so that it is only activated if the cursor is on a certain object.
