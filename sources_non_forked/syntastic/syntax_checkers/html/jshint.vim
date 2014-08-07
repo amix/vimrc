@@ -31,6 +31,8 @@ function! SyntaxCheckers_html_jshint_GetLocList() dict
 
     let errorformat = '%A%f: line %l\, col %v\, %m \(%t%*\d\)'
 
+    call self.setWantSort(1)
+
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,

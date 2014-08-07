@@ -77,6 +77,7 @@ Contents~
         tlib#list#RemoveAll .................... |tlib#list#RemoveAll()|
         tlib#list#Zip .......................... |tlib#list#Zip()|
         tlib#list#Uniq ......................... |tlib#list#Uniq()|
+        tlib#list#ToDictionary ................. |tlib#list#ToDictionary()|
         tlib#cmd#OutputAsList .................. |tlib#cmd#OutputAsList()|
         tlib#cmd#BrowseOutput .................. |tlib#cmd#BrowseOutput()|
         tlib#cmd#BrowseOutputWithCallback ...... |tlib#cmd#BrowseOutputWithCallback()|
@@ -92,6 +93,7 @@ Contents~
         g:tlib#vcs#def ......................... |g:tlib#vcs#def|
         g:tlib#vcs#executables ................. |g:tlib#vcs#executables|
         g:tlib#vcs#check ....................... |g:tlib#vcs#check|
+        tlib#vcs#Executable .................... |tlib#vcs#Executable()|
         tlib#vcs#FindVCS ....................... |tlib#vcs#FindVCS()|
         tlib#vcs#Ls ............................ |tlib#vcs#Ls()|
         tlib#vcs#Diff .......................... |tlib#vcs#Diff()|
@@ -239,7 +241,19 @@ Contents~
         tlib#file#Join ......................... |tlib#file#Join()|
         tlib#file#Relative ..................... |tlib#file#Relative()|
         tlib#file#Absolute ..................... |tlib#file#Absolute()|
+        tlib#file#Canonic ...................... |tlib#file#Canonic()|
         tlib#file#With ......................... |tlib#file#With()|
+        g:tlib#sys#windows ..................... |g:tlib#sys#windows|
+        g:tlib#sys#null ........................ |g:tlib#sys#null|
+        tlib#sys#IsExecutable .................. |tlib#sys#IsExecutable()|
+        g:tlib#sys#check_cygpath ............... |g:tlib#sys#check_cygpath|
+        g:tlib#sys#cygwin_path_rx .............. |g:tlib#sys#cygwin_path_rx|
+        g:tlib#sys#cygwin_expr ................. |g:tlib#sys#cygwin_expr|
+        tlib#sys#IsCygwinBin ................... |tlib#sys#IsCygwinBin()|
+        tlib#sys#GetCmd ........................ |tlib#sys#GetCmd()|
+        tlib#sys#MaybeUseCygpath ............... |tlib#sys#MaybeUseCygpath()|
+        tlib#sys#ConvertPath ................... |tlib#sys#ConvertPath()|
+        tlib#sys#FileArgs ...................... |tlib#sys#FileArgs()|
         tlib#paragraph#GetMetric ............... |tlib#paragraph#GetMetric()|
         tlib#paragraph#Move .................... |tlib#paragraph#Move()|
         g:tlib_inputlist_pct ................... |g:tlib_inputlist_pct|
@@ -269,6 +283,7 @@ Contents~
         tlib#arg#Let ........................... |tlib#arg#Let()|
         tlib#arg#Key ........................... |tlib#arg#Key()|
         tlib#arg#StringAsKeyArgs ............... |tlib#arg#StringAsKeyArgs()|
+        tlib#arg#StringAsKeyArgsEqual .......... |tlib#arg#StringAsKeyArgsEqual()|
         tlib#arg#Ex ............................ |tlib#arg#Ex()|
         tlib#fixes#Winpos ...................... |tlib#fixes#Winpos()|
         g:tlib#dir#sep ......................... |g:tlib#dir#sep|
@@ -658,6 +673,9 @@ tlib#list#Zip(lists, ?default='')
                                                     *tlib#list#Uniq()*
 tlib#list#Uniq(list, ...)
 
+                                                    *tlib#list#ToDictionary()*
+tlib#list#ToDictionary(list, default, ...)
+
 
 ========================================================================
 autoload/tlib/cmd.vim~
@@ -746,6 +764,9 @@ g:tlib#vcs#executables         {...}
 g:tlib#vcs#check               (default: has('win16') || has('win32') || has('win64') ? '%s.exe' : '%s')
     If non-empty, use it as a format string to check whether a VCS is 
     installed on your computer.
+
+                                                    *tlib#vcs#Executable()*
+tlib#vcs#Executable(type)
 
                                                     *tlib#vcs#FindVCS()*
 tlib#vcs#FindVCS(filename)
@@ -1571,8 +1592,57 @@ tlib#file#Relative(filename, basedir)
                                                     *tlib#file#Absolute()*
 tlib#file#Absolute(filename, ...)
 
+                                                    *tlib#file#Canonic()*
+tlib#file#Canonic(filename, ...)
+
                                                     *tlib#file#With()*
 tlib#file#With(fcmd, bcmd, files, ?world={})
+
+
+========================================================================
+autoload/tlib/sys.vim~
+
+                                                    *g:tlib#sys#windows*
+g:tlib#sys#windows             (default: &shell !~ 'sh' && (has('win16') || has('win32') || has('win64')))
+
+                                                    *g:tlib#sys#null*
+g:tlib#sys#null                (default: g:tlib#sys#windows ? 'NUL' : (filereadable('/dev/null') ? '/dev/null' : ''))
+
+                                                    *tlib#sys#IsExecutable()*
+tlib#sys#IsExecutable(cmd, ...)
+
+                                                    *g:tlib#sys#check_cygpath*
+g:tlib#sys#check_cygpath       (default: g:tlib#sys#windows && tlib#sys#IsExecutable('cygpath'))
+    If true, check whether we have to convert a path via cyppath -- 
+    see |tlib#sys#MaybeUseCygpath|
+
+                                                    *g:tlib#sys#cygwin_path_rx*
+g:tlib#sys#cygwin_path_rx      (default: '/cygwin/')
+    If a full windows filename (with slashes instead of backslashes) 
+    matches this |regexp|, it is assumed to be a cygwin executable.
+
+                                                    *g:tlib#sys#cygwin_expr*
+g:tlib#sys#cygwin_expr         (default: '"bash -c ''". escape(%s, "''\\") ."''"')
+    For cygwin binaries, convert command calls using this vim 
+    expression.
+
+                                                    *tlib#sys#IsCygwinBin()*
+tlib#sys#IsCygwinBin(cmd)
+
+                                                    *tlib#sys#GetCmd()*
+tlib#sys#GetCmd(cmd)
+
+                                                    *tlib#sys#MaybeUseCygpath()*
+tlib#sys#MaybeUseCygpath(cmd)
+    If cmd seems to be a cygwin executable, use cygpath to convert 
+    filenames. This assumes that cygwin's which command returns full 
+    filenames for non-cygwin executables.
+
+                                                    *tlib#sys#ConvertPath()*
+tlib#sys#ConvertPath(converter, filename)
+
+                                                    *tlib#sys#FileArgs()*
+tlib#sys#FileArgs(cmd, files)
 
 
 ========================================================================
@@ -1734,7 +1804,10 @@ tlib#arg#Key(dict, list, ?default='')
     See |:TKeyArg|.
 
                                                     *tlib#arg#StringAsKeyArgs()*
-tlib#arg#StringAsKeyArgs(string, ?keys=[], ?evaluate=0)
+tlib#arg#StringAsKeyArgs(string, ?keys=[], ?evaluate=0, ?sep=':')
+
+                                                    *tlib#arg#StringAsKeyArgsEqual()*
+tlib#arg#StringAsKeyArgsEqual(string)
 
                                                     *tlib#arg#Ex()*
 tlib#arg#Ex(arg, ?chars='%#! ')

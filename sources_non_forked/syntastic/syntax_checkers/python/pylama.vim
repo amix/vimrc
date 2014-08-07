@@ -23,18 +23,19 @@ function! SyntaxCheckers_python_pylama_GetHighlightRegex(item)
 endfunction
 
 function! SyntaxCheckers_python_pylama_GetLocList() dict
-    let makeprg = self.makeprgBuild({
-        \ 'exe_before': (syntastic#util#isRunningWindows() ? '' : 'TERM=dumb'),
-        \ 'args_after': '-f pep8' })
+    let makeprg = self.makeprgBuild({ 'args_after': '-f pep8' })
 
     " TODO: "WARNING:pylama:..." messages are probably a logging bug
     let errorformat =
         \ '%-GWARNING:pylama:%.%#,' .
         \ '%A%f:%l:%c: %m'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat })
+        \ 'errorformat': errorformat,
+        \ 'env': env })
 
     " adjust for weirdness in each checker
     for e in loclist

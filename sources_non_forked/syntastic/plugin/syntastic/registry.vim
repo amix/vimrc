@@ -9,6 +9,7 @@ let s:defaultCheckers = {
         \ 'actionscript':['mxmlc'],
         \ 'ada':         ['gcc'],
         \ 'applescript': ['osacompile'],
+        \ 'arduino':     ['avrgcc'],
         \ 'asciidoc':    ['asciidoc'],
         \ 'asm':         ['gcc'],
         \ 'bro':         ['bro'],
@@ -29,7 +30,7 @@ let s:defaultCheckers = {
         \ 'dart':        ['dartanalyzer'],
         \ 'docbk':       ['xmllint'],
         \ 'dustjs':      ['swiffer'],
-        \ 'elixir':      ['elixir'],
+        \ 'elixir':      [],
         \ 'erlang':      ['escript'],
         \ 'eruby':       ['ruby'],
         \ 'fortran':     ['gfortran'],
@@ -178,9 +179,6 @@ function! g:SyntasticRegistry.getNamesOfAvailableCheckers(ftalias) " {{{2
 endfunction " }}}2
 
 function! g:SyntasticRegistry.echoInfoFor(ftalias_list) " {{{2
-    echomsg "Syntastic version: " . g:syntastic_version
-    echomsg "Info for filetype: " . join(a:ftalias_list, '.')
-
     let ft_list = syntastic#util#unique(map( copy(a:ftalias_list), 's:normaliseFiletype(v:val)' ))
     if len(ft_list) != 1
         let available = []
@@ -196,8 +194,15 @@ function! g:SyntasticRegistry.echoInfoFor(ftalias_list) " {{{2
         let active = map(self.getCheckersAvailable(ft, []), 'v:val.getName()')
     endif
 
-    echomsg "Available checker(s): " . join(sort(available))
-    echomsg "Currently enabled checker(s): " . join(active)
+    let cnt = len(available)
+    let plural = cnt != 1 ? 's' : ''
+    let cklist = cnt ? join(sort(available)) : '-'
+    echomsg 'Available checker' . plural . ': ' . cklist
+
+    let cnt = len(active)
+    let plural = cnt != 1 ? 's' : ''
+    let cklist = cnt ? join(active) : '-'
+    echomsg 'Currently enabled checker' . plural . ': ' . cklist
 endfunction " }}}2
 
 " }}}1

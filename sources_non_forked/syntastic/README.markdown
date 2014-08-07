@@ -35,16 +35,16 @@ the user is notified and is happy because they didn't have to compile their
 code or execute their script to find them.
 
 At the time of this writing, syntax checking plugins exist for ActionScript,
-Ada, AppleScript, AsciiDoc, ASM, BEMHTML, Bro, Bourne shell, C, C++, C#, Cabal,
-Chef, CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart, DocBook, Dust,
-Elixir, Erlang, eRuby, Fortran, Gentoo metadata, GLSL, Go, Haml, Haskell, Haxe,
-Handlebars, HSS, HTML, Java, JavaScript, JSON, JSX, LESS, Lex, Limbo, LISP,
-LLVM intermediate language, Lua, MATLAB, NASM, Objective-C, Objective-C++,
-OCaml, Perl, Perl POD, PHP, gettext Portable Object, OS X and iOS property
-lists, Puppet, Python, Racket, R, reStructuredText, Ruby, SASS/SCSS, Scala,
-Slim, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog, VHDL, VimL, xHtml,
-XML, XSLT, YACC, YAML, z80, Zope page templates, and zsh.  See the [wiki][3]
-for details about the corresponding supported checkers.
+Ada, AppleScript, Arduino, AsciiDoc, ASM, BEMHTML, Bro, Bourne shell, C,
+C++, C#, Cabal, Chef, CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart,
+DocBook, Dust, Elixir, Erlang, eRuby, Fortran, Gentoo metadata, GLSL, Go,
+Haml, Haskell, Haxe, Handlebars, HSS, HTML, Java, JavaScript, JSON, JSX, LESS,
+Lex, Limbo, LISP, LLVM intermediate language, Lua, MATLAB, NASM, Objective-C,
+Objective-C++, OCaml, Perl, Perl POD, PHP, gettext Portable Object, OS X
+and iOS property lists, Puppet, Python, Racket, R, reStructuredText, Ruby,
+SASS/SCSS, Scala, Slim, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog,
+VHDL, VimL, xHtml, XML, XSLT, YACC, YAML, z80, Zope page templates, and zsh.
+See the [wiki][3] for details about the corresponding supported checkers.
 
 Below is a screenshot showing the methods that Syntastic uses to display syntax
 errors.  Note that, in practise, you will only have a subset of these methods
@@ -137,7 +137,8 @@ statements in your file (cf. [perlrun][10]).  This is probably fine if you
 wrote the file yourself, but it's a security problem if you're checking third
 party files.  Since there is currently no way to disable this behaviour while
 still producing useful results, the checker is now disabled by default.  To
-(re-)enable it, set `g:syntastic_enable_perl_checker` to 1 in your vimrc:
+(re-)enable it, make sure the `g:syntastic_perl_checkers` list includes `perl`,
+and set `g:syntastic_enable_perl_checker` to 1 in your vimrc:
 ```vim
 let g:syntastic_enable_perl_checker = 1
 ```

@@ -30,7 +30,7 @@ function! SyntaxCheckers_erlang_escript_GetLocList() dict
     endif
 
     let shebang = syntastic#util#parseShebang()
-    if shebang['exe'] =~# '\m\<escript$' || (shebang['exe'] ==# '/usr/bin/env' && shebang['args'][0] ==# 'escript')
+    if shebang['exe'] ==# 'escript'
         let args = '-s'
         let post_args = ''
     else

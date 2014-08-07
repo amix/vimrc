@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
 " @Last Change: 2011-03-18.
-" @Revision:    53
+" @Revision:    57
 
 
 """ List related functions {{{1
@@ -164,5 +164,17 @@ function! tlib#list#Uniq(list, ...) "{{{3
         endfor
     endif
     return uniques
+endf
+
+
+function! tlib#list#ToDictionary(list, default, ...) "{{{3
+    TVarArg ['generator', '']
+    let dict = {}
+    for item in a:list
+        if !empty(item)
+            let dict[item] = empty(generator) ? a:default : call(generator, [item, a:default])
+        endif
+    endfor
+    return dict
 endf
 

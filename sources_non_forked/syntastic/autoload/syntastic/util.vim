@@ -35,12 +35,12 @@ endfunction " }}}2
 "
 "{'exe': '/usr/bin/perl', 'args': ['-f', '-bar']}
 function! syntastic#util#parseShebang() " {{{2
-    for lnum in range(1,5)
+    for lnum in range(1, 5)
         let line = getline(lnum)
-
         if line =~ '^#!'
-            let exe = matchstr(line, '\m^#!\s*\zs[^ \t]*')
-            let args = split(matchstr(line, '\m^#!\s*[^ \t]*\zs.*'))
+            let line = substitute(line, '\v^#!\s*(\S+/env(\s+-\S+)*\s+)?', '', '')
+            let exe = matchstr(line, '\m^\S*\ze')
+            let args = split(matchstr(line, '\m^\S*\zs.*'))
             return { 'exe': exe, 'args': args }
         endif
     endfor
@@ -58,7 +58,7 @@ endfunction " }}}2
 
 " Parse a version string.  Return an array of version components.
 function! syntastic#util#parseVersion(version) " {{{2
-    return split(matchstr( a:version, '\v^\D*\zs\d+(\.\d+)+\ze' ), '\m\.')
+    return map(split(matchstr( a:version, '\v^\D*\zs\d+(\.\d+)+\ze' ), '\m\.'), 'str2nr(v:val)')
 endfunction " }}}2
 
 " Run 'command' in a shell and parse output as a version string.
@@ -74,15 +74,21 @@ endfunction " }}}2
 "
 " See http://semver.org for info about version numbers.
 function! syntastic#util#versionIsAtLeast(installed, required) " {{{2
-    for idx in range(max([len(a:installed), len(a:required)]))
-        let installed_element = get(a:installed, idx, 0)
-        let required_element = get(a:required, idx, 0)
-        if installed_element != required_element
-            return installed_element > required_element
+    return syntastic#util#compareLexi(a:installed, a:required) >= 0
+endfunction " }}}2
+
+" Almost lexicographic comparison of two lists of integers. :) If lists
+" have different lengths, the "missing" elements are assumed to be 0.
+function! syntastic#util#compareLexi(a, b) " {{{2
+    for idx in range(max([len(a:a), len(a:b)]))
+        let a_element = str2nr(get(a:a, idx, 0))
+        let b_element = str2nr(get(a:b, idx, 0))
+        if a_element != b_element
+            return a_element > b_element ? 1 : -1
         endif
     endfor
     " Everything matched, so it is at least the required version.
-    return 1
+    return 0
 endfunction " }}}2
 
 " strwidth() was added in Vim 7.3; if it doesn't exist, we use strlen()
@@ -224,6 +230,13 @@ function! syntastic#util#sortLoclist(errors) " {{{2
         call s:setScreenColumn(e)
     endfor
     call sort(a:errors, 's:compareErrorItems')
+endfunction " }}}2
+
+" Return a [high, low] list of integers, representing the time
+" (hopefully high resolution) since program start
+" TODO: This assumes reltime() returns a list of integers.
+function! syntastic#util#stamp() " {{{2
+    return reltime(g:syntastic_start)
 endfunction " }}}2
 
 " }}}1

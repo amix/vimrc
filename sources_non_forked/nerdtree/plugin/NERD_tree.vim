@@ -142,20 +142,13 @@ call nerdtree#loadClassFiles()
 
 " SECTION: Commands {{{1
 "============================================================
-"init the command that users start the nerd tree with
-command! -n=? -complete=dir -bar NERDTree :call g:NERDTreeCreator.CreatePrimary('<args>')
-command! -n=? -complete=dir -bar NERDTreeToggle :call g:NERDTreeCreator.TogglePrimary('<args>')
-command! -n=0 -bar NERDTreeClose :call nerdtree#closeTreeIfOpen()
-command! -n=1 -complete=customlist,nerdtree#completeBookmarks -bar NERDTreeFromBookmark call g:NERDTreeCreator.CreatePrimary('<args>')
-command! -n=0 -bar NERDTreeMirror call g:NERDTreeCreator.CreateMirror()
-command! -n=0 -bar NERDTreeFind call nerdtree#findAndRevealPath()
-command! -n=0 -bar NERDTreeFocus call NERDTreeFocus()
-command! -n=0 -bar NERDTreeCWD call NERDTreeCWD()
+call nerdtree#ui_glue#setupCommands()
+
 " SECTION: Auto commands {{{1
 "============================================================
 augroup NERDTree
     "Save the cursor position whenever we close the nerd tree
-    exec "autocmd BufWinLeave ". g:NERDTreeCreator.BufNamePrefix() ."* call nerdtree#saveScreenState()"
+    exec "autocmd BufLeave ". g:NERDTreeCreator.BufNamePrefix() ."* call b:NERDTree.ui.saveScreenState()"
 
     "disallow insert mode in the NERDTree
     exec "autocmd BufEnter ". g:NERDTreeCreator.BufNamePrefix() ."* stopinsert"
@@ -201,7 +194,7 @@ endfunction
 
 function! NERDTreeCWD()
     call NERDTreeFocus()
-    call nerdtree#chRootCwd()
+    call nerdtree#ui_glue#chRootCwd()
 endfunction
 " SECTION: Post Source Actions {{{1
 call nerdtree#postSourceActions()

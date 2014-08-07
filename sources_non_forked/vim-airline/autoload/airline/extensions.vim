@@ -211,6 +211,10 @@ function! airline#extensions#load()
       call airline#extensions#nrrwrgn#init(s:ext)
   endif
 
+  if (get(g:, 'airline#extensions#capslock#enabled', 1) && exists('*CapsLockStatusline'))
+    call airline#extensions#capslock#init(s:ext)
+  endif
+
   if !get(g:, 'airline#extensions#disable_rtp_load', 0)
     " load all other extensions, which are not part of the default distribution.
     " (autoload/airline/extensions/*.vim outside of our s:script_path).

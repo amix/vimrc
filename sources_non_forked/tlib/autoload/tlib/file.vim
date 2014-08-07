@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2013-09-25.
-" @Revision:    0.0.142
+" @Last Change: 2014-07-07.
+" @Revision:    0.0.150
 
 if &cp || exists("loaded_tlib_file_autoload")
     finish
@@ -99,6 +99,25 @@ function! tlib#file#Absolute(filename, ...) "{{{3
     endif
     let filename = substitute(filename, '\(^\|[\/]\)\zs\.[\/]', '', 'g')
     let filename = substitute(filename, '[\/]\zs[^\/]\+[\/]\.\.[\/]', '', 'g')
+    return filename
+endf
+
+
+function! tlib#file#Canonic(filename, ...) "{{{3
+    TVarArg ['mode', '']
+    if a:filename =~ '^\\\\'
+        let mode = 'windows'
+    elseif a:filename =~ '^\(file\|ftp\|http\)s\?:'
+        let mode = 'url'
+    elseif (empty(mode) && g:tlib#sys#windows)
+        let mode = 'windows'
+    endif
+    let filename = a:filename
+    if mode == 'windows'
+        let filename = substitute(filename, '/', '\\', 'g')
+    else
+        let filename = substitute(filename, '\\', '/', 'g')
+    endif
     return filename
 endf
 

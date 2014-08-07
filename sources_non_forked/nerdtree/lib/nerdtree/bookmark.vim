@@ -275,7 +275,7 @@ function! s:Bookmark.toRoot()
             let targetNode = g:NERDTreeFileNode.New(s:Bookmark.BookmarkFor(self.name).path)
         endtry
         call targetNode.makeRoot()
-        call nerdtree#renderView()
+        call b:NERDTree.render()
         call targetNode.putCursorHere(0, 0)
     endif
 endfunction
@@ -293,7 +293,7 @@ function! s:Bookmark.validate()
         return 1
     else
         call s:Bookmark.CacheBookmarks(1)
-        call nerdtree#renderView()
+        call b:NERDTree.render()
         call nerdtree#echo(self.name . "now points to an invalid location. See :help NERDTreeInvalidBookmarks for info.")
         return 0
     endif

@@ -399,8 +399,7 @@ function! SyntaxCheckers_java_javac_GetLocList() dict
 
     let makeprg = self.makeprgBuild({
         \ 'args': javac_opts,
-        \ 'fname': syntastic#util#shescape(fname),
-        \ 'tail': '2>&1' })
+        \ 'fname': syntastic#util#shescape(fname) })
 
     " unashamedly stolen from *errorformat-javac* (quickfix.txt) and modified to include error types
     let errorformat =

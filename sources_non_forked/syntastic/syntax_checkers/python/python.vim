@@ -26,15 +26,16 @@ function! SyntaxCheckers_python_python_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_python_python_GetLocList() dict
-    let makeprg = self.makeprgBuild({
-        \ 'exe_before': (syntastic#util#isRunningWindows() ? '' : 'TERM=dumb'),
-        \ 'exe': [self.getExec(), s:compiler] })
+    let makeprg = self.makeprgBuild({ 'exe': [self.getExec(), s:compiler] })
 
     let errorformat = '%E%f:%l:%c: %m'
+
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'env': env,
         \ 'returns': [0] })
 endfunction
 

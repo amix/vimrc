@@ -32,8 +32,8 @@ endfunction " }}}2
 " Sets error highlights in the cuirrent window
 function! g:SyntasticHighlightingNotifier.refresh(loclist) " {{{2
     if self.enabled()
-        call self.reset(a:loclist)
         call syntastic#log#debug(g:SyntasticDebugNotifications, 'highlighting: refresh')
+        call self._reset()
         let buf = bufnr('')
         let issues = filter(a:loclist.copyRaw(), 'v:val["bufnr"] == buf')
         for item in issues
@@ -64,11 +64,7 @@ endfunction " }}}2
 function! g:SyntasticHighlightingNotifier.reset(loclist) " {{{2
     if s:has_highlighting
         call syntastic#log#debug(g:SyntasticDebugNotifications, 'highlighting: reset')
-        for match in getmatches()
-            if stridx(match['group'], 'Syntastic') == 0
-                call matchdelete(match['id'])
-            endif
-        endfor
+        call self._reset()
     endif
 endfunction " }}}2
 " @vimlint(EVL103, 0, a:loclist)
@@ -93,6 +89,14 @@ function! g:SyntasticHighlightingNotifier._setup() " {{{2
             highlight link SyntasticStyleWarning SyntasticWarning
         endif
     endif
+endfunction " }}}2
+
+function! g:SyntasticHighlightingNotifier._reset() " {{{2
+    for match in getmatches()
+        if stridx(match['group'], 'Syntastic') == 0
+            call matchdelete(match['id'])
+        endif
+    endfor
 endfunction " }}}2
 
 " }}}1
