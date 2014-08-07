@@ -1,10 +1,12 @@
 # Snippets for VIM Help Files
 
+priority -50
+
 global !p
 def sec_title(snip, t):
-    file_start = snip.fn.split('.')[0]
-    sec_name = t[1].strip("1234567890. ").lower().replace(' ', '-')
-    return ("*%s-%s*" % (file_start, sec_name)).rjust(78-len(t[1]))
+	file_start = snip.fn.split('.')[0]
+	sec_name = t[1].strip("1234567890. ").lower().replace(' ', '-')
+	return ("*%s-%s*" % (file_start, sec_name)).rjust(78-len(t[1]))
 endglobal
 
 snippet sec "Section marker" b

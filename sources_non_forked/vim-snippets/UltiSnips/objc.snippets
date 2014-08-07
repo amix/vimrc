@@ -1,3 +1,5 @@
+priority -50
+
 ###########################################################################
 #                            TextMate Snippets                            #
 ###########################################################################
@@ -11,11 +13,11 @@ snippet Imp "#import <> (Imp)"
 endsnippet
 
 snippet cl "020 Class (objc)"
-@interface ${1:`!p 
+@interface ${1:`!p
 if len(fn):
-   snip.rv = re.sub(r'\..*$', '', fn)
+		snip.rv = re.sub(r'\..*$', '', fn)
 else:
-   snip.rv = "object"
+		snip.rv = "object"
 `} : ${2:NSObject}
 {
 }
@@ -118,7 +120,7 @@ snippet arracc "LoD array (arracc)"
 	[${3:${1/./\l$0/}} addObject:anObject];
 }
 
-- (void)insertObject:($2)anObject in$1AtIndex:(unsigned int)i 
+- (void)insertObject:($2)anObject in$1AtIndex:(unsigned int)i
 {
 	[$3 insertObject:anObject atIndex:i];
 }
@@ -189,7 +191,7 @@ if(choice == NSAlertDefaultReturn) // "$3"
 }
 else if(choice == NSAlertAlternateReturn) // "$4"
 {
-	
+		$0
 }
 endsnippet
 
@@ -217,7 +219,7 @@ endsnippet
 snippet responds "Responds to Selector"
 if ([${1:self} respondsToSelector:@selector(${2:someSelector:})])
 {
-    [$1 ${3:${2/((:\s*$)|(:\s*))/:<>(?3: )/g}}];
+		[$1 ${3:${2/((:\s*$)|(:\s*))/:<>(?3: )/g}}];
 }
 endsnippet
 

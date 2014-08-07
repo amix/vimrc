@@ -36,7 +36,7 @@ if exists("syntax_on")
   syntax reset
 endif
 
-let g:colors_name = expand("<sfile>:t:r")
+let g:colors_name = "peaksea"
 
 " I don't want to abuse folding, but here folding is used to avoid confusion. 
 if &background=='light' 
@@ -281,7 +281,7 @@ elseif &background=='dark'
   hi ModeMsg		guifg=fg	guibg=#000080	gui=NONE
   hi VisualNOS		guifg=fg	guibg=#000080	gui=NONE
   hi SpecialKey		guifg=#b0d0f0	guibg=NONE	gui=NONE
-  hi NonText		guifg=#6080f0	guibg=#101010	gui=NONE
+  hi NonText		guifg=#202020	guibg=#202020	gui=NONE
   hi Directory		guifg=#80c0e0	guibg=NONE	gui=NONE
   hi ErrorMsg		guifg=#d0d090	guibg=#800000	gui=NONE
   hi MoreMsg		guifg=#c0e080	guibg=NONE	gui=NONE
@@ -294,7 +294,7 @@ elseif &background=='dark'
   hi DiffChange		guifg=NONE	guibg=#800080	gui=NONE
   hi DiffDelete		guifg=#6080f0	guibg=#202020	gui=NONE
   hi DiffText		guifg=#000000	guibg=#c0e080	gui=NONE
-  hi SignColumn		guifg=#e0e0e0	guibg=#008000	gui=NONE
+  hi SignColumn		guifg=#e0e0e0	guibg=#202020	gui=NONE
   hi IncSearch		guifg=White	guibg=DarkRed	gui=NONE
   hi StatusLineNC	guifg=#000000	guibg=#c0c0c0	gui=NONE
   hi VertSplit		guifg=#000000	guibg=#c0c0c0	gui=NONE

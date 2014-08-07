@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2009-02-15.
-" @Revision:    0.0.30
+" @Last Change: 2014-01-20.
+" @Revision:    0.0.37
 
 if &cp || exists("loaded_tlib_char_autoload")
     finish
@@ -19,13 +19,22 @@ let loaded_tlib_char_autoload = 1
 "   echo tlib#char#Get()
 "   echo tlib#char#Get(5)
 function! tlib#char#Get(...) "{{{3
-    TVarArg ['timeout', 0], ['resolution', 0]
+    TVarArg ['timeout', 0], ['resolution', 0], ['getmod', 0]
+    let char = -1
+    let mode = 0
     if timeout == 0 || !has('reltime')
-        return getchar()
+        let char = getchar()
     else
-        return tlib#char#GetWithTimeout(timeout, resolution)
+        let char = tlib#char#GetWithTimeout(timeout, resolution)
     endif
-    return -1
+    if getmod
+        if char != -1
+            let mode = getcharmod()
+        endif
+        return [char, mode]
+    else
+        return char
+    endif
 endf
 
 

@@ -230,3 +230,15 @@ snippet ga
 	go func(${1} ${2:type}) {
 		${3:/* code */}
 	}(${0})
+snippet test test function
+	func Test${1:name}(t *testing.T) {
+		${2}
+	}
+	${0}
+snippet bench benchmark function
+	func Benchmark${1:name}(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			${2}
+		}
+	}
+	${0}

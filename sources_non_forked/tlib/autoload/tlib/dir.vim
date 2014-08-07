@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2013-09-25.
-" @Revision:    0.0.37
+" @Last Change: 2014-07-07.
+" @Revision:    0.0.38
 
 if &cp || exists("loaded_tlib_dir_autoload")
     finish
@@ -21,10 +21,11 @@ let s:dir_stack = []
 "   tlib#dir#CanonicName('foo/bar')
 "   => 'foo/bar/'
 function! tlib#dir#CanonicName(dirname) "{{{3
-    if a:dirname !~ '[/\\]$'
-        return a:dirname . g:tlib#dir#sep
+    let dirname = tlib#file#Canonic(a:dirname)
+    if dirname !~ '[/\\]$'
+        return dirname . g:tlib#dir#sep
     endif
-    return a:dirname
+    return dirname
 endf
 
 

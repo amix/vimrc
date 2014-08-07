@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013 Bailey Ling.
+" MIT License. Copyright (c) 2013-2014 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 if !exists(':TagbarToggle')
@@ -23,9 +23,15 @@ function! airline#extensions#tagbar#inactive_apply(...)
   endif
 endfunction
 
+let s:airline_tagbar_last_lookup_time = 0
+let s:airline_tagbar_last_lookup_val = ''
 function! airline#extensions#tagbar#currenttag()
   if get(w:, 'airline_active', 0)
-    return tagbar#currenttag('%s', '', s:flags)
+    if s:airline_tagbar_last_lookup_time != localtime()
+      let s:airline_tagbar_last_lookup_val = tagbar#currenttag('%s', '', s:flags)
+      let s:airline_tagbar_last_lookup_time = localtime()
+    endif
+    return s:airline_tagbar_last_lookup_val
   endif
   return ''
 endfunction

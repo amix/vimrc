@@ -1,0 +1,6 @@
+This is a mirror of the misc/vim portion of the official Go repository. It is
+automatically updated.
+
+Any contributions or issues should be made to the official repository.
+
+http://golang.org/doc/contribute.html

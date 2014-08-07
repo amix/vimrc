@@ -1,4 +1,5 @@
-This directory contains the main scripts that come bundled with UltiSnips.
+This directory contains the snippets for UltiSnips.
+https://github.com/sirver/ultisnips
 
 Standing On The Shoulders of Giants
 ===================================
@@ -10,12 +11,7 @@ two projects:
    TextMate: http://svn.textmate.org/trunk/Bundles/
    SnipMate: http://code.google.com/p/snipmate/
 
-All snippets from those sources were copied and cleaned up, so that they are 
-  - not using shell script, only python (so they are cross platform compatible)
-  - not using any feature that UltiSnips doesn't offer
-
-UltiSnips has seen contributions by various individuals. Those contributions
-have been merged into this collection seamlessly and without further comments.
+UltiSnips has seen contributions by many individuals. Those contributions have
+been merged into this collection seamlessly and without further comments.
 
 -- vim:ft=rst:nospell:
-

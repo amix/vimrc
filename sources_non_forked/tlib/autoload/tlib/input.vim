@@ -1,10 +1,7 @@
-" input.vim
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-06-30.
-" @Last Change: 2013-09-30.
-" @Revision:    0.0.1262
+" @Revision:    1317
 
 
 " :filedoc:
@@ -23,16 +20,15 @@ TLet g:tlib#input#livesearch_threshold = 1000
 
 
 " Determine how |tlib#input#List()| and related functions work.
-" Can be "cnf", "cnfd", "cnfx", "seq", or "fuzzy". See:
-"   cnfx ... Like cnfd but |g:tlib#Filter_cnfx#expander| is interpreted 
-"            as a wildcard (this is the default method)
-"     - A plus character ("+") acts as a wildcard as if ".\{-}" (see 
-"       |/\{-|) were entered.
+" Can be "glob", "cnf", "cnfd", "seq", or "fuzzy". See:
+"   glob ... Like cnf but "*" and "?" (see |g:tlib#Filter_glob#seq|, 
+"       |g:tlib#Filter_glob#char|) are interpreted as glob-like 
+"       |wildcards| (this is the default method)
 "     - Examples:
-"         - "f+o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
+"         - "f*o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
 "           "far".
 "     - Otherwise it is a derivate of the cnf method (see below).
-"     - See also |tlib#Filter_cnfx#New()|.
+"     - See also |tlib#Filter_glob#New()|.
 "   cnfd ... Like cnf but "." is interpreted as a wildcard, i.e. it is 
 "            expanded to "\.\{-}"
 "     - A period character (".") acts as a wildcard as if ".\{-}" (see 
@@ -60,7 +56,7 @@ TLet g:tlib#input#livesearch_threshold = 1000
 "     - |tlib#Filter_seq#New()|
 "   fuzzy .. Match fuzzy character sequences
 "     - |tlib#Filter_fuzzy#New()|
-TLet g:tlib#input#filter_mode = 'cnfx'
+TLet g:tlib#input#filter_mode = 'glob'
 
 
 " The highlight group to use for showing matches in the input list 
@@ -126,6 +122,8 @@ TLet g:tlib#input#numeric_chars = {
 TLet g:tlib#input#keyagents_InputList_s = {
             \ "\<PageUp>":   'tlib#agent#PageUp',
             \ "\<PageDown>": 'tlib#agent#PageDown',
+            \ "\<Home>":     'tlib#agent#Home',
+            \ "\<End>":      'tlib#agent#End',
             \ "\<Up>":       'tlib#agent#Up',
             \ "\<Down>":     'tlib#agent#Down',
             \ "\<c-Up>":     'tlib#agent#UpN',
@@ -140,7 +138,6 @@ TLet g:tlib#input#keyagents_InputList_s = {
             \ 26:            'tlib#agent#Suspend',
             \ 250:           'tlib#agent#Suspend',
             \ 15:            'tlib#agent#SuspendToParentWindow',  
-            \ 63:            'tlib#agent#Help',
             \ "\<F1>":       'tlib#agent#Help',
             \ "\<F10>":      'tlib#agent#ExecAgentByName',
             \ "\<S-Esc>":    'tlib#agent#ExecAgentByName',
@@ -155,6 +152,7 @@ TLet g:tlib#input#keyagents_InputList_s = {
             \ char2nr(g:tlib#input#or):  'tlib#agent#OR',
             \ char2nr(g:tlib#input#and): 'tlib#agent#AND',
             \ }
+            " \ 63:            'tlib#agent#Help',
 
 
 " :nodefault:
@@ -327,6 +325,8 @@ function! tlib#input#ListW(world, ...) "{{{3
     " TLogVAR world.state, world.sticky, world.initial_index
     " let statusline  = &l:statusline
     " let laststatus  = &laststatus
+    let showmode = &showmode
+    set noshowmode
     let lastsearch  = @/
     let scrolloff = &l:scrolloff
     let &l:scrolloff = 0
@@ -344,6 +344,16 @@ function! tlib#input#ListW(world, ...) "{{{3
             " TLogVAR time01, time01 - time0
             try
                 call s:RunStateHandlers(world)
+
+                " if exists('b:tlib_world_event')
+                "     let event = b:tlib_world_event
+                "     unlet! b:tlib_world_event
+                "     if event == 'WinLeave'
+                "         " let world.resume_state = world.state
+                "         let world = tlib#agent#Suspend(world, world.rv)
+                "         break
+                "     endif
+                " endif
 
                 " let time02 = str2float(reltimestr(reltime()))  " DBG
                 " TLogVAR time02, time02 - time0
@@ -443,14 +453,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                             " TLogDBG 5
                             " TLogDBG len(world.list)
                             " TLogVAR world.list
-                            let dlist = copy(world.list)
-                            " TLogVAR world.display_format
-                            if !empty(world.display_format)
-                                let display_format = world.display_format
-                                let cache = world.fmt_display
-                                " TLogVAR display_format, fmt_entries
-                                call map(dlist, 'world.FormatName(cache, display_format, v:val)')
-                            endif
+                            let dlist = world.DisplayFormat(world.list)
                             " TLogVAR world.prefidx
                             " TLogDBG 6
                             " let time6 = str2float(reltimestr(reltime()))  " DBG
@@ -545,20 +548,15 @@ function! tlib#input#ListW(world, ...) "{{{3
                             exec exec_cmd
                         endif
                     elseif has('gui_gtk') || has('gui_gtk2')
-                        let c = getchar()
-                        let cmod = getcharmod()
-                        " TLogVAR c, cmod
-                        if c !~ '\D' && c > 0 && cmod != 0
-                            let c = printf("<%s-%s>", cmod, c)
-                        endif
+                        let c = s:GetModdedChar(world)
+                        " TLogVAR c
                     endif
                 else
                     " TLogVAR world.timeout
-                    let c = tlib#char#Get(world.timeout, world.timeout_resolution)
+                    let c = s:GetModdedChar(world)
                     " TLogVAR c, has_key(world.key_map[world.key_mode],c)
-                    let cmod = getcharmod()
                 endif
-                " TLogVAR c, cmod
+                " TLogVAR c
                 " TLogDBG string(sort(keys(world.key_map[world.key_mode])))
 
                 " TLogVAR world.next_agent, world.next_eval
@@ -602,7 +600,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                         " let world.offset  = world.prefidx
                         if empty(world.prefidx)
                             " call feedkeys(c, 't')
-                            let c = tlib#char#Get(world.timeout)
+                            let c = s:GetModdedChar(world)
                             let world.state = 'help'
                             continue
                         endif
@@ -783,6 +781,9 @@ function! tlib#input#ListW(world, ...) "{{{3
         " TLogVAR statusline
         " let &l:statusline = statusline
         " let &laststatus = laststatus
+        if &showmode != showmode
+            let &showmode = showmode
+        endif
         silent! let @/  = lastsearch
         let &l:scrolloff = scrolloff
         if s:PopupmenuExists() == 1
@@ -829,6 +830,16 @@ function! tlib#input#ListW(world, ...) "{{{3
 endf
 
 
+function! s:GetModdedChar(world) "{{{3
+    let [char, mode] = tlib#char#Get(a:world.timeout, a:world.timeout_resolution, 1)
+    if char !~ '\D' && char > 0 && mode != 0
+        return printf("<%s-%s>", mode, char)
+    else
+        return char
+    endif
+endf
+
+
 function! s:Init(world, cmd) "{{{3
     " TLogVAR a:cmd
     let a:world.initial_display = 1
@@ -844,6 +855,9 @@ function! s:Init(world, cmd) "{{{3
         else
             call a:world.Retrieve(1)
         endif
+        " if !empty(a:world.resume_state)
+        "     let a:world.state = a:world.resume_state
+        " endif
     elseif !a:world.initialized
         " TLogVAR a:world.initialized, a:world.win_wnr, a:world.bufnr
         let a:world.filetype = &filetype

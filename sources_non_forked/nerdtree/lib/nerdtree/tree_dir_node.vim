@@ -21,7 +21,7 @@ unlet s:TreeDirNode.activate
 function! s:TreeDirNode.activate(...)
     let opts = a:0 ? a:1 : {}
     call self.toggleOpen(opts)
-    call nerdtree#renderView()
+    call b:NERDTree.render()
     call self.putCursorHere(0, 0)
 endfunction
 
@@ -229,7 +229,7 @@ function! s:TreeDirNode._initChildren(silent)
     let globDir = dir.str({'format': 'Glob'})
 
     if version >= 703
-        let filesStr = globpath(globDir, '*', 1) . "\n" . globpath(globDir, '.*', 1)
+        let filesStr = globpath(globDir, '*', !g:NERDTreeRespectWildIgnore) . "\n" . globpath(globDir, '.*', !g:NERDTreeRespectWildIgnore)
     else
         let filesStr = globpath(globDir, '*') . "\n" . globpath(globDir, '.*')
     endif
@@ -252,6 +252,7 @@ function! s:TreeDirNode._initChildren(silent)
             try
                 let path = g:NERDTreePath.New(i)
                 call self.createChild(path, 0)
+                call g:NERDTreePathNotifier.NotifyListeners('init', path, {})
             catch /^NERDTree.\(InvalidArguments\|InvalidFiletype\)Error/
                 let invalidFilesFound += 1
             endtry
@@ -438,6 +439,20 @@ function! s:TreeDirNode.refresh()
     endif
 endfunction
 
+"FUNCTION: TreeDirNode.refreshFlags() {{{1
+unlet s:TreeDirNode.refreshFlags
+function! s:TreeDirNode.refreshFlags()
+    call self.path.refreshFlags()
+    for i in self.children
+        call i.refreshFlags()
+    endfor
+endfunction
+
+"FUNCTION: TreeDirNode.refreshDirFlags() {{{1
+function! s:TreeDirNode.refreshDirFlags()
+    call self.path.refreshFlags()
+endfunction
+
 "FUNCTION: TreeDirNode.reveal(path) {{{1
 "reveal the given path, i.e. cache and open all treenodes needed to display it
 "in the UI
@@ -450,7 +465,7 @@ function! s:TreeDirNode.reveal(path)
 
     if self.path.equals(a:path.getParent())
         let n = self.findNode(a:path)
-        call nerdtree#renderView()
+        call b:NERDTree.render()
         call n.putCursorHere(1,0)
         return
     endif
@@ -500,7 +515,7 @@ function! s:TreeDirNode.toggleOpen(...)
     if self.isOpen ==# 1
         call self.close()
     else
-        if g:NERDTreeCasadeOpenSingleChildDir == 0
+        if g:NERDTreeCascadeOpenSingleChildDir == 0
             call self.open(opts)
         else
             call self.openAlong(opts)

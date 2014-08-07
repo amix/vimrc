@@ -1,3 +1,5 @@
+priority -50
+
 # Generic Tags
 snippet %
 {% ${1} %}${2}
@@ -5,7 +7,7 @@ endsnippet
 
 snippet %%
 {% ${1:tag_name} %}
-  ${2}
+	${2}
 {% end$1 %}
 endsnippet
 
@@ -17,14 +19,14 @@ endsnippet
 
 snippet autoescape
 {% autoescape ${1:off} %}
-  ${2}
+	${2}
 {% endautoescape %}
 endsnippet
 
 snippet block
 {% block ${1} %}
-  ${2}
-{% endblock %}
+	${2}
+{% endblock $1 %}
 endsnippet
 
 snippet #
@@ -33,7 +35,7 @@ endsnippet
 
 snippet comment
 {% comment %}
-  ${1}
+	${1}
 {% endcomment %}
 endsnippet
 
@@ -51,7 +53,7 @@ endsnippet
 
 snippet filter
 {% filter ${1} %}
-  ${2}
+	${2}
 {% endfilter %}
 endsnippet
 
@@ -61,24 +63,24 @@ endsnippet
 
 snippet for
 {% for ${1} in ${2} %}
-  ${3}
+	${3}
 {% endfor %}
 endsnippet
 
 snippet empty
 {% empty %}
-  ${1}
+	${1}
 endsnippet
 
 snippet if
 {% if ${1} %}
-  ${2}
+	${2}
 {% endif %}
 endsnippet
 
-snippet el
+snippet else
 {% else %}
-  ${1}
+	${1}
 endsnippet
 
 snippet ifchanged
@@ -87,13 +89,13 @@ endsnippet
 
 snippet ifequal
 {% ifequal ${1} ${2} %}
-  ${3}
+	${3}
 {% endifequal %}
 endsnippet
 
 snippet ifnotequal
 {% ifnotequal ${1} ${2} %}
-  ${3}
+	${3}
 {% endifnotequal %}
 endsnippet
 

@@ -1,5 +1,3 @@
-IMPORTANT: comment on: [What about merging with Ultisnip using its engine](https://github.com/garbas/vim-snipmate/issues/114)
-
 Snipmate & UltiSnip Snippets
 ============================
 
@@ -9,50 +7,93 @@ It is community-maintained and many people have contributed snippet files and
 other improvements already.
 
 Contents
-========
+--------
 
-    snippets/*: snippets using snipmate format
-    UltiSnips/*: snippets using UltiSnips format
+- `snippets/*`: snippets using snipmate format
+- `UltiSnips/*`: snippets using UltiSnips format
 
-Snippet engines
-===============
+Snippet engines supporting vim-snippets
+----------------------------------------
 
 There are different forks of snippet engines which allow the user to insert
-sippets by typing the name of a snippet hitting the expansion mapping.
+snippets by typing the name of a snippet hitting the expansion mapping.
 
-    garbas/vim-snipmate [4]:
-      VimL, snipmate-snippets, engine sometimes behaves strange, supports
-      rewriting snippets on the fly (eg adding a second version with folding
-      markers)
+- [github.com/SirVer/ultisnips](https://github.com/SirVer/ultisnips):   
+  python, supports all snippets in this repo.
+- [github.com/garbas/vim-snipmate](https://github.com/garbas/vim-snipmate):   
+  VimL, snipmate-snippets, engine sometimes behaves strange. Supports
+  snippets/*
+- [github.com/Shougo/neosnippet](https://github.com/Shougo/neosnippet.vim):   
+  VimL, supports snippets/* with some configuration.
+- [github.com/drmingdrmer/xptemplate](https://github.com/drmingdrmer/xptemplate):
+  Totally different syntax, does not read snippets contained in this file, but
+  it is also very powerful. It does not support vim-snippets (just listing it
+  here for completness)
+ 
+There tries to be a more comprehensive list (which still is incomplete) here:
+http://vim-wiki.mawercer.de/wiki/topic/text-snippets-skeletons-templates.html
 
-    MarcWeber/UltiSnips [6]:
-      python, snipmate-snippets and UltiSnips-snippets
+UltiSnips has additional features such as high speed, nesting snippets,
+expanding snippets in snippets and offers powerful transformations on text in
+snippets (like visual selections or placeholder texts).
 
-    SirVer/ultisnips [7]:
-      python, UltiSnips-snippets
-
-    github.com/Shougo/neosnippet [5]:
-      viml, has a compatible mode allowing to reuse most snipmate snippets ?
-
-    XPTemplate:
-      totally different syntax, does not read snippets contained in this file,
-      but it is also very powerful
-
-    ... there are some more, but they have less features which is why I don't
-    mention them here
-
-UltiSnips engine has additional features such as "nested snippets".
-
-Which one to use? If you have python give MarcWeber/UltiSnips a try because its
-fast and supports all important features. You can prefer the UltiSnip versions
-of the snippets by setting the "always_use_first_snippet" option to 1.
+Which one to use? If you have python give
+[SirVer/ultisnips](https://github.com/SirVer/ultisnips) a try because its fast
+and has the most features.
 
 If you have VimL only (vim without python support) your best option is using
-garbas/vim-snipmate and cope with the minor bugs found in the engine.
+[garbas/vim-snipmate](https://github.com/garbas/vim-snipmate) and cope with the
+minor bugs found in the engine.
 
+
+Q: Should "snipmate be deprecated in favour of UltiSnips"?
+
+A: No, because snimpate is VimL, and UltiSnips requires Python.
+Some people want to use snippets without having to install Vim with Python
+support. Yes - this sucks. 
+
+One solution would be: Use snippets if they are good enough, but allow overriding them
+in UltiSnips. This would avoid most duplication while still serving most users.
+AFAIK there is a nested-placeholder branch for snipmate too. snipmate is still
+improved by Adnan Zafar. So maybe time is not ready to make a final decision yet.
+
+[github issue/discussion](https://github.com/honza/vim-snippets/issues/363)
+
+Installation
+------------
+
+First be aware that there are many options, see "Snippet engines" above.
+Second be aware than there are [tons of plugin managers](http://vim-wiki.mawercer.de/wiki/topic/vim%20plugin%20managment.html)
+which is why Marc Weber thinks that it doesn't make sense to repeat the same
+repetitive information everywhere.
+
+*Recommended way:*
+[vim-addon-manager](vim-addon-manager) (because Marc Weber wrote it for exactly
+this reason, it supports simple dependency management). Eg you're done by this
+line in your .vimrc:
+
+```
+" assuming you want to use snipmate snippet engine
+ActivateAddons vim-snippets snipmate
+```
+
+[vim-pi](https://bitbucket.org/vimcommunity/vim-pi/issue/90/we-really-need-a-web-interface)
+Is the place to discuss plugin managers and repository resources.
+
+About how to install snipate see [snipmate@garbas](https://github.com/garbas/vim-snipmate)
+
+(Bundle, Pathogen, git clone - keywords to make people find this link by ctrl-f search)
+I know that I should be reading the docs of the snippet engine, just let me copy paste into my .vimrc:
+[See this pull request](https://github.com/honza/vim-snippets/pull/307/files).
+
+TROUBLE
+=======
+If you still have trouble getting this to work create a github ticket, ask on
+irc or the mailinglist.
 
 Policies / for contributors
-===========================
+---------------------------
+
 Some snippets are useful for almost all languages, so let's try to have the same
 triggers for them:
 
@@ -64,11 +105,7 @@ el  : else ..
 wh  : while (cond) ...
 ```
 
-If you're not satisfied with these defaults, open a ticket that we implement
-aliasing. Then you can remap "else" to "el" or the like.
-
-
-Don't add stupid placeholder default texts like
+Don't add useless placeholder default texts like
 ```
 if (${1:condition}){
   ${2:some code here}
@@ -93,9 +130,16 @@ What about one line if ee then .. else .. vs if \n .. then \n ... \n else \n .. 
 Which additional policies to add?
 Discuss at: https://github.com/honza/vim-snippets/issues/230
 
+*folding markers*:
+Until further work is done on `vim-snipmate`, please don't add folding markers
+into snippets. `vim-snipmate` has some comments about how to patch all snippets
+on the fly adding those.
+
+Currently all snippets from UltiSnips have been put into UltiSnips - some work
+on merging should be done (dropping duplicates etc). Also see engines section above.
 
 Related repositories
-====================
+--------------------
 We also encourage people to maintain sets of snippets for particular use cases
 so that all users can benefit from them.  People can list their snippet repositories here:
 
@@ -106,15 +150,15 @@ so that all users can benefit from them.  People can list their snippet reposito
 
 Installation using VAM: "github:rbonvall/snipmate-snippets-bib"
 
-
 Future - ideas - examples
-=========================
+-------------------------
+
 [overview snippet engines](http://vim-wiki.mawercer.de/wiki/topic/text-snippets-skeletons-templates.html)
 If you have ideas you can add them to that list of "snippet engine features by example".
 
 
 Historical notes
-================
+----------------
 
 [vim-snipmate][1] was originally started by [Michael Sanders][2] who has now
 unfortunately abandoned the project. [Rok Garbas][3] is now maintaining a
@@ -138,17 +182,6 @@ let g:snipMate.scope_aliases = {}
 let g:snipMate.scope_aliases['ruby'] = 'ruby,ruby-rails,ruby-1.9'
 ```
 
-or github.com/MarcWeber/UltiSnips this way:
-
-
-```vim
-let g:UltiSnips = {}
-
-let g:UltiSnips.snipmate_ft_filter = {
-            \ 'default' : {'filetypes': ["FILETYPE"] },
-            \ 'ruby'    : {'filetypes': ["ruby", "ruby-rails", "ruby-1.9"] },
-```
-
 If it happens that you work on a project requiring ruby-1.8 snippets instead,
 consider using vim-addon-local-vimrc and override the filetypes.
 
@@ -160,16 +193,15 @@ ruby-library-version triplet. Sometimes postfixing a name such as
 
 will do it then if syntax has changed.
 
+
 Language maintainers
 --------------------
 
 No one can really be proficient in all programming languages. If you would like
 to maintain snippets for a language, please get in touch.
 
-Notes: People are interested in snippets - and their interest may stop again
-at will. So its ok if people maintain a language only for a short period of
-time - or jump in and get things done - don't let the flow stop :)
-vim-snippets is not like the "linux kernel".
+Notes: People are interested in snippets - and their interest may wane again.
+This list is kept up-to-date on a best effort basis.
 
 * Python - [honza](http://github.com/honza)
 * Javascript - [honza](http://github.com/honza)
@@ -180,25 +212,6 @@ vim-snippets is not like the "linux kernel".
 * Scala - [gorodinskiy](https://github.com/gorodinskiy)
 * Falcon - [steveno](https://github.com/steveno)
 * Elixir - [iurifq](https://github.com/iurifq)
-
-Contributing notes
-------------------
-
-Until further work is done on `vim-snipmate`, please don't add folding markers
-into snippets. `vim-snipmate` has some comments about how to patch all snippets
-on the fly adding those.
-
-Because MarcWeber/UltiSnips [6] supports also snipmate-snippets there is no
-need to duplicate all snippets - only those snippets who use advanced UltiSnips
-features should be duplicated in UltiSnips (?)
-
-Currently all snippets from UltiSnips have been put into UltiSnips - some work
-on merging should be done (dropping duplicates etc)
-
-Authors
--------
-
-For a list of authors, please see the `AUTHORS` files.
 
 License
 -------
@@ -211,6 +224,4 @@ terms of the MIT license.
 [2]: http://github.com/msanders
 [3]: http://github.com/garbas
 [4]: http://github.com/garbas/vim-snipmate
-[5]: http://github.com/Shougo/neosnippet
-[6]: http://github.com/MarcWeber/UltiSnips
 [7]: http://github.com/SirVer/ultisnips

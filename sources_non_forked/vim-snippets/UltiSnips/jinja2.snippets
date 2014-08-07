@@ -1,3 +1,4 @@
+priority -50
 
 # http://jinja.pocoo.org/
 
@@ -11,7 +12,7 @@
 
 snippet block "block" b
 {% block ${1:name} %}
-    $2
+		$2
 {% endblock $1 %}
 endsnippet
 
@@ -33,7 +34,7 @@ endsnippet
 
 snippet raw "escaped block" b
 {% raw %}
-    $1
+		$1
 {% endraw %}
 endsnippet
 
@@ -60,7 +61,7 @@ endsnippet
 
 snippet filter "filter" b
 {% filter ${1:filter} %}
-    $2
+	$2
 {% endfilter %}
 endsnippet
 
@@ -78,57 +79,57 @@ endsnippet
 
 snippet for "for" b
 {% for ${1:item} in ${2:sequence} %}
-    $3
+	$3
 {% endfor %}
 endsnippet
 
 
 snippet for "for/else" b
 {% for ${1:item} in ${2:sequence} %}
-    $3
+	$3
 {% else %}
-    $4
+	$4
 {% endfor %}
 endsnippet
 
 
 snippet if "if" b
 {% if ${1:expr} %}
-    $2
+	$2
 {% endif %}
 endsnippet
 
 
 snippet if "if/else" b
 {% if ${1:expr} %}
-    $2
+	$2
 {% else %}
-    $3
+	$3
 {% endif %}
 endsnippet
 
 
 snippet if "if/elif/else" b
 {% if ${1:expr} %}
-    $2
+	$2
 {% elif %}
-    $3
+	$3
 {% else %}
-    $4
+	$4
 {% endif %}
 endsnippet
 
 
 snippet macro "macro" b
 {% macro ${1:name}(${2:args}) %}
-    $3
+	$3
 {% endmacro %}
 endsnippet
 
 
 snippet call "call" b
 {% call ${1:name}(${2:args}) %}
-    $3
+	$3
 {% endcall %}
 endsnippet
 
@@ -140,25 +141,24 @@ endsnippet
 
 snippet trans "translation" b
 {% trans %}
-    $1
+	$1
 {% endtrans %}
 endsnippet
 
 
 snippet with "with" b
 {% with %}
-    $1
+	$1
 {% endwith %}
 endsnippet
 
-
 snippet autoescape "autoescape" b
 {% autoescape ${1:true} %}
-    $2
+	$2
 {% endautoescape %}
 endsnippet
 
-# Filters 
+# Filters
 # @todo: expand only when snippet is preceeded by a |
 
 snippet batch "batch items" w

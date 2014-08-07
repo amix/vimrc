@@ -178,79 +178,20 @@ function! s:TreeFileNode.findSibling(direction)
     return {}
 endfunction
 
-"FUNCTION: TreeFileNode.getLineNum(){{{1
-"returns the line number this node is rendered on, or -1 if it isnt rendered
-function! s:TreeFileNode.getLineNum()
-    "if the node is the root then return the root line no.
-    if self.isRoot()
-        return s:TreeFileNode.GetRootLineNum()
-    endif
-
-    let totalLines = line("$")
-
-    "the path components we have matched so far
-    let pathcomponents = [substitute(b:NERDTreeRoot.path.str({'format': 'UI'}), '/ *$', '', '')]
-    "the index of the component we are searching for
-    let curPathComponent = 1
-
-    let fullpath = self.path.str({'format': 'UI'})
-
-
-    let lnum = s:TreeFileNode.GetRootLineNum()
-    while lnum > 0
-        let lnum = lnum + 1
-        "have we reached the bottom of the tree?
-        if lnum ==# totalLines+1
-            return -1
-        endif
-
-        let curLine = getline(lnum)
-
-        let indent = nerdtree#indentLevelFor(curLine)
-        if indent ==# curPathComponent
-            let curLine = nerdtree#stripMarkupFromLine(curLine, 1)
-
-            let curPath =  join(pathcomponents, '/') . '/' . curLine
-            if stridx(fullpath, curPath, 0) ==# 0
-                if fullpath ==# curPath || strpart(fullpath, len(curPath)-1,1) ==# '/'
-                    let curLine = substitute(curLine, '/ *$', '', '')
-                    call add(pathcomponents, curLine)
-                    let curPathComponent = curPathComponent + 1
-
-                    if fullpath ==# curPath
-                        return lnum
-                    endif
-                endif
-            endif
-        endif
-    endwhile
-    return -1
-endfunction
-
 "FUNCTION: TreeFileNode.GetRootForTab(){{{1
 "get the root node for this tab
 function! s:TreeFileNode.GetRootForTab()
-    if nerdtree#treeExistsForTab()
+    if g:NERDTree.ExistsForTab()
         return getbufvar(t:NERDTreeBufName, 'NERDTreeRoot')
     end
     return {}
-endfunction
-
-"FUNCTION: TreeFileNode.GetRootLineNum(){{{1
-"gets the line number of the root node
-function! s:TreeFileNode.GetRootLineNum()
-    let rootLine = 1
-    while getline(rootLine) !~# '^\(/\|<\)'
-        let rootLine = rootLine + 1
-    endwhile
-    return rootLine
 endfunction
 
 "FUNCTION: TreeFileNode.GetSelected() {{{1
 "gets the treenode that the cursor is currently over
 function! s:TreeFileNode.GetSelected()
     try
-        let path = nerdtree#getPath(line("."))
+        let path = b:NERDTree.ui.getPath(line("."))
         if path ==# {}
             return {}
         endif
@@ -270,7 +211,7 @@ endfunction
 "FUNCTION: TreeFileNode.isRoot() {{{1
 "returns 1 if this node is b:NERDTreeRoot
 function! s:TreeFileNode.isRoot()
-    if !nerdtree#treeExistsForBuf()
+    if !g:NERDTree.ExistsForBuf()
         throw "NERDTree.NoTreeError: No tree exists for the current buffer"
     endif
 
@@ -348,7 +289,7 @@ endfunction
 "recurseUpward: try to put the cursor on the parent if the this node isnt
 "visible
 function! s:TreeFileNode.putCursorHere(isJump, recurseUpward)
-    let ln = self.getLineNum()
+    let ln = b:NERDTree.ui.getLineNum(self)
     if ln != -1
         if a:isJump
             mark '
@@ -357,11 +298,11 @@ function! s:TreeFileNode.putCursorHere(isJump, recurseUpward)
     else
         if a:recurseUpward
             let node = self
-            while node != {} && node.getLineNum() ==# -1
+            while node != {} && b:NERDTree.ui.getLineNum(node) ==# -1
                 let node = node.parent
                 call node.open()
             endwhile
-            call nerdtree#renderView()
+            call b:NERDTree.render()
             call node.putCursorHere(a:isJump, 0)
         endif
     endif
@@ -370,6 +311,11 @@ endfunction
 "FUNCTION: TreeFileNode.refresh() {{{1
 function! s:TreeFileNode.refresh()
     call self.path.refresh()
+endfunction
+
+"FUNCTION: TreeFileNode.refreshFlags() {{{1
+function! s:TreeFileNode.refreshFlags()
+    call self.path.refreshFlags()
 endfunction
 
 "FUNCTION: TreeFileNode.rename() {{{1

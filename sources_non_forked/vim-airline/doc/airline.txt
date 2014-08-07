@@ -139,7 +139,7 @@ COMMANDS                                                  *airline-commands*
   Toggles between the standard 'statusline' and airline.
 
 :AirlineRefresh                                            *:AirlineRefresh*
-  Refreshes all highlight groups.
+  Refreshes all highlight groups and redraws the statusline.
 
 ==============================================================================
 CUSTOMIZATION                                        *airline-customization*
@@ -217,6 +217,14 @@ EXTENSIONS                                              *airline-extensions*
 Most extensions are enabled by default and lazily loaded when the
 corresponding plugin (if any) is detected.
 
+By default, airline will attempt to load any extension it can find in the
+'runtimepath'.  On some systems this can result in an undersirable startup
+cost.  You can disable the check with the following flag. >
+  let g:airline#extensions#disable_rtp_load = 1
+<
+  Note: Third party plugins that rely on this behavior will be affected. You
+  will need to manually load them.
+
 -------------------------------------                      *airline-default*
 The default extension understands all of the `g:` variables in the
 |airline-configuration| section, however it also has some more fine-tuned
@@ -228,7 +236,7 @@ configuration values that you can use.
       \ 'x': 60,
       \ 'y': 88,
       \ 'z': 45,
-      \ })
+      \ }
 
   " Note: set to an empty dictionary to disable truncation.
   let g:airline#extensions#default#section_truncate_width = {}
@@ -238,9 +246,8 @@ configuration values that you can use.
   let g:airline#extensions#default#layout = [
       \ [ 'a', 'b', 'c' ],
       \ [ 'x', 'y', 'z', 'warning' ]
-      \ ])
+      \ ]
 <
-
 -------------------------------------                     *airline-quickfix*
 The quickfix extension is a simple built-in extension which determines
 whether the buffer is a quickfix or location list buffer, and adjusts the
@@ -275,7 +282,10 @@ vcscommand   <http://www.vim.org/scripts/script.php?script_id=90>
 
 * use vcscommand.vim if available >
   let g:airline#extensions#branch#use_vcscommand = 0
-<
+
+* truncate long branch names to a fixed length >
+  let g:airline#extensions#branch#displayed_head_limit = 10
+
 -------------------------------------                    *airline-syntastic*
 syntastic <https://github.com/scrooloose/syntastic>
 
@@ -283,13 +293,13 @@ syntastic <https://github.com/scrooloose/syntastic>
   let g:airline#extensions#syntastic#enabled = 1
 <
 -------------------------------------                       *airline-tagbar*
-tagbar <https://github.com/majutsushi/>
+tagbar <https://github.com/majutsushi/tagbar>
 
 * enable/disable tagbar integration >
   let g:airline#extensions#tagbar#enabled = 1
 <
 * change how tags are displayed (:help tagbar-statusline) >
-  let g:airline#extensions#tagbar#flags = ''  "default
+  let g:airline#extensions#tagbar#flags = ''  (default)
   let g:airline#extensions#tagbar#flags = 'f'
   let g:airline#extensions#tagbar#flags = 's'
   let g:airline#extensions#tagbar#flags = 'p'
@@ -307,6 +317,7 @@ csv.vim <https://github.com/chrisbra/csv.vim>
 -------------------------------------                        *airline-hunks*
 vim-gitgutter <https://github.com/airblade/vim-gitgutter>
 vim-signify <https://github.com/mhinz/vim-signify>
+changesPlugin <https://github.com/chrisbra/changesPlugin>
 
 * enable/disable showing a summary of changed hunks under source control. >
   let g:airline#extensions#hunks#enabled = 1
@@ -349,11 +360,22 @@ eclim <https://eclim.org>
 * enable/disable detection of whitespace errors. >
   let g:airline#extensions#whitespace#enabled = 1
 <
+* customize the type of mixed indent checking to perform. >
+  " must be all spaces or all tabs before the first non-whitespace character
+  let g:airline#extensions#whitespace#mixed_indent_algo = 0 (default)
+
+  " certain number of spaces are allowed after tabs, but not in between
+  " this algorithm works well for /** */ style comments in a tab-indented file
+  let g:airline#extensions#whitespace#mixed_indent_algo = 1
+<
 * customize the whitespace symbol. >
   let g:airline#extensions#whitespace#symbol = '!'
 <
 * configure which whitespace checks to enable. >
   let g:airline#extensions#whitespace#checks = [ 'indent', 'trailing' ]
+<
+* configure the maximum number of lines where whitespace checking is enabled. >
+  let g:airline#extensions#whitespace#max_lines = 20000
 <
 * configure whether a message should be displayed. >
   let g:airline#extensions#whitespace#show_message = 1
@@ -376,11 +398,17 @@ eclim <https://eclim.org>
   let g:airline#extensions#tabline#tab_nr_type = 0 " # of splits (default)
   let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
 <
+* enable/disable displaying tab number in tabs mode. >
+  let g:airline#extensions#tabline#show_tab_nr = 1
+
+* enable/disable displaying tab type (far right)
+  let g:airline#extensions#tabline#show_tab_type = 1
+
 * defines the name of a formatter for how buffer names are displayed. >
   let g:airline#extensions#tabline#formatter = 'default'
 
   " here is how you can define a 'foo' formatter:
-  function! airline#extensions#tabline#formatters#foo(bufnr, buffers)
+  function! airline#extensions#tabline#foo#format(bufnr, buffers)
     return fnamemodify(bufname(a:bufnr), ':t')
   endfunction
   let g:airline#extensions#tabline#formatter = 'foo'
@@ -403,6 +431,10 @@ eclim <https://eclim.org>
   " there is another file of the same name, in which it will display it along
   " with the containing parent directory.
   let g:airline#extensions#tabline#formatter = 'unique_tail'
+
+  " The `unique_tail_improved` - another algorithm, that will smartly uniquify
+  " buffers names with similar filename, suppressing common parts of paths.
+  let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 <
 * configure the minimum number of buffers needed to show the tabline. >
   let g:airline#extensions#tabline#buffer_min_count = 0
@@ -420,9 +452,62 @@ eclim <https://eclim.org>
   let g:airline#extensions#tabline#left_alt_sep = ''
   let g:airline#extensions#tabline#right_sep = ''
   let g:airline#extensions#tabline#right_alt_sep = ''
+
+* configure symbol used to represent close button
+  let g:airline#extensions#tabline#close_symbol = 'X'
+
 <
 Note: Enabling this extension will modify 'showtabline' and 'guioptions'.
 
+-------------------------------------                     *airline-tmuxline*
+tmuxline <https://github.com/edkolev/tmuxline.vim>
+
+* enable/disable tmuxline integration >
+  let g:airline#extensions#tmuxline#enabled = 0
+<
+* configure which mode colors should be used in tmux statusline >
+  let airline#extensions#tmuxline#color_template = 'normal' (default)
+  let airline#extensions#tmuxline#color_template = 'insert'
+  let airline#extensions#tmuxline#color_template = 'visual'
+  let airline#extensions#tmuxline#color_template = 'replace'
+<
+* if specified, setting this option will trigger writing to the file whenever the
+  airline theme is applied, i.e. when :AirlineTheme is executed and on vim
+  startup >
+  airline#extensions#tmuxline#snapshot_file = "~/.tmux-statusline-colors.conf"
+<
+-------------------------------------                   *airline-promptline*
+promptline <https://github.com/edkolev/promptline.vim>
+
+* configure the path to the snapshot .sh file. Mandatory option. The created
+  file should be sourced by the shell on login >
+  " in .vimrc
+  airline#extensions#promptline#snapshot_file = "~/.shell_prompt.sh"
+
+  " in .bashrc/.zshrc
+  [ -f ~/.shell_prompt.sh ] && source ~/.shell_prompt.sh
+<
+* enable/disable promptline integration >
+  let g:airline#extensions#promptline#enabled = 0
+<
+* configure which mode colors should be used in prompt >
+  let airline#extensions#promptline#color_template = 'normal' (default)
+  let airline#extensions#promptline#color_template = 'insert'
+  let airline#extensions#promptline#color_template = 'visual'
+  let airline#extensions#promptline#color_template = 'replace'
+<
+-------------------------------------                    *airline-nrrwrgn*
+NrrwRgn <https://github.com/chrisbra/NrrwRgn>
+
+* enable/disable NrrwRgn integration >
+  let g:airline#extensions#nrrwrgn#enabled = 1
+
+-------------------------------------                        *airline-capslock*
+vim-capslock <https://github.com/tpope/vim-capslock>
+
+* enable/disable vim-capslock integration >
+  let g:airline#extensions#capslock#enabled = 1
+<
 ==============================================================================
 ADVANCED CUSTOMIZATION                      *airline-advanced-customization*
 
@@ -568,7 +653,7 @@ to your liking.  Here is an example: >
     return 1
   endfunction
 <
-The above example uses various some example highlight groups to demonstrate
+The above example uses various example highlight groups to demonstrate
 that you can use any combination from the loaded colorscheme. However, if
 you want colors to change between modes, you should use one of the section
 highlight groups, e.g. `airline_a` and `airline_b`.
@@ -671,7 +756,7 @@ Contributions and pull requests are welcome.
 ==============================================================================
 LICENSE                                                    *airline-license*
 
-MIT License.  Copyright © 2013 Bailey Ling.
+MIT License.  Copyright © 2013-2014 Bailey Ling.
 
 
  vim:tw=78:ts=8:ft=help:norl:

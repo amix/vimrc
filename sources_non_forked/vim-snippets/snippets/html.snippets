@@ -47,6 +47,9 @@ snippet backspace
 # ⎋
 snippet esc
 	&#x238B;
+# comment
+snippet //
+	<!-- ${1} -->${0}
 # Generic Doctype
 snippet doctype HTML 4.01 Strict
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
@@ -147,6 +150,8 @@ snippet a:ext
 	<a href="http://${1:example.com}">${0:$1}</a>
 snippet a:mail
 	<a href="mailto:${1:joe@example.com}?subject=${2:feedback}">${0:email me}</a>
+snippet ac
+	<a href="`@+`">${0:`@+`}</a>
 snippet abbr
 	<abbr title="${1}">${0}</abbr>
 snippet address
@@ -361,15 +366,15 @@ snippet footer#
 		${0}
 	</footer>
 snippet form
-	<form action="${1}" method="${2:get}" accept-charset="utf-8">
+	<form action="${1}" method="${2:post}">
 		${0}
 	</form>
 snippet form.
-	<form class="${1}" action="${2}" method="${3:get}" accept-charset="utf-8">
+	<form class="${1}" action="${2}" method="${3:post}">
 		${0}
 	</form>
 snippet form#
-	<form id="${1}" action="${2}" method="${3:get}" accept-charset="utf-8">
+	<form id="${1}" action="${2}" method="${3:post}">
 		${0}
 	</form>
 snippet h1
@@ -449,7 +454,8 @@ snippet html5
 	<!DOCTYPE html>
 	<html>
 		<head>
-			<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+			<meta charset="utf-8">
+			<meta name="viewport" content="width=device-width">
 			<title>${1:`substitute(vim_snippets#Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
 			${2:meta}
 		</head>
@@ -749,15 +755,15 @@ snippet summary
 snippet sup
 	<sup>${0}</sup>
 snippet table
-	<table border="${1:0}">
+	<table>
 		${0}
 	</table>
 snippet table.
-	<table class="${1}" border="${2:0}">
+	<table class="${1}">
 		${0}
 	</table>
 snippet table#
-	<table id="${1}" border="${2:0}">
+	<table id="${1}">
 		${0}
 	</table>
 snippet tbody
