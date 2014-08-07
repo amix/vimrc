@@ -1,0 +1,54 @@
+Note taking syntax
+
+This note contains examples of the syntax highlighting styles supported by the
+notes plug-in. When your Vim configuration supports concealing of text, the
+markers which enable the syntax highlighting won’t be visible. In this case you
+can make the markers visible by selecting the text.
+
+# Headings
+
+Lines prefixed with one or more ‘#’ symbols are headings which can be used for
+automatic text folding. There’s also an alternative heading format which isn’t
+folded, it consists of a line shorter than 60 letters that starts with an
+uppercase letter and ends in a colon (the hard wrapping in this paragraph
+illustrates why the “starts with uppercase” rule is needed):
+
+# Inline formatting
+
+Text styles:
+ • _italic text_
+ • *bold text*
+
+Hyper links and such:
+ • Hyper links: http://www.vim.org/, sftp://server/file
+ • Domain names: www.python.org
+ • E-mail addresses: user@host.ext
+ • UNIX filenames: ~/relative/to/home, /absolute/path
+ • Windows filenames: ~\relative\to\home, c:\absolute\path, \\server\share
+
+# Lists
+
+Bulleted lists can be used for to-do lists:
+ • DONE Publish my notes.vim plug-in
+ • TODO Write an indent script for atx headings
+ • XXX This one is really important
+
+Numbered lists are also supported:
+ 1. And You can
+ 2) use any type
+ 3/ of marker
+
+# Block quotes
+
+> Quotes are written using
+> the convention from e-mail
+
+# Embedded syntax highlighting
+
+If you type three ‘{’ characters followed by the name of a Vim file type, all
+text until the three closing ‘}’ characters will be highlighted using the
+indicated file type. Here are some examples of the Fibonacci sequence:
+
+Lua:        {{{lua function fib(n) return n < 2 and n or fib(n - 1) + fib(n - 2) end }}}
+Vim script: {{{vim function fib(n) | return n < 2 ? n : fib(n - 1) + fib(n - 2) | endfunction }}}
+Python:     {{{python def fib(n): return n < 2 and n or fib(n - 1) + fib(n - 2) }}}
