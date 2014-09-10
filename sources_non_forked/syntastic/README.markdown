@@ -35,15 +35,16 @@ the user is notified and is happy because they didn't have to compile their
 code or execute their script to find them.
 
 At the time of this writing, syntax checking plugins exist for ActionScript,
-Ada, AppleScript, AsciiDoc, ASM, BEMHTML, Bourne shell, C, C++, C#, Chef,
-CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart, DocBook, Dust, Elixir,
-Erlang, eRuby, Fortran, Gentoo metadata, GLSL, Go, Haml, Haskell, Haxe,
-Handlebars, HSS, HTML, Java, JavaScript, JSON, JSX, LESS, Lex, Limbo, LISP,
-LLVM intermediate language, Lua, MATLAB, NASM, Objective-C, Objective-C++,
-OCaml, Perl, Perl POD, PHP, gettext Portable Object, Puppet, Python, Racket,
-reStructuredText, Ruby, Rust, SASS/SCSS, Scala, Slim, Tcl, TeX, Texinfo, Twig,
-TypeScript, Vala, Verilog, VHDL, VimL, xHtml, XML, XSLT, YACC, YAML, z80, Zope
-page templates, and zsh.
+Ada, AppleScript, Arduino, AsciiDoc, ASM, BEMHTML, Bro, Bourne shell, C,
+C++, C#, Cabal, Chef, CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart,
+DocBook, Dust, Elixir, Erlang, eRuby, Fortran, Gentoo metadata, GLSL, Go,
+Haml, Haskell, Haxe, Handlebars, HSS, HTML, Java, JavaScript, JSON, JSX, LESS,
+Lex, Limbo, LISP, LLVM intermediate language, Lua, MATLAB, NASM, Objective-C,
+Objective-C++, OCaml, Perl, Perl POD, PHP, gettext Portable Object, OS X
+and iOS property lists, Puppet, Python, Racket, R, reStructuredText, Ruby,
+SASS/SCSS, Scala, Slim, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog,
+VHDL, VimL, xHtml, XML, XSLT, YACC, YAML, z80, Zope page templates, and zsh.
+See the [wiki][3] for details about the corresponding supported checkers.
 
 Below is a screenshot showing the methods that Syntastic uses to display syntax
 errors.  Note that, in practise, you will only have a subset of these methods
@@ -75,9 +76,8 @@ First I'll show you how to install Tim Pope's [pathogen][1] so that it's easy to
 install syntastic.  Do this in your terminal so that you get the `pathogen.vim`
 file and the directories it needs:
 ```sh
-mkdir -p ~/.vim/autoload ~/.vim/bundle; \
-curl -so ~/.vim/autoload/pathogen.vim \
-    https://raw.github.com/tpope/vim-pathogen/master/autoload/pathogen.vim
+mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 ```
 Next you *need* to add this to your `~/.vimrc`:
 ```vim
@@ -91,7 +91,7 @@ execute pathogen#infect()
 You now have pathogen installed and can put syntastic into `~/.vim/bundle` like
 this:
 ```sh
-cd ~/.vim/bundle
+cd ~/.vim/bundle && \
 git clone https://github.com/scrooloose/syntastic.git
 ```
 Quit vim and start it back up to reload it, then type:
@@ -111,6 +111,8 @@ If you get an error when you do this, then you probably didn't install
 
 ## 3\. FAQ
 
+<a name="faqinfo"></a>
+
 __Q. I installed syntastic but it isn't reporting any errors...__
 
 A. The most likely reason is that none of the syntax checkers that it requires
@@ -125,6 +127,8 @@ error output for a syntax checker may have changed. In this case, make sure you
 have the latest version of the syntax checker installed. If it still fails then
 create an issue - or better yet, create a pull request.
 
+<a name="faqperl"></a>
+
 __Q. The `perl` checker has stopped working...__
 
 A. The `perl` checker runs `perl -c` against your file, which in turn
@@ -133,10 +137,21 @@ statements in your file (cf. [perlrun][10]).  This is probably fine if you
 wrote the file yourself, but it's a security problem if you're checking third
 party files.  Since there is currently no way to disable this behaviour while
 still producing useful results, the checker is now disabled by default.  To
-(re-)enable it, set `g:syntastic_enable_perl_checker` to 1 in your vimrc:
+(re-)enable it, make sure the `g:syntastic_perl_checkers` list includes `perl`,
+and set `g:syntastic_enable_perl_checker` to 1 in your vimrc:
 ```vim
 let g:syntastic_enable_perl_checker = 1
 ```
+
+<a name="faqrust"></a>
+
+__Q. What happened to the `rustc` checker?__
+
+A. It has been included in the [Rust compiler package][12].  If you have
+a recent version of the Rust compiler, the checker should be picked up
+automatically by syntastic.
+
+<a name="faqloclist"></a>
 
 __Q. I run a checker and the location list is not updated...__
 
@@ -147,6 +162,8 @@ your vimrc:
 ```vim
 let g:syntastic_always_populate_loc_list = 1
 ```
+
+<a name="faqargs"></a>
 
 __Q. How can I pass additional arguments to a checker?__
 
@@ -161,6 +178,8 @@ let g:syntastic_ruby_mri_args = "--my --args --here"
 ```
 
 See `:help syntastic-checker-options` for more information.
+
+<a name="faqcheckers"></a>
 
 __Q. Syntastic supports several checkers for my filetype - how do I tell it
 which one(s) to use?__
@@ -190,6 +209,32 @@ let g:syntastic_php_checkers = ['php', 'phpcs', 'phpmd']
 This is telling syntastic to run the `php` checker first, and if no errors are
 found, run `phpcs`, and then `phpmd`.
 
+You can also run checkers explicitly by calling `:SyntasticCheck <checker>`.
+
+e.g. to run `phpcs` and `phpmd`:
+```vim
+:SyntasticCheck phpcs phpmd
+```
+
+This works for any checkers available for the current filetype, even if they
+aren't listed in `g:syntastic_<filetype>_checkers`.  You can't run checkers for
+"foreign" filetypes though (e.g. you can't run, say, a Python checker if the
+current filetype is `php`).
+
+<a name="faqaggregate"></a>
+
+__Q. How can I display together the errors found by all checkers enabled for
+the current file?__
+
+A. Set `g:syntastic_aggregate_errors` to 1 in your vimrc:
+```vim
+let g:syntastic_aggregate_errors = 1
+```
+
+See `:help syntastic-aggregating-errors` for more details.
+
+<a name="faqlnext"></a>
+
 __Q. How can I jump between the different errors without using the location
 list at the bottom of the window?__
 
@@ -199,6 +244,8 @@ A. Vim provides several built in commands for this. See `:help :lnext` and
 If you use these commands a lot then you may want to add shortcut mappings to
 your vimrc, or install something like [unimpaired][2], which provides such
 mappings (among other things).
+
+<a name="faqstyle"></a>
 
 __Q. A syntax checker is giving me unwanted/strange style tips?__
 
@@ -213,6 +260,8 @@ messages you don't want to see. e.g. To turn off all style messages:
 let g:syntastic_quiet_messages = { "type": "style" }
 ```
 See `:help syntastic_quiet_messages` for details.
+
+<a name="faqbdelete"></a>
 
 __Q. The error window is closed automatically when I :quit the current buffer
 but not when I :bdelete it?__
@@ -231,8 +280,10 @@ cabbrev <silent> bd lclose\|bdelete
 ## 4\. Other resources
 
 The preferred place for posting suggestions, reporting bugs, and general
-discussions related to syntastic is the [issue tracker at GitHub][4].  There
-are also a [google group][5], and a [syntastic tag at StackOverflow][6].
+discussions related to syntastic is the [issue tracker at GitHub][4].
+A guide for writing syntax checkers can be found in the [wiki][11].
+There are also a dedicated [google group][5], and a
+[syntastic tag at StackOverflow][6].
 
 Syntastic aims to provide a common interface to syntax checkers for as many
 languages as possible.  For particular languages, there are, of course, other
@@ -248,5 +299,7 @@ a look at [jedi-vim][7], [python-mode][8], or [YouCompleteMe][9].
 [6]: http://stackoverflow.com/questions/tagged/syntastic
 [7]: https://github.com/davidhalter/jedi-vim
 [8]: https://github.com/klen/python-mode
-[9]: https://github.com/Valloric/YouCompleteMe
+[9]: http://valloric.github.io/YouCompleteMe/
 [10]: http://perldoc.perl.org/perlrun.html#*-c*
+[11]: https://github.com/scrooloose/syntastic/wiki/Syntax-Checker-Guide
+[12]: https://github.com/rust-lang/rust/

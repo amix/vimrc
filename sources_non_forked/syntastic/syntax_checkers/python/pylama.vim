@@ -30,10 +30,12 @@ function! SyntaxCheckers_python_pylama_GetLocList() dict
         \ '%-GWARNING:pylama:%.%#,' .
         \ '%A%f:%l:%c: %m'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'postprocess': ['sort'] })
+        \ 'env': env })
 
     " adjust for weirdness in each checker
     for e in loclist
@@ -52,6 +54,8 @@ function! SyntaxCheckers_python_pylama_GetLocList() dict
             let e['subtype'] = 'Style'
         endif
     endfor
+
+    call self.setWantSort(1)
 
     return loclist
 endfunction

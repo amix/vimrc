@@ -6,122 +6,95 @@ snippet if if .. do .. end
 	if ${1} do
 		${0}
 	end
-
 snippet if if .. do: ..
 	if ${1:condition}, do: ${0}
-
 snippet ife if .. do .. else .. end
 	if ${1:condition} do
 		${2}
 	else
 		${0}
 	end
-
 snippet ife if .. do: .. else:
 	if ${1:condition}, do: ${2}, else: ${0}
-
 snippet unless unless .. do .. end
 	unless ${1} do
 		${0}
 	end
-
 snippet unless unless .. do: ..
 	unless ${1:condition}, do: ${0}
-
 snippet unlesse unless .. do .. else .. end
 	unless ${1:condition} do
 		${2}
 	else
 		${0}
 	end
-
 snippet unlesse unless .. do: .. else:
 	unless ${1:condition}, do: ${2}, else: ${0}
-
 snippet cond
 	cond do
 	${1} ->
 		${0}
 	end
-
 snippet case
 	case ${1} do
 	${2} ->
 		${0}
 	end
-
 snippet df
 	def ${1:name}, do: ${2}
-
 snippet def
 	def ${1:name} do
 		${0}
 	end
-
 snippet defim
 	defimpl ${1:protocol_name}, for: ${2:data_type} do
 		${0}
 	end
-
 snippet defma
 	defmacro ${1:name} do
 		${0}
 	end
-
 snippet defmo
 	defmodule ${1:module_name} do
 		${0}
 	end
-
 snippet defp
 	defp ${1:name} do
 		${0}
 	end
-
 snippet defpr
 	defprotocol ${1:name}, [${0:function}]
-
 snippet defr
 	defrecord ${1:record_name}, ${0:fields}
-
 snippet doc
 	@doc """
 	${0}
 	"""
-
 snippet fn
 	fn(${1:args}) -> ${0} end
-
 snippet fun
-        function do
-        	${0}
-        end
-
+	function do
+		${0}
+	end
 snippet mdoc
 	@moduledoc """
 	${0}
 	"""
-
 snippet rec
 	receive do
 	${1} ->
 		${0}
 	end
-
 snippet req
 	require ${0:module_name}
-
 snippet imp
 	import ${0:module_name}
-
 snippet ali
 	alias ${0:module_name}
-
 snippet test
 	test "${1:test_name}" do
 		${0}
 	end
-
 snippet try try .. rescue .. end
 	try do
 		${1}

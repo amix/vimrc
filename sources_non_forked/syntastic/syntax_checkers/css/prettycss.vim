@@ -43,12 +43,13 @@ function! SyntaxCheckers_css_prettycss_GetLocList() dict
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")},
-        \ 'postprocess': ['sort'] })
+        \ 'defaults': {'bufnr': bufnr("")} })
 
     for e in loclist
         let e["text"] .= ')'
     endfor
+
+    call self.setWantSort(1)
 
     return loclist
 endfunction

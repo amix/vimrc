@@ -1,4 +1,3 @@
-
 "============================================================================
 "File:        scss.vim
 "Description: scss syntax checking plugin for syntastic

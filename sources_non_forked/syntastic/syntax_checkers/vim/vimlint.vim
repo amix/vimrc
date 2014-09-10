@@ -29,21 +29,16 @@ function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item)
             endif
         endif
 
-        return '\V' . (col ? '\%' . col . 'c' : '') . escape(term, '\')
+        return col ? '\%>' . (col - 1) . 'c\%<' . (col + strlen(term)) . 'c' : '\V' . escape(term, '\')
     endif
 
     return ''
 endfunction
 
 function! SyntaxCheckers_vim_vimlint_IsAvailable() dict
-    let ret = 0
-    try
-        call vimlint#vimlint(syntastic#util#DevNull(), { 'output': [], 'quiet': 1 })
-        let ret = 1
-    catch /\m^Vim\%((\a\+)\)\=:E117/
-        " do nothing
-    endtry
-    return ret
+    return
+        \ globpath(&runtimepath, 'autoload/vimlparser.vim') != '' &&
+        \ globpath(&runtimepath, 'autoload/vimlint.vim') != ''
 endfunction
 
 function! SyntaxCheckers_vim_vimlint_GetLocList() dict
@@ -58,7 +53,7 @@ function! SyntaxCheckers_vim_vimlint_GetLocList() dict
     " value 3: the message is a warning
     "
     " References: :help vimlint-errorcode and :help vimlint-variables
-    return vimlint#vimlint(expand('%'), {
+    let param = {
         \ 'output': function('s:vimlintOutput'),
         \ 'quiet':  1,
         \ 'EVL102': 3,
@@ -68,7 +63,16 @@ function! SyntaxCheckers_vim_vimlint_GetLocList() dict
         \ 'EVL106': 3,
         \ 'EVL201': 3,
         \ 'EVL204': 3,
-        \ 'EVL205': 3 })
+        \ 'EVL205': 3 }
+
+    if exists('g:syntastic_vimlint_options')
+        if type(g:syntastic_vimlint_options) == type({})
+            let options = filter(copy(g:syntastic_vimlint_options), 'v:key =~# "\\m^EVL"')
+            call extend(param, options, 'force')
+        endif
+    endif
+
+    return vimlint#vimlint(expand('%'), param)
 endfunction
 
 " @vimlint(EVL103, 1, a:filename)
@@ -86,7 +90,8 @@ endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'vim',
-    \ 'name': 'vimlint'})
+    \ 'name': 'vimlint',
+    \ 'exec': 'vim' })
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

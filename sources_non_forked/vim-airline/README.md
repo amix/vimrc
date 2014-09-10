@@ -121,7 +121,7 @@ This plugin follows the standard runtime path structure, and as such it can be i
 *  [NeoBundle][12]
   *  `NeoBundle 'bling/vim-airline'`
 *  [Vundle][13]
-  *  `Bundle 'bling/vim-airline'`
+  *  `Plugin 'bling/vim-airline'`
 *  [VAM][22]
   *  `call vam#ActivateAddons([ 'vim-airline' ])`
 *  manual

@@ -13,6 +13,7 @@ function! g:SyntasticChecker.New(args) " {{{2
     let newObj._filetype = a:args['filetype']
     let newObj._name = a:args['name']
     let newObj._exec = get(a:args, 'exec', newObj._name)
+    let newObj._sort = 0
 
     if has_key(a:args, 'redirect')
         let [filetype, name] = split(a:args['redirect'], '/')
@@ -75,6 +76,14 @@ function! g:SyntasticChecker.getLocList() " {{{2
     return g:SyntasticLoclist.New(self.getLocListRaw())
 endfunction " }}}2
 
+function! g:SyntasticChecker.getWantSort() " {{{2
+    return self._sort
+endfunction " }}}2
+
+function! g:SyntasticChecker.setWantSort(val) " {{{2
+    let self._sort = a:val
+endfunction " }}}2
+
 function! g:SyntasticChecker.makeprgBuild(opts) " {{{2
     let basename = self._filetype . '_' . self._name . '_'
 
@@ -89,7 +98,10 @@ function! g:SyntasticChecker.makeprgBuild(opts) " {{{2
 endfunction " }}}2
 
 function! g:SyntasticChecker.isAvailable() " {{{2
-    return self._isAvailableFunc()
+    if !has_key(self, '_available')
+        let self._available = self._isAvailableFunc()
+    endif
+    return self._available
 endfunction " }}}2
 
 " }}}1
@@ -126,7 +138,7 @@ function! g:SyntasticChecker._populateHighlightRegexes(errors) " {{{2
         for e in a:errors
             if e['valid']
                 let term = self._highlightRegexFunc(e)
-                if len(term) > 0
+                if term != ''
                     let e['hl'] = term
                 endif
             endif

@@ -18,6 +18,7 @@ let g:loaded_syntastic_sass_sass_checker = 1
 "sass caching for large files drastically speeds up the checking, but store it
 "in a temp location otherwise sass puts .sass_cache dirs in the users project
 let s:sass_cache_location = tempname()
+lockvar s:sass_cache_location
 
 "By default do not check partials as unknown variables are a syntax error
 if !exists("g:syntastic_sass_check_partials")

@@ -8,7 +8,7 @@
 "             Want To Public License, Version 2, as published by Sam Hocevar.
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "============================================================================
-"
+
 if exists("g:loaded_syntastic_bemhtml_bemhtmllint_checker")
     finish
 endif
@@ -29,6 +29,7 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'name': 'bemhtmllint',
     \ 'exec': 'bemhtml-lint' })
 
-
 let &cpo = s:save_cpo
 unlet s:save_cpo
+
+" vim: set et sts=4 sw=4:

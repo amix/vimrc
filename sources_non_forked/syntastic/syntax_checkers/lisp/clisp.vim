@@ -20,13 +20,14 @@ set cpo&vim
 
 function! SyntaxCheckers_lisp_clisp_GetLocList() dict
     let makeprg = self.makeprgBuild({
-        \ 'args_after': '-q -c ' . syntastic#c#NullOutput() })
+        \ 'args_after': '-q',
+        \ 'fname_before': '-c' })
 
     let errorformat  =
         \ '%-G;%.%#,' .
-        \ '%W%>WARNING:%.%#line %l : %m,' .
+        \ '%W%>WARNING:%.%# line %l : %m,' .
         \ '%Z  %#%m,' .
-        \ '%W%>WARNING:%.%#lines %l..%\d\# : %m,' .
+        \ '%W%>WARNING:%.%# lines %l%\%.%\%.%\d%\+ : %m,' .
         \ '%Z  %#%m,' .
         \ '%E%>The following functions were %m,' .
         \ '%Z %m,' .

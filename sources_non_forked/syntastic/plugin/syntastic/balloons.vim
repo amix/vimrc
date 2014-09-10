@@ -43,6 +43,7 @@ endfunction " }}}2
 " Reset the error balloons
 " @vimlint(EVL103, 1, a:loclist)
 function! g:SyntasticBalloonsNotifier.reset(loclist) " {{{2
+    let b:syntastic_balloons = {}
     if has('balloon_eval')
         call syntastic#log#debug(g:SyntasticDebugNotifications, 'balloons: reset')
         set nobeval

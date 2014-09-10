@@ -19,17 +19,13 @@ if exists('g:loaded_syntastic_css_csslint_checker')
 endif
 let g:loaded_syntastic_css_csslint_checker = 1
 
-if !exists('g:syntastic_csslint_options')
-    let g:syntastic_csslint_options = ''
-endif
-
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_css_csslint_GetLocList() dict
-    let makeprg = self.makeprgBuild({
-        \ 'args': g:syntastic_csslint_options,
-        \ 'args_after': '--format=compact' })
+    call syntastic#log#deprecationWarn('csslint_options', 'css_csslint_args')
+
+    let makeprg = self.makeprgBuild({ 'args_after': '--format=compact' })
 
     " Print CSS Lint's error/warning messages from compact format. Ignores blank lines.
     let errorformat =

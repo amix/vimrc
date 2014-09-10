@@ -11,8 +11,8 @@ if exists('loaded_snips') || &cp || version < 700
 	finish
 endif
 let loaded_snips = 1
-if !exists('snips_author') | let snips_author = 'Me' | endif
-" save and reset 'cpo'
+
+" Save and reset 'cpo'
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -24,7 +24,7 @@ endtry
 
 if (!exists('g:snipMateSources'))
   let g:snipMateSources = {}
-  " default source: get snippets based on runtimepath:
+  " Default source: get snippets based on runtimepath
   let g:snipMateSources['default'] = funcref#Function('snipMate#DefaultPool')
 endif
 
@@ -40,51 +40,88 @@ inoremap <silent> <Plug>snipMateTrigger        <C-R>=snipMate#TriggerSnippet(1)<
 inoremap <silent> <Plug>snipMateBack           <C-R>=snipMate#BackwardsSnippet()<CR>
 snoremap <silent> <Plug>snipMateBack           <Esc>a<C-R>=snipMate#BackwardsSnippet()<CR>
 inoremap <silent> <Plug>snipMateShow           <C-R>=snipMate#ShowAvailableSnips()<CR>
-xnoremap <silent> <Plug>snipMateVisual         :<C-U>call <SID>grab_visual()<CR>i
+xnoremap <silent> <Plug>snipMateVisual         :<C-U>call <SID>grab_visual()<CR>gv"_c
 
-" config which can be overridden (shared lines)
-if !exists('g:snipMate')
-  let g:snipMate = {}
+" config variables
+if !exists('g:snips_author')
+	let g:snips_author = 'Me'
 endif
-let s:snipMate = g:snipMate
+if !exists('g:snipMate')
+	let g:snipMate = {}
+endif
 
-let s:snipMate['get_snippets'] = get(s:snipMate, 'get_snippets', funcref#Function("snipMate#GetSnippets"))
+" SnipMate inserts this string when no snippet expansion can be done
+let g:snipMate['no_match_completion_feedkeys_chars'] =
+			\ get(g:snipMate, 'no_match_completion_feedkeys_chars', "\t")
 
-" old snippets_dir: function returning list of paths which is used to read
-" snippets. You can replace it with your own implementation. Defaults to all
-" directories in &rtp/snippets/*
-let s:snipMate['snippet_dirs'] = get(s:snipMate, 'snippet_dirs', funcref#Function('return split(&runtimepath,",")'))
-if type(s:snipMate['snippet_dirs']) == type([])
-	call map(s:snipMate['snippet_dirs'], 'expand(v:val)')
+" Add default scope aliases, without overriding user settings
+let g:snipMate.scope_aliases = get(g:snipMate, 'scope_aliases', {})
+if exists('g:snipMate_no_default_aliases')
+	echom 'The g:snipMate_no_default_aliases option has been renamed.'
+				\ 'See :h snipMate-options.'
+endif
+if (!exists('g:snipMate_no_default_aliases') || !g:snipMate_no_default_aliases)
+			\ && (!exists('g:snipMate.no_default_aliases')
+				\ || !g:snipMate.no_default_aliases)
+	let g:snipMate.scope_aliases.objc =
+				\ get(g:snipMate.scope_aliases, 'objc', 'c')
+	let g:snipMate.scope_aliases.cpp =
+				\ get(g:snipMate.scope_aliases, 'cpp', 'c')
+	let g:snipMate.scope_aliases.cu =
+				\ get(g:snipMate.scope_aliases, 'cu', 'c')
+	let g:snipMate.scope_aliases.xhtml =
+				\ get(g:snipMate.scope_aliases, 'xhtml', 'html')
+	let g:snipMate.scope_aliases.html =
+				\ get(g:snipMate.scope_aliases, 'html', 'javascript')
+	let g:snipMate.scope_aliases.php =
+				\ get(g:snipMate.scope_aliases, 'php', 'php,html,javascript')
+	let g:snipMate.scope_aliases.ur =
+				\ get(g:snipMate.scope_aliases, 'ur', 'html,javascript')
+	let g:snipMate.scope_aliases.mxml =
+				\ get(g:snipMate.scope_aliases, 'mxml', 'actionscript')
+	let g:snipMate.scope_aliases.eruby =
+				\ get(g:snipMate.scope_aliases, 'eruby', 'eruby-rails,html')
+endif
+
+let g:snipMate['get_snippets'] = get(g:snipMate, 'get_snippets', funcref#Function("snipMate#GetSnippets"))
+
+" List of paths where snippets/ dirs are located, or a function returning such
+" a list
+let g:snipMate['snippet_dirs'] = get(g:snipMate, 'snippet_dirs', funcref#Function('return split(&runtimepath,",")'))
+if type(g:snipMate['snippet_dirs']) == type([])
+	call map(g:snipMate['snippet_dirs'], 'expand(v:val)')
 endif
 
 " _ is default scope added always
 "
 " &ft honors multiple filetypes and syntax such as in set ft=html.javascript syntax=FOO
-let s:snipMate['get_scopes'] = get(s:snipMate, 'get_scopes', funcref#Function('return split(&ft,"\\.")+[&syntax, "_"]'))
-
-" dummy for compatibility - will be removed
-" moving to autoload to improve loading speed and debugging
-fun! TriggerSnippet()
-	echoe "replace TriggerSnippet by snipMate#TriggerSnippet, please!"
-	return snipMate#TriggerSnippet()
-endf
-fun! BackwardSnippet()
-	echoe "replace BackwardSnippet by snipMate#BackwardsSnippet, please!"
-	return snipMate#BackwardsSnippet()
-endf
+let g:snipMate['get_scopes'] = get(g:snipMate, 'get_scopes', funcref#Function('return split(&ft,"\\.")+[&syntax, "_"]'))
 
 " Modified from Luc Hermitte's function on StackOverflow
 " <http://stackoverflow.com/a/1534347>
 function! s:grab_visual()
 	let a_save = @a
 	try
-		normal! gv"ad
+		normal! gv"ay
 		let b:snipmate_content_visual = @a
 	finally
 		let @a = a_save
 	endtry
 endfunction
+
+" TODO: Allow specifying an arbitrary snippets file
+function! s:load_scopes(bang, ...)
+	let gb = a:bang ? g: : b:
+	let gb.snipMate = get(gb, 'snipMate', {})
+	let gb.snipMate.scope_aliases = get(gb.snipMate, 'scope_aliases', {})
+	let gb.snipMate.scope_aliases['_'] = join(split(get(gb.snipMate.scope_aliases, '_', ''), ',') + a:000, ',')
+endfunction
+
+command! -bang -bar -nargs=+ SnipMateLoadScope
+			\ call s:load_scopes(<bang>0, <f-args>)
+
+" Edit snippet files
+command! SnipMateOpenSnippetFiles call snipMate#OpenSnippetFiles()
 
 " restore 'cpo'
 let &cpo = s:save_cpo

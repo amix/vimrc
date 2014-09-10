@@ -37,8 +37,9 @@ function! SyntaxCheckers_java_checkstyle_GetLocList() dict
 
     let makeprg = self.makeprgBuild({
         \ 'args_after': '-cp ' . g:syntastic_java_checkstyle_classpath .
-        \               ' com.puppycrawl.tools.checkstyle.Main -c ' . g:syntastic_java_checkstyle_conf_file .
-        \               ' -f xml',
+        \       ' com.puppycrawl.tools.checkstyle.Main -c ' .
+        \       syntastic#util#shexpand(g:syntastic_java_checkstyle_conf_file) .
+        \       ' -f xml',
         \ 'fname': fname })
 
     let errorformat = '%f:%t:%l:%c:%m'

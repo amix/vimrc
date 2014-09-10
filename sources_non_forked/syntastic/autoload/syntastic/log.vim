@@ -6,7 +6,7 @@ let g:loaded_syntastic_log_autoload = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:deprecation_notices_issued = []
+let s:one_time_notices_issued = []
 
 " Public functions {{{1
 
@@ -27,14 +27,38 @@ function! syntastic#log#error(msg) " {{{2
     echohl None
 endfunction " }}}2
 
-function! syntastic#log#deprecationWarn(msg) " {{{2
-    if index(s:deprecation_notices_issued, a:msg) >= 0
+function! syntastic#log#oneTimeWarn(msg) " {{{2
+    if index(s:one_time_notices_issued, a:msg) >= 0
         return
     endif
 
-    call add(s:deprecation_notices_issued, a:msg)
+    call add(s:one_time_notices_issued, a:msg)
     call syntastic#log#warn(a:msg)
 endfunction " }}}2
+
+" @vimlint(EVL102, 1, l:OLD_VAR)
+function! syntastic#log#deprecationWarn(old, new, ...) " {{{2
+    if exists('g:syntastic_' . a:old) && !exists('g:syntastic_' . a:new)
+        let msg = 'variable g:syntastic_' . a:old . ' is deprecated, please use '
+
+        if a:0
+            let OLD_VAR = g:syntastic_{a:old}
+            try
+                let NEW_VAR = eval(a:1)
+                let msg .= 'in its stead: let g:syntastic_' . a:new . ' = ' . string(NEW_VAR)
+                let g:syntastic_{a:new} = NEW_VAR
+            catch
+                let msg .= 'g:syntastic_' . a:new . ' instead'
+            endtry
+        else
+            let msg .= 'g:syntastic_' . a:new . ' instead'
+            let g:syntastic_{a:new} = g:syntastic_{a:old}
+        endif
+
+        call syntastic#log#oneTimeWarn(msg)
+    endif
+endfunction " }}}2
+" @vimlint(EVL102, 0, l:OLD_VAR)
 
 function! syntastic#log#debug(level, msg, ...) " {{{2
     if !s:isDebugEnabled(a:level)
@@ -113,6 +137,7 @@ function! s:isDebugEnabled_dumb(level) " {{{2
 endfunction " }}}2
 
 let s:isDebugEnabled = function(exists('*and') ? 's:isDebugEnabled_smart' : 's:isDebugEnabled_dumb')
+lockvar s:isDebugEnabled
 
 function! s:logRedirect(on) " {{{2
     if exists("g:syntastic_debug_file")
@@ -129,15 +154,9 @@ function! s:logRedirect(on) " {{{2
     endif
 endfunction " }}}2
 
-function! s:logTimestamp_smart() " {{{2
+function! s:logTimestamp() " {{{2
     return 'syntastic: ' . split(reltimestr(reltime(g:syntastic_start)))[0] . ': '
 endfunction " }}}2
-
-function! s:logTimestamp_dumb() " {{{2
-    return 'syntastic: debug: '
-endfunction " }}}2
-
-let s:logTimestamp = function(has('reltime') ? 's:logTimestamp_smart' : 's:logTimestamp_dumb')
 
 function! s:formatVariable(name) " {{{2
     let vals = []

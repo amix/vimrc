@@ -30,19 +30,19 @@ set cpo&vim
 " TODO: join this with html.vim DRY's sake?
 function! s:TidyEncOptByFenc()
     let tidy_opts = {
-                \'utf-8':        '-utf8',
-                \'ascii':        '-ascii',
-                \'latin1':       '-latin1',
-                \'iso-2022-jp':  '-iso-2022',
-                \'cp1252':       '-win1252',
-                \'macroman':     '-mac',
-                \'utf-16le':     '-utf16le',
-                \'utf-16':       '-utf16',
-                \'big5':         '-big5',
-                \'cp932':        '-shiftjis',
-                \'sjis':         '-shiftjis',
-                \'cp850':        '-ibm858',
-                \}
+            \ 'utf-8':        '-utf8',
+            \ 'ascii':        '-ascii',
+            \ 'latin1':       '-latin1',
+            \ 'iso-2022-jp':  '-iso-2022',
+            \ 'cp1252':       '-win1252',
+            \ 'macroman':     '-mac',
+            \ 'utf-16le':     '-utf16le',
+            \ 'utf-16':       '-utf16',
+            \ 'big5':         '-big5',
+            \ 'cp932':        '-shiftjis',
+            \ 'sjis':         '-shiftjis',
+            \ 'cp850':        '-ibm858',
+        \ }
     return get(tidy_opts, &fileencoding, '-utf8')
 endfunction
 

@@ -12,6 +12,8 @@ from string import Template
 import re
 from collections import Counter
 
+from vimsnippets import complete
+
 #http://docutils.sourceforge.net/docs/ref/rst/roles.html
 TEXT_ROLES = ['emphasis','literal','code','math',
 			  'pep-reference','rfc-reference',
@@ -40,18 +42,9 @@ INCLUDABLE_DIRECTIVES = ['image', 'figure', 'include']
 CJK_RE = re.compile(u'[⺀-⺙⺛-⻳⼀-⿕々〇〡-〩〸-〺〻㐀-䶵一-鿃豈-鶴侮-頻並-龎]', re.UNICODE)
 
 
-def has_cjk(char):
-	"""
-	Detect char contains CJK character
-
-	:param char: characters needs to be detect
-	"""
-	try:
-		CJK_RE.finditer(char).next()
-	except StopIteration:
-		return False
-	else:
-		return True
+def has_cjk(s):
+	"""Detect if s contains CJK characters."""
+	return CJK_RE.search(s) is not None
 
 def real_filename(filename):
 	"""pealeextension name off if possible
@@ -72,15 +65,17 @@ def check_file_exist(rst_path, relative_path):
 		return abs_path
 
 
-def rst_char_len(char):
-	"""
-	return len of string which fit in rst
-	For instance:chinese "我" decode as only one character,
-	However, the rst interpreter needs 2 "=" instead of 1.
+try:
+	rst_char_len = vim.strwidth  # Requires Vim 7.3+
+except AttributeError:
+	from unicodedata import east_asian_width
+	def rst_char_len(s):
+		"""Return the required over-/underline length for s."""
+		result = 0
+		for c in s:
+			result += 2 if east_asian_width(c) in ('W', 'F') else 1
+		return result
 
-	:param: char needs to be count
-	"""
-	return len(re.findall(r'[^\u4e00-\u9fff\s]', char))+len(char)
 
 def	make_items(times, leading='+'):
 	"""
@@ -92,7 +87,7 @@ def	make_items(times, leading='+'):
 	times = int(times)
 	if leading == 1:
 		msg = ""
-		for x in xrange(1, times+1):
+		for x in range(1, times+1):
 			msg += "%s. Item\n" % x
 		return msg
 	else:
@@ -130,68 +125,47 @@ def get_popular_code_type():
 	except IndexError:
 		popular_type = "lua" # Don't break default
 	return popular_type
-
-
-def complete(t, opts):
-	"""
-	get options that start with t
-
-	:param t: query string
-	:param opts: list that needs to be completed
-
-	:return: a string that start with t
-	"""
-	msg = "({0})"
-	if t:
-		opts = [ m[len(t):] for m in opts if m.startswith(t) ]
-	if len(opts) == 1:
-		return opts[0]
-
-	if not len(opts):
-		msg = "{0}"
-	return msg.format("|".join(opts))
-
 endglobal
 
 snippet part "Part" b
 `!p snip.rv = rst_char_len(t[1])*'#'`
-${1:Part name}
+${1:${VISUAL:Part name}}
 `!p snip.rv = rst_char_len(t[1])*'#'`
-
-$0
-endsnippet
-
-snippet sec "Section" b
-${1:Section name}
-`!p snip.rv = rst_char_len(t[1])*'='`
-
-$0
-endsnippet
-
-snippet ssec "Subsection" b
-${1:Section name}
-`!p snip.rv = rst_char_len(t[1])*'-'`
-
-$0
-endsnippet
-
-snippet sssec "Subsubsection" b
-${1:Section name}
-`!p snip.rv = rst_char_len(t[1])*'^'`
 
 $0
 endsnippet
 
 snippet chap "Chapter" b
 `!p snip.rv = rst_char_len(t[1])*'*'`
-${1:Chapter name}
+${1:${VISUAL:Chapter name}}
 `!p snip.rv = rst_char_len(t[1])*'*'`
 
 $0
 endsnippet
 
+snippet sec "Section" b
+${1:${VISUAL:Section name}}
+`!p snip.rv = rst_char_len(t[1])*'='`
+
+$0
+endsnippet
+
+snippet ssec "Subsection" b
+${1:${VISUAL:Subsection name}}
+`!p snip.rv = rst_char_len(t[1])*'-'`
+
+$0
+endsnippet
+
+snippet sssec "Subsubsection" b
+${1:${VISUAL:Subsubsection name}}
+`!p snip.rv = rst_char_len(t[1])*'^'`
+
+$0
+endsnippet
+
 snippet para "Paragraph" b
-${1:Paragraph name}
+${1:${VISUAL:Paragraph name}}
 `!p snip.rv = rst_char_len(t[1])*'"'`
 
 $0
@@ -199,7 +173,7 @@ endsnippet
 
 snippet em "Emphasize string" i
 `!p
-# dirty but works with CJK charactor detection
+# dirty but works with CJK character detection
 if has_cjk(vim.current.line):
 	snip.rv ="\ "`*${1:${VISUAL:Em}}*`!p
 if has_cjk(vim.current.line):
@@ -243,7 +217,7 @@ endsnippet
 snippet cb "Code Block" b
 .. code-block:: ${1:`!p snip.rv = get_popular_code_type()`}
 
-	${2:code}
+	${2:${VISUAL:code}}
 
 $0
 endsnippet
@@ -266,7 +240,10 @@ if di == 'fi':
 	:alt: {0}
 	{0}""".format(real_name)
 `
-..`!p snip.rv = " %s" % link if link else ""` $1`!p snip.rv=complete(t[1], INCLUDABLE_DIRECTIVES)`:: ${2:file}`!p if content:
+..`!p snip.rv = " %s" % link if link else ""` $1`!p
+snip.rv=complete(t[1], INCLUDABLE_DIRECTIVES)
+`:: ${2:${VISUAL:file}}`!p
+if content:
 	snip.rv +="    "+content`
 `!p
 # Tip of whether file is exist in comment type
@@ -280,7 +257,7 @@ endsnippet
 snippet di "Directives" b
 .. $1`!p snip.rv=complete(t[1], DIRECTIVES)`:: $2
 
-	${3:Content}
+	${3:${VISUAL:Content}}
 $0
 endsnippet
 
@@ -292,7 +269,7 @@ endsnippet
 snippet sa "Specific Admonitions" b
 .. $1`!p snip.rv =complete(t[1], SPECIFIC_ADMONITIONS)`::
 
-	${2:Content}
+	${2:${VISUAL:Content}}
 
 $0
 endsnippet
@@ -311,6 +288,6 @@ endsnippet
 snippet sid "SideBar" b
 .. sidebar:: ${1:SideBar Title}
 
-	${2:SideBar Content}
+	${2:${VISUAL:SideBar Content}}
 endsnippet
 # vim:ft=snippets:

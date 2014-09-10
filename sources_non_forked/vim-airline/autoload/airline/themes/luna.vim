@@ -44,7 +44,7 @@ let g:airline#themes#luna#palette.visual_modified = {
 let s:IA = [ '#4e4e4e' , '#002b2b' , 59 , 23 , '' ]
 let g:airline#themes#luna#palette.inactive = airline#themes#generate_color_map(s:IA, s:IA, s:IA)
 let g:airline#themes#luna#palette.inactive_modified = {
-      \ 'airline_c': [ '#450000' , ''        , 52      , ''      , ''     ] ,
+      \ 'airline_c': [ '#e20000' , ''        , 166      , ''      , ''     ] ,
       \ }
 
 let g:airline#themes#luna#palette.tabline = {

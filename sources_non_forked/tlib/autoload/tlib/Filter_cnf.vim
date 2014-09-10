@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2008-11-25.
-" @Last Change: 2014-01-23.
-" @Revision:    0.0.108
+" @Last Change: 2014-06-02.
+" @Revision:    0.0.109
 
 let s:prototype = tlib#Object#New({'_class': ['Filter_cnf'], 'name': 'cnf'}) "{{{2
 let s:prototype.highlight = g:tlib#input#higroup
@@ -57,28 +57,6 @@ function! s:prototype.AssessName(world, name) dict "{{{3
         elseif a:name =~ '\A'. flt .'\|'. flt .'\A'
             let xa += 1
         endif
-
-        " if a:name =~ '\^'. flt .'\|'. flt .'\$'
-        "     let xa += 4
-        " elseif a:name =~ '\<'. flt .'\|'. flt .'\>'
-        "     let xa += 3
-        " " elseif a:name =~ flt .'\>'
-        " "     let xa += 2
-        " elseif a:name =~ '\A'. flt .'\|'. flt .'\A'
-        "     let xa += 1
-        " endif
-        " if flt[0] =~# '\u' && matchstr(a:name, '\V\.\ze'. flt) =~# '\U'
-        "     let xa += 1
-        " endif
-        " if flt[0] =~# '\U' && matchstr(a:name, '\V\.\ze'. flt) =~# '\u'
-        "     let xa += 1
-        " endif
-        " if flt[-1] =~# '\u' && matchstr(a:name, '\V'. flt .'\zs\.') =~# '\U'
-        "     let xa += 1
-        " endif
-        " if flt[-1] =~# '\U' && matchstr(a:name, '\V'. flt .'\zs\.') =~# '\u'
-        "     let xa += 1
-        " endif
     endfor
     " TLogVAR a:name, xa
     return xa

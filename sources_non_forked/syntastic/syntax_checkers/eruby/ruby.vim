@@ -19,22 +19,17 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_eruby_ruby_IsAvailable() dict
-    if !exists("g:syntastic_ruby_exec")
-        let g:syntastic_ruby_exec = self.getExec()
+    if !exists('g:syntastic_eruby_ruby_exec') && exists('g:syntastic_ruby_exec')
+        let g:syntastic_eruby_ruby_exec = g:syntastic_ruby_exec
     endif
-    return executable(expand(g:syntastic_ruby_exec))
+    return executable(self.getExec())
 endfunction
 
 function! SyntaxCheckers_eruby_ruby_GetLocList() dict
-    let exe = syntastic#util#shexpand(g:syntastic_ruby_exec)
-    if !syntastic#util#isRunningWindows()
-        let exe = 'RUBYOPT= ' . exe
-    endif
-
     let fname = "'" . escape(expand('%'), "\\'") . "'"
 
     " TODO: encodings became useful in ruby 1.9 :)
-    if syntastic#util#versionIsAtLeast(syntastic#util#getVersion(exe . ' --version'), [1, 9])
+    if syntastic#util#versionIsAtLeast(syntastic#util#getVersion(self.getExecEscaped(). ' --version'), [1, 9])
         let enc = &fileencoding != '' ? &fileencoding : &encoding
         let encoding_spec = ', :encoding => "' . (enc ==? 'utf-8' ? 'UTF-8' : 'BINARY') . '"'
     else
@@ -43,11 +38,11 @@ function! SyntaxCheckers_eruby_ruby_GetLocList() dict
 
     "gsub fixes issue #7, rails has it's own eruby syntax
     let makeprg =
-        \ exe . ' -rerb -e ' .
+        \ self.getExecEscaped() . ' -rerb -e ' .
         \ syntastic#util#shescape('puts ERB.new(File.read(' .
         \     fname . encoding_spec .
         \     ').gsub(''<%='',''<%''), nil, ''-'').src') .
-        \ ' | ' . exe . ' -c'
+        \ ' | ' . self.getExecEscaped() . ' -c'
 
     let errorformat =
         \ '%-GSyntax OK,'.
@@ -56,9 +51,12 @@ function! SyntaxCheckers_eruby_ruby_GetLocList() dict
         \ '%Z%p^,'.
         \ '%-C%.%#'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'RUBYOPT': '' }
+
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'env': env,
         \ 'defaults': { 'bufnr': bufnr(""), 'vcol': 1 } })
 endfunction
 

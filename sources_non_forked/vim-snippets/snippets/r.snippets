@@ -23,9 +23,19 @@ snippet ei
 		${0}
 	}
 
+# loops
+snippet wh
+	while(${1}) {
+		${2}
+	}
+snippet for
+	for (${1:item} in ${2:list}) {
+		${3}
+	}
+
 # functions
 snippet fun
-	${1:name} = function (${2:variables}) {
+	${1:name} <- function (${2:variables}) {
 		${0}
 	}
 snippet ret
@@ -39,7 +49,7 @@ snippet c
 snippet li
 	list(${0:items})
 snippet mat
-	matrix(${1:data}, nrow=${2:rows}, ncol=${0:cols})
+	matrix(${1:data}, nrow = ${2:rows}, ncol = ${0:cols})
 
 # apply functions
 snippet apply
@@ -100,7 +110,7 @@ snippet pl
 snippet ggp
 	ggplot(${1:data}, aes(${0:aesthetics}))
 snippet img
-	${1:(jpeg,bmp,png,tiff)}(filename="${2:filename}", width=${3}, height=${4}, unit="${5}")
+	${1:(jpeg,bmp,png,tiff)}(filename = '${2:filename}', width = ${3}, height = ${4}, unit = '${5}')
 	${0:plot}
 	dev.off()
 

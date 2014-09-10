@@ -46,6 +46,19 @@ If you have VimL only (vim without python support) your best option is using
 minor bugs found in the engine.
 
 
+Q: Should "snipmate be deprecated in favour of UltiSnips"?
+
+A: No, because snimpate is VimL, and UltiSnips requires Python.
+Some people want to use snippets without having to install Vim with Python
+support. Yes - this sucks. 
+
+One solution would be: Use snippets if they are good enough, but allow overriding them
+in UltiSnips. This would avoid most duplication while still serving most users.
+AFAIK there is a nested-placeholder branch for snipmate too. snipmate is still
+improved by Adnan Zafar. So maybe time is not ready to make a final decision yet.
+
+[github issue/discussion](https://github.com/honza/vim-snippets/issues/363)
+
 Installation
 ------------
 
@@ -70,8 +83,8 @@ Is the place to discuss plugin managers and repository resources.
 About how to install snipate see [snipmate@garbas](https://github.com/garbas/vim-snipmate)
 
 (Bundle, Pathogen, git clone - keywords to make people find this link by ctrl-f search)
-I know that I should be reading the docs of the snippet engine, just let me copy paste into my .vmirc:
-(See this pull request)[https://github.com/honza/vim-snippets/pull/307/files].
+I know that I should be reading the docs of the snippet engine, just let me copy paste into my .vimrc:
+[See this pull request](https://github.com/honza/vim-snippets/pull/307/files).
 
 TROUBLE
 =======
@@ -117,6 +130,13 @@ What about one line if ee then .. else .. vs if \n .. then \n ... \n else \n .. 
 Which additional policies to add?
 Discuss at: https://github.com/honza/vim-snippets/issues/230
 
+*folding markers*:
+Until further work is done on `vim-snipmate`, please don't add folding markers
+into snippets. `vim-snipmate` has some comments about how to patch all snippets
+on the fly adding those.
+
+Currently all snippets from UltiSnips have been put into UltiSnips - some work
+on merging should be done (dropping duplicates etc). Also see engines section above.
 
 Related repositories
 --------------------
@@ -192,20 +212,6 @@ This list is kept up-to-date on a best effort basis.
 * Scala - [gorodinskiy](https://github.com/gorodinskiy)
 * Falcon - [steveno](https://github.com/steveno)
 * Elixir - [iurifq](https://github.com/iurifq)
-
-Contributing notes
-------------------
-
-Until further work is done on `vim-snipmate`, please don't add folding markers
-into snippets. `vim-snipmate` has some comments about how to patch all snippets
-on the fly adding those.
-
-Because UltiSnips reads snipmate-snippets too there is no need to duplicate all
-snippets - only those snippets who use advanced UltiSnips features should be
-duplicated in UltiSnips.
-
-Currently all snippets from UltiSnips have been put into UltiSnips - some work
-on merging should be done (dropping duplicates etc)
 
 License
 -------

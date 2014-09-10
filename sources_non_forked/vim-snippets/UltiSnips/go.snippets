@@ -52,6 +52,12 @@ for ${1:condition}${1/(.+)/ /}{
 }
 endsnippet
 
+snippet fori "Integer for loop" b
+for ${1:i} := 0; $1 < ${2:N}; $1++ {
+	${0:${VISUAL}}
+}
+endsnippet
+
 snippet forr "For range loop" b
 for ${2:name} := range ${1:collection} {
 	${0:${VISUAL}}

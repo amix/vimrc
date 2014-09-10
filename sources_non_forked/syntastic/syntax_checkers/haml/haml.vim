@@ -19,16 +19,12 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haml_haml_IsAvailable() dict
-    if !exists('g:syntastic_haml_interpreter')
-        let g:syntastic_haml_interpreter = self.getExec()
-    endif
-    return executable(expand(g:syntastic_haml_interpreter))
+    call syntastic#log#deprecationWarn('haml_interpreter', 'haml_haml_exec')
+    return executable(self.getExec())
 endfunction
 
 function! SyntaxCheckers_haml_haml_GetLocList() dict
-    let makeprg = self.makeprgBuild({
-        \ 'exe': syntastic#util#shexpand(g:syntastic_haml_interpreter),
-        \ 'args_after': '-c' })
+    let makeprg = self.makeprgBuild({ 'args_after': '-c' })
 
     let errorformat =
         \ 'Haml error on line %l: %m,' .

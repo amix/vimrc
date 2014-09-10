@@ -22,7 +22,7 @@ function! g:SyntasticCursorNotifier.refresh(loclist) " {{{2
         let b:syntastic_messages = copy(a:loclist.messages(bufnr('')))
         let b:oldLine = -1
         autocmd! syntastic CursorMoved
-        autocmd syntastic CursorMoved * call g:SyntasticRefreshCursor()
+        autocmd syntastic CursorMoved * call SyntasticRefreshCursor()
     endif
 endfunction " }}}2
 
@@ -40,7 +40,7 @@ endfunction " }}}2
 " Private methods {{{1
 
 " The following defensive nonsense is needed because of the nature of autocmd
-function! g:SyntasticRefreshCursor() " {{{2
+function! SyntasticRefreshCursor() " {{{2
     if !exists('b:syntastic_messages') || empty(b:syntastic_messages)
         " file not checked
         return

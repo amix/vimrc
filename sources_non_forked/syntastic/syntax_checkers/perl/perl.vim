@@ -50,25 +50,25 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_perl_perl_IsAvailable() dict
-    if !exists('g:syntastic_perl_interpreter')
-        let g:syntastic_perl_interpreter = self.getExec()
+    if !exists('g:syntastic_perl_perl_exec') && exists('g:syntastic_perl_interpreter')
+        let g:syntastic_perl_perl_exec = g:syntastic_perl_interpreter
     endif
 
     " don't call executable() here, to allow things like
     " let g:syntastic_perl_interpreter='/usr/bin/env perl'
-    silent! call system(syntastic#util#shexpand(g:syntastic_perl_interpreter) . ' -e ' . syntastic#util#shescape('exit(0)'))
+    silent! call system(self.getExecEscaped() . ' -e ' . syntastic#util#shescape('exit(0)'))
     return v:shell_error == 0
 endfunction
 
 function! SyntaxCheckers_perl_perl_GetLocList() dict
     if !exists('g:syntastic_enable_perl_checker') || !g:syntastic_enable_perl_checker
-        call syntastic#log#error('checker perl/perl: checks disabled for security reasons; set g:syntastic_enable_perl_checker to 1 to override')
+        call syntastic#log#error('checker perl/perl: checks disabled for security reasons; ' .
+            \ 'set g:syntastic_enable_perl_checker to 1 to override')
         return []
     endif
 
-    let exe = expand(g:syntastic_perl_interpreter)
     if type(g:syntastic_perl_lib_path) == type('')
-        call syntastic#log#deprecationWarn('variable g:syntastic_perl_lib_path should be a list')
+        call syntastic#log#oneTimeWarn('variable g:syntastic_perl_lib_path should be a list')
         let includes = split(g:syntastic_perl_lib_path, ',')
     else
         let includes = copy(syntastic#util#var('perl_lib_path'))
@@ -79,9 +79,7 @@ function! SyntaxCheckers_perl_perl_GetLocList() dict
         \ (index(shebang['args'], '-t') >= 0 ? ' -t' : '')
     let errorformat = '%f:%l:%m'
 
-    let makeprg = self.makeprgBuild({
-        \ 'exe': exe,
-        \ 'args_before': '-c -X ' . extra })
+    let makeprg = self.makeprgBuild({ 'args_before': '-c -X ' . extra })
 
     let errors = SyntasticMake({
         \ 'makeprg': makeprg,
@@ -92,9 +90,7 @@ function! SyntaxCheckers_perl_perl_GetLocList() dict
         return errors
     endif
 
-    let makeprg = self.makeprgBuild({
-        \ 'exe': exe,
-        \ 'args_before': '-c -Mwarnings ' . extra })
+    let makeprg = self.makeprgBuild({ 'args_before': '-c -Mwarnings ' . extra })
 
     return SyntasticMake({
         \ 'makeprg': makeprg,

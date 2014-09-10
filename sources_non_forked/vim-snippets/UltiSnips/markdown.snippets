@@ -39,4 +39,15 @@ snippet img "Image"
 ![${1:pic alt}](${2:path}${3/.+/ "/}${3:opt title}${3/.+/"/})$0
 endsnippet
 
+snippet ilc "Inline Code" i
+\`$1\`$0
+endsnippet
+
+snippet cbl "Codeblock" b
+\`\`\`
+$1
+\`\`\`
+$0
+endsnippet
+
 # vim:ft=snippets:

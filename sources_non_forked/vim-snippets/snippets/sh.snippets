@@ -81,7 +81,7 @@ snippet getopt
 	done
 	shift $(($OPTIND-1))
 snippet root
-	if [ $(id -u) -ne 0 ]; then exec sudo $0; fi
+	if [ \$(id -u) -ne 0 ]; then exec sudo \$0; fi
 snippet fun
 	${1:function_name}() {
 		${0:#function_body}

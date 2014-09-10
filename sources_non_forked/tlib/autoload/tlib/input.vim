@@ -1,7 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    1315
+" @Revision:    1317
 
 
 " :filedoc:
@@ -325,6 +325,8 @@ function! tlib#input#ListW(world, ...) "{{{3
     " TLogVAR world.state, world.sticky, world.initial_index
     " let statusline  = &l:statusline
     " let laststatus  = &laststatus
+    let showmode = &showmode
+    set noshowmode
     let lastsearch  = @/
     let scrolloff = &l:scrolloff
     let &l:scrolloff = 0
@@ -779,6 +781,9 @@ function! tlib#input#ListW(world, ...) "{{{3
         " TLogVAR statusline
         " let &l:statusline = statusline
         " let &laststatus = laststatus
+        if &showmode != showmode
+            let &showmode = showmode
+        endif
         silent! let @/  = lastsearch
         let &l:scrolloff = scrolloff
         if s:PopupmenuExists() == 1

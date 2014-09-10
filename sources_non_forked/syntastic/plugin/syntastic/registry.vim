@@ -9,10 +9,13 @@ let s:defaultCheckers = {
         \ 'actionscript':['mxmlc'],
         \ 'ada':         ['gcc'],
         \ 'applescript': ['osacompile'],
+        \ 'arduino':     ['avrgcc'],
         \ 'asciidoc':    ['asciidoc'],
         \ 'asm':         ['gcc'],
+        \ 'bro':         ['bro'],
         \ 'bemhtml':     ['bemhtmllint'],
         \ 'c':           ['gcc'],
+        \ 'cabal':       ['cabal'],
         \ 'chef':        ['foodcritic'],
         \ 'co':          ['coco'],
         \ 'cobol':       ['cobc'],
@@ -27,7 +30,7 @@ let s:defaultCheckers = {
         \ 'dart':        ['dartanalyzer'],
         \ 'docbk':       ['xmllint'],
         \ 'dustjs':      ['swiffer'],
-        \ 'elixir':      ['elixir'],
+        \ 'elixir':      [],
         \ 'erlang':      ['escript'],
         \ 'eruby':       ['ruby'],
         \ 'fortran':     ['gfortran'],
@@ -60,10 +63,10 @@ let s:defaultCheckers = {
         \ 'pod':         ['podchecker'],
         \ 'puppet':      ['puppet', 'puppetlint'],
         \ 'python':      ['python', 'flake8', 'pylint'],
+        \ 'r':           [],
         \ 'racket':      ['racket'],
         \ 'rst':         ['rst2pseudoxml'],
         \ 'ruby':        ['mri'],
-        \ 'rust':        ['rustc'],
         \ 'sass':        ['sass'],
         \ 'scala':       ['fsc', 'scalac'],
         \ 'scss':        ['sass', 'scss_lint'],
@@ -88,12 +91,14 @@ let s:defaultCheckers = {
         \ 'zpt':         ['zptlint'],
         \ 'zsh':         ['zsh', 'shellcheck']
     \ }
+lockvar! s:defaultCheckers
 
 let s:defaultFiletypeMap = {
         \ 'gentoo-metadata': 'xml',
         \ 'lhaskell': 'haskell',
         \ 'litcoffee': 'coffee'
     \ }
+lockvar! s:defaultFiletypeMap
 
 let g:SyntasticRegistry = {}
 
@@ -101,14 +106,13 @@ let g:SyntasticRegistry = {}
 
 " Public methods {{{1
 
-" TODO: Handling of filetype aliases: all public methods take aliases as
+" Note: Handling of filetype aliases: all public methods take aliases as
 " parameters, all private methods take normalized filetypes.  Public methods
 " are thus supposed to normalize filetypes before calling private methods.
 
 function! g:SyntasticRegistry.Instance() " {{{2
     if !exists('s:SyntasticRegistryInstance')
         let s:SyntasticRegistryInstance = copy(self)
-        let s:SyntasticRegistryInstance._checkerRaw = {}
         let s:SyntasticRegistryInstance._checkerMap = {}
     endif
 
@@ -121,35 +125,35 @@ function! g:SyntasticRegistry.CreateAndRegisterChecker(args) " {{{2
     call registry._registerChecker(checker)
 endfunction " }}}2
 
-function! g:SyntasticRegistry.isCheckable(ftalias) " {{{2
+" Given a list of checker names hints_list, return a map name --> checker.
+" If hints_list is empty, user settings are are used instead. Checkers are
+" not checked for availability (that is, the corresponding IsAvailable() are
+" not run).
+function! g:SyntasticRegistry.getCheckers(ftalias, hints_list) " {{{2
     let ft = s:normaliseFiletype(a:ftalias)
-    call self._loadCheckers(ft)
-    return !empty(self._checkerMap[ft])
-endfunction " }}}2
+    call self._loadCheckersFor(ft)
 
-function! g:SyntasticRegistry.getCheckersMap(ftalias) " {{{2
-    let ft = s:normaliseFiletype(a:ftalias)
-    call self._loadCheckers(ft)
-    return self._checkerMap[ft]
-endfunction " }}}2
-
-function! g:SyntasticRegistry.getCheckers(ftalias, list) " {{{2
-    let checkers_map = self.getCheckersMap(a:ftalias)
+    let checkers_map = self._checkerMap[ft]
     if empty(checkers_map)
         return []
     endif
 
-    let ft = s:normaliseFiletype(a:ftalias)
     call self._checkDeprecation(ft)
 
     let names =
-        \ !empty(a:list) ? a:list :
+        \ !empty(a:hints_list) ? syntastic#util#unique(a:hints_list) :
         \ exists('b:syntastic_checkers') ? b:syntastic_checkers :
         \ exists('g:syntastic_' . ft . '_checkers') ? g:syntastic_{ft}_checkers :
         \ get(s:defaultCheckers, ft, 0)
 
     return type(names) == type([]) ?
         \ self._filterCheckersByName(checkers_map, names) : [checkers_map[keys(checkers_map)[0]]]
+endfunction " }}}2
+
+" Same as getCheckers(), but keep only the checkers available.  This runs the
+" corresponding IsAvailable() functions for all checkers.
+function! g:SyntasticRegistry.getCheckersAvailable(ftalias, hints_list) " {{{2
+    return filter(self.getCheckers(a:ftalias, a:hints_list), 'v:val.isAvailable()')
 endfunction " }}}2
 
 function! g:SyntasticRegistry.getKnownFiletypes() " {{{2
@@ -168,26 +172,37 @@ function! g:SyntasticRegistry.getKnownFiletypes() " {{{2
     return syntastic#util#unique(types)
 endfunction " }}}2
 
-function! g:SyntasticRegistry.echoInfoFor(ftalias_list) " {{{2
-    echomsg "Syntastic info for filetype: " . join(a:ftalias_list, '.')
+function! g:SyntasticRegistry.getNamesOfAvailableCheckers(ftalias) " {{{2
+    let ft = s:normaliseFiletype(a:ftalias)
+    call self._loadCheckersFor(ft)
+    return keys(filter( copy(self._checkerMap[ft]), 'v:val.isAvailable()' ))
+endfunction " }}}2
 
+function! g:SyntasticRegistry.echoInfoFor(ftalias_list) " {{{2
     let ft_list = syntastic#util#unique(map( copy(a:ftalias_list), 's:normaliseFiletype(v:val)' ))
     if len(ft_list) != 1
         let available = []
         let active = []
 
         for ft in ft_list
-            call extend(available, map( keys(self.getCheckersMap(ft)), 'ft . "/" . v:val' ))
-            call extend(active, map( self.getCheckers(ft, []), 'ft . "/" . v:val.getName()' ))
+            call extend(available, map( self.getNamesOfAvailableCheckers(ft), 'ft . "/" . v:val' ))
+            call extend(active, map( self.getCheckersAvailable(ft, []), 'ft . "/" . v:val.getName()' ))
         endfor
     else
         let ft = ft_list[0]
-        let available = keys(self.getCheckersMap(ft))
-        let active = map(self.getCheckers(ft, []), 'v:val.getName()')
+        let available = self.getNamesOfAvailableCheckers(ft)
+        let active = map(self.getCheckersAvailable(ft, []), 'v:val.getName()')
     endif
 
-    echomsg "Available checker(s): " . join(sort(available))
-    echomsg "Currently enabled checker(s): " . join(active)
+    let cnt = len(available)
+    let plural = cnt != 1 ? 's' : ''
+    let cklist = cnt ? join(sort(available)) : '-'
+    echomsg 'Available checker' . plural . ': ' . cklist
+
+    let cnt = len(active)
+    let plural = cnt != 1 ? 's' : ''
+    let cklist = cnt ? join(active) : '-'
+    echomsg 'Currently enabled checker' . plural . ': ' . cklist
 endfunction " }}}2
 
 " }}}1
@@ -196,44 +211,31 @@ endfunction " }}}2
 
 function! g:SyntasticRegistry._registerChecker(checker) abort " {{{2
     let ft = a:checker.getFiletype()
-
-    if !has_key(self._checkerRaw, ft)
-        let self._checkerRaw[ft] = []
+    if !has_key(self._checkerMap, ft)
         let self._checkerMap[ft] = {}
     endif
 
-    call self._validateUniqueName(a:checker)
-
     let name = a:checker.getName()
-    call add(self._checkerRaw[ft], name)
-
-    if a:checker.isAvailable()
-        let self._checkerMap[ft][name] = a:checker
+    if has_key(self._checkerMap[ft], name)
+        throw 'Syntastic: Duplicate syntax checker name: ' . ft . '/' . name
     endif
+
+    let self._checkerMap[ft][name] = a:checker
 endfunction " }}}2
 
 function! g:SyntasticRegistry._filterCheckersByName(checkers_map, list) " {{{2
     return filter( map(copy(a:list), 'get(a:checkers_map, v:val, {})'), '!empty(v:val)' )
 endfunction " }}}2
 
-function! g:SyntasticRegistry._loadCheckers(filetype) " {{{2
-    if has_key(self._checkerRaw, a:filetype)
+function! g:SyntasticRegistry._loadCheckersFor(filetype) " {{{2
+    if has_key(self._checkerMap, a:filetype)
         return
     endif
 
     execute "runtime! syntax_checkers/" . a:filetype . "/*.vim"
 
-    if !has_key(self._checkerRaw, a:filetype)
-        let self._checkerRaw[a:filetype] = []
+    if !has_key(self._checkerMap, a:filetype)
         let self._checkerMap[a:filetype] = {}
-    endif
-endfunction " }}}2
-
-function! g:SyntasticRegistry._validateUniqueName(checker) abort " {{{2
-    let ft = a:checker.getFiletype()
-    let name = a:checker.getName()
-    if index(self._checkerRaw[ft], name) > -1
-        throw 'Syntastic: Duplicate syntax checker name: ' . ft . '/' . name
     endif
 endfunction " }}}2
 
@@ -241,7 +243,7 @@ endfunction " }}}2
 function! g:SyntasticRegistry._checkDeprecation(filetype) " {{{2
     if exists('g:syntastic_' . a:filetype . '_checker') && !exists('g:syntastic_' . a:filetype . '_checkers')
         let g:syntastic_{a:filetype}_checkers = [g:syntastic_{a:filetype}_checker]
-        call syntastic#log#deprecationWarn('variable g:syntastic_' . a:filetype . '_checker is deprecated')
+        call syntastic#log#oneTimeWarn('variable g:syntastic_' . a:filetype . '_checker is deprecated')
     endif
 endfunction " }}}2
 

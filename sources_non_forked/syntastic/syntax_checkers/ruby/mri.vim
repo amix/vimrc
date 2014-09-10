@@ -18,6 +18,13 @@ let g:loaded_syntastic_ruby_mri_checker = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! SyntaxCheckers_ruby_mri_IsAvailable() dict
+    if !exists('g:syntastic_ruby_mri_exec') && exists('g:syntastic_ruby_exec')
+        let g:syntastic_ruby_mri_exec = g:syntastic_ruby_exec
+    endif
+    return executable(self.getExec())
+endfunction
+
 function! SyntaxCheckers_ruby_mri_GetHighlightRegex(i)
     if stridx(a:i['text'], 'assigned but unused variable') >= 0
         let term = split(a:i['text'], ' - ')[1]
@@ -28,18 +35,7 @@ function! SyntaxCheckers_ruby_mri_GetHighlightRegex(i)
 endfunction
 
 function! SyntaxCheckers_ruby_mri_GetLocList() dict
-    if !exists('g:syntastic_ruby_exec')
-        let g:syntastic_ruby_exec = self.getExec()
-    endif
-
-    let exe = syntastic#util#shexpand(g:syntastic_ruby_exec)
-    if !syntastic#util#isRunningWindows()
-        let exe = 'RUBYOPT= ' . exe
-    endif
-
-    let makeprg = self.makeprgBuild({
-        \ 'exe': exe,
-        \ 'args_after': '-w -T1 -c' })
+    let makeprg = self.makeprgBuild({ 'args_after': '-w -T1 -c' })
 
     "this is a hack to filter out a repeated useless warning in rspec files
     "containing lines like
@@ -64,9 +60,12 @@ function! SyntaxCheckers_ruby_mri_GetLocList() dict
         \ '%W%f:%l: %m,'.
         \ '%-C%.%#'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'RUBYOPT': '' }
+
     return SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat })
+        \ 'errorformat': errorformat,
+        \ 'env': env })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

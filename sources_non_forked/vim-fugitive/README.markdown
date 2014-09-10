@@ -11,8 +11,8 @@ Vim's diff handling capabilities to stage a subset of the file's
 changes.
 
 Bring up the output of `git status` with `:Gstatus`.  Press `-` to
-`add`/`reset` a file's changes, or `p` to `add`/`reset` `--patch` that
-mofo.  And guess what `:Gcommit` does!
+`add`/`reset` a file's changes, or `p` to `add`/`reset` `--patch`.  And guess
+what `:Gcommit` does!
 
 `:Gblame` brings up an interactive vertical split with `git blame`
 output.  Press enter on a line to edit the commit where the line
@@ -55,15 +55,13 @@ and `Git!` to open the output of a command in a temp file.
 
 ## Installation
 
-If you don't have a preferred installation method, I recommend
-installing [pathogen.vim](https://github.com/tpope/vim-pathogen), and
-then simply copy and paste:
+If you don't have a preferred installation method, one option is to install
+[pathogen.vim](https://github.com/tpope/vim-pathogen), and then copy
+and paste:
 
     cd ~/.vim/bundle
     git clone git://github.com/tpope/vim-fugitive.git
-
-Once help tags have been generated, you can view the manual with
-`:help fugitive`.
+    vim -u NONE -c "helptags vim-fugitive/doc" -c q
 
 If your Vim version is below 7.2, I recommend also installing
 [vim-git](https://github.com/tpope/vim-git) for syntax highlighting and

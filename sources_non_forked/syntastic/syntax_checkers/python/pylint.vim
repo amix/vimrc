@@ -32,10 +32,12 @@ function! SyntaxCheckers_python_pylint_GetLocList() dict
         \ '%-Z%p^%.%#,' .
         \ '%-G%.%#'
 
-    let loclist=SyntasticMake({
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
+    let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'postprocess': ['sort'],
+        \ 'env': env,
         \ 'returns': range(32) })
 
     for e in loclist
@@ -55,6 +57,8 @@ function! SyntaxCheckers_python_pylint_GetLocList() dict
         let e['vcol'] = 0
     endfor
 
+    call self.setWantSort(1)
+
     return loclist
 endfunction
 
@@ -63,9 +67,10 @@ function! s:PylintNew(exe)
     try
         " On Windows the version is shown as "pylint-script.py 1.0.0".
         " On Gentoo Linux it's "pylint-python2.7 0.28.0".
-        " On NixOS, that would be ".pylint-wrapped 0.26.0", that would be.
+        " On NixOS, that would be ".pylint-wrapped 0.26.0".
+        " On Arch Linux it's "pylint2 1.1.0".
         " Have you guys considered switching to creative writing yet? ;)
-        let pylint_version = filter(split(system(exe . ' --version'), '\m, \=\|\n'), 'v:val =~# ''\m^\.\=pylint\>''')[0]
+        let pylint_version = filter(split(system(exe . ' --version'), '\m, \=\|\n'), 'v:val =~# ''\m^\.\=pylint[-0-9]*\>''')[0]
         let pylint_version = substitute(pylint_version, '\v^\S+\s+', '', '')
         let ret = syntastic#util#versionIsAtLeast(syntastic#util#parseVersion(pylint_version), [1])
     catch /\m^Vim\%((\a\+)\)\=:E684/

@@ -27,9 +27,12 @@ function! SyntaxCheckers_python_frosted_GetLocList() dict
         \ '%-Z%p^,' .
         \ '%-G%.%#'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'env': env,
         \ 'returns': [0, 1] })
 
     for e in loclist

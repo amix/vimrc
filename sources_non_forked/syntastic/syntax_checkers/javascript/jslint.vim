@@ -22,7 +22,7 @@ set cpo&vim
 function! SyntaxCheckers_javascript_jslint_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], '\mExpected .* and instead saw ''\zs.*\ze''')
     if term != ''
-        let term = '\V' . escape(term, '\')
+        let term = '\V\<' . escape(term, '\') . '\>'
     endif
     return term
 endfunction
