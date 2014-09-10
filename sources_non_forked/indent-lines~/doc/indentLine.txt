@@ -1,0 +1,118 @@
+*indentLine.txt*        Show vertical lines for indent with conceal feature
+
+CONTENTS                                        *indentLine-contents*
+Introduction                                    |indentLine-introduction|
+Config                                          |indentLine-config|
+Variables                                       |indentLine-variables|
+Commands                                        |indentLine-commands|
+FAQ                                             |indentLine-faq|
+Changelog                                       |indentLine-changelog|
+Credits                                         |indentLine-credits|
+==============================================================================
+INTRODUCTION                                    *indentLine-introduction*
+This plugin is used for displaying thin vertical lines at each indentation
+level for code indented with spaces. For code indented with tabs, I think
+there is no need to support it, using :set list lcs=tab:\|\ (here is a space)
+can achieve it.
+==============================================================================
+CONFIG                                          *indentLine-config*
+
+==============================================================================
+VARIABLES                                       *indentLine-variables*
+
+g:indentLine_loaded                             *g:loaded_indentLine*
+                Whether load indentLine plugin.
+                Default value is 0.
+
+g:indentLine_char                               *g:indentLine_char*
+                Specify a character to be used as indent line.
+                You also can use other characters:
+                  | ¦ ┆ │
+                Default value is "|".
+
+g:indentLine_first_char                         *g:indentLine_first_char*
+                Specify a character to be used as indent line
+                on the first level.
+                You also can use other characters:
+                  | ¦ ┆ │
+                Default value is "|".
+
+g:indentLine_color_term                         *g:indentLine_color_term*
+                Specify terminal vim indent line color.
+                e.g.  let g:indentLine_color_term = 239
+
+
+g:indentLine_color_gui                          *g:indentLine_color_gui*
+                Specify GUI vim indent line color.
+                e.g.  let g:indentLine_color_gui = '#A4E57E'
+
+g:indentLine_indentLevel                        *g:indentLine_indentLevel*
+                Specify how much indent level do you want to use for
+                indentLine. Most program will not has bigger indent level than
+                10.
+                Default value is 10.
+
+g:indentLine_showFirstIndentLevel               *g:indentLine_showFirstIndentLevel*
+                Specify whether the first indent level should be shown.
+                This is useful if you use indentLine in comination with
+                |listchars| in order to show tabs.
+                Default value is 0.
+
+g:indentLine_enabled                            *g:indentLine_enabled*
+                Specify whether to enable indentLine plugin by default.
+                If value is not 0, the plugin is on by default, otherwise off.
+                Default value is 1.
+
+g:indentLine_fileType                           *g:indentLine_fileType*
+                This variable specify a list of file types.
+                When opening these types of files, the plugin is enabled by
+                default.
+                e.g. let g:indentLine_fileType = ['c', 'cpp']
+                Default value is [] which means all file types is supported.
+
+g:indentLine_fileTypeExclude                    *g:indentLine_fileTypeExclude*
+                This variable specify a list of file types.
+                When opening these types of files, the plugin is disabled by
+                default.
+                e.g. let g:indentLine_fileType = ['text', 'sh']
+                Default value is [] which means no file types is excluded.
+
+g:indentLine_bufNameExclude                     *g:indentLine_bufNameExclude*
+                This variable specify a list of buffer names, which can be
+                regular expression. If the buffer's name fall into this list,
+                the indentLine won't display.
+                e.g. let g:indentLine_bufNameExclude = ['_.*', 'NERD_tree.*']
+                Default value is [].
+
+g:indentLine_maxLines                           *g:indentLine_maxLines*
+                This variable specify a number, when the number of buffer's
+                lines exceed it, the plugin try to use another pattern to make
+                the performance better.
+                Default value is 3000.
+
+==============================================================================
+COMMANDS                                         *indentLine-commands*
+
+IndentLinesReset [number]
+                if 'shiftwidth' changes, using this command can redraw the
+                indentLines. number is optional, it means the width between
+                two indent level, if ommited, value of 'shiftwidth' is used.
+
+IndentLinesToggle
+                toggle the indent lines of the current buffer.
+==============================================================================
+FAQ                                              *indentLine-faq*
+
+==============================================================================
+CHANGELOG                                        *indentLine-changelog*
+
+==============================================================================
+CREDITS                                          *indentLine-credits*
+
+Thanks to the following people for suggestions and patches:
+
+NagatoPain
+Salman Halim
+Christophe
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl
