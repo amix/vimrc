@@ -153,3 +153,11 @@ nnoremap \ :Ag<SPACE>
 " => vim-zoomwin
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 map <Leader><Leader> :ZoomWin<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-to-github
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:to_github_clip_command = 'pbcopy'
+let g:to_github_clipboard = 1
+map <Leader>gh :ToGithub<CR>
