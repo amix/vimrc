@@ -34,20 +34,20 @@ snippet ec
 	extern crate ${1:sync};
 snippet ecl
 	#![feature(phase)]
-	#[phase(syntax, link)] extern crate log;
+	#[phase(plugin, link)] extern crate log;
 snippet mod
 	mod ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} {
 		${0}
 	} /* $1 */
 snippet crate
-	// Crate ID
-	#![crate_id = "${1:crate_name}#${2:0.0.1}"]
+	// Crate name
+	#![crate_name = "${1:crate_name}"]
 	// Additional metadata attributes
-	#![desc = "${3:Descrption.}"]
-	#![license = "${4:BSD}"]
-	#![comment = "${5:Comment.}"]
+	#![desc = "${2:Descrption.}"]
+	#![license = "${3:BSD}"]
+	#![comment = "${4:Comment.}"]
 	// Specify the output type
-	#![crate_type = "${6:lib}"]
+	#![crate_type = "${5:lib}"]
 snippet allow
 	#[allow(${1:unused_variable})]
 snippet feat

@@ -109,6 +109,8 @@ snippet dele delegate .. to
 	delegate :${1:methods}, to: :${0:object}
 snippet dele delegate .. to .. prefix .. allow_nil
 	delegate :${1:methods}, to: :${2:object}, prefix: :${3:prefix}, allow_nil: ${0:allow_nil}
+snippet amc
+	alias_method_chain :${1:method_name}, :${0:feature}
 snippet flash
 	flash[:${1:notice}] = '${0}'
 snippet habtm

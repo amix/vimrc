@@ -57,7 +57,7 @@ function! s:GetShell()
         endif
         " try to use env variable in case no shebang could be found
         if b:shell == ''
-            let b:shell = fnamemodify(expand('$SHELL'), ':t')
+            let b:shell = fnamemodify($SHELL, ':t')
         endif
     endif
     return b:shell

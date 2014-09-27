@@ -42,9 +42,16 @@ function! SyntaxCheckers_eruby_ruby_GetLocList() dict
         \ syntastic#util#shescape('puts ERB.new(File.read(' .
         \     fname . encoding_spec .
         \     ').gsub(''<%='',''<%''), nil, ''-'').src') .
-        \ ' | ' . self.getExecEscaped() . ' -c'
+        \ ' | ' . self.getExecEscaped() . ' -w -c'
 
-    let errorformat =
+    let errorformat = '%-G%\m%.%#warning: %\%%(possibly %\)%\?useless use of a literal in void context,'
+
+    " filter out lines starting with ...
+    " long lines are truncated and wrapped in ... %p then returns the wrong
+    " column offset
+    let errorformat .= '%-G%\%.%\%.%\%.%.%#,'
+
+    let errorformat .=
         \ '%-GSyntax OK,'.
         \ '%E-:%l: syntax error\, %m,%Z%p^,'.
         \ '%W-:%l: warning: %m,'.

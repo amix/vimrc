@@ -14,7 +14,7 @@ endsnippet
 snippet do "do"
 do {
 	${2:// code... }
-} while (${1:/* condition */});"
+} while (${1:/* condition */});
 endsnippet
 
 snippet doc_f "doc_f"
@@ -63,6 +63,12 @@ endsnippet
 
 snippet if "if"
 if (${1:/* condition */}) {
+	${2:// code...}
+}
+endsnippet
+
+snippet elif "elseif"
+elseif (${1:/* condition */}) {
 	${2:// code...}
 }
 endsnippet
@@ -240,8 +246,8 @@ public function __construct(${1:$dependencies})
 $0
 endsnippet
 
-snippet pr "Dumb debug helper in HTML"
-echo '<pre>' . var_export($1, 1) . '</pre>';$0
+snippet ve "Dumb debug helper in HTML"
+    echo '<pre>' . var_export($1, 1) . '</pre>';$0
 endsnippet
 
 snippet pc "Dumb debug helper in cli"

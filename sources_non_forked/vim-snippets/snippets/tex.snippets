@@ -263,3 +263,20 @@ snippet col2 two-column environment
 			${0}
 		\end{column}
 	\end{columns}
+# Code listings
+snippet lst
+	\begin{listing}[language=${1:language}]
+		${0}
+	\end{listing}
+snippet lsi
+	\lstinline|${1}| ${0}
+# Hyperlinks
+snippet url
+	\url{${1}} ${0}
+snippet href
+	\href{${1}}{${2}} ${0}
+# URL from Clipboard.
+snippet urlc
+	\url{`@+`} ${0}
+snippet hrefc
+	\href{`@+`}{${1}} ${0}

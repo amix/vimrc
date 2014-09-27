@@ -404,6 +404,25 @@ eclim <https://eclim.org>
 * enable/disable displaying tab type (far right)
   let g:airline#extensions#tabline#show_tab_type = 1
 
+* enable/disable displaying index of the buffer.
+
+When enabled, numbers will be displayed in the tabline and mappings will be
+exposed to allow you to select a buffer directly.  Up to 9 mappings will be
+exposed.
+
+  let g:airline#extensions#tabline#buffer_idx_mode = 1
+  nmap <leader>1 <Plug>AirlineSelectTab1
+  nmap <leader>2 <Plug>AirlineSelectTab2
+  nmap <leader>3 <Plug>AirlineSelectTab3
+  nmap <leader>4 <Plug>AirlineSelectTab4
+  nmap <leader>5 <Plug>AirlineSelectTab5
+  nmap <leader>6 <Plug>AirlineSelectTab6
+  nmap <leader>7 <Plug>AirlineSelectTab7
+  nmap <leader>8 <Plug>AirlineSelectTab8
+  nmap <leader>9 <Plug>AirlineSelectTab9
+
+  Note: Mappings will be ignored within a NERDTree buffer.
+
 * defines the name of a formatter for how buffer names are displayed. >
   let g:airline#extensions#tabline#formatter = 'default'
 
@@ -452,6 +471,9 @@ eclim <https://eclim.org>
   let g:airline#extensions#tabline#left_alt_sep = ''
   let g:airline#extensions#tabline#right_sep = ''
   let g:airline#extensions#tabline#right_alt_sep = ''
+
+* configure whether close button should be shown
+  let g:airline#extensions#tabline#show_close_button = 1
 
 * configure symbol used to represent close button
   let g:airline#extensions#tabline#close_symbol = 'X'
@@ -507,6 +529,15 @@ vim-capslock <https://github.com/tpope/vim-capslock>
 
 * enable/disable vim-capslock integration >
   let g:airline#extensions#capslock#enabled = 1
+
+-------------------------------------                       *airline-windowswap*
+vim-windowswap <https://github.com/wesQ3/vim-windowswap>
+
+* enable/disable vim-windowswap integration >
+  let g:airline#extensions#windowswap#enabled = 1
+
+* set marked window indicator string >
+  let g:airline#extensions#windowswap#indicator_text = 'WS'
 <
 ==============================================================================
 ADVANCED CUSTOMIZATION                      *airline-advanced-customization*

@@ -62,7 +62,7 @@ endfunction " }}}2
 " GetLocList() for C-like compilers
 function! syntastic#c#GetLocList(filetype, subchecker, options) " {{{2
     try
-        let flags = s:getCflags(a:filetype, a:subchecker, a:options)
+        let flags = s:_getCflags(a:filetype, a:subchecker, a:options)
     catch /\m\C^Syntastic: skip checks$/
         return []
     endtry
@@ -70,9 +70,9 @@ function! syntastic#c#GetLocList(filetype, subchecker, options) " {{{2
     let makeprg = syntastic#util#shexpand(g:syntastic_{a:filetype}_compiler) .
         \ ' ' . flags . ' ' . syntastic#util#shexpand('%')
 
-    let errorformat = s:getCheckerVar('g', a:filetype, a:subchecker, 'errorformat', a:options['errorformat'])
+    let errorformat = s:_getCheckerVar('g', a:filetype, a:subchecker, 'errorformat', a:options['errorformat'])
 
-    let postprocess = s:getCheckerVar('g', a:filetype, a:subchecker, 'remove_include_errors', 0) ?
+    let postprocess = s:_getCheckerVar('g', a:filetype, a:subchecker, 'remove_include_errors', 0) ?
         \ ['filterForeignErrors'] : []
 
     " process makeprg
@@ -87,29 +87,29 @@ endfunction " }}}2
 " Private functions {{{1
 
 " initialize c/cpp syntax checker handlers
-function! s:init() " {{{2
+function! s:_init() " {{{2
     let s:handlers = []
     let s:cflags = {}
 
-    call s:regHandler('\m\<cairo',       'syntastic#c#checkPKG', ['cairo', 'cairo'])
-    call s:regHandler('\m\<freetype',    'syntastic#c#checkPKG', ['freetype', 'freetype2', 'freetype'])
-    call s:regHandler('\m\<glade',       'syntastic#c#checkPKG', ['glade', 'libglade-2.0', 'libglade'])
-    call s:regHandler('\m\<glib',        'syntastic#c#checkPKG', ['glib', 'glib-2.0', 'glib'])
-    call s:regHandler('\m\<gtk',         'syntastic#c#checkPKG', ['gtk', 'gtk+-2.0', 'gtk+', 'glib-2.0', 'glib'])
-    call s:regHandler('\m\<libsoup',     'syntastic#c#checkPKG', ['libsoup', 'libsoup-2.4', 'libsoup-2.2'])
-    call s:regHandler('\m\<libxml',      'syntastic#c#checkPKG', ['libxml', 'libxml-2.0', 'libxml'])
-    call s:regHandler('\m\<pango',       'syntastic#c#checkPKG', ['pango', 'pango'])
-    call s:regHandler('\m\<SDL',         'syntastic#c#checkPKG', ['sdl', 'sdl'])
-    call s:regHandler('\m\<opengl',      'syntastic#c#checkPKG', ['opengl', 'gl'])
-    call s:regHandler('\m\<webkit',      'syntastic#c#checkPKG', ['webkit', 'webkit-1.0'])
+    call s:_regHandler('\m\<cairo',       'syntastic#c#checkPKG', ['cairo', 'cairo'])
+    call s:_regHandler('\m\<freetype',    'syntastic#c#checkPKG', ['freetype', 'freetype2', 'freetype'])
+    call s:_regHandler('\m\<glade',       'syntastic#c#checkPKG', ['glade', 'libglade-2.0', 'libglade'])
+    call s:_regHandler('\m\<glib',        'syntastic#c#checkPKG', ['glib', 'glib-2.0', 'glib'])
+    call s:_regHandler('\m\<gtk',         'syntastic#c#checkPKG', ['gtk', 'gtk+-2.0', 'gtk+', 'glib-2.0', 'glib'])
+    call s:_regHandler('\m\<libsoup',     'syntastic#c#checkPKG', ['libsoup', 'libsoup-2.4', 'libsoup-2.2'])
+    call s:_regHandler('\m\<libxml',      'syntastic#c#checkPKG', ['libxml', 'libxml-2.0', 'libxml'])
+    call s:_regHandler('\m\<pango',       'syntastic#c#checkPKG', ['pango', 'pango'])
+    call s:_regHandler('\m\<SDL',         'syntastic#c#checkPKG', ['sdl', 'sdl'])
+    call s:_regHandler('\m\<opengl',      'syntastic#c#checkPKG', ['opengl', 'gl'])
+    call s:_regHandler('\m\<webkit',      'syntastic#c#checkPKG', ['webkit', 'webkit-1.0'])
 
-    call s:regHandler('\m\<php\.h\>',    'syntastic#c#checkPHP',    [])
-    call s:regHandler('\m\<Python\.h\>', 'syntastic#c#checkPython', [])
-    call s:regHandler('\m\<ruby',        'syntastic#c#checkRuby',   [])
+    call s:_regHandler('\m\<php\.h\>',    'syntastic#c#checkPHP',    [])
+    call s:_regHandler('\m\<Python\.h\>', 'syntastic#c#checkPython', [])
+    call s:_regHandler('\m\<ruby',        'syntastic#c#checkRuby',   [])
 endfunction " }}}2
 
 " return a handler dictionary object
-function! s:regHandler(regex, function, args) " {{{2
+function! s:_regHandler(regex, function, args) " {{{2
     let handler = {}
     let handler["regex"] = a:regex
     let handler["func"] = function(a:function)
@@ -118,7 +118,7 @@ function! s:regHandler(regex, function, args) " {{{2
 endfunction " }}}2
 
 " resolve checker-related user variables
-function! s:getCheckerVar(scope, filetype, subchecker, name, default) " {{{2
+function! s:_getCheckerVar(scope, filetype, subchecker, name, default) " {{{2
     let prefix = a:scope . ':' . 'syntastic_'
     if exists(prefix . a:filetype . '_' . a:subchecker . '_' . a:name)
         return {a:scope}:syntastic_{a:filetype}_{a:subchecker}_{a:name}
@@ -130,10 +130,10 @@ function! s:getCheckerVar(scope, filetype, subchecker, name, default) " {{{2
 endfunction " }}}2
 
 " resolve user CFLAGS
-function! s:getCflags(ft, ck, opts) " {{{2
+function! s:_getCflags(ft, ck, opts) " {{{2
     " determine whether to parse header files as well
     if has_key(a:opts, 'header_names') && expand('%') =~? a:opts['header_names']
-        if s:getCheckerVar('g', a:ft, a:ck, 'check_header', 0)
+        if s:_getCheckerVar('g', a:ft, a:ck, 'check_header', 0)
             let flags = get(a:opts, 'header_flags', '') . ' -c ' . syntastic#c#NullOutput()
         else
             " checking headers when check_header is unset: bail out
@@ -143,21 +143,21 @@ function! s:getCflags(ft, ck, opts) " {{{2
         let flags = get(a:opts, 'main_flags', '')
     endif
 
-    let flags .= ' ' . s:getCheckerVar('g', a:ft, a:ck, 'compiler_options', '') . ' ' . s:getIncludeDirs(a:ft)
+    let flags .= ' ' . s:_getCheckerVar('g', a:ft, a:ck, 'compiler_options', '') . ' ' . s:_getIncludeDirs(a:ft)
 
     " check if the user manually set some cflags
-    let b_cflags = s:getCheckerVar('b', a:ft, a:ck, 'cflags', '')
+    let b_cflags = s:_getCheckerVar('b', a:ft, a:ck, 'cflags', '')
     if b_cflags == ''
         " check whether to search for include files at all
-        if !s:getCheckerVar('g', a:ft, a:ck, 'no_include_search', 0)
+        if !s:_getCheckerVar('g', a:ft, a:ck, 'no_include_search', 0)
             if a:ft ==# 'c' || a:ft ==# 'cpp'
                 " refresh the include file search if desired
-                if s:getCheckerVar('g', a:ft, a:ck, 'auto_refresh_includes', 0)
-                    let flags .= ' ' . s:searchHeaders()
+                if s:_getCheckerVar('g', a:ft, a:ck, 'auto_refresh_includes', 0)
+                    let flags .= ' ' . s:_searchHeaders()
                 else
                     " search for header includes if not cached already
                     if !exists('b:syntastic_' . a:ft . '_includes')
-                        let b:syntastic_{a:ft}_includes = s:searchHeaders()
+                        let b:syntastic_{a:ft}_includes = s:_searchHeaders()
                     endif
                     let flags .= ' ' . b:syntastic_{a:ft}_includes
                 endif
@@ -169,7 +169,7 @@ function! s:getCflags(ft, ck, opts) " {{{2
     endif
 
     " add optional config file parameters
-    let config_file = s:getCheckerVar('g', a:ft, a:ck, 'config_file', '.syntastic_' . a:ft . '_config')
+    let config_file = s:_getCheckerVar('g', a:ft, a:ck, 'config_file', '.syntastic_' . a:ft . '_config')
     let flags .= ' ' . syntastic#c#ReadConfig(config_file)
 
     return flags
@@ -177,7 +177,7 @@ endfunction " }}}2
 
 " get the gcc include directory argument depending on the default
 " includes and the optional user-defined 'g:syntastic_c_include_dirs'
-function! s:getIncludeDirs(filetype) " {{{2
+function! s:_getIncludeDirs(filetype) " {{{2
     let include_dirs = []
 
     if a:filetype =~# '\v^%(c|cpp|objc|objcpp)$' &&
@@ -195,7 +195,7 @@ endfunction " }}}2
 
 " search the first 100 lines for include statements that are
 " given in the handlers dictionary
-function! s:searchHeaders() " {{{2
+function! s:_searchHeaders() " {{{2
     let includes = ''
     let files = []
     let found = []
@@ -324,7 +324,7 @@ let s:default_includes = [
     \ '..' . syntastic#util#Slash() . 'include',
     \ '..' . syntastic#util#Slash() . 'includes' ]
 
-call s:init()
+call s:_init()
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

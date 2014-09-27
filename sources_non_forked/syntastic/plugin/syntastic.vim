@@ -19,7 +19,7 @@ if has('reltime')
     lockvar! g:syntastic_start
 endif
 
-let g:syntastic_version = '3.4.0-117'
+let g:syntastic_version = '3.5.0-37'
 lockvar g:syntastic_version
 
 " Sanity checks {{{1
@@ -56,12 +56,14 @@ let g:syntastic_defaults = {
         \ 'bash_hack':                1,
         \ 'check_on_open':            0,
         \ 'check_on_wq':              1,
+        \ 'cursor_columns':           1,
         \ 'debug':                    0,
         \ 'echo_current_error':       1,
         \ 'enable_balloons':          1,
         \ 'enable_highlighting':      1,
         \ 'enable_signs':             1,
         \ 'error_symbol':             '>>',
+        \ 'exit_checks':              !(s:running_windows && &shell =~? '\m\<cmd\.exe$'),
         \ 'filetype_map':             {},
         \ 'full_redraws':             !(has('gui_running') || has('gui_macvim')),
         \ 'id_checkers':              1,
@@ -228,7 +230,7 @@ endfunction " }}}2
 function! s:QuitPreHook() " {{{2
     call syntastic#log#debug(g:SyntasticDebugAutocommands,
         \ 'autocmd: QuitPre, buffer ' . bufnr("") . ' = ' . string(bufname(str2nr(bufnr("")))))
-    let b:syntastic_skip_checks = !g:syntastic_check_on_wq
+    let b:syntastic_skip_checks = get(b:, 'syntastic_skip_checks', 0) || !syntastic#util#var('check_on_wq')
     call SyntasticLoclistHide()
 endfunction " }}}2
 
@@ -481,7 +483,15 @@ function! SyntasticMake(options) " {{{2
         execute 'lcd ' . fnameescape(old_cwd)
     endif
 
-    silent! lolder
+    try
+        silent lolder
+    catch /\m^Vim\%((\a\+)\)\=:E380/
+        " E380: At bottom of quickfix stack
+        call setloclist(0, [], 'r')
+    catch /\m^Vim\%((\a\+)\)\=:E776/
+        " E776: No location list
+        " do nothing
+    endtry
 
     " restore options {{{3
     let &errorformat = old_errorformat
@@ -496,7 +506,7 @@ function! SyntasticMake(options) " {{{2
 
     call syntastic#log#debug(g:SyntasticDebugLoclist, 'raw loclist:', errors)
 
-    if has_key(a:options, 'returns') && index(a:options['returns'], v:shell_error) == -1
+    if syntastic#util#var('exit_checks') && has_key(a:options, 'returns') && index(a:options['returns'], v:shell_error) == -1
         throw 'Syntastic: checker error'
     endif
 
@@ -555,9 +565,9 @@ endfunction " }}}2
 " Skip running in special buffers
 function! s:skipFile() " {{{2
     let fname = expand('%')
-    let skip = (exists('b:syntastic_skip_checks') ? b:syntastic_skip_checks : 0) ||
-        \ (&buftype != '') || !filereadable(fname) || getwinvar(0, '&diff') ||
-        \ s:ignoreFile(fname) || fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
+    let skip = get(b:, 'syntastic_skip_checks', 0) || (&buftype != '') ||
+        \ !filereadable(fname) || getwinvar(0, '&diff') || s:ignoreFile(fname) ||
+        \ fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
     if skip
         call syntastic#log#debug(g:SyntasticDebugTrace, 'skipFile: skipping')
     endif

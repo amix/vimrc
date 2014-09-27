@@ -43,7 +43,7 @@ function! SyntaxCheckers_sass_sass_GetLocList() dict
         \ 'args_before': '--cache-location ' . s:sass_cache_location . ' ' . s:imports . ' --check' })
 
     let errorformat =
-        \ '%ESyntax %trror: %m,' .
+        \ '%E%\m%\%%(Syntax %\)%\?%trror: %m,' .
         \ '%+C              %.%#,' .
         \ '%C        on line %l of %f\, %.%#,' .
         \ '%C        on line %l of %f,' .

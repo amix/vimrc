@@ -96,6 +96,16 @@ endfunction " }}}2
 let s:width = function(exists('*strwidth') ? 'strwidth' : 'strlen')
 lockvar s:width
 
+function! syntastic#util#screenWidth(str, tabstop) " {{{2
+    let chunks = split(a:str, "\t", 1)
+    let width = s:width(chunks[-1])
+    for c in chunks[:-2]
+        let cwidth = s:width(c)
+        let width += cwidth + a:tabstop - cwidth % a:tabstop
+    endfor
+    return width
+endfunction " }}}2
+
 "print as much of a:msg as possible without "Press Enter" prompt appearing
 function! syntastic#util#wideMsg(msg) " {{{2
     let old_ruler = &ruler
@@ -215,7 +225,7 @@ function! syntastic#util#redraw(full) " {{{2
 endfunction " }}}2
 
 function! syntastic#util#dictFilter(errors, filter) " {{{2
-    let rules = s:translateFilter(a:filter)
+    let rules = s:_translateFilter(a:filter)
     " call syntastic#log#debug(g:SyntasticDebugFilters, "applying filter:", rules)
     try
         call filter(a:errors, rules)
@@ -223,13 +233,6 @@ function! syntastic#util#dictFilter(errors, filter) " {{{2
         let msg = matchstr(v:exception, '\m^Vim\%((\a\+)\)\=:\zs.*')
         call syntastic#log#error('quiet_messages: ' . msg)
     endtry
-endfunction " }}}2
-
-function! syntastic#util#sortLoclist(errors) " {{{2
-    for e in a:errors
-        call s:setScreenColumn(e)
-    endfor
-    call sort(a:errors, 's:compareErrorItems')
 endfunction " }}}2
 
 " Return a [high, low] list of integers, representing the time
@@ -243,13 +246,13 @@ endfunction " }}}2
 
 " Private functions {{{1
 
-function! s:translateFilter(filters) " {{{2
+function! s:_translateFilter(filters) " {{{2
     let conditions = []
     for k in keys(a:filters)
         if type(a:filters[k]) == type([])
-            call extend(conditions, map(copy(a:filters[k]), 's:translateElement(k, v:val)'))
+            call extend(conditions, map(copy(a:filters[k]), 's:_translateElement(k, v:val)'))
         else
-            call add(conditions, s:translateElement(k, a:filters[k]))
+            call add(conditions, s:_translateElement(k, a:filters[k]))
         endif
     endfor
 
@@ -259,7 +262,7 @@ function! s:translateFilter(filters) " {{{2
     return len(conditions) == 1 ? conditions[0] : join(map(conditions, '"(" . v:val . ")"'), ' && ')
 endfunction " }}}2
 
-function! s:translateElement(key, term) " {{{2
+function! s:_translateElement(key, term) " {{{2
     if a:key ==? 'level'
         let ret = 'v:val["type"] !=? ' . string(a:term[0])
     elseif a:key ==? 'type'
@@ -273,49 +276,6 @@ function! s:translateElement(key, term) " {{{2
         let ret = "1"
     endif
     return ret
-endfunction " }}}2
-
-function! s:screenWidth(str, tabstop) " {{{2
-    let chunks = split(a:str, "\t", 1)
-    let width = s:width(chunks[-1])
-    for c in chunks[:-2]
-        let cwidth = s:width(c)
-        let width += cwidth + a:tabstop - cwidth % a:tabstop
-    endfor
-    return width
-endfunction " }}}2
-
-function! s:setScreenColumn(item) " {{{2
-    if !has_key(a:item, 'scol')
-        let col = get(a:item, 'col', 0)
-        if col != 0 && a:item['vcol'] == 0
-            let buf = str2nr(a:item['bufnr'])
-            try
-                let line = getbufline(buf, a:item['lnum'])[0]
-            catch  /\m^Vim\%((\a\+)\)\=:E684/
-                let line = ''
-            endtry
-            let a:item['scol'] = s:screenWidth(strpart(line, 0, col), getbufvar(buf, '&tabstop'))
-        else
-            let a:item['scol'] = col
-        endif
-    endif
-endfunction " }}}2
-
-function! s:compareErrorItems(a, b) " {{{2
-    if a:a['bufnr'] != a:b['bufnr']
-        " group by file
-        return a:a['bufnr'] - a:b['bufnr']
-    elseif a:a['lnum'] != a:b['lnum']
-        " sort by line
-        return a:a['lnum'] - a:b['lnum']
-    elseif a:a['type'] !=? a:b['type']
-        " errors take precedence over warnings
-        return a:a['type'] ==? 'E' ? -1 : 1
-    else
-        " sort by screen column
-        return a:a['scol'] - a:b['scol']
-    endif
 endfunction " }}}2
 
 " }}}1

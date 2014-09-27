@@ -84,22 +84,22 @@ def get_style(snip):
 
 def format_arg(arg, style):
 	if style == DOXYGEN:
-		return "@param %s @todo" % arg
+		return "@param %s TODO" % arg
 	elif style == SPHINX:
-		return ":param %s: @todo" % arg
+		return ":param %s: TODO" % arg
 	elif style == NORMAL:
-		return ":%s: @todo" % arg
+		return ":%s: TODO" % arg
 	elif style == GOOGLE:
-		return "%s (@todo): @todo" % arg
+		return "%s (TODO): TODO" % arg
 
 
 def format_return(style):
 	if style == DOXYGEN:
-		return "@return: @todo"
+		return "@return: TODO"
 	elif style in (NORMAL, SPHINX):
-		return ":returns: @todo"
+		return ":returns: TODO"
 	elif style == GOOGLE:
-		return "Returns: @todo"
+		return "Returns: TODO"
 
 
 def write_docstring_args(args, snip):
@@ -169,7 +169,7 @@ class ${1:MyClass}(${2:object}):
 	`!p snip.rv = triple_quotes(snip)`${3:Docstring for $1. }`!p snip.rv = triple_quotes(snip)`
 
 	def __init__(self$4):
-		`!p snip.rv = triple_quotes(snip)`${5:@todo: to be defined1.}`!p
+		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined1.}`!p
 snip.rv = ""
 snip >> 2
 
@@ -197,7 +197,7 @@ write_slots_args(args, snip)
 `
 
 	def __init__(self$4):
-		`!p snip.rv = triple_quotes(snip)`${5:@todo: to be defined.}`!p
+		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined.}`!p
 snip.rv = ""
 snip >> 2
 
@@ -399,7 +399,7 @@ snippet def "function with docstrings" b
 def ${1:function}(`!p
 if snip.indent:
 	snip.rv = 'self' + (", " if len(t[2]) else "")`${2:arg1}):
-	`!p snip.rv = triple_quotes(snip)`${4:@todo: Docstring for $1.}`!p
+	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
 snip.rv = ""
 snip >> 1
 
@@ -437,7 +437,7 @@ endsnippet
 snippet rwprop "Read write property" b
 def ${1:name}():
 	`!p snip.rv = triple_quotes(snip) if t[2] else ''
-`${2:@todo: Docstring for $1.}`!p
+`${2:TODO: Docstring for $1.}`!p
 if t[2]:
 	snip >> 1
 

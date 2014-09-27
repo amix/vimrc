@@ -347,6 +347,10 @@ snippet vd
 	var_dump(${0});
 snippet vdd
 	var_dump(${1}); die(${0:});
+snippet pr
+	print_r(${0});
+snippet prs
+	print_r(${0}, 1);
 snippet vdf
 	error_log(print_r($${1:foo}, true), 3, '${2:/tmp/debug.log}');
 snippet http_redirect

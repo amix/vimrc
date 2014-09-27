@@ -18,7 +18,7 @@ let g:loaded_syntastic_arduino_avrgcc_checker = 1
 runtime! syntax_checkers/c/*.vim
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-    \ 'filetype': 'c',
+    \ 'filetype': 'arduino',
     \ 'name': 'avrgcc',
     \ 'exec': 'avr-gcc',
     \ 'redirect': 'c/avrgcc'})

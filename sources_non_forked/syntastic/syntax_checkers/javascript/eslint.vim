@@ -35,7 +35,8 @@ function! SyntaxCheckers_javascript_eslint_GetLocList() dict
 
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat })
+        \ 'errorformat': errorformat,
+        \ 'postprocess': ['guards'] })
 
     for e in loclist
         let e['col'] += 1

@@ -462,8 +462,8 @@ Jump to the previous sibling of the selected node.
 ------------------------------------------------------------------------------
                                                                   *NERDTree-C*
 Default key: C
-Map option: NERDTreeMapChdir
-Applies to: directories.
+Map option: NERDTreeMapChangeRoot
+Applies to: files and directories.
 
 Make the selected directory node the new tree root. If a file is selected, its
 parent is used.

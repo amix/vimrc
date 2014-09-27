@@ -65,8 +65,8 @@ function! syntastic#log#debug(level, msg, ...) " {{{2
         return
     endif
 
-    let leader = s:logTimestamp()
-    call s:logRedirect(1)
+    let leader = s:_logTimestamp()
+    call s:_logRedirect(1)
 
     if a:0 > 0
         " filter out dictionary functions
@@ -77,7 +77,7 @@ function! syntastic#log#debug(level, msg, ...) " {{{2
         echomsg leader . a:msg
     endif
 
-    call s:logRedirect(0)
+    call s:_logRedirect(0)
 endfunction " }}}2
 
 function! syntastic#log#debugShowOptions(level, names) " {{{2
@@ -85,15 +85,15 @@ function! syntastic#log#debugShowOptions(level, names) " {{{2
         return
     endif
 
-    let leader = s:logTimestamp()
-    call s:logRedirect(1)
+    let leader = s:_logTimestamp()
+    call s:_logRedirect(1)
 
     let vlist = copy(type(a:names) == type("") ? [a:names] : a:names)
     if !empty(vlist)
         call map(vlist, "'&' . v:val . ' = ' . strtrans(string(eval('&' . v:val)))")
         echomsg leader . join(vlist, ', ')
     endif
-    call s:logRedirect(0)
+    call s:_logRedirect(0)
 endfunction " }}}2
 
 function! syntastic#log#debugShowVariables(level, names) " {{{2
@@ -101,18 +101,18 @@ function! syntastic#log#debugShowVariables(level, names) " {{{2
         return
     endif
 
-    let leader = s:logTimestamp()
-    call s:logRedirect(1)
+    let leader = s:_logTimestamp()
+    call s:_logRedirect(1)
 
     let vlist = type(a:names) == type("") ? [a:names] : a:names
     for name in vlist
-        let msg = s:formatVariable(name)
+        let msg = s:_formatVariable(name)
         if msg != ''
             echomsg leader . msg
         endif
     endfor
 
-    call s:logRedirect(0)
+    call s:_logRedirect(0)
 endfunction " }}}2
 
 function! syntastic#log#debugDump(level) " {{{2
@@ -127,19 +127,19 @@ endfunction " }}}2
 
 " Private functions {{{1
 
-function! s:isDebugEnabled_smart(level) " {{{2
+function! s:_isDebugEnabled_smart(level) " {{{2
     return and(g:syntastic_debug, a:level)
 endfunction " }}}2
 
-function! s:isDebugEnabled_dumb(level) " {{{2
+function! s:_isDebugEnabled_dumb(level) " {{{2
     " poor man's bit test for bit N, assuming a:level == 2**N
     return (g:syntastic_debug / a:level) % 2
 endfunction " }}}2
 
-let s:isDebugEnabled = function(exists('*and') ? 's:isDebugEnabled_smart' : 's:isDebugEnabled_dumb')
+let s:isDebugEnabled = function(exists('*and') ? 's:_isDebugEnabled_smart' : 's:_isDebugEnabled_dumb')
 lockvar s:isDebugEnabled
 
-function! s:logRedirect(on) " {{{2
+function! s:_logRedirect(on) " {{{2
     if exists("g:syntastic_debug_file")
         if a:on
             try
@@ -154,11 +154,11 @@ function! s:logRedirect(on) " {{{2
     endif
 endfunction " }}}2
 
-function! s:logTimestamp() " {{{2
+function! s:_logTimestamp() " {{{2
     return 'syntastic: ' . split(reltimestr(reltime(g:syntastic_start)))[0] . ': '
 endfunction " }}}2
 
-function! s:formatVariable(name) " {{{2
+function! s:_formatVariable(name) " {{{2
     let vals = []
     if exists('g:syntastic_' . a:name)
         call add(vals, 'g:syntastic_' . a:name . ' = ' . strtrans(string(g:syntastic_{a:name})))

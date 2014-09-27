@@ -32,8 +32,8 @@ function! SyntaxCheckers_puppet_puppet_GetLocList() dict
     let errorformat =
         \ '%-Gerr: Try ''puppet help parser validate'' for usage,' .
         \ '%-GError: Try ''puppet help parser validate'' for usage,' .
-        \ '%Eerr: Could not parse for environment %*[a-z]: %m at %f:%l,' .
-        \ '%EError: Could not parse for environment %*[a-z]: %m at %f:%l'
+        \ '%A%t%*[a-zA-Z]: %m at %f:%l:%c,' .
+        \ '%A%t%*[a-zA-Z]: %m at %f:%l'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,

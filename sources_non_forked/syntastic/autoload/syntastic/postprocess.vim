@@ -46,6 +46,25 @@ function! syntastic#postprocess#filterForeignErrors(errors) " {{{2
     return filter(copy(a:errors), 'get(v:val, "bufnr") == ' . bufnr(''))
 endfunction " }}}2
 
+" make sure line numbers are not past end of buffers
+" XXX: this loads all referenced buffers in memory
+function! syntastic#postprocess#guards(errors) " {{{2
+    let buffers = syntastic#util#unique(map(filter(copy(a:errors), 'v:val["valid"]'), 'str2nr(v:val["bufnr"])'))
+
+    let guards = {}
+    for b in buffers
+        let guards[b] = len(getbufline(b, 1, '$'))
+    endfor
+
+    for e in a:errors
+        if e['valid'] && e['lnum'] > guards[e['bufnr']]
+            let e['lnum'] = guards[e['bufnr']]
+        endif
+    endfor
+
+    return a:errors
+endfunction " }}}2
+
 " }}}1
 
 let &cpo = s:save_cpo
