@@ -426,3 +426,8 @@ function! GetCoffeeIndent(curlnum)
   " No special rules applied, so use the default policy.
   exec 'return' s:GetDefaultPolicy(a:curlnum)
 endfunction
+
+" tab space
+setlocal expandtab
+setlocal tabstop=2 shiftwidth=2 softtabstop=2
+setlocal autoindent
