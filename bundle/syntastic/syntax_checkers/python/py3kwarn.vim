@@ -18,9 +18,12 @@ function! SyntaxCheckers_python_py3kwarn_GetLocList() dict
 
     let errorformat = '%W%f:%l:%c: %m'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
     return SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat })
+        \ 'errorformat': errorformat,
+        \ 'env': env })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

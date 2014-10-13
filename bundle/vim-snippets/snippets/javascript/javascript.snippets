@@ -1,22 +1,26 @@
-# Prototype
+# prototype
 snippet proto
-	${1:class_name}.prototype.${2:method_name} =
-	function(${3:first_argument}) {
-		${0:// body...}
+	${1:class_name}.prototype.${2:method_name} = function(${3}) {
+		${0}
 	};
 # Function
 snippet fun
-	function ${1:function_name}(${2:argument}) {
-		${0:// body...}
+	function ${1:function_name}(${2}) {
+		${0}
 	}
 # Anonymous Function
 snippet f
-	function (${1}) {
+	function(${1}) {
 		${0}
-	}${2:;}
+	}
+# Function assigned to variable
+snippet vf
+	var ${1:function_name} = function $1(${2}) {
+		${0}
+	};
 # Immediate function
 snippet (f
-	(function (${1}) {
+	(function(${1}) {
 		${0}
 	}(${2}));
 # if
@@ -94,6 +98,9 @@ snippet gett
 # console.log (Firebug)
 snippet cl
 	console.log(${0});
+# console.debug (Firebug)
+snippet cd
+	console.debug(${0});
 # return
 snippet ret
 	return ${0:result}

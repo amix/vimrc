@@ -19,8 +19,8 @@ endfunction " }}}2
 function! g:SyntasticModeMap.synch() " {{{2
     if exists('g:syntastic_mode_map')
         let self._mode = get(g:syntastic_mode_map, 'mode', 'active')
-        let self._activeFiletypes = get(g:syntastic_mode_map, 'active_filetypes', [])
-        let self._passiveFiletypes = get(g:syntastic_mode_map, 'passive_filetypes', [])
+        let self._activeFiletypes = copy(get(g:syntastic_mode_map, 'active_filetypes', []))
+        let self._passiveFiletypes = copy(get(g:syntastic_mode_map, 'passive_filetypes', []))
     else
         let self._mode = 'active'
         let self._activeFiletypes = []
@@ -60,6 +60,27 @@ endfunction " }}}2
 
 function! g:SyntasticModeMap.echoMode() " {{{2
     echo "Syntastic: " . self._mode . " mode enabled"
+endfunction " }}}2
+
+function! g:SyntasticModeMap.modeInfo(...) " {{{2
+    echomsg 'Syntastic version: ' . g:syntastic_version
+    let type = a:0 ? a:1 : &filetype
+    echomsg 'Info for filetype: ' . type
+
+    call self.synch()
+    echomsg 'Mode: ' . self._mode
+    if self._mode ==# 'active'
+        if len(self._passiveFiletypes)
+            let plural = len(self._passiveFiletypes) != 1 ? 's' : ''
+            echomsg 'Passive filetype' . plural . ': ' . join(sort(copy(self._passiveFiletypes)))
+        endif
+    else
+        if len(self._activeFiletypes)
+            let plural = len(self._activeFiletypes) != 1 ? 's' : ''
+            echomsg 'Active filetype' . plural . ': ' . join(sort(copy(self._activeFiletypes)))
+        endif
+    endif
+    echomsg 'Filetype ' . type . ' is ' . (self.allowsAutoChecking(type) ? 'active' : 'passive')
 endfunction " }}}2
 
 " }}}1

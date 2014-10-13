@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2009-02-15.
-" @Revision:    0.0.23
+" @Last Change: 2014-07-03.
+" @Revision:    0.0.26
 
 if &cp || exists("loaded_tlib_var_autoload")
     finish
@@ -58,10 +58,12 @@ endf
 "   echo tlib#var#Get('foo', 'bg')  => 2
 "   echo tlib#var#Get('foo', 'wbg') => 3
 function! tlib#var#Get(var, namespace, ...) "{{{3
+    let var_ = substitute(a:var, '#', '_', 'g')
     for namespace in split(a:namespace, '\zs')
-        let var = namespace .':'. a:var
+        let vname = namespace == 'g' ? a:var : var_
+        let var = namespace .':'. vname
         if exists(var)
-            return eval(var)
+            return {var}
         endif
     endfor
     return a:0 >= 1 ? a:1 : ''

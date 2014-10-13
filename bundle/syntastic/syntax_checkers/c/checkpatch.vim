@@ -14,24 +14,27 @@ if exists("g:loaded_syntastic_c_checkpatch_checker")
 endif
 let g:loaded_syntastic_c_checkpatch_checker = 1
 
-" Bail if the user doesn't have `checkpatch.pl` or ./scripts/checkpatch.pl installed.
-if executable("checkpatch.pl")
-    let g:syntastic_c_checker_checkpatch_location = 'checkpatch.pl'
-elseif executable("./scripts/checkpatch.pl")
-    let g:syntastic_c_checker_checkpatch_location = './scripts/checkpatch.pl'
-endif
-
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_c_checkpatch_IsAvailable() dict
-    return exists("g:syntastic_c_checker_checkpatch_location")
+    call syntastic#log#deprecationWarn('c_checker_checkpatch_location', 'c_checkpatch_exe')
+
+    if !exists('g:syntastic_c_checkpatch_exe') && !executable(self.getExec())
+        if executable('checkpatch')
+            let g:syntastic_c_checkpatch_exe = 'checkpatch'
+        elseif executable('./scripts/checkpatch.pl')
+            let g:syntastic_c_checkpatch_exe = fnamemodify('./scripts/checkpatch.pl', ':p')
+        elseif executable('./scripts/checkpatch')
+            let g:syntastic_c_checkpatch_exe = fnamemodify('./scripts/checkpatch', ':p')
+        endif
+    endif
+
+    return executable(self.getExec())
 endfunction
 
 function! SyntaxCheckers_c_checkpatch_GetLocList() dict
-    let makeprg = self.makeprgBuild({
-        \ 'exe': g:syntastic_c_checker_checkpatch_location,
-        \ 'args_after': '--no-summary --no-tree --terse --file' })
+    let makeprg = self.makeprgBuild({ 'args_after': '--no-summary --no-tree --terse --file' })
 
     let errorformat =
         \ '%f:%l: %tARNING: %m,' .

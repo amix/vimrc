@@ -82,13 +82,14 @@ endfunction
 function! s:promptToRenameBuffer(bufnum, msg, newFileName)
     echo a:msg
     if g:NERDTreeAutoDeleteBuffer || nr2char(getchar()) ==# 'y'
+        let quotedFileName = "'" . a:newFileName . "'"
         " 1. ensure that a new buffer is loaded
-        exec "badd " . a:newFileName
+        exec "badd " . quotedFileName
         " 2. ensure that all windows which display the just deleted filename
         " display a buffer for a new filename. 
         let s:originalTabNumber = tabpagenr()
         let s:originalWindowNumber = winnr()
-        exec "tabdo windo if winbufnr(0) == " . a:bufnum . " | exec ':e! " . a:newFileName . "' | endif"
+        exec "tabdo windo if winbufnr(0) == " . a:bufnum . " | exec \":e! " . quotedFileName . "\" | endif"
         exec "tabnext " . s:originalTabNumber
         exec s:originalWindowNumber . "wincmd w"
         " 3. We don't need a previous buffer anymore
@@ -114,7 +115,10 @@ function! NERDTreeAddNode()
         let parentNode = b:NERDTreeRoot.findNode(newPath.getParent())
 
         let newTreeNode = g:NERDTreeFileNode.New(newPath)
-        if parentNode.isOpen || !empty(parentNode.children)
+        if empty(parentNode)
+            call b:NERDTreeRoot.refresh()
+            call b:NERDTree.render()
+        elseif parentNode.isOpen || !empty(parentNode.children)
             call parentNode.addChild(newTreeNode, 1)
             call NERDTreeRender()
             call newTreeNode.putCursorHere(1, 0)
@@ -138,7 +142,7 @@ function! NERDTreeMoveNode()
     endif
 
     try
-        let bufnum = bufnr(curNode.path.str())
+        let bufnum = bufnr("^".curNode.path.str()."$")
 
         call curNode.rename(newNodePath)
         call NERDTreeRender()
@@ -186,7 +190,7 @@ function! NERDTreeDeleteNode()
 
             "if the node is open in a buffer, ask the user if they want to
             "close that buffer
-            let bufnum = bufnr(currentNode.path.str())
+            let bufnum = bufnr("^".currentNode.path.str()."$")
             if buflisted(bufnum)
                 let prompt = "\nNode deleted.\n\nThe file is open in buffer ". bufnum . (bufwinnr(bufnum) ==# -1 ? " (hidden)" : "") .". Delete this buffer? (yN)"
                 call s:promptToDelBuffer(bufnum, prompt)
@@ -224,7 +228,10 @@ function! NERDTreeCopyNode()
         if confirmed
             try
                 let newNode = currentNode.copy(newNodePath)
-                if !empty(newNode)
+                if empty(newNode)
+                    call b:NERDTreeRoot.refresh()
+                    call b:NERDTree.render()
+                else
                     call NERDTreeRender()
                     call newNode.putCursorHere(0, 0)
                 endif

@@ -1,43 +1,52 @@
 "
 " Colorscheme: Kalisi for airline. Inspired by powerline.
-" 06.02.2014 Arthur Jaron
+" Arthur Jaron
 " hifreeo@gmail.com
-" 
+" 30.07.2014 
+ 
 
 " Insert mode                                    
-let s:I1 = [ '#ffffff' , '#e80000' , 23  , 231 ] 
-let s:I2 = [ '#c5c5c5' , '#901010' , 74  , 31  ] 
-let s:I3 = [ '#c5c5c5' , '#500000' , 117 , 24  ] 
+let s:I1 = [ '#ffffff' , '#e80000','','']
+let s:I2 = [ '#c5c5c5' , '#901010','','']
+let s:I3 = [ '#c5c5c5' , '#500000','','']
 
-" Visual mode                                    
-let s:V1 = [ '#005f5f' , '#ffffff' , 23  , 231 ] 
-let s:V2 = [ '#5fafd7' , '#0087af' , 74  , 31  ] 
-let s:V3 = [ '#87d7ff' , '#005f87' , 117 , 24  ] 
+" Visual mode                                   
+let s:V1 = [ '#2a5d8e' , '#ffffff','','']
+let s:V2 = [ '#87e7ff' , '#4077df','','']
+let s:V3 = [ '#87e7ff' , '#2a5d8e','','']
 
 " Replace mode
-let s:R1 = [ '#8e00da' , '#ffffff' , 23  , 231 ] 
-let s:R2 = [ '#8e00da' , '#ce99ff' , 74  , 31  ] 
-let s:R3 = [ '#ce99ff' , '#8e00da' , 117 , 24  ] 
+let s:R1 = [ '#6e00ba' , '#ffffff','','']
+let s:R2 = [ '#6e00ba' , '#d358ff','','']
+let s:R3 = [ '#ce99ff' , '#6e00ba','','']
 
 let g:airline#themes#kalisi#palette = {}
+let g:airline#themes#kalisi#palette.accents = {'red': ['#FF0000', '', 88, '']}
+
 
 function! airline#themes#kalisi#refresh()
 
+  let s:StatusLine = airline#themes#get_highlight('StatusLine')
+  let s:StatusLineNC = airline#themes#get_highlight('StatusLineNC')
+
   " Normal mode
-  let s:N1 = [ '#005f00' , '#afd700' , 22  , 148 ]
-  let s:N2 = [ '#afd700' , '#005f00' , 247 , 236 ]
-  let s:N3 = airline#themes#get_highlight('StatusLine')
+  let s:N1 = [ '#005f00' , '#afd700','',''] 
+  let s:N2 = [ '#afd700' , '#005f00','',''] 
+  let s:N3 = s:StatusLine
+
 
   " Tabline Plugin
   let g:airline#themes#kalisi#palette.tabline = {
-        \ 'airline_tab':  ['#A6DB29', '#005f00',  231, 29, ''],
-        \ 'airline_tabsel':  ['#404042', '#A6DB29',  231, 36, ''],
-        \ 'airline_tabtype':  ['#afd700', '#005f00',  231, 36, ''],
-        \ 'airline_tabfill':  ['#ffffff', '#000000',  231, 23, ''],
-        \ 'airline_tabhid':  ['#c5c5c5', '#404042',  231, 88, ''],
-        \ 'airline_tabmod':  ['#ffffff', '#F1266F',  231, 88, ''],
+        \ 'airline_tab':  ['#A6DB29', '#005f00','',''],
+        \ 'airline_tabsel':  ['#404042', '#A6DB29','',''],
+        \ 'airline_tabtype':  ['#afd700', '#204d20','',''],
+        \ 'airline_tabfill':  s:StatusLine,
+        \ 'airline_tabhid':  ['#c5c5c5', '#404042','',''],
+        \ 'airline_tabmod':  ['#ffffff', '#F1266F','','']
         \ }
 
+        " \ 'airline_tabfill':  ['#ffffff', '#2b2b2b','',''],
+        
   let g:airline#themes#kalisi#palette.normal = airline#themes#generate_color_map(s:N1, s:N2, s:N3)
   let g:airline#themes#kalisi#palette.visual = airline#themes#generate_color_map(s:V1, s:V2, s:V3)
   let g:airline#themes#kalisi#palette.insert = airline#themes#generate_color_map(s:I1, s:I2, s:I3)
@@ -54,4 +63,12 @@ function! airline#themes#kalisi#refresh()
 endfunction
 
 call airline#themes#kalisi#refresh()
+
+if !get(g:, 'loaded_ctrlp', 0)
+  finish
+endif
+let g:airline#themes#kalisi#palette.ctrlp = airline#extensions#ctrlp#generate_color_map(
+      \ s:StatusLineNC,
+      \ s:StatusLine,
+      \ [ '#005f00' , '#afd700' , '','', ''] )
 

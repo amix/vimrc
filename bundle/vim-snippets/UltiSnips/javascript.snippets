@@ -79,6 +79,14 @@ setTimeout(function() {
 }${2:.bind(${3:this})}, ${1:10});
 endsnippet
 
+snippet fi "for prop in obj using hasOwnProperty" b
+for (${1:prop} in ${2:obj}){
+	if ($2.hasOwnProperty($1)) {
+		${VISUAL}$0
+	}
+}
+endsnippet
+
 # Snippets for Console Debug Output
 
 snippet ca "console.assert" b
@@ -119,6 +127,10 @@ endsnippet
 
 snippet cl "console.log" b
 console.log(${1:"${2:value}"});
+endsnippet
+
+snippet cd "console.debug" b
+console.debug(${1:"${2:value}"});
 endsnippet
 
 snippet cprof "console.profile" b

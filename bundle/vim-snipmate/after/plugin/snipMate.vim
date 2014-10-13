@@ -41,11 +41,6 @@ if !exists('g:snips_no_mappings') || !g:snips_no_mappings
 	call s:map_if_not_mapped('<C-R><Tab>', '<Plug>snipMateShow', 'i')
 endif
 
-" FIXME: Without this map, <BS> in select mode deletes the current selection and
-" returns to normal mode. This doesn't update placeholders. Ideally there's some
-" way to update the placeholders without this otherwise useless map.
-silent! snoremap <unique> <BS> b<BS><Esc>
-
 let &cpo = s:save_cpo
 
 " vim:noet:

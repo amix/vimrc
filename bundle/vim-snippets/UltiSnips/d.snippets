@@ -106,14 +106,14 @@ endsnippet
 snippet if "if .. (if)"
 if(${1:/*condition*/})
 {
-	${VISUAL}${0:/*code*/}
+	${VISUAL}${0}
 }
 endsnippet
 
 snippet ife "if .. else (ife)" b
 if(${1:/*condition*/})
 {
-	${2:/*code*/}
+	${2}
 }
 else
 {
@@ -124,14 +124,14 @@ endsnippet
 snippet el "else (el)" b
 else
 {
-	${VISUAL}${1:/*code*/}
+	${VISUAL}${1}
 }
 endsnippet
 
 snippet elif "else if (elif)" b
 else if(${1:/*condition*/})
 {
-	${VISUAL}${0:/*code*/}
+	${VISUAL}${0}
 }
 endsnippet
 
@@ -139,10 +139,10 @@ snippet sw "switch (sw)"
 switch(${1:/*var*/})
 {
 	case ${2:/*value*/}:
-		${3:/*code*/}
+		${3}
 		break;
 	case ${4:/*value*/}:
-		${5:/*code*/}
+		${5}
 		break;
 	${7:/*more cases*/}
 	default:
@@ -151,13 +151,13 @@ switch(${1:/*var*/})
 endsnippet
 
 snippet fsw "final switch (fsw)"
-switch(${1:/*var*/})
+final switch(${1:/*var*/})
 {
 	case ${2:/*value*/}:
-		${3:/*code*/}
+		${3}
 		break;
 	case ${4:/*value*/}:
-		${5:/*code*/}
+		${5}
 		break;
 	${7:/*more cases*/}
 }
@@ -165,7 +165,7 @@ endsnippet
 
 snippet case "case (case)" b
 case ${1:/*value*/}:
-	${2:/*code*/}
+	${2}
 	break;
 endsnippet
 
@@ -178,42 +178,42 @@ endsnippet
 snippet do "do while (do)" b
 do
 {
-	${VISUAL}${2:/*code*/}
+	${VISUAL}${2}
 } while(${1:/*condition*/});
 endsnippet
 
 snippet wh "while (wh)" b
 while(${1:/*condition*/})
 {
-	${VISUAL}${2:/*code*/}
+	${VISUAL}${2}
 }
 endsnippet
 
 snippet for "for (for)" b
 for (${4:size_t} ${2:i} = 0; $2 < ${1:count}; ${3:++$2})
 {
-	${VISUAL}${0:/*code*/}
+	${VISUAL}${0}
 }
 endsnippet
 
 snippet forever "forever (forever)" b
 for(;;)
 {
-	${VISUAL}${0:/*code*/}
+	${VISUAL}${0}
 }
 endsnippet
 
 snippet fore "foreach (fore)"
 foreach(${1:/*elem*/}; ${2:/*range*/})
 {
-	${VISUAL}${3:/*code*/}
+	${VISUAL}${3}
 }
 endsnippet
 
 snippet forif "foreach if (forif)" b
 foreach(${1:/*elem*/}; ${2:/*range*/}) if(${3:/*condition*/})
 {
-	${VISUAL}${4:/*code*/}
+	${VISUAL}${4}
 }
 endsnippet
 
@@ -249,21 +249,21 @@ endsnippet
 snippet fun "function definition (fun)"
 ${1:void} ${2:/*function name*/}(${3:/*args*/}) ${4:@safe pure nothrow}
 {
-	${VISUAL}${5:/*code*/}
+	${VISUAL}${5}
 }
 endsnippet
 
 snippet void "void function definition (void)"
 void ${1:/*function name*/}(${2:/*args*/}) ${3:@safe pure nothrow}
 {
-	${VISUAL}${4:/*code*/}
+	${VISUAL}${4}
 }
 endsnippet
 
 snippet this "ctor (this)" w
 this(${1:/*args*/})
 {
-	${VISUAL}${2:/*code*/}
+	${VISUAL}${2}
 }
 endsnippet
 
@@ -295,7 +295,7 @@ endsnippet
 snippet scope "scope (scope)" b
 scope(${1:exit})
 {
-	${VISUAL}${2:/*code*/}
+	${VISUAL}${2}
 }
 endsnippet
 
@@ -304,7 +304,7 @@ endsnippet
 snippet with "with (with)"
 with(${1})
 {
-	${VISUAL}${2:/*code*/}
+	${VISUAL}${2}
 }
 endsnippet
 
@@ -405,14 +405,14 @@ endsnippet
 snippet version "version (version)" b
 version(${1:/*version name*/})
 {
-	${VISUAL}${2:/*code*/}
+	${VISUAL}${2}
 }
 endsnippet
 
 snippet debug "debug" b
 debug
 {
-	${VISUAL}${1:/*code*/}
+	${VISUAL}${1}
 }
 endsnippet
 
@@ -422,7 +422,7 @@ endsnippet
 snippet temp "template (temp)" b
 template ${2:/*name*/}(${1:/*args*/})
 {
-	${3:/*code*/}
+	${3}
 }
 endsnippet
 
@@ -440,7 +440,7 @@ endsnippet
 snippet unittest "unittest (unittest)" b
 unittest
 {
-	${1:/*code*/}
+	${1}
 }
 endsnippet
 
@@ -450,21 +450,21 @@ endsnippet
 snippet opDis "opDispatch (opDis)" b
 ${1:/*return type*/} opDispatch(string s)()
 {
-	${2:/*code*/};
+	${2};
 }
 endsnippet
 
 snippet op= "opAssign (op=)" b
 void opAssign(${1} rhs) ${2:@safe pure nothrow}
 {
-	${2:/*code*/}
+	${2}
 }
 endsnippet
 
 snippet opCmp "opCmp (opCmp)" b
 int opCmp(${1} rhs) @safe const pure nothrow
 {
-	${2:/*code*/}
+	${2}
 }
 endsnippet
 
@@ -484,7 +484,7 @@ endsnippet
 snippet toString "toString (toString)" b
 string toString() @safe const pure nothrow
 {
-	${1:/*code*/}
+	${1}
 }
 endsnippet
 

@@ -44,6 +44,30 @@ looking at the [vim-snippets][vim-snippets] repository.
         " Optional:
         Bundle "honza/vim-snippets"
 
+## FAQ ##
+
+> How does SnipMate determine which snippets to load? How can I separate, for
+> example, my Rails snippets from my Ruby snippets?
+
+Primarily SnipMate looks at the `'filetype'` and `'syntax'` settings. Taking
+"scopes" from these options, it looks in each `snippets/` directory in
+`'runtimepath'` for files named `scope.snippets`, `scope/*.snippets`, or
+`scope_*.snippets`.
+
+However we understand this may not allow for the flexibility desired by some
+languages. For this we provide two options: scope aliases and the
+`:SnipMateLoadScope` command. Scope aliases simply say "whenever this scope is
+loaded, also load this other scope:
+
+    let g:snipMate = {}
+    let g:snipMate.scope_aliases = {}
+    let g:snipMate.scope_aliases['ruby'] = 'ruby,rails'
+
+will load the `ruby-rails` scope whenever the `ruby` scope is active. The
+`:SnipMateLoadScope foo` command will always load the foo scope in the current
+buffer. The [vim-rails](https://github.com/tpope/vim-rails) plugin automatically
+does `:SnipMateLoadScope rails` when editing a Rails project for example.
+
 ## Release Notes ##
 
 ### Master ###
@@ -53,6 +77,10 @@ looking at the [vim-snippets][vim-snippets] repository.
 * Fix bug with mirrors in the first column
 * Fix bug with tabs in indents ([#143][143])
 * Fix bug with mirrors in placeholders
+* Fix reading single snippet files
+* Fix the use of the visual map at the end of a line
+* Add `:SnipMateLoadScope` command and buffer-local scope aliases
+* Load `<scope>_*.snippets` files
 
 ### 0.87 - 2014-01-04 ###
 

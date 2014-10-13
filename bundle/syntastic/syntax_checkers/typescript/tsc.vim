@@ -23,11 +23,14 @@ function! SyntaxCheckers_typescript_tsc_GetLocList() dict
         \ '%Eerror %m,' .
         \ '%C%\s%\+%m'
 
-    return SyntasticMake({
+    let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")},
-        \ 'postprocess': ['sort'] })
+        \ 'defaults': {'bufnr': bufnr("")} })
+
+    call self.setWantSort(1)
+
+    return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

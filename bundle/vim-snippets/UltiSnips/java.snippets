@@ -25,7 +25,12 @@ def getArgs(group):
 	return [i.split(" ") for i in word.findall(group) ]
 
 def camel(word):
+	if not word: return ''
 	return word[0].upper() + word[1:]
+
+def mixedCase(word):
+	if not word: return ''
+	return word[0].lower() + word[1:]
 
 endglobal
 
@@ -55,7 +60,7 @@ abstract $0
 endsnippet
 
 snippet as "assert" b
-assert ${1:test}${2/(.+)/(?1: \: ")/}${2:Failure message}${2/(.+)/(?1:")/};$0
+assert ${1:test}${2/(.+)/(?1: \: ")/}${2:Failure message}${2/(.+)/(?1:")/};
 endsnippet
 
 snippet at "assert true" b
@@ -63,7 +68,7 @@ assertTrue(${1:actual});
 endsnippet
 
 snippet af "assert false" b
-assertFalse(${1:actual});$0
+assertFalse(${1:actual});
 endsnippet
 
 snippet ae "assert equals" b
@@ -136,7 +141,7 @@ if len(args) > 0:
 	public `!p snip.rv = snip.basename or "unknown"`($1) { `!p
 args = getArgs(t[1])
 for i in args:
-	snip.rv += "\n\t\tthis." + i[1] + " = " + i[1]
+	snip.rv += "\n\t\tthis.%s = %s;" % (i[1], i[1])
 if len(args) == 0:
 	snip.rv += "\n"`
 	}
@@ -173,15 +178,15 @@ default:
 	$0
 endsnippet
 
-snippet elif "else if" b
+snippet elif "else if"
 else if ($1)`!p nl(snip)`{
-	$0
+	$0${VISUAL}
 }
 endsnippet
 
-snippet /el(se)?/ "else" br
+snippet el "else" w
 else`!p nl(snip)`{
-	$0
+	$0${VISUAL}
 }
 endsnippet
 
@@ -209,7 +214,7 @@ endsnippet
 
 snippet if "if" b
 if ($1)`!p nl(snip)`{
-	$0
+	$0${VISUAL}
 }
 endsnippet
 
@@ -219,7 +224,7 @@ $0
 endsnippet
 
 snippet im "import"  b
-import ${1:java}.${2:util}.$0
+import ${1:java}.${2:util}.$0;
 endsnippet
 
 snippet in "interface" b
@@ -264,7 +269,7 @@ if len(args) > 0:
 public `!p snip.rv = snip.basename or "unknown"`($1) { `!p
 args = getArgs(t[1])
 for i in args:
-	snip.rv += "\n\t\tthis." + i[1] + " = " + i[1]
+	snip.rv += "\n\t\tthis.%s = %s;" % (i[1], i[1])
 if len(args) == 0:
 	snip.rv += "\n"`
 }
@@ -298,7 +303,7 @@ endsnippet
 
 snippet try "try/catch" b
 try {
-	$1
+	$1${VISUAL}
 } catch(${2:Exception} ${3:e}){
 	${4:e.printStackTrace();}
 }
@@ -338,23 +343,23 @@ endsnippet
 
 snippet /get(ter)?/ "getter" br
 public ${1:String} get${2:Name}() {
-	return `!p snip.rv = t[2].lower()`;
+	return `!p snip.rv = mixedCase(t[2])`;
 }
 endsnippet
 
 snippet /set(ter)?/ "setter" br
-public void set${1:Name}(${2:String} $1) {
-	return this.`!p snip.rv = t[1].lower()` = `!p snip.rv = t[1].lower()`;
+public void set${1:Name}(${2:String} `!p snip.rv = mixedCase(t[1])`) {
+	this.`!p snip.rv = mixedCase(t[1])` = `!p snip.rv = mixedCase(t[1])`;
 }
 endsnippet
 
 snippet /se?tge?t|ge?tse?t|gs/ "setter and getter" br
-public void set${1:Name}(${2:String} `!p snip.rv = t[1].lower()`) {
-	this.`!p snip.rv = t[1].lower()` = `!p snip.rv = t[1].lower()`;
+public void set${1:Name}(${2:String} `!p snip.rv = mixedCase(t[1])`) {
+	this.`!p snip.rv = mixedCase(t[1])` = `!p snip.rv = mixedCase(t[1])`;
 }
 
 public $2 get$1() {
-	return `!p snip.rv = t[1].lower()`;
+	return `!p snip.rv = mixedCase(t[1])`;
 }
 endsnippet
 

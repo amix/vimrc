@@ -14,7 +14,7 @@
 " - Install this python package:
 "   https://github.com/rgiot/pycpcdemotools
 " - Copy/paste this script in your search path:
-"   https://raw.github.com/rgiot/pycpcdemotools/master/cpcdemotools/source_checker/z80_syntax_checker.py
+"   https://raw.githubusercontent.com/rgiot/pycpcdemotools/master/cpcdemotools/source_checker/z80_syntax_checker.py
 
 if exists("g:loaded_syntastic_z80_z80syntaxchecker_checker")
     finish

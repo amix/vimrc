@@ -24,19 +24,18 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_yaml_yamlxs_IsAvailable() dict
-    if !exists('g:syntastic_perl_interpreter')
-        let g:syntastic_perl_interpreter = self.getExec()
+    if !exists('g:syntastic_yaml_yamlxs_exec') && exists('g:syntastic_perl_interpreter')
+        let g:syntastic_yaml_yamlxs_exec = g:syntastic_perl_interpreter
     endif
 
     " don't call executable() here, to allow things like
     " let g:syntastic_perl_interpreter='/usr/bin/env perl'
-    silent! call system(s:Exe() . ' ' . s:Modules() . ' -e ' . syntastic#util#shescape('exit(0)'))
+    silent! call system(self.getExecEscaped() . ' ' . s:Modules() . ' -e ' . syntastic#util#shescape('exit(0)'))
     return v:shell_error == 0
 endfunction
 
 function! SyntaxCheckers_yaml_yamlxs_GetLocList() dict
     let makeprg = self.makeprgBuild({
-        \ 'exe': s:Exe(),
         \ 'args_before': s:Modules() . ' -e ' . syntastic#util#shescape('YAML::XS::LoadFile($ARGV[0])') })
 
     let errorformat =
@@ -53,13 +52,9 @@ function! SyntaxCheckers_yaml_yamlxs_GetLocList() dict
         \ 'defaults': {'bufnr': bufnr("")} })
 endfunction
 
-function! s:Exe()
-    return syntastic#util#shexpand(g:syntastic_perl_interpreter)
-endfunction
-
 function s:Modules()
     if type(g:syntastic_perl_lib_path) == type('')
-        call syntastic#log#deprecationWarn('variable g:syntastic_perl_lib_path should be a list')
+        call syntastic#log#oneTimeWarn('variable g:syntastic_perl_lib_path should be a list')
         let includes = split(g:syntastic_perl_lib_path, ',')
     else
         let includes = copy(syntastic#util#var('perl_lib_path'))

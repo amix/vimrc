@@ -36,9 +36,14 @@ CONTENTS                                                  *syntastic-contents*
         5.3.Configuring specific checkers..........|syntastic-config-makeprg|
     6.Notes........................................|syntastic-notes|
         6.1.Handling of composite filetypes........|syntastic-composite|
-        6.2.Interaction with python-mode...........|syntastic-pymode|
-        6.3.Interaction with the fish shell........|syntastic-fish|
-        6.4.Using syntastic with the fizsh shell...|syntastic-fizsh|
+        6.2.Editing files over network.............|syntastic-netrw|
+        6.3.Interaction with python-mode...........|syntastic-pymode|
+        6.4.Interaction with YouCompleteMe.........|syntastic-ycm|
+        6.5.Interaction with the fish shell........|syntastic-fish|
+        6.6.Interaction with PowerShell............|syntastic-powershell|
+        6.7.Using syntastic with the fizsh shell...|syntastic-fizsh|
+        6.8.Interaction with Eclim.................|syntastic-eclim|
+        6.9.Interaction with vim-virtualenv........|syntastic-vim-virtualenv|
     7.About........................................|syntastic-about|
     8.License......................................|syntastic-license|
 
@@ -62,7 +67,7 @@ Take a look at the wiki for a list of supported filetypes and checkers:
     https://github.com/scrooloose/syntastic/wiki/Syntax-Checkers
 
 Note: This doc only deals with using syntastic. To learn how to write syntax
-checker integrations, see the guide on the github wiki:
+checker integrations, see the guide on the GitHub wiki:
 
     https://github.com/scrooloose/syntastic/wiki/Syntax-Checker-Guide
 
@@ -73,16 +78,17 @@ Syntastic comes preconfigured with a default list of enabled checkers per
 filetype. This list is kept reasonably short to prevent slowing down Vim or
 trying to use conflicting checkers.
 
-You can see the list checkers available for the current filetype with the
+You can see the list of checkers available for the current filetype with the
 |:SyntasticInfo| command.
 
-If you want to override the configured list of checkers for a filetype then
-see |syntastic-checker-options| for details. You can also change the arguments
-passed to a specific checker as well.
+You probably want to override the configured list of checkers for the
+filetypes you use, and also change the arguments passed to specific checkers
+to suit your needs. See |syntastic-checker-options| for details.
 
-Use |:SyntasticCheck| to manually check right now. Use |:SyntasticToggleMode|
-to switch between active (checking on writting the buffer) and passive (manual)
-checking.
+Use |:SyntasticCheck| to manually check right now. Use |:Errors| to open the
+|location-list| window, and |:lclose| to close it. You can clear the error
+list with |:SyntasticReset|, and you can use |:SyntasticToggleMode| to switch
+between active (checking on writing the buffer) and passive (manual) checking.
 
 ==============================================================================
 2. Functionality provided                            *syntastic-functionality*
@@ -91,7 +97,7 @@ Syntax checking can be done automatically or on demand (see
 |'syntastic_mode_map'| and |:SyntasticToggleMode| for configuring this).
 
 When syntax checking is done, the features below can be used to notify the
-user of errors. See |syntastic-options| for how to configure and
+user of errors. See |syntastic-global-options| for how to configure and
 activate/deactivate these features.
 
     * A statusline flag
@@ -150,13 +156,21 @@ Example: >
     highlight SyntasticErrorLine guibg=#2f0000
 <
 ------------------------------------------------------------------------------
-2.3. The error window                         *:Errors* *syntastic-error-window*
+2.3. The error window                                   *syntastic-error-window*
 
-You can use the :Errors command to display the errors for the current buffer
+You can use the |:Errors| command to display the errors for the current buffer
 in the |location-list|.
 
-Note that when you use :Errors, the current location list is overwritten with
-Syntastic's own location list.
+Note that when you use |:Errors|, the current location list is overwritten
+with Syntastic's own location list.
+
+By default syntastic doesn't fill the |location-list| with the errors found by
+the checkers, in order to reduce clashes with other plugins. Consequently, if
+you run |:lopen| or |:lwindow| rather than |:Errors| to open the error window you
+wouldn't see syntastic's list of errors. If you insist on using |:lopen| or
+|:lwindow| you should either run |:SyntasticSetLoclist| after running the checks,
+or set |syntastic_always_populate_loc_list| which tells syntastic to update the
+|location-list| automatically.
 
 ------------------------------------------------------------------------------
 2.4. Error highlighting                               *syntastic-highlighting*
@@ -167,6 +181,8 @@ and the SpellCap group is used for warnings. If you wish to customize the
 colors for highlighting you can use the following groups:
     SyntasticError - Links to 'SpellBad' by default
     SyntasticWarning - Links to 'SpellCap' by default
+    SyntasticStyleError - Links to SyntasticError by default
+    SyntasticStyleWarning - Links to SyntasticWarning by default
 
 Example: >
     highlight SyntasticError guibg=#2f0000
@@ -186,7 +202,12 @@ If |'syntastic_aggregate_errors'| is set, syntastic runs all checkers that
 apply (still cf. |syntastic-filetype-checkers|), then aggregates errors found
 by all checkers in a single list, and notifies you. In this mode each error
 message is labeled with the name of the checker that generated it, but you can
-disable these labels by unsetting '|syntastic_id_checkers|'.
+disable generation of these labels by turning off '|syntastic_id_checkers|'.
+
+If |'syntastic_sort_aggregated_errors'| is set (which is the default), messages
+in the aggregated list are grouped by file, then sorted by line number, then
+type, then column number.  Otherwise messages produced by the same checker are
+grouped together.
 
 ------------------------------------------------------------------------------
 2.6 Filtering errors                              *syntastic-filtering-errors*
@@ -200,10 +221,13 @@ See also: |'syntastic_<filetype>_<checker>_quiet_messages'|.
 ==============================================================================
 3. Commands                                               *syntastic-commands*
 
-:Errors                                                     *:SyntasticErrors*
+:Errors                                                              *:Errors*
 
 When errors have been detected, use this command to pop up the |location-list|
 and display the error messages.
+
+Please note that the |:Errors| command overwrites the current location list with
+syntastic's own location list.
 
 :SyntasticToggleMode                                    *:SyntasticToggleMode*
 
@@ -227,7 +251,7 @@ the order specified.  The rules of |syntastic_aggregate_errors| still apply.
 Example: >
     :SyntasticCheck flake8 pylint
 <
-:SyntasticInfo                                               *:SyntasticInfo*
+:SyntasticInfo                                                *:SyntasticInfo*
 
 The command takes an optional argument, and outputs information about the
 checkers available for the filetype named by said argument, or for the current
@@ -279,11 +303,34 @@ checker has produced a given error message. This variable instructs syntastic
 to label error messages with the names of the checkers that created them. >
     let g:syntastic_id_checkers = 0
 <
+                                          *'syntastic_sort_aggregated_errors'*
+Default: 1
+By default, when results from multiple checkers are aggregated in a single
+error list (that is either when |syntastic_aggregate_errors| is enabled, or
+when checking a file with a composite filetype), errors are grouped by file,
+then sorted by line number, then grouped by type (namely errors take precedence
+over warnings), then they are sorted by column number.  If you want to leave
+messages grouped by checker output, set this variable to 0. >
+    let g:syntastic_sort_aggregated_errors = 0
+<
                                               *'syntastic_echo_current_error'*
 Default: 1
-If enabled, syntastic will echo the error associated with the current line to
-the command window. If multiple errors are found, the first will be used. >
+If enabled, syntastic will echo current error to the command window. If
+multiple errors are found on the same line, |syntastic_cursor_columns| is used
+to decide which one is shown. >
     let g:syntastic_echo_current_error = 1
+<
+                                                  *'syntastic_cursor_columns'*
+Default: 1
+This option controls which errors are echoed to the command window if
+|syntastic_echo_current_error| is set and multiple errors are found on the same
+line. When the option is enabled, the first error corresponding to the current
+column is show. Otherwise, the first error on the current line is echoed,
+regardless of the cursor position on the current line.
+
+When dealing with very large lists of errors, disabling this option can speed
+up navigation significantly: >
+    let g:syntastic_cursor_column = 0
 <
                                                     *'syntastic_enable_signs'*
 Default: 1
@@ -301,8 +348,8 @@ error symbols can be customized:
     syntastic_style_warning_symbol - For style warnings, defaults to 'S>'
 
 Example: >
-    let g:syntastic_error_symbol = '✗'
-    let g:syntastic_warning_symbol = '⚠'
+    let g:syntastic_error_symbol = "✗"
+    let g:syntastic_warning_symbol = "⚠"
 <
                                                  *'syntastic_enable_balloons'*
 Default: 1
@@ -374,47 +421,45 @@ Default: {}
 Use this option to map non-standard filetypes to standard ones.  Corresponding
 checkers are mapped accordingly, which allows syntastic to check files with
 non-standard filetypes: >
-    let g:syntastic_filetype_map = { 'latex': 'tex',
-                                   \ 'gentoo-metadata': 'xml' }
+    let g:syntastic_filetype_map = { "latex": "tex",
+                                   \ "gentoo-metadata": "xml" }
 <
 Composite filetypes can also be mapped to simple types, which disables the
 default behaviour of running both checkers against the input file: >
-    let g:syntastic_filetype_map = { 'handlebars.html': 'handlebars' }
+    let g:syntastic_filetype_map = { "handlebars.html": "handlebars" }
 <
                                                         *'syntastic_mode_map'*
 Default: { "mode": "active",
            "active_filetypes": [],
            "passive_filetypes": [] }
-
 Use this option to fine tune when automatic syntax checking is done (or not
 done).
 
 The option should be set to something like: >
 
-    let g:syntastic_mode_map = { 'mode': 'active',
-                               \ 'active_filetypes': ['ruby', 'php'],
-                               \ 'passive_filetypes': ['puppet'] }
+    let g:syntastic_mode_map = { "mode": "active",
+                               \ "active_filetypes": ["ruby", "php"],
+                               \ "passive_filetypes": ["puppet"] }
 <
-"mode" can be mapped to one of two values - "active" or "passive". When set to
-active, syntastic does automatic checking whenever a buffer is saved or
+"mode" can be mapped to one of two values - "active" or "passive". When set
+to "active", syntastic does automatic checking whenever a buffer is saved or
 initially opened.  When set to "passive" syntastic only checks when the user
 calls |:SyntasticCheck|.
 
 The exceptions to these rules are defined with "active_filetypes" and
-"passive_filetypes". In passive mode, automatic checks are still done
-for all filetypes in the "active_filetypes" array. In active mode,
-automatic checks are not done for any filetypes in the
-"passive_filetypes" array.
+"passive_filetypes". In passive mode, automatic checks are still done for
+filetypes in the "active_filetypes" array (and "passive_filetypes" is
+ignored). In active mode, automatic checks are not done for any filetypes in
+the "passive_filetypes" array ("active_filetypes" is ignored).
+
+If any of "mode", "active_filetypes", or "passive_filetypes" are left
+unspecified, they default to values above.
 
 At runtime, the |:SyntasticToggleMode| command can be used to switch between
-active and passive mode.
-
-If any of "mode", "active_filetypes", or "passive_filetypes" are not specified
-then they will default to their default value as above.
+active and passive modes.
 
                                                   *'syntastic_quiet_messages'*
 Default: {}
-
 Use this option to filter out some of the messages produced by checkers.  The
 option should be set to something like: >
     let g:syntastic_quiet_messages = { "level": "warnings",
@@ -451,7 +496,7 @@ Since filter elements with values [] or '' are ignored, you can disable global
 filters for particular checkers, by setting the values of the corresponding
 elements in |'syntastic_<filetype>_<checker>_quiet_messages'| to [] or ''. For
 example, the following setting will silence all warnings, except for the
-ones produced by 'pylint': >
+ones produced by "pylint": >
     let g:syntastic_quiet_messages = { "level": "warnings" }
     let g:syntastic_python_pylint_quiet_messages = { "level" : [] }
 <
@@ -484,12 +529,25 @@ statusline: >
 If the buffer had 2 warnings, starting on line 5 then this would appear: >
     [Warn: 5 #2]
 <
+                                                   *'b:syntastic_skip_checks'*
+Default: unset
+Only the local form |'b:syntastic_skip_checks'| is used. When set to a true
+value, no checks are run against the corresponding buffer. Example: >
+    let b:syntastic_skip_checks = 1
+<
                                                     *'syntastic_full_redraws'*
 Default: 0 in GUI Vim and MacVim, 1 otherwise
 Controls whether syntastic calls |:redraw| or |:redraw!| for screen redraws.
 Changing it can in principle make screen redraws smoother, but it can also
 cause screen to flicker, or cause ghost characters. Leaving it to the default
 should be safe.
+
+                                                     *'syntastic_exit_checks'*
+Default: 0 when running under "cmd.exe" on Windows, 1 otherwise
+Syntastic attempts to catch abnormal termination conditions from checkers by
+looking at their exit codes. The "cmd.exe" shell on Windows make these checks
+meaningless, by returning 1 to Vim when the checkers exit with non-zero codes.
+The above variable can be used to disable exit code checks in syntastic.
 
                                                            *'syntastic_debug'*
 Default: 0
@@ -520,7 +578,7 @@ List of filetypes handled by checkers external to syntastic.  If you have a Vim
 plugin that adds a checker for syntastic, and if the said checker deals with a
 filetype that is unknown to syntastic, you might consider adding that filetype
 to this list: >
-    let g:syntastic_extra_filetypes = [ 'make', 'gitcommit' ]
+    let g:syntastic_extra_filetypes = [ "make", "gitcommit" ]
 <
 This will allow |:SyntasticInfo| to do proper tab completion for the new
 filetypes.
@@ -534,14 +592,14 @@ filetypes.
                                            *'g:syntastic_<filetype>_checkers'*
 You can tell syntastic which checkers to run for a given filetype by setting a
 variable 'g:syntastic_<filetype>_checkers' to a list of checkers, e.g. >
-    let g:syntastic_php_checkers = ['php', 'phpcs', 'phpmd']
+    let g:syntastic_php_checkers = ["php", "phpcs", "phpmd"]
 <
                                                       *'b:syntastic_checkers'*
 There is also a per-buffer version of this setting, 'b:syntastic_checkers'.
 When set, it takes precedence over |'g:syntastic_<filetype>_checkers'|.  You can
 use this in an autocmd to configure specific checkers for particular paths: >
-    autocmd FileType python if stridx(expand('%:p'), '/some/path/') == 0 |
-        \ let b:syntastic_checkers = ['pylint'] | endif
+    autocmd FileType python if stridx(expand("%:p"), "/some/path/") == 0 |
+        \ let b:syntastic_checkers = ["pylint"] | endif
 <
 If neither |'g:syntastic_<filetype>_checkers'| nor |'b:syntastic_checkers'|
 is set, a default list of checker is used. Beware however that this list
@@ -557,48 +615,61 @@ Use |:SyntasticInfo| to see which checkers are available for a given filetype.
 ------------------------------------------------------------------------------
 5.2 Choosing the executable                            *syntastic-config-exec*
 
-                                    *'syntastic_<filetype>_<subchecker>_exec'*
-The executable used by a checker is normally defined automatically, when the
-checkers is registered. You can however override it by setting the variable
-'g:syntastic_<filetype>_<subchecker>_exec': >
+                                       *'syntastic_<filetype>_<checker>_exec'*
+The executable run by a checker is normally defined automatically, when the
+checker is registered. You can however override it, by setting the variable
+'g:syntastic_<filetype>_<checker>_exec': >
     let g:syntastic_ruby_mri_exec = '~/bin/ruby2'
 <
+This variable has a local version, 'b:syntastic_<filetype>_<checker>_exec',
+which takes precedence over the global one in the corresponding buffer.
+
+                                                *'b:syntastic_<checker>_exec'*
+And there is also a local variable named 'b:syntastic_<checker>_exec', which
+takes precedence over both 'b:syntastic_<filetype>_<checker>_exec' and
+'g:syntastic_<filetype>_<checker>_exec' in the buffers where it is defined.
+
 ------------------------------------------------------------------------------
 5.3 Configuring specific checkers                   *syntastic-config-makeprg*
 
 Most checkers use the 'makeprgBuild()' function and provide many options by
 default - in fact you can customise every part of the command that gets called.
 
-                                *'syntastic_<filetype>_<subchecker>_<option>'*
+                                   *'syntastic_<filetype>_<checker>_<option>'*
 Checkers that use 'makeprgBuild()' construct a 'makeprg' like this: >
     let makeprg = self.makeprgBuild({
-                \ 'exe': self.getExec(),
-                \ 'args': '-a -b -c',
-                \ 'post_args': '--more --args',
-                \ 'tail': '> /tmp/output' })
+                \ "exe": self.getExec(),
+                \ "args": "-a -b -c",
+                \ "post_args": "--more --args",
+                \ "tail": "2>/dev/null" })
 <
 The result is a 'makeprg' of the form: >
-    <exe> <args> <filename> <post_args> <tail>
+    <exe> <args> <fname> <post_args> <tail>
 <
-                                     *'syntastic_<filetype>_<subchecker>_exe'*
 All arguments above are optional, and can be overridden by setting global
 variables 'g:syntastic_<filetype>_<checker-name>_<option-name>' - even
 parameters not specified in the call to makeprgBuild(). These variables also
 have local versions 'b:syntastic_<filetype>_<checker-name>_<option-name>',
 which take precedence over the global ones in the corresponding buffers.
 
+If one of these variables has a non-empty default and you want it to be empty,
+you can set it to an empty string, e.g.: >
+    let g:syntastic_javascript_jslint_args = ""
+<
+                                        *'syntastic_<filetype>_<checker>_exe'*
 The 'exe' is normally the same as the 'exec' attribute described above, in
 which case it may be omitted. However, you can use it to add environment
-variables or additional parameters, e.g. to tell the mri checker to use KANJI
-encoding you could do something like this: >
-    let g:syntastic_ruby_mri_exe = 'RUBYOPT="-Ke" ruby'
+variables, or to change the way the checker is run. For example this setup
+allows you to run PC-Lint under Wine emulation on Linux: >
+    let  g:syntastic_c_pc_lint_exec = "wine"
+    let  g:syntastic_c_pc_lint_exe = "wine c:/path/to/lint-nt.exe"
 <
 To override the args and the tail: >
-    let g:syntastic_ruby_mri_args = "--my --args --here"
-    let g:syntastic_ruby_mri_tail = "> /tmp/my-output-file-biatch"
+    let g:syntastic_c_pc_lint_args = "-w5 -Iz:/usr/include/linux"
+    let g:syntastic_c_pc_lint_tail = "2>/dev/null"
 <
 The general form of the override options is: >
-    syntastic_<filetype>_<subchecker>_<option-name>
+    syntastic_<filetype>_<checker>_<option-name>
 <
 For checkers that do not use the 'makeprgBuild()' function you will have to
 look at the source code of the checker in question. If there are specific
@@ -621,37 +692,65 @@ See |syntastic_quiet_messages| for the syntax.
 ------------------------------------------------------------------------------
 6.1. Handling of composite filetypes                     *syntastic-composite*
 
-Some Vim plugins use composite filetypes, such as 'django.python' or
-'handlebars.html'. Normally, syntastic deals with this situation by splitting
+Some Vim plugins use composite filetypes, such as "django.python" or
+"handlebars.html". Normally, syntastic deals with this situation by splitting
 the filetype in its simple components, and calling all checkers that apply.
 If this behaviour is not desirable, you can disable it by mapping the
 composite filetypes to a simple ones using |syntastic_filetype_map|, e.g.: >
-    let g:syntastic_filetype_map = { 'handlebars.html': 'handlebars' }
+    let g:syntastic_filetype_map = { "handlebars.html": "handlebars" }
 <
 ------------------------------------------------------------------------------
-6.2 Interaction with python-mode                            *syntastic-pymode*
+6.2 Editing files over network                               *syntastic-netrw*
+
+The standard plugin |netrw| allows Vim to transparently edit files over
+network and inside archives.  Currently syntastic doesn't support this mode
+of operation.  It can only check files that can be accessed directly by local
+checkers, without any translation or conversion.
+
+------------------------------------------------------------------------------
+6.3 Interaction with python-mode                            *syntastic-pymode*
 
 Syntastic can be used along with the 'python-mode' Vim plugin (see
 https://github.com/klen/python-mode). However, they both run syntax checks by
 default when you save buffers to disk, and this is probably not what you want.
 To avoid both plugins opening error windows, you can either set passive mode
 for python in syntastic (see |syntastic_mode_map|), or disable lint checks in
-python-mode, by setting |pymode_lint_write| to 0. E.g.: >
+'python-mode', by setting |pymode_lint_write| to 0. E.g.: >
     let g:pymode_lint_write = 0
 <
 ------------------------------------------------------------------------------
-6.3 Interaction with the fish shell                           *syntastic-fish*
+6.4 Interaction with YouCompleteMe                             *syntastic-ycm*
+
+Syntastic can be used together with the 'YouCompleteMe' Vim plugin (see
+http://valloric.github.io/YouCompleteMe/).  However, by default 'YouCompleteMe'
+disables syntastic"s checkers for the "c", "cpp", "objc", and "objcpp"
+filetypes, in order to allow its own checkers to run.  If you want to use YCM's
+identifier completer but still run syntastic's checkers for those filetypes you
+have to set |ycm_show_diagnostics_ui| to 0. E.g.: >
+    let g:ycm_show_diagnostics_ui = 0
+<
+------------------------------------------------------------------------------
+6.5 Interaction with the fish shell                           *syntastic-fish*
 
 At the time of this writing the 'fish' shell (see http://fishshell.com/)
 doesn't support the standard UNIX syntax for file redirections, and thus it
 can't be used together with syntastic. You don't need to change your login
 shell to address this problem, but you do have to point Vim's 'shell' to a more
-traditional shell, such as 'zsh', 'bash', 'ksh', or even the original Bourne
-'sh': >
+traditional shell, such as "zsh", "bash", "ksh", or even the original Bourne
+"sh": >
     set shell=bash
 <
 ------------------------------------------------------------------------------
-6.4. Using syntastic with the fizsh shell                    *syntastic-fizsh*
+6.6. Interaction with PowerShell                        *syntastic-powershell*
+
+At the time of this writing, syntastic is not compatible with using 'Windows
+PowerShell' (http://technet.microsoft.com/en-us/library/bb978526.aspx) as Vim's
+'shell'.  You may still run Vim from 'PowerShell', but you do have to point
+Vim's 'shell' to a more traditional program, such as 'cmd.exe': >
+    set shell=cmd.exe
+<
+------------------------------------------------------------------------------
+6.7. Using syntastic with the fizsh shell                    *syntastic-fizsh*
 
 Using syntastic with the 'fizsh' shell (see https://github.com/zsh-users/fizsh)
 is possible, but potentially problematic. In order to do it you'll need to set
@@ -659,17 +758,34 @@ is possible, but potentially problematic. In order to do it you'll need to set
     set shellredir=>%s\ 2>&1
 <
 Please keep in mind however that Vim can't take advantage of any of the
-interactive features of 'fizsh'. Using a more traditional shell such as 'zsh',
-'bash', 'ksh', or the original Bourne 'sh' might be a better choice: >
+interactive features of 'fizsh'. Using a more traditional shell such as "zsh",
+"bash", "ksh", or the original Bourne "sh" might be a better choice: >
     set shell=zsh
 <
+------------------------------------------------------------------------------
+6.8. Interaction with Eclim                                  *syntastic-eclim*
+
+As far as syntastic is concerned there shouldn't be any compatibility problems
+with the 'Eclim' Vim plugin (see http://eclim.org/). However, at the time of
+this writing there are several reports that 'Eclim' triggers a bug in Vim that
+makes syntastic forget some of its configuration parameters. No solutions or
+workarounds are known for now.
+
+------------------------------------------------------------------------------
+6.9. Interaction with vim-virtualenv                *syntastic-vim-virtualenv*
+
+At the time of this writing, syntastic can't run checkers installed
+in Python virtual environments activated by 'vim-virtualenv' (see
+https://github.com/jmcantrell/vim-virtualenv).  This is a limitation of
+'vim-virtualenv'.
+
 ==============================================================================
 7. About                                                     *syntastic-about*
 
 The core maintainers of syntastic are:
-    Martin Grenfell (github: scrooloose)
-    Gregor Uhlenheuer (github: kongo2002)
-    LCD 047 (github: lcd047)
+    Martin Grenfell (GitHub: scrooloose)
+    Gregor Uhlenheuer (GitHub: kongo2002)
+    LCD 047 (GitHub: lcd047)
 
 Find the latest version of syntastic at:
 

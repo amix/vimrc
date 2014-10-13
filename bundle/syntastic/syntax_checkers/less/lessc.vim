@@ -58,6 +58,7 @@ function! SyntaxCheckers_less_lessc_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'postprocess': ['guards'],
         \ 'defaults': {'bufnr': bufnr(""), 'text': "Syntax error"} })
 endfunction
 

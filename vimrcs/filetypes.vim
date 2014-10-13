@@ -26,7 +26,7 @@ au FileType javascript call JavaScriptFold()
 au FileType javascript setl fen
 au FileType javascript setl nocindent
 
-au FileType javascript imap <c-t> AJS.log();<esc>hi
+au FileType javascript imap <c-t> $log();<esc>hi
 au FileType javascript imap <c-a> alert();<esc>hi
 
 au FileType javascript inoremap <buffer> $r return 
@@ -60,3 +60,5 @@ au BufRead,BufNewFile *.json set filetype=json
 " sth not working here http://visibletrap.blogspot.com/2010/05/vim-how-to-format-and-syntax-highlight.html
 " sudo cpan JSON::XS
 " au Filetype.json map <leader>jt  <Esc>:%!json_xs -f json -t json-pretty<CR>
+
+au FileType gitcommit call setpos('.', [0, 1, 1, 0])

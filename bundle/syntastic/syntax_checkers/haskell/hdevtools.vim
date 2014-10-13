@@ -19,22 +19,30 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haskell_hdevtools_GetLocList() dict
-    let makeprg = self.makeprgBuild({
-        \ 'exe': self.getExecEscaped() . ' check',
-        \ 'args': get(g:, 'hdevtools_options', '') })
+    if !exists('g:syntastic_haskell_hdevtools_args') && exists('g:hdevtools_options')
+        call syntastic#log#oneTimeWarn('variable g:hdevtools_options is deprecated, ' .
+            \ 'please use g:syntastic_haskell_hdevtools_args instead')
+        let g:syntastic_haskell_hdevtools_args = g:hdevtools_options
+    endif
 
-    let errorformat= '\%-Z\ %#,'.
-        \ '%W%f:%l:%c:\ Warning:\ %m,'.
-        \ '%W%f:%l:%c:\ Warning:,'.
-        \ '%E%f:%l:%c:\ %m,'.
-        \ '%E%>%f:%l:%c:,'.
-        \ '%+C\ \ %#%m,'.
-        \ '%W%>%f:%l:%c:,'.
-        \ '%+C\ \ %#%tarning:\ %m,'
+    let makeprg = self.makeprgBuild({
+        \ 'exe_after': 'check',
+        \ 'fname': syntastic#util#shexpand('%:p') })
+
+    let errorformat =
+        \ '%-Z %#,'.
+        \ '%W%f:%l:%v: Warning: %m,'.
+        \ '%W%f:%l:%v: Warning:,'.
+        \ '%E%f:%l:%v: %m,'.
+        \ '%E%>%f:%l:%v:,'.
+        \ '%+C  %#%m,'.
+        \ '%W%>%f:%l:%v:,'.
+        \ '%+C  %#%tarning: %m,'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'defaults': {'vcol': 1},
         \ 'postprocess': ['compressWhitespace'] })
 endfunction
 

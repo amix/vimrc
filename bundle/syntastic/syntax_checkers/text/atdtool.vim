@@ -44,6 +44,8 @@ function! SyntaxCheckers_text_atdtool_GetLocList() dict
         let e['text'] = substitute(e['text'], '\m\n\s\+', ' | ', 'g')
     endfor
 
+    call self.setWantSort(1)
+
     return loclist
 endfunction
 

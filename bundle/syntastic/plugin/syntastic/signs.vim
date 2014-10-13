@@ -25,6 +25,7 @@ function! g:SyntasticSignsNotifier.New() " {{{2
     if !s:setup_done
         call self._setup()
         let s:setup_done = 1
+        lockvar s:setup_done
     endif
 
     return newObj
@@ -41,7 +42,6 @@ function! g:SyntasticSignsNotifier.refresh(loclist) " {{{2
         call self._signErrors(a:loclist)
     endif
     call self._removeSigns(old_signs)
-    let s:first_sign_id = s:next_sign_id
 endfunction " }}}2
 
 " }}}1
@@ -87,15 +87,20 @@ function! g:SyntasticSignsNotifier._signErrors(loclist) " {{{2
     let loclist = a:loclist
     if !loclist.isEmpty()
 
-        " errors some first, so that they are not masked by warnings
         let buf = bufnr('')
+        if !bufloaded(buf)
+            " signs can be placed only in loaded buffers
+            return
+        endif
+
+        " errors come first, so that they are not masked by warnings
         let issues = copy(loclist.errors())
         call extend(issues, loclist.warnings())
         call filter(issues, 'v:val["bufnr"] == buf')
         let seen = {}
 
         for i in issues
-            if !has_key(seen, i['lnum'])
+            if i['lnum'] > 0 && !has_key(seen, i['lnum'])
                 let seen[i['lnum']] = 1
 
                 let sign_severity = i['type'] ==? 'W' ? 'Warning' : 'Error'
@@ -113,9 +118,9 @@ endfunction " }}}2
 " Remove the signs with the given ids from this buffer
 function! g:SyntasticSignsNotifier._removeSigns(ids) " {{{2
     if has('signs')
-        for i in a:ids
-            execute "sign unplace " . i
-            call remove(self._bufSignIds(), index(self._bufSignIds(), i))
+        for s in reverse(copy(a:ids))
+            execute "sign unplace " . s
+            call remove(self._bufSignIds(), index(self._bufSignIds(), s))
         endfor
     endif
 endfunction " }}}2

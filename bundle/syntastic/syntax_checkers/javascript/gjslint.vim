@@ -14,16 +14,13 @@ if exists("g:loaded_syntastic_javascript_gjslint_checker")
 endif
 let g:loaded_syntastic_javascript_gjslint_checker = 1
 
-if !exists("g:syntastic_javascript_gjslint_conf")
-    let g:syntastic_javascript_gjslint_conf = ""
-endif
-
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_javascript_gjslint_GetLocList() dict
+    call syntastic#log#deprecationWarn('javascript_gjslint_conf', 'javascript_gjslint_args')
+
     let makeprg = self.makeprgBuild({
-        \ 'args': g:syntastic_javascript_gjslint_conf,
         \ 'args_after': '--nosummary --unix_mode --nodebug_indentation --nobeep' })
 
     let errorformat =

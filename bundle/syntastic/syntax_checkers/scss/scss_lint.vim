@@ -31,7 +31,7 @@ function! SyntaxCheckers_scss_scss_lint_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'subtype': 'Style',
-        \ 'returns': [0, 1, 65] })
+        \ 'returns': [0, 1, 2, 65, 66] })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

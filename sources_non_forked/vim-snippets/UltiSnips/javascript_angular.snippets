@@ -1,0 +1,25 @@
+priority -50
+
+snippet iti "it (js, inject)" b
+it('${1:description}', inject(function($2) {
+	$0
+}));
+endsnippet
+
+snippet befi "before each (js, inject)" b
+beforeEach(inject(function($1) {
+	$0
+}));
+endsnippet
+
+snippet aconf "angular config" i
+config(function($1) {
+	$0
+});
+endsnippet
+
+snippet acont "angular controller" i
+controller('${1:name}', function($2) {
+	$0
+});
+endsnippet

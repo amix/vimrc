@@ -16,7 +16,7 @@ endsnippet
 
 snippet #if "#if #endif" b
 #if ${1:0}
-${VISUAL}${0:${VISUAL/(.*)/(?1::code)/}}
+${VISUAL}${0}
 #endif
 endsnippet
 
@@ -40,7 +40,7 @@ endsnippet
 snippet main "main() (main)"
 int main(int argc, char *argv[])
 {
-	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+	${VISUAL}${0}
 	return 0;
 }
 endsnippet
@@ -48,14 +48,14 @@ endsnippet
 snippet for "for loop (for)"
 for (${2:i} = 0; $2 < ${1:count}; ${3:++$2})
 {
-	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+	${VISUAL}${0}
 }
 endsnippet
 
 snippet fori "for int loop (fori)"
 for (${4:int} ${2:i} = 0; $2 < ${1:count}; ${3:++$2})
 {
-	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+	${VISUAL}${0}
 }
 endsnippet
 
@@ -74,10 +74,9 @@ else:
 	snip.rv = snip.c`}
 #define $1
 
-${0}
+${VISUAL}${0}
 
 #endif /* end of include guard: $1 */
-
 endsnippet
 
 snippet td "Typedef"
@@ -86,13 +85,13 @@ endsnippet
 
 snippet wh "while loop"
 while(${1:/* condition */}) {
-	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+	${VISUAL}${0}
 }
 endsnippet
 
 snippet do "do...while loop (do)"
 do {
-	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+	${VISUAL}${0}
 } while(${1:/* condition */});
 endsnippet
 
@@ -103,26 +102,26 @@ endsnippet
 snippet if "if .. (if)"
 if (${1:/* condition */})
 {
-	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+	${VISUAL}${0}
 }
 endsnippet
 
 snippet el "else .. (else)"
 else {
-	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+	${VISUAL}${0}
 }
 endsnippet
 
 snippet eli "else if .. (eli)"
 else if (${1:/* condition */}) {
-	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+	${VISUAL}${0}
 }
 endsnippet
 
 snippet ife "if .. else (ife)"
 if (${1:/* condition */})
 {
-	${2:/* code */}
+	${2}
 }
 else
 {
@@ -144,7 +143,7 @@ endsnippet
 snippet fun "function" b
 ${1:void} ${2:function_name}(${3})
 {
-	${VISUAL}${0:${VISUAL/(.*)/(?1::\/* code *\/)/}}
+	${VISUAL}${0}
 }
 endsnippet
 

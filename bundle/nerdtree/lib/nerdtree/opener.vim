@@ -3,6 +3,29 @@
 let s:Opener = {}
 let g:NERDTreeOpener = s:Opener
 
+"FUNCTION: s:Opener._bufInWindows(bnum){{{1
+"[[STOLEN FROM VTREEEXPLORER.VIM]]
+"Determine the number of windows open to this buffer number.
+"Care of Yegappan Lakshman.  Thanks!
+"
+"Args:
+"bnum: the subject buffers buffer number
+function! s:Opener._bufInWindows(bnum)
+    let cnt = 0
+    let winnum = 1
+    while 1
+        let bufnum = winbufnr(winnum)
+        if bufnum < 0
+            break
+        endif
+        if bufnum ==# a:bnum
+            let cnt = cnt + 1
+        endif
+        let winnum = winnum + 1
+    endwhile
+
+    return cnt
+endfunction
 "FUNCTION: Opener._checkToCloseTree(newtab) {{{1
 "Check the class options and global options (i.e. NERDTreeQuitOnOpen) to see
 "if the tree should be closed now.
@@ -19,6 +42,24 @@ function! s:Opener._checkToCloseTree(newtab)
     if (a:newtab && self._where == 't') || !a:newtab
         call nerdtree#closeTreeIfQuitOnOpen()
     endif
+endfunction
+
+
+"FUNCTION: s:Opener._firstUsableWindow(){{{1
+"find the window number of the first normal window
+function! s:Opener._firstUsableWindow()
+    let i = 1
+    while i <= winnr("$")
+        let bnum = winbufnr(i)
+        if bnum != -1 && getbufvar(bnum, '&buftype') ==# ''
+                    \ && !getwinvar(i, '&previewwindow')
+                    \ && (!getbufvar(bnum, '&modified') || &hidden)
+            return i
+        endif
+
+        let i += 1
+    endwhile
+    return -1
 endfunction
 
 "FUNCTION: Opener._gotoTargetWin() {{{1
@@ -46,6 +87,37 @@ function! s:Opener._gotoTargetWin()
 
         call self._checkToCloseTree(0)
     endif
+endfunction
+
+"FUNCTION: s:Opener._isWindowUsable(winnumber) {{{1
+"Returns 0 if opening a file from the tree in the given window requires it to
+"be split, 1 otherwise
+"
+"Args:
+"winnumber: the number of the window in question
+function! s:Opener._isWindowUsable(winnumber)
+    "gotta split if theres only one window (i.e. the NERD tree)
+    if winnr("$") ==# 1
+        return 0
+    endif
+
+    let oldwinnr = winnr()
+    call nerdtree#exec(a:winnumber . "wincmd p")
+    let specialWindow = getbufvar("%", '&buftype') != '' || getwinvar('%', '&previewwindow')
+    let modified = &modified
+    call nerdtree#exec(oldwinnr . "wincmd p")
+
+    "if its a special window e.g. quickfix or another explorer plugin then we
+    "have to split
+    if specialWindow
+        return 0
+    endif
+
+    if &hidden
+        return 1
+    endif
+
+    return !modified || self._bufInWindows(winbufnr(a:winnumber)) >= 2
 endfunction
 
 "FUNCTION: Opener.New(path, opts) {{{1
@@ -190,7 +262,7 @@ function! s:Opener._openDirectory(node)
         call self._gotoTargetWin()
         if empty(self._where)
             call a:node.makeRoot()
-            call nerdtree#renderView()
+            call b:NERDTree.render()
             call a:node.putCursorHere(0, 0)
         elseif self._where == 't'
             call g:NERDTreeCreator.CreatePrimary(a:node.path.str())
@@ -206,12 +278,12 @@ endfunction
 
 "FUNCTION: Opener._previousWindow() {{{1
 function! s:Opener._previousWindow()
-    if !nerdtree#isWindowUsable(winnr("#")) && nerdtree#firstUsableWindow() ==# -1
+    if !self._isWindowUsable(winnr("#")) && self._firstUsableWindow() ==# -1
         call self._newSplit()
     else
         try
-            if !nerdtree#isWindowUsable(winnr("#"))
-                call nerdtree#exec(nerdtree#firstUsableWindow() . "wincmd w")
+            if !self._isWindowUsable(winnr("#"))
+                call nerdtree#exec(self._firstUsableWindow() . "wincmd w")
             else
                 call nerdtree#exec('wincmd p')
             endif

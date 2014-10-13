@@ -19,14 +19,19 @@ set cpo&vim
 
 function! SyntaxCheckers_javascript_jscs_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': '--no-colors --reporter checkstyle' })
+
     let errorformat = '%f:%t:%l:%c:%m'
-    return SyntasticMake({
+
+    let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'subtype': 'Style',
         \ 'preprocess': 'checkstyle',
-        \ 'postprocess': ['sort'],
         \ 'returns': [0, 2] })
+
+    call self.setWantSort(1)
+
+    return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

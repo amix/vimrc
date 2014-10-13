@@ -30,9 +30,12 @@ function! SyntaxCheckers_python_python_GetLocList() dict
 
     let errorformat = '%E%f:%l:%c: %m'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'env': env,
         \ 'returns': [0] })
 endfunction
 

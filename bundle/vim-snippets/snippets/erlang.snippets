@@ -120,8 +120,12 @@ snippet gen_server
 	        ]).
 
 	%% gen_server callbacks
-	-export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-	         terminate/2, code_change/3]).
+	-export([init/1,
+	         handle_call/3,
+	         handle_cast/2,
+	         handle_info/2,
+	         terminate/2,
+	         code_change/3]).
 
 	-define(SERVER, ?MODULE).
 
@@ -156,6 +160,320 @@ snippet gen_server
 
 	code_change(_OldVsn, State, _Extra) ->
 	    {ok, State}.
+
+	%%%===================================================================
+	%%% Internal functions
+	%%%===================================================================
+# OTP gen_fsm
+snippet gen_fsm
+	-module(${0:`vim_snippets#Filename('', 'my')`}).
+
+	-behaviour(gen_fsm).
+
+	%% API
+	-export([start_link/0]).
+
+	%% gen_fsm callbacks
+	-export([init/1,
+			 state_name/2,
+			 state_name/3,
+			 handle_event/3,
+			 handle_sync_event/4,
+			 handle_info/3,
+			 terminate/3,
+			 code_change/4]).
+
+	-record(state, {}).
+
+	%%%===================================================================
+	%%% API
+	%%%===================================================================
+
+	%%--------------------------------------------------------------------
+	%% @doc
+	%% Creates a gen_fsm process which calls Module:init/1 to
+	%% initialize. To ensure a synchronized start-up procedure, this
+	%% function does not return until Module:init/1 has returned.
+	%%
+	%% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
+	%% @end
+	%%--------------------------------------------------------------------
+	start_link() ->
+		gen_fsm:start_link({local, ?MODULE}, ?MODULE, [], []).
+
+	%%%===================================================================
+	%%% gen_fsm callbacks
+	%%%===================================================================
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% Whenever a gen_fsm is started using gen_fsm:start/[3,4] or
+	%% gen_fsm:start_link/[3,4], this function is called by the new
+	%% process to initialize.
+	%%
+	%% @spec init(Args) -> {ok, StateName, State} |
+	%%                     {ok, StateName, State, Timeout} |
+	%%                     ignore |
+	%%                     {stop, StopReason}
+	%% @end
+	%%--------------------------------------------------------------------
+	init([]) ->
+		{ok, state_name, #state{}}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% There should be one instance of this function for each possible
+	%% state name. Whenever a gen_fsm receives an event sent using
+	%% gen_fsm:send_event/2, the instance of this function with the same
+	%% name as the current state name StateName is called to handle
+	%% the event. It is also called if a timeout occurs.
+	%%
+	%% @spec state_name(Event, State) ->
+	%%                   {next_state, NextStateName, NextState} |
+	%%                   {next_state, NextStateName, NextState, Timeout} |
+	%%                   {stop, Reason, NewState}
+	%% @end
+	%%--------------------------------------------------------------------
+	state_name(_Event, State) ->
+		{next_state, state_name, State}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% There should be one instance of this function for each possible
+	%% state name. Whenever a gen_fsm receives an event sent using
+	%% gen_fsm:sync_send_event/[2,3], the instance of this function with
+	%% the same name as the current state name StateName is called to
+	%% handle the event.
+	%%
+	%% @spec state_name(Event, From, State) ->
+	%%                   {next_state, NextStateName, NextState} |
+	%%                   {next_state, NextStateName, NextState, Timeout} |
+	%%                   {reply, Reply, NextStateName, NextState} |
+	%%                   {reply, Reply, NextStateName, NextState, Timeout} |
+	%%                   {stop, Reason, NewState} |
+	%%                   {stop, Reason, Reply, NewState}
+	%% @end
+	%%--------------------------------------------------------------------
+	state_name(_Event, _From, State) ->
+		Reply = ok,
+		{reply, Reply, state_name, State}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% Whenever a gen_fsm receives an event sent using
+	%% gen_fsm:send_all_state_event/2, this function is called to handle
+	%% the event.
+	%%
+	%% @spec handle_event(Event, StateName, State) ->
+	%%                   {next_state, NextStateName, NextState} |
+	%%                   {next_state, NextStateName, NextState, Timeout} |
+	%%                   {stop, Reason, NewState}
+	%% @end
+	%%--------------------------------------------------------------------
+	handle_event(_Event, StateName, State) ->
+		{next_state, StateName, State}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% Whenever a gen_fsm receives an event sent using
+	%% gen_fsm:sync_send_all_state_event/[2,3], this function is called
+	%% to handle the event.
+	%%
+	%% @spec handle_sync_event(Event, From, StateName, State) ->
+	%%                   {next_state, NextStateName, NextState} |
+	%%                   {next_state, NextStateName, NextState, Timeout} |
+	%%                   {reply, Reply, NextStateName, NextState} |
+	%%                   {reply, Reply, NextStateName, NextState, Timeout} |
+	%%                   {stop, Reason, NewState} |
+	%%                   {stop, Reason, Reply, NewState}
+	%% @end
+	%%--------------------------------------------------------------------
+	handle_sync_event(_Event, _From, StateName, State) ->
+		Reply = ok,
+		{reply, Reply, StateName, State}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% This function is called by a gen_fsm when it receives any
+	%% message other than a synchronous or asynchronous event
+	%% (or a system message).
+	%%
+	%% @spec handle_info(Info,StateName,State)->
+	%%                   {next_state, NextStateName, NextState} |
+	%%                   {next_state, NextStateName, NextState, Timeout} |
+	%%                   {stop, Reason, NewState}
+	%% @end
+	%%--------------------------------------------------------------------
+	handle_info(_Info, StateName, State) ->
+		{next_state, StateName, State}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% This function is called by a gen_fsm when it is about to
+	%% terminate. It should be the opposite of Module:init/1 and do any
+	%% necessary cleaning up. When it returns, the gen_fsm terminates with
+	%% Reason. The return value is ignored.
+	%%
+	%% @spec terminate(Reason, StateName, State) -> void()
+	%% @end
+	%%--------------------------------------------------------------------
+	terminate(_Reason, _StateName, _State) ->
+		ok.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% Convert process state when code is changed
+	%%
+	%% @spec code_change(OldVsn, StateName, State, Extra) ->
+	%%                   {ok, StateName, NewState}
+	%% @end
+	%%--------------------------------------------------------------------
+	code_change(_OldVsn, StateName, State, _Extra) ->
+		{ok, StateName, State}.
+
+	%%%===================================================================
+	%%% Internal functions
+	%%%===================================================================
+# OTP gen_event
+snippet gen_event
+	-module(${0:`vim_snippets#Filename('', 'my')`}).
+
+	-behaviour(gen_event).
+
+	%% API
+	-export([start_link/0,
+			 add_handler/2]).
+
+	%% gen_event callbacks
+	-export([init/1,
+			 handle_event/2,
+			 handle_call/2,
+			 handle_info/2,
+			 terminate/2,
+			 code_change/3]).
+
+	-record(state, {}).
+
+	%%%===================================================================
+	%%% gen_event callbacks
+	%%%===================================================================
+
+	%%--------------------------------------------------------------------
+	%% @doc
+	%% Creates an event manager
+	%%
+	%% @spec start_link() -> {ok, Pid} | {error, Error}
+	%% @end
+	%%--------------------------------------------------------------------
+	start_link() ->
+		gen_event:start_link({local, ?MODULE}).
+
+	%%--------------------------------------------------------------------
+	%% @doc
+	%% Adds an event handler
+	%%
+	%% @spec add_handler(Handler, Args) -> ok | {'EXIT', Reason} | term()
+	%% @end
+	%%--------------------------------------------------------------------
+	add_handler(Handler, Args) ->
+		gen_event:add_handler(?MODULE, Handler, Args).
+
+	%%%===================================================================
+	%%% gen_event callbacks
+	%%%===================================================================
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% Whenever a new event handler is added to an event manager,
+	%% this function is called to initialize the event handler.
+	%%
+	%% @spec init(Args) -> {ok, State}
+	%% @end
+	%%--------------------------------------------------------------------
+	init([]) ->
+		{ok, #state{}}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% Whenever an event manager receives an event sent using
+	%% gen_event:notify/2 or gen_event:sync_notify/2, this function is
+	%% called for each installed event handler to handle the event.
+	%%
+	%% @spec handle_event(Event, State) ->
+	%%                          {ok, State} |
+	%%                          {swap_handler, Args1, State1, Mod2, Args2} |
+	%%                          remove_handler
+	%% @end
+	%%--------------------------------------------------------------------
+	handle_event(_Event, State) ->
+		{ok, State}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% Whenever an event manager receives a request sent using
+	%% gen_event:call/3,4, this function is called for the specified
+	%% event handler to handle the request.
+	%%
+	%% @spec handle_call(Request, State) ->
+	%%                   {ok, Reply, State} |
+	%%                   {swap_handler, Reply, Args1, State1, Mod2, Args2} |
+	%%                   {remove_handler, Reply}
+	%% @end
+	%%--------------------------------------------------------------------
+	handle_call(_Request, State) ->
+		Reply = ok,
+		{ok, Reply, State}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% This function is called for each installed event handler when
+	%% an event manager receives any other message than an event or a
+	%% synchronous request (or a system message).
+	%%
+	%% @spec handle_info(Info, State) ->
+	%%                         {ok, State} |
+	%%                         {swap_handler, Args1, State1, Mod2, Args2} |
+	%%                         remove_handler
+	%% @end
+	%%--------------------------------------------------------------------
+	handle_info(_Info, State) ->
+		{ok, State}.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% Whenever an event handler is deleted from an event manager, this
+	%% function is called. It should be the opposite of Module:init/1 and
+	%% do any necessary cleaning up.
+	%%
+	%% @spec terminate(Reason, State) -> void()
+	%% @end
+	%%--------------------------------------------------------------------
+	terminate(_Reason, _State) ->
+		ok.
+
+	%%--------------------------------------------------------------------
+	%% @private
+	%% @doc
+	%% Convert process state when code is changed
+	%%
+	%% @spec code_change(OldVsn, State, Extra) -> {ok, NewState}
+	%% @end
+	%%--------------------------------------------------------------------
+	code_change(_OldVsn, State, _Extra) ->
+		{ok, State}.
 
 	%%%===================================================================
 	%%% Internal functions
