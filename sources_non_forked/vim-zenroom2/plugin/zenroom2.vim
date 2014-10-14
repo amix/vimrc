@@ -62,7 +62,7 @@ function! s:markdown_room()
     exec( "hi StatusLineNC " . l:highlightfgbgcolor )
 endfunction
 
-function! g:Zenroom_goyo_before()
+function! s:zenroom_goyo_before()
     if !has("gui_running")
         return
     endif
@@ -73,7 +73,7 @@ function! g:Zenroom_goyo_before()
     endif
 endfunction
 
-function! g:Zenroom_goyo_after()
+function! s:zenroom_goyo_after()
     if !has("gui_running")
         return
     endif
@@ -87,4 +87,4 @@ function! g:Zenroom_goyo_after()
     endif
 endfunction
 
-let g:goyo_callbacks = [ function('g:Zenroom_goyo_before'), function('g:Zenroom_goyo_after') ]
+let g:goyo_callbacks = [ function('s:zenroom_goyo_before'), function('s:zenroom_goyo_after') ]

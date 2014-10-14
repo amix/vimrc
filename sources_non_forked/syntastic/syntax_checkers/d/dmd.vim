@@ -31,6 +31,7 @@ function! SyntaxCheckers_d_dmd_IsAvailable() dict
     if !exists('g:syntastic_d_compiler')
         let g:syntastic_d_compiler = self.getExec()
     endif
+    call self.log('g:syntastic_d_compiler =', g:syntastic_d_compiler)
     return executable(expand(g:syntastic_d_compiler))
 endfunction
 

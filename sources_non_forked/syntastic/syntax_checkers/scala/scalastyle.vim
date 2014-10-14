@@ -27,10 +27,16 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_scala_scalastyle_IsAvailable() dict
-    return
-        \ executable(self.getExec()) &&
-        \ filereadable(expand(g:syntastic_scala_scalastyle_jar)) &&
-        \ filereadable(expand(g:syntastic_scala_scalastyle_config_file))
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    let jar = expand(g:syntastic_scala_scalastyle_jar)
+    let conf_file = expand(g:syntastic_scala_scalastyle_config_file)
+    call self.log('filereadable(' . string(jar) . ') = ' . filereadable(jar) . ', ' .
+        \ 'filereadable(' . string(conf_file) . ') = ' . filereadable(conf_file))
+
+    return filereadable(jar) && filereadable(conf_file)
 endfunction
 
 function! SyntaxCheckers_scala_scalastyle_GetLocList() dict

@@ -20,6 +20,9 @@ set cpo&vim
 
 " TODO: we should probably split this into separate checkers
 function! SyntaxCheckers_elixir_elixir_IsAvailable() dict
+    call self.log(g:SyntasticDebugCheckers,
+        \ 'executable("elixir") = ' . executable('elixir') . ', ' .
+        \ 'executable("mix") = ' . executable('mix'))
     return executable('elixir') && executable('mix')
 endfunction
 

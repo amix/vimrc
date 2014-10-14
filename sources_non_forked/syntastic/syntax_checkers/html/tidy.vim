@@ -164,8 +164,8 @@ let s:empty_tags = [
 lockvar! s:empty_tags
 
 function! s:IgnoreError(text)
-    for i in s:ignore_errors + g:syntastic_html_tidy_ignore_errors
-        if stridx(a:text, i) != -1
+    for item in s:ignore_errors + g:syntastic_html_tidy_ignore_errors
+        if stridx(a:text, item) != -1
             return 1
         endif
     endfor

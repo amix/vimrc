@@ -145,49 +145,79 @@ $0
 endsnippet
 
 snippet pub "Public function" b
+/**
+ * ${3:undocumented function}
+ *
+ * @return ${4:void}
+ */
 public function ${1:name}(${2:$param})
 {
-	${VISUAL}${3:return null;}
+	${VISUAL}${5:return null;}
 }
 $0
 endsnippet
 
 snippet pro "Protected function" b
+/**
+ * ${3:undocumented function}
+ *
+ * @return ${4:void}
+ */
 protected function ${1:name}(${2:$param})
 {
-	${VISUAL}${3:return null;}
+	${VISUAL}${5:return null;}
 }
 $0
 endsnippet
 
 snippet pri "Private function" b
+/**
+ * ${3:undocumented function}
+ *
+ * @return ${4:void}
+ */
 private function ${1:name}(${2:$param})
 {
-	${VISUAL}${3:return null;}
+	${VISUAL}${5:return null;}
 }
 $0
 endsnippet
 
 snippet pubs "Public static function" b
+/**
+ * ${3:undocumented function}
+ *
+ * @return ${4:void}
+ */
 public static function ${1:name}(${2:$param})
 {
-	${VISUAL}${3:return null;}
+	${VISUAL}${5:return null;}
 }
 $0
 endsnippet
 
 snippet pros "Protected static function" b
+/**
+ * ${3:undocumented function}
+ *
+ * @return ${4:void}
+ */
 protected static function ${1:name}(${2:$param})
 {
-	${VISUAL}${3:return null;}
+	${VISUAL}${5:return null;}
 }
 $0
 endsnippet
 
 snippet pris "Private static function" b
+/**
+ * ${3:undocumented function}
+ *
+ * @return ${4:void}
+ */
 private static function ${1:name}(${2:$param})
 {
-	${VISUAL}${3:return null;}
+	${VISUAL}${5:return null;}
 }
 $0
 endsnippet
@@ -223,10 +253,25 @@ endsnippet
 
 snippet class "Class declaration template" b
 /**
- * Class ${1:`!p snip.rv=snip.fn.split('.')[0]`}
+ * Class ${2:`!p snip.rv=snip.fn.split('.')[0]`}
+ * @author ${3:`!v g:snips_author`}
+ */
+$1class $2
+{
+	public function ${4:__construct}(${5:$options})
+	{
+		${6:// code}
+	}
+}
+$0
+endsnippet
+
+snippet interface "interface declaration template" b
+/**
+ * Interface ${1:`!p snip.rv=snip.fn.split('.')[0]`}
  * @author ${2:`!v g:snips_author`}
  */
-class $1
+interface $1
 {
 	public function ${3:__construct}(${4:$options})
 	{
@@ -265,6 +310,12 @@ public function $1Action($2)
 	$3
 	return ${4:array();}$0
 }
+endsnippet
+
+snippet inheritdoc "@inheritdoc docblock"
+/**
+ * {@inheritdoc}
+ */
 endsnippet
 
 # :vim:ft=snippets:

@@ -19,9 +19,12 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_puppet_puppet_GetLocList() dict
-    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version 2>' . syntastic#util#DevNull())
+    if !exists('s:puppet_version')
+        let s:puppet_version = syntastic#util#getVersion(self.getExecEscaped() . ' --version 2>' . syntastic#util#DevNull())
+        call self.log(self.getExec() . ' version =', s:puppet_version)
+    endif
 
-    if syntastic#util#versionIsAtLeast(ver, [2,7,0])
+    if syntastic#util#versionIsAtLeast(s:puppet_version, [2,7,0])
         let args = 'parser validate --color=false'
     else
         let args = '--color=false --parseonly'

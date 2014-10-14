@@ -19,7 +19,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_co_coco_GetLocList() dict
-    let tmpdir = $TMPDIR != '' ? $TMPDIR : $TMP != '' ? $TMP : '/tmp'
+    let tmpdir = syntastic#util#tmpdir()
     let makeprg = self.makeprgBuild({ 'args_after': '-c -o ' . tmpdir })
 
     let errorformat =
@@ -28,9 +28,13 @@ function! SyntaxCheckers_co_coco_GetLocList() dict
         \ '%EFailed at: %f,'.
         \ '%Z%trror: Parse error on line %l: %m'
 
-    return SyntasticMake({
+    let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat })
+
+    call syntastic#util#rmrf(tmpdir)
+
+    return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

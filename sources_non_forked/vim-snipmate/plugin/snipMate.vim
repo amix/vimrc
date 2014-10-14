@@ -81,6 +81,10 @@ if (!exists('g:snipMate_no_default_aliases') || !g:snipMate_no_default_aliases)
 				\ get(g:snipMate.scope_aliases, 'mxml', 'actionscript')
 	let g:snipMate.scope_aliases.eruby =
 				\ get(g:snipMate.scope_aliases, 'eruby', 'eruby-rails,html')
+	let g:snipMate.scope_aliases.scss =
+				\ get(g:snipMate.scope_aliases, 'scss', 'css')
+	let g:snipMate.scope_aliases.less =
+				\ get(g:snipMate.scope_aliases, 'less', 'css')
 endif
 
 let g:snipMate['get_snippets'] = get(g:snipMate, 'get_snippets', funcref#Function("snipMate#GetSnippets"))

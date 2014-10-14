@@ -47,8 +47,8 @@ function! s:TidyEncOptByFenc()
 endfunction
 
 function! s:IgnoreError(text)
-    for i in g:syntastic_xhtml_tidy_ignore_errors
-        if stridx(a:text, i) != -1
+    for item in g:syntastic_xhtml_tidy_ignore_errors
+        if stridx(a:text, item) != -1
             return 1
         endif
     endfor

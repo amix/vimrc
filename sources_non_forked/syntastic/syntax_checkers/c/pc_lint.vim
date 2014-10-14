@@ -24,6 +24,7 @@ endif
 
 function! SyntaxCheckers_c_pc_lint_GetLocList() dict
     let config = findfile(g:syntastic_pc_lint_config_file, '.;')
+    call self.log('config =', config)
 
     " -hFs1         - show filename, add space after messages, try to make message 1 line
     " -width(0,0)   - make sure there are no line breaks

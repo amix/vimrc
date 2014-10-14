@@ -7,21 +7,21 @@ snippet imp "@import '...';" b
 endsnippet
 
 snippet inc "@include mixin(...);" b
-@include ${1:mixin}(${2:arguments});
+@include ${1:mixin}(${2});
 endsnippet
 
 snippet ext "@extend %placeholder;" b
-@extend %${1:placeholder};
+@extend %${1:%placeholder};
 endsnippet
 
 snippet mixin "@mixin (...) { ... }" b
-@mixin ${1:name}(${2:arguments}) {
+@mixin ${1:name}(${2}) {
 	${VISUAL}$0
 }
 endsnippet
 
 snippet fun "@function (...) { ... }" b
-@function ${1:name}(${2:arguments}) {
+@function ${1:name}(${2}) {
 	${VISUAL}$0
 }
 endsnippet

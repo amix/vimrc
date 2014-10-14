@@ -21,10 +21,6 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_c_clang_tidy_IsAvailable() dict
-  return executable(self.getExec())
-endfunction
-
 function! SyntaxCheckers_c_clang_tidy_GetLocList() dict
     let makeprg = self.makeprgBuild({
         \ 'post_args':

@@ -554,11 +554,12 @@ Default: 0
 Set this to the sum of one or more of the following flags to enable
 debugging:
 
-     1 - trace checker calls
+     1 - trace general workflow
      2 - dump location lists
      4 - trace notifiers
      8 - trace autocommands
     16 - dump options
+    32 - trace running of specific checkers
 
 Example: >
     let g:syntastic_debug = 1

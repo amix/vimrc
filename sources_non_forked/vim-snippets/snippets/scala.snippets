@@ -6,32 +6,27 @@
 # Scala lang
 #if
 snippet if
-	if(${1:obj}) {
+	if (${1})
 		${0}
-	}
 #if not
 snippet ifn
-	if(!${1:obj}) {
+	if (!${1})
 		${0}
-	}
 #if-else
 snippet ife
-	if(${1:obj}) {
+	if (${1})
 		${2}
-	} else {
+	else
 		${0}
-	}
 #if-else-if
 snippet ifelif
-	if(${1:obj}) {
+	if (${1})
 		${2}
-	} else if(${3:obj}) {
+	else if (${3})
 		${0}
-	}
 snippet eif
-	else if(${3:obj}) {
+	else if (${3})
 		${0}
-	}
 #while loop
 snippet wh
 	while (${1:obj}) {

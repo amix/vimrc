@@ -28,10 +28,17 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_java_checkstyle_IsAvailable() dict
-    return
-        \ executable(self.getExec()) &&
-        \ filereadable(expand(g:syntastic_java_checkstyle_classpath)) &&
-        \ filereadable(expand(g:syntastic_java_checkstyle_conf_file))
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    let classpath = expand(g:syntastic_java_checkstyle_classpath)
+    let conf_file = expand(g:syntastic_java_checkstyle_conf_file)
+    call self.log(
+        \ 'filereadable(' . string(classpath) . ') = ' . filereadable(classpath) . ', ' .
+        \ 'filereadable(' . string(conf_file) . ') = ' . filereadable(conf_file))
+
+    return filereadable(classpath) && filereadable(conf_file)
 endfunction
 
 function! SyntaxCheckers_java_checkstyle_GetLocList() dict

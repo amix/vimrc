@@ -1,3 +1,7 @@
+### Version 003 (October 10, 2014)
+
+Almost 3 years' worth of fixes and (hopefully) improvements.
+
 ### Version 002 (December 5, 2011)
 
 Added binary numbers (0b0101) and fixed some bugs (#9, #62, #63, #65).

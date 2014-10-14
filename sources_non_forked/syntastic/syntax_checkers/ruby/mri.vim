@@ -21,6 +21,7 @@ set cpo&vim
 function! SyntaxCheckers_ruby_mri_IsAvailable() dict
     if !exists('g:syntastic_ruby_mri_exec') && exists('g:syntastic_ruby_exec')
         let g:syntastic_ruby_mri_exec = g:syntastic_ruby_exec
+        call self.log('g:syntastic_ruby_exec =', g:syntastic_ruby_exec)
     endif
     return executable(self.getExec())
 endfunction

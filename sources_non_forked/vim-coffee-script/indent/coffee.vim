@@ -1,5 +1,5 @@
 " Language:    CoffeeScript
-" Maintainer:  Mick Koch <kchmck@gmail.com>
+" Maintainer:  Mick Koch <mick@kochm.co>
 " URL:         http://github.com/kchmck/vim-coffee-script
 " License:     WTFPL
 
@@ -426,8 +426,3 @@ function! GetCoffeeIndent(curlnum)
   " No special rules applied, so use the default policy.
   exec 'return' s:GetDefaultPolicy(a:curlnum)
 endfunction
-
-" tab space
-setlocal expandtab
-setlocal tabstop=2 shiftwidth=2 softtabstop=2
-setlocal autoindent

@@ -1,5 +1,5 @@
 "============================================================================
-"File:        chktex.vim
+"File:        igor.vim
 "Description: Syntax checking plugin for syntastic.vim
 "Maintainer:  LCD 47 <lcd047 at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
@@ -10,41 +10,44 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_tex_chktex_checker')
+if exists('g:loaded_syntastic_docbk_igor_checker')
     finish
 endif
-let g:loaded_syntastic_tex_chktex_checker = 1
+let g:loaded_syntastic_docbk_igor_checker = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-if !exists('g:syntastic_tex_chktex_showmsgs')
-    let g:syntastic_tex_chktex_showmsgs = 1
-endif
+function! SyntaxCheckers_docbk_igor_GetLocList() dict
+    let makeprg = self.makeprgBuild({})
 
-function! SyntaxCheckers_tex_chktex_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '-q -v1' })
+    let errorformat = '%f:%l:%m'
 
-    let errorformat =
-        \ '%EError %n in %f line %l: %m,' .
-        \ '%WWarning %n in %f line %l: %m,' .
-        \ (g:syntastic_tex_chktex_showmsgs ? '%WMessage %n in %f line %l: %m,' : '') .
-        \ '%Z%p^,' .
-        \ '%-G%.%#'
-
-    let loclist =  SyntasticMake({
+    let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'subtype': 'Style' })
+        \ 'defaults': { 'type': 'W' },
+        \ 'subtype': 'Style',
+        \ 'returns': [0] })
 
-    call self.setWantSort(1)
+    let buf = bufnr('')
+    for e in loclist
+        " XXX: igor strips directories from filenames
+        let e['bufnr'] = buf
+
+        let e['hl'] = '\V' . escape( substitute(e['text'], '\m[^:]*:', '', ''), '\' )
+        let e['hl'] = substitute(e['hl'], '\V[', '\\zs', 'g')
+        let e['hl'] = substitute(e['hl'], '\V]', '\\ze', 'g')
+
+        " let e['text'] = substitute(e['text'], '\m:.*$', '', '')
+    endfor
 
     return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-    \ 'filetype': 'tex',
-    \ 'name': 'chktex'})
+    \ 'filetype': 'docbk',
+    \ 'name': 'igor'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

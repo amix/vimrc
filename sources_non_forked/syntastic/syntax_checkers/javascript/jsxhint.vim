@@ -19,10 +19,14 @@ set cpo&vim
 
 function! SyntaxCheckers_javascript_jsxhint_IsAvailable() dict
     let jsxhint_version = system(self.getExecEscaped() . ' --version')
-    return
-        \ v:shell_error == 0 &&
-        \ jsxhint_version =~# '\m^JSXHint\>' &&
-        \ syntastic#util#versionIsAtLeast(syntastic#util#parseVersion(jsxhint_version), [0, 4, 1])
+    if v:shell_error || (jsxhint_version !~# '\m^JSXHint\>')
+        return 0
+    endif
+
+    let ver = syntastic#util#parseVersion(jsxhint_version)
+    call self.log(self.getExec() . ' version =', ver)
+
+    return syntastic#util#versionIsAtLeast(ver, [0, 4, 1])
 endfunction
 
 function! SyntaxCheckers_javascript_jsxhint_GetLocList() dict

@@ -19,8 +19,14 @@ set cpo&vim
 
 function! SyntaxCheckers_html_jshint_IsAvailable() dict
     call syntastic#log#deprecationWarn('jshint_exec', 'html_jshint_exec')
-    return executable(self.getExec()) &&
-        \ syntastic#util#versionIsAtLeast(syntastic#util#getVersion(self.getExecEscaped() . ' --version'), [2,4])
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
+    call self.log(self.getExec() . ' version =', ver)
+
+    return syntastic#util#versionIsAtLeast(ver, [2, 4])
 endfunction
 
 function! SyntaxCheckers_html_jshint_GetLocList() dict

@@ -26,6 +26,7 @@ function! SyntaxCheckers_fortran_gfortran_IsAvailable() dict
     if !exists('g:syntastic_fortran_compiler')
         let g:syntastic_fortran_compiler = self.getExec()
     endif
+    call self.log('g:syntastic_fortran_compiler = ', g:syntastic_fortran_compiler)
     return executable(expand(g:syntastic_fortran_compiler))
 endfunction
 

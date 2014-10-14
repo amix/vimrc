@@ -26,6 +26,7 @@ function! SyntaxCheckers_cpp_gcc_IsAvailable() dict
     if !exists('g:syntastic_cpp_compiler')
         let g:syntastic_cpp_compiler = executable(self.getExec()) ? self.getExec() : 'clang++'
     endif
+    call self.log('g:syntastic_cpp_compiler =', g:syntastic_cpp_compiler)
     return executable(expand(g:syntastic_cpp_compiler))
 endfunction
 

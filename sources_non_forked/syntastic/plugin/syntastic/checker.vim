@@ -82,6 +82,15 @@ function! g:SyntasticChecker.setWantSort(val) " {{{2
     let self._sort = a:val
 endfunction " }}}2
 
+function! g:SyntasticChecker.log(msg, ...) " {{{2
+    let leader = self._filetype . '/' . self._name . ': '
+    if a:0 > 0
+        call syntastic#log#debug(g:SyntasticDebugCheckers, leader . a:msg, a:1)
+    else
+        call syntastic#log#debug(g:SyntasticDebugCheckers, leader . a:msg)
+    endif
+endfunction " }}}2
+
 function! g:SyntasticChecker.makeprgBuild(opts) " {{{2
     let basename = self._filetype . '_' . self._name . '_'
 

@@ -19,6 +19,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_sh_sh_IsAvailable() dict
+    call self.log('shell =', s:GetShell())
     return s:IsShellValid()
 endfunction
 
