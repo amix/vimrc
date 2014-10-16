@@ -1,0 +1,3 @@
+[submodule "bundle/smartgf"]
+	path = bundle/smartgf
+	url = git@github.com:gorkunov/smartgf.vim.git
