@@ -19,7 +19,7 @@ if has('reltime')
     lockvar! g:syntastic_start
 endif
 
-let g:syntastic_version = '3.5.0-65'
+let g:syntastic_version = '3.5.0-69'
 lockvar g:syntastic_version
 
 " Sanity checks {{{1
@@ -180,10 +180,11 @@ command! -nargs=* -complete=custom,s:CompleteCheckerName SyntasticCheck
             \ call syntastic#util#redraw(g:syntastic_full_redraws)
 command! Errors call s:ShowLocList()
 command! -nargs=? -complete=custom,s:CompleteFiletypes SyntasticInfo
-            \ call s:modemap.modeInfo(<f-args>) |
-            \ call s:registry.echoInfoFor(s:resolveFiletypes(<f-args>))
+            \ call s:modemap.modeInfo(<f-args>) <bar>
+            \ call s:registry.echoInfoFor(s:resolveFiletypes(<f-args>)) <bar>
+            \ call s:explainSkip(<f-args>)
 command! SyntasticReset
-            \ call s:ClearCache() |
+            \ call s:ClearCache() <bar>
             \ call s:notifiers.refresh(g:SyntasticLoclist.New([]))
 command! SyntasticSetLoclist call g:SyntasticLoclist.current().setloclist()
 
@@ -580,6 +581,35 @@ function! s:skipFile() " {{{2
         call syntastic#log#debug(g:SyntasticDebugTrace, 'skipFile: skipping')
     endif
     return skip
+endfunction " }}}2
+
+" Explain why checks will be skipped for the current file
+function! s:explainSkip(...) " {{{2
+    if !a:0 && s:skipFile()
+        let why = []
+        let fname = expand('%')
+
+        if get(b:, 'syntastic_skip_checks', 0)
+            call add(why, 'b:syntastic_skip_checks set')
+        endif
+        if &buftype != ''
+            call add(why, 'buftype = ' . string(&buftype))
+        endif
+        if !filereadable(fname)
+            call add(why, 'file not readable / not local')
+        endif
+        if getwinvar(0, '&diff')
+            call add(why, 'diff mode')
+        endif
+        if s:ignoreFile(fname)
+            call add(why, 'filename matching g:syntastic_ignore_files')
+        endif
+        if fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
+            call add(why, 'extension matching g:syntastic_ignore_extensions')
+        endif
+
+        echomsg 'The current file will not be checked (' . join(why, ', ') . ')'
+    endif
 endfunction " }}}2
 
 " Take a list of errors and add default values to them from a:options

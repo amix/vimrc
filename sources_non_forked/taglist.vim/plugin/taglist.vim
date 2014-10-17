@@ -1287,6 +1287,10 @@ function! s:Tlist_Window_Create()
         let win_dir = 'botright'
         " Horizontal window height
         let win_size = g:Tlist_WinHeight
+    elseif g:Tlist_Use_Split_Window
+        " Open the window in a horizontal split  of current window
+        let win_dir = 'abo'
+        let win_size = g:Tlist_WinWidth
     else
         if s:tlist_winsize_chgd == -1
             " Open a vertically split window. Increase the window size, if

@@ -28,11 +28,11 @@
 
 ## 1\. Introduction
 
-Syntastic is a syntax checking plugin for Vim that runs files through external
-syntax checkers and displays any resulting errors to the user. This can be done
-on demand, or automatically as files are saved. If syntax errors are detected,
-the user is notified and is happy because they didn't have to compile their
-code or execute their script to find them.
+Syntastic is a syntax checking plugin for [Vim][13] that runs files through
+external syntax checkers and displays any resulting errors to the user. This
+can be done on demand, or automatically as files are saved. If syntax errors
+are detected, the user is notified and is happy because they didn't have to
+compile their code or execute their script to find them.
 
 At the time of this writing, syntax checking plugins exist for ActionScript,
 Ada, AppleScript, Arduino, AsciiDoc, ASM, BEMHTML, Bro, Bourne shell, C,
@@ -64,16 +64,40 @@ enabled.
 
 ## 2\. Installation
 
-Installing syntastic is easy but first you need to have the [pathogen][1]
-plugin installed.  If you already have [pathogen][1] working then skip
-[Step 1](#step1) and go to [Step 2](#step2).
+<a name="requirements"></a>
 
+### 2.1\. Requirements
+
+Syntastic itself has rather relaxed requirements: it doesn't have any external
+dependencies, and it needs a version of [Vim][13] compiled with a few common
+features: `autocmd`, `eval`, `file_in_path`, `modify_fname`, `quickfix`,
+`reltime`, and `user_commands`. Not all possible combinations of features that
+include the ones above make equal sense on all operating systems, but Vim
+version 7 or later with the "normal", "big", or "huge" feature sets should be
+fine.
+
+Syntastic should work with any modern plugin managers for Vim, such as
+[NeoBundle][14], [Pathogen][1], [Vim-Addon-Manager][15], [Vim-Plug][16], or
+[Vundle][17]. Instructions for installing syntastic with [Pathogen][1] are
+included below for completeness.
+
+Last but not least: syntastic doesn't know how to do any syntax checks by
+itself. In order to get meaningful results you need to install external
+checkers corresponding to the types of files you use. Please consult the
+[wiki][3] for a list of supported checkers.
+
+<a name="installpathogen"></a>
+
+### 2.2\. Installing syntastic with Pathogen
+
+If you already have [Pathogen][1] working then skip [Step 1](#step1) and go to
+[Step 2](#step2).
 
 <a name="step1"></a>
 
-### 2.1\. Step 1: Install pathogen.vim
+#### 2.2.1\. Step 1: Install pathogen.vim
 
-First I'll show you how to install Tim Pope's [pathogen][1] so that it's easy to
+First I'll show you how to install Tim Pope's [Pathogen][1] so that it's easy to
 install syntastic.  Do this in your terminal so that you get the `pathogen.vim`
 file and the directories it needs:
 ```sh
@@ -87,7 +111,7 @@ execute pathogen#infect()
 
 <a name="step2"></a>
 
-### 2.2\. Step 2: Install syntastic as a pathogen bundle
+#### 2.2.2\. Step 2: Install syntastic as a Pathogen bundle
 
 You now have pathogen installed and can put syntastic into `~/.vim/bundle` like
 this:
@@ -100,7 +124,8 @@ Quit vim and start it back up to reload it, then type:
 :Helptags
 ```
 If you get an error when you do this, then you probably didn't install
-[pathogen][1] right.  Go back to [Step 1](#step1) and make sure you did the following:
+[Pathogen][1] right.  Go back to [Step 1](#step1) and make sure you did the
+following:
 
 1. Created both the `~/.vim/autoload` and `~/.vim/bundle` directories.
 2. Added the `call pathogen#infect()` line to your `~/.vimrc` file
@@ -328,6 +353,11 @@ a look at [jedi-vim][7], [python-mode][8], or [YouCompleteMe][9].
 [10]: http://perldoc.perl.org/perlrun.html#*-c*
 [11]: https://github.com/scrooloose/syntastic/wiki/Syntax-Checker-Guide
 [12]: https://github.com/rust-lang/rust/
+[13]: http://www.vim.org/
+[14]: https://github.com/Shougo/neobundle.vim
+[15]: https://github.com/MarcWeber/vim-addon-manager
+[16]: https://github.com/junegunn/vim-plug/
+[17]: https://github.com/gmarik/Vundle.vim
 
 <!--
 vim:tw=79:sw=4:

@@ -44,6 +44,7 @@ CONTENTS                                                  *syntastic-contents*
         6.7.Using syntastic with the fizsh shell...|syntastic-fizsh|
         6.8.Interaction with Eclim.................|syntastic-eclim|
         6.9.Interaction with vim-virtualenv........|syntastic-vim-virtualenv|
+        6.10.Interaction with vim-auto-save........|syntastic-vim-auto-save|
     7.About........................................|syntastic-about|
     8.License......................................|syntastic-license|
 
@@ -780,6 +781,19 @@ in Python virtual environments activated by 'vim-virtualenv' (see
 https://github.com/jmcantrell/vim-virtualenv).  This is a limitation of
 'vim-virtualenv'.
 
+------------------------------------------------------------------------------
+6.10. Interaction with vim-auto-save                 *syntastic-vim-auto-save*
+
+At the time of this writing, syntastic checks in active mode are not triggered
+by 'vim-auto-save' (see https://github.com/907th/vim-auto-save). The reason is
+a limitation in 'vim-auto-save', namely a missing flag to an 'autocmd' (see
+|autocmd-nested|). Fortunately it's pretty easy to achieve a similar effect
+without 'vim-auto-save'': >
+    augroup syntastic
+        autocmd CursorHold * nested update
+    augroup END
+    set updatetime=200
+<
 ==============================================================================
 7. About                                                     *syntastic-about*
 
