@@ -180,13 +180,13 @@ endsnippet
 
 snippet elif "else if"
 else if ($1)`!p nl(snip)`{
-	$0
+	$0${VISUAL}
 }
 endsnippet
 
 snippet el "else" w
 else`!p nl(snip)`{
-	$0
+	$0${VISUAL}
 }
 endsnippet
 
@@ -214,7 +214,7 @@ endsnippet
 
 snippet if "if" b
 if ($1)`!p nl(snip)`{
-	$0
+	$0${VISUAL}
 }
 endsnippet
 
@@ -303,7 +303,7 @@ endsnippet
 
 snippet try "try/catch" b
 try {
-	$1
+	$1${VISUAL}
 } catch(${2:Exception} ${3:e}){
 	${4:e.printStackTrace();}
 }

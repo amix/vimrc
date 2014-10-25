@@ -26,6 +26,7 @@ function! SyntaxCheckers_objc_gcc_IsAvailable() dict
     if !exists('g:syntastic_objc_compiler')
         let g:syntastic_objc_compiler = executable(self.getExec()) ? self.getExec() : 'clang'
     endif
+    call self.log('g:syntastic_objc_compiler =', g:syntastic_objc_compiler)
     return executable(expand(g:syntastic_objc_compiler))
 endfunction
 

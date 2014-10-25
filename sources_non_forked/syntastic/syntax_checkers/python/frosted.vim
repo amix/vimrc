@@ -42,7 +42,7 @@ function! SyntaxCheckers_python_frosted_GetLocList() dict
         if len(parts) >= 4
             let e["type"] = parts[1][0]
             let e["text"] = parts[3] . ' [' . parts[1] . ']'
-            let e["hl"] = '\V' . escape(parts[2], '\')
+            let e["hl"] = '\V\<' . escape(parts[2], '\') . '\>'
         elseif e["text"] =~? '\v^I\d+:'
             let e["valid"] = 0
         else

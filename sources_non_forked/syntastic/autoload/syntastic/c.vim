@@ -91,21 +91,21 @@ function! s:_init() " {{{2
     let s:handlers = []
     let s:cflags = {}
 
-    call s:_regHandler('\m\<cairo',       'syntastic#c#checkPKG', ['cairo', 'cairo'])
-    call s:_regHandler('\m\<freetype',    'syntastic#c#checkPKG', ['freetype', 'freetype2', 'freetype'])
-    call s:_regHandler('\m\<glade',       'syntastic#c#checkPKG', ['glade', 'libglade-2.0', 'libglade'])
-    call s:_regHandler('\m\<glib',        'syntastic#c#checkPKG', ['glib', 'glib-2.0', 'glib'])
-    call s:_regHandler('\m\<gtk',         'syntastic#c#checkPKG', ['gtk', 'gtk+-2.0', 'gtk+', 'glib-2.0', 'glib'])
-    call s:_regHandler('\m\<libsoup',     'syntastic#c#checkPKG', ['libsoup', 'libsoup-2.4', 'libsoup-2.2'])
-    call s:_regHandler('\m\<libxml',      'syntastic#c#checkPKG', ['libxml', 'libxml-2.0', 'libxml'])
-    call s:_regHandler('\m\<pango',       'syntastic#c#checkPKG', ['pango', 'pango'])
-    call s:_regHandler('\m\<SDL',         'syntastic#c#checkPKG', ['sdl', 'sdl'])
-    call s:_regHandler('\m\<opengl',      'syntastic#c#checkPKG', ['opengl', 'gl'])
-    call s:_regHandler('\m\<webkit',      'syntastic#c#checkPKG', ['webkit', 'webkit-1.0'])
+    call s:_regHandler('\m\<cairo',       's:_check_pkg', ['cairo', 'cairo'])
+    call s:_regHandler('\m\<freetype',    's:_check_pkg', ['freetype', 'freetype2', 'freetype'])
+    call s:_regHandler('\m\<glade',       's:_check_pkg', ['glade', 'libglade-2.0', 'libglade'])
+    call s:_regHandler('\m\<glib',        's:_check_pkg', ['glib', 'glib-2.0', 'glib'])
+    call s:_regHandler('\m\<gtk',         's:_check_pkg', ['gtk', 'gtk+-2.0', 'gtk+', 'glib-2.0', 'glib'])
+    call s:_regHandler('\m\<libsoup',     's:_check_pkg', ['libsoup', 'libsoup-2.4', 'libsoup-2.2'])
+    call s:_regHandler('\m\<libxml',      's:_check_pkg', ['libxml', 'libxml-2.0', 'libxml'])
+    call s:_regHandler('\m\<pango',       's:_check_pkg', ['pango', 'pango'])
+    call s:_regHandler('\m\<SDL',         's:_check_pkg', ['sdl', 'sdl'])
+    call s:_regHandler('\m\<opengl',      's:_check_pkg', ['opengl', 'gl'])
+    call s:_regHandler('\m\<webkit',      's:_check_pkg', ['webkit', 'webkit-1.0'])
 
-    call s:_regHandler('\m\<php\.h\>',    'syntastic#c#checkPHP',    [])
-    call s:_regHandler('\m\<Python\.h\>', 'syntastic#c#checkPython', [])
-    call s:_regHandler('\m\<ruby',        'syntastic#c#checkRuby',   [])
+    call s:_regHandler('\m\<php\.h\>',    's:_check_php',    [])
+    call s:_regHandler('\m\<Python\.h\>', 's:_check_python', [])
+    call s:_regHandler('\m\<ruby',        's:_check_ruby',   [])
 endfunction " }}}2
 
 " return a handler dictionary object
@@ -253,7 +253,7 @@ endfunction " }}}2
 " try to find library with 'pkg-config'
 " search possible libraries from first to last given
 " argument until one is found
-function! syntastic#c#checkPKG(name, ...) " {{{2
+function! s:_check_pkg(name, ...) " {{{2
     if executable('pkg-config')
         if !has_key(s:cflags, a:name)
             for pkg in a:000
@@ -274,7 +274,7 @@ function! syntastic#c#checkPKG(name, ...) " {{{2
 endfunction " }}}2
 
 " try to find PHP includes with 'php-config'
-function! syntastic#c#checkPHP() " {{{2
+function! s:_check_php() " {{{2
     if executable('php-config')
         if !has_key(s:cflags, 'php')
             let s:cflags['php'] = system('php-config --includes')
@@ -286,7 +286,7 @@ function! syntastic#c#checkPHP() " {{{2
 endfunction " }}}2
 
 " try to find the ruby headers with 'rbconfig'
-function! syntastic#c#checkRuby() " {{{2
+function! s:_check_ruby() " {{{2
     if executable('ruby')
         if !has_key(s:cflags, 'ruby')
             let s:cflags['ruby'] = system('ruby -r rbconfig -e ' .
@@ -300,7 +300,7 @@ function! syntastic#c#checkRuby() " {{{2
 endfunction " }}}2
 
 " try to find the python headers with distutils
-function! syntastic#c#checkPython() " {{{2
+function! s:_check_python() " {{{2
     if executable('python')
         if !has_key(s:cflags, 'python')
             let s:cflags['python'] = system('python -c ''from distutils import ' .

@@ -18,10 +18,14 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_scss_scss_lint_IsAvailable() dict
-    return
-        \ executable(self.getExec()) &&
-        \ syntastic#util#versionIsAtLeast(syntastic#util#getVersion(
-        \       self.getExecEscaped() . ' --version'), [0, 12])
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
+    call self.log(self.getExec() . ' version =', ver)
+
+    return syntastic#util#versionIsAtLeast(ver, [0, 12])
 endfunction
 
 function! SyntaxCheckers_scss_scss_lint_GetLocList() dict
@@ -31,7 +35,7 @@ function! SyntaxCheckers_scss_scss_lint_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'subtype': 'Style',
-        \ 'returns': [0, 1, 65] })
+        \ 'returns': [0, 1, 2, 65, 66] })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

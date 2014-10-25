@@ -21,8 +21,14 @@ set cpo&vim
 let s:compiler = expand('<sfile>:p:h') . syntastic#util#Slash() . 'compile.py'
 
 function! SyntaxCheckers_python_python_IsAvailable() dict
-    return executable(self.getExec()) &&
-        \ syntastic#util#versionIsAtLeast(syntastic#util#getVersion(self.getExecEscaped() . ' --version'), [2, 6])
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
+    call self.log(self.getExec() . ' version =', ver)
+
+    return syntastic#util#versionIsAtLeast(ver, [2, 6])
 endfunction
 
 function! SyntaxCheckers_python_python_GetLocList() dict

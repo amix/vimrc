@@ -27,6 +27,7 @@ function! SyntaxCheckers_cobol_cobc_IsAvailable() dict
     if !exists('g:syntastic_cobol_compiler')
         let g:syntastic_cobol_compiler = self.getExec()
     endif
+    call self.log('g:syntastic_cobol_compiler =', g:syntastic_cobol_compiler)
     return executable(expand(g:syntastic_cobol_compiler))
 endfunction
 

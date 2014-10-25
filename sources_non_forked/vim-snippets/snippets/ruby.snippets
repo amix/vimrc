@@ -590,7 +590,11 @@ snippet begin
 
 #debugging
 snippet debug
-	require 'ruby-debug'; debugger; true;
+	require 'byebug'; byebug
+snippet debug19
+	require 'debugger'; debugger
+snippet debug18
+	require 'ruby-debug'; debugger
 snippet pry
 	require 'pry'; binding.pry
 snippet strf

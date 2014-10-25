@@ -24,19 +24,21 @@ endfunction
 
 function! SyntaxCheckers_go_govet_GetLocList() dict
     let makeprg = 'go vet'
-    let errorformat = '%Evet: %.%\+: %f:%l:%c: %m,%W%f:%l: %m,%-G%.%#'
+
+    let errorformat =
+        \ '%Evet: %.%\+: %f:%l:%c: %m,' .
+        \ '%W%f:%l: %m,' .
+        \ '%-G%.%#'
 
     " The go compiler needs to either be run with an import path as an
     " argument or directly from the package directory. Since figuring out
     " the proper import path is fickle, just cwd to the package.
 
-    let errors = SyntasticMake({
+    return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'cwd': expand('%:p:h'),
         \ 'defaults': {'type': 'w'} })
-
-    return errors
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

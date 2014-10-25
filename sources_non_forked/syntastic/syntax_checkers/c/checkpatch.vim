@@ -18,17 +18,19 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_c_checkpatch_IsAvailable() dict
-    call syntastic#log#deprecationWarn('c_checker_checkpatch_location', 'c_checkpatch_exe')
+    call syntastic#log#deprecationWarn('c_checker_checkpatch_location', 'c_checkpatch_exec')
 
-    if !exists('g:syntastic_c_checkpatch_exe') && !executable(self.getExec())
+    if !exists('g:syntastic_c_checkpatch_exec') && !executable(self.getExec())
         if executable('checkpatch')
-            let g:syntastic_c_checkpatch_exe = 'checkpatch'
+            let g:syntastic_c_checkpatch_exec = 'checkpatch'
         elseif executable('./scripts/checkpatch.pl')
-            let g:syntastic_c_checkpatch_exe = fnamemodify('./scripts/checkpatch.pl', ':p')
+            let g:syntastic_c_checkpatch_exec = fnamemodify('./scripts/checkpatch.pl', ':p')
         elseif executable('./scripts/checkpatch')
-            let g:syntastic_c_checkpatch_exe = fnamemodify('./scripts/checkpatch', ':p')
+            let g:syntastic_c_checkpatch_exec = fnamemodify('./scripts/checkpatch', ':p')
         endif
     endif
+
+    call self.log('exec =', self.getExec())
 
     return executable(self.getExec())
 endfunction

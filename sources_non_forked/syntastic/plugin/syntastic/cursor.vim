@@ -99,7 +99,7 @@ function! s:_isSameIndex(line, old_line, column, idx, messages) " {{{2
             return 1
         endif
 
-        if a:messages[a:idx].scol <= a:column
+        if a:messages[a:idx].scol <= a:column || a:idx == 0
             if a:idx == len(a:messages) - 1 || a:column < a:messages[a:idx + 1].scol
                 return 1
             else

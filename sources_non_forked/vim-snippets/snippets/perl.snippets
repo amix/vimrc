@@ -349,3 +349,11 @@ snippet debug_trace
 		require Carp; Carp::confess
 	};
 
+snippet dump
+	use Data::Dump qw(dump);
+	warn dump ${1:variable}
+
+snippet subtest
+	subtest '${1: test_name}' => sub {
+		${2}
+	};

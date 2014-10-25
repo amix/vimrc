@@ -73,7 +73,7 @@ endsnippet
 
 snippet ecl "...extern crate log;" b
 #![feature(phase)]
-#[phase(syntax, link)] extern crate log;
+#[phase(plugin, link)] extern crate log;
 endsnippet
 
 snippet mod	 "A module" b
@@ -83,16 +83,16 @@ mod ${1:`!p snip.rv = snip.basename.lower() or "name"`} {
 endsnippet
 
 snippet crate "Create header information" b
-// Crate ID
-#![crate_id = "${1:crate_name}#${2:0.0.1}"]
+// Crate name
+#![crate_name = "${1:crate_name}"]
 
 // Additional metadata attributes
-#![desc = "${3:Descrption.}"]
-#![license = "${4:BSD}"]
-#![comment = "${5:Comment.}"]
+#![desc = "${2:Descrption.}"]
+#![license = "${3:BSD}"]
+#![comment = "${4:Comment.}"]
 
 // Specify the output type
-#![crate_type = "${6:lib}"]
+#![crate_type = "${5:lib}"]
 endsnippet
 
 snippet allow "#[allow(..)]" b

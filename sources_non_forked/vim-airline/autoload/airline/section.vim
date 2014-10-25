@@ -49,7 +49,7 @@ function! s:create(parts, append)
     endif
 
     if exists('part.condition')
-      let partval = substitute(partval, '{', '{'.(part.condition).' ? ', '')
+      let partval = substitute(partval, '{', '\="{".(part.condition)." ? "', '')
       let partval = substitute(partval, '}', ' : ""}', '')
     endif
 

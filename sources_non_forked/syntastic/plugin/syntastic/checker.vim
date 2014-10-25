@@ -46,11 +46,9 @@ function! g:SyntasticChecker.getName() " {{{2
 endfunction " }}}2
 
 function! g:SyntasticChecker.getExec() " {{{2
-    if exists('g:syntastic_' . self._filetype . '_' . self._name . '_exec')
-        return expand(g:syntastic_{self._filetype}_{self._name}_exec)
-    endif
-
-    return self._exec
+    return
+        \ expand( exists('b:syntastic_' . self._name . '_exec') ? b:syntastic_{self._name}_exec :
+        \ syntastic#util#var(self._filetype . '_' . self._name . '_exec', self._exec) )
 endfunction " }}}2
 
 function! g:SyntasticChecker.getExecEscaped() " {{{2
@@ -82,6 +80,15 @@ endfunction " }}}2
 
 function! g:SyntasticChecker.setWantSort(val) " {{{2
     let self._sort = a:val
+endfunction " }}}2
+
+function! g:SyntasticChecker.log(msg, ...) " {{{2
+    let leader = self._filetype . '/' . self._name . ': '
+    if a:0 > 0
+        call syntastic#log#debug(g:SyntasticDebugCheckers, leader . a:msg, a:1)
+    else
+        call syntastic#log#debug(g:SyntasticDebugCheckers, leader . a:msg)
+    endif
 endfunction " }}}2
 
 function! g:SyntasticChecker.makeprgBuild(opts) " {{{2
@@ -147,10 +154,9 @@ function! g:SyntasticChecker._populateHighlightRegexes(errors) " {{{2
 endfunction " }}}2
 
 function! g:SyntasticChecker._getOpt(opts, basename, name, default) " {{{2
-    let user_val = syntastic#util#var(a:basename . a:name)
     let ret = []
     call extend( ret, self._shescape(get(a:opts, a:name . '_before', '')) )
-    call extend( ret, self._shescape(user_val != '' ? user_val : get(a:opts, a:name, a:default)) )
+    call extend( ret, self._shescape(syntastic#util#var( a:basename . a:name, get(a:opts, a:name, a:default) )) )
     call extend( ret, self._shescape(get(a:opts, a:name . '_after', '')) )
 
     return ret

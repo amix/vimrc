@@ -22,7 +22,10 @@ function! SyntaxCheckers_javascript_jshint_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
+
     let s:jshint_version = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
+    call self.log(self.getExec() . ' version =', s:jshint_version)
+
     return syntastic#util#versionIsAtLeast(s:jshint_version, [1])
 endfunction
 

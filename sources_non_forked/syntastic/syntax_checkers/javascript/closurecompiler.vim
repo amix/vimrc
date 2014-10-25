@@ -20,25 +20,33 @@ set cpo&vim
 function! SyntaxCheckers_javascript_closurecompiler_IsAvailable() dict
     call syntastic#log#deprecationWarn('javascript_closure_compiler_path', 'javascript_closurecompiler_path')
 
-    return
-        \ executable("java") &&
-        \ exists("g:syntastic_javascript_closurecompiler_path") &&
-        \ filereadable(g:syntastic_javascript_closurecompiler_path)
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    let cp = get(g:, 'syntastic_javascript_closurecompiler_path', '')
+    call self.log('g:syntastic_javascript_closurecompiler_path =', cp)
+
+    let jar = expand(cp)
+    call self.log('filereadable(' . string(jar) . ') = ' . filereadable(jar))
+
+    return filereadable(jar)
 endfunction
 
 function! SyntaxCheckers_javascript_closurecompiler_GetLocList() dict
     call syntastic#log#deprecationWarn('javascript_closure_compiler_options', 'javascript_closurecompiler_args')
     call syntastic#log#deprecationWarn('javascript_closure_compiler_file_list', 'javascript_closurecompiler_file_list')
 
-    if exists("g:syntastic_javascript_closurecompiler_file_list")
-        let file_list = join(readfile(g:syntastic_javascript_closurecompiler_file_list))
+    let flist = expand(get(g:, 'syntastic_javascript_closurecompiler_file_list', ''))
+    if filereadable(flist)
+        let file_list = map( readfile(flist), 'expand(v:var)' )
     else
-        let file_list = syntastic#util#shexpand('%')
+        let file_list = [expand('%')]
     endif
 
     let makeprg = self.makeprgBuild({
-        \ 'exe_after': '-jar ' . g:syntastic_javascript_closurecompiler_path,
-        \ 'args_after': '--js' ,
+        \ 'exe_after': ['-jar', expand(g:syntastic_javascript_closurecompiler_path)],
+        \ 'args_after': '--js',
         \ 'fname': file_list })
 
     let errorformat =

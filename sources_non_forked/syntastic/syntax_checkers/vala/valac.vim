@@ -63,7 +63,7 @@ function! s:GetValaVapiDirs()
         elseif type(g:syntastic_vala_vapi_dirs) == type([])
             return copy(g:syntastic_vala_vapi_dirs)
         else
-            echoerr 'g:syntastic_vala_vapi_dirs must be either list or string: fallback to in file modules string'
+            echoerr 'g:syntastic_vala_vapi_dirs must be either a list, or a string: fallback to in-file modules string'
         endif
     endif
 

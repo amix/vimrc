@@ -36,6 +36,7 @@ set cpo&vim
 let s:node_file = 'node ' . syntastic#util#shescape(expand('<sfile>:p:h') . syntastic#util#Slash() . 'less-lint.js')
 
 function! SyntaxCheckers_less_lessc_IsAvailable() dict
+    call self.log('g:syntastic_less_use_less_lint =', g:syntastic_less_use_less_lint)
     return g:syntastic_less_use_less_lint ? executable('node') : executable(self.getExec())
 endfunction
 
@@ -58,6 +59,7 @@ function! SyntaxCheckers_less_lessc_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'postprocess': ['guards'],
         \ 'defaults': {'bufnr': bufnr(""), 'text': "Syntax error"} })
 endfunction
 

@@ -17,8 +17,12 @@ let g:loaded_syntastic_sass_sass_checker = 1
 
 "sass caching for large files drastically speeds up the checking, but store it
 "in a temp location otherwise sass puts .sass_cache dirs in the users project
-let s:sass_cache_location = tempname()
+let s:sass_cache_location = syntastic#util#tmpdir()
 lockvar s:sass_cache_location
+
+augroup syntastic
+    autocmd VimLeave * call syntastic#util#rmrf(s:sass_cache_location)
+augroup END
 
 "By default do not check partials as unknown variables are a syntax error
 if !exists("g:syntastic_sass_check_partials")
@@ -43,7 +47,7 @@ function! SyntaxCheckers_sass_sass_GetLocList() dict
         \ 'args_before': '--cache-location ' . s:sass_cache_location . ' ' . s:imports . ' --check' })
 
     let errorformat =
-        \ '%ESyntax %trror: %m,' .
+        \ '%E%\m%\%%(Syntax %\)%\?%trror: %m,' .
         \ '%+C              %.%#,' .
         \ '%C        on line %l of %f\, %.%#,' .
         \ '%C        on line %l of %f,' .

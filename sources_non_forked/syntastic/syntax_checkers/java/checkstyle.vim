@@ -27,19 +27,34 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! SyntaxCheckers_java_checkstyle_IsAvailable() dict
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    let classpath = expand(g:syntastic_java_checkstyle_classpath)
+    let conf_file = expand(g:syntastic_java_checkstyle_conf_file)
+    call self.log(
+        \ 'filereadable(' . string(classpath) . ') = ' . filereadable(classpath) . ', ' .
+        \ 'filereadable(' . string(conf_file) . ') = ' . filereadable(conf_file))
+
+    return filereadable(classpath) && filereadable(conf_file)
+endfunction
+
 function! SyntaxCheckers_java_checkstyle_GetLocList() dict
 
-    let fname = syntastic#util#shescape( expand('%:p:h') . '/' . expand('%:t') )
+    let fname = syntastic#util#shescape( expand('%:p:h') . syntastic#util#Slash() . expand('%:t') )
 
     if has('win32unix')
         let fname = substitute(system('cygpath -m ' . fname), '\m\%x00', '', 'g')
     endif
 
     let makeprg = self.makeprgBuild({
-        \ 'args_after': '-cp ' . g:syntastic_java_checkstyle_classpath .
-        \       ' com.puppycrawl.tools.checkstyle.Main -c ' .
-        \       syntastic#util#shexpand(g:syntastic_java_checkstyle_conf_file) .
-        \       ' -f xml',
+        \ 'args_after': [
+        \       '-cp', expand(g:syntastic_java_checkstyle_classpath),
+        \       'com.puppycrawl.tools.checkstyle.Main',
+        \       '-c', expand(g:syntastic_java_checkstyle_conf_file),
+        \       '-f', 'xml'],
         \ 'fname': fname })
 
     let errorformat = '%f:%t:%l:%c:%m'

@@ -51,6 +51,7 @@ let s:defaultCheckers = {
         \ 'lisp':        ['clisp'],
         \ 'llvm':        ['llvm'],
         \ 'lua':         ['luac'],
+        \ 'markdown':    ['mdl'],
         \ 'matlab':      ['mlint'],
         \ 'nasm':        ['nasm'],
         \ 'nroff':       ['mandoc'],
@@ -65,6 +66,7 @@ let s:defaultCheckers = {
         \ 'python':      ['python', 'flake8', 'pylint'],
         \ 'r':           [],
         \ 'racket':      ['racket'],
+        \ 'rnc':         ['rnv'],
         \ 'rst':         ['rst2pseudoxml'],
         \ 'ruby':        ['mri'],
         \ 'sass':        ['sass'],
@@ -72,10 +74,11 @@ let s:defaultCheckers = {
         \ 'scss':        ['sass', 'scss_lint'],
         \ 'sh':          ['sh', 'shellcheck'],
         \ 'slim':        ['slimrb'],
+        \ 'spec':        ['rpmlint'],
         \ 'tcl':         ['nagelfar'],
         \ 'tex':         ['lacheck', 'chktex'],
         \ 'texinfo':     ['makeinfo'],
-        \ 'text':        ['atdtool'],
+        \ 'text':        [],
         \ 'twig':        ['twiglint'],
         \ 'typescript':  ['tsc'],
         \ 'vala':        ['valac'],
@@ -95,8 +98,13 @@ lockvar! s:defaultCheckers
 
 let s:defaultFiletypeMap = {
         \ 'gentoo-metadata': 'xml',
+        \ 'groff': 'nroff',
         \ 'lhaskell': 'haskell',
-        \ 'litcoffee': 'coffee'
+        \ 'litcoffee': 'coffee',
+        \ 'mail': 'text',
+        \ 'mkd': 'markdown',
+        \ 'sgml': 'docbk',
+        \ 'sgmllnx': 'docbk',
     \ }
 lockvar! s:defaultFiletypeMap
 

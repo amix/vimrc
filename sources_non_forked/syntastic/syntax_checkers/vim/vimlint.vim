@@ -36,9 +36,11 @@ function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item)
 endfunction
 
 function! SyntaxCheckers_vim_vimlint_IsAvailable() dict
-    return
-        \ globpath(&runtimepath, 'autoload/vimlparser.vim') != '' &&
-        \ globpath(&runtimepath, 'autoload/vimlint.vim') != ''
+    let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim')
+    let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim')
+    call self.log("globpath(&runtimepath, 'autoload/vimlparser.vim') = " . string(vimlparser) . ', ' .
+                \ "globpath(&runtimepath, 'autoload/vimlint.vim') = " .    string(vimlint))
+    return vimlparser != '' && vimlint != ''
 endfunction
 
 function! SyntaxCheckers_vim_vimlint_GetLocList() dict

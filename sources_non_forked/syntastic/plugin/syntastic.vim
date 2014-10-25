@@ -19,12 +19,20 @@ if has('reltime')
     lockvar! g:syntastic_start
 endif
 
-let g:syntastic_version = '3.4.0-117'
+let g:syntastic_version = '3.5.0-65'
 lockvar g:syntastic_version
 
 " Sanity checks {{{1
 
-for s:feature in ['autocmd', 'eval', 'modify_fname', 'quickfix', 'reltime', 'user_commands']
+for s:feature in [
+            \ 'autocmd',
+            \ 'eval',
+            \ 'file_in_path',
+            \ 'modify_fname',
+            \ 'quickfix',
+            \ 'reltime',
+            \ 'user_commands'
+        \ ]
     if !has(s:feature)
         call syntastic#log#error("need Vim compiled with feature " . s:feature)
         finish
@@ -38,7 +46,7 @@ if !s:running_windows && executable('uname')
     try
         let s:uname = system('uname')
     catch /\m^Vim\%((\a\+)\)\=:E484/
-        call syntastic#log#error("your shell " . &shell . " doesn't use traditional UNIX syntax for redirections")
+        call syntastic#log#error("your shell " . &shell . " can't handle traditional UNIX syntax for redirections")
         finish
     endtry
     lockvar s:uname
@@ -53,7 +61,7 @@ let g:syntastic_defaults = {
         \ 'always_populate_loc_list': 0,
         \ 'auto_jump':                0,
         \ 'auto_loc_list':            2,
-        \ 'bash_hack':                1,
+        \ 'bash_hack':                0,
         \ 'check_on_open':            0,
         \ 'check_on_wq':              1,
         \ 'cursor_columns':           1,
@@ -63,6 +71,7 @@ let g:syntastic_defaults = {
         \ 'enable_highlighting':      1,
         \ 'enable_signs':             1,
         \ 'error_symbol':             '>>',
+        \ 'exit_checks':              !(s:running_windows && &shell =~? '\m\<cmd\.exe$'),
         \ 'filetype_map':             {},
         \ 'full_redraws':             !(has('gui_running') || has('gui_macvim')),
         \ 'id_checkers':              1,
@@ -81,7 +90,7 @@ lockvar! g:syntastic_defaults
 
 for s:key in keys(g:syntastic_defaults)
     if !exists('g:syntastic_' . s:key)
-        let g:syntastic_{s:key} = g:syntastic_defaults[s:key]
+        let g:syntastic_{s:key} = copy(g:syntastic_defaults[s:key])
     endif
 endfor
 
@@ -127,6 +136,8 @@ let     g:SyntasticDebugAutocommands  = 8
 lockvar g:SyntasticDebugAutocommands
 let     g:SyntasticDebugVariables     = 16
 lockvar g:SyntasticDebugVariables
+let     g:SyntasticDebugCheckers      = 32
+lockvar g:SyntasticDebugCheckers
 
 " }}}1
 
@@ -229,7 +240,7 @@ endfunction " }}}2
 function! s:QuitPreHook() " {{{2
     call syntastic#log#debug(g:SyntasticDebugAutocommands,
         \ 'autocmd: QuitPre, buffer ' . bufnr("") . ' = ' . string(bufname(str2nr(bufnr("")))))
-    let b:syntastic_skip_checks = !g:syntastic_check_on_wq
+    let b:syntastic_skip_checks = get(b:, 'syntastic_skip_checks', 0) || !syntastic#util#var('check_on_wq')
     call SyntasticLoclistHide()
 endfunction " }}}2
 
@@ -388,7 +399,7 @@ endfunction " }}}2
 function! s:ToggleMode() " {{{2
     call s:modemap.toggleMode()
     call s:ClearCache()
-    call s:UpdateErrors(1)
+    call s:notifiers.refresh(g:SyntasticLoclist.New([]))
     call s:modemap.echoMode()
 endfunction " }}}2
 
@@ -420,7 +431,6 @@ function! SyntasticMake(options) " {{{2
     call syntastic#log#debug(g:SyntasticDebugTrace, 'SyntasticMake: called with options:', a:options)
 
     " save options and locale env variables {{{3
-    let old_shell = &shell
     let old_shellredir = &shellredir
     let old_local_errorformat = &l:errorformat
     let old_errorformat = &errorformat
@@ -482,13 +492,20 @@ function! SyntasticMake(options) " {{{2
         execute 'lcd ' . fnameescape(old_cwd)
     endif
 
-    silent! lolder
+    try
+        silent lolder
+    catch /\m^Vim\%((\a\+)\)\=:E380/
+        " E380: At bottom of quickfix stack
+        call setloclist(0, [], 'r')
+    catch /\m^Vim\%((\a\+)\)\=:E776/
+        " E776: No location list
+        " do nothing
+    endtry
 
     " restore options {{{3
     let &errorformat = old_errorformat
     let &l:errorformat = old_local_errorformat
     let &shellredir = old_shellredir
-    let &shell = old_shell
     " }}}3
 
     if !s:running_windows && (s:uname() =~ "FreeBSD" || s:uname() =~ "OpenBSD")
@@ -497,7 +514,7 @@ function! SyntasticMake(options) " {{{2
 
     call syntastic#log#debug(g:SyntasticDebugLoclist, 'raw loclist:', errors)
 
-    if has_key(a:options, 'returns') && index(a:options['returns'], v:shell_error) == -1
+    if syntastic#util#var('exit_checks') && has_key(a:options, 'returns') && index(a:options['returns'], v:shell_error) == -1
         throw 'Syntastic: checker error'
     endif
 
@@ -556,9 +573,9 @@ endfunction " }}}2
 " Skip running in special buffers
 function! s:skipFile() " {{{2
     let fname = expand('%')
-    let skip = (exists('b:syntastic_skip_checks') ? b:syntastic_skip_checks : 0) ||
-        \ (&buftype != '') || !filereadable(fname) || getwinvar(0, '&diff') ||
-        \ s:ignoreFile(fname) || fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
+    let skip = get(b:, 'syntastic_skip_checks', 0) || (&buftype != '') ||
+        \ !filereadable(fname) || getwinvar(0, '&diff') || s:ignoreFile(fname) ||
+        \ fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
     if skip
         call syntastic#log#debug(g:SyntasticDebugTrace, 'skipFile: skipping')
     endif
@@ -578,22 +595,21 @@ function! s:addToErrors(errors, options) " {{{2
     return a:errors
 endfunction " }}}2
 
-" The script changes &shellredir and &shell to stop the screen flicking when
-" shelling out to syntax checkers. Not all OSs support the hacks though.
+" XXX: Is this still needed?
+" The script changes &shellredir to stop the screen
+" flicking when shelling out to syntax checkers.
 function! s:bashHack() " {{{2
-    if !exists('s:bash')
-        if !s:running_windows && (s:uname() !~# "FreeBSD") && (s:uname() !~# "OpenBSD")
-            let s:bash =
-                \ executable('/usr/local/bin/bash') ? '/usr/local/bin/bash' :
-                \ executable('/bin/bash') ? '/bin/bash' : ''
-        else
-            let s:bash = ''
+    if g:syntastic_bash_hack
+        if !exists('s:shell_is_bash')
+            let s:shell_is_bash =
+                \ !s:running_windows &&
+                \ (s:uname() !~# "FreeBSD") && (s:uname() !~# "OpenBSD") &&
+                \ &shell =~# '\m\<bash$'
         endif
-    endif
 
-    if g:syntastic_bash_hack && s:bash != ''
-        let &shell = s:bash
-        let &shellredir = '&>'
+        if s:shell_is_bash
+            let &shellredir = '&>'
+        endif
     endif
 endfunction " }}}2
 

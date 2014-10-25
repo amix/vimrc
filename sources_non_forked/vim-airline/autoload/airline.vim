@@ -156,7 +156,7 @@ function! airline#check_mode(winnr)
     call add(l:mode, 'paste')
   endif
 
-  if &readonly
+  if &readonly || ! &modifiable
     call add(l:mode, 'readonly')
   endif
 

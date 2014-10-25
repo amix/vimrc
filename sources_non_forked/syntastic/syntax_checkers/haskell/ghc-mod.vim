@@ -21,10 +21,33 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haskell_ghc_mod_IsAvailable() dict
-    " We need either a Vim version that can handle NULs in system() output,
-    " or a ghc-mod version that has the --boundary option.
-    let exe = self.getExec()
-    let s:ghc_mod_new = executable(exe) ? s:GhcModNew(exe) : -1
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    " ghc-mod 5.0.0 and later needs the "version" command to print the
+    " version.  But the "version" command appeared in 4.1.0.  Thus, we need to
+    " know the version in order to know how to find out the version. :)
+
+    " Try "ghc-mod version".
+    let ver = filter(split(system(self.getExecEscaped() . ' version'), '\n'), 'v:val =~# ''\m^ghc-mod version''')
+    if !len(ver)
+        " That didn't work.  Try "ghc-mod" alone.
+        let ver = filter(split(system(self.getExecEscaped()), '\n'), 'v:val =~# ''\m^ghc-mod version''')
+    endif
+
+    if len(ver)
+        " Encouraged by the great success in finding out the version, now we
+        " need either a Vim that can handle NULs in system() output, or a
+        " ghc-mod that has the "--boundary" option.
+        let parsed_ver = syntastic#util#parseVersion(ver[0])
+        call self.log(self.getExec() . ' version =', parsed_ver)
+        let s:ghc_mod_new = syntastic#util#versionIsAtLeast(parsed_ver, [2, 1, 2])
+    else
+        call syntastic#log#error("checker haskell/ghc_mod: can't parse version string (abnormal termination?)")
+        let s:ghc_mod_new = -1
+    endif
+
     return (s:ghc_mod_new >= 0) && (v:version >= 704 || s:ghc_mod_new)
 endfunction
 
@@ -47,18 +70,6 @@ function! SyntaxCheckers_haskell_ghc_mod_GetLocList() dict
         \ 'errorformat': errorformat,
         \ 'postprocess': ['compressWhitespace'],
         \ 'returns': [0] })
-endfunction
-
-function! s:GhcModNew(exe)
-    let exe = syntastic#util#shescape(a:exe)
-    try
-        let ghc_mod_version = filter(split(system(exe), '\n'), 'v:val =~# ''\m^ghc-mod version''')[0]
-        let ret = syntastic#util#versionIsAtLeast(syntastic#util#parseVersion(ghc_mod_version), [2, 1, 2])
-    catch /\m^Vim\%((\a\+)\)\=:E684/
-        call syntastic#log#error("checker haskell/ghc_mod: can't parse version string (abnormal termination?)")
-        let ret = -1
-    endtry
-    return ret
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

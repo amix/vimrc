@@ -51,15 +51,7 @@ function! s:CygwinPath(path)
 endfunction
 
 if !exists('g:syntastic_java_javac_temp_dir')
-    if has('win32') || has('win64')
-        let g:syntastic_java_javac_temp_dir = $TEMP . syntastic#util#Slash() . 'vim-syntastic-javac'
-    elseif has('win32unix')
-        let g:syntastic_java_javac_temp_dir = s:CygwinPath('/tmp/vim-syntastic-javac')
-    elseif $TMPDIR != ''
-        let g:syntastic_java_javac_temp_dir = $TMPDIR . '/vim-syntastic-javac'
-    else
-        let g:syntastic_java_javac_temp_dir = '/tmp/vim-syntastic-javac'
-    endif
+    let g:syntastic_java_javac_temp_dir = syntastic#util#tmpdir()
 endif
 
 if !exists('g:syntastic_java_javac_autoload_maven_classpath')
@@ -88,18 +80,6 @@ endif
 
 function! s:RemoveCarriageReturn(line)
     return substitute(a:line, "\r", '', 'g')
-endfunction
-
-" recursively remove directory and all it's sub-directories
-function! s:RemoveDir(dir)
-    if isdirectory(a:dir)
-        for f in split(globpath(a:dir, '*'), "\n")
-            call s:RemoveDir(f)
-        endfor
-        silent! call system('rmdir ' . syntastic#util#shescape(a:dir))
-    else
-        silent! call delete(a:dir)
-    endif
 endfunction
 
 function! s:ClassSep()
@@ -419,7 +399,7 @@ function! SyntaxCheckers_java_javac_GetLocList() dict
         \ 'postprocess': ['cygwinRemoveCR'] })
 
     if g:syntastic_java_javac_delete_output
-        call s:RemoveDir(output_dir)
+        call syntastic#util#rmrf(output_dir)
     endif
     return errors
 

@@ -16,14 +16,38 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_python_pylint_IsAvailable() dict
-    let exe = self.getExec()
-    let s:pylint_new = executable(exe) ? s:PylintNew(exe) : -1
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    try
+        " On Windows the version is shown as "pylint-script.py 1.0.0".
+        " On Gentoo Linux it's "pylint-python2.7 0.28.0".
+        " On NixOS, that would be ".pylint-wrapped 0.26.0".
+        " On Arch Linux it's "pylint2 1.1.0".
+        " On new-ish Fedora it's "python3-pylint 1.2.0".
+        " Have you guys considered switching to creative writing yet? ;)
+
+        let pylint_version = filter( split(system(self.getExecEscaped() . ' --version'), '\m, \=\|\n'),
+            \ 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=pylint[-0-9]*\>''' )[0]
+        let ver = syntastic#util#parseVersion(substitute(pylint_version, '\v^\S+\s+', '', ''))
+
+        call self.log(self.getExec() . ' version =', ver)
+
+        let s:pylint_new = syntastic#util#versionIsAtLeast(ver, [1])
+    catch /\m^Vim\%((\a\+)\)\=:E684/
+        call syntastic#log#error("checker python/pylint: can't parse version string (abnormal termination?)")
+        let s:pylint_new = -1
+    endtry
+
     return s:pylint_new >= 0
 endfunction
 
 function! SyntaxCheckers_python_pylint_GetLocList() dict
     let makeprg = self.makeprgBuild({
-        \ 'args_after': (s:pylint_new ? '-f text --msg-template="{path}:{line}:{column}:{C}: [{symbol}] {msg}" -r n' : '-f parseable -r n -i y') })
+        \ 'args_after': (s:pylint_new ?
+        \       '-f text --msg-template="{path}:{line}:{column}:{C}: [{symbol}] {msg}" -r n' :
+        \       '-f parseable -r n -i y') })
 
     let errorformat =
         \ '%A%f:%l:%c:%t: %m,' .
@@ -60,24 +84,6 @@ function! SyntaxCheckers_python_pylint_GetLocList() dict
     call self.setWantSort(1)
 
     return loclist
-endfunction
-
-function! s:PylintNew(exe)
-    let exe = syntastic#util#shescape(a:exe)
-    try
-        " On Windows the version is shown as "pylint-script.py 1.0.0".
-        " On Gentoo Linux it's "pylint-python2.7 0.28.0".
-        " On NixOS, that would be ".pylint-wrapped 0.26.0".
-        " On Arch Linux it's "pylint2 1.1.0".
-        " Have you guys considered switching to creative writing yet? ;)
-        let pylint_version = filter(split(system(exe . ' --version'), '\m, \=\|\n'), 'v:val =~# ''\m^\.\=pylint[-0-9]*\>''')[0]
-        let pylint_version = substitute(pylint_version, '\v^\S+\s+', '', '')
-        let ret = syntastic#util#versionIsAtLeast(syntastic#util#parseVersion(pylint_version), [1])
-    catch /\m^Vim\%((\a\+)\)\=:E684/
-        call syntastic#log#error("checker python/pylint: can't parse version string (abnormal termination?)")
-        let ret = -1
-    endtry
-    return ret
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

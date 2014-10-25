@@ -315,7 +315,7 @@ endfunction " }}}2
 function! s:_setScreenColumn(item) " {{{2
     if !has_key(a:item, 'scol')
         let col = get(a:item, 'col', 0)
-        if col != 0 && a:item['vcol'] == 0
+        if col != 0 && get(a:item, 'vcol', 0) == 0
             let buf = str2nr(a:item['bufnr'])
             try
                 let line = getbufline(buf, a:item['lnum'])[0]

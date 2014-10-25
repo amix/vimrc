@@ -19,6 +19,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_sh_sh_IsAvailable() dict
+    call self.log('shell =', s:GetShell())
     return s:IsShellValid()
 endfunction
 
@@ -57,7 +58,7 @@ function! s:GetShell()
         endif
         " try to use env variable in case no shebang could be found
         if b:shell == ''
-            let b:shell = fnamemodify(expand('$SHELL'), ':t')
+            let b:shell = fnamemodify($SHELL, ':t')
         endif
     endif
     return b:shell

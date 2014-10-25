@@ -29,6 +29,7 @@ function! SyntaxCheckers_handlebars_handlebars_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'postprocess': ['guards'],
         \ 'defaults': {'bufnr': bufnr("")} })
 endfunction
 

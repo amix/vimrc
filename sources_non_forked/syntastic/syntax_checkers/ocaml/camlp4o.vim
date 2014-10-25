@@ -71,7 +71,7 @@ if !exists('g:syntastic_ocaml_use_ocamlc') || !executable('ocamlc')
 endif
 
 if !exists('g:syntastic_ocaml_use_janestreet_core')
-    let g:syntastic_ocaml_use_ocamlc = 0
+    let g:syntastic_ocaml_use_janestreet_core = 0
 endif
 
 if !exists('g:syntastic_ocaml_use_ocamlbuild') || !executable("ocamlbuild")

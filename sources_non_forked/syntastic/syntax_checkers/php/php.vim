@@ -38,7 +38,8 @@ function! SyntaxCheckers_php_php_GetLocList() dict
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat })
+        \ 'errorformat': errorformat,
+        \ 'postprocess': ['guards'] })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
