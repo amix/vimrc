@@ -176,7 +176,6 @@ set nobackup
 set nowb
 set noswapfile
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -283,6 +282,9 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Remap ; to :
+nnoremap ; :
+
 " Remap VIM 0 to first non-blank character
 map 0 ^
 
@@ -300,13 +302,14 @@ if has("mac") || has("macunix")
 endif
 
 " Delete trailing white space on save, useful for Python and CoffeeScript ;)
-func! DeleteTrailingWS()
-  exe "normal mz"
-  %s/\s\+$//ge
-  exe "normal `z"
-endfunc
-autocmd BufWrite *.py :call DeleteTrailingWS()
-autocmd BufWrite *.coffee :call DeleteTrailingWS()
+"func! DeleteTrailingWS()
+  "exe "normal mz"
+  "%s/\s\+$//ge
+  "exe "normal `z"
+"endfunc
+"autocmd BufWrite *.py :call DeleteTrailingWS()
+"autocmd BufWrite *.coffee :call DeleteTrailingWS()
+autocmd BufWritePre * :FixWhitespace
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
