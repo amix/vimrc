@@ -5,7 +5,7 @@ let g:molokai_original = 1
 "colorscheme solarized
 "syntax enable
 "set background=dark
-let g:airline_theme = 'molokai'
+"let g:airline_theme = 'molokai'
 "set smartindent
 "autocmd BufWritePre * :FixWhitespace
 set timeoutlen=2000
