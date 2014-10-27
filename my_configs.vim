@@ -1,11 +1,38 @@
+"Switch color schemes"
+function! ColorSet(colorName)
+  if  a:colorName == "default"
+    colorscheme molokai
+    set background=light
+    let g:molokai_original=1
+    let g:airline_theme = 'molokai'
+  elseif a:colorName == "outside"
+    colorscheme solarized
+    set background=light
+    let g:airline_theme = 'molokai'
+  elseif a:colorName == "bluey"
+    colorscheme solarized
+    set background=dark
+    let g:airline_theme = 'molokai'
+  else
+    echo "you fucked up"
+  endif
+endfunction
+
+:command -nargs=1 ColorSet :call ColorSet(<f-args>)
+
+if !empty($VIM_COLOR)
+  :call ColorSet($VIM_COLOR)
+else
+  :call ColorSet("default")
+endif
+
+
 "set mouse=a
-colorscheme molokai
-set background=dark
-let g:molokai_original = 1
+"set background=dark
+"let g:molokai_original = 1
 "colorscheme solarized
 "syntax enable
 "set background=dark
-"let g:airline_theme = 'molokai'
 "set smartindent
 "autocmd BufWritePre * :FixWhitespace
 set timeoutlen=2000
@@ -91,3 +118,6 @@ set scrolloff=3
 "set shiftwidth=2
 "set expandtab
 "set smartindentl:s
+"
+"
+
