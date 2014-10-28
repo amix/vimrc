@@ -2,7 +2,7 @@
 function! ColorSet(colorName)
   if  a:colorName == "default"
     colorscheme molokai
-    set background=light
+    set background=dark
     let g:molokai_original=1
     let g:airline_theme = 'molokai'
   elseif a:colorName == "outside"
@@ -11,6 +11,10 @@ function! ColorSet(colorName)
     let g:airline_theme = 'molokai'
   elseif a:colorName == "bluey"
     colorscheme solarized
+    set background=dark
+    let g:airline_theme = 'molokai'
+  elseif a:colorName == "smyck"
+    colorscheme smyck
     set background=dark
     let g:airline_theme = 'molokai'
   else

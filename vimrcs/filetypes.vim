@@ -63,11 +63,11 @@ function! WordProcessor()
   "setl textwidth=80
   "setl foldcolumn=10
   "setl columns=100
-  :Goyo
+"  :Goyo
 endfunction
 
 " md is markdown
-autocmd FileType markdown,mkd call WordProcessor()
+"autocmd FileType markdown,mkd call WordProcessor()
 "autocmd BufRead,BufNewFile *.md set filetype=markdown
 "
 "let g:pencil#wrapModeDefault = 'soft'   " or 'hard'
