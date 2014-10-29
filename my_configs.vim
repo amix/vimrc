@@ -17,8 +17,15 @@ function! ColorSet(colorName)
     colorscheme smyck
     set background=dark
     let g:airline_theme = 'molokai'
+  elseif a:colorName == "dracula"
+    colorscheme dracula
+    set background=dark
+    let g:airline_theme = 'molokai'
   else
-    echo "you fucked up"
+    colorscheme molokai
+    set background=dark
+    let g:molokai_original=1
+    let g:airline_theme = 'molokai'
   endif
 endfunction
 
