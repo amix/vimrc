@@ -20,6 +20,10 @@ if exists("g:loaded_syntastic_css_prettycss_checker")
 endif
 let g:loaded_syntastic_css_prettycss_checker = 1
 
+if !exists('g:syntastic_css_prettycss_sort')
+    let g:syntastic_css_prettycss_sort = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -48,8 +52,6 @@ function! SyntaxCheckers_css_prettycss_GetLocList() dict
     for e in loclist
         let e["text"] .= ')'
     endfor
-
-    call self.setWantSort(1)
 
     return loclist
 endfunction

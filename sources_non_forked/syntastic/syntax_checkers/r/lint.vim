@@ -19,6 +19,10 @@ if !exists('g:syntastic_r_lint_styles')
     let g:syntastic_r_lint_styles = 'lint.style'
 endif
 
+if !exists('g:syntastic_r_lint_sort')
+    let g:syntastic_r_lint_sort = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -64,8 +68,6 @@ function! SyntaxCheckers_r_lint_GetLocList() dict
             call remove(e, 'subtype')
         endif
     endfor
-
-    call self.setWantSort(1)
 
     return loclist
 endfunction

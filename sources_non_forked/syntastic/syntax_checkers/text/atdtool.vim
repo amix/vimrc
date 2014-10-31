@@ -15,6 +15,10 @@ if exists("g:loaded_syntastic_text_atdtool_checker")
 endif
 let g:loaded_syntastic_text_atdtool_checker = 1
 
+if !exists('g:syntastic_text_atdtool_sort')
+    let g:syntastic_text_atdtool_sort = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -43,8 +47,6 @@ function! SyntaxCheckers_text_atdtool_GetLocList() dict
     for e in loclist
         let e['text'] = substitute(e['text'], '\m\n\s\+', ' | ', 'g')
     endfor
-
-    call self.setWantSort(1)
 
     return loclist
 endfunction

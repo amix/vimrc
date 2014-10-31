@@ -24,6 +24,11 @@ function! SyntaxCheckers_javascript_closurecompiler_IsAvailable() dict
         return 0
     endif
 
+    let s:has_script = exists('g:syntastic_javascript_closurecompiler_script')
+    if s:has_script
+        return 1
+    endif
+
     let cp = get(g:, 'syntastic_javascript_closurecompiler_path', '')
     call self.log('g:syntastic_javascript_closurecompiler_path =', cp)
 
@@ -45,14 +50,13 @@ function! SyntaxCheckers_javascript_closurecompiler_GetLocList() dict
     endif
 
     let makeprg = self.makeprgBuild({
-        \ 'exe_after': ['-jar', expand(g:syntastic_javascript_closurecompiler_path)],
+        \ 'exe_after': (s:has_script ? [] : ['-jar', expand(g:syntastic_javascript_closurecompiler_path)]),
         \ 'args_after': '--js',
         \ 'fname': file_list })
 
     let errorformat =
         \ '%-GOK,'.
         \ '%E%f:%l: ERROR - %m,'.
-        \ '%Z%p^,'.
         \ '%W%f:%l: WARNING - %m,'.
         \ '%Z%p^'
 
@@ -64,7 +68,7 @@ endfunction
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'javascript',
     \ 'name': 'closurecompiler',
-    \ 'exec': 'java'})
+    \ 'exec': get(g:, 'syntastic_javascript_closurecompiler_script', 'java')})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

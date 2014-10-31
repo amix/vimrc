@@ -24,7 +24,7 @@ call NERDTreeAddMenuItem({'text': '(a)dd a childnode', 'shortcut': 'a', 'callbac
 call NERDTreeAddMenuItem({'text': '(m)ove the current node', 'shortcut': 'm', 'callback': 'NERDTreeMoveNode'})
 call NERDTreeAddMenuItem({'text': '(d)elete the current node', 'shortcut': 'd', 'callback': 'NERDTreeDeleteNode'})
 
-if has("gui_mac") || has("gui_macvim") 
+if has("gui_mac") || has("gui_macvim")
     call NERDTreeAddMenuItem({'text': '(r)eveal in Finder the current node', 'shortcut': 'r', 'callback': 'NERDTreeRevealInFinder'})
     call NERDTreeAddMenuItem({'text': '(o)pen the current node with system editor', 'shortcut': 'o', 'callback': 'NERDTreeExecuteFile'})
     call NERDTreeAddMenuItem({'text': '(q)uicklook the current node', 'shortcut': 'q', 'callback': 'NERDTreeQuickLook'})
@@ -86,10 +86,11 @@ function! s:promptToRenameBuffer(bufnum, msg, newFileName)
         " 1. ensure that a new buffer is loaded
         exec "badd " . quotedFileName
         " 2. ensure that all windows which display the just deleted filename
-        " display a buffer for a new filename. 
+        " display a buffer for a new filename.
         let s:originalTabNumber = tabpagenr()
         let s:originalWindowNumber = winnr()
-        exec "tabdo windo if winbufnr(0) == " . a:bufnum . " | exec \":e! " . quotedFileName . "\" | endif"
+        let editStr = g:NERDTreePath.New(a:newFileName).str({'format': 'Edit'})
+        exec "tabdo windo if winbufnr(0) == " . a:bufnum . " | exec ':e! " . editStr . "' | endif"
         exec "tabnext " . s:originalTabNumber
         exec s:originalWindowNumber . "wincmd w"
         " 3. We don't need a previous buffer anymore

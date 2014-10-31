@@ -15,6 +15,10 @@ if exists('g:loaded_syntastic_haskell_scan_checker')
 endif
 let g:loaded_syntastic_haskell_scan_checker = 1
 
+if !exists('g:syntastic_haskell_scan_sort')
+    let g:syntastic_haskell_scan_sort = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -23,14 +27,10 @@ function! SyntaxCheckers_haskell_scan_GetLocList() dict
 
     let errorformat = '%f:%l:%v: %m'
 
-    let loclist = SyntasticMake({
+    return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'subtype': 'Style' })
-
-    call self.setWantSort(1)
-
-    return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

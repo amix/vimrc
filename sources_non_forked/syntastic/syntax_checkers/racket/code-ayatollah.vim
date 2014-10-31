@@ -19,6 +19,10 @@ if !exists('g:syntastic_racket_code_ayatollah_script')
     let g:syntastic_racket_code_ayatollah_script = 'code-ayatollah.rkt'
 endif
 
+if !exists('g:syntastic_racket_code_ayatollah_sort')
+    let g:syntastic_racket_code_ayatollah_sort = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -43,8 +47,6 @@ function! SyntaxCheckers_racket_code_ayatollah_GetLocList() dict
     for e in loclist
         let e['col'] += 1
     endfor
-
-    call self.setWantSort(1)
 
     return loclist
 endfunction

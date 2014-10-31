@@ -34,6 +34,7 @@ CONTENTS                                                  *syntastic-contents*
         5.1.Choosing which checkers to use.........|syntastic-filetype-checkers|
         5.2.Choosing the executable................|syntastic-config-exec|
         5.3.Configuring specific checkers..........|syntastic-config-makeprg|
+        5.4.Sorting errors.........................|syntastic-config-sort|
     6.Notes........................................|syntastic-notes|
         6.1.Handling of composite filetypes........|syntastic-composite|
         6.2.Editing files over network.............|syntastic-netrw|
@@ -44,6 +45,7 @@ CONTENTS                                                  *syntastic-contents*
         6.7.Using syntastic with the fizsh shell...|syntastic-fizsh|
         6.8.Interaction with Eclim.................|syntastic-eclim|
         6.9.Interaction with vim-virtualenv........|syntastic-vim-virtualenv|
+        6.10.Interaction with vim-auto-save........|syntastic-vim-auto-save|
     7.About........................................|syntastic-about|
     8.License......................................|syntastic-license|
 
@@ -207,7 +209,8 @@ disable generation of these labels by turning off '|syntastic_id_checkers|'.
 If |'syntastic_sort_aggregated_errors'| is set (which is the default), messages
 in the aggregated list are grouped by file, then sorted by line number, then
 type, then column number.  Otherwise messages produced by the same checker are
-grouped together.
+grouped together, and sorting within each group is decided by the variables
+|'syntastic_<filetype>_<checker>_sort'|.
 
 ------------------------------------------------------------------------------
 2.6 Filtering errors                              *syntastic-filtering-errors*
@@ -687,6 +690,25 @@ Example: >
 <
 See |syntastic_quiet_messages| for the syntax.
 
+------------------------------------------------------------------------------
+5.4 Sorting errors                                     *syntastic-config-sort*
+
+                                       *'syntastic_<filetype>_<checker>_sort'*
+Syntastic may decide to group the errors produced by some checkers by file,
+then sort them by line number, then by type, then by column number. If you'd
+prefer to see the errors in the order in which they are output by the external
+checker you can set the variable |'g:syntastic_<filetype>_<checker>_sort'| to 0.
+
+Alternatively, if syntastic doesn't reorder the errors produced by a checker
+but you'd like it to sort them, you can set the same variable to 1.
+
+There is also a local version |'b:syntastic_<filetype>_<checker>_sort'| of
+this variable, that takes precedence over it in the buffers where it is
+defined.
+
+For aggregated lists (see |syntastic-aggregating-errors|) these variables are
+ignored if |syntastic_sort_aggregated_errors| is set (which is the default).
+
 ==============================================================================
 6. Notes                                                     *syntastic-notes*
 
@@ -724,7 +746,7 @@ for python in syntastic (see |syntastic_mode_map|), or disable lint checks in
 
 Syntastic can be used together with the 'YouCompleteMe' Vim plugin (see
 http://valloric.github.io/YouCompleteMe/).  However, by default 'YouCompleteMe'
-disables syntastic"s checkers for the "c", "cpp", "objc", and "objcpp"
+disables syntastic's checkers for the "c", "cpp", "objc", and "objcpp"
 filetypes, in order to allow its own checkers to run.  If you want to use YCM's
 identifier completer but still run syntastic's checkers for those filetypes you
 have to set |ycm_show_diagnostics_ui| to 0. E.g.: >
@@ -766,11 +788,15 @@ interactive features of 'fizsh'. Using a more traditional shell such as "zsh",
 ------------------------------------------------------------------------------
 6.8. Interaction with Eclim                                  *syntastic-eclim*
 
-As far as syntastic is concerned there shouldn't be any compatibility problems
-with the 'Eclim' Vim plugin (see http://eclim.org/). However, at the time of
-this writing there are several reports that 'Eclim' triggers a bug in Vim that
-makes syntastic forget some of its configuration parameters. No solutions or
-workarounds are known for now.
+Syntastic can be used together with 'Eclim' (see http://eclim.org/). However,
+by default Eclim disables syntastic's checks for the filetypes it supports, in
+order to run its own validation. If you'd prefer to use Eclim but still run
+syntastic's checks, set |g:EclimFileTypeValidate| to 0: >
+    let g:EclimFileTypeValidate = 0
+<
+It is also possible to re-enable syntastic checks only for some filetypes, and
+run Eclim's validation for others. Please consult Eclim's documentation for
+details.
 
 ------------------------------------------------------------------------------
 6.9. Interaction with vim-virtualenv                *syntastic-vim-virtualenv*
@@ -780,6 +806,19 @@ in Python virtual environments activated by 'vim-virtualenv' (see
 https://github.com/jmcantrell/vim-virtualenv).  This is a limitation of
 'vim-virtualenv'.
 
+------------------------------------------------------------------------------
+6.10. Interaction with vim-auto-save                 *syntastic-vim-auto-save*
+
+At the time of this writing, syntastic checks in active mode are not triggered
+by 'vim-auto-save' (see https://github.com/907th/vim-auto-save). The reason is
+a limitation in 'vim-auto-save', namely a missing flag to an 'autocmd' (see
+|autocmd-nested|). Fortunately it's pretty easy to achieve a similar effect
+without 'vim-auto-save'': >
+    augroup syntastic
+        autocmd CursorHold * nested update
+    augroup END
+    set updatetime=200
+<
 ==============================================================================
 7. About                                                     *syntastic-about*
 

@@ -14,6 +14,10 @@ if exists('g:loaded_syntastic_javascript_eslint_checker')
 endif
 let g:loaded_syntastic_javascript_eslint_checker = 1
 
+if !exists('g:syntastic_javascript_eslint_sort')
+    let g:syntastic_javascript_eslint_sort = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -46,8 +50,6 @@ function! SyntaxCheckers_javascript_eslint_GetLocList() dict
     for e in loclist
         let e['col'] += 1
     endfor
-
-    call self.setWantSort(1)
 
     return loclist
 endfunction

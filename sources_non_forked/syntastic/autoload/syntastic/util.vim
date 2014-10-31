@@ -274,7 +274,7 @@ endfunction " }}}2
 
 function! syntastic#util#dictFilter(errors, filter) " {{{2
     let rules = s:_translateFilter(a:filter)
-    " call syntastic#log#debug(g:SyntasticDebugFilters, "applying filter:", rules)
+    " call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, "applying filter:", rules)
     try
         call filter(a:errors, rules)
     catch /\m^Vim\%((\a\+)\)\=:E/
@@ -287,7 +287,7 @@ endfunction " }}}2
 " (hopefully high resolution) since program start
 " TODO: This assumes reltime() returns a list of integers.
 function! syntastic#util#stamp() " {{{2
-    return reltime(g:syntastic_start)
+    return reltime(g:_SYNTASTIC_START)
 endfunction " }}}2
 
 " }}}1

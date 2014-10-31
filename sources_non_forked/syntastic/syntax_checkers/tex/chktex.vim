@@ -15,12 +15,16 @@ if exists('g:loaded_syntastic_tex_chktex_checker')
 endif
 let g:loaded_syntastic_tex_chktex_checker = 1
 
-let s:save_cpo = &cpo
-set cpo&vim
-
 if !exists('g:syntastic_tex_chktex_showmsgs')
     let g:syntastic_tex_chktex_showmsgs = 1
 endif
+
+if !exists('g:syntastic_tex_chktex_sort')
+    let g:syntastic_tex_chktex_sort = 1
+endif
+
+let s:save_cpo = &cpo
+set cpo&vim
 
 function! SyntaxCheckers_tex_chktex_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': '-q -v1' })
@@ -32,14 +36,10 @@ function! SyntaxCheckers_tex_chktex_GetLocList() dict
         \ '%Z%p^,' .
         \ '%-G%.%#'
 
-    let loclist =  SyntasticMake({
+    return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'subtype': 'Style' })
-
-    call self.setWantSort(1)
-
-    return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

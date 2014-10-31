@@ -17,7 +17,7 @@ ${1:name} :: ${2:Type} -> ${3:Type}
 endsnippet
 
 snippet => "Type constraint"
-(${1:Class} ${2:Type var}) => ${3:$2}
+(${1:Class} ${2:a}) => $2
 endsnippet
 
 snippet def "Function definition"
@@ -50,7 +50,7 @@ snippet | "Guard"
 endsnippet
 
 snippet \ "Lambda expression"
-\ ${1:pattern} -> ${2:expression}
+\\${1:pattern} -> ${2:expression}
 endsnippet
 
 snippet [|] "List comprehension"
@@ -60,4 +60,9 @@ endsnippet
 snippet let "let ... in ..."
 let ${1:name} = ${2:expression}
 in ${3:expression}
+endsnippet
+
+snippet wh "where x = expression"
+where
+	${1:name} = ${2:expression}
 endsnippet

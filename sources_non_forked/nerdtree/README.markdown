@@ -87,7 +87,9 @@ A. Stick this in your vimrc
 
 __Q. How can I map a specific key or shortcut to open NERDTree?__
 
-A. Stick this in your vimrc to open NERDTree with `Ctrl+n` (you can set whatever key you want): `map <C-n> :NERDTreeToggle<CR>`
+A. Stick this in your vimrc to open NERDTree with `Ctrl+n` (you can set whatever key you want): 
+
+`map <C-n> :NERDTreeToggle<CR>`
 
 __Q. How can I close vim if the only window left open is a NERDTree?__
 

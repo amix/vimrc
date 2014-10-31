@@ -18,6 +18,10 @@ if !exists('g:syntastic_clang_tidy_config_file')
     let g:syntastic_clang_tidy_config_file = '.syntastic_clang_tidy_config'
 endif
 
+if !exists('g:syntastic_c_clang_tidy_sort')
+    let g:syntastic_c_clang_tidy_sort = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -39,15 +43,11 @@ function! SyntaxCheckers_c_clang_tidy_GetLocList() dict
         \ '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
         \ '%E%m'
 
-    let loclist = SyntasticMake({
+    return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'defaults': {'bufnr': bufnr('')},
         \ 'returns': [0, 1] })
-
-    call self.setWantSort(1)
-
-    return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

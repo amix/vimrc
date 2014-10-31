@@ -42,6 +42,11 @@ snippet fori
 	for (${1:i} <- ${2:0} to ${3:obj}.length) {
 		${0}
 	}
+#for comprehension
+snippet fory
+	for {
+		${1:item} <- ${2:obj}
+	} yield ${0}
 #exceptions
 snippet try
 	try {
