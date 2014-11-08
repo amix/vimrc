@@ -1,5 +1,10 @@
 nnoremap <F9> :exe 'NERDTreeToggle'<CR> :exe 'Tlist'<CR>
 let Tlist_Use_Split_Window = 1
+"sudo apt-get install ncurses-term
+"export TERM=xterm-256color(.bashrc)
+colorscheme molokai
+"colorscheme monokai
+inoremap {} {<esc>o}<esc>O
 map <leader>1 :tabnext 1<CR>
 map <leader>2 :tabnext 2<CR>
 map <leader>3 :tabnext 3<CR>

@@ -17,8 +17,8 @@ let s:builder_context = {
       \ 'right_alt_sep' : get(g:, 'airline#extensions#tabline#right_alt_sep', g:airline_right_alt_sep),
       \ }
 if get(g:, 'airline_powerline_fonts', 0)
-  let s:builder_context.left_sep     = get(g:, 'airline#extensions#tabline#left_sep'     , "\ue0b0")
-  let s:builder_context.left_alt_sep = get(g:, 'airline#extensions#tabline#left_alt_sep' , "\ue0b1")
+  let s:builder_context.left_sep     = get(g:, 'airline#extensions#tabline#left_sep'     , g:airline_left_sep)
+  let s:builder_context.left_alt_sep = get(g:, 'airline#extensions#tabline#left_alt_sep' , g:airline_left_alt_sep)
 else
   let s:builder_context.left_sep     = get(g:, 'airline#extensions#tabline#left_sep'     , ' ')
   let s:builder_context.left_alt_sep = get(g:, 'airline#extensions#tabline#left_alt_sep' , '|')

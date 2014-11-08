@@ -160,10 +160,6 @@ snippet base "XHTML <base>" w
 <base href="$1"${2: target="$3"}`!p x(snip)`>
 endsnippet
 
-snippet img "XHTML <img>" w
-<img src="${1:imgsrc}">
-endsnippet
-
 snippet body "XHTML <body>"
 <body id="${1:`!p
 snip.rv = snip.fn and 'Hallo' or 'Nothin'
@@ -172,7 +168,13 @@ snip.rv = snip.fn and 'Hallo' or 'Nothin'
 </body>
 endsnippet
 
-snippet div "XHTML <div>" w
+snippet div. "<div> with class" w
+<div`!p snip.rv=' class="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""`>
+	$0
+</div>
+endsnippet
+
+snippet div# "<div> with ID & class" w
 <div`!p snip.rv=' id="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""``!p snip.rv=' class="' if t[2] else ""`${2:name}`!p snip.rv = '"' if t[2] else ""`>
 	$0
 </div>

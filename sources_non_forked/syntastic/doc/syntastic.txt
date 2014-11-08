@@ -725,7 +725,7 @@ for python in syntastic (see |syntastic_mode_map|), or disable lint checks in
 
 Syntastic can be used together with the 'YouCompleteMe' Vim plugin (see
 http://valloric.github.io/YouCompleteMe/).  However, by default 'YouCompleteMe'
-disables syntastic"s checkers for the "c", "cpp", "objc", and "objcpp"
+disables syntastic's checkers for the "c", "cpp", "objc", and "objcpp"
 filetypes, in order to allow its own checkers to run.  If you want to use YCM's
 identifier completer but still run syntastic's checkers for those filetypes you
 have to set |ycm_show_diagnostics_ui| to 0. E.g.: >

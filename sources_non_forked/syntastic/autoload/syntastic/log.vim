@@ -120,7 +120,7 @@ function! syntastic#log#debugDump(level) " {{{2
         return
     endif
 
-    call syntastic#log#debugShowVariables( a:level, sort(keys(g:syntastic_defaults)) )
+    call syntastic#log#debugShowVariables( a:level, sort(keys(g:_SYNTASTIC_DEFAULTS)) )
 endfunction " }}}2
 
 " }}}1
@@ -155,7 +155,7 @@ function! s:_logRedirect(on) " {{{2
 endfunction " }}}2
 
 function! s:_logTimestamp() " {{{2
-    return 'syntastic: ' . split(reltimestr(reltime(g:syntastic_start)))[0] . ': '
+    return 'syntastic: ' . split(reltimestr(reltime(g:_SYNTASTIC_START)))[0] . ': '
 endfunction " }}}2
 
 function! s:_formatVariable(name) " {{{2

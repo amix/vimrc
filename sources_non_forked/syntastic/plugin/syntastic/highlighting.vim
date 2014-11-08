@@ -32,7 +32,7 @@ endfunction " }}}2
 " Sets error highlights in the cuirrent window
 function! g:SyntasticHighlightingNotifier.refresh(loclist) " {{{2
     if self.enabled()
-        call syntastic#log#debug(g:SyntasticDebugNotifications, 'highlighting: refresh')
+        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'highlighting: refresh')
         call self._reset()
         let buf = bufnr('')
         let issues = filter(a:loclist.copyRaw(), 'v:val["bufnr"] == buf')
@@ -63,7 +63,7 @@ endfunction " }}}2
 " @vimlint(EVL103, 1, a:loclist)
 function! g:SyntasticHighlightingNotifier.reset(loclist) " {{{2
     if s:has_highlighting
-        call syntastic#log#debug(g:SyntasticDebugNotifications, 'highlighting: reset')
+        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'highlighting: reset')
         call self._reset()
     endif
 endfunction " }}}2

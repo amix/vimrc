@@ -173,6 +173,29 @@ function! g:SyntasticLoclist.decorate(tag) " {{{2
     endfor
 endfunction " }}}2
 
+function! g:SyntasticLoclist.balloons() " {{{2
+    if !exists("self._cachedBalloons")
+        let sep = has("balloon_multiline") ? "\n" : ' | '
+
+        let self._cachedBalloons = {}
+        for e in self._rawLoclist
+            let buf = e['bufnr']
+
+            if !has_key(self._cachedBalloons, buf)
+                let self._cachedBalloons[buf] = {}
+            endif
+
+            if has_key(self._cachedBalloons[buf], e['lnum'])
+                let self._cachedBalloons[buf][e['lnum']] .= sep . e['text']
+            else
+                let self._cachedBalloons[buf][e['lnum']] = e['text']
+            endif
+        endfor
+    endif
+
+    return get(self._cachedBalloons, bufnr(''), {})
+endfunction " }}}2
+
 function! g:SyntasticLoclist.errors() " {{{2
     if !exists("self._cachedErrors")
         let self._cachedErrors = self.filter({'type': "E"})
@@ -258,14 +281,14 @@ function! g:SyntasticLoclist.setloclist() " {{{2
         let w:syntastic_loclist_set = 0
     endif
     let replace = g:syntastic_reuse_loc_lists && w:syntastic_loclist_set
-    call syntastic#log#debug(g:SyntasticDebugNotifications, 'loclist: setloclist ' . (replace ? '(replace)' : '(new)'))
+    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: setloclist ' . (replace ? '(replace)' : '(new)'))
     call setloclist(0, self.getRaw(), replace ? 'r' : ' ')
     let w:syntastic_loclist_set = 1
 endfunction " }}}2
 
 "display the cached errors for this buf in the location list
 function! g:SyntasticLoclist.show() " {{{2
-    call syntastic#log#debug(g:SyntasticDebugNotifications, 'loclist: show')
+    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: show')
     call self.setloclist()
 
     if !self.isEmpty()
@@ -300,7 +323,7 @@ endfunction " }}}2
 " Non-method functions {{{1
 
 function! SyntasticLoclistHide() " {{{2
-    call syntastic#log#debug(g:SyntasticDebugNotifications, 'loclist: hide')
+    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: hide')
     silent! lclose
 endfunction " }}}2
 

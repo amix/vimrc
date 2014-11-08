@@ -18,7 +18,7 @@ endfunction " }}}2
 
 function! g:SyntasticCursorNotifier.refresh(loclist) " {{{2
     if self.enabled() && !a:loclist.isEmpty()
-        call syntastic#log#debug(g:SyntasticDebugNotifications, 'cursor: refresh')
+        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'cursor: refresh')
         let b:syntastic_messages = copy(a:loclist.messages(bufnr('')))
         let b:syntastic_line = -1
         let b:syntastic_cursor_columns = a:loclist.getCursorColumns()
@@ -29,7 +29,7 @@ endfunction " }}}2
 
 " @vimlint(EVL103, 1, a:loclist)
 function! g:SyntasticCursorNotifier.reset(loclist) " {{{2
-    call syntastic#log#debug(g:SyntasticDebugNotifications, 'cursor: reset')
+    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'cursor: reset')
     autocmd! syntastic CursorMoved
     unlet! b:syntastic_messages
     let b:syntastic_line = -1
