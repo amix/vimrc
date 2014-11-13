@@ -1,4 +1,11 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" cursor line
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+highlight CursorLine ctermbg=NONE cterm=NONE gui=NONE
+highlight LineNr ctermfg=darkgrey
+set cursorline
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => my custom settings 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set number                      " line numbers
