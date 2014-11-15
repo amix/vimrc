@@ -1,0 +1,94 @@
+Note taking commands
+
+To edit existing notes you can use Vim commands such as :edit, :split and
+:tabedit with a filename that starts with ‘note:’ followed by (part of) the
+title of one of your notes, e.g.:
+   {{{vim
+   :edit note:todo
+   }}}
+When you don’t follow ‘note:’ with anything a new note is created.
+The following commands can be used to manage your notes:
+
+# :Note starts new notes and edits existing ones
+
+If you don’t pass any arguments to the :Note command it will start editing a
+new note. If you pass (part of) of the title of one of your existing notes that
+note will be edited. If no notes match the given argument then a new note is
+created with its title set to the text you passed to :Note. This command will
+fail when changes have been made to the current buffer, unless you use :Note!
+which discards any changes.
+
+To start a new note and use the currently selected text as the title for the
+note you can use the :NoteFromSelectedText command. The name of this command
+isn’t very well suited to daily use, however the idea is that users will define
+their own mapping to invoke this command. For example:
+  {{{vim
+  " Map \ns in visual mode to start new note with selected text as title.
+  vmap <Leader>ns :NoteFromSelectedText<CR>
+  }}}
+# :DeleteNote deletes the current note
+
+The :DeleteNote command deletes the current note, destroys the buffer and
+removes the note from the internal cache of filenames and note titles. This
+fails when changes have been made to the current buffer, unless you use
+:DeleteNote! which discards any changes.
+
+# :SearchNotes searches your notes
+
+This command wraps :vimgrep and enables you to search through your notes using
+a regular expression pattern or keywords. To search for a pattern you pass a
+single argument that starts & ends with a slash:
+
+  :SearchNotes /TODO\|FIXME\|XXX/
+
+To search for one or more keywords you can just omit the slashes, this matches
+notes containing all of the given keywords:
+
+  :SearchNotes syntax highlighting
+
+## :SearchNotes understands @tags
+
+If you don’t pass any arguments to the :SearchNotes command it will search for
+the word under the cursor. If the word under the cursor starts with ‘@’ this
+character will be included in the search, which makes it possible to easily
+add @tags to your @notes and then search for those tags. To make searching for
+tags even easier you can create key mappings for the :SearchNotes command:
+  {{{vim
+  " Make the C-] combination search for @tags:
+  imap <C-]> <C-o>:SearchNotes<CR>
+  nmap <C-]> :SearchNotes<CR>
+
+  " Make double mouse click search for @tags. This is actually quite a lot of
+  " fun if you don’t use the mouse for text selections anyway; you can click
+  " between notes as if you’re in a web browser:
+  imap <2-LeftMouse> <C-o>:SearchNotes<CR>
+  nmap <2-LeftMouse> :SearchNotes<CR>
+  }}}
+These mappings are currently not enabled by default because they conflict with
+already useful key mappings, but if you have any suggestions for alternatives
+feel free to contact me through GitHub or at peter@peterodding.com.
+
+## Accelerated searching with Python
+
+After collecting a fair amount of notes (say >= 5 MB) you will probably start
+to get annoyed at how long it takes Vim to search through all of your notes. To
+make searching more scalable the notes plug-in includes a Python script which
+uses a persistent keyword index of your notes stored in a file.
+
+The first time the Python script is run it will need to build the complete
+index which can take a moment, but after the index has been initialized
+updates and searches should be more or less instantaneous.
+
+# :RelatedNotes finds related notes
+
+This command makes it easy to find all notes related to the current file: If
+you are currently editing a note then a search for the note’s title is done,
+otherwise this searches for the absolute path of the current file.
+
+# :RecentNotes lists notes by modification date
+
+If you execute the :RecentNotes command it will open a Vim buffer that lists
+all your notes grouped by the day they were edited, starting with your most
+recently edited note. If you pass an argument to :RecentNotes it will filter
+the list of notes by matching the title of each note against the argument which
+is interpreted as a Vim pattern.

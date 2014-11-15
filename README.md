@@ -1,5 +1,7 @@
 # The Ultimate vimrc
 
+## Important -- set iterm profile -> terminal -> report terminal type: xterm-256
+
 Over the last 8 years I have used and tweaked Vim. This is my Ultimate vimrc.
 
 There are two versions:
@@ -109,13 +111,13 @@ After you have installed the setup you can create **~/.vim_runtime/my_configs.vi
 
 	~/.vim_runtime (master)> cat my_configs.vim
 	map <leader>ct :cd ~/Desktop/Todoist/todoist<cr>
-	map <leader>cw :cd ~/Desktop/Wedoist/wedoist<cr> 
+	map <leader>cw :cd ~/Desktop/Wedoist/wedoist<cr>
 
 You can also install your own plugins, for instance, via pathogen we can install [vim-rails](https://github.com/tpope/vim-rails):
 
 	cd ~/.vim_runtime
 	git clone git://github.com/tpope/vim-rails.git sources_non_forked/vim-rails
-	
+
 Now you have vim-rails installed ;-)
 
 
@@ -124,7 +126,7 @@ Now you have vim-rails installed ;-)
 ### Plugin related mappings
 
 Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) and see and manage the current buffers:
-    
+
     map <leader>o :BufExplorer<cr>
 
 Open [MRU.vim](https://github.com/vim-scripts/mru.vim) and see the recently open files:
@@ -132,7 +134,7 @@ Open [MRU.vim](https://github.com/vim-scripts/mru.vim) and see the recently open
     map <leader>f :MRU<CR>
 
 Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin:
-    
+
     let g:ctrlp_map = '<c-f>'
 
 Open [PeepOpen](https://peepcode.com/products/peepopen) plugin:
@@ -142,7 +144,7 @@ Open [PeepOpen](https://peepcode.com/products/peepopen) plugin:
 Managing the [NERD Tree](https://github.com/scrooloose/nerdtree) plugin:
 
     map <leader>nn :NERDTreeToggle<cr>
-    map <leader>nb :NERDTreeFromBookmark 
+    map <leader>nb :NERDTreeFromBookmark
     map <leader>nf :NERDTreeFind<cr>
 
 [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It has a special look when editing Markdown, reStructuredText and textfiles. It only has one mapping.
@@ -159,65 +161,65 @@ Treat long lines as break lines (useful when moving around in them):
 
 	map j gj
 	map k gk
-	
+
 Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
-	
+
 	map <space> /
 	map <c-space> ?
 	map <silent> <leader><cr> :noh<cr>
 
 Disable highlight when `<leader><cr>` is pressed:
-	
+
 	map <silent> <leader><cr> :noh<cr>
 
 Smart way to move between windows:
-	
+
 	map <C-j> <C-W>j
 	map <C-k> <C-W>k
 	map <C-h> <C-W>h
 	map <C-l> <C-W>l
 
 Closing of current buffer(s):
-	
+
 	" Close current buffer
 	map <leader>bd :Bclose<cr>
-	
+
 	" Close all buffers
 	map <leader>ba :1,1000 bd!<cr>
-	
+
 Useful mappings for managing tabs:
-	
+
 	map <leader>tn :tabnew<cr>
 	map <leader>to :tabonly<cr>
 	map <leader>tc :tabclose<cr>
-	map <leader>tm :tabmove 
-	
+	map <leader>tm :tabmove
+
 	" Opens a new tab with the current buffer's path
 	" Super useful when editing files in the same directory
 	map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
-	
+
 Switch CWD to the directory of the open buffer:
-	
+
 	map <leader>cd :cd %:p:h<cr>:pwd<cr>
-	
+
 Open vimgrep and put the cursor in the right position:
-	
+
 	map <leader>g :vimgrep // **/*.<left><left><left><left><left><left><left>
 
 Vimgreps in the current file:
-	
+
 	map <leader><space> :vimgrep // <C-R>%<C-A><right><right><right><right><right><right><right><right><right>
 
 Remove the Windows ^M - when the encodings gets messed up:
-	
+
 	noremap <leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
-	
+
 Quickly open a buffer for scripbble:
-	
+
 	map <leader>q :e ~/buffer<cr>
 
 Toggle paste mode on and off:
-	
+
 	map <leader>pp :setlocal paste!<cr>
 
 
@@ -261,7 +263,7 @@ Surround the visual selection in parenthesis/brackets/etc.:
     vnoremap $$ <esc>`>a"<esc>`<i"<esc>
     vnoremap $q <esc>`>a'<esc>`<i'<esc>
     vnoremap $e <esc>`>a"<esc>`<i"<esc>
-	
+
 
 ### Command line mappings
 
@@ -280,7 +282,7 @@ Bash like keys for the command line:
 
 Write the file as sudo (only on Unix). Super useful when you open a file and you don't have permissions to save your changes. [Vim tip](http://vim.wikia.com/wiki/Su-write):
 
-    :W 
+    :W
 
 
 ### Spell checking
@@ -295,7 +297,7 @@ Shortcuts using `<leader>` instead of special chars
     map <leader>sa zg
     map <leader>s? z=
 
-### Cope	
+### Cope
 Do :help cope if you are unsure what cope is. It's super useful!
 
 When you search with vimgrep, display your results in cope by doing:

@@ -1,0 +1,61 @@
+*vim-ruby.txt*
+
+1. Ruby motions			|ruby-motion|
+2. Ruby text objects		|ruby-text-objects|
+
+==============================================================================
+1. Ruby motions						*ruby-motion*
+
+Vim provides motions such as |[m| and |]m| for jumping to the start or end of
+a method definition. Out of the box, these work for curly-bracket languages,
+but not for ruby. The |vim-ruby| plugin enhances these motions, by making them
+also work on ruby files.
+
+							*ruby-]m*
+]m			Go to start of next method definition.
+
+							*ruby-]M*
+]M			Go to end of next method definition.
+
+							*ruby-[m*
+[m			Go to start of previous method definition.
+
+							*ruby-[M*
+[M			Go to end of previous method definition.
+
+							*ruby-]]*
+]]			Go to start of next module or class definition.
+
+							*ruby-][*
+][			Go to end of next module or class definition.
+
+							*ruby-[[*
+[[			Go to start of previous module or class definition.
+
+							*ruby-[]*
+[]			Go to end of previous module or class definition.
+
+==============================================================================
+2. Ruby text objects					*ruby-text-objects*
+
+Vim's |text-objects| can be used to select or operate upon regions of text
+that are defined by structure. The |vim-ruby| plugin adds text objects for
+operating on methods and classes.
+
+							*ruby-v_am* *ruby-am*
+am			"a method", select from "def" until matching "end"
+			keyword.
+
+							*ruby-v_im* *ruby-im*
+im			"inner method", select contents of "def"/"end" block,
+			excluding the "def" and "end" themselves.
+
+							*ruby-v_aM* *ruby-aM*
+aM			"a class", select from "class" until matching "end"
+			keyword.
+
+							*ruby-v_iM* *ruby-iM*
+iM			"inner class", select contents of "class"/"end"
+			block, excluding the "class" and "end" themselves.
+
+ vim:tw=78:sw=4:ts=8:ft=help:norl:
