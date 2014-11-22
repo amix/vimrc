@@ -6,11 +6,21 @@ highlight LineNr ctermfg=darkgrey
 set cursorline
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => my custom settings 
+" => my custom settings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set number                      " line numbers
 set nocompatible                " choose no compatibility with legacy vi
 set nowrap                      " don't wrap lines
+set colorcolumn=80
+highlight ColorColumn ctermbg=DarkGray
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => trailing whitespaces (show & remove on save)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set list
+set listchars=tab:▸\ ,trail:·
+autocmd BufWritePre * :%s/\s\+$//e
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => custom key maps
