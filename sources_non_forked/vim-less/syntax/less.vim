@@ -35,7 +35,7 @@ syn match lessClass "[[:alnum:]_-]\+" contained
 " string functions
 syn keyword lessFunction escape e % containedin=cssDefinition contained
 " misc functions
-syn keyword lessFunction color unit containedin=cssDefinition contained
+syn keyword lessFunction unit containedin=cssDefinition contained
 " math functions
 syn keyword lessFunction ceil floor percentage round containedin=cssDefinition contained
 " color definition

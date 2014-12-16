@@ -1,6 +1,4 @@
-###########################################################################
-#                    GENERATED FROM get_tm_snippets.py                    #
-###########################################################################
+priority -50
 
 snippet anaf "accepts_nested_attributes_for"
 accepts_nested_attributes_for :${1:association_name}${2:${3:, :allow_destroy => true}${4:, :reject_if => proc \{ |obj| ${5:obj.blank?} \}}}
@@ -77,90 +75,90 @@ endsnippet
 
 snippet resources "Create resources controller class"
 class ${1:Model}sController < ApplicationController
-  before_filter :find_${1/./\l$0/}, :only => [:show, :edit, :update, :destroy]
+	before_filter :find_${1/./\l$0/}, :only => [:show, :edit, :update, :destroy]
 
-  # GET /${1/./\l$0/}s
-  # GET /${1/./\l$0/}s.xml
-  def index
-    @${1/./\l$0/}s = ${1:Model}.all
+	# GET /${1/./\l$0/}s
+	# GET /${1/./\l$0/}s.xml
+	def index
+		@${1/./\l$0/}s = ${1:Model}.all
 
-    respond_to do |wants|
-      wants.html # index.html.erb
-      wants.xml  { render :xml => @${1/./\l$0/}s }
-    end
-  end
+		respond_to do |wants|
+			wants.html # index.html.erb
+			wants.xml  { render :xml => @${1/./\l$0/}s }
+		end
+	end
 
-  # GET /${1/./\l$0/}s/1
-  # GET /${1/./\l$0/}s/1.xml
-  def show
-    respond_to do |wants|
-      wants.html # show.html.erb
-      wants.xml  { render :xml => @${1/./\l$0/} }
-    end
-  end
+	# GET /${1/./\l$0/}s/1
+	# GET /${1/./\l$0/}s/1.xml
+	def show
+		respond_to do |wants|
+			wants.html # show.html.erb
+			wants.xml  { render :xml => @${1/./\l$0/} }
+		end
+	end
 
-  # GET /${1/./\l$0/}s/new
-  # GET /${1/./\l$0/}s/new.xml
-  def new
-    @${1/./\l$0/} = ${1:Model}.new
+	# GET /${1/./\l$0/}s/new
+	# GET /${1/./\l$0/}s/new.xml
+	def new
+		@${1/./\l$0/} = ${1:Model}.new
 
-    respond_to do |wants|
-      wants.html # new.html.erb
-      wants.xml  { render :xml => @${1/./\l$0/} }
-    end
-  end
+		respond_to do |wants|
+			wants.html # new.html.erb
+			wants.xml  { render :xml => @${1/./\l$0/} }
+		end
+	end
 
-  # GET /${1/./\l$0/}s/1/edit
-  def edit
-  end
+	# GET /${1/./\l$0/}s/1/edit
+	def edit
+	end
 
-  # POST /${1/./\l$0/}s
-  # POST /${1/./\l$0/}s.xml
-  def create
-    @${1/./\l$0/} = ${1:Model}.new(params[:${1/./\l$0/}])
+	# POST /${1/./\l$0/}s
+	# POST /${1/./\l$0/}s.xml
+	def create
+		@${1/./\l$0/} = ${1:Model}.new(params[:${1/./\l$0/}])
 
-    respond_to do |wants|
-      if @${1/./\l$0/}.save
-        flash[:notice] = '${1:Model} was successfully created.'
-        wants.html { redirect_to(@${1/./\l$0/}) }
-        wants.xml  { render :xml => @${1/./\l$0/}, :status => :created, :location => @${1/./\l$0/} }
-      else
-        wants.html { render :action => "new" }
-        wants.xml  { render :xml => @${1/./\l$0/}.errors, :status => :unprocessable_entity }
-      end
-    end
-  end
+		respond_to do |wants|
+			if @${1/./\l$0/}.save
+				flash[:notice] = '${1:Model} was successfully created.'
+				wants.html { redirect_to(@${1/./\l$0/}) }
+				wants.xml  { render :xml => @${1/./\l$0/}, :status => :created, :location => @${1/./\l$0/} }
+			else
+				wants.html { render :action => "new" }
+				wants.xml  { render :xml => @${1/./\l$0/}.errors, :status => :unprocessable_entity }
+			end
+		end
+	end
 
-  # PUT /${1/./\l$0/}s/1
-  # PUT /${1/./\l$0/}s/1.xml
-  def update
-    respond_to do |wants|
-      if @${1/./\l$0/}.update_attributes(params[:${1/./\l$0/}])
-        flash[:notice] = '${1:Model} was successfully updated.'
-        wants.html { redirect_to(@${1/./\l$0/}) }
-        wants.xml  { head :ok }
-      else
-        wants.html { render :action => "edit" }
-        wants.xml  { render :xml => @${1/./\l$0/}.errors, :status => :unprocessable_entity }
-      end
-    end
-  end
+	# PUT /${1/./\l$0/}s/1
+	# PUT /${1/./\l$0/}s/1.xml
+	def update
+		respond_to do |wants|
+			if @${1/./\l$0/}.update_attributes(params[:${1/./\l$0/}])
+				flash[:notice] = '${1:Model} was successfully updated.'
+				wants.html { redirect_to(@${1/./\l$0/}) }
+				wants.xml  { head :ok }
+			else
+				wants.html { render :action => "edit" }
+				wants.xml  { render :xml => @${1/./\l$0/}.errors, :status => :unprocessable_entity }
+			end
+		end
+	end
 
-  # DELETE /${1/./\l$0/}s/1
-  # DELETE /${1/./\l$0/}s/1.xml
-  def destroy
-    @${1/./\l$0/}.destroy
+	# DELETE /${1/./\l$0/}s/1
+	# DELETE /${1/./\l$0/}s/1.xml
+	def destroy
+		@${1/./\l$0/}.destroy
 
-    respond_to do |wants|
-      wants.html { redirect_to(${1/./\l$0/}s_url) }
-      wants.xml  { head :ok }
-    end
-  end
+		respond_to do |wants|
+			wants.html { redirect_to(${1/./\l$0/}s_url) }
+			wants.xml  { head :ok }
+		end
+	end
 
-  private
-    def find_${1/./\l$0/}
-      @${1/./\l$0/} = ${1:Model}.find(params[:id])
-    end
+	private
+		def find_${1/./\l$0/}
+			@${1/./\l$0/} = ${1:Model}.find(params[:id])
+		end
 
 end
 
@@ -227,31 +225,31 @@ assert_response :${1:success}, @response.body$0
 endsnippet
 
 snippet aftc "after_create"
-after_create 
+after_create $0
 endsnippet
 
 snippet aftd "after_destroy"
-after_destroy 
+after_destroy $0
 endsnippet
 
 snippet afts "after_save"
-after_save 
+after_save $0
 endsnippet
 
 snippet aftu "after_update"
-after_update 
+after_update $0
 endsnippet
 
 snippet aftv "after_validation"
-after_validation 
+after_validation $0
 endsnippet
 
 snippet aftvoc "after_validation_on_create"
-after_validation_on_create 
+after_validation_on_create $0
 endsnippet
 
 snippet aftvou "after_validation_on_update"
-after_validation_on_update 
+after_validation_on_update $0
 endsnippet
 
 snippet asg "assert(var = assigns(:var))"
@@ -261,13 +259,13 @@ endsnippet
 
 snippet asd "assert_difference"
 assert_difference "${1:Model}.${2:count}", ${3:1} do
-  $0
+	$0
 end
 endsnippet
 
 snippet asnd "assert_no_difference"
 assert_no_difference "${1:Model}.${2:count}" do
-  $0
+	$0
 end
 endsnippet
 
@@ -298,27 +296,27 @@ end}
 endsnippet
 
 snippet befc "before_create"
-before_create 
+before_create $0
 endsnippet
 
 snippet befd "before_destroy"
-before_destroy 
+before_destroy $0
 endsnippet
 
 snippet befs "before_save"
-before_save 
+before_save $0
 endsnippet
 
 snippet befu "before_update"
-before_update 
+before_update $0
 endsnippet
 
 snippet befv "before_validation"
-before_validation 
+before_validation $0
 endsnippet
 
 snippet befvoc "before_validation_on_create"
-before_validation_on_create 
+before_validation_on_create $0
 endsnippet
 
 snippet befvou "before_validation_on_update"
@@ -456,13 +454,13 @@ endsnippet
 
 snippet mapr "map.resource"
 ${1:map}.resource :${2:resource}${10: do |${11:$2}|
-  $0
+	$0
 end}
 endsnippet
 
 snippet maprs "map.resources"
 ${1:map}.resources :${2:resource}${10: do |${11:$2}|
-  $0
+	$0
 end}
 endsnippet
 
@@ -605,7 +603,7 @@ endsnippet
 
 snippet resw "respond_with"
 respond_with(${1:@${2:model}})${3: do |format|
-  format.${4:html} { $0 \}
+	format.${4:html} { $0 \}
 end}
 endsnippet
 
@@ -807,32 +805,32 @@ endsnippet
 
 snippet sweeper "Create sweeper class"
 class ${1:Model}Sweeper < ActionController::Caching::Sweeper
-  observe ${1:Model}
+	observe ${1:Model}
 
-  def after_save(${1/./\l$0/})
-    expire_cache(${1/./\l$0/})
-  end
+	def after_save(${1/./\l$0/})
+		expire_cache(${1/./\l$0/})
+	end
 
-  def after_destroy(${1/./\l$0/})
-    expire_cache(${1/./\l$0/})
-  end
+	def after_destroy(${1/./\l$0/})
+		expire_cache(${1/./\l$0/})
+	end
 
-  private
+	private
 
-    def expire_cache(${1/./\l$0/})
-      ${0:expire_page ${1/./\l$0/}s_path 
-      expire_page ${1/./\l$0/}_path(${1/./\l$0/})}
-    end
+		def expire_cache(${1/./\l$0/})
+			${0:expire_page ${1/./\l$0/}s_path
+			expire_page ${1/./\l$0/}_path(${1/./\l$0/})}
+		end
 
 end
 endsnippet
 
 snippet col "collection routes"
 collection do
-  ${1:get :${2:action}}
-  ${3:put :${4:action}}
-  ${5:post :${6:action}}
-  ${7:delete :${8:action}}
+	${1:get :${2:action}}
+	${3:put :${4:action}}
+	${5:post :${6:action}}
+	${7:delete :${8:action}}
 end
 endsnippet
 
@@ -854,16 +852,16 @@ endsnippet
 
 snippet member "member routes"
 member do
-  ${1:get :${2:action}}
-  ${3:put :${4:action}}
-  ${5:post :${6:action}}
-  ${7:delete :${8:action}}
+	${1:get :${2:action}}
+	${3:put :${4:action}}
+	${5:post :${6:action}}
+	${7:delete :${8:action}}
 end
 endsnippet
 
 snippet res "resources"
 resources :${1:posts}${2: do
-  $3
+	$3
 end}
 endsnippet
 
@@ -877,9 +875,9 @@ endsnippet
 
 snippet scopee "scope with extension"
 scope :${1:name}, ${2:where(${3::${4:field} => ${5:'${6:value}'}})} do
-  def ${7:method_name}
-    $0
-  end
+	def ${7:method_name}
+		$0
+	end
 end
 endsnippet
 
@@ -893,13 +891,13 @@ setup do
 end
 endsnippet
 
-snippet trans "Translation snippet" 
+snippet trans "Translation snippet"
 I18n.t('`!v substitute(substitute(substitute(@%, substitute(getcwd() . "/", "\/", "\\\\/", "g"), "", ""), "\\(\\.\\(html\\|js\\)\\.\\(haml\\|erb\\)\\|\\(_controller\\)\\?\\.rb\\)$", "", ""), "/", ".", "g")`.${2:${1/[^\w]/_/g}}${3}', :default => "${1:some_text}"${4})${5:$0}
 endsnippet
 
 snippet route_spec
 it 'routes to #${1:action}' do
-  ${2:get}('/${3:url}').should route_to('`!v substitute(expand('%:t:r'), '_routing_spec$', '', '')`#$1'${4:, ${5:params}})${6}
+	${2:get}('/${3:url}').should route_to('`!v substitute(expand('%:t:r'), '_routing_spec$', '', '')`#$1'${4:, ${5:params}})${6}
 end
 endsnippet
 

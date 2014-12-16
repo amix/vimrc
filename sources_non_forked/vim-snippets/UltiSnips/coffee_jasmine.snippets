@@ -2,7 +2,11 @@
 # CoffeeScript versions -- adapted from the JS TextMate bundle + additions
 # for some jasmine-jquery matchers
 #
+priority -50
+
 extends coffee
+
+priority -49
 
 snippet des "Describe (coffee)" b
 describe '${1:description}', ->
@@ -160,4 +164,3 @@ endsnippet
 snippet noscw "expect was not called with (coffee)" b
 expect(${1:target}).wasNotCalledWith(${2:arguments})
 endsnippet
-

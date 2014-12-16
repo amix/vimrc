@@ -1,14 +1,187 @@
-" input.vim
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-06-30.
-" @Last Change: 2012-10-01.
-" @Revision:    0.0.966
+" @Revision:    1317
 
 
 " :filedoc:
 " Input-related, select from a list etc.
+
+" If a list is bigger than this value, don't try to be smart when 
+" selecting an item. Be slightly faster instead.
+" See |tlib#input#List()|.
+TLet g:tlib#input#sortprefs_threshold = 200
+
+
+" If a list contains more items, |tlib#input#List()| does not perform an 
+" incremental "live search" but uses |input()| to query the user for a 
+" filter. This is useful on slower machines or with very long lists.
+TLet g:tlib#input#livesearch_threshold = 1000
+
+
+" Determine how |tlib#input#List()| and related functions work.
+" Can be "glob", "cnf", "cnfd", "seq", or "fuzzy". See:
+"   glob ... Like cnf but "*" and "?" (see |g:tlib#Filter_glob#seq|, 
+"       |g:tlib#Filter_glob#char|) are interpreted as glob-like 
+"       |wildcards| (this is the default method)
+"     - Examples:
+"         - "f*o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
+"           "far".
+"     - Otherwise it is a derivate of the cnf method (see below).
+"     - See also |tlib#Filter_glob#New()|.
+"   cnfd ... Like cnf but "." is interpreted as a wildcard, i.e. it is 
+"            expanded to "\.\{-}"
+"     - A period character (".") acts as a wildcard as if ".\{-}" (see 
+"       |/\{-|) were entered.
+"     - Examples:
+"         - "f.o" matches "fo", "fxo", and "fxxxoo", but doesn't match 
+"           "far".
+"     - Otherwise it is a derivate of the cnf method (see below).
+"     - See also |tlib#Filter_cnfd#New()|.
+"   cnf .... Match substrings
+"     - A blank creates an AND conjunction, i.e. the next pattern has to 
+"       match too.
+"     - A pipe character ("|") creates an OR conjunction, either this or 
+"       the next next pattern has to match.
+"     - Patterns are very 'nomagic' |regexp| with a |\V| prefix.
+"     - A pattern starting with "-" makes the filter exclude items 
+"       matching that pattern.
+"     - Examples:
+"         - "foo bar" matches items that contain the strings "foo" AND 
+"           "bar".
+"         - "foo|bar boo|far" matches items that contain either ("foo" OR 
+"           "bar") AND ("boo" OR "far").
+"     - See also |tlib#Filter_cnf#New()|.
+"   seq .... Match sequences of characters
+"     - |tlib#Filter_seq#New()|
+"   fuzzy .. Match fuzzy character sequences
+"     - |tlib#Filter_fuzzy#New()|
+TLet g:tlib#input#filter_mode = 'glob'
+
+
+" The highlight group to use for showing matches in the input list 
+" window.
+" See |tlib#input#List()|.
+TLet g:tlib#input#higroup = 'IncSearch'
+
+" When 1, automatically select the last remaining item only if the list 
+" had only one item to begin with.
+" When 2, automatically select a last remaining item after applying 
+" any filters.
+" See |tlib#input#List()|.
+TLet g:tlib_pick_last_item = 1
+
+
+" :doc:
+" Keys for |tlib#input#List|~
+
+TLet g:tlib#input#and = ' '
+TLet g:tlib#input#or  = '|'
+TLet g:tlib#input#not = '-'
+
+" When editing a list with |tlib#input#List|, typing these numeric chars 
+" (as returned by getchar()) will select an item based on its index, not 
+" based on its name. I.e. in the default setting, typing a "4" will 
+" select the fourth item, not the item called "4".
+" In order to make keys 0-9 filter the items in the list and make 
+" <m-[0-9]> select an item by its index, remove the keys 48 to 57 from 
+" this dictionary.
+" Format: [KEY] = BASE ... the number is calculated as KEY - BASE.
+" :nodefault:
+TLet g:tlib#input#numeric_chars = {
+            \ 176: 176,
+            \ 177: 176,
+            \ 178: 176,
+            \ 179: 176,
+            \ 180: 176,
+            \ 181: 176,
+            \ 182: 176,
+            \ 183: 176,
+            \ 184: 176,
+            \ 185: 176,
+            \}
+            " \ 48: 48,
+            " \ 49: 48,
+            " \ 50: 48,
+            " \ 51: 48,
+            " \ 52: 48,
+            " \ 53: 48,
+            " \ 54: 48,
+            " \ 55: 48,
+            " \ 56: 48,
+            " \ 57: 48,
+
+
+" :nodefault:
+" The default key bindings for single-item-select list views. If you 
+" want to use <c-j>, <c-k> to move the cursor up and down, add these two 
+" lines to after/plugin/02tlib.vim: >
+"
+"   let g:tlib#input#keyagents_InputList_s[10] = 'tlib#agent#Down'  " <c-j>
+"   let g:tlib#input#keyagents_InputList_s[11] = 'tlib#agent#Up'    " <c-k>
+TLet g:tlib#input#keyagents_InputList_s = {
+            \ "\<PageUp>":   'tlib#agent#PageUp',
+            \ "\<PageDown>": 'tlib#agent#PageDown',
+            \ "\<Home>":     'tlib#agent#Home',
+            \ "\<End>":      'tlib#agent#End',
+            \ "\<Up>":       'tlib#agent#Up',
+            \ "\<Down>":     'tlib#agent#Down',
+            \ "\<c-Up>":     'tlib#agent#UpN',
+            \ "\<c-Down>":   'tlib#agent#DownN',
+            \ "\<Left>":     'tlib#agent#ShiftLeft',
+            \ "\<Right>":    'tlib#agent#ShiftRight',
+            \ 18:            'tlib#agent#Reset',
+            \ 242:           'tlib#agent#Reset',
+            \ 17:            'tlib#agent#Input',
+            \ 241:           'tlib#agent#Input',
+            \ 27:            'tlib#agent#Exit',
+            \ 26:            'tlib#agent#Suspend',
+            \ 250:           'tlib#agent#Suspend',
+            \ 15:            'tlib#agent#SuspendToParentWindow',  
+            \ "\<F1>":       'tlib#agent#Help',
+            \ "\<F10>":      'tlib#agent#ExecAgentByName',
+            \ "\<S-Esc>":    'tlib#agent#ExecAgentByName',
+            \ "\<bs>":       'tlib#agent#ReduceFilter',
+            \ "\<del>":      'tlib#agent#ReduceFilter',
+            \ "\<c-bs>":     'tlib#agent#PopFilter',
+            \ "\<m-bs>":     'tlib#agent#PopFilter',
+            \ "\<c-del>":    'tlib#agent#PopFilter',
+            \ "\<m-del>":    'tlib#agent#PopFilter',
+            \ "\<s-space>":  'tlib#agent#Wildcard',
+            \ 191:           'tlib#agent#Debug',
+            \ char2nr(g:tlib#input#or):  'tlib#agent#OR',
+            \ char2nr(g:tlib#input#and): 'tlib#agent#AND',
+            \ }
+            " \ 63:            'tlib#agent#Help',
+
+
+" :nodefault:
+TLet g:tlib#input#keyagents_InputList_m = {
+            \ 35:          'tlib#agent#Select',
+            \ "\<s-up>":   'tlib#agent#SelectUp',
+            \ "\<s-down>": 'tlib#agent#SelectDown',
+            \ 1:           'tlib#agent#SelectAll',
+            \ 225:         'tlib#agent#SelectAll',
+            \ "\<F9>":     'tlib#agent#ToggleRestrictView',
+            \ }
+" "\<c-space>": 'tlib#agent#Select'
+
+
+" :nodefault:
+TLet g:tlib#input#handlers_EditList = [
+            \ {'key': 5,  'agent': 'tlib#agent#EditItem',    'key_name': '<c-e>', 'help': 'Edit item'},
+            \ {'key': 4,  'agent': 'tlib#agent#DeleteItems', 'key_name': '<c-d>', 'help': 'Delete item(s)'},
+            \ {'key': 14, 'agent': 'tlib#agent#NewItem',     'key_name': '<c-n>', 'help': 'New item'},
+            \ {'key': 24, 'agent': 'tlib#agent#Cut',         'key_name': '<c-x>', 'help': 'Cut item(s)'},
+            \ {'key':  3, 'agent': 'tlib#agent#Copy',        'key_name': '<c-c>', 'help': 'Copy item(s)'},
+            \ {'key': 22, 'agent': 'tlib#agent#Paste',       'key_name': '<c-v>', 'help': 'Paste item(s)'},
+            \ {'pick_last_item': 0},
+            \ {'return_agent': 'tlib#agent#EditReturnValue'},
+            \ {'help_extra': [
+            \      'Submit changes by pressing ENTER or <c-s> or <c-w><cr>',
+            \      'Cancel editing by pressing <c-w>c'
+            \ ]},
+            \ ]
 
 
 " If true, define a popup menu for |tlib#input#List()| and related 
@@ -40,7 +213,7 @@ TLet g:tlib#input#filename_max_width = '&co / 2'
 " of selected elements or its indexes.
 "
 " By default, typing numbers will select an item by its index. See 
-" |g:tlib_numeric_chars| to find out how to change this.
+" |g:tlib#input#numeric_chars| to find out how to change this.
 "
 " The item is automatically selected if the numbers typed equals the 
 " number of digits of the list length. I.e. if a list contains 20 items, 
@@ -58,7 +231,7 @@ TLet g:tlib#input#filename_max_width = '&co / 2'
 "     mi ... Return a list of indexes
 "
 " Several pattern matching styles are supported. See 
-" |g:tlib_inputlist_match|.
+" |g:tlib#input#filter_mode|.
 "
 " EXAMPLES: >
 "   echo tlib#input#List('s', 'Select one item', [100,200,300])
@@ -110,7 +283,7 @@ function! tlib#input#List(type, ...) "{{{3
         let world.pick_last_item   = tlib#list#Find(handlers, 'has_key(v:val, "pick_last_item")', 
                     \ tlib#var#Get('tlib_pick_last_item', 'bg'), 'v:val.pick_last_item')
         let world.numeric_chars    = tlib#list#Find(handlers, 'has_key(v:val, "numeric_chars")', 
-                    \ tlib#var#Get('tlib_numeric_chars', 'bg'), 'v:val.numeric_chars')
+                    \ g:tlib#input#numeric_chars, 'v:val.numeric_chars')
         let world.key_handlers     = filter(copy(handlers), 'has_key(v:val, "key")')
         let filter                 = tlib#list#Find(handlers, 'has_key(v:val, "filter")', '', 'v:val.filter')
         if !empty(filter)
@@ -152,21 +325,35 @@ function! tlib#input#ListW(world, ...) "{{{3
     " TLogVAR world.state, world.sticky, world.initial_index
     " let statusline  = &l:statusline
     " let laststatus  = &laststatus
+    let showmode = &showmode
+    set noshowmode
     let lastsearch  = @/
     let scrolloff = &l:scrolloff
     let &l:scrolloff = 0
     let @/ = ''
     let dlist = []
+    let post_keys = ''
     " let &laststatus = 2
 
     try
         while !empty(world.state) && world.state !~ '^exit' && (world.show_empty || !empty(world.base))
+            let post_keys = ''
             " TLogDBG 'while'
             " TLogVAR world.state
             " let time01 = str2float(reltimestr(reltime()))  " DBG
             " TLogVAR time01, time01 - time0
             try
                 call s:RunStateHandlers(world)
+
+                " if exists('b:tlib_world_event')
+                "     let event = b:tlib_world_event
+                "     unlet! b:tlib_world_event
+                "     if event == 'WinLeave'
+                "         " let world.resume_state = world.state
+                "         let world = tlib#agent#Suspend(world, world.rv)
+                "         break
+                "     endif
+                " endif
 
                 " let time02 = str2float(reltimestr(reltime()))  " DBG
                 " TLogVAR time02, time02 - time0
@@ -249,7 +436,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                             " TLogVAR world.idx, world.llen, world.state
                             " TLogDBG world.FilterIsEmpty()
                             if world.state == 'display'
-                                if world.idx == '' && world.llen < g:tlib_sortprefs_threshold && !world.FilterIsEmpty()
+                                if world.idx == '' && world.llen < g:tlib#input#sortprefs_threshold && !world.FilterIsEmpty()
                                     call world.SetPrefIdx()
                                 else
                                     let world.prefidx = world.idx == '' ? world.initial_index : world.idx
@@ -266,14 +453,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                             " TLogDBG 5
                             " TLogDBG len(world.list)
                             " TLogVAR world.list
-                            let dlist = copy(world.list)
-                            " TLogVAR world.display_format
-                            if !empty(world.display_format)
-                                let display_format = world.display_format
-                                let cache = world.fmt_display
-                                " TLogVAR display_format, fmt_entries
-                                call map(dlist, 'world.FormatName(cache, display_format, v:val)')
-                            endif
+                            let dlist = world.DisplayFormat(world.list)
                             " TLogVAR world.prefidx
                             " TLogDBG 6
                             " let time6 = str2float(reltimestr(reltime()))  " DBG
@@ -333,7 +513,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                     "     let world.prefidx = world.offset
                     " endif
                     call world.DisplayList()
-                    if world.state == 'help'
+                    if world.state == 'help' || world.state == 'printlines'
                         let world.state = 'display'
                     else
                         let world.state = ''
@@ -343,7 +523,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                 " TAssert IsNotEmpty(world.scratch)
                 let world.list_wnr = winnr()
 
-                " TLogVAR world.next_state, world.state
+                " TLogVAR world.state, world.next_state
                 if !empty(world.next_state)
                     let world.state = world.next_state
                     let world.next_state = ''
@@ -354,11 +534,44 @@ function! tlib#input#ListW(world, ...) "{{{3
                     continue
                 endif
 
-                " TLogVAR world.timeout
-                let c = tlib#char#Get(world.timeout, world.timeout_resolution)
-                " TLogVAR c, has_key(world.key_map[world.key_mode],c)
+                if world.state =~ '\<eval\>'
+                    let query = matchstr(world.state, '\<eval\[\zs.\{-}\ze\]')
+                    if empty(query)
+                        let query = 'Waiting for input ... Press ESC to continue'
+                    endif
+                    if has('gui_win32')
+                        let exec_cmd = input(query, '')
+                        " TLogVAR exec_cmd
+                        if exec_cmd == ''
+                            let world.state = 'redisplay'
+                        else
+                            exec exec_cmd
+                        endif
+                    elseif has('gui_gtk') || has('gui_gtk2')
+                        let c = s:GetModdedChar(world)
+                        " TLogVAR c
+                    endif
+                else
+                    " TLogVAR world.timeout
+                    let c = s:GetModdedChar(world)
+                    " TLogVAR c, has_key(world.key_map[world.key_mode],c)
+                endif
+                " TLogVAR c
                 " TLogDBG string(sort(keys(world.key_map[world.key_mode])))
-                if world.state != ''
+
+                " TLogVAR world.next_agent, world.next_eval
+                if !empty(world.next_agent)
+                    let nagent = world.next_agent
+                    let world.next_agent = ''
+                    let world = call(nagent, [world, world.GetSelectedItems(world.CurrentItem())])
+                    call s:CheckAgentReturnValue(nagent, world)
+                elseif !empty(world.next_eval)
+                    let selected = world.GetSelectedItems(world.CurrentItem())
+                    let neval = world.next_eval
+                    let world.next_eval = ''
+                    exec neval
+                    call s:CheckAgentReturnValue(neval, world)
+                elseif world.state != ''
                     " continue
                 elseif has_key(world.key_map[world.key_mode], c)
                     let sr = @/
@@ -382,35 +595,53 @@ function! tlib#input#ListW(world, ...) "{{{3
                         let world.state = 'exit empty'
                     endif
                 elseif c == "\<LeftMouse>"
-                    let world.prefidx = world.GetLineIdx(v:mouse_lnum)
-                    " let world.offset  = world.prefidx
-                    " TLogVAR v:mouse_lnum, world.prefidx
-                    if empty(world.prefidx)
-                        " call feedkeys(c, 't')
-                        let c = tlib#char#Get(world.timeout)
-                        let world.state = 'help'
-                        continue
-                    endif
-                    throw 'pick'
-                elseif c == "\<RightMouse>"
-                    if g:tlib#input#use_popup && world.has_menu
-                        " if v:mouse_lnum != line('.')
-                        " endif
+                    if v:mouse_win == world.list_wnr
                         let world.prefidx = world.GetLineIdx(v:mouse_lnum)
-                        let world.state = 'redisplay'
-                        call world.DisplayList()
-                        if line('w$') - v:mouse_lnum < 6
-                            popup ]TLibInputListPopupMenu
+                        " let world.offset  = world.prefidx
+                        if empty(world.prefidx)
+                            " call feedkeys(c, 't')
+                            let c = s:GetModdedChar(world)
+                            let world.state = 'help'
+                            continue
+                        endif
+                        throw 'pick'
+                    else
+                        let post_keys = v:mouse_lnum .'gg'. v:mouse_col .'|'. c
+                        if world.allow_suspend
+                            let world = tlib#agent#SuspendToParentWindow(world, world.rv)
                         else
-                            popup! ]TLibInputListPopupMenu
+                            let world.state = 'exit empty'
+                        endif
+                    endif
+                elseif c == "\<RightMouse>"
+                    if v:mouse_win == world.list_wnr
+                        call s:BuildMenu(world)
+                        let world.state = 'redisplay'
+                        if s:PopupmenuExists() == 1
+                            " if v:mouse_lnum != line('.')
+                            " endif
+                            let world.prefidx = world.GetLineIdx(v:mouse_lnum)
+                            let world.next_state = 'eval[Waiting for popup menu ... Press ESC to continue]'
+                            call world.DisplayList()
+                            if line('w$') - v:mouse_lnum < 6
+                                popup ]TLibInputListPopupMenu
+                            else
+                                popup! ]TLibInputListPopupMenu
+                            endif
                         endif
                     else
-                        let world.state = 'redisplay'
+                        let post_keys = v:mouse_lnum .'gg'. v:mouse_col .'|'. c
+                        if world.allow_suspend
+                            let world = tlib#agent#SuspendToParentWindow(world, world.rv)
+                        else
+                            let world.state = 'exit empty'
+                        endif
                     endif
                     " TLogVAR world.prefidx, world.state
                 elseif has_key(world.key_map[world.key_mode], 'unknown_key')
                     let agent = world.key_map[world.key_mode].unknown_key.agent
                     let world = call(agent, [world, c])
+                    call s:CheckAgentReturnValue(agent, world)
                 elseif c >= 32
                     let world.state = 'display'
                     let numbase = get(world.numeric_chars, c, -99999)
@@ -425,7 +656,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                     else
                         let world.idx = ''
                         " TLogVAR world.filter
-                        if world.llen > g:tlib_inputlist_livesearch_threshold
+                        if world.llen > g:tlib#input#livesearch_threshold
                             let pattern = input('Filter: ', world.CleanFilter(world.filter[0][0]) . nr2char(c))
                             if empty(pattern)
                                 let world.state = 'exit empty'
@@ -550,11 +781,13 @@ function! tlib#input#ListW(world, ...) "{{{3
         " TLogVAR statusline
         " let &l:statusline = statusline
         " let &laststatus = laststatus
+        if &showmode != showmode
+            let &showmode = showmode
+        endif
         silent! let @/  = lastsearch
         let &l:scrolloff = scrolloff
-        if g:tlib#input#use_popup && world.has_menu
+        if s:PopupmenuExists() == 1
             silent! aunmenu ]TLibInputListPopupMenu
-            let world.has_menu = 0
         endif
 
         " TLogDBG 'finally 2'
@@ -589,7 +822,21 @@ function! tlib#input#ListW(world, ...) "{{{3
         " endfor
         echo
         redraw!
+        if !empty(post_keys)
+            " TLogVAR post_keys
+            call feedkeys(post_keys)
+        endif
     endtry
+endf
+
+
+function! s:GetModdedChar(world) "{{{3
+    let [char, mode] = tlib#char#Get(a:world.timeout, a:world.timeout_resolution, 1)
+    if char !~ '\D' && char > 0 && mode != 0
+        return printf("<%s-%s>", mode, char)
+    else
+        return char
+    endif
 endf
 
 
@@ -608,11 +855,14 @@ function! s:Init(world, cmd) "{{{3
         else
             call a:world.Retrieve(1)
         endif
+        " if !empty(a:world.resume_state)
+        "     let a:world.state = a:world.resume_state
+        " endif
     elseif !a:world.initialized
         " TLogVAR a:world.initialized, a:world.win_wnr, a:world.bufnr
         let a:world.filetype = &filetype
         let a:world.fileencoding = &fileencoding
-        call a:world.SetMatchMode(tlib#var#Get('tlib_inputlist_match', 'wb'))
+        call a:world.SetMatchMode(tlib#var#Get('tlib#input#filter_mode', 'wb'))
         call a:world.Initialize()
         if !has_key(a:world, 'key_mode')
             let a:world.key_mode = 'default'
@@ -623,18 +873,19 @@ function! s:Init(world, cmd) "{{{3
             if has_key(a:world.key_map, a:world.key_mode)
                 let a:world.key_map[a:world.key_mode] = extend(
                             \ a:world.key_map[a:world.key_mode],
-                            \ copy(g:tlib_keyagents_InputList_s),
+                            \ copy(g:tlib#input#keyagents_InputList_s),
                             \ 'keep')
             else
-                let a:world.key_map[a:world.key_mode] = copy(g:tlib_keyagents_InputList_s)
+                let a:world.key_map[a:world.key_mode] = copy(g:tlib#input#keyagents_InputList_s)
             endif
         else
             let a:world.key_map = {
-                        \ a:world.key_mode : copy(g:tlib_keyagents_InputList_s)
+                        \ a:world.key_mode : copy(g:tlib#input#keyagents_InputList_s)
                         \ }
         endif
+        " TLogVAR a:world.type
         if stridx(a:world.type, 'm') != -1
-            call extend(a:world.key_map[a:world.key_mode], g:tlib_keyagents_InputList_m, 'force')
+            call extend(a:world.key_map[a:world.key_mode], g:tlib#input#keyagents_InputList_m, 'force')
         endif
         for key_mode in keys(a:world.key_map)
             let a:world.key_map[key_mode] = map(a:world.key_map[key_mode], 'type(v:val) == 4 ? v:val : {"agent": v:val}')
@@ -652,7 +903,6 @@ function! s:Init(world, cmd) "{{{3
             let a:world.state .= ' '. a:cmd
         endif
     endif
-    call s:BuildMenu(a:world)
     " TLogVAR a:world.state, a:world.sticky
 endf
 
@@ -667,37 +917,130 @@ function! s:ExtendKeyMap(world, key_mode, key_handlers) "{{{3
 endf
 
 
+function s:PopupmenuExists()
+    if !g:tlib#input#use_popup
+                \ || exists(':popup') != 2
+                \ || !(has('gui_win32') || has('gui_gtk') || has('gui_gtk2'))
+                " \ || !has('gui_win32')
+        let rv = -1
+    else
+        try
+            let rv = 1
+            silent amenu ]TLibInputListPopupMenu
+        catch
+            let rv = 0
+        endtry
+    endif
+    " TLogVAR rv
+    return rv
+endf
+
+
 function! s:BuildMenu(world) "{{{3
-    if g:tlib#input#use_popup
-        if a:world.has_menu
-            silent! aunmenu ]TLibInputListPopupMenu
-        endif
-        amenu ]TLibInputListPopupMenu.Pick\ selected\ item <cr>
-        amenu ]TLibInputListPopupMenu.Select #
-        amenu ]TLibInputListPopupMenu.Select\ all <c-a>
-        amenu ]TLibInputListPopupMenu.Reset\ list <c-r>
-        amenu ]TLibInputListPopupMenu.Cancel <esc>
-        amenu ]TLibInputListPopupMenu.-StandardEntries- :
-        let a:world.has_menu = 1
+    if g:tlib#input#use_popup && s:PopupmenuExists() == 0
+        call s:BuildItem('Pick\ selected\ item', {'key_name': '<cr>', 'eval': 'let world.state = "pick"'})
+        call s:BuildItem('Cancel', {'key_name': '<esc>', 'agent': 'tlib#agent#Exit'})
+        call s:BuildItem('Select', {'key_name': '#', 'agent': 'tlib#agent#Select'})
+        call s:BuildItem('Select\ all', {'key_name': '<c-a>', 'agent': 'tlib#agent#SelectAll'})
+        call s:BuildItem('Reset\ list', {'key_name': '<c-r>', 'agent': 'tlib#agent#Reset'})
+        call s:BuildItem('-StandardEntries-', {'key': ":", 'eval': 'let world.state = "redisplay"'})
         for [key_mode, key_handlers] in items(a:world.key_map)
             let keys = sort(keys(key_handlers))
+            let mitems = {}
             for key in keys
                 let handler = key_handlers[key]
                 let k = get(handler, 'key', '')
                 if !empty(k) && has_key(handler, 'help') && !empty(handler.help)
                     if empty(key_mode) || key_mode == 'default'
-                        exec 'amenu ]TLibInputListPopupMenu.'. escape(handler.help, ' .\')
-                                    \ .' '. handler.key_name
+                        let mname = ''
                     else
-                        exec 'amenu ]TLibInputListPopupMenu'. 
-                                    \ '.'. escape(key_mode, ' .\')
-                                    \ '.'. escape(handler.help, ' .\')
-                                    \ .' '. handler.key_name
+                        let mname = escape(key_mode, ' .\') .'.'
                     endif
+                    if has_key(handler, 'submenu')
+                        let submenu = escape(handler.submenu, ' .\')
+                    else
+                        let submenu = '~'
+                    endif
+                    for mfield in ['menu', 'help', 'key_name', 'agent']
+                        if has_key(handler, mfield)
+                            let mname .= escape(handler[mfield], ' .\')
+                            break
+                        endif
+                    endfor
+                    if !has_key(mitems, submenu)
+                        let mitems[submenu] = {}
+                    endif
+                    let mitems[submenu][mname] = handler
                 endif
+            endfor
+            for msubname in sort(keys(mitems))
+                let msubitems = mitems[msubname]
+                if msubname == '~'
+                    let msubmname = ''
+                else
+                    let msubmname = msubname .'.'
+                endif
+                for mname in sort(keys(msubitems))
+                    let msname = msubmname . mname
+                    let handler = msubitems[mname]
+                    call s:BuildItem(msname, handler)
+                    " if has_key(handler, 'agent')
+                    "     call s:BuildItem(msname, {'agent': handler.agent})
+                    " else
+                    "     call s:BuildItem(msname, {'key': handler.key_name})
+                    " endif
+                endfor
             endfor
         endfor
     endif
+endf
+
+
+function! s:BuildItem(menu, def) "{{{3
+    if has('gui_win32')
+        let key_mode = 'c'
+    elseif has('gui_gtk') || has('gui_gtk2')
+        let key_mode = 'raw'
+    endif
+    for k in ['agent', 'eval', 'key_name', 'key']
+        if has('gui_win32')
+        elseif has('gui_gtk') || has('gui_gtk')
+            if k == 'agent' || k == 'eval'
+                continue
+            endif
+        endif
+        try 
+            if has_key(a:def, k)
+                let v = a:def[k]
+                if k == 'key'
+                    if key_mode == 'c'
+                        " echom 'DBG amenu' (']TLibInputListPopupMenu.'. a:menu) ':let c = "'. v .'"<cr>'
+                        exec 'amenu' (']TLibInputListPopupMenu.'. a:menu) ':let c = "'. v .'"<cr>'
+                    else
+                        " echom 'DBG amenu' (']TLibInputListPopupMenu.'. a:menu) v
+                        exec 'amenu' (']TLibInputListPopupMenu.'. a:menu) v
+                    endif
+                elseif k == 'key_name'
+                    if key_mode == 'c'
+                        " echom 'DBG amenu' (']TLibInputListPopupMenu.'. a:menu) ':let c = "\'. v .'"<cr>'
+                        exec 'amenu' (']TLibInputListPopupMenu.'. a:menu) ':let c = "\'. v .'"<cr>'
+                    else
+                        let key = v
+                        " echom 'DBG amenu' (']TLibInputListPopupMenu.'. a:menu) key
+                        exec 'amenu' (']TLibInputListPopupMenu.'. a:menu) key
+                    endif
+                elseif k == 'agent'
+                    " echom 'DBG amenu' (']TLibInputListPopupMenu.'. a:menu) ':let world.next_agent ='. string(v) .'<cr>'
+                    exec 'amenu' (']TLibInputListPopupMenu.'. a:menu) ':let world.next_agent ='. string(v) .'<cr>'
+                elseif k == 'eval'
+                    " echom 'DBG amenu' (']TLibInputListPopupMenu.'. a:menu) ':let world.next_eval ='. string(v) .'<cr>'
+                    exec 'amenu' (']TLibInputListPopupMenu.'. a:menu) ':let world.next_eval ='. string(v) .'<cr>'
+                endif
+                return
+            endif
+        catch
+        endtry
+    endfor
 endf
 
 
@@ -748,7 +1091,7 @@ endf
 " EXAMPLES: >
 "   echo tlib#input#EditList('Edit:', [100,200,300])
 function! tlib#input#EditList(query, list, ...) "{{{3
-    let handlers = a:0 >= 1 && !empty(a:1) ? a:1 : g:tlib_handlers_EditList
+    let handlers = a:0 >= 1 && !empty(a:1) ? a:1 : g:tlib#input#handlers_EditList
     let default  = a:0 >= 2 ? a:2 : []
     let timeout  = a:0 >= 3 ? a:3 : 0
     " TLogVAR handlers
@@ -767,7 +1110,7 @@ function! tlib#input#Resume(name, pick, bufnr) "{{{3
     " TLogVAR a:name, a:pick
     echo
     if bufnr('%') != a:bufnr
-        if g:tlib_debug
+        if g:tlib#debug
             echohl WarningMsg
             echom "tlib#input#Resume: Internal error: Not in scratch buffer:" bufname('%')
             echohl NONE
@@ -775,7 +1118,7 @@ function! tlib#input#Resume(name, pick, bufnr) "{{{3
         let br = tlib#buffer#Set(a:bufnr)
     endif
     if !exists('b:tlib_'. a:name)
-        if g:tlib_debug
+        if g:tlib#debug
             echohl WarningMsg
             echom "tlib#input#Resume: Internal error: b:tlib_". a:name ." does not exist:" bufname('%')
             echohl NONE

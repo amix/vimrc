@@ -1,3 +1,7 @@
+## 2.2 (06/10/2013)
+Bugfixes:
+  - Fix plugin break in PASTE mode. This fixes #44.
+
 ## 2.1 (04/26/2013)
 
 Bugfixes:

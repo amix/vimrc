@@ -1,3 +1,5 @@
+priority -50
+
 snippet rs "raise" b
 raise (${1:Not_found})
 endsnippet
@@ -44,30 +46,30 @@ endsnippet
 
 snippet lr "let rec"
 let rec ${1:f} =
-  ${2:expr}
+	${2:expr}
 endsnippet
 
 snippet if "if"
 if ${1:(* condition *)} then
-  ${2:(* A *)}
+	${2:(* A *)}
 else
-  ${3:(* B *)}
+	${3:(* B *)}
 endsnippet
 
 snippet If "If"
 if ${1:(* condition *)} then
-  ${2:(* A *)}
+	${2:(* A *)}
 endsnippet
 
 snippet while "while"
 while ${1:(* condition *)} do
-  ${2:(* A *)}
+	${2:(* A *)}
 done
 endsnippet
 
 snippet for "for"
 for ${1:i} = ${2:1} to ${3:10} do
-  ${4:(* BODY *)}
+	${4:(* BODY *)}
 done
 endsnippet
 
@@ -83,19 +85,19 @@ endsnippet
 
 snippet class "class"
 class ${1:name} = object
-  ${2:methods}
+	${2:methods}
 end
 endsnippet
 
 snippet obj "obj"
 object
-  ${2:methods}
+	${2:methods}
 end
 endsnippet
 
 snippet Obj "object"
 object (self)
-  ${2:methods}
+	${2:methods}
 end
 endsnippet
 
@@ -105,7 +107,7 @@ endsnippet
 
 snippet beg "beg"
 begin
-  ${1:block}
+	${1:block}
 end
 endsnippet
 
@@ -115,19 +117,19 @@ endsnippet
 
 snippet mod "module - no signature"
 module ${1:(* Name *)} = struct
-  ${2:(* BODY *)}
+	${2:(* BODY *)}
 end
 endsnippet
 
 snippet Mod "module with signature"
 module ${1:(* Name *)} : ${2:(* SIG *)} = struct
-  ${3:(* BODY *)}
+	${3:(* BODY *)}
 end
 endsnippet
 
 snippet sig "anonymous signature"
 sig
-  ${2:(* BODY *)}
+	${2:(* BODY *)}
 end
 endsnippet
 
@@ -137,27 +139,27 @@ endsnippet
 
 snippet func "define functor - no signature"
 module ${1:M} (${2:Arg} : ${3:ARG}) = struct
-  ${4:(* BODY *)}
+	${4:(* BODY *)}
 end
 endsnippet
 
 snippet Func "define functor - with signature"
 module ${1:M} (${2:Arg} : ${3:ARG}) : ${4:SIG} = struct
-  ${5:(* BODY *)}
+	${5:(* BODY *)}
 end
 endsnippet
 
 snippet mot "Declare module signature"
 module type ${1:(* Name *)} = sig
-  ${2:(* BODY *)}
+	${2:(* BODY *)}
 end
 endsnippet
 
 snippet module "Module with anonymous signature"
 module ${1:(* Name *)} : sig
-  ${2:(* SIGNATURE *)}
+	${2:(* SIGNATURE *)}
 end = struct
-  ${3:(* BODY *)}
+	${3:(* BODY *)}
 end
 endsnippet
 
@@ -167,6 +169,6 @@ endsnippet
 
 snippet qt "inline qtest"
 (*$T ${1:name}
-   ${2:test}
+	${2:test}
 *)
 endsnippet

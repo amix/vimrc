@@ -1,0 +1,11 @@
+snippet def
+	define ["${1:#dependencies1}"], (${2:#dependencies2}) ->
+		${0:TARGET}
+
+snippet defn
+	define "${1:#name}", ["${2:#dependencies1}"], (${3:#dependencies2}) ->
+		${0:TARGET}
+
+snippet reqjs
+	require ["${1:#dependencies1}"], (${2:#dependencies2}) ->
+		${0:TARGET}

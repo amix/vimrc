@@ -8,5 +8,5 @@
     "vim-addon-mw-utils": {},
     "tlib": {}
   },
-  "description" : "snipMate.vim aims to be a concise vim script that implements some of TextMate's snippets features in Vim. See README.markdown to learn about the features this fork adds"
+  "description" : "snipMate.vim aims to be a concise vim script that implements some of TextMate's snippets features in Vim. See README.md to learn about the features this fork adds"
 }

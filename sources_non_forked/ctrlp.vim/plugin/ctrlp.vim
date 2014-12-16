@@ -51,7 +51,9 @@ com! -n=? -com=buffer CtrlPBufTag
 com! -bar CtrlPBufTagAll cal ctrlp#init(ctrlp#buffertag#cmd(1))
 com! -bar CtrlPRTS       cal ctrlp#init(ctrlp#rtscript#id())
 com! -bar CtrlPUndo      cal ctrlp#init(ctrlp#undo#id())
-com! -bar CtrlPLine      cal ctrlp#init(ctrlp#line#id())
+
+com! -n=? -com=buffer CtrlPLine
+	\ cal ctrlp#init(ctrlp#line#cmd(1, <q-args>))
 
 com! -n=? -com=buffer CtrlPChange
 	\ cal ctrlp#init(ctrlp#changes#cmd(0, <q-args>))

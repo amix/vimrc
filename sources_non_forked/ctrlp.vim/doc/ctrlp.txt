@@ -40,9 +40,7 @@ Overview:~
   |ctrlp_cmd|...................Default command used for the default mapping.
   |ctrlp_by_filename|...........Default to filename mode or not.
   |ctrlp_regexp|................Default to regexp mode or not.
-  |ctrlp_match_window_bottom|...Where to show the match window.
-  |ctrlp_match_window_reversed|.Sort order in the match window.
-  |ctrlp_max_height|............Max height of the match window.
+  |ctrlp_match_window|..........Order, height and position of the match window.
   |ctrlp_switch_buffer|.........Jump to an open buffer if already opened.
   |ctrlp_reuse_window|..........Reuse special windows (help, quickfix, etc).
   |ctrlp_tabpage_position|......Where to put the new tab page.
@@ -76,6 +74,11 @@ Overview:~
   |ctrlp_mruf_default_order|....Disable sorting.
   |ctrlp_mruf_case_sensitive|...MRU files are case sensitive or not.
   |ctrlp_mruf_save_on_update|...Save to disk whenever a new entry is added.
+
+  BufferTag mode: (to enable, see |ctrlp-extensions|)
+  |g:ctrlp_buftag_ctags_bin|....The location of the ctags-compatible binary.
+  |g:ctrlp_buftag_systemenc|....The encoding used for the ctags command.
+  |g:ctrlp_buftag_types|........Add new filetypes and set the cmd arguments.
 
   Advanced options:
   |ctrlp_open_func|.............Use custom file opening functions.
@@ -114,21 +117,30 @@ Set this to 1 to set regexp search as the default: >
 <
 Can be toggled on/off by pressing <c-r> inside the prompt.
 
-                                                *'g:ctrlp_match_window_bottom'*
-Set this to 0 to show the match window at the top of the screen: >
-  let g:ctrlp_match_window_bottom = 1
+                                                       *'g:ctrlp_match_window'*
+Change the postion, the listing order of results, the minimum and the maximum
+heights of the match window: >
+  let g:ctrlp_match_window = ''
 <
+Example: >
+  let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:10,results:10'
+<
+The position: (default: bottom)
+  top - show the match window at the top of the screen.
+  bottom - show the match window at the bottom of the screen.
 
-                                              *'g:ctrlp_match_window_reversed'*
-Change the listing order of the files in the match window. The default setting
-(1) is from bottom to top: >
-  let g:ctrlp_match_window_reversed = 1
-<
+The listing order of results: (default: btt)
+  order:ttb - from top to bottom.
+  order:btt - from bottom to top.
 
-                                                         *'g:ctrlp_max_height'*
-Set the maximum height of the match window: >
-  let g:ctrlp_max_height = 10
-<
+The minimum and maximum heights:
+  min:{n} - show minimum {n} lines (default: 1).
+  max:{n} - show maximum {n} lines (default: 10).
+
+The maximum number of results:
+  results:{n} - list maximum {n} results (default: sync with max height).
+
+Note: When a setting isn't set, its default value will be used.
 
                                                       *'g:ctrlp_switch_buffer'*
 When opening a file, if it's already open in a window somewhere, CtrlP will try
@@ -323,18 +335,21 @@ Some examples: >
   let g:ctrlp_user_command = ['.hg', 'for /f "tokens=1" %%a in (''hg root'') '
     \ . 'do hg --cwd %s status -numac -I . %%a']           " Windows
 <
-Note #1: if the fallback_command is empty or the 'fallback' key is not defined,
+Note #1: in the |Dictionary| format, 'fallback' and 'ignore' are optional. In
+the |List| format, fallback_command is optional.
+
+Note #2: if the fallback_command is empty or the 'fallback' key is not defined,
 |globpath()| will then be used when scanning outside of a repository.
 
-Note #2: unless the |Dictionary| format is used and 'ignore' is defined and set
+Note #3: unless the |Dictionary| format is used and 'ignore' is defined and set
 to 1, the |wildignore| and |g:ctrlp_custom_ignore| options do not apply when
 these custom commands are being used. When not present, 'ignore' is set to 0 by
 default to retain the performance advantage of using external commands.
 
-Note #3: when changing the option's variable type, remember to |:unlet| it
+Note #4: when changing the option's variable type, remember to |:unlet| it
 first or restart Vim to avoid the "E706: Variable type mismatch" error.
 
-Note #4: you can use a |b:var| to set this option on a per buffer basis.
+Note #5: you can use a |b:var| to set this option on a per buffer basis.
 
                                                         *'g:ctrlp_max_history'*
 The maximum number of input strings you want CtrlP to remember. The default
@@ -563,6 +578,9 @@ Example: >
 Set this to 1 to show only MRU files in the current working directory: >
   let g:ctrlp_mruf_relative = 0
 <
+Note: you can use a custom mapping to toggle this option inside the prompt: >
+  let g:ctrlp_prompt_mappings = { 'ToggleMRURelative()': ['<F2>'] }
+<
 
                                                  *'g:ctrlp_mruf_default_order'*
 Set this to 1 to disable sorting when searching in MRU mode: >
@@ -731,6 +749,27 @@ Structure of the function: >
     " +- a:regex  : In regex mode: 1 or 0.
 
     return list_of_matched_items
+  endfunction
+<
+
+Note: you can extend any of the above options with { 'arg_type': 'dict' } to
+enable passing all the function arguments in a single Dictionary argument. Use
+the existing argument names as keys in this Dictionary.
+
+Example: >
+  let g:ctrlp_status_func = {
+    \ 'arg_type' : 'dict',
+    \ 'enter': 'Function_Name_1',
+    \ 'exit':  'Function_Name_2',
+    \ }
+
+  function! Function_Name_1(dict)
+    " where dict == {
+    " \ 'focus':   value,
+    " \ 'byfname': value,
+    " \ 'regex':   value,
+    " \ ...
+    " }
   endfunction
 <
 
@@ -1076,8 +1115,8 @@ Available extensions:~
                                                                    *:CtrlPLine*
   * Line mode:~
     - Name: 'line'
-    - Command: ":CtrlPLine"
-    - Search for a line in all listed buffers.
+    - Command: ":CtrlPLine [buffer]"
+    - Search for a line in all listed buffers or in the specified [buffer].
 
                                                                  *:CtrlPChange*
                                                               *:CtrlPChangeAll*
@@ -1164,7 +1203,7 @@ Highlighting:~
 
 Statuslines:~
   * Highlight groups:
-    CtrlPMode1 : 'file' or 'path', and the current mode (Character)
+    CtrlPMode1 : 'file' or 'path' or 'line', and the current mode (Character)
     CtrlPMode2 : 'prt' or 'win', 'regex', the working directory (|hl-LineNr|)
     CtrlPStats : the scanning status (Function)
 
@@ -1249,9 +1288,15 @@ Special thanks:~
     * Christopher Fredén <github.com/icetan>
     * Zahary Karadjov <github.com/zah>
     * Jo De Boeck <github.com/grimpy>
+    * Rudi Grinberg <github.com/rgrinberg>
+    * Timothy Mellor <github.com/mellort>
 
 ===============================================================================
 CHANGELOG                                                     *ctrlp-changelog*
+
+    + Combine *g:ctrlp_match_window_bottom* *g:ctrlp_match_window_reversed* and
+      *g:ctrlp_max_height* into |g:ctrlp_match_window|.
+    + New option: |g:ctrlp_match_window|.
 
 Before 2012/11/30~
 

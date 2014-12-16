@@ -62,6 +62,7 @@ let s:types = {
 	\ 'lisp'   : '%slisp%slisp%sf',
 	\ 'lua'    : '%slua%slua%sf',
 	\ 'make'   : '%smake%smake%sm',
+	\ 'ocaml'  : '%socaml%socaml%scmMvtfCre',
 	\ 'pascal' : '%spascal%spascal%sfp',
 	\ 'perl'   : '%sperl%sperl%sclps',
 	\ 'php'    : '%sphp%sphp%scdvf',
@@ -248,7 +249,9 @@ endf
 fu! ctrlp#buffertag#cmd(mode, ...)
 	let s:btmode = a:mode
 	if a:0 && !empty(a:1)
-		let s:bufname = fnamemodify(a:1, ':p')
+		let s:btmode = 0
+		let bname = a:1 =~# '^%$\|^#\d*$' ? expand(a:1) : a:1
+		let s:bufname = fnamemodify(bname, ':p')
 	en
 	retu s:id
 endf

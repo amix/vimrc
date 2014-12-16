@@ -1,66 +1,66 @@
 snippet if
 	If ${1:condition} Then
-		${2:; True code}
+		${0:; True code}
 	EndIf
 snippet el
 	Else
-		${1}
-snippet elif
+		${0}
+snippet eif
 	ElseIf ${1:condition} Then
-		${2:; True code}
+		${0:; True code}
 # If/Else block
-snippet ifel
+snippet ife
 	If ${1:condition} Then
 		${2:; True code}
 	Else
-		${3:; Else code}
+		${0:; Else code}
 	EndIf
-# If/ElseIf/Else block
+# If/ElseIf/Else block - because there is eif this is not really neccessary
 snippet ifelif
 	If ${1:condition 1} Then
 		${2:; True code}
 	ElseIf ${3:condition 2} Then
 		${4:; True code}
 	Else
-		${5:; Else code}
+		${0:; Else code}
 	EndIf
 # Switch block
 snippet switch
 	Switch (${1:condition})
-	Case {$2:case1}:
-		{$3:; Case 1 code}
+	Case ${2:case1}:
+		${3:; Case 1 code}
 	Case Else:
-		{$4:; Else code}
+		${0:; Else code}
 	EndSwitch
 # Select block
 snippet select
 	Select (${1:condition})
-	Case {$2:case1}:
-		{$3:; Case 1 code}
+	Case ${2:case1}:
+		${3:; Case 1 code}
 	Case Else:
-		{$4:; Else code}
+		${0:; Else code}
 	EndSelect
 # While loop
-snippet while
+snippet wh
 	While (${1:condition})
-		${2:; code...}
+		${0:; code...}
 	WEnd
 # For loop
 snippet for
 	For ${1:n} = ${3:1} to ${2:count}
-		${4:; code...}
+		${0:; code...}
 	Next
 # New Function
 snippet func
 	Func ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
-		${4:Return}
+		${0:Return}
 	EndFunc
 # Message box
 snippet msg
-	MsgBox(${3:MsgType}, ${1:"Title"}, ${2:"Message Text"})
+	MsgBox(${0:MsgType}, ${1:"Title"}, ${2:"Message Text"})
 # Debug Message
 snippet debug
-	MsgBox(0, "Debug", ${1:"Debug Message"})
+	MsgBox(0, "Debug", ${0:"Debug Message"})
 # Show Variable Debug Message
 snippet showvar
-	MsgBox(0, "${1:VarName}", $1)
+	MsgBox(0, "${0:VarName}", $1)

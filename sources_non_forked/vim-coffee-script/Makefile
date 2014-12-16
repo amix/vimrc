@@ -2,7 +2,7 @@ REF = HEAD
 VERSION = $(shell git describe --always $(REF))
 
 ARCHIVE = vim-coffee-script-$(VERSION).zip
-ARCHIVE_DIRS = after compiler doc ftdetect ftplugin indent syntax
+ARCHIVE_DIRS = after autoload compiler doc ftdetect ftplugin indent syntax
 
 # Don't do anything by default.
 all:

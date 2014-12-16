@@ -3,8 +3,13 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2012-02-09.
-" @Revision:    0.0.351
+" @Last Change: 2013-09-25.
+" @Revision:    0.0.352
+
+
+" Where to display the line when using |tlib#buffer#ViewLine|.
+" For possible values for position see |scroll-cursor|.
+TLet g:tlib_viewline_position = 'zz'
 
 
 let s:bmru = []

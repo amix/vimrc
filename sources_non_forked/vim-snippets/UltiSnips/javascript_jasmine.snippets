@@ -1,8 +1,8 @@
-#
+priority -50
+
 # JavaScript versions -- from the TextMate bundle + some additions
 # for jasmine-jquery matchers
 #
-extends javascript
 
 snippet des "Describe (js)" b
 describe('${1:description}', function() {
@@ -48,6 +48,10 @@ endsnippet
 
 snippet ee "expect to equal (js)" b
 expect(${1:target}).toEqual(${2:value});
+endsnippet
+
+snippet eb "expect to be (js)" b
+expect(${1:target}).toBe(${2:value});
 endsnippet
 
 snippet em "expect to match (js)" b
@@ -164,5 +168,17 @@ endsnippet
 
 snippet noscw "expect was not called with (js)" b
 expect(${1:target}).wasNotCalledWith(${2:arguments});
+endsnippet
+
+snippet ethbc "expect to have been called (js)" b
+expect(${1:target}).toHaveBeenCalled();
+endsnippet
+
+snippet nthbc "expect not to have been called (js)" b
+expect(${1:target}).not.toHaveBeenCalled();
+endsnippet
+
+snippet ethbcw "expect to have been called with (js)" b
+expect(${1:target}).toHaveBeenCalledWith(${2:arguments});
 endsnippet
 
