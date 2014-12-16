@@ -112,12 +112,12 @@ fu! ctrlp#bookmarkdir#accept(mode, str)
 	en
 endf
 
-fu! ctrlp#bookmarkdir#add(dir)
+fu! ctrlp#bookmarkdir#add(dir, ...)
 	let str = 'Directory to bookmark: '
 	let cwd = a:dir != '' ? a:dir : s:getinput(str, getcwd(), 'dir')
 	if cwd == '' | retu | en
 	let cwd = fnamemodify(cwd, ':p')
-	let name = s:getinput('Bookmark as: ', cwd)
+	let name = a:0 && a:1 != '' ? a:1 : s:getinput('Bookmark as: ', cwd)
 	if name == '' | retu | en
 	let name = tr(name, '	', ' ')
 	cal s:savebookmark(name, cwd)

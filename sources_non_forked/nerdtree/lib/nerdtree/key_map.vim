@@ -44,7 +44,7 @@ function! s:KeyMap.bind()
 
     let premap = self.key == "<LeftRelease>" ? " <LeftRelease>" : " "
 
-    exec 'nnoremap <buffer> <silent> '. self.key . premap . ':call nerdtree#invokeKeyMap("'. keymapInvokeString .'")<cr>'
+    exec 'nnoremap <buffer> <silent> '. self.key . premap . ':call nerdtree#ui_glue#invokeKeyMap("'. keymapInvokeString .'")<cr>'
 endfunction
 
 "FUNCTION: KeyMap.Remove(key, scope) {{{1
@@ -79,6 +79,16 @@ endfunction
 "If a keymap has the scope of "all" then it will be called if no other keymap
 "is found for a:key and the scope.
 function! s:KeyMap.Invoke(key)
+
+    "required because clicking the command window below another window still
+    "invokes the <LeftRelease> mapping - but changes the window cursor
+    "is in first
+    "
+    "TODO: remove this check when the vim bug is fixed
+    if !g:NERDTree.ExistsForBuf()
+        return {}
+    endif
+
     let node = g:NERDTreeFileNode.GetSelected()
     if !empty(node)
 
@@ -124,8 +134,14 @@ endfunction
 
 "FUNCTION: KeyMap.Create(options) {{{1
 function! s:KeyMap.Create(options)
-    let newKeyMap = copy(self)
     let opts = extend({'scope': 'all', 'quickhelpText': ''}, copy(a:options))
+
+    "dont override other mappings unless the 'override' option is given
+    if get(opts, 'override', 0) == 0 && !empty(s:KeyMap.FindFor(opts['key'], opts['scope']))
+        return
+    end
+
+    let newKeyMap = copy(self)
     let newKeyMap.key = opts['key']
     let newKeyMap.quickhelpText = opts['quickhelpText']
     let newKeyMap.callback = opts['callback']

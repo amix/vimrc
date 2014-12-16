@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
 " @Last Change: 2011-03-18.
-" @Revision:    36
+" @Revision:    57
 
 
 """ List related functions {{{1
@@ -140,25 +140,41 @@ endf
 
 
 function! tlib#list#Uniq(list, ...) "{{{3
-    TVarArg ['get_value', '']
-    let s:uniq_values = {}
+    TVarArg ['get_value', ''], ['remove_empty', 0]
+    if remove_empty
+        call filter(a:list, 'type(v:val) == 0 || !empty(v:val)')
+    endif
+    " CREDITS: Based on syntastic#util#unique(list) by scrooloose
+    let seen = {}
+    let uniques = []
     if empty(get_value)
-        call filter(a:list, 's:UniqValue(v:val)')
+        for e in a:list
+            if !has_key(seen, e)
+                let seen[e] = 1
+                call add(uniques, e)
+            endif
+        endfor
     else
-        call filter(a:list, 's:UniqValue(eval(printf(get_value, string(v:val))))')
+        for e in a:list
+            let v = eval(printf(get_value, string(e)))
+            if !has_key(seen, v)
+                let seen[v] = 1
+                call add(uniques, e)
+            endif
+        endfor
     endif
-    unlet s:uniq_values
-    return a:list
+    return uniques
 endf
 
 
-function! s:UniqValue(value) "{{{3
-    if get(s:uniq_values, a:value, 0)
-        return 0
-    else
-        let s:uniq_values[a:value] = 1
-        return 1
-    endif
+function! tlib#list#ToDictionary(list, default, ...) "{{{3
+    TVarArg ['generator', '']
+    let dict = {}
+    for item in a:list
+        if !empty(item)
+            let dict[item] = empty(generator) ? a:default : call(generator, [item, a:default])
+        endif
+    endfor
+    return dict
 endf
-
 

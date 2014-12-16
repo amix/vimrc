@@ -3,12 +3,15 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-24.
-" @Last Change: 2012-10-03.
-" @Revision:    0.1.208
+" @Last Change: 2014-02-06.
+" @Revision:    0.1.251
 
 
 " :filedoc:
 " Various agents for use as key handlers in tlib#input#List()
+
+" Number of items to move when pressing <c-up/down> in the input list window.
+TLet g:tlib_scroll_lines = 10
 
 
 " General {{{1
@@ -48,6 +51,20 @@ endf
 function! tlib#agent#PageDown(world, selected) "{{{3
     let a:world.offset += (winheight(0) / 2)
     let a:world.state = 'scroll'
+    return a:world
+endf
+
+
+function! tlib#agent#Home(world, selected) "{{{3
+    let a:world.prefidx = 1
+    let a:world.state = 'redisplay'
+    return a:world
+endf
+
+
+function! tlib#agent#End(world, selected) "{{{3
+    let a:world.prefidx = len(a:world.list)
+    let a:world.state = 'redisplay'
     return a:world
 endf
 
@@ -107,6 +124,36 @@ endf
 
 function! tlib#agent#Reset(world, selected) "{{{3
     let a:world.state = 'reset'
+    return a:world
+endf
+
+
+function! tlib#agent#ToggleRestrictView(world, selected) "{{{3
+    if empty(a:world.filtered_items)
+        return tlib#agent#RestrictView(a:world, a:selected)
+    else
+        return tlib#agent#UnrestrictView(a:world, a:selected)
+    endif
+endf
+
+
+function! tlib#agent#RestrictView(world, selected) "{{{3
+    " TLogVAR a:selected
+    let filtered_items = map(copy(a:selected), 'index(a:world.base, v:val) + 1')
+    " TLogVAR 1, filtered_items
+    let filtered_items = filter(filtered_items, 'v:val > 0')
+    " TLogVAR 2, filtered_items
+    if !empty(filtered_items)
+        let a:world.filtered_items = filtered_items
+    endif
+    let a:world.state = 'display'
+    return a:world
+endf
+
+
+function! tlib#agent#UnrestrictView(world, selected) "{{{3
+    let a:world.filtered_items = []
+    let a:world.state = 'display'
     return a:world
 endf
 
@@ -401,12 +448,17 @@ function! tlib#agent#EditFileInVSplit(world, selected) "{{{3
     call a:world.CloseScratch()
     " call tlib#file#With('edit', 'buffer', a:selected[0:0], a:world)
     " call tlib#file#With('vertical split', 'vertical sbuffer', a:selected[1:-1], a:world)
+    let winpos = tlib#fixes#Winpos()
     call tlib#file#With('vertical split', 'vertical sbuffer', a:selected, a:world)
+    if !empty(winpos)
+        exec winpos
+    endif
     return tlib#agent#Exit(a:world, a:selected)
 endf
 
 
 function! tlib#agent#EditFileInTab(world, selected) "{{{3
+    " TLogVAR a:selected
     call a:world.CloseScratch()
     call tlib#file#With('tabedit', 'tab sbuffer', a:selected, a:world)
     return tlib#agent#Exit(a:world, a:selected)
@@ -419,19 +471,18 @@ function! tlib#agent#ToggleScrollbind(world, selected) "{{{3
     return a:world
 endf
 
+
 function! tlib#agent#ShowInfo(world, selected)
+    let lines = []
     for f in a:selected
         if filereadable(f)
             let desc = [getfperm(f), strftime('%c', getftime(f)),  getfsize(f) .' bytes', getftype(f)]
-            echo fnamemodify(f, ':t') .':'
-            echo '  '. join(desc, '; ')
+            call add(lines, fnamemodify(f, ':p'))
+            call add(lines, '  '. join(desc, '; '))
         endif
     endfor
-    echohl MoreMsg
-    echo 'Press any key to continue'
-    echohl NONE
-    call getchar()
-    let a:world.state = 'redisplay'
+    let a:world.temp_lines = lines
+    let a:world.state = 'printlines'
     return a:world
 endf
 
@@ -524,14 +575,14 @@ endf
 
 function! tlib#agent#ExecAgentByName(world, selected) "{{{3
     let s:agent_names_world = a:world
-    let agent_names = {}
+    let agent_names = {'Help': 'tlib#agent#Help'}
     for def in values(a:world.key_map[a:world.key_mode])
         if has_key(def, 'help') && !empty(def.help) && has_key(def, 'agent') && !empty(def.agent)
             let agent_names[def.help] = def.agent
         endif
     endfor
-    let s:agent_names = join(sort(keys(agent_names)), "\n")
-    let command = input('Command: ', '', 'custom,tlib#agent#CompleteAgentNames')
+    let s:agent_names = sort(keys(agent_names))
+    let command = input('Command: ', '', 'customlist,tlib#agent#CompleteAgentNames')
     " TLogVAR command
     if !has_key(agent_names, command)
         " TLogVAR command
@@ -558,6 +609,6 @@ endf
 
 
 function! tlib#agent#CompleteAgentNames(ArgLead, CmdLine, CursorPos)
-    return s:agent_names
+    return filter(copy(s:agent_names), 'stridx(v:val, a:ArgLead) != -1')
 endf
 

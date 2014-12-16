@@ -1,0 +1,252 @@
+#######################################################################
+#                            Rust Snippets                            #
+#######################################################################
+
+priority -50
+
+snippet fn "A function, optionally with arguments and return type." b
+fn ${1:function_name}(${2})${3/..*/ -> /}${3} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet test "Test function" b
+#[test]
+fn ${1:test_function_name}() {
+	${VISUAL}${0}
+}
+endsnippet
+
+
+snippet bench "Bench function" b
+#[bench]
+fn ${1:bench_function_name}(b: &mut test::Bencher) {
+	b.iter(|| {
+		${VISUAL}${0}
+	})
+}
+endsnippet
+
+snippet new "A new function" b
+pub fn new(${2}) -> ${1:Name} {
+	${VISUAL}${0}return $1 { ${3} };
+}
+endsnippet
+
+snippet main "The main function" b
+pub fn main() {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet let "A let statement" b
+let ${1:name}${3} = ${VISUAL}${2};
+endsnippet
+
+snippet lmut "let mut = .." b
+let mut ${1:name}${3} = ${VISUAL}${2};
+endsnippet
+
+snippet pri "print!(..)" b
+print!("${1}"${2/..*/, /}${2});
+endsnippet
+
+snippet pln "println!(..)" b
+println!("${1}"${2/..*/, /}${2});
+endsnippet
+
+snippet fmt "format!(..)"
+format!("${1}"${2/..*/, /}${2});
+endsnippet
+
+snippet macro "macro_rules!" b
+macro_rules! ${1:name} (
+	(${2:matcher}) => (
+		${3}
+	)
+)
+endsnippet
+
+snippet ec "extern crate ..." b
+extern crate ${1:sync};
+endsnippet
+
+snippet ecl "...extern crate log;" b
+#![feature(phase)]
+#[phase(plugin, link)] extern crate log;
+endsnippet
+
+snippet mod	 "A module" b
+mod ${1:`!p snip.rv = snip.basename.lower() or "name"`} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet crate "Create header information" b
+// Crate name
+#![crate_name = "${1:crate_name}"]
+
+// Additional metadata attributes
+#![desc = "${2:Descrption.}"]
+#![license = "${3:BSD}"]
+#![comment = "${4:Comment.}"]
+
+// Specify the output type
+#![crate_type = "${5:lib}"]
+endsnippet
+
+snippet allow "#[allow(..)]" b
+#[allow(${1:unused_variable})]
+endsnippet
+
+snippet feat "#![feature(..)]" b
+#![feature(${1:macro_rules})]
+endsnippet
+
+snippet der "#[deriving(..)]" b
+#[deriving(${1:Show})]
+endsnippet
+
+snippet attr "#[..]" b
+#[${1:inline}]
+endsnippet
+
+snippet opt "Option<..>"
+Option<${1:int}>
+endsnippet
+
+snippet res "Result<.., ..>"
+Result<${1:int}, ${2:()}>
+endsnippet
+
+snippet if "if .. (if)" b
+if ${1} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet el "else .. (el)"
+else {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet eli "else if .. (eli)"
+else if ${1} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet ife "if .. else (ife)"
+if ${1} {
+	${2}
+} else {
+	${3}
+}
+endsnippet
+
+snippet mat "match"
+match ${1} {
+	${2} => ${3},
+}
+endsnippet
+
+snippet loop "loop {}" b
+loop {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet while "while .. {}" b
+while ${1} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet for "for .. in .." b
+for ${1:i} in ${2:range(0u, 10)} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet spawn "spawn(proc() { .. });" b
+spawn(proc() {
+	${VISUAL}${0}
+});
+endsnippet
+
+snippet chan "A channel" b
+let (${1:tx}, ${2:rx}): (Sender<${3:int}>, Receiver<${4:int}>) = channel();
+endsnippet
+
+snippet duplex "Duplex stream" b
+let (${1:from_child}, ${2:to_child}) = sync::duplex();
+endsnippet
+
+snippet todo "A Todo comment"
+// [TODO]: ${1:Description} - `!v strftime("%Y-%m-%d %I:%M%P")`
+endsnippet
+
+snippet fixme "FIXME comment"
+// FIXME: ${1}
+endsnippet
+
+snippet st "Struct" b
+struct ${1:`!p snip.rv = snip.basename.title() or "Name"`} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet stn "Struct with new constructor." b
+pub struct ${1:`!p snip.rv = snip.basename.title() or "Name"`} {
+	${3}
+}
+
+impl $1 {
+	pub fn new(${2}) -> $1 {
+		${4}return $1 {
+			${5}
+		};
+	}
+}
+endsnippet
+
+snippet enum "An enum" b
+enum ${1:Name} {
+	${VISUAL}${0},
+}
+endsnippet
+
+snippet type "A type" b
+type ${1:NewName} = ${VISUAL}${0};
+endsnippet
+
+snippet imp "An impl" b
+impl ${1:Name} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet drop "Drop implementation" b
+impl Drop for ${1:Name} {
+	fn drop(&mut self) {
+		${VISUAL}${0}
+	}
+}
+endsnippet
+
+snippet trait "Trait definition" b
+trait ${1:Name} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet ss "A static string."
+static ${1}: &'static str = "${VISUAL}${0}";
+endsnippet
+
+snippet stat "A static variable."
+static ${1}: ${2:uint} = ${VISUAL}${0};
+endsnippet
+
+# vim:ft=snippets:

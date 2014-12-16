@@ -17,7 +17,7 @@ snippet cookbook_file
 
 		${14:#}${15: action :create} # Create this file (Default)
 		${16:#}${17: action :create_if_missing} # Create only if it doesn't exist yet
-		${18:#}${19: action :delete} # Delete this file
+		${18:#}${0: action :delete} # Delete this file
 	end
 
 snippet execute
@@ -34,7 +34,7 @@ snippet execute
 		${18:#}umask ${19:nil} # Umask for files created by the command
 
 		${20:#}${21:action :run} # Run this command (Default)
-		${22:#}${23:action :nothing} # Do not run this command
+		${22:#}${0:action :nothing} # Do not run this command
 	end
 
 snippet link
@@ -46,7 +46,7 @@ snippet link
 		${8:#}group ${9} # The group of the symlink
 
 		${10:#}${11:action :create} # Create a link (Default)
-		${12:#}${13:action :delete} # Delete a link
+		${12:#}${0:action :delete} # Delete a link
 	end
 
 snippet package
@@ -61,7 +61,7 @@ snippet package
 		${12:#}${13:action :install} # Install a package - if version is provided, install that specific version (Default)
 		${14:#}${15:action :upgrade} # Upgrade a package - if version is provided, upgrade to that specific version
 		${16:#}${17:action :remove} # Remove a package
-		${18:#}${19:action :purge} # Purge a package (this usually entails removing configuration files as well as the package itself)
+		${18:#}${0:action :purge} # Purge a package (this usually entails removing configuration files as well as the package itself)
 	end
 
 snippet service
@@ -83,7 +83,7 @@ snippet service
 		${26:#}${27:action :start} # Start this service
 		${28:#}${29:action :stop} # Stop this service
 		${30:#}${31:action :restart} # Restart this service
-		${32:#}${33:action :reload} # Reload the configuration for this service
+		${32:#}${0:action :reload} # Reload the configuration for this service
 	end
 
 snippet file
@@ -97,7 +97,7 @@ snippet file
 
 		${12:#}${13:action :create} # Create this file (Default)
 		${14:#}${15:action :delete} # Delete this file
-		${16:#}${17:action :touch} # Touch this file (update the mtime/atime)
+		${16:#}${0:action :touch} # Touch this file (update the mtime/atime)
 	end
 
 snippet directory
@@ -109,7 +109,7 @@ snippet directory
 		${10:#}recursive ${11:false} # When deleting the directory, delete it recursively. When creating the directory, create recursively (ie, mkdir -p)
 
 		${12:#}${13:action :create} # Create this directory (Default)
-		${14:#}${15:action :delete} # Delete this directory
+		${14:#}${0:action :delete} # Delete this directory
 	end
 
 snippet template
@@ -127,7 +127,7 @@ snippet template
 
 		${20:#}${21:action :create} # Create the file (Default)
 		${22:#}${23:action :delete} # Delete this file
-		${24:#}${25:action :touch} # Touch this file (update the mtime/atime)
+		${24:#}${0:action :touch} # Touch this file (update the mtime/atime)
 	end
 
 snippet svn
@@ -141,10 +141,10 @@ snippet svn
 		${12:#}svn_username ${13} # (Subversion only) Username for Subversion operations
 		${14:#}svn_password ${15} # (Subversion only) Password for Subversion operations
 		${16:#}svn_arguments ${17} # (Subversion only) Extra arguments passed to the subversion command
-		
+
 		${18:#}${19:action :sync} # Update the source to the specified revision, or get a new checkout (Default)
 		${20:#}${21:action :checkout} # Checkout the source. Does nothing if a checkout is available
-		${22:#}${23:action :export} # Export the source, excluding or removing any version control artifacts
+		${22:#}${0:action :export} # Export the source, excluding or removing any version control artifacts
 	end
 
 snippet git
@@ -159,10 +159,10 @@ snippet git
 		${14:#}enable_submodules ${15:"false"} # (Git only) performs a submodule init and submodule update
 		${16:#}remote ${17:"origin"} # (Git only) remote repository to use for syncing an existing clone
 		${18:#}ssh_wrapper ${19} # (Git only) path to a wrapper script for running SSH with git. GIT_SSH environment variable is set to this.
-		
+
 		${20:#}${21:action :sync} # Update the source to the specified revision, or get a new clone (Default)
 		${22:#}${23:action :checkout} # Clone the source. Does nothing if a checkout is available
-		${24:#}${25:action :export} # Export the source, excluding or removing any version control artifacts
+		${24:#}${0:action :export} # Export the source, excluding or removing any version control artifacts
 	end
 
 snippet deploy
@@ -197,8 +197,8 @@ snippet deploy
 		${54:#}before_symlink ${55:"deploy/before_symlink.rb"} # A block or path to a file containing chef code to run before symlinking
 		${56:#}before_restart ${57:"deploy/before_restart.rb"} # A block or path to a file containing chef code to run before restarting
 		${58:#}after_restart ${59:"deploy/after_restart.rb"} # A block or path to a file containing chef code to run after restarting
-		
+
 		${60:#}${61::deploy} # Deploy the application (Default)
 		${62:#}${63::force_deploy} # For the revision deploy strategy, this removes any existing release of the same code version and re-deploys in its place
-		${64:#}${65::rollback} # Rollback the application to the previous release
+		${64:#}${0::rollback} # Rollback the application to the previous release
 	end

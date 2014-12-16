@@ -1,0 +1,215 @@
+# Snippets for Go
+
+priority -10
+
+# when to abbriviate and when not?
+# b doesn't work here, because it ignores whitespace
+# optional local name?
+snippet import "Import declaration" b
+import (
+	"${1:package}"
+)
+endsnippet
+
+snippet package "Package declaration" b
+// Package $1 provides ${2:...}
+package ${1:main}
+${0:${VISUAL}}
+endsnippet
+
+# Mostly converted from: https://github.com/AlanQuatermain/go-tmbundle
+snippet /^cons/ "Constants declaration" r
+const (
+	${1:constant}${2/(.+)/ /}${2:type} = ${0:value}
+)
+endsnippet
+
+snippet /^con/ "Constant declaration" r
+const ${1:name}${2/(.+)/ /}${2:type} = ${0:value}
+endsnippet
+
+snippet iota "Iota constant generator" b
+const (
+	${1:constant}${2/(.+)/ /}${2:type} = iota
+)
+endsnippet
+
+snippet struct "Struct declaration" b
+type ${1:Struct} struct {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet interface "Interface declaration" b
+type ${1:Interface} interface {
+	${0:${VISUAL}}
+}
+endsnippet
+
+# statements
+snippet for "For loop" b
+for ${1:condition} {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet fori "Integer for loop" b
+for ${1:i} := 0; $1 < ${2:N}; $1++ {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet forr "For range loop" b
+for ${2:name} := range ${1:collection} {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet if "If statement" b
+if ${1:condition}${1/(.+)/ /}{
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet switch "Switch statement" b
+switch ${1:expression}${1/(.+)/ /}{
+case${0}
+}
+endsnippet
+
+snippet select "Select statement" b
+select {
+case${0}
+}
+endsnippet
+
+snippet case "Case clause" b
+case ${1:condition}:
+	${0:${VISUAL}}
+endsnippet
+
+snippet default "Default clause" b
+default:
+	${0:${VISUAL}}
+endsnippet
+
+# functions
+snippet /^main/ "Main function" r
+func main() {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet /^meth/ "Method" r
+func (${1:receiver} ${2:type}) ${3:name}(${4:params})${5/(.+)/ /}${5:type} {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet func "Function" b
+func ${1:name}(${2:params})${3/(.+)/ /}${3:type} {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet anon "Anonymous Function" !b
+${1:fn} := func() {
+	${2}
+}
+endsnippet
+
+# types and variables
+snippet map "Map type" b
+map[${1:keytype}]${2:valtype}
+endsnippet
+
+snippet : "Short variable declaration :=" !b
+${1:name} := ${0:value}
+endsnippet
+
+snippet var "Variable declaration" b
+var ${1:name}${2/(.+)/ /}${2:type}${3: = ${0:value}}
+endsnippet
+
+snippet vars "Variables declaration" b
+var (
+	${1:name}${2/(.+)/ /}${2:type}${3: = ${0:value} }
+)
+endsnippet
+
+snippet json "JSON field"
+\`json:"${1:displayName}"\`
+endsnippet
+
+snippet er "Error clause " !b
+if err != nil {
+	${0}
+}
+endsnippet
+
+snippet errn "Error return " !b
+if err != nil {
+	return err
+}
+${0}
+endsnippet
+
+snippet errn, "Error return with two return values" !b
+if err != nil {
+	return ${1:nil}, err
+}
+${0}
+endsnippet
+
+snippet errn,, "Error return with three return values" !b
+if err != nil {
+	return ${1:nil}, ${2:nil}, err
+}
+${0}
+endsnippet
+
+snippet ok "OK statement" !b
+if !ok {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet gof "Anonymous Goroutine" !b
+go func() {
+	${1}
+}()
+endsnippet
+
+snippet def "Anonymous Defer" !b
+defer func() {
+	${1}
+}()
+endsnippet
+
+snippet ff "Fmt Printf debug" !b
+fmt.Printf("${1} %+v\n", $1)
+endsnippet
+
+snippet fn "Fmt Println debug" !b
+fmt.Println("${1}")
+endsnippet
+
+snippet lf "Log Printf debug" !b
+log.Printf("${1} %+v\n", $1)
+endsnippet
+
+snippet ln "Log Println debug" !b
+log.Println("${1}")
+endsnippet
+
+snippet make "make allocation" !b
+make(${1:Type}, ${2:size})${0}
+endsnippet
+
+snippet test "test function" b
+func Test${1:Function}(t *testing.T) {
+	${2}
+}
+endsnippet
+
+# vim:ft=snippets:
