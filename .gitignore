@@ -1,6 +1,7 @@
 temp_dirs/undodir*
 bundle/ack.vim/.netrwhist
 temp_dirs/yankring_history_v2.txt
-sources_forked/yankring/doc/tags
-bundle/tlib/doc/tags
-tags
+sources_forked/**/doc/tags
+bundle/**/doc/tags
+bundle/smartgf/*
+bundle/vim-dispatch/*
