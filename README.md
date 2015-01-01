@@ -54,7 +54,7 @@ Opening recently opened files [mru.vim](https://github.com/vim-scripts/mru.vim):
 This vimrc even works on Windows!
 ![Screenshot 4](http://files1.wedoist.com/4e85163d97b81422240c822c82022f2f/as/screenshot_4.png)
 
-Distraction free mode (using goyo.vim and vim-zenroom2):
+Distraction free mode using [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2):
 ![Screenshot 5](https://d2dq6e731uoz0t.cloudfront.net/a5182977c3d6c2a6cd3f9e97398ca8ca/as/zen_mode.jpg)
 
 
