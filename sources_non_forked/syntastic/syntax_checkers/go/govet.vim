@@ -19,11 +19,11 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_go_govet_IsAvailable() dict
-    return executable('go')
+    return executable(self.getExec())
 endfunction
 
 function! SyntaxCheckers_go_govet_GetLocList() dict
-    let makeprg = 'go vet'
+    let makeprg = self.getExec() . ' vet'
 
     let errorformat =
         \ '%Evet: %.%\+: %f:%l:%c: %m,' .
@@ -37,15 +37,16 @@ function! SyntaxCheckers_go_govet_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'cwd': expand('%:p:h'),
+        \ 'cwd': expand('%:p:h', 1),
         \ 'defaults': {'type': 'w'} })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'go',
-    \ 'name': 'govet'})
+    \ 'name': 'govet',
+    \ 'exec': 'go' })
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

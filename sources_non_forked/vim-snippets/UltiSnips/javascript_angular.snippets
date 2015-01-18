@@ -19,49 +19,59 @@ config(function($1) {
 endsnippet
 
 snippet acont "angular controller" i
-controller('${1:name}', ['${2:param_annotation}', function(${3:param}) {
+controller('${1:name}', [${2}function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	$0
 }]);
 endsnippet
 
 snippet aconts "angular controller with scope" i
-controller('${1:name}', ['$scope', function($scope) {
+controller('${1:name}', [${2:'$scope', }function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	$0
 }]);
 endsnippet
 
 snippet adir "angular directive" i
-directive('${1:name}', ['${2:param_annotation}', function(${3:param}) {
-	$0
+directive('${1}', [${2}function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
+	return {
+		restrict: '${3:EA}',
+		link: function(scope, element, attrs) {
+			${0}
+		}
+	};
 }]);
 endsnippet
 
 snippet adirs "angular directive with scope" i
-directive('${1:name}', ['$scope', function($scope) {
-	$0
+directive('${1}', [${2:'$scope', }function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
+	return {
+		restrict: '${3:EA}',
+		link: function(scope, element, attrs) {
+			${0}
+		}
+	};
 }]);
 endsnippet
 
 snippet afact "angular factory" i
-factory('${1:name}', ['${2:param_annotation}', function(${3:param}) {
+factory('${1:name}', [${2}function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	$0
 }]);
 endsnippet
 
 snippet afacts "angular factory with scope" i
-factory('${1:name}', ['$scope', function($scope) {
+factory('${1:name}', [${2:'$scope', }function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	$0
 }]);
 endsnippet
 
 snippet aserv "angular service" i
-service('${1:name}', ['${2:param_annotation}', function(${3:param}) {
+service('${1:name}', [${2}function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	$0
 }]);
 endsnippet
 
 snippet aservs "angular service" i
-service('${1:name}', ['$scope', function($scope) {
+service('${1:name}', [${2:'$scope', }function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	$0
 }]);
 endsnippet

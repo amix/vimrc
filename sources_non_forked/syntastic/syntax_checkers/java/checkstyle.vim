@@ -32,8 +32,8 @@ function! SyntaxCheckers_java_checkstyle_IsAvailable() dict
         return 0
     endif
 
-    let classpath = expand(g:syntastic_java_checkstyle_classpath)
-    let conf_file = expand(g:syntastic_java_checkstyle_conf_file)
+    let classpath = expand(g:syntastic_java_checkstyle_classpath, 1)
+    let conf_file = expand(g:syntastic_java_checkstyle_conf_file, 1)
     call self.log(
         \ 'filereadable(' . string(classpath) . ') = ' . filereadable(classpath) . ', ' .
         \ 'filereadable(' . string(conf_file) . ') = ' . filereadable(conf_file))
@@ -43,7 +43,7 @@ endfunction
 
 function! SyntaxCheckers_java_checkstyle_GetLocList() dict
 
-    let fname = syntastic#util#shescape( expand('%:p:h') . syntastic#util#Slash() . expand('%:t') )
+    let fname = syntastic#util#shescape( expand('%:p:h', 1) . syntastic#util#Slash() . expand('%:t', 1) )
 
     if has('win32unix')
         let fname = substitute(system('cygpath -m ' . fname), '\m\%x00', '', 'g')
@@ -51,9 +51,9 @@ function! SyntaxCheckers_java_checkstyle_GetLocList() dict
 
     let makeprg = self.makeprgBuild({
         \ 'args_after': [
-        \       '-cp', expand(g:syntastic_java_checkstyle_classpath),
+        \       '-cp', expand(g:syntastic_java_checkstyle_classpath, 1),
         \       'com.puppycrawl.tools.checkstyle.Main',
-        \       '-c', expand(g:syntastic_java_checkstyle_conf_file),
+        \       '-c', expand(g:syntastic_java_checkstyle_conf_file, 1),
         \       '-f', 'xml'],
         \ 'fname': fname })
 
@@ -74,4 +74,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

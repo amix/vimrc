@@ -3,8 +3,7 @@
 "
 "  Part of this plugin was taken directly from the oracle repo, however it's
 "  massively changed for a better integration into vim-go. Thanks Alan Donovan
-"  for the first iteration based on quickfix!  - fatih arslan
-"
+"  for the first iteration based on quickfix!  - Fatih Arslan
 "
 
 if !exists("g:go_oracle_bin")
@@ -89,8 +88,6 @@ func! s:RunOracle(mode, selected) range abort
         " unfortunaly oracle outputs a very long stack trace that is not
         " parsable to show the real error. But the main issue is usually the
         " package which doesn't build. 
-        " echo out
-        " redraw | echon 'vim-go: could not run static analyser (does it build?)'
         redraw | echon "vim-go: " | echohl Statement | echon out | echohl None
         return {}
     else
@@ -139,12 +136,12 @@ function! go#oracle#Implements(selected)
     endfor
 
     " open a window and put the result
-    call go#ui#OpenWindow(result)
+    call go#ui#OpenWindow("Implements", result)
 
     " define some buffer related mappings:
     "
     " go to definition when hit enter
-    nnoremap <buffer> <CR> :<C-u>call go#ui#OpenDefinition()<CR>
+    nnoremap <buffer> <CR> :<C-u>call go#ui#OpenDefinition("implements")<CR>
     " close the window when hit ctrl-c
     nnoremap <buffer> <c-c> :<C-u>call go#ui#CloseWindow()<CR>
 endfunction
@@ -182,7 +179,43 @@ endfunction
 " Show possible targets of selected function call
 function! go#oracle#Callees(selected)
     let out = s:RunOracle('callees', a:selected)
-    echo out
+    if empty(out)
+        return
+    endif
+
+    " be sure the callees object exists which contains the position and names
+    " of the callees, before we continue
+    if !has_key(out, "callees")
+        return
+    endif
+
+    " get the callees list
+    if has_key(out.callees, "callees")
+        let callees = out.callees.callees
+    else
+        redraw | echon "vim-go: " | echon "no callees available"| echohl None
+        return
+    endif
+
+    let title = "Call targets:"
+
+    " start to populate our buffer content
+    let result  = [title, ""]
+
+    for calls in callees
+        let line = calls.name . "\t" . calls.pos
+        call add(result, line)
+    endfor
+
+    " open a window and put the result
+    call go#ui#OpenWindow("Callees", result)
+
+    " define some buffer related mappings:
+    "
+    " go to definition when hit enter
+    nnoremap <buffer> <CR> :<C-u>call go#ui#OpenDefinition("call targets")<CR>
+    " close the window when hit ctrl-c
+    nnoremap <buffer> <c-c> :<C-u>call go#ui#CloseWindow()<CR>
 endfunction
 
 " Show possible callers of selected function

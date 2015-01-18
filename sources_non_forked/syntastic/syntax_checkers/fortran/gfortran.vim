@@ -27,7 +27,7 @@ function! SyntaxCheckers_fortran_gfortran_IsAvailable() dict
         let g:syntastic_fortran_compiler = self.getExec()
     endif
     call self.log('g:syntastic_fortran_compiler = ', g:syntastic_fortran_compiler)
-    return executable(expand(g:syntastic_fortran_compiler))
+    return executable(expand(g:syntastic_fortran_compiler, 1))
 endfunction
 
 function! SyntaxCheckers_fortran_gfortran_GetLocList() dict
@@ -49,4 +49,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

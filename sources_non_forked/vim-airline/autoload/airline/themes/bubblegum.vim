@@ -60,3 +60,11 @@ let g:airline#themes#bubblegum#palette.inactive_modified = {
       \ 'airline_c': [s:gui_orange, '', s:cterm_orange, '', ''],
       \ }
 
+" CtrlP
+if !get(g:, 'loaded_ctrlp', 0)
+  finish
+endif
+let g:airline#themes#bubblegum#palette.ctrlp = airline#extensions#ctrlp#generate_color_map(
+      \ [ s:gui_orange, s:gui_med_gray_hi, s:cterm_orange, s:cterm_med_gray_hi, '' ] ,
+      \ [ s:gui_orange, s:gui_med_gray_lo, s:cterm_orange, s:cterm_med_gray_lo, '' ] ,
+      \ [ s:gui_dark_gray, s:gui_green, s:cterm_dark_gray, s:cterm_green, 'bold' ] )

@@ -67,7 +67,7 @@ function! airline#extensions#whitespace#check()
     endif
   endif
   return b:airline_whitespace_check
-endfunction!
+endfunction
 
 function! airline#extensions#whitespace#toggle()
   if s:enabled

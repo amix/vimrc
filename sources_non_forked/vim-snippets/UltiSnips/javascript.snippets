@@ -52,25 +52,16 @@ function ${1:function_name}(${2:argument}) {
 }
 endsnippet
 
+snippet vf "Function assigned to var"
+${1:var }${2:function_name} = function $2(${3}) {
+	${VISUAL}$0
+};
+endsnippet
+
 snippet iife "Immediately-Invoked Function Expression (iife)"
 (function (${1:argument}) {
 	${VISUAL}$0
 }(${2:$1}));
-endsnippet
-
-snippet ife "if ___ else"
-if (${1:condition}) {
-	${2://code}
-}
-else {
-	${3://code}
-}
-endsnippet
-
-snippet if "if"
-if (${1:condition}) {
-	${VISUAL}$0
-}
 endsnippet
 
 snippet timeout "setTimeout function"

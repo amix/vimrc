@@ -2,151 +2,143 @@
 
 priority -10
 
-# when to abbriviate and when not?
-# b doesn't work here, because it ignores whitespace
-# optional local name?
-snippet import "Import declaration" b
+# shorthand variable declaration
+snippet : "v := value"
+${1} := ${0}
+endsnippet
+
+# anonymous function
+snippet anon "fn := func() { ... }"
+${1:fn} := func() {
+	${0}
+}
+endsnippet
+
+# append
+snippet ap "append(slice, value)"
+append(${1:slice}, ${0:value})
+endsnippet
+
+# break
+snippet br "break"
+break
+endsnippet
+
+# channel
+snippet ch "chan Type"
+chan ${0:int}
+endsnippet
+
+# case
+snippet case "case ...:"
+case ${1:value}:
+	${0}
+endsnippet
+
+# constant
+snippet con "const XXX Type = ..."
+const ${1:NAME} ${2:Type} = ${0:0}
+endsnippet
+
+# constants
+snippet cons "const ( ... )"
+const (
+	${1:NAME} ${2:Type} = ${3:value}
+	${0}
+)
+endsnippet
+
+# constants with iota
+snippet iota "const ( ... = iota )"
+const (
+	${1:NAME} ${2:Type} = iota
+	${0}
+)
+endsnippet
+
+# continue
+snippet cn "continue"
+continue
+endsnippet
+
+# default case
+snippet default "default: ..."
+default:
+	${0}
+
+endsnippet
+
+# defer
+snippet df "defer someFunction()"
+defer ${1:func}(${2})
+${0}
+endsnippet
+
+snippet def "defer func() { ... }"
+defer func() {
+	${0}
+}()
+endsnippet
+
+# defer recover
+snippet defr
+defer func() {
+	if err := recover(); err != nil {
+		${0}
+	}
+}()
+endsnippet
+
+# gpl
+snippet gpl
+/*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, see <http://www.gnu.org/licenses/>.
+*
+* Copyright (C) ${1:Author}, `strftime("%Y")`
+*/
+${0}
+endsnippet
+
+# import
+snippet import "import ( ... )"
 import (
 	"${1:package}"
 )
 endsnippet
 
-snippet package "Package declaration" b
-// Package $1 provides ${2:...}
-package ${1:main}
-${0:${VISUAL}}
-endsnippet
-
-# Mostly converted from: https://github.com/AlanQuatermain/go-tmbundle
-snippet /^cons/ "Constants declaration" r
-const (
-	${1:constant}${2/(.+)/ /}${2:type} = ${0:value}
-)
-endsnippet
-
-snippet /^con/ "Constant declaration" r
-const ${1:name}${2/(.+)/ /}${2:type} = ${0:value}
-endsnippet
-
-snippet iota "Iota constant generator" b
-const (
-	${1:constant}${2/(.+)/ /}${2:type} = iota
-)
-endsnippet
-
-snippet struct "Struct declaration" b
-type ${1:Struct} struct {
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet interface "Interface declaration" b
+# full interface snippet
+snippet interface "interface I { ... }"
 type ${1:Interface} interface {
-	${0:${VISUAL}}
+	${2:/* TODO: add methods */}
 }
 endsnippet
 
-# statements
-snippet for "For loop" b
-for ${1:condition} {
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet fori "Integer for loop" b
-for ${1:i} := 0; $1 < ${2:N}; $1++ {
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet forr "For range loop" b
-for ${2:name} := range ${1:collection} {
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet if "If statement" b
-if ${1:condition}${1/(.+)/ /}{
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet switch "Switch statement" b
-switch ${1:expression}${1/(.+)/ /}{
-case${0}
-}
-endsnippet
-
-snippet select "Select statement" b
-select {
-case${0}
-}
-endsnippet
-
-snippet case "Case clause" b
-case ${1:condition}:
-	${0:${VISUAL}}
-endsnippet
-
-snippet default "Default clause" b
-default:
-	${0:${VISUAL}}
-endsnippet
-
-# functions
-snippet /^main/ "Main function" r
-func main() {
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet /^meth/ "Method" r
-func (${1:receiver} ${2:type}) ${3:name}(${4:params})${5/(.+)/ /}${5:type} {
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet func "Function" b
-func ${1:name}(${2:params})${3/(.+)/ /}${3:type} {
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet anon "Anonymous Function" !b
-${1:fn} := func() {
-	${2}
-}
-endsnippet
-
-# types and variables
-snippet map "Map type" b
-map[${1:keytype}]${2:valtype}
-endsnippet
-
-snippet : "Short variable declaration :=" !b
-${1:name} := ${0:value}
-endsnippet
-
-snippet var "Variable declaration" b
-var ${1:name}${2/(.+)/ /}${2:type}${3: = ${0:value}}
-endsnippet
-
-snippet vars "Variables declaration" b
-var (
-	${1:name}${2/(.+)/ /}${2:type}${3: = ${0:value} }
-)
-endsnippet
-
-snippet json "JSON field"
-\`json:"${1:displayName}"\`
-endsnippet
-
-snippet er "Error clause " !b
-if err != nil {
+# if condition
+snippet if "if ... { ... }"
+if ${1:condition} {
 	${0}
 }
 endsnippet
 
+# else snippet
+snippet else
+else {
+	${0}
+}
+endsnippet
+
+# error snippet
 snippet errn "Error return " !b
 if err != nil {
 	return err
@@ -161,55 +153,195 @@ if err != nil {
 ${0}
 endsnippet
 
-snippet errn,, "Error return with three return values" !b
-if err != nil {
-	return ${1:nil}, ${2:nil}, err
-}
-${0}
+snippet json "\`json:key\`"
+\`json:"${1:keyName}"\`
 endsnippet
 
-snippet ok "OK statement" !b
-if !ok {
+# fallthrough
+snippet ft "fallthrough"
+fallthrough
+endsnippet
+
+# for loop
+snippet for "for ... { ... }"
+for ${1} {
+	${0}
+}
+endsnippet
+
+# for integer loop
+snippet fori "for 0..N-1 { ... }"
+for ${1:i} := 0; $1 < ${2:N}; $1++ {
+	${0}
+}
+endsnippet
+
+# for range loop
+snippet forr "for k, v := range items { ... }"
+for ${2:k}, ${3:v} := range ${1} {
+	${0}
+}
+endsnippet
+
+# function
+snippet func "func Function(...) [error] { ... }"
+func ${1:name}(${2:params})${3/(.+)/ /}`!p opening_par(snip, 3)`$3`!p closing_par(snip, 3)` {
 	${0:${VISUAL}}
 }
 endsnippet
 
-snippet gof "Anonymous Goroutine" !b
+# Fmt Printf debug
+snippet ff "fmt.Printf(...)"
+fmt.Printf("${1} = %+v\n", $1)
+endsnippet
+
+# Fmt Println debug
+snippet fn "fmt.Println(...)"
+fmt.Println("${1}")
+endsnippet
+
+# log printf
+snippet lf "log.Printf(...)"
+log.Printf("${1} = %+v\n", $1)
+endsnippet
+
+# log println
+snippet ln "log.Println(...)"
+log.Println("${1}")
+endsnippet
+
+# make
+snippet make "make(Type, size)"
+make(${1:[]string}, ${2:0})${0}
+endsnippet
+
+# map
+snippet map "map[Type]Type"
+map[${1:string}]${0:int}
+endsnippet
+
+# main()
+snippet main "func main() { ... }"
+func main() {
+	${0}
+}
+endsnippet
+
+# method
+snippet meth "func (self Type) Method(...) [error] { ... }"
+func (${1:receiver} ${2:type}) ${3:name}(${4:params})${5/(.+)/ /}`!p opening_par(snip, 5)`$5`!p closing_par(snip, 5)` {
+	${0:${VISUAL}}
+}
+endsnippet
+
+# ok
+snippet ok "if !ok { ... }"
+if !ok {
+	${0}
+}
+endsnippet
+
+# package
+snippet package "package ..."
+// Package $1 provides ${2:...}
+package ${1:main}
+${0}
+endsnippet
+
+# panic
+snippet pn "panic()"
+panic("${0:msg}")
+endsnippet
+
+# return
+snippet rt "return"
+return ${0}
+endsnippet
+
+# select
+snippet select "select { case a := <-chan: ... }"
+select {
+case ${1:v1} := <-${2:chan1}
+	${0}
+}
+endsnippet
+
+# struct
+snippet st "type T struct { ... }"
+type ${1:Type} struct {
+${0}
+}
+endsnippet
+
+# switch
+snippet switch "switch x { ... }"
+switch ${1:var} {
+case ${2:value1}:
+	${0}
+}
+endsnippet
+
+# sprintf
+snippet sp "fmt.Sprintf(...)"
+fmt.Sprintf("%${1:s}", ${2:var})
+endsnippet
+
+# goroutine named function
+snippet go "go someFunc(...)"
+go ${1:funcName}(${0})
+endsnippet
+
+# goroutine anonymous function
+snippet gof "go func() { ... }()"
 go func() {
 	${1}
 }()
 endsnippet
 
-snippet def "Anonymous Defer" !b
-defer func() {
-	${1}
-}()
-endsnippet
-
-snippet ff "Fmt Printf debug" !b
-fmt.Printf("${1} %+v\n", $1)
-endsnippet
-
-snippet fn "Fmt Println debug" !b
-fmt.Println("${1}")
-endsnippet
-
-snippet lf "Log Printf debug" !b
-log.Printf("${1} %+v\n", $1)
-endsnippet
-
-snippet ln "Log Println debug" !b
-log.Println("${1}")
-endsnippet
-
-snippet make "make allocation" !b
-make(${1:Type}, ${2:size})${0}
-endsnippet
-
-snippet test "test function" b
+# test function
+snippet test "func TestXYZ(t *testing.T) { ... }"
 func Test${1:Function}(t *testing.T) {
-	${2}
+	${0}
 }
 endsnippet
 
+# variable declaration
+snippet var "var x Type [= ...]"
+var ${1:x} ${2:Type}${3: = ${0:value\}}
+endsnippet
+
+# variables declaration
+snippet vars "var ( ... )"
+var (
+${1:x} ${2:Type}${3: = ${0:value\}}
+)
+endsnippet
+
+global !p
+
+import re
+
+# Automatically wrap return types with parentheses
+
+def return_values(s):
+	# remove everything wrapped in parentheses
+	s = re.sub("\(.*?\)|\([^)]*$", "", s)
+	return len(s.split(","))
+
+def opening_par(snip, pos):
+	if return_values(t[pos]) > 1 and not t[pos].startswith("("):
+		snip.rv = "("
+	else:
+		snip.rv = ""
+
+def closing_par(snip, pos):
+	if return_values(t[pos]) > 1:
+		snip.rv = ")"
+	else:
+		snip.rv = ""
+
+endglobal
+
+
 # vim:ft=snippets:
+

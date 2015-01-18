@@ -32,7 +32,7 @@ function! SyntaxCheckers_go_gotype_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'cwd': expand('%:p:h'),
+        \ 'cwd': expand('%:p:h', 1),
         \ 'defaults': {'type': 'e'} })
 endfunction
 
@@ -43,4 +43,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

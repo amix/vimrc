@@ -43,9 +43,9 @@ fu! s:gocodeCommand(cmd, preargs, args)
         let a:preargs[i] = s:gocodeShellescape(a:preargs[i])
     endfor
 
-    let bin_path = go#tool#BinPath(g:go_gocode_bin) 
-    if empty(bin_path) 
-        return 
+    let bin_path = go#tool#BinPath(g:go_gocode_bin)
+    if empty(bin_path)
+        return
     endif
 
     let result = s:system(printf('%s %s %s %s', bin_path, join(a:preargs), a:cmd, join(a:args)))
@@ -96,7 +96,7 @@ function! go#complete#GetInfo()
 
     " no candidates are found
     if len(out) == 1
-        return
+        return ""
     endif
 
     " only one candiate is found
@@ -119,14 +119,16 @@ function! go#complete#GetInfo()
     if len(filtered) == 1
         return filtered[0]
     endif
+
+    return ""
 endfunction
 
 function! go#complete#Info()
     let result = go#complete#GetInfo()
-    if len(result) > 0
+    if !empty(result)
         echo "vim-go: " | echohl Function | echon result | echohl None
     endif
-endfunction!
+endfunction
 
 fu! go#complete#Complete(findstart, base)
     "findstart = 1 when we need to get the text length

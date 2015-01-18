@@ -6,18 +6,6 @@
 "
 "============================================================================
 
-" in order to also check header files add this to your .vimrc:
-" (this creates an empty .syntastic_dummy.cu file in your source directory)
-"
-"   let g:syntastic_cuda_check_header = 1
-
-" By default, nvcc and thus syntastic, defaults to the most basic architecture.
-" This can produce false errors if the developer intends to compile for newer
-" hardware and use newer features, eg. double precision numbers. To pass a
-" specific target arch to nvcc, e.g. add the following to your .vimrc:
-"
-"   let g:syntastic_cuda_arch = "sm_20"
-
 if exists("g:loaded_syntastic_cuda_nvcc_checker")
     finish
 endif
@@ -53,7 +41,7 @@ function! SyntaxCheckers_cuda_nvcc_GetLocList() dict
         \ '%DMaking %*\a in %f,'.
         \ '%f|%l| %m'
 
-    if expand('%') =~? '\m\%(.h\|.hpp\|.cuh\)$'
+    if expand('%', 1) =~? '\m\%(.h\|.hpp\|.cuh\)$'
         if exists('g:syntastic_cuda_check_header')
             let makeprg =
                 \ 'echo > .syntastic_dummy.cu ; ' .
@@ -75,4 +63,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

@@ -27,7 +27,7 @@ function! SyntaxCheckers_eruby_ruby_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_eruby_ruby_GetLocList() dict
-    let fname = "'" . escape(expand('%'), "\\'") . "'"
+    let fname = "'" . escape(expand('%', 1), "\\'") . "'"
 
     " TODO: encodings became useful in ruby 1.9 :)
     if syntastic#util#versionIsAtLeast(syntastic#util#getVersion(self.getExecEscaped(). ' --version'), [1, 9])
@@ -75,4 +75,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

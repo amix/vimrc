@@ -32,7 +32,7 @@ function! SyntaxCheckers_javascript_closurecompiler_IsAvailable() dict
     let cp = get(g:, 'syntastic_javascript_closurecompiler_path', '')
     call self.log('g:syntastic_javascript_closurecompiler_path =', cp)
 
-    let jar = expand(cp)
+    let jar = expand(cp, 1)
     call self.log('filereadable(' . string(jar) . ') = ' . filereadable(jar))
 
     return filereadable(jar)
@@ -42,15 +42,15 @@ function! SyntaxCheckers_javascript_closurecompiler_GetLocList() dict
     call syntastic#log#deprecationWarn('javascript_closure_compiler_options', 'javascript_closurecompiler_args')
     call syntastic#log#deprecationWarn('javascript_closure_compiler_file_list', 'javascript_closurecompiler_file_list')
 
-    let flist = expand(get(g:, 'syntastic_javascript_closurecompiler_file_list', ''))
+    let flist = expand(get(g:, 'syntastic_javascript_closurecompiler_file_list', ''), 1)
     if filereadable(flist)
-        let file_list = map( readfile(flist), 'expand(v:var)' )
+        let file_list = map( readfile(flist), 'expand(v:var, 1)' )
     else
-        let file_list = [expand('%')]
+        let file_list = [expand('%', 1)]
     endif
 
     let makeprg = self.makeprgBuild({
-        \ 'exe_after': (s:has_script ? [] : ['-jar', expand(g:syntastic_javascript_closurecompiler_path)]),
+        \ 'exe_after': (s:has_script ? [] : ['-jar', expand(g:syntastic_javascript_closurecompiler_path, 1)]),
         \ 'args_after': '--js',
         \ 'fname': file_list })
 
@@ -73,4 +73,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

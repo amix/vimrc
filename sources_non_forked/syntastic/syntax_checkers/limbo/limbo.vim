@@ -27,7 +27,7 @@ function! SyntaxCheckers_limbo_limbo_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_before': include . '-w' . output })
 
     let errorformat = '%E%f:%l:%m'
-    if expand('%') =~# '\m\.m$'
+    if expand('%', 1) =~# '\m\.m$'
         let errorformat = '%-G%f:%l: near ` EOF ` : no implementation module,' . errorformat
     endif
 
@@ -43,4 +43,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

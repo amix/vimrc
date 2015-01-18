@@ -27,7 +27,7 @@ let s:glsl_extensions = {
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_glsl_cgc_GetLocList() dict
+function! SyntaxCheckers_glsl_cgc_GetLocList() dict " {{{1
     let makeprg = self.makeprgBuild({
         \ 'args_before': '-oglsl -profile ' . s:GetProfile(),
         \ 'args': (exists('g:syntastic_glsl_options') ? ' ' . g:syntastic_glsl_options : '') })
@@ -39,9 +39,11 @@ function! SyntaxCheckers_glsl_cgc_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat })
-endfunction
+endfunction " }}}1
 
-function! s:GetProfile()
+" Utilities {{{1
+
+function! s:GetProfile() " {{{2
     let save_view = winsaveview()
     let old_foldenable = &foldenable
     let old_lazyredraw = &lazyredraw
@@ -61,11 +63,13 @@ function! s:GetProfile()
         let profile = matchstr(getline(line), magic . '\zs.*')
     else
         let extensions = exists('g:syntastic_glsl_extensions') ? g:syntastic_glsl_extensions : s:glsl_extensions
-        let profile = get(extensions, tolower(expand('%:e')), 'gpu_vert')
+        let profile = get(extensions, tolower(expand('%:e', 1)), 'gpu_vert')
     endif
 
     return profile
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \'filetype': 'glsl',
@@ -74,4 +78,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

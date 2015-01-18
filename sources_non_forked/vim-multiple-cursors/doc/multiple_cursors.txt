@@ -108,6 +108,21 @@ mode than for selecting the next location, do like the following: >
     let g:multi_cursor_start_key='<F6>'
 <
 
+*g:multi_cursor_start_word_key*
+When multicursor mode is started, it selects current word without
+boundaries, i.e. it behavies like `g*`. If you want to use word boundaries in
+Normal mode (as `*` does) but still have old behaviour up your sleeve, you can
+do the following: >
+
+    let g:multi_cursor_start_key='g<C-n>'
+    let g:multi_cursor_start_word_key='<C-n>'
+<
+
+In this configuration <C-n> will start multicursor mode using word boundaries
+(but only in Normal mode, as it does not make much sense to use it in Visual
+mode). Old behaviour without word boundaries is still available using
+g<C-n>.
+
 IMPORTANT: Please note that currently only single keystroes and special
 keys can be mapped. This contraint is also the reason why multikey commands
 such as `ciw` do not work and cause unexpected behavior in Normal mode. This

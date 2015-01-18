@@ -1,53 +1,70 @@
 # shorthand variable declaration
-snippet v
-	${1} := ${2}
-# variable initialization
-snippet vr
-	var ${1:t} ${0:string}
-# variable declaration
-snippet var
-	var ${1} ${2} = ${3}
-# variables declaration
-snippet vars
-	var (
-		${1} ${2} = ${3}
-	)
+snippet :
+abbr v := value
+	${1} := ${0}
+# anonymous function
+snippet anon
+abbr fn := func() { ... }
+	${1:fn} := func() {
+		${0}
+	}
 # append
 snippet ap
+abbr append(slice, value)
 	append(${1:slice}, ${0:value})
-# bool
-snippet bl
-	bool
-# byte
-snippet bt
-	byte
 # break
 snippet br
+abbr break
 	break
 # channel
 snippet ch
+abbr chan Type
 	chan ${0:int}
 # case
-snippet cs
+snippet case
+abbr case ...:
 	case ${1:value}:
 		${0}
-# const
-snippet c
-	const ${1:NAME} = ${0:0}
-# constants with iota
-snippet co
+# constant
+snippet con
+abbr const XXX Type = ...
+	const ${1:NAME} ${2:Type} = ${0:0}
+# constants
+snippet cons
+abbr const ( ... )
 	const (
-		${1:NAME1} = iota
-		${0:NAME2}
+		${1:NAME} ${2:Type} = ${3:value}
+		${0}
+	)
+# constants with iota
+snippet iota
+abbr const ( ... = iota )
+	const (
+		${1:NAME} ${2:Type} = iota
+		${0}
 	)
 # continue
 snippet cn
+abbr continue
 	continue
+# default case
+snippet default
+abbr default: ...
+	default:
+		${0}
+
 # defer
 snippet df
-	defer ${0:func}()
+abbr defer someFunction()
+	defer ${1:func}(${2})
+	${0}
+snippet def
+abbr defer func() { ... }
+	defer func() {
+		${0}
+	}()
 # defer recover
-snippet dfr
+snippet defr
 	defer func() {
 		if err := recover(); err != nil {
 			${0}
@@ -73,171 +90,185 @@ snippet gpl
 	 */
 
 	${0}
-# int
-snippet i
-	int
 # import
-snippet im
+snippet import
+abbr import ( ... )
 	import (
 		"${1:package}"
 	)
-# interface
-snippet in
-	interface{}
 # full interface snippet
-snippet inf
-	interface ${1:name} {
-		${2:/* methods */}
+snippet interface
+abbr interface I { ... }
+	type ${1:Interface} interface {
+		${2:/* TODO: add methods */}
 	}
 # if condition
 snippet if
-	if ${1:/* condition */} {
-		${2}
+abbr if ... { ... }
+	if ${1:condition} {
+		${0}
 	}
 # else snippet
-snippet el
+abbr else { ... }
+snippet else
 	else {
-		${1}
+		${0}
 	}
 # error snippet
-snippet ir
+snippet errn
+abbr if err != nil { ... }
 	if err != nil {
 		return err
 	}
+
+# error snippet with two return values
+snippet errn,
+abbr if err != nil { return [...], err }
+	if err != nil {
+		return ${2}$1, err
+	}
 	${0}
-# false
-snippet f
-	false
+
+# json snippet
+snippet json
+abbr \`json:key\`
+	\`json:"${1:keyName}"\`
 # fallthrough
 snippet ft
+abbr fallthrough
 	fallthrough
-# float
-snippet fl
-	float32
-# float32
-snippet f3
-	float32
-# float64
-snippet f6
-	float64
-# if else
-snippet ie
-	if ${1:/* condition */} {
-		${2}
-	} else {
-		${3}
-	}
-	${0}
 # for loop
-snippet fo
-	for ${2:i} := 0; $2 < ${1:count}; $2${3:++} {
-		${4}
+snippet for
+abbr for ... { ... }
+	for ${1} {
+		${0}
 	}
-	${0}
+# for integer loop
+snippet fori
+abbr for 0..N-1 { ... }
+	for ${1:i} := 0; $1 < ${2:N}; $1++ {
+		${0}
+	}
 # for range loop
-snippet fr
-	for ${1:k}, ${2:v} := range ${3} {
-		${4}
+snippet forr
+abbr for k, v := range items { ... }
+	for ${2:k}, ${3:v} := range ${1} {
+		${0}
 	}
-	${0}
-# function simple
-snippet fun
-	func ${1:funcName}(${2}) ${3:error} {
-		${4}
+# function
+snippet func
+abbr func function(...) [error] { ... }
+	func ${1:function}(${2}) ${3:error }{
+		${0}
 	}
-	${0}
-# function on receiver
-snippet fum
-	func (self ${1:type}) ${2:funcName}(${3}) ${4:error} {
-		${5}
-	}
-	${0}
 # Fmt Printf debug
 snippet ff
-	fmt.Printf("${1} %+v\n", ${0})
+abbr fmt.Printf(...)
+	fmt.Printf("${1} = %+v\n", $1)
+	${0}
 # Fmt Println debug
 snippet fn
+abbr fmt.Println(...)
 	fmt.Println("${1}")
 # log printf
 snippet lf
-	log.Printf("%${1:s}", ${2:var})
-# log printf
-snippet lp
+abbr log.Printf(...)
+	log.Printf("${1} = %+v\n", $1)
+# log println
+snippet ln
+abbr log.Println(...)
 	log.Println("${1}")
 # make
-snippet mk
-	make(${1:[]string}, ${0:0})
+snippet make
+abbr make(Type, size)
+	make(${1:[]string}, ${2:0})${0}
 # map
-snippet mp
+snippet map
+abbr map[Type]Type
 	map[${1:string}]${0:int}
 # main()
 snippet main
+abbr func main() { ... }
+options head
 	func main() {
-		${1}
+		${0}
 	}
+# method
+snippet meth
+abbr func (self Type) Method(...) [error] { ... }
+regexp /^meth/
+	func (${1:self} ${2:Type}) ${3:Do}(${4}) ${5:error }{
+		${0}
+	}
+# ok
+snippet ok
+abbr if !ok { ... }
+	if !ok {
+		${0}
+	}
+# package
+snippet package
+abbr package ...
+	// Package $1 provides ${2:...}
+	package ${1:main}
 	${0}
-# new
-snippet nw
-	new(${0:type})
 # panic
-snippet pn
-	panic("${0:msg}")
-# print
-snippet pr
-	fmt.Printf("%${1:s}\n", ${2:var})
-# range
-snippet rn
-	range ${0}
+snippet panic
+alias pn
+abbr panic("...")
+	panic("${0}")
 # return
-snippet rt
+snippet return
+alias rt
+abbr return ...
 	return ${0}
-# result
-snippet rs
-	result
 # select
-snippet sl
+snippet select
+abbr select { case a := <-chan: ... }
 	select {
 	case ${1:v1} := <-${2:chan1}
-		${3}
-	case ${4:v2} := <-${5:chan2}
-		${6}
-	default:
 		${0}
 	}
-# string
-snippet sr
-	string
 # struct
 snippet st
-	struct ${1:name} {
-		${2:/* data */}
-	}
-	${0}
-# switch
-snippet sw
-	switch ${1:var} {
-	case ${2:value1}:
-		${3}
-	case ${4:value2}:
-		${5}
-	default:
+abbr type T struct { ... }
+	type ${1:Type} struct {
 		${0}
 	}
+# switch
+snippet switch
+abbr switch x { ... }
+	switch ${1:var} {
+	case ${2:value1}:
+		${0}
+	}
+# sprintf
 snippet sp
+abbr fmt.Sprintf(...)
 	fmt.Sprintf("%${1:s}", ${2:var})
-# true
-snippet t
-	true
 # goroutine named function
-snippet g
+snippet go
+abbr go someFunc(...)
 	go ${1:funcName}(${0})
 # goroutine anonymous function
-snippet ga
-	go func(${1} ${2:type}) {
-		${3:/* code */}
-	}(${0})
+snippet gof
+abbr go func(...) { ... }(...)
+	go func(${1}) {
+		${3:/* TODO */}
+	}(${2})
 # test function
 snippet test
+abbr func TestXYZ(t *testing.T) { ... }
 	func Test${1:Function}(t *testing.T) {
-		${2}
+		${0}
 	}
+# variable declaration
+snippet var
+abbr var x Type [= ...]
+	var ${1:x} ${2:Type}${3: = ${0:value\}}
+# variables declaration
+snippet vars
+abbr var ( ... )
+	var (
+		${1:x} ${2:Type}${3: = ${0:value\}}
+	)

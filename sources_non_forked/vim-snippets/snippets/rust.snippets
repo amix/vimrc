@@ -4,17 +4,20 @@
 
 # Functions
 snippet fn
-	fn ${1:function_name}(${2}) {
-		${0}
-	}
-snippet fn-
-	fn ${1:function_name}(${2}) -> ${3} {
+	fn ${1:function_name}(${2})${3} {
 		${0}
 	}
 snippet test
 	#[test]
 	fn ${1:test_function_name}() {
 		${0}
+	}
+snippet bench "Bench function" b
+	#[bench]
+	fn ${1:bench_function_name}(b: &mut test::Bencher) {
+		b.iter(|| {
+			${0}
+		})
 	}
 snippet new
 	pub fn new(${2}) -> ${1:Name} {
@@ -25,7 +28,9 @@ snippet main
 		${0}
 	}
 snippet let
-	let ${1:name}${3} = ${2};
+	let ${1:name: type} = ${2};
+snippet let
+	let mut ${1:name: type} = ${2};
 snippet pln
 	println!("${1}");
 snippet pln,
@@ -52,25 +57,48 @@ snippet allow
 	#[allow(${1:unused_variable})]
 snippet feat
 	#![feature(${1:macro_rules})]
+snippet der "#[deriving(..)]" b
+	#[deriving(${1:Show})]
+snippet attr "#[..]" b
+	#[${1:inline}]
+
 # Common types
 snippet opt
 	Option<${1:int}>
 snippet res
 	Result<${1:~str}, ${2:()}>
 snippet if
-	if ${1:/* condition */} {
+	if ${1} {
+		${0}
+	}
+snippet ife
+	if ${1} {
+		${2}
+	} else {
+		${0}
+	}
+snippet el
+	else {
+		${0}
+	}
+snippet eli
+	else if ${1} {
 		${0}
 	}
 snippet mat
 	match ${1} {
 		${2} => ${3},
 	}
+snippet loop "loop {}" b
+	loop {
+		${0}
+	}
 snippet while
 	while ${1:condition} {
 		${0}
 	}
 snippet for
-	for ${1:i} in ${2:range(0u, 10)} {
+	for ${1:i} in ${2:0u..10} {
 		${0}
 	}
 snippet spawn
@@ -83,9 +111,16 @@ snippet duplex
 	let (${1:from_child}, ${2:to_child}) = sync::duplex();
 # TODO commenting
 snippet todo
-	// [TODO]: ${1:Description}
+	// [TODO]: ${0:Description}
+snippet fixme "FIXME comment"
+	// FIXME: $0
+
 # Struct
 snippet st
+	struct ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} {
+		${0}
+	}
+snippet stn
 	struct ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} {
 		${0}
 	}
@@ -97,9 +132,11 @@ snippet st
 			};
 		}
 	}
+snippet typ
+	type ${1:NewName} = $0;
 # Enum
 snippet enum
-	enum ${1:enum_name} {
+	enum ${1:Name} {
 		${0},
 	}
 # Impl
@@ -122,4 +159,4 @@ snippet trait
 snippet ss
 	static ${1}: &'static str = "${0}";
 snippet stat
-	static ${1}: ${2:uint} = ${0};
+	static ${1}: ${2:usize} = ${0};

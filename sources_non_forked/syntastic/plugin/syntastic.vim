@@ -19,7 +19,7 @@ if has('reltime')
     lockvar! g:_SYNTASTIC_START
 endif
 
-let g:_SYNTASTIC_VERSION = '3.5.0-72'
+let g:_SYNTASTIC_VERSION = '3.5.0-148'
 lockvar g:_SYNTASTIC_VERSION
 
 " Sanity checks {{{1
@@ -154,7 +154,7 @@ let s:modemap = g:SyntasticModeMap.Instance()
 " @vimlint(EVL103, 1, a:argLead)
 function! s:CompleteCheckerName(argLead, cmdLine, cursorPos) " {{{2
     let checker_names = []
-    for ft in s:resolveFiletypes()
+    for ft in s:_resolve_filetypes([])
         call extend(checker_names, s:registry.getNamesOfAvailableCheckers(ft))
     endfor
     return join(checker_names, "\n")
@@ -174,28 +174,56 @@ endfunction " }}}2
 " @vimlint(EVL103, 0, a:cmdLine)
 " @vimlint(EVL103, 0, a:argLead)
 
-command! SyntasticToggleMode call s:ToggleMode()
-command! -nargs=* -complete=custom,s:CompleteCheckerName SyntasticCheck
-            \ call s:UpdateErrors(0, <f-args>) <bar>
-            \ call syntastic#util#redraw(g:syntastic_full_redraws)
-command! Errors call s:ShowLocList()
-command! -nargs=? -complete=custom,s:CompleteFiletypes SyntasticInfo
-            \ call s:modemap.modeInfo(<f-args>) <bar>
-            \ call s:registry.echoInfoFor(s:resolveFiletypes(<f-args>)) <bar>
-            \ call s:explainSkip(<f-args>)
-command! SyntasticReset
-            \ call s:ClearCache() <bar>
-            \ call s:notifiers.refresh(g:SyntasticLoclist.New([]))
-command! SyntasticSetLoclist call g:SyntasticLoclist.current().setloclist()
+command! -nargs=* -complete=custom,s:CompleteCheckerName SyntasticCheck call SyntasticCheck(<f-args>)
+command! -nargs=? -complete=custom,s:CompleteFiletypes   SyntasticInfo  call SyntasticInfo(<f-args>)
+command! Errors              call SyntasticErrors()
+command! SyntasticReset      call SyntasticReset()
+command! SyntasticToggleMode call SyntasticToggleMode()
+command! SyntasticSetLoclist call SyntasticSetLoclist()
 
 " }}}1
 
-" Autocommands and hooks {{{1
+" Public API {{{1
+
+function! SyntasticCheck(...) " {{{2
+    call s:UpdateErrors(0, a:000)
+    call syntastic#util#redraw(g:syntastic_full_redraws)
+endfunction " }}}2
+
+function! SyntasticInfo(...) " {{{2
+    call s:modemap.modeInfo(a:000)
+    call s:registry.echoInfoFor(s:_resolve_filetypes(a:000))
+    call s:_explain_skip(a:000)
+endfunction " }}}2
+
+function! SyntasticErrors() " {{{2
+    call g:SyntasticLoclist.current().show()
+endfunction " }}}2
+
+function! SyntasticReset() " {{{2
+    call s:ClearCache()
+    call s:notifiers.refresh(g:SyntasticLoclist.New([]))
+endfunction " }}}2
+
+function! SyntasticToggleMode() " {{{2
+    call s:modemap.toggleMode()
+    call s:ClearCache()
+    call s:notifiers.refresh(g:SyntasticLoclist.New([]))
+    call s:modemap.echoMode()
+endfunction " }}}2
+
+function! SyntasticSetLoclist() " {{{2
+    call g:SyntasticLoclist.current().setloclist()
+endfunction " }}}2
+
+" }}}1
+
+" Autocommands {{{1
 
 augroup syntastic
-    autocmd BufReadPost * call s:BufReadPostHook()
+    autocmd BufReadPost  * call s:BufReadPostHook()
     autocmd BufWritePost * call s:BufWritePostHook()
-    autocmd BufEnter * call s:BufEnterHook()
+    autocmd BufEnter     * call s:BufEnterHook()
 augroup END
 
 if v:version > 703 || (v:version == 703 && has('patch544'))
@@ -209,14 +237,14 @@ function! s:BufReadPostHook() " {{{2
     if g:syntastic_check_on_open
         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS,
             \ 'autocmd: BufReadPost, buffer ' . bufnr("") . ' = ' . string(bufname(str2nr(bufnr("")))))
-        call s:UpdateErrors(1)
+        call s:UpdateErrors(1, [])
     endif
 endfunction " }}}2
 
 function! s:BufWritePostHook() " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS,
         \ 'autocmd: BufWritePost, buffer ' . bufnr("") . ' = ' . string(bufname(str2nr(bufnr("")))))
-    call s:UpdateErrors(1)
+    call s:UpdateErrors(1, [])
 endfunction " }}}2
 
 function! s:BufEnterHook() " {{{2
@@ -232,7 +260,7 @@ function! s:BufEnterHook() " {{{2
         let loclist = filter(copy(getloclist(0)), 'v:val["valid"] == 1')
         let owner = str2nr(getbufvar(bufnr(""), 'syntastic_owner_buffer'))
         let buffers = syntastic#util#unique(map(loclist, 'v:val["bufnr"]') + (owner ? [owner] : []))
-        if !empty(loclist) && empty(filter( buffers, 'syntastic#util#bufIsActive(v:val)' ))
+        if get(w:, 'syntastic_loclist_set', 0) && !empty(loclist) && empty(filter( buffers, 'syntastic#util#bufIsActive(v:val)' ))
             call SyntasticLoclistHide()
         endif
     endif
@@ -242,7 +270,9 @@ function! s:QuitPreHook() " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS,
         \ 'autocmd: QuitPre, buffer ' . bufnr("") . ' = ' . string(bufname(str2nr(bufnr("")))))
     let b:syntastic_skip_checks = get(b:, 'syntastic_skip_checks', 0) || !syntastic#util#var('check_on_wq')
-    call SyntasticLoclistHide()
+    if get(w:, 'syntastic_loclist_set', 0)
+        call SyntasticLoclistHide()
+    endif
 endfunction " }}}2
 
 " }}}1
@@ -250,30 +280,36 @@ endfunction " }}}2
 " Main {{{1
 
 "refresh and redraw all the error info for this buf when saving or reading
-function! s:UpdateErrors(auto_invoked, ...) " {{{2
+function! s:UpdateErrors(auto_invoked, checker_names) " {{{2
     call syntastic#log#debugShowVariables(g:_SYNTASTIC_DEBUG_TRACE, 'version')
     call syntastic#log#debugShowOptions(g:_SYNTASTIC_DEBUG_TRACE, s:_DEBUG_DUMP_OPTIONS)
     call syntastic#log#debugDump(g:_SYNTASTIC_DEBUG_VARIABLES)
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, 'UpdateErrors' . (a:auto_invoked ? ' (auto)' : '') .
-        \ ': ' . (a:0 ? join(a:000) : 'default checkers'))
-    if s:skipFile()
+        \ ': ' . (len(a:checker_names) ? join(a:checker_names) : 'default checkers'))
+    if s:_skip_file()
         return
     endif
 
     call s:modemap.synch()
-    let run_checks = !a:auto_invoked || s:modemap.allowsAutoChecking(&filetype)
+    let run_checks = !a:auto_invoked || s:modemap.doAutoChecking()
     if run_checks
-        call s:CacheErrors(a:000)
+        call s:CacheErrors(a:checker_names)
     endif
 
     let loclist = g:SyntasticLoclist.current()
 
+    if exists('*SyntasticCheckHook')
+        call SyntasticCheckHook(loclist.getRaw())
+    endif
+
     " populate loclist and jump {{{3
-    let do_jump = syntastic#util#var('auto_jump')
+    let do_jump = syntastic#util#var('auto_jump') + 0
     if do_jump == 2
-        let first = loclist.getFirstIssue()
-        let type = get(first, 'type', '')
-        let do_jump = type ==? 'E'
+        let do_jump = loclist.getFirstError(1)
+    elseif do_jump == 3
+        let do_jump = loclist.getFirstError()
+    elseif 0 > do_jump || do_jump > 3
+        let do_jump = 0
     endif
 
     let w:syntastic_loclist_set = 0
@@ -283,7 +319,7 @@ function! s:UpdateErrors(auto_invoked, ...) " {{{2
         let w:syntastic_loclist_set = 1
         if run_checks && do_jump && !loclist.isEmpty()
             call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: jump')
-            silent! lrewind
+            execute 'silent! lrewind ' . do_jump
 
             " XXX: Vim doesn't call autocmd commands in a predictible
             " order, which can lead to missing filetype when jumping
@@ -312,13 +348,13 @@ function! s:CacheErrors(checker_names) " {{{2
     call s:ClearCache()
     let newLoclist = g:SyntasticLoclist.New([])
 
-    if !s:skipFile()
+    if !s:_skip_file()
         " debug logging {{{3
         call syntastic#log#debugShowVariables(g:_SYNTASTIC_DEBUG_TRACE, 'aggregate_errors')
         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, 'getcwd() = ' . getcwd())
         " }}}3
 
-        let filetypes = s:resolveFiletypes()
+        let filetypes = s:_resolve_filetypes([])
         let aggregate_errors = syntastic#util#var('aggregate_errors') || len(filetypes) > 1
         let decorate_errors = aggregate_errors && syntastic#util#var('id_checkers')
         let sort_aggregated_errors = aggregate_errors && syntastic#util#var('sort_aggregated_errors')
@@ -397,18 +433,6 @@ function! s:CacheErrors(checker_names) " {{{2
     call newLoclist.deploy()
 endfunction " }}}2
 
-function! s:ToggleMode() " {{{2
-    call s:modemap.toggleMode()
-    call s:ClearCache()
-    call s:notifiers.refresh(g:SyntasticLoclist.New([]))
-    call s:modemap.echoMode()
-endfunction " }}}2
-
-"display the cached errors for this buf in the location list
-function! s:ShowLocList() " {{{2
-    call g:SyntasticLoclist.current().show()
-endfunction " }}}2
-
 "Emulates the :lmake command. Sets up the make environment according to the
 "options given, runs make, resets the environment, returns the location list
 "
@@ -440,7 +464,7 @@ function! SyntasticMake(options) " {{{2
     let old_lc_all = $LC_ALL
     " }}}3
 
-    call s:bashHack()
+    call s:_bash_hack()
 
     if has_key(a:options, 'errorformat')
         let &errorformat = a:options['errorformat']
@@ -519,7 +543,7 @@ function! SyntasticMake(options) " {{{2
     let &shellredir = old_shellredir
     " }}}3
 
-    if !s:_running_windows && (s:uname() =~ "FreeBSD" || s:uname() =~ "OpenBSD")
+    if !s:_running_windows && (s:_os_name() =~ "FreeBSD" || s:_os_name() =~ "OpenBSD")
         call syntastic#util#redraw(g:syntastic_full_redraws)
     endif
 
@@ -530,12 +554,12 @@ function! SyntasticMake(options) " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_LOCLIST, 'raw loclist:', errors)
 
     if has_key(a:options, 'defaults')
-        call s:addToErrors(errors, a:options['defaults'])
+        call s:_add_to_errors(errors, a:options['defaults'])
     endif
 
     " Add subtype info if present.
     if has_key(a:options, 'subtype')
-        call s:addToErrors(errors, { 'subtype': a:options['subtype'] })
+        call s:_add_to_errors(errors, { 'subtype': a:options['subtype'] })
     endif
 
     if has_key(a:options, 'Postprocess') && !empty(a:options['Postprocess'])
@@ -566,12 +590,12 @@ endfunction " }}}2
 
 " Utilities {{{1
 
-function! s:resolveFiletypes(...) " {{{2
-    let type = a:0 ? a:1 : &filetype
+function! s:_resolve_filetypes(filetypes) " {{{2
+    let type = len(a:filetypes) ? a:filetypes[0] : &filetype
     return split( get(g:syntastic_filetype_map, type, type), '\m\.' )
 endfunction " }}}2
 
-function! s:ignoreFile(filename) " {{{2
+function! s:_ignore_file(filename) " {{{2
     let fname = fnamemodify(a:filename, ':p')
     for pattern in g:syntastic_ignore_files
         if fname =~# pattern
@@ -582,22 +606,22 @@ function! s:ignoreFile(filename) " {{{2
 endfunction " }}}2
 
 " Skip running in special buffers
-function! s:skipFile() " {{{2
-    let fname = expand('%')
+function! s:_skip_file() " {{{2
+    let fname = expand('%', 1)
     let skip = get(b:, 'syntastic_skip_checks', 0) || (&buftype != '') ||
-        \ !filereadable(fname) || getwinvar(0, '&diff') || s:ignoreFile(fname) ||
+        \ !filereadable(fname) || getwinvar(0, '&diff') || s:_ignore_file(fname) ||
         \ fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
     if skip
-        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, 'skipFile: skipping')
+        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, '_skip_file: skipping checks')
     endif
     return skip
 endfunction " }}}2
 
 " Explain why checks will be skipped for the current file
-function! s:explainSkip(...) " {{{2
-    if !a:0 && s:skipFile()
+function! s:_explain_skip(filetypes) " {{{2
+    if empty(a:filetypes) && s:_skip_file()
         let why = []
-        let fname = expand('%')
+        let fname = expand('%', 1)
 
         if get(b:, 'syntastic_skip_checks', 0)
             call add(why, 'b:syntastic_skip_checks set')
@@ -611,7 +635,7 @@ function! s:explainSkip(...) " {{{2
         if getwinvar(0, '&diff')
             call add(why, 'diff mode')
         endif
-        if s:ignoreFile(fname)
+        if s:_ignore_file(fname)
             call add(why, 'filename matching g:syntastic_ignore_files')
         endif
         if fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
@@ -623,7 +647,7 @@ function! s:explainSkip(...) " {{{2
 endfunction " }}}2
 
 " Take a list of errors and add default values to them from a:options
-function! s:addToErrors(errors, options) " {{{2
+function! s:_add_to_errors(errors, options) " {{{2
     for err in a:errors
         for key in keys(a:options)
             if !has_key(err, key) || empty(err[key])
@@ -638,12 +662,12 @@ endfunction " }}}2
 " XXX: Is this still needed?
 " The script changes &shellredir to stop the screen
 " flicking when shelling out to syntax checkers.
-function! s:bashHack() " {{{2
+function! s:_bash_hack() " {{{2
     if g:syntastic_bash_hack
         if !exists('s:shell_is_bash')
             let s:shell_is_bash =
                 \ !s:_running_windows &&
-                \ (s:uname() !~# "FreeBSD") && (s:uname() !~# "OpenBSD") &&
+                \ (s:_os_name() !~# "FreeBSD") && (s:_os_name() !~# "OpenBSD") &&
                 \ &shell =~# '\m\<bash$'
         endif
 
@@ -653,7 +677,7 @@ function! s:bashHack() " {{{2
     endif
 endfunction " }}}2
 
-function! s:uname() " {{{2
+function! s:_os_name() " {{{2
     if !exists('s:_uname')
         let s:_uname = system('uname')
         lockvar s:_uname

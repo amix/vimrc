@@ -9,9 +9,8 @@ endif
 let g:loaded_commentary = 1
 
 function! s:surroundings() abort
-  return split(substitute(substitute(
-        \ get(b:, 'commentary_format', &commentstring)
-        \ ,'\S\zs%s',' %s','') ,'%s\ze\S', '%s ', ''), '%s', 1)
+  return split(get(b:, 'commentary_format', substitute(substitute(
+        \ &commentstring, '\S\zs%s',' %s','') ,'%s\ze\S', '%s ', '')), '%s', 1)
 endfunction
 
 function! s:go(type,...) abort

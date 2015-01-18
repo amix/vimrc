@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-08-23.
-" @Last Change: 2014-02-05.
-" @Revision:    0.0.53
+" @Last Change: 2014-10-21.
+" @Revision:    0.0.54
 
 if &cp || exists("loaded_tlib_cmd_autoload")
     finish
@@ -107,5 +107,13 @@ function! tlib#cmd#Time(cmd) "{{{3
         let diff = (localtime() - start) .'s'
     endif
     echom 'Time: '. diff .': '. a:cmd
+endf
+
+
+function! tlib#cmd#Capture(cmd) "{{{3
+    redir => s
+    silent exec a:cmd
+    redir END
+    return s
 endf
 

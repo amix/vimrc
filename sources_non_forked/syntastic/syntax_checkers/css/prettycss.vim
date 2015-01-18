@@ -9,11 +9,6 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" For details about PrettyCSS see:
-"
-"   - http://fidian.github.io/PrettyCSS/
-"   - https://github.com/fidian/PrettyCSS
 
 if exists("g:loaded_syntastic_css_prettycss_checker")
     finish
@@ -63,4 +58,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

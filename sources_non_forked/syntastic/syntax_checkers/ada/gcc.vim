@@ -23,7 +23,7 @@ function! SyntaxCheckers_ada_gcc_IsAvailable() dict
     if !exists('g:syntastic_ada_compiler')
         let g:syntastic_ada_compiler = self.getExec()
     endif
-    return executable(expand(g:syntastic_ada_compiler))
+    return executable(expand(g:syntastic_ada_compiler, 1))
 endfunction
 
 function! SyntaxCheckers_ada_gcc_GetLocList() dict
@@ -44,4 +44,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

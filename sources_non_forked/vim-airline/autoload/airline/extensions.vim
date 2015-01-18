@@ -22,10 +22,10 @@ let s:script_path = tolower(resolve(expand('<sfile>:p:h')))
 let s:filetype_overrides = {
       \ 'nerdtree': [ 'NERD', '' ],
       \ 'gundo': [ 'Gundo', '' ],
-      \ 'diff': [ 'diff', '' ],
       \ 'vimfiler': [ 'vimfiler', '%{vimfiler#get_status_string()}' ],
       \ 'minibufexpl': [ 'MiniBufExplorer', '' ],
       \ 'startify': [ 'startify', '' ],
+      \ 'vim-plug': [ 'Plugins', '' ],
       \ }
 
 let s:filetype_regex_overrides = {}
@@ -178,7 +178,7 @@ function! airline#extensions#load()
     call airline#extensions#bufferline#init(s:ext)
   endif
 
-  if get(g:, 'virtualenv_loaded', 0) && get(g:, 'airline#extensions#virtualenv#enabled', 1)
+  if isdirectory($VIRTUAL_ENV) && get(g:, 'airline#extensions#virtualenv#enabled', 1)
     call airline#extensions#virtualenv#init(s:ext)
   endif
 

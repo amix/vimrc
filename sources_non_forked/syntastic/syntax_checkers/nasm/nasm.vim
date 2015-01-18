@@ -21,7 +21,7 @@ set cpo&vim
 function! SyntaxCheckers_nasm_nasm_GetLocList() dict
     let makeprg = self.makeprgBuild({
         \ 'args_after': '-X gnu -f elf' .
-        \       ' -I ' . syntastic#util#shescape(expand("%:p:h") . "/") .
+        \       ' -I ' . syntastic#util#shescape(expand('%:p:h', 1) . '/') .
         \       ' ' . syntastic#c#NullOutput() })
 
     let errorformat = '%f:%l: %t%*[^:]: %m'
@@ -38,4 +38,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

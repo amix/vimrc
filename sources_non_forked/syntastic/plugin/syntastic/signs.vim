@@ -127,10 +127,10 @@ endfunction " }}}2
 
 " Get all the ids of the SyntaxError signs in the buffer
 function! g:SyntasticSignsNotifier._bufSignIds() " {{{2
-    if !exists("b:syntastic_sign_ids")
-        let b:syntastic_sign_ids = []
+    if !exists("b:syntastic_private_sign_ids")
+        let b:syntastic_private_sign_ids = []
     endif
-    return b:syntastic_sign_ids
+    return b:syntastic_private_sign_ids
 endfunction " }}}2
 
 " }}}1

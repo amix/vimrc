@@ -17,10 +17,11 @@ CONTENTS                                                          *go-contents*
 	1. Intro........................................|go-intro|
 	2. Install......................................|go-install|
 	3. Commands.....................................|go-commands|
-	4. Settings.....................................|go-settings|
-	5. Mappings.....................................|go-mappings|
-	6. Troubleshooting..............................|go-troubleshooting|
-	7. Credits......................................|go-credits|
+	4. Mappings.....................................|go-mappings|
+	5. Text Objects.................................|go-text-objects|
+	6. Settings.....................................|go-settings|
+	7. Troubleshooting..............................|go-troubleshooting|
+	8. Credits......................................|go-credits|
 
 ===============================================================================
 INTRO                                                                *go-intro*
@@ -49,7 +50,7 @@ easily.
   * Checking with `errcheck` for unchecked errors.
   * Integrated and improved snippets. Supports `ultisnips` or `neosnippet`
   * Share your current code to play.golang.org
-  * Type information about the underlying identifier 
+  * Type information about the underlying identifier
   * Tagbar support to show tags of the source code in a sidebar with `gotags`
 
 ===============================================================================
@@ -134,7 +135,7 @@ COMMANDS                                                          *go-commands*
 
     Filter the current Go buffer through goimports (needs to be installed).
     `goimports` automatically discards/add import path based on the code. Like
-    |GoFmt|, It tries to preserve cursor position and avoids replacing the 
+    |GoFmt|, It tries to preserve cursor position and avoids replacing the
     buffer with stderr output.
 
                                                                      *:GoPlay*
@@ -159,7 +160,7 @@ COMMANDS                                                          *go-commands*
 
     Goto declaration/definition for the given [identifier]. If no argument is
     given, it will jump to the declaration under the cursor. By default the
-    mapping `gd` is enabled to invoke GoDef for the identifier under the cursor. 
+    mapping `gd` is enabled to invoke GoDef for the identifier under the cursor.
     See |g:go_def_mapping_enabled| to disable it.
 
                                                                      *:GoRun*
@@ -167,16 +168,19 @@ COMMANDS                                                          *go-commands*
 
     Build and run your current main package. By default all main files for the
     current file is used. If an argument is passed, 'expand' is used as file
-    selector. For example use `:GoRun %` to select the current file only.  
+    selector. For example use `:GoRun %` to select the current file only.
 
     If [!] is not given the first error is jumped to.
 
                                                                    *:GoBuild*
-:GoBuild[!]
+:GoBuild[!] [options]
 
     Build your package with `go build`. It automatically builds only the files
     that depends on the current file. GoBuild doesn't produce a result file.
-    Use 'make' to create a result file. 
+    Use 'make' to create a result file.
+
+    You may optionally pass any valid go build flags/options. For a full list
+    please see `go help build`.
 
     If [!] is not given the first error is jumped to.
 
@@ -238,14 +242,25 @@ COMMANDS                                                          *go-commands*
 :GoImplements
 
     Show 'implements' relation for a selected package. A list of interfaces
-    for the type under the cursor (or selected package) is shown in a custom
-    window. Hit `<enter>` to jump in a new tab or close it via `<c-c>`.
+    for the type that implements an interface under the cursor (or selected
+    package) is shown in a custom window. Hit `<enter>` to jump in a new tab
+    or close it via `<c-c>`.
 
                                                                 *:GoRename*
 :GoRename [to]
 
     Rename the identifier under the cursor to the desired new name. If no
     argument is given a prompt will ask for the desired identifier.
+
+                                                              *:GoCallees*
+:GoCallees
+
+    Show 'callees' relation for a selected package. A list of call targets
+    for the type under the cursor (or selected package) is shown in a custom
+    window. Hit `<enter>` to jump in a new tab or close it via `<c-c>`. For
+    example if called for a interface method call, it will show all call targets
+    that has implemented the method.
+
 
 ===============================================================================
 MAPPINGS                                                        *go-mappings*
@@ -353,6 +368,23 @@ Show the interfaces that the type under the cursor implements.
 
 Rename the identifier under the cursor to the desired new name
 
+                                                              *(go-callees)*
+
+Show the call targets for the type under the cursor
+
+===============================================================================
+TEXT OBJECTS                                                 *go-text-objects*
+
+vim-go comes with several custom |text-objects| that can be used to operate
+upon regions of text. vim-go currently defines the following text objects:
+
+                                               *go-v_af* *go-af*
+af			      "a function", select contents from a function definition to the
+               closing bracket.
+
+                                               *go-v_if* *go-if*
+if			      "inside a function", select contents of a function,
+			        excluding the function definition and the closing bracket.
 
 
 ===============================================================================
@@ -410,6 +442,16 @@ fails. By default it's disabled. >
 
   let g:go_fmt_fail_silently = 0
 <
+
+                                                   *'g:go_fmt_experimental'*
+
+Use this option to enable fmt's experimental mode. This experimental mode is
+superior to the current mode as it fully saves the undo history, so undo/redo
+doesn't break. However it's causing problems on some Vim versions. By default
+it's disabled. >
+
+  let g:go_fmt_experimental = 1
+<
                                               *'g:go_doc_keywordprg_enabled'*
 
 Use this option to change the enable GoDoc to run on words under the cursor
@@ -443,7 +485,7 @@ is empty. >
 
 <                                                            *'g:go_bin_path'*
 
-Use this option to change default path for vim-go tools when using 
+Use this option to change default path for vim-go tools when using
 |GoInstallBinaries| and |GoUpdateBinaries|. If not set `$GOBIN` or
 `$GOPATH/bin` is used. >
 
@@ -517,6 +559,12 @@ Highlights struct names. By default it's disabled. >
 
 	let g:go_highlight_structs = 0
 <
+                                                  *'g:go_textobj_enabled'*
+
+Adds custom text objects. By default it's enabled. >
+
+	let g:go_textobj_enabled = 1
+
 ===============================================================================
 TROUBLESHOOTING                                         *go-troubleshooting*
 

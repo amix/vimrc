@@ -22,10 +22,10 @@ endfunction " }}}2
 
 " Update the error balloons
 function! g:SyntasticBalloonsNotifier.refresh(loclist) " {{{2
-    unlet! b:syntastic_balloons
+    unlet! b:syntastic_private_balloons
     if self.enabled() && !a:loclist.isEmpty()
-        let b:syntastic_balloons = a:loclist.balloons()
-        if !empty(b:syntastic_balloons)
+        let b:syntastic_private_balloons = a:loclist.balloons()
+        if !empty(b:syntastic_private_balloons)
             set ballooneval balloonexpr=SyntasticBalloonsExprNotifier()
         endif
     endif
@@ -34,10 +34,10 @@ endfunction " }}}2
 " Reset the error balloons
 " @vimlint(EVL103, 1, a:loclist)
 function! g:SyntasticBalloonsNotifier.reset(loclist) " {{{2
-    let b:syntastic_balloons = {}
+    let b:syntastic_private_balloons = {}
     if has('balloon_eval')
         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'balloons: reset')
-        unlet! b:syntastic_balloons
+        unlet! b:syntastic_private_balloons
         set noballooneval
     endif
 endfunction " }}}2
@@ -48,10 +48,10 @@ endfunction " }}}2
 " Private functions {{{1
 
 function! SyntasticBalloonsExprNotifier() " {{{2
-    if !exists('b:syntastic_balloons')
+    if !exists('b:syntastic_private_balloons')
         return ''
     endif
-    return get(b:syntastic_balloons, v:beval_lnum, '')
+    return get(b:syntastic_private_balloons, v:beval_lnum, '')
 endfunction " }}}2
 
 " }}}1

@@ -2,26 +2,75 @@
 
 # Includes octopress (http://octopress.org/) snippets
 
-snippet [
-	[${1:text}](http://${2:address} "${0:title}")
-snippet [*
-	[${1:link}](${2:`@*`} "${3:title}")
+# The suffix `c` stands for "Clipboard".
 
+snippet [
+	[${1:text}](http://${2:address})
+snippet [*
+	[${1:link}](${2:`@*`})
+snippet [c
+	[${1:link}](${2:`@+`})
+snippet ["
+	[${1:text}](http://${2:address} "${3:title}")
+snippet ["*
+	[${1:link}](${2:`@*`} "${3:title}")
+snippet ["c
+	[${1:link}](${2:`@+`} "${3:title}")
 snippet [:
-	[${1:id}]: http://${2:url} "${0:title}"
+	[${1:id}]: http://${2:url}
+
 snippet [:*
-	[${1:id}]: ${2:`@*`} "${0:title}"
+	[${1:id}]: ${2:`@*`}
+
+snippet [:c
+	[${1:id}]: ${2:`@+`}
+
+snippet [:"
+	[${1:id}]: http://${2:url} "${3:title}"
+
+snippet [:"*
+	[${1:id}]: ${2:`@*`} "${3:title}"
+
+snippet [:"c
+	[${1:id}]: ${2:`@+`} "${3:title}"
 
 snippet ![
-	![${1:alttext}](${2:/images/image.jpg} "${0:title}")
+	![${1:alttext}](${2:/images/image.jpg})
 snippet ![*
+	![${1:alt}](${2:`@*`})
+snippet ![c
+	![${1:alt}](${2:`@+`})
+snippet !["
+	![${1:alttext}](${2:/images/image.jpg} "${3:title}")
+snippet !["*
 	![${1:alt}](${2:`@*`} "${3:title}")
-
+snippet !["c
+	![${1:alt}](${2:`@+`} "${3:title}")
 snippet ![:
-	![${1:id}]: ${2:url} "${0:title}"
-snippet ![:*
-	![${1:id}]: ${2:`@*`} "${0:title}"
+	![${1:id}]: ${2:url}
 
+snippet ![:*
+	![${1:id}]: ${2:`@*`}
+
+snippet ![:"
+	![${1:id}]: ${2:url} "${3:title}"
+
+snippet ![:"*
+	![${1:id}]: ${2:`@*`} "${3:title}"
+
+snippet ![:"c
+	![${1:id}]: ${2:`@+`} "${3:title}"
+
+snippet <
+	<http://${1:url}>
+snippet <*
+	<`@*`>
+snippet <c
+	<`@+`>
+snippet **
+	**${1:bold}**
+snippet __
+	__${1:bold}__
 snippet ===
 	`repeat('=', strlen(getline(line(".") - 1)) - strlen(getline('.')))`
 
@@ -46,15 +95,16 @@ snippet blockquote-link
 	${0:quote}
 	{% endblockquote %}
 
-snippet bt-codeblock-short
-	```
-	${0:code_snippet}
-	```
+snippet ```
+	\`\`\`
+	${1:code}
+	\`\`\`
 
-snippet bt-codeblock-full
-	``` ${1:language} ${2:title} ${3:URL} ${4:link_text}
-	${0:code_snippet}
-	```
+# Language.
+snippet ```l
+	\`\`\`${1:language}
+	${2:code}
+	\`\`\`
 
 snippet codeblock-short
 	{% codeblock %}

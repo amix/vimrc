@@ -391,6 +391,9 @@ eclim <https://eclim.org>
 * enable/disable displaying buffers with a single tab. >
   let g:airline#extensions#tabline#show_buffers = 1
 <
+* enable/disable displaying tabs, regardless of number. >
+  let g:airline#extensions#tabline#show_tabs = 1
+<
 * configure filename match rules to exclude from the tabline. >
   let g:airline#extensions#tabline#excludes = []
 <

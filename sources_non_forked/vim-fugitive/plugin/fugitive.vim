@@ -145,6 +145,13 @@ function! fugitive#extract_git_dir(path) abort
     if root ==# $GIT_WORK_TREE && fugitive#is_git_dir($GIT_DIR)
       return $GIT_DIR
     endif
+    if fugitive#is_git_dir($GIT_DIR)
+      " Ensure that we've cached the worktree
+      call s:configured_tree($GIT_DIR)
+      if has_key(s:dir_for_worktree, root)
+        return s:dir_for_worktree[root]
+      endif
+    endif
     let dir = s:sub(root, '[\/]$', '') . '/.git'
     let type = getftype(dir)
     if type ==# 'dir' && fugitive#is_git_dir(dir)
@@ -178,7 +185,14 @@ function! fugitive#detect(path) abort
     endif
   endif
   if exists('b:git_dir')
-    silent doautocmd User FugitiveBoot
+    if exists('#User#FugitiveBoot')
+      try
+        let [save_mls, &modelines] = [&mls, 0]
+        doautocmd User FugitiveBoot
+      finally
+        let &mls = save_mls
+      endtry
+    endif
     cnoremap <buffer> <expr> <C-R><C-G> fnameescape(<SID>recall())
     nnoremap <buffer> <silent> y<C-G> :call setreg(v:register, <SID>recall())<CR>
     let buffer = fugitive#buffer()
@@ -193,7 +207,12 @@ function! fugitive#detect(path) abort
         call buffer.setvar('&tags', escape(b:git_dir.'/'.&filetype.'.tags', ', ').','.buffer.getvar('&tags'))
       endif
     endif
-    silent doautocmd User Fugitive
+    try
+      let [save_mls, &modelines] = [&mls, 0]
+      doautocmd User Fugitive
+    finally
+      let &mls = save_mls
+    endtry
   endif
 endfunction
 
@@ -211,6 +230,8 @@ augroup END
 
 let s:repo_prototype = {}
 let s:repos = {}
+let s:worktree_for_dir = {}
+let s:dir_for_worktree = {}
 
 function! s:repo(...) abort
   let dir = a:0 ? a:1 : (exists('b:git_dir') && b:git_dir !=# '' ? b:git_dir : fugitive#extract_git_dir(expand('%:p')))
@@ -234,21 +255,23 @@ function! s:repo_dir(...) dict abort
   return join([self.git_dir]+a:000,'/')
 endfunction
 
-function! s:repo_configured_tree() dict abort
-  if !has_key(self,'_tree')
-    let self._tree = ''
-    if filereadable(self.dir('config'))
-      let config = readfile(self.dir('config'),'',10)
+function! s:configured_tree(git_dir) abort
+  if !has_key(s:worktree_for_dir, a:git_dir)
+    let s:worktree_for_dir[a:git_dir] = ''
+    let config_file = a:git_dir . '/config'
+    if filereadable(config_file)
+      let config = readfile(config_file,'',10)
       call filter(config,'v:val =~# "^\\s*worktree *="')
       if len(config) == 1
-        let self._tree = matchstr(config[0], '= *\zs.*')
+        let s:worktree_for_dir[a:git_dir] = matchstr(config[0], '= *\zs.*')
+        let s:dir_for_worktree[s:worktree_for_dir[a:git_dir]] = a:git_dir
       endif
     endif
   endif
-  if self._tree =~# '^\.'
-    return simplify(self.dir(self._tree))
+  if s:worktree_for_dir[a:git_dir] =~# '^\.'
+    return simplify(a:git_dir . '/' . s:worktree_for_dir[a:git_dir])
   else
-    return self._tree
+    return s:worktree_for_dir[a:git_dir]
   endif
 endfunction
 
@@ -256,7 +279,7 @@ function! s:repo_tree(...) dict abort
   if self.dir() =~# '/\.git$'
     let dir = self.dir()[0:-6]
   else
-    let dir = self.configured_tree()
+    let dir = s:configured_tree(self.git_dir)
   endif
   if dir ==# ''
     call s:throw('no work tree')
@@ -269,7 +292,7 @@ function! s:repo_bare() dict abort
   if self.dir() =~# '/\.git$'
     return 0
   else
-    return self.configured_tree() ==# ''
+    return s:configured_tree(self.git_dir) ==# ''
   endif
 endfunction
 
@@ -334,7 +357,7 @@ function! s:repo_head(...) dict abort
     return branch
 endfunction
 
-call s:add_methods('repo',['dir','configured_tree','tree','bare','translate','head'])
+call s:add_methods('repo',['dir','tree','bare','translate','head'])
 
 function! s:repo_git_command(...) dict abort
   let git = g:fugitive_git_executable . ' --git-dir='.s:shellesc(self.git_dir)
@@ -2274,7 +2297,7 @@ endfunction
 function! s:instaweb_url(opts) abort
   let output = a:opts.repo.git_chomp('instaweb','-b','unknown')
   if output =~# 'http://'
-    let root = matchstr(output,'http://.*').'/?p='.fnamemodify(a:opts.repo.opts.dir(),':t')
+    let root = matchstr(output,'http://.*').'/?p='.fnamemodify(a:opts.repo.dir(),':t')
   else
     return ''
   endif
@@ -2495,7 +2518,9 @@ function! s:BufWriteIndexFile() abort
     endif
     if v:shell_error == 0
       setlocal nomodified
-      silent execute 'doautocmd BufWritePost '.s:fnameescape(expand('%:p'))
+      if exists('#BufWritePost')
+        execute 'doautocmd BufWritePost '.s:fnameescape(expand('%:p'))
+      endif
       call fugitive#reload_status()
       return ''
     else

@@ -25,7 +25,7 @@ function! s:get_text()
   let nr = bufnr('%')
   for buf in split(buffers, '\n')
     if match(buf, '\v^\s*'.nr) > -1
-      if match(buf, '\[Quickfix List\]') > -1
+      if match(buf, '\cQuickfix') > -1
         return g:airline#extensions#quickfix#quickfix_text
       else
         return g:airline#extensions#quickfix#location_text

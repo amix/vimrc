@@ -9,20 +9,6 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" For details about perlcritic see:
-"
-" - http://perlcritic.tigris.org/
-" - https://metacpan.org/module/Perl::Critic
-"
-" Checker options:
-"
-" - g:syntastic_perl_perlcritic_thres (integer; default: 5)
-"   error threshold: policy violations with a severity above this
-"   value are highlighted as errors, the others are warnings
-"
-" - g:syntastic_perl_perlcritic_args (string; default: empty)
-"   command line options to pass to perlcritic
 
 if exists("g:loaded_syntastic_perl_perlcritic_checker")
     finish
@@ -63,4 +49,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

@@ -55,6 +55,7 @@ let g:repeat_reg = ['', '']
 " Special function to avoid spurious repeats in a related, naturally repeating
 " mapping when your repeatable mapping doesn't increase b:changedtick.
 function! repeat#invalidate()
+    autocmd! repeat_custom_motion
     let g:repeat_tick = -1
 endfunction
 
@@ -97,7 +98,7 @@ endfunction
 
 function! repeat#wrap(command,count)
     let preserve = (g:repeat_tick == b:changedtick)
-    exe 'norm! '.(a:count ? a:count : '').a:command . (&foldopen =~# 'undo' ? 'zv' : '')
+    exe 'norm! '.(a:count ? a:count : '').a:command . (&foldopen =~# 'undo\|all' ? 'zv' : '')
     if preserve
         let g:repeat_tick = b:changedtick
     endif

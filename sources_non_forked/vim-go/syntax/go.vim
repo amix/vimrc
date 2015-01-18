@@ -10,7 +10,9 @@
 "     let OPTION_NAME = 0
 "   in your ~/.vimrc file to disable particular options. You can also write:
 "     let OPTION_NAME = 1
-"   to enable particular options. At present, all options default to on.
+"   to enable particular options. 
+"   At present, all options default to on, except highlight of:
+"   functions, methods and structs.
 "
 "   - go_highlight_array_whitespace_error
 "     Highlights white space after "[]".
@@ -107,10 +109,10 @@ syn match       goDeclaration       /\<func\>/
 " Predefined functions and values
 syn keyword     goBuiltins          append cap close complex copy delete imag len
 syn keyword     goBuiltins          make new panic print println real recover
-syn keyword     goConstants         iota true false nil
+syn keyword     goBoolean           iota true false nil
 
 hi def link     goBuiltins          Keyword
-hi def link     goConstants         Keyword
+hi def link     goBoolean           Boolean
 
 " Comments; their contents
 syn keyword     goTodo              contained TODO FIXME XXX BUG
@@ -141,9 +143,11 @@ hi def link     goEscapeError       Error
 syn cluster     goStringGroup       contains=goEscapeOctal,goEscapeC,goEscapeX,goEscapeU,goEscapeBigU,goEscapeError
 syn region      goString            start=+"+ skip=+\\\\\|\\"+ end=+"+ contains=@goStringGroup
 syn region      goRawString         start=+`+ end=+`+
+syn match       goFormatSpecifier   /%[#0\-\ \+\*]*[vTtbcdoqxXUeEfgGsp]/ contained containedin=goString
 
 hi def link     goString            String
 hi def link     goRawString         String
+hi def link 	goFormatSpecifier   goSpecialString
 
 " Characters; their contents
 syn cluster     goCharacterGroup    contains=goEscapeOctal,goEscapeC,goEscapeX,goEscapeU,goEscapeBigU
@@ -199,7 +203,7 @@ endif
 " Extra types commonly seen
 if g:go_highlight_extra_types != 0
   syn match goExtraType /\<bytes\.\(Buffer\)\>/
-  syn match goExtraType /\<io\.\(Reader\|Writer\|ReadWriter\|ReadWriteCloser\)\>/
+  syn match goExtraType /\<io\.\(Reader\|ReadSeeker\|ReadWriter\|ReadCloser\|ReadWriteCloser\|Writer\|WriteCloser\|Seeker\)\>/
   syn match goExtraType /\<reflect\.\(Kind\|Type\|Value\)\>/
   syn match goExtraType /\<unsafe\.Pointer\>/
 endif

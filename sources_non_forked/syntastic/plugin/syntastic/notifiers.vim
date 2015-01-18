@@ -34,12 +34,12 @@ function! g:SyntasticNotifiers.refresh(loclist) " {{{2
         if !has_key(g:{class}, 'enabled') || self._notifier[type].enabled()
             if index(s:_PERSISTENT_NOTIFIERS, type) > -1
                 " refresh only if loclist has changed since last call
-                if !exists('b:syntastic_' . type . '_stamp')
-                    let b:syntastic_{type}_stamp = []
+                if !exists('b:syntastic_private_' . type . '_stamp')
+                    let b:syntastic_private_{type}_stamp = []
                 endif
-                if a:loclist.isNewerThan(b:syntastic_{type}_stamp) || a:loclist.isEmpty()
+                if a:loclist.isNewerThan(b:syntastic_private_{type}_stamp) || a:loclist.isEmpty()
                     call self._notifier[type].refresh(a:loclist)
-                    let b:syntastic_{type}_stamp = syntastic#util#stamp()
+                    let b:syntastic_private_{type}_stamp = syntastic#util#stamp()
                 endif
             else
                 call self._notifier[type].refresh(a:loclist)
@@ -62,7 +62,7 @@ function! g:SyntasticNotifiers.reset(loclist) " {{{2
 
         " also reset stamps
         if index(s:_PERSISTENT_NOTIFIERS, type) > -1
-            let b:syntastic_{type}_stamp = []
+            let b:syntastic_private_{type}_stamp = []
         endif
     endfor
 endfunction " }}}2

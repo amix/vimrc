@@ -33,6 +33,7 @@ disabled/enabled easily.
 * Share your current code to [play.golang.org](http://play.golang.org)
 * On-the-fly type information about the word under the cursor
 * Tagbar support to show tags of the source code in a sidebar with `gotags`
+* Custom vim text objects, such a `a function` or `inner function`
 
 ## Install
 
@@ -53,9 +54,10 @@ and execute `:PluginInstall` (or `:BundleInstall` for older versions of Vundle)
 
 Please be sure all necessary binaries are installed (such as `gocode`, `godef`,
 `goimports`, etc..). You can easily install them with the included
-`:GoInstallBinaries`. Those binaries will be automatically downloaded and
-installed to your `$GOBIN` environment (if not set it will use `$GOPATH/bin`).
-It requires `git` and `hg` for fetching the individual Go packages.
+`:GoInstallBinaries` command. Those binaries will be automatically downloaded
+and installed to your `$GOBIN` environment (if not set it will use
+`$GOPATH/bin`).  It requires `git` and `hg` for fetching the individual Go
+packages.
 
 ### Optional
 
@@ -72,12 +74,11 @@ completion (completion by type) install:
 
 ## Usage
 
-All [features](#features) are enabled by default. There are no additional
-settings needed.  Usage and commands are listed in `doc/vim-go.txt`. Just open
-the help page to see all commands:
+Many of the [features](#features) are enabled by default. There are no
+additional settings needed. All usages and commands are listed in
+`doc/vim-go.txt`. Just open the help page to see all commands:
 
     :help vim-go
-
 
 ## Mappings
 
@@ -178,55 +179,13 @@ let g:go_bin_path = expand("~/.gotools")
 let g:go_bin_path = "/home/fatih/.mypath"      "or give absolute path
 ```
 
-## Snippets
-
-Snippets are useful and very powerful. By default ultisnips is
-used, however you can change it to neosnippet with:
-
+By default syntax-highlighting for Functions, Methods and Structs is disabled.
+To change it:
 ```vim
-let g:go_snippet_engine = "neosnippet"
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
 ```
-
-Snippet feature is enabled only if the snippet plugins are installed.  Below are
-some examples snippets and the corresponding trigger keywords, The `|`
-character defines the cursor. Ultisnips has support for multiple cursors
-
-
-`ff` is useful for debugging:
-
-```go
-fmt.Printf(" | %+v\n", |)
-```
-
-`errn` expands to:
-
-```go
-if err != nil {
-    return err
-}
-```
-
-Use `gof` to quickly create a anonymous goroutine :
-
-```go
-go func() {
-    |
-}()
-```
-
-To add `json` tags to a struct field, use `json` trigger:
-
-```
-type foo struct {
-    bar string  `json:"myField"
-           ^ type `json` here, hit tab and type "myField". It will expand to `json:"myField"`
-}
-```
-
-...
-
-And many more! For the full list have a look at the
-[included snippets](https://github.com/fatih/vim-go/blob/master/gosnippets/):
 
 ## Troubleshooting
 

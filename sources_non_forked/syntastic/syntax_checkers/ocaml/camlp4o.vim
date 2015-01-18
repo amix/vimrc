@@ -9,44 +9,6 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" The more reliable way to check for a single .ml file is to use ocamlc.
-" You can do that setting this in your .vimrc:
-"
-"   let g:syntastic_ocaml_use_ocamlc = 1
-" It's possible to use ocamlc in conjuction with Jane Street's Core. In order
-" to do that, you have to specify this in your .vimrc:
-"
-"   let g:syntastic_ocaml_use_janestreet_core = 1
-"   let g:syntastic_ocaml_janestreet_core_dir = <path>
-"
-" Where path is the path to your core installation (usually a collection of
-" .cmx and .cmxa files).
-"
-"
-" By default the camlp4o preprocessor is used to check the syntax of .ml, and .mli files,
-" ocamllex is used to check .mll files and menhir is used to check .mly files.
-" The output is all redirected to /dev/null, nothing is written to the disk.
-"
-" If your source code needs camlp4r then you can define this in your .vimrc:
-"
-"   let g:syntastic_ocaml_camlp4r = 1
-"
-" If you used some syntax extensions, or you want to also typecheck the source
-" code, then you can define this:
-"
-"   let g:syntastic_ocaml_use_ocamlbuild = 1
-"
-" This will run ocamlbuild <name>.inferred.mli, so it will write to your _build
-" directory (and possibly rebuild your myocamlbuild.ml plugin), only enable this
-" if you are ok with that.
-"
-" If you are using syntax extensions / external libraries and have a properly
-" set up _tags (and myocamlbuild.ml file) then it should just work
-" to enable this flag and get syntax / type checks through syntastic.
-"
-" For best results your current directory should be the project root
-" (same situation if you want useful output from :make).
 
 if exists("g:loaded_syntastic_ocaml_camlp4o_checker")
     finish
@@ -62,9 +24,7 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_ocaml_camlp4o_IsAvailable() dict
-    return executable(s:ocamlpp)
-endfunction
+" Checker options {{{1
 
 if !exists('g:syntastic_ocaml_use_ocamlc') || !executable('ocamlc')
     let g:syntastic_ocaml_use_ocamlc = 0
@@ -78,7 +38,13 @@ if !exists('g:syntastic_ocaml_use_ocamlbuild') || !executable("ocamlbuild")
     let g:syntastic_ocaml_use_ocamlbuild = 0
 endif
 
-function! SyntaxCheckers_ocaml_camlp4o_GetLocList() dict
+" }}}1
+
+function! SyntaxCheckers_ocaml_camlp4o_IsAvailable() dict " {{{1
+    return executable(s:ocamlpp)
+endfunction " }}}1
+
+function! SyntaxCheckers_ocaml_camlp4o_GetLocList() dict " {{{1
     let makeprg = s:GetMakeprg()
     if makeprg == ""
         return []
@@ -96,9 +62,11 @@ function! SyntaxCheckers_ocaml_camlp4o_GetLocList() dict
         \ '%-G+%.%#'
 
     return SyntasticMake({ 'makeprg': makeprg, 'errorformat': errorformat })
-endfunction
+endfunction " }}}1
 
-function! s:GetMakeprg()
+" Utilities {{{1
+
+function! s:GetMakeprg() " {{{2
     if g:syntastic_ocaml_use_ocamlc
         return s:GetOcamlcMakeprg()
     endif
@@ -108,30 +76,30 @@ function! s:GetMakeprg()
     endif
 
     return s:GetOtherMakeprg()
-endfunction
+endfunction " }}}2
 
-function! s:GetOcamlcMakeprg()
+function! s:GetOcamlcMakeprg() " {{{2
     if g:syntastic_ocaml_use_janestreet_core
         let build_cmd = "ocamlc -I "
-        let build_cmd .= expand(g:syntastic_ocaml_janestreet_core_dir)
+        let build_cmd .= expand(g:syntastic_ocaml_janestreet_core_dir, 1)
         let build_cmd .= " -c " . syntastic#util#shexpand('%')
         return build_cmd
     else
         return "ocamlc -c " . syntastic#util#shexpand('%')
     endif
-endfunction
+endfunction " }}}2
 
-function! s:GetOcamlBuildMakeprg()
+function! s:GetOcamlBuildMakeprg() " {{{2
     return "ocamlbuild -quiet -no-log -tag annot," . s:ocamlpp . " -no-links -no-hygiene -no-sanitize " .
                 \ syntastic#util#shexpand('%:r') . ".cmi"
-endfunction
+endfunction " }}}2
 
-function! s:GetOtherMakeprg()
+function! s:GetOtherMakeprg() " {{{2
     "TODO: give this function a better name?
     "
     "TODO: should use throw/catch instead of returning an empty makeprg
 
-    let extension = expand('%:e')
+    let extension = expand('%:e', 1)
     let makeprg = ""
 
     if stridx(extension, 'mly') >= 0 && executable("menhir")
@@ -144,7 +112,9 @@ function! s:GetOtherMakeprg()
     endif
 
     return makeprg
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'ocaml',
@@ -153,4 +123,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

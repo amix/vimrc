@@ -39,6 +39,10 @@ if !exists('g:go_fmt_options')
     let g:go_fmt_options = ''
 endif
 
+if !exists("g:go_fmt_experimental")
+    let g:go_fmt_experimental = 0
+endif
+
 let s:got_fmt_error = 0
 
 "  we have those problems : 
@@ -57,12 +61,15 @@ function! go#fmt#Format(withGoimport)
     let l:tmpname=tempname()
     call writefile(getline(1,'$'), l:tmpname)
 
-    " save our undo file to be restored after we are done. This is needed to
-    " prevent an additional undo jump due to BufWritePre auto command and also
-    " restore 'redo' history because it's getting being destroyed every
-    " BufWritePre
-    let tmpundofile=tempname()
-    exe 'wundo! ' . tmpundofile
+
+    if g:go_fmt_experimental == 1
+        " save our undo file to be restored after we are done. This is needed to
+        " prevent an additional undo jump due to BufWritePre auto command and also
+        " restore 'redo' history because it's getting being destroyed every
+        " BufWritePre
+        let tmpundofile=tempname()
+        exe 'wundo! ' . Tmpundofile
+    endif
 
     " get the command first so we can test it
     let fmt_command = g:go_fmt_command
@@ -128,9 +135,11 @@ function! go#fmt#Format(withGoimport)
         cwindow
     endif
 
-    " restore our undo history
-    silent! exe 'rundo ' . tmpundofile
-    call delete(tmpundofile)
+    if g:go_fmt_experimental == 1
+        " restore our undo history
+        silent! exe 'rundo ' . tmpundofile
+        call delete(tmpundofile)
+    endif
 
     " restore our cursor/windows positions
     call delete(l:tmpname)

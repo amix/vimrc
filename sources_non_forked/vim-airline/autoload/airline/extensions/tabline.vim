@@ -1,29 +1,18 @@
 " MIT License. Copyright (c) 2013-2014 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
+scriptencoding utf-8
+
 let s:formatter = get(g:, 'airline#extensions#tabline#formatter', 'default')
 let s:excludes = get(g:, 'airline#extensions#tabline#excludes', [])
 let s:tab_nr_type = get(g:, 'airline#extensions#tabline#tab_nr_type', 0)
 let s:show_buffers = get(g:, 'airline#extensions#tabline#show_buffers', 1)
+let s:show_tabs = get(g:, 'airline#extensions#tabline#show_tabs', 1)
 let s:show_tab_nr = get(g:, 'airline#extensions#tabline#show_tab_nr', 1)
 let s:show_tab_type = get(g:, 'airline#extensions#tabline#show_tab_type', 1)
 let s:show_close_button = get(g:, 'airline#extensions#tabline#show_close_button', 1)
 let s:close_symbol = get(g:, 'airline#extensions#tabline#close_symbol', 'X')
 let s:buffer_idx_mode = get(g:, 'airline#extensions#tabline#buffer_idx_mode', 0)
-
-let s:builder_context = {
-      \ 'active'        : 1,
-      \ 'right_sep'     : get(g:, 'airline#extensions#tabline#right_sep'    , g:airline_right_sep),
-      \ 'right_alt_sep' : get(g:, 'airline#extensions#tabline#right_alt_sep', g:airline_right_alt_sep),
-      \ }
-if get(g:, 'airline_powerline_fonts', 0)
-  let s:builder_context.left_sep     = get(g:, 'airline#extensions#tabline#left_sep'     , g:airline_left_sep)
-  let s:builder_context.left_alt_sep = get(g:, 'airline#extensions#tabline#left_alt_sep' , g:airline_left_alt_sep)
-else
-  let s:builder_context.left_sep     = get(g:, 'airline#extensions#tabline#left_sep'     , ' ')
-  let s:builder_context.left_alt_sep = get(g:, 'airline#extensions#tabline#left_alt_sep' , '|')
-endif
-
 let s:buf_min_count = get(g:, 'airline#extensions#tabline#buffer_min_count', 0)
 let s:tab_min_count = get(g:, 'airline#extensions#tabline#tab_min_count', 0)
 let s:spc = g:airline_symbols.space
@@ -76,9 +65,10 @@ function! s:toggle_on()
     augroup airline_tabline
       autocmd!
       if s:show_buffers == 1
-        autocmd CursorMoved * call <sid>on_cursormove(s:buf_min_count, len(s:get_buffer_list()))
+        autocmd BufEnter * call <sid>show_tabline(s:buf_min_count, len(s:get_buffer_list()))
+        autocmd BufUnload * call <sid>show_tabline(s:buf_min_count, len(s:get_buffer_list()) - 1)
       else
-        autocmd TabEnter * call <sid>on_cursormove(s:tab_min_count, tabpagenr('$'))
+        autocmd TabEnter * call <sid>show_tabline(s:tab_min_count, tabpagenr('$'))
       endif
     augroup END
   endif
@@ -108,7 +98,7 @@ function! airline#extensions#tabline#load_theme(palette)
   call airline#highlighter#exec('airline_tabhid', l:tabhid)
 endfunction
 
-function! s:on_cursormove(min_count, total_count)
+function! s:show_tabline(min_count, total_count)
   if a:total_count >= a:min_count
     if &showtabline != 2
       set showtabline=2
@@ -126,7 +116,7 @@ function! airline#extensions#tabline#get()
     let s:current_tabcnt = curtabcnt
     let s:current_bufnr = -1  " force a refresh...
   endif
-  if s:show_buffers && curtabcnt == 1
+  if s:show_buffers && curtabcnt == 1 || !s:show_tabs
     return s:get_buffers()
   else
     return s:get_tabs()
@@ -148,15 +138,19 @@ function! s:get_buffer_list()
   let cur = bufnr('%')
   for nr in range(1, bufnr('$'))
     if buflisted(nr) && bufexists(nr)
+      let toadd = 1
       for ex in s:excludes
-        if match(bufname(nr), ex)
-          continue
+        if match(bufname(nr), ex) >= 0
+          let toadd = 0
+          break
         endif
       endfor
       if getbufvar(nr, 'current_syntax') == 'qf'
-        continue
+        let toadd = 0
       endif
-      call add(buffers, nr)
+      if toadd
+        call add(buffers, nr)
+      endif
     endif
   endfor
 
@@ -231,7 +225,7 @@ function! s:get_buffers()
   endif
 
   let l:index = 1
-  let b = airline#builder#new(s:builder_context)
+  let b = s:new_builder()
   let tab_bufs = tabpagebuflist(tabpagenr())
   for nr in s:get_visible_buffers()
     if nr < 0
@@ -270,6 +264,7 @@ function! s:get_buffers()
 
   call b.add_section('airline_tabfill', '')
   call b.split()
+  call b.add_section('airline_tabfill', '')
   call b.add_section('airline_tabtype', ' buffers ')
 
   let s:current_bufnr = cur
@@ -306,6 +301,23 @@ function! s:define_buffer_idx_mode_mappings()
   noremap <unique> <Plug>AirlineSelectTab9 :call <SID>select_tab(8)<CR>
 endfunction
 
+function! s:new_builder()
+  let builder_context = {
+        \ 'active'        : 1,
+        \ 'right_sep'     : get(g:, 'airline#extensions#tabline#right_sep'    , g:airline_right_sep),
+        \ 'right_alt_sep' : get(g:, 'airline#extensions#tabline#right_alt_sep', g:airline_right_alt_sep),
+        \ }
+  if get(g:, 'airline_powerline_fonts', 0)
+    let builder_context.left_sep     = get(g:, 'airline#extensions#tabline#left_sep'     , g:airline_left_sep)
+    let builder_context.left_alt_sep = get(g:, 'airline#extensions#tabline#left_alt_sep' , g:airline_left_alt_sep)
+  else
+    let builder_context.left_sep     = get(g:, 'airline#extensions#tabline#left_sep'     , ' ')
+    let builder_context.left_alt_sep = get(g:, 'airline#extensions#tabline#left_alt_sep' , '|')
+  endif
+
+  return airline#builder#new(builder_context)
+endfunction
+
 function! s:get_tabs()
   let curbuf = bufnr('%')
   let curtab = tabpagenr()
@@ -315,7 +327,7 @@ function! s:get_tabs()
     endif
   endif
 
-  let b = airline#builder#new(s:builder_context)
+  let b = s:new_builder()
   for i in range(1, tabpagenr('$'))
     if i == curtab
       let group = 'airline_tabsel'

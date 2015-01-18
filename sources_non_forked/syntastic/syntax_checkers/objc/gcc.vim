@@ -27,7 +27,7 @@ function! SyntaxCheckers_objc_gcc_IsAvailable() dict
         let g:syntastic_objc_compiler = executable(self.getExec()) ? self.getExec() : 'clang'
     endif
     call self.log('g:syntastic_objc_compiler =', g:syntastic_objc_compiler)
-    return executable(expand(g:syntastic_objc_compiler))
+    return executable(expand(g:syntastic_objc_compiler, 1))
 endfunction
 
 function! SyntaxCheckers_objc_gcc_GetLocList() dict
@@ -56,4 +56,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

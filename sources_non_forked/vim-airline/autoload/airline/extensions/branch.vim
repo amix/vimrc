@@ -107,6 +107,7 @@ function! s:check_in_path()
         if match(root, pattern) >= 0
           let root = substitute(root, pattern, '', '')
         endif
+      endif
     endif
 
     let b:airline_file_in_root = stridx(bufferpath, root) > -1

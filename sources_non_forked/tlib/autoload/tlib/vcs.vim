@@ -2,8 +2,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2012-03-08.
-" @Last Change: 2014-07-01.
-" @Revision:    131
+" @Last Change: 2014-09-30.
+" @Revision:    133
 
 
 " A dictionarie of supported VCS (currently: git, hg, svn, bzr).

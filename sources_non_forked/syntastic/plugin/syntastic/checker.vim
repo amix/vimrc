@@ -30,7 +30,7 @@ function! g:SyntasticChecker.New(args) " {{{2
     if exists('*' . prefix . 'IsAvailable')
         let newObj._isAvailableFunc = function(prefix . 'IsAvailable')
     else
-        let newObj._isAvailableFunc = function('SyntasticCheckerIsAvailableDefault')
+        let newObj._isAvailableFunc = function('s:_isAvailableDefault')
     endif
 
     if exists('*' . prefix . 'GetHighlightRegex')
@@ -51,7 +51,7 @@ endfunction " }}}2
 function! g:SyntasticChecker.getExec() " {{{2
     return
         \ expand( exists('b:syntastic_' . self._name . '_exec') ? b:syntastic_{self._name}_exec :
-        \ syntastic#util#var(self._filetype . '_' . self._name . '_exec', self._exec) )
+        \ syntastic#util#var(self._filetype . '_' . self._name . '_exec', self._exec), 1 )
 endfunction " }}}2
 
 function! g:SyntasticChecker.getExecEscaped() " {{{2
@@ -162,28 +162,18 @@ endfunction " }}}2
 
 function! g:SyntasticChecker._getOpt(opts, basename, name, default) " {{{2
     let ret = []
-    call extend( ret, self._shescape(get(a:opts, a:name . '_before', '')) )
-    call extend( ret, self._shescape(syntastic#util#var( a:basename . a:name, get(a:opts, a:name, a:default) )) )
-    call extend( ret, self._shescape(get(a:opts, a:name . '_after', '')) )
+    call extend( ret, syntastic#util#argsescape(get(a:opts, a:name . '_before', '')) )
+    call extend( ret, syntastic#util#argsescape(syntastic#util#var( a:basename . a:name, get(a:opts, a:name, a:default) )) )
+    call extend( ret, syntastic#util#argsescape(get(a:opts, a:name . '_after', '')) )
 
     return ret
 endfunction " }}}2
 
-function! g:SyntasticChecker._shescape(opt) " {{{2
-    if type(a:opt) == type('') && a:opt != ''
-        return [a:opt]
-    elseif type(a:opt) == type([])
-        return map(copy(a:opt), 'syntastic#util#shescape(v:val)')
-    endif
-
-    return []
-endfunction " }}}2
-
 " }}}1
 
-" Non-method functions {{{1
+" Private functions {{{1
 
-function! SyntasticCheckerIsAvailableDefault() dict " {{{2
+function! s:_isAvailableDefault() dict " {{{2
     return executable(self.getExec())
 endfunction " }}}2
 

@@ -22,4 +22,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'name': 'xmllint',
     \ 'redirect': 'xml/xmllint'})
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

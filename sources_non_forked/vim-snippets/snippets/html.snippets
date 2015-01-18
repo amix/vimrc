@@ -462,8 +462,8 @@ snippet html5
 	<!DOCTYPE html>
 	<html>
 		<head>
-			<meta charset="utf-8" />
-			<meta name="viewport" content="width=device-width" />
+			<meta charset="utf-8">
+			<meta name="viewport" content="width=device-width">
 			<title>${1:`substitute(vim_snippets#Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
 			${2:link}
 		</head>
@@ -475,8 +475,8 @@ snippet html5l
 	<!DOCTYPE html>
 	<html lang="${1:es}">
 		<head>
-			<meta charset="utf-8" />
-			<meta name="viewport" content="width=device-width" />
+			<meta charset="utf-8">
+			<meta name="viewport" content="width=device-width">
 			<title>${2:`substitute(vim_snippets#Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
 			${3:link}
 		</head>
@@ -702,6 +702,10 @@ snippet output
 	<output>${0}</output>
 snippet p
 	<p>${0}</p>
+snippet p.
+	<p class="${1}">${0}</p>
+snippet p#
+	<p id="${1}">${0}</p>
 snippet param
 	<param name="${1}" value="${2}" />
 snippet pre

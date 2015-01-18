@@ -106,12 +106,13 @@ fun! s:ProcessSnippet(snip)
 	let esc_bslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
 
 	if exists('b:snipmate_content_visual')
-		let visual = b:snipmate_content_visual
+		let visual = substitute(b:snipmate_content_visual, "\n$", '', '')
 		unlet b:snipmate_content_visual
 	else
 		let visual = ''
 	endif
-	let snippet = substitute(snippet,'{VISUAL}', escape(visual,'%\'), 'g')
+	let snippet = substitute(snippet, '\n\(\t\+\).\{-\}\zs{VISUAL}',
+				\ substitute(escape(visual, '%\'), "\n", "\n\\\\1", 'g'), 'g')
 
 	" Evaluate eval (`...`) expressions.
 	" Backquotes prefixed with a backslash "\" are ignored.

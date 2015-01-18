@@ -21,6 +21,7 @@ CONTENTS                                                  *syntastic-contents*
 
     1.Intro........................................|syntastic-intro|
         1.1.Quick start............................|syntastic-quickstart|
+        1.2.Recommended settings...................|syntastic-recommended|
     2.Functionality provided.......................|syntastic-functionality|
         2.1.The statusline flag....................|syntastic-statusline-flag|
         2.2.Error signs............................|syntastic-error-signs|
@@ -85,13 +86,35 @@ You can see the list of checkers available for the current filetype with the
 
 You probably want to override the configured list of checkers for the
 filetypes you use, and also change the arguments passed to specific checkers
-to suit your needs. See |syntastic-checker-options| for details.
+to suit your needs. See |syntastic-checker-options| below for details.
 
 Use |:SyntasticCheck| to manually check right now. Use |:Errors| to open the
 |location-list| window, and |:lclose| to close it. You can clear the error
 list with |:SyntasticReset|, and you can use |:SyntasticToggleMode| to switch
 between active (checking on writing the buffer) and passive (manual) checking.
 
+You don't have to switch focus to the |location-list| window to jump to the
+different errors.  Vim provides several built-in commands for this, for
+example |:lnext| and |:lprevious|.  You may want to add shortcut mappings for
+these commands, or perhaps install a plugin such as Tim Pope's 'unimpaired'
+(see https://github.com/tpope/vim-unimpaired) that provides such mappings.
+
+------------------------------------------------------------------------------
+1.2. Recommended settings                              *syntastic-recommended*
+
+Syntastic has a large number of options that can be configured, and the
+defaults are not particularly well suitable for new users. It is recommended
+that you start by adding the following lines to your vimrc, and return to them
+later as needed: >
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 0
+<
 ==============================================================================
 2. Functionality provided                            *syntastic-functionality*
 
@@ -163,8 +186,9 @@ Example: >
 You can use the |:Errors| command to display the errors for the current buffer
 in the |location-list|.
 
-Note that when you use |:Errors|, the current location list is overwritten
-with Syntastic's own location list.
+Note that when you use |:Errors| the current location list is overwritten with
+Syntastic's own location list. The location list is also overwritten when
+|syntastic_auto_jump| is non-zero and the cursor has to jump to an issue.
 
 By default syntastic doesn't fill the |location-list| with the errors found by
 the checkers, in order to reduce clashes with other plugins. Consequently, if
@@ -382,12 +406,17 @@ when saving or opening a file.
 When set to 0 the cursor won't jump automatically. >
     let g:syntastic_auto_jump = 0
 <
-When set to 1 the cursor will always jump to the first issue detected. >
+When set to 1 the cursor will always jump to the first issue detected,
+regardless of type. >
     let g:syntastic_auto_jump = 1
 <
 When set to 2 the cursor will jump to the first issue detected, but only if
 this issue is an error. >
     let g:syntastic_auto_jump = 2
+<
+When set to 3 the cursor will jump to the first error detected, if any. If
+all issues detected are warnings, the cursor won't jump. >
+    let g:syntastic_auto_jump = 3
 <
                                                    *'syntastic_auto_loc_list'*
 Default: 2
@@ -424,8 +453,9 @@ Default: {}
 Use this option to map non-standard filetypes to standard ones.  Corresponding
 checkers are mapped accordingly, which allows syntastic to check files with
 non-standard filetypes: >
-    let g:syntastic_filetype_map = { "latex": "tex",
-                                   \ "gentoo-metadata": "xml" }
+    let g:syntastic_filetype_map = {
+        \ "latex": "tex",
+        \ "gentoo-metadata": "xml" }
 <
 Composite filetypes can also be mapped to simple types, which disables the
 default behaviour of running both checkers against the input file: >
@@ -440,9 +470,10 @@ done).
 
 The option should be set to something like: >
 
-    let g:syntastic_mode_map = { "mode": "active",
-                               \ "active_filetypes": ["ruby", "php"],
-                               \ "passive_filetypes": ["puppet"] }
+    let g:syntastic_mode_map = {
+        \ "mode": "active",
+        \ "active_filetypes": ["ruby", "php"],
+        \ "passive_filetypes": ["puppet"] }
 <
 "mode" can be mapped to one of two values - "active" or "passive". When set
 to "active", syntastic does automatic checking whenever a buffer is saved or
@@ -458,30 +489,49 @@ the "passive_filetypes" array ("active_filetypes" is ignored).
 If any of "mode", "active_filetypes", or "passive_filetypes" are left
 unspecified, they default to values above.
 
+If local variable |'b:syntastic_mode'| is defined its value takes precedence
+over all calculations involving |'syntastic_mode_map'| for the corresponding
+buffer.
+
 At runtime, the |:SyntasticToggleMode| command can be used to switch between
 active and passive modes.
+
+                                                          *'b:syntastic_mode'*
+Default: unset
+Only the local form |'b:syntastic_mode'| is used. When set to either "active"
+or "passive", it takes precedence over |'syntastic_mode_map'| when deciding
+whether the corresponding buffer should be checked automatically.
 
                                                   *'syntastic_quiet_messages'*
 Default: {}
 Use this option to filter out some of the messages produced by checkers.  The
 option should be set to something like: >
-    let g:syntastic_quiet_messages = { "level": "warnings",
-                                     \ "type":  "style",
-                                     \ "regex": '\m\[C03\d\d\]',
-                                     \ "file":  ['\m^/usr/include/', '\m\c\.h$'] }
+    let g:syntastic_quiet_messages = {
+        \ "!level":  "errors",
+        \ "type":    "style",
+        \ "regex":   '\m\[C03\d\d\]',
+        \ "file:p":  ['\m^/usr/include/', '\m\c\.h$'] }
 <
 Each element turns off messages matching the patterns specified by the
 corresponding value. Values are lists, but if a list consist of a single
-element you can omit adding the brackets (e.g. you can write "style" instead
-of ["style"]). Elements with values [] or '' are ignored (this is useful for
+element you may omit the brackets (e.g. you may write "style" instead of
+["style"]). Elements with values [] or '' are ignored (this is useful for
 overriding filters, cf. |filter-overrides|).
 
     "level" - takes one of two values, "warnings" or "errors"
     "type"  - can be either "syntax" or "style"
     "regex" - is matched against the messages' text as a case insensitive
               |regular-expression|
-    "file"  - is matched against the filename the error refers to, as a case
-              sensitive |regular-expression|.
+    "file"  - is matched against the filenames the messages refer to, as a
+              case sensitive |regular-expression|.
+
+If a key is prefixed by an exclamation mark "!", the corresponding filter is
+negated (i.e. the above example silences all messages that are NOT errors).
+
+The "file" key may be followed by one or more filename modifiers (see
+|filename-modifiers|). The modifiers are applied to the filenames the messages
+refer to before matching against the value (i.e. in the above example the full
+path of the issues are matched against '\m^/usr/include/' and '\m\c\.h$').
 
 If |'syntastic_id_checkers'| is set, filters are applied before error messages
 are labeled with the names of the checkers that created them.
@@ -685,8 +735,9 @@ options that can be set, these are usually documented in the wiki:
 In the same vein, 'g:syntastic_<filetype>_<checker-name>_quiet_messages' can
 be used to restrict message filters to messages produced by specific checkers.
 Example: >
-    let g:syntastic_python_pylama_quiet_messages = { "type":  "style",
-                                                   \ "regex": '\m\[C03\d\d\]' }
+    let g:syntastic_python_pylama_quiet_messages = {
+        \ "type":  "style",
+        \ "regex": '\m\[C03\d\d\]' }
 <
 See |syntastic_quiet_messages| for the syntax.
 

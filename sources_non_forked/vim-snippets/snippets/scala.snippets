@@ -298,19 +298,25 @@ snippet scalatest
 	${0:import org.scalatest.FunSuite}
 #assert
 snippet assert
-	assert(${1:a}==${0:b})
+	assert(${1:a} === ${0:b})
 #ensuring(p 296)
 snippet ensuring
 	ifel ensuring(${1:a}==${0:b})
 #expect
 snippet expect
-	expect(${0:what}) {
+	expect(${1:what}) {
+		${0}
+	}
 #intercept
 snippet intercept
-	intercept[${0:IllegalArgumentException}] {
+	intercept[${1:IllegalArgumentException}] {
+		${0}
+	}
 #test
 snippet test
-	test("${0:description}") {
+	test("${1:description}") {
+		${0}
+	}
 #suite
 snippet suite
 	class ${0:name} extends Suite {

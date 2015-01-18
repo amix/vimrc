@@ -15,8 +15,12 @@ endif
 
 let s:save_cpo = &cpo
 set cpo-=C
+if filereadable("makefile") || filereadable("Makefile")
+    CompilerSet makeprg=make
+else
+    CompilerSet makeprg=go\ build
+endif
 
-CompilerSet makeprg=go\ build
 CompilerSet errorformat=
       \%-G#\ %.%#,
       \%-G%.%#panic:\ %m,
