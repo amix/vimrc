@@ -25,6 +25,8 @@ The awesome version includes a lot of great plugins, configurations and color sc
 	git clone git://github.com/amix/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_awesome_vimrc.sh
 
+The taglist.vim plugin will require ctags (http://ctags.sourceforge.net) (Debian: apt-get install ctags)
+
 I also recommend using [Source Code Pro font from Adobe](http://store1.adobe.com/cfusion/store/html/index.cfm?event=displayFontPackage&code=1960) (it's free and awesome font for writing and programming). The Awesome vimrc is already setup to try to use it
 
 ## How to install on Windows?
