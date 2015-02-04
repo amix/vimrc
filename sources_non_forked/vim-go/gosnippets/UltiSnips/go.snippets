@@ -10,8 +10,9 @@ endsnippet
 # anonymous function
 snippet anon "fn := func() { ... }"
 ${1:fn} := func() {
-	${0}
+	${2:${VISUAL}}
 }
+${0}
 endsnippet
 
 # append
@@ -192,7 +193,7 @@ endsnippet
 
 # Fmt Printf debug
 snippet ff "fmt.Printf(...)"
-fmt.Printf("${1} = %+v\n", $1)
+fmt.Printf("${1:${VISUAL}} = %+v\n", $1)
 endsnippet
 
 # Fmt Println debug
@@ -294,8 +295,9 @@ endsnippet
 # goroutine anonymous function
 snippet gof "go func() { ... }()"
 go func() {
-	${1}
+	${1:${VISUAL}}
 }()
+${0}
 endsnippet
 
 # test function

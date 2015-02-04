@@ -74,6 +74,7 @@ let s:_DEFAULT_CHECKERS = {
         \ 'sh':          ['sh', 'shellcheck'],
         \ 'slim':        ['slimrb'],
         \ 'spec':        ['rpmlint'],
+        \ 'swift':       ['xcrun'],
         \ 'tcl':         ['nagelfar'],
         \ 'tex':         ['lacheck', 'chktex'],
         \ 'texinfo':     ['makeinfo'],

@@ -24,7 +24,7 @@ function! SyntaxCheckers_javascript_jsxhint_IsAvailable() dict
     endif
 
     let ver = syntastic#util#parseVersion(jsxhint_version)
-    call self.log(self.getExec() . ' version =', ver)
+    call self.setVersion(ver)
 
     return syntastic#util#versionIsAtLeast(ver, [0, 4, 1])
 endfunction

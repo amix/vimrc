@@ -9,7 +9,7 @@ let g:go_loaded_install = 1
 let s:packages = [
             \ "github.com/nsf/gocode",
             \ "golang.org/x/tools/cmd/goimports",
-            \ "code.google.com/p/rog-go/exp/cmd/godef",
+            \ "github.com/rogpeppe/godef",
             \ "golang.org/x/tools/cmd/oracle",
             \ "golang.org/x/tools/cmd/gorename",
             \ "github.com/golang/lint/golint",
@@ -164,11 +164,6 @@ function! s:CheckBinaries()
 
     if !executable('git')
         echohl Error | echomsg "vim-go: git executable not found." | echohl None
-        return -1
-    endif
-
-    if !executable('hg')
-        echohl Error | echomsg "vim.go: hg (mercurial) executable not found." | echohl None
         return -1
     endif
 endfunction

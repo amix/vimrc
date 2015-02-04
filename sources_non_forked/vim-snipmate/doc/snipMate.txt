@@ -6,7 +6,9 @@ Last Change: December 27, 2009
 1. Description                        |SnipMate-description|
 2. Usage                              |SnipMate-usage|
 3. Interface and Settings             |SnipMate-interface| |SnipMate-settings|
-4. Snippet syntax                     |SnipMate-syntax|
+4. Snippets                           |SnipMate-snippets|
+  - Snippet files                     |SnipMate-snippet-files|
+  - Snippet syntax                    |SnipMate-syntax|
 5. Snippet sources                    |SnipMate-snippet-sources|
 6. Disadvantages to TextMate          |SnipMate-disadvantages|
 7. Contact                            |SnipMate-contact|
@@ -140,6 +142,24 @@ g:snipMate.no_default_aliases
                                 the user or someone else will still be in
                                 effect.
 
+g:snipMate.snippet_version
+                                The snippet parser version to use. The
+                                possible values are:
+                                    0   Use the older parser
+                                    1   Use the newer parser
+                                If unset, SnipMate defaults to version 0. The
+                                value of this option is also used for all
+                                .snippet files.
+
+g:snipMate.override
+                                As detailed below, when two snippets with the
+                                same name and description are loaded, both are
+                                kept and differentiated by the location of the
+                                file they were in. When this option is enabled
+                                (set to 1), the snippet originating in the
+                                last loaded file is kept, similar to how Vim
+                                maps and other settings work.
+
 g:snipMate['no_match_completion_feedkeys_chars']
                                 A string inserted when no match for a trigger
                                 is found. By default a tab is inserted
@@ -152,7 +172,7 @@ Mappings~
 
 The mappings SnipMate uses can be customized with the |:map| commands. For
 example, to change the key that triggers snippets and moves to the next
-tabstop, >
+tab stop, >
 
         :imap <C-J> <Plug>snipMateNextOrTrigger
         :smap <C-J> <Plug>snipMateNextOrTrigger
@@ -186,12 +206,17 @@ Additionally, <CR> is mapped in visual mode in .snippets files for retabbing
 snippets.
 
 ==============================================================================
-SYNTAX                                      *snippet-syntax* *SnipMate-syntax*
+SNIPPETS                                                   *SnipMate-snippets*
+
+                                                      *SnipMate-snippet-files*
+Snippet Files ~
+
+Note: SnipMate does not ship with any snippets.
 
 SnipMate looks inside of each entry of 'rtp' (or |SnipMate-snippet-sources|)
 for a directory named /snippets/. Based on the 'filetype' and 'syntax'
-settings (taking into account the dotted syntax), the following files are read
-for snippets: >
+settings (dotted filetypes are parsed), the following files are read for
+snippets: >
 
     .../snippets/<scope>.snippets
     .../snippets/<scope>_<name>.snippets
@@ -199,7 +224,7 @@ for snippets: >
     .../snippets/<scope>/<trigger>.snippet
     .../snippets/<scope>/<trigger>/<description>.snippet
 
-where <scope> is an entry in 'filetype' or 'syntax', <name> is an arbitrary
+where <scope> is a scope or 'filetype' or 'syntax', <name> is an arbitrary
 name, <trigger> is the trigger for a snippet, and <description> is
 a description used for |SnipMate-multisnip|.
 
@@ -215,13 +240,24 @@ looks something like: >
         more expanded text
 
 <                                                         *SnipMate-multisnip*
-The description is optional. If it is left out and a second snippet inside the
-same .snippets file uses the same trigger, the second one will overwrite the
-first. Otherwise multisnip is used.
+The description is optional. If it is left out, the description "default" is
+used. When two snippets in the same scope have the same name and the same
+description, SnipMate will try to preserve both. The g:snipMate.override
+option disables this, in favor of keeping the last-loaded snippet. This can be
+overridden on a per-snippet basis by defining the snippet with a bang (!): >
+
+    snippet! trigger optional description
+        expanded text
+        more expanded text
 
 Note: Hard tabs in the expansion text are required. When the snippet is
 expanded in the text and 'expandtab' is set, each tab will be replaced with
 spaces based on 'softtabstop' if nonzero or 'shiftwidth' otherwise.
+
+Which version parser the snippets in a file should be used with can be
+specified with a version line, e.g.: >
+
+    version 1
 
 Comments can be made in .snippets files by starting a line with a # character.
 However these can't be used inside of snippet definitions: >
@@ -243,74 +279,100 @@ directive, for example: >
 
 will tell SnipMate to also read html, javascript, and css snippets.
 
+SNIPPET SYNTAX                             *snippet-syntax* *SnipMate-syntax*
+
+Anywhere in a snippet, a backslash escapes the character following it,
+regardless of whether that character is special or not. That is, '\a' will
+always result in an 'a' in the output. A single backslash can be output by
+using '\\'.
+
                                                           *SnipMate-tabstops*
 Tab stops~
 
-A tab stop, specified by ${#} where # is a number, tells SnipMate where to
-position the cursor next. The special tab stop ${0} denotes the last cursor
-position; in its absence, the cursor is placed at the end of the snippet.
+When triggering a snippet, SnipMate will by default jump to the very end of
+the snippet text. This can be changed through the use of tab stops: $1, $2,
+and so on. After expansion, SnipMate will jump to the first tab stop. From
+then on, the <Plug>snipMateNextOrTrigger map will jump to the next higher
+numbered tabs top.
 
-For example, to place the cursor first on the id of a <div> tag, allow
-the user to press <tab> to go to the middle of it, and finally end after
-</div>: >
+However, SnipMate will always stop at the zero tab stop $0. Once it jumps to
+the zero tab stop, snippet expansion is finished. If the zero tab stop is not
+present in a definition, it will be put at the end.
+
+In the case of an ambiguity, for example if a stop occurs just before a literal
+number, braces may be placed around the stop number to resolve it: ${3}79 is
+the third tab stop followed by the string "79".
+
+Note: In the version 0 snippet parser, the braces are mandatory.
+
+For example, to place the cursor first on the id of a <div> tag, then on
+its class, and finally end editing its contents: >
 
     snippet div
-        <div id="${1}">
-            ${2}
+        <div id="$1" class="$2">
+            $0
         </div>
 
-<                                   *SnipMate-placeholders* *SnipMate-mirrors*
-Placeholders and Mirrors~
+<                                                      *SnipMate-placeholders*
+In addition to being simply a location, each tab stop contains a placeholder,
+or some default text. The placeholder can be specified for every tab stop
+(including the zero tab stop) with a colon after the stop ID, as in
+${1:default text}. The braces are required only when specifying a placeholder.
+Once a tab stop with a placeholder is reached, the placeholder will be
+selected in |Select-mode|. For example, >
 
-Placeholder text can be supplied using "${#:text}", where # is the number of
-the tab stop. This text then can be copied throughout the snippet using "$#",
-given # is the same number as used before. So, to make a C for loop: >
+    snippet div
+        <div id="${1:id}" class="${2:class}">
+            $0
+        </div>
+
+Finally, placeholders can contain mirrors and evaluations (detailed below) and
+even entire other tab stops. If the placeholder is edited, then these nested
+tab stops are removed and skipped entirely. For example, >
+
+    snippet div
+        <div${1: id="${2:id}"}${3: class="${4:class}"}>
+            $0
+        </div>
+
+When expanded, this snippet selects the entirety of the id attribute. If this
+stop is edited, then the second tab stop is removed and the third tab stop
+becomes the next one. If the first tab stop is left unedited, then SnipMate
+jumps to the second tab stop. This allows the user to use a single div snippet
+that can be used for instances where the id or class attributes are desired
+and those where they are not.
+
+                                                            *SnipMate-mirrors*
+Mirrors~
+
+A mirror is simply a copy of a tab stop's text, updated as the tab stop is
+edited. These look like a tab stop without a placeholder; $1 for example. In
+the event that no placeholder is specified for a certain tab stop--say $1--the
+first instance becomes the tab stop and the rest become mirrors.
+
+Additionally substitutions similar to |:substitute| can be performed. For
+instance ${1/foo/bar/g} will replace all instances of "foo" in the $1 mirror
+with "bar". This uses |substitute()| behind the scenes.
+
+Note: Just like with tab stops, braces can be used to avoid ambiguities: ${1}2
+is a mirror of the first tab stop followed by a 2. Version 0 of the snippet
+parser offers no way to resolve such ambiguities.
+
+As an example, >
 
     snippet for
-        for (${2:i}=0; $2 < ${1:count}; $2++) {
-            ${4}
+        for ($1 = ${2:start}; ${1:i} < ${3:end}; $1${4:++}) {
+            ${0:/* code */}
         }
 
-This will cause "count" to first be selected and change if the user starts
-typing. When <tab> is pressed, the "i" in ${2}'s position will be selected;
-all $2 variables will default to "i" and automatically be updated if the user
-starts typing.
+<                                                              *SnipMate-eval*
+Expression Evaluation~
 
-NOTE: "$#" syntax is used only for mirrors, not for tab stops as in TextMate.
-
-Mirrors can also be used inside of placeholders. For instance: >
-
- snippet opt
-        <option value="${1:option}">${2:$1}</option>
-
-Will, as usual, cause "option" to first be selected and update all the $1
-variables if the user starts typing. Since one of these variables is inside of
-${2}, this text will then be used as a placeholder for the next tab stop,
-allowing the user to change it if he wishes.
-
-To copy a value throughout a snippet without supplying default text, simply
-use the "${#:}" construct without the text, e.g.: >
-
- snippet foo
-        ${1:}bar$1
-
-<                                                            *SnipMate-visual*
-There is a special placeholder called {VISUAL}. If you visually select text,
-then press <Tab> Vim switches to insert mode. The next snippet you'll expand
-will replace {VISUAL} by the text which was selected previously.
-
-                                                               *SnipMate-eval*
-Interpolated Vim Script~
-
-Snippets can also contain Vim script commands that are executed (via |eval()|)
-when the snippet is inserted. Commands are given inside backticks (`...`); for
-TextMates's functionality, use the |system()| function. E.g.: >
+Snippets can contain Vim script expressions that are evaluated as the snippet
+is expanded. Expressions are specified inside backticks: >
 
  snippet date
-        `system("date +%Y-%m-%d")`
-
-will insert the current date, assuming you are on a Unix system. Note that you
-can also (and should) use |strftime()| for this example.
+        `strftime("%Y-%m-%d")`
 
 Filename([{expr}] [, {defaultText}])                     *SnipMate-Filename()*
 
@@ -335,6 +397,26 @@ The first example returns the filename if it the file has been named, and an
 empty string if it hasn't. The second returns the filename if it's been named,
 and "name" if it hasn't. The third returns the filename followed by "_foo" if
 it has been named, and an empty string if it hasn't.
+
+                                                             *SnipMate-visual*
+The VISUAL Stop~
+
+While tab stops have numeric IDs, a special one exists with the ID 'VISUAL'.
+When a snippet is expanded, if any text had been grabbed with the
+snipMateVisual mapping (see |SnipMate-mappings|), all instances of the VISUAL
+stop will be replaced with it. Both transformations as well as a default
+placeholder can be used with the VISUAL stop.
+
+Note: Both $VISUAL and ${VISUAL} are valid in version 1 of the snippet parser.
+In version 0, only {VISUAL} is valid (without the $), and neither
+transformations nor a default placeholder can be used.
+
+Example: >
+
+    snippet div
+        <div>
+            ${0:${VISUAL:<!-- content -->}}
+        </div>
 
 ==============================================================================
 SNIPPET SOURCES                                     *SnipMate-snippet-sources*
@@ -398,19 +480,13 @@ See |SnipMate-syntax| for more details about all possible relative locations
 to 'rtp' can be found in.
 
 ==============================================================================
-DISADVANTAGES                                         *SnipMate-disadvantages*
+KNOWN ISSUES                                         *SnipMate-known-issues*
 
 SnipMate.vim currently has the following disadvantages to TextMate's snippets:
-    - Nested placeholders are not currently possible. E.g.: >
-        '<div${1: id="${2:some_id}}">${3}</div>'
-<     In TextMate this would first highlight ' id="some_id"', and if
-      you hit delete it would automatically skip ${2} and go to ${3}
-      on the next <tab>, but if you didn't delete it it would highlight
-      "some_id" first. You cannot do this in SnipMate.vim.
-    - Regex cannot be performed on variables, such as "${1/.*/\U&}"
     - Placeholders cannot span multiple lines.
     - Activating snippets in different scopes of the same file is
       not possible.
+    - Vim formatting with fo=t or fo=a can mess up SnipMate.
 
 Perhaps some of these features will be added in a later release.
 

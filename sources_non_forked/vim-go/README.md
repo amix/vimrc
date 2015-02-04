@@ -189,6 +189,22 @@ let g:go_highlight_structs = 1
 
 ## Troubleshooting
 
+### Command not found
+
+If trying to use `:GoDef`,  `:GoInfo` and get a `command not found`, check that you have the binaries installed by using: `:GoInstallBinaries`
+
+Before opening vim, check your current `$PATH`:
+
+	echo $PATH
+	
+after opening vim, run `:echo $PATH`, the output must be your current `$PATH` + `$PATH/bin` (the location where `:GoInstallBinaries` installed the binaries
+
+If problem persists and you are using maybe 'csh' or other shell, try adding this to your .vimrc:
+
+    set shell=/bin/sh
+   
+
+
 ### I'm using Fish shell but have some problems using Vim-go
 
 First environment variables in Fish are applied differently, it should be like:
@@ -202,13 +218,12 @@ too). To overcome this problem change the default shell by adding the following
 into your .vimrc (on the top of the file):
 
 	if $SHELL =~ 'fish'
-	  set shell='/bin/bash'
+	  set shell='/bin/sh'
 	endif
 
 or
 
-	set shell='/bin/bash'
-
+	set shell='/bin/sh'
 
 ## Why another plugin?
 
@@ -220,6 +235,12 @@ This plugin is improved and contains all my fixes/changes that I'm using for
 months under heavy go development environment.
 
 Give it a try. I hope you like it. Feel free to contribute to the project.
+
+## Donations
+
+Vim-go is an open source project and I'm working on it on my free times. I'm spending a lot of time and thoughts to make it stable, fixing bugs, adding new features, etc... If you like vim-go and find it helpful, you might give me a gift from some of the books (kindle) I have in my wish list: 
+
+[Amazon.com Fatih's Wish List](http://amzn.com/w/3RUTKZC0U30P6). Thanks!
 
 ## Credits
 

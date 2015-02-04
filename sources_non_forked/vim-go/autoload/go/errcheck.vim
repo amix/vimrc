@@ -5,6 +5,10 @@ endif
 function! go#errcheck#Run(...) abort
     if a:0 == 0
         let package = go#package#ImportPath(expand('%:p:h'))
+        if package == -1
+            echohl Error | echomsg "vim-go: package is not inside GOPATH src" | echohl None
+            return
+        endif
     else
         let package = a:1
     end
@@ -14,6 +18,7 @@ function! go#errcheck#Run(...) abort
         return
     endif
 
+    echon "vim-go: " | echohl Identifier | echon "errcheck analysing ..." | echohl None
     let out = system(bin_path . ' ' . package)
     if v:shell_error
         let errors = []
@@ -28,15 +33,21 @@ function! go#errcheck#Run(...) abort
                             \"text": tokens[4]})
             endif
         endfor
+
         if empty(errors)
-            % | " Couldn't detect error format, output errors
+            echohl Error | echomsg "GoErrCheck returned error" | echohl None
+            echo out
         endif
+
         if !empty(errors)
+            redraw | echo
             call setqflist(errors, 'r')
         endif
-        echohl Error | echomsg "GoErrCheck returned error" | echohl None
     else
         call setqflist([])
     endif
+
     cwindow
 endfunction
+
+" vim:ts=4:sw=4:et

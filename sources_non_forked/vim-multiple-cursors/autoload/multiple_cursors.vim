@@ -236,6 +236,14 @@ function! multiple_cursors#find(start, end, pattern)
     return
   else
     echohl Normal | echo 'Added '.s:cm.size().' cursor'.(s:cm.size()>1?'s':'') | echohl None
+
+    " If we've created any cursors, we need to call the before function, end
+    " function will be called via normal routes
+    if exists('*Multiple_cursors_before') && !s:before_function_called
+      exe "call Multiple_cursors_before()"
+      let s:before_function_called = 1
+    endif
+
     call s:wait_for_user_input('v')
   endif
 endfunction
@@ -458,8 +466,8 @@ function! s:CursorManager.update_current() dict
     call cur.update_visual_selection(s:get_visual_region(s:pos('.')))
   elseif s:from_mode ==# 'v' || s:from_mode ==# 'V'
     call cur.remove_visual_selection()
-  elseif s:from_mode ==# 'i' && s:to_mode ==# 'n' && self.current_index == self.size() - 1
-    normal! `^
+  elseif s:from_mode ==# 'i' && s:to_mode ==# 'n' && self.current_index != self.size() - 1
+    normal! h
   endif
   let vdelta = line('$') - s:saved_linecount
   " If the total number of lines changed in the buffer, we need to potentially
@@ -985,7 +993,9 @@ endfunction
 
 let s:retry_keys = ""
 function! s:display_error()
-  if s:bad_input == s:cm.size() && has_key(g:multi_cursor_normal_maps, s:char[0])
+  if s:bad_input == s:cm.size()
+        \ && s:from_mode ==# 'n'
+        \ && has_key(g:multi_cursor_normal_maps, s:char[0])
     " we couldn't replay it anywhere but we're told it's the beginning of a
     " multi-character map like the `d` in `dw`
     let s:retry_keys = s:char
@@ -1037,13 +1047,13 @@ function! s:last_char()
 endfunction
 
 function! s:wait_for_user_input(mode)
+  call s:display_error()
+
   let s:from_mode = a:mode
   if empty(a:mode)
     let s:from_mode = s:to_mode
   endif
   let s:to_mode = ''
-
-  call s:display_error()
 
   " Right before redraw, apply the highlighting bug fix
   call s:apply_highlight_fix()

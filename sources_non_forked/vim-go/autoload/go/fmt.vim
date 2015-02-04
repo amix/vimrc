@@ -74,8 +74,15 @@ function! go#fmt#Format(withGoimport)
     " get the command first so we can test it
     let fmt_command = g:go_fmt_command
     if a:withGoimport  == 1 
+        let fmt_command  = g:go_goimports_bin
+    endif
+
+    " if it's something else than gofmt, we need to check the existing of that
+    " binary. For example if it's goimports, let us check if it's installed,
+    " if not the user get's a warning via go#tool#BinPath()
+    if fmt_command != "gofmt"
         " check if the user has installed goimports
-        let bin_path = go#tool#BinPath(g:go_goimports_bin) 
+        let bin_path = go#tool#BinPath(fmt_command) 
         if empty(bin_path) 
             return 
         endif

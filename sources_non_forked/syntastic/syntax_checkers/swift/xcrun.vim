@@ -1,31 +1,37 @@
 "============================================================================
-"File:        rubylint.vim
-"Description: Checks Ruby source code using ruby-lint
-"Maintainer:  Yorick Peterse <yorickpeterse@gmail.com>
+"File:        xcrun.vim
+"Description: swift syntax checker - using xcrun
+"Maintainer:  Tom Fogg <tom@canobe.com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
 "             it and/or modify it under the terms of the Do What The Fuck You
 "             Want To Public License, Version 2, as published by Sam Hocevar.
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
-"
 "============================================================================
 
-if exists("g:loaded_syntastic_ruby_rubylint_checker")
+if exists("g:loaded_syntastic_swift_xcrun_checker")
     finish
 endif
-
-let g:loaded_syntastic_ruby_rubylint_checker = 1
+let g:loaded_syntastic_xcrun_checker = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_ruby_rubylint_GetLocList() dict
-    if !exists('s:rubylint_new')
-        let s:rubylint_new = syntastic#util#versionIsAtLeast(self.getVersion(), [2])
-    endif
-    let makeprg = self.makeprgBuild({ 'args': (s:rubylint_new ? '' : 'analyze ') . '--presenter=syntastic' })
+function! SyntaxCheckers_swift_xcrun_GetLocList() dict
 
-    let errorformat = '%f:%t:%l:%c: %m'
+    let makeprg = self.makeprgBuild({ 'args_after': 'swift' })
+
+    let errorformat=
+        \ '%f:%l:%c:{%*[^}]}: %trror: %m,'.
+        \ '%f:%l:%c:{%*[^}]}: fatal %trror: %m,'.
+        \ '%f:%l:%c:{%*[^}]}: %tarning: %m,'.
+        \ '%f:%l:%c: %trror: %m,'.
+        \ '%f:%l:%c: fatal %trror: %m,'.
+        \ '%f:%l:%c: %tarning: %m,'.
+        \ '%f:%l: %trror: %m,'.
+        \ '%f:%l: fatal %trror: %m,'.
+        \ '%f:%l: %tarning: %m,' .
+        \ '%-G%.%#'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
@@ -33,9 +39,8 @@ function! SyntaxCheckers_ruby_rubylint_GetLocList() dict
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-    \ 'filetype': 'ruby',
-    \ 'name': 'rubylint',
-    \ 'exec': 'ruby-lint'})
+    \ 'filetype': 'swift',
+    \ 'name': 'xcrun'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

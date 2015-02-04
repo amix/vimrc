@@ -77,6 +77,27 @@ function! g:SyntasticChecker.getLocList() " {{{2
     return g:SyntasticLoclist.New(self.getLocListRaw())
 endfunction " }}}2
 
+function! g:SyntasticChecker.getVersion(...) " {{{2
+    if !exists('self._version')
+        let command = a:0 ? a:1 : self.getExecEscaped() . ' --version'
+        let version_output = system(command)
+        call self.log('getVersion: ' . string(command) . ': ' .
+            \ string(split(version_output, "\n", 1)) .
+            \ (v:shell_error ? ' (exit code ' . v:shell_error . ')' : '') )
+        call self.setVersion(syntastic#util#parseVersion(version_output))
+    endif
+    return get(self, '_version', [])
+endfunction " }}}2
+
+function! g:SyntasticChecker.setVersion(version) " {{{2
+    if len(a:version)
+        let self._version = copy(a:version)
+        call self.log(self.getExec() . ' version =', a:version)
+    else
+        call syntastic#log#error("checker " . self._filetype . "/" . self._name . ": can't parse version string (abnormal termination?)")
+    endif
+endfunction " }}}2
+
 function! g:SyntasticChecker.log(msg, ...) " {{{2
     let leader = self._filetype . '/' . self._name . ': '
     if a:0 > 0

@@ -39,8 +39,9 @@ easiest to understand with some examples:
   <div>Yo!*</div>           dst         Yo!
 
 Change surroundings is *cs* .  It takes two arguments, a target like with
-|ds|, and a replacement.  Details about the second argument can be found
-below in |surround-replacements|.  Once again, examples are in order.
+|ds|, and a replacement.  *cS* changes surroundings, placing the surrounded
+text on its own line(s) like |yS|.  Details about the second argument can be
+found below in |surround-replacements|.  Once again, examples are in order.
 
   Old text                  Command     New text ~
   "Hello *world!"           cs"'        'Hello world!'

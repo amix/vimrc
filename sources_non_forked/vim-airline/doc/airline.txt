@@ -126,6 +126,11 @@ values):
   heavily) >
   let g:airline_exclude_preview = 0
 <
+* disable the Airline customization for selective windows (this is a
+  window-local variable so you can disable it for only some windows) >
+  let w:airline_disabled = 1
+<
+
 ==============================================================================
 COMMANDS                                                  *airline-commands*
 

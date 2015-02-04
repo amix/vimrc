@@ -25,10 +25,7 @@ function! SyntaxCheckers_coffee_coffee_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-
-    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version 2>' . syntastic#util#DevNull())
-    call self.log(self.getExec() . ' version = ', ver)
-
+    let ver = self.getVersion(self.getExecEscaped() . ' --version 2>' . syntastic#util#DevNull())
     return syntastic#util#versionIsAtLeast(ver, [1, 6, 2])
 endfunction
 

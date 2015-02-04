@@ -71,13 +71,13 @@ function! g:SyntasticSignsNotifier._setup() " {{{2
         endif
 
         " define the signs used to display syntax and style errors/warns
-        exe 'sign define SyntasticError text=' . g:syntastic_error_symbol .
+        execute 'sign define SyntasticError text=' . g:syntastic_error_symbol .
             \ ' texthl=SyntasticErrorSign linehl=SyntasticErrorLine'
-        exe 'sign define SyntasticWarning text=' . g:syntastic_warning_symbol .
+        execute 'sign define SyntasticWarning text=' . g:syntastic_warning_symbol .
             \ ' texthl=SyntasticWarningSign linehl=SyntasticWarningLine'
-        exe 'sign define SyntasticStyleError text=' . g:syntastic_style_error_symbol .
+        execute 'sign define SyntasticStyleError text=' . g:syntastic_style_error_symbol .
             \ ' texthl=SyntasticStyleErrorSign linehl=SyntasticStyleErrorLine'
-        exe 'sign define SyntasticStyleWarning text=' . g:syntastic_style_warning_symbol .
+        execute 'sign define SyntasticStyleWarning text=' . g:syntastic_style_warning_symbol .
             \ ' texthl=SyntasticStyleWarningSign linehl=SyntasticStyleWarningLine'
     endif
 endfunction " }}}2

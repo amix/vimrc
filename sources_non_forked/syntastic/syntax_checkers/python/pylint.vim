@@ -35,8 +35,7 @@ function! SyntaxCheckers_python_pylint_IsAvailable() dict
         let pylint_version = filter( split(system(self.getExecEscaped() . ' --version'), '\m, \=\|\n'),
             \ 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=pylint[-0-9]*\>''' )[0]
         let ver = syntastic#util#parseVersion(substitute(pylint_version, '\v^\S+\s+', '', ''))
-
-        call self.log(self.getExec() . ' version =', ver)
+        call self.setVersion(ver)
 
         let s:pylint_new = syntastic#util#versionIsAtLeast(ver, [1])
     catch /\m^Vim\%((\a\+)\)\=:E684/

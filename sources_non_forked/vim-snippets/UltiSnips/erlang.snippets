@@ -5,12 +5,12 @@
 priority -50
 
 snippet pat "Case:Receive:Try Clause"
-${1:pattern}${2: when ${3:guard}} ->;
+${1:pattern}${2: when ${3:guard}} ->
 	${4:body}
 endsnippet
 
-snippet beh "Behaviour Directive"
--behaviour (${1:behaviour}).
+snippet beh "Behaviour Directive" b
+-behaviour(${1:behaviour}).
 endsnippet
 
 snippet case "Case Expression"
@@ -20,12 +20,12 @@ case ${1:expression} of
 end
 endsnippet
 
-snippet def "Define Directive"
--define (${1:macro}${2: (${3:param})}, ${4:body}).
+snippet def "Define Directive" b
+-define(${1:macro}${2: (${3:param})}, ${4:body}).
 endsnippet
 
-snippet exp "Export Directive"
--export ([${1:function}/${2:arity}]).
+snippet exp "Export Directive" b
+-export([${1:function}/${2:arity}]).
 endsnippet
 
 snippet fun "Fun Expression"
@@ -36,7 +36,7 @@ end
 endsnippet
 
 snippet fu "Function"
-${1:function} (${2:param})${3: when ${4:guard}} ->
+${1:function}(${2:param})${3: when ${4:guard}} ->
 	${5:body}
 endsnippet
 
@@ -47,24 +47,24 @@ if
 end
 endsnippet
 
-snippet ifdef "Ifdef Directive"
--ifdef (${1:macro}).
+snippet ifdef "Ifdef Directive" b
+-ifdef(${1:macro}).
 endsnippet
 
-snippet ifndef "Ifndef Directive"
--ifndef (${1:macro}).
+snippet ifndef "Ifndef Directive" b
+-ifndef(${1:macro}).
 endsnippet
 
-snippet imp "Import Directive"
--import (${1:module}, [${2:function}/${3:arity}]).
+snippet imp "Import Directive" b
+-import(${1:module}, [${2:function}/${3:arity}]).
 endsnippet
 
-snippet inc "Include Directive"
--include ("${1:file}").
+snippet inc "Include Directive" b
+-include("${1:file}").
 endsnippet
 
-snippet mod "Module Directive"
--module (${1:`!p snip.rv = snip.basename or "module"`}).
+snippet mod "Module Directive" b
+-module(${1:`!p snip.rv = snip.basename or "module"`}).
 endsnippet
 
 snippet rcv "Receive Expression"
@@ -77,8 +77,8 @@ ${6:after
 end
 endsnippet
 
-snippet rec "Record Directive"
--record (${1:record}, {${2:field}${3: = ${4:value}}}).
+snippet rec "Record Directive" b
+-record(${1:record}, {${2:field}${3: = ${4:value}}}).
 endsnippet
 
 snippet try "Try Expression"
@@ -93,8 +93,16 @@ ${13:after
 end
 endsnippet
 
-snippet undef "Undef Directive"
--undef (${1:macro}).
+snippet undef "Undef Directive" b
+-undef(${1:macro}).
+endsnippet
+
+snippet || "List Comprehension"
+[${1:X} || ${2:X} <- ${3:List}${4:, gen}]
+endsnippet
+
+snippet gen "Generator Expression"
+${1:X} <- ${2:List}${3:, gen}
 endsnippet
 
 # vim:ft=snippets:

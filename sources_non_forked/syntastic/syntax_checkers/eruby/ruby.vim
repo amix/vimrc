@@ -27,10 +27,14 @@ function! SyntaxCheckers_eruby_ruby_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_eruby_ruby_GetLocList() dict
+    if !exists('s:ruby_new')
+        let s:ruby_new = syntastic#util#versionIsAtLeast(self.getVersion(), [1, 9])
+    endif
+
     let fname = "'" . escape(expand('%', 1), "\\'") . "'"
 
     " TODO: encodings became useful in ruby 1.9 :)
-    if syntastic#util#versionIsAtLeast(syntastic#util#getVersion(self.getExecEscaped(). ' --version'), [1, 9])
+    if s:ruby_new
         let enc = &fileencoding != '' ? &fileencoding : &encoding
         let encoding_spec = ', :encoding => "' . (enc ==? 'utf-8' ? 'UTF-8' : 'BINARY') . '"'
     else

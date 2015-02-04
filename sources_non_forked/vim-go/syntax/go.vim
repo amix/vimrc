@@ -67,6 +67,10 @@ if !exists("g:go_highlight_structs")
 	let g:go_highlight_structs = 0
 endif
 
+if !exists("g:go_highlight_build_constraints")
+    let g:go_highlight_build_constraints = 0
+endif
+
 syn case match
 
 syn keyword     goDirective         package import
@@ -269,6 +273,21 @@ if g:go_highlight_structs != 0
 endif
 hi def link     goStruct						Function
 hi def link     goStructDef         Function
+
+" Build Constraints
+if g:go_highlight_build_constraints != 0
+    syn keyword goBuildOs           contained ignore cgo android darwin dragonfly freebsd linux nacl netbsd openbsd plan9 solaris windows 
+    syn keyword goBuildArch         contained 386 amd64 amd64p32 arm
+    syn match   goBuildDirective    display contained "+build"
+    syn region  goBuildComment      start="//\s*+build" end="$" contains=goBuildDirective,goBuildOs,goBuildArch
+    syn region  goBuildComment      start="/\*\s*+build" end="\*/" contains=goBuildDirective,goBuildOs,goBuildArch
+endif
+
+hi def link     goBuildComment      Comment
+hi def link     goBuildOs           Type
+hi def link     goBuildArch         Type
+hi def link     goBuildDirective    PreProc
+
 
 " Search backwards for a global declaration to start processing the syntax.
 "syn sync match goSync grouphere NONE /^\(const\|var\|type\|func\)\>/

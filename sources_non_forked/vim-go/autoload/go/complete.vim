@@ -19,7 +19,12 @@ fu! s:gocodeCurrentBuffer()
     return file
 endf
 
-let s:vim_system = get(g:, 'gocomplete#system_function', 'system')
+
+if go#vimproc#has_vimproc()
+    let s:vim_system = get(g:, 'gocomplete#system_function', 'vimproc#system2')
+else
+    let s:vim_system = get(g:, 'gocomplete#system_function', 'system')
+endif
 
 fu! s:system(str, ...)
     return call(s:vim_system, [a:str] + a:000)

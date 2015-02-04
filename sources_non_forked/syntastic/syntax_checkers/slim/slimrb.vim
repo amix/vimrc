@@ -20,8 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_slim_slimrb_GetLocList() dict
     if !exists('s:slimrb_new')
-        let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version 2>'. syntastic#util#DevNull())
-        call self.log(self.getExec() . ' version =', ver)
+        let ver = self.getVersion(self.getExecEscaped() . ' --version 2>'. syntastic#util#DevNull())
         let s:slimrb_new = syntastic#util#versionIsAtLeast(ver, [1, 3, 1])
     endif
 

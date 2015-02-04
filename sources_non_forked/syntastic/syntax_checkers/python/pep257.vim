@@ -13,9 +13,7 @@ set cpo&vim
 
 function! SyntaxCheckers_python_pep257_GetLocList() dict
     if !exists('s:pep257_new')
-        let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
-        call self.log(self.getExec() . ' version =', ver)
-        let s:pep257_new = syntastic#util#versionIsAtLeast(ver, [0, 3])
+        let s:pep257_new = syntastic#util#versionIsAtLeast(self.getVersion(), [0, 3])
     endif
 
     let makeprg = self.makeprgBuild({})

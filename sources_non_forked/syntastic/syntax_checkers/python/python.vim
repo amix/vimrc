@@ -28,11 +28,7 @@ function! SyntaxCheckers_python_python_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-
-    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
-    call self.log(self.getExec() . ' version =', ver)
-
-    return syntastic#util#versionIsAtLeast(ver, [2, 6])
+    return syntastic#util#versionIsAtLeast(self.getVersion(), [2, 6])
 endfunction
 
 function! SyntaxCheckers_python_python_GetLocList() dict

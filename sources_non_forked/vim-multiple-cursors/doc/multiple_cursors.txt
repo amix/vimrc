@@ -110,7 +110,7 @@ mode than for selecting the next location, do like the following: >
 
 *g:multi_cursor_start_word_key*
 When multicursor mode is started, it selects current word without
-boundaries, i.e. it behavies like `g*`. If you want to use word boundaries in
+boundaries, i.e. it behaves like `g*`. If you want to use word boundaries in
 Normal mode (as `*` does) but still have old behaviour up your sleeve, you can
 do the following: >
 

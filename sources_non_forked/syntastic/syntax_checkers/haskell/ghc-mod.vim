@@ -41,7 +41,7 @@ function! SyntaxCheckers_haskell_ghc_mod_IsAvailable() dict
         " need either a Vim that can handle NULs in system() output, or a
         " ghc-mod that has the "--boundary" option.
         let parsed_ver = syntastic#util#parseVersion(ver[0])
-        call self.log(self.getExec() . ' version =', parsed_ver)
+        call self.setVersion(parsed_ver)
         let s:ghc_mod_new = syntastic#util#versionIsAtLeast(parsed_ver, [2, 1, 2])
     else
         call syntastic#log#error("checker haskell/ghc_mod: can't parse version string (abnormal termination?)")

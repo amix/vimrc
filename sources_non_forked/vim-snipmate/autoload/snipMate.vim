@@ -9,35 +9,39 @@ catch /.*/
 	echoe "you're missing tlib. See install instructions at ".expand('<sfile>:h:h').'/README.md'
 endtry
 
-" match $ which doesn't follow a \
-let s:d = nr2char(31)
-
 fun! Filename(...)
 	let filename = expand('%:t:r')
 	if filename == '' | return a:0 == 2 ? a:2 : '' | endif
 	return !a:0 || a:1 == '' ? filename : substitute(a:1, '$1', filename, 'g')
 endf
 
-let s:state_proto = {}
 let s:cache = {}
 
-fun! s:state_proto.remove()
-	unlet! b:snip_state
-	" Remove all buffer-local autocommands in the snipmate_changes group
-	au! snipmate_changes * <buffer>
-endf
-
-fun! snipMate#expandSnip(snip, col)
-	let lnum = line('.') | let col = a:col
-
-	let snippet = s:ProcessSnippet(a:snip)
-	" Avoid error if eval evaluates to nothing
-	if snippet == '' | return '' | endif
-
-	" Expand snippet onto current position with the tab stops removed
-	let snipLines = split(substitute(snippet, ''.s:d .'\d\+\|'.s:d .'{\d\+.\{-}}', '', 'g'), "\n", 1)
-
+function! snipMate#expandSnip(snip, version, col)
+	let lnum = line('.')
+	let col = a:col
 	let line = getline(lnum)
+	let indent = match(line, '\S\|$') + 1
+	let b:snip_state = snipmate#jumping#state()
+
+	if a:version == 1
+		let [snippet, b:snip_state.stops] = snipmate#parse#snippet(a:snip)
+		" Build stop/mirror info
+		let b:snip_state.stop_count = s:build_stops(snippet, b:snip_state.stops, lnum, col, indent)
+		let snipLines = snipMate#sniplist_str(snippet, b:snip_state.stops)
+	else
+		let snippet = snipmate#legacy#process_snippet(a:snip)
+		let [b:snip_state.stops, b:snip_state.stop_count] = snipmate#legacy#build_stops(snippet, lnum, col - indent, indent)
+		let snipLines = split(substitute(snippet, printf('%s\d\+\|%s{\d\+.\{-}}',
+					\ g:snipmate#legacy#sigil, g:snipmate#legacy#sigil), '', 'g'), "\n", 1)
+	endif
+
+	" Abort if the snippet is empty
+	if empty(snippet)
+		return ''
+	endif
+
+	" Expand snippet onto current position
 	let afterCursor = strpart(line, col - 1)
 	" Keep text after the cursor
 	if afterCursor != "\t" && afterCursor != ' '
@@ -52,336 +56,143 @@ fun! snipMate#expandSnip(snip, col)
 	endif
 
 	" Insert snippet with proper indentation
-	let indent = match(line, '\S\|$') + 1
 	call setline(lnum, line . snipLines[0])
 	call append(lnum, map(snipLines[1:], "empty(v:val) ? v:val : '" . strpart(line, 0, indent - 1) . "' . v:val"))
 
 	" Open any folds snippet expands into
-	if &fen | sil! exe lnum.','.(lnum + len(snipLines) - 1).'foldopen' | endif
-
-	let b:snip_state = copy(s:state_proto)
-	let [b:snip_state.stops, b:snip_state.stop_count] = s:BuildTabStops(snippet, lnum, col - indent, indent)
-
-	if b:snip_state.stop_count
-		aug snipmate_changes
-			au CursorMoved,CursorMovedI <buffer> if exists('b:snip_state') |
-						\     call b:snip_state.update_changes() |
-						\ else |
-						\     silent! au! snipmate_changes * <buffer> |
-						\ endif
-		aug END
-		call b:snip_state.set_stop(0)
-		let ret = b:snip_state.select_word()
-
-		if b:snip_state.stop_count == 1
-			call b:snip_state.remove()
-		endif
-
-		return ret
-	else
-		unlet b:snip_state
-		" Place cursor at end of snippet if no tab stop is given
-		let newlines = len(snipLines) - 1
-		call cursor(lnum + newlines, indent + len(snipLines[-1]) - len(afterCursor)
-					\ + (newlines ? 0: col - 1))
+	if &foldenable
+		silent! exec lnum . ',' . (lnum + len(snipLines) - 1) . 'foldopen'
 	endif
-	return ''
-endf
 
-" Update state information to correspond to the given tab stop
-function! s:state_proto.set_stop(stop)
-	let self.stop_no   = a:stop
-	let self.cur_stop  = self.stops[self.stop_no]
-	let self.end_col   = self.cur_stop[1] + self.cur_stop[2]
-	let self.start_col = self.cur_stop[1]
-	call cursor(self.cur_stop[0], self.cur_stop[1])
-	let self.prev_len  = col('$')
-	let self.has_vars  = exists('self.cur_stop[3]')
-	let self.old_vars  = self.has_vars ? deepcopy(self.cur_stop[3]) : []
+	aug snipmate_changes
+		au CursorMoved,CursorMovedI <buffer> if exists('b:snip_state') |
+					\     call b:snip_state.update_changes() |
+					\ else |
+					\     silent! au! snipmate_changes * <buffer> |
+					\ endif
+	aug END
+
+	let b:snip_state.stop_no = 0
+	return b:snip_state.set_stop(0)
 endfunction
 
-" Prepare snippet to be processed by s:BuildTabStops
-fun! s:ProcessSnippet(snip)
-	let snippet = a:snip
-	let esc_bslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
+function! snipMate#placeholder_str(num, stops)
+	return snipMate#sniplist_str(a:stops[a:num].placeholder, a:stops)[0]
+endfunction
 
-	if exists('b:snipmate_content_visual')
-		let visual = substitute(b:snipmate_content_visual, "\n$", '', '')
-		unlet b:snipmate_content_visual
-	else
-		let visual = ''
-	endif
-	let snippet = substitute(snippet, '\n\(\t\+\).\{-\}\zs{VISUAL}',
-				\ substitute(escape(visual, '%\'), "\n", "\n\\\\1", 'g'), 'g')
+function! snipMate#sniplist_str(snippet, stops)
+	let lines = ['']
+	let pos = 0
+	let add_to = 1
+	let seen_stops = []
 
-	" Evaluate eval (`...`) expressions.
-	" Backquotes prefixed with a backslash "\" are ignored.
-	" And backslash can be escaped by doubling it.
-	" Using a loop here instead of a regex fixes a bug with nested "\=".
-	if stridx(snippet, '`') != -1
-		let new = []
-		let snip = split(snippet, esc_bslash . '`', 1)
-		let isexp = 0
-		for i in snip
-			if isexp
-				call add(new, substitute(eval(i), "\n\\%$", '', ''))
+	while pos < len(a:snippet)
+		let item = a:snippet[pos]
+
+		if type(item) == type('')
+			if add_to
+				let lines[-1] .= item
 			else
-				call add(new, i)
+				call add(lines, item)
 			endif
-			let isexp = !isexp
-		endfor
-		let snippet = join(new, '')
-		let snippet = substitute(snippet, "\r", "\n", 'g')
-		let snippet = substitute(snippet, '\\`', "`", 'g')
-	endif
-
-	" Place all text after a colon in a tab stop after the tab stop
-	" (e.g. "${#:foo}" becomes "${:foo}foo").
-	" This helps tell the position of the tab stops later.
-	let snippet = substitute(snippet, esc_bslash . '\$\({\d\+:\(.\{-}\)}\|{\d\+}\)', s:d . '\1\2', 'g')
-	let snippet = substitute(snippet, esc_bslash . '\$\(\d\+\)', s:d . '\1', 'g')
-	let snippet = substitute(snippet, esc_bslash . '\\\$', '$', 'g')
-	let snippet = substitute(snippet, '\\\\', "\\", 'g')
-
-	" Update the a:snip so that all the $# become the text after
-	" the colon in their associated ${#}.
-	" (e.g. "${1:foo}" turns all "$1"'s into "foo")
-	let i = 1
-	while snippet =~ s:d.'{'.i
-		let s = matchstr(snippet, s:d.'{'.i.':\zs.\{-}\ze}')
-		if s != ''
-			let snippet = substitute(snippet, s:d.i, s.'&', 'g')
+			let add_to = 0
+		elseif type(item) == type([])
+			let lines[-1] .= snipMate#placeholder_str(item[0], a:stops)
+			let add_to = 1
 		endif
-		let i += 1
-	endw
 
-	" Add ${0} tab stop if found
-	if snippet =~ s:d . '{0'
-		let snippet = substitute(snippet, s:d.'{0', s:d . '{' . i, '')
-		let s = matchstr(snippet, s:d.'{'.i.':\zs.\{-}\ze}')
-		if s != ''
-			let snippet = substitute(snippet, s:d.'0', s:d . i, 'g')
-			let snippet = substitute(snippet, s:d.i, s.'&', 'g')
-		endif
-	else
-		let snippet .= s:d . '{'.i.'}'
-	endif
+		let pos += 1
+		unlet item " avoid E706
+	endwhile
 
-	if &et " Expand tabs to spaces if 'expandtab' is set.
-		return substitute(snippet, '\t', repeat(' ', (&sts > 0) ? &sts : &sw), 'g')
-	endif
-	return snippet
-endf
-
-" Counts occurences of haystack in needle
-fun! s:Count(haystack, needle)
-	let counter = 0
-	let index = stridx(a:haystack, a:needle)
-	while index != -1
-		let index = stridx(a:haystack, a:needle, index+1)
-		let counter += 1
-	endw
-	return counter
-endf
-
-" Builds a list of a list of each tab stop in the snippet containing:
-" 1.) The tab stop's line number.
-" 2.) The tab stop's column number
-"     (by getting the length of the string between the last "\n" and the
-"     tab stop).
-" 3.) The length of the text after the colon for the current tab stop
-"     (e.g. "${1:foo}" would return 3).
-" 4.) If the "${#:}" construct is given, another list containing all
-"     the matches of "$#", to be replaced with the placeholder. This list is
-"     composed the same way as the parent; the first item is the line number,
-"     and the second is the column.
-fun! s:BuildTabStops(snip, lnum, col, indent)
-	let snipPos = []
-	let i = 1
-	let withoutVars = substitute(a:snip, s:d . '\d\+', '', 'g')
-	while a:snip =~ s:d.'{'.i
-		let beforeTabStop = matchstr(withoutVars, '^.*\ze'.s:d .'{'.i.'\D')
-		let withoutOthers = substitute(withoutVars, ''.s:d .'{\('.i.'\D\)\@!\d\+.\{-}}', '', 'g')
-
-		let j = i - 1
-		call add(snipPos, [0, 0, 0])
-		let snipPos[j][0] = a:lnum + s:Count(beforeTabStop, "\n")
-		let snipPos[j][1] = a:indent + len(matchstr(withoutOthers, '.*\(\n\|^\)\zs.*\ze'.s:d .'{'.i.'\D'))
-		if snipPos[j][0] == a:lnum | let snipPos[j][1] += a:col | endif
-
-		" Get all $# matches in another list, if ${#:name} is given
-		if withoutVars =~ ''.s:d .'{'.i.':'
-			let snipPos[j][2] = len(matchstr(withoutVars, ''.s:d .'{'.i.':\zs.\{-}\ze}'))
-			let dots = repeat('.', snipPos[j][2])
-			call add(snipPos[j], [])
-			let withoutOthers = substitute(a:snip, ''.s:d .'{\d\+.\{-}}\|'.s:d .''.i.'\@!\d\+', '', 'g')
-			while match(withoutOthers, ''.s:d .''.i.'\(\D\|$\)') != -1
-				let beforeMark = matchstr(withoutOthers, '^.\{-}\ze'.dots.''.s:d .''.i.'\(\D\|$\)')
-				call add(snipPos[j][3], [0, 0])
-				let snipPos[j][3][-1][0] = a:lnum + s:Count(beforeMark, "\n")
-				let snipPos[j][3][-1][1] = a:indent + (snipPos[j][3][-1][0] > a:lnum
-				                           \ ? len(matchstr(beforeMark, '.*\n\zs.*'))
-				                           \ : a:col + len(beforeMark))
-				let withoutOthers = substitute(withoutOthers, ''.s:d .''.i.'\ze\(\D\|$\)', '', '')
-			endw
-		endif
-		let i += 1
-	endw
-	return [snipPos, i - 1]
-endf
-
-function! s:state_proto.jump_stop(backwards)
-	" Update changes just in case
-	" This seems to be only needed because insert completion does not trigger
-	" the CursorMovedI event
-	call self.update_changes()
-
-	" Update stop and var locations
-	call self.update_stops()
-
-	" Store the changed col/length of the current stop
-	let self.cur_stop[1] = self.start_col
-	let self.cur_stop[2] = self.end_col - self.start_col
-
-	let self.stop_no += a:backwards ? -1 : 1
-	" Loop over the snippet when going backwards from the beginning
-	if self.stop_no < 0 | let self.stop_no = self.stop_count - 1 | endif
-
-	call self.set_stop(self.stop_no)
-	let ret = self.select_word()
-	if self.stop_no == self.stop_count - 1
-		call self.remove()
-	endif
-	return ret
+	return lines
 endfunction
 
-" Updates tab stops/vars
-function! s:state_proto.update_stops()
-	let changeLen = self.end_col - self.cur_stop[2] - self.start_col
-	" Update tab stops in snippet if text has been added via "$#"
-	" (e.g., in "${1:foo}bar$1${2}").
-	if changeLen != 0
-		let curLine = line('.')
+function! s:build_stops(snippet, stops, lnum, col, indent)
+	let stops = a:stops
+	let line  = a:lnum
+	let col   = a:col
 
-		for pos in self.stops
-			if pos == self.cur_stop | continue | endif
-			let changed = pos[0] == curLine && pos[1] > self.cur_stop[1]
-			let changedVars = 0
-			let endPlaceholder = pos[2] - 1 + pos[1]
-			" Subtract changeLen from each tab stop that was after any of
-			" the current tab stop's placeholders.
-			for [lnum, col] in self.old_vars
-				if lnum > pos[0] | break | endif
-				if pos[0] == lnum
-					if pos[1] > col || (pos[2] == -1 && pos[1] == col)
-						let changed += 1
-					elseif col < endPlaceholder
-						let changedVars += 1
-					endif
+	for [id, dict] in items(stops)
+		for i in dict.instances
+			if len(i) > 1 && type(i[1]) != type({})
+				if !has_key(dict, 'placeholder')
+					let dict.placeholder = i[1:]
+				else
+					unlet i[1:]
 				endif
-			endfor
-			let pos[1] += changeLen * changed
-			" Parse variables within placeholders, e.g., "${1:foo} ${2:$1bar}"
-			let pos[2] += changeLen * changedVars
-
-			" Do the same to any placeholders in the other tab stops.
-			if exists('pos[3]')
-				for nPos in pos[3]
-					let changed = nPos[0] == curLine && nPos[1] > self.start_col
-					if changed && nPos[1] < self.start_col + self.cur_stop[2]
-						call remove(pos, index(pos, nPos))
-						continue
-					endif
-					for [lnum, col] in self.old_vars
-						if lnum > nPos[0] | break | endif
-						if nPos[0] == lnum && nPos[1] > col
-							let changed += 1
-						endif
-					endfor
-					let nPos[1] += changeLen * changed
-				endfor
 			endif
 		endfor
-	endif
-endfunction
-
-" Select the placeholder for the current tab stop
-function! s:state_proto.select_word()
-	let len = self.cur_stop[2]
-	if !len | return '' | endif
-	let l = col('.') != 1 ? 'l' : ''
-	if &sel == 'exclusive'
-		return "\<esc>".l.'v'.len."l\<c-g>"
-	endif
-	return len == 1 ? "\<esc>".l.'gh' : "\<esc>".l.'v'.(len - 1)."l\<c-g>"
-endfunction
-
-" Update the snippet as text is typed. The self.update_vars() function does
-" the actual work.
-" If the cursor moves outside of a placeholder, call self.remove()
-function! s:state_proto.update_changes()
-	let change_len = col('$') - self.prev_len
-	let self.end_col += change_len
-
-	let col = col('.')
-	if mode() == 'i'
-		if line('.') != self.cur_stop[0]
-					\ || col < self.start_col || col > self.end_col
-			call self.remove()
-		elseif self.has_vars
-			call self.update_vars(change_len)
+		if !has_key(dict, 'placeholder')
+			let dict.placeholder = []
+			let j = 0
+			while len(dict.instances[j]) > 1
+				let j += 1
+			endwhile
+			call add(dict.instances[j], '')
 		endif
-	endif
-
-	let self.prev_len = col('$')
-endfunction
-
-" Actually update the vars for any changed text
-function! s:state_proto.update_vars(change)
-	let newWordLen = self.end_col - self.start_col
-	let newWord = strpart(getline('.'), self.start_col - 1, newWordLen)
-	let changeLen = a:change
-	let curLine = line('.')
-	let curCol = col('.')
-	let oldStartSnip = self.start_col
-	let updateTabStops = changeLen != 0
-	let i = 0
-
-	for [lnum, col] in self.cur_stop[3]
-		if updateTabStops
-			let start = self.start_col
-			if lnum == curLine && col <= start
-				let self.start_col += changeLen
-				let self.end_col += changeLen
-			endif
-			for nPos in self.cur_stop[3][(i):]
-				" This list is in ascending order, so quit if we've gone too far.
-				if nPos[0] > lnum | break | endif
-				if nPos[0] == lnum && nPos[1] > col
-					let nPos[1] += changeLen
-				endif
-			endfor
-			if lnum == curLine && col > start
-				let col += changeLen
-				let self.cur_stop[3][i][1] = col
-			endif
-			let i += 1
-		endif
-
-		" Split the line into three parts: the mirror, what's before it, and
-		" what's after it. Then combine them using the new mirror string.
-		" Subtract one to go from column index to byte index
-		let theline = getline(lnum)
-		let update  = strpart(theline, 0, col - 1)
-		let update .= newWord
-		let update .= strpart(theline, col + self.end_col - self.start_col - a:change - 1)
-		call setline(lnum, update)
+		unlet dict.instances
 	endfor
 
-	" Reposition the cursor in case a var updates on the same line but before
-	" the current tabstop
-	if oldStartSnip != self.start_col || mode() == 'i'
-		call cursor(0, curCol + self.start_col - oldStartSnip)
+	let [line, col] = s:build_loc_info(a:snippet, stops, line, col, a:indent)
+
+	" add zero tabstop if it doesn't exist and then link it to the highest stop
+	" number
+	let stops[0] = get(stops, 0,
+				\ { 'placeholder' : [], 'line' : line, 'col' : col })
+	let stop_count = max(keys(stops)) + 2
+	let stops[stop_count - 1] = stops[0]
+
+	return stop_count
+endfunction
+
+function! s:build_loc_info(snippet, stops, line, col, indent)
+	let stops   = a:stops
+	let line    = a:line
+	let col     = a:col
+	let pos     = 0
+	let in_text = 0
+
+	while pos < len(a:snippet)
+		let item = a:snippet[pos]
+
+		if type(item) == type('')
+			if in_text
+				let line += 1
+				let col = a:indent
+			endif
+			let col += len(item)
+			let in_text = 1
+		elseif type(item) == type([])
+			let id = item[0]
+			if len(item) > 1 && type(item[1]) != type({})
+				let stops[id].line = line
+				let stops[id].col = col
+				let [line, col] = s:build_loc_info(item[1:], stops, line, col, a:indent)
+			else
+				call s:add_mirror(stops, id, line, col, item)
+				let col += len(snipMate#placeholder_str(id, stops))
+			endif
+			let in_text = 0
+		endif
+
+		let pos += 1
+		unlet item " avoid E706
+	endwhile
+
+	return [line, col]
+endfunction
+
+function! s:add_mirror(stops, id, line, col, item)
+	let stops = a:stops
+	let item = a:item
+	let stops[a:id].mirrors = get(stops[a:id], 'mirrors', [])
+	let mirror = get(a:item, 1, {})
+	let mirror.line = a:line
+	let mirror.col = a:col
+	call add(stops[a:id].mirrors, mirror)
+	if len(item) == 1
+		call add(item, mirror)
 	endif
 endfunction
 
@@ -396,6 +207,7 @@ fun! snipMate#ReadSnippetsFile(file)
 	if !filereadable(a:file) | return [result, new_scopes] | endif
 	let inSnip = 0
 	let line_no = 0
+	let snipversion = get(g:snipMate, 'snippet_version', 0)
 	for line in readfile(a:file) + ["\n"]
 		let line_no += 1
 
@@ -403,13 +215,15 @@ fun! snipMate#ReadSnippetsFile(file)
 			let content .= strpart(line, 1)."\n"
 			continue
 		elseif inSnip
-			call add(result, [trigger, name == '' ? 'default' : name, content[:-2]])
+			call add(result, [trigger, name,
+						\     content[:-2], bang, snipversion])
 			let inSnip = 0
 		endif
 
 		if line[:6] == 'snippet'
 			let inSnip = 1
-			let trigger = strpart(line, 8)
+			let bang = (line[7] == '!')
+			let trigger = strpart(line, 8 + bang)
 			let name = ''
 			let space = stridx(trigger, ' ') + 1
 			if space " Process multi snip
@@ -424,6 +238,8 @@ fun! snipMate#ReadSnippetsFile(file)
 		elseif line[:6] == 'extends'
 			call extend(new_scopes, map(split(strpart(line, 8)),
 						\ "substitute(v:val, ',*$', '', '')"))
+		elseif line[:6] == 'version'
+			let snipversion = +strpart(line, 8)
 		endif
 	endfor
 	return [result, new_scopes]
@@ -464,80 +280,40 @@ fun! s:AddScopeAliases(list)
   return keys(did)
 endf
 
-if v:version < 704 || has('win32')
-	function! s:Glob(path, expr)
-		let res = []
-		for p in split(a:path, ',')
-			let h = split(fnamemodify(a:expr, ':h'), '/')[0]
-			if isdirectory(p . '/' . h)
-				call extend(res, split(glob(p . '/' . a:expr), "\n"))
-			endif
-		endfor
-		return filter(res, 'filereadable(v:val)')
-	endfunction
-else
-	function! s:Glob(path, expr)
-		return split(globpath(a:path, a:expr), "\n")
-	endfunction
-endif
+au SourceCmd *.snippet,*.snippets call s:source_snippet()
 
-" returns dict of
-" { path: { 'type': one of 'snippet' 'snippets',
-"           'exists': 1 or 0
-"           " for single snippet files:
-"           'name': name of snippet
-"           'trigger': trigger of snippet
-"         }
-" }
-" use mustExist = 1 to return existing files only
-"
-"     mustExist = 0 is used by OpenSnippetFiles
-function! snipMate#GetSnippetFiles(mustExist, scopes, trigger)
-	let paths = join(funcref#Call(g:snipMate.snippet_dirs), ',')
-	let result = {}
-	let scopes = s:AddScopeAliases(a:scopes)
-	let trigger = escape(a:trigger, "*[]?{}`'$")
-
-	" collect existing files
-	for scope in scopes
-
-		for f in s:Glob(paths, 'snippets/' . scope . '.snippets') +
-					\ s:Glob(paths, 'snippets/' . scope . '_*.snippets') +
-					\ s:Glob(paths, 'snippets/' . scope . '/*.snippets')
-			let result[f] = { 'exists' : 1, 'type' : 'snippets',
-						\ 'name_prefix' : fnamemodify(f, ':t:r') }
-		endfor
-
-		" We check for trigger* in the next two loops. In the case of an exact
-		" match, that'll be handled in snipMate#GetSnippetsForWordBelowCursor.
-		for f in s:Glob(paths, 'snippets/' . scope . '/' . trigger . '*.snippet')
-			let result[f] = {'exists': 1, 'type': 'snippet', 'name': 'default',
-						\ 'trigger': fnamemodify(f, ':t:r'), 'name_prefix' : scope }
-		endfor
-
-		for f in s:Glob(paths, 'snippets/' . scope . '/' . trigger . '*/*.snippet')
-			let result[f] = {'exists': 1, 'type': 'snippet', 'name' : fnamemodify(f, ':t:r'),
-						\ 'trigger': fnamemodify(f, ':h:t'), 'name_prefix' : scope }
-		endfor
-
-		if !a:mustExist
-			for p in split(paths, ',')
-				let p .= '/snippets/' . scope . '.snippets'
-				let result[p] = get(result, p, {'exists': 0, 'type': 'snippets'})
-			endfor
-		endif
-
-	endfor
-	return result
+function! s:info_from_filename(file)
+	let parts = split(fnamemodify(a:file, ':r'), '/')
+	let snipidx = len(parts) - index(reverse(copy(parts)), 'snippets') - 1
+	let rtp_prefix = join(parts[(snipidx -
+				\ (parts[snipidx - 1] == 'after' ? 3 : 2)):snipidx - 1], '/')
+	let trigger = get(parts, snipidx + 2, '')
+	let desc = get(parts, snipidx + 3, get(g:snipMate, 'override', 0) ?
+				\ '' : fnamemodify(a:file, ':t'))
+	return [rtp_prefix, trigger, desc]
 endfunction
 
-" should be moved to utils or such?
-function! snipMate#SetByPath(dict, trigger, path, snippet) abort
-	let d = a:dict
-	if !has_key(d, a:trigger)
-		let d[a:trigger] = {}
+function! s:source_snippet()
+	let file = expand('<afile>:p')
+	let [rtp_prefix, trigger, desc] = s:info_from_filename(file)
+	let new_snips = []
+	if fnamemodify(file, ':e') == 'snippet'
+		call add(new_snips, [trigger, desc, join(readfile(file), "\n"), 0,
+					\ get(g:snipMate, 'snippet_version', 0)])
+	else
+		let [snippets, extends] = s:CachedSnips(file)
+		let new_snips = deepcopy(snippets)
+		call extend(s:lookup_state.extends, extends)
 	endif
-	let d[a:trigger][a:path] = a:snippet
+	for snip in new_snips
+		if get(g:snipMate, 'override', 0)
+			let snip[1] = join([s:lookup_state.scope, snip[1]])
+		else
+			let snip[1] = join([s:lookup_state.scope, rtp_prefix,
+						\ empty(snip[1]) ? desc : snip[1]])
+		endif
+	endfor
+	call extend(s:lookup_state.snips, new_snips)
 endfunction
 
 function! s:CachedSnips(file)
@@ -551,31 +327,50 @@ function! s:CachedSnips(file)
 	return s:cache[a:file].contents
 endfunction
 
+function! s:snippet_filenames(scope, trigger)
+	let mid = ['', '_*', '/*']
+	return join(map(extend(mid, map(filter(copy(mid), 'v:key != 1'),
+				\ "'/' . a:trigger . '*' . v:val")),
+				\ "'snippets/' . a:scope . v:val . '.snippet'"
+				\ . ". (v:key < 3 ? 's' : '')"))
+endfunction
+
+function! snipMate#SetByPath(dict, trigger, path, snippet, bang, snipversion)
+	let d = a:dict
+	if !has_key(d, a:trigger) || a:bang
+		let d[a:trigger] = {}
+	endif
+	let d[a:trigger][a:path] = [a:snippet, a:snipversion]
+endfunction
+
 " default triggers based on paths
 function! snipMate#DefaultPool(scopes, trigger, result)
-	let extra_scopes = []
-	for [f,opts] in items(snipMate#GetSnippetFiles(1, a:scopes, a:trigger))
-		let opts.name_prefix = matchstr(f, '\v/\zs.{-}\ze/snippets') . ' ' . opts.name_prefix
-		if opts.type == 'snippets'
-			let [snippets, new_scopes] = s:CachedSnips(f)
-			call extend(extra_scopes, new_scopes)
-			for [trigger, name, contents] in snippets
-				if trigger =~ '\V\^' . escape(a:trigger, '\')
-					call snipMate#SetByPath(a:result, trigger,
-								\ opts.name_prefix . ' ' . name, contents)
-				endif
-			endfor
-		elseif opts.type == 'snippet'
-			call snipMate#SetByPath(a:result, opts.trigger,
-						\ opts.name_prefix . ' ' . opts.name, readfile(f))
-		else
-			throw "unexpected"
+	let scopes = s:AddScopeAliases(a:scopes)
+	let scopes_done = []
+	let rtp_save = &rtp
+	let &rtp = join(g:snipMate.snippet_dirs, ',')
+	let s:lookup_state = {}
+	let s:lookup_state.snips = []
+
+	while !empty(scopes)
+		let scope = remove(scopes, 0)
+		let s:lookup_state.scope = scope
+		let s:lookup_state.extends = []
+
+		exec 'runtime!' s:snippet_filenames(scope, escape(a:trigger, "*[]?{}`'$|#%"))
+
+		call add(scopes_done, scope)
+		call extend(scopes, s:lookup_state.extends)
+		call filter(scopes, 'index(scopes_done, v:val) == -1')
+	endwhile
+
+	for [trigger, desc, contents, bang, snipversion] in s:lookup_state.snips
+		if trigger =~ '\V\^' . escape(a:trigger, '\')
+			call snipMate#SetByPath(a:result, trigger, desc, contents, bang, snipversion)
 		endif
 	endfor
 
-	if !empty(extra_scopes)
-		call snipMate#DefaultPool(extra_scopes, a:trigger, a:result)
-	endif
+	let &rtp = rtp_save
 endfunction
 
 " return a dict of snippets found in runtimepath matching trigger
@@ -659,8 +454,15 @@ endf
 fun! snipMate#GetSnippetsForWordBelowCursor(word, exact)
 	" Setup lookups: '1.2.3' becomes [1.2.3] + [3, 2.3]
 	let parts = split(a:word, '\W\zs')
-	if len(parts) > 2
-		let parts = parts[-2:] " max 2 additional items, this might become a setting
+	" Since '\W\zs' results in splitting *after* a non-keyword character, the
+	" first \W stays connected to whatever's before it, so split it off
+	if len(parts) > 1 && len(parts[0]) > 1
+		let parts = [ parts[0][:-2], strpart(parts[0], len(parts[0]) - 1) ]
+					\ + parts[1:]
+	endif
+	" Only look at the last few possibilities. Too many can be slow.
+	if len(parts) > 5
+		let parts = parts[-5:]
 	endif
 	let lookups = [a:word]
 	let lookup = ''
@@ -670,11 +472,6 @@ fun! snipMate#GetSnippetsForWordBelowCursor(word, exact)
 			call add(lookups, lookup)
 		endif
 	endfor
-
-	" allow matching '.'
-	if a:word =~ '\.$'
-		call add(lookups, '.')
-	endif
 
 	" Remove empty lookup entries, but only if there are other nonempty lookups
 	if len(lookups) > 1
@@ -795,19 +592,12 @@ function! snipMate#TriggerSnippet(...)
 		let snippet = ''
 	else
 		let [trigger, snippetD] = list[0]
-
-		let s = s:ChooseSnippet(snippetD)
-		if type(s) == type([])
-			let snippet = join(s, "\n")
-		else
-			let snippet = s
-		end
-
+		let snippet = s:ChooseSnippet(snippetD)
 		" Before expanding snippet, create new undo point |i_CTRL-G|
 		let &undolevels = &undolevels
 		let col = col('.') - len(trigger)
 		sil exe 's/\V'.escape(trigger, '/\.').'\%#//'
-		return snipMate#expandSnip(snippet, col)
+		return snipMate#expandSnip(snippet[0], snippet[1], col)
 	endif
 
 	" should allow other plugins to register hooks instead (duplicate code)

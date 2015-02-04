@@ -81,6 +81,23 @@ does `:SnipMateLoadScope rails` when editing a Rails project for example.
 * Fix the use of the visual map at the end of a line
 * Add `:SnipMateLoadScope` command and buffer-local scope aliases
 * Load `<scope>_*.snippets` files
+* Indent visual placeholder expansions and remove extraneous lines ([#177][177]
+  and [#178][178])
+
+* The nested branch has been merged
+    * A new snippet parser has been added. The g:snipmate.version as well as
+      version lines in snippet files determines which is used
+    * The new parser supports tab stops placed within placeholders,
+      substitutions, non-consecutive stop numbers, and fewer ambiguities
+    * The stop jumping code has been updated
+    * Tests have been added for the jumping code and the new parser
+
+* The override branch has been merged
+    * The g:snipMate.override option is added. When enabled, if two snippets
+      share the same name, the later-loaded one is kept and the other discarded
+    * Override behavior can be enabled on a per-snippet basis with a bang (!) in
+      the snippet file
+    * Otherwise, SnipMate tries to preserve all snippets loaded
 
 ### 0.87 - 2014-01-04 ###
 
@@ -106,3 +123,5 @@ does `:SnipMateLoadScope rails` when editing a Rails project for example.
 [vundle]: https://github.com/gmarik/vundle
 
 [143]: https://github.com/garbas/vim-snipmate/issues/143
+[177]: https://github.com/garbas/vim-snipmate/issues/177
+[178]: https://github.com/garbas/vim-snipmate/issues/178

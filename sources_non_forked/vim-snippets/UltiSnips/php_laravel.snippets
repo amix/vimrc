@@ -7,33 +7,30 @@ snippet l_rsc "Laravel resource controller" b
  * \date        `!v strftime('%d-%m-%y')`
  */
 
-class $1 {
-    public function index() {
-        ${3}
-    }
-    
-    public function create() {
+class $1 extends ${3: BaseController} {
+    function __construct() {
         ${4}
     }
     
+    public function index() {
+    }
+    
+    public function create() {
+    }
+    
     public function store($id) {
-        ${5}
     }
     
     public function show($id) {
-        ${6}
     }
     
     public function edit($id) {
-        ${7}
     }
     
     public function update($id) {
-        ${8}
     }
     
     public function destroy($id) {
-        ${9}
     }
 }
 endsnippet
@@ -117,7 +114,7 @@ namespace $1;
 class $2 extends \Eloquent {
     protected $table   = '${4:`!p snip.rv = t[2].lower()`}';
 
-    public $timestamps = '${5:false}';
+    public $timestamps = ${5:false};
 
     protected $hidden  = array(${6});
 
@@ -196,7 +193,7 @@ snippet l_r "Laravel Repository" b
 /*!
  * \namespace   ${1:Repositories\\${2}}
  * \class       ${3:`!v expand('%:t:r')`}
- * \implements  ${4:BaseRepositoryInterface}
+ * \implements  ${4:$3RepositoryInterface}
  *
  * \author      ${5:`!v g:snips_author`}
  * \date        `!v strftime('%d-%m-%y')`
@@ -204,8 +201,8 @@ snippet l_r "Laravel Repository" b
 
 namespace $1;
 
-class $3 extends \\$1 implements $4 {
-    ${6}
+class $3 extends \\${6} implements $4 {
+    ${7}
 }
 endsnippet
 

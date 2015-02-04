@@ -121,12 +121,6 @@ function! syntastic#util#parseVersion(version) " {{{2
     return map(split(matchstr( a:version, '\v^\D*\zs\d+(\.\d+)+\ze' ), '\m\.'), 'str2nr(v:val)')
 endfunction " }}}2
 
-" Run 'command' in a shell and parse output as a version string.
-" Returns an array of version components.
-function! syntastic#util#getVersion(command) " {{{2
-    return syntastic#util#parseVersion(system(a:command))
-endfunction " }}}2
-
 " Verify that the 'installed' version is at least the 'required' version.
 "
 " 'installed' and 'required' must be arrays. If they have different lengths,

@@ -441,7 +441,8 @@ function! s:dosurround(...) " {{{1
   endif
   call setreg('"',keeper,regtype)
   if newchar != ""
-    call s:wrapreg('"',newchar)
+    let special = a:0 > 2 ? a:3 : 0
+    call s:wrapreg('"',newchar, special)
   endif
   silent exe 'norm! ""'.pcmd.'`['
   if removed =~ '\n' || okeeper =~ '\n' || getreg('"') =~ '\n'
@@ -456,11 +457,11 @@ function! s:dosurround(...) " {{{1
   if newchar == ""
     silent! call repeat#set("\<Plug>Dsurround".char,scount)
   else
-    silent! call repeat#set("\<Plug>Csurround".char.newchar.s:input,scount)
+    silent! call repeat#set("\<Plug>C".(a:0 > 2 && a:3 ? "S" : "s")."urround".char.newchar.s:inpur,scount)
   endif
 endfunction " }}}1
 
-function! s:changesurround() " {{{1
+function! s:changesurround(...) " {{{1
   let a = s:inputtarget()
   if a == ""
     return s:beep()
@@ -469,7 +470,7 @@ function! s:changesurround() " {{{1
   if b == ""
     return s:beep()
   endif
-  call s:dosurround(a,b)
+  call s:dosurround(a,b,a:0 && a:1)
 endfunction " }}}1
 
 function! s:opfunc(type,...) " {{{1
@@ -558,6 +559,7 @@ endfunction " }}}1
 nnoremap <silent> <Plug>SurroundRepeat .
 nnoremap <silent> <Plug>Dsurround  :<C-U>call <SID>dosurround(<SID>inputtarget())<CR>
 nnoremap <silent> <Plug>Csurround  :<C-U>call <SID>changesurround()<CR>
+nnoremap <silent> <Plug>CSurround  :<C-U>call <SID>changesurround(1)<CR>
 nnoremap <silent> <Plug>Yssurround :<C-U>call <SID>opfunc(v:count1)<CR>
 nnoremap <silent> <Plug>YSsurround :<C-U>call <SID>opfunc2(v:count1)<CR>
 " <C-U> discards the numerical argument but there's not much we can do with it
@@ -571,6 +573,7 @@ inoremap <silent> <Plug>ISurround  <C-R>=<SID>insert(1)<CR>
 if !exists("g:surround_no_mappings") || ! g:surround_no_mappings
   nmap ds  <Plug>Dsurround
   nmap cs  <Plug>Csurround
+  nmap cS  <Plug>CSurround
   nmap ys  <Plug>Ysurround
   nmap yS  <Plug>YSurround
   nmap yss <Plug>Yssurround

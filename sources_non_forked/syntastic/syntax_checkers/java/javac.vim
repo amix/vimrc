@@ -204,7 +204,7 @@ endfunction " }}}2
 
 function! s:LoadConfigFile() " {{{2
     if filereadable(expand(g:syntastic_java_javac_config_file, 1))
-        exe 'source ' . fnameescape(expand(g:syntastic_java_javac_config_file, 1))
+        execute 'source ' . fnameescape(expand(g:syntastic_java_javac_config_file, 1))
     endif
 endfunction " }}}2
 
