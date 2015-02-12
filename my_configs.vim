@@ -11,8 +11,8 @@ set cursorline
 set number                      " line numbers
 set nocompatible                " choose no compatibility with legacy vi
 set nowrap                      " don't wrap lines
-set colorcolumn=80
-highlight ColorColumn ctermbg=DarkGray
+let &colorcolumn="80,".join(range(120,999),",")
+highlight ColorColumn ctermbg=235
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => trailing whitespaces (show & remove on save)
