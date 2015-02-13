@@ -23,7 +23,9 @@ set cpo&vim
 " and http://www.xmlsoft.org/catalog.html for more information.
 
 function! SyntaxCheckers_xml_xmllint_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '--xinclude --noout --postvalid' })
+    let makeprg = self.makeprgBuild({
+        \ 'args': '--xinclude --postvalid',
+        \ 'args_after': '--noout' })
 
     let errorformat=
         \ '%E%f:%l: error : %m,' .

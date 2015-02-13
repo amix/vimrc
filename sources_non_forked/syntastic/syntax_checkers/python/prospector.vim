@@ -31,7 +31,6 @@ endfunction
 
 function! SyntaxCheckers_python_prospector_GetLocList() dict
     let makeprg = self.makeprgBuild({
-        \ 'args': '--external-config merge',
         \ 'args_after': '--messages-only --absolute-paths --die-on-tool-error --zero-exit --output-format json' })
 
     let errorformat = '%f:%l:%c: %m'

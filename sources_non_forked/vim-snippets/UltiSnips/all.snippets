@@ -29,7 +29,7 @@ def _parse_comments(s):
 			if len(flags) == 0:
 				rv.append((text, text, text, ""))
 			# parse 3-part comment, but ignore those with O flag
-			elif flags[0] == 's' and 'O' not in flags:
+			elif 's' in flags and 'O' not in flags:
 				ctriple = []
 				indent = ""
 
@@ -47,7 +47,7 @@ def _parse_comments(s):
 				ctriple.append(indent)
 
 				rv.append(ctriple)
-			elif flags[0] == 'b':
+			elif 'b' in flags:
 				if len(text) == 1:
 					rv.insert(0, (text,text,text, ""))
 	except StopIteration:

@@ -118,6 +118,7 @@ This plugin follows the standard runtime path structure, and as such it can be i
 
 *  [Pathogen][11]
   *  `git clone https://github.com/bling/vim-airline ~/.vim/bundle/vim-airline`
+  *  Remember to run `:Helptags` to generate help tags
 *  [NeoBundle][12]
   *  `NeoBundle 'bling/vim-airline'`
 *  [Vundle][13]

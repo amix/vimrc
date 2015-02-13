@@ -37,20 +37,21 @@ function! GoIndent(lnum)
   let previ = indent(prevlnum)
 
   let ind = previ
+  let s:shiftwidth = shiftwidth()
 
   if prevl =~ '[({]\s*$'
     " previous line opened a block
-    let ind += &sw
+    let ind += s:shiftwidth
   endif
   if prevl =~# '^\s*\(case .*\|default\):$'
     " previous line is part of a switch statement
-    let ind += &sw
+    let ind += s:shiftwidth
   endif
   " TODO: handle if the previous line is a label.
 
   if thisl =~ '^\s*[)}]'
     " this line closed a block
-    let ind -= &sw
+    let ind -= s:shiftwidth
   endif
 
   " Colons are tricky.
@@ -58,7 +59,7 @@ function! GoIndent(lnum)
   " We ignore trying to deal with jump labels because (a) they're rare, and
   " (b) they're hard to disambiguate from a composite literal key.
   if thisl =~# '^\s*\(case .*\|default\):$'
-    let ind -= &sw
+    let ind -= s:shiftwidth
   endif
 
   return ind

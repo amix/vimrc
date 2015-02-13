@@ -2,7 +2,7 @@ let s:sigil = nr2char(31)
 let snipmate#legacy#sigil = s:sigil
 
 " Prepare snippet to be processed by s:BuildTabStops
-function! snipmate#legacy#process_snippet(snip)
+function! snipmate#legacy#process_snippet(snip) abort
 	let snippet = a:snip
 	let esc_bslash = '\%(\\\@<!\%(\\\\\)*\)\@<='
 
@@ -76,7 +76,7 @@ endfunction
 "     the matches of "$#", to be replaced with the placeholder. This list is
 "     composed the same way as the parent; the first item is the line number,
 "     and the second is the column.
-function! snipmate#legacy#build_stops(snip, lnum, col, indent)
+function! snipmate#legacy#build_stops(snip, lnum, col, indent) abort
 	let stops = {}
 	let i = 0
 	let withoutVars = substitute(a:snip, s:sigil . '\d\+', '', 'g')
@@ -118,7 +118,7 @@ function! snipmate#legacy#build_stops(snip, lnum, col, indent)
 endfunction
 
 " Counts occurences of haystack in needle
-function! s:count(haystack, needle)
+function! s:count(haystack, needle) abort
 	let counter = 0
 	let index = stridx(a:haystack, a:needle)
 	while index != -1

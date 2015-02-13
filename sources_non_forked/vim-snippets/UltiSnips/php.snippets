@@ -261,35 +261,55 @@ if (${1:/* condition */}) {
 $0
 endsnippet
 
+snippet ns "namespace declaration" b
+namespace ${1:`!p
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+›   snip.rv = m.group().replace('/', '\\')
+`};
+endsnippet
+
 snippet class "Class declaration template" b
+<?php
+
+namespace ${1:`!p
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+›   snip.rv = m.group().replace('/', '\\')
+`};
+
 /**
- * Class ${2:`!p snip.rv=snip.fn.split('.')[0]`}
- * @author ${3:`!v g:snips_author`}
+ * Class ${1:`!p snip.rv=snip.basename`}
+ * @author ${2:`!v g:snips_author`}
  */
-$1class $2
+class $1
 {
-	public function ${4:__construct}(${5:$options})
-	{
-		${6:// code}
-	}
 }
 $0
 endsnippet
 
-snippet interface "interface declaration template" b
+snippet interface "Interface declaration template" b
+<?php
+
+namespace ${1:`!p
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+›   snip.rv = m.group().replace('/', '\\')
+`};
+
 /**
- * Interface ${1:`!p snip.rv=snip.fn.split('.')[0]`}
+ * Interface ${1:`!p snip.rv=snip.basename`}
  * @author ${2:`!v g:snips_author`}
  */
 interface $1
 {
-	public function ${3:__construct}(${4:$options})
-	{
-		${5:// code}
-	}
+›   public function ${3:someFunction}();$4                                                                                                              
 }
-$0
 endsnippet
+
 
 snippet construct "__construct()" b
 /**
