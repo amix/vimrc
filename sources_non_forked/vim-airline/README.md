@@ -178,7 +178,7 @@ Contributions and pull requests are welcome.  Please take note of the following 
 
 # License
 
-MIT License. Copyright (c) 2013-2014 Bailey Ling.
+MIT License. Copyright (c) 2013-2015 Bailey Ling.
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bling/vim-airline/trend.png)](https://bitdeli.com/free "Bitdeli Badge")

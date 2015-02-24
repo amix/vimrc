@@ -1,131 +1,148 @@
 # ack.vim
 
-This plugin is a front for the Perl module
-[App::Ack](http://search.cpan.org/~petdance/ack/ack).  Ack can be used as a
-replacement for 99% of the uses of _grep_.  This plugin will allow you to run
-ack from vim, and shows the results in a split window.
+Run your favorite search tool from Vim, with an enhanced results list.
+
+This plugin was designed as a Vim frontend for the Perl module [App::Ack]. Ack
+can be used as a replacement for 99% of the uses of _grep_. The plugin allows
+you to run ack from vim, and shows the results in a split window.
+
+But here's a little secret for the Vim-seasoned: it's just a light wrapper for
+Vim's [grepprg] and the [quickfix] window for match results. This makes it easy
+to integrate with your own Vim configuration and use existing knowledge of core
+features. It also means the plugin is flexible to use with other search tools.
+
+[App::Ack]: http://search.cpan.org/~petdance/ack/ack
+[grepprg]: http://vimdoc.sourceforge.net/htmldoc/options.html#'grepprg'
+[quickfix]: http://vimdoc.sourceforge.net/htmldoc/quickfix.html#quickfix
 
 ## Installation
 
 ### Ack
 
-You will need the ack(>= 2.0), of course, to install it follow the
-[manual](http://beyondgrep.com/install/)
+You will need ack (>= 2.0), of course. To install it follow the
+[manual](http://beyondgrep.com/install/).
 
 ### The Plugin
 
-To install it is recommended to use one of the popular package managers for Vim,
-rather than installing by drag and drop all required files into your `.vim` folder.
-
-#### Manual (not recommended)
-
-Just
-[download](https://github.com/mileszs/ack.vim/archive/kb-improve-readme.zip) the
-plugin and put it in your `~/.vim/`(or `%PROGRAMFILES%/Vim/vimfiles` on windows)
+It is recommended to use one of the popular plugin managers for Vim. There are
+many and you probably already have a preferred one, but a few examples for your
+copy-and-paste convenience:
 
 #### Vundle
 
-    Bundle 'mileszs/ack.vim'
+    Plugin 'mileszs/ack.vim'
 
 #### NeoBundle
 
     NeoBundle 'mileszs/ack.vim'
 
+#### Manual (not recommended)
+
+[Download][releases] the plugin and extract it in `~/.vim/` (or
+`%PROGRAMFILES%/Vim/vimfiles` on Windows).
+
+[zipball]: https://github.com/mileszs/ack.vim/archive/master.zip
+
 ## Usage
 
     :Ack [options] {pattern} [{directories}]
 
-Search recursively in {directory} (which defaults to the current directory) for
-the {pattern}.
+Search recursively in `{directories}` (which defaults to the current directory)
+for the `{pattern}`.
 
-Files containing the search term will be listed in the split window, along with
-the line number of the occurrence, once for each occurrence.  [Enter] on a line
-in this window will open the file, and place the cursor on the matching line.
+Files containing the search term will be listed in the quickfix window, along
+with the line number of the occurrence, once for each occurrence. `<Enter>` on
+a line in this window will open the file, and place the cursor on the matching
+line.
 
-Just like where you use :grep, :grepadd, :lgrep, and :lgrepadd, you can use
-`:Ack`, `:AckAdd`, `:LAck`, and `:LAckAdd` respectively.
-(See `doc/ack.txt`, or install and `:h Ack` for more information.)
+Just like where you use `:grep`, `:grepadd`, `:lgrep`, and :`lgrepadd`, you can
+use `:Ack`, `:AckAdd`, `:LAck`, and `:LAckAdd` respectively. (See `:help Ack`
+after installing, or [`doc/ack.txt`][doc] in the repo, for more information.)
 
-For more ack options see
-[ack documentation](http://beyondgrep.com/documentation/)
+For more ack help see [ack documentation](http://beyondgrep.com/documentation/).
+
+[doc]: https://github.com/mileszs/ack.vim/blob/master/doc/ack.txt
 
 ### Keyboard Shortcuts
 
-In the quickfix window, you can use:
+The quickfix results window is augmented with these convenience mappings:
 
-    o    to open (same as enter)
-    O    to open and close quickfix window
-    go   to preview file (open but maintain focus on ack.vim results)
+    ?    a quick summary of these keys, repeat to close
+    o    to open (same as Enter)
+    O    to open and close the quickfix window
+    go   to preview file, open but maintain focus on ack.vim results
     t    to open in new tab
-    T    to open in new tab silently
+    T    to open in new tab without moving to it
     h    to open in horizontal split
-    H    to open in horizontal split silently
+    H    to open in horizontal split, keeping focus on the results
     v    to open in vertical split
-    gv   to open in vertical split silently
+    gv   to open in vertical split, keeping focus on the results
     q    to close the quickfix window
-
-This Vim plugin is derived (and by derived, I mean copied, essentially) from
-Antoine Imbert's blog post
-[Ack and Vim Integration](http://blog.ant0ine.com/typepad/2007/03/ack-and-vim-integration.html)
-(in particular, the function at the bottom of the post).  I added a help file that
-provides just enough reference to get you going.  I also highly recommend you
-check out the docs for the Perl script 'ack', for obvious reasons:
-[ack - grep-like text finder](http://beyondgrep.com/).
 
 ### Gotchas
 
-Some characters have special meaning, and need to be escaped your search
-pattern. For instance, '#'. You have to escape it like this `:Ack '\\\#define
-foo'` to search for '#define foo'. (From blueyed in issue #5.)
+Some characters have special meaning, and need to be escaped in your search
+pattern. For instance, `#`. You need to escape it with `:Ack '\\\#define
+foo'` to search for '#define foo'. See [issue #5].
+
+[issue #5]: https://github.com/mileszs/ack.vim/issues/5
+
+## Possibly FAQ
+
+#### Can I use `ag` ([The Silver Searcher]) with this?
+
+Absolutely, and probably other tools if their output is similar or you can
+write a pattern match for it--just set `g:ackprg`. If you like, you can fall
+back to Ack in case you use your vimrc on a system without Ag available:
+
+```vim
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
+```
+
+Since Ack is quite portable you might check a copy of it into your dotfiles
+repository in `~/bin` so you'll nearly always have it available.
+
+#### What's the difference from ag.vim?
+
+Well... not a lot really.
+
+Present maintainer, yours truly, [kind of wishes they never forked][sadface],
+contributes to both, and wouldn't mind seeing them merged again. ag.vim got a
+nice code clean-up (which ack.vim is now hopefully getting), and ack.vim picked
+up a few features that haven't made their way to ag.vim, like `:AckWindow`,
+optional background search execution with [vim-dispatch], and auto-previewing.
+
+[The Silver Searcher]: https://github.com/ggreer/the_silver_searcher
+[sadface]: https://github.com/mileszs/ack.vim/commit/d97090fb502d40229e6976dfec0e06636ba227d5#commitcomment-5771145
 
 ## Changelog
 
-### 1.0
+Please see [the Github releases page][releases].
 
-* Remove support to ack 1.x
-* Start to use a Changelog
-* Use `autoload` directory to define functions, instead of `plugin`.
-* Add option to auto fold the results(`g:ack_autofold_results`)
-* Improve documentation, list all options and shortcuts
-* Improve highlight option to work when passes directories or use quotes.
-* Add g:ack_mapping
-* Add g:ack_default_options
-* Add a help toggle `?`(like NERDTree)
+### 1.0.9 (unreleased)
 
-### 1.0.1
+* Fix location list and layout of quickfix when using Dispatch (#154)
+* Fix the quick help overlay clobbering the list mappings
+* Fix `:AckFile` when using Dispatch
+* Restore original `'makeprg'` and `'errorformat'` when using Dispatch
+* Internal refactoring and clean-up
 
-* Fixes #124. Bug with `g:ack_autofold_results`
+## Credits
 
-### 1.0.2
+This plugin is derived from Antoine Imbert's blog post [Ack and Vim
+Integration][] (in particular, the function in the update to the post). [Miles
+Sterrett][mileszs] packaged it up as a plugin and documented it in Vim's help
+format, and since then [many contributors][contributors] have submitted
+enhancements and fixes.
 
-* Add compatibility with [vim-dispatch](https://github.com/tpope/vim-dispatch)
+And of course, where would we be without [Ack]. And, you know, Vim.
 
-### 1.0.3
+[Ack and Vim Integration]: http://blog.ant0ine.com/typepad/2007/03/ack-and-vim-integration.html
+[mileszs]: https://github.com/mileszs
+[contributors]: https://github.com/mileszs/ack.vim/graphs/contributors
+[Ack]: http://beyondgrep.com/
 
-* Fixes #127. Use `&l:hlsearch` instead of `v:hlsearch` to keep compatibility
-with versions that does not have this variable.
-
-### 1.0.4
-
-* Fixes #128. Always apply mappings, even when using vim-dispatch.
-
-### 1.0.5
-
-* Fixes #128. Fixes the `errorformat` for ack when using vim-dispatch.
-* Do not use vim-dispatch by default. To use vim-dispath must set
-`g:ack_use_dispatch`
-
-### 1.0.6
-
-* Fixes highlight function to work when user passes options. Ex.: Ack -i test
-  Thank's @mannih. (#131, #134)
-
-### 1.0.7
-
-* Fixes highlight function to work when passes more than one option, or options
-with double dashes(--option) Thank's to @MiguelLatorre and @mannih
-
-### 1.0.8
-
-* Fixes (again) highlight, now using negative look behind.
-* Change mappings `o` and `O` to behave as documented
+[vim-dispatch]: https://github.com/tpope/vim-dispatch
+[releases]: https://github.com/mileszs/ack.vim/releases

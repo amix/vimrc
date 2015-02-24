@@ -1,7 +1,7 @@
 "============================================================================
-"File:        reek.vim
+"File:        vint.vim
 "Description: Syntax checking plugin for syntastic.vim
-"Maintainer:  Mindaugas Mozūras
+"Maintainer:  LCD 47 <lcd047 at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
 "             it and/or modify it under the terms of the Do What The Fuck You
@@ -10,36 +10,35 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_ruby_reek_checker")
+if exists("g:loaded_syntastic_vim_vint_checker")
     finish
 endif
-let g:loaded_syntastic_ruby_reek_checker = 1
+let g:loaded_syntastic_vim_vint_checker = 1
+
+if !exists('g:syntastic_vim_vint_sort')
+    let g:syntastic_vim_vint_sort = 1
+endif
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_ruby_reek_IsAvailable() dict
-    if !executable(self.getExec())
-        return 0
-    endif
-    return syntastic#util#versionIsAtLeast(self.getVersion(), [1, 3, 0])
-endfunction
+function! SyntaxCheckers_vim_vint_GetLocList() dict
+    let makeprg = self.makeprgBuild({ 'post_args': '--json' })
 
-function! SyntaxCheckers_ruby_reek_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_before': '--no-color --line-number --single-line' })
-
-    let errorformat =
-        \ '%E%.%#: Racc::ParseError: %f:%l :: %m,' .
-        \ '%W%f:%l: %m'
+    let errorformat = '%f:%l:%c:%t: %m'
 
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'returns': [0, 2] })
+        \ 'preprocess': 'vint',
+        \ 'returns': [0, 1] })
 
     for e in loclist
-        if e['type'] ==? 'W'
+        if e['type'] ==? 's'
+            let e['type'] = 'w'
             let e['subtype'] = 'Style'
+        elseif e['type'] !=? 'e' && e['type'] !=? 'w'
+            let e['type'] = 'e'
         endif
     endfor
 
@@ -47,8 +46,8 @@ function! SyntaxCheckers_ruby_reek_GetLocList() dict
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-    \ 'filetype': 'ruby',
-    \ 'name': 'reek'})
+    \ 'filetype': 'vim',
+    \ 'name': 'vint'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

@@ -146,7 +146,7 @@ function! SyntaxCheckers_java_javac_GetLocList() dict " {{{1
     let fname = expand('%:p:h', 1) . syntastic#util#Slash() . expand ('%:t', 1)
 
     if has('win32unix')
-        let fname = s:CygwinPath(fname)
+        let fname = syntastic#util#CygwinPath(fname)
     endif
 
     let makeprg = self.makeprgBuild({
@@ -155,9 +155,9 @@ function! SyntaxCheckers_java_javac_GetLocList() dict " {{{1
 
     " unashamedly stolen from *errorformat-javac* (quickfix.txt) and modified to include error types
     let errorformat =
-        \ '%E%f:%l:\ error:\ %m,'.
-        \ '%W%f:%l:\ warning:\ %m,'.
-        \ '%A%f:%l:\ %m,'.
+        \ '%E%f:%l: error: %m,'.
+        \ '%W%f:%l: warning: %m,'.
+        \ '%A%f:%l: %m,'.
         \ '%+Z%p^,'.
         \ '%+C%.%#,'.
         \ '%-G%.%#'
@@ -178,10 +178,6 @@ function! SyntaxCheckers_java_javac_GetLocList() dict " {{{1
 endfunction " }}}1
 
 " Utilities {{{1
-
-function! s:CygwinPath(path) " {{{2
-    return substitute(system('cygpath -m ' . syntastic#util#shescape(a:path)), "\n", '', 'g')
-endfunction " }}}2
 
 function! s:RemoveCarriageReturn(line) " {{{2
     return substitute(a:line, "\r", '', 'g')
@@ -360,13 +356,14 @@ function! s:GetMavenClasspath() " {{{2
 
             let mvn_properties = s:GetMavenProperties()
 
-            let output_dir = 'target/classes'
+            let sep = syntastic#util#Slash()
+            let output_dir = join(['target', 'classes'], sep)
             if has_key(mvn_properties, 'project.build.outputDirectory')
                 let output_dir = mvn_properties['project.build.outputDirectory']
             endif
             let mvn_classpath = s:AddToClasspath(mvn_classpath, output_dir)
 
-            let test_output_dir = 'target/test-classes'
+            let test_output_dir = join(['target', 'test-classes'], sep)
             if has_key(mvn_properties, 'project.build.testOutputDirectory')
                 let test_output_dir = mvn_properties['project.build.testOutputDirectory']
             endif
@@ -388,21 +385,23 @@ function! s:MavenOutputDirectory() " {{{2
         if has_key(mvn_properties, 'project.properties.build.dir')
             let output_dir = mvn_properties['project.properties.build.dir']
         endif
-        if stridx(expand('%:p:h', 1), 'src.main.java') >= 0
-            let output_dir .= '/target/classes'
+
+        let sep = syntastic#util#Slash()
+        if stridx(expand('%:p:h', 1), join(['src', 'main', 'java'], sep)) >= 0
+            let output_dir = join ([output_dir, 'target', 'classes'], sep)
             if has_key(mvn_properties, 'project.build.outputDirectory')
                 let output_dir = mvn_properties['project.build.outputDirectory']
             endif
         endif
-        if stridx(expand('%:p:h', 1), 'src.test.java') >= 0
-            let output_dir .= '/target/test-classes'
+        if stridx(expand('%:p:h', 1), join(['src', 'test', 'java'], sep)) >= 0
+            let output_dir = join([output_dir, 'target', 'test-classes'], sep)
             if has_key(mvn_properties, 'project.build.testOutputDirectory')
                 let output_dir = mvn_properties['project.build.testOutputDirectory']
             endif
         endif
 
         if has('win32unix')
-            let output_dir = s:CygwinPath(output_dir)
+            let output_dir = syntastic#util#CygwinPath(output_dir)
         endif
         return output_dir
     endif

@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2014 Bailey Ling.
+" MIT License. Copyright (c) 2013-2015 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 let s:prototype = {}
@@ -77,7 +77,7 @@ function! s:should_change_group(group1, group2)
   endif
   let color1 = airline#highlighter#get_highlight(a:group1)
   let color2 = airline#highlighter#get_highlight(a:group2)
-  if has('gui_running')
+  if has('gui_running') || (has("termtruecolor") && &guicolors == 1)
     return color1[1] != color2[1] || color1[0] != color2[0]
   else
     return color1[3] != color2[3] || color1[2] != color2[2]

@@ -19,7 +19,7 @@ let s:setup_done = 0
 
 " Public methods {{{1
 
-function! g:SyntasticSignsNotifier.New() " {{{2
+function! g:SyntasticSignsNotifier.New() abort " {{{2
     let newObj = copy(self)
 
     if !s:setup_done
@@ -31,11 +31,11 @@ function! g:SyntasticSignsNotifier.New() " {{{2
     return newObj
 endfunction " }}}2
 
-function! g:SyntasticSignsNotifier.enabled() " {{{2
+function! g:SyntasticSignsNotifier.enabled() abort " {{{2
     return has('signs') && syntastic#util#var('enable_signs')
 endfunction " }}}2
 
-function! g:SyntasticSignsNotifier.refresh(loclist) " {{{2
+function! g:SyntasticSignsNotifier.refresh(loclist) abort " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'signs: refresh')
     let old_signs = copy(self._bufSignIds())
     if self.enabled()
@@ -49,7 +49,7 @@ endfunction " }}}2
 " Private methods {{{1
 
 " One time setup: define our own sign types and highlighting
-function! g:SyntasticSignsNotifier._setup() " {{{2
+function! g:SyntasticSignsNotifier._setup() abort " {{{2
     if has('signs')
         if !hlexists('SyntasticErrorSign')
             highlight link SyntasticErrorSign error
@@ -83,7 +83,7 @@ function! g:SyntasticSignsNotifier._setup() " {{{2
 endfunction " }}}2
 
 " Place signs by all syntax errors in the buffer
-function! g:SyntasticSignsNotifier._signErrors(loclist) " {{{2
+function! g:SyntasticSignsNotifier._signErrors(loclist) abort " {{{2
     let loclist = a:loclist
     if !loclist.isEmpty()
 
@@ -116,7 +116,7 @@ function! g:SyntasticSignsNotifier._signErrors(loclist) " {{{2
 endfunction " }}}2
 
 " Remove the signs with the given ids from this buffer
-function! g:SyntasticSignsNotifier._removeSigns(ids) " {{{2
+function! g:SyntasticSignsNotifier._removeSigns(ids) abort " {{{2
     if has('signs')
         for s in reverse(copy(a:ids))
             execute "sign unplace " . s
@@ -126,7 +126,7 @@ function! g:SyntasticSignsNotifier._removeSigns(ids) " {{{2
 endfunction " }}}2
 
 " Get all the ids of the SyntaxError signs in the buffer
-function! g:SyntasticSignsNotifier._bufSignIds() " {{{2
+function! g:SyntasticSignsNotifier._bufSignIds() abort " {{{2
     if !exists("b:syntastic_private_sign_ids")
         let b:syntastic_private_sign_ids = []
     endif

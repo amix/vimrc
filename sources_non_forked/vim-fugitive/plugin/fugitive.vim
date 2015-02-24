@@ -193,8 +193,10 @@ function! fugitive#detect(path) abort
         let &mls = save_mls
       endtry
     endif
-    cnoremap <buffer> <expr> <C-R><C-G> fnameescape(<SID>recall())
-    nnoremap <buffer> <silent> y<C-G> :call setreg(v:register, <SID>recall())<CR>
+    if !exists('g:fugitive_no_maps')
+      cnoremap <buffer> <expr> <C-R><C-G> fnameescape(<SID>recall())
+      nnoremap <buffer> <silent> y<C-G> :call setreg(v:register, <SID>recall())<CR>
+    endif
     let buffer = fugitive#buffer()
     if expand('%:p') =~# '//'
       call buffer.setvar('&path', s:sub(buffer.getvar('&path'), '^\.%(,|$)', ''))
@@ -2225,7 +2227,10 @@ function! s:Browse(bang,line1,count,...) abort
     elseif exists(':Browse') == 2
       return 'echomsg '.string(url).'|Browse '.url
     else
-      if has("patch-7.4.567")
+      if !exists('g:loaded_netrw')
+        runtime! autoload/netrw.vim
+      endif
+      if exists('*netrw#BrowseX')
         return 'echomsg '.string(url).'|call netrw#BrowseX('.string(url).', 0)'
       else
         return 'echomsg '.string(url).'|call netrw#NetrwBrowseX('.string(url).', 0)'

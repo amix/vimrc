@@ -18,6 +18,13 @@ nnoremap <silent> <Plug>(go-import) :<C-u>call go#import#SwitchImport(1, '', exp
 
 nnoremap <silent> <Plug>(go-implements) :<C-u>call go#oracle#Implements(-1)<CR>
 nnoremap <silent> <Plug>(go-callees) :<C-u>call go#oracle#Callees(-1)<CR>
+nnoremap <silent> <Plug>(go-callers) :<C-u>call go#oracle#Callers(-1)<CR>
+nnoremap <silent> <Plug>(go-describe) :<C-u>call go#oracle#Describe(-1)<CR>
+nnoremap <silent> <Plug>(go-callgraph) :<C-u>call go#oracle#Callgraph(-1)<CR>
+nnoremap <silent> <Plug>(go-callstack) :<C-u>call go#oracle#Callstack(-1)<CR>
+nnoremap <silent> <Plug>(go-freevars) :<C-u>call go#oracle#Freevars(-1)<CR>
+nnoremap <silent> <Plug>(go-channelpeers) :<C-u>call go#oracle#ChannelPeers(-1)<CR>
+nnoremap <silent> <Plug>(go-referrers) :<C-u>call go#oracle#Referrers(-1)<CR>
 
 nnoremap <silent> <Plug>(go-rename) :<C-u>call go#rename#Rename()<CR>
 
@@ -39,6 +46,13 @@ command! -nargs=? GoRename call go#rename#Rename(<f-args>)
 " oracle
 command! -range=% GoImplements call go#oracle#Implements(<count>)
 command! -range=% GoCallees call go#oracle#Callees(<count>)
+command! -range=% GoDescribe call go#oracle#Describe(<count>)
+command! -range=% GoCallers call go#oracle#Callers(<count>)
+command! -range=% GoCallgraph call go#oracle#Callgraph(<count>)
+command! -range=% GoCallstack call go#oracle#Callstack(<count>)
+command! -range=% GoFreevars call go#oracle#Freevars(<count>)
+command! -range=% GoChannelPeers call go#oracle#ChannelPeers(<count>)
+command! -range=% GoReferrers call go#oracle#Referrers(<count>)
 
 " tool
 command! -nargs=0 GoFiles echo go#tool#Files()
@@ -78,16 +92,4 @@ command! GoLint call go#lint#Run()
 " -- errcheck
 command! -nargs=? -complete=customlist,go#package#Complete GoErrCheck call go#errcheck#Run(<f-args>)
 
-" Disable all commands until they are fully integrated.
-"
-" command! -range=% GoOracleDescribe call go#oracle#Describe(<count>)
-" command! -range=% GoOracleCallers call go#oracle#Callers(<count>)
-" command! -range=% GoOracleCallgraph call go#oracle#Callgraph(<count>)
-" command! -range=% GoOracleCallstack call go#oracle#Callstack(<count>)
-" command! -range=% GoOracleFreevars call go#oracle#Freevars(<count>)
-" command! -range=% GoOraclePeers call go#oracle#Peers(<count>)
-" command! -range=% GoOracleReferrers call go#oracle#Referrers(<count>)
-
 " vim:ts=4:sw=4:et
-"
-

@@ -329,9 +329,9 @@ endfunction
 
 function! s:snippet_filenames(scope, trigger) abort
 	let mid = ['', '_*', '/*']
-	let mid += map(copy(mid[1:]), "'/' . a:trigger . '*' . v:val")
-	return join(map(mid, "'snippets/' . a:scope . v:val . '.snippet'"
-				\ . ". (v:key < 3 ? 's' : '')"))
+	let mid += map(copy(mid), "'/' . a:trigger . '*' . v:val")
+	call map(mid, "'snippets/' . a:scope . v:val . '.snippet'")
+	return join(map(mid[:2], 'v:val . "s"') + mid[3:])
 endfunction
 
 function! snipMate#SetByPath(dict, trigger, path, snippet, bang, snipversion) abort
@@ -455,7 +455,7 @@ fun! snipMate#GetSnippetsForWordBelowCursor(word, exact) abort
 	let parts = split(a:word, '\W\zs')
 	" Since '\W\zs' results in splitting *after* a non-keyword character, the
 	" first \W stays connected to whatever's before it, so split it off
-	if len(parts) > 1 && len(parts[0]) > 1
+	if !empty(parts) && parts[0] =~ '\W$'
 		let parts = [ parts[0][:-2], strpart(parts[0], len(parts[0]) - 1) ]
 					\ + parts[1:]
 	endif

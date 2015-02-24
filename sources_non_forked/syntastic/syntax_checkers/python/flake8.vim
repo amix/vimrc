@@ -44,7 +44,7 @@ function! SyntaxCheckers_python_flake8_GetLocList() dict
             let e['text'] .= printf(' [%s%03d]', e['type'], e['nr'])
             " E901 are syntax errors
             " E902 are I/O errors
-            if e['type'] ==? 'E' && e['nr'] !~ '\m^9'
+            if e['type'] ==? 'E' && e['nr'] !~# '\m^9'
                 let e['subtype'] = 'Style'
             endif
             call remove(e, 'nr')

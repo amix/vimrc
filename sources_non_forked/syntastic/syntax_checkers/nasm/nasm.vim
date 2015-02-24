@@ -21,7 +21,7 @@ set cpo&vim
 function! SyntaxCheckers_nasm_nasm_GetLocList() dict
     let makeprg = self.makeprgBuild({
         \ 'args_after': '-X gnu -f elf' .
-        \       ' -I ' . syntastic#util#shescape(expand('%:p:h', 1) . '/') .
+        \       ' -I ' . syntastic#util#shescape(expand('%:p:h', 1) . syntastic#util#Slash()) .
         \       ' ' . syntastic#c#NullOutput() })
 
     let errorformat = '%f:%l: %t%*[^:]: %m'

@@ -19,7 +19,9 @@ Garbas][garbas], [Marc Weber][marcweber], and [Adnan Zafar][ajzafar].
 
 We recommend one of the following methods for installing SnipMate and its
 dependencies. SnipMate depends on [vim-addon-mw-utils][mw-utils] and
-[tlib][tlib]. Since SnipMate does not ship with any snippets, we suggest
+[tlib][tlib].
+
+> **NOTE:** SnipMate does not ship with any snippets out of the box. We suggest
 looking at the [vim-snippets][vim-snippets] repository.
 
 * Using [VAM][vam], add `vim-snippets` to the list of packages to be installed.

@@ -20,6 +20,11 @@ snippet ap "append(slice, value)"
 append(${1:slice}, ${0:value})
 endsnippet
 
+# append assignment
+snippet ap= "a = append(a, value)"
+${1:slice} = append($1, ${0:value})
+endsnippet
+
 # break
 snippet br "break"
 break
@@ -143,6 +148,14 @@ endsnippet
 snippet errn "Error return " !b
 if err != nil {
 	return err
+}
+${0}
+endsnippet
+
+# error snippet
+snippet errt "Error test fatal " !b
+if err != nil {
+	t.Fatal(err)
 }
 ${0}
 endsnippet
@@ -307,6 +320,30 @@ func Test${1:Function}(t *testing.T) {
 }
 endsnippet
 
+# quick test server
+snippet tsrv "httptest.NewServer"
+ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, ${1:`response`})
+}))
+defer ts.Close()
+
+${0:someUrl} = ts.URL
+endsnippet
+
+# test error handling
+snippet ter "if err != nil { t.Errorf(...) }"
+if err != nil {
+	t.Errorf("${0:message}")
+}
+endsnippet
+
+# test fatal error
+snippet terf "if err != nil { t.Fatalf(...) }"
+if err != nil {
+	t.Fatalf("${0:message}")
+}
+endsnippet
+
 # variable declaration
 snippet var "var x Type [= ...]"
 var ${1:x} ${2:Type}${3: = ${0:value\}}
@@ -344,6 +381,4 @@ def closing_par(snip, pos):
 
 endglobal
 
-
 # vim:ft=snippets:
-

@@ -12,6 +12,10 @@ abbr fn := func() { ... }
 snippet ap
 abbr append(slice, value)
 	append(${1:slice}, ${0:value})
+# append assign
+snippet ap=
+abbr slice = append(slice, value)
+  ${1:slice} = append($1, ${0:value})
 # break
 snippet br
 abbr break
@@ -119,6 +123,12 @@ snippet errn
 abbr if err != nil { ... }
 	if err != nil {
 		return err
+	}
+# error snippet in TestFunc
+snippet errt
+abbr if err != nil { ... }
+	if err != nil {
+		t.Fatal(err)
 	}
 
 # error snippet with two return values
@@ -262,6 +272,28 @@ abbr func TestXYZ(t *testing.T) { ... }
 	func Test${1:Function}(t *testing.T) {
 		${0}
 	}
+# test server
+snippet tsrv
+abbr ts := httptest.NewServer(...)
+  ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintln(w, ${1:`response`})
+  }))
+  defer ts.Close()
+
+  //Use testing server url (type string) somewhere
+  ${0:someUrl} = ts.URL
+# test error
+snippet ter
+abbr if err != nil { t.Errorf(...) }
+  if err != nil {
+    t.Errorf("${1}")
+  }
+# test fatal error
+snippet terf
+abbr if err != nil { t.Fatalf(...) }
+  if err != nil {
+    t.Fatalf("${1}")
+  }
 # variable declaration
 snippet var
 abbr var x Type [= ...]

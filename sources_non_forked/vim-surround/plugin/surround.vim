@@ -124,13 +124,12 @@ function! s:process(string)
   return s
 endfunction
 
-function! s:wrap(string,char,type,...)
+function! s:wrap(string,char,type,removed,special)
   let keeper = a:string
   let newchar = a:char
   let s:input = ""
   let type = a:type
   let linemode = type ==# 'V' ? 1 : 0
-  let special = a:0 ? a:1 : 0
   let before = ""
   let after  = ""
   if type ==# "V"
@@ -171,7 +170,7 @@ function! s:wrap(string,char,type,...)
     if !maparg(">","c")
       let dounmapb = 1
       " Hide from AsNeeded
-      exe "cn"."oremap > <CR>"
+      exe "cn"."oremap > ><CR>"
     endif
     let default = ""
     if newchar ==# "T"
@@ -181,18 +180,24 @@ function! s:wrap(string,char,type,...)
       let default = matchstr(s:lastdel,'<\zs.\{-\}\ze>')
     endif
     let tag = input("<",default)
-    echo "<".substitute(tag,'>*$','>','')
     if dounmapb
       silent! cunmap >
     endif
     let s:input = tag
     if tag != ""
+      let keepAttributes = ( match(tag, ">$") == -1 )
       let tag = substitute(tag,'>*$','','')
+      let attributes = ""
+      if keepAttributes
+        let attributes = matchstr(a:removed, '<[^ \t\n]\+\zs\_.\{-\}\ze>')
+      endif
       let s:input = tag . '>'
-      let before = '<'.tag.'>'
       if tag =~ '/$'
+        let tag = substitute(tag, '/$', '', '')
+        let before = '<'.tag.attributes.' />'
         let after = ''
       else
+        let before = '<'.tag.attributes.'>'
         let after  = '</'.substitute(tag,' .*','','').'>'
       endif
       if newchar == "\<C-T>" || newchar == ","
@@ -246,7 +251,7 @@ function! s:wrap(string,char,type,...)
     let after  = ''
   endif
   let after  = substitute(after ,'\n','\n'.initspaces,'g')
-  if type ==# 'V' || (special && type ==# "v")
+  if type ==# 'V' || (a:special && type ==# "v")
     let before = substitute(before,' \+$','','')
     let after  = substitute(after ,'^ \+','','')
     if after !~ '^\n'
@@ -259,7 +264,7 @@ function! s:wrap(string,char,type,...)
     endif
     if before !~ '\n\s*$'
       let before .= "\n"
-      if special
+      if a:special
         let before .= "\t"
       endif
     endif
@@ -289,11 +294,10 @@ function! s:wrap(string,char,type,...)
   return keeper
 endfunction
 
-function! s:wrapreg(reg,char,...)
+function! s:wrapreg(reg,char,removed,special)
   let orig = getreg(a:reg)
   let type = substitute(getregtype(a:reg),'\d\+$','','')
-  let special = a:0 ? a:1 : 0
-  let new = s:wrap(orig,a:char,type,special)
+  let new = s:wrap(orig,a:char,type,a:removed,a:special)
   call setreg(a:reg,new,type)
 endfunction
 " }}}1
@@ -314,7 +318,7 @@ function! s:insert(...) " {{{1
   set clipboard-=unnamed clipboard-=unnamedplus
   let reg_save = @@
   call setreg('"',"\r",'v')
-  call s:wrapreg('"',char,linemode)
+  call s:wrapreg('"',char,"",linemode)
   " If line mode is used and the surrounding consists solely of a suffix,
   " remove the initial newline.  This fits a use case of mine but is a
   " little inconsistent.  Is there anyone that would prefer the simpler
@@ -442,7 +446,7 @@ function! s:dosurround(...) " {{{1
   call setreg('"',keeper,regtype)
   if newchar != ""
     let special = a:0 > 2 ? a:3 : 0
-    call s:wrapreg('"',newchar, special)
+    call s:wrapreg('"',newchar,removed,special)
   endif
   silent exe 'norm! ""'.pcmd.'`['
   if removed =~ '\n' || okeeper =~ '\n' || getreg('"') =~ '\n'
@@ -518,7 +522,7 @@ function! s:opfunc(type,...) " {{{1
     let keeper = substitute(keeper,'\_s\@<!\s*$','','')
   endif
   call setreg(reg,keeper,type)
-  call s:wrapreg(reg,char,a:0 && a:1)
+  call s:wrapreg(reg,char,"",a:0 && a:1)
   if type ==# "v" && a:type !=# "v" && append != ""
     call setreg(reg,append,"ac")
   endif

@@ -68,7 +68,7 @@ function! go#fmt#Format(withGoimport)
         " restore 'redo' history because it's getting being destroyed every
         " BufWritePre
         let tmpundofile=tempname()
-        exe 'wundo! ' . Tmpundofile
+        exe 'wundo! ' . tmpundofile
     endif
 
     " get the command first so we can test it

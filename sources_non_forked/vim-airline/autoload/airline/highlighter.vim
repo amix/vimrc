@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2014 Bailey Ling.
+" MIT License. Copyright (c) 2013-2015 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 let s:is_win32term = (has('win32') || has('win64')) && !has('gui_running')
@@ -16,13 +16,13 @@ endfunction
 
 function! s:get_syn(group, what)
   " need to pass in mode, known to break on 7.3.547
-  let mode = has('gui_running') ? 'gui' : 'cterm'
+  let mode = has('gui_running') || (has("termtruecolor") && &guicolors == 1) ? 'gui' : 'cterm'
   let color = synIDattr(synIDtrans(hlID(a:group)), a:what, mode)
   if empty(color) || color == -1
     let color = synIDattr(synIDtrans(hlID('Normal')), a:what, mode)
   endif
   if empty(color) || color == -1
-    if has('gui_running')
+    if has('gui_running') || (has("termtruecolor") && &guicolors == 1)
       let color = a:what ==# 'fg' ? '#000000' : '#FFFFFF'
     else
       let color = a:what ==# 'fg' ? 0 : 1
@@ -34,7 +34,7 @@ endfunction
 function! s:get_array(fg, bg, opts)
   let fg = a:fg
   let bg = a:bg
-  return has('gui_running')
+  return has('gui_running') || (has("termtruecolor") && &guicolors == 1)
         \ ? [ fg, bg, '', '', join(a:opts, ',') ]
         \ : [ '', '', fg, bg, join(a:opts, ',') ]
 endfunction
@@ -42,7 +42,7 @@ endfunction
 function! airline#highlighter#get_highlight(group, ...)
   let fg = s:get_syn(a:group, 'fg')
   let bg = s:get_syn(a:group, 'bg')
-  let reverse = has('gui_running')
+  let reverse = has('gui_running') || (has("termtruecolor") && &guicolors == 1)
         \ ? synIDattr(synIDtrans(hlID(a:group)), 'reverse', 'gui')
         \ : synIDattr(synIDtrans(hlID(a:group)), 'reverse', 'cterm')
         \|| synIDattr(synIDtrans(hlID(a:group)), 'reverse', 'term')

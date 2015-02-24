@@ -1,54 +1,45 @@
 "============================================================================
-"File:        reek.vim
-"Description: Syntax checking plugin for syntastic.vim
-"Maintainer:  Mindaugas Mozūras
+"File:        standard.vim
+"Description: JavaScript syntax checker - using standard
+"Maintainer:  LCD 47 <lcd047@gmail.com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
 "             it and/or modify it under the terms of the Do What The Fuck You
 "             Want To Public License, Version 2, as published by Sam Hocevar.
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
-"
 "============================================================================
 
-if exists("g:loaded_syntastic_ruby_reek_checker")
+if exists("g:loaded_syntastic_javascript_standard_checker")
     finish
 endif
-let g:loaded_syntastic_ruby_reek_checker = 1
+let g:loaded_syntastic_javascript_standard_checker = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_ruby_reek_IsAvailable() dict
+function! SyntaxCheckers_javascript_standard_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-    return syntastic#util#versionIsAtLeast(self.getVersion(), [1, 3, 0])
+    return syntastic#util#versionIsAtLeast(self.getVersion(), [2, 6, 1])
 endfunction
 
-function! SyntaxCheckers_ruby_reek_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_before': '--no-color --line-number --single-line' })
+function! SyntaxCheckers_javascript_standard_GetLocList() dict
+    let makeprg = self.makeprgBuild({ 'args': '-v' })
 
-    let errorformat =
-        \ '%E%.%#: Racc::ParseError: %f:%l :: %m,' .
-        \ '%W%f:%l: %m'
+    let errorformat = '  %f:%l:%c: %m'
 
-    let loclist = SyntasticMake({
+    return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'returns': [0, 2] })
-
-    for e in loclist
-        if e['type'] ==? 'W'
-            let e['subtype'] = 'Style'
-        endif
-    endfor
-
-    return loclist
+        \ 'subtype': 'Style',
+        \ 'defaults': {'type': 'W'},
+        \ 'returns': [0, 1] })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-    \ 'filetype': 'ruby',
-    \ 'name': 'reek'})
+    \ 'filetype': 'javascript',
+    \ 'name': 'standard'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

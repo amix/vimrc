@@ -141,9 +141,9 @@ try.
 ==============================================================================
 4. Global Options                            *multiple-cursors-global-options* 
 
-Currently there're two additional global settings one can tweak:
+Currently there are four additional global settings one can tweak:
 
-*g:multi_cursor_exit_from_visual_mode* (Defaut: 1)
+*g:multi_cursor_exit_from_visual_mode* (Default: 1)
 
 If set to 0, then pressing |g:multi_cursor_quit_key| in Visual mode will not
 quit and delete all existing cursors. This is useful if you want to press
@@ -157,6 +157,27 @@ quit and delete all existing cursors. This is useful if you want to press
 Escape and go back to Normal mode, and still be able to operate on all the
 cursors.
 
+*g:multi_cursor_insert_maps* (Default: `{}`)
+
+Any key in this map (values are ignored) will cause multi-cursor _Insert_ mode
+to pause for `timeoutlen` waiting for map completion just like normal vim.
+Otherwise keys mapped in insert mode are ignored when multiple cursors are
+active. For example, setting it to `{'\':1}` will make insert-mode mappings
+beginning with the default leader key work in multi-cursor mode. You have to
+manually set this because vim doesn't provide a way to see which keys _start_
+mappings.
+
+*g:multi_cursor_normal_maps* (Default: `{}`)
+
+Any key in this map (values are ignored) will cause multi-cursor _Normal_ mode
+to pause for map completion just like normal vim. Otherwise keys mapped in
+normal mode will "fail to replay" when multiple cursors are active. For example,
+setting it to `{'d':1}` will make normal-mode mappings beginning with `d` (such
+as `dw` to delete a word) work in multi-cursor mode. You have to
+manually set this because vim doesn't provide a way to see which keys _start_
+mappings; setting it to include motion commands like `j` can break things.
+
+
 The plugin uses the highlight group `multiple_cursors_cursor` and
 `multiple_cursors_visual` to highlight the virtual cursors and their visual
 selections respectively. You can customize them by putting something similar
@@ -165,6 +186,7 @@ like the following in your vimrc: >
     " Default highlighting (see help :highlight and help :highlight-link)
     highlight multiple_cursors_cursor term=reverse cterm=reverse gui=reverse
     highlight link multiple_cursors_visual Visual
+
 <
 
 ==============================================================================

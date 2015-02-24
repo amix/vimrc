@@ -37,26 +37,28 @@ disabled/enabled easily.
 
 ## Install
 
-First of all, do not use it with other Go plugins. If you use pathogen, just
-clone it into your bundle directory:
+Vim-go follows the standard runtime path structure, so I highly recommend to use
+a common and well known plugin manager to install vim-go. Do not use vim-go with
+other Go plugins. For Pathogen just clone the repo, for other plugin managers
+add the appropriate lines and execute the plugin's install command.
 
-```bash
-$ cd ~/.vim/bundle
-$ git clone https://github.com/fatih/vim-go.git
-```
+*  [Pathogen](https://github.com/tpope/vim-pathogen)
+  * `git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go`
+*  [vim-plug](https://github.com/junegunn/vim-plug)
+  * `Plug 'fatih/vim-go'`
+*  [NeoBundle](https://github.com/Shougo/neobundle.vim)
+  * `NeoBundle 'fatih/vim-go'`
+*  [Vundle](https://github.com/gmarik/vundle)
+  * `Plugin 'fatih/vim-go'`
+*  Manual
+  *  Copy all of the files into your `~/.vim` directory
 
-For Vundle add this line to your vimrc:
-
-```vimrc
-Plugin 'fatih/vim-go'
-```
-and execute `:PluginInstall` (or `:BundleInstall` for older versions of Vundle)
 
 Please be sure all necessary binaries are installed (such as `gocode`, `godef`,
 `goimports`, etc..). You can easily install them with the included
-`:GoInstallBinaries` command. Those binaries will be automatically downloaded
-and installed to your `$GOBIN` environment (if not set it will use
-`$GOPATH/bin`).  It requires `git` and `hg` for fetching the individual Go
+`:GoInstallBinaries` command. If you invoke it, all necessary binaries will be
+automatically downloaded and installed to your `$GOBIN` environment (if not set
+it will use `$GOPATH/bin`).  It requires `git` for fetching the individual Go
 packages.
 
 ### Optional

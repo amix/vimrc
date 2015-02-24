@@ -7,7 +7,7 @@ let g:SyntasticChecker = {}
 
 " Public methods {{{1
 
-function! g:SyntasticChecker.New(args) " {{{2
+function! g:SyntasticChecker.New(args) abort " {{{2
     let newObj = copy(self)
 
     let newObj._filetype = a:args['filetype']
@@ -40,25 +40,43 @@ function! g:SyntasticChecker.New(args) " {{{2
     return newObj
 endfunction " }}}2
 
-function! g:SyntasticChecker.getFiletype() " {{{2
+function! g:SyntasticChecker.getFiletype() abort " {{{2
     return self._filetype
 endfunction " }}}2
 
-function! g:SyntasticChecker.getName() " {{{2
+function! g:SyntasticChecker.getName() abort " {{{2
     return self._name
 endfunction " }}}2
 
-function! g:SyntasticChecker.getExec() " {{{2
-    return
+" Synchronise _exec with user's setting.  Force re-validation if needed.
+"
+" XXX: This function must be called at least once before calling either
+" getExec() or getExecEscaped().  Normally isAvailable() does that for you
+" automatically, but you should keep still this in mind if you change the
+" current checker workflow.
+function! g:SyntasticChecker.syncExec() dict " {{{2
+    let user_exec =
         \ expand( exists('b:syntastic_' . self._name . '_exec') ? b:syntastic_{self._name}_exec :
-        \ syntastic#util#var(self._filetype . '_' . self._name . '_exec', self._exec), 1 )
+        \ syntastic#util#var(self._filetype . '_' . self._name . '_exec'), 1 )
+
+    if user_exec != '' && user_exec !=# self._exec
+        let self._exec = user_exec
+        if has_key(self, '_available')
+            " we have a new _exec on the block, it has to be validated
+            call remove(self, '_available')
+        endif
+    endif
 endfunction " }}}2
 
-function! g:SyntasticChecker.getExecEscaped() " {{{2
-    return syntastic#util#shescape(self.getExec())
+function! g:SyntasticChecker.getExec() abort " {{{2
+    return self._exec
 endfunction " }}}2
 
-function! g:SyntasticChecker.getLocListRaw() " {{{2
+function! g:SyntasticChecker.getExecEscaped() abort " {{{2
+    return syntastic#util#shescape(self._exec)
+endfunction " }}}2
+
+function! g:SyntasticChecker.getLocListRaw() abort " {{{2
     let name = self._filetype . '/' . self._name
     try
         let list = self._locListFunc()
@@ -73,11 +91,11 @@ function! g:SyntasticChecker.getLocListRaw() " {{{2
     return list
 endfunction " }}}2
 
-function! g:SyntasticChecker.getLocList() " {{{2
+function! g:SyntasticChecker.getLocList() abort " {{{2
     return g:SyntasticLoclist.New(self.getLocListRaw())
 endfunction " }}}2
 
-function! g:SyntasticChecker.getVersion(...) " {{{2
+function! g:SyntasticChecker.getVersion(...) abort " {{{2
     if !exists('self._version')
         let command = a:0 ? a:1 : self.getExecEscaped() . ' --version'
         let version_output = system(command)
@@ -89,7 +107,7 @@ function! g:SyntasticChecker.getVersion(...) " {{{2
     return get(self, '_version', [])
 endfunction " }}}2
 
-function! g:SyntasticChecker.setVersion(version) " {{{2
+function! g:SyntasticChecker.setVersion(version) abort " {{{2
     if len(a:version)
         let self._version = copy(a:version)
         call self.log(self.getExec() . ' version =', a:version)
@@ -98,7 +116,7 @@ function! g:SyntasticChecker.setVersion(version) " {{{2
     endif
 endfunction " }}}2
 
-function! g:SyntasticChecker.log(msg, ...) " {{{2
+function! g:SyntasticChecker.log(msg, ...) abort " {{{2
     let leader = self._filetype . '/' . self._name . ': '
     if a:0 > 0
         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_CHECKERS, leader . a:msg, a:1)
@@ -107,7 +125,7 @@ function! g:SyntasticChecker.log(msg, ...) " {{{2
     endif
 endfunction " }}}2
 
-function! g:SyntasticChecker.makeprgBuild(opts) " {{{2
+function! g:SyntasticChecker.makeprgBuild(opts) abort " {{{2
     let basename = self._filetype . '_' . self._name . '_'
 
     let parts = []
@@ -120,20 +138,21 @@ function! g:SyntasticChecker.makeprgBuild(opts) " {{{2
     return join(parts)
 endfunction " }}}2
 
-function! g:SyntasticChecker.isAvailable() " {{{2
+function! g:SyntasticChecker.isAvailable() abort " {{{2
+    call self.syncExec()
     if !has_key(self, '_available')
         let self._available = self._isAvailableFunc()
     endif
     return self._available
 endfunction " }}}2
 
-function! g:SyntasticChecker.wantSort() " {{{2
+function! g:SyntasticChecker.wantSort() abort " {{{2
     return syntastic#util#var(self._filetype . '_' . self._name . '_sort', 0)
 endfunction " }}}2
 
 " This method is no longer used by syntastic.  It's here only to maintain
 " backwards compatibility with external checkers which might depend on it.
-function! g:SyntasticChecker.setWantSort(val) " {{{2
+function! g:SyntasticChecker.setWantSort(val) abort " {{{2
     if !exists('g:syntastic_' . self._filetype . '_' . self._name . '_sort')
         let g:syntastic_{self._filetype}_{self._name}_sort = a:val
     endif
@@ -143,7 +162,7 @@ endfunction " }}}2
 
 " Private methods {{{1
 
-function! g:SyntasticChecker._quietMessages(errors) " {{{2
+function! g:SyntasticChecker._quietMessages(errors) abort " {{{2
     " wildcard quiet_messages
     let quiet_filters = copy(syntastic#util#var('quiet_messages', {}))
     if type(quiet_filters) != type({})
@@ -168,7 +187,7 @@ function! g:SyntasticChecker._quietMessages(errors) " {{{2
     endif
 endfunction " }}}2
 
-function! g:SyntasticChecker._populateHighlightRegexes(errors) " {{{2
+function! g:SyntasticChecker._populateHighlightRegexes(errors) abort " {{{2
     if has_key(self, '_highlightRegexFunc')
         for e in a:errors
             if e['valid']
@@ -181,7 +200,7 @@ function! g:SyntasticChecker._populateHighlightRegexes(errors) " {{{2
     endif
 endfunction " }}}2
 
-function! g:SyntasticChecker._getOpt(opts, basename, name, default) " {{{2
+function! g:SyntasticChecker._getOpt(opts, basename, name, default) abort " {{{2
     let ret = []
     call extend( ret, syntastic#util#argsescape(get(a:opts, a:name . '_before', '')) )
     call extend( ret, syntastic#util#argsescape(syntastic#util#var( a:basename . a:name, get(a:opts, a:name, a:default) )) )

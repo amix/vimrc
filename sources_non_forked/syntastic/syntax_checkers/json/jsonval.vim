@@ -22,7 +22,7 @@ function! SyntaxCheckers_json_jsonval_GetLocList() dict
     let makeprg = self.makeprgBuild({})
 
     let errorformat =
-        \ '%E%f:\ %m\ at\ line\ %l,' .
+        \ '%E%f: %m at line %l,' .
         \ '%-G%.%#'
 
     return SyntasticMake({

@@ -1,3 +1,7 @@
+if exists('g:loaded_ack')
+  finish
+endif
+
 if !exists("g:ack_default_options")
   let g:ack_default_options = " -s -H --nocolor --nogroup --column"
 endif
@@ -21,10 +25,6 @@ endif
 if !exists("g:ack_apply_lmappings")
   let g:ack_apply_lmappings = !exists("g:ack_lhandler")
 endif
-
-if !exists("g:ack_use_dispatch")
-  let g:ack_use_dispatch = 0
-end
 
 let s:ack_mappings = {
       \ "t": "<C-W><CR><C-W>T",
@@ -73,3 +73,7 @@ command! -bang -nargs=* -complete=help AckHelp       call ack#AckHelp('grep<bang
 command! -bang -nargs=* -complete=help LAckHelp      call ack#AckHelp('lgrep<bang>', <q-args>)
 command! -bang -nargs=* -complete=help AckWindow     call ack#AckWindow('grep<bang>', <q-args>)
 command! -bang -nargs=* -complete=help LAckWindow    call ack#AckWindow('lgrep<bang>', <q-args>)
+
+let g:loaded_ack = 1
+
+" vim:set et sw=2 ts=2 tw=78 fdm=marker

@@ -243,9 +243,7 @@ COMMANDS                                                          *go-commands*
 
     Show 'implements' relation for a selected package. A list of interfaces
     for the type that implements an interface under the cursor (or selected
-    package) is shown in a custom window. Hit `<enter>` to jump in a new tab
-    or close it via `<c-c>`.
-
+    package) is shown quickfix list. 
                                                                 *:GoRename*
 :GoRename [to]
 
@@ -255,11 +253,73 @@ COMMANDS                                                          *go-commands*
                                                               *:GoCallees*
 :GoCallees
 
-    Show 'callees' relation for a selected package. A list of call targets
-    for the type under the cursor (or selected package) is shown in a custom
-    window. Hit `<enter>` to jump in a new tab or close it via `<c-c>`. For
-    example if called for a interface method call, it will show all call targets
-    that has implemented the method.
+    Show 'callees' relation for a selected package. A list of possible call
+    targets for the type under the cursor (or selected package) is shown in a
+    quickfix list.
+
+                                                              *:GoCallers*
+:GoCallers
+
+    Show 'callers' relation for a selected function. A list of possible
+    callers for the selected function under the cursor is shown in a quickfix
+    list.
+
+                                                              *:GoDescribe*
+:GoDescribe
+
+    Shows various properties of the selected syntax: its syntactic kind, its
+    type (for an expression), its value (for a constant expression), its size,
+    alignment, method set and interfaces (for a type), its declaration (for an
+    identifier), etc. Almost any piece of syntax may be described, and the
+    oracle will try to print all the useful information it can.
+
+                                                              *:GoCallgraph*
+:GoCallgraph
+
+    Shows the 'callgraph' for the entire program. For more info about the
+    indentation checkout the Oracle User Manual:
+    golang.org/s/oracle-user-manual 
+
+                                                              *:GoCallstack*
+:GoCallstack
+
+    Shows 'callstack' relation for the selected function. An arbitrary path
+    from the root of the callgrap to the selected function is showed in a
+    quickfix list. This may be useful to understand how the function is
+    reached in a given program. 
+
+                                                              *:GoFreevars*
+:GoFreevars
+
+    Enumerates the free variables of the selection. “Free variables” is a
+    technical term meaning the set of variables that are referenced but not
+    defined within the selection, or loosely speaking, its inputs. 
+
+    This information is useful if you’re considering whether to refactor the
+    selection into a function of its own, as the free variables would be the
+    necessary parameters of that function.  It’s also useful when you want to
+    understand what the inputs are to a complex block of code even if you
+    don’t plan to change it.
+
+                                                            *:GoChannelPeers*
+:GoChannelPeers
+
+    Shows the set of possible sends/receives on the channel operand of the
+    selected send or receive operation; the selection must be a <- token. 
+
+    For example, visually select a channel operand in the form of: 
+
+      "done <- true" 
+
+    and call |GoChannelPeers| on it. It will show where it was allocated, and
+    the sending and receiving endings.
+
+                                                              *:GoReferrers*
+:GoReferrers
+
+    The referrers query shows the set of identifiers that refer to the same
+    object as does the selected identifier, within any package in the analysis
+    scope.
 
 
 ===============================================================================
@@ -271,8 +331,9 @@ mapping for the `(go-run)`: >
 
   au FileType go nmap <leader>r <Plug>(go-run)
 
-As always one is free to create more advanced mappings or functions based
-with |go-commands|. Available <Plug> keys are:
+As always one is free to create more advanced mappings or functions based with
+|go-commands|. For more information please check out the mappings command
+documentation in the |go-commands| section. Available <Plug> keys are:
 
                                                                   *(go-run)*
 
@@ -372,6 +433,36 @@ Rename the identifier under the cursor to the desired new name
 
 Show the call targets for the type under the cursor
 
+                                                              *(go-callers)*
+
+Show possible callers of selected function
+
+                                                             *(go-describe)*
+
+Describe selected syntax: definition, methods, etc
+
+
+                                                            *(go-callgraph)*
+
+Show the callgraph of the current program.
+
+                                                            *(go-callstack)*
+
+Show path from callgraph root to selected function
+
+                                                             *(go-freevars)*
+
+Show free variables of selection
+
+                                                          *(go-channelpeers)*
+
+Show send/receive corresponding to selected channel op
+
+                                                            *(go-referrers)*
+
+Show all refs to entity denoted by selected identifier
+
+
 ===============================================================================
 TEXT OBJECTS                                                 *go-text-objects*
 
@@ -385,6 +476,7 @@ af			      "a function", select contents from a function definition to the
                                                *go-v_if* *go-if*
 if			      "inside a function", select contents of a function,
 			        excluding the function definition and the closing bracket.
+
 
 
 ===============================================================================
@@ -497,6 +589,18 @@ Use this option to define the default snippet engine.  By default "ultisnips"
 is used. Use "neosnippet" for neosnippet.vim: >
 
   let g:go_snippet_engine = "ultisnips"
+<
+
+                                                      *'g:go_oracle_scope'*
+
+Use this option to define the scope of the analysis to be passed for Oracle
+related commands, such as |GoImplements|, |GoCallers|, etc..  By default it's
+not set, so only the current packages go files are passed as scope. For more
+info please have look at Oracle's User Manual:
+https://docs.google.com/document/d/1SLk36YRjjMgKqe490mSRzOPYEDe0Y_WQNRv-EiFYUyw/view#heading=h.nwso96pj07q8
+>
+
+  let g:go_oracle_scope = ''
 <
 
                                       *'g:go_highlight_array_whitespace_error'*

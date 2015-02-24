@@ -46,7 +46,7 @@ endfunction " }}}1
 
 function! SyntaxCheckers_ocaml_camlp4o_GetLocList() dict " {{{1
     let makeprg = s:GetMakeprg()
-    if makeprg == ""
+    if makeprg == ''
         return []
     endif
 

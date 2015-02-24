@@ -14,16 +14,17 @@ CONTENTS                                                  *airline-contents*
    03. Name ................................................. |airline-name|
    04. Configuration ............................... |airline-configuration|
    05. Commands ......................................... |airline-commands|
-   06. Customization ............................... |airline-customization|
-   07. Extensions ..................................... |airline-extensions|
-   08. Advanced Customization ............. |airline-advanced-customization|
-   09. Funcrefs ......................................... |airline-funcrefs|
-   10. Pipeline ......................................... |airline-pipeline|
-   11. Writing Extensions ..................... |airline-writing-extensions|
-   12. Writing Themes ..................................... |airline-themes|
-   13. Troubleshooting ........................... |airline-troubleshooting|
-   14. Contributions ............................... |airline-contributions|
-   15. License ........................................... |airline-license|
+   06. Autocommands ................................. |airline-autocommands|
+   07. Customization ............................... |airline-customization|
+   08. Extensions ..................................... |airline-extensions|
+   09. Advanced Customization ............. |airline-advanced-customization|
+   10. Funcrefs ......................................... |airline-funcrefs|
+   11. Pipeline ......................................... |airline-pipeline|
+   12. Writing Extensions ..................... |airline-writing-extensions|
+   13. Writing Themes ..................................... |airline-themes|
+   14. Troubleshooting ........................... |airline-troubleshooting|
+   15. Contributions ............................... |airline-contributions|
+   16. License ........................................... |airline-license|
 
 ==============================================================================
 INTRODUCTION                                                 *airline-intro*
@@ -145,6 +146,17 @@ COMMANDS                                                  *airline-commands*
 
 :AirlineRefresh                                            *:AirlineRefresh*
   Refreshes all highlight groups and redraws the statusline.
+
+==============================================================================
+AUTOCOMMANDS                                          *airline-autocommands*
+
+Airline comes with some user-defined autocommands.
+
+|AirlineAfterInit|     after plugin is initialized, but before the statusline
+                    is replaced
+|AirlineToggledOn|    after airline is activated and replaced the statusline
+|AirlineToggledOff|   after airline is deactivated and the statusline is
+                    restored to the original
 
 ==============================================================================
 CUSTOMIZATION                                        *airline-customization*
@@ -616,7 +628,7 @@ define a section like this: >
     let g:airline_section_b = airline#section#create_left(['ffenc','file'])
     let g:airline_section_c = airline#section#create(['%{getcwd()}'])
   endfunction
-  autocmd VimEnter * call AirlineInit()
+  autocmd User AirlineAfterInit call AirlineInit()
 <
 This will create a section with the `mode`, followed by a space, and our `foo`
 part in section `a`. Section `b` will have two parts with a left-side
@@ -795,7 +807,7 @@ Contributions and pull requests are welcome.
 ==============================================================================
 LICENSE                                                    *airline-license*
 
-MIT License.  Copyright © 2013-2014 Bailey Ling.
+MIT License.  Copyright © 2013-2015 Bailey Ling.
 
 
  vim:tw=78:ts=8:ft=help:norl:

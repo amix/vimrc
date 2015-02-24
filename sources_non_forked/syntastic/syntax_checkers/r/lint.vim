@@ -62,7 +62,7 @@ function! SyntaxCheckers_r_lint_GetLocList() dict
         \ 'returns': [0] })
 
     for e in loclist
-        if e['type'] == 'F'
+        if e['type'] ==? 'F'
             " parse error
             let e['type'] = 'E'
             call remove(e, 'subtype')

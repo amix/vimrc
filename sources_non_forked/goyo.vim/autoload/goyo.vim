@@ -160,6 +160,18 @@ endfunction
 
 function! s:goyo_on(width)
   let s:orig_tab = tabpagenr()
+  let settings =
+    \ { 'laststatus':    &laststatus,
+    \   'showtabline':   &showtabline,
+    \   'fillchars':     &fillchars,
+    \   'winminwidth':   &winminwidth,
+    \   'winwidth':      &winwidth,
+    \   'winminheight':  &winminheight,
+    \   'winheight':     &winheight,
+    \   'ruler':         &ruler,
+    \   'sidescroll':    &sidescroll,
+    \   'sidescrolloff': &sidescrolloff
+    \ }
 
   " New tab
   tab split
@@ -170,18 +182,7 @@ function! s:goyo_on(width)
   let t:goyo_margin_bottom = get(g:, 'goyo_margin_bottom', 4)
   let t:goyo_initial_dim = [t:goyo_width, t:goyo_margin_top, t:goyo_margin_bottom]
   let t:goyo_pads = {}
-  let t:goyo_revert =
-    \ { 'laststatus':     &laststatus,
-    \   'showtabline':    &showtabline,
-    \   'fillchars':      &fillchars,
-    \   'winminwidth':    &winminwidth,
-    \   'winwidth':       &winwidth,
-    \   'winminheight':   &winminheight,
-    \   'winheight':      &winheight,
-    \   'ruler':          &ruler,
-    \   'sidescroll':     &sidescroll,
-    \   'sidescrolloff':  &sidescrolloff
-    \ }
+  let t:goyo_revert = settings
   let t:goyo_maps = extend(s:maps_nop(), s:maps_resize())
   if has('gui_running')
     let t:goyo_revert.guioptions = &guioptions
