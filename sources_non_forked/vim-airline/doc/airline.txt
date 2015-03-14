@@ -242,6 +242,15 @@ cost.  You can disable the check with the following flag. >
   Note: Third party plugins that rely on this behavior will be affected. You
   will need to manually load them.
 
+Alternatively, if you want a minimalistic setup and would rather opt-in which
+extensions get loaded instead of disabling each individually, you can declare
+the following list variable: >
+  " an empty list disables all extensions
+  let g:airline_extensions = []
+
+  " or only load what you want
+  let g:airline_extensions = ['branch', 'tabline']
+<
 -------------------------------------                      *airline-default*
 The default extension understands all of the `g:` variables in the
 |airline-configuration| section, however it also has some more fine-tuned
@@ -296,13 +305,27 @@ vcscommand   <http://www.vim.org/scripts/script.php?script_id=90>
 <
 * change the text for when no branch is detected >
   let g:airline#extensions#branch#empty_message = ''
-
+<
 * use vcscommand.vim if available >
   let g:airline#extensions#branch#use_vcscommand = 0
-
+<
 * truncate long branch names to a fixed length >
   let g:airline#extensions#branch#displayed_head_limit = 10
+<
+* customize formatting of branch name >
+  " default value leaves the name unmodifed
+  let g:airline#extensions#branch#format = 0
 
+  " to only show the tail, e.g. a branch 'feature/foo' show 'foo'
+  let g:airline#extensions#branch#format = 1
+
+  " if a string is provided, it should be the name of a function that
+  " takes a string and returns the desired value
+  let g:airline#extensions#branch#format = 'CustomBranchName'
+  function! CustomBranchName(name)
+    return '[' . a:name . ']'
+  endfunction
+<
 -------------------------------------                    *airline-syntastic*
 syntastic <https://github.com/scrooloose/syntastic>
 
@@ -414,9 +437,10 @@ eclim <https://eclim.org>
 * configure filename match rules to exclude from the tabline. >
   let g:airline#extensions#tabline#excludes = []
 <
-* configure how numbers are calculated in tab mode. >
+* configure how numbers are displayed in tab mode. >
   let g:airline#extensions#tabline#tab_nr_type = 0 " # of splits (default)
   let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
+  let g:airline#extensions#tabline#tab_nr_type = 2 " splits and tab number
 <
 * enable/disable displaying tab number in tabs mode. >
   let g:airline#extensions#tabline#show_tab_nr = 1
@@ -538,19 +562,19 @@ promptline <https://github.com/edkolev/promptline.vim>
   let airline#extensions#promptline#color_template = 'visual'
   let airline#extensions#promptline#color_template = 'replace'
 <
--------------------------------------                    *airline-nrrwrgn*
+-------------------------------------                      *airline-nrrwrgn*
 NrrwRgn <https://github.com/chrisbra/NrrwRgn>
 
 * enable/disable NrrwRgn integration >
   let g:airline#extensions#nrrwrgn#enabled = 1
 
--------------------------------------                        *airline-capslock*
+-------------------------------------                     *airline-capslock*
 vim-capslock <https://github.com/tpope/vim-capslock>
 
 * enable/disable vim-capslock integration >
   let g:airline#extensions#capslock#enabled = 1
 
--------------------------------------                       *airline-windowswap*
+-------------------------------------                   *airline-windowswap*
 vim-windowswap <https://github.com/wesQ3/vim-windowswap>
 
 * enable/disable vim-windowswap integration >
@@ -558,6 +582,18 @@ vim-windowswap <https://github.com/wesQ3/vim-windowswap>
 
 * set marked window indicator string >
   let g:airline#extensions#windowswap#indicator_text = 'WS'
+<
+-------------------------------------                        *airline-taboo*
+taboo.vim <https://github.com/gcmt/taboo.vim>
+
+* enable/disable taboo.vim integration >
+  let g:airline#extensions#taboo#enabled = 1
+<
+-------------------------------------                    *airline-ctrlspace*
+vim-ctrlspace <https://github.com/szw/vim-ctrlspace>
+
+* enable/disable vim-ctrlspace integration >
+  let g:airline#extensions#ctrlspace#enabled = 1
 <
 ==============================================================================
 ADVANCED CUSTOMIZATION                      *airline-advanced-customization*

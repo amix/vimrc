@@ -30,10 +30,10 @@ function! SyntaxCheckers_haskell_ghc_mod_IsAvailable() dict
     " know the version in order to know how to find out the version. :)
 
     " Try "ghc-mod version".
-    let ver = filter(split(system(self.getExecEscaped() . ' version'), '\n'), 'v:val =~# ''\m\sversion''')
+    let ver = filter(split(syntastic#util#system(self.getExecEscaped() . ' version'), '\n'), 'v:val =~# ''\m\sversion''')
     if !len(ver)
         " That didn't work.  Try "ghc-mod" alone.
-        let ver = filter(split(system(self.getExecEscaped()), '\n'), 'v:val =~# ''\m\sversion''')
+        let ver = filter(split(syntastic#util#system(self.getExecEscaped()), '\n'), 'v:val =~# ''\m\sversion''')
     endif
 
     if len(ver)

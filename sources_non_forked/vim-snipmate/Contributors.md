@@ -29,6 +29,7 @@ additional contributions from:
 * [lpil](https://github.com/lpil)
 * [marutanm](https://github.com/marutanm)
 * [MicahElliott](https://github.com/MicahElliott)
+* [mikeastock](https://github.com/mikeastock)
 * [muffinresearch](https://github.com/muffinresearch)
 * [pielgrzym](https://github.com/pielgrzym)
 * [pose](https://github.com/pose)

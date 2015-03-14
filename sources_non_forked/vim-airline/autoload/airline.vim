@@ -46,6 +46,7 @@ function! airline#load_theme()
 
   call airline#highlighter#load_theme()
   call airline#extensions#load_theme()
+  call airline#update_statusline()
 endfunction
 
 function! airline#switch_theme(name)
@@ -62,7 +63,6 @@ function! airline#switch_theme(name)
   endtry
 
   let w:airline_lastmode = ''
-  call airline#update_statusline()
   call airline#load_theme()
 
   " this is required to prevent clobbering the startup info message, i don't know why...

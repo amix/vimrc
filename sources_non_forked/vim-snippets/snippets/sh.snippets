@@ -1,5 +1,8 @@
 # Shebang. Executing bash via /usr/bin/env makes scripts more portable.
 snippet #!
+	#!/usr/bin/env sh
+	
+snippet bash
 	#!/usr/bin/env bash
 
 snippet if
@@ -51,15 +54,12 @@ snippet getopt
 	#===============================================================================
 	function usage ()
 	{
-			cat <<- EOT
+		echo "Usage :  $${0:0} [options] [--]
 
-	  Usage :  $${0:0} [options] [--]
+	    Options:
+	    -h|help       Display this message
+	    -v|version    Display script version"
 
-	  Options:
-	  -h|help       Display this message
-	  -v|version    Display script version
-
-			EOT
 	}    # ----------  end of function usage  ----------
 
 	#-----------------------------------------------------------------------
@@ -74,7 +74,7 @@ snippet getopt
 
 		v|version  )  echo "$${0:0} -- Version $__ScriptVersion"; exit 0   ;;
 
-		\? )  echo -e "\n  Option does not exist : $OPTARG\n"
+		* )  echo -e "\n  Option does not exist : $OPTARG\n"
 			  usage; exit 1   ;;
 
 	  esac    # --- end of case ---
@@ -82,11 +82,13 @@ snippet getopt
 	shift $(($OPTIND-1))
 snippet root
 	if [ \$(id -u) -ne 0 ]; then exec sudo \$0; fi
-snippet fun
+
+snippet fun-sh
 	${1:function_name}() {
 		${0:#function_body}
 	}
-snippet ffun
+
+snippet fun
 	function ${1:function_name}() {
 		${0:#function_body}
 	}

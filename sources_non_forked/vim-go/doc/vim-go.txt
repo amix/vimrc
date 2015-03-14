@@ -38,10 +38,13 @@ easily.
   * Better `gofmt` on save, keeps cursor position and doesn't break your undo
     history
   * Go to symbol/declaration with `godef`
+  * Look up documentation with `godoc` inside Vim or open it in browser.
   * Automatically import packages via `goimports`
   * Compile and `go build` your package, install it with `go install`
   * `go run` quickly your current file/files
   * Run `go test` and see any errors in quickfix window
+  * Create a coverage profile and display annotated source code in browser to
+    see which functions are covered.
   * Lint your code with `golint`
   * Run your code trough `go vet` to catch static errors.
   * Advanced source analysis tool with `oracle`
@@ -50,30 +53,49 @@ easily.
   * Checking with `errcheck` for unchecked errors.
   * Integrated and improved snippets. Supports `ultisnips` or `neosnippet`
   * Share your current code to play.golang.org
-  * Type information about the underlying identifier
+  * On-the-fly type information about the word under the cursor
   * Tagbar support to show tags of the source code in a sidebar with `gotags`
+  * Custom vim text objects, such a `a function` or `inner function`
 
 ===============================================================================
 INSTALL                                                           *go-install*
 
-If you use pathogen, just clone it into your bundle directory: >
+Vim-go follows the standard runtime path structure, so I highly recommend to use
+a common and well known plugin manager to install vim-go. Do not use vim-go with
+other Go plugins. For Pathogen just clone the repo, for other plugin managers
+add the appropriate lines and execute the plugin's install command.
 
-	$ cd ~/.vim/bundle
-	$ git clone https://github.com/fatih/vim-go.git
+*  https://github.com/tpope/vim-pathogen >
+
+    git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go
 <
 
-For Vundle add this line to your vimrc:
->
-  Plugin 'fatih/vim-go'
+*  https://github.com/junegunn/vim-plug >
+  
+    Plug 'fatih/vim-go'
+
 <
-and execute `:PluginInstall` (or `:BundleInstall` for older versions of Vundle)
+*  https://github.com/Shougo/neobundle.vim >
+  
+    NeoBundle 'fatih/vim-go'
+<
 
+*  https://github.com/gmarik/vundle >
 
-Please be sure all necessary binares are installed (such as `gocode`, `godef`,
+    Plugin 'fatih/vim-go'
+
+<
+*  Manual >
+  
+    Copy all of the files into your `~/.vim` directory
+<
+
+Please be sure all necessary binaries are installed (such as `gocode`, `godef`,
 `goimports`, etc..). You can easily install them with the included
-|GoInstallBinaries|. Those binaries will be automatically downloaded and
-installed to your `$GOBIN` environment (if not set it will use `$GOPATH/bin`).
-It requires `git` and `hg` for fetching the individual Go packages.
+|GoInstallBinaries| command. If you invoke it, all necessary binaries will be
+automatically downloaded and installed to your `$GOBIN` environment (if not set
+it will use `$GOPATH/bin`).  It requires `git` for fetching the individual Go
+packages.
 
 * Autocompletion is enabled by default via `<C-x><C-o>`, to get real-time
 completion (completion by type) install:
@@ -199,9 +221,18 @@ COMMANDS                                                          *go-commands*
                                                                     *:GoTest*
 :GoTest [expand]
 
-    Test your _test.go files via in your current directory. Errors are
+    Run the tests on your _test.go files via in your current directory. Errors
+    are populated in quickfix window.  If an argument is passed, 'expand' is
+    used as file selector (useful for cases like `:GoTest ./...`).
+
+                                                              *:GoTestCompile*
+:GoTestCompile [expand]
+
+    Compile your _test.go files via in your current directory. Errors are
     populated in quickfix window.  If an argument is passed, 'expand' is used
-    as file selector (useful for cases like `:GoTest ./...`).
+    as file selector (useful for cases like `:GoTest ./...`). Useful to not
+    run the tests and capture/fix errors before running the tests or to
+    create test binary.
 
                                                                 *:GoCoverage*
 :GoCoverage
@@ -358,6 +389,10 @@ Calls `go install` for the current package
                                                                  *(go-test)*
 
 Calls `go test` for the current package
+
+                                                          *(go-test-compile)*
+
+Calls `go test -c` for the current package
 
                                                              *(go-coverage)*
 
@@ -699,7 +734,8 @@ or
 	set shell='/bin/sh'
 >
 
-I'm seeing weirds errors during the startup~
+I'm seeing weirds errors during installation of binaries with
+GoInstallBinaries:
 
 If you see errors like this:
 >

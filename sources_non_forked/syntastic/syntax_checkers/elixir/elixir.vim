@@ -44,7 +44,9 @@ function! SyntaxCheckers_elixir_elixir_GetLocList() dict
 
     let make_options['makeprg'] = self.makeprgBuild({ 'exe': compile_command })
 
-    let make_options['errorformat'] = '** %*[^\ ] %f:%l: %m'
+    let make_options['errorformat'] =
+        \ '%E** %*[^\ ] %f:%l: %m,' .
+        \ '%W%f:%l: warning: %m'
 
     return SyntasticMake(make_options)
 endfunction

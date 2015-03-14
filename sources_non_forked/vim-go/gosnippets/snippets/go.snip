@@ -139,6 +139,16 @@ abbr if err != nil { return [...], err }
 	}
 	${0}
 
+
+# error snippet handle and return
+snippet errh
+abbr if err != nil { return }
+	if err != nil {
+		${1}
+		return
+	}
+	${0}
+
 # json snippet
 snippet json
 abbr \`json:key\`
@@ -304,3 +314,11 @@ abbr var ( ... )
 	var (
 		${1:x} ${2:Type}${3: = ${0:value\}}
 	)
+# equals fails the test if exp is not equal to act.
+snippet eq
+abbr equals: test two identifiers with DeepEqual
+  if !reflect.DeepEqual(${1:expected}, ${2:actual}) {
+  	_, file, line, _ := runtime.Caller(0)
+  	fmt.Printf("%s:%d:\n\n\texp: %#v\n\n\tgot: %#v\n\n", filepath.Base(file), line, $1, $2)
+  	t.FailNow()
+  }

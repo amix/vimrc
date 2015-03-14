@@ -8,7 +8,8 @@ let g:go_loaded_commands = 1
 nnoremap <silent> <Plug>(go-run) :<C-u>call go#cmd#Run(expand('%'))<CR>
 nnoremap <silent> <Plug>(go-build) :<C-u>call go#cmd#Build('')<CR>
 nnoremap <silent> <Plug>(go-install) :<C-u>call go#cmd#Install()<CR>
-nnoremap <silent> <Plug>(go-test) :<C-u>call go#cmd#Test('')<CR>
+nnoremap <silent> <Plug>(go-test) :<C-u>call go#cmd#Test(0, '')<CR>
+nnoremap <silent> <Plug>(go-test-compile) :<C-u>call go#cmd#Test(1, '')<CR>
 nnoremap <silent> <Plug>(go-coverage) :<C-u>call go#cmd#Coverage('')<CR>
 nnoremap <silent> <Plug>(go-vet) :<C-u>call go#cmd#Vet()<CR>
 nnoremap <silent> <Plug>(go-files) :<C-u>call go#tool#Files()<CR>
@@ -63,7 +64,8 @@ command! -nargs=* GoInfo call go#complete#Info()
 command! -nargs=* -bang GoRun call go#cmd#Run(<bang>0,<f-args>)
 command! -nargs=* -bang GoBuild call go#cmd#Build(<bang>0,<f-args>)
 command! -nargs=* GoInstall call go#cmd#Install(<f-args>)
-command! -nargs=* GoTest call go#cmd#Test(<f-args>)
+command! -nargs=* GoTest call go#cmd#Test(0, <f-args>)
+command! -nargs=* GoTestCompile call go#cmd#Test(1, <f-args>)
 command! -nargs=* GoCoverage call go#cmd#Coverage(<f-args>)
 command! -nargs=0 GoVet call go#cmd#Vet()
 

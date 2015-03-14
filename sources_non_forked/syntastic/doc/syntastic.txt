@@ -39,16 +39,19 @@ CONTENTS                                                  *syntastic-contents*
     6.Notes........................................|syntastic-notes|
         6.1.Handling of composite filetypes........|syntastic-composite|
         6.2.Editing files over network.............|syntastic-netrw|
-        6.3.Interaction with python-mode...........|syntastic-pymode|
-        6.4.Interaction with YouCompleteMe.........|syntastic-ycm|
-        6.5.Interaction with the fish shell........|syntastic-fish|
-        6.6.Interaction with PowerShell............|syntastic-powershell|
-        6.7.Using syntastic with the fizsh shell...|syntastic-fizsh|
-        6.8.Interaction with Eclim.................|syntastic-eclim|
-        6.9.Interaction with vim-virtualenv........|syntastic-vim-virtualenv|
-        6.10.Interaction with vim-auto-save........|syntastic-vim-auto-save|
-    7.About........................................|syntastic-about|
-    8.License......................................|syntastic-license|
+        6.3.The 'shellslash' option................|syntastic-shellslash|
+    7.Compatibility with other software............|syntastic-compatibility|
+        7.1.The csh and tcsh shells................|syntastic-csh|
+        7.2.Eclim..................................|syntastic-eclim|
+        7.3.The fish shell.........................|syntastic-fish|
+        7.4.The fizsh shell........................|syntastic-fizsh|
+        7.5.The PowerShell shell...................|syntastic-powershell|
+        7.6.python-mode............................|syntastic-pymode|
+        7.7.vim-auto-save..........................|syntastic-vim-auto-save|
+        7.8.vim-virtualenv.........................|syntastic-vim-virtualenv|
+        7.9.YouCompleteMe..........................|syntastic-ycm|
+    8.About........................................|syntastic-about|
+    9.License......................................|syntastic-license|
 
 
 ==============================================================================
@@ -602,6 +605,20 @@ looking at their exit codes. The "cmd.exe" shell on Windows make these checks
 meaningless, by returning 1 to Vim when the checkers exit with non-zero codes.
 The above variable can be used to disable exit code checks in syntastic.
 
+                                                           *'syntastic_shell'*
+Default: Vim's 'shell'
+
+This is the (full path to) the shell syntastic will use to run the checkers.
+On UNIX and Mac OS-X this shell must accept Bourne-compatible syntax for
+file "stdout" and "stderr" redirections ">file" and "2>file".  Examples of
+compatible shells are "zsh", "bash", "ksh", and of course the original Bourne
+"sh".
+
+This shell is independent of Vim's 'shell', and it isn't used for interactive
+operations.  It must take care to initialize all environment variables needed
+by the checkers you're using.  Example: >
+    let g:syntastic_shell = "/bin/sh"
+<
                                                            *'syntastic_debug'*
 Default: 0
 Set this to the sum of one or more of the following flags to enable
@@ -782,64 +799,32 @@ of operation.  It can only check files that can be accessed directly by local
 checkers, without any translation or conversion.
 
 ------------------------------------------------------------------------------
-6.3 Interaction with python-mode                            *syntastic-pymode*
+6.3 The 'shellslash' option                             *syntastic-shellslash*
 
-Syntastic can be used along with the 'python-mode' Vim plugin (see
-https://github.com/klen/python-mode). However, they both run syntax checks by
-default when you save buffers to disk, and this is probably not what you want.
-To avoid both plugins opening error windows, you can either set passive mode
-for python in syntastic (see |syntastic_mode_map|), or disable lint checks in
-'python-mode', by setting |pymode_lint_write| to 0. E.g.: >
-    let g:pymode_lint_write = 0
+The 'shellslash' option is relevant only on Windows systems.  This option
+determines (among other things) the rules for quoting command lines, and there
+is no easy way for syntastic to make sure its state is appropriate for your
+shell.  It should be turned off if your 'shell' (or |g:syntastic_shell|) is
+"cmd.exe", and on for shells that expect an UNIX-like syntax, such as Cygwin's
+"sh".  Most checkers will stop working if 'shellslash' is set to the wrong
+value.
+
+==============================================================================
+7. Compatibility with other software                 *syntastic-compatibility*
+
+------------------------------------------------------------------------------
+7.1 The csh and tcsh shells                                    *syntastic-csh*
+
+The "csh" and "tcsh" shells are mostly compatible with syntastic.  However,
+some checkers assume Bourne shell syntax for redirecting "stderr".  For this
+reason, you should point |g:syntastic_shell| to a Bourne-compatible shell,
+such as "zsh", "bash", "ksh", or even the original Bourne "sh": >
+    let g:syntastic_shell = "/bin/sh"
 <
 ------------------------------------------------------------------------------
-6.4 Interaction with YouCompleteMe                             *syntastic-ycm*
+7.2. Eclim                                                   *syntastic-eclim*
 
-Syntastic can be used together with the 'YouCompleteMe' Vim plugin (see
-http://valloric.github.io/YouCompleteMe/).  However, by default 'YouCompleteMe'
-disables syntastic's checkers for the "c", "cpp", "objc", and "objcpp"
-filetypes, in order to allow its own checkers to run.  If you want to use YCM's
-identifier completer but still run syntastic's checkers for those filetypes you
-have to set |ycm_show_diagnostics_ui| to 0. E.g.: >
-    let g:ycm_show_diagnostics_ui = 0
-<
-------------------------------------------------------------------------------
-6.5 Interaction with the fish shell                           *syntastic-fish*
-
-At the time of this writing the 'fish' shell (see http://fishshell.com/)
-doesn't support the standard UNIX syntax for file redirections, and thus it
-can't be used together with syntastic. You don't need to change your login
-shell to address this problem, but you do have to point Vim's 'shell' to a more
-traditional shell, such as "zsh", "bash", "ksh", or even the original Bourne
-"sh": >
-    set shell=bash
-<
-------------------------------------------------------------------------------
-6.6. Interaction with PowerShell                        *syntastic-powershell*
-
-At the time of this writing, syntastic is not compatible with using 'Windows
-PowerShell' (http://technet.microsoft.com/en-us/library/bb978526.aspx) as Vim's
-'shell'.  You may still run Vim from 'PowerShell', but you do have to point
-Vim's 'shell' to a more traditional program, such as 'cmd.exe': >
-    set shell=cmd.exe
-<
-------------------------------------------------------------------------------
-6.7. Using syntastic with the fizsh shell                    *syntastic-fizsh*
-
-Using syntastic with the 'fizsh' shell (see https://github.com/zsh-users/fizsh)
-is possible, but potentially problematic. In order to do it you'll need to set
-'shellredir' like this: >
-    set shellredir=>%s\ 2>&1
-<
-Please keep in mind however that Vim can't take advantage of any of the
-interactive features of 'fizsh'. Using a more traditional shell such as "zsh",
-"bash", "ksh", or the original Bourne "sh" might be a better choice: >
-    set shell=zsh
-<
-------------------------------------------------------------------------------
-6.8. Interaction with Eclim                                  *syntastic-eclim*
-
-Syntastic can be used together with 'Eclim' (see http://eclim.org/). However,
+Syntastic can be used together with "Eclim" (see http://eclim.org/). However,
 by default Eclim disables syntastic's checks for the filetypes it supports, in
 order to run its own validation. If you'd prefer to use Eclim but still run
 syntastic's checks, set |g:EclimFileTypeValidate| to 0: >
@@ -850,28 +835,76 @@ run Eclim's validation for others. Please consult Eclim's documentation for
 details.
 
 ------------------------------------------------------------------------------
-6.9. Interaction with vim-virtualenv                *syntastic-vim-virtualenv*
+7.3 The fish shell                                            *syntastic-fish*
 
-At the time of this writing, syntastic can't run checkers installed
-in Python virtual environments activated by 'vim-virtualenv' (see
-https://github.com/jmcantrell/vim-virtualenv).  This is a limitation of
-'vim-virtualenv'.
+At the time of this writing the "fish" shell (see http://fishshell.com/)
+doesn't support the standard UNIX syntax for file redirections, and thus it
+can't be used together with syntastic. You can however set |g:syntastic_shell|
+to a more traditional shell, such as "zsh", "bash", "ksh", or even the
+original Bourne "sh": >
+    let g:syntastic_shell = "/bin/sh"
+<
+------------------------------------------------------------------------------
+7.4. The fizsh shell                                         *syntastic-fizsh*
+
+Using syntastic with the "fizsh" shell (see https://github.com/zsh-users/fizsh)
+is possible, but potentially problematic. In order to do it you'll need to set
+'shellredir' like this: >
+    set shellredir=>%s\ 2>&1
+<
+Please keep in mind however that Vim can't take advantage of any of the
+interactive features of "fizsh". Using a more traditional shell such as "zsh",
+"bash", "ksh", or the original Bourne "sh" might be a better choice: >
+    let g:syntastic_shell = "/bin/sh"
+<
+------------------------------------------------------------------------------
+7.5. The PowerShell shell                               *syntastic-powershell*
+
+At the time of this writing, syntastic is not compatible with using "Windows
+PowerShell" (http://technet.microsoft.com/en-us/library/bb978526.aspx) as Vim's
+'shell'.  You may still run Vim from 'PowerShell', but you do have to point
+Vim's 'shell' to a more traditional program, such as "cmd.exe": >
+    set shell=cmd.exe
+<
+------------------------------------------------------------------------------
+7.6 python-mode                                             *syntastic-pymode*
+
+Syntastic can be used along with the "python-mode" Vim plugin (see
+https://github.com/klen/python-mode). However, they both run syntax checks by
+default when you save buffers to disk, and this is probably not what you want.
+To avoid both plugins opening error windows, you can either set passive mode
+for python in syntastic (see |syntastic_mode_map|), or disable lint checks in
+"python-mode", by setting |pymode_lint_write| to 0. E.g.: >
+    let g:pymode_lint_write = 0
+<
+------------------------------------------------------------------------------
+7.7. vim-auto-save                                   *syntastic-vim-auto-save*
+
+Syntastic can be used together with the "vim-auto-save" Vim plugin (see
+https://github.com/907th/vim-auto-save).  However, syntastic checks in active
+mode only work with "vim-auto-save" version 0.1.7 or later.
 
 ------------------------------------------------------------------------------
-6.10. Interaction with vim-auto-save                 *syntastic-vim-auto-save*
+7.8. vim-virtualenv                                 *syntastic-vim-virtualenv*
 
-At the time of this writing, syntastic checks in active mode are not triggered
-by 'vim-auto-save' (see https://github.com/907th/vim-auto-save). The reason is
-a limitation in 'vim-auto-save', namely a missing flag to an 'autocmd' (see
-|autocmd-nested|). Fortunately it's pretty easy to achieve a similar effect
-without 'vim-auto-save'': >
-    augroup syntastic
-        autocmd CursorHold * nested update
-    augroup END
-    set updatetime=200
+At the time of this writing, syntastic can't run checkers installed
+in Python virtual environments activated by "vim-virtualenv" (see
+https://github.com/jmcantrell/vim-virtualenv).  This is a limitation of
+"vim-virtualenv".
+
+------------------------------------------------------------------------------
+7.9 YouCompleteMe                                              *syntastic-ycm*
+
+Syntastic can be used together with the "YouCompleteMe" Vim plugin (see
+http://valloric.github.io/YouCompleteMe/).  However, by default "YouCompleteMe"
+disables syntastic's checkers for the "c", "cpp", "objc", and "objcpp"
+filetypes, in order to allow its own checkers to run.  If you want to use YCM's
+identifier completer but still run syntastic's checkers for those filetypes you
+have to set |ycm_show_diagnostics_ui| to 0. E.g.: >
+    let g:ycm_show_diagnostics_ui = 0
 <
 ==============================================================================
-7. About                                                     *syntastic-about*
+8. About                                                     *syntastic-about*
 
 The core maintainers of syntastic are:
     Martin Grenfell (GitHub: scrooloose)
@@ -883,9 +916,9 @@ Find the latest version of syntastic at:
     http://github.com/scrooloose/syntastic
 
 ==============================================================================
-8. License                                                 *syntastic-license*
+9. License                                                 *syntastic-license*
 
-Syntastic is released under the wtfpl.
+Syntastic is released under the WTFPL.
 See http://sam.zoy.org/wtfpl/COPYING.
 
  vim:tw=78:sw=4:ft=help:norl:

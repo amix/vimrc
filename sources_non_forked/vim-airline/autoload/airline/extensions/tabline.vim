@@ -5,6 +5,12 @@ let s:formatter = get(g:, 'airline#extensions#tabline#formatter', 'default')
 let s:show_buffers = get(g:, 'airline#extensions#tabline#show_buffers', 1)
 let s:show_tabs = get(g:, 'airline#extensions#tabline#show_tabs', 1)
 
+let s:taboo = get(g:, 'airline#extensions#taboo#enabled', 1) && get(g:, 'loaded_taboo', 0)
+if s:taboo
+  let g:taboo_tabline = 0
+endif
+
+
 function! airline#extensions#tabline#init(ext)
   if has('gui_running')
     set guioptions-=e
@@ -72,9 +78,18 @@ function! airline#extensions#tabline#get()
 endfunction
 
 function! airline#extensions#tabline#title(n)
-  let buflist = tabpagebuflist(a:n)
-  let winnr = tabpagewinnr(a:n)
-  return airline#extensions#tabline#get_buffer_name(buflist[winnr - 1])
+  let title = ''
+  if s:taboo
+    let title = TabooTabTitle(a:n)
+  endif
+
+  if empty(title)
+    let buflist = tabpagebuflist(a:n)
+    let winnr = tabpagewinnr(a:n)
+    return airline#extensions#tabline#get_buffer_name(buflist[winnr - 1])
+  endif
+
+  return title
 endfunction
 
 function! airline#extensions#tabline#get_buffer_name(nr)

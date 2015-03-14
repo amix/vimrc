@@ -1,8 +1,10 @@
-let g:airline_theme = 'dark'
-call airline#init#bootstrap()
-call airline#init#sections()
+let g:airline#extensions#default#layout = [
+      \ [ 'c', 'a', 'b', 'warning' ],
+      \ [ 'x', 'z', 'y' ]
+      \ ]
+
 source plugin/airline.vim
-call airline#load_theme()
+doautocmd VimEnter
 
 describe 'default'
   before
@@ -10,10 +12,6 @@ describe 'default'
   end
 
   it 'should use the layout'
-    let g:airline#extensions#default#layout = [
-          \ [ 'c', 'a', 'b', 'warning' ],
-          \ [ 'x', 'z', 'y' ]
-          \ ]
     call airline#extensions#default#apply(s:builder, { 'winnr': 1, 'active': 1 })
     let stl = s:builder.build()
     Expect stl =~ 'airline_c_to_airline_a'

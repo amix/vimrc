@@ -38,7 +38,7 @@ function! SyntaxCheckers_r_lint_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-    call system(self.getExecEscaped() . ' --slave --restore --no-save -e ' . syntastic#util#shescape('library(lint)'))
+    call syntastic#util#system(self.getExecEscaped() . ' --slave --restore --no-save -e ' . syntastic#util#shescape('library(lint)'))
     return v:shell_error == 0
 endfunction
 

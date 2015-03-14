@@ -36,7 +36,7 @@ snippet crw
 	cattr_accessor :${0:attr_names}
 snippet defcreate
 	def create
-		@${1:model_class_name} = ${2:ModelClassName}.new(params[:$1])
+		@${1:model_class_name} = ${2:ModelClassName}.new($1_params)
 
 		respond_to do |format|
 			if @$1.save
@@ -95,7 +95,7 @@ snippet defupdate
 		@${1:model_class_name} = ${2:ModelClassName}.find(params[:id])
 
 		respond_to do |format|
-			if @$1.update_attributes(params[:$1])
+			if @$1.update($1_params)
 				flash[:notice] = '$2 was successfully updated.'
 				format.html { redirect_to(@$1) }
 				format.xml  { head :ok }
@@ -104,6 +104,10 @@ snippet defupdate
 				format.xml  { render xml: @$1.errors, status: :unprocessable_entity }
 			end
 		end
+	end
+snippet defparams
+	def ${1:model_class_name}_params
+		params.require(:$1).permit()
 	end
 snippet dele delegate .. to
 	delegate :${1:methods}, to: :${0:object}

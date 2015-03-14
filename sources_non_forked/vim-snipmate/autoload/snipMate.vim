@@ -331,7 +331,7 @@ function! s:snippet_filenames(scope, trigger) abort
 	let mid = ['', '_*', '/*']
 	let mid += map(copy(mid), "'/' . a:trigger . '*' . v:val")
 	call map(mid, "'snippets/' . a:scope . v:val . '.snippet'")
-	return join(map(mid[:2], 'v:val . "s"') + mid[3:])
+	return map(mid[:2], 'v:val . "s"') + mid[3:]
 endfunction
 
 function! snipMate#SetByPath(dict, trigger, path, snippet, bang, snipversion) abort
@@ -342,12 +342,27 @@ function! snipMate#SetByPath(dict, trigger, path, snippet, bang, snipversion) ab
 	let d[a:trigger][a:path] = [a:snippet, a:snipversion]
 endfunction
 
+if v:version < 704 || has('win32')
+	function! s:Glob(path, expr)
+		let res = []
+		for p in split(a:path, ',')
+			let h = split(fnamemodify(a:expr, ':h'), '/')[0]
+			if isdirectory(p . '/' . h)
+				call extend(res, split(glob(p . '/' . a:expr), "\n"))
+			endif
+		endfor
+		return filter(res, 'filereadable(v:val)')
+	endfunction
+else
+	function! s:Glob(path, expr)
+		return split(globpath(a:path, a:expr), "\n")
+	endfunction
+endif
+
 " default triggers based on paths
 function! snipMate#DefaultPool(scopes, trigger, result) abort
 	let scopes = s:AddScopeAliases(a:scopes)
 	let scopes_done = []
-	let rtp_save = &rtp
-	let &rtp = join(g:snipMate.snippet_dirs, ',')
 	let s:lookup_state = {}
 	let s:lookup_state.snips = []
 
@@ -356,7 +371,13 @@ function! snipMate#DefaultPool(scopes, trigger, result) abort
 		let s:lookup_state.scope = scope
 		let s:lookup_state.extends = []
 
-		exec 'runtime!' s:snippet_filenames(scope, escape(a:trigger, "*[]?{}`'$|#%"))
+		for expr in s:snippet_filenames(scope, escape(a:trigger, "*[]?{}`'$|#%"))
+			for path in g:snipMate.snippet_dirs
+				for file in s:Glob(path, expr)
+					source `=file`
+				endfor
+			endfor
+		endfor
 
 		call add(scopes_done, scope)
 		call extend(scopes, s:lookup_state.extends)
@@ -368,8 +389,6 @@ function! snipMate#DefaultPool(scopes, trigger, result) abort
 			call snipMate#SetByPath(a:result, trigger, desc, contents, bang, snipversion)
 		endif
 	endfor
-
-	let &rtp = rtp_save
 endfunction
 
 " return a dict of snippets found in runtimepath matching trigger
@@ -385,64 +404,28 @@ fun! snipMate#GetSnippets(scopes, trigger) abort
 	return result
 endf
 
-" adds leading tab
-" and replaces leading spaces by tabs
-" see ftplugin/snippet.vim
-fun! snipMate#RetabSnip() range abort
-  let leadingTab = expand('%:e') == 'snippets'
-
-  let lines = getline(a:firstline, a:lastline)
-
-  " remove leading "\t"
-  let allIndented = 1
-  for l in lines
-	if l[0] != '\t' | let allIndented = 0 | endif
-  endfor
-
-  " retab
-  if allIndented
-	call map(lines, 'v:val[1:]')
-  endif
-
-  let leadingSp = filter(map(copy(lines),'matchstr(v:val,"^\\s*") '),'v:val !=""')
-  if !empty(leadingSp)
-	" lines containing leading spaces found
-	let smallestInd =  len(sort(leadingSp)[-1])
-	let ind = input('retab, spaces per tab: ', smallestInd)
-	for i in range(0, len(lines)-1)
-	  let ml = matchlist(lines[i], '^\(\s*\)\(.*\)')
-	  let lines[i] = repeat("\t", len(ml[1]) / ind)
-				 \ . repeat( " ", len(ml[1]) % ind)
-				 \ . ml[2]
+function! snipMate#OpenSnippetFiles() abort
+	let files = []
+	let scopes_done = []
+	let exists = []
+	let notexists = []
+	for scope in s:AddScopeAliases(snipMate#ScopesByFile())
+		let files += split(s:snippet_filenames(scope, ''))
 	endfor
-  endif
-  " readd tab
-  let tab = leadingTab ? "\t" : ""
-  for i in range(0,len(lines)-1)
-	call setline(a:firstline + i, tab.lines[i])
-  endfor
-endf
-
-fun! snipMate#OpenSnippetFiles() abort
-  let dict = snipMate#GetSnippetFiles(0, snipMate#ScopesByFile(), '*')
-  " sort by files wether they exist - put existing files first
-  let exists = []
-  let notExists = []
-  for [file, v] in items(dict)
-	let v['file'] = file
-	if v['exists']
-	  call add(exists, v)
-	else
-	  call add(notExists, v)
-	endif
-  endfor
-  let all = exists + notExists
-  let show = map(copy(all),'(v:val["exists"] ? "exists:" : "does not exist yet:")." ".v:val["file"]')
-  let select = tlib#input#List('mi', 'select files to be opened in splits', show)
-  for idx in select
-	exec 'sp '.all[idx - 1]['file']
-  endfor
-endf
+	call filter(files, "v:val !~# '\\*'")
+	for path in split(g:snipMate.snippet_dirs, ',')
+		let fullpaths = map(copy(files), 'printf("%s/%s", path, v:val)')
+		let exists += filter(copy(fullpaths), 'filereadable(v:val)')
+		let notexists += map(filter(copy(fullpaths),
+					\ 'v:val =~# "\.snippets" && !filereadable(v:val)'),
+					\       '"does not exist: " . v:val')
+	endfor
+	let all = exists + notexists
+	let select = tlib#input#List('mi', 'select files to be opened in splits', all)
+	for idx in select
+		exec 'sp' all[idx - 1]
+	endfor
+endfunction
 
 fun! snipMate#ScopesByFile() abort
 	" duplicates are removed in AddScopeAliases

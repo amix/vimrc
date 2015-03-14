@@ -37,16 +37,42 @@ looking at the [vim-snippets][vim-snippets] repository.
         % git clone https://github.com/honza/vim-snippets.git
 
 * Using [Vundle][vundle], add the following to your `vimrc` then run
-  `:BundleInstall`
+  `:PluginInstall`
 
-        Bundle "MarcWeber/vim-addon-mw-utils"
-        Bundle "tomtom/tlib_vim"
-        Bundle "garbas/vim-snipmate"
+        Plugin "MarcWeber/vim-addon-mw-utils"
+        Plugin "tomtom/tlib_vim"
+        Plugin "garbas/vim-snipmate"
 
         " Optional:
-        Bundle "honza/vim-snippets"
+        Plugin "honza/vim-snippets"
 
 ## FAQ ##
+
+> SnipMate doesn't work / My snippets aren't triggering
+
+Try all of the following:
+
+* Check that SnipMate is loaded. This can be done by looking for
+  `<Plug>snipMateTrigger` and similar maps in the output of `:imap`.
+  Additionally make sure either `<Plug>snipMateTrigger` or
+  `<Plug>snipMateNextOrTrigger` is mapped to the key you expect.
+
+* Check that the snippets file you mean to use exists, and that it contains the
+  snippet you're trying to expand.
+
+* Check that your snippets file is located inside a `foo/snippets` directory,
+  where `foo` is a path listed in your `runtimepath`.
+
+* Check that your snippets file is in scope by either the filetype matching the
+  path of the snippet file or the scope explicitly loaded.
+
+* Check if any snippets from your snippets file are available. This can be done
+  with the "show available snips` map, by default bound to `<C-R><Tab>` in
+  insert mode.
+
+If all of the above check out, please open an issue stating your Vim version,
+a sample snippet, and a description of exactly what happens when you try to
+trigger a snippet.
 
 > How does SnipMate determine which snippets to load? How can I separate, for
 > example, my Rails snippets from my Ruby snippets?

@@ -1,7 +1,5 @@
-call airline#init#bootstrap()
-call airline#init#sections()
-
 source plugin/airline.vim
+doautocmd VimEnter
 
 describe 'commands'
   it 'should toggle off and on'

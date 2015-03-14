@@ -18,7 +18,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_ruby_macruby_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '-W1 -c' })
+    let makeprg = self.makeprgBuild({
+        \ 'args': '-W1',
+        \ 'args_after': '-c' })
 
     let errorformat =
         \ '%-GSyntax OK,'.

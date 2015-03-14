@@ -9,6 +9,21 @@ if !s:has_fugitive && !s:has_lawrencium && !s:has_vcscommand
   finish
 endif
 
+let s:head_format = get(g:, 'airline#extensions#branch#format', 0)
+if s:head_format == 1
+  function! s:format_name(name)
+    return fnamemodify(a:name, ':t')
+  endfunction
+elseif type(s:head_format) == type('')
+  function! s:format_name(name)
+    return call(s:head_format, [a:name])
+  endfunction
+else
+  function! s:format_name(name)
+    return a:name
+  endfunction
+endif
+
 let s:git_dirs = {}
 function! s:get_git_branch(path)
   if has_key(s:git_dirs, a:path)
@@ -71,6 +86,8 @@ function! airline#extensions#branch#head()
   if empty(b:airline_head) || !found_fugitive_head && !s:check_in_path()
     let b:airline_head = ''
   endif
+
+  let b:airline_head = s:format_name(b:airline_head)
 
   if exists("g:airline#extensions#branch#displayed_head_limit")
     let w:displayed_head_limit = g:airline#extensions#branch#displayed_head_limit

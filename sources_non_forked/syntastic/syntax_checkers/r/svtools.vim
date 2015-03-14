@@ -41,7 +41,7 @@ function! SyntaxCheckers_r_svtools_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-    call system(self.getExecEscaped() . ' --slave --restore --no-save -e ' . syntastic#util#shescape('library(svTools)'))
+    call syntastic#util#system(self.getExecEscaped() . ' --slave --restore --no-save -e ' . syntastic#util#shescape('library(svTools)'))
     return v:shell_error == 0
 endfunction
 

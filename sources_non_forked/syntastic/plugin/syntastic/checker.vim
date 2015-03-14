@@ -80,10 +80,16 @@ function! g:SyntasticChecker.getLocListRaw() abort " {{{2
     let name = self._filetype . '/' . self._name
     try
         let list = self._locListFunc()
-        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, 'getLocList: checker ' . name . ' returned ' . v:shell_error)
+        if self._exec != ''
+            call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, 'getLocList: checker ' . name . ' returned ' . v:shell_error)
+        endif
     catch /\m\C^Syntastic: checker error$/
         let list = []
-        call syntastic#log#error('checker ' . name . ' returned abnormal status ' . v:shell_error)
+        if self._exec != ''
+            call syntastic#log#error('checker ' . name . ' returned abnormal status ' . v:shell_error)
+        else
+            call syntastic#log#error('checker ' . name . ' aborted')
+        endif
     endtry
     call self._populateHighlightRegexes(list)
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_LOCLIST, name . ' raw:', list)
@@ -98,7 +104,7 @@ endfunction " }}}2
 function! g:SyntasticChecker.getVersion(...) abort " {{{2
     if !exists('self._version')
         let command = a:0 ? a:1 : self.getExecEscaped() . ' --version'
-        let version_output = system(command)
+        let version_output = syntastic#util#system(command)
         call self.log('getVersion: ' . string(command) . ': ' .
             \ string(split(version_output, "\n", 1)) .
             \ (v:shell_error ? ' (exit code ' . v:shell_error . ')' : '') )

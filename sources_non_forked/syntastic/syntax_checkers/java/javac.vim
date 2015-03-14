@@ -129,7 +129,7 @@ function! SyntaxCheckers_java_javac_GetLocList() dict " {{{1
 
     " load custom classpath {{{2
     if g:syntastic_java_javac_custom_classpath_command != ''
-        let lines = system(g:syntastic_java_javac_custom_classpath_command)
+        let lines = syntastic#util#system(g:syntastic_java_javac_custom_classpath_command)
         if syntastic#util#isRunningWindows() || has('win32unix')
             let lines = substitute(lines, "\r\n", "\n", 'g')
         endif
@@ -306,7 +306,7 @@ function! s:GetMavenProperties() " {{{2
                 \ ' -f ' . syntastic#util#shescape(pom) .
                 \ ' ' . g:syntastic_java_maven_options
             let mvn_is_managed_tag = 1
-            let mvn_settings_output = split(system(mvn_cmd . ' help:effective-pom'), "\n")
+            let mvn_settings_output = split(syntastic#util#system(mvn_cmd . ' help:effective-pom'), "\n")
             let current_path = 'project'
             for line in mvn_settings_output
                 let matches = matchlist(line, '\m^\s*<\([a-zA-Z0-9\-\.]\+\)>\s*$')
@@ -340,7 +340,7 @@ function! s:GetMavenClasspath() " {{{2
             let mvn_cmd = syntastic#util#shexpand(g:syntastic_java_maven_executable) .
                 \ ' -f ' . syntastic#util#shescape(pom) .
                 \ ' ' . g:syntastic_java_maven_options
-            let mvn_classpath_output = split(system(mvn_cmd . ' dependency:build-classpath'), "\n")
+            let mvn_classpath_output = split(syntastic#util#system(mvn_cmd . ' dependency:build-classpath'), "\n")
             let mvn_classpath = ''
             let class_path_next = 0
 

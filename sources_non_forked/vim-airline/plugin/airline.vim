@@ -6,9 +6,14 @@ if &cp || v:version < 702 || (exists('g:loaded_airline') && g:loaded_airline)
 endif
 let g:loaded_airline = 1
 
+let s:airline_initialized = 0
 let s:airline_theme_defined = 0
 function! s:init()
-  call airline#init#bootstrap()
+  if s:airline_initialized
+    return
+  endif
+  let s:airline_initialized = 1
+
   call airline#extensions#load()
   call airline#init#sections()
 
@@ -19,17 +24,18 @@ function! s:init()
   endif
 
   silent doautocmd User AirlineAfterInit
-  call s:airline_toggle()
 endfunction
 
 function! s:on_window_changed()
   if pumvisible()
     return
   endif
+  call s:init()
   call airline#update_statusline()
 endfunction
 
 function! s:on_colorscheme_changed()
+  call s:init()
   if !s:airline_theme_defined
     if airline#switch_matching_theme()
       return
@@ -75,7 +81,10 @@ function! s:airline_toggle()
             \ | call airline#load_theme()
     augroup END
 
-    call <sid>on_window_changed()
+    if s:airline_initialized
+      call s:on_window_changed()
+    endif
+
     silent doautocmd User AirlineToggledOn
   endif
 endfunction
@@ -95,9 +104,11 @@ endfunction
 
 command! -nargs=? -complete=customlist,<sid>get_airline_themes AirlineTheme call <sid>airline_theme(<f-args>)
 command! AirlineToggleWhitespace call airline#extensions#whitespace#toggle()
-command! AirlineToggle call <sid>airline_toggle()
+command! AirlineToggle call s:airline_toggle()
 command! AirlineRefresh call airline#load_theme() | call airline#update_statusline()
 
+call airline#init#bootstrap()
+call s:airline_toggle()
+
 autocmd VimEnter * call airline#deprecation#check()
-autocmd VimEnter * call s:init()
 

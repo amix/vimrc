@@ -133,7 +133,7 @@ function! s:_checkPackage(name, ...) abort " {{{2
     if executable('pkg-config')
         if !has_key(s:cflags, a:name)
             for pkg in a:000
-                let pkg_flags = system('pkg-config --cflags ' . pkg)
+                let pkg_flags = syntastic#util#system('pkg-config --cflags ' . pkg)
                 " since we cannot necessarily trust the pkg-config exit code
                 " we have to check for an error output as well
                 if v:shell_error == 0 && pkg_flags !~? 'not found'
@@ -153,7 +153,7 @@ endfunction " }}}2
 function! s:_checkPhp() abort " {{{2
     if executable('php-config')
         if !has_key(s:cflags, 'php')
-            let s:cflags['php'] = system('php-config --includes')
+            let s:cflags['php'] = syntastic#util#system('php-config --includes')
             let s:cflags['php'] = ' ' . substitute(s:cflags['php'], "\n", '', '')
         endif
         return s:cflags['php']
@@ -165,7 +165,7 @@ endfunction " }}}2
 function! s:_checkPython() abort " {{{2
     if executable('python')
         if !has_key(s:cflags, 'python')
-            let s:cflags['python'] = system('python -c ''from distutils import ' .
+            let s:cflags['python'] = syntastic#util#system('python -c ''from distutils import ' .
                 \ 'sysconfig; import sys; sys.stdout.write(sysconfig.get_python_inc())''')
             let s:cflags['python'] = substitute(s:cflags['python'], "\n", '', '')
             let s:cflags['python'] = ' -I' . s:cflags['python']
@@ -179,7 +179,7 @@ endfunction " }}}2
 function! s:_checkRuby() abort " {{{2
     if executable('ruby')
         if !has_key(s:cflags, 'ruby')
-            let s:cflags['ruby'] = system('ruby -r rbconfig -e ' .
+            let s:cflags['ruby'] = syntastic#util#system('ruby -r rbconfig -e ' .
                 \ '''puts RbConfig::CONFIG["rubyhdrdir"] || RbConfig::CONFIG["archdir"]''')
             let s:cflags['ruby'] = substitute(s:cflags['ruby'], "\n", '', '')
             let s:cflags['ruby'] = ' -I' . s:cflags['ruby']

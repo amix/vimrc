@@ -1,3 +1,6 @@
+let g:airline#themes#durant#palette = {}
+
+
 let s:N1 = [ '#005f00' , '#afd700' , 22  , 148 ]
 let s:N2 = [ '#93a1a1' , '#586e75' , 245 , 240 ]
 let s:N3 = [ '#93a1a1' , '#073642' , 240 , 233 ]

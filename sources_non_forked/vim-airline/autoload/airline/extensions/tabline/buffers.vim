@@ -172,6 +172,14 @@ function! s:select_tab(buf_index)
   endif
 endfunction
 
+function! s:jump_to_tab(offset)
+    let l = s:current_visible_buffers
+    let i = index(l, bufnr('%'))
+    if i > -1
+        exec 'b!' . l[float2nr(fmod(i + a:offset, len(l)))]
+    endif
+endfunction
+
 if s:buffer_idx_mode
   noremap <unique> <Plug>AirlineSelectTab1 :call <SID>select_tab(0)<CR>
   noremap <unique> <Plug>AirlineSelectTab2 :call <SID>select_tab(1)<CR>
@@ -182,4 +190,6 @@ if s:buffer_idx_mode
   noremap <unique> <Plug>AirlineSelectTab7 :call <SID>select_tab(6)<CR>
   noremap <unique> <Plug>AirlineSelectTab8 :call <SID>select_tab(7)<CR>
   noremap <unique> <Plug>AirlineSelectTab9 :call <SID>select_tab(8)<CR>
+  noremap <unique> <Plug>AirlineSelectPrevTab :<C-u>call <SID>jump_to_tab(-v:count1)<CR>
+  noremap <unique> <Plug>AirlineSelectNextTab :<C-u>call <SID>jump_to_tab(v:count1)<CR>
 endif

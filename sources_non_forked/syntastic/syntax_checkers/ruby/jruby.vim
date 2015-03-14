@@ -20,8 +20,8 @@ set cpo&vim
 
 function! SyntaxCheckers_ruby_jruby_GetLocList() dict
     let makeprg = self.makeprgBuild({
-        \ 'args': (syntastic#util#isRunningWindows() ? '-T1' : ''),
-        \ 'args_after': '-W1 -c' })
+        \ 'args': (syntastic#util#isRunningWindows() ? '-T1 -W1' : '-W1'),
+        \ 'args_after': '-c' })
 
     let errorformat =
         \ '%-GSyntax OK for %f,'.

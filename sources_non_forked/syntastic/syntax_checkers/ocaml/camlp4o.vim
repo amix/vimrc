@@ -51,17 +51,31 @@ function! SyntaxCheckers_ocaml_camlp4o_GetLocList() dict " {{{1
     endif
 
     let errorformat =
-        \ '%AFile "%f"\, line %l\, characters %c-%*\d:,'.
+        \ '%WWarning: File "%f"\, line %l\, chars %c-%n:,'.
+        \ '%WWarning: line %l\, chars %c-%n:,'.
+        \ '%AFile "%f"\, line %l\, characters %c-%n:,'.
         \ '%AFile "%f"\, line %l\, characters %c-%*\d (end at line %*\d\, character %*\d):,'.
         \ '%AFile "%f"\, line %l\, character %c:,'.
         \ '%AFile "%f"\, line %l\, character %c:%m,'.
         \ '%-GPreprocessing error %.%#,'.
         \ '%-GCommand exited %.%#,'.
-        \ '%C%tarning %n: %m,'.
+        \ '%C%tarning %*\d: %m,'.
         \ '%C%m,'.
         \ '%-G+%.%#'
 
-    return SyntasticMake({ 'makeprg': makeprg, 'errorformat': errorformat })
+    let loclist = SyntasticMake({
+        \ 'makeprg': makeprg,
+        \ 'errorformat': errorformat,
+        \ 'defaults': {'bufnr': bufnr("")} })
+
+    for e in loclist
+        if get(e, 'col', 0) && get(e, 'nr', 0)
+            let e['hl'] = '\%>' . (e['col'] - 1) . 'c\%<' . (e['nr'] + 1) . 'c'
+            let e['nr'] = 0
+        endif
+    endfor
+
+    return loclist
 endfunction " }}}1
 
 " Utilities {{{1

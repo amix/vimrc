@@ -46,7 +46,7 @@ function! SyntaxCheckers_java_checkstyle_GetLocList() dict
     let fname = syntastic#util#shescape( expand('%:p:h', 1) . syntastic#util#Slash() . expand('%:t', 1) )
 
     if has('win32unix')
-        let fname = substitute(system('cygpath -m ' . fname), '\m\%x00', '', 'g')
+        let fname = substitute(syntastic#util#system('cygpath -m ' . fname), '\m\%x00', '', 'g')
     endif
 
     let makeprg = self.makeprgBuild({

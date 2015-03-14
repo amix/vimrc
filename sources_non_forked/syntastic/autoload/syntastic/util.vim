@@ -25,7 +25,26 @@ function! syntastic#util#Slash() abort " {{{2
 endfunction " }}}2
 
 function! syntastic#util#CygwinPath(path) abort " {{{2
-    return substitute(system('cygpath -m ' . syntastic#util#shescape(a:path)), "\n", '', 'g')
+    return substitute(syntastic#util#system('cygpath -m ' . syntastic#util#shescape(a:path)), "\n", '', 'g')
+endfunction " }}}2
+
+function! syntastic#util#system(command) abort " {{{2
+    let old_shell = &shell
+    let old_lc_messages = $LC_MESSAGES
+    let old_lc_all = $LC_ALL
+
+    let &shell = syntastic#util#var('shell')
+    let $LC_MESSAGES = 'C'
+    let $LC_ALL = ''
+
+    let out = system(a:command)
+
+    let $LC_ALL = old_lc_all
+    let $LC_MESSAGES = old_lc_messages
+
+    let &shell = old_shell
+
+    return out
 endfunction " }}}2
 
 " Create a temporary directory
@@ -35,7 +54,7 @@ function! syntastic#util#tmpdir() abort " {{{2
     if (has('unix') || has('mac')) && executable('mktemp')
         " TODO: option "-t" to mktemp(1) is not portable
         let tmp = $TMPDIR != '' ? $TMPDIR : $TMP != '' ? $TMP : '/tmp'
-        let out = split(system('mktemp -q -d ' . tmp . '/vim-syntastic-' . getpid() . '-XXXXXXXX'), "\n")
+        let out = split(syntastic#util#system('mktemp -q -d ' . tmp . '/vim-syntastic-' . getpid() . '-XXXXXXXX'), "\n")
         if v:shell_error == 0 && len(out) == 1
             let tempdir = out[0]
         endif
@@ -79,7 +98,7 @@ function! syntastic#util#rmrf(what) abort " {{{2
         endif
 
         if s:rmrf != ''
-            silent! call system(s:rmrf . ' ' . syntastic#util#shescape(a:what))
+            silent! call syntastic#util#system(s:rmrf . ' ' . syntastic#util#shescape(a:what))
         else
             call s:_rmrf(a:what)
         endif
@@ -382,7 +401,7 @@ function! s:_rmrf(what) abort " {{{2
         for f in split(globpath(a:what, '*', 1), "\n")
             call s:_rmrf(f)
         endfor
-        silent! call system(s:rmdir . ' ' . syntastic#util#shescape(a:what))
+        silent! call syntastic#util#system(s:rmdir . ' ' . syntastic#util#shescape(a:what))
     else
         silent! call delete(a:what)
     endif
