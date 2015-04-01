@@ -1,4 +1,10 @@
-nnoremap <F9> :exe 'NERDTreeToggle'<CR> :exe 'Tlist'<CR>
+nnoremap <F9> :exe 'NERDTreeToggle'<CR>
+"set pastetoggle=<F2>
+
+nnoremap <F2> :set invpaste paste?<CR>
+imap <F2> <C-O>:set invpaste paste?<CR>
+set pastetoggle=<F2>
+
 let Tlist_Use_Split_Window = 1
 "sudo apt-get install ncurses-term
 "export TERM=xterm-256color(.bashrc)
