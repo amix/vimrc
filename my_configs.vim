@@ -1,7 +1,11 @@
-nnoremap <F9> :exe 'NERDTreeToggle'<CR> :exe 'Tlist'<CR>
+"nnoremap <F9> :exe 'NERDTreeToggle'<CR> :exe 'Tlist'<CR>
+nnoremap <F9> :exe 'NERDTreeToggle'<CR> 
 let Tlist_Use_Split_Window = 1
 "sudo apt-get install ncurses-term
 "export TERM=xterm-256color(.bashrc)
+let g:molokai_original = 1
+let g:rehash256 = 1
+:set nu
 colorscheme molokai
 "colorscheme monokai
 inoremap {} {<esc>o}<esc>O
