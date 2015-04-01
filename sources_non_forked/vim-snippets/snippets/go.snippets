@@ -148,8 +148,8 @@ snippet fun
 	${0}
 # function on receiver
 snippet fum
-	func (self ${1:type}) ${2:funcName}(${3}) ${4:error} {
-		${5}
+	func (${1:receiver} ${2:type}) ${3:funcName}(${4}) ${5:error} {
+		${6}
 	}
 	${0}
 # log printf
@@ -173,6 +173,9 @@ snippet main
 # new
 snippet nw
 	new(${0:type})
+# package
+snippet pa
+	package ${1:main}
 # panic
 snippet pn
 	panic("${0:msg}")

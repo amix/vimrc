@@ -1,7 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    1393
+" @Revision:    1397
 
 " :filedoc:
 " A prototype used by |tlib#input#List|.
@@ -688,7 +688,7 @@ endf
 function! s:prototype.SetInitialFilter(filter) dict "{{{3
     " let self.initial_filter = [[''], [a:filter]]
     if type(a:filter) == 3
-        let self.initial_filter = copy(a:filter)
+        let self.initial_filter = deepcopy(a:filter)
     else
         let self.initial_filter = [[a:filter]]
     endif
@@ -815,7 +815,11 @@ function! s:prototype.UseInputListScratch() dict "{{{3
     endif
     if !exists('w:tlib_list_init')
         " TLogVAR scratch
-        syntax match InputlListIndex /^\d\+:/
+        if has_key(self, 'index_next_syntax')
+            exec 'syntax match InputlListIndex /^\d\+:\s/ nextgroup='. self.index_next_syntax
+        else
+            syntax match InputlListIndex /^\d\+:\s/
+        endif
         syntax match InputlListCursor /^\d\+\* .*$/ contains=InputlListIndex
         syntax match InputlListSelected /^\d\+# .*$/ contains=InputlListIndex
         hi def link InputlListIndex Constant
@@ -1119,10 +1123,11 @@ function! s:prototype.DisplayList(...) dict "{{{3
         if self.state =~ '\<display\>'
             call self.Resize(self.GetResize(ll), eval(get(self, 'resize_vertical', 0)))
             call tlib#normal#WithRegister('gg"tdG', 't')
+            let lines = copy(list)
+            let lines = map(lines, 'substitute(v:val, ''[[:cntrl:][:space:]]'', " ", "g")')
             let w = winwidth(0) - &fdc
             " let w = winwidth(0) - &fdc - 1
-            let lines = copy(list)
-            let lines = map(lines, 'printf("%-'. w .'.'. w .'s", substitute(v:val, ''[[:cntrl:][:space:]]'', " ", "g"))')
+            let lines = map(lines, 'printf("%-'. w .'.'. w .'s", v:val)')
             " TLogVAR lines
             call append(0, lines)
             call tlib#normal#WithRegister('G"tddgg', 't')

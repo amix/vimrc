@@ -30,3 +30,9 @@ expects($this->${1:once}())
 	->with($this->equalTo(${3})${4})
 	->will($this->returnValue(${5}));
 endsnippet
+
+snippet testcmt "phpunit comment with group" b
+/**
+* @group ${1}
+*/
+endsnippet

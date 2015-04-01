@@ -19,18 +19,12 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_puppet_puppet_GetLocList() dict
-    if !exists('s:puppet_version')
-        let s:puppet_version = syntastic#util#getVersion(self.getExecEscaped() . ' --version 2>' . syntastic#util#DevNull())
-        call self.log(self.getExec() . ' version =', s:puppet_version)
+    if !exists('s:puppet_new')
+        let s:puppet_new = syntastic#util#versionIsAtLeast(self.getVersion(), [2, 7, 0])
     endif
 
-    if syntastic#util#versionIsAtLeast(s:puppet_version, [2,7,0])
-        let args = 'parser validate --color=false'
-    else
-        let args = '--color=false --parseonly'
-    endif
-
-    let makeprg = self.makeprgBuild({ 'args_before': args })
+    let makeprg = self.makeprgBuild({
+        \ 'args_before': (s:puppet_new ? 'parser validate --color=false' : '--color=false --parseonly') })
 
     let errorformat =
         \ '%-Gerr: Try ''puppet help parser validate'' for usage,' .
@@ -50,4 +44,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

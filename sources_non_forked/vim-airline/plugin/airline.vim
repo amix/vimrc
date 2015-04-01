@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2014 Bailey Ling.
+" MIT License. Copyright (c) 2013-2015 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 if &cp || v:version < 702 || (exists('g:loaded_airline') && g:loaded_airline)
@@ -6,36 +6,36 @@ if &cp || v:version < 702 || (exists('g:loaded_airline') && g:loaded_airline)
 endif
 let g:loaded_airline = 1
 
-" autocmd VimEnter * call airline#deprecation#check()
-
 let s:airline_initialized = 0
 let s:airline_theme_defined = 0
 function! s:init()
-  if !s:airline_initialized
-    let s:airline_initialized = 1
-
-    call airline#init#bootstrap()
-    call airline#extensions#load()
-    call airline#init#sections()
-
-    let s:airline_theme_defined = exists('g:airline_theme')
-    if s:airline_theme_defined || !airline#switch_matching_theme()
-      let g:airline_theme = get(g:, 'airline_theme', 'dark')
-      call airline#switch_theme(g:airline_theme)
-    endif
+  if s:airline_initialized
+    return
   endif
+  let s:airline_initialized = 1
+
+  call airline#extensions#load()
+  call airline#init#sections()
+
+  let s:airline_theme_defined = exists('g:airline_theme')
+  if s:airline_theme_defined || !airline#switch_matching_theme()
+    let g:airline_theme = get(g:, 'airline_theme', 'dark')
+    call airline#switch_theme(g:airline_theme)
+  endif
+
+  silent doautocmd User AirlineAfterInit
 endfunction
 
 function! s:on_window_changed()
   if pumvisible()
     return
   endif
-  call <sid>init()
+  call s:init()
   call airline#update_statusline()
 endfunction
 
 function! s:on_colorscheme_changed()
-  call <sid>init()
+  call s:init()
   if !s:airline_theme_defined
     if airline#switch_matching_theme()
       return
@@ -81,11 +81,11 @@ function! s:airline_toggle()
             \ | call airline#load_theme()
     augroup END
 
-    silent doautocmd User AirlineToggledOn
-
     if s:airline_initialized
-      call <sid>on_window_changed()
+      call s:on_window_changed()
     endif
+
+    silent doautocmd User AirlineToggledOn
   endif
 endfunction
 
@@ -93,6 +93,7 @@ function! s:get_airline_themes(a, l, p)
   let files = split(globpath(&rtp, 'autoload/airline/themes/'.a:a.'*'), "\n")
   return map(files, 'fnamemodify(v:val, ":t:r")')
 endfunction
+
 function! s:airline_theme(...)
   if a:0
     call airline#switch_theme(a:1)
@@ -100,10 +101,14 @@ function! s:airline_theme(...)
     echo g:airline_theme
   endif
 endfunction
+
 command! -nargs=? -complete=customlist,<sid>get_airline_themes AirlineTheme call <sid>airline_theme(<f-args>)
 command! AirlineToggleWhitespace call airline#extensions#whitespace#toggle()
-command! AirlineToggle call <sid>airline_toggle()
+command! AirlineToggle call s:airline_toggle()
 command! AirlineRefresh call airline#load_theme() | call airline#update_statusline()
 
-call <sid>airline_toggle()
+call airline#init#bootstrap()
+call s:airline_toggle()
+
+autocmd VimEnter * call airline#deprecation#check()
 

@@ -8,11 +8,11 @@ set cpo&vim
 
 " Public functions {{{1
 
-function! syntastic#util#isRunningWindows() " {{{2
+function! syntastic#util#isRunningWindows() abort " {{{2
     return has('win16') || has('win32') || has('win64')
 endfunction " }}}2
 
-function! syntastic#util#DevNull() " {{{2
+function! syntastic#util#DevNull() abort " {{{2
     if syntastic#util#isRunningWindows()
         return 'NUL'
     endif
@@ -24,14 +24,37 @@ function! syntastic#util#Slash() abort " {{{2
     return (!exists("+shellslash") || &shellslash) ? '/' : '\'
 endfunction " }}}2
 
+function! syntastic#util#CygwinPath(path) abort " {{{2
+    return substitute(syntastic#util#system('cygpath -m ' . syntastic#util#shescape(a:path)), "\n", '', 'g')
+endfunction " }}}2
+
+function! syntastic#util#system(command) abort " {{{2
+    let old_shell = &shell
+    let old_lc_messages = $LC_MESSAGES
+    let old_lc_all = $LC_ALL
+
+    let &shell = syntastic#util#var('shell')
+    let $LC_MESSAGES = 'C'
+    let $LC_ALL = ''
+
+    let out = system(a:command)
+
+    let $LC_ALL = old_lc_all
+    let $LC_MESSAGES = old_lc_messages
+
+    let &shell = old_shell
+
+    return out
+endfunction " }}}2
+
 " Create a temporary directory
-function! syntastic#util#tmpdir() " {{{2
+function! syntastic#util#tmpdir() abort " {{{2
     let tempdir = ''
 
     if (has('unix') || has('mac')) && executable('mktemp')
         " TODO: option "-t" to mktemp(1) is not portable
         let tmp = $TMPDIR != '' ? $TMPDIR : $TMP != '' ? $TMP : '/tmp'
-        let out = split(system('mktemp -q -d ' . tmp . '/vim-syntastic-' . getpid() . '-XXXXXXXX'), "\n")
+        let out = split(syntastic#util#system('mktemp -q -d ' . tmp . '/vim-syntastic-' . getpid() . '-XXXXXXXX'), "\n")
         if v:shell_error == 0 && len(out) == 1
             let tempdir = out[0]
         endif
@@ -41,19 +64,31 @@ function! syntastic#util#tmpdir() " {{{2
         if has('win32') || has('win64')
             let tempdir = $TEMP . syntastic#util#Slash() . 'vim-syntastic-' . getpid()
         elseif has('win32unix')
-            let tempdir = s:CygwinPath('/tmp/vim-syntastic-'  . getpid())
+            let tempdir = syntastic#util#CygwinPath('/tmp/vim-syntastic-'  . getpid())
         elseif $TMPDIR != ''
             let tempdir = $TMPDIR . '/vim-syntastic-' . getpid()
         else
             let tempdir = '/tmp/vim-syntastic-' . getpid()
         endif
+
+        try
+            call mkdir(tempdir, 'p', 0700)
+        catch /\m^Vim\%((\a\+)\)\=:E739/
+            call syntastic#log#error(v:exception)
+            let tempdir = '.'
+        endtry
     endif
 
     return tempdir
 endfunction " }}}2
 
 " Recursively remove a directory
-function! syntastic#util#rmrf(what) " {{{2
+function! syntastic#util#rmrf(what) abort " {{{2
+    " try to make sure we don't delete directories we didn't create
+    if a:what !~? 'vim-syntastic-'
+        return
+    endif
+
     if  getftype(a:what) ==# 'dir'
         if !exists('s:rmrf')
             let s:rmrf =
@@ -63,7 +98,7 @@ function! syntastic#util#rmrf(what) " {{{2
         endif
 
         if s:rmrf != ''
-            silent! call system(s:rmrf . ' ' . syntastic#util#shescape(a:what))
+            silent! call syntastic#util#system(s:rmrf . ' ' . syntastic#util#shescape(a:what))
         else
             call s:_rmrf(a:what)
         endif
@@ -82,7 +117,7 @@ endfunction " }}}2
 "returns
 "
 "{'exe': '/usr/bin/perl', 'args': ['-f', '-bar']}
-function! syntastic#util#parseShebang() " {{{2
+function! syntastic#util#parseShebang() abort " {{{2
     for lnum in range(1, 5)
         let line = getline(lnum)
         if line =~ '^#!'
@@ -97,7 +132,7 @@ function! syntastic#util#parseShebang() " {{{2
 endfunction " }}}2
 
 " Get the value of a variable.  Allow local variables to override global ones.
-function! syntastic#util#var(name, ...) " {{{2
+function! syntastic#util#var(name, ...) abort " {{{2
     return
         \ exists('b:syntastic_' . a:name) ? b:syntastic_{a:name} :
         \ exists('g:syntastic_' . a:name) ? g:syntastic_{a:name} :
@@ -105,14 +140,8 @@ function! syntastic#util#var(name, ...) " {{{2
 endfunction " }}}2
 
 " Parse a version string.  Return an array of version components.
-function! syntastic#util#parseVersion(version) " {{{2
+function! syntastic#util#parseVersion(version) abort " {{{2
     return map(split(matchstr( a:version, '\v^\D*\zs\d+(\.\d+)+\ze' ), '\m\.'), 'str2nr(v:val)')
-endfunction " }}}2
-
-" Run 'command' in a shell and parse output as a version string.
-" Returns an array of version components.
-function! syntastic#util#getVersion(command) " {{{2
-    return syntastic#util#parseVersion(system(a:command))
 endfunction " }}}2
 
 " Verify that the 'installed' version is at least the 'required' version.
@@ -121,13 +150,13 @@ endfunction " }}}2
 " the "missing" elements will be assumed to be 0 for the purposes of checking.
 "
 " See http://semver.org for info about version numbers.
-function! syntastic#util#versionIsAtLeast(installed, required) " {{{2
+function! syntastic#util#versionIsAtLeast(installed, required) abort " {{{2
     return syntastic#util#compareLexi(a:installed, a:required) >= 0
 endfunction " }}}2
 
 " Almost lexicographic comparison of two lists of integers. :) If lists
 " have different lengths, the "missing" elements are assumed to be 0.
-function! syntastic#util#compareLexi(a, b) " {{{2
+function! syntastic#util#compareLexi(a, b) abort " {{{2
     for idx in range(max([len(a:a), len(a:b)]))
         let a_element = str2nr(get(a:a, idx, 0))
         let b_element = str2nr(get(a:b, idx, 0))
@@ -141,21 +170,21 @@ endfunction " }}}2
 
 " strwidth() was added in Vim 7.3; if it doesn't exist, we use strlen()
 " and hope for the best :)
-let s:width = function(exists('*strwidth') ? 'strwidth' : 'strlen')
-lockvar s:width
+let s:_width = function(exists('*strwidth') ? 'strwidth' : 'strlen')
+lockvar s:_width
 
-function! syntastic#util#screenWidth(str, tabstop) " {{{2
+function! syntastic#util#screenWidth(str, tabstop) abort " {{{2
     let chunks = split(a:str, "\t", 1)
-    let width = s:width(chunks[-1])
+    let width = s:_width(chunks[-1])
     for c in chunks[:-2]
-        let cwidth = s:width(c)
+        let cwidth = s:_width(c)
         let width += cwidth + a:tabstop - cwidth % a:tabstop
     endfor
     return width
 endfunction " }}}2
 
 "print as much of a:msg as possible without "Press Enter" prompt appearing
-function! syntastic#util#wideMsg(msg) " {{{2
+function! syntastic#util#wideMsg(msg) abort " {{{2
     let old_ruler = &ruler
     let old_showcmd = &showcmd
 
@@ -166,7 +195,7 @@ function! syntastic#util#wideMsg(msg) " {{{2
     "convert tabs to spaces so that the tabs count towards the window
     "width as the proper amount of characters
     let chunks = split(msg, "\t", 1)
-    let msg = join(map(chunks[:-2], 'v:val . repeat(" ", &tabstop - s:width(v:val) % &tabstop)'), '') . chunks[-1]
+    let msg = join(map(chunks[:-2], 'v:val . repeat(" ", &tabstop - s:_width(v:val) % &tabstop)'), '') . chunks[-1]
     let msg = strpart(msg, 0, &columns - 1)
 
     set noruler noshowcmd
@@ -179,7 +208,7 @@ function! syntastic#util#wideMsg(msg) " {{{2
 endfunction " }}}2
 
 " Check whether a buffer is loaded, listed, and not hidden
-function! syntastic#util#bufIsActive(buffer) " {{{2
+function! syntastic#util#bufIsActive(buffer) abort " {{{2
     " convert to number, or hell breaks loose
     let buf = str2nr(a:buffer)
 
@@ -199,7 +228,7 @@ endfunction " }}}2
 
 " start in directory a:where and walk up the parent folders until it
 " finds a file matching a:what; return path to that file
-function! syntastic#util#findInParent(what, where) " {{{2
+function! syntastic#util#findInParent(what, where) abort " {{{2
     let here = fnamemodify(a:where, ':p')
 
     let root = syntastic#util#Slash()
@@ -212,7 +241,7 @@ function! syntastic#util#findInParent(what, where) " {{{2
 
     let old = ''
     while here != ''
-        let p = split(globpath(here, a:what), '\n')
+        let p = split(globpath(here, a:what, 1), '\n')
 
         if !empty(p)
             return fnamemodify(p[0], ':p')
@@ -231,7 +260,7 @@ function! syntastic#util#findInParent(what, where) " {{{2
 endfunction " }}}2
 
 " Returns unique elements in a list
-function! syntastic#util#unique(list) " {{{2
+function! syntastic#util#unique(list) abort " {{{2
     let seen = {}
     let uniques = []
     for e in a:list
@@ -244,17 +273,28 @@ function! syntastic#util#unique(list) " {{{2
 endfunction " }}}2
 
 " A less noisy shellescape()
-function! syntastic#util#shescape(string) " {{{2
-    return a:string =~ '\m^[A-Za-z0-9_/.-]\+$' ? a:string : shellescape(a:string)
+function! syntastic#util#shescape(string) abort " {{{2
+    return a:string =~# '\m^[A-Za-z0-9_/.-]\+$' ? a:string : shellescape(a:string)
 endfunction " }}}2
 
 " A less noisy shellescape(expand())
-function! syntastic#util#shexpand(string) " {{{2
-    return syntastic#util#shescape(expand(a:string))
+function! syntastic#util#shexpand(string, ...) abort " {{{2
+    return syntastic#util#shescape(a:0 ? expand(a:string, a:1) : expand(a:string, 1))
+endfunction " }}}2
+
+" Escape arguments
+function! syntastic#util#argsescape(opt) abort " {{{2
+    if type(a:opt) == type('') && a:opt != ''
+        return [a:opt]
+    elseif type(a:opt) == type([])
+        return map(copy(a:opt), 'syntastic#util#shescape(v:val)')
+    endif
+
+    return []
 endfunction " }}}2
 
 " decode XML entities
-function! syntastic#util#decodeXMLEntities(string) " {{{2
+function! syntastic#util#decodeXMLEntities(string) abort " {{{2
     let str = a:string
     let str = substitute(str, '\m&lt;', '<', 'g')
     let str = substitute(str, '\m&gt;', '>', 'g')
@@ -264,7 +304,7 @@ function! syntastic#util#decodeXMLEntities(string) " {{{2
     return str
 endfunction " }}}2
 
-function! syntastic#util#redraw(full) " {{{2
+function! syntastic#util#redraw(full) abort " {{{2
     if a:full
         redraw!
     else
@@ -272,7 +312,7 @@ function! syntastic#util#redraw(full) " {{{2
     endif
 endfunction " }}}2
 
-function! syntastic#util#dictFilter(errors, filter) " {{{2
+function! syntastic#util#dictFilter(errors, filter) abort " {{{2
     let rules = s:_translateFilter(a:filter)
     " call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, "applying filter:", rules)
     try
@@ -286,7 +326,7 @@ endfunction " }}}2
 " Return a [high, low] list of integers, representing the time
 " (hopefully high resolution) since program start
 " TODO: This assumes reltime() returns a list of integers.
-function! syntastic#util#stamp() " {{{2
+function! syntastic#util#stamp() abort " {{{2
     return reltime(g:_SYNTASTIC_START)
 endfunction " }}}2
 
@@ -294,7 +334,7 @@ endfunction " }}}2
 
 " Private functions {{{1
 
-function! s:_translateFilter(filters) " {{{2
+function! s:_translateFilter(filters) abort " {{{2
     let conditions = []
     for k in keys(a:filters)
         if type(a:filters[k]) == type([])
@@ -310,32 +350,58 @@ function! s:_translateFilter(filters) " {{{2
     return len(conditions) == 1 ? conditions[0] : join(map(conditions, '"(" . v:val . ")"'), ' && ')
 endfunction " }}}2
 
-function! s:_translateElement(key, term) " {{{2
-    if a:key ==? 'level'
-        let ret = 'v:val["type"] !=? ' . string(a:term[0])
-    elseif a:key ==? 'type'
-        let ret = a:term ==? 'style' ? 'get(v:val, "subtype", "") !=? "style"' : 'has_key(v:val, "subtype")'
-    elseif a:key ==? 'regex'
-        let ret = 'v:val["text"] !~? ' . string(a:term)
-    elseif a:key ==? 'file'
-        let ret = 'bufname(str2nr(v:val["bufnr"])) !~# ' . string(a:term)
+function! s:_translateElement(key, term) abort " {{{2
+    let fkey = a:key
+    if fkey[0] == '!'
+        let fkey = fkey[1:]
+        let not = 1
     else
-        call syntastic#log#warn('quiet_messages: ignoring invalid key ' . strtrans(string(a:key)))
+        let not = 0
+    endif
+
+    if fkey ==? 'level'
+        let op = not ? ' ==? ' : ' !=? '
+        let ret = 'v:val["type"]' . op . string(a:term[0])
+    elseif fkey ==? 'type'
+        if a:term ==? 'style'
+            let op = not ? ' ==? ' : ' !=? '
+            let ret = 'get(v:val, "subtype", "")' . op . '"style"'
+        else
+            let op = not ? '!' : ''
+            let ret = op . 'has_key(v:val, "subtype")'
+        endif
+    elseif fkey ==? 'regex'
+        let op = not ? ' =~? ' : ' !~? '
+        let ret = 'v:val["text"]' . op . string(a:term)
+    elseif fkey ==? 'file' || fkey[:4] ==? 'file:'
+        let op = not ? ' =~# ' : ' !~# '
+        let ret = 'bufname(str2nr(v:val["bufnr"]))'
+        let mod = fkey[4:]
+        if mod != ''
+            let ret = 'fnamemodify(' . ret . ', ' . string(mod) . ')'
+        endif
+        let ret .= op . string(a:term)
+    else
+        call syntastic#log#warn('quiet_messages: ignoring invalid key ' . strtrans(string(fkey)))
         let ret = "1"
     endif
     return ret
 endfunction " }}}2
 
-function! s:_rmrf(what) " {{{2
+function! s:_rmrf(what) abort " {{{2
     if !exists('s:rmdir')
         let s:rmdir = syntastic#util#shescape(get(g:, 'netrw_localrmdir', 'rmdir'))
     endif
 
     if getftype(a:what) ==# 'dir'
-        for f in split(globpath(a:what, '*'), "\n")
+        if filewritable(a:what) != 2
+            return
+        endif
+
+        for f in split(globpath(a:what, '*', 1), "\n")
             call s:_rmrf(f)
         endfor
-        silent! call system(s:rmdir . ' ' . syntastic#util#shescape(a:what))
+        silent! call syntastic#util#system(s:rmdir . ' ' . syntastic#util#shescape(a:what))
     else
         silent! call delete(a:what)
     endif

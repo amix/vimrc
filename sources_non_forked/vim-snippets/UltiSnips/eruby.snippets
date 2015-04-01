@@ -44,66 +44,13 @@ snippet fi "<%= Fixtures.identify(:symbol) %>"
 endsnippet
 
 snippet ft "form_tag"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`form_tag(${1::action => "${5:update}"}${6:, {:${8:class} => "${9:form}"\}}) do`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`form_tag(${1::action => '${5:update}'}${6:, {:${8:class} => '${9:form}'\}}) do`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 	$0
 `!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
-endsnippet
-
-snippet end "end (ERB)"
-<% end -%>
-endsnippet
-
-snippet for "for loop (ERB)"
-<% if !${1:list}.blank? %>
-	<% for ${2:item} in ${1} %>
-		$3
-	<% end %>
-<% else %>
-	$4
-<% end %>
-
-endsnippet
-
-snippet ffcb "form_for check_box"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.check_box :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
-endsnippet
-
-snippet ffff "form_for file_field 2"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.file_field :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
-endsnippet
-
-snippet ffhf "form_for hidden_field 2"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.hidden_field :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
-endsnippet
-
-snippet ffl "form_for label 2"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.label :${1:attribute}${2:, "${3:${1/[[:alpha:]]+|(_)/(?1: :\u$0)/g}}"}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
-endsnippet
-
-snippet ffpf "form_for password_field 2"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.password_field :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
-endsnippet
-
-snippet ffrb "form_for radio_box 2"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.radio_box :${1:attribute}, :${2:tag_value}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
 snippet ffs "form_for submit 2"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.submit "${1:Submit}"${2:, :disable_with => '${3:$1ing...}'}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
-endsnippet
-
-snippet ffta "form_for text_area 2"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.text_area :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
-endsnippet
-
-snippet fftf "form_for text_field 2"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.text_field :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
-endsnippet
-
-snippet fields "fields_for"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`fields_for :${1:model}, @${2:$1} do |$1|`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_INLINE', snip)`
-	$0
-`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`${1:f}.submit '${2:Submit}'${3:, :disable_with => '${4:$2ing...}'}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
 snippet f. "f_fields_for (nff)"
@@ -132,8 +79,8 @@ snippet f. "f.password_field"
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.password_field :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f.radio_box"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.radio_box :${1:attribute}, :${2:tag_value}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+snippet f. "f.radio_button"
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.radio_button :${1:attribute}, :${2:tag_value}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
 snippet f. "f.submit"
@@ -277,10 +224,6 @@ endsnippet
 snippet else "else (ERB)"
 <% else %>
 	$0
-endsnippet
-
-snippet if "if (ERB)"
-<% if ${1:condition} %>$0
 endsnippet
 
 snippet lf "link_to_function"

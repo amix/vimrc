@@ -129,9 +129,19 @@ snippet pdb
 # ipython debugger (ipdb)
 snippet ipdb
 	import ipdb; ipdb.set_trace()
+# embed ipython itself
+snippet iem
+	import IPython; IPython.embed()
 # ipython debugger (pdbbb)
 snippet pdbbb
 	import pdbpp; pdbpp.set_trace()
+# remote python debugger (rpdb)
+snippet rpdb
+	import rpdb; rpdb.set_trace()
+# python_prompt_toolkit
+snippet ppt
+	from prompt_toolkit.contrib.repl import embed
+	embed(globals(), locals(), vi_mode=${1:default=False}, history_filename=${2:default=None})
 # python console debugger (pudb)
 snippet pudb
 	import pudb; pudb.set_trace()
@@ -208,3 +218,9 @@ snippet kwg
 	self.${1:var_name} = kwargs.get('$1', ${2:None})
 snippet lkwg
 	${1:var_name} = kwargs.get('$1', ${2:None})
+snippet args
+	*args${1:,}${0}
+snippet kwargs
+	**kwargs${1:,}${0}
+snippet akw
+	*args, **kwargs${1:,}${0}

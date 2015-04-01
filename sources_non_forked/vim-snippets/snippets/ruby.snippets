@@ -73,9 +73,31 @@ snippet ife
 snippet eif
 	elsif ${1:condition}
 		${0}
+snippet ifee
+	if ${1:condition}
+		$2
+	elsif ${3:condition}
+		$4
+	else
+		$0
+	end
 snippet unless
 	unless ${1:condition}
 		${0}
+	end
+snippet unlesse
+	unless ${1:condition}
+		$2
+	else
+		$0
+	end
+snippet unlesee
+	unless ${1:condition}
+		$2
+	elsif ${3:condition}
+		$4
+	else
+		$0
 	end
 snippet wh
 	while ${1:condition}

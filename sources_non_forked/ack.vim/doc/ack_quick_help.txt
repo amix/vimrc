@@ -1,6 +1,6 @@
 ====  ack.vim quick help ===============
 
-  *?:*  Show this help
+  *?:*  Show/quit this help
   *t:*  Open in a new tab
   *T:*  Open in a new tab silently
   *o:*  Open

@@ -31,8 +31,8 @@ function! SyntaxCheckers_scala_scalastyle_IsAvailable() dict
         return 0
     endif
 
-    let jar = expand(g:syntastic_scala_scalastyle_jar)
-    let conf_file = expand(g:syntastic_scala_scalastyle_config_file)
+    let jar = expand(g:syntastic_scala_scalastyle_jar, 1)
+    let conf_file = expand(g:syntastic_scala_scalastyle_config_file, 1)
     call self.log('filereadable(' . string(jar) . ') = ' . filereadable(jar) . ', ' .
         \ 'filereadable(' . string(conf_file) . ') = ' . filereadable(conf_file))
 
@@ -42,8 +42,8 @@ endfunction
 function! SyntaxCheckers_scala_scalastyle_GetLocList() dict
 
     let makeprg = self.makeprgBuild({
-        \ 'exe_after': ['-jar', expand(g:syntastic_scala_scalastyle_jar)],
-        \ 'args_before': ['-q', 'true', '-c', expand(g:syntastic_scala_scalastyle_config_file)] })
+        \ 'exe_after': ['-jar', expand(g:syntastic_scala_scalastyle_jar, 1)],
+        \ 'args_before': ['-q', 'true', '-c', expand(g:syntastic_scala_scalastyle_config_file, 1)] })
 
     let errorformat =
         \ '%trror file=%f message=%m line=%l column=%c,' .
@@ -74,4 +74,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

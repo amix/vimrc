@@ -9,16 +9,15 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" For details about PrettyCSS see:
-"
-"   - http://fidian.github.io/PrettyCSS/
-"   - https://github.com/fidian/PrettyCSS
 
 if exists("g:loaded_syntastic_css_prettycss_checker")
     finish
 endif
 let g:loaded_syntastic_css_prettycss_checker = 1
+
+if !exists('g:syntastic_css_prettycss_sort')
+    let g:syntastic_css_prettycss_sort = 1
+endif
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -49,8 +48,6 @@ function! SyntaxCheckers_css_prettycss_GetLocList() dict
         let e["text"] .= ')'
     endfor
 
-    call self.setWantSort(1)
-
     return loclist
 endfunction
 
@@ -61,4 +58,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

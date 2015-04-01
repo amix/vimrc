@@ -10,10 +10,14 @@ if exists("g:loaded_syntastic_python_pylint_checker")
 endif
 let g:loaded_syntastic_python_pylint_checker = 1
 
-let s:pylint_new = -1
+if !exists('g:syntastic_python_pylint_sort')
+    let g:syntastic_python_pylint_sort = 1
+endif
 
 let s:save_cpo = &cpo
 set cpo&vim
+
+let s:pylint_new = -1
 
 function! SyntaxCheckers_python_pylint_IsAvailable() dict
     if !executable(self.getExec())
@@ -28,11 +32,10 @@ function! SyntaxCheckers_python_pylint_IsAvailable() dict
         " On new-ish Fedora it's "python3-pylint 1.2.0".
         " Have you guys considered switching to creative writing yet? ;)
 
-        let pylint_version = filter( split(system(self.getExecEscaped() . ' --version'), '\m, \=\|\n'),
+        let pylint_version = filter( split(syntastic#util#system(self.getExecEscaped() . ' --version'), '\m, \=\|\n'),
             \ 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=pylint[-0-9]*\>''' )[0]
         let ver = syntastic#util#parseVersion(substitute(pylint_version, '\v^\S+\s+', '', ''))
-
-        call self.log(self.getExec() . ' version =', ver)
+        call self.setVersion(ver)
 
         let s:pylint_new = syntastic#util#versionIsAtLeast(ver, [1])
     catch /\m^Vim\%((\a\+)\)\=:E684/
@@ -81,8 +84,6 @@ function! SyntaxCheckers_python_pylint_GetLocList() dict
         let e['vcol'] = 0
     endfor
 
-    call self.setWantSort(1)
-
     return loclist
 endfunction
 
@@ -93,4 +94,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

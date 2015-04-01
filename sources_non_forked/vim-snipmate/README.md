@@ -19,7 +19,9 @@ Garbas][garbas], [Marc Weber][marcweber], and [Adnan Zafar][ajzafar].
 
 We recommend one of the following methods for installing SnipMate and its
 dependencies. SnipMate depends on [vim-addon-mw-utils][mw-utils] and
-[tlib][tlib]. Since SnipMate does not ship with any snippets, we suggest
+[tlib][tlib].
+
+> **NOTE:** SnipMate does not ship with any snippets out of the box. We suggest
 looking at the [vim-snippets][vim-snippets] repository.
 
 * Using [VAM][vam], add `vim-snippets` to the list of packages to be installed.
@@ -35,16 +37,42 @@ looking at the [vim-snippets][vim-snippets] repository.
         % git clone https://github.com/honza/vim-snippets.git
 
 * Using [Vundle][vundle], add the following to your `vimrc` then run
-  `:BundleInstall`
+  `:PluginInstall`
 
-        Bundle "MarcWeber/vim-addon-mw-utils"
-        Bundle "tomtom/tlib_vim"
-        Bundle "garbas/vim-snipmate"
+        Plugin "MarcWeber/vim-addon-mw-utils"
+        Plugin "tomtom/tlib_vim"
+        Plugin "garbas/vim-snipmate"
 
         " Optional:
-        Bundle "honza/vim-snippets"
+        Plugin "honza/vim-snippets"
 
 ## FAQ ##
+
+> SnipMate doesn't work / My snippets aren't triggering
+
+Try all of the following:
+
+* Check that SnipMate is loaded. This can be done by looking for
+  `<Plug>snipMateTrigger` and similar maps in the output of `:imap`.
+  Additionally make sure either `<Plug>snipMateTrigger` or
+  `<Plug>snipMateNextOrTrigger` is mapped to the key you expect.
+
+* Check that the snippets file you mean to use exists, and that it contains the
+  snippet you're trying to expand.
+
+* Check that your snippets file is located inside a `foo/snippets` directory,
+  where `foo` is a path listed in your `runtimepath`.
+
+* Check that your snippets file is in scope by either the filetype matching the
+  path of the snippet file or the scope explicitly loaded.
+
+* Check if any snippets from your snippets file are available. This can be done
+  with the "show available snips` map, by default bound to `<C-R><Tab>` in
+  insert mode.
+
+If all of the above check out, please open an issue stating your Vim version,
+a sample snippet, and a description of exactly what happens when you try to
+trigger a snippet.
 
 > How does SnipMate determine which snippets to load? How can I separate, for
 > example, my Rails snippets from my Ruby snippets?
@@ -81,6 +109,23 @@ does `:SnipMateLoadScope rails` when editing a Rails project for example.
 * Fix the use of the visual map at the end of a line
 * Add `:SnipMateLoadScope` command and buffer-local scope aliases
 * Load `<scope>_*.snippets` files
+* Indent visual placeholder expansions and remove extraneous lines ([#177][177]
+  and [#178][178])
+
+* The nested branch has been merged
+    * A new snippet parser has been added. The g:snipmate.version as well as
+      version lines in snippet files determines which is used
+    * The new parser supports tab stops placed within placeholders,
+      substitutions, non-consecutive stop numbers, and fewer ambiguities
+    * The stop jumping code has been updated
+    * Tests have been added for the jumping code and the new parser
+
+* The override branch has been merged
+    * The g:snipMate.override option is added. When enabled, if two snippets
+      share the same name, the later-loaded one is kept and the other discarded
+    * Override behavior can be enabled on a per-snippet basis with a bang (!) in
+      the snippet file
+    * Otherwise, SnipMate tries to preserve all snippets loaded
 
 ### 0.87 - 2014-01-04 ###
 
@@ -106,3 +151,5 @@ does `:SnipMateLoadScope rails` when editing a Rails project for example.
 [vundle]: https://github.com/gmarik/vundle
 
 [143]: https://github.com/garbas/vim-snipmate/issues/143
+[177]: https://github.com/garbas/vim-snipmate/issues/177
+[178]: https://github.com/garbas/vim-snipmate/issues/178

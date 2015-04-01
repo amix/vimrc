@@ -19,11 +19,15 @@ if !exists('g:syntastic_racket_code_ayatollah_script')
     let g:syntastic_racket_code_ayatollah_script = 'code-ayatollah.rkt'
 endif
 
+if !exists('g:syntastic_racket_code_ayatollah_sort')
+    let g:syntastic_racket_code_ayatollah_sort = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_racket_code_ayatollah_IsAvailable() dict
-    let s:script = expand(g:syntastic_racket_code_ayatollah_script)
+    let s:script = expand(g:syntastic_racket_code_ayatollah_script, 1)
     return executable(self.getExec()) && filereadable(s:script)
 endfunction
 
@@ -44,8 +48,6 @@ function! SyntaxCheckers_racket_code_ayatollah_GetLocList() dict
         let e['col'] += 1
     endfor
 
-    call self.setWantSort(1)
-
     return loclist
 endfunction
 
@@ -57,4 +59,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

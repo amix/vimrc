@@ -15,6 +15,11 @@ snippet f
 	function(${1}) {
 		${0}
 	}
+# Anonymous Function assigned to variable
+snippet vaf
+	var ${1:function_name} = function(${2}) {
+		${0}
+	};
 # Function assigned to variable
 snippet vf
 	var ${1:function_name} = function $1(${2}) {
@@ -112,8 +117,8 @@ snippet fori
 # Object Method
 snippet :f
 	${1:method_name}: function (${2:attribute}) {
-		${0}
-	}${3:,}
+		${3}
+	},
 # hasOwnProperty
 snippet has
 	hasOwnProperty(${0})
@@ -251,6 +256,10 @@ snippet cdir
 	console.dir(${0:obj});
 
 # Misc
+
+# 'use strict';
+snippet us
+	'use strict';
 
 # setTimeout function
 snippet timeout

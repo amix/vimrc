@@ -28,11 +28,12 @@ if (!exists('g:snipMateSources'))
   let g:snipMateSources['default'] = funcref#Function('snipMate#DefaultPool')
 endif
 
-au BufRead,BufNewFile *.snippet set ft=snippet
-au FileType snippet setl noet nospell
-
-au BufRead,BufNewFile *.snippets set ft=snippets
-au FileType snippets setl noet nospell fdm=expr fde=getline(v:lnum)!~'^\\t\\\\|^$'?'>1':1
+au BufRead,BufNewFile *.snippet,*.snippets setlocal filetype=snippets
+au FileType snippets if expand('<afile>:e') =~# 'snippet$'
+				\ | setlocal syntax=snippet
+			\ | else
+				\ | setlocal syntax=snippets
+			\ | endif
 
 inoremap <silent> <Plug>snipMateNextOrTrigger  <C-R>=snipMate#TriggerSnippet()<CR>
 snoremap <silent> <Plug>snipMateNextOrTrigger  <Esc>a<C-R>=snipMate#TriggerSnippet()<CR>
@@ -91,9 +92,11 @@ let g:snipMate['get_snippets'] = get(g:snipMate, 'get_snippets', funcref#Functio
 
 " List of paths where snippets/ dirs are located, or a function returning such
 " a list
-let g:snipMate['snippet_dirs'] = get(g:snipMate, 'snippet_dirs', funcref#Function('return split(&runtimepath,",")'))
-if type(g:snipMate['snippet_dirs']) == type([])
-	call map(g:snipMate['snippet_dirs'], 'expand(v:val)')
+let g:snipMate['snippet_dirs'] = get(g:snipMate, 'snippet_dirs', split(&rtp, ','))
+if type(g:snipMate['snippet_dirs']) != type([])
+	echohl WarningMsg
+	echom "g:snipMate['snippet_dirs'] must be a List"
+	echohl None
 endif
 
 " _ is default scope added always
@@ -103,18 +106,18 @@ let g:snipMate['get_scopes'] = get(g:snipMate, 'get_scopes', funcref#Function('r
 
 " Modified from Luc Hermitte's function on StackOverflow
 " <http://stackoverflow.com/a/1534347>
-function! s:grab_visual()
+function! s:grab_visual() abort
 	let a_save = @a
 	try
 		normal! gv"ay
-		let b:snipmate_content_visual = @a
+		let b:snipmate_visual = @a
 	finally
 		let @a = a_save
 	endtry
 endfunction
 
 " TODO: Allow specifying an arbitrary snippets file
-function! s:load_scopes(bang, ...)
+function! s:load_scopes(bang, ...) abort
 	let gb = a:bang ? g: : b:
 	let gb.snipMate = get(gb, 'snipMate', {})
 	let gb.snipMate.scope_aliases = get(gb.snipMate, 'scope_aliases', {})

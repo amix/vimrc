@@ -10,24 +10,24 @@ let s:one_time_notices_issued = []
 
 " Public functions {{{1
 
-function! syntastic#log#info(msg) " {{{2
+function! syntastic#log#info(msg) abort " {{{2
     echomsg "syntastic: info: " . a:msg
 endfunction " }}}2
 
-function! syntastic#log#warn(msg) " {{{2
+function! syntastic#log#warn(msg) abort " {{{2
     echohl WarningMsg
     echomsg "syntastic: warning: " . a:msg
     echohl None
 endfunction " }}}2
 
-function! syntastic#log#error(msg) " {{{2
+function! syntastic#log#error(msg) abort " {{{2
     execute "normal \<Esc>"
     echohl ErrorMsg
     echomsg "syntastic: error: " . a:msg
     echohl None
 endfunction " }}}2
 
-function! syntastic#log#oneTimeWarn(msg) " {{{2
+function! syntastic#log#oneTimeWarn(msg) abort " {{{2
     if index(s:one_time_notices_issued, a:msg) >= 0
         return
     endif
@@ -37,7 +37,7 @@ function! syntastic#log#oneTimeWarn(msg) " {{{2
 endfunction " }}}2
 
 " @vimlint(EVL102, 1, l:OLD_VAR)
-function! syntastic#log#deprecationWarn(old, new, ...) " {{{2
+function! syntastic#log#deprecationWarn(old, new, ...) abort " {{{2
     if exists('g:syntastic_' . a:old) && !exists('g:syntastic_' . a:new)
         let msg = 'variable g:syntastic_' . a:old . ' is deprecated, please use '
 
@@ -60,12 +60,12 @@ function! syntastic#log#deprecationWarn(old, new, ...) " {{{2
 endfunction " }}}2
 " @vimlint(EVL102, 0, l:OLD_VAR)
 
-function! syntastic#log#debug(level, msg, ...) " {{{2
-    if !s:isDebugEnabled(a:level)
+function! syntastic#log#debug(level, msg, ...) abort " {{{2
+    if !s:_isDebugEnabled(a:level)
         return
     endif
 
-    let leader = s:_logTimestamp()
+    let leader = s:_log_timestamp()
     call s:_logRedirect(1)
 
     if a:0 > 0
@@ -80,12 +80,12 @@ function! syntastic#log#debug(level, msg, ...) " {{{2
     call s:_logRedirect(0)
 endfunction " }}}2
 
-function! syntastic#log#debugShowOptions(level, names) " {{{2
-    if !s:isDebugEnabled(a:level)
+function! syntastic#log#debugShowOptions(level, names) abort " {{{2
+    if !s:_isDebugEnabled(a:level)
         return
     endif
 
-    let leader = s:_logTimestamp()
+    let leader = s:_log_timestamp()
     call s:_logRedirect(1)
 
     let vlist = copy(type(a:names) == type("") ? [a:names] : a:names)
@@ -96,17 +96,17 @@ function! syntastic#log#debugShowOptions(level, names) " {{{2
     call s:_logRedirect(0)
 endfunction " }}}2
 
-function! syntastic#log#debugShowVariables(level, names) " {{{2
-    if !s:isDebugEnabled(a:level)
+function! syntastic#log#debugShowVariables(level, names) abort " {{{2
+    if !s:_isDebugEnabled(a:level)
         return
     endif
 
-    let leader = s:_logTimestamp()
+    let leader = s:_log_timestamp()
     call s:_logRedirect(1)
 
     let vlist = type(a:names) == type("") ? [a:names] : a:names
     for name in vlist
-        let msg = s:_formatVariable(name)
+        let msg = s:_format_variable(name)
         if msg != ''
             echomsg leader . msg
         endif
@@ -115,8 +115,8 @@ function! syntastic#log#debugShowVariables(level, names) " {{{2
     call s:_logRedirect(0)
 endfunction " }}}2
 
-function! syntastic#log#debugDump(level) " {{{2
-    if !s:isDebugEnabled(a:level)
+function! syntastic#log#debugDump(level) abort " {{{2
+    if !s:_isDebugEnabled(a:level)
         return
     endif
 
@@ -127,23 +127,23 @@ endfunction " }}}2
 
 " Private functions {{{1
 
-function! s:_isDebugEnabled_smart(level) " {{{2
+function! s:_isDebugEnabled_smart(level) abort " {{{2
     return and(g:syntastic_debug, a:level)
 endfunction " }}}2
 
-function! s:_isDebugEnabled_dumb(level) " {{{2
+function! s:_isDebugEnabled_dumb(level) abort " {{{2
     " poor man's bit test for bit N, assuming a:level == 2**N
     return (g:syntastic_debug / a:level) % 2
 endfunction " }}}2
 
-let s:isDebugEnabled = function(exists('*and') ? 's:_isDebugEnabled_smart' : 's:_isDebugEnabled_dumb')
-lockvar s:isDebugEnabled
+let s:_isDebugEnabled = function(exists('*and') ? 's:_isDebugEnabled_smart' : 's:_isDebugEnabled_dumb')
+lockvar s:_isDebugEnabled
 
-function! s:_logRedirect(on) " {{{2
+function! s:_logRedirect(on) abort " {{{2
     if exists("g:syntastic_debug_file")
         if a:on
             try
-                execute 'redir >> ' . fnameescape(expand(g:syntastic_debug_file))
+                execute 'redir >> ' . fnameescape(expand(g:syntastic_debug_file, 1))
             catch /\m^Vim\%((\a\+)\)\=:/
                 silent! redir END
                 unlet g:syntastic_debug_file
@@ -154,11 +154,15 @@ function! s:_logRedirect(on) " {{{2
     endif
 endfunction " }}}2
 
-function! s:_logTimestamp() " {{{2
+" }}}1
+
+" Utilities {{{1
+
+function! s:_log_timestamp() abort " {{{2
     return 'syntastic: ' . split(reltimestr(reltime(g:_SYNTASTIC_START)))[0] . ': '
 endfunction " }}}2
 
-function! s:_formatVariable(name) " {{{2
+function! s:_format_variable(name) abort " {{{2
     let vals = []
     if exists('g:syntastic_' . a:name)
         call add(vals, 'g:syntastic_' . a:name . ' = ' . strtrans(string(g:syntastic_{a:name})))

@@ -68,7 +68,12 @@ with the line number of the occurrence, once for each occurrence.  <Enter> on
 a line in this window will open the file, and place the cursor on the matching
 line.
 
-See http://betterthangrep.com/ for more information.
+Note that if you are using Dispatch.vim with |g:ack_use_dispatch|, location
+lists are not supported, because Dispatch does not support them at this time.
+`:LAck` versions of commands above will give a warning and proceed to use the
+quickfix list instead.
+
+See http://beyondgrep.com/ for more information on searching with ack.
 
 
 ==============================================================================
@@ -208,7 +213,12 @@ Example:
 g:ack_use_dispatch
 Default: 0
 
-Use this option to use vim-dispatch to search the results in background
+Use this option to use vim-dispatch to run searches in the background, with a
+variety of execution backends for different systems.
+
+Due to limitations in Dispatch at this time, location lists are unsupported
+and result windows will appear before results are ready. Still, these may be
+acceptable tradeoffs for very large projects where searches are slow.
 
 Example:
 >

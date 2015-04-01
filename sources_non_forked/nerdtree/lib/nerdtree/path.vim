@@ -623,8 +623,13 @@ function! s:Path.str(...)
 
     if has_key(options, 'truncateTo')
         let limit = options['truncateTo']
-        if len(toReturn) > limit
-            let toReturn = "<" . strpart(toReturn, len(toReturn) - limit + 1)
+        if len(toReturn) > limit-1
+            let toReturn = toReturn[(len(toReturn)-limit+1):]
+            if len(split(toReturn, '/')) > 1
+                let toReturn = '</' . join(split(toReturn, '/')[1:], '/') . '/'
+            else
+                let toReturn = '<' . toReturn
+            endif
         endif
     endif
 
@@ -652,25 +657,15 @@ endfunction
 "Return: the string for this path that is suitable to be used with the :edit
 "command
 function! s:Path._strForEdit()
-    let p = escape(self.str({'format': 'UI'}), self._escChars())
-    let cwd = getcwd() . s:Path.Slash()
+    let p = escape(self.str(), self._escChars())
 
-    "return a relative path if we can
-    let isRelative = 0
-    if nerdtree#runningWindows()
-        let isRelative = stridx(tolower(p), tolower(cwd)) == 0
-    else
-        let isRelative = stridx(p, cwd) == 0
-    endif
+    "make it relative
+    let p = fnamemodify(p, ':.')
 
-    if isRelative
-        let p = strpart(p, strlen(cwd))
-
-        "handle the edge case where the file begins with a + (vim interprets
-        "the +foo in `:e +foo` as an option to :edit)
-        if p[0] == "+"
-            let p = '\' . p
-        endif
+    "handle the edge case where the file begins with a + (vim interprets
+    "the +foo in `:e +foo` as an option to :edit)
+    if p[0] == "+"
+        let p = '\' . p
     endif
 
     if p ==# ''

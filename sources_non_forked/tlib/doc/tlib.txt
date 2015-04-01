@@ -85,6 +85,7 @@ Contents~
         tlib#cmd#ParseScriptname ............... |tlib#cmd#ParseScriptname()|
         tlib#cmd#UseVertical ................... |tlib#cmd#UseVertical()|
         tlib#cmd#Time .......................... |tlib#cmd#Time()|
+        tlib#cmd#Capture ....................... |tlib#cmd#Capture()|
         tlib#syntax#Collect .................... |tlib#syntax#Collect()|
         tlib#syntax#Names ...................... |tlib#syntax#Names()|
         tlib#balloon#Register .................. |tlib#balloon#Register()|
@@ -224,6 +225,7 @@ Contents~
         g:tlib#input#keyagents_InputList_s ..... |g:tlib#input#keyagents_InputList_s|
         g:tlib#input#keyagents_InputList_m ..... |g:tlib#input#keyagents_InputList_m|
         g:tlib#input#handlers_EditList ......... |g:tlib#input#handlers_EditList|
+        g:tlib#input#user_shortcuts ............ |g:tlib#input#user_shortcuts|
         g:tlib#input#use_popup ................. |g:tlib#input#use_popup|
         g:tlib#input#format_filename ........... |g:tlib#input#format_filename|
         g:tlib#input#filename_padding_r ........ |g:tlib#input#filename_padding_r|
@@ -722,6 +724,9 @@ tlib#cmd#UseVertical(?rx='')
 tlib#cmd#Time(cmd)
     Print the time in seconds or milliseconds (if your version of VIM 
     has |+reltime|) a command takes.
+
+                                                    *tlib#cmd#Capture()*
+tlib#cmd#Capture(cmd)
 
 
 ========================================================================
@@ -1434,19 +1439,28 @@ g:tlib#input#numeric_chars
 
                                                     *g:tlib#input#keyagents_InputList_s*
 g:tlib#input#keyagents_InputList_s
-    The default key bindings for single-item-select list views. If you 
-    want to use <c-j>, <c-k> to move the cursor up and down, add these two 
-    lines to after/plugin/02tlib.vim: >
+    The default key bindings for single-item-select list views.
 
-      let g:tlib#input#keyagents_InputList_s[10] = 'tlib#agent#Down'  " <c-j>
-      let g:tlib#input#keyagents_InputList_s[11] = 'tlib#agent#Up'    " <c-k>
-<
+    This variable is best customized via the variable 
+    g:tlib_extend_keyagents_InputList_s. If you want to use <c-j>, <c-k> 
+    to move the cursor up and down, add these two lines to your |vimrc| 
+    file:
+
+      let g:tlib_extend_keyagents_InputList_s = {
+          \ 10: 'tlib#agent#Down',
+          \ 11: 'tlib#agent#Up'
+          \ }
 
                                                     *g:tlib#input#keyagents_InputList_m*
 g:tlib#input#keyagents_InputList_m
 
                                                     *g:tlib#input#handlers_EditList*
 g:tlib#input#handlers_EditList
+
+                                                    *g:tlib#input#user_shortcuts*
+g:tlib#input#user_shortcuts    (default: {})
+    A dictionary KEY => {'agent': AGENT, 'key_name': KEY_NAME} to 
+    customize keyboard shortcuts in the list view.
 
                                                     *g:tlib#input#use_popup*
 g:tlib#input#use_popup         (default: has('menu') && (has('gui_gtk') || has('gui_gtk2') || has('gui_win32')))

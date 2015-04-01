@@ -205,15 +205,15 @@ to maintain snippets for a language, please get in touch.
 Notes: People are interested in snippets - and their interest may wane again.
 This list is kept up-to-date on a best effort basis.
 
-* Python - [honza](http://github.com/honza)
-* Javascript - [honza](http://github.com/honza)
-* HTML Django - [honza](http://github.com/honza)
-* Markdown - [honza](http://github.com/honza)
-* Ruby - [taq](http://github.com/taq)
-* PHP - [chrisyue](http://github.com/chrisyue)
-* Scala - [gorodinskiy](https://github.com/gorodinskiy)
-* Falcon - [steveno](https://github.com/steveno)
 * Elixir - [iurifq](https://github.com/iurifq)
+* Falcon - [steveno](https://github.com/steveno)
+* HTML Django - [honza](http://github.com/honza)
+* Javascript - [honza](http://github.com/honza)
+* Markdown - [honza](http://github.com/honza)
+* PHP - [chrisyue](http://github.com/chrisyue)
+* Python - [honza](http://github.com/honza)
+* Ruby - [taq](http://github.com/taq)
+* Scala - [gorodinskiy](https://github.com/gorodinskiy)
 
 License
 -------

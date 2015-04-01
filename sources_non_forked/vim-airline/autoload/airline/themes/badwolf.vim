@@ -15,7 +15,7 @@ let s:V4 = [ '#c7915b' , 173 ]                   " coffee
 let s:PA = [ '#f4cf86' , 222 ]                   " dirtyblonde
 let s:RE = [ '#ff9eb8' , 211 ]                   " dress
 
-let s:IA = [ s:N2[1] , s:N3[1] , s:N2[3] , s:N3[3] , '' ]
+let s:IA = [ s:N3[1] , s:N2[1] , s:N3[3] , s:N2[3] , '' ]
 
 let g:airline#themes#badwolf#palette = {}
 

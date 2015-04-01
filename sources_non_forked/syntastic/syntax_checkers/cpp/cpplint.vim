@@ -9,18 +9,6 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" For details about cpplint see:
-"    https://code.google.com/p/google-styleguide/
-"
-" Checker options:
-"
-" - g:syntastic_cpp_cpplint_thres (integer; default: 5)
-"   error threshold: policy violations with a severity above this
-"   value are highlighted as errors, the others are warnings
-"
-" - g:syntastic_cpp_cpplint_args (string; default: '--verbose=3')
-"   command line options to pass to cpplint
 
 if exists("g:loaded_syntastic_cpp_cpplint_checker")
     finish
@@ -61,4 +49,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

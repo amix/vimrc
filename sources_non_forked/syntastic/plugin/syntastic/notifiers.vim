@@ -13,7 +13,7 @@ lockvar! s:_PERSISTENT_NOTIFIERS
 
 " Public methods {{{1
 
-function! g:SyntasticNotifiers.Instance() " {{{2
+function! g:SyntasticNotifiers.Instance() abort " {{{2
     if !exists('s:SyntasticNotifiersInstance')
         let s:SyntasticNotifiersInstance = copy(self)
         call s:SyntasticNotifiersInstance._initNotifiers()
@@ -22,7 +22,7 @@ function! g:SyntasticNotifiers.Instance() " {{{2
     return s:SyntasticNotifiersInstance
 endfunction " }}}2
 
-function! g:SyntasticNotifiers.refresh(loclist) " {{{2
+function! g:SyntasticNotifiers.refresh(loclist) abort " {{{2
     if !a:loclist.isEmpty() && !a:loclist.isNewerThan([])
         " loclist not fully constructed yet
         return
@@ -34,12 +34,12 @@ function! g:SyntasticNotifiers.refresh(loclist) " {{{2
         if !has_key(g:{class}, 'enabled') || self._notifier[type].enabled()
             if index(s:_PERSISTENT_NOTIFIERS, type) > -1
                 " refresh only if loclist has changed since last call
-                if !exists('b:syntastic_' . type . '_stamp')
-                    let b:syntastic_{type}_stamp = []
+                if !exists('b:syntastic_private_' . type . '_stamp')
+                    let b:syntastic_private_{type}_stamp = []
                 endif
-                if a:loclist.isNewerThan(b:syntastic_{type}_stamp) || a:loclist.isEmpty()
+                if a:loclist.isNewerThan(b:syntastic_private_{type}_stamp) || a:loclist.isEmpty()
                     call self._notifier[type].refresh(a:loclist)
-                    let b:syntastic_{type}_stamp = syntastic#util#stamp()
+                    let b:syntastic_private_{type}_stamp = syntastic#util#stamp()
                 endif
             else
                 call self._notifier[type].refresh(a:loclist)
@@ -48,7 +48,7 @@ function! g:SyntasticNotifiers.refresh(loclist) " {{{2
     endfor
 endfunction " }}}2
 
-function! g:SyntasticNotifiers.reset(loclist) " {{{2
+function! g:SyntasticNotifiers.reset(loclist) abort " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'notifiers: reset')
     for type in self._enabled_types
         let class = substitute(type, '\m.*', 'Syntastic\u&Notifier', '')
@@ -62,7 +62,7 @@ function! g:SyntasticNotifiers.reset(loclist) " {{{2
 
         " also reset stamps
         if index(s:_PERSISTENT_NOTIFIERS, type) > -1
-            let b:syntastic_{type}_stamp = []
+            let b:syntastic_private_{type}_stamp = []
         endif
     endfor
 endfunction " }}}2
@@ -71,7 +71,7 @@ endfunction " }}}2
 
 " Private methods {{{1
 
-function! g:SyntasticNotifiers._initNotifiers() " {{{2
+function! g:SyntasticNotifiers._initNotifiers() abort " {{{2
     let self._notifier = {}
     for type in s:_NOTIFIER_TYPES
         let class = substitute(type, '\m.*', 'Syntastic\u&Notifier', '')

@@ -15,6 +15,10 @@ if exists("g:loaded_syntastic_markdown_mdl_checker")
 endif
 let g:loaded_syntastic_markdown_mdl_checker = 1
 
+if !exists('g:syntastic_markdown_mdl_sort')
+    let g:syntastic_markdown_mdl_sort = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -25,14 +29,10 @@ function! SyntaxCheckers_markdown_mdl_GetLocList() dict
         \ '%E%f:%l: %m,'.
         \ '%W%f: Kramdown Warning: %m found on line %l'
 
-    let loclist = SyntasticMake({
+    return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'subtype': 'Style' })
-
-    call self.setWantSort(1)
-
-    return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
@@ -42,4 +42,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

@@ -17,22 +17,16 @@
 "
 " HTML Tidy for HTML5 can be used without changes by this checker, just install
 " it and point g:syntastic_html_tidy_exec to the executable.
-"
-" Checker options:
-"
-" - g:syntastic_html_tidy_ignore_errors (list; default: [])
-"   list of errors to ignore
-" - g:syntastic_html_tidy_blocklevel_tags (list; default: [])
-"   list of additional blocklevel tags, to be added to "--new-blocklevel-tags"
-" - g:syntastic_html_tidy_inline_tags (list; default: [])
-"   list of additional inline tags, to be added to "--new-inline-tags"
-" - g:syntastic_html_tidy_empty_tags (list; default: [])
-"   list of additional empty tags, to be added to "--new-empty-tags"
 
 if exists("g:loaded_syntastic_html_tidy_checker")
     finish
 endif
 let g:loaded_syntastic_html_tidy_checker = 1
+
+let s:save_cpo = &cpo
+set cpo&vim
+
+" Checker options {{{1
 
 if !exists('g:syntastic_html_tidy_ignore_errors')
     let g:syntastic_html_tidy_ignore_errors = []
@@ -50,27 +44,9 @@ if !exists('g:syntastic_html_tidy_empty_tags')
     let g:syntastic_html_tidy_empty_tags = []
 endif
 
-let s:save_cpo = &cpo
-set cpo&vim
+" }}}1
 
-" TODO: join this with xhtml.vim for DRY's sake?
-function! s:TidyEncOptByFenc()
-    let TIDY_OPTS = {
-            \ 'utf-8':        '-utf8',
-            \ 'ascii':        '-ascii',
-            \ 'latin1':       '-latin1',
-            \ 'iso-2022-jp':  '-iso-2022',
-            \ 'cp1252':       '-win1252',
-            \ 'macroman':     '-mac',
-            \ 'utf-16le':     '-utf16le',
-            \ 'utf-16':       '-utf16',
-            \ 'big5':         '-big5',
-            \ 'cp932':        '-shiftjis',
-            \ 'sjis':         '-shiftjis',
-            \ 'cp850':        '-ibm858',
-        \ }
-    return get(TIDY_OPTS, &fileencoding, '-utf8')
-endfunction
+" Constants {{{1
 
 let s:IGNORE_ERRORS = [
         \ "<table> lacks \"summary\" attribute",
@@ -163,29 +139,9 @@ let s:EMPTY_TAGS = [
     \ ]
 lockvar! s:EMPTY_TAGS
 
-function! s:IgnoreError(text)
-    for item in s:IGNORE_ERRORS + g:syntastic_html_tidy_ignore_errors
-        if stridx(a:text, item) != -1
-            return 1
-        endif
-    endfor
-    return 0
-endfunction
+" }}}1
 
-function! s:NewTags(name)
-    return syntastic#util#shescape(join( s:{toupper(a:name)} + g:syntastic_html_tidy_{a:name}, ',' ))
-endfunction
-
-function! s:Args()
-    let args = s:TidyEncOptByFenc() .
-        \ ' --new-blocklevel-tags ' . s:NewTags('blocklevel_tags') .
-        \ ' --new-inline-tags ' . s:NewTags('inline_tags') .
-        \ ' --new-empty-tags ' . s:NewTags('empty_tags') .
-        \ ' -e'
-    return args
-endfunction
-
-function! SyntaxCheckers_html_tidy_GetLocList() dict
+function! SyntaxCheckers_html_tidy_GetLocList() dict " {{{1
     let makeprg = self.makeprgBuild({ 'args_after': s:Args() })
 
     let errorformat =
@@ -207,7 +163,52 @@ function! SyntaxCheckers_html_tidy_GetLocList() dict
     endfor
 
     return loclist
-endfunction
+endfunction " }}}1
+
+" Utilities {{{1
+
+" TODO: join this with xhtml.vim for DRY's sake?
+function! s:TidyEncOptByFenc() " {{{2
+    let TIDY_OPTS = {
+            \ 'utf-8':        '-utf8',
+            \ 'ascii':        '-ascii',
+            \ 'latin1':       '-latin1',
+            \ 'iso-2022-jp':  '-iso-2022',
+            \ 'cp1252':       '-win1252',
+            \ 'macroman':     '-mac',
+            \ 'utf-16le':     '-utf16le',
+            \ 'utf-16':       '-utf16',
+            \ 'big5':         '-big5',
+            \ 'cp932':        '-shiftjis',
+            \ 'sjis':         '-shiftjis',
+            \ 'cp850':        '-ibm858',
+        \ }
+    return get(TIDY_OPTS, &fileencoding, '-utf8')
+endfunction " }}}2
+
+function! s:IgnoreError(text) " {{{2
+    for item in s:IGNORE_ERRORS + g:syntastic_html_tidy_ignore_errors
+        if stridx(a:text, item) != -1
+            return 1
+        endif
+    endfor
+    return 0
+endfunction " }}}2
+
+function! s:NewTags(name) " {{{2
+    return syntastic#util#shescape(join( s:{toupper(a:name)} + g:syntastic_html_tidy_{a:name}, ',' ))
+endfunction " }}}2
+
+function! s:Args() " {{{2
+    let args = s:TidyEncOptByFenc() .
+        \ ' --new-blocklevel-tags ' . s:NewTags('blocklevel_tags') .
+        \ ' --new-inline-tags ' . s:NewTags('inline_tags') .
+        \ ' --new-empty-tags ' . s:NewTags('empty_tags') .
+        \ ' -e'
+    return args
+endfunction " }}}2
+
+" }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'html',
@@ -216,4 +217,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

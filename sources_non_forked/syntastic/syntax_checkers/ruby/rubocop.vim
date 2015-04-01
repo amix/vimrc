@@ -9,9 +9,6 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" In order to use rubocop with the default ruby checker (mri):
-"     let g:syntastic_ruby_checkers = ['mri', 'rubocop']
 
 if exists("g:loaded_syntastic_ruby_rubocop_checker")
     finish
@@ -25,15 +22,11 @@ function! SyntaxCheckers_ruby_rubocop_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-
-    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
-    call self.log(self.getExec() . ' version =', ver)
-
-    return syntastic#util#versionIsAtLeast(ver, [0, 9, 0])
+    return syntastic#util#versionIsAtLeast(self.getVersion(), [0, 12, 0])
 endfunction
 
 function! SyntaxCheckers_ruby_rubocop_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '--format emacs --silent' })
+    let makeprg = self.makeprgBuild({ 'args_after': '--format emacs' })
 
     let errorformat = '%f:%l:%c: %t: %m'
 
@@ -61,4 +54,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

@@ -25,10 +25,7 @@ function! SyntaxCheckers_coffee_coffee_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-
-    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version 2>' . syntastic#util#DevNull())
-    call self.log(self.getExec() . ' version = ', ver)
-
+    let ver = self.getVersion(self.getExecEscaped() . ' --version 2>' . syntastic#util#DevNull())
     return syntastic#util#versionIsAtLeast(ver, [1, 6, 2])
 endfunction
 
@@ -58,4 +55,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

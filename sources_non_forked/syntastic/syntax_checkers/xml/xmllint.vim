@@ -23,7 +23,9 @@ set cpo&vim
 " and http://www.xmlsoft.org/catalog.html for more information.
 
 function! SyntaxCheckers_xml_xmllint_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '--xinclude --noout --postvalid' })
+    let makeprg = self.makeprgBuild({
+        \ 'args': '--xinclude --postvalid',
+        \ 'args_after': '--noout' })
 
     let errorformat=
         \ '%E%f:%l: error : %m,' .
@@ -49,4 +51,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

@@ -12,7 +12,20 @@ function! GotoFile(w)
         let pos = ""
         let fname = curword
     endif
-    " Open new window if requested
+ 
+    " check exists file.
+    if filereadable(fname)
+        let fullname = fname
+    else
+        " try find file with prefix by working directory
+        let fullname = getcwd() . '/' . fname
+        if ! filereadable(fullname)
+            " the last try, using current directory based on file opened.
+            let fullname = expand('%:h') . '/' . fname
+        endif
+    endif
+
+   " Open new window if requested
     if a:w == "new"
         new
     endif

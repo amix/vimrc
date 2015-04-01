@@ -20,9 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_coffee_coffeelint_GetLocList() dict
     if !exists('s:coffeelint_new')
-        let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
-        call self.log(self.getExec() . ' version =', ver)
-        let s:coffeelint_new = syntastic#util#versionIsAtLeast(ver, [1, 4])
+        let s:coffeelint_new = syntastic#util#versionIsAtLeast(self.getVersion(), [1, 4])
     endif
     let makeprg = self.makeprgBuild({ 'args_after': (s:coffeelint_new ? '--reporter csv' : '--csv') })
 
@@ -46,4 +44,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

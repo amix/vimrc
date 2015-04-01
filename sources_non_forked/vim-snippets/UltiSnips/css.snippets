@@ -1,18 +1,130 @@
+priority -50
+
+snippet . "selector { }"
+$1 {
+	$0
+}
+endsnippet
+
+snippet p "padding"
+padding: ${1:0};$0
+endsnippet
+
+snippet m "margin"
+margin: ${1:0};$0
+endsnippet
+
+snippet bd "border"
+border: ${1:0};$0
+endsnippet
+
+snippet d "display"
+display: ${1:none};$0
+endsnippet
+
+snippet bg "background"
+background: ${1:none};$0
+endsnippet
+
+snippet ff "font-family"
+font-family: ${1:"Helvetica Neue", Helvetica, Arial, sans-serif};$0
+endsnippet
+
+snippet h "height"
+height: ${1:auto};$0
+endsnippet
+
+snippet w "width"
+width: ${1:auto};$0
+endsnippet
+
+snippet pos "position"
+position: ${1:relative};$0
+endsnippet
+
+snippet tt "text-transform"
+text-transform: ${1:none};$0
+endsnippet
+
+snippet ! "!important CSS (!)"
+!important
+endsnippet
+
+snippet tsh "text-shadow: color-hex x y blur (text)"
+text-shadow: ${1:${2:color} ${3:offset-x} ${4:offset-y} ${5:blur}};$0
+endsnippet
+
+snippet bxsh "box-shadow: color-hex x y blur (text)"
+box-shadow: ${1:${2:offset-x} ${3:offset-y} ${4:blur} ${5:spread} ${6:color}};$0
+endsnippet
+
+#
+# Colors
+#
+
+snippet rgb "color rgb"
+rgb(${1:255}, ${2:255}, ${3:255})$0
+endsnippet
+
+snippet rgba "color rgba"
+rgba(${1:255}, ${2:255}, ${3:255}, ${4:0.5})$0
+endsnippet
+
+snippet hsl "color hsl"
+hsl(${1:360}, ${2:100}%, ${3:100}%)$0
+endsnippet
+
+snippet hsla "color hsla"
+hsla(${1:360}, ${2:100}%, ${3:100}%, ${4:0.5})$0
+endsnippet
+
+#
+# Selectors
+#
+
+snippet :fc
+:first-child
+endsnippet
+
+snippet :lc
+:last-child
+endsnippet
+
+snippet :nc
+:nth-child($0)
+endsnippet
+
+snippet :nlc
+:nth-last-child($0)
+endsnippet
+
+snippet :oc
+:only-child
+endsnippet
+
+#
+# Pseudo-elements
+#
+
+snippet :a
+:after
+endsnippet
+
+snippet :b
+:before
+endsnippet
+
+snippet ::a
+::after
+endsnippet
+
+snippet ::b
+::before
+endsnippet
+
 ###########################################################################
 #                    Most of these came from TextMate                     #
 ###########################################################################
-
-priority -50
-
-snippet ! "!important CSS (!)"
-${1:!important}
-endsnippet
-
-snippet fixed "Fixed Position Bottom 100% wide IE6"
-${2:bottom: auto;}top: expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-${1:THE HEIGHT OF THIS THING IN PIXELS}));
-${3:left: expression(eval(document.documentElement.scrollLeft));
-}${4:width: expression(eval(document.documentElement.clientWidth));}$0
-endsnippet
 
 snippet background "background-attachment: scroll:fixed (background)"
 background-attachment: ${1:scroll/fixed};$0
@@ -360,24 +472,8 @@ snippet text "text-indent: length (text)"
 text-indent: ${1:10}px;$0
 endsnippet
 
-snippet text "text-shadow: color-hex x y blur (text)"
-text-shadow: #${1:DDD} ${2:10px} ${3:10px} ${4:2px};$0
-endsnippet
-
-snippet text "text-shadow: color-rgb x y blur (text)"
-text-shadow: rgb(${1:255},${2:255},${3:255}) ${4:10px} ${5:10px} ${6:2px};$0
-endsnippet
-
-snippet text "text-shadow: none (text)"
-text-shadow: none;$0
-endsnippet
-
 snippet text "text-transform: capitalize:upper:lower (text)"
 text-transform: ${1:capitalize/uppercase/lowercase};$0
-endsnippet
-
-snippet text "text-transform: none (text)"
-text-transform: none;$0
 endsnippet
 
 snippet vertical "vertical-align: type (vertical)"
@@ -394,10 +490,6 @@ endsnippet
 
 snippet word "word-spacing:  length (word)"
 word-spacing: ${1:10px};$0
-endsnippet
-
-snippet word "word-spacing:  normal (word)"
-word-spacing: normal;$0
 endsnippet
 
 snippet z "z-index: index (z)"

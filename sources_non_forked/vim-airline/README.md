@@ -7,7 +7,7 @@ Lean &amp; mean status/tabline for vim that's light as air.
 # Features
 
 *  Tiny core written with extensibility in mind ([open/closed principle][8]).
-*  Integrates with a variety of plugins, including: [vim-bufferline][6], [fugitive][4], [unite][9], [ctrlp][10], [minibufexpl][15], [gundo][16], [undotree][17], [nerdtree][18], [tagbar][19], [vim-gitgutter][29], [vim-signify][30], [syntastic][5], [eclim][34], [lawrencium][21], [virtualenv][31], [tmuxline][35].
+*  Integrates with a variety of plugins, including: [vim-bufferline][6], [fugitive][4], [unite][9], [ctrlp][10], [minibufexpl][15], [gundo][16], [undotree][17], [nerdtree][18], [tagbar][19], [vim-gitgutter][29], [vim-signify][30], [syntastic][5], [eclim][34], [lawrencium][21], [virtualenv][31], [tmuxline][35], [taboo.vim][37], [ctrlspace][38] and more.
 *  Looks good with regular fonts and provides configuration points so you can use unicode or powerline symbols.
 *  Optimized for speed; it loads in under a millisecond.
 *  Extensive suite of themes for popular color schemes including [solarized][23] (dark and light), [tomorrow][24] (all variants), [base16][32] (all variants), [molokai][25], [jellybeans][26] and others; have a look at the [screenshots][14] in the wiki.
@@ -118,6 +118,7 @@ This plugin follows the standard runtime path structure, and as such it can be i
 
 *  [Pathogen][11]
   *  `git clone https://github.com/bling/vim-airline ~/.vim/bundle/vim-airline`
+  *  Remember to run `:Helptags` to generate help tags
 *  [NeoBundle][12]
   *  `NeoBundle 'bling/vim-airline'`
 *  [Vundle][13]
@@ -150,9 +151,11 @@ Whoa!  Everything got slow all of a sudden...
 
 vim-airline strives to make it easy to use out of the box, which means that by default it will look for all compatible plugins that you have installed and enable the relevant extension.
 
-Many optimizations have been made such that the majority of users will not see any performance degradation, but it can still happen.  For example, users who routinely open very large files may want to disable the tagbar extension, as it can be very expensive to scan for the name of the current function.
+Many optimizations have been made such that the majority of users will not see any performance degradation, but it can still happen.  For example, users who routinely open very large files may want to disable the `tagbar` extension, as it can be very expensive to scan for the name of the current function.
 
 The [minivimrc][7] project has some helper mappings to troubleshoot performance related issues.
+
+If you don't want all the bells and whistles enabled by default, you can define a value for `g:airline_extensions`.  When this variable is defined, only the extensions listed will be loaded; an empty array would effectively disable all extensions.
 
 # Screenshots
 
@@ -177,7 +180,7 @@ Contributions and pull requests are welcome.  Please take note of the following 
 
 # License
 
-MIT License. Copyright (c) 2013-2014 Bailey Ling.
+MIT License. Copyright (c) 2013-2015 Bailey Ling.
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bling/vim-airline/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
@@ -218,3 +221,5 @@ MIT License. Copyright (c) 2013-2014 Bailey Ling.
 [34]: http://eclim.org
 [35]: https://github.com/edkolev/tmuxline.vim
 [36]: https://github.com/edkolev/promptline.vim
+[37]: https://github.com/gcmt/taboo.vim
+[38]: https://github.com/szw/vim-ctrlspace

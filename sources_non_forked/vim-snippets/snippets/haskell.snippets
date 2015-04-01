@@ -2,6 +2,8 @@ snippet lang
 	{-# LANGUAGE ${0:OverloadedStrings} #-}
 snippet haddock
 	{-# OPTIONS_HADDOCK ${0:hide} #-}
+snippet inline
+	{-# INLINE ${0:name} #-}
 snippet info
 	-- |
 	-- Module      :  ${1:Module.Namespace}
@@ -14,10 +16,14 @@ snippet info
 	--
 	-- ${0:Description}
 	--
+snippet imp
+	import ${0:Data.Text}
 snippet import
 	import           ${0:Data.Text}
 snippet import2
 	import           ${1:Data.Text} (${0:head})
+snippet impq
+	import qualified ${1:Data.Text} as ${0:T}
 snippet importq
 	import qualified ${1:Data.Text} as ${0:T}
 snippet inst
@@ -52,9 +58,11 @@ snippet do
 	do
 
 snippet λ
-	\${1:x} -> ${0}
+	\\${1:x} -> ${0:expression}
 snippet \
-	\${1:x} -> ${0}
+	\\${1:x} -> ${0:expression}
+snippet (\
+	(\\${1:x} -> ${0:expression})
 snippet <-
 	${1:a} <- ${0:m a}
 snippet ←

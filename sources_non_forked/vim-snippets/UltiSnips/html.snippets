@@ -160,12 +160,16 @@ snippet base "XHTML <base>" w
 <base href="$1"${2: target="$3"}`!p x(snip)`>
 endsnippet
 
-snippet body "XHTML <body>"
-<body id="${1:`!p
-snip.rv = snip.fn and 'Hallo' or 'Nothin'
-`}"${2: onload="$3"}>
+snippet body "<body>"
+<body>
 	$0
 </body>
+endsnippet
+
+snippet div "<div>" w
+<div>
+	$0
+</div>
 endsnippet
 
 snippet div. "<div> with class" w
@@ -191,7 +195,7 @@ snip.rv = (snip.basename or 'unnamed') + '_submit'
 endsnippet
 
 snippet h1 "XHTML <h1>" w
-<h1 id="${1/[\w\d]+|( )/(?1:_:\L$0\E)/g}">${1}</h1>
+<h1>$0</h1>
 endsnippet
 
 snippet head "XHTML <head>"
@@ -286,23 +290,5 @@ snippet movie "Embed QT movie (movie)" b
 		pluginspage="http://www.apple.com/quicktime/download/"
 	`!p x(snip)`>
 </object>
-endsnippet
-
-snippet html5 "HTML5 Template"
-<!DOCTYPE html>
-<html>
-<head>
-	<title>${1}</title>
-	<meta charset="utf-8" />
-</head>
-<body>
-	<header>
-		${2}
-	</header>
-	<footer>
-		${4}
-	</footer>
-</body>
-</html>
 endsnippet
 # vim:ft=snippets:

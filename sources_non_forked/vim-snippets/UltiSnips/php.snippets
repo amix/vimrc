@@ -102,44 +102,53 @@ var_export(${1});${2}
 endsnippet
 
 snippet getter "PHP Class Getter" b
-/*
+/**
  * Getter for $1
+ *
+ * ${2:return string}
  */
 public function get${1/\w+\s*/\u$0/}()
 {
-	return $this->$1;$2
+    return $this->$1;$3
 }
-$4
 endsnippet
 
 snippet setter "PHP Class Setter" b
-/*
+/**
  * Setter for $1
+ *
+ * @param ${2:string} $$1                                                                                                                               
+ * @return ${3:`!p snip.rv=snip.basename`}
  */
-public function set${1/\w+\s*/\u$0/}($$1)
+public function set${1/\w+\s*/\u$0/}(${4:${2/(void|string|int|integer|double|float|object|boolear|null|mixed|number|resource)|(.*)/(?1::$2 )/}}$$1)
 {
-	$this->$1 = $$1;$3
-	${4:return $this;}
+    $this->$1 = $$1;$5
+    ${6:return $this;}
 }
 $0
 endsnippet
 
 snippet gs "PHP Class Getter Setter" b
-/*
+/**
  * Getter for $1
+ *
+ * return ${2:string}
  */
 public function get${1/\w+\s*/\u$0/}()
 {
-	return $this->$1;$2
+    return $this->$1;$3
 }
 
-/*
+/**
  * Setter for $1
+ *
+ * @param $2 $$1
+ * @return ${4:`!p snip.rv=snip.basename`}
  */
-public function set${1/\w+\s*/\u$0/}($$1)
+public function set${1/\w+\s*/\u$0/}(${5:${2/(void|string|int|integer|double|float|object|boolear|null|mixed|number|resource)|(.*)/(?1::$2 )/}}$$1)
 {
-	$this->$1 = $$1;$3
-	${4:return $this;}
+    $this->$1 = $$1;$6
+    ${7:return $this;}
 }
 $0
 endsnippet
@@ -251,35 +260,54 @@ if (${1:/* condition */}) {
 $0
 endsnippet
 
-snippet class "Class declaration template" b
-/**
- * Class ${2:`!p snip.rv=snip.fn.split('.')[0]`}
- * @author ${3:`!v g:snips_author`}
- */
-$1class $2
-{
-	public function ${4:__construct}(${5:$options})
-	{
-		${6:// code}
-	}
-}
-$0
+snippet ns "namespace declaration" b
+namespace ${1:`!p
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`};
 endsnippet
 
-snippet interface "interface declaration template" b
+snippet class "Class declaration template" b
+<?php
+
+namespace ${1:`!p
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`};
+
 /**
- * Interface ${1:`!p snip.rv=snip.fn.split('.')[0]`}
+ * Class ${1:`!p snip.rv=snip.basename`}
+ * @author ${2:`!v g:snips_author`}
+ */
+class $1
+{
+}
+endsnippet
+
+snippet interface "Interface declaration template" b
+<?php
+
+namespace ${1:`!p
+abspath = os.path.abspath(path)
+m = re.search(r'[A-Z].+(?=/)', abspath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`};
+
+/**
+ * Interface ${1:`!p snip.rv=snip.basename`}
  * @author ${2:`!v g:snips_author`}
  */
 interface $1
 {
-	public function ${3:__construct}(${4:$options})
-	{
-		${5:// code}
-	}
+	public function ${3:someFunction}();$4                                                                                                              
 }
-$0
 endsnippet
+
 
 snippet construct "__construct()" b
 /**

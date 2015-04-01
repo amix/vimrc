@@ -8,9 +8,6 @@
 "             Want To Public License, Version 2, as published by Sam Hocevar.
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
-"
-"Installation: $ npm install -g js-yaml
-"
 "============================================================================
 
 if exists("g:loaded_syntastic_yaml_jsyaml_checker")
@@ -23,9 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_yaml_jsyaml_GetLocList() dict
     if !exists('s:js_yaml_new')
-        let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
-        call self.log(self.getExec() . ' version =', ver)
-        let s:js_yaml_new = syntastic#util#versionIsAtLeast(ver, [2])
+        let s:js_yaml_new = syntastic#util#versionIsAtLeast(self.getVersion(), [2])
     endif
 
     let makeprg = self.makeprgBuild({ 'args_after': (s:js_yaml_new ? '' : '--compact') })
@@ -49,4 +44,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

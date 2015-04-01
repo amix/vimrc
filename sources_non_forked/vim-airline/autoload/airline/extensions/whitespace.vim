@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2014 Bailey Ling.
+" MIT License. Copyright (c) 2013-2015 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 " http://got-ravings.blogspot.com/2008/10/vim-pr0n-statusline-whitespace-flags.html
@@ -67,7 +67,7 @@ function! airline#extensions#whitespace#check()
     endif
   endif
   return b:airline_whitespace_check
-endfunction!
+endfunction
 
 function! airline#extensions#whitespace#toggle()
   if s:enabled

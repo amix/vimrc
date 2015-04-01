@@ -39,8 +39,9 @@ easiest to understand with some examples:
   <div>Yo!*</div>           dst         Yo!
 
 Change surroundings is *cs* .  It takes two arguments, a target like with
-|ds|, and a replacement.  Details about the second argument can be found
-below in |surround-replacements|.  Once again, examples are in order.
+|ds|, and a replacement.  *cS* changes surroundings, placing the surrounded
+text on its own line(s) like |yS|.  Details about the second argument can be
+found below in |surround-replacements|.  Once again, examples are in order.
 
   Old text                  Command     New text ~
   "Hello *world!"           cs"'        'Hello world!'
@@ -129,9 +130,10 @@ code blocks in C-style languages, <C-}> (which is really <C-]>) adds braces on
 lines separate from the content.
 
 If t or < is used, Vim prompts for an HTML/XML tag to insert.  You may specify
-attributes here and they will be stripped from the closing tag.  End your
-input by pressing <CR> or >.  If <C-T> is used, the tags will appear on lines
-by themselves.
+attributes here and they will be stripped from the closing tag. If replacing a
+tag, its attributes are kept in the new tag. End your input with > to discard
+the those attributes. If <C-T> is used, the tags will appear on lines by
+themselves.
 
 If s is used, a leading but not trailing space is added.  This is useful for
 removing parentheses from a function call with csbs.

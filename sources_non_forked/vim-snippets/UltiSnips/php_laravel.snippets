@@ -1,0 +1,257 @@
+#resource controller
+snippet l_rsc "Laravel resource controller" b
+/*!
+ * \class       ${1:`!v expand('%:t:r')`}
+ *
+ * \author      ${2:`!v g:snips_author`}
+ * \date        `!v strftime('%d-%m-%y')`
+ */
+
+class $1 extends ${3: BaseController} {
+    function __construct() {
+        ${4}
+    }
+    
+    public function index() {
+    }
+    
+    public function create() {
+    }
+    
+    public function store($id) {
+    }
+    
+    public function show($id) {
+    }
+    
+    public function edit($id) {
+    }
+    
+    public function update($id) {
+    }
+    
+    public function destroy($id) {
+    }
+}
+endsnippet
+
+#service service provider
+snippet l_ssp "Laravel service provider for service" b
+/*!
+ * \namespace   ${1:Services}
+ * \class       ${2:`!v expand('%:t:r')`}
+ *
+ * \author      ${3:`!v g:snips_author`}
+ * \date        `!v strftime('%d-%m-%y')`
+ */
+
+namespace $1;
+
+use Illuminate\Support\ServiceProvider;
+
+class $2 extends ServiceProvider {
+    
+    public function register() {
+        $this->app->bind('${4}Service', function ($app) {
+            return new ${5}(
+                $app->make('Repositories\\${6}Interface')
+            );
+        });
+    }
+}
+endsnippet
+
+#repository service provider
+snippet l_rsp "Laravel service provider for repository" b
+/*!
+ * \namespace   ${2:Repositories\\${1:}}
+ * \class       ${3:`!v expand('%:t:r')`}
+ *
+ * \author      ${4:`!v g:snips_author`}
+ * \date        `!v strftime('%d-%m-%y')`
+ */
+
+namespace $2;
+
+use Entities\\$1;
+use $2\\$1Repository;
+use Illuminate\Support\ServiceProvider;
+
+class $3 extends ServiceProvider {
+    /*!
+     * \var     defer
+     * \brief   Defer service
+     */
+    protected $defer = ${5:true};
+
+    public function register() {
+        $this->app->bind('$2\\$1Interface', function($app) {
+            return new $1Repository(new $1());
+        });
+    }
+
+    /*!
+     * \brief   If $defer == true need this fn
+     */ 
+    public function provides() {
+        return ['$2\\$1Interface'];
+    }
+}
+endsnippet
+
+#model
+snippet l_md "Laravel simple model" b
+/*!
+ * \namespace   ${1:Entities}
+ * \class       ${2:`!v expand('%:t:r')`}
+ *
+ * \author      ${3:`!v g:snips_author`}
+ * \date        `!v strftime('%d-%m-%y')`
+ */
+
+namespace $1;
+
+class $2 extends \Eloquent {
+    protected $table   = '${4:`!p snip.rv = t[2].lower()`}';
+
+    public $timestamps = ${5:false};
+
+    protected $hidden  = array(${6});
+
+    protected $guarded = array(${7:'id'});
+}
+endsnippet
+
+#abstract repository
+snippet l_ar "Laravel abstract Repository" b
+/*!
+ * \namespace   ${1:Repositories}
+ * \class       ${2:`!v expand('%:t:r')`}
+ * \implements  ${3:BaseRepositoryInterface}
+ *
+ * \author      ${4:`!v g:snips_author`}
+ * \date        `!v strftime('%d-%m-%y')`
+ */
+
+namespace $1;
+
+use Illuminate\Database\Eloquent\Model;
+
+abstract class $2 implements $3 {
+    protected $model;
+
+    /*!
+     * \fn      __construct
+     *
+     * \brief   Take the model
+     */
+
+    public function __construct(Model $model) {
+        $this->model = $model;
+    }
+
+    /*!
+     * \fn      all
+     *
+     * \return  Illuminate\Database\Eloquent\Collection
+     */
+    public function all($columns = array('*')) {
+        return $this->model->all()->toArray();
+    }
+
+    /*!
+     * \fn      create
+     *
+     * \return  Illuminate\Database\Eloquent\Model
+     */
+    public function create(array $attributes) {
+        return $this->model->create($attributes);
+    }
+
+    /*!
+     * \fn      destroy
+     *
+     * \return  int
+     */
+    public function destroy($ids) {
+        return $this->model->destroy($ids);
+    }
+
+    /*!
+     * \fn      find
+     *
+     * \return  mixed
+     */
+    public function find($id, $columns = array('*')) {
+        return $this->model->find($id, $columns);
+    }
+}
+endsnippet
+
+#repository
+snippet l_r "Laravel Repository" b
+/*!
+ * \namespace   ${1:Repositories\\${2}}
+ * \class       ${3:`!v expand('%:t:r')`}
+ * \implements  ${4:$3RepositoryInterface}
+ *
+ * \author      ${5:`!v g:snips_author`}
+ * \date        `!v strftime('%d-%m-%y')`
+ */
+
+namespace $1;
+
+class $3 extends \\${6} implements $4 {
+    ${7}
+}
+endsnippet
+
+#service
+snippet l_s "Laravel Service" b
+/*!
+ * \namespace   ${1:Services}
+ * \class       ${2:`!v expand('%:t:r')`}
+ *
+ * \author      ${3:`!v g:snips_author`}
+ * \date        `!v strftime('%d-%m-%y')`
+ */
+
+namespace $1;
+
+use ${4:Repositories\\${5:Interface}};
+
+class $2 {
+    protected $${6:repo};
+    
+    /*!
+     * \fn      __construct
+     */
+    public function __construct($5 $repo) {
+        $this->$6 = $repo;
+    }
+}
+endsnippet
+
+#facade
+snippet l_f "Laravel Facade" b
+/*!
+ * \namespace   ${1:Services}
+ * \class       ${2:`!v expand('%:t:r')`}
+ *
+ * \author      ${3:`!v g:snips_author`}
+ * \date        `!v strftime('%d-%m-%y')`
+ */
+
+namespace $1;
+
+use \Illuminate\Support\Facades\Facade;
+
+class $2 extends Facade {
+    /*!
+     * \fn          getFacadeAccessor
+     *
+     * \return      string
+     */
+    protected static function getFacadeAccessor() { return '${5:${4}Service}'; }
+}
+endsnippet

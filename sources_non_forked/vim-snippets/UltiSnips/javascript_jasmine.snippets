@@ -169,3 +169,16 @@ endsnippet
 snippet noscw "expect was not called with (js)" b
 expect(${1:target}).wasNotCalledWith(${2:arguments});
 endsnippet
+
+snippet ethbc "expect to have been called (js)" b
+expect(${1:target}).toHaveBeenCalled();
+endsnippet
+
+snippet nthbc "expect not to have been called (js)" b
+expect(${1:target}).not.toHaveBeenCalled();
+endsnippet
+
+snippet ethbcw "expect to have been called with (js)" b
+expect(${1:target}).toHaveBeenCalledWith(${2:arguments});
+endsnippet
+

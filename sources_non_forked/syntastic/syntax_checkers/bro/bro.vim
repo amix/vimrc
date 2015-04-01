@@ -28,7 +28,7 @@ function! SyntaxCheckers_bro_bro_IsAvailable() dict
         return 0
     endif
 
-    if system(self.getExecEscaped() . ' --help') !~# '--parse-only'
+    if syntastic#util#system(self.getExecEscaped() . ' --help') !~# '--parse-only'
         call self.log('unknown option "--parse-only"')
         return 0
     endif
@@ -57,4 +57,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

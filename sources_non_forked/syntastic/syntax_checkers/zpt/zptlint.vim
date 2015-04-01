@@ -9,15 +9,6 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" In order for this plugin to be useful, you will need to set up the
-" zpt filetype in your vimrc
-"
-"    " set up zope page templates as the zpt filetype
-"    au BufNewFile,BufRead *.pt,*.cpt,*.zpt set filetype=zpt syntax=xml
-"
-" Then install the zptlint program, found on pypi:
-" http://pypi.python.org/pypi/zptlint
 
 if exists("g:loaded_syntastic_zpt_zptlint_checker")
     finish
@@ -48,4 +39,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:
