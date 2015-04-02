@@ -1,6 +1,7 @@
 nnoremap <F9> :exe 'NERDTreeToggle'<CR>
 "set pastetoggle=<F2>
 
+"for outside paste mistake
 nnoremap <F2> :set invpaste paste?<CR>
 imap <F2> <C-O>:set invpaste paste?<CR>
 set pastetoggle=<F2>

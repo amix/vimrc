@@ -40,6 +40,13 @@ else
     let g:colors_name="desert"
 endif
 
+colorscheme molokai
+set background=dark
+let g:molokai_original=1
+let g:rehash256=1
+
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Fast editing and reloading of vimrc configs
