@@ -61,9 +61,6 @@
 [submodule "bundle/vimux"]
 	path = bundle/vimux
 	url = https://github.com/benmills/vimux
-[submodule "bundle/colorschemes"]
-	path = bundle/colorschemes
-	url = git@github.com:flazz/vim-colorschemes.git
 [submodule "bundle/vim-github-colorscheme"]
 	path = bundle/vim-github-colorscheme
 	url = git@github.com:endel/vim-github-colorscheme.git
