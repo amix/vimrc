@@ -4,3 +4,6 @@
 [submodule "bundle/vim-dispatch"]
 	path = bundle/vim-dispatch
 	url = git://github.com/tpope/vim-dispatch.git
+[submodule "bundle/werewolf.vim"]
+	path = bundle/werewolf.vim
+	url = git@github.com:jonstoler/werewolf.vim.git
