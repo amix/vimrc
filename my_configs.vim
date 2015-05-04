@@ -1,19 +1,29 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" cursor line
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! SetupCursorLine(...)
+  highlight CursorLine ctermbg=NONE cterm=NONE gui=NONE
+  highlight LineNr ctermfg=darkgrey
+  set cursorline
+  let &colorcolumn="80,".join(range(120,999),",")
+  highlight ColorColumn ctermbg=235
+endfunction
+
+call SetupCursorLine()
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " werewolf.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! ToggleColorScheme(...)
+  :call WerewolfToggle()
+  :call SetupCursorLine()
+endfunction
 
 let g:werewolf_day_themes = ['github']
 let g:werewolf_night_themes = ['desert']
 let g:werewolf_change_automatically = 0
 " Fast toogle
-nmap <leader>. :WerewolfToggle<cr>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" cursor line
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-highlight CursorLine ctermbg=NONE cterm=NONE gui=NONE
-highlight LineNr ctermfg=darkgrey
-set cursorline
+nmap <leader>. :call ToggleColorScheme()<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => my custom settings
@@ -21,8 +31,6 @@ set cursorline
 set number                      " line numbers
 set nocompatible                " choose no compatibility with legacy vi
 set nowrap                      " don't wrap lines
-let &colorcolumn="80,".join(range(120,999),",")
-highlight ColorColumn ctermbg=235
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => trailing whitespaces (show & remove on save)
