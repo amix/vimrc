@@ -7,6 +7,63 @@
 [submodule "bundle/werewolf.vim"]
 	path = bundle/werewolf.vim
 	url = git@github.com:jonstoler/werewolf.vim.git
+[submodule "bundle/ag"]
+	path = bundle/ag
+	url = git@github.com:rking/ag.vim.git
+[submodule "bundle/dash.vim"]
+	path = bundle/dash.vim
+	url = https://github.com/rizzatti/dash.vim.git
+[submodule "bundle/splice.vim"]
+	path = bundle/splice.vim
+	url = https://github.com/sjl/splice.vim.git
+[submodule "bundle/vim-csharp"]
+	path = bundle/vim-csharp
+	url = git@github.com:OrangeT/vim-csharp.git
+[submodule "bundle/vim-css3-syntax"]
+	path = bundle/vim-css3-syntax
+	url = https://github.com/hail2u/vim-css3-syntax.git
+[submodule "bundle/vim-css-color"]
+	path = bundle/vim-css-color
+	url = https://github.com/skammer/vim-css-color
+[submodule "bundle/vim-cucumber"]
+	path = bundle/vim-cucumber
+	url = https://github.com/tpope/vim-cucumber
+[submodule "bundle/vim-haml"]
+	path = bundle/vim-haml
+	url = https://github.com/chriseppstein/vim-haml
+[submodule "bundle/vim-javascript"]
+	path = bundle/vim-javascript
+	url = https://github.com/pangloss/vim-javascript
+[submodule "bundle/vim-json"]
+	path = bundle/vim-json
+	url = git@githvim-jsonub.com:elzr/vim-json.git
+[submodule "bundle/vim-puppet"]
+	path = bundle/vim-puppet
+	url = https://github.com/rodjek/vim-puppet
+[submodule "bundle/vim-rails"]
+	path = bundle/vim-rails
+	url = https://github.com/tpope/vim-rails
+[submodule "bundle/vim-rake"]
+	path = bundle/vim-rake
+	url = https://github.com/tpope/vim-rake
+[submodule "bundle/vim-ruby"]
+	path = bundle/vim-ruby
+	url = https://github.com/vim-ruby/vim-ruby
+[submodule "bundle/vim-ruby-refactoring"]
+	path = bundle/vim-ruby-refactoring
+	url = https://github.com/ecomba/vim-ruby-refactoring
+[submodule "bundle/vim-to-github"]
+	path = bundle/vim-to-github
+	url = https://github.com/tonchis/vim-to-github.git
+[submodule "bundle/vim-zoomwin"]
+	path = bundle/vim-zoomwin
+	url = git@github.com:amix/vimrc.git
+[submodule "bundle/vimux"]
+	path = bundle/vimux
+	url = https://github.com/benmills/vimux
 [submodule "bundle/colorschemes"]
 	path = bundle/colorschemes
 	url = git@github.com:flazz/vim-colorschemes.git
+[submodule "bundle/vim-github-colorscheme"]
+	path = bundle/vim-github-colorscheme
+	url = git@github.com:endel/vim-github-colorscheme.git
