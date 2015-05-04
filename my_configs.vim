@@ -1,4 +1,14 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" werewolf.vim
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:werewolf_day_themes = ['github']
+let g:werewolf_night_themes = ['desert']
+let g:werewolf_change_automatically = 0
+" Fast toogle
+nmap <leader>. :WerewolfToggle<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " cursor line
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 highlight CursorLine ctermbg=NONE cterm=NONE gui=NONE

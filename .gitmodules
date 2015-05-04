@@ -7,3 +7,6 @@
 [submodule "bundle/werewolf.vim"]
 	path = bundle/werewolf.vim
 	url = git@github.com:jonstoler/werewolf.vim.git
+[submodule "bundle/colorschemes"]
+	path = bundle/colorschemes
+	url = git@github.com:flazz/vim-colorschemes.git
