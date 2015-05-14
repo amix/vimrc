@@ -197,6 +197,7 @@ set tw=500
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
+set nu
 
 
 """"""""""""""""""""""""""""""
@@ -227,6 +228,10 @@ map <C-j> <C-W>j
 map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
+
+" Go to home and end using capitalized directions
+noremap H ^
+noremap L $
 
 " Close the current buffer
 map <leader>bd :Bclose<cr>

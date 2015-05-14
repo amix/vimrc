@@ -76,7 +76,7 @@ set grepprg=/bin/grep\ -nH
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Nerd Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:NERDTreeWinPos = "right"
+let g:NERDTreeWinPos = "left"
 let NERDTreeIgnore = ['\.pyc$']
 let g:NERDTreeWinSize=35
 map <leader>nn :NERDTreeToggle<cr>
