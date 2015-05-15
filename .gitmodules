@@ -1,0 +1,3 @@
+[submodule "sources_non_forked/gruvbox"]
+	path = sources_non_forked/gruvbox
+	url = git@github.com:morhetz/gruvbox.git
