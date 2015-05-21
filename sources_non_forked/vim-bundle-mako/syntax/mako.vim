@@ -60,6 +60,9 @@ syn region makoAttributeValue containedin=MakoTag contained start=/'/ skip=/\\'/
 syn region makoTag matchgroup=makoDelim start="<%\(def\|call\|page\|include\|namespace\|inherit\|block\|[a-zA-Z_][a-zA-Z0-9_]*:[a-zA-Z_][a-zA-Z0-9_]*\)\>" end="/\?>"
 syn match makoDelim "</%\(def\|call\|namespace\|block\|[a-zA-Z_][a-zA-Z0-9_]*:[a-zA-Z_][a-zA-Z0-9_]*\)>"
 
+syn region  makoJavaScript matchgroup=makoDelim start=+<%block .*js.*>+ keepend end=+</%block>+ contains=@htmlJavaScript,htmlCssStyleComment,htmlScriptTag,@htmlPreproc,makoLine,makoBlock,makoVariable
+syn region makoCssStyle matchgroup=makoDelim start=+<%block .*css.*>+ keepend end=+</%block>+ contains=@htmlCss,htmlTag,htmlEndTag,htmlCssStyleComment,@htmlPreproc,makoLine,makoBlock,makoVariable
+
 " Newline Escapes
 syn match makoEscape /\\$/
 

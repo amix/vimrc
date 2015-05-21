@@ -1,7 +1,7 @@
 # 0/*
 snippet fv
 	type		fixedValue;
-	value		uniform ${1};
+	value		uniform ${0};
 snippet zg
 	type		zeroGradient;
 snippet sym
@@ -17,7 +17,7 @@ snippet forces
 		outputInterval		${2:1};
 		patches				(${3});
 		log					${4:true};
-		CofR				(${5:0 0 0});
+		CofR				(${0:0 0 0});
 	}
 # system/fvSolution
 # solvers
@@ -26,7 +26,7 @@ snippet gamg
 	{
 		solver          GAMG;
 		tolerance       1e-${2:6};
-		relTol          ${3:0.0};
+		relTol          ${0:0.0};
 		smoother        GaussSeidel;
 		cacheAgglomeration true;
 		nCellsInCoarsestLevel 10;
@@ -39,7 +39,7 @@ snippet pbicg
 		solver          PBiCG;
 		preconditioner  DILU;
 		tolerance       1e-${2:6};
-		relTol          ${3:0.0};
+		relTol          ${0:0.0};
 	}
 # PIMPLE
 snippet pimple
@@ -49,5 +49,5 @@ snippet pimple
 		nCorrectors     	${2:inner};
 		nNonOrthogonalCorrectors ${3:nonOrtho};
 		pRefCell        	${4:cell};
-		pRefValue       	${5:value for $4};
+		pRefValue       	${0:value for $4};
 	}

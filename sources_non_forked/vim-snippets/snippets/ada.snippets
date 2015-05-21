@@ -1,0 +1,217 @@
+snippet wi with
+	with ${1};${0}
+
+snippet pac package
+	package ${1} is
+		${0}
+	end $1;
+
+snippet pacb package body
+	package body ${1} is
+		${0}
+	end $1;
+
+snippet ent entry ... when
+	entry ${1}(${2}) when ${3} is
+	begin
+		${0}
+	end $1;
+
+snippet task task
+	task ${1} is
+		entry ${0}
+	end $1;
+
+snippet taskb task body
+	task body ${1} is
+		${2}
+	begin
+		${0}
+	end $1;
+
+snippet acc accept
+	accept ${1}(${2}) do
+		${0}
+	end $1;
+
+snippet prot protected type
+	protected type ${1}(${2}) is
+		${0}
+	end $1;
+
+snippet prob protected body
+	protected body ${1} is
+		${2}
+	begin
+		${0}
+	end $1;
+
+snippet gen generic type
+	generic
+		type ${1} is ${2};${0}
+
+snippet ty type
+	type ${1} is ${2};${0}
+
+snippet tyd type with default value
+	type ${1} is ${2}
+		with Default_Value => ${3};${0}
+
+snippet subty subtype
+	subtype ${1} is ${2};${0}
+
+snippet dec declare block
+	declare
+		${1}
+	begin
+		${0}
+	end;
+
+snippet decn declare named block
+	${1}:
+	declare
+		${2}
+	begin
+		${0}
+	end $1;
+
+snippet ifex if expression
+	if ${1} then ${2} else ${0}
+
+snippet casex case expression
+	case ${1} is
+		when ${2} => ${3},${0}
+
+snippet fora for all
+	for all ${1} ${2:in} ${3} => ${0}
+
+snippet fors for some
+	for some ${1} ${2:in} ${3} => ${0}
+
+snippet if if
+	if ${1} then
+		${0}
+	end if;
+
+snippet ife if ... else
+	if ${1} then
+		${2}
+	else
+		${0}
+	end if;
+
+snippet el else
+	else
+		${0}
+
+snippet eif elsif
+	elsif ${1} then
+		${0}
+
+snippet wh while
+	while ${1} loop
+		${0}
+	end loop;
+
+snippet nwh named while
+	${1}:
+	while ${2} loop
+		${0}
+	end loop $1;
+
+snippet for for
+	for ${1:I} in ${2} loop
+		${0}
+	end loop;
+
+snippet fore for each
+	for ${1} of ${2} loop
+		${0}
+	end loop;
+
+snippet nfor named for
+	${1}:
+	for ${2:I} in ${3} loop
+		${0}
+	end loop $1;
+
+snippet nfore named for each
+	${1}:
+	for ${2} of ${3} loop
+		${0}
+	end loop $1;
+
+snippet proc procedure
+	procedure ${1}(${2}) is
+		${3}
+	begin
+		${0}
+	end $1;
+
+snippet procd procedure declaration
+	procedure ${1};${0}
+
+snippet fun function
+	function ${1}(${2}) return ${3} is
+		${4}
+	begin
+		${0}
+	end $1;
+
+snippet fune expression function
+	function ${1} return ${2} is
+		(${3});${0}
+
+snippet fund function declaration
+	function ${1} return ${2};${0}
+
+snippet ret extended return
+	return ${1} do
+		${0}
+	end return;
+
+snippet rec record
+	record
+		${0}
+	end record;
+
+snippet case case
+	case ${1} is
+		when ${2} => ${3};${0}
+	end case;
+
+snippet whe when
+	when ${1} => ${2};${0}
+
+snippet wheo when others
+	when others => ${1};${0}
+
+snippet lo loop
+	loop
+		${0}
+	end loop;
+
+snippet nlo named loop
+	${1}:
+	loop
+		${0}
+	end loop $1;
+
+snippet ex exit when
+	exit when ${1};${0}
+
+snippet put Ada.Text_IO.Put
+	Ada.Text_IO.Put(${1});${0}
+
+snippet putl Ada.Text_IO.Put_Line
+	Ada.Text_IO.Put_Line(${1});${0}
+
+snippet get Ada.Text_IO.Get
+	Ada.Text_IO.Get(${1});${0}
+
+snippet getl Ada.Text_IO.Get_Line
+	Ada.Text_IO.Get_Line(${1});${0}
+
+snippet newline Ada.Text_IO.New_Line
+	Ada.Text_IO.New_Line(${1:1});${0}
+

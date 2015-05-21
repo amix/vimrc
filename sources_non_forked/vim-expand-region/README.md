@@ -90,3 +90,7 @@ let g:expand_region_use_select_mode = 1
 [Pathogen]:http://github.com/tpope/vim-pathogen
 [Vundle]:http://github.com/gmarik/vundle
 [Neobundle]:http://github.com/Shougo/neobundle.vim
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/terryma/vim-expand-region/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+

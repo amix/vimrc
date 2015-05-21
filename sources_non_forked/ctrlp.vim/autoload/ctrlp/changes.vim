@@ -83,7 +83,9 @@ endf
 fu! ctrlp#changes#cmd(mode, ...)
 	let s:clmode = a:mode
 	if a:0 && !empty(a:1)
-		let s:bufnr = bufnr('^'.fnamemodify(a:1, ':p').'$')
+		let s:clmode = 0
+		let bname = a:1 =~# '^%$\|^#\d*$' ? expand(a:1) : a:1
+		let s:bufnr = bufnr('^'.fnamemodify(bname, ':p').'$')
 	en
 	retu s:id
 endf

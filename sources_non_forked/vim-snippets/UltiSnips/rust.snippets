@@ -1,0 +1,100 @@
+#######################################################################
+#                            Rust Snippets                            #
+#######################################################################
+
+priority -50
+
+snippet let "let variable declaration" b
+let ${1:name}${2:: ${3:type}} = ${4};
+endsnippet
+
+snippet letm "let mut variable declaration" b
+let mut ${1:name}${2:: ${3:type}} = ${4};
+endsnippet
+
+snippet fn "A function, optionally with arguments and return type."
+fn ${1:function_name}(${2})${3/..*/ -> /}${3} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet arg "Function Arguments" i
+${1:a}: ${2:T}${3:, arg}
+endsnippet
+
+snippet || "Closure, anonymous function (inline)" i
+${1:move }|${2}| { $3 }
+endsnippet
+
+snippet |} "Closure, anonymous function (block)" i
+${1:move }|${2}| {
+	$3
+}
+endsnippet
+
+snippet pri "print!(..)" b
+print!("${1}"${2/..*/, /}${2});
+endsnippet
+
+snippet pln "println!(..)" b
+println!("${1}"${2/..*/, /}${2});
+endsnippet
+
+snippet fmt "format!(..)"
+format!("${1}"${2/..*/, /}${2});
+endsnippet
+
+snippet macro "macro_rules!" b
+macro_rules! ${1:name} (
+	(${2:matcher}) => (
+		${3}
+	)
+)
+endsnippet
+
+snippet mod "A module" b
+mod ${1:`!p snip.rv = snip.basename.lower() or "name"`} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet for "for .. in .." b
+for ${1:i} in ${2:${3:0us}..${4:10}} {
+	${VISUAL}${0}
+}
+endsnippet
+
+snippet todo "A Todo comment"
+// [TODO]: ${1:Description} - `!v strftime("%Y-%m-%d %I:%M%P")`
+endsnippet
+
+snippet st "Struct" b
+struct ${1:`!p snip.rv = snip.basename.title() or "Name"`} {
+	${VISUAL}${0}
+}
+endsnippet
+
+# TODO: fancy dynamic field mirroring like Python slotclass
+snippet stn "Struct with new constructor." b
+pub struct ${1:`!p snip.rv = snip.basename.title() or "Name"`} {
+	fd${0}
+}
+
+impl $1 {
+	pub fn new(${2}) -> $1 {
+		$1 { ${3} };
+	}
+}
+endsnippet
+
+snippet fd "Struct field definition" w
+${1:name}: ${2:Type},
+endsnippet
+
+snippet impl "Struct/Trait implementation" b
+impl ${1:Type/Trait}${2: for ${3:Type}} {
+	${0}
+}
+endsnippet
+
+# vim:ft=snippets:

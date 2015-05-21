@@ -5,7 +5,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:map_if_not_mapped(lhs, rhs, mode)
+function! s:map_if_not_mapped(lhs, rhs, mode) abort
     let l:unique = s:overwrite ? '' : ' <unique>'
     if !hasmapto(a:rhs, a:mode)
 	silent! exe a:mode . 'map' . l:unique a:lhs a:rhs
@@ -40,11 +40,6 @@ if !exists('g:snips_no_mappings') || !g:snips_no_mappings
 
 	call s:map_if_not_mapped('<C-R><Tab>', '<Plug>snipMateShow', 'i')
 endif
-
-" FIXME: Without this map, <BS> in select mode deletes the current selection and
-" returns to normal mode. This doesn't update placeholders. Ideally there's some
-" way to update the placeholders without this otherwise useless map.
-silent! snoremap <unique> <BS> b<BS><Esc>
 
 let &cpo = s:save_cpo
 

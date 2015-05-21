@@ -4,7 +4,7 @@
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2010-08-30.
 " @Last Change: 2010-09-05.
-" @Revision:    23
+" @Revision:    27
 
 
 function! tlib#balloon#Register(expr) "{{{3
@@ -37,10 +37,12 @@ endf
 
 
 function! tlib#balloon#Expr() "{{{3
+    " TLogVAR exists('b:tlib_balloons')
     if !exists('b:tlib_balloons')
         return ''
     endif
     let text = map(copy(b:tlib_balloons), 'eval(v:val)')
+    " TLogVAR b:tlib_balloons, text
     call filter(text, '!empty(v:val)')
     if has('balloon_multiline')
         return join(text, "\n----------------------------------\n")

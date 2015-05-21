@@ -90,7 +90,7 @@ endfunction
 "callback
 function! s:MenuItem.execute()
     if len(self.children)
-        let mc = s:MenuController.New(self.children)
+        let mc = g:NERDTreeMenuController.New(self.children)
         call mc.showMenu()
     else
         if self.callback != -1

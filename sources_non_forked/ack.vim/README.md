@@ -1,114 +1,148 @@
-# ack.vim #
+# ack.vim
 
-This plugin is a front for the Perl module
-[App::Ack](http://search.cpan.org/~petdance/ack/ack).  Ack can be used as a
-replacement for 99% of the uses of _grep_.  This plugin will allow you to run
-ack from vim, and shows the results in a split window.
+Run your favorite search tool from Vim, with an enhanced results list.
 
-The *Official Version* of this plugin is available at [vim.org](http://www.vim.org/scripts/script.php?script_id=2572).
+This plugin was designed as a Vim frontend for the Perl module [App::Ack]. Ack
+can be used as a replacement for 99% of the uses of _grep_. The plugin allows
+you to run ack from vim, and shows the results in a split window.
 
-## Installation ##
+But here's a little secret for the Vim-seasoned: it's just a light wrapper for
+Vim's [grepprg] and the [quickfix] window for match results. This makes it easy
+to integrate with your own Vim configuration and use existing knowledge of core
+features. It also means the plugin is flexible to use with other search tools.
 
+[App::Ack]: http://search.cpan.org/~petdance/ack/ack
+[grepprg]: http://vimdoc.sourceforge.net/htmldoc/options.html#'grepprg'
+[quickfix]: http://vimdoc.sourceforge.net/htmldoc/quickfix.html#quickfix
+
+## Installation
 
 ### Ack
 
-You have to install [ack](http://betterthangrep.com/), of course.
-
-Install on Debian / Ubuntu with:
-
-    sudo apt-get install ack-grep
-
-Install on Fedora with:
-
-    su -l -c 'yum install ack'
-
-Install on openSUSE with:
-
-    sudo zypper install ack
-
-Install on Gentoo with:
-
-    sudo emerge ack
-
-Install with Homebrew:
-
-    brew install ack
-
-Install with MacPorts:
-
-    sudo port install p5-app-ack
-
-Install with Gentoo Prefix:
-
-    emerge ack
-
-Install on FreeBSD with:
-
-    cd /usr/ports/textproc/p5-ack/ && make install clean
-
-You can specify a custom ack name and path in your .vimrc like so:
-
-    let g:ackprg="<custom-ack-path-goes-here> -H --nocolor --nogroup --column"
-
-Otherwise, you are on your own.
+You will need ack (>= 2.0), of course. To install it follow the
+[manual](http://beyondgrep.com/install/).
 
 ### The Plugin
 
-If you have [Rake](http://rake.rubyforge.org/) installed, you can just run: `rake install`.
+It is recommended to use one of the popular plugin managers for Vim. There are
+many and you probably already have a preferred one, but a few examples for your
+copy-and-paste convenience:
 
-Otherwise, the file ack.vim goes in ~/.vim/plugin, and the ack.txt file belongs in ~/.vim/doc.  Be sure to run
+#### Vundle
 
-    :helptags ~/.vim/doc
+    Plugin 'mileszs/ack.vim'
 
-afterwards.
+#### NeoBundle
 
+    NeoBundle 'mileszs/ack.vim'
 
-## Usage ##
+#### Manual (not recommended)
 
-    :Ack [options] {pattern} [{directory}]
+[Download][releases] the plugin and extract it in `~/.vim/` (or
+`%PROGRAMFILES%/Vim/vimfiles` on Windows).
 
-Search recursively in {directory} (which defaults to the current directory) for the {pattern}.
+[zipball]: https://github.com/mileszs/ack.vim/archive/master.zip
 
-Files containing the search term will be listed in the split window, along with
-the line number of the occurrence, once for each occurrence.  [Enter] on a line
-in this window will open the file, and place the cursor on the matching line.
+## Usage
 
-Just like where you use :grep, :grepadd, :lgrep, and :lgrepadd, you can use `:Ack`, `:AckAdd`, `:LAck`, and `:LAckAdd` respectively. (See `doc/ack.txt`, or install and `:h Ack` for more information.)
+    :Ack [options] {pattern} [{directories}]
 
-**From the [ack docs](http://betterthangrep.com/)** (my favorite feature):
+Search recursively in `{directories}` (which defaults to the current directory)
+for the `{pattern}`.
 
-    --type=TYPE, --type=noTYPE
+Files containing the search term will be listed in the quickfix window, along
+with the line number of the occurrence, once for each occurrence. `<Enter>` on
+a line in this window will open the file, and place the cursor on the matching
+line.
 
-        Specify the types of files to include or exclude from a search. TYPE is a filetype, like perl or xml. --type=perl can also be specified as --perl, and --type=noperl can be done as --noperl.
+Just like where you use `:grep`, `:grepadd`, `:lgrep`, and :`lgrepadd`, you can
+use `:Ack`, `:AckAdd`, `:LAck`, and `:LAckAdd` respectively. (See `:help Ack`
+after installing, or [`doc/ack.txt`][doc] in the repo, for more information.)
 
-        If a file is of both type "foo" and "bar", specifying --foo and --nobar will exclude the file, because an exclusion takes precedence over an inclusion.
+For more ack help see [ack documentation](http://beyondgrep.com/documentation/).
 
-        Type specifications can be repeated and are ORed together.
+[doc]: https://github.com/mileszs/ack.vim/blob/master/doc/ack.txt
 
-        See ack --help=types for a list of valid types.
+### Keyboard Shortcuts
 
-### Gotchas ###
+The quickfix results window is augmented with these convenience mappings:
 
-Some characters have special meaning, and need to be escaped your search pattern. For instance, '#'. You have to escape it like this `:Ack '\\\#define foo'` to search for `#define foo`. (From [blueyed in issue #5](https://github.com/mileszs/ack.vim/issues/5).)
-
-### Keyboard Shortcuts ###
-
-In the quickfix window, you can use:
-
-    o    to open (same as enter)
-    go   to preview file (open but maintain focus on ack.vim results)
+    ?    a quick summary of these keys, repeat to close
+    o    to open (same as Enter)
+    O    to open and close the quickfix window
+    go   to preview file, open but maintain focus on ack.vim results
     t    to open in new tab
-    T    to open in new tab silently
+    T    to open in new tab without moving to it
     h    to open in horizontal split
-    H    to open in horizontal split silently
+    H    to open in horizontal split, keeping focus on the results
     v    to open in vertical split
-    gv   to open in vertical split silently
+    gv   to open in vertical split, keeping focus on the results
     q    to close the quickfix window
 
-This Vim plugin is derived (and by derived, I mean copied, essentially) from
-Antoine Imbert's blog post [Ack and Vim
-Integration](http://blog.ant0ine.com/typepad/2007/03/ack-and-vim-integration.html) (in
-particular, the function at the bottom of the post).  I added a help file that
-provides just enough reference to get you going.  I also highly recommend you
-check out the docs for the Perl script 'ack', for obvious reasons: [ack -
-grep-like text finder](http://betterthangrep.com/).
+### Gotchas
+
+Some characters have special meaning, and need to be escaped in your search
+pattern. For instance, `#`. You need to escape it with `:Ack '\\\#define
+foo'` to search for '#define foo'. See [issue #5].
+
+[issue #5]: https://github.com/mileszs/ack.vim/issues/5
+
+## Possibly FAQ
+
+#### Can I use `ag` ([The Silver Searcher]) with this?
+
+Absolutely, and probably other tools if their output is similar or you can
+write a pattern match for it--just set `g:ackprg`. If you like, you can fall
+back to Ack in case you use your vimrc on a system without Ag available:
+
+```vim
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
+```
+
+Since Ack is quite portable you might check a copy of it into your dotfiles
+repository in `~/bin` so you'll nearly always have it available.
+
+#### What's the difference from ag.vim?
+
+Well... not a lot really.
+
+Present maintainer, yours truly, [kind of wishes they never forked][sadface],
+contributes to both, and wouldn't mind seeing them merged again. ag.vim got a
+nice code clean-up (which ack.vim is now hopefully getting), and ack.vim picked
+up a few features that haven't made their way to ag.vim, like `:AckWindow`,
+optional background search execution with [vim-dispatch], and auto-previewing.
+
+[The Silver Searcher]: https://github.com/ggreer/the_silver_searcher
+[sadface]: https://github.com/mileszs/ack.vim/commit/d97090fb502d40229e6976dfec0e06636ba227d5#commitcomment-5771145
+
+## Changelog
+
+Please see [the Github releases page][releases].
+
+### 1.0.9 (unreleased)
+
+* Fix location list and layout of quickfix when using Dispatch (#154)
+* Fix the quick help overlay clobbering the list mappings
+* Fix `:AckFile` when using Dispatch
+* Restore original `'makeprg'` and `'errorformat'` when using Dispatch
+* Internal refactoring and clean-up
+
+## Credits
+
+This plugin is derived from Antoine Imbert's blog post [Ack and Vim
+Integration][] (in particular, the function in the update to the post). [Miles
+Sterrett][mileszs] packaged it up as a plugin and documented it in Vim's help
+format, and since then [many contributors][contributors] have submitted
+enhancements and fixes.
+
+And of course, where would we be without [Ack]. And, you know, Vim.
+
+[Ack and Vim Integration]: http://blog.ant0ine.com/typepad/2007/03/ack-and-vim-integration.html
+[mileszs]: https://github.com/mileszs
+[contributors]: https://github.com/mileszs/ack.vim/graphs/contributors
+[Ack]: http://beyondgrep.com/
+
+[vim-dispatch]: https://github.com/tpope/vim-dispatch
+[releases]: https://github.com/mileszs/ack.vim/releases

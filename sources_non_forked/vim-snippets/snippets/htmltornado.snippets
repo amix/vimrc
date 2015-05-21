@@ -1,55 +1,55 @@
 # Generic tags
 
 snippet {
-	{{ ${1} }}
+	{{ ${0} }}
 
 # Template tags
 
 snippet extends
-	{% extends "${1:base.html}" %}
+	{% extends "${0:base.html}" %}
 snippet autoescape
-	{% autoescape ${1:xhtml_escape | None} %}
+	{% autoescape ${0:xhtml_escape | None} %}
 snippet apply
 	{% apply ${1:function} %}
-	  ${2}
+	  ${0}
 	{% end %}
 snippet block
 	{% block ${1} %}
-	  ${2}
+	  ${0}
 	{% end %}
 snippet for
 	{% for ${1:item} in ${2} %}
-	  ${3}
+	  ${0}
 	{% end %}
 snippet from
-	{% from ${1:x} import ${2:y} %}
+	{% from ${1:x} import ${0:y} %}
 snippet if
 	{% if ${1:condition} %}
-	  ${2}
+	  ${0}
 	{% end %}
-snippet elif
-	{% elif ${1:condition} %} 
-snippet else
+snippet eif
+	{% elif ${0:condition} %}
+snippet el
 	{% else %}
 snippet import
-	{% import ${1:module} %}
+	{% import ${0:module} %}
 snippet include
-	{% include "${1:filename}" %}
+	{% include "${0:filename}" %}
 snippet module
-	{% module ${1:expression} %}
+	{% module ${0:expression} %}
 snippet raw
-	{% raw ${1:expression} %}
+	{% raw ${0:expression} %}
 snippet set
-	{% set ${1:x} = ${2:y} %}
+	{% set ${1:x} = ${0:y} %}
 snippet try
 	{% try %}
 	  ${1}
 	{% except %}
 	  ${2}
 	{% finallly %}
-	  ${3}
+	  ${0}
 	{% end %}
-snippet while
+snippet wh
 	{% while ${1:condition} %}
-	  ${2}
+	  ${0}
 	{% end %}

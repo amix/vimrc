@@ -45,28 +45,30 @@ function! s:initVariable(var, value)
 endfunction
 
 "SECTION: Init variable calls and other random constants {{{2
-call s:initVariable("g:NERDChristmasTree", 1)
 call s:initVariable("g:NERDTreeAutoCenter", 1)
 call s:initVariable("g:NERDTreeAutoCenterThreshold", 3)
 call s:initVariable("g:NERDTreeCaseSensitiveSort", 0)
+call s:initVariable("g:NERDTreeSortHiddenFirst", 1)
 call s:initVariable("g:NERDTreeChDirMode", 0)
 call s:initVariable("g:NERDTreeMinimalUI", 0)
 if !exists("g:NERDTreeIgnore")
     let g:NERDTreeIgnore = ['\~$']
 endif
 call s:initVariable("g:NERDTreeBookmarksFile", expand('$HOME') . '/.NERDTreeBookmarks')
+call s:initVariable("g:NERDTreeBookmarksSort", 1)
 call s:initVariable("g:NERDTreeHighlightCursorline", 1)
 call s:initVariable("g:NERDTreeHijackNetrw", 1)
 call s:initVariable("g:NERDTreeMouseMode", 1)
 call s:initVariable("g:NERDTreeNotificationThreshold", 100)
 call s:initVariable("g:NERDTreeQuitOnOpen", 0)
+call s:initVariable("g:NERDTreeRespectWildIgnore", 0)
 call s:initVariable("g:NERDTreeShowBookmarks", 0)
 call s:initVariable("g:NERDTreeShowFiles", 1)
 call s:initVariable("g:NERDTreeShowHidden", 0)
 call s:initVariable("g:NERDTreeShowLineNumbers", 0)
 call s:initVariable("g:NERDTreeSortDirs", 1)
 call s:initVariable("g:NERDTreeDirArrows", !nerdtree#runningWindows())
-call s:initVariable("g:NERDTreeCasadeOpenSingleChildDir", 1)
+call s:initVariable("g:NERDTreeCascadeOpenSingleChildDir", 1)
 
 if !exists("g:NERDTreeSortOrder")
     let g:NERDTreeSortOrder = ['\/$', '*', '\.swp$',  '\.bak$', '\~$']
@@ -140,20 +142,13 @@ call nerdtree#loadClassFiles()
 
 " SECTION: Commands {{{1
 "============================================================
-"init the command that users start the nerd tree with
-command! -n=? -complete=dir -bar NERDTree :call g:NERDTreeCreator.CreatePrimary('<args>')
-command! -n=? -complete=dir -bar NERDTreeToggle :call g:NERDTreeCreator.TogglePrimary('<args>')
-command! -n=0 -bar NERDTreeClose :call nerdtree#closeTreeIfOpen()
-command! -n=1 -complete=customlist,nerdtree#completeBookmarks -bar NERDTreeFromBookmark call g:NERDTreeCreator.CreatePrimary('<args>')
-command! -n=0 -bar NERDTreeMirror call g:NERDTreeCreator.CreateMirror()
-command! -n=0 -bar NERDTreeFind call nerdtree#findAndRevealPath()
-command! -n=0 -bar NERDTreeFocus call NERDTreeFocus()
-command! -n=0 -bar NERDTreeCWD call NERDTreeCWD()
+call nerdtree#ui_glue#setupCommands()
+
 " SECTION: Auto commands {{{1
 "============================================================
 augroup NERDTree
     "Save the cursor position whenever we close the nerd tree
-    exec "autocmd BufWinLeave ". g:NERDTreeCreator.BufNamePrefix() ."* call nerdtree#saveScreenState()"
+    exec "autocmd BufLeave ". g:NERDTreeCreator.BufNamePrefix() ."* call b:NERDTree.ui.saveScreenState()"
 
     "disallow insert mode in the NERDTree
     exec "autocmd BufEnter ". g:NERDTreeCreator.BufNamePrefix() ."* stopinsert"
@@ -199,7 +194,7 @@ endfunction
 
 function! NERDTreeCWD()
     call NERDTreeFocus()
-    call nerdtree#chRootCwd()
+    call nerdtree#ui_glue#chRootCwd()
 endfunction
 " SECTION: Post Source Actions {{{1
 call nerdtree#postSourceActions()

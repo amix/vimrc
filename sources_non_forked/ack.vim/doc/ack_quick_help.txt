@@ -1,0 +1,14 @@
+====  ack.vim quick help ===============
+
+  *?:*  Show/quit this help
+  *t:*  Open in a new tab
+  *T:*  Open in a new tab silently
+  *o:*  Open
+  *O:*  Open and close result window
+ *go:*  Preview
+  *h:*  Horizontal open
+  *H:*  Horizontal open silently
+  *v:*  Vertical open
+ *gv:*  Vertical open silently
+
+========================================

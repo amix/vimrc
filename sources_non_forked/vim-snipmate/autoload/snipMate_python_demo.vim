@@ -9,7 +9,7 @@
 " will create a snippet on the fly which looks like this:
 " abc(${1:a}, ${2:b}, ${3:c=None})
 
-fun! snipMate_python_demo#Activate()
+fun! snipMate_python_demo#Activate() abort
   if !exists('g:snipMateSources')
     let g:snipMateSources = {}
   endif
@@ -17,7 +17,7 @@ fun! snipMate_python_demo#Activate()
   let g:snipMateSources['python'] = funcref#Function('snipMate_python_demo#FunctionsFromCurrentFileAndTags')
 endf
 
-fun! s:Add(dict, line, source, trigger)
+fun! s:Add(dict, line, source, trigger) abort
   let matched = matchlist(a:line,'def\s\+\([^( \t]\+\)[ \t]*(\([^)]*\)')
   if len(matched) > 2
     let name = matched[1]
@@ -34,7 +34,7 @@ fun! s:Add(dict, line, source, trigger)
     let sd[a:source] = name.'('.join(args,', ').')'
   endif
 endf
-fun! snipMate_python_demo#FunctionsFromCurrentFileAndTags(scopes, trigger, result)
+fun! snipMate_python_demo#FunctionsFromCurrentFileAndTags(scopes, trigger, result) abort
   " getting all might be too much
   if a:trigger == '*' | return | endif
   if index(a:scopes, 'python') < 0 | return | endif

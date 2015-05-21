@@ -1,13 +1,12 @@
-# From the TextMate bundle
+priority -50
 
 snippet fun "Function" b
-${1:name} = (${2:args}) ->
+${1:name} = `!p snip.rv = "(" if t[2] else ""`${2:args}`!p snip.rv = ") " if t[2] else ""`->
 	${0:# body...}
 endsnippet
 
-snippet bfun "Function (bound)" b
-${1:(${2:args}) }=>
-	${0:# body...}
+snippet bfun "Function (bound)" i
+`!p snip.rv = "(" if t[1] else ""`${1:args}`!p snip.rv = ") " if t[1] else ""`=>`!p snip.rv = " " if t[2] and not t[2].startswith("\n") else ""`${2:expr}
 endsnippet
 
 snippet if "If" b
@@ -46,27 +45,35 @@ for ${1:key}, ${2:value} of ${3:Object}
 endsnippet
 
 snippet forr "Range Comprehension (inclusive)" b
-for ${1:name} in [${2:start}..${3:finish}]${4: by ${5:step}}
+for ${1:name} in [${2:start}..${3:finish}]`!p snip.rv = " by " if t[4] else ""`${4:step}
 	${0:# body...}
 endsnippet
 
 snippet forrex "Range Comprehension (exclusive)" b
-for ${1:name} in [${2:start}...${3:finish}]${4: by ${5:step}}
+for ${1:name} in [${2:start}...${3:finish}]`!p snip.rv = " by " if t[4] else ""`${4:step}
 	${0:# body...}
 endsnippet
 
 snippet swi "Switch" b
 switch ${1:object}
 	when ${2:value}
-		${0:# body...}
+		${3:# body...}
+	else
+		$0
+endsnippet
+
+snippet swit "Switch when .. then" b
+switch ${1:object}
+	when ${2:condition}`!p snip.rv = " then " if t[3] else ""`${3:value}
+	else`!p snip.rv = " " if t[4] and not t[4].startswith("\n") else ""`${4:value}
 endsnippet
 
 snippet cla "Class" b
-class ${1:ClassName}${2: extends ${3:Ancestor}}
+class ${1:ClassName}`!p snip.rv = " extends " if t[2] else ""`${2:Ancestor}
 
-	${4:constructor: (${5:args}) ->
-		${6:# body...}}
-	$7
+	${3:constructor:`!p snip.rv = " (" if t[4] else ""`${4:args}`!p snip.rv = ")" if t[4] else ""` ->
+		${5:# body...}}
+	$0
 endsnippet
 
 snippet try "Try .. Catch" b
@@ -80,11 +87,10 @@ snippet req "Require" b
 ${1/^'?(\w+)'?$/\L$1\E/} = require(${1:'${2:sys}'})
 endsnippet
 
-snippet # "Interpolated Code"
+snippet # "Interpolated Code" i
 #{$1}$0
 endsnippet
 
 snippet log "Log" b
 console.log ${1:"${2:msg}"}
 endsnippet
-

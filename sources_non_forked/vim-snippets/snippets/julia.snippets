@@ -1,0 +1,102 @@
+snippet #!
+	#!/usr/bin/env julia
+
+# Functions
+snippet fun function definition
+	function ${1}(${2})
+		${0}
+	end
+
+snippet ret return
+	return(${0})
+
+# Printing to console
+snippet pr print
+	print("${1}")
+	${0}
+
+snippet prl print line
+	println("${1}")
+	${0}
+
+# Includes
+snippet use load a package
+	using ${0}
+
+snippet incl include source code
+	include("${1}")
+	${0}
+
+# Loops
+snippet forc for loop iterating over iterable container
+	for ${1} in ${2}
+		${0}
+	end
+
+snippet for standard for loop
+	for ${1} = ${2}
+		${0}
+	end
+
+snippet fornest nested for loop
+	for ${1} = ${2}, ${3} = ${4}
+		${0}
+	end
+
+snippet wh while loop
+	while ${1} ${2:<=} ${3}
+		${0}
+	end
+
+# Conditionals
+snippet if if statement
+	if ${1}
+		${0}
+	end
+
+snippet el else part of statement
+	else
+		${0}
+
+snippet eif else if part of if statement
+	else if ${1}
+		${0}
+
+snippet ife full if-else statement
+	if ${1}
+		${2}
+	else
+		${0}
+	end
+
+snippet tern ternary operator
+	${1} ? ${2} : ${3:nothing}
+
+# Exceptions
+snippet try try catch
+	try
+		${1}
+	catch ${2}
+		${0}
+	end
+
+snippet fin finally statement
+	finally
+		${0}
+
+snippet thr throw
+	throw(${1})
+	${0}
+
+# Messages
+snippet in
+	info("${1}")
+	${0}
+
+snippet wa
+	warn("${1}")
+	${0}
+
+snippet err
+	error("${1}")
+	${0}
