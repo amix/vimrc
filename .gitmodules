@@ -64,3 +64,6 @@
 [submodule "bundle/vim-github-colorscheme"]
 	path = bundle/vim-github-colorscheme
 	url = git@github.com:endel/vim-github-colorscheme.git
+[submodule "bundle/vim-rspec"]
+	path = bundle/vim-rspec
+	url = git@github.com:thoughtbot/vim-rspec.git

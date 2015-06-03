@@ -5,8 +5,6 @@ function! SetupCursorLine(...)
   highlight CursorLine ctermbg=NONE cterm=NONE gui=NONE
   highlight LineNr ctermfg=darkgrey
   set cursorline
-  let &colorcolumn="80,".join(range(120,999),",")
-  highlight ColorColumn ctermbg=235
 endfunction
 
 call SetupCursorLine()
@@ -50,6 +48,11 @@ noremap <Down> <NOP>
 noremap <Left> <NOP>
 noremap <Right> <NOP>
 
+" javascript
+let g:javascript_fold = 0
+set nofoldenable
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => custom ... WTF, don't remember ;)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -87,3 +90,9 @@ autocmd BufNewFile,BufReadPost *.feature,*.story set filetype=cucumber
 autocmd BufNewFile,BufRead *.haml setf haml
 autocmd BufNewFile,BufRead *.sass setf sass
 autocmd BufNewFile,BufRead *.scss setf scss
+
+" RSpec.vim mappings
+map <Leader>t :call RunCurrentSpecFile()<CR>
+map <Leader>s :call RunNearestSpec()<CR>
+map <Leader>l :call RunLastSpec()<CR>
+map <Leader>a :call RunAllSpecs()<CR>
