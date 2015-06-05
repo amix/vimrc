@@ -67,3 +67,12 @@
 [submodule "bundle/vim-rspec"]
 	path = bundle/vim-rspec
 	url = git@github.com:thoughtbot/vim-rspec.git
+[submodule "bundle/emmet-vim"]
+	path = bundle/emmet-vim
+	url = git@github.com:mattn/emmet-vim.git
+[submodule "bundle/mru.vim"]
+	path = bundle/mru.vim
+	url = git@github.com:vim-scripts/mru.vim.git
+[submodule "bundle/bufexplorer"]
+	path = bundle/bufexplorer
+	url = git@github.com:jlanzarotta/bufexplorer.git
