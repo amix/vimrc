@@ -57,7 +57,7 @@
 	url = https://github.com/tonchis/vim-to-github.git
 [submodule "bundle/vim-zoomwin"]
 	path = bundle/vim-zoomwin
-	url = git@github.com:amix/vimrc.git
+	url = git@github.com:vim-scripts/ZoomWin.git
 [submodule "bundle/vimux"]
 	path = bundle/vimux
 	url = https://github.com/benmills/vimux
