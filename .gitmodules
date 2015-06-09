@@ -115,3 +115,21 @@
 [submodule "bundle/vim-commentary"]
 	path = bundle/vim-commentary
 	url = git@github.com:tpope/vim-commentary.git
+[submodule "bundle/vim-fugitive"]
+	path = bundle/vim-fugitive
+	url = git@github.com:tpope/vim-fugitive.git
+[submodule "bundle/vim-airline"]
+	path = bundle/vim-airline
+	url = git@github.com:bling/vim-airline.git
+[submodule "bundle/mayansmoke"]
+	path = bundle/mayansmoke
+	url = git@github.com:vim-scripts/mayansmoke.git
+[submodule "bundle/vim-markdown"]
+	path = bundle/vim-markdown
+	url = git@github.com:tpope/vim-markdown.git
+[submodule "bundle/goyo.vim"]
+	path = bundle/goyo.vim
+	url = git@github.com:junegunn/goyo.vim.git
+[submodule "bundle/vim-zenroom2"]
+	path = bundle/vim-zenroom2
+	url = git@github.com:amix/vim-zenroom2.git
