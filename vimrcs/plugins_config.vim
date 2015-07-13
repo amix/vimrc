@@ -127,3 +127,10 @@ func! SyntasticCheckCoffeescript()
     execute "Errors"
 endfunc
 nnoremap <silent> <leader>l :call SyntasticCheckCoffeescript()<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Git gutter (Git diff)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:gitgutter_enabled=0
+nnoremap <silent> <leader>d :GitGutterToggle<cr>
