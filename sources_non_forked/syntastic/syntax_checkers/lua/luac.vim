@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_lua_luac_checker")
+if exists('g:loaded_syntastic_lua_luac_checker')
     finish
 endif
 let g:loaded_syntastic_lua_luac_checker = 1
@@ -21,7 +21,7 @@ set cpo&vim
 function! SyntaxCheckers_lua_luac_GetHighlightRegex(pos)
     let result = ''
     let near = matchstr(a:pos['text'], '\mnear ''\zs[^'']\+\ze''')
-    if near != ''
+    if near !=# ''
         if near ==# '<eof>'
             let p = getpos('$')
             let a:pos['lnum'] = p[1]

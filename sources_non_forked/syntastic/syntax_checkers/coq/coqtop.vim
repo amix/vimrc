@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_coq_coqtop_checker")
+if exists('g:loaded_syntastic_coq_coqtop_checker')
     finish
 endif
 let g:loaded_syntastic_coq_coqtop_checker = 1

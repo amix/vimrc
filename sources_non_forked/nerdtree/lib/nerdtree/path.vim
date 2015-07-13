@@ -1,6 +1,12 @@
 "we need to use this number many times for sorting... so we calculate it only
 "once here
 let s:NERDTreeSortStarIndex = index(g:NERDTreeSortOrder, '*')
+" used in formating sortKey, e.g. '%04d'
+if exists("log10")
+    let s:sortKeyFormat = "%0" . float2nr(ceil(log10(len(g:NERDTreeSortOrder)))) . "d"
+else
+    let s:sortKeyFormat = "%04d"
+endif
 
 "CLASS: Path
 "============================================================
@@ -361,6 +367,24 @@ function! s:Path.getSortOrderIndex()
     return s:NERDTreeSortStarIndex
 endfunction
 
+"FUNCTION: Path.getSortKey() {{{1
+"returns a string used in compare function for sorting
+function! s:Path.getSortKey()
+    if !exists("self._sortKey")
+        let path = self.getLastPathComponent(1)
+        if !g:NERDTreeSortHiddenFirst
+            let path = substitute(path, '^[._]', '', '')
+        endif
+        if !g:NERDTreeCaseSensitiveSort
+            let path = tolower(path)
+        endif
+        let self._sortKey = printf(s:sortKeyFormat, self.getSortOrderIndex()) . path
+    endif
+
+    return self._sortKey
+endfunction
+
+
 "FUNCTION: Path.isUnixHiddenFile() {{{1
 "check for unix hidden files
 function! s:Path.isUnixHiddenFile()
@@ -392,6 +416,12 @@ function! s:Path.ignore()
                 return 1
             endif
         endfor
+
+        for callback in g:NERDTree.PathFilters()
+            if {callback}({'path': self, 'nerdtree': b:NERDTree})
+                return 1
+            endif
+        endfor
     endif
 
     "dont show hidden files unless instructed to
@@ -400,10 +430,6 @@ function! s:Path.ignore()
     endif
 
     if b:NERDTreeShowFiles ==# 0 && self.isDirectory ==# 0
-        return 1
-    endif
-
-    if exists("*NERDTreeCustomIgnoreFilter") && NERDTreeCustomIgnoreFilter(self)
         return 1
     endif
 
@@ -611,7 +637,7 @@ function! s:Path.str(...)
         if has_key(self, '_strFor' . format)
             exec 'let toReturn = self._strFor' . format . '()'
         else
-            raise 'NERDTree.UnknownFormatError: unknown format "'. format .'"'
+            throw 'NERDTree.UnknownFormatError: unknown format "'. format .'"'
         endif
     else
         let toReturn = self._str()

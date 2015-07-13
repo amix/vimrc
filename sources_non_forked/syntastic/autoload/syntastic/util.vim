@@ -1,4 +1,4 @@
-if exists('g:loaded_syntastic_util_autoload') || !exists("g:loaded_syntastic_plugin")
+if exists('g:loaded_syntastic_util_autoload') || !exists('g:loaded_syntastic_plugin')
     finish
 endif
 let g:loaded_syntastic_util_autoload = 1
@@ -21,7 +21,7 @@ endfunction " }}}2
 
 " Get directory separator
 function! syntastic#util#Slash() abort " {{{2
-    return (!exists("+shellslash") || &shellslash) ? '/' : '\'
+    return (!exists('+shellslash') || &shellslash) ? '/' : '\'
 endfunction " }}}2
 
 function! syntastic#util#CygwinPath(path) abort " {{{2
@@ -53,19 +53,19 @@ function! syntastic#util#tmpdir() abort " {{{2
 
     if (has('unix') || has('mac')) && executable('mktemp')
         " TODO: option "-t" to mktemp(1) is not portable
-        let tmp = $TMPDIR != '' ? $TMPDIR : $TMP != '' ? $TMP : '/tmp'
+        let tmp = $TMPDIR !=# '' ? $TMPDIR : $TMP !=# '' ? $TMP : '/tmp'
         let out = split(syntastic#util#system('mktemp -q -d ' . tmp . '/vim-syntastic-' . getpid() . '-XXXXXXXX'), "\n")
         if v:shell_error == 0 && len(out) == 1
             let tempdir = out[0]
         endif
     endif
 
-    if tempdir == ''
+    if tempdir ==# ''
         if has('win32') || has('win64')
             let tempdir = $TEMP . syntastic#util#Slash() . 'vim-syntastic-' . getpid()
         elseif has('win32unix')
             let tempdir = syntastic#util#CygwinPath('/tmp/vim-syntastic-'  . getpid())
-        elseif $TMPDIR != ''
+        elseif $TMPDIR !=# ''
             let tempdir = $TMPDIR . '/vim-syntastic-' . getpid()
         else
             let tempdir = '/tmp/vim-syntastic-' . getpid()
@@ -97,7 +97,7 @@ function! syntastic#util#rmrf(what) abort " {{{2
                 \ has('win16') || has('win95') || has('dos16') || has('dos32') ? 'deltree /Y' : ''
         endif
 
-        if s:rmrf != ''
+        if s:rmrf !=# ''
             silent! call syntastic#util#system(s:rmrf . ' ' . syntastic#util#shescape(a:what))
         else
             call s:_rmrf(a:what)
@@ -120,7 +120,7 @@ endfunction " }}}2
 function! syntastic#util#parseShebang() abort " {{{2
     for lnum in range(1, 5)
         let line = getline(lnum)
-        if line =~ '^#!'
+        if line =~# '^#!'
             let line = substitute(line, '\v^#!\s*(\S+/env(\s+-\S+)*\s+)?', '', '')
             let exe = matchstr(line, '\m^\S*\ze')
             let args = split(matchstr(line, '\m^\S*\zs.*'))
@@ -140,8 +140,8 @@ function! syntastic#util#var(name, ...) abort " {{{2
 endfunction " }}}2
 
 " Parse a version string.  Return an array of version components.
-function! syntastic#util#parseVersion(version) abort " {{{2
-    return map(split(matchstr( a:version, '\v^\D*\zs\d+(\.\d+)+\ze' ), '\m\.'), 'str2nr(v:val)')
+function! syntastic#util#parseVersion(version, ...) abort " {{{2
+    return map(split(matchstr( a:version, a:0 ? a:1 : '\v^\D*\zs\d+(\.\d+)+\ze' ), '\m\.'), 'str2nr(v:val)')
 endfunction " }}}2
 
 " Verify that the 'installed' version is at least the 'required' version.
@@ -164,7 +164,7 @@ function! syntastic#util#compareLexi(a, b) abort " {{{2
             return a_element > b_element ? 1 : -1
         endif
     endfor
-    " Everything matched, so it is at least the required version.
+    " still here, thus everything matched
     return 0
 endfunction " }}}2
 
@@ -190,7 +190,7 @@ function! syntastic#util#wideMsg(msg) abort " {{{2
 
     "This is here because it is possible for some error messages to
     "begin with \n which will cause a "press enter" prompt.
-    let msg = substitute(a:msg, "\n", "", "g")
+    let msg = substitute(a:msg, "\n", '', 'g')
 
     "convert tabs to spaces so that the tabs count towards the window
     "width as the proper amount of characters
@@ -226,13 +226,23 @@ function! syntastic#util#bufIsActive(buffer) abort " {{{2
     return 0
 endfunction " }}}2
 
-" start in directory a:where and walk up the parent folders until it
-" finds a file matching a:what; return path to that file
-function! syntastic#util#findInParent(what, where) abort " {{{2
+" start in directory a:where and walk up the parent folders until it finds a
+" file named a:what; return path to that file
+function! syntastic#util#findFileInParent(what, where) abort " {{{2
+    let old_suffixesadd = &suffixesadd
+    let &suffixesadd = ''
+    let file = findfile(a:what, escape(a:where, ' ') . ';')
+    let &suffixesadd = old_suffixesadd
+    return file
+endfunction " }}}2
+
+" start in directory a:where and walk up the parent folders until it finds a
+" file matching a:what; return path to that file
+function! syntastic#util#findGlobInParent(what, where) abort " {{{2
     let here = fnamemodify(a:where, ':p')
 
     let root = syntastic#util#Slash()
-    if syntastic#util#isRunningWindows() && here[1] == ':'
+    if syntastic#util#isRunningWindows() && here[1] ==# ':'
         " The drive letter is an ever-green source of fun.  That's because
         " we don't care about running syntastic on Amiga these days. ;)
         let root = fnamemodify(root, ':p')
@@ -240,7 +250,7 @@ function! syntastic#util#findInParent(what, where) abort " {{{2
     endif
 
     let old = ''
-    while here != ''
+    while here !=# ''
         let p = split(globpath(here, a:what, 1), '\n')
 
         if !empty(p)
@@ -284,7 +294,7 @@ endfunction " }}}2
 
 " Escape arguments
 function! syntastic#util#argsescape(opt) abort " {{{2
-    if type(a:opt) == type('') && a:opt != ''
+    if type(a:opt) == type('') && a:opt !=# ''
         return [a:opt]
     elseif type(a:opt) == type([])
         return map(copy(a:opt), 'syntastic#util#shescape(v:val)')
@@ -323,11 +333,10 @@ function! syntastic#util#dictFilter(errors, filter) abort " {{{2
     endtry
 endfunction " }}}2
 
-" Return a [high, low] list of integers, representing the time
-" (hopefully high resolution) since program start
-" TODO: This assumes reltime() returns a list of integers.
+" Return a [seconds, fractions] list of strings, representing the
+" (hopefully high resolution) time since program start
 function! syntastic#util#stamp() abort " {{{2
-    return reltime(g:_SYNTASTIC_START)
+    return split( split(reltimestr(reltime(g:_SYNTASTIC_START)))[0], '\.' )
 endfunction " }}}2
 
 " }}}1
@@ -345,14 +354,14 @@ function! s:_translateFilter(filters) abort " {{{2
     endfor
 
     if conditions == []
-        let conditions = ["1"]
+        let conditions = ['1']
     endif
     return len(conditions) == 1 ? conditions[0] : join(map(conditions, '"(" . v:val . ")"'), ' && ')
 endfunction " }}}2
 
 function! s:_translateElement(key, term) abort " {{{2
     let fkey = a:key
-    if fkey[0] == '!'
+    if fkey[0] ==# '!'
         let fkey = fkey[1:]
         let not = 1
     else
@@ -377,13 +386,13 @@ function! s:_translateElement(key, term) abort " {{{2
         let op = not ? ' =~# ' : ' !~# '
         let ret = 'bufname(str2nr(v:val["bufnr"]))'
         let mod = fkey[4:]
-        if mod != ''
+        if mod !=# ''
             let ret = 'fnamemodify(' . ret . ', ' . string(mod) . ')'
         endif
         let ret .= op . string(a:term)
     else
         call syntastic#log#warn('quiet_messages: ignoring invalid key ' . strtrans(string(fkey)))
-        let ret = "1"
+        let ret = '1'
     endif
     return ret
 endfunction " }}}2

@@ -148,7 +148,7 @@ call nerdtree#ui_glue#setupCommands()
 "============================================================
 augroup NERDTree
     "Save the cursor position whenever we close the nerd tree
-    exec "autocmd BufLeave ". g:NERDTreeCreator.BufNamePrefix() ."* call b:NERDTree.ui.saveScreenState()"
+    exec "autocmd BufLeave ". g:NERDTreeCreator.BufNamePrefix() ."* if g:NERDTree.IsOpen() | call b:NERDTree.ui.saveScreenState() | endif"
 
     "disallow insert mode in the NERDTree
     exec "autocmd BufEnter ". g:NERDTreeCreator.BufNamePrefix() ."* stopinsert"
@@ -185,8 +185,8 @@ function! NERDTreeRender()
 endfunction
 
 function! NERDTreeFocus()
-    if nerdtree#isTreeOpen()
-        call nerdtree#putCursorInTreeWin()
+    if g:NERDTree.IsOpen()
+        call g:NERDTree.CursorToTreeWin()
     else
         call g:NERDTreeCreator.TogglePrimary("")
     endif
@@ -196,6 +196,11 @@ function! NERDTreeCWD()
     call NERDTreeFocus()
     call nerdtree#ui_glue#chRootCwd()
 endfunction
+
+function! NERDTreeAddPathFilter(callback)
+    call g:NERDTree.AddPathFilter(a:callback)
+endfunction
+
 " SECTION: Post Source Actions {{{1
 call nerdtree#postSourceActions()
 

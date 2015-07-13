@@ -1,11 +1,11 @@
 "============================================================================
 "File:        pylint.vim
 "Description: Syntax checking plugin for syntastic.vim
-"Author:      Parantapa Bhattacharya <parantapa at gmail dot com>
+"Maintainer:  Parantapa Bhattacharya <parantapa at gmail dot com>
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_python_pylint_checker")
+if exists('g:loaded_syntastic_python_pylint_checker')
     finish
 endif
 let g:loaded_syntastic_python_pylint_checker = 1
@@ -32,13 +32,14 @@ function! SyntaxCheckers_python_pylint_IsAvailable() dict
         " On new-ish Fedora it's "python3-pylint 1.2.0".
         " Have you guys considered switching to creative writing yet? ;)
 
-        let pylint_version = filter( split(syntastic#util#system(self.getExecEscaped() . ' --version'), '\m, \=\|\n'),
-            \ 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=pylint[-0-9]*\>''' )[0]
-        let ver = syntastic#util#parseVersion(substitute(pylint_version, '\v^\S+\s+', '', ''))
-        call self.setVersion(ver)
+        let version_output = syntastic#util#system(self.getExecEscaped() . ' --version')
+        let pylint_version = filter( split(version_output, '\m, \=\|\n'), 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=pylint[-0-9]*\>''' )[0]
+        let parsed_ver = syntastic#util#parseVersion(substitute(pylint_version, '\v^\S+\s+', '', ''))
+        call self.setVersion(parsed_ver)
 
-        let s:pylint_new = syntastic#util#versionIsAtLeast(ver, [1])
+        let s:pylint_new = syntastic#util#versionIsAtLeast(parsed_ver, [1])
     catch /\m^Vim\%((\a\+)\)\=:E684/
+        call syntastic#log#ndebug(g:_SYNTASTIC_DEBUG_LOCLIST, 'checker output:', split(version_output, "\n", 1))
         call syntastic#log#error("checker python/pylint: can't parse version string (abnormal termination?)")
         let s:pylint_new = -1
     endtry

@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_cs_mcs_checker")
+if exists('g:loaded_syntastic_cs_mcs_checker')
     finish
 endif
 let g:loaded_syntastic_cs_mcs_checker = 1
@@ -26,7 +26,7 @@ function! SyntaxCheckers_cs_mcs_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")} })
+        \ 'defaults': {'bufnr': bufnr('')} })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

@@ -177,6 +177,8 @@ tab stop, >
         :imap <C-J> <Plug>snipMateNextOrTrigger
         :smap <C-J> <Plug>snipMateNextOrTrigger
 
+Note: The noremap variants of the map commands must NOT be used.
+
 The list of possible <Plug> mappings is as follows:
 
 <Plug>snipMateNextOrTrigger     Default: <Tab>          Mode: Insert, Select
@@ -258,6 +260,10 @@ Which version parser the snippets in a file should be used with can be
 specified with a version line, e.g.: >
 
     version 1
+
+Specification of a version applies to the snippets following it. Multiple
+version specifications can appear in a single file to intermix version 0 and
+version 1 snippets.
 
 Comments can be made in .snippets files by starting a line with a # character.
 However these can't be used inside of snippet definitions: >
@@ -374,6 +380,9 @@ is expanded. Expressions are specified inside backticks: >
  snippet date
         `strftime("%Y-%m-%d")`
 
+If the expression results in any Vim error, the error will be displayed (or
+found in :messages) and the result of the expression will be the empty string.
+
 Filename([{expr}] [, {defaultText}])                     *SnipMate-Filename()*
 
 Since the current filename is used often in snippets, a default function
@@ -423,17 +432,14 @@ SNIPPET SOURCES                                     *SnipMate-snippet-sources*
 
 SnipMate is configurable.
 
-plugin/SnipMate.vim assigns three important keys: >
+plugin/SnipMate.vim assigns a couple important keys: >
 
     " default implementation collecting snippets by handlers
     let g:SnipMate['get_snippets'] = SnipMate#GetSnippets
     " default handler:
     let g:SnipMateSources['default'] = SnipMate#DefaultPool
-    " default directories containing snippets:
-    let g:SnipMate['snippet_dirs']
-                \ = funcref#Function('return split(&runtimepath,",")')
 
-You can override all of those settings.
+You can override both of those settings.
 
 You can see that the default set of snippets is determined by Vim's 'rtp'.
 
@@ -492,6 +498,42 @@ Perhaps some of these features will be added in a later release.
 
 ==============================================================================
 CHANGELOG                                                 *SnipMate-changelog*
+
+0.88 - 2015-04-04
+-----------------
+
+* Implement simple caching
+* Remove expansion guards
+* Add `:SnipMateLoadScope` command and buffer-local scope aliases
+* Load `<scope>_*.snippets` files
+* Use CursorMoved autocmd events entirely
+
+* The nested branch has been merged
+    * A new snippet parser has been added. The g:snipmate.version as well as
+      version lines in snippet files determines which is used
+    * The new parser supports tab stops placed within placeholders,
+      substitutions, non-consecutive stop numbers, and fewer ambiguities
+    * The stop jumping code has been updated
+    * Tests have been added for the jumping code and the new parser
+
+* The override branch has been merged
+    * The g:snipMate.override option is added. When enabled, if two snippets
+      share the same name, the later-loaded one is kept and the other discarded
+    * Override behavior can be enabled on a per-snippet basis with a bang (!) in
+      the snippet file
+    * Otherwise, SnipMate tries to preserve all snippets loaded
+
+* Fix bug with mirrors in the first column
+* Fix bug with tabs in indents
+  <http://github.com/garbas/vim-snipmate/issues/143>
+* Fix bug with mirrors in placeholders
+* Fix reading single snippet files
+* Fix the use of the visual map at the end of a line
+* Fix expansion of stops containing only the zero tab stop
+* Remove select mode mappings
+* Indent visual placeholder expansions and remove extraneous lines
+  <http://github.com/garbas/vim-snipmate/issues/177>
+  <http://github.com/garbas/vim-snipmate/issues/178>
 
 0.87 - 2014-01-04
 -----------------

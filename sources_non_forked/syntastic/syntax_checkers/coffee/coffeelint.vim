@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_coffee_coffeelint_checker")
+if exists('g:loaded_syntastic_coffee_coffeelint_checker')
     finish
 endif
 let g:loaded_syntastic_coffee_coffeelint_checker = 1

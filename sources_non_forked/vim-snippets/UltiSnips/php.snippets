@@ -8,7 +8,7 @@ $${1:arrayName} = array('${2}' => ${3});${4}
 endsnippet
 
 snippet def "def"
-define('${1}'${2});${3}
+define('${1:VARIABLE_NAME}', ${2:'definition'});${3}
 endsnippet
 
 snippet do "do"
@@ -52,7 +52,7 @@ for ($${2:i} = 0; $$2 < ${1:count}; $$2${3:++}) {
 endsnippet
 
 snippet foreachk "foreachk"
-foreach ($${1:variable} as $${2:key} => $${3:value}){
+foreach ($${1:variable} as $${2:key} => $${3:value}) {
 	${4:// code...}
 }
 endsnippet
@@ -83,6 +83,10 @@ endsnippet
 
 snippet post "post"
 $_POST['${1}']${2}
+endsnippet
+
+snippet req "req1"
+require_once '${1:file}';${2}
 endsnippet
 
 snippet req1 "req1"
@@ -123,6 +127,7 @@ snippet setter "PHP Class Setter" b
 public function set${1/\w+\s*/\u$0/}(${4:${2/(void|string|int|integer|double|float|object|boolear|null|mixed|number|resource)|(.*)/(?1::$2 )/}}$$1)
 {
     $this->$1 = $$1;$5
+
     ${6:return $this;}
 }
 $0
@@ -148,6 +153,7 @@ public function get${1/\w+\s*/\u$0/}()
 public function set${1/\w+\s*/\u$0/}(${5:${2/(void|string|int|integer|double|float|object|boolear|null|mixed|number|resource)|(.*)/(?1::$2 )/}}$$1)
 {
     $this->$1 = $$1;$6
+
     ${7:return $this;}
 }
 $0
@@ -240,14 +246,14 @@ $0
 endsnippet
 
 snippet fore "Foreach loop"
-foreach ($${1:variable} as $${3:value}){
+foreach ($${1:variable} as $${3:value}) {
 	${VISUAL}${4}
 }
 $0
 endsnippet
 
 snippet new "New class instance" b
-$$1 = new $1($2);
+$${1:variableName} = new ${2:${1/\w+\s*/\u$0/}}($3);
 $0
 endsnippet
 

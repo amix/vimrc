@@ -45,8 +45,13 @@ snippet gat gather(ed) environment
 # Equation
 snippet eq equation environment
 	\begin{equation}
-	\label{eq:${2}}
 		${0}
+	\end{equation}
+# Equation
+snippet eql Labeled equation environment
+	\begin{equation}
+		\label{eq:${2}}
+	${0}
 	\end{equation}
 # Equation
 snippet eq* unnumbered equation environment
@@ -206,6 +211,13 @@ snippet rm roman font text
 	\textrm{${0:text}}
 snippet tt typewriter (monospace) text
 	\texttt{${0:text}}
+#Math font
+snippet mf mathfrak
+	\mathfrak{${0:text}}
+snippet mc mathcal
+	\mathcal{${0:text}}
+snippet ms mathscr
+	\mathscr{${0:text}}
 #misc
 snippet ft \footnote
 	\footnote{${0:text}}
@@ -263,6 +275,18 @@ snippet col2 two-column environment
 			${0}
 		\end{column}
 	\end{columns}
+#delimiter
+snippet lr( left( right) 
+	\left( ${0} \right)
+snippet lr| left| right| 
+	\left| ${0} \right|
+snippet lr{ left\{ right\} 
+	\left\\{ ${0} \right\\}
+snippet lr[ left[ right] 
+	\left[ ${0} \right]
+snippet lra langle rangle 
+	\langle ${0} \rangle
+
 # Code listings
 snippet lst
 	\begin{listing}[language=${1:language}]

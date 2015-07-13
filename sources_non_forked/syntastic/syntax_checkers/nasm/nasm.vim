@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_nasm_nasm_checker")
+if exists('g:loaded_syntastic_nasm_nasm_checker')
     finish
 endif
 let g:loaded_syntastic_nasm_nasm_checker = 1

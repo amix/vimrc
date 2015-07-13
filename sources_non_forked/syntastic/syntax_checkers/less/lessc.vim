@@ -10,16 +10,16 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_less_lessc_checker")
+if exists('g:loaded_syntastic_less_lessc_checker')
     finish
 endif
 let g:loaded_syntastic_less_lessc_checker = 1
 
-if !exists("g:syntastic_less_options")
-    let g:syntastic_less_options = ""
+if !exists('g:syntastic_less_options')
+    let g:syntastic_less_options = ''
 endif
 
-if !exists("g:syntastic_less_use_less_lint")
+if !exists('g:syntastic_less_use_less_lint')
     let g:syntastic_less_use_less_lint = 0
 endif
 
@@ -53,7 +53,7 @@ function! SyntaxCheckers_less_lessc_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'postprocess': ['guards'],
-        \ 'defaults': {'bufnr': bufnr(""), 'text': "Syntax error"} })
+        \ 'defaults': {'bufnr': bufnr(''), 'text': 'Syntax error'} })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

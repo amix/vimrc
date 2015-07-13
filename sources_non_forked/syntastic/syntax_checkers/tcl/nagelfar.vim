@@ -13,7 +13,7 @@
 "Notes:       Requires nagelfar v1.1.12 or later with support for -H option.
 "             See nagelfar homepage http://nagelfar.berlios.de/.
 
-if exists("g:loaded_syntastic_tcl_nagelfar_checker")
+if exists('g:loaded_syntastic_tcl_nagelfar_checker')
     finish
 endif
 let g:loaded_syntastic_tcl_nagelfar_checker = 1

@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_css_prettycss_checker")
+if exists('g:loaded_syntastic_css_prettycss_checker')
     finish
 endif
 let g:loaded_syntastic_css_prettycss_checker = 1
@@ -23,8 +23,8 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_css_prettycss_GetHighlightRegex(item)
-    let term = matchstr(a:item["text"], '\m (\zs[^)]\+\ze)$')
-    if term != ''
+    let term = matchstr(a:item['text'], '\m (\zs[^)]\+\ze)$')
+    if term !=# ''
         let term = '\V' . escape(term, '\')
     endif
     return term
@@ -42,10 +42,10 @@ function! SyntaxCheckers_css_prettycss_GetLocList() dict
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")} })
+        \ 'defaults': {'bufnr': bufnr('')} })
 
     for e in loclist
-        let e["text"] .= ')'
+        let e['text'] .= ')'
     endfor
 
     return loclist

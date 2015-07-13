@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_javascript_jslint_checker")
+if exists('g:loaded_syntastic_javascript_jslint_checker')
     finish
 endif
 
@@ -21,7 +21,7 @@ set cpo&vim
 
 function! SyntaxCheckers_javascript_jslint_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], '\mExpected .* and instead saw ''\zs.*\ze''')
-    if term != ''
+    if term !=# ''
         let term = '\V\<' . escape(term, '\') . '\>'
     endif
     return term
@@ -38,7 +38,7 @@ function! SyntaxCheckers_javascript_jslint_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")} })
+        \ 'defaults': {'bufnr': bufnr('')} })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

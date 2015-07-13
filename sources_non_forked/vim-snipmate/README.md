@@ -39,12 +39,12 @@ looking at the [vim-snippets][vim-snippets] repository.
 * Using [Vundle][vundle], add the following to your `vimrc` then run
   `:PluginInstall`
 
-        Plugin "MarcWeber/vim-addon-mw-utils"
-        Plugin "tomtom/tlib_vim"
-        Plugin "garbas/vim-snipmate"
+        Plugin 'MarcWeber/vim-addon-mw-utils'
+        Plugin 'tomtom/tlib_vim'
+        Plugin 'garbas/vim-snipmate'
 
         " Optional:
-        Plugin "honza/vim-snippets"
+        Plugin 'honza/vim-snippets'
 
 ## FAQ ##
 
@@ -67,7 +67,7 @@ Try all of the following:
   path of the snippet file or the scope explicitly loaded.
 
 * Check if any snippets from your snippets file are available. This can be done
-  with the "show available snips` map, by default bound to `<C-R><Tab>` in
+  with the "show available snips" map, by default bound to `<C-R><Tab>` in
   insert mode.
 
 If all of the above check out, please open an issue stating your Vim version,
@@ -98,19 +98,13 @@ does `:SnipMateLoadScope rails` when editing a Rails project for example.
 
 ## Release Notes ##
 
-### Master ###
+### 0.88 - 2015-04-04 ###
 
 * Implement simple caching
 * Remove expansion guards
-* Fix bug with mirrors in the first column
-* Fix bug with tabs in indents ([#143][143])
-* Fix bug with mirrors in placeholders
-* Fix reading single snippet files
-* Fix the use of the visual map at the end of a line
 * Add `:SnipMateLoadScope` command and buffer-local scope aliases
 * Load `<scope>_*.snippets` files
-* Indent visual placeholder expansions and remove extraneous lines ([#177][177]
-  and [#178][178])
+* Use CursorMoved autocmd events entirely
 
 * The nested branch has been merged
     * A new snippet parser has been added. The g:snipmate.version as well as
@@ -126,6 +120,16 @@ does `:SnipMateLoadScope rails` when editing a Rails project for example.
     * Override behavior can be enabled on a per-snippet basis with a bang (!) in
       the snippet file
     * Otherwise, SnipMate tries to preserve all snippets loaded
+
+* Fix bug with mirrors in the first column
+* Fix bug with tabs in indents ([#143][143])
+* Fix bug with mirrors in placeholders
+* Fix reading single snippet files
+* Fix the use of the visual map at the end of a line
+* Fix expansion of stops containing only the zero tab stop
+* Remove select mode mappings
+* Indent visual placeholder expansions and remove extraneous lines ([#177][177]
+  and [#178][178])
 
 ### 0.87 - 2014-01-04 ###
 

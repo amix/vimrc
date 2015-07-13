@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_racket_code_ayatollah_checker")
+if exists('g:loaded_syntastic_racket_code_ayatollah_checker')
     finish
 endif
 let g:loaded_syntastic_racket_code_ayatollah_checker = 1

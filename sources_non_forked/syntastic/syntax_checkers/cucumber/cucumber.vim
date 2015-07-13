@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_cucumber_cucumber_checker")
+if exists('g:loaded_syntastic_cucumber_cucumber_checker')
     finish
 endif
 let g:loaded_syntastic_cucumber_cucumber_checker = 1

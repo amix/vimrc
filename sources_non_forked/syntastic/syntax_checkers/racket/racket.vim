@@ -11,7 +11,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_racket_racket_checker")
+if exists('g:loaded_syntastic_racket_racket_checker')
     finish
 endif
 let g:loaded_syntastic_racket_racket_checker=1

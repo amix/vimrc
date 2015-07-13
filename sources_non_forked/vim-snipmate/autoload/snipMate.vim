@@ -410,10 +410,10 @@ function! snipMate#OpenSnippetFiles() abort
 	let exists = []
 	let notexists = []
 	for scope in s:AddScopeAliases(snipMate#ScopesByFile())
-		let files += split(s:snippet_filenames(scope, ''))
+		let files += s:snippet_filenames(scope, '')
 	endfor
 	call filter(files, "v:val !~# '\\*'")
-	for path in split(g:snipMate.snippet_dirs, ',')
+	for path in g:snipMate.snippet_dirs
 		let fullpaths = map(copy(files), 'printf("%s/%s", path, v:val)')
 		let exists += filter(copy(fullpaths), 'filereadable(v:val)')
 		let notexists += map(filter(copy(fullpaths),

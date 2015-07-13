@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_python_pep8_checker")
+if exists('g:loaded_syntastic_python_pep8_checker')
     finish
 endif
 let g:loaded_syntastic_python_pep8_checker = 1

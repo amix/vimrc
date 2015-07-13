@@ -9,7 +9,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_plugin")
+if exists('g:loaded_syntastic_plugin')
     finish
 endif
 let g:loaded_syntastic_plugin = 1
@@ -19,7 +19,7 @@ if has('reltime')
     lockvar! g:_SYNTASTIC_START
 endif
 
-let g:_SYNTASTIC_VERSION = '3.6.0-57'
+let g:_SYNTASTIC_VERSION = '3.6.0-122'
 lockvar g:_SYNTASTIC_VERSION
 
 " Sanity checks {{{1
@@ -34,7 +34,7 @@ for s:feature in [
             \ 'user_commands'
         \ ]
     if !has(s:feature)
-        call syntastic#log#error("need Vim compiled with feature " . s:feature)
+        call syntastic#log#error('need Vim compiled with feature ' . s:feature)
         finish
     endif
 endfor
@@ -104,7 +104,7 @@ for s:key in keys(g:_SYNTASTIC_DEFAULTS)
     endif
 endfor
 
-if exists("g:syntastic_quiet_warnings")
+if exists('g:syntastic_quiet_warnings')
     call syntastic#log#oneTimeWarn("variable g:syntastic_quiet_warnings is deprecated, please use let g:syntastic_quiet_messages = {'level': 'warnings'} instead")
     if g:syntastic_quiet_warnings
         let s:quiet_warnings = get(g:syntastic_quiet_messages, 'type', [])
@@ -246,29 +246,29 @@ endif
 function! s:BufReadPostHook() abort " {{{2
     if g:syntastic_check_on_open
         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS,
-            \ 'autocmd: BufReadPost, buffer ' . bufnr("") . ' = ' . string(bufname(str2nr(bufnr("")))))
+            \ 'autocmd: BufReadPost, buffer ' . bufnr('') . ' = ' . string(bufname(str2nr(bufnr('')))))
         call s:UpdateErrors(1, [])
     endif
 endfunction " }}}2
 
 function! s:BufWritePostHook() abort " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS,
-        \ 'autocmd: BufWritePost, buffer ' . bufnr("") . ' = ' . string(bufname(str2nr(bufnr("")))))
+        \ 'autocmd: BufWritePost, buffer ' . bufnr('') . ' = ' . string(bufname(str2nr(bufnr('')))))
     call s:UpdateErrors(1, [])
 endfunction " }}}2
 
 function! s:BufEnterHook() abort " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS,
-        \ 'autocmd: BufEnter, buffer ' . bufnr("") . ' = ' . string(bufname(str2nr(bufnr("")))) .
+        \ 'autocmd: BufEnter, buffer ' . bufnr('') . ' = ' . string(bufname(str2nr(bufnr('')))) .
         \ ', &buftype = ' . string(&buftype))
-    if &buftype == ''
+    if &buftype ==# ''
         call s:notifiers.refresh(g:SyntasticLoclist.current())
     elseif &buftype ==# 'quickfix'
         " TODO: this is needed because in recent versions of Vim lclose
         " can no longer be called from BufWinLeave
         " TODO: at this point there is no b:syntastic_loclist
         let loclist = filter(copy(getloclist(0)), 'v:val["valid"] == 1')
-        let owner = str2nr(getbufvar(bufnr(""), 'syntastic_owner_buffer'))
+        let owner = str2nr(getbufvar(bufnr(''), 'syntastic_owner_buffer'))
         let buffers = syntastic#util#unique(map(loclist, 'v:val["bufnr"]') + (owner ? [owner] : []))
         if get(w:, 'syntastic_loclist_set', 0) && !empty(loclist) && empty(filter( buffers, 'syntastic#util#bufIsActive(v:val)' ))
             call SyntasticLoclistHide()
@@ -278,7 +278,7 @@ endfunction " }}}2
 
 function! s:QuitPreHook() abort " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS,
-        \ 'autocmd: QuitPre, buffer ' . bufnr("") . ' = ' . string(bufname(str2nr(bufnr("")))))
+        \ 'autocmd: QuitPre, buffer ' . bufnr('') . ' = ' . string(bufname(str2nr(bufnr('')))))
     let b:syntastic_skip_checks = get(b:, 'syntastic_skip_checks', 0) || !syntastic#util#var('check_on_wq')
     if get(w:, 'syntastic_loclist_set', 0)
         call SyntasticLoclistHide()
@@ -304,6 +304,9 @@ function! s:UpdateErrors(auto_invoked, checker_names) abort " {{{2
     let run_checks = !a:auto_invoked || s:modemap.doAutoChecking()
     if run_checks
         call s:CacheErrors(a:checker_names)
+        unlockvar! b:syntastic_changedtick
+        let b:syntastic_changedtick = b:changedtick
+        lockvar! b:syntastic_changedtick
     endif
 
     let loclist = g:SyntasticLoclist.current()
@@ -335,7 +338,7 @@ function! s:UpdateErrors(auto_invoked, checker_names) abort " {{{2
             " order, which can lead to missing filetype when jumping
             " to a new file; the following is a workaround for the
             " resulting brain damage
-            if &filetype == ''
+            if &filetype ==# ''
                 silent! filetype detect
             endif
         endif
@@ -544,11 +547,12 @@ function! SyntasticMake(options) abort " {{{2
     let &l:errorformat = old_local_errorformat
     " }}}3
 
-    if !s:_running_windows && (s:_os_name() =~? "FreeBSD" || s:_os_name() =~? "OpenBSD")
+    if !s:_running_windows && (s:_os_name() =~? 'FreeBSD' || s:_os_name() =~? 'OpenBSD')
         call syntastic#util#redraw(g:syntastic_full_redraws)
     endif
 
     if bailout
+        call syntastic#log#ndebug(g:_SYNTASTIC_DEBUG_LOCLIST, 'checker output:', err_lines)
         throw 'Syntastic: checker error'
     endif
 
@@ -609,7 +613,7 @@ endfunction " }}}2
 " Skip running in special buffers
 function! s:_skip_file() abort " {{{2
     let fname = expand('%', 1)
-    let skip = get(b:, 'syntastic_skip_checks', 0) || (&buftype != '') ||
+    let skip = get(b:, 'syntastic_skip_checks', 0) || (&buftype !=# '') ||
         \ !filereadable(fname) || getwinvar(0, '&diff') || s:_ignore_file(fname) ||
         \ fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
     if skip
@@ -627,7 +631,7 @@ function! s:_explain_skip(filetypes) abort " {{{2
         if get(b:, 'syntastic_skip_checks', 0)
             call add(why, 'b:syntastic_skip_checks set')
         endif
-        if &buftype != ''
+        if &buftype !=# ''
             call add(why, 'buftype = ' . string(&buftype))
         endif
         if !filereadable(fname)

@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_glsl_cgc_checker")
+if exists('g:loaded_syntastic_glsl_cgc_checker')
     finish
 endif
 let g:loaded_syntastic_glsl_cgc_checker = 1
@@ -33,8 +33,8 @@ function! SyntaxCheckers_glsl_cgc_GetLocList() dict " {{{1
         \ 'args': (exists('g:syntastic_glsl_options') ? ' ' . g:syntastic_glsl_options : '') })
 
     let errorformat =
-        \ "%E%f(%l) : error %m," .
-        \ "%W%f(%l) : warning %m"
+        \ '%E%f(%l) : error %m,' .
+        \ '%W%f(%l) : warning %m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,

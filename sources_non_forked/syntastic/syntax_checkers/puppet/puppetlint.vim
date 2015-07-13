@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_puppet_puppetlint_checker")
+if exists('g:loaded_syntastic_puppet_puppetlint_checker')
     finish
 endif
 let g:loaded_syntastic_puppet_puppetlint_checker = 1
@@ -19,20 +19,20 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_puppet_puppetlint_IsAvailable() dict
-    call self.log("executable('puppet') = " . executable('puppet') . ', ' .
-        \ "executable(" . string(self.getExec()) . ") = " . executable(self.getExec()))
-    if !executable('puppet') || !executable(self.getExec())
+    if !executable(self.getExec())
         return 0
     endif
-    let ver = self.getVersion(self.getExecEscaped() . ' --version 2>' . syntastic#util#DevNull())
-    return syntastic#util#versionIsAtLeast(ver, [0, 1, 10])
+    let s:puppetlint_new = syntastic#util#versionIsAtLeast(self.getVersion(), [1])
+    return syntastic#util#versionIsAtLeast(self.getVersion(), [0, 2])
 endfunction
 
 function! SyntaxCheckers_puppet_puppetlint_GetLocList() dict
     call syntastic#log#deprecationWarn('puppet_lint_arguments', 'puppet_puppetlint_args')
 
     let makeprg = self.makeprgBuild({
-        \ 'args_after': '--log-format "%{KIND} [%{check}] %{message} at %{fullpath}:%{linenumber}"' })
+        \ 'args_after':
+        \       '--log-format "%{KIND} [%{check}] %{message} at %{fullpath}:' .
+        \       (s:puppetlint_new ? '%{line}' : '%{linenumber}') . '"' })
 
     let errorformat = '%t%*[a-zA-Z] %m at %f:%l'
 

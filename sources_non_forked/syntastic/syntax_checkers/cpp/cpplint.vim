@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_cpp_cpplint_checker")
+if exists('g:loaded_syntastic_cpp_cpplint_checker')
     finish
 endif
 let g:loaded_syntastic_cpp_cpplint_checker = 1

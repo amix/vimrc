@@ -9,7 +9,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_ruby_macruby_checker")
+if exists('g:loaded_syntastic_ruby_macruby_checker')
     finish
 endif
 let g:loaded_syntastic_ruby_macruby_checker = 1

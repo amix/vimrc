@@ -9,7 +9,7 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "============================================================================
 
-if exists("g:loaded_syntastic_lua_luacheck_checker")
+if exists('g:loaded_syntastic_lua_luacheck_checker')
     finish
 endif
 let g:loaded_syntastic_lua_luacheck_checker = 1
@@ -19,27 +19,27 @@ set cpo&vim
 
 function! SyntaxCheckers_lua_luacheck_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], '\m''\zs\S\+\ze''')
-    if term != ''
+    if term !=# ''
         return '\V\<' . escape(term, '\') . '\>'
     endif
 
     let term = matchstr(a:item['text'], '\m\(accessing undefined\|setting non-standard global\|' .
                 \ 'setting non-module global\|unused global\) variable \zs\S\+')
-    if term == ''
+    if term ==# ''
         let term = matchstr(a:item['text'], '\mvariable \zs\S\+\ze was previously defined')
     endif
-    if term == ''
+    if term ==# ''
         let term = matchstr(a:item['text'], '\munused \(variable\|argument\|loop variable\) \zs\S\+')
     endif
-    if term == ''
+    if term ==# ''
         let term = matchstr(a:item['text'], '\m\(value assigned to variable\|value of argument\|' .
                 \ 'value of loop variable\) \zs\S\+')
     endif
-    if term == ''
+    if term ==# ''
         let term = matchstr(a:item['text'], '\mvariable \zs\S\+\ze is never set')
     endif
 
-    return term != '' ? '\V\<' . escape(term, '\') . '\>' : ''
+    return term !=# '' ? '\V\<' . escape(term, '\') . '\>' : ''
 endfunction
 
 function! SyntaxCheckers_lua_luacheck_GetLocList() dict

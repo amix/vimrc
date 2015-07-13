@@ -27,11 +27,7 @@ function! ack#Ack(cmd, args) "{{{
   endif
 
   " If no pattern is provided, search for the word under the cursor
-  if empty(a:args)
-    let l:grepargs = expand("<cword>")
-  else
-    let l:grepargs = a:args . join(a:000, ' ')
-  end
+  let l:grepargs = empty(a:args) ? expand("<cword>") : a:args . join(a:000, ' ')
 
   " NOTE: we escape special chars, but not everything using shellescape to
   "       allow for passing arguments etc
@@ -118,6 +114,8 @@ function! s:ApplyMappings() "{{{
   if exists("g:ackpreview") " if auto preview in on, remap j and k keys
     nnoremap <buffer> <silent> j j<CR><C-W><C-W>
     nnoremap <buffer> <silent> k k<CR><C-W><C-W>
+    nmap <buffer> <silent> <Down> j
+    nmap <buffer> <silent> <Up> k
   endif
 endfunction "}}}
 
@@ -157,17 +155,11 @@ function! s:QuickHelp() "{{{
   execute 'edit' globpath(&rtp, 'doc/ack_quick_help.txt')
 
   silent normal gg
-  setlocal buftype=nofile
-  setlocal bufhidden=hide
-  setlocal noswapfile
-  setlocal nobuflisted
-  setlocal nomodifiable
+  setlocal buftype=nofile bufhidden=hide nobuflisted
+  setlocal nomodifiable noswapfile
   setlocal filetype=help
-  setlocal nonumber
-  setlocal norelativenumber
-  setlocal nowrap
-  setlocal foldlevel=20
-  setlocal foldmethod=diff
+  setlocal nonumber norelativenumber nowrap
+  setlocal foldmethod=diff foldlevel=20
 
   nnoremap <buffer> <silent> ? :q!<CR>:call ack#ShowResults()<CR>
 endfunction "}}}

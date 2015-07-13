@@ -40,16 +40,21 @@ CONTENTS                                                  *syntastic-contents*
         6.1.Handling of composite filetypes........|syntastic-composite|
         6.2.Editing files over network.............|syntastic-netrw|
         6.3.The 'shellslash' option................|syntastic-shellslash|
+        6.4.Saving Vim sessions....................|syntastic-sessions|
     7.Compatibility with other software............|syntastic-compatibility|
         7.1.The csh and tcsh shells................|syntastic-csh|
         7.2.Eclim..................................|syntastic-eclim|
         7.3.The fish shell.........................|syntastic-fish|
         7.4.The fizsh shell........................|syntastic-fizsh|
-        7.5.The PowerShell shell...................|syntastic-powershell|
-        7.6.python-mode............................|syntastic-pymode|
-        7.7.vim-auto-save..........................|syntastic-vim-auto-save|
-        7.8.vim-virtualenv.........................|syntastic-vim-virtualenv|
-        7.9.YouCompleteMe..........................|syntastic-ycm|
+        7.5.flagship...............................|syntastic-flagship|
+        7.6.powerline..............................|syntastic-powerline|
+        7.7.The PowerShell shell...................|syntastic-powershell|
+        7.8.python-mode............................|syntastic-pymode|
+        7.9.vim-auto-save..........................|syntastic-vim-auto-save|
+        7.10.vim-go................................|syntastic-vim-go|
+        7.11.vim-virtualenv........................|syntastic-vim-virtualenv|
+        7.12.YouCompleteMe.........................|syntastic-ycm|
+        7.13.The zsh shell and rvm.................|syntastic-zsh|
     8.About........................................|syntastic-about|
     9.License......................................|syntastic-license|
 
@@ -457,7 +462,7 @@ Use this option to map non-standard filetypes to standard ones.  Corresponding
 checkers are mapped accordingly, which allows syntastic to check files with
 non-standard filetypes: >
     let g:syntastic_filetype_map = {
-        \ "latex": "tex",
+        \ "plaintex": "tex",
         \ "gentoo-metadata": "xml" }
 <
 Composite filetypes can also be mapped to simple types, which disables the
@@ -809,6 +814,16 @@ shell.  It should be turned off if your 'shell' (or |g:syntastic_shell|) is
 "sh".  Most checkers will stop working if 'shellslash' is set to the wrong
 value.
 
+------------------------------------------------------------------------------
+6.4 Saving Vim sessions                                   *syntastic-sessions*
+
+If you use |:mksession| to save Vim sessions you should probably make sure to
+remove option "blank" from 'sessionoptions': >
+    set sessionoptions-=blank
+<
+This will prevent |:mksession| from saving |syntastic-error-window| as empty
+quickfix windows.
+
 ==============================================================================
 7. Compatibility with other software                 *syntastic-compatibility*
 
@@ -858,7 +873,34 @@ interactive features of "fizsh". Using a more traditional shell such as "zsh",
     let g:syntastic_shell = "/bin/sh"
 <
 ------------------------------------------------------------------------------
-7.5. The PowerShell shell                               *syntastic-powershell*
+7.5 flagship                                              *syntastic-flagship*
+
+The "flagship" Vim plugin (https://github.com/tpope/vim-flagship) has its
+own mechanism of showing flags on the |'statusline'|. To allow "flagship"
+to manage syntastic's statusline flag add the following |autocommand| to
+your vimrc, rather than explicitly adding the flag to your |'statusline'| as
+described in the |syntastic-statusline-flag| section above: >
+    autocmd User Flags call Hoist("window", "SyntasticStatuslineFlag")
+<
+------------------------------------------------------------------------------
+7.6. powerline                                           *syntastic-powerline*
+
+The "powerline" Vim plugin (https://github.com/powerline/powerline) comes
+packaged with a syntastic segment. To customize this segment create a file
+~/.config/powerline/themes/vim/default.json, with a content like this: >
+    {
+        "segment_data" : {
+            "powerline.segments.vim.plugin.syntastic.syntastic" : {
+                "args" : {
+                    "err_format" : "Err: {first_line} #{num} ",
+                    "warn_format" : "Warn: {first_line} #{num} "
+                }
+            }
+        }
+    }
+<
+------------------------------------------------------------------------------
+7.7. The PowerShell shell                               *syntastic-powershell*
 
 At the time of this writing, syntastic is not compatible with using "Windows
 PowerShell" (http://technet.microsoft.com/en-us/library/bb978526.aspx) as Vim's
@@ -867,7 +909,7 @@ Vim's 'shell' to a more traditional program, such as "cmd.exe": >
     set shell=cmd.exe
 <
 ------------------------------------------------------------------------------
-7.6 python-mode                                             *syntastic-pymode*
+7.8 python-mode                                             *syntastic-pymode*
 
 Syntastic can be used along with the "python-mode" Vim plugin (see
 https://github.com/klen/python-mode). However, they both run syntax checks by
@@ -878,14 +920,27 @@ for python in syntastic (see |syntastic_mode_map|), or disable lint checks in
     let g:pymode_lint_write = 0
 <
 ------------------------------------------------------------------------------
-7.7. vim-auto-save                                   *syntastic-vim-auto-save*
+7.9. vim-auto-save                                   *syntastic-vim-auto-save*
 
 Syntastic can be used together with the "vim-auto-save" Vim plugin (see
 https://github.com/907th/vim-auto-save).  However, syntastic checks in active
 mode only work with "vim-auto-save" version 0.1.7 or later.
 
 ------------------------------------------------------------------------------
-7.8. vim-virtualenv                                 *syntastic-vim-virtualenv*
+7.10. vim-go                                                *syntastic-vim-go*
+
+The "vim-go" Vim plugin (https://github.com/fatih/vim-go) uses |quickfix|
+lists, and thus doesn't conflict with syntastic (which uses |location-list|
+lists).  However, both "vim-go" and syntastic run syntax checks by default
+when you save buffers to disk, and this can have confusing results.  To
+avoid both plugins opening error windows, you can either set passive
+mode for go in syntastic (see |syntastic_mode_map|), or prevent "vim-go"
+from showing a quickfix window when |g:go_fmt_command| fails, by setting
+|g:go_fmt_fail_silently| to 1.  E.g.: >
+    let g:go_fmt_fail_silently = 1
+<
+------------------------------------------------------------------------------
+7.11. vim-virtualenv                                *syntastic-vim-virtualenv*
 
 At the time of this writing, syntastic can't run checkers installed
 in Python virtual environments activated by "vim-virtualenv" (see
@@ -893,7 +948,7 @@ https://github.com/jmcantrell/vim-virtualenv).  This is a limitation of
 "vim-virtualenv".
 
 ------------------------------------------------------------------------------
-7.9 YouCompleteMe                                              *syntastic-ycm*
+7.12 YouCompleteMe                                             *syntastic-ycm*
 
 Syntastic can be used together with the "YouCompleteMe" Vim plugin (see
 http://valloric.github.io/YouCompleteMe/).  However, by default "YouCompleteMe"
@@ -903,6 +958,18 @@ identifier completer but still run syntastic's checkers for those filetypes you
 have to set |ycm_show_diagnostics_ui| to 0. E.g.: >
     let g:ycm_show_diagnostics_ui = 0
 <
+------------------------------------------------------------------------------
+7.13 The zsh shell and rvm                                     *syntastic-zsh*
+
+If you're running MacVim together with the "zsh" shell (http://www.zsh.org/)
+and "rvm" (https://rvm.io/), you need to be aware that MacVim does not source
+the .zshrc file, but will source a .zshenv file.  Consequently you have to
+either source the "rvm" scripts from within .zshenv, or just change your shell
+to something else: >
+    set shell=/bin/sh
+<
+Of course, you'll have to make sure "rvm" still works in the new shell.
+
 ==============================================================================
 8. About                                                     *syntastic-about*
 

@@ -90,8 +90,7 @@ endif
 
 let g:snipMate['get_snippets'] = get(g:snipMate, 'get_snippets', funcref#Function("snipMate#GetSnippets"))
 
-" List of paths where snippets/ dirs are located, or a function returning such
-" a list
+" List of paths where snippets/ dirs are located
 let g:snipMate['snippet_dirs'] = get(g:snipMate, 'snippet_dirs', split(&rtp, ','))
 if type(g:snipMate['snippet_dirs']) != type([])
 	echohl WarningMsg

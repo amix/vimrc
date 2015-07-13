@@ -9,7 +9,7 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "============================================================================
 
-if exists("g:loaded_syntastic_objc_oclint_checker")
+if exists('g:loaded_syntastic_objc_oclint_checker')
     finish
 endif
 let g:loaded_syntastic_objc_oclint_checker = 1

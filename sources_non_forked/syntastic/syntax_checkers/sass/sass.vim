@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_sass_sass_checker")
+if exists('g:loaded_syntastic_sass_sass_checker')
     finish
 endif
 let g:loaded_syntastic_sass_sass_checker = 1
@@ -25,21 +25,21 @@ augroup syntastic
 augroup END
 
 "By default do not check partials as unknown variables are a syntax error
-if !exists("g:syntastic_sass_check_partials")
+if !exists('g:syntastic_sass_check_partials')
     let g:syntastic_sass_check_partials = 0
 endif
 
 "use compass imports if available
-let s:imports = ""
-if executable("compass")
-    let s:imports = "--compass"
+let s:imports = ''
+if executable('compass')
+    let s:imports = '--compass'
 endif
 
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_sass_sass_GetLocList() dict
-    if !g:syntastic_sass_check_partials && expand('%:t', 1)[0] == '_'
+    if !g:syntastic_sass_check_partials && expand('%:t', 1)[0] ==# '_'
         return []
     endif
 

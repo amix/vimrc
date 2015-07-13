@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_bro_bro_checker")
+if exists('g:loaded_syntastic_bro_bro_checker')
     finish
 endif
 let g:loaded_syntastic_bro_bro_checker = 1
@@ -20,7 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_bro_bro_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], '\m at or near "\zs[^"]\+\ze"')
-    return term != '' ? '\V\<' . escape(term, '\') . '\>' : ''
+    return term !=# '' ? '\V\<' . escape(term, '\') . '\>' : ''
 endfunction
 
 function! SyntaxCheckers_bro_bro_IsAvailable() dict

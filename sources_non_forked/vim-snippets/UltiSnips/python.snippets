@@ -7,18 +7,18 @@ priority -50
 #! header
 snippet #! "Shebang header for python scripts" b
 #!/usr/bin/env python
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 $0
 endsnippet
 
 snippet ifmain "ifmain" b
 if __name__ == '__main__':
-	${1:main()}$0
+	${1:${VISUAL:main()}}
 endsnippet
 
 snippet for "for loop" b
 for ${1:item} in ${2:iterable}:
-	${3:pass}
+	${3:${VISUAL:pass}}
 endsnippet
 
 ##########
@@ -447,7 +447,7 @@ if snip.indent:
 	snip.rv = 'self' + (", " if len(t[2]) else "")`${2:arg1}):
 	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
 write_function_docstring(t, snip) `
-	${0:pass}
+	${5:${VISUAL:pass}}
 endsnippet
 
 
@@ -458,7 +458,7 @@ if snip.indent:
 	snip.rv = 'cls' + (", " if len(t[2]) else "")`${2:arg1}):
 	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
 write_function_docstring(t, snip) `
-	${0:pass}
+	${5:${VISUAL:pass}}
 endsnippet
 
 
@@ -467,7 +467,7 @@ snippet defs "static method with docstrings" b
 def ${1:function}(${2:arg1}):
 	`!p snip.rv = triple_quotes(snip)`${4:TODO: Docstring for $1.}`!p
 write_function_docstring(t, snip) `
-	${0:pass}
+	${5:${VISUAL:pass}}
 endsnippet
 
 
@@ -520,19 +520,19 @@ endsnippet
 ####################
 snippet if "If" b
 if ${1:condition}:
-	${2:pass}
+	${2:${VISUAL:pass}}
 endsnippet
 
 snippet ife "If / Else" b
 if ${1:condition}:
-	${2:pass}
+	${2:${VISUAL:pass}}
 else:
 	${3:pass}
 endsnippet
 
 snippet ifee "If / Elif / Else" b
 if ${1:condition}:
-	${2:pass}
+	${2:${VISUAL:pass}}
 elif ${3:condition}:
 	${4:pass}
 else:
@@ -545,32 +545,32 @@ endsnippet
 ##########################
 snippet try "Try / Except" b
 try:
-	${1:pass}
+	${1:${VISUAL:pass}}
 except ${2:Exception}, ${3:e}:
 	${4:raise $3}
 endsnippet
 
-snippet try "Try / Except / Else" b
+snippet trye "Try / Except / Else" b
 try:
-	${1:pass}
+	${1:${VISUAL:pass}}
 except ${2:Exception}, ${3:e}:
 	${4:raise $3}
 else:
 	${5:pass}
 endsnippet
 
-snippet try "Try / Except / Finally" b
+snippet tryf "Try / Except / Finally" b
 try:
-	${1:pass}
+	${1:${VISUAL:pass}}
 except ${2:Exception}, ${3:e}:
 	${4:raise $3}
 finally:
 	${5:pass}
 endsnippet
 
-snippet try "Try / Except / Else / Finally" b
+snippet tryef "Try / Except / Else / Finally" b
 try:
-	${1:pass}
+	${1:${VISUAL:pass}}
 except${2: ${3:Exception}, ${4:e}}:
 	${5:raise}
 else:
@@ -597,31 +597,31 @@ import pudb; pudb.set_trace()
 endsnippet
 
 snippet ae "Assert equal" b
-self.assertEqual(${1:first},${2:second})
+self.assertEqual(${1:${VISUAL:first}},${2:second})
 endsnippet
 
 snippet at "Assert True" b
-self.assertTrue(${0:exp})
+self.assertTrue(${1:${VISUAL:expression}})
 endsnippet
 
 snippet af "Assert False" b
-self.assertFalse(${1:expression})
+self.assertFalse(${1:${VISUAL:expression}})
 endsnippet
 
 snippet aae "Assert almost equal" b
-self.assertAlmostEqual(${1:first},${2:second})
+self.assertAlmostEqual(${1:${VISUAL:first}},${2:second})
 endsnippet
 
 snippet ar "Assert raises" b
-self.assertRaises(${1:exception}, ${2:func}${3/.+/, /}${3:arguments})
+self.assertRaises(${1:exception}, ${2:${VISUAL:func}}${3/.+/, /}${3:arguments})
 endsnippet
 
 snippet an "Assert is None" b
-self.assertIsNone(${0:expression})
+self.assertIsNone(${1:${VISUAL:expression}})
 endsnippet
 
 snippet ann "Assert is not None" b
-self.assertIsNotNone(${0:expression})
+self.assertIsNotNone(${1:${VISUAL:expression}})
 endsnippet
 
 snippet testcase "pyunit testcase" b
@@ -636,24 +636,24 @@ class Test${1:Class}(${2:unittest.TestCase}):
 		${5:pass}
 
 	def test_${6:name}(self):
-		${7:pass}
+		${7:${VISUAL:pass}}
 endsnippet
 
 snippet " "triple quoted string (double quotes)" b
 """
-${1:doc}
+${1:${VISUAL:doc}}
 `!p triple_quotes_handle_trailing(snip, '"')`
 endsnippet
 
 snippet ' "triple quoted string (single quotes)" b
 '''
-${1:doc}
+${1:${VISUAL:doc}}
 `!p triple_quotes_handle_trailing(snip, "'")`
 endsnippet
 
 snippet doc "doc block (triple quotes)"
 `!p snip.rv = triple_quotes(snip)`
-${1:doc}
+${1:${VISUAL:doc}}
 `!p snip.rv = triple_quotes(snip)`
 endsnippet
 

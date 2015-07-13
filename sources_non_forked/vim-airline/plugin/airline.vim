@@ -102,10 +102,10 @@ function! s:airline_theme(...)
   endif
 endfunction
 
-command! -nargs=? -complete=customlist,<sid>get_airline_themes AirlineTheme call <sid>airline_theme(<f-args>)
-command! AirlineToggleWhitespace call airline#extensions#whitespace#toggle()
-command! AirlineToggle call s:airline_toggle()
-command! AirlineRefresh call airline#load_theme() | call airline#update_statusline()
+command! -bar -nargs=? -complete=customlist,<sid>get_airline_themes AirlineTheme call <sid>airline_theme(<f-args>)
+command! -bar AirlineToggleWhitespace call airline#extensions#whitespace#toggle()
+command! -bar AirlineToggle call s:airline_toggle()
+command! -bar AirlineRefresh call airline#load_theme() | call airline#update_statusline()
 
 call airline#init#bootstrap()
 call s:airline_toggle()

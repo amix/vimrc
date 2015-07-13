@@ -1,6 +1,0 @@
-[submodule "sources_non_forked/vim-gitgutter"]
-	path = sources_non_forked/vim-gitgutter
-	url = git://github.com/airblade/vim-gitgutter.git
-[submodule "sources_non_forked/gruvbox"]
-	path = sources_non_forked/gruvbox
-	url = git@github.com:morhetz/gruvbox.git

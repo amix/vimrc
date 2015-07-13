@@ -1,7 +1,7 @@
 " MIT License. Copyright (c) 2013-2015 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
-if !get(g:, 'loaded_signify', 0) && !get(g:, 'loaded_gitgutter', 0) && !get(g:, 'loaded_changes', 0)
+if !get(g:, 'loaded_signify', 0) && !get(g:, 'loaded_gitgutter', 0) && !get(g:, 'loaded_changes', 0) && !get(g:, 'loaded_quickfixsigns', 0)
   finish
 endif
 
@@ -53,6 +53,8 @@ function! s:get_hunks()
       let s:source_func = 's:get_hunks_gitgutter'
     elseif exists('*changes#GetStats')
       let s:source_func = 's:get_hunks_changes'
+    elseif exists('*quickfixsigns#vcsdiff#GetHunkSummary')
+      let s:source_func = 'quickfixsigns#vcsdiff#GetHunkSummary'
     else
       let s:source_func = 's:get_hunks_empty'
     endif

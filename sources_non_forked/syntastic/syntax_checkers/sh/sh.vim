@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_sh_sh_checker")
+if exists('g:loaded_syntastic_sh_sh_checker')
     finish
 endif
 let g:loaded_syntastic_sh_sh_checker = 1
@@ -46,10 +46,10 @@ endfunction " }}}1
 " Utilities {{{1
 
 function! s:GetShell() " {{{2
-    if !exists('b:shell') || b:shell == ''
+    if !exists('b:shell') || b:shell ==# ''
         let b:shell = ''
         let shebang = syntastic#util#parseShebang()['exe']
-        if shebang != ''
+        if shebang !=# ''
             if shebang[-strlen('bash'):-1] ==# 'bash'
                 let b:shell = 'bash'
             elseif shebang[-strlen('zsh'):-1] ==# 'zsh'
@@ -59,7 +59,7 @@ function! s:GetShell() " {{{2
             endif
         endif
         " try to use env variable in case no shebang could be found
-        if b:shell == ''
+        if b:shell ==# ''
             let b:shell = fnamemodify($SHELL, ':t')
         endif
     endif
@@ -68,7 +68,7 @@ endfunction " }}}2
 
 function! s:IsShellValid() " {{{2
     let shell = s:GetShell()
-    return shell != '' && executable(shell)
+    return shell !=# '' && executable(shell)
 endfunction " }}}2
 
 function! s:ForwardToZshChecker() " {{{2

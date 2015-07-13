@@ -20,11 +20,11 @@ set cpo&vim
 
 function! SyntaxCheckers_cabal_cabal_GetHighlightRegex(item)
     let field = matchstr(a:item['text'], "\\vParse of field '\\zs[^']+")
-    if field != ''
+    if field !=# ''
         return '\v\c^\s*' . field . '\s*:\s*\zs.*$'
     endif
     let field = matchstr(a:item['text'], "\\v(^|\\s)'\\zs[^']+\\ze'")
-    if field != ''
+    if field !=# ''
         return '\V\c\<' . escape(field, '\') . '\>'
     endif
     return ''

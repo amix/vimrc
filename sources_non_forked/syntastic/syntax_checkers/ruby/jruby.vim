@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_ruby_jruby_checker")
+if exists('g:loaded_syntastic_ruby_jruby_checker')
     finish
 endif
 let g:loaded_syntastic_ruby_jruby_checker = 1

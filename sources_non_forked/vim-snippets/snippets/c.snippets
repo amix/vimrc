@@ -52,22 +52,28 @@ snippet once
 ## Control Statements
 # if
 snippet if
-	if (${1:/* condition */}) {
+	if (${1:true}) {
+		${0}
+	}
+snippet ife
+	if (${1:true}) {
 		${2}
+	} else {
+		${0}
 	}
 # else
 snippet el
 	else {
-		${1}
+		${0}
 	}
 # else if
 snippet elif
-	else if (${1:/* condition */}) {
-		${2}
+	else if (${1:true}) {
+		${0}
 	}
 # ifi
 snippet ifi
-	if (${1:/* condition */}) ${2};
+	if (${1:true}) ${0};
 # ternary
 snippet t
 	${1:/* condition */} ? ${2:a} : ${3:b}

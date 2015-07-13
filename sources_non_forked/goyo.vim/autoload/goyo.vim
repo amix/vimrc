@@ -24,6 +24,10 @@
 let s:cpo_save = &cpo
 set cpo&vim
 
+function! s:const(val, min, max)
+  return min([max([a:val, a:min]), a:max])
+endfunction
+
 function! s:get_color(group, attr)
   return synIDattr(synIDtrans(hlID(a:group)), a:attr)
 endfunction
@@ -78,28 +82,27 @@ function! s:setup_pad(bufnr, vert, size, repel)
   execute winnr('#') . 'wincmd w'
 endfunction
 
-function! s:hmargin()
-  let nwidth = max([len(string(line('$'))) + 1, &numberwidth])
-  let width  = t:goyo_width + (&number ? nwidth : 0)
-  return (&columns - width)
-endfunction
-
 function! s:resize_pads()
-  let t:goyo_width         = max([2, t:goyo_width])
-  let t:goyo_margin_top    = min([max([2, t:goyo_margin_top]),    &lines / 2 - 1])
-  let t:goyo_margin_bottom = min([max([2, t:goyo_margin_bottom]), &lines / 2 - 1])
-
-  let hmargin = s:hmargin()
-
   augroup goyop
     autocmd!
   augroup END
-  call s:setup_pad(t:goyo_pads.t, 0, t:goyo_margin_top - 1, 'j')
-  call s:setup_pad(t:goyo_pads.b, 0, t:goyo_margin_bottom - 2, 'k')
-  call s:setup_pad(t:goyo_pads.l, 1, hmargin / 2 - 1, 'l')
-  call s:setup_pad(t:goyo_pads.r, 1, hmargin / 2 - 1, 'h')
 
-  let t:goyo_width = winwidth(0)
+  let t:goyo_dim.width = s:const(t:goyo_dim.width, 2, &columns)
+  let t:goyo_dim.height = s:const(t:goyo_dim.height, 2, &lines)
+
+  let vmargin = max([0, (&lines - t:goyo_dim.height) / 2 - 1])
+  let yoff = s:const(t:goyo_dim.yoff, - vmargin, vmargin)
+  let top = vmargin + yoff
+  let bot = vmargin - yoff - 1
+  call s:setup_pad(t:goyo_pads.t, 0, top, 'j')
+  call s:setup_pad(t:goyo_pads.b, 0, bot, 'k')
+
+  let nwidth  = max([len(string(line('$'))) + 1, &numberwidth])
+  let width   = t:goyo_dim.width + (&number ? nwidth : 0)
+  let hmargin = max([0, (&columns - width) / 2 - 1])
+  let xoff    = s:const(t:goyo_dim.xoff, - hmargin, hmargin)
+  call s:setup_pad(t:goyo_pads.l, 1, hmargin + xoff, 'l')
+  call s:setup_pad(t:goyo_pads.r, 1, hmargin - xoff, 'h')
 endfunction
 
 function! s:tranquilize()
@@ -145,11 +148,11 @@ endfunction
 
 function! s:maps_resize()
   let commands = {
-  \ '=': ':<c-u>let [t:goyo_width, t:goyo_margin_top, t:goyo_margin_bottom] = t:goyo_initial_dim <bar> call <sid>resize_pads()<cr>',
-  \ '>': ':<c-u>let t:goyo_width = winwidth(0) + 2 * v:count1 <bar> call <sid>resize_pads()<cr>',
-  \ '<': ':<c-u>let t:goyo_width = winwidth(0) - 2 * v:count1 <bar> call <sid>resize_pads()<cr>',
-  \ '+': ':<c-u>let t:goyo_margin_top -= v:count1 <bar> let t:goyo_margin_bottom -= v:count1 <bar> call <sid>resize_pads()<cr>',
-  \ '-': ':<c-u>let t:goyo_margin_top += v:count1 <bar> let t:goyo_margin_bottom += v:count1 <bar> call <sid>resize_pads()<cr>'
+  \ '=': ':<c-u>let t:goyo_dim = <sid>parse_arg(t:goyo_dim_expr) <bar> call <sid>resize_pads()<cr>',
+  \ '>': ':<c-u>let t:goyo_dim.width = winwidth(0) + 2 * v:count1 <bar> call <sid>resize_pads()<cr>',
+  \ '<': ':<c-u>let t:goyo_dim.width = winwidth(0) - 2 * v:count1 <bar> call <sid>resize_pads()<cr>',
+  \ '+': ':<c-u>let t:goyo_dim.height += 2 * v:count1 <bar> call <sid>resize_pads()<cr>',
+  \ '-': ':<c-u>let t:goyo_dim.height -= 2 * v:count1 <bar> call <sid>resize_pads()<cr>'
   \ }
   let mapped = filter(keys(commands), "empty(maparg(\"\<c-w>\".v:val, 'n'))")
   for c in mapped
@@ -158,7 +161,12 @@ function! s:maps_resize()
   return mapped
 endfunction
 
-function! s:goyo_on(width)
+function! s:goyo_on(dim)
+  let dim = s:parse_arg(a:dim)
+  if empty(dim)
+    return
+  endif
+
   let s:orig_tab = tabpagenr()
   let settings =
     \ { 'laststatus':    &laststatus,
@@ -177,10 +185,8 @@ function! s:goyo_on(width)
   tab split
 
   let t:goyo_master = winbufnr(0)
-  let t:goyo_width  = a:width
-  let t:goyo_margin_top = get(g:, 'goyo_margin_top', 4)
-  let t:goyo_margin_bottom = get(g:, 'goyo_margin_bottom', 4)
-  let t:goyo_initial_dim = [t:goyo_width, t:goyo_margin_top, t:goyo_margin_bottom]
+  let t:goyo_dim = dim
+  let t:goyo_dim_expr = a:dim
   let t:goyo_pads = {}
   let t:goyo_revert = settings
   let t:goyo_maps = extend(s:maps_nop(), s:maps_resize())
@@ -360,19 +366,60 @@ function! s:goyo_off()
   silent! doautocmd User GoyoLeave
 endfunction
 
-function! goyo#execute(bang, ...)
-  let width = a:0 > 0 ? a:1 : get(g:, 'goyo_width', 80)
+function! s:relsz(expr, limit)
+  if a:expr !~ '%$'
+    return str2nr(a:expr)
+  endif
+  return a:limit * str2nr(a:expr[:-2]) / 100
+endfunction
 
+function! s:parse_arg(arg)
+  if exists('g:goyo_height') || !exists('g:goyo_margin_top') && !exists('g:goyo_margin_bottom')
+    let height = s:relsz(get(g:, 'goyo_height', '85%'), &lines)
+    let yoff = 0
+  else
+    let top = max([0, s:relsz(get(g:, 'goyo_margin_top', 4), &lines)])
+    let bot = max([0, s:relsz(get(g:, 'goyo_margin_bottom', 4), &lines)])
+    let height = &lines - top - bot
+    let yoff = top - bot
+  endif
+
+  let dim = { 'width':  s:relsz(get(g:, 'goyo_width', 80), &columns),
+            \ 'height': height,
+            \ 'xoff':   0,
+            \ 'yoff':   yoff }
+  if empty(a:arg)
+    return dim
+  endif
+  let parts = matchlist(a:arg, '^\s*\([0-9]\+%\?\)\?\([+-][0-9]\+%\?\)\?\%(x\([0-9]\+%\?\)\?\([+-][0-9]\+%\?\)\?\)\?\s*$')
+  if empty(parts)
+    echohl WarningMsg
+    echo 'Invalid dimension expression: '.a:arg
+    echohl None
+    return {}
+  endif
+  if !empty(parts[1]) | let dim.width  = s:relsz(parts[1], &columns) | endif
+  if !empty(parts[2]) | let dim.xoff   = s:relsz(parts[2], &columns) | endif
+  if !empty(parts[3]) | let dim.height = s:relsz(parts[3], &lines)   | endif
+  if !empty(parts[4]) | let dim.yoff   = s:relsz(parts[4], &lines)   | endif
+  return dim
+endfunction
+
+function! goyo#execute(bang, dim)
   if a:bang
     if exists('#goyo')
       call s:goyo_off()
     endif
   else
     if exists('#goyo') == 0
-      call s:goyo_on(width)
-    elseif a:0 > 0
-      let t:goyo_width = width
-      call s:resize_pads()
+      call s:goyo_on(a:dim)
+    elseif !empty(a:dim)
+      let dim = s:parse_arg(a:dim)
+      if !empty(dim)
+        let t:goyo_dim = dim
+        let t:goyo_dim_expr = a:dim
+        call s:resize_pads()
+      endif
     else
       call s:goyo_off()
     end

@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_yaml_jsyaml_checker")
+if exists('g:loaded_syntastic_yaml_jsyaml_checker')
     finish
 endif
 let g:loaded_syntastic_yaml_jsyaml_checker = 1
@@ -33,7 +33,7 @@ function! SyntaxCheckers_yaml_jsyaml_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")} })
+        \ 'defaults': {'bufnr': bufnr('')} })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

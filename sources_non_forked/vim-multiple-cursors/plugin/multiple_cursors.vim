@@ -33,9 +33,6 @@ let s:settings = {
       \ 'debug_latency': 0,
       \ }
 
-let g:multi_cursor_insert_maps = get(g:, 'multi_cursor_insert_maps', {})
-let g:multi_cursor_normal_maps = get(g:, 'multi_cursor_normal_maps', {})
-
 let s:settings_if_default = {
       \ 'quit_key': '<Esc>',
       \ 'next_key': '<C-n>',
@@ -43,14 +40,22 @@ let s:settings_if_default = {
       \ 'skip_key': '<C-x>',
       \ }
 
+let s:default_insert_maps = {}
+let s:default_normal_maps = {'!':1, '@':1, '=':1, 'q':1, 'r':1, 't':1, 'T':1, 'y':1, '[':1, ']':1, '\':1, 'd':1, 'f':1, 'F':1, 'g':1, '"':1, 'z':1, 'c':1, 'm':1, '<':1, '>':1}
+
+let g:multi_cursor_insert_maps =
+      \ get(g:, 'multi_cursor_insert_maps', s:default_insert_maps)
+let g:multi_cursor_normal_maps =
+      \ get(g:, 'multi_cursor_normal_maps', s:default_normal_maps)
+
 call s:init_settings(s:settings)
 
 if g:multi_cursor_use_default_mapping
   call s:init_settings(s:settings_if_default)
 endif
 
-if !exists('g:multi_cursor_start_key') && exists('g:multi_cursor_next_key')
-  let g:multi_cursor_start_key = g:multi_cursor_next_key
+if !exists('g:multi_cursor_start_word_key') && exists('g:multi_cursor_next_key')
+  let g:multi_cursor_start_word_key = g:multi_cursor_next_key
 endif
 
 " External mappings
@@ -70,7 +75,7 @@ if exists('g:multi_cursor_start_word_key')
 endif
 
 " Commands
-command! -nargs=1 -range=% MultipleCursorsFind 
+command! -nargs=1 -range=% MultipleCursorsFind
       \ call multiple_cursors#find(<line1>, <line2>, <q-args>)
 
 let &cpo = s:save_cpo

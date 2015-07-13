@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_yaml_yamlxs_checker")
+if exists('g:loaded_syntastic_yaml_yamlxs_checker')
     finish
 endif
 let g:loaded_syntastic_yaml_yamlxs_checker = 1
@@ -48,7 +48,7 @@ function! SyntaxCheckers_yaml_yamlxs_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'postprocess': ['compressWhitespace'],
-        \ 'defaults': {'bufnr': bufnr("")} })
+        \ 'defaults': {'bufnr': bufnr('')} })
 endfunction
 
 function s:Modules()

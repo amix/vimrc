@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_log_autoload") || !exists("g:loaded_syntastic_plugin")
+if exists('g:loaded_syntastic_log_autoload') || !exists('g:loaded_syntastic_plugin')
     finish
 endif
 let g:loaded_syntastic_log_autoload = 1
@@ -11,19 +11,19 @@ let s:one_time_notices_issued = []
 " Public functions {{{1
 
 function! syntastic#log#info(msg) abort " {{{2
-    echomsg "syntastic: info: " . a:msg
+    echomsg 'syntastic: info: ' . a:msg
 endfunction " }}}2
 
 function! syntastic#log#warn(msg) abort " {{{2
     echohl WarningMsg
-    echomsg "syntastic: warning: " . a:msg
+    echomsg 'syntastic: warning: ' . a:msg
     echohl None
 endfunction " }}}2
 
 function! syntastic#log#error(msg) abort " {{{2
     execute "normal \<Esc>"
     echohl ErrorMsg
-    echomsg "syntastic: error: " . a:msg
+    echomsg 'syntastic: error: ' . a:msg
     echohl None
 endfunction " }}}2
 
@@ -88,9 +88,9 @@ function! syntastic#log#debugShowOptions(level, names) abort " {{{2
     let leader = s:_log_timestamp()
     call s:_logRedirect(1)
 
-    let vlist = copy(type(a:names) == type("") ? [a:names] : a:names)
+    let vlist = copy(type(a:names) == type('') ? [a:names] : a:names)
     if !empty(vlist)
-        call map(vlist, "'&' . v:val . ' = ' . strtrans(string(eval('&' . v:val)))")
+        call map(vlist, "'&' . v:val . ' = ' . strtrans(string(eval('&' . v:val))) . (s:_is_modified(v:val) ? ' (!)' : '')")
         echomsg leader . join(vlist, ', ')
     endif
     call s:_logRedirect(0)
@@ -104,10 +104,10 @@ function! syntastic#log#debugShowVariables(level, names) abort " {{{2
     let leader = s:_log_timestamp()
     call s:_logRedirect(1)
 
-    let vlist = type(a:names) == type("") ? [a:names] : a:names
+    let vlist = type(a:names) == type('') ? [a:names] : a:names
     for name in vlist
         let msg = s:_format_variable(name)
-        if msg != ''
+        if msg !=# ''
             echomsg leader . msg
         endif
     endfor
@@ -121,6 +121,21 @@ function! syntastic#log#debugDump(level) abort " {{{2
     endif
 
     call syntastic#log#debugShowVariables( a:level, sort(keys(g:_SYNTASTIC_DEFAULTS)) )
+endfunction " }}}2
+
+function! syntastic#log#ndebug(level, title, messages) abort " {{{2
+    if s:_isDebugEnabled(a:level)
+        return
+    endif
+
+    call syntastic#log#error(a:title)
+    if type(a:messages) == type([])
+        for msg in a:messages
+            echomsg msg
+        endfor
+    else
+        echomsg a:messages
+    endif
 endfunction " }}}2
 
 " }}}1
@@ -140,7 +155,7 @@ let s:_isDebugEnabled = function(exists('*and') ? 's:_isDebugEnabled_smart' : 's
 lockvar s:_isDebugEnabled
 
 function! s:_logRedirect(on) abort " {{{2
-    if exists("g:syntastic_debug_file")
+    if exists('g:syntastic_debug_file')
         if a:on
             try
                 execute 'redir >> ' . fnameescape(expand(g:syntastic_debug_file, 1))
@@ -172,6 +187,20 @@ function! s:_format_variable(name) abort " {{{2
     endif
 
     return join(vals, ', ')
+endfunction " }}}2
+
+function! s:_is_modified(name) abort " {{{2
+    if !exists('s:option_defaults')
+        let s:option_defaults = {}
+    endif
+    if !has_key(s:option_defaults, a:name)
+        let opt_save = eval('&' . a:name)
+        execute 'set ' . a:name . '&'
+        let s:option_defaults[a:name] = eval('&' . a:name)
+        execute 'let &' . a:name . ' = ' . string(opt_save)
+    endif
+
+    return s:option_defaults[a:name] !=# eval('&' . a:name)
 endfunction " }}}2
 
 " }}}1

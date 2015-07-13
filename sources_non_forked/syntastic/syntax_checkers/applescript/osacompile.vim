@@ -25,7 +25,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_applescript_osacompile_checker")
+if exists('g:loaded_syntastic_applescript_osacompile_checker')
     finish
 endif
 let g:loaded_syntastic_applescript_osacompile_checker = 1

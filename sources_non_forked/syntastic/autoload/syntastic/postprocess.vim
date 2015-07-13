@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_postprocess_autoload") || !exists("g:loaded_syntastic_plugin")
+if exists('g:loaded_syntastic_postprocess_autoload') || !exists('g:loaded_syntastic_plugin')
     finish
 endif
 let g:loaded_syntastic_postprocess_autoload = 1

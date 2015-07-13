@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_hss_hss_checker")
+if exists('g:loaded_syntastic_hss_hss_checker')
     finish
 endif
 let g:loaded_syntastic_hss_hss_checker = 1

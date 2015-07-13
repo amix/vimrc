@@ -246,8 +246,12 @@ function! s:TreeDirNode._initChildren(silent)
         "filter out the .. and . directories
         "Note: we must match .. AND ../ cos sometimes the globpath returns
         "../ for path with strange chars (eg $)
-        if i !~# '\/\.\.\/\?$' && i !~# '\/\.\/\?$'
-
+"        if i !~# '\/\.\.\/\?$' && i !~# '\/\.\/\?$'
+"
+        " Regular expression is too expensive. Use simply string comparison
+        " instead
+        if i[len(i)-3:2] != ".." && i[len(i)-2:2] != ".." && 
+         \ i[len(i)-2:1] != "." && i[len(i)-1] != "."
             "put the next file in a new node and attach it
             try
                 let path = g:NERDTreePath.New(i)
@@ -405,8 +409,12 @@ function! s:TreeDirNode.refresh()
             "filter out the .. and . directories
             "Note: we must match .. AND ../ cos sometimes the globpath returns
             "../ for path with strange chars (eg $)
-            if i !~# '\/\.\.\/\?$' && i !~# '\/\.\/\?$'
+            "if i !~# '\/\.\.\/\?$' && i !~# '\/\.\/\?$'
 
+            " Regular expression is too expensive. Use simply string comparison
+            " instead
+            if i[len(i)-3:2] != ".." && i[len(i)-2:2] != ".." && 
+             \ i[len(i)-2:1] != "." && i[len(i)-1] != "."
                 try
                     "create a new path and see if it exists in this nodes children
                     let path = g:NERDTreePath.New(i)
@@ -504,7 +512,7 @@ endfunction
 "directory priority.
 "
 function! s:TreeDirNode.sortChildren()
-    let CompareFunc = function("nerdtree#compareNodes")
+    let CompareFunc = function("nerdtree#compareNodesBySortKey")
     call sort(self.children, CompareFunc)
 endfunction
 

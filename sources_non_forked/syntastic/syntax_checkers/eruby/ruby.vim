@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_eruby_ruby_checker")
+if exists('g:loaded_syntastic_eruby_ruby_checker')
     finish
 endif
 let g:loaded_syntastic_eruby_ruby_checker = 1
@@ -35,7 +35,7 @@ function! SyntaxCheckers_eruby_ruby_GetLocList() dict
 
     " TODO: encodings became useful in ruby 1.9 :)
     if s:ruby_new
-        let enc = &fileencoding != '' ? &fileencoding : &encoding
+        let enc = &fileencoding !=# '' ? &fileencoding : &encoding
         let encoding_spec = ', :encoding => "' . (enc ==? 'utf-8' ? 'UTF-8' : 'BINARY') . '"'
     else
         let encoding_spec = ''
@@ -69,7 +69,7 @@ function! SyntaxCheckers_eruby_ruby_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'env': env,
-        \ 'defaults': { 'bufnr': bufnr(""), 'vcol': 1 } })
+        \ 'defaults': { 'bufnr': bufnr(''), 'vcol': 1 } })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

@@ -44,7 +44,7 @@ let s:before_function_called = 0
 
 " Used for searching whole words (search pattern is wrapped with \< and \>)
 " Keep old behaviour by default (act like g*)
-let s:use_word_boundary = 0
+let s:use_word_boundary = 1
 
 " Set up highlighting
 if !hlexists(s:hi_group_cursor)
@@ -168,6 +168,11 @@ function! multiple_cursors#new(mode, word_boundary)
       call s:wait_for_user_input('v')
     endif
   endif
+endfunction
+
+" Quit out of multicursor mode, fixes #27.
+function! multiple_cursors#quit()
+  call s:exit()
 endfunction
 
 " Delete the current cursor. If there's no more cursors, stop the loop

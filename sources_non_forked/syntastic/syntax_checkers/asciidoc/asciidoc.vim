@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_asciidoc_asciidoc_checker")
+if exists('g:loaded_syntastic_asciidoc_asciidoc_checker')
     finish
 endif
 let g:loaded_syntastic_asciidoc_asciidoc_checker = 1

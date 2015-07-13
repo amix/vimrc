@@ -9,13 +9,8 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" Checker option:
-"
-" - g:syntastic_xhtml_tidy_ignore_errors (list; default: [])
-"   list of errors to ignore
 
-if exists("g:loaded_syntastic_xhtml_tidy_checker")
+if exists('g:loaded_syntastic_xhtml_tidy_checker')
     finish
 endif
 let g:loaded_syntastic_xhtml_tidy_checker = 1
@@ -62,7 +57,7 @@ function! SyntaxCheckers_xhtml_tidy_GetLocList() dict " {{{1
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")},
+        \ 'defaults': {'bufnr': bufnr('')},
         \ 'returns': [0, 1, 2] })
 
     for e in loclist

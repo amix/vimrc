@@ -13,12 +13,12 @@
 " We use rst2pseudoxml.py, as it is ever so marginally faster than the other
 " rst2${x} tools in docutils.
 
-if exists("g:loaded_syntastic_rst_rst2pseudoxml_checker")
+if exists('g:loaded_syntastic_rst_rst2pseudoxml_checker')
     finish
 endif
 let g:loaded_syntastic_rst_rst2pseudoxml_checker = 1
 
-let s:rst2pseudoxml = executable('rst2pseudoxml.py') ? 'rst2pseudoxml.py' : 'rst2pseudoxml'
+let s:rst2pseudoxml = (executable('rst2pseudoxml.py') && !syntastic#util#isRunningWindows()) ? 'rst2pseudoxml.py' : 'rst2pseudoxml'
 
 let s:save_cpo = &cpo
 set cpo&vim

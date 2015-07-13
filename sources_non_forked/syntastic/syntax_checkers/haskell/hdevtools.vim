@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_haskell_hdevtools_checker")
+if exists('g:loaded_syntastic_haskell_hdevtools_checker')
     finish
 endif
 let g:loaded_syntastic_haskell_hdevtools_checker = 1

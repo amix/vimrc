@@ -24,6 +24,7 @@ endif
 CompilerSet errorformat=
       \%-G#\ %.%#,
       \%-G%.%#panic:\ %m,
+      \%Ecan\'t\ load\ package:\ %m,
       \%A%f:%l:%c:\ %m,
       \%A%f:%l:\ %m,
       \%C%*\\s%m,

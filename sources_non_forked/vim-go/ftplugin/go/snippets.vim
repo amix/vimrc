@@ -26,7 +26,17 @@ function! s:GoNeosnippet()
 	endif
 
 	let g:neosnippet#enable_snipmate_compatibility = 1
-	exec 'NeoSnippetSource' globpath(&rtp, 'gosnippets/snippets/go.snip')
+
+	let gosnippets_dir = globpath(&rtp, 'gosnippets/snippets')
+	if type(g:neosnippet#snippets_directory) == type([])
+		let g:neosnippet#snippets_directory += [gosnippets_dir]
+	elseif type(g:neosnippet#snippets_directory) == type("")
+		if strlen(g:neosnippet#snippets_directory) > 0
+			let g:neosnippet#snippets_directory = g:neosnippet#snippets_directory . "," . gosnippets_dir
+		else
+			let g:neosnippet#snippets_directory = gosnippets_dir
+		endif
+	endif
 endfunction
 
 if g:go_snippet_engine == "ultisnips"

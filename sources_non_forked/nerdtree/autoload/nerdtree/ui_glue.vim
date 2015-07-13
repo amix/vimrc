@@ -85,7 +85,7 @@ endfunction
 "FUNCTION: s:activateAll() {{{1
 "handle the user activating the updir line
 function! s:activateAll()
-    if getline(".") ==# nerdtree#treeUpDirLine()
+    if getline(".") ==# g:NERDTreeUI.UpDirLine()
         return nerdtree#ui_glue#upDir(0)
     endif
 endfunction
@@ -93,13 +93,13 @@ endfunction
 "FUNCTION: s:activateDirNode() {{{1
 "handle the user activating a tree node
 function! s:activateDirNode(node)
-    call a:node.activate({'reuse': 1})
+    call a:node.activate()
 endfunction
 
 "FUNCTION: s:activateFileNode() {{{1
 "handle the user activating a tree node
 function! s:activateFileNode(node)
-    call a:node.activate({'reuse': 1, 'where': 'p'})
+    call a:node.activate({'reuse': 'all', 'where': 'p'})
 endfunction
 
 "FUNCTION: s:activateBookmark() {{{1
@@ -212,7 +212,7 @@ function! s:closeTreeWindow()
         exec "buffer " . b:NERDTreePreviousBuf
     else
         if winnr("$") > 1
-            call nerdtree#closeTree()
+            call g:NERDTree.Close()
         else
             call nerdtree#echo("Cannot close last window")
         endif
@@ -275,20 +275,20 @@ function! s:findAndRevealPath()
         endif
     else
         if !p.isUnder(g:NERDTreeFileNode.GetRootForTab().path)
-            if !nerdtree#isTreeOpen()
+            if !g:NERDTree.IsOpen()
                 call g:NERDTreeCreator.TogglePrimary('')
             else
-                call nerdtree#putCursorInTreeWin()
+                call g:NERDTree.CursorToTreeWin()
             endif
             let b:NERDTreeShowHidden = g:NERDTreeShowHidden
             call s:chRoot(g:NERDTreeDirNode.New(p.getParent()))
         else
-            if !nerdtree#isTreeOpen()
+            if !g:NERDTree.IsOpen()
                 call g:NERDTreeCreator.TogglePrimary("")
             endif
         endif
     endif
-    call nerdtree#putCursorInTreeWin()
+    call g:NERDTree.CursorToTreeWin()
     call b:NERDTreeRoot.reveal(p)
 
     if p.isUnixHiddenFile()
@@ -312,7 +312,7 @@ function! s:handleLeftClick()
         endfor
 
         if currentNode.path.isDirectory
-            if startToCur =~# nerdtree#treeMarkupReg() && startToCur =~# '[+~▾▸] \?$'
+            if startToCur =~# g:NERDTreeUI.MarkupReg() && startToCur =~# '[+~▾▸] \?$'
                 call currentNode.activate()
                 return
             endif
@@ -320,11 +320,11 @@ function! s:handleLeftClick()
 
         if (g:NERDTreeMouseMode ==# 2 && currentNode.path.isDirectory) || g:NERDTreeMouseMode ==# 3
             let char = strpart(startToCur, strlen(startToCur)-1, 1)
-            if char !~# nerdtree#treeMarkupReg()
+            if char !~# g:NERDTreeUI.MarkupReg()
                 if currentNode.path.isDirectory
                     call currentNode.activate()
                 else
-                    call currentNode.activate({'reuse': 1, 'where': 'p'})
+                    call currentNode.activate({'reuse': 'all', 'where': 'p'})
                 endif
                 return
             endif
@@ -547,7 +547,7 @@ endfunction
 function! nerdtree#ui_glue#setupCommands()
     command! -n=? -complete=dir -bar NERDTree :call g:NERDTreeCreator.CreatePrimary('<args>')
     command! -n=? -complete=dir -bar NERDTreeToggle :call g:NERDTreeCreator.TogglePrimary('<args>')
-    command! -n=0 -bar NERDTreeClose :call nerdtree#closeTreeIfOpen()
+    command! -n=0 -bar NERDTreeClose :call g:NERDTree.Close()
     command! -n=1 -complete=customlist,nerdtree#completeBookmarks -bar NERDTreeFromBookmark call g:NERDTreeCreator.CreatePrimary('<args>')
     command! -n=0 -bar NERDTreeMirror call g:NERDTreeCreator.CreateMirror()
     command! -n=0 -bar NERDTreeFind call s:findAndRevealPath()

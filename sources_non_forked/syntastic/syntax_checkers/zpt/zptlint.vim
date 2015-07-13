@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_zpt_zptlint_checker")
+if exists('g:loaded_syntastic_zpt_zptlint_checker')
     finish
 endif
 let g:loaded_syntastic_zpt_zptlint_checker = 1

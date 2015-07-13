@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_twig_twiglint_checker")
+if exists('g:loaded_syntastic_twig_twiglint_checker')
     finish
 endif
 let g:loaded_syntastic_twig_twiglint_checker = 1
