@@ -23,3 +23,4 @@ map <leader>5 :tabnext 5<CR>
 map <leader>6 :tabnext 6<CR>
 map <leader>7 :tabnext 7<CR>
 map <leader>8 :tabnext 8<CR>
+"let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/'
