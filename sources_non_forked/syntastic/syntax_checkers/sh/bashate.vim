@@ -9,7 +9,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_sh_bashate_checker")
+if exists('g:loaded_syntastic_sh_bashate_checker')
     finish
 endif
 let g:loaded_syntastic_sh_bashate_checker = 1
@@ -22,7 +22,7 @@ function! SyntaxCheckers_sh_bashate_GetLocList() dict
 
     let errorformat =
         \ '%EE%n: %m,' .
-        \ '%Z - %f: L%l,' .
+        \ '%Z - %f%\s%\+: L%l,' .
         \ '%-G%.%#'
 
     let loclist = SyntasticMake({

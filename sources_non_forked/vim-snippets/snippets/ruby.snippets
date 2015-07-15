@@ -121,23 +121,17 @@ snippet cla class .. initialize .. end
 			${0}
 		end
 	end
-snippet cla class .. < ParentClass .. initialize .. end
+snippet cla< class .. < ParentClass .. initialize .. end
 	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} < ${2:ParentClass}
 		def initialize(${3:args})
 			${0}
 		end
 	end
-snippet cla ClassName = Struct .. do .. end
-	${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} = Struct.new(:${2:attr_names}) do
-		def ${3:method_name}
-			${0}
-		end
-	end
-snippet cla class BlankSlate .. initialize .. end
+snippet blankslate class BlankSlate .. initialize .. end
 	class ${0:BlankSlate}
 		instance_methods.each { |meth| undef_method(meth) unless meth =~ /\A__/ }
 	end
-snippet cla class << self .. end
+snippet claself class << self .. end
 	class << ${1:self}
 		${0}
 	end
@@ -152,12 +146,6 @@ snippet cla-
 	end
 snippet mod module .. end
 	module ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
-		${0}
-	end
-snippet mod module .. module_function .. end
-	module ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
-		module_function
-
 		${0}
 	end
 snippet mod module .. ClassMethods .. end
@@ -735,3 +723,11 @@ snippet is
 	it { should ${0} }
 snippet isn
 	it { should_not ${0} }
+snippet iexp
+	it { expect(${1:object}).${1} ${0} }
+snippet iexpb
+	it { expect { ${1:object} }.${1} ${0} }
+snippet iiexp
+	it { is_expected.to ${0} }
+snippet iiexpn
+	it { is_expected.not_to ${0} }

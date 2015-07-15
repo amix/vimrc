@@ -40,6 +40,14 @@ snippet case
 		${2} ->
 			${0}
 	end
+snippet for
+	for ${1:item} <- ${2:items} do
+		${0}
+	end
+snippet fori
+	for ${1:item} <- ${2:items}, into: ${3} do
+		${0}
+	end
 snippet df
 	def ${1:name}, do: ${2}
 snippet def
@@ -89,8 +97,8 @@ snippet mdoc
 	"""
 snippet rec
 	receive do
-	${1} ->
-		${0}
+		${1} ->
+			${0}
 	end
 snippet req
 	require ${0:module_name}

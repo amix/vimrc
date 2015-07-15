@@ -13,7 +13,7 @@ function! go#errcheck#Run(...) abort
         let package = a:1
     end
 
-    let bin_path = go#tool#BinPath(g:go_errcheck_bin)
+    let bin_path = go#path#CheckBinPath(g:go_errcheck_bin)
     if empty(bin_path)
         return
     endif
@@ -27,7 +27,7 @@ function! go#errcheck#Run(...) abort
             let tokens = matchlist(line, mx)
 
             if !empty(tokens)
-                call add(errors, {"filename": expand(DefaultGoPath() . "/src/" . tokens[1]),
+                call add(errors, {"filename": expand(go#path#Default() . "/src/" . tokens[1]),
                             \"lnum": tokens[2],
                             \"col": tokens[3],
                             \"text": tokens[4]})
@@ -44,6 +44,7 @@ function! go#errcheck#Run(...) abort
             call setqflist(errors, 'r')
         endif
     else
+        redraw | echo
         call setqflist([])
     endif
 

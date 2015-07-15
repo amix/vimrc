@@ -54,6 +54,10 @@ function! airline#parts#mode()
   return get(w:, 'airline_current_mode', '')
 endfunction
 
+function! airline#parts#crypt()
+  return g:airline_detect_crypt && exists("+key") && !empty(&key) ? g:airline_symbols.crypt : ''
+endfunction
+
 function! airline#parts#paste()
   return g:airline_detect_paste && &paste ? g:airline_symbols.paste : ''
 endfunction

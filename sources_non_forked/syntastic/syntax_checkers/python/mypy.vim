@@ -5,7 +5,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_python_mypy_checker")
+if exists('g:loaded_syntastic_python_mypy_checker')
     finish
 endif
 let g:loaded_syntastic_python_mypy_checker = 1

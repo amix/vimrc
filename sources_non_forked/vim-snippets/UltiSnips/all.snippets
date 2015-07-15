@@ -89,7 +89,8 @@ endsnippet
 
 snippet bbox "A nice box over the full width" b
 `!p
-width = int(vim.eval("&textwidth")) or 71
+if not snip.c:
+	width = int(vim.eval("&textwidth - (virtcol('.') == 1 ? 0 : virtcol('.'))")) or 71
 box = make_box(len(t[1]), width)
 snip.rv = box[0]
 snip += box[1]

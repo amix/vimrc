@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_lex_flex_checker")
+if exists('g:loaded_syntastic_lex_flex_checker')
     finish
 endif
 let g:loaded_syntastic_lex_flex_checker = 1
@@ -21,12 +21,12 @@ set cpo&vim
 function! SyntaxCheckers_lex_flex_GetHighlightRegex(item)
     let term = matchstr(a:item['text'],
         \ '\m^\(unrecognized %option\|bad <start condition>\|bad character\( class expression\)\=\): \zs.*')
-    if term == ''
+    if term ==# ''
         let term = matchstr(a:item['text'],
             \ '\m^\(Definition value for\|undefined definition\) \zs{[^}]\+}\ze')
     endif
 
-    return term != '' ? '\V' . escape(term, '\') : ''
+    return term !=# '' ? '\V' . escape(term, '\') : ''
 endfunction
 
 function! SyntaxCheckers_lex_flex_GetLocList() dict

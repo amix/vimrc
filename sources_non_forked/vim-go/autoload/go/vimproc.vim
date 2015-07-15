@@ -1,7 +1,7 @@
 "Check if has vimproc
 function! go#vimproc#has_vimproc()
     if !exists('g:go#use_vimproc')
-        if IsWin()
+        if go#util#IsWin()
             try
                 call vimproc#version()
                 let exists_vimproc = 1

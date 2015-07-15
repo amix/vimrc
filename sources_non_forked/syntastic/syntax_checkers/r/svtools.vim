@@ -20,7 +20,7 @@
 "
 "   let g:syntastic_enable_r_svtools_checker = 1
 
-if exists("g:loaded_syntastic_r_svtools_checker")
+if exists('g:loaded_syntastic_r_svtools_checker')
     finish
 endif
 let g:loaded_syntastic_r_svtools_checker = 1
@@ -34,7 +34,7 @@ set cpo&vim
 
 function! SyntaxCheckers_r_svtools_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], "\\m'\\zs[^']\\+\\ze'")
-    return term != '' ? '\V' . escape(term, '\') : ''
+    return term !=# '' ? '\V' . escape(term, '\') : ''
 endfunction
 
 function! SyntaxCheckers_r_svtools_IsAvailable() dict
@@ -46,11 +46,6 @@ function! SyntaxCheckers_r_svtools_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_r_svtools_GetLocList() dict
-    if !exists('g:syntastic_enable_r_svtools_checker') || !g:syntastic_enable_r_svtools_checker
-        call syntastic#log#error('checker r/svtools: checks disabled for security reasons; set g:syntastic_enable_r_svtools_checker to 1 to override')
-        return []
-    endif
-
     let setwd = syntastic#util#isRunningWindows() ? 'setwd("' . escape(getcwd(), '"\') . '"); ' : ''
     let makeprg = self.getExecEscaped() . ' --slave --restore --no-save' .
         \ ' -e ' . syntastic#util#shescape(setwd . 'library(svTools); ' .
@@ -70,7 +65,8 @@ endfunction
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'r',
     \ 'name': 'svtools',
-    \ 'exec': 'R' })
+    \ 'exec': 'R',
+    \ 'enable': 'enable_r_svtools_checker'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

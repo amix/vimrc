@@ -1,4 +1,3 @@
-" -*- text -*-
 "  oracle.vim -- Vim integration for the Go oracle.
 "
 "  Part of this plugin was taken directly from the oracle repo, however it's
@@ -46,7 +45,7 @@ endfun
 " via regex.
 func! s:qflistSecond(output)
     " backup users errorformat, will be restored once we are finished
-	let old_errorformat = &errorformat
+    let old_errorformat = &errorformat
 
     " match two possible styles of errorformats:
     "
@@ -56,13 +55,13 @@ func! s:qflistSecond(output)
     " We discard line2 and col2 for the first errorformat, because it's not
     " useful and quickfix only has the ability to show one line and column
     " number
-	let &errorformat = "%f:%l.%c-%[%^:]%#:\ %m,%f:%l:%c:\ %m"
+    let &errorformat = "%f:%l.%c-%[%^:]%#:\ %m,%f:%l:%c:\ %m"
 
     " create the quickfix list and open it
     cgetexpr split(a:output, "\n")
     cwindow
 
-	let &errorformat = old_errorformat
+    let &errorformat = old_errorformat
 endfun
 
 func! s:getpos(l, c)
@@ -85,7 +84,7 @@ func! s:RunOracle(mode, selected) range abort
         let unescaped_scopes = split(get(g:, 'go_oracle_scope'))
         let scopes = []
         for unescaped_scope in unescaped_scopes
-          call add(scopes, shellescape(unescaped_scope))
+            call add(scopes, shellescape(unescaped_scope))
         endfor
     elseif exists('g:go_oracle_include_tests') && pkg != -1
         " give import path so it includes all _test.go files too
@@ -97,7 +96,7 @@ func! s:RunOracle(mode, selected) range abort
     endif
 
     "return with a warning if the bin doesn't exist
-    let bin_path = go#tool#BinPath(g:go_oracle_bin) 
+    let bin_path = go#path#CheckBinPath(g:go_oracle_bin) 
     if empty(bin_path) 
         return 
     endif
@@ -120,23 +119,48 @@ func! s:RunOracle(mode, selected) range abort
     " info check Oracle's User Manual section about scopes:
     " https://docs.google.com/document/d/1SLk36YRjjMgKqe490mSRzOPYEDe0Y_WQNRv-EiFYUyw/view#heading=h.nwso96pj07q8
     for scope in scopes
-      let cmd .= ' ' . scope
+        let cmd .= ' ' . scope
     endfor
 
     echon "vim-go: " | echohl Identifier | echon "analysing ..." | echohl None
 
+    let old_gopath = $GOPATH
+    let $GOPATH = go#path#Detect()
+
     let out = system(cmd)
+
+    let $GOPATH = old_gopath
+
     if v:shell_error
         " unfortunaly oracle outputs a very long stack trace that is not
         " parsable to show the real error. But the main issue is usually the
         " package which doesn't build. 
         redraw | echon "vim-go: " | echohl Statement | echon out | echohl None
         return ""
-    else
+    endif
 
     return out
-endfun
+endfunc
 
+function! go#oracle#Scope(...)
+    if len(a:000)
+        if len(a:000) == 1 && a:1 == '""'
+            let g:go_oracle_scope = ""
+            echon "vim-go: " | echohl Function | echon "oracle scope is cleared"| echohl None
+        else
+            let g:go_oracle_scope = join(a:000, ' ')
+            echon "vim-go: " | echohl Function | echon "oracle scope changed to: '". g:go_oracle_scope ."'" | echohl None
+        endif
+
+        return
+    endif
+
+    if !exists(g:go_oracle_scope)
+        echon "vim-go: " | echohl Function | echon "oracle scope is not set"| echohl None
+    else
+        echon "vim-go: " | echohl Function | echon "current oracle scope: '". g:go_oracle_scope ."'" | echohl None
+    endif
+endfunction
 
 " Show 'implements' relation for selected package
 function! go#oracle#Implements(selected)
@@ -162,12 +186,6 @@ function! go#oracle#Callers(selected)
     call s:qflistSecond(out)
 endfunction
 
-" Show the callgraph of the current program.
-function! go#oracle#Callgraph(selected)
-    let out = s:RunOracle('callgraph', a:selected)
-    call s:qflistSecond(out)
-endfunction
-
 " Show path from callgraph root to selected function
 function! go#oracle#Callstack(selected)
     let out = s:RunOracle('callstack', a:selected)
@@ -189,28 +207,8 @@ endfunction
 " Show all refs to entity denoted by selected identifier
 function! go#oracle#Referrers(selected)
     let out = s:RunOracle('referrers', a:selected)
-
-    " append line contents from Go source file for some messages:
-    " '...: referenced here'
-    " '...: reference to NAME'
-    let lines = split(out, "\n")
-    let extlines = []
-    for line in lines
-        if line =~# '\v: referenced here$|: reference to [^ :]*$'
-            let parts = split(line, ':')
-            " Note: we count -3 from end, to support additional comma in
-            " Windows-style C:\... paths
-            let filename = join(parts[0:-3], ':')
-            let linenum = parts[-2]
-            let extline = line . ': ' . readfile(filename, '', linenum)[linenum-1]
-            call add(extlines, extline)
-        else
-            call add(extlines, line)
-        endif
-    endfor
-    let out = join(extlines, "\n")
-
     call s:qflistSecond(out)
 endfunction
 
 " vim:ts=4:sw=4:et
+"

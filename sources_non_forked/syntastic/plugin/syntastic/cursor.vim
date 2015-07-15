@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_notifier_cursor") || !exists("g:loaded_syntastic_plugin")
+if exists('g:loaded_syntastic_notifier_cursor') || !exists('g:loaded_syntastic_plugin')
     finish
 endif
 let g:loaded_syntastic_notifier_cursor = 1

@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_modemap") || !exists("g:loaded_syntastic_plugin")
+if exists('g:loaded_syntastic_modemap') || !exists('g:loaded_syntastic_plugin')
     finish
 endif
 let g:loaded_syntastic_modemap = 1
@@ -68,7 +68,7 @@ function! g:SyntasticModeMap.toggleMode() abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticModeMap.echoMode() abort " {{{2
-    echo "Syntastic: " . self._mode . " mode enabled"
+    echo 'Syntastic: ' . self._mode . ' mode enabled'
 endfunction " }}}2
 
 function! g:SyntasticModeMap.modeInfo(filetypes) abort " {{{2

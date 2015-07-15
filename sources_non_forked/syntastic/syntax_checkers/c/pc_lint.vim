@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_c_pc_lint_checker")
+if exists('g:loaded_syntastic_c_pc_lint_checker')
     finish
 endif
 let g:loaded_syntastic_c_pc_lint_checker = 1
@@ -23,7 +23,7 @@ if !exists('g:syntastic_pc_lint_config_file')
 endif
 
 function! SyntaxCheckers_c_pc_lint_GetLocList() dict
-    let config = findfile(g:syntastic_pc_lint_config_file, '.;')
+    let config = syntastic#util#findFileInParent(g:syntastic_pc_lint_config_file, expand('%:p:h', 1))
     call self.log('config =', config)
 
     " -hFs1         - show filename, add space after messages, try to make message 1 line

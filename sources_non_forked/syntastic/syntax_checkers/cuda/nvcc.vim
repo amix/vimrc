@@ -6,7 +6,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_cuda_nvcc_checker")
+if exists('g:loaded_syntastic_cuda_nvcc_checker')
     finish
 endif
 let g:loaded_syntastic_cuda_nvcc_checker = 1

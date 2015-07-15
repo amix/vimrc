@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_z80_z80syntaxchecker_checker")
+if exists('g:loaded_syntastic_z80_z80syntaxchecker_checker')
     finish
 endif
 let g:loaded_syntastic_z80_z80syntaxchecker_checker = 1

@@ -212,10 +212,11 @@ function! s:wrap(string,char,type,removed,special)
   elseif newchar ==# 'l' || newchar == '\'
     " LaTeX
     let env = input('\begin{')
-    let env = '{' . env
-    let env .= s:closematch(env)
-    echo '\begin'.env
     if env != ""
+      let s:input = env."\<CR>"
+      let env = '{' . env
+      let env .= s:closematch(env)
+      echo '\begin'.env
       let before = '\begin'.env
       let after  = '\end'.matchstr(env,'[^}]*').'}'
     endif

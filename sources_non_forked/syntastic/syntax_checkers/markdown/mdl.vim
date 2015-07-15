@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_markdown_mdl_checker")
+if exists('g:loaded_syntastic_markdown_mdl_checker')
     finish
 endif
 let g:loaded_syntastic_markdown_mdl_checker = 1

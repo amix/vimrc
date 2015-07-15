@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_php_phpcs_checker")
+if exists('g:loaded_syntastic_php_phpcs_checker')
     finish
 endif
 let g:loaded_syntastic_php_phpcs_checker = 1

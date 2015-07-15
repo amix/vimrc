@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_pod_podchecker_checker")
+if exists('g:loaded_syntastic_pod_podchecker_checker')
     finish
 endif
 let g:loaded_syntastic_pod_podchecker_checker = 1

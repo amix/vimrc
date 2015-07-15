@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_go_govet_checker")
+if exists('g:loaded_syntastic_go_govet_checker')
     finish
 endif
 let g:loaded_syntastic_go_govet_checker = 1

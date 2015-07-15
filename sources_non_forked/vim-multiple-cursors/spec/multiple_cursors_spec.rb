@@ -32,9 +32,10 @@ end
 
 describe "Multiple Cursors op pending & exit from insert|visual mode" do
   let(:filename) { 'test.txt' }
-  let(:options) { ['let g:multi_cursor_normal_maps = {"d": 1, "c": 1}',
-                   'let g:multi_cursor_exit_from_insert_mode = 0',
+  let(:options) { ['let g:multi_cursor_exit_from_insert_mode = 0',
                    'let g:multi_cursor_exit_from_visual_mode = 0'] }
+  # the default value of g:multi_cursor_normal_maps already works
+  # for testing operator-pending
 
   specify "#paste from unnamed register to 3 cursors" do
     before <<-EOF
@@ -131,6 +132,32 @@ describe "Multiple Cursors op pending & exit from insert|visual mode" do
       hello 1jan world
       hello 1feb world
       hello 1mar world
+    EOF
+  end
+
+end
+
+describe "Multiple Cursors when normal_maps is empty" do
+  let(:filename) { 'test.txt' }
+  let(:options) { ['let g:multi_cursor_normal_maps = {}'] }
+
+  # Operator-pending commands are handled correctly thanks to their inclusion
+  # in `g:multi_cursor_normal_maps`.
+  #
+  # When an operator-pending command like 'd' is missing from that setting's
+  # value, then it should result in a no-op, but we should still remain in
+  # multicursor mode.
+  specify "#normal mode 'd'" do
+    before <<-EOF
+      hello
+      hello
+    EOF
+
+    type '<C-n><C-n>vdx<Esc>'
+
+    after <<-EOF
+      hell
+      hell
     EOF
   end
 
@@ -429,22 +456,6 @@ describe "Multiple Cursors" do
     after <<-EOF
       hello
       hello
-    EOF
-  end
-
-  # 'd' is an operator pending command, which are not supported at the moment.
-  # This should result in a nop, but we should still remain in multicursor mode.
-  specify "#normal mode 'd'" do
-    before <<-EOF
-      hello
-      hello
-    EOF
-
-    type '<C-n><C-n>vdx<Esc>'
-
-    after <<-EOF
-      hell
-      hell
     EOF
   end
 

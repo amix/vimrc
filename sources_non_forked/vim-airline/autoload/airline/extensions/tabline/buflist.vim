@@ -2,6 +2,7 @@
 " vim: et ts=2 sts=2 sw=2
 
 let s:excludes = get(g:, 'airline#extensions#tabline#excludes', [])
+let s:exclude_preview = get(g:, 'airline#extensions#tabline#exclude_preview', 1)
 
 function! airline#extensions#tabline#buflist#invalidate()
   unlet! s:current_buffer_list
@@ -24,6 +25,9 @@ function! airline#extensions#tabline#buflist#list()
         endif
       endfor
       if getbufvar(nr, 'current_syntax') == 'qf'
+        let toadd = 0
+      endif
+      if s:exclude_preview && getbufvar(nr, '&bufhidden') == 'wipe' && getbufvar(nr, '&buftype') == 'nofile'
         let toadd = 0
       endif
       if toadd

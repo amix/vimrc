@@ -4,7 +4,7 @@
 "Maintainer:  Kocha <kocha dot lsifrontend at gmail dot com>
 "============================================================================
 
-if exists("g:loaded_syntastic_verilog_verilator_checker")
+if exists('g:loaded_syntastic_verilog_verilator_checker')
     finish
 endif
 let g:loaded_syntastic_verilog_verilator_checker = 1

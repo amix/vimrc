@@ -71,8 +71,8 @@ command! -bang -nargs=* -complete=file LAckAdd       call ack#Ack('lgrepadd<bang
 command! -bang -nargs=* -complete=file AckFile       call ack#Ack('grep<bang> -g', <q-args>)
 command! -bang -nargs=* -complete=help AckHelp       call ack#AckHelp('grep<bang>', <q-args>)
 command! -bang -nargs=* -complete=help LAckHelp      call ack#AckHelp('lgrep<bang>', <q-args>)
-command! -bang -nargs=* -complete=help AckWindow     call ack#AckWindow('grep<bang>', <q-args>)
-command! -bang -nargs=* -complete=help LAckWindow    call ack#AckWindow('lgrep<bang>', <q-args>)
+command! -bang -nargs=*                AckWindow     call ack#AckWindow('grep<bang>', <q-args>)
+command! -bang -nargs=*                LAckWindow    call ack#AckWindow('lgrep<bang>', <q-args>)
 
 let g:loaded_ack = 1
 

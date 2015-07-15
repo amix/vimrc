@@ -40,7 +40,7 @@ function! s:Opener._checkToCloseTree(newtab)
     endif
 
     if (a:newtab && self._where == 't') || !a:newtab
-        call nerdtree#closeTreeIfQuitOnOpen()
+        call g:NERDTree.CloseIfQuitOnOpen()
     endif
 endfunction
 
@@ -131,7 +131,8 @@ endfunction
 "  'where': Specifies whether the node should be opened in new split/tab or in
 "           the previous window. Can be either 'v' or 'h' or 't' (for open in
 "           new tab)
-"  'reuse': if a window is displaying the file then jump the cursor there
+"  'reuse': if a window is displaying the file then jump the cursor there. Can
+"           'all', 'currenttab' or empty to not reuse.
 "  'keepopen': dont close the tree window
 "  'stay': open the file, but keep the cursor in the tree win
 function! s:Opener.New(path, opts)
@@ -139,7 +140,13 @@ function! s:Opener.New(path, opts)
 
     let newObj._path = a:path
     let newObj._stay = nerdtree#has_opt(a:opts, 'stay')
-    let newObj._reuse = nerdtree#has_opt(a:opts, 'reuse')
+
+    if has_key(a:opts, 'reuse')
+        let newObj._reuse = a:opts['reuse']
+    else
+        let newObj._reuse = ''
+    endif
+
     let newObj._keepopen = nerdtree#has_opt(a:opts, 'keepopen')
     let newObj._where = has_key(a:opts, 'where') ? a:opts['where'] : ''
     let newObj._treetype = b:NERDTreeType
@@ -189,7 +196,7 @@ function! s:Opener._newSplit()
     try
         exec(splitMode." sp ")
     catch /^Vim\%((\a\+)\)\=:E37/
-        call nerdtree#putCursorInTreeWin()
+        call g:NERDTree.CursorToTreeWin()
         throw "NERDTree.FileAlreadyOpenAndModifiedError: ". self._path.str() ." is already open and modified."
     catch /^Vim\%((\a\+)\)\=:/
         "do nothing
@@ -219,7 +226,7 @@ function! s:Opener._newVSplit()
     vnew
 
     "resize the nerd tree back to the original size
-    call nerdtree#putCursorInTreeWin()
+    call g:NERDTree.CursorToTreeWin()
     exec("silent vertical resize ". winwidth)
     call nerdtree#exec('wincmd p')
 endfunction
@@ -235,7 +242,7 @@ endfunction
 
 "FUNCTION: Opener._openFile() {{{1
 function! s:Opener._openFile()
-    if self._reuse && self._reuseWindow()
+    if self._reuseWindow()
         return
     endif
 
@@ -288,7 +295,7 @@ function! s:Opener._previousWindow()
                 call nerdtree#exec('wincmd p')
             endif
         catch /^Vim\%((\a\+)\)\=:E37/
-            call nerdtree#putCursorInTreeWin()
+            call g:NERDTree.CursorToTreeWin()
             throw "NERDTree.FileAlreadyOpenAndModifiedError: ". self._path.str() ." is already open and modified."
         catch /^Vim\%((\a\+)\)\=:/
             echo v:exception
@@ -307,23 +314,32 @@ endfunction
 "
 "return 1 if we were successful
 function! s:Opener._reuseWindow()
+    if empty(self._reuse)
+        return 0
+    endif
+
     "check the current tab for the window
     let winnr = bufwinnr('^' . self._path.str() . '$')
     if winnr != -1
         call nerdtree#exec(winnr . "wincmd w")
         call self._checkToCloseTree(0)
         return 1
-    else
-        "check other tabs
-        let tabnr = self._path.tabnr()
-        if tabnr
-            call self._checkToCloseTree(1)
-            call nerdtree#exec('normal! ' . tabnr . 'gt')
-            let winnr = bufwinnr('^' . self._path.str() . '$')
-            call nerdtree#exec(winnr . "wincmd w")
-            return 1
-        endif
     endif
+
+    if self._reuse == 'currenttab'
+        return 0
+    endif
+
+    "check other tabs
+    let tabnr = self._path.tabnr()
+    if tabnr
+        call self._checkToCloseTree(1)
+        call nerdtree#exec('normal! ' . tabnr . 'gt')
+        let winnr = bufwinnr('^' . self._path.str() . '$')
+        call nerdtree#exec(winnr . "wincmd w")
+        return 1
+    endif
+
     return 0
 endfunction
 

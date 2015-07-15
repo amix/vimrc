@@ -6,7 +6,7 @@
 "             as part of the devscripts package.
 "============================================================================
 
-if exists("g:loaded_syntastic_sh_checkbashisms_checker")
+if exists('g:loaded_syntastic_sh_checkbashisms_checker')
     finish
 endif
 let g:loaded_syntastic_sh_checkbashisms_checker = 1

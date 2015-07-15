@@ -50,6 +50,12 @@ function! go#import#SwitchImport(enabled, localname, path)
     if path[len(path)-1] == '"'
         let path = strpart(path, 0, len(path) - 1)
     endif
+
+    " if given a trailing slash, eg. `github.com/user/pkg/`, remove it
+    if path[len(path)-1] == '/'
+        let path = strpart(path, 0, len(path) - 1)
+    endif
+
     if path == ''
         call s:Error('Import path not provided')
         return

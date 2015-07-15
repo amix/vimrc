@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_vim_vimlint_checker")
+if exists('g:loaded_syntastic_vim_vimlint_checker')
     finish
 endif
 let g:loaded_syntastic_vim_vimlint_checker = 1
@@ -20,7 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item) " {{{1
     let term = matchstr(a:item['text'], '\m `\zs[^`]\+\ze`')
-    if term != ''
+    if term !=# ''
         let col = get(a:item, 'col', 0)
 
         if col && term[0:1] ==# 'l:'
@@ -40,7 +40,7 @@ function! SyntaxCheckers_vim_vimlint_IsAvailable() dict " {{{1
     let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim', 1)
     call self.log("globpath(&runtimepath, 'autoload/vimlparser.vim', 1) = " . string(vimlparser) . ', ' .
                 \ "globpath(&runtimepath, 'autoload/vimlint.vim', 1) = " .    string(vimlint))
-    return vimlparser != '' && vimlint != ''
+    return vimlparser !=# '' && vimlint !=# ''
 endfunction " }}}1
 
 function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1

@@ -11,16 +11,16 @@
 " Tested with checkstyle 5.5
 "============================================================================
 
-if exists("g:loaded_syntastic_java_checkstyle_checker")
+if exists('g:loaded_syntastic_java_checkstyle_checker')
     finish
 endif
 let g:loaded_syntastic_java_checkstyle_checker = 1
 
-if !exists("g:syntastic_java_checkstyle_classpath")
+if !exists('g:syntastic_java_checkstyle_classpath')
     let g:syntastic_java_checkstyle_classpath = 'checkstyle-5.5-all.jar'
 endif
 
-if !exists("g:syntastic_java_checkstyle_conf_file")
+if !exists('g:syntastic_java_checkstyle_conf_file')
     let g:syntastic_java_checkstyle_conf_file = 'sun_checks.xml'
 endif
 

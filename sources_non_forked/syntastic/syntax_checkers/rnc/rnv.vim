@@ -9,7 +9,7 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "============================================================================
 
-if exists("g:loaded_syntastic_rnc_rnv_checker")
+if exists('g:loaded_syntastic_rnc_rnv_checker')
     finish
 endif
 let g:loaded_syntastic_rnc_rnv_checker = 1

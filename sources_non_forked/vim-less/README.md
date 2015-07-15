@@ -1,5 +1,9 @@
 # VIM-LESS
 
+**This project is looking for new contributors / a new maintainer. [issue 51](https://github.com/groenewege/vim-less/issues/51)**
+
+---
+
 This vim bundle adds syntax highlighting, indenting and autocompletion for the dynamic stylesheet language [LESS](http://lesscss.org).
 
 This bundle is compatible with [vim-css-color](https://github.com/skammer/vim-css-color),
@@ -24,7 +28,13 @@ in `after/syntax/css.vim` or `after/syntax/css/*.vim`.
 
 - OR use [vundle](https://github.com/gmarik/vundle), adding this line to your `~/.vimrc`:
 
-        Bundle 'groenewege/vim-less'
+        Plugin 'groenewege/vim-less'
+        
+
+- OR use [neobundle](https://github.com/Shougo/neobundle.vim), adding this line to your `~/.vimrc`:
+
+        NeoBundle 'groenewege/vim-less'
+        
 
 - OR use git submodules:
 

@@ -101,6 +101,35 @@ else
     let g:airline#themes#base16#palette.inactive_modified = {
           \ 'airline_c': [ group[0], '', group[2], '', '' ]
           \ }
+    
+    " Warnings
+    let s:WI = airline#themes#get_highlight2(['WarningMsg', 'bg'], ['WarningMsg', 'fg'], 'bold')
+    let g:airline#themes#base16#palette.normal.airline_warning = [
+         \ s:WI[0], s:WI[1], s:WI[2], s:WI[3]
+         \ ]
+
+    let g:airline#themes#base16#palette.normal_modified.airline_warning =
+        \ g:airline#themes#base16#palette.normal.airline_warning
+
+
+    let g:airline#themes#base16#palette.insert.airline_warning =
+        \ g:airline#themes#base16#palette.normal.airline_warning
+
+    let g:airline#themes#base16#palette.insert_modified.airline_warning =
+        \ g:airline#themes#base16#palette.normal.airline_warning
+
+    let g:airline#themes#base16#palette.visual.airline_warning =
+        \ g:airline#themes#base16#palette.normal.airline_warning
+
+    let g:airline#themes#base16#palette.visual_modified.airline_warning =
+        \ g:airline#themes#base16#palette.normal.airline_warning
+
+    let g:airline#themes#base16#palette.replace.airline_warning =
+        \ g:airline#themes#base16#palette.normal.airline_warning
+
+    let g:airline#themes#base16#palette.replace_modified.airline_warning =
+        \ g:airline#themes#base16#palette.normal.airline_warning
+
   endfunction
   call airline#themes#base16#refresh()
 endif

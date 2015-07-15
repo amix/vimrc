@@ -103,8 +103,8 @@ snippet supervisor
 	    supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
 	init([]) ->
-	    Server = {${0:my_server}, {$2, start_link, []},
-	      permanent, 2000, worker, [$2]},
+	    Server = {${0:my_server}, {${2}, start_link, []},
+	      permanent, 2000, worker, [${2}]},
 	    Children = [Server],
 	    RestartStrategy = {one_for_one, 0, 1},
 	    {ok, {RestartStrategy, Children}}.

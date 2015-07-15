@@ -9,7 +9,7 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "============================================================================
 
-if exists("g:loaded_syntastic_erlang_syntaxerl_checker")
+if exists('g:loaded_syntastic_erlang_syntaxerl_checker')
     finish
 endif
 

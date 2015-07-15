@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_php_php_checker")
+if exists('g:loaded_syntastic_php_php_checker')
     finish
 endif
 let g:loaded_syntastic_php_php_checker = 1
@@ -20,7 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_php_php_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], "\\munexpected '\\zs[^']\\+\\ze'")
-    return term != '' ? '\V' . escape(term, '\') : ''
+    return term !=# '' ? '\V' . escape(term, '\') : ''
 endfunction
 
 function! SyntaxCheckers_php_php_GetLocList() dict

@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_zsh_zsh_checker")
+if exists('g:loaded_syntastic_zsh_zsh_checker')
     finish
 endif
 let g:loaded_syntastic_zsh_zsh_checker = 1

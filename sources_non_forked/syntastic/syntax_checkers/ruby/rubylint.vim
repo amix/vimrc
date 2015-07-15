@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_ruby_rubylint_checker")
+if exists('g:loaded_syntastic_ruby_rubylint_checker')
     finish
 endif
 

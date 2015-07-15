@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_scala_scalac_checker")
+if exists('g:loaded_syntastic_scala_scalac_checker')
     finish
 endif
 let g:loaded_syntastic_scala_scalac_checker = 1

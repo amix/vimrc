@@ -18,15 +18,16 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_javascript_jsxhint_IsAvailable() dict
-    let jsxhint_version = syntastic#util#system(self.getExecEscaped() . ' --version')
-    if v:shell_error || (jsxhint_version !~# '\m^JSXHint\>')
-        return 0
+    let version_output = syntastic#util#system(self.getExecEscaped() . ' --version')
+    let parsed_ver = !v:shell_error && (version_output =~# '\m^JSXHint\>') ? syntastic#util#parseVersion(version_output) : []
+    if len(parsed_ver)
+        call self.setVersion(parsed_ver)
+    else
+        call syntastic#log#ndebug(g:_SYNTASTIC_DEBUG_LOCLIST, 'checker output:', split(version_output, "\n", 1))
+        call syntastic#log#error("checker javascript/jsxhint: can't parse version string (abnormal termination?)")
     endif
 
-    let ver = syntastic#util#parseVersion(jsxhint_version)
-    call self.setVersion(ver)
-
-    return syntastic#util#versionIsAtLeast(ver, [0, 4, 1])
+    return syntastic#util#versionIsAtLeast(parsed_ver, [0, 4, 1])
 endfunction
 
 function! SyntaxCheckers_javascript_jsxhint_GetLocList() dict

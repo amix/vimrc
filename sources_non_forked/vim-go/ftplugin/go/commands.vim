@@ -3,15 +3,28 @@ if exists("g:go_loaded_commands")
 endif
 let g:go_loaded_commands = 1
 
+" go_jump_to_error defines whether we should pass the bang attribute to the
+" command or not. This is only used for mappings, because the user can't pass
+" the bang attribute to the plug mappings below. So instead of hardcoding it
+" as 0 (no '!' attribute) or 1 (with '!' attribute) we pass the user setting,
+" which by default is enabled. For commands the user has the ability to pass
+" the '!', such as :GoBuild or :GoBuild!
+if !exists("g:go_jump_to_error")
+    let g:go_jump_to_error = 1
+endif
+
 
 " Some handy plug mappings
-nnoremap <silent> <Plug>(go-run) :<C-u>call go#cmd#Run(expand('%'))<CR>
-nnoremap <silent> <Plug>(go-build) :<C-u>call go#cmd#Build('')<CR>
-nnoremap <silent> <Plug>(go-install) :<C-u>call go#cmd#Install()<CR>
-nnoremap <silent> <Plug>(go-test) :<C-u>call go#cmd#Test(0, '')<CR>
-nnoremap <silent> <Plug>(go-test-compile) :<C-u>call go#cmd#Test(1, '')<CR>
-nnoremap <silent> <Plug>(go-coverage) :<C-u>call go#cmd#Coverage('')<CR>
-nnoremap <silent> <Plug>(go-vet) :<C-u>call go#cmd#Vet()<CR>
+nnoremap <silent> <Plug>(go-run) :<C-u>call go#cmd#Run(!g:go_jump_to_error,expand('%'))<CR>
+nnoremap <silent> <Plug>(go-build) :<C-u>call go#cmd#Build(!g:go_jump_to_error,'')<CR>
+nnoremap <silent> <Plug>(go-generate) :<C-u>call go#cmd#Generate(!g:go_jump_to_error,'')<CR>
+nnoremap <silent> <Plug>(go-install) :<C-u>call go#cmd#Install(!g:go_jump_to_error)<CR>
+nnoremap <silent> <Plug>(go-test) :<C-u>call go#cmd#Test(!g:go_jump_to_error, 0, '')<CR>
+nnoremap <silent> <Plug>(go-test-func) :<C-u>call go#cmd#TestFunc(!g:go_jump_to_error, '')<CR>
+nnoremap <silent> <Plug>(go-test-compile) :<C-u>call go#cmd#Test(!g:go_jump_to_error, 1, '')<CR>
+nnoremap <silent> <Plug>(go-coverage) :<C-u>call go#cmd#Coverage(!g:go_jump_to_error, '')<CR>
+nnoremap <silent> <Plug>(go-vet) :<C-u>call go#cmd#Vet(!g:go_jump_to_error)<CR>
+
 nnoremap <silent> <Plug>(go-files) :<C-u>call go#tool#Files()<CR>
 nnoremap <silent> <Plug>(go-deps) :<C-u>call go#tool#Deps()<CR>
 nnoremap <silent> <Plug>(go-info) :<C-u>call go#complete#Info()<CR>
@@ -21,7 +34,6 @@ nnoremap <silent> <Plug>(go-implements) :<C-u>call go#oracle#Implements(-1)<CR>
 nnoremap <silent> <Plug>(go-callees) :<C-u>call go#oracle#Callees(-1)<CR>
 nnoremap <silent> <Plug>(go-callers) :<C-u>call go#oracle#Callers(-1)<CR>
 nnoremap <silent> <Plug>(go-describe) :<C-u>call go#oracle#Describe(-1)<CR>
-nnoremap <silent> <Plug>(go-callgraph) :<C-u>call go#oracle#Callgraph(-1)<CR>
 nnoremap <silent> <Plug>(go-callstack) :<C-u>call go#oracle#Callstack(-1)<CR>
 nnoremap <silent> <Plug>(go-freevars) :<C-u>call go#oracle#Freevars(-1)<CR>
 nnoremap <silent> <Plug>(go-channelpeers) :<C-u>call go#oracle#ChannelPeers(-1)<CR>
@@ -49,11 +61,12 @@ command! -range=% GoImplements call go#oracle#Implements(<count>)
 command! -range=% GoCallees call go#oracle#Callees(<count>)
 command! -range=% GoDescribe call go#oracle#Describe(<count>)
 command! -range=% GoCallers call go#oracle#Callers(<count>)
-command! -range=% GoCallgraph call go#oracle#Callgraph(<count>)
 command! -range=% GoCallstack call go#oracle#Callstack(<count>)
 command! -range=% GoFreevars call go#oracle#Freevars(<count>)
 command! -range=% GoChannelPeers call go#oracle#ChannelPeers(<count>)
 command! -range=% GoReferrers call go#oracle#Referrers(<count>)
+
+command! -nargs=* -complete=customlist,go#package#Complete GoOracleScope call go#oracle#Scope(<f-args>)
 
 " tool
 command! -nargs=0 GoFiles echo go#tool#Files()
@@ -61,13 +74,15 @@ command! -nargs=0 GoDeps echo go#tool#Deps()
 command! -nargs=* GoInfo call go#complete#Info()
 
 " cmd
-command! -nargs=* -bang GoRun call go#cmd#Run(<bang>0,<f-args>)
 command! -nargs=* -bang GoBuild call go#cmd#Build(<bang>0,<f-args>)
-command! -nargs=* GoInstall call go#cmd#Install(<f-args>)
-command! -nargs=* GoTest call go#cmd#Test(0, <f-args>)
-command! -nargs=* GoTestCompile call go#cmd#Test(1, <f-args>)
-command! -nargs=* GoCoverage call go#cmd#Coverage(<f-args>)
-command! -nargs=0 GoVet call go#cmd#Vet()
+command! -nargs=* -bang GoGenerate call go#cmd#Generate(<bang>0,<f-args>)
+command! -nargs=* -bang GoRun call go#cmd#Run(<bang>0,<f-args>)
+command! -nargs=* -bang GoInstall call go#cmd#Install(<bang>0, <f-args>)
+command! -nargs=* -bang GoTest call go#cmd#Test(<bang>0, 0, <f-args>)
+command! -nargs=* -bang GoTestFunc call go#cmd#TestFunc(<bang>0, <f-args>)
+command! -nargs=* -bang GoTestCompile call go#cmd#Test(<bang>0, 1, <f-args>)
+command! -nargs=* -bang GoCoverage call go#cmd#Coverage(<bang>0, <f-args>)
+command! -nargs=0 -bang GoVet call go#cmd#Vet(<bang>0)
 
 " -- play
 command! -nargs=0 -range=% GoPlay call go#play#Share(<count>, <line1>, <line2>)

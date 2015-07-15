@@ -31,6 +31,7 @@ additional contributions from:
 * [MicahElliott](https://github.com/MicahElliott)
 * [mikeastock](https://github.com/mikeastock)
 * [muffinresearch](https://github.com/muffinresearch)
+* [munyari](https://github.com/munyari)
 * [pielgrzym](https://github.com/pielgrzym)
 * [pose](https://github.com/pose)
 * [r00k](https://github.com/r00k)

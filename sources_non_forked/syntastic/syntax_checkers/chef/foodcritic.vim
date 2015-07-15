@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_chef_foodcritic_checker")
+if exists('g:loaded_syntastic_chef_foodcritic_checker')
     finish
 endif
 let g:loaded_syntastic_chef_foodcritic_checker = 1

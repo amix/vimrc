@@ -3,7 +3,7 @@
 "Description: Shell script syntax/style checking plugin for syntastic.vim
 "============================================================================
 
-if exists("g:loaded_syntastic_sh_shellcheck_checker")
+if exists('g:loaded_syntastic_sh_shellcheck_checker')
     finish
 endif
 let g:loaded_syntastic_sh_shellcheck_checker = 1

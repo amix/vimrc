@@ -42,98 +42,51 @@ snippet ci_model_crudl
 			${3:// code...}
 		}
 
-		// public create(data) {{{
-		/**
-		 * create
-		 *
-		 * @param mixed $data
-		 * @access public
-		 * @return boolean
-		 */
 		public function create($data)
 		{
-			if($this->db->insert($table, $data))
+			if($this->db->insert($this->table, $data))
 				return true;
 			else
 				return false;
 		}
-		// }}}
 
-		// public read(id) {{{
-		/**
-		 * read
-		 *
-		 * @param int $id
-		 * @access public
-		 * @return boolean
-		 */
 		public function read($id)
 		{
-			return $this->db->get_where($table, array('id', $id))->result();
+			return $this->db->get_where($this->table, array('id', $id))->result();
 		}
-		// }}}
 
-		// public update(id,data) {{{
-		/**
-		 * update
-		 *
-		 * @param int $id
-		 * @param mixed $data
-		 * @access public
-		 * @return boolean
-		 */
 		public function update($id, $data)
 		{
-			if($this->db->update($table, $data, array('id' => $id)))
+			if($this->db->update($this->table, $data, array('id' => $id)))
 				return true;
 			else
 				return false;
 		}
-		// }}}
 
-		// public delete(id) {{{
-		/**
-		 * delete
-		 *
-		 * @param mixed $id (int o array of int)
-		 * @access public
-		 * @return boolean
-		 */
 		public function delete($id)
 		{
 			if(is_array($id))
 			{
 				$this->db->trans_start();
 				foreach($id as $elem)
-					$this->db->delete($table, array('id' => $elem));
+					$this->db->delete($this->table, array('id' => $elem));
 				$this->db->trans_complete();
 			}
 			else
 			{
-				if($this->db->delete($table, array('id' => $id)))
+				if($this->db->delete($this->table, array('id' => $id)))
 					return true;
 				else
 					return false;
 			}
 		}
-		// }}}
 
-		// public listRows(limit=null,offset=0) {{{
-		/**
-		 * listRows
-		 *
-		 * @param int $limit
-		 * @param int $offset
-		 * @access public
-		 * @return boolean
-		 */
 		public function listRows($limit = null, $offset = 0)
 		{
 			if(!is_null($limit))
 				$this->db->limit($limit, $offset);
-			return $this->db->get($table)->result();
+			return $this->db->get($this->table)->result();
 		}
-		// }}}
 	}
 # Load view
 snippet ci_load-view

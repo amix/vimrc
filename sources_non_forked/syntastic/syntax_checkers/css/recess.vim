@@ -11,7 +11,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_css_recess_checker")
+if exists('g:loaded_syntastic_css_recess_checker')
     finish
 endif
 let g:loaded_syntastic_css_recess_checker = 1

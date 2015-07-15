@@ -6,7 +6,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_python_flake8_checker")
+if exists('g:loaded_syntastic_python_flake8_checker')
     finish
 endif
 let g:loaded_syntastic_python_flake8_checker = 1

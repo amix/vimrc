@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_vim_vint_checker")
+if exists('g:loaded_syntastic_vim_vint_checker')
     finish
 endif
 let g:loaded_syntastic_vim_vint_checker = 1

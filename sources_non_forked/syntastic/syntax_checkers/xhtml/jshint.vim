@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_xhtml_jshint_checker")
+if exists('g:loaded_syntastic_xhtml_jshint_checker')
     finish
 endif
 let g:loaded_syntastic_xhtml_jshint_checker = 1

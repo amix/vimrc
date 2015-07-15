@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_slim_slimrb_checker")
+if exists('g:loaded_syntastic_slim_slimrb_checker')
     finish
 endif
 let g:loaded_syntastic_slim_slimrb_checker = 1

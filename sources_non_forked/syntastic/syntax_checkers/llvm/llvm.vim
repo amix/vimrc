@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_llvm_llvm_checker")
+if exists('g:loaded_syntastic_llvm_llvm_checker')
     finish
 endif
 let g:loaded_syntastic_llvm_llvm_checker = 1

@@ -17,7 +17,7 @@ if !exists("g:go_golint_bin")
 endif
 
 function! go#lint#Run() abort
-	let bin_path = go#tool#BinPath(g:go_golint_bin) 
+	let bin_path = go#path#CheckBinPath(g:go_golint_bin) 
 	if empty(bin_path) 
 		return 
 	endif

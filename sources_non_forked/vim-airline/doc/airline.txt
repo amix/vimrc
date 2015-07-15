@@ -70,6 +70,9 @@ values):
 * enable paste detection >
   let g:airline_detect_paste=1
 <
+* enable crypt detection >
+  let g:airline_detect_crypt=1
+<
 * enable iminsert detection >
   let g:airline_detect_iminsert=0
 <
@@ -162,10 +165,10 @@ Airline comes with some user-defined autocommands.
 CUSTOMIZATION                                        *airline-customization*
 
 The following are some unicode symbols for customizing the left/right
-separators, as well as the powerline font glyths.
+separators, as well as the powerline font glyphs.
 
 Note: You must define the dictionary first before setting values. Also, it's a
-good idea to check whether if it exists as to avoid accidentally overwritting
+good idea to check whether it exists as to avoid accidentally overwriting
 its contents. >
   if !exists('g:airline_symbols')
     let g:airline_symbols = {}
@@ -176,6 +179,7 @@ its contents. >
   let g:airline_left_sep = '▶'
   let g:airline_right_sep = '«'
   let g:airline_right_sep = '◀'
+  let g:airline_symbols.crypt = '🔒'
   let g:airline_symbols.linenr = '␊'
   let g:airline_symbols.linenr = '␤'
   let g:airline_symbols.linenr = '¶'
@@ -214,7 +218,7 @@ section.
 >
   variable names                default contents
   ----------------------------------------------------------------------------
-  let g:airline_section_a       (mode, paste, iminsert)
+  let g:airline_section_a       (mode, crypt, paste, iminsert)
   let g:airline_section_b       (hunks, branch)
   let g:airline_section_c       (bufferline or filename)
   let g:airline_section_gutter  (readonly, csv)
@@ -235,7 +239,7 @@ Most extensions are enabled by default and lazily loaded when the
 corresponding plugin (if any) is detected.
 
 By default, airline will attempt to load any extension it can find in the
-'runtimepath'.  On some systems this can result in an undersirable startup
+'runtimepath'.  On some systems this can result in an undesirable startup
 cost.  You can disable the check with the following flag. >
   let g:airline#extensions#disable_rtp_load = 1
 <
@@ -267,7 +271,7 @@ configuration values that you can use.
   " Note: set to an empty dictionary to disable truncation.
   let g:airline#extensions#default#section_truncate_width = {}
 <
-* configure the layout of the sections by specificing an array of two arrays
+* configure the layout of the sections by specifying an array of two arrays
   (first array is the left side, second array is the right side). >
   let g:airline#extensions#default#layout = [
       \ [ 'a', 'b', 'c' ],
@@ -358,6 +362,7 @@ csv.vim <https://github.com/chrisbra/csv.vim>
 vim-gitgutter <https://github.com/airblade/vim-gitgutter>
 vim-signify <https://github.com/mhinz/vim-signify>
 changesPlugin <https://github.com/chrisbra/changesPlugin>
+quickfixsigns <https://github.com/tomtom/quickfixsigns_vim>
 
 * enable/disable showing a summary of changed hunks under source control. >
   let g:airline#extensions#hunks#enabled = 1
@@ -407,6 +412,11 @@ eclim <https://eclim.org>
   " certain number of spaces are allowed after tabs, but not in between
   " this algorithm works well for /** */ style comments in a tab-indented file
   let g:airline#extensions#whitespace#mixed_indent_algo = 1
+
+  " spaces are allowed after tabs, but not in between
+  " this algorithm works well with programming styles that use tabs for
+  " indentation and spaces for alignment
+  let g:airline#extensions#whitespace#mixed_indent_algo = 2
 <
 * customize the whitespace symbol. >
   let g:airline#extensions#whitespace#symbol = '!'
@@ -436,7 +446,10 @@ eclim <https://eclim.org>
 <
 * configure filename match rules to exclude from the tabline. >
   let g:airline#extensions#tabline#excludes = []
-<
+
+* enable/disable display preview window buffer in the tabline.
+  let g:airline#extensions#tabline#exclude_preview = 1
+
 * configure how numbers are displayed in tab mode. >
   let g:airline#extensions#tabline#tab_nr_type = 0 " # of splits (default)
   let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
@@ -489,6 +502,9 @@ exposed.
 <
     * configure collapsing parent directories in buffer name. >
       let g:airline#extensions#tabline#fnamecollapse = 1
+<
+    * configure truncating non-active buffer names to specified length. >
+      let g:airline#extensions#tabline#fnametruncate = 0
 
   " The `unique_tail` algorithm will display the tail of the filename, unless
   " there is another file of the same name, in which it will display it along
@@ -598,7 +614,7 @@ vim-ctrlspace <https://github.com/szw/vim-ctrlspace>
 ==============================================================================
 ADVANCED CUSTOMIZATION                      *airline-advanced-customization*
 
-The defaults will accomodate the mass majority of users with minimal
+The defaults will accommodate the mass majority of users with minimal
 configuration. However, if you want to reposition sections or contents you can
 do so with built-in helper functions, which makes it possible to create
 sections in a more declarative style.
@@ -630,6 +646,7 @@ Before is a list of parts that are predefined by vim-airline.
 * `mode`           displays the current mode
 * `iminsert`       displays the current insert method
 * `paste`          displays the paste indicator
+* crypt          displays the crypted indicator
 * `filetype`       displays the file type
 * `readonly`       displays the read only indicator
 * `file`           displays the filename and modified indicator
@@ -692,7 +709,7 @@ the most powerful way to customize the statusline, and sometimes it may be
 easier to go this route than the above methods.
 
 Every section can have two values. The default value is the global `g:`
-variable which is used in the absense of a `w:` value. This makes it very easy
+variable which is used in the absence of a `w:` value. This makes it very easy
 to override only certain parts of the statusline by only defining window-local
 variables for a subset of all sections.
 

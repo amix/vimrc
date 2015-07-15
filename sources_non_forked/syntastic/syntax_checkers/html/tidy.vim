@@ -9,16 +9,8 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" Note: if you need to check HTML5 sources, you might consider installing a
-" fork of HTML Tidy, named "HTML Tidy for HTML5":
-"
-"   http://w3c.github.io/tidy-html5/
-"
-" HTML Tidy for HTML5 can be used without changes by this checker, just install
-" it and point g:syntastic_html_tidy_exec to the executable.
 
-if exists("g:loaded_syntastic_html_tidy_checker")
+if exists('g:loaded_syntastic_html_tidy_checker')
     finish
 endif
 let g:loaded_syntastic_html_tidy_checker = 1
@@ -102,40 +94,40 @@ let s:IGNORE_ERRORS = [
 lockvar! s:IGNORE_ERRORS
 
 let s:BLOCKLEVEL_TAGS = [
-        \ "main",
-        \ "section",
-        \ "article",
-        \ "aside",
-        \ "header",
-        \ "footer",
-        \ "nav",
-        \ "figure",
-        \ "figcaption"
+        \ 'main',
+        \ 'section',
+        \ 'article',
+        \ 'aside',
+        \ 'header',
+        \ 'footer',
+        \ 'nav',
+        \ 'figure',
+        \ 'figcaption'
     \ ]
 lockvar! s:BLOCKLEVEL_TAGS
 
 let s:INLINE_TAGS = [
-        \ "video",
-        \ "audio",
-        \ "source",
-        \ "embed",
-        \ "mark",
-        \ "progress",
-        \ "meter",
-        \ "time",
-        \ "ruby",
-        \ "rt",
-        \ "rp",
-        \ "canvas",
-        \ "command",
-        \ "details",
-        \ "datalist"
+        \ 'video',
+        \ 'audio',
+        \ 'source',
+        \ 'embed',
+        \ 'mark',
+        \ 'progress',
+        \ 'meter',
+        \ 'time',
+        \ 'ruby',
+        \ 'rt',
+        \ 'rp',
+        \ 'canvas',
+        \ 'command',
+        \ 'details',
+        \ 'datalist'
     \ ]
 lockvar! s:INLINE_TAGS
 
 let s:EMPTY_TAGS = [
-        \ "wbr",
-        \ "keygen"
+        \ 'wbr',
+        \ 'keygen'
     \ ]
 lockvar! s:EMPTY_TAGS
 
@@ -152,7 +144,7 @@ function! SyntaxCheckers_html_tidy_GetLocList() dict " {{{1
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")},
+        \ 'defaults': {'bufnr': bufnr('')},
         \ 'returns': [0, 1, 2] })
 
     " filter out valid HTML5 from the errors

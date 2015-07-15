@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_notifier_signs") || !exists("g:loaded_syntastic_plugin")
+if exists('g:loaded_syntastic_notifier_signs') || !exists('g:loaded_syntastic_plugin')
     finish
 endif
 let g:loaded_syntastic_notifier_signs = 1
@@ -107,7 +107,7 @@ function! g:SyntasticSignsNotifier._signErrors(loclist) abort " {{{2
                 let sign_subtype = get(i, 'subtype', '')
                 let sign_type = 'Syntastic' . sign_subtype . sign_severity
 
-                execute "sign place " . s:next_sign_id . " line=" . i['lnum'] . " name=" . sign_type . " buffer=" . i['bufnr']
+                execute 'sign place ' . s:next_sign_id . ' line=' . i['lnum'] . ' name=' . sign_type . ' buffer=' . i['bufnr']
                 call add(self._bufSignIds(), s:next_sign_id)
                 let s:next_sign_id += 1
             endif
@@ -119,7 +119,7 @@ endfunction " }}}2
 function! g:SyntasticSignsNotifier._removeSigns(ids) abort " {{{2
     if has('signs')
         for s in reverse(copy(a:ids))
-            execute "sign unplace " . s
+            execute 'sign unplace ' . s
             call remove(self._bufSignIds(), index(self._bufSignIds(), s))
         endfor
     endif
@@ -127,7 +127,7 @@ endfunction " }}}2
 
 " Get all the ids of the SyntaxError signs in the buffer
 function! g:SyntasticSignsNotifier._bufSignIds() abort " {{{2
-    if !exists("b:syntastic_private_sign_ids")
+    if !exists('b:syntastic_private_sign_ids')
         let b:syntastic_private_sign_ids = []
     endif
     return b:syntastic_private_sign_ids

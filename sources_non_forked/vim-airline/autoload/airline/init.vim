@@ -15,13 +15,13 @@ function! airline#init#bootstrap()
   let s:loaded = 1
 
   let g:airline#init#bootstrapping = 1
-
   call s:check_defined('g:airline_left_sep', get(g:, 'airline_powerline_fonts', 0)?"\ue0b0":">")
   call s:check_defined('g:airline_left_alt_sep', get(g:, 'airline_powerline_fonts', 0)?"\ue0b1":">")
   call s:check_defined('g:airline_right_sep', get(g:, 'airline_powerline_fonts', 0)?"\ue0b2":"<")
   call s:check_defined('g:airline_right_alt_sep', get(g:, 'airline_powerline_fonts', 0)?"\ue0b3":"<")
   call s:check_defined('g:airline_detect_modified', 1)
   call s:check_defined('g:airline_detect_paste', 1)
+  call s:check_defined('g:airline_detect_crypt', 1)
   call s:check_defined('g:airline_detect_iminsert', 0)
   call s:check_defined('g:airline_inactive_collapse', 1)
   call s:check_defined('g:airline_exclude_filenames', ['DebuggerWatch','DebuggerStack','DebuggerStatus'])
@@ -41,6 +41,7 @@ function! airline#init#bootstrap()
         \ 's'  : 'SELECT',
         \ 'S'  : 'S-LINE',
         \ '' : 'S-BLOCK',
+        \ 't'  : 'TERMINAL',
         \ }, 'keep')
 
   call s:check_defined('g:airline_theme_map', {})
@@ -62,6 +63,7 @@ function! airline#init#bootstrap()
         \ 'branch': get(g:, 'airline_branch_prefix', get(g:, 'airline_powerline_fonts', 0) ? "\ue0a0" : ''),
         \ 'modified': '+',
         \ 'space': ' ',
+        \ 'crypt': get(g:, 'airline_crypt_symbol', nr2char(0x1F512)),
         \ }, 'keep')
 
   call airline#parts#define('mode', {
@@ -70,6 +72,7 @@ function! airline#init#bootstrap()
         \ })
   call airline#parts#define_function('iminsert', 'airline#parts#iminsert')
   call airline#parts#define_function('paste', 'airline#parts#paste')
+  call airline#parts#define_function('crypt', 'airline#parts#crypt')
   call airline#parts#define_function('filetype', 'airline#parts#filetype')
   call airline#parts#define('readonly', {
         \ 'function': 'airline#parts#readonly',
@@ -87,7 +90,7 @@ endfunction
 function! airline#init#sections()
   let spc = g:airline_symbols.space
   if !exists('g:airline_section_a')
-    let g:airline_section_a = airline#section#create_left(['mode', 'paste', 'capslock', 'iminsert'])
+    let g:airline_section_a = airline#section#create_left(['mode', 'crypt', 'paste', 'capslock', 'iminsert'])
   endif
   if !exists('g:airline_section_b')
     let g:airline_section_b = airline#section#create(['hunks', 'branch'])

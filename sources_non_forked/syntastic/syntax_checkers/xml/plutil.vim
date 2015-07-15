@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_xml_plutil_checker")
+if exists('g:loaded_syntastic_xml_plutil_checker')
     finish
 endif
 let g:loaded_syntastic_xml_plutil_checker = 1

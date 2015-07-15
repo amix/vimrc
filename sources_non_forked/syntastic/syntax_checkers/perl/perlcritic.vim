@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_perl_perlcritic_checker")
+if exists('g:loaded_syntastic_perl_perlcritic_checker')
     finish
 endif
 let g:loaded_syntastic_perl_perlcritic_checker = 1

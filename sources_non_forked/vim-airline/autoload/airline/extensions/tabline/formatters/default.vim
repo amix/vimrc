@@ -3,6 +3,7 @@
 
 let s:fmod = get(g:, 'airline#extensions#tabline#fnamemod', ':~:.')
 let s:fnamecollapse = get(g:, 'airline#extensions#tabline#fnamecollapse', 1)
+let s:fnametruncate = get(g:, 'airline#extensions#tabline#fnametruncate', 0)
 let s:buf_nr_format = get(g:, 'airline#extensions#tabline#buffer_nr_format', '%s: ')
 let s:buf_nr_show = get(g:, 'airline#extensions#tabline#buffer_nr_show', 0)
 let s:buf_modified_symbol = g:airline_symbols.modified
@@ -18,6 +19,9 @@ function! airline#extensions#tabline#formatters#default#format(bufnr, buffers)
       let _ .= substitute(fnamemodify(name, s:fmod), '\v\w\zs.{-}\ze(\\|/)', '', 'g')
     else
       let _ .= fnamemodify(name, s:fmod)
+    endif
+    if a:bufnr != bufnr('%') && s:fnametruncate && strlen(_) > s:fnametruncate
+      let _ = strpart(_, 0, s:fnametruncate)
     endif
   endif
 

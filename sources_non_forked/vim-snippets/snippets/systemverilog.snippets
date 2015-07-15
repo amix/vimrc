@@ -1,0 +1,127 @@
+# if statement
+snippet if
+	if (${1}) begin
+		${0}
+	end
+# If/else statements
+snippet ife
+	if (${1}) begin
+		${2}
+	end
+	else begin
+		${1}
+	end
+# Else if statement
+snippet eif
+	else if (${1}) begin
+		${0}
+	end
+#Else statement
+snippet el
+	else begin
+		${0}
+	end
+# While statement
+snippet wh
+	while (${1}) begin
+		${0}
+	end
+# Repeat Loop
+snippet rep
+	repeat (${1}) begin
+		${0}
+	end
+# Foreach Loopo
+snippet fe
+	foreach (${1}) begin
+		${0}
+	end
+# Do-while statement
+snippet dowh
+	do begin
+		${0}
+	end while (${1});
+# Case statement
+snippet case
+	case (${1})
+		{$2}: begin
+			${0}
+		end
+		default: begin
+		end
+	endcase
+# CaseZ statement
+snippet casez
+casez (${1})
+		{$2}: begin
+			${0}
+		end
+		default: begin
+		end
+	endcase
+# Combinational always block
+snippet alc
+	always_comb begin ${1:: statement_label}
+		${0}
+	end $1
+# Sequential logic
+snippet alff
+	always_ff @(posedge ${1:clk}) begin ${2:: statement_label}
+		${0}
+	end $2
+# Latched logic
+snippet all
+	always_latch begin ${1:: statement_label}
+		${0}
+	end $1
+# Module block
+snippet mod
+	module ${1:module_name} (${2});
+		${0}
+	endmodule : $1
+# Class
+snippet cl
+	class ${1:class_name};
+		// data or class properties
+		${0}
+
+		// initialization
+		function new();
+		endfunction : new
+
+	endclass : $1
+# Typedef structure
+snippet types
+	typedef struct {
+		${0}
+	} ${1:name_t};
+# Program block
+snippet prog
+	program ${1:program_name} ();
+		${0}
+	endprogram : $1
+# Interface block
+snippet intf
+	interface ${1:program_name} ();
+		// nets
+		${0}
+		// clocking
+
+		// modports
+
+	endinterface : $1
+# Clocking Block
+snippet clock
+	clocking ${1:clocking_name} @(${2:posedge} ${3:clk});
+		${0}
+	endclocking : $1
+# Covergroup construct
+snippet cg
+	covergroup ${1:group_name} @(${2:posedge} ${3:clk});
+		${0}
+	endgroup : $1
+# Package declaration
+snippet pkg
+	package ${1:package_name};
+		${0}
+	endpackage : $1

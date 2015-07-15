@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_r_lint_checker")
+if exists('g:loaded_syntastic_r_lint_checker')
     finish
 endif
 let g:loaded_syntastic_r_lint_checker = 1
@@ -28,10 +28,10 @@ set cpo&vim
 
 function! SyntaxCheckers_r_lint_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], '\m`\zs[^`]\+\ze`')
-    if term == ''
+    if term ==# ''
         let term = matchstr(a:item['text'], "\\m'\\zs[^']\\+\\ze'")
     endif
-    return term != '' ? '\V' . escape(term, '\') : ''
+    return term !=# '' ? '\V' . escape(term, '\') : ''
 endfunction
 
 function! SyntaxCheckers_r_lint_IsAvailable() dict

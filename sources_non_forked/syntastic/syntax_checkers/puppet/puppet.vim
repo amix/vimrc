@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_puppet_puppet_checker")
+if exists('g:loaded_syntastic_puppet_puppet_checker')
     finish
 endif
 let g:loaded_syntastic_puppet_puppet_checker = 1

@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_loclist") || !exists("g:loaded_syntastic_plugin")
+if exists('g:loaded_syntastic_loclist') || !exists('g:loaded_syntastic_plugin')
     finish
 endif
 let g:loaded_syntastic_loclist = 1
@@ -13,7 +13,7 @@ function! g:SyntasticLoclist.New(rawLoclist) abort " {{{2
     let llist = filter(copy(a:rawLoclist), 'v:val["valid"] == 1')
 
     for e in llist
-        if get(e, 'type', '') == ''
+        if get(e, 'type', '') ==# ''
             let e['type'] = 'E'
         endif
     endfor
@@ -28,7 +28,7 @@ function! g:SyntasticLoclist.New(rawLoclist) abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticLoclist.current() abort " {{{2
-    if !exists("b:syntastic_loclist") || empty(b:syntastic_loclist)
+    if !exists('b:syntastic_loclist') || empty(b:syntastic_loclist)
         let b:syntastic_loclist = g:SyntasticLoclist.New([])
     endif
     return b:syntastic_loclist
@@ -57,7 +57,7 @@ function! g:SyntasticLoclist.isEmpty() abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticLoclist.isNewerThan(stamp) abort " {{{2
-    if !exists("self._stamp")
+    if !exists('self._stamp')
         let self._stamp = []
         return 0
     endif
@@ -81,10 +81,10 @@ function! g:SyntasticLoclist.getCursorColumns() abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticLoclist.getStatuslineFlag() abort " {{{2
-    if !exists("self._stl_format")
+    if !exists('self._stl_format')
         let self._stl_format = ''
     endif
-    if !exists("self._stl_flag")
+    if !exists('self._stl_flag')
         let self._stl_flag = ''
     endif
 
@@ -185,8 +185,8 @@ function! g:SyntasticLoclist.decorate(tag) abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticLoclist.balloons() abort " {{{2
-    if !exists("self._cachedBalloons")
-        let sep = has("balloon_multiline") ? "\n" : ' | '
+    if !exists('self._cachedBalloons')
+        let sep = has('balloon_multiline') ? "\n" : ' | '
 
         let self._cachedBalloons = {}
         for e in self._rawLoclist
@@ -208,15 +208,15 @@ function! g:SyntasticLoclist.balloons() abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticLoclist.errors() abort " {{{2
-    if !exists("self._cachedErrors")
-        let self._cachedErrors = self.filter({'type': "E"})
+    if !exists('self._cachedErrors')
+        let self._cachedErrors = self.filter({'type': 'E'})
     endif
     return self._cachedErrors
 endfunction " }}}2
 
 function! g:SyntasticLoclist.warnings() abort " {{{2
-    if !exists("self._cachedWarnings")
-        let self._cachedWarnings = self.filter({'type': "W"})
+    if !exists('self._cachedWarnings')
+        let self._cachedWarnings = self.filter({'type': 'W'})
     endif
     return self._cachedWarnings
 endfunction " }}}2
@@ -229,7 +229,7 @@ endfunction " }}}2
 
 " cache used by EchoCurrentError()
 function! g:SyntasticLoclist.messages(buf) abort " {{{2
-    if !exists("self._cachedMessages")
+    if !exists('self._cachedMessages')
         let self._cachedMessages = {}
 
         let errors = self.errors() + self.warnings()
@@ -304,9 +304,9 @@ function! g:SyntasticLoclist.show() abort " {{{2
 
     if !self.isEmpty()
         let num = winnr()
-        execute "lopen " . syntastic#util#var('loc_list_height')
+        execute 'lopen ' . syntastic#util#var('loc_list_height')
         if num != winnr()
-            wincmd p
+            execute num . 'wincmd w'
         endif
 
         " try to find the loclist window and set w:quickfix_title
@@ -320,7 +320,7 @@ function! g:SyntasticLoclist.show() abort " {{{2
                 " errors == getloclist(0) is the only somewhat safe way to
                 " achieve that
                 if strpart(title, 0, 16) ==# ':SyntasticCheck ' ||
-                            \ ( (title == '' || title ==# ':setloclist()') && errors == getloclist(0) )
+                            \ ( (title ==# '' || title ==# ':setloclist()') && errors == getloclist(0) )
                     call setwinvar(win, 'quickfix_title', ':SyntasticCheck ' . self._name)
                     call setbufvar(buf, 'syntastic_owner_buffer', self._owner)
                 endif

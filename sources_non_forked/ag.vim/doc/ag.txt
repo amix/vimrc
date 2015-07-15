@@ -1,0 +1,174 @@
+*ag.txt*   Plugin that integrates ag with Vim
+
+==============================================================================
+INTRODUCTION                                                               *ag*
+
+This plugin is a front for the_silver_searcher: ag. Ag can be used as a
+replacement for ack. This plugin will allow you to run ag from vim, and shows
+the results in a split window.
+
+:Ag[!] [options] {pattern} [{directory}]                                  *:Ag*
+
+    Search recursively in {directory} (which defaults to the current
+    directory) for the {pattern}. Behaves just like the |:grep| command, but
+    will open the |Quickfix| window for you. If [!] is not given the first
+    error is jumped to.
+
+:AgBuffer[!] [options] {pattern}                                    *:AgBuffer*
+
+    Search for {pattern} in all open buffers. Behaves just like the |:grep|
+    command, but will open the |Quickfix| window for you. If [!] is not given
+    the first error is jumped to.
+
+    Note: this will not find changes in modified buffers, since ag can only
+    find what is on disk! You can save buffers automatically when searching
+    with the 'autowrite' option. A buffer will be ignored if it is a directory
+    (an explorer, like netrw).
+
+:AgAdd [options] {pattern} [{directory}]                               *:AgAdd*
+
+    Just like |:Ag|, but instead of making a new list, the matches are
+    appended to the current |quickfix| list.
+
+:AgFromSearch [{directory}]                                     *:AgFromSearch*
+
+    Just like |:Ag| but the pattern is from previous search.
+
+:LAg [options] {pattern} [{directory}]                                   *:LAg*
+
+    Just like |:Ag| but instead of the |quickfix| list, matches are placed in
+    the current |location-list|.
+
+:LAgBuffer [options] {pattern}                                     *:LAgBuffer*
+
+    Just like |:AgBuffer| but instead of the |quickfix| list, matches are
+    placed in the current |location-list|.
+
+:LAgAdd [options] {pattern} [{directory}]                             *:LAgAdd*
+
+    Just like |:AgAdd| but instead of the |quickfix| list, matches are added
+    to the current |location-list|
+
+:AgFile [options] {pattern} [{directory}]                             *:AgFile*
+
+    Search recursively in {directory} (which defaults to the current
+    directory) for filenames matching the {pattern}. Behaves just like the
+    |:grep| command, but will open the |Quickfix| window for you.
+
+:AgHelp[!] [options] {pattern}                                        *:AgHelp*
+
+    Search vim documentation files for the {pattern}. Behaves just like the
+    |:Ag| command, but searches only vim documentation .txt files
+
+:LAgHelp [options] {pattern}                                         *:LAgHelp*
+
+    Just like |:AgHelp| but instead of the |quickfix| list, matches are placed
+    in the current |location-list|.
+
+Files containing the search term will be listed in the split window, along
+with the line number of the occurrence, once for each occurrence. <Enter> on a
+line in this window will open the file, and place the cursor on the matching
+line.
+
+See http://geoff.greer.fm/2011/12/27/the-silver-searcher-better-than-ack/ for
+more information.
+
+==============================================================================
+OPTIONS                                                            *ag-options*
+
+                                                                     *g:ag_prg*
+The location of the Ag program, and any options you want passed to it before
+searching. Default: "ag --vimgrep" (for parsable output). Example: >
+  let g:ag_prg="ag --vimgrep --smart-case"
+<
+Note: the `--vimgrep` option was added in Ag 0.25.0. If ag.vim detects that
+you're using a lower version, the following default will be used instead: >
+  let g:ag_prg="ag --column --nogroup --noheading"
+<
+This works around inconsistent behaviors in earlier Ag versions, but it is
+recommended that you upgrade if possible for a better experience. `--vimgrep`
+supports multiple matches on the same line of text, for example.
+
+For background, see: https://github.com/rking/ag.vim/pull/88
+
+                                                       *g:ag_working_path_mode*
+A mapping that describes where ag will be run. Default is the current working
+directory. Specifying 'r' as the argument will tell it to run from the project
+rootdirectory. For now any other mapping will result to the default.
+Example:
+  let g:ag_working_path_mode='r'
+
+                                                               *g:ag_highlight*
+If 1, highlight the search terms after searching. Default: 0. Example: >
+  let g:ag_highlight=1
+<
+
+                                                                  *g:ag_format*
+Format to recognize the matches. See 'errorformat' for more info. Default:
+"%f" when searching for files, "%f:%l:%c:%m" if not otherwise set. For
+example, if your `g:ag_prg` is set to just "ag" (no column numbers in the
+output, so when you jump to a match your cursor will be on the start of the
+line): >
+  let g:ag_format="%f:%l:%m"
+<
+
+                                                         *g:ag_apply_lmappings*
+Whether or not to add custom mappings to location list windows opened by this
+plugin. Only applies if you're using the location list. Default 1. Example: >
+  let g:ag_apply_lmappings=0
+<
+
+                                                         *g:ag_apply_qmappings*
+Whether or not to add custom mappings to quickfix windows opened by this
+plugin. Only applies if you're using the error list. Default 1. Example: >
+  let g:ag_apply_qmappings=0
+<
+
+                                                                *g:ag_lhandler*
+A custom command used to open the location list after it's populated.
+Default: "botright lopen". You might want to set this to change where the
+location list is opened, or what size it is. Example: >
+  let g:ag_lhandler="topleft lopen"
+<
+
+                                                                *g:ag_qhandler*
+A custom command used to open the error list after it's populated. Default:
+"botright copen". You might want to set this to change where the quickfix
+window is opened, or what size it is. Example: >
+  let g:ag_qhandler="copen 20"
+<
+
+                                                         *g:ag_mapping_message*
+Whether or not to show the message explaining the extra mappings that are
+added to the results list this plugin populates. This message is not shown if
+the mappings are not applied (see |g:ag_apply_qmappings| and
+|g:ag_apply_lmappings| for more info. Default 1. Example: >
+  let g:ag_mapping_message=0
+<
+
+==============================================================================
+MAPPINGS                                                         *ag-mappings*
+
+The following keyboard shortcuts are available in the quickfix window:
+
+e                   open file and close the quickfix window.
+
+o                   open file (same as enter).
+
+go                  preview file (open but maintain focus on ag.vim results).
+
+t                   open in a new tab.
+
+T                   open in new tab silently.
+
+h                   open in horizontal split.
+
+H                  open in horizontal split silently.
+
+v                   open in vertical split.
+
+gv                  open in vertical split silently.
+
+q                   close the quickfix window.
+
+  vim:tw=78:fo=tcq2:ft=help:norl:

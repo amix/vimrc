@@ -44,11 +44,7 @@ function! go#package#Paths()
         let dirs += [goroot]
     endif
 
-    let pathsep = ':'
-    if s:goos == 'windows'
-        let pathsep = ';'
-    endif
-    let workspaces = split($GOPATH, pathsep)
+    let workspaces = split($GOPATH, go#util#PathListSep())
     if workspaces != []
         let dirs += workspaces
     endif
@@ -116,7 +112,11 @@ endfunction
 
 function! go#package#Complete(ArgLead, CmdLine, CursorPos)
     let words = split(a:CmdLine, '\s\+', 1)
-    if len(words) > 2 && words[0] != "GoImportAs"
+
+    " do not complete package members for these commands
+    let neglect_commands = ["GoImportAs", "GoOracleScope"]
+
+    if len(words) > 2 && index(neglect_commands, words[0]) == -1
         " Complete package members
         return go#package#CompleteMembers(words[1], words[2])
     endif
@@ -142,6 +142,11 @@ function! go#package#Complete(ArgLead, CmdLine, CursorPos)
                 endif
                 let i = substitute(substitute(i[len(r)+1:], '[\\]', '/', 'g'),
                                   \ '\.a$', '', 'g')
+
+                " without this the result can have duplicates in form of
+                " 'encoding/json' and '/encoding/json/'
+                let i = go#util#StripPathSep(i)
+
                 let ret[i] = i
             endfor
         endfor

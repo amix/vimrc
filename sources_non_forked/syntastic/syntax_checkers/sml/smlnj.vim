@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_sml_smlnj_checker")
+if exists('g:loaded_syntastic_sml_smlnj_checker')
     finish
 endif
 let g:loaded_syntastic_sml_smlnj_checker = 1

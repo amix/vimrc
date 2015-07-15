@@ -33,7 +33,7 @@ function! SyntaxCheckers_css_csslint_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")} })
+        \ 'defaults': {'bufnr': bufnr('')} })
 
 endfunction
 

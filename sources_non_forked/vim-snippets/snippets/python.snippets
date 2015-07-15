@@ -47,7 +47,7 @@ snippet deff
 	def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
 		${0}
 # New Method
-snippet defs
+snippet defm
 	def ${1:mname}(self, ${2:arg}):
 		${0}
 # New Property
@@ -138,18 +138,17 @@ snippet pdbbb
 # remote python debugger (rpdb)
 snippet rpdb
 	import rpdb; rpdb.set_trace()
-# python_prompt_toolkit
-snippet ppt
-	from prompt_toolkit.contrib.repl import embed
-	embed(globals(), locals(), vi_mode=${1:default=False}, history_filename=${2:default=None})
+# ptpython
+snippet ptpython
+	from ptpython.repl import embed
+	embed(globals(), locals(), vi_mode=${1:False}, history_filename=${2:None})
 # python console debugger (pudb)
 snippet pudb
 	import pudb; pudb.set_trace()
 snippet pprint
 	import pprint; pprint.pprint(${1})
 snippet "
-	"""
-	${0:doc}
+	"""${0:doc}
 	"""
 # assertions
 snippet a=
@@ -200,8 +199,7 @@ snippet lc
 snippet li
 	logger.info(${0:msg})
 snippet epydoc
-	"""
-	${1:Description}
+	"""${1:Description}
 
 	@param ${2:param}: ${3: Description}
 	@type  $2: ${4: Type}

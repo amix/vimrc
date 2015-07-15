@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_scss_sassc_checker")
+if exists('g:loaded_syntastic_scss_sassc_checker')
     finish
 endif
 let g:loaded_syntastic_scss_sassc_checker = 1

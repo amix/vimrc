@@ -13,7 +13,7 @@
 " Note: this script requires CoffeeScript version 1.6.2 or newer.
 "
 
-if exists("g:loaded_syntastic_coffee_coffee_checker")
+if exists('g:loaded_syntastic_coffee_coffee_checker')
     finish
 endif
 let g:loaded_syntastic_coffee_coffee_checker = 1

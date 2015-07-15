@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_lisp_clisp_checker")
+if exists('g:loaded_syntastic_lisp_clisp_checker')
     finish
 endif
 let g:loaded_syntastic_lisp_clisp_checker = 1
@@ -20,7 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_lisp_clisp_GetLocList() dict
     let tmpdir = syntastic#util#tmpdir()
-    let out = tmpdir != '.' ? ('-o ' . syntastic#util#shescape(tmpdir . syntastic#util#Slash() . 'syntastic_' . getpid())) : ''
+    let out = tmpdir !=# '.' ? ('-o ' . syntastic#util#shescape(tmpdir . syntastic#util#Slash() . 'syntastic_' . getpid())) : ''
 
     let makeprg = self.makeprgBuild({
         \ 'args_after': '-q',

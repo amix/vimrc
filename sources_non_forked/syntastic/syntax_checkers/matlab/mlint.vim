@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_matlab_mlint_checker")
+if exists('g:loaded_syntastic_matlab_mlint_checker')
     finish
 endif
 let g:loaded_syntastic_matlab_mlint_checker = 1
@@ -28,7 +28,7 @@ function! SyntaxCheckers_matlab_mlint_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")} })
+        \ 'defaults': {'bufnr': bufnr('')} })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

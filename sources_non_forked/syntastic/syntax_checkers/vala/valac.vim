@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_vala_valac_checker")
+if exists('g:loaded_syntastic_vala_valac_checker')
     finish
 endif
 let g:loaded_syntastic_vala_valac_checker = 1
@@ -26,7 +26,7 @@ endfunction " }}}1
 function! SyntaxCheckers_vala_valac_GetLocList() dict " {{{1
     let vala_pkg_args = join(map(s:GetValaModules(), '"--pkg ".v:val'), ' ')
     let vala_vapi_args = join(map(s:GetValaVapiDirs(), '"--vapidir ".v:val'), ' ')
-    let makeprg = self.makeprgBuild({ 'args': '-C ' . vala_pkg_args . " " . vala_vapi_args })
+    let makeprg = self.makeprgBuild({ 'args': '-C ' . vala_pkg_args . ' ' . vala_vapi_args })
 
     let errorformat =
         \ '%A%f:%l.%c-%\d%\+.%\d%\+: %t%[a-z]%\+: %m,'.

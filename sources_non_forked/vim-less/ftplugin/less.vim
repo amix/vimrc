@@ -13,12 +13,13 @@ let b:did_ftplugin = 1
 let b:undo_ftplugin = "setl cms< def< inc< inex< ofu< sua<"
 
 setlocal iskeyword+=-
-setlocal commentstring=//\ %s
+setlocal commentstring=//%s
 setlocal define=^\\s*\\%(@mixin\\\|=\\)
 setlocal includeexpr=substitute(v:fname,'\\%(.*/\\\|^\\)\\zs','_','')
 setlocal omnifunc=csscomplete#CompleteCSS
 setlocal suffixesadd=.less
-setlocal comments=s1:/*,mb:*,ex:*/
+setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,://
+setlocal fo=jcroql
 
 let &l:include = '^\s*@import\s\+\%(url(\)\=["'']\='
 

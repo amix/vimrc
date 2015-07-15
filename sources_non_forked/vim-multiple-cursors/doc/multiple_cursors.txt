@@ -1,11 +1,11 @@
 *vim-multiple-cursors.txt* True Sublime Text multiple selection in Vim
 
-                    ____  _       __                                            
+                    ____  _       __
    ____ ___  __  __/ / /_(_)___  / /__     _______  ________________  __________
   / __ `__ \/ / / / / __/ / __ \/ / _ \   / ___/ / / / ___/ ___/ __ \/ ___/ ___/
- / / / / / / /_/ / / /_/ / /_/ / /  __/  / /__/ /_/ / /  (__  ) /_/ / /  (__  ) 
-/_/ /_/ /_/\__,_/_/\__/_/ .___/_/\___/   \___/\__,_/_/  /____/\____/_/  /____/  
-                       /_/                                                      
+ / / / / / / /_/ / / /_/ / /_/ / /  __/  / /__/ /_/ / /  (__  ) /_/ / /  (__  )
+/_/ /_/ /_/\__,_/_/\__/_/ .___/_/\___/   \___/\__,_/_/  /____/\____/_/  /____/
+                       /_/
 
 
                               Reference Manual~
@@ -71,7 +71,7 @@ CTRL-N in Normal mode and it will remove all prior cursors before starting a
 new one.
 
 ==============================================================================
-3. Mappings                                        *multiple-cursors-mappings* 
+3. Mappings                                        *multiple-cursors-mappings*
 
 *g:multi_cursor_use_default_mapping* (Default: 1)
 
@@ -123,7 +123,7 @@ In this configuration <C-n> will start multicursor mode using word boundaries
 mode). Old behaviour without word boundaries is still available using
 g<C-n>.
 
-IMPORTANT: Please note that currently only single keystroes and special
+IMPORTANT: Please note that currently only single keystrokes and special
 keys can be mapped. This contraint is also the reason why multikey commands
 such as `ciw` do not work and cause unexpected behavior in Normal mode. This
 means that a mapping like `<Leader>n` will NOT work correctly. For a list of
@@ -139,7 +139,7 @@ like above. If your key mappings don't appear to work, give the new syntax a
 try.
 
 ==============================================================================
-4. Global Options                            *multiple-cursors-global-options* 
+4. Global Options                            *multiple-cursors-global-options*
 
 Currently there are four additional global settings one can tweak:
 
@@ -167,15 +167,23 @@ beginning with the default leader key work in multi-cursor mode. You have to
 manually set this because vim doesn't provide a way to see which keys _start_
 mappings.
 
-*g:multi_cursor_normal_maps* (Default: `{}`)
+*g:multi_cursor_normal_maps* (Default: see below)
+
+Default value: `{'!':1, '@':1, '=':1, 'q':1, 'r':1, 't':1, 'T':1, 'y':1, '[':1, ']':1, '\':1, 'd':1, 'f':1, 'F':1, 'g':1, '"':1, 'z':1, 'c':1, 'm':1, '<':1, '>':1}`
 
 Any key in this map (values are ignored) will cause multi-cursor _Normal_ mode
 to pause for map completion just like normal vim. Otherwise keys mapped in
 normal mode will "fail to replay" when multiple cursors are active. For example,
-setting it to `{'d':1}` will make normal-mode mappings beginning with `d` (such
-as `dw` to delete a word) work in multi-cursor mode. You have to
-manually set this because vim doesn't provide a way to see which keys _start_
-mappings; setting it to include motion commands like `j` can break things.
+changing it from `{}` to `{'d':1}` makes normal-mode mappings beginning with `d`
+(such as `dw` to delete a word) work in multi-cursor mode.
+
+The default list contents should work for anybody, unless they have remapped a
+key from an operator-pending command to a non-operator-pending command or
+vice versa.
+
+These keys must be manually listed because vim doesn't provide a way to
+automatically see which keys _start_ mappings, and trying to run motion commands
+such as `j` as if they were operator-pending commands can break things.
 
 
 The plugin uses the highlight group `multiple_cursors_cursor` and
@@ -190,7 +198,7 @@ like the following in your vimrc: >
 <
 
 ==============================================================================
-5. Issues                                            *multiple-cursors-issues* 
+5. Issues                                            *multiple-cursors-issues*
 
 - Multi key commands like ciw do not work at the moment
 - All user input typed before Vim is able to fan out the last operation to all
@@ -200,7 +208,7 @@ like the following in your vimrc: >
 - Select mode is not implemented
 
 ==============================================================================
-6. Contributing                                *multiple-cursors-contributing* 
+6. Contributing                                *multiple-cursors-contributing*
 
 The project is hosted on Github. Patches, feature requests and suggestions are
 always welcome!
@@ -209,19 +217,19 @@ Find the latest version of the plugin here:
     http://github.com/terryma/vim-multiple-cursors
 
 ==============================================================================
-7. License                                          *multiple-cursors-license* 
+7. License                                          *multiple-cursors-license*
 
 The project is licensed under the MIT license [7]. Copyrigth 2013 Terry Ma
 
 ==============================================================================
-8. Credit                                            *multiple-cursors-credit* 
+8. Credit                                            *multiple-cursors-credit*
 
 The plugin is obviously inspired by Sublime Text's awesome multiple selection
 [6] feature. Some inspiration was also taken from Emac's multiple cursors [8]
-implementation. 
+implementation.
 
 ==============================================================================
-9. References                                    *multiple-cursors-references* 
+9. References                                    *multiple-cursors-references*
 
 [1] https://github.com/paradigm/vim-multicursor
 [2] https://github.com/felixr/vim-multiedit

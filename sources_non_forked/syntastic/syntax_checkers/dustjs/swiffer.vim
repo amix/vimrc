@@ -9,7 +9,7 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "============================================================================
 
-if exists("g:loaded_syntastic_dustjs_swiffer_checker")
+if exists('g:loaded_syntastic_dustjs_swiffer_checker')
     finish
 endif
 

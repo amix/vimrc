@@ -30,20 +30,23 @@ function! SyntaxCheckers_haskell_ghc_mod_IsAvailable() dict
     " know the version in order to know how to find out the version. :)
 
     " Try "ghc-mod version".
-    let ver = filter(split(syntastic#util#system(self.getExecEscaped() . ' version'), '\n'), 'v:val =~# ''\m\sversion''')
+    let version_output = split(syntastic#util#system(self.getExecEscaped() . ' version'), '\n', 1)
+    let ver = filter(copy(version_output), 'v:val =~# ''\m\sversion''')
     if !len(ver)
         " That didn't work.  Try "ghc-mod" alone.
-        let ver = filter(split(syntastic#util#system(self.getExecEscaped()), '\n'), 'v:val =~# ''\m\sversion''')
+        let version_output = split(syntastic#util#system(self.getExecEscaped()), '\n', 1)
+        let ver = filter(copy(version_output), 'v:val =~# ''\m\sversion''')
     endif
+    let parsed_ver = len(ver) ? syntastic#util#parseVersion(ver[0]) : []
 
-    if len(ver)
+    if len(parsed_ver)
         " Encouraged by the great success in finding out the version, now we
         " need either a Vim that can handle NULs in system() output, or a
         " ghc-mod that has the "--boundary" option.
-        let parsed_ver = syntastic#util#parseVersion(ver[0])
         call self.setVersion(parsed_ver)
         let s:ghc_mod_new = syntastic#util#versionIsAtLeast(parsed_ver, [2, 1, 2])
     else
+        call syntastic#log#ndebug(g:_SYNTASTIC_DEBUG_LOCLIST, 'checker output:', version_output)
         call syntastic#log#error("checker haskell/ghc_mod: can't parse version string (abnormal termination?)")
         let s:ghc_mod_new = -1
     endif
@@ -68,6 +71,7 @@ function! SyntaxCheckers_haskell_ghc_mod_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'preprocess': 'iconv',
         \ 'postprocess': ['compressWhitespace'],
         \ 'returns': [0] })
 endfunction

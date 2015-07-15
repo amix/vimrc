@@ -253,7 +253,7 @@ endfunction
 " FUNCTION: Bookmark.str()   {{{1
 " Get the string that should be rendered in the view for this bookmark
 function! s:Bookmark.str()
-    let pathStrMaxLen = winwidth(nerdtree#getTreeWinNum()) - 4 - len(self.name)
+    let pathStrMaxLen = winwidth(g:NERDTree.GetWinNum()) - 4 - len(self.name)
     if &nu
         let pathStrMaxLen = pathStrMaxLen - &numberwidth
     endif

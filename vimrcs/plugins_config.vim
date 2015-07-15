@@ -77,7 +77,8 @@ set grepprg=/bin/grep\ -nH
 " => Nerd Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:NERDTreeWinPos = "right"
-let NERDTreeIgnore = ['\.pyc$']
+let NERDTreeShowHidden=0
+let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let g:NERDTreeWinSize=35
 map <leader>nn :NERDTreeToggle<cr>
 map <leader>nb :NERDTreeFromBookmark 
@@ -116,3 +117,20 @@ nnoremap <silent> <leader>z :Goyo<cr>
 " => Syntastic (syntax checker)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:syntastic_python_checkers=['pyflakes']
+let g:syntastic_javascript_checkers = ['jshint']
+
+" Custom CoffeeScript SyntasticCheck
+func! SyntasticCheckCoffeescript()
+    let l:filename = substitute(expand("%:p"), '\(\w\+\)\.coffee', '.coffee.\1.js', '')
+    execute "e " . l:filename
+    execute "SyntasticCheck"
+    execute "Errors"
+endfunc
+nnoremap <silent> <leader>l :call SyntasticCheckCoffeescript()<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Git gutter (Git diff)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:gitgutter_enabled=0
+nnoremap <silent> <leader>d :GitGutterToggle<cr>

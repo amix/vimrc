@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_apiblueprint_snowcrash_checker")
+if exists('g:loaded_syntastic_apiblueprint_snowcrash_checker')
     finish
 endif
 let g:loaded_syntastic_apiblueprint_snowcrash_checker = 1
