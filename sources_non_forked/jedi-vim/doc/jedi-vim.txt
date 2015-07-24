@@ -1,0 +1,508 @@
+*jedi-vim.txt* - For Vim version 7.3 - Last change: 2014/07/29
+       __   _______  _______   __       ____    ____  __  .___  ___.~
+      |  | |   ____||       \ |  |      \   \  /   / |  | |   \/   |~
+      |  | |  |__   |  .--.  ||  |  _____\   \/   /  |  | |  \  /  |~
+.--.  |  | |   __|  |  |  |  ||  | |______\      /   |  | |  |\/|  |~
+|  `--'  | |  |____ |  '--'  ||  |         \    /    |  | |  |  |  |~
+ \______/  |_______||_______/ |__|          \__/     |__| |__|  |__|~
+
+          jedi-vim - awesome Python autocompletion with Vim
+
+==============================================================================
+Contents				*jedi-vim-contents*
+
+1. Introduction				|jedi-vim-introduction|
+2. Installation				|jedi-vim-installation|
+    2.0. Requirements			|jedi-vim-installation-requirements|
+    2.1. Manually			|jedi-vim-installation-manually|
+    2.2. Using Pathogen			|jedi-vim-installation-pathogen|
+    2.3. Using Vundle			|jedi-vim-installation-vundle|
+    2.4. Installing from Repositories	|jedi-vim-installation-repos|
+3. Supported Python features		|jedi-vim-support|
+4. Usage				|jedi-vim-usage|
+5. Mappings				|jedi-vim-keybindings|
+    5.1. Start completion		|g:jedi#completions_command|
+    5.2. Go to definition		|g:jedi#goto_command|
+    5.3. Go to assignment		|g:jedi#goto_assignments_command|
+    5.4  Go to definition (deprecated)	|g:jedi#goto_definitions_command|
+    5.5. Show documentation		|g:jedi#documentation_command|
+    5.6. Rename variables		|g:jedi#rename_command|
+    5.7. Show name usages		|g:jedi#usages_command|
+    5.8. Open module by name 		|:Pyimport|
+6. Configuration			|jedi-vim-configuration|
+    6.1. auto_initialization		|g:jedi#auto_initialization|
+    6.2. auto_vim_configuration		|g:jedi#auto_vim_configuration|
+    6.3. popup_on_dot			|g:jedi#popup_on_dot|
+    6.4. popup_select_first		|g:jedi#popup_select_first|
+    6.5. auto_close_doc			|g:jedi#auto_close_doc|
+    6.6. show_call_signatures		|g:jedi#show_call_signatures|
+    6.7. use_tabs_not_buffers		|g:jedi#use_tabs_not_buffers|
+    6.8. squelch_py_warning		|g:jedi#squelch_py_warning|
+    6.9. completions_enabled		|g:jedi#completions_enabled|
+    6.10. use_splits_not_buffers	|g:jedi#use_splits_not_buffers|
+    6.11. force_py_version              |g:jedi#force_py_version|
+7. Testing				|jedi-vim-testing|
+8. Contributing				|jedi-vim-contributing|
+9. License				|jedi-vim-license|
+
+==============================================================================
+1. Introduction				*jedi-vim-introduction*
+
+Jedi-vim is a Vim binding to the awesome Python autocompletion library
+`jedi`. Among jedi's (and, therefore, jedi-vim's) features are:
+
+- Completion for a wide array of Python features (see |jedi-vim-support|)
+- Robust in dealing with syntax errors and wrong indentation
+- Parses complex module/function/class structures
+- Infers function arguments from Sphinx/Epydoc strings
+- Doesn't execute Python code
+- Supports Virtualenv
+- Supports Python 2.5+ and 3.2+
+
+By leveraging this library, jedi-vim adds the following capabilities to Vim:
+
+- Displaying function/class bodies
+- "Go to definition" command
+- Displaying docstrings
+- Renaming and refactoring
+- Looking up related names
+
+==============================================================================
+2. Installation				*jedi-vim-installation*
+
+------------------------------------------------------------------------------
+2.0. Requirements			*jedi-vim-installation-requirements*
+
+First of all, jedi-vim requires Vim to be compiled with the `+python` option.
+
+The jedi library has to be installed for jedi-vim to work properly.  You can
+install it first, by using e.g. your distribution's package manager, or by
+using pip: >
+
+    pip install jedi
+
+However, you can also install it as a git submodule if you don't want to use
+jedi for anything but this plugin. How to do this is detailed below.
+
+It is best if you have VIM >= 7.3, compiled with the `+conceal` option. With
+older versions, you will probably not see the parameter recommendation list
+for functions after typing the open bracket. Some platforms (including OS X
+releases) do not ship a VIM with `+conceal`. You can check if your VIM has the
+feature with >
+
+    :ver
+
+and look for "`+conceal`" (as opposed to "`-conceal`") or >
+
+    :echo has('conceal')
+
+which will report 0 (not included) or 1 (included). If your VIM lacks this
+feature and you would like function parameter completion, you will need to
+build your own VIM, or use a package for your operating system that has this
+feature (such as MacVim on OS X, which also contains a console binary).
+
+------------------------------------------------------------------------------
+2.1. Installing manually		*jedi-vim-installation-manually*
+
+1a. Get the latest repository from Github: >
+
+    git clone http://github.com/davidhalter/jedi-vim path/to/bundles/jedi-vim
+
+1b. If you want to install jedi as a submodule instead, issue this command: >
+
+    git clone --recursive http://github.com/davidhalter/jedi-vim
+
+2. Put the plugin files into their respective folders in your vim runtime
+   directory (usually ~/.vim). Be sure to pay attention to the directory
+   structure!
+3. Update the Vim help tags with >
+
+    :helptags <path/to/vimruntime>/doc
+
+------------------------------------------------------------------------------
+2.1. Installing using Pathogen		*jedi-vim-installation-pathogen*
+
+Pathogen simplifies installation considerably.
+
+1.a Clone the git repository into your bundles directory: >
+
+    git clone http://github.com/davidhalter/jedi-vim path/to/bundles/jedi-vim
+
+1b. Again, if you want to install jedi as a submodule, use this command
+   instead: >
+
+    git clone --recursive http://github.com/davidhalter/jedi-vim
+
+------------------------------------------------------------------------------
+2.3. Installing using Vundle		*jedi-vim-installation-vundle*
+
+1. Vundle automatically downloads subrepositories as git submodules, so you
+   will automatically get the jedi library with the jedi-vim plugin. Add the
+   following to the Bundles section in your .vimrc file: >
+
+    Plugin 'davidhalter/jedi-vim'
+
+2. Issue the following command in Vim: >
+
+    :PluginInstall
+
+Help tags are generated automatically, so you should be good to go.
+
+------------------------------------------------------------------------------
+2.4. Installing from Repositories	*jedi-vim-installation-repos*
+
+Some Linux distributions have jedi-vim packages in their official 
+repositories. On Arch Linux, install vim-jedi. On Debian (8+) or Ubuntu 
+(14.04+) install vim-python-jedi.
+
+==============================================================================
+3. Supported Python features		*jedi-vim-support*
+
+The Jedi library does all the hard work behind the scenes. It supports
+completion of a large number of Python features, among them:
+
+- Builtins
+- Multiple `return`s or `yield`s
+- Tuple assignments/array indexing/dictionary indexing
+- `with`-statement/exception handling
+- `*args` and `**kwargs`
+- Decorators, lambdas, closures
+- Generators, iterators
+- Some descriptors: `property`/`staticmethod`/`classmethod`
+- Some magic methods: `__call__`, `__iter__`, `__next__`, `__get__`,
+  `__getitem__`, `__init__`
+- `list.append()`, `set.add()`, `list.extend()`, etc.
+- (Nested) list comprehensions and ternary expressions
+- Relative `import`s
+- `getattr()`/`__getattr__`/`__getattribute__`
+- Function annotations (py3k feature, are being ignored at the moment, but are
+  parsed)
+- Class decorators (py3k feature, are being ignored at the moment, but are
+  parsed)
+- Simple/usual `sys.path` modifications
+- `isinstance` checks for `if`/`while`/`assert` case, that doesn’t work with
+  Jedi
+- And more...
+
+Note: This list is not necessarily up to date. For a complete list of
+features, please refer to the Jedi documentation at http://jedi.jedidjah.ch.
+
+==============================================================================
+4. Usage				*jedi-vim-usage*
+
+With the default settings, autocompletion can be triggered by typing
+<Ctrl-Space>. The first entry will automatically be selected, so you can press
+<Return> to insert it into your code or keep typing and narrow down your
+completion options. The usual <C-X><C-O> and <C-P>/<C-N> keybindings work as
+well. Autocompletion is also triggered by typing a period in insert mode.
+Since periods rarely occur in Python code outside of method/import lookups,
+this is handy to have (but can be disabled).
+
+When it encounters a new module, jedi might take a few seconds to parse that
+module's contents. Afterwards, the contents are cached and completion will be
+almost instantaneous.
+
+==============================================================================
+5. Key Bindings		    		*jedi-vim-keybindings*
+
+All keybindings can be mapped by setting the appropriate global option. For
+example, to set the keybinding for starting omnicompletion to <C-N> instead of
+<Ctrl-Space>, add the following setting to your .vimrc file: >
+
+    let g:jedi#completions_command = "<C-N>"
+
+Note: If you have |g:jedi#auto_initialization| set to 0, you have to create
+a mapping yourself by calling a function: >
+
+    " Using <C-N> for omnicompletion
+    inoremap <silent> <buffer> <C-N> <c-x><c-o>
+    " Use <localleader>r (by default <\-r>) for renaming
+    nnoremap <silent> <buffer> <localleader>r :call jedi#rename()<cr>
+    " etc.
+
+Note: You can set commands to '', which means that they are empty and not
+assigned. It's an easy way to "disable" functionality of jedi-vim.
+
+------------------------------------------------------------------------------
+5.1. `g:jedi#completions_command`	*g:jedi#completions_command*
+Function: n/a; see above
+Default: <Ctrl-Space>			Start completion
+
+Performs autocompletion (or omnicompletion, to be precise).
+
+Note: If you want to use <Tab> for completion, please install Supertab:
+https://github.com/ervandew/supertab.
+
+------------------------------------------------------------------------------
+5.2. `g:jedi#goto_command`		*g:jedi#goto_command*
+Function: `jedi#goto()`
+Default: <leader>d			Go to definition (or assignment)
+
+This function first tries |jedi#goto_definitions|, and falls back to
+|jedi#goto_assignments| for builtin modules.  It produces an error if nothing
+could be found.
+NOTE: this implementation is subject to change.
+Ref: https://github.com/davidhalter/jedi/issues/570
+
+This command tries to find the original definition of the function/class under
+the cursor. Just like the `jedi#goto_assignments()` function, it does not work
+if the definition isn't in a Python source file.
+
+The difference between `jedi#goto_assignments()` and `jedi#goto_definitions()`
+is that the latter performs recursive lookups. Take, for example, the
+following module structure: >
+
+    # file1.py:
+    from file2 import foo
+
+    # file2.py:
+    from file3 import bar as foo
+
+    # file3.py
+    def bar():
+        pass
+
+The `jedi#goto_assignments()` function will take you to the >
+
+    from file2 import foo
+
+statement in file1.py, while the `jedi#goto_definitions()` function will take
+you all the way to the >
+
+    def bar():
+
+line in file3.py.
+
+------------------------------------------------------------------------------
+5.3. `g:jedi#goto_assignments_command`	*g:jedi#goto_assignments_command*
+Function: `jedi#goto_assignments()`
+Default: <leader>g			Go to assignment
+
+This function finds the first definition of the function/class under the
+cursor. It produces an error if the definition is not in a Python file.
+
+------------------------------------------------------------------------------
+5.4. `g:jedi#goto_definitions_command`	*g:jedi#goto_definitions_command*
+Function: `jedi#goto_definitions()`
+Default: - 				Go to original definition
+
+NOTE: Deprecated. Use |g:jedi#goto_command| / |jedi#goto()| instead, which
+currently uses this internally.
+
+------------------------------------------------------------------------------
+5.5. `g:jedi#documentation_command`	*g:jedi#documentation_command*
+Function: `jedi#show_documentation()`
+Default: <K>				Show pydoc documentation
+
+This shows the pydoc documentation for the item currently under the cursor.
+The documentation is opened in a horizontally split buffer. The height of this
+buffer is controlled by `g:jedi#max_doc_height` (set by default to 30).
+
+------------------------------------------------------------------------------
+5.6. `g:jedi#rename_command`		*g:jedi#rename_command*
+Function: `jedi#rename()`
+Default: <leader>r			Rename variables
+
+Jedi-vim deletes the word currently under the cursor and puts Vim in insert
+mode, where the user is expected to enter the new variable name. Upon leaving
+insert mode, jedi-vim then renames all occurences of the old variable name
+with the new one. The number of performed renames is displayed in the command
+line.
+
+------------------------------------------------------------------------------
+5.7. `g:jedi#usages_command`		*g:jedi#usages_command*
+Function: `jedi#usages()`
+Default: <leader>n			Show usages of a name.
+
+The quickfix window is populated with a list of all names which point to the
+definition of the name under the cursor.
+
+------------------------------------------------------------------------------
+5.8. Open module by name		*:Pyimport*
+Function: `jedi#py_import(args)`
+Default: :Pyimport			e.g. `:Pyimport os` shows os.py in VIM.
+
+Simulate an import and open that module in VIM.
+
+==============================================================================
+6. Configuration			*jedi-vim-configuration*
+
+Note: You currently have to set these options in your .vimrc. Setting them in
+an ftplugin (e.g. ~/.vim/ftplugin/python/jedi-vim-settings.vim) will not work
+because jedi-vim is not set up as an filetype plugin, but as a "regular"
+plugin.
+
+------------------------------------------------------------------------------
+6.1. `g:jedi#auto_initialization`	*g:jedi#auto_initialization*
+
+Upon initialization, jedi-vim performs the following steps:
+
+1. Set the current buffers 'omnifunc' to its own completion function
+   `jedi#completions`
+2. Create mappings to commands specified in |jedi-vim-keybindings|
+3. Call `jedi#configure_call_signatures()` if
+   `g:jedi#show_call_signatures` is set
+
+You can disable the default initialization routine by setting this option to
+0. Beware that you have to perform the above steps yourself, though.
+
+Options: 0 or 1
+Default: 1 (Perform automatic initialization)
+
+------------------------------------------------------------------------------
+6.2. `g:jedi#auto_vim_configuration`	*g:jedi#auto_vim_configuration*
+
+Jedi-vim sets 'completeopt' to `menuone,longest,preview` by default, if
+'completeopt' is not changed from Vim's default.
+It also remaps <Ctrl-C> to <Esc> in insert mode.
+
+If you want to keep your own configuration, disable this setting.
+
+Options: 0 or 1
+Default: 1 (Set 'completeopt' and mapping as described above)
+
+------------------------------------------------------------------------------
+6.3. `g:jedi#popup_on_dot`		*g:jedi#popup_on_dot*
+
+Jedi-vim automatically starts completion upon typing a period in insert mode.
+
+However, when working with large modules, this can slow down your typing flow
+since you have to wait for jedi to parse the module and show the completion
+menu. By disabling this setting, completion is only started when you manually
+press the completion key.
+
+Options: 0 or 1
+Default: 1 (Start completion on typing a period)
+
+------------------------------------------------------------------------------
+6.4. `g:jedi#popup_select_first`	*g:jedi#popup_select_first*
+
+Upon starting completion, jedi-vim can automatically select the first entry
+that pops up (without actually inserting it).
+
+This leads to a better typing flow: As you type more characters, the entries
+in the completion menu are narrowed down. If they are narrowed down enough,
+you can just press <Return> to insert the first match.
+
+Options: 0 or 1
+Default: 1 (Automatically select first completion entry)
+
+------------------------------------------------------------------------------
+6.5. `g:jedi#auto_close_doc`		*g:jedi#auto_close_doc*
+
+When doing completion, jedi-vim shows the docstring of the currently selected
+item in a preview window. By default, this window is being closed after
+insertion of a completion item.
+
+Set this to 0 to leave the preview window open even after leaving insert mode.
+This could be useful if you want to browse longer docstrings.
+
+Options: 0 or 1
+Default: 1 (Automatically close preview window upon leaving insert mode)
+
+------------------------------------------------------------------------------
+6.6. `g:jedi#show_call_signatures`	*g:jedi#show_call_signatures*
+
+Jedi-vim can display a small window detailing the arguments of the currently
+completed function and highlighting the currently selected argument. This can
+be disabled by setting this option to 0. Setting this option to 2 shows call
+signatures in the command line instead of a popup window.
+
+Options: 0, 1, or 2
+Default: 1 (Show call signatures window)
+
+Note: 'showmode' must be disabled for command line call signatures to be
+visible.
+
+Note: This setting is ignored if |g:jedi#auto_initialization| is set to 0. In
+that case, if you want to see call signatures, you have to set it up
+manually by calling a function in your configuration file: >
+
+    call jedi#configure_call_signatures()
+
+------------------------------------------------------------------------------
+6.7. `g:jedi#use_tabs_not_buffers`	*g:jedi#use_tabs_not_buffers*
+
+You can make jedi-vim open a new tab if you use the "go to", "show
+definition", or "related names" commands. When you leave this at the default
+(0), they open in the current buffer instead.
+
+Options: 0 or 1
+Default: 0 (Command output is put in a new tab)
+
+------------------------------------------------------------------------------
+6.8. `g:jedi#squelch_py_warning`	*g:jedi#squelch_py_warning*
+
+When Vim has not been compiled with +python, jedi-vim shows a warning to that
+effect and aborts loading itself. Set this to 1 to suppress that warning.
+
+Options: 0 or 1
+Default: 0 (Warning is shown)
+
+------------------------------------------------------------------------------
+6.9. `g:jedi#completions_enabled`	*g:jedi#completions_enabled*
+
+If you don't want Jedi completion, but all the other features, you can disable
+it in favor of another completion engine (that probably also uses Jedi, like
+YCM).
+
+Options: 0 or 1
+Default: 1
+
+------------------------------------------------------------------------------
+6.10. `g:jedi#use_splits_not_buffers`	*g:jedi#use_splits_not_buffers*
+
+If you want to open new split for "go to", you could set this option to the
+direction which you want to open a split with.
+
+Options: top, left, right, bottom or winwidth
+Default: "" (not enabled by default)
+
+Note: with the 'winwidth' option the window is split vertically or horizontally
+depending on the width of the window relative to 'textwidth'. This essentially
+means that if the window is big enough it will be split vertically but if it is
+small a horizontal split happens.
+
+------------------------------------------------------------------------------
+6.11. `g:jedi#force_py_version`                *g:jedi#force_py_version*
+
+If you have installed both python 2 and python 3, you can force which one jedi
+should use by setting this variable. It forces the internal Vim command, which
+will be used for every jedi call to the respective python interpreter.
+The variable can be set in the .vimrc like this to force python 3:
+
+let g:jedi#force_py_version = 3
+
+This variable can be switched during runtime using the following function:
+Function: `jedi#force_py_version_switch()`
+
+or set directly using this function, which has the same name as the variable:
+Function: `jedi#force_py_version(py_version)`
+
+Options: 2 or 3
+Default: "auto" (will use sys.version_info from "python" in your $PATH)
+
+==============================================================================
+7. Testing				*jedi-vim-testing*
+
+jedi-vim is being tested with a combination of vspec
+https://github.com/kana/vim-vspec and py.test http://pytest.org/.
+
+The tests are in the test subdirectory, you can run them calling::
+
+    py.test
+
+The tests are automatically run with `travis
+<https://travis-ci.org/davidhalter/jedi-vim>`_.
+
+==============================================================================
+8. Contributing				*jedi-vim-contributing*
+
+We love Pull Requests! Read the instructions in `CONTRIBUTING.md`.
+
+==============================================================================
+9. License				*jedi-vim-license*
+
+Jedi-vim is licensed with the MIT license.
+
+ vim: textwidth=78 tabstop=8 filetype=help:norightleft:

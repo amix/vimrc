@@ -1,5 +1,6 @@
 nnoremap <F9> :exe 'NERDTreeToggle'<CR>
 "set pastetoggle=<F2>
+set mouse=
 
 "for outside paste mistake
 nnoremap <F2> :set invpaste paste?<CR>
@@ -24,3 +25,5 @@ map <leader>6 :tabnext 6<CR>
 map <leader>7 :tabnext 7<CR>
 map <leader>8 :tabnext 8<CR>
 "let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/'
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929 
+match OverLength /\%81v.\+/

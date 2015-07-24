@@ -1,0 +1,51 @@
+Main Authors
+============
+
+David Halter (@davidhalter) <davidhalter88@gmail.com>
+
+
+Contributors (in order of contributions)
+========================================
+
+Patrice Peterson (@runiq)
+tek (@tek)
+heavenshell (@heavenshell) <heavenshell.jp@gmail.com>
+Danilo Bargen (@dbrgn) <gezuru@gmail.com>
+mattn (@mattn) <mattn.jp@gmail.com>
+Enrico Batista da Luz (@ricobl) <rico.bl@gmail.com>
+coot (@coot) <mszamot@gmail.com>
+Artur Dryomov (@ming13) <artur.dryomov@gmail.com>
+andviro (@andviro)
+Jean-Louis Fuchs (@ganwell) <ganwell@fangorn.ch>
+Mathieu Comandon (@strycore) <strider@strycore.com>
+Nick Hurley (@todesschaf) <hurley@todesschaf.org>
+gpoulin (@gpoulin)
+Akinori Hattori (@hattya)
+Luper Rouch (@flupke)
+Matthew Moses (@mlmoses) <moses.matthewl@gmail.com>
+Tyler Wymer (@twymer)
+Artem Nezvigin (@artnez)
+rogererens (@rogererens)
+Emily Strickland (@emilyst) <mail@emily.st>
+Tin Tvrtković (@Tinche) <tinchester@gmail.com>
+Zekeriya Koc (@zekzekus) <zekzekus@gmail.com>
+ethinx (@ethinx) <eth2net@gmail.com>
+Wouter Overmeire (@lodagro) <lodagro@gmail.com>
+Stephen J. Fuhry (@fuhrysteve) <fuhrysteve@gmail.com>
+Sheng Yun (@ShengYun) <uewing@gmail.com>
+Yann Thomas-Gérard (@inside) <inside@gmail.com>
+Colin Su (@littleq0903) <littleq0903@gmail.com>
+Arthur Jaron (@eyetracker)
+Justin M. Keyes (@justinmk)
+nagev (@np1)
+Chris Lasher (@gotgenes) <chris.lasher@gmail.com>
+Doan Thanh Nam (@tndoan)
+Markus Koller (@toupeira)
+Justin Cheevers @justincheevers
+Talha Ahmed (@talha81) <talha.ahmed@gmail.com>
+Matthew Tylee Atkinson (@matatk)
+Pedro Ferrari (@petobens)
+Dave Honneffer (@pearofducks)
+
+
+@something are github user names.

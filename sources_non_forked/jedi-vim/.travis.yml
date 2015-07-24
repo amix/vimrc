@@ -1,0 +1,6 @@
+language: python
+install:
+    - pip install --quiet --use-mirrors pytest
+script:
+    - vim --version
+    - py.test
