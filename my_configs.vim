@@ -6,15 +6,21 @@ set mouse=
 nnoremap <F2> :set invpaste paste?<CR>
 imap <F2> <C-O>:set invpaste paste?<CR>
 set pastetoggle=<F2>
-
 "let Tlist_Use_Split_Window = 1
 "sudo apt-get install ncurses-term
 "export TERM=xterm-256color(.bashrc)
-let g:molokai_original = 1
 "let g:rehash256 = 1
 :set nu
-colorscheme molokai
 "colorscheme monokai
+colorscheme molokai
+let g:molokai_original = 1
+
+"vertical indent, use <leader>ig to activatee
+let g:indent_guides_start_level = 2
+let g:indent_guides_guide_size=1
+let g:indent_guides_auto_colors = 0
+hi IndentGuidesOdd  guibg=red   ctermbg=darkgrey
+hi IndentGuidesEven guibg=green ctermbg=darkgrey
 inoremap {} {<esc>o}<esc>O
 map <leader>1 :tabnext 1<CR>
 map <leader>2 :tabnext 2<CR>
