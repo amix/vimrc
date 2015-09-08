@@ -1,0 +1,339 @@
+*indent_guides.txt*  A plugin for visually displaying indent levels in Vim.
+
+                                                                 *indent-guides*
+      ____           __            __     ______       _      __
+     /  _/____  ____/ /___  ____  / /_   / ____/__  __(_)____/ /___  _____
+     / / / __ \/ __  // _ \/ __ \/ __/  / / __ / / / / // __  // _ \/ ___/
+   _/ / / / / / /_/ //  __/ / / / /_   / /_/ // /_/ / // /_/ //  __(__  )
+  /___//_/ /_/\__,_/ \___/_/ /_/\__/   \____/ \__,_/_/ \__,_/ \___/____/
+
+
+Author:      Nate Kane <nathanaelkane AT gmail DOT com>
+Version:     1.7
+Last Change: 07 Mar 2013
+
+==============================================================================
+CONTENTS                                                *indent-guides-contents*
+
+  1. Introduction.......................... |indent-guides-introduction|
+  2. Commands.............................. |indent-guides-commands|
+  3. Options............................... |indent-guides-options|
+  4. Mappings.............................. |indent-guides-mappings|
+  5. Terminal Vim.......................... |indent-guides-terminal-vim|
+  6. About................................. |indent-guides-about|
+  7. Changelog............................. |indent-guides-changelog|
+  8. License............................... |indent-guides-license|
+
+==============================================================================
+1. INTRODUCTION                                     *indent-guides-introduction*
+
+Indent Guides is a plugin for visually displaying indent levels in Vim.
+
+This plugin should work with gVim out of the box, no configuration needed.
+
+Features:~
+  * Can detect both tab and space indent styles.
+  * Automatically inspects your colorscheme and picks appropriate colors (gVim
+    only).
+  * Will highlight indent levels with alternating colors.
+  * Full support for gVim and basic support for Terminal Vim.
+  * Seems to work on Windows gVim 7.3 (haven't done any extensive tests
+    though).
+  * Customizable size for indent guides, eg. skinny guides (soft-tabs only).
+  * Customizable start indent level.
+  * Highlight support for files with a mixture of tab and space indent styles.
+
+==============================================================================
+2. COMMANDS                                             *indent-guides-commands*
+
+------------------------------------------------------------------------------
+:IndentGuidesToggle                                        *:IndentGuidesToggle*
+  Toggles the indent guides on and off.
+
+------------------------------------------------------------------------------
+:IndentGuidesEnable                                        *:IndentGuidesEnable*
+  Enables the indent guides for the current buffer and any other buffer upon
+  entering it.
+
+------------------------------------------------------------------------------
+:IndentGuidesDisable                                      *:IndentGuidesDisable*
+  Disables the indent guides for the current buffer and any other buffer upon
+  entering it.
+
+==============================================================================
+3. OPTIONS                                               *indent-guides-options*
+
+------------------------------------------------------------------------------
+                                                 *'indent_guides_indent_levels'*
+Use this option to control how many indent levels to display guides for.
+
+Default: 30. Values: integer.
+>
+  let g:indent_guides_indent_levels = 30
+<
+
+------------------------------------------------------------------------------
+                                                   *'indent_guides_auto_colors'*
+Use this option to control whether or not the plugin automatically calculates
+the highlight colors. Will use the current colorscheme's background color as a
+base color.
+
+Default: 1. Values: 0 or 1.
+>
+  let g:indent_guides_auto_colors = 1
+<
+
+If you set this option to 0, be sure to manually define some highlight colors
+in an autocmd.
+>
+  let g:indent_guides_auto_colors = 0
+  autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=red   ctermbg=3
+  autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=green ctermbg=4
+<
+
+Alternatively you can add the following lines to your colorscheme file.
+>
+  hi IndentGuidesOdd  guibg=red   ctermbg=3
+  hi IndentGuidesEven guibg=green ctermbg=4
+<
+
+------------------------------------------------------------------------------
+                                          *'indent_guides_color_change_percent'*
+Use this option to control the percent at which the highlight colors will be
+lightened or darkened.
+
+Default: 10 (10%). Values: between 0 and 100.
+>
+  let g:indent_guides_color_change_percent = 10
+<
+
+------------------------------------------------------------------------------
+                                                    *'indent_guides_guide_size'*
+Use this option to customize the size of the indent guide. By default the
+value is set to 0, which will set the guide size to be the same as the
+|shiftwidth|. Setting this value to be larger than the |shiftwidth| is essentially
+the same as setting it to 0.
+
+A common use of this setting is to create skinny indent guides, which look
+great with a |shiftwidth| of 4 or more.
+
+NOTE: This option only works for soft-tabs (spaces) and not hard-tabs.
+
+Default: 0. Values: between 0 and |shiftwidth|.
+>
+  let g:indent_guides_guide_size = 1
+<
+
+------------------------------------------------------------------------------
+                                                   *'indent_guides_start_level'*
+Use this option to control which indent level to start showing guides from.
+
+Default: 1. Values: between 1 and g:|indent_guides_indent_levels|.
+>
+  let g:indent_guides_start_level = 2
+<
+
+------------------------------------------------------------------------------
+                                                  *'indent_guides_space_guides'*
+Use this option to control whether the plugin considers spaces as indention.
+
+Default: 1. Values: 0 or 1.
+>
+  let g:indent_guides_space_guides = 0
+<
+
+------------------------------------------------------------------------------
+                                                  *'indent_guides_soft_pattern'*
+Use this option to explicitly specify a pattern for soft indentation. For
+example to match spaces only in the beginning of line use ' ' pattern.
+
+Default: '\s'. Values: Vim regexp.
+>
+  let g:indent_guides_soft_pattern = ' '
+<
+
+------------------------------------------------------------------------------
+                                         *'indent_guides_enable_on_vim_startup'*
+Use this option to control whether the plugin is enabled on Vim startup.
+
+Default: 0. Values: 0 or 1.
+>
+  let g:indent_guides_enable_on_vim_startup = 0
+<
+
+------------------------------------------------------------------------------
+                                             *'indent_guides_exclude_filetypes'*
+Use this option to specify a list of filetypes to disable the plugin for.
+
+Default: ['help']. Values: list of strings.
+>
+  let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
+<
+
+------------------------------------------------------------------------------
+                                               *'indent_guides_default_mapping'*
+Use this option to control whether the default mapping (<Leader>ig) gets set.
+
+Default: 1. Values: 0 or 1.
+>
+  let g:indent_guides_default_mapping = 0
+<
+
+==============================================================================
+4. MAPPINGS                                             *indent-guides-mappings*
+
+The default mapping for toggling indent guides is <Leader>ig. You can easily
+map it to other keys. For example:
+>
+  :nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
+<
+
+You can also map some other commands that are not mapped by default. For
+example:
+>
+  :nmap <silent> <Leader>ie <Plug>IndentGuidesEnable
+  :nmap <silent> <Leader>id <Plug>IndentGuidesDisable
+<
+
+==============================================================================
+5. TERMINAL VIM                                     *indent-guides-terminal-vim*
+
+At the moment Terminal Vim only has basic support. This means is that colors
+won't be automatically calculated based on your colorscheme. Instead, some
+preset colors are used depending on whether `background` is set to `dark` or
+`light`.
+
+When `set background=dark` is used, the following highlight colors will be
+defined:
+>
+  hi IndentGuidesOdd  ctermbg=black
+  hi IndentGuidesEven ctermbg=darkgrey
+<
+
+Alternatively, when `set background=light` is used, the following highlight
+colors will be defined:
+>
+  hi IndentGuidesOdd  ctermbg=white
+  hi IndentGuidesEven ctermbg=lightgrey
+<
+
+If for some reason it's incorrectly defining light highlight colors instead of
+dark ones or vice versa, the first thing you should check is that the
+`background` value is being set correctly for your colorscheme. Sometimes it's
+best to manually set the `background` value in your `.vimrc`, for example:
+>
+  colorscheme desert256
+  set background=dark
+<
+
+Alternatively you can manually setup the highlight colors yourself, see
+|indent_guides_auto_colors| for an example.
+
+==============================================================================
+6. ABOUT                                                   *indent-guides-about*
+
+Why did I build this plugin?~
+  * I believe indent guides make nested code easier to read and understand.
+  * Other editors have them and it's high time Vim did.
+  * None of the existing indent guide plugins on the market suited my needs.
+  * I wanted to learn me some VimL.
+
+Links:~
+  * Github:        https://github.com/nathanaelkane/vim-indent-guides
+  * Bugs & Issues: https://github.com/nathanaelkane/vim-indent-guides/issues
+
+Credits:~
+  * Matt Wozniski (godlygeek) for letting me use the list of color names and
+    hex codes from his CSApprox plugin.
+
+Contact:~
+  * Twitter: @nathanaelkane
+  * Email:   <nathanaelkane AT gmail DOT com>
+
+Bug reports, feedback, suggestions etc are welcomed.
+
+==============================================================================
+7. CHANGELOG                                           *indent-guides-changelog*
+
+1.8 (pending release)~
+  * Added option g:|indent_guides_soft_pattern| to control the pattern for
+    soft indentation (thanks @sergey-vlasov).
+  * Added option g:|indent_guides_default_mapping| to control whether the
+    default mapping (<Leader>ig) gets set (thanks @suy).
+  * Set size of indent guide to `tabstop` value when `shiftwidth=0` or
+    `noexpandtab` is used (thanks @darkfeline and @wilywampa).
+
+1.7~
+  * Added way to override the default mapping (thanks @xuhdev).
+  * Added option g:|indent_guides_exclude_filetypes| to specify a list of
+    filetypes to disable the plugin for.
+  * Disable the plugin when in a diff.
+  * Various bug fixes.
+
+1.6~
+  * Added option g:|indent_guides_space_guides| to control whether spaces are
+    considered as indention (thanks @scoz).
+  * Added 'doc/tags' to gitignore (thanks @lenniboy).
+  * Fixed E803 ID not found spam (thanks @mutewinter).
+  * Fixed str2float issue with Vim 7.1 (thanks @acx0).
+
+1.5~
+  * Added highlight support for files with a mixture of tab and space indent
+    styles (thanks @graywh).
+  * Added -bar to all the :commands so they can chain with other :commands
+    (thanks @graywh).
+  * No longer overriding pre-defined custom highlight colors (thanks @graywh).
+  * Using str2float to work around a float bug in some versions of Vim 7.2
+    (thanks @voidus).
+
+1.4~
+  * Added the new plugin option g:|indent_guides_enable_on_vim_startup|.
+  * Improved Windows support.
+
+1.3~
+  * Changed the default value of g:|indent_guides_color_change_percent| to 10.
+  * Added support for gVim themes that don't specify a `hi Normal guibg`
+    color.
+
+1.2~
+  * Customizable size for indent guides, eg. skinny guides (soft-tabs only).
+  * Customizable start indent level.
+  * Refactored some internal logic.
+
+1.1~
+  * Added basic support for Terminal Vim. See |indent-guides-terminal-vim| for
+    more information.
+  * Cut down on rgb to hex color conversions by adding a big dictionary of
+    color names and hex codes.
+  * Various bug fixes.
+
+1.0~
+  * First public version.
+
+==============================================================================
+8. LICENSE                                               *indent-guides-license*
+
+The MIT Licence
+http://www.opensource.org/licenses/mit-license.php
+
+Copyright (c) 2010-2013 Nate Kane
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+vim:tw=78:ts=2:ft=help:norl:

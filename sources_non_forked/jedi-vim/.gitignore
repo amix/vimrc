@@ -1,0 +1,6 @@
+*~
+*.sw?
+*.py[cod]
+.ropeproject
+doc/tags
+.cache
