@@ -15,12 +15,14 @@ set pastetoggle=<F2>
 colorscheme molokai
 let g:molokai_original = 1
 
+"let NERDTreeWinPos='left'
+
 "vertical indent, use <leader>ig to activatee
 let g:indent_guides_start_level = 2
 let g:indent_guides_guide_size=1
 let g:indent_guides_auto_colors = 0
-hi IndentGuidesOdd  guibg=red   ctermbg=darkgrey
-hi IndentGuidesEven guibg=green ctermbg=darkgrey
+hi IndentGuidesOdd  guibg=darkgrey   ctermbg=darkgrey
+hi IndentGuidesEven guibg=darkgrey ctermbg=darkgrey
 inoremap {} {<esc>o}<esc>O
 map <leader>1 :tabnext 1<CR>
 map <leader>2 :tabnext 2<CR>
@@ -31,5 +33,3 @@ map <leader>6 :tabnext 6<CR>
 map <leader>7 :tabnext 7<CR>
 map <leader>8 :tabnext 8<CR>
 "let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/'
-highlight OverLength ctermbg=red ctermfg=white guibg=#592929 
-match OverLength /\%81v.\+/
