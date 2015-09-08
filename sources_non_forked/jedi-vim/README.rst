@@ -88,7 +88,8 @@ Example Installation Command using Pathogen:
 On Arch Linux, you can also install jedi-vim from official repositories as `vim-jedi
 <https://www.archlinux.org/packages/community/any/vim-jedi/>`__. It is also available
 on `Debian (≥8) <https://packages.debian.org/vim-python-jedi>`__ and `Ubuntu (≥14.04)
-<http://packages.ubuntu.com/vim-python-jedi>`__ as vim-python-jedi.
+<http://packages.ubuntu.com/vim-python-jedi>`__ as vim-python-jedi. On Fedora Linux,
+it is available as `vim-jedi <https://apps.fedoraproject.org/packages/vim-jedi>`__.
 
 Note that the `python-mode <https://github.com/klen/python-mode>`_ VIM plugin seems
 to conflict with jedi-vim, therefore you should disable it before enabling

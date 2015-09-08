@@ -70,7 +70,7 @@ function! s:init_python()
         " avoids starting both of them.
 
         " Get default python version from interpreter in $PATH.
-        let s:def_py = system("python -c 'import sys; sys.stdout.write(str(sys.version_info[0]))'")
+        let s:def_py = system('python -c '.shellescape('import sys; sys.stdout.write(str(sys.version_info[0]))'))
         if v:shell_error != 0 || !len(s:def_py)
             if !exists("g:jedi#squelch_py_warning")
                 echohl WarningMsg
