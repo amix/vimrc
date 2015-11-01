@@ -46,6 +46,9 @@
 " Sets how many lines of history VIM has to remember
 set history=500
 
+" Sets line number
+set number
+
 " Enable filetype plugins
 filetype plugin on
 filetype indent on
@@ -55,8 +58,8 @@ set autoread
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
-let mapleader = ","
-let g:mapleader = ","
+let mapleader = ";"
+let g:mapleader = ";"
 
 " Fast saving
 nmap <leader>w :w!<cr>
@@ -142,7 +145,7 @@ set foldcolumn=1
 syntax enable 
 
 try
-    colorscheme desert
+    colorscheme peaksea 
 catch
 endtry
 
@@ -360,8 +363,10 @@ map <leader>x :e ~/buffer.md<cr>
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
-
-
+" Ctrl-x for cut
+vmap <C-x> :!pbcopy<cr>
+" Ctrl-c for copy
+vmap <C-c> :w !pbcopy<cr><cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
