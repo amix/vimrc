@@ -4,8 +4,6 @@ set shortmess=I
 " Mode shown in the statusline all the time"
 set noshowmode
 
-"If we want backups, then put them under vim_runitime"
-set backupdir=~\.vim_runtime\backupdir
 " Block can move outside of bounds"
 set virtualedit=block
 
