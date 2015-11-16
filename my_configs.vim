@@ -15,7 +15,7 @@ elseif has("win16") || has("win32")
 elseif has("linux")
     set guifont=Source\ Code\ Pro\ 10,Bitstream\ Vera\ Sans\ Mono:h11
 elseif has("unix")
-    set guifont=Monospace\ 11
+    set guifont=Source\ Code\ Pro\ 10
 endif
 " set guifont=Source\ Code\ Pro\ 11
 
