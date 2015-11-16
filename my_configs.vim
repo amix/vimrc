@@ -7,17 +7,6 @@ set noshowmode
 " Block can move outside of bounds"
 set virtualedit=block
 
-" Turn spelling on by default, toggle with <F4>"
-if has("spell")
-  set spell
-  " toggle spelling with F4 key
-  map <F4> :set spell!<CR><Bar>:echo "Spell Check: " . strpart("OffOn", 3 * &spell, 3)<CR>
-  " they were using white on white
-  highlight PmenuSel ctermfg=black ctermbg=lightgray
-  " limit it to just the top 10 items
-  set sps=best,10
-endif
-
 set guifont=Source\ Code\ Pro:h11
 
 nmap <leader>rb :call DeleteTrailingWS()<cr>
