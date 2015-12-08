@@ -122,7 +122,7 @@ let g:syntastic_javascript_checkers = ['jshint']
 " Custom CoffeeScript SyntasticCheck
 func! SyntasticCheckCoffeescript()
     let l:filename = substitute(expand("%:p"), '\(\w\+\)\.coffee', '.coffee.\1.js', '')
-    execute "e " . l:filename
+    execute "tabedit " . l:filename
     execute "SyntasticCheck"
     execute "Errors"
 endfunc
