@@ -1,12 +1,7 @@
-# encoding for Ruby 1.9
 snippet enc
 	# encoding: utf-8
-
-# #!/usr/bin/env ruby
 snippet #!
 	#!/usr/bin/env ruby
-	# encoding: utf-8
-
 # New Block
 snippet =b
 	=begin rdoc
@@ -29,15 +24,12 @@ snippet beg
 		${0}
 	rescue ${1:Exception} => ${2:e}
 	end
-
 snippet req require
 	require '${1}'
 snippet reqr
 	require_relative '${1}'
 snippet #
 	# =>
-snippet end
-	__END__
 snippet case
 	case ${1:object}
 	when ${2:condition}
@@ -115,7 +107,7 @@ snippet cla class .. end
 	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		${0}
 	end
-snippet cla class .. initialize .. end
+snippet clai class .. initialize .. end
 	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		def initialize(${2:args})
 			${0}

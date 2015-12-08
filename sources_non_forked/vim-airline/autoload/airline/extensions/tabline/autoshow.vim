@@ -34,7 +34,7 @@ function! airline#extensions#tabline#autoshow#on()
 
     " Invalidate cache.  This has to come after the BufUnload for
     " s:show_buffers, to invalidate the cache for BufEnter.
-    autocmd BufAdd,BufUnload * call airline#extensions#tabline#buflist#invalidate()
+    autocmd BufLeave,BufAdd,BufUnload * call airline#extensions#tabline#buflist#invalidate()
   augroup END
 endfunction
 

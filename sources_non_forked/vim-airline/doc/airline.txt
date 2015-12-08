@@ -401,6 +401,15 @@ eclim <https://eclim.org>
   |airline-syntastic| extension. >
   let g:airline#extensions#eclim#enabled = 1
 
+-------------------------------------                    *airline-wordcount*
+* enable/disable word counting. >
+  let g:airline#extensions#wordcount#enabled = 1
+<
+* regex of filetypes to enable word counting. >
+  " the default value matches filetypes typically used for documentation
+  " such as markdown and help files.
+  let g:airline#extensions#wordcount#filetypes = ...
+<
 -------------------------------------                   *airline-whitespace*
 * enable/disable detection of whitespace errors. >
   let g:airline#extensions#whitespace#enabled = 1
@@ -422,7 +431,7 @@ eclim <https://eclim.org>
   let g:airline#extensions#whitespace#symbol = '!'
 <
 * configure which whitespace checks to enable. >
-  let g:airline#extensions#whitespace#checks = [ 'indent', 'trailing' ]
+  let g:airline#extensions#whitespace#checks = [ 'indent', 'trailing', 'long' ]
 <
 * configure the maximum number of lines where whitespace checking is enabled. >
   let g:airline#extensions#whitespace#max_lines = 20000
@@ -433,6 +442,7 @@ eclim <https://eclim.org>
 * configure the formatting of the warning messages. >
   let g:airline#extensions#whitespace#trailing_format = 'trailing[%s]'
   let g:airline#extensions#whitespace#mixed_indent_format = 'mixed-indent[%s]'
+  let g:airline#extensions#whitespace#long_format = 'long[%s]'
 <
 -------------------------------------                      *airline-tabline*
 * enable/disable enhanced tabline. >
@@ -489,7 +499,11 @@ exposed.
   endfunction
   let g:airline#extensions#tabline#formatter = 'foo'
 <
+
   Note: the following variables are only used by the 'default' formatter.
+  When no disambiguation is needed, both 'unique_tail_improved' and
+  'unique_tail' delegate formatting to 'default', so these variables also
+  control rendering of unique filenames when using these formatters.
 
     * configure whether buffer numbers should be shown. >
       let g:airline#extensions#tabline#buffer_nr_show = 0

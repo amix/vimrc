@@ -2,7 +2,6 @@
 " File:        exec_menuitem.vim
 " Description: plugin for NERD Tree that provides an execute file menu item
 " Maintainer:  Martin Grenfell <martin.grenfell at gmail dot com>
-" Last Change: 22 July, 2009
 " License:     This program is free software. It comes without any warranty,
 "              to the extent permitted by applicable law. You can redistribute
 "              it and/or modify it under the terms of the Do What The Fuck You

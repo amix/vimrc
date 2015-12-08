@@ -43,9 +43,12 @@ function! SyntaxCheckers_c_clang_check_GetLocList() dict
         \ '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
         \ '%E%m'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'env': env,
         \ 'defaults': {'bufnr': bufnr('')},
         \ 'returns': [0, 1] })
 endfunction

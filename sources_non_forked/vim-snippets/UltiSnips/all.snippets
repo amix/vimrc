@@ -10,69 +10,7 @@ priority -60
 # NICE BOXES #
 ##############
 global !p
-import string, vim
-
-""" Maps a filetype to comment format used for boxes.
-Automatically filled during usage"""
-_commentDict = { }
-
-def _parse_comments(s):
-	""" Parses vim's comments option to extract comment format """
-	i = iter(s.split(","))
-
-	rv = []
-	try:
-		while True:
-			# get the flags and text of a comment part
-			flags, text = next(i).split(':', 1)
-
-			if len(flags) == 0:
-				rv.append((text, text, text, ""))
-			# parse 3-part comment, but ignore those with O flag
-			elif 's' in flags and 'O' not in flags:
-				ctriple = []
-				indent = ""
-
-				if flags[-1] in string.digits:
-					indent = " " * int(flags[-1])
-				ctriple.append(text)
-
-				flags,text = next(i).split(':', 1)
-				assert(flags[0] == 'm')
-				ctriple.append(text)
-
-				flags,text = next(i).split(':', 1)
-				assert(flags[0] == 'e')
-				ctriple.append(text)
-				ctriple.append(indent)
-
-				rv.append(ctriple)
-			elif 'b' in flags:
-				if len(text) == 1:
-					rv.insert(0, (text,text,text, ""))
-	except StopIteration:
-		return rv
-
-def _get_comment_format():
-	""" Returns a 4-element tuple representing the comment format for
-	the current file. """
-	return _parse_comments(vim.eval("&comments"))[0]
-
-
-def make_box(twidth, bwidth=None):
-	b, m, e, i = _get_comment_format()
-	bwidth_inner = bwidth - 3 - max(len(b), len(i + e)) if bwidth else twidth + 2
-	sline = b + m + bwidth_inner * m[0] + 2 * m[0]
-	nspaces = (bwidth_inner - twidth) // 2
-	mlines = i + m + " " + " " * nspaces
-	mlinee = " " + " "*(bwidth_inner - twidth - nspaces) + m
-	eline = i + m + bwidth_inner * m[0] + 2 * m[0] + e
-	return sline, mlines, mlinee, eline
-
-def foldmarker():
-	"Return a tuple of (open fold marker, close fold marker)"
-	return vim.eval("&foldmarker").split(",")
-
+from vimsnippets import foldmarker, make_box, get_comment_format
 endglobal
 
 snippet box "A nice box with the current comment symbol" b
@@ -102,17 +40,17 @@ $0
 endsnippet
 
 snippet fold "Insert a vim fold marker" b
-`!p snip.rv = _get_comment_format()[0]` ${1:Fold description} `!p snip.rv = foldmarker()[0]`${2:1} `!p snip.rv = _get_comment_format()[2]`
+`!p snip.rv = get_comment_format()[0]` ${1:Fold description} `!p snip.rv = foldmarker()[0]`${2:1} `!p snip.rv = get_comment_format()[2]`
 endsnippet
 
 snippet foldc "Insert a vim fold close marker" b
-`!p snip.rv = _get_comment_format()[0]` ${2:1}`!p snip.rv = foldmarker()[1]` `!p snip.rv = _get_comment_format()[2]`
+`!p snip.rv = get_comment_format()[0]` ${2:1}`!p snip.rv = foldmarker()[1]` `!p snip.rv = get_comment_format()[2]`
 endsnippet
 
 snippet foldp "Insert a vim fold marker pair" b
-`!p snip.rv = _get_comment_format()[0]` ${1:Fold description} `!p snip.rv = foldmarker()[0]` `!p snip.rv = _get_comment_format()[2]`
+`!p snip.rv = get_comment_format()[0]` ${1:Fold description} `!p snip.rv = foldmarker()[0]` `!p snip.rv = get_comment_format()[2]`
 ${2:${VISUAL:Content}}
-`!p snip.rv = _get_comment_format()[0]` `!p snip.rv = foldmarker()[1]` $1 `!p snip.rv = _get_comment_format()[2]`
+`!p snip.rv = get_comment_format()[0]` `!p snip.rv = foldmarker()[1]` $1 `!p snip.rv = get_comment_format()[2]`
 endsnippet
 
 ##########################

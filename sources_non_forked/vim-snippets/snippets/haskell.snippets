@@ -2,11 +2,13 @@ snippet lang
 	{-# LANGUAGE ${0:OverloadedStrings} #-}
 snippet haddock
 	{-# OPTIONS_HADDOCK ${0:hide} #-}
+snippet ghc
+	{-# OPTIONS_GHC ${0:-fno-warn-unused-imports} #-}
 snippet inline
 	{-# INLINE ${0:name} #-}
 snippet info
 	-- |
-	-- Module      :  ${1:Module.Namespace}
+	-- Module      :  ${1:`substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`}
 	-- Copyright   :  ${2:Author} ${3:2011-2012}
 	-- License     :  ${4:BSD3}
 	--
@@ -40,9 +42,12 @@ snippet class
 		${0}
 snippet module
 	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` (
-	)	where
-	`expand('%') =~ 'Main' ? "\n\nmain = do\n  print \"hello world\"" : ""`
+	) where
+	`expand('%') =~ 'Main' ? "\nmain :: IO ()\nmain = undefined" : ""`
 
+snippet main
+	main :: IO ()
+	main = ${0:undefined}
 snippet const
 	${1:name} :: ${2:a}
 	$1 = ${0:undefined}
@@ -52,24 +57,20 @@ snippet fn
 snippet fn2
 	${1:fn} :: ${2:a} -> ${3:a} -> ${4:a}
 	$1 ${5} = ${0:undefined}
+snippet fn3
+	${1:fn} :: ${2:a} -> ${3:a} -> ${4:a} -> ${5:a}
+	$1 ${6} = ${0:undefined}
+snippet => "Type constraint"
+	(${1:Class} ${2:a}) => $2
 snippet ap
 	${1:map} ${2:fn} ${0:list}
-snippet do
-	do
-
-snippet λ
-	\\${1:x} -> ${0:expression}
 snippet \
 	\\${1:x} -> ${0:expression}
 snippet (\
 	(\\${1:x} -> ${0:expression})
 snippet <-
 	${1:a} <- ${0:m a}
-snippet ←
-	${1:a} <- ${0:m a}
 snippet ->
-	${1:m a} -> ${0:a}
-snippet →
 	${1:m a} -> ${0:a}
 snippet tup
 	(${1:a}, ${0:b})
@@ -90,3 +91,25 @@ snippet let
 snippet where
 	where
 		${1:fn} = ${0:undefined}
+snippet spec
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` (main, spec) where
+
+	import Test.Hspec
+	import Test.QuickCheck
+
+	main :: IO ()
+	main = hspec spec
+
+	spec :: Spec
+	spec =
+		describe "${1}" $ do
+			$0
+snippet desc
+	describe "${1}" $ do
+		$0
+snippet it
+	it "${1}" $
+		$0
+snippet itp
+	it "${1}" $ property $
+		$0

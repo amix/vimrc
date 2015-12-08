@@ -64,7 +64,7 @@ endfunction
 
 "FUNCTION: Opener._gotoTargetWin() {{{1
 function! s:Opener._gotoTargetWin()
-    if b:NERDTreeType ==# "secondary"
+    if b:NERDTree.isWinTree()
         if self._where == 'v'
             vsplit
         elseif self._where == 'h'
@@ -149,7 +149,7 @@ function! s:Opener.New(path, opts)
 
     let newObj._keepopen = nerdtree#has_opt(a:opts, 'keepopen')
     let newObj._where = has_key(a:opts, 'where') ? a:opts['where'] : ''
-    let newObj._treetype = b:NERDTreeType
+    let newObj._nerdtree = b:NERDTree
     call newObj._saveCursorPos()
 
     return newObj
@@ -247,34 +247,25 @@ function! s:Opener._openFile()
     endif
 
     call self._gotoTargetWin()
-
-    if self._treetype ==# "secondary"
-        call self._path.edit()
-    else
-        call self._path.edit()
-
-
-        if self._stay
-            call self._restoreCursorPos()
-        endif
+    call self._path.edit()
+    if self._stay
+        call self._restoreCursorPos()
     endif
 endfunction
 
 "FUNCTION: Opener._openDirectory(node) {{{1
 function! s:Opener._openDirectory(node)
-    if self._treetype ==# "secondary"
+    if self._nerdtree.isWinTree()
         call self._gotoTargetWin()
-        call g:NERDTreeCreator.CreateSecondary(a:node.path.str())
+        call g:NERDTreeCreator.CreateWindow(a:node.path.str())
     else
         call self._gotoTargetWin()
         if empty(self._where)
-            call a:node.makeRoot()
-            call b:NERDTree.render()
-            call a:node.putCursorHere(0, 0)
+            call b:NERDTree.changeRoot(a:node)
         elseif self._where == 't'
-            call g:NERDTreeCreator.CreatePrimary(a:node.path.str())
+            call g:NERDTreeCreator.CreateTabTree(a:node.path.str())
         else
-            call g:NERDTreeCreator.CreateSecondary(a:node.path.str())
+            call g:NERDTreeCreator.CreateWindowTree(a:node.path.str())
         endif
     endif
 

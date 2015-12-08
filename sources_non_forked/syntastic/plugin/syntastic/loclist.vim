@@ -110,19 +110,21 @@ function! g:SyntasticLoclist.getStatuslineFlag() abort " {{{2
             "hide stuff wrapped in %B(...) unless there are both errors and warnings
             let output = substitute(output, '\m\C%B{\([^}]*\)}', (num_warnings && num_errors) ? '\1' : '' , 'g')
 
-            "sub in the total errors/warnings/both
-            let output = substitute(output, '\m\C%w', num_warnings, 'g')
-            let output = substitute(output, '\m\C%e', num_errors, 'g')
-            let output = substitute(output, '\m\C%t', num_issues, 'g')
-
-            "first error/warning line num
-            let output = substitute(output, '\m\C%F', num_issues ? self._rawLoclist[0]['lnum'] : '', 'g')
-
-            "first error line num
-            let output = substitute(output, '\m\C%fe', num_errors ? errors[0]['lnum'] : '', 'g')
-
-            "first warning line num
-            let output = substitute(output, '\m\C%fw', num_warnings ? warnings[0]['lnum'] : '', 'g')
+            let flags = {
+                \ '%':  '%',
+                \ 't':  num_issues,
+                \ 'e':  num_errors,
+                \ 'w':  num_warnings,
+                \ 'N':  (num_issues ? fnamemodify( bufname(self._rawLoclist[0]['bufnr']), ':t') : ''),
+                \ 'P':  (num_issues ? fnamemodify( bufname(self._rawLoclist[0]['bufnr']), ':p:~:.') : ''),
+                \ 'F':  (num_issues ? self._rawLoclist[0]['lnum'] : ''),
+                \ 'ne': (num_errors ? fnamemodify( bufname(errors[0]['bufnr']), ':t') : ''),
+                \ 'pe': (num_errors ? fnamemodify( bufname(errors[0]['bufnr']), ':p:~:.') : ''),
+                \ 'fe': (num_errors ? errors[0]['lnum'] : ''),
+                \ 'nw': (num_warnings ? fnamemodify( bufname(warnings[0]['bufnr']), ':t') : ''),
+                \ 'pw': (num_warnings ? fnamemodify( bufname(warnings[0]['bufnr']), ':p:~:.') : ''),
+                \ 'fw': (num_warnings ? warnings[0]['lnum'] : '') }
+            let output = substitute(output, '\v\C\%(-?\d*%(\.\d+)?)([npf][ew]|[NPFtew%])', '\=syntastic#util#wformat(submatch(1), flags[submatch(2)])', 'g')
 
             let self._stl_flag = output
         else

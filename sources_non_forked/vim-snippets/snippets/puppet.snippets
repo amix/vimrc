@@ -221,7 +221,7 @@ snippet package
 
 snippet yumrepo
 	yumrepo { "${1:repo name}":
-		Descr   => "${2:$1}",
+		descr   => "${2:$1}",
 		enabled => ${0:1},
 	}
 

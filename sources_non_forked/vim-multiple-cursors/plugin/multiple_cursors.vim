@@ -1,7 +1,7 @@
 "===============================================================================
 " File: multiple_cursors.vim
 " Author: Terry Ma
-" Description: Emulate Sublime Text's multi selection feature 
+" Description: Emulate Sublime Text's multi selection feature
 " Potential Features:
 " - Create a blinking cursor effect? Good place to do it would be instead of
 "   waiting for user input, cycle through the highlight
@@ -54,8 +54,12 @@ if g:multi_cursor_use_default_mapping
   call s:init_settings(s:settings_if_default)
 endif
 
-if !exists('g:multi_cursor_start_word_key') && exists('g:multi_cursor_next_key')
-  let g:multi_cursor_start_word_key = g:multi_cursor_next_key
+if !exists('g:multi_cursor_start_word_key')
+  if exists('g:multi_cursor_start_key')
+    let g:multi_cursor_start_word_key = g:multi_cursor_start_key
+  elseif exists('g:multi_cursor_next_key')
+    let g:multi_cursor_start_word_key = g:multi_cursor_next_key
+  endif
 endif
 
 " External mappings

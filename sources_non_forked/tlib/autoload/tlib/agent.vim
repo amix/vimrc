@@ -1,10 +1,7 @@
-" agent.vim
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-06-24.
-" @Last Change: 2014-02-06.
-" @Revision:    0.1.251
+" @Revision:    328
 
 
 " :filedoc:
@@ -414,14 +411,17 @@ function! tlib#agent#ViewFile(world, selected) "{{{3
     if !empty(a:selected)
         let back = a:world.SwitchWindow('win')
         " TLogVAR back
-        if !&hidden && &l:modified
-            let cmd0 = 'split'
-            let cmd1 = 'sbuffer'
-        else
-            let cmd0 = 'edit'
-            let cmd1 = 'buffer'
-        endif
-        call tlib#file#With(cmd0, cmd1, a:selected, a:world)
+        for filename in a:selected
+            call tlib#file#Edit(filename)
+        endfor
+        " if !&hidden && &l:modified
+        "     let cmd0 = 'split'
+        "     let cmd1 = 'sbuffer'
+        " else
+        "     let cmd0 = 'edit'
+        "     let cmd1 = 'buffer'
+        " endif
+        " call tlib#file#With(cmd0, cmd1, a:selected, a:world)
         " TLogVAR &filetype
         exec back
         let a:world.state = 'display'
@@ -610,5 +610,55 @@ endf
 
 function! tlib#agent#CompleteAgentNames(ArgLead, CmdLine, CursorPos)
     return filter(copy(s:agent_names), 'stridx(v:val, a:ArgLead) != -1')
+endf
+
+
+function! tlib#agent#Complete(world, selected) abort "{{{3
+    let rxprefix = a:world.matcher.FilterRxPrefix()
+    let flt = a:world.filter[0][0]
+    " TLogVAR flt
+    let fltrx = rxprefix . flt . '\m[^[:space:][:cntrl:][:punct:]<>*+?&~{}()\[\]\\/]\+'
+    let fltrx0 = '\m^' . fltrx
+    " TLogVAR fltrx, fltrx0
+    let words = {}
+    for item in a:world.list
+        let parts = split(item, '\ze'. fltrx)
+        " TLogVAR item, parts
+        for part in parts
+            let word = matchstr(part, fltrx0)
+            " TLogVAR part, word
+            if !empty(word)
+                let words[word] = 1
+            endif
+        endfor
+    endfor
+    " TLogVAR keys(words)
+    let completions = keys(words)
+    " let completions = filter(keys(words), 'matchstr(v:val, fltrx0)')
+    let completions = sort(completions, 's:SortCompletions')
+    let completions = tlib#list#Uniq(completions)
+    " TLogVAR 0, completions
+    while len(completions) > 1
+        let nchar = strwidth(completions[0]) - 1
+        let completions = map(completions, 'strpart(v:val, 0, nchar)')
+        " TLogVAR 'reduce', completions
+        let completions = tlib#list#Uniq(completions)
+        " TLogVAR 'unique', len(completions), completions
+    endwh
+    " TLogVAR 9, completions
+    if empty(completions)
+        let a:world.state = 'redisplay update'
+    else
+        let a:world.filter[0][0] = completions[0]
+        let a:world.state = 'display update'
+    endif
+    return a:world
+endf
+
+
+function! s:SortCompletions(a, b) abort "{{{3
+    let i1 = strwidth(a:a)
+    let i2 = strwidth(a:b)
+    return i2 - i1
 endf
 

@@ -1,15 +1,7 @@
-" tag.vim
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-11-01.
-" @Last Change: 2013-09-25.
-" @Revision:    0.0.58
-
-if &cp || exists("loaded_tlib_tag_autoload")
-    finish
-endif
-let loaded_tlib_tag_autoload = 1
+" @Revision:    59
 
 
 " Extra tags for |tlib#tag#Retrieve()| (see there). Can also be buffer-local.

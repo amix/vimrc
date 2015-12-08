@@ -1,0 +1,122 @@
+snippet sm_controller
+	<?php
+		namespace Controllers;
+		use Core\View;
+		use Core\Controller;
+
+		class ${1:class_name} extends Controller
+		{
+			public function __construct()
+			{
+				parent::__construct();
+			}
+
+			public function index()
+			{
+				${2:}
+			}
+		}
+snippet sm_model
+	<?php 
+		namespace Models;
+	 
+		use Core\Model;
+	  
+		class ${1:class_name} extends Model 
+		{    
+			function __construct()
+			{
+				parent::__construct();
+			}  
+		}
+snippet sm_model_crud
+	<?php 
+		namespace Models;
+
+		use Core\Model;
+
+		class ${1:class_name} extends Model 
+		{    
+			private $${2:table};
+			function __construct()
+			{
+				parent::__construct();
+			}  
+			
+			public function getRow($where)
+			{
+				return $this->db->select('SELECT * FROM '.$table.' WHERE ${3:where}', $data);
+			}
+
+			public function getRows($where)
+			{
+				return $this->db->select('SELECT * FROM '.$table.');
+			}
+
+			public function insert($data)
+			{
+				$this->db->insert($table, $data);
+			}
+
+			public function update($data, $where)
+			{
+				$this->db->update($table ,$data, $where);
+			}
+
+			public function delete($where)
+			{
+				$this->db->delete($table, $where);
+			}
+		}
+snippet sm_render
+	View::render('${1:view}', $${2:array});
+snippet sm_render_template
+	View::renderTemplate('${1:part}', $${2:array});
+
+# database
+snippet sm_db_select
+	$this->db->select(${1:sql}, ${2:where});
+
+snippet sm_db_insert
+	$this->db->insert(${1:table}, ${2:data});
+
+snippet sm_db_update
+	$this->db->update(${1:table}, ${2:data}, ${3:where});
+
+snippet sm_db_delete
+	$this->db->delete(${1:table}, ${2:where});
+
+snippet sm_db_truncate
+	$this->db->delete(${1:table});
+
+#session
+snippet sm_session_set
+	Session::set(${1:key}, ${2:value});
+
+snippet sm_session_get
+	Session::get(${1:key});
+
+snippet sm_session_pull
+	Session::pull(${1:key});
+
+snippet sm_session_id
+	Session::id();
+
+snippet sm_session_destroy
+	Session::set(${1:key});
+	
+snippet sm_session_display
+	Session::display();
+
+#url
+snippet sm_url_redirect
+	Url:redirect('${1:path}');
+
+snippet sm_url_previous
+	Url:previous();
+
+snippet sm_url_templatepath
+	Url:templatePath();
+
+snippet sm_url_autolink
+	Url:autolink('${1:string}');

@@ -13,6 +13,14 @@ function! s:surroundings() abort
         \ &commentstring, '\S\zs%s',' %s','') ,'%s\ze\S', '%s ', '')), '%s', 1)
 endfunction
 
+function! s:strip_white_space(l,r,line) abort
+  let [l, r] = [a:l, a:r]
+  if stridx(a:line,l) == -1 && stridx(a:line,l[0:-2]) == 0 && a:line[strlen(a:line)-strlen(r[1:]):-1] == r[1:]
+    return [l[0:-2], r[1:]]
+  endif
+  return [l, r]
+endfunction
+
 function! s:go(type,...) abort
   if a:0
     let [lnum1, lnum2] = [a:type, a:1]
@@ -24,6 +32,7 @@ function! s:go(type,...) abort
   let uncomment = 2
   for lnum in range(lnum1,lnum2)
     let line = matchstr(getline(lnum),'\S.*\s\@<!')
+    let [l, r] = s:strip_white_space(l,r,line)
     if line != '' && (stridx(line,l) || line[strlen(line)-strlen(r) : -1] != r)
       let uncomment = 0
     endif
@@ -53,12 +62,14 @@ function! s:go(type,...) abort
 endfunction
 
 function! s:textobject(inner) abort
-  let [l, r] = s:surroundings()
+  let [l_, r_] = s:surroundings()
+  let [l, r] = [l_, r_]
   let lnums = [line('.')+1, line('.')-2]
   for [index, dir, bound, line] in [[0, -1, 1, ''], [1, 1, line('$'), '']]
     while lnums[index] != bound && line ==# '' || !(stridx(line,l) || line[strlen(line)-strlen(r) : -1] != r)
       let lnums[index] += dir
       let line = matchstr(getline(lnums[index]+dir),'\S.*\s\@<!')
+      let [l, r] = s:strip_white_space(l_,r_,line)
     endwhile
   endfor
   while (a:inner || lnums[1] != line('$')) && empty(getline(lnums[0]))

@@ -22,7 +22,7 @@ function! SyntaxCheckers_coq_coqtop_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': '-noglob -batch -load-vernac-source' })
 
     let errorformat =
-        \ '%AFile \"%f\"\, line %l\, characters %c\-%.%#\:,'.
+        \ '%AFile "%f"\, line %l\, characters %c-%.%#\:,'.
         \ '%C%m'
 
     return SyntasticMake({

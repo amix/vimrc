@@ -97,7 +97,7 @@ if main_syntax ==# 'markdown'
   unlet! s:type
 endif
 
-syn match markdownEscape "\\[][\\`*_{}()#+.!-]"
+syn match markdownEscape "\\[][\\`*_{}()<>#+.!-]"
 syn match markdownError "\w\@<=_\w\@="
 
 hi def link markdownH1                    htmlH1

@@ -9,6 +9,7 @@ let g:go_loaded_install = 1
 " needed by the user with GoInstallBinaries
 let s:packages = [
             \ "github.com/nsf/gocode",
+            \ "github.com/alecthomas/gometalinter", 
             \ "golang.org/x/tools/cmd/goimports",
             \ "github.com/rogpeppe/godef",
             \ "golang.org/x/tools/cmd/oracle",
@@ -130,6 +131,11 @@ augroup vim-go
     " code formatting on save
     if get(g:, "go_fmt_autosave", 1)
         autocmd BufWritePre *.go call go#fmt#Format(-1)
+    endif
+
+    " run gometalinter on save
+    if get(g:, "go_metalinter_autosave", 0)
+        autocmd BufWritePost *.go call go#lint#Gometa(1)
     endif
 
 augroup END

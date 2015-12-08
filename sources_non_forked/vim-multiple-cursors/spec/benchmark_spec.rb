@@ -58,6 +58,7 @@ end
 
 describe "Multiple Cursors" do
   let(:filename) { 'test.txt' }
+  let(:options) { [] }
 
   specify "#benchmark" do
     before <<-EOF

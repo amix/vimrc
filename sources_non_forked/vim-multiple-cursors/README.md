@@ -27,16 +27,22 @@
 ### It's great for quick refactoring
 ![Example1](assets/example1.gif?raw=true)
 
+Vim command sequence: `2Gfp<C-n><C-n><C-n>cname`
+
 ### Add a cursor to each line of your visual selection
 ![Example2](assets/example2.gif?raw=true)
+
+Vim command sequence: `2Gvip<C-n>i"<Right><Right><Right>",<Esc>vipJ$r]Idays = [`
 
 ### Do it backwards too! This is not just a replay of the above gif :)
 ![Example3](assets/example3.gif?raw=true)
 
+Vim command sequence: `2Gdf[$r,0f,v<C-n>…<C-n>c<CR><Up><Del><Right><Right><Right><Del>`
+
 ### Add multiple cursors using regexes
 ![Example4](assets/example4.gif?raw=true)
 
-To see what keystrokes are used for the above example, see [this issue](https://github.com/terryma/vim-multiple-cursors/issues/39).
+To see what keystrokes are used for the above examples, see [this issue](https://github.com/terryma/vim-multiple-cursors/issues/39).
 
 ## Features
 - Live update in Insert mode
@@ -187,9 +193,11 @@ highlight link multiple_cursors_visual Visual
 
 ## Known Issues
 - Select mode is not implemented
-- I and A do not work in Visual mode yet (See #55)
+- `I` and `A` do not work in Visual mode yet (See [#55](../../issues/55))
   
- Single key command to switch to Insert mode such as c or s from Visual mode or i, a, I, A in Normal mode should work without any issues. **NOTE**: vim's Visual block mode also supports I and A commands, however they do not work in this plugin's Visual mode at the moment. For now, to use I and A, switch to normal mode by pressing v first.
+ Single key command to switch to Insert mode such as `c` or `s` from Visual mode or `i`, `a`, `I`, `A` in Normal mode should work without any issues. 
+
+**NOTE**: Vim's Visual Block mode also supports `I` and `A` commands, however they do not work in this plugin's Visual mode at the moment. For now, to use `I` and `A`, switch to Normal mode by pressing `v` first.
 
 ## Changelog
 See [CHANGELOG.md](CHANGELOG.md)

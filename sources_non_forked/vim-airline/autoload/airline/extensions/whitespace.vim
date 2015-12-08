@@ -15,6 +15,7 @@ let s:default_checks = ['indent', 'trailing']
 
 let s:trailing_format = get(g:, 'airline#extensions#whitespace#trailing_format', 'trailing[%s]')
 let s:mixed_indent_format = get(g:, 'airline#extensions#whitespace#mixed_indent_format', 'mixed-indent[%s]')
+let s:long_format = get(g:, 'airline#extensions#whitespace#long_format', 'long[%s]')
 let s:indent_algo = get(g:, 'airline#extensions#whitespace#mixed_indent_algo', 0)
 
 let s:max_lines = get(g:, 'airline#extensions#whitespace#max_lines', 20000)
@@ -56,7 +57,12 @@ function! airline#extensions#whitespace#check()
       let mixed = s:check_mixed_indent()
     endif
 
-    if trailing != 0 || mixed != 0
+    let long = 0
+    if index(checks, 'long') > -1 && &tw > 0
+      let long = search('\%>'.&tw.'v.\+', 'nw')
+    endif
+
+    if trailing != 0 || mixed != 0 || long != 0
       let b:airline_whitespace_check = s:symbol
       if s:show_message
         if trailing != 0
@@ -64,6 +70,9 @@ function! airline#extensions#whitespace#check()
         endif
         if mixed != 0
           let b:airline_whitespace_check .= (g:airline_symbols.space).printf(s:mixed_indent_format, mixed)
+        endif
+        if long != 0
+          let b:airline_whitespace_check .= (g:airline_symbols.space).printf(s:long_format, long)
         endif
       endif
     endif

@@ -56,11 +56,40 @@ snippet err:
 snippet cau:
 	.. caution::
 		${0:Watch out!}
-#Spinx only
+#Sphinx only
 snippet sid:
 	.. sidebar:: ${1:Title}
 
 		${0}
+snippet tod:
+	.. todo::
+		${0}
+snippet lis:
+	.. list-table:: ${0:Title}
+		:header-rows: 1
+		:stub-columns: 1
+
+		* - x1,y1
+		  - x2,y1
+		  - x3,y1
+		* - x1,y2
+		  - x2,y2
+		  - x3,y2
+		* - x1,y3
+		  - x2,y3
+		  - x3,y3
+
+snippet toc:
+	.. toctree::
+		:maxdepth: 2
+
+		${0}
+snippet dow:
+	:download:`${0:text} <${1:path}>`
+snippet ref:
+	:ref:`${0:text} <${1:path}>`
+snippet doc:
+	:doc:`${0:text} <${1:path}>`
 # CJK optimize, CJK has no space between charaters
 snippet *c
 	\ *${1:Emphasis}*\ ${0}

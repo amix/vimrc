@@ -18,6 +18,10 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_javascript_jsxhint_IsAvailable() dict
+    if !executable(self.getExec())
+        return 0
+    endif
+
     let version_output = syntastic#util#system(self.getExecEscaped() . ' --version')
     let parsed_ver = !v:shell_error && (version_output =~# '\m^JSXHint\>') ? syntastic#util#parseVersion(version_output) : []
     if len(parsed_ver)

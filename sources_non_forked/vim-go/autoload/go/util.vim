@@ -27,7 +27,7 @@ endfunction
 
 " IsWin returns 1 if current OS is Windows or 0 otherwise
 function! go#util#IsWin()
-	let win = ['win16', 'win32', 'win32unix', 'win64', 'win95']
+	let win = ['win16', 'win32', 'win64', 'win95']
 	for w in win
 		if (has(w))
 			return 1
@@ -48,4 +48,12 @@ function! go#util#StripPathSep(path)
 	return a:path
 endfunction
 
-" vim:ts=4:sw=4:et
+" Shelljoin returns a shell-safe string representation of arglist. The
+" {special} argument of shellescape() may optionally be passed.
+function! go#util#Shelljoin(arglist, ...)
+	if a:0
+		return join(map(copy(a:arglist), 'shellescape(v:val, ' . a:1 . ')'), ' ')
+	else
+		return join(map(copy(a:arglist), 'shellescape(v:val)'), ' ')
+	endif
+endfunction
