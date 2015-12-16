@@ -1,6 +1,11 @@
 " No Uganda message on startup"
 set shortmess=I
 
+" Guard mouse
+if !has('nvim')
+    set ttymouse=xterm2
+endif
+
 " Mode shown in the statusline all the time"
 set noshowmode
 
