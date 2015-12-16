@@ -46,10 +46,11 @@ disabled/enabled easily.
 
 ## Install
 
-Vim-go follows the standard runtime path structure, so I highly recommend to use
-a common and well known plugin manager to install vim-go. Do not use vim-go with
-other Go oriented vim plugins. For Pathogen just clone the repo. For other plugin managers
-add the appropriate lines and execute the plugin's install command.
+Vim-go follows the standard runtime path structure, so I highly recommend to
+use a common and well known plugin manager to install vim-go. Do not use vim-go
+with other Go oriented vim plugins. For Pathogen just clone the repo. For other
+plugin managers add the appropriate lines and execute the plugin's install
+command.
 
 *  [Pathogen](https://github.com/tpope/vim-pathogen)
   * `git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go`
@@ -64,8 +65,9 @@ Please be sure all necessary binaries are installed (such as `gocode`, `godef`,
 `goimports`, etc.). You can easily install them with the included
 `:GoInstallBinaries` command. If invoked, all necessary binaries will be
 automatically downloaded and installed to your `$GOBIN` environment (if not set
-it will use `$GOPATH/bin`). Note that this command requires `git` for fetching the individual Go
-packages. Additionally, use `:GoUpdateBinaries` to update the installed binaries.
+it will use `$GOPATH/bin`). Note that this command requires `git` for fetching
+the individual Go packages. Additionally, use `:GoUpdateBinaries` to update the
+installed binaries.
 
 ### Optional
 
@@ -156,19 +158,6 @@ More `<Plug>` mappings can be seen with `:he go-mappings`. Also these are just
 recommendations, you are free to create more advanced mappings or functions
 based on `:he go-commands`.
 
-### Location list navigation
-
-All commands support collecting and displaying errors in Vim's location
-  list.
-
-Quickly navigate through these location lists with `:lne` for next error and `:lp` 
-for previous.  You can also bind these to keys, for example:
-
-```vim
-map <C-n> :lne<CR>
-map <C-m> :lp<CR>
-```
-
 ## Settings
 Below are some settings you might find useful. For the full list see `:he go-settings`.
 
@@ -214,7 +203,21 @@ let g:go_bin_path = expand("~/.gotools")
 let g:go_bin_path = "/home/fatih/.mypath"      "or give absolute path
 ```
 
-## Using with Syntastic
+### Location list navigation
+
+All commands support collecting and displaying errors in Vim's location
+  list.
+
+Quickly navigate through these location lists with `:lne` for next error and `:lp` 
+for previous.  You can also bind these to keys, for example:
+
+```vim
+map <C-n> :lne<CR>
+map <C-m> :lp<CR>
+```
+
+
+### Using with Syntastic
 Sometimes when using both `vim-go` and `syntastic` Vim will start lagging while saving and opening
 files. The following fixes this:
 

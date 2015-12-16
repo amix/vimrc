@@ -36,6 +36,10 @@ function! go#list#Populate(items)
 	call setloclist(0, a:items, 'r')
 endfunction
 
+function! go#list#PopulateWin(winnr, items)
+	call setloclist(a:winnr, a:items, 'r')
+endfunction
+
 " Parse parses the given items based on the specified errorformat nad
 " populates the location list.
 function! go#list#ParseFormat(errformat, items)

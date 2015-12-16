@@ -50,9 +50,14 @@ function! go#tool#ParseErrors(lines)
         if !empty(fatalerrors)
             call add(errors, {"text": fatalerrors[1]})
         elseif !empty(tokens)
-            call add(errors, {"filename" : fnamemodify(tokens[1], ':p'),
-                        \"lnum":     tokens[2],
-                        \"text":     tokens[3]})
+            " strip endlines of form ^M
+            let out=substitute(tokens[3], '\r$', '', '')
+
+            call add(errors, {
+                        \ "filename" : fnamemodify(tokens[1], ':p'),
+                        \ "lnum"     : tokens[2],
+                        \ "text"     : out,
+                        \ })
         elseif !empty(errors)
             " Preserve indented lines.
             " This comes up especially with multi-line test output.
@@ -63,6 +68,42 @@ function! go#tool#ParseErrors(lines)
     endfor
 
     return errors
+endfunction
+
+"FilterValids filters the given items with only items that have a valid
+"filename. Any non valid filename is filtered out.
+function! go#tool#FilterValids(items)
+    " Remove any nonvalid filename from the location list to avoid opening an
+    " empty buffer. See https://github.com/fatih/vim-go/issues/287 for
+    " details.
+    let filtered = []
+    let is_readable = {}
+
+    for item in a:items
+        if has_key(item, 'bufnr')
+            let filename = bufname(item.bufnr)
+        elseif has_key(item, 'filename')
+            let filename = item.filename
+        else
+            " nothing to do, add item back to the list
+            call add(filtered, item)
+            continue
+        endif
+
+        if !has_key(is_readable, filename)
+            let is_readable[filename] = filereadable(filename)
+        endif
+        if is_readable[filename]
+            call add(filtered, item)
+        endif
+    endfor
+
+    for k in keys(filter(is_readable, '!v:val'))
+        echo "vim-go: " | echohl Identifier | echon "[run] Dropped " | echohl Constant | echon  '"' . k . '"'
+        echohl Identifier | echon " from location list (nonvalid filename)" | echohl None
+    endfor
+
+    return filtered
 endfunction
 
 function! go#tool#ExecuteInDir(cmd) abort

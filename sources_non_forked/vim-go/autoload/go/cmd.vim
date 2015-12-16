@@ -14,24 +14,30 @@ endfunction
 " default it tries to call simply 'go build', but it first tries to get all
 " dependent files for the current folder and passes it to go build.
 function! go#cmd#Build(bang, ...)
-    let default_makeprg = &makeprg
+    " expand all wildcards(i.e: '%' to the current file name)
+    let goargs = map(copy(a:000), "expand(v:val)")
+
+    " escape all shell arguments before we pass it to make
+    let goargs = go#util#Shelllist(goargs, 1)
+
+    " create our command arguments. go build discards any results when it
+    " compiles multiple packages. So we pass the `errors` package just as an
+    " placeholder with the current folder (indicated with '.')
+    let args = ["build"]  + goargs + [".", "errors"]
+
+    " if we have nvim, call it asynchronously and return early ;)
+    if has('nvim')
+        call go#jobcontrol#Spawn("build", args)
+        return
+    endif
 
     let old_gopath = $GOPATH
     let $GOPATH = go#path#Detect()
+    let default_makeprg = &makeprg
+    let &makeprg = "go " . join(args, ' ')
 
-    let l:tmpname = tempname()
-
-    if v:shell_error
-        let &makeprg = "go build . errors"
-    else
-        " :make expands '%' and '#' wildcards, so they must also be escaped
-        let goargs = go#util#Shelljoin(map(copy(a:000), "expand(v:val)"), 1)
-        let gofiles = go#util#Shelljoin(go#tool#Files(), 1)
-        let &makeprg = "go build -o " . l:tmpname . ' ' . goargs . ' ' . gofiles
-    endif
-
-    echon "vim-go: " | echohl Identifier | echon "building ..."| echohl None
     if g:go_dispatch_enabled && exists(':Make') == 2
+        call go#util#EchoProgress("building dispatched ...")
         silent! exe 'Make'
     else
         silent! exe 'lmake!'
@@ -42,18 +48,23 @@ function! go#cmd#Build(bang, ...)
     let errors = go#list#Get()
     call go#list#Window(len(errors))
 
-    if !empty(errors) 
+    if !empty(errors)
         if !a:bang
             call go#list#JumpToFirst()
         endif
     else
-        redraws! | echon "vim-go: " | echohl Function | echon "[build] SUCCESS"| echohl None
+        call go#util#EchoSuccess("[build] SUCCESS")
     endif
 
-
-    call delete(l:tmpname)
     let &makeprg = default_makeprg
     let $GOPATH = old_gopath
+endfunction
+
+
+" Run runs the current file (and their dependencies if any) in a new terminal.
+function! go#cmd#RunTerm(mode)
+    let cmd = "go run ".  go#util#Shelljoin(go#tool#Files())
+    call go#term#newmode(cmd, a:mode)
 endfunction
 
 " Run runs the current file (and their dependencies if any) and outputs it.
@@ -61,6 +72,11 @@ endfunction
 " suitable for long running apps, because vim is blocking by default and
 " calling long running apps will block the whole UI.
 function! go#cmd#Run(bang, ...)
+    if has('nvim')
+        call go#cmd#RunTerm('')
+        return
+    endif
+
     let old_gopath = $GOPATH
     let $GOPATH = go#path#Detect()
 
@@ -90,27 +106,8 @@ function! go#cmd#Run(bang, ...)
         exe 'lmake!'
     endif
 
-    " Remove any nonvalid filename from the location list to avoid opening an
-    " empty buffer. See https://github.com/fatih/vim-go/issues/287 for
-    " details.
     let items = go#list#Get()
-    let errors = []
-    let is_readable = {}
-
-    for item in items
-        let filename = bufname(item.bufnr)
-        if !has_key(is_readable, filename)
-            let is_readable[filename] = filereadable(filename)
-        endif
-        if is_readable[filename]
-            call add(errors, item)
-        endif
-    endfor
-
-    for k in keys(filter(is_readable, '!v:val'))
-        echo "vim-go: " | echohl Identifier | echon "[run] Dropped " | echohl Constant | echon  '"' . k . '"'
-        echohl Identifier | echon " from location list (nonvalid filename)" | echohl None
-    endfor
+    let errors = go#tool#FilterValids(items)
 
     call go#list#Populate(errors)
     call go#list#Window(len(errors))
@@ -149,33 +146,51 @@ endfunction
 " compile the tests instead of running them (useful to catch errors in the
 " test files). Any other argument is appendend to the final `go test` command
 function! go#cmd#Test(bang, compile, ...)
-    let command = "go test "
+    let args = ["test"]
 
     " don't run the test, only compile it. Useful to capture and fix errors or
     " to create a test binary.
     if a:compile
-        let command .= "-c "
+        call add(args, "-c")
     endif
 
     if a:0
-        let command .= go#util#Shelljoin(map(copy(a:000), "expand(v:val)"))
+        " expand all wildcards(i.e: '%' to the current file name)
+        let goargs = map(copy(a:000), "expand(v:val)")
+
+        " escape all shell arguments before we pass it to test
+        call extend(args, go#util#Shelllist(goargs, 1))
     else
         " only add this if no custom flags are passed
         let timeout  = get(g:, 'go_test_timeout', '10s')
-        let command .= "-timeout=" . timeout . " "
+        call add(args, printf("-timeout=%s", timeout))
     endif
 
-    call go#cmd#autowrite()
+    if has('nvim')
+        if get(g:, 'go_term_enabled', 0)
+            call go#term#new(["go"] + args)
+        else
+            call go#jobcontrol#Spawn("test", args)
+        endif
+        return
+    endif
+
     if a:compile
         echon "vim-go: " | echohl Identifier | echon "compiling tests ..." | echohl None
     else
         echon "vim-go: " | echohl Identifier | echon "testing ..." | echohl None
     endif
 
+    call go#cmd#autowrite()
     redraw
+
+    let command = "go " . join(args, ' ')
+
     let out = go#tool#ExecuteInDir(command)
     if v:shell_error
         let errors = go#tool#ParseErrors(split(out, '\n'))
+        let errors = go#tool#FilterValids(errors)
+
         call go#list#Populate(errors)
         call go#list#Window(len(errors))
         if !empty(errors) && !a:bang

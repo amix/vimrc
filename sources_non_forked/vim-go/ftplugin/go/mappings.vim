@@ -11,6 +11,13 @@ endif
 
 " Some handy plug mappings
 nnoremap <silent> <Plug>(go-run) :<C-u>call go#cmd#Run(!g:go_jump_to_error, '%')<CR>
+
+if has("nvim")
+	nnoremap <silent> <Plug>(go-run-vertical) :<C-u>call go#cmd#RunTerm('vsplit')<CR>
+	nnoremap <silent> <Plug>(go-run-split) :<C-u>call go#cmd#RunTerm('split')<CR>
+	nnoremap <silent> <Plug>(go-run-tab) :<C-u>call go#cmd#RunTerm('tab')<CR>
+endif
+
 nnoremap <silent> <Plug>(go-build) :<C-u>call go#cmd#Build(!g:go_jump_to_error)<CR>
 nnoremap <silent> <Plug>(go-generate) :<C-u>call go#cmd#Generate(!g:go_jump_to_error)<CR>
 nnoremap <silent> <Plug>(go-install) :<C-u>call go#cmd#Install(!g:go_jump_to_error)<CR>

@@ -43,6 +43,8 @@ if !exists("g:go_fmt_experimental")
     let g:go_fmt_experimental = 0
 endif
 
+let s:got_fmt_error = 0
+
 "  we have those problems : 
 "  http://stackoverflow.com/questions/12741977/prevent-vim-from-updating-its-undo-tree
 "  http://stackoverflow.com/questions/18532692/golang-formatter-and-vim-how-to-destroy-history-record?rq=1
@@ -117,9 +119,12 @@ function! go#fmt#Format(withGoimport)
         let &fileformat = old_fileformat
         let &syntax = &syntax
 
-        " clean up previous location list
-        call go#list#Clean()
-        call go#list#Window()
+        " clean up previous location list, but only if it's due fmt
+        if s:got_fmt_error 
+            let s:got_fmt_error = 0
+            call go#list#Clean()
+            call go#list#Window()
+        endif
     elseif g:go_fmt_fail_silently == 0 
         let splitted = split(out, '\n')
         "otherwise get the errors and put them to location list
@@ -141,6 +146,7 @@ function! go#fmt#Format(withGoimport)
             echohl Error | echomsg "Gofmt returned error" | echohl None
         endif
 
+        let s:got_fmt_error = 1
         call go#list#Window(len(errors))
 
         " We didn't use the temp file, so clean up
