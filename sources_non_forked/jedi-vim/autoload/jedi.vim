@@ -17,7 +17,7 @@ let s:default_settings = {
     \ 'auto_initialization': 1,
     \ 'auto_vim_configuration': 1,
     \ 'goto_command': "'<leader>d'",
-    \ 'goto_assignments_command': "'<leader>g'",
+    \ 'goto_assignments_command': "'<leader>gg'",
     \ 'goto_definitions_command': "''",
     \ 'completions_command': "'<C-Space>'",
     \ 'call_signatures_command': "'<leader>n'",

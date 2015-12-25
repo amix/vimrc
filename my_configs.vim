@@ -1,6 +1,6 @@
 nnoremap <F9> :exe 'NERDTreeToggle'<CR>
 "set pastetoggle=<F2>
-set mouse=
+"set mouse=
 
 "for outside paste mistake
 nnoremap <F2> :set invpaste paste?<CR>
@@ -14,6 +14,9 @@ set pastetoggle=<F2>
 "colorscheme monokai
 colorscheme molokai
 let g:molokai_original = 1
+
+"filetype plugin indent on
+"autocmd FileType python setlocal et sta sw=2 sts=2
 
 "vertical indent, use <leader>ig to activatee
 let g:indent_guides_start_level = 2
@@ -31,5 +34,5 @@ map <leader>6 :tabnext 6<CR>
 map <leader>7 :tabnext 7<CR>
 map <leader>8 :tabnext 8<CR>
 "let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/'
-highlight OverLength ctermbg=red ctermfg=white guibg=#592929 
-match OverLength /\%81v.\+/
+"highlight OverLength ctermbg=red ctermfg=white guibg=#592929 
+"match OverLength /\%81v.\+/
