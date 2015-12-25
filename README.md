@@ -1,3 +1,30 @@
+**My Personal README is in [tiande.txt](/tiande.txt)**
+
+ [tiande.txt](/tiande.txt)  vim  ;) 
+
+ pull request  dtdnqsb@163.com
+
+if you wanna use Tiande's version, just:
+```
+git clone git://github.com/Tiande/vimrc.git ~/.vim_runtime
+bash ~/.vim_runtime/install_awesome_vimrc.sh
+```
+OR 
+You can [Dowmload a ZIP](https://github.com/Tiande/vimrc/archive/master.zip),
+
+UNZIP and put the **vimrc** dir to your home folder,
+
+RENAME **vimrc** to **.vim_runtime**,
+
+FINALLY you need:
+```
+bash ~/.vim_runtime/install_awesome_vimrc.sh
+```
+ TagList  [Ctags](http://ctags.sourceforge.net/) 
+
+
+
+
 # The Ultimate vimrc
 
 Over the last 8 years I have used and tweaked Vim. This is my Ultimate vimrc.
