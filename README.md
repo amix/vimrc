@@ -1,8 +1,8 @@
 **My Personal README is in [tiande.txt](/tiande.txt)**
 
- [tiande.txt](/tiande.txt)  vim  ;) 
+我会时不时的更新下 [tiande.txt](/tiande.txt) 算是记录 vim 使用过程中的收获，你可以没事来逛逛 ;) 
 
- pull request  dtdnqsb@163.com
+如果你也有愿意分享的小技巧，欢迎 pull request ，或者邮箱联系我： dtdnqsb@163.com
 
 if you wanna use Tiande's version, just:
 ```
@@ -20,7 +20,7 @@ FINALLY you need:
 ```
 bash ~/.vim_runtime/install_awesome_vimrc.sh
 ```
- TagList  [Ctags](http://ctags.sourceforge.net/) 
+如果要使用 TagList 功能，还需手动安装 [Ctags](http://ctags.sourceforge.net/)
 
 
 
