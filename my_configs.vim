@@ -17,13 +17,14 @@ let g:molokai_original = 1
 
 "filetype plugin indent on
 "autocmd FileType python setlocal et sta sw=2 sts=2
+"let NERDTreeWinPos='left'
 
 "vertical indent, use <leader>ig to activatee
 let g:indent_guides_start_level = 2
 let g:indent_guides_guide_size=1
 let g:indent_guides_auto_colors = 0
-hi IndentGuidesOdd  guibg=red   ctermbg=darkgrey
-hi IndentGuidesEven guibg=green ctermbg=darkgrey
+hi IndentGuidesOdd  guibg=darkgrey   ctermbg=darkgrey
+hi IndentGuidesEven guibg=darkgrey ctermbg=darkgrey
 inoremap {} {<esc>o}<esc>O
 map <leader>1 :tabnext 1<CR>
 map <leader>2 :tabnext 2<CR>
