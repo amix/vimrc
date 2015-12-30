@@ -57,10 +57,18 @@ map <leader>t9 :tabnext 9<cr>
 " Mac 下不可用
 map <M-u> :tabprev<cr>
 map <M-i> :tabnext<cr>
+
 " mapping :tlist to ,tg
-map <leader>tg :TlistOpen<cr>
+" map <leader>tg :TlistOpen<cr>
 " add current file to tlist
-map <leader>ta :TlistAddFiles %<cr>
+" map <leader>ta :TlistAddFiles %<cr>
+
+" use tagbar to  instead of taglist
+let g:tagbar_left = 1
+let g:tagbar_width = 30
+let g:tagbar_autofocus = 1
+map <leader>tg :TagbarToggle<cr>
+
 " Set line number
 set number
 " set cursorline and cursorcolumn
