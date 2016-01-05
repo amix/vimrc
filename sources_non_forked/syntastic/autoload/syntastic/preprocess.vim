@@ -156,6 +156,37 @@ function! syntastic#preprocess#iconv(errors) abort " {{{2
         \       a:errors
 endfunction " }}}2
 
+function! syntastic#preprocess#jscs(errors) abort " {{{2
+    let errs = join(a:errors, '')
+    if errs ==# ''
+        return []
+    endif
+
+    let json = s:_decode_JSON(errs)
+
+    let out = []
+    if type(json) == type({})
+        for fname in keys(json)
+            if type(json[fname]) == type([])
+                for e in json[fname]
+                    try
+                        let e['message'] = substitute(e['message'], "\n", ' ', 'g')
+                        cal add(out, fname . ':' . e['line'] . ':' . e['column'] . ':' . e['message'])
+                    catch /\m^Vim\%((\a\+)\)\=:E716/
+                        call syntastic#log#warn('checker javascript/jscs: unrecognized error item ' . string(e))
+                        let out = []
+                    endtry
+                endfor
+            else
+                call syntastic#log#warn('checker javascript/jscs: unrecognized error format')
+            endif
+        endfor
+    else
+        call syntastic#log#warn('checker javascript/jscs: unrecognized error format')
+    endif
+    return out
+endfunction " }}}2
+
 function! syntastic#preprocess#killEmpty(errors) abort " {{{2
     return filter(copy(a:errors), 'v:val !=# ""')
 endfunction " }}}2
@@ -269,15 +300,16 @@ function! syntastic#preprocess#stylelint(errors) abort " {{{2
 
             for e in errs[0]['warnings']
                 try
+                    let severity = type(e['severity']) == type(0) ? ['W', 'E'][e['severity']-1] : e['severity'][0]
                     let msg =
-                        \ ['W', 'E'][e['severity']-1] . ':' .
+                        \ severity . ':' .
                         \ errs[0]['source'] . ':' .
                         \ e['line'] . ':' .
                         \ e['column'] . ':' .
                         \ e['text']
                     call add(out, msg)
                 catch /\m^Vim\%((\a\+)\)\=:E716/
-                    call syntastic#log#warn('checker css/stylelint: unrecognized error format')
+                    call syntastic#log#warn('checker css/stylelint: unrecognized error item ' . string(e))
                     let out = []
                     break
                 endtry

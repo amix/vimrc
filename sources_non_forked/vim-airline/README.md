@@ -203,7 +203,7 @@ MIT License. Copyright (c) 2013-2015 Bailey Ling.
 [7]: https://github.com/bling/minivimrc
 [8]: http://en.wikipedia.org/wiki/Open/closed_principle
 [9]: https://github.com/Shougo/unite.vim
-[10]: https://github.com/kien/ctrlp.vim
+[10]: https://github.com/ctrlpvim/ctrlp.vim
 [11]: https://github.com/tpope/vim-pathogen
 [12]: https://github.com/Shougo/neobundle.vim
 [13]: https://github.com/gmarik/vundle

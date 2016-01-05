@@ -2,11 +2,15 @@
 " vim: et ts=2 sts=2 sw=2
 
 let s:filetypes = get(g:, 'airline#extensions#wordcount#filetypes', '\vhelp|markdown|rst|org')
+let s:format = get(g:, 'airline#extensions#wordcount#format', '%d words')
 
 " adapted from http://stackoverflow.com/questions/114431/fast-word-count-function-in-vim
 function! s:update()
   if &ft !~ s:filetypes
     unlet! b:airline_wordcount
+    return
+  elseif mode() =~? 's'
+    " Bail on select mode
     return
   endif
 
@@ -21,7 +25,7 @@ function! s:update()
   if len(parts) > 11
     let cnt = str2nr(split(stat)[11])
     let spc = g:airline_symbols.space
-    let b:airline_wordcount = cnt . spc . 'words' . spc . g:airline_right_alt_sep . spc
+    let b:airline_wordcount = printf(s:format, cnt) . spc . g:airline_right_alt_sep . spc
   else
     unlet! b:airline_wordcount
   endif

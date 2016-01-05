@@ -35,6 +35,9 @@ function! go#rename#Rename(bang, ...)
         call go#list#Window(len(errors))
         if !empty(errors) && !a:bang
             call go#list#JumpToFirst()
+        elseif empty(errors)
+            " failed to parse errors, output the original content
+            call go#util#EchoError(out)
         endif
         return
     else

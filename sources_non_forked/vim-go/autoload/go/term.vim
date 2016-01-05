@@ -7,12 +7,12 @@ let s:jobs = {}
 
 " new creates a new terminal with the given command. Mode is set based on the
 " global variable g:go_term_mode, which is by default set to :vsplit
-function! go#term#new(cmd)
-    call go#term#newmode(a:cmd, g:go_term_mode)
+function! go#term#new(bang, cmd)
+    call go#term#newmode(a:bang, a:cmd, g:go_term_mode)
 endfunction
 
 " new creates a new terminal with the given command and window mode.
-function! go#term#newmode(cmd, mode)
+function! go#term#newmode(bang, cmd, mode)
     let mode = a:mode
     if empty(mode)
         let mode = g:go_term_mode
@@ -39,6 +39,7 @@ function! go#term#newmode(cmd, mode)
     let job = { 
                 \ 'stderr' : [],
                 \ 'stdout' : [],
+                \ 'bang' : a:bang,
                 \ 'on_stdout': function('s:on_stdout'),
                 \ 'on_stderr': function('s:on_stderr'),
                 \ 'on_exit' : function('s:on_exit'),
@@ -110,7 +111,9 @@ function! s:on_exit(job_id, data)
 
             call go#list#Populate(errors)
             call go#list#Window(len(errors))
-            call go#list#JumpToFirst()
+            if !self.bang
+                call go#list#JumpToFirst()
+            endif
         else
             call go#list#Clean()
             call go#list#Window()

@@ -79,6 +79,7 @@ function! airline#init#bootstrap()
         \ 'accent': 'red',
         \ })
   call airline#parts#define_raw('file', '%f%m')
+  call airline#parts#define_raw('path', '%F%m')
   call airline#parts#define_raw('linenr', '%{g:airline_symbols.linenr}%#__accent_bold#%4l%#__restore__#')
   call airline#parts#define_function('ffenc', 'airline#parts#ffenc')
   call airline#parts#define_empty(['hunks', 'branch', 'tagbar', 'syntastic', 'eclim', 'whitespace','windowswap'])
@@ -96,7 +97,11 @@ function! airline#init#sections()
     let g:airline_section_b = airline#section#create(['hunks', 'branch'])
   endif
   if !exists('g:airline_section_c')
-    let g:airline_section_c = airline#section#create(['%<', 'file', spc, 'readonly'])
+    if &autochdir == 1
+      let g:airline_section_c = airline#section#create(['%<', 'path', spc, 'readonly'])
+    else
+      let g:airline_section_c = airline#section#create(['%<', 'file', spc, 'readonly'])
+    endif
   endif
   if !exists('g:airline_section_gutter')
     let g:airline_section_gutter = airline#section#create(['%='])

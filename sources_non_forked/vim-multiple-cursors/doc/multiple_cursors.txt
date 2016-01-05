@@ -177,6 +177,16 @@ normal mode will "fail to replay" when multiple cursors are active. For example,
 changing it from `{}` to `{'d':1}` makes normal-mode mappings beginning with `d`
 (such as `dw` to delete a word) work in multi-cursor mode.
 
+*g:multi_cursor_visual_maps* (Default: )
+
+Default value: `{'i':1, 'a':1, 'f':1, 'F':1, 't':1, 'T':1}`
+
+Any key in this map (values are ignored) will cause multi-cursor _Visual_ mode
+to pause for map completion just like normal vim. Otherwise keys mapped in
+visual mode will "fail to replay" when multiple cursors are active. For example,
+changing it from `{}` to `{'i':1}` makes visual-mode mappings beginning with `i`
+(such as `it` to select an "inner tag block") work in multi-cursor mode.
+
 The default list contents should work for anybody, unless they have remapped a
 key from an operator-pending command to a non-operator-pending command or
 vice versa.

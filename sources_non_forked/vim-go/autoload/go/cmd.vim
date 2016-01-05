@@ -27,7 +27,7 @@ function! go#cmd#Build(bang, ...)
 
     " if we have nvim, call it asynchronously and return early ;)
     if has('nvim')
-        call go#jobcontrol#Spawn("build", args)
+        call go#jobcontrol#Spawn(a:bang, "build", args)
         return
     endif
 
@@ -36,14 +36,22 @@ function! go#cmd#Build(bang, ...)
     let default_makeprg = &makeprg
     let &makeprg = "go " . join(args, ' ')
 
-    if g:go_dispatch_enabled && exists(':Make') == 2
-        call go#util#EchoProgress("building dispatched ...")
-        silent! exe 'Make'
-    else
-        silent! exe 'lmake!'
-    endif
-    redraw!
-
+    " execute make inside the source folder so we can parse the errors
+    " correctly
+    let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+    let dir = getcwd()
+    try
+      execute cd . fnameescape(expand("%:p:h"))
+      if g:go_dispatch_enabled && exists(':Make') == 2
+          call go#util#EchoProgress("building dispatched ...")
+          silent! exe 'Make'
+      else
+          silent! exe 'lmake!'
+      endif
+      redraw!
+    finally
+      execute cd . fnameescape(dir)
+    endtry
 
     let errors = go#list#Get()
     call go#list#Window(len(errors))
@@ -62,9 +70,9 @@ endfunction
 
 
 " Run runs the current file (and their dependencies if any) in a new terminal.
-function! go#cmd#RunTerm(mode)
+function! go#cmd#RunTerm(bang, mode)
     let cmd = "go run ".  go#util#Shelljoin(go#tool#Files())
-    call go#term#newmode(cmd, a:mode)
+    call go#term#newmode(a:bang, cmd, a:mode)
 endfunction
 
 " Run runs the current file (and their dependencies if any) and outputs it.
@@ -73,7 +81,7 @@ endfunction
 " calling long running apps will block the whole UI.
 function! go#cmd#Run(bang, ...)
     if has('nvim')
-        call go#cmd#RunTerm('')
+        call go#cmd#RunTerm(a:bang, '')
         return
     endif
 
@@ -168,9 +176,9 @@ function! go#cmd#Test(bang, compile, ...)
 
     if has('nvim')
         if get(g:, 'go_term_enabled', 0)
-            call go#term#new(["go"] + args)
+            call go#term#new(a:bang, ["go"] + args)
         else
-            call go#jobcontrol#Spawn("test", args)
+            call go#jobcontrol#Spawn(a:bang, "test", args)
         endif
         return
     endif
@@ -195,6 +203,9 @@ function! go#cmd#Test(bang, compile, ...)
         call go#list#Window(len(errors))
         if !empty(errors) && !a:bang
             call go#list#JumpToFirst()
+        elseif empty(errors)
+            " failed to parse errors, output the original content
+            call go#util#EchoError(out)
         endif
         echon "vim-go: " | echohl ErrorMsg | echon "[test] FAIL" | echohl None
     else
