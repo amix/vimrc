@@ -221,10 +221,9 @@ that are part of Git repositories).
 
                                                 *fugitive-:Gbrowse*
 :Gbrowse                Open the current file, blob, tree, commit, or tag
-                        in your browser at the upstream hosting provider
-                        indicated by the "origin" remote.  If a range is
-                        given, it is appropriately appended to the URL as an
-                        anchor.
+                        in your browser at the upstream hosting provider.
+                        If a range is given, it is appropriately appended to
+                        the URL as an anchor.
 
                         Upstream providers can be added by installing an
                         appropriate Vim plugin.  For example, GitHub can be
@@ -233,8 +232,11 @@ that are part of Git repositories).
                         support for GitHub is currently included, but that is
                         slated to be removed.)
 
-                        If no upstream support is available, a local instance
-                        of git-instaweb will be started and used instead.
+                        The hosting provider is determined by looking at the
+                        remote for the current or specified branch and falls
+                        back to "origin".  In the special case of a "."
+                        remote, a local instance of git-instaweb will be
+                        started and used.
 
 :Gbrowse {revision}     Like :Gbrowse, but for a given |fugitive-revision|.  A
                         useful value here is -, which ties the URL to the

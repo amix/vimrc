@@ -439,7 +439,8 @@ Default: 2
 Use this option to tell syntastic to automatically open and/or close the
 |location-list| (see |syntastic-error-window|).
 
-When set to 0 the error window will not be opened or closed automatically. >
+When set to 0 the error window will be neither opened nor closed
+automatically. >
     let g:syntastic_auto_loc_list = 0
 <
 When set to 1 the error window will be automatically opened when errors are
@@ -449,6 +450,10 @@ detected, and closed when none are detected. >
 When set to 2 the error window will be automatically closed when no errors are
 detected, but not opened automatically. >
     let g:syntastic_auto_loc_list = 2
+<
+When set to 3 the error window will be automatically opened when errors are
+detected, but not closed automatically. >
+    let g:syntastic_auto_loc_list = 3
 <
                                                  *'syntastic_loc_list_height'*
 Default: 10
@@ -956,14 +961,12 @@ mode only work with "vim-auto-save" version 0.1.7 or later.
 ------------------------------------------------------------------------------
 7.10. vim-go                                                *syntastic-vim-go*
 
-The "vim-go" Vim plugin (https://github.com/fatih/vim-go) uses |quickfix|
-lists, and thus doesn't conflict with syntastic (which uses |location-list|
-lists).  However, both "vim-go" and syntastic run syntax checks by default
-when you save buffers to disk, and this can have confusing results.  To
-avoid both plugins opening error windows, you can either set passive
-mode for go in syntastic (see |syntastic_mode_map|), or prevent "vim-go"
-from showing a quickfix window when |g:go_fmt_command| fails, by setting
-|g:go_fmt_fail_silently| to 1.  E.g.: >
+Syntastic can be used along with the "vim-go" Vim plugin (see
+https://github.com/fatih/vim-go).  However, both "vim-go" and syntastic run
+syntax checks by default when you save buffers to disk.  To avoid conflicts,
+you have to either set passive mode in syntastic for the go filetype (see
+|syntastic_mode_map|), or prevent "vim-go" from showing a quickfix window when
+|g:go_fmt_command| fails, by setting |g:go_fmt_fail_silently| to 1.  E.g.: >
     let g:go_fmt_fail_silently = 1
 <
 ------------------------------------------------------------------------------

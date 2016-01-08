@@ -42,6 +42,7 @@ vim-go https://github.com/fatih/vim-go
 vim-gitgutter https://github.com/airblade/vim-gitgutter
 gruvbox https://github.com/morhetz/gruvbox
 vim-flake8 https://github.com/nvie/vim-flake8
+vim-jade https://github.com/digitaltoad/vim-jade
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'

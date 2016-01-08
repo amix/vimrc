@@ -14,6 +14,10 @@ if s:head_format == 1
   function! s:format_name(name)
     return fnamemodify(a:name, ':t')
   endfunction
+elseif s:head_format == 2
+  function! s:format_name(name)
+    return pathshorten(a:name)
+  endfunction
 elseif type(s:head_format) == type('')
   function! s:format_name(name)
     return call(s:head_format, [a:name])

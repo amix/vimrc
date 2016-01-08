@@ -320,8 +320,12 @@ vcscommand   <http://www.vim.org/scripts/script.php?script_id=90>
   " default value leaves the name unmodifed
   let g:airline#extensions#branch#format = 0
 
-  " to only show the tail, e.g. a branch 'feature/foo' show 'foo'
+  " to only show the tail, e.g. a branch 'feature/foo' becomes 'foo', use
   let g:airline#extensions#branch#format = 1
+
+  " to truncate all path sections but the last one, e.g. a branch
+  " 'foo/bar/baz' becomes 'f/b/baz', use
+  let g:airline#extensions#branch#format = 2
 
   " if a string is provided, it should be the name of a function that
   " takes a string and returns the desired value
