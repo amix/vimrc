@@ -1,3 +1,5 @@
+extends css
+
 snippet $
 	$${1:variable}: ${0:value};
 snippet imp
@@ -8,7 +10,7 @@ snippet mix
 	}
 snippet inc
 	@include ${1:mixin}(${2});
-snippet ex
+snippet ext
 	@extend ${0};
 snippet fun
 	@function ${1:name}(${2:args}) {

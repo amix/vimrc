@@ -19,7 +19,7 @@ setlocal includeexpr=substitute(v:fname,'\\%(.*/\\\|^\\)\\zs','_','')
 setlocal omnifunc=csscomplete#CompleteCSS
 setlocal suffixesadd=.less
 setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,://
-setlocal fo=jcroql
+setlocal fo=croql
 
 let &l:include = '^\s*@import\s\+\%(url(\)\=["'']\='
 

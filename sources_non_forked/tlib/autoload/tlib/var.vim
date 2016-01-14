@@ -1,15 +1,7 @@
-" var.vim
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-06-30.
-" @Last Change: 2014-07-08.
-" @Revision:    0.0.29
-
-if &cp || exists("loaded_tlib_var_autoload")
-    finish
-endif
-let loaded_tlib_var_autoload = 1
+" @Revision:    30
 
 
 " Define a variable called NAME if yet undefined.

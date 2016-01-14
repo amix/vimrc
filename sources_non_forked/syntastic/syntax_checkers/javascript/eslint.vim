@@ -18,21 +18,31 @@ if !exists('g:syntastic_javascript_eslint_sort')
     let g:syntastic_javascript_eslint_sort = 1
 endif
 
+if !exists('g:syntastic_javascript_eslint_generic')
+    let g:syntastic_javascript_eslint_generic = 0
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_javascript_eslint_IsAvailable() dict
+    if g:syntastic_javascript_eslint_generic
+        call self.log('generic eslint, exec =', self.getExec())
+    endif
+
     if !executable(self.getExec())
         return 0
     endif
-    return syntastic#util#versionIsAtLeast(self.getVersion(), [0, 1])
+    return g:syntastic_javascript_eslint_generic || syntastic#util#versionIsAtLeast(self.getVersion(), [0, 1])
 endfunction
 
 function! SyntaxCheckers_javascript_eslint_GetLocList() dict
-    call syntastic#log#deprecationWarn('javascript_eslint_conf', 'javascript_eslint_args',
-        \ "'--config ' . syntastic#util#shexpand(OLD_VAR)")
+    if !g:syntastic_javascript_eslint_generic
+        call syntastic#log#deprecationWarn('javascript_eslint_conf', 'javascript_eslint_args',
+            \ "'--config ' . syntastic#util#shexpand(OLD_VAR)")
+    endif
 
-    let makeprg = self.makeprgBuild({ 'args_before': '-f compact' })
+    let makeprg = self.makeprgBuild({ 'args_before': (g:syntastic_javascript_eslint_generic ? '' : '-f compact') })
 
     let errorformat =
         \ '%E%f: line %l\, col %c\, Error - %m,' .
@@ -43,9 +53,17 @@ function! SyntaxCheckers_javascript_eslint_GetLocList() dict
         \ 'errorformat': errorformat,
         \ 'postprocess': ['guards'] })
 
-    for e in loclist
-        let e['col'] += 1
-    endfor
+    if !g:syntastic_javascript_eslint_generic
+        if !exists('s:eslint_new')
+            let s:eslint_new = syntastic#util#versionIsAtLeast(self.getVersion(), [1])
+        endif
+
+        if !s:eslint_new
+            for e in loclist
+                let e['col'] += 1
+            endfor
+        endif
+    endif
 
     return loclist
 endfunction

@@ -1,7 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    1338
+" @Revision:    1366
 
 
 " :filedoc:
@@ -131,6 +131,7 @@ TLet g:tlib#input#keyagents_InputList_s = {
             \ "\<End>":      'tlib#agent#End',
             \ "\<Up>":       'tlib#agent#Up',
             \ "\<Down>":     'tlib#agent#Down',
+            \ 9:             'tlib#agent#Complete',
             \ "\<c-Up>":     'tlib#agent#UpN',
             \ "\<c-Down>":   'tlib#agent#DownN',
             \ "\<Left>":     'tlib#agent#ShiftLeft',
@@ -252,6 +253,9 @@ TLet g:tlib#input#filename_max_width = '&co / 2'
 " Several pattern matching styles are supported. See 
 " |g:tlib#input#filter_mode|.
 "
+" Users can type <Tab> to complete the current filter with the longest 
+" match.
+"
 " EXAMPLES: >
 "   echo tlib#input#List('s', 'Select one item', [100,200,300])
 "   echo tlib#input#List('si', 'Select one item', [100,200,300])
@@ -362,7 +366,7 @@ function! tlib#input#ListW(world, ...) "{{{3
             " let time01 = str2float(reltimestr(reltime()))  " DBG
             " TLogVAR time01, time01 - time0
             try
-                call s:RunStateHandlers(world)
+                let world = s:RunStateHandlers(world)
 
                 " if exists('b:tlib_world_event')
                 "     let event = b:tlib_world_event
@@ -518,7 +522,8 @@ function! tlib#input#ListW(world, ...) "{{{3
                     "     let world.offset = world.prefidx
                     " endif
                     " TLogDBG 8
-                    if world.initial_display || !tlib#char#IsAvailable()
+                    " TLogVAR world.initial_display, !tlib#char#IsAvailable()
+                    if world.state =~ '\<update\>' || world.initial_display || !tlib#char#IsAvailable()
                         " TLogDBG len(dlist)
                         call world.DisplayList(world.Query(), dlist)
                         call world.FollowCursor()
@@ -585,8 +590,9 @@ function! tlib#input#ListW(world, ...) "{{{3
                 if !empty(world.next_agent)
                     let nagent = world.next_agent
                     let world.next_agent = ''
-                    let world = call(nagent, [world, world.GetSelectedItems(world.CurrentItem())])
-                    call s:CheckAgentReturnValue(nagent, world)
+                    " let world = call(nagent, [world, world.GetSelectedItems(world.CurrentItem())])
+                    " call s:CheckAgentReturnValue(nagent, world)
+                    let world = s:CallAgent({'agent': nagent}, world, world.GetSelectedItems(world.CurrentItem()))
                 elseif !empty(world.next_eval)
                     let selected = world.GetSelectedItems(world.CurrentItem())
                     let neval = world.next_eval
@@ -601,9 +607,10 @@ function! tlib#input#ListW(world, ...) "{{{3
                     " TLogVAR c, world.key_map[world.key_mode][c]
                     " TLog "Agent: ". string(world.key_map[world.key_mode][c])
                     let handler = world.key_map[world.key_mode][c]
-                    " TLogVAR handler
-                    let world = call(handler.agent, [world, world.GetSelectedItems(world.CurrentItem())])
-                    call s:CheckAgentReturnValue(c, world)
+                    " " TLogVAR handler
+                    " let world = call(handler.agent, [world, world.GetSelectedItems(world.CurrentItem())])
+                    " call s:CheckAgentReturnValue(c, world)
+                    let world = s:CallAgent(handler, world, world.GetSelectedItems(world.CurrentItem()))
                     silent! let @/ = sr
                     " continue
                 elseif c == 13
@@ -662,8 +669,9 @@ function! tlib#input#ListW(world, ...) "{{{3
                     " TLogVAR world.prefidx, world.state
                 elseif has_key(world.key_map[world.key_mode], 'unknown_key')
                     let agent = world.key_map[world.key_mode].unknown_key.agent
-                    let world = call(agent, [world, c])
-                    call s:CheckAgentReturnValue(agent, world)
+                    " let world = call(agent, [world, c])
+                    " call s:CheckAgentReturnValue(agent, world)
+                    let world = s:CallAgent({'agent': agent}, world, c)
                 elseif c >= 32
                     let world.state = 'display'
                     let numbase = get(world.numeric_chars, c, -99999)
@@ -856,6 +864,18 @@ function! tlib#input#ListW(world, ...) "{{{3
 endf
 
 
+function! s:CallAgent(handler, world, list) abort "{{{3
+    let agent = a:handler.agent
+    let args = [a:world, a:list]
+    if has_key(a:handler, 'args')
+        let args += a:handler.args
+    endif
+    let world = call(agent, args)
+    " TLogVAR world.state, world.rv
+    call s:CheckAgentReturnValue(agent, world)
+    return world
+endf
+
 function! s:GetModdedChar(world) "{{{3
     let [char, mode] = tlib#char#Get(a:world.timeout, a:world.timeout_resolution, 1)
     if char !~ '\D' && char > 0 && mode != 0
@@ -916,6 +936,7 @@ function! s:Init(world, cmd) "{{{3
         for key_mode in keys(a:world.key_map)
             let a:world.key_map[key_mode] = map(a:world.key_map[key_mode], 'type(v:val) == 4 ? v:val : {"agent": v:val}')
         endfor
+        " TLogVAR a:world.key_mode
         if type(a:world.key_handlers) == 3
             call s:ExtendKeyMap(a:world, a:world.key_mode, a:world.key_handlers)
         elseif type(a:world.key_handlers) == 4
@@ -925,6 +946,7 @@ function! s:Init(world, cmd) "{{{3
         else
             throw "tlib#input#ListW: key_handlers must be either a list or a dictionary"
         endif
+        " TLogVAR a:world.type, a:world.key_map
         if !empty(a:cmd)
             let a:world.state .= ' '. a:cmd
         endif
@@ -943,7 +965,7 @@ function! s:ExtendKeyMap(world, key_mode, key_handlers) "{{{3
 endf
 
 
-function s:PopupmenuExists()
+function! s:PopupmenuExists()
     if !g:tlib#input#use_popup
                 \ || exists(':popup') != 2
                 \ || !(has('gui_win32') || has('gui_gtk') || has('gui_gtk2'))
@@ -1082,11 +1104,13 @@ function! s:RunStateHandlers(world) "{{{3
                 exec ea
             else
                 let agent = get(handler, 'agent', '')
-                let a:world = call(agent, [a:world, a:world.GetSelectedItems(a:world.CurrentItem())])
-                call s:CheckAgentReturnValue(agent, a:world)
+                " let world = call(agent, [a:world, a:world.GetSelectedItems(a:world.CurrentItem())])
+                " call s:CheckAgentReturnValue(agent, a:world)
+                let world = s:CallAgent({'agent': agent}, world, world.GetSelectedItems(world.CurrentItem()))
             endif
         endif
     endfor
+    return world
 endf
 
 

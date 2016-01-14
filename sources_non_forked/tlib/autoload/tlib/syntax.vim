@@ -1,17 +1,7 @@
-" syntax.vim
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-11-19.
-" @Last Change: 2009-02-15.
-" @Revision:    0.0.11
-
-if &cp || exists("loaded_tlib_syntax_autoload")
-    finish
-endif
-let loaded_tlib_syntax_autoload = 1
-let s:save_cpo = &cpo
-set cpo&vim
+" @Revision:    13
 
 
 function! tlib#syntax#Collect() "{{{3
@@ -23,7 +13,7 @@ function! tlib#syntax#Collect() "{{{3
         elseif line =~ '^\w'
             let ml = matchlist(line, '^\(\w\+\)\s\+\(xxx\s\+\(.*\)\|\(cluster.*\)\)$')
             if empty(ml)
-                echoerr 'Internal error: '. string(line)
+                " echoerr 'Internal error: '. string(line)
             else
                 let [m_0, syn, m_1, m_def1, m_def2; m_rest] = ml
                 let acc[syn] = [empty(m_def1) ? m_def2 : m_def1]
@@ -46,6 +36,3 @@ function! tlib#syntax#Names(...) "{{{3
     return names
 endf
 
-
-let &cpo = s:save_cpo
-unlet s:save_cpo

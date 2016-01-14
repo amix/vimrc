@@ -2,7 +2,7 @@ if !exists("g:go_gorename_bin")
     let g:go_gorename_bin = "gorename"
 endif
 
-function! go#rename#Rename(...)
+function! go#rename#Rename(bang, ...)
     let to = ""
     if a:0 == 0
         let from = expand("<cword>")
@@ -12,7 +12,6 @@ function! go#rename#Rename(...)
     else
         let to = a:1
     endif
-
 
     "return with a warning if the bin doesn't exist
     let bin_path = go#path#CheckBinPath(g:go_gorename_bin) 
@@ -31,12 +30,26 @@ function! go#rename#Rename(...)
     let clean = split(out, '\n')
 
     if v:shell_error
-        redraw | echon "vim-go: " | echohl Statement | echon clean[0] | echohl None
+        let errors = go#tool#ParseErrors(split(out, '\n'))
+        call go#list#Populate(errors)
+        call go#list#Window(len(errors))
+        if !empty(errors) && !a:bang
+            call go#list#JumpToFirst()
+        elseif empty(errors)
+            " failed to parse errors, output the original content
+            call go#util#EchoError(out)
+        endif
+        return
     else
+        call go#list#Clean()
+        call go#list#Window()
         redraw | echon "vim-go: " | echohl Function | echon clean[0] | echohl None
     endif
 
     " refresh the buffer so we can see the new content
+    " TODO(arslan): also find all other buffers and refresh them too. For this
+    " we need a way to get the list of changes from gorename upon an success
+    " change.
     silent execute ":e"
 endfunction
 

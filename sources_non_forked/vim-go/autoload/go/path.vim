@@ -65,10 +65,10 @@ function! go#path#HasPath(path)
     return hasA || hasB
 endfunction
 
-" Detect returns the current GOPATH. If a package manager is used, such
-" as Godeps or something like gb (not supported yet), it will modify the
-" GOPATH so those directories take precedence over the current GOPATH. It also
-" detects diretories whose are outside GOPATH.
+" Detect returns the current GOPATH. If a package manager is used, such as
+" Godeps, GB, it will modify the GOPATH so those directories take precedence
+" over the current GOPATH. It also detects diretories whose are outside
+" GOPATH.
 function! go#path#Detect()
     let gopath = $GOPATH
 

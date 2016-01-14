@@ -19,6 +19,10 @@ if !exists('g:syntastic_asm_compiler_options')
     let g:syntastic_asm_compiler_options = ''
 endif
 
+if !exists('g:syntastic_asm_generic')
+    let g:syntastic_asm_generic = 0
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -36,14 +40,13 @@ function! SyntaxCheckers_asm_gcc_GetLocList() dict " {{{1
         \     '%f:%l:%c: %trror: %m,' .
         \     '%f:%l:%c: %tarning: %m,' .
         \     '%f:%l: %m',
-        \ 'main_flags': '-x assembler -fsyntax-only -masm=' . s:GetDialect() })
+        \ 'main_flags': '-x assembler -fsyntax-only' . (g:syntastic_asm_generic ? '' : ' -masm=' . s:GetDialect()) })
 endfunction " }}}1
 
 " Utilities {{{1
 
 function! s:GetDialect() " {{{2
-    return exists('g:syntastic_asm_dialect') ? g:syntastic_asm_dialect :
-        \ expand('%:e', 1) ==? 'asm' ? 'intel' : 'att'
+    return syntastic#util#var('asm_dialect', expand('%:e', 1) ==? 'asm' ? 'intel' : 'att')
 endfunction " }}}2
 
 " }}}1

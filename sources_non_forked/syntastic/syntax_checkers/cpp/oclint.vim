@@ -14,8 +14,6 @@ if exists('g:loaded_syntastic_cpp_oclint_checker')
 endif
 let g:loaded_syntastic_cpp_oclint_checker = 1
 
-runtime! syntax_checkers/c/*.vim
-
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'cpp',
     \ 'name': 'oclint',

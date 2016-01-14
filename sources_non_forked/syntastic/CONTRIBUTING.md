@@ -40,8 +40,8 @@ too:
 
 Before you consider adding features to syntastic, _please_ spend a few
 minutes (re-)reading the latest version of the [manual][1].  Syntastic
-is changing rapidly at times, and it's quite possible that some of the
-features you want to add exist already.
+is changing rapidly at times, and it's quite possible that some features
+you want to add exist already.
 
 To submit a patch:
 
@@ -54,7 +54,7 @@ Small, focused patches are preferred.
 Large changes to the code should be discussed with the core team first.
 Create an issue and explain your plan and see what we say.
 
-Also make sure to update the manual whenever applicable.  Nobody can use
+Also, make sure to update the manual whenever applicable.  Nobody can use
 features that aren't documented.
 
 <a name="generalstyle"></a>

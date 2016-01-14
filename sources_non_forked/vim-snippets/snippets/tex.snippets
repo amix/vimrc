@@ -76,6 +76,14 @@ snippet enum enumerate environment
 	\begin{enumerate}
 		\item ${0}
 	\end{enumerate}
+snippet enuma enumerate environment
+	\begin{enumerate}[(a)]
+		\item ${0}
+	\end{enumerate}
+snippet enumi enumerate environment
+	\begin{enumerate}[(i)]
+		\item ${0}
+	\end{enumerate}
 # Itemize
 snippet itemize itemize environment
 	\begin{itemize}
@@ -249,7 +257,7 @@ snippet frac \frac{}{}
 snippet sum \sum^{}_{}
 	\sum^{${1:n}}_{${2:i=1}} ${0}
 snippet lim \lim_{}
-	\lim_{${1:x \to +\infty}} ${0}
+	\lim_{${1:n \to \infty}} ${0}
 snippet frame frame environment
 	\begin{frame}[${1:t}]{${2:title}}
 		${0}
@@ -275,7 +283,11 @@ snippet col2 two-column environment
 			${0}
 		\end{column}
 	\end{columns}
+snippet \{ \{ \}
+	\\{ ${0} \\}
 #delimiter
+snippet lr left right
+	\left${1} ${0} \right$1
 snippet lr( left( right) 
 	\left( ${0} \right)
 snippet lr| left| right| 
@@ -286,7 +298,6 @@ snippet lr[ left[ right]
 	\left[ ${0} \right]
 snippet lra langle rangle 
 	\langle ${0} \rangle
-
 # Code listings
 snippet lst
 	\begin{listing}[language=${1:language}]

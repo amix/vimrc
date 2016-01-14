@@ -1,6 +1,9 @@
 snippet #!
 	#!/usr/bin/env python
 	# -*- coding: utf-8 -*-
+snippet #!3
+	#!/usr/bin/env python3
+	# -*- coding: utf-8 -*-
 snippet imp
 	import ${0:module}
 snippet uni
@@ -145,6 +148,9 @@ snippet ptpython
 # python console debugger (pudb)
 snippet pudb
 	import pudb; pudb.set_trace()
+# pdb in nosetests
+snippet nosetrace
+	from nose.tools import set_trace; set_trace()
 snippet pprint
 	import pprint; pprint.pprint(${1})
 snippet "

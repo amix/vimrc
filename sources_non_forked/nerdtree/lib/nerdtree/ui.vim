@@ -21,18 +21,18 @@ endfunction
 "prints out the quick help
 function! s:UI._dumpHelp()
     let old_h = @h
-    if b:treeShowHelp ==# 1
+    if self.getShowHelp()
         let @h=   "\" NERD tree (" . nerdtree#version() . ") quickhelp~\n"
         let @h=@h."\" ============================\n"
         let @h=@h."\" File node mappings~\n"
         let @h=@h."\" ". (g:NERDTreeMouseMode ==# 3 ? "single" : "double") ."-click,\n"
         let @h=@h."\" <CR>,\n"
-        if b:NERDTreeType ==# "primary"
+        if self.nerdtree.isTabTree()
             let @h=@h."\" ". g:NERDTreeMapActivateNode .": open in prev window\n"
         else
             let @h=@h."\" ". g:NERDTreeMapActivateNode .": open in current window\n"
         endif
-        if b:NERDTreeType ==# "primary"
+        if self.nerdtree.isTabTree()
             let @h=@h."\" ". g:NERDTreeMapPreview .": preview\n"
         endif
         let @h=@h."\" ". g:NERDTreeMapOpenInTab.": open in new tab\n"
@@ -87,10 +87,10 @@ function! s:UI._dumpHelp()
 
         let @h=@h."\"\n\" ----------------------------\n"
         let @h=@h."\" Tree filtering mappings~\n"
-        let @h=@h."\" ". g:NERDTreeMapToggleHidden .": hidden files (" . (b:NERDTreeShowHidden ? "on" : "off") . ")\n"
-        let @h=@h."\" ". g:NERDTreeMapToggleFilters .": file filters (" . (b:NERDTreeIgnoreEnabled ? "on" : "off") . ")\n"
-        let @h=@h."\" ". g:NERDTreeMapToggleFiles .": files (" . (b:NERDTreeShowFiles ? "on" : "off") . ")\n"
-        let @h=@h."\" ". g:NERDTreeMapToggleBookmarks .": bookmarks (" . (b:NERDTreeShowBookmarks ? "on" : "off") . ")\n"
+        let @h=@h."\" ". g:NERDTreeMapToggleHidden .": hidden files (" . (self.getShowHidden() ? "on" : "off") . ")\n"
+        let @h=@h."\" ". g:NERDTreeMapToggleFilters .": file filters (" . (self.isIgnoreFilterEnabled() ? "on" : "off") . ")\n"
+        let @h=@h."\" ". g:NERDTreeMapToggleFiles .": files (" . (self.getShowFiles() ? "on" : "off") . ")\n"
+        let @h=@h."\" ". g:NERDTreeMapToggleBookmarks .": bookmarks (" . (self.getShowBookmarks() ? "on" : "off") . ")\n"
 
         "add quickhelp entries for each custom key map
         let @h=@h."\"\n\" ----------------------------\n"
@@ -116,7 +116,7 @@ function! s:UI._dumpHelp()
         let @h=@h."\" :ClearBookmarks [<names>]\n"
         let @h=@h."\" :ClearAllBookmarks\n"
         silent! put h
-    elseif g:NERDTreeMinimalUI == 0
+    elseif !self.isMinimal()
         let @h="\" Press ". g:NERDTreeMapHelp ." for help\n"
         silent! put h
     endif
@@ -129,6 +129,12 @@ endfunction
 function! s:UI.New(nerdtree)
     let newObj = copy(self)
     let newObj.nerdtree = a:nerdtree
+    let newObj._showHelp = 0
+    let newObj._ignoreEnabled = 1
+    let newObj._showFiles = g:NERDTreeShowFiles
+    let newObj._showHidden = g:NERDTreeShowHidden
+    let newObj._showBookmarks = g:NERDTreeShowBookmarks
+
     return newObj
 endfunction
 
@@ -149,18 +155,11 @@ function! s:UI.getPath(ln)
 
     "check to see if we have the root node
     if a:ln == rootLine
-        return b:NERDTreeRoot.path
-    endif
-
-    if !g:NERDTreeDirArrows
-        " in case called from outside the tree
-        if line !~# '^ *[|`▸▾ ]' || line =~# '^$'
-            return {}
-        endif
+        return self.nerdtree.root.path
     endif
 
     if line ==# s:UI.UpDirLine()
-        return b:NERDTreeRoot.path.getParent()
+        return self.nerdtree.root.path.getParent()
     endif
 
     let indent = self._indentLevelFor(line)
@@ -183,7 +182,7 @@ function! s:UI.getPath(ln)
 
         "have we reached the top of the tree?
         if lnum == rootLine
-            let dir = b:NERDTreeRoot.path.str({'format': 'UI'}) . dir
+            let dir = self.nerdtree.root.path.str({'format': 'UI'}) . dir
             break
         endif
         if curLineStripped =~# '/$'
@@ -196,7 +195,7 @@ function! s:UI.getPath(ln)
             endif
         endif
     endwhile
-    let curFile = b:NERDTreeRoot.path.drive . dir . curFile
+    let curFile = self.nerdtree.root.path.drive . dir . curFile
     let toReturn = g:NERDTreePath.New(curFile)
     return toReturn
 endfunction
@@ -206,19 +205,19 @@ endfunction
 function! s:UI.getLineNum(file_node)
     "if the node is the root then return the root line no.
     if a:file_node.isRoot()
-        return b:NERDTree.ui.getRootLineNum()
+        return self.getRootLineNum()
     endif
 
     let totalLines = line("$")
 
     "the path components we have matched so far
-    let pathcomponents = [substitute(b:NERDTreeRoot.path.str({'format': 'UI'}), '/ *$', '', '')]
+    let pathcomponents = [substitute(self.nerdtree.root.path.str({'format': 'UI'}), '/ *$', '', '')]
     "the index of the component we are searching for
     let curPathComponent = 1
 
     let fullpath = a:file_node.path.str({'format': 'UI'})
 
-    let lnum = b:NERDTree.ui.getRootLineNum()
+    let lnum = self.getRootLineNum()
     while lnum > 0
         let lnum = lnum + 1
         "have we reached the bottom of the tree?
@@ -259,15 +258,33 @@ function! s:UI.getRootLineNum()
     return rootLine
 endfunction
 
+"FUNCTION: s:UI.getShowBookmarks() {{{1
+function! s:UI.getShowBookmarks()
+    return self._showBookmarks
+endfunction
+
+"FUNCTION: s:UI.getShowFiles() {{{1
+function! s:UI.getShowFiles()
+    return self._showFiles
+endfunction
+
+"FUNCTION: s:UI.getShowHelp() {{{1
+function! s:UI.getShowHelp()
+    return self._showHelp
+endfunction
+
+"FUNCTION: s:UI.getShowHidden() {{{1
+function! s:UI.getShowHidden()
+    return self._showHidden
+endfunction
+
 "FUNCTION: s:UI._indentLevelFor(line) {{{1
 function! s:UI._indentLevelFor(line)
-    let level = match(a:line, '[^ \-+~▸▾`|]') / s:UI.IndentWid()
-    " check if line includes arrows
-    if match(a:line, '[▸▾]') > -1
-        " decrement level as arrow uses 3 ascii chars
-        let level = level - 1
-    endif
-    return level
+    "have to do this work around because match() returns bytes, not chars
+    let numLeadBytes = match(a:line, '\M\[^ '.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.']')
+    let leadChars = strchars(a:line[0:numLeadBytes-1])
+
+    return leadChars / s:UI.IndentWid()
 endfunction
 
 "FUNCTION: s:UI.IndentWid() {{{1
@@ -275,19 +292,25 @@ function! s:UI.IndentWid()
     return 2
 endfunction
 
+"FUNCTION: s:UI.isIgnoreFilterEnabled() {{{1
+function! s:UI.isIgnoreFilterEnabled()
+    return self._ignoreEnabled == 1
+endfunction
+
+"FUNCTION: s:UI.isMinimal() {{{1
+function! s:UI.isMinimal()
+    return g:NERDTreeMinimalUI
+endfunction
+
 "FUNCTION: s:UI.MarkupReg() {{{1
 function! s:UI.MarkupReg()
-    if g:NERDTreeDirArrows
-        return '^\([▾▸] \| \+[▾▸] \| \+\)'
-    endif
-
-    return '^[ `|]*[\-+~]'
+    return '^\(['.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.'] \| \+['.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.'] \| \+\)'
 endfunction
 
 "FUNCTION: s:UI._renderBookmarks {{{1
 function! s:UI._renderBookmarks()
 
-    if g:NERDTreeMinimalUI == 0
+    if !self.isMinimal()
         call setline(line(".")+1, ">----------Bookmarks----------")
         call cursor(line(".")+1, col("."))
     endif
@@ -332,6 +355,11 @@ function! s:UI.saveScreenState()
     let self._screenState['oldTopLine'] = line("w0")
     let self._screenState['oldWindowSize']= winwidth("")
     call nerdtree#exec(win . "wincmd w")
+endfunction
+
+"FUNCTION: s:UI.setShowHidden(val) {{{1
+function! s:UI.setShowHidden(val)
+    let self._showHidden = a:val
 endfunction
 
 "FUNCTION: s:UI._stripMarkup(line, removeLeadingSpaces){{{1
@@ -390,29 +418,29 @@ function! s:UI.render()
     call self._dumpHelp()
 
     "delete the blank line before the help and add one after it
-    if g:NERDTreeMinimalUI == 0
+    if !self.isMinimal()
         call setline(line(".")+1, "")
         call cursor(line(".")+1, col("."))
     endif
 
-    if b:NERDTreeShowBookmarks
+    if self.getShowBookmarks()
         call self._renderBookmarks()
     endif
 
     "add the 'up a dir' line
-    if !g:NERDTreeMinimalUI
+    if !self.isMinimal()
         call setline(line(".")+1, s:UI.UpDirLine())
         call cursor(line(".")+1, col("."))
     endif
 
     "draw the header line
-    let header = b:NERDTreeRoot.path.str({'format': 'UI', 'truncateTo': winwidth(0)})
+    let header = self.nerdtree.root.path.str({'format': 'UI', 'truncateTo': winwidth(0)})
     call setline(line(".")+1, header)
     call cursor(line(".")+1, col("."))
 
     "draw the tree
     let old_o = @o
-    let @o = b:NERDTreeRoot.renderToString()
+    let @o = self.nerdtree.root.renderToString()
     silent put o
     let @o = old_o
 
@@ -443,47 +471,52 @@ function! s:UI.renderViewSavingPosition()
         let currentNode = currentNode.parent
     endwhile
 
-    call b:NERDTree.render()
+    call self.render()
 
     if currentNode != {}
         call currentNode.putCursorHere(0, 0)
     endif
 endfunction
 
+"FUNCTION: s:UI.toggleHelp() {{{1
+function! s:UI.toggleHelp()
+    let self._showHelp = !self._showHelp
+endfunction
+
 " FUNCTION: s:UI.toggleIgnoreFilter() {{{1
 " toggles the use of the NERDTreeIgnore option
 function! s:UI.toggleIgnoreFilter()
-    let b:NERDTreeIgnoreEnabled = !b:NERDTreeIgnoreEnabled
-    call b:NERDTree.ui.renderViewSavingPosition()
-    call b:NERDTree.ui.centerView()
+    let self._ignoreEnabled = !self._ignoreEnabled
+    call self.renderViewSavingPosition()
+    call self.centerView()
 endfunction
 
 " FUNCTION: s:UI.toggleShowBookmarks() {{{1
 " toggles the display of bookmarks
 function! s:UI.toggleShowBookmarks()
-    let b:NERDTreeShowBookmarks = !b:NERDTreeShowBookmarks
-    if b:NERDTreeShowBookmarks
-        call b:NERDTree.render()
+    let self._showBookmarks = !self._showBookmarks
+    if self.getShowBookmarks()
+        call self.nerdtree.render()
         call g:NERDTree.CursorToBookmarkTable()
     else
-        call b:NERDTree.ui.renderViewSavingPosition()
+        call self.renderViewSavingPosition()
     endif
-    call b:NERDTree.ui.centerView()
+    call self.centerView()
 endfunction
 
 " FUNCTION: s:UI.toggleShowFiles() {{{1
 " toggles the display of hidden files
 function! s:UI.toggleShowFiles()
-    let b:NERDTreeShowFiles = !b:NERDTreeShowFiles
-    call b:NERDTree.ui.renderViewSavingPosition()
-    call b:NERDTree.ui.centerView()
+    let self._showFiles = !self._showFiles
+    call self.renderViewSavingPosition()
+    call self.centerView()
 endfunction
 
 " FUNCTION: s:UI.toggleShowHidden() {{{1
 " toggles the display of hidden files
 function! s:UI.toggleShowHidden()
-    let b:NERDTreeShowHidden = !b:NERDTreeShowHidden
-    call b:NERDTree.ui.renderViewSavingPosition()
+    let self._showHidden = !self._showHidden
+    call self.renderViewSavingPosition()
     call self.centerView()
 endfunction
 

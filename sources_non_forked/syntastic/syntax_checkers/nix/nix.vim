@@ -23,14 +23,15 @@ function! SyntaxCheckers_nix_nix_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': '--parse-only' })
 
     let errorformat =
-        \ '%m\, at %f:%l:%c,' .
-        \ '%m at %f\, line %l:,' .
-        \ 'error: %m\, in %f'
+        \ '%f:%l:%c:%m,' .
+        \ '%f:%l:%m,' .
+        \ '%f:%m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'type': 'e'} })
+        \ 'defaults': {'type': 'e'},
+        \ 'preprocess': 'nix' })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

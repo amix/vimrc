@@ -11,7 +11,7 @@ snippet fun
 		${0}
 	}
 # Anonymous Function
-snippet f
+snippet f "" w
 	function(${1}) {
 		${0}
 	}
@@ -80,6 +80,18 @@ snippet try
 	} catch (${2:e}) {
 		${0:/* handle error */}
 	}
+# try finally
+snippet tryf
+	try {
+		${1}
+	} catch (${2:e}) {
+		${0:/* handle error */}
+	} finally {
+		${3:/* be executed regardless of the try / catch result*/}
+	}
+# throw Error
+snippet terr
+	throw new Error('${1:error message}')
 # return
 snippet ret
 	return ${0:result};
@@ -88,12 +100,12 @@ snippet ret
 
 # for loop
 snippet for
-	for (var ${2:i} = 0, l = ${1:arr}.length; $2 < l; $2 ++) {
+	for (var ${2:i} = 0, l = ${1:arr}.length; $2 < l; $2++) {
 		var ${3:v} = $1[$2];${0:}
 	}
 # Reversed for loop
 snippet forr
-	for (var ${2:i} = ${1:arr}.length - 1; $2 >= 0; $2 --) {
+	for (var ${2:i} = ${1:arr}.length - 1; $2 >= 0; $2--) {
 		var ${3:v} = $1[$2];${0:}
 	}
 # While loop
@@ -203,7 +215,6 @@ snippet @par
 	@param {${1:type}} ${2:name} ${0:description}
 snippet @ret
 	@return {${1:type}} ${0:description}
-
 # JSON
 
 # JSON.parse
@@ -243,6 +254,9 @@ snippet cl
 # console.debug
 snippet cd
 	console.debug(${0});
+# console.err
+snippet ce
+	console.err(${0});
 # console.trace
 snippet ct
 	console.trace(${0:label});

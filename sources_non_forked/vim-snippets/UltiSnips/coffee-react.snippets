@@ -1,0 +1,80 @@
+#
+# CoffeeScript versions -- adapted from coffee-jasmine
+# for some ReactJS matchers.
+#
+priority -50
+
+extends coffee
+
+priority -49
+
+snippet createClass "React define Class" b
+${1:classname}Class = React.createClass
+	displayName: "$1"
+	render: ->
+		${2}
+$1 = React.createFactory($1)
+endsnippet
+
+snippet PropTypes "React define propTypes" b
+propTypes: ->
+	${1:myVar}: React.PropTypes.${2:type}${3:.isRequired}
+endsnippet
+
+snippet propType "React propType (key/value)" b
+${1:myVar}: React.PropTypes.${2:type}${3:.isRequired}
+${4}
+endsnippet
+
+snippet setState "React setState" b
+@setState
+	${1:myvar}: ${2:myvalue}
+	${3}
+endsnippet
+
+snippet getInitialState "React define getInitialState" b
+getInitialState: ->
+	${1:myvar}: ${2:myvalue}
+	${3}
+endsnippet
+
+snippet getDefaultProps "React define getDefaultProps" b
+getDefaultProps: ->
+	${1:myvar}: ${2:myvalue}
+	${3}
+endsnippet
+
+snippet componentWillMount "React define componentWillMount" b
+componentWillMount: ->
+	${1}
+endsnippet
+
+snippet componentDidMount "React define componentDidMount" b
+componentDidMount: ->
+	${1}
+endsnippet
+
+snippet componentWillReceiveProps "React define componentWillReceiveProps" b
+componentWillReceiveProps: (nextProps) ->
+	${1}
+endsnippet
+
+snippet shouldComponentUpdate "React define shouldComponentUpdate" b
+shouldComponentUpdate: (nextProps, nextState) ->
+	${1}
+endsnippet
+
+snippet componentWillUpdate "React define componentWillUpdate" b
+componentWillUpdate: (nextProps, nextState) ->
+	${1}
+endsnippet
+
+snippet componentDidUpdate "React define componentDidUpdate" b
+componentDidUpdate: (prevProps, prevState) ->
+	${1}
+endsnippet
+
+snippet componentWillUnmount "React define componentWillUnmount" b
+componentWillUnmount: ->
+	${1}
+endsnippet

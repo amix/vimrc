@@ -16,8 +16,8 @@ snippet marginconvention
 	var ${8:height} = ${9:500} - $1.top - $1.bottom;
 	
 	var ${10:svg} = d3.select("${11}").append("svg")
-	  .attr("width", $6)
-	  .attr("height", $8)
+	  .attr("width", $6 + $1.left + $1.right)
+	  .attr("height", $8 + $1.top + $1.bottom)
 	    .append("g")
 	  .attr("transform", "translate(" + $1.left + "," + $1.top + ")")
 snippet nest

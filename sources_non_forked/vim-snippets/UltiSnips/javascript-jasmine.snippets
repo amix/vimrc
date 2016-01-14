@@ -28,8 +28,38 @@ afterEach(function() {
 });
 endsnippet
 
+snippet befa "before all (js)" b
+beforeAll(function() {
+	$0
+});
+endsnippet
+
+snippet afta "after all (js)" b
+afterAll(function() {
+	$0
+});
+endsnippet
+
 snippet any "any (js)" b
 jasmine.any($1)
+endsnippet
+
+snippet anyt "anything (js)" b
+jasmine.anything()
+endsnippet
+
+snippet objc "object containing (js)" b
+jasmine.objectContaining({
+	${VISUAL}$0
+});
+endsnippet
+
+snippet arrc "array containing (js)" b
+jasmine.arrayContaining([${1:value1}]);
+endsnippet
+
+snippet strm "string matching (js)" b
+jasmine.stringMatching("${1:matcher}")
 endsnippet
 
 snippet ru "runs (js)" b
@@ -48,6 +78,14 @@ endsnippet
 
 snippet ee "expect to equal (js)" b
 expect(${1:target}).toEqual(${2:value});
+endsnippet
+
+snippet el "expect to be less than (js)" b
+expect(${1:target}).toBeLessThan(${2:value});
+endsnippet
+
+snippet eg "expect to be greater than (js)" b
+expect(${1:target}).toBeGreaterThan(${2:value});
 endsnippet
 
 snippet eb "expect to be (js)" b
@@ -74,6 +112,10 @@ snippet ed "expect to be defined (js)" b
 expect(${1:target}).toBeDefined();
 endsnippet
 
+snippet eud "expect to be defined (js)" b
+expect(${1:target}).toBeUndefined();
+endsnippet
+
 snippet en "expect to be null (js)" b
 expect(${1:target}).toBeNull();
 endsnippet
@@ -96,6 +138,14 @@ endsnippet
 
 snippet note "expect not to equal (js)" b
 expect(${1:target}).not.toEqual(${2:value});
+endsnippet
+
+snippet notl "expect to not be less than (js)" b
+expect(${1:target}).not.toBeLessThan(${2:value});
+endsnippet
+
+snippet notg "expect to not be greater than (js)" b
+expect(${1:target})..not.toBeGreaterThan(${2:value});
 endsnippet
 
 snippet notm "expect not to match (js)" b
@@ -139,35 +189,19 @@ spyOn(${1:object}, '${2:method}')$0;
 endsnippet
 
 snippet sr "spy on and return (js)" b
-spyOn(${1:object}, '${2:method}').andReturn(${3:arguments});
+spyOn(${1:object}, '${2:method}').and.returnValue(${3:arguments});
 endsnippet
 
 snippet st "spy on and throw (js)" b
-spyOn(${1:object}, '${2:method}').andThrow(${3:exception});
+spyOn(${1:object}, '${2:method}').and.throwError(${3:exception});
 endsnippet
 
 snippet sct "spy on and call through (js)" b
-spyOn(${1:object}, '${2:method}').andCallThrough();
+spyOn(${1:object}, '${2:method}').and.callThrough();
 endsnippet
 
 snippet scf "spy on and call fake (js)" b
-spyOn(${1:object}, '${2:method}').andCallFake(${3:function});
-endsnippet
-
-snippet esc "expect was called (js)" b
-expect(${1:target}).wasCalled();
-endsnippet
-
-snippet escw "expect was called with (js)" b
-expect(${1:target}).wasCalledWith(${2:arguments});
-endsnippet
-
-snippet notsc "expect was not called (js)" b
-expect(${1:target}).wasNotCalled();
-endsnippet
-
-snippet noscw "expect was not called with (js)" b
-expect(${1:target}).wasNotCalledWith(${2:arguments});
+spyOn(${1:object}, '${2:method}').and.callFake(${3:function});
 endsnippet
 
 snippet ethbc "expect to have been called (js)" b

@@ -27,7 +27,7 @@ endfunction
 
 " IsWin returns 1 if current OS is Windows or 0 otherwise
 function! go#util#IsWin()
-	let win = ['win16', 'win32', 'win32unix', 'win64', 'win95']
+	let win = ['win16', 'win32', 'win64', 'win95']
 	for w in win
 		if (has(w))
 			return 1
@@ -46,6 +46,44 @@ function! go#util#StripPathSep(path)
 	endif
 
 	return a:path
+endfunction
+
+" Shelljoin returns a shell-safe string representation of arglist. The
+" {special} argument of shellescape() may optionally be passed.
+function! go#util#Shelljoin(arglist, ...)
+	if a:0
+		return join(map(copy(a:arglist), 'shellescape(v:val, ' . a:1 . ')'), ' ')
+	endif
+
+	return join(map(copy(a:arglist), 'shellescape(v:val)'), ' ')
+endfunction
+
+" Shelljoin returns a shell-safe representation of the items in the given
+" arglist. The {special} argument of shellescape() may optionally be passed.
+function! go#util#Shelllist(arglist, ...)
+	if a:0
+		return map(copy(a:arglist), 'shellescape(v:val, ' . a:1 . ')')
+    endif
+	return map(copy(a:arglist), 'shellescape(v:val)')
+endfunction
+
+" TODO(arslan): I couldn't parameterize the highlight types. Check if we can
+" simplify the following functions
+
+function! go#util#EchoSuccess(msg)
+    redraws! | echon "vim-go: " | echohl Function | echon a:msg | echohl None
+endfunction
+
+function! go#util#EchoError(msg)
+    redraws! | echon "vim-go: " | echohl ErrorMsg | echon a:msg | echohl None
+endfunction
+
+function! go#util#EchoWarning(msg)
+    redraws! | echon "vim-go: " | echohl WarningMsg | echon a:msg | echohl None
+endfunction
+
+function! go#util#EchoProgress(msg)
+    redraws! | echon "vim-go: " | echohl Identifier | echon a:msg | echohl None
 endfunction
 
 " vim:ts=4:sw=4:et

@@ -9,7 +9,7 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_plugin')
+if exists('g:loaded_syntastic_plugin') || &compatible
     finish
 endif
 let g:loaded_syntastic_plugin = 1
@@ -19,10 +19,15 @@ if has('reltime')
     lockvar! g:_SYNTASTIC_START
 endif
 
-let g:_SYNTASTIC_VERSION = '3.6.0-122'
+let g:_SYNTASTIC_VERSION = '3.7.0-69'
 lockvar g:_SYNTASTIC_VERSION
 
 " Sanity checks {{{1
+
+if v:version < 700 || (v:version == 700 && !has('patch175'))
+    call syntastic#log#error('need Vim version 7.0.175 or later')
+    finish
+endif
 
 for s:feature in [
             \ 'autocmd',
@@ -87,6 +92,7 @@ let g:_SYNTASTIC_DEFAULTS = {
         \ 'ignore_extensions':        '\c\v^([gx]?z|lzma|bz2)$',
         \ 'ignore_files':             [],
         \ 'loc_list_height':          10,
+        \ 'nested_autocommands':      0,
         \ 'quiet_messages':           {},
         \ 'reuse_loc_lists':          0,
         \ 'shell':                    &shell,
@@ -130,7 +136,7 @@ let s:_DEBUG_DUMP_OPTIONS = [
         \ 'shelltemp',
         \ 'shellxquote'
     \ ]
-if v:version > 703 || (v:version == 703 && has('patch446'))
+if exists('+shellxescape')
     call add(s:_DEBUG_DUMP_OPTIONS, 'shellxescape')
 endif
 lockvar! s:_DEBUG_DUMP_OPTIONS
@@ -156,6 +162,8 @@ runtime! plugin/syntastic/*.vim
 let s:registry = g:SyntasticRegistry.Instance()
 let s:notifiers = g:SyntasticNotifiers.Instance()
 let s:modemap = g:SyntasticModeMap.Instance()
+
+let s:_quit_pre = []
 
 " Commands {{{1
 
@@ -184,12 +192,15 @@ endfunction " }}}2
 " @vimlint(EVL103, 0, a:cmdLine)
 " @vimlint(EVL103, 0, a:argLead)
 
-command! -nargs=* -complete=custom,s:CompleteCheckerName SyntasticCheck call SyntasticCheck(<f-args>)
-command! -nargs=? -complete=custom,s:CompleteFiletypes   SyntasticInfo  call SyntasticInfo(<f-args>)
-command! Errors              call SyntasticErrors()
-command! SyntasticReset      call SyntasticReset()
-command! SyntasticToggleMode call SyntasticToggleMode()
-command! SyntasticSetLoclist call SyntasticSetLoclist()
+command! -bar -nargs=* -complete=custom,s:CompleteCheckerName SyntasticCheck call SyntasticCheck(<f-args>)
+command! -bar -nargs=? -complete=custom,s:CompleteFiletypes   SyntasticInfo  call SyntasticInfo(<f-args>)
+command! -bar Errors              call SyntasticErrors()
+command! -bar SyntasticReset      call SyntasticReset()
+command! -bar SyntasticToggleMode call SyntasticToggleMode()
+command! -bar SyntasticSetLoclist call SyntasticSetLoclist()
+
+command! SyntasticJavacEditClasspath runtime! syntax_checkers/java/*.vim | SyntasticJavacEditClasspath
+command! SyntasticJavacEditConfig    runtime! syntax_checkers/java/*.vim | SyntasticJavacEditConfig
 
 " }}}1
 
@@ -231,15 +242,26 @@ endfunction " }}}2
 " Autocommands {{{1
 
 augroup syntastic
-    autocmd BufReadPost  * call s:BufReadPostHook()
-    autocmd BufWritePost * call s:BufWritePostHook()
-    autocmd BufEnter     * call s:BufEnterHook()
+    autocmd!
+    autocmd BufEnter * call s:BufEnterHook()
 augroup END
 
-if v:version > 703 || (v:version == 703 && has('patch544'))
+if g:syntastic_nested_autocommands
+    augroup syntastic
+        autocmd BufReadPost  * nested call s:BufReadPostHook()
+        autocmd BufWritePost * nested call s:BufWritePostHook()
+    augroup END
+else
+    augroup syntastic
+        autocmd BufReadPost  * call s:BufReadPostHook()
+        autocmd BufWritePost * call s:BufWritePostHook()
+    augroup END
+endif
+
+if exists('##QuitPre')
     " QuitPre was added in Vim 7.3.544
     augroup syntastic
-        autocmd QuitPre * call s:QuitPreHook()
+        autocmd QuitPre * call s:QuitPreHook(expand('<amatch>', 1))
     augroup END
 endif
 
@@ -276,10 +298,15 @@ function! s:BufEnterHook() abort " {{{2
     endif
 endfunction " }}}2
 
-function! s:QuitPreHook() abort " {{{2
-    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS,
-        \ 'autocmd: QuitPre, buffer ' . bufnr('') . ' = ' . string(bufname(str2nr(bufnr('')))))
-    let b:syntastic_skip_checks = get(b:, 'syntastic_skip_checks', 0) || !syntastic#util#var('check_on_wq')
+function! s:QuitPreHook(fname) abort " {{{2
+    let buf = bufnr(fnameescape(a:fname))
+    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS, 'autocmd: QuitPre, buffer ' . buf . ' = ' . string(a:fname))
+
+    if !syntastic#util#var('check_on_wq')
+        call syntastic#util#setWids()
+        call add(s:_quit_pre, buf . '_' . getbufvar(buf, 'changetick') . '_' . w:syntastic_wid)
+    endif
+
     if get(w:, 'syntastic_loclist_set', 0)
         call SyntasticLoclistHide()
     endif
@@ -296,17 +323,23 @@ function! s:UpdateErrors(auto_invoked, checker_names) abort " {{{2
     call syntastic#log#debugDump(g:_SYNTASTIC_DEBUG_VARIABLES)
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, 'UpdateErrors' . (a:auto_invoked ? ' (auto)' : '') .
         \ ': ' . (len(a:checker_names) ? join(a:checker_names) : 'default checkers'))
+
+    call s:modemap.synch()
+
     if s:_skip_file()
         return
     endif
 
-    call s:modemap.synch()
     let run_checks = !a:auto_invoked || s:modemap.doAutoChecking()
     if run_checks
         call s:CacheErrors(a:checker_names)
         unlockvar! b:syntastic_changedtick
         let b:syntastic_changedtick = b:changedtick
         lockvar! b:syntastic_changedtick
+    else
+        if a:auto_invoked
+            return
+        endif
     endif
 
     let loclist = g:SyntasticLoclist.current()
@@ -477,6 +510,7 @@ function! SyntasticMake(options) abort " {{{2
 
     if has_key(a:options, 'errorformat')
         let &errorformat = a:options['errorformat']
+        set errorformat<
     endif
 
     if has_key(a:options, 'cwd')
@@ -610,11 +644,26 @@ function! s:_ignore_file(filename) abort " {{{2
     return 0
 endfunction " }}}2
 
+function! s:_is_quitting(buf) abort " {{{2
+    let quitting = 0
+    if exists('w:syntastic_wid')
+        let key = a:buf . '_' . getbufvar(a:buf, 'changetick') . '_' . w:syntastic_wid
+        let idx = index(s:_quit_pre, key)
+        if idx >= 0
+            call remove(s:_quit_pre, idx)
+            let quitting = 1
+        endif
+    endif
+
+    return quitting
+endfunction " }}}2
+
 " Skip running in special buffers
 function! s:_skip_file() abort " {{{2
     let fname = expand('%', 1)
-    let skip = get(b:, 'syntastic_skip_checks', 0) || (&buftype !=# '') ||
-        \ !filereadable(fname) || getwinvar(0, '&diff') || s:_ignore_file(fname) ||
+    let skip = s:_is_quitting(bufnr('%')) || get(b:, 'syntastic_skip_checks', 0) ||
+        \ (&buftype !=# '') || !filereadable(fname) || getwinvar(0, '&diff') ||
+        \ getwinvar(0, '&previewwindow') || s:_ignore_file(fname) ||
         \ fnamemodify(fname, ':e') =~? g:syntastic_ignore_extensions
     if skip
         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, '_skip_file: skipping checks')
@@ -628,6 +677,9 @@ function! s:_explain_skip(filetypes) abort " {{{2
         let why = []
         let fname = expand('%', 1)
 
+        if s:_is_quitting(bufnr('%'))
+            call add(why, 'quitting buffer')
+        endif
         if get(b:, 'syntastic_skip_checks', 0)
             call add(why, 'b:syntastic_skip_checks set')
         endif
@@ -639,6 +691,9 @@ function! s:_explain_skip(filetypes) abort " {{{2
         endif
         if getwinvar(0, '&diff')
             call add(why, 'diff mode')
+        endif
+        if getwinvar(0, '&previewwindow')
+            call add(why, 'preview window')
         endif
         if s:_ignore_file(fname)
             call add(why, 'filename matching g:syntastic_ignore_files')

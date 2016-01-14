@@ -51,6 +51,7 @@ let g:airline#themes#behelit#palette.normal.airline_warning = s:WI
 let g:airline#themes#behelit#palette.normal_modified.airline_warning = s:WI
 let g:airline#themes#behelit#palette.insert.airline_warning = s:WI
 let g:airline#themes#behelit#palette.insert_modified.airline_warning = s:WI
+let g:airline#themes#behelit#palette.insert_paste.airline_warning = s:WI
 let g:airline#themes#behelit#palette.visual.airline_warning = s:WI
 let g:airline#themes#behelit#palette.visual_modified.airline_warning = s:WI
 let g:airline#themes#behelit#palette.replace.airline_warning = s:WI

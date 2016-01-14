@@ -55,12 +55,18 @@ The following features and functionality are provided by the NERD tree:
 Installation
 ------------
 
-[pathogen.vim](https://github.com/tpope/vim-pathogen) is the recommended way to install nerdtree.
+####[pathogen.vim](https://github.com/tpope/vim-pathogen)
 
     cd ~/.vim/bundle
     git clone https://github.com/scrooloose/nerdtree.git
 
 Then reload vim, run `:Helptags`, and check out `:help NERD_tree.txt`.
+
+
+####[apt-vim](https://github.com/egalpin/apt-vim)
+
+    apt-vim install -y https://github.com/scrooloose/nerdtree.git
+
 
 
 Faq
@@ -85,10 +91,12 @@ Stick this in your vimrc: `autocmd vimenter * NERDTree`
 
 > How can I open a NERDTree automatically when vim starts up if no files were specified?
 
-Stick this in your vimrc
+Stick this in your vimrc:
 
     autocmd StdinReadPre * let s:std_in=1
     autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+
+Note: Now start vim with plain `vim`, not `vim .`
 
 > How can I map a specific key or shortcut to open NERDTree?
 
@@ -100,8 +108,15 @@ Stick this in your vimrc to open NERDTree with `Ctrl+n` (you can set whatever ke
 
 Stick this in your vimrc:
 
-    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 > Can I have different highlighting for different file extensions?
 
 See here: https://github.com/scrooloose/nerdtree/issues/433#issuecomment-92590696
+
+> How can I change default arrows?
+
+Use these variables in your vimrc. Note that below are default arrow symbols
+
+    let g:NERDTreeDirArrowExpandable = '▸'
+    let g:NERDTreeDirArrowCollapsible = '▾'

@@ -84,11 +84,12 @@ lockvar! s:_FILE_SHORTCUTS
 
 " }}}1
 
-command! SyntasticJavacEditClasspath call s:EditClasspath()
+" Commands {{{1
 
-if g:syntastic_java_javac_config_file_enabled
-    command! SyntasticJavacEditConfig call s:EditConfig()
-endif
+command! SyntasticJavacEditClasspath call s:EditClasspath()
+command! SyntasticJavacEditConfig    call s:EditConfig()
+
+" }}}1
 
 function! SyntaxCheckers_java_javac_IsAvailable() dict " {{{1
     let s:has_maven = executable(expand(g:syntastic_java_maven_executable, 1))
@@ -173,9 +174,8 @@ function! SyntaxCheckers_java_javac_GetLocList() dict " {{{1
     let errorformat =
         \ '%E%f:%l: error: %m,'.
         \ '%W%f:%l: warning: %m,'.
-        \ '%A%f:%l: %m,'.
-        \ '%+Z%p^,'.
-        \ '%+C%.%#,'.
+        \ '%E%f:%l: %m,'.
+        \ '%Z%p^,'.
         \ '%-G%.%#'
 
     if output_dir !=# ''
@@ -290,6 +290,10 @@ function! s:SaveConfig() " {{{2
 endfunction " }}}2
 
 function! s:EditConfig() " {{{2
+    if !g:syntastic_java_javac_config_file_enabled
+        return
+    endif
+
     let command = 'syntastic javac config'
     let winnr = bufwinnr('^' . command . '$')
     if winnr < 0
@@ -356,7 +360,7 @@ function! s:GetMavenClasspath() " {{{2
             let mvn_cmd = syntastic#util#shexpand(g:syntastic_java_maven_executable) .
                 \ ' -f ' . syntastic#util#shescape(pom) .
                 \ ' ' . g:syntastic_java_maven_options
-            let mvn_classpath_output = split(syntastic#util#system(mvn_cmd . ' dependency:build-classpath'), "\n")
+            let mvn_classpath_output = split(syntastic#util#system(mvn_cmd . ' dependency:build-classpath -DincludeScope=test'), "\n")
             let mvn_classpath = ''
             let class_path_next = 0
 
@@ -373,16 +377,10 @@ function! s:GetMavenClasspath() " {{{2
             let mvn_properties = s:GetMavenProperties()
 
             let sep = syntastic#util#Slash()
-            let output_dir = join(['target', 'classes'], sep)
-            if has_key(mvn_properties, 'project.build.outputDirectory')
-                let output_dir = mvn_properties['project.build.outputDirectory']
-            endif
+            let output_dir = get(mvn_properties, 'project.build.outputDirectory', join(['target', 'classes'], sep))
             let mvn_classpath = s:AddToClasspath(mvn_classpath, output_dir)
 
-            let test_output_dir = join(['target', 'test-classes'], sep)
-            if has_key(mvn_properties, 'project.build.testOutputDirectory')
-                let test_output_dir = mvn_properties['project.build.testOutputDirectory']
-            endif
+            let test_output_dir = get(mvn_properties, 'project.build.testOutputDirectory', join(['target', 'test-classes'], sep))
             let mvn_classpath = s:AddToClasspath(mvn_classpath, test_output_dir)
 
             let g:syntastic_java_javac_maven_pom_ftime[pom] = getftime(pom)
@@ -397,23 +395,16 @@ function! s:MavenOutputDirectory() " {{{2
     let pom = syntastic#util#findFileInParent('pom.xml', expand('%:p:h', 1))
     if s:has_maven && filereadable(pom)
         let mvn_properties = s:GetMavenProperties()
-        let output_dir = getcwd()
-        if has_key(mvn_properties, 'project.properties.build.dir')
-            let output_dir = mvn_properties['project.properties.build.dir']
-        endif
+        let output_dir = get(mvn_properties, 'project.properties.build.dir', getcwd())
 
         let sep = syntastic#util#Slash()
-        if stridx(expand('%:p:h', 1), join(['src', 'main', 'java'], sep)) >= 0
-            let output_dir = join ([output_dir, 'target', 'classes'], sep)
-            if has_key(mvn_properties, 'project.build.outputDirectory')
-                let output_dir = mvn_properties['project.build.outputDirectory']
-            endif
+        let src_main_dir = get(mvn_properties, 'project.build.sourceDirectory', join(['src', 'main', 'java'], sep))
+        let src_test_dir = get(mvn_properties, 'project.build.testsourceDirectory', join(['src', 'test', 'java'], sep))
+        if stridx(expand('%:p:h', 1), src_main_dir) >= 0
+            let output_dir = get(mvn_properties, 'project.build.outputDirectory', join ([output_dir, 'target', 'classes'], sep))
         endif
-        if stridx(expand('%:p:h', 1), join(['src', 'test', 'java'], sep)) >= 0
-            let output_dir = join([output_dir, 'target', 'test-classes'], sep)
-            if has_key(mvn_properties, 'project.build.testOutputDirectory')
-                let output_dir = mvn_properties['project.build.testOutputDirectory']
-            endif
+        if stridx(expand('%:p:h', 1), src_test_dir) >= 0
+            let output_dir = get(mvn_properties, 'project.build.testOutputDirectory', join([output_dir, 'target', 'test-classes'], sep))
         endif
 
         if has('win32unix')

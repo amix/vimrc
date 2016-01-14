@@ -40,14 +40,12 @@ function! SyntaxCheckers_bro_bro_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_before': '--parse-only' })
 
     "example: error in ./foo.bro, line 3: unknown identifier banana, at or near "banana"
-    let errorformat =
-        \ 'fatal %trror in %f\, line %l: %m,' .
-        \ '%trror in %f\, line %l: %m,' .
-        \ '%tarning in %f\, line %l: %m'
+    let errorformat = '%t:%f:%l:%m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat })
+        \ 'errorformat': errorformat,
+        \ 'preprocess': 'bro' })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

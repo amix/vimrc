@@ -1,5 +1,5 @@
 "============================================================================
-"File:        snowcrash.vim
+"File:        drafter.vim
 "Description: Syntax checking plugin for syntastic.vim
 "Maintainer:  LCD 47 <lcd047 at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
@@ -10,19 +10,19 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_apiblueprint_snowcrash_checker')
+if exists('g:loaded_syntastic_apiblueprint_drafter_checker')
     finish
 endif
-let g:loaded_syntastic_apiblueprint_snowcrash_checker = 1
+let g:loaded_syntastic_apiblueprint_drafter_checker = 1
 
-if !exists('g:syntastic_apiblueprint_snowcrash_sort')
-    let g:syntastic_apiblueprint_snowcrash_sort = 1
+if !exists('g:syntastic_apiblueprint_drafter_sort')
+    let g:syntastic_apiblueprint_drafter_sort = 1
 endif
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_apiblueprint_snowcrash_GetLocList() dict
+function! SyntaxCheckers_apiblueprint_drafter_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'post_args': '-u -l' })
 
     let errorformat =
@@ -34,7 +34,7 @@ function! SyntaxCheckers_apiblueprint_snowcrash_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'defaults': {'bufnr': bufnr('')},
-        \ 'returns': [0, 2] })
+        \ 'returns': [0, 2, 3, 4] })
 
     for e in loclist
         let matches = matchlist(e['text'], '\v^(.+); line (\d+), column (\d+) - line (\d+), column (\d+)$')
@@ -58,7 +58,7 @@ endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'apiblueprint',
-    \ 'name': 'snowcrash'})
+    \ 'name': 'drafter'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

@@ -1,15 +1,7 @@
-" scratch.vim
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-07-18.
-" @Last Change: 2014-02-06.
-" @Revision:    0.0.252
-
-if &cp || exists("loaded_tlib_scratch_autoload")
-    finish
-endif
-let loaded_tlib_scratch_autoload = 1
+" @Revision:    255
 
 
 " Scratch window position. By default the list window is opened on the 
@@ -92,8 +84,9 @@ function! tlib#scratch#UseScratch(...) "{{{3
         setlocal nobuflisted
         setlocal foldmethod=manual
         setlocal foldcolumn=0
-        setlocal modifiable
         setlocal nospell
+        setlocal modifiable
+        setlocal noreadonly
         " TLogVAR &ft, ft
         if !empty(ft)
             let &l:ft = ft

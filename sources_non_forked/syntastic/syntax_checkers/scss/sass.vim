@@ -15,8 +15,6 @@ if exists('g:loaded_syntastic_scss_sass_checker')
 endif
 let g:loaded_syntastic_scss_sass_checker = 1
 
-runtime! syntax_checkers/sass/*.vim
-
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'scss',
     \ 'name': 'sass',

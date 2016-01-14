@@ -18,6 +18,12 @@ fn ${1:function_name}(${2})${3/..*/ -> /}${3} {
 }
 endsnippet
 
+snippet pfn "A public function, optionally with arguments and return type."
+pub fn ${1:function_name}(${2})${3/..*/ -> /}${3} {
+	${VISUAL}${0}
+}
+endsnippet
+
 snippet arg "Function Arguments" i
 ${1:a}: ${2:T}${3:, arg}
 endsnippet

@@ -27,6 +27,10 @@ function! SyntaxCheckers_go_go_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_go_go_GetLocList() dict
+    if !exists('s:go_new')
+        let s:go_new = syntastic#util#versionIsAtLeast(self.getVersion(self.getExecEscaped() . ' version'), [1, 5])
+    endif
+
     " Check with gofmt first, since `go build` and `go test` might not report
     " syntax errors in the current file if another file with syntax error is
     " compiled first.
@@ -51,15 +55,15 @@ function! SyntaxCheckers_go_go_GetLocList() dict
     " compiled by `go build`, therefore `go test` must be called for those.
     if match(expand('%', 1), '\m_test\.go$') == -1
         let cmd = 'build'
-        let opts = syntastic#util#var('go_go_build_args')
+        let opts = syntastic#util#var('go_go_build_args', s:go_new ? '-buildmode=archive' : '')
         let cleanup = 0
     else
         let cmd = 'test -c'
-        let opts = syntastic#util#var('go_go_test_args')
+        let opts = syntastic#util#var('go_go_test_args', s:go_new ? '-buildmode=archive' : '')
         let cleanup = 1
     endif
     let opt_str = (type(opts) != type('') || opts !=# '') ? join(syntastic#util#argsescape(opts)) : opts
-    let makeprg = self.getExec() . ' ' . cmd . ' ' . opt_str
+    let makeprg = self.getExecEscaped() . ' ' . cmd . ' ' . opt_str
 
     " The first pattern is for warnings from C compilers.
     let errorformat =
@@ -67,6 +71,8 @@ function! SyntaxCheckers_go_go_GetLocList() dict
         \ '%E%f:%l:%c:%m,' .
         \ '%E%f:%l:%m,' .
         \ '%C%\s%\+%m,' .
+        \ '%+Ecan''t load package: %m,' .
+        \ '%+Einternal error: %m,' .
         \ '%-G#%.%#'
 
     " The go compiler needs to either be run with an import path as an
@@ -77,6 +83,7 @@ function! SyntaxCheckers_go_go_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'cwd': expand('%:p:h', 1),
+        \ 'env': {'GOGC': 'off'},
         \ 'defaults': {'type': 'e'} })
 
     if cleanup

@@ -18,7 +18,7 @@ function! s:gofiletype_post()
     let &g:fileencodings = s:current_fileencodings
 endfunction
 
-au BufNewFile *.go setlocal filetype=go fileencoding=utf-8 fileformat=unix
+au BufNewFile *.go setfiletype go | setlocal fileencoding=utf-8 fileformat=unix
 au BufRead *.go call s:gofiletype_pre()
 au BufReadPost *.go call s:gofiletype_post()
 

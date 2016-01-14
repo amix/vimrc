@@ -11,21 +11,13 @@ endsnippet
 snippet ifndef "#ifndef ... #define ... #endif"
 #ifndef ${1/([A-Za-z0-9_]+).*/$1/}
 #define ${1:SYMBOL} ${2:value}
-#endif
+#endif /* ifndef $1 */
 endsnippet
 
 snippet #if "#if #endif" b
 #if ${1:0}
 ${VISUAL}${0}
 #endif
-endsnippet
-
-snippet inc "#include local header (inc)"
-#include "${1:`!p snip.rv = snip.basename + '.h'`}"
-endsnippet
-
-snippet Inc "#include <> (Inc)"
-#include <${1:.h}>
 endsnippet
 
 snippet mark "#pragma mark (mark)"
@@ -57,10 +49,6 @@ for (${4:int} ${2:i} = 0; $2 < ${1:count}; ${3:++$2}) {
 }
 endsnippet
 
-snippet enum "Enumeration"
-enum ${1:name} { $0 };
-endsnippet
-
 snippet once "Include header once only guard"
 #ifndef ${1:`!p
 if not snip.c:
@@ -75,22 +63,6 @@ else:
 ${VISUAL}${0}
 
 #endif /* end of include guard: $1 */
-endsnippet
-
-snippet td "Typedef"
-typedef ${1:int} ${2:MyCustomType};
-endsnippet
-
-snippet wh "while loop"
-while(${1:/* condition */}) {
-	${VISUAL}${0}
-}
-endsnippet
-
-snippet do "do...while loop (do)"
-do {
-	${VISUAL}${0}
-} while(${1:/* condition */});
 endsnippet
 
 snippet fprintf "fprintf ..."
