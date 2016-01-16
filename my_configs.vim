@@ -12,7 +12,7 @@ let g:solarized_italic=0 " 1 | 0
 " let g:solarized_bold=0
 " let g:solarized_underline=0
 
-set background=dark " dark
+set background=light " dark
 :colorscheme solarized " ir_black mayansmoke 
 
 " syntastic
@@ -95,6 +95,14 @@ let NERDTreeAutoDeleteBuffer=1
 map <M-n> :lnext<cr>
 map <M-p> :lprevious<cr>
 
+" Return to last edit position when opening files (You want this!)
+autocmd BufReadPost * silent! normal! g`"zv
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \   exe "normal! g`\"" |
+     \ endif
+" Remember info about open buffers on close
+set viminfo^=%
+
 " multi_cursor
 " Default mapping
 let g:multi_cursor_next_key='<C-n>'
@@ -103,9 +111,6 @@ let g:multi_cursor_skip_key='<C-x>'
 let g:multi_cursor_quit_key='<Esc>'
 let g:multi_cursor_start_key='<C-n>'
 let g:multi_cursor_start_word_key='g<C-n>'
-
-" emmet
-let g:user_emmet_mode='a'
 
 " vim -b : edit binary using xxd-format!
 augroup Binary
