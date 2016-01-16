@@ -20,7 +20,7 @@ FINALLY you need:
 ```
 bash ~/.vim_runtime/install_awesome_vimrc.sh
 ```
-如果要使用 TagList 功能，还需手动安装 [Ctags](http://ctags.sourceforge.net/)
+如果要使用 TagList/Tagbar 功能，还需手动安装 [Ctags](http://ctags.sourceforge.net/)
 
 
 
