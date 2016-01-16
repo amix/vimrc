@@ -12,7 +12,7 @@ let g:solarized_italic=0 " 1 | 0
 " let g:solarized_bold=0
 " let g:solarized_underline=0
 
-set background=dark " dark
+set background=light " dark
 :colorscheme solarized " ir_black mayansmoke 
 
 " syntastic
@@ -76,7 +76,7 @@ map <leader>tg :TagbarToggle<cr>
 set number
 " set cursorline and cursorcolumn
 set cursorline
-set cursorcolumn
+" set cursorcolumn
 " foldmethod
 " set foldmethod=indent " marker
 " 禁止光标闪烁

@@ -1,45 +1,67 @@
 基本的 vim 操作就不介绍了，看过一本: [《VIM简明手册》](https://github.com/Tiande/Practice/blob/master/resource/VIM_Tutorial.md)
 
-**WARNING:**
+### WARNING:
+```
 全局的 <leader> 就是指 , (逗号) 了
 <C-*> 里 'C' 是指 Ctrl , '-' 号无实际意义
 地址连接符不用 Win 的 \ ,均以 Unix 的 / 展示
 <space> 就是让你按空格
+```
 
+```
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
 绑定 <space> <C-space> 到 / ?
 但因为 <C-space> 为切换输入法，所以可能会无效
+```
 
+```
 " Disable highlight when <leader><cr> is pressed
 ,<cr>开关搜索词高亮
 <cr> 是回车的意思
+```
 
+```
 " Smart way to move between windows
 <c-hjkl> 快速在窗口间切换
+```
 
+```
 " Switch CWD to the directory of the open buffer
 ,cd 切换工作目录到当前文件所在目录
+```
 
+```
 " Move a line of text using ALT+[jk] or Comamnd+[jk] on mac
 <alt-jk> 移动当前行(或 visual 选中的多行)，与上下的其他行互换 
 炒鸡好玩！！！！(Mac 用户再见;) )
+```
 
+```
 " Remove the Windows ^M - when the encodings gets messed up
 ,m 把该死的 utf-8 with BOM(DOS下) 文件格式末尾的 ^M 去掉
+```
 
+```
 " Quickly open a buffer for scribble
 ,q 快速打开一个 buffer
+```
 
+```
 " Quickly open a markdown buffer for scribble
 ,x 快速打开一个 markdown buffer
+```
 
+```
 " Toggle paste mode on and off
 ,pp 开关 paste mode
+```
 
+```
 " Fast editing and reloading of vimrc configs
 ,e 快速打开 ./my_configs.vim
 
 " 如果需要折行 ,e 后，将 set nowrap 注释掉(行头加 ")
+```
 
 目录补全:
 输入模式下，按 <c-xf> 开启，然后 <c-n><c-p> 上下选择
