@@ -1,7 +1,7 @@
 基本的 vim 操作就不介绍了，看过一本: [《VIM简明手册》](https://github.com/Tiande/Practice/blob/master/resource/VIM_Tutorial.md)
 
-### WARNING:
 ```
+### WARNING:
 全局的 <leader> 就是指 , (逗号) 了
 <C-*> 里 'C' 是指 Ctrl , '-' 号无实际意义
 地址连接符不用 Win 的 \ ,均以 Unix 的 / 展示
@@ -63,16 +63,21 @@
 " 如果需要折行 ,e 后，将 set nowrap 注释掉(行头加 ")
 ```
 
+```
 目录补全:
 输入模式下，按 <c-xf> 开启，然后 <c-n><c-p> 上下选择
 你可以现在就试一下，先输入 . 然后使用快捷键补全成下面的样子： 
 ./README.md
+```
 
+```
 打开地址下的文件:
 gf
 例: ./README.md
 光标移到地址下然后 gf 试试看！ 可以使用 ,bd 关闭等下打开的窗口回到这里哦！
+```
 
+```
 MRU
 打开最近使用文件列表
 open: ,f
@@ -83,7 +88,9 @@ open in new tab: t
 可以使用 <space> 或者 ? 启用搜索
 
 to display only file names containing "vim" in them, you can use the following command ":MRU vim". # 其实就是关键词搜索 我更喜欢直接在 ,f 里 <space>
+```
 
+```
 主题啊！！ 超多啊！！ 自己也可以去加啊！！
 The 3rd theme:
 peaksea ir_black mayansmoke solarized pyte gruvbox
@@ -93,15 +100,17 @@ blue darkblue default delek desert elflord evening koehler morning murphy pablo 
 
 Edit your "my_configs.vim" (可以使用 ,e 直接打开) and modify:
 :colorscheme ir_black # or peaksea ...
+```
 
+```
 YankRing: 
 是一个粘贴强化的功能
 1.  paste something first (p), then use <c-p> <c-n> to select previous yanks, changes and deletes.  # p 之后， <c-n><c-p> 就可以选啦！
 2.  to see a history of previous yanks, changes and deletes, use:
-```
 :YRShow
 ```
 
+```
 snipMate:
 就是自动补全
 打代码很有用
@@ -110,7 +119,9 @@ just <Tab> or <c-j> to finish a definition, function,  etc...
 例: 输入 date OR datetime 后， 按 <tab> 或 <c-j> 就会补全日期啦！
 2015-07-10
 2015-07-10 10:56
+```
 
+```
 bufexplorer:
 缓冲区浏览器
 缓冲区 和 缓存 感觉差不多
@@ -129,13 +140,17 @@ Close the current buffer (关闭当前编辑的文件)
 ,bd
 Close all the buffers (关闭所有 buffer)
 ,ba
+```
 
+```
 commentary
 使用 gc gcc gcap 快速添加注释
 gcc : 只注释/取消注释当前行
 gc : 注释/取消注释选定区域
 gcap : 注释/取消注释一个区块
+```
 
+```
 NERD Tree:
 目录树
 
@@ -146,7 +161,9 @@ NERD Tree:
 命令太多，可以自行查看：
 ,nn 后按 ?
 友情提示： <c-hjkl> 可以快速的在 不同窗口 间切换！
+```
 
+```
 ctrlp:
 Fuzzy file, buffer, mru and tag finder.
 文件搜索
@@ -158,7 +175,9 @@ Fuzzy file, buffer, mru and tag finder.
 3.  <leader>j # 在 ./my_configs.vim 中被 tab 切换快捷覆盖
 
 for more info read the "./sources_non_forked/ctrlp.vim/readme.md"
+```
 
+```
 Taglist(现在项目用的是 TagBar )
 神器，列出所有函数声明 
 !!!! 你要自己去安装 ctags 快到官网愉快的下载吧。
@@ -169,7 +188,9 @@ open
 ,ta
 在taglist窗口中看帮助：
 <F1>
+```
 
+```
 vim-multiple-cursors:
 超好玩
 在 v 模式下
@@ -187,30 +208,37 @@ vim-multiple-cursors:
 5
 结果：
 1 2 3 4 5
+```
 
+```
 vi-expand-region:
 和 vim 中用 v V <c-v> 的 visual 模式不同,
 直接使用 + - 号来选择区块。
 智能度不行，但傻瓜易操作
+```
 
+```
 vim-airline:
 就是状态栏的主题
 在 ,e 里配置你想要的色彩：
 let g:airline_theme="luna"
+```
 
+```
 goyo:
 简化页面元素，让你专心码字！
 1.  use <leader>z to into zoom mode ;)
 2.  use <C--> <C-+> to zoom in/out ;)
+```
 
-vim-commentary:
-;(
-
+```
 syntastic:
 语法检查 
 ,,, 开关
 使用 ALT-n ALT-p 遍历出问题的行(MAC 下暂时不会映射按键)
+```
 
+```
 使用 :SyntasticInfo 查看所用检查器 (checker)
 python 需要先安装 pylint flake8 之类的检查器
 To tell syntastic to use pylint, you would use this setting:
@@ -222,7 +250,9 @@ e.g. Python has the following checkers, among others: flake8, pyflakes, pylint a
 2.  <leader>sn <leader>sp to move between wrong words.
 3.  <leader>sa to add word to dictionary.
 4.  <leader>s? to select a right word.
+```
 
+```
 surround.vim config
 在 选中的区域 加前后缀
 " Annotate strings with gettext "http://amix.dk/blog/post/19678"
@@ -231,7 +261,9 @@ surround.vim config
 S" # 此时即可前后加上 "
 test ==> "test"
 其实和 v 选中后再 $1 ($2 $3...)效果相同
+```
 
+```
 tab 命令
 ,tn # 新 tab
 ,to # 只保留当前 tab
@@ -244,24 +276,32 @@ tab 命令
 
 将 ALT-u ,ALT-i 映射为 左右切换 tab (在 ./my_configs.vim)
 vim 默认使用 gt gT 左右切换 tab
+```
 
+```
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
 ,te 底部命令栏会出现当前文件目录，需要补全，然后在新 tab 打开文件
 ,nn 感觉更好用啊
+```
 
+```
 保存命令
 ,w
 
 " :W sudo saves the file 
 使用 :W 命令，用 sudo 权限保存文件
+```
 
+```
 " Visual mode pressing * or # searches for the current selection
 " Super useful! From an idea by Michael Naumann
 visual 模式选中字段后，使用 * OR # 可直接指定该区域为搜索条件
 应当只按一次 * # ，然后用 n N 搜索
 因为 * # 默认为搜索当前光标下的词(不是句子)！
+```
 
+```
 " Parenthesis/bracket
 visual 模式下！ 各种快捷 在选中的区域前后 插入标点符号
 $1 ==> ()
@@ -284,16 +324,19 @@ $4 ==> {
 $q ==> ''
 $e ==> ""
 $t ==> <>
+```
 
+```
 python 下折叠函数
 F
 
 操作：za，打开或关闭当前折叠；zM，关闭所有折叠；zR，打开所有折叠。
 关于折叠的详细用法，可以在这里找到：
 http://tiandechi.com/2015/07/08/vim%E6%8A%98%E5%8F%A0/
+```
 
-python 下的 快捷
-插入
+```
+python 下的快捷插入
 $r return
 $i import
 $p print 
@@ -303,13 +346,17 @@ $f #--- PH ----------------------------------------------<esc>FP2xi
 ,2 /def
 ,C ?class
 ,D ?def
+```
 
+```
 javascript 下的 快捷
 <c-t> $log()
 <c-a> alert()
 $r return
 $f //--- PH ----------------------------------------------<esc>FP2xi
+```
 
+```
 ACK 
 并不会用...
 需要机器上有 ACK(>=2.0) http://beyondgrep.com/install/
@@ -338,7 +385,9 @@ map <leader>cc :botright cope<cr>
 map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
 map <leader>n :cn<cr>
 map <leader>p :cp<cr>
+```
 
+```
 可以跳过
 因为我已经把 submodule 移除了...
 use submodule plugin
@@ -357,3 +406,4 @@ update
 git submodule foreach --recursive git pull origin master
 delete
 git rm --cached node_modules/wheat && rm -rf node_modules/wheat/
+```
