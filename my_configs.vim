@@ -1,7 +1,10 @@
 " This is Tiande's Personal settings.
 
-" 禁止折行
-set nowrap
+" [禁止] 折行
+set wrap " nowrap
+
+set list " 显示制表符等
+" set listchars=tab:>-,trail:-
 
 " solarized 配置，不用的时候可以注释掉
 let g:solarized_termcolors=256 " 16 | 256

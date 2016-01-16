@@ -1,6 +1,6 @@
-**My Personal README is in [tiande.txt](/tiande.txt)**
+**My Personal README is in [tiande.md](/tiande.md)**
 
-我会时不时的更新下 [tiande.txt](/tiande.txt) 算是记录 vim 使用过程中的收获，你可以没事来逛逛 ;) 
+我会时不时的更新下 [tiande.md](/tiande.md) 算是记录 vim 使用过程中的收获，你可以没事来逛逛 ;) 
 
 如果你也有愿意分享的小技巧，欢迎 pull request ，或者邮箱联系我： dtdnqsb@163.com
 
