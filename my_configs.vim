@@ -1,6 +1,7 @@
 nnoremap <F9> :exe 'NERDTreeToggle'<CR>
 "set pastetoggle=<F2>
-"set mouse=
+"for easy copy 
+set mouse=
 
 "for outside paste mistake
 nnoremap <F2> :set invpaste paste?<CR>
@@ -11,6 +12,7 @@ set pastetoggle=<F2>
 "export TERM=xterm-256color(.bashrc)
 "let g:rehash256 = 1
 :set nu
+" [set nu!] to close the line number
 "colorscheme monokai
 colorscheme molokai
 let g:molokai_original = 1
