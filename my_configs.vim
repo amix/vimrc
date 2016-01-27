@@ -14,3 +14,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 nmap be :BufExplorer<CR>
 nmap nt :NERDTree<CR>
 nmap tl :Tlist<CR>
+nmap vs :vsplite<CR>
+
+
