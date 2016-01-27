@@ -1,3 +1,12 @@
+
+
+# 快捷键总结
+| 快捷键        | 功能      |
+|--             |--         |
+|  <Ctrl-]>     | 进入函数或者函数定义处
+| <Ctrl-o>      | 返回<Ctrl-]>前一步
+
+
 # The Ultimate vimrc
 
 Over the last 8 years I have used and tweaked Vim. This is my Ultimate vimrc.

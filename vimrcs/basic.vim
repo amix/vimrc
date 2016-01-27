@@ -102,9 +102,9 @@ set hid
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
-" In many terminal emulators the mouse works just fine, thus enable it.
+" In many terminal emulators the mouse works just fine, thus enable it. modified by YN
 if has('mouse')
-  set mouse=a
+  set mouse= "a
 endif
 
 " Ignore case when searching
@@ -261,13 +261,13 @@ try
 catch
 endtry
 
-" Return to last edit position when opening files (You want this!)
-" autocmd BufReadPost *
-"      \ if line("'\"") > 0 && line("'\"") <= line("$") |
-"      \   exe "normal! g`\"" |
-"      \ endif
+" Return to last edit position when opening files (You want this!) modified by YN
+ autocmd BufReadPost *
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \   exe "normal! g`\"" |
+     \ endif
 " Remember info about open buffers on close
-" set viminfo^=%
+set viminfo^=%
 
 
 """"""""""""""""""""""""""""""
