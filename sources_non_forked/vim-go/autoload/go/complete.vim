@@ -87,7 +87,7 @@ fu! s:gocodeCurrentBufferOpt(filename)
     return '-in=' . a:filename
 endf
 
-fu! s:gocodeCursor()
+fu! go#complete#gocodeCursor()
     if &encoding != 'utf-8'
         let sep = &l:fileformat == 'dos' ? "\r\n" : "\n"
         let c = col('.')
@@ -95,6 +95,7 @@ fu! s:gocodeCursor()
         let buf .= c == 1 ? "" : getline('.')[:c-2]
         return printf('%d', len(iconv(buf, &encoding, "utf-8")))
     endif
+
     return printf('%d', line2byte(line('.')) + (col('.')-2))
 endf
 
@@ -102,16 +103,16 @@ fu! s:gocodeAutocomplete()
     let filename = s:gocodeCurrentBuffer()
     let result = s:gocodeCommand('autocomplete',
                 \ [s:gocodeCurrentBufferOpt(filename), '-f=vim'],
-                \ [expand('%:p'), s:gocodeCursor()])
+                \ [expand('%:p'), go#complete#gocodeCursor()])
     call delete(filename)
     return result
 endf
 
-function! go#complete#GetInfo()
+function! go#complete#GetInfoFromOffset(offset)
     let filename = s:gocodeCurrentBuffer()
     let result = s:gocodeCommand('autocomplete',
                 \ [s:gocodeCurrentBufferOpt(filename), '-f=godit'],
-                \ [expand('%:p'), s:gocodeCursor()])
+                \ [expand('%:p'), a:offset])
     call delete(filename)
 
     " first line is: Charcount,,NumberOfCandidates, i.e: 8,,1
@@ -145,6 +146,11 @@ function! go#complete#GetInfo()
     endif
 
     return ""
+endfunction
+
+function! go#complete#GetInfo()
+    let offset = go#complete#gocodeCursor()
+    return go#complete#GetInfoFromOffset(offset)
 endfunction
 
 function! go#complete#Info()

@@ -34,7 +34,7 @@ function! SyntaxCheckers_javascript_flow_GetLocList() dict
     endif
 
     let makeprg = self.makeprgBuild({
-        \ 'exe': self.getExecEscaped() . ' status',
+        \ 'exe': self.getExecEscaped() . ' check',
         \ 'args_after': '--show-all-errors --json' })
 
     let errorformat =

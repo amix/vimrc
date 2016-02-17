@@ -35,8 +35,8 @@ func! s:loclist(output)
         endif
         call add(llist, item)
     endfor
-    call go#list#Populate(llist)
-    call go#list#Window(len(llist))
+    call go#list#Populate("locationlist", llist)
+    call go#list#Window("locationlist", len(llist))
 endfun
 
 " This uses Vim's errorformat to parse the output from Oracle's 'plain output
@@ -56,10 +56,10 @@ func! s:loclistSecond(output)
     " useful and location only has the ability to show one line and column
     " number
     let errformat = "%f:%l.%c-%[%^:]%#:\ %m,%f:%l:%c:\ %m"
-    call go#list#ParseFormat(errformat, split(a:output, "\n"))
+    call go#list#ParseFormat("locationlist", errformat, split(a:output, "\n"))
 
-    let errors = go#list#Get()
-    call go#list#Window(len(errors))
+    let errors = go#list#Get("locationlist")
+    call go#list#Window("locationlist", len(errors))
 endfun
 
 func! s:getpos(l, c)

@@ -26,7 +26,7 @@ function! SyntaxCheckers_markdown_mdl_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args': '--warnings' })
 
     let errorformat =
-        \ '%E%f:%l: %m,'.
+        \ '%E%f:%\s%\=%l: %m,'.
         \ '%W%f: Kramdown Warning: %m found on line %l'
 
     return SyntasticMake({
