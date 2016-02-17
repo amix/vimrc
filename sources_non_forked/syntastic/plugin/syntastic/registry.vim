@@ -40,7 +40,7 @@ let s:_DEFAULT_CHECKERS = {
         \ 'go':            ['go'],
         \ 'haml':          ['haml'],
         \ 'handlebars':    ['handlebars'],
-        \ 'haskell':       ['ghc_mod', 'hdevtools', 'hlint'],
+        \ 'haskell':       ['hdevtools', 'hlint'],
         \ 'haxe':          ['haxe'],
         \ 'hss':           ['hss'],
         \ 'html':          ['tidy'],

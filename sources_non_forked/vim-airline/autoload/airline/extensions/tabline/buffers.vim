@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2015 Bailey Ling.
+" MIT License. Copyright (c) 2013-2016 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 scriptencoding utf-8
@@ -37,6 +37,8 @@ function! airline#extensions#tabline#buffers#on()
   augroup airline_tabline_buffers
     autocmd!
     autocmd BufDelete * call airline#extensions#tabline#buffers#invalidate()
+    autocmd User BufMRUChange call airline#extensions#tabline#buflist#invalidate()
+    autocmd User BufMRUChange call airline#extensions#tabline#buffers#invalidate()
   augroup END
 endfunction
 
@@ -45,6 +47,7 @@ function! airline#extensions#tabline#buffers#invalidate()
 endfunction
 
 function! airline#extensions#tabline#buffers#get()
+  call <sid>map_keys()
   let cur = bufnr('%')
   if cur == s:current_bufnr
     if !g:airline_detect_modified || getbufvar(cur, '&modified') == s:current_modified
@@ -180,16 +183,18 @@ function! s:jump_to_tab(offset)
     endif
 endfunction
 
-if s:buffer_idx_mode
-  noremap <unique> <Plug>AirlineSelectTab1 :call <SID>select_tab(0)<CR>
-  noremap <unique> <Plug>AirlineSelectTab2 :call <SID>select_tab(1)<CR>
-  noremap <unique> <Plug>AirlineSelectTab3 :call <SID>select_tab(2)<CR>
-  noremap <unique> <Plug>AirlineSelectTab4 :call <SID>select_tab(3)<CR>
-  noremap <unique> <Plug>AirlineSelectTab5 :call <SID>select_tab(4)<CR>
-  noremap <unique> <Plug>AirlineSelectTab6 :call <SID>select_tab(5)<CR>
-  noremap <unique> <Plug>AirlineSelectTab7 :call <SID>select_tab(6)<CR>
-  noremap <unique> <Plug>AirlineSelectTab8 :call <SID>select_tab(7)<CR>
-  noremap <unique> <Plug>AirlineSelectTab9 :call <SID>select_tab(8)<CR>
-  noremap <unique> <Plug>AirlineSelectPrevTab :<C-u>call <SID>jump_to_tab(-v:count1)<CR>
-  noremap <unique> <Plug>AirlineSelectNextTab :<C-u>call <SID>jump_to_tab(v:count1)<CR>
-endif
+function s:map_keys()
+  if s:buffer_idx_mode
+    noremap <silent> <Plug>AirlineSelectTab1 :call <SID>select_tab(0)<CR>
+    noremap <silent> <Plug>AirlineSelectTab2 :call <SID>select_tab(1)<CR>
+    noremap <silent> <Plug>AirlineSelectTab3 :call <SID>select_tab(2)<CR>
+    noremap <silent> <Plug>AirlineSelectTab4 :call <SID>select_tab(3)<CR>
+    noremap <silent> <Plug>AirlineSelectTab5 :call <SID>select_tab(4)<CR>
+    noremap <silent> <Plug>AirlineSelectTab6 :call <SID>select_tab(5)<CR>
+    noremap <silent> <Plug>AirlineSelectTab7 :call <SID>select_tab(6)<CR>
+    noremap <silent> <Plug>AirlineSelectTab8 :call <SID>select_tab(7)<CR>
+    noremap <silent> <Plug>AirlineSelectTab9 :call <SID>select_tab(8)<CR>
+    noremap <silent> <Plug>AirlineSelectPrevTab :<C-u>call <SID>jump_to_tab(-v:count1)<CR>
+    noremap <silent> <Plug>AirlineSelectNextTab :<C-u>call <SID>jump_to_tab(v:count1)<CR>
+  endif
+endfunction

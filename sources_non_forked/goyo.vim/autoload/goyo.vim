@@ -33,7 +33,7 @@ function! s:get_color(group, attr)
 endfunction
 
 function! s:set_color(group, attr, color)
-  let gui = has('gui_running')
+  let gui = a:color =~ '^#'
   execute printf("hi %s %s%s=%s", a:group, gui ? 'gui' : 'cterm', a:attr, a:color)
 endfunction
 
@@ -106,7 +106,7 @@ function! s:resize_pads()
 endfunction
 
 function! s:tranquilize()
-  let bg = s:get_color('Normal', 'bg')
+  let bg = s:get_color('Normal', 'bg#')
   for grp in ['NonText', 'FoldColumn', 'ColorColumn', 'VertSplit',
             \ 'StatusLine', 'StatusLineNC', 'SignColumn']
     " -1 on Vim / '' on GVim
