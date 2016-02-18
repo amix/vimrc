@@ -327,3 +327,9 @@ Vimscript mappings:
 * [Folding in Vim](http://amix.dk/blog/post/19132#Folding-in-Vim)
 * [
 Zen room for Vim: Focusing only on the essential](http://amix.dk/blog/post/19744#zenroom-for-Vim-Focsuing-only-on-the-essential)
+
+## How to uninstall
+Do following:
+* Remove `~/.vim_runtime`
+* Remove any lines that refernce `.vim_runtime` in your `~/.vimrc`
+
