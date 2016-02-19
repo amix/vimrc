@@ -51,7 +51,7 @@ endfunction " }}}2
 function! syntastic#util#tmpdir() abort " {{{2
     let tempdir = ''
 
-    if (has('unix') || has('mac')) && executable('mktemp')
+    if (has('unix') || has('mac')) && executable('mktemp') && !has('win32unix')
         " TODO: option "-t" to mktemp(1) is not portable
         let tmp = $TMPDIR !=# '' ? $TMPDIR : $TMP !=# '' ? $TMP : '/tmp'
         let out = split(syntastic#util#system('mktemp -q -d ' . tmp . '/vim-syntastic-' . getpid() . '-XXXXXXXX'), "\n")
@@ -90,33 +90,22 @@ function! syntastic#util#rmrf(what) abort " {{{2
     endif
 
     if  getftype(a:what) ==# 'dir'
-        if !exists('s:rmrf')
-            let s:rmrf =
-                \ has('unix') || has('mac') ? 'rm -rf' :
-                \ has('win32') || has('win64') ? 'rmdir /S /Q' :
-                \ has('win16') || has('win95') || has('dos16') || has('dos32') ? 'deltree /Y' : ''
-        endif
-
-        if s:rmrf !=# ''
-            silent! call syntastic#util#system(s:rmrf . ' ' . syntastic#util#shescape(a:what))
-        else
-            call s:_rmrf(a:what)
-        endif
+        call s:_delete(a:what, 'rf')
     else
         silent! call delete(a:what)
     endif
 endfunction " }}}2
 
-"search the first 5 lines of the file for a magic number and return a map
-"containing the args and the executable
+" Search the first 5 lines of the file for a magic number and return a map
+" containing the args and the executable
 "
-"e.g.
+" e.g.
 "
-"#!/usr/bin/perl -f -bar
+" #!/usr/bin/perl -f -bar
 "
-"returns
+" returns
 "
-"{'exe': '/usr/bin/perl', 'args': ['-f', '-bar']}
+" {'exe': '/usr/bin/perl', 'args': ['-f', '-bar']}
 function! syntastic#util#parseShebang() abort " {{{2
     for lnum in range(1, 5)
         let line = getline(lnum)
@@ -183,7 +172,7 @@ function! syntastic#util#screenWidth(str, tabstop) abort " {{{2
     return width
 endfunction " }}}2
 
-"print as much of a:msg as possible without "Press Enter" prompt appearing
+" Print as much of a:msg as possible without "Press Enter" prompt appearing
 function! syntastic#util#wideMsg(msg) abort " {{{2
     let old_ruler = &ruler
     let old_showcmd = &showcmd
@@ -226,7 +215,7 @@ function! syntastic#util#bufIsActive(buffer) abort " {{{2
     return 0
 endfunction " }}}2
 
-" start in directory a:where and walk up the parent folders until it finds a
+" Start in directory a:where and walk up the parent folders until it finds a
 " file named a:what; return path to that file
 function! syntastic#util#findFileInParent(what, where) abort " {{{2
     let old_suffixesadd = &suffixesadd
@@ -236,7 +225,7 @@ function! syntastic#util#findFileInParent(what, where) abort " {{{2
     return file
 endfunction " }}}2
 
-" start in directory a:where and walk up the parent folders until it finds a
+" Start in directory a:where and walk up the parent folders until it finds a
 " file matching a:what; return path to that file
 function! syntastic#util#findGlobInParent(what, where) abort " {{{2
     let here = fnamemodify(a:where, ':p')
@@ -274,8 +263,9 @@ function! syntastic#util#unique(list) abort " {{{2
     let seen = {}
     let uniques = []
     for e in a:list
-        if !has_key(seen, e)
-            let seen[e] = 1
+        let k = string(e)
+        if !has_key(seen, k)
+            let seen[k] = 1
             call add(uniques, e)
         endif
     endfor
@@ -303,7 +293,7 @@ function! syntastic#util#argsescape(opt) abort " {{{2
     return []
 endfunction " }}}2
 
-" decode XML entities
+" Decode XML entities
 function! syntastic#util#decodeXMLEntities(string) abort " {{{2
     let str = a:string
     let str = substitute(str, '\m&lt;', '<', 'g')
@@ -337,6 +327,87 @@ endfunction " }}}2
 " (hopefully high resolution) time since program start
 function! syntastic#util#stamp() abort " {{{2
     return split( split(reltimestr(reltime(g:_SYNTASTIC_START)))[0], '\.' )
+endfunction " }}}2
+
+let s:_wid_base = 'syntastic_' . getpid() . '_' . reltimestr(g:_SYNTASTIC_START) . '_'
+let s:_wid_pool = 0
+
+" Add unique IDs to windows
+function! syntastic#util#setWids() abort " {{{2
+    for tab in range(1, tabpagenr('$'))
+        for win in range(1, tabpagewinnr(tab, '$'))
+            if gettabwinvar(tab, win, 'syntastic_wid') ==# ''
+                call settabwinvar(tab, win, 'syntastic_wid', s:_wid_base . s:_wid_pool)
+                let s:_wid_pool += 1
+            endif
+        endfor
+    endfor
+endfunction " }}}2
+
+let s:_str2float = function(exists('*str2float') ? 'str2float' : 'str2nr')
+lockvar s:_str2float
+
+function! syntastic#util#str2float(val) abort " {{{2
+    return s:_str2float(a:val)
+endfunction " }}}2
+
+function! syntastic#util#float2str(val) abort " {{{2
+    return s:_float2str(a:val)
+endfunction " }}}2
+
+" Crude printf()-like width formatter.  Handles wide characters.
+function! syntastic#util#wformat(format, str) abort " {{{2
+    if a:format ==# ''
+        return a:str
+    endif
+
+ echomsg string(a:format) . ', ' . string(a:str)
+    let specs = matchlist(a:format, '\v^(-?)(0?)(%([1-9]\d*))?%(\.(\d+))?$')
+    if len(specs) < 5
+        return a:str
+    endif
+
+    let flushleft = specs[1] ==# '-'
+    let lpad = specs[2] ==# '0' ? '0' : ' '
+    let minlen = str2nr(specs[3])
+    let maxlen = str2nr(specs[4])
+    let out = substitute(a:str, "\t", ' ', 'g')
+
+    if maxlen && s:_width(out) > maxlen
+        let chars = filter(split(out, '\zs\ze', 1), 'v:val !=# ""')
+        let out = ''
+
+        if flushleft
+            for c in chars
+                if s:_width(out . c) < maxlen
+                    let out .= c
+                else
+                    let out .= &encoding ==# 'utf-8' && &termencoding ==# 'utf-8' ? "\u2026" : '>'
+                    break
+                endif
+            endfor
+        else
+            call reverse(chars)
+            for c in chars
+                if s:_width(c . out) < maxlen
+                    let out = c . out
+                else
+                    let out = (&encoding ==# 'utf-8' && &termencoding ==# 'utf-8' ? "\u2026" : '<') . out
+                    break
+                endif
+            endfor
+        endif
+    endif
+
+    if minlen && s:_width(out) < minlen
+        if flushleft
+            let out .= repeat(' ', minlen - s:_width(out))
+        else
+            let out = repeat(lpad, minlen - s:_width(out)) . out
+        endif
+    endif
+
+    return out
 endfunction " }}}2
 
 " }}}1
@@ -397,6 +468,27 @@ function! s:_translateElement(key, term) abort " {{{2
     return ret
 endfunction " }}}2
 
+" @vimlint(EVL103, 1, a:flags)
+function! s:_delete_dumb(what, flags) abort " {{{2
+    if !exists('s:rmrf')
+        let s:rmrf =
+            \ has('unix') || has('mac') ? 'rm -rf' :
+            \ has('win32') || has('win64') ? 'rmdir /S /Q' :
+            \ has('win16') || has('win95') || has('dos16') || has('dos32') ? 'deltree /Y' : ''
+    endif
+
+    if s:rmrf !=# ''
+        silent! call syntastic#util#system(s:rmrf . ' ' . syntastic#util#shescape(a:what))
+    else
+        call s:_rmrf(a:what)
+    endif
+endfunction " }}}2
+" @vimlint(EVL103, 0, a:flags)
+
+" delete(dir, 'rf') was added in Vim 7.4.1107, but it didn't become usable until 7.4.1128
+let s:_delete = function(v:version > 704 || (v:version == 704 && has('patch1128')) ? 'delete' : 's:_delete_dumb')
+lockvar s:_delete
+
 function! s:_rmrf(what) abort " {{{2
     if !exists('s:rmdir')
         let s:rmdir = syntastic#util#shescape(get(g:, 'netrw_localrmdir', 'rmdir'))
@@ -415,6 +507,17 @@ function! s:_rmrf(what) abort " {{{2
         silent! call delete(a:what)
     endif
 endfunction " }}}2
+
+function! s:_float2str_smart(val) abort " {{{2
+    return printf('%.1f', a:val)
+endfunction " }}}2
+
+function! s:_float2str_dumb(val) abort " {{{2
+    return a:val
+endfunction " }}}2
+
+let s:_float2str = function(has('float') ? 's:_float2str_smart' : 's:_float2str_dumb')
+lockvar s:_float2str
 
 " }}}1
 

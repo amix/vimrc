@@ -16,13 +16,14 @@ set cpo&vim
 function! SyntaxCheckers_python_mypy_GetLocList() dict
     let makeprg = self.makeprgBuild({})
 
-    let errorformat = '%f\, line %l: %m'
+    let errorformat = '%f:%l:%m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'defaults': { 'type': 'E' },
-        \ 'returns': [0, 1] })
+        \ 'returns': [0, 1],
+        \ 'preprocess': 'mypy' })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

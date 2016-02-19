@@ -11,8 +11,8 @@ function! s:Notifier.AddListener(event, funcname)
     call add(listeners, a:funcname)
 endfunction
 
-function! s:Notifier.NotifyListeners(event, path, params)
-    let event = g:NERDTreeEvent.New(b:NERDTree, a:path, a:event, a:params)
+function! s:Notifier.NotifyListeners(event, path, nerdtree, params)
+    let event = g:NERDTreeEvent.New(a:nerdtree, a:path, a:event, a:params)
 
     for listener in s:Notifier.GetListenersForEvent(a:event)
         call {listener}(event)

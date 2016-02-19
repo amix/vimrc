@@ -15,7 +15,7 @@ t.boolean :${1:title}
 $0
 endsnippet
 
-snippet cla "Create controller class"
+snippet clac "Create controller class"
 class ${1:Model}Controller < ApplicationController
 	before_filter :find_${2:model}
 
@@ -48,7 +48,7 @@ t.float :${1:title}
 $0
 endsnippet
 
-snippet cla "Create functional test class"
+snippet clact "Create functional test class"
 require 'test_helper'
 
 class ${1:Model}ControllerTest < ActionController::TestCase
@@ -133,7 +133,7 @@ class ${1:Model}sController < ApplicationController
 	# PUT /${1/./\l$0/}s/1.xml
 	def update
 		respond_to do |wants|
-			if @${1/./\l$0/}.update_attributes(params[:${1/./\l$0/}])
+			if @${1/./\l$0/}.update(params[:${1/./\l$0/}])
 				flash[:notice] = '${1:Model} was successfully updated.'
 				wants.html { redirect_to(@${1/./\l$0/}) }
 				wants.xml  { head :ok }
@@ -601,12 +601,6 @@ respond_to do |wants|
 end
 endsnippet
 
-snippet resw "respond_with"
-respond_with(${1:@${2:model}})${3: do |format|
-	format.${4:html} { $0 \}
-end}
-endsnippet
-
 # FIXME
 snippet returning "returning do |variable| ... end"
 returning ${1:variable} do${2/(^(?<var>\s*[a-z_][a-zA-Z0-9_]*\s*)(,\g<var>)*,?\s*$)|.*/(?1: |)/}${2:v}${2/(^(?<var>\s*[a-z_][a-zA-Z0-9_]*\s*)(,\g<var>)*,?\s*$)|.*/(?1:|)/}
@@ -797,10 +791,6 @@ endsnippet
 
 snippet xput "xhr put"
 xhr :put, :${1:update}, :id => ${2:1}, :${3:object} => { $4 }$0
-endsnippet
-
-snippet finl "find(:last)"
-find(:last${1:, :conditions => ['${2:${3:field} = ?}', ${5:true}]})
 endsnippet
 
 snippet sweeper "Create sweeper class"

@@ -74,6 +74,8 @@ function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1
         endif
     endif
 
+    call self.log('options =', param)
+
     return vimlint#vimlint(expand('%', 1), param)
 endfunction " }}}1
 

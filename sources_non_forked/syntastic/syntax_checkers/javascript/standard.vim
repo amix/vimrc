@@ -14,14 +14,22 @@ if exists('g:loaded_syntastic_javascript_standard_checker')
 endif
 let g:loaded_syntastic_javascript_standard_checker = 1
 
+if !exists('g:syntastic_javascript_standard_generic')
+    let g:syntastic_javascript_standard_generic = 0
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_javascript_standard_IsAvailable() dict
+    if g:syntastic_javascript_standard_generic
+        call self.log('generic standard, exec =', self.getExec())
+    endif
+
     if !executable(self.getExec())
         return 0
     endif
-    return syntastic#util#versionIsAtLeast(self.getVersion(), [2, 6, 1])
+    return g:syntastic_javascript_standard_generic || syntastic#util#versionIsAtLeast(self.getVersion(), [2, 6, 1])
 endfunction
 
 function! SyntaxCheckers_javascript_standard_GetLocList() dict

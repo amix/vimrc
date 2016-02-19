@@ -27,11 +27,11 @@ def textmate_var(var, snip):
 endglobal
 
 
-snippet % "<% ${0} %>"
+snippet % "<% ${0} %>" i
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`${0}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_INLINE', snip)`
 endsnippet
 
-snippet = "<%= ${0} %>"
+snippet = "<%= ${0} %>" i
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`${0}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
@@ -43,59 +43,59 @@ snippet fi "<%= Fixtures.identify(:symbol) %>"
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`Fixtures.identify(:${1:name})`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`$0
 endsnippet
 
-snippet ft "form_tag"
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`form_tag(${1::action => '${5:update}'}${6:, {:${8:class} => '${9:form}'\}}) do`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+snippet ft "form_tag" w
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`form_tag(${1::action => '${2:update}'}${3:, ${4:${5:class} => '${6:form}'\}}}) do`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 	$0
 `!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
 endsnippet
 
-snippet ffs "form_for submit 2"
+snippet ffs "form_for submit 2" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`${1:f}.submit '${2:Submit}'${3:, :disable_with => '${4:$2ing...}'}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f_fields_for (nff)"
+snippet f. "f_fields_for (nff)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`f.fields_for :${1:attribute} do |${2:f}|`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_INLINE', snip)`
 	$0
 `!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
 endsnippet
 
-snippet f. "f.checkbox"
+snippet f. "f.checkbox" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.check_box :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f.file_field"
+snippet f. "f.file_field" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.file_field :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f.hidden_field"
+snippet f. "f.hidden_field" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.hidden_field :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f.label"
+snippet f. "f.label" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.label :${1:attribute}${2:, "${3:${1/[[:alpha:]]+|(_)/(?1: :\u$0)/g}}"}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f.password_field"
+snippet f. "f.password_field" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.password_field :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f.radio_button"
+snippet f. "f.radio_button" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.radio_button :${1:attribute}, :${2:tag_value}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f.submit"
+snippet f. "f.submit" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.submit "${1:Submit}"${2:, :disable_with => '${3:$1ing...}'}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f.text_area"
+snippet f. "f.text_area" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.text_area :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet f. "f.text_field"
+snippet f. "f.text_field" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`f.text_field :${1:attribute}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet ffe "form_for with errors"
+snippet ffe "form_for with errors" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`error_messages_for :${1:model}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`form_for @${2:$1} do |f|`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
@@ -103,17 +103,17 @@ snippet ffe "form_for with errors"
 `!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
 endsnippet
 
-snippet ff "form_for"
+snippet ff "form_for" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`form_for @${1:model} do |f|`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 	$0
 `!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_BLOCK', snip)`
 endsnippet
 
-snippet ist "image_submit_tag"
+snippet ist "image_submit_tag" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`image_submit_tag("${1:agree.png}"${2:${3:, :id => "${4:${1/^(\w+)(\.\w*)?$/$1/}}"}${5:, :name => "${6:${1/^(\w+)(\.\w*)?$/$1/}}"}${7:, :class => "${8:${1/^(\w+)(\.\w*)?$/$1/}-button}"}${9:, :disabled => ${10:false}}})`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet it "image_tag"
+snippet it "image_tag" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`image_tag "$1${2:.png}"${3:${4:, :title => "${5:title}"}${6:, :class => "${7:class}"}}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
@@ -121,47 +121,51 @@ snippet layout "layout"
 layout "${1:template_name}"${2:${3:, :only => ${4:[:${5:action}, :${6:action}]}}${7:, :except => ${8:[:${9:action}, :${10:action}]}}}
 endsnippet
 
-snippet jit "javascript_include_tag"
+snippet jit "javascript_include_tag" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`javascript_include_tag ${1::all}${2:, :cache => ${3:true}}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet lia "link_to (action)"
+snippet lt "link_to (name, dest)" w
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to "${1:link text...}", ${2:dest}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+endsnippet
+
+snippet lia "link_to (action)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to "${1:link text...}", :action => "${2:index}"`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet liai "link_to (action, id)"
+snippet liai "link_to (action, id)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to "${1:link text...}", :action => "${2:edit}", :id => ${3:@item}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet lic "link_to (controller)"
+snippet lic "link_to (controller)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to "${1:link text...}", :controller => "${2:items}"`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet lica "link_to (controller, action)"
+snippet lica "link_to (controller, action)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to "${1:link text...}", :controller => "${2:items}", :action => "${3:index}"`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet licai "link_to (controller, action, id)"
+snippet licai "link_to (controller, action, id)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to "${1:link text...}", :controller => "${2:items}", :action => "${3:edit}", :id => ${4:@item}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet linpp "link_to (nested path plural)"
+snippet linpp "link_to (nested path plural)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${10:parent}_${11:child}_path(${12:@}${13:${10}})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet linp "link_to (nested path)"
+snippet linp "link_to (nested path)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${12:parent}_${13:child}_path(${14:@}${15:${12}}, ${16:@}${17:${13}})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet lipp "link_to (path plural)"
+snippet lipp "link_to (path plural)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${4:model}s_path}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet lip "link_to (path)"
+snippet lip "link_to (path)" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${12:model}_path(${13:@}${14:${12}})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet lim "link_to model"
+snippet lim "link_to model" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:model}.${2:name}, ${3:${4:$1}_path(${14:$1})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
@@ -213,11 +217,11 @@ snippet rps "render (partial,status) (rps)"
 render :partial => "${1:item}", :status => ${2:500}
 endsnippet
 
-snippet slt "stylesheet_link_tag"
+snippet slt "stylesheet_link_tag" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`stylesheet_link_tag ${1::all}${2:, :cache => ${3:true}}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
-snippet st "submit_tag"
+snippet st "submit_tag" w
 `!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`submit_tag "${1:Save changes}"${2:, :id => "${3:submit}"}${4:, :name => "${5:$3}"}${6:, :class => "${7:form_$3}"}${8:, :disabled => ${9:false}}${10:, :disable_with => "${11:Please wait...}"}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 

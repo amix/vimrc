@@ -17,7 +17,7 @@ def before(string)
 end
 
 def after(string)
-  get_file_content().should eq normalize_string_indent(string)
+  expect(get_file_content()).to eq normalize_string_indent(string)
 end
 
 def type(string)
@@ -163,9 +163,35 @@ describe "Multiple Cursors when normal_maps is empty" do
 
 end
 
+describe "Multiple Cursors when visual_maps is empty" do
+  let(:filename) { 'test.txt' }
+  let(:options) { ['let g:multi_cursor_visual_maps = {}'] }
+
+  # Operator-pending commands are handled correctly thanks to their inclusion
+  # in `g:multi_cursor_visual_maps`.
+  #
+  # When an operator-pending command like 'f' is missing from that setting's
+  # value, then it should result in a no-op, but we should still remain in
+  # multicursor mode.
+  specify "#visual mode 'i'" do
+    before <<-EOF
+      hello world x
+      hello world x
+    EOF
+
+    type 'fw<C-n><C-n>fx<Esc>'
+
+    after <<-EOF
+      hello  x
+      hello  x
+    EOF
+  end
+
+end
+
 describe "Multiple Cursors" do
   let(:filename) { 'test.txt' }
-  let(:options) { [] }
+  let(:options) { ['set autoindent'] }
 
   specify "#paste buffer normal x then p" do
     before <<-EOF
@@ -324,6 +350,38 @@ describe "Multiple Cursors" do
     EOF
   end
 
+  specify "#multiple new lines on one line in insert mode" do
+    before <<-EOF
+      'a','b','c','d','e'
+    EOF
+
+    type 'f,v<C-n><C-n><C-n>c<CR><Esc>'
+
+    after <<-EOF
+      'a'
+      'b'
+      'c'
+      'd'
+      'e'
+    EOF
+  end
+
+  specify "#multiple new lines on one line in insert mode with indents" do
+    before <<-EOF
+      'a','b','c','d','e'
+    EOF
+
+    type '4i<Space><Esc>f,v<C-n><C-n><C-n>c<CR><Esc>:%s/^/^<CR>'
+
+    after <<-EOF
+      ^    'a'
+      ^    'b'
+      ^    'c'
+      ^    'd'
+      ^    'e'
+    EOF
+  end
+
   specify "#normal mode 'o'" do
     before <<-EOF
       hello
@@ -371,6 +429,48 @@ describe "Multiple Cursors" do
     EOF
   end
 
+  specify "#find command start-of-line" do
+    before <<-EOF
+      hello
+      world
+
+      hello
+      world
+    EOF
+
+    vim.normal ':MultipleCursorsFind ^<CR>'
+    type 'Ibegin<Esc>'
+
+    after <<-EOF
+      beginhello
+      beginworld
+      begin
+      beginhello
+      beginworld
+    EOF
+  end
+
+  specify "#find command end-of-line" do
+    before <<-EOF
+      hello
+      world
+
+      hello
+      world
+    EOF
+
+    vim.normal ':MultipleCursorsFind $<CR>'
+    type 'Iend<Esc>'
+
+    after <<-EOF
+      helloend
+      worldend
+      end
+      helloend
+      worldend
+    EOF
+  end
+
   specify "#visual line mode replacement" do
     before <<-EOF
       hello world
@@ -414,6 +514,216 @@ describe "Multiple Cursors" do
       world
       world
       hello
+    EOF
+  end
+
+  specify "#visual mode 'i'" do
+    before <<-EOF
+      hi (hello world jan) bye
+      hi (hello world feb) bye
+      hi (hello world mar) bye
+    EOF
+
+    type 'fw<C-n><C-n><C-n>ibcone<Esc>'
+
+    after <<-EOF
+      hi (one) bye
+      hi (one) bye
+      hi (one) bye
+    EOF
+  end
+
+  specify "#visual mode 'a'" do
+    before <<-EOF
+      hi (hello world jan) bye
+      hi (hello world feb) bye
+      hi (hello world mar) bye
+    EOF
+
+    type 'fw<C-n><C-n><C-n>abcone<Esc>'
+
+    after <<-EOF
+      hi one bye
+      hi one bye
+      hi one bye
+    EOF
+  end
+
+  specify "#visual mode 'f'" do
+    before <<-EOF
+      hi (hello world jan) bye
+      hi (hello world feb) bye
+      hi (hello world mar) bye
+    EOF
+
+    type 'fw<C-n><C-n><C-n>f)cone<Esc>'
+
+    after <<-EOF
+      hi (hello one bye
+      hi (hello one bye
+      hi (hello one bye
+    EOF
+  end
+
+  specify "#visual mode 'F'" do
+    before <<-EOF
+      hi (hello world jan) bye
+      hi (hello world feb) bye
+      hi (hello world mar) bye
+    EOF
+
+    type 'fw<C-n><C-n><C-n>F(cbefore<Esc>'
+
+    after <<-EOF
+      hi beforeorld jan) bye
+      hi beforeorld feb) bye
+      hi beforeorld mar) bye
+    EOF
+  end
+
+  specify "#visual mode 't'" do
+    before <<-EOF
+      hello.jan
+      hello hi.feb
+      hello hi bye.mar
+    EOF
+
+    type '<C-n><C-n><C-n>t.cone<Esc>'
+
+    after <<-EOF
+      one.jan
+      one.feb
+      one.mar
+    EOF
+  end
+
+  specify "#visual mode 'T'" do
+    before <<-EOF
+      jan.world
+      feb.hi world
+      mar.bye hi world
+    EOF
+
+    type 'fw<C-n><C-n><C-n>T.cbefore<Esc>'
+
+    after <<-EOF
+      jan.beforeorld
+      feb.beforeorld
+      mar.beforeorld
+    EOF
+  end
+
+  specify "#visual line mode 'f'" do
+    before <<-EOF
+      hello jan world
+      hello feb world
+      hello mar world
+    EOF
+
+    type '<C-n><C-n><C-n>VfwvAafter<Esc>'
+
+    after <<-EOF
+      hello jan wafterorld
+      hello feb wafterorld
+      hello mar wafterorld
+    EOF
+  end
+
+  specify "#visual mode 'I'" do
+    before <<-EOF
+      hello world jan
+      hello world feb
+      hello world mar
+    EOF
+
+    type 'w<C-n><C-n><C-n>Ibefore<Esc>'
+
+    after <<-EOF
+      hello beforeworld jan
+      hello beforeworld feb
+      hello beforeworld mar
+    EOF
+  end
+
+  specify "#visual mode 'A'" do
+    before <<-EOF
+      hello world jan
+      hello world feb
+      hello world mar
+    EOF
+
+    type 'w<C-n><C-n><C-n>Aafter<Esc>'
+
+    after <<-EOF
+      hello worldafter jan
+      hello worldafter feb
+      hello worldafter mar
+    EOF
+  end
+
+  specify "#resize regions visual mode 'I'" do
+    before <<-EOF
+      hello world jan
+      hello world feb
+      hello world mar
+    EOF
+
+    type 'w<C-n><C-n><C-n>hhhIbefore<Esc>'
+
+    after <<-EOF
+      hello beforeworld jan
+      hello beforeworld feb
+      hello beforeworld mar
+    EOF
+  end
+
+  specify "#resize regions visual mode 'A'" do
+    before <<-EOF
+      hello world jan
+      hello world feb
+      hello world mar
+    EOF
+
+    type 'w<C-n><C-n><C-n>hhhAbefore<Esc>'
+
+    after <<-EOF
+      hello wobeforerld jan
+      hello wobeforerld feb
+      hello wobeforerld mar
+    EOF
+  end
+
+  specify "#no word boundries visual mode 'I'" do
+    before <<-EOF
+      hello hibye world
+      hello hibye world
+      hello hibye world
+    EOF
+
+    vim.normal ':MultipleCursorsFind bye<CR>'
+    type 'Ibefore<Esc>'
+
+    after <<-EOF
+      hello hibeforebye world
+      hello hibeforebye world
+      hello hibeforebye world
+    EOF
+  end
+
+  specify "#variable-length regions visual mode 'I'" do
+    before <<-EOF
+      hello hii world
+      hello hiiii world
+      hello hiiiiii world
+    EOF
+
+    vim.normal ':MultipleCursorsFind \<hi*\><CR>'
+    type 'Ibefore<Esc>'
+
+    after <<-EOF
+      hello beforehii world
+      hello beforehiiii world
+      hello beforehiiiiii world
     EOF
   end
 

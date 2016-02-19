@@ -5,7 +5,7 @@ if exists('g:ack_use_dispatch')
   endif
 else
   let g:ack_use_dispatch = 0
-end
+endif
 
 "-----------------------------------------------------------------------------
 " Public API

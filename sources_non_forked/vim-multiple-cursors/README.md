@@ -1,5 +1,7 @@
-# vim-multiple-cursors [![Build Status](https://travis-ci.org/terryma/vim-multiple-cursors.svg)](https://travis-ci.org/terryma/vim-multiple-cursors)
-
+# vim-multiple-cursors
+[![Build Status](https://travis-ci.org/terryma/vim-multiple-cursors.svg)](https://travis-ci.org/terryma/vim-multiple-cursors)
+[![Issue Stats](http://issuestats.com/github/terryma/vim-multiple-cursors/badge/pr?style=flat)](http://issuestats.com/github/terryma/vim-multiple-cursors)
+[![Issue Stats](http://issuestats.com/github/terryma/vim-multiple-cursors/badge/issue?style=flat)](http://issuestats.com/github/terryma/vim-multiple-cursors)
 ## Contents
  - [About](#about)
  - [Features](#features)
@@ -10,10 +12,11 @@
  - [Interactions with other plugins](#interactions-with-other-plugins)
  - [Highlight](#highlight)
  - *[FAQ](#faq)*
- - *[Known Issues](#known-issues)*
+ - *[Known issues](#known-issues)*
+ - *[Issue creation requirements](#issue-creation-requirements)*
  - [Changelog](#changelog)
  - [Contributing](#contributing)
- - [Credit](#credit) 
+ - [Credit](#credit)
 
 ###Contributors
 - [eapache](https://github.com/eapache)
@@ -27,16 +30,22 @@
 ### It's great for quick refactoring
 ![Example1](assets/example1.gif?raw=true)
 
+Vim command sequence: `2Gfp<C-n><C-n><C-n>cname`
+
 ### Add a cursor to each line of your visual selection
 ![Example2](assets/example2.gif?raw=true)
+
+Vim command sequence: `2Gvip<C-n>i"<Right><Right><Right>",<Esc>vipJ$r]Idays = [`
 
 ### Do it backwards too! This is not just a replay of the above gif :)
 ![Example3](assets/example3.gif?raw=true)
 
+Vim command sequence: `2Gdf[$r,0f,v<C-n>…<C-n>c<CR><Up><Del><Right><Right><Right><Del>`
+
 ### Add multiple cursors using regexes
 ![Example4](assets/example4.gif?raw=true)
 
-To see what keystrokes are used for the above example, see [this issue](https://github.com/terryma/vim-multiple-cursors/issues/39).
+To see what keystrokes are used for the above examples, see [the wiki page](https://github.com/terryma/vim-multiple-cursors/wiki/Keystrokes-for-example-gifs).
 
 ## Features
 - Live update in Insert mode
@@ -132,6 +141,15 @@ normal mode will "fail to replay" when multiple cursors are active. For example,
 changing it from `{}` to `{'d':1}` makes normal-mode mappings beginning with `d`
 (such as `dw` to delete a word) work in multi-cursor mode.
 
+### ```g:multi_cursor_visual_maps``` (Default: see below)
+Default value: `{'i':1, 'a':1, 'f':1, 'F':1, 't':1, 'T':1}`
+
+Any key in this map (values are ignored) will cause multi-cursor _Visual_ mode
+to pause for map completion just like normal vim. Otherwise keys mapped in
+visual mode will "fail to replay" when multiple cursors are active. For example,
+changing it from `{}` to `{'i':1}` makes visual-mode mappings beginning with `i`
+(such as `it` to select an "inner tag block") work in multi-cursor mode.
+
 The default list contents should work for anybody, unless they have remapped a
 key from an operator-pending command to a non-operator-pending command or
 vice versa.
@@ -144,9 +162,9 @@ such as `j` as if they were operator-pending commands can break things.
 
 ### ```Multiple_cursors_before/Multiple_cursors_after``` (Default: `nothing`)
 
-Other plugins may trigger on keypresses when in insert mode. These plugins 
+Other plugins may trigger on keypresses when in insert mode. These plugins
 generally provide a means to toggle their active state. These hooks allow
-the user to provide functions in their .vimrc to do this when multiple-cursor-mode 
+the user to provide functions in their .vimrc to do this when multiple-cursor-mode
 is entered.
 
 For example, if you are using [Neocomplete](https://github.com/Shougo/neocomplete.vim),
@@ -187,9 +205,10 @@ highlight link multiple_cursors_visual Visual
 
 ## Known Issues
 - Select mode is not implemented
-- I and A do not work in Visual mode yet (See #55)
-  
- Single key command to switch to Insert mode such as c or s from Visual mode or i, a, I, A in Normal mode should work without any issues. **NOTE**: vim's Visual block mode also supports I and A commands, however they do not work in this plugin's Visual mode at the moment. For now, to use I and A, switch to normal mode by pressing v first.
+
+## Issue Creation Requirements
+
+This is a community supported project. Contributor's time is precious and limited. To ensure your issue is not closed out of hand, please ensure it meets the requirements outlined in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Changelog
 See [CHANGELOG.md](CHANGELOG.md)
@@ -211,6 +230,4 @@ Obviously inspired by Sublime Text's [multiple selection][sublime-multiple-selec
 [emacs-multiple-cursors]:https://github.com/magnars/multiple-cursors.el
 
 
-
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/terryma/vim-multiple-cursors/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-

@@ -1,6 +1,6 @@
 " add line number
 :set number
-:set colorcolumn=80
+" :set colorcolumn=80
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -10,3 +10,5 @@
 "
 
 set clipboard=unnamed
+let g:syntastic_javascript_args = "-c ./.eslintrc"
+

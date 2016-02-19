@@ -158,7 +158,8 @@ g:snipMate.override
                                 file they were in. When this option is enabled
                                 (set to 1), the snippet originating in the
                                 last loaded file is kept, similar to how Vim
-                                maps and other settings work.
+                                maps and other settings work. Note: Load order
+                                is determined by 'runtimepath'.
 
 g:snipMate['no_match_completion_feedkeys_chars']
                                 A string inserted when no match for a trigger
@@ -252,6 +253,9 @@ overridden on a per-snippet basis by defining the snippet with a bang (!): >
         expanded text
         more expanded text
 
+Two bangs will remove the trigger entirely from SnipMate's lookup. In this
+case any snippet text is unused.
+
 Note: Hard tabs in the expansion text are required. When the snippet is
 expanded in the text and 'expandtab' is set, each tab will be replaced with
 spaces based on 'softtabstop' if nonzero or 'shiftwidth' otherwise.
@@ -301,18 +305,19 @@ and so on. After expansion, SnipMate will jump to the first tab stop. From
 then on, the <Plug>snipMateNextOrTrigger map will jump to the next higher
 numbered tabs top.
 
-However, SnipMate will always stop at the zero tab stop $0. Once it jumps to
+In the case of an ambiguity, for example if a stop occurs just before
+a literal number, braces may be placed around the stop number to resolve it:
+${3}79 is the third tab stop followed by the string "79".
+
+NOTE: In the version 0 snippet parser, the braces are mandatory.
+
+                                                       *SnipMate-zero-tabstop*
+SnipMate will always stop at the special zero tab stop $0. Once it jumps to
 the zero tab stop, snippet expansion is finished. If the zero tab stop is not
 present in a definition, it will be put at the end.
 
-In the case of an ambiguity, for example if a stop occurs just before a literal
-number, braces may be placed around the stop number to resolve it: ${3}79 is
-the third tab stop followed by the string "79".
-
-Note: In the version 0 snippet parser, the braces are mandatory.
-
-For example, to place the cursor first on the id of a <div> tag, then on
-its class, and finally end editing its contents: >
+For example, to place the cursor first on the id of a <div> tag, then on its
+class, and finally end editing its contents: >
 
     snippet div
         <div id="$1" class="$2">

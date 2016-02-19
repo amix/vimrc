@@ -5,7 +5,7 @@ if !exists('*CapsLockStatusline')
 endif
 
 function! airline#extensions#capslock#status()
-  return CapsLockStatusline() == '[caps]' ? 'CAPS' : ''
+  return tolower(CapsLockStatusline()) == '[caps]' ? 'CAPS' : ''
 endfunction
 
 function! airline#extensions#capslock#init(ext)

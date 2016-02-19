@@ -10,9 +10,9 @@
 "     let OPTION_NAME = 0
 "   in your ~/.vimrc file to disable particular options. You can also write:
 "     let OPTION_NAME = 1
-"   to enable particular options. 
+"   to enable particular options.
 "   At present, all options default to on, except highlight of:
-"   functions, methods and structs.
+"   functions, methods, structs, operators, build constraints and interfaces.
 "
 "   - go_highlight_array_whitespace_error
 "     Highlights white space after "[]".
@@ -25,6 +25,8 @@
 "     Highlights instances of tabs following spaces.
 "   - go_highlight_trailing_whitespace_error
 "     Highlights trailing white space.
+"   - go_highlight_string_spellcheck
+"     Specifies that strings should be spell checked
 
 " Quit when a (custom) syntax file was already loaded
 if exists("b:current_syntax")
@@ -52,23 +54,31 @@ if !exists("g:go_highlight_trailing_whitespace_error")
 endif
 
 if !exists("g:go_highlight_operators")
-	let g:go_highlight_operators = 0
+  let g:go_highlight_operators = 0
 endif
 
 if !exists("g:go_highlight_functions")
-	let g:go_highlight_functions = 0
+  let g:go_highlight_functions = 0
 endif
 
 if !exists("g:go_highlight_methods")
-	let g:go_highlight_methods = 0
+  let g:go_highlight_methods = 0
 endif
 
 if !exists("g:go_highlight_structs")
-	let g:go_highlight_structs = 0
+  let g:go_highlight_structs = 0
+endif
+
+if !exists("g:go_highlight_interfaces")
+  let g:go_highlight_interfaces = 0
 endif
 
 if !exists("g:go_highlight_build_constraints")
-    let g:go_highlight_build_constraints = 0
+  let g:go_highlight_build_constraints = 0
+endif
+
+if !exists("g:go_highlight_string_spellcheck")
+  let g:go_highlight_string_spellcheck = 1
 endif
 
 syn case match
@@ -111,8 +121,8 @@ syn match       goDeclaration       /\<func\>/
 
 
 " Predefined functions and values
-syn keyword     goBuiltins          append cap close complex copy delete imag len
-syn keyword     goBuiltins          make new panic print println real recover
+syn match       goBuiltins          /\<\v(append|cap|close|complex|copy|delete|imag|len)\ze\(/
+syn match       goBuiltins          /\<\v(make|new|panic|print|println|real|recover)\ze\(/
 syn keyword     goBoolean           iota true false nil
 
 hi def link     goBuiltins          Keyword
@@ -145,13 +155,18 @@ hi def link     goEscapeError       Error
 
 " Strings and their contents
 syn cluster     goStringGroup       contains=goEscapeOctal,goEscapeC,goEscapeX,goEscapeU,goEscapeBigU,goEscapeError
-syn region      goString            start=+"+ skip=+\\\\\|\\"+ end=+"+ contains=@goStringGroup
-syn region      goRawString         start=+`+ end=+`+
+if g:go_highlight_string_spellcheck != 0
+  syn region      goString            start=+"+ skip=+\\\\\|\\"+ end=+"+ contains=@goStringGroup,@Spell
+  syn region      goRawString         start=+`+ end=+`+ contains=@Spell
+else
+  syn region      goString            start=+"+ skip=+\\\\\|\\"+ end=+"+ contains=@goStringGroup
+  syn region      goRawString         start=+`+ end=+`+
+endif
 syn match       goFormatSpecifier   /%[-#0 +]*\%(\*\|\d\+\)\=\%(\.\%(\*\|\d\+\)\)*[vTtbcdoqxXUeEfgGsp]/ contained containedin=goString
 
 hi def link     goString            String
 hi def link     goRawString         String
-hi def link 	goFormatSpecifier   goSpecialString
+hi def link     goFormatSpecifier   goSpecialString
 
 " Characters; their contents
 syn cluster     goCharacterGroup    contains=goEscapeOctal,goEscapeC,goEscapeX,goEscapeU,goEscapeBigU
@@ -197,9 +212,17 @@ endif
 " Spacing errors around the 'chan' keyword
 if g:go_highlight_chan_whitespace_error != 0
   " receive-only annotation on chan type
-  syn match goSpaceError display "\(<-\)\@<=\s\+\(chan\>\)\@="
+  "
+  " \(\<chan\>\)\@<!<-  (only pick arrow when it doesn't come after a chan)
+  " this prevents picking up 'chan<- chan<-' but not '<- chan'
+  syn match goSpaceError display "\(\(\<chan\>\)\@<!<-\)\@<=\s\+\(\<chan\>\)\@="
+
   " send-only annotation on chan type
-  syn match goSpaceError display "\(\<chan\)\@<=\s\+\(<-\)\@="
+  "
+  " \(<-\)\@<!\<chan\>  (only pick chan when it doesn't come after an arrow)
+  " this prevents picking up '<-chan <-chan' but not 'chan <-'
+  syn match goSpaceError display "\(\(<-\)\@<!\<chan\>\)\@<=\s\+\(<-\)\@="
+
   " value-ignoring receives in a few contexts
   syn match goSpaceError display "\(\(^\|[={(,;]\)\s*<-\)\@<=\s\+"
 endif
@@ -234,57 +257,84 @@ syn keyword     goTodo              contained NOTE
 hi def link     goTodo              Todo
 
 
-" Operators; 
+" Operators;
 if g:go_highlight_operators != 0
-	" match single-char operators:          - + % < > ! & | ^ * =
-	" and corresponding two-char operators: -= += %= <= >= != &= |= ^= *= ==
-	syn match goOperator /[-+%<>!&|^*=]=\?/
-	" match / and /=
-	syn match goOperator /\/\%(=\|\ze[^/*]\)/
-	" match two-char operators:               << >> &^
-	" and corresponding three-char operators: <<= >>= &^=
-	syn match goOperator /\%(<<\|>>\|&^\)=\?/
-	" match remaining two-char operators: := && || <- ++ --
-	syn match goOperator /:=\|||\|<-\|++\|--/
-	" match ...
-	syn match goOperator /\.\.\./
+  " match single-char operators:          - + % < > ! & | ^ * =
+  " and corresponding two-char operators: -= += %= <= >= != &= |= ^= *= ==
+  syn match goOperator /[-+%<>!&|^*=]=\?/
+  " match / and /=
+  syn match goOperator /\/\%(=\|\ze[^/*]\)/
+  " match two-char operators:               << >> &^
+  " and corresponding three-char operators: <<= >>= &^=
+  syn match goOperator /\%(<<\|>>\|&^\)=\?/
+  " match remaining two-char operators: := && || <- ++ --
+  syn match goOperator /:=\|||\|<-\|++\|--/
+  " match ...
+  syn match goOperator /\.\.\./
 endif
-hi def link     goOperator					Operator
+hi def link     goOperator          Operator
 
-" Functions; 
+" Functions;
 if g:go_highlight_functions != 0
-	syn match goFunction							/\(func\s\+\)\@<=\w\+\((\)\@=/
-	syn match goFunction							/\()\s\+\)\@<=\w\+\((\)\@=/
+  syn match goFunction              /\(func\s\+\)\@<=\w\+\((\)\@=/
+  syn match goFunction              /\()\s\+\)\@<=\w\+\((\)\@=/
 endif
-hi def link     goFunction					Function
+hi def link     goFunction          Function
 
-" Methods; 
+" Methods;
 if g:go_highlight_methods != 0
-	syn match goMethod								/\(\.\)\@<=\w\+\((\)\@=/
+  syn match goMethod                /\(\.\)\@<=\w\+\((\)\@=/
 endif
-hi def link     goMethod						Type
+hi def link     goMethod            Type
 
-" Structs; 
+" Structs;
 if g:go_highlight_structs != 0
-	syn match goStruct								/\(.\)\@<=\w\+\({\)\@=/
-	syn match goStructDef							/\(type\s\+\)\@<=\w\+\(\s\+struct\s\+{\)\@=/
+  syn match goStruct                /\(.\)\@<=\w\+\({\)\@=/
+  syn match goStructDef             /\(type\s\+\)\@<=\w\+\(\s\+struct\s\+{\)\@=/
 endif
-hi def link     goStruct						Function
+hi def link     goStruct            Function
 hi def link     goStructDef         Function
+
+" Interfaces;
+if g:go_highlight_interfaces != 0
+  syn match goInterface             /\(.\)\@<=\w\+\({\)\@=/
+  syn match goInterfaceDef          /\(type\s\+\)\@<=\w\+\(\s\+interface\s\+{\)\@=/
+endif
+hi def link     goInterface         Function
+hi def link     goInterfaceDef      Function
 
 " Build Constraints
 if g:go_highlight_build_constraints != 0
-    syn keyword goBuildOs           contained ignore cgo android darwin dragonfly freebsd linux nacl netbsd openbsd plan9 solaris windows 
-    syn keyword goBuildArch         contained 386 amd64 amd64p32 arm
-    syn match   goBuildDirective    display contained "+build"
-    syn region  goBuildComment      start="//\s*+build" end="$" contains=goBuildDirective,goBuildOs,goBuildArch
-    syn region  goBuildComment      start="/\*\s*+build" end="\*/" contains=goBuildDirective,goBuildOs,goBuildArch
-endif
+    syn match   goBuildKeyword      display contained "+build"
+    " Highlight the known values of GOOS, GOARCH, and other +build options.
+    syn keyword goBuildDirectives   contained
+      \ android darwin dragonfly freebsd linux nacl netbsd openbsd plan9
+      \ solaris windows 386 amd64 amd64p32 arm armbe arm64 arm64be ppc64
+      \ ppc64le mips mipsle mips64 mips64le mips64p32 mips64p32le ppc
+      \ s390 s390x sparc sparc64 cgo ignore race
 
-hi def link     goBuildComment      Comment
-hi def link     goBuildOs           Type
-hi def link     goBuildArch         Type
-hi def link     goBuildDirective    PreProc
+    " Other words in the build directive are build tags not listed above, so
+    " avoid highlighting them as comments by using a matchgroup just for the
+    " start of the comment.
+    " The rs=s+2 option lets the \s*+build portion be part of the inner region
+    " instead of the matchgroup so it will be highlighted as a goBuildKeyword.
+    syn region  goBuildComment      matchgroup=goBuildCommentStart
+      \ start="//\s*+build\s"rs=s+2 end="$"
+      \ contains=goBuildKeyword,goBuildDirectives
+    hi def link goBuildCommentStart Comment
+    hi def link goBuildDirectives   Type
+    hi def link goBuildKeyword      PreProc
+
+    " One or more line comments that are followed immediately by a "package"
+    " declaration are treated like package documentation, so these must be
+    " matched as comments to avoid looking like working build constraints.
+    " The he, me, and re options let the "package" itself be highlighted by
+    " the usual rules.
+    syn region  goPackageComment    start=/\v(\/\/.*\n)+\s*package/
+      \ end=/\v\n\s*package/he=e-7,me=e-7,re=e-7
+      \ contains=@goCommentGroup,@Spell
+    hi def link goPackageComment    Comment
+endif
 
 
 " Search backwards for a global declaration to start processing the syntax.

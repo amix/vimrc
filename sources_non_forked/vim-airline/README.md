@@ -1,8 +1,8 @@
-# vim-airline [![Build Status](https://travis-ci.org/bling/vim-airline.png)](https://travis-ci.org/bling/vim-airline)
+# vim-airline [![Build Status](https://travis-ci.org/vim-airline/vim-airline.png)](https://travis-ci.org/vim-airline/vim-airline)
 
 Lean &amp; mean status/tabline for vim that's light as air.
 
-![img](https://github.com/bling/vim-airline/wiki/screenshots/demo.gif)
+![img](https://github.com/vim-airline/vim-airline/wiki/screenshots/demo.gif)
 
 # Features
 
@@ -15,7 +15,8 @@ Lean &amp; mean status/tabline for vim that's light as air.
    [ctrlspace][38] and more.
 *  Looks good with regular fonts and provides configuration points so you can use unicode or powerline symbols.
 *  Optimized for speed; it loads in under a millisecond.
-*  Extensive suite of themes for popular color schemes including [solarized][23] (dark and light), [tomorrow][24] (all variants), [base16][32] (all variants), [molokai][25], [jellybeans][26] and others; have a look at the [screenshots][14] in the wiki.
+*  Extensive suite of themes for popular color schemes including [solarized][23] (dark and light), [tomorrow][24] (all variants), [base16][32] (all variants), [molokai][25], [jellybeans][26] and others.
+ Note these are now external to this plugin. See [below][46] for detail.
 *  Supports 7.2 as the minimum Vim version.
 *  The master branch tries to be as stable as possible, and new features are merged in only after they have gone through a [full regression test][33].
 *  Unit testing suite.
@@ -25,6 +26,20 @@ Lean &amp; mean status/tabline for vim that's light as air.
 If you don't like the defaults, you can replace all sections with standard `statusline` syntax.  Give your statusline that you've built over the years a face lift.
 
 ![image](https://f.cloud.github.com/assets/306502/1009429/d69306da-0b38-11e3-94bf-7c6e3eef41e9.png)
+
+## Themes
+
+Themes have moved to
+another repository as of [this commit][45].
+
+Install the themes as you would this plugin (Vundle example):
+
+```vim
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+```
+
+See https://github.com/vim-airline/vim-airline-themes for more.
 
 ## Automatic truncation
 
@@ -78,6 +93,9 @@ vim-airline integrates with a variety of plugins out of the box.  These extensio
 #### [promptline][36]
 ![airline-promptline-sc](https://f.cloud.github.com/assets/1532071/1871900/7d4b28a0-789d-11e3-90e4-16f37269981b.gif)
 
+#### [ctrlspace][38]
+![papercolor_with_ctrlspace](https://cloud.githubusercontent.com/assets/493242/12912041/7fc3c6ec-cf16-11e5-8775-8492b9c64ebf.png)
+
 ## Extras
 
 vim-airline also supplies some supplementary stand-alone extensions.  In addition to the tabline extension mentioned earlier, there is also:
@@ -93,7 +111,7 @@ Every section is composed of parts, and you can reorder and reconfigure them at 
 
 ![image](https://f.cloud.github.com/assets/306502/1073278/f291dd4c-14a3-11e3-8a83-268e2753f97d.png)
 
-Sections can contain accents, which allows for very granular control of visuals (see configuration [here](https://github.com/bling/vim-airline/issues/299#issuecomment-25772886)).
+Sections can contain accents, which allows for very granular control of visuals (see configuration [here](https://github.com/vim-airline/vim-airline/issues/299#issuecomment-25772886)).
 
 ![image](https://f.cloud.github.com/assets/306502/1195815/4bfa38d0-249d-11e3-823e-773cfc2ca894.png)
 
@@ -122,12 +140,14 @@ I wrote the initial version on an airplane, and since it's light as air it turne
 This plugin follows the standard runtime path structure, and as such it can be installed with a variety of plugin managers:
 
 *  [Pathogen][11]
-  *  `git clone https://github.com/bling/vim-airline ~/.vim/bundle/vim-airline`
+  *  `git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline`
   *  Remember to run `:Helptags` to generate help tags
 *  [NeoBundle][12]
-  *  `NeoBundle 'bling/vim-airline'`
+  *  `NeoBundle 'vim-airline/vim-airline'`
 *  [Vundle][13]
-  *  `Plugin 'bling/vim-airline'`
+  *  `Plugin 'vim-airline/vim-airline'`
+*  [Plug][40]
+  *  `Plug 'vim-airline/vim-airline'`
 *  [VAM][22]
   *  `call vam#ActivateAddons([ 'vim-airline' ])`
 *  manual
@@ -166,29 +186,17 @@ If you don't want all the bells and whistles enabled by default, you can define 
 
 A full list of screenshots for various themes can be found in the [Wiki][14].
 
-# Bugs
+# Maintainers
 
-Tracking down bugs can take a very long time due to different configurations, versions, and operating systems.  To ensure a timely response, please help me out by doing the following:
+The project is currently being maintained by [Bailey Ling][41], [Christian Brabandt][42], and [Mike Hartington][44].
 
-*  Reproduce it with this [minivimrc][7] repository to rule out any configuration conflicts.
-*  A link to your vimrc or a gist which shows how you configured the plugin(s).
-*  And so I can reproduce; your `:version` of vim, and the commit of vim-airline you're using.
-
-# Contributions
-
-Contributions and pull requests are welcome.  Please take note of the following guidelines:
-
-*  Adhere to the existing style as much as possible; notably, 2 space indents and long-form keywords.
-*  Keep the history clean! squash your branches before you submit a pull request. `pull --rebase` is your friend.
-*  Any changes to the core should be tested against Vim 7.2.
-*  If you submit a theme, please create a screenshot so it can be added to the [Wiki][14].
+If you are interested in becoming a maintainer (we always welcome more maintainers), please [go here][43].
 
 # License
 
-MIT License. Copyright (c) 2013-2015 Bailey Ling.
+MIT License. Copyright (c) 2013-2016 Bailey Ling.
 
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/bling/vim-airline/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/vim-airline/vim-airline/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 [1]: https://github.com/Lokaltog/vim-powerline
 [2]: https://github.com/Lokaltog/powerline
@@ -199,11 +207,11 @@ MIT License. Copyright (c) 2013-2015 Bailey Ling.
 [7]: https://github.com/bling/minivimrc
 [8]: http://en.wikipedia.org/wiki/Open/closed_principle
 [9]: https://github.com/Shougo/unite.vim
-[10]: https://github.com/kien/ctrlp.vim
+[10]: https://github.com/ctrlpvim/ctrlp.vim
 [11]: https://github.com/tpope/vim-pathogen
 [12]: https://github.com/Shougo/neobundle.vim
 [13]: https://github.com/gmarik/vundle
-[14]: https://github.com/bling/vim-airline/wiki/Screenshots
+[14]: https://github.com/vim-airline/vim-airline/wiki/Screenshots
 [15]: https://github.com/techlivezheng/vim-plugin-minibufexpl
 [16]: https://github.com/sjl/gundo.vim
 [17]: https://github.com/mbbill/undotree
@@ -216,16 +224,23 @@ MIT License. Copyright (c) 2013-2015 Bailey Ling.
 [24]: https://github.com/chriskempson/tomorrow-theme
 [25]: https://github.com/tomasr/molokai
 [26]: https://github.com/nanotech/jellybeans.vim
-[27]: https://github.com/bling/vim-airline/wiki/FAQ
+[27]: https://github.com/vim-airline/vim-airline/wiki/FAQ
 [28]: https://github.com/chrisbra/csv.vim
 [29]: https://github.com/airblade/vim-gitgutter
 [30]: https://github.com/mhinz/vim-signify
 [31]: https://github.com/jmcantrell/vim-virtualenv
 [32]: https://github.com/chriskempson/base16-vim
-[33]: https://github.com/bling/vim-airline/wiki/Test-Plan
+[33]: https://github.com/vim-airline/vim-airline/wiki/Test-Plan
 [34]: http://eclim.org
 [35]: https://github.com/edkolev/tmuxline.vim
 [36]: https://github.com/edkolev/promptline.vim
 [37]: https://github.com/gcmt/taboo.vim
 [38]: https://github.com/szw/vim-ctrlspace
 [39]: https://github.com/tomtom/quickfixsigns_vim
+[40]: https://github.com/junegunn/vim-plug
+[41]: https://github.com/bling
+[42]: https://github.com/chrisbra
+[43]: https://github.com/vim-airline/vim-airline/wiki/Becoming-a-Maintainer
+[44]: https://github.com/mhartington
+[45]: https://github.com/vim-airline/vim-airline/commit/d7fd8ca649e441b3865551a325b10504cdf0711b
+[46]: https://github.com/vim-airline/vim-airline#themes

@@ -31,17 +31,19 @@ endif
 function! go#package#Paths()
     let dirs = []
 
-    if executable('go')
-        let goroot = substitute(system('go env GOROOT'), '\n', '', 'g')
-        if v:shell_error
-            echomsg '''go env GOROOT'' failed'
+    if !exists("s:goroot")
+        if executable('go')
+            let s:goroot = substitute(system('go env GOROOT'), '\n', '', 'g')
+            if v:shell_error
+                echomsg '''go env GOROOT'' failed'
+            endif
+        else
+            let s:goroot = $GOROOT
         endif
-    else
-        let goroot = $GOROOT
     endif
 
-    if len(goroot) != 0 && isdirectory(goroot)
-        let dirs += [goroot]
+    if len(s:goroot) != 0 && isdirectory(s:goroot)
+        let dirs += [s:goroot]
     endif
 
     let workspaces = split($GOPATH, go#util#PathListSep())
@@ -66,7 +68,8 @@ function! go#package#ImportPath(arg)
         return -1
     endif
 
-    return substitute(path, workspace . '/src/', '', '')
+    let srcdir = substitute(workspace . '/src/', '//', '/', '')
+    return substitute(path, srcdir, '', '')
 endfunction
 
 function! go#package#FromPath(arg)

@@ -1,3 +1,6 @@
+#**This project is unmaintained** 
+**You should use [this fork](https://github.com/ctrlpvim/ctrlp.vim) instead.**
+
 # ctrlp.vim
 Full path fuzzy __file__, __buffer__, __mru__, __tag__, __...__ finder for Vim.
 

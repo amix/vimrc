@@ -22,23 +22,23 @@ snippet for
 		${0}
 	<% end %>
 snippet rp
-	<%= render :partial => '${0:item}' %>
+	<%= render partial: '${0:item}' %>
 snippet rpl
-	<%= render :partial => '${1:item}', :locals => { :${2:name} => '${3:value}'${0} } %>
+	<%= render partial: '${1:item}', locals: { :${2:name} => '${3:value}'${0} } %>
 snippet rps
-	<%= render :partial => '${1:item}', :status => ${0:500} %>
+	<%= render partial: '${1:item}', status: ${0:500} %>
 snippet rpc
-	<%= render :partial => '${1:item}', :collection => ${0:items} %>
+	<%= render partial: '${1:item}', collection: ${0:items} %>
 snippet lia
-	<%= link_to '${1:link text...}', :action => '${0:index}' %>
+	<%= link_to '${1:link text...}', action: '${0:index}' %>
 snippet liai
-	<%= link_to '${1:link text...}', :action => '${2:edit}', :id => ${0:@item} %>
+	<%= link_to '${1:link text...}', action: '${2:edit}', id: ${0:@item} %>
 snippet lic
-	<%= link_to '${1:link text...}', :controller => '${0:items}' %>
+	<%= link_to '${1:link text...}', controller: '${0:items}' %>
 snippet lica
-	<%= link_to '${1:link text...}', :controller => '${2:items}', :action => '${0:index}' %>
+	<%= link_to '${1:link text...}', controller: '${2:items}', action: '${0:index}' %>
 snippet licai
-	<%= link_to '${1:link text...}', :controller => '${2:items}', :action => '${3:edit}', :id => ${0:@item} %>
+	<%= link_to '${1:link text...}', controller: '${2:items}', action: '${3:edit}', id: ${0:@item} %>
 snippet yield
 	<%= yield ${1::content_symbol} %>
 snippet conf
@@ -110,11 +110,11 @@ snippet ofcfs
 snippet ofs
 	<%= options_for_select ${1:collection}, ${2:value_method} %>
 snippet rf
-	<%= render :file => "${1:file}"${0} %>
+	<%= render file: "${1:file}"${0} %>
 snippet rt
-	<%= render :template => "${1:file}"${0} %>
+	<%= render template: "${1:file}"${0} %>
 snippet slt
-	<%= stylesheet_link_tag ${1::all}, :cache => ${0:true} %>
+	<%= stylesheet_link_tag ${1::all}, cache: ${0:true} %>
 snippet sslt
 	<%= stylesheet_link_tag "${0}" %>
 snippet if

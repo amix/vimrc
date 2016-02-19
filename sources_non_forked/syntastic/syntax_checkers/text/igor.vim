@@ -15,8 +15,6 @@ if exists('g:loaded_syntastic_text_igor_checker')
 endif
 let g:loaded_syntastic_text_igor_checker = 1
 
-runtime! syntax_checkers/docbk/*.vim
-
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'text',
     \ 'name': 'igor',

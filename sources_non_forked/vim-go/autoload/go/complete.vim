@@ -19,12 +19,20 @@ fu! s:gocodeCurrentBuffer()
     return file
 endf
 
-
 if go#vimproc#has_vimproc()
     let s:vim_system = get(g:, 'gocomplete#system_function', 'vimproc#system2')
+    let s:vim_shell_error = get(g:, 'gocomplete#shell_error_function', 'vimproc#get_last_status')
 else
     let s:vim_system = get(g:, 'gocomplete#system_function', 'system')
+    let s:vim_shell_error = ''
 endif
+
+fu! s:shell_error()
+    if empty(s:vim_shell_error)
+        return v:shell_error
+    endif
+    return call(s:vim_shell_error, [])
+endf
 
 fu! s:system(str, ...)
     return call(s:vim_system, [a:str] + a:000)
@@ -65,7 +73,7 @@ fu! s:gocodeCommand(cmd, preargs, args)
 
     let $GOPATH = old_gopath
 
-    if v:shell_error != 0
+    if s:shell_error() != 0
         return "[\"0\", []]"
     else
         if &encoding != 'utf-8'
@@ -79,7 +87,7 @@ fu! s:gocodeCurrentBufferOpt(filename)
     return '-in=' . a:filename
 endf
 
-fu! s:gocodeCursor()
+fu! go#complete#gocodeCursor()
     if &encoding != 'utf-8'
         let sep = &l:fileformat == 'dos' ? "\r\n" : "\n"
         let c = col('.')
@@ -87,6 +95,7 @@ fu! s:gocodeCursor()
         let buf .= c == 1 ? "" : getline('.')[:c-2]
         return printf('%d', len(iconv(buf, &encoding, "utf-8")))
     endif
+
     return printf('%d', line2byte(line('.')) + (col('.')-2))
 endf
 
@@ -94,16 +103,16 @@ fu! s:gocodeAutocomplete()
     let filename = s:gocodeCurrentBuffer()
     let result = s:gocodeCommand('autocomplete',
                 \ [s:gocodeCurrentBufferOpt(filename), '-f=vim'],
-                \ [expand('%:p'), s:gocodeCursor()])
+                \ [expand('%:p'), go#complete#gocodeCursor()])
     call delete(filename)
     return result
 endf
 
-function! go#complete#GetInfo()
+function! go#complete#GetInfoFromOffset(offset)
     let filename = s:gocodeCurrentBuffer()
     let result = s:gocodeCommand('autocomplete',
                 \ [s:gocodeCurrentBufferOpt(filename), '-f=godit'],
-                \ [expand('%:p'), s:gocodeCursor()])
+                \ [expand('%:p'), a:offset])
     call delete(filename)
 
     " first line is: Charcount,,NumberOfCandidates, i.e: 8,,1
@@ -137,6 +146,11 @@ function! go#complete#GetInfo()
     endif
 
     return ""
+endfunction
+
+function! go#complete#GetInfo()
+    let offset = go#complete#gocodeCursor()
+    return go#complete#GetInfoFromOffset(offset)
 endfunction
 
 function! go#complete#Info()

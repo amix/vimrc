@@ -12,8 +12,14 @@ $0
 endsnippet
 
 snippet ifmain "ifmain" b
-if __name__ == '__main__':
+if __name__ == `!p snip.rv = get_quoting_style(snip)`__main__`!p snip.rv = get_quoting_style(snip)`:
 	${1:${VISUAL:main()}}
+endsnippet
+
+snippet with "with" b
+with ${1:expr}`!p snip.rv = " as " if t[2] else ""`${2:var}:
+	${3:${VISUAL:pass}}
+${0}
 endsnippet
 
 snippet for "for loop" b
@@ -35,6 +41,8 @@ NORMAL  = 0x1
 DOXYGEN = 0x2
 SPHINX  = 0x3
 GOOGLE  = 0x4
+NUMPY   = 0x5
+JEDI    = 0x6
 
 SINGLE_QUOTES = "'"
 DOUBLE_QUOTES = '"'
@@ -69,7 +77,10 @@ def get_quoting_style(snip):
 	return DOUBLE_QUOTES
 
 def triple_quotes(snip):
-	return get_quoting_style(snip) * 3
+	style = snip.opt("g:ultisnips_python_triple_quoting_style")
+	if not style:
+		return get_quoting_style(snip) * 3
+	return (SINGLE_QUOTES if style == 'single' else DOUBLE_QUOTES) * 3
 
 def triple_quotes_handle_trailing(snip, quoting_style):
 	"""
@@ -105,6 +116,8 @@ def get_style(snip):
 	if    style == "doxygen": return DOXYGEN
 	elif  style == "sphinx": return SPHINX
 	elif  style == "google": return GOOGLE
+	elif  style == "numpy": return NUMPY
+	elif  style == "jedi": return JEDI
 	else: return NORMAL
 
 
@@ -117,12 +130,16 @@ def format_arg(arg, style):
 		return ":%s: TODO" % arg
 	elif style == GOOGLE:
 		return "%s (TODO): TODO" % arg
+	elif style == JEDI:
+		return ":type %s: TODO" % arg
+	elif style == NUMPY:
+		return "%s : TODO" % arg
 
 
 def format_return(style):
 	if style == DOXYGEN:
 		return "@return: TODO"
-	elif style in (NORMAL, SPHINX):
+	elif style in (NORMAL, SPHINX, JEDI):
 		return ":returns: TODO"
 	elif style == GOOGLE:
 		return "Returns: TODO"
@@ -139,6 +156,8 @@ def write_docstring_args(args, snip):
 
 	if style == GOOGLE:
 		write_google_docstring_args(args, snip)
+	elif style == NUMPY:
+		write_numpy_docstring_args(args, snip)
 	else:
 		for arg in args:
 			snip += format_arg(arg, style)
@@ -163,6 +182,23 @@ def write_google_docstring_args(args, snip):
 			snip += format_arg(kwarg, GOOGLE)
 		snip.unshift()
 		snip.rv += '\n' + snip.mkline('', indent='')
+
+
+def write_numpy_docstring_args(args, snip):
+	if args:
+		snip += "Parameters"
+		snip += "----------"
+
+	kwargs = [arg for arg in args if arg.is_kwarg()]
+	args = [arg for arg in args if not arg.is_kwarg()]
+
+	if args:
+		for arg in args:
+			snip += format_arg(arg, NUMPY)
+	if kwargs:
+		for kwarg in kwargs:
+			snip += format_arg(kwarg, NUMPY) + ', optional'
+	snip.rv += '\n' + snip.mkline('', indent='')
 
 
 def write_init_body(args, parents, snip):
@@ -199,7 +235,13 @@ def write_function_docstring(t, snip):
 		write_docstring_args(args, snip)
 
 	style = get_style(snip)
-	snip += format_return(style)
+
+	if style == NUMPY:
+		snip += 'Returns'
+		snip += '-------'
+		snip += 'TODO'
+	else:
+		snip += format_return(style)
 	snip.rv += '\n' + snip.mkline('', indent='')
 	snip += triple_quotes(snip)
 
@@ -546,14 +588,14 @@ endsnippet
 snippet try "Try / Except" b
 try:
 	${1:${VISUAL:pass}}
-except ${2:Exception}, ${3:e}:
+except ${2:Exception} as ${3:e}:
 	${4:raise $3}
 endsnippet
 
 snippet trye "Try / Except / Else" b
 try:
 	${1:${VISUAL:pass}}
-except ${2:Exception}, ${3:e}:
+except ${2:Exception} as ${3:e}:
 	${4:raise $3}
 else:
 	${5:pass}
@@ -562,7 +604,7 @@ endsnippet
 snippet tryf "Try / Except / Finally" b
 try:
 	${1:${VISUAL:pass}}
-except ${2:Exception}, ${3:e}:
+except ${2:Exception} as ${3:e}:
 	${4:raise $3}
 finally:
 	${5:pass}
@@ -571,7 +613,7 @@ endsnippet
 snippet tryef "Try / Except / Else / Finally" b
 try:
 	${1:${VISUAL:pass}}
-except${2: ${3:Exception}, ${4:e}}:
+except${2: ${3:Exception} as ${4:e}}:
 	${5:raise}
 else:
 	${6:pass}
@@ -580,21 +622,9 @@ finally:
 endsnippet
 
 
-#####################
+######################
 # Assertions & Tests #
-#####################
-
-snippet pdb "Set PDB breakpoint" b
-import pdb; pdb.set_trace()
-endsnippet
-
-snippet ipdb "Set IPDB breakpoint" b
-import ipdb; ipdb.set_trace()
-endsnippet
-
-snippet pudb "Set PUDB breakpoint" b
-import pudb; pudb.set_trace()
-endsnippet
+######################
 
 snippet ae "Assert equal" b
 self.assertEqual(${1:${VISUAL:first}},${2:second})

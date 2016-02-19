@@ -18,14 +18,20 @@ unlet! b:current_syntax
 if !exists('g:markdown_fenced_languages')
   let g:markdown_fenced_languages = []
 endif
+let s:done_include = {}
 for s:type in map(copy(g:markdown_fenced_languages),'matchstr(v:val,"[^=]*$")')
+  if has_key(s:done_include, matchstr(s:type,'[^.]*'))
+    continue
+  endif
   if s:type =~ '\.'
     let b:{matchstr(s:type,'[^.]*')}_subtype = matchstr(s:type,'\.\zs.*')
   endif
   exe 'syn include @markdownHighlight'.substitute(s:type,'\.','','g').' syntax/'.matchstr(s:type,'[^.]*').'.vim'
   unlet! b:current_syntax
+  let s:done_include[matchstr(s:type,'[^.]*')] = 1
 endfor
 unlet! s:type
+unlet! s:done_include
 
 syn sync minlines=10
 syn case ignore
@@ -85,19 +91,25 @@ exe 'syn region markdownBoldItalic matchgroup=markdownBoldItalicDelimiter start=
 
 syn region markdownCode matchgroup=markdownCodeDelimiter start="`" end="`" keepend contains=markdownLineStart
 syn region markdownCode matchgroup=markdownCodeDelimiter start="`` \=" end=" \=``" keepend contains=markdownLineStart
-syn region markdownCode matchgroup=markdownCodeDelimiter start="^\s*```.*$" end="^\s*```\ze\s*$" keepend
+syn region markdownCode matchgroup=markdownCodeDelimiter start="^\s*```*.*$" end="^\s*```*\ze\s*$" keepend
 
 syn match markdownFootnote "\[^[^\]]\+\]"
 syn match markdownFootnoteDefinition "^\[^[^\]]\+\]:"
 
 if main_syntax ==# 'markdown'
+  let s:done_include = {}
   for s:type in g:markdown_fenced_languages
-    exe 'syn region markdownHighlight'.substitute(matchstr(s:type,'[^=]*$'),'\..*','','').' matchgroup=markdownCodeDelimiter start="^\s*```\s*'.matchstr(s:type,'[^=]*').'\>.*$" end="^\s*```\ze\s*$" keepend contains=@markdownHighlight'.substitute(matchstr(s:type,'[^=]*$'),'\.','','g')
+    if has_key(s:done_include, matchstr(s:type,'[^.]*'))
+      continue
+    endif
+    exe 'syn region markdownHighlight'.substitute(matchstr(s:type,'[^=]*$'),'\..*','','').' matchgroup=markdownCodeDelimiter start="^\s*```*\s*'.matchstr(s:type,'[^=]*').'\>.*$" end="^\s*```*\ze\s*$" keepend contains=@markdownHighlight'.substitute(matchstr(s:type,'[^=]*$'),'\.','','g')
+    let s:done_include[matchstr(s:type,'[^.]*')] = 1
   endfor
   unlet! s:type
+  unlet! s:done_include
 endif
 
-syn match markdownEscape "\\[][\\`*_{}()#+.!-]"
+syn match markdownEscape "\\[][\\`*_{}()<>#+.!-]"
 syn match markdownError "\w\@<=_\w\@="
 
 hi def link markdownH1                    htmlH1

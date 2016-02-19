@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2015 Bailey Ling.
+" MIT License. Copyright (c) 2013-2016 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 " generates a dictionary which defines the colors for each highlight group
@@ -38,6 +38,9 @@ function! airline#themes#patch(palette)
   for mode in keys(a:palette)
     if !has_key(a:palette[mode], 'airline_warning')
       let a:palette[mode]['airline_warning'] = [ '#000000', '#df5f00', 232, 166 ]
+    endif
+    if !has_key(a:palette[mode], 'airline_error')
+      let a:palette[mode]['airline_error'] = [ '#000000', '#990000', 232, 160 ]
     endif
   endfor
 

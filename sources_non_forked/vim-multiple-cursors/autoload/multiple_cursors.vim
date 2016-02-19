@@ -218,9 +218,12 @@ function! multiple_cursors#find(start, end, pattern)
   let first = 1
   while 1
     if first
+      " Set `virtualedit` to 'onemore' for the first search to consistently
+      " match patterns like '$'
+      let saved_virtualedit = &virtualedit
+      let &virtualedit = "onemore"
       " First search starts from the current position
       let match = search(a:pattern, 'cW')
-      let first = 0
     else
       let match = search(a:pattern, 'W')
     endif
@@ -228,9 +231,26 @@ function! multiple_cursors#find(start, end, pattern)
       break
     endif
     let left = s:pos('.')
-    call search(a:pattern, 'ceW')
+    " Perform an intermediate backward search to correctly match patterns like
+    " '^' and '$'
+    let match = search(a:pattern, 'bceW')
     let right = s:pos('.')
+    " Reset the cursor and perform a normal search if the intermediate search
+    " wasn't successful
+    if !match || s:compare_pos(right, left) != 0
+      call cursor(left)
+      call search(a:pattern, 'ceW')
+      let right = s:pos('.')
+    endif
+    if first
+      let &virtualedit = saved_virtualedit
+      let first = 0
+    endif
     if s:compare_pos(right, pos2) > 0
+      " Position the cursor at the end of the previous match so it'll be on a
+      " virtual cursor when multicursor mode is started. The `winrestview()`
+      " call below 'undoes' unnecessary repositionings
+      call search(a:pattern, 'be')
       break
     endif
     call s:cm.add(right, [left, right])
@@ -268,6 +288,7 @@ function! s:Cursor.new(position)
   let obj = copy(self)
   let obj.position = copy(a:position)
   let obj.visual = []
+  let obj.saved_visual = []
   " Stores text that was yanked after any commands in Normal or Visual mode
   let obj.paste_buffer_text = getreg('"')
   let obj.paste_buffer_type = getregtype('"')
@@ -332,6 +353,7 @@ endfunction
 
 " Remove the visual selection and its highlight
 function! s:Cursor.remove_visual_selection() dict
+  let self.saved_visual = deepcopy(self.visual)
   let self.visual = []
   " TODO(terryma): Move functionality into separate class
   call s:cm.remove_highlight(self.visual_hi_id)
@@ -409,6 +431,7 @@ function! s:CursorManager.reset(restore_view, restore_setting, ...) dict
   let self.saved_winview = []
   let self.start_from_find = 0
   let s:char = ''
+  let s:saved_char = ''
   if a:restore_setting
     call self.restore_user_settings()
   endif
@@ -507,7 +530,7 @@ function! s:CursorManager.update_current() dict
   " adjust other cursor locations
   if vdelta != 0
     if self.current_index != self.size() - 1
-      let cur_line_length = len(getline(cur.line()))
+      let cur_column_offset = (cur.column() - col('.')) * -1
       let new_line_length = len(getline('.'))
       for i in range(self.current_index+1, self.size()-1)
         let hdelta = 0
@@ -519,7 +542,7 @@ function! s:CursorManager.update_current() dict
         if cur.line() == c.line()
           if vdelta > 0
             " Added a line
-            let hdelta = cur_line_length * -1
+            let hdelta = cur_column_offset
           else
             " Removed a line
             let hdelta = new_line_length
@@ -626,6 +649,13 @@ function! s:CursorManager.restore_user_settings() dict
   call setreg('"', s:paste_buffer_temporary_text, s:paste_buffer_temporary_type)
 endfunction
 
+" Reposition all cursors to the start or end of their region
+function! s:CursorManager.reposition_all_within_region(start) dict
+  for c in self.cursors
+    call c.update_position(c.saved_visual[a:start ? 0 : 1])
+  endfor
+endfunction
+
 " Reselect the current cursor's region in visual mode
 function! s:CursorManager.reapply_visual_selection() dict
   call s:select_in_visual_mode(self.get_current().visual)
@@ -670,6 +700,9 @@ endfunction
 
 " This is the last user input that we're going to replicate, in its string form
 let s:char = ''
+" This is either `I` or `A`, as input in Visual mode, that we're going to use
+" to make the appropriate transition into Insert mode
+let s:saved_char = ''
 " This is the mode the user is in before s:char
 let s:from_mode = ''
 " This is the mode the user is in after s:char
@@ -898,9 +931,31 @@ endfunction
 " to be called to continue the fanout process
 function! s:detect_bad_input()
   if !s:valid_input
+    " To invoke the appropriate `<Plug>(multiple-cursors-apply)` mapping, we
+    " need to revert back to the mode the user was in when the input was entered
+    call s:revert_mode(s:to_mode, s:from_mode)
     " We ignore the bad input and force invoke s:apply_user_input_next
     call feedkeys("\<Plug>(multiple-cursors-apply)")
     let s:bad_input += 1
+  endif
+endfunction
+
+" Complete transition into Insert mode when `I` or `A` is input in Visual mode
+function! s:handle_visual_IA_to_insert()
+  if !empty(s:saved_char) && s:char =~# 'v\|V' && s:to_mode ==# 'n'
+    if s:saved_char ==# 'I'
+      call s:cm.reposition_all_within_region(1)
+    endif
+    call feedkeys(tolower(s:saved_char))
+    let s:saved_char = ''
+  endif
+endfunction
+
+" Begin transition into Insert mode when `I` or `A` is input in Visual mode
+function! s:handle_visual_IA_to_normal()
+  if s:char =~# 'I\|A' && s:from_mode =~# 'v\|V'
+    let s:saved_char = s:char
+    let s:char = s:from_mode " spoof a 'v' or 'V' input to transiton from Visual into Normal mode
   endif
 endfunction
 
@@ -931,6 +986,7 @@ function! s:apply_user_input_next(mode)
       call s:update_visual_markers(s:cm.get_current().visual)
     endif
     call feedkeys("\<Plug>(multiple-cursors-wait)")
+    call s:handle_visual_IA_to_insert()
   else
     " Continue to next
     call feedkeys("\<Plug>(multiple-cursors-input)")
@@ -1050,8 +1106,8 @@ endfunction
 let s:retry_keys = ""
 function! s:display_error()
   if s:bad_input == s:cm.size()
-        \ && s:from_mode ==# 'n'
-        \ && has_key(g:multi_cursor_normal_maps, s:char[0])
+        \ && ((s:from_mode ==# 'n'    && has_key(g:multi_cursor_normal_maps, s:char[0]))
+        \ ||  (s:from_mode =~# 'v\|V' && has_key(g:multi_cursor_visual_maps, s:char[0])))
     " we couldn't replay it anywhere but we're told it's the beginning of a
     " multi-character map like the `d` in `dw`
     let s:retry_keys = s:char
@@ -1124,6 +1180,7 @@ function! s:wait_for_user_input(mode)
   let s:char = s:retry_keys . s:saved_keys
   if len(s:saved_keys) == 0
     let s:char .= s:get_char()
+    call s:handle_visual_IA_to_normal()
   else
     let s:saved_keys = ""
   endif

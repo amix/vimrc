@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2013-09-25.
-" @Revision:    0.0.352
+" @Last Change: 2015-11-06.
+" @Revision:    7.1.352
 
 
 " Where to display the line when using |tlib#buffer#ViewLine|.
@@ -160,7 +160,7 @@ function! tlib#buffer#GetList(...)
     elseif order == 'basename'
         call sort(buffer_list, function('s:CompareBuffernameByBasename'))
     endif
-    let buffer_nr = map(copy(buffer_list), 'matchstr(v:val, ''\s*\zs\d\+\ze'')')
+    let buffer_nr = map(copy(buffer_list), 'str2nr(matchstr(v:val, ''\s*\zs\d\+\ze''))')
     " TLogVAR buffer_list, buffer_nr
     if show_number
         call map(buffer_list, 'matchstr(v:val, ''^\s*\d\+.\{-}\ze\s\+\S\+ \d\+\s*$'')')
@@ -201,7 +201,7 @@ endf
 
 
 function! s:UndoHighlightLine() "{{{3
-    3match none
+    2match none
     autocmd! TLib CursorMoved,CursorMovedI <buffer>
     autocmd! TLib CursorHold,CursorHoldI <buffer>
     autocmd! TLib InsertEnter,InsertChange,InsertLeave <buffer>
@@ -211,8 +211,8 @@ endf
 
 function! tlib#buffer#HighlightLine(...) "{{{3
     TVarArg ['line', line('.')]
-    " exec '3match MatchParen /^\%'. a:line .'l.*/'
-    exec '3match Search /^\%'. line .'l.*/'
+    " exec '2match MatchParen /^\%'. a:line .'l.*/'
+    exec '2match Search /^\%'. line .'l.*/'
     call tlib#autocmdgroup#Init()
     exec 'autocmd TLib CursorMoved,CursorMovedI <buffer> if line(".") != '. line .' | call s:UndoHighlightLine() | endif'
     autocmd TLib CursorHold,CursorHoldI <buffer> call s:UndoHighlightLine()
@@ -276,27 +276,28 @@ endf
 function! tlib#buffer#InsertText(text, ...) "{{{3
     TVarArg ['keyargs', {}]
     " TLogVAR a:text, keyargs
-    TKeyArg keyargs, ['shift', 0], ['col', col('.')], ['lineno', line('.')], ['pos', 'e'],
-                \ ['indent', 0]
-    " TLogVAR shift, col, lineno, pos, indent
+    let keyargs = extend({
+                \ 'shift': 0, 'col': col('.'), 'lineno': line('.'), 'pos': 'e', 'indent': 0
+                \ }, keyargs)
+    " TLogVAR keyargs
     let grow = 0
     let post_del_last_line = line('$') == 1
-    let line = getline(lineno)
-    if col + shift > 0
-        let pre  = line[0 : (col - 1 + shift)]
-        let post = line[(col + shift): -1]
+    let line = getline(keyargs.lineno)
+    if keyargs.col + keyargs.shift > 0
+        let pre  = line[0 : (keyargs.col - 1 + keyargs.shift)]
+        let post = line[(keyargs.col + keyargs.shift): -1]
     else
         let pre  = ''
         let post = line
     endif
-    " TLogVAR lineno, line, pre, post
+    " TLogVAR keyargs.lineno, line, pre, post
     let text0 = pre . a:text . post
     let text  = split(text0, '\n', 1)
     " TLogVAR text
     let icol = len(pre)
-    " exec 'norm! '. lineno .'G'
-    call cursor(lineno, col)
-    if indent && col > 1
+    " exec 'norm! '. keyargs.lineno .'G'
+    call cursor(keyargs.lineno, keyargs.col)
+    if keyargs.indent && keyargs.col > 1
 		if &fo =~# '[or]'
             " FIXME: Is the simple version sufficient?
             " VERSION 1
@@ -306,13 +307,13 @@ function! tlib#buffer#InsertText(text, ...) "{{{3
 			" norm! a
 			" "norm! o
 			" " TAssertExec redraw | sleep 3
-			" let idt = strpart(getline('.'), 0, col('.') + shift)
+			" let idt = strpart(getline('.'), 0, keyargs.col('.') + keyargs.shift)
 			" " TLogVAR idt
 			" let idtl = len(idt)
 			" -1,.delete
 			" " TAssertExec redraw | sleep 3
-			" call append(lineno - 1, cline)
-			" call cursor(lineno, col)
+			" call append(keyargs.lineno - 1, cline)
+			" call cursor(keyargs.lineno, keyargs.col)
 			" " TAssertExec redraw | sleep 3
 			" if idtl == 0 && icol != 0
 			" 	let idt = matchstr(pre, '^\s\+')
@@ -336,27 +337,27 @@ function! tlib#buffer#InsertText(text, ...) "{{{3
         endfor
     endif
     " TLogVAR text
-    " exec 'norm! '. lineno .'Gdd'
+    " exec 'norm! '. keyargs.lineno .'Gdd'
     call tlib#normal#WithRegister('"tdd', 't')
-    call append(lineno - 1, text)
+    call append(keyargs.lineno - 1, text)
     if post_del_last_line
         call tlib#buffer#KeepCursorPosition('$delete')
     endif
     let tlen = len(text)
-    let posshift = matchstr(pos, '\d\+')
-    " TLogVAR pos
-    if pos =~ '^e'
-        exec lineno + tlen - 1
+    let posshift = matchstr(keyargs.pos, '\d\+')
+    " TLogVAR keyargs.pos
+    if keyargs.pos =~ '^e'
+        exec keyargs.lineno + tlen - 1
         exec 'norm! 0'. (len(text[-1]) - len(post) + posshift - 1) .'l'
-    elseif pos =~ '^s'
-        " TLogVAR lineno, pre, posshift
-        exec lineno
+    elseif keyargs.pos =~ '^s'
+        " TLogVAR keyargs.lineno, pre, posshift
+        exec keyargs.lineno
         exec 'norm! '. len(pre) .'|'
         if !empty(posshift)
             exec 'norm! '. posshift .'h'
         endif
     endif
-    " TLogDBG getline(lineno)
+    " TLogDBG getline(keyargs.lineno)
     " TLogDBG string(getline(1, '$'))
     return grow
 endf
