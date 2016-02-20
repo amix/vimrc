@@ -49,6 +49,7 @@ function! airline#init#bootstrap()
   call extend(g:airline_theme_map, {
         \ 'Tomorrow.*': 'tomorrow',
         \ 'base16.*': 'base16',
+        \ 'bubblegum': 'bubblegum',
         \ 'mo[l|n]okai': 'molokai',
         \ 'wombat.*': 'wombat',
         \ '.*zenburn.*': 'zenburn',

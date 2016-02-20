@@ -348,7 +348,7 @@ snippet mct
 		${0}
 	end
 snippet migration class .. < ActiveRecord::Migration .. def up .. def down .. end
-	class ${1:class_name} < ActiveRecord::Migration
+	class `substitute( substitute(vim_snippets#Filename(), '^\d\+_', '',''), '\(_\|^\)\(.\)', '\u\2', 'g')` < ActiveRecord::Migration
 		def up
 			${0}
 		end
@@ -357,7 +357,7 @@ snippet migration class .. < ActiveRecord::Migration .. def up .. def down .. en
 		end
 	end
 snippet migration class .. < ActiveRecord::Migration .. def change .. end
-	class ${1:class_name} < ActiveRecord::Migration
+	class `substitute( substitute(vim_snippets#Filename(), '^\d\+_', '',''), '\(_\|^\)\(.\)', '\u\2', 'g')` < ActiveRecord::Migration
 		def change
 			${0}
 		end

@@ -30,8 +30,8 @@ function! SyntaxCheckers_chef_foodcritic_GetLocList() dict
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-      \ 'filetype': 'chef',
-      \ 'name': 'foodcritic'})
+    \ 'filetype': 'chef',
+    \ 'name': 'foodcritic'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

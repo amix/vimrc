@@ -68,6 +68,7 @@ let s:_DEFAULT_CHECKERS = {
         \ 'po':            ['msgfmt'],
         \ 'pod':           ['podchecker'],
         \ 'puppet':        ['puppet', 'puppetlint'],
+        \ 'pug':           ['pug_lint'],
         \ 'python':        ['python', 'flake8', 'pylint'],
         \ 'qml':           ['qmllint'],
         \ 'r':             [],

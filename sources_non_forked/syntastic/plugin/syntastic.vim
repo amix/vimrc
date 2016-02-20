@@ -19,7 +19,13 @@ if has('reltime')
     lockvar! g:_SYNTASTIC_START
 endif
 
+<<<<<<< 913d549a8f5b39fd3a4a3e5bc8a176b1f32e51ee
 let g:_SYNTASTIC_VERSION = '3.7.0-86'
+||||||| merged common ancestors
+let g:_SYNTASTIC_VERSION = '3.7.0-69'
+=======
+let g:_SYNTASTIC_VERSION = '3.7.0-88'
+>>>>>>> Updated plugins
 lockvar g:_SYNTASTIC_VERSION
 
 " Sanity checks {{{1
