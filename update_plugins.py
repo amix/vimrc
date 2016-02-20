@@ -1,3 +1,11 @@
+try:
+    import concurrent.futures as futures
+except ImportError:
+    try:
+        import futures
+    except ImportError:
+        futures = None
+
 import zipfile
 import shutil
 import tempfile
@@ -77,14 +85,21 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     print('Updated {0}'.format(plugin_name))
 
 
+def update(plugin):
+    name, github_url = plugin.split(' ')
+    zip_path = GITHUB_ZIP % github_url
+    download_extract_replace(name, zip_path,
+                             temp_directory, SOURCE_DIR)
+
+
 if __name__ == '__main__':
     temp_directory = tempfile.mkdtemp()
 
     try:
-        for line in PLUGINS.splitlines():
-            name, github_url = line.split(' ')
-            zip_path = GITHUB_ZIP % github_url
-            download_extract_replace(name, zip_path,
-                                     temp_directory, SOURCE_DIR)
+        if futures:
+            with futures.ThreadPoolExecutor(16) as executor:
+                executor.map(update, PLUGINS.splitlines())
+        else:
+            [update(x) for x in PLUGINS.splitlines()]
     finally:
         shutil.rmtree(temp_directory)

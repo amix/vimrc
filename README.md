@@ -15,7 +15,14 @@ The awesome version includes a lot of great plugins, configurations and color sc
 	git clone https://github.com/amix/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_awesome_vimrc.sh
 
-The taglist.vim plugin will require ctags (http://ctags.sourceforge.net) (Debian: apt-get install ctags)
+The taglist.vim plugin will require ctags (http://ctags.sourceforge.net) 
+For Debian and Ubuntu: 
+
+	apt-get install ctags
+	
+For Arch Linux:
+
+	pacman -S ctags
 
 I also recommend using [Source Code Pro font from Adobe](http://store1.adobe.com/cfusion/store/html/index.cfm?event=displayFontPackage&code=1960) (it's free and awesome font for writing and programming). The Awesome vimrc is already setup to try to use it
 
@@ -102,7 +109,7 @@ Remove all clutter and focus only on the essential. Similar to iA Writer or Writ
 * [vim-bundle-mako](https://github.com/sophacles/vim-bundle-mako)
 * [vim-markdown](https://github.com/tpope/vim-markdown)
 * [nginx.vim](https://github.com/vim-scripts/nginx.vim): Highlights configuration files for nginx
-* [vim-golang](https://github.com/jnwhiteh/vim-golang)
+* [vim-go](https://github.com/fatih/vim-go)
 
 
 ## How to include your own stuff?
@@ -137,7 +144,7 @@ Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin:
     
     let g:ctrlp_map = '<c-f>'
 
-Open [PeepOpen](https://peepcode.com/products/peepopen) plugin:
+Open [PeepOpen](http://topfunky.github.io/PeepOpen/) plugin:
 
     map <leader>j :PeepOpen<cr>
 
@@ -327,3 +334,9 @@ Vimscript mappings:
 * [Folding in Vim](http://amix.dk/blog/post/19132#Folding-in-Vim)
 * [
 Zen room for Vim: Focusing only on the essential](http://amix.dk/blog/post/19744#zenroom-for-Vim-Focsuing-only-on-the-essential)
+
+## How to uninstall
+Do following:
+* Remove `~/.vim_runtime`
+* Remove any lines that refernce `.vim_runtime` in your `~/.vimrc`
+
