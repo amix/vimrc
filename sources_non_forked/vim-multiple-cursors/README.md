@@ -1,5 +1,7 @@
-# vim-multiple-cursors [![Build Status](https://travis-ci.org/terryma/vim-multiple-cursors.svg)](https://travis-ci.org/terryma/vim-multiple-cursors)
-
+# vim-multiple-cursors
+[![Build Status](https://travis-ci.org/terryma/vim-multiple-cursors.svg)](https://travis-ci.org/terryma/vim-multiple-cursors)
+[![Issue Stats](http://issuestats.com/github/terryma/vim-multiple-cursors/badge/pr?style=flat)](http://issuestats.com/github/terryma/vim-multiple-cursors)
+[![Issue Stats](http://issuestats.com/github/terryma/vim-multiple-cursors/badge/issue?style=flat)](http://issuestats.com/github/terryma/vim-multiple-cursors)
 ## Contents
  - [About](#about)
  - [Features](#features)
@@ -10,7 +12,8 @@
  - [Interactions with other plugins](#interactions-with-other-plugins)
  - [Highlight](#highlight)
  - *[FAQ](#faq)*
- - *[Known Issues](#known-issues)*
+ - *[Known issues](#known-issues)*
+ - *[Issue creation requirements](#issue-creation-requirements)*
  - [Changelog](#changelog)
  - [Contributing](#contributing)
  - [Credit](#credit)
@@ -42,7 +45,7 @@ Vim command sequence: `2Gdf[$r,0f,v<C-n>…<C-n>c<CR><Up><Del><Right><Right><Rig
 ### Add multiple cursors using regexes
 ![Example4](assets/example4.gif?raw=true)
 
-To see what keystrokes are used for the above examples, see [this issue](https://github.com/terryma/vim-multiple-cursors/issues/39).
+To see what keystrokes are used for the above examples, see [the wiki page](https://github.com/terryma/vim-multiple-cursors/wiki/Keystrokes-for-example-gifs).
 
 ## Features
 - Live update in Insert mode
@@ -202,6 +205,10 @@ highlight link multiple_cursors_visual Visual
 
 ## Known Issues
 - Select mode is not implemented
+
+## Issue Creation Requirements
+
+This is a community supported project. Contributor's time is precious and limited. To ensure your issue is not closed out of hand, please ensure it meets the requirements outlined in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Changelog
 See [CHANGELOG.md](CHANGELOG.md)

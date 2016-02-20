@@ -21,21 +21,28 @@ function! SyntaxCheckers_scss_scss_lint_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-    return syntastic#util#versionIsAtLeast(self.getVersion(), [0, 12])
+    return syntastic#util#versionIsAtLeast(self.getVersion(), [0, 29])
 endfunction
 
 function! SyntaxCheckers_scss_scss_lint_GetLocList() dict
-    let makeprg = self.makeprgBuild({})
+    let makeprg = self.makeprgBuild({ 'args_after': '-f JSON' })
 
-    let errorformat = '%f:%l [%t] %m'
+    let errorformat = '%f:%t:%l:%c:%n:%m'
 
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'preprocess': 'scss_lint',
+        \ 'postprocess': ['guards'],
         \ 'returns': [0, 1, 2, 65, 66] })
 
     let cutoff = strlen('Syntax Error: ')
     for e in loclist
+        if e['nr'] > 1
+            let e['hl'] = '\%>' . (e['col'] - 1) . 'c\%<' . (e['col'] + e['nr']) . 'c'
+        endif
+        let e['nr'] = 0
+
         if e['text'][: cutoff-1] ==# 'Syntax Error: '
             let e['text'] = e['text'][cutoff :]
         else

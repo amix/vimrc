@@ -12,7 +12,7 @@
 "     let OPTION_NAME = 1
 "   to enable particular options.
 "   At present, all options default to on, except highlight of:
-"   functions, methods and structs.
+"   functions, methods, structs, operators, build constraints and interfaces.
 "
 "   - go_highlight_array_whitespace_error
 "     Highlights white space after "[]".
@@ -67,6 +67,10 @@ endif
 
 if !exists("g:go_highlight_structs")
   let g:go_highlight_structs = 0
+endif
+
+if !exists("g:go_highlight_interfaces")
+  let g:go_highlight_interfaces = 0
 endif
 
 if !exists("g:go_highlight_build_constraints")
@@ -290,6 +294,14 @@ if g:go_highlight_structs != 0
 endif
 hi def link     goStruct            Function
 hi def link     goStructDef         Function
+
+" Interfaces;
+if g:go_highlight_interfaces != 0
+  syn match goInterface             /\(.\)\@<=\w\+\({\)\@=/
+  syn match goInterfaceDef          /\(type\s\+\)\@<=\w\+\(\s\+interface\s\+{\)\@=/
+endif
+hi def link     goInterface         Function
+hi def link     goInterfaceDef      Function
 
 " Build Constraints
 if g:go_highlight_build_constraints != 0

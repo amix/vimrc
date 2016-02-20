@@ -218,9 +218,12 @@ function! multiple_cursors#find(start, end, pattern)
   let first = 1
   while 1
     if first
+      " Set `virtualedit` to 'onemore' for the first search to consistently
+      " match patterns like '$'
+      let saved_virtualedit = &virtualedit
+      let &virtualedit = "onemore"
       " First search starts from the current position
       let match = search(a:pattern, 'cW')
-      let first = 0
     else
       let match = search(a:pattern, 'W')
     endif
@@ -228,9 +231,26 @@ function! multiple_cursors#find(start, end, pattern)
       break
     endif
     let left = s:pos('.')
-    call search(a:pattern, 'ceW')
+    " Perform an intermediate backward search to correctly match patterns like
+    " '^' and '$'
+    let match = search(a:pattern, 'bceW')
     let right = s:pos('.')
+    " Reset the cursor and perform a normal search if the intermediate search
+    " wasn't successful
+    if !match || s:compare_pos(right, left) != 0
+      call cursor(left)
+      call search(a:pattern, 'ceW')
+      let right = s:pos('.')
+    endif
+    if first
+      let &virtualedit = saved_virtualedit
+      let first = 0
+    endif
     if s:compare_pos(right, pos2) > 0
+      " Position the cursor at the end of the previous match so it'll be on a
+      " virtual cursor when multicursor mode is started. The `winrestview()`
+      " call below 'undoes' unnecessary repositionings
+      call search(a:pattern, 'be')
       break
     endif
     call s:cm.add(right, [left, right])
@@ -510,7 +530,7 @@ function! s:CursorManager.update_current() dict
   " adjust other cursor locations
   if vdelta != 0
     if self.current_index != self.size() - 1
-      let cur_line_length = len(getline(cur.line()))
+      let cur_column_offset = (cur.column() - col('.')) * -1
       let new_line_length = len(getline('.'))
       for i in range(self.current_index+1, self.size()-1)
         let hdelta = 0
@@ -522,7 +542,7 @@ function! s:CursorManager.update_current() dict
         if cur.line() == c.line()
           if vdelta > 0
             " Added a line
-            let hdelta = cur_line_length * -1
+            let hdelta = cur_column_offset
           else
             " Removed a line
             let hdelta = new_line_length

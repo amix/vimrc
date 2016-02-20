@@ -124,6 +124,7 @@ abbr if err != nil { ... }
 	if err != nil {
 		return err
 	}
+	${0}
 # error snippet in TestFunc
 snippet errt
 abbr if err != nil { ... }
@@ -135,10 +136,9 @@ abbr if err != nil { ... }
 snippet errn,
 abbr if err != nil { return [...], err }
 	if err != nil {
-		return ${2}$1, err
+		return ${1:nil}, err
 	}
 	${0}
-
 
 # error snippet handle and return
 snippet errh
@@ -153,6 +153,7 @@ abbr if err != nil { return }
 snippet json
 abbr \`json:key\`
 	\`json:"${1:keyName}"\`
+
 # fallthrough
 snippet ft
 abbr fallthrough
