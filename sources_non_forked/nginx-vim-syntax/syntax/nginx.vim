@@ -9,12 +9,11 @@ setlocal iskeyword+=.
 setlocal iskeyword+=/
 setlocal iskeyword+=:
 
-syn match ngxVariable '\$\w\w*'
-syn match ngxVariableBlock '\$\w\w*' contained
-syn match ngxVariableString '\$\w\w*' contained
-syn region ngxBlock start=+^+ end=+{+ contains=ngxComment,ngxDirectiveBlock,ngxVariableBlock,ngxString oneline
-syn region ngxString start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=ngxVariableString oneline
-syn region ngxString start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=ngxVariableString oneline
+syn match ngxVariable '\$\(\w\+\|{\w\+}\)'
+syn match ngxVariableBlock '\$\(\w\+\|{\w\+}\)' contained
+syn match ngxVariableString '\$\(\w\+\|{\w\+}\)' contained
+syn region ngxBlock start=+^+ end=+{+ skip=+\${+ contains=ngxComment,ngxDirectiveBlock,ngxVariableBlock,ngxString oneline
+syn region ngxString start=+\z(["']\)+ end=+\z1+ skip=+\\\\\|\\\z1+ contains=ngxVariableString
 syn match ngxComment ' *#.*$'
 
 syn keyword ngxBoolean on
@@ -642,6 +641,46 @@ syn keyword ngxDirectiveThirdParty xss_callback_arg
 syn keyword ngxDirectiveThirdParty xss_get
 syn keyword ngxDirectiveThirdParty xss_input_types
 syn keyword ngxDirectiveThirdParty xss_output_type
+
+" uWSGI Module <http://wiki.nginx.org/HttpUwsgiModule>
+" Allows Nginx to interact with uWSGI processes and control what parameters are passed to the process.
+syn keyword ngxDirectiveThirdParty uwsgi_bind
+syn keyword ngxDirectiveThirdParty uwsgi_buffer_size
+syn keyword ngxDirectiveThirdParty uwsgi_buffering
+syn keyword ngxDirectiveThirdParty uwsgi_buffers
+syn keyword ngxDirectiveThirdParty uwsgi_busy_buffers_size
+syn keyword ngxDirectiveThirdParty uwsgi_cache
+syn keyword ngxDirectiveThirdParty uwsgi_cache_bypass
+syn keyword ngxDirectiveThirdParty uwsgi_cache_key
+syn keyword ngxDirectiveThirdParty uwsgi_cache_lock
+syn keyword ngxDirectiveThirdParty uwsgi_cache_lock_timeout
+syn keyword ngxDirectiveThirdParty uwsgi_cache_methods
+syn keyword ngxDirectiveThirdParty uwsgi_cache_min_uses
+syn keyword ngxDirectiveThirdParty uwsgi_cache_path
+syn keyword ngxDirectiveThirdParty uwsgi_cache_use_stale
+syn keyword ngxDirectiveThirdParty uwsgi_cache_valid
+syn keyword ngxDirectiveThirdParty uwsgi_connect_timeout
+syn keyword ngxDirectiveThirdParty uwsgi_hide_header
+syn keyword ngxDirectiveThirdParty uwsgi_ignore_client_abort
+syn keyword ngxDirectiveThirdParty uwsgi_ignore_headers
+syn keyword ngxDirectiveThirdParty uwsgi_intercept_errors
+syn keyword ngxDirectiveThirdParty uwsgi_max_temp_file_size
+syn keyword ngxDirectiveThirdParty uwsgi_modifier1
+syn keyword ngxDirectiveThirdParty uwsgi_modifier2
+syn keyword ngxDirectiveThirdParty uwsgi_next_upstream
+syn keyword ngxDirectiveThirdParty uwsgi_no_cache
+syn keyword ngxDirectiveThirdParty uwsgi_param
+syn keyword ngxDirectiveThirdParty uwsgi_pass
+syn keyword ngxDirectiveThirdParty uwsgi_pass_header
+syn keyword ngxDirectiveThirdParty uwsgi_pass_request_body
+syn keyword ngxDirectiveThirdParty uwsgi_pass_request_headers
+syn keyword ngxDirectiveThirdParty uwsgi_read_timeout
+syn keyword ngxDirectiveThirdParty uwsgi_send_timeout
+syn keyword ngxDirectiveThirdParty uwsgi_store
+syn keyword ngxDirectiveThirdParty uwsgi_store_access
+syn keyword ngxDirectiveThirdParty uwsgi_string
+syn keyword ngxDirectiveThirdParty uwsgi_temp_file_write_size
+syn keyword ngxDirectiveThirdParty uwsgi_temp_path
 
 " highlight
 
