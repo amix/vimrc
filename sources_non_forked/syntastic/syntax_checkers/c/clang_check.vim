@@ -10,7 +10,7 @@
 "============================================================================
 
 if exists('g:loaded_syntastic_c_clang_check_checker')
-  finish
+    finish
 endif
 let g:loaded_syntastic_c_clang_check_checker = 1
 

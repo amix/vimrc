@@ -191,7 +191,7 @@ end
 
 describe "Multiple Cursors" do
   let(:filename) { 'test.txt' }
-  let(:options) { [] }
+  let(:options) { ['set autoindent'] }
 
   specify "#paste buffer normal x then p" do
     before <<-EOF
@@ -350,6 +350,38 @@ describe "Multiple Cursors" do
     EOF
   end
 
+  specify "#multiple new lines on one line in insert mode" do
+    before <<-EOF
+      'a','b','c','d','e'
+    EOF
+
+    type 'f,v<C-n><C-n><C-n>c<CR><Esc>'
+
+    after <<-EOF
+      'a'
+      'b'
+      'c'
+      'd'
+      'e'
+    EOF
+  end
+
+  specify "#multiple new lines on one line in insert mode with indents" do
+    before <<-EOF
+      'a','b','c','d','e'
+    EOF
+
+    type '4i<Space><Esc>f,v<C-n><C-n><C-n>c<CR><Esc>:%s/^/^<CR>'
+
+    after <<-EOF
+      ^    'a'
+      ^    'b'
+      ^    'c'
+      ^    'd'
+      ^    'e'
+    EOF
+  end
+
   specify "#normal mode 'o'" do
     before <<-EOF
       hello
@@ -394,6 +426,48 @@ describe "Multiple Cursors" do
     after <<-EOF
       world
       world
+    EOF
+  end
+
+  specify "#find command start-of-line" do
+    before <<-EOF
+      hello
+      world
+
+      hello
+      world
+    EOF
+
+    vim.normal ':MultipleCursorsFind ^<CR>'
+    type 'Ibegin<Esc>'
+
+    after <<-EOF
+      beginhello
+      beginworld
+      begin
+      beginhello
+      beginworld
+    EOF
+  end
+
+  specify "#find command end-of-line" do
+    before <<-EOF
+      hello
+      world
+
+      hello
+      world
+    EOF
+
+    vim.normal ':MultipleCursorsFind $<CR>'
+    type 'Iend<Esc>'
+
+    after <<-EOF
+      helloend
+      worldend
+      end
+      helloend
+      worldend
     EOF
   end
 

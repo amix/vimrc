@@ -36,6 +36,7 @@ CONTENTS                                                  *syntastic-contents*
         5.2.Choosing the executable................|syntastic-config-exec|
         5.3.Configuring specific checkers..........|syntastic-config-makeprg|
         5.4.Sorting errors.........................|syntastic-config-sort|
+        5.5.Debugging..............................|syntastic-config-debug|
     6.Notes........................................|syntastic-notes|
         6.1.Handling of composite filetypes........|syntastic-composite|
         6.2.Editing files over network.............|syntastic-netrw|
@@ -157,6 +158,11 @@ Something like this could be more useful: >
 <
 When syntax errors are detected a flag will be shown. The content of the flag
 is derived from the |syntastic_stl_format| option.
+
+Please note that these settings might conflict with other Vim plugins that
+change the way statusline works. Refer to these plugins' documentation for
+possible solutions. See also |syntastic-powerline| below if you're using the
+"powerline" Vim plugin (https://github.com/powerline/powerline).
 
 ------------------------------------------------------------------------------
 2.2. Error signs                                       *syntastic-error-signs*
@@ -541,10 +547,10 @@ overriding filters, cf. |filter-overrides|).
 
     "level" - takes one of two values, "warnings" or "errors"
     "type"  - can be either "syntax" or "style"
-    "regex" - is matched against the messages' text as a case-insensitive
-              |regular-expression|
-    "file"  - is matched against the filenames the messages refer to, as a
-              case-sensitive |regular-expression|.
+    "regex" - each item in list is matched against the messages' text as a
+              case-insensitive |regular-expression|
+    "file"  - each item in list is matched against the filenames the messages
+              refer to, as a case-sensitive |regular-expression|.
 
 If a key is prefixed by an exclamation mark "!", the corresponding filter is
 negated (i.e. the above example silences all messages that are NOT errors).
@@ -813,6 +819,25 @@ defined.
 
 For aggregated lists (see |syntastic-aggregating-errors|) these variables are
 ignored if |'syntastic_sort_aggregated_errors'| is set (which is the default).
+
+------------------------------------------------------------------------------
+5.5 Debugging                                         *syntastic-config-debug*
+
+Syntastic can log a trace of its working to Vim's |message-history|. To verify
+the command line constructed by syntastic to run a checker, set the variable
+|'syntastic_debug'| to a non-zero value, run the checker, then run |:mes| to
+display the messages, and look for "makeprg" in the output.
+
+From a user's perspective, the useful values for |'syntastic_debug'| are 1, 3,
+and 33:
+
+     1 - logs syntastic's workflow
+     3 - logs workflow, checker's output, and |location-list| manipulations
+    33 - logs workflow and checker-specific details (such as version checks).
+
+Debug logs can be saved to a file; see |'syntastic_debug_file'| for details.
+
+Setting |'syntastic_debug'| to 0 turns off logging.
 
 ==============================================================================
 6. Notes                                                     *syntastic-notes*

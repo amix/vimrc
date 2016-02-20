@@ -2,6 +2,15 @@ if !exists("g:go_godef_bin")
 	let g:go_godef_bin = "godef"
 endif
 
+if go#vimproc#has_vimproc()
+	let s:vim_system = get(g:, 'gocomplete#system_function', 'vimproc#system2')
+else
+	let s:vim_system = get(g:, 'gocomplete#system_function', 'system')
+endif
+
+fu! s:system(str, ...)
+	return call(s:vim_system, [a:str] + a:000)
+endf
 
 " modified and improved version of vim-godef
 function! go#def#Jump(...)
@@ -21,10 +30,11 @@ function! go#def#Jump(...)
 	let old_gopath = $GOPATH
 	let $GOPATH = go#path#Detect()
 
-	let command = bin_path . " -f=" . shellescape(expand("%:p")) . " -i " . shellescape(arg)
+	let fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
+	let command = bin_path . " -f=" . shellescape(fname) . " -i " . shellescape(arg)
 
 	" get output of godef
-	let out=system(command, join(getbufline(bufnr('%'), 1, '$'), go#util#LineEnding()))
+	let out = s:system(command, join(getbufline(bufnr('%'), 1, '$'), go#util#LineEnding()))
 
 	" jump to it
 	call s:godefJump(out, "")
@@ -43,10 +53,11 @@ function! go#def#JumpMode(mode)
 	let old_gopath = $GOPATH
 	let $GOPATH = go#path#Detect()
 
-	let command = bin_path . " -f=" . shellescape(expand("%:p")) . " -i " . shellescape(arg)
+	let fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
+	let command = bin_path . " -f=" . shellescape(fname) . " -i " . shellescape(arg)
 
 	" get output of godef
-	let out=system(command, join(getbufline(bufnr('%'), 1, '$'), go#util#LineEnding()))
+	let out = s:system(command, join(getbufline(bufnr('%'), 1, '$'), go#util#LineEnding()))
 
 	call s:godefJump(out, a:mode)
 	let $GOPATH = old_gopath
@@ -74,7 +85,7 @@ function! s:godefJump(out, mode)
 	let &errorformat = "%f:%l:%c"
 
 	if a:out =~ 'godef: '
-		let out=substitute(a:out, go#util#LineEnding() . '$', '', '')
+		let out = substitute(a:out, go#util#LineEnding() . '$', '', '')
 		echom out
 	else
 		let parts = split(a:out, ':')
