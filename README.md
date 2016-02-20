@@ -144,7 +144,7 @@ Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin:
     
     let g:ctrlp_map = '<c-f>'
 
-Open [PeepOpen](https://peepcode.com/products/peepopen) plugin:
+Open [PeepOpen](http://topfunky.github.io/PeepOpen/) plugin:
 
     map <leader>j :PeepOpen<cr>
 
