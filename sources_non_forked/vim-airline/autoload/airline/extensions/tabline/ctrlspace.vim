@@ -7,6 +7,9 @@ let s:current_bufnr = -1
 let s:current_tabnr = -1
 let s:current_tabline = ''
 
+let s:buffers_label = get(g:, 'airline#extensions#tabline#buffers_label', 'buffers')
+let s:tabs_label = get(g:, 'airline#extensions#tabline#tabs_label', 'tabs')
+
 function! airline#extensions#tabline#ctrlspace#off()
   augroup airline_tabline_ctrlspace
     autocmd!
@@ -41,7 +44,7 @@ function! airline#extensions#tabline#ctrlspace#get()
 
   let b = airline#extensions#tabline#new_builder()
 
-  call b.add_section_spaced('airline_tabtype', 'buffers')
+  call b.add_section_spaced('airline_tabtype', s:buffers_label)
 
   let s:buffer_list = ctrlspace#api#BufferList(cur_tab)
   for buffer in s:buffer_list
@@ -88,7 +91,7 @@ function! airline#extensions#tabline#ctrlspace#get()
     call b.add_section_spaced(group, tab.title.ctrlspace#api#TabBuffersNumber(tab.index))
   endfor
 
-  call b.add_section_spaced('airline_tabtype', 'tabs')
+  call b.add_section_spaced('airline_tabtype', s:tabs_label)
 
   let s:current_bufnr = cur_buf
   let s:current_tabnr = cur_tab

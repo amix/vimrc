@@ -518,8 +518,14 @@ eclim <https://eclim.org>
 * enable/disable displaying index of the buffer.
 
   Note: If you're using ctrlspace the tabline shows your tabs on the right and
-  buffer on the left. Also none of the tabline switches is currently
+  buffer on the left. Also none of the above tabline switches is currently
   supported!
+
+* rename label for buffers (default: 'buffers')
+  let g:airline#extensions#tabline#buffers_label = 'b'
+
+* rename label for tabs (default: 'tabs')
+  let g:airline#extensions#tabline#tabs_label = 't'
 
   When enabled, numbers will be displayed in the tabline and mappings will be
   exposed to allow you to select a buffer directly.  Up to 9 mappings will be
