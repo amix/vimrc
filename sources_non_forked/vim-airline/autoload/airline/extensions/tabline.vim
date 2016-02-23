@@ -5,6 +5,7 @@ let s:formatter = get(g:, 'airline#extensions#tabline#formatter', 'default')
 let s:show_buffers = get(g:, 'airline#extensions#tabline#show_buffers', 1)
 let s:show_tabs = get(g:, 'airline#extensions#tabline#show_tabs', 1)
 let s:ignore_bufadd_pat = get(g:, 'airline#extensions#tabline#ignore_bufadd_pat', '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree')
+
 let s:taboo = get(g:, 'airline#extensions#taboo#enabled', 1) && get(g:, 'loaded_taboo', 0)
 if s:taboo
   let g:taboo_tabline = 0
@@ -47,7 +48,7 @@ function! s:update_tabline()
   elseif !get(g:, 'airline#extensions#tabline#enabled', 0)
     return
   " return, if buffer matches ignore pattern or is directory (netrw)
-  elseif empty(match) 
+  elseif empty(match)
         \ || match(match, s:ignore_bufadd_pat) > -1
         \ || isdirectory(expand("<afile>"))
     return
@@ -57,11 +58,6 @@ function! s:update_tabline()
   endif
   call feedkeys("\<Plug>AirlineTablineRefresh")
   call feedkeys("\<Plug>AirlineTablineRefresh")
-  "call feedkeys(',,', 't')
-  "call feedkeys(':unmap ,,')
-  " force re-evaluation of tabline setting
-  " disable explicit redraw, may cause E315
-  "redraw
 endfunction
 
 function! airline#extensions#tabline#load_theme(palette)
@@ -92,6 +88,7 @@ function! airline#extensions#tabline#load_theme(palette)
 
   " Theme for tabs on the right
   let l:tabsel_right  = get(colors, 'airline_tabsel_right', a:palette.normal.airline_a)
+  let l:tab_right     = get(colors, 'airline_tab_right',    a:palette.inactive.airline_c)
   let l:tabmod_right  = get(colors, 'airline_tabmod_right', a:palette.insert.airline_a)
   let l:tabhid_right  = get(colors, 'airline_tabhid_right', a:palette.normal.airline_c)
   if has_key(a:palette, 'normal_modified') && has_key(a:palette.normal_modified, 'airline_c')
@@ -100,6 +97,7 @@ function! airline#extensions#tabline#load_theme(palette)
     "Fall back to normal airline_c if modified airline_c isn't present
     let l:tabmodu_right = get(colors, 'airline_tabmod_unsel_right', a:palette.normal.airline_c)
   endif
+  call airline#highlighter#exec('airline_tab_right',    l:tab_right)
   call airline#highlighter#exec('airline_tabsel_right', l:tabsel_right)
   call airline#highlighter#exec('airline_tabmod_right', l:tabmod_right)
   call airline#highlighter#exec('airline_tabhid_right', l:tabhid_right)
@@ -162,4 +160,25 @@ function! airline#extensions#tabline#new_builder()
   endif
 
   return airline#builder#new(builder_context)
+endfunction
+
+function! airline#extensions#tabline#group_of_bufnr(tab_bufs, bufnr)
+  let cur = bufnr('%')
+  if cur == a:bufnr
+    if g:airline_detect_modified && getbufvar(a:bufnr, '&modified')
+      let group = 'airline_tabmod'
+    else
+      let group = 'airline_tabsel'
+    endif
+    let s:current_modified = (group == 'airline_tabmod') ? 1 : 0
+  else
+    if g:airline_detect_modified && getbufvar(a:bufnr, '&modified')
+      let group = 'airline_tabmod_unsel'
+    elseif index(a:tab_bufs, a:bufnr) > -1
+      let group = 'airline_tab'
+    else
+      let group = 'airline_tabhid'
+    endif
+  endif
+  return group
 endfunction

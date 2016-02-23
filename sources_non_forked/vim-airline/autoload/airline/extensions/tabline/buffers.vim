@@ -5,6 +5,7 @@ scriptencoding utf-8
 
 let s:buffer_idx_mode = get(g:, 'airline#extensions#tabline#buffer_idx_mode', 0)
 let s:show_tab_type = get(g:, 'airline#extensions#tabline#show_tab_type', 1)
+let s:buffers_label = get(g:, 'airline#extensions#tabline#buffers_label', 'buffers')
 let s:spc = g:airline_symbols.space
 
 let s:current_bufnr = -1
@@ -64,23 +65,7 @@ function! airline#extensions#tabline#buffers#get()
       continue
     endif
 
-    if cur == nr
-      if g:airline_detect_modified && getbufvar(nr, '&modified')
-        let group = 'airline_tabmod'
-      else
-        let group = 'airline_tabsel'
-      endif
-      let s:current_modified = (group == 'airline_tabmod') ? 1 : 0
-    else
-      if g:airline_detect_modified && getbufvar(nr, '&modified')
-        let group = 'airline_tabmod_unsel'
-      elseif index(tab_bufs, nr) > -1
-        let group = 'airline_tab'
-      else
-        let group = 'airline_tabhid'
-      endif
-    endif
-
+    let group = airline#extensions#tabline#group_of_bufnr(tab_bufs, nr)
     if s:buffer_idx_mode
       if len(s:number_map) > 0
         call b.add_section(group, s:spc . get(s:number_map, l:index, '') . '%(%{airline#extensions#tabline#get_buffer_name('.nr.')}%)' . s:spc)
@@ -97,7 +82,7 @@ function! airline#extensions#tabline#buffers#get()
   call b.split()
   call b.add_section('airline_tabfill', '')
   if s:show_tab_type
-    call b.add_section('airline_tabtype', ' buffers ')
+    call b.add_section_spaced('airline_tabtype', s:buffers_label)
   endif
 
   let s:current_bufnr = cur
