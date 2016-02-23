@@ -1,0 +1,67 @@
+## Previm
+
+Vim plugin for preview.
+
+###ScreenShot
+
+![previm](https://raw.github.com/wiki/kannokanno/previm/images/previm-example.gif)
+
+## Supported file formats
+
+* Markdown
+    * support [mermaid](http://knsv.github.io/mermaid/index.html)
+* reStructuredText(required rst2html.py)
+* textile
+
+## Dependencies
+
+### For conversion
+
+There is nothing essential in the case of textile and Markdown.  
+`rst2html.py` is required in the case of reStructuredText.  
+It will become available `rst2html.py` command when you install the `docutils.`
+
+    % pip install docutils
+    % rst2html.py --version
+    rst2html.py (Docutils 0.12 [release], Python 2.7.5, on darwin)
+
+### For open preview
+
+No need for extra libraries or plug-ins.
+
+It can, however, be integrated with [open-browser.vim](https://github.com/tyru/open-browser.vim). For detailed usages, please see below.
+
+## Usage
+
+1. Define `g:previm_open_cmd` in .vimrc
+    * This command is used in terminal for opening your browser.
+    * For example, uses Safari on Mac `let g:previm_open_cmd = 'open -a Safari'`
+    * `:help g:previm_open_cmd` for more details
+    * You can skip this setting if you're using open-browser.
+2. Start editing the file of Markdown.(`filetype` is `markdown`)
+    * __NOTE__: In the case of `.md`, `filetype` becomes a `modula2`. If so, please describe in `.vimrc` this setting
+    ```vim
+    augroup PrevimSettings
+        autocmd!
+        autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
+    augroup END
+    ```
+3. Run `:PrevimOpen` to open browser to preview
+4. Back to Vim to edit your file
+5. Update the file, and the content for previewing will be updated automatically
+
+### mermaid
+
+Support [mermaid](http://knsv.github.io/mermaid/index.html)
+
+<pre>
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->E;
+```
+</pre>
+
+![previm](https://raw.github.com/wiki/kannokanno/previm/images/previm-example-mermaid.png)

@@ -1,0 +1,224 @@
+#header {
+  border-bottom: 1px solid #ccc;
+}
+
+#last-modified {
+  padding-left: 10px;
+}
+
+/* GitHub-like styles based on ghf_marked.css of Docter (https://github.com/alampros/Docter) */
+
+html {
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font: 14px helvetica,arial,freesans,clean,sans-serif;
+  line-height: 1.6;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: left;
+  color: #333;
+  width: auto;
+  max-width: 920px;
+}
+
+body > *:first-child {
+  margin-top: 0 !important;
+}
+body > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: black;
+}
+
+h2 {
+  font-size: 24px;
+  margin: 20px 0 10px;
+  color: black;
+  border-bottom: 1px solid #ccc;
+}
+
+h3 {
+  font-size: 18px;
+  margin: 20px 0 10px;
+}
+
+h4 {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 20px 0 10px;
+}
+
+h5 {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 20px 0 10px;
+}
+
+h6 {
+  color: #777;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 20px 0 10px;
+}
+
+hr {
+}
+
+p {
+  margin: 15px 0; 
+}
+
+pre, code {
+  font: 12px 'Bitstream Vera Sans Mono','Courier',monospace;
+}
+.highlight pre, pre {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  padding: 6px 10px;
+}
+
+code {
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  margin: 0 2px;
+  padding: 0 5px;
+}
+
+pre code
+{
+  white-space: pre;
+  border: none;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+a, a code {
+  color: #4183C4;
+  text-decoration: none;
+}
+
+blockquote
+{
+  border-left: 4px solid #ddd;
+  padding: 0 15px;
+  color: #777777;
+  margin: 15px 0;
+}
+blockquote > :first-child {
+  margin-top: 0;
+}
+blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+table
+{
+  font-size: 14px;
+  border-collapse: collapse;
+  margin: 20px 0 0;
+  padding: 0;
+}
+
+table tr
+{
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+table tr:nth-child(2n)
+{
+  background-color: #f8f8f8;
+}
+table tr th[align="center"], table tr td[align="center"] {
+  text-align: center;
+}
+table tr th[align="right"], table tr td[align="right"] {
+  text-align: right;
+}
+table tr th, table tr td
+{
+  border: 1px solid #ccc;
+  text-align: left;
+  margin: 0;
+  padding: 6px 13px;
+}
+
+ul, ol
+{
+  margin: 15px 0;
+}
+
+ul li, ol li
+{
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+
+dl {
+  padding: 0;
+}
+dl dt {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0;
+  margin: 15px 0 5px;
+}
+dl dt:first-child {
+  padding: 0;
+}
+dl dt > :first-child {
+  margin-top: 0;
+}
+dl dt > :last-child {
+  margin-bottom: 0;
+}
+dl dd {
+  margin: 0 0 15px;
+  padding: 0 15px;
+}
+dl dd > :first-child {
+  margin-top: 0;
+}
+dl dd > :last-child {
+  margin-bottom: 0;
+}
+
+.shadow {
+  -webkit-box-shadow: 0 5px 15px #000;
+  -moz-box-shadow: 0 5px 15px #000;
+  box-shadow: 0 5px 15px #000;		
+}
+
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+  table, pre {
+    page-break-inside: avoid;
+  }
+}

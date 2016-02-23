@@ -40,7 +40,7 @@ function! airline#themes#lucius#refresh()
     let g:airline#themes#lucius#palette.visual.airline_warning = g:airline#themes#lucius#palette.normal.airline_warning
     let g:airline#themes#lucius#palette.visual_modified.airline_warning = g:airline#themes#lucius#palette.normal_modified.airline_warning
 
-    let s:IA = airline#themes#get_highlight('StatusLineNC')
+    let s:IA = airline#themes#get_highlight('CursorLine')
     let g:airline#themes#lucius#palette.inactive = airline#themes#generate_color_map(s:IA, s:IA, s:IA)
     let g:airline#themes#lucius#palette.inactive_modified = {
                 \ 'airline_c': [ modified_group[0], '', modified_group[2], '', '' ]

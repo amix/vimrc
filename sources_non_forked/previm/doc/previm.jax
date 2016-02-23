@@ -1,0 +1,231 @@
+*previm.txt*	プレビュー用プラグイン
+
+Version: 1.6
+Author: kanno <akapanna@gmail.com>
+
+==============================================================================
+目次							*previm-contents*
+
+概要							|previm-introduction|
+依存プラグイン						|previm-depends|
+使い方							|previm-usage|
+コマンド						|previm-command|
+関数							|previm-functions|
+設定							|previm-settings|
+open-browser.vimの使用					|previm-openbrowser|
+更新履歴						|previm-changelog|
+
+
+==============================================================================
+概要							*previm-introduction*
+
+Vimで編集した内容をブラウザでプレビューするための機能を提供します。
+リアルタイムプレビューに近いことが可能です。
+
+[対応フォーマット]
+	- Markdown
+	- textile
+	- reStructuredText(required rst2html.py)
+
+最新版:
+http://github.com/kannokanno/previm
+
+
+==============================================================================
+依存プラグイン						*previm-depends*
+
+[必須]
+	なし
+
+[任意]
+	- open-browser.vim(https://github.com/tyru/open-browser.vim)
+
+
+==============================================================================
+使い方							*previm-usage*
+
+Markdownの場合を例とします。他の形式についても基本的な操作は同じです。
+
+1. .vimrcで |g:previm_open_cmd| を設定します。
+(ただしopen-browser.vimを使用する場合は不要です)
+2. |filetype| がMarkdownのファイルの編集を開始します。
+3. |:PrevimOpen| を実行してブラウザを開きます。
+4. 元のVimバッファに戻り編集を続けます。
+5. 変更の度にブラウザの表示内容が更新されます。
+
+注意:拡張子が`.md`の場合は`markdown`ではなく`modula2`として認識されてしまいます。
+その場合は以下の設定を.vimrcに記述してください
+
+
+	" .vimrc
+	augroup PrevimSettings
+	  autocmd!
+	  autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
+	augroup END
+
+==============================================================================
+コマンド						*previm-command*
+
+							*:PrevimOpen*
+:PrevimOpen
+	現在のファイルを対象としてブラウザを開きます。
+
+
+==============================================================================
+関数							*previm-functions*
+
+previm#open({path})					*previm#open()*
+	{path} にはブラウザで開くURLを指定します。
+
+previm#refresh()					*previm#refresh()*
+	編集内容の更新を反映します。これによりブラウザの表示も更新されます。
+
+
+==============================================================================
+設定							*previm-settings*
+
+
+g:previm_open_cmd					*g:previm_open_cmd*
+	型:文字列
+
+	|:PrevimOpen| で実行するコマンドを指定します。このコマンドが指定されて
+	いない場合はopenbrowser#openを試みます。
+	|previm-openbrowser| も参照してください。
+
+	以下の設定例は、MacにてFirefoxで開く場合です。
+>
+	" .vimrc
+	let g:previm_open_cmd = 'open -a Firefox'
+<
+
+g:previm_enable_realtime			*g:previm_enable_realtime*
+	型:数値
+
+	リアルタイムに変更をプレビューするかどうかを設定します。
+	値が0なら以下のタイミングでのみ変更が反映されます。
+
+	  * ファイル保存時
+
+	値が1ならば、ほぼリアルタイムにプレビューできます。
+	デフォルトでは0に設定されています。
+
+	なおプレビュー対象のファイルを開いた後でこの値を変えた場合は、
+	設定反映のためにプレビュー対象のファイルを開き直す必要があります。
+>
+	" .vimrc
+        " リアルタイムにプレビューする
+	let g:previm_enable_realtime = 1
+
+g:previm_disable_default_css			*g:previm_disable_default_css*
+	型:数値
+
+	プレビュー時にデフォルトのCSSを適用しないようにします。
+	設定出来る有効な値は1のみです。それ以外の値は無視されます。
+
+>
+	" .vimrc
+	" デフォルトのCSSを無効にする
+	let g:previm_disable_default_css = 1
+
+g:previm_custom_css_path			*g:previm_custom_css_path*
+	型:文字列
+
+	プレビュー時にユーザー定義のCSSを追加出来ます。
+	このCSSはデフォルトCSSの後に読み込まれます。
+	設定する値にはCSSファイルへの絶対パスを書いてください。
+
+>
+	" .vimrc
+	" デフォルトのCSSに加えて独自のCSSも適用する
+	let g:previm_custom_css_path = '/Users/kanno/tmp/some.css'
+
+	" .vimrc
+	" デフォルトのCSSを使わず、独自のCSSのみ適用する
+	let g:previm_disable_default_css = 1
+	let g:previm_custom_css_path = '/Users/kanno/tmp/some.css'
+
+g:previm_show_header					*g:previm_show_header*
+	型:数値
+
+	値が1ならば、プレビュー時にヘッダーを表示します。
+	ヘッダーには編集しているファイル名と更新日時が表示されます。
+
+	値が0ならば、プレビュー時にヘッダーを表示しません。
+	デフォルトでは1に設定されています。
+
+>
+	" .vimrc
+	let g:previm_show_header = 0
+
+
+==============================================================================
+open-browser.vimの使用					*previm-openbrowser*
+
+プレビューブラウザを開くときは次のような処理になります。
+
+1. |g:previm_open_cmd| が設定されていればそのコマンドを実行する
+  - |g:previm_open_cmd| が未定義、もしくは空文字の場合は 2 へ
+2. openbrowser#open()でブラウザを開く
+  - open-browser.vimがインストールされていない場合は 3 へ
+3. 実行できるコマンドがないので標準エラーにメッセージを出力して終了
+
+このため、open-browser.vimを使う場合 |g:previm_open_cmd| の設定は不要です。
+
+
+==============================================================================
+更新履歴						*previm-changelog*
+
+1.7.1	2015-08-17
+        - support hidden header
+
+1.7	2015-08-15
+        - support mermaid(https://github.com/knsv/mermaid)
+
+1.6	2014-09-15
+        - support realtime refresh
+
+1.5.4	2014-09-06
+        - support custom css
+
+1.5.3	2014-08-02
+        - support reStructuredText(required rst2html.py)
+
+1.5.2	2014-07-27
+	- code block syntax highlighting
+        - update marked.js
+
+1.5.1	2014-06-08
+	- cssのバグを修正
+
+1.5	2014-04-05
+	- modula2の対応を記述
+
+1.4	2014-03-29
+	- textile対応
+
+1.3.2	2013-07-06
+	- ローカルの画像を参照できるようになった
+	- g:previm_open_cmdに半角空白が含まれる場合のバグを修正
+
+1.3.1	2013-06-28
+	- showdown.js を marked に変更
+
+1.3	2013-06-22
+	- fixed #4(Github issue)
+	- Windowsのディレクトリパス()のエスケープ処理追加
+	- IE8以前での動作対応(attachEvent対応追加)
+	- Windows環境での更新日表示対応追加
+	- Thanks id:sousu, id:beckorz
+
+1.2	2013-06-16
+	- resolved reload issue in google chrome
+	- Thanks id:ArcCosine
+
+1.1	2013-06-13
+	- previm-function.jsのエンコードにUTF-8を明示
+
+1.0	2013-06-11
+	- 初版
+
+vim:tw=78:ts=8:ft=help:norl:
+

@@ -2,7 +2,6 @@
 :set number
 " :set colorcolumn=80
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Copying/Pasting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -11,4 +10,12 @@
 
 set clipboard=unnamed
 let g:syntastic_javascript_args = "-c ./.eslintrc"
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Window management
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" close and open windows quickly
+map <leader>wc <C-W>c
+map <leader>wn <C-W>n
 

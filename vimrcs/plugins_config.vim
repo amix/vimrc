@@ -86,6 +86,14 @@ map <leader>nf :NERDTreeFind<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Previm - awesome markdown and mermaid interation!
+" Remember - your file has to be set as type markdown.
+" do this with :set ft=markdown
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" command is :PrevimOpen
+let g:previm_open_cmd = 'open -a Safari'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-multiple-cursors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:multi_cursor_next_key="\<C-s>"

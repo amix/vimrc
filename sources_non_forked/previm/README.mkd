@@ -1,0 +1,67 @@
+[README in English](https://github.com/kannokanno/previm/blob/master/README-en.mkd)
+
+## Previm
+
+プレビュー用のVimプラグインです。  
+
+![previm](https://raw.github.com/wiki/kannokanno/previm/images/previm-example.gif)
+
+## 対応フォーマット
+
+* Markdown
+    * support [mermaid](http://knsv.github.io/mermaid/index.html)
+* reStructuredText
+* textile
+
+## 依存
+
+### 変換のため
+
+Markdownとtextileの場合は必須なものはありません。  
+reStructuredTextの場合は`rst2html.py`が必要です。  
+`docutils`をインストールすると`rst2html.py`コマンドが使えるようになります。
+
+    % pip install docutils
+    % rst2html.py --version
+    rst2html.py (Docutils 0.12 [release], Python 2.7.5, on darwin)
+
+### プレビューを開くため
+
+必須なものはありません。  
+[open-browser.vim](https://github.com/tyru/open-browser.vim)は任意で使用できます。
+
+
+## 使い方(Markdownの場合)
+
+1. .vimrc にて `g:previm_open_cmd` を定義します
+    * この値はコマンドラインから実行できるコマンドです
+    * たとえばMacなら `open -a Safari` などです
+    * `:help g:previm_open_cmd` を参照してください
+    * open-browserを使う場合は設定不要です
+1. `filetype` がMarkdownのファイルの編集を開始します
+    * 注意:拡張子が`.md`の場合は`markdown`ではなく`modula2`として認識されてしまいます。その場合は以下の設定を.vimrcに記述してください
+    ```vim
+    augroup PrevimSettings
+        autocmd!
+        autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
+    augroup END
+    ```
+1. `:PrevimOpen` を実行してブラウザを開きます
+1. 元のVimバッファに戻り編集を続けます
+1. 変更の度にブラウザの表示内容が更新されます
+
+### mermaid
+
+[mermaid](http://knsv.github.io/mermaid/index.html)に対応しています。
+
+<pre>
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->E;
+```
+</pre>
+
+![previm](https://raw.github.com/wiki/kannokanno/previm/images/previm-example-mermaid.png)

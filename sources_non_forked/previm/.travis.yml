@@ -1,0 +1,11 @@
+language: generic
+
+before_script:
+  - git clone https://github.com/thinca/vim-themis --quiet --branch v1.4.1 --single-branch --depth 1 /tmp/vim-themis
+
+script:
+  - vim --version
+  - /tmp/vim-themis/bin/themis test/ -r --reporter dot
+
+notifications:
+  email: false
