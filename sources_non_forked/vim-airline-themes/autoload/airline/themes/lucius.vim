@@ -50,6 +50,12 @@ function! airline#themes#lucius#refresh()
                 \ 'red': airline#themes#get_highlight('Constant'),
                 \ }
 
+    " Extra tabline colors
+    let s:TS = airline#themes#get_highlight('TabLineSel')
+    let g:airline#themes#lucius#palette.tabline = {}
+    let g:airline#themes#lucius#palette.tabline.airline_tabsel = s:TS
+    let g:airline#themes#lucius#palette.tabline.airline_tabsel_right = s:TS
+
 endfunction
 
 call airline#themes#lucius#refresh()

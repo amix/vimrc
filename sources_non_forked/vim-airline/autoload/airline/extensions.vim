@@ -210,6 +210,10 @@ function! airline#extensions#load()
     call airline#extensions#whitespace#init(s:ext)
   endif
 
+  if get(g:, 'airline#extensions#po#enabled', 1) && executable('msgfmt')
+    call airline#extensions#po#init(s:ext)
+  endif
+
   if get(g:, 'airline#extensions#wordcount#enabled', 1)
     call airline#extensions#wordcount#init(s:ext)
   endif

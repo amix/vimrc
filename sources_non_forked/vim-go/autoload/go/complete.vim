@@ -149,13 +149,16 @@ function! go#complete#GetInfoFromOffset(offset)
 endfunction
 
 function! go#complete#GetInfo()
-    let offset = go#complete#gocodeCursor()
+    let offset = go#complete#gocodeCursor()+1
     return go#complete#GetInfoFromOffset(offset)
 endfunction
 
-function! go#complete#Info()
+function! go#complete#Info(auto)
+    " auto is true if we were called by g:go_auto_type_info's autocmd
     let result = go#complete#GetInfo()
     if !empty(result)
+        " if auto, and the result is a PANIC by gocode, hide it
+        if a:auto && result ==# 'PANIC PANIC PANIC' | return | endif
         echo "vim-go: " | echohl Function | echon result | echohl None
     endif
 endfunction

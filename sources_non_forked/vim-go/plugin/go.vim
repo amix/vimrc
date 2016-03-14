@@ -143,7 +143,7 @@ augroup vim-go
 
     " GoInfo automatic update
     if get(g:, "go_auto_type_info", 0)
-        autocmd CursorHold *.go nested call go#complete#Info()
+        autocmd CursorHold *.go nested call go#complete#Info(1)
     endif
 
     " Echo the identifier information when completion is done. Useful to see

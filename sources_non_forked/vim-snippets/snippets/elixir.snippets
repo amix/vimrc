@@ -87,10 +87,6 @@ snippet doc
 	"""
 snippet fn
 	fn ${1:args} -> ${0} end
-snippet fun
-	function do
-		${0}
-	end
 snippet mdoc
 	@moduledoc """
 	${0}
@@ -114,6 +110,12 @@ snippet test
 	end
 snippet testa
 	test "${1:test_name}", %{${2:arg: arg}} do
+		${0}
+	end
+snippet exunit
+	defmodule ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
+		use ExUnit.Case
+
 		${0}
 	end
 snippet try try .. rescue .. end

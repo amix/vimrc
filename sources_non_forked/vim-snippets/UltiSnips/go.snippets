@@ -45,25 +45,6 @@ type ${1:Interface} interface {
 }
 endsnippet
 
-# statements
-snippet for "For loop" b
-for ${1:condition}${1/(.+)/ /}{
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet fori "Integer for loop" b
-for ${1:i} := 0; $1 < ${2:N}; $1++ {
-	${0:${VISUAL}}
-}
-endsnippet
-
-snippet forr "For range loop" b
-for ${2:name} := range ${1:collection} {
-	${0:${VISUAL}}
-}
-endsnippet
-
 snippet if "If statement" b
 if ${1:condition}${1/(.+)/ /}{
 	${0:${VISUAL}}
@@ -74,22 +55,6 @@ snippet switch "Switch statement" b
 switch ${1:expression}${1/(.+)/ /}{
 case${0}
 }
-endsnippet
-
-snippet select "Select statement" b
-select {
-case${0}
-}
-endsnippet
-
-snippet case "Case clause" b
-case ${1:condition}:
-	${0:${VISUAL}}
-endsnippet
-
-snippet default "Default clause" b
-default:
-	${0:${VISUAL}}
 endsnippet
 
 # functions
