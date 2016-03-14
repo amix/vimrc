@@ -1,11 +1,14 @@
 " MIT License. Copyright (c) 2013-2016 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
-let s:show_tab_nr = get(g:, 'airline#extensions#tabline#show_tab_nr', 1)
-let s:tab_nr_type = get(g:, 'airline#extensions#tabline#tab_nr_type', 0)
 let s:show_close_button = get(g:, 'airline#extensions#tabline#show_close_button', 1)
 let s:show_tab_type = get(g:, 'airline#extensions#tabline#show_tab_type', 1)
+let s:show_tab_nr = get(g:, 'airline#extensions#tabline#show_tab_nr', 1)
+let s:tab_nr_type = get(g:, 'airline#extensions#tabline#tab_nr_type', 0)
 let s:close_symbol = get(g:, 'airline#extensions#tabline#close_symbol', 'X')
+let s:tabs_label = get(g:, 'airline#extensions#tabline#tabs_label', 'tabs')
+let s:show_splits = get(g:, 'airline#extensions#tabline#show_splits', 1)
+let s:spc = g:airline_symbols.space
 
 let s:current_bufnr = -1
 let s:current_tabnr = -1
@@ -39,19 +42,20 @@ function! airline#extensions#tabline#tabs#get()
   endif
 
   let b = airline#extensions#tabline#new_builder()
+
   for i in range(1, tabpagenr('$'))
     if i == curtab
-      let group = 'airline_tabsel'
+      let group = 'airline_tabsel_right'
       if g:airline_detect_modified
         for bi in tabpagebuflist(i)
           if getbufvar(bi, '&modified')
-            let group = 'airline_tabmod'
+            let group = 'airline_tabmod_right'
           endif
         endfor
       endif
-      let s:current_modified = (group == 'airline_tabmod') ? 1 : 0
+      let s:current_modified = (group == 'airline_tabmod_right') ? 1 : 0
     else
-      let group = 'airline_tab'
+      let group = 'airline_tab_right'
     endif
     let val = '%('
     if s:show_tab_nr
@@ -66,14 +70,22 @@ function! airline#extensions#tabline#tabs#get()
     call b.add_section(group, val.'%'.i.'T %{airline#extensions#tabline#title('.i.')} %)')
   endfor
 
-  call b.add_raw('%T')
   call b.add_section('airline_tabfill', '')
   call b.split()
+  call b.add_section('airline_tabfill', '')
+
   if s:show_close_button
-    call b.add_section('airline_tab', ' %999X'.s:close_symbol.' ')
+    call b.add_section('airline_tab_right', ' %999X'.s:close_symbol.' ')
   endif
-  if s:show_tab_type
-    call b.add_section('airline_tabtype', ' tabs ')
+
+  if s:show_splits == 1
+    let buffers = tabpagebuflist(curtab)
+    for nr in buffers
+      let group = airline#extensions#tabline#group_of_bufnr(buffers, nr)
+      call b.add_section_spaced(group, '%(%{airline#extensions#tabline#get_buffer_name('.nr.')}%)')
+    endfor
+  elseif s:show_tab_type == 1
+    call b.add_section_spaced('airline_tabtype', s:tabs_label)
   endif
 
   let s:current_bufnr = curbuf

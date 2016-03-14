@@ -114,6 +114,10 @@ func! s:RunOracle(mode, selected, needs_package) range abort
                     \  shellescape(fname), pos, tags, a:mode)
     endif
 
+    " strip trailing slashes for each path in scoped. bug:
+    " https://github.com/golang/go/issues/14584
+    let scopes = go#util#StripTrailingSlash(scopes)
+
     " now append each scope to the end as Oracle's scope parameter. It can be
     " a packages or go files, dependent on the User's own choice. For more
     " info check Oracle's User Manual section about scopes:

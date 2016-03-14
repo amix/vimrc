@@ -64,8 +64,8 @@ CONTENTS                                                  *syntastic-contents*
 1. Intro                                                     *syntastic-intro*
 
 Syntastic is a syntax checking plugin that runs files through external syntax
-checkers. This can be done on demand, or automatically as files are saved and
-opened.  If syntax errors are detected, the user is notified and is happy
+checkers. This can be done on demand, or automatically as files are saved
+and opened. If syntax errors are detected, the user is notified and is happy
 because they didn't have to compile their code or execute their script to find
 them.
 
@@ -103,8 +103,8 @@ list with |:SyntasticReset|, and you can use |:SyntasticToggleMode| to switch
 between active (checking on writing the buffer) and passive (manual) checking.
 
 You don't have to switch focus to the |location-list| window to jump to the
-different errors.  Vim provides several built-in commands for this, for
-example |:lnext| and |:lprevious|.  You may want to add shortcut mappings for
+different errors. Vim provides several built-in commands for this, for
+example |:lnext| and |:lprevious|. You may want to add shortcut mappings for
 these commands, or perhaps install a plugin such as Tim Pope's 'unimpaired'
 (see https://github.com/tpope/vim-unimpaired) that provides such mappings.
 
@@ -242,7 +242,7 @@ disable generation of these labels by turning off '|syntastic_id_checkers|'.
 
 If |'syntastic_sort_aggregated_errors'| is set (which is the default), messages
 in the aggregated list are grouped by file, then sorted by line number, then
-type, then column number.  Otherwise messages produced by the same checker are
+type, then column number. Otherwise messages produced by the same checker are
 grouped together, and sorting within each group is decided by the variables
 |'syntastic_<filetype>_<checker>_sort'|.
 
@@ -274,17 +274,17 @@ for more info.
 
 :SyntasticCheck                                              *:SyntasticCheck*
 
-Manually cause a syntax check to be done.  By default the checkers in the
+Manually cause a syntax check to be done. By default the checkers in the
 |'g:syntastic_<filetype>_checkers'| or |'b:syntastic_checkers'| lists are run,
-cf. |syntastic-filetype-checkers|.  If |'syntastic_aggregate_errors'| is unset
+cf. |syntastic-filetype-checkers|. If |'syntastic_aggregate_errors'| is unset
 (which is the default), checking stops the first time a checker reports any
 errors; if |'syntastic_aggregate_errors'| is set, all checkers that apply are
 run in turn, and all errors found are aggregated in a single list.
 
-The command may be followed by a (space separated) list of checkers.  In this
+The command may be followed by a (space separated) list of checkers. In this
 case |'g:syntastic_<filetype>_checkers'| and |'b:syntastic_checkers'| are
 ignored, and the checkers named by the command's arguments are run instead, in
-the order specified.  The set by |'syntastic_aggregate_errors'| still apply.
+the order specified. The set by |'syntastic_aggregate_errors'| still apply.
 
 Example: >
     :SyntasticCheck flake8 pylint
@@ -319,7 +319,7 @@ when buffers are first loaded, as well as on saving: >
                                                      *'syntastic_check_on_wq'*
 Default: 1
 In active mode syntax checks are normally run whenever buffers are written to
-disk, even when the writes happen just before quitting Vim.  If you want to
+disk, even when the writes happen just before quitting Vim. If you want to
 skip checks when you issue |:wq|, |:x|, and |:ZZ|, set this variable to 0: >
     let g:syntastic_check_on_wq = 0
 <
@@ -347,7 +347,7 @@ By default, when results from multiple checkers are aggregated in a single
 error list (that is either when |'syntastic_aggregate_errors'| is enabled,
 or when checking a file with a composite filetype), errors are grouped by
 file, then sorted by line number, then grouped by type (namely errors take
-precedence over warnings), then they are sorted by column number.  If you want
+precedence over warnings), then they are sorted by column number. If you want
 to leave messages grouped by checker output, set this variable to 0: >
     let g:syntastic_sort_aggregated_errors = 0
 <
@@ -413,7 +413,7 @@ option to tell syntastic to always stick any detected errors into the
 <
 Please note that if |'syntastic_auto_jump'| is set to a non-zero value the
 location list is overwritten with Syntastic's own list when taking a jump,
-regardless of the value of |'syntastic_always_populate_loc_list'|.  The
+regardless of the value of |'syntastic_always_populate_loc_list'|. The
 location list is also overwritten when running the |:Errors| command.
 
                                                        *'syntastic_auto_jump'*
@@ -469,10 +469,10 @@ opens. >
 <
                                                     *'syntastic_ignore_files'*
 Default: []
-Use this option to specify files that syntastic should never check.  It's a
-list of |regular-expression| patterns.  The full paths of files (see |::p|) are
+Use this option to specify files that syntastic should never check. It's a
+list of |regular-expression| patterns. The full paths of files (see |::p|) are
 matched against these patterns, and the matches are case-sensitive. Use |\c|
-to specify case-insensitive patterns.  Example: >
+to specify case-insensitive patterns. Example: >
     let g:syntastic_ignore_files = ['\m^/usr/include/', '\m\c\.h$']
 <
                                                     *'syntastic_filetype_map'*
@@ -504,7 +504,7 @@ The option should be set to something like: >
 <
 "mode" can be mapped to one of two values - "active" or "passive". When set
 to "active", syntastic does automatic checking whenever a buffer is saved or
-initially opened.  When set to "passive" syntastic only checks when the user
+initially opened. When set to "passive" syntastic only checks when the user
 calls |:SyntasticCheck|.
 
 The exceptions to these rules are defined with "active_filetypes" and
@@ -531,7 +531,7 @@ whether the corresponding buffer should be checked automatically.
 
                                                   *'syntastic_quiet_messages'*
 Default: {}
-Use this option to filter out some of the messages produced by checkers.  The
+Use this option to filter out some of the messages produced by checkers. The
 option should be set to something like: >
     let g:syntastic_quiet_messages = {
         \ "!level":  "errors",
@@ -646,20 +646,20 @@ The above variable can be used to disable exit code checks in syntastic.
 Default: Vim's 'shell'
 This is the (full path to) the shell syntastic will use to run the checkers.
 On UNIX and Mac OS-X this shell must accept Bourne-compatible syntax for
-file "stdout" and "stderr" redirections ">file" and "2>file".  Examples of
+file "stdout" and "stderr" redirections ">file" and "2>file". Examples of
 compatible shells are "zsh", "bash", "ksh", and of course the original Bourne
 "sh".
 
 This shell is independent of Vim's 'shell', and it isn't used for interactive
-operations.  It must take care to initialize all environment variables needed
-by the checkers you're using.  Example: >
+operations. It must take care to initialize all environment variables needed
+by the checkers you're using. Example: >
     let g:syntastic_shell = "/bin/sh"
 <
                                              *'syntastic_nested_autocommands'*
 Default: 0
 Controls whether syntastic's autocommands |BufReadPost| and |BufWritePost|
 are called from other |BufReadPost| and |BufWritePost| autocommands (see
-|autocmd-nested|).  This is known to trigger interoperability problems with
+|autocmd-nested|). This is known to trigger interoperability problems with
 other plugins, so only enable it if you actually need that functionality.
 
                                                            *'syntastic_debug'*
@@ -688,7 +688,7 @@ addition to being added to Vim's |message-history|: >
 <
                                                  *'syntastic_extra_filetypes'*
 Default: []
-List of filetypes handled by checkers external to syntastic.  If you have a Vim
+List of filetypes handled by checkers external to syntastic. If you have a Vim
 plugin that adds a checker for syntastic, and if the said checker deals with a
 filetype that is unknown to syntastic, you might consider adding that filetype
 to this list: >
@@ -710,7 +710,7 @@ variable 'g:syntastic_<filetype>_checkers' to a list of checkers, e.g. >
 <
                                                       *'b:syntastic_checkers'*
 There is also a per-buffer version of this setting, 'b:syntastic_checkers'.
-When set, it takes precedence over |'g:syntastic_<filetype>_checkers'|.  You can
+When set, it takes precedence over |'g:syntastic_<filetype>_checkers'|. You can
 use this in an autocmd to configure specific checkers for particular paths: >
     autocmd FileType python if stridx(expand("%:p"), "/some/path/") == 0 |
         \ let b:syntastic_checkers = ["pylint"] | endif
@@ -856,19 +856,19 @@ composite filetypes to simple ones using |'syntastic_filetype_map'|, e.g.: >
 6.2 Editing files over network                               *syntastic-netrw*
 
 The standard plugin |netrw| allows Vim to transparently edit files over
-network and inside archives.  Currently syntastic doesn't support this mode
-of operation.  It can only check files that can be accessed directly by local
+network and inside archives. Currently syntastic doesn't support this mode
+of operation. It can only check files that can be accessed directly by local
 checkers, without any translation or conversion.
 
 ------------------------------------------------------------------------------
 6.3 The 'shellslash' option                             *syntastic-shellslash*
 
-The 'shellslash' option is relevant only on Windows systems.  This option
+The 'shellslash' option is relevant only on Windows systems. This option
 determines (among other things) the rules for quoting command lines, and there
 is no easy way for syntastic to make sure its state is appropriate for your
-shell.  It should be turned off if your 'shell' (or |'syntastic_shell'|) is
+shell. It should be turned off if your 'shell' (or |'syntastic_shell'|) is
 "cmd.exe", and on for shells that expect an UNIX-like syntax, such as Cygwin's
-"sh".  Most checkers will stop working if 'shellslash' is set to the wrong
+"sh". Most checkers will stop working if 'shellslash' is set to the wrong
 value.
 
 ------------------------------------------------------------------------------
@@ -887,8 +887,8 @@ quickfix windows.
 ------------------------------------------------------------------------------
 7.1 The csh and tcsh shells                                    *syntastic-csh*
 
-The "csh" and "tcsh" shells are mostly compatible with syntastic.  However,
-some checkers assume Bourne shell syntax for redirecting "stderr".  For this
+The "csh" and "tcsh" shells are mostly compatible with syntastic. However,
+some checkers assume Bourne shell syntax for redirecting "stderr". For this
 reason, you should point |'syntastic_shell'| to a Bourne-compatible shell,
 such as "zsh", "bash", "ksh", or even the original Bourne "sh": >
     let g:syntastic_shell = "/bin/sh"
@@ -961,7 +961,7 @@ packaged with a syntastic segment. To customize this segment create a file
 
 At the time of this writing, syntastic is not compatible with using "Windows
 PowerShell" (http://technet.microsoft.com/en-us/library/bb978526.aspx) as Vim's
-'shell'.  You may still run Vim from 'PowerShell', but you do have to point
+'shell'. You may still run Vim from 'PowerShell', but you do have to point
 Vim's 'shell' to a more traditional program, such as "cmd.exe": >
     set shell=cmd.exe
 <
@@ -980,18 +980,18 @@ for python in syntastic (see |'syntastic_mode_map'|), or disable lint checks in
 7.9. vim-auto-save                                   *syntastic-vim-auto-save*
 
 Syntastic can be used together with the "vim-auto-save" Vim plugin (see
-https://github.com/907th/vim-auto-save).  However, syntastic checks in active
+https://github.com/907th/vim-auto-save). However, syntastic checks in active
 mode only work with "vim-auto-save" version 0.1.7 or later.
 
 ------------------------------------------------------------------------------
 7.10. vim-go                                                *syntastic-vim-go*
 
 Syntastic can be used along with the "vim-go" Vim plugin (see
-https://github.com/fatih/vim-go).  However, both "vim-go" and syntastic run
-syntax checks by default when you save buffers to disk.  To avoid conflicts,
+https://github.com/fatih/vim-go). However, both "vim-go" and syntastic run
+syntax checks by default when you save buffers to disk. To avoid conflicts,
 you have to either set passive mode in syntastic for the go filetype (see
 |syntastic_mode_map|), or prevent "vim-go" from showing a quickfix window when
-|g:go_fmt_command| fails, by setting |g:go_fmt_fail_silently| to 1.  E.g.: >
+|g:go_fmt_command| fails, by setting |g:go_fmt_fail_silently| to 1. E.g.: >
     let g:go_fmt_fail_silently = 1
 <
 ------------------------------------------------------------------------------
@@ -999,16 +999,16 @@ you have to either set passive mode in syntastic for the go filetype (see
 
 At the time of this writing, syntastic can't run checkers installed
 in Python virtual environments activated by "vim-virtualenv" (see
-https://github.com/jmcantrell/vim-virtualenv).  This is a limitation of
+https://github.com/jmcantrell/vim-virtualenv). This is a limitation of
 "vim-virtualenv".
 
 ------------------------------------------------------------------------------
 7.12 YouCompleteMe                                             *syntastic-ycm*
 
 Syntastic can be used together with the "YouCompleteMe" Vim plugin (see
-http://valloric.github.io/YouCompleteMe/).  However, by default "YouCompleteMe"
+http://valloric.github.io/YouCompleteMe/). However, by default "YouCompleteMe"
 disables syntastic's checkers for the "c", "cpp", "objc", and "objcpp"
-filetypes, in order to allow its own checkers to run.  If you want to use YCM's
+filetypes, in order to allow its own checkers to run. If you want to use YCM's
 identifier completer but still run syntastic's checkers for those filetypes you
 have to set |g:ycm_show_diagnostics_ui| to 0. E.g.: >
     let g:ycm_show_diagnostics_ui = 0
@@ -1018,9 +1018,9 @@ have to set |g:ycm_show_diagnostics_ui| to 0. E.g.: >
 
 If you're running MacVim together with the "zsh" shell (http://www.zsh.org/)
 you need to be aware that MacVim does not source your .zshrc file, but will
-source a .zshenv file.  Consequently you have to move any setup steps relevant
+source a .zshenv file. Consequently you have to move any setup steps relevant
 to the checkers you're using from .zshrc to .zshenv, otherwise your checkers
-will misbehave when run by syntastic.  This is particularly important for
+will misbehave when run by syntastic. This is particularly important for
 programs such as "rvm" (https://rvm.io/) or "rbenv" (http://rbenv.org/), that
 rely on setting environment variables.
 

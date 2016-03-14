@@ -113,28 +113,28 @@ function! go#doc#Open(newmode, mode, ...)
     call s:GodocView(a:newmode, a:mode, content)
 
     if exported_name == ''
-        silent! normal gg
+        silent! normal! gg
         return -1
     endif
 
     " jump to the specified name
     if search('^func ' . exported_name . '(')
-        silent! normal zt
+        silent! normal! zt
         return -1
     endif
 
     if search('^type ' . exported_name)
-        silent! normal zt
+        silent! normal! zt
         return -1
     endif
 
     if search('^\%(const\|var\|type\|\s\+\) ' . pkg . '\s\+=\s')
-        silent! normal zt
+        silent! normal! zt
         return -1
     endif
 
     " nothing found, jump to top
-    silent! normal gg
+    silent! normal! gg
 endfunction
 
 function! s:GodocView(newposition, position, content)

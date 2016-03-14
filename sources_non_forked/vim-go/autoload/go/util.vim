@@ -48,6 +48,12 @@ function! go#util#StripPathSep(path)
     return a:path
 endfunction
 
+" StripTrailingSlash strips the trailing slash from the given path list.
+" example: ['/foo/bar/']  -> ['/foo/bar']
+function! go#util#StripTrailingSlash(paths)
+  return map(copy(a:paths), 'go#util#StripPathSep(v:val)')
+endfunction
+
 " Shelljoin returns a shell-safe string representation of arglist. The
 " {special} argument of shellescape() may optionally be passed.
 function! go#util#Shelljoin(arglist, ...)

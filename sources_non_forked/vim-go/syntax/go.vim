@@ -179,30 +179,31 @@ syn region      goBlock             start="{" end="}" transparent fold
 syn region      goParen             start='(' end=')' transparent
 
 " Integers
-syn match       goDecimalInt        "\<\d\+\([Ee]\d\+\)\?\>"
-syn match       goHexadecimalInt    "\<0x\x\+\>"
-syn match       goOctalInt          "\<0\o\+\>"
-syn match       goOctalError        "\<0\o*[89]\d*\>"
+syn match       goDecimalInt        "\<-\=\d\+\%([Ee][-+]\=\d\+\)\=\>"
+syn match       goHexadecimalInt    "\<-\=0[xX]\x\+\>"
+syn match       goOctalInt          "\<-\=0\o\+\>"
+syn match       goOctalError        "\<-\=0\o*[89]\d*\>"
 
 hi def link     goDecimalInt        Integer
 hi def link     goHexadecimalInt    Integer
 hi def link     goOctalInt          Integer
+hi def link     goOctalError        Error
 hi def link     Integer             Number
 
 " Floating point
-syn match       goFloat             "\<\d\+\.\d*\([Ee][-+]\d\+\)\?\>"
-syn match       goFloat             "\<\.\d\+\([Ee][-+]\d\+\)\?\>"
-syn match       goFloat             "\<\d\+[Ee][-+]\d\+\>"
+syn match       goFloat             "\<-\=\d\+\.\d*\%([Ee][-+]\=\d\+\)\=\>"
+syn match       goFloat             "\<-\=\.\d\+\%([Ee][-+]\=\d\+\)\=\>"
 
 hi def link     goFloat             Float
 
 " Imaginary literals
-syn match       goImaginary         "\<\d\+i\>"
-syn match       goImaginary         "\<\d\+\.\d*\([Ee][-+]\d\+\)\?i\>"
-syn match       goImaginary         "\<\.\d\+\([Ee][-+]\d\+\)\?i\>"
-syn match       goImaginary         "\<\d\+[Ee][-+]\d\+i\>"
+syn match       goImaginary         "\<-\=\d\+i\>"
+syn match       goImaginary         "\<-\=\d\+[Ee][-+]\=\d\+i\>"
+syn match       goImaginaryFloat    "\<-\=\d\+\.\d*\%([Ee][-+]\=\d\+\)\=i\>"
+syn match       goImaginaryFloat    "\<-\=\.\d\+\%([Ee][-+]\=\d\+\)\=i\>"
 
 hi def link     goImaginary         Number
+hi def link     goImaginaryFloat    Float
 
 " Spaces after "[]"
 if g:go_highlight_array_whitespace_error != 0

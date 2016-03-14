@@ -11,11 +11,11 @@
 ## 1. Bug reports / GitHub issues
 
 Please note that the preferred channel for posting bug reports is the
-[issue tracker at GitHub][0].  Reports posted elsewhere are less likely
+[issue tracker at GitHub][0]. Reports posted elsewhere are less likely
 to be seen by the core team.
 
 When reporting a bug make sure you search the existing GitHub issues
-for the same/similar issues.  If you find one, feel free to add a `+1`
+for the same/similar issues. If you find one, feel free to add a `+1`
 comment with any additional information that may help us solve the
 issue.
 
@@ -26,7 +26,7 @@ When creating a new issue be sure to state the following:
 * the version of syntastic you are using (see `:SyntasticInfo`).
 
 For syntax checker bugs also state the version of the checker executable
-that you are using.  Adding debugging information is typically useful
+that you are using. Adding debugging information is typically useful
 too:
 
 * open a file handled by your checker;
@@ -38,10 +38,10 @@ too:
 
 ## 2. Submitting a patch
 
-Before you consider adding features to syntastic, _please_ spend a few
-minutes (re-)reading the latest version of the [manual][1].  Syntastic
-is changing rapidly at times, and it's quite possible that some features
-you want to add exist already.
+Before you consider adding features to syntastic, _please_ spend a few minutes
+(re-)reading the latest version of the [manual][1]. Syntastic is changing
+rapidly at times, and it's possible that some features you want to add exist
+already.
 
 To submit a patch:
 
@@ -54,7 +54,7 @@ Small, focused patches are preferred.
 Large changes to the code should be discussed with the core team first.
 Create an issue and explain your plan and see what we say.
 
-Also, make sure to update the manual whenever applicable.  Nobody can use
+Also, make sure to update the manual whenever applicable. Nobody can use
 features that aren't documented.
 
 <a name="generalstyle"></a>

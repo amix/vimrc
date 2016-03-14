@@ -35,8 +35,14 @@ function! s:check_mixed_indent()
 endfunction
 
 function! s:check_mixed_indent_file()
+  if stridx(&ft, 'c') == 0 || stridx(&ft, 'cpp') == 0 || stridx(&ft, 'javascript') == 0
+    " for C/CPP only allow /** */ comment style with one space before the '*'
+    let head_spc = '\v(^ +\*@!)'
+  else
+    let head_spc = '\v(^ +)'
+  endif
   let indent_tabs = search('\v(^\t+)', 'nw')
-  let indent_spc  = search('\v(^ +)', 'nw')
+  let indent_spc  = search(head_spc, 'nw')
   if indent_tabs > 0 && indent_spc > 0
     return printf("%d:%d", indent_tabs, indent_spc)
   else

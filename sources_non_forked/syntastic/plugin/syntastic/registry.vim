@@ -164,7 +164,7 @@ function! g:SyntasticRegistry.CreateAndRegisterChecker(args) abort " {{{2
 
     if has_key(a:args, 'redirect')
         let [ft, name] = split(a:args['redirect'], '/')
-        call registry._loadCheckersFor(ft)
+        call registry._loadCheckersFor(ft, 1)
 
         let clone = get(registry._checkerMap[ft], name, {})
         if empty(clone)
@@ -320,8 +320,9 @@ function! g:SyntasticRegistry._filterCheckersByName(checkers_map, list) abort " 
     return filter( map(copy(a:list), 'get(a:checkers_map, v:val, {})'), '!empty(v:val)' )
 endfunction " }}}2
 
-function! g:SyntasticRegistry._loadCheckersFor(filetype) abort " {{{2
-    if has_key(self._checkerMap, a:filetype)
+function! g:SyntasticRegistry._loadCheckersFor(filetype, ...) abort " {{{2
+    " XXX: a:1 == 1 means re-scan checkers for filetype
+    if has_key(self._checkerMap, a:filetype) && (!a:0 || !a:1)
         return
     endif
 

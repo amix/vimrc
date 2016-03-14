@@ -47,13 +47,12 @@ function! airline#init#bootstrap()
 
   call s:check_defined('g:airline_theme_map', {})
   call extend(g:airline_theme_map, {
-        \ 'Tomorrow.*': 'tomorrow',
-        \ 'base16.*': 'base16',
-        \ 'bubblegum': 'bubblegum',
+        \ '\CTomorrow': 'tomorrow',
+        \ 'base16': 'base16',
         \ 'mo[l|n]okai': 'molokai',
-        \ 'wombat.*': 'wombat',
-        \ '.*zenburn.*': 'zenburn',
-        \ '.*solarized.*': 'solarized',
+        \ 'wombat': 'wombat',
+        \ 'zenburn': 'zenburn',
+        \ 'solarized': 'solarized',
         \ }, 'keep')
 
   call s:check_defined('g:airline_symbols', {})

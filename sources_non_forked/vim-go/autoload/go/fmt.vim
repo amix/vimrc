@@ -52,13 +52,25 @@ endif
 "  this and have VimL experience, please look at the function for
 "  improvements, patches are welcome :)
 function! go#fmt#Format(withGoimport)
-    " save cursor position, folds and many other things
-    let l:curw = {}
-    try
-        mkview!
-    catch
+    if g:go_fmt_experimental == 1
+        " Using winsaveview to save/restore cursor state has the problem of
+        " closing folds on save:
+        "   https://github.com/fatih/vim-go/issues/502
+        " One fix is to use mkview instead. Unfortunately, this sometimes causes
+        " other bad side effects:
+        "   https://github.com/fatih/vim-go/issues/728
+        " and still closes all folds if foldlevel>0:
+        "   https://github.com/fatih/vim-go/issues/732
+        let l:curw = {}
+        try
+            mkview!
+        catch
+            let l:curw=winsaveview()
+        endtry
+    else
+        " Save cursor position and many other things.
         let l:curw=winsaveview()
-    endtry
+    endif
 
     " Write current unsaved buffer to a temp file
     let l:tmpname = tempname()
@@ -99,6 +111,24 @@ function! go#fmt#Format(withGoimport)
     let command = fmt_command . ' -w '
     if a:withGoimport  != 1 
         let command  = command . g:go_fmt_options
+    endif
+
+    if fmt_command == "goimports"
+        if !exists('b:goimports_vendor_compatible')
+            let out = system("goimports --help")
+            if out !~ "-srcdir"
+                echohl WarningMsg
+                echomsg "vim-go: goimports does not support srcdir."
+                echomsg "  update with: :GoUpdateBinaries"
+                echohl None
+            else
+               let b:goimports_vendor_compatible = 1
+            endif
+        endif
+
+        if exists('b:goimports_vendor_compatible') && b:goimports_vendor_compatible
+            let command  = command . '-srcdir ' . fnameescape(expand("%:p:h"))
+        endif
     endif
 
     " execute our command...
@@ -163,10 +193,15 @@ function! go#fmt#Format(withGoimport)
         call delete(tmpundofile)
     endif
 
-    " restore our cursor/windows positions, folds, etc..
-    if empty(l:curw)
-        silent! loadview
+    if g:go_fmt_experimental == 1
+        " Restore our cursor/windows positions, folds, etc.
+        if empty(l:curw)
+            silent! loadview
+        else
+            call winrestview(l:curw)
+        endif
     else
+        " Restore our cursor/windows positions.
         call winrestview(l:curw)
     endif
 endfunction
