@@ -31,10 +31,14 @@ snippet main "Main function"
 	pub fn main() {
 		${0}
 	}
-snippet let "let variable declaration"
-	let ${1:name}${2:: ${3:type}} = ${4};
-snippet letm "let mut variable declaration"
-	let mut ${1:name}${2:: ${3:type}} = ${4};
+snippet let "let variable declaration with type inference"
+	let ${1}  = ${2};
+snippet lett "let variable declaration with explicit type annotation"
+	let ${1}: ${2}  = ${3};
+snippet letm "let mut variable declaration with type inference"
+	let mut ${1}  = ${2};
+snippet lettm "let mut variable declaration with explicit type annotation"
+	let mut ${1}: ${2}  = ${3};
 snippet pln "println!"
 	println!("${1}");
 snippet pln, "println! with format param"

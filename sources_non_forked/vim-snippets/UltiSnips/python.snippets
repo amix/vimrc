@@ -622,25 +622,9 @@ finally:
 endsnippet
 
 
-#####################
+######################
 # Assertions & Tests #
-#####################
-
-snippet pdb "Set PDB breakpoint" b
-import pdb; pdb.set_trace()
-endsnippet
-
-snippet ipy "Embed IPython shell" b
-import IPython; IPython.embed()
-endsnippet
-
-snippet ipdb "Set IPDB breakpoint" b
-import ipdb; ipdb.set_trace()
-endsnippet
-
-snippet pudb "Set PUDB breakpoint" b
-import pudb; pudb.set_trace()
-endsnippet
+######################
 
 snippet ae "Assert equal" b
 self.assertEqual(${1:${VISUAL:first}},${2:second})

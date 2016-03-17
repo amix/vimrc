@@ -29,10 +29,8 @@ function! SyntaxCheckers_rst_rst2pseudoxml_GetLocList() dict
         \ 'tail': syntastic#util#DevNull() })
 
     let errorformat =
-        \ '%f:%l: (%tNFO/1) %m,'.
-        \ '%f:%l: (%tARNING/2) %m,'.
-        \ '%f:%l: (%tRROR/3) %m,'.
-        \ '%f:%l: (%tEVERE/4) %m,'.
+        \ '%f:%l: (%t%\w%\+/%\d%\+) %m,'.
+        \ '%f:: (%t%\w%\+/%\d%\+) %m,'.
         \ '%-G%.%#'
 
     let loclist = SyntasticMake({
@@ -40,11 +38,11 @@ function! SyntaxCheckers_rst_rst2pseudoxml_GetLocList() dict
         \ 'errorformat': errorformat })
 
     for e in loclist
-        if e['type'] ==? 'S'
-            let e['type'] = 'E'
-        elseif e['type'] ==? 'I'
+        if e['type'] ==? 'I'
             let e['type'] = 'W'
             let e['subtype'] = 'Style'
+        else
+            let e['type'] = 'E'
         endif
     endfor
 
