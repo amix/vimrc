@@ -41,6 +41,7 @@ vim-commentary https://github.com/tpope/vim-commentary
 vim-go https://github.com/fatih/vim-go
 vim-gitgutter https://github.com/airblade/vim-gitgutter
 gruvbox https://github.com/morhetz/gruvbox
+vim-gradle https://github.com/tfnico/vim-gradle
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'
