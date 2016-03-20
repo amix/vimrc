@@ -503,6 +503,27 @@ COMMANDS                                                          *go-commands*
       autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
     augroup END
 <
+                                                              *:GoDecls*
+:GoDecls [file]
+  
+    Only enabled if `ctrlp.vim` is installed. If run shows all function and
+    type declarations for the current file. If [file] is non empty it parses
+    the given file. 
+    By default `type` and `func` declarations are being showed. This can be
+    changed via |g:go_decls_includes|, which accepts a comma delimited list of
+    definitions. By default set to: `"func,type"`. Possible options are:
+    `{func,type}`
+
+                                                              *:GoDeclsDir*
+:GoDeclsDir [dir]
+  
+    Only enabled if `ctrlp.vim` is installed. If run shows all function and
+    type declarations for the current directory. If [dir] is given it parses
+    the given directory.
+    By default `type` and `func` declarations are being showed. This can be
+    changed via |g:go_decls_includes|, which accepts a comma delimited list of
+    definitions. By default set to: `"func,type"`. Possible options are:
+    `{func,type}`
 
 ===============================================================================
 MAPPINGS                                                        *go-mappings*
@@ -691,11 +712,26 @@ upon regions of text. vim-go currently defines the following text objects:
 
                                                *go-v_af* *go-af*
 af			      "a function", select contents from a function definition to the
-               closing bracket.
+               closing bracket. If |g:go_textobj_include_function_doc| is
+               enabled it also includes the comment doc for a function
+               declaration. This text-object also supports literal functions.
 
                                                *go-v_if* *go-if*
-if			      "inside a function", select contents of a function,
-			        excluding the function definition and the closing bracket.
+if            "inside a function", select contents of a function,
+              excluding the function definition and the closing bracket. This
+              text-object also supports literal functions
+
+
+vim-go also defines the following text motion objects:
+
+                                               *go-v_]]* *go-]]*
+]]			      [count] forward to next function declaration. If 
+              |g:go_textobj_include_function_doc| is enabled and if your 
+              on a comment, it skips the function which the comment 
+              belongs and forwards to the next function declaration.
+
+                                               *go-v_[[* *go-[[*
+[[            [count] backward to previous function declaration.
 
 
 

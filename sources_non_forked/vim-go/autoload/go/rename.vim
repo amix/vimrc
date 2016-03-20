@@ -31,7 +31,7 @@ function! go#rename#Rename(bang, ...)
     endif
 
     let fname = expand('%:p')
-    let pos = s:getpos(line('.'), col('.'))
+    let pos = go#util#OffsetCursor()
     let cmd = printf('%s -offset %s -to %s', shellescape(bin_path), shellescape(printf('%s:#%d', fname, pos)), shellescape(to))
 
     let out = go#tool#ExecuteInDir(cmd)
@@ -64,15 +64,6 @@ function! go#rename#Rename(bang, ...)
     " change.
     silent execute ":e"
 endfunction
-
-func! s:getpos(l, c)
-    if &encoding != 'utf-8'
-        let buf = a:l == 1 ? '' : (join(getline(1, a:l-1), "\n") . "\n")
-        let buf .= a:c == 1 ? '' : getline('.')[:a:c-2]
-        return len(iconv(buf, &encoding, 'utf-8'))
-    endif
-    return line2byte(a:l) + (a:c-2)
-endfun
 
 " vim:ts=4:sw=4:et
 "

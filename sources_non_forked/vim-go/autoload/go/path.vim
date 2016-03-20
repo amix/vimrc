@@ -144,7 +144,6 @@ function! go#path#CheckBinPath(binpath)
         return binpath
     endif
 
-
     " just get the basename
     let basename = fnamemodify(binpath, ":t")
 

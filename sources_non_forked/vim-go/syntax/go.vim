@@ -81,6 +81,10 @@ if !exists("g:go_highlight_string_spellcheck")
   let g:go_highlight_string_spellcheck = 1
 endif
 
+if !exists("g:go_highlight_generate_tags")
+  let g:go_highlight_generate_tags = 0
+endif
+
 syn case match
 
 syn keyword     goDirective         package import
@@ -132,10 +136,17 @@ hi def link     goBoolean           Boolean
 syn keyword     goTodo              contained TODO FIXME XXX BUG
 syn cluster     goCommentGroup      contains=goTodo
 syn region      goComment           start="/\*" end="\*/" contains=@goCommentGroup,@Spell
-syn region      goComment           start="//" end="$" contains=@goCommentGroup,@Spell
+syn region      goComment           start="//" end="$" contains=goGenerate,@goCommentGroup,@Spell
 
 hi def link     goComment           Comment
 hi def link     goTodo              Todo
+
+if g:go_highlight_generate_tags != 0
+  syn match       goGenerateVariables contained /\(\$GOARCH\|\$GOOS\|\$GOFILE\|\$GOLINE\|\$GOPACKAGE\|\$DOLLAR\)\>/
+  syn region      goGenerate          start="^\s*//go:generate" end="$" contains=goGenerateVariables
+  hi def link     goGenerate          PreProc
+  hi def link     goGenerateVariables Special
+endif
 
 " Go escapes
 syn match       goEscapeOctal       display contained "\\[0-7]\{3}"
