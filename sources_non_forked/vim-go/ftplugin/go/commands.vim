@@ -56,4 +56,10 @@ command! -nargs=* -complete=customlist,go#package#Complete GoErrCheck call go#li
 " -- alternate
 command! -bang GoAlternate call go#alternate#Switch(<bang>0, '')
 
+" -- ctrlp
+if globpath(&rtp, 'plugin/ctrlp.vim') != ""
+  command! -nargs=? -complete=file GoDecls call ctrlp#init(ctrlp#decls#cmd(0, <q-args>))
+  command! -nargs=? -complete=dir GoDeclsDir call ctrlp#init(ctrlp#decls#cmd(1, <q-args>))
+endif
+
 " vim:ts=4:sw=4:et

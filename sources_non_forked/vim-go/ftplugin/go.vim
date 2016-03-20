@@ -29,14 +29,25 @@ if get(g:, "go_doc_keywordprg_enabled", 1)
 endif
 
 if get(g:, "go_def_mapping_enabled", 1)
-   nnoremap <buffer> <silent> gd :GoDef<cr>
+    nnoremap <buffer> <silent> gd :GoDef<cr>
 endif
 
 if get(g:, "go_textobj_enabled", 1)
-    onoremap <buffer> af :<c-u>call go#textobj#Function('a')<cr>
-    xnoremap <buffer> af :<c-u>call go#textobj#Function('a')<cr>
-    onoremap <buffer> if :<c-u>call go#textobj#Function('i')<cr>
-    xnoremap <buffer> if :<c-u>call go#textobj#Function('i')<cr>
+    onoremap <buffer> <silent> af :<c-u>call go#textobj#Function('a')<cr>
+    onoremap <buffer> <silent> if :<c-u>call go#textobj#Function('i')<cr>
+
+    xnoremap <buffer> <silent> af :<c-u>call go#textobj#Function('a')<cr>
+    xnoremap <buffer> <silent> if :<c-u>call go#textobj#Function('i')<cr>
+
+    " Remap ]] and [[ to jump betweeen functions as they are useless in Go
+    nnoremap <buffer> <silent> ]] :<c-u>call go#textobj#FunctionJump('n', 'next')<cr>
+    nnoremap <buffer> <silent> [[ :<c-u>call go#textobj#FunctionJump('n', 'prev')<cr>
+
+    onoremap <buffer> <silent> ]] :<c-u>call go#textobj#FunctionJump('o', 'next')<cr>
+    onoremap <buffer> <silent> [[ :<c-u>call go#textobj#FunctionJump('o', 'prev')<cr>
+
+    xnoremap <buffer> <silent> ]] :<c-u>call go#textobj#FunctionJump('v', 'next')<cr>
+    xnoremap <buffer> <silent> [[ :<c-u>call go#textobj#FunctionJump('v', 'prev')<cr>
 endif
 
 if get(g:, "go_auto_type_info", 0)

@@ -9,6 +9,8 @@ disabled/enabled easily.
 
 ![vim-go](https://dl.dropboxusercontent.com/u/174404/vim-go-2.png)
 
+
+
 ## Features
 
 * Improved Syntax highlighting with items such as Functions, Operators, Methods.
@@ -48,6 +50,12 @@ disabled/enabled easily.
 * Integrated with the Neovim terminal, launch `:GoRun` and other go commands
   in their own new terminal. (beta)
 * Alternate between implementation and test code with `:GoAlternate`
+
+## Donation
+
+People have asked for this for a long time, now you can be a fully supporter by [being a patron](https://www.patreon.com/fatih)! This is fully optional and is just a way to support vim-go's ongoing development directly. Thanks!
+
+[https://www.patreon.com/fatih](https://www.patreon.com/fatih)
 
 ## Install
 

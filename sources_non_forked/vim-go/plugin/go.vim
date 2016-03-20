@@ -18,6 +18,7 @@ let s:packages = [
             \ "github.com/kisielk/errcheck",
             \ "github.com/jstemmer/gotags",
             \ "github.com/klauspost/asmfmt/cmd/asmfmt",
+            \ "github.com/fatih/motion",
             \ ]
 
 " These commands are available on any filetypes

@@ -62,15 +62,6 @@ func! s:loclistSecond(output)
     call go#list#Window("locationlist", len(errors))
 endfun
 
-func! s:getpos(l, c)
-    if &encoding != 'utf-8'
-        let buf = a:l == 1 ? '' : (join(getline(1, a:l-1), "\n") . "\n")
-        let buf .= a:c == 1 ? '' : getline('.')[:a:c-2]
-        return len(iconv(buf, &encoding, 'utf-8'))
-    endif
-    return line2byte(a:l) + (a:c-2)
-endfun
-
 func! s:RunOracle(mode, selected, needs_package) range abort
     let fname = expand('%:p')
     let dname = expand('%:p:h')
@@ -102,13 +93,13 @@ func! s:RunOracle(mode, selected, needs_package) range abort
     endif
 
     if a:selected != -1
-        let pos1 = s:getpos(line("'<"), col("'<"))
-        let pos2 = s:getpos(line("'>"), col("'>"))
+        let pos1 = go#util#Offset(line("'<"), col("'<"))
+        let pos2 = go#util#Offset(line("'>"), col("'>"))
         let cmd = printf('%s -format plain -pos=%s:#%d,#%d -tags=%s %s',
                     \  bin_path,
                     \  shellescape(fname), pos1, pos2, tags, a:mode)
     else
-        let pos = s:getpos(line('.'), col('.'))
+        let pos = go#util#OffsetCursor()
         let cmd = printf('%s -format plain -pos=%s:#%d -tags=%s %s',
                     \  bin_path,
                     \  shellescape(fname), pos, tags, a:mode)
