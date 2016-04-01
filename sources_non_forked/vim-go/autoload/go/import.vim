@@ -165,7 +165,7 @@ function! go#import#SwitchImport(enabled, localname, path, bang)
             call append(appendline, appendstr)
             execute appendline + 1
             if indentstr
-                execute 'normal >>'
+                execute 'normal! >>'
             endif
             let linesdelta += 1
         endif

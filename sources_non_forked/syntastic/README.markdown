@@ -35,7 +35,7 @@
 4.8. [How can I pass additional arguments to a checker?](#faqargs)  
 4.9. [Syntastic supports several checkers for my filetype - how do I tell which one(s) to use?](#faqcheckers)  
 4.10. [What is the difference between syntax checkers and style checkers?](#faqstyle)  
-4.11. [I have enabled multiple checkers for the current filetype.  How can I display all errors from all checkers together?](#faqaggregate)  
+4.11. [I have enabled multiple checkers for the current filetype. How can I display all errors from all checkers together?](#faqaggregate)  
 4.12. [How can I jump between the different errors without using the location list at the bottom of the window?](#faqlnext)  
 4.13. [The error window is closed automatically when I :quit the current buffer but not when I :bdelete it?](#faqbdelete)  
 5. [Resources](#otherresources)  
@@ -54,17 +54,17 @@ compile their code or execute their script to find them.
 
 At the time of this writing, syntastic has checking plugins for ActionScript,
 Ada, Ansible configurations, API Blueprint, AppleScript, AsciiDoc, ASM,
-BEMHTML, Bro, Bourne shell, C, C++, C#, Cabal, Chef, CoffeeScript, Coco, Coq,
-CSS, Cucumber, CUDA, D, Dart, DocBook, Dockerfile, Dust, Elixir, Erlang,
-eRuby, Fortran, Gentoo metadata, GLSL, Go, Haml, Haskell, Haxe, Handlebars,
-HSS, HTML, Jade, Java, JavaScript, JSON, JSX, LESS, Lex, Limbo, LISP, LLVM
-intermediate language, Lua, Markdown, MATLAB, Mercury, NASM, Nix, Objective-C,
-Objective-C++, OCaml, Perl, Perl POD, PHP, gettext Portable Object, OS X and
-iOS property lists, Puppet, Python, QML, R, Racket, Relax NG, reStructuredText,
-RPM spec, Ruby, SASS/SCSS, Scala, Slim, SML, Sphinx, SQL, Stylus, Tcl, TeX,
-Texinfo, Twig, TypeScript, Vala, Verilog, VHDL, VimL, xHtml, XML, XSLT, XQuery,
-YACC, YAML, z80, Zope page templates, and zsh.  See the [wiki][3] for details
-about the corresponding supported checkers.
+BEMHTML, Bro, Bourne shell, C, C++, C#, Cabal, Chef, CoffeeScript, Coco,
+Coq, CSS, Cucumber, CUDA, D, Dart, DocBook, Dockerfile, Dust, Elixir,
+Erlang, eRuby, Fortran, Gentoo metadata, GLSL, Go, Haml, Haskell, Haxe,
+Handlebars, HSS, HTML, Java, JavaScript, JSON, JSX, LESS, Lex, Limbo, LISP,
+LLVM intermediate language, Lua, Markdown, MATLAB, Mercury, NASM, Nix,
+Objective-C, Objective-C++, OCaml, Perl, Perl POD, PHP, gettext Portable
+Object, OS X and iOS property lists, Pug (formerly Jade), Puppet, Python, QML,
+R, Racket, Relax NG, reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim,
+SML, Sphinx, SQL, Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog,
+VHDL, VimL, xHtml, XML, XSLT, XQuery, YACC, YAML, z80, Zope page templates, and
+zsh. See the [wiki][3] for details about the corresponding supported checkers.
 
 A number of third-party Vim plugins also provide checkers for syntastic,
 for example: [merlin][30], [omnisharp-vim][25], [rust.vim][12],
@@ -72,7 +72,7 @@ for example: [merlin][30], [omnisharp-vim][25], [rust.vim][12],
 [vim-eastwood][28], and [vim-swift][24].
 
 Below is a screenshot showing the methods that Syntastic uses to display syntax
-errors.  Note that, in practise, you will only have a subset of these methods
+errors. Note that, in practise, you will only have a subset of these methods
 enabled.
 
 ![Screenshot 1][0]
@@ -105,6 +105,12 @@ Syntastic should work with any modern plugin managers for Vim, such as
 [Vundle][17]. Instructions for installing syntastic with [Pathogen][1] are
 included below for completeness.
 
+Starting with Vim version 7.4.1486 you can also load syntastic using the
+standard mechanism of packages, without the help of third-party plugin managers
+(see `:help packages` in Vim for details). Beware however that, while support
+for packages has been added in Vim 7.4.1384, the functionality needed by
+syntastic is present only in versions 7.4.1486 and later.
+
 Last but not least: syntastic doesn't know how to do any syntax checks by
 itself. In order to get meaningful results you need to install external
 checkers corresponding to the types of files you use. Please consult the
@@ -122,7 +128,7 @@ If you already have [Pathogen][1] working then skip [Step 1](#step1) and go to
 #### 2.2.1\. Step 1: Install pathogen.vim
 
 First I'll show you how to install Tim Pope's [Pathogen][1] so that it's easy to
-install syntastic.  Do this in your terminal so that you get the `pathogen.vim`
+install syntastic. Do this in your terminal so that you get the `pathogen.vim`
 file and the directories it needs:
 ```sh
 mkdir -p ~/.vim/autoload ~/.vim/bundle && \
@@ -148,7 +154,7 @@ Quit vim and start it back up to reload it, then type:
 :Helptags
 ```
 If you get an error when you do this, then you probably didn't install
-[Pathogen][1] right.  Go back to [Step 1](#step1) and make sure you did the
+[Pathogen][1] right. Go back to [Step 1](#step1) and make sure you did the
 following:
 
 1. Created both the `~/.vim/autoload` and `~/.vim/bundle` directories.
@@ -161,7 +167,7 @@ following:
 ## 3\. Recommended settings
 
 Syntastic has numerous options that can be configured, and the defaults
-are not particularly well suitable for new users.  It is recommended
+are not particularly well suitable for new users. It is recommended
 that you start by adding the following lines to your `vimrc` file, and
 return to them after reading the manual (see `:help syntastic` in Vim):
 ```vim
@@ -231,8 +237,8 @@ let g:syntastic_python_python_exec = '/path/to/python3'
 
 __4.3. Q. Are there any local checkers for HTML5 that I can use with syntastic?__
 
-[HTML Tidy][18] has a fork named [HTML Tidy for HTML5][19].  It's a drop
-in replacement, and syntastic can use it without changes.  Just install it
+[HTML Tidy][18] has a fork named [HTML Tidy for HTML5][19]. It's a drop
+in replacement, and syntastic can use it without changes. Just install it
 somewhere and point `g:syntastic_html_tidy_exec` to its executable:
 ```vim
 let g:syntastic_html_tidy_exec = 'tidy5'
@@ -253,12 +259,12 @@ __4.4. Q. The `perl` checker has stopped working...__
 
 A. The `perl` checker runs `perl -c` against your file, which in turn
 __executes__ any `BEGIN`, `UNITCHECK`, and `CHECK` blocks, and any `use`
-statements in your file (cf. [perlrun][10]).  This is probably fine if you
-wrote the file yourself, but it's a security problem if you're checking third
-party files.  Since there is currently no way to disable this behaviour while
-still producing useful results, the checker is now disabled by default.  To
-(re-)enable it, make sure the `g:syntastic_perl_checkers` list includes `perl`,
-and set `g:syntastic_enable_perl_checker` to 1 in your `vimrc`:
+statements in your file (cf. [perlrun][10]). This is probably fine if you
+wrote the file yourself, but it's a security problem if you're checking
+third-party files. Since there is currently no way to disable this behaviour
+while still producing useful results, the checker is now disabled by default.
+To (re-)enable it, make sure the `g:syntastic_perl_checkers` list includes
+`perl`, and set `g:syntastic_enable_perl_checker` to 1 in your `vimrc`:
 ```vim
 let g:syntastic_enable_perl_checker = 1
 ```
@@ -267,7 +273,7 @@ let g:syntastic_enable_perl_checker = 1
 
 __4.5. Q. What happened to the `rustc` checker?__
 
-A. It is now part of the [rust.vim][12] plugin.  If you install this plugin the
+A. It is now part of the [rust.vim][12] plugin. If you install this plugin the
 checker should be picked up automatically by syntastic.
 
 <a name="faqxcrun"></a>
@@ -275,7 +281,7 @@ checker should be picked up automatically by syntastic.
 __4.6. Q. What happened to the `xcrun` checker?__
 
 A. The `xcrun` checker used to have a security problem and it has been removed.
-A better checker for __Swift__ is part of the [vim-swift][24] plugin.  If you
+A better checker for __Swift__ is part of the [vim-swift][24] plugin. If you
 install this plugin the checker should be picked up automatically by syntastic.
 
 <a name="faqloclist"></a>
@@ -284,7 +290,7 @@ __4.7. Q. I run a checker and the location list is not updated...__
 __4.7. Q. I run`:lopen` or `:lwindow` and the error window is empty...__
 
 A. By default the location list is changed only when you run the `:Errors`
-command, in order to minimise conflicts with other plugins.  If you want the
+command, in order to minimise conflicts with other plugins. If you want the
 location list to always be updated when you run the checkers, add this line to
 your `vimrc`:
 ```vim
@@ -367,7 +373,7 @@ nature, produce both kinds of messages. Syntastic is not smart enough to be
 able to sort out these things by itself.
 
 In fact it's more useful to look at this from the perspective of filtering
-unwanted messages, rather than as an indicator of severity levels.  The
+unwanted messages, rather than as an indicator of severity levels. The
 distinction between syntax and style is orthogonal to the distinction between
 errors and warnings, and thus you can turn off messages based on level, on
 type, or both.
@@ -380,7 +386,7 @@ See `:help syntastic_quiet_messages` for details.
 
 <a name="faqaggregate"></a>
 
-__4.11. Q. I have enabled multiple checkers for the current filetype.  How can I
+__4.11. Q. I have enabled multiple checkers for the current filetype. How can I
 display all errors from all checkers together?__
 
 A. Set `g:syntastic_aggregate_errors` to 1 in your `vimrc`:
@@ -426,8 +432,8 @@ There are also a dedicated [google group][5], and a
 [syntastic tag at StackOverflow][6].
 
 Syntastic aims to provide a common interface to syntax checkers for as many
-languages as possible.  For particular languages, there are, of course, other
-plugins that provide more functionality than syntastic.  You might want to take
+languages as possible. For particular languages, there are, of course, other
+plugins that provide more functionality than syntastic. You might want to take
 a look at [ghcmod-vim][31], [jedi-vim][7], [python-mode][8], [vim-go][32], or
 [YouCompleteMe][9].
 

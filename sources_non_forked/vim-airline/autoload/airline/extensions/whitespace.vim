@@ -1,22 +1,18 @@
-" MIT License. Copyright (c) 2013-2015 Bailey Ling.
+" MIT License. Copyright (c) 2013-2016 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 " http://got-ravings.blogspot.com/2008/10/vim-pr0n-statusline-whitespace-flags.html
 
-" for backwards compatibility
-if exists('g:airline_detect_whitespace')
-  let s:show_message = g:airline_detect_whitespace == 1
-else
-  let s:show_message = get(g:, 'airline#extensions#whitespace#show_message', 1)
-endif
-
+let s:show_message = get(g:, 'airline#extensions#whitespace#show_message', 1)
 let s:symbol = get(g:, 'airline#extensions#whitespace#symbol', g:airline_symbols.whitespace)
-let s:default_checks = ['indent', 'trailing']
+let s:default_checks = ['indent', 'trailing', 'mixed-indent-file']
 
 let s:trailing_format = get(g:, 'airline#extensions#whitespace#trailing_format', 'trailing[%s]')
 let s:mixed_indent_format = get(g:, 'airline#extensions#whitespace#mixed_indent_format', 'mixed-indent[%s]')
 let s:long_format = get(g:, 'airline#extensions#whitespace#long_format', 'long[%s]')
+let s:mixed_indent_file_format = get(g:, 'airline#extensions#whitespace#mixed_indent_file_format', 'mix-indent-file[%s]')
 let s:indent_algo = get(g:, 'airline#extensions#whitespace#mixed_indent_algo', 0)
+let s:skip_check_ft = {'make': ['indent', 'mixed-indent-file'] }
 
 let s:max_lines = get(g:, 'airline#extensions#whitespace#max_lines', 20000)
 
@@ -38,6 +34,22 @@ function! s:check_mixed_indent()
   endif
 endfunction
 
+function! s:check_mixed_indent_file()
+  if stridx(&ft, 'c') == 0 || stridx(&ft, 'cpp') == 0 || stridx(&ft, 'javascript') == 0
+    " for C/CPP only allow /** */ comment style with one space before the '*'
+    let head_spc = '\v(^ +\*@!)'
+  else
+    let head_spc = '\v(^ +)'
+  endif
+  let indent_tabs = search('\v(^\t+)', 'nw')
+  let indent_spc  = search(head_spc, 'nw')
+  if indent_tabs > 0 && indent_spc > 0
+    return printf("%d:%d", indent_tabs, indent_spc)
+  else
+    return ''
+  endif
+endfunction
+
 function! airline#extensions#whitespace#check()
   if &readonly || !&modifiable || !s:enabled || line('$') > s:max_lines
     return ''
@@ -49,12 +61,26 @@ function! airline#extensions#whitespace#check()
 
     let trailing = 0
     if index(checks, 'trailing') > -1
-      let trailing = search('\s$', 'nw')
+      try
+        let regexp = get(g:, 'airline#extensions#whitespace#trailing_regexp', '\s$')
+        let trailing = search(regexp, 'nw')
+      catch
+        echomsg 'airline#whitespace: error occured evaluating '. regexp
+        echomsg v:exception
+        return ''
+      endtry
     endif
 
     let mixed = 0
-    if index(checks, 'indent') > -1
+    let check = 'indent'
+    if index(checks, check) > -1 && index(get(s:skip_check_ft, &ft, []), check) < 0
       let mixed = s:check_mixed_indent()
+    endif
+
+    let mixed_file = ''
+    let check = 'mixed-indent-file'
+    if index(checks, check) > -1 && index(get(s:skip_check_ft, &ft, []), check) < 0
+      let mixed_file = s:check_mixed_indent_file()
     endif
 
     let long = 0
@@ -62,7 +88,7 @@ function! airline#extensions#whitespace#check()
       let long = search('\%>'.&tw.'v.\+', 'nw')
     endif
 
-    if trailing != 0 || mixed != 0 || long != 0
+    if trailing != 0 || mixed != 0 || long != 0 || !empty(mixed_file)
       let b:airline_whitespace_check = s:symbol
       if s:show_message
         if trailing != 0
@@ -73,6 +99,9 @@ function! airline#extensions#whitespace#check()
         endif
         if long != 0
           let b:airline_whitespace_check .= (g:airline_symbols.space).printf(s:long_format, long)
+        endif
+        if !empty(mixed_file)
+          let b:airline_whitespace_check .= (g:airline_symbols.space).printf(s:mixed_indent_file_format, mixed_file)
         endif
       endif
     endif

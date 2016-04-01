@@ -53,26 +53,6 @@ snippet dfr
 			${0}
 		}
 	}()
-# gpl
-snippet gpl
-	/*
-	 * This program is free software; you can redistribute it and/or modify
-	 * it under the terms of the GNU General Public License as published by
-	 * the Free Software Foundation; either version 2 of the License, or
-	 * (at your option) any later version.
-	 *
-	 * This program is distributed in the hope that it will be useful,
-	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 * GNU General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU General Public License
-	 * along with this program; if not, see <http://www.gnu.org/licenses/>.
-	 *
-	 * Copyright (C) ${1:Author}, `strftime("%Y")`
-	 */
-
-	${0}
 # int
 snippet i
 	int
@@ -93,6 +73,12 @@ snippet inf
 snippet if
 	if ${1:/* condition */} {
 		${2}
+	}
+snippet ife
+	if ${1:/* condition */} {
+		${2}
+	} else {
+		${0}
 	}
 # else snippet
 snippet el
@@ -128,18 +114,21 @@ snippet ie
 		${3}
 	}
 	${0}
-# for loop
-snippet fo
+# for int loop
+snippet for
+	for ${1}{
+		${0}
+	}
+# for int loop
+snippet fori
 	for ${2:i} := 0; $2 < ${1:count}; $2${3:++} {
-		${4}
+		${0}
 	}
-	${0}
 # for range loop
-snippet fr
-	for ${1:k}, ${2:v} := range ${3} {
-		${4}
+snippet forr
+	for ${1:e} := range ${2:collection} {
+		${0}
 	}
-	${0}
 # function simple
 snippet fun
 	func ${1:funcName}(${2}) ${3:error} {
@@ -196,8 +185,6 @@ snippet sl
 	select {
 	case ${1:v1} := <-${2:chan1}
 		${3}
-	case ${4:v2} := <-${5:chan2}
-		${6}
 	default:
 		${0}
 	}
@@ -228,7 +215,7 @@ snippet t
 # goroutine named function
 snippet g
 	go ${1:funcName}(${0})
-# goroutine anonymous function 
+# goroutine anonymous function
 snippet ga
 	go func(${1} ${2:type}) {
 		${3:/* code */}

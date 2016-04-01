@@ -1,58 +1,83 @@
-snippet cmake
-	CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-	PROJECT(${1:ProjectName})
+snippet init
+	cmake_minimum_required(version ${1:2.8.2})
+	project(${2:ProjectName})
 
-	FIND_PACKAGE(${2:LIBRARY})
+	find_package(${3:library})
 
-	INCLUDE_DIRECTORIES(
-		${$2_INCLUDE_DIR}
-	)
+	include_directories(${$3_INCLUDE_DIRS})
 
-	ADD_SUBDIRECTORY(${0:src})
+	add_subdirectory(${0:src})
 
-	ADD_EXECUTABLE($1)
+	add_executable($2)
 
-	TARGET_LINK_LIBRARIES($1
-		${$2_LIBRARIES}
-	)
+	target_link_libraries($2 ${$3_LIBRARIES})
+
+snippet proj
+	project(${0:Name})
+
+snippet min
+	cmake_minimum_required(version ${0:2.8.2})
 
 snippet include
-	INCLUDE_DIRECTORIES(
-		${${0:INCLUDE_DIR}}
-	)
+	include_directories(${${0:include_dir}})
 
 snippet find
-	FIND_PACKAGE(${0:LIBRARY})
+	find_package(${1:library} ${0:REQUIRED})
 
 snippet glob
-	FILE(GLOB ${1:SRCS} *.${0:cpp})
+	file(glob ${1:srcs} *.${0:cpp})
 
 snippet subdir
-	ADD_SUBDIRECTORY(${0:src})
+	add_subdirectory(${0:src})
 
 snippet lib
-	ADD_LIBRARY(${1:lib} ${2:STATIC}
-		${${0:SRCS}}
-	)
+	add_library(${1:lib} ${${0:srcs}})
 
 snippet link
-	TARGET_LINK_LIBRARIES(${1:bin}
-		${0:somelib}
-	)
+	target_link_libraries(${1:bin} ${0:somelib})
 
 snippet bin
-	ADD_EXECUTABLE(${1:bin})
+	add_executable(${1:bin})
 
 snippet set
-	SET(${1:var} ${0:val})
+	set(${1:var} ${0:val})
 
 snippet dep
-	ADD_DEPENDENCIES(${1:target}
+	add_dependencies(${1:target}
 		${0:dep}
 	)
 
+snippet Ext_url
+	include(ExternalProject)
+	ExternalProject_Add(${1:googletest}
+	  URL ${2:http://googletest.googlecode.com/files/gtest-1.7.0.zip}
+	  URL_HASH SHA1=${3:f85f6d2481e2c6c4a18539e391aa4ea8ab0394af}
+	  SOURCE_DIR "${4:${CMAKE_BINARY_DIR}/gtest-src}"
+	  BINARY_DIR "${0:${CMAKE_BINARY_DIR}/gtest-build}"
+	  CONFIGURE_COMMAND ""
+	  BUILD_COMMAND     ""
+	  INSTALL_COMMAND   ""
+	  TEST_COMMAND      ""
+	)
+
+snippet Ext_git
+	include(ExternalProject)
+	ExternalProject_Add(${1:googletest}
+	  GIT_REPOSITORY    ${2:https://github.com/google/googletest.git}
+	  GIT_TAG           ${3:master}
+	  SOURCE_DIR        "${4:${CMAKE_BINARY_DIR}/googletest-src}"
+	  BINARY_DIR        "${0:${CMAKE_BINARY_DIR}/googletest-build}"
+	  CONFIGURE_COMMAND ""
+	  BUILD_COMMAND     ""
+	  INSTALL_COMMAND   ""
+	  TEST_COMMAND      ""
+	)
+
 snippet props
-	SET_TARGET_PROPERTIES(${1:target}
-		${2:PROPERTIES} ${3:COMPILE_FLAGS}
+	set_target_properties(${1:target}
+		${2:properties} ${3:compile_flags}
 		${0:"-O3 -Wall -pedantic"}
 	)
+
+snippet test
+	add_test(${1:ATestName} ${0:testCommand --options})

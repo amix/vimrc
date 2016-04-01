@@ -19,8 +19,12 @@ let g:loaded_syntastic_css_stylelint_checker = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:args_after = {
+    \ 'css':  '-f json',
+    \ 'scss': '-f json -s scss' }
+
 function! SyntaxCheckers_css_stylelint_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '-f json' })
+    let makeprg = self.makeprgBuild({ 'args_after': get(s:args_after, self.getFiletype(), '') })
 
     let errorformat = '%t:%f:%l:%c:%m'
 

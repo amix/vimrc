@@ -129,15 +129,6 @@ optional background search execution with [vim-dispatch], and auto-previewing.
 
 Please see [the Github releases page][releases].
 
-### 1.0.9 (unreleased)
-
-* Fix location list and layout of quickfix when using Dispatch (#154)
-* Fix the quick help overlay clobbering the list mappings
-* Fix `:AckFile` when using Dispatch
-* Restore original `'makeprg'` and `'errorformat'` when using Dispatch
-* Arrow keys also work for auto-preview (#158)
-* Internal refactoring and clean-up
-
 ## Credits
 
 This plugin is derived from Antoine Imbert's blog post [Ack and Vim

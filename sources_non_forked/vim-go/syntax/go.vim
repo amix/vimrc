@@ -12,7 +12,7 @@
 "     let OPTION_NAME = 1
 "   to enable particular options.
 "   At present, all options default to on, except highlight of:
-"   functions, methods and structs.
+"   functions, methods, structs, operators, build constraints and interfaces.
 "
 "   - go_highlight_array_whitespace_error
 "     Highlights white space after "[]".
@@ -69,12 +69,20 @@ if !exists("g:go_highlight_structs")
   let g:go_highlight_structs = 0
 endif
 
+if !exists("g:go_highlight_interfaces")
+  let g:go_highlight_interfaces = 0
+endif
+
 if !exists("g:go_highlight_build_constraints")
   let g:go_highlight_build_constraints = 0
 endif
 
 if !exists("g:go_highlight_string_spellcheck")
   let g:go_highlight_string_spellcheck = 1
+endif
+
+if !exists("g:go_highlight_generate_tags")
+  let g:go_highlight_generate_tags = 0
 endif
 
 syn case match
@@ -128,10 +136,17 @@ hi def link     goBoolean           Boolean
 syn keyword     goTodo              contained TODO FIXME XXX BUG
 syn cluster     goCommentGroup      contains=goTodo
 syn region      goComment           start="/\*" end="\*/" contains=@goCommentGroup,@Spell
-syn region      goComment           start="//" end="$" contains=@goCommentGroup,@Spell
+syn region      goComment           start="//" end="$" contains=goGenerate,@goCommentGroup,@Spell
 
 hi def link     goComment           Comment
 hi def link     goTodo              Todo
+
+if g:go_highlight_generate_tags != 0
+  syn match       goGenerateVariables contained /\(\$GOARCH\|\$GOOS\|\$GOFILE\|\$GOLINE\|\$GOPACKAGE\|\$DOLLAR\)\>/
+  syn region      goGenerate          start="^\s*//go:generate" end="$" contains=goGenerateVariables
+  hi def link     goGenerate          PreProc
+  hi def link     goGenerateVariables Special
+endif
 
 " Go escapes
 syn match       goEscapeOctal       display contained "\\[0-7]\{3}"
@@ -175,30 +190,31 @@ syn region      goBlock             start="{" end="}" transparent fold
 syn region      goParen             start='(' end=')' transparent
 
 " Integers
-syn match       goDecimalInt        "\<\d\+\([Ee]\d\+\)\?\>"
-syn match       goHexadecimalInt    "\<0x\x\+\>"
-syn match       goOctalInt          "\<0\o\+\>"
-syn match       goOctalError        "\<0\o*[89]\d*\>"
+syn match       goDecimalInt        "\<-\=\d\+\%([Ee][-+]\=\d\+\)\=\>"
+syn match       goHexadecimalInt    "\<-\=0[xX]\x\+\>"
+syn match       goOctalInt          "\<-\=0\o\+\>"
+syn match       goOctalError        "\<-\=0\o*[89]\d*\>"
 
 hi def link     goDecimalInt        Integer
 hi def link     goHexadecimalInt    Integer
 hi def link     goOctalInt          Integer
+hi def link     goOctalError        Error
 hi def link     Integer             Number
 
 " Floating point
-syn match       goFloat             "\<\d\+\.\d*\([Ee][-+]\d\+\)\?\>"
-syn match       goFloat             "\<\.\d\+\([Ee][-+]\d\+\)\?\>"
-syn match       goFloat             "\<\d\+[Ee][-+]\d\+\>"
+syn match       goFloat             "\<-\=\d\+\.\d*\%([Ee][-+]\=\d\+\)\=\>"
+syn match       goFloat             "\<-\=\.\d\+\%([Ee][-+]\=\d\+\)\=\>"
 
 hi def link     goFloat             Float
 
 " Imaginary literals
-syn match       goImaginary         "\<\d\+i\>"
-syn match       goImaginary         "\<\d\+\.\d*\([Ee][-+]\d\+\)\?i\>"
-syn match       goImaginary         "\<\.\d\+\([Ee][-+]\d\+\)\?i\>"
-syn match       goImaginary         "\<\d\+[Ee][-+]\d\+i\>"
+syn match       goImaginary         "\<-\=\d\+i\>"
+syn match       goImaginary         "\<-\=\d\+[Ee][-+]\=\d\+i\>"
+syn match       goImaginaryFloat    "\<-\=\d\+\.\d*\%([Ee][-+]\=\d\+\)\=i\>"
+syn match       goImaginaryFloat    "\<-\=\.\d\+\%([Ee][-+]\=\d\+\)\=i\>"
 
 hi def link     goImaginary         Number
+hi def link     goImaginaryFloat    Float
 
 " Spaces after "[]"
 if g:go_highlight_array_whitespace_error != 0
@@ -290,6 +306,14 @@ if g:go_highlight_structs != 0
 endif
 hi def link     goStruct            Function
 hi def link     goStructDef         Function
+
+" Interfaces;
+if g:go_highlight_interfaces != 0
+  syn match goInterface             /\(.\)\@<=\w\+\({\)\@=/
+  syn match goInterfaceDef          /\(type\s\+\)\@<=\w\+\(\s\+interface\s\+{\)\@=/
+endif
+hi def link     goInterface         Function
+hi def link     goInterfaceDef      Function
 
 " Build Constraints
 if g:go_highlight_build_constraints != 0

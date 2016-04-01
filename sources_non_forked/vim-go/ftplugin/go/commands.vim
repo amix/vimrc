@@ -16,12 +16,12 @@ command! -nargs=? GoOracleTags call go#oracle#Tags(<f-args>)
 " tool
 command! -nargs=0 GoFiles echo go#tool#Files()
 command! -nargs=0 GoDeps echo go#tool#Deps()
-command! -nargs=* GoInfo call go#complete#Info()
+command! -nargs=* GoInfo call go#complete#Info(0)
 
 " cmd
 command! -nargs=* -bang GoBuild call go#cmd#Build(<bang>0,<f-args>)
 command! -nargs=* -bang GoGenerate call go#cmd#Generate(<bang>0,<f-args>)
-command! -nargs=* -bang GoRun call go#cmd#Run(<bang>0,<f-args>)
+command! -nargs=* -bang -complete=file GoRun call go#cmd#Run(<bang>0,<f-args>)
 command! -nargs=* -bang GoInstall call go#cmd#Install(<bang>0, <f-args>)
 command! -nargs=* -bang GoTest call go#cmd#Test(<bang>0, 0, <f-args>)
 command! -nargs=* -bang GoTestFunc call go#cmd#TestFunc(<bang>0, <f-args>)
@@ -52,5 +52,14 @@ command! -nargs=* GoMetaLinter call go#lint#Gometa(0, <f-args>)
 command! -nargs=* GoLint call go#lint#Golint(<f-args>)
 command! -nargs=* -bang GoVet call go#lint#Vet(<bang>0, <f-args>)
 command! -nargs=* -complete=customlist,go#package#Complete GoErrCheck call go#lint#Errcheck(<f-args>)
+
+" -- alternate
+command! -bang GoAlternate call go#alternate#Switch(<bang>0, '')
+
+" -- ctrlp
+if globpath(&rtp, 'plugin/ctrlp.vim') != ""
+  command! -nargs=? -complete=file GoDecls call ctrlp#init(ctrlp#decls#cmd(0, <q-args>))
+  command! -nargs=? -complete=dir GoDeclsDir call ctrlp#init(ctrlp#decls#cmd(1, <q-args>))
+endif
 
 " vim:ts=4:sw=4:et

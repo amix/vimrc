@@ -185,7 +185,7 @@ ${1:FIELDNAME} = models.DateTimeField($2)
 endsnippet
 
 snippet mdecimal "DecimalField" b
-${1:FIELDNAME} = models.DateTimeField($2)
+${1:FIELDNAME} = models.DecimalField(max_digits=${2:10}, decimal_places=${3:2})
 endsnippet
 
 snippet memail "EmailField" b

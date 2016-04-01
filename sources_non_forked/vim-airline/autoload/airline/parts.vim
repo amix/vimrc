@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2015 Bailey Ling.
+" MIT License. Copyright (c) 2013-2016 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 let s:parts = {}
@@ -70,7 +70,11 @@ function! airline#parts#iminsert()
 endfunction
 
 function! airline#parts#readonly()
-  return &readonly ? g:airline_symbols.readonly : ''
+  if &readonly && &modifiable && !filereadable(bufname('%'))
+    return '[noperm]'
+  else
+    return &readonly ? g:airline_symbols.readonly : ''
+  endif
 endfunction
 
 function! airline#parts#filetype()
@@ -78,6 +82,6 @@ function! airline#parts#filetype()
 endfunction
 
 function! airline#parts#ffenc()
-  return printf('%s%s', &fenc, strlen(&ff) > 0 ? '['.&ff.']' : '')
+  return printf('%s%s%s', &fenc, &l:bomb ? '[BOM]' : '', strlen(&ff) > 0 ? '['.&ff.']' : '')
 endfunction
 

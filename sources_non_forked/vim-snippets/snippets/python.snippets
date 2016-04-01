@@ -128,31 +128,43 @@ snippet _
 	__${1:init}__
 # python debugger (pdb)
 snippet pdb
-	import pdb; pdb.set_trace()
+	import pdb
+	pdb.set_trace()
+# bpython debugger (bpdb)
+snippet bpdb
+	import bpdb
+	bpdb.set_trace()
 # ipython debugger (ipdb)
 snippet ipdb
-	import ipdb; ipdb.set_trace()
+	import ipdb
+	ipdb.set_trace()
 # embed ipython itself
 snippet iem
-	import IPython; IPython.embed()
+	import IPython
+	IPython.embed()
 # ipython debugger (pdbbb)
 snippet pdbbb
-	import pdbpp; pdbpp.set_trace()
+	import pdbpp
+	pdbpp.set_trace()
 # remote python debugger (rpdb)
 snippet rpdb
-	import rpdb; rpdb.set_trace()
+	import rpdb
+	rpdb.set_trace()
 # ptpython
 snippet ptpython
 	from ptpython.repl import embed
 	embed(globals(), locals(), vi_mode=${1:False}, history_filename=${2:None})
 # python console debugger (pudb)
 snippet pudb
-	import pudb; pudb.set_trace()
+	import pudb
+	pudb.set_trace()
 # pdb in nosetests
 snippet nosetrace
-	from nose.tools import set_trace; set_trace()
+	from nose.tools import set_trace
+	set_trace()
 snippet pprint
-	import pprint; pprint.pprint(${1})
+	import pprint
+	pprint.pprint(${1})
 snippet "
 	"""${0:doc}
 	"""

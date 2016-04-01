@@ -33,8 +33,8 @@ function! s:get_color(group, attr)
 endfunction
 
 function! s:set_color(group, attr, color)
-  let gui = has('gui_running')
-  execute printf("hi %s %s%s=%s", a:group, gui ? 'gui' : 'cterm', a:attr, a:color)
+  let gui = a:color =~ '^#'
+  execute printf('hi %s %s%s=%s', a:group, gui ? 'gui' : 'cterm', a:attr, a:color)
 endfunction
 
 function! s:blank(repel)
@@ -106,7 +106,7 @@ function! s:resize_pads()
 endfunction
 
 function! s:tranquilize()
-  let bg = s:get_color('Normal', 'bg')
+  let bg = s:get_color('Normal', 'bg#')
   for grp in ['NonText', 'FoldColumn', 'ColorColumn', 'VertSplit',
             \ 'StatusLine', 'StatusLineNC', 'SignColumn']
     " -1 on Vim / '' on GVim
@@ -207,13 +207,13 @@ function! s:goyo_on(dim)
   endif
 
   " vim-airline
-  let t:goyo_disabled_airline = exists("#airline")
+  let t:goyo_disabled_airline = exists('#airline')
   if t:goyo_disabled_airline
     AirlineToggle
   endif
 
   " vim-powerline
-  let t:goyo_disabled_powerline = exists("#PowerlineMain")
+  let t:goyo_disabled_powerline = exists('#PowerlineMain')
   if t:goyo_disabled_powerline
     augroup PowerlineMain
       autocmd!
@@ -222,7 +222,7 @@ function! s:goyo_on(dim)
   endif
 
   " lightline.vim
-  let t:goyo_disabled_lightline = exists('#LightLine')
+  let t:goyo_disabled_lightline = exists('#lightline')
   if t:goyo_disabled_lightline
     silent! call lightline#disable()
   endif
@@ -330,7 +330,7 @@ function! s:goyo_off()
   let &winheight    = wh
 
   for [k, v] in items(goyo_revert)
-    execute printf("let &%s = %s", k, string(v))
+    execute printf('let &%s = %s', k, string(v))
   endfor
   execute 'colo '. get(g:, 'colors_name', 'default')
 
@@ -344,7 +344,7 @@ function! s:goyo_off()
     endif
   endif
 
-  if goyo_disabled_airline && !exists("#airline")
+  if goyo_disabled_airline && !exists('#airline')
     AirlineToggle
     " For some reason, Airline requires two refreshes to avoid display
     " artifacts
@@ -352,7 +352,7 @@ function! s:goyo_off()
     silent! AirlineRefresh
   endif
 
-  if goyo_disabled_powerline && !exists("#PowerlineMain")
+  if goyo_disabled_powerline && !exists('#PowerlineMain')
     doautocmd PowerlineStartup VimEnter
     silent! PowerlineReloadColorscheme
   endif

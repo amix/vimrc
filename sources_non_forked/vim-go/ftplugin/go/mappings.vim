@@ -5,17 +5,16 @@
 " which by default is enabled. For commands the user has the ability to pass
 " the '!', such as :GoBuild or :GoBuild!
 if !exists("g:go_jump_to_error")
-    let g:go_jump_to_error = 1
+	let g:go_jump_to_error = 1
 endif
 
-
 " Some handy plug mappings
-nnoremap <silent> <Plug>(go-run) :<C-u>call go#cmd#Run(!g:go_jump_to_error, '%')<CR>
+nnoremap <silent> <Plug>(go-run) :<C-u>call go#cmd#Run(!g:go_jump_to_error)<CR>
 
 if has("nvim")
-	nnoremap <silent> <Plug>(go-run-vertical) :<C-u>call go#cmd#RunTerm('vsplit')<CR>
-	nnoremap <silent> <Plug>(go-run-split) :<C-u>call go#cmd#RunTerm('split')<CR>
-	nnoremap <silent> <Plug>(go-run-tab) :<C-u>call go#cmd#RunTerm('tab')<CR>
+	nnoremap <silent> <Plug>(go-run-vertical) :<C-u>call go#cmd#RunTerm(!g:go_jump_to_error, 'vsplit', [])<CR>
+	nnoremap <silent> <Plug>(go-run-split) :<C-u>call go#cmd#RunTerm(!g:go_jump_to_error, 'split', [])<CR>
+	nnoremap <silent> <Plug>(go-run-tab) :<C-u>call go#cmd#RunTerm(!g:go_jump_to_error, 'tabe', [])<CR>
 endif
 
 nnoremap <silent> <Plug>(go-build) :<C-u>call go#cmd#Build(!g:go_jump_to_error)<CR>
@@ -28,7 +27,7 @@ nnoremap <silent> <Plug>(go-coverage) :<C-u>call go#cmd#Coverage(!g:go_jump_to_e
 
 nnoremap <silent> <Plug>(go-files) :<C-u>call go#tool#Files()<CR>
 nnoremap <silent> <Plug>(go-deps) :<C-u>call go#tool#Deps()<CR>
-nnoremap <silent> <Plug>(go-info) :<C-u>call go#complete#Info()<CR>
+nnoremap <silent> <Plug>(go-info) :<C-u>call go#complete#Info(0)<CR>
 nnoremap <silent> <Plug>(go-import) :<C-u>call go#import#SwitchImport(1, '', expand('<cword>'), '')<CR>
 
 nnoremap <silent> <Plug>(go-implements) :<C-u>call go#oracle#Implements(-1)<CR>
@@ -56,4 +55,6 @@ nnoremap <silent> <Plug>(go-doc-browser) :<C-u>call go#doc#OpenBrowser()<CR>
 nnoremap <silent> <Plug>(go-metalinter) :<C-u>call go#lint#Gometa(0)<CR>
 nnoremap <silent> <Plug>(go-vet) :<C-u>call go#lint#Vet(!g:go_jump_to_error)<CR>
 
-
+nnoremap <silent> <Plug>(go-alternate-edit) :<C-u>call go#alternate#Switch(0, "edit")<CR>
+nnoremap <silent> <Plug>(go-alternate-vertical) :<C-u>call go#alternate#Switch(0, "vsplit")<CR>
+nnoremap <silent> <Plug>(go-alternate-split) :<C-u>call go#alternate#Switch(0, "split")<CR>

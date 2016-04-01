@@ -17,6 +17,8 @@ let s:packages = [
             \ "github.com/golang/lint/golint",
             \ "github.com/kisielk/errcheck",
             \ "github.com/jstemmer/gotags",
+            \ "github.com/klauspost/asmfmt/cmd/asmfmt",
+            \ "github.com/fatih/motion",
             \ ]
 
 " These commands are available on any filetypes
@@ -119,18 +121,46 @@ endfunction
 
 " Autocommands
 " ============================================================================
+"
+function! s:echo_go_info()
+    if !exists('v:completed_item') || empty(v:completed_item)
+        return
+    endif
+    let item = v:completed_item
+
+    if !has_key(item, "info")
+        return
+    endif
+
+    if empty(item.info)
+        return
+    endif
+
+    redraws! | echo "vim-go: " | echohl Function | echon item.info | echohl None
+endfunction
 
 augroup vim-go
     autocmd!
 
     " GoInfo automatic update
     if get(g:, "go_auto_type_info", 0)
-        autocmd CursorHold *.go nested call go#complete#Info()
+        autocmd CursorHold *.go nested call go#complete#Info(1)
     endif
 
-    " code formatting on save
+    " Echo the identifier information when completion is done. Useful to see
+    " the signature of a function, etc...
+    if exists('##CompleteDone')
+        autocmd CompleteDone *.go nested call s:echo_go_info()
+    endif
+
+    " Go code formatting on save
     if get(g:, "go_fmt_autosave", 1)
         autocmd BufWritePre *.go call go#fmt#Format(-1)
+    endif
+
+    " Go asm formatting on save
+    if get(g:, "go_asmfmt_autosave", 1)
+        autocmd BufWritePre *.s call go#asmfmt#Format()
     endif
 
     " run gometalinter on save
