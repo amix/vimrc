@@ -131,6 +131,10 @@ function! airline#extensions#tabline#title(n)
     let title = TabooTabTitle(a:n)
   endif
 
+  if empty(title) && exists('*gettabvar')
+    let title = gettabvar(a:n, 'title')
+  endif
+
   if empty(title)
     let buflist = tabpagebuflist(a:n)
     let winnr = tabpagewinnr(a:n)

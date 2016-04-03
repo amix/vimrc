@@ -175,6 +175,10 @@ function! airline#check_mode(winnr)
     call add(l:mode, 'crypt')
   endif
 
+  if g:airline_detect_spell && &spell
+    call add(l:mode, 'spell')
+  endif
+
   if &readonly || ! &modifiable
     call add(l:mode, 'readonly')
   endif

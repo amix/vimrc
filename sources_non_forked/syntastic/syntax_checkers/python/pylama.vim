@@ -49,7 +49,7 @@ function! SyntaxCheckers_python_pylama_GetLocList() dict
     " adjust for weirdness in each checker
     for e in loclist
         let e['type'] = e['text'] =~? '\m^[RCW]' ? 'W' : 'E'
-        if e['text'] =~# '\v\[%(mccabe|pep257|pylint)\]$'
+        if e['text'] =~# '\v\[%(isort|mccabe|pep257|pylint)\]$'
             if has_key(e, 'col')
                 let e['col'] += 1
             endif
@@ -59,7 +59,7 @@ function! SyntaxCheckers_python_pylama_GetLocList() dict
                 let e['vcol'] = 0
             endif
         endif
-        if e['text'] =~# '\v\[%(mccabe|pep257|pep8)\]$'
+        if e['text'] =~# '\v\[%(isort|mccabe|pep257|pep8)\]$'
             let e['subtype'] = 'Style'
         endif
     endfor
