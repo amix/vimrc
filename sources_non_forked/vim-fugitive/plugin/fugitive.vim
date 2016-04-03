@@ -1568,6 +1568,7 @@ function! s:Write(force,...) abort
 
   unlet! restorewinnr
   let zero = s:repo().translate(':0:'.path)
+  silent execute 'doautocmd BufWritePost' s:fnameescape(zero)
   for tab in range(1,tabpagenr('$'))
     for winnr in range(1,tabpagewinnr(tab,'$'))
       let bufnr = tabpagebuflist(tab)[winnr-1]

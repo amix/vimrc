@@ -1,10 +1,10 @@
+### Actual behavior
+
+Write here what's happening ...
+
 ### Expected behavior
 
 Write here what you're expecting ...
-
-### Actual behavior
-
-Write here what happens instead ...
 
 ### Steps to reproduce:
 
@@ -18,13 +18,11 @@ enabled:
 
 ### Configuration
 
-#### `vimrc` you used to reproduce:
+Add here your current configuration and additional information that might be
+useful, such as:
 
-#### vim version: 
-
-#### vim-go version:
-
-#### go version:
-
-
+* `vimrc` you used to reproduce
+* vim version:
+* vim-go version
+* go version
 
