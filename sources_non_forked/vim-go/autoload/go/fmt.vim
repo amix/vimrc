@@ -127,7 +127,10 @@ function! go#fmt#Format(withGoimport)
         endif
 
         if exists('b:goimports_vendor_compatible') && b:goimports_vendor_compatible
-            let command  = command . '-srcdir ' . fnameescape(expand("%:p:h"))
+            let ssl_save = &shellslash
+            set noshellslash
+            let command  = command . '-srcdir ' . shellescape(expand("%:p:h"))
+            let &shellslash = ssl_save
         endif
     endif
 

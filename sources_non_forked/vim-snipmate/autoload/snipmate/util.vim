@@ -20,3 +20,11 @@ function! snipmate#util#eval(arg)
     endtry
     return type(ret) == type('') ? ret : string(ret)
 endfunction
+
+function! snipmate#util#tabwidth()
+    if &sts > 0
+        return &sts
+    else
+        return exists('*shiftwidth') ? shiftwidth() : &sw
+    endif
+endfunction

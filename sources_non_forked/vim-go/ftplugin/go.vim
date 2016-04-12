@@ -29,7 +29,9 @@ if get(g:, "go_doc_keywordprg_enabled", 1)
 endif
 
 if get(g:, "go_def_mapping_enabled", 1)
-    nnoremap <buffer> <silent> gd :GoDef<cr>
+   nnoremap <buffer> <silent> gd :GoDef<cr>
+   nnoremap <buffer> <silent> <C-]> :GoDef<cr>
+   nnoremap <buffer> <silent> <C-t> :<C-U>call go#def#StackPop(v:count1)<cr>
 endif
 
 if get(g:, "go_textobj_enabled", 1)

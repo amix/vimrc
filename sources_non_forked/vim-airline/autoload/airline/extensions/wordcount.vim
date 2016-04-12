@@ -1,7 +1,7 @@
 " MIT License. Copyright (c) 2013-2016 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
-let s:filetypes = get(g:, 'airline#extensions#wordcount#filetypes', '\vhelp|markdown|rst|org|text')
+let s:filetypes = get(g:, 'airline#extensions#wordcount#filetypes', '\vhelp|markdown|rst|org|text|asciidoc')
 let s:format = get(g:, 'airline#extensions#wordcount#format', '%d words')
 let s:formatter = get(g:, 'airline#extensions#wordcount#formatter', 'default')
 

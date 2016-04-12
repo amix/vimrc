@@ -63,7 +63,7 @@ describe 'snippet parser'
         Expect Parse(printf('${1:%s}', text)) == [[1] + expect]
     end
 
-    it 'converts tabs according to &et, &sts, &sw'
+    it 'converts tabs according to &et, &sts, &sw, &ts'
         " &noet -> leave tabs alone
         setl noet
         Expect Parse("abc\tdef\n\t\tghi") == ["abc\tdef", "\t\tghi"]
@@ -77,6 +77,12 @@ describe 'snippet parser'
 
         setl et sts=-1 sw=3
         Expect Parse("abc\tdef\n\t\tghi") == ["abc   def", "      ghi"]
+
+        " See #227
+        if exists('*shiftwidth')
+            setl et sts=0 sw=0 ts=3
+            Expect Parse("abc\tdef\n\t\tghi") == ["abc   def", "      ghi"]
+        endif
     end
 
     it 'parses backslashes as escaping the next character or joining lines'

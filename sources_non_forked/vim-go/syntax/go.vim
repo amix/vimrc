@@ -27,6 +27,8 @@
 "     Highlights trailing white space.
 "   - go_highlight_string_spellcheck
 "     Specifies that strings should be spell checked
+"   - go_highlight_format_strings
+"     Highlights printf-style operators inside string literals.
 
 " Quit when a (custom) syntax file was already loaded
 if exists("b:current_syntax")
@@ -79,6 +81,10 @@ endif
 
 if !exists("g:go_highlight_string_spellcheck")
   let g:go_highlight_string_spellcheck = 1
+endif
+
+if !exists("g:go_highlight_format_strings")
+  let g:go_highlight_format_strings = 1
 endif
 
 if !exists("g:go_highlight_generate_tags")
@@ -173,11 +179,14 @@ else
   syn region      goString            start=+"+ skip=+\\\\\|\\"+ end=+"+ contains=@goStringGroup
   syn region      goRawString         start=+`+ end=+`+
 endif
-syn match       goFormatSpecifier   /%[-#0 +]*\%(\*\|\d\+\)\=\%(\.\%(\*\|\d\+\)\)*[vTtbcdoqxXUeEfgGsp]/ contained containedin=goString
+
+if g:go_highlight_format_strings != 0
+  syn match       goFormatSpecifier   /%[-#0 +]*\%(\*\|\d\+\)\=\%(\.\%(\*\|\d\+\)\)*[vTtbcdoqxXUeEfgGsp]/ contained containedin=goString
+  hi def link     goFormatSpecifier   goSpecialString
+endif
 
 hi def link     goString            String
 hi def link     goRawString         String
-hi def link     goFormatSpecifier   goSpecialString
 
 " Characters; their contents
 syn cluster     goCharacterGroup    contains=goEscapeOctal,goEscapeC,goEscapeX,goEscapeU,goEscapeBigU

@@ -45,17 +45,17 @@ function! airline#extensions#tabline#tabs#get()
 
   for i in range(1, tabpagenr('$'))
     if i == curtab
-      let group = 'airline_tabsel_right'
+      let group = 'airline_tabsel'
       if g:airline_detect_modified
         for bi in tabpagebuflist(i)
           if getbufvar(bi, '&modified')
-            let group = 'airline_tabmod_right'
+            let group = 'airline_tabmod'
           endif
         endfor
       endif
-      let s:current_modified = (group == 'airline_tabmod_right') ? 1 : 0
+      let s:current_modified = (group == 'airline_tabmod') ? 1 : 0
     else
-      let group = 'airline_tab_right'
+      let group = 'airline_tab'
     endif
     let val = '%('
     if s:show_tab_nr
@@ -81,7 +81,7 @@ function! airline#extensions#tabline#tabs#get()
   if s:show_splits == 1
     let buffers = tabpagebuflist(curtab)
     for nr in buffers
-      let group = airline#extensions#tabline#group_of_bufnr(buffers, nr)
+      let group = airline#extensions#tabline#group_of_bufnr(buffers, nr) . "_right"
       call b.add_section_spaced(group, '%(%{airline#extensions#tabline#get_buffer_name('.nr.')}%)')
     endfor
   elseif s:show_tab_type == 1
