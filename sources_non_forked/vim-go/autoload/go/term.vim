@@ -92,35 +92,45 @@ function! s:on_stderr(job_id, data)
     call extend(job.stderr, a:data)
 endfunction
 
-function! s:on_exit(job_id, data)
+function! s:on_exit(job_id, exit_status)
     if !has_key(s:jobs, a:job_id)
         return
     endif
     let job = s:jobs[a:job_id]
 
     let l:listtype = "locationlist"
+
     " usually there is always output so never branch into this clause
     if empty(job.stdout)
         call go#list#Clean(l:listtype)
         call go#list#Window(l:listtype)
-    else
-        let errors = go#tool#ParseErrors(job.stdout)
-        let errors = go#tool#FilterValids(errors)
-        if !empty(errors)
-            " close terminal we don't need it
-            close 
-
-            call go#list#Populate(l:listtype, errors)
-            call go#list#Window(l:listtype, len(errors))
-            if !self.bang
-                call go#list#JumpToFirst(l:listtype)
-            endif
-        else
-            call go#list#Clean(l:listtype)
-            call go#list#Window(l:listtype)
-        endif
-
+        unlet s:jobs[a:job_id]
+        return
     endif
+
+    let errors = go#tool#ParseErrors(job.stdout)
+    let errors = go#tool#FilterValids(errors)
+
+    if !empty(errors)
+        " close terminal we don't need it anymore
+        close 
+
+        call go#list#Populate(l:listtype, errors)
+        call go#list#Window(l:listtype, len(errors))
+        if !self.bang
+            call go#list#JumpToFirst(l:listtype)
+        endif
+        unlet s:jobs[a:job_id]
+        return
+    endif
+
+    " tests are passing clean the list and close the list. But we only can
+    " close them from a normal view, so jump back, close the list and then
+    " again jump back to the terminal
+    wincmd p
+    call go#list#Clean(l:listtype)
+    call go#list#Window(l:listtype)
+    wincmd p
 
     unlet s:jobs[a:job_id]
 endfunction

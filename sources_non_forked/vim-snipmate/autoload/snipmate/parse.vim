@@ -187,7 +187,7 @@ call extend(s:parser_proto, snipmate#util#add_methods(s:sfile(), 'parser',
 
 function! s:indent(count) abort
     if &expandtab
-        let shift = repeat(' ', (&sts > 0) ? &sts : &sw)
+        let shift = repeat(' ', snipmate#util#tabwidth())
     else
         let shift = "\t"
     endif

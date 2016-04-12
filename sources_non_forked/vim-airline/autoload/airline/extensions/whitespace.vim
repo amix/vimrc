@@ -18,7 +18,7 @@ let s:max_lines = get(g:, 'airline#extensions#whitespace#max_lines', 20000)
 
 let s:enabled = get(g:, 'airline#extensions#whitespace#enabled', 1)
 
-let s:c_like_langs = ['c', 'cpp', 'javascript', 'ld']
+let s:c_like_langs = ['c', 'cpp', 'cuda', 'java', 'javascript', 'ld']
 
 function! s:check_mixed_indent()
   if s:indent_algo == 1

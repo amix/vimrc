@@ -161,6 +161,8 @@ function! s:maps_resize()
   return mapped
 endfunction
 
+nnoremap <silent> <plug>(goyo-resize) :<c-u>call <sid>resize_pads()<cr>
+
 function! s:goyo_on(dim)
   let dim = s:parse_arg(a:dim)
   if empty(dim)
@@ -263,6 +265,9 @@ function! s:goyo_on(dim)
     autocmd ColorScheme *        call s:tranquilize()
     autocmd BufWinEnter *        call s:hide_linenr() | call s:hide_statusline()
     autocmd WinEnter,WinLeave *  call s:hide_statusline()
+    if has('nvim')
+      autocmd TermClose * call feedkeys("\<plug>(goyo-resize)")
+    endif
   augroup END
 
   call s:hide_statusline()

@@ -213,11 +213,11 @@ function! go#cmd#Test(bang, compile, ...)
 
     if has('nvim')
         if get(g:, 'go_term_enabled', 0)
-            call go#term#new(a:bang, ["go"] + args)
+            let id = go#term#new(a:bang, ["go"] + args)
         else
-            call go#jobcontrol#Spawn(a:bang, "test", args)
+            let id = go#jobcontrol#Spawn(a:bang, "test", args)
         endif
-        return
+        return id
     endif
 
     call go#cmd#autowrite()
@@ -288,36 +288,6 @@ function! go#cmd#TestFunc(bang, ...)
     endif
 
     call call('go#cmd#Test', args)
-endfunction
-
-" Coverage creates a new cover profile with 'go test -coverprofile' and opens
-" a new HTML coverage page from that profile.
-function! go#cmd#Coverage(bang, ...)
-    let l:tmpname=tempname()
-
-    let command = "go test -coverprofile=" . l:tmpname . ' ' . go#util#Shelljoin(a:000)
-
-
-    let l:listtype = "quickfix"
-    call go#cmd#autowrite()
-    let out = go#tool#ExecuteInDir(command)
-    if v:shell_error
-        let errors = go#tool#ParseErrors(split(out, '\n'))
-        call go#list#Populate(l:listtype, errors)
-        call go#list#Window(l:listtype, len(errors))
-        if !empty(errors) && !a:bang
-            call go#list#JumpToFirst(l:listtype)
-        endif
-    else
-        " clear previous location list 
-        call go#list#Clean(l:listtype)
-        call go#list#Window(l:listtype)
-
-        let openHTML = 'go tool cover -html='.l:tmpname
-        call go#tool#ExecuteInDir(openHTML)
-    endif
-
-    call delete(l:tmpname)
 endfunction
 
 " Generate runs 'go generate' in similar fashion to go#cmd#Build()

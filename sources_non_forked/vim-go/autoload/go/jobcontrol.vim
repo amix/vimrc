@@ -2,6 +2,10 @@
 " internal function s:spawn
 let s:jobs = {}
 
+" s:handlers is a global event handlers for all jobs started with Spawn() or
+" with the internal function s:spawn
+let s:handlers = {}
+
 " Spawn is a wrapper around s:spawn. It can be executed by other files and
 " scripts if needed. Desc defines the description for printing the status
 " during the job execution (useful for statusline integration).
@@ -34,6 +38,22 @@ function! go#jobcontrol#Statusline() abort
   endfor
 
   return ''
+endfunction
+
+" AddHandler adds a on_exit callback handler and returns the id.
+function! go#jobcontrol#AddHandler(handler)
+  let i = len(s:handlers)
+  while has_key(s:handlers, string(i))
+    let i += 1
+    break
+  endwhile
+  let s:handlers[string(i)] = a:handler
+  return string(i)
+endfunction
+
+" RemoveHandler removes a callback handler by id.
+function! go#jobcontrol#RemoveHandler(id)
+  unlet s:handlers[a:id]
 endfunction
 
 " spawn spawns a go subcommand with the name and arguments with jobstart. Once
@@ -95,6 +115,8 @@ endfunction
 " it'll be closed.
 function! s:on_exit(job_id, exit_status)
   let std_combined = self.stderr + self.stdout
+  call s:callback_handlers_on_exit(s:jobs[a:job_id], a:exit_status, std_combined)
+
   if a:exit_status == 0
     call go#list#Clean(0)
     call go#list#Window(0)
@@ -132,6 +154,17 @@ function! s:on_exit(job_id, exit_status)
       call go#list#JumpToFirst(l:listtype)
     endif
   endif
+endfunction
+
+" callback_handlers_on_exit runs all handlers for job on exit event.
+function! s:callback_handlers_on_exit(job, exit_status, data)
+  if empty(s:handlers)
+    return
+  endif
+
+  for s:handler in values(s:handlers)
+    call s:handler(a:job, a:exit_status, a:data)
+  endfor
 endfunction
 
 " on_stdout is the stdout handler for jobstart(). It collects the output of

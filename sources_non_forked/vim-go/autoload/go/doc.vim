@@ -1,22 +1,6 @@
 " Copyright 2011 The Go Authors. All rights reserved.
 " Use of this source code is governed by a BSD-style
 " license that can be found in the LICENSE file.
-"
-" godoc.vim: Vim command to see godoc.
-"
-"
-" Commands:
-"
-"   :GoDoc
-"
-"       Open the relevant Godoc for either the word[s] passed to the command or
-"       the, by default, the word under the cursor.
-"
-" Options:
-"
-"   g:go_godoc_commands [default=1]
-"
-"       Flag to indicate whether to enable the commands listed above.
 
 let s:buf_nr = -1
 
@@ -33,10 +17,9 @@ endif
 " ie: github.com/fatih/set and New
 function! s:godocWord(args)
     if !executable('godoc')
-        echohl WarningMsg
-        echo "godoc command not found."
-        echo "  install with: go get golang.org/x/tools/cmd/godoc"
-        echohl None
+        let msg = "godoc command not found."
+        let msg .= "  install with: go get golang.org/x/tools/cmd/godoc"
+        call go#util#echoWarning(msg)
         return []
     endif
 
@@ -94,47 +77,24 @@ function! go#doc#OpenBrowser(...)
 endfunction
 
 function! go#doc#Open(newmode, mode, ...)
-    let pkgs = s:godocWord(a:000)
-    if empty(pkgs)
+    " check if we have 'gogetdoc' and use it automatically
+    let bin_path = go#path#CheckBinPath('gogetdoc')
+    if empty(bin_path)
         return
     endif
 
-    let pkg = pkgs[0]
-    let exported_name = pkgs[1]
+    let offset = go#util#OffsetCursor()
+    let fname = expand("%:p")
 
-    let command = g:go_doc_command . ' ' . g:go_doc_options . ' ' . pkg
+    let command = printf("%s -pos %s:#%s", bin_path, fname, offset)
 
-    silent! let content = system(command)
-    if v:shell_error || s:godocNotFound(content)
-        echo 'No documentation found for "' . pkg . '".'
-        return -1
+    let out = system(command)
+    if v:shell_error != 0
+        call go#util#EchoError(out)
+        return
     endif
 
-    call s:GodocView(a:newmode, a:mode, content)
-
-    if exported_name == ''
-        silent! normal! gg
-        return -1
-    endif
-
-    " jump to the specified name
-    if search('^func ' . exported_name . '(')
-        silent! normal! zt
-        return -1
-    endif
-
-    if search('^type ' . exported_name)
-        silent! normal! zt
-        return -1
-    endif
-
-    if search('^\%(const\|var\|type\|\s\+\) ' . pkg . '\s\+=\s')
-        silent! normal! zt
-        return -1
-    endif
-
-    " nothing found, jump to top
-    silent! normal! gg
+    call s:GodocView(a:newmode, a:mode, out)
 endfunction
 
 function! s:GodocView(newposition, position, content)
@@ -148,6 +108,15 @@ function! s:GodocView(newposition, position, content)
         execute s:buf_nr . 'buffer'
     elseif bufwinnr(s:buf_nr) != bufwinnr('%')
         execute bufwinnr(s:buf_nr) . 'wincmd w'
+    endif
+
+    " cap buffer height to 20, but resize it for smaller contents
+    let max_height = 20
+    let content_height = len(split(a:content, "\n"))
+    if content_height > max_height
+        exe 'resize ' . max_height
+    else
+        exe 'resize ' . content_height
     endif
 
     setlocal filetype=godoc
@@ -165,7 +134,10 @@ function! s:GodocView(newposition, position, content)
     call append(0, split(a:content, "\n"))
     sil $delete _
     setlocal nomodifiable
+
+    " close easily with <esc> or enter
+    noremap <buffer> <silent> <CR> :<C-U>close<CR>
+    noremap <buffer> <silent> <Esc> :<C-U>close<CR>
 endfunction
 
-
-" vim:ts=4:sw=4:et
+" vim:ts=2:sw=2:et
