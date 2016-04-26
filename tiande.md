@@ -1,4 +1,4 @@
-基本的 vim 操作就不介绍了，看过一本: [《VIM简明手册》](https://github.com/Tiande/Practice/blob/master/resource/VIM_Tutorial.md)
+基本的 vim 操作就不介绍了，看过一本: [《VIM简明手册》](https://pan.baidu.com/s/1jG3rFPs)
 
 ```
 ### WARNING:
