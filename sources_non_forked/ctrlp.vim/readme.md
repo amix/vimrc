@@ -1,6 +1,3 @@
-#**This project is unmaintained** 
-**You should use [this fork](https://github.com/ctrlpvim/ctrlp.vim) instead.**
-
 # ctrlp.vim
 Full path fuzzy __file__, __buffer__, __mru__, __tag__, __...__ finder for Vim.
 
@@ -35,8 +32,8 @@ Check `:help ctrlp-commands` and `:help ctrlp-extensions` for other commands.
 Run `:help ctrlp-mappings` or submit `?` in CtrlP for more mapping help.
 
 * Submit two or more dots `..` to go up the directory tree by one or multiple levels.
-* End the input string with a colon `:` followed by a command to execute it on the opening file(s):  
-Use `:25` to jump to line 25.  
+* End the input string with a colon `:` followed by a command to execute it on the opening file(s):
+Use `:25` to jump to line 25.
 Use `:diffthis` when opening multiple files to run `:diffthis` on the first 4 files.
 
 ## Basic Options
@@ -47,20 +44,27 @@ Use `:diffthis` when opening multiple files to run `:diffthis` on the first 4 fi
     let g:ctrlp_cmd = 'CtrlP'
     ```
 
-* When invoked, unless a starting directory is specified, CtrlP will set its local working directory according to this variable:
+* When invoked without an explicit starting directory, CtrlP will set its local working directory according to this variable:
 
     ```vim
     let g:ctrlp_working_path_mode = 'ra'
     ```
 
     `'c'` - the directory of the current file.  
-    `'r'` - the nearest ancestor that contains one of these directories or files: `.git` `.hg` `.svn` `.bzr` `_darcs`  
-    `'a'` - like c, but only if the current working directory outside of CtrlP is not a direct ancestor of the directory of the current file.  
+    `'a'` - the directory of the current file, unless it is a subdirectory of the cwd  
+    `'r'` - the nearest ancestor of the current file that contains one of these directories or files: `.git` `.hg` `.svn` `.bzr` `_darcs`  
+    `'w'` - modifier to "r": start search from the cwd instead of the current file's directory  
     `0` or `''` (empty string) - disable this feature.
 
-    Define additional root markers with the `g:ctrlp_root_markers` option.
+    If none of the default markers (`.git` `.hg` `.svn` `.bzr` `_darcs`) are present in a project, you can define additional ones with `g:ctrlp_root_markers`:
 
-* Exclude files and directories using Vim's `wildignore` and CtrlP's own `g:ctrlp_custom_ignore`:
+    ```vim
+    let g:ctrlp_root_markers = ['pom.xml', '.p4ignore']
+    ```
+
+    If more than one mode is specified, they will be tried in order until a directory is located.
+
+* Exclude files and directories using Vim's `wildignore` and CtrlP's own `g:ctrlp_custom_ignore`. If a custom listing command is being used, exclusions are ignored:
 
     ```vim
     set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
@@ -81,11 +85,17 @@ Use `:diffthis` when opening multiple files to run `:diffthis` on the first 4 fi
     let g:ctrlp_user_command = 'dir %s /-n /b /s /a-d'  " Windows
     ```
 
+* Ignore files in `.gitignore`
+    
+    ```vim
+      let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+    ```
+
 Check `:help ctrlp-options` for other options.
 
 ## Installation
 Use your favorite method or check the homepage for a [quick installation guide][3].
 
-[1]: http://i.imgur.com/yIynr.png
-[2]: https://github.com/kien/ctrlp.vim/tree/extensions
-[3]: http://kien.github.com/ctrlp.vim#installation
+[1]: http://i.imgur.com/aOcwHwt.png
+[2]: https://github.com/ctrlpvim/ctrlp.vim/tree/extensions
+[3]: http://ctrlpvim.github.com/ctrlp.vim#installation
