@@ -1,0 +1,35 @@
+<<<<<<< 3667b54b19b952b13d638536b5f47e226d252e30
+" Basic formatting settings
+set listchars=tab:»·,trail:·
+set list
+" Turn on line numbering
+set number
+syntax on
+colorscheme monokai
+
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
+
+" Adds proper PEP-8 settings for Python files
+au BufNewFile,BufRead *.py
+    \ set tabstop=4
+    \ set softtabstop=4
+    \ set shiftwidth=4
+    \ set textwidth=79
+    \ set expandtab
+    \ set autoindent
+    \ set fileformat=unix
+
+au BufNewFile,BufRead *.js, *.html, *.css
+    \ set tabstop=2
+    \ set softtabstop=2
+    \ set shiftwidth=2
+||||||| merged common ancestors
+=======
+set listchars=tab:»·,trail:·
+set list
+set number
+syntax on
+colorscheme monokai
+>>>>>>> -added personal git configuration file
