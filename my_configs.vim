@@ -12,8 +12,8 @@ let g:solarized_italic=0 " 1 | 0
 " let g:solarized_bold=0
 " let g:solarized_underline=0
 
-set background=light " dark
-:colorscheme solarized " ir_black mayansmoke 
+set background=dark " dark
+:colorscheme solarized " solarized ir_black mayansmoke 
 
 " syntastic
 set statusline+=%#warningmsg#
@@ -92,6 +92,7 @@ set guioptions-=T
 " 删除文件时自动删除文件对应 buffer
 let NERDTreeAutoDeleteBuffer=1
 " map ALT-n ALT-p to :lnext :lprevious
+" Mac 下不可用
 map <M-n> :lnext<cr>
 map <M-p> :lprevious<cr>
 
@@ -126,3 +127,7 @@ augroup END
 if has('gui_running')
   set guifont=Lucida_Console:h12
 endif
+
+" map $t to <>
+vnoremap $t <esc>`>a><esc>`<i<<esc>
+inoremap $t <><esc>i
