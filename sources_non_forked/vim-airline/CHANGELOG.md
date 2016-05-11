@@ -3,16 +3,31 @@
 This is the Changelog for the vim-airline project.
 
 ## [Unreleased]
+
+## [0.8] - 2016-03-09
 - Changes
-  - Themes have been moved into an extra repository [vim-airline-themes](https://github.com/vim-airline/vim-airline-themes)
-  - Many new themes
-  - Airline Moved to new [repository](https://github.com/vim-airline/vim-airline)
-- New features
-  - Integration with [taboo](https://github.com/gcmt/taboo.vim), [vim-ctrlspace](https://github.com/szw/vim-ctrlspace),
-    [quickfixsigns](https://github.com/tomtom/quickfixsigns_vim), [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
+  - Airline converted to an organization and moved to new [repository](https://github.com/vim-airline/vim-airline)
+  - Themes have been split into an separate repository [vim-airline-themes](https://github.com/vim-airline/vim-airline-themes)
+- Improvements
+  - Extensions
+    - branch: support Git and Mercurial simultaneously, untracked files
+    - whitespace: new mixed-indent rule
+  - Windows support
+  - Many bug fixes
   - Support for Neovim
-  - Added wordcount extension
-  - Adding Crypt and Byte Order Mark Indicator
+- New features
+  - Many new themes
+  - Extensions/integration
+    - [taboo](https://github.com/gcmt/taboo.vim)
+    - [vim-ctrlspace](https://github.com/szw/vim-ctrlspace)
+    - [quickfixsigns](https://github.com/tomtom/quickfixsigns_vim)
+    - [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
+    - [po.vim](http://www.vim.org/scripts/script.php?script_id=695)
+    - [unicode.vim](https://github.com/chrisbra/unicode.vim)
+    - wordcount
+    - crypt indicator
+    - byte order mark indicator
+  - Tabline's tab mode can display splits simultaneously
 
 ## [0.7] - 2014-12-10
 - New features
@@ -94,7 +109,8 @@ This is the Changelog for the vim-airline project.
   - integration with other plugins: netrw, unite, nerdtree, undotree, gundo, tagbar, minibufexplr, ctrlp
   - support for themes: 8 included
 
-[Unreleased]: https://github.com/vim-airline/vim-airline/compare/v0.7...HEAD
+[Unreleased]: https://github.com/vim-airline/vim-airline/compare/v0.8...HEAD
+[0.8]: https://github.com/vim-airline/vim-airline/compare/v0.7...v0.8
 [0.7]: https://github.com/vim-airline/vim-airline/compare/v0.6...v0.7
 [0.6]: https://github.com/vim-airline/vim-airline/compare/v0.5...v0.6
 [0.5]: https://github.com/vim-airline/vim-airline/compare/v0.4...v0.5

@@ -72,9 +72,10 @@ endfunction
 function! airline#switch_matching_theme()
   if exists('g:colors_name')
     let existing = g:airline_theme
+    let theme = substitute(g:colors_name, '-', '_', 'g')
     try
-      let palette = g:airline#themes#{g:colors_name}#palette
-      call airline#switch_theme(g:colors_name)
+      let palette = g:airline#themes#{theme}#palette
+      call airline#switch_theme(theme)
       return 1
     catch
       for map in items(g:airline_theme_map)
@@ -172,6 +173,10 @@ function! airline#check_mode(winnr)
 
   if g:airline_detect_crypt && exists("+key") && !empty(&key)
     call add(l:mode, 'crypt')
+  endif
+
+  if g:airline_detect_spell && &spell
+    call add(l:mode, 'spell')
   endif
 
   if &readonly || ! &modifiable

@@ -227,12 +227,12 @@ function! syntastic#preprocess#prospector(errors) abort " {{{2
 
                         call add(out, msg)
                     catch /\m^Vim\%((\a\+)\)\=:E716/
-                        call syntastic#log#warn('checker python/prospector: unrecognized error format')
+                        call syntastic#log#warn('checker python/prospector: unrecognized error item ' . string(e))
                         let out = []
                         break
                     endtry
                 else
-                    call syntastic#log#warn('checker python/prospector: unrecognized error format')
+                    call syntastic#log#warn('checker python/prospector: unrecognized error item ' . string(e))
                     let out = []
                     break
                 endif
@@ -394,12 +394,12 @@ function! syntastic#preprocess#vint(errors) abort " {{{2
 
                     call add(out, msg)
                 catch /\m^Vim\%((\a\+)\)\=:E716/
-                    call syntastic#log#warn('checker vim/vint: unrecognized error format')
+                    call syntastic#log#warn('checker vim/vint: unrecognized error item ' . string(e))
                     let out = []
                     break
                 endtry
             else
-                call syntastic#log#warn('checker vim/vint: unrecognized error format')
+                call syntastic#log#warn('checker vim/vint: unrecognized error item ' . string(e))
                 let out = []
                 break
             endif

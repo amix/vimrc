@@ -5,26 +5,26 @@ endif
 
 " Test alternates between the implementation of code and the test code.
 function! go#alternate#Switch(bang, cmd)
-  let l:file = go#alternate#Filename(fnameescape(expand("%")))
-  if !filereadable(l:file) && !bufexists(l:file) && !a:bang
-    redraws! | echon "vim-go: " | echohl ErrorMsg | echon "couldn't find ".file | echohl None
+  let file = expand('%')
+  if empty(file)
+    call go#util#EchoError("no buffer name")
+    return
+  elseif file =~# '^\f\+_test\.go$'
+    let l:root = split(file, '_test.go$')[0]
+    let l:alt_file = l:root . ".go"
+  elseif file =~# '^\f\+\.go$'
+    let l:root = split(file, ".go$")[0]
+    let l:alt_file = l:root . '_test.go'
+  else
+    call go#util#EchoError("not a go file")
+    return
+  endif
+  if !filereadable(alt_file) && !bufexists(alt_file) && !a:bang
+    call go#util#EchoError("couldn't find ".alt_file)
     return
   elseif empty(a:cmd)
-    execute ":" . g:go_alternate_mode . " " . file
+    execute ":" . g:go_alternate_mode . " " . alt_file
   else
-    execute ":" . a:cmd . " " . file
+    execute ":" . a:cmd . " " . alt_file
   endif
-endfunction
-
-" Filename returns the name of the test file or implementation file
-" depending on the arguments
-function! go#alternate#Filename(path)
-  if empty(matchstr(a:path, "_test"))
-    let l:root = split(a:path, ".go$")[0]
-    let l:file = l:root . "_test.go"
-  else
-    let l:root = split(a:path, "_test.go$")[0]
-    let l:file = l:root . ".go"
-  endif
-  return l:file
 endfunction

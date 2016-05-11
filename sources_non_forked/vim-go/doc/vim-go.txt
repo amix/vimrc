@@ -47,7 +47,7 @@ easily.
   * Automatic `GOPATH` detection based on the directory structure (i.e. `gb`
     projects, `godep` vendored projects)
   * Change or display `GOPATH` with `:GoPath`
-  * Create a coverage profile and display annotated source code in browser to see
+  * Create a coverage profile and display annotated source code in to see
     which functions are covered with `:GoCoverage`
   * Call `gometalinter` with `:GoMetaLinter`, which invokes all possible linters
     (golint, vet, errcheck, deadcode, etc..) and shows the warnings/errors
@@ -211,11 +211,62 @@ COMMANDS                                                          *go-commands*
 
                                                                      *:GoDef*
 :GoDef [identifier]
+gd
+CTRL-]
 
     Goto declaration/definition for the given [identifier]. If no argument is
     given, it will jump to the declaration under the cursor. By default the
-    mapping `gd` is enabled to invoke GoDef for the identifier under the cursor.
-    See |g:go_def_mapping_enabled| to disable it.
+    CTRL-] key and the mapping `gd` are enabled to invoke :GoDef for the
+    identifier under the cursor. See |g:go_def_mapping_enabled| to disable them.
+
+    vim-go also keeps a per-window location stack, roughly analagous to how
+    vim's internal |tags| functionality works. This is pushed to every time a
+    jump is made using the GoDef functionality. In essence, this is a LIFO list
+    of file locations you have visited with :GoDef that is retained to help you
+    navigate software. For more information on displaying the stack, see
+    |:GoDefJump|
+
+                                                                 *:GoDefJump*
+:GoDefJump [number]
+
+    This command Jumps to a given location in the jumpstack, retaining all other
+    entries. Jumps to non-existent entries will print an informative message,
+    but are otherwise a noop.
+
+    If no argument is given, it will print out an interactive list of all items
+    in the stack. Its output looks like this:
+
+      1 /path/to/first/file.go|1187 col 16|AddThing func(t *Thing)
+    > 2 /path/to/thing/thing.go|624 col 19|String() string
+      3 /path/to/thing/thing.go|744 col 6|func Sprintln(a ...interface{}) string
+
+    This list shows the identifiers that you jumped to and the file and cursor
+    position before that jump.  The older jumps are at the top, the newer at the
+    bottom.
+
+    The '>' points to the active entry.  This entry and any newer entries below
+    it will be replaced if |:GoDef| is done from this location. The CTRL-t and
+    |:GoDefPop| command will jump to the position above the active entry.
+
+    Jumps to non-existent entries will print an informative message, but are
+    otherwise a noop.
+
+                                                                  *:GoDefPop*
+:GoDefPop [count]
+CTRL-t
+
+    Navigate to the [count] earlier entry in the jump stack, retaining the newer
+    entries. If no argument is given, it will jump to the next most recent entry
+    (`:GoDefPop 1`).  If [count] is greater than the number of prior entries,
+    an error will be printed and no jump will be performed.
+
+    If you have used :GoDefPop to jump to an earlier location, and you issue
+    another :GoDef command, the current entry will be replaced, and all newer
+    entries will be removed, effectively resuming the stack at that location.
+
+    By default [count]CTRL-t is enabled to invoke :GoDefPop.  Similarly, hitting
+    CTRL-t without a prior count is equivalent to `:GoDefPop 1`.  See
+    |g:go_def_mapping_enabled| to disable this.
 
                                                                      *:GoRun*
 :GoRun[!] [expand]
@@ -323,12 +374,21 @@ COMMANDS                                                          *go-commands*
 
     If [!] is not given the first error is jumped to.
 
-    If using neovim `:GoTestCompile` will run in a new terminal or run asynchronously
-    in the background according to |g:go_term_enabled|. You can set the mode of
-    the new terminal with |g:go_term_mode|.
+    If using neovim `:GoTestCompile` will run in a new terminal or run
+    asynchronously in the background according to |g:go_term_enabled|. You can
+    set the mode of the new terminal with |g:go_term_mode|.
 
                                                                 *:GoCoverage*
 :GoCoverage[!] [options]
+
+    Create a coverage profile and annotates the current file's source code. If
+    called again clears the annotation (works as a toggle)
+
+    If [!] is not given the first error is jumped to.
+
+
+                                                          *:GoCoverageBrowser*
+:GoCoverageBrowser[!] [options]
 
     Create a coverage profile and open a browser to display the annotated
     source code of the current package.
@@ -503,6 +563,27 @@ COMMANDS                                                          *go-commands*
       autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
     augroup END
 <
+                                                              *:GoDecls*
+:GoDecls [file]
+  
+    Only enabled if `ctrlp.vim` is installed. If run shows all function and
+    type declarations for the current file. If [file] is non empty it parses
+    the given file. 
+    By default `type` and `func` declarations are being showed. This can be
+    changed via |g:go_decls_includes|, which accepts a comma delimited list of
+    definitions. By default set to: `"func,type"`. Possible options are:
+    `{func,type}`
+
+                                                              *:GoDeclsDir*
+:GoDeclsDir [dir]
+  
+    Only enabled if `ctrlp.vim` is installed. If run shows all function and
+    type declarations for the current directory. If [dir] is given it parses
+    the given directory.
+    By default `type` and `func` declarations are being showed. This can be
+    changed via |g:go_decls_includes|, which accepts a comma delimited list of
+    definitions. By default set to: `"func,type"`. Possible options are:
+    `{func,type}`
 
 ===============================================================================
 MAPPINGS                                                        *go-mappings*
@@ -691,11 +772,26 @@ upon regions of text. vim-go currently defines the following text objects:
 
                                                *go-v_af* *go-af*
 af			      "a function", select contents from a function definition to the
-               closing bracket.
+               closing bracket. If |g:go_textobj_include_function_doc| is
+               enabled it also includes the comment doc for a function
+               declaration. This text-object also supports literal functions.
 
                                                *go-v_if* *go-if*
-if			      "inside a function", select contents of a function,
-			        excluding the function definition and the closing bracket.
+if            "inside a function", select contents of a function,
+              excluding the function definition and the closing bracket. This
+              text-object also supports literal functions
+
+
+vim-go also defines the following text motion objects:
+
+                                               *go-v_]]* *go-]]*
+]]			      [count] forward to next function declaration. If 
+              |g:go_textobj_include_function_doc| is enabled and if your 
+              on a comment, it skips the function which the comment 
+              belongs and forwards to the next function declaration.
+
+                                               *go-v_[[* *go-[[*
+[[            [count] backward to previous function declaration.
 
 
 
@@ -810,8 +906,9 @@ In Go, using `godoc` is more idiomatic. Default is enabled. >
 <
                                                  *'g:go_def_mapping_enabled'*
 
-Use this option to enable/disable the default mapping of (`gd`) for GoDef.
-Disabling it allows you to map something else to `gd`. Default is enabled. >
+Use this option to enable/disable the default mapping of CTRL-] and (`gd`) for
+GoDef and CTRL-t for :GoDefPop. Disabling it allows you to map something else to
+these keys or mappings. Default is enabled. >
 
   let g:go_def_mapping_enabled = 1
 <
@@ -944,7 +1041,13 @@ also enabled. By default it's enabled. >
 
 	let g:go_highlight_string_spellcheck = 1
 <
+                                        *'g:go_highlight_format_strings*
 
+Use this option to highlight printf-style operators inside string literals.
+By default it's enabled. >
+
+	let g:go_highlight_format_strings = 1
+<
                                                 *'g:go_autodetect_gopath'*
 
 Automatically modifies GOPATH for certain directory structures, such as for

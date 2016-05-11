@@ -240,7 +240,12 @@ function! syntastic#util#findGlobInParent(what, where) abort " {{{2
 
     let old = ''
     while here !=# ''
-        let p = split(globpath(here, a:what, 1), '\n')
+        try
+            " Vim 7.4.279 and later
+            let p = globpath(here, a:what, 1, 1)
+        catch /\m^Vim\%((\a\+)\)\=:E118/
+            let p = split(globpath(here, a:what, 1), "\n")
+        endtry
 
         if !empty(p)
             return fnamemodify(p[0], ':p')
@@ -327,6 +332,12 @@ endfunction " }}}2
 " (hopefully high resolution) time since program start
 function! syntastic#util#stamp() abort " {{{2
     return split( split(reltimestr(reltime(g:_SYNTASTIC_START)))[0], '\.' )
+endfunction " }}}2
+
+function! syntastic#util#setChangedtick() abort " {{{2
+    unlockvar! b:syntastic_changedtick
+    let b:syntastic_changedtick = b:changedtick
+    lockvar! b:syntastic_changedtick
 endfunction " }}}2
 
 let s:_wid_base = 'syntastic_' . getpid() . '_' . reltimestr(g:_SYNTASTIC_START) . '_'
@@ -499,7 +510,13 @@ function! s:_rmrf(what) abort " {{{2
             return
         endif
 
-        for f in split(globpath(a:what, '*', 1), "\n")
+        try
+            " Vim 7.4.279 and later
+            let entries = globpath(a:what, '*', 1, 1)
+        catch /\m^Vim\%((\a\+)\)\=:E118/
+            let entries = split(globpath(a:what, '*', 1), "\n")
+        endtry
+        for f in entries
             call s:_rmrf(f)
         endfor
         silent! call syntastic#util#system(s:rmdir . ' ' . syntastic#util#shescape(a:what))

@@ -154,7 +154,7 @@ function! airline#extensions#branch#head()
   if exists("g:airline#extensions#branch#displayed_head_limit")
     let w:displayed_head_limit = g:airline#extensions#branch#displayed_head_limit
     if len(b:airline_head) > w:displayed_head_limit - 1
-      let b:airline_head = b:airline_head[0:w:displayed_head_limit - 1].'…'
+      let b:airline_head = b:airline_head[0:(w:displayed_head_limit - 1)].(&encoding ==? 'utf-8' ?  '…' : '.')
     endif
   endif
 

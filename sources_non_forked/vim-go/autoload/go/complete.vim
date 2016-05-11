@@ -87,32 +87,21 @@ fu! s:gocodeCurrentBufferOpt(filename)
     return '-in=' . a:filename
 endf
 
-fu! go#complete#gocodeCursor()
-    if &encoding != 'utf-8'
-        let sep = &l:fileformat == 'dos' ? "\r\n" : "\n"
-        let c = col('.')
-        let buf = line('.') == 1 ? "" : (join(getline(1, line('.')-1), sep) . sep)
-        let buf .= c == 1 ? "" : getline('.')[:c-2]
-        return printf('%d', len(iconv(buf, &encoding, "utf-8")))
-    endif
-
-    return printf('%d', line2byte(line('.')) + (col('.')-2))
-endf
-
 fu! s:gocodeAutocomplete()
     let filename = s:gocodeCurrentBuffer()
     let result = s:gocodeCommand('autocomplete',
                 \ [s:gocodeCurrentBufferOpt(filename), '-f=vim'],
-                \ [expand('%:p'), go#complete#gocodeCursor()])
+                \ [expand('%:p'), go#util#OffsetCursor()])
     call delete(filename)
     return result
 endf
 
-function! go#complete#GetInfoFromOffset(offset)
+function! go#complete#GetInfo()
+    let offset = go#util#OffsetCursor()+1
     let filename = s:gocodeCurrentBuffer()
     let result = s:gocodeCommand('autocomplete',
                 \ [s:gocodeCurrentBufferOpt(filename), '-f=godit'],
-                \ [expand('%:p'), a:offset])
+                \ [expand('%:p'), offset])
     call delete(filename)
 
     " first line is: Charcount,,NumberOfCandidates, i.e: 8,,1
@@ -148,14 +137,12 @@ function! go#complete#GetInfoFromOffset(offset)
     return ""
 endfunction
 
-function! go#complete#GetInfo()
-    let offset = go#complete#gocodeCursor()
-    return go#complete#GetInfoFromOffset(offset)
-endfunction
-
-function! go#complete#Info()
+function! go#complete#Info(auto)
+    " auto is true if we were called by g:go_auto_type_info's autocmd
     let result = go#complete#GetInfo()
     if !empty(result)
+        " if auto, and the result is a PANIC by gocode, hide it
+        if a:auto && result ==# 'PANIC PANIC PANIC' | return | endif
         echo "vim-go: " | echohl Function | echon result | echohl None
     endif
 endfunction

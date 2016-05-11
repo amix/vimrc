@@ -24,8 +24,8 @@ disabled/enabled easily.
 * Automatic `GOPATH` detection based on the directory structure (i.e. `gb`
   projects, `godep` vendored projects)
 * Change or display `GOPATH` with `:GoPath`
-* Create a coverage profile and display annotated source code in browser to see
-  which functions are covered with `:GoCoverage`
+* Create a coverage profile and display annotated source code to see which
+  functions are covered with `:GoCoverage`
 * Call `gometalinter` with `:GoMetaLinter`, which invokes all possible linters
   (golint, vet, errcheck, deadcode, etc..) and shows the warnings/errors
 * Lint your code with `:GoLint`
@@ -43,11 +43,18 @@ disabled/enabled easily.
 * Tagbar support to show tags of the source code in a sidebar with `gotags`
 * Custom vim text objects such as `a function` or `inner function`
   list.
+* Jump to function or type declarations with `:GoDecls` or `:GoDeclsDir`
 * A async launcher for the go command is implemented for Neovim, fully async
   building and testing (beta).
 * Integrated with the Neovim terminal, launch `:GoRun` and other go commands
   in their own new terminal. (beta)
 * Alternate between implementation and test code with `:GoAlternate`
+
+## Donation
+
+People have asked for this for a long time, now you can be a fully supporter by [being a patron](https://www.patreon.com/fatih)! This is fully optional and is just a way to support vim-go's ongoing development directly. Thanks!
+
+[https://www.patreon.com/fatih](https://www.patreon.com/fatih)
 
 ## Install
 

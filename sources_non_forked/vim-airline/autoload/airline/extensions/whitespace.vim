@@ -18,6 +18,8 @@ let s:max_lines = get(g:, 'airline#extensions#whitespace#max_lines', 20000)
 
 let s:enabled = get(g:, 'airline#extensions#whitespace#enabled', 1)
 
+let s:c_like_langs = ['c', 'cpp', 'cuda', 'java', 'javascript', 'ld']
+
 function! s:check_mixed_indent()
   if s:indent_algo == 1
     " [<tab>]<space><tab>
@@ -35,8 +37,14 @@ function! s:check_mixed_indent()
 endfunction
 
 function! s:check_mixed_indent_file()
+  if index(s:c_like_langs, &ft) > -1
+    " for C-like languages: allow /** */ comment style with one space before the '*'
+    let head_spc = '\v(^ +\*@!)'
+  else
+    let head_spc = '\v(^ +)'
+  endif
   let indent_tabs = search('\v(^\t+)', 'nw')
-  let indent_spc  = search('\v(^ +)', 'nw')
+  let indent_spc  = search(head_spc, 'nw')
   if indent_tabs > 0 && indent_spc > 0
     return printf("%d:%d", indent_tabs, indent_spc)
   else

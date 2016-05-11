@@ -123,7 +123,9 @@ let s:abstract_prototype = {}
 
 function! fugitive#is_git_dir(path) abort
   let path = s:sub(a:path, '[\/]$', '') . '/'
-  return isdirectory(path.'objects') && isdirectory(path.'refs') && getfsize(path.'HEAD') > 10
+  return getfsize(path.'HEAD') > 10 && (
+        \ isdirectory(path.'objects') && isdirectory(path.'refs') ||
+        \ getftype(path.'commondir') ==# 'file')
 endfunction
 
 function! fugitive#extract_git_dir(path) abort
@@ -265,9 +267,17 @@ function! s:configured_tree(git_dir) abort
       let config = readfile(config_file,'',10)
       call filter(config,'v:val =~# "^\\s*worktree *="')
       if len(config) == 1
-        let s:worktree_for_dir[a:git_dir] = matchstr(config[0], '= *\zs.*')
-        let s:dir_for_worktree[s:worktree_for_dir[a:git_dir]] = a:git_dir
+        let worktree = matchstr(config[0], '= *\zs.*')
       endif
+    elseif filereadable(a:git_dir . '/gitdir')
+      let worktree = fnamemodify(readfile(a:git_dir . '/gitdir')[0], ':h')
+      if worktree ==# '.'
+        unlet! worktree
+      endif
+    endif
+    if exists('worktree')
+      let s:worktree_for_dir[a:git_dir] = worktree
+      let s:dir_for_worktree[s:worktree_for_dir[a:git_dir]] = a:git_dir
     endif
   endif
   if s:worktree_for_dir[a:git_dir] =~# '^\.'
@@ -299,6 +309,10 @@ function! s:repo_bare() dict abort
 endfunction
 
 function! s:repo_translate(spec) dict abort
+  let refs = self.dir('refs/')
+  if filereadable(self.dir('commondir'))
+    let refs = simplify(self.dir(get(readfile(self.dir('commondir'), 1), 0, ''))) . '/refs/'
+  endif
   if a:spec ==# '.' || a:spec ==# '/.'
     return self.bare() ? self.dir() : self.tree()
   elseif a:spec =~# '^/\=\.git$' && self.bare()
@@ -322,18 +336,18 @@ function! s:repo_translate(spec) dict abort
     return 'fugitive://'.self.dir().'//0/'.a:spec[1:-1]
   elseif a:spec ==# '@'
     return self.dir('HEAD')
-  elseif a:spec =~# 'HEAD\|^refs/' && a:spec !~ ':' && filereadable(self.dir(a:spec))
-    return self.dir(a:spec)
-  elseif filereadable(self.dir('refs/'.a:spec))
-    return self.dir('refs/'.a:spec)
-  elseif filereadable(self.dir('refs/tags/'.a:spec))
-    return self.dir('refs/tags/'.a:spec)
-  elseif filereadable(self.dir('refs/heads/'.a:spec))
-    return self.dir('refs/heads/'.a:spec)
-  elseif filereadable(self.dir('refs/remotes/'.a:spec))
-    return self.dir('refs/remotes/'.a:spec)
-  elseif filereadable(self.dir('refs/remotes/'.a:spec.'/HEAD'))
-    return self.dir('refs/remotes/'.a:spec,'/HEAD')
+  elseif a:spec =~# 'HEAD\|^refs/' && a:spec !~ ':' && filereadable(refs . '../' . a:spec)
+    return simplify(refs . '../' . a:spec)
+  elseif filereadable(refs.a:spec)
+    return refs.a:spec
+  elseif filereadable(refs.'tags/'.a:spec)
+    return refs.'tags/'.a:spec
+  elseif filereadable(refs.'heads/'.a:spec)
+    return refs.'heads/'.a:spec
+  elseif filereadable(refs.'remotes/'.a:spec)
+    return refs.'remotes/'.a:spec
+  elseif filereadable(refs.'remotes/'.a:spec.'/HEAD')
+    return refs.'remotes/'.a:spec,'/HEAD'
   else
     try
       let ref = self.rev_parse(matchstr(a:spec,'[^:]*'))
@@ -849,7 +863,9 @@ function! s:StageUndo() abort
   let hash = repo.git_chomp('hash-object', '-w', filename)
   if !empty(hash)
     if section ==# 'untracked'
-      call delete(s:repo().tree(filename))
+      call repo.git_chomp_in_tree('clean', '--', filename)
+    elseif section ==# 'unmerged'
+      call repo.git_chomp_in_tree('rm', '--', filename)
     elseif section ==# 'unstaged'
       call repo.git_chomp_in_tree('checkout', '--', filename)
     else
@@ -1552,6 +1568,7 @@ function! s:Write(force,...) abort
 
   unlet! restorewinnr
   let zero = s:repo().translate(':0:'.path)
+  silent execute 'doautocmd BufWritePost' s:fnameescape(zero)
   for tab in range(1,tabpagenr('$'))
     for winnr in range(1,tabpagewinnr(tab,'$'))
       let bufnr = tabpagebuflist(tab)[winnr-1]
@@ -2310,7 +2327,7 @@ function! s:Browse(bang,line1,count,...) abort
     let url = s:gsub(url, '[ <>]', '\="%".printf("%02X",char2nr(submatch(0)))')
     if a:bang
       if has('clipboard')
-        let @* = url
+        let @+ = url
       endif
       return 'echomsg '.string(url)
     elseif exists(':Browse') == 2
@@ -2675,7 +2692,7 @@ function! s:BufReadObject() abort
         if b:fugitive_display_format
           call s:ReplaceCmd(s:repo().git_command('cat-file',b:fugitive_type,hash))
         else
-          call s:ReplaceCmd(s:repo().git_command('show','--no-color','--pretty=format:tree %T%nparent %P%nauthor %an <%ae> %ad%ncommitter %cn <%ce> %cd%nencoding %e%n%n%s%n%n%b',hash))
+          call s:ReplaceCmd(s:repo().git_command('show','--no-color','--pretty=format:tree%x20%T%nparent%x20%P%nauthor%x20%an%x20<%ae>%x20%ad%ncommitter%x20%cn%x20<%ce>%x20%cd%nencoding%x20%e%n%n%s%n%n%b',hash))
           keepjumps call search('^parent ')
           if getline('.') ==# 'parent '
             silent keepjumps delete_

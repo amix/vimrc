@@ -16,23 +16,28 @@ command! -nargs=? GoOracleTags call go#oracle#Tags(<f-args>)
 " tool
 command! -nargs=0 GoFiles echo go#tool#Files()
 command! -nargs=0 GoDeps echo go#tool#Deps()
-command! -nargs=* GoInfo call go#complete#Info()
+command! -nargs=* GoInfo call go#complete#Info(0)
 
 " cmd
 command! -nargs=* -bang GoBuild call go#cmd#Build(<bang>0,<f-args>)
 command! -nargs=* -bang GoGenerate call go#cmd#Generate(<bang>0,<f-args>)
-command! -nargs=* -bang GoRun call go#cmd#Run(<bang>0,<f-args>)
+command! -nargs=* -bang -complete=file GoRun call go#cmd#Run(<bang>0,<f-args>)
 command! -nargs=* -bang GoInstall call go#cmd#Install(<bang>0, <f-args>)
 command! -nargs=* -bang GoTest call go#cmd#Test(<bang>0, 0, <f-args>)
 command! -nargs=* -bang GoTestFunc call go#cmd#TestFunc(<bang>0, <f-args>)
 command! -nargs=* -bang GoTestCompile call go#cmd#Test(<bang>0, 1, <f-args>)
-command! -nargs=* -bang GoCoverage call go#cmd#Coverage(<bang>0, <f-args>)
+
+" -- cover
+command! -nargs=* -bang GoCoverage call go#coverage#Buffer(<bang>0, <f-args>)
+command! -nargs=* -bang GoCoverageBrowser call go#coverage#Browser(<bang>0, <f-args>)
 
 " -- play
 command! -nargs=0 -range=% GoPlay call go#play#Share(<count>, <line1>, <line2>)
 
 " -- def
 command! -nargs=* -range GoDef :call go#def#Jump(<f-args>)
+command! -nargs=? GoDefPop :call go#def#StackPop(<f-args>)
+command! -nargs=? GoDefJump :call go#def#StackJump(<f-args>)
 
 " -- doc
 command! -nargs=* -range -complete=customlist,go#package#Complete GoDoc call go#doc#Open('new', 'split', <f-args>)
@@ -55,5 +60,11 @@ command! -nargs=* -complete=customlist,go#package#Complete GoErrCheck call go#li
 
 " -- alternate
 command! -bang GoAlternate call go#alternate#Switch(<bang>0, '')
+
+" -- ctrlp
+if globpath(&rtp, 'plugin/ctrlp.vim') != ""
+  command! -nargs=? -complete=file GoDecls call ctrlp#init(ctrlp#decls#cmd(0, <q-args>))
+  command! -nargs=? -complete=dir GoDeclsDir call ctrlp#init(ctrlp#decls#cmd(1, <q-args>))
+endif
 
 " vim:ts=4:sw=4:et

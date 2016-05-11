@@ -62,6 +62,10 @@ function! airline#parts#paste()
   return g:airline_detect_paste && &paste ? g:airline_symbols.paste : ''
 endfunction
 
+function! airline#parts#spell()
+  return g:airline_detect_spell && &spell ? g:airline_symbols.spell : ''
+endfunction
+
 function! airline#parts#iminsert()
   if g:airline_detect_iminsert && &iminsert && exists('b:keymap_name')
     return toupper(b:keymap_name)
@@ -70,7 +74,11 @@ function! airline#parts#iminsert()
 endfunction
 
 function! airline#parts#readonly()
-  return &readonly ? g:airline_symbols.readonly : ''
+  if &readonly && &modifiable && !filereadable(bufname('%'))
+    return '[noperm]'
+  else
+    return &readonly ? g:airline_symbols.readonly : ''
+  endif
 endfunction
 
 function! airline#parts#filetype()

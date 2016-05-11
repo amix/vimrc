@@ -22,6 +22,7 @@ function! airline#init#bootstrap()
   call s:check_defined('g:airline_detect_modified', 1)
   call s:check_defined('g:airline_detect_paste', 1)
   call s:check_defined('g:airline_detect_crypt', 1)
+  call s:check_defined('g:airline_detect_spell', 1)
   call s:check_defined('g:airline_detect_iminsert', 0)
   call s:check_defined('g:airline_inactive_collapse', 1)
   call s:check_defined('g:airline_exclude_filenames', ['DebuggerWatch','DebuggerStack','DebuggerStatus'])
@@ -47,18 +48,18 @@ function! airline#init#bootstrap()
 
   call s:check_defined('g:airline_theme_map', {})
   call extend(g:airline_theme_map, {
-        \ 'Tomorrow.*': 'tomorrow',
-        \ 'base16.*': 'base16',
-        \ 'bubblegum': 'bubblegum',
+        \ '\CTomorrow': 'tomorrow',
+        \ 'base16': 'base16',
         \ 'mo[l|n]okai': 'molokai',
-        \ 'wombat.*': 'wombat',
-        \ '.*zenburn.*': 'zenburn',
-        \ '.*solarized.*': 'solarized',
+        \ 'wombat': 'wombat',
+        \ 'zenburn': 'zenburn',
+        \ 'solarized': 'solarized',
         \ }, 'keep')
 
   call s:check_defined('g:airline_symbols', {})
   call extend(g:airline_symbols, {
         \ 'paste': 'PASTE',
+        \ 'spell': 'SPELL',
         \ 'readonly': get(g:, 'airline_powerline_fonts', 0) ? "\ue0a2" : 'RO',
         \ 'whitespace': get(g:, 'airline_powerline_fonts', 0) ? "\u2739" : '!',
         \ 'linenr': get(g:, 'airline_powerline_fonts', 0) ? "\ue0a1" : ':',
@@ -76,6 +77,7 @@ function! airline#init#bootstrap()
   call airline#parts#define_function('iminsert', 'airline#parts#iminsert')
   call airline#parts#define_function('paste', 'airline#parts#paste')
   call airline#parts#define_function('crypt', 'airline#parts#crypt')
+  call airline#parts#define_function('spell', 'airline#parts#spell')
   call airline#parts#define_function('filetype', 'airline#parts#filetype')
   call airline#parts#define('readonly', {
         \ 'function': 'airline#parts#readonly',
@@ -103,7 +105,7 @@ endfunction
 function! airline#init#sections()
   let spc = g:airline_symbols.space
   if !exists('g:airline_section_a')
-    let g:airline_section_a = airline#section#create_left(['mode', 'crypt', 'paste', 'capslock', 'iminsert'])
+    let g:airline_section_a = airline#section#create_left(['mode', 'crypt', 'paste', 'spell', 'capslock', 'iminsert'])
   endif
   if !exists('g:airline_section_b')
     let g:airline_section_b = airline#section#create(['hunks', 'branch'])

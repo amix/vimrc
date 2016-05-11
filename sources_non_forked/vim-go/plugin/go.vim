@@ -18,6 +18,8 @@ let s:packages = [
             \ "github.com/kisielk/errcheck",
             \ "github.com/jstemmer/gotags",
             \ "github.com/klauspost/asmfmt/cmd/asmfmt",
+            \ "github.com/fatih/motion",
+            \ "github.com/zmb3/gogetdoc",
             \ ]
 
 " These commands are available on any filetypes
@@ -143,7 +145,7 @@ augroup vim-go
 
     " GoInfo automatic update
     if get(g:, "go_auto_type_info", 0)
-        autocmd CursorHold *.go nested call go#complete#Info()
+        autocmd CursorHold *.go nested call go#complete#Info(1)
     endif
 
     " Echo the identifier information when completion is done. Useful to see
@@ -166,6 +168,10 @@ augroup vim-go
     if get(g:, "go_metalinter_autosave", 0)
         autocmd BufWritePost *.go call go#lint#Gometa(1)
     endif
+
+    " initialize window-local godef stack
+	au BufReadPre,WinEnter *.go if !exists('w:go_stack') | let w:go_stack = [] | endif
+	au BufReadPre,WinEnter *.go if !exists('w:go_stack_level') | let w:go_stack_level = 0 | endif
 augroup END
 
 

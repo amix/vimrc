@@ -72,6 +72,9 @@ values):
 <
 * enable crypt detection >
   let g:airline_detect_crypt=1
+
+* enable spell detection >
+  let g:airline_detect_spell=1
 <
 * enable iminsert detection >
   let g:airline_detect_iminsert=0
@@ -191,6 +194,7 @@ its contents. >
   let g:airline_symbols.paste = 'ρ'
   let g:airline_symbols.paste = 'Þ'
   let g:airline_symbols.paste = '∥'
+  let g:airline_symbols.spell = 'Ꞩ'
   let g:airline_symbols.notexists = '∄'
   let g:airline_symbols.whitespace = 'Ξ'
 
@@ -223,7 +227,7 @@ section.
 >
   variable names                default contents
   ----------------------------------------------------------------------------
-  let g:airline_section_a       (mode, crypt, paste, iminsert)
+  let g:airline_section_a       (mode, crypt, paste, spell, iminsert)
   let g:airline_section_b       (hunks, branch)
   let g:airline_section_c       (bufferline or filename)
   let g:airline_section_gutter  (readonly, csv)
@@ -489,13 +493,22 @@ eclim <https://eclim.org>
   let g:airline#extensions#whitespace#trailing_regexp = '\s$'
 <
 -------------------------------------                      *airline-tabline*
-* enable/disable enhanced tabline. >
+Note: If you're using the ctrlspace tabline only the option marked with (c)
+are supported!
+
+* enable/disable enhanced tabline. (c)
   let g:airline#extensions#tabline#enabled = 0
-<
-* enable/disable displaying buffers with a single tab. >
+
+* enable/disable displaying open splits per tab (only when tabs are opened). >
+  let g:airline#extensions#tabline#show_splits = 1
+    *
+* switch position of buffers and tabs on splited tabline (c)
+  let g:airline#extensions#tabline#switch_buffers_and_tabs = 0
+
+* enable/disable displaying buffers with a single tab. (c)
   let g:airline#extensions#tabline#show_buffers = 1
 <
-* enable/disable displaying tabs, regardless of number. >
+* enable/disable displaying tabs, regardless of number. (c)
   let g:airline#extensions#tabline#show_tabs = 1
 <
 * configure filename match rules to exclude from the tabline. >
@@ -515,11 +528,13 @@ eclim <https://eclim.org>
 * enable/disable displaying tab type (far right) >
   let g:airline#extensions#tabline#show_tab_type = 1
 
-* enable/disable displaying index of the buffer.
+* rename label for buffers (default: 'buffers') (c)
+  let g:airline#extensions#tabline#buffers_label = 'b'
 
-  Note: If you're using ctrlspace the tabline shows your tabs on the right and
-  buffer on the left. Also none of the tabline switches is currently
-  supported!
+* rename label for tabs (default: 'tabs') (c)
+  let g:airline#extensions#tabline#tabs_label = 't'
+
+* enable/disable displaying index of the buffer.
 
   When enabled, numbers will be displayed in the tabline and mappings will be
   exposed to allow you to select a buffer directly.  Up to 9 mappings will be
@@ -545,7 +560,7 @@ eclim <https://eclim.org>
   Use |gt| for switching tabs.
   In tabmode, those mappings will switch to the specified tab.
 
-* defines the name of a formatter for how buffer names are displayed. >
+* defines the name of a formatter for how buffer names are displayed. (c)
   let g:airline#extensions#tabline#formatter = 'default'
 
   " here is how you can define a 'foo' formatter:
@@ -565,7 +580,7 @@ eclim <https://eclim.org>
     * configure whether buffer numbers should be shown. >
       let g:airline#extensions#tabline#buffer_nr_show = 0
 <
-    * configure how buffer numbers should be formatted with |printf|. >
+    * configure how buffer numbers should be formatted with |printf()|. >
       let g:airline#extensions#tabline#buffer_nr_format = '%s: '
 <
     * configure the formatting of filenames (see |filename-modifiers|). >
@@ -614,8 +629,12 @@ eclim <https://eclim.org>
   let airline#extensions#tabline#ignore_bufadd_pat =
             \ '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree'
 
-<
 Note: Enabling this extension will modify 'showtabline' and 'guioptions'.
+
+* enable Refresh of tabline buffers on |BufAdd| autocommands
+  (set this to one, if you note 'AirlineTablineRefresh', however, this
+   won't update airline on |:badd| commands) >
+  let airline#extensions#tabline#disable_refresh = 0
 
 -------------------------------------                     *airline-tmuxline*
 tmuxline <https://github.com/edkolev/tmuxline.vim>
@@ -707,6 +726,15 @@ Shows number of errors and warnings in the current file detected by YCM.
 * set warning count prefix >
   let g:airline#extensions#ycm#warning_symbol = 'W:'
 <
+-------------------------------------                          *airline-po*
+po.vim <http://www.vim.org/scripts/script.php?script_id=2530>
+
+* enable/disable po integration >
+  let g:airline#extensions#po#enabled = 1
+<
+* truncate width names to a fixed length >
+  let g:airline#extensions#po#displayed_limit = 0
+<
 ==============================================================================
 ADVANCED CUSTOMIZATION                      *airline-advanced-customization*
 
@@ -747,6 +775,7 @@ Before is a list of parts that are predefined by vim-airline.
 * `iminsert`       displays the current insert method
 * `paste`          displays the paste indicator
 * `crypt`          displays the crypted indicator
+* `spell`          displays the spell indicator
 * `filetype`       displays the file type
 * `readonly`       displays the read only indicator
 * `file`           displays the filename and modified indicator

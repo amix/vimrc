@@ -164,7 +164,7 @@ function! g:SyntasticRegistry.CreateAndRegisterChecker(args) abort " {{{2
 
     if has_key(a:args, 'redirect')
         let [ft, name] = split(a:args['redirect'], '/')
-        call registry._loadCheckersFor(ft)
+        call registry._loadCheckersFor(ft, 1)
 
         let clone = get(registry._checkerMap[ft], name, {})
         if empty(clone)
@@ -184,7 +184,7 @@ endfunction " }}}2
 " not run).
 function! g:SyntasticRegistry.getCheckers(ftalias, hints_list) abort " {{{2
     let ft = s:_normalise_filetype(a:ftalias)
-    call self._loadCheckersFor(ft)
+    call self._loadCheckersFor(ft, 0)
 
     let checkers_map = self._checkerMap[ft]
     if empty(checkers_map)
@@ -233,7 +233,7 @@ endfunction " }}}2
 
 function! g:SyntasticRegistry.getNamesOfAvailableCheckers(ftalias) abort " {{{2
     let ft = s:_normalise_filetype(a:ftalias)
-    call self._loadCheckersFor(ft)
+    call self._loadCheckersFor(ft, 0)
     return keys(filter( copy(self._checkerMap[ft]), 'v:val.isAvailable()' ))
 endfunction " }}}2
 
@@ -320,8 +320,8 @@ function! g:SyntasticRegistry._filterCheckersByName(checkers_map, list) abort " 
     return filter( map(copy(a:list), 'get(a:checkers_map, v:val, {})'), '!empty(v:val)' )
 endfunction " }}}2
 
-function! g:SyntasticRegistry._loadCheckersFor(filetype) abort " {{{2
-    if has_key(self._checkerMap, a:filetype)
+function! g:SyntasticRegistry._loadCheckersFor(filetype, force) abort " {{{2
+    if !a:force && has_key(self._checkerMap, a:filetype)
         return
     endif
 

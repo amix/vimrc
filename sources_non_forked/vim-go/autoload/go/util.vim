@@ -48,6 +48,12 @@ function! go#util#StripPathSep(path)
     return a:path
 endfunction
 
+" StripTrailingSlash strips the trailing slash from the given path list.
+" example: ['/foo/bar/']  -> ['/foo/bar']
+function! go#util#StripTrailingSlash(paths)
+  return map(copy(a:paths), 'go#util#StripPathSep(v:val)')
+endfunction
+
 " Shelljoin returns a shell-safe string representation of arglist. The
 " {special} argument of shellescape() may optionally be passed.
 function! go#util#Shelljoin(arglist, ...)
@@ -76,6 +82,34 @@ function! go#util#Shelllist(arglist, ...)
         return map(copy(a:arglist), 'shellescape(v:val)')
     finally
         let &shellslash = ssl_save
+    endtry
+endfunction
+
+" Returns the byte offset for line and column
+function! go#util#Offset(line, col)
+    if &encoding != 'utf-8'
+        let sep = go#util#LineEnding()
+        let buf = a:line == 1 ? '' : (join(getline(1, a:line-1), sep) . sep)
+        let buf .= a:col == 1 ? '' : getline('.')[:a:col-2]
+        return len(iconv(buf, &encoding, 'utf-8'))
+    endif
+    return line2byte(a:line) + (a:col-2)
+endfunction
+"
+" Returns the byte offset for the cursor
+function! go#util#OffsetCursor()
+    return go#util#Offset(line('.'), col('.'))
+endfunction
+
+" Windo is like the built-in :windo, only it returns to the window the command
+" was issued from
+function! go#util#Windo(command)
+    let s:currentWindow = winnr()
+    try
+        execute "windo " . a:command
+    finally
+        execute s:currentWindow. "wincmd w"
+        unlet s:currentWindow
     endtry
 endfunction
 
