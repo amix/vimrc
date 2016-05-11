@@ -131,3 +131,4 @@ endif
 " map $t to <>
 vnoremap $t <esc>`>a><esc>`<i<<esc>
 inoremap $t <><esc>i
+
