@@ -15,7 +15,11 @@ function! airline#extensions#windowswap#init(ext)
 endfunction
 
 function! airline#extensions#windowswap#get_status()
-  if WindowSwap#HasMarkedWindow() && WindowSwap#GetMarkedWindowNum() == winnr()
+  " use new tab-aware api if WS is up to date
+  let s:mark = exists('*WindowSwap#IsCurrentWindowMarked') ?
+    \WindowSwap#IsCurrentWindowMarked() :
+    \(WindowSwap#HasMarkedWindow() && WindowSwap#GetMarkedWindowNum() == winnr())
+  if s:mark
     return g:airline#extensions#windowswap#indicator_text.s:spc
   endif
   return ''

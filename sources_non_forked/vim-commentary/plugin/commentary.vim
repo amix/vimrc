@@ -1,6 +1,6 @@
 " commentary.vim - Comment stuff out
 " Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      1.2
+" Version:      1.3
 " GetLatestVimScripts: 3695 1 :AutoInstall: commentary.vim
 
 if exists("g:loaded_commentary") || &cp || v:version < 700
@@ -28,11 +28,11 @@ function! s:go(type,...) abort
     let [lnum1, lnum2] = [line("'["), line("']")]
   endif
 
-  let [l, r] = s:surroundings()
+  let [l_, r_] = s:surroundings()
   let uncomment = 2
   for lnum in range(lnum1,lnum2)
     let line = matchstr(getline(lnum),'\S.*\s\@<!')
-    let [l, r] = s:strip_white_space(l,r,line)
+    let [l, r] = s:strip_white_space(l_,r_,line)
     if line != '' && (stridx(line,l) || line[strlen(line)-strlen(r) : -1] != r)
       let uncomment = 0
     endif
@@ -98,13 +98,6 @@ if !hasmapto('<Plug>Commentary') || maparg('gc','n') ==# ''
   nmap gcc <Plug>CommentaryLine
   nmap cgc <Plug>ChangeCommentary
   nmap gcu <Plug>Commentary<Plug>Commentary
-endif
-
-if maparg('\\','n') ==# '' && maparg('\','n') ==# '' && get(g:, 'commentary_map_backslash', 1)
-  xmap \\  <Plug>Commentary:echomsg '\\ is deprecated. Use gc'<CR>
-  nmap \\  :echomsg '\\ is deprecated. Use gc'<CR><Plug>Commentary
-  nmap \\\ <Plug>CommentaryLine:echomsg '\\ is deprecated. Use gc'<CR>
-  nmap \\u <Plug>CommentaryUndo:echomsg '\\ is deprecated. Use gc'<CR>
 endif
 
 " vim:set et sw=2:

@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2015 Bailey Ling.
+" MIT License. Copyright (c) 2013-2016 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 let s:is_win32term = (has('win32') || has('win64')) && !has('gui_running') && (empty($CONEMUBUILD) || &term !=? 'xterm')
@@ -9,25 +9,23 @@ let s:accents = {}
 function! s:gui2cui(rgb, fallback)
   if a:rgb == ''
     return a:fallback
+  elseif match(a:rgb, '^\%(NONE\|[fb]g\)$') > -1
+    return a:rgb
   endif
-  let rgb = map(matchlist(a:rgb, '#\(..\)\(..\)\(..\)')[1:3], '0 + ("0x".v:val)')
-  let rgb = [rgb[0] > 127 ? 4 : 0, rgb[1] > 127 ? 2 : 0, rgb[2] > 127 ? 1 : 0]
-  return rgb[0]+rgb[1]+rgb[2]
+  let rgb = map(split(a:rgb[1:], '..\zs'), '0 + ("0x".v:val)')
+  return airline#msdos#round_msdos_colors(rgb)
 endfunction
 
 function! s:get_syn(group, what)
-  " need to pass in mode, known to break on 7.3.547
-  let mode = has('gui_running') || (has("termtruecolor") && &guicolors == 1) ? 'gui' : 'cterm'
-  let color = synIDattr(synIDtrans(hlID(a:group)), a:what, mode)
+  if !exists("g:airline_gui_mode")
+    let g:airline_gui_mode = airline#init#gui_mode()
+  endif
+  let color = synIDattr(synIDtrans(hlID(a:group)), a:what, g:airline_gui_mode)
   if empty(color) || color == -1
-    let color = synIDattr(synIDtrans(hlID('Normal')), a:what, mode)
+    let color = synIDattr(synIDtrans(hlID('Normal')), a:what, g:airline_gui_mode)
   endif
   if empty(color) || color == -1
-    if has('gui_running') || (has("termtruecolor") && &guicolors == 1)
-      let color = a:what ==# 'fg' ? '#000000' : '#FFFFFF'
-    else
-      let color = a:what ==# 'fg' ? 0 : 1
-    endif
+    let color = 'NONE'
   endif
   return color
 endfunction
@@ -35,7 +33,7 @@ endfunction
 function! s:get_array(fg, bg, opts)
   let fg = a:fg
   let bg = a:bg
-  return has('gui_running') || (has("termtruecolor") && &guicolors == 1)
+  return g:airline_gui_mode ==# 'gui'
         \ ? [ fg, bg, '', '', join(a:opts, ',') ]
         \ : [ '', '', fg, bg, join(a:opts, ',') ]
 endfunction
@@ -43,7 +41,7 @@ endfunction
 function! airline#highlighter#get_highlight(group, ...)
   let fg = s:get_syn(a:group, 'fg')
   let bg = s:get_syn(a:group, 'bg')
-  let reverse = has('gui_running') || (has("termtruecolor") && &guicolors == 1)
+  let reverse = g:airline_gui_mode ==# 'gui'
         \ ? synIDattr(synIDtrans(hlID(a:group)), 'reverse', 'gui')
         \ : synIDattr(synIDtrans(hlID(a:group)), 'reverse', 'cterm')
         \|| synIDattr(synIDtrans(hlID(a:group)), 'reverse', 'term')
@@ -57,23 +55,40 @@ function! airline#highlighter#get_highlight2(fg, bg, ...)
 endfunction
 
 function! airline#highlighter#exec(group, colors)
+  if pumvisible()
+    return
+  endif
   let colors = a:colors
   if s:is_win32term
     let colors[2] = s:gui2cui(get(colors, 0, ''), get(colors, 2, ''))
     let colors[3] = s:gui2cui(get(colors, 1, ''), get(colors, 3, ''))
   endif
-  exec printf('hi %s %s %s %s %s %s %s %s',
-        \ a:group,
-        \ get(colors, 0, '') != '' ? 'guifg='.colors[0] : '',
-        \ get(colors, 1, '') != '' ? 'guibg='.colors[1] : '',
-        \ get(colors, 2, '') != '' ? 'ctermfg='.colors[2] : '',
-        \ get(colors, 3, '') != '' ? 'ctermbg='.colors[3] : '',
-        \ get(colors, 4, '') != '' ? 'gui='.colors[4] : '',
-        \ get(colors, 4, '') != '' ? 'cterm='.colors[4] : '',
-        \ get(colors, 4, '') != '' ? 'term='.colors[4] : '')
+  let cmd= printf('hi %s %s %s %s %s %s %s %s',
+        \ a:group, s:Get(colors, 0, 'guifg=', ''), s:Get(colors, 1, 'guibg=', ''),
+        \ s:Get(colors, 2, 'ctermfg=', ''), s:Get(colors, 3, 'ctermbg=', ''),
+        \ s:Get(colors, 4, 'gui=', ''), s:Get(colors, 4, 'cterm=', ''),
+        \ s:Get(colors, 4, 'term=', ''))
+  let old_hi = airline#highlighter#get_highlight(a:group)
+  if len(colors) == 4
+    call add(colors, '')
+  endif
+  if old_hi != colors
+    exe cmd
+  endif
+endfunction
+
+function! s:Get(dict, key, prefix, default)
+  if get(a:dict, a:key, a:default) isnot# a:default
+    return a:prefix. get(a:dict, a:key)
+  else
+    return ''
+  endif
 endfunction
 
 function! s:exec_separator(dict, from, to, inverse, suffix)
+  if pumvisible()
+    return
+  endif
   let l:from = airline#themes#get_highlight(a:from.a:suffix)
   let l:to = airline#themes#get_highlight(a:to.a:suffix)
   let group = a:from.'_to_'.a:to.a:suffix
@@ -87,6 +102,9 @@ function! s:exec_separator(dict, from, to, inverse, suffix)
 endfunction
 
 function! airline#highlighter#load_theme()
+  if pumvisible()
+    return
+  endif
   for winnr in filter(range(1, winnr('$')), 'v:val != winnr()')
     call airline#highlighter#highlight_modified_inactive(winbufnr(winnr))
   endfor

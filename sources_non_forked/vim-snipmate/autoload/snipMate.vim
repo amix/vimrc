@@ -283,7 +283,9 @@ fun! s:AddScopeAliases(list) abort
   return keys(did)
 endf
 
-au SourceCmd *.snippet,*.snippets call s:source_snippet()
+augroup SnipMateSource
+	au SourceCmd *.snippet,*.snippets call s:source_snippet()
+augroup END
 
 function! s:info_from_filename(file) abort
 	let parts = split(fnamemodify(a:file, ':r'), '/')

@@ -1,15 +1,17 @@
-" MIT License. Copyright (c) 2013-2015 Bailey Ling.
+" MIT License. Copyright (c) 2013-2016 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 let s:formatter = get(g:, 'airline#extensions#tabline#formatter', 'default')
 let s:show_buffers = get(g:, 'airline#extensions#tabline#show_buffers', 1)
 let s:show_tabs = get(g:, 'airline#extensions#tabline#show_tabs', 1)
+let s:ignore_bufadd_pat = get(g:, 'airline#extensions#tabline#ignore_bufadd_pat', '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree')
 
 let s:taboo = get(g:, 'airline#extensions#taboo#enabled', 1) && get(g:, 'loaded_taboo', 0)
 if s:taboo
   let g:taboo_tabline = 0
 endif
 
+let s:ctrlspace = get(g:, 'CtrlSpaceLoaded', 0)
 
 function! airline#extensions#tabline#init(ext)
   if has('gui_running')
@@ -27,31 +29,54 @@ function! s:toggle_off()
   call airline#extensions#tabline#autoshow#off()
   call airline#extensions#tabline#tabs#off()
   call airline#extensions#tabline#buffers#off()
+  call airline#extensions#tabline#ctrlspace#off()
 endfunction
 
 function! s:toggle_on()
   call airline#extensions#tabline#autoshow#on()
   call airline#extensions#tabline#tabs#on()
   call airline#extensions#tabline#buffers#on()
+  call airline#extensions#tabline#ctrlspace#on()
 
   set tabline=%!airline#extensions#tabline#get()
 endfunction
 
+function! s:update_tabline()
+  if get(g:, 'airline#extensions#tabline#disable_refresh', 0)
+    return
+  endif
+  let match = expand('<afile>')
+  if pumvisible()
+    return
+  elseif !get(g:, 'airline#extensions#tabline#enabled', 0)
+    return
+  " return, if buffer matches ignore pattern or is directory (netrw)
+  elseif empty(match)
+        \ || match(match, s:ignore_bufadd_pat) > -1
+        \ || isdirectory(expand("<afile>"))
+    return
+  endif
+  doautocmd User BufMRUChange
+endfunction
+
 function! airline#extensions#tabline#load_theme(palette)
+  if pumvisible()
+    return
+  endif
   let colors    = get(a:palette, 'tabline', {})
+  " Theme for tabs on the left
   let l:tab     = get(colors, 'airline_tab', a:palette.normal.airline_b)
   let l:tabsel  = get(colors, 'airline_tabsel', a:palette.normal.airline_a)
   let l:tabtype = get(colors, 'airline_tabtype', a:palette.visual.airline_a)
   let l:tabfill = get(colors, 'airline_tabfill', a:palette.normal.airline_c)
   let l:tabmod  = get(colors, 'airline_tabmod', a:palette.insert.airline_a)
+  let l:tabhid  = get(colors, 'airline_tabhid', a:palette.normal.airline_c)
   if has_key(a:palette, 'normal_modified') && has_key(a:palette.normal_modified, 'airline_c')
     let l:tabmodu = get(colors, 'airline_tabmod_unsel', a:palette.normal_modified.airline_c)
   else
     "Fall back to normal airline_c if modified airline_c isn't present
     let l:tabmodu = get(colors, 'airline_tabmod_unsel', a:palette.normal.airline_c)
   endif
-
-  let l:tabhid  = get(colors, 'airline_tabhid', a:palette.normal.airline_c)
   call airline#highlighter#exec('airline_tab', l:tab)
   call airline#highlighter#exec('airline_tabsel', l:tabsel)
   call airline#highlighter#exec('airline_tabtype', l:tabtype)
@@ -59,6 +84,23 @@ function! airline#extensions#tabline#load_theme(palette)
   call airline#highlighter#exec('airline_tabmod', l:tabmod)
   call airline#highlighter#exec('airline_tabmod_unsel', l:tabmodu)
   call airline#highlighter#exec('airline_tabhid', l:tabhid)
+
+  " Theme for tabs on the right
+  let l:tabsel_right  = get(colors, 'airline_tabsel_right', a:palette.normal.airline_a)
+  let l:tab_right     = get(colors, 'airline_tab_right',    a:palette.inactive.airline_c)
+  let l:tabmod_right  = get(colors, 'airline_tabmod_right', a:palette.insert.airline_a)
+  let l:tabhid_right  = get(colors, 'airline_tabhid_right', a:palette.normal.airline_c)
+  if has_key(a:palette, 'normal_modified') && has_key(a:palette.normal_modified, 'airline_c')
+    let l:tabmodu_right = get(colors, 'airline_tabmod_unsel_right', a:palette.normal_modified.airline_c)
+  else
+    "Fall back to normal airline_c if modified airline_c isn't present
+    let l:tabmodu_right = get(colors, 'airline_tabmod_unsel_right', a:palette.normal.airline_c)
+  endif
+  call airline#highlighter#exec('airline_tab_right',    l:tab_right)
+  call airline#highlighter#exec('airline_tabsel_right', l:tabsel_right)
+  call airline#highlighter#exec('airline_tabmod_right', l:tabmod_right)
+  call airline#highlighter#exec('airline_tabhid_right', l:tabhid_right)
+  call airline#highlighter#exec('airline_tabmod_unsel_right', l:tabmodu_right)
 endfunction
 
 let s:current_tabcnt = -1
@@ -68,9 +110,15 @@ function! airline#extensions#tabline#get()
     let s:current_tabcnt = curtabcnt
     call airline#extensions#tabline#tabs#invalidate()
     call airline#extensions#tabline#buffers#invalidate()
+    call airline#extensions#tabline#ctrlspace#invalidate()
   endif
 
-  if s:show_buffers && curtabcnt == 1 || !s:show_tabs
+  if !exists('#airline#BufAdd#*')
+    autocmd airline BufAdd * call <sid>update_tabline()
+  endif
+  if s:ctrlspace
+    return airline#extensions#tabline#ctrlspace#get()
+  elseif s:show_buffers && curtabcnt == 1 || !s:show_tabs
     return airline#extensions#tabline#buffers#get()
   else
     return airline#extensions#tabline#tabs#get()
@@ -81,6 +129,10 @@ function! airline#extensions#tabline#title(n)
   let title = ''
   if s:taboo
     let title = TabooTabTitle(a:n)
+  endif
+
+  if empty(title) && exists('*gettabvar')
+    let title = gettabvar(a:n, 'title')
   endif
 
   if empty(title)
@@ -111,4 +163,24 @@ function! airline#extensions#tabline#new_builder()
   endif
 
   return airline#builder#new(builder_context)
+endfunction
+
+function! airline#extensions#tabline#group_of_bufnr(tab_bufs, bufnr)
+  let cur = bufnr('%')
+  if cur == a:bufnr
+    if g:airline_detect_modified && getbufvar(a:bufnr, '&modified')
+      let group = 'airline_tabmod'
+    else
+      let group = 'airline_tabsel'
+    endif
+  else
+    if g:airline_detect_modified && getbufvar(a:bufnr, '&modified')
+      let group = 'airline_tabmod_unsel'
+    elseif index(a:tab_bufs, a:bufnr) > -1
+      let group = 'airline_tab'
+    else
+      let group = 'airline_tabhid'
+    endif
+  endif
+  return group
 endfunction

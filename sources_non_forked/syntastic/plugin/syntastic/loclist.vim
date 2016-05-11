@@ -291,12 +291,15 @@ endfunction " }}}2
 
 function! g:SyntasticLoclist.setloclist() abort " {{{2
     if !exists('w:syntastic_loclist_set')
-        let w:syntastic_loclist_set = 0
+        let w:syntastic_loclist_set = []
     endif
-    let replace = g:syntastic_reuse_loc_lists && w:syntastic_loclist_set
-    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: setloclist ' . (replace ? '(replace)' : '(new)'))
-    call setloclist(0, self.getRaw(), replace ? 'r' : ' ')
-    let w:syntastic_loclist_set = 1
+    if empty(w:syntastic_loclist_set) || w:syntastic_loclist_set != [bufnr(''), b:changedtick]
+        let replace = g:syntastic_reuse_loc_lists && !empty(w:syntastic_loclist_set)
+        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: setloclist ' . (replace ? '(replace)' : '(new)'))
+        call setloclist(0, self.getRaw(), replace ? 'r' : ' ')
+        call syntastic#util#setChangedtick()
+        let w:syntastic_loclist_set = [bufnr(''), b:syntastic_changedtick]
+    endif
 endfunction " }}}2
 
 "display the cached errors for this buf in the location list

@@ -28,12 +28,14 @@ if (!exists('g:snipMateSources'))
   let g:snipMateSources['default'] = funcref#Function('snipMate#DefaultPool')
 endif
 
-au BufRead,BufNewFile *.snippet,*.snippets setlocal filetype=snippets
-au FileType snippets if expand('<afile>:e') =~# 'snippet$'
+augroup SnipMateDetect
+	au BufRead,BufNewFile *.snippet,*.snippets setlocal filetype=snippets
+	au FileType snippets if expand('<afile>:e') =~# 'snippet$'
 				\ | setlocal syntax=snippet
-			\ | else
-				\ | setlocal syntax=snippets
-			\ | endif
+				\ | else
+					\ | setlocal syntax=snippets
+					\ | endif
+augroup END
 
 inoremap <silent> <Plug>snipMateNextOrTrigger  <C-R>=snipMate#TriggerSnippet()<CR>
 snoremap <silent> <Plug>snipMateNextOrTrigger  <Esc>a<C-R>=snipMate#TriggerSnippet()<CR>

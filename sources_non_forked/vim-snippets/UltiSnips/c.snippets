@@ -8,7 +8,7 @@ snippet def "#define ..."
 #define ${1}
 endsnippet
 
-snippet ifndef "#ifndef ... #define ... #endif"
+snippet #ifndef "#ifndef ... #define ... #endif"
 #ifndef ${1/([A-Za-z0-9_]+).*/$1/}
 #define ${1:SYMBOL} ${2:value}
 #endif /* ifndef $1 */
