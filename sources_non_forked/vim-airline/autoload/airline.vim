@@ -1,9 +1,9 @@
-" MIT License. Copyright (c) 2013-2015 Bailey Ling.
+" MIT License. Copyright (c) 2013-2016 Bailey Ling.
 " vim: et ts=2 sts=2 sw=2
 
 let g:airline_statusline_funcrefs = get(g:, 'airline_statusline_funcrefs', [])
 
-let s:sections = ['a','b','c','gutter','x','y','z','warning']
+let s:sections = ['a','b','c','gutter','x','y','z', 'error', 'warning']
 let s:inactive_funcrefs = []
 
 function! airline#add_statusline_func(name)
@@ -71,14 +71,21 @@ endfunction
 
 function! airline#switch_matching_theme()
   if exists('g:colors_name')
+    let existing = g:airline_theme
+    let theme = substitute(g:colors_name, '-', '_', 'g')
     try
-      let palette = g:airline#themes#{g:colors_name}#palette
-      call airline#switch_theme(g:colors_name)
+      let palette = g:airline#themes#{theme}#palette
+      call airline#switch_theme(theme)
       return 1
     catch
       for map in items(g:airline_theme_map)
         if match(g:colors_name, map[0]) > -1
-          call airline#switch_theme(map[1])
+          try
+            let palette = g:airline#themes#{map[1]}#palette
+            call airline#switch_theme(map[1])
+          catch
+            call airline#switch_theme(existing)
+          endtry
           return 1
         endif
       endfor
@@ -166,6 +173,10 @@ function! airline#check_mode(winnr)
 
   if g:airline_detect_crypt && exists("+key") && !empty(&key)
     call add(l:mode, 'crypt')
+  endif
+
+  if g:airline_detect_spell && &spell
+    call add(l:mode, 'spell')
   endif
 
   if &readonly || ! &modifiable

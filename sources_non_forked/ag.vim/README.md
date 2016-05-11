@@ -67,6 +67,9 @@ In the quickfix window, you can use:
     gv   to open in vertical split silently
     q    to close the quickfix window
 
+### Related Plugin ###
+[vim-ag-anything](https://github.com/Chun-Yang/vim-ag-anything) adds an 'ga' action to search any text object.
+
 ### Acknowledgements ###
 
 This Vim plugin is derived (and by derived, I mean copied, almost entirely)

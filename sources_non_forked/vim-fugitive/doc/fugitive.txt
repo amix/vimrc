@@ -57,6 +57,10 @@ that are part of Git repositories).
                         q     close status
                         r     reload status
                         S     |:Gvsplit|
+                        U     |:Git| checkout
+                        U     |:Git| checkout HEAD (staged files)
+                        U     |:Git| clean (untracked files)
+                        U     |:Git| rm (unmerged files)
 
                                                 *fugitive-:Gcommit*
 :Gcommit [args]         A wrapper around git-commit.  If there is nothing
@@ -91,10 +95,10 @@ that are part of Git repositories).
 :Gfetch [args]          Like |:Gpush|, but for git-fetch.
 
                                                 *fugitive-:Ggrep*
-:Ggrep [args]           |:grep| with git-grep as 'grepprg'.
+:Ggrep[!] [args]        |:grep|[!] with git-grep as 'grepprg'.
 
                                                 *fugitive-:Glgrep*
-:Glgrep [args]          |:lgrep| with git-grep as 'grepprg'.
+:Glgrep[!] [args]       |:lgrep|[!] with git-grep as 'grepprg'.
 
                                                 *fugitive-:Glog*
 :Glog [args]            Load all previous revisions of the current file into

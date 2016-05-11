@@ -227,12 +227,12 @@ function! syntastic#preprocess#prospector(errors) abort " {{{2
 
                         call add(out, msg)
                     catch /\m^Vim\%((\a\+)\)\=:E716/
-                        call syntastic#log#warn('checker python/prospector: unrecognized error format')
+                        call syntastic#log#warn('checker python/prospector: unrecognized error item ' . string(e))
                         let out = []
                         break
                     endtry
                 else
-                    call syntastic#log#warn('checker python/prospector: unrecognized error format')
+                    call syntastic#log#warn('checker python/prospector: unrecognized error item ' . string(e))
                     let out = []
                     break
                 endif
@@ -281,6 +281,42 @@ function! syntastic#preprocess#rparse(errors) abort " {{{2
         endif
     endfor
 
+    return out
+endfunction " }}}2
+
+function! syntastic#preprocess#scss_lint(errors) abort " {{{2
+    let errs = join(a:errors, '')
+    if errs ==# ''
+        return []
+    endif
+
+    let json = s:_decode_JSON(errs)
+
+    let out = []
+    if type(json) == type({})
+        for fname in keys(json)
+            if type(json[fname]) == type([])
+                for e in json[fname]
+                    try
+                        cal add(out, fname . ':' .
+                            \ e['severity'][0] . ':' .
+                            \ e['line'] . ':' .
+                            \ e['column'] . ':' .
+                            \ e['length'] . ':' .
+                            \ ( has_key(e, 'linter') ? e['linter'] . ': ' : '' ) .
+                            \ e['reason'])
+                    catch /\m^Vim\%((\a\+)\)\=:E716/
+                        call syntastic#log#warn('checker scss/scss_lint: unrecognized error item ' . string(e))
+                        let out = []
+                    endtry
+                endfor
+            else
+                call syntastic#log#warn('checker scss/scss_lint: unrecognized error format')
+            endif
+        endfor
+    else
+        call syntastic#log#warn('checker scss/scss_lint: unrecognized error format')
+    endif
     return out
 endfunction " }}}2
 
@@ -358,12 +394,12 @@ function! syntastic#preprocess#vint(errors) abort " {{{2
 
                     call add(out, msg)
                 catch /\m^Vim\%((\a\+)\)\=:E716/
-                    call syntastic#log#warn('checker vim/vint: unrecognized error format')
+                    call syntastic#log#warn('checker vim/vint: unrecognized error item ' . string(e))
                     let out = []
                     break
                 endtry
             else
-                call syntastic#log#warn('checker vim/vint: unrecognized error format')
+                call syntastic#log#warn('checker vim/vint: unrecognized error item ' . string(e))
                 let out = []
                 break
             endif

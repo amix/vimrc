@@ -21,6 +21,7 @@ function! SyntaxCheckers_haskell_hlint_GetLocList() dict
         \ '%E%f:%l:%v: Error while reading hint file\, %m,' .
         \ '%E%f:%l:%v: Error: %m,' .
         \ '%W%f:%l:%v: Warning: %m,' .
+        \ '%W%f:%l:%v: Suggestion: %m,' .
         \ '%C%m'
 
     return SyntasticMake({

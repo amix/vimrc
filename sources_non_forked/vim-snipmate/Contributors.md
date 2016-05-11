@@ -38,6 +38,7 @@ additional contributions from:
 * [r00k](https://github.com/r00k)
 * [radicalbit](https://github.com/radicalbit)
 * [redpill](https://github.com/redpill)
+* [rglassett](http://github.com/rglassett)
 * [robhudson](https://github.com/robhudson)
 * [Shraymonks](https://github.com/shraymonks)
 * [sickill](https://github.com/sickill)
