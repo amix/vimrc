@@ -25,7 +25,21 @@ snippet add
 snippet print
 	print-%: ; @echo $*=$($*)
 # ifeq
-snippet ifeq
+snippet if
 	ifeq (${1:cond0}, ${2:cond1})
 		${0}
 	endif
+# ifeq ... else ... endif
+snippet ife
+	ifeq (${1:cond0}, ${2:cond1})
+		${3}
+	else
+		${0}
+	endif
+# else ...
+snippet el
+	else
+		${0}
+# .DEFAULT_GOAL := target
+snippet default
+	.DEFAULT_GOAL := ${1}

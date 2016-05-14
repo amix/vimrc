@@ -11,6 +11,12 @@ snippet def "def"
 define('${1:VARIABLE_NAME}', ${2:'definition'});${3}
 endsnippet
 
+snippet wh "while"
+while (${1}) {
+	${0:${VISUAL}}
+}
+endsnippet
+
 snippet do "do"
 do {
 	${2:// code... }
@@ -39,9 +45,9 @@ interface ${1:someClass}
 } // END interface $1"
 endsnippet
 
-snippet else "else"
+snippet el "else"
 else {
-	${1:// code...}
+	${0:${VISUAL}}
 }
 endsnippet
 
@@ -62,14 +68,14 @@ $_GET['${1}']${2}
 endsnippet
 
 snippet if "if"
-if (${1:/* condition */}) {
-	${2:// code...}
+if (${1}) {
+	${0:${VISUAL}}
 }
 endsnippet
 
-snippet elif "elseif"
-elseif (${1:/* condition */}) {
-	${2:// code...}
+snippet eif "elseif"
+elseif (${1}) {
+	${0:${VISUAL}}
 }
 endsnippet
 
@@ -268,8 +274,8 @@ endsnippet
 
 snippet ns "namespace declaration" b
 namespace ${1:`!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `};
@@ -279,8 +285,8 @@ snippet class "Class declaration template" b
 <?php
 
 namespace ${1:`!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `};
@@ -298,8 +304,8 @@ snippet interface "Interface declaration template" b
 <?php
 
 namespace ${1:`!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `};
@@ -314,6 +320,24 @@ interface $1
 }
 endsnippet
 
+snippet trait "Trait declaration template" b
+<?php
+
+namespace ${1:`!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`};
+
+/**
+ * Trait ${1:`!p snip.rv=snip.basename`}
+ * @author ${2:`!v g:snips_author`}
+ */
+trait $1
+{
+}
+endsnippet
 
 snippet construct "__construct()" b
 /**
@@ -331,19 +355,6 @@ endsnippet
 
 snippet pc "Dumb debug helper in cli"
 var_export($1);$0
-endsnippet
-
-# Symfony 2 based snippets
-snippet sfa "Symfony 2 Controller action"
-/**
-* @Route("/${1:route_name}", name="$1")
-* @Template()
-*/
-public function $1Action($2)
-{
-	$3
-	return ${4:array();}$0
-}
 endsnippet
 
 snippet inheritdoc "@inheritdoc docblock"

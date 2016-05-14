@@ -33,8 +33,8 @@ function! go#package#Paths()
 
     if !exists("s:goroot")
         if executable('go')
-            let s:goroot = substitute(system('go env GOROOT'), '\n', '', 'g')
-            if v:shell_error
+            let s:goroot = substitute(go#util#System('go env GOROOT'), '\n', '', 'g')
+            if go#util#ShellError() != 0
                 echomsg '''go env GOROOT'' failed'
             endif
         else
@@ -95,8 +95,8 @@ function! go#package#FromPath(arg)
 endfunction
 
 function! go#package#CompleteMembers(package, member)
-    silent! let content = system('godoc ' . a:package)
-    if v:shell_error || !len(content)
+    silent! let content = go#util#System('godoc ' . a:package)
+    if go#util#ShellError() || !len(content)
         return []
     endif
     let lines = filter(split(content, "\n"),"v:val !~ '^\\s\\+$'")
@@ -117,7 +117,7 @@ function! go#package#Complete(ArgLead, CmdLine, CursorPos)
     let words = split(a:CmdLine, '\s\+', 1)
 
     " do not complete package members for these commands
-    let neglect_commands = ["GoImportAs", "GoOracleScope"]
+    let neglect_commands = ["GoImportAs", "GoGuruScope"]
 
     if len(words) > 2 && index(neglect_commands, words[0]) == -1
         " Complete package members

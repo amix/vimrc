@@ -30,7 +30,7 @@ disabled/enabled easily.
   (golint, vet, errcheck, deadcode, etc..) and shows the warnings/errors
 * Lint your code with `:GoLint`
 * Run your code through `:GoVet` to catch static errors
-* Advanced source analysis tools utilizing oracle, such as `:GoImplements`,
+* Advanced source analysis tools utilizing guru, such as `:GoImplements`,
   `:GoCallees`, and `:GoReferrers`
 * Precise type-safe renaming of identifiers with `:GoRename`
 * List all source files and dependencies
@@ -50,13 +50,10 @@ disabled/enabled easily.
   in their own new terminal. (beta)
 * Alternate between implementation and test code with `:GoAlternate`
 
-## Donation
-
-People have asked for this for a long time, now you can be a fully supporter by [being a patron](https://www.patreon.com/fatih)! This is fully optional and is just a way to support vim-go's ongoing development directly. Thanks!
-
-[https://www.patreon.com/fatih](https://www.patreon.com/fatih)
-
 ## Install
+
+Master branch is supposed to be a development branch. So stuff here can break and change. 
+Please try use always the [latest release](https://github.com/fatih/vim-go/releases/latest)
 
 Vim-go follows the standard runtime path structure, so I highly recommend to
 use a common and well known plugin manager to install vim-go. Do not use vim-go
@@ -108,10 +105,11 @@ After that just open the help page to see all commands:
 
     :help vim-go
 
-## Mappings
+## Example Mappings
 
 vim-go has several `<Plug>` mappings which can be used to create custom
-mappings. Below are some examples you might find useful:
+mappings. Unless otherwise specified, none of these mappings are enabled
+by default. Here some examples you might find useful:
 
 Run commands such as `go run` for the current file with `<leader>r` or `go
 build` and `go test` for the current package with `<leader>b` and `<leader>t`
@@ -259,6 +257,15 @@ let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 ```
 
+Another issue with `vim-go` and `syntastic` is that the location list window
+that contains the output of commands such as `:GoBuild` and `:GoTest` might not appear.
+To resolve this:
+
+```vim
+let g:go_list_type = "quickfix"
+```
+
+
 ## More info
 
 Check out the [Wiki](https://github.com/fatih/vim-go/wiki) page for more
@@ -267,10 +274,18 @@ information. It includes
 section](https://github.com/fatih/vim-go/wiki/FAQ-Troubleshooting), and many
 other [various pieces](https://github.com/fatih/vim-go/wiki) of information.
 
+## Donation
+
+People have asked for this for a long time, now you can be a fully supporter by
+[being a patron](https://www.patreon.com/fatih)! This is fully optional and is
+just a way to support vim-go's ongoing development directly. Thanks!
+
+[https://www.patreon.com/fatih](https://www.patreon.com/fatih)
+
 ## Credits
 
 * Go Authors for official vim plugins
-* Gocode, Godef, Golint, Oracle, Goimports, Gotags, Errcheck projects and
+* Gocode, Godef, Golint, Guru, Goimports, Gotags, Errcheck projects and
   authors of those projects.
 * Other vim-plugins, thanks for inspiration (vim-golang, go.vim, vim-gocode,
   vim-godef)

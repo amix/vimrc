@@ -20,8 +20,26 @@ endsnippet
 
 snippet if "twig if" b
 {% if ${1} %}
-${2}
+${0:${VISUAL}}
 {% endif %}
+endsnippet
+
+snippet ife "twig if ... else" b
+{% if ${1} %}
+${2}
+{% else %}
+${0}
+{% endif %}
+endsnippet
+
+snippet el "twig else"
+{% else %}
+${0:${VISUAL}}
+endsnippet
+
+snippet eif "twig elseif"
+{% elseif ${1} %}
+${0:${VISUAL}}
 endsnippet
 
 snippet for "twig for" b

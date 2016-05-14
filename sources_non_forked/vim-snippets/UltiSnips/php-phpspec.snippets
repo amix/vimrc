@@ -1,0 +1,38 @@
+# Snippets for phpspec
+
+priority -50
+
+snippet spec "phpspec class" b
+<?php
+
+namespace `!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`;
+
+use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
+
+/**
+ * @author `!v g:snips_author`
+ */
+class `!p
+snip.rv = re.match(r'.*(?=\.)', fn).group()
+` extends ObjectBehavior
+{
+	public function it${1:_does_something}()
+	{
+		$0
+	}
+}
+endsnippet
+
+snippet it "phpspec function it..." b
+public function it${1:_does_something}()
+{
+	$0
+}
+endsnippet
+

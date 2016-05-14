@@ -33,8 +33,10 @@ com! -bar CtrlPCurWD   cal ctrlp#init(0, { 'mode': '' })
 com! -bar CtrlPCurFile cal ctrlp#init(0, { 'mode': 'c' })
 com! -bar CtrlPRoot    cal ctrlp#init(0, { 'mode': 'r' })
 
-if g:ctrlp_map != '' && !hasmapto(':<c-u>'.g:ctrlp_cmd.'<cr>', 'n')
-	exe 'nn <silent>' g:ctrlp_map ':<c-u>'.g:ctrlp_cmd.'<cr>'
+exe 'nn <silent> <plug>(ctrlp) :<c-u>'.g:ctrlp_cmd.'<cr>'
+
+if g:ctrlp_map != '' && !hasmapto('<plug>(ctrlp)')
+	exe 'map' g:ctrlp_map '<plug>(ctrlp)'
 en
 
 cal ctrlp#mrufiles#init()
@@ -62,7 +64,7 @@ com! -bar CtrlPChangeAll   cal ctrlp#init(ctrlp#changes#cmd(1))
 com! -bar CtrlPMixed       cal ctrlp#init(ctrlp#mixed#id())
 com! -bar CtrlPBookmarkDir cal ctrlp#init(ctrlp#bookmarkdir#id())
 
-com! -n=? -com=dir CtrlPBookmarkDirAdd
-	\ cal ctrlp#call('ctrlp#bookmarkdir#add', <q-args>)
+com! -n=? -com=dir -bang CtrlPBookmarkDirAdd
+	\ cal ctrlp#call('ctrlp#bookmarkdir#add', '<bang>', <q-args>)
 
 " vim:ts=2:sw=2:sts=2

@@ -327,6 +327,18 @@ func Test${1:Function}(t *testing.T) {
 }
 endsnippet
 
+snippet hf "http.HandlerFunc" !b
+func ${1:handler}(w http.ResponseWriter, r *http.Request) {
+	${0:fmt.Fprintf(w, "hello world")}
+}
+endsnippet
+
+snippet hhf "mux.HandleFunc" !b
+${1:http}.HandleFunc("${2:/}", func(w http.ResponseWriter, r *http.Request) {
+	${0:fmt.Fprintf(w, "hello world")}
+})
+endsnippet
+
 # quick test server
 snippet tsrv "httptest.NewServer"
 ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -351,6 +363,21 @@ if err != nil {
 }
 endsnippet
 
+snippet example "func ExampleXYZ() { ... }"
+func Example${1:Method}() {
+	${0:${VISUAL}}
+	// Output:
+}
+endsnippet
+
+snippet benchmark "func BenchmarkXYZ(b *testing.B) { ... }"
+func Benchmark${1:Method}(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		${0:${VISUAL}}
+	}
+}
+endsnippet
+
 # variable declaration
 snippet var "var x Type [= ...]"
 var ${1:x} ${2:Type}${3: = ${0:value}}
@@ -371,7 +398,6 @@ if !reflect.DeepEqual(${1:expected}, ${2:actual}) {
 	t.FailNow()
 }
 endsnippet
-
 
 global !p
 

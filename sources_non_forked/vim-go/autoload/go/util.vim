@@ -37,6 +37,67 @@ function! go#util#IsWin()
     return 0
 endfunction
 
+function! go#util#GOARCH()
+    return substitute(go#util#System('go env GOARCH'), '\n', '', 'g')
+endfunction
+
+function! go#util#GOOS()
+    return substitute(go#util#System('go env GOOS'), '\n', '', 'g')
+endfunction
+
+function! go#util#GOROOT()
+    return substitute(go#util#System('go env GOROOT'), '\n', '', 'g')
+endfunction
+
+function! go#util#GOPATH()
+    return substitute(go#util#System('go env GOPATH'), '\n', '', 'g')
+endfunction
+
+function! go#util#OSARCH()
+    return go#util#GOOS() . '_' . go#util#GOARCH()
+endfunction
+
+
+"Check if has vimproc
+function! s:has_vimproc()
+    if !exists('g:go#use_vimproc')
+        if go#util#IsWin()
+            try
+                call vimproc#version()
+                let exists_vimproc = 1
+            catch
+                let exists_vimproc = 0
+            endtry
+        else
+            let exists_vimproc = 0
+        endif
+
+        let g:go#use_vimproc = exists_vimproc
+    endif
+
+    return g:go#use_vimproc
+endfunction
+
+if s:has_vimproc()
+    let s:vim_system = get(g:, 'gocomplete#system_function', 'vimproc#system2')
+    let s:vim_shell_error = get(g:, 'gocomplete#shell_error_function', 'vimproc#get_last_status')
+else
+    let s:vim_system = get(g:, 'gocomplete#system_function', 'system')
+    let s:vim_shell_error = ''
+endif
+
+function! go#util#System(str, ...)
+    return call(s:vim_system, [a:str] + a:000)
+endfunction
+
+function! go#util#ShellError()
+    if empty(s:vim_shell_error)
+        return v:shell_error
+    endif
+    return call(s:vim_shell_error, [])
+endfunction
+
+
 " StripPath strips the path's last character if it's a path separator.
 " example: '/foo/bar/'  -> '/foo/bar'
 function! go#util#StripPathSep(path)
@@ -69,6 +130,19 @@ function! go#util#Shelljoin(arglist, ...)
         let &shellslash = ssl_save
     endtry
 endfunction
+
+fu! go#util#Shellescape(arg)
+    if s:has_vimproc()
+        return vimproc#shellescape(a:arg)
+    endif
+    try
+        let ssl_save = &shellslash
+        set noshellslash
+        return shellescape(a:arg)
+    finally
+        let &shellslash = ssl_save
+    endtry
+endf
 
 " Shelllist returns a shell-safe representation of the items in the given
 " arglist. The {special} argument of shellescape() may optionally be passed.

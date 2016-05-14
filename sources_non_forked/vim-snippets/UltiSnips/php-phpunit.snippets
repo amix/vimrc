@@ -3,15 +3,17 @@
 priority -50
 
 snippet test "phpunit test class" b
+<?php
+
 namespace `!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `;
 
 /**
- * @author `whoami`
+ * @author `!v g:snips_author`
  */
 class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()

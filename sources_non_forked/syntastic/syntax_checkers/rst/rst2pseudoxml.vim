@@ -23,6 +23,11 @@ let s:rst2pseudoxml = (executable('rst2pseudoxml.py') && !syntastic#util#isRunni
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! SyntaxCheckers_rst_rst2pseudoxml_IsAvailable() dict
+    call self.log('exec =', self.getExec())
+    return executable(self.getExec())
+endfunction
+
 function! SyntaxCheckers_rst_rst2pseudoxml_GetLocList() dict
     let makeprg = self.makeprgBuild({
         \ 'args_after': '--report=2 --exit-status=1',

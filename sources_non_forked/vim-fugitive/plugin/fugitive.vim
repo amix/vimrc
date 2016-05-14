@@ -112,11 +112,6 @@ function! s:define_commands() abort
   endfor
 endfunction
 
-augroup fugitive_utility
-  autocmd!
-  autocmd User Fugitive call s:define_commands()
-augroup END
-
 let s:abstract_prototype = {}
 
 " Section: Initialization
@@ -213,6 +208,7 @@ function! fugitive#detect(path) abort
     endif
     try
       let [save_mls, &modelines] = [&mls, 0]
+      call s:define_commands()
       doautocmd User Fugitive
     finally
       let &mls = save_mls
@@ -347,7 +343,7 @@ function! s:repo_translate(spec) dict abort
   elseif filereadable(refs.'remotes/'.a:spec)
     return refs.'remotes/'.a:spec
   elseif filereadable(refs.'remotes/'.a:spec.'/HEAD')
-    return refs.'remotes/'.a:spec,'/HEAD'
+    return refs.'remotes/'.a:spec.'/HEAD'
   else
     try
       let ref = self.rev_parse(matchstr(a:spec,'[^:]*'))
@@ -704,7 +700,7 @@ function! s:Git(bang, args) abort
   let args = matchstr(a:args,'\v\C.{-}%($|\\@<!%(\\\\)*\|)@=')
   if exists(':terminal')
     let dir = s:repo().tree()
-    tabedit %
+    -tabedit %
     execute 'lcd' fnameescape(dir)
     execute 'terminal' git args
   else
@@ -1089,7 +1085,7 @@ function! s:Commit(args, ...) abort
         if bufname('%') == '' && line('$') == 1 && getline(1) == '' && !&mod
           execute 'keepalt edit '.s:fnameescape(msgfile)
         elseif a:args =~# '\%(^\| \)-\%(-verbose\|\w*v\)\>'
-          execute 'keepalt '.(tabpagenr()-1).'tabedit '.s:fnameescape(msgfile)
+          execute 'keepalt -tabedit '.s:fnameescape(msgfile)
         elseif s:buffer().type() ==# 'index'
           execute 'keepalt edit '.s:fnameescape(msgfile)
           execute (search('^#','n')+1).'wincmd+'

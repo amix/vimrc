@@ -41,7 +41,7 @@ function! go#rename#Rename(bang, ...)
     let clean = split(out, '\n')
 
     let l:listtype = "quickfix"
-    if v:shell_error
+    if go#util#ShellError() != 0
         let errors = go#tool#ParseErrors(split(out, '\n'))
         call go#list#Populate(l:listtype, errors)
         call go#list#Window(l:listtype, len(errors))
