@@ -13,7 +13,7 @@ let g:solarized_italic=0 " 1 | 0
 " let g:solarized_underline=0
 
 set background=light " dark light
-:colorscheme solarized " solarized ir_black mayansmoke 
+:colorscheme solarized "peaksea solarized ir_black mayansmoke 
 
 " syntastic
 set statusline+=%#warningmsg#
@@ -57,11 +57,6 @@ map <leader>t7 :tabnext 7<cr>
 map <leader>t8 :tabnext 8<cr>
 map <leader>t9 :tabnext 9<cr>
 
-" mapping :tlist to ,tg
-" map <leader>tg :TlistOpen<cr>
-" add current file to tlist
-" map <leader>ta :TlistAddFiles %<cr>
-
 " use tagbar to  instead of taglist
 let g:tagbar_left = 1
 let g:tagbar_width = 30
@@ -87,12 +82,6 @@ set guioptions-=m
 set guioptions-=T
 " 删除文件时自动删除文件对应 buffer
 let NERDTreeAutoDeleteBuffer=1
-
-" Uncomment the following to have Vim jump to the last position when reopening a file
-if has("autocmd")
-  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
-    \| exe "normal! g`\"" | endif
-endif
 
 " multi_cursor
 " Default mapping
