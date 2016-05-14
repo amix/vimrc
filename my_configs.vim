@@ -12,7 +12,7 @@ let g:solarized_italic=0 " 1 | 0
 " let g:solarized_bold=0
 " let g:solarized_underline=0
 
-set background=dark " dark
+set background=light " dark light
 :colorscheme solarized " solarized ir_black mayansmoke 
 
 " syntastic
@@ -56,10 +56,6 @@ map <leader>t6 :tabnext 6<cr>
 map <leader>t7 :tabnext 7<cr>
 map <leader>t8 :tabnext 8<cr>
 map <leader>t9 :tabnext 9<cr>
-" use ALT-h ,ALT-j to switch in tabs
-" Mac 下不可用
-map <M-u> :tabprev<cr>
-map <M-i> :tabnext<cr>
 
 " mapping :tlist to ,tg
 " map <leader>tg :TlistOpen<cr>
@@ -91,10 +87,6 @@ set guioptions-=m
 set guioptions-=T
 " 删除文件时自动删除文件对应 buffer
 let NERDTreeAutoDeleteBuffer=1
-" map ALT-n ALT-p to :lnext :lprevious
-" Mac 下不可用
-map <M-n> :lnext<cr>
-map <M-p> :lprevious<cr>
 
 " Uncomment the following to have Vim jump to the last position when reopening a file
 if has("autocmd")
