@@ -26,8 +26,22 @@ function! ack#Ack(cmd, args) "{{{
     let l:grepformat = '%f'
   endif
 
+  " Check user policy for blank searches
+  if empty(a:args)
+    if !g:ack_use_cword_for_empty_search
+      echo "No regular expression found."
+      return
+    endif
+  endif
+
   " If no pattern is provided, search for the word under the cursor
   let l:grepargs = empty(a:args) ? expand("<cword>") : a:args . join(a:000, ' ')
+
+  "Bypass search if cursor is on blank string
+  if l:grepargs == ""
+    echo "No regular expression found."
+    return
+  endif
 
   " NOTE: we escape special chars, but not everything using shellescape to
   "       allow for passing arguments etc

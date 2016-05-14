@@ -64,7 +64,7 @@ function! go#lint#Gometa(autosave, ...) abort
     let out = go#tool#ExecuteInDir(meta_command)
 
     let l:listtype = "quickfix"
-    if v:shell_error == 0
+    if go#util#ShellError() == 0
         redraw | echo
         call go#list#Clean(l:listtype)
         call go#list#Window(l:listtype)
@@ -102,7 +102,7 @@ function! go#lint#Golint(...) abort
         let goargs = go#util#Shelljoin(a:000)
     endif
 
-    let out = system(bin_path . " " . goargs)
+    let out = go#util#System(bin_path . " " . goargs)
     if empty(out)
         echon "vim-go: " | echohl Function | echon "[lint] PASS" | echohl None
         return
@@ -127,7 +127,7 @@ function! go#lint#Vet(bang, ...)
     endif
 
     let l:listtype = "quickfix"
-    if v:shell_error
+    if go#util#ShellError() != 0
         let errors = go#tool#ParseErrors(split(out, '\n'))
         call go#list#Populate(l:listtype, errors)
         call go#list#Window(l:listtype, len(errors))
@@ -167,7 +167,7 @@ function! go#lint#Errcheck(...) abort
     let out = go#tool#ExecuteInDir(command)
 
     let l:listtype = "quickfix"
-    if v:shell_error
+    if go#util#ShellError() != 0
         let errformat = "%f:%l:%c:\ %m, %f:%l:%c\ %#%m"
 
         " Parse and populate our location list

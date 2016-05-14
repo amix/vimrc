@@ -4,15 +4,17 @@
 priority -50
 
 snippet classn "Basic class with namespace snippet" b
+<?php
+
 namespace `!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `;
 
 /**
- * ${1:@author `whoami`}
+ * ${1:@author `!v g:snips_author`}
  */
 class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
@@ -26,9 +28,11 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet contr "Symfony2 controller" b
+<?php
+
 namespace `!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `;
@@ -40,12 +44,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * ${1:@author `whoami`}
+ * ${1:@author `!v g:snips_author`}
  */
 class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
 ` extends Controller
 {
+}
+endsnippet
+
+snippet sfa "Symfony 2 Controller action"
+/**
+* @Route("/${1:route_name}", name="$1")
+* @Template()
+*/
+public function $1Action($2)
+{
+	$3
+	return ${4:array();}$0
 }
 endsnippet
 
@@ -72,13 +88,15 @@ public function ${1}Action(${2})
 	${6}
 	return [];
 }`!p
-abspath = os.path.abspath(path)`
+relpath = os.path.relpath(path)`
 endsnippet
 
 snippet comm "Symfony2 command" b
+<?php
+
 namespace `!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `;
@@ -90,7 +108,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * ${3:@author `whoami`}
+ * ${3:@author `!v g:snips_author`}
  */
 class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
@@ -113,9 +131,11 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet subs "Symfony2 subscriber" b
+<?php
+
 namespace `!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `;
@@ -123,7 +143,7 @@ if m:
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * ${1:@author `whoami`}
+ * ${1:@author `!v g:snips_author`}
  */
 class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
@@ -144,9 +164,11 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet transf "Symfony2 form data transformer" b
+<?php
+
 namespace `!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `;
@@ -155,7 +177,7 @@ use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
 /**
- * ${3:@author `whoami`}
+ * ${3:@author `!v g:snips_author`}
  */
 class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
@@ -178,9 +200,11 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet ent "Symfony2 doctrine entity" b
+<?php
+
 namespace `!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `;
@@ -188,7 +212,7 @@ if m:
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ${3:@author `whoami`}
+ * ${3:@author `!v g:snips_author`}
  *
  * @ORM\Entity()
  * @ORM\Table(name="`!p
@@ -215,9 +239,11 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet form "Symfony2 form type" b
+<?php
+
 namespace `!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `;
@@ -227,7 +253,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * ${2:@author `whoami`}
+ * ${2:@author `!v g:snips_author`}
  */
 class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
@@ -259,9 +285,11 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet ev "Symfony2 event" b
+<?php
+
 namespace `!p
-abspath = os.path.abspath(path)
-m = re.search(r'[A-Z].+(?=/)', abspath)
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
 if m:
 	snip.rv = m.group().replace('/', '\\')
 `;
@@ -269,7 +297,7 @@ if m:
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * ${2:@author `whoami`}
+ * ${2:@author `!v g:snips_author`}
  */
 class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()

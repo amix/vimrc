@@ -63,6 +63,7 @@ function! airline#init#bootstrap()
         \ 'readonly': get(g:, 'airline_powerline_fonts', 0) ? "\ue0a2" : 'RO',
         \ 'whitespace': get(g:, 'airline_powerline_fonts', 0) ? "\u2739" : '!',
         \ 'linenr': get(g:, 'airline_powerline_fonts', 0) ? "\ue0a1" : ':',
+        \ 'maxlinenr': get(g:, 'airline_powerline_fonts', 0) ? "\u2630" : '',
         \ 'branch': get(g:, 'airline_powerline_fonts', 0) ? "\ue0a0" : '',
         \ 'notexists': "\u2204",
         \ 'modified': '+',
@@ -88,6 +89,9 @@ function! airline#init#bootstrap()
   call airline#parts#define('linenr', {
         \ 'raw': '%{g:airline_symbols.linenr}%#__accent_bold#%4l%#__restore__#',
         \ 'accent': 'bold'})
+  call airline#parts#define('maxlinenr', {
+        \ 'raw': '%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__#',
+        \ 'accent': 'bold'})
   call airline#parts#define_function('ffenc', 'airline#parts#ffenc')
   call airline#parts#define_empty(['hunks', 'branch', 'tagbar', 'syntastic',
         \ 'eclim', 'whitespace','windowswap', 'ycm_error_count', 'ycm_warning_count'])
@@ -97,8 +101,8 @@ function! airline#init#bootstrap()
 endfunction
 
 function! airline#init#gui_mode()
-  return ((has('nvim') && exists('$NVIM_TUI_ENABLE_TRUE_COLOR'))
-        \ || has('gui_running') || (has("termtruecolor") && &guicolors == 1)) ?
+  return ((has('nvim') && exists('$NVIM_TUI_ENABLE_TRUE_COLOR') && !exists("+termguicolors"))
+        \ || has('gui_running') || (has("termtruecolor") && &guicolors == 1) || (has("termguicolors") && &termguicolors == 1)) ?
         \ 'gui' : 'cterm'
 endfunction
 
@@ -127,7 +131,7 @@ function! airline#init#sections()
     let g:airline_section_y = airline#section#create_right(['ffenc'])
   endif
   if !exists('g:airline_section_z')
-    let g:airline_section_z = airline#section#create(['windowswap', '%3p%%'.spc, 'linenr', ':%3v '])
+    let g:airline_section_z = airline#section#create(['windowswap', '%3p%%'.spc, 'linenr', 'maxlinenr', spc.':%3v'])
   endif
   if !exists('g:airline_section_error')
     let g:airline_section_error = airline#section#create(['ycm_error_count', 'syntastic', 'eclim'])

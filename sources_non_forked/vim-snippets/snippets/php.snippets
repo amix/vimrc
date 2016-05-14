@@ -218,6 +218,18 @@ snippet interface
 	{
 		${0}
 	}
+# Trait
+snippet trait
+	/**
+	 * ${2:undocumented class}
+	 *
+	 * @package ${3:default}
+	 * @author ${4:`g:snips_author`}
+	 */
+	trait ${1:`vim_snippets#Filename()`}
+	{
+		${0}
+	}
 # class ...
 snippet class
 	/**
@@ -287,7 +299,7 @@ snippet el
 		${0}
 	}
 snippet eif
-	elseif (${1:/* condition */}) {
+	elseif (${1}) {
 		${0}
 	}
 snippet switch

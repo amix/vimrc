@@ -25,6 +25,8 @@ nnoremap <silent> <Plug>(go-test-func) :<C-u>call go#cmd#TestFunc(!g:go_jump_to_
 nnoremap <silent> <Plug>(go-test-compile) :<C-u>call go#cmd#Test(!g:go_jump_to_error, 1)<CR>
 
 nnoremap <silent> <Plug>(go-coverage) :<C-u>call go#coverage#Buffer(!g:go_jump_to_error)<CR>
+nnoremap <silent> <Plug>(go-coverage-clear) :<C-u>call go#coverage#Clear()<CR>
+nnoremap <silent> <Plug>(go-coverage-toggle) :<C-u>call go#coverage#BufferToggle(!g:go_jump_to_error)<CR>
 nnoremap <silent> <Plug>(go-coverage-browser) :<C-u>call go#coverage#Browser(!g:go_jump_to_error)<CR>
 
 nnoremap <silent> <Plug>(go-files) :<C-u>call go#tool#Files()<CR>
@@ -32,21 +34,28 @@ nnoremap <silent> <Plug>(go-deps) :<C-u>call go#tool#Deps()<CR>
 nnoremap <silent> <Plug>(go-info) :<C-u>call go#complete#Info(0)<CR>
 nnoremap <silent> <Plug>(go-import) :<C-u>call go#import#SwitchImport(1, '', expand('<cword>'), '')<CR>
 
-nnoremap <silent> <Plug>(go-implements) :<C-u>call go#oracle#Implements(-1)<CR>
-nnoremap <silent> <Plug>(go-callees) :<C-u>call go#oracle#Callees(-1)<CR>
-nnoremap <silent> <Plug>(go-callers) :<C-u>call go#oracle#Callers(-1)<CR>
-nnoremap <silent> <Plug>(go-describe) :<C-u>call go#oracle#Describe(-1)<CR>
-nnoremap <silent> <Plug>(go-callstack) :<C-u>call go#oracle#Callstack(-1)<CR>
-nnoremap <silent> <Plug>(go-freevars) :<C-u>call go#oracle#Freevars(-1)<CR>
-nnoremap <silent> <Plug>(go-channelpeers) :<C-u>call go#oracle#ChannelPeers(-1)<CR>
-nnoremap <silent> <Plug>(go-referrers) :<C-u>call go#oracle#Referrers(-1)<CR>
+nnoremap <silent> <Plug>(go-implements) :<C-u>call go#guru#Implements(-1)<CR>
+nnoremap <silent> <Plug>(go-callees) :<C-u>call go#guru#Callees(-1)<CR>
+nnoremap <silent> <Plug>(go-callers) :<C-u>call go#guru#Callers(-1)<CR>
+nnoremap <silent> <Plug>(go-describe) :<C-u>call go#guru#Describe(-1)<CR>
+nnoremap <silent> <Plug>(go-callstack) :<C-u>call go#guru#Callstack(-1)<CR>
+xnoremap <silent> <Plug>(go-freevars) :<C-u>call go#guru#Freevars(0)<CR>
+nnoremap <silent> <Plug>(go-channelpeers) :<C-u>call go#guru#ChannelPeers(-1)<CR>
+nnoremap <silent> <Plug>(go-referrers) :<C-u>call go#guru#Referrers(-1)<CR>
+
+" TODO(arslan): enable this once the function is implemented
+" nnoremap <silent> <Plug>(go-sameids) :<C-u>call go#guru#SameIds(-1)<CR>
 
 nnoremap <silent> <Plug>(go-rename) :<C-u>call go#rename#Rename(!g:go_jump_to_error)<CR>
 
-nnoremap <silent> <Plug>(go-def) :<C-u>call go#def#Jump()<CR>
-nnoremap <silent> <Plug>(go-def-vertical) :<C-u>call go#def#JumpMode("vsplit")<CR>
-nnoremap <silent> <Plug>(go-def-split) :<C-u>call go#def#JumpMode("split")<CR>
-nnoremap <silent> <Plug>(go-def-tab) :<C-u>call go#def#JumpMode("tab")<CR>
+nnoremap <silent> <Plug>(go-def) :<C-u>call go#def#Jump('')<CR>
+nnoremap <silent> <Plug>(go-def-vertical) :<C-u>call go#def#Jump("vsplit")<CR>
+nnoremap <silent> <Plug>(go-def-split) :<C-u>call go#def#Jump("split")<CR>
+nnoremap <silent> <Plug>(go-def-tab) :<C-u>call go#def#Jump("tab")<CR>
+
+nnoremap <silent> <Plug>(go-def-pop) :<C-u>call go#def#StackPop()<CR>
+nnoremap <silent> <Plug>(go-def-stack) :<C-u>call go#def#Stack()<CR>
+nnoremap <silent> <Plug>(go-def-stack-clear) :<C-u>call go#def#StackClear()<CR>
 
 nnoremap <silent> <Plug>(go-doc) :<C-u>call go#doc#Open("new", "split")<CR>
 nnoremap <silent> <Plug>(go-doc-tab) :<C-u>call go#doc#Open("tabnew", "tabe")<CR>

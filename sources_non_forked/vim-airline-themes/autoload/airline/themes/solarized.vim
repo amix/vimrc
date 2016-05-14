@@ -12,22 +12,44 @@ function! airline#themes#solarized#refresh()
   " Colors
   """"""""""""""""""""""""""""""""""""""""""""""""
   " Base colors
-  let s:base03  = {'t': s:ansi_colors ?   8 : (s:tty ? '0' : 234), 'g': '#002b36'}
-  let s:base02  = {'t': s:ansi_colors ? '0' : (s:tty ? '0' : 235), 'g': '#073642'}
-  let s:base01  = {'t': s:ansi_colors ?  10 : (s:tty ? '0' : 240), 'g': '#586e75'}
-  let s:base00  = {'t': s:ansi_colors ?  11 : (s:tty ? '7' : 241), 'g': '#657b83'}
-  let s:base0   = {'t': s:ansi_colors ?  12 : (s:tty ? '7' : 244), 'g': '#839496'}
-  let s:base1   = {'t': s:ansi_colors ?  14 : (s:tty ? '7' : 245), 'g': '#93a1a1'}
-  let s:base2   = {'t': s:ansi_colors ?   7 : (s:tty ? '7' : 254), 'g': '#eee8d5'}
-  let s:base3   = {'t': s:ansi_colors ?  15 : (s:tty ? '7' : 230), 'g': '#fdf6e3'}
-  let s:yellow  = {'t': s:ansi_colors ?   3 : (s:tty ? '3' : 136), 'g': '#b58900'}
-  let s:orange  = {'t': s:ansi_colors ?   9 : (s:tty ? '1' : 166), 'g': '#cb4b16'}
-  let s:red     = {'t': s:ansi_colors ?   1 : (s:tty ? '1' : 160), 'g': '#dc322f'}
-  let s:magenta = {'t': s:ansi_colors ?   5 : (s:tty ? '5' : 125), 'g': '#d33682'}
-  let s:violet  = {'t': s:ansi_colors ?  13 : (s:tty ? '5' : 61 ), 'g': '#6c71c4'}
-  let s:blue    = {'t': s:ansi_colors ?   4 : (s:tty ? '4' : 33 ), 'g': '#268bd2'}
-  let s:cyan    = {'t': s:ansi_colors ?   6 : (s:tty ? '6' : 37 ), 'g': '#2aa198'}
-  let s:green   = {'t': s:ansi_colors ?   2 : (s:tty ? '2' : 64 ), 'g': '#859900'}
+  " Extended base16 support by @cuviper.
+  " Via https://github.com/blueyed/vim-colors-solarized/commit/92f2f994 /
+  " https://github.com/cuviper/vim-colors-solarized.
+  if s:ansi_colors && get(g:, 'solarized_base16', 0)
+    let s:base03  = {'t': 0,  'g': "#002b36"}  " Base 00
+    let s:base02  = {'t': 18, 'g': "#073642"}  " Base 01
+    let s:base01  = {'t': 19, 'g': "#586e75"}  " Base 02
+    let s:base00  = {'t': 8,  'g': "#657b83"}  " Base 03
+    let s:base0   = {'t': 20, 'g': "#839496"}  " Base 04
+    let s:base1   = {'t': 7,  'g': "#93a1a1"}  " Base 05
+    let s:base2   = {'t': 21, 'g': "#eee8d5"}  " Base 06
+    let s:base3   = {'t': 15, 'g': "#fdf6e3"}  " Base 07
+    let s:yellow  = {'t': 3,  'g': "#dc322f"}  " Base 0A
+    let s:orange  = {'t': 16, 'g': "#cb4b16"}  " Base 09
+    let s:red     = {'t': 1,  'g': "#b58900"}  " Base 08
+    let s:magenta = {'t': 17, 'g': "#859900"}  " Base 0F
+    let s:violet  = {'t': 5,  'g': "#2aa198"}  " Base 0E
+    let s:blue    = {'t': 4,  'g': "#268bd2"}  " Base 0D
+    let s:cyan    = {'t': 6,  'g': "#6c71c4"}  " Base 0C
+    let s:green   = {'t': 2,  'g': "#d33682"}  " Base 0B
+  else
+    let s:base03  = {'t': s:ansi_colors ?   8 : (s:tty ? '0' : 234), 'g': '#002b36'}
+    let s:base02  = {'t': s:ansi_colors ? '0' : (s:tty ? '0' : 235), 'g': '#073642'}
+    let s:base01  = {'t': s:ansi_colors ?  10 : (s:tty ? '0' : 240), 'g': '#586e75'}
+    let s:base00  = {'t': s:ansi_colors ?  11 : (s:tty ? '7' : 241), 'g': '#657b83'}
+    let s:base0   = {'t': s:ansi_colors ?  12 : (s:tty ? '7' : 244), 'g': '#839496'}
+    let s:base1   = {'t': s:ansi_colors ?  14 : (s:tty ? '7' : 245), 'g': '#93a1a1'}
+    let s:base2   = {'t': s:ansi_colors ?   7 : (s:tty ? '7' : 254), 'g': '#eee8d5'}
+    let s:base3   = {'t': s:ansi_colors ?  15 : (s:tty ? '7' : 230), 'g': '#fdf6e3'}
+    let s:yellow  = {'t': s:ansi_colors ?   3 : (s:tty ? '3' : 136), 'g': '#b58900'}
+    let s:orange  = {'t': s:ansi_colors ?   9 : (s:tty ? '1' : 166), 'g': '#cb4b16'}
+    let s:red     = {'t': s:ansi_colors ?   1 : (s:tty ? '1' : 160), 'g': '#dc322f'}
+    let s:magenta = {'t': s:ansi_colors ?   5 : (s:tty ? '5' : 125), 'g': '#d33682'}
+    let s:violet  = {'t': s:ansi_colors ?  13 : (s:tty ? '5' : 61 ), 'g': '#6c71c4'}
+    let s:blue    = {'t': s:ansi_colors ?   4 : (s:tty ? '4' : 33 ), 'g': '#268bd2'}
+    let s:cyan    = {'t': s:ansi_colors ?   6 : (s:tty ? '6' : 37 ), 'g': '#2aa198'}
+    let s:green   = {'t': s:ansi_colors ?   2 : (s:tty ? '2' : 64 ), 'g': '#859900'}
+  endif
 
   """"""""""""""""""""""""""""""""""""""""""""""""
   " Simple mappings

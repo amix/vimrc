@@ -61,7 +61,7 @@ function! s:Path.cacheDisplayString() abort
     endif
 
     if self.isReadOnly
-        let self.cachedDisplayString .=  ' [RO]'
+        let self.cachedDisplayString .=  ' ['.g:NERDTreeGlyphReadOnly.']'
     endif
 endfunction
 

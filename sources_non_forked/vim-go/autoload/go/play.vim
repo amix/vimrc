@@ -13,13 +13,13 @@ function! go#play#Share(count, line1, line2)
     let share_file = tempname()
     call writefile(split(content, "\n"), share_file, "b")
 
-    let command = "curl -s -X POST http://play.golang.org/share --data-binary '@".share_file."'"
-    let snippet_id = system(command)
+    let command = "curl -s -X POST https://play.golang.org/share --data-binary '@".share_file."'"
+    let snippet_id = go#util#System(command)
 
     " we can remove the temp file because it's now posted.
     call delete(share_file)
 
-    if v:shell_error
+    if go#util#ShellError() != 0
         echo 'A error has occured. Run this command to see what the problem is:'
         echo command
         return
@@ -77,7 +77,7 @@ function! s:get_browser_command()
     if go_play_browser_command == ''
         if has('win32') || has('win64')
             let go_play_browser_command = '!start rundll32 url.dll,FileProtocolHandler %URL%'
-        elseif has('mac') || has('macunix') || has('gui_macvim') || system('uname') =~? '^darwin'
+        elseif has('mac') || has('macunix') || has('gui_macvim') || go#util#System('uname') =~? '^darwin'
             let go_play_browser_command = 'open %URL%'
         elseif executable('xdg-open')
             let go_play_browser_command = 'xdg-open %URL%'

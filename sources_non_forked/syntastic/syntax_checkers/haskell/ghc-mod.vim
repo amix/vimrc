@@ -20,7 +20,7 @@ let s:ghc_mod_new = -1
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_haskell_ghc_mod_IsAvailable() dict
+function! SyntaxCheckers_haskell_ghc_mod_IsAvailable() dict " {{{1
     if !executable(self.getExec())
         return 0
     endif
@@ -59,9 +59,9 @@ function! SyntaxCheckers_haskell_ghc_mod_IsAvailable() dict
     let s:ghc_mod_bailout = syntastic#util#versionIsAtLeast(parsed_ver, [5, 4])
 
     return (s:ghc_mod_new >= 0) && (v:version >= 704 || s:ghc_mod_new) && !s:ghc_mod_bailout
-endfunction
+endfunction " }}}1
 
-function! SyntaxCheckers_haskell_ghc_mod_GetLocList() dict
+function! SyntaxCheckers_haskell_ghc_mod_GetLocList() dict " {{{1
     let makeprg = self.makeprgBuild({
         \ 'exe': self.getExecEscaped() . ' check' . (s:ghc_mod_new ? ' --boundary=""' : '') })
 
@@ -81,7 +81,7 @@ function! SyntaxCheckers_haskell_ghc_mod_GetLocList() dict
         \ 'preprocess': 'iconv',
         \ 'postprocess': ['compressWhitespace'],
         \ 'returns': [0] })
-endfunction
+endfunction " }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'haskell',

@@ -140,6 +140,10 @@ values):
 * disable the Airline customization for selective windows (this is a
   window-local variable so you can disable it for only some windows) >
   let w:airline_disabled = 1
+
+* Do not draw separators for empty sections (only for the active window)
+ >
+  let g:airline_skip_empty_sections = 1
 <
 
 ==============================================================================
@@ -190,6 +194,8 @@ its contents. >
   let g:airline_symbols.linenr = '␊'
   let g:airline_symbols.linenr = '␤'
   let g:airline_symbols.linenr = '¶'
+  let g:airline_symbols.maxlinenr = '☰'
+  let g:airline_symbols.maxlinenr = ''
   let g:airline_symbols.branch = '⎇'
   let g:airline_symbols.paste = 'ρ'
   let g:airline_symbols.paste = 'Þ'
@@ -491,6 +497,10 @@ eclim <https://eclim.org>
 
 * configure custom trailing whitespace regexp rule >
   let g:airline#extensions#whitespace#trailing_regexp = '\s$'
+
+* configure, which filetypes have special treatment of /* */ comments,
+  matters for mix-indent-file algorithm: >
+  let airline#extensions#c_like_langs = ['c', 'cpp', 'cuda', 'javascript', 'ld', 'php']
 <
 -------------------------------------                      *airline-tabline*
 Note: If you're using the ctrlspace tabline only the option marked with (c)
@@ -508,6 +518,11 @@ are supported!
 * enable/disable displaying buffers with a single tab. (c)
   let g:airline#extensions#tabline#show_buffers = 1
 <
+
+Note: If you are using neovim (has('tablineat') = 1), then you can click
+on the tabline with the left mouse button to switch to that buffer, and
+with the middle mouse button to delete that buffer.
+
 * enable/disable displaying tabs, regardless of number. (c)
   let g:airline#extensions#tabline#show_tabs = 1
 <

@@ -65,11 +65,11 @@ function! go#fmt#Format(withGoimport)
         try
             mkview!
         catch
-            let l:curw=winsaveview()
+            let l:curw = winsaveview()
         endtry
     else
         " Save cursor position and many other things.
-        let l:curw=winsaveview()
+        let l:curw = winsaveview()
     endif
 
     " Write current unsaved buffer to a temp file
@@ -81,7 +81,7 @@ function! go#fmt#Format(withGoimport)
         " prevent an additional undo jump due to BufWritePre auto command and also
         " restore 'redo' history because it's getting being destroyed every
         " BufWritePre
-        let tmpundofile=tempname()
+        let tmpundofile = tempname()
         exe 'wundo! ' . tmpundofile
     endif
 
@@ -115,7 +115,7 @@ function! go#fmt#Format(withGoimport)
 
     if fmt_command == "goimports"
         if !exists('b:goimports_vendor_compatible')
-            let out = system("goimports --help")
+            let out = go#util#System("goimports --help")
             if out !~ "-srcdir"
                 echohl WarningMsg
                 echomsg "vim-go: goimports does not support srcdir."
@@ -135,7 +135,10 @@ function! go#fmt#Format(withGoimport)
     endif
 
     " execute our command...
-    let out = system(command . " " . l:tmpname)
+    if go#util#IsWin()
+        let l:tmpname = tr(l:tmpname, '\', '/')
+    endif
+    let out = go#util#System(command . " " . l:tmpname)
 
     if fmt_command != "gofmt"
         let $GOPATH = old_gopath
@@ -145,7 +148,7 @@ function! go#fmt#Format(withGoimport)
     "if there is no error on the temp file replace the output with the current
     "file (if this fails, we can always check the outputs first line with:
     "splitted =~ 'package \w\+')
-    if v:shell_error == 0
+    if go#util#ShellError() == 0
         " remove undo point caused via BufWritePre
         try | silent undojoin | catch | endtry
 

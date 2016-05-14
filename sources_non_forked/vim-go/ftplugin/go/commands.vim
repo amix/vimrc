@@ -1,24 +1,27 @@
-" gorename
+" -- gorename
 command! -nargs=? GoRename call go#rename#Rename(<bang>0,<f-args>)
 
-" oracle
-command! -nargs=* -complete=customlist,go#package#Complete GoOracleScope call go#oracle#Scope(<f-args>)
-command! -range=% GoImplements call go#oracle#Implements(<count>)
-command! -range=% GoCallees call go#oracle#Callees(<count>)
-command! -range=% GoDescribe call go#oracle#Describe(<count>)
-command! -range=% GoCallers call go#oracle#Callers(<count>)
-command! -range=% GoCallstack call go#oracle#Callstack(<count>)
-command! -range=% GoFreevars call go#oracle#Freevars(<count>)
-command! -range=% GoChannelPeers call go#oracle#ChannelPeers(<count>)
-command! -range=% GoReferrers call go#oracle#Referrers(<count>)
-command! -nargs=? GoOracleTags call go#oracle#Tags(<f-args>)
+" -- guru
+command! -nargs=* -complete=customlist,go#package#Complete GoGuruScope call go#guru#Scope(<f-args>)
+command! -range=% GoImplements call go#guru#Implements(<count>)
+command! -range=% GoCallees call go#guru#Callees(<count>)
+command! -range=% GoDescribe call go#guru#Describe(<count>)
+command! -range=% GoCallers call go#guru#Callers(<count>)
+command! -range=% GoCallstack call go#guru#Callstack(<count>)
+command! -range=% GoFreevars call go#guru#Freevars(<count>)
+command! -range=% GoChannelPeers call go#guru#ChannelPeers(<count>)
+command! -range=% GoReferrers call go#guru#Referrers(<count>)
+command! -nargs=? GoGuruTags call go#guru#Tags(<f-args>)
 
-" tool
+" TODO(arslan): enable this once the function is implemented
+" command! -range=% GoSameIds call go#guru#SameIds(<count>)
+
+" -- tool
 command! -nargs=0 GoFiles echo go#tool#Files()
 command! -nargs=0 GoDeps echo go#tool#Deps()
 command! -nargs=* GoInfo call go#complete#Info(0)
 
-" cmd
+" -- cmd
 command! -nargs=* -bang GoBuild call go#cmd#Build(<bang>0,<f-args>)
 command! -nargs=* -bang GoGenerate call go#cmd#Generate(<bang>0,<f-args>)
 command! -nargs=* -bang -complete=file GoRun call go#cmd#Run(<bang>0,<f-args>)
@@ -29,15 +32,18 @@ command! -nargs=* -bang GoTestCompile call go#cmd#Test(<bang>0, 1, <f-args>)
 
 " -- cover
 command! -nargs=* -bang GoCoverage call go#coverage#Buffer(<bang>0, <f-args>)
+command! -nargs=* -bang GoCoverageClear call go#coverage#Clear()
+command! -nargs=* -bang GoCoverageToggle call go#coverage#BufferToggle(<bang>0, <f-args>)
 command! -nargs=* -bang GoCoverageBrowser call go#coverage#Browser(<bang>0, <f-args>)
 
 " -- play
 command! -nargs=0 -range=% GoPlay call go#play#Share(<count>, <line1>, <line2>)
 
 " -- def
-command! -nargs=* -range GoDef :call go#def#Jump(<f-args>)
+command! -nargs=* -range GoDef :call go#def#Jump('')
 command! -nargs=? GoDefPop :call go#def#StackPop(<f-args>)
-command! -nargs=? GoDefJump :call go#def#StackJump(<f-args>)
+command! -nargs=? GoDefStack :call go#def#Stack(<f-args>)
+command! -nargs=? GoDefStackClear :call go#def#StackClear(<f-args>)
 
 " -- doc
 command! -nargs=* -range -complete=customlist,go#package#Complete GoDoc call go#doc#Open('new', 'split', <f-args>)
@@ -66,5 +72,8 @@ if globpath(&rtp, 'plugin/ctrlp.vim') != ""
   command! -nargs=? -complete=file GoDecls call ctrlp#init(ctrlp#decls#cmd(0, <q-args>))
   command! -nargs=? -complete=dir GoDeclsDir call ctrlp#init(ctrlp#decls#cmd(1, <q-args>))
 endif
+
+" -- impl
+command! -nargs=* -buffer -complete=customlist,go#impl#Complete GoImpl call go#impl#Impl(<f-args>)
 
 " vim:ts=4:sw=4:et

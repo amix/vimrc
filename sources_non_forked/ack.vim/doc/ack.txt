@@ -230,6 +230,22 @@ Example:
         let g:ack_use_dispatch = 1
 <
 
+                                             *g:ack_use_cword_for_empty_search*
+
+g:ack_use_cword_for_empty_search
+Default: 1
+
+Use this option to enable blank searches to run against the word under the
+cursor. When this option is not set, blank searches will only output an error
+message.
+
+
+Example:
+>
+        let g:ack_use_cword_for_empty_search = 0
+<
+
+
 ==============================================================================
 MAPPINGS                                                        *ack-mappings*
 

@@ -1071,10 +1071,16 @@ mode only work with "vim-auto-save" version 0.1.7 or later.
 Syntastic can be used along with the "vim-go" Vim plugin (see
 https://github.com/fatih/vim-go). However, both "vim-go" and syntastic run
 syntax checks by default when you save buffers to disk. To avoid conflicts,
-you have to either set passive mode in syntastic for the go filetype (see
+you have to either set passive mode in syntastic for the "go" filetype (see
 |syntastic_mode_map|), or prevent "vim-go" from showing a quickfix window when
 |g:go_fmt_command| fails, by setting |g:go_fmt_fail_silently| to 1. E.g.: >
     let g:go_fmt_fail_silently = 1
+<
+"vim-go" version 1.4 and earlier always uses |quickfix| lists. Starting with
+version 1.5, "vim-go" can also use location lists (see |location-list|). To
+avoid conflicts with syntastic, you probably want to configure "vim-go" to
+stick with |quickfix| lists: >
+    let g:go_list_type = "quickfix"
 <
 ------------------------------------------------------------------------------
 7.11. vim-virtualenv                                *syntastic-vim-virtualenv*

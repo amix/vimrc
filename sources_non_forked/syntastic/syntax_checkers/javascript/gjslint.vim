@@ -21,7 +21,8 @@ function! SyntaxCheckers_javascript_gjslint_GetLocList() dict
     call syntastic#log#deprecationWarn('javascript_gjslint_conf', 'javascript_gjslint_args')
 
     let makeprg = self.makeprgBuild({
-        \ 'args_after': '--nosummary --unix_mode --nodebug_indentation --nobeep' })
+        \ 'args': '--nodebug_indentation',
+        \ 'args_after': '--check_html --nosummary --unix_mode --nobeep' })
 
     let errorformat =
         \ "%f:%l:(New Error -%\\?\%n) %m," .

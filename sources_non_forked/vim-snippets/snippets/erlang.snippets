@@ -24,6 +24,10 @@ snippet incl
 # behavior directive
 snippet beh
 	-behaviour(${1:behaviour}).
+snippet ifd
+	-ifdef(${1:TEST}).
+	${0}
+	-endif.
 # if expression
 snippet if
 	if
@@ -483,21 +487,21 @@ snippet testsuite
 	-module(${0:`vim_snippets#Filename('', 'my')`}).
 
 	-include_lib("common_test/include/ct.hrl").
-	
+
 	%% Test server callbacks
 	-export([suite/0, all/0, groups/0,
 		 init_per_suite/1, end_per_suite/1,
 		 init_per_group/2, end_per_group/2,
 		 init_per_testcase/2, end_per_testcase/2]).
-	
+
 	%% Test cases
 	-export([
 		]).
-	
+
 	%%--------------------------------------------------------------------
 	%% COMMON TEST CALLBACK FUNCTIONS
 	%%--------------------------------------------------------------------
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: suite() -> Info
 	%%
@@ -512,7 +516,7 @@ snippet testsuite
 	%%--------------------------------------------------------------------
 	suite() ->
 	    [{timetrap,{minutes,10}}].
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: init_per_suite(Config0) ->
 	%%               Config1 | {skip,Reason} | {skip_and_save,Reason,Config1}
@@ -529,7 +533,7 @@ snippet testsuite
 	%%--------------------------------------------------------------------
 	init_per_suite(Config) ->
 	    Config.
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: end_per_suite(Config0) -> void() | {save_config,Config1}
 	%%
@@ -540,7 +544,7 @@ snippet testsuite
 	%%--------------------------------------------------------------------
 	end_per_suite(_Config) ->
 	    ok.
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: init_per_group(GroupName, Config0) ->
 	%%               Config1 | {skip,Reason} | {skip_and_save,Reason,Config1}
@@ -556,7 +560,7 @@ snippet testsuite
 	%%--------------------------------------------------------------------
 	init_per_group(_GroupName, Config) ->
 	    Config.
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: end_per_group(GroupName, Config0) ->
 	%%               void() | {save_config,Config1}
@@ -570,7 +574,7 @@ snippet testsuite
 	%%--------------------------------------------------------------------
 	end_per_group(_GroupName, _Config) ->
 	    ok.
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: init_per_testcase(TestCase, Config0) ->
 	%%               Config1 | {skip,Reason} | {skip_and_save,Reason,Config1}
@@ -589,7 +593,7 @@ snippet testsuite
 	%%--------------------------------------------------------------------
 	init_per_testcase(_TestCase, Config) ->
 	    Config.
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: end_per_testcase(TestCase, Config0) ->
 	%%               void() | {save_config,Config1} | {fail,Reason}
@@ -605,7 +609,7 @@ snippet testsuite
 	%%--------------------------------------------------------------------
 	end_per_testcase(_TestCase, _Config) ->
 	    ok.
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: groups() -> [Group]
 	%%
@@ -629,7 +633,7 @@ snippet testsuite
 	%%--------------------------------------------------------------------
 	groups() ->
 	    [].
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: all() -> GroupsAndTestCases | {skip,Reason}
 	%%
@@ -644,14 +648,14 @@ snippet testsuite
 	%% Description: Returns the list of groups and test cases that
 	%%              are to be executed.
 	%%--------------------------------------------------------------------
-	all() -> 
+	all() ->
 	    [].
-	
-	
+
+
 	%%--------------------------------------------------------------------
 	%% TEST CASES
 	%%--------------------------------------------------------------------
-	
+
 	%%--------------------------------------------------------------------
 	%% Function: TestCase(Config0) ->
 	%%               ok | exit() | {skip,Reason} | {comment,Comment} |

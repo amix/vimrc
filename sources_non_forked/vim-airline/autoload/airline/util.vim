@@ -19,6 +19,12 @@ function! airline#util#append(text, minwidth)
   return empty(a:text) ? '' : prefix.g:airline_left_alt_sep.s:spc.a:text
 endfunction
 
+function! airline#util#warning(msg)
+  echohl WarningMsg
+  echomsg "airline: ".a:msg
+  echohl Normal
+endfunction
+
 function! airline#util#prepend(text, minwidth)
   if a:minwidth > 0 && winwidth(0) < a:minwidth
     return ''

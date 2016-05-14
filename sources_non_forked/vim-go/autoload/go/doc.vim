@@ -88,8 +88,8 @@ function! go#doc#Open(newmode, mode, ...)
 
     let command = printf("%s -pos %s:#%s", bin_path, fname, offset)
 
-    let out = system(command)
-    if v:shell_error != 0
+    let out = go#util#System(command)
+    if go#util#ShellError() != 0
         call go#util#EchoError(out)
         return
     endif

@@ -1,7 +1,6 @@
 "============================================================================
 "File:        cuda.vim
-"Description: Syntax checking plugin for syntastic.vim
-"
+"Description: Syntax checking plugin for syntastic
 "Author:      Hannes Schulz <schulz at ais dot uni-bonn dot de>
 "
 "============================================================================
@@ -15,7 +14,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_cuda_nvcc_GetLocList() dict
-    if exists('g:syntastic_cuda_arch')
+    if syntastic#util#var('cuda_arch') !=# ''
         let arch_flag = '-arch=' . g:syntastic_cuda_arch
     else
         let arch_flag = ''
@@ -41,8 +40,8 @@ function! SyntaxCheckers_cuda_nvcc_GetLocList() dict
         \ '%DMaking %*\a in %f,'.
         \ '%f|%l| %m'
 
-    if expand('%', 1) =~? '\m\%(.h\|.hpp\|.cuh\)$'
-        if exists('g:syntastic_cuda_check_header')
+    if index(['h', 'hpp', 'cuh'], expand('%:e', 1), 0, 1) >= 0
+        if syntastic#util#var('cuda_check_header', 0)
             let makeprg =
                 \ 'echo > .syntastic_dummy.cu ; ' .
                 \ self.getExecEscaped() . ' ' . arch_flag .

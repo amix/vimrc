@@ -22,6 +22,9 @@ function! s:get_section(winnr, key, ...)
     endif
   endif
   let spc = g:airline_symbols.space
+  if !exists('g:airline_section_{a:key}')
+    return ''
+  endif
   let text = airline#util#getwinvar(a:winnr, 'airline_section_'.a:key, g:airline_section_{a:key})
   let [prefix, suffix] = [get(a:000, 0, '%('.spc), get(a:000, 1, spc.'%)')]
   return empty(text) ? '' : prefix.text.suffix
@@ -40,7 +43,7 @@ endfunction
 " deactivate it, until this is properly fixed:
 " https://groups.google.com/d/msg/vim_dev/sb1jmVirXPU/mPhvDnZ-CwAJ
 if s:section_use_groups && (v:version >= 704 || (v:version >= 703 && has('patch81')))
-  function s:add_section(builder, context, key)
+  function! s:add_section(builder, context, key)
     " i have no idea why the warning section needs special treatment, but it's
     " needed to prevent separators from showing up
     if ((a:key == 'error' || a:key == 'warning') && empty(s:get_section(a:context.winnr, a:key)))
@@ -56,7 +59,7 @@ if s:section_use_groups && (v:version >= 704 || (v:version >= 703 && has('patch8
   endfunction
 else
   " older version don't like the use of %(%)
-  function s:add_section(builder, context, key)
+  function! s:add_section(builder, context, key)
     if ((a:key == 'error' || a:key == 'warning') && empty(s:get_section(a:context.winnr, a:key)))
       return
     endif

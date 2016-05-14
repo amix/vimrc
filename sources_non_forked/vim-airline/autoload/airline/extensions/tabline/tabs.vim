@@ -94,7 +94,7 @@ function! airline#extensions#tabline#tabs#get()
   return s:current_tabline
 endfunction
 
-function s:map_keys()
+function! s:map_keys()
   noremap <silent> <Plug>AirlineSelectTab1 :1tabn<CR>
   noremap <silent> <Plug>AirlineSelectTab2 :2tabn<CR>
   noremap <silent> <Plug>AirlineSelectTab3 :3tabn<CR>

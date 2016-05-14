@@ -18,10 +18,6 @@ let g:loaded_syntastic_go_govet_checker = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_go_govet_IsAvailable() dict
-    return executable(self.getExec())
-endfunction
-
 function! SyntaxCheckers_go_govet_GetLocList() dict
     let makeprg = self.getExecEscaped() . ' vet'
 

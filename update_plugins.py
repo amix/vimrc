@@ -52,6 +52,7 @@ vim-gitgutter https://github.com/airblade/vim-gitgutter
 gruvbox https://github.com/morhetz/gruvbox
 vim-flake8 https://github.com/nvie/vim-flake8
 vim-pug https://github.com/digitaltoad/vim-pug
+vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'

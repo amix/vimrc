@@ -48,6 +48,7 @@ call s:initVariable("g:NERDTreeAutoCenterThreshold", 3)
 call s:initVariable("g:NERDTreeCaseSensitiveSort", 0)
 call s:initVariable("g:NERDTreeSortHiddenFirst", 1)
 call s:initVariable("g:NERDTreeChDirMode", 0)
+call s:initVariable("g:NERDTreeCreatePrefix", "silent")
 call s:initVariable("g:NERDTreeMinimalUI", 0)
 if !exists("g:NERDTreeIgnore")
     let g:NERDTreeIgnore = ['\~$']
@@ -83,6 +84,8 @@ else
         call add(g:NERDTreeSortOrder, '*')
     endif
 endif
+
+call s:initVariable("g:NERDTreeGlyphReadOnly", "RO")
 
 if !exists('g:NERDTreeStatusline')
 

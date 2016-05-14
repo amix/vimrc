@@ -1,0 +1,128 @@
+*airline-themes.txt*  Themes for vim-airline
+                   _                       _      _ _                        ~
+            __   _(_)_ __ ___         __ _(_)_ __| (_)_ __   ___             ~
+            \ \ / / | '_ ` _ \ _____ / _` | | '__| | | '_ \ / _ \            ~
+             \ V /| | | | | | |_____| (_| | | |  | | | | | |  __/            ~
+              \_/ |_|_| |_| |_|      \__,_|_|_|  |_|_|_| |_|\___|            ~
+                                                                             ~
+==============================================================================
+CONTENTS                                           *airline-theme-contents*
+
+   01. Intro ........................................ |airline-themes-intro|
+   02. Features ........................................... |airline-themes|
+   03. Configuration ........................ |airline-themes-configuration|
+   04. Contributions ........................ |airline-themes-contributions|
+   05. License .................................... |airline-themes-license|
+
+==============================================================================
+INTRODUCTION                                         *airline-themes-intro*
+
+This is a plugin for vim-airline and provides several themes to be used in
+conjuction with |vim-airline|
+
+==============================================================================
+FEATURES                                              *airline-themes-list*
+
+Currently this repository contains the following themes:
+
+    * badwolf
+    * base16
+    * base16_3024
+    * base16_apathy
+    * base16_ashes
+    * base16_atelierdune
+    * base16_atelierforest
+    * base16_atelierheath
+    * base16_atelierlakeside
+    * base16_atelierseaside
+    * base16_bespin
+    * base16_brewer
+    * base16_bright
+    * base16_chalk
+    * base16_codeschool
+    * base16_colors
+    * base16_default
+    * base16_eighties
+    * base16_embers
+    * base16_flat
+    * base16_google
+    * base16_grayscale
+    * base16_greenscreen
+    * base16_harmonic16
+    * base16_hopscotch
+    * base16_isotope
+    * base16_londontube
+    * base16_marrakesh
+    * base16_mocha
+    * base16_monokai
+    * base16_ocean
+    * base16_paraiso
+    * base16_pop
+    * base16_railscasts
+    * base16_shapeshifter
+    * base16_solarized
+    * base16_summerfruit
+    * base16_tomorrow
+    * base16_twilight
+    * base16color
+    * behelit
+    * bubblegum
+    * cool
+    * dark
+    * distinguished
+    * durant
+    * hybrid
+    * hybridline
+    * jellybeans
+    * kalisi
+    * kolor
+    * laederon
+    * light
+    * lucius
+    * luna
+    * molokai
+    * monochrome
+    * murmur
+    * papercolor
+    * powerlineish
+    * raven
+    * serene
+    * silver
+    * simple
+    * sol
+    * solarized (|airline-theme-solarized|)
+    * term
+    * tomorrow
+    * ubaryd
+    * understated
+    * wombat
+    * xtermlight
+    * zenburn
+
+==============================================================================
+NAME                                         *airline-themes-configuration*
+
+                                                  |airline-theme-solarized|
+*g:solarized_base16*
+
+Base16 has a Solarized theme with the usual colors, but mapped in the
+terminal differently.  The main difference is that the bright colors,
+Ansi 9-15, are left the same as their Ansi 1-7 counterparts.  The
+remaining solarized colors are mapped into higher indexes by using
+Base16 Shell.  To enable it:
+>
+    let g:solarized_base16 = 1
+>
+See also https://github.com/blueyed/vim-colors-solarized/commit/92f2f994.
+
+==============================================================================
+CONTRIBUTIONS                                *airline-themes-contributions*
+
+Contributions and pull requests are welcome.
+
+==============================================================================
+LICENSE                                            *airline-themes-license*
+
+MIT License.  Copyright © 2013-2016 Bailey Ling, et al
+
+ vim:tw=78:ts=8:ft=help:norl:

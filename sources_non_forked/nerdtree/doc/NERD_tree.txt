@@ -679,6 +679,9 @@ NERD tree. These options should be set in your vimrc.
                                 a buffer when a file is being deleted or renamed
                                 via a context menu command.
 
+|'NERDTreeCreatePrefix'|        Specify a prefix to be used when creating the
+                                NERDTree window.
+
 ------------------------------------------------------------------------------
 3.2. Customisation details                             *NERDTreeOptionDetails*
 
@@ -1009,6 +1012,17 @@ then it worths to set this option to 1. Use one of the follow lines to set this
 option: >
     let NERDTreeAutoDeleteBuffer=0
     let NERDTreeAutoDeleteBuffer=1
+<
+------------------------------------------------------------------------------
+                                          *'NERDTreeCreatePrefix'*
+Values: Any valid command prefix.
+Default: "silent".
+
+Internally, NERDTree uses the |:edit| command to create a buffer in which to
+display its tree view. You can augment this behavior by specifying a prefix
+string such as "keepalt" or similar. For example, to have NERDTree create its
+tree window using `silent keepalt keepjumps edit`:
+    let NERDTreeCreatePrefix='silent keepalt keepjumps'
 <
 
 ==============================================================================

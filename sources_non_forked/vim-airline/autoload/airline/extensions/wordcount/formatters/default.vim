@@ -48,7 +48,7 @@ function! s:wordcount()
   endif
 endfunction
 
-function s:get_decimal_group()
+function! s:get_decimal_group()
   if match(v:lang, '\v\cC|en') > -1
     return ','
   elseif match(v:lang, '\v\cde|dk|fr|pt') > -1

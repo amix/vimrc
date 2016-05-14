@@ -245,6 +245,9 @@ def write_function_docstring(t, snip):
 	snip.rv += '\n' + snip.mkline('', indent='')
 	snip += triple_quotes(snip)
 
+def get_dir_and_file_name(snip):
+	return os.getcwd().split(os.sep)[-1] + '.' + snip.basename
+
 endglobal
 
 ########################################
@@ -685,6 +688,20 @@ snippet doc "doc block (triple quotes)"
 `!p snip.rv = triple_quotes(snip)`
 ${1:${VISUAL:doc}}
 `!p snip.rv = triple_quotes(snip)`
+endsnippet
+
+snippet pmdoc "pocoo style module doc string" b
+# -*- coding: utf-8 -*-
+"""
+	`!p snip.rv = get_dir_and_file_name(snip)`
+	`!p snip.rv = '~' * len(get_dir_and_file_name(snip))`
+
+	${1:DESCRIPTION}
+
+	:copyright: (c) `date +%Y` by ${2:YOUR_NAME}.
+	:license: ${3:LICENSE_NAME}, see LICENSE for more details.
+"""
+$0
 endsnippet
 
 # vim:ft=snippets:

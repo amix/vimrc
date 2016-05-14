@@ -61,10 +61,11 @@ Handlebars, HSS, HTML, Java, JavaScript, JSON, JSX, LESS, Lex, Limbo, LISP,
 LLVM intermediate language, Lua, Markdown, MATLAB, Mercury, NASM, Nix,
 Objective-C, Objective-C++, OCaml, Perl, Perl POD, PHP, gettext Portable
 Object, OS X and iOS property lists, Pug (formerly Jade), Puppet, Python, QML,
-R, Racket, Relax NG, reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim,
-SML, Sphinx, SQL, Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog,
-VHDL, VimL, xHtml, XML, XSLT, XQuery, YACC, YAML, z80, Zope page templates, and
-zsh. See the [wiki][3] for details about the corresponding supported checkers.
+R, Racket, RDF TriG, RDF Turtle, Relax NG, reStructuredText, RPM spec, Ruby,
+SASS/SCSS, Scala, Slim, SML, Sphinx, SQL, Stylus, Tcl, TeX, Texinfo, Twig,
+TypeScript, Vala, Verilog, VHDL, VimL, xHtml, XML, XSLT, XQuery, YACC, YAML,
+YANG data models, z80, Zope page templates, and zsh. See the [wiki][3] for
+details about the corresponding supported checkers.
 
 A number of third-party Vim plugins also provide checkers for syntastic,
 for example: [merlin][30], [omnisharp-vim][25], [rust.vim][12],

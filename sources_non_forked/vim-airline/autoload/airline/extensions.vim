@@ -123,7 +123,11 @@ function! airline#extensions#load()
 
   if exists('g:airline_extensions')
     for ext in g:airline_extensions
-      call airline#extensions#{ext}#init(s:ext)
+      try
+        call airline#extensions#{ext}#init(s:ext)
+      catch /^Vim\%((\a\+)\)\=:E117/	" E117, function does not exist
+        call airline#util#warning("Extension '".ext."' not installed, ignoring!")
+      endtry
     endfor
     return
   endif

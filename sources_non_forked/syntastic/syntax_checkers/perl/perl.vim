@@ -39,7 +39,7 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_perl_perl_IsAvailable() dict
+function! SyntaxCheckers_perl_perl_IsAvailable() dict " {{{1
     if !exists('g:syntastic_perl_perl_exec') && exists('g:syntastic_perl_interpreter')
         let g:syntastic_perl_perl_exec = g:syntastic_perl_interpreter
     endif
@@ -48,9 +48,9 @@ function! SyntaxCheckers_perl_perl_IsAvailable() dict
     " let g:syntastic_perl_interpreter='/usr/bin/env perl'
     silent! call syntastic#util#system(self.getExecEscaped() . ' -e ' . syntastic#util#shescape('exit(0)'))
     return v:shell_error == 0
-endfunction
+endfunction " }}}1
 
-function! SyntaxCheckers_perl_perl_GetLocList() dict
+function! SyntaxCheckers_perl_perl_GetLocList() dict " {{{1
     if type(g:syntastic_perl_lib_path) == type('')
         call syntastic#log#oneTimeWarn('variable g:syntastic_perl_lib_path should be a list')
         let includes = split(g:syntastic_perl_lib_path, ',')
@@ -81,7 +81,7 @@ function! SyntaxCheckers_perl_perl_GetLocList() dict
         \ 'errorformat': errorformat,
         \ 'preprocess': 'perl',
         \ 'defaults': {'type': 'W'} })
-endfunction
+endfunction " }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'perl',
