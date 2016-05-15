@@ -1,11 +1,13 @@
 cd ~/.vim_runtime
 
-echo 'set runtimepath+=~/.vim_runtime
+echo 'set rtp+=~/.vim_runtime
+call vundle#rc()
 
-source ~/.vim_runtime/vimrcs/basic.vim
-source ~/.vim_runtime/vimrcs/filetypes.vim
-source ~/.vim_runtime/vimrcs/plugins_config.vim
-source ~/.vim_runtime/vimrcs/extended.vim
+source ~/.vim_runtime/basic.vim
+source ~/.vim_runtime/filetypes.vim
+source ~/.vim_runtime/extended.vim
+source ~/.vim_runtime/vundle_plugins.vim
+source ~/.vim_runtime/plugins_config.vim
 
 try
 source ~/.vim_runtime/my_configs.vim
