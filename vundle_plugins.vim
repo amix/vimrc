@@ -1,3 +1,6 @@
+""" let Vundle manage Vundle
+Bundle 'VundleVim/Vundle.vim'
+
 """ vim-scripts repos
 Bundle 'YankRing.vim'
 Bundle 'bufexplorer.zip'
