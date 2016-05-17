@@ -61,6 +61,8 @@ map <leader>t9 :tabnext 9<cr>
 let g:tagbar_left = 1
 let g:tagbar_width = 30
 let g:tagbar_autofocus = 1
+let g:tagbar_show_visibility = 1
+" let g:tagbar_show_linenumbers = 2
 map <leader>tg :TagbarToggle<cr>
 
 " Set line number
