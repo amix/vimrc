@@ -19,9 +19,3 @@ let g:syntastic_javascript_args = "-c ./.eslintrc"
 map <leader>wc <C-W>c
 map <leader>wn <C-W>n
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Autotrim trailing spaces on specific files
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-autocmd FileType javascript autocmd BufWritePre <buffer> :%s/\s\+$//e
-
