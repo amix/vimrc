@@ -1,6 +1,6 @@
 cd ~/.vim_runtime
 
-echo 'set rtp+=~/.vim_runtime
+echo 'set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#rc()
 
 source ~/.vim_runtime/basic.vim
