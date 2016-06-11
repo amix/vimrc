@@ -92,7 +92,7 @@ function! s:process(string)
     let m = matchstr(a:string,nr2char(i).'.\{-\}\ze'.nr2char(i))
     if m != ''
       let m = substitute(strpart(m,1),'\r.*','','')
-      let repl_{i} = input(substitute(m,':\s*$','','').': ')
+      let repl_{i} = input(match(m,'\w\+$') >= 0 ? m.': ' : m)
     endif
   endfor
   let s = ""

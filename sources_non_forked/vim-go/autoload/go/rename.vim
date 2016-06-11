@@ -36,6 +36,15 @@ function! go#rename#Rename(bang, ...)
 
     let out = go#tool#ExecuteInDir(cmd)
 
+    " reload all files to reflect the new changes. We explicitly call
+    " checktime to trigger a reload of all files. See
+    " http://www.mail-archive.com/vim@vim.org/msg05900.html for more info
+    " about the autoread bug
+    let current_autoread = &autoread
+    set autoread
+    silent! checktime
+    let &autoread = current_autoread
+
     " strip out newline on the end that gorename puts. If we don't remove, it
     " will trigger the 'Hit ENTER to continue' prompt
     let clean = split(out, '\n')

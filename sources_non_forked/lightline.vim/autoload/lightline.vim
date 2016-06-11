@@ -2,7 +2,7 @@
 " Filename: autoload/lightline.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2016/05/14 13:20:45.
+" Last Change: 2016/06/11 14:05:27.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -276,7 +276,7 @@ function! lightline#highlight(...) abort
     let rs = has_key(get(c, d, {}), 'right') ? c[d].right : has_key(f, d) && has_key(get(c, f[d], {}), 'right') ? c[f[d]].right : c.normal.right
     for [p, l, zs] in [['Left', len(left), ls], ['Right', len(right), rs]]
       for [i, t] in map(range(0, l), '[v:val, 0]') + types
-        if i != l
+        if i < l || i < 1
           let r = t ? (has_key(get(c, d, []), i) ? c[d][i][0] : has_key(get(c, 'tabline', {}), i) ? c.tabline[i][0] : get(c.normal, i, zs)[0]) : get(zs, i, ms)
           exec printf('hi LightLine%s_%s_%s guifg=%s guibg=%s ctermfg=%s ctermbg=%s %s', p, mode, i, r[0], r[1], r[2], r[3], s:term(r))
         endif

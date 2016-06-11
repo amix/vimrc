@@ -280,7 +280,7 @@ function! s:findAndRevealPath()
             else
                 call g:NERDTree.CursorToTreeWin()
             endif
-            call b:NERDTree.setShowHidden(g:NERDTreeShowHidden)
+            call b:NERDTree.ui.setShowHidden(g:NERDTreeShowHidden)
             call s:chRoot(g:NERDTreeDirNode.New(p.getParent(), b:NERDTree))
         else
             if !g:NERDTree.IsOpen()

@@ -1,9 +1,4 @@
-if !exists("g:go_gocode_bin")
-    let g:go_gocode_bin = "gocode"
-endif
-
-
-fu! s:gocodeCurrentBuffer()
+function! s:gocodeCurrentBuffer()
     let buf = getline(1, '$')
     if &encoding != 'utf-8'
         let buf = map(buf, 'iconv(v:val, &encoding, "utf-8")')
@@ -17,9 +12,9 @@ fu! s:gocodeCurrentBuffer()
     call writefile(buf, file)
 
     return file
-endf
+endfunction
 
-fu! s:gocodeCommand(cmd, preargs, args)
+function! s:gocodeCommand(cmd, preargs, args)
     for i in range(0, len(a:args) - 1)
         let a:args[i] = go#util#Shellescape(a:args[i])
     endfor
@@ -27,7 +22,7 @@ fu! s:gocodeCommand(cmd, preargs, args)
         let a:preargs[i] = go#util#Shellescape(a:preargs[i])
     endfor
 
-    let bin_path = go#path#CheckBinPath(g:go_gocode_bin)
+    let bin_path = go#path#CheckBinPath("gocode")
     if empty(bin_path)
         return
     endif
@@ -49,20 +44,43 @@ fu! s:gocodeCommand(cmd, preargs, args)
         endif
         return result
     endif
-endf
+endfunction
 
-fu! s:gocodeCurrentBufferOpt(filename)
+function! s:gocodeCurrentBufferOpt(filename)
     return '-in=' . a:filename
-endf
+endfunction
 
-fu! s:gocodeAutocomplete()
+let s:optionsEnabled = 0
+function! s:gocodeEnableOptions()
+    if s:optionsEnabled 
+        return
+    endif
+
+    let bin_path = go#path#CheckBinPath("gocode")
+    if empty(bin_path)
+        return
+    endif
+
+    let s:optionsEnabled = 1
+
+    call go#util#System(printf('%s set propose-builtins %s', go#util#Shellescape(bin_path), s:toBool(get(g:, 'go_gocode_propose_builtins', 1))))
+    call go#util#System(printf('%s set autobuild %s', go#util#Shellescape(bin_path), s:toBool(get(g:, 'go_gocode_autobuild', 1))))
+endfunction
+
+function! s:toBool(val)
+    if a:val | return 'true ' | else | return 'false' | endif
+endfunction
+
+function! s:gocodeAutocomplete()
+    call s:gocodeEnableOptions()
+
     let filename = s:gocodeCurrentBuffer()
     let result = s:gocodeCommand('autocomplete',
                 \ [s:gocodeCurrentBufferOpt(filename), '-f=vim'],
                 \ [expand('%:p'), go#util#OffsetCursor()])
     call delete(filename)
     return result
-endf
+endfunction
 
 function! go#complete#GetInfo()
     let offset = go#util#OffsetCursor()+1
@@ -120,7 +138,7 @@ function! s:trim_bracket(val)
     return a:val
 endfunction
 
-fu! go#complete#Complete(findstart, base)
+function! go#complete#Complete(findstart, base)
     "findstart = 1 when we need to get the text length
     if a:findstart == 1
         execute "silent let g:gocomplete_completions = " . s:gocodeAutocomplete()

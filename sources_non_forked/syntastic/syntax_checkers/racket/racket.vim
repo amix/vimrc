@@ -42,7 +42,8 @@ endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'racket',
-    \ 'name': 'racket'})
+    \ 'name': 'racket',
+    \ 'enable': 'enable_racket_racket_checker' })
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

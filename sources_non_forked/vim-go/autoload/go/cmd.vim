@@ -191,12 +191,14 @@ function! go#cmd#Test(bang, compile, ...)
     " don't run the test, only compile it. Useful to capture and fix errors or
     " to create a test binary.
     if a:compile
-        call add(args, "-c")
+        let compile_file = "vim-go-test-compile"
+        call extend(args, ["-c", "-o", compile_file])
     endif
 
     if a:0
         " expand all wildcards(i.e: '%' to the current file name)
         let goargs = map(copy(a:000), "expand(v:val)")
+        let goargs = go#util#Shelllist(goargs, 1)
 
         call extend(args, goargs, 1)
     else
@@ -217,6 +219,11 @@ function! go#cmd#Test(bang, compile, ...)
         else
             let id = go#jobcontrol#Spawn(a:bang, "test", args)
         endif
+
+        if a:compile
+            call go#jobcontrol#AddHandler(function('s:test_compile_handler'))
+            let s:test_compile_handlers[id] = compile_file
+        endif
         return id
     endif
 
@@ -228,6 +235,10 @@ function! go#cmd#Test(bang, compile, ...)
     let out = go#tool#ExecuteInDir(command)
 
     let l:listtype = "quickfix"
+
+    if a:compile
+        call delete(compile_file)
+    endif
 
     if go#util#ShellError() != 0
         let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -330,6 +341,21 @@ function! go#cmd#Generate(bang, ...)
 
     let &makeprg = default_makeprg
     let $GOPATH = old_gopath
+endfunction
+
+
+" -----------------------
+" | Neovim job handlers |
+" -----------------------
+let s:test_compile_handlers = {}
+
+function! s:test_compile_handler(job, exit_status, data)
+    if !has_key(s:test_compile_handlers, a:job.id)
+        return
+    endif
+    let l:compile_file = s:test_compile_handlers[a:job.id]
+    call delete(l:compile_file)
+    unlet s:test_compile_handlers[a:job.id]
 endfunction
 
 " vim:ts=4:sw=4:et

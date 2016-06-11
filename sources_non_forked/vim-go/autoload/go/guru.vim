@@ -74,7 +74,8 @@ func! s:RunGuru(mode, format, selected, needs_scope) range abort
     endif
 
     " this is our final command
-    let command .= printf(' %s %s:%s', a:mode, shellescape(filename), pos)
+    let filename .= ':'.pos
+    let command .= printf(' %s %s', a:mode, shellescape(filename))
 
     let old_gopath = $GOPATH
     let $GOPATH = go#path#Detect()

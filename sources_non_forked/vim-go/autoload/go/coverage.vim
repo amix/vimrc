@@ -28,6 +28,19 @@ function! go#coverage#Buffer(bang, ...)
         return -1
     endif
 
+    " check if there is any test file, if not we just return
+    let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+    let dir = getcwd()
+    try
+        execute cd . fnameescape(expand("%:p:h"))
+        if empty(glob("*_test.go"))
+            call go#util#EchoError("no tests files available")
+            return
+        endif
+    finally
+        execute cd . fnameescape(dir)
+    endtry
+
     let s:toggle = 1
     let l:tmpname = tempname()
     let args = [a:bang, 0, "-coverprofile", l:tmpname]
@@ -221,9 +234,9 @@ function! go#coverage#overlay(file)
     endfor
 
     syntax manual
-    highlight normaltext term=bold ctermfg=59 guifg=#75715E
-    highlight covered term=bold ctermfg=118 guifg=#A6E22E
-    highlight uncover term=bold ctermfg=197 guifg=#F92672
+    highlight normaltext term=bold ctermfg=darkgrey guifg=#75715E
+    highlight covered term=bold ctermfg=green guifg=#A6E22E
+    highlight uncover term=bold ctermfg=red guifg=#F92672
 
     " clear the matches if we leave the buffer
     autocmd BufWinLeave <buffer> call go#coverage#Clear()

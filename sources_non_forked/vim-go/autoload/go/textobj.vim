@@ -16,7 +16,7 @@ endif
 function! go#textobj#Function(mode)
   let offset = go#util#OffsetCursor()
 
-  let fname = expand("%:p")
+  let fname = shellescape(expand("%:p"))
   if &modified
     " Write current unsaved buffer to a temp file and use the modified content
     let l:tmpname = tempname()
@@ -103,7 +103,7 @@ function! go#textobj#FunctionJump(mode, direction)
 
   let offset = go#util#OffsetCursor()
 
-  let fname = expand("%:p")
+  let fname = shellescape(expand("%:p"))
   if &modified
     " Write current unsaved buffer to a temp file and use the modified content
     let l:tmpname = tempname()

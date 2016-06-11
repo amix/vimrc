@@ -8,11 +8,12 @@ let g:go_loaded_install = 1
 " needed by the user with GoInstallBinaries
 let s:packages = [
             \ "github.com/nsf/gocode",
-            \ "github.com/alecthomas/gometalinter", 
+            \ "github.com/alecthomas/gometalinter",
             \ "golang.org/x/tools/cmd/goimports",
             \ "golang.org/x/tools/cmd/guru",
             \ "golang.org/x/tools/cmd/gorename",
             \ "github.com/golang/lint/golint",
+            \ "github.com/rogpeppe/godef",
             \ "github.com/kisielk/errcheck",
             \ "github.com/jstemmer/gotags",
             \ "github.com/klauspost/asmfmt/cmd/asmfmt",
@@ -65,13 +66,16 @@ function! s:GoInstallBinaries(updateBinaries)
         set noshellslash
     endif
 
-    let cmd = "go get -u -v "
+    let cmd = "go get -v "
+    if get(g:, "go_get_update", 1) != 0
+        let cmd .= "-u "
+    endif
 
     let s:go_version = matchstr(go#util#System("go version"), '\d.\d.\d')
 
     " https://github.com/golang/go/issues/10791
     if s:go_version > "1.4.0" && s:go_version < "1.5.0"
-        let cmd .= "-f " 
+        let cmd .= "-f "
     endif
 
     for pkg in s:packages

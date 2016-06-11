@@ -87,7 +87,7 @@ function! go#fmt#Format(withGoimport)
 
     " get the command first so we can test it
     let fmt_command = g:go_fmt_command
-    if a:withGoimport  == 1 
+    if a:withGoimport  == 1
         let fmt_command  = g:go_goimports_bin
     endif
 
@@ -109,18 +109,15 @@ function! go#fmt#Format(withGoimport)
 
     " populate the final command with user based fmt options
     let command = fmt_command . ' -w '
-    if a:withGoimport  != 1 
+    if a:withGoimport  != 1
         let command  = command . g:go_fmt_options
     endif
 
     if fmt_command == "goimports"
         if !exists('b:goimports_vendor_compatible')
-            let out = go#util#System("goimports --help")
+            let out = go#util#System(bin_path . " --help")
             if out !~ "-srcdir"
-                echohl WarningMsg
-                echomsg "vim-go: goimports does not support srcdir."
-                echomsg "  update with: :GoUpdateBinaries"
-                echohl None
+                call go#util#EchoWarning("vim-go: goimports does not support srcdir. update with: :GoUpdateBinaries")
             else
                let b:goimports_vendor_compatible = 1
             endif

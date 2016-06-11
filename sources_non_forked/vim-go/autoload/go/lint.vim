@@ -24,7 +24,7 @@ endif
 
 function! go#lint#Gometa(autosave, ...) abort
     if a:0 == 0
-        let goargs = expand('%:p:h')
+        let goargs = shellescape(expand('%:p:h'))
     else
         let goargs = go#util#Shelljoin(a:000)
     endif

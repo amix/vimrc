@@ -28,7 +28,8 @@ function! snipMate#expandSnip(snip, version, col) abort
 		let [snippet, b:snip_state.stops] = snipmate#parse#snippet(a:snip)
 		" Build stop/mirror info
 		let b:snip_state.stop_count = s:build_stops(snippet, b:snip_state.stops, lnum, col, indent)
-		let snipLines = snipMate#sniplist_str(snippet, b:snip_state.stops)
+		let snipLines = map(copy(snippet),
+					\ 'snipMate#sniplist_str(v:val, b:snip_state.stops)')
 	else
 		let snippet = snipmate#legacy#process_snippet(a:snip)
 		let [b:snip_state.stops, b:snip_state.stop_count] = snipmate#legacy#build_stops(snippet, lnum, col - indent, indent)
@@ -77,11 +78,11 @@ function! snipMate#expandSnip(snip, version, col) abort
 endfunction
 
 function! snipMate#placeholder_str(num, stops) abort
-	return snipMate#sniplist_str(a:stops[a:num].placeholder, a:stops)[0]
+	return snipMate#sniplist_str(a:stops[a:num].placeholder, a:stops)
 endfunction
 
 function! snipMate#sniplist_str(snippet, stops) abort
-	let lines = ['']
+	let str = ''
 	let pos = 0
 	let add_to = 1
 	let seen_stops = []
@@ -90,110 +91,82 @@ function! snipMate#sniplist_str(snippet, stops) abort
 		let item = a:snippet[pos]
 
 		if type(item) == type('')
-			if add_to
-				let lines[-1] .= item
-			else
-				call add(lines, item)
-			endif
-			let add_to = 0
+			let str .= item
 		elseif type(item) == type([])
-			let lines[-1] .= snipMate#placeholder_str(item[0], a:stops)
-			let add_to = 1
+			let str .= snipMate#placeholder_str(item[0], a:stops)
 		endif
 
 		let pos += 1
 		unlet item " avoid E706
 	endwhile
 
-	return lines
+	return str
 endfunction
 
 function! s:build_stops(snippet, stops, lnum, col, indent) abort
 	let stops = a:stops
-	let line  = a:lnum
+	let lnum  = a:lnum
 	let col   = a:col
 
-	for [id, dict] in items(stops)
-		for i in dict.instances
-			if len(i) > 1 && type(i[1]) != type({})
-				if !has_key(dict, 'placeholder')
-					let dict.placeholder = i[1:]
-				else
-					unlet i[1:]
-				endif
-			endif
-		endfor
-		if !has_key(dict, 'placeholder')
-			let dict.placeholder = []
-			let j = 0
-			while len(dict.instances[j]) > 1
-				let j += 1
-			endwhile
-			call add(dict.instances[j], '')
+	for line in a:snippet
+		let col = s:build_loc_info(line, stops, lnum, col, [])
+		if line isnot line[-1]
+			let lnum += 1
+			let col = a:indent
 		endif
-		unlet dict.instances
 	endfor
-
-	let [line, col] = s:build_loc_info(a:snippet, stops, line, col, a:indent)
 
 	" add zero tabstop if it doesn't exist and then link it to the highest stop
 	" number
 	let stops[0] = get(stops, 0,
-				\ { 'placeholder' : [], 'line' : line, 'col' : col })
+				\ { 'placeholder' : [], 'line' : lnum, 'col' : col })
 	let stop_count = max(keys(stops)) + 2
 	let stops[stop_count - 1] = stops[0]
 
 	return stop_count
 endfunction
 
-function! s:build_loc_info(snippet, stops, line, col, indent) abort
+function! s:build_loc_info(snippet, stops, lnum, col, seen_items) abort
 	let stops   = a:stops
-	let line    = a:line
+	let lnum    = a:lnum
 	let col     = a:col
 	let pos     = 0
 	let in_text = 0
+	let seen_items = a:seen_items
 
-	while pos < len(a:snippet)
-		let item = a:snippet[pos]
-
+	for item in a:snippet
 		if type(item) == type('')
-			if in_text
-				let line += 1
-				let col = a:indent
-			endif
 			let col += len(item)
-			let in_text = 1
 		elseif type(item) == type([])
 			let id = item[0]
-			if len(item) > 1 && type(item[1]) != type({})
-				let stops[id].line = line
-				let stops[id].col = col
-				let [line, col] = s:build_loc_info(item[1:], stops, line, col, a:indent)
+			let stub = item[-1]
+			let stub.line = lnum
+			let stub.col = col
+			call s:add_update_objects(stub, seen_items)
+
+			if len(item) > 2 && type(item[1]) != type({})
+				let col = s:build_loc_info(item[1:-2], stops, lnum, col, seen_items)
 			else
-				call s:add_mirror(stops, id, line, col, item)
 				let col += len(snipMate#placeholder_str(id, stops))
 			endif
+
 			let in_text = 0
 		endif
-
-		let pos += 1
 		unlet item " avoid E706
-	endwhile
+	endfor
 
-	return [line, col]
+	return col
 endfunction
 
-function! s:add_mirror(stops, id, line, col, item) abort
-	let stops = a:stops
-	let item = a:item
-	let stops[a:id].mirrors = get(stops[a:id], 'mirrors', [])
-	let mirror = get(a:item, 1, {})
-	let mirror.line = a:line
-	let mirror.col = a:col
-	call add(stops[a:id].mirrors, mirror)
-	if len(item) == 1
-		call add(item, mirror)
-	endif
+function! s:add_update_objects(object, targets) abort
+	let targets = a:targets
+
+	for item in targets
+		let item.update_objects = get(item, 'update_objects', [])
+		call add(item.update_objects, a:object)
+	endfor
+
+	call add(targets, a:object)
 endfunction
 
 " reads a .snippets file

@@ -67,6 +67,10 @@ if !exists("g:go_highlight_methods")
   let g:go_highlight_methods = 0
 endif
 
+if !exists("g:go_highlight_fields")
+	let g:go_highlight_fields = 0
+endif
+
 if !exists("g:go_highlight_structs")
   let g:go_highlight_structs = 0
 endif
@@ -307,6 +311,12 @@ if g:go_highlight_methods != 0
   syn match goMethod                /\(\.\)\@<=\w\+\((\)\@=/
 endif
 hi def link     goMethod            Type
+
+" Fields;
+if g:go_highlight_fields != 0
+  syn match goField                 /\(\.\)\@<=\a\+\([\ \n\r\:\)]\)\@=/
+endif
+hi def link    goField              Type
 
 " Structs;
 if g:go_highlight_structs != 0

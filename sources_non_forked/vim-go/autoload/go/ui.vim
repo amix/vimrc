@@ -87,7 +87,7 @@ function! go#ui#OpenDefinition(filter)
 
     " don't touch our first line or any blank line
     if curline =~ a:filter || curline =~ "^$"
-        " supress information about calling this function
+        " suppress information about calling this function
         echo ""
         return
     endif

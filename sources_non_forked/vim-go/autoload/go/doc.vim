@@ -77,16 +77,27 @@ function! go#doc#OpenBrowser(...)
 endfunction
 
 function! go#doc#Open(newmode, mode, ...)
-    " check if we have 'gogetdoc' and use it automatically
-    let bin_path = go#path#CheckBinPath('gogetdoc')
-    if empty(bin_path)
-        return
+    if len(a:000)
+        " check if we have 'godoc' and use it automatically
+        let bin_path = go#path#CheckBinPath('godoc')
+        if empty(bin_path)
+            return
+        endif
+
+        let command = printf("%s %s", bin_path, join(a:000, ' '))
+    else
+        " check if we have 'gogetdoc' and use it automatically
+        let bin_path = go#path#CheckBinPath('gogetdoc')
+        if empty(bin_path)
+            return
+        endif
+
+        let offset = go#util#OffsetCursor()
+        let fname = expand("%:p:gs!\\!/!")
+        let pos = shellescape(fname.':#'.offset)
+
+        let command = printf("%s -pos %s", bin_path, pos)
     endif
-
-    let offset = go#util#OffsetCursor()
-    let fname = expand("%:p")
-
-    let command = printf("%s -pos %s:#%s", bin_path, fname, offset)
 
     let out = go#util#System(command)
     if go#util#ShellError() != 0
@@ -134,6 +145,7 @@ function! s:GodocView(newposition, position, content)
     call append(0, split(a:content, "\n"))
     sil $delete _
     setlocal nomodifiable
+    sil normal! gg
 
     " close easily with <esc> or enter
     noremap <buffer> <silent> <CR> :<C-U>close<CR>

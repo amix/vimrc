@@ -1,19 +1,21 @@
 function! go#tool#Files()
     if go#util#IsWin()
-        let command = 'go list -f "{{range $f := .GoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}"'
+        let format = '{{range $f := .GoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}'
     else
-        let command = "go list -f '{{range $f := .GoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}'"
+        let format = "{{range $f := .GoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}"
     endif
+    let command = 'go list -f '.shellescape(format)
     let out = go#tool#ExecuteInDir(command)
     return split(out, '\n')
 endfunction
 
 function! go#tool#Deps()
     if go#util#IsWin()
-        let command = 'go list -f "{{range $f := .Deps}}{{$f}}{{printf \"\n\"}}{{end}}"'
+        let format = '{{range $f := .Deps}}{{$f}}{{printf \"\n\"}}{{end}}'
     else
-        let command = "go list -f $'{{range $f := .Deps}}{{$f}}\n{{end}}'"
+        let format = "{{range $f := .Deps}}{{$f}}\n{{end}}"
     endif
+    let command = 'go list -f '.shellescape(format)
     let out = go#tool#ExecuteInDir(command)
     return split(out, '\n')
 endfunction
@@ -21,10 +23,11 @@ endfunction
 function! go#tool#Imports()
     let imports = {}
     if go#util#IsWin()
-        let command = 'go list -f "{{range $f := .Imports}}{{$f}}{{printf \"\n\"}}{{end}}"'
+        let format = '{{range $f := .Imports}}{{$f}}{{printf \"\n\"}}{{end}}'
     else
-        let command = "go list -f $'{{range $f := .Imports}}{{$f}}\n{{end}}'"
+        let format = "{{range $f := .Imports}}{{$f}}{{printf \"\\n\"}}{{end}}"
     endif
+    let command = 'go list -f '.shellescape(format)
     let out = go#tool#ExecuteInDir(command)
     if go#util#ShellError() != 0
         echo out
@@ -32,7 +35,7 @@ function! go#tool#Imports()
     endif
 
     for package_path in split(out, '\n')
-        let cmd = "go list -f {{.Name}} " . package_path
+        let cmd = "go list -f '{{.Name}}' " . shellescape(package_path)
         let package_name = substitute(go#tool#ExecuteInDir(cmd), '\n$', '', '')
         let imports[package_name] = package_path
     endfor
@@ -168,10 +171,10 @@ function! go#tool#OpenBrowser(url)
         return
     endif
     if cmd =~ '^!'
-        let cmd = substitute(cmd, '%URL%', '\=shellescape(a:url)', 'g')
+        let cmd = substitute(cmd, '%URL%', '\=escape(shellescape(a:url),"#")', 'g')
         silent! exec cmd
     elseif cmd =~ '^:[A-Z]'
-        let cmd = substitute(cmd, '%URL%', '\=a:url', 'g')
+        let cmd = substitute(cmd, '%URL%', '\=escape(a:url,"#")', 'g')
         exec cmd
     else
         let cmd = substitute(cmd, '%URL%', '\=shellescape(a:url)', 'g')

@@ -315,11 +315,11 @@ fu! s:Open()
 	cal s:setupblank()
 endf
 
-fu! s:Close()
+fu! s:Close(exit)
 	cal s:buffunc(0)
 	if winnr('$') == 1
 		bw!
-	el
+	elsei a:exit
 		try | bun!
 		cat | clo! | endt
 		cal s:unmarksigns()
@@ -908,7 +908,7 @@ endf
 
 fu! s:PrtExit()
 	if bufnr('%') == s:bufnr && bufname('%') == 'ControlP'
-		noa cal s:Close()
+		noa cal s:Close(1)
 		noa winc p
 	en
 endf
@@ -1754,7 +1754,7 @@ fu! ctrlp#syntax()
 	en
 	sy match CtrlPNoEntries '^ == NO ENTRIES ==$'
 	if hlexists('CtrlPLinePre')
-		sy match CtrlPLinePre '^>'
+		exe "sy match CtrlPLinePre '^".escape(get(g:, 'ctrlp_line_prefix', '>'),'^$.*~\')."'"
 	en
 
 	if s:itemtype == 1 && s:has_conceal
@@ -1941,7 +1941,7 @@ fu! s:isabs(path)
 endf
 
 fu! s:bufnrfilpath(line)
-	if s:isabs(a:line) || a:line =~ '^\~[/\\]'
+	if s:isabs(a:line) || a:line =~ '^\~[/\\]' || a:line =~ '^\w\+:\/\/'
 		let filpath = a:line
 	el
 		let filpath = s:dyncwd.s:lash().a:line
@@ -1956,9 +1956,10 @@ fu! s:bufnrfilpath(line)
 endf
 
 fu! ctrlp#normcmd(cmd, ...)
+	let buftypes = [ 'quickfix', 'help' ]
 	if a:0 < 2 && s:nosplit() | retu a:cmd | en
 	let norwins = filter(range(1, winnr('$')),
-		\ 'empty(getbufvar(winbufnr(v:val), "&bt")) || s:isneovimterminal(winbufnr(v:val))')
+		\ 'index(buftypes, getbufvar(winbufnr(v:val), "&bt")) == -1 || s:isneovimterminal(winbufnr(v:val))')
 	for each in norwins
 		let bufnr = winbufnr(each)
 		if empty(bufname(bufnr)) && empty(getbufvar(bufnr, '&ft'))
@@ -2533,7 +2534,7 @@ if has('autocmd')
 	aug CtrlPAug
 		au!
 		au BufEnter ControlP cal s:checkbuf()
-		au BufLeave ControlP noa cal s:Close()
+		au BufLeave ControlP noa cal s:Close(0)
 		au VimLeavePre * cal s:leavepre()
 	aug END
 en
