@@ -1,5 +1,9 @@
 set number
 
+"格式化python代码
+au FileType python set formatprg=~/pyformat.py 
+noremap <F11> gggqG
+
 "-- Taglist setting --
 let Tlist_Ctags_Cmd='ctags' "因为我们放在环境变量里，所以可以直接执行
 let Tlist_Use_Right_Window=1 "让窗口显示在右边，0的话就是显示在左边
@@ -14,3 +18,9 @@ let Tlist_Inc_Winwidth=0
 let g:winManagerWindowLayout='FileExplorer|TagList' " 设置我们要管理的插件
 let g:persistentBehaviour=0 " 如果所有编辑文件都关闭了，退出vim
 nmap wm :WMToggle<cr>
+
+"-- YCM --
+let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
+nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
+let g:ycm_server_keep_logfiles = 1
+let g:ycm_server_log_level = 'debug'

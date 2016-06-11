@@ -8,7 +8,6 @@ Bundle 'mru.vim'
 Bundle 'taglist.vim'
 Bundle 'winmanager'
 
-
 """ original repos on github
 Bundle 'scrooloose/nerdtree'
 Bundle 'mileszs/ack.vim'
@@ -29,3 +28,4 @@ Bundle 'MarcWeber/vim-addon-mw-utils'
 Bundle 'tomtom/tlib_vim'
 Bundle 'garbas/vim-snipmate'
 Bundle 'honza/vim-snippets'
+Bundle 'Valloric/YouCompleteMe'
