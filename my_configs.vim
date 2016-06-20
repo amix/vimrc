@@ -1,5 +1,10 @@
 set number
 
+"高亮当前行
+set cursorline 
+hi CursorLine   cterm=NONE ctermbg=lightblue ctermfg=white 
+hi CursorColumn cterm=NONE ctermbg=lightblue ctermfg=white 
+
 "格式化python代码
 au FileType python set formatprg=~/pyformat.py 
 noremap <F11> gggqG
@@ -17,6 +22,7 @@ let Tlist_Inc_Winwidth=0
 "-- WinManager setting --
 let g:winManagerWindowLayout='FileExplorer|TagList' " 设置我们要管理的插件
 let g:persistentBehaviour=0 " 如果所有编辑文件都关闭了，退出vim
+"let g:AutoOpenWinManager=1 " 自动打开WinManager
 nmap wm :WMToggle<cr>
 
 "-- YCM --
@@ -24,3 +30,5 @@ let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_
 nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
 let g:ycm_server_keep_logfiles = 1
 let g:ycm_server_log_level = 'debug'
+
+"-- easy motion --
