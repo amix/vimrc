@@ -1,5 +1,5 @@
 if exists("b:current_syntax")
-    finish
+  finish
 endif
 
 syn match godefStackComment             '^".*'
@@ -16,3 +16,5 @@ hi def link godefStackComment           Comment
 hi def link godefStackCurrentPosition   Special
 hi def link godefStackFilename          Directory
 hi def link godefStackEntryLocationNumber LineNr
+
+" vim: sw=2 ts=2 et

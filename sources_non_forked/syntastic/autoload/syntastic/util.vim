@@ -37,12 +37,18 @@ function! syntastic#util#system(command) abort " {{{2
     let $LC_MESSAGES = 'C'
     let $LC_ALL = ''
 
+    let cmd_start = reltime()
     let out = system(a:command)
+    let cmd_time = split(reltimestr(reltime(cmd_start)))[0]
 
     let $LC_ALL = old_lc_all
     let $LC_MESSAGES = old_lc_messages
 
     let &shell = old_shell
+
+    if exists('g:_SYNTASTIC_DEBUG_TRACE')
+        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE, 'system: command run in ' . cmd_time . 's')
+    endif
 
     return out
 endfunction " }}}2

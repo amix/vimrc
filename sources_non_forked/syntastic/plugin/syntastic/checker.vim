@@ -91,6 +91,7 @@ function! g:SyntasticChecker.getExecEscaped() abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticChecker.getLocListRaw() abort " {{{2
+    let checker_start = reltime()
     let name = self._filetype . '/' . self._name
 
     if has_key(self, '_enable')
@@ -128,6 +129,8 @@ function! g:SyntasticChecker.getLocListRaw() abort " {{{2
     call self._populateHighlightRegexes(list)
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_LOCLIST, name . ' raw:', list)
     call self._quietMessages(list)
+    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE,
+        \ 'getLocList: checker ' . name . ' run in ' . split(reltimestr(reltime(checker_start)))[0] . 's')
     return list
 endfunction " }}}2
 

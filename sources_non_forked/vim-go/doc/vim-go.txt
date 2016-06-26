@@ -439,7 +439,8 @@ CTRL-t
 :GoInstallBinaries
 
     Download and Install all necessary Go tool binaries such as `godef`,
-    `goimports`, `gocode`, etc.. under `g:go_bin_path`
+    `goimports`, `gocode`, etc.. under `g:go_bin_path`. Set |g:go_get_update|
+    to disable updating dependencies.
 
                                                           *:GoUpdateBinaries*
 :GoUpdateBinaries
@@ -630,6 +631,7 @@ CTRL-t
       :GoImpl f *Foo io.Writer
       :GoImpl T io.ReadWriteCloser
 <
+  
 
 ===============================================================================
 MAPPINGS                                                        *go-mappings*
@@ -672,16 +674,13 @@ Calls `go build` for the current package
 
 Calls `go generate` for the current package
 
-
                                                                  *(go-info)*
 
 Shows type information for the word under the cursor
 
-
                                                               *(go-install)*
 
 Calls `go install` for the current package
-
 
                                                                  *(go-test)*
 
@@ -709,6 +708,10 @@ Clears the coverage annotation
 Calls `go test -coverprofile-temp.out` for the current package and shows the
 coverage annotation. If run agains it acts as a toggle and clears the
 annotation.
+
+                                                                *(go-imports)*
+
+Calls `goimports` for the current package
 
                                                                   *(go-vet)*
 
@@ -833,6 +836,11 @@ Alternates between the implementation and test code in a new horizontal split
                                                     *(go-alternate-vertical)*
 
 Alternates between the implementation and test code in a new vertical split
+
+                                                                *(go-import)*
+
+Calls `:GoImport` for the current package
+
 
 ===============================================================================
 TEXT OBJECTS                                                 *go-text-objects*
@@ -974,6 +982,14 @@ In Go, using `godoc` is more idiomatic. Default is enabled. >
 
   let g:go_doc_keywordprg_enabled = 1
 <
+                                                            *'g:go_def_mode'*
+
+Use this option to define the command to be used for |:GoDef|. By default
+`guru` is being used as it covers all edge cases. But one might also use
+`godef` as it's more faster. Current valid options are: `[guru, godef]` >
+
+  let g:go_def_mode = 'guru'
+<
                                                  *'g:go_def_mapping_enabled'*
 
 Use this option to enable/disable the default mapping of CTRL-] and (`gd`) for
@@ -1026,6 +1042,14 @@ Use this option to define the default snippet engine.  By default "ultisnips"
 is used. Use "neosnippet" for neosnippet.vim: >
 
   let g:go_snippet_engine = "ultisnips"
+<
+
+                                                         *'g:go_get_update'*
+
+Use this option to disable updating dependencies with |GoInstallBinaries|. By
+default this is enabled.
+>
+  let g:go_get_update = 1
 <
 
                                                          *'g:go_guru_scope'*
@@ -1098,7 +1122,13 @@ Highlights method names. By default it's disabled. >
 
 Highlights struct names. By default it's disabled. >
 
-	let g:go_highlight_structs = 0
+  let g:go_highlight_structs = 0
+<
+                                                  *'g:go_highlight_fields'*
+
+Highlights field names. By default it's disabled. >
+
+  let g:go_highlight_fields = 0
 <
                                                *'g:go_highlight_interfaces'*
 
@@ -1243,10 +1273,24 @@ By default it is set to edit.
                                                        *g:go_gorename_prefill*
 
 Specifies whether |:GoRename| prefills the new identifier name with the
-word under the cursor. By default is is enabled.
+word under the cursor. By default it is enabled.
 >
   let g:go_gorename_prefill = 1
 <
+                                                       *g:go_gocode_autobuild*
+
+Specifies whether `gocode` should automatically build out-of-date packages
+when their source fiels are modified, in order to obtahin the freshes
+autocomplete results for them.  By default it is enabled.
+>
+  let g:go_gocode_autobuild = 1
+<
+                                                *g:go_gocode_propose_builtins*
+
+Specifies whether `gocode` should add built-in types, functions and constants
+to an autocompletion proposals. By default it is enabled.
+>
+  let g:go_gocode_propose_builtins = 1
 
 
 ===============================================================================

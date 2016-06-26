@@ -76,9 +76,7 @@ syntax checker plugins are defined on a per-filetype basis where each one wraps
 up an external syntax checking program. The core script delegates off to these
 plugins and uses their output to provide the syntastic functionality.
 
-Take a look at the wiki for a list of supported filetypes and checkers:
-
-    https://github.com/scrooloose/syntastic/wiki/Syntax-Checkers
+Take a look at the list of supported filetypes and checkers: |syntastic-checkers|.
 
 Note: This doc only deals with using syntastic. To learn how to write syntax
 checker integrations, see the guide on the GitHub wiki:
@@ -563,7 +561,7 @@ option should be set to something like: >
         \ "file:p":  ['\m^/usr/include/', '\m\c\.h$'] }
 <
 Each element turns off messages matching the patterns specified by the
-corresponding value. Values are lists, but if a list consist of a single
+corresponding value. Values are lists, but if a list consists of a single
 element you may omit the brackets (e.g. you may write "style" instead of
 ["style"]). Elements with values [] or "" are ignored (this is useful for
 overriding filters, cf. |filter-overrides|).
@@ -751,10 +749,8 @@ If neither |'g:syntastic_<filetype>_checkers'| nor |'b:syntastic_checkers'|
 is set, a default list of checker is used. Beware however that this list
 deliberately kept minimal, for performance reasons.
 
-Take a look at the wiki to find out what checkers and filetypes are supported
-by syntastic:
-
-    https://github.com/scrooloose/syntastic/wiki/Syntax-Checkers
+Take a look elsewhere in this manual to find out what checkers and filetypes
+are supported by syntastic: |syntastic-checkers|.
 
 Use `:SyntasticInfo` to see which checkers are available for a given filetype.
 
@@ -848,9 +844,8 @@ omitting the filename from the command line: >
                                             *syntastic-config-no-makeprgbuild*
 For checkers that do not use the "makeprgBuild()" function you will have to
 look at the source code of the checker in question. If there are specific
-options that can be set, they are normally documented in the wiki:
-
-    https://github.com/scrooloose/syntastic/wiki/Syntax-Checkers
+options that can be set they are normally documented in this manual (see
+|syntastic-checkers|).
 
 ------------------------------------------------------------------------------
 5.4 Sorting errors                                     *syntastic-config-sort*

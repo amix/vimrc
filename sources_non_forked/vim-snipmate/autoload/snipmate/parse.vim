@@ -5,6 +5,7 @@ function! s:sfile() abort
 endfunction
 
 let s:parser_proto = {}
+let s:special_chars = "$`\n"
 
 function! s:new_parser(text) abort
     let ret = copy(s:parser_proto)
@@ -14,6 +15,7 @@ function! s:new_parser(text) abort
     let ret.indent = 0
     let ret.value = []
     let ret.vars = {}
+    let ret.stored_lines = []
     call ret.advance()
     return ret
 endfunction
@@ -82,35 +84,56 @@ function! s:parser_varend() dict abort
 endfunction
 
 function! s:parser_placeholder() dict abort
-    return self.parse('}')
+    let ret = self.text('}')
+    return empty(ret) ? [''] : ret
 endfunction
 
 function! s:parser_subst() dict abort
     let ret = {}
-    let ret.pat = join(self.text('/', 1))
+    let ret.pat = self.pat()
     if self.same('/')
-        let ret.sub = join(self.text('/}'))
+        let ret.sub = self.pat(1)
     endif
     if self.same('/')
-        let ret.flags = join(self.text('}', 1))
+        let ret.flags = self.pat(1)
     endif
     return ret
 endfunction
 
+function! s:parser_pat(...) dict abort
+    let val = ''
+
+    while self.pos < self.len
+        if self.same('\')
+            if self.next == '/'
+                let val .= '/'
+                call self.advance()
+            elseif a:0 && self.next == '}'
+                let val .= '}'
+                call self.advance()
+            else
+                let val .= '\'
+            endif
+        elseif self.next == '/' || a:0 && self.next == '}'
+            break
+        else
+            let val .= self.next
+            call self.advance()
+        endif
+    endwhile
+
+    return val
+endfunction
+
 function! s:parser_expr() dict abort
-    let str = join(self.text('`', 1))
+    let str = self.string('`')
     call self.same('`')
     return snipmate#util#eval(str)
 endfunction
 
-function! s:parser_text(...) dict abort
-    let res = []
+function! s:parser_string(till, ...) dict abort
     let val = ''
-    if a:0 == 2 && a:2
-        let till = '\V' . escape(a:1, '\')
-    else
-        let till = '[`$' . (a:0 ? a:1 : '') . ']'
-    endif
+    let till = '\V\[' . escape(a:till, '\') . ']'
 
     while self.pos < self.len
         if self.same('\')
@@ -120,11 +143,6 @@ function! s:parser_text(...) dict abort
             call self.advance()
         elseif self.next =~# till
             break
-        elseif self.next == "\n"
-            call add(res, val)
-            let val = ''
-            let self.indent = 0
-            call self.advance()
         elseif self.next == "\t"
             let self.indent += 1
             let val .= s:indent(1)
@@ -135,55 +153,77 @@ function! s:parser_text(...) dict abort
         endif
     endwhile
 
-    call add(res, val)
-    return res
+    return val
 endfunction
 
-function! s:parser_parse(...) dict abort
-    let ret = a:0 ? [] : self.value
+function! s:join_consecutive_strings(list) abort
+    let list = a:list
+    let pos = 0
+    while pos + 1 < len(list)
+        if type(list[pos]) == type('') && type(list[pos+1]) == type('')
+            let list[pos] .= list[pos+1]
+            call remove(list, pos + 1)
+        else
+            let pos += 1
+        endif
+    endwhile
+endfunction
+
+function! s:parser_text(till) dict abort
+    let ret = []
+
     while self.pos < self.len
+        let lines = []
+
         if self.same('$')
             let var = self.var()
             if !empty(var)
                 if var[0] is# 'VISUAL'
-                    let add_to = s:visual_placeholder(var, self.indent)
-                    if !empty(ret) && type(ret[-1]) == type('')
-                        let ret[-1] .= add_to[0]
-                    else
-                        call add(ret, add_to[0])
-                    endif
-                    call extend(ret, add_to[1:-1])
+                    let lines = s:visual_placeholder(var, self.indent)
                 elseif var[0] >= 0
                     call add(ret, var)
                     call self.add_var(var)
                 endif
             endif
         elseif self.same('`')
-            let add_to = self.expr()
-            if !empty(ret) && type(ret[-1]) == type('')
-                let ret[-1] .= add_to
-            else
-                call add(ret, add_to)
-            endif
+            let lines = split(self.expr(), "\n", 1)
         else
-            let text = a:0 ? self.text(a:1) : self.text()
-            if exists('add_to')
-                let ret[-1] .= text[0]
-                call remove(text, 0)
-                unlet add_to
-            endif
-            call extend(ret, text)
+            let lines = [self.string(a:till . s:special_chars)]
         endif
-        if a:0 && self.next == a:1
+
+        if !empty(lines)
+            call add(ret, lines[0])
+            call extend(self.stored_lines, lines[1:])
+        endif
+
+        " Empty lines are ignored if this is tested at the start of an iteration
+        if self.next ==# a:till
             break
         endif
     endwhile
+
+    call s:join_consecutive_strings(ret)
     return ret
 endfunction
 
-call extend(s:parser_proto, snipmate#util#add_methods(s:sfile(), 'parser',
-            \ [ 'advance', 'same', 'id', 'add_var', 'var', 'varend',
-            \ 'placeholder', 'subst', 'expr', 'text', 'parse' ]), 'error')
+function! s:parser_line() dict abort
+    let ret = []
+    if !empty(self.stored_lines)
+        call add(ret, remove(self.stored_lines, 0))
+    else
+        call extend(ret, self.text("\n"))
+        call self.same("\n")
+    endif
+    let self.indent = 0
+    return ret
+endfunction
+
+function! s:parser_parse() dict abort
+    while self.pos < self.len || !empty(self.stored_lines)
+        let line = self.line()
+        call add(self.value, line)
+    endwhile
+endfunction
 
 function! s:indent(count) abort
     if &expandtab
@@ -211,9 +251,59 @@ function! s:visual_placeholder(var, indent) abort
     return content
 endfunction
 
-function! snipmate#parse#snippet(text) abort
+function! s:parser_create_stubs() dict abort
+
+    for [id, dict] in items(self.vars)
+        for i in dict.instances
+            if len(i) > 1 && type(i[1]) != type({})
+                if !has_key(dict, 'placeholder')
+                    let dict.placeholder = i[1:]
+                    call add(i, dict)
+                else
+                    unlet i[1:]
+                    call s:create_mirror_stub(i, dict)
+                endif
+            else
+                call s:create_mirror_stub(i, dict)
+            endif
+        endfor
+        if !has_key(dict, 'placeholder')
+            let dict.placeholder = []
+            let j = 0
+            while len(dict.instances[j]) > 2
+                let j += 1
+            endwhile
+            let oldstub = remove(dict.instances[j], 1, -1)[-1]
+            call add(dict.instances[j], '')
+            call add(dict.instances[j], dict)
+            call filter(dict.mirrors, 'v:val isnot oldstub')
+        endif
+        unlet dict.instances
+    endfor
+
+endfunction
+
+function! s:create_mirror_stub(mirror, dict)
+    let mirror = a:mirror
+    let dict = a:dict
+    let stub = get(mirror, 1, {})
+    call add(mirror, stub)
+    let dict.mirrors = get(dict, 'mirrors', [])
+    call add(dict.mirrors, stub)
+endfunction
+
+function! snipmate#parse#snippet(text, ...) abort
     let parser = s:new_parser(a:text)
     call parser.parse()
+    if !(a:0 && a:1)
+        call parser.create_stubs()
+    endif
     unlet! b:snipmate_visual
     return [parser.value, parser.vars]
 endfunction
+
+call extend(s:parser_proto, snipmate#util#add_methods(s:sfile(), 'parser',
+            \ [ 'advance', 'same', 'id', 'add_var', 'var', 'varend',
+            \   'line', 'string', 'create_stubs', 'pat',
+            \   'placeholder', 'subst', 'expr', 'text', 'parse',
+            \ ]), 'error')

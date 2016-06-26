@@ -52,7 +52,7 @@ disabled/enabled easily.
 
 ## Install
 
-Master branch is supposed to be a development branch. So stuff here can break and change. 
+Master branch is supposed to be a development branch. So stuff here can break and change.
 Please try use always the [latest release](https://github.com/fatih/vim-go/releases/latest)
 
 Vim-go follows the standard runtime path structure, so I highly recommend to
@@ -180,6 +180,7 @@ To change it:
 ```vim
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
+let g:go_highlight_fields = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_interfaces = 1
 let g:go_highlight_operators = 1
@@ -216,6 +217,11 @@ By default when `:GoInstallBinaries` is called, the binaries are installed to
 ```vim
 let g:go_bin_path = expand("~/.gotools")
 let g:go_bin_path = "/home/fatih/.mypath"      "or give absolute path
+```
+
+Disable updating dependencies when installing/updating binaries:
+```vim
+let g:go_get_update = 0
 ```
 
 ### Using with Neovim (beta)

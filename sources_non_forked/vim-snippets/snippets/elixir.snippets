@@ -114,7 +114,7 @@ snippet testa
 	end
 snippet exunit
 	defmodule ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
-		use ExUnit.Case
+		use ExUnit.Case, async: true
 
 		${0}
 	end
@@ -131,3 +131,6 @@ snippet qu
 	quote do
 		${1}
 	end
+snippet beh
+	@behaviour ${1:Mix.Task}
+	${0}

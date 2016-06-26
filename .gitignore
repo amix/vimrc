@@ -1,7 +1,12 @@
-temp_dirs/undodir*
+temp_dirs/undodir/*
 sources_non_forked/ack.vim/.netrwhist
 temp_dirs/yankring_history_v2.txt
 sources_forked/yankring/doc/tags
 sources_non_forked/tlib/doc/tags
+<<<<<<< HEAD
+=======
+sources_non_forked/ctrlp.vim/doc/tags*
+my_configs.vim
+>>>>>>> 2644909e1e6273e4317a077ef289833e7500be53
 tags
 .DS_Store

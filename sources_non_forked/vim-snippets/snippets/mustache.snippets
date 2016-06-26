@@ -1,0 +1,18 @@
+# if {{#value}} ... {{/value}}
+snippet if
+	{{#${1:value}}}
+	${0}
+	{{/$1}}
+# if not {{^value}} ... {{/value}}
+snippet ifn
+	{{^${1:value}}}
+	${0}
+	{{/$1}}
+# if else {{#value}} ... {{/value}} {{^value}} ... {{/value}}
+snippet ife
+	{{#${1:value}}}
+	${2}
+	{{/$1}}
+	{{^$1}}
+	${3}
+	{{/$1}}

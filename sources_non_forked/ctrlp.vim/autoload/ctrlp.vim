@@ -93,6 +93,7 @@ let [s:pref, s:bpref, s:opts, s:new_opts, s:lc_opts] =
 	\ 'open_single_match':     ['s:opensingle', []],
 	\ 'brief_prompt':          ['s:brfprt', 0],
 	\ 'match_current_file':    ['s:matchcrfile', 0],
+	\ 'match_natural_name':    ['s:matchnatural', 0],
 	\ 'compare_lim':           ['s:compare_lim', 3000],
 	\ 'bufname_mod':           ['s:bufname_mod', ':t'],
 	\ 'bufpath_mod':           ['s:bufpath_mod', ':~:.:h'],
@@ -315,11 +316,11 @@ fu! s:Open()
 	cal s:setupblank()
 endf
 
-fu! s:Close()
+fu! s:Close(exit)
 	cal s:buffunc(0)
 	if winnr('$') == 1
 		bw!
-	el
+	elsei a:exit
 		try | bun!
 		cat | clo! | endt
 		cal s:unmarksigns()
@@ -425,7 +426,7 @@ fu! s:UserCmd(lscmd)
 	let do_ign =
 		\ type(s:usrcmd) == 4 && has_key(s:usrcmd, 'ignore') && s:usrcmd['ignore']
 	if do_ign && ctrlp#igncwd(s:cwd) | retu | en
-	if exists('+ssl') && &ssl
+	if exists('+ssl') && &ssl && &shell !~ 'sh'
 		let [ssl, &ssl, path] = [&ssl, 0, tr(path, '/', '\')]
 	en
 	if (has('win32') || has('win64')) && match(&shellcmdflag, "/") != -1
@@ -653,9 +654,9 @@ fu! s:Update(str)
 endf
 
 fu! s:ForceUpdate()
-	let wv = winsaveview()
+	let pos = exists('*getcurpos') ? getcurpos() : getpos('.')
 	sil! cal s:Update(escape(s:getinput(), '\'))
-	cal winrestview(wv)
+	cal setpos('.', pos)
 endf
 
 fu! s:BuildPrompt(upd)
@@ -839,9 +840,9 @@ fu! s:PrtSelectMove(dir)
 	let wht = winheight(0)
 	let dirs = {'t': 'gg','b': 'G','j': 'j','k': 'k','u': wht.'k','d': wht.'j'}
 	exe 'keepj norm!' dirs[a:dir]
-	let wv = winsaveview()
+	let pos = exists('*getcurpos') ? getcurpos() : getpos('.')
 	cal s:BuildPrompt(0)
-	cal winrestview(wv)
+	cal setpos('.', pos)
 endf
 
 fu! s:PrtSelectJump(char)
@@ -864,9 +865,9 @@ fu! s:PrtSelectJump(char)
 			let [jmpln, s:jmpchr] = [npos == -1 ? pos : npos, [chr, npos]]
 		en
 		exe 'keepj norm!' ( jmpln + 1 ).'G'
-		let wv = winsaveview()
+		let pos = exists('*getcurpos') ? getcurpos() : getpos('.')
 		cal s:BuildPrompt(0)
-		cal winrestview(wv)
+		cal setpos('.', pos)
 	en
 endf
 " Misc {{{2
@@ -907,8 +908,9 @@ fu! s:PrtDeleteMRU()
 endf
 
 fu! s:PrtExit()
+	exe bufwinnr(s:bufnr).'winc w'
 	if bufnr('%') == s:bufnr && bufname('%') == 'ControlP'
-		noa cal s:Close()
+		noa cal s:Close(1)
 		noa winc p
 	en
 endf
@@ -1754,7 +1756,7 @@ fu! ctrlp#syntax()
 	en
 	sy match CtrlPNoEntries '^ == NO ENTRIES ==$'
 	if hlexists('CtrlPLinePre')
-		sy match CtrlPLinePre '^>'
+		exe "sy match CtrlPLinePre '^".escape(get(g:, 'ctrlp_line_prefix', '>'),'^$.*~\')."'"
 	en
 
 	if s:itemtype == 1 && s:has_conceal
@@ -1822,7 +1824,7 @@ fu! s:highlight(pat, grp)
 				" occurrence of our letters. We also ensure that our matcher is case
 				" insensitive or sensitive depending.
 				cal matchadd(a:grp, beginning.middle.ending)
-			endfor
+			endfo
 		en
 
 		cal matchadd('CtrlPLinePre', '^>')
@@ -1941,7 +1943,7 @@ fu! s:isabs(path)
 endf
 
 fu! s:bufnrfilpath(line)
-	if s:isabs(a:line) || a:line =~ '^\~[/\\]'
+	if s:isabs(a:line) || a:line =~ '^\~[/\\]' || a:line =~ '^\w\+:\/\/'
 		let filpath = a:line
 	el
 		let filpath = s:dyncwd.s:lash().a:line
@@ -1956,9 +1958,10 @@ fu! s:bufnrfilpath(line)
 endf
 
 fu! ctrlp#normcmd(cmd, ...)
+	let buftypes = [ 'quickfix', 'help' ]
 	if a:0 < 2 && s:nosplit() | retu a:cmd | en
 	let norwins = filter(range(1, winnr('$')),
-		\ 'empty(getbufvar(winbufnr(v:val), "&bt")) || s:isneovimterminal(winbufnr(v:val))')
+		\ 'index(buftypes, getbufvar(winbufnr(v:val), "&bt")) == -1 || s:isneovimterminal(winbufnr(v:val))')
 	for each in norwins
 		let bufnr = winbufnr(each)
 		if empty(bufname(bufnr)) && empty(getbufvar(bufnr, '&ft'))
@@ -2345,9 +2348,16 @@ endf
 
 fu! s:buildpat(lst)
 	let pat = a:lst[0]
-	for item in range(1, len(a:lst) - 1)
-		let pat .= '[^'.a:lst[item - 1].']\{-}'.a:lst[item]
-	endfo
+	if s:matchnatural == 1
+		for item in range(1, len(a:lst) - 1)
+			let c = a:lst[item - 1]
+			let pat .= (c == '/' ? '[^/]\{-}' : '[^'.c.'/]\{-}').a:lst[item]
+		endfo
+	else
+		for item in range(1, len(a:lst) - 1)
+			let pat .= '[^'.a:lst[item - 1].']\{-}'.a:lst[item]
+		endfo
+	en
 	retu pat
 endf
 
@@ -2533,7 +2543,7 @@ if has('autocmd')
 	aug CtrlPAug
 		au!
 		au BufEnter ControlP cal s:checkbuf()
-		au BufLeave ControlP noa cal s:Close()
+		au BufLeave ControlP noa cal s:Close(0)
 		au VimLeavePre * cal s:leavepre()
 	aug END
 en

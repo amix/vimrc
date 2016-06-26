@@ -76,4 +76,4 @@ endif
 " -- impl
 command! -nargs=* -buffer -complete=customlist,go#impl#Complete GoImpl call go#impl#Impl(<f-args>)
 
-" vim:ts=4:sw=4:et
+" vim: sw=2 ts=2 et
