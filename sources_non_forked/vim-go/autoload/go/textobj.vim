@@ -177,4 +177,4 @@ function! go#textobj#FunctionJump(mode, direction)
   keepjumps call cursor(info.func.line, 1)
 endfunction
 
-" vim:ts=2:sw=2:et
+" vim: sw=2 ts=2 et

@@ -3,7 +3,7 @@ priority -50
 ## Snippets from SnipMate, taken from
 ## https://github.com/scrooloose/snipmate-snippets.git
 
-snippet getter "PHP Class Getter" b
+snippet gm "PHP Class Getter" b
 /**
  * Getter for $1
  *
@@ -11,11 +11,11 @@ snippet getter "PHP Class Getter" b
  */
 public function get${1/\w+\s*/\u$0/}()
 {
-    return $this->$1;$3
+    return $this->$1;
 }
 endsnippet
 
-snippet setter "PHP Class Setter" b
+snippet sm "PHP Class Setter" b
 /**
  * Setter for $1
  *
@@ -24,11 +24,10 @@ snippet setter "PHP Class Setter" b
  */
 public function set${1/\w+\s*/\u$0/}(${4:${2/(void|string|int|integer|double|float|object|boolear|null|mixed|number|resource)|(.*)/(?1::$2 )/}}$$1)
 {
-    $this->$1 = $$1;$5
+    $this->$1 = $$1;
 
-    ${6:return $this;}
+    ${5:return $this;}
 }
-$0
 endsnippet
 
 snippet gs "PHP Class Getter Setter" b
@@ -39,22 +38,21 @@ snippet gs "PHP Class Getter Setter" b
  */
 public function get${1/\w+\s*/\u$0/}()
 {
-    return $this->$1;$3
+    return $this->$1;
 }
 
 /**
  * Setter for $1
  *
  * @param $2 $$1
- * @return ${4:`!p snip.rv=snip.basename`}
+ * @return ${3:`!p snip.rv=snip.basename`}
  */
-public function set${1/\w+\s*/\u$0/}(${5:${2/(void|string|int|integer|double|float|object|boolear|null|mixed|number|resource)|(.*)/(?1::$2 )/}}$$1)
+public function set${1/\w+\s*/\u$0/}(${4:${2/(void|string|int|integer|double|float|object|boolear|null|mixed|number|resource)|(.*)/(?1::$2 )/}}$$1)
 {
-    $this->$1 = $$1;$6
+    $this->$1 = $$1;
 
-    ${7:return $this;}
+    ${5:return $this;}
 }
-$0
 endsnippet
 
 snippet pub "Public function" b

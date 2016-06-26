@@ -9,60 +9,60 @@ let s:initial_go_path = ""
 " GOPATH with it. If two double quotes are passed (the empty string in go),
 " it'll clear the GOPATH and will restore to the initial GOPATH.
 function! go#path#GoPath(...)
-    " we have an argument, replace GOPATH
-    if len(a:000)
-        " clears the current manually set GOPATH and restores it to the
-        " initial GOPATH, which was set when Vim was started.
-        if len(a:000) == 1 && a:1 == '""'
-            if !empty(s:initial_go_path)
-                let $GOPATH = s:initial_go_path
-                let s:initial_go_path = ""
-            endif
+  " we have an argument, replace GOPATH
+  if len(a:000)
+    " clears the current manually set GOPATH and restores it to the
+    " initial GOPATH, which was set when Vim was started.
+    if len(a:000) == 1 && a:1 == '""'
+      if !empty(s:initial_go_path)
+        let $GOPATH = s:initial_go_path
+        let s:initial_go_path = ""
+      endif
 
-            echon "vim-go: " | echohl Function | echon "GOPATH restored to ". $GOPATH | echohl None
-            return
-        endif
-
-        echon "vim-go: " | echohl Function | echon "GOPATH changed to ". a:1 | echohl None
-        let s:initial_go_path = $GOPATH
-        let $GOPATH = a:1
-        return
+      echon "vim-go: " | echohl Function | echon "GOPATH restored to ". $GOPATH | echohl None
+      return
     endif
 
-    echo go#path#Detect()
+    echon "vim-go: " | echohl Function | echon "GOPATH changed to ". a:1 | echohl None
+    let s:initial_go_path = $GOPATH
+    let $GOPATH = a:1
+    return
+  endif
+
+  echo go#path#Detect()
 endfunction
 
 " Default returns the default GOPATH. If there is a single GOPATH it returns
 " it. For multiple GOPATHS separated with a the OS specific separator, only
 " the first one is returned
 function! go#path#Default()
-    let go_paths = split($GOPATH, go#util#PathListSep())
+  let go_paths = split($GOPATH, go#util#PathListSep())
 
-    if len(go_paths) == 1
-        return $GOPATH
-    endif
+  if len(go_paths) == 1
+    return $GOPATH
+  endif
 
-    return go_paths[0]
+  return go_paths[0]
 endfunction
 
 " HasPath checks whether the given path exists in GOPATH environment variable
 " or not
 function! go#path#HasPath(path)
-    let go_paths = split($GOPATH, go#util#PathListSep())
-    let last_char = strlen(a:path) - 1
+  let go_paths = split($GOPATH, go#util#PathListSep())
+  let last_char = strlen(a:path) - 1
 
-    " check cases of '/foo/bar/' and '/foo/bar'
-    if a:path[last_char] == go#util#PathSep()
-        let withSep = a:path
-        let noSep = strpart(a:path, 0, last_char)
-    else
-        let withSep = a:path . go#util#PathSep()
-        let noSep = a:path
-    endif
+  " check cases of '/foo/bar/' and '/foo/bar'
+  if a:path[last_char] == go#util#PathSep()
+    let withSep = a:path
+    let noSep = strpart(a:path, 0, last_char)
+  else
+    let withSep = a:path . go#util#PathSep()
+    let noSep = a:path
+  endif
 
-    let hasA = index(go_paths, withSep) != -1
-    let hasB = index(go_paths, noSep) != -1
-    return hasA || hasB
+  let hasA = index(go_paths, withSep) != -1
+  let hasB = index(go_paths, noSep) != -1
+  return hasA || hasB
 endfunction
 
 " Detect returns the current GOPATH. If a package manager is used, such as
@@ -70,60 +70,60 @@ endfunction
 " over the current GOPATH. It also detects diretories whose are outside
 " GOPATH.
 function! go#path#Detect()
-    let gopath = $GOPATH
+  let gopath = $GOPATH
 
-    " don't lookup for godeps if autodetect is disabled.
-    if !get(g:, "go_autodetect_gopath", 1)
-        return gopath
-    endif
-
-    let current_dir = fnameescape(expand('%:p:h'))
-
-    " TODO(arslan): this should be changed so folders or files should be
-    " fetched from a customizable list. The user should define any new package
-    " management tool by it's own.
-
-    " src folder outside $GOPATH
-    let src_root = finddir("src", current_dir .";")
-    if !empty(src_root)
-        let src_path = fnamemodify(src_root, ':p:h:h') . go#util#PathSep()
-
-        " gb vendor plugin
-        " (https://github.com/constabulary/gb/tree/master/cmd/gb-vendor)
-        let gb_vendor_root = src_path . "vendor" . go#util#PathSep()
-        if isdirectory(gb_vendor_root) && !go#path#HasPath(gb_vendor_root)
-            let gopath = gb_vendor_root . go#util#PathListSep() . gopath
-        endif
-
-        if !go#path#HasPath(src_path)
-            let gopath =  src_path . go#util#PathListSep() . gopath
-        endif
-    endif
-
-    " Godeps
-    let godeps_root = finddir("Godeps", current_dir .";")
-    if !empty(godeps_root)
-        let godeps_path = join([fnamemodify(godeps_root, ':p:h:h'), "Godeps", "_workspace" ], go#util#PathSep())
-
-        if !go#path#HasPath(godeps_path)
-            let gopath =  godeps_path . go#util#PathListSep() . gopath
-        endif
-    endif
-
+  " don't lookup for godeps if autodetect is disabled.
+  if !get(g:, "go_autodetect_gopath", 1)
     return gopath
+  endif
+
+  let current_dir = fnameescape(expand('%:p:h'))
+
+  " TODO(arslan): this should be changed so folders or files should be
+  " fetched from a customizable list. The user should define any new package
+  " management tool by it's own.
+
+  " src folder outside $GOPATH
+  let src_root = finddir("src", current_dir .";")
+  if !empty(src_root)
+    let src_path = fnamemodify(src_root, ':p:h:h') . go#util#PathSep()
+
+    " gb vendor plugin
+    " (https://github.com/constabulary/gb/tree/master/cmd/gb-vendor)
+    let gb_vendor_root = src_path . "vendor" . go#util#PathSep()
+    if isdirectory(gb_vendor_root) && !go#path#HasPath(gb_vendor_root)
+      let gopath = gb_vendor_root . go#util#PathListSep() . gopath
+    endif
+
+    if !go#path#HasPath(src_path)
+      let gopath =  src_path . go#util#PathListSep() . gopath
+    endif
+  endif
+
+  " Godeps
+  let godeps_root = finddir("Godeps", current_dir .";")
+  if !empty(godeps_root)
+    let godeps_path = join([fnamemodify(godeps_root, ':p:h:h'), "Godeps", "_workspace" ], go#util#PathSep())
+
+    if !go#path#HasPath(godeps_path)
+      let gopath =  godeps_path . go#util#PathListSep() . gopath
+    endif
+  endif
+
+  return gopath
 endfunction
 
 
 " BinPath returns the binary path of installed go tools.
 function! go#path#BinPath()
-    let bin_path = ""
+  let bin_path = ""
 
-    " check if our global custom path is set, if not check if $GOBIN is set so
-    " we can use it, otherwise use $GOPATH + '/bin'
-    if exists("g:go_bin_path")
-        let bin_path = g:go_bin_path
-    elseif $GOBIN != ""
-        let bin_path = $GOBIN
+  " check if our global custom path is set, if not check if $GOBIN is set so
+  " we can use it, otherwise use $GOPATH + '/bin'
+  if exists("g:go_bin_path")
+    let bin_path = g:go_bin_path
+  elseif $GOBIN != ""
+    let bin_path = $GOBIN
     elseif $GOPATH != ""
         let bin_path = expand(go#path#Default() . "/bin/")
     else
@@ -172,4 +172,4 @@ function! go#path#CheckBinPath(binpath)
     return go_bin_path . go#util#PathSep() . basename
 endfunction
 
-" vim:ts=4:sw=4:et
+" vim: sw=2 ts=2 et

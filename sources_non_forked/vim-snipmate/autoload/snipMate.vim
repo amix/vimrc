@@ -110,7 +110,7 @@ function! s:build_stops(snippet, stops, lnum, col, indent) abort
 
 	for line in a:snippet
 		let col = s:build_loc_info(line, stops, lnum, col, [])
-		if line isnot line[-1]
+		if line isnot a:snippet[-1]
 			let lnum += 1
 			let col = a:indent
 		endif

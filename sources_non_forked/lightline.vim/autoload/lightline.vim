@@ -2,7 +2,7 @@
 " Filename: autoload/lightline.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2016/06/11 14:05:27.
+" Last Change: 2016/06/12 22:40:00.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -263,7 +263,7 @@ endif
 function! lightline#highlight(...) abort
   let [c, f] = [s:lightline.palette, s:lightline.mode_fallback]
   let [s:lightline.llen, s:lightline.rlen] = [len(c.normal.left), len(c.normal.right)]
-  let [s:lightline.tab_llen,  s:lightline.tab_rlen] = [len(has_key(get(c, 'tabline', {}),  'left') ? c.tabline.left : c.normal.left),  len(has_key(get(c, 'tabline', {}),  'right') ? c.tabline.right : c.normal.right)]
+  let [s:lightline.tab_llen, s:lightline.tab_rlen] = [len(has_key(get(c, 'tabline', {}), 'left') ? c.tabline.left : c.normal.left), len(has_key(get(c, 'tabline', {}), 'right') ? c.tabline.right : c.normal.right)]
   let types = map(s:uniq(sort(filter(values(s:lightline.component_type), 'v:val !=# "raw"'))), '[v:val, 1]')
   let modes = a:0 ? [a:1] : extend(['normal', 'insert', 'replace', 'visual', 'inactive', 'command', 'select', 'tabline'], has('nvim') ? ['terminal'] : [])
   for mode in modes
@@ -293,7 +293,7 @@ function! lightline#highlight(...) abort
 endfunction
 
 function! s:subseparator(components, subseparator, expanded) abort
-  let [a, c, f, v] = [ a:components, s:lightline.component, s:lightline.component_function,  s:lightline.component_visible_condition ]
+  let [a, c, f, v] = [ a:components, s:lightline.component, s:lightline.component_function, s:lightline.component_visible_condition ]
   let xs = map(range(len(a:components)), 'a:expanded[v:val] ? "1" :
         \ has_key(f, a[v:val]) ? (exists("*".f[a[v:val]]) ? "" : "exists(\"*".f[a[v:val]]."\")&&").f[a[v:val]]."()!=#\"\"" :
         \ has_key(v, a[v:val]) ? "(" . v[a[v:val]] . ")" : has_key(c, a[v:val]) ? "1" : "0"')

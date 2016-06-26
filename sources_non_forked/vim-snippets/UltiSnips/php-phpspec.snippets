@@ -23,7 +23,7 @@ class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
 ` extends ObjectBehavior
 {
-	function it${1}()
+	function it_${1}()
 	{
 		$0
 	}
@@ -31,7 +31,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet it "function it_does_something() { ... }"
-function it${1}()
+function it_${1}()
 {
 	${0:${VISUAL}}
 }
@@ -163,11 +163,11 @@ endsnippet
 
 # Scalar type matchers
 snippet sbscalar "$this->XYZ()->shouldBeString|Array|Bool()"
-$this->${1:method}()->shouldBe(${2:'String|Array|Bool'});
+$this->${1:method}()->shouldBe${2:String|Array|Bool}();
 endsnippet
 
 snippet snbscalar "$this->XYZ()->shouldNotBeString|Array|Bool()"
-$this->${1:method}()->shouldNotBe(${2:'String|Array|Bool'});
+$this->${1:method}()->shouldNotBe${2:String|Array|Bool}();
 endsnippet
 
 # Contain matcher

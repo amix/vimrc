@@ -47,28 +47,27 @@ snippet m
 	{
 		${0}
 	}
-# setter method
-snippet sm
+snippet sm "PHP Class Setter"
 	/**
 	 * Sets the value of ${1:foo}
 	 *
-	 * @param ${2:$1} $$1 ${3:description}
+	 * @param ${2:string} $$1 ${3:description}
 	 *
 	 * @return ${4:`vim_snippets#Filename()`}
 	 */
-	${5:public} function set${6:$2}(${7:$2 }$$1)
+	${5:public} function set${6:$1}(${7:$2 }$$1)
 	{
 		$this->${8:$1} = $$1;
+
 		return $this;
 	}
-# getter method
-snippet gm
+snippet gm "PHP Class Getter Setter"
 	/**
 	 * Gets the value of ${1:foo}
 	 *
-	 * @return ${2:$1}
+	 * @return ${2:string}
 	 */
-	${3:public} function get${4:$2}()
+	${3:public} function get${4:$1}()
 	{
 		return $this->${5:$1};
 	}
@@ -391,13 +390,13 @@ snippet ve "Dumb debug helper in HTML"
 snippet pc "Dumb debug helper in cli"
 	var_export($1);$0
 # Getters & Setters
-snippet gs
+snippet gs "PHP Class Getter Setter"
 	/**
 	 * Gets the value of ${1:foo}
 	 *
-	 * @return ${2:$1}
+	 * @return ${2:string}
 	 */
-	public function get${3:$2}()
+	public function get${3:$1}()
 	{
 		return $this->${4:$1};
 	}

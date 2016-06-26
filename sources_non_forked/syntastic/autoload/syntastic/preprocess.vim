@@ -357,6 +357,54 @@ function! syntastic#preprocess#stylelint(errors) abort " {{{2
     return out
 endfunction " }}}2
 
+function! syntastic#preprocess#tern_lint(errors) abort " {{{2
+    let errs = join(a:errors, '')
+    let json = s:_decode_JSON(errs)
+
+echomsg string(json)
+    let out = []
+    if type(json) == type({}) && has_key(json, 'messages') && type(json['messages']) == type([])
+        for e in json['messages']
+            try
+                let line_from = byte2line(e['from'] + 1)
+                if line_from > 0
+                    let line = line_from
+                    let column = e['from'] - line2byte(line_from) + 2
+                    let line_to = byte2line(e['from'] + 1)
+                    let hl = line_to == line ? e['to'] - line2byte(line_to) + 1 : 0
+                else
+                    let line = 0
+                    let column = 0
+                    let hl = 0
+                endif
+
+                if column < 0
+                    let column = 0
+                endif
+                if hl < 0
+                    let hl = 0
+                endif
+
+                call add(out,
+                    \ e['file'] . ':' .
+                    \ e['severity'][0] . ':' .
+                    \ line . ':' .
+                    \ column . ':' .
+                    \ hl . ':' .
+                    \ e['message'])
+            catch /\m^Vim\%((\a\+)\)\=:E716/
+                call syntastic#log#warn('checker javascript/tern_lint: unrecognized error item ' . string(e))
+                let out = []
+            endtry
+        endfor
+    else
+        call syntastic#log#warn('checker javascript/tern_lint: unrecognized error format')
+    endif
+
+echomsg string(out)
+    return out
+endfunction " }}}2
+
 function! syntastic#preprocess#tslint(errors) abort " {{{2
     return map(copy(a:errors), 'substitute(v:val, ''\m^\(([^)]\+)\)\s\(.\+\)$'', ''\2 \1'', "")')
 endfunction " }}}2

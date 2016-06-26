@@ -19,7 +19,7 @@ if has('reltime')
     lockvar! g:_SYNTASTIC_START
 endif
 
-let g:_SYNTASTIC_VERSION = '3.7.0-144'
+let g:_SYNTASTIC_VERSION = '3.7.0-153'
 lockvar g:_SYNTASTIC_VERSION
 
 " Sanity checks {{{1
