@@ -4,7 +4,7 @@ Version: 0.0
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2016/05/08 13:56:19.
+Last Change: 2016/05/26 21:57:34.
 
 CONTENTS					*lightline-contents*
 
@@ -175,14 +175,18 @@ OPTIONS						*lightline-option*
 		|g:lightline.component_expand|. The types are used to specify
 		the color. Specifically, the type raw is used to specify a
 		component which should not be wrapped by item group: %(...%).
->
+		The default value is: >
+
 		let g:lightline.component_type = {
 		    \ 'tabs': 'tabsel',
 		    \ 'close': 'raw' }
 <
 	g:lightline.tab_component		*g:lightline.tab_component*
 		A dictionary for components in one tab.
+		The default value is: >
 
+		let g:lightline.tab_component = {}
+<
 	g:lightline.tab_component_function	*g:lightline.tab_component_function*
 		Another dictionary for components in one tab.
 		A function specified as a tab component takes one argument:
@@ -286,8 +290,8 @@ nice.
 	endfunction
 	function! LightLineFugitive()
 		if exists('*fugitive#head')
-			let _ = fugitive#head()
-			return _ !=# '' ? ''._ : ''
+			let branch = fugitive#head()
+			return branch !=# '' ? ''.branch : ''
 		endif
 		return ''
 	endfunction
@@ -311,8 +315,8 @@ look nice.
 	endfunction
 	function! LightLineFugitive()
 		if exists('*fugitive#head')
-			let _ = fugitive#head()
-			return _ !=# '' ? '⭠ '._ : ''
+			let branch = fugitive#head()
+			return branch !=# '' ? '⭠ '.branch : ''
 		endif
 		return ''
 	endfunction
@@ -337,7 +341,7 @@ Exposed functions for lightline.vim.
 		Returns the mode of the Vim using |g:lightline.mode_map|.
 
 	lightline#init()			*lightline#init()*
-		Initializes the variable |g:lightline|.
+		Initializes the internal state from |g:lightline|.
 
 	lightline#colorscheme()			*lightline#colorscheme()*
 		Initializes the colorscheme and the highlight groups.
@@ -741,8 +745,8 @@ A nice example for |vim-powerline| font users:
 	endfunction
 	function! LightLineFugitive()
 		if &ft !~? 'vimfiler' && exists('*fugitive#head')
-			let _ = fugitive#head()
-			return _ !=# '' ? '⭠ '._ : ''
+			let branch = fugitive#head()
+			return branch !=# '' ? '⭠ '.branch : ''
 		endif
 		return ''
 	endfunction
@@ -802,8 +806,8 @@ For users who uses lots of plugins:
 	  try
 	    if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
 	      let mark = ''  " edit here for cool mark
-	      let _ = fugitive#head()
-	      return _ !=# '' ? mark._ : ''
+	      let branch = fugitive#head()
+	      return branch !=# '' ? mark.branch : ''
 	    endif
 	  catch
 	  endtry

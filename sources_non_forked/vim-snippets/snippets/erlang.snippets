@@ -482,6 +482,37 @@ snippet gen_event
 	%%%===================================================================
 	%%% Internal functions
 	%%%===================================================================
+# EUnit snippets
+snippet eunit
+	-module(${1:`vim_snippets#Filename('', 'my')`}).
+	-include_lib("eunit/include/eunit.hrl").
+
+	${0}
+snippet ieunit
+	-ifdef(TEST).
+	-include_lib("eunit/include/eunit.hrl").
+
+	${0}
+
+	-endif.
+snippet as
+	?assert(${0})
+snippet asn
+	?assertNot(${0})
+snippet aseq
+	?assertEqual(${1}, ${0})
+snippet asneq
+	?assertNotEqual(${1}, ${0})
+snippet asmat
+	?assertMatch(${1:Pattern}, ${0:Expression})
+snippet asnmat
+	?assertNotMatch(${1:Pattern}, ${0:Expression})
+snippet aserr
+	?assertError(${1:Pattern}, ${0:Expression})
+snippet asex
+	?assertExit(${1:Pattern}, ${0:Expression})
+snippet asexc
+	?assertException(${1:Class}, ${2:Pattern}, ${0:Expression})
 # common_test test_SUITE
 snippet testsuite
 	-module(${0:`vim_snippets#Filename('', 'my')`}).

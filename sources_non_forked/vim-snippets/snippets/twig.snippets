@@ -1,43 +1,34 @@
-# twig block
-snippet bl
+snippet bl "{% block xyz %} .. {% endblock xyz %}"
 	{% block ${1} %}
 	${2}
 	{% endblock $1 %}
-# twig javascripts
-snippet js
+snippet js "{% javascripts 'xyz' %} .. {% endjavascripts %}"
 	{% javascripts '${1}' %}
 		<script src="{{ asset_url }}"></script>
 	{% endjavascripts %}
-# twig stylesheets
-snippet css
+snippet css "{% stylesheets 'xyz' %} .. {% endstylesheets %}"
 	{% stylesheets '${1}' %}
 		<link rel="stylesheet" href="{{ asset_url }}">
 	{% endstylesheets %}
-# twig if
-snippet if
+snippet if "{% if %} .. {% endif %}"
 	{% if ${1} %}
 	${2}
 	{% endif %}
-# twig if ... else
-snippet ife
+snippet ife "{% if %} .. {% else %} .. {% endif %}"
 	{% if ${1} %}
 	${2}
 	{% else %}
 	${0}
 	{% endif %}
-# twig else
-snippet el
+snippet el "{% else %}"
 	{% else %}
 	${0}
-# twig elseif
-snippet eif
+snippet eif "{% elseif %}"
 	{% elseif ${1} %}
 	${0}
-# twig for
-snippet for
+snippet for "{% for x in y %} .. {% endfor %}"
 	{% for ${1} in ${2} %}
 	${3}
 	{% endfor %}
-# twig extends
-snippet ext
+snippet ext "{% extends xyz %}"
 	{% extends ${1} %}

@@ -1,112 +1,112 @@
 " PathSep returns the appropriate OS specific path separator.
 function! go#util#PathSep()
-    if go#util#IsWin()
-        return '\'
-    endif
-    return '/'
+  if go#util#IsWin()
+    return '\'
+  endif
+  return '/'
 endfunction
 
 " PathListSep returns the appropriate OS specific path list separator.
 function! go#util#PathListSep()
-    if go#util#IsWin()
-        return ";"
-    endif
-    return ":"
+  if go#util#IsWin()
+    return ";"
+  endif
+  return ":"
 endfunction
 
 " LineEnding returns the correct line ending, based on the current fileformat
 function! go#util#LineEnding()
-    if &fileformat == 'dos'
-        return "\r\n"
-    elseif &fileformat == 'mac'
-        return "\r"
-    endif
+  if &fileformat == 'dos'
+    return "\r\n"
+  elseif &fileformat == 'mac'
+    return "\r"
+  endif
 
-    return "\n"
+  return "\n"
 endfunction
 
 " IsWin returns 1 if current OS is Windows or 0 otherwise
 function! go#util#IsWin()
-    let win = ['win16', 'win32', 'win64', 'win95']
-    for w in win
-        if (has(w))
-            return 1
-        endif
-    endfor
+  let win = ['win16', 'win32', 'win64', 'win95']
+  for w in win
+    if (has(w))
+      return 1
+    endif
+  endfor
 
-    return 0
+  return 0
 endfunction
 
 function! go#util#GOARCH()
-    return substitute(go#util#System('go env GOARCH'), '\n', '', 'g')
+  return substitute(go#util#System('go env GOARCH'), '\n', '', 'g')
 endfunction
 
 function! go#util#GOOS()
-    return substitute(go#util#System('go env GOOS'), '\n', '', 'g')
+  return substitute(go#util#System('go env GOOS'), '\n', '', 'g')
 endfunction
 
 function! go#util#GOROOT()
-    return substitute(go#util#System('go env GOROOT'), '\n', '', 'g')
+  return substitute(go#util#System('go env GOROOT'), '\n', '', 'g')
 endfunction
 
 function! go#util#GOPATH()
-    return substitute(go#util#System('go env GOPATH'), '\n', '', 'g')
+  return substitute(go#util#System('go env GOPATH'), '\n', '', 'g')
 endfunction
 
 function! go#util#OSARCH()
-    return go#util#GOOS() . '_' . go#util#GOARCH()
+  return go#util#GOOS() . '_' . go#util#GOARCH()
 endfunction
 
 
 "Check if has vimproc
 function! s:has_vimproc()
-    if !exists('g:go#use_vimproc')
-        if go#util#IsWin()
-            try
-                call vimproc#version()
-                let exists_vimproc = 1
-            catch
-                let exists_vimproc = 0
-            endtry
-        else
-            let exists_vimproc = 0
-        endif
-
-        let g:go#use_vimproc = exists_vimproc
+  if !exists('g:go#use_vimproc')
+    if go#util#IsWin()
+      try
+        call vimproc#version()
+        let exists_vimproc = 1
+      catch
+        let exists_vimproc = 0
+      endtry
+    else
+      let exists_vimproc = 0
     endif
 
-    return g:go#use_vimproc
+    let g:go#use_vimproc = exists_vimproc
+  endif
+
+  return g:go#use_vimproc
 endfunction
 
 if s:has_vimproc()
-    let s:vim_system = get(g:, 'gocomplete#system_function', 'vimproc#system2')
-    let s:vim_shell_error = get(g:, 'gocomplete#shell_error_function', 'vimproc#get_last_status')
+  let s:vim_system = get(g:, 'gocomplete#system_function', 'vimproc#system2')
+  let s:vim_shell_error = get(g:, 'gocomplete#shell_error_function', 'vimproc#get_last_status')
 else
-    let s:vim_system = get(g:, 'gocomplete#system_function', 'system')
-    let s:vim_shell_error = ''
+  let s:vim_system = get(g:, 'gocomplete#system_function', 'system')
+  let s:vim_shell_error = ''
 endif
 
 function! go#util#System(str, ...)
-    return call(s:vim_system, [a:str] + a:000)
+  return call(s:vim_system, [a:str] + a:000)
 endfunction
 
 function! go#util#ShellError()
-    if empty(s:vim_shell_error)
-        return v:shell_error
-    endif
-    return call(s:vim_shell_error, [])
+  if empty(s:vim_shell_error)
+    return v:shell_error
+  endif
+  return call(s:vim_shell_error, [])
 endfunction
 
 
 " StripPath strips the path's last character if it's a path separator.
 " example: '/foo/bar/'  -> '/foo/bar'
 function! go#util#StripPathSep(path)
-    let last_char = strlen(a:path) - 1
-    if a:path[last_char] == go#util#PathSep()
-        return strpart(a:path, 0, last_char)
-    endif
+  let last_char = strlen(a:path) - 1
+  if a:path[last_char] == go#util#PathSep()
+    return strpart(a:path, 0, last_char)
+  endif
 
-    return a:path
+  return a:path
 endfunction
 
 " StripTrailingSlash strips the trailing slash from the given path list.
@@ -118,12 +118,12 @@ endfunction
 " Shelljoin returns a shell-safe string representation of arglist. The
 " {special} argument of shellescape() may optionally be passed.
 function! go#util#Shelljoin(arglist, ...)
-    try
-        let ssl_save = &shellslash
-        set noshellslash
-        if a:0
-            return join(map(copy(a:arglist), 'shellescape(v:val, ' . a:1 . ')'), ' ')
-        endif
+  try
+    let ssl_save = &shellslash
+    set noshellslash
+    if a:0
+      return join(map(copy(a:arglist), 'shellescape(v:val, ' . a:1 . ')'), ' ')
+    endif
 
         return join(map(copy(a:arglist), 'shellescape(v:val)'), ' ')
     finally
@@ -206,4 +206,4 @@ function! go#util#EchoProgress(msg)
     redraws! | echon "vim-go: " | echohl Identifier | echon a:msg | echohl None
 endfunction
 
-" vim:ts=4:sw=4:et
+" vim: sw=2 ts=2 et

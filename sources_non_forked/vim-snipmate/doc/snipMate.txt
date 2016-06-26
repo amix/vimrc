@@ -1,7 +1,6 @@
 *SnipMate.txt*  Plugin for using TextMate-style snippets in Vim.
 
 SnipMate                                       *snippet* *snippets* *SnipMate*
-Last Change: December 27, 2009
 
 1. Description                        |SnipMate-description|
 2. Usage                              |SnipMate-usage|
@@ -503,6 +502,15 @@ Perhaps some of these features will be added in a later release.
 
 ==============================================================================
 CHANGELOG                                                 *SnipMate-changelog*
+
+0.89 - 2016-05-29
+-----------------
+
+* Various regex updates to legacy parser Addition of double bang syntax to
+* completely remove a snippet from lookup Group various SnipMate autocommands
+* Support setting 'shiftwidth' to 0 Parser now operates linewise, adding some
+* flexibility Mirror substitutions are more literal Mirror length is
+* calculated correctly when substitutions occur
 
 0.88 - 2015-04-04
 -----------------

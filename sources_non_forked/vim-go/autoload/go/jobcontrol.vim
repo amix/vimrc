@@ -115,6 +115,11 @@ endfunction
 " it'll be closed.
 function! s:on_exit(job_id, exit_status)
   let std_combined = self.stderr + self.stdout
+
+  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+  let dir = getcwd()
+  execute cd self.dir
+
   call s:callback_handlers_on_exit(s:jobs[a:job_id], a:exit_status, std_combined)
 
   if a:exit_status == 0
@@ -123,21 +128,18 @@ function! s:on_exit(job_id, exit_status)
 
     let self.state = "SUCCESS"
     call go#util#EchoSuccess("SUCCESS")
+
+    execute cd . fnameescape(dir)
     return
   endif
 
   let self.state = "FAILED"
   call go#util#EchoError("FAILED")
 
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
-  let dir = getcwd()
-  try
-    execute cd self.dir
-    let errors = go#tool#ParseErrors(std_combined)
-    let errors = go#tool#FilterValids(errors)
-  finally
-    execute cd . fnameescape(dir)
-  endtry
+  let errors = go#tool#ParseErrors(std_combined)
+  let errors = go#tool#FilterValids(errors)
+
+  execute cd . fnameescape(dir)
 
   if !len(errors)
     " failed to parse errors, output the original content
@@ -209,4 +211,4 @@ function! s:abort(path)
   endfor
 endfunction
 
-" vim:ts=2:sw=2:et
+" vim: sw=2 ts=2 et

@@ -1,5 +1,7 @@
 # ag.vim #
 
+## Deprecated: See [this comment](https://github.com/rking/ag.vim/issues/124#issuecomment-227038003) for more info. Maybe try [ack.vim](https://github.com/mileszs/ack.vim#can-i-use-ag-the-silver-searcher-with-this) as an alternative. ##
+
 This plugin is a front for ag, A.K.A.
 [the_silver_searcher](https://github.com/ggreer/the_silver_searcher).  Ag can
 be used as a replacement for 153% of the uses of `ack`.  This plugin will allow

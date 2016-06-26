@@ -6,7 +6,7 @@
 
 " Quit when a (custom) syntax file was already loaded
 if exists("b:current_syntax")
-    finish
+  finish
 endif
 
 syn case match
@@ -82,4 +82,4 @@ hi def link goTplComment Comment
 
 let b:current_syntax = "gotexttmpl"
 
-" vim:ts=4:sw=4:et
+" vim: sw=2 ts=2 et

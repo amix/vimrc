@@ -1,3 +1,7 @@
+if exists('g:autoloaded_ack') || &cp
+  finish
+endif
+
 if exists('g:ack_use_dispatch')
   if g:ack_use_dispatch && !exists(':Dispatch')
     call s:Warn('Dispatch not loaded! Falling back to g:ack_use_dispatch = 0.')
@@ -238,4 +242,5 @@ function! s:Warn(msg) "{{{
   echohl WarningMsg | echomsg 'Ack: ' . a:msg | echohl None
 endf "}}}
 
+let g:autoloaded_ack = 1
 " vim:set et sw=2 ts=2 tw=78 fdm=marker

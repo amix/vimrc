@@ -50,3 +50,5 @@ function! go#asmfmt#Format()
   " Restore the cursor/window positions.
   call winrestview(l:curw)
 endfunction
+
+" vim: sw=2 ts=2 et
