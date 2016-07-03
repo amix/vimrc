@@ -171,6 +171,11 @@ augroup vim-go
   if get(g:, "go_metalinter_autosave", 0)
     autocmd BufWritePost *.go call go#lint#Gometa(1)
   endif
+
+  " create new template from scratch
+  if get(g:, "go_template_autocreate", 1)
+    autocmd BufNewFile *.go call go#template#create()
+  endif
 augroup END
 
 " vim: sw=2 ts=2 et

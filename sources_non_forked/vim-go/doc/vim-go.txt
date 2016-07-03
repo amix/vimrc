@@ -1118,23 +1118,17 @@ Highlights method names. By default it's disabled. >
 
 	let g:go_highlight_methods = 0
 <
-                                                  *'g:go_highlight_structs'*
+                                                  *'g:go_highlight_types'*
 
-Highlights struct names. By default it's disabled. >
+Highlights struct and interface names. By default it's disabled. >
 
-  let g:go_highlight_structs = 0
+  let g:go_highlight_types = 0
 <
                                                   *'g:go_highlight_fields'*
 
 Highlights field names. By default it's disabled. >
 
   let g:go_highlight_fields = 0
-<
-                                               *'g:go_highlight_interfaces'*
-
-Highlights interface names. By default it's disabled. >
-
-  let g:go_highlight_interfaces = 0
 <
                                         *'g:go_highlight_build_constraints'*
 
@@ -1291,8 +1285,30 @@ Specifies whether `gocode` should add built-in types, functions and constants
 to an autocompletion proposals. By default it is enabled.
 >
   let g:go_gocode_propose_builtins = 1
+<
+                                                      *g:go_template_autocreate*
 
+When a new Go file is created, vim-go automatically fills the buffer content
+with a Go code template. By default the template under
+`templates/hello_world.go` is used. This can be changed with the
+|g:go_template_file| setting. 
 
+If the new file is created in an already prepopulated package (with other Go
+files), in this case a Go code template with only the Go package declaration
+(which is automatically determined according to the current package) is added.
+
+By default it is enabled.
+>
+  let g:go_template_autocreate = 1
+<
+                                                      *g:go_template_file*
+
+Specifies the file under the `templates` folder that is used if a new Go file
+is created. Checkout |g:go_template_autocreate| for more info. By default the
+`hello_world.go` file is used.
+>
+  let g:go_template_file = "hello_world.go"
+<
 ===============================================================================
 TROUBLESHOOTING                                         *go-troubleshooting*
 

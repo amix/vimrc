@@ -71,12 +71,8 @@ if !exists("g:go_highlight_fields")
   let g:go_highlight_fields = 0
 endif
 
-if !exists("g:go_highlight_structs")
-  let g:go_highlight_structs = 0
-endif
-
-if !exists("g:go_highlight_interfaces")
-  let g:go_highlight_interfaces = 0
+if !exists("g:go_highlight_types")
+  let g:go_highlight_types = 0
 endif
 
 if !exists("g:go_highlight_build_constraints")
@@ -98,12 +94,10 @@ endif
 syn case match
 
 syn keyword     goDirective         package import
-syn keyword     goDeclaration       var const type
-syn keyword     goDeclType          struct interface
+syn keyword     goDeclaration       var const
 
 hi def link     goDirective         Statement
 hi def link     goDeclaration       Keyword
-hi def link     goDeclType          Keyword
 
 " Keywords within functions
 syn keyword     goStatement         defer go goto return break continue fallthrough
@@ -128,10 +122,6 @@ hi def link     goSignedInts        Type
 hi def link     goUnsignedInts      Type
 hi def link     goFloats            Type
 hi def link     goComplexes         Type
-
-" Treat func specially: it's a declaration at the start of a line, but a type
-" elsewhere. Order matters here.
-syn match       goDeclaration       /\<func\>/
 
 
 " Predefined functions and values
@@ -301,38 +291,43 @@ hi def link     goOperator          Operator
 
 " Functions;
 if g:go_highlight_functions != 0
-  syn match goFunction              /\(func\s\+\)\@<=\w\+\((\)\@=/
-  syn match goFunction              /\()\s\+\)\@<=\w\+\((\)\@=/
+  syn match goDeclaration       /\<func\>/ nextgroup=goReceiver,goFunction skipwhite skipnl
+  syn match goReceiver /([^),]\+)/ contained nextgroup=goFunction contains=goReceiverType skipwhite skipnl
+  syn match goReceiverType /\(\s\|*\)\w\+)/hs=s+1,he=e-1 contained
+  syn match goFunction /\w\+/ contained
+else
+  syn keyword goDeclaration func
 endif
+hi def link     goReceiverType      Type
 hi def link     goFunction          Function
 
 " Methods;
 if g:go_highlight_methods != 0
-  syn match goMethod                /\(\.\)\@<=\w\+\((\)\@=/
+  syn match goMethod                /\.\w\+(/hs=s+1,he=e-1
 endif
 hi def link     goMethod            Type
 
 " Fields;
 if g:go_highlight_fields != 0
-  syn match goField                 /\(\.\)\@<=\a\+\([\ \n\r\:\)]\)\@=/
+  syn match goVarArgs               /\.\.\.\w\+\>/
+  syn match goField                 /\.\a\+\([\ \n\r\:\)\[]\)\@=/hs=s+1
 endif
-hi def link    goField              Type
+hi def link    goField              Identifier
 
-" Structs;
-if g:go_highlight_structs != 0
-  syn match goStruct                /\(.\)\@<=\w\+\({\)\@=/
-  syn match goStructDef             /\(type\s\+\)\@<=\w\+\(\s\+struct\s\+{\)\@=/
+" Structs & Interfaces;
+if g:go_highlight_types != 0
+  syn match goTypeConstructor      /\<\w\+{/he=e-1
+  syn match goTypeDecl             /\<type\>/ nextgroup=goTypeName skipwhite skipnl
+  syn match goTypeName             /\w\+/ contained nextgroup=goDeclType skipwhite skipnl
+  syn match goDeclType             /\<interface\|struct\>/ contained skipwhite skipnl
+else
+  syn keyword goDeclType           struct interface
+  syn keyword goDeclaration        type
 endif
-hi def link     goStruct            Function
-hi def link     goStructDef         Function
-
-" Interfaces;
-if g:go_highlight_interfaces != 0
-  syn match goInterface             /\(.\)\@<=\w\+\({\)\@=/
-  syn match goInterfaceDef          /\(type\s\+\)\@<=\w\+\(\s\+interface\s\+{\)\@=/
-endif
-hi def link     goInterface         Function
-hi def link     goInterfaceDef      Function
+hi def link     goTypeConstructor   Type
+hi def link     goTypeName          Type
+hi def link     goTypeDecl          Keyword
+hi def link     goDeclType          Keyword
 
 " Build Constraints
 if g:go_highlight_build_constraints != 0

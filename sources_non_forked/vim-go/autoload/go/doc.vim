@@ -19,7 +19,7 @@ function! s:godocWord(args)
   if !executable('godoc')
     let msg = "godoc command not found."
     let msg .= "  install with: go get golang.org/x/tools/cmd/godoc"
-    call go#util#echoWarning(msg)
+    call go#util#EchoWarning(msg)
     return []
   endif
 

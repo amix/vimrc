@@ -25,6 +25,12 @@ function! go#util#LineEnding()
   return "\n"
 endfunction
 
+" Join joins any number of path elements into a single path, adding a
+" Separator if necessary and returns the result
+function! go#util#Join(...)
+  return join(a:000, go#util#PathSep())
+endfunction
+
 " IsWin returns 1 if current OS is Windows or 0 otherwise
 function! go#util#IsWin()
   let win = ['win16', 'win32', 'win64', 'win95']
