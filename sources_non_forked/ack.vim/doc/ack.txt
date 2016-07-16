@@ -275,7 +275,19 @@ If you're using this plugin with ag, The Silver Searcher, bear in mind that:
 ==============================================================================
 ISSUES AND FAQ                                            *ack-issues-and-faq*
 
-I use NERDTree and opening ack.vim results in a vertical split displaces it.~
+I don't want to jump to the first result automatically.~
+
+    Use `:Ack!`, with bang. If you want this behavior most of the time, you
+    might like an abbreviation or mapping in your personal config, something
+    like these:
+>
+        cnoreabbrev Ack Ack!
+        nnoremap <Leader>a :Ack!<Space>
+<
+    Most of the `:[L]Ack*` commands support this. Note that this behavior
+    follows the convention of Vim's built-in |:grep| and |:make| commands.
+
+I use NERDTree and opening ack.vim results in a vertical split displacing it.~
 
     You are probably using NERDTree with its default alignment at the left
     side of the window. Set these custom mappings in your vimrc to work around

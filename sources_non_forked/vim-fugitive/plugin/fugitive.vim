@@ -2840,7 +2840,7 @@ function! s:cfile() abort
       elseif getline('.') =~# '^#\trenamed:.* -> '
         let file = '/'.matchstr(getline('.'),' -> \zs.*')
         return [file]
-      elseif getline('.') =~# '^#\t\(\k\| \)\+: *.'
+      elseif getline('.') =~# '^#\t\(\k\| \)\+\p\?: *.'
         let file = '/'.matchstr(getline('.'),': *\zs.\{-\}\ze\%( ([^()[:digit:]]\+)\)\=$')
         return [file]
       elseif getline('.') =~# '^#\t.'

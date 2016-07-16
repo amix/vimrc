@@ -149,6 +149,7 @@ let [s:lcmap, s:prtmaps] = ['nn <buffer> <silent>', {
 	\ 'CreateNewFile()':      ['<c-y>'],
 	\ 'MarkToOpen()':         ['<c-z>'],
 	\ 'OpenMulti()':          ['<c-o>'],
+	\ 'YankLine()':           [],
 	\ 'PrtExit()':            ['<esc>', '<c-c>', '<c-g>'],
 	\ }]
 
@@ -1323,6 +1324,18 @@ fu! s:OpenMulti(...)
 	en
 	let &swb = swb
 	unl! s:tabct
+endf
+
+fu! s:YankLine(...)
+	let @" = s:getinput()
+	let has_marked = exists('s:marked')
+	if !has_marked
+		let line = ctrlp#getcline()
+		if line == '' | retu | en
+		let marked = { 1 : fnamemodify(line, ':p') }
+	en
+	let @" = join(values(has_marked ? s:marked : marked), "\n")
+	cal s:PrtExit()
 endf
 
 fu! s:OpenNoMarks(md, line)

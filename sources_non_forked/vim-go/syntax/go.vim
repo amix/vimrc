@@ -286,19 +286,22 @@ if g:go_highlight_operators != 0
   syn match goOperator /:=\|||\|<-\|++\|--/
   " match ...
   syn match goOperator /\.\.\./
+
+  hi def link     goPointerOperator   Operator
 endif
 hi def link     goOperator          Operator
 
 " Functions;
 if g:go_highlight_functions != 0
   syn match goDeclaration       /\<func\>/ nextgroup=goReceiver,goFunction skipwhite skipnl
-  syn match goReceiver /([^),]\+)/ contained nextgroup=goFunction contains=goReceiverType skipwhite skipnl
-  syn match goReceiverType /\(\s\|*\)\w\+)/hs=s+1,he=e-1 contained
-  syn match goFunction /\w\+/ contained
+  syn match goReceiver          /(\(\w\|[ *]\)\+)/ contained nextgroup=goFunction contains=goReceiverVar skipwhite skipnl
+  syn match goReceiverVar       /\w\+/ nextgroup=goPointerOperator,goReceiverType skipwhite skipnl contained
+  syn match goPointerOperator   /\*/ nextgroup=goReceiverType contained skipwhite skipnl
+  syn match goReceiverType      /\w\+/ contained
+  syn match goFunction          /\w\+/ contained
 else
   syn keyword goDeclaration func
 endif
-hi def link     goReceiverType      Type
 hi def link     goFunction          Function
 
 " Methods;
@@ -320,6 +323,7 @@ if g:go_highlight_types != 0
   syn match goTypeDecl             /\<type\>/ nextgroup=goTypeName skipwhite skipnl
   syn match goTypeName             /\w\+/ contained nextgroup=goDeclType skipwhite skipnl
   syn match goDeclType             /\<interface\|struct\>/ contained skipwhite skipnl
+  hi def link     goReceiverType      Type
 else
   syn keyword goDeclType           struct interface
   syn keyword goDeclaration        type
@@ -362,6 +366,7 @@ if g:go_highlight_build_constraints != 0
   hi def link goPackageComment    Comment
 endif
 
+hi def link goSameId IncSearch
 
 " Search backwards for a global declaration to start processing the syntax.
 "syn sync match goSync grouphere NONE /^\(const\|var\|type\|func\)\>/

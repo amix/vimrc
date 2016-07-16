@@ -131,85 +131,121 @@ function! go#util#Shelljoin(arglist, ...)
       return join(map(copy(a:arglist), 'shellescape(v:val, ' . a:1 . ')'), ' ')
     endif
 
-        return join(map(copy(a:arglist), 'shellescape(v:val)'), ' ')
-    finally
-        let &shellslash = ssl_save
-    endtry
+    return join(map(copy(a:arglist), 'shellescape(v:val)'), ' ')
+  finally
+    let &shellslash = ssl_save
+  endtry
 endfunction
 
 fu! go#util#Shellescape(arg)
-    if s:has_vimproc()
-        return vimproc#shellescape(a:arg)
-    endif
-    try
-        let ssl_save = &shellslash
-        set noshellslash
-        return shellescape(a:arg)
-    finally
-        let &shellslash = ssl_save
-    endtry
+  if s:has_vimproc()
+    return vimproc#shellescape(a:arg)
+  endif
+  try
+    let ssl_save = &shellslash
+    set noshellslash
+    return shellescape(a:arg)
+  finally
+    let &shellslash = ssl_save
+  endtry
 endf
 
 " Shelllist returns a shell-safe representation of the items in the given
 " arglist. The {special} argument of shellescape() may optionally be passed.
 function! go#util#Shelllist(arglist, ...)
-    try
-        let ssl_save = &shellslash
-        set noshellslash
-        if a:0
-            return map(copy(a:arglist), 'shellescape(v:val, ' . a:1 . ')')
-        endif
-        return map(copy(a:arglist), 'shellescape(v:val)')
-    finally
-        let &shellslash = ssl_save
-    endtry
+  try
+    let ssl_save = &shellslash
+    set noshellslash
+    if a:0
+      return map(copy(a:arglist), 'shellescape(v:val, ' . a:1 . ')')
+    endif
+    return map(copy(a:arglist), 'shellescape(v:val)')
+  finally
+    let &shellslash = ssl_save
+  endtry
 endfunction
 
 " Returns the byte offset for line and column
 function! go#util#Offset(line, col)
-    if &encoding != 'utf-8'
-        let sep = go#util#LineEnding()
-        let buf = a:line == 1 ? '' : (join(getline(1, a:line-1), sep) . sep)
-        let buf .= a:col == 1 ? '' : getline('.')[:a:col-2]
-        return len(iconv(buf, &encoding, 'utf-8'))
-    endif
-    return line2byte(a:line) + (a:col-2)
+  if &encoding != 'utf-8'
+    let sep = go#util#LineEnding()
+    let buf = a:line == 1 ? '' : (join(getline(1, a:line-1), sep) . sep)
+    let buf .= a:col == 1 ? '' : getline('.')[:a:col-2]
+    return len(iconv(buf, &encoding, 'utf-8'))
+  endif
+  return line2byte(a:line) + (a:col-2)
 endfunction
 "
 " Returns the byte offset for the cursor
 function! go#util#OffsetCursor()
-    return go#util#Offset(line('.'), col('.'))
+  return go#util#Offset(line('.'), col('.'))
 endfunction
 
 " Windo is like the built-in :windo, only it returns to the window the command
 " was issued from
 function! go#util#Windo(command)
-    let s:currentWindow = winnr()
-    try
-        execute "windo " . a:command
-    finally
-        execute s:currentWindow. "wincmd w"
-        unlet s:currentWindow
-    endtry
+  let s:currentWindow = winnr()
+  try
+    execute "windo " . a:command
+  finally
+    execute s:currentWindow. "wincmd w"
+    unlet s:currentWindow
+  endtry
 endfunction
+
+" snippetcase converts the given word to given preferred snippet setting type
+" case.
+function! go#util#snippetcase(word)
+  let l:snippet_case = get(g:, 'go_snippet_case_type', "snakecase")
+  if l:snippet_case == "snakecase"
+    return go#util#snakecase(a:word)
+  elseif l:snippet_case == "camelcase"
+    return go#util#camelcase(a:word)
+  else
+    return a:word " do nothing
+  endif
+endfunction
+
+" snakecase converts a string to snake case. i.e: FooBar -> foo_bar
+" Copied from tpope/vim-abolish
+function! go#util#snakecase(word)
+  let word = substitute(a:word,'::','/','g')
+  let word = substitute(word,'\(\u\+\)\(\u\l\)','\1_\2','g')
+  let word = substitute(word,'\(\l\|\d\)\(\u\)','\1_\2','g')
+  let word = substitute(word,'[.-]','_','g')
+  let word = tolower(word)
+  return word
+endfunction
+
+" camelcase converts a string to camel case. i.e: FooBar -> fooBar
+" Copied from tpope/vim-abolish
+function! go#util#camelcase(word)
+  let word = substitute(a:word, '-', '_', 'g')
+  if word !~# '_' && word =~# '\l'
+    return substitute(word,'^.','\l&','')
+  else
+    return substitute(word,'\C\(_\)\=\(.\)','\=submatch(1)==""?tolower(submatch(2)) : toupper(submatch(2))','g')
+  endif
+endfunction
+
 
 " TODO(arslan): I couldn't parameterize the highlight types. Check if we can
 " simplify the following functions
 
 function! go#util#EchoSuccess(msg)
-    redraws! | echon "vim-go: " | echohl Function | echon a:msg | echohl None
+  redraws! | echon "vim-go: " | echohl Function | echon a:msg | echohl None
 endfunction
 
 function! go#util#EchoError(msg)
-    redraws! | echon "vim-go: " | echohl ErrorMsg | echon a:msg | echohl None
+  redraws! | echon "vim-go: " | echohl ErrorMsg | echon a:msg | echohl None
 endfunction
 
 function! go#util#EchoWarning(msg)
-    redraws! | echon "vim-go: " | echohl WarningMsg | echon a:msg | echohl None
+  redraws! | echon "vim-go: " | echohl WarningMsg | echon a:msg | echohl None
 endfunction
 
 function! go#util#EchoProgress(msg)
-    redraws! | echon "vim-go: " | echohl Identifier | echon a:msg | echohl None
+  redraws! | echon "vim-go: " | echohl Identifier | echon a:msg | echohl None
 endfunction
 
 " vim: sw=2 ts=2 et

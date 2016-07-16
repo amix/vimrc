@@ -3,9 +3,11 @@
 FEATURES:
 
 * If you open a new buffer with a Go filename it get automatically populated based on the directory. If there are no Go files a simple main package is created, otherwise the file will include the package declaration line based on the package in the current directory. Checkout the demo to see it in action: https://twitter.com/fatih/status/748333086643994624. This is enabled by default. Can be disabled with `let g:go_template_autocreate = 0`. You can use your own template with `let g:go_template_file = "foo.go"` and putting the file under the `templates/` folder. [gh-918]
+* The snippet expansion `json` is now much more smarter. It pre populates the placeholder according to the first word and it also applies `snake_case` or `camelCase` conversion. Checkout the demo to see it in action: https://github.com/fatih/vim-go/pull/927 [gh-927]
+* **`:GoSameIds`** support. When called highlights all same identifiers in the current file. Can be also enabled to highlight identifiers automatically. Checkout the demo to see it in action: https://twitter.com/fatih/status/753673709278339072. [gh-936]
+* Add new `errp` snippet to expand an `if err != nil { panic() }` clause [gh-926] 
 
 IMPROVEMENTS:
-
 * `:GoDoc` accepts arguments now which are passed directly to `godoc`. So usages like `:GoDoc flag` works again (it was changed in previous versions [gh-894]
 * `:GoDef` works now for modified files as well [gh-910]
 * Internal: fix indentations on all files to **2-spaces/no tabs**. This is now the default vim-go style across all VimL files [gh-915]

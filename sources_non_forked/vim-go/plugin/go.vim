@@ -151,6 +151,11 @@ augroup vim-go
     autocmd CursorHold *.go nested call go#complete#Info(1)
   endif
 
+  " GoSameId automatic update
+  if get(g:, "go_auto_sameids", 0)
+    autocmd CursorMoved *.go nested call go#guru#SameIds(-1)
+  endif
+
   " Echo the identifier information when completion is done. Useful to see
   " the signature of a function, etc...
   if exists('##CompleteDone')
