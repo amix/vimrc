@@ -25,19 +25,21 @@
 3. [Recommended settings](#settings)  
 4. [FAQ](#faq)  
 4.1. [I installed syntastic but it isn't reporting any errors...](#faqinfo)  
-4.2. [The `python` checker complains about syntactically valid Python 3 constructs...](#faqpython3)  
-4.3. [Are there any local checkers for HTML5 that I can use with syntastic?](#faqhtml5)  
-4.4. [The `perl` checker has stopped working...](#faqperl)  
-4.5. [What happened to the `rustc` checker?](#faqrust)  
-4.6. [What happened to the `xcrun` checker?](#faqxcrun)  
-4.7. [I run a checker and the location list is not updated...](#faqloclist)  
-4.7. [I run`:lopen` or `:lwindow` and the error window is empty...](#faqloclist)  
-4.8. [How can I pass additional arguments to a checker?](#faqargs)  
-4.9. [Syntastic supports several checkers for my filetype - how do I tell which one(s) to use?](#faqcheckers)  
-4.10. [What is the difference between syntax checkers and style checkers?](#faqstyle)  
-4.11. [I have enabled multiple checkers for the current filetype. How can I display all errors from all checkers together?](#faqaggregate)  
-4.12. [How can I jump between the different errors without using the location list at the bottom of the window?](#faqlnext)  
-4.13. [The error window is closed automatically when I :quit the current buffer but not when I :bdelete it?](#faqbdelete)  
+4.2. [How can I check scripts written for different versions of Python?](#faqpython)  
+4.3. [How can I check scripts written for different versions of Ruby?](#faqruby)  
+4.4. [Are there any local checkers for HTML5 that I can use with syntastic?](#faqhtml5)  
+4.5. [The `perl` checker has stopped working...](#faqperl)  
+4.6. [What happened to the `rustc` checker?](#faqrust)  
+4.7. [What happened to the `xcrun` checker?](#faqxcrun)  
+4.8. [I run a checker and the location list is not updated...](#faqloclist)  
+4.8. [I run`:lopen` or `:lwindow` and the error window is empty...](#faqloclist)  
+4.9. [How can I pass additional arguments to a checker?](#faqargs)  
+4.10. [Syntastic supports several checkers for my filetype - how do I tell which one(s) to use?](#faqcheckers)  
+4.11. [What is the difference between syntax checkers and style checkers?](#faqstyle)  
+4.12. [I have enabled multiple checkers for the current filetype. How can I display all errors from all checkers together?](#faqaggregate)  
+4.13. [How can I jump between the different errors without using the location list at the bottom of the window?](#faqlnext)  
+4.14. [My favourite checker needs to load a configuration file from the project's root rather than the current directory...](#faqconfig)  
+4.15. [The error window is closed automatically when I :quit the current buffer but not when I :bdelete it?](#faqbdelete)  
 5. [Resources](#otherresources)  
 
 - - -
@@ -150,7 +152,7 @@ You now have pathogen installed and can put syntastic into `~/.vim/bundle` like
 this:
 ```sh
 cd ~/.vim/bundle && \
-git clone https://github.com/scrooloose/syntastic.git
+git clone --depth=1 https://github.com/scrooloose/syntastic.git
 ```
 Quit vim and start it back up to reload it, then type:
 ```vim
@@ -227,19 +229,40 @@ or the error output for a syntax checker may have changed. In this case, make
 sure you have the latest version of the syntax checker installed. If it still
 fails then post an [issue][bug_tracker] - or better yet, create a pull request.
 
-<a name="faqpython3"></a>
+<a name="faqpython"></a>
 
-__4.2. Q. The `python` checker complains about syntactically valid Python 3 constructs...__
+__4.2. Q. How can I check scripts written for different versions of Python?__
 
-A. Configure the `python` checker to call a Python 3 interpreter rather than
-Python 2, e.g:
-```vim
-let g:syntastic_python_python_exec = '/path/to/python3'
-```
+A. Install a Python version manager such as [virtualenv][virtualenv]
+or [pyenv][pyenv], activate the environment for the relevant version
+of Python, and install in it the checkers you want to use.  Set
+`g:syntastic_python_checkers` accordingly in your `vimrc`, and run [Vim][vim]
+from the virtual environment.
+
+If you're starting Vim from a desktop manager rather than from a terminal you
+might need to write wrapper scripts around your checkers, to activate the
+virtual environment before running the actual checks.  Then you'll need to
+point the relevant `g:syntastic_python_<checker>_exec` variables to the wrapper
+scripts.
+
+<a name="faqruby"></a>
+
+__4.3. Q. How can I check scripts written for different versions of Ruby?__
+
+A. Install a Ruby version manager such as [rvm][rvm] or [rbenv][rbenv],
+activate the environment for the relevant version of Ruby, and install in it
+the checkers you want to use.  Set `g:syntastic_ruby_checkers` accordingly in
+your `vimrc`, and run [Vim][vim] from the virtual environment.
+
+If you're starting Vim from a desktop manager rather than from a terminal you
+might need to write wrapper scripts around your checkers, to activate the
+virtual environment before running the actual checks.  Then you'll need to
+point the relevant `g:syntastic_ruby_<checker>_exec` variables to the wrapper
+scripts.
 
 <a name="faqhtml5"></a>
 
-__4.3. Q. Are there any local checkers for HTML5 that I can use with syntastic?__
+__4.4. Q. Are there any local checkers for HTML5 that I can use with syntastic?__
 
 [HTML Tidy][tidy_old] has a fork named [HTML Tidy for HTML5][tidy]. It's a drop
 in replacement, and syntastic can use it without changes. Just install it
@@ -259,7 +282,7 @@ let g:syntastic_html_validator_api = 'http://localhost:8888/'
 
 <a name="faqperl"></a>
 
-__4.4. Q. The `perl` checker has stopped working...__
+__4.5. Q. The `perl` checker has stopped working...__
 
 A. The `perl` checker runs `perl -c` against your file, which in turn
 __executes__ any `BEGIN`, `UNITCHECK`, and `CHECK` blocks, and any `use`
@@ -275,14 +298,14 @@ let g:syntastic_enable_perl_checker = 1
 
 <a name="faqrust"></a>
 
-__4.5. Q. What happened to the `rustc` checker?__
+__4.6. Q. What happened to the `rustc` checker?__
 
 A. It is now part of the [rust.vim][rust] plugin. If you install this plugin the
 checker should be picked up automatically by syntastic.
 
 <a name="faqxcrun"></a>
 
-__4.6. Q. What happened to the `xcrun` checker?__
+__4.7. Q. What happened to the `xcrun` checker?__
 
 A. The `xcrun` checker used to have a security problem and it has been removed.
 A better checker for __Swift__ is part of the [vim-swift][swift] plugin. If you
@@ -290,8 +313,8 @@ install this plugin the checker should be picked up automatically by syntastic.
 
 <a name="faqloclist"></a>
 
-__4.7. Q. I run a checker and the location list is not updated...__  
-__4.7. Q. I run`:lopen` or `:lwindow` and the error window is empty...__
+__4.8. Q. I run a checker and the location list is not updated...__  
+__4.8. Q. I run`:lopen` or `:lwindow` and the error window is empty...__
 
 A. By default the location list is changed only when you run the `:Errors`
 command, in order to minimise conflicts with other plugins. If you want the
@@ -303,7 +326,7 @@ let g:syntastic_always_populate_loc_list = 1
 
 <a name="faqargs"></a>
 
-__4.8. Q. How can I pass additional arguments to a checker?__
+__4.9. Q. How can I pass additional arguments to a checker?__
 
 A. Almost all syntax checkers use the `makeprgBuild()` function. Those checkers
 that do can be configured using global variables. The general form of the
@@ -319,7 +342,7 @@ See `:help syntastic-checker-options` for more information.
 
 <a name="faqcheckers"></a>
 
-__4.9. Q. Syntastic supports several checkers for my filetype - how do I tell it
+__4.10. Q. Syntastic supports several checkers for my filetype - how do I tell it
 which one(s) to use?__
 
 A. Stick a line like this in your `vimrc`:
@@ -360,7 +383,7 @@ filetype of the current file is `php`).
 
 <a name="faqstyle"></a>
 
-__4.10. Q. What is the difference between syntax checkers and style checkers?__
+__4.11. Q. What is the difference between syntax checkers and style checkers?__
 
 A. The errors and warnings they produce are highlighted differently and can
 be filtered by different rules, but otherwise the distinction is pretty much
@@ -390,7 +413,7 @@ See `:help syntastic_quiet_messages` for details.
 
 <a name="faqaggregate"></a>
 
-__4.11. Q. I have enabled multiple checkers for the current filetype. How can I
+__4.12. Q. I have enabled multiple checkers for the current filetype. How can I
 display all errors from all checkers together?__
 
 A. Set `g:syntastic_aggregate_errors` to 1 in your `vimrc`:
@@ -402,7 +425,7 @@ See `:help syntastic-aggregating-errors` for more details.
 
 <a name="faqlnext"></a>
 
-__4.12. Q. How can I jump between the different errors without using the location
+__4.13. Q. How can I jump between the different errors without using the location
 list at the bottom of the window?__
 
 A. Vim provides several built-in commands for this. See `:help :lnext` and
@@ -412,9 +435,28 @@ If you use these commands a lot then you may want to add shortcut mappings to
 your `vimrc`, or install something like [unimpaired][unimpaired], which provides such
 mappings (among other things).
 
+<a name="faqconfig"></a>
+
+__4.14. My favourite checker needs to load a configuration file from the
+project's root rather than the current directory...__
+
+A. You can set up an `autocmd` to search for the configuration file in the
+current directory and upwards, and add it to the checker's options when found.
+For example for `jscs`:
+
+```vim
+function! FindConfig(prefix, what, where)
+    let cfg = findfile(a:what, escape(a:where, ' ') . ';')
+    return cfg !=# '' ? ' ' . a:prefix . ' ' . cfg : ''
+endfunction
+
+autocmd FileType javascript let b:syntastic_javascript_jscs_args =
+    \ get(g:, 'syntastic_javascript_jscs_args', '') .
+    \ FindConfig('-c', '.jscsrc', expand('<amatch>:p:h', 1))
+```
 <a name="faqbdelete"></a>
 
-__4.13. Q. The error window is closed automatically when I :quit the current buffer
+__4.15. Q. The error window is closed automatically when I :quit the current buffer
 but not when I :bdelete it?__
 
 A. There is no safe way to handle that situation automatically, but you can
@@ -458,9 +500,12 @@ a look at [ghcmod-vim][ghcmod], [jedi-vim][jedi], [python-mode][python_mode], [v
 [pathogen]:         https://github.com/tpope/vim-pathogen
 [perlrun]:          http://perldoc.perl.org/perlrun.html#*-c*
 [plug]:             https://github.com/junegunn/vim-plug/
+[pyenv]:            https://github.com/yyuu/pyenv
 [python_mode]:      https://github.com/klen/python-mode
+[rbenv]:            https://github.com/rbenv/rbenv
 [roktas]:           https://github.com/roktas/syntastic-more
 [rust]:             https://github.com/rust-lang/rust.vim
+[rvm]:              https://rvm.io/
 [stack_overflow]:   http://stackoverflow.com/questions/tagged/syntastic
 [swift]:            https://github.com/kballard/vim-swift
 [tidy]:             http://www.htacg.org/tidy-html5/
@@ -469,6 +514,7 @@ a look at [ghcmod-vim][ghcmod], [jedi-vim][jedi], [python-mode][python_mode], [v
 [vam]:              https://github.com/MarcWeber/vim-addon-manager
 [vim]:              http://www.vim.org/
 [vimgo]:            https://github.com/fatih/vim-go
+[virtualenv]:       https://virtualenv.pypa.io/en/stable/
 [vnu]:              http://about.validator.nu/
 [vnu_jar]:          https://github.com/validator/validator/releases/latest
 [vnu_server]:       http://validator.github.io/validator/#standalone

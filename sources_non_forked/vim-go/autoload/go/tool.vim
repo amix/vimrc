@@ -43,6 +43,16 @@ function! go#tool#Imports()
   return imports
 endfunction
 
+function! go#tool#PackageName()
+  let command = "go list -f '{{.Name}}'"
+  let out = go#tool#ExecuteInDir(command)
+  if go#util#ShellError() != 0
+      return -1
+  endif
+
+  return split(out, '\n')[0]
+endfunction
+
 function! go#tool#ParseErrors(lines)
   let errors = []
 

@@ -4398,9 +4398,9 @@ The following checkers are available for Python (filetype "python"):
     1. flake8...................|syntastic-python-flake8|
     2. Frosted..................|syntastic-python-frosted|
     3. mypy.....................|syntastic-python-mypy|
-    4. pep8.....................|syntastic-python-pep8|
-    5. Prospector...............|syntastic-python-prospector|
-    6. py3kwarn.................|syntastic-python-py3kwarn|
+    4. Prospector...............|syntastic-python-prospector|
+    5. py3kwarn.................|syntastic-python-py3kwarn|
+    6. pycodestyle..............|syntastic-python-pycodestyle|
     7. pydocstyle...............|syntastic-python-pydocstyle|
     8. Pyflakes.................|syntastic-python-pyflakes|
     9. Pylama...................|syntastic-python-pylama|
@@ -4460,24 +4460,7 @@ This checker is initialised using the "makeprgBuild()" function and thus it
 accepts the standard options described at |syntastic-config-makeprg|.
 
 ------------------------------------------------------------------------------
-4. pep8                                                *syntastic-python-pep8*
-
-Name:        pep8
-Maintainer:  LCD 47 <lcd047@gmail.com>
-
-"Pep8" is a style checker for Python, derived from the conventions in PEP 8
-(http://www.python.org/dev/peps/pep-0008/). See the project's page for
-details:
-
-    https://github.com/jcrocholl/pep8
-
-Checker options~
-
-This checker is initialised using the "makeprgBuild()" function and thus it
-accepts the standard options described at |syntastic-config-makeprg|.
-
-------------------------------------------------------------------------------
-5. Prospector                                    *syntastic-python-prospector*
+4. Prospector                                    *syntastic-python-prospector*
 
 Name:        prospector
 Maintainer:  LCD 47 <lcd047@gmail.com>
@@ -4500,7 +4483,7 @@ This checker is initialised using the "makeprgBuild()" function and thus it
 accepts the standard options described at |syntastic-config-makeprg|.
 
 ------------------------------------------------------------------------------
-6. py3kwarn                                        *syntastic-python-py3kwarn*
+5. py3kwarn                                        *syntastic-python-py3kwarn*
 
 Name:        py3kwarn
 Author: Liam Curry <liam@curry.name>
@@ -4509,6 +4492,23 @@ Author: Liam Curry <liam@curry.name>
 Python 3. See the project's page for details:
 
     https://github.com/liamcurry/py3kwarn
+
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+------------------------------------------------------------------------------
+6. pycodestyle                                  *syntastic-python-pycodestyle*
+
+Name:        pycodestyle
+Maintainer:  LCD 47 <lcd047@gmail.com>
+
+"pycodestyle" (formerly "pep8") is a style checker for Python, derived from
+the conventions in PEP 8 (http://www.python.org/dev/peps/pep-0008/). See the
+project's page for details:
+
+    https://github.com/PyCQA/pycodestyle
 
 Checker options~
 

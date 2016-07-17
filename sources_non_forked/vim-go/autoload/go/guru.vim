@@ -7,7 +7,18 @@ func! s:RunGuru(mode, format, selected, needs_scope) range abort
     return {'err': "bin path not found"}
   endif
 
-  let filename = expand('%:p')
+  let filename = fnamemodify(expand("%"), ':p:gs?\\?/?')
+  if !filereadable(filename)
+    " this might happen for new buffers which are not written yet
+    return {'err': "file does not exist"}
+  endif
+
+  if &modified
+    " Write current unsaved buffer to a temp file and use the modified content
+    let l:tmpname = tempname()
+    call writefile(getline(1, '$'), l:tmpname)
+    let filename = l:tmpname
+  endif
   let dirname = expand('%:p:h')
   let pkg = go#package#ImportPath(dirname)
 
@@ -80,11 +91,17 @@ func! s:RunGuru(mode, format, selected, needs_scope) range abort
   let old_gopath = $GOPATH
   let $GOPATH = go#path#Detect()
 
-  " the query might take time, let us give some feedback
-  call go#util#EchoProgress("analysing ...")
+  if a:mode !=# 'what'
+    " the query might take time, let us give some feedback
+    call go#util#EchoProgress("analysing ...")
+  endif
 
   " run, forrest run!!!
   let out = go#util#System(command)
+
+  if exists("l:tmpname")
+    call delete(l:tmpname)
+  endif
 
   let $GOPATH = old_gopath
   if go#util#ShellError() != 0
@@ -268,37 +285,65 @@ function! go#guru#What(selected)
 
   let out = s:RunGuru('what', 'json', a:selected, 0)
   if has_key(out, 'err')
-    return out.err
+    return {'err': out.err}
   endif
 
-  call s:loclistSecond(out.out)
   let result = json_decode(out.out)
 
   if type(result) != type({})
     return {'err': "malformed output from guru"}
   endif
 
-  if !has_key(result, 'what')
-    return {'err': "no what query found for the given identifier"}
-  endif
-
-  return {'out': result.what}
+  return result
 endfunction
 
 function! go#guru#SameIds(selected)
+  call go#guru#ClearSameIds()
+
   let result = go#guru#What(a:selected)
-  if has_key(out, 'err')
-    call go#util#EchoError(out.err)
+  if has_key(result, 'err') && !get(g:, 'go_auto_sameids', 0)
+    " only echo if it's called via `:GoSameIds, but not if it's in automode
+    call go#util#EchoError(result.err)
     return
   endif
 
-  if !has_key(result.out, 'sameids')
-    call go#util#EchoError("no same_ids founds for the given identifier")
-    return -1
+  if !has_key(result, 'sameids')
+    if !get(g:, 'go_auto_sameids', 0)
+      call go#util#EchoError("no same_ids founds for the given identifier")
+    endif
+    return
   endif
 
-  let same_ids = result.what.sameids
-  echo same_ids
+  let poslen = 0
+  for enclosing in result['enclosing']
+    if enclosing['desc'] == 'identifier'
+      let poslen = enclosing['end'] - enclosing['start']
+      break
+    endif
+  endfor
+
+  " return when there's no identifier to highlight.
+  if poslen == 0
+    return
+  endif
+
+  hi goSameId term=bold cterm=bold ctermbg=white ctermfg=black
+
+  let same_ids = result['sameids']
+  " highlight the lines
+  for item in same_ids
+    let pos = split(item, ':')
+    call matchaddpos('goSameId', [[str2nr(pos[-2]), str2nr(pos[-1]), str2nr(poslen)]])
+  endfor
+endfunction
+
+function! go#guru#ClearSameIds()
+  let m = getmatches()
+  for item in m
+    if item['group'] == 'goSameId'
+      call matchdelete(item['id'])
+    endif
+  endfor
 endfunction
 
 " vim: sw=2 ts=2 et

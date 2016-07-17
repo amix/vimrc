@@ -151,6 +151,11 @@ augroup vim-go
     autocmd CursorHold *.go nested call go#complete#Info(1)
   endif
 
+  " GoSameId automatic update
+  if get(g:, "go_auto_sameids", 0)
+    autocmd CursorMoved *.go nested call go#guru#SameIds(-1)
+  endif
+
   " Echo the identifier information when completion is done. Useful to see
   " the signature of a function, etc...
   if exists('##CompleteDone')
@@ -170,6 +175,11 @@ augroup vim-go
   " run gometalinter on save
   if get(g:, "go_metalinter_autosave", 0)
     autocmd BufWritePost *.go call go#lint#Gometa(1)
+  endif
+
+  " create new template from scratch
+  if get(g:, "go_template_autocreate", 1)
+    autocmd BufNewFile *.go call go#template#create()
   endif
 augroup END
 

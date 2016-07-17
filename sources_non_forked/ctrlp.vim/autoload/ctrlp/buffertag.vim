@@ -59,6 +59,7 @@ let s:types = {
 	\ 'erlang' : '%serlang%serlang%sdrmf',
 	\ 'expect' : '%stcl%stcl%scfp',
 	\ 'fortran': '%sfortran%sfortran%spbceiklmntvfs',
+	\ 'go'     : '%sgo%sgo%sfctv',
 	\ 'html'   : '%shtml%shtml%saf',
 	\ 'java'   : '%sjava%sjava%spcifm',
 	\ 'javascript': '%sjavascript%sjavascript%sf',

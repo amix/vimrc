@@ -13,7 +13,7 @@ call coffee#CoffeeSetUpVariables()
 setlocal formatoptions-=t formatoptions+=croql
 setlocal comments=:# commentstring=#\ %s
 setlocal omnifunc=javascriptcomplete#CompleteJS
-setlocal suffixesadd+=coffee
+setlocal suffixesadd+=.coffee
 
 " Create custom augroups.
 augroup CoffeeBufUpdate | augroup END

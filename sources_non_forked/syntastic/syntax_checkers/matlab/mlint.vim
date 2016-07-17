@@ -19,7 +19,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_matlab_mlint_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '-id $*' })
+    let makeprg = self.makeprgBuild({ 'args_after': '-id' })
 
     let errorformat =
         \ 'L %l (C %c): %*[a-zA-Z0-9]: %m,'.

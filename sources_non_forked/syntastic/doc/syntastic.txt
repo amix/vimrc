@@ -44,6 +44,7 @@ CONTENTS                                                  *syntastic-contents*
         6.2.Editing files over network.............|syntastic-netrw|
         6.3.The 'shellslash' option................|syntastic-shellslash|
         6.4.Saving Vim sessions....................|syntastic-sessions|
+        6.5.The location list callback.............|syntastic-loclist-callback|
     7.Compatibility with other software............|syntastic-compatibility|
         7.1.The csh and tcsh shells................|syntastic-csh|
         7.2.Eclim..................................|syntastic-eclim|
@@ -882,6 +883,7 @@ The syntax is of course identical to that of |syntastic_quiet_messages|.
 
 ------------------------------------------------------------------------------
 5.6 Debugging                                         *syntastic-config-debug*
+                                                             *syntastic-debug*
 
 Syntastic can log a trace of its working to Vim's |message-history|. To verify
 the command line constructed by syntastic to run a checker, set the variable
@@ -957,6 +959,29 @@ remove option "blank" from 'sessionoptions': >
 <
 This will prevent `:mksession` from saving |syntastic-error-window| as empty
 quickfix windows.
+
+------------------------------------------------------------------------------
+6.5 The location list callback                    *syntastic-loclist-callback*
+
+                                                        *SyntasticCheckHook()*
+Syntastic also gives you direct access to the list of errors.  A function
+named |SyntasticCheckHook()| is called by syntastic (if it exists) right
+before populating the |location-list| and enabling the notifiers. The function
+takes exactly one argument, the list of errors in |location-list| format (see
+|getqflist()| for details). format. You can do essentially anything with this
+list, as long as you don't change its format, and you don't add or remove
+elements.
+
+For example the following function will make the error window smaller if fewer
+than 10 errors are found: >
+    function! SyntasticCheckHook(errors)
+        if !empty(a:errors)
+            let g:syntastic_loc_list_height = min([len(a:errors), 10])
+        endif
+    endfunction
+<
+(Please keep in mind however that Vim options |winheight| and |winminheight|
+also affect window sizes.)
 
 ==============================================================================
 7. Compatibility with other software                 *syntastic-compatibility*
