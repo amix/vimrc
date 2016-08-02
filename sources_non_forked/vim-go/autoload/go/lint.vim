@@ -196,4 +196,15 @@ function! go#lint#Errcheck(...) abort
 
 endfunction
 
+function! go#lint#ToggleMetaLinterAutoSave()
+  if get(g:, "go_metalinter_autosave", 0)
+    let g:go_metalinter_autosave = 0
+    call go#util#EchoProgress("auto metalinter disabled")
+    return
+  end
+
+  let g:go_metalinter_autosave = 1
+  call go#util#EchoProgress("auto metalinter enabled")
+endfunction
+
 " vim: sw=2 ts=2 et

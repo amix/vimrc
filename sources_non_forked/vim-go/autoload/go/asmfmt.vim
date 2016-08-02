@@ -41,7 +41,11 @@ function! go#asmfmt#Format()
 
     " Replace the current file with the temp file; then reload the buffer.
     let old_fileformat = &fileformat
+    " save old file permissions
+    let original_fperm = getfperm(expand('%'))
     call rename(l:tmpname, expand('%'))
+    " restore old file permissions
+    call setfperm(expand('%'), original_fperm)
     silent edit!
     let &fileformat = old_fileformat
     let &syntax = &syntax
@@ -49,6 +53,17 @@ function! go#asmfmt#Format()
 
   " Restore the cursor/window positions.
   call winrestview(l:curw)
+endfunction
+
+function! go#asmfmt#ToggleAsmFmtAutoSave()
+  if get(g:, "go_asmfmt_autosave", 1)
+    let g:go_asmfmt_autosave = 0
+    call go#util#EchoProgress("auto asmfmt disabled")
+    return
+  end
+
+  let g:go_asmfmt_autosave = 1
+  call go#util#EchoProgress("auto asmfmt enabled")
 endfunction
 
 " vim: sw=2 ts=2 et

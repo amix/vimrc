@@ -44,6 +44,8 @@ xnoremap <silent> <Plug>(go-freevars) :<C-u>call go#guru#Freevars(0)<CR>
 nnoremap <silent> <Plug>(go-channelpeers) :<C-u>call go#guru#ChannelPeers(-1)<CR>
 nnoremap <silent> <Plug>(go-referrers) :<C-u>call go#guru#Referrers(-1)<CR>
 nnoremap <silent> <Plug>(go-sameids) :<C-u>call go#guru#SameIds(-1)<CR>
+nnoremap <silent> <Plug>(go-whicherrs) :<C-u>call go#guru#Whicherrs(-1)<CR>
+nnoremap <silent> <Plug>(go-sameids-toggle) :<C-u>call go#guru#ToggleSameIds(-1)<CR>
 
 nnoremap <silent> <Plug>(go-rename) :<C-u>call go#rename#Rename(!g:go_jump_to_error)<CR>
 

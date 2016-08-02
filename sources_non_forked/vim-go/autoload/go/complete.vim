@@ -153,4 +153,16 @@ function! go#complete#Complete(findstart, base)
   endif
 endf
 
+function! go#complete#ToggleAutoTypeInfo()
+  if get(g:, "go_auto_type_info", 0)
+    let g:go_auto_type_info = 0
+    call go#util#EchoProgress("auto type info disabled")
+    return
+  end
+
+  let g:go_auto_type_info = 1
+  call go#util#EchoProgress("auto type info enabled")
+endfunction
+
+
 " vim: sw=2 ts=2 et

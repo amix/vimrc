@@ -71,12 +71,12 @@ endif
 
 function! s:root_dirs()
   let dirs = []
-  let root = go#util#GOROOT()
+  let root = go#util#goroot()
   if root !=# '' && isdirectory(root)
     call add(dirs, root)
   endif
 
-  let paths = map(split(go#util#GOPATH(), go#util#PathListSep()), "substitute(v:val, '\\\\', '/', 'g')")
+  let paths = map(split(go#util#gopath(), go#util#PathListSep()), "substitute(v:val, '\\\\', '/', 'g')")
   if go#util#ShellError()
     return []
   endif
@@ -91,7 +91,7 @@ endfunction
 function! s:go_packages(dirs)
   let pkgs = []
   for d in a:dirs
-    let pkg_root = expand(d . '/pkg/' . go#util#OSARCH())
+    let pkg_root = expand(d . '/pkg/' . go#util#osarch())
     call extend(pkgs, split(globpath(pkg_root, '**/*.a', 1), "\n"))
   endfor
   return map(pkgs, "fnamemodify(v:val, ':t:r')")

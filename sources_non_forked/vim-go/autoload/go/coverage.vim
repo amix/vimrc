@@ -134,9 +134,9 @@ endfunction
 " Generates matches to be added to matchaddpos for the given coverage profile
 " block
 function! go#coverage#genmatch(cov)
-  let color = 'covered'
+  let color = 'goCoverageCovered'
   if a:cov.cnt == 0
-    let color = 'uncover'
+    let color = 'goCoverageUncover'
   endif
 
   let matches = []
@@ -195,12 +195,12 @@ function! go#coverage#overlay(file)
   " contains matches for matchaddpos()
   let matches = []
 
-  " first mark all lines as normaltext. We use a custom group to not
+  " first mark all lines as goCoverageNormalText. We use a custom group to not
   " interfere with other buffers highlightings. Because the priority is
   " lower than the cover and uncover matches, it'll be overriden.
   let cnt = 1
   while cnt <= line('$')
-    call add(matches, {'group': 'normaltext', 'pos': [cnt], 'priority': 1})
+    call add(matches, {'group': 'goCoverageNormalText', 'pos': [cnt], 'priority': 1})
     let cnt += 1
   endwhile
 
@@ -234,9 +234,6 @@ function! go#coverage#overlay(file)
   endfor
 
   syntax manual
-  highlight normaltext term=bold ctermfg=darkgrey guifg=#75715E
-  highlight covered term=bold ctermfg=green guifg=#A6E22E
-  highlight uncover term=bold ctermfg=red guifg=#F92672
 
   " clear the matches if we leave the buffer
   autocmd BufWinLeave <buffer> call go#coverage#Clear()

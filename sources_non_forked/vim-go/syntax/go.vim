@@ -271,6 +271,7 @@ hi def link     goSpaceError        Error
 syn keyword     goTodo              contained NOTE
 hi def link     goTodo              Todo
 
+syn match goVarArgs /\.\.\./
 
 " Operators;
 if g:go_highlight_operators != 0
@@ -285,9 +286,9 @@ if g:go_highlight_operators != 0
   " match remaining two-char operators: := && || <- ++ --
   syn match goOperator /:=\|||\|<-\|++\|--/
   " match ...
-  syn match goOperator /\.\.\./
 
-  hi def link     goPointerOperator   Operator
+  hi def link     goPointerOperator   goOperator
+  hi def link     goVarArgs           goOperator
 endif
 hi def link     goOperator          Operator
 
@@ -306,14 +307,13 @@ hi def link     goFunction          Function
 
 " Methods;
 if g:go_highlight_methods != 0
-  syn match goMethod                /\.\w\+(/hs=s+1,he=e-1
+  syn match goMethod                /\.\w\+\ze(/hs=s+1
 endif
 hi def link     goMethod            Type
 
 " Fields;
 if g:go_highlight_fields != 0
-  syn match goVarArgs               /\.\.\.\w\+\>/
-  syn match goField                 /\.\a\+\([\ \n\r\:\)\[]\)\@=/hs=s+1
+  syn match goField                 /\.\w\+\([\ \n\r\:\)\[,]\)\@=/hs=s+1
 endif
 hi def link    goField              Identifier
 
@@ -366,7 +366,13 @@ if g:go_highlight_build_constraints != 0
   hi def link goPackageComment    Comment
 endif
 
-hi def link goSameId IncSearch
+" :GoSameIds
+hi def goSameId term=bold cterm=bold ctermbg=white ctermfg=black
+
+" :GoCoverage commands
+hi def link goCoverageNormalText Comment
+hi def      goCoverageCovered    ctermfg=green guifg=#A6E22E
+hi def      goCoverageUncover    ctermfg=red guifg=#F92672
 
 " Search backwards for a global declaration to start processing the syntax.
 "syn sync match goSync grouphere NONE /^\(const\|var\|type\|func\)\>/

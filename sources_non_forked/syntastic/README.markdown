@@ -30,16 +30,17 @@
 4.4. [Are there any local checkers for HTML5 that I can use with syntastic?](#faqhtml5)  
 4.5. [The `perl` checker has stopped working...](#faqperl)  
 4.6. [What happened to the `rustc` checker?](#faqrust)  
-4.7. [What happened to the `xcrun` checker?](#faqxcrun)  
-4.8. [I run a checker and the location list is not updated...](#faqloclist)  
-4.8. [I run`:lopen` or `:lwindow` and the error window is empty...](#faqloclist)  
-4.9. [How can I pass additional arguments to a checker?](#faqargs)  
-4.10. [Syntastic supports several checkers for my filetype - how do I tell which one(s) to use?](#faqcheckers)  
-4.11. [What is the difference between syntax checkers and style checkers?](#faqstyle)  
-4.12. [I have enabled multiple checkers for the current filetype. How can I display all errors from all checkers together?](#faqaggregate)  
-4.13. [How can I jump between the different errors without using the location list at the bottom of the window?](#faqlnext)  
-4.14. [My favourite checker needs to load a configuration file from the project's root rather than the current directory...](#faqconfig)  
-4.15. [The error window is closed automatically when I :quit the current buffer but not when I :bdelete it?](#faqbdelete)  
+4.7. [What happened to the `tsc` checker?](#faqtsc)  
+4.8. [What happened to the `xcrun` checker?](#faqxcrun)  
+4.9. [I run a checker and the location list is not updated...](#faqloclist)  
+4.9. [I run`:lopen` or `:lwindow` and the error window is empty...](#faqloclist)  
+4.10. [How can I pass additional arguments to a checker?](#faqargs)  
+4.11. [Syntastic supports several checkers for my filetype - how do I tell which one(s) to use?](#faqcheckers)  
+4.12. [What is the difference between syntax checkers and style checkers?](#faqstyle)  
+4.13. [I have enabled multiple checkers for the current filetype. How can I display all errors from all checkers together?](#faqaggregate)  
+4.14. [How can I jump between the different errors without using the location list at the bottom of the window?](#faqlnext)  
+4.15. [My favourite checker needs to load a configuration file from the project's root rather than the current directory...](#faqconfig)  
+4.16. [The error window is closed automatically when I :quit the current buffer but not when I :bdelete it?](#faqbdelete)  
 5. [Resources](#otherresources)  
 
 - - -
@@ -54,26 +55,26 @@ can be done on demand, or automatically as files are saved. If syntax errors
 are detected, the user is notified and is happy because they didn't have to
 compile their code or execute their script to find them.
 
-At the time of this writing, syntastic has checking plugins for ActionScript,
-Ada, Ansible configurations, API Blueprint, AppleScript, AsciiDoc, Assembly
-languages, BEMHTML, Bro, Bourne shell, C, C++, C#, Cabal, Chef, CoffeeScript,
-Coco, Coq, CSS, Cucumber, CUDA, D, Dart, DocBook, Dockerfile, Dust, Elixir,
-Erlang, eRuby, Fortran, Gentoo metadata, GLSL, Go, Haml, Haskell, Haxe,
-Handlebars, HSS, HTML, Java, JavaScript, JSON, JSX, LESS, Lex, Limbo, LISP,
-LLVM intermediate language, Lua, Markdown, MATLAB, Mercury, NASM, Nix,
-Objective-C, Objective-C++, OCaml, Perl, Perl POD, PHP, gettext Portable
-Object, OS X and iOS property lists, Pug (formerly Jade), Puppet, Python,
-QML, R, Racket, RDF TriG, RDF Turtle, Relax NG, reStructuredText, RPM spec,
-Ruby, SASS/SCSS, Scala, Slim, SML, Sphinx, SQL, Stylus, Tcl, TeX, Texinfo,
-Twig, TypeScript, Vala, Verilog, VHDL, VimL, xHtml, XML, XSLT, XQuery,
-YACC, YAML, YANG data models, z80, Zope page templates, and Zsh. See the
-[manual][checkers] for details about the corresponding supported checkers
-(`:help syntastic-checkers` in Vim).
+At the time of this writing, syntastic has checking plugins for ACPI
+Source Language, ActionScript, Ada, Ansible configurations, API Blueprint,
+AppleScript, AsciiDoc, Assembly languages, BEMHTML, Bro, Bourne shell, C,
+C++, C#, Cabal, Chef, CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart,
+DocBook, Dockerfile, Dust, Elixir, Erlang, eRuby, Fortran, Gentoo metadata,
+GLSL, Go, Haml, Haskell, Haxe, Handlebars, HSS, HTML, Java, JavaScript, JSON,
+JSX, LESS, Lex, Limbo, LISP, LLVM intermediate language, Lua, Markdown,
+MATLAB, Mercury, NASM, Nix, Objective-C, Objective-C++, OCaml, Perl, Perl
+POD, PHP, gettext Portable Object, OS X and iOS property lists, Pug (formerly
+Jade), Puppet, Python, QML, R, Racket, RDF TriG, RDF Turtle, Relax NG,
+reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim, SML, Sphinx, SQL,
+Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog, VHDL, VimL, xHtml,
+XML, XSLT, XQuery, YACC, YAML, YANG data models, z80, Zope page templates, and
+Zsh. See the [manual][checkers] for details about the corresponding supported
+checkers (`:help syntastic-checkers` in Vim).
 
-A number of third-party Vim plugins also provide checkers for syntastic,
-for example: [merlin][merlin], [omnisharp-vim][omnisharp], [rust.vim][rust],
-[syntastic-extras][myint], [syntastic-more][roktas], [vim-crystal][crystal],
-[vim-eastwood][eastwood], and [vim-swift][swift].
+A number of third-party Vim plugins also provide checkers for syntastic, for
+example: [merlin][merlin], [omnisharp-vim][omnisharp], [rust.vim][rust],
+[syntastic-extras][myint], [syntastic-more][roktas], [tsuquyomi][tsuquyomi],
+[vim-crystal][crystal], [vim-eastwood][eastwood], and [vim-swift][swift].
 
 Below is a screenshot showing the methods that Syntastic uses to display syntax
 errors. Note that, in practise, you will only have a subset of these methods
@@ -303,9 +304,17 @@ __4.6. Q. What happened to the `rustc` checker?__
 A. It is now part of the [rust.vim][rust] plugin. If you install this plugin the
 checker should be picked up automatically by syntastic.
 
+<a name="faqtsc"></a>
+
+__4.7. Q. What happened to the `tsc` checker?__
+
+A. It didn't meet people's expectations and it has been removed. Please
+consider using the external checker [tsuquyomi][tsuquyomi] instead. If you
+install this plugin the checker should be picked up automatically by syntastic.
+
 <a name="faqxcrun"></a>
 
-__4.7. Q. What happened to the `xcrun` checker?__
+__4.8. Q. What happened to the `xcrun` checker?__
 
 A. The `xcrun` checker used to have a security problem and it has been removed.
 A better checker for __Swift__ is part of the [vim-swift][swift] plugin. If you
@@ -313,8 +322,8 @@ install this plugin the checker should be picked up automatically by syntastic.
 
 <a name="faqloclist"></a>
 
-__4.8. Q. I run a checker and the location list is not updated...__  
-__4.8. Q. I run`:lopen` or `:lwindow` and the error window is empty...__
+__4.9. Q. I run a checker and the location list is not updated...__  
+__4.9. Q. I run`:lopen` or `:lwindow` and the error window is empty...__
 
 A. By default the location list is changed only when you run the `:Errors`
 command, in order to minimise conflicts with other plugins. If you want the
@@ -326,7 +335,7 @@ let g:syntastic_always_populate_loc_list = 1
 
 <a name="faqargs"></a>
 
-__4.9. Q. How can I pass additional arguments to a checker?__
+__4.10. Q. How can I pass additional arguments to a checker?__
 
 A. Almost all syntax checkers use the `makeprgBuild()` function. Those checkers
 that do can be configured using global variables. The general form of the
@@ -342,7 +351,7 @@ See `:help syntastic-checker-options` for more information.
 
 <a name="faqcheckers"></a>
 
-__4.10. Q. Syntastic supports several checkers for my filetype - how do I tell it
+__4.11. Q. Syntastic supports several checkers for my filetype - how do I tell it
 which one(s) to use?__
 
 A. Stick a line like this in your `vimrc`:
@@ -383,7 +392,7 @@ filetype of the current file is `php`).
 
 <a name="faqstyle"></a>
 
-__4.11. Q. What is the difference between syntax checkers and style checkers?__
+__4.12. Q. What is the difference between syntax checkers and style checkers?__
 
 A. The errors and warnings they produce are highlighted differently and can
 be filtered by different rules, but otherwise the distinction is pretty much
@@ -413,7 +422,7 @@ See `:help syntastic_quiet_messages` for details.
 
 <a name="faqaggregate"></a>
 
-__4.12. Q. I have enabled multiple checkers for the current filetype. How can I
+__4.13. Q. I have enabled multiple checkers for the current filetype. How can I
 display all errors from all checkers together?__
 
 A. Set `g:syntastic_aggregate_errors` to 1 in your `vimrc`:
@@ -425,7 +434,7 @@ See `:help syntastic-aggregating-errors` for more details.
 
 <a name="faqlnext"></a>
 
-__4.13. Q. How can I jump between the different errors without using the location
+__4.14. Q. How can I jump between the different errors without using the location
 list at the bottom of the window?__
 
 A. Vim provides several built-in commands for this. See `:help :lnext` and
@@ -437,7 +446,7 @@ mappings (among other things).
 
 <a name="faqconfig"></a>
 
-__4.14. My favourite checker needs to load a configuration file from the
+__4.15. My favourite checker needs to load a configuration file from the
 project's root rather than the current directory...__
 
 A. You can set up an `autocmd` to search for the configuration file in the
@@ -456,7 +465,7 @@ autocmd FileType javascript let b:syntastic_javascript_jscs_args =
 ```
 <a name="faqbdelete"></a>
 
-__4.15. Q. The error window is closed automatically when I :quit the current buffer
+__4.16. Q. The error window is closed automatically when I :quit the current buffer
 but not when I :bdelete it?__
 
 A. There is no safe way to handle that situation automatically, but you can
@@ -510,6 +519,7 @@ a look at [ghcmod-vim][ghcmod], [jedi-vim][jedi], [python-mode][python_mode], [v
 [swift]:            https://github.com/kballard/vim-swift
 [tidy]:             http://www.htacg.org/tidy-html5/
 [tidy_old]:         http://tidy.sourceforge.net/
+[tsuquyomi]:        https://github.com/Quramy/tsuquyomi/
 [unimpaired]:       https://github.com/tpope/vim-unimpaired
 [vam]:              https://github.com/MarcWeber/vim-addon-manager
 [vim]:              http://www.vim.org/

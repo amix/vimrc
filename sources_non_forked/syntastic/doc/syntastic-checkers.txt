@@ -6,6 +6,7 @@ SYNTAX CHECKERS BY LANGUAGE                          *syntastic-checkers-lang*
 
 |syntastic| comes with checkers for the following languages:
 
+    ACPI Source Language.....................|syntastic-checkers-asl|
     ActionScript.............................|syntastic-checkers-actionscript|
     Ada......................................|syntastic-checkers-ada|
     Ansible..................................|syntastic-checkers-ansible|
@@ -131,6 +132,37 @@ SYNTAX CHECKERS BY LANGUAGE                          *syntastic-checkers-lang*
     Zsh......................................|syntastic-checkers-zsh|
 
 Third-party checkers are available for additional languages.
+
+==============================================================================
+SYNTAX CHECKERS FOR ACPI SOURCE LANGUAGE              *syntastic-checkers-asl*
+
+The following checkers are available for the ACPI Source Language (filetype
+"asl"):
+
+    1. iasl.....................|syntastic-asl-iasl|
+
+------------------------------------------------------------------------------
+1. iasl                                                   *syntastic-asl-iasl*
+
+Name:        iasl
+Maintainer:  Peter Wu <peter@lekensteyn.nl>
+
+"iasl" is a compiler/decompiler for ACPI Source Language (ASL) and ACPI
+Machine Language (AML). See the project's page for details:
+
+    https://acpica.org/
+
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+Note~
+
+You probably also need a plugin to set |filetype| for ASL files, such as
+"vim-acpi-asl":
+
+    https://github.com/martinlroth/vim-acpi-asl
 
 ==============================================================================
 SYNTAX CHECKERS FOR ACTIONSCRIPT             *syntastic-checkers-actionscript*
@@ -344,7 +376,7 @@ accepts the standard options described at |syntastic-config-makeprg|.
 ==============================================================================
 SYNTAX CHECKERS FOR ASSEMBLY LANGUAGES                *syntastic-checkers-asm*
 
-The following checkers are available for asembly languages (filetype "asm"):
+The following checkers are available for assembly languages (filetype "asm"):
 
     1. GCC......................|syntastic-asm-gcc|
 
@@ -432,7 +464,7 @@ The following checkers are available for BEMHTML (filetype "bemhtml"):
 Name:        bemhtmllint
 Maintainer:  Sergej Tatarincev
 
-BEMHTML is a template engine intended for using with BEM methodology
+BEMHTML is a template engine intended for using with the BEM methodology
 (http://bem.info/method/). See the project's page at GitHub for details:
 
     https://github.com/SevInf/bemhtml-lint
@@ -492,9 +524,9 @@ Checker options~
 This checker is initialised using the "makeprgBuild()" function and thus it
 accepts the standard options described at |syntastic-config-makeprg|.
 
-Aditionally:
+Additionally:
 
-                                              *g:syntastic_avrgcc_config_file*
+                                            *'g:syntastic_avrgcc_config_file'*
 Type: string
 Default: ".syntastic_avrgcc_config"
 File containing compilation flags (such as defines or include directories),
@@ -895,17 +927,39 @@ SYNTAX CHECKERS FOR C++                               *syntastic-checkers-cpp*
 
 The following checkers are available for C++ (filetype "cpp"):
 
-    1. ClangCheck...............|syntastic-cpp-clang_check|
-    2. Clang-Tidy...............|syntastic-cpp-clang_tidy|
-    3. Cppcheck.................|syntastic-cpp-cppcheck|
-    4. Cpplint..................|syntastic-cpp-cpplint|
-    5. GCC......................|syntastic-cpp-gcc|
-    6. OClint...................|syntastic-cpp-oclint|
-    7. PC-Lint..................|syntastic-cpp-pc_lint|
-    8. Vera++...................|syntastic-cpp-verapp|
+    1. AVR-GCC..................|syntastic-cpp-avrgcc|
+    2. ClangCheck...............|syntastic-cpp-clang_check|
+    3. Clang-Tidy...............|syntastic-cpp-clang_tidy|
+    4. Cppcheck.................|syntastic-cpp-cppcheck|
+    5. Cpplint..................|syntastic-cpp-cpplint|
+    6. GCC......................|syntastic-cpp-gcc|
+    7. OClint...................|syntastic-cpp-oclint|
+    8. PC-Lint..................|syntastic-cpp-pc_lint|
+    9. Vera++...................|syntastic-cpp-verapp|
 
 ------------------------------------------------------------------------------
-1. ClangCheck                                      *syntastic-cpp-clang_check*
+1. AVR-GCC                                              *syntastic-cpp-avrgcc*
+
+Name:        avrgcc
+Maintainer:  Sławek Piotrowski <sentinel@atteo.com>
+
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+Additionally:
+
+                                            'g:syntastic_avrgcc_config_file'
+Type: string
+Default: ".syntastic_avrgcc_config"
+File containing compilation flags (such as defines or include directories),
+one option per line (cf. |syntastic-config-files|).
+
+See also: |syntastic-c-avrgcc|.
+
+------------------------------------------------------------------------------
+2. ClangCheck                                      *syntastic-cpp-clang_check*
 
 Name:        clang_check
 Maintainer:  Benjamin Bannier <bbannier@gmail.com>
@@ -948,7 +1002,7 @@ then ignored.
 See also: |syntastic-c-clang_check|.
 
 ------------------------------------------------------------------------------
-2. Clang-Tidy                                       *syntastic-cpp-clang_tidy*
+3. Clang-Tidy                                       *syntastic-cpp-clang_tidy*
 
 Name:        clang_tidy
 Maintainer:  Benjamin Bannier <bbannier@gmail.com>
@@ -999,7 +1053,7 @@ then ignored.
 See also: |syntastic-c-clang_tidy|.
 
 ------------------------------------------------------------------------------
-3. Cppcheck                                           *syntastic-cpp-cppcheck*
+4. Cppcheck                                           *syntastic-cpp-cppcheck*
 
 Name:        cppcheck
 Maintainer:  LCD 47 <lcd047@gmail.com>
@@ -1025,7 +1079,7 @@ one option per line (cf. |syntastic-config-files|).
 See also: |syntastic-c-cppcheck|.
 
 ------------------------------------------------------------------------------
-4. Cpplint                                             *syntastic-cpp-cpplint*
+5. Cpplint                                             *syntastic-cpp-cpplint*
 
 Name:        cpplint
 Maintainer:  LCD 47 <lcd047@gmail.com>
@@ -1061,7 +1115,7 @@ However, if your "cpplint" was installed with "pip", the script's name is
     let g:syntastic_cpp_cpplint_exec = "cpplint"
 <
 ------------------------------------------------------------------------------
-5. GCC                                                     *syntastic-cpp-gcc*
+6. GCC                                                     *syntastic-cpp-gcc*
 
 Name:        gcc
 Maintainer:  Gregor Uhlenheuer <kongo2002@gmail.com>
@@ -1158,7 +1212,7 @@ executable.
 See also: |syntastic-c-gcc|.
 
 ------------------------------------------------------------------------------
-6. OClint                                               *syntastic-cpp-oclint*
+7. OClint                                               *syntastic-cpp-oclint*
 
 Name:        oclint
 Maintainer:  "UnCO" Lin <undercooled@lavabit.com>
@@ -1198,7 +1252,7 @@ Config files pointed to by 'g:syntastic_oclint_config_file' are then ignored.
 See also: |syntastic-c-oclint|.
 
 ------------------------------------------------------------------------------
-7. PC-Lint                                             *syntastic-cpp-pc_lint*
+8. PC-Lint                                             *syntastic-cpp-pc_lint*
 
 Name:        pc_lint
 Maintainer:  Steve Bragg <steve@empresseffects.com>
@@ -1225,7 +1279,7 @@ current directory and in parent directories; first such file found is used.
 See also: |syntastic-c-pc_lint|.
 
 ------------------------------------------------------------------------------
-8. Vera++                                               *syntastic-cpp-verapp*
+9. Vera++                                               *syntastic-cpp-verapp*
 
 Name:        verapp
 Maintainer:  Lucas Verney <phyks@phyks.me>
@@ -1450,7 +1504,7 @@ The following checkers are available for Coq (filetype "coq"):
 Name:        coqtop
 Maintainer:  Matvey Aksenov <matvey.aksenov@gmail.com>
 
-"Coqtop" is the top level intrface for Coq. See the project's page for
+"Coqtop" is the top level interface for Coq. See the project's page for
 details:
 
     http://coq.inria.fr/
@@ -1989,8 +2043,8 @@ Name:        syntaxerl
 Maintainer:  locojay
 
 "SyntaxErl" is a syntax checker for Erlang. It uses "rebar"
-(https://github.com/basho/rebar) to determine correct deps and libs paths.
-See the project's page for more information:
+(https://github.com/basho/rebar) to determine correct dependencies and library
+paths. See the project's page for more information:
 
     https://github.com/ten0s/syntaxerl
 
@@ -2191,7 +2245,7 @@ If the magic comment does not exist, then the dictionary
 'g:syntastic_glsl_extensions' is used to infer the appropriate profile from
 the current file's extension. If this dictionary does not exist either, a
 default dictionary is used instead. Finally, if the current file's extension
-cannott be found in these dictionaries, the checker assumes a vertex shader
+cannot be found in these dictionaries, the checker assumes a vertex shader
 profile.
 
                                                   *'g:syntastic_glsl_options'*
@@ -2879,7 +2933,7 @@ point |'g:syntastic_java_checkstyle_classpath'| to it:
     http://iweb.dl.sourceforge.net/project/checkstyle/checkstyle/
     http://checkstyle.sourceforge.net/cmdline.html#Usage_by_Classpath_update
 
-Current builds at Maven Central do not package "checkstyles" with its
+Current builds at Maven Central do not package "checkstyle" with its
 dependencies:
 
     http://search.maven.org/#search|gav|1|g%3A%22com.puppycrawl.tools%22%20AND%20a%3A%22checkstyle%22
@@ -4637,7 +4691,7 @@ Please note that transforming a file like this affects line numbers and
 column numbers, and syntastic has no way to make the necessary adjustments.
 Consequently, errors might appear on surprising lines if you enable this
 feature and the transformed file has code on different lines than the raw
-file. For this reason the use of these transformations should be limitted
+file. For this reason the use of these transformations should be limited
 to codecs that preserve line numbers, such as the "spec" codec provided by
 "NoseOfYeti":
 
@@ -4741,7 +4795,7 @@ setting of "lint.style".
 Name:        lintr
 Maintainer:  Jim Hester <james.f.hester@gmail.com>
 
-"lintr" is a static code analysys tool for R files. See the project's page at
+"lintr" is a static code analysis tool for R files. See the project's page at
 GitHub for details:
 
     https://github.com/jimhester/lintr
@@ -4794,7 +4848,7 @@ This is a checker for R files, using the R package "svTools":
     http://cran.r-project.org/web/packages/svTools/
 
 In turn, this package delegates most of the work to the "checkUsage()"
-function in the codetools package:
+function in the "codetools" package:
 
     http://cran.r-project.org/web/packages/codetools/
 
@@ -4851,7 +4905,7 @@ The following checkers are available for R Markdown (filetype "rmd"):
 Name:        lintr
 Maintainer:  Jim Hester <james.f.hester@gmail.com>
 
-"lintr" is a static code analysys tool for R files.  See the project's page at
+"lintr" is a static code analysis tool for R files.  See the project's page at
 GitHub for details:
 
     https://github.com/jimhester/lintr
@@ -5060,7 +5114,7 @@ directory, or if you want to override the autodetected paths, options
 |'g:syntastic_rst_sphinx_source_dir'| and |'g:syntastic_rst_sphinx_config_dir'|
 take precedence over the detected values.
 
-Please not also that the checker creates output files in a temporary directory
+Please note also that the checker creates output files in a temporary directory
 that is created upon the first run in the current session, and is removed when
 Vim exits. If you need to change the location of this directory you can do
 so by exporting the environment variables "TMPDIR" or "TMP" (on UNIX and Mac
@@ -5081,7 +5135,7 @@ The following checkers are available for Linux RPM packages (filetype "spec"):
 Name:        rpmlint
 Maintainer:  LCD 47 <lcd047@gmail.com>
 
-"rpmlint" is a trool for checking Linux RPM packages. See the project's page
+"rpmlint" is a tool for checking Linux RPM packages. See the project's page
 for details:
 
     http://sourceforge.net/projects/rpmlint/
@@ -5165,7 +5219,7 @@ Name:        macruby
 Maintainer:  Martin Grenfell <martin.grenfell@gmail.com>
 
 "MacRuby" is an implementation of Ruby for Mac OS X. See the project's
-pagefor details:
+page for details:
 
     http://www.macruby.org/
 
@@ -5864,7 +5918,7 @@ The following checkers are available for Texinfo (filetype "texinfo"):
 Name:        makeinfo
 Maintainer:  LCD 47 <lcd047@gmail.com>
 
-"Makeinfo" is a convertor for Texinfo files. It is distributed together with
+"Makeinfo" is a converter for Texinfo files. It is distributed together with
 the GNU package "texinfo":
 
     http://www.gnu.org/software/texinfo/
@@ -6087,8 +6141,7 @@ SYNTAX CHECKERS FOR TYPESCRIPT                 *syntastic-checkers-typescript*
 The following checkers are available for TypeScript (filetype "typescript"):
 
     1. ESLint...................|syntastic-typescript-eslint|
-    2. tsc......................|syntastic-typescript-tsc|
-    3. TSLint...................|syntastic-typescript-tslint|
+    2. TSLint...................|syntastic-typescript-tslint|
 
 ------------------------------------------------------------------------------
 1. ESLint                                        *syntastic-typescript-eslint*
@@ -6118,29 +6171,7 @@ as "typescript-vim":
 See also: |syntastic-html-eslint|, |syntastic-javascript-eslint|.
 
 ------------------------------------------------------------------------------
-2. tsc                                              *syntastic-typescript-tsc*
-
-Name:        tsc
-Maintainer:  Bill Casarin <bill@casarin.ca>
-
-"tsc" is a compiler for TypeScript. See the project's page for details:
-
-    http://www.typescriptlang.org/
-
-Checker options~
-
-This checker is initialised using the "makeprgBuild()" function and thus it
-accepts the standard options described at |syntastic-config-makeprg|.
-
-Note~
-
-You probably also need a plugin to set |filetype| for TypeScript files, such
-as "typescript-vim":
-
-    https://github.com/leafgarland/typescript-vim
-
-------------------------------------------------------------------------------
-3. TSLint                                        *syntastic-typescript-tslint*
+2. TSLint                                        *syntastic-typescript-tslint*
 
 Name:        tslint
 Maintainer:  Seon-Wook Park <seon.wook@swook.net>
@@ -6861,6 +6892,7 @@ syntastic-specific configuration files:
         OpenCOBOL (|syntastic-cobol-cobc|)
 
     C++~
+        AVR-GCC (|syntastic-cpp-avrgcc|)
         ClangCheck (|syntastic-cpp-clang_check|)
         Clang-Tidy (|syntastic-cpp-clang_tidy|)
         Cppcheck (|syntastic-cpp-cppcheck|)
