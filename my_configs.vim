@@ -35,4 +35,10 @@ set tabstop=2
 set softtabstop=2
 
 set cmdheight=1
+set number
+
+" Mark, highlight multiple words
+source ~/.vim_runtime/sources_non_forked/Mark/plugin/mark.vim
+let g:mwDefaultHighlightingPalette = 'maximum' 
+let g:mwDefaultHighlightingNum = 10
 
