@@ -31,6 +31,10 @@ This is useful to install on remote servers where you don't need many plugins an
 Use [msysgit](http://msysgit.github.com/) to checkout the repository and run the installation instructions above. No special instructions needed ;-)
 
 
+## How to install on Linux
+
+If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: `alias vi=vim`. Otherwise, `apt-get install vim`
+
 ## How to update to latest version?
 
 Simply just do a git rebase!
