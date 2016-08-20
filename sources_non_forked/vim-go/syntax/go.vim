@@ -366,13 +366,27 @@ if g:go_highlight_build_constraints != 0
   hi def link goPackageComment    Comment
 endif
 
-" :GoSameIds
-hi def goSameId term=bold cterm=bold ctermbg=white ctermfg=black
-
 " :GoCoverage commands
 hi def link goCoverageNormalText Comment
-hi def      goCoverageCovered    ctermfg=green guifg=#A6E22E
-hi def      goCoverageUncover    ctermfg=red guifg=#F92672
+
+function! s:hi()
+  " :GoSameIds
+  if &background == 'dark'
+    hi def goSameId term=bold cterm=bold ctermbg=white ctermfg=black guibg=white guifg=black
+  else
+    hi def goSameId term=bold cterm=bold ctermbg=14 guibg=Cyan
+  endif
+
+  " :GoCoverage commands
+  hi def      goCoverageCovered    ctermfg=green guifg=#A6E22E
+  hi def      goCoverageUncover    ctermfg=red guifg=#F92672
+endfunction
+
+augroup vim-go-hi
+  autocmd!
+  autocmd ColorScheme * call s:hi()
+augroup end
+call s:hi()
 
 " Search backwards for a global declaration to start processing the syntax.
 "syn sync match goSync grouphere NONE /^\(const\|var\|type\|func\)\>/

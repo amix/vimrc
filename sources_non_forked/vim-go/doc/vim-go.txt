@@ -1388,6 +1388,13 @@ to an autocompletion proposals. By default it is enabled.
 >
   let g:go_gocode_propose_builtins = 1
 <
+                                                   *'g:go_gocode_socket_type'*
+
+Specifies whether `gocode` should use a different socket type. By default
+`unix` is enabled. Possible values: `unix`, `tcp`
+>
+  let g:go_gocode_socket_type = 'unix'
+<
                                                   *'g:go_template_autocreate'*
 
 When a new Go file is created, vim-go automatically fills the buffer content

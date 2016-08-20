@@ -1,6 +1,5 @@
 "  guru.vim -- Vim integration for the Go guru.
 
-
 func! s:RunGuru(mode, format, selected, needs_scope) range abort
   "return with a warning if the binary doesn't exist
   let bin_path = go#path#CheckBinPath("guru") 
@@ -364,6 +363,12 @@ function! go#guru#SameIds(selected)
     let pos = split(item, ':')
     call matchaddpos('goSameId', [[str2nr(pos[-2]), str2nr(pos[-1]), str2nr(poslen)]])
   endfor
+
+  if get(g:, "go_auto_sameids", 0)
+    " re-apply SameIds at the current cursor position at the time the buffer
+    " is redisplayed: e.g. :edit, :GoRename, etc.
+    autocmd BufWinEnter <buffer> nested call go#guru#SameIds(-1)
+  endif
 endfunction
 
 function! go#guru#ClearSameIds()
@@ -373,6 +378,11 @@ function! go#guru#ClearSameIds()
       call matchdelete(item['id'])
     endif
   endfor
+
+  " remove the autocmds we defined
+  if exists("#BufWinEnter<buffer>")
+    autocmd! BufWinEnter <buffer>
+  endif
 endfunction
 
 function! go#guru#ToggleSameIds(selected)

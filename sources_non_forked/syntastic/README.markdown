@@ -65,11 +65,11 @@ JSX, LESS, Lex, Limbo, LISP, LLVM intermediate language, Lua, Markdown,
 MATLAB, Mercury, NASM, Nix, Objective-C, Objective-C++, OCaml, Perl, Perl
 POD, PHP, gettext Portable Object, OS X and iOS property lists, Pug (formerly
 Jade), Puppet, Python, QML, R, Racket, RDF TriG, RDF Turtle, Relax NG,
-reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim, SML, Sphinx, SQL,
-Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog, VHDL, VimL, xHtml,
-XML, XSLT, XQuery, YACC, YAML, YANG data models, z80, Zope page templates, and
-Zsh. See the [manual][checkers] for details about the corresponding supported
-checkers (`:help syntastic-checkers` in Vim).
+reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim, SML, Solidity,
+Sphinx, SQL, Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog,
+VHDL, VimL, xHtml, XML, XSLT, XQuery, YACC, YAML, YANG data models, z80, Zope
+page templates, and Zsh. See the [manual][checkers] for details about the
+corresponding supported checkers (`:help syntastic-checkers` in Vim).
 
 A number of third-party Vim plugins also provide checkers for syntastic, for
 example: [merlin][merlin], [omnisharp-vim][omnisharp], [rust.vim][rust],
@@ -456,12 +456,12 @@ For example for `jscs`:
 ```vim
 function! FindConfig(prefix, what, where)
     let cfg = findfile(a:what, escape(a:where, ' ') . ';')
-    return cfg !=# '' ? ' ' . a:prefix . ' ' . cfg : ''
+    return cfg !=# '' ? ' ' . a:prefix . ' ' . shellescape(cfg) : ''
 endfunction
 
 autocmd FileType javascript let b:syntastic_javascript_jscs_args =
     \ get(g:, 'syntastic_javascript_jscs_args', '') .
-    \ FindConfig('-c', '.jscsrc', expand('<amatch>:p:h', 1))
+    \ FindConfig('-c', '.jscsrc', expand('<afile>:p:h', 1))
 ```
 <a name="faqbdelete"></a>
 

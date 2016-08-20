@@ -101,6 +101,7 @@ SYNTAX CHECKERS BY LANGUAGE                          *syntastic-checkers-lang*
     Sh.......................................|syntastic-checkers-sh|
     Slim.....................................|syntastic-checkers-slim|
     SML......................................|syntastic-checkers-sml|
+    Solidity.................................|syntastic-checkers-solidity|
     SQL......................................|syntastic-checkers-sql|
     Stylus...................................|syntastic-checkers-stylus|
 
@@ -5778,6 +5779,37 @@ Checker options~
 
 This checker is initialised using the "makeprgBuild()" function and thus it
 accepts the standard options described at |syntastic-config-makeprg|.
+
+==============================================================================
+SYNTAX CHECKERS FOR SOLIDITY                     *syntastic-checkers-solidity*
+
+The following checkers are available for Solidity (filetype "solidity"):
+
+    1. solc.....................|syntastic-solidity-solc|
+
+------------------------------------------------------------------------------
+1. solc                                              *syntastic-solidity-solc*
+
+Name:        solc 
+Maintainer:  Jacob Cholewa <jacob@cholewa.dk>
+
+"solc" is a compiler for Ethereum's smart-contract language "Solidity"
+(https://solidity.readthedocs.io/). See the project's page for details:
+
+    https://github.com/ethereum/solidity
+
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+Note~
+
+You probably also need a plugin to set |filetype| for Solidity files, such as
+"vim-solidity":
+
+    https://github.com/tomlion/vim-solidity
+
 
 ==============================================================================
 SYNTAX CHECKERS FOR SQL                               *syntastic-checkers-sql*

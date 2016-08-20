@@ -6,10 +6,15 @@ IMPROVEMENTS:
   buffers as well. This affects all commands where `guru` is used. Such as
   `:GoDef`, `:GoReferrers`, etc.. [gh-944]
 * Cleanup and improve documentation [gh-987]
+* Add new `g:go_gocode_socket_type` setting to change the underlying socket type passed to `gocode`. Usefull to fallback to `tcp` on cases such as Bash on Windows [gh-1000]
+* `:GoSameIds` is now automatically re-evaluated in cases of buffer reloads (such as `:GoRename`) [gh-998]
 
 BUG FIXES:
 
 * Fix system calls on Windows [gh-988]
+* Fix :GoSameIds and :GoCoverage for light background and after changing color schemes [gh-983]
+* Fix TagBar and `GoCallers` for Windows user [gh-999]
+* Set updatetime for for `auto_sameids` feature as well [gh-1016]
 
 
 ## 1.8 (July 31, 2016)

@@ -1,7 +1,7 @@
 "============================================================================
-"File:        fsc.vim
-"Description: Syntax checking plugin for syntastic.vim
-"Maintainer:  Gregor Uhlenheuer <kongo2002 at gmail dot com>
+"File:        solc.vim
+"Description: Solidity syntax checker - using solc
+"Maintainer:  Jacob Cholewa <jacob@cholewa.dk>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
 "             it and/or modify it under the terms of the Do What The Fuck You
@@ -10,29 +10,18 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_scala_fsc_checker')
+if exists('g:loaded_syntastic_solidity_solc_checker')
     finish
 endif
-let g:loaded_syntastic_scala_fsc_checker = 1
+let g:loaded_syntastic_solidity_solc_checker = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_scala_fsc_GetLocList() dict
-    call syntastic#log#deprecationWarn('scala_options', 'scala_fsc_args')
+function! SyntaxCheckers_solidity_solc_GetLocList() dict
+    let makeprg = self.makeprgBuild({})
 
-    " fsc has some serious problems with the
-    " working directory changing after being started
-    " that's why we better pass an absolute path
-    let makeprg = self.makeprgBuild({
-        \ 'args': '-Ystop-after:parser',
-        \ 'fname': syntastic#util#shexpand('%:p') })
-
-    let errorformat =
-        \ '%E%f:%l: %trror: %m,' .
-        \ '%W%f:%l: %tarning:%m,' .
-        \ '%Z%p^,' .
-        \ '%-G%.%#'
+    let errorformat = '%f:%l:%c: %trror: %m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
@@ -40,8 +29,8 @@ function! SyntaxCheckers_scala_fsc_GetLocList() dict
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-    \ 'filetype': 'scala',
-    \ 'name': 'fsc'})
+    \ 'filetype': 'solidity',
+    \ 'name': 'solc'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
