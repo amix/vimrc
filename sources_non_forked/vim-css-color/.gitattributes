@@ -1,0 +1,5 @@
+/autoload/css_color.vim export-subst
+/.gitattributes         export-ignore
+/README.md              export-ignore
+/LICENSE                export-ignore
+/tests                  export-ignore

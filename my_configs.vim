@@ -42,3 +42,6 @@ source ~/.vim_runtime/sources_non_forked/Mark/plugin/mark.vim
 let g:mwDefaultHighlightingPalette = 'maximum' 
 let g:mwDefaultHighlightingNum = 10
 
+" Vim-jsx
+let g:jsx_ext_required = 0
+
