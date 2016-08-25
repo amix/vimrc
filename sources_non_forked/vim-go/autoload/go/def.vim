@@ -6,12 +6,6 @@ function! go#def#Jump(mode)
   let $GOPATH = go#path#Detect()
 
   let fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
-  if &modified
-    " Write current unsaved buffer to a temp file and use the modified content
-    let l:tmpname = tempname()
-    call writefile(getline(1, '$'), l:tmpname)
-    let fname = l:tmpname
-  endif
 
   " so guru right now is slow for some people. previously we were using
   " godef which also has it's own quirks. But this issue come up so many
@@ -19,6 +13,13 @@ function! go#def#Jump(mode)
   " covers all edge cases, but now anyone can switch to godef if they wish
   let bin_name = get(g:, 'go_def_mode', 'guru')
   if bin_name == 'godef'
+    if &modified
+      " Write current unsaved buffer to a temp file and use the modified content
+      let l:tmpname = tempname()
+      call writefile(getline(1, '$'), l:tmpname)
+      let fname = l:tmpname
+    endif
+
     let bin_path = go#path#CheckBinPath("godef")
     if empty(bin_path)
       let $GOPATH = old_gopath
@@ -31,29 +32,43 @@ function! go#def#Jump(mode)
     " jump_to_declaration() function can parse it. This makes it
     " compatible with guru definition as well too
     let out = join(split(out, '\n'), ':')
+    if exists("l:tmpname")
+      call delete(l:tmpname)
+    endif
+
   elseif bin_name == 'guru'
+    let flags = ""
+    let in = ""
+
+    if &modified
+      let sep = go#util#LineEnding()
+      let content  = join(getline(1, '$'), sep)
+      let in = fname . "\n" . strlen(content) . "\n" . content
+      let flags .= " -modified"
+    endif
+
     let bin_path = go#path#CheckBinPath("guru")
     if empty(bin_path)
       let $GOPATH = old_gopath
       return
     endif
 
-    let flags = ""
     if exists('g:go_guru_tags')
       let tags = get(g:, 'go_guru_tags')
-      let flags = printf(" -tags %s", tags)
+      let flags .= printf(" -tags %s", tags)
     endif
 
     let fname = shellescape(fname.':#'.go#util#OffsetCursor())
     let command = printf("%s %s definition %s", bin_path, flags, fname)
-    let out = go#util#System(command)
+
+    if &modified
+      let out = go#util#System(command, in)
+    else
+      let out = go#util#System(command)
+    endif
   else
     call go#util#EchoError('go_def_mode value: '. bin_name .' is not valid. Valid values are: [godef, guru]')
     return
-  endif
-
-  if exists("l:tmpname")
-    call delete(l:tmpname)
   endif
 
   if go#util#ShellError() != 0
@@ -98,24 +113,29 @@ function! s:jump_to_declaration(out, mode)
   " modes of switchbuf which we need based on the split mode
   let old_switchbuf = &switchbuf
 
-  " jump to existing buffer if, 1. we have enabled it, 2. the buffer is loaded
-  " and 3. there is buffer window number we switch to
-  if get(g:, 'go_def_reuse_buffer', 0) && bufloaded(filename) != 0 && bufwinnr(filename) != -1
-    " jumpt to existing buffer if it exists
-    execute bufwinnr(filename) . 'wincmd w'
-  elseif a:mode == "tab"
-    let &switchbuf = "usetab"
-    if bufloaded(filename) == 0
-      tab split
+  let l:fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
+  if filename != l:fname
+    " jump to existing buffer if, 1. we have enabled it, 2. the buffer is loaded
+    " and 3. there is buffer window number we switch to
+    if get(g:, 'go_def_reuse_buffer', 0) && bufloaded(filename) != 0 && bufwinnr(filename) != -1
+      " jumpt to existing buffer if it exists
+      execute bufwinnr(filename) . 'wincmd w'
+    elseif a:mode == "tab"
+      let &switchbuf = "usetab"
+      if bufloaded(filename) == 0
+        tab split
+      endif
+    elseif a:mode == "split"
+      split
+    elseif a:mode == "vsplit"
+      vsplit
+    elseif &modified
+      split
     endif
-  elseif a:mode == "split"
-    split
-  elseif a:mode == "vsplit"
-    vsplit
-  endif
 
-  " open the file and jump to line and column
-  exec 'edit '.filename
+    " open the file and jump to line and column
+    exec 'edit '.filename
+  endif
   call cursor(line, col)
 
   " also align the line to middle of the view

@@ -32,10 +32,17 @@ function! s:gocodeCommand(cmd, preargs, args)
   let old_gopath = $GOPATH
   let $GOPATH = go#path#Detect()
 
-  let result = go#util#System(printf('%s %s %s %s', go#util#Shellescape(bin_path), join(a:preargs), go#util#Shellescape(a:cmd), join(a:args)))
+  let socket_type = get(g:, 'go_gocode_socket_type', 'unix')
+  let cmd = printf('%s -sock %s %s %s %s', 
+        \ go#util#Shellescape(bin_path), 
+        \ socket_type, 
+        \ join(a:preargs), 
+        \ go#util#Shellescape(a:cmd), 
+        \ join(a:args)
+        \ )
 
+  let result = go#util#System(cmd)
   let $GOPATH = old_gopath
-
   if go#util#ShellError() != 0
     return "[\"0\", []]"
   else
@@ -152,5 +159,17 @@ function! go#complete#Complete(findstart, base)
     return g:gocomplete_completions[1]
   endif
 endf
+
+function! go#complete#ToggleAutoTypeInfo()
+  if get(g:, "go_auto_type_info", 0)
+    let g:go_auto_type_info = 0
+    call go#util#EchoProgress("auto type info disabled")
+    return
+  end
+
+  let g:go_auto_type_info = 1
+  call go#util#EchoProgress("auto type info enabled")
+endfunction
+
 
 " vim: sw=2 ts=2 et

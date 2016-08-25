@@ -43,7 +43,7 @@ if !exists("g:go_fmt_experimental")
   let g:go_fmt_experimental = 0
 endif
 
-"  we have those problems : 
+"  we have those problems :
 "  http://stackoverflow.com/questions/12741977/prevent-vim-from-updating-its-undo-tree
 "  http://stackoverflow.com/questions/18532692/golang-formatter-and-vim-how-to-destroy-history-record?rq=1
 "
@@ -124,7 +124,7 @@ function! go#fmt#Format(withGoimport)
     if exists('b:goimports_vendor_compatible') && b:goimports_vendor_compatible
       let ssl_save = &shellslash
       set noshellslash
-      let command  = command . '-srcdir ' . shellescape(expand("%:p:h"))
+      let command  = command . '-srcdir ' . shellescape(expand("%:p"))
       let &shellslash = ssl_save
     endif
   endif
@@ -149,7 +149,15 @@ function! go#fmt#Format(withGoimport)
 
     " Replace current file with temp file, then reload buffer
     let old_fileformat = &fileformat
+    if exists("*getfperm")
+      " save old file permissions
+      let original_fperm = getfperm(expand('%'))
+    endif
     call rename(l:tmpname, expand('%'))
+    " restore old file permissions
+    if exists("*setfperm") && original_fperm != ''
+      call setfperm(expand('%'), original_fperm)
+    endif
     silent edit!
     let &fileformat = old_fileformat
     let &syntax = &syntax
@@ -207,4 +215,14 @@ function! go#fmt#Format(withGoimport)
   endif
 endfunction
 
+function! go#fmt#ToggleFmtAutoSave()
+  if get(g:, "go_fmt_autosave", 1)
+    let g:go_fmt_autosave = 0
+    call go#util#EchoProgress("auto fmt disabled")
+    return
+  end
+
+  let g:go_fmt_autosave = 1
+  call go#util#EchoProgress("auto fmt enabled")
+endfunction
 " vim: sw=2 ts=2 et

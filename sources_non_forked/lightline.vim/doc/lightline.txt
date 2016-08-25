@@ -4,7 +4,7 @@ Version: 0.0
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2016/05/26 21:57:34.
+Last Change: 2016/08/09 06:22:39.
 
 CONTENTS					*lightline-contents*
 
@@ -1202,8 +1202,7 @@ Problem 13:					*lightline-problem-13*
 		  try
 		    if g:colors_name =~# 'wombat\|solarized\|landscape\|jellybeans\|seoul256\|Tomorrow'
 		      let g:lightline.colorscheme =
-		            \ substitute(substitute(g:colors_name, '-', '_', 'g'), '256.*', '', '') .
-		            \ (g:colors_name ==# 'solarized' ? '_' . &background : '')
+		            \ substitute(substitute(g:colors_name, '-', '_', 'g'), '256.*', '', '')
 		      call lightline#init()
 		      call lightline#colorscheme()
 		      call lightline#update()

@@ -33,7 +33,7 @@ function! go#package#Paths()
 
   if !exists("s:goroot")
     if executable('go')
-      let s:goroot = substitute(go#util#System('go env GOROOT'), '\n', '', 'g')
+      let s:goroot = go#util#goroot()
       if go#util#ShellError() != 0
         echomsg '''go env GOROOT'' failed'
       endif
@@ -59,7 +59,7 @@ function! go#package#ImportPath(arg)
   let dirs = go#package#Paths()
 
   for dir in dirs
-    if len(dir) && match(path, dir) == 0
+    if len(dir) && matchstr(escape(path, '\/'), escape(dir, '\/')) == 0
       let workspace = dir
     endif
   endfor
@@ -68,8 +68,13 @@ function! go#package#ImportPath(arg)
     return -1
   endif
 
-  let srcdir = substitute(workspace . '/src/', '//', '/', '')
-  return substitute(path, srcdir, '', '')
+  if go#util#IsWin()
+    let srcdir = substitute(workspace . '\src\', '//', '/', '')
+    return path[len(srcdir):]
+  else
+    let srcdir = substitute(workspace . '/src/', '//', '/', '')
+    return substitute(path, srcdir, '', '')
+  endif
 endfunction
 
 function! go#package#FromPath(arg)

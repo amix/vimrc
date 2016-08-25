@@ -45,7 +45,7 @@ function! s:SetTagbar()
           \ 'ctype' : 't',
           \ 'ntype' : 'n'
           \ },
-          \ 'ctagsbin'  : expand(bin_path),
+          \ 'ctagsbin'  : bin_path,
           \ 'ctagsargs' : '-sort -silent'
           \ }
   endif

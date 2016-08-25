@@ -143,6 +143,8 @@ endfunction
 " is given(which are passed directly to 'go install') it tries to install those
 " packages. Errors are populated in the location window.
 function! go#cmd#Install(bang, ...)
+  let old_gopath = $GOPATH
+  let $GOPATH = go#path#Detect()
   let default_makeprg = &makeprg
 
   " :make expands '%' and '#' wildcards, so they must also be escaped
@@ -179,6 +181,7 @@ function! go#cmd#Install(bang, ...)
     redraws! | echon "vim-go: " | echohl Function | echon "installed to ". $GOPATH | echohl None
   endif
 
+  let $GOPATH = old_gopath
   let &makeprg = default_makeprg
 endfunction
 

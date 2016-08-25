@@ -44,7 +44,7 @@ function! go#tool#Imports()
 endfunction
 
 function! go#tool#PackageName()
-  let command = "go list -f '{{.Name}}'"
+  let command = "go list -f \"{{.Name}}\""
   let out = go#tool#ExecuteInDir(command)
   if go#util#ShellError() != 0
       return -1

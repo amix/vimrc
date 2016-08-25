@@ -859,7 +859,7 @@ function! s:StageUndo() abort
   let hash = repo.git_chomp('hash-object', '-w', filename)
   if !empty(hash)
     if section ==# 'untracked'
-      call repo.git_chomp_in_tree('clean', '--', filename)
+      call repo.git_chomp_in_tree('clean', '-f', '--', filename)
     elseif section ==# 'unmerged'
       call repo.git_chomp_in_tree('rm', '--', filename)
     elseif section ==# 'unstaged'

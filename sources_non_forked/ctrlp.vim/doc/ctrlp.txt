@@ -68,6 +68,7 @@ Overview:~
   |ctrlp_open_single_match|.....Automatically accept when only one candidate.
   |ctrlp_brief_prompt|..........Exit CtrlP on empty prompt by <bs>.
   |ctrlp_match_current_file|....Include current file in match entries.
+  |ctrlp_types|.................Names of builtin types.
 
   MRU mode:
   |ctrlp_mruf_max|..............Max MRU entries to remember.
@@ -454,13 +455,19 @@ This option works well together with |g:ctrlp_open_single_match|
 
 
                                                  *'g:ctrlp_match_current_file'*
-Includes the current file in the match entries:
+Includes the current file in the match entries: >
   let g:ctrlp_match_current_file = 1
 
 By default, the current file is excluded from the list.
 
 Note: does not apply when |g:ctrlp_match_func| is used. 
 
+                                                              *'g:ctrlp_types'*
+Set this to list of names to customize core types: >
+  let g:ctrlp_types = ['mru', 'fil']
+
+By default, the types are: >
+  let g:ctrlp_types = ['fil', 'buf', 'mru'].
 
                                                              *'g:ctrlp_abbrev'*
 Define input abbreviations that can be expanded (either internally or visibly)

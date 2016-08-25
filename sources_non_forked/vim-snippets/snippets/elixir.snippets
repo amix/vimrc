@@ -105,11 +105,15 @@ snippet imp
 snippet ali
 	alias ${0:module_name}
 snippet test
-	test "${1:test_name}" do
+	test "${1:test name}" do
 		${0}
 	end
 snippet testa
 	test "${1:test_name}", %{${2:arg: arg}} do
+		${0}
+	end
+snippet des
+	describe "${1:test group subject}" do
 		${0}
 	end
 snippet exunit

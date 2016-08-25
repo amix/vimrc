@@ -1,51 +1,57 @@
 "============================================================================
-"File:        dockerfile_lint.vim
-"Description: Syntax checking plugin for syntastic.vim using dockerfile-lint
-"             (https://github.com/projectatomic/dockerfile_lint).
-"Maintainer:  Tim Carry <tim at pixelastic dot com>
+"File:        iasl.vim
+"Description: Syntax checking plugin for syntastic using iasl
+"Maintainer:  Peter Wu <peter@lekensteyn.nl>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
 "             it and/or modify it under the terms of the Do What The Fuck You
 "             Want To Public License, Version 2, as published by Sam Hocevar.
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
-"
 "============================================================================
 
-if exists('g:loaded_syntastic_dockerfile_dockerfile_lint_checker')
+if exists('g:loaded_syntastic_asl_iasl_checker')
     finish
 endif
-let g:loaded_syntastic_dockerfile_dockerfile_lint_checker = 1
+let g:loaded_syntastic_asl_iasl_checker = 1
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_dockerfile_dockerfile_lint_GetLocList() dict
+function! SyntaxCheckers_asl_iasl_GetLocList() dict
+    let tmpdir = syntastic#util#tmpdir() . syntastic#util#Slash()
     let makeprg = self.makeprgBuild({
-        \ 'args_after': '-j',
-        \ 'fname_before': '-f' })
+        \ 'args': '-vi',
+        \ 'args_after': ['-p', tmpdir] })
 
-    let errorformat = '%t:%n:%l:%m'
+    let errorformat =
+        \ '%f(%l) : %trror    %n - %m,' .
+        \ '%f(%l) : %tarning  %n - %m,' .
+        \ '%f(%l) : %temark   %n - %m,' .
+        \ '%f(%l) : %tptimize %n - %m,' .
+        \ '%f(%l) : %m'
 
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'preprocess': 'dockerfile_lint',
-        \ 'defaults': {'bufnr': bufnr('')},
-        \ 'returns': [0, 1] })
+        \ 'returns': [0, 255] })
 
     for e in loclist
-        if e['nr']
+        if e['type'] =~? 'r'
+            let e['type'] = 'W'
+        elseif e['type'] =~? 'o'
+            let e['type'] = 'W'
             let e['subtype'] = 'Style'
         endif
-        call remove(e, 'nr')
     endfor
+
+    call syntastic#util#rmrf(tmpdir)
 
     return loclist
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-    \ 'filetype': 'dockerfile',
-    \ 'name': 'dockerfile_lint'})
+    \ 'filetype': 'asl',
+    \ 'name': 'iasl'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

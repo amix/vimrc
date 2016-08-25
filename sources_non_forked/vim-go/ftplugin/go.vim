@@ -56,7 +56,7 @@ if get(g:, "go_textobj_enabled", 1)
   xnoremap <buffer> <silent> [[ :<c-u>call go#textobj#FunctionJump('v', 'prev')<cr>
 endif
 
-if get(g:, "go_auto_type_info", 0)
+if get(g:, "go_auto_type_info", 0) || get(g:, "go_auto_sameids", 0)
   setlocal updatetime=800
 endif
 
