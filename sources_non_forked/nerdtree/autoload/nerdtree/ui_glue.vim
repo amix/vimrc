@@ -105,7 +105,7 @@ endfunction
 "FUNCTION: s:activateBookmark() {{{1
 "handle the user activating a bookmark
 function! s:activateBookmark(bm)
-    call a:bm.activate(!a:bm.path.isDirectory ? {'where': 'p'} : {})
+    call a:bm.activate(b:NERDTree, !a:bm.path.isDirectory ? {'where': 'p'} : {})
 endfunction
 
 " FUNCTION: nerdtree#ui_glue#bookmarkNode(name) {{{1
@@ -140,9 +140,7 @@ endfunction
 " FUNCTION: s:chRoot(node) {{{1
 " changes the current root to the selected one
 function! s:chRoot(node)
-    call a:node.makeRoot()
-    call b:NERDTree.render()
-    call b:NERDTreeRoot.putCursorHere(0, 0)
+    call b:NERDTree.changeRoot(a:node)
 endfunction
 
 " FUNCTION: s:nerdtree#ui_glue#chRootCwd() {{{1
@@ -157,7 +155,7 @@ function! nerdtree#ui_glue#chRootCwd()
     if cwd.str() == g:NERDTreeFileNode.GetRootForTab().path.str()
        return
     endif
-    call s:chRoot(g:NERDTreeDirNode.New(cwd))
+    call s:chRoot(g:NERDTreeDirNode.New(cwd, b:NERDTree))
 endfunction
 
 " FUNCTION: nnerdtree#ui_glue#clearBookmarks(bookmarks) {{{1
@@ -173,6 +171,7 @@ function! nerdtree#ui_glue#clearBookmarks(bookmarks)
             call bookmark.delete()
         endfor
     endif
+    call b:NERDTree.root.refresh()
     call b:NERDTree.render()
 endfunction
 
@@ -188,17 +187,17 @@ endfunction
 " closes the parent dir of the current node
 function! s:closeCurrentDir(node)
     let parent = a:node.parent
+    while g:NERDTreeCascadeOpenSingleChildDir && !parent.isRoot()
+        let childNodes = parent.getVisibleChildren()
+        if len(childNodes) == 1 && childNodes[0].path.isDirectory
+            let parent = parent.parent
+        else
+            break
+        endif
+    endwhile
     if parent ==# {} || parent.isRoot()
         call nerdtree#echo("cannot close tree root")
     else
-        while g:NERDTreeCascadeOpenSingleChildDir && !parent.parent.isRoot()
-            if parent.parent.getVisibleChildCount() == 1
-                call parent.close()
-                let parent = parent.parent
-            else
-                break
-            endif
-        endwhile
         call parent.close()
         call b:NERDTree.render()
         call parent.putCursorHere(0, 0)
@@ -208,8 +207,8 @@ endfunction
 " FUNCTION: s:closeTreeWindow() {{{1
 " close the tree window
 function! s:closeTreeWindow()
-    if b:NERDTreeType ==# "secondary" && b:NERDTreePreviousBuf != -1
-        exec "buffer " . b:NERDTreePreviousBuf
+    if b:NERDTree.isWinTree() && b:NERDTree.previousBuf() != -1
+        exec "buffer " . b:NERDTree.previousBuf()
     else
         if winnr("$") > 1
             call g:NERDTree.Close()
@@ -227,6 +226,7 @@ function! s:deleteBookmark(bm)
     if  nr2char(getchar()) ==# 'y'
         try
             call a:bm.delete()
+            call b:NERDTree.root.refresh()
             call b:NERDTree.render()
             redraw
         catch /^NERDTree/
@@ -241,7 +241,7 @@ endfunction
 " FUNCTION: s:displayHelp() {{{1
 " toggles the help display
 function! s:displayHelp()
-    let b:treeShowHelp = b:treeShowHelp ? 0 : 1
+    call b:NERDTree.ui.toggleHelp()
     call b:NERDTree.render()
     call b:NERDTree.ui.centerView()
 endfunction
@@ -269,27 +269,29 @@ function! s:findAndRevealPath()
         endtry
 
         if p.isUnder(cwd)
-            call g:NERDTreeCreator.CreatePrimary(cwd.str())
+            call g:NERDTreeCreator.CreateTabTree(cwd.str())
         else
-            call g:NERDTreeCreator.CreatePrimary(p.getParent().str())
+            call g:NERDTreeCreator.CreateTabTree(p.getParent().str())
         endif
     else
         if !p.isUnder(g:NERDTreeFileNode.GetRootForTab().path)
             if !g:NERDTree.IsOpen()
-                call g:NERDTreeCreator.TogglePrimary('')
+                call g:NERDTreeCreator.ToggleTabTree('')
             else
                 call g:NERDTree.CursorToTreeWin()
             endif
-            let b:NERDTreeShowHidden = g:NERDTreeShowHidden
-            call s:chRoot(g:NERDTreeDirNode.New(p.getParent()))
+            call b:NERDTree.ui.setShowHidden(g:NERDTreeShowHidden)
+            call s:chRoot(g:NERDTreeDirNode.New(p.getParent(), b:NERDTree))
         else
             if !g:NERDTree.IsOpen()
-                call g:NERDTreeCreator.TogglePrimary("")
+                call g:NERDTreeCreator.ToggleTabTree("")
             endif
         endif
     endif
     call g:NERDTree.CursorToTreeWin()
-    call b:NERDTreeRoot.reveal(p)
+    let node = b:NERDTree.root.reveal(p)
+    call b:NERDTree.render()
+    call node.putCursorHere(1,0)
 
     if p.isUnixHiddenFile()
         let g:NERDTreeShowHidden = showhidden
@@ -312,7 +314,7 @@ function! s:handleLeftClick()
         endfor
 
         if currentNode.path.isDirectory
-            if startToCur =~# g:NERDTreeUI.MarkupReg() && startToCur =~# '[+~▾▸] \?$'
+            if startToCur =~# g:NERDTreeUI.MarkupReg() && startToCur =~# '[+~'.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.'] \?$'
                 call currentNode.activate()
                 return
             endif
@@ -409,7 +411,7 @@ endfunction
 " FUNCTION: s:jumpToRoot() {{{1
 " moves the cursor to the root node
 function! s:jumpToRoot()
-    call b:NERDTreeRoot.putCursorHere(1, 0)
+    call b:NERDTree.root.putCursorHere(1, 0)
     call b:NERDTree.ui.centerView()
 endfunction
 
@@ -442,13 +444,13 @@ endfunction
 " put the cursor on the given bookmark and, if its a file, open it
 function! nerdtree#ui_glue#openBookmark(name)
     try
-        let targetNode = g:NERDTreeBookmark.GetNodeForName(a:name, 0)
+        let targetNode = g:NERDTreeBookmark.GetNodeForName(a:name, 0, b:NERDTree)
         call targetNode.putCursorHere(0, 1)
         redraw!
     catch /^NERDTree.BookmarkedNodeNotFoundError/
         call nerdtree#echo("note - target node is not cached")
         let bookmark = g:NERDTreeBookmark.BookmarkFor(a:name)
-        let targetNode = g:NERDTreeFileNode.New(bookmark.path)
+        let targetNode = g:NERDTreeFileNode.New(bookmark.path, b:NERDTree)
     endtry
     if targetNode.path.isDirectory
         call targetNode.openExplorer()
@@ -510,7 +512,7 @@ endfunction
 " put the cursor on the node associate with the given name
 function! nerdtree#ui_glue#revealBookmark(name)
     try
-        let targetNode = g:NERDTreeBookmark.GetNodeForName(a:name, 0)
+        let targetNode = g:NERDTreeBookmark.GetNodeForName(a:name, 0, b:NERDTree)
         call targetNode.putCursorHere(0, 1)
     catch /^NERDTree.BookmarkNotFoundError/
         call nerdtree#echo("Bookmark isnt cached under the current root")
@@ -522,7 +524,7 @@ endfunction
 " will be reloaded.
 function! s:refreshRoot()
     call nerdtree#echo("Refreshing the root node. This could take a while...")
-    call b:NERDTreeRoot.refresh()
+    call b:NERDTree.root.refresh()
     call b:NERDTree.render()
     redraw
     call nerdtree#echo("Refreshing the root node. This could take a while... DONE")
@@ -545,10 +547,10 @@ endfunction
 
 " FUNCTION: nerdtree#ui_glue#setupCommands() {{{1
 function! nerdtree#ui_glue#setupCommands()
-    command! -n=? -complete=dir -bar NERDTree :call g:NERDTreeCreator.CreatePrimary('<args>')
-    command! -n=? -complete=dir -bar NERDTreeToggle :call g:NERDTreeCreator.TogglePrimary('<args>')
+    command! -n=? -complete=dir -bar NERDTree :call g:NERDTreeCreator.CreateTabTree('<args>')
+    command! -n=? -complete=dir -bar NERDTreeToggle :call g:NERDTreeCreator.ToggleTabTree('<args>')
     command! -n=0 -bar NERDTreeClose :call g:NERDTree.Close()
-    command! -n=1 -complete=customlist,nerdtree#completeBookmarks -bar NERDTreeFromBookmark call g:NERDTreeCreator.CreatePrimary('<args>')
+    command! -n=1 -complete=customlist,nerdtree#completeBookmarks -bar NERDTreeFromBookmark call g:NERDTreeCreator.CreateTabTree('<args>')
     command! -n=0 -bar NERDTreeMirror call g:NERDTreeCreator.CreateMirror()
     command! -n=0 -bar NERDTreeFind call s:findAndRevealPath()
     command! -n=0 -bar NERDTreeFocus call NERDTreeFocus()
@@ -602,28 +604,28 @@ endfunction
 "keepState: 1 if the current root should be left open when the tree is
 "re-rendered
 function! nerdtree#ui_glue#upDir(keepState)
-    let cwd = b:NERDTreeRoot.path.str({'format': 'UI'})
+    let cwd = b:NERDTree.root.path.str({'format': 'UI'})
     if cwd ==# "/" || cwd =~# '^[^/]..$'
         call nerdtree#echo("already at top dir")
     else
         if !a:keepState
-            call b:NERDTreeRoot.close()
+            call b:NERDTree.root.close()
         endif
 
-        let oldRoot = b:NERDTreeRoot
+        let oldRoot = b:NERDTree.root
 
-        if empty(b:NERDTreeRoot.parent)
-            let path = b:NERDTreeRoot.path.getParent()
-            let newRoot = g:NERDTreeDirNode.New(path)
+        if empty(b:NERDTree.root.parent)
+            let path = b:NERDTree.root.path.getParent()
+            let newRoot = g:NERDTreeDirNode.New(path, b:NERDTree)
             call newRoot.open()
-            call newRoot.transplantChild(b:NERDTreeRoot)
-            let b:NERDTreeRoot = newRoot
+            call newRoot.transplantChild(b:NERDTree.root)
+            let b:NERDTree.root = newRoot
         else
-            let b:NERDTreeRoot = b:NERDTreeRoot.parent
+            let b:NERDTree.root = b:NERDTree.root.parent
         endif
 
         if g:NERDTreeChDirMode ==# 2
-            call b:NERDTreeRoot.path.changeToDir()
+            call b:NERDTree.root.path.changeToDir()
         endif
 
         call b:NERDTree.render()

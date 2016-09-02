@@ -33,8 +33,8 @@ function! s:get_color(group, attr)
 endfunction
 
 function! s:set_color(group, attr, color)
-  let gui = has('gui_running')
-  execute printf("hi %s %s%s=%s", a:group, gui ? 'gui' : 'cterm', a:attr, a:color)
+  let gui = a:color =~ '^#'
+  execute printf('hi %s %s%s=%s', a:group, gui ? 'gui' : 'cterm', a:attr, a:color)
 endfunction
 
 function! s:blank(repel)
@@ -106,7 +106,7 @@ function! s:resize_pads()
 endfunction
 
 function! s:tranquilize()
-  let bg = s:get_color('Normal', 'bg')
+  let bg = s:get_color('Normal', 'bg#')
   for grp in ['NonText', 'FoldColumn', 'ColorColumn', 'VertSplit',
             \ 'StatusLine', 'StatusLineNC', 'SignColumn']
     " -1 on Vim / '' on GVim
@@ -161,6 +161,8 @@ function! s:maps_resize()
   return mapped
 endfunction
 
+nnoremap <silent> <plug>(goyo-resize) :<c-u>call <sid>resize_pads()<cr>
+
 function! s:goyo_on(dim)
   let dim = s:parse_arg(a:dim)
   if empty(dim)
@@ -207,13 +209,13 @@ function! s:goyo_on(dim)
   endif
 
   " vim-airline
-  let t:goyo_disabled_airline = exists("#airline")
+  let t:goyo_disabled_airline = exists('#airline')
   if t:goyo_disabled_airline
     AirlineToggle
   endif
 
   " vim-powerline
-  let t:goyo_disabled_powerline = exists("#PowerlineMain")
+  let t:goyo_disabled_powerline = exists('#PowerlineMain')
   if t:goyo_disabled_powerline
     augroup PowerlineMain
       autocmd!
@@ -222,7 +224,7 @@ function! s:goyo_on(dim)
   endif
 
   " lightline.vim
-  let t:goyo_disabled_lightline = exists('#LightLine')
+  let t:goyo_disabled_lightline = exists('#lightline')
   if t:goyo_disabled_lightline
     silent! call lightline#disable()
   endif
@@ -263,13 +265,18 @@ function! s:goyo_on(dim)
     autocmd ColorScheme *        call s:tranquilize()
     autocmd BufWinEnter *        call s:hide_linenr() | call s:hide_statusline()
     autocmd WinEnter,WinLeave *  call s:hide_statusline()
+    if has('nvim')
+      autocmd TermClose * call feedkeys("\<plug>(goyo-resize)")
+    endif
   augroup END
 
   call s:hide_statusline()
   if exists('g:goyo_callbacks[0]')
     call g:goyo_callbacks[0]()
   endif
-  silent! doautocmd User GoyoEnter
+  if exists('#User#GoyoEnter')
+    doautocmd User GoyoEnter
+  endif
 endfunction
 
 function! s:goyo_off()
@@ -328,7 +335,7 @@ function! s:goyo_off()
   let &winheight    = wh
 
   for [k, v] in items(goyo_revert)
-    execute printf("let &%s = %s", k, string(v))
+    execute printf('let &%s = %s', k, string(v))
   endfor
   execute 'colo '. get(g:, 'colors_name', 'default')
 
@@ -342,12 +349,15 @@ function! s:goyo_off()
     endif
   endif
 
-  if goyo_disabled_airline && !exists("#airline")
+  if goyo_disabled_airline && !exists('#airline')
     AirlineToggle
+    " For some reason, Airline requires two refreshes to avoid display
+    " artifacts
+    silent! AirlineRefresh
     silent! AirlineRefresh
   endif
 
-  if goyo_disabled_powerline && !exists("#PowerlineMain")
+  if goyo_disabled_powerline && !exists('#PowerlineMain')
     doautocmd PowerlineStartup VimEnter
     silent! PowerlineReloadColorscheme
   endif
@@ -363,7 +373,9 @@ function! s:goyo_off()
   if exists('g:goyo_callbacks[1]')
     call g:goyo_callbacks[1]()
   endif
-  silent! doautocmd User GoyoLeave
+  if exists('#User#GoyoLeave')
+    doautocmd User GoyoLeave
+  endif
 endfunction
 
 function! s:relsz(expr, limit)
@@ -414,6 +426,10 @@ function! goyo#execute(bang, dim)
     if exists('#goyo') == 0
       call s:goyo_on(a:dim)
     elseif !empty(a:dim)
+      if winnr('$') < 5
+        call s:goyo_off()
+        return goyo#execute(a:bang, a:dim)
+      endif
       let dim = s:parse_arg(a:dim)
       if !empty(dim)
         let t:goyo_dim = dim

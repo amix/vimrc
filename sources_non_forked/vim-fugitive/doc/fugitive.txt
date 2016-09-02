@@ -57,6 +57,10 @@ that are part of Git repositories).
                         q     close status
                         r     reload status
                         S     |:Gvsplit|
+                        U     |:Git| checkout
+                        U     |:Git| checkout HEAD (staged files)
+                        U     |:Git| clean (untracked files)
+                        U     |:Git| rm (unmerged files)
 
                                                 *fugitive-:Gcommit*
 :Gcommit [args]         A wrapper around git-commit.  If there is nothing
@@ -91,10 +95,10 @@ that are part of Git repositories).
 :Gfetch [args]          Like |:Gpush|, but for git-fetch.
 
                                                 *fugitive-:Ggrep*
-:Ggrep [args]           |:grep| with git-grep as 'grepprg'.
+:Ggrep[!] [args]        |:grep|[!] with git-grep as 'grepprg'.
 
                                                 *fugitive-:Glgrep*
-:Glgrep [args]          |:lgrep| with git-grep as 'grepprg'.
+:Glgrep[!] [args]       |:lgrep|[!] with git-grep as 'grepprg'.
 
                                                 *fugitive-:Glog*
 :Glog [args]            Load all previous revisions of the current file into
@@ -220,31 +224,39 @@ that are part of Git repositories).
 :[range]Gblame [flags]  Run git-blame on the given range.
 
                                                 *fugitive-:Gbrowse*
-:[range]Gbrowse         If the remote for the current branch is on GitHub,
-                        open the current file, blob, tree, commit, or tag
-                        (with git-web--browse) on GitHub.  Otherwise, open the
-                        current file, blob, tree, commit, or tag in
-                        git-instaweb (if you have issues, verify you can run
-                        "git instaweb" from a terminal).  If a range is given,
-                        it is appropriately appended to the URL as an anchor.
+:Gbrowse                Open the current file, blob, tree, commit, or tag
+                        in your browser at the upstream hosting provider.
+                        If a range is given, it is appropriately appended to
+                        the URL as an anchor.
 
-                        To use with GitHub FI, point g:fugitive_github_domains
-                        at a list of domains:
->
-                        let g:fugitive_github_domains = ['https://example.com']
-~
-:[range]Gbrowse!        Like :Gbrowse, but put the URL on the clipboard rather
-                        than opening it.
+                        Upstream providers can be added by installing an
+                        appropriate Vim plugin.  For example, GitHub can be
+                        supported by installing rhubarb.vim, available at
+                        <https://github.com/tpope/vim-rhubarb>.  (Native
+                        support for GitHub is currently included, but that is
+                        slated to be removed.)
 
-:[range]Gbrowse {revision}
-                        Like :Gbrowse, but for a given |fugitive-revision|.  A
+                        The hosting provider is determined by looking at the
+                        remote for the current or specified branch and falls
+                        back to "origin".  In the special case of a "."
+                        remote, a local instance of git-instaweb will be
+                        started and used.
+
+:Gbrowse {revision}     Like :Gbrowse, but for a given |fugitive-revision|.  A
                         useful value here is -, which ties the URL to the
                         latest commit rather than a volatile branch.
 
-:[range]Gbrowse [...]@{remote}
-                        Force using the given remote rather than the remote
+:Gbrowse [...]@{remote} Force using the given remote rather than the remote
                         for the current branch.  The remote is used to
                         determine which GitHub repository to link to.
+
+:{range}Gbrowse [args]  Appends an anchor to the URL that emphasizes the
+                        selected lines.  You almost certainly want to give a
+                        "-" argument in this case to force the URL to include
+                        an exact revision.
+
+:[range]Gbrowse! [args] Like :Gbrowse, but put the URL on the clipboard rather
+                        than opening it.
 
 MAPPINGS                                        *fugitive-mappings*
 

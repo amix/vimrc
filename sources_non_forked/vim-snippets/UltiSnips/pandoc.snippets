@@ -4,7 +4,7 @@ extends markdown
 priority -49
 
 snippet title "Title Header" b
-% ${1:`!v Filename('', 'title')`}
+% ${1:`!v vim_snippets#Filename('$1', 'title')`}
 % ${2:`!v g:snips_author`}
 % ${3:`!v strftime("%d %B %Y")`}
 

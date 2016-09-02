@@ -19,7 +19,7 @@ function! s:TreeFileNode.bookmark(name)
     "it so we can update its display string
     let oldMarkedNode = {}
     try
-        let oldMarkedNode = g:NERDTreeBookmark.GetNodeForName(a:name, 1)
+        let oldMarkedNode = g:NERDTreeBookmark.GetNodeForName(a:name, 1, self.getNerdtree())
     catch /^NERDTree.BookmarkNotFoundError/
     catch /^NERDTree.BookmarkedNodeNotFoundError/
     endtry
@@ -41,7 +41,7 @@ function! s:TreeFileNode.cacheParent()
         if parentPath.equals(self.path)
             throw "NERDTree.CannotCacheParentError: already at root"
         endif
-        let self.parent = s:TreeFileNode.New(parentPath)
+        let self.parent = s:TreeFileNode.New(parentPath, self.getNerdtree())
     endif
 endfunction
 
@@ -59,7 +59,7 @@ endfunction
 function! s:TreeFileNode.copy(dest)
     call self.path.copy(a:dest)
     let newPath = g:NERDTreePath.New(a:dest)
-    let parent = b:NERDTreeRoot.findNode(newPath.getParent())
+    let parent = self.getNerdtree().root.findNode(newPath.getParent())
     if !empty(parent)
         call parent.refresh()
         return parent.findNode(newPath)
@@ -83,7 +83,7 @@ endfunction
 "Return:
 "a string that can be used in the view to represent this node
 function! s:TreeFileNode.displayString()
-    return self.path.displayString()
+    return self.path.flagSet.renderToString() . self.path.displayString()
 endfunction
 
 "FUNCTION: TreeFileNode.equals(treenode) {{{1
@@ -165,7 +165,7 @@ function! s:TreeFileNode.findSibling(direction)
 
                 "if the next node is not an ignored node (i.e. wont show up in the
                 "view) then return it
-                if self.parent.children[siblingIndx].path.ignore() ==# 0
+                if self.parent.children[siblingIndx].path.ignore(self.getNerdtree()) ==# 0
                     return self.parent.children[siblingIndx]
                 endif
 
@@ -178,11 +178,16 @@ function! s:TreeFileNode.findSibling(direction)
     return {}
 endfunction
 
+"FUNCTION: TreeFileNode.getNerdtree(){{{1
+function! s:TreeFileNode.getNerdtree()
+    return self._nerdtree
+endfunction
+
 "FUNCTION: TreeFileNode.GetRootForTab(){{{1
 "get the root node for this tab
 function! s:TreeFileNode.GetRootForTab()
     if g:NERDTree.ExistsForTab()
-        return getbufvar(t:NERDTreeBufName, 'NERDTreeRoot')
+        return getbufvar(t:NERDTreeBufName, 'NERDTree').root
     end
     return {}
 endfunction
@@ -195,7 +200,7 @@ function! s:TreeFileNode.GetSelected()
         if path ==# {}
             return {}
         endif
-        return b:NERDTreeRoot.findNode(path)
+        return b:NERDTree.root.findNode(path)
     catch /^NERDTree/
         return {}
     endtry
@@ -205,51 +210,32 @@ endfunction
 "returns 1 if this node should be visible according to the tree filters and
 "hidden file filters (and their on/off status)
 function! s:TreeFileNode.isVisible()
-    return !self.path.ignore()
+    return !self.path.ignore(self.getNerdtree())
 endfunction
 
 "FUNCTION: TreeFileNode.isRoot() {{{1
-"returns 1 if this node is b:NERDTreeRoot
 function! s:TreeFileNode.isRoot()
     if !g:NERDTree.ExistsForBuf()
         throw "NERDTree.NoTreeError: No tree exists for the current buffer"
     endif
 
-    return self.equals(b:NERDTreeRoot)
+    return self.equals(self.getNerdtree().root)
 endfunction
 
-"FUNCTION: TreeFileNode.makeRoot() {{{1
-"Make this node the root of the tree
-function! s:TreeFileNode.makeRoot()
-    if self.path.isDirectory
-        let b:NERDTreeRoot = self
-    else
-        call self.cacheParent()
-        let b:NERDTreeRoot = self.parent
-    endif
-
-    call b:NERDTreeRoot.open()
-
-    "change dir to the dir of the new root if instructed to
-    if g:NERDTreeChDirMode ==# 2
-        exec "cd " . b:NERDTreeRoot.path.str({'format': 'Edit'})
-    endif
-
-    silent doautocmd User NERDTreeNewRoot
-endfunction
-
-"FUNCTION: TreeFileNode.New(path) {{{1
+"FUNCTION: TreeFileNode.New(path, nerdtree) {{{1
 "Returns a new TreeNode object with the given path and parent
 "
 "Args:
-"path: a path object representing the full filesystem path to the file/dir that the node represents
-function! s:TreeFileNode.New(path)
+"path: file/dir that the node represents
+"nerdtree: the tree the node belongs to
+function! s:TreeFileNode.New(path, nerdtree)
     if a:path.isDirectory
-        return g:NERDTreeDirNode.New(a:path)
+        return g:NERDTreeDirNode.New(a:path, a:nerdtree)
     else
         let newTreeNode = copy(self)
         let newTreeNode.path = a:path
         let newTreeNode.parent = {}
+        let newTreeNode._nerdtree = a:nerdtree
         return newTreeNode
     endif
 endfunction
@@ -289,7 +275,7 @@ endfunction
 "recurseUpward: try to put the cursor on the parent if the this node isnt
 "visible
 function! s:TreeFileNode.putCursorHere(isJump, recurseUpward)
-    let ln = b:NERDTree.ui.getLineNum(self)
+    let ln = self.getNerdtree().ui.getLineNum(self)
     if ln != -1
         if a:isJump
             mark '
@@ -298,11 +284,11 @@ function! s:TreeFileNode.putCursorHere(isJump, recurseUpward)
     else
         if a:recurseUpward
             let node = self
-            while node != {} && b:NERDTree.ui.getLineNum(node) ==# -1
+            while node != {} && self.getNerdtree().ui.getLineNum(node) ==# -1
                 let node = node.parent
                 call node.open()
             endwhile
-            call b:NERDTree.render()
+            call self._nerdtree.render()
             call node.putCursorHere(a:isJump, 0)
         endif
     endif
@@ -310,12 +296,12 @@ endfunction
 
 "FUNCTION: TreeFileNode.refresh() {{{1
 function! s:TreeFileNode.refresh()
-    call self.path.refresh()
+    call self.path.refresh(self.getNerdtree())
 endfunction
 
 "FUNCTION: TreeFileNode.refreshFlags() {{{1
 function! s:TreeFileNode.refreshFlags()
-    call self.path.refreshFlags()
+    call self.path.refreshFlags(self.getNerdtree())
 endfunction
 
 "FUNCTION: TreeFileNode.rename() {{{1
@@ -326,7 +312,7 @@ function! s:TreeFileNode.rename(newName)
     call self.parent.removeChild(self)
 
     let parentPath = self.path.getParent()
-    let newParent = b:NERDTreeRoot.findNode(parentPath)
+    let newParent = self.getNerdtree().root.findNode(parentPath)
 
     if newParent != {}
         call newParent.createChild(self.path, 1)
@@ -337,70 +323,24 @@ endfunction
 "FUNCTION: TreeFileNode.renderToString {{{1
 "returns a string representation for this tree to be rendered in the view
 function! s:TreeFileNode.renderToString()
-    return self._renderToString(0, 0, [], self.getChildCount() ==# 1)
+    return self._renderToString(0, 0)
 endfunction
 
 "Args:
 "depth: the current depth in the tree for this call
 "drawText: 1 if we should actually draw the line for this node (if 0 then the
 "child nodes are rendered only)
-"vertMap: a binary array that indicates whether a vertical bar should be draw
 "for each depth in the tree
-"isLastChild:true if this curNode is the last child of its parent
-function! s:TreeFileNode._renderToString(depth, drawText, vertMap, isLastChild)
+function! s:TreeFileNode._renderToString(depth, drawText)
     let output = ""
     if a:drawText ==# 1
 
-        let treeParts = ''
+        let treeParts = repeat('  ', a:depth - 1)
 
-        "get all the leading spaces and vertical tree parts for this line
-        if a:depth > 1
-            for j in a:vertMap[0:-2]
-                if g:NERDTreeDirArrows
-                    let treeParts = treeParts . '  '
-                else
-                    if j ==# 1
-                        let treeParts = treeParts . '| '
-                    else
-                        let treeParts = treeParts . '  '
-                    endif
-                endif
-            endfor
+        if !self.path.isDirectory
+            let treeParts = treeParts . '  '
         endif
 
-        "get the last vertical tree part for this line which will be different
-        "if this node is the last child of its parent
-        if !g:NERDTreeDirArrows
-            if a:isLastChild
-                let treeParts = treeParts . '`'
-            else
-                let treeParts = treeParts . '|'
-            endif
-        endif
-
-        "smack the appropriate dir/file symbol on the line before the file/dir
-        "name itself
-        if self.path.isDirectory
-            if self.isOpen
-                if g:NERDTreeDirArrows
-                    let treeParts = treeParts . '▾ '
-                else
-                    let treeParts = treeParts . '~'
-                endif
-            else
-                if g:NERDTreeDirArrows
-                    let treeParts = treeParts . '▸ '
-                else
-                    let treeParts = treeParts . '+'
-                endif
-            endif
-        else
-            if g:NERDTreeDirArrows
-                let treeParts = treeParts . '  '
-            else
-                let treeParts = treeParts . '-'
-            endif
-        endif
         let line = treeParts . self.displayString()
 
         let output = output . line . "\n"
@@ -410,18 +350,15 @@ function! s:TreeFileNode._renderToString(depth, drawText, vertMap, isLastChild)
     if self.path.isDirectory ==# 1 && self.isOpen ==# 1
 
         let childNodesToDraw = self.getVisibleChildren()
-        if len(childNodesToDraw) > 0
 
-            "draw all the nodes children except the last
-            let lastIndx = len(childNodesToDraw)-1
-            if lastIndx > 0
-                for i in childNodesToDraw[0:lastIndx-1]
-                    let output = output . i._renderToString(a:depth + 1, 1, add(copy(a:vertMap), 1), 0)
-                endfor
-            endif
+        if self.isCascadable() && a:depth > 0
 
-            "draw the last child, indicating that it IS the last
-            let output = output . childNodesToDraw[lastIndx]._renderToString(a:depth + 1, 1, add(copy(a:vertMap), 0), 1)
+            let output = output . childNodesToDraw[0]._renderToString(a:depth, 0)
+
+        elseif len(childNodesToDraw) > 0
+            for i in childNodesToDraw
+                let output = output . i._renderToString(a:depth + 1, 1)
+            endfor
         endif
     endif
 

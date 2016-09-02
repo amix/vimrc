@@ -67,12 +67,15 @@ function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1
         \ 'EVL204': 3,
         \ 'EVL205': 3 }
 
-    if exists('g:syntastic_vimlint_options')
-        if type(g:syntastic_vimlint_options) == type({})
-            let options = filter(copy(g:syntastic_vimlint_options), 'v:key =~# "\\m^EVL"')
+    if exists('g:syntastic_vimlint_options') || exists('b:syntastic_vimlint_options')
+        let opts = syntastic#util#var('vimlint_options')
+        if type(opts) == type({})
+            let options = filter(copy(opts), 'v:key =~# "\\m^EVL"')
             call extend(param, options, 'force')
         endif
     endif
+
+    call self.log('options =', param)
 
     return vimlint#vimlint(expand('%', 1), param)
 endfunction " }}}1

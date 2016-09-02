@@ -127,7 +127,6 @@ endsnippet
 #############
 snippet input "Input with Label" w
 <label for="${2:${1/[[:alpha:]]+|( )/(?1:_:\L$0)/g}}">$1</label><input type="${3:text/submit/hidden/button}" name="${4:$2}" value="$5"${6: id="${7:$2}"}`!p x(snip)`>
-
 endsnippet
 
 snippet input "XHTML   <input>" w
@@ -141,9 +140,7 @@ endsnippet
 
 snippet select "Select Box" w
 <select name="${1:some_name}" id="${2:$1}"${3:${4: multiple}${5: onchange="${6:}"}${7: size="${8:1}"}}>
-	<option${9: value="${10:option1}"}>${11:$10}</option>
-	<option${12: value="${13:option2}"}>${14:$13}</option>${15:}
-	$0
+	${0:${VISUAL}}
 </select>
 endsnippet
 
@@ -162,25 +159,25 @@ endsnippet
 
 snippet body "<body>"
 <body>
-	$0
+	${0:${VISUAL}}
 </body>
 endsnippet
 
 snippet div "<div>" w
 <div>
-	$0
+	${0:${VISUAL}}
 </div>
 endsnippet
 
 snippet div. "<div> with class" w
 <div`!p snip.rv=' class="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""`>
-	$0
+	${0:${VISUAL}}
 </div>
 endsnippet
 
 snippet div# "<div> with ID & class" w
 <div`!p snip.rv=' id="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""``!p snip.rv=' class="' if t[2] else ""`${2:name}`!p snip.rv = '"' if t[2] else ""`>
-	$0
+	${0:${VISUAL}}
 </div>
 endsnippet
 
@@ -188,33 +185,39 @@ snippet form "XHTML <form>" w
 <form action="${1:`!p
 snip.rv = (snip.basename or 'unnamed') + '_submit'
 `}" method="${2:get}" accept-charset="utf-8">
-	$0
-
-	<p><input type="submit" value="Continue →"`!p x(snip)`></p>
+	${0:${VISUAL}}
 </form>
 endsnippet
 
 snippet h1 "XHTML <h1>" w
-<h1>$0</h1>
+<h1>${0:${VISUAL}}</h1>
 endsnippet
 
 snippet h2 "XHTML <h2>" w
-<h2>$0</h2>
+<h2>${0:${VISUAL}}</h2>
 endsnippet
 
 snippet h3 "XHTML <h3>" w
-<h3>$0</h3>
+<h3>${0:${VISUAL}}</h3>
 endsnippet
 
 snippet h4 "XHTML <h4>" w
-<h4>$0</h4>
+<h4>${0:${VISUAL}}</h4>
+endsnippet
+
+snippet h5 "XHTML <h5>" w
+<h5>${0:${VISUAL}}</h5>
+endsnippet
+
+snippet h6 "XHTML <h6>" w
+<h6>${0:${VISUAL}}</h6>
 endsnippet
 
 snippet head "XHTML <head>"
 <head>
 	<meta charset="utf-8">
 	<title>${1:`!p snip.rv = snip.basename or "Page Title"`}</title>
-	$0
+	${0:${VISUAL}}
 </head>
 endsnippet
 
@@ -232,20 +235,19 @@ endsnippet
 
 snippet script "XHTML <script>" w
 <script type="text/javascript" charset="utf-8">
-	$0
+	${0:${VISUAL}}
 </script>
 endsnippet
 
 snippet style "XHTML <style>" w
 <style type="text/css" media="screen">
-	$0
+	${0:${VISUAL}}
 </style>
 endsnippet
 
 snippet table "XHTML <table>" w
 <table border="${1:0}"${2: cellspacing="${3:5}" cellpadding="${4:5}"}>
-	<tr><th>${5:Header}</th></tr>
-	<tr><td>${0:Data}</td></tr>
+	${0:${VISUAL}}
 </table>
 endsnippet
 
@@ -254,29 +256,29 @@ snippet a "Link" w
 endsnippet
 
 snippet p "paragraph" w
-<p>$0</p>
+<p>${0:${VISUAL}}</p>
 endsnippet
 
 snippet li "list item" w
-<li>$0</li>
+<li>${0:${VISUAL}}</li>
 endsnippet
 
 snippet ul "unordered list" w
 <ul>
-$0
+	${0:${VISUAL}}
 </ul>
 endsnippet
 
 snippet td "table cell" w
-<td>$0</td>
+<td>${0:${VISUAL}}</td>
 endsnippet
 
 snippet th "table header" w
-<th>$0</th>
+<th>${0:${VISUAL}}</th>
 endsnippet
 
 snippet tr "table row" w
-<tr>$0</tr>
+<tr>${0:${VISUAL}}</tr>
 endsnippet
 
 snippet title "XHTML <title>" w
@@ -286,7 +288,7 @@ endsnippet
 snippet fieldset "Fieldset" w
 <fieldset id="${1/[\w\d]+|( )/(?1:_:\L$0\E)/g}" ${2:class="${3:}"}>
 	<legend>$1</legend>
-	$0
+	${0:${VISUAL}}
 </fieldset>
 endsnippet
 

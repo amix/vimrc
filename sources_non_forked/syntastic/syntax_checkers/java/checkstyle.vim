@@ -17,7 +17,7 @@ endif
 let g:loaded_syntastic_java_checkstyle_checker = 1
 
 if !exists('g:syntastic_java_checkstyle_classpath')
-    let g:syntastic_java_checkstyle_classpath = 'checkstyle-5.5-all.jar'
+    let g:syntastic_java_checkstyle_classpath = 'checkstyle-6.10.1-all.jar'
 endif
 
 if !exists('g:syntastic_java_checkstyle_conf_file')
@@ -32,30 +32,38 @@ function! SyntaxCheckers_java_checkstyle_IsAvailable() dict
         return 0
     endif
 
-    let classpath = expand(g:syntastic_java_checkstyle_classpath, 1)
     let conf_file = expand(g:syntastic_java_checkstyle_conf_file, 1)
-    call self.log(
-        \ 'filereadable(' . string(classpath) . ') = ' . filereadable(classpath) . ', ' .
-        \ 'filereadable(' . string(conf_file) . ') = ' . filereadable(conf_file))
+    call self.log('filereadable(' . string(conf_file) . ') = ' . filereadable(conf_file))
 
-    return filereadable(classpath) && filereadable(conf_file)
+    return filereadable(conf_file)
 endfunction
 
 function! SyntaxCheckers_java_checkstyle_GetLocList() dict
 
-    let fname = syntastic#util#shescape( expand('%:p:h', 1) . syntastic#util#Slash() . expand('%:t', 1) )
+    " classpath
+    if !exists('s:sep')
+        let s:sep = syntastic#util#isRunningWindows() || has('win32unix') ? ';' : ':'
+    endif
+    let classpath = join(map( split(g:syntastic_java_checkstyle_classpath, s:sep, 1), 'expand(v:val, 1)' ), s:sep)
+    call self.log('classpath =', classpath)
 
+    " forced options
+    let opts = []
+    if classpath !=# ''
+        call extend(opts, ['-cp', classpath])
+    endif
+    call extend(opts, [
+        \ 'com.puppycrawl.tools.checkstyle.Main',
+        \ '-c', expand(g:syntastic_java_checkstyle_conf_file, 1),
+        \ '-f', 'xml' ])
+
+    " filename
+    let fname = syntastic#util#shescape( expand('%:p:h', 1) . syntastic#util#Slash() . expand('%:t', 1) )
     if has('win32unix')
         let fname = substitute(syntastic#util#system('cygpath -m ' . fname), '\m\%x00', '', 'g')
     endif
 
-    let makeprg = self.makeprgBuild({
-        \ 'args_after': [
-        \       '-cp', expand(g:syntastic_java_checkstyle_classpath, 1),
-        \       'com.puppycrawl.tools.checkstyle.Main',
-        \       '-c', expand(g:syntastic_java_checkstyle_conf_file, 1),
-        \       '-f', 'xml'],
-        \ 'fname': fname })
+    let makeprg = self.makeprgBuild({ 'args_after': opts, 'fname': fname })
 
     let errorformat = '%f:%t:%l:%c:%m'
 

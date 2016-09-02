@@ -77,7 +77,7 @@ if &background=='light'
   hi WarningMsg		guifg=#b02000	guibg=NONE	gui=NONE
   hi WildMenu		guifg=fg	guibg=#d0d090	gui=NONE
   hi Folded		guifg=NONE	guibg=#b0e0b0	gui=NONE
-  hi FoldColumn		guifg=fg	guibg=#90e090	gui=NONE
+  hi FoldColumn		guifg=fg	guibg=NONE	gui=NONE
   hi DiffAdd		guifg=NONE	guibg=#b0b0e0	gui=NONE
   hi DiffChange		guifg=NONE	guibg=#e0b0e0	gui=NONE
   hi DiffDelete		guifg=#002090	guibg=#d0d0d0	gui=NONE
@@ -190,7 +190,7 @@ if &background=='light'
     hi WarningMsg	ctermfg=124	ctermbg=NONE	cterm=NONE
     hi WildMenu		ctermfg=fg	ctermbg=186	cterm=NONE
     hi Folded		ctermfg=NONE	ctermbg=151	cterm=NONE
-    hi FoldColumn	ctermfg=fg	ctermbg=114	cterm=NONE
+    hi FoldColumn	ctermfg=fg	ctermbg=NONE	cterm=NONE
     hi DiffAdd		ctermfg=NONE	ctermbg=146	cterm=NONE
     hi DiffChange	ctermfg=NONE	ctermbg=182	cterm=NONE
     hi DiffDelete	ctermfg=18	ctermbg=252	cterm=NONE
@@ -289,7 +289,7 @@ elseif &background=='dark'
   hi WarningMsg		guifg=#f08060	guibg=NONE	gui=NONE
   hi WildMenu		guifg=#000000	guibg=#d0d090	gui=NONE
   hi Folded		guifg=#aaaaaa	guibg=#333333	gui=NONE
-  hi FoldColumn		guifg=#202020	guibg=#202020	gui=NONE
+  hi FoldColumn		guifg=#202020	guibg=NONE	gui=NONE
   hi DiffAdd		guifg=NONE	guibg=#000080	gui=NONE
   hi DiffChange		guifg=NONE	guibg=#800080	gui=NONE
   hi DiffDelete		guifg=#6080f0	guibg=#202020	gui=NONE
@@ -370,7 +370,7 @@ elseif &background=='dark'
     hi Question		ctermfg=Black	    ctermbg=DarkYellow
     hi Todo		ctermfg=DarkRed     ctermbg=DarkYellow
     hi Folded		ctermfg=DarkGrey    ctermbg=DarkGrey
-    hi FoldColumn	ctermfg=DarkGrey    ctermbg=DarkGrey
+    hi FoldColumn	ctermfg=DarkGrey    ctermbg=NONE
     hi ModeMsg		ctermfg=Grey	    ctermbg=DarkBlue
     hi VisualNOS	ctermfg=Grey	    ctermbg=DarkBlue
     hi ErrorMsg		ctermfg=DarkYellow  ctermbg=DarkRed
@@ -525,7 +525,7 @@ elseif &background=='dark'
     hi WarningMsg	ctermfg=209	ctermbg=NONE	cterm=NONE
     hi WildMenu		ctermfg=16	ctermbg=186	cterm=NONE
     hi Folded		ctermfg=NONE	ctermbg=DarkGrey cterm=NONE
-    hi FoldColumn	ctermfg=DarkGrey ctermbg=DarkGrey cterm=NONE
+    hi FoldColumn	ctermfg=DarkGrey ctermbg=NONE cterm=NONE
     hi DiffAdd		ctermfg=NONE	ctermbg=18	cterm=NONE
     hi DiffChange	ctermfg=NONE	ctermbg=90	cterm=NONE
     hi DiffDelete	ctermfg=69	ctermbg=234	cterm=NONE

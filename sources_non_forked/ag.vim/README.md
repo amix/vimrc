@@ -1,5 +1,7 @@
 # ag.vim #
 
+## Deprecated: See [this comment](https://github.com/rking/ag.vim/issues/124#issuecomment-227038003) for more info. Maybe try [ack.vim](https://github.com/mileszs/ack.vim#can-i-use-ag-the-silver-searcher-with-this) as an alternative. ##
+
 This plugin is a front for ag, A.K.A.
 [the_silver_searcher](https://github.com/ggreer/the_silver_searcher).  Ag can
 be used as a replacement for 153% of the uses of `ack`.  This plugin will allow
@@ -21,13 +23,13 @@ Vim has various ways of installing plugins, the standard way is in [the document
   cd ~/.vim/bundle && git clone https://github.com/rking/ag.vim ag && echo "set runtimepath^=~/.vim/bundle/ag" >> ~/.vimrc
   ```
 
-  Then open vim and rum `:helptags ~/.vim/bundle/ag/doc`.
+  Then open vim and run `:helptags ~/.vim/bundle/ag/doc`.
 
 ### Configuration ###
 
 You can specify a custom ag name and path in your .vimrc like so:
 
-    let g:agprg="<custom-ag-path-goes-here> --vimgrep"
+    let g:ag_prg="<custom-ag-path-goes-here> --vimgrep"
 
 You can configure ag.vim to always start searching from your project root
 instead of the cwd
@@ -66,6 +68,9 @@ In the quickfix window, you can use:
     v    to open in vertical split
     gv   to open in vertical split silently
     q    to close the quickfix window
+
+### Related Plugin ###
+[vim-ag-anything](https://github.com/Chun-Yang/vim-ag-anything) adds an 'ga' action to search any text object.
 
 ### Acknowledgements ###
 

@@ -1,0 +1,22 @@
+language: generic
+
+sudo: false
+
+install:
+  - git clone --depth=1 https://github.com/thinca/vim-themis /tmp/themis
+  - git clone https://github.com/vim/vim $HOME/vim
+  - (if ! test -d $HOME/vim-7.4/bin;     then cd $HOME/vim && git checkout . && git checkout v7.4     && ./configure --prefix=$HOME/vim-7.4     && make && make install; fi)
+  - (if ! test -d $HOME/vim-7.3/bin;     then cd $HOME/vim && git checkout . && git checkout v7.3     && ./configure --prefix=$HOME/vim-7.3     && make && make install; fi)
+  - (if ! test -d $HOME/vim-7.2.051/bin; then cd $HOME/vim && git checkout . && git checkout v7.2.051 && ./configure --prefix=$HOME/vim-7.2.051 && make && make install; fi)
+
+cache:
+  directories:
+    - $HOME/vim-7.4
+    - $HOME/vim-7.3
+    - $HOME/vim-7.2.051
+
+script:
+  - /tmp/themis/bin/themis --reporter spec
+  - PATH=$HOME/vim-7.4/bin/:$PATH     /tmp/themis/bin/themis --reporter spec
+  - PATH=$HOME/vim-7.3/bin/:$PATH     /tmp/themis/bin/themis --reporter spec
+  - PATH=$HOME/vim-7.2.051/bin/:$PATH /tmp/themis/bin/themis --reporter spec

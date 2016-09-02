@@ -223,30 +223,26 @@ function! s:_get_cflags(ft, ck, opts) abort " {{{2
 
     " check if the user manually set some cflags
     let b_cflags = s:_get_checker_var('b', a:ft, a:ck, 'cflags', '')
-    if b_cflags ==# ''
-        if a:ft ==# 'c' || a:ft ==# 'cpp'
-            " check whether to search for include files at all
-            if !s:_get_checker_var('g', a:ft, a:ck, 'no_include_search', 0)
-                " refresh the include file search if desired
-                if s:_get_checker_var('g', a:ft, a:ck, 'auto_refresh_includes', 0)
-                    let flags .= ' ' . s:_search_headers()
-                else
-                    " search for header includes if not cached already
-                    if !exists('b:syntastic_' . a:ft . '_includes')
-                        let b:syntastic_{a:ft}_includes = s:_search_headers()
-                    endif
-                    let flags .= ' ' . b:syntastic_{a:ft}_includes
-                endif
-            endif
-        endif
-    else
-        " user-defined cflags
+    if b_cflags !=# ''
         let flags .= ' ' . b_cflags
     endif
 
     " add optional config file parameters
     let config_file = s:_get_checker_var('g', a:ft, a:ck, 'config_file', '.syntastic_' . a:ft . '_config')
     let flags .= ' ' . syntastic#c#ReadConfig(config_file)
+
+    if b_cflags ==# '' && (a:ft ==# 'c' || a:ft ==# 'cpp') && !s:_get_checker_var('g', a:ft, a:ck, 'no_include_search', 0)
+        " refresh the include file search if desired
+        if s:_get_checker_var('g', a:ft, a:ck, 'auto_refresh_includes', 0)
+            let flags .= ' ' . s:_search_headers()
+        else
+            " search for header includes if not cached already
+            if !exists('b:syntastic_' . a:ft . '_includes')
+                let b:syntastic_{a:ft}_includes = s:_search_headers()
+            endif
+            let flags .= ' ' . b:syntastic_{a:ft}_includes
+        endif
+    endif
 
     return flags
 endfunction " }}}2

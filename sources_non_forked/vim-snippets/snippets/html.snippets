@@ -254,11 +254,11 @@ snippet colgroup+
 		col+${0}
 	</colgroup>
 snippet command
-	<command type="command" label="${1}" icon="${0}" />
+	<command type="command" label="${1}" icon="${0}">
 snippet command:c
-	<command type="checkbox" label="${1}" icon="${0}" />
+	<command type="checkbox" label="${1}" icon="${0}">
 snippet command:r
-	<command type="radio" radiogroup="${1}" label="${2}" icon="${0}" />
+	<command type="radio" radiogroup="${1}" label="${2}" icon="${0}">
 snippet datagrid
 	<datagrid>
 		${0}
@@ -462,8 +462,8 @@ snippet html5
 	<!DOCTYPE html>
 	<html>
 		<head>
-			<meta charset="utf-8">
-			<meta name="viewport" content="width=device-width">
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width" />
 			<title>${1:`substitute(vim_snippets#Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
 			${2:link}
 		</head>
@@ -475,8 +475,8 @@ snippet html5l
 	<!DOCTYPE html>
 	<html lang="${1:es}">
 		<head>
-			<meta charset="utf-8">
-			<meta name="viewport" content="width=device-width">
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width" />
 			<title>${2:`substitute(vim_snippets#Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
 			${3:link}
 		</head>
@@ -550,8 +550,6 @@ snippet ins
 	<ins>${0}</ins>
 snippet kbd
 	<kbd>${0}</kbd>
-snippet keygen
-	<keygen>${0}</keygen>
 snippet label
 	<label for="${0:$1}">${1}</label>
 snippet label:i
@@ -853,7 +851,7 @@ snippet tr+
 		td+${0}
 	</tr>
 snippet track
-	<track src="${1}" srclang="${2}" label="${3}" default="${4:default}>${5}</track>
+	<track src="${1}" srclang="${2}" label="${3}" default="${4:default} />${5}
 snippet ul
 	<ul>
 		${0}

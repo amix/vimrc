@@ -28,6 +28,7 @@ function! SyntaxCheckers_yaml_jsyaml_GetLocList() dict
     let errorformat =
         \ 'Error on line %l\, col %c:%m,' .
         \ 'JS-YAML: %m at line %l\, column %c:,' .
+        \ 'YAMLException: %m at line %l\, column %c:,' .
         \ '%-G%.%#'
 
     return SyntasticMake({

@@ -6,7 +6,7 @@
 
 " Quit when a (custom) syntax file was already loaded
 if exists("b:current_syntax")
-    finish
+  finish
 endif
 
 syn case match
@@ -37,7 +37,7 @@ hi def link     goRawString         String
 
 " Characters; their contents
 syn cluster     goCharacterGroup    contains=goEscapeOctal,goEscapeC,goEscapeX,goEscapeU,goEscapeBigU
-syn region      goCharacter         start=+'+ skip=+\\\\\|\\'+ end=+'+ contains=@goCharacterGroup
+syn region      goCharacter         contained start=+'+ skip=+\\\\\|\\'+ end=+'+ contains=@goCharacterGroup
 
 hi def link     goCharacter         Character
 
@@ -65,8 +65,8 @@ hi def link     goImaginary  Number
 syn cluster     gotplLiteral     contains=goString,goRawString,goCharacter,@goInt,goFloat,goImaginary
 syn keyword     gotplControl     contained   if else end range with template
 syn keyword     gotplFunctions   contained   and html index js len not or print printf println urlquery eq ne lt le gt ge
-syn match       gotplVariable    contained   /\$[^ ]*\>/
-syn match       goTplIdentifier  contained   /\.[^ ]*\>/
+syn match       gotplVariable    contained   /\$[a-zA-Z0-9_]*\>/
+syn match       goTplIdentifier  contained   /\.[^\s}]+\>/
 
 hi def link     gotplControl        Keyword
 hi def link     gotplFunctions      Function
@@ -82,4 +82,4 @@ hi def link goTplComment Comment
 
 let b:current_syntax = "gotexttmpl"
 
-" vim:ts=4:sw=4:et
+" vim: sw=2 ts=2 et

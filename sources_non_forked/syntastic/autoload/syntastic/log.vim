@@ -89,8 +89,12 @@ function! syntastic#log#debugShowOptions(level, names) abort " {{{2
     call s:_logRedirect(1)
 
     let vlist = copy(type(a:names) == type('') ? [a:names] : a:names)
+    let add_shell = index(vlist, 'shell') >= 0 && &shell !=# syntastic#util#var('shell')
     if !empty(vlist)
         call map(vlist, "'&' . v:val . ' = ' . strtrans(string(eval('&' . v:val))) . (s:_is_modified(v:val) ? ' (!)' : '')")
+        if add_shell
+            call add(vlist, 'u:shell = ' . strtrans(string(syntastic#util#var('shell'))) . ' (!)')
+        endif
         echomsg leader . join(vlist, ', ')
     endif
     call s:_logRedirect(0)
@@ -173,9 +177,16 @@ endfunction " }}}2
 
 " Utilities {{{1
 
-function! s:_log_timestamp() abort " {{{2
+function! s:_log_timestamp_smart() abort " {{{2
+    return printf('syntastic: %f: ', reltimefloat(reltime(g:_SYNTASTIC_START)))
+endfunction " }}}2
+
+function! s:_log_timestamp_dumb() abort " {{{2
     return 'syntastic: ' . split(reltimestr(reltime(g:_SYNTASTIC_START)))[0] . ': '
 endfunction " }}}2
+
+let s:_log_timestamp = function(has('float') && exists('*reltimefloat') ? 's:_log_timestamp_smart' : 's:_log_timestamp_dumb')
+lockvar s:_log_timestamp
 
 function! s:_format_variable(name) abort " {{{2
     let vals = []

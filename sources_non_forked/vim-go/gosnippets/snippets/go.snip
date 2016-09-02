@@ -124,6 +124,7 @@ abbr if err != nil { ... }
 	if err != nil {
 		return err
 	}
+	${0}
 # error snippet in TestFunc
 snippet errt
 abbr if err != nil { ... }
@@ -135,10 +136,9 @@ abbr if err != nil { ... }
 snippet errn,
 abbr if err != nil { return [...], err }
 	if err != nil {
-		return ${2}$1, err
+		return ${1:nil}, err
 	}
 	${0}
-
 
 # error snippet handle and return
 snippet errh
@@ -149,10 +149,24 @@ abbr if err != nil { return }
 	}
 	${0}
 
+# error snippet with panic
+snippet errp
+abbr if err != nil { ... }
+	if err != nil {
+		panic(${1})
+	}
+	${0}
+
 # json snippet
 snippet json
 abbr \`json:key\`
 	\`json:"${1:keyName}"\`
+
+# yaml snippet
+snippet yaml
+abbr \`yaml:key\`
+	\`yaml:"${1:keyName}"\`
+
 # fallthrough
 snippet ft
 abbr fallthrough
@@ -304,6 +318,19 @@ abbr if err != nil { t.Fatalf(...) }
   if err != nil {
     t.Fatalf("${1}")
   }
+# test example
+snippet example
+	func Example${1:Method}() {
+		${0}
+		// Output:
+	}
+# test benchmark
+snippet benchmark
+	func Benchmark${1:Method}(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			${0}
+		}
+	}
 # variable declaration
 snippet var
 abbr var x Type [= ...]
@@ -322,3 +349,15 @@ abbr equals: test two identifiers with DeepEqual
   	fmt.Printf("%s:%d:\n\n\texp: %#v\n\n\tgot: %#v\n\n", filepath.Base(file), line, $1, $2)
   	t.FailNow()
   }
+
+snippet hf
+abbr http.HandlerFunc
+  func ${1:handler}(w http.ResponseWriter, r *http.Request) {
+    ${0:fmt.Fprintf(w, "hello world")}
+  }
+
+snippet hhf
+abbr mux.HandleFunc(...)
+  ${1:http}.HandleFunc("${2:/}", func(w http.ResponseWriter, r *http.Request) {
+    ${0:fmt.Fprintf(w, "hello world")}
+  })

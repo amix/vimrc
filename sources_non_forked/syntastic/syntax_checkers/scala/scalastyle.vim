@@ -43,7 +43,7 @@ function! SyntaxCheckers_scala_scalastyle_GetLocList() dict
 
     let makeprg = self.makeprgBuild({
         \ 'exe_after': ['-jar', expand(g:syntastic_scala_scalastyle_jar, 1)],
-        \ 'args_before': ['-q', 'true', '-c', expand(g:syntastic_scala_scalastyle_config_file, 1)] })
+        \ 'args_before': ['-c', expand(g:syntastic_scala_scalastyle_config_file, 1)] })
 
     let errorformat =
         \ '%trror file=%f message=%m line=%l column=%c,' .

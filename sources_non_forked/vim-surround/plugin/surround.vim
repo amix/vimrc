@@ -92,7 +92,7 @@ function! s:process(string)
     let m = matchstr(a:string,nr2char(i).'.\{-\}\ze'.nr2char(i))
     if m != ''
       let m = substitute(strpart(m,1),'\r.*','','')
-      let repl_{i} = input(substitute(m,':\s*$','','').': ')
+      let repl_{i} = input(match(m,'\w\+$') >= 0 ? m.': ' : m)
     endif
   endfor
   let s = ""
@@ -164,7 +164,7 @@ function! s:wrap(string,char,type,removed,special)
   elseif newchar ==# ':'
     let before = ':'
     let after = ''
-  elseif newchar =~# "[tT\<C-T><,]"
+  elseif newchar =~# "[tT\<C-T><]"
     let dounmapp = 0
     let dounmapb = 0
     if !maparg(">","c")
@@ -200,7 +200,7 @@ function! s:wrap(string,char,type,removed,special)
         let before = '<'.tag.attributes.'>'
         let after  = '</'.substitute(tag,' .*','','').'>'
       endif
-      if newchar == "\<C-T>" || newchar == ","
+      if newchar == "\<C-T>"
         if type ==# "v" || type ==# "V"
           let before .= "\n\t"
         endif
@@ -386,7 +386,7 @@ function! s:dosurround(...) " {{{1
   let strcount = (scount == 1 ? "" : scount)
   if char == '/'
     exe 'norm! '.strcount.'[/d'.strcount.']/'
-  elseif char =~# '[[:punct:]]' && char !~# '[][(){}<>"''`]'
+  elseif char =~# '[[:punct:][:space:]]' && char !~# '[][(){}<>"''`]'
     exe 'norm! T'.char
     if getline('.')[col('.')-1] == char
       exe 'norm! l'
@@ -416,7 +416,7 @@ function! s:dosurround(...) " {{{1
     norm! "_x
     call setreg('"','/**/',"c")
     let keeper = substitute(substitute(keeper,'^/\*\s\=','',''),'\s\=\*$','','')
-  elseif char =~# '[[:punct:]]' && char !~# '[][(){}<>]'
+  elseif char =~# '[[:punct:][:space:]]' && char !~# '[][(){}<>]'
     exe 'norm! F'.char
     exe 'norm! df'.char
   else

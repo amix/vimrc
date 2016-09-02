@@ -1,19 +1,10 @@
-" Object.vim -- Prototype objects?
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-05-01.
-" @Last Change: 2011-03-10.
-" @Revision:    0.1.126
+" @Revision:    127
 
 " :filedoc:
 " Provides a prototype plus some OO-like methods.
-
-
-if &cp || exists("loaded_tlib_object_autoload")
-    finish
-endif
-let loaded_tlib_object_autoload = 1
 
 let s:id_counter = 0
 let s:prototype  = {'_class': ['object'], '_super': [], '_id': 0} "{{{2

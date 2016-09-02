@@ -10,19 +10,15 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set font according to system
 if has("mac") || has("macunix")
-    set gfn=Source\ Code\ Pro:h15,Menlo:h15
+    set gfn=Hack:h14,Source\ Code\ Pro:h15,Menlo:h15
 elseif has("win16") || has("win32")
-    set gfn=Source\ Code\ Pro:h12,Bitstream\ Vera\ Sans\ Mono:h11
+    set gfn=Hack:h14,Source\ Code\ Pro:h12,Bitstream\ Vera\ Sans\ Mono:h11
+elseif has("gui_gtk2")
+    set gfn=Hack\ 14,Source\ Code\ Pro\ 12,Bitstream\ Vera\ Sans\ Mono\ 11
 elseif has("linux")
-    set gfn=Source\ Code\ Pro:h12,Bitstream\ Vera\ Sans\ Mono:h11
+    set gfn=Hack\ 14,Source\ Code\ Pro\ 12,Bitstream\ Vera\ Sans\ Mono\ 11
 elseif has("unix")
     set gfn=Monospace\ 11
-endif
-
-" Open MacVim in fullscreen mode
-if has("gui_macvim")
-    set fuoptions=maxvert,maxhorz
-    au GUIEnter * set fullscreen
 endif
 
 " Disable scrollbars (real hackers don't use scrollbars for navigation!)
@@ -32,13 +28,8 @@ set guioptions-=l
 set guioptions-=L
 
 " Colorscheme
-if has("gui_running")
-    set background=dark
-    colorscheme peaksea
-else
-    colorscheme desert
-    let g:colors_name="desert"
-endif
+set background=dark
+colorscheme peaksea
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -103,7 +94,6 @@ inoremap $3 {}<esc>i
 inoremap $4 {<esc>o}<esc>O
 inoremap $q ''<esc>i
 inoremap $e ""<esc>i
-inoremap $t <><esc>i
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

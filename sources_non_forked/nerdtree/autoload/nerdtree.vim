@@ -4,17 +4,17 @@ endif
 let g:loaded_nerdtree_autoload = 1
 
 function! nerdtree#version()
-    return '4.2.0'
+    return '5.0.0'
 endfunction
 
 " SECTION: General Functions {{{1
 "============================================================
 
 "FUNCTION: nerdtree#checkForBrowse(dir) {{{2
-"inits a secondary nerd tree in the current buffer if appropriate
+"inits a window tree in the current buffer if appropriate
 function! nerdtree#checkForBrowse(dir)
     if a:dir != '' && isdirectory(a:dir)
-        call g:NERDTreeCreator.CreateSecondary(a:dir)
+        call g:NERDTreeCreator.CreateWindowTree(a:dir)
     endif
 endfunction
 
@@ -94,7 +94,7 @@ endfunction
 
 " FUNCTION: nerdtree#postSourceActions() {{{2
 function! nerdtree#postSourceActions()
-    call g:NERDTreeBookmark.CacheBookmarks(0)
+    call g:NERDTreeBookmark.CacheBookmarks(1)
     call nerdtree#ui_glue#createDefaultBindings()
 
     "load all nerdtree plugins

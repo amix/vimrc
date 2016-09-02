@@ -151,14 +151,7 @@ if err != nil {
 ${0}
 endsnippet
 
-# error snippet
-snippet errt "Error test fatal " !b
-if err != nil {
-	t.Fatal(err)
-}
-${0}
-endsnippet
-
+# error multiple return
 snippet errn, "Error return with two return values" !b
 if err != nil {
 	return ${1:nil}, err
@@ -166,6 +159,23 @@ if err != nil {
 ${0}
 endsnippet
 
+# error panic
+snippet errp "Error panic" !b
+if err != nil {
+	panic(${1})
+}
+${0}
+endsnippet
+
+# error test 
+snippet errt "Error test fatal " !b
+if err != nil {
+	t.Fatal(err)
+}
+${0}
+endsnippet
+
+# error handle
 snippet errh "Error handle and return" !b
 if err != nil {
 	${1}
@@ -174,8 +184,14 @@ if err != nil {
 ${0}
 endsnippet
 
+# json field tag
 snippet json "\`json:key\`"
-\`json:"${1:keyName}"\`
+\`json:"${1:`!v  go#util#snippetcase(matchstr(getline("."), '\w\+'))`}"\`
+endsnippet
+
+# yaml field tag
+snippet yaml "\`yaml:key\`"
+\`yaml:"${1:`!v  go#util#snippetcase(matchstr(getline("."), '\w\+'))`}"\`
 endsnippet
 
 # fallthrough
@@ -327,6 +343,18 @@ func Test${1:Function}(t *testing.T) {
 }
 endsnippet
 
+snippet hf "http.HandlerFunc" !b
+func ${1:handler}(w http.ResponseWriter, r *http.Request) {
+	${0:fmt.Fprintf(w, "hello world")}
+}
+endsnippet
+
+snippet hhf "mux.HandleFunc" !b
+${1:http}.HandleFunc("${2:/}", func(w http.ResponseWriter, r *http.Request) {
+	${0:fmt.Fprintf(w, "hello world")}
+})
+endsnippet
+
 # quick test server
 snippet tsrv "httptest.NewServer"
 ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -351,6 +379,21 @@ if err != nil {
 }
 endsnippet
 
+snippet example "func ExampleXYZ() { ... }"
+func Example${1:Method}() {
+	${0:${VISUAL}}
+	// Output:
+}
+endsnippet
+
+snippet benchmark "func BenchmarkXYZ(b *testing.B) { ... }"
+func Benchmark${1:Method}(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		${0:${VISUAL}}
+	}
+}
+endsnippet
+
 # variable declaration
 snippet var "var x Type [= ...]"
 var ${1:x} ${2:Type}${3: = ${0:value}}
@@ -371,7 +414,6 @@ if !reflect.DeepEqual(${1:expected}, ${2:actual}) {
 	t.FailNow()
 }
 endsnippet
-
 
 global !p
 

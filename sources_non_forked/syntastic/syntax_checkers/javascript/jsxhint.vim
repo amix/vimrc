@@ -17,7 +17,11 @@ let g:loaded_syntastic_javascript_jsxhint_checker = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_javascript_jsxhint_IsAvailable() dict
+function! SyntaxCheckers_javascript_jsxhint_IsAvailable() dict " {{{1
+    if !executable(self.getExec())
+        return 0
+    endif
+
     let version_output = syntastic#util#system(self.getExecEscaped() . ' --version')
     let parsed_ver = !v:shell_error && (version_output =~# '\m^JSXHint\>') ? syntastic#util#parseVersion(version_output) : []
     if len(parsed_ver)
@@ -28,9 +32,9 @@ function! SyntaxCheckers_javascript_jsxhint_IsAvailable() dict
     endif
 
     return syntastic#util#versionIsAtLeast(parsed_ver, [0, 4, 1])
-endfunction
+endfunction " }}}1
 
-function! SyntaxCheckers_javascript_jsxhint_GetLocList() dict
+function! SyntaxCheckers_javascript_jsxhint_GetLocList() dict " {{{1
     let makeprg = self.makeprgBuild({
         \ 'args_after': '--verbose' })
 
@@ -40,7 +44,7 @@ function! SyntaxCheckers_javascript_jsxhint_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'defaults': {'bufnr': bufnr('')} })
-endfunction
+endfunction " }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'javascript',

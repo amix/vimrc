@@ -41,35 +41,37 @@ endfunction " }}}1
 " Utilities {{{1
 
 function! s:GetValaModules() " {{{2
-    if exists('g:syntastic_vala_modules')
-        if type(g:syntastic_vala_modules) == type('')
-            return split(g:syntastic_vala_modules, '\s\+')
-        elseif type(g:syntastic_vala_modules) == type([])
-            return copy(g:syntastic_vala_modules)
+    if exists('g:syntastic_vala_modules') || exists('b:syntastic_vala_modules')
+        let modules = syntastic#util#var('vala_modules')
+        if type(modules) == type('')
+            return split(modules, '\m\s\+')
+        elseif type(modules) == type([])
+            return copy(modules)
         else
-            echoerr 'g:syntastic_vala_modules must be either list or string: fallback to in file modules string'
+            echoerr 'syntastic_vala_modules must be either list or string: fallback to in file modules string'
         endif
     endif
 
     let modules_line = search('^// modules: ', 'n')
     let modules_str = getline(modules_line)
-    return split(strpart(modules_str, 12), '\s\+')
+    return split(strpart(modules_str, 12), '\m\s\+')
 endfunction " }}}2
 
 function! s:GetValaVapiDirs() " {{{2
-    if exists('g:syntastic_vala_vapi_dirs')
-        if type(g:syntastic_vala_vapi_dirs) == type('')
-            return split(g:syntastic_vala_vapi_dirs, '\s\+')
-        elseif type(g:syntastic_vala_vapi_dirs) == type([])
-            return copy(g:syntastic_vala_vapi_dirs)
+    if exists('g:syntastic_vala_vapi_dirs') || exists('b:syntastic_vala_vapi_dirs')
+        let vapi_dirs = syntastic#util#var('vala_vapi_dirs')
+        if type(vapi_dirs) == type('')
+            return split(vapi_dirs, '\m\s\+')
+        elseif type(vapi_dirs) == type([])
+            return copy(vapi_dirs)
         else
-            echoerr 'g:syntastic_vala_vapi_dirs must be either a list, or a string: fallback to in-file modules string'
+            echoerr 'syntastic_vala_vapi_dirs must be either a list, or a string: fallback to in-file modules string'
         endif
     endif
 
     let vapi_line = search('^//\s*vapidirs:\s*','n')
     let vapi_str = getline(vapi_line)
-    return split( substitute( vapi_str, '^//\s*vapidirs:\s*', '', 'g' ), '\s\+' )
+    return split( substitute( vapi_str, '\m^//\s*vapidirs:\s*', '', 'g' ), '\m\s\+' )
 endfunction " }}}2
 
 " }}}1

@@ -44,7 +44,6 @@ endfunction
 
 function! SyntaxCheckers_r_lint_GetLocList() dict
     let setwd = syntastic#util#isRunningWindows() ? 'setwd("' . escape(getcwd(), '"\') . '"); ' : ''
-    let setwd = 'setwd("' . escape(getcwd(), '"\') . '"); '
     let makeprg = self.getExecEscaped() . ' --slave --restore --no-save' .
         \ ' -e ' . syntastic#util#shescape(setwd . 'library(lint); ' .
         \       'try(lint(commandArgs(TRUE), ' . g:syntastic_r_lint_styles . '))') .

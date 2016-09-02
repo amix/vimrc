@@ -7,26 +7,36 @@ let g:SyntasticChecker = {}
 
 " Public methods {{{1
 
-function! g:SyntasticChecker.New(args) abort " {{{2
+function! g:SyntasticChecker.New(args, ...) abort " {{{2
     let newObj = copy(self)
 
     let newObj._filetype = a:args['filetype']
     let newObj._name = a:args['name']
-    let newObj._exec = get(a:args, 'exec', newObj._name)
 
-    if has_key(a:args, 'redirect')
-        let [filetype, name] = split(a:args['redirect'], '/')
+    if a:0
+        " redirected checker
+        let newObj._exec = get(a:args, 'exec', a:1['_exec'])
+
+        let filetype = a:1['_filetype']
+        let name = a:1['_name']
         let prefix = 'SyntaxCheckers_' . filetype . '_' . name . '_'
 
         if exists('g:syntastic_' . filetype . '_' . name . '_sort') && !exists('g:syntastic_' . newObj._filetype . '_' . newObj._name . '_sort')
             let g:syntastic_{newObj._filetype}_{newObj._name}_sort = g:syntastic_{filetype}_{name}_sort
         endif
-    else
-        let prefix = 'SyntaxCheckers_' . newObj._filetype . '_' . newObj._name . '_'
-    endif
 
-    if has_key(a:args, 'enable')
-        let newObj._enable = a:args['enable']
+        if has_key(a:args, 'enable')
+            let newObj._enable = a:args['enable']
+        elseif has_key(a:1, '_enable')
+            let newObj._enable = a:1['_enable']
+        endif
+    else
+        let newObj._exec = get(a:args, 'exec', newObj._name)
+        let prefix = 'SyntaxCheckers_' . newObj._filetype . '_' . newObj._name . '_'
+
+        if has_key(a:args, 'enable')
+            let newObj._enable = a:args['enable']
+        endif
     endif
 
     let newObj._locListFunc = function(prefix . 'GetLocList')
@@ -81,10 +91,16 @@ function! g:SyntasticChecker.getExecEscaped() abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticChecker.getLocListRaw() abort " {{{2
+    let checker_start = reltime()
     let name = self._filetype . '/' . self._name
 
     if has_key(self, '_enable')
         let status = syntastic#util#var(self._enable, -1)
+        if type(status) != type(0)
+            call syntastic#log#error('checker ' . name . ': invalid value ' . strtrans(string(status)) .
+                \ ' for g:syntastic_' . self._enable . '; try 0 or 1 instead')
+            return []
+        endif
         if status < 0
             call syntastic#log#error('checker ' . name . ': checks disabled for security reasons; ' .
                 \ 'set g:syntastic_' . self._enable . ' to 1 to override')
@@ -113,6 +129,8 @@ function! g:SyntasticChecker.getLocListRaw() abort " {{{2
     call self._populateHighlightRegexes(list)
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_LOCLIST, name . ' raw:', list)
     call self._quietMessages(list)
+    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE,
+        \ 'getLocList: checker ' . name . ' run in ' . split(reltimestr(reltime(checker_start)))[0] . 's')
     return list
 endfunction " }}}2
 
