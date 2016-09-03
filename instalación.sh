@@ -12,4 +12,4 @@ source ~/.vim_runtime/my_configs.vim
 catch
 endtry' > ~/.vimrc
 
-echo "Installed the Ultimate Vim configuration successfully! Enjoy :-)"
+echo "Instalación finalizada!"
