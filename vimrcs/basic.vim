@@ -111,6 +111,9 @@ set tm=500
 " agrega un poco de margen a la izquierda
 set foldcolumn=3
 
+" configura el plegado basado en marcas
+set foldmethod=marker
+set foldmarker={{{,}}}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => colores y fuentes tipográficas
