@@ -4,19 +4,19 @@
 "       facundolaffont@gmail.com
 "
 " Secciones:
-"    -> General
-"    -> VIM user interface
-"    -> Colors and Fonts
-"    -> Files and backups
-"    -> Text, tab and indent related
-"    -> Visual mode related
-"    -> Moving around, tabs and buffers
-"    -> Status line
-"    -> Editing mappings
-"    -> vimgrep searching and cope displaying
-"    -> Spell checking
-"    -> Misc
-"    -> Helper functions
+"    -> general
+"    -> interfaz de usuario de Vim
+"    -> colores y fuentes tipográficas
+"    -> archivos, backups y deshacer
+"    -> texto, tabulación e indentación
+"    -> relacionado con el modo visual
+"    -> sobre movimiento, pestañas, ventanas y buffers
+"    -> línea de estado
+"    -> mapeos para edición
+"    -> vimgrep searching and cope displaying <¡>falta traducir y modificar sección<!>
+"    -> chequeo de gramática
+"    -> misceláneo
+"    -> sección de definición de funciones
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -42,7 +42,10 @@ let g:mapleader = ","
 " guardado rápido
 nmap <leader>w :w!<cr>
 
-" <?>
+" volver al modo normal casi sin esfuerzo ;)
+ino ñjaf <esc> 
+
+" <¿?>
 " :W sudo saves the file (useful for handling the permission-denied error)
 command W w !sudo tee % > /dev/null
 
@@ -96,7 +99,7 @@ set magic
 " muestra el paréntesis opuesto cuando el cursor está sobre uno
 set showmatch 
 
-" cuántas decenas de segundos tarda en parpadear el cursor cuando se indica el paréntesis opuesto
+" cuántas décimas de segundos tarda en parpadear el cursor cuando se indica el paréntesis opuesto
 set mat=2
 
 " quita el sonido y el flash en los errores
@@ -106,7 +109,7 @@ set t_vb=
 set tm=500
 
 " agrega un poco de margen a la izquierda
-set foldcolumn=1
+set foldcolumn=3
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -134,7 +137,7 @@ set ffs=unix,mac,dos
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => archivos, back-ups y deshacer
+" => archivos, backups y deshacer
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Turn backup off, since most stuff is in SVN, git et.c anyway...
@@ -208,7 +211,7 @@ map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove 
-map <leader>t<leader> :tabnext<cr>
+map <leader>t<leader> :tabnext
 
 " 'tl' salta entre la pestaña actual y la última a la que se accedió
 let g:lasttab = 1
@@ -250,7 +253,23 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 " remapea '0' para que posicione el cursor en el primer carácter no blanco
 map 0 ^
 
-" <¿>no funciona correctamente<?>
+" colocación de espacios sin tener que entrar en modo INSERT
+nn <space>k<space> O<esc>j
+nn <space>kk O<esc>
+nn <space><space>k O<esc>k
+nn <space>kj O<esc>jo<esc>k
+nn <space>j<space> o<esc>k
+nn <space>jj o<esc>
+nn <space><space>j o<esc>j
+nn <space>h<space> i<space><esc>l
+nn <space>hh i<space><esc>
+nn <space><space>h i<space><esc>h
+nn <space>hl i<space><esc>la<space><esc>h
+nn <space>l<space> a<space><esc>h
+nn <space>ll a<space><esc>
+nn <space><space>l a<space><esc>l
+
+" <¡>no funciona correctamente<!>
 " mueve una línea de texto hacia arriba o hacia abajo
 nmap <D-j> mz:m+<cr>`z
 nmap <D-k> mz:m-2<cr>`z
