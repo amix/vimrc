@@ -43,6 +43,8 @@ let g:mapleader = ","
 nmap <leader>w :w!<cr>
 
 " volver al modo normal casi sin esfuerzo ;)
+" <¡>falta que idenfitique si se encuentra en EOF y que vuelva atrás, porque cuando salta una línea
+" es muy molesto<!>
 ino ñjaf <esc> 
 
 " <¿?>
@@ -274,10 +276,10 @@ nn <space><space>l a<space><esc>l
 
 " <¡>no funciona correctamente<!>
 " mueve una línea de texto hacia arriba o hacia abajo
-nmap <D-j> mz:m+<cr>`z
-nmap <D-k> mz:m-2<cr>`z
-vmap <D-j> :m'>+<cr>`<my`>mzgv`yo`z
-vmap <D-k> :m'<-2<cr>`>my`<mzgv`yo`z
+" nmap <D-j> mz:m+<cr>`z
+" nmap <D-k> mz:m-2<cr>`z
+" vmap <D-j> :m'>+<cr>`<my`>mzgv`yo`z
+" vmap <D-k> :m'<-2<cr>`>my`<mzgv`yo`z
 
 " borra los espacios sobrantes al final de la línea, cuando se guarda el buffer
 func! DeleteTrailingWS()
@@ -288,7 +290,7 @@ endfunc
 autocmd BufWrite *.py :call DeleteTrailingWS()
 autocmd BufWrite *.coffee :call DeleteTrailingWS()
 
-" <¿>falta chequear toda esta sección<?>
+" <¿>falta traducir y modificar toda esta sección<?>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Ag searching and cope displaying
 "    requires ag.vim - it's much better than vimgrep/grep
