@@ -117,6 +117,10 @@ set foldcolumn=3
 set foldmethod=marker
 set foldmarker={{{,}}}
 
+" agrega automáticamente las marcas de plegado desde modo NORMAL
+" el mapeo desde modo INSERT está en extended.vim
+map <space>f<space> i{{{<esc>o}}}<esc>O<esc>i
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => colores y fuentes tipográficas
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -273,6 +277,9 @@ nn <space>hl i<space><esc>la<space><esc>h
 nn <space>l<space> a<space><esc>h
 nn <space>ll a<space><esc>
 nn <space><space>l a<space><esc>l
+
+" pega el contenido del registro de doble comillas arriba y debajo del texto
+map <space>p<space> Pjpk
 
 " <¡>no funciona correctamente<!>
 " mueve una línea de texto hacia arriba o hacia abajo
