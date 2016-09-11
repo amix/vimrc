@@ -1,8 +1,0 @@
-language: ruby
-before_install:
-  - curl -f -L "https://raw.githubusercontent.com/vim-airline/vim-airline-themes/master/autoload/airline/themes/simple.vim" -o autoload/airline/themes/simple.vim
-  - curl -f -L "https://raw.githubusercontent.com/vim-airline/vim-airline-themes/master/autoload/airline/themes/molokai.vim" -o autoload/airline/themes/molokai.vim
-  - mkdir colors && curl -f -L 'https://raw.githubusercontent.com/tomasr/molokai/master/colors/molokai.vim' -o colors/molokai.vim
-rvm:
-  - 1.9.3
-script: rake ci

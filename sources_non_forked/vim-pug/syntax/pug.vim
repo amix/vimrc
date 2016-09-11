@@ -32,8 +32,8 @@ syn cluster pugTop contains=pugBegin,pugComment,pugHtmlComment,pugJavascript
 syn match   pugBegin "^\s*\%([<>]\|&[^=~ ]\)\@!" nextgroup=pugTag,pugClassChar,pugIdChar,pugPlainChar,pugJavascript,pugScriptConditional,pugScriptStatement,pugPipedText
 syn match   pugTag "+\?\w\+\%(:\w\+\)\=" contained contains=htmlTagName,htmlSpecialTagName nextgroup=@pugComponent
 syn cluster pugComponent contains=pugAttributes,pugIdChar,pugBlockExpansionChar,pugClassChar,pugPlainChar,pugJavascript,pugTagBlockChar,pugTagInlineText
-syn match   pugComment '\s*\/\/.*$'
-syn region  pugCommentBlock start="\z(\s*\)\/\/.*$" end="^\%(\z1\s\|\s*$\)\@!" keepend 
+syn match   pugComment '\(\s\+\|^\)\/\/.*$'
+syn region  pugCommentBlock start="\z(\s\+\|^\)\/\/.*$" end="^\%(\z1\s\|\s*$\)\@!" keepend 
 syn region  pugHtmlConditionalComment start="<!--\%(.*\)>" end="<!\%(.*\)-->"
 syn region  pugAttributes matchgroup=pugAttributesDelimiter start="(" end=")" contained contains=@htmlJavascript,pugHtmlArg,htmlArg,htmlEvent,htmlCssDefinition nextgroup=@pugComponent
 syn match   pugClassChar "\." contained nextgroup=pugClass

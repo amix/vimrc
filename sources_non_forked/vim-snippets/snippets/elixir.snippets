@@ -105,16 +105,20 @@ snippet imp
 snippet ali
 	alias ${0:module_name}
 snippet test
-	test "${1:test_name}" do
+	test "${1:test name}" do
 		${0}
 	end
 snippet testa
 	test "${1:test_name}", %{${2:arg: arg}} do
 		${0}
 	end
+snippet des
+	describe "${1:test group subject}" do
+		${0}
+	end
 snippet exunit
 	defmodule ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
-		use ExUnit.Case
+		use ExUnit.Case, async: true
 
 		${0}
 	end
@@ -131,3 +135,6 @@ snippet qu
 	quote do
 		${1}
 	end
+snippet beh
+	@behaviour ${1:Mix.Task}
+	${0}

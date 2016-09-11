@@ -12,8 +12,7 @@ function! snipmate#legacy#process_snippet(snip) abort
 	else
 		let visual = ''
 	endif
-	let snippet = substitute(snippet, '\n\(\t\+\).\{-\}\zs{VISUAL}',
-				\ substitute(escape(visual, '%\'), "\n", "\n\\\\1", 'g'), 'g')
+        let snippet = s:substitute_visual(snippet, visual)
 
 	" Evaluate eval (`...`) expressions.
 	" Backquotes prefixed with a backslash "\" are ignored.
@@ -116,6 +115,16 @@ function! snipmate#legacy#build_stops(snip, lnum, col, indent) abort
 	endw
 	let stops[i] = stops[0]
 	return [stops, i + 1]
+endfunction
+
+function! s:substitute_visual(snippet, visual) abort
+    let lines = []
+    for line in split(a:snippet, "\n")
+        let indent = matchstr(line, '^\t\+')
+        call add(lines, substitute(line, '{VISUAL}',
+                    \ substitute(escape(a:visual, '%\'), "\n", "\n" . indent, 'g'), 'g'))
+    endfor
+    return join(lines, "\n")
 endfunction
 
 " Counts occurences of haystack in needle

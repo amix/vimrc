@@ -19,7 +19,7 @@ set cpo&vim
 
 let s:pylint_new = -1
 
-function! SyntaxCheckers_python_pylint_IsAvailable() dict
+function! SyntaxCheckers_python_pylint_IsAvailable() dict " {{{1
     if !executable(self.getExec())
         return 0
     endif
@@ -45,9 +45,9 @@ function! SyntaxCheckers_python_pylint_IsAvailable() dict
     endtry
 
     return s:pylint_new >= 0
-endfunction
+endfunction " }}}1
 
-function! SyntaxCheckers_python_pylint_GetLocList() dict
+function! SyntaxCheckers_python_pylint_GetLocList() dict " {{{1
     let makeprg = self.makeprgBuild({
         \ 'args_after': (s:pylint_new ?
         \       '-f text --msg-template="{path}:{line}:{column}:{C}: [{symbol}] {msg}" -r n' :
@@ -86,7 +86,7 @@ function! SyntaxCheckers_python_pylint_GetLocList() dict
     endfor
 
     return loclist
-endfunction
+endfunction " }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'python',

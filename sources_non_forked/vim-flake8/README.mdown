@@ -41,7 +41,7 @@ the `<F7>` key if so.  For example, to remap it to `<F3>` instead, use:
 
 For flake8 configuration options please consult the following page:
 
-https://flake8.readthedocs.org/en/latest/config.html
+http://flake8.pycqa.org/en/latest/user/configuration.html
 
 To customize the location of your flake8 binary, set `g:flake8_cmd`:
 

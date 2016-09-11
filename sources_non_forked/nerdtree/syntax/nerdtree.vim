@@ -1,6 +1,6 @@
 let s:tree_up_dir_line = '.. (up a dir)'
 syn match NERDTreeIgnore #\~#
-syn match NERDTreeIgnore #\[RO\]#
+exec 'syn match NERDTreeIgnore #\['.g:NERDTreeGlyphReadOnly.'\]#'
 
 "highlighting for the .. (up dir) line at the top of the tree
 execute "syn match NERDTreeUp #\\V". s:tree_up_dir_line ."#"
@@ -31,7 +31,7 @@ syn match NERDTreeExecFile  #^ .*\*\($\| \)# contains=NERDTreeRO,NERDTreeBookmar
 exec 'syn match NERDTreeFile  #^[^"\.'.s:dirArrows.'] *[^'.s:dirArrows.']*# contains=NERDTreeLink,NERDTreeRO,NERDTreeBookmark,NERDTreeExecFile'
 
 "highlighting for readonly files
-syn match NERDTreeRO # *\zs.*\ze \[RO\]# contains=NERDTreeIgnore,NERDTreeBookmark,NERDTreeFile
+exec 'syn match NERDTreeRO # *\zs.*\ze \['.g:NERDTreeGlyphReadOnly.'\]# contains=NERDTreeIgnore,NERDTreeBookmark,NERDTreeFile'
 
 syn match NERDTreeFlags #^ *\zs\[.\]# containedin=NERDTreeFile,NERDTreeExecFile
 syn match NERDTreeFlags #\[.\]# containedin=NERDTreeDir

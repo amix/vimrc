@@ -89,8 +89,12 @@ function! syntastic#log#debugShowOptions(level, names) abort " {{{2
     call s:_logRedirect(1)
 
     let vlist = copy(type(a:names) == type('') ? [a:names] : a:names)
+    let add_shell = index(vlist, 'shell') >= 0 && &shell !=# syntastic#util#var('shell')
     if !empty(vlist)
         call map(vlist, "'&' . v:val . ' = ' . strtrans(string(eval('&' . v:val))) . (s:_is_modified(v:val) ? ' (!)' : '')")
+        if add_shell
+            call add(vlist, 'u:shell = ' . strtrans(string(syntastic#util#var('shell'))) . ' (!)')
+        endif
         echomsg leader . join(vlist, ', ')
     endif
     call s:_logRedirect(0)

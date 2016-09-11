@@ -28,7 +28,9 @@ endfunction
 function! SyntaxCheckers_ansible_ansible_lint_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': '-p' })
 
-    let errorformat = '%f:%l: [ANSIBLE%n] %m'
+    let errorformat =
+        \ '%f:%l: [EANSIBLE%n] %m,' .
+        \ '%f:%l: [ANSIBLE%n] %m'
 
     let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
 

@@ -15,12 +15,6 @@ if exists('g:loaded_syntastic_ocaml_camlp4o_checker')
 endif
 let g:loaded_syntastic_ocaml_camlp4o_checker = 1
 
-if exists('g:syntastic_ocaml_camlp4r') && g:syntastic_ocaml_camlp4r != 0
-    let s:ocamlpp='camlp4r'
-else
-    let s:ocamlpp='camlp4o'
-endif
-
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -34,6 +28,10 @@ if !exists('g:syntastic_ocaml_use_janestreet_core')
     let g:syntastic_ocaml_use_janestreet_core = 0
 endif
 
+if !exists('g:syntastic_ocaml_janestreet_core_dir')
+    let g:syntastic_ocaml_janestreet_core_dir = '.'
+endif
+
 if !exists('g:syntastic_ocaml_use_ocamlbuild') || !executable('ocamlbuild')
     let g:syntastic_ocaml_use_ocamlbuild = 0
 endif
@@ -41,6 +39,7 @@ endif
 " }}}1
 
 function! SyntaxCheckers_ocaml_camlp4o_IsAvailable() dict " {{{1
+    let s:ocamlpp = get(g:, 'syntastic_ocaml_camlp4r', 0) ? 'camlp4r' : 'camlp4o'
     return executable(s:ocamlpp)
 endfunction " }}}1
 
@@ -81,31 +80,22 @@ endfunction " }}}1
 " Utilities {{{1
 
 function! s:GetMakeprg() " {{{2
-    if g:syntastic_ocaml_use_ocamlc
-        return s:GetOcamlcMakeprg()
-    endif
-
-    if g:syntastic_ocaml_use_ocamlbuild && isdirectory('_build')
-        return s:GetOcamlBuildMakeprg()
-    endif
-
-    return s:GetOtherMakeprg()
+    return
+        \ g:syntastic_ocaml_use_ocamlc ? g:syntastic_ocaml_use_ocamlc :
+        \ (g:syntastic_ocaml_use_ocamlbuild && isdirectory('_build')) ? s:GetOcamlcMakeprg() :
+        \ s:GetOtherMakeprg()
 endfunction " }}}2
 
 function! s:GetOcamlcMakeprg() " {{{2
-    if g:syntastic_ocaml_use_janestreet_core
-        let build_cmd = 'ocamlc -I '
-        let build_cmd .= expand(g:syntastic_ocaml_janestreet_core_dir, 1)
-        let build_cmd .= ' -c ' . syntastic#util#shexpand('%')
-        return build_cmd
-    else
-        return 'ocamlc -c ' . syntastic#util#shexpand('%')
-    endif
+    let build_cmd = g:syntastic_ocaml_use_janestreet_core ?
+        \ 'ocamlc -I ' . syntastic#util#shexpand(g:syntastic_ocaml_janestreet_core_dir) : 'ocamlc'
+    let build_cmd .= ' -c ' . syntastic#util#shexpand('%')
+    return build_cmd
 endfunction " }}}2
 
 function! s:GetOcamlBuildMakeprg() " {{{2
     return 'ocamlbuild -quiet -no-log -tag annot,' . s:ocamlpp . ' -no-links -no-hygiene -no-sanitize ' .
-                \ syntastic#util#shexpand('%:r') . '.cmi'
+        \ syntastic#util#shexpand('%:r') . '.cmi'
 endfunction " }}}2
 
 function! s:GetOtherMakeprg() " {{{2

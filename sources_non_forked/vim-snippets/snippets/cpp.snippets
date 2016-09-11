@@ -3,7 +3,7 @@ extends c
 ##
 ## Preprocessor
 # #include <...>
-snippet inc
+snippet incc
 	#include <${1:iostream}>
 snippet binc
 	#include <boost/${1:shared_ptr}.hpp>
@@ -106,6 +106,19 @@ snippet cout
 snippet cin
 	std::cin >> ${1};
 ##
+## Casts
+# static
+snippet sca
+	static_cast<${1:unsigned}>(${2:expr})${3}
+# dynamic
+snippet dca
+	dynamic_cast<${1:unsigned}>(${2:expr})${3}
+# reinterpret
+snippet rca
+	reinterpret_cast<${1:unsigned}>(${2:expr})${3}
+# const
+snippet cca
+	const_cast<${1:unsigned}>(${2:expr})${3}
 ## Iteration
 # for i
 snippet fori
@@ -133,9 +146,9 @@ snippet itera
 ## Lambdas
 # lamda (one line)
 snippet ld
-	[${1}](${2}){${3}}
+	[${1}](${2}){${3}};
 # lambda (multi-line)
 snippet lld
 	[${1}](${2}){
 		${3}
-	}
+	};

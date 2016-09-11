@@ -44,6 +44,7 @@ CONTENTS                                                  *syntastic-contents*
         6.2.Editing files over network.............|syntastic-netrw|
         6.3.The 'shellslash' option................|syntastic-shellslash|
         6.4.Saving Vim sessions....................|syntastic-sessions|
+        6.5.The location list callback.............|syntastic-loclist-callback|
     7.Compatibility with other software............|syntastic-compatibility|
         7.1.The csh and tcsh shells................|syntastic-csh|
         7.2.Eclim..................................|syntastic-eclim|
@@ -76,9 +77,7 @@ syntax checker plugins are defined on a per-filetype basis where each one wraps
 up an external syntax checking program. The core script delegates off to these
 plugins and uses their output to provide the syntastic functionality.
 
-Take a look at the wiki for a list of supported filetypes and checkers:
-
-    https://github.com/scrooloose/syntastic/wiki/Syntax-Checkers
+Take a look at the list of supported filetypes and checkers: |syntastic-checkers|.
 
 Note: This doc only deals with using syntastic. To learn how to write syntax
 checker integrations, see the guide on the GitHub wiki:
@@ -563,7 +562,7 @@ option should be set to something like: >
         \ "file:p":  ['\m^/usr/include/', '\m\c\.h$'] }
 <
 Each element turns off messages matching the patterns specified by the
-corresponding value. Values are lists, but if a list consist of a single
+corresponding value. Values are lists, but if a list consists of a single
 element you may omit the brackets (e.g. you may write "style" instead of
 ["style"]). Elements with values [] or "" are ignored (this is useful for
 overriding filters, cf. |filter-overrides|).
@@ -751,10 +750,8 @@ If neither |'g:syntastic_<filetype>_checkers'| nor |'b:syntastic_checkers'|
 is set, a default list of checker is used. Beware however that this list
 deliberately kept minimal, for performance reasons.
 
-Take a look at the wiki to find out what checkers and filetypes are supported
-by syntastic:
-
-    https://github.com/scrooloose/syntastic/wiki/Syntax-Checkers
+Take a look elsewhere in this manual to find out what checkers and filetypes
+are supported by syntastic: |syntastic-checkers|.
 
 Use `:SyntasticInfo` to see which checkers are available for a given filetype.
 
@@ -848,9 +845,8 @@ omitting the filename from the command line: >
                                             *syntastic-config-no-makeprgbuild*
 For checkers that do not use the "makeprgBuild()" function you will have to
 look at the source code of the checker in question. If there are specific
-options that can be set, they are normally documented in the wiki:
-
-    https://github.com/scrooloose/syntastic/wiki/Syntax-Checkers
+options that can be set they are normally documented in this manual (see
+|syntastic-checkers|).
 
 ------------------------------------------------------------------------------
 5.4 Sorting errors                                     *syntastic-config-sort*
@@ -887,6 +883,7 @@ The syntax is of course identical to that of |syntastic_quiet_messages|.
 
 ------------------------------------------------------------------------------
 5.6 Debugging                                         *syntastic-config-debug*
+                                                             *syntastic-debug*
 
 Syntastic can log a trace of its working to Vim's |message-history|. To verify
 the command line constructed by syntastic to run a checker, set the variable
@@ -962,6 +959,29 @@ remove option "blank" from 'sessionoptions': >
 <
 This will prevent `:mksession` from saving |syntastic-error-window| as empty
 quickfix windows.
+
+------------------------------------------------------------------------------
+6.5 The location list callback                    *syntastic-loclist-callback*
+
+                                                        *SyntasticCheckHook()*
+Syntastic also gives you direct access to the list of errors.  A function
+named |SyntasticCheckHook()| is called by syntastic (if it exists) right
+before populating the |location-list| and enabling the notifiers. The function
+takes exactly one argument, the list of errors in |location-list| format (see
+|getqflist()| for details). format. You can do essentially anything with this
+list, as long as you don't change its format, and you don't add or remove
+elements.
+
+For example the following function will make the error window smaller if fewer
+than 10 errors are found: >
+    function! SyntasticCheckHook(errors)
+        if !empty(a:errors)
+            let g:syntastic_loc_list_height = min([len(a:errors), 10])
+        endif
+    endfunction
+<
+(Please keep in mind however that Vim options |winheight| and |winminheight|
+also affect window sizes.)
 
 ==============================================================================
 7. Compatibility with other software                 *syntastic-compatibility*
@@ -1071,10 +1091,16 @@ mode only work with "vim-auto-save" version 0.1.7 or later.
 Syntastic can be used along with the "vim-go" Vim plugin (see
 https://github.com/fatih/vim-go). However, both "vim-go" and syntastic run
 syntax checks by default when you save buffers to disk. To avoid conflicts,
-you have to either set passive mode in syntastic for the go filetype (see
+you have to either set passive mode in syntastic for the "go" filetype (see
 |syntastic_mode_map|), or prevent "vim-go" from showing a quickfix window when
 |g:go_fmt_command| fails, by setting |g:go_fmt_fail_silently| to 1. E.g.: >
     let g:go_fmt_fail_silently = 1
+<
+"vim-go" version 1.4 and earlier always uses |quickfix| lists. Starting with
+version 1.5, "vim-go" can also use location lists (see |location-list|). To
+avoid conflicts with syntastic, you probably want to configure "vim-go" to
+stick with |quickfix| lists: >
+    let g:go_list_type = "quickfix"
 <
 ------------------------------------------------------------------------------
 7.11. vim-virtualenv                                *syntastic-vim-virtualenv*
