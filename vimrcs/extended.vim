@@ -80,15 +80,16 @@ imap ½ $
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Parenthesis/bracket
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" autocompletado de (, ", ', [, [[[ en modo VISUAL
-vnoremap $1 <esc>`>a)<esc>`<i(<esc>
+" autocompletado de (, ", ', [, [[[, {{{}}} en modo VISUAL
+vnoremap $1 <esc>`>a)<esc>`<i(<esc> 
 vnoremap $2 <esc>`>a]<esc>`<i[<esc>
 vnoremap $3 <esc>`>a}<esc>`<i{<esc>
 vnoremap $$ <esc>`>a"<esc>`<i"<esc>
 vnoremap $q <esc>`>a'<esc>`<i'<esc>
 vnoremap $e <esc>`>a"<esc>`<i"<esc>
+vnoremap $f <esc>`<a<space>{{{<esc>`>i}}}<esc>
 
-" autocompletado de (, ", ', [, {{{ en modo INSERT
+" autocompletado de (, ", ', [, {{{}}} en modo INSERT
 inoremap $1 ()<esc>i
 inoremap $2 []<esc>i
 inoremap $3 {}<esc>i

@@ -42,6 +42,9 @@ let g:mapleader = ","
 " guardado rápido
 nmap <leader>w :w!<cr>
 
+" sale de todas las ventanas
+map <leader>q :qa<cr>
+
 " volver al modo normal casi sin esfuerzo ;)
 " <¡>falta que idenfitique si se encuentra en EOF y que vuelva atrás, porque cuando salta una línea
 " es muy molesto<!>
@@ -194,7 +197,7 @@ vnoremap <silent> ¿ :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 " mapeos de búsqueda
 map <space> /
 " <¿>no funciona<?>
-map <C-Space> ?
+" map <C-Space> ?
 
 " deshabilita el resaltado de las búsquedas
 map <silent> <leader><cr> :noh<cr>
@@ -204,6 +207,10 @@ map <C-j> <C-W>j
 map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
+
+" movimiento entre líneas con igual indentación
+map <space>+ :call search('^'. matchstr(getline('.'), '\(^\s*\)') .'\%<' . line('.') . 'l\S', 'be')<CR>
+map <space>- :call search('^'. matchstr(getline('.'), '\(^\s*\)') .'\%>' . line('.') . 'l\S', 'e')<CR>
 
 " cierra el buffer actual
 map <leader>bd :Bclose<cr>:tabclose<cr>gT
@@ -230,13 +237,12 @@ au TabLeave * let g:lasttab = tabpagenr()
 " abre una nueva pestaña con la ruta del buffer actual
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/<cr>
 
-" <¿?>
-" Switch CWD to the directory of the open buffer
+" configura el CWD para que sea el mismo que el del buffer abierto
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " especifica el comportamiento cuando se cambia de buffer
 try
-  set switchbuf=useopen,usetab,newtab
+  set switchbuf=newtab
   set stal=2
 catch
 endtry
@@ -349,12 +355,6 @@ map <leader>s? z=
 
 " quita los caracteres ^M de windows cuando las codificaciones de texto se mezclan
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
-
-" abre un buffer sin nombre
-map <leader>q :e ~/buffer<cr>
-
-" abre un buffer sin nombre, de tipo Markdown
-map <leader>x :e ~/buffer.md<cr>
 
 " activa o desactiva el modo paste
 map <leader>pp :setlocal paste!<cr>
