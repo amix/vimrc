@@ -45,10 +45,8 @@ nmap <leader>w :w!<cr>
 " sale de todas las ventanas
 map <leader>q :qa<cr>
 
-" volver al modo normal casi sin esfuerzo ;)
-" <¡>falta que idenfitique si se encuentra en EOF y que vuelva atrás, porque cuando salta una línea
-" es muy molesto<!>
-ino ñjaf <esc> 
+" volver al modo normal sin tener que retirar los dedos de la posición normal en el teclado
+ino ñjaf <esc>
 
 " <¿?>
 " :W sudo saves the file (useful for handling the permission-denied error)
@@ -73,6 +71,9 @@ set ruler
 
 " altura de la línea de comandos
 set cmdheight=2
+
+" activa los números relativos
+set rnu
 
 " <?>
 " A buffer becomes hidden when it is abandoned

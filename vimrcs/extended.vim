@@ -88,6 +88,7 @@ vnoremap $$ <esc>`>a"<esc>`<i"<esc>
 vnoremap $q <esc>`>a'<esc>`<i'<esc>
 vnoremap $e <esc>`>a"<esc>`<i"<esc>
 vnoremap $f <esc>`<a<space>{{{<esc>`>i}}}<esc>
+vnoremap $b <esc>`<Obegin<esc>`>oend<esc>`<V`>>
 
 " autocompletado de (, ", ', [, {{{}}} en modo INSERT
 inoremap $1 ()<esc>i
@@ -97,7 +98,10 @@ inoremap $4 {<esc>o}<esc>O
 inoremap $q ''<esc>i
 inoremap $e ""<esc>i
 inoremap $f {{{<esc>o}}}<esc>O<esc>i
+inoremap $b begin<cr><bs>end<esc>O
 
+" saltarse del paréntesis final sin tener que salir del modo INSERT
+inoremap $$ <esc>la
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General abbreviations
