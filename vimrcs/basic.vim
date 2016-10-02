@@ -131,6 +131,12 @@ set novisualbell
 set t_vb=
 set tm=500
 
+" Properly disable sound on errors on MacVim
+if has("gui_macvim")
+    autocmd GUIEnter * set vb t_vb=
+endif
+
+
 " Add a bit extra margin to the left
 set foldcolumn=1
 
