@@ -1,10 +1,10 @@
 *lightline.txt*	A light and configurable statusline/tabline for Vim
 
-Version: 0.0
+Version: 0.1
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2016/08/09 06:22:39.
+Last Change: 2016/09/13 23:56:56.
 
 CONTENTS					*lightline-contents*
 
@@ -19,7 +19,6 @@ Examples				|lightline-examples|
 Nice Examples				|lightline-nice-examples|
 Powerful Example			|lightline-powerful-example|
 Troubleshooting				|lightline-troubleshooting|
-Changelog				|lightline-changelog|
 
 ==============================================================================
 INTRODUCTION					*lightline-introduction*
@@ -115,10 +114,13 @@ OPTIONS						*lightline-option*
 		    \ 'column': '%c'
 		    \ 'close': '%999X X ' }
 <
-	g:lightline.component_visible_condition		*g:lightline.component_visible_condition*
-		Dictionary of boolean expressions for the components.
+	g:lightline.component_visible_condition
+						*g:lightline.component_visible_condition*
+		Dictionary to store the visible condition of the components.
 		Each expression should correspond to the condition each
-		component have non-zero length.
+		component is not empty. This configuration is used to control
+		the visibility of the subseparators. You cannot use this
+		configuration to control the visibility of the components.
 		The default value is:
 >
 		let g:lightline.component_visible_condition = {
@@ -135,6 +137,11 @@ OPTIONS						*lightline-option*
 		because the user does not have to set both component and
 		component_visible_condition. If a component set to both component and
 		component_function, the setting of component_function has priority.
+
+		The default value is:
+>
+		let g:lightline.component_function = {}
+<
 		For example, if you want a component for read-only mark, which
 		disappears in help windows:
 >
@@ -150,6 +157,19 @@ OPTIONS						*lightline-option*
 		function! LightLineReadonly()
 			return &ft !~? 'help' && &readonly ? 'RO' : ''
 		endfunction
+<
+	g:lightline.component_function_visible_condition
+						*g:lightline.component_function_visible_condition*
+		Dictionary to store the visible conditions of the function
+		components. Each expression should correspond to the condition
+		each component is not empty. This configuration is used to
+		control the visibility of the subseparators. You can use this
+		configuration to reduce the number of function calls for
+		function components by setting the value 1 (to tell lightline
+		that the component is always visible).
+		The default value is:
+>
+		let g:lightline.component_function_visible_condition = {}
 <
 	g:lightline.component_expand		*g:lightline.component_expand*
 		Another dictionary for components. You can create a component
@@ -1126,7 +1146,7 @@ Problem 9:					*lightline-problem-9*
 	subseparator.right	'|'		'' (\ue0b3)		'⮃' (\u2b83)
 	branch symbol		--		'' (\ue0a0)		'⭠' (\u2b60)
 	readonly symbol		--		'' (\ue0a2)		'⭤' (\u2b64)
-	linecolumn symbol	--		'' (\ue0a1)		'⭡' (\u2b81)
+	linecolumn symbol	--		'' (\ue0a1)		'⭡' (\u2b61)
 
 Problem 10:					*lightline-problem-10*
 	Cool statusline disappears on |unite|, |vimfiler| and |vimshell|
@@ -1269,12 +1289,6 @@ Problem 17:					*lightline-problem-17*
 
 		Report/Request the issue/feature at
 		https://github.com/itchyny/lightline.vim/issues.
-
-==============================================================================
-CHANGELOG					*lightline-changelog*
-
-0.0	2013-08-21, ...
-	- Initial commit and implementation
 
 ==============================================================================
 vim:tw=78:sw=4:ts=8:ft=help:norl:noet:

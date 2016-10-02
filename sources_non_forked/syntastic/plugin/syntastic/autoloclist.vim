@@ -25,10 +25,27 @@ function! g:SyntasticAutoloclistNotifier.AutoToggle(loclist) abort " {{{2
             call a:loclist.show()
         endif
     else
-        if auto_loc_list == 1 || auto_loc_list == 2
-            "TODO: this will close the loc list window if one was opened by
-            "something other than syntastic
-            lclose
+        if (auto_loc_list == 1 || auto_loc_list == 2) && !empty(get(w:, 'syntastic_loclist_set', []))
+            try
+                " Vim 7.4.2200 or later
+                let title = get(getloclist(0, { 'title': 1 }), 'title', ':SyntasticCheck ')
+            catch /\m^Vim\%((\a\+)\)\=:E\%(118\|731\)/
+                let title = ':SyntasticCheck '
+            endtry
+
+            if strpart(title, 0, 16) ==# ':SyntasticCheck '
+                " TODO: this will close the loc list window if one was opened
+                " by something other than syntastic
+                call SyntasticLoclistHide()
+
+                try
+                    " Vim 7.4.2200 or later
+                    call setloclist(0, [], 'r', { 'title': '' })
+                catch /\m^Vim\%((\a\+)\)\=:E\%(118\|731\)/
+                    " do nothing
+                endtry
+                let w:syntastic_loclist_set = []
+            endif
         endif
     endif
 endfunction " }}}2

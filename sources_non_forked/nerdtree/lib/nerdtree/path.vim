@@ -174,11 +174,15 @@ function! s:Path.copy(dest)
 
     call s:Path.createParentDirectories(a:dest)
 
-    let dest = s:Path.WinToUnixPath(a:dest)
+    if exists('g:NERDTreeCopyCmd')
+        let cmd_prefix = g:NERDTreeCopyCmd
+    else
+        let cmd_prefix = (self.isDirectory ? g:NERDTreeCopyDirCmd : g:NERDTreeCopyFileCmd)
+    endif
 
-    let cmd = g:NERDTreeCopyCmd . " " . escape(self.str(), self._escChars()) . " " . escape(dest, self._escChars())
+    let cmd = cmd_prefix . " " . escape(self.str(), self._escChars()) . " " . escape(a:dest, self._escChars())
     let success = system(cmd)
-    if success != 0
+    if v:shell_error != 0
         throw "NERDTree.CopyError: Could not copy ''". self.str() ."'' to: '" . a:dest . "'"
     endif
 endfunction
@@ -187,7 +191,7 @@ endfunction
 "
 "returns 1 if copying is supported for this OS
 function! s:Path.CopyingSupported()
-    return exists('g:NERDTreeCopyCmd')
+    return exists('g:NERDTreeCopyCmd') || (exists('g:NERDTreeCopyDirCmd') && exists('g:NERDTreeCopyFileCmd'))
 endfunction
 
 "FUNCTION: Path.copyingWillOverwrite(dest) {{{1
@@ -213,7 +217,7 @@ endfunction
 "FUNCTION: Path.createParentDirectories(path) {{{1
 "
 "create parent directories for this path if needed
-"without throwing any errors is those directories already exist
+"without throwing any errors if those directories already exist
 "
 "Args:
 "path: full path of the node whose parent directories may need to be created
@@ -226,8 +230,7 @@ endfunction
 
 "FUNCTION: Path.delete() {{{1
 "
-"Deletes the file represented by this path.
-"Deletion of directories is not supported
+"Deletes the file or directory represented by this path.
 "
 "Throws NERDTree.Path.Deletion exceptions
 function! s:Path.delete()

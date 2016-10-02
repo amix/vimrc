@@ -71,7 +71,7 @@ command! -nargs=* -bang -complete=customlist,go#package#Complete GoImportAs call
 
 " -- linters
 command! -nargs=* GoMetaLinter call go#lint#Gometa(0, <f-args>)
-command! -nargs=0 GoMetalinterAutoSaveToggle call go#lint#ToggleMetaLinterAutoSave()
+command! -nargs=0 GoMetaLinterAutoSaveToggle call go#lint#ToggleMetaLinterAutoSave()
 command! -nargs=* GoLint call go#lint#Golint(<f-args>)
 command! -nargs=* -bang GoVet call go#lint#Vet(<bang>0, <f-args>)
 command! -nargs=* -complete=customlist,go#package#Complete GoErrCheck call go#lint#Errcheck(<f-args>)

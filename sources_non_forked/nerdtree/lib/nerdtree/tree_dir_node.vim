@@ -117,28 +117,14 @@ endfunction
 "FUNCTION: TreeDirNode.getCascade() {{{1
 "Return an array of dir nodes (starting from self) that can be cascade opened.
 function! s:TreeDirNode.getCascade()
+    if !self.isCascadable()
+        return [self]
+    endif
 
-    let rv = [self]
-    let node = self
+    let vc = self.getVisibleChildren()
+    let visChild = vc[0]
 
-    while 1
-        let vc = node.getVisibleChildren()
-        if len(vc) != 1
-            break
-        endif
-
-        let visChild = vc[0]
-
-        "TODO: optimize
-        if !visChild.path.isDirectory
-            break
-        endif
-
-        call add(rv, visChild)
-        let node = visChild
-    endwhile
-
-    return rv
+    return [self] + visChild.getCascade()
 endfunction
 
 "FUNCTION: TreeDirNode.getChildCount() {{{1
@@ -264,6 +250,10 @@ endfunction
 "FUNCTION: TreeDirNode.isCascadable() {{{1
 "true if this dir has only one visible child - which is also a dir
 function! s:TreeDirNode.isCascadable()
+    if g:NERDTreeCascadeSingleChildDir == 0
+        return 0
+    endif
+
     let c = self.getVisibleChildren()
     return len(c) == 1 && c[0].path.isDirectory
 endfunction
@@ -466,7 +456,7 @@ function! s:TreeDirNode.refresh()
 
             " Regular expression is too expensive. Use simply string comparison
             " instead
-            if i[len(i)-3:2] != ".." && i[len(i)-2:2] != ".." && 
+            if i[len(i)-3:2] != ".." && i[len(i)-2:2] != ".." &&
              \ i[len(i)-2:1] != "." && i[len(i)-1] != "."
                 try
                     "create a new path and see if it exists in this nodes children

@@ -3147,13 +3147,13 @@ accepts the standard options described at |syntastic-config-makeprg|.
 
 Notes~
 
-Syntastic requires "Flow" version 0.6 or later.
+Syntastic requires "Flow" version 0.18.1 or later.
 
 To use "Flow" with your projects, you must:
 
 a. Install it:
 
-    https://github.com/sindresorhus/flow-bin
+    https://github.com/flowtype/flow-bin
 
 b. Configure your project:
 >
@@ -6183,7 +6183,7 @@ Maintainer:  LCD 47 <lcd047@gmail.com>
 
 "ESLint" is a tool for identifying and reporting on patterns found
 in ECMAScript/JavaScript code. With the "babel-eslint" plugin
-(https://github.com/babel/babel-eslint) "ESLint" can also can also be
+(https://github.com/babel/babel-eslint) "ESLint" can also be
 used to check TypeScript files. See the project's page for details:
 
     https://github.com/nzakas/eslint

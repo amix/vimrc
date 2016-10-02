@@ -48,6 +48,21 @@ snippet fori
 	for ${1:item} <- ${2:items}, into: ${3} do
 		${0}
 	end
+snippet wi
+	with(
+		${1:item} <- ${2:items}
+	) do
+		${0}
+	end
+snippet wie
+	with(
+		${1:item} <- ${2:items}
+	) do
+		${3}
+	else
+		${4} ->
+			${0}
+	end
 snippet df
 	def ${1:name}, do: ${2}
 snippet def

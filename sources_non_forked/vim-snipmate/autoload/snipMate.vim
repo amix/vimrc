@@ -488,8 +488,18 @@ fun! snipMate#WordBelowCursor() abort
 endf
 
 fun! snipMate#GetSnippetsForWordBelowCursorForComplete(word) abort
-	let snippets = map(snipMate#GetSnippetsForWordBelowCursor(a:word, 0), 'v:val[0]')
-	return filter(snippets, 'v:val =~# "\\V\\^' . escape(a:word, '"\') . '"')
+	let matches = snipMate#GetSnippetsForWordBelowCursor(a:word, 0)
+	let snippets = []
+	for [trigger, dict] in matches
+		if get(g:snipMate, 'description_in_completion', 0)
+			call extend(snippets, map(keys(dict),
+						\ '{ "word" : trigger, "menu" : v:val, "dup" : 1 }'))
+		else
+			call add(snippets, { "word" : trigger })
+		endif
+	endfor
+	return filter(snippets,
+				\ 'v:val.word =~# "\\V\\^' . escape(a:word, '"\') . '"')
 endf
 
 fun! snipMate#CanBeTriggered() abort

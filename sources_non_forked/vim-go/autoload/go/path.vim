@@ -151,7 +151,7 @@ function! go#path#CheckBinPath(binpath)
 
     " if it's in PATH just return it
     if executable(binpath)
-        if v:version == 704 && has('patch235')
+        if exists('*exepath')
             let binpath = exepath(binpath)
         endif
         let $PATH = old_path

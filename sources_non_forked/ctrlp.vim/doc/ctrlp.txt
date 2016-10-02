@@ -255,8 +255,9 @@ plugins look for .git/, .hg/,... some other plugins look for external *.exe
 tools on Windows). So be a little mindful of what you put in your |wildignore|.
 
                                                       *'g:ctrlp_custom_ignore'*
-In addition to |'wildignore'|, use this for files and directories you want only
-CtrlP to not show. Use regexp to specify the patterns: >
+In addition to |'wildignore'| and |g:ctrlp_show_hidden|, use this for files
+and directories you want only CtrlP to not show. Use regexp to specify the
+patterns: >
   let g:ctrlp_custom_ignore = ''
 <
 Examples: >
@@ -860,13 +861,24 @@ COMMANDS                                                       *ctrlp-commands*
    Open CtrlP in find file mode.
 
    If no argument is given, the value of |g:ctrlp_working_path_mode| will be
-   used to determine the starting directory.
+   used to determine the starting directory.  See |:CtrlPCurFile| and
+   |:CtrlPCurWD| to temporarily override the setting.
 
    You can use <tab> to auto-complete the [starting-directory] when typing it.
 
                                                                  *:CtrlPBuffer*
 :CtrlPBuffer
    Open CtrlP in find buffer mode.
+
+                                                                *:CtrlPCurFile*
+:CtrlPCurFile
+    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = '' and ignores
+    the variable's current value.
+
+                                                                  *:CtrlPCurWD*
+:CtrlPCurWD
+    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = '' and ignores
+    the variable's current value.
 
                                                                     *:CtrlPMRU*
 :CtrlPMRU
@@ -1329,7 +1341,8 @@ Available extensions:~
 Buffer Tag mode options:~
 
                                                    *'g:ctrlp_buftag_ctags_bin'*
-If ctags isn't in your $PATH, use this to set its location: >
+If ctags isn't in your $PATH, or a ctags binary exists in either
+/opt/local/bin or /usr/local/bin, us this to set its location: >
   let g:ctrlp_buftag_ctags_bin = ''
 <
 

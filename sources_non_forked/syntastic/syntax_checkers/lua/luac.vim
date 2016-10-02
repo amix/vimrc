@@ -47,7 +47,7 @@ endfunction
 function! SyntaxCheckers_lua_luac_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': '-p' })
 
-    let errorformat = 'luac: %#%f:%l: %m'
+    let errorformat = '%*\f: %#%f:%l: %m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,

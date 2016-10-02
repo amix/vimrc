@@ -204,6 +204,14 @@ let s:hlgrps = {
 	\ }
 
 " lname, sname of the basic(non-extension) modes
+let s:types = ['fil', 'buf', 'mru']
+if !exists('g:ctrlp_types')
+	let g:ctrlp_types = s:types
+el
+	call filter(g:ctrlp_types, "index(['fil', 'buf', 'mru'], v:val)!=-1")
+en
+let g:ctrlp_builtins = len(g:ctrlp_types)-1
+
 let s:coretypes = filter([
 	\ ['files', 'fil'],
 	\ ['buffers', 'buf'],
@@ -912,10 +920,13 @@ fu! s:PrtDeleteMRU()
 endf
 
 fu! s:PrtExit()
+	let bw = bufwinnr('%')
 	exe bufwinnr(s:bufnr).'winc w'
 	if bufnr('%') == s:bufnr && bufname('%') == 'ControlP'
 		noa cal s:Close(1)
 		noa winc p
+	els
+		exe bw.'winc w'
 	en
 endf
 
@@ -1962,7 +1973,7 @@ fu! s:isabs(path)
 endf
 
 fu! s:bufnrfilpath(line)
-  if s:isabs(a:line) || a:line =~ '^\~[/\\]'
+  if s:isabs(a:line) || a:line =~ '^\~[/\\]' || a:line =~ '^\w\+:\/\/'
 		let filpath = a:line
 	el
 		let filpath = s:dyncwd.s:lash().a:line
@@ -2032,7 +2043,7 @@ fu! s:checkbuf()
 endf
 
 fu! s:iscmdwin()
-	let ermsg = v:errmsg
+	let [ermsg, v:errmsg] = [v:errmsg, '']
 	sil! noa winc p
 	sil! noa winc p
 	let [v:errmsg, ermsg] = [ermsg, v:errmsg]

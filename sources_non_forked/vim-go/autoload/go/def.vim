@@ -113,8 +113,8 @@ function! s:jump_to_declaration(out, mode)
   " modes of switchbuf which we need based on the split mode
   let old_switchbuf = &switchbuf
 
-  let l:fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
-  if filename != l:fname
+  normal! m'
+  if filename != fnamemodify(expand("%"), ':p:gs?\\?/?')
     " jump to existing buffer if, 1. we have enabled it, 2. the buffer is loaded
     " and 3. there is buffer window number we switch to
     if get(g:, 'go_def_reuse_buffer', 0) && bufloaded(filename) != 0 && bufwinnr(filename) != -1
@@ -134,7 +134,7 @@ function! s:jump_to_declaration(out, mode)
     endif
 
     " open the file and jump to line and column
-    exec 'edit '.filename
+    exec 'edit' filename
   endif
   call cursor(line, col)
 
@@ -248,7 +248,7 @@ function! go#def#Stack(...)
     let target = s:go_stack[s:go_stack_level]
 
     " jump
-    exec 'edit '.target["file"]
+    exec 'edit' target["file"]
     call cursor(target["line"], target["col"])
     normal! zz
   else

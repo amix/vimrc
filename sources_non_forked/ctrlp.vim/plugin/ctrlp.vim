@@ -10,15 +10,9 @@ if ( exists('g:loaded_ctrlp') && g:loaded_ctrlp ) || v:version < 700 || &cp
 en
 let g:loaded_ctrlp = 1
 
-let s:types = ['fil', 'buf', 'mru']
-if !exists('g:ctrlp_types')
-	let g:ctrlp_types = s:types
-el
-	call filter(g:ctrlp_types, "index(['fil', 'buf', 'mru'], v:val)!=-1")
-en
 let [g:ctrlp_lines, g:ctrlp_allfiles, g:ctrlp_alltags, g:ctrlp_alldirs,
 	\ g:ctrlp_allmixes, g:ctrlp_buftags, g:ctrlp_ext_vars, g:ctrlp_builtins]
-	\ = [[], [], [], [], {}, {}, [], len(g:ctrlp_types)-1]
+	\ = [[], [], [], [], {}, {}, [], 2]
 
 if !exists('g:ctrlp_map') | let g:ctrlp_map = '<c-p>' | en
 if !exists('g:ctrlp_cmd') | let g:ctrlp_cmd = 'CtrlP' | en

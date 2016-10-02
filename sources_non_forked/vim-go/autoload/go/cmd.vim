@@ -18,8 +18,9 @@ function! go#cmd#Build(bang, ...)
   let goargs = map(copy(a:000), "expand(v:val)")
 
   " escape all shell arguments before we pass it to make
-  let goargs = go#util#Shelllist(goargs, 1)
-
+  if !has('nvim')
+    let goargs = go#util#Shelllist(goargs, 1)
+  endif
   " create our command arguments. go build discards any results when it
   " compiles multiple packages. So we pass the `errors` package just as an
   " placeholder with the current folder (indicated with '.')

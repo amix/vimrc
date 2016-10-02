@@ -73,4 +73,27 @@ snippet modeline "Vim modeline"
 vim`!v ':set '. (&expandtab ? printf('et sw=%i ts=%i', &sw, &ts) : printf('noet sts=%i sw=%i ts=%i', &sts, &sw, &ts)) . (&tw ? ' tw='. &tw : '') . ':'`
 endsnippet
 
+#########
+# DATES #
+#########
+snippet date "YYYY-MM-DD" w
+`date +%Y-%m-%d`
+endsnippet
+
+snippet ddate "Month DD, YYYY" w
+`date +%B\ %d,\ %Y`
+endsnippet
+
+snippet diso "ISO format datetime" w
+`date +%Y-%m-%dT%H:%M:%S%:z`
+endsnippet
+
+snippet time "hh:mm" w
+`date +%H:%M`
+endsnippet
+
+snippet datetime "YYYY-MM-DD hh:mm" w
+`date +%Y-%m-%d\ %H:%M`
+endsnippet
+
 # vim:ft=snippets:

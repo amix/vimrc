@@ -1,3 +1,5 @@
+let s:sock_type = (has('win32') || has('win64')) ? 'tcp' : 'unix'
+
 function! s:gocodeCurrentBuffer()
   let buf = getline(1, '$')
   if &encoding != 'utf-8'
@@ -32,7 +34,7 @@ function! s:gocodeCommand(cmd, preargs, args)
   let old_gopath = $GOPATH
   let $GOPATH = go#path#Detect()
 
-  let socket_type = get(g:, 'go_gocode_socket_type', 'unix')
+  let socket_type = get(g:, 'go_gocode_socket_type', s:sock_type)
   let cmd = printf('%s -sock %s %s %s %s', 
         \ go#util#Shellescape(bin_path), 
         \ socket_type, 

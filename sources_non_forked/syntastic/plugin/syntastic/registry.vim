@@ -339,7 +339,10 @@ endfunction " }}}2
 
 " Check for obsolete variable g:syntastic_<filetype>_checker
 function! g:SyntasticRegistry._checkDeprecation(filetype) abort " {{{2
-    if exists('g:syntastic_' . a:filetype . '_checker') && !exists('g:syntastic_' . a:filetype . '_checkers')
+    if exists('g:syntastic_' . a:filetype . '_checker') &&
+        \ !exists('g:syntastic_' . a:filetype . '_checkers') &&
+        \ type(g:syntastic_{a:filetype}_checker) == type('')
+
         let g:syntastic_{a:filetype}_checkers = [g:syntastic_{a:filetype}_checker]
         call syntastic#log#oneTimeWarn('variable g:syntastic_' . a:filetype . '_checker is deprecated')
     endif

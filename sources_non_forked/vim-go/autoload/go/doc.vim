@@ -85,6 +85,7 @@ function! go#doc#Open(newmode, mode, ...)
     endif
 
     let command = printf("%s %s", bin_path, join(a:000, ' '))
+    let out = go#util#System(command)
   else
     " check if we have 'gogetdoc' and use it automatically
     let bin_path = go#path#CheckBinPath('gogetdoc')
@@ -95,11 +96,27 @@ function! go#doc#Open(newmode, mode, ...)
     let offset = go#util#OffsetCursor()
     let fname = expand("%:p:gs!\\!/!")
     let pos = shellescape(fname.':#'.offset)
-
     let command = printf("%s -pos %s", bin_path, pos)
+
+    if &modified
+      " gogetdoc supports the same archive format as guru for dealing with
+      " modified buffers.
+      "   use the -modified flag
+      "   write each archive entry on stdin as:
+      "     filename followed by newline
+      "     file size followed by newline
+      "     file contents
+      let in = ""
+      let sep = go#util#LineEnding()
+      let content = join(getline(1, '$'), sep)
+      let in = fname . "\n" . strlen(content) . "\n" . content
+      let command .= " -modified"
+      let out = go#util#System(command, in)
+    else
+      let out = go#util#System(command)
+    endif
   endif
 
-  let out = go#util#System(command)
   if go#util#ShellError() != 0
     call go#util#EchoError(out)
     return

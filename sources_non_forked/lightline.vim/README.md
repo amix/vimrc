@@ -272,7 +272,7 @@ set noshowmode
 ```
 
 
-Now, let us get back to the tutorial (with the patched font for vim-powerline).
+Now, let's get back to the tutorial (with the patched font for vim-powerline).
 You look into a help file to find the marks annoying.
 
 ![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/6.png)
@@ -293,8 +293,8 @@ let g:lightline = {
 ![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/7.png)
 
 Huh? Weird!
-The components do not collapse even if they have no information!
-In order to avoid this situation, you set expressions to `g:lightline.component_visible_condition`, which should become 1 only when the corresponding components have information.
+The subseparators are visible even if the components are empty.
+In order to hide the subseparators, you can set expressions to `g:lightline.component_visible_condition`, which should be 1 only when the corresponding component is not empty.
 ```vim
 let g:lightline = {
       \ 'colorscheme': 'wombat',
@@ -313,8 +313,8 @@ let g:lightline = {
 ![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/8.png)
 
 Okay. It works nice.
-
-
+The configuration `component_visible_condition` is used to control the visibility of the subseparators.
+You cannot use this variable to control the visibility of the components themselves.
 
 How does lightline decide the components to show in the statusline?
 It's very simple.
@@ -340,15 +340,8 @@ let g:lightline = {
       \ }
 ```
 If the plugin arranges all the components (in a situation you `set paste` and the file `.vimrc` is read-only, try to modify):
+
 ![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/9.png)
-
-The mode component, the paste component, read-only component, filename component and modified component in a row.
-Normally, the paste component does not show up.
-![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/10.png)
-
-If the file is not read-only (more common cases), the read-only component does not show up.
-![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/11.png)
-
 
 Again look into `g:lightline.active.left`.
 ```vim
@@ -357,8 +350,6 @@ let g:lightline = {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'readonly', 'filename', 'modified' ] ] ...
 ```
-And the screen shot of all the components.
-![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/9.png)
 
 The mode and paste component are displayed in the same group.
 The read-only, filename and modified component are in the second group.
@@ -369,11 +360,11 @@ You can configure the components in the statusline by the following four variabl
 + `g:lightline.inactive.left`
 + `g:lightline.inactive.right`
 
-Of course, your settings in `.vimrc` have priority over the default settings in lightline.
+Of course, your configurations in `.vimrc` have priority over the default settings in lightline.
 
 
 
-GitHub branch is important for us.
+Git branch is important for us.
 And it is a default component in [powerline](https://github.com/Lokaltog/powerline) and [vim-powerline](https://github.com/Lokaltog/vim-powerline).
 However, lightline does not provide the branch feature by default.
 
@@ -552,7 +543,7 @@ subseparator.left  | '\|'    | '' (\ue0b1) | '⮁' (\u2b81)
 subseparator.right | '\|'    | '' (\ue0b3) | '⮃' (\u2b83)
 branch symbol      | --      | '' (\ue0a0) | '⭠' (\u2b60)
 readonly symbol    | --      | '' (\ue0a2) | '⭤' (\u2b64)
-linecolumn symbol  | --      | '' (\ue0a1) | '⭡' (\u2b81)
+linecolumn symbol  | --      | '' (\ue0a1) | '⭡' (\u2b61)
 
 ### My settings
 I show my settings. I use the patched font for vim-powerline.

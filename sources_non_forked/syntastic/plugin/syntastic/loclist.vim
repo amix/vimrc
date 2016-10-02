@@ -27,17 +27,18 @@ function! g:SyntasticLoclist.New(rawLoclist) abort " {{{2
     return newObj
 endfunction " }}}2
 
-function! g:SyntasticLoclist.current() abort " {{{2
-    if !exists('b:syntastic_loclist') || empty(b:syntastic_loclist)
-        let b:syntastic_loclist = g:SyntasticLoclist.New([])
+function! g:SyntasticLoclist.current(...) abort " {{{2
+    let buf = a:0 > 1 ? a:1 : bufnr('')
+    let loclist = getbufvar(buf, 'syntastic_loclist')
+    if type(loclist) != type({}) || empty(loclist)
+        unlet! loclist
+        let loclist = g:SyntasticLoclist.New([])
     endif
-    return b:syntastic_loclist
+    return loclist
 endfunction " }}}2
 
 function! g:SyntasticLoclist.extend(other) abort " {{{2
-    let list = self.copyRaw()
-    call extend(list, a:other.copyRaw())
-    return g:SyntasticLoclist.New(list)
+    call extend(self._rawLoclist, a:other.copyRaw())
 endfunction " }}}2
 
 function! g:SyntasticLoclist.sort() abort " {{{2
@@ -167,7 +168,6 @@ function! g:SyntasticLoclist.setOwner(buffer) abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticLoclist.deploy() abort " {{{2
-    call self.setOwner(bufnr(''))
     let self._stamp = syntastic#util#stamp()
     for buf in self.getBuffers()
         call setbufvar(buf, 'syntastic_loclist', self)
@@ -289,23 +289,29 @@ function! g:SyntasticLoclist.filter(filters) abort " {{{2
     return filter(copy(self._rawLoclist), filter)
 endfunction " }}}2
 
-function! g:SyntasticLoclist.setloclist() abort " {{{2
+function! g:SyntasticLoclist.setloclist(new) abort " {{{2
     if !exists('w:syntastic_loclist_set')
         let w:syntastic_loclist_set = []
     endif
-    if empty(w:syntastic_loclist_set) || w:syntastic_loclist_set != [bufnr(''), b:changedtick]
-        let replace = g:syntastic_reuse_loc_lists && !empty(w:syntastic_loclist_set)
+    if a:new || empty(w:syntastic_loclist_set) || w:syntastic_loclist_set != [self._owner, getbufvar(self._owner, 'changedtick')]
+        let replace = !a:new && g:syntastic_reuse_loc_lists && !empty(w:syntastic_loclist_set)
         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: setloclist ' . (replace ? '(replace)' : '(new)'))
         call setloclist(0, self.getRaw(), replace ? 'r' : ' ')
-        call syntastic#util#setChangedtick()
-        let w:syntastic_loclist_set = [bufnr(''), b:syntastic_changedtick]
+        try
+            " Vim 7.4.2200 or later
+            call setloclist(0, [], 'r', { 'title': ':SyntasticCheck ' . self._name })
+        catch /\m^Vim\%((\a\+)\)\=:E\%(118\|731\)/
+            " do nothing
+        endtry
+        call syntastic#util#setLastTick(self._owner)
+        let w:syntastic_loclist_set = [self._owner, getbufvar(self._owner, 'syntastic_lasttick')]
     endif
 endfunction " }}}2
 
 "display the cached errors for this buf in the location list
 function! g:SyntasticLoclist.show() abort " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: show')
-    call self.setloclist()
+    call self.setloclist(0)
 
     if !self.isEmpty()
         let num = winnr()

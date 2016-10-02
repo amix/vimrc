@@ -610,3 +610,15 @@ function! s:suite.duplicated_type_both_nil_right_most()
         \ [[['filename'], ['y0', 'y1', 'y0', 'y1']], [[0], [1, 1, 1, 1]], ['0', 'custom', '1']])
   delfunction Custom
 endfunction
+
+function! s:suite.dictionary_function()
+  let g:lightline = { 'component_expand': { 'custom': 'g:lightline.Custom' } }
+  function! g:lightline.Custom()
+    return [ ['left'], ['middle'], ['right'] ]
+  endfunction
+  call lightline#init()
+  call s:assert.equals(s:expand([['readonly', 'filename'], ['custom'], ['modified']]),
+        \ [[['readonly', 'filename'], ['left', 'middle', 'right'], ['modified']], [[0, 0], [1, 1, 1], [0]], ['0', '1', '2', '3']])
+  call s:assert.equals(s:expand([['readonly', 'filename', 'custom', 'modified']]),
+        \ [[['readonly', 'filename', 'left', 'middle', 'right', 'modified']], [[0, 0, 1, 1, 1, 0]], ['0', '1']])
+endfunction

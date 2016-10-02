@@ -582,8 +582,9 @@ CTRL-t
     Enables or disables automatic highlighting of |:GoSameIds| while moving
     the cursor. This basically toggles the option |'g:go_auto_sameids'|
     on/off.
-    If enabled it starts highlighting whenever your cursor is. If disabled it
-    clears and stops automatic highlighting.
+    If enabled it starts highlighting whenever your cursor is staying at the
+    same position for a configurable period of time (see 'updatetime'). If
+    disabled it clears and stops automatic highlighting.
 
                                                                *:GoMetaLinter*
 :GoMetaLinter [path]
@@ -695,8 +696,8 @@ CTRL-t
 
     Toggles |'g:go_asmfmt_autosave'|.
 
-                                                 *:GoMetalinterAutoSaveToggle*
-:GoMetalinterAutoSaveToggle
+                                                 *:GoMetaLinterAutoSaveToggle*
+:GoMetaLinterAutoSaveToggle
 
     Toggles |'g:go_metalinter_autosave'|.
 
@@ -995,7 +996,8 @@ updated. By default it's disabled.
                                                          *'g:go_auto_sameids'*
 
 Use this option to highlight all uses of the identifier under the cursor
-(:GoSameIds) automatically. By default it's disabled.
+(:GoSameIds) automatically. By default it's disabled. The delay can be
+configured with the 'updatetime' setting.
 >
   let g:go_auto_sameids = 0
 <
@@ -1231,6 +1233,12 @@ Highlights build constraints. By default it's disabled. >
 
   let g:go_highlight_build_constraints = 0
 <
+                                          *'g:go_highlight_generate_tags'*
+
+Highlights go:generate directives. By default it's disabled. >
+
+  let g:go_highlight_generate_tags = 0
+<
                                           *'g:go_highlight_string_spellcheck'*
 
 Use this option to highlight spelling errors in strings when |spell| is
@@ -1456,8 +1464,7 @@ Vim becomes slow while editing Go files~
 
 Don't enable these options:
 >
-  let g:go_highlight_structs = 0
-  let g:go_highlight_interfaces = 0
+  let g:go_highlight_types = 0
   let g:go_highlight_operators = 0
 <
 

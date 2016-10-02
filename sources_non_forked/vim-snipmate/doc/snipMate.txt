@@ -160,6 +160,12 @@ g:snipMate.override
                                 maps and other settings work. Note: Load order
                                 is determined by 'runtimepath'.
 
+g:snipMate.description_in_completion
+                                If set to 1 (default is 0), snippet
+                                descriptions will be included in the popup
+                                menu used for snippet completion, like with
+                                <Plug>snipMateShow.
+
 g:snipMate['no_match_completion_feedkeys_chars']
                                 A string inserted when no match for a trigger
                                 is found. By default a tab is inserted
