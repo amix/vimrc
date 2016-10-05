@@ -1,5 +1,5 @@
 if has("mac") || has("macunix")
-    set gfn=Hack:h24,Source\ Code\ Pro:h24,Menlo:h24
+    set gfn=Hack:h16,Source\ Code\ Pro:h16,Menlo:h16
 elseif has("win16") || has("win32")
     set gfn=Hack:h18,Source\ Code\ Pro:h16,Bitstream\ Vera\ Sans\ Mono:h15
 elseif has("gui_gtk2")
@@ -36,6 +36,9 @@ set softtabstop=2
 
 set cmdheight=1
 set number
+
+" yank to the system register (*) by default 
+set clipboard=unnamed
 
 " Mark, highlight multiple words
 source ~/.vim_runtime/sources_non_forked/Mark/plugin/mark.vim
