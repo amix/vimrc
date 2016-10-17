@@ -43,7 +43,10 @@ let g:mapleader = ","
 nmap <leader>w :w!<cr>
 
 " sale de todas las ventanas
-map <leader>q :qa<cr>
+map <leader><space>q :qa<cr>
+
+" sale de la ventana actual
+map <leader>q :q<cr>
 
 " volver al modo normal sin tener que retirar los dedos de la posición normal en el teclado
 ino ñjaf <esc>
@@ -268,6 +271,9 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " remapea '0' para que posicione el cursor en el primer carácter no blanco
 map 0 ^
+
+" en vez de copiar toda la línea, copia desde el cursor hasta el final de la línea
+map Y y$
 
 " colocación de espacios sin tener que entrar en modo INSERT
 nn <space>k<space> O<esc>j

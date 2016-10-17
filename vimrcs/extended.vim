@@ -80,25 +80,39 @@ imap ½ $
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Parenthesis/bracket
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" autocompletado de (, ", ', [, [[[, {{{}}} en modo VISUAL
+
+" autocompletado en modo VISUAL
 vnoremap $1 <esc>`>a)<esc>`<i(<esc> 
 vnoremap $2 <esc>`>a]<esc>`<i[<esc>
 vnoremap $3 <esc>`>a}<esc>`<i{<esc>
-vnoremap $$ <esc>`>a"<esc>`<i"<esc>
-vnoremap $q <esc>`>a'<esc>`<i'<esc>
-vnoremap $e <esc>`>a"<esc>`<i"<esc>
-vnoremap $f <esc>`<a<space>{{{<esc>`>i}}}<esc>
+vnoremap $' <esc>`>a'<esc>`<i'<esc>
+vnoremap $" <esc>`>a"<esc>`<i"<esc>
+vnoremap $* <esc>`>a*<esc>`<i*<esc>
+vnoremap $> <esc>`>a><esc>`<i<<esc>
+vnoremap $? <esc>`>a?<esc>`<i¿<esc>
+vnoremap $= <esc>`>o=<esc>yl99p`<O=<esc>yl99p
 vnoremap $b <esc>`<Obegin<esc>`>oend<esc>`<V`>>
+vnoremap $f <esc>`<A<space>{{{<esc>`>i}}}<esc>zxza
 
-" autocompletado de (, ", ', [, {{{}}} en modo INSERT
+" autocompletado en modo INSERT
 inoremap $1 ()<esc>i
 inoremap $2 []<esc>i
 inoremap $3 {}<esc>i
 inoremap $4 {<esc>o}<esc>O
-inoremap $q ''<esc>i
-inoremap $e ""<esc>i
-inoremap $f {{{<esc>o}}}<esc>O<esc>i
+inoremap $' ''<esc>i
+inoremap $" ""<esc>i
+inoremap $* **<esc>i
+inoremap $> <><esc>i
+inoremap $? ¿?<esc>i
+inoremap $= =<esc>yl99pYpO
 inoremap $b begin<cr><bs>end<esc>O
+inoremap $f <space>{{{<esc>o}}}<esc>O<esc>zxi
+inoremap $<space>f <esc>?*<cr>v`>$f
+
+" autocompletado en modo NORMAL
+nmap $* I*<esc>A*<esc>
+nmap $f $a<space>{{{<esc>o}}}<esc>O<esc>zxi
+nmap $<space>f v?*<cr><esc>`<a<space>{{{<esc>`>i}}}<esc>zxza
 
 " saltarse del paréntesis final sin tener que salir del modo INSERT
 inoremap $$ <esc>la

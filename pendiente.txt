@@ -1,0 +1,3 @@
+- en algunas ocaciones, 'end' queda una indentación atrás cuando se tipea '$b' en modo VISUAL
+- cuando se reconozca que los archivos a editar son de lenguajes de programación, debería configurar 'set tw=0'
+- modificar el mapeo <space>p<space> de manera que se pueda usar con cualquier registro, y no sólo con el registro "

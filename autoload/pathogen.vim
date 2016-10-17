@@ -10,22 +10,89 @@
 "
 " The API is documented inline below.
 
+" si ya se cargó este archivo o la compatibilidad con Vi está activada
 if exists("g:loaded_pathogen") || &cp
+
+" termina la carga acá
   finish
+
 endif
+
 let g:loaded_pathogen = 1
 
-" Point of entry for basic default usage.  Give a relative path to invoke
-" pathogen#interpose() (defaults to "bundle/{}"), or an absolute path to invoke
-" pathogen#surround().  Curly braces are expanded with pathogen#expand():
-" "bundle/{}" finds all subdirectories inside "bundle" inside all directories
-" in the runtime path.
+" Point of entry for basic default usage. Give a relative path to invoke pathogen#interpose()
+" (defaults to "bundle/{}"), or an absolute path to invoke pathogen#surround(). Curly braces are
+" expanded with pathogen#expand(): "bundle/{}" finds all subdirectories inside "bundle" inside all
+" directories in the runtime path.
+
+" !: si hay una función definida con el mismo identificador, la reemplaza
+" ...: acepta 0 o más argumentos
+" abort: termina la ejecución de la función al primer error
 function! pathogen#infect(...) abort
+
+  " para cada elemento en
+  "     si hay argumentos
+  "         se realiza una copia de la lista de los argumentos
+  "         se invierten los elementos de la lista
+  "         se eliminan los argumentos que no sean de tipo string
+  "     sino
+  "         una lista con un elemento = 'bundle/{}'
   for path in a:0 ? filter(reverse(copy(a:000)), 'type(v:val) == type("")') : ['bundle/{}']
+
+    " si el elemento es igual (case sensitive) a
+        " 1. ^: principio de línea
+        " 2. \%(: comienzo de grupo
+            " 3. "{"
+            " 4. \=: encuentra 0 o 1 vez el elemento anterior
+            " 5. [: comienzo de colección
+                " 6. "$"
+                " 7. "~"
+                " 8. \\: "\"
+                " 9. "/"
+            " 10. ]: fin de la colección que comenzó en (5.)
+        " 11. \|: OR
+            " 12. "{"
+            " 13. \=: encuentra 0 o 1 vez el elemento anterior
+            " 14. \w: igual a [0-9A-Za-z_]
+            " 15. ":"
+            " 16. [: comienzo de colección
+                " 17. \\: "\"
+                " 18. "/"
+            " 19. ]: fin de colección (16.)
+        " 20. \): fin de grupo (2.)
+        " 21. .: cualquier carácter menos fin de línea
+        " 22. *: encuentra 0 o más veces el elemento anterior
+        " 23. [: comienzo de colección
+            " 24. "{"
+            " 25. "}"
+            " 26. "*"
+        " 27. ]: fin de colección (23.)
     if path =~# '^\%({\=[$~\\/]\|{\=\w:[\\/]\).*[{}*]'
+
       call pathogen#surround(path)
+
+    " si el elemento es igual (case sensitive) a
+        " 1. ^: comienzo de línea
+        " 2. \%(: inicio de grupo
+            " 3. [: inicio de colección
+                " 4. "$"
+                " 5. "~"
+                " 6. \\: "\"
+                " 7. "/"
+            " 8. ]: fin de colección
+        " 9. \|: OR
+            " 10. \w: igual a [0-9A-Za-z_]
+            " 11. ":"
+            " 12. [: inicio de colección
+                " 13. \\: "\"
+                " 14. "/"
+            " 15. ]: fin de colección
+        " 16. \): fin de grupo
     elseif path =~# '^\%([$~\\/]\|\w:[\\/]\)'
+
+      " parámetro: un texto que avisa que al parámetro de pathogen#infect se le agrega '/{}'
       call s:warn('Change pathogen#infect('.string(path).') to pathogen#infect('.string(path.'/{}').')')
+
       call pathogen#surround(path . '/{}')
     elseif path =~# '[{}*]'
       call pathogen#interpose(path)
@@ -43,8 +110,15 @@ endfunction
 
 " Split a path into a list.
 function! pathogen#split(path) abort
+
+  " |: se utiliza para separar comandos en una misma línea
+  " si path es una lista, entonces devuelve path
   if type(a:path) == type([]) | return a:path | endif
+
+  " si path no contiene elementos, devuelve una lista vacía
   if empty(a:path) | return [] | endif
+
+  " la variable 'split' = 
   let split = split(a:path,'\\\@<!\%(\\\\\)*\zs,')
   return map(split,'substitute(v:val,''\\\([\\,]\)'',''\1'',"g")')
 endfunction
