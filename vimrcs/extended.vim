@@ -96,12 +96,9 @@ vnoremap $$ <esc>`>a"<esc>`<i"<esc>
 vnoremap $q <esc>`>a'<esc>`<i'<esc>
 vnoremap $e <esc>`>a"<esc>`<i"<esc>
 
-" Map auto complete of (, ", ', [
+" Map auto complete of (, ", [
 inoremap ( ()<esc>i
 inoremap [ []<esc>i
-inoremap { {}<esc>i
-inoremap { {<esc>o}<esc>O
-inoremap ' ''<esc>i
 inoremap " ""<esc>i
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
