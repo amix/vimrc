@@ -105,12 +105,14 @@ inoremap $* **<esc>i
 inoremap $> <><esc>i
 inoremap $? ¿?<esc>i
 inoremap $= =<esc>yl99pYpO
+inoremap $% (<esc>l%a)<esc>%a
 inoremap $b begin<cr><bs>end<esc>O
 inoremap $f <space>{{{<esc>o}}}<esc>O<esc>zxi
 inoremap $<space>f <esc>?*<cr>v`>$f
 
 " autocompletado en modo NORMAL
 nmap $* I*<esc>A*<esc>
+nmap $% i(<esc>l%a)<esc>%a
 nmap $f $a<space>{{{<esc>o}}}<esc>O<esc>zxi
 nmap $<space>f v?*<cr><esc>`<a<space>{{{<esc>`>i}}}<esc>zxza
 

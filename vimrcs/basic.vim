@@ -48,8 +48,8 @@ map <leader><space>q :qa<cr>
 " sale de la ventana actual
 map <leader>q :q<cr>
 
-" volver al modo normal sin tener que retirar los dedos de la posición normal en el teclado
-ino ñjaf <esc>
+" Atajo que escribe ':h ' y deja el cursor listo para introducir el término a buscar
+nmap <leader><space>h :h<space>
 
 " <¿?>
 " :W sudo saves the file (useful for handling the permission-denied error)
@@ -184,6 +184,10 @@ set ai
 set si
 set wrap
 
+" determina de qué forma se aplica el formateo, y en qué casos
+set formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+set formatoptions=tcqn
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => relacionado con el modo visual
@@ -200,7 +204,8 @@ vnoremap <silent> ¿ :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
 " mapeos de búsqueda
 map <space> /
-" <¿>no funciona<?>
+
+" <¡>no funciona<!>
 " map <C-Space> ?
 
 " deshabilita el resaltado de las búsquedas
@@ -243,6 +248,16 @@ map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/<cr>
 
 " configura el CWD para que sea el mismo que el del buffer abierto
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
+
+" Cuando se esté usando NERDTree: configura CWD con el valor de la ruta del directorio que está en
+" la línea donde se encuentra el cursor o al del directorio del archivo que está en la línea del
+" cursor, y abre una nueva pestaña en la terminal, (el mapeo se debe modificar si se va a utilizar
+" otra terminal. En mi caso, mi terminal es iTerm) con la ruta del CWD
+nmap <leader><space>o cd:!open<space>-a<space>iTerm<space>.<cr><cr>
+
+" Cuando se esté usando NERDTree: ejecuta open, y le pasa como argumento la ruta del archivo que se
+" encuentra en la línea del cursor
+nmap <leader><space><leader>o 0v$hycd:!open<space>"./<c-r>""<cr><cr>
 
 " especifica el comportamiento cuando se cambia de buffer
 try
