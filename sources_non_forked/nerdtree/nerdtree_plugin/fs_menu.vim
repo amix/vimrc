@@ -74,7 +74,7 @@ endfunction
 function! s:promptToRenameBuffer(bufnum, msg, newFileName)
     echo a:msg
     if g:NERDTreeAutoDeleteBuffer || nr2char(getchar()) ==# 'y'
-        let quotedFileName = fnameescape(a:newFilename)
+        let quotedFileName = fnameescape(a:newFileName)
         " 1. ensure that a new buffer is loaded
         exec "badd " . quotedFileName
         " 2. ensure that all windows which display the just deleted filename

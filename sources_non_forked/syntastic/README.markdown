@@ -26,20 +26,21 @@
 4. [FAQ](#faq)  
 4.1. [I installed syntastic but it isn't reporting any errors...](#faqinfo)  
 4.2. [Syntastic supports several checkers for my filetype, how do I tell it which one(s) to use?](#faqcheckers)  
-4.3. [I have enabled multiple checkers for the current filetype. How can I display all errors from all checkers together?](#faqaggregate)  
-4.4. [How can I pass additional arguments to a checker?](#faqargs)  
-4.5. [I run a checker and the location list is not updated...](#faqloclist)  
-4.5. [I run`:lopen` or `:lwindow` and the error window is empty...](#faqloclist)  
-4.6. [How can I jump between the different errors without using the location list at the bottom of the window?](#faqlnext)  
-4.7. [The error window is closed automatically when I `:quit` the current buffer but not when I `:bdelete` it?](#faqbdelete)  
-4.8. [My favourite checker needs to load a configuration file from the project's root rather than the current directory...](#faqconfig)  
-4.9. [What is the difference between syntax checkers and style checkers?](#faqstyle)  
-4.10. [How can I check scripts written for different versions of Python?](#faqpython)  
-4.11. [How can I check scripts written for different versions of Ruby?](#faqruby)  
-4.12. [The `perl` checker has stopped working...](#faqperl)  
-4.13. [What happened to the `rustc` checker?](#faqrust)  
-4.14. [What happened to the `tsc` checker?](#faqtsc)  
-4.15. [What happened to the `xcrun` checker?](#faqxcrun)  
+4.3. [How can I run checkers for "foreign" filetypes against the current file?](#faqforeign)  
+4.4. [I have enabled multiple checkers for the current filetype. How can I display all errors from all checkers together?](#faqaggregate)  
+4.5. [How can I pass additional arguments to a checker?](#faqargs)  
+4.6. [I run a checker and the location list is not updated...](#faqloclist)  
+4.6. [I run`:lopen` or `:lwindow` and the error window is empty...](#faqloclist)  
+4.7. [How can I jump between the different errors without using the location list at the bottom of the window?](#faqlnext)  
+4.8. [The error window is closed automatically when I `:quit` the current buffer but not when I `:bdelete` it?](#faqbdelete)  
+4.9. [My favourite checker needs to load a configuration file from the project's root rather than the current directory...](#faqconfig)  
+4.10. [What is the difference between syntax checkers and style checkers?](#faqstyle)  
+4.11. [How can I check scripts written for different versions of Python?](#faqpython)  
+4.12. [How can I check scripts written for different versions of Ruby?](#faqruby)  
+4.13. [The `perl` checker has stopped working...](#faqperl)  
+4.14. [What happened to the `rustc` checker?](#faqrust)  
+4.15. [What happened to the `tsc` checker?](#faqtsc)  
+4.16. [What happened to the `xcrun` checker?](#faqxcrun)  
 5. [Resources](#otherresources)  
 
 - - -
@@ -65,9 +66,9 @@ MATLAB, Mercury, NASM, Nix, Objective-C, Objective-C++, OCaml, Perl, Perl
 POD, PHP, gettext Portable Object, OS X and iOS property lists, Pug (formerly
 Jade), Puppet, Python, QML, R, Racket, RDF TriG, RDF Turtle, Relax NG,
 reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim, SML, Solidity,
-Sphinx, SQL, Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog,
-VHDL, VimL, xHtml, XML, XSLT, XQuery, YACC, YAML, YANG data models, z80, Zope
-page templates, and Zsh. See the [manual][checkers] for details about the
+Sphinx, SQL, Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog, VHDL,
+Vim help, VimL, xHtml, XML, XSLT, XQuery, YACC, YAML, YANG data models, z80,
+Zope page templates, and Zsh. See the [manual][checkers] for details about the
 corresponding supported checkers (`:help syntastic-checkers` in Vim).
 
 A number of third-party Vim plugins also provide checkers for syntastic, for
@@ -264,13 +265,36 @@ For example to run `phpcs` and `phpmd`:
 ```
 
 This works for any checkers available for the current filetype, even if they
-aren't listed in `g:syntastic_<filetype>_checkers`.  You can't run checkers for
-"foreign" filetypes though (e.g. you can't run, say, a Python checker if the
-filetype of the current file is `php`).
+aren't listed in `g:syntastic_<filetype>_checkers`.
+
+<a name="faqforeign"></a>
+
+__4.3. Q. How can I run checkers for "foreign" filetypes against the current
+file?__
+
+A. You need to qualify the name of the "foreign" checker with the name
+of its filetype. For example to check `tex` files with the checker
+`language_check` (which normally acts only on files of type `text`), you can
+add `text/language_check` to the list fo checkers for `tex`:
+```vim
+let g:syntastic_tex_checkers = ['lacheck', 'text/language_check']
+```
+
+This also works with `:SyntasticCheck`, e.g. the following command runs
+`text/language_check` against the current file regardless of the current
+filetype:
+```vim
+:SyntasticCheck text/language_check
+```
+
+Of course, the checkers specified this way need to be known to syntastic, and
+they need to be shown as available when you run `:SyntasticInfo`. You can't
+just make up a combination of a filetype and a program name and expect it to
+work as a checker.
 
 <a name="faqaggregate"></a>
 
-__4.3. Q. I have enabled multiple checkers for the current filetype. How can I
+__4.4. Q. I have enabled multiple checkers for the current filetype. How can I
 display all errors from all checkers together?__
 
 A. Set `g:syntastic_aggregate_errors` to 1 in your `vimrc`:
@@ -282,7 +306,7 @@ See `:help syntastic-aggregating-errors` for more details.
 
 <a name="faqargs"></a>
 
-__4.4. Q. How can I pass additional arguments to a checker?__
+__4.5. Q. How can I pass additional arguments to a checker?__
 
 A. In most cases a command line is constructed using an internal function
 named `makeprgBuild()`, which provides a number of options that allow you to
@@ -306,8 +330,8 @@ list of options should be included in the [manual][checkers]
 
 <a name="faqloclist"></a>
 
-__4.5. Q. I run a checker and the location list is not updated...__  
-__4.5. Q. I run`:lopen` or `:lwindow` and the error window is empty...__
+__4.6. Q. I run a checker and the location list is not updated...__  
+__4.6. Q. I run`:lopen` or `:lwindow` and the error window is empty...__
 
 A. By default the location list is changed only when you run the `:Errors`
 command, in order to minimise conflicts with other plugins. If you want the
@@ -319,7 +343,7 @@ let g:syntastic_always_populate_loc_list = 1
 
 <a name="faqlnext"></a>
 
-__4.6. Q. How can I jump between the different errors without using the location
+__4.7. Q. How can I jump between the different errors without using the location
 list at the bottom of the window?__
 
 A. Vim provides several built-in commands for this. See `:help :lnext` and
@@ -331,7 +355,7 @@ mappings (among other things).
 
 <a name="faqbdelete"></a>
 
-__4.7. Q. The error window is closed automatically when I `:quit` the current buffer
+__4.8. Q. The error window is closed automatically when I `:quit` the current buffer
 but not when I `:bdelete` it?__
 
 A. There is no safe way to handle that situation automatically, but you can
@@ -343,7 +367,7 @@ cabbrev <silent> bd <C-r>=(getcmdtype()==#':' && getcmdpos()==1 ? 'lclose\|bdele
 
 <a name="faqconfig"></a>
 
-__4.8. My favourite checker needs to load a configuration file from the
+__4.9. My favourite checker needs to load a configuration file from the
 project's root rather than the current directory...__
 
 A. You can set up an `autocmd` to search for the configuration file in the
@@ -363,7 +387,7 @@ autocmd FileType javascript let b:syntastic_javascript_jscs_args =
 
 <a name="faqstyle"></a>
 
-__4.9. Q. What is the difference between syntax checkers and style checkers?__
+__4.10. Q. What is the difference between syntax checkers and style checkers?__
 
 A. The errors and warnings they produce are highlighted differently and can
 be filtered by different rules, but otherwise the distinction is pretty much
@@ -393,7 +417,7 @@ See `:help syntastic_quiet_messages` for more information.
 
 <a name="faqpython"></a>
 
-__4.10. Q. How can I check scripts written for different versions of Python?__
+__4.11. Q. How can I check scripts written for different versions of Python?__
 
 A. Install a Python version manager such as [virtualenv][virtualenv]
 or [pyenv][pyenv], activate the environment for the relevant version
@@ -409,7 +433,7 @@ scripts.
 
 <a name="faqruby"></a>
 
-__4.11. Q. How can I check scripts written for different versions of Ruby?__
+__4.12. Q. How can I check scripts written for different versions of Ruby?__
 
 A. Install a Ruby version manager such as [rvm][rvm] or [rbenv][rbenv],
 activate the environment for the relevant version of Ruby, and install in it
@@ -424,7 +448,7 @@ scripts.
 
 <a name="faqperl"></a>
 
-__4.12. Q. The `perl` checker has stopped working...__
+__4.13. Q. The `perl` checker has stopped working...__
 
 A. The `perl` checker runs `perl -c` against your file, which in turn
 __executes__ any `BEGIN`, `UNITCHECK`, and `CHECK` blocks, and any `use`
@@ -440,14 +464,14 @@ let g:syntastic_enable_perl_checker = 1
 
 <a name="faqrust"></a>
 
-__4.13. Q. What happened to the `rustc` checker?__
+__4.14. Q. What happened to the `rustc` checker?__
 
 A. It is now part of the [rust.vim][rust] plugin. If you install this plugin the
 checker should be picked up automatically by syntastic.
 
 <a name="faqtsc"></a>
 
-__4.14. Q. What happened to the `tsc` checker?__
+__4.15. Q. What happened to the `tsc` checker?__
 
 A. It didn't meet people's expectations and it has been removed. The plugin
 [tsuquyomi][tsuquyomi] comes packaged with a checker for TypeScript. If you
@@ -455,7 +479,7 @@ install this plugin the checker should be picked up automatically by syntastic.
 
 <a name="faqxcrun"></a>
 
-__4.15. Q. What happened to the `xcrun` checker?__
+__4.16. Q. What happened to the `xcrun` checker?__
 
 A. The `xcrun` checker used to have a security problem and it has been removed.
 A better checker for __Swift__ is part of the [vim-swift][swift] plugin. If you

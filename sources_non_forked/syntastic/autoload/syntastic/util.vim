@@ -102,6 +102,10 @@ function! syntastic#util#rmrf(what) abort " {{{2
     endif
 endfunction " }}}2
 
+function! syntastic#util#getbufvar(buf, name, ...) abort " {{{2
+    return a:0 ? s:_getbufvar(a:buf, a:name, a:1) : getbufvar(a:buf, a:name)
+endfunction " }}}2
+
 " Search the first 5 lines of the file for a magic number and return a map
 " containing the args and the executable
 "
@@ -126,9 +130,19 @@ function! syntastic#util#parseShebang() abort " {{{2
     return { 'exe': '', 'args': [] }
 endfunction " }}}2
 
+" Get the value of a Vim variable.  Allow buffer variables to override global ones.
+function! syntastic#util#bufRawVar(buf, name, ...) abort " {{{2
+    return s:_getbufvar(a:buf, a:name, get(g:, a:name, a:0 ? a:1 : ''))
+endfunction "}}}2
+
+" Get the value of a syntastic variable.  Allow buffer variables to override global ones.
+function! syntastic#util#bufVar(buf, name, ...) abort " {{{2
+    return call('syntastic#util#bufRawVar', [a:buf, 'syntastic_' . a:name] + a:000)
+endfunction "}}}2
+
 " Get the value of a Vim variable.  Allow local variables to override global ones.
 function! syntastic#util#rawVar(name, ...) abort " {{{2
-    return get(b:, a:name, get(g:, a:name, a:0 > 0 ? a:1 : ''))
+    return get(b:, a:name, get(g:, a:name, a:0 ? a:1 : ''))
 endfunction " }}}2
 
 " Get the value of a syntastic variable.  Allow local variables to override global ones.
@@ -164,11 +178,6 @@ function! syntastic#util#compareLexi(a, b) abort " {{{2
     " still here, thus everything matched
     return 0
 endfunction " }}}2
-
-" strwidth() was added in Vim 7.3; if it doesn't exist, we use strlen()
-" and hope for the best :)
-let s:_width = function(exists('*strwidth') ? 'strwidth' : 'strlen')
-lockvar s:_width
 
 function! syntastic#util#screenWidth(str, tabstop) abort " {{{2
     let chunks = split(a:str, "\t", 1)
@@ -391,9 +400,6 @@ function! syntastic#util#setWids() abort " {{{2
     endfor
 endfunction " }}}2
 
-let s:_str2float = function(exists('*str2float') ? 'str2float' : 'str2nr')
-lockvar s:_str2float
-
 function! syntastic#util#str2float(val) abort " {{{2
     return s:_str2float(a:val)
 endfunction " }}}2
@@ -515,6 +521,11 @@ function! s:_translateElement(key, term) abort " {{{2
     return ret
 endfunction " }}}2
 
+" strwidth() was added in Vim 7.3; if it doesn't exist, we use strlen()
+" and hope for the best :)
+let s:_width = function(exists('*strwidth') ? 'strwidth' : 'strlen')
+lockvar s:_width
+
 " @vimlint(EVL103, 1, a:flags)
 function! s:_delete_dumb(what, flags) abort " {{{2
     if !exists('s:rmrf')
@@ -561,6 +572,9 @@ function! s:_rmrf(what) abort " {{{2
     endif
 endfunction " }}}2
 
+let s:_str2float = function(exists('*str2float') ? 'str2float' : 'str2nr')
+lockvar s:_str2float
+
 function! s:_float2str_smart(val) abort " {{{2
     return printf('%.1f', a:val)
 endfunction " }}}2
@@ -571,6 +585,18 @@ endfunction " }}}2
 
 let s:_float2str = function(has('float') ? 's:_float2str_smart' : 's:_float2str_dumb')
 lockvar s:_float2str
+
+function! s:_getbufvar_dumb(buf, name, ...) abort " {{{2
+    let ret = getbufvar(a:buf, a:name)
+    if a:0 && type(ret) == type('') && ret ==# ''
+        unlet! ret
+        let ret = a:1
+    endif
+    return ret
+endfunction "}}}2
+
+let s:_getbufvar = function(v:version > 703 || (v:version == 703 && has('patch831')) ? 'getbufvar' : 's:_getbufvar_dumb')
+lockvar s:_getbufvar
 
 " }}}1
 

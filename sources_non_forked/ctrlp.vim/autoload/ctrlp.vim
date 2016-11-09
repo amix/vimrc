@@ -98,6 +98,7 @@ let [s:pref, s:bpref, s:opts, s:new_opts, s:lc_opts] =
 	\ 'bufname_mod':           ['s:bufname_mod', ':t'],
 	\ 'bufpath_mod':           ['s:bufpath_mod', ':~:.:h'],
 	\ 'formatline_func':       ['s:flfunc', 's:formatline(v:val)'],
+	\ 'user_command_async':    ['s:usrcmdasync', 0],
 	\ }, {
 	\ 'open_multiple_files':   's:opmul',
 	\ 'regexp':                's:regexp',
@@ -212,11 +213,13 @@ el
 en
 let g:ctrlp_builtins = len(g:ctrlp_types)-1
 
-let s:coretypes = filter([
-	\ ['files', 'fil'],
-	\ ['buffers', 'buf'],
-	\ ['mru files', 'mru'],
-\ ], 'index(g:ctrlp_types, v:val[1])!=-1')
+let s:coretype_names = {
+	\ 'fil' : 'files',
+	\ 'buf' : 'buffers',
+	\ 'mru' : 'mru files',
+	\ }
+
+let s:coretypes = map(copy(g:ctrlp_types), '[s:coretype_names[v:val], v:val]')
 
 " Get the options {{{2
 fu! s:opts(...)
@@ -326,11 +329,11 @@ fu! s:Open()
 	cal s:setupblank()
 endf
 
-fu! s:Close(exit)
+fu! s:Close()
 	cal s:buffunc(0)
 	if winnr('$') == 1
 		bw!
-	elsei a:exit
+	el
 		try | bun!
 		cat | clo! | endt
 		cal s:unmarksigns()
@@ -431,6 +434,11 @@ fu! s:GlobPath(dirs, depth)
 	en
 endf
 
+fu! ctrlp#addfile(ch, file)
+	call add(g:ctrlp_allfiles, a:file)
+	cal s:BuildPrompt(1)
+endf
+
 fu! s:UserCmd(lscmd)
 	let [path, lscmd] = [s:dyncwd, a:lscmd]
 	let do_ign =
@@ -446,7 +454,13 @@ fu! s:UserCmd(lscmd)
 	if (has('win32') || has('win64')) && match(&shell, 'sh') != -1
 		let path = tr(path, '\', '/')
 	en
-	if has('patch-7.4-597') && !(has('win32') || has('win64'))
+	if s:usrcmdasync && v:version >= 800 && exists('*job_start')
+		if exists('s:job')
+			call job_stop(s:job)
+		en
+		let g:ctrlp_allfiles = []
+		let s:job = job_start([&shell, &shellcmdflag, printf(lscmd, path)], {'callback': 'ctrlp#addfile'})
+	elsei has('patch-7.4-597') && !(has('win32') || has('win64'))
 		let g:ctrlp_allfiles = systemlist(printf(lscmd, path))
 	el
 		let g:ctrlp_allfiles = split(system(printf(lscmd, path)), "\n")
@@ -658,7 +672,7 @@ fu! s:Update(str)
 	let pat = s:matcher == {} ? s:SplitPattern(str) : str
 	let lines = s:nolim == 1 && empty(str) ? copy(g:ctrlp_lines)
 		\ : s:MatchedItems(g:ctrlp_lines, pat, s:mw_res)
-	if empty(str) | call clearmatches() | en
+	if empty(str) | cal clearmatches() | en
 	cal s:Render(lines, pat)
 	return lines
 endf
@@ -923,7 +937,7 @@ fu! s:PrtExit()
 	let bw = bufwinnr('%')
 	exe bufwinnr(s:bufnr).'winc w'
 	if bufnr('%') == s:bufnr && bufname('%') == 'ControlP'
-		noa cal s:Close(1)
+		noa cal s:Close()
 		noa winc p
 	els
 		exe bw.'winc w'
@@ -2562,6 +2576,10 @@ fu! ctrlp#init(type, ...)
 	cal s:SetWD(a:0 ? a:1 : {})
 	cal s:MapNorms()
 	cal s:MapSpecs()
+	if empty(g:ctrlp_types) && empty(g:ctrlp_ext_vars)
+		call ctrlp#exit()
+		retu
+	en
 	if type(a:type) == 0
 		let type = a:type
 	el
@@ -2588,7 +2606,7 @@ if has('autocmd')
 	aug CtrlPAug
 		au!
 		au BufEnter ControlP cal s:checkbuf()
-		au BufLeave ControlP noa cal s:Close(0)
+		au BufLeave ControlP noa cal s:Close()
 		au VimLeavePre * cal s:leavepre()
 	aug END
 en

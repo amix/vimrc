@@ -48,19 +48,20 @@ CONTENTS                                                  *syntastic-contents*
     7.Compatibility with other software............|syntastic-compatibility|
         7.1.airline................................|syntastic-airline|
         7.2.The csh and tcsh shells................|syntastic-csh|
-        7.3.Eclim..................................|syntastic-eclim|
-        7.4.ferret.................................|syntastic-ferret|
-        7.5.The fish shell.........................|syntastic-fish|
-        7.6.The fizsh shell........................|syntastic-fizsh|
-        7.7.flagship...............................|syntastic-flagship|
-        7.8.powerline..............................|syntastic-powerline|
-        7.9.The PowerShell shell...................|syntastic-powershell|
-        7.10.python-mode...........................|syntastic-pymode|
-        7.11.vim-auto-save.........................|syntastic-vim-auto-save|
-        7.12.vim-go................................|syntastic-vim-go|
-        7.13.vim-virtualenv........................|syntastic-vim-virtualenv|
-        7.14.YouCompleteMe.........................|syntastic-ycm|
-        7.15.The zsh shell and MacVim..............|syntastic-zsh|
+        7.3.EasyGrep...............................|syntastic-easygrep|
+        7.4.Eclim..................................|syntastic-eclim|
+        7.5.ferret.................................|syntastic-ferret|
+        7.6.The fish shell.........................|syntastic-fish|
+        7.7.The fizsh shell........................|syntastic-fizsh|
+        7.8.flagship...............................|syntastic-flagship|
+        7.9.powerline..............................|syntastic-powerline|
+        7.10.The PowerShell shell..................|syntastic-powershell|
+        7.11.python-mode...........................|syntastic-pymode|
+        7.12.vim-auto-save.........................|syntastic-vim-auto-save|
+        7.13.vim-go................................|syntastic-vim-go|
+        7.14.vim-virtualenv........................|syntastic-vim-virtualenv|
+        7.15.YouCompleteMe.........................|syntastic-ycm|
+        7.16.The zsh shell and MacVim..............|syntastic-zsh|
     8.About........................................|syntastic-about|
     9.License......................................|syntastic-license|
 
@@ -301,12 +302,22 @@ the order specified. The set by |'syntastic_aggregate_errors'| still apply.
 Example: >
     :SyntasticCheck flake8 pylint
 <
+You can also run checkers for filetypes different from the current filetype
+by qualifying their names with their respective filetypes, like this:
+"<filetype>/<checker>".
+
+Example: >
+    :SyntasticCheck lacheck text/language_check
+<
 :SyntasticInfo                                                *:SyntasticInfo*
 
 The command takes an optional argument, and outputs information about the
 checkers available for the filetype named by said argument, or for the current
 filetype if no argument was provided.
 
+Example: >
+    :SyntasticInfo python
+<
 :SyntasticReset                                              *:SyntasticReset*
 
 Resets the list of errors and turns off all error notifiers.
@@ -761,6 +772,10 @@ If neither |'g:syntastic_<filetype>_checkers'| nor |'b:syntastic_checkers'|
 is set, a default list of checker is used. Beware however that this list
 deliberately kept minimal, for performance reasons.
 
+You can specify checkers for other filetypes anywhere in these lists, by
+qualifying their names with their respective filetypes: >
+    let g:syntastic_tex_checkers = ["lacheck", "text/language_check"]
+<
 Take a look elsewhere in this manual to find out what checkers and filetypes
 are supported by syntastic: |syntastic-checkers|.
 
@@ -854,9 +869,8 @@ omitting the filename from the command line: >
     let g:syntastic_sml_smlnj_fname = ""
 <
                                             *syntastic-config-no-makeprgbuild*
-For checkers that do not use the "makeprgBuild()" function you will have to
-look at the source code of the checker in question. If there are specific
-options that can be set they are normally documented in this manual (see
+For checkers that do not use the "makeprgBuild()" function any specific
+options that can be set should be documented in this manual (see
 |syntastic-checkers|).
 
 ------------------------------------------------------------------------------
@@ -1017,7 +1031,16 @@ such as "zsh", "bash", "ksh", or even the original Bourne "sh": >
     let g:syntastic_shell = "/bin/sh"
 <
 ------------------------------------------------------------------------------
-7.3. Eclim                                                   *syntastic-eclim*
+7.3. EasyGrep                                             *syntastic-easygrep*
+
+The "EasyGrep" Vim plugin (https://github.com/dkprice/vim-easygrep) can use
+either |quickfix| lists, or location lists (see |location-list|). Syntastic can
+be run along with "EasyGrep" provided that the latter is configured to use
+|quickfix| lists (which is the default at the time of this writing): >
+    let g:EasyGrepWindow = 0
+<
+------------------------------------------------------------------------------
+7.4. Eclim                                                   *syntastic-eclim*
 
 Syntastic can be used together with "Eclim" (see http://eclim.org/). However,
 by default Eclim disables syntastic's checks for the filetypes it supports, in
@@ -1030,7 +1053,7 @@ run Eclim's validation for others. Please consult Eclim's documentation for
 details.
 
 ------------------------------------------------------------------------------
-7.4. ferret                                                 *syntastic-ferret*
+7.5. ferret                                                 *syntastic-ferret*
 
 At the time of this writing syntastic conflicts with the "ferret" Vim plugin
 (https://github.com/wincent/ferret). The "ferret" plugin assumes control over
@@ -1038,7 +1061,7 @@ loclist windows even when configured to use |quickfix| lists. This interferes
 with syntastic's functioning.
 
 ------------------------------------------------------------------------------
-7.5. The fish shell                                           *syntastic-fish*
+7.6. The fish shell                                           *syntastic-fish*
 
 At the time of this writing the "fish" shell (see http://fishshell.com/)
 doesn't support the standard UNIX syntax for file redirections, and thus it
@@ -1048,7 +1071,7 @@ original Bourne "sh": >
     let g:syntastic_shell = "/bin/sh"
 <
 ------------------------------------------------------------------------------
-7.6. The fizsh shell                                         *syntastic-fizsh*
+7.7. The fizsh shell                                         *syntastic-fizsh*
 
 Using syntastic with the "fizsh" shell (see https://github.com/zsh-users/fizsh)
 is possible, but potentially problematic. In order to do it you'll need to set
@@ -1061,7 +1084,7 @@ interactive features of "fizsh". Using a more traditional shell such as "zsh",
     let g:syntastic_shell = "/bin/sh"
 <
 ------------------------------------------------------------------------------
-7.7. flagship                                             *syntastic-flagship*
+7.8. flagship                                             *syntastic-flagship*
 
 The "flagship" Vim plugin (https://github.com/tpope/vim-flagship) has its
 own mechanism of showing flags on the |'statusline'|. To allow "flagship"
@@ -1071,7 +1094,7 @@ described in the |syntastic-statusline-flag| section above: >
     autocmd User Flags call Hoist("window", "SyntasticStatuslineFlag")
 <
 ------------------------------------------------------------------------------
-7.8. powerline                                           *syntastic-powerline*
+7.9. powerline                                           *syntastic-powerline*
 
 The "powerline" Vim plugin (https://github.com/powerline/powerline) comes
 packaged with a syntastic segment. To customize this segment create a file
@@ -1088,7 +1111,7 @@ packaged with a syntastic segment. To customize this segment create a file
     }
 <
 ------------------------------------------------------------------------------
-7.9. The PowerShell shell                               *syntastic-powershell*
+7.10. The PowerShell shell                              *syntastic-powershell*
 
 At the time of this writing syntastic is not compatible with using
 "PowerShell" (https://msdn.microsoft.com/en-us/powershell) as Vim's 'shell'.
@@ -1099,7 +1122,7 @@ You may still run Vim from "PowerShell", but you do have to point Vim's
     set shell=/bin/sh
 <
 ------------------------------------------------------------------------------
-7.10. python-mode                                           *syntastic-pymode*
+7.11. python-mode                                           *syntastic-pymode*
 
 Syntastic can be used along with the "python-mode" Vim plugin (see
 https://github.com/klen/python-mode). However, they both run syntax checks by
@@ -1110,14 +1133,14 @@ for python in syntastic (see |'syntastic_mode_map'|), or disable lint checks in
     let g:pymode_lint_on_write = 0
 <
 ------------------------------------------------------------------------------
-7.11. vim-auto-save                                  *syntastic-vim-auto-save*
+7.12. vim-auto-save                                  *syntastic-vim-auto-save*
 
 Syntastic can be used together with the "vim-auto-save" Vim plugin (see
 https://github.com/907th/vim-auto-save). However, syntastic checks in active
 mode only work with "vim-auto-save" version 0.1.7 or later.
 
 ------------------------------------------------------------------------------
-7.12. vim-go                                                *syntastic-vim-go*
+7.13. vim-go                                                *syntastic-vim-go*
 
 Syntastic can be used along with the "vim-go" Vim plugin (see
 https://github.com/fatih/vim-go). However, both "vim-go" and syntastic run
@@ -1134,7 +1157,7 @@ stick with |quickfix| lists: >
     let g:go_list_type = "quickfix"
 <
 ------------------------------------------------------------------------------
-7.13. vim-virtualenv                                *syntastic-vim-virtualenv*
+7.14. vim-virtualenv                                *syntastic-vim-virtualenv*
 
 At the time of this writing, syntastic can't run checkers installed
 in Python virtual environments activated by "vim-virtualenv" (see
@@ -1142,7 +1165,7 @@ https://github.com/jmcantrell/vim-virtualenv). This is a limitation of
 "vim-virtualenv".
 
 ------------------------------------------------------------------------------
-7.14. YouCompleteMe                                            *syntastic-ycm*
+7.15. YouCompleteMe                                            *syntastic-ycm*
 
 Syntastic can be used together with the "YouCompleteMe" Vim plugin (see
 http://valloric.github.io/YouCompleteMe/). However, by default "YouCompleteMe"
@@ -1153,7 +1176,7 @@ have to set |g:ycm_show_diagnostics_ui| to 0. E.g.: >
     let g:ycm_show_diagnostics_ui = 0
 <
 ------------------------------------------------------------------------------
-7.15. The zsh shell and MacVim                                 *syntastic-zsh*
+7.16. The zsh shell and MacVim                                 *syntastic-zsh*
 
 If you're running MacVim together with the "zsh" shell (http://www.zsh.org/)
 you need to be aware that MacVim does not source your .zshrc file, but will

@@ -1,5 +1,4 @@
 # Functions
-
 # prototype
 snippet proto
 	${1:class_name}.prototype.${2:method_name} = function(${3}) {
@@ -44,9 +43,7 @@ snippet sdf
 			${0}
 		};
 	};
-
 # Flow control
-
 # if
 snippet if
 	if (${1:true}) {
@@ -100,9 +97,6 @@ snippet terr
 # return
 snippet ret
 	return ${0:result};
-
-# Loops
-
 # for loop
 snippet for
 	for (var ${2:i} = 0, l = ${1:arr}.length; $2 < l; $2++) {
@@ -128,9 +122,7 @@ snippet fori
 	for (var ${1:prop} in ${2:object}) {
 		${0:$2[$1]}
 	}
-
 # Objects
-
 # Object Method
 snippet :f
 	${1:method_name}: function (${2:attribute}) {
@@ -207,9 +199,7 @@ snippet prop
 			configurable : ${0:boolean}
 		}
 	);
-
 # Documentation
-
 # docstring
 snippet /**
 	/**
@@ -228,9 +218,7 @@ snippet jsonp
 # JSON.stringify
 snippet jsons
 	JSON.stringify(${0:object});
-
 # DOM selectors
-
 # Get elements
 snippet get
 	getElementsBy${1:TagName}('${0}')
@@ -249,7 +237,6 @@ snippet qs
 # Query selector all
 snippet qsa
 	${1:document}.querySelectorAll('${0:CSS selector}')
-
 # Debugging
 snippet de
 	debugger;
@@ -265,6 +252,9 @@ snippet ce
 # console.warn
 snippet cw
 	console.warn(${0});
+# console.info
+snippet ci
+	console.info(${0});
 # console.trace
 snippet ct
 	console.trace(${0:label});
@@ -277,13 +267,10 @@ snippet ca
 # console.dir
 snippet cdir
 	console.dir(${0:obj});
-
 # Misc
-
 # 'use strict';
 snippet us
 	'use strict';
-
 # setTimeout function
 snippet timeout
 	setTimeout(function () {${0}}${2}, ${1:10});

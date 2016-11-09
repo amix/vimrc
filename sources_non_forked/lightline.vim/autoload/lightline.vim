@@ -2,7 +2,7 @@
 " Filename: autoload/lightline.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2016/09/04 13:01:40.
+" Last Change: 2016/10/05 08:00:00.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -191,10 +191,6 @@ function! lightline#colorscheme() abort
     let s:lightline.colorscheme = 'default'
     let s:lightline.palette = g:lightline#colorscheme#{s:lightline.colorscheme}#palette
   finally
-    let s:highlight = {}
-    call lightline#highlight('normal')
-    call lightline#link()
-    let s:_ = 0
     if has('win32') && !has('gui_running') && &t_Co < 256
       for u in values(s:lightline.palette)
         for v in values(u)
@@ -204,6 +200,10 @@ function! lightline#colorscheme() abort
         endfor
       endfor
     endif
+    let s:highlight = {}
+    call lightline#highlight('normal')
+    call lightline#link()
+    let s:_ = 0
   endtry
 endfunction
 

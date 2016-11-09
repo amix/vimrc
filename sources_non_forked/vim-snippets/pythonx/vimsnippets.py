@@ -32,7 +32,7 @@ def _parse_comments(s):
             flags, text = next(i).split(':', 1)
 
             if len(flags) == 0:
-                rv.append((text, text, text, ""))
+                rv.append(('OTHER', text, text, text, ""))
             # parse 3-part comment, but ignore those with O flag
             elif 's' in flags and 'O' not in flags:
                 ctriple = ["TRIPLE"]

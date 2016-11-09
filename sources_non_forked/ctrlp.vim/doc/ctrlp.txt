@@ -943,7 +943,8 @@ Once inside the prompt:~
     Toggle the focus between the match window and the prompt.
 
   <esc>,
-  <c-c>
+  <c-c>,
+  <c-g>
     Exit CtrlP.
 
 Moving:~

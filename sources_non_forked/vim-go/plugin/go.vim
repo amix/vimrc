@@ -200,6 +200,10 @@ augroup vim-go
   autocmd BufWritePre *.s call s:asmfmt_autosave()
   autocmd BufWritePost *.go call s:metalinter_autosave()
   autocmd BufNewFile *.go call s:template_autocreate()
+  " clear SameIds when the buffer is unloaded so that loading another buffer
+  " in the same window doesn't highlight the most recently matched
+  " identifier's positions.
+  autocmd BufWinEnter *.go call go#guru#ClearSameIds()
 augroup END
 
 " vim: sw=2 ts=2 et

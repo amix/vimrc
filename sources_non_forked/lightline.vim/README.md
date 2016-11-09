@@ -415,15 +415,15 @@ let g:lightline = {
       \             [ 'fugitive', 'readonly', 'filename', 'modified' ] ]
       \ },
       \ 'component_function': {
-      \   'fugitive': 'LightLineFugitive',
-      \   'readonly': 'LightLineReadonly',
-      \   'modified': 'LightLineModified'
+      \   'fugitive': 'LightlineFugitive',
+      \   'readonly': 'LightlineReadonly',
+      \   'modified': 'LightlineModified'
       \ },
       \ 'separator': { 'left': '⮀', 'right': '⮂' },
       \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
       \ }
 
-function! LightLineModified()
+function! LightlineModified()
   if &filetype == "help"
     return ""
   elseif &modified
@@ -435,7 +435,7 @@ function! LightLineModified()
   endif
 endfunction
 
-function! LightLineReadonly()
+function! LightlineReadonly()
   if &filetype == "help"
     return ""
   elseif &readonly
@@ -445,7 +445,7 @@ function! LightLineReadonly()
   endif
 endfunction
 
-function! LightLineFugitive()
+function! LightlineFugitive()
   return exists('*fugitive#head') ? fugitive#head() : ''
 endfunction
 ```
@@ -464,16 +464,16 @@ let g:lightline = {
       \             [ 'fugitive', 'filename' ] ]
       \ },
       \ 'component_function': {
-      \   'fugitive': 'LightLineFugitive',
-      \   'readonly': 'LightLineReadonly',
-      \   'modified': 'LightLineModified',
-      \   'filename': 'LightLineFilename'
+      \   'fugitive': 'LightlineFugitive',
+      \   'readonly': 'LightlineReadonly',
+      \   'modified': 'LightlineModified',
+      \   'filename': 'LightlineFilename'
       \ },
       \ 'separator': { 'left': '⮀', 'right': '⮂' },
       \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
       \ }
 
-function! LightLineModified()
+function! LightlineModified()
   if &filetype == "help"
     return ""
   elseif &modified
@@ -485,7 +485,7 @@ function! LightLineModified()
   endif
 endfunction
 
-function! LightLineReadonly()
+function! LightlineReadonly()
   if &filetype == "help"
     return ""
   elseif &readonly
@@ -495,21 +495,21 @@ function! LightLineReadonly()
   endif
 endfunction
 
-function! LightLineFugitive()
+function! LightlineFugitive()
   return exists('*fugitive#head') ? fugitive#head() : ''
 endfunction
 
-function! LightLineFilename()
-  return ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
+function! LightlineFilename()
+  return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
        \ ('' != expand('%:t') ? expand('%:t') : '[No Name]') .
-       \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
+       \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
 endfunction
 ```
 ![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/14.png)
 
 Oops! We forgot the cool mark for the branch component! (work with the patched font for vim-powerline)
 ```vim
-function! LightLineFugitive()
+function! LightlineFugitive()
   if exists("*fugitive#head")
     let branch = fugitive#head()
     return branch !=# '' ? '⭠ '.branch : ''
@@ -528,7 +528,7 @@ let g:lightline = {
     \   'left': [ [ 'mode', 'paste' ],
     \             [ 'my_component' ] ] },
     \ 'component_function': {
-    \   'my_component': 'LightLineComponent', ...
+    \   'my_component': 'LightlineComponent', ...
 ```
 
 This is the end of the tutorial. For more information, see `:help lightline`. Good luck with your nice statuslines.
@@ -555,37 +555,37 @@ let g:lightline = {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ]
       \ },
       \ 'component_function': {
-      \   'modified': 'LightLineModified',
-      \   'readonly': 'LightLineReadonly',
-      \   'fugitive': 'LightLineFugitive',
-      \   'filename': 'LightLineFilename',
-      \   'fileformat': 'LightLineFileformat',
-      \   'filetype': 'LightLineFiletype',
-      \   'fileencoding': 'LightLineFileencoding',
-      \   'mode': 'LightLineMode',
+      \   'modified': 'LightlineModified',
+      \   'readonly': 'LightlineReadonly',
+      \   'fugitive': 'LightlineFugitive',
+      \   'filename': 'LightlineFilename',
+      \   'fileformat': 'LightlineFileformat',
+      \   'filetype': 'LightlineFiletype',
+      \   'fileencoding': 'LightlineFileencoding',
+      \   'mode': 'LightlineMode',
       \ },
       \ 'separator': { 'left': '⮀', 'right': '⮂' },
       \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
       \ }
 
-function! LightLineModified()
+function! LightlineModified()
   return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
 endfunction
 
-function! LightLineReadonly()
+function! LightlineReadonly()
   return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? '⭤' : ''
 endfunction
 
-function! LightLineFilename()
-  return ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
+function! LightlineFilename()
+  return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
         \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
         \  &ft == 'unite' ? unite#get_status_string() :
         \  &ft == 'vimshell' ? vimshell#get_status_string() :
         \ '' != expand('%:t') ? expand('%:t') : '[No Name]') .
-        \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
+        \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
 endfunction
 
-function! LightLineFugitive()
+function! LightlineFugitive()
   if &ft !~? 'vimfiler\|gundo' && exists("*fugitive#head")
     let branch = fugitive#head()
     return branch !=# '' ? '⭠ '.branch : ''
@@ -593,19 +593,19 @@ function! LightLineFugitive()
   return ''
 endfunction
 
-function! LightLineFileformat()
+function! LightlineFileformat()
   return winwidth(0) > 70 ? &fileformat : ''
 endfunction
 
-function! LightLineFiletype()
+function! LightlineFiletype()
   return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
 endfunction
 
-function! LightLineFileencoding()
+function! LightlineFileencoding()
   return winwidth(0) > 70 ? (&fenc !=# '' ? &fenc : &enc) : ''
 endfunction
 
-function! LightLineMode()
+function! LightlineMode()
   return winwidth(0) > 60 ? lightline#mode() : ''
 endfunction
 ```
@@ -640,12 +640,12 @@ let g:lightline = {
       \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
       \ },
       \ 'component_function': {
-      \   'fugitive': 'LightLineFugitive',
-      \   'filename': 'LightLineFilename',
-      \   'fileformat': 'LightLineFileformat',
-      \   'filetype': 'LightLineFiletype',
-      \   'fileencoding': 'LightLineFileencoding',
-      \   'mode': 'LightLineMode',
+      \   'fugitive': 'LightlineFugitive',
+      \   'filename': 'LightlineFilename',
+      \   'fileformat': 'LightlineFileformat',
+      \   'filetype': 'LightlineFiletype',
+      \   'fileencoding': 'LightlineFileencoding',
+      \   'mode': 'LightlineMode',
       \   'ctrlpmark': 'CtrlPMark',
       \ },
       \ 'component_expand': {
@@ -657,15 +657,15 @@ let g:lightline = {
       \ 'subseparator': { 'left': '|', 'right': '|' }
       \ }
 
-function! LightLineModified()
+function! LightlineModified()
   return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
 endfunction
 
-function! LightLineReadonly()
+function! LightlineReadonly()
   return &ft !~? 'help' && &readonly ? 'RO' : ''
 endfunction
 
-function! LightLineFilename()
+function! LightlineFilename()
   let fname = expand('%:t')
   return fname == 'ControlP' && has_key(g:lightline, 'ctrlp_item') ? g:lightline.ctrlp_item :
         \ fname == '__Tagbar__' ? g:lightline.fname :
@@ -673,12 +673,12 @@ function! LightLineFilename()
         \ &ft == 'vimfiler' ? vimfiler#get_status_string() :
         \ &ft == 'unite' ? unite#get_status_string() :
         \ &ft == 'vimshell' ? vimshell#get_status_string() :
-        \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
+        \ ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
         \ ('' != fname ? fname : '[No Name]') .
-        \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
+        \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
 endfunction
 
-function! LightLineFugitive()
+function! LightlineFugitive()
   try
     if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
       let mark = ''  " edit here for cool mark
@@ -690,19 +690,19 @@ function! LightLineFugitive()
   return ''
 endfunction
 
-function! LightLineFileformat()
+function! LightlineFileformat()
   return winwidth(0) > 70 ? &fileformat : ''
 endfunction
 
-function! LightLineFiletype()
+function! LightlineFiletype()
   return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
 endfunction
 
-function! LightLineFileencoding()
+function! LightlineFileencoding()
   return winwidth(0) > 70 ? (&fenc !=# '' ? &fenc : &enc) : ''
 endfunction
 
-function! LightLineMode()
+function! LightlineMode()
   let fname = expand('%:t')
   return fname == '__Tagbar__' ? 'Tagbar' :
         \ fname == 'ControlP' ? 'CtrlP' :
