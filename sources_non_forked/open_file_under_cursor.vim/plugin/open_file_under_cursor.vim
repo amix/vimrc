@@ -12,7 +12,7 @@ function! GotoFile(w)
         let pos = ""
         let fname = curword
     endif
- 
+
     " check exists file.
     if filereadable(fname)
         let fullname = fname
@@ -36,6 +36,5 @@ endfunction
 set isfname+=: " include colon in filenames
 
 " Override vim commands 'gf', '^Wf', '^W^F'
-nnoremap gf :call GotoFile("")<CR>
 nnoremap <C-W>f :call GotoFile("new")<CR>
 nnoremap <C-W><C-F> :call GotoFile("new")<CR>
