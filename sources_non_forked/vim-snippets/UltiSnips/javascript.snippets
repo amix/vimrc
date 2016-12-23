@@ -158,14 +158,4 @@ snippet cw "console.warn" b
 console.warn(${1:"${2:value}"});
 endsnippet
 
-# AMD (Asynchronous Module Definition) snippets
-
-snippet def "define an AMD module"
-define(${1:optional_name, }[${2:'jquery'}], ${3:callback});
-endsnippet
-
-snippet req "require an AMD module"
-require([${1:'dependencies'}], ${2:callback});
-endsnippet
-
 # vim:ft=snippets:

@@ -28,13 +28,9 @@ function! snipMate#expandSnip(snip, version, col) abort
 		let [snippet, b:snip_state.stops] = snipmate#parse#snippet(a:snip)
 		" Build stop/mirror info
 		let b:snip_state.stop_count = s:build_stops(snippet, b:snip_state.stops, lnum, col, indent)
-		let snipLines = map(copy(snippet),
-					\ 'snipMate#sniplist_str(v:val, b:snip_state.stops)')
 	else
 		let snippet = snipmate#legacy#process_snippet(a:snip)
 		let [b:snip_state.stops, b:snip_state.stop_count] = snipmate#legacy#build_stops(snippet, lnum, col - indent, indent)
-		let snipLines = split(substitute(snippet, printf('%s\d\+\|%s{\d\+.\{-}}',
-					\ g:snipmate#legacy#sigil, g:snipmate#legacy#sigil), '', 'g'), "\n", 1)
 	endif
 
 	" Abort if the snippet is empty
@@ -42,23 +38,7 @@ function! snipMate#expandSnip(snip, version, col) abort
 		return ''
 	endif
 
-	" Expand snippet onto current position
-	let afterCursor = strpart(line, col - 1)
-	" Keep text after the cursor
-	if afterCursor != "\t" && afterCursor != ' '
-		let line = strpart(line, 0, col - 1)
-		let snipLines[-1] .= afterCursor
-	else
-		let afterCursor = ''
-		" For some reason the cursor needs to move one right after this
-		if line != '' && col == 1 && &ve != 'all' && &ve != 'onemore'
-			let col += 1
-		endif
-	endif
-
-	" Insert snippet with proper indentation
-	call setline(lnum, line . snipLines[0])
-	call append(lnum, map(snipLines[1:], "empty(v:val) ? v:val : '" . strpart(line, 0, indent - 1) . "' . v:val"))
+	let col = s:insert_snippet_text(snippet, lnum, col, indent)
 
 	" Open any folds snippet expands into
 	if &foldenable
@@ -75,6 +55,50 @@ function! snipMate#expandSnip(snip, version, col) abort
 
 	let b:snip_state.stop_no = 0
 	return b:snip_state.set_stop(0)
+endfunction
+
+function! s:insert_snippet_text(snippet, lnum, col, indent)
+	let line = getline(a:lnum)
+	let col = a:col
+	let snippet = type(a:snippet) == type([]) ? a:snippet : split(a:snippet, "\n", 1)
+	let lnum = a:lnum
+
+	" Keep text after the cursor
+	let afterCursor = strpart(line, col - 1)
+	if afterCursor != "\t" && afterCursor != ' '
+		let line = strpart(line, 0, col - 1)
+	else
+		let afterCursor = ''
+		" For some reason the cursor needs to move one right after this
+		if line != '' && col == 1 && &ve != 'all' && &ve != 'onemore'
+			let col += 1
+		endif
+	endif
+
+	call setline(lnum, '')
+	call append(lnum, repeat([''], len(snippet) - 1))
+
+	for item in snippet
+		let add = lnum == a:lnum ? line : strpart(line, 0, a:indent - 1)
+
+		if !(empty(item) || (type(item) == type([]) && empty(item[0])))
+			if type(item) == type([])
+				call setline(lnum, add .
+							\ snipMate#sniplist_str(item, b:snip_state.stops))
+			else
+				call setline(lnum, add .
+							\ substitute(item, printf('%s\d\+\|%s{\d\+.\{-}}',
+							\ g:snipmate#legacy#sigil, g:snipmate#legacy#sigil),
+							\ '', 'g'))
+			endif
+		endif
+
+		let lnum += 1
+	endfor
+
+	call setline(lnum - 1, getline(lnum - 1) . afterCursor)
+
+	return col
 endfunction
 
 function! snipMate#placeholder_str(num, stops) abort

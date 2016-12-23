@@ -88,6 +88,8 @@ snippet defmo
 	defmodule ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
 		${0}
 	end
+snippet dfp
+	defp ${1:name}, do: ${2}
 snippet defp
 	defp ${1:name} do
 		${0}
@@ -100,6 +102,8 @@ snippet doc
 	@doc """
 	${0}
 	"""
+snippet docf
+	@doc false
 snippet fn
 	fn ${1:args} -> ${0} end
 snippet mdoc

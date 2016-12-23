@@ -3,7 +3,7 @@ if !exists("g:go_play_open_browser")
 endif
 
 
-function! go#play#Share(count, line1, line2)
+function! go#play#Share(count, line1, line2) abort
   if !executable('curl')
     echohl ErrorMsg | echomsg "vim-go: require 'curl' command" | echohl None
     return
@@ -42,7 +42,7 @@ function! go#play#Share(count, line1, line2)
 endfunction
 
 
-function! s:get_visual_content()
+function! s:get_visual_content() abort
   let save_regcont = @"
   let save_regtype = getregtype('"')
   silent! normal! gvy
@@ -55,7 +55,7 @@ endfunction
 " http://stackoverflow.com/questions/1533565/how-to-get-visually-selected-text-in-vimscript
 " another function that returns the content of visual selection, it's not used
 " but might be useful in the future
-function! s:get_visual_selection()
+function! s:get_visual_selection() abort
   let [lnum1, col1] = getpos("'<")[1:2]
   let [lnum2, col2] = getpos("'>")[1:2]
 
@@ -72,7 +72,7 @@ endfunction
 
 " following two functions are from: https://github.com/mattn/gist-vim 
 " thanks  @mattn
-function! s:get_browser_command()
+function! s:get_browser_command() abort
   let go_play_browser_command = get(g:, 'go_play_browser_command', '')
   if go_play_browser_command == ''
     if has('win32') || has('win64')

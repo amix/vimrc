@@ -1,0 +1,52 @@
+snippet mod
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`
+		(
+		) where
+
+		import Prelude
+
+		${0}
+snippet imp
+	import ${0:Data.List}
+snippet impq
+	import ${1:Data.List} as ${0:List}
+snippet fn0
+	${1:name} :: ${2:a}
+	$1 = ${0:undefined}
+snippet fn
+	${1:fn} :: ${2:a} -> ${3:a}
+	$1 ${4}= ${0}
+snippet fn1
+	${1:fn} :: ${2:a} -> ${3:a}
+	$1 ${4}= ${0}
+snippet fn2
+	${1:fn} :: ${2:a} -> ${3:a} -> ${4:a}
+	$1 ${5}= ${0}
+snippet fn3
+	${1:fn} :: ${2:a} -> ${3:a} -> ${4:a} -> ${5:a}
+	$1 ${6}= ${0}
+snippet case
+	case ${1} of
+		${2} -> ${0}
+snippet let
+	let
+		${1} = ${2}
+	in
+		${3}
+snippet where
+	where
+		${1} = ${0}
+snippet testunit
+	module Test.Main where
+
+	import Prelude
+	import Test.Unit (suite, test)
+	import Test.Unit.Main (runTest)
+	import Test.Unit.Assert as Assert
+
+	main = runTest do
+		suite "${1}" do
+			test "${2:the tests run}" do
+				Assert.equal
+					"Hello, world!"
+					"Hello, sailor!"

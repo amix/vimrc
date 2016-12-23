@@ -101,15 +101,13 @@ Stick this in your vimrc:
 Note: Now start vim with plain `vim`, not `vim .`
 
 ---
-> How can I open NERDTree on startup, and have my cursor start in the other window?
+> How can I open NERDTree automatically when vim starts up on opening a directory?
 
-Stick this in your vimrc:
+    autocmd StdinReadPre * let s:std_in=1
+    autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 
-    autocmd vimenter * NERDTree
-    autocmd vimenter * wincmd p
+This window is tab-specific, meaning it's used by all windows in the tab. This trick also prevents NERDTree from hiding when first selecting a file.
 
- *via [stackoverflow/Yohann](http://stackoverflow.com/questions/4277808/nerdtree-auto-focus-to-file-when-opened-in-new-tab/19330023#19330023)*
- 
 ---
 > How can I map a specific key or shortcut to open NERDTree?
 
@@ -134,5 +132,5 @@ See here: https://github.com/scrooloose/nerdtree/issues/433#issuecomment-9259069
 
 Use these variables in your vimrc. Note that below are default arrow symbols
 
-    let g:NERDTreeDirArrowExpandable = '►'
-    let g:NERDTreeDirArrowCollapsible = '▼'
+    let g:NERDTreeDirArrowExpandable = '▸'
+    let g:NERDTreeDirArrowCollapsible = '▾'

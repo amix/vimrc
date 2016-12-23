@@ -17,7 +17,7 @@ let [g:ctrlp_lines, g:ctrlp_allfiles, g:ctrlp_alltags, g:ctrlp_alldirs,
 if !exists('g:ctrlp_map') | let g:ctrlp_map = '<c-p>' | en
 if !exists('g:ctrlp_cmd') | let g:ctrlp_cmd = 'CtrlP' | en
 
-com! -n=? -com=dir CtrlP         cal ctrlp#init('fil', { 'dir': <q-args> })
+com! -n=? -com=dir CtrlP         cal ctrlp#init(0, { 'dir': <q-args> })
 com! -n=? -com=dir CtrlPMRUFiles cal ctrlp#init('mru', { 'dir': <q-args> })
 
 com! -bar CtrlPBuffer   cal ctrlp#init('buf')

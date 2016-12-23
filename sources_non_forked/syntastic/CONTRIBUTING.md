@@ -97,9 +97,9 @@ let errorformat =
     \ '%-G%.%#'
 ```
 
-[bug_tracker]:      https://github.com/scrooloose/syntastic/issues
-[manual]:           https://github.com/scrooloose/syntastic/blob/master/doc/syntastic.txt
-[github]:           https://github.com/scrooloose/syntastic
+[bug_tracker]:      https://github.com/vim-syntastic/syntastic/issues
+[manual]:           https://github.com/vim-syntastic/syntastic/blob/master/doc/syntastic.txt
+[github]:           https://github.com/vim-syntastic/syntastic
 [branches]:         https://github.com/dchelimsky/rspec/wiki/Topic-Branches#using-topic-branches-when-contributing-patches
 [variables]:        http://www.refactoring.com/catalog/extractVariable.html
-[guide]:            https://github.com/scrooloose/syntastic/wiki/Syntax-Checker-Guide
+[guide]:            https://github.com/vim-syntastic/syntastic/wiki/Syntax-Checker-Guide

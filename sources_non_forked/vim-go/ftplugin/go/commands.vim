@@ -17,15 +17,15 @@ command! -nargs=? GoGuruTags call go#guru#Tags(<f-args>)
 
 command! -nargs=* -range GoAddTags call go#util#AddTags(<line1>, <line2>, <f-args>)
 
-command! -range=% GoSameIds call go#guru#SameIds(<count>)
+command! -range=0 GoSameIds call go#guru#SameIds()
 command! -range=0 GoSameIdsClear call go#guru#ClearSameIds()
-command! -range=% GoSameIdsToggle call go#guru#ToggleSameIds(<count>)
+command! -range=0 GoSameIdsToggle call go#guru#ToggleSameIds()
 command! -range=0 GoSameIdsAutoToggle call go#guru#AutoToogleSameIds()
 
 " -- tool
 command! -nargs=0 GoFiles echo go#tool#Files()
 command! -nargs=0 GoDeps echo go#tool#Deps()
-command! -nargs=* GoInfo call go#complete#Info(0)
+command! -nargs=* GoInfo call go#tool#Info(0)
 command! -nargs=0 GoAutoTypeInfoToggle call go#complete#ToggleAutoTypeInfo()
 
 " -- cmd

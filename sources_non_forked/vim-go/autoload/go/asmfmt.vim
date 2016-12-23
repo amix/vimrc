@@ -11,7 +11,7 @@
 "
 " Options:
 "
-"   g:go_asmfmt_autosave [default=1]
+"   g:go_asmfmt_autosave [default=0]
 "
 "       Flag to automatically call :Fmt when file is saved.
 
@@ -19,7 +19,7 @@ let s:got_fmt_error = 0
 
 " This is a trimmed-down version of the logic in fmt.vim.
 
-function! go#asmfmt#Format()
+function! go#asmfmt#Format() abort
   " Save state.
   let l:curw = winsaveview()
 
@@ -55,15 +55,15 @@ function! go#asmfmt#Format()
   call winrestview(l:curw)
 endfunction
 
-function! go#asmfmt#ToggleAsmFmtAutoSave()
-  if get(g:, "go_asmfmt_autosave", 1)
-    let g:go_asmfmt_autosave = 0
-    call go#util#EchoProgress("auto asmfmt disabled")
+function! go#asmfmt#ToggleAsmFmtAutoSave() abort
+  if get(g:, "go_asmfmt_autosave", 0)
+    let g:go_asmfmt_autosave = 1
+    call go#util#EchoProgress("auto asmfmt enabled")
     return
   end
 
-  let g:go_asmfmt_autosave = 1
-  call go#util#EchoProgress("auto asmfmt enabled")
+  let g:go_asmfmt_autosave = 0
+  call go#util#EchoProgress("auto asmfmt disabled")
 endfunction
 
 " vim: sw=2 ts=2 et

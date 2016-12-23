@@ -57,7 +57,75 @@ if get(g:, "go_textobj_enabled", 1)
 endif
 
 if get(g:, "go_auto_type_info", 0) || get(g:, "go_auto_sameids", 0)
-  setlocal updatetime=800
+  let &l:updatetime= get(g:, "go_updatetime", 800)
 endif
+
+" NOTE(arslan): experimental, disabled by default, doesn't work well. No
+" documentation as well. If anyone feels adventerous, enable the following and
+" try to search for Go identifiers ;)
+"
+" if get(g:, "go_sameid_search_enabled", 0)
+"   autocmd FileType go nnoremap <buffer> <silent> * :<c-u>call Sameids_search(0)<CR>
+"   autocmd FileType go nnoremap <buffer> <silent> # :<c-u>call Sameids_search(1)<CR>
+"   autocmd FileType go nnoremap <buffer> <silent> n :<c-u>call Sameids_repeat(0)<CR>
+"   autocmd FileType go nnoremap <buffer> <silent> N :<c-u>call Sameids_repeat(1)<CR>
+"   autocmd FileType go cabbrev nohlsearch <C-r>=Sameids_nohlsearch()<CR>
+" endif
+
+" " mode 0: next 1: prev
+" function! Sameids_repeat(mode)
+"   let matches = getmatches()
+"   if empty(matches)
+"     return
+"   endif
+"   let cur_offset = go#util#OffsetCursor()
+
+"   " reverse list to make it easy to find the prev occurence
+"   if a:mode
+"    call reverse(matches)
+"   endif
+
+"   for m in matches
+"     if !has_key(m, "group")
+"       return
+"     endif
+
+"     if m.group != "goSameId"
+"       return
+"     endif
+
+"     let offset = go#util#Offset(m.pos1[0], m.pos1[1])
+
+"     if a:mode && cur_offset > offset
+"       call cursor(m.pos1[0], m.pos1[1])
+"       return
+"     elseif !a:mode && cur_offset < offset
+"       call cursor(m.pos1[0], m.pos1[1])
+"       return
+"     endif
+"   endfor
+
+"   " reached start/end, jump to the end/start
+"   let initial_match = matches[0]
+"   if !has_key(initial_match, "group")
+"     return
+"   endif
+
+"   if initial_match.group != "goSameId"
+"     return
+"   endif
+
+"   call cursor(initial_match.pos1[0], initial_match.pos1[1])
+" endfunction
+
+" function! Sameids_search(mode)
+"   call go#guru#SameIds()
+"   call Sameids_repeat(a:mode)
+" endfunction
+
+" function! Sameids_nohlsearch()
+"   call go#guru#ClearSameIds()
+"   return "nohlsearch"
+" endfunction
 
 " vim: sw=2 ts=2 et

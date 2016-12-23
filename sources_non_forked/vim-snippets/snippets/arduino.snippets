@@ -1,8 +1,8 @@
 snippet setup
 	void setup()
 	{
-		${0}
-		Serial.begin(9600);
+		Serial.begin(${1:9600});
+		${2}
 	}
 
 snippet loop
@@ -13,6 +13,9 @@ snippet loop
 
 snippet inc
 	#include <${1}.h>
+
+snippet def
+	#define ${1}
 
 # if
 snippet if
@@ -50,12 +53,12 @@ snippet case
 
 # for
 snippet for
-	for (${2:i} = 0; $2 < ${1:count}; $2${3:++}) {
+	for (int ${2:i} = 0; $2 < ${1:count}; $2${3:++}) {
 		${4}
 	}
 # for (custom)
 snippet forr
-	for (${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++}) {
+	for (int ${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++}) {
 		${5}
 	}
 # while
@@ -93,14 +96,29 @@ snippet dwLow
 # digitalRead
 snippet dr
 	digitalRead(${1});
+# analogRead
+snippet ar
+	analogRead(${1});
+# analogWrite
+snippet aw
+	analogWrite(${1});
 # serialRead
 snippet sr
-	serialRead();
-# serial.println
+	Serial.read();
+# serialWrite
+snippet sw
+	Serial.write();
+# serial.print
 snippet sp
-	serial.println(${1});
+	Serial.print(${1});
+# serial.println
+snippet sl
+	Serial.println(${1});
 
 
 # delay
 snippet dl
 	delay(${1});
+# millis
+snippet ml
+	millis();

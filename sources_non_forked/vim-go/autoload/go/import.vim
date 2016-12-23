@@ -4,7 +4,7 @@
 "
 " Check out the docs for more information at /doc/vim-go.txt
 "
-function! go#import#SwitchImport(enabled, localname, path, bang)
+function! go#import#SwitchImport(enabled, localname, path, bang) abort
   let view = winsaveview()
   let path = substitute(a:path, '^\s*\(.\{-}\)\s*$', '\1', '')
 
@@ -205,7 +205,7 @@ function! go#import#SwitchImport(enabled, localname, path, bang)
 endfunction
 
 
-function! s:Error(s)
+function! s:Error(s) abort
   echohl Error | echo a:s | echohl None
 endfunction
 

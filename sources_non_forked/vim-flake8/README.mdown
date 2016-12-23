@@ -108,6 +108,20 @@ This plugin goes well together with the following plugin:
   and `<F9>`)
 
 
+Max line lengths
+----------------
+
+One particular customization a lot of people like to make is relaxing the
+maximum line length default.  This is a config setting that should be set in
+flake8 itself. (vim-flake8 "just" invokes it and deals with showing the output
+in Vim's quickfix window.)
+
+To do so, put the following into your `~/.config/flake8` file:
+
+    [flake8]
+    max-line-length = 120
+
+
 History
 -------
 1.6: Deprecated configuring flake8 options through Vim settings.  Instead,

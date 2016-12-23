@@ -1,0 +1,58 @@
+# Snippets for 
+# Authored by Trevor Sullivan <trevor@trevorsullivan.net>
+
+# PowerShell Class
+snippet class
+	class {
+		[string] ${0:FirstName}
+	}
+
+# PowerShell Advanced Function 
+snippet function
+	function {0:name} {
+		[CmdletBinding()]
+		param (
+			[Parameter(Mandatory = $true)]
+			[string] $Param1
+		)
+
+		begin {
+		}
+
+		process {
+		}
+
+		end {
+		}
+	}
+
+# PowerShell Splatting
+snippet splatting
+	$Params = @{
+		${0:Param1} = 'Value1'
+		${1:Param2} = 'Value2'
+	}
+	${3:CommandName}
+
+# PowerShell Enumeration
+snippet enum
+	enum ${0:name} {
+		${1:item1}
+		${2:item2}
+	}
+
+# PowerShell if..then
+snippet if
+	if (${0:condition}) {
+		${1:statement}
+	}
+
+# PowerShell While Loop
+snippet while
+	while (${0:condition}) {
+		${1:statement}
+	}
+
+# PowerShell Filter..Sort
+snippet filtersort
+	${0:command} | Where-Object -FilterScript { $PSItem.${1:property} -${2:operator} '${3:expression}' } | Sort-Object -Property ${4:sortproperty}

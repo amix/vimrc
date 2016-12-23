@@ -4,7 +4,7 @@ if !exists("g:go_alternate_mode")
 endif
 
 " Test alternates between the implementation of code and the test code.
-function! go#alternate#Switch(bang, cmd)
+function! go#alternate#Switch(bang, cmd) abort
   let file = expand('%')
   if empty(file)
     call go#util#EchoError("no buffer name")

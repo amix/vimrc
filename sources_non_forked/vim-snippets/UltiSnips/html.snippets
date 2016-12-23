@@ -258,7 +258,7 @@ snippet style "XHTML <style>" w
 endsnippet
 
 snippet table "XHTML <table>" w
-<table border="${1:0}"${2: cellspacing="${3:5}" cellpadding="${4:5}"}>
+<table>
 	${0:${VISUAL}}
 </table>
 endsnippet
@@ -316,5 +316,9 @@ snippet movie "Embed QT movie (movie)" b
 		pluginspage="http://www.apple.com/quicktime/download/"
 	`!p x(snip)`>
 </object>
+endsnippet
+
+snippet viewport "Responsive viewport meta" w
+<meta name="viewport" content="width=device-width, initial-scale=1">
 endsnippet
 # vim:ft=snippets:

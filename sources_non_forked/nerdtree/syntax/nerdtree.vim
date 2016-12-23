@@ -72,8 +72,8 @@ hi def link NERDTreeDir Directory
 hi def link NERDTreeUp Directory
 hi def link NERDTreeFile Normal
 hi def link NERDTreeCWD Statement
-hi def link NERDTreeOpenable Title
-hi def link NERDTreeClosable Title
+hi def link NERDTreeOpenable Directory
+hi def link NERDTreeClosable Directory
 hi def link NERDTreeIgnore ignore
 hi def link NERDTreeRO WarningMsg
 hi def link NERDTreeBookmark Statement
