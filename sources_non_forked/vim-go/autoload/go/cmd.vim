@@ -1,19 +1,14 @@
-if !exists("g:go_dispatch_enabled")
-  let g:go_dispatch_enabled = 0
-endif
-
-function! go#cmd#autowrite()
+function! go#cmd#autowrite() abort
   if &autowrite == 1
-    silent wall
+    silent! wall
   endif
 endfunction
-
 
 " Build builds the source code without producting any output binary. We live in
 " an editor so the best is to build it to catch errors and fix them. By
 " default it tries to call simply 'go build', but it first tries to get all
 " dependent files for the current folder and passes it to go build.
-function! go#cmd#Build(bang, ...)
+function! go#cmd#Build(bang, ...) abort
   " expand all wildcards(i.e: '%' to the current file name)
   let goargs = map(copy(a:000), "expand(v:val)")
 
@@ -26,8 +21,18 @@ function! go#cmd#Build(bang, ...)
   " placeholder with the current folder (indicated with '.')
   let args = ["build"]  + goargs + [".", "errors"]
 
-  " if we have nvim, call it asynchronously and return early ;)
-  if has('nvim')
+  if go#util#has_job()
+    if get(g:, 'go_echo_command_info', 1)
+      call go#util#EchoProgress("building dispatched ...")
+    endif
+
+    call s:cmd_job({
+          \ 'cmd': ['go'] + args,
+          \ 'bang': a:bang,
+          \})
+    return
+  elseif has('nvim')
+    " if we have nvim, call it asynchronously and return early ;)
     call go#util#EchoProgress("building dispatched ...")
     call go#jobcontrol#Spawn(a:bang, "build", args)
     return
@@ -45,10 +50,7 @@ function! go#cmd#Build(bang, ...)
   let dir = getcwd()
   try
     execute cd . fnameescape(expand("%:p:h"))
-    if g:go_dispatch_enabled && exists(':Make') == 2
-      call go#util#EchoProgress("building dispatched ...")
-      silent! exe 'Make'
-    elseif l:listtype == "locationlist"
+    if l:listtype == "locationlist"
       silent! exe 'lmake!'
     else
       silent! exe 'make!'
@@ -60,11 +62,8 @@ function! go#cmd#Build(bang, ...)
 
   let errors = go#list#Get(l:listtype)
   call go#list#Window(l:listtype, len(errors))
-
-  if !empty(errors)
-    if !a:bang
-      call go#list#JumpToFirst(l:listtype)
-    endif
+  if !empty(errors) && !a:bang
+    call go#list#JumpToFirst(l:listtype)
   else
     call go#util#EchoSuccess("[build] SUCCESS")
   endif
@@ -75,7 +74,7 @@ endfunction
 
 
 " Run runs the current file (and their dependencies if any) in a new terminal.
-function! go#cmd#RunTerm(bang, mode, files)
+function! go#cmd#RunTerm(bang, mode, files) abort
   if empty(a:files)
     let cmd = "go run ".  go#util#Shelljoin(go#tool#Files())
   else
@@ -88,10 +87,16 @@ endfunction
 " This is intented to test small programs and play with them. It's not
 " suitable for long running apps, because vim is blocking by default and
 " calling long running apps will block the whole UI.
-function! go#cmd#Run(bang, ...)
+function! go#cmd#Run(bang, ...) abort
   if has('nvim')
     call go#cmd#RunTerm(a:bang, '', a:000)
     return
+  endif
+
+  if go#util#has_job()
+    " NOTE(arslan): 'term': 'open' case is not implement for +jobs. This means
+    " executions waiting for stdin will not work. That's why we don't do
+    " anything. Once this is implemented we're going to make :GoRun async
   endif
 
   let old_gopath = $GOPATH
@@ -119,9 +124,7 @@ function! go#cmd#Run(bang, ...)
 
   let l:listtype = go#list#Type("quickfix")
 
-  if g:go_dispatch_enabled && exists(':Make') == 2
-    silent! exe 'Make'
-  elseif l:listtype == "locationlist"
+  if l:listtype == "locationlist"
     exe 'lmake!'
   else
     exe 'make!'
@@ -130,7 +133,7 @@ function! go#cmd#Run(bang, ...)
   let items = go#list#Get(l:listtype)
   let errors = go#tool#FilterValids(items)
 
-  call go#list#Populate(l:listtype, errors)
+  call go#list#Populate(l:listtype, errors, &makeprg)
   call go#list#Window(l:listtype, len(errors))
   if !empty(errors) && !a:bang
     call go#list#JumpToFirst(l:listtype)
@@ -141,9 +144,28 @@ function! go#cmd#Run(bang, ...)
 endfunction
 
 " Install installs the package by simple calling 'go install'. If any argument
-" is given(which are passed directly to 'go install') it tries to install those
-" packages. Errors are populated in the location window.
-function! go#cmd#Install(bang, ...)
+" is given(which are passed directly to 'go install') it tries to install
+" those packages. Errors are populated in the location window.
+function! go#cmd#Install(bang, ...) abort
+  " use vim's job functionality to call it asynchronously
+  if go#util#has_job()
+    " expand all wildcards(i.e: '%' to the current file name)
+    let goargs = map(copy(a:000), "expand(v:val)")
+
+    " escape all shell arguments before we pass it to make
+    let goargs = go#util#Shelllist(goargs, 1)
+
+    if get(g:, 'go_echo_command_info', 1)
+      call go#util#EchoProgress("installing dispatched ...")
+    endif
+
+    call s:cmd_job({
+          \ 'cmd': ['go', 'install'] + goargs,
+          \ 'bang': a:bang,
+          \})
+    return
+  endif
+
   let old_gopath = $GOPATH
   let $GOPATH = go#path#Detect()
   let default_makeprg = &makeprg
@@ -159,10 +181,7 @@ function! go#cmd#Install(bang, ...)
   let dir = getcwd()
   try
     execute cd . fnameescape(expand("%:p:h"))
-    if g:go_dispatch_enabled && exists(':Make') == 2
-      call go#util#EchoProgress("building dispatched ...")
-      silent! exe 'Make'
-    elseif l:listtype == "locationlist"
+    if l:listtype == "locationlist"
       silent! exe 'lmake!'
     else
       silent! exe 'make!'
@@ -174,12 +193,10 @@ function! go#cmd#Install(bang, ...)
 
   let errors = go#list#Get(l:listtype)
   call go#list#Window(l:listtype, len(errors))
-  if !empty(errors)
-    if !a:bang
-      call go#list#JumpToFirst(l:listtype)
-    endif
+  if !empty(errors) && !a:bang
+    call go#list#JumpToFirst(l:listtype)
   else
-    redraws! | echon "vim-go: " | echohl Function | echon "installed to ". $GOPATH | echohl None
+    call go#util#EchoSuccess("installed to ". $GOPATH)
   endif
 
   let $GOPATH = old_gopath
@@ -189,7 +206,7 @@ endfunction
 " Test runs `go test` in the current directory. If compile is true, it'll
 " compile the tests instead of running them (useful to catch errors in the
 " test files). Any other argument is appendend to the final `go test` command
-function! go#cmd#Test(bang, compile, ...)
+function! go#cmd#Test(bang, compile, ...) abort
   let args = ["test"]
 
   " don't run the test, only compile it. Useful to capture and fix errors.
@@ -199,9 +216,15 @@ function! go#cmd#Test(bang, compile, ...)
   endif
 
   if a:0
-    " expand all wildcards(i.e: '%' to the current file name)
-    let goargs = map(copy(a:000), "expand(v:val)")
-    if !has('nvim')
+    let goargs = a:000
+
+    " do not expand for coverage mode as we're passing the arg ourself
+    if a:1 != '-coverprofile'
+      " expand all wildcards(i.e: '%' to the current file name)
+      let goargs = map(copy(a:000), "expand(v:val)")
+    endif
+
+    if !(has('nvim') || go#util#has_job())
       let goargs = go#util#Shelllist(goargs, 1)
     endif
 
@@ -212,13 +235,29 @@ function! go#cmd#Test(bang, compile, ...)
     call add(args, printf("-timeout=%s", timeout))
   endif
 
-  if a:compile
-    echon "vim-go: " | echohl Identifier | echon "compiling tests ..." | echohl None
-  else
-    echon "vim-go: " | echohl Identifier | echon "testing ..." | echohl None
+  if get(g:, 'go_echo_command_info', 1)
+    if a:compile
+      echon "vim-go: " | echohl Identifier | echon "compiling tests ..." | echohl None
+    else
+      echon "vim-go: " | echohl Identifier | echon "testing ..." | echohl None
+    endif
   endif
 
-  if has('nvim')
+  if go#util#has_job()
+    " use vim's job functionality to call it asynchronously
+    let job_args = {
+          \ 'cmd': ['go'] + args,
+          \ 'bang': a:bang,
+          \ }
+
+    if a:compile
+      let job_args['custom_cb'] = function('s:test_compile', [compile_file])
+    endif
+
+    call s:cmd_job(job_args)
+    return
+  elseif has('nvim')
+    " use nvims's job functionality
     if get(g:, 'go_term_enabled', 0)
       let id = go#term#new(a:bang, ["go"] + args)
     else
@@ -252,7 +291,7 @@ function! go#cmd#Test(bang, compile, ...)
     let errors = go#tool#ParseErrors(split(out, '\n'))
     let errors = go#tool#FilterValids(errors)
 
-    call go#list#Populate(l:listtype, errors)
+    call go#list#Populate(l:listtype, errors, command)
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang
       call go#list#JumpToFirst(l:listtype)
@@ -276,7 +315,7 @@ endfunction
 
 " Testfunc runs a single test that surrounds the current cursor position.
 " Arguments are passed to the `go test` command.
-function! go#cmd#TestFunc(bang, ...)
+function! go#cmd#TestFunc(bang, ...) abort
   " search flags legend (used only)
   " 'b' search backward instead of forward
   " 'c' accept a match at the cursor position
@@ -304,7 +343,7 @@ function! go#cmd#TestFunc(bang, ...)
 endfunction
 
 " Generate runs 'go generate' in similar fashion to go#cmd#Build()
-function! go#cmd#Generate(bang, ...)
+function! go#cmd#Generate(bang, ...) abort
   let default_makeprg = &makeprg
 
   let old_gopath = $GOPATH
@@ -322,9 +361,7 @@ function! go#cmd#Generate(bang, ...)
   let l:listtype = go#list#Type("quickfix")
 
   echon "vim-go: " | echohl Identifier | echon "generating ..."| echohl None
-  if g:go_dispatch_enabled && exists(':Make') == 2
-    silent! exe 'Make'
-  elseif l:listtype == "locationlist"
+  if l:listtype == "locationlist"
     silent! exe 'lmake!'
   else
     silent! exe 'make!'
@@ -346,12 +383,79 @@ function! go#cmd#Generate(bang, ...)
 endfunction
 
 
+" ---------------------
+" | Vim job callbacks |
+" ---------------------
+
+function s:cmd_job(args) abort
+  let status_dir = expand('%:p:h')
+  let started_at = reltime()
+
+  call go#statusline#Update(status_dir, {
+        \ 'desc': "current status",
+        \ 'type': a:args.cmd[1],
+        \ 'state': "started",
+        \})
+
+  " autowrite is not enabled for jobs
+  call go#cmd#autowrite()
+
+  function! s:error_info_cb(job, exit_status, data) closure abort
+    let status = {
+          \ 'desc': 'last status',
+          \ 'type': a:args.cmd[1],
+          \ 'state': "success",
+          \ }
+
+    if a:exit_status
+      let status.state = "failed"
+    endif
+
+    let elapsed_time = reltimestr(reltime(started_at))
+    " strip whitespace
+    let elapsed_time = substitute(elapsed_time, '^\s*\(.\{-}\)\s*$', '\1', '')
+    let status.state .= printf(" (%ss)", elapsed_time)
+
+    call go#statusline#Update(status_dir, status)
+  endfunction
+
+  let a:args.error_info_cb = function('s:error_info_cb')
+  let callbacks = go#job#Spawn(a:args)
+
+  let start_options = {
+        \ 'callback': callbacks.callback,
+        \ 'close_cb': callbacks.close_cb,
+        \ }
+
+  " modify GOPATH if needed
+  let old_gopath = $GOPATH
+  let $GOPATH = go#path#Detect()
+
+  " pre start
+  let dir = getcwd()
+  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+  let jobdir = fnameescape(expand("%:p:h"))
+  execute cd . jobdir
+
+  call job_start(a:args.cmd, start_options)
+
+  " post start
+  execute cd . fnameescape(dir)
+  let $GOPATH = old_gopath
+endfunction
+
+
+" test_compile is called when a GoTestCompile call is finished
+function! s:test_compile(test_file, job, exit_status, data) abort
+  call delete(a:test_file)
+endfunction
+
 " -----------------------
 " | Neovim job handlers |
 " -----------------------
 let s:test_compile_handlers = {}
 
-function! s:test_compile_handler(job, exit_status, data)
+function! s:test_compile_handler(job, exit_status, data) abort
   if !has_key(s:test_compile_handlers, a:job.id)
     return
   endif

@@ -327,7 +327,9 @@ CTRL-t
 :GoInfo
     Show type information about the identifier under the cursor. For example
     putting it above a function call is going to show the full function
-    signature. It uses gocode to get the type informations.
+    signature. By default it uses `gocode` to get the type informations. To
+    change the underlying tool from `gocode` to another tool, see
+    |g:go_info_mode|.
 
 
                                                                   *:GoInstall*
@@ -786,6 +788,10 @@ annotation.
 
 Calls `goimports` for the current package
 
+                                                                   *(go-lint)*
+
+Calls `golint` for the current package
+
                                                                     *(go-vet)*
 
 Calls `go vet` for the current package
@@ -946,13 +952,17 @@ vim-go also defines the following text motion objects:
 ==============================================================================
 FUNCTIONS                                                       *go-functions*
 
-                                                  *go#jobcontrol#Statusline()*
+                                                        *go#statusline#Show()*
 
 Shows the status of a job running asynchronously. Can be used to plug into the
 statusline. It works to show the status per package instead of per
 file. Assume you have three files open, all belonging to the same package, if
-the package build (`:GoBuild`) is successful, all statusline's will be empty
-(means SUCCESS), if you it fails all file's statusline will show FAILED.
+the package build (`:GoBuild`) is successful, all statusline's will show
+`success`, if you it fails all file's statusline will show `failed`. 
+
+To avoid always showing old status information, the status information is
+cleaned for each package after `60` seconds. This can be changed with the
+|g:go_statusline_duration| setting.
 
                                                        *go#complete#GetInfo()*
 
@@ -989,17 +999,35 @@ with |:GoPlay|. By default it's enabled. >
 
 Use this option to show the type info (|:GoInfo|) for the word under the
 cursor automatically. Whenever the cursor changes the type info will be
-updated. By default it's disabled.
+updated. By default it's disabled. The delay can be configured with the
+'g:go_updatetime' setting.
 >
   let g:go_auto_type_info = 0
+<
+
+                                                            *'g:go_info_mode'*
+
+Use this option to define the command to be used for |:GoInfo|. By default
+`gocode` is being used as it's the fastest option. But one might also use
+`guru` as it's covers more cases and is more accurate.  Current valid options
+are: `[gocode, guru]` >
+
+  let g:go_info_mode = 'gocode'
 <
                                                          *'g:go_auto_sameids'*
 
 Use this option to highlight all uses of the identifier under the cursor
 (:GoSameIds) automatically. By default it's disabled. The delay can be
-configured with the 'updatetime' setting.
+configured with the 'g:go_updatetime' setting.
 >
   let g:go_auto_sameids = 0
+<
+                                                           *'g:go_updatetime'*
+
+Use this option to configure the a custom 'updatetime' for Go source files. If
+set to 0, no custom time will be configured. By default it's set to 800ms.
+>
+  let g:go_updatetime = 800
 <
                                                         *'g:go_jump_to_error'*
 
@@ -1078,14 +1106,6 @@ Use this option to jump to an existing buffer for the split, vsplit and tab
 mappings of |:GoDef|. By default it's disabled. >
 
   let g:go_def_reuse_buffer = 0
-<
-                                                     *'g:go_dispatch_enabled'*
-
-Use this option to enable/disable the use of Dispatch to execute the `:GoRun`,
-`:GoBuild` and `:GoGenerate` commands. More information about Dispatch is
-available at https://github.com/tpope/vim-dispatch. Default is disabled. >
-
-  let g:go_dispatch_enabled = 0
 <
                                                           *'g:go_doc_command'*
 
@@ -1332,9 +1352,9 @@ appropriate kind of list for the command that was called. Supported values are
 <
                                                       *'g:go_asmfmt_autosave'*
 
-Use this option to auto |:AsmFmt| on save. By default it's enabled. >
+Use this option to auto |:AsmFmt| on save. By default it's disabled. >
 
-  let g:go_asmfmt_autosave = 1
+  let g:go_asmfmt_autosave = 0
 <
                                                             *'g:go_term_mode'*
 
@@ -1399,9 +1419,11 @@ to an autocompletion proposals. By default it is enabled.
                                               *'g:go_gocode_unimported_packages'*
 
 Specifies whether `gocode` should include suggestions from unimported packages.
-By default it is enabled
+By default it is disabled.
 >
-  let g:go_gocode_unimported_packages = 1
+  let g:go_gocode_unimported_packages = 0
+<
+
                                                    *'g:go_gocode_socket_type'*
 
 Specifies whether `gocode` should use a different socket type. By default
@@ -1420,6 +1442,9 @@ If the new file is created in an already prepopulated package (with other Go
 files), in this case a Go code template with only the Go package declaration
 (which is automatically determined according to the current package) is added.
 
+To always use the package name instead of the template, enable the
+|`g:go_template_use_pkg`| setting.
+
 By default it is enabled.
 >
   let g:go_template_autocreate = 1
@@ -1432,14 +1457,44 @@ the `hello_world.go` file is used.
 >
   let g:go_template_file = "hello_world.go"
 <
+                                                     *'g:go_template_use_pkg'*
+
+Specifies that, rather than using a template, the package name is used if a new
+Go file is created. Checkout |'g:go_template_autocreate'| for more info. By
+default the template file specified by |'g:go_template_file'| is used.
+
+>
+  let g:go_template_use_pkg = 0
+<
                                                        *'g:go_decls_includes'*
 
-    Only useful if `ctrlp.vim` is installed. This sets which declarations to
-    show for |:GoDecls|.
-    It is a Comma delimited list Possible options are: {func,type}.
-    The default is: >
+Only useful if `ctrlp.vim` is installed. This sets which declarations to show
+for |:GoDecls|.  It is a Comma delimited list Possible options are:
+{func,type}.  The default is: >
 
       let g:go_decls_includes = 'func,type'
+<
+                                                       *'g:go_echo_command_info'*
+
+Echoes information about various Go commands, such as `:GoBuild`, `:GoTest`,
+`:GoCoverage`, etc... Useful to disable if you use the statusline integration,
+i.e: |go#statusline#Show()|. By default it's enabled
+>
+      let g:go_echo_command_info = 1
+<
+                                                       *'g:go_echo_go_info'*
+
+Use this option to show the identifier information when completion is done. By
+default it's enabled >
+
+      let g:go_echo_go_info = 1
+<
+                                                    *'g:go_statusline_duration'*
+
+Specifices the duration of statusline information being showed per package. By
+default it's 60 seconds. Must be in milliseconds.
+>
+      let g:go_statusline_duration = 60000
 <
 ==============================================================================
 TROUBLESHOOTING                                         *go-troubleshooting*

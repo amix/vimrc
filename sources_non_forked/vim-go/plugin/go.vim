@@ -126,6 +126,10 @@ endfunction
 " ============================================================================
 "
 function! s:echo_go_info()
+  if !get(g:, "go_echo_go_info", 1)
+    return
+  endif
+
   if !exists('v:completed_item') || empty(v:completed_item)
     return
   endif
@@ -145,14 +149,14 @@ endfunction
 function! s:auto_type_info()
   " GoInfo automatic update
   if get(g:, "go_auto_type_info", 0)
-    call go#complete#Info(1)
+    call go#tool#Info(1)
   endif
 endfunction
 
 function! s:auto_sameids()
   " GoSameId automatic update
   if get(g:, "go_auto_sameids", 0)
-    call go#guru#SameIds(-1)
+    call go#guru#SameIds()
   endif
 endfunction
 
@@ -165,7 +169,7 @@ endfunction
 
 function! s:asmfmt_autosave()
   " Go asm formatting on save
-  if get(g:, "go_asmfmt_autosave", 1)
+  if get(g:, "go_asmfmt_autosave", 0)
     call go#asmfmt#Format()
   endif
 endfunction

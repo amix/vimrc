@@ -1497,6 +1497,28 @@ Special thanks:~
 ===============================================================================
 CHANGELOG                                                     *ctrlp-changelog*
 
+Before 2016/11/28~
+
+    + New command: |YankLine()| to yank current line.
+    + New option: |g:ctrlp_types| to select builtin modes.
+    + New feature: asynchronized spawn of |g:ctrlp_user_command|. This enable
+                  with set |g:user_command_async| to 1.
+    + Support buffertag for delphi, rust and golang.
+    + New option: |g:ctrlp_brief_prompt|,
+                  |g:match_current_file|,
+                  |g:ctrlp_compare_lim|.
+    + New feature: Auto-ignore extension.
+    + Support buffertag for ant, tex, dosbatch, matlab and vhdl.
+    + New option |g:ctrlp_line_prefix| for integrating third party plugins.
+    + New option |g:open_single_match| to open single file in matches.
+    + Add <plug>(ctrlp) for launch CtrlP.
+    + Accept bang for CtrlPBookmarkDirAdd to avoid confirm.
+    + Handle variable like "g:ctrlp_TYPE_MODE".
+                   ex: let g:ctrlp_path_sort
+    + New option: |g:ctrlp_custom_ancestors|
+
+Before 2014/08/08~
+
     + New buffer explorer mode with highlighting (|+conceal| recommended)
     + New options: |g:ctrlp_bufname_mod|,
                    |g:ctrlp_bufpath_mod|

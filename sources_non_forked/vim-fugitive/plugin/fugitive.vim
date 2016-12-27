@@ -2321,7 +2321,7 @@ function! s:Browse(bang,line1,count,...) abort
     if empty(url) && raw ==# '.'
       call s:throw("Instaweb failed to start")
     elseif empty(url)
-      call s:throw('"'.remote."' is not a supported remote")
+      call s:throw("'".remote."' is not a supported remote")
     endif
 
     let url = s:gsub(url, '[ <>]', '\="%".printf("%02X",char2nr(submatch(0)))')

@@ -28,7 +28,7 @@ if len(s:goarch) == 0
   endif
 endif
 
-function! go#package#Paths()
+function! go#package#Paths() abort
   let dirs = []
 
   if !exists("s:goroot")
@@ -54,7 +54,7 @@ function! go#package#Paths()
   return dirs
 endfunction
 
-function! go#package#ImportPath(arg)
+function! go#package#ImportPath(arg) abort
   let path = fnamemodify(resolve(a:arg), ':p')
   let dirs = go#package#Paths()
 
@@ -77,7 +77,7 @@ function! go#package#ImportPath(arg)
   endif
 endfunction
 
-function! go#package#FromPath(arg)
+function! go#package#FromPath(arg) abort
   let path = fnamemodify(resolve(a:arg), ':p')
   let dirs = go#package#Paths()
 
@@ -99,7 +99,7 @@ function! go#package#FromPath(arg)
   endif
 endfunction
 
-function! go#package#CompleteMembers(package, member)
+function! go#package#CompleteMembers(package, member) abort
   silent! let content = go#util#System('godoc ' . a:package)
   if go#util#ShellError() || !len(content)
     return []
@@ -118,7 +118,7 @@ function! go#package#CompleteMembers(package, member)
   endtry
 endfunction
 
-function! go#package#Complete(ArgLead, CmdLine, CursorPos)
+function! go#package#Complete(ArgLead, CmdLine, CursorPos) abort
   let words = split(a:CmdLine, '\s\+', 1)
 
   " do not complete package members for these commands

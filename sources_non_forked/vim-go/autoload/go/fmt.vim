@@ -51,7 +51,7 @@ endif
 "  it doesn't undo changes and break undo history.  If you are here reading
 "  this and have VimL experience, please look at the function for
 "  improvements, patches are welcome :)
-function! go#fmt#Format(withGoimport)
+function! go#fmt#Format(withGoimport) abort
   if g:go_fmt_experimental == 1
     " Using winsaveview to save/restore cursor state has the problem of
     " closing folds on save:
@@ -185,7 +185,7 @@ function! go#fmt#Format(withGoimport)
       % | " Couldn't detect gofmt error format, output errors
     endif
     if !empty(errors)
-      call go#list#Populate(l:listtype, errors)
+      call go#list#Populate(l:listtype, errors, 'Format')
       echohl Error | echomsg "Gofmt returned error" | echohl None
     endif
 
@@ -215,7 +215,7 @@ function! go#fmt#Format(withGoimport)
   endif
 endfunction
 
-function! go#fmt#ToggleFmtAutoSave()
+function! go#fmt#ToggleFmtAutoSave() abort
   if get(g:, "go_fmt_autosave", 1)
     let g:go_fmt_autosave = 0
     call go#util#EchoProgress("auto fmt disabled")

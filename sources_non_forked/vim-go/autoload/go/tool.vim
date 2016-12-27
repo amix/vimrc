@@ -1,4 +1,4 @@
-function! go#tool#Files()
+function! go#tool#Files() abort
   if go#util#IsWin()
     let format = '{{range $f := .GoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}'
   else
@@ -9,7 +9,7 @@ function! go#tool#Files()
   return split(out, '\n')
 endfunction
 
-function! go#tool#Deps()
+function! go#tool#Deps() abort
   if go#util#IsWin()
     let format = '{{range $f := .Deps}}{{$f}}{{printf \"\n\"}}{{end}}'
   else
@@ -20,7 +20,7 @@ function! go#tool#Deps()
   return split(out, '\n')
 endfunction
 
-function! go#tool#Imports()
+function! go#tool#Imports() abort
   let imports = {}
   if go#util#IsWin()
     let format = '{{range $f := .Imports}}{{$f}}{{printf \"\n\"}}{{end}}'
@@ -43,7 +43,18 @@ function! go#tool#Imports()
   return imports
 endfunction
 
-function! go#tool#PackageName()
+function! go#tool#Info(auto) abort
+  let l:mode = get(g:, 'go_info_mode', 'gocode')
+  if l:mode == 'gocode'
+    call go#complete#Info(a:auto)
+  elseif l:mode == 'guru'
+    call go#guru#DescribeInfo()
+  else
+    call go#util#EchoError('go_info_mode value: '. l:mode .' is not valid. Valid values are: [gocode, guru]')
+  endif
+endfunction
+
+function! go#tool#PackageName() abort
   let command = "go list -f \"{{.Name}}\""
   let out = go#tool#ExecuteInDir(command)
   if go#util#ShellError() != 0
@@ -53,7 +64,7 @@ function! go#tool#PackageName()
   return split(out, '\n')[0]
 endfunction
 
-function! go#tool#ParseErrors(lines)
+function! go#tool#ParseErrors(lines) abort
   let errors = []
 
   for line in a:lines
@@ -85,7 +96,7 @@ endfunction
 
 "FilterValids filters the given items with only items that have a valid
 "filename. Any non valid filename is filtered out.
-function! go#tool#FilterValids(items)
+function! go#tool#FilterValids(items) abort
   " Remove any nonvalid filename from the location list to avoid opening an
   " empty buffer. See https://github.com/fatih/vim-go/issues/287 for
   " details.
@@ -141,7 +152,7 @@ endfunction
 
 " Exists checks whether the given importpath exists or not. It returns 0 if
 " the importpath exists under GOPATH.
-function! go#tool#Exists(importpath)
+function! go#tool#Exists(importpath) abort
     let command = "go list ". a:importpath
     let out = go#tool#ExecuteInDir(command)
 
@@ -155,7 +166,7 @@ endfunction
 
 " following two functions are from: https://github.com/mattn/gist-vim 
 " thanks  @mattn
-function! s:get_browser_command()
+function! s:get_browser_command() abort
     let go_play_browser_command = get(g:, 'go_play_browser_command', '')
     if go_play_browser_command == ''
         if go#util#IsWin()
@@ -173,7 +184,7 @@ function! s:get_browser_command()
     return go_play_browser_command
 endfunction
 
-function! go#tool#OpenBrowser(url)
+function! go#tool#OpenBrowser(url) abort
     let cmd = s:get_browser_command()
     if len(cmd) == 0
         redraw

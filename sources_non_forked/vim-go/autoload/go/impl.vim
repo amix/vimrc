@@ -1,4 +1,4 @@
-function! go#impl#Impl(...)
+function! go#impl#Impl(...) abort
   let binpath = go#path#CheckBinPath('impl')
   if empty(binpath)
     return
@@ -69,7 +69,7 @@ else
   endfunction
 endif
 
-function! s:root_dirs()
+function! s:root_dirs() abort
   let dirs = []
   let root = go#util#goroot()
   if root !=# '' && isdirectory(root)
@@ -88,7 +88,7 @@ function! s:root_dirs()
   return dirs
 endfunction
 
-function! s:go_packages(dirs)
+function! s:go_packages(dirs) abort
   let pkgs = []
   for d in a:dirs
     let pkg_root = expand(d . '/pkg/' . go#util#osarch())
@@ -97,7 +97,7 @@ function! s:go_packages(dirs)
   return map(pkgs, "fnamemodify(v:val, ':t:r')")
 endfunction
 
-function! s:interface_list(pkg)
+function! s:interface_list(pkg) abort
   let contents = split(go#util#System('go doc ' . a:pkg), "\n")
   if go#util#ShellError()
     return []
@@ -108,7 +108,7 @@ function! s:interface_list(pkg)
 endfunction
 
 " Complete package and interface for {interface}
-function! go#impl#Complete(arglead, cmdline, cursorpos)
+function! go#impl#Complete(arglead, cmdline, cursorpos) abort
   let words = split(a:cmdline, '\s\+', 1)
   if words[-1] ==# ''
     return s:uniq(sort(s:go_packages(s:root_dirs())))

@@ -85,7 +85,7 @@ Take a look at the list of supported filetypes and checkers: |syntastic-checkers
 Note: This doc only deals with using syntastic. To learn how to write syntax
 checker integrations, see the guide on the GitHub wiki:
 
-    https://github.com/scrooloose/syntastic/wiki/Syntax-Checker-Guide
+    https://github.com/vim-syntastic/syntastic/wiki/Syntax-Checker-Guide
 
 ------------------------------------------------------------------------------
 1.1. Quick start                                        *syntastic-quickstart*
@@ -1196,7 +1196,7 @@ The core maintainers of syntastic are:
 
 Find the latest version of syntastic at:
 
-    http://github.com/scrooloose/syntastic
+    http://github.com/vim-syntastic/syntastic
 
 ==============================================================================
 9. License                                                 *syntastic-license*

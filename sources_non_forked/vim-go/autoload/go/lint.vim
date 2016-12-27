@@ -29,37 +29,42 @@ function! go#lint#Gometa(autosave, ...) abort
     let goargs = go#util#Shelljoin(a:000)
   endif
 
-  let meta_command = "gometalinter --disable-all"
+  let bin_path = go#path#CheckBinPath("gometalinter")
+  if empty(bin_path)
+    return
+  endif
+
+  let cmd = [bin_path]
+  let cmd += ["--disable-all"]
+
   if a:autosave || empty(g:go_metalinter_command)
-    let bin_path = go#path#CheckBinPath("gometalinter")
-    if empty(bin_path)
-      return
-    endif
-
-    if a:autosave
-      " include only messages for the active buffer
-      let meta_command .= " --include='^" . expand('%:p') . ".*$'"
-    endif
-
     " linters
     let linters = a:autosave ? g:go_metalinter_autosave_enabled : g:go_metalinter_enabled
     for linter in linters
-      let meta_command .= " --enable=".linter
+      let cmd += ["--enable=".linter]
     endfor
 
-    " deadline
-    let meta_command .= " --deadline=" . g:go_metalinter_deadline
-
     " path
-    let meta_command .=  " " . goargs
+    let cmd += [expand('%:p:h')]
   else
     " the user wants something else, let us use it.
-    let meta_command = g:go_metalinter_command
+    let cmd += [split(g:go_metalinter_command, " ")]
   endif
 
-  " comment out the following two lines for debugging
-  " echo meta_command
-  " return
+  if go#util#has_job() && has('lambda')
+    call s:lint_job({'cmd': cmd})
+    return
+  endif
+
+  " we add deadline only for sync mode
+  let cmd += ["--deadline=" . g:go_metalinter_deadline]
+  if a:autosave
+    " include only messages for the active buffer
+    let cmd += ["--include='^" . expand('%:p') . ".*$'"]
+  endif
+
+
+  let meta_command = join(cmd, " ")
 
   let out = go#tool#ExecuteInDir(meta_command)
 
@@ -77,7 +82,7 @@ function! go#lint#Gometa(autosave, ...) abort
     let errformat = "%f:%l:%c:%t%*[^:]:\ %m,%f:%l::%t%*[^:]:\ %m"
 
     " Parse and populate our location list
-    call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"))
+    call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"), 'GoMetaLinter')
 
     let errors = go#list#Get(l:listtype)
     call go#list#Window(l:listtype, len(errors))
@@ -117,7 +122,7 @@ endfunction
 
 " Vet calls 'go vet' on the current directory. Any warnings are populated in
 " the location list
-function! go#lint#Vet(bang, ...)
+function! go#lint#Vet(bang, ...) abort
   call go#cmd#autowrite()
   echon "vim-go: " | echohl Identifier | echon "calling vet..." | echohl None
   if a:0 == 0
@@ -129,7 +134,7 @@ function! go#lint#Vet(bang, ...)
   let l:listtype = "quickfix"
   if go#util#ShellError() != 0
     let errors = go#tool#ParseErrors(split(out, '\n'))
-    call go#list#Populate(l:listtype, errors)
+    call go#list#Populate(l:listtype, errors, 'Vet')
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang
       call go#list#JumpToFirst(l:listtype)
@@ -171,7 +176,7 @@ function! go#lint#Errcheck(...) abort
     let errformat = "%f:%l:%c:\ %m, %f:%l:%c\ %#%m"
 
     " Parse and populate our location list
-    call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"))
+    call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"), 'Errcheck')
 
     let errors = go#list#Get(l:listtype)
 
@@ -182,7 +187,7 @@ function! go#lint#Errcheck(...) abort
     endif
 
     if !empty(errors)
-      call go#list#Populate(l:listtype, errors)
+      call go#list#Populate(l:listtype, errors, 'Errcheck')
       call go#list#Window(l:listtype, len(errors))
       if !empty(errors)
         call go#list#JumpToFirst(l:listtype)
@@ -196,7 +201,7 @@ function! go#lint#Errcheck(...) abort
 
 endfunction
 
-function! go#lint#ToggleMetaLinterAutoSave()
+function! go#lint#ToggleMetaLinterAutoSave() abort
   if get(g:, "go_metalinter_autosave", 0)
     let g:go_metalinter_autosave = 0
     call go#util#EchoProgress("auto metalinter disabled")
@@ -205,6 +210,90 @@ function! go#lint#ToggleMetaLinterAutoSave()
 
   let g:go_metalinter_autosave = 1
   call go#util#EchoProgress("auto metalinter enabled")
+endfunction
+
+function s:lint_job(args)
+  let status_dir = expand('%:p:h')
+  let started_at = reltime()
+
+  call go#statusline#Update(status_dir, {
+        \ 'desc': "current status",
+        \ 'type': "gometalinter",
+        \ 'state': "analysing",
+        \})
+
+  " autowrite is not enabled for jobs
+  call go#cmd#autowrite()
+
+  let l:listtype = go#list#Type("quickfix")
+  let l:errformat = '%f:%l:%c:%t%*[^:]:\ %m,%f:%l::%t%*[^:]:\ %m'
+
+  function! s:callback(chan, msg) closure
+    let old_errorformat = &errorformat
+    let &errorformat = l:errformat
+    caddexpr a:msg
+    let &errorformat = old_errorformat
+
+    " TODO(arslan): cursor still jumps to first error even If I don't want
+    " it. Seems like there is a regression somewhere, but not sure where.
+    copen
+  endfunction
+
+  function! s:close_cb(chan) closure
+    let l:job = ch_getjob(a:chan)
+    let l:status = job_status(l:job)
+
+    let exitval = 1
+    if l:status == "dead"
+      let l:info = job_info(l:job)
+      let exitval = l:info.exitval
+    endif
+
+    let status = {
+          \ 'desc': 'last status',
+          \ 'type': "gometaliner",
+          \ 'state': "finished",
+          \ }
+
+    if exitval
+      let status.state = "failed"
+    endif
+
+    let elapsed_time = reltimestr(reltime(started_at))
+    " strip whitespace
+    let elapsed_time = substitute(elapsed_time, '^\s*\(.\{-}\)\s*$', '\1', '')
+    let status.state .= printf(" (%ss)", elapsed_time)
+
+    call go#statusline#Update(status_dir, status)
+
+    let errors = go#list#Get(l:listtype)
+    if empty(errors) 
+      call go#list#Window(l:listtype, len(errors))
+    elseif has("patch-7.4.2200")
+      if l:listtype == 'quickfix'
+        call setqflist([], 'a', {'title': 'GoMetaLinter'})
+      else
+        call setloclist(0, [], 'a', {'title': 'GoMetaLinter'})
+      endif
+    endif
+
+    if get(g:, 'go_echo_command_info', 1)
+      call go#util#EchoSuccess("linting finished")
+    endif
+  endfunction
+
+  let start_options = {
+        \ 'callback': function("s:callback"),
+        \ 'close_cb': function("s:close_cb"),
+        \ }
+
+  call job_start(a:args.cmd, start_options)
+
+  call go#list#Clean(l:listtype)
+
+  if get(g:, 'go_echo_command_info', 1)
+    call go#util#EchoProgress("linting started ...")
+  endif
 endfunction
 
 " vim: sw=2 ts=2 et

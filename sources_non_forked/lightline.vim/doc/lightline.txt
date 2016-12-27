@@ -223,7 +223,7 @@ OPTIONS						*lightline-option*
 		The colorscheme for lightline.vim.
 		Currently, wombat, solarized, powerline, jellybeans, Tomorrow,
 		Tomorrow_Night, Tomorrow_Night_Blue, Tomorrow_Night_Eighties,
-		PaperColor, seoul256, landscape, one, Dracula, and 16color are available.
+		PaperColor, seoul256, landscape, one, Dracula, Molokai and 16color are available.
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'
@@ -635,6 +635,16 @@ compiled version of your colorscheme.
 	echo g:lightline#colorscheme#yourcolorscheme#palette
 <
 Then copy and paste the result to the colorscheme file.
+
+If you want to contribute a new colorscheme that is not currently available
+please follow the following rules:
+    *) All hex codes should be lowercase only
+    *) Use 2 space soft tabs
+    *) If your colorscheme has both light and dark variants, use a single file
+    *) Normal Mode should default to Cyan
+    *) Insert Mode should default to Green
+    *) Visual Mode should default to Yellow
+    *) Replace Mode should default to Red
 
 ==============================================================================
 EXAMPLES					*lightline-examples*

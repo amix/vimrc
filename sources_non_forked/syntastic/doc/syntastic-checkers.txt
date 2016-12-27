@@ -2009,7 +2009,7 @@ Security~
 
 This checker executes the code in the files it checks:
 
-    https://github.com/scrooloose/syntastic/issues/1141
+    https://github.com/vim-syntastic/syntastic/issues/1141
 
 This is probably fine if you wrote the files yourself, but it can be a problem
 if you're trying to check third party files. If you are 100% willing to let
@@ -2277,6 +2277,13 @@ Type: string
 Default: unset
 Additional arguments to pass to "cgc".
 
+Note~
+
+You probably also need a plugin to set |filetype| for OpenGL files, such as
+"vim-glsl":
+
+    https://github.com/tikhomirov/vim-glsl
+
 ==============================================================================
 SYNTAX CHECKERS FOR GO                                 *syntastic-checkers-go*
 
@@ -2385,7 +2392,7 @@ Maintainer:  Kamil Kisiel <kamil@kamilkisiel.net>
 
 See the tool's documentation for details:
 
-    https://godoc.org/golang.org/x/tools/cmd/vet
+    https://godoc.org/cmd/vet
 
 Note~
 
@@ -5123,7 +5130,7 @@ Security~
 
 This checker executes the code in the files it checks:
 
-    https://github.com/scrooloose/syntastic/issues/1773
+    https://github.com/vim-syntastic/syntastic/issues/1773
 
 This is probably fine if you wrote the files yourself, but it can be a problem
 if you're trying to check third party files. If you are 100% willing to let
@@ -6010,7 +6017,7 @@ Maintainer:  LCD 47 <lcd047@gmail.com>
 "Stylint" is a linter for Stylus (http://learnboost.github.io/stylus). See
 the project's page at GitHub for details:
 
-    https://github.com/rossPatton/stylint
+    https://github.com/SimenB/stylint
 
 Checker options~
 

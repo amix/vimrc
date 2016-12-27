@@ -1,12 +1,123 @@
-## Unplanned
+## 1.11 - Unplanned
 
-* We have now a [logo for vim-go](https://github.com/fatih/vim-go/blob/master/assets/vim-go.png)! Thanks to @egonelbre for his work on this. 
+FEATURES:
+
+* Add new `g:go_updatetime` setting to change the default updatetime (which was hardcoded previously) [gh-1055]
+* Add new `g:go_template_use_pkg` setting to enable to use cwd as package name instead of basic template file [gh-1124]
 
 IMPROVEMENTS:
 
-* Function calls are now highligted as wel when `g:go_highlight_functions` is enabled [gh-1048]
-* Add completion support for uninported packages. This allows to complete even if the package is not improted [gh-1084]
-* Tools that embeds GOROOT into their binaries do not work when people update their Go version and the GOROOT contains the vesion as part of their path (i.e: `/usr/local/Cellar/go/1.7.2/libexec`, [more info](https://blog.filippo.io/stale-goroot-and-gorebuild/)) . This is now fixed by introducing automatic GOROOT set/unset before each tool invoke. [gh-954]
+* Add `statusline` support for `:GoMetaLinter` [gh-1120]
+* Quickfix and Location lists contain now a descriptive title (requires at least Vim `7.4.2200`)[gh-1004]
+
+BUG FIXES:
+
+* Always use full path to detect packages to be shown in statusline [gh-1121]
+* Use `echom` to persist errors in case of multiple echos [gh-1122]
+* Fix a race condition where a quickfix window was not closed if a job has succeeded [gh-1123]
+* Do not expand coverage arguments for non job execution of `:GoCoverage` [gh-1127]
+* `:GoCoverage` doesn't mess up custom syntax anymore [gh-1128]
+* Disable autoformat for `asm` files as they might be non Go ASM format [gh-1141]
+* Fix indentation broken when using a action with a minus sign like `{{-` [gh-1143]
+* Fix breaking Neovim change of passing less arguments to callbacks [gh-1145]
+* Fix `guru` commands if custom build tags were set [gh-1136]
+* Fix referencing a non defined variable for async commands when bang (!) was used
+* Fix `:GoDef` failing for a modified buffer if `hidden` was not set [gh-1132]
+* Fix `:GoDefStack` to allow popping from jump list when buffer is modified [gh-1133]
+
+
+## 1.10 (November 24, 2016)
+
+FEATURES:
+
+* **Vim 8.0 support!** This is the initial version to add Vim 8.0 based support to
+  all basic commands (check out below for more information). With time we'll
+  going to extend it to other commands. All the features are only enabled if
+  you have at least Vim 8.0.0087. Backwards compatible with Vim 7.4.x.
+  If you see any problems, please open an issue.
+
+* We have now a [logo for vim-go](https://github.com/fatih/vim-go/blob/master/assets/vim-go.png)! Thanks to @egonelbre for his work on this. 
+* `:GoBuild`, `:GoTest`, `:GoTestCompile`, `:GoInstall` commands are now fully
+  async. Async means it doesn't block your UI anymore. If the command finished
+  it echoes the status. For a better experience use the statusline information
+  (more info below)
+
+* `:GoCoverage` and `:GoCoverageBrowser` commands are fully async.
+* `:GoDef` is fully async if `guru` is used as command.
+* `:GoRename` is fully async .
+
+* `:GoMetaLinter` is fully asnyc. Also works with the current autosave linting
+  feature. As a reminder, to enable auto linting on save either call
+  `:GoMetaLinterAutoSaveToggle` (temporary) or add `let
+  g:go_metalinter_autosave = 1` (persistent) to your virmc).
+
+* All `guru` commands run asynchronously if Vim 8.0 is being used. Current 
+  Commands:
+	* GoImplements
+	* GoWhicherrs
+	* GoCallees
+	* GoDescribe
+	* GoCallers
+	* GoCallstack
+	* GoFreevars
+	* GoChannelPeers
+	* GoReferrers
+
+* `:GoSameIds` also runs asynchronously. This makes it useful especially for
+  auto sameids mode. In this mode it constantly evaluates the identifier under the
+  cursor whenever it's in hold position and then calls :GoSameIds. As a
+  reminder, to enable auto info either call `:GoSameIdsAutoToggle`(temporary)
+  or add `let g:go_auto_sameids = 1` (persistent) to your vimrc. 
+
+* `:GoInfo` is now non blocking and works in async mode if `guru` is used in
+  `g:go_info_mode`. This makes it useful especially for autoinfo mode. In this
+  mode it constantly evaluates the identifier under the cursor whenever it's in
+  hold position and then calls :GoInfo. As a reminder, to enable auto info
+  either call `:GoAutoTypeInfoToggle`(temporary) or add `let
+  g:go_auto_type_info = 1` (persistent) to your vimrc. To use `guru` instead of
+  `gocode` add following to your vimrc: `let g:go_info_mode = 'guru'`
+
+  The `guru` is more accurate and reliabed due the usage of `guru` describe. It
+  doesn't rely on `pkg/` folder like `gocode` does. However it's slower than
+  `gocode` as there is no caching mechanism in `guru` yet.
+
+* **New**: Statusline function: `go#statusline#Show()` which can be plugged into
+  the statusline bar. Works only with vim 8.0. It shows all asynchronously
+  called functions status real time.  Checkout it in action:
+  https://twitter.com/fatih/status/800473735467847680. To enable it add the
+  following to your `vimrc`. If you use lightline, airline, .. check out their
+  respective documentation on how to add a custom function:
+
+```viml
+" go command status (requires vim-go)
+set statusline+=%#goStatuslineColor#
+set statusline+=%{go#statusline#Show()}
+set statusline+=%*
+```
+
+IMPROVEMENTS:
+
+* **:GoDocBrowser** is now capable to to understand the identifier under the cursor (just like :GoDoc)
+* Function calls are now highlighted as well when `g:go_highlight_functions` is enabled [gh-1048]
+* Add completion support for un-imported packages. This allows to complete even
+  if the package is not imported. By default it's disabled, enable by adding
+  `let g:go_gocode_unimported_packages = 1` [gh-1084]
+* Tools that embeds GOROOT into their binaries do not work when people update
+  their Go version and the GOROOT contains the vesion as part of their path
+  (i.e: `/usr/local/Cellar/go/1.7.2/libexec`, [more
+  info](https://blog.filippo.io/stale-goroot-and-gorebuild/)) . This is now
+  fixed by introducing automatic GOROOT set/unset before each tool invoke.
+  [gh-954]
+* Added new setting `g:go_echo_go_info` to enable/disable printing identifier
+  information when completion is done [gh-1101]
+* Added new `go_echo_command_info` setting is added, which is enabled by
+  default.  It's just a switch for disabling messages of commands, such as
+  `:GoBuild`, `:GoTest`, etc.. Useful to *disable* if `go#statusline#Show()` is
+  being used in Statusline, to prevent to see duplicates notifications.
+* goSameId highlighting is now linked to `Search`, which is much more clear as
+  it changes according to the users colorscheme
+* Add plug mapping `(go-lint)` for :GoLint [gh-1089]
+
 
 BUG FIXES:
 
@@ -16,6 +127,17 @@ BUG FIXES:
 * Highlight nested structs correctly [gh-1075]
 * Highlight builtin functions correctly if `g:go_highlight_functions` is enabled [gh-1070]
 * Fix `:GoSameIds` highlighting if a new buffer is opened in the same window [gh-1067]
+* Internal: add `abort` to all vim function to return in case of errors [gh-1100]
+* Fix `:GoCoverage` to be executed if working dir is not inside the test dir [gh-1033]
+
+BACKWARDS INCOMPATIBILITIES:
+
+* remove vim-dispatch and vimproc.vim support. vim 8.0 has now the necessary
+  API to invoke async jobs and timers. Going forward we should use those. Also
+  this will remove the burden to maintain compatibility with those plugins.
+
+* `go#jobcontrol#Statusline()` is removed in favor of the new, global and
+  extensible `go#statusline#Show()`
 
 ## 1.9 (September 13, 2016)
 

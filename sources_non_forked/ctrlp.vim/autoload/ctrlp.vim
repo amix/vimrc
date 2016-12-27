@@ -1,8 +1,9 @@
 " =============================================================================
 " File:          autoload/ctrlp.vim
 " Description:   Fuzzy file, buffer, mru, tag, etc finder.
-" Author:        Kien Nguyen <github.com/kien>
-" Version:       1.79
+" Author:        CtrlP Dev Team
+" Original:      Kien Nguyen <github.com/kien>
+" Version:       1.80
 " =============================================================================
 
 " ** Static variables {{{1
@@ -1583,7 +1584,7 @@ fu! s:formatline(str)
 				let str .= printf('  %s', '<bp>'.parts[3].'</bp>')
 			en
 		el
-			let str .= printf(' %-5s %-30s  %s',
+			let str .= printf(' %-5s %-30s',
 				\ parts[0],
 				\ parts[2])
 			if (!empty(s:bufpath_mod))

@@ -8,7 +8,7 @@ let s:initial_go_path = ""
 " echoes the current GOPATH, if an argument is passed it replaces the current
 " GOPATH with it. If two double quotes are passed (the empty string in go),
 " it'll clear the GOPATH and will restore to the initial GOPATH.
-function! go#path#GoPath(...)
+function! go#path#GoPath(...) abort
   " we have an argument, replace GOPATH
   if len(a:000)
     " clears the current manually set GOPATH and restores it to the
@@ -35,7 +35,7 @@ endfunction
 " Default returns the default GOPATH. If there is a single GOPATH it returns
 " it. For multiple GOPATHS separated with a the OS specific separator, only
 " the first one is returned
-function! go#path#Default()
+function! go#path#Default() abort
   let go_paths = split($GOPATH, go#util#PathListSep())
 
   if len(go_paths) == 1
@@ -47,7 +47,7 @@ endfunction
 
 " HasPath checks whether the given path exists in GOPATH environment variable
 " or not
-function! go#path#HasPath(path)
+function! go#path#HasPath(path) abort
   let go_paths = split($GOPATH, go#util#PathListSep())
   let last_char = strlen(a:path) - 1
 
@@ -69,7 +69,7 @@ endfunction
 " Godeps, GB, it will modify the GOPATH so those directories take precedence
 " over the current GOPATH. It also detects diretories whose are outside
 " GOPATH.
-function! go#path#Detect()
+function! go#path#Detect() abort
   let gopath = $GOPATH
 
   " don't lookup for godeps if autodetect is disabled.
@@ -115,7 +115,7 @@ endfunction
 
 
 " BinPath returns the binary path of installed go tools.
-function! go#path#BinPath()
+function! go#path#BinPath() abort
   let bin_path = ""
 
   " check if our global custom path is set, if not check if $GOBIN is set so
@@ -135,7 +135,7 @@ endfunction
 
 " CheckBinPath checks whether the given binary exists or not and returns the
 " path of the binary. It returns an empty string doesn't exists.
-function! go#path#CheckBinPath(binpath)
+function! go#path#CheckBinPath(binpath) abort
     " remove whitespaces if user applied something like 'goimports   '
     let binpath = substitute(a:binpath, '^\s*\(.\{-}\)\s*$', '\1', '')
     " save off original path
@@ -161,7 +161,7 @@ function! go#path#CheckBinPath(binpath)
     " just get the basename
     let basename = fnamemodify(binpath, ":t")
     if !executable(basename)
-        echo "vim-go: could not find '" . basename . "'. Run :GoInstallBinaries to fix it."
+        echom "vim-go: could not find '" . basename . "'. Run :GoInstallBinaries to fix it."
         " restore back!
         let $PATH = old_path
         return ""
