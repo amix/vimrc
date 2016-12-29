@@ -1,6 +1,6 @@
 "============================================================================
 "File:        avrgcc.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Karel <karelishere at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -22,10 +22,12 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:opt_x = { 'c': 'c', 'cpp': 'c++' }
+
 function! SyntaxCheckers_c_avrgcc_GetLocList() dict
     let makeprg = self.makeprgBuild({
         \ 'args_before': syntastic#c#ReadConfig(g:syntastic_avrgcc_config_file),
-        \ 'args_after': '-x c -fsyntax-only' })
+        \ 'args_after': '-x ' . get(s:opt_x, self.getFiletype(), '')  . ' -fsyntax-only' })
 
     let errorformat =
         \ '%-G%f:%s:,' .

@@ -5,7 +5,7 @@ endif
 " Window opens the list with the given height up to 10 lines maximum.
 " Otherwise g:go_loclist_height is used. If no or zero height is given it
 " closes the window
-function! go#list#Window(listtype, ...)
+function! go#list#Window(listtype, ...) abort
   let l:listtype = go#list#Type(a:listtype)
   " we don't use lwindow to close the location list as we need also the
   " ability to resize the window. So, we are going to use lopen and lclose
@@ -40,7 +40,7 @@ endfunction
 
 
 " Get returns the current list of items from the location list
-function! go#list#Get(listtype)
+function! go#list#Get(listtype) abort
   let l:listtype = go#list#Type(a:listtype)
   if l:listtype == "locationlist"
     return getloclist(0)
@@ -50,22 +50,27 @@ function! go#list#Get(listtype)
 endfunction
 
 " Populate populate the location list with the given items
-function! go#list#Populate(listtype, items)
+function! go#list#Populate(listtype, items, title) abort
   let l:listtype = go#list#Type(a:listtype)
   if l:listtype == "locationlist"
     call setloclist(0, a:items, 'r')
+
+    " The last argument ({what}) is introduced with 7.4.2200:
+    " https://github.com/vim/vim/commit/d823fa910cca43fec3c31c030ee908a14c272640
+    if has("patch-7.4.2200") | call setloclist(0, [], 'a', {'title': a:title}) | endif
   else
     call setqflist(a:items, 'r')
+    if has("patch-7.4.2200") | call setqflist([], 'a', {'title': a:title}) | endif
   endif
 endfunction
 
-function! go#list#PopulateWin(winnr, items)
+function! go#list#PopulateWin(winnr, items) abort
   call setloclist(a:winnr, a:items, 'r')
 endfunction
 
 " Parse parses the given items based on the specified errorformat nad
 " populates the location list.
-function! go#list#ParseFormat(listtype, errformat, items)
+function! go#list#ParseFormat(listtype, errformat, items, title) abort
   let l:listtype = go#list#Type(a:listtype)
   " backup users errorformat, will be restored once we are finished
   let old_errorformat = &errorformat
@@ -74,8 +79,10 @@ function! go#list#ParseFormat(listtype, errformat, items)
   let &errorformat = a:errformat
   if l:listtype == "locationlist"
     lgetexpr a:items
+    if has("patch-7.4.2200") | call setloclist(0, [], 'a', {'title': a:title}) | endif
   else
     cgetexpr a:items
+    if has("patch-7.4.2200") | call setqflist([], 'a', {'title': a:title}) | endif
   endif
 
   "restore back
@@ -84,7 +91,7 @@ endfunction
 
 " Parse parses the given items based on the global errorformat and
 " populates the location list.
-function! go#list#Parse(listtype, items)
+function! go#list#Parse(listtype, items) abort
   let l:listtype = go#list#Type(a:listtype)
   if l:listtype == "locationlist"
     lgetexpr a:items
@@ -94,7 +101,7 @@ function! go#list#Parse(listtype, items)
 endfunction
 
 " JumpToFirst jumps to the first item in the location list
-function! go#list#JumpToFirst(listtype)
+function! go#list#JumpToFirst(listtype) abort
   let l:listtype = go#list#Type(a:listtype)
   if l:listtype == "locationlist"
     ll 1
@@ -104,7 +111,7 @@ function! go#list#JumpToFirst(listtype)
 endfunction
 
 " Clean cleans the location list
-function! go#list#Clean(listtype)
+function! go#list#Clean(listtype) abort
   let l:listtype = go#list#Type(a:listtype)
   if l:listtype == "locationlist"
     lex []
@@ -113,7 +120,7 @@ function! go#list#Clean(listtype)
   endif
 endfunction
 
-function! go#list#Type(listtype)
+function! go#list#Type(listtype) abort
   if g:go_list_type == "locationlist"
     return "locationlist"
   elseif g:go_list_type == "quickfix"

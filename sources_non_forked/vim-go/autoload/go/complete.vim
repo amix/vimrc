@@ -1,4 +1,6 @@
-function! s:gocodeCurrentBuffer()
+let s:sock_type = (has('win32') || has('win64')) ? 'tcp' : 'unix'
+
+function! s:gocodeCurrentBuffer() abort
   let buf = getline(1, '$')
   if &encoding != 'utf-8'
     let buf = map(buf, 'iconv(v:val, &encoding, "utf-8")')
@@ -14,7 +16,7 @@ function! s:gocodeCurrentBuffer()
   return file
 endfunction
 
-function! s:gocodeCommand(cmd, preargs, args)
+function! s:gocodeCommand(cmd, preargs, args) abort
   for i in range(0, len(a:args) - 1)
     let a:args[i] = go#util#Shellescape(a:args[i])
   endfor
@@ -30,11 +32,22 @@ function! s:gocodeCommand(cmd, preargs, args)
   " we might hit cache problems, as gocode doesn't handle well different
   " GOPATHS: https://github.com/nsf/gocode/issues/239
   let old_gopath = $GOPATH
+  let old_goroot = $GOROOT
   let $GOPATH = go#path#Detect()
+  let $GOROOT = go#util#env("goroot")
 
-  let result = go#util#System(printf('%s %s %s %s', go#util#Shellescape(bin_path), join(a:preargs), go#util#Shellescape(a:cmd), join(a:args)))
+  let socket_type = get(g:, 'go_gocode_socket_type', s:sock_type)
+  let cmd = printf('%s -sock %s %s %s %s', 
+        \ go#util#Shellescape(bin_path), 
+        \ socket_type, 
+        \ join(a:preargs), 
+        \ go#util#Shellescape(a:cmd), 
+        \ join(a:args)
+        \ )
 
+  let result = go#util#System(cmd)
   let $GOPATH = old_gopath
+  let $GOROOT = old_goroot
 
   if go#util#ShellError() != 0
     return "[\"0\", []]"
@@ -46,12 +59,12 @@ function! s:gocodeCommand(cmd, preargs, args)
   endif
 endfunction
 
-function! s:gocodeCurrentBufferOpt(filename)
+function! s:gocodeCurrentBufferOpt(filename) abort
   return '-in=' . a:filename
 endfunction
 
 let s:optionsEnabled = 0
-function! s:gocodeEnableOptions()
+function! s:gocodeEnableOptions() abort
   if s:optionsEnabled 
     return
   endif
@@ -65,13 +78,14 @@ function! s:gocodeEnableOptions()
 
   call go#util#System(printf('%s set propose-builtins %s', go#util#Shellescape(bin_path), s:toBool(get(g:, 'go_gocode_propose_builtins', 1))))
   call go#util#System(printf('%s set autobuild %s', go#util#Shellescape(bin_path), s:toBool(get(g:, 'go_gocode_autobuild', 1))))
+  call go#util#System(printf('%s set unimported-packages %s', go#util#Shellescape(bin_path), s:toBool(get(g:, 'go_gocode_unimported_packages', 0))))
 endfunction
 
-function! s:toBool(val)
+function! s:toBool(val) abort
   if a:val | return 'true ' | else | return 'false' | endif
 endfunction
 
-function! s:gocodeAutocomplete()
+function! s:gocodeAutocomplete() abort
   call s:gocodeEnableOptions()
 
   let filename = s:gocodeCurrentBuffer()
@@ -82,7 +96,7 @@ function! s:gocodeAutocomplete()
   return result
 endfunction
 
-function! go#complete#GetInfo()
+function! go#complete#GetInfo() abort
   let offset = go#util#OffsetCursor()+1
   let filename = s:gocodeCurrentBuffer()
   let result = s:gocodeCommand('autocomplete',
@@ -123,7 +137,7 @@ function! go#complete#GetInfo()
   return ""
 endfunction
 
-function! go#complete#Info(auto)
+function! go#complete#Info(auto) abort
   " auto is true if we were called by g:go_auto_type_info's autocmd
   let result = go#complete#GetInfo()
   if !empty(result)
@@ -133,12 +147,12 @@ function! go#complete#Info(auto)
   endif
 endfunction
 
-function! s:trim_bracket(val)
+function! s:trim_bracket(val) abort
   let a:val.word = substitute(a:val.word, '[(){}\[\]]\+$', '', '')
   return a:val
 endfunction
 
-function! go#complete#Complete(findstart, base)
+function! go#complete#Complete(findstart, base) abort
   "findstart = 1 when we need to get the text length
   if a:findstart == 1
     execute "silent let g:gocomplete_completions = " . s:gocodeAutocomplete()
@@ -152,5 +166,17 @@ function! go#complete#Complete(findstart, base)
     return g:gocomplete_completions[1]
   endif
 endf
+
+function! go#complete#ToggleAutoTypeInfo() abort
+  if get(g:, "go_auto_type_info", 0)
+    let g:go_auto_type_info = 0
+    call go#util#EchoProgress("auto type info disabled")
+    return
+  end
+
+  let g:go_auto_type_info = 1
+  call go#util#EchoProgress("auto type info enabled")
+endfunction
+
 
 " vim: sw=2 ts=2 et

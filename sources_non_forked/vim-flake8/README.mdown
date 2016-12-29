@@ -41,7 +41,7 @@ the `<F7>` key if so.  For example, to remap it to `<F3>` instead, use:
 
 For flake8 configuration options please consult the following page:
 
-https://flake8.readthedocs.org/en/latest/config.html
+http://flake8.pycqa.org/en/latest/user/configuration.html
 
 To customize the location of your flake8 binary, set `g:flake8_cmd`:
 
@@ -106,6 +106,20 @@ This plugin goes well together with the following plugin:
 
 - [PyUnit](https://github.com/nvie/vim-pyunit) (unit test helper under `<F8>`
   and `<F9>`)
+
+
+Max line lengths
+----------------
+
+One particular customization a lot of people like to make is relaxing the
+maximum line length default.  This is a config setting that should be set in
+flake8 itself. (vim-flake8 "just" invokes it and deals with showing the output
+in Vim's quickfix window.)
+
+To do so, put the following into your `~/.config/flake8` file:
+
+    [flake8]
+    max-line-length = 120
 
 
 History

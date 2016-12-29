@@ -10,7 +10,7 @@ endsnippet
 
 snippet tab "tabular / array environment" b
 \begin{${1:t}${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${2:c}}
-$0${2/((?<=.)c|l|r)|./(?1: & )/g}
+$0${2/(?<=.)(c|l|r)|./(?1: & )/g}
 \end{$1${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}
 endsnippet
 
@@ -20,7 +20,7 @@ snippet table "Table environment" b
 	\caption{${2:caption}}
 	\label{tab:${3:label}}
 	\begin{${4:t}${4/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${5:c}}
-	$0${5/((?<=.)c|l|r)|./(?1: & )/g}
+	$0${5/(?<=.)(c|l|r)|./(?1: & )/g}
 	\end{$4${4/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}
 \end{table}
 endsnippet

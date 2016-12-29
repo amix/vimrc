@@ -28,12 +28,12 @@ if len(s:goarch) == 0
   endif
 endif
 
-function! go#package#Paths()
+function! go#package#Paths() abort
   let dirs = []
 
   if !exists("s:goroot")
     if executable('go')
-      let s:goroot = substitute(go#util#System('go env GOROOT'), '\n', '', 'g')
+      let s:goroot = go#util#goroot()
       if go#util#ShellError() != 0
         echomsg '''go env GOROOT'' failed'
       endif
@@ -54,12 +54,12 @@ function! go#package#Paths()
   return dirs
 endfunction
 
-function! go#package#ImportPath(arg)
+function! go#package#ImportPath(arg) abort
   let path = fnamemodify(resolve(a:arg), ':p')
   let dirs = go#package#Paths()
 
   for dir in dirs
-    if len(dir) && match(path, dir) == 0
+    if len(dir) && matchstr(escape(path, '\/'), escape(dir, '\/')) == 0
       let workspace = dir
     endif
   endfor
@@ -68,11 +68,16 @@ function! go#package#ImportPath(arg)
     return -1
   endif
 
-  let srcdir = substitute(workspace . '/src/', '//', '/', '')
-  return substitute(path, srcdir, '', '')
+  if go#util#IsWin()
+    let srcdir = substitute(workspace . '\src\', '//', '/', '')
+    return path[len(srcdir):]
+  else
+    let srcdir = substitute(workspace . '/src/', '//', '/', '')
+    return substitute(path, srcdir, '', '')
+  endif
 endfunction
 
-function! go#package#FromPath(arg)
+function! go#package#FromPath(arg) abort
   let path = fnamemodify(resolve(a:arg), ':p')
   let dirs = go#package#Paths()
 
@@ -94,7 +99,7 @@ function! go#package#FromPath(arg)
   endif
 endfunction
 
-function! go#package#CompleteMembers(package, member)
+function! go#package#CompleteMembers(package, member) abort
   silent! let content = go#util#System('godoc ' . a:package)
   if go#util#ShellError() || !len(content)
     return []
@@ -113,7 +118,7 @@ function! go#package#CompleteMembers(package, member)
   endtry
 endfunction
 
-function! go#package#Complete(ArgLead, CmdLine, CursorPos)
+function! go#package#Complete(ArgLead, CmdLine, CursorPos) abort
   let words = split(a:CmdLine, '\s\+', 1)
 
   " do not complete package members for these commands

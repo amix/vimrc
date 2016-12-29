@@ -351,8 +351,8 @@ snippet foreachkil "<?php foreach ($var as $key => $value): ?>  ... <?php endfor
 	<?php foreach ($${1:variable} as $${2:key} => $${3:value}): ?>
 		${0:<!-- html... -->}
 	<?php endforeach; ?>
-snippet array "$... = array(...)"
-	$${1:arrayName} = array('${2}' => ${3});
+snippet array "$... = ['' => ]"
+	$${1:arrayName} = ['${2}' => ${3}];
 snippet try "try { ... } catch (Exception $e) { ... }"
 	try {
 		${0}
@@ -466,7 +466,7 @@ snippet CSVWriter
 				? fopen($file_or_handle, $mode)
 				: $file_or_handle;
 	
-			$this->fputcsv_args = array($this->f, null, $sep, $quot);
+			$this->fputcsv_args = [$this->f, null, $sep, $quot];
 	
 			if (!$this->f) throw new Exception('bad file descriptor');
 		}
@@ -502,7 +502,7 @@ snippet CSVIterator
 			* enclosure
 			* delimiter
 			*/
-		public function __construct( $file_or_handle, $opts = array(4096, ',') )
+		public function __construct( $file_or_handle, $opts = [4096, ','] )
 		{
 			$d = function($n) use(&$opts){ return isset($opts[$n]) ? $opts[$n] : false; };
 	
@@ -515,13 +515,13 @@ snippet CSVIterator
 				? fopen( $file_or_handle, 'r' )
 				: $file_or_handle;
 			if (!$this->f) throw new Exception('bad file descriptor');
-			$this->fgetcsv_args = array(
+			$this->fgetcsv_args = [
 					$this->f,
 					isset($opts['row_size']) ? $opts['row_size'] : 4096,
 					isset($opts['delimiter']) ? $opts['delimiter'] : ',',
 					isset($opts['enclosure']) ? $opts['enclosure'] : '"',
 					isset($opts['escape']) ? $opts['escape'] : '\\',
-			);
+			];
 			$this->start();
 		}
 	

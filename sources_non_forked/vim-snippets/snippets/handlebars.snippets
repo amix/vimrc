@@ -1,0 +1,14 @@
+snippet if # {{#if value}} ... {{/if}}
+	{{#if ${1:value}}}
+	${0}
+	{{/if}}
+snippet ifn # {{#unless value}} ... {{/unless}}
+	{{#unless ${1:value}}}
+	${0}
+	{{/unless}}
+snippet ife # {{#if value}} ... {{else}} .. {{/if}}
+	{{#if ${1:value}}}
+	${2}
+	{{else}}
+	${3}
+	{{/if}}
