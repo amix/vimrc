@@ -19,13 +19,25 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_stylus_stylint_GetLocList() dict
+    if !exists('s:stylint_new')
+        let s:stylint_new = syntastic#util#versionIsAtLeast(self.getVersion(), [1, 5, 7])
+    endif
+
     let makeprg = self.makeprgBuild({})
 
-    let errorformat =
-        \ '%WWarning: %m,' .
-        \ '%EError: %m,' .
-        \ '%CFile: %f,' .
-        \ '%CLine: %l:%.%#'
+    if s:stylint_new
+        let errorformat =
+            \ '%P%f,' .
+            \ '%-Q,' .
+            \ '%\m%l:%c%\s%\+%t%\%%(rror%\|arning%\)%\s%\+%m%\s%\+%\S%\+%\s%#,' .
+            \ '%\m%l%\s%\+%t%\%%(rror%\|arning%\)%\s%\+%m%\s%\+%\S%\+%\s%#'
+    else
+        let errorformat =
+            \ '%WWarning: %m,' .
+            \ '%EError: %m,' .
+            \ '%CFile: %f,' .
+            \ '%CLine: %l:%.%#'
+    endif
 
     return SyntasticMake({
         \ 'makeprg': makeprg,

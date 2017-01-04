@@ -5,16 +5,16 @@
 " which by default is enabled. For commands the user has the ability to pass
 " the '!', such as :GoBuild or :GoBuild!
 if !exists("g:go_jump_to_error")
-	let g:go_jump_to_error = 1
+  let g:go_jump_to_error = 1
 endif
 
 " Some handy plug mappings
 nnoremap <silent> <Plug>(go-run) :<C-u>call go#cmd#Run(!g:go_jump_to_error)<CR>
 
 if has("nvim")
-	nnoremap <silent> <Plug>(go-run-vertical) :<C-u>call go#cmd#RunTerm(!g:go_jump_to_error, 'vsplit', [])<CR>
-	nnoremap <silent> <Plug>(go-run-split) :<C-u>call go#cmd#RunTerm(!g:go_jump_to_error, 'split', [])<CR>
-	nnoremap <silent> <Plug>(go-run-tab) :<C-u>call go#cmd#RunTerm(!g:go_jump_to_error, 'tabe', [])<CR>
+  nnoremap <silent> <Plug>(go-run-vertical) :<C-u>call go#cmd#RunTerm(!g:go_jump_to_error, 'vsplit', [])<CR>
+  nnoremap <silent> <Plug>(go-run-split) :<C-u>call go#cmd#RunTerm(!g:go_jump_to_error, 'split', [])<CR>
+  nnoremap <silent> <Plug>(go-run-tab) :<C-u>call go#cmd#RunTerm(!g:go_jump_to_error, 'tabe', [])<CR>
 endif
 
 nnoremap <silent> <Plug>(go-build) :<C-u>call go#cmd#Build(!g:go_jump_to_error)<CR>
@@ -31,8 +31,9 @@ nnoremap <silent> <Plug>(go-coverage-browser) :<C-u>call go#coverage#Browser(!g:
 
 nnoremap <silent> <Plug>(go-files) :<C-u>call go#tool#Files()<CR>
 nnoremap <silent> <Plug>(go-deps) :<C-u>call go#tool#Deps()<CR>
-nnoremap <silent> <Plug>(go-info) :<C-u>call go#complete#Info(0)<CR>
+nnoremap <silent> <Plug>(go-info) :<C-u>call go#tool#Info(0)<CR>
 nnoremap <silent> <Plug>(go-import) :<C-u>call go#import#SwitchImport(1, '', expand('<cword>'), '')<CR>
+nnoremap <silent> <Plug>(go-imports) :<C-u>call go#fmt#Format(1)<CR>
 
 nnoremap <silent> <Plug>(go-implements) :<C-u>call go#guru#Implements(-1)<CR>
 nnoremap <silent> <Plug>(go-callees) :<C-u>call go#guru#Callees(-1)<CR>
@@ -42,9 +43,9 @@ nnoremap <silent> <Plug>(go-callstack) :<C-u>call go#guru#Callstack(-1)<CR>
 xnoremap <silent> <Plug>(go-freevars) :<C-u>call go#guru#Freevars(0)<CR>
 nnoremap <silent> <Plug>(go-channelpeers) :<C-u>call go#guru#ChannelPeers(-1)<CR>
 nnoremap <silent> <Plug>(go-referrers) :<C-u>call go#guru#Referrers(-1)<CR>
-
-" TODO(arslan): enable this once the function is implemented
-" nnoremap <silent> <Plug>(go-sameids) :<C-u>call go#guru#SameIds(-1)<CR>
+nnoremap <silent> <Plug>(go-sameids) :<C-u>call go#guru#SameIds()<CR>
+nnoremap <silent> <Plug>(go-whicherrs) :<C-u>call go#guru#Whicherrs(-1)<CR>
+nnoremap <silent> <Plug>(go-sameids-toggle) :<C-u>call go#guru#ToggleSameIds()<CR>
 
 nnoremap <silent> <Plug>(go-rename) :<C-u>call go#rename#Rename(!g:go_jump_to_error)<CR>
 
@@ -64,8 +65,11 @@ nnoremap <silent> <Plug>(go-doc-split) :<C-u>call go#doc#Open("new", "split")<CR
 nnoremap <silent> <Plug>(go-doc-browser) :<C-u>call go#doc#OpenBrowser()<CR>
 
 nnoremap <silent> <Plug>(go-metalinter) :<C-u>call go#lint#Gometa(0)<CR>
+nnoremap <silent> <Plug>(go-lint) :<C-u>call go#lint#Golint()<CR>
 nnoremap <silent> <Plug>(go-vet) :<C-u>call go#lint#Vet(!g:go_jump_to_error)<CR>
 
 nnoremap <silent> <Plug>(go-alternate-edit) :<C-u>call go#alternate#Switch(0, "edit")<CR>
 nnoremap <silent> <Plug>(go-alternate-vertical) :<C-u>call go#alternate#Switch(0, "vsplit")<CR>
 nnoremap <silent> <Plug>(go-alternate-split) :<C-u>call go#alternate#Switch(0, "split")<CR>
+
+" vim: sw=2 ts=2 et

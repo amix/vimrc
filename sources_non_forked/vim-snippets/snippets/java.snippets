@@ -214,12 +214,20 @@ snippet wh
 	while (${1}) ${0}
 ##
 ## Main method
+snippet psvm
+	public static void main (String[] args) {
+		${0}
+	}
 snippet main
 	public static void main (String[] args) {
 		${0}
 	}
 ##
 ## Print Methods
+snippet sout
+	System.out.println(${0});
+snippet serr
+	System.err.println(${0});
 snippet print
 	System.out.print("${0:Message}");
 snippet printf

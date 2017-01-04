@@ -121,9 +121,9 @@ class ${2:`!v expand('%:t:r')`} extends \Eloquent {
 
     public $timestamps = ${5:false};
 
-    protected $hidden  = array(${6});
+    protected $hidden  = [${6}];
 
-    protected $guarded = array(${7:'id'});
+    protected $guarded = [${7:'id'}];
 }
 endsnippet
 
@@ -162,7 +162,7 @@ abstract class ${2:`!v expand('%:t:r')`} implements ${3:BaseRepositoryInterface}
      *
      * \return  Illuminate\Database\Eloquent\Collection
      */
-    public function all($columns = array('*')) {
+    public function all($columns = ['*']) {
         return $this->model->all()->toArray();
     }
 
@@ -189,7 +189,7 @@ abstract class ${2:`!v expand('%:t:r')`} implements ${3:BaseRepositoryInterface}
      *
      * \return  mixed
      */
-    public function find($id, $columns = array('*')) {
+    public function find($id, $columns = ['*']) {
         return $this->model->find($id, $columns);
     }
 }

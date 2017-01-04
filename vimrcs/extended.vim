@@ -21,12 +21,6 @@ elseif has("unix")
     set gfn=Monospace\ 11
 endif
 
-" Open MacVim in fullscreen mode
-if has("gui_macvim")
-    set fuoptions=maxvert,maxhorz
-    au GUIEnter * set fullscreen
-endif
-
 " Disable scrollbars (real hackers don't use scrollbars for navigation!)
 set guioptions-=r
 set guioptions-=R

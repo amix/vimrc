@@ -668,14 +668,18 @@ NERD tree. These options should be set in your vimrc.
 |'NERDTreeWinSize'|             Sets the window size when the NERD tree is
                                 opened.
 
-|'NERDTreeMinimalUI'|           Disables display of the 'Bookmarks' label and 
+|'NERDTreeMinimalUI'|           Disables display of the 'Bookmarks' label and
                                 'Press ? for help' text.
+
+|'NERDTreeCascadeSingleChildDir'|
+                                Collapses on the same line directories that
+                                have only one child directory.
 
 |'NERDTreeCascadeOpenSingleChildDir'|
                                 Cascade open while selected directory has only
                                 one child that also is a directory.
 
-|'NERDTreeAutoDeleteBuffer'|    Tells the NERD tree to automatically remove 
+|'NERDTreeAutoDeleteBuffer'|    Tells the NERD tree to automatically remove
                                 a buffer when a file is being deleted or renamed
                                 via a context menu command.
 
@@ -987,7 +991,18 @@ of the following lines to set this option: >
 <
 
 ------------------------------------------------------------------------------
-                                          *'NERDTreeCascadeOpenSingleChildDir'*
+                                             *'NERDTreeCascadeSingleChildDir'*
+Values: 0 or 1
+Default: 1.
+
+When displaying dir nodes, this option tells NERDTree to collapse dirs that
+have only one child. Use one of the follow lines to set this option: >
+    let NERDTreeCascadeSingleChildDir=0
+    let NERDTreeCascadeSingleChildDir=1
+<
+
+------------------------------------------------------------------------------
+                                         *'NERDTreeCascadeOpenSingleChildDir'*
 Values: 0 or 1
 Default: 1.
 
@@ -1001,7 +1016,7 @@ useful for Java projects. Use one of the follow lines to set this option: >
 <
 
 ------------------------------------------------------------------------------
-                                          *'NERDTreeAutoDeleteBuffer'*
+                                                  *'NERDTreeAutoDeleteBuffer'*
 Values: 0 or 1
 Default: 0.
 

@@ -12,6 +12,7 @@ let s:_DEFAULT_CHECKERS = {
         \ 'apiblueprint':  ['drafter'],
         \ 'applescript':   ['osacompile'],
         \ 'asciidoc':      ['asciidoc'],
+        \ 'asl':           ['iasl'],
         \ 'asm':           ['gcc'],
         \ 'bro':           ['bro'],
         \ 'bemhtml':       ['bemhtmllint'],
@@ -42,6 +43,7 @@ let s:_DEFAULT_CHECKERS = {
         \ 'handlebars':    ['handlebars'],
         \ 'haskell':       ['hdevtools', 'hlint'],
         \ 'haxe':          ['haxe'],
+        \ 'help':          [],
         \ 'hss':           ['hss'],
         \ 'html':          ['tidy'],
         \ 'jade':          ['jade_lint'],
@@ -84,6 +86,7 @@ let s:_DEFAULT_CHECKERS = {
         \ 'slim':          ['slimrb'],
         \ 'sml':           ['smlnj'],
         \ 'spec':          ['rpmlint'],
+        \ 'solidity':      ['solc'],
         \ 'sql':           ['sqlint'],
         \ 'stylus':        ['stylint'],
         \ 'tcl':           ['nagelfar'],
@@ -93,7 +96,7 @@ let s:_DEFAULT_CHECKERS = {
         \ 'trig':          ['rapper'],
         \ 'turtle':        ['rapper'],
         \ 'twig':          ['twiglint'],
-        \ 'typescript':    ['tsc'],
+        \ 'typescript':    [],
         \ 'vala':          ['valac'],
         \ 'verilog':       ['verilator'],
         \ 'vhdl':          ['ghdl'],
@@ -186,24 +189,39 @@ endfunction " }}}2
 " not checked for availability (that is, the corresponding IsAvailable() are
 " not run).
 function! g:SyntasticRegistry.getCheckers(ftalias, hints_list) abort " {{{2
-    let ft = s:_normalise_filetype(a:ftalias)
-    call self._loadCheckersFor(ft, 0)
-
-    let checkers_map = self._checkerMap[ft]
-    if empty(checkers_map)
-        return []
-    endif
-
-    call self._checkDeprecation(ft)
+    let ftlist = self.resolveFiletypes(a:ftalias)
 
     let names =
-        \ !empty(a:hints_list) ? syntastic#util#unique(a:hints_list) :
-        \ exists('b:syntastic_checkers') ? b:syntastic_checkers :
-        \ exists('g:syntastic_' . ft . '_checkers') ? g:syntastic_{ft}_checkers :
-        \ get(s:_DEFAULT_CHECKERS, ft, 0)
+        \ !empty(a:hints_list) ? a:hints_list :
+        \ exists('b:syntastic_checkers') ? b:syntastic_checkers : []
 
-    return type(names) == type([]) ?
-        \ self._filterCheckersByName(checkers_map, names) : [checkers_map[keys(checkers_map)[0]]]
+    let cnames = []
+    if !empty(names)
+        for name in names
+            if name !~# '/'
+                for ft in ftlist
+                    call add(cnames, ft . '/' . name)
+                endfor
+            else
+                call add(cnames, name)
+            endif
+        endfor
+    else
+        for ft in ftlist
+            call self._sanityCheck(ft)
+            let defs =
+                \ exists('g:syntastic_' . ft . '_checkers') ? g:syntastic_{ft}_checkers :
+                \ get(s:_DEFAULT_CHECKERS, ft, [])
+            call extend(cnames, map(copy(defs), 'stridx(v:val, "/") < 0 ? ft . "/" . v:val : v:val' ))
+        endfor
+    endif
+    let cnames = syntastic#util#unique(cnames)
+
+    for ft in syntastic#util#unique(map( copy(cnames), 'v:val[: stridx(v:val, "/")-1]' ))
+        call self._loadCheckersFor(ft, 0)
+    endfor
+
+    return self._filterCheckersByName(cnames)
 endfunction " }}}2
 
 " Same as getCheckers(), but keep only the available checkers.  This runs the
@@ -240,8 +258,12 @@ function! g:SyntasticRegistry.getNamesOfAvailableCheckers(ftalias) abort " {{{2
     return keys(filter( copy(self._checkerMap[ft]), 'v:val.isAvailable()' ))
 endfunction " }}}2
 
+function! g:SyntasticRegistry.resolveFiletypes(ftalias) abort " {{{2
+    return map(split( get(g:syntastic_filetype_map, a:ftalias, a:ftalias), '\m\.' ), 's:_normalise_filetype(v:val)')
+endfunction " }}}2
+
 function! g:SyntasticRegistry.echoInfoFor(ftalias_list) abort " {{{2
-    let ft_list = syntastic#util#unique(map( copy(a:ftalias_list), 's:_normalise_filetype(v:val)' ))
+    let ft_list = syntastic#util#unique(self.resolveFiletypes(empty(a:ftalias_list) ? &filetype : a:ftalias_list[0]))
     if len(ft_list) != 1
         let available = []
         let active = []
@@ -255,8 +277,8 @@ function! g:SyntasticRegistry.echoInfoFor(ftalias_list) abort " {{{2
     else
         let ft = ft_list[0]
         let available = self.getNamesOfAvailableCheckers(ft)
-        let active = map(self.getCheckersAvailable(ft, []), 'v:val.getName()')
-        let disabled = map(self.getCheckersDisabled(ft, []), 'v:val.getName()')
+        let active = map(self.getCheckersAvailable(ft, []), 'ft ==# v:val.getFiletype() ? v:val.getName() : v:val.getCName()')
+        let disabled = map(self.getCheckersDisabled(ft, []), 'ft ==# v:val.getFiletype() ? v:val.getName() : v:val.getCName()')
     endif
 
     let cnt = len(available)
@@ -272,7 +294,7 @@ function! g:SyntasticRegistry.echoInfoFor(ftalias_list) abort " {{{2
     let cnt = len(disabled)
     let plural = cnt != 1 ? 's' : ''
     if len(disabled)
-        let cklist = join(sort(disabled))
+        let cklist = join(sort(disabled, 's:_compare_checker_names'))
         echomsg 'Checker' . plural . ' disabled for security reasons: ' . cklist
     endif
 
@@ -319,8 +341,20 @@ function! g:SyntasticRegistry._registerChecker(checker) abort " {{{2
     let self._checkerMap[ft][name] = a:checker
 endfunction " }}}2
 
-function! g:SyntasticRegistry._filterCheckersByName(checkers_map, list) abort " {{{2
-    return filter( map(copy(a:list), 'get(a:checkers_map, v:val, {})'), '!empty(v:val)' )
+function! g:SyntasticRegistry._findChecker(cname) abort " {{{2
+    let sep_idx = stridx(a:cname, '/')
+    if sep_idx > 0
+        let ft = a:cname[: sep_idx-1]
+        let name = a:cname[sep_idx+1 :]
+    else
+        let ft = &filetype
+        let name = a:cname
+    endif
+    return get(self._checkerMap[ft], name, {})
+endfunction "}}}2
+
+function! g:SyntasticRegistry._filterCheckersByName(cnames) abort " {{{2
+    return filter( map(copy(a:cnames), 'self._findChecker(v:val)'), '!empty(v:val)' )
 endfunction " }}}2
 
 function! g:SyntasticRegistry._loadCheckersFor(filetype, force) abort " {{{2
@@ -336,8 +370,18 @@ function! g:SyntasticRegistry._loadCheckersFor(filetype, force) abort " {{{2
 endfunction " }}}2
 
 " Check for obsolete variable g:syntastic_<filetype>_checker
-function! g:SyntasticRegistry._checkDeprecation(filetype) abort " {{{2
-    if exists('g:syntastic_' . a:filetype . '_checker') && !exists('g:syntastic_' . a:filetype . '_checkers')
+function! g:SyntasticRegistry._sanityCheck(filetype) abort " {{{2
+    if exists('g:syntastic_' . a:filetype . '_checkers') &&
+        \ type(g:syntastic_{a:filetype}_checkers) != type([])
+
+        unlet! g:syntastic_{a:filetype}_checkers
+        call syntastic#log#error('variable g:syntastic_' . a:filetype . '_checkers has to be a list of strings')
+    endif
+
+    if exists('g:syntastic_' . a:filetype . '_checker') &&
+        \ !exists('g:syntastic_' . a:filetype . '_checkers') &&
+        \ type(g:syntastic_{a:filetype}_checker) == type('')
+
         let g:syntastic_{a:filetype}_checkers = [g:syntastic_{a:filetype}_checker]
         call syntastic#log#oneTimeWarn('variable g:syntastic_' . a:filetype . '_checker is deprecated')
     endif
@@ -368,6 +412,26 @@ endfunction " }}}2
 
 function! s:_disabled_by_ycm(filetype) abort " {{{2
     return index(s:_YCM_TYPES, a:filetype) >= 0
+endfunction " }}}2
+
+function! s:_compare_checker_names(a, b) abort " {{{2
+    if a:a ==# a:b
+        return 0
+    endif
+
+    if stridx(a:a, '/') < 0
+        if stridx(a:b, '/') < 0
+            return a:a < a:b ? -1 : 1
+        else
+            return -1
+        endif
+    else
+        if stridx(a:b, '/') < 0
+            return 1
+        else
+            return a:a < a:b ? -1 : 1
+        endif
+    endif
 endfunction " }}}2
 
 " }}}1

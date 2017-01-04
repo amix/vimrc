@@ -25,7 +25,7 @@ function! SyntaxCheckers_javascript_flow_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-    return syntastic#util#versionIsAtLeast(self.getVersion(), [0, 6])
+    return syntastic#util#versionIsAtLeast(self.getVersion(self.getExecEscaped() . ' version'), [0, 18, 1])
 endfunction
 
 function! SyntaxCheckers_javascript_flow_GetLocList() dict

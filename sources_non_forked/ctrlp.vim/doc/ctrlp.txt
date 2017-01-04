@@ -68,6 +68,7 @@ Overview:~
   |ctrlp_open_single_match|.....Automatically accept when only one candidate.
   |ctrlp_brief_prompt|..........Exit CtrlP on empty prompt by <bs>.
   |ctrlp_match_current_file|....Include current file in match entries.
+  |ctrlp_types|.................Names of builtin types.
 
   MRU mode:
   |ctrlp_mruf_max|..............Max MRU entries to remember.
@@ -254,8 +255,9 @@ plugins look for .git/, .hg/,... some other plugins look for external *.exe
 tools on Windows). So be a little mindful of what you put in your |wildignore|.
 
                                                       *'g:ctrlp_custom_ignore'*
-In addition to |'wildignore'|, use this for files and directories you want only
-CtrlP to not show. Use regexp to specify the patterns: >
+In addition to |'wildignore'| and |g:ctrlp_show_hidden|, use this for files
+and directories you want only CtrlP to not show. Use regexp to specify the
+patterns: >
   let g:ctrlp_custom_ignore = ''
 <
 Examples: >
@@ -454,13 +456,19 @@ This option works well together with |g:ctrlp_open_single_match|
 
 
                                                  *'g:ctrlp_match_current_file'*
-Includes the current file in the match entries:
+Includes the current file in the match entries: >
   let g:ctrlp_match_current_file = 1
 
 By default, the current file is excluded from the list.
 
 Note: does not apply when |g:ctrlp_match_func| is used. 
 
+                                                              *'g:ctrlp_types'*
+Set this to list of names to customize core types: >
+  let g:ctrlp_types = ['mru', 'fil']
+
+By default, the types are: >
+  let g:ctrlp_types = ['fil', 'buf', 'mru'].
 
                                                              *'g:ctrlp_abbrev'*
 Define input abbreviations that can be expanded (either internally or visibly)
@@ -853,13 +861,24 @@ COMMANDS                                                       *ctrlp-commands*
    Open CtrlP in find file mode.
 
    If no argument is given, the value of |g:ctrlp_working_path_mode| will be
-   used to determine the starting directory.
+   used to determine the starting directory.  See |:CtrlPCurFile| and
+   |:CtrlPCurWD| to temporarily override the setting.
 
    You can use <tab> to auto-complete the [starting-directory] when typing it.
 
                                                                  *:CtrlPBuffer*
 :CtrlPBuffer
    Open CtrlP in find buffer mode.
+
+                                                                *:CtrlPCurFile*
+:CtrlPCurFile
+    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = '' and ignores
+    the variable's current value.
+
+                                                                  *:CtrlPCurWD*
+:CtrlPCurWD
+    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = '' and ignores
+    the variable's current value.
 
                                                                     *:CtrlPMRU*
 :CtrlPMRU
@@ -924,7 +943,8 @@ Once inside the prompt:~
     Toggle the focus between the match window and the prompt.
 
   <esc>,
-  <c-c>
+  <c-c>,
+  <c-g>
     Exit CtrlP.
 
 Moving:~
@@ -1322,7 +1342,8 @@ Available extensions:~
 Buffer Tag mode options:~
 
                                                    *'g:ctrlp_buftag_ctags_bin'*
-If ctags isn't in your $PATH, use this to set its location: >
+If ctags isn't in your $PATH, or a ctags binary exists in either
+/opt/local/bin or /usr/local/bin, us this to set its location: >
   let g:ctrlp_buftag_ctags_bin = ''
 <
 
@@ -1475,6 +1496,28 @@ Special thanks:~
 
 ===============================================================================
 CHANGELOG                                                     *ctrlp-changelog*
+
+Before 2016/11/28~
+
+    + New command: |YankLine()| to yank current line.
+    + New option: |g:ctrlp_types| to select builtin modes.
+    + New feature: asynchronized spawn of |g:ctrlp_user_command|. This enable
+                  with set |g:user_command_async| to 1.
+    + Support buffertag for delphi, rust and golang.
+    + New option: |g:ctrlp_brief_prompt|,
+                  |g:match_current_file|,
+                  |g:ctrlp_compare_lim|.
+    + New feature: Auto-ignore extension.
+    + Support buffertag for ant, tex, dosbatch, matlab and vhdl.
+    + New option |g:ctrlp_line_prefix| for integrating third party plugins.
+    + New option |g:open_single_match| to open single file in matches.
+    + Add <plug>(ctrlp) for launch CtrlP.
+    + Accept bang for CtrlPBookmarkDirAdd to avoid confirm.
+    + Handle variable like "g:ctrlp_TYPE_MODE".
+                   ex: let g:ctrlp_path_sort
+    + New option: |g:ctrlp_custom_ancestors|
+
+Before 2014/08/08~
 
     + New buffer explorer mode with highlighting (|+conceal| recommended)
     + New options: |g:ctrlp_bufname_mod|,

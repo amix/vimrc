@@ -1,7 +1,6 @@
 *SnipMate.txt*  Plugin for using TextMate-style snippets in Vim.
 
 SnipMate                                       *snippet* *snippets* *SnipMate*
-Last Change: December 27, 2009
 
 1. Description                        |SnipMate-description|
 2. Usage                              |SnipMate-usage|
@@ -160,6 +159,12 @@ g:snipMate.override
                                 last loaded file is kept, similar to how Vim
                                 maps and other settings work. Note: Load order
                                 is determined by 'runtimepath'.
+
+g:snipMate.description_in_completion
+                                If set to 1 (default is 0), snippet
+                                descriptions will be included in the popup
+                                menu used for snippet completion, like with
+                                <Plug>snipMateShow.
 
 g:snipMate['no_match_completion_feedkeys_chars']
                                 A string inserted when no match for a trigger
@@ -503,6 +508,15 @@ Perhaps some of these features will be added in a later release.
 
 ==============================================================================
 CHANGELOG                                                 *SnipMate-changelog*
+
+0.89 - 2016-05-29
+-----------------
+
+* Various regex updates to legacy parser Addition of double bang syntax to
+* completely remove a snippet from lookup Group various SnipMate autocommands
+* Support setting 'shiftwidth' to 0 Parser now operates linewise, adding some
+* flexibility Mirror substitutions are more literal Mirror length is
+* calculated correctly when substitutions occur
 
 0.88 - 2015-04-04
 -----------------

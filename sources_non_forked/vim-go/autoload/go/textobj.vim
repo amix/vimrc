@@ -13,10 +13,10 @@ endif
 " < >
 " t for tag
 
-function! go#textobj#Function(mode)
+function! go#textobj#Function(mode) abort
   let offset = go#util#OffsetCursor()
 
-  let fname = expand("%:p")
+  let fname = shellescape(expand("%:p"))
   if &modified
     " Write current unsaved buffer to a temp file and use the modified content
     let l:tmpname = tempname()
@@ -84,7 +84,7 @@ function! go#textobj#Function(mode)
   call cursor(info.rbrace.line-1, 1)
 endfunction
 
-function! go#textobj#FunctionJump(mode, direction)
+function! go#textobj#FunctionJump(mode, direction) abort
   " get count of the motion. This should be done before all the normal
   " expressions below as those reset this value(because they have zero
   " count!). We abstract -1 because the index starts from 0 in motion.
@@ -103,7 +103,7 @@ function! go#textobj#FunctionJump(mode, direction)
 
   let offset = go#util#OffsetCursor()
 
-  let fname = expand("%:p")
+  let fname = shellescape(expand("%:p"))
   if &modified
     " Write current unsaved buffer to a temp file and use the modified content
     let l:tmpname = tempname()
@@ -177,4 +177,4 @@ function! go#textobj#FunctionJump(mode, direction)
   keepjumps call cursor(info.func.line, 1)
 endfunction
 
-" vim:ts=2:sw=2:et
+" vim: sw=2 ts=2 et

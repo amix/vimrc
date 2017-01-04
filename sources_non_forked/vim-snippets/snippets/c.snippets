@@ -104,12 +104,12 @@ snippet ret
 ## Loops
 # for
 snippet for
-	for (${2:i} = 0; $2 < ${1:count}; $2${3:++}) {
+	for (int ${2:i} = 0; $2 < ${1:count}; $2${3:++}) {
 		${4}
 	}
 # for (custom)
 snippet forr
-	for (${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++}) {
+	for (int ${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++}) {
 		${5}
 	}
 # while
@@ -164,6 +164,12 @@ snippet pr
 # fprintf (again, this isn't as nice as TextMate's version, but it works)
 snippet fpr
 	fprintf(${1:stderr}, "${2:%s}\n"${3});
+snippet prd
+	printf("${1:} = %d\n", $1);
+snippet prf
+	printf("${1:} = %f\n", $1);
+snippet prx
+	printf("${1:} = %${2}\n", $1);
 # getopt
 snippet getopt
 	int choice;

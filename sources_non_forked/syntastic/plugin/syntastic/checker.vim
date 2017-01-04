@@ -15,7 +15,7 @@ function! g:SyntasticChecker.New(args, ...) abort " {{{2
 
     if a:0
         " redirected checker
-        let newObj._exec = get(a:args, 'exec', a:1['_exec'])
+        let newObj._exec_default = get(a:args, 'exec', a:1['_exec_default'])
 
         let filetype = a:1['_filetype']
         let name = a:1['_name']
@@ -31,7 +31,10 @@ function! g:SyntasticChecker.New(args, ...) abort " {{{2
             let newObj._enable = a:1['_enable']
         endif
     else
-        let newObj._exec = get(a:args, 'exec', newObj._name)
+        let newObj._exec_default = get(a:args, 'exec', newObj._name)
+        if newObj._exec_default ==# ''
+            let newObj._exec_default = '<dummy>'
+        endif
         let prefix = 'SyntaxCheckers_' . newObj._filetype . '_' . newObj._name . '_'
 
         if has_key(a:args, 'enable')
@@ -62,23 +65,24 @@ function! g:SyntasticChecker.getName() abort " {{{2
     return self._name
 endfunction " }}}2
 
+function! g:SyntasticChecker.getCName() abort " {{{2
+    return self._filetype . '/' . self._name
+endfunction " }}}2
+
 " Synchronise _exec with user's setting.  Force re-validation if needed.
 "
 " XXX: This function must be called at least once before calling either
 " getExec() or getExecEscaped().  Normally isAvailable() does that for you
 " automatically, but you should keep still this in mind if you change the
 " current checker workflow.
-function! g:SyntasticChecker.syncExec() abort " {{{2
-    let user_exec =
-        \ expand( exists('b:syntastic_' . self._name . '_exec') ? b:syntastic_{self._name}_exec :
-        \ syntastic#util#var(self._filetype . '_' . self._name . '_exec'), 1 )
-
-    if user_exec !=# '' && user_exec !=# self._exec
-        let self._exec = user_exec
-        if has_key(self, '_available')
-            " we have a new _exec on the block, it has to be validated
-            call remove(self, '_available')
-        endif
+function! g:SyntasticChecker.syncExec(...) abort " {{{2
+    if a:0
+        let self._exec = a:1
+    else
+        let suffix = self._name . '_exec'
+        let self._exec = expand(
+            \ syntastic#util#var(self._filetype . '_' . suffix,
+            \ syntastic#util#var(suffix, self._exec_default)), 1 )
     endif
 endfunction " }}}2
 
@@ -91,7 +95,8 @@ function! g:SyntasticChecker.getExecEscaped() abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticChecker.getLocListRaw() abort " {{{2
-    let name = self._filetype . '/' . self._name
+    let checker_start = reltime()
+    let name = self.getCName()
 
     if has_key(self, '_enable')
         let status = syntastic#util#var(self._enable, -1)
@@ -128,6 +133,8 @@ function! g:SyntasticChecker.getLocListRaw() abort " {{{2
     call self._populateHighlightRegexes(list)
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_LOCLIST, name . ' raw:', list)
     call self._quietMessages(list)
+    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_TRACE,
+        \ 'getLocList: checker ' . name . ' run in ' . split(reltimestr(reltime(checker_start)))[0] . 's')
     return list
 endfunction " }}}2
 
@@ -147,7 +154,7 @@ function! g:SyntasticChecker.getVersion(...) abort " {{{2
             call self.setVersion(parsed_ver)
         else
             call syntastic#log#ndebug(g:_SYNTASTIC_DEBUG_LOCLIST, 'checker output:', split(version_output, "\n", 1))
-            call syntastic#log#error("checker " . self._filetype . "/" . self._name . ": can't parse version string (abnormal termination?)")
+            call syntastic#log#error("checker " . self.getCName() . ": can't parse version string (abnormal termination?)")
         endif
     endif
     return get(self, '_version', [])
@@ -161,8 +168,8 @@ function! g:SyntasticChecker.setVersion(version) abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticChecker.log(msg, ...) abort " {{{2
-    let leader = self._filetype . '/' . self._name . ': '
-    if a:0 > 0
+    let leader = self.getCName() . ': '
+    if a:0
         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_CHECKERS, leader . a:msg, a:1)
     else
         call syntastic#log#debug(g:_SYNTASTIC_DEBUG_CHECKERS, leader . a:msg)
@@ -184,10 +191,15 @@ endfunction " }}}2
 
 function! g:SyntasticChecker.isAvailable() abort " {{{2
     call self.syncExec()
+
     if !has_key(self, '_available')
-        let self._available = self._isAvailableFunc()
+        let self._available = {}
     endif
-    return self._available
+    if !has_key(self._available, self._exec)
+        let self._available[self._exec] = self._isAvailableFunc()
+    endif
+
+    return self._available[self._exec]
 endfunction " }}}2
 
 function! g:SyntasticChecker.isDisabled() abort " {{{2

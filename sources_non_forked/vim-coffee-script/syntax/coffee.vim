@@ -32,7 +32,7 @@ hi def link coffeeConditional Conditional
 syn match coffeeException /\<\%(try\|catch\|finally\)\>/ display
 hi def link coffeeException Exception
 
-syn match coffeeKeyword /\<\%(new\|in\|of\|by\|and\|or\|not\|is\|isnt\|class\|extends\|super\|do\|yield\)\>/
+syn match coffeeKeyword /\<\%(new\|in\|of\|by\|and\|or\|not\|is\|isnt\|class\|extends\|super\|do\|yield\|debugger\|import\|export\)\>/
 \                       display
 " The `own` keyword is only a keyword after `for`.
 syn match coffeeKeyword /\<for\s\+own\>/ contained containedin=coffeeRepeat
@@ -107,7 +107,7 @@ hi def link coffeeFloat Float
 
 " An error for reserved keywords, taken from the RESERVED array:
 " http://coffeescript.org/documentation/docs/lexer.html#section-67
-syn match coffeeReservedError /\<\%(case\|default\|function\|var\|void\|with\|const\|let\|enum\|export\|import\|native\|__hasProp\|__extends\|__slice\|__bind\|__indexOf\|implements\|interface\|package\|private\|protected\|public\|static\)\>/
+syn match coffeeReservedError /\<\%(case\|default\|function\|var\|void\|with\|const\|let\|enum\|native\|implements\|interface\|package\|private\|protected\|public\|static\)\>/
 \                             display
 hi def link coffeeReservedError Error
 

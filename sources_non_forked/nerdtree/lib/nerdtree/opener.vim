@@ -257,7 +257,7 @@ endfunction
 function! s:Opener._openDirectory(node)
     if self._nerdtree.isWinTree()
         call self._gotoTargetWin()
-        call g:NERDTreeCreator.CreateWindow(a:node.path.str())
+        call g:NERDTreeCreator.CreateWindowTree(a:node.path.str())
     else
         call self._gotoTargetWin()
         if empty(self._where)

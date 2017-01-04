@@ -87,7 +87,7 @@ languages. For this we provide two options: scope aliases and the
 `:SnipMateLoadScope` command. Scope aliases simply say "whenever this scope is
 loaded, also load this other scope:
 
-    let g:snipMate = {}
+    let g:snipMate = get(g:, 'snipMate', {}) " Allow for vimrc re-sourcing
     let g:snipMate.scope_aliases = {}
     let g:snipMate.scope_aliases['ruby'] = 'ruby,rails'
 
@@ -97,6 +97,16 @@ buffer. The [vim-rails](https://github.com/tpope/vim-rails) plugin automatically
 does `:SnipMateLoadScope rails` when editing a Rails project for example.
 
 ## Release Notes ##
+
+### 0.89 - 2016-05-29 ###
+
+* Various regex updates to legacy parser
+* Addition of double bang syntax to completely remove a snippet from lookup
+* Group various SnipMate autocommands
+* Support setting 'shiftwidth' to 0
+* Parser now operates linewise, adding some flexibility
+* Mirror substitutions are more literal
+* Mirror length is calculated correctly when substitutions occur
 
 ### 0.88 - 2015-04-04 ###
 

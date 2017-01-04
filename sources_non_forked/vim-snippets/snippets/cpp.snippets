@@ -3,7 +3,7 @@ extends c
 ##
 ## Preprocessor
 # #include <...>
-snippet inc
+snippet incc
 	#include <${1:iostream}>
 snippet binc
 	#include <boost/${1:shared_ptr}.hpp>
@@ -146,9 +146,9 @@ snippet itera
 ## Lambdas
 # lamda (one line)
 snippet ld
-	[${1}](${2}){${3}}
+	[${1}](${2}){${3}};
 # lambda (multi-line)
 snippet lld
 	[${1}](${2}){
 		${3}
-	}
+	};

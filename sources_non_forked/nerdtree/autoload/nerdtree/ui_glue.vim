@@ -187,17 +187,17 @@ endfunction
 " closes the parent dir of the current node
 function! s:closeCurrentDir(node)
     let parent = a:node.parent
+    while g:NERDTreeCascadeOpenSingleChildDir && !parent.isRoot()
+        let childNodes = parent.getVisibleChildren()
+        if len(childNodes) == 1 && childNodes[0].path.isDirectory
+            let parent = parent.parent
+        else
+            break
+        endif
+    endwhile
     if parent ==# {} || parent.isRoot()
         call nerdtree#echo("cannot close tree root")
     else
-        while g:NERDTreeCascadeOpenSingleChildDir && !parent.parent.isRoot()
-            if parent.parent.getVisibleChildCount() == 1
-                call parent.close()
-                let parent = parent.parent
-            else
-                break
-            endif
-        endwhile
         call parent.close()
         call b:NERDTree.render()
         call parent.putCursorHere(0, 0)
@@ -280,7 +280,7 @@ function! s:findAndRevealPath()
             else
                 call g:NERDTree.CursorToTreeWin()
             endif
-            call b:NERDTree.setShowHidden(g:NERDTreeShowHidden)
+            call b:NERDTree.ui.setShowHidden(g:NERDTreeShowHidden)
             call s:chRoot(g:NERDTreeDirNode.New(p.getParent(), b:NERDTree))
         else
             if !g:NERDTree.IsOpen()

@@ -17,7 +17,6 @@ let g:loaded_syntastic_cpp_clang_check_checker = 1
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'cpp',
     \ 'name': 'clang_check',
-    \ 'exec': 'clang-check',
     \ 'redirect': 'c/clang_check'})
 
 " vim: set sw=4 sts=4 et fdm=marker:

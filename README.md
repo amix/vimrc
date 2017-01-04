@@ -31,6 +31,10 @@ This is useful to install on remote servers where you don't need many plugins an
 Use [msysgit](http://msysgit.github.com/) to checkout the repository and run the installation instructions above. No special instructions needed ;-)
 
 
+## How to install on Linux
+
+If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: `alias vi=vim`. Otherwise, `apt-get install vim`
+
 ## How to update to latest version?
 
 Simply just do a git rebase!
@@ -121,21 +125,17 @@ Now you have vim-rails installed ;-)
 
 ### Plugin related mappings
 
-Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) and see and manage the current buffers:
+Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) and see and manage the current buffers (`<leader>o`):
     
     map <leader>o :BufExplorer<cr>
 
-Open [MRU.vim](https://github.com/vim-scripts/mru.vim) and see the recently open files:
+Open [MRU.vim](https://github.com/vim-scripts/mru.vim) and see the recently open files (`<leader>f`):
 
     map <leader>f :MRU<CR>
 
-Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin:
+Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin (`<leader>j` or `<ctrl>f`):
     
     let g:ctrlp_map = '<c-f>'
-
-Open [PeepOpen](http://topfunky.github.io/PeepOpen/) plugin:
-
-    map <leader>j :PeepOpen<cr>
 
 Managing the [NERD Tree](https://github.com/scrooloose/nerdtree) plugin:
 
@@ -143,20 +143,15 @@ Managing the [NERD Tree](https://github.com/scrooloose/nerdtree) plugin:
     map <leader>nb :NERDTreeFromBookmark 
     map <leader>nf :NERDTreeFind<cr>
 
-[goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It has a special look when editing Markdown, reStructuredText and textfiles. It only has one mapping.
+[goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It has a special look when editing Markdown, reStructuredText and textfiles. It only has one mapping. (`<leader>z`)
 
     map <leader>z :Goyo<cr>
 
 ### Normal mode mappings
 
-Fast saving of a buffer:
+Fast saving of a buffer (`<leader>w`):
 
 	nmap <leader>w :w!<cr>
-
-Treat long lines as break lines (useful when moving around in them):
-
-	map j gj
-	map k gk
 	
 Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
 	
@@ -168,14 +163,14 @@ Disable highlight when `<leader><cr>` is pressed:
 	
 	map <silent> <leader><cr> :noh<cr>
 
-Smart way to move between windows:
+Smart way to move between windows (`<ctrl>j` etc.):
 	
 	map <C-j> <C-W>j
 	map <C-k> <C-W>k
 	map <C-h> <C-W>h
 	map <C-l> <C-W>l
 
-Closing of current buffer(s):
+Closing of current buffer(s) (`<leader>bd` and (`<leader>ba`)):
 	
 	" Close current buffer
 	map <leader>bd :Bclose<cr>
@@ -311,18 +306,6 @@ Vimscript mappings:
     map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
     map <leader>n :cn<cr>
     map <leader>p :cp<cr>
-
-## Useful blog tips regarding my Vim setup
-
-* [Vim: Annotate strings with gettext (the macro way)](http://amix.dk/blog/post/19678#Vim-Annotate-strings-with-gettext-the-macro-way)
-* [vimgrep: Searching through multiple file extensions](http://amix.dk/blog/post/19672#vimgrep-Searching-through-multiple-file-extensions)
-* [Filtering through vimgrep results using regular expressions](http://amix.dk/blog/post/19666#Filtering-through-vimgrep-results-using-regular-expressions)
-* [PeepOpen - File auto completion for Mac editors](http://amix.dk/blog/post/19601#PeepOpen-File-auto-completion-for-Mac-editors)
-* [Vim 7.3: Persistent undo and encryption!](http://amix.dk/blog/post/19548#Vim-7-3-Persistent-undo-and-encryption)
-* [Vim tips: Visual Search](http://amix.dk/blog/post/19334#Vim-tips-Visual-Search)
-* [Folding in Vim](http://amix.dk/blog/post/19132#Folding-in-Vim)
-* [
-Zen room for Vim: Focusing only on the essential](http://amix.dk/blog/post/19744#zenroom-for-Vim-Focsuing-only-on-the-essential)
 
 ## How to uninstall
 Do following:

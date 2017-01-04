@@ -57,10 +57,9 @@ Installation
 
 ####[pathogen.vim](https://github.com/tpope/vim-pathogen)
 
-    cd ~/.vim/bundle
-    git clone https://github.com/scrooloose/nerdtree.git
+    git clone https://github.com/scrooloose/nerdtree.git ~/.vim/bundle/nerdtree
 
-Then reload vim, run `:Helptags`, and check out `:help NERD_tree.txt`.
+Then reload vim, run `:helptags ~/.vim/bundle/nerdtree/doc/`, and check out `:help NERD_tree.txt`.
 
 
 ####[apt-vim](https://github.com/egalpin/apt-vim)
@@ -100,6 +99,14 @@ Stick this in your vimrc:
     autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 Note: Now start vim with plain `vim`, not `vim .`
+
+---
+> How can I open NERDTree automatically when vim starts up on opening a directory?
+
+    autocmd StdinReadPre * let s:std_in=1
+    autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
+This window is tab-specific, meaning it's used by all windows in the tab. This trick also prevents NERDTree from hiding when first selecting a file.
 
 ---
 > How can I map a specific key or shortcut to open NERDTree?

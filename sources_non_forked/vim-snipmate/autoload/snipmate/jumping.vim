@@ -113,7 +113,7 @@ function! s:state_update_changes() dict abort
 		return self.remove()
 	endif
 
-	call self.update(self.cur_stop, change_len)
+	call self.update(self.cur_stop, change_len, change_len)
 	if !empty(self.mirrors)
 		call self.update_mirrors(change_len)
 	endif
@@ -141,14 +141,37 @@ function! s:state_update_mirrors(change) dict abort
 			endif
 		endfor
 
-		call self.update(mirror, changeLen)
+		if has_key(mirror, 'oldSize')
+			" recover the old size deduce the endline
+			let oldSize = mirror.oldSize
+		else
+			" first time, we use the intitial size
+			let oldSize = strlen(newWord)
+		endif
+
 		" Split the line into three parts: the mirror, what's before it, and
 		" what's after it. Then combine them using the new mirror string.
 		" Subtract one to go from column index to byte index
+
 		let theline = getline(mirror.line)
-		let update  = strpart(theline, 0, mirror.col - 1)
-		let update .= substitute(newWord, get(mirror, 'pat', ''), get(mirror, 'sub', ''), get(mirror, 'flags', ''))
-		let update .= strpart(theline, mirror.col + self.end_col - self.start_col - a:change - 1)
+
+		" part before the current mirror
+		let beginline  = strpart(theline, 0, mirror.col - 1)
+
+		" current mirror transformation, and save size
+		let wordMirror= substitute(newWord, get(mirror, 'pat', ''), get(mirror, 'sub', ''), get(mirror, 'flags', ''))
+		let mirror.oldSize = strlen(wordMirror)
+
+		" end of the line, use the oldSize because with the transformation,
+		" the size of the mirror can be different from those of the snippet
+		let endline    = strpart(theline, mirror.col + oldSize -1)
+
+		" Update other object on the line
+		call self.update(mirror, changeLen, mirror.oldSize - oldSize)
+
+		" reconstruct the line
+		let update = beginline.wordMirror.endline
+
 		call setline(mirror.line, update)
 	endfor
 
@@ -179,17 +202,17 @@ function! s:state_find_update_objects(item) dict abort
 	return item.update_objects
 endfunction
 
-function! s:state_update(item, change_len) dict abort
+function! s:state_update(item, change_len, mirror_change) dict abort
 	let item = a:item
-	if exists('item.update_objects')
-		let to_update = item.update_objects
-	else
-		let to_update = self.find_update_objects(a:item)
-		let item.update_objects = to_update
+	if !exists('item.update_objects')
+		let item.update_objects = self.find_update_objects(a:item)
 	endif
+	let to_update = item.update_objects
 
 	for obj in to_update
-		let obj.col += a:change_len
+		" object does not necessarly have the same decalage
+		" than mirrors if mirrors use regexp
+		let obj.col += a:mirror_change
 		if obj is self.cur_stop
 			let self.start_col += a:change_len
 			let self.end_col += a:change_len

@@ -4,6 +4,7 @@ command! -nargs=? GoRename call go#rename#Rename(<bang>0,<f-args>)
 " -- guru
 command! -nargs=* -complete=customlist,go#package#Complete GoGuruScope call go#guru#Scope(<f-args>)
 command! -range=% GoImplements call go#guru#Implements(<count>)
+command! -range=% GoWhicherrs call go#guru#Whicherrs(<count>)
 command! -range=% GoCallees call go#guru#Callees(<count>)
 command! -range=% GoDescribe call go#guru#Describe(<count>)
 command! -range=% GoCallers call go#guru#Callers(<count>)
@@ -13,13 +14,19 @@ command! -range=% GoChannelPeers call go#guru#ChannelPeers(<count>)
 command! -range=% GoReferrers call go#guru#Referrers(<count>)
 command! -nargs=? GoGuruTags call go#guru#Tags(<f-args>)
 
-" TODO(arslan): enable this once the function is implemented
-" command! -range=% GoSameIds call go#guru#SameIds(<count>)
+
+command! -nargs=* -range GoAddTags call go#util#AddTags(<line1>, <line2>, <f-args>)
+
+command! -range=0 GoSameIds call go#guru#SameIds()
+command! -range=0 GoSameIdsClear call go#guru#ClearSameIds()
+command! -range=0 GoSameIdsToggle call go#guru#ToggleSameIds()
+command! -range=0 GoSameIdsAutoToggle call go#guru#AutoToogleSameIds()
 
 " -- tool
 command! -nargs=0 GoFiles echo go#tool#Files()
 command! -nargs=0 GoDeps echo go#tool#Deps()
-command! -nargs=* GoInfo call go#complete#Info(0)
+command! -nargs=* GoInfo call go#tool#Info(0)
+command! -nargs=0 GoAutoTypeInfoToggle call go#complete#ToggleAutoTypeInfo()
 
 " -- cmd
 command! -nargs=* -bang GoBuild call go#cmd#Build(<bang>0,<f-args>)
@@ -51,7 +58,11 @@ command! -nargs=* -range -complete=customlist,go#package#Complete GoDocBrowser c
 
 " -- fmt
 command! -nargs=0 GoFmt call go#fmt#Format(-1)
+command! -nargs=0 GoFmtAutoSaveToggle call go#fmt#ToggleFmtAutoSave()
 command! -nargs=0 GoImports call go#fmt#Format(1)
+
+" -- asmfmt
+command! -nargs=0 GoAsmFmtAutoSaveToggle call go#asmfmt#ToggleAsmFmtAutoSave()
 
 " -- import
 command! -nargs=? -complete=customlist,go#package#Complete GoDrop call go#import#SwitchImport(0, '', <f-args>, '')
@@ -60,6 +71,7 @@ command! -nargs=* -bang -complete=customlist,go#package#Complete GoImportAs call
 
 " -- linters
 command! -nargs=* GoMetaLinter call go#lint#Gometa(0, <f-args>)
+command! -nargs=0 GoMetaLinterAutoSaveToggle call go#lint#ToggleMetaLinterAutoSave()
 command! -nargs=* GoLint call go#lint#Golint(<f-args>)
 command! -nargs=* -bang GoVet call go#lint#Vet(<bang>0, <f-args>)
 command! -nargs=* -complete=customlist,go#package#Complete GoErrCheck call go#lint#Errcheck(<f-args>)
@@ -76,4 +88,7 @@ endif
 " -- impl
 command! -nargs=* -buffer -complete=customlist,go#impl#Complete GoImpl call go#impl#Impl(<f-args>)
 
-" vim:ts=4:sw=4:et
+" -- template
+command! -nargs=0 GoTemplateAutoCreateToggle call go#template#ToggleAutoCreate()
+
+" vim: sw=2 ts=2 et

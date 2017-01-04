@@ -486,6 +486,11 @@ def __coerce__(self, other):
 	${25:pass}
 endsnippet
 
+snippet deff
+def ${1:fname}(`!p snip.rv = vim.eval('indent(".") ? "self" : ""')`$2):
+	$0
+endsnippet
+
 snippet def "function with docstrings" b
 def ${1:function}(`!p
 if snip.indent:

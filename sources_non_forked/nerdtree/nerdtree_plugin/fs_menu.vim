@@ -74,7 +74,7 @@ endfunction
 function! s:promptToRenameBuffer(bufnum, msg, newFileName)
     echo a:msg
     if g:NERDTreeAutoDeleteBuffer || nr2char(getchar()) ==# 'y'
-        let quotedFileName = "'" . a:newFileName . "'"
+        let quotedFileName = fnameescape(a:newFileName)
         " 1. ensure that a new buffer is loaded
         exec "badd " . quotedFileName
         " 2. ensure that all windows which display the just deleted filename
@@ -160,10 +160,10 @@ function! NERDTreeDeleteNode()
     let currentNode = g:NERDTreeFileNode.GetSelected()
     let confirmed = 0
 
-    if currentNode.path.isDirectory
+    if currentNode.path.isDirectory && currentNode.getChildCount() > 0
         let choice =input("Delete the current node\n" .
                          \ "==========================================================\n" .
-                         \ "STOP! To delete this entire directory, type 'yes'\n" .
+                         \ "STOP! Directory is not empty! To delete, type 'yes'\n" .
                          \ "" . currentNode.path.str() . ": ")
         let confirmed = choice ==# 'yes'
     else
