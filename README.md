@@ -311,4 +311,6 @@ Vimscript mappings:
 Do following:
 * Remove `~/.vim_runtime`
 * Remove any lines that refernce `.vim_runtime` in your `~/.vimrc`
+## Stop Right  Now
+Because Vim 8 not stable~until to version  8.1
 
