@@ -6,9 +6,9 @@ if has("mac") || has("macunix")
 elseif has("win16") || has("win32")
     set gfn=Source_Code_Pro_Medium:h12,Bitstream\ Vera\ Sans\ Mono:h11
 elseif has("gui_gtk2")
-    set gfn=Source\ Code\ Pro\ for\ Powerline\ Medium\ 11
+    set gfn=SauceCodePro\ Nerd\ Font\ Medium\ 11
 elseif has("linux")
-    set gfn=Source\ Code\ Pro\ for\ Powerline\ Medium\ 11
+    set gfn=SauceCodePro\ Nerd\ Font\ Medium\ 11
 elseif has("unix")
     set gfn=Monospace\ 11
 endif
@@ -172,4 +172,10 @@ let g:vimfiler_force_overwrite_statusline = 0
 let g:vimshell_force_overwrite_statusline = 0
 map <leader>h :noh<CR>
 
-set clipboard=unnamedplus
+set clipboard=unnamed
+
+if !has('nvim')
+    set clipboard+=unnamedplus
+endif
+
+let g:syntastic_c_config_file = 'syntastic_c_config'
