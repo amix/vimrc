@@ -2392,7 +2392,7 @@ Maintainer:  Kamil Kisiel <kamil@kamilkisiel.net>
 
 See the tool's documentation for details:
 
-    https://godoc.org/golang.org/x/tools/cmd/vet
+    https://godoc.org/cmd/vet
 
 Note~
 

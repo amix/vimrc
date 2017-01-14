@@ -240,15 +240,28 @@ snippet fig figure environment (includegraphics)
 	\\end{figure}
 	${0}
 snippet tikz figure environment (tikzpicture)
-	\\begin{figure}
+
+	\\begin{figure}[htpb]
 	\\begin{center}
-	\\begin{tikzpicture}[scale=${1:1}]
+	\\begin{tikzpicture}[scale=${1:1}, transform shape]
+  
 		${2}
 	\\end{tikzpicture}
 	\\end{center}
 	\\caption{${3}}
 	\\label{fig:${4}}
 	\\end{figure}
+  
+	${0}
+snippet subfig subfigure environment
+	\\begin{subfigure}[${1}]{${2:\\textwidth}}
+	\\begin{center}
+		${3}
+	\\end{center}
+	\\caption{${4}}
+	\\label{fig:${5}}
+	\\end{subfigure}
+  
 	${0}
 #math
 snippet stackrel \stackrel{}{}
@@ -289,15 +302,15 @@ snippet \{ \{ \}
 #delimiter
 snippet lr left right
 	\\left${1} ${0} \\right$1
-snippet lr( left( right) 
+snippet lr( left( right)
 	\\left( ${0} \\right)
-snippet lr| left| right| 
+snippet lr| left| right|
 	\\left| ${0} \\right|
-snippet lr{ left\{ right\} 
+snippet lr{ left\{ right\}
 	\\left\\{ ${0} \\right\\}
-snippet lr[ left[ right] 
+snippet lr[ left[ right]
 	\\left[ ${0} \\right]
-snippet lra langle rangle 
+snippet lra langle rangle
 	\\langle ${0} \\rangle
 # Code listings
 snippet lst
