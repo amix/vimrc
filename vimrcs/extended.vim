@@ -21,15 +21,22 @@ elseif has("unix")
     set gfn=Monospace\ 11
 endif
 
+" Open MacVim in fullscreen mode
+if has("gui_macvim")
+    set fuoptions=maxvert,maxhorz
+    au GUIEnter * set fullscreen
+endif
+
 " Disable scrollbars (real hackers don't use scrollbars for navigation!)
-set guioptions-=r
+set guioptions+=r
 set guioptions-=R
 set guioptions-=l
 set guioptions-=L
+set mouse=a
 
 " Colorscheme
 set background=dark
-colorscheme peaksea
+colorscheme ir_black 
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -78,6 +85,7 @@ imap ½ $
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+cnoremap <C-E>		<End>
 " => Parenthesis/bracket
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 vnoremap $1 <esc>`>a)<esc>`<i(<esc>
@@ -135,3 +143,12 @@ endfunc
 func! CurrentFileDir(cmd)
     return a:cmd . " " . expand("%:p:h") . "/"
 endfunc
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => BJORN BJORN BJORN
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+:imap jk <Esc>
+
+:set relativenumber
+:set number
+let g:syntastic_javascript_checkers = ['eslint']
