@@ -12,33 +12,6 @@ def x(snip):
 		snip.rv = ""
 endglobal
 
-############
-# Doctypes #
-############
-snippet doctype "DocType XHTML 1.0 Strict" b
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-endsnippet
-
-snippet doctype "DocType XHTML 1.0 Transitional" b
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-endsnippet
-
-snippet doctype "DocType XHTML 1.1" b
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-
-endsnippet
-
-snippet doctype "HTML - 4.0 Transitional (doctype)" b
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-	"http://www.w3.org/TR/html4/loose.dtd">
-
-endsnippet
-
 snippet doctype "HTML - 5.0 (doctype)" b
 <!DOCTYPE html>
 
@@ -83,45 +56,6 @@ snippet left "Left (left)"
 &#x2190;
 endsnippet
 
-snippet option "Option (option)"
-&#x2325;
-endsnippet
-
-#######################
-# Conditional inserts #
-#######################
-snippet ! "IE Conditional Comment: Internet Explorer 5_0 only"
-<!--[if IE 5.0]>${1:IE Conditional Comment: Internet Explorer 5.0 only }<![endif]-->$0
-endsnippet
-
-snippet ! "IE Conditional Comment: Internet Explorer 5_5 only"
-<!--[if IE 5.5000]>${1:IE Conditional Comment: Internet Explorer 5.5 only }<![endif]-->$0
-endsnippet
-
-snippet ! "IE Conditional Comment: Internet Explorer 5_x"
-<!--[if lt IE 6]>${1:IE Conditional Comment: Internet Explorer 5.x      }<![endif]-->$0
-endsnippet
-
-snippet ! "IE Conditional Comment: Internet Explorer 6 and below"
-<!--[if lte IE 6]>${1:IE Conditional Comment: Internet Explorer 6 and below }<![endif]-->$0
-endsnippet
-
-snippet ! "IE Conditional Comment: Internet Explorer 6 only"
-<!--[if IE 6]>${1:IE Conditional Comment: Internet Explorer 6 only   }<![endif]-->$0
-endsnippet
-
-snippet ! "IE Conditional Comment: Internet Explorer 7+"
-<!--[if gte IE 7]>${1:IE Conditional Comment: Internet Explorer 7 and above }<![endif]-->$0
-endsnippet
-
-snippet ! "IE Conditional Comment: Internet Explorer"
-<!--[if IE]>${1:       IE Conditional Comment: Internet Explorer          }<![endif]-->$0
-endsnippet
-
-snippet ! "IE Conditional Comment: NOT Internet Explorer"
-<!--[if !IE]><!-->${1:  IE Conditional Comment: NOT Internet Explorer      }<!-- <![endif]-->$0
-endsnippet
-
 #############
 # HTML TAGS #
 #############
@@ -129,12 +63,12 @@ snippet input "Input with Label" w
 <label for="${2:${1/[[:alpha:]]+|( )/(?1:_:\L$0)/g}}">$1</label><input type="${3:text/submit/hidden/button}" name="${4:$2}" value="$5"${6: id="${7:$2}"}`!p x(snip)`>
 endsnippet
 
-snippet input "XHTML   <input>" w
+snippet input "HTML   <input>" w
 <input type="${1:text/submit/hidden/button}" name="${2:some_name}" value="$3"${4: id="${5:$2}"}`!p x(snip)`>
 endsnippet
 
 
-snippet opt "Option" w
+snippet option "Option" w
 <option${1: value="${2:option}"}>${3:$2}</option>
 endsnippet
 
@@ -145,15 +79,15 @@ snippet select "Select Box" w
 endsnippet
 
 
-snippet textarea "XHTML   <textarea>" w
+snippet textarea "HTML   <textarea>" w
 <textarea name="${1:Name}" rows="${2:8}" cols="${3:40}">$0</textarea>
 endsnippet
 
-snippet mailto "XHTML <a mailto: >" w
+snippet mailto "HTML <a mailto: >" w
 <a href="mailto:${1:joe@example.com}?subject=${2:feedback}">${3:email me}</a>
 endsnippet
 
-snippet base "XHTML <base>" w
+snippet base "HTML <base>" w
 <base href="$1"${2: target="$3"}`!p x(snip)`>
 endsnippet
 
@@ -229,12 +163,12 @@ snippet meta "XHTML <meta>" w
 <meta name="${1:name}" content="${2:content}"`!p x(snip)`>
 endsnippet
 
-snippet scriptsrc "XHTML <script src...>" w
-<script src="$1" type="text/javascript" charset="${3:utf-8}"></script>
+snippet scriptsrc "HTML <script src...>" w
+<script src="$1" charset="${3:utf-8}"></script>
 endsnippet
 
-snippet script "XHTML <script>" w
-<script type="text/javascript" charset="utf-8">
+snippet script "HTML <script>" w
+<script charset="utf-8">
 	${0:${VISUAL}}
 </script>
 endsnippet
@@ -302,20 +236,6 @@ snippet fieldset "Fieldset" w
 	<legend>$1</legend>
 	${0:${VISUAL}}
 </fieldset>
-endsnippet
-
-snippet movie "Embed QT movie (movie)" b
-<object width="$2" height="$3" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
-	<param name="src" value="$1"`!p x(snip)`>
-	<param name="controller" value="$4"`!p x(snip)`>
-	<param name="autoplay" value="$5"`!p x(snip)`>
-	<embed src="${1:movie.mov}"
-		width="${2:320}" height="${3:240}"
-		controller="${4:true}" autoplay="${5:true}"
-		scale="tofit" cache="true"
-		pluginspage="http://www.apple.com/quicktime/download/"
-	`!p x(snip)`>
-</object>
 endsnippet
 
 snippet viewport "Responsive viewport meta" w

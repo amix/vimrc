@@ -3226,7 +3226,7 @@ accepts the standard options described at |syntastic-config-makeprg|.
 
 Notes~
 
-Syntastic requires "Flow" version 0.18.1 or later.
+Syntastic requires "Flow" version 0.34.0 or later.
 
 To use "Flow" with your projects, you must:
 

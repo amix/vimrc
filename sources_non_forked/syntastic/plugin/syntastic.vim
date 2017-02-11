@@ -19,7 +19,7 @@ if has('reltime')
     lockvar! g:_SYNTASTIC_START
 endif
 
-let g:_SYNTASTIC_VERSION = '3.8.0-10'
+let g:_SYNTASTIC_VERSION = '3.8.0-21'
 lockvar g:_SYNTASTIC_VERSION
 
 " Sanity checks {{{1
@@ -66,6 +66,15 @@ else
     let g:_SYNTASTIC_UNAME = 'Unknown'
 endif
 lockvar g:_SYNTASTIC_UNAME
+
+" XXX Ugly hack to make g:_SYNTASTIC_UNAME available to :SyntasticInfo without
+" polluting session namespaces
+let g:syntastic_version =
+    \ g:_SYNTASTIC_VERSION .
+    \ ' (Vim ' . v:version . (has('nvim') ? ', Neovim' : '') . ', ' .
+    \ g:_SYNTASTIC_UNAME .
+    \ (has('gui') ? ', GUI' : '') . ')'
+lockvar g:syntastic_version
 
 " }}}1
 
@@ -344,13 +353,6 @@ function! s:BufWinEnterHook(fname) abort " {{{2
 endfunction " }}}2
 
 function! s:VimEnterHook() abort " {{{2
-    let g:syntastic_version =
-        \ g:_SYNTASTIC_VERSION .
-        \ ' (Vim ' . v:version . (has('nvim') ? ', Neovim' : '') . ', ' .
-        \ g:_SYNTASTIC_UNAME .
-        \ (has('gui') ? ', GUI' : '') . ')'
-    lockvar g:syntastic_version
-
     let buf = bufnr('')
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_AUTOCOMMANDS,
         \ 'autocmd: VimEnter, buffer ' . buf . ' = ' . string(bufname(buf)) . ', &buftype = ' . string(&buftype))

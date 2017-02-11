@@ -85,8 +85,8 @@ function s:rename_job(args)
   endfunction
 
   let start_options = {
-        \ 'callback': function("s:callback"),
-        \ 'close_cb': function("s:close_cb"),
+        \ 'callback': funcref("s:callback"),
+        \ 'close_cb': funcref("s:close_cb"),
         \ }
 
   " modify GOPATH if needed

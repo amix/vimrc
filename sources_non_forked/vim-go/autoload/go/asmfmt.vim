@@ -25,7 +25,7 @@ function! go#asmfmt#Format() abort
 
   " Write the current buffer to a tempfile.
   let l:tmpname = tempname()
-  call writefile(getline(1, '$'), l:tmpname)
+  call writefile(go#util#GetLines(), l:tmpname)
 
   " Run asmfmt.
   let path = go#path#CheckBinPath("asmfmt")

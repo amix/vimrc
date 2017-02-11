@@ -32,7 +32,7 @@ snippet main "Main function"
 		${0}
 	}
 snippet let "let variable declaration with type inference"
-	let ${1}  = ${2};
+	let ${1} = ${2};
 snippet lett "let variable declaration with explicit type annotation"
 	let ${1}: ${2}  = ${3};
 snippet letm "let mut variable declaration with type inference"
@@ -88,21 +88,21 @@ snippet res "Result<T, E>"
 # Control structures
 snippet if
 	if ${1} {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet ife "if / else"
 	if ${1} {
-		${2}
+		${2:${VISUAL}}
 	} else {
 		${0}
 	}
 snippet el "else"
 	else {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet eli "else if"
 	else if ${1} {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet mat "match pattern"
 	match ${1} {
@@ -112,11 +112,11 @@ snippet case "Case clause of pattern match"
 	${1:_} => ${2:expression}
 snippet loop "loop {}" b
 	loop {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet wh "while loop"
 	while ${1:condition} {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet for "for ... in ... loop"
 	for ${1:i} in ${2} {

@@ -1,16 +1,16 @@
 snippet do
 	do
-		${0}
+		${0:${VISUAL}}
 	end
 snippet if if .. do .. end
 	if ${1} do
-		${0}
+		${0:${VISUAL}}
 	end
 snippet if: if .. do: ..
 	if ${1:condition}, do: ${0}
 snippet ife if .. do .. else .. end
 	if ${1:condition} do
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 	end
@@ -18,13 +18,13 @@ snippet ife: if .. do: .. else:
 	if ${1:condition}, do: ${2}, else: ${0}
 snippet unless unless .. do .. end
 	unless ${1} do
-		${0}
+		${0:${VISUAL}}
 	end
 snippet unless: unless .. do: ..
 	unless ${1:condition}, do: ${0}
 snippet unlesse unless .. do .. else .. end
 	unless ${1:condition} do
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 	end
@@ -33,7 +33,7 @@ snippet unlesse: unless .. do: .. else:
 snippet cond
 	cond do
 		${1} ->
-			${0}
+		${0:${VISUAL}}
 	end
 snippet case
 	case ${1} do
@@ -143,7 +143,7 @@ snippet exunit
 	end
 snippet try try .. rescue .. end
 	try do
-		${1}
+		${1:${VISUAL}}
 	rescue
 		${2} -> ${0}
 	end

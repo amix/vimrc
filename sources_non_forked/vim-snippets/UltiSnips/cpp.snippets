@@ -27,7 +27,7 @@ endsnippet
 snippet ns "namespace .. (namespace)"
 namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`}
 {
-	${VISUAL}${0}
+	${VISUAL}$0
 }${1/.+/ \/* /m}$1${1/.+/ *\/ /m}
 endsnippet
 
@@ -61,7 +61,7 @@ snippet cla "An entire .h generator" b
 class ${1:`!v substitute(substitute(vim_snippets#Filename('$1','ClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`}
 {
 private:
-	${3}
+	$3
 
 public:
 	$1();

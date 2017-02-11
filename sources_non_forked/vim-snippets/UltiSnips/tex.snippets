@@ -53,7 +53,7 @@ snippet desc "Description" b
 endsnippet
 
 snippet it "Individual item" b
-\item ${1}
+\item $1
 $0
 endsnippet
 
@@ -61,54 +61,54 @@ snippet part "Part" b
 \part{${1:part name}}
 \label{prt:${2:${1/(\w+)|\W+/(?1:\L$0\E:_)/ga}}}
 
-${0}
+$0
 endsnippet
 
 snippet cha "Chapter" b
 \chapter{${1:chapter name}}
 \label{cha:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
-${0}
+$0
 endsnippet
 
 snippet sec "Section" b
 \section{${1:section name}}
 \label{sec:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
-${0}
+$0
 endsnippet
 
 snippet sub "Subsection" b
 \subsection{${1:subsection name}}
 \label{sub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
-${0}
+$0
 endsnippet
 
 snippet ssub "Subsubsection" b
 \subsubsection{${1:subsubsection name}}
 \label{ssub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
-${0}
+$0
 endsnippet
 
 snippet par "Paragraph" b
 \paragraph{${1:paragraph name}}
 \label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
-${0}
+$0
 endsnippet
 
 snippet subp "Subparagraph" b
 \subparagraph{${1:subparagraph name}}
 \label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
-${0}
+$0
 endsnippet
 
 snippet ni "Non-indented paragraph" b
 \noindent
-${0}
+$0
 endsnippet
 
 snippet pac "Package" b

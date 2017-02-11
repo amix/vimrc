@@ -24,11 +24,11 @@ setwd("${1:`!p snip.rv = os.getcwd()`}")
 endsnippet
 
 snippet as "Apply type on variable" w
-as.$1`!p snip.rv = complete(t[1], FIELD_TYPES)`(${2}${VISUAL})
+as.$1`!p snip.rv = complete(t[1], FIELD_TYPES)`($2${VISUAL})
 endsnippet
 
 snippet is "Test type on variable" w
-is.$1`!p snip.rv = complete(t[1], FIELD_TYPES)`(${2}${VISUAL})
+is.$1`!p snip.rv = complete(t[1], FIELD_TYPES)`($2${VISUAL})
 endsnippet
 
 snippet dl "Download and install a package" b
@@ -50,51 +50,51 @@ source('${0:file}')
 endsnippet
 
 snippet if "If statement"
-if (${1}) {
-	${0}
+if ($1) {
+	$0
 }
 endsnippet
 
 snippet eif "Else-If statement"
-else if (${1}) {
-	${0}
+else if ($1) {
+	$0
 }
 endsnippet
 
 snippet el "Else statement"
 else {
-	${0}
+	$0
 }
 endsnippet
 
 snippet ife "if .. else"
-if (${1}) {
-	${2}
+if ($1) {
+	$2
 } else {
-	${3}
+	$3
 }
 endsnippet
 
 snippet wh "while loop"
-while(${1}) {
-	${2}
+while($1) {
+	$2
 }
 endsnippet
 
 snippet for "for loop"
 for (${1:item} in ${2:list}) {
-	${3}
+	$3
 }
 endsnippet
 
 snippet fun "Function definition"
-${1:name} <- function (${2}) {
-	${0}
+${1:name} <- function ($2) {
+	$0
 }
 endsnippet
 
 snippet ret "Return call"
-return(${0})
+return($0)
 endsnippet
 
 snippet df "Data frame"

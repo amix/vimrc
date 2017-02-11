@@ -1382,8 +1382,7 @@ For example here is how to set each to 30.
 This option is Neovim only. Use it to change the behavior of the test
 commands. If set to 1 it opens the test commands inside a new terminal
 according to |'g:go_term_mode'|, otherwise it will run them in the background
-just like `:GoBuild` and then display the status with
-|go#jobcontrol#Statusline()|. By default it is disabled.
+just like `:GoBuild`. By default it is disabled.
 >
   let g:go_term_enabled = 0
 <

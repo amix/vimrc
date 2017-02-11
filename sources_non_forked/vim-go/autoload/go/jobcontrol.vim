@@ -38,6 +38,16 @@ endfunction
 " GOPATH when g:go_autodetect_gopath is enabled. The job is started inside the
 " current files folder.
 function! s:spawn(bang, desc, args) abort
+  let status_type = a:args[0]
+  let status_dir = expand('%:p:h')
+  let started_at = reltime()
+
+  call go#statusline#Update(status_dir, {
+        \ 'desc': "current status",
+        \ 'type': status_type,
+        \ 'state': "started",
+        \})
+
   let job = {
         \ 'desc': a:desc,
         \ 'bang': a:bang,
@@ -49,6 +59,9 @@ function! s:spawn(bang, desc, args) abort
         \ 'on_stdout': function('s:on_stdout'),
         \ 'on_stderr': function('s:on_stderr'),
         \ 'on_exit' : function('s:on_exit'),
+        \ 'status_type' : status_type,
+        \ 'status_dir' : status_dir,
+        \ 'started_at' : started_at,
         \ }
 
   " modify GOPATH if needed
@@ -91,6 +104,23 @@ endfunction
 " on_stderr handler. If there are no errors and a quickfix window is open,
 " it'll be closed.
 function! s:on_exit(job_id, exit_status, event) dict abort
+  let status = {
+        \ 'desc': 'last status',
+        \ 'type': self.status_type,
+        \ 'state': "success",
+        \ }
+
+  if a:exit_status
+    let status.state = "failed"
+  endif
+
+  let elapsed_time = reltimestr(reltime(self.started_at))
+  " strip whitespace
+  let elapsed_time = substitute(elapsed_time, '^\s*\(.\{-}\)\s*$', '\1', '')
+  let status.state .= printf(" (%ss)", elapsed_time)
+
+  call go#statusline#Update(self.status_dir, status)
+
   let std_combined = self.stderr + self.stdout
 
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -105,14 +135,20 @@ function! s:on_exit(job_id, exit_status, event) dict abort
     call go#list#Window(l:listtype)
 
     let self.state = "SUCCESS"
-    call go#util#EchoSuccess("SUCCESS")
+
+    if get(g:, 'go_echo_command_info', 1)
+      call go#util#EchoSuccess("[" . self.status_type . "] SUCCESS")
+    endif
 
     execute cd . fnameescape(dir)
     return
   endif
 
   let self.state = "FAILED"
-  call go#util#EchoError("FAILED")
+
+  if get(g:, 'go_echo_command_info', 1)
+    call go#util#EchoError("[" . self.status_type . "] FAILED")
+  endif
 
   let errors = go#tool#ParseErrors(std_combined)
   let errors = go#tool#FilterValids(errors)
@@ -148,13 +184,13 @@ endfunction
 
 " on_stdout is the stdout handler for jobstart(). It collects the output of
 " stderr and stores them to the jobs internal stdout list.
-function! s:on_stdout(job_id, data) dict abort
+function! s:on_stdout(job_id, data, event) dict abort
   call extend(self.stdout, a:data)
 endfunction
 
 " on_stderr is the stderr handler for jobstart(). It collects the output of
 " stderr and stores them to the jobs internal stderr list.
-function! s:on_stderr(job_id, data) dict abort
+function! s:on_stderr(job_id, data, event) dict abort
   call extend(self.stderr, a:data)
 endfunction
 

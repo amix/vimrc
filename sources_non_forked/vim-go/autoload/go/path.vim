@@ -110,6 +110,9 @@ function! go#path#Detect() abort
     endif
   endif
 
+  " Fix up the case where initial $GOPATH is empty,
+  " and we end up with a trailing :
+  let gopath = substitute(gopath, ":$", "", "")
   return gopath
 endfunction
 

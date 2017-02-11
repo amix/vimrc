@@ -43,12 +43,12 @@ snippet ign IGNORECASE
 
 snippet if if {...}
 	if (${1}) {
-		${0}
+		${0:${VISUAL}}
 	}
 
 snippet ife if ... else ...
 	if (${1}) {
-		${2}
+		${2:${VISUAL}}
 	} else {
 		${0}
 	}

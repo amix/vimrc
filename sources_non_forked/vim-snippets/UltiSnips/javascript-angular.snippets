@@ -19,7 +19,7 @@ config(function($1) {
 endsnippet
 
 snippet acont "angular controller" i
-controller('${1:name}', [${2}function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
+controller('${1:name}', [$2function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	$0
 }]);
 endsnippet
@@ -31,29 +31,29 @@ controller('${1:name}', [${2:'$scope', }function(${2/('|")([A-Z_$]+)?\1?((, ?)$)
 endsnippet
 
 snippet adir "angular directive" i
-directive('${1}', [${2}function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
+directive('$1', [$2function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	return {
 		restrict: '${3:EA}',
 		link: function(scope, element, attrs) {
-			${0}
+			$0
 		}
 	};
 }]);
 endsnippet
 
 snippet adirs "angular directive with scope" i
-directive('${1}', [${2:'$scope', }function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
+directive('$1', [${2:'$scope', }function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	return {
 		restrict: '${3:EA}',
 		link: function(scope, element, attrs) {
-			${0}
+			$0
 		}
 	};
 }]);
 endsnippet
 
 snippet afact "angular factory" i
-factory('${1:name}', [${2}function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
+factory('${1:name}', [$2function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	$0
 }]);
 endsnippet
@@ -65,7 +65,7 @@ factory('${1:name}', [${2:'$scope', }function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$
 endsnippet
 
 snippet aserv "angular service" i
-service('${1:name}', [${2}function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
+service('${1:name}', [$2function(${2/('|")([A-Z_$]+)?\1?((, ?)$)?/$2(?3::$4)/ig}) {
 	$0
 }]);
 endsnippet

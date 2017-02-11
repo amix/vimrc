@@ -1,18 +1,8 @@
 let s:sock_type = (has('win32') || has('win64')) ? 'tcp' : 'unix'
 
 function! s:gocodeCurrentBuffer() abort
-  let buf = getline(1, '$')
-  if &encoding != 'utf-8'
-    let buf = map(buf, 'iconv(v:val, &encoding, "utf-8")')
-  endif
-  if &l:fileformat == 'dos'
-    " XXX: line2byte() depend on 'fileformat' option.
-    " so if fileformat is 'dos', 'buf' must include '\r'.
-    let buf = map(buf, 'v:val."\r"')
-  endif
   let file = tempname()
-  call writefile(buf, file)
-
+  call writefile(go#util#GetLines(), file)
   return file
 endfunction
 

@@ -76,15 +76,15 @@ snippet svm
 # if condition
 snippet if
 	if (${1:true}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet el
 	else {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet ifs
 	if (${1})
-		${0}
+		${0:${VISUAL}}
 # ternary conditional
 snippet t
 	${1} ? ${2} : ${0}
@@ -93,12 +93,12 @@ snippet ?
 # do while loop
 snippet do
 	do {
-		${0}
+		${0:${VISUAL}}
 	} while (${1:true});
 # while loop
 snippet wh
 	while (${1:true}) {
-		${0}
+		${0:${VISUAL}}
 	}
 # for loop
 snippet for
@@ -451,14 +451,14 @@ snippet switch
 # try
 snippet try
 	try {
-			${0}
+			${0:${VISUAL}}
 	}
 	catch (${1:System.Exception}) {
 			throw;
 	}
 snippet tryf
 	try {
-		${0}
+		${0:${VISUAL}}
 	}
 	finally {
 		${1}

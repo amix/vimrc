@@ -32,7 +32,7 @@ command! -nargs=? -complete=dir GoPath call go#path#GoPath(<f-args>)
 " target install directory. GoInstallBinaries doesn't install binaries if they
 " exist, to update current binaries pass 1 to the argument.
 function! s:GoInstallBinaries(updateBinaries)
-  if $GOPATH == ""
+  if $GOPATH == "" && go#util#gopath() == ""
     echohl Error
     echomsg "vim.go: $GOPATH is not set"
     echohl None

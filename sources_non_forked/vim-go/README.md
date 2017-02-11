@@ -1,4 +1,4 @@
-# vim-go
+# vim-go [![Build Status](http://img.shields.io/travis/fatih/vim-go.svg?style=flat-square)](https://travis-ci.org/fatih/vim-go) 
 
 <p align="center">
   <img style="float: right;" src="assets/vim-go.png" alt="Vim-go logo"/>
@@ -137,43 +137,43 @@ current buffer. You can also open the definition/declaration, in a new vertical,
 horizontal, or tab, for the word under your cursor:
 
 ```vim
-au FileType go nmap <Leader>ds <Plug>(go-def-split)
-au FileType go nmap <Leader>dv <Plug>(go-def-vertical)
-au FileType go nmap <Leader>dt <Plug>(go-def-tab)
+au FileType go nmap <leader>ds <Plug>(go-def-split)
+au FileType go nmap <leader>dv <Plug>(go-def-vertical)
+au FileType go nmap <leader>dt <Plug>(go-def-tab)
 ```
 
 Open the relevant Godoc for the word under the cursor with `<leader>gd` or open
 it vertically with `<leader>gv`
 
 ```vim
-au FileType go nmap <Leader>gd <Plug>(go-doc)
-au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+au FileType go nmap <leader>gd <Plug>(go-doc)
+au FileType go nmap <leader>gv <Plug>(go-doc-vertical)
 ```
 
 Or open the Godoc in browser
 
 ```vim
-au FileType go nmap <Leader>gb <Plug>(go-doc-browser)
+au FileType go nmap <leader>gb <Plug>(go-doc-browser)
 ```
 
 Show a list of interfaces which is implemented by the type under your cursor
 with `<leader>s`
 
 ```vim
-au FileType go nmap <Leader>s <Plug>(go-implements)
+au FileType go nmap <leader>s <Plug>(go-implements)
 ```
 
 Show type info for the word under your cursor with `<leader>i` (useful if you
 have disabled auto showing type info via `g:go_auto_type_info`)
 
 ```vim
-au FileType go nmap <Leader>i <Plug>(go-info)
+au FileType go nmap <leader>i <Plug>(go-info)
 ```
 
 Rename the identifier under the cursor to a new name
 
 ```vim
-au FileType go nmap <Leader>e <Plug>(go-rename)
+au FileType go nmap <leader>e <Plug>(go-rename)
 ```
 
 More `<Plug>` mappings can be seen with `:he go-mappings`. Also these are just
@@ -245,8 +245,8 @@ Run `:GoRun` in a new tab, horizontal split or vertical split terminal
 
 ```vim
 au FileType go nmap <leader>rt <Plug>(go-run-tab)
-au FileType go nmap <Leader>rs <Plug>(go-run-split)
-au FileType go nmap <Leader>rv <Plug>(go-run-vertical)
+au FileType go nmap <leader>rs <Plug>(go-run-split)
+au FileType go nmap <leader>rv <Plug>(go-run-vertical)
 ```
 
 By default new terminals are opened in a vertical split. To change it
@@ -287,6 +287,31 @@ information. It includes
 [Screencasts](https://github.com/fatih/vim-go/wiki/Screencasts), an [FAQ
 section](https://github.com/fatih/vim-go/wiki/FAQ-Troubleshooting), and many
 other [various pieces](https://github.com/fatih/vim-go/wiki) of information.
+
+## Development & Testing
+
+vim-go supports now test files. Please check `autoload` folder for examples. If
+you add a new feature be sure you also include the `_test.vim` file next to the
+script. Test functions should be starting with `Test_`, example:
+
+
+```viml
+function Test_run_fmt()
+  call assert_equal(expected, actual)
+  ...
+endfunction
+```
+
+You can locally test it by running:
+
+```
+make
+```
+
+This will run all tests and print either `PASS` or `FAIL` to indicate the final
+status of all tests.
+
+Additionally, each new pull request will trigger a new Travis-ci job.
 
 ## Donation
 

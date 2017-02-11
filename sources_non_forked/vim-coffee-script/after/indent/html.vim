@@ -18,7 +18,7 @@ setlocal indentexpr=GetCoffeeHtmlIndent(v:lnum)
 
 function! GetCoffeeHtmlIndent(curlinenum)
   " See if we're inside a coffeescript block.
-  let scriptlnum = searchpair('<script [^>]*type="text/coffeescript"[^>]*>', '',
+  let scriptlnum = searchpair('<script [^>]*type=[''"]\?text/coffeescript[''"]\?[^>]*>', '',
   \                           '</script>', 'bWn')
   let prevlnum = prevnonblank(a:curlinenum)
 

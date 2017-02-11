@@ -132,6 +132,13 @@ abbr if err != nil { ... }
 		t.Fatal(err)
 	}
 
+# error snippet in log.Fatal
+snippet errl
+abbr if err != nil { ... }
+	if err != nil {
+		log.Fatal(err)
+	}
+
 # error snippet with two return values
 snippet errn,
 abbr if err != nil { return [...], err }

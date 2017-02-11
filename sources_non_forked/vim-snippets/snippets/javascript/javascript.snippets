@@ -2,37 +2,37 @@
 # prototype
 snippet proto
 	${1:class_name}.prototype.${2:method_name} = function(${3}) {
-		${0}
+		${0:${VISUAL}}
 	};
 # Function
 snippet fun
 	function ${1:function_name}(${2}) {
-		${0}
+		${0:${VISUAL}}
 	}
 # Anonymous Function
 snippet f "" w
 	function(${1}) {
-		${0}
+		${0:${VISUAL}}
 	}
 # Anonymous Function assigned to variable
 snippet vaf
 	var ${1:function_name} = function(${2}) {
-		${0}
+		${0:${VISUAL}}
 	};
 # Function assigned to variable
 snippet vf
 	var ${1:function_name} = function $1(${2}) {
-		${0}
+		${0:${VISUAL}}
 	};
 # Immediate function
 snippet (f
 	(function(${1}) {
-		${0}
+		${0:${VISUAL}}
 	}(${2}));
 # Minify safe iife
 snippet ;fe
 	;(function(${1}) {
-		${0}
+		${0:${VISUAL}}
 	}(${2}))
 # self-defining function
 snippet sdf
@@ -40,21 +40,21 @@ snippet sdf
 		${3}
 
 		$1 = function ($2) {
-			${0}
+			${0:${VISUAL}}
 		};
 	};
 # Flow control
 # if
-snippet if
+snippet if "if (condition) { ... }"
 	if (${1:true}) {
-		${0}
+		${0:${VISUAL}}
 	}
 # if ... else
-snippet ife
+snippet ife "if (condition) { ... } else { ... }"
 	if (${1:true}) {
-		${2}
+		${0:${VISUAL}}
 	} else {
-		${0}
+		${2}
 	}
 # tertiary conditional
 snippet ter
@@ -69,25 +69,21 @@ snippet switch
 		default:
 			${2}
 	}
-# case
-snippet case
+snippet case "case 'xyz': ... break"
 	case '${1:case}':
-		${2}
+		${0:${VISUAL}}
 		break;
-	${0}
-# try
-snippet try
+snippet try "try { ... } catch(e) { ... }"
 	try {
-		${1}
-	} catch (${2:e}) {
-		${0:/* handle error */}
+		${0:${VISUAL}}
+	} catch (${1:e}) {
+		${2:/* handle error */}
 	}
-# try finally
-snippet tryf
+snippet tryf "try { ... } catch(e) { ... } finally { ... }"
 	try {
-		${1}
-	} catch (${2:e}) {
-		${0:/* handle error */}
+		${0:${VISUAL}}
+	} catch (${1:e}) {
+		${2:/* handle error */}
 	} finally {
 		${3:/* be executed regardless of the try / catch result*/}
 	}
@@ -97,25 +93,21 @@ snippet terr
 # return
 snippet ret
 	return ${0:result};
-# for loop
-snippet for
-	for (var ${2:i} = 0, l = ${1:arr}.length; $2 < l; $2++) {
-		var ${3:v} = $1[$2];${0:}
+snippet for "for (...) {...}"
+	for (var ${1:i} = 0, ${2:len} = ${3:Things.length}; $1 < $2; $1++) {
+		${0:${VISUAL}}
 	}
-# Reversed for loop
-snippet forr
-	for (var ${2:i} = ${1:arr}.length - 1; $2 >= 0; $2--) {
-		var ${3:v} = $1[$2];${0:}
+snippet forr "reversed for (...) {...}"
+	for (var ${2:i} = ${1:Things.length} - 1; $2 >= 0; $2--) {
+		${0:${VISUAL}}
 	}
-# While loop
-snippet wh
+snippet wh "(condition) { ... }"
 	while (${1:/* condition */}) {
-		${0}
+		${0:${VISUAL}}
 	}
-# Do while loop
-snippet do
+snippet do "do { ... } while (condition)"
 	do {
-		${0}
+		${0:${VISUAL}}
 	} while (${1:/* condition */});
 # For in loop
 snippet fori
@@ -126,7 +118,7 @@ snippet fori
 # Object Method
 snippet :f
 	${1:method_name}: function (${2:attribute}) {
-		${3}
+		${0:${VISUAL}}
 	},
 # hasOwnProperty
 snippet has
@@ -240,33 +232,46 @@ snippet qsa
 # Debugging
 snippet de
 	debugger;
-# console.log
-snippet cl
+snippet cl "console.log"
 	console.log(${0});
-# console.debug
-snippet cd
+snippet cd "console.debug"
 	console.debug(${0});
-# console.error
-snippet ce
+snippet ce "console.error"
 	console.error(${0});
-# console.warn
-snippet cw
+snippet cw "console.warn"
 	console.warn(${0});
-# console.info
-snippet ci
+snippet ci "console.info"
 	console.info(${0});
-# console.trace
-snippet ct
+snippet ct "console.trace"
 	console.trace(${0:label});
-# console.time
-snippet ctime
-	console.time(${0:label});
-# console.assert
-snippet ca
+snippet ctime "console.time ... console.timeEnd"
+	console.time("${1:label}");
+	${0:${VISUAL}}
+	console.timeEnd("$1");
+snippet ctimestamp "console.timeStamp"
+	console.timeStamp("${1:label}");
+snippet ca "console.assert"
 	console.assert(${1:expression}, ${0:obj});
-# console.dir
-snippet cdir
+snippet cclear "console.clear"
+	console.clear();
+snippet cdir "console.dir"
 	console.dir(${0:obj});
+snippet cdirx "console.dirxml"
+	console.dirxml(${1:object});
+snippet cgroup "console.group"
+	console.group("${1:label}");
+	${0:${VISUAL}}
+	console.groupEnd();
+snippet cgroupc "console.groupCollapsed"
+	console.groupCollapsed("${1:label}");
+	${0:${VISUAL}}
+	console.groupEnd();
+snippet cprof "console.profile"
+	console.profile("${1:label}");
+	${0:${VISUAL}}
+	console.profileEnd();
+snippet ctable "console.table"
+	console.table(${1:"${2:value}"});
 # Misc
 # 'use strict';
 snippet us

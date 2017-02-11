@@ -23,7 +23,7 @@ snippet docs
 
 snippet wh
 	while ${1:condition}:
-		${0}
+		${0:${VISUAL}}
 # dowh - does the same as do...while in other languages
 snippet dowh
 	while True:
@@ -32,7 +32,7 @@ snippet dowh
 			break
 snippet with
 	with ${1:expr} as ${2:var}:
-		${0}
+		${0:${VISUAL}}
 # New Class
 snippet cl
 	class ${1:ClassName}(${2:object}):
@@ -68,13 +68,13 @@ snippet property
 # Ifs
 snippet if
 	if ${1:condition}:
-		${0}
+		${0:${VISUAL}}
 snippet el
 	else:
-		${0}
+		${0:${VISUAL}}
 snippet ei
 	elif ${1:condition}:
-		${0}
+		${0:${VISUAL}}
 # For
 snippet for
 	for ${1:item} in ${2:items}:
@@ -93,27 +93,27 @@ snippet .
 	self.
 snippet try Try/Except
 	try:
-		${1}
-	except ${2:Exception}, ${3:e}:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
 		${0:raise $3}
 snippet try Try/Except/Else
 	try:
-		${1}
-	except ${2:Exception}, ${3:e}:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
 		${4:raise $3}
 	else:
 		${0}
 snippet try Try/Except/Finally
 	try:
-		${1}
-	except ${2:Exception}, ${3:e}:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
 		${4:raise $3}
 	finally:
 		${0}
 snippet try Try/Except/Else/Finally
 	try:
-		${1}
-	except ${2:Exception}, ${3:e}:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
 		${4:raise $3}
 	else:
 		${5}

@@ -1,8 +1,8 @@
-snippet .
+snippet . "selector { }"
 	${1} {
-		${0}
+		${0:${VISUAL}}
 	}
-snippet !
+snippet ! "!important"
 	 !important
 snippet bdi:m+
 	-moz-border-image: url(${1}) ${2:0} ${3:0} ${4:0} ${5:0} ${6:stretch} ${0:stretch};
@@ -31,9 +31,9 @@ snippet @f
 	}
 snippet @i
 	@import url(${0});
-snippet @m
+snippet @m "@media mediatype { }"
 	@media ${1:print} {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet bg+
 	background: #${1:FFF} url(${2}) ${3:0} ${4:0} ${0:no-repeat};

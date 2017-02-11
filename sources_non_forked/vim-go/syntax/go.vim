@@ -10,9 +10,7 @@
 "     let OPTION_NAME = 0
 "   in your ~/.vimrc file to disable particular options. You can also write:
 "     let OPTION_NAME = 1
-"   to enable particular options.
-"   At present, all options default to on, except highlight of:
-"   functions, methods, structs, operators, build constraints and interfaces.
+"   to enable particular options. At present, all options default to off:
 "
 "   - go_highlight_array_whitespace_error
 "     Highlights white space after "[]".
@@ -36,23 +34,23 @@ if exists("b:current_syntax")
 endif
 
 if !exists("g:go_highlight_array_whitespace_error")
-  let g:go_highlight_array_whitespace_error = 1
+  let g:go_highlight_array_whitespace_error = 0
 endif
 
 if !exists("g:go_highlight_chan_whitespace_error")
-  let g:go_highlight_chan_whitespace_error = 1
+  let g:go_highlight_chan_whitespace_error = 0
 endif
 
 if !exists("g:go_highlight_extra_types")
-  let g:go_highlight_extra_types = 1
+  let g:go_highlight_extra_types = 0
 endif
 
 if !exists("g:go_highlight_space_tab_error")
-  let g:go_highlight_space_tab_error = 1
+  let g:go_highlight_space_tab_error = 0
 endif
 
 if !exists("g:go_highlight_trailing_whitespace_error")
-  let g:go_highlight_trailing_whitespace_error = 1
+  let g:go_highlight_trailing_whitespace_error = 0
 endif
 
 if !exists("g:go_highlight_operators")

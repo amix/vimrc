@@ -305,4 +305,17 @@ function! go#util#EchoInfo(msg)
   redraw | echohl Debug | echom "vim-go: " . a:msg | echohl None
 endfunction
 
+function! go#util#GetLines()
+  let buf = getline(1, '$')
+  if &encoding != 'utf-8'
+    let buf = map(buf, 'iconv(v:val, &encoding, "utf-8")')
+  endif
+  if &l:fileformat == 'dos'
+    " XXX: line2byte() depend on 'fileformat' option.
+    " so if fileformat is 'dos', 'buf' must include '\r'.
+    let buf = map(buf, 'v:val."\r"')
+  endif
+  return buf
+endfunction
+
 " vim: sw=2 ts=2 et

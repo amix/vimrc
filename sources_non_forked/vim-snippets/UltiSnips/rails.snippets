@@ -22,7 +22,7 @@ class ${1:Model}Controller < ApplicationController
 	$0
 
 	private
-	def find_${2}
+	def find_$2
 		@$2 = ${3:$1}.find(params[:id]) if params[:id]
 	end
 end
@@ -253,7 +253,7 @@ after_validation_on_update $0
 endsnippet
 
 snippet asg "assert(var = assigns(:var))"
-assert(${1:var} = assigns(:${1}), "Cannot find @${1}")
+assert(${1:var} = assigns(:$1), "Cannot find @$1")
 $0
 endsnippet
 
@@ -270,11 +270,11 @@ end
 endsnippet
 
 snippet artnpp "assert_redirected_to (nested path plural)"
-assert_redirected_to ${10:${2:parent}_${3:child}_path(${4:@}${5:${2}})}
+assert_redirected_to ${10:${2:parent}_${3:child}_path(${4:@}${5:$2})}
 endsnippet
 
 snippet artnp "assert_redirected_to (nested path)"
-assert_redirected_to ${2:${12:parent}_${13:child}_path(${14:@}${15:${12}}, ${16:@}${17:${13}})}
+assert_redirected_to ${2:${12:parent}_${13:child}_path(${14:@}${15:$12}, ${16:@}${17:$13})}
 endsnippet
 
 snippet artpp "assert_redirected_to (path plural)"
@@ -282,7 +282,7 @@ assert_redirected_to ${10:${2:model}s_path}
 endsnippet
 
 snippet artp "assert_redirected_to (path)"
-assert_redirected_to ${2:${12:model}_path(${13:@}${14:${12}})}
+assert_redirected_to ${2:${12:model}_path(${13:@}${14:$12})}
 endsnippet
 
 snippet asrj "assert_rjs"
@@ -324,7 +324,7 @@ before_validation_on_update
 endsnippet
 
 snippet bt "belongs_to (bt)"
-belongs_to :${1:object}${2:, :class_name => "${3:${1/[[:alpha:]]+|(_)/(?1::\u$0)/g}}", :foreign_key => "${4:${1}_id}"}
+belongs_to :${1:object}${2:, :class_name => "${3:${1/[[:alpha:]]+|(_)/(?1::\u$0)/g}}", :foreign_key => "${4:$1_id}"}
 endsnippet
 
 snippet crw "cattr_accessor"
@@ -358,7 +358,7 @@ endsnippet
 snippet deftg "def get request"
 def test_should_get_${1:action}
 	${2:@${3:model} = ${4:$3s}(:${5:fixture_name})
-	}get :${1}${6:, :id => @$3.to_param}
+	}get :$1${6:, :id => @$3.to_param}
 	assert_response :success
 	$0
 end
@@ -367,7 +367,7 @@ endsnippet
 snippet deftp "def post request"
 def test_should_post_${1:action}
 	${3:@$2 = ${4:$2s}(:${5:fixture_name})
-	}post :${1}${6:, :id => @$2.to_param}, :${2:model} => { $0 }
+	}post :$1${6:, :id => @$2.to_param}, :${2:model} => { $0 }
 	assert_response :redirect
 
 end
@@ -400,23 +400,23 @@ end
 endsnippet
 
 snippet habtm "has_and_belongs_to_many (habtm)"
-has_and_belongs_to_many :${1:object}${2:, :join_table => "${3:table_name}", :foreign_key => "${4:${1}_id}"}
+has_and_belongs_to_many :${1:object}${2:, :join_table => "${3:table_name}", :foreign_key => "${4:$1_id}"}
 endsnippet
 
 snippet hm "has_many (hm)"
-has_many :${1:object}s${2:, :class_name => "${1}", :foreign_key => "${4:reference}_id"}
+has_many :${1:object}s${2:, :class_name => "$1", :foreign_key => "${4:reference}_id"}
 endsnippet
 
 snippet hmt "has_many (through)"
-has_many :${1:objects}, :through => :${2:join_association}${3:, :source => :${4:${2}_table_foreign_key_to_${1}_table}}
+has_many :${1:objects}, :through => :${2:join_association}${3:, :source => :${4:$2_table_foreign_key_to_$1_table}}
 endsnippet
 
 snippet hmd "has_many :dependent => :destroy"
-has_many :${1:object}s${2:, :class_name => "${1}", :foreign_key => "${4:reference}_id"}, :dependent => :destroy$0
+has_many :${1:object}s${2:, :class_name => "$1", :foreign_key => "${4:reference}_id"}, :dependent => :destroy$0
 endsnippet
 
 snippet ho "has_one (ho)"
-has_one :${1:object}${2:, :class_name => "${3:${1/[[:alpha:]]+|(_)/(?1::\u$0)/g}}", :foreign_key => "${4:${1}_id}"}
+has_one :${1:object}${2:, :class_name => "${3:${1/[[:alpha:]]+|(_)/(?1::\u$0)/g}}", :foreign_key => "${4:$1_id}"}
 endsnippet
 
 snippet logd "logger.debug"
@@ -514,11 +514,11 @@ redirect_to :controller => "${1:items}", :action => "${2:show}", :id => ${0:@ite
 endsnippet
 
 snippet renpp "redirect_to (nested path plural)"
-redirect_to(${2:${10:parent}_${11:child}_path(${12:@}${13:${10}})})
+redirect_to(${2:${10:parent}_${11:child}_path(${12:@}${13:$10})})
 endsnippet
 
 snippet renp "redirect_to (nested path)"
-redirect_to(${2:${12:parent}_${13:child}_path(${14:@}${15:${12}}, ${16:@}${17:${13}})})
+redirect_to(${2:${12:parent}_${13:child}_path(${14:@}${15:$12}, ${16:@}${17:$13})})
 endsnippet
 
 snippet repp "redirect_to (path plural)"
@@ -526,7 +526,7 @@ redirect_to(${2:${10:model}s_path})
 endsnippet
 
 snippet rep "redirect_to (path)"
-redirect_to(${2:${12:model}_path(${13:@}${14:${12}})})
+redirect_to(${2:${12:model}_path(${13:@}${14:$12})})
 endsnippet
 
 snippet reb "redirect_to :back"
@@ -882,12 +882,12 @@ end
 endsnippet
 
 snippet trans "Translation snippet"
-I18n.t('`!v substitute(substitute(substitute(@%, substitute(getcwd() . "/", "\/", "\\\\/", "g"), "", ""), "\\(\\.\\(html\\|js\\)\\.\\(haml\\|erb\\)\\|\\(_controller\\)\\?\\.rb\\)$", "", ""), "/", ".", "g")`.${2:${1/[^\w]/_/g}}${3}', :default => "${1:some_text}"${4})${5:$0}
+I18n.t('`!v substitute(substitute(substitute(@%, substitute(getcwd() . "/", "\/", "\\\\/", "g"), "", ""), "\\(\\.\\(html\\|js\\)\\.\\(haml\\|erb\\)\\|\\(_controller\\)\\?\\.rb\\)$", "", ""), "/", ".", "g")`.${2:${1/[^\w]/_/g}}$3', :default => "${1:some_text}"$4)${5:$0}
 endsnippet
 
 snippet route_spec
 it 'routes to #${1:action}' do
-	${2:get}('/${3:url}').should route_to('`!v substitute(expand('%:t:r'), '_routing_spec$', '', '')`#$1'${4:, ${5:params}})${6}
+	${2:get}('/${3:url}').should route_to('`!v substitute(expand('%:t:r'), '_routing_spec$', '', '')`#$1'${4:, ${5:params}})$6
 end
 endsnippet
 

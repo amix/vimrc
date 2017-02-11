@@ -1,6 +1,0 @@
-mode: set
-pkg1/sample.go:5.19,6.11 1 1
-pkg1/sample.go:11.2,11.10 1 1
-pkg1/sample.go:6.11,8.3 1 0
-pkg1/sample.go:8.3,8.18 1 1
-pkg1/sample.go:8.18,10.3 1 0

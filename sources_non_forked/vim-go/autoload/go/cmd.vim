@@ -32,8 +32,11 @@ function! go#cmd#Build(bang, ...) abort
           \})
     return
   elseif has('nvim')
+    if get(g:, 'go_echo_command_info', 1)
+      call go#util#EchoProgress("building dispatched ...")
+    endif
+
     " if we have nvim, call it asynchronously and return early ;)
-    call go#util#EchoProgress("building dispatched ...")
     call go#jobcontrol#Spawn(a:bang, "build", args)
     return
   endif
@@ -419,7 +422,7 @@ function s:cmd_job(args) abort
     call go#statusline#Update(status_dir, status)
   endfunction
 
-  let a:args.error_info_cb = function('s:error_info_cb')
+  let a:args.error_info_cb = funcref('s:error_info_cb')
   let callbacks = go#job#Spawn(a:args)
 
   let start_options = {

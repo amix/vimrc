@@ -16,7 +16,7 @@ function! go#def#Jump(mode) abort
     if &modified
       " Write current unsaved buffer to a temp file and use the modified content
       let l:tmpname = tempname()
-      call writefile(getline(1, '$'), l:tmpname)
+      call writefile(go#util#GetLines(), l:tmpname)
       let fname = l:tmpname
     endif
 
@@ -41,8 +41,7 @@ function! go#def#Jump(mode) abort
     let stdin_content = ""
 
     if &modified
-      let sep = go#util#LineEnding()
-      let content  = join(getline(1, '$'), sep)
+      let content  = join(go#util#GetLines(), "\n")
       let stdin_content = fname . "\n" . strlen(content) . "\n" . content
       call add(cmd, "-modified")
     endif
@@ -87,7 +86,7 @@ function! go#def#Jump(mode) abort
     return
   endif
 
-  call s:jump_to_declaration(out, a:mode, bin_name)
+  call go#def#jump_to_declaration(out, a:mode, bin_name)
   let $GOPATH = old_gopath
 endfunction
 
@@ -96,10 +95,10 @@ function! s:jump_to_declaration_cb(mode, bin_name, job, exit_status, data) abort
     return
   endif
 
-  call s:jump_to_declaration(a:data[0], a:mode, a:bin_name)
+  call go#def#jump_to_declaration(a:data[0], a:mode, a:bin_name)
 endfunction
 
-function! s:jump_to_declaration(out, mode, bin_name) abort
+function! go#def#jump_to_declaration(out, mode, bin_name) abort
   let final_out = a:out
   if a:bin_name == "godef"
     " append the type information to the same line so our we can parse it.
@@ -299,7 +298,7 @@ function s:def_job(args) abort
     " do not print anything during async definition search&jump
   endfunction
 
-  let a:args.error_info_cb = function('s:error_info_cb')
+  let a:args.error_info_cb = funcref('s:error_info_cb')
   let callbacks = go#job#Spawn(a:args)
 
   let start_options = {

@@ -1,6 +1,6 @@
 "  guru.vim -- Vim integration for the Go guru.
 
-" guru_cmd returns a dict that contains the command to execute guru. option
+" guru_cmd returns a dict that contains the command to execute guru. args
 " is dict with following options:
 "  mode        : guru mode, such as 'implements'
 "  format      : output format, either 'plain' or 'json'
@@ -34,10 +34,8 @@ function! s:guru_cmd(args) range abort
   let cmd = [bin_path]
 
   let filename = fnamemodify(expand("%"), ':p:gs?\\?/?')
-  let stdin_content = ""
   if &modified
-    let sep = go#util#LineEnding()
-    let content  = join(getline(1, '$'), sep )
+    let content  = join(go#util#GetLines(), "\n")
     let result.stdin_content = filename . "\n" . strlen(content) . "\n" . content
     call add(cmd, "-modified")
   endif
@@ -127,7 +125,7 @@ function! s:sync_guru(args) abort
 
   " run, forrest run!!!
   let command = join(result.cmd, " ")
-  if &modified
+  if has_key(result, 'stdin_content')
     let out = go#util#System(command, result.stdin_content)
   else
     let out = go#util#System(command)
@@ -198,10 +196,10 @@ function! s:async_guru(args) abort
   endfunction
 
   let start_options = {
-        \ 'close_cb': function("s:close_cb"),
+        \ 'close_cb': funcref("s:close_cb"),
         \ }
 
-  if &modified
+  if has_key(result, 'stdin_content')
     let l:tmpname = tempname()
     call writefile(split(result.stdin_content, "\n"), l:tmpname, "b")
     let l:start_options.in_io = "file"
@@ -543,7 +541,7 @@ function! go#guru#ClearSameIds() abort
   endfor
 
   " remove the autocmds we defined
-  if exists("#BufWinEnter<buffer>")
+  if exists("#BufWinEnter#<buffer>")
     autocmd! BufWinEnter <buffer>
   endif
 endfunction
@@ -635,7 +633,7 @@ function! go#guru#Tags(...) abort
   if !exists('g:go_guru_tags')
     call go#util#EchoSuccess("guru tags is not set")
   else
-    call go#util#EchoSuccess("current guru tags: ". a:1)
+    call go#util#EchoSuccess("current guru tags: ". g:go_guru_tags)
   endif
 endfunction
 

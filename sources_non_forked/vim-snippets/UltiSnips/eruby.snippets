@@ -27,12 +27,12 @@ def textmate_var(var, snip):
 endglobal
 
 
-snippet % "<% ${0} %>" i
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`${0}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_INLINE', snip)`
+snippet % "<% $0 %>" i
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_INLINE', snip)`$0`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_INLINE', snip)`
 endsnippet
 
-snippet = "<%= ${0} %>" i
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`${0}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+snippet = "<%= $0 %>" i
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`$0`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
 ###########################################################################
@@ -150,11 +150,11 @@ snippet licai "link_to (controller, action, id)" w
 endsnippet
 
 snippet linpp "link_to (nested path plural)" w
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${10:parent}_${11:child}_path(${12:@}${13:${10}})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${10:parent}_${11:child}_path(${12:@}${13:$10})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
 snippet linp "link_to (nested path)" w
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${12:parent}_${13:child}_path(${14:@}${15:${12}}, ${16:@}${17:${13}})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${12:parent}_${13:child}_path(${14:@}${15:$12}, ${16:@}${17:$13})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
 snippet lipp "link_to (path plural)" w
@@ -162,7 +162,7 @@ snippet lipp "link_to (path plural)" w
 endsnippet
 
 snippet lip "link_to (path)" w
-`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${12:model}_path(${13:@}${14:${12}})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
+`!p textmate_var('TM_RAILS_TEMPLATE_START_RUBY_EXPR', snip)`link_to ${1:"${2:link text...}"}, ${3:${12:model}_path(${13:@}${14:$12})}`!p textmate_var('TM_RAILS_TEMPLATE_END_RUBY_EXPR', snip)`
 endsnippet
 
 snippet lim "link_to model" w

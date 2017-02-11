@@ -31,12 +31,11 @@ function! go#doc#OpenBrowser(...) abort
 
     let import = out["import"]
     let name = out["name"]
-
-    " if import is empty, it means we selected a package name
-    if import ==# ""
-      let godoc_url = "https://godoc.org/" . name 
-    else
-      let godoc_url = "https://godoc.org/" . import . "#" . name
+    let decl = out["decl"]
+    
+    let godoc_url = "https://godoc.org/" . import
+    if decl !~ "^package"
+      let godoc_url .= "#" . name 
     endif
 
     echo godoc_url
@@ -153,8 +152,7 @@ function! s:gogetdoc(json) abort
     "     file size followed by newline
     "     file contents
     let in = ""
-    let sep = go#util#LineEnding()
-    let content = join(getline(1, '$'), sep)
+    let content = join(go#util#GetLines(), "\n")
     let in = fname . "\n" . strlen(content) . "\n" . content
     let command .= " -modified"
     let out = go#util#System(command, in)

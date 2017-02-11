@@ -9,22 +9,22 @@ snippet dir
 # <FilesMatch>
 snippet filesmatch
 	<FilesMatch "${1:regex}">
-		${0}
+		${0:${VISUAL}}
 	</FilesMatch>
 # <IfModule>
 snippet ifmodule
 	<IfModule ${1:mod_example.c}>
-		${0}
+		${0:${VISUAL}}
 	</IfModule>
 # <LimitExcept>
 snippet limitexcept
 	<LimitExcept ${1:POST GET}>
-		${0}
+		${0:${VISUAL}}
 	</LimitExcept>
 # <Proxy>
 snippet proxy
 	<Proxy ${1:*}>
-		${0}
+		${0:${VISUAL}}
 	</Proxy>
 # <VirtualHost>
 snippet virtualhost

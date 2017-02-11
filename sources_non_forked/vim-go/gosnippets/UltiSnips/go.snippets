@@ -151,6 +151,14 @@ if err != nil {
 ${0}
 endsnippet
 
+# error log snippet
+snippet errl "Error with log.Fatal(err)" !b
+if err != nil {
+	log.Fatal(err)
+}
+${0}
+endsnippet
+
 # error multiple return
 snippet errn, "Error return with two return values" !b
 if err != nil {

@@ -301,10 +301,10 @@ endfunction
 "FUNCTION: Path._escChars() {{{1
 function! s:Path._escChars()
     if nerdtree#runningWindows()
-        return " `\|\"#%&,?()\*^<>"
+        return " `\|\"#%&,?()\*^<>$"
     endif
 
-    return " \\`\|\"#%&,?()\*^<>[]"
+    return " \\`\|\"#%&,?()\*^<>[]$"
 endfunction
 
 "FUNCTION: Path.getDir() {{{1

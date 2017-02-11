@@ -1,7 +1,33 @@
-## 1.11 - Unplanned
+## unplanned
 
 FEATURES:
 
+* Add new `errl` snippet that expands to [gh-1185]:
+
+```
+if err != nil {
+	log.Fatal(err)
+}
+```
+
+IMPROVEMENTS:
+
+* Lowercase `<Leader>` in mappings examples for consisten documentation across the README [gh-1192]
+* All of files should be written in utf-8 if the file will be passed to external command. [gh-1184]
+
+BUG FIXES:
+
+* Honor `g:go_echo_command_info` when dispatching builds in neovim [gh-1176]
+* Fix `:GoBuild` error in neovim due to invalid jobcontrol handler function signatures (`s:on_stdout`, `s:on_stderr`)[gh-1176]
+* Update statusline before and after `go#jobcontrol#Spawn` command is executed [gh-1176]
+* Correctly report the value of the 'g:go_guru_tags' variable [gh-1177]
+* Ensure no trailing `:` exist in GOPATH detection if initial GOPATH is not set [gh-1194]
+
+## 1.11 - (January 9, 2017)
+
+FEATURES:
+
+* Travis test integration has been added. Now any file that is added as `<name>_test.vim` will be automatically tested in for every Pull Request (just like how we add tests to Go with `_test.go`). Going forward this will tremendously increase the stability and decrease the maintaince burden of vim-go. [gh-1157]
 * Add new `g:go_updatetime` setting to change the default updatetime (which was hardcoded previously) [gh-1055]
 * Add new `g:go_template_use_pkg` setting to enable to use cwd as package name instead of basic template file [gh-1124]
 
@@ -9,6 +35,8 @@ IMPROVEMENTS:
 
 * Add `statusline` support for `:GoMetaLinter` [gh-1120]
 * Quickfix and Location lists contain now a descriptive title (requires at least Vim `7.4.2200`)[gh-1004]
+* Check `go env GOPATH` as well for `:GoInstallBinaries` as Go has now a default path for GOPATH ("~/go")starting with 1.8 [gh-1152]
+* `:GoDocBrowser` now also works on import paths [gh-1174]
 
 BUG FIXES:
 
@@ -24,6 +52,22 @@ BUG FIXES:
 * Fix referencing a non defined variable for async commands when bang (!) was used
 * Fix `:GoDef` failing for a modified buffer if `hidden` was not set [gh-1132]
 * Fix `:GoDefStack` to allow popping from jump list when buffer is modified [gh-1133]
+* Improve internal defining of functions and referencing them for async operations [gh-1155]
+* Fix `:GoMetaLinter` failing if `go_metalinter_command` is set. [gh-1160]
+* Fix `:GoMetaLinter`'s `go_metalinter_deadline` setting for async mode [gh-1146]
+
+BACKWARDS INCOMPATIBILITIES:
+
+* The following syntax options are now disabled by default. If you're using them be sure to set them in your .vimrc [gh-1167]
+
+```viml
+g:go_highlight_array_whitespace_error
+g:go_highlight_chan_whitespace_error
+g:go_highlight_extra_types
+g:go_highlight_space_tab_error
+g:go_highlight_trailing_whitespace_error
+```
+
 
 
 ## 1.10 (November 24, 2016)
