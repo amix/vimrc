@@ -19,7 +19,7 @@ if has('reltime')
     lockvar! g:_SYNTASTIC_START
 endif
 
-let g:_SYNTASTIC_VERSION = '3.8.0-21'
+let g:_SYNTASTIC_VERSION = '3.8.0-26'
 lockvar g:_SYNTASTIC_VERSION
 
 " Sanity checks {{{1
@@ -36,7 +36,8 @@ for s:feature in [
             \ 'modify_fname',
             \ 'quickfix',
             \ 'reltime',
-            \ 'user_commands'
+            \ 'statusline',
+            \ 'user_commands',
         \ ]
     if !has(s:feature)
         call syntastic#log#error('need Vim compiled with feature ' . s:feature)

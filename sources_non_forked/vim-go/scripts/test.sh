@@ -4,6 +4,9 @@ set -e
 
 cd $(dirname $0)
 
+# install dependencies
+go get github.com/fatih/gomodifytags
+
 # cleanup test.log
 if [ -f "test.log" ]; then
    rm test.log

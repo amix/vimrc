@@ -101,10 +101,10 @@ enabled.
 Syntastic itself has rather relaxed requirements: it doesn't have any external
 dependencies, and it needs a version of [Vim][vim] compiled with a few common
 features: `autocmd`, `eval`, `file_in_path`, `modify_fname`, `quickfix`,
-`reltime`, and `user_commands`. Not all possible combinations of features that
-include the ones above make equal sense on all operating systems, but Vim
-version 7 or later with the "normal", "big", or "huge" feature sets should be
-fine.
+`reltime`, `statusline`, and `user_commands`. Not all possible combinations of
+features that include the ones above make equal sense on all operating systems,
+but Vim version 7 or later with the "normal", "big", or "huge" feature sets
+should be fine.
 
 Syntastic should work with any modern plugin managers for Vim, such as
 [NeoBundle][neobundle], [Pathogen][pathogen], [Vim-Addon-Manager][vam],

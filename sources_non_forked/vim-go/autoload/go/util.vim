@@ -53,7 +53,7 @@ let s:env_cache = {}
 
 " env returns the go environment variable for the given key. Where key can be
 " GOARCH, GOOS, GOROOT, etc... It caches the result and returns the cached
-" version. 
+" version.
 function! go#util#env(key) abort
   let l:key = tolower(a:key)
   if has_key(s:env_cache, l:key)

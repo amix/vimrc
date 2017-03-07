@@ -18,7 +18,7 @@ function! go#impl#Impl(...) abort
       return
     endif
   elseif a:0 == 1
-    " we assume the user only passed the interface type, 
+    " we assume the user only passed the interface type,
     " i.e: ':GoImpl io.Writer'
     let receiveType = expand("<cword>")
     let recv = printf("%s *%s", tolower(receiveType)[0], receiveType)
@@ -44,7 +44,7 @@ function! go#impl#Impl(...) abort
   end
 
   let pos = getpos('.')
-  put ='' 
+  put =''
   put =result
   call setpos('.', pos)
 endfunction

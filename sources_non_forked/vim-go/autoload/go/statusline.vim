@@ -4,7 +4,7 @@
 " s:statuses is a global reference to all statuses. It stores the statuses per
 " import paths (map[string]status), where each status is unique per its
 " type. Current status dict is in form:
-" { 
+" {
 "   'desc'        : 'Job description',
 "   'state'       : 'Job state, such as success, failure, etc..',
 "   'type'        : 'Job type, such as build, test, etc..'

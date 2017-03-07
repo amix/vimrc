@@ -27,11 +27,11 @@ function! s:gocodeCommand(cmd, preargs, args) abort
   let $GOROOT = go#util#env("goroot")
 
   let socket_type = get(g:, 'go_gocode_socket_type', s:sock_type)
-  let cmd = printf('%s -sock %s %s %s %s', 
-        \ go#util#Shellescape(bin_path), 
-        \ socket_type, 
-        \ join(a:preargs), 
-        \ go#util#Shellescape(a:cmd), 
+  let cmd = printf('%s -sock %s %s %s %s',
+        \ go#util#Shellescape(bin_path),
+        \ socket_type,
+        \ join(a:preargs),
+        \ go#util#Shellescape(a:cmd),
         \ join(a:args)
         \ )
 
@@ -55,7 +55,7 @@ endfunction
 
 let s:optionsEnabled = 0
 function! s:gocodeEnableOptions() abort
-  if s:optionsEnabled 
+  if s:optionsEnabled
     return
   endif
 

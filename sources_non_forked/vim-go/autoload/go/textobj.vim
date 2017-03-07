@@ -67,7 +67,7 @@ function! go#textobj#Function(mode) abort
     normal! v
     call cursor(info.rbrace.line, info.rbrace.col)
     return
-  endif 
+  endif
 
   " rest is inner mode, a:mode == 'i'
 

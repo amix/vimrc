@@ -132,9 +132,9 @@ endfunction " }}}2
 " returns
 "
 " {'exe': '/usr/bin/perl', 'args': ['-f', '-bar']}
-function! syntastic#util#parseShebang() abort " {{{2
+function! syntastic#util#parseShebang(buf) abort " {{{2
     for lnum in range(1, 5)
-        let line = getline(lnum)
+        let line = get(getbufline(a:buf, lnum), 0, '')
         if line =~# '^#!'
             let line = substitute(line, '\v^#!\s*(\S+/env(\s+-\S+)*\s+)?', '', '')
             let exe = matchstr(line, '\m^\S*\ze')

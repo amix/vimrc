@@ -38,7 +38,7 @@ set cpo&vim
 
 function! SyntaxCheckers_r_lintr_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], "\\m'\\zs[^']\\+\\ze'")
-    return term != '' ? '\V' . escape(term, '\') : ''
+    return term !=# '' ? '\V' . escape(term, '\') : ''
 endfunction
 
 function! SyntaxCheckers_r_lintr_IsAvailable() dict
@@ -50,11 +50,13 @@ function! SyntaxCheckers_r_lintr_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_r_lintr_GetLocList() dict
+    let buf = bufnr('')
+
     let setwd = syntastic#util#isRunningWindows() ? 'setwd("' . escape(getcwd(), '"\') . '"); ' : ''
     let makeprg = self.getExecEscaped() . ' --slave --no-restore --no-save' .
         \ ' -e ' . syntastic#util#shescape(setwd . 'suppressPackageStartupMessages(library(lintr)); ' .
         \       'lint(cache = ' . g:syntastic_r_lintr_cache . ', commandArgs(TRUE), ' . g:syntastic_r_lintr_linters . ')') .
-        \ ' --args ' . syntastic#util#shexpand('%')
+        \ ' --args ' . syntastic#util#shescape(bufname(buf))
 
     let errorformat =
         \ '%W%f:%l:%c: style: %m,' .

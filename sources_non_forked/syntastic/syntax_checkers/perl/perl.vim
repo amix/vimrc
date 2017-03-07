@@ -51,13 +51,14 @@ function! SyntaxCheckers_perl_perl_IsAvailable() dict " {{{1
 endfunction " }}}1
 
 function! SyntaxCheckers_perl_perl_GetLocList() dict " {{{1
+    let buf = bufnr('')
     if type(g:syntastic_perl_lib_path) == type('')
         call syntastic#log#oneTimeWarn('variable g:syntastic_perl_lib_path should be a list')
         let includes = split(g:syntastic_perl_lib_path, ',')
     else
-        let includes = copy(syntastic#util#var('perl_lib_path', []))
+        let includes = copy(syntastic#util#bufVar(buf, 'perl_lib_path', []))
     endif
-    let shebang = syntastic#util#parseShebang()
+    let shebang = syntastic#util#parseShebang(buf)
     let extra = map(includes, '"-I" . v:val') +
         \ (index(shebang['args'], '-T') >= 0 ? ['-T'] : []) +
         \ (index(shebang['args'], '-t') >= 0 ? ['-t'] : [])

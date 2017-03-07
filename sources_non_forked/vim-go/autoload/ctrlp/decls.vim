@@ -39,7 +39,7 @@ function! ctrlp#decls#accept(mode, str) abort
     let vals = matchlist(a:str, '|\(.\{-}\):\(\d\+\):\(\d\+\)\s*\(.*\)|')
 
     " i.e: main.go
-    let filename =  vals[1] 
+    let filename =  vals[1]
     let line =  vals[2]
     let col =  vals[3]
 
@@ -119,7 +119,7 @@ function! ctrlp#decls#enter() abort
       let space .= " "
     endfor
 
-    call add(s:decls, printf("%s\t%s |%s:%s:%s|\t%s", 
+    call add(s:decls, printf("%s\t%s |%s:%s:%s|\t%s",
           \ decl.ident . space,
           \ decl.keyword,
           \ fnamemodify(decl.filename, ":t"),
@@ -135,7 +135,7 @@ function! s:enable_syntax() abort
     return
   endif
 
-  syntax match CtrlPIdent      '\zs\h\+\ze\s' 
+  syntax match CtrlPIdent      '\zs\h\+\ze\s'
   syntax match CtrlPKeyword		 '\zs[^\t|]\+\ze|[^|]\+:\d\+:\d\+|'
   syntax match CtrlPFilename   '|\zs[^|]\+:\d\+:\d\+\ze|'
   syntax match CtrlPSignature  '\zs\t.*\ze$' contains=CtrlPKeyWord,CtrlPFilename

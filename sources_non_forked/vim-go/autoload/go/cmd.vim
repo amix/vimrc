@@ -373,7 +373,7 @@ function! go#cmd#Generate(bang, ...) abort
 
   let errors = go#list#Get(l:listtype)
   call go#list#Window(l:listtype, len(errors))
-  if !empty(errors) 
+  if !empty(errors)
     if !a:bang
       call go#list#JumpToFirst(l:listtype)
     endif

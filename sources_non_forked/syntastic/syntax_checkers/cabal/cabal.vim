@@ -31,6 +31,7 @@ function! SyntaxCheckers_cabal_cabal_GetHighlightRegex(item)
 endfunction
 
 function! SyntaxCheckers_cabal_cabal_GetLocList() dict
+    let buf = bufnr('')
     let makeprg = self.getExecEscaped() . ' check'
 
     let errorformat =
@@ -40,9 +41,9 @@ function! SyntaxCheckers_cabal_cabal_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'cwd': expand('%:p:h', 1),
+        \ 'cwd': fnamemodify(bufname(buf), ':p:h'),
         \ 'preprocess': 'cabal',
-        \ 'defaults': {'bufnr': bufnr('')} })
+        \ 'defaults': {'bufnr': buf} })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

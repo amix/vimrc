@@ -34,7 +34,7 @@ function! go#coverage#Buffer(bang, ...) abort
   try
     execute cd . fnameescape(expand("%:p:h"))
     if empty(glob("*_test.go"))
-      call go#util#EchoError("no tests files available")
+      call go#util#EchoError("no test files available")
       return
     endif
   finally
@@ -89,8 +89,8 @@ function! go#coverage#Clear() abort
 
   if exists("s:toggle") | let s:toggle = 0 | endif
 
-  " remove the autocmd we defined 
-  if exists("#BufWinLeave#<buffer>") 
+  " remove the autocmd we defined
+  if exists("#BufWinLeave#<buffer>")
     autocmd! BufWinLeave <buffer>
   endif
 endfunction
@@ -160,8 +160,8 @@ function! go#coverage#genmatch(cov) abort
   " example: foo.go:92.2,92.65 1 0
   if a:cov.startline == a:cov.endline
     call add(matches, {
-          \ 'group': color, 
-          \ 'pos': [[a:cov.startline, a:cov.startcol, a:cov.endcol - a:cov.startcol]], 
+          \ 'group': color,
+          \ 'pos': [[a:cov.startline, a:cov.startcol, a:cov.endcol - a:cov.startcol]],
           \ 'priority': 2,
           \ })
     return matches
@@ -171,8 +171,8 @@ function! go#coverage#genmatch(cov) abort
   " the line, we assume it is at maximum 200 bytes. I know this is hacky,
   " but that's only way of fixing the issue
   call add(matches, {
-        \ 'group': color, 
-        \ 'pos': [[a:cov.startline, a:cov.startcol, 200]], 
+        \ 'group': color,
+        \ 'pos': [[a:cov.startline, a:cov.startcol, 200]],
         \ 'priority': 2,
         \ })
 
@@ -181,16 +181,16 @@ function! go#coverage#genmatch(cov) abort
   while start_line < a:cov.endline
     let start_line += 1
     call add(matches, {
-          \ 'group': color, 
-          \ 'pos': [[start_line]], 
+          \ 'group': color,
+          \ 'pos': [[start_line]],
           \ 'priority': 2,
           \ })
   endwhile
 
   " finally end columns
   call add(matches, {
-        \ 'group': color, 
-        \ 'pos': [[a:cov.endline, a:cov.endcol-1]], 
+        \ 'group': color,
+        \ 'pos': [[a:cov.endline, a:cov.endcol-1]],
         \ 'priority': 2,
         \ })
 

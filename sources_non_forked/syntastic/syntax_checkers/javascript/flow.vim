@@ -29,7 +29,8 @@ function! SyntaxCheckers_javascript_flow_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_javascript_flow_GetLocList() dict
-    if syntastic#util#findFileInParent('.flowconfig', expand('%:p:h', 1)) ==# ''
+    let buf = bufnr('')
+    if syntastic#util#findFileInParent('.flowconfig', fnamemodify(bufname(buf), ':p:h')) ==# ''
         return []
     endif
 

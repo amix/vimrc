@@ -27,9 +27,10 @@ function! SyntaxCheckers_elixir_elixir_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_elixir_elixir_GetLocList() dict
+    let buf = bufnr('')
     let make_options = {}
     let compile_command = 'elixir'
-    let mix_file = syntastic#util#findFileInParent('mix.exs', expand('%:p:h', 1))
+    let mix_file = syntastic#util#findFileInParent('mix.exs', fnamemodify(bufname(buf), ':p:h'))
 
     if filereadable(mix_file)
         let compile_command = 'mix compile'

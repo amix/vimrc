@@ -14,8 +14,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haskell_hlint_GetLocList() dict
+    let buf = bufnr('')
     let makeprg = self.makeprgBuild({
-        \ 'fname': syntastic#util#shexpand('%:p')})
+        \ 'fname': syntastic#util#shescape(fnamemodify(bufname(buf), ':p')) })
 
     let errorformat =
         \ '%E%f:%l:%v: Error while reading hint file\, %m,' .

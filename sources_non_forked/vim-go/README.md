@@ -1,4 +1,4 @@
-# vim-go [![Build Status](http://img.shields.io/travis/fatih/vim-go.svg?style=flat-square)](https://travis-ci.org/fatih/vim-go) 
+# vim-go [![Build Status](http://img.shields.io/travis/fatih/vim-go.svg?style=flat-square)](https://travis-ci.org/fatih/vim-go)
 
 <p align="center">
   <img style="float: right;" src="assets/vim-go.png" alt="Vim-go logo"/>
@@ -235,9 +235,9 @@ let g:go_get_update = 0
 ### Using with Neovim (beta)
 
 Note: Neovim currently is not a first class citizen for vim-go. You are free
-to open bug, however I'm not using Neovim so it's hard for me to test it. 
-vim-go might not work well as good as in Vim. I'm happy to accept pull requests 
-or very detailed bug reports. If you're interested to improve the state of 
+to open bug, however I'm not using Neovim so it's hard for me to test it.
+vim-go might not work well as good as in Vim. I'm happy to accept pull requests
+or very detailed bug reports. If you're interested to improve the state of
 Neovim in vim-go you're always welcome!
 
 

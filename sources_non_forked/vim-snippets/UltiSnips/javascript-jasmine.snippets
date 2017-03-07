@@ -132,6 +132,14 @@ snippet eh "expect to be hidden (js)" b
 expect(${1:target}).toBeHidden();
 endsnippet
 
+snippet eth "expect to throw (js)" b
+expect(${1:target}).toThrow(${2:value});
+endsnippet
+
+snippet ethe "expect to throw error (js)" b
+expect(${1:target}).toThrowError(${2:value});
+endsnippet
+
 snippet notx "expect not (js)" b
 expect(${1:target}).not$0;
 endsnippet
@@ -145,7 +153,7 @@ expect(${1:target}).not.toBeLessThan(${2:value});
 endsnippet
 
 snippet notg "expect to not be greater than (js)" b
-expect(${1:target})..not.toBeGreaterThan(${2:value});
+expect(${1:target}).not.toBeGreaterThan(${2:value});
 endsnippet
 
 snippet notm "expect not to match (js)" b
@@ -182,6 +190,14 @@ endsnippet
 
 snippet noth "expect not to be hidden (js)" b
 expect(${1:target}).not.toBeHidden();
+endsnippet
+
+snippet notth "expect not to throw (js)" b
+expect(${1:target}).not.toThrow(${2:value});
+endsnippet
+
+snippet notthe "expect not to throw error (js)" b
+expect(${1:target}).not.toThrowError(${2:value});
 endsnippet
 
 snippet s "spy on (js)" b

@@ -18,6 +18,7 @@ let s:packages = [
       \ "github.com/jstemmer/gotags",
       \ "github.com/klauspost/asmfmt/cmd/asmfmt",
       \ "github.com/fatih/motion",
+      \ "github.com/fatih/gomodifytags",
       \ "github.com/zmb3/gogetdoc",
       \ "github.com/josharian/impl",
       \ ]

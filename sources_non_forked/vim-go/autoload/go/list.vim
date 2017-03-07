@@ -124,7 +124,7 @@ function! go#list#Type(listtype) abort
   if g:go_list_type == "locationlist"
     return "locationlist"
   elseif g:go_list_type == "quickfix"
-    return "quickfix" 
+    return "quickfix"
   else
     return a:listtype
   endif

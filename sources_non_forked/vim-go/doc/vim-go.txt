@@ -576,7 +576,7 @@ CTRL-t
                                                             *:GoSameIdsToggle*
 :GoSameIdsToggle
 
-    Toggle between |:GoSameIds| and |:GoSameIdsClear|. 
+    Toggle between |:GoSameIds| and |:GoSameIdsClear|.
 
                                                         *:GoSameIdsAutoToggle*
 :GoSameIdsAutoToggle
@@ -669,12 +669,13 @@ CTRL-t
       :GoImpl T io.ReadWriteCloser
 <
                                                                   *:GoAddTags*
-:[range]GoAddTags [key] [key1] ...
+:[range]GoAddTags [key],[option] [key1],[option] ...
 
     Adds field tags for the fields of a struct. If called inside a struct it
     automatically add field tags with the `json` key and the value
     automatically generated based on the field name. An error message is given
-    if it's called outside a struct definition.
+    if it's called outside a struct definition or if the file is not correctly
+    formatted.
 
     If [range] is given, only the selected fields will be changed.
 
@@ -682,6 +683,37 @@ CTRL-t
     arguments. An example of adding `xml` and `db` would be:
 >
       :GoAddTags xml db
+<
+    If [option] is passed it'll either add a new tag with an option or will
+    modify exising tags. An example of adding `omitempty` to all `json` fields
+    would be:
+>
+      :GoAddTags json,omitempty
+<
+    You can define a constant value instead of the default field based value.
+    For example the following command will add ``valid:"1"`` to all fields.
+>
+      :GoAddTags valid=1
+<
+                                                               *:GoRemoveTags*
+:[range]GoRemoveTags [key],[option] [key1],[option1] ...
+
+    Rmove field tags for the fields of a struct. If called inside a struct it
+    automatically remove all field tags. An error message is given if it's
+    called outside a struct definition or if the file is not correctly
+    formatted
+
+    If [range] is given, only the selected fields will be changed.
+
+    If [key] is given, it will only remove those keys. Example:
+>
+      :GoRemoveTags json
+<
+    If [option] is passed with a [key], it will only remove the options.
+    Example, this will only remove `omitempty` options from fields containing
+    `json`:
+>
+      :GoRemoveTags json,omitempty
 <
                                                        *:GoAutoTypeInfoToggle*
 :GoAutoTypeInfoToggle
@@ -958,7 +990,7 @@ Shows the status of a job running asynchronously. Can be used to plug into the
 statusline. It works to show the status per package instead of per
 file. Assume you have three files open, all belonging to the same package, if
 the package build (`:GoBuild`) is successful, all statusline's will show
-`success`, if you it fails all file's statusline will show `failed`. 
+`success`, if you it fails all file's statusline will show `failed`.
 
 To avoid always showing old status information, the status information is
 cleaned for each package after `60` seconds. This can be changed with the
@@ -1488,6 +1520,8 @@ default it's enabled >
 
       let g:go_echo_go_info = 1
 <
+Please note that 'noshowmode' must be set for this feature to work correctly.
+
                                                     *'g:go_statusline_duration'*
 
 Specifices the duration of statusline information being showed per package. By

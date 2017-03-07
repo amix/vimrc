@@ -30,6 +30,7 @@ function! SyntaxCheckers_go_go_GetLocList() dict
     if !exists('s:go_new')
         let s:go_new = syntastic#util#versionIsAtLeast(self.getVersion(self.getExecEscaped() . ' version'), [1, 5])
     endif
+    let buf = bufnr('')
 
     " Check with gofmt first, since `go build` and `go test` might not report
     " syntax errors in the current file if another file with syntax error is
@@ -53,14 +54,14 @@ function! SyntaxCheckers_go_go_GetLocList() dict
 
     " Test files, i.e. files with a name ending in `_test.go`, are not
     " compiled by `go build`, therefore `go test` must be called for those.
-    if match(expand('%', 1), '\m_test\.go$') == -1
-        let cmd = 'build'
-        let opts = syntastic#util#var('go_go_build_args', s:go_new ? '-buildmode=archive' : '')
-        let cleanup = 0
-    else
+    if bufname(buf) =~# '\m_test\.go$'
         let cmd = 'test -c'
-        let opts = syntastic#util#var('go_go_test_args', s:go_new ? '-buildmode=archive' : '')
+        let opts = syntastic#util#bufVar(buf, 'go_go_test_args', s:go_new ? '-buildmode=archive' : '')
         let cleanup = 1
+    else
+        let cmd = 'build'
+        let opts = syntastic#util#bufVar(buf, 'go_go_build_args', s:go_new ? '-buildmode=archive' : '')
+        let cleanup = 0
     endif
     let opt_str = (type(opts) != type('') || opts !=# '') ? join(syntastic#util#argsescape(opts)) : opts
     let makeprg = self.getExecEscaped() . ' ' . cmd . ' ' . opt_str
@@ -82,12 +83,12 @@ function! SyntaxCheckers_go_go_GetLocList() dict
     let errors = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'cwd': expand('%:p:h', 1),
+        \ 'cwd': fnamemodify(bufname(buf), ':p:h'),
         \ 'env': {'GOGC': 'off'},
         \ 'defaults': {'type': 'e'} })
 
     if cleanup
-        call delete(expand('%:p:h', 1) . syntastic#util#Slash() . expand('%:p:h:t', 1) . '.test')
+        call delete(fnamemodify(bufname(buf), ':p:h') . syntastic#util#Slash() . fnamemodify(bufname(buf), ':p:h') . '.test')
     endif
 
     return errors

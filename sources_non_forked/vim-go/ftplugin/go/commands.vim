@@ -14,13 +14,14 @@ command! -range=% GoChannelPeers call go#guru#ChannelPeers(<count>)
 command! -range=% GoReferrers call go#guru#Referrers(<count>)
 command! -nargs=? GoGuruTags call go#guru#Tags(<f-args>)
 
-
-command! -nargs=* -range GoAddTags call go#util#AddTags(<line1>, <line2>, <f-args>)
-
 command! -range=0 GoSameIds call go#guru#SameIds()
 command! -range=0 GoSameIdsClear call go#guru#ClearSameIds()
 command! -range=0 GoSameIdsToggle call go#guru#ToggleSameIds()
 command! -range=0 GoSameIdsAutoToggle call go#guru#AutoToogleSameIds()
+
+" -- tags
+command! -nargs=* -range GoAddTags call go#tags#Add(<line1>, <line2>, <count>, <f-args>)
+command! -nargs=* -range GoRemoveTags call go#tags#Remove(<line1>, <line2>, <count>, <f-args>)
 
 " -- tool
 command! -nargs=0 GoFiles echo go#tool#Files()

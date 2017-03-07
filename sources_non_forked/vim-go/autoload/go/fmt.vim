@@ -77,7 +77,7 @@ function! go#fmt#Format(withGoimport) abort
   if go#util#ShellError() == 0
     call go#fmt#update_file(l:tmpname, expand('%'))
   elseif g:go_fmt_fail_silently == 0
-    let errors = s:parse_errors(out)
+    let errors = s:parse_errors(expand('%'), out)
     call s:show_errors(errors)
   endif
 
@@ -102,7 +102,7 @@ function! go#fmt#Format(withGoimport) abort
 endfunction
 
 " update_file updates the target file with the given formatted source
-function! go#fmt#update_file(source, target) 
+function! go#fmt#update_file(source, target)
   " remove undo point caused via BufWritePre
   try | silent undojoin | catch | endtry
 
@@ -133,8 +133,8 @@ endfunction
 
 " run runs the gofmt/goimport command for the given source file and returns
 " the the output of the executed command. Target is the real file to be
-" formated. 
-function! go#fmt#run(bin_name, source, target) 
+" formated.
+function! go#fmt#run(bin_name, source, target)
   let cmd = s:fmt_cmd(a:bin_name, a:source, a:target)
   if cmd[0] == "goimports"
     " change GOPATH too, so goimports can pick up the correct library
@@ -168,10 +168,9 @@ function! s:fmt_cmd(bin_name, source, target)
   " start constructing the command
   let cmd = [bin_path]
   call add(cmd, "-w")
+  call extend(cmd, split(g:go_fmt_options, " "))
 
-  if a:bin_name != "goimports"
-    call extend(cmd, split(g:go_fmt_options, " "))
-  else
+  if a:bin_name == "goimports"
     " lazy check if goimports support `-srcdir`. We should eventually remove
     " this in the future
     if !exists('b:goimports_vendor_compatible')
@@ -196,7 +195,7 @@ function! s:fmt_cmd(bin_name, source, target)
 endfunction
 
 " parse_errors parses the given errors and returns a list of parsed errors
-function! s:parse_errors(content) abort
+function! s:parse_errors(filename, content) abort
   let splitted = split(a:content, '\n')
 
   " list of errors to be put into location list
@@ -205,6 +204,7 @@ function! s:parse_errors(content) abort
     let tokens = matchlist(line, '^\(.\{-}\):\(\d\+\):\(\d\+\)\s*\(.*\)')
     if !empty(tokens)
       call add(errors,{
+            \"filename": a:filename,
             \"lnum":     tokens[2],
             \"col":      tokens[3],
             \"text":     tokens[4],
@@ -218,13 +218,13 @@ endfunction
 " show_errors opens a location list and shows the given errors. If the given
 " errors is empty, it closes the the location list
 function! s:show_errors(errors) abort
-  let l:listtype = "locationlist" 
+  let l:listtype = "locationlist"
   if !empty(a:errors)
     call go#list#Populate(l:listtype, a:errors, 'Format')
     echohl Error | echomsg "Gofmt returned error" | echohl None
   endif
 
-  " this closes the window if there are no errors or it opens 
+  " this closes the window if there are no errors or it opens
   " it if there is any
   call go#list#Window(l:listtype, len(a:errors))
 endfunction

@@ -109,9 +109,9 @@ endfunction
 " Golint calls 'golint' on the current directory. Any warnings are populated in
 " the location list
 function! go#lint#Golint(...) abort
-  let bin_path = go#path#CheckBinPath(g:go_golint_bin) 
-  if empty(bin_path) 
-    return 
+  let bin_path = go#path#CheckBinPath(g:go_golint_bin)
+  if empty(bin_path)
+    return
   endif
 
   if a:0 == 0
@@ -280,7 +280,7 @@ function s:lint_job(args)
     call go#statusline#Update(status_dir, status)
 
     let errors = go#list#Get(l:listtype)
-    if empty(errors) 
+    if empty(errors)
       call go#list#Window(l:listtype, len(errors))
     elseif has("patch-7.4.2200")
       if l:listtype == 'quickfix'
