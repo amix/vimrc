@@ -171,6 +171,7 @@ endfunction
 
 function! s:parser_text(till) dict abort
     let ret = []
+    let target = ret
 
     while self.pos < self.len
         let lines = []
@@ -180,8 +181,12 @@ function! s:parser_text(till) dict abort
             if !empty(var)
                 if var[0] is# 'VISUAL'
                     let lines = s:visual_placeholder(var, self.indent)
+                    " Remove trailing newline. See #245
+                    if lines[-1] == '' && self.next == "\n"
+                        call remove(lines, -1)
+                    endif
                 elseif var[0] >= 0
-                    call add(ret, var)
+                    call add(target, var)
                     call self.add_var(var)
                 endif
             endif
@@ -192,8 +197,12 @@ function! s:parser_text(till) dict abort
         endif
 
         if !empty(lines)
-            call add(ret, lines[0])
-            call extend(self.stored_lines, lines[1:])
+            call add(target, lines[0])
+            call extend(self.stored_lines, lines[1:-2])
+            " Don't change targets if there's only one line
+            if exists("lines[1]")
+                let target = [lines[-1]]
+            endif
         endif
 
         " Empty lines are ignored if this is tested at the start of an iteration
@@ -203,6 +212,11 @@ function! s:parser_text(till) dict abort
     endwhile
 
     call s:join_consecutive_strings(ret)
+    if target isnot ret
+        call s:join_consecutive_strings(target)
+        call extend(self.stored_lines, target)
+    endif
+
     return ret
 endfunction
 

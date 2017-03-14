@@ -598,15 +598,16 @@ CTRL-t
     use the variable |'g:go_metalinter_command'|. To override the maximum
     linters execution time use |'g:go_metalinter_deadline'| variable.
 
-                                                                 *:GoGuruTags*
-:GoGuruTags [tags]
+                                                                 *:GoBuildTags*
+:GoBuildTags [tags]
 
-    Changes the custom |'g:go_guru_tags'| setting and overrides it with the
-    given build tags. This command cooperate with GoReferrers command when
-    there exist mulitiple build tags in your project, then you can set one of
-    the build tags for GoReferrers to find more accurate.
-    The custom build tags is cleared (unset) if `""` is given. If no arguments
-    is given it prints the current custom build tags.
+    Changes the build tags for various commands. If you have any file that
+    uses a custom build tag, such as `//+build integration` , this command can
+    be used to pass it to all tools that accepts tags, such as guru, gorenate,
+    etc.. 
+
+    The build tags is cleared (unset) if `""` is given. If no arguments is
+    given it prints the current custom build tags.
 
                                                                      *:AsmFmt*
 :AsmFmt
@@ -1208,15 +1209,15 @@ set, so the relevant commands defaults are being used.
 >
   let g:go_guru_scope = []
 <
-                                                        *'g:go_guru_tags'*
+                                                           *'g:go_build_tags'*
 
 These options that will be automatically passed to the `-tags` option of
-`go guru` when it's invoked with |:GoDef|. You can use |:GoGuruTags| to set
-this. By default it's not set.
+various tools, such as `guru`, `gorename`, etc... This is a permanatent
+setting. A more useful way is to use |:GoBuildTags| to dynamically change or
+remove build tags. By default it's not set.
 >
-  let g:go_guru_tags = ''
+  let g:go_build_tags = ''
 <
-
                                      *'g:go_highlight_array_whitespace_error'*
 
 Highlights white space after "[]". >

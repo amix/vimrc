@@ -46,8 +46,8 @@ function! s:guru_cmd(args) range abort
   endif
 
   " check for any tags
-  if exists('g:go_guru_tags')
-    let tags = get(g:, 'go_guru_tags')
+  if exists('g:go_build_tags')
+    let tags = get(g:, 'go_build_tags')
     call extend(cmd, ["-tags", tags])
     let result.tags = tags
   endif
@@ -616,26 +616,6 @@ function! go#guru#Scope(...) abort
     call go#util#EchoError("guru scope is not set")
   else
     call go#util#EchoSuccess("current guru scope: ". join(g:go_guru_scope, ","))
-  endif
-endfunction
-
-function! go#guru#Tags(...) abort
-  if a:0
-    if a:0 == 1 && a:1 == '""'
-      unlet g:go_guru_tags
-      call go#util#EchoSuccess("guru tags is cleared")
-    else
-      let g:go_guru_tags = a:1
-      call go#util#EchoSuccess("guru tags changed to: ". a:1)
-    endif
-
-    return
-  endif
-
-  if !exists('g:go_guru_tags')
-    call go#util#EchoSuccess("guru tags is not set")
-  else
-    call go#util#EchoSuccess("current guru tags: ". g:go_guru_tags)
   endif
 endfunction
 

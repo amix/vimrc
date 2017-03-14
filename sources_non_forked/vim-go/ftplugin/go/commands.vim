@@ -12,7 +12,6 @@ command! -range=% GoCallstack call go#guru#Callstack(<count>)
 command! -range=% GoFreevars call go#guru#Freevars(<count>)
 command! -range=% GoChannelPeers call go#guru#ChannelPeers(<count>)
 command! -range=% GoReferrers call go#guru#Referrers(<count>)
-command! -nargs=? GoGuruTags call go#guru#Tags(<f-args>)
 
 command! -range=0 GoSameIds call go#guru#SameIds()
 command! -range=0 GoSameIdsClear call go#guru#ClearSameIds()
@@ -31,6 +30,7 @@ command! -nargs=0 GoAutoTypeInfoToggle call go#complete#ToggleAutoTypeInfo()
 
 " -- cmd
 command! -nargs=* -bang GoBuild call go#cmd#Build(<bang>0,<f-args>)
+command! -nargs=? -bang GoBuildTags call go#cmd#BuildTags(<bang>0, <f-args>)
 command! -nargs=* -bang GoGenerate call go#cmd#Generate(<bang>0,<f-args>)
 command! -nargs=* -bang -complete=file GoRun call go#cmd#Run(<bang>0,<f-args>)
 command! -nargs=* -bang GoInstall call go#cmd#Install(<bang>0, <f-args>)

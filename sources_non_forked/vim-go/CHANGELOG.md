@@ -2,7 +2,11 @@
 
 FEATURES:
 
-* New `:GoAddTags` and `:GoRemoveTags` command based on the tool [gomodifytags](https://github.com/fatih/gomodifytags). This fixes many old bugs that were due prior regexp based implementation. For the usage please read the docs and checkout the demo at: https://github.com/fatih/vim-go/pull/1204 [gh-1204]
+* New `:GoAddTags` and `:GoRemoveTags` command based on the tool
+  [gomodifytags](https://github.com/fatih/gomodifytags). This fixes many old
+  bugs that were due prior regexp based implementation. For the usage please
+  read the docs and checkout the demo at:
+  https://github.com/fatih/vim-go/pull/1204 [gh-1204]
 * Add new `errl` snippet that expands to [gh-1185]:
 
 ```
@@ -10,12 +14,16 @@ if err != nil {
 	log.Fatal(err)
 }
 ```
+* New `:GoBuildTags` command to change build tags for tools such as `guru`,
+  `gorename`, etc ... There is also a new setting called `g:go_build_tags`
+  [gh-1232]
 
 IMPROVEMENTS:
 
-* Lowercase `<Leader>` in mappings examples for consisten documentation across the README [gh-1192]
+* Lowercase `<Leader>` in mappings examples for consistent documentation across the README [gh-1192]
 * All of files should be written in utf-8 if the file will be passed to external command. [gh-1184]
-* `:GoAddTags` is now able to add options to existing tags with the syntax `:GoAddTags key,option`, i.e: `:GoAddTags json,omitempty` [gh-985]
+* `:GoAddTags` is now able to add options to existing tags with the syntax
+  `:GoAddTags key,option`, i.e: `:GoAddTags json,omitempty` [gh-985]
 * Document 'noshowmode' requirement for echo_go_info [gh-1197]
 * Improve godoc view for vertical splits [gh-1195]
 * Set GOPATH for both possible go guru execution paths (sync and async) [gh-1193]
@@ -23,7 +31,8 @@ IMPROVEMENTS:
 BUG FIXES:
 
 * Honor `g:go_echo_command_info` when dispatching builds in neovim [gh-1176]
-* Fix `:GoBuild` error in neovim due to invalid jobcontrol handler function signatures (`s:on_stdout`, `s:on_stderr`)[gh-1176]
+* Fix `:GoBuild` error in neovim due to invalid jobcontrol handler function
+  signatures (`s:on_stdout`, `s:on_stderr`)[gh-1176]
 * Update statusline before and after `go#jobcontrol#Spawn` command is executed [gh-1176]
 * Correctly report the value of the 'g:go_guru_tags' variable [gh-1177]
 * Ensure no trailing `:` exist in GOPATH detection if initial GOPATH is not set [gh-1194]
@@ -36,12 +45,20 @@ BUG FIXES:
 * Respect go_fmt_options when running goimports [gh-1211]
 * Set the filename in the location-list when there is an error with :GoFmt [gh-1199]
 
+BACKWARDS INCOMPATIBILITIES:
+
+* The command `:GoGuruTags` is removed in favour of the new command
+  `:GoBuildTags`. This command will be used now not just for `guru`, also for
+  all new commands such as `guru` [gh-1232]
+* The setting `g:go_guru_tags` is removed in favour of the new setting
+  `g:go_build_tags` [gh-1232]
+
 
 ## 1.11 - (January 9, 2017)
 
 FEATURES:
 
-* Travis test integration has been added. Now any file that is added as `<name>_test.vim` will be automatically tested in for every Pull Request (just like how we add tests to Go with `_test.go`). Going forward this will tremendously increase the stability and decrease the maintaince burden of vim-go. [gh-1157]
+* Travis test integration has been added. Now any file that is added as `<name>_test.vim` will be automatically tested in for every Pull Request (just like how we add tests to Go with `_test.go`). Going forward this will tremendously increase the stability and decrease the maintenance burden of vim-go. [gh-1157]
 * Add new `g:go_updatetime` setting to change the default updatetime (which was hardcoded previously) [gh-1055]
 * Add new `g:go_template_use_pkg` setting to enable to use cwd as package name instead of basic template file [gh-1124]
 

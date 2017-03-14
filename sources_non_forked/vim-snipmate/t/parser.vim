@@ -118,6 +118,16 @@ describe 'snippet parser'
                     \ ["\t  baz"], ["x"]]
     end
 
+    it 'removes newlines from the end of VISUALs if before an end of line'
+        let b:snipmate_visual = "1\n2\n"
+        Expect Parse("x\n$VISUAL\nx") == [['x'], ['1'], ['2'], ['x']]
+    end
+
+    it 'splits the before and after a $VISUAL if it is multiline'
+        let b:snipmate_visual = "1\n2\n3"
+        Expect Parse("foo $VISUAL bar") == [['foo 1'], ['2'], ['3 bar']]
+    end
+
     it 'determines which var with an id is the stop'
         let [snip, stops] = Parse("$1$1$1", 0, 1)
         Expect snip == [[[1, "", stops[1]], [1, {}], [1, {}]]]
