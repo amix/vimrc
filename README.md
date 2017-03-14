@@ -1,3 +1,5 @@
+![VIM](https://camo.githubusercontent.com/bec48ea0e886e5489a8819486bf74075fe626067/68747470733a2f2f7261772e6769746875622e636f6d2f656c6d636173742f656c6d2d76696d2f6d61737465722f73637265656e73686f74732f6c6f676f2e706e67)
+
 # The Ultimate vimrc
 
 Over the last 8 years I have used and tweaked Vim. This is my Ultimate vimrc.
@@ -15,7 +17,7 @@ The awesome version includes a lot of great plugins, configurations and color sc
 	git clone https://github.com/amix/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_awesome_vimrc.sh
 
-I also recommend using [Source Code Pro font from Adobe](http://store1.adobe.com/cfusion/store/html/index.cfm?event=displayFontPackage&code=1960) (it's free and awesome font for writing and programming). The Awesome vimrc is already setup to try to use it
+I also recommend using [Source Code Pro font from Adobe](https://typekit.com/fonts/source-code-pro) (it's free and awesome font for writing and programming). The Awesome vimrc is already setup to try to use it
 
 ## How to install the Basic version?
 The basic version is basically just one file and no plugins. You can check out [basic.vim](https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim).
@@ -310,5 +312,5 @@ Vimscript mappings:
 ## How to uninstall
 Do following:
 * Remove `~/.vim_runtime`
-* Remove any lines that refernce `.vim_runtime` in your `~/.vimrc`
+* Remove any lines that reference `.vim_runtime` in your `~/.vimrc`
 
