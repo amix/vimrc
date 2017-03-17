@@ -1,3 +1,11 @@
+try:
+    import concurrent.futures as futures
+except ImportError:
+    try:
+        import futures
+    except ImportError:
+        futures = None
+
 import zipfile
 import shutil
 import tempfile
@@ -9,14 +17,14 @@ from os import path
 #--- Globals ----------------------------------------------
 PLUGINS = """
 ack.vim https://github.com/mileszs/ack.vim
+ag.vim https://github.com/rking/ag.vim
 bufexplorer https://github.com/corntrace/bufexplorer
-ctrlp.vim https://github.com/kien/ctrlp.vim
+ctrlp.vim https://github.com/ctrlpvim/ctrlp.vim
 mayansmoke https://github.com/vim-scripts/mayansmoke
 nerdtree https://github.com/scrooloose/nerdtree
-nginx.vim https://github.com/vim-scripts/nginx.vim
+nginx-vim-syntax https://github.com/evanmiller/nginx-vim-syntax
 open_file_under_cursor.vim https://github.com/amix/open_file_under_cursor.vim
 snipmate-snippets https://github.com/scrooloose/snipmate-snippets
-taglist.vim https://github.com/vim-scripts/taglist.vim
 tlib https://github.com/vim-scripts/tlib
 vim-addon-mw-utils https://github.com/MarcWeber/vim-addon-mw-utils
 vim-bundle-mako https://github.com/sophacles/vim-bundle-mako
@@ -32,13 +40,18 @@ vim-surround https://github.com/tpope/vim-surround
 vim-expand-region https://github.com/terryma/vim-expand-region
 vim-multiple-cursors https://github.com/terryma/vim-multiple-cursors
 vim-fugitive https://github.com/tpope/vim-fugitive
-vim-airline https://github.com/bling/vim-airline
 goyo.vim https://github.com/junegunn/goyo.vim
 vim-zenroom2 https://github.com/amix/vim-zenroom2
 syntastic https://github.com/scrooloose/syntastic
 vim-repeat https://github.com/tpope/vim-repeat
 vim-commentary https://github.com/tpope/vim-commentary
 vim-go https://github.com/fatih/vim-go
+vim-gitgutter https://github.com/airblade/vim-gitgutter
+gruvbox https://github.com/morhetz/gruvbox
+vim-flake8 https://github.com/nvie/vim-flake8
+vim-pug https://github.com/digitaltoad/vim-pug
+vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
+lightline.vim https://github.com/itchyny/lightline.vim
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'
@@ -72,14 +85,21 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     print('Updated {0}'.format(plugin_name))
 
 
+def update(plugin):
+    name, github_url = plugin.split(' ')
+    zip_path = GITHUB_ZIP % github_url
+    download_extract_replace(name, zip_path,
+                             temp_directory, SOURCE_DIR)
+
+
 if __name__ == '__main__':
     temp_directory = tempfile.mkdtemp()
 
     try:
-        for line in PLUGINS.splitlines():
-            name, github_url = line.split(' ')
-            zip_path = GITHUB_ZIP % github_url
-            download_extract_replace(name, zip_path,
-                                     temp_directory, SOURCE_DIR)
+        if futures:
+            with futures.ThreadPoolExecutor(16) as executor:
+                executor.map(update, PLUGINS.splitlines())
+        else:
+            [update(x) for x in PLUGINS.splitlines()]
     finally:
         shutil.rmtree(temp_directory)

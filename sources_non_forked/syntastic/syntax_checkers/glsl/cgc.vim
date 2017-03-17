@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_glsl_cgc_checker")
+if exists('g:loaded_syntastic_glsl_cgc_checker')
     finish
 endif
 let g:loaded_syntastic_glsl_cgc_checker = 1
@@ -27,45 +27,34 @@ let s:glsl_extensions = {
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_glsl_cgc_GetLocList() dict
+function! SyntaxCheckers_glsl_cgc_GetLocList() dict " {{{1
+    let buf = bufnr('')
     let makeprg = self.makeprgBuild({
-        \ 'args_before': '-oglsl -profile ' . s:GetProfile(),
+        \ 'args_before': '-oglsl -profile ' . s:GetProfile(buf),
         \ 'args': (exists('g:syntastic_glsl_options') ? ' ' . g:syntastic_glsl_options : '') })
 
     let errorformat =
-        \ "%E%f(%l) : error %m," .
-        \ "%W%f(%l) : warning %m"
+        \ '%E%f(%l) : error %m,' .
+        \ '%W%f(%l) : warning %m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat })
-endfunction
+endfunction " }}}1
 
-function! s:GetProfile()
-    let save_view = winsaveview()
-    let old_foldenable = &foldenable
-    let old_lazyredraw = &lazyredraw
+" Utilities {{{1
 
-    let &lazyredraw = 1
-    let &foldenable = 0
-    call cursor(1, 1)
-
-    let magic = '\m\C^// profile:\s*'
-    let line = search(magic, 'c')
-
-    call winrestview(save_view)
-    let &foldenable = old_foldenable
-    let &lazyredraw = old_lazyredraw
-
-    if line
-        let profile = matchstr(getline(line), magic . '\zs.*')
-    else
-        let extensions = exists('g:syntastic_glsl_extensions') ? g:syntastic_glsl_extensions : s:glsl_extensions
-        let profile = get(extensions, tolower(expand('%:e')), 'gpu_vert')
+function! s:GetProfile(buf) " {{{2
+    let profile = matchstr(get(filter(getbufline(a:buf, 1, 100), 'v:val =~# "\\m\\C^//\\s*profile:"'), 0, ''), '\m\C^//\s*profile:\s*\zs.*')
+    if profile ==# ''
+        let extensions = syntastic#util#bufVar(a:buf, 'glsl_extensions', s:glsl_extensions)
+        let profile = get(extensions, tolower(fnamemodify(bufname(a:buf), ':e')), 'gpu_vert')
     endif
 
     return profile
-endfunction
+endfunction " }}}2
+
+" }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \'filetype': 'glsl',
@@ -74,4 +63,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

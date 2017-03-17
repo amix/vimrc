@@ -2,8 +2,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2008-11-25.
-" @Last Change: 2014-01-23.
-" @Revision:    0.0.80
+" @Last Change: 2014-11-18.
+" @Revision:    0.0.82
 
 let s:prototype = tlib#Filter_cnf#New({'_class': ['Filter_glob'], 'name': 'glob'}) "{{{2
 let s:prototype.highlight = g:tlib#input#higroup
@@ -61,8 +61,8 @@ endf
 
 " :nodoc:
 function! s:prototype.CleanFilter(filter) dict "{{{3
-    let filter = substitute(a:filter, '\\.\\{-}', g:tlib#Filter_glob#seq, 'g')
-    let filter = substitute(filter, '\\.', g:tlib#Filter_glob#char, 'g')
+    let filter = substitute(a:filter, '\\\.\\{-}', g:tlib#Filter_glob#seq, 'g')
+    let filter = substitute(filter, '\\\.', g:tlib#Filter_glob#char, 'g')
     return filter
 endf
 

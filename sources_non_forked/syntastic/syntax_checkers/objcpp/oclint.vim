@@ -8,24 +8,15 @@
 "             Want To Public License, Version 2, as published by Sam Hocevar.
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "============================================================================
-"
-" The setting 'g:syntastic_oclint_config_file' allows you to define a file
-" that contains additional compiler arguments like include directories or
-" CFLAGS. The file is expected to contain one option per line. If none is
-" given the filename defaults to '.syntastic_oclint_config':
-"
-"   let g:syntastic_oclint_config_file = '.config'
 
-if exists("g:loaded_syntastic_objcpp_oclint_checker")
+if exists('g:loaded_syntastic_objcpp_oclint_checker')
     finish
 endif
 let g:loaded_syntastic_objcpp_oclint_checker = 1
-
-runtime! syntax_checkers/c/*.vim
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'objcpp',
     \ 'name': 'oclint',
     \ 'redirect': 'c/oclint'})
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

@@ -9,21 +9,15 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" See here for details of phpcs
-"    - phpcs (see http://pear.php.net/package/PHP_CodeSniffer)
-"
 
-if exists("g:loaded_syntastic_css_phpcs_checker")
+if exists('g:loaded_syntastic_css_phpcs_checker')
     finish
 endif
 let g:loaded_syntastic_css_phpcs_checker = 1
-
-runtime! syntax_checkers/php/*.vim
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'css',
     \ 'name': 'phpcs',
     \ 'redirect': 'php/phpcs'})
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

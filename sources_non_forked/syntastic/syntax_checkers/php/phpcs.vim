@@ -9,11 +9,8 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" See here for details of phpcs
-"    - phpcs (see http://pear.php.net/package/PHP_CodeSniffer)
 
-if exists("g:loaded_syntastic_php_phpcs_checker")
+if exists('g:loaded_syntastic_php_phpcs_checker')
     finish
 endif
 let g:loaded_syntastic_php_phpcs_checker = 1
@@ -22,13 +19,11 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_php_phpcs_GetLocList() dict
-    let makeprg = self.makeprgBuild({
-        \ 'args': '--tab-width=' . &tabstop,
-        \ 'args_after': '--report=csv' })
+    let makeprg = self.makeprgBuild({ 'args_after': '--report=csv' })
 
     let errorformat =
         \ '%-GFile\,Line\,Column\,Type\,Message\,Source\,Severity%.%#,'.
-        \ '"%f"\,%l\,%v\,%t%*[a-zA-Z]\,"%m"\,%*[a-zA-Z0-9_.-]\,%*[0-9]%.%#'
+        \ '"%f"\,%l\,%c\,%t%*[a-zA-Z]\,"%m"\,%*[a-zA-Z0-9_.-]\,%*[0-9]%.%#'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
@@ -43,4 +38,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

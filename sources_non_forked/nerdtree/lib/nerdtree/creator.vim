@@ -1,5 +1,5 @@
 "CLASS: Creator
-"Creates primary/secondary/mirror nerdtree windows. Sets up all the window and
+"Creates tab/window/mirror nerdtree windows. Sets up all the window and
 "buffer options and key mappings etc.
 "============================================================
 let s:Creator = {}
@@ -16,7 +16,7 @@ function! s:Creator._bindMappings()
     command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=1 RevealBookmark :call nerdtree#ui_glue#revealBookmark('<args>')
     command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=1 OpenBookmark :call nerdtree#ui_glue#openBookmark('<args>')
     command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=* ClearBookmarks call nerdtree#ui_glue#clearBookmarks('<args>')
-    command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=+ BookmarkToRoot call g:NERDTreeBookmark.ToRoot('<args>')
+    command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=+ BookmarkToRoot call g:NERDTreeBookmark.ToRoot('<args>', b:NERDTree)
     command! -buffer -nargs=0 ClearAllBookmarks call g:NERDTreeBookmark.ClearAll() <bar> call b:NERDTree.render()
     command! -buffer -nargs=0 ReadBookmarks call g:NERDTreeBookmark.CacheBookmarks(0) <bar> call b:NERDTree.render()
     command! -buffer -nargs=0 WriteBookmarks call g:NERDTreeBookmark.Write()
@@ -32,16 +32,25 @@ function! s:Creator.BufNamePrefix()
     return 'NERD_tree_'
 endfunction
 
-"FUNCTION: s:Creator.CreatePrimary(a:name) {{{1
-function! s:Creator.CreatePrimary(name)
+"FUNCTION: s:Creator.CreateTabTree(a:name) {{{1
+function! s:Creator.CreateTabTree(name)
     let creator = s:Creator.New()
-    call creator.createPrimary(a:name)
+    call creator.createTabTree(a:name)
 endfunction
 
-"FUNCTION: s:Creator.createPrimary(a:name) {{{1
+"FUNCTION: s:Creator.createTabTree(a:name) {{{1
 "name: the name of a bookmark or a directory
-function! s:Creator.createPrimary(name)
+function! s:Creator.createTabTree(name)
     let path = self._pathForString(a:name)
+
+    "abort if exception was thrown (bookmark/dir doesn't exist)
+    if empty(path)
+        return
+    endif
+
+    if path == {}
+        return
+    endif
 
     "if instructed to, then change the vim CWD to the dir the NERDTree is
     "inited in
@@ -50,35 +59,29 @@ function! s:Creator.createPrimary(name)
     endif
 
     if g:NERDTree.ExistsForTab()
-        if nerdtree#isTreeOpen()
-            call nerdtree#closeTree()
+        if g:NERDTree.IsOpen()
+            call g:NERDTree.Close()
         endif
-        unlet t:NERDTreeBufName
+
+        call self._removeTreeBufForTab()
     endif
 
     call self._createTreeWin()
-    call self._createNERDTree(path)
-    let b:NERDTreeType = "primary"
-    let b:treeShowHelp = 0
-    let b:NERDTreeIgnoreEnabled = 1
-    let b:NERDTreeShowFiles = g:NERDTreeShowFiles
-    let b:NERDTreeShowHidden = g:NERDTreeShowHidden
-    let b:NERDTreeShowBookmarks = g:NERDTreeShowBookmarks
-
+    call self._createNERDTree(path, "tab")
     call b:NERDTree.render()
-    call b:NERDTreeRoot.putCursorHere(0, 0)
+    call b:NERDTree.root.putCursorHere(0, 0)
 
     call self._broadcastInitEvent()
 endfunction
 
-"FUNCTION: s:Creator.CreateSecondary(dir) {{{1
-function! s:Creator.CreateSecondary(dir)
+"FUNCTION: s:Creator.CreateWindowTree(dir) {{{1
+function! s:Creator.CreateWindowTree(dir)
     let creator = s:Creator.New()
-    call creator.createSecondary(a:dir)
+    call creator.createWindowTree(a:dir)
 endfunction
 
-"FUNCTION: s:Creator.createSecondary(dir) {{{1
-function! s:Creator.createSecondary(dir)
+"FUNCTION: s:Creator.createWindowTree(dir) {{{1
+function! s:Creator.createWindowTree(dir)
     try
         let path = g:NERDTreePath.New(a:dir)
     catch /^NERDTree.InvalidArgumentsError/
@@ -91,14 +94,13 @@ function! s:Creator.createSecondary(dir)
 
     let previousBuf = expand("#")
 
-    "we need a unique name for each secondary tree buffer to ensure they are
+    "we need a unique name for each window tree buffer to ensure they are
     "all independent
-    exec "silent edit " . self._nextBufferName()
+    exec g:NERDTreeCreatePrefix . " edit " . self._nextBufferName()
 
-    let b:NERDTreePreviousBuf = bufnr(previousBuf)
-    call self._createNERDTree(path)
+    call self._createNERDTree(path, "window")
+    let b:NERDTree._previousBuf = bufnr(previousBuf)
     call self._setCommonBufOptions()
-    let b:NERDTreeType = "secondary"
 
     call b:NERDTree.render()
 
@@ -106,8 +108,8 @@ function! s:Creator.createSecondary(dir)
 endfunction
 
 " FUNCTION: s:Creator._createNERDTree(path) {{{1
-function! s:Creator._createNERDTree(path)
-    let b:NERDTree = g:NERDTree.New(a:path)
+function! s:Creator._createNERDTree(path, type)
+    let b:NERDTree = g:NERDTree.New(a:path, a:type)
     "TODO: This is kept for compatability only since many things use
     "b:NERDTreeRoot instead of the new NERDTree.root
     "Remove this one day
@@ -140,7 +142,7 @@ function! s:Creator.createMirror()
     let i = 0
     while i < len(treeBufNames)
         let bufName = treeBufNames[i]
-        let treeRoot = getbufvar(bufName, "NERDTreeRoot")
+        let treeRoot = getbufvar(bufName, "NERDTree").root
         let options[i+1 . '. ' . treeRoot.path.str() . '  (buf name: ' . bufName . ')'] = bufName
         let i = i + 1
     endwhile
@@ -163,8 +165,8 @@ function! s:Creator.createMirror()
         return
     endif
 
-    if g:NERDTree.ExistsForTab() && nerdtree#isTreeOpen()
-        call nerdtree#closeTree()
+    if g:NERDTree.ExistsForTab() && g:NERDTree.IsOpen()
+        call g:NERDTree.Close()
     endif
 
     let t:NERDTreeBufName = bufferName
@@ -194,6 +196,15 @@ function! s:Creator._createTreeWin()
 
     setlocal winfixwidth
     call self._setCommonBufOptions()
+endfunction
+
+"FUNCTION: s:Creator._isBufHidden(nr) {{{1
+function! s:Creator._isBufHidden(nr)
+    redir => bufs
+    silent ls!
+    redir END
+
+    return bufs =~ a:nr . '..h'
 endfunction
 
 "FUNCTION: s:Creator.New() {{{1
@@ -240,7 +251,7 @@ function! s:Creator._pathForString(str)
             let path = g:NERDTreePath.New(dir)
         catch /^NERDTree.InvalidArgumentsError/
             call nerdtree#echo("No bookmark or directory found for: " . a:str)
-            return
+            return {}
         endtry
     endif
     if !path.isDirectory
@@ -248,6 +259,23 @@ function! s:Creator._pathForString(str)
     endif
 
     return path
+endfunction
+
+" Function: s:Creator._removeTreeBufForTab()   {{{1
+function! s:Creator._removeTreeBufForTab()
+    let buf = bufnr(t:NERDTreeBufName)
+
+    "if &hidden is not set then it will already be gone
+    if buf != -1
+
+        "nerdtree buf may be mirrored/displayed elsewhere
+        if self._isBufHidden(buf)
+            exec "bwipeout " . buf
+        endif
+
+    endif
+
+    unlet t:NERDTreeBufName
 endfunction
 
 "FUNCTION: s:Creator._setCommonBufOptions() {{{1
@@ -278,12 +306,6 @@ function! s:Creator._setCommonBufOptions()
     endif
 
     call self._setupStatusline()
-
-    let b:treeShowHelp = 0
-    let b:NERDTreeIgnoreEnabled = 1
-    let b:NERDTreeShowFiles = g:NERDTreeShowFiles
-    let b:NERDTreeShowHidden = g:NERDTreeShowHidden
-    let b:NERDTreeShowBookmarks = g:NERDTreeShowBookmarks
     call self._bindMappings()
     setlocal filetype=nerdtree
 endfunction
@@ -313,32 +335,32 @@ function! s:Creator._tabpagevar(tabnr, var)
     return v
 endfunction
 
-"FUNCTION: s:Creator.TogglePrimary(dir) {{{1
-function! s:Creator.TogglePrimary(dir)
+"FUNCTION: s:Creator.ToggleTabTree(dir) {{{1
+function! s:Creator.ToggleTabTree(dir)
     let creator = s:Creator.New()
-    call creator.togglePrimary(a:dir)
+    call creator.toggleTabTree(a:dir)
 endfunction
 
-"FUNCTION: s:Creator.togglePrimary(dir) {{{1
+"FUNCTION: s:Creator.toggleTabTree(dir) {{{1
 "Toggles the NERD tree. I.e the NERD tree is open, it is closed, if it is
 "closed it is restored or initialized (if it doesnt exist)
 "
 "Args:
 "dir: the full path for the root node (is only used if the NERD tree is being
 "initialized.
-function! s:Creator.togglePrimary(dir)
+function! s:Creator.toggleTabTree(dir)
     if g:NERDTree.ExistsForTab()
-        if !nerdtree#isTreeOpen()
+        if !g:NERDTree.IsOpen()
             call self._createTreeWin()
             if !&hidden
                 call b:NERDTree.render()
             endif
             call b:NERDTree.ui.restoreScreenState()
         else
-            call nerdtree#closeTree()
+            call g:NERDTree.Close()
         endif
     else
-        call self.createPrimary(a:dir)
+        call self.createTabTree(a:dir)
     endif
 endfunction
 

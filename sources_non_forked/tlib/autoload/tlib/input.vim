@@ -1,7 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    1317
+" @Revision:    1366
 
 
 " :filedoc:
@@ -113,12 +113,17 @@ TLet g:tlib#input#numeric_chars = {
 
 
 " :nodefault:
-" The default key bindings for single-item-select list views. If you 
-" want to use <c-j>, <c-k> to move the cursor up and down, add these two 
-" lines to after/plugin/02tlib.vim: >
+" The default key bindings for single-item-select list views.
 "
-"   let g:tlib#input#keyagents_InputList_s[10] = 'tlib#agent#Down'  " <c-j>
-"   let g:tlib#input#keyagents_InputList_s[11] = 'tlib#agent#Up'    " <c-k>
+" This variable is best customized via the variable 
+" g:tlib_extend_keyagents_InputList_s. If you want to use <c-j>, <c-k> 
+" to move the cursor up and down, add these two lines to your |vimrc| 
+" file:
+"
+"   let g:tlib_extend_keyagents_InputList_s = {
+"       \ 10: 'tlib#agent#Down',
+"       \ 11: 'tlib#agent#Up'
+"       \ }
 TLet g:tlib#input#keyagents_InputList_s = {
             \ "\<PageUp>":   'tlib#agent#PageUp',
             \ "\<PageDown>": 'tlib#agent#PageDown',
@@ -126,6 +131,7 @@ TLet g:tlib#input#keyagents_InputList_s = {
             \ "\<End>":      'tlib#agent#End',
             \ "\<Up>":       'tlib#agent#Up',
             \ "\<Down>":     'tlib#agent#Down',
+            \ 9:             'tlib#agent#Complete',
             \ "\<c-Up>":     'tlib#agent#UpN',
             \ "\<c-Down>":   'tlib#agent#DownN',
             \ "\<Left>":     'tlib#agent#ShiftLeft',
@@ -154,6 +160,10 @@ TLet g:tlib#input#keyagents_InputList_s = {
             \ }
             " \ 63:            'tlib#agent#Help',
 
+if exists('g:tlib_extend_keyagents_InputList_s')
+    let g:tlib#input#keyagents_InputList_s = extend(g:tlib#input#keyagents_InputList_s, g:tlib_extend_keyagents_InputList_s)
+endif
+
 
 " :nodefault:
 TLet g:tlib#input#keyagents_InputList_m = {
@@ -165,6 +175,11 @@ TLet g:tlib#input#keyagents_InputList_m = {
             \ "\<F9>":     'tlib#agent#ToggleRestrictView',
             \ }
 " "\<c-space>": 'tlib#agent#Select'
+
+if exists('g:tlib_extend_keyagents_InputList_m')
+    let g:tlib#input#keyagents_InputList_m = extend(g:tlib#input#keyagents_InputList_m, g:tlib_extend_keyagents_InputList_m)
+endif
+
 
 
 " :nodefault:
@@ -182,6 +197,11 @@ TLet g:tlib#input#handlers_EditList = [
             \      'Cancel editing by pressing <c-w>c'
             \ ]},
             \ ]
+
+
+" A dictionary KEY => {'agent': AGENT, 'key_name': KEY_NAME} to 
+" customize keyboard shortcuts in the list view.
+TLet g:tlib#input#user_shortcuts = {}
 
 
 " If true, define a popup menu for |tlib#input#List()| and related 
@@ -232,6 +252,9 @@ TLet g:tlib#input#filename_max_width = '&co / 2'
 "
 " Several pattern matching styles are supported. See 
 " |g:tlib#input#filter_mode|.
+"
+" Users can type <Tab> to complete the current filter with the longest 
+" match.
 "
 " EXAMPLES: >
 "   echo tlib#input#List('s', 'Select one item', [100,200,300])
@@ -343,7 +366,7 @@ function! tlib#input#ListW(world, ...) "{{{3
             " let time01 = str2float(reltimestr(reltime()))  " DBG
             " TLogVAR time01, time01 - time0
             try
-                call s:RunStateHandlers(world)
+                let world = s:RunStateHandlers(world)
 
                 " if exists('b:tlib_world_event')
                 "     let event = b:tlib_world_event
@@ -381,10 +404,13 @@ function! tlib#input#ListW(world, ...) "{{{3
 
                 " TLogVAR world.filter
                 " TLogVAR world.sticky
-                if world.state =~ '\<pick\>'
+                if world.state =~ '\<picked\>'
+                    " TLogVAR world.rv
+                    throw 'picked'
+                elseif world.state =~ '\<pick\>'
                     let world.rv = world.CurrentItem()
                     " TLogVAR world.rv
-                    throw 'pick'
+                    throw 'picked'
                 elseif world.state =~ 'display'
                     if world.state =~ '^display'
                         " let time03 = str2float(reltimestr(reltime()))  " DBG
@@ -496,7 +522,8 @@ function! tlib#input#ListW(world, ...) "{{{3
                     "     let world.offset = world.prefidx
                     " endif
                     " TLogDBG 8
-                    if world.initial_display || !tlib#char#IsAvailable()
+                    " TLogVAR world.initial_display, !tlib#char#IsAvailable()
+                    if world.state =~ '\<update\>' || world.initial_display || !tlib#char#IsAvailable()
                         " TLogDBG len(dlist)
                         call world.DisplayList(world.Query(), dlist)
                         call world.FollowCursor()
@@ -563,8 +590,9 @@ function! tlib#input#ListW(world, ...) "{{{3
                 if !empty(world.next_agent)
                     let nagent = world.next_agent
                     let world.next_agent = ''
-                    let world = call(nagent, [world, world.GetSelectedItems(world.CurrentItem())])
-                    call s:CheckAgentReturnValue(nagent, world)
+                    " let world = call(nagent, [world, world.GetSelectedItems(world.CurrentItem())])
+                    " call s:CheckAgentReturnValue(nagent, world)
+                    let world = s:CallAgent({'agent': nagent}, world, world.GetSelectedItems(world.CurrentItem()))
                 elseif !empty(world.next_eval)
                     let selected = world.GetSelectedItems(world.CurrentItem())
                     let neval = world.next_eval
@@ -579,9 +607,10 @@ function! tlib#input#ListW(world, ...) "{{{3
                     " TLogVAR c, world.key_map[world.key_mode][c]
                     " TLog "Agent: ". string(world.key_map[world.key_mode][c])
                     let handler = world.key_map[world.key_mode][c]
-                    " TLogVAR handler
-                    let world = call(handler.agent, [world, world.GetSelectedItems(world.CurrentItem())])
-                    call s:CheckAgentReturnValue(c, world)
+                    " " TLogVAR handler
+                    " let world = call(handler.agent, [world, world.GetSelectedItems(world.CurrentItem())])
+                    " call s:CheckAgentReturnValue(c, world)
+                    let world = s:CallAgent(handler, world, world.GetSelectedItems(world.CurrentItem()))
                     silent! let @/ = sr
                     " continue
                 elseif c == 13
@@ -640,8 +669,9 @@ function! tlib#input#ListW(world, ...) "{{{3
                     " TLogVAR world.prefidx, world.state
                 elseif has_key(world.key_map[world.key_mode], 'unknown_key')
                     let agent = world.key_map[world.key_mode].unknown_key.agent
-                    let world = call(agent, [world, c])
-                    call s:CheckAgentReturnValue(agent, world)
+                    " let world = call(agent, [world, c])
+                    " call s:CheckAgentReturnValue(agent, world)
+                    let world = s:CallAgent({'agent': agent}, world, c)
                 elseif c >= 32
                     let world.state = 'display'
                     let numbase = get(world.numeric_chars, c, -99999)
@@ -679,6 +709,11 @@ function! tlib#input#ListW(world, ...) "{{{3
                     " let world.state = 'continue'
                 endif
 
+            catch /^picked$/
+                call world.ClearAllMarks()
+                call world.MarkCurrent(world.prefidx)
+                let world.state = 'exit'
+
             catch /^pick$/
                 call world.ClearAllMarks()
                 call world.MarkCurrent(world.prefidx)
@@ -686,7 +721,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                 " TLogDBG 'Pick item #'. world.prefidx
 
             finally
-                " TLogDBG 'finally 1'
+                " TLogDBG 'finally 1', world.state
                 if world.state =~ '\<suspend\>'
                     " if !world.allow_suspend
                     "     echom "Cannot be suspended"
@@ -695,10 +730,10 @@ function! tlib#input#ListW(world, ...) "{{{3
                 elseif !empty(world.list) && !empty(world.base)
                     " TLogVAR world.list
                     if empty(world.state)
-                        " TLogVAR world.state
                         let world.rv = world.CurrentItem()
+                        " TLogVAR world.state, world.rv
                     endif
-                    " TLog "postprocess"
+                    " TLogVAR "postprocess"
                     for handler in world.post_handlers
                         let state = get(handler, 'postprocess', '')
                         " TLogVAR handler
@@ -746,7 +781,6 @@ function! tlib#input#ListW(world, ...) "{{{3
                 return ''
             endif
         elseif !empty(world.return_agent)
-            " TLog "return_agent"
             " TLogDBG 'return agent'
             " TLogVAR world.return_agent
             call world.CloseScratch()
@@ -830,6 +864,18 @@ function! tlib#input#ListW(world, ...) "{{{3
 endf
 
 
+function! s:CallAgent(handler, world, list) abort "{{{3
+    let agent = a:handler.agent
+    let args = [a:world, a:list]
+    if has_key(a:handler, 'args')
+        let args += a:handler.args
+    endif
+    let world = call(agent, args)
+    " TLogVAR world.state, world.rv
+    call s:CheckAgentReturnValue(agent, world)
+    return world
+endf
+
 function! s:GetModdedChar(world) "{{{3
     let [char, mode] = tlib#char#Get(a:world.timeout, a:world.timeout_resolution, 1)
     if char !~ '\D' && char > 0 && mode != 0
@@ -890,6 +936,7 @@ function! s:Init(world, cmd) "{{{3
         for key_mode in keys(a:world.key_map)
             let a:world.key_map[key_mode] = map(a:world.key_map[key_mode], 'type(v:val) == 4 ? v:val : {"agent": v:val}')
         endfor
+        " TLogVAR a:world.key_mode
         if type(a:world.key_handlers) == 3
             call s:ExtendKeyMap(a:world, a:world.key_mode, a:world.key_handlers)
         elseif type(a:world.key_handlers) == 4
@@ -899,6 +946,7 @@ function! s:Init(world, cmd) "{{{3
         else
             throw "tlib#input#ListW: key_handlers must be either a list or a dictionary"
         endif
+        " TLogVAR a:world.type, a:world.key_map
         if !empty(a:cmd)
             let a:world.state .= ' '. a:cmd
         endif
@@ -917,7 +965,7 @@ function! s:ExtendKeyMap(world, key_mode, key_handlers) "{{{3
 endf
 
 
-function s:PopupmenuExists()
+function! s:PopupmenuExists()
     if !g:tlib#input#use_popup
                 \ || exists(':popup') != 2
                 \ || !(has('gui_win32') || has('gui_gtk') || has('gui_gtk2'))
@@ -1056,11 +1104,13 @@ function! s:RunStateHandlers(world) "{{{3
                 exec ea
             else
                 let agent = get(handler, 'agent', '')
-                let a:world = call(agent, [a:world, a:world.GetSelectedItems(a:world.CurrentItem())])
-                call s:CheckAgentReturnValue(agent, a:world)
+                " let world = call(agent, [a:world, a:world.GetSelectedItems(a:world.CurrentItem())])
+                " call s:CheckAgentReturnValue(agent, a:world)
+                let world = s:CallAgent({'agent': agent}, world, world.GetSelectedItems(world.CurrentItem()))
             endif
         endif
     endfor
+    return world
 endf
 
 

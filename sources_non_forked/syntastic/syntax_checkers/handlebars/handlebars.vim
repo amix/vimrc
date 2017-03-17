@@ -9,7 +9,7 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "============================================================================
 
-if exists("g:loaded_syntastic_handlebars_handlebars_checker")
+if exists('g:loaded_syntastic_handlebars_handlebars_checker')
     finish
 endif
 let g:loaded_syntastic_handlebars_handlebars_checker = 1
@@ -21,8 +21,8 @@ function! SyntaxCheckers_handlebars_handlebars_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': '-f ' . syntastic#util#DevNull() })
 
     let errorformat =
-        \ '%EError: %m on line %l:,'.
-        \ "%EError: %m,".
+        \ '%EError: %m on line %l:,' .
+        \ '%EError: %m,' .
         \ '%Z%p^,' .
         \ '%-G%.%#'
 
@@ -30,7 +30,7 @@ function! SyntaxCheckers_handlebars_handlebars_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'postprocess': ['guards'],
-        \ 'defaults': {'bufnr': bufnr("")} })
+        \ 'defaults': {'bufnr': bufnr('')} })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
@@ -40,4 +40,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

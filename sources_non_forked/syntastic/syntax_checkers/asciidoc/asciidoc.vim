@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_asciidoc_asciidoc_checker")
+if exists('g:loaded_syntastic_asciidoc_asciidoc_checker')
     finish
 endif
 let g:loaded_syntastic_asciidoc_asciidoc_checker = 1
@@ -22,14 +22,14 @@ function! SyntaxCheckers_asciidoc_asciidoc_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': syntastic#c#NullOutput() })
 
     let errorformat =
-        \ '%Easciidoc: %tRROR: %f: line %l: %m,' .
-        \ '%Easciidoc: %tRROR: %f: %m,' .
-        \ '%Easciidoc: FAILED: %f: line %l: %m,' .
-        \ '%Easciidoc: FAILED: %f: %m,' .
-        \ '%Wasciidoc: %tARNING: %f: line %l: %m,' .
-        \ '%Wasciidoc: %tARNING: %f: %m,' .
-        \ '%Wasciidoc: DEPRECATED: %f: line %l: %m,' .
-        \ '%Wasciidoc: DEPRECATED: %f: %m'
+        \ '%E%\w%\+: %tRROR: %f: line %l: %m,' .
+        \ '%E%\w%\+: %tRROR: %f: %m,' .
+        \ '%E%\w%\+: FAILED: %f: line %l: %m,' .
+        \ '%E%\w%\+: FAILED: %f: %m,' .
+        \ '%W%\w%\+: %tARNING: %f: line %l: %m,' .
+        \ '%W%\w%\+: %tARNING: %f: %m,' .
+        \ '%W%\w%\+: DEPRECATED: %f: line %l: %m,' .
+        \ '%W%\w%\+: DEPRECATED: %f: %m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
@@ -44,4 +44,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

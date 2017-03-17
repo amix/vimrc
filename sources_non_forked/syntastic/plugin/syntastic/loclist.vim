@@ -1,4 +1,4 @@
-if exists("g:loaded_syntastic_loclist") || !exists("g:loaded_syntastic_plugin")
+if exists('g:loaded_syntastic_loclist') || !exists('g:loaded_syntastic_plugin')
     finish
 endif
 let g:loaded_syntastic_loclist = 1
@@ -7,13 +7,13 @@ let g:SyntasticLoclist = {}
 
 " Public methods {{{1
 
-function! g:SyntasticLoclist.New(rawLoclist) " {{{2
+function! g:SyntasticLoclist.New(rawLoclist) abort " {{{2
     let newObj = copy(self)
 
-    let llist = filter(copy(a:rawLoclist), 'v:val["valid"] == 1')
+    let llist = filter(copy(a:rawLoclist), 'v:val["valid"]')
 
     for e in llist
-        if get(e, 'type', '') == ''
+        if get(e, 'type', '') ==# ''
             let e['type'] = 'E'
         endif
     endfor
@@ -27,64 +27,65 @@ function! g:SyntasticLoclist.New(rawLoclist) " {{{2
     return newObj
 endfunction " }}}2
 
-function! g:SyntasticLoclist.current() " {{{2
-    if !exists("b:syntastic_loclist") || empty(b:syntastic_loclist)
-        let b:syntastic_loclist = g:SyntasticLoclist.New([])
+function! g:SyntasticLoclist.current(...) abort " {{{2
+    let buf = a:0 ? a:1 : bufnr('')
+    let loclist = syntastic#util#getbufvar(buf, 'syntastic_loclist', {})
+    if type(loclist) != type({}) || empty(loclist)
+        unlet! loclist
+        let loclist = g:SyntasticLoclist.New([])
     endif
-    return b:syntastic_loclist
+    return loclist
 endfunction " }}}2
 
-function! g:SyntasticLoclist.extend(other) " {{{2
-    let list = self.copyRaw()
-    call extend(list, a:other.copyRaw())
-    return g:SyntasticLoclist.New(list)
+function! g:SyntasticLoclist.extend(other) abort " {{{2
+    call extend(self._rawLoclist, a:other.copyRaw())
 endfunction " }}}2
 
-function! g:SyntasticLoclist.sort() " {{{2
+function! g:SyntasticLoclist.sort() abort " {{{2
     if !self._sorted
         for e in self._rawLoclist
-            call s:_setScreenColumn(e)
+            call s:_set_screen_column(e)
         endfor
 
-        call sort(self._rawLoclist, self._columns ? 's:_compareErrorItemsByColumns' : 's:_compareErrorItemsByLines')
+        call sort(self._rawLoclist, self._columns ? 's:_compare_error_items_by_columns' : 's:_compare_error_items_by_lines')
 
         let self._sorted = 1
     endif
 endfunction " }}}2
 
-function! g:SyntasticLoclist.isEmpty() " {{{2
+function! g:SyntasticLoclist.isEmpty() abort " {{{2
     return empty(self._rawLoclist)
 endfunction " }}}2
 
-function! g:SyntasticLoclist.isNewerThan(stamp) " {{{2
-    if !exists("self._stamp")
+function! g:SyntasticLoclist.isNewerThan(stamp) abort " {{{2
+    if !exists('self._stamp')
         let self._stamp = []
         return 0
     endif
     return syntastic#util#compareLexi(self._stamp, a:stamp) > 0
 endfunction " }}}2
 
-function! g:SyntasticLoclist.copyRaw() " {{{2
+function! g:SyntasticLoclist.copyRaw() abort " {{{2
     return copy(self._rawLoclist)
 endfunction " }}}2
 
-function! g:SyntasticLoclist.getRaw() " {{{2
+function! g:SyntasticLoclist.getRaw() abort " {{{2
     return self._rawLoclist
 endfunction " }}}2
 
-function! g:SyntasticLoclist.getBuffers() " {{{2
+function! g:SyntasticLoclist.getBuffers() abort " {{{2
     return syntastic#util#unique(map(copy(self._rawLoclist), 'str2nr(v:val["bufnr"])') + [self._owner])
 endfunction " }}}2
 
-function! g:SyntasticLoclist.getCursorColumns() " {{{2
+function! g:SyntasticLoclist.getCursorColumns() abort " {{{2
     return self._columns
 endfunction " }}}2
 
-function! g:SyntasticLoclist.getStatuslineFlag() " {{{2
-    if !exists("self._stl_format")
+function! g:SyntasticLoclist.getStatuslineFlag() abort " {{{2
+    if !exists('self._stl_format')
         let self._stl_format = ''
     endif
-    if !exists("self._stl_flag")
+    if !exists('self._stl_flag')
         let self._stl_flag = ''
     endif
 
@@ -110,19 +111,21 @@ function! g:SyntasticLoclist.getStatuslineFlag() " {{{2
             "hide stuff wrapped in %B(...) unless there are both errors and warnings
             let output = substitute(output, '\m\C%B{\([^}]*\)}', (num_warnings && num_errors) ? '\1' : '' , 'g')
 
-            "sub in the total errors/warnings/both
-            let output = substitute(output, '\m\C%w', num_warnings, 'g')
-            let output = substitute(output, '\m\C%e', num_errors, 'g')
-            let output = substitute(output, '\m\C%t', num_issues, 'g')
-
-            "first error/warning line num
-            let output = substitute(output, '\m\C%F', num_issues ? self._rawLoclist[0]['lnum'] : '', 'g')
-
-            "first error line num
-            let output = substitute(output, '\m\C%fe', num_errors ? errors[0]['lnum'] : '', 'g')
-
-            "first warning line num
-            let output = substitute(output, '\m\C%fw', num_warnings ? warnings[0]['lnum'] : '', 'g')
+            let flags = {
+                \ '%':  '%',
+                \ 't':  num_issues,
+                \ 'e':  num_errors,
+                \ 'w':  num_warnings,
+                \ 'N':  (num_issues ? fnamemodify( bufname(self._rawLoclist[0]['bufnr']), ':t') : ''),
+                \ 'P':  (num_issues ? fnamemodify( bufname(self._rawLoclist[0]['bufnr']), ':p:~:.') : ''),
+                \ 'F':  (num_issues ? self._rawLoclist[0]['lnum'] : ''),
+                \ 'ne': (num_errors ? fnamemodify( bufname(errors[0]['bufnr']), ':t') : ''),
+                \ 'pe': (num_errors ? fnamemodify( bufname(errors[0]['bufnr']), ':p:~:.') : ''),
+                \ 'fe': (num_errors ? errors[0]['lnum'] : ''),
+                \ 'nw': (num_warnings ? fnamemodify( bufname(warnings[0]['bufnr']), ':t') : ''),
+                \ 'pw': (num_warnings ? fnamemodify( bufname(warnings[0]['bufnr']), ':p:~:.') : ''),
+                \ 'fw': (num_warnings ? warnings[0]['lnum'] : '') }
+            let output = substitute(output, '\v\C\%(-?\d*%(\.\d+)?)([npf][ew]|[NPFtew%])', '\=syntastic#util#wformat(submatch(1), flags[submatch(2)])', 'g')
 
             let self._stl_flag = output
         else
@@ -133,49 +136,59 @@ function! g:SyntasticLoclist.getStatuslineFlag() " {{{2
     return self._stl_flag
 endfunction " }}}2
 
-function! g:SyntasticLoclist.getFirstIssue() " {{{2
-    return get(self._rawLoclist, 0, {})
+function! g:SyntasticLoclist.getFirstError(...) abort " {{{2
+    let max_issues = len(self._rawLoclist)
+    if a:0 && a:1 < max_issues
+        let max_issues = a:1
+    endif
+
+    for idx in range(max_issues)
+        if get(self._rawLoclist[idx], 'type', '') ==? 'E'
+            return idx + 1
+        endif
+    endfor
+
+    return 0
 endfunction " }}}2
 
-function! g:SyntasticLoclist.getName() " {{{2
+function! g:SyntasticLoclist.getName() abort " {{{2
     return len(self._name)
 endfunction " }}}2
 
-function! g:SyntasticLoclist.setName(name) " {{{2
+function! g:SyntasticLoclist.setName(name) abort " {{{2
     let self._name = a:name
 endfunction " }}}2
 
-function! g:SyntasticLoclist.getOwner() " {{{2
+function! g:SyntasticLoclist.getOwner() abort " {{{2
     return self._owner
 endfunction " }}}2
 
-function! g:SyntasticLoclist.setOwner(buffer) " {{{2
+function! g:SyntasticLoclist.setOwner(buffer) abort " {{{2
     let self._owner = type(a:buffer) == type(0) ? a:buffer : str2nr(a:buffer)
 endfunction " }}}2
 
-function! g:SyntasticLoclist.deploy() " {{{2
-    call self.setOwner(bufnr(''))
+function! g:SyntasticLoclist.deploy() abort " {{{2
     let self._stamp = syntastic#util#stamp()
     for buf in self.getBuffers()
         call setbufvar(buf, 'syntastic_loclist', self)
     endfor
 endfunction " }}}2
 
-function! g:SyntasticLoclist.destroy() " {{{2
+function! g:SyntasticLoclist.destroy() abort " {{{2
     for buf in self.getBuffers()
         call setbufvar(buf, 'syntastic_loclist', {})
     endfor
 endfunction " }}}2
 
-function! g:SyntasticLoclist.decorate(tag) " {{{2
+function! g:SyntasticLoclist.decorate(tag) abort " {{{2
     for e in self._rawLoclist
         let e['text'] .= ' [' . a:tag . ']'
     endfor
 endfunction " }}}2
 
-function! g:SyntasticLoclist.balloons() " {{{2
-    if !exists("self._cachedBalloons")
-        let sep = has("balloon_multiline") ? "\n" : ' | '
+function! g:SyntasticLoclist.balloons() abort " {{{2
+    if !exists('self._cachedBalloons')
+        let sep = has('balloon_multiline') ? "\n" : ' | '
 
         let self._cachedBalloons = {}
         for e in self._rawLoclist
@@ -196,29 +209,29 @@ function! g:SyntasticLoclist.balloons() " {{{2
     return get(self._cachedBalloons, bufnr(''), {})
 endfunction " }}}2
 
-function! g:SyntasticLoclist.errors() " {{{2
-    if !exists("self._cachedErrors")
-        let self._cachedErrors = self.filter({'type': "E"})
+function! g:SyntasticLoclist.errors() abort " {{{2
+    if !exists('self._cachedErrors')
+        let self._cachedErrors = self.filter({'type': 'E'})
     endif
     return self._cachedErrors
 endfunction " }}}2
 
-function! g:SyntasticLoclist.warnings() " {{{2
-    if !exists("self._cachedWarnings")
-        let self._cachedWarnings = self.filter({'type': "W"})
+function! g:SyntasticLoclist.warnings() abort " {{{2
+    if !exists('self._cachedWarnings')
+        let self._cachedWarnings = self.filter({'type': 'W'})
     endif
     return self._cachedWarnings
 endfunction " }}}2
 
 " Legacy function.  Syntastic no longer calls it, but we keep it
 " around because other plugins (f.i. powerline) depend on it.
-function! g:SyntasticLoclist.hasErrorsOrWarningsToDisplay() " {{{2
+function! g:SyntasticLoclist.hasErrorsOrWarningsToDisplay() abort " {{{2
     return !self.isEmpty()
 endfunction " }}}2
 
 " cache used by EchoCurrentError()
-function! g:SyntasticLoclist.messages(buf) " {{{2
-    if !exists("self._cachedMessages")
+function! g:SyntasticLoclist.messages(buf) abort " {{{2
+    if !exists('self._cachedMessages')
         let self._cachedMessages = {}
 
         let errors = self.errors() + self.warnings()
@@ -243,9 +256,9 @@ function! g:SyntasticLoclist.messages(buf) " {{{2
                     for l in keys(self._cachedMessages[b])
                         if len(self._cachedMessages[b][l]) > 1
                             for e in self._cachedMessages[b][l]
-                                call s:_setScreenColumn(e)
+                                call s:_set_screen_column(e)
                             endfor
-                            call sort(self._cachedMessages[b][l], 's:_compareErrorItemsByColumns')
+                            call sort(self._cachedMessages[b][l], 's:_compare_error_items_by_columns')
                         endif
                     endfor
                 endfor
@@ -253,7 +266,7 @@ function! g:SyntasticLoclist.messages(buf) " {{{2
 
             for b in keys(self._cachedMessages)
                 for l in keys(self._cachedMessages[b])
-                    call s:_removeShadowedItems(self._cachedMessages[b][l])
+                    call s:_remove_shadowed_items(self._cachedMessages[b][l])
                 endfor
             endfor
         endif
@@ -268,34 +281,43 @@ endfunction " }}}2
 "
 "would return all errors for buffer 10.
 "
-"Note that all comparisons are done with ==?
-function! g:SyntasticLoclist.filter(filters) " {{{2
+"Note that all string comparisons are done with ==?
+function! g:SyntasticLoclist.filter(filters) abort " {{{2
     let conditions = values(map(copy(a:filters), 's:_translate(v:key, v:val)'))
     let filter = len(conditions) == 1 ?
         \ conditions[0] : join(map(conditions, '"(" . v:val . ")"'), ' && ')
     return filter(copy(self._rawLoclist), filter)
 endfunction " }}}2
 
-function! g:SyntasticLoclist.setloclist() " {{{2
+function! g:SyntasticLoclist.setloclist(new) abort " {{{2
     if !exists('w:syntastic_loclist_set')
-        let w:syntastic_loclist_set = 0
+        let w:syntastic_loclist_set = []
     endif
-    let replace = g:syntastic_reuse_loc_lists && w:syntastic_loclist_set
-    call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: setloclist ' . (replace ? '(replace)' : '(new)'))
-    call setloclist(0, self.getRaw(), replace ? 'r' : ' ')
-    let w:syntastic_loclist_set = 1
+    if a:new || empty(w:syntastic_loclist_set) || w:syntastic_loclist_set != [self._owner, getbufvar(self._owner, 'changedtick')]
+        let replace = !a:new && g:syntastic_reuse_loc_lists && !empty(w:syntastic_loclist_set)
+        call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: setloclist ' . (replace ? '(replace)' : '(new)'))
+        call setloclist(0, self.getRaw(), replace ? 'r' : ' ')
+        try
+            " Vim 7.4.2200 or later
+            call setloclist(0, [], 'r', { 'title': ':SyntasticCheck ' . self._name })
+        catch /\m^Vim\%((\a\+)\)\=:E\%(118\|731\)/
+            " do nothing
+        endtry
+        call syntastic#util#setLastTick(self._owner)
+        let w:syntastic_loclist_set = [self._owner, getbufvar(self._owner, 'syntastic_lasttick')]
+    endif
 endfunction " }}}2
 
 "display the cached errors for this buf in the location list
-function! g:SyntasticLoclist.show() " {{{2
+function! g:SyntasticLoclist.show() abort " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: show')
-    call self.setloclist()
+    call self.setloclist(0)
 
     if !self.isEmpty()
         let num = winnr()
-        execute "lopen " . syntastic#util#var('loc_list_height')
+        execute 'lopen ' . syntastic#util#var('loc_list_height')
         if num != winnr()
-            wincmd p
+            execute num . 'wincmd w'
         endif
 
         " try to find the loclist window and set w:quickfix_title
@@ -309,7 +331,7 @@ function! g:SyntasticLoclist.show() " {{{2
                 " errors == getloclist(0) is the only somewhat safe way to
                 " achieve that
                 if strpart(title, 0, 16) ==# ':SyntasticCheck ' ||
-                            \ ( (title == '' || title ==# ':setloclist()') && errors == getloclist(0) )
+                            \ ( (title ==# '' || title ==# ':setloclist()') && errors == getloclist(0) )
                     call setwinvar(win, 'quickfix_title', ':SyntasticCheck ' . self._name)
                     call setbufvar(buf, 'syntastic_owner_buffer', self._owner)
                 endif
@@ -320,22 +342,22 @@ endfunction " }}}2
 
 " }}}1
 
-" Non-method functions {{{1
+" Public functions {{{1
 
-function! SyntasticLoclistHide() " {{{2
+function! SyntasticLoclistHide() abort " {{{2
     call syntastic#log#debug(g:_SYNTASTIC_DEBUG_NOTIFICATIONS, 'loclist: hide')
     silent! lclose
 endfunction " }}}2
 
 " }}}1
 
-" Private functions {{{1
+" Utilities {{{1
 
-function! s:_translate(key, val) " {{{2
+function! s:_translate(key, val) abort " {{{2
     return 'get(v:val, ' . string(a:key) . ', "") ==? ' . string(a:val)
 endfunction " }}}2
 
-function! s:_setScreenColumn(item) " {{{2
+function! s:_set_screen_column(item) abort " {{{2
     if !has_key(a:item, 'scol')
         let col = get(a:item, 'col', 0)
         if col != 0 && get(a:item, 'vcol', 0) == 0
@@ -352,7 +374,7 @@ function! s:_setScreenColumn(item) " {{{2
     endif
 endfunction " }}}2
 
-function! s:_removeShadowedItems(errors) " {{{2
+function! s:_remove_shadowed_items(errors) abort " {{{2
     " keep only the first message at a given column
     let i = 0
     while i < len(a:errors) - 1
@@ -384,7 +406,7 @@ function! s:_removeShadowedItems(errors) " {{{2
     endwhile
 endfunction " }}}2
 
-function! s:_compareErrorItemsByColumns(a, b) " {{{2
+function! s:_compare_error_items_by_columns(a, b) abort " {{{2
     if a:a['bufnr'] != a:b['bufnr']
         " group by file
         return a:a['bufnr'] - a:b['bufnr']
@@ -402,7 +424,7 @@ function! s:_compareErrorItemsByColumns(a, b) " {{{2
     endif
 endfunction " }}}2
 
-function! s:_compareErrorItemsByLines(a, b) " {{{2
+function! s:_compare_error_items_by_lines(a, b) abort " {{{2
     if a:a['bufnr'] != a:b['bufnr']
         " group by file
         return a:a['bufnr'] - a:b['bufnr']

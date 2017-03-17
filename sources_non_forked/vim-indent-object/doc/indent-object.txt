@@ -86,6 +86,12 @@ this case if blank lines are ignored, then the entire file would be selected.
 Instead when code at the top level is being indented blank lines are
 considered to delimit the block.
 
+This exceptional behaviour can be disabled by executing the following line
+>
+      :let g:indent_object_except_first_level = 0
+<
+(default is 1)
+
 
 ==============================================================================
 ABOUT                                                          *idntobj-about*

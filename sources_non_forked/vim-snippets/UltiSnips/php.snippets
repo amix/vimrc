@@ -1,147 +1,67 @@
 priority -50
 
+global !p
+import vim
+
+# Set g:ultisnips_php_scalar_types to 1 if you'd like to enable PHP 7's scalar types for return values
+def isPHPScalarTypesEnabled():
+	isEnabled = vim.eval("get(g:, 'ultisnips_php_scalar_types', 0)") == "1"
+	return isEnabled or re.match('<\?php\s+declare\(strict_types=[01]\);', '\n'.join(vim.current.window.buffer))
+endglobal
+
 ## Snippets from SnipMate, taken from
 ## https://github.com/scrooloose/snipmate-snippets.git
 
-snippet array "array"
-$${1:arrayName} = array('${2}' => ${3});${4}
-endsnippet
-
-snippet def "def"
-define('${1}'${2});${3}
-endsnippet
-
-snippet do "do"
-do {
-	${2:// code... }
-} while (${1:/* condition */});
-endsnippet
-
-snippet doc_f "doc_f"
+snippet gm "PHP Class Getter" b
 /**
- * $2
- * @return ${4:void}
- * @author ${5:`!v g:snips_author`}
- **/
-${1:public }function ${2:someFunc}(${3})
-{${6}
-}
-endsnippet
-
-snippet doc_i "doc_i"
-/**
- * $1
- * @package ${2:default}
- * @author ${3:`!v g:snips_author`}
- **/
-interface ${1:someClass}
-{${4}
-} // END interface $1"
-endsnippet
-
-snippet else "else"
-else {
-	${1:// code...}
-}
-endsnippet
-
-snippet for "for"
-for ($${2:i} = 0; $$2 < ${1:count}; $$2${3:++}) {
-	${4:// code...}
-}
-endsnippet
-
-snippet foreachk "foreachk"
-foreach ($${1:variable} as $${2:key} => $${3:value}){
-	${4:// code...}
-}
-endsnippet
-
-snippet get "get"
-$_GET['${1}']${2}
-endsnippet
-
-snippet if "if"
-if (${1:/* condition */}) {
-	${2:// code...}
-}
-endsnippet
-
-snippet elif "elseif"
-elseif (${1:/* condition */}) {
-	${2:// code...}
-}
-endsnippet
-
-snippet inc "inc"
-include '${1:file}';${2}
-endsnippet
-
-snippet log "log"
-error_log(var_export(${1}, true));${2}
-endsnippet
-
-snippet post "post"
-$_POST['${1}']${2}
-endsnippet
-
-snippet req1 "req1"
-require_once '${1:file}';${2}
-endsnippet
-
-snippet session "session"
-$_SESSION['${1}']${2}
-endsnippet
-
-snippet t "t"
-$${1:retVal} = (${2:condition}) ? ${3:a} : ${4:b};${5}
-endsnippet
-
-snippet var "var"
-var_export(${1});${2}
-endsnippet
-
-snippet getter "PHP Class Getter" b
-/*
  * Getter for $1
+ *
+ * @return ${2:string}
  */
-public function get${1/\w+\s*/\u$0/}()
+public function get${1/\w+\s*/\u$0/}()`!p snip.rv = ': '+t[2] if isPHPScalarTypesEnabled() else ''`
 {
-	return $this->$1;$2
+    return $this->$1;
 }
-$4
 endsnippet
 
-snippet setter "PHP Class Setter" b
-/*
+snippet sm "PHP Class Setter" b
+/**
  * Setter for $1
+ *
+ * @param ${2:string} $$1
+ * @return ${3:`!p snip.rv=snip.basename`}
  */
-public function set${1/\w+\s*/\u$0/}($$1)
+public function set${1/\w+\s*/\u$0/}(${4:${2/(void|string|int|integer|double|float|object|boolear|null|mixed|number|resource)|(.*)/(?1::$2 )/}}$$1)
 {
-	$this->$1 = $$1;$3
-	${4:return $this;}
+    $this->$1 = $$1;
+
+    ${5:return $this;}
 }
-$0
 endsnippet
 
 snippet gs "PHP Class Getter Setter" b
-/*
+/**
  * Getter for $1
+ *
+ * @return ${2:string}
  */
-public function get${1/\w+\s*/\u$0/}()
+public function get${1/\w+\s*/\u$0/}()`!p snip.rv = ': '+t[2] if isPHPScalarTypesEnabled() else ''`
 {
-	return $this->$1;$2
+    return $this->$1;
 }
 
-/*
+/**
  * Setter for $1
+ *
+ * @param $2 $$1
+ * @return ${3:`!p snip.rv=snip.basename`}
  */
-public function set${1/\w+\s*/\u$0/}($$1)
+public function set${1/\w+\s*/\u$0/}(${4:${2/(void|string|int|integer|double|float|object|boolear|null|mixed|number|resource)|(.*)/(?1::$2 )/}}$$1)
 {
-	$this->$1 = $$1;$3
-	${4:return $this;}
+    $this->$1 = $$1;
+
+    ${5:return $this;}
 }
-$0
 endsnippet
 
 snippet pub "Public function" b
@@ -230,55 +150,76 @@ function ${1:name}(${2:$param})
 $0
 endsnippet
 
-snippet fore "Foreach loop"
-foreach ($${1:variable} as $${3:value}){
-	${VISUAL}${4}
-}
-$0
-endsnippet
-
 snippet new "New class instance" b
-$$1 = new $1($2);
+$${1:variableName} = new ${2:${1/\w+\s*/\u$0/}}($3);
 $0
 endsnippet
 
-snippet ife "if else"
-if (${1:/* condition */}) {
-	${2:// code...}
-} else {
-	${3:// code...}
-}
-$0
+snippet ns "namespace declaration" b
+namespace ${1:`!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`};
 endsnippet
 
 snippet class "Class declaration template" b
+<?php
+
+namespace ${1:`!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`};
+
 /**
- * Class ${2:`!p snip.rv=snip.fn.split('.')[0]`}
- * @author ${3:`!v g:snips_author`}
+ * Class ${1:`!p snip.rv=snip.basename`}
+ * @author ${2:`!v g:snips_author`}
  */
-$1class $2
+class $1
 {
-	public function ${4:__construct}(${5:$options})
-	{
-		${6:// code}
-	}
 }
-$0
 endsnippet
 
-snippet interface "interface declaration template" b
+snippet interface "Interface declaration template" b
+<?php
+
+namespace ${1:`!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`};
+
 /**
- * Interface ${1:`!p snip.rv=snip.fn.split('.')[0]`}
+ * Interface ${1:`!p snip.rv=snip.basename`}
  * @author ${2:`!v g:snips_author`}
  */
 interface $1
 {
-	public function ${3:__construct}(${4:$options})
-	{
-		${5:// code}
-	}
+	public function ${3:someFunction}();$4
 }
-$0
+endsnippet
+
+snippet trait "Trait declaration template" b
+<?php
+
+namespace ${1:`!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`};
+
+/**
+ * Trait ${1:`!p snip.rv=snip.basename`}
+ * @author ${2:`!v g:snips_author`}
+ */
+trait $1
+{
+}
 endsnippet
 
 snippet construct "__construct()" b
@@ -291,31 +232,29 @@ public function __construct(${1:$dependencies})
 $0
 endsnippet
 
-snippet ve "Dumb debug helper in HTML"
-    echo '<pre>' . var_export($1, 1) . '</pre>';$0
-endsnippet
+# PHPUnit snippets
+snippet testcase "class XYZTest extends \PHPUnit_Framework_TestCase { ... }"
+<?php
 
-snippet pc "Dumb debug helper in cli"
-var_export($1);$0
-endsnippet
+namespace `!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`;
 
-# Symfony 2 based snippets
-snippet sfa "Symfony 2 Controller action"
 /**
-* @Route("/${1:route_name}", name="$1")
-* @Template()
-*/
-public function $1Action($2)
-{
-	$3
-	return ${4:array();}$0
-}
-endsnippet
-
-snippet inheritdoc "@inheritdoc docblock"
-/**
- * {@inheritdoc}
+ * @author `!v g:snips_author`
  */
+class `!p
+snip.rv = re.match(r'.*(?=\.)', fn).group()
+` extends \PHPUnit_Framework_TestCase
+{
+	public function test$1()
+	{
+		${0:${VISUAL}}
+	}
+}
 endsnippet
 
 # :vim:ft=snippets:

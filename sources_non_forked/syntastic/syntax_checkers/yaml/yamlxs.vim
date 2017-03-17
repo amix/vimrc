@@ -7,11 +7,10 @@
 "             it and/or modify it under the terms of the Do What The Fuck You
 "             Want To Public License, Version 2, as published by Sam Hocevar.
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
-"Installation: cpanm YAML::XS
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_yaml_yamlxs_checker")
+if exists('g:loaded_syntastic_yaml_yamlxs_checker')
     finish
 endif
 let g:loaded_syntastic_yaml_yamlxs_checker = 1
@@ -30,13 +29,14 @@ function! SyntaxCheckers_yaml_yamlxs_IsAvailable() dict
 
     " don't call executable() here, to allow things like
     " let g:syntastic_perl_interpreter='/usr/bin/env perl'
-    silent! call system(self.getExecEscaped() . ' ' . s:Modules() . ' -e ' . syntastic#util#shescape('exit(0)'))
+    silent! call syntastic#util#system(self.getExecEscaped() . ' ' . s:Modules(bufnr('')) . ' -e ' . syntastic#util#shescape('exit(0)'))
     return v:shell_error == 0
 endfunction
 
 function! SyntaxCheckers_yaml_yamlxs_GetLocList() dict
+    let buf = bufnr('')
     let makeprg = self.makeprgBuild({
-        \ 'args_before': s:Modules() . ' -e ' . syntastic#util#shescape('YAML::XS::LoadFile($ARGV[0])') })
+        \ 'args_before': s:Modules(buf) . ' -e ' . syntastic#util#shescape('YAML::XS::LoadFile($ARGV[0])') })
 
     let errorformat =
         \ '%EYAML::XS::Load Error: The problem:,' .
@@ -49,15 +49,16 @@ function! SyntaxCheckers_yaml_yamlxs_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'postprocess': ['compressWhitespace'],
-        \ 'defaults': {'bufnr': bufnr("")} })
+        \ 'defaults': {'bufnr': bufnr('')} })
 endfunction
 
-function s:Modules()
-    if type(g:syntastic_perl_lib_path) == type('')
-        call syntastic#log#oneTimeWarn('variable g:syntastic_perl_lib_path should be a list')
-        let includes = split(g:syntastic_perl_lib_path, ',')
+function s:Modules(buf)
+    let lib_path = syntastic#util#bufVar(a:buf, 'perl_lib_path')
+    if type(lib_path) == type('')
+        call syntastic#log#oneTimeWarn('variable syntastic_perl_lib_path should be a list')
+        let includes = split(lib_path, ',')
     else
-        let includes = copy(syntastic#util#var('perl_lib_path'))
+        let includes = copy(lib_path)
     endif
     return join(map(includes, '"-I" . v:val') + ['-MYAML::XS'])
 endfunction
@@ -70,4 +71,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

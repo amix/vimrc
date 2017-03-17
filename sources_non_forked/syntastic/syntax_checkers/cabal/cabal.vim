@@ -20,17 +20,18 @@ set cpo&vim
 
 function! SyntaxCheckers_cabal_cabal_GetHighlightRegex(item)
     let field = matchstr(a:item['text'], "\\vParse of field '\\zs[^']+")
-    if field != ''
+    if field !=# ''
         return '\v\c^\s*' . field . '\s*:\s*\zs.*$'
     endif
     let field = matchstr(a:item['text'], "\\v(^|\\s)'\\zs[^']+\\ze'")
-    if field != ''
+    if field !=# ''
         return '\V\c\<' . escape(field, '\') . '\>'
     endif
     return ''
 endfunction
 
 function! SyntaxCheckers_cabal_cabal_GetLocList() dict
+    let buf = bufnr('')
     let makeprg = self.getExecEscaped() . ' check'
 
     let errorformat =
@@ -40,9 +41,9 @@ function! SyntaxCheckers_cabal_cabal_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'cwd': expand('%:p:h'),
+        \ 'cwd': fnamemodify(bufname(buf), ':p:h'),
         \ 'preprocess': 'cabal',
-        \ 'defaults': {'bufnr': bufnr('')} })
+        \ 'defaults': {'bufnr': buf} })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
@@ -52,4 +53,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

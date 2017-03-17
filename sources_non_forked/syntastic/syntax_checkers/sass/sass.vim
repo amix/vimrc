@@ -10,13 +10,13 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_sass_sass_checker")
+if exists('g:loaded_syntastic_sass_sass_checker')
     finish
 endif
 let g:loaded_syntastic_sass_sass_checker = 1
 
-"sass caching for large files drastically speeds up the checking, but store it
-"in a temp location otherwise sass puts .sass_cache dirs in the users project
+" sass caching for large files drastically speeds up the checking, but store it
+" in a temp location otherwise sass puts .sass_cache dirs in the users project
 let s:sass_cache_location = syntastic#util#tmpdir()
 lockvar s:sass_cache_location
 
@@ -24,22 +24,23 @@ augroup syntastic
     autocmd VimLeave * call syntastic#util#rmrf(s:sass_cache_location)
 augroup END
 
-"By default do not check partials as unknown variables are a syntax error
-if !exists("g:syntastic_sass_check_partials")
+" By default do not check partials as unknown variables are a syntax error
+if !exists('g:syntastic_sass_check_partials')
     let g:syntastic_sass_check_partials = 0
 endif
 
-"use compass imports if available
-let s:imports = ""
-if executable("compass")
-    let s:imports = "--compass"
+" use compass imports if available
+let s:imports = ''
+if executable('compass')
+    let s:imports = '--compass'
 endif
 
 let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_sass_sass_GetLocList() dict
-    if !g:syntastic_sass_check_partials && expand('%:t')[0] == '_'
+    let buf = bufnr('')
+    if !syntastic#util#bufVar(buf, 'sass_check_partials') && fnamemodify(bufname(buf), ':t')[0] ==# '_'
         return []
     endif
 
@@ -81,4 +82,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

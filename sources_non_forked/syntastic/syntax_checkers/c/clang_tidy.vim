@@ -9,8 +9,8 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "============================================================================
 
-if exists("g:loaded_syntastic_c_clang_tidy_checker")
-  finish
+if exists('g:loaded_syntastic_c_clang_tidy_checker')
+    finish
 endif
 let g:loaded_syntastic_c_clang_tidy_checker = 1
 
@@ -43,9 +43,12 @@ function! SyntaxCheckers_c_clang_tidy_GetLocList() dict
         \ '%-G%\m%\%%(LLVM ERROR:%\|No compilation database found%\)%\@!%.%#,' .
         \ '%E%m'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'env': env,
         \ 'defaults': {'bufnr': bufnr('')},
         \ 'returns': [0, 1] })
 endfunction
@@ -58,4 +61,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

@@ -75,10 +75,6 @@ snippet do
 	do {
 		${0}
 	} while (${1:cond})
-snippet wh
-	while ${1:cond}{
-		${0}
-	}
 snippet for enumerate names
 	for (${1:var} in ${2:object}){
 		${0}
@@ -100,7 +96,7 @@ snippet interface
 	}
 snippet try
 	try {
-		${1}
+		${1:${VISUAL}}
 	} catch (error:ErrorType) {
 		${2}
 	} finally {
@@ -119,11 +115,11 @@ snippet forr
 # If Condition
 snippet if
 	if (${1:/* condition */}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet el
 	else {
-		${0}
+		${0:${VISUAL}}
 	}
 # Ternary conditional
 snippet t

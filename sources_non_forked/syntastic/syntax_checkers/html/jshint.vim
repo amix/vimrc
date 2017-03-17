@@ -22,11 +22,7 @@ function! SyntaxCheckers_html_jshint_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-
-    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
-    call self.log(self.getExec() . ' version =', ver)
-
-    return syntastic#util#versionIsAtLeast(ver, [2, 4])
+    return syntastic#util#versionIsAtLeast(self.getVersion(), [2, 4])
 endfunction
 
 function! SyntaxCheckers_html_jshint_GetLocList() dict
@@ -51,4 +47,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

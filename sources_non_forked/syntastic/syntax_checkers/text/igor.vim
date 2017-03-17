@@ -15,11 +15,9 @@ if exists('g:loaded_syntastic_text_igor_checker')
 endif
 let g:loaded_syntastic_text_igor_checker = 1
 
-runtime! syntax_checkers/docbk/*.vim
-
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'text',
     \ 'name': 'igor',
     \ 'redirect': 'docbk/igor'})
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

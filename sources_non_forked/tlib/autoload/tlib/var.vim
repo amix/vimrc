@@ -1,15 +1,7 @@
-" var.vim
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-06-30.
-" @Last Change: 2014-07-03.
-" @Revision:    0.0.26
-
-if &cp || exists("loaded_tlib_var_autoload")
-    finish
-endif
-let loaded_tlib_var_autoload = 1
+" @Revision:    30
 
 
 " Define a variable called NAME if yet undefined.
@@ -75,12 +67,16 @@ endf
 " EXAMPLE:
 "   echo tlib#var#List('tlib_', 'g:')
 function! tlib#var#List(rx, ...) "{{{3
-    TVarArg ['prefix', '']
-    redir => vars
-    silent! exec 'let '. prefix
-    redir END
-    let varlist = split(vars, '\n')
-    call map(varlist, 'matchstr(v:val, ''^\S\+'')')
+    TVarArg ['prefix', 'g:']
+    if v:version >= 704
+        exec 'let varlist = keys('. prefix .')'
+    else
+        redir => vars
+        silent! exec 'let '. prefix
+        redir END
+        let varlist = split(vars, '\n')
+        call map(varlist, 'matchstr(v:val, ''^\S\+'')')
+    endif
     call filter(varlist, 'v:val =~ a:rx')
     return varlist
 endf

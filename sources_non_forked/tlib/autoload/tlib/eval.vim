@@ -1,15 +1,7 @@
-" eval.vim
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Created:     2007-09-16.
-" @Last Change: 2009-02-15.
-" @Revision:    0.0.34
-
-if &cp || exists("loaded_tlib_eval_autoload")
-    finish
-endif
-let loaded_tlib_eval_autoload = 1
+" @Revision:    56
 
 
 function! tlib#eval#FormatValue(value, ...) "{{{3
@@ -52,4 +44,29 @@ function! tlib#eval#FormatValue(value, ...) "{{{3
     return join(acc, "\n")
 endf
 
+
+function! tlib#eval#Extend(a, b, ...) abort "{{{3
+    let mode = a:0 >= 1 ? a:1 : 'force'
+    if type(a:a) != type(a:b)
+        throw 'tlib#eval#Extend: Incompatible types: a='. string(a:a) .' b='. string(a:b)
+    elseif type(a:a) == 3 " list
+        return extend(a:a, a:b, mode)
+    elseif type(a:a) == 4 " dict
+        for k in keys(a:b)
+            if has_key(a:a, k)
+                if mode == 'force'
+                    let a:a[k] = tlib#eval#Extend(copy(a:a[k]), a:b[k], mode)
+                elseif mode == 'error'
+                    throw 'tlib#eval#Extend: Key already exists: '. k
+                endif
+            else
+                let a:a[k] = a:b[k]
+            endif
+            unlet! k
+        endfor
+        return a:a
+    else
+        return a:b
+    endif
+endf
 

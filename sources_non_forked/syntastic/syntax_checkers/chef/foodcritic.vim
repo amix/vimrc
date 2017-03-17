@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_chef_foodcritic_checker")
+if exists('g:loaded_syntastic_chef_foodcritic_checker')
     finish
 endif
 let g:loaded_syntastic_chef_foodcritic_checker = 1
@@ -30,10 +30,10 @@ function! SyntaxCheckers_chef_foodcritic_GetLocList() dict
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-      \ 'filetype': 'chef',
-      \ 'name': 'foodcritic'})
+    \ 'filetype': 'chef',
+    \ 'name': 'foodcritic'})
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

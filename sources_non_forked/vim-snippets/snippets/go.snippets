@@ -30,7 +30,7 @@ snippet ch
 # case
 snippet cs
 	case ${1:value}:
-		${0}
+		${0:${VISUAL}}
 # const
 snippet c
 	const ${1:NAME} = ${0:0}
@@ -50,29 +50,9 @@ snippet df
 snippet dfr
 	defer func() {
 		if err := recover(); err != nil {
-			${0}
+			${0:${VISUAL}}
 		}
 	}()
-# gpl
-snippet gpl
-	/*
-	 * This program is free software; you can redistribute it and/or modify
-	 * it under the terms of the GNU General Public License as published by
-	 * the Free Software Foundation; either version 2 of the License, or
-	 * (at your option) any later version.
-	 *
-	 * This program is distributed in the hope that it will be useful,
-	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 * GNU General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU General Public License
-	 * along with this program; if not, see <http://www.gnu.org/licenses/>.
-	 *
-	 * Copyright (C) ${1:Author}, `strftime("%Y")`
-	 */
-
-	${0}
 # int
 snippet i
 	int
@@ -92,12 +72,18 @@ snippet inf
 # if condition
 snippet if
 	if ${1:/* condition */} {
-		${2}
+		${2:${VISUAL}}
+	}
+snippet ife
+	if ${1:/* condition */} {
+		${2:${VISUAL}}
+	} else {
+		${0}
 	}
 # else snippet
 snippet el
 	else {
-		${1}
+		${0:${VISUAL}}
 	}
 # error snippet
 snippet ir
@@ -120,26 +106,21 @@ snippet f3
 # float64
 snippet f6
 	float64
-# if else
-snippet ie
-	if ${1:/* condition */} {
-		${2}
-	} else {
-		${3}
+# for int loop
+snippet for
+	for ${1}{
+		${0:${VISUAL}}
 	}
-	${0}
-# for loop
-snippet fo
+# for int loop
+snippet fori
 	for ${2:i} := 0; $2 < ${1:count}; $2${3:++} {
-		${4}
+		${0:${VISUAL}}
 	}
-	${0}
 # for range loop
-snippet fr
-	for ${1:k}, ${2:v} := range ${3} {
-		${4}
+snippet forr
+	for ${1:e} := range ${2:collection} {
+		${0:${VISUAL}}
 	}
-	${0}
 # function simple
 snippet fun
 	func ${1:funcName}(${2}) ${3:error} {
@@ -148,8 +129,8 @@ snippet fun
 	${0}
 # function on receiver
 snippet fum
-	func (self ${1:type}) ${2:funcName}(${3}) ${4:error} {
-		${5}
+	func (${1:receiver} ${2:type}) ${3:funcName}(${4}) ${5:error} {
+		${6}
 	}
 	${0}
 # log printf
@@ -173,12 +154,18 @@ snippet main
 # new
 snippet nw
 	new(${0:type})
+# package
+snippet pa
+	package ${1:main}
 # panic
 snippet pn
 	panic("${0:msg}")
 # print
 snippet pr
 	fmt.Printf("%${1:s}\n", ${2:var})
+# println
+snippet pl
+	fmt.Println("${1:s}")
 # range
 snippet rn
 	range ${0}
@@ -193,8 +180,6 @@ snippet sl
 	select {
 	case ${1:v1} := <-${2:chan1}
 		${3}
-	case ${4:v2} := <-${5:chan2}
-		${6}
 	default:
 		${0}
 	}
@@ -225,16 +210,15 @@ snippet t
 # goroutine named function
 snippet g
 	go ${1:funcName}(${0})
-# goroutine anonymous function 
+# goroutine anonymous function
 snippet ga
 	go func(${1} ${2:type}) {
 		${3:/* code */}
 	}(${0})
 snippet test test function
 	func Test${1:name}(t *testing.T) {
-		${2}
+		${0:${VISUAL}}
 	}
-	${0}
 snippet bench benchmark function
 	func Benchmark${1:name}(b *testing.B) {
 		for i := 0; i < b.N; i++ {

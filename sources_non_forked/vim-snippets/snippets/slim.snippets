@@ -1,3 +1,16 @@
+snippet pry
+	- binding.pry
+snippet renp
+	= render partial: '${0}'
+# Forms
+# =====
+snippet fieldset
+	fieldset
+		legend ${1}
+snippet css
+	link rel="stylesheet" href="${1:style.css}" type="text/css" media="${2:all}"
+snippet script
+	script src="${1:script.js}" type="text/javascript"
 # Some useful Unicode entities
 # ============================
 # Non-Breaking Space
@@ -48,17 +61,3 @@ snippet backspace
 # ⎋
 snippet esc
 	&#x238B;
-
-# Forms
-# =====
-snippet fieldset
-	fieldset
-		legend ${1}
-
-# Assets
-# ======
-snippet css
-	link rel="stylesheet" href="${1:style.css}" type="text/css" media="${2:all}"
-
-snippet script
-	script src="${1:script.js}" type="text/javascript"

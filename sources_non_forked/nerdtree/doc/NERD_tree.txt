@@ -34,10 +34,10 @@ CONTENTS                                                   *NERDTree-contents*
     4.The NERD tree API.......................|NERDTreeAPI|
         4.1.Key map API.......................|NERDTreeKeymapAPI|
         4.2.Menu API..........................|NERDTreeMenuAPI|
+        4.3.Menu API..........................|NERDTreeAddPathFilter()|
+        4.4.Path Listener API.................|NERDTreePathListenerAPI|
     5.About...................................|NERDTreeAbout|
-    6.Changelog...............................|NERDTreeChangelog|
-    7.Credits.................................|NERDTreeCredits|
-    8.License.................................|NERDTreeLicense|
+    6.License.................................|NERDTreeLicense|
 
 ==============================================================================
 1. Intro                                                            *NERDTree*
@@ -131,7 +131,7 @@ The following features and functionality are provided by the NERD tree:
 :NERDTreeFind                                                  *:NERDTreeFind*
     Find the current file in the tree.
 
-    If not tree exists and the current file is under vim's CWD, then init a
+    If no tree exists and the current file is under vim's CWD, then init a
     tree at the CWD and reveal the file. Otherwise init a tree in the current
     file's directory.
 
@@ -668,19 +668,23 @@ NERD tree. These options should be set in your vimrc.
 |'NERDTreeWinSize'|             Sets the window size when the NERD tree is
                                 opened.
 
-|'NERDTreeMinimalUI'|           Disables display of the 'Bookmarks' label and 
+|'NERDTreeMinimalUI'|           Disables display of the 'Bookmarks' label and
                                 'Press ? for help' text.
 
-|'NERDTreeDirArrows'|           Tells the NERD tree to use arrows instead of
-                                + ~ chars when displaying directories.
+|'NERDTreeCascadeSingleChildDir'|
+                                Collapses on the same line directories that
+                                have only one child directory.
 
 |'NERDTreeCascadeOpenSingleChildDir'|
                                 Cascade open while selected directory has only
                                 one child that also is a directory.
 
-|'NERDTreeAutoDeleteBuffer'|    Tells the NERD tree to automatically remove 
+|'NERDTreeAutoDeleteBuffer'|    Tells the NERD tree to automatically remove
                                 a buffer when a file is being deleted or renamed
                                 via a context menu command.
+
+|'NERDTreeCreatePrefix'|        Specify a prefix to be used when creating the
+                                NERDTree window.
 
 ------------------------------------------------------------------------------
 3.2. Customisation details                             *NERDTreeOptionDetails*
@@ -776,13 +780,13 @@ Default: 1.
 If set to 1, doing a >
     :edit <some directory>
 <
-will open up a "secondary" NERD tree instead of a netrw in the target window.
+will open up a window level NERD tree instead of a netrw in the target window.
 
-Secondary NERD trees behaves slightly different from a regular trees in the
+Window level trees behaves slightly different from a regular trees in the
 following respects:
     1. 'o' will open the selected file in the same window as the tree,
        replacing it.
-    2. you can have as many secondary tree as you want in the same tab.
+    2. you can have one tree per window - instead of per tab.
 
 ------------------------------------------------------------------------------
                                                             *'NERDTreeIgnore'*
@@ -945,7 +949,7 @@ Other examples: >
 ------------------------------------------------------------------------------
                                                         *'NERDTreeStatusline'*
 Values: Any valid statusline setting.
-Default: %{b:NERDTreeRoot.path.strForOS(0)}
+Default: %{b:NERDTree.root.path.strForOS(0)}
 
 Tells the script what to use as the |'statusline'| setting for NERD tree
 windows.
@@ -987,20 +991,18 @@ of the following lines to set this option: >
 <
 
 ------------------------------------------------------------------------------
-                                                           *'NERDTreeDirArrows'*
+                                             *'NERDTreeCascadeSingleChildDir'*
 Values: 0 or 1
-Default: 0.
+Default: 1.
 
-This option is used to change the default look of directory nodes displayed in
-the tree. When set to 0 it shows old-school bars (|), + and ~ chars. If set to
-1 it shows right and down arrows.  Use one of the follow lines to set this
-option: >
-    let NERDTreeDirArrows=0
-    let NERDTreeDirArrows=1
+When displaying dir nodes, this option tells NERDTree to collapse dirs that
+have only one child. Use one of the follow lines to set this option: >
+    let NERDTreeCascadeSingleChildDir=0
+    let NERDTreeCascadeSingleChildDir=1
 <
 
 ------------------------------------------------------------------------------
-                                          *'NERDTreeCascadeOpenSingleChildDir'*
+                                         *'NERDTreeCascadeOpenSingleChildDir'*
 Values: 0 or 1
 Default: 1.
 
@@ -1014,7 +1016,7 @@ useful for Java projects. Use one of the follow lines to set this option: >
 <
 
 ------------------------------------------------------------------------------
-                                          *'NERDTreeAutoDeleteBuffer'*
+                                                  *'NERDTreeAutoDeleteBuffer'*
 Values: 0 or 1
 Default: 0.
 
@@ -1025,6 +1027,17 @@ then it worths to set this option to 1. Use one of the follow lines to set this
 option: >
     let NERDTreeAutoDeleteBuffer=0
     let NERDTreeAutoDeleteBuffer=1
+<
+------------------------------------------------------------------------------
+                                          *'NERDTreeCreatePrefix'*
+Values: Any valid command prefix.
+Default: "silent".
+
+Internally, NERDTree uses the |:edit| command to create a buffer in which to
+display its tree view. You can augment this behavior by specifying a prefix
+string such as "keepalt" or similar. For example, to have NERDTree create its
+tree window using `silent keepalt keepjumps edit`:
+    let NERDTreeCreatePrefix='silent keepalt keepjumps'
 <
 
 ==============================================================================
@@ -1174,6 +1187,44 @@ When any of the 3 concrete menu items are selected the function "SomeFunction"
 will be called.
 
 ------------------------------------------------------------------------------
+4.3 NERDTreeAddPathFilter(callback)                   *NERDTreeAddPathFilter()*
+
+Path filters are essentially a more powerful version of  |NERDTreeIgnore|.
+If the simple regex matching in |NERDTreeIgnore| is not enough then use
+|NERDTreeAddPathFilter()| to add a callback function that paths will be
+checked against when the decision to ignore them is made. Example >
+
+    call NERDTreeAddPathFilter('MyFilter')
+
+    function! MyFilter(params)
+        "params is a dict containing keys: 'nerdtree' and 'path' which are
+        "g:NERDTree and g:NERDTreePath objects
+
+        "return 1 to ignore params['path'] or 0 otherwise
+    endfunction
+<
+------------------------------------------------------------------------------
+4.4 Path Listener API                              *NERDTreePathListenerAPI*
+
+Use this API if you want to run a callback for events on Path objects. E.G >
+
+    call g:NERDTreePathNotifier.AddListener("init", "MyListener")
+
+    "....
+
+    function! MyListener(event)
+        "This function will be called whenever a Path object is created.
+
+        "a:event is an object that contains a bunch of relevant info -
+        "including the path in question. See lib/nerdtree/event.vim for details.
+    endfunction
+<
+Current events supported:
+  init ~
+  refresh ~
+  refreshFlags ~
+
+------------------------------------------------------------------------------
 NERDTreeRender()                                            *NERDTreeRender()*
     Re-renders the NERD tree buffer. Useful if you change the state of the
     tree and you want to it to be reflected in the UI.
@@ -1195,185 +1246,8 @@ The latest stable versions can be found at
 The latest dev versions are on github
     http://github.com/scrooloose/nerdtree
 
-
 ==============================================================================
-6. Changelog                                               *NERDTreeChangelog*
-
-Next
-    - add 'scope' argument to the key map API
-    - add NERDTreeCustomIgnoreFilter hook - needs doc
-    - add magic [[dir]] and [[file]] flags to NERDTreeIgnore
-
-4.2.0
-    - Add NERDTreeDirArrows option to make the UI use pretty arrow chars
-      instead of the old +~| chars to define the tree structure (sickill)
-    - shift the syntax highlighting out into its own syntax file (gnap)
-    - add some mac specific options to the filesystem menu - for macvim
-      only (andersonfreitas)
-    - Add NERDTreeMinimalUI option to remove some non functional parts of the
-      nerdtree ui (camthompson)
-    - tweak the behaviour of :NERDTreeFind - see :help :NERDTreeFind for the
-      new behaviour (benjamingeiger)
-    - if no name is given to :Bookmark, make it default to the name of the
-      target file/dir (minyoung)
-    - use 'file' completion when doing copying, create, and move
-      operations (EvanDotPro)
-    - lots of misc bug fixes (paddyoloughlin, sdewald, camthompson, Vitaly
-      Bogdanov, AndrewRadev, mathias, scottstvnsn, kml, wycats, me RAWR!)
-
-4.1.0
-    features:
-    - NERDTreeFind to reveal the node for the current buffer in the tree,
-      see |NERDTreeFind|. This effectively merges the FindInNERDTree plugin (by
-      Doug McInnes) into the script.
-    - make NERDTreeQuitOnOpen apply to the t/T keymaps too. Thanks to Stefan
-      Ritter and Rémi Prévost.
-    - truncate the root node if wider than the tree window. Thanks to Victor
-      Gonzalez.
-
-    bugfixes:
-    - really fix window state restoring
-    - fix some win32 path escaping issues. Thanks to Stephan Baumeister, Ricky,
-      jfilip1024, and Chris Chambers
-
-4.0.0
-    - add a new programmable menu system (see :help NERDTreeMenu).
-    - add new APIs to add menus/menu-items to the menu system as well as
-      custom key mappings to the NERD tree buffer (see :help NERDTreeAPI).
-    - removed the old API functions
-    - added a mapping to maximize/restore the size of nerd tree window, thanks
-      to Guillaume Duranceau for the patch. See :help NERDTree-A for details.
-
-    - fix a bug where secondary nerd trees (netrw hijacked trees) and
-      NERDTreeQuitOnOpen didnt play nicely, thanks to Curtis Harvey.
-    - fix a bug where the script ignored directories whose name ended in a dot,
-      thanks to Aggelos Orfanakos for the patch.
-    - fix a bug when using the x mapping on the tree root, thanks to Bryan
-      Venteicher for the patch.
-    - fix a bug where the cursor position/window size of the nerd tree buffer
-      wasnt being stored on closing the window, thanks to Richard Hart.
-    - fix a bug where NERDTreeMirror would mirror the wrong tree
-
-3.1.1
-    - fix a bug where a non-listed no-name buffer was getting created every
-      time the tree windows was created, thanks to Derek Wyatt and owen1
-    - make <CR> behave the same as the 'o' mapping
-    - some helptag fixes in the doc, thanks strull
-    - fix a bug when using :set nohidden and opening a file where the previous
-      buf was modified. Thanks iElectric
-    - other minor fixes
-
-3.1.0
-    New features:
-    - add mappings to open files in a vsplit, see :help NERDTree-s and :help
-      NERDTree-gs
-    - make the statusline for the nerd tree window default to something
-      hopefully more useful. See :help 'NERDTreeStatusline'
-    Bugfixes:
-    - make the hijack netrw functionality work when vim is started with "vim
-      <some dir>" (thanks to Alf Mikula for the patch).
-    - fix a bug where the CWD wasnt being changed for some operations even when
-      NERDTreeChDirMode==2 (thanks to Lucas S. Buchala)
-    - add -bar to all the nerd tree :commands so they can chain with other
-      :commands (thanks to tpope)
-    - fix bugs when ignorecase was set (thanks to nach)
-    - fix a bug with the relative path code (thanks to nach)
-    - fix a bug where doing a :cd would cause :NERDTreeToggle to fail (thanks nach)
-
-
-3.0.1
-    Bugfixes:
-    - fix bugs with :NERDTreeToggle and :NERDTreeMirror when 'hidden
-      was not set
-    - fix a bug where :NERDTree <path> would fail if <path> was relative and
-      didnt start with a ./ or ../  Thanks to James Kanze.
-    - make the q mapping work with secondary (:e <dir>  style) trees,
-      thanks to jamessan
-    - fix a bunch of small bugs with secondary trees
-
-    More insane refactoring.
-
-3.0.0
-    - hijack netrw so that doing an :edit <directory>  will put a NERD tree in
-      the window rather than a netrw browser. See :help 'NERDTreeHijackNetrw'
-    - allow sharing of trees across tabs, see :help :NERDTreeMirror
-    - remove "top" and "bottom" as valid settings for NERDTreeWinPos
-    - change the '<tab>' mapping to 'i'
-    - change the 'H' mapping to 'I'
-    - lots of refactoring
-
-==============================================================================
-7. Credits                                                   *NERDTreeCredits*
-
-Thanks to the following people for testing, bug reports, ideas etc. Without
-you I probably would have got bored of the hacking the NERD tree and
-just downloaded pr0n instead.
-
-    Tim Carey-Smith (halorgium)
-    Vigil
-    Nick Brettell
-    Thomas Scott Urban
-    Terrance Cohen
-    Yegappan Lakshmanan
-    Jason Mills
-    Michael Geddes (frogonwheels)
-    Yu Jun
-    Michael Madsen
-    AOYAMA Shotaro
-    Zhang Weiwu
-    Niels Aan de Brugh
-    Olivier Yiptong
-    Zhang Shuhan
-    Cory Echols
-    Piotr Czachur
-    Yuan Jiang
-    Matan Nassau
-    Maxim Kim
-    Charlton Wang
-    Matt Wozniski (godlygeek)
-    knekk
-    Sean Chou
-    Ryan Penn
-    Simon Peter Nicholls
-    Michael Foobar
-    Tomasz Chomiuk
-    Denis Pokataev
-    Tim Pope (tpope)
-    James Kanze
-    James Vega (jamessan)
-    Frederic Chanal (nach)
-    Alf Mikula
-    Lucas S. Buchala
-    Curtis Harvey
-    Guillaume Duranceau
-    Richard Hart (hates)
-    Doug McInnes
-    Stefan Ritter
-    Rémi Prévost
-    Victor Gonzalez
-    Stephan Baumeister
-    Ricky
-    jfilip1024
-    Chris Chambers
-    Vitaly Bogdanov
-    Patrick O'Loughlin (paddyoloughlin)
-    Cam Thompson (camthompson)
-    Marcin Kulik (sickill)
-    Steve DeWald (sdewald)
-    Ivan Necas (iNecas)
-    George Ang (gnap)
-    Evan Coury (EvanDotPro)
-    Andrew Radev (AndrewRadev)
-    Matt Gauger (mathias)
-    Scott Stevenson (scottstvnsn)
-    Anderson Freitas (andersonfreitas)
-    Kamil K. Lemański (kml)
-    Yehuda Katz (wycats)
-    Min-Young Wu (minyoung)
-    Benjamin Geiger (benjamingeiger)
-
-==============================================================================
-8. License                                                   *NERDTreeLicense*
+6. License                                                   *NERDTreeLicense*
 
 The NERD tree is released under the wtfpl.
 See http://sam.zoy.org/wtfpl/COPYING.

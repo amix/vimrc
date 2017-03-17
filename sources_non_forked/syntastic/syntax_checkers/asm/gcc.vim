@@ -19,30 +19,38 @@ if !exists('g:syntastic_asm_compiler_options')
     let g:syntastic_asm_compiler_options = ''
 endif
 
+if !exists('g:syntastic_asm_generic')
+    let g:syntastic_asm_generic = 0
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! SyntaxCheckers_asm_gcc_IsAvailable() dict
+function! SyntaxCheckers_asm_gcc_IsAvailable() dict " {{{1
     if !exists('g:syntastic_asm_compiler')
         let g:syntastic_asm_compiler = self.getExec()
     endif
-    return executable(expand(g:syntastic_asm_compiler))
-endfunction
+    return executable(expand(g:syntastic_asm_compiler, 1))
+endfunction " }}}1
 
-function! SyntaxCheckers_asm_gcc_GetLocList() dict
+function! SyntaxCheckers_asm_gcc_GetLocList() dict " {{{1
+    let buf = bufnr('')
     return syntastic#c#GetLocList('asm', 'gcc', {
         \ 'errorformat':
         \     '%-G%f:%s:,' .
         \     '%f:%l:%c: %trror: %m,' .
         \     '%f:%l:%c: %tarning: %m,' .
         \     '%f:%l: %m',
-        \ 'main_flags': '-x assembler -fsyntax-only -masm=' . s:GetDialect() })
-endfunction
+        \ 'main_flags': '-x assembler -fsyntax-only' . (g:syntastic_asm_generic ? '' : ' -masm=' . s:GetDialect(buf)) })
+endfunction " }}}1
 
-function! s:GetDialect()
-    return exists('g:syntastic_asm_dialect') ? g:syntastic_asm_dialect :
-        \ expand('%:e') ==? 'asm' ? 'intel' : 'att'
-endfunction
+" Utilities {{{1
+
+function! s:GetDialect(buf) " {{{2
+    return syntastic#util#bufVar(a:buf, 'asm_dialect', fnamemodify(bufname(a:buf), ':e') ==? 'asm' ? 'intel' : 'att')
+endfunction " }}}2
+
+" }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'asm',
@@ -51,4 +59,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

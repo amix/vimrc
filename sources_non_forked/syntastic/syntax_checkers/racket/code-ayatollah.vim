@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_racket_code_ayatollah_checker")
+if exists('g:loaded_syntastic_racket_code_ayatollah_checker')
     finish
 endif
 let g:loaded_syntastic_racket_code_ayatollah_checker = 1
@@ -27,7 +27,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_racket_code_ayatollah_IsAvailable() dict
-    let s:script = expand(g:syntastic_racket_code_ayatollah_script)
+    let s:script = expand(g:syntastic_racket_code_ayatollah_script, 1)
     return executable(self.getExec()) && filereadable(s:script)
 endfunction
 
@@ -59,4 +59,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

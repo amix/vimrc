@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_c_pc_lint_checker")
+if exists('g:loaded_syntastic_c_pc_lint_checker')
     finish
 endif
 let g:loaded_syntastic_c_pc_lint_checker = 1
@@ -23,7 +23,8 @@ if !exists('g:syntastic_pc_lint_config_file')
 endif
 
 function! SyntaxCheckers_c_pc_lint_GetLocList() dict
-    let config = findfile(g:syntastic_pc_lint_config_file, '.;')
+    let buf = bufnr('')
+    let config = syntastic#util#findFileInParent(g:syntastic_pc_lint_config_file, fnamemodify(bufname(buf), ':p:h'))
     call self.log('config =', config)
 
     " -hFs1         - show filename, add space after messages, try to make message 1 line
@@ -63,4 +64,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

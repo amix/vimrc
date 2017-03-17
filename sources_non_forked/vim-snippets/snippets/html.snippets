@@ -254,11 +254,11 @@ snippet colgroup+
 		col+${0}
 	</colgroup>
 snippet command
-	<command type="command" label="${1}" icon="${0}" />
+	<command type="command" label="${1}" icon="${0}">
 snippet command:c
-	<command type="checkbox" label="${1}" icon="${0}" />
+	<command type="checkbox" label="${1}" icon="${0}">
 snippet command:r
-	<command type="radio" radiogroup="${1}" label="${2}" icon="${0}" />
+	<command type="radio" radiogroup="${1}" label="${2}" icon="${0}">
 snippet datagrid
 	<datagrid>
 		${0}
@@ -550,8 +550,6 @@ snippet ins
 	<ins>${0}</ins>
 snippet kbd
 	<kbd>${0}</kbd>
-snippet keygen
-	<keygen>${0}</keygen>
 snippet label
 	<label for="${0:$1}">${1}</label>
 snippet label:i
@@ -592,6 +590,10 @@ snippet link:rss
 	<link rel="alternate" href="${1:rss.xml}" title="RSS" type="application/atom+xml" />
 snippet link:touch
 	<link rel="apple-touch-icon" href="${1:favicon.png}" />
+snippet main
+	<main role="main">
+		${0}
+	</main>
 snippet map
 	<map name="${1}">
 		${0}
@@ -702,6 +704,10 @@ snippet output
 	<output>${0}</output>
 snippet p
 	<p>${0}</p>
+snippet p.
+	<p class="${1}">${0}</p>
+snippet p#
+	<p id="${1}">${0}</p>
 snippet param
 	<param name="${1}" value="${2}" />
 snippet pre
@@ -727,7 +733,7 @@ snippet samp
 		${0}
 	</samp>
 snippet script
-	<script type="text/javascript" charset="utf-8">
+	<script charset="utf-8">
 		${0}
 	</script>
 snippet scripts
@@ -737,7 +743,7 @@ snippet scriptt
 		${0}
 	</script>
 snippet scriptsrc
-	<script src="${0}.js" type="text/javascript" charset="utf-8"></script>
+	<script src="${0}.js" charset="utf-8"></script>
 snippet section
 	<section>
 		${0}
@@ -845,7 +851,7 @@ snippet tr+
 		td+${0}
 	</tr>
 snippet track
-	<track src="${1}" srclang="${2}" label="${3}" default="${4:default}>${5}</track>
+	<track src="${1}" srclang="${2}" label="${3}" default="${4:default} />${5}
 snippet ul
 	<ul>
 		${0}
@@ -869,3 +875,5 @@ snippet video
 	<video src="${1} height="${2}" width="${3}" preload="${5:none}" autoplay="${6:autoplay}>${7}</video>
 snippet wbr
 	<wbr />
+snippet viewport
+	<meta name="viewport" content="width=device-width, initial-scale=1">

@@ -14,13 +14,13 @@ snippet f function
 	endf
 snippet t try ... catch statement
 	try
-		${1}
+		${1:${VISUAL}}
 	catch ${2}
 		${0}
 	endtry
 snippet for for ... in loop
 	for ${1} in ${2}
-		${0}
+		${0:${VISUAL}}
 	endfor
 snippet forkv for [key, value] in loop
 	for [${1},${2}] in items(${3})
@@ -29,15 +29,15 @@ snippet forkv for [key, value] in loop
 	endfor
 snippet wh while loop
 	while ${1}
-		${0}
+		${0:${VISUAL}}
 	endw
 snippet if if statement
 	if ${1}
-		${0}
+		${0:${VISUAL}}
 	endif
 snippet ife if ... else statement
 	if ${1}
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 	endif

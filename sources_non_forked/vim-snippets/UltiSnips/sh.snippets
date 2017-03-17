@@ -33,6 +33,13 @@ snippet !env "#!/usr/bin/env (!env)"
 `!p snip.rv = '#!/usr/bin/env ' + getShell() + "\n\n" `
 endsnippet
 
+snippet sbash "safe bash options"
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+`!p snip.rv ='\n\n' `
+endsnippet
+
 snippet temp "Tempfile"
 ${1:TMPFILE}="$(mktemp -t ${2:`!p
 snip.rv = re.sub(r'[^a-zA-Z]', '_', snip.fn) or "untitled"

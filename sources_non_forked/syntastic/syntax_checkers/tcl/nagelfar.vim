@@ -7,12 +7,13 @@
 "             it and/or modify it under the terms of the Do What The Fuck You
 "             Want To Public License, Version 2, as published by Sam Hocevar.
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
-"Notes:       Requires nagelfar v1.1.12 or later with support for -H option.
-"             See nagelfar homepage http://nagelfar.berlios.de/.
 "
 "============================================================================
+"
+"Notes:       Requires nagelfar v1.1.12 or later with support for -H option.
+"             See nagelfar homepage http://nagelfar.berlios.de/.
 
-if exists("g:loaded_syntastic_tcl_nagelfar_checker")
+if exists('g:loaded_syntastic_tcl_nagelfar_checker')
     finish
 endif
 let g:loaded_syntastic_tcl_nagelfar_checker = 1
@@ -40,4 +41,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

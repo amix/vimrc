@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2013-09-25.
-" @Revision:    0.1.243
+" @Last Change: 2015-10-24.
+" @Revision:    31.1.243
 
 
 " The cache directory. If empty, use |tlib#dir#MyRuntime|.'/cache'.
@@ -44,6 +44,8 @@ TLet g:tlib#cache#dont_purge = ['[\/]\.last_purge$']
 " If the cache filename is longer than N characters, use 
 " |pathshorten()|.
 TLet g:tlib#cache#max_filename = 200
+
+let s:cache = {}
 
 
 " :display: tlib#cache#Dir(?mode = 'bg')
@@ -124,9 +126,13 @@ function! s:SetTimestamp(cfile, type) "{{{3
 endf
 
 
-function! tlib#cache#Save(cfile, dictionary) "{{{3
-    " TLogVAR a:cfile, a:dictionary
-    if !empty(a:cfile)
+function! tlib#cache#Save(cfile, dictionary, ...) "{{{3
+    TVarArg ['options', {}]
+    let in_memory = get(options, 'in_memory', 0)
+    if in_memory
+        " TLogVAR in_memory, a:cfile, localtime()
+        let s:cache[a:cfile] = {'mtime': localtime(), 'data': a:dictionary}
+    elseif !empty(a:cfile)
         " TLogVAR a:dictionary
         call writefile([string(a:dictionary)], a:cfile, 'b')
         call s:SetTimestamp(a:cfile, 'write')
@@ -142,33 +148,48 @@ endf
 
 
 function! tlib#cache#Get(cfile, ...) "{{{3
-    call tlib#cache#MaybePurge()
-    if !empty(a:cfile) && filereadable(a:cfile)
-        let val = readfile(a:cfile, 'b')
-        call s:SetTimestamp(a:cfile, 'read')
-        return eval(join(val, "\n"))
+    TVarArg ['default', {}], ['options', {}]
+    let in_memory = get(options, 'in_memory', 0)
+    if in_memory
+        " TLogVAR in_memory, a:cfile
+        return get(get(s:cache, a:cfile, {}), 'data', default)
     else
-        let default = a:0 >= 1 ? a:1 : {}
-        return default
+        call tlib#cache#MaybePurge()
+        if !empty(a:cfile) && filereadable(a:cfile)
+            let val = readfile(a:cfile, 'b')
+            call s:SetTimestamp(a:cfile, 'read')
+            return eval(join(val, "\n"))
+        else
+            return default
+        endif
     endif
 endf
 
 
+" :display: tlib#cache#Value(cfile, generator, ftime, ?generator_args=[], ?options={})
 " Get a cached value from cfile. If it is outdated (compared to ftime) 
 " or does not exist, create it calling a generator function.
 function! tlib#cache#Value(cfile, generator, ftime, ...) "{{{3
-    if !filereadable(a:cfile) || (a:ftime != 0 && getftime(a:cfile) < a:ftime)
-        let args = a:0 >= 1 ? a:1 : []
+    TVarArg ['args', []], ['options', {}]
+    let in_memory = get(options, 'in_memory', 0)
+    let not_found = in_memory ? !has_key(s:cache, a:cfile) : !filereadable(a:cfile)
+    " TLogVAR in_memory, not_found
+    let cftime = in_memory ? (not_found ? 0 : s:cache[a:cfile].mtime) : getftime(a:cfile)
+    if not_found || (a:ftime != 0 && cftime < a:ftime)
         " TLogVAR a:generator, args
         let val = call(a:generator, args)
         " TLogVAR val
         let cval = {'val': val}
         " TLogVAR cval
-        call tlib#cache#Save(a:cfile, cval)
+        call tlib#cache#Save(a:cfile, cval, options)
         return val
     else
-        let val = tlib#cache#Get(a:cfile)
-        return val.val
+        let val = tlib#cache#Get(a:cfile, {}, options)
+        if !has_key(val, 'val')
+            throw 'tlib#cache#Value: Internal error: '. a:cfile
+        else
+            return val.val
+        endif
     endif
 endf
 

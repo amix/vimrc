@@ -10,29 +10,31 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_python_python_checker")
+if exists('g:loaded_syntastic_python_python_checker')
     finish
 endif
 let g:loaded_syntastic_python_python_checker = 1
 
+if !exists('g:syntastic_python_python_use_codec')
+    let g:syntastic_python_python_use_codec = 0
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:compiler = expand('<sfile>:p:h') . syntastic#util#Slash() . 'compile.py'
+let s:base_path = expand('<sfile>:p:h', 1) . syntastic#util#Slash()
 
 function! SyntaxCheckers_python_python_IsAvailable() dict
     if !executable(self.getExec())
         return 0
     endif
-
-    let ver = syntastic#util#getVersion(self.getExecEscaped() . ' --version')
-    call self.log(self.getExec() . ' version =', ver)
-
-    return syntastic#util#versionIsAtLeast(ver, [2, 6])
+    return syntastic#util#versionIsAtLeast(self.getVersion(), [2, 6])
 endfunction
 
 function! SyntaxCheckers_python_python_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'exe': [self.getExec(), s:compiler] })
+    let compiler = s:base_path . (g:syntastic_python_python_use_codec ? 'codec.py' : 'compile.py')
+    call self.log('using compiler script', compiler)
+    let makeprg = self.makeprgBuild({ 'exe': [self.getExec(), compiler] })
 
     let errorformat = '%E%f:%l:%c: %m'
 
@@ -52,4 +54,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

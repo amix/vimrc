@@ -1,7 +1,9 @@
 snippet <?
 	<?php
 
-	${0}
+	${0:${VISUAL}}
+snippet dst "declare(strict_types=1)"
+	declare(strict_types=${1:1});
 snippet ec
 	echo ${0};
 snippet <?e
@@ -15,63 +17,60 @@ snippet ?
 	<?php ${0} ?>
 snippet ?f
 	<?php foreach ($${1:vars} as $${2:$var}): ?>
-		${0}
+		${0:${VISUAL}}
 	<?php endforeach ?>
 snippet ?i
 	<?php if ($${1:var}): ?>
-		${0}
+		${0:${VISUAL}}
 	<?php endif ?>
 snippet ns
 	namespace ${1:Foo\Bar\Baz};
-	${0}
-snippet use
-	use ${1:Foo\Bar\Baz};
-	${0}
-snippet	c
+	
+	${0:${VISUAL}}
+snippet c
 	class ${1:`vim_snippets#Filename()`}
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 snippet i
 	interface ${1:`vim_snippets#Filename()`}
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 snippet t.
 	$this->
 snippet f
 	function ${1}(${3})
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 # method
 snippet m
 	${1:protected} function ${2:foo}()
 	{
-		${0}
+		${0:${VISUAL}}
 	}
-# setter method
-snippet sm
+snippet sm "PHP Class Setter"
 	/**
 	 * Sets the value of ${1:foo}
 	 *
-	 * @param ${2:$1} $$1 ${3:description}
+	 * @param ${2:string} $$1 ${3:description}
 	 *
 	 * @return ${4:`vim_snippets#Filename()`}
 	 */
-	${5:public} function set${6:$2}(${7:$2 }$$1)
+	${5:public} function set${6:$1}(${7:$2 }$$1)
 	{
 		$this->${8:$1} = $$1;
+
 		return $this;
 	}
-# getter method
-snippet gm
+snippet gm "PHP Class Getter Setter"
 	/**
 	 * Gets the value of ${1:foo}
 	 *
-	 * @return ${2:$1}
+	 * @return ${2:string}
 	 */
-	${3:public} function get${4:$2}()
+	${3:public} function get${4:$1}()
 	{
 		return $this->${5:$1};
 	}
@@ -81,22 +80,23 @@ snippet $s
 #getter
 snippet $g
 	${1:$foo}->get${0:Bar}();
-
 # Tertiary conditional
 snippet =?:
 	$${1:foo} = ${2:true} ? ${3:a} : ${0};
 snippet ?:
 	${1:true} ? ${2:a} : ${0}
-
+snippet t "$retVal = (condition) ? a : b"
+	$${1:retVal} = (${2:condition}) ? ${3:a} : ${4:b};
+# Predefined variables
 snippet C
 	$_COOKIE['${1:variable}']
 snippet E
 	$_ENV['${1:variable}']
 snippet F
 	$_FILES['${1:variable}']
-snippet G
+snippet G "_GET array"
 	$_GET['${1:variable}']
-snippet P
+snippet P "_POST array"
 	$_POST['${1:variable}']
 snippet R
 	$_REQUEST['${1:variable}']
@@ -104,7 +104,12 @@ snippet S
 	$_SERVER['${1:variable}']
 snippet SS
 	$_SESSION['${1:variable}']
-
+snippet get "get"
+	$_GET['${1}']
+snippet post "post"
+	$_POST['${1}']
+snippet session "session"
+	$_SESSION['${1}']
 # the following are old ones
 snippet inc
 	include '${1:file}';
@@ -154,7 +159,7 @@ snippet doc_c
 	 */
 	${1:}class ${2:}
 	{
-		${0}
+		${0:${VISUAL}}
 	} // END $1class $2
 # Constant Definition - post doc
 snippet doc_dp
@@ -205,7 +210,19 @@ snippet doc_h
 	 * @copyright ${4:$2}, `strftime('%d %B, %Y')`
 	 * @package ${0:default}
 	 */
-
+snippet doc_i "interface someClass {}"
+	/**
+	 * $1
+	 * @package ${2:default}
+	 * @author ${3:`!v g:snips_author`}
+	 **/
+	interface ${1:someClass}
+	{${4}
+	}
+snippet inheritdoc "@inheritdoc docblock"
+	/**
+	 * {@inheritdoc}
+	 */
 # Interface
 snippet interface
 	/**
@@ -216,7 +233,19 @@ snippet interface
 	 */
 	interface ${1:`vim_snippets#Filename()`}
 	{
-		${0}
+		${0:${VISUAL}}
+	}
+# Trait
+snippet trait
+	/**
+	 * ${2:undocumented class}
+	 *
+	 * @package ${3:default}
+	 * @author ${4:`g:snips_author`}
+	 */
+	trait ${1:`vim_snippets#Filename()`}
+	{
+		${0:${VISUAL}}
 	}
 # class ...
 snippet class
@@ -239,58 +268,55 @@ snippet nc
 
 	${2:abstract }class ${3:`vim_snippets#Filename()`}
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 # define(...)
-snippet def
-	define('${1}'${2});
+snippet def "define('VARIABLE_NAME', 'definition')"
+	define('${1:VARIABLE_NAME}', ${2:'definition'});
 # defined(...)
 snippet def?
 	${1}defined('${2}')
-snippet wh
+snippet wh "while (condition) { ... }"
 	while (${1:/* condition */}) {
-		${0}
+		${0:${VISUAL}}
 	}
-# do ... while
-snippet do
+snippet do "do { ... } while (condition)"
 	do {
-		${0}
-	} while (${1:/* condition */});
-snippet if
-	if (${1:/* condition */}) {
-		${0}
+		${0:${VISUAL}}
+	} while (${1});
+snippet if "if (condition) { ... }"
+	if (${1}) {
+		${0:${VISUAL}}
 	}
-snippet ifn
-	if (!${1:/* condition */}) {
-		${2}
+snippet ifn "if (!condition) { ... }"
+	if (!${1}) {
+		${0:${VISUAL}}
 	}
-snippet ifil
-	<?php if (${1:/* condition */}): ?>
-		${0}
+snippet ifil "<?php if (condition): ?> ... <?php endif; ?>"
+	<?php if (${1}): ?>
+		${0:${VISUAL}}
 	<?php endif; ?>
-snippet ife
-	if (${1:/* condition */}) {
-		${2}
+snippet ife "if (cond) { ... } else { ... }"
+	if (${1}) {
+		${0:${VISUAL}}
 	} else {
-		${3}
+		${2}
 	}
-	${0}
-snippet ifeil
-	<?php if (${1:/* condition */}): ?>
-		${2:<!-- html... -->}
+snippet ifeil "<?php if (condition): ?> ... <?php else: ?> ... <?php endif; ?>"
+	<?php if (${1}): ?>
+		${0:${VISUAL}}
 	<?php else: ?>
-		${3:<!-- html... -->}
+		${2}
 	<?php endif; ?>
-	${0}
-snippet el
+snippet el "else { ... }"
 	else {
-		${0}
+		${0:${VISUAL}}
 	}
-snippet eif
-	elseif (${1:/* condition */}) {
-		${0}
+snippet eif "elseif(condition) { ... }"
+	elseif (${1}) {
+		${0:${VISUAL}}
 	}
-snippet switch
+snippet switch "switch($var) { case 'xyz': ... default: .... }"
 	switch ($${1:variable}) {
 		case '${2:value}':
 			${3}
@@ -300,36 +326,35 @@ snippet switch
 			${4}
 			break;
 	}
-snippet case
+snippet case "case 'value': ... break"
 	case '${1:value}':
-		${2}
+		${0:${VISUAL}}
 		break;
-snippet for
+snippet for "for ($i = 0; $i < $count; $i++) { ... }"
 	for ($${2:i} = 0; $$2 < ${1:count}; $$2${3:++}) {
-		${0}
+		${0:${VISUAL}}
 	}
-snippet foreach
+snippet foreach "foreach ($var as $value) { .. }"
 	foreach ($${1:variable} as $${2:value}) {
-		${0}
+		${0:${VISUAL}}
 	}
-snippet foreachil
+snippet foreachil "<?php foreach ($var as $value): ?>  ... <?php endforeach; ?>"
 	<?php foreach ($${1:variable} as $${2:value}): ?>
-		${0:<!-- html... -->}
+		${0:${VISUAL}}
 	<?php endforeach; ?>
-snippet foreachk
+snippet foreachk "foreach ($var as $key => $value) { .. }"
 	foreach ($${1:variable} as $${2:key} => $${3:value}) {
-		${0}
+		${0:${VISUAL}}
 	}
-snippet foreachkil
+snippet foreachkil "<?php foreach ($var as $key => $value): ?>  ... <?php endforeach; ?>"
 	<?php foreach ($${1:variable} as $${2:key} => $${3:value}): ?>
 		${0:<!-- html... -->}
 	<?php endforeach; ?>
-# $... = array (...)
-snippet array
-	$${1:arrayName} = array('${2}' => ${3});
-snippet try
+snippet array "$... = ['' => ]"
+	$${1:arrayName} = ['${2}' => ${3}];
+snippet try "try { ... } catch (Exception $e) { ... }"
 	try {
-		${0}
+		${0:${VISUAL}}
 	} catch (${1:Exception} $e) {
 	}
 # lambda with closure
@@ -357,14 +382,22 @@ snippet http_redirect
 	header ("HTTP/1.1 301 Moved Permanently");
 	header ("Location: ".URL);
 	exit();
+snippet log "error_log(var_export($var, true));"
+	error_log(var_export(${1}, true));
+snippet var "var_export($var)"
+	var_export(${1});
+snippet ve "Dumb debug helper in HTML"
+	echo '<pre>' . var_export(${1}, 1) . '</pre>';
+snippet pc "Dumb debug helper in cli"
+	var_export($1);$0
 # Getters & Setters
-snippet gs
+snippet gs "PHP Class Getter Setter"
 	/**
 	 * Gets the value of ${1:foo}
 	 *
-	 * @return ${2:$1}
+	 * @return ${2:string}
 	 */
-	public function get${3:$2}()
+	public function get${3:$1}()
 	{
 		return $this->${4:$1};
 	}
@@ -413,14 +446,12 @@ snippet aw
 	array_walk($${1:foo}, function(&$${2:v}, $${3:k}) {
 		$$2 = ${0};
 	});
-
 # static var assign once
 snippet static_var
 	static $${1} = null;
 	if (is_null($$1)){
 		$$1 = ${2};
 	}
-
 snippet CSVWriter
 	<?php
 	
@@ -434,7 +465,7 @@ snippet CSVWriter
 				? fopen($file_or_handle, $mode)
 				: $file_or_handle;
 	
-			$this->fputcsv_args = array($this->f, null, $sep, $quot);
+			$this->fputcsv_args = [$this->f, null, $sep, $quot];
 	
 			if (!$this->f) throw new Exception('bad file descriptor');
 		}
@@ -455,7 +486,6 @@ snippet CSVWriter
 		}
 	
 	}
-
 snippet CSVIterator
 	
 	// http://snipplr.com/view.php?codeview&id=1986 // modified
@@ -471,7 +501,7 @@ snippet CSVIterator
 			* enclosure
 			* delimiter
 			*/
-		public function __construct( $file_or_handle, $opts = array(4096, ',') )
+		public function __construct( $file_or_handle, $opts = [4096, ','] )
 		{
 			$d = function($n) use(&$opts){ return isset($opts[$n]) ? $opts[$n] : false; };
 	
@@ -484,13 +514,13 @@ snippet CSVIterator
 				? fopen( $file_or_handle, 'r' )
 				: $file_or_handle;
 			if (!$this->f) throw new Exception('bad file descriptor');
-			$this->fgetcsv_args = array(
+			$this->fgetcsv_args = [
 					$this->f,
 					isset($opts['row_size']) ? $opts['row_size'] : 4096,
 					isset($opts['delimiter']) ? $opts['delimiter'] : ',',
 					isset($opts['enclosure']) ? $opts['enclosure'] : '"',
 					isset($opts['escape']) ? $opts['escape'] : '\\',
-			);
+			];
 			$this->start();
 		}
 	
@@ -558,47 +588,97 @@ snippet CSVIterator
 		}
 	
 	} // end class
-
-snippet is
-	isset($1{VISUAL})
-
-# phpunit	
-snippet ase
-	$this->assertEquals(${1:expected}, ${2:actual});
-
-snippet asne
-	$this->assertNotEquals(${1:expected}, ${2:actual});
-
-snippet asf
-	$this->assertFalse(${1:Something});
-
-snippet ast
-	$this->assertTrue(${1:Something});
-
-snippet asfex
-	$this->assertFileExists(${1:path/to/file});
-
-snippet asfnex
-	$this->assertFileNotExists(${1:path/to/file});
-
-snippet ascon
-	$this->assertContains(${1:Search Value}, ${2:Array or Iterator});
-
-snippet ashk
-	$this->assertArrayHasKey(${1:key}, ${2:array});
-
-snippet asnhk
-	this->assertArrayNotHasKey(${1:value}, ${2:array});
-
-snippet ascha
-	$this->assertClassHasAttribute('${1:Attribute Name}', '${2:ClassName}');
-
-snippet asi
-	$this->assertInstanceOf(${1:expected}, ${2:actual});
-
-snippet tc
-	public function test${1:name_of_the_test}()
+# phpunit
+snippet ase "$this->assertEquals($a, $b)"
+	$this->assertEquals(${1:$expected}, ${2:$actual});
+snippet asne "$this->assertNotEquals($a, $b)"
+	$this->assertNotEquals(${1:$expected}, ${2:$actual});
+snippet asf "$this->assertFalse($a)"
+	$this->assertFalse(${1});
+snippet ast "$this->assertTrue($a)"
+	$this->assertTrue(${1});
+snippet asfex "$this->assertFileExists('path/to/file')"
+	$this->assertFileExists(${1:'path/to/file'});
+snippet asfnex "$this->assertFileNotExists('path/to/file')"
+	$this->assertFileNotExists(${1:'path/to/file'});
+snippet ascon "$this->assertContains($needle, $haystack)"
+	$this->assertContains(${1:$needle}, ${2:$haystack});
+snippet asncon "$this->assertNotContains($needle, $haystack)"
+	$this->assertNotContains(${1:$needle}, ${2:$haystack});
+snippet ascono "$this->assertContainsOnly($needle, $haystack)"
+	$this->assertContainsOnly(${1:$needle}, ${2:$haystack});
+snippet asconoi "$this->assertContainsOnlyInstancesOf(Example::class, $haystack)"
+	$this->assertContainsOnlyInstancesOf(${1:Example}::class, ${2:$haystack});
+snippet ashk "$this->assertArrayHasKey($key, $array)"
+	$this->assertArrayHasKey(${1:$key}, ${2:$array});
+snippet asnhk "$this->assertArrayNotHasKey($key, $array)"
+	this->assertArrayNotHasKey(${1:$key}, ${2:$array});
+snippet ascha "$this->assertClassHasAttribute($name, Example::class)"
+	$this->assertClassHasAttribute(${1:$attributeName}, ${2:Example}::class);
+snippet asi "$this->assertInstanceOf(Example::class, $actual)"
+	$this->assertInstanceOf(${1:Example}::class, ${2:$actual});
+snippet ast "$this->assertInternalType('string', $actual)"
+	$this->assertInternalType(${1:'string'}, ${2:actual});
+snippet asco "$this->assertCount($count, $haystack)"
+	$this->assertCount(${1:$expectedCount}, ${2:$haystack});
+snippet asnco "$this->assertNotCount($count, $haystack)"
+	$this->assertNotCount(${1:$count}, ${2:$haystack});
+snippet assub "$this->assertArraySubset($subset, $array)"
+	$this->assertArraySubset(${1:$subset}, ${2:$array});
+snippet asnu "$this->assertNull($a)"
+	$this->assertNull(${1});
+snippet asnnu "$this->assertNotNull($a)"
+	$this->assertNotNull(${1});
+snippet test "public function testXYZ() { ... }"
+	public function test${1}()
 	{
-		${0:code}
+		${0:${VISUAL}}
 	}
-
+snippet setup "protected function setUp() { ... }"
+	protected function setUp()
+	{
+		${0:${VISUAL}}
+	}
+snippet teardown "protected function tearDown() { ... }"
+	protected function tearDown()
+	{
+		${0:${VISUAL}}
+	}
+snippet proph "$observer = $this->prophesize(SomeClass::class);"
+	$${1:observer} = $this->prophesize(${2:SomeClass}::class);
+snippet mock "$mock = $this->createMock(SomeClass::class);"
+	$${1:mock} = $this->createMock(${2:SomeClass}::class);
+snippet exp "phpunit expects"
+	expects($this->${1:once}())
+		->method('${2}')
+		->with(${3})
+		->willReturn(${4});
+snippet testcmt "phpunit comment with group"
+	/**
+	* @group ${1}
+	*/
+snippet fail "$this->fail()"
+	$this->fail(${1});
+snippet marki "$this->markTestIncomplete()"
+	$this->markTestIncomplete(${1});
+snippet marks "$this->markTestSkipped()"
+	$this->markTestSkipped(${1});
+# end of phpunit snippets
+snippet te "throw new Exception()"
+	throw new ${1:Exception}("${2:Error Processing Request}");
+snippet fpc "file_put_contents" b
+	file_put_contents(${1:file}, ${2:content}${3:, FILE_APPEND});$0
+snippet sr "str_replace"
+	str_replace(${1:search}, ${2:replace}, ${3:subject})$0
+snippet ia "in_array"
+	in_array(${1:needle}, ${2:haystack})$0
+snippet is "isset"
+	isset(${1:var})$0
+snippet isa "isset array"
+	isset($${1:array}[${2:key}])$0
+snippet in "is_null"
+	is_null($${1:var})$0
+snippet fe "file_exists"
+	file_exists(${1:file})$0
+snippet id "is_dir"
+	is_dir(${1:path})$0

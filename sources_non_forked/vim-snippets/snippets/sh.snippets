@@ -1,29 +1,37 @@
 # Shebang. Executing bash via /usr/bin/env makes scripts more portable.
 snippet #!
+	#!/usr/bin/env sh
+	
+snippet bash
 	#!/usr/bin/env bash
+
+snippet sbash
+	#!/usr/bin/env bash
+	set -euo pipefail
+	IFS=$'\n\t'
 
 snippet if
 	if [[ ${1:condition} ]]; then
-		${0:#statements}
+		${0:${VISUAL}}
 	fi
 snippet elif
 	elif [[ ${1:condition} ]]; then
-		${0:#statements}
+		${0:${VISUAL}}
 snippet for
 	for (( ${2:i} = 0; $2 < ${1:count}; $2++ )); do
-		${0:#statements}
+		${0:${VISUAL}}
 	done
 snippet fori
 	for ${1:needle} in ${2:haystack} ; do
-		${0:#statements}
+		${0:${VISUAL}}
 	done
 snippet wh
 	while [[ ${1:condition} ]]; do
-		${0:#statements}
+		${0:${VISUAL}}
 	done
 snippet until
 	until [[ ${1:condition} ]]; do
-		${0:#statements}
+		${0:${VISUAL}}
 	done
 snippet case
 	case ${1:word} in
@@ -51,15 +59,12 @@ snippet getopt
 	#===============================================================================
 	function usage ()
 	{
-			cat <<- EOT
+		echo "Usage :  $${0:0} [options] [--]
 
-	  Usage :  $${0:0} [options] [--]
+	    Options:
+	    -h|help       Display this message
+	    -v|version    Display script version"
 
-	  Options:
-	  -h|help       Display this message
-	  -v|version    Display script version
-
-			EOT
 	}    # ----------  end of function usage  ----------
 
 	#-----------------------------------------------------------------------
@@ -74,7 +79,7 @@ snippet getopt
 
 		v|version  )  echo "$${0:0} -- Version $__ScriptVersion"; exit 0   ;;
 
-		\? )  echo -e "\n  Option does not exist : $OPTARG\n"
+		* )  echo -e "\n  Option does not exist : $OPTARG\n"
 			  usage; exit 1   ;;
 
 	  esac    # --- end of case ---
@@ -82,11 +87,13 @@ snippet getopt
 	shift $(($OPTIND-1))
 snippet root
 	if [ \$(id -u) -ne 0 ]; then exec sudo \$0; fi
-snippet fun
+
+snippet fun-sh
 	${1:function_name}() {
 		${0:#function_body}
 	}
-snippet ffun
+
+snippet fun
 	function ${1:function_name}() {
 		${0:#function_body}
 	}

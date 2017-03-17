@@ -10,17 +10,14 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_cpp_pc_lint_checker")
+if exists('g:loaded_syntastic_cpp_pc_lint_checker')
     finish
 endif
 let g:loaded_syntastic_cpp_pc_lint_checker = 1
 
-runtime! syntax_checkers/c/*.vim
-
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'cpp',
     \ 'name': 'pc_lint',
-    \ 'exec': 'lint-nt',
     \ 'redirect': 'c/pc_lint'})
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

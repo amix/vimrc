@@ -1,6 +1,9 @@
 snippet #!
 	#!/usr/bin/env python
 	# -*- coding: utf-8 -*-
+snippet #!3
+	#!/usr/bin/env python3
+	# -*- coding: utf-8 -*-
 snippet imp
 	import ${0:module}
 snippet uni
@@ -20,7 +23,7 @@ snippet docs
 
 snippet wh
 	while ${1:condition}:
-		${0}
+		${0:${VISUAL}}
 # dowh - does the same as do...while in other languages
 snippet dowh
 	while True:
@@ -29,7 +32,7 @@ snippet dowh
 			break
 snippet with
 	with ${1:expr} as ${2:var}:
-		${0}
+		${0:${VISUAL}}
 # New Class
 snippet cl
 	class ${1:ClassName}(${2:object}):
@@ -47,7 +50,7 @@ snippet deff
 	def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
 		${0}
 # New Method
-snippet defs
+snippet defm
 	def ${1:mname}(self, ${2:arg}):
 		${0}
 # New Property
@@ -65,13 +68,13 @@ snippet property
 # Ifs
 snippet if
 	if ${1:condition}:
-		${0}
+		${0:${VISUAL}}
 snippet el
 	else:
-		${0}
+		${0:${VISUAL}}
 snippet ei
 	elif ${1:condition}:
-		${0}
+		${0:${VISUAL}}
 # For
 snippet for
 	for ${1:item} in ${2:items}:
@@ -90,27 +93,27 @@ snippet .
 	self.
 snippet try Try/Except
 	try:
-		${1}
-	except ${2:Exception}, ${3:e}:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
 		${0:raise $3}
 snippet try Try/Except/Else
 	try:
-		${1}
-	except ${2:Exception}, ${3:e}:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
 		${4:raise $3}
 	else:
 		${0}
 snippet try Try/Except/Finally
 	try:
-		${1}
-	except ${2:Exception}, ${3:e}:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
 		${4:raise $3}
 	finally:
 		${0}
 snippet try Try/Except/Else/Finally
 	try:
-		${1}
-	except ${2:Exception}, ${3:e}:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
 		${4:raise $3}
 	else:
 		${5}
@@ -125,21 +128,45 @@ snippet _
 	__${1:init}__
 # python debugger (pdb)
 snippet pdb
-	import pdb; pdb.set_trace()
+	import pdb
+	pdb.set_trace()
+# bpython debugger (bpdb)
+snippet bpdb
+	import bpdb
+	bpdb.set_trace()
 # ipython debugger (ipdb)
 snippet ipdb
-	import ipdb; ipdb.set_trace()
+	import ipdb
+	ipdb.set_trace()
+# embed ipython itself
+snippet iem
+	import IPython
+	IPython.embed()
 # ipython debugger (pdbbb)
 snippet pdbbb
-	import pdbpp; pdbpp.set_trace()
+	import pdbpp
+	pdbpp.set_trace()
+# remote python debugger (rpdb)
+snippet rpdb
+	import rpdb
+	rpdb.set_trace()
+# ptpython
+snippet ptpython
+	from ptpython.repl import embed
+	embed(globals(), locals(), vi_mode=${1:False}, history_filename=${2:None})
 # python console debugger (pudb)
 snippet pudb
-	import pudb; pudb.set_trace()
+	import pudb
+	pudb.set_trace()
+# pdb in nosetests
+snippet nosetrace
+	from nose.tools import set_trace
+	set_trace()
 snippet pprint
-	import pprint; pprint.pprint(${1})
+	import pprint
+	pprint.pprint(${1})
 snippet "
-	"""
-	${0:doc}
+	"""${0:doc}
 	"""
 # assertions
 snippet a=
@@ -190,8 +217,7 @@ snippet lc
 snippet li
 	logger.info(${0:msg})
 snippet epydoc
-	"""
-	${1:Description}
+	"""${1:Description}
 
 	@param ${2:param}: ${3: Description}
 	@type  $2: ${4: Type}
@@ -208,3 +234,9 @@ snippet kwg
 	self.${1:var_name} = kwargs.get('$1', ${2:None})
 snippet lkwg
 	${1:var_name} = kwargs.get('$1', ${2:None})
+snippet args
+	*args${1:,}${0}
+snippet kwargs
+	**kwargs${1:,}${0}
+snippet akw
+	*args, **kwargs${1:,}${0}

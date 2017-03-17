@@ -34,7 +34,7 @@ Once help tags have been generated, you can view the manual with
 
 Relax!  You just have to adjust `'commentstring'`:
 
-    autocmd FileType apache set commentstring=#\ %s
+    autocmd FileType apache setlocal commentstring=#\ %s
 
 ## Self-Promotion
 

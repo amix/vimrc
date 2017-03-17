@@ -1,13 +1,17 @@
+if exists('g:loaded_ack') || &cp
+  finish
+endif
+
 if !exists("g:ack_default_options")
-  let g:ack_default_options = " -s -H --nocolor --nogroup --column"
+  let g:ack_default_options = " -s -H --nopager --nocolor --nogroup --column"
 endif
 
 " Location of the ack utility
 if !exists("g:ackprg")
-  if executable('ack')
-    let g:ackprg = "ack"
-  elseif executable('ack-grep')
+  if executable('ack-grep')
     let g:ackprg = "ack-grep"
+  elseif executable('ack')
+    let g:ackprg = "ack"
   else
     finish
   endif
@@ -21,10 +25,6 @@ endif
 if !exists("g:ack_apply_lmappings")
   let g:ack_apply_lmappings = !exists("g:ack_lhandler")
 endif
-
-if !exists("g:ack_use_dispatch")
-  let g:ack_use_dispatch = 0
-end
 
 let s:ack_mappings = {
       \ "t": "<C-W><CR><C-W>T",
@@ -63,6 +63,10 @@ if !exists("g:ack_autofold_results")
   let g:ack_autofold_results = 0
 endif
 
+if !exists("g:ack_use_cword_for_empty_search")
+  let g:ack_use_cword_for_empty_search = 1
+endif
+
 command! -bang -nargs=* -complete=file Ack           call ack#Ack('grep<bang>', <q-args>)
 command! -bang -nargs=* -complete=file AckAdd        call ack#Ack('grepadd<bang>', <q-args>)
 command! -bang -nargs=* -complete=file AckFromSearch call ack#AckFromSearch('grep<bang>', <q-args>)
@@ -71,5 +75,9 @@ command! -bang -nargs=* -complete=file LAckAdd       call ack#Ack('lgrepadd<bang
 command! -bang -nargs=* -complete=file AckFile       call ack#Ack('grep<bang> -g', <q-args>)
 command! -bang -nargs=* -complete=help AckHelp       call ack#AckHelp('grep<bang>', <q-args>)
 command! -bang -nargs=* -complete=help LAckHelp      call ack#AckHelp('lgrep<bang>', <q-args>)
-command! -bang -nargs=* -complete=help AckWindow     call ack#AckWindow('grep<bang>', <q-args>)
-command! -bang -nargs=* -complete=help LAckWindow    call ack#AckWindow('lgrep<bang>', <q-args>)
+command! -bang -nargs=*                AckWindow     call ack#AckWindow('grep<bang>', <q-args>)
+command! -bang -nargs=*                LAckWindow    call ack#AckWindow('lgrep<bang>', <q-args>)
+
+let g:loaded_ack = 1
+
+" vim:set et sw=2 ts=2 tw=78 fdm=marker

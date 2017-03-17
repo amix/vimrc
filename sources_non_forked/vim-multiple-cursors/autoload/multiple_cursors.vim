@@ -8,22 +8,23 @@
 " it to work the way we like. '<C-n>' is converted to '\<C-n>' by the end and
 " the global vars are replaced by their new value. This is ok since the mapping
 " using '<C-n>' should already have completed in the plugin file.
-for key in [ 'g:multi_cursor_next_key',
+for s:key in [ 'g:multi_cursor_next_key',
            \ 'g:multi_cursor_prev_key',
            \ 'g:multi_cursor_skip_key',
            \ 'g:multi_cursor_quit_key' ]
-  if exists(key)
+  if exists(s:key)
     " Translate raw strings like "<C-n>" into key code like "\<C-n>"
-    exec 'let temp = '.key
-    if temp =~ '^<.*>$'
-      exec 'let '.key.' = "\'.temp.'"' 
+    exec 'let s:temp = '.s:key
+    if s:temp =~ '^<.*>$'
+      exec 'let '.s:key.' = "\'.s:temp.'"'
     endif
   else
     " If the user didn't define it, initialize it to an empty string so the
     " logic later don't break
-    exec 'let '.key.' = ""'
+    exec 'let '.s:key.' = ""'
   endif
 endfor
+unlet! s:key s:temp
 
 " These keys will not be replicated at every cursor location. Make sure that
 " this assignment happens AFTER the key tweak setting above
@@ -38,6 +39,13 @@ let s:hi_group_cursor = 'multiple_cursors_cursor'
 " The highlight group we use for all the visual selection
 let s:hi_group_visual = 'multiple_cursors_visual'
 
+" Used for preventing multiple calls on before function
+let s:before_function_called = 0
+
+" Used for searching whole words (search pattern is wrapped with \< and \>)
+" Keep old behaviour by default (act like g*)
+let s:use_word_boundary = 1
+
 " Set up highlighting
 if !hlexists(s:hi_group_cursor)
   exec "highlight ".s:hi_group_cursor." term=reverse cterm=reverse gui=reverse"
@@ -46,32 +54,38 @@ if !hlexists(s:hi_group_visual)
   exec "highlight link ".s:hi_group_visual." Visual"
 endif
 
+" Temporary buffer that is used for individual paste buffer save/restore
+" operations
+let s:paste_buffer_temporary_text = ''
+let s:paste_buffer_temporary_type = ''
+
 "===============================================================================
 " Internal Mappings
 "===============================================================================
 
-inoremap <silent> <Plug>(i) <C-o>:call <SID>process_user_input()<CR>
-nnoremap <silent> <Plug>(i) :call <SID>process_user_input()<CR>
-xnoremap <silent> <Plug>(i) :<C-u>call <SID>process_user_input()<CR>
+inoremap <silent> <Plug>(multiple-cursors-input) <C-o>:call <SID>process_user_input()<CR>
+nnoremap <silent> <Plug>(multiple-cursors-input) :call <SID>process_user_input()<CR>
+xnoremap <silent> <Plug>(multiple-cursors-input) :<C-u>call <SID>process_user_input()<CR>
 
-inoremap <silent> <Plug>(a) <C-o>:call <SID>apply_user_input_next('i')<CR>
-nnoremap <silent> <Plug>(a) :call <SID>apply_user_input_next('n')<CR>
-xnoremap <silent> <Plug>(a) :<C-u>call <SID>apply_user_input_next('v')<CR>
+inoremap <silent> <Plug>(multiple-cursors-apply) <C-o>:call <SID>apply_user_input_next('i')<CR>
+nnoremap <silent> <Plug>(multiple-cursors-apply) :call <SID>apply_user_input_next('n')<CR>
+xnoremap <silent> <Plug>(multiple-cursors-apply) :<C-u>call <SID>apply_user_input_next('v')<CR>
 
-inoremap <silent> <Plug>(d) <C-o>:call <SID>detect_bad_input()<CR>
-nnoremap <silent> <Plug>(d) :call <SID>detect_bad_input()<CR>
-xnoremap <silent> <Plug>(d) :<C-u>call <SID>detect_bad_input()<CR>
+inoremap <silent> <Plug>(multiple-cursors-detect) <C-o>:call <SID>detect_bad_input()<CR>
+nnoremap <silent> <Plug>(multiple-cursors-detect) :call <SID>detect_bad_input()<CR>
+xnoremap <silent> <Plug>(multiple-cursors-detect) :<C-u>call <SID>detect_bad_input()<CR>
 
-inoremap <silent> <Plug>(w) <C-o>:call <SID>wait_for_user_input('')<CR>
-nnoremap <silent> <Plug>(w) :call <SID>wait_for_user_input('')<CR>
-xnoremap <silent> <Plug>(w) :<C-u>call <SID>wait_for_user_input('')<CR>
+inoremap <silent> <Plug>(multiple-cursors-wait) <C-o>:call <SID>wait_for_user_input('')<CR>
+nnoremap <silent> <Plug>(multiple-cursors-wait) :call <SID>wait_for_user_input('')<CR>
+xnoremap <silent> <Plug>(multiple-cursors-wait) :<C-u>call <SID>wait_for_user_input('')<CR>
 
 " Note that although these mappings are seemingly triggerd from Visual mode,
 " they are in fact triggered from Normal mode. We quit visual mode to allow the
 " virtual highlighting to take over
-nnoremap <silent> <Plug>(p) :<C-u>call multiple_cursors#prev()<CR>
-nnoremap <silent> <Plug>(s) :<C-u>call multiple_cursors#skip()<CR>
-nnoremap <silent> <Plug>(n) :<C-u>call multiple_cursors#new('v')<CR>
+nnoremap <silent> <Plug>(multiple-cursors-prev) :<C-u>call multiple_cursors#prev()<CR>
+nnoremap <silent> <Plug>(multiple-cursors-skip) :<C-u>call multiple_cursors#skip()<CR>
+nnoremap <silent> <Plug>(multiple-cursors-new) :<C-u>call multiple_cursors#new('v', 0)<CR>
+nnoremap <silent> <Plug>(multiple-cursors-new-word) :<C-u>call multiple_cursors#new('v', 1)<CR>
 
 "===============================================================================
 " Public Functions
@@ -95,7 +109,13 @@ endfunction
 " 3. In visual mode, if the visual selection covers a single line, a new cursor
 " is created at the end of the visual selection. Another cursor will be
 " attempted to be created at the next occurrence of the visual selection
-function! multiple_cursors#new(mode)
+function! multiple_cursors#new(mode, word_boundary)
+  " Call before function if exists only once until it is canceled (<Esc>)
+  if exists('*Multiple_cursors_before') && !s:before_function_called
+    exe "call Multiple_cursors_before()"
+    let s:before_function_called = 1
+  endif
+  let s:use_word_boundary = a:word_boundary
   if a:mode ==# 'n'
     " Reset all existing cursors, don't restore view and setting
     call s:cm.reset(0, 0)
@@ -150,6 +170,11 @@ function! multiple_cursors#new(mode)
   endif
 endfunction
 
+" Quit out of multicursor mode, fixes #27.
+function! multiple_cursors#quit()
+  call s:exit()
+endfunction
+
 " Delete the current cursor. If there's no more cursors, stop the loop
 function! multiple_cursors#prev()
   call s:cm.delete_current()
@@ -193,9 +218,12 @@ function! multiple_cursors#find(start, end, pattern)
   let first = 1
   while 1
     if first
+      " Set `virtualedit` to 'onemore' for the first search to consistently
+      " match patterns like '$'
+      let saved_virtualedit = &virtualedit
+      let &virtualedit = "onemore"
       " First search starts from the current position
       let match = search(a:pattern, 'cW')
-      let first = 0
     else
       let match = search(a:pattern, 'W')
     endif
@@ -203,9 +231,26 @@ function! multiple_cursors#find(start, end, pattern)
       break
     endif
     let left = s:pos('.')
-    call search(a:pattern, 'ceW')
+    " Perform an intermediate backward search to correctly match patterns like
+    " '^' and '$'
+    let match = search(a:pattern, 'bceW')
     let right = s:pos('.')
+    " Reset the cursor and perform a normal search if the intermediate search
+    " wasn't successful
+    if !match || s:compare_pos(right, left) != 0
+      call cursor(left)
+      call search(a:pattern, 'ceW')
+      let right = s:pos('.')
+    endif
+    if first
+      let &virtualedit = saved_virtualedit
+      let first = 0
+    endif
     if s:compare_pos(right, pos2) > 0
+      " Position the cursor at the end of the previous match so it'll be on a
+      " virtual cursor when multicursor mode is started. The `winrestview()`
+      " call below 'undoes' unnecessary repositionings
+      call search(a:pattern, 'be')
       break
     endif
     call s:cm.add(right, [left, right])
@@ -221,6 +266,14 @@ function! multiple_cursors#find(start, end, pattern)
     return
   else
     echohl Normal | echo 'Added '.s:cm.size().' cursor'.(s:cm.size()>1?'s':'') | echohl None
+
+    " If we've created any cursors, we need to call the before function, end
+    " function will be called via normal routes
+    if exists('*Multiple_cursors_before') && !s:before_function_called
+      exe "call Multiple_cursors_before()"
+      let s:before_function_called = 1
+    endif
+
     call s:wait_for_user_input('v')
   endif
 endfunction
@@ -235,9 +288,16 @@ function! s:Cursor.new(position)
   let obj = copy(self)
   let obj.position = copy(a:position)
   let obj.visual = []
+  let obj.saved_visual = []
+  " Stores text that was yanked after any commands in Normal or Visual mode
+  let obj.paste_buffer_text = getreg('"')
+  let obj.paste_buffer_type = getregtype('"')
   let obj.cursor_hi_id = s:highlight_cursor(a:position)
   let obj.visual_hi_id = 0
   let obj.line_length = col([a:position[0], '$'])
+  if has('folding')
+    silent! execute a:position[0] . "foldopen!"
+  endif
   return obj
 endfunction
 
@@ -293,10 +353,22 @@ endfunction
 
 " Remove the visual selection and its highlight
 function! s:Cursor.remove_visual_selection() dict
+  let self.saved_visual = deepcopy(self.visual)
   let self.visual = []
   " TODO(terryma): Move functionality into separate class
   call s:cm.remove_highlight(self.visual_hi_id)
   let self.visual_hi_id = 0
+endfunction
+
+" Restore unnamed register from paste buffer
+function! s:Cursor.restore_unnamed_register() dict
+  call setreg('"', self.paste_buffer_text, self.paste_buffer_type)
+endfunction
+
+" Save contents of the unnamed register into paste buffer
+function! s:Cursor.save_unnamed_register() dict
+  let self.paste_buffer_text = getreg('"')
+  let self.paste_buffer_type = getregtype('"')
 endfunction
 
 "===============================================================================
@@ -319,6 +391,7 @@ function! s:CursorManager.new()
         \ 'cursorline': &cursorline,
         \ 'lazyredraw': &lazyredraw,
         \ 'paste': &paste,
+        \ 'clipboard': &clipboard,
         \ }
   " We save the window view when multicursor mode is entered
   let obj.saved_winview = []
@@ -328,7 +401,7 @@ function! s:CursorManager.new()
 endfunction
 
 " Clear all cursors and their highlights
-function! s:CursorManager.reset(restore_view, restore_setting) dict
+function! s:CursorManager.reset(restore_view, restore_setting, ...) dict
   if a:restore_view
     " Return the view back to the beginning
     if !empty(self.saved_winview)
@@ -358,8 +431,14 @@ function! s:CursorManager.reset(restore_view, restore_setting) dict
   let self.saved_winview = []
   let self.start_from_find = 0
   let s:char = ''
+  let s:saved_char = ''
   if a:restore_setting
     call self.restore_user_settings()
+  endif
+  " Call after function if exists and only if action is canceled (<Esc>)
+  if exists('*Multiple_cursors_after') && a:0 && s:before_function_called
+    exe "call Multiple_cursors_after()"
+    let s:before_function_called = 0
   endif
 endfunction
 
@@ -434,14 +513,24 @@ function! s:CursorManager.update_current() dict
     exec "normal! gv\<Esc>"
     call cur.update_visual_selection(s:get_visual_region(s:pos('.')))
   elseif s:from_mode ==# 'v' || s:from_mode ==# 'V'
+    " Save contents of unnamed register after each operation in Visual mode.
+    " This should be executed after user input is processed, when unnamed
+    " register already contains the text.
+    call cur.save_unnamed_register()
+
     call cur.remove_visual_selection()
+  elseif s:from_mode ==# 'i' && s:to_mode ==# 'n' && self.current_index != self.size() - 1
+    normal! h
+  elseif s:from_mode ==# 'n'
+    " Save contents of unnamed register after each operation in Normal mode.
+    call cur.save_unnamed_register()
   endif
   let vdelta = line('$') - s:saved_linecount
   " If the total number of lines changed in the buffer, we need to potentially
   " adjust other cursor locations
   if vdelta != 0
     if self.current_index != self.size() - 1
-      let cur_line_length = len(getline(cur.line()))
+      let cur_column_offset = (cur.column() - col('.')) * -1
       let new_line_length = len(getline('.'))
       for i in range(self.current_index+1, self.size()-1)
         let hdelta = 0
@@ -453,7 +542,7 @@ function! s:CursorManager.update_current() dict
         if cur.line() == c.line()
           if vdelta > 0
             " Added a line
-            let hdelta = cur_line_length * -1
+            let hdelta = cur_column_offset
           else
             " Removed a line
             let hdelta = new_line_length
@@ -518,19 +607,28 @@ endfunction
 " cursors on screen
 " paste mode needs to be switched off since it turns off a bunch of features
 " that's critical for the plugin to function
+" clipboard should not have unnamed and unnamedplus otherwise plugin cannot
+" reliably use unnamed register ('"')
 function! s:CursorManager.initialize() dict
   let self.saved_settings['virtualedit'] = &virtualedit
   let self.saved_settings['cursorline'] = &cursorline
   let self.saved_settings['lazyredraw'] = &lazyredraw
   let self.saved_settings['paste'] = &paste
+  let self.saved_settings['clipboard'] = &clipboard
   let &virtualedit = "onemore"
   let &cursorline = 0
   let &lazyredraw = 1
   let &paste = 0
+  set clipboard-=unnamed clipboard-=unnamedplus
   " We could have already saved the view from multiple_cursors#find
   if !self.start_from_find
     let self.saved_winview = winsaveview()
   endif
+
+  " Save contents and type of unnamed register upon entering multicursor mode
+  " to restore it later when leaving mode
+  let s:paste_buffer_temporary_text = getreg('"')
+  let s:paste_buffer_temporary_type = getregtype('"')
 endfunction
 
 " Restore user settings.
@@ -540,7 +638,22 @@ function! s:CursorManager.restore_user_settings() dict
     let &cursorline = self.saved_settings['cursorline']
     let &lazyredraw = self.saved_settings['lazyredraw']
     let &paste = self.saved_settings['paste']
+    let &clipboard = self.saved_settings['clipboard']
   endif
+
+  " Restore original contents and type of unnamed register. This method is
+  " called from reset, which calls us only when restore_setting argument is
+  " true, which happens only when we leave multicursor mode. This should be
+  " symmetrical to saving of unnamed register upon the start of multicursor
+  " mode.
+  call setreg('"', s:paste_buffer_temporary_text, s:paste_buffer_temporary_type)
+endfunction
+
+" Reposition all cursors to the start or end of their region
+function! s:CursorManager.reposition_all_within_region(start) dict
+  for c in self.cursors
+    call c.update_position(c.saved_visual[a:start ? 0 : 1])
+  endfor
 endfunction
 
 " Reselect the current cursor's region in visual mode
@@ -587,6 +700,9 @@ endfunction
 
 " This is the last user input that we're going to replicate, in its string form
 let s:char = ''
+" This is either `I` or `A`, as input in Visual mode, that we're going to use
+" to make the appropriate transition into Insert mode
+let s:saved_char = ''
 " This is the mode the user is in before s:char
 let s:from_mode = ''
 " This is the mode the user is in after s:char
@@ -628,6 +744,12 @@ endfunction
 " visual selection ended
 function! s:exit_visual_mode()
   exec "normal! \<Esc>gv\<Esc>"
+
+  " Call before function if exists only once until it is canceled (<Esc>)
+  if exists('*Multiple_cursors_before') && !s:before_function_called
+    exe "call Multiple_cursors_before()"
+    let s:before_function_called = 1
+  endif
 endfunction
 
 " Visually select input region, where region is an array containing the start
@@ -643,7 +765,7 @@ endfunction
 function! s:select_in_visual_mode(region)
   if a:region[0] == a:region[1]
     normal! v
-  else 
+  else
     call cursor(a:region[1])
     normal! m`
     call cursor(a:region[0])
@@ -660,7 +782,7 @@ endfunction
 function! s:update_visual_markers(region)
   if a:region[0] == a:region[1]
     normal! v
-  else 
+  else
     call cursor(a:region[1])
     normal! m`
     call cursor(a:region[0])
@@ -674,7 +796,11 @@ endfunction
 " Mode change: Normal -> Normal
 " Cursor change: Set to the end of the match
 function! s:find_next(text)
-  let pattern = '\V\C'.substitute(escape(a:text, '\'), '\n', '\\n', 'g')
+  let pattern = substitute(escape(a:text, '\'), '\n', '\\n', 'g')
+  if s:use_word_boundary == 1
+      let pattern = '\<'.pattern.'\>'
+  endif
+  let pattern = '\V\C'.pattern
   call search(pattern)
   let start = s:pos('.')
   call search(pattern, 'ce')
@@ -714,7 +840,7 @@ function! s:highlight_region(region)
       let pattern = s1.'\|'.s2
       " More than two lines
       if (s[1][0] - s[0][0] > 1)
-        let pattern = pattern.'\|\%>'.s[0][0].'l\%<'.s[1][0].'l.*\ze.\_$' 
+        let pattern = pattern.'\|\%>'.s[0][0].'l\%<'.s[1][0].'l.*\ze.\_$'
       endif
     endif
   endif
@@ -725,28 +851,31 @@ endfunction
 function! s:revert_mode(from, to)
   if a:to ==# 'v'
     call s:cm.reapply_visual_selection()
-  endif
-  if a:to ==# 'V'
+  elseif a:to ==# 'V'
     call s:cm.reapply_visual_selection()
     normal! V
-  endif
-  if a:to ==# 'n' && a:from ==# 'i'
+  elseif a:to ==# 'n' && a:from ==# 'i'
     stopinsert
   endif
 endfunction
 
 " Consume all the additional character the user typed between the last
 " getchar() and here, to avoid potential race condition.
-" TODO(terryma): This solves the problem of cursors getting out of sync, but
-" we're potentially losing user input. We COULD replay these characters as
-" well...
+let s:saved_keys = ""
 function! s:feedkeys(keys)
   while 1
     let c = getchar(0)
+    let char_type = type(c)
     " Checking type is important, when strings are compared with integers,
     " strings are always converted to ints, and all strings are equal to 0
-    if type(c) == 0 && c == 0
-      break
+    if char_type == 0
+      if c == 0
+        break
+      else
+        let s:saved_keys .= nr2char(c)
+      endif
+    elseif char_type == 1 " char with more than 8 bits (as string)
+      let s:saved_keys .= c
     endif
   endwhile
   call feedkeys(a:keys)
@@ -757,7 +886,8 @@ function! s:process_user_input()
   " Grr this is frustrating. In Insert mode, between the feedkey call and here,
   " the current position could actually CHANGE for some odd reason. Forcing a
   " position reset here
-  call cursor(s:cm.get_current().position)
+  let cursor_position = s:cm.get_current()
+  call cursor(cursor_position.position)
 
   " Before applying the user input, we need to revert back to the mode the user
   " was in when the input was entered
@@ -765,13 +895,20 @@ function! s:process_user_input()
 
   " Update the line length BEFORE applying any actions. TODO(terryma): Is there
   " a better place to do this?
-  call s:cm.get_current().update_line_length()
+  " let cursor_position = s:cm.get_current()
+  call cursor_position.update_line_length()
   let s:saved_linecount = line('$')
+
+  " Restore unnamed register only in Normal mode. This should happen before user
+  " input is processed.
+  if s:from_mode ==# 'n' || s:from_mode ==# 'v' || s:from_mode ==# 'V'
+    call cursor_position.restore_unnamed_register()
+  endif
 
   " Apply the user input. Note that the above could potentially change mode, we
   " use the mapping below to help us determine what the new mode is
-  " Note that it's possible that \<Plug>(a) never gets called, we have a
-  " detection mechanism using \<Plug>(d). See its documentation for more details
+  " Note that it's possible that \<Plug>(multiple-cursors-apply) never gets called, we have a
+  " detection mechanism using \<Plug>(multiple-cursors-detect). See its documentation for more details
 
   " Assume that input is not valid
   let s:valid_input = 0
@@ -781,14 +918,14 @@ function! s:process_user_input()
   " FIXME(terryma): Undo always places the cursor at the beginning of the line.
   " Figure out why.
   if s:from_mode ==# 'i' || s:to_mode ==# 'i'
-    silent! undojoin | call s:feedkeys(s:char."\<Plug>(a)")
+    silent! undojoin | call s:feedkeys(s:char."\<Plug>(multiple-cursors-apply)")
   else
-    call s:feedkeys(s:char."\<Plug>(a)")
+    call s:feedkeys(s:char."\<Plug>(multiple-cursors-apply)")
   endif
-  
+
   " Even when s:char produces invalid input, this method is always called. The
   " 't' here is important
-  call feedkeys("\<Plug>(d)", 't')
+  call feedkeys("\<Plug>(multiple-cursors-detect)", 't')
 endfunction
 
 " This method is always called during fanout, even when a bad user input causes
@@ -796,9 +933,31 @@ endfunction
 " to be called to continue the fanout process
 function! s:detect_bad_input()
   if !s:valid_input
+    " To invoke the appropriate `<Plug>(multiple-cursors-apply)` mapping, we
+    " need to revert back to the mode the user was in when the input was entered
+    call s:revert_mode(s:to_mode, s:from_mode)
     " We ignore the bad input and force invoke s:apply_user_input_next
-    call feedkeys("\<Plug>(a)")
+    call feedkeys("\<Plug>(multiple-cursors-apply)")
     let s:bad_input += 1
+  endif
+endfunction
+
+" Complete transition into Insert mode when `I` or `A` is input in Visual mode
+function! s:handle_visual_IA_to_insert()
+  if !empty(s:saved_char) && s:char =~# 'v\|V' && s:to_mode ==# 'n'
+    if s:saved_char ==# 'I'
+      call s:cm.reposition_all_within_region(1)
+    endif
+    call feedkeys(tolower(s:saved_char))
+    let s:saved_char = ''
+  endif
+endfunction
+
+" Begin transition into Insert mode when `I` or `A` is input in Visual mode
+function! s:handle_visual_IA_to_normal()
+  if s:char =~# 'I\|A' && s:from_mode =~# 'v\|V'
+    let s:saved_char = s:char
+    let s:char = s:from_mode " spoof a 'v' or 'V' input to transiton from Visual into Normal mode
   endif
 endfunction
 
@@ -828,10 +987,11 @@ function! s:apply_user_input_next(mode)
       " This is necessary to set the "'<" and "'>" markers properly
       call s:update_visual_markers(s:cm.get_current().visual)
     endif
-    call feedkeys("\<Plug>(w)")
+    call feedkeys("\<Plug>(multiple-cursors-wait)")
+    call s:handle_visual_IA_to_insert()
   else
     " Continue to next
-    call feedkeys("\<Plug>(i)")
+    call feedkeys("\<Plug>(multiple-cursors-input)")
   endif
 endfunction
 
@@ -873,7 +1033,7 @@ endfunction
 " Quits multicursor mode and clears all cursors. Return true if exited
 " successfully.
 function! s:exit()
-  if s:char !=# g:multi_cursor_quit_key
+  if s:last_char() !=# g:multi_cursor_quit_key
     return 0
   endif
   let exit = 0
@@ -887,7 +1047,7 @@ function! s:exit()
     let exit = 1
   endif
   if exit
-    call s:cm.reset(1, 1)
+    call s:cm.reset(1, 1, 1)
     return 1
   endif
   return 0
@@ -902,11 +1062,15 @@ function! s:handle_special_key(key, mode)
   " increasing the call stack, since feedkeys execute after the current call
   " finishes
   if a:key == g:multi_cursor_next_key
-    call s:feedkeys("\<Plug>(n)")
+    if s:use_word_boundary == 1
+      call s:feedkeys("\<Plug>(multiple-cursors-new-word)")
+    else
+      call s:feedkeys("\<Plug>(multiple-cursors-new)")
+    endif
   elseif a:key == g:multi_cursor_prev_key
-    call s:feedkeys("\<Plug>(p)")
+    call s:feedkeys("\<Plug>(multiple-cursors-prev)")
   elseif a:key == g:multi_cursor_skip_key
-    call s:feedkeys("\<Plug>(s)")
+    call s:feedkeys("\<Plug>(multiple-cursors-skip)")
   endif
 endfunction
 
@@ -941,12 +1105,22 @@ function! s:revert_highlight_fix()
   let s:saved_line = 0
 endfunction
 
+let s:retry_keys = ""
 function! s:display_error()
-  if s:bad_input > 0
-    echohl ErrorMsg |
-          \ echo "Key '".s:char."' cannot be replayed at ".
-          \ s:bad_input." cursor location".(s:bad_input == 1 ? '' : 's') |
-          \ echohl Normal
+  if s:bad_input == s:cm.size()
+        \ && ((s:from_mode ==# 'n'    && has_key(g:multi_cursor_normal_maps, s:char[0]))
+        \ ||  (s:from_mode =~# 'v\|V' && has_key(g:multi_cursor_visual_maps, s:char[0])))
+    " we couldn't replay it anywhere but we're told it's the beginning of a
+    " multi-character map like the `d` in `dw`
+    let s:retry_keys = s:char
+  else
+    let s:retry_keys = ""
+    if s:bad_input > 0
+      echohl ErrorMsg |
+            \ echo "Key '".s:char."' cannot be replayed at ".
+            \ s:bad_input." cursor location".(s:bad_input == 1 ? '' : 's') |
+            \ echohl Normal
+    endif
   endif
   let s:bad_input = 0
 endfunction
@@ -982,14 +1156,18 @@ function! s:end_latency_measure()
   let s:skip_latency_measure = 0
 endfunction
 
+function! s:last_char()
+  return s:char[len(s:char)-1]
+endfunction
+
 function! s:wait_for_user_input(mode)
+  call s:display_error()
+
   let s:from_mode = a:mode
   if empty(a:mode)
     let s:from_mode = s:to_mode
   endif
   let s:to_mode = ''
-
-  call s:display_error()
 
   " Right before redraw, apply the highlighting bug fix
   call s:apply_highlight_fix()
@@ -1001,7 +1179,39 @@ function! s:wait_for_user_input(mode)
 
   call s:end_latency_measure()
 
-  let s:char = s:get_char()
+  let s:char = s:retry_keys . s:saved_keys
+  if len(s:saved_keys) == 0
+    let s:char .= s:get_char()
+    call s:handle_visual_IA_to_normal()
+  else
+    let s:saved_keys = ""
+  endif
+
+  if s:from_mode ==# 'i' && has_key(g:multi_cursor_insert_maps, s:last_char())
+    let c = getchar(0)
+    let char_type = type(c)
+    let poll_count = 0
+    while char_type == 0 && c == 0 && poll_count < &timeoutlen
+      sleep 1m
+      let c = getchar(0)
+      let char_type = type(c)
+      let poll_count += 1
+    endwhile
+
+    if char_type == 0 && c != 0
+      let s:char .= nr2char(c)
+    elseif char_type == 1 " char with more than 8 bits (as string)
+      let s:char .= c
+    endif
+  elseif s:from_mode !=# 'i' && s:char[0] ==# ":"
+    call feedkeys(s:char)
+    call s:cm.reset(1, 1)
+    return
+  elseif s:from_mode ==# 'n'
+    while match(s:last_char(), "\\d") == 0
+      let s:char .= s:get_char()
+    endwhile
+  endif
 
   call s:start_latency_measure()
 
@@ -1013,11 +1223,11 @@ function! s:wait_for_user_input(mode)
   endif
 
   " If the key is a special key and we're in the right mode, handle it
-  if index(get(s:special_keys, s:from_mode, []), s:char) != -1
-    call s:handle_special_key(s:char, s:from_mode)
+  if index(get(s:special_keys, s:from_mode, []), s:last_char()) != -1
+    call s:handle_special_key(s:last_char(), s:from_mode)
     call s:skip_latency_measure()
   else
     call s:cm.start_loop()
-    call s:feedkeys("\<Plug>(i)")
+    call s:feedkeys("\<Plug>(multiple-cursors-input)")
   endif
 endfunction

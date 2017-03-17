@@ -9,11 +9,8 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" See here for details of phpmd
-"   - phpmd (see http://phpmd.org)
 
-if exists("g:loaded_syntastic_php_phpmd_checker")
+if exists('g:loaded_syntastic_php_phpmd_checker')
     finish
 endif
 let g:loaded_syntastic_php_phpmd_checker = 1
@@ -23,35 +20,35 @@ set cpo&vim
 
 function! SyntaxCheckers_php_phpmd_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], '\m\C^The \S\+ \w\+\(()\)\= \(has\|is not\|utilizes\)')
-    if term != ''
+    if term !=# ''
         return '\V'.substitute(term, '\m\C^The \S\+ \(\w\+\)\(()\)\= .*', '\1', '')
     endif
     let term = matchstr(a:item['text'], '\m\C^Avoid \(variables with short\|excessively long variable\) names like \S\+\.')
-    if term != ''
+    if term !=# ''
         return '\V'.substitute(term, '\m\C^Avoid \(variables with short\|excessively long variable\) names like \(\S\+\)\..*', '\2', '')
     endif
     let term = matchstr(a:item['text'], '\m\C^Avoid using short method names like \S\+::\S\+()\.')
-    if term != ''
+    if term !=# ''
         return '\V'.substitute(term, '\m\C^Avoid using short method names like \S\+::\(\S\+\)()\..*', '\1', '')
     endif
     let term = matchstr(a:item['text'], '\m\C^\S\+ accesses the super-global variable ')
-    if term != ''
+    if term !=# ''
         return '\V'.substitute(term, '\m\C accesses the super-global variable .*$', '', '')
     endif
     let term = matchstr(a:item['text'], '\m\C^Constant \S\+ should be defined in uppercase')
-    if term != ''
+    if term !=# ''
         return '\V'.substitute(term, '\m\C^Constant \(\S\+\) should be defined in uppercase', '\1', '')
     endif
     let term = matchstr(a:item['text'], "\\m\\C^The '\\S\\+()' method which returns ")
-    if term != ''
-        return '\V'.substitute(term, "\\m\\C^The '\\(\\S\\+\\()' method which returns.*", '\1', '')
+    if term !=# ''
+        return '\V'.substitute(term, "\\m\\C^The '\\(\\S\\+\\)()' method which returns.*", '\1', '')
     endif
     let term = matchstr(a:item['text'], '\m\C variable \S\+ should begin with ')
-    if term != ''
+    if term !=# ''
         return '\V'.substitute(term, '\m\C.* variable \(\S\+\) should begin with .*', '\1', '')
     endif
     let term = matchstr(a:item['text'], "\\m\\C^Avoid unused \\(private fields\\|local variables\\|private methods\\|parameters\\) such as '\\S\\+'")
-    if term != ''
+    if term !=# ''
         return '\V'.substitute(term, "\\m\\C^Avoid unused \\(private fields\\|local variables\\|private methods\\|parameters\\) such as '\\(\\S\\+\\)'.*", '\2', '')
     endif
     return ''
@@ -77,4 +74,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

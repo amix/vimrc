@@ -21,7 +21,7 @@ cal add(g:ctrlp_ext_vars, {
 
 let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
 " Utilities {{{1
-fu! s:findcount(str)
+fu! s:findcount(str, tgaddr)
 	let [tg, ofname] = split(a:str, '\t\+\ze[^\t]\+$')
 	let tgs = taglist('^'.tg.'$')
 	if len(tgs) < 2
@@ -48,7 +48,13 @@ fu! s:findcount(str)
 	for tgi in ntgs
 		let cnt += 1
 		if tgi["filename"] == ofname
-			let [fnd, pos] = [0, cnt]
+			if a:tgaddr != ""
+				if a:tgaddr == tgi["cmd"]
+					let [fnd, pos] = [0, cnt]
+				en
+			else
+				let [fnd, pos] = [0, cnt]
+			en
 		en
 	endfo
 	retu [1, fnd, pos, len(ctgs)]
@@ -92,8 +98,9 @@ endf
 
 fu! ctrlp#tag#accept(mode, str)
 	cal ctrlp#exit()
+	let tgaddr = matchstr(a:str, '^[^\t]\+\t\+[^\t]\+\t\zs[^\t]\{-1,}\ze\%(;"\)\?\t')
 	let str = matchstr(a:str, '^[^\t]\+\t\+[^\t]\+\ze\t')
-	let [tg, fdcnt] = [split(str, '^[^\t]\+\zs\t')[0], s:findcount(str)]
+	let [tg, fdcnt] = [split(str, '^[^\t]\+\zs\t')[0], s:findcount(str, tgaddr)]
 	let cmds = {
 		\ 't': ['tab sp', 'tab stj'],
 		\ 'h': ['sp', 'stj'],
@@ -121,6 +128,7 @@ fu! ctrlp#tag#accept(mode, str)
 		en
 		cal feedkeys(":".cmd." ".tg."\r".ext, 'nt')
 	en
+	cal feedkeys('zvzz', 'nt')
 	cal ctrlp#setlcdir()
 endf
 
@@ -129,8 +137,8 @@ fu! ctrlp#tag#id()
 endf
 
 fu! ctrlp#tag#enter()
-	let tfs = tagfiles()
-	let s:tagfiles = tfs != [] ? filter(map(tfs, 'fnamemodify(v:val, ":p")'),
+	let tfs = get(g:, 'ctrlp_custom_tag_files', tagfiles())
+	let s:tagfiles = type(tfs) == 3 && tfs != [] ? filter(map(tfs, 'fnamemodify(v:val, ":p")'),
 		\ 'filereadable(v:val)') : []
 endf
 "}}}

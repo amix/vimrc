@@ -9,15 +9,8 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-"
-" Checker option:
-"
-" - g:syntastic_html_w3_api (string; default: 'http://validator.w3.org/check')
-"   URL of the service to use for checking; leave it to the default to run the
-"   checks against http://validator.w3.org/, or set it to
-"   'http://localhost/w3c-validator/check' if you're running a local service
 
-if exists("g:loaded_syntastic_html_w3_checker")
+if exists('g:loaded_syntastic_html_w3_checker')
     finish
 endif
 let g:loaded_syntastic_html_w3_checker = 1
@@ -30,8 +23,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_html_w3_GetLocList() dict
-    let makeprg = self.getExecEscaped() . ' -s -F output=json ' .
-        \ '-F uploaded_file=@' . syntastic#util#shexpand('%:p') . '\;type=text/html ' .
+    let buf = bufnr('')
+    let makeprg = self.getExecEscaped() . ' -q -L -s -F output=json ' .
+        \ '-F uploaded_file=@' . syntastic#util#shescape(fnamemodify(bufname(buf), ':p')) . '\;type=text/html ' .
         \ g:syntastic_html_w3_api
 
     let errorformat =
@@ -48,7 +42,7 @@ function! SyntaxCheckers_html_w3_GetLocList() dict
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr("")},
+        \ 'defaults': {'bufnr': bufnr('')},
         \ 'returns': [0] })
 
     for e in loclist
@@ -66,4 +60,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:

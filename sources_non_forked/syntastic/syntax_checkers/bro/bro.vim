@@ -10,7 +10,7 @@
 "
 "============================================================================
 
-if exists("g:loaded_syntastic_bro_bro_checker")
+if exists('g:loaded_syntastic_bro_bro_checker')
     finish
 endif
 let g:loaded_syntastic_bro_bro_checker = 1
@@ -20,7 +20,7 @@ set cpo&vim
 
 function! SyntaxCheckers_bro_bro_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], '\m at or near "\zs[^"]\+\ze"')
-    return term != '' ? '\V\<' . escape(term, '\') . '\>' : ''
+    return term !=# '' ? '\V\<' . escape(term, '\') . '\>' : ''
 endfunction
 
 function! SyntaxCheckers_bro_bro_IsAvailable() dict
@@ -28,7 +28,7 @@ function! SyntaxCheckers_bro_bro_IsAvailable() dict
         return 0
     endif
 
-    if system(self.getExecEscaped() . ' --help') !~# '--parse-only'
+    if syntastic#util#system(self.getExecEscaped() . ' --help') !~# '--parse-only'
         call self.log('unknown option "--parse-only"')
         return 0
     endif
@@ -40,14 +40,12 @@ function! SyntaxCheckers_bro_bro_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_before': '--parse-only' })
 
     "example: error in ./foo.bro, line 3: unknown identifier banana, at or near "banana"
-    let errorformat =
-        \ 'fatal %trror in %f\, line %l: %m,' .
-        \ '%trror in %f\, line %l: %m,' .
-        \ '%tarning in %f\, line %l: %m'
+    let errorformat = '%t:%f:%l:%m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat })
+        \ 'errorformat': errorformat,
+        \ 'preprocess': 'bro' })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
@@ -57,4 +55,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:
