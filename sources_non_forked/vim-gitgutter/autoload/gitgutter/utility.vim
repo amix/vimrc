@@ -2,6 +2,23 @@ let s:file = ''
 let s:using_xolox_shell = -1
 let s:exit_code = 0
 
+function! gitgutter#utility#setbufvar(buffer, varname, val)
+  let dict = get(getbufvar(a:buffer, ''), 'gitgutter', {})
+  let dict[a:varname] = a:val
+  call setbufvar(a:buffer, 'gitgutter', dict)
+endfunction
+
+function! gitgutter#utility#getbufvar(buffer, varname, ...)
+  let dict = get(getbufvar(a:buffer, ''), 'gitgutter', {})
+  if has_key(dict, a:varname)
+    return dict[a:varname]
+  else
+    if a:0
+      return a:1
+    endif
+  endif
+endfunction
+
 function! gitgutter#utility#warn(message) abort
   echohl WarningMsg
   echo 'vim-gitgutter: ' . a:message
@@ -10,8 +27,8 @@ function! gitgutter#utility#warn(message) abort
 endfunction
 
 function! gitgutter#utility#warn_once(message, key) abort
-  if empty(getbufvar(s:bufnr, a:key))
-    call setbufvar(s:bufnr, a:key, '1')
+  if empty(gitgutter#utility#getbufvar(s:bufnr, a:key))
+    call gitgutter#utility#setbufvar(s:bufnr, a:key, '1')
     echohl WarningMsg
     redraw | echo 'vim-gitgutter: ' . a:message
     echohl None
@@ -92,11 +109,11 @@ function! gitgutter#utility#has_unsaved_changes() abort
 endfunction
 
 function! gitgutter#utility#has_fresh_changes() abort
-  return getbufvar(s:bufnr, 'changedtick') != getbufvar(s:bufnr, 'gitgutter_last_tick')
+  return getbufvar(s:bufnr, 'changedtick') != gitgutter#utility#getbufvar(s:bufnr, 'last_tick')
 endfunction
 
 function! gitgutter#utility#save_last_seen_change() abort
-  call setbufvar(s:bufnr, 'gitgutter_last_tick', getbufvar(s:bufnr, 'changedtick'))
+  call gitgutter#utility#setbufvar(s:bufnr, 'last_tick', getbufvar(s:bufnr, 'changedtick'))
 endfunction
 
 function! gitgutter#utility#shell_error() abort
@@ -136,12 +153,12 @@ function! gitgutter#utility#system(cmd, ...) abort
 endfunction
 
 function! gitgutter#utility#file_relative_to_repo_root() abort
-  let file_path_relative_to_repo_root = getbufvar(s:bufnr, 'gitgutter_repo_relative_path')
+  let file_path_relative_to_repo_root = gitgutter#utility#getbufvar(s:bufnr, 'repo_relative_path')
   if empty(file_path_relative_to_repo_root)
     let dir_path_relative_to_repo_root = gitgutter#utility#system(gitgutter#utility#command_in_directory_of_file(g:gitgutter_git_executable.' rev-parse --show-prefix'))
     let dir_path_relative_to_repo_root = gitgutter#utility#strip_trailing_new_line(dir_path_relative_to_repo_root)
     let file_path_relative_to_repo_root = dir_path_relative_to_repo_root . gitgutter#utility#filename()
-    call setbufvar(s:bufnr, 'gitgutter_repo_relative_path', file_path_relative_to_repo_root)
+    call gitgutter#utility#setbufvar(s:bufnr, 'repo_relative_path', file_path_relative_to_repo_root)
   endif
   return file_path_relative_to_repo_root
 endfunction
@@ -174,14 +191,10 @@ function! gitgutter#utility#strip_trailing_new_line(line) abort
   return substitute(a:line, '\n$', '', '')
 endfunction
 
-function! gitgutter#utility#git_version() abort
-  return matchstr(system(g:gitgutter_git_executable.' --version'), '[0-9.]\+')
-endfunction
-
 " True for git v1.7.2+.
 function! gitgutter#utility#git_supports_command_line_config_override() abort
-  let [major, minor, patch; _] = split(gitgutter#utility#git_version(), '\.')
-  return major > 1 || (major == 1 && minor > 7) || (minor == 7 && patch > 1)
+  call system(g:gitgutter_git_executable.' -c foo.bar=baz --version')
+  return !v:shell_error
 endfunction
 
 function! gitgutter#utility#stringify(list) abort

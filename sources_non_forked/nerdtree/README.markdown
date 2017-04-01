@@ -55,14 +55,14 @@ The following features and functionality are provided by the NERD tree:
 Installation
 ------------
 
-####[pathogen.vim](https://github.com/tpope/vim-pathogen)
+#### [pathogen.vim](https://github.com/tpope/vim-pathogen)
 
     git clone https://github.com/scrooloose/nerdtree.git ~/.vim/bundle/nerdtree
 
 Then reload vim, run `:helptags ~/.vim/bundle/nerdtree/doc/`, and check out `:help NERD_tree.txt`.
 
 
-####[apt-vim](https://github.com/egalpin/apt-vim)
+#### [apt-vim](https://github.com/egalpin/apt-vim)
 
     apt-vim install -y https://github.com/scrooloose/nerdtree.git
 

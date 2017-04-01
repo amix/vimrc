@@ -217,15 +217,14 @@ COMMANDS                                                         *go-commands*
     If [!] is not given the first error is jumped to.
 
                                                                       *:GoDef*
-:GoDef [identifier]
+:GoDef 
 gd
 CTRL-]
 
-    Goto declaration/definition for the given [identifier]. If no argument is
-    given, it will jump to the declaration under the cursor. By default the
-    CTRL-] key and the mapping `gd` are enabled to invoke :GoDef for the
+    Goto declaration/definition for the declaration under the cursor. By default
+    the CTRL-] key and the mapping `gd` are enabled to invoke :GoDef for the
     identifier under the cursor. See |'g:go_def_mapping_enabled'| to disable
-    them.
+    them.  No explicit arguments are supported.
 
     vim-go also keeps a per-window location stack, roughly analogous to how
     Vim's internal |tags| functionality works. This is pushed to every time a

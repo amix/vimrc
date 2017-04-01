@@ -1,5 +1,7 @@
 ## unplanned
 
+## 1.12 - (March 29, 2017)
+
 FEATURES:
 
 * New `:GoAddTags` and `:GoRemoveTags` command based on the tool
@@ -20,6 +22,7 @@ if err != nil {
 
 IMPROVEMENTS:
 
+* vim-go works now even if GOPATH is not set (starting with Go 1.8) [gh-1248]
 * Lowercase `<Leader>` in mappings examples for consistent documentation across the README [gh-1192]
 * All of files should be written in utf-8 if the file will be passed to external command. [gh-1184]
 * `:GoAddTags` is now able to add options to existing tags with the syntax
@@ -27,6 +30,8 @@ IMPROVEMENTS:
 * Document 'noshowmode' requirement for echo_go_info [gh-1197]
 * Improve godoc view for vertical splits [gh-1195]
 * Set GOPATH for both possible go guru execution paths (sync and async) [gh-1193]
+* Improve docs for :GoDef usage [gh-1242]
+* Highlight trimming syntax for Go templates [gh-1235]
 
 BUG FIXES:
 
@@ -44,12 +49,13 @@ BUG FIXES:
 * Fix `:GoAddTags` not working if any field comment would contain `{}` [gh-1189]
 * Respect go_fmt_options when running goimports [gh-1211]
 * Set the filename in the location-list when there is an error with :GoFmt [gh-1199]
+* Fix `:GoInstall` to accept additional arguments if async mode was enabled [gh-1246]
 
 BACKWARDS INCOMPATIBILITIES:
 
 * The command `:GoGuruTags` is removed in favour of the new command
   `:GoBuildTags`. This command will be used now not just for `guru`, also for
-  all new commands such as `guru` [gh-1232]
+  all new commands such as `gorename` [gh-1232]
 * The setting `g:go_guru_tags` is removed in favour of the new setting
   `g:go_build_tags` [gh-1232]
 

@@ -1763,6 +1763,7 @@ fu! ctrlp#setpathmode(pmode, ...)
 		let spath = a:0 ? a:1 : s:crfpath
 		let markers = ['.git', '.hg', '.svn', '.bzr', '_darcs']
 		if type(s:rmarkers) == 3 && !empty(s:rmarkers)
+			if s:findroot(spath, s:rmarkers, 0, 0) != [] | retu 1 | en
 			cal filter(markers, 'index(s:rmarkers, v:val) < 0')
 			let markers = s:rmarkers + markers
 		en
@@ -2384,7 +2385,7 @@ endf
 fu! s:matchbuf(item, pat)
 	let bufnr = s:bufnrfilpath(a:item)[0]
 	let parts = s:bufparts(bufnr)
-	let item = bufnr.parts[0].parts[2].s:lash().parts[3]
+	let item = s:byfname ? parts[2] : bufnr.parts[0].parts[2].s:lash().parts[3]
 	retu match(item, a:pat)
 endf
 

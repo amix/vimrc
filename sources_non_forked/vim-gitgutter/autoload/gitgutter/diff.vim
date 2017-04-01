@@ -56,7 +56,7 @@ function! gitgutter#diff#run_diff(realtime, preserve_full_diff) abort
   let cmd = '('
 
   let bufnr = gitgutter#utility#bufnr()
-  let tracked = getbufvar(bufnr, 'gitgutter_tracked')  " i.e. tracked by git
+  let tracked = gitgutter#utility#getbufvar(bufnr, 'tracked', 0)  " i.e. tracked by git
   if !tracked
     " Don't bother trying to realtime-diff an untracked file.
     " NOTE: perhaps we should pull this guard up to the caller?
@@ -95,6 +95,7 @@ function! gitgutter#diff#run_diff(realtime, preserve_full_diff) abort
   let cmd .= g:gitgutter_git_executable
   if s:c_flag
     let cmd .= ' -c "diff.autorefreshindex=0"'
+    let cmd .= ' -c "diff.noprefix=false"'
   endif
   let cmd .= ' diff --no-ext-diff --no-color -U0 '.g:gitgutter_diff_args.' '
 
@@ -165,7 +166,6 @@ function! gitgutter#diff#parse_hunk(line) abort
 endfunction
 
 function! gitgutter#diff#process_hunks(hunks) abort
-  call gitgutter#hunk#reset()
   let modified_lines = []
   for hunk in a:hunks
     call extend(modified_lines, gitgutter#diff#process_hunk(hunk))

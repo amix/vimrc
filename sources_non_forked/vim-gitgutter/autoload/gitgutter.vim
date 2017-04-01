@@ -44,7 +44,7 @@ endfunction
 function! gitgutter#handle_diff(diff) abort
   call gitgutter#debug#log(a:diff)
 
-  call setbufvar(gitgutter#utility#bufnr(), 'gitgutter_tracked', 1)
+  call gitgutter#utility#setbufvar(gitgutter#utility#bufnr(), 'tracked', 1)
 
   call gitgutter#hunk#set_hunks(gitgutter#diff#parse_diff(a:diff))
   let modified_lines = gitgutter#diff#process_hunks(gitgutter#hunk#hunks())
@@ -209,10 +209,16 @@ function! gitgutter#undo_hunk() abort
       call gitgutter#utility#system(gitgutter#utility#command_in_directory_of_file(g:gitgutter_git_executable.' apply --reverse --unidiff-zero - '), diff_for_hunk)
 
       " reload file preserving screen line position
-      let wl = winline()
+      " CTRL-Y and CTRL-E treat negative counts as positive counts.
+      let x = line('w0')
       silent edit
-      let offset = wl - winline()
-      execute "normal! ".offset."\<C-Y>"
+      let y = line('w0')
+      let z = x - y
+      if z > 0
+        execute "normal! ".z."\<C-E>"
+      else
+        execute "normal! ".z."\<C-Y>"
+      endif
     endif
 
     silent! call repeat#set("\<Plug>GitGutterUndoHunk", -1)<CR>

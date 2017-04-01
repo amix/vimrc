@@ -9,35 +9,41 @@ let s:initial_go_path = ""
 " GOPATH with it. If two double quotes are passed (the empty string in go),
 " it'll clear the GOPATH and will restore to the initial GOPATH.
 function! go#path#GoPath(...) abort
-  " we have an argument, replace GOPATH
-  if len(a:000)
-    " clears the current manually set GOPATH and restores it to the
-    " initial GOPATH, which was set when Vim was started.
-    if len(a:000) == 1 && a:1 == '""'
-      if !empty(s:initial_go_path)
-        let $GOPATH = s:initial_go_path
-        let s:initial_go_path = ""
-      endif
-
-      echon "vim-go: " | echohl Function | echon "GOPATH restored to ". $GOPATH | echohl None
-      return
-    endif
-
-    echon "vim-go: " | echohl Function | echon "GOPATH changed to ". a:1 | echohl None
-    let s:initial_go_path = $GOPATH
-    let $GOPATH = a:1
+  " no argument, show GOPATH
+  if len(a:000) == 0
+    echo go#path#Detect()
     return
   endif
 
-  echo go#path#Detect()
+  " we have an argument, replace GOPATH
+  " clears the current manually set GOPATH and restores it to the
+  " initial GOPATH, which was set when Vim was started.
+  if len(a:000) == 1 && a:1 == '""'
+    if !empty(s:initial_go_path)
+      let $GOPATH = s:initial_go_path
+      let s:initial_go_path = ""
+    endif
+
+    echon "vim-go: " | echohl Function | echon "GOPATH restored to ". $GOPATH | echohl None
+    return
+  endif
+
+  echon "vim-go: " | echohl Function | echon "GOPATH changed to ". a:1 | echohl None
+  let s:initial_go_path = $GOPATH
+  let $GOPATH = a:1
 endfunction
 
 " Default returns the default GOPATH. If there is a single GOPATH it returns
 " it. For multiple GOPATHS separated with a the OS specific separator, only
-" the first one is returned
+" the first one is returned. If GOPATH is not set, it uses the default GOPATH
+" set starting with GO 1.8. This GOPATH can be retrieved via 'go env GOPATH'
 function! go#path#Default() abort
-  let go_paths = split($GOPATH, go#util#PathListSep())
+  if $GOPATH == ""
+    " use default GOPATH via go env
+    return go#util#gopath()
+  endif
 
+  let go_paths = split($GOPATH, go#util#PathListSep())
   if len(go_paths) == 1
     return $GOPATH
   endif
@@ -48,7 +54,7 @@ endfunction
 " HasPath checks whether the given path exists in GOPATH environment variable
 " or not
 function! go#path#HasPath(path) abort
-  let go_paths = split($GOPATH, go#util#PathListSep())
+  let go_paths = split(go#path#Default(), go#util#PathListSep())
   let last_char = strlen(a:path) - 1
 
   " check cases of '/foo/bar/' and '/foo/bar'
@@ -70,7 +76,7 @@ endfunction
 " over the current GOPATH. It also detects diretories whose are outside
 " GOPATH.
 function! go#path#Detect() abort
-  let gopath = $GOPATH
+  let gopath = go#path#Default()
 
   " don't lookup for godeps if autodetect is disabled.
   if !get(g:, "go_autodetect_gopath", 1)
@@ -122,57 +128,58 @@ function! go#path#BinPath() abort
   let bin_path = ""
 
   " check if our global custom path is set, if not check if $GOBIN is set so
-  " we can use it, otherwise use $GOPATH + '/bin'
+  " we can use it, otherwise use default GOPATH
   if exists("g:go_bin_path")
     let bin_path = g:go_bin_path
   elseif $GOBIN != ""
     let bin_path = $GOBIN
-    elseif $GOPATH != ""
-        let bin_path = expand(go#path#Default() . "/bin/")
-    else
-        " could not find anything
-    endif
+  else
+    " GOPATH (user set or default GO)
+    let bin_path = expand(go#path#Default() . "/bin/")
+  endif
 
-    return bin_path
+  return bin_path
 endfunction
 
 " CheckBinPath checks whether the given binary exists or not and returns the
 " path of the binary. It returns an empty string doesn't exists.
 function! go#path#CheckBinPath(binpath) abort
-    " remove whitespaces if user applied something like 'goimports   '
-    let binpath = substitute(a:binpath, '^\s*\(.\{-}\)\s*$', '\1', '')
-    " save off original path
-    let old_path = $PATH
+  " remove whitespaces if user applied something like 'goimports   '
+  let binpath = substitute(a:binpath, '^\s*\(.\{-}\)\s*$', '\1', '')
+  " save off original path
+  let old_path = $PATH
 
-    " check if we have an appropriate bin_path
-    let go_bin_path = go#path#BinPath()
-    if !empty(go_bin_path)
-        " append our GOBIN and GOPATH paths and be sure they can be found there...
-        " let us search in our GOBIN and GOPATH paths
-        let $PATH = go_bin_path . go#util#PathListSep() . $PATH
+  " check if we have an appropriate bin_path
+  let go_bin_path = go#path#BinPath()
+  if !empty(go_bin_path)
+    " append our GOBIN and GOPATH paths and be sure they can be found there...
+    " let us search in our GOBIN and GOPATH paths
+    let $PATH = go_bin_path . go#util#PathListSep() . $PATH
+  endif
+
+  " if it's in PATH just return it
+  if executable(binpath)
+    if exists('*exepath')
+      let binpath = exepath(binpath)
     endif
-
-    " if it's in PATH just return it
-    if executable(binpath)
-        if exists('*exepath')
-            let binpath = exepath(binpath)
-        endif
-        let $PATH = old_path
-        return binpath
-    endif
-
-    " just get the basename
-    let basename = fnamemodify(binpath, ":t")
-    if !executable(basename)
-        echom "vim-go: could not find '" . basename . "'. Run :GoInstallBinaries to fix it."
-        " restore back!
-        let $PATH = old_path
-        return ""
-    endif
-
     let $PATH = old_path
+    return binpath
+  endif
 
-    return go_bin_path . go#util#PathSep() . basename
+  " just get the basename
+  let basename = fnamemodify(binpath, ":t")
+  if !executable(basename)
+
+    call go#util#EchoError(printf("could not find '%s'. Run :GoInstallBinaries to fix it", basename))
+
+    " restore back!
+    let $PATH = old_path
+    return ""
+  endif
+
+  let $PATH = old_path
+
+  return go_bin_path . go#util#PathSep() . basename
 endfunction
 
 " vim: sw=2 ts=2 et

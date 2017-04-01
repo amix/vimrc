@@ -848,7 +848,7 @@ Example: >
 When this is set to 1, the <bs> on empty prompt exit CtrlP.
 
                                                           *ctrlp-default-value*
-Otherwize, you can use below to change default value.
+Otherwise, you can use below to change default value.
 Example: >
   let g:ctrlp_path_nolim = 1
 

@@ -138,6 +138,7 @@ Commands for staging or undoing individual hunks:
 
   :GitGutterPreviewHunk                                 *:GitGutterPreviewHunk*
       Preview the hunk the cursor is in.
+      Use |:pclose| or |CTRL-W_CTRL-Z| to close the preview window.
 
 ===============================================================================
 5. AUTOCOMMAND                                               *GitGutterAutocmd*

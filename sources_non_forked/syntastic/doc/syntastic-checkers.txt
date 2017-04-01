@@ -1755,6 +1755,7 @@ SYNTAX CHECKERS FOR D                                   *syntastic-checkers-d*
 The following checkers are available for D (filetype "d"):
 
     1. DMD......................|syntastic-d-dmd|
+    2. D-Scanner................|syntastic-d-dscanner|
 
 ------------------------------------------------------------------------------
 1. DMD                                                       *syntastic-d-dmd*
@@ -1833,6 +1834,22 @@ This checker doesn't call the "makeprgBuild()" function, and thus it ignores
 the usual 'g:syntastic_d_dmd_<option>' variables. The only exception is
 'g:syntastic_d_dmd_exec', which can still be used to override the checker's
 executable.
+
+------------------------------------------------------------------------------
+2. D-Scanner                                            *syntastic-d-dscanner*
+
+Name:        dscanner
+Maintainer:  ANtlord
+
+"D-Scanner" is a tool for analyzing D source code (https://dlang.org/). See
+the project's page at GitHub for more information:
+
+    https://github.com/Hackerpilot/Dscanner
+
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
 
 ==============================================================================
 SYNTAX CHECKERS FOR DART                             *syntastic-checkers-dart*
@@ -1934,6 +1951,7 @@ SYNTAX CHECKERS FOR DOCKERFILE                 *syntastic-checkers-dockerfile*
 The following checkers are available for Dockerfile (filetype "dockerfile"):
 
     1. dockerfile-lint..........|syntastic-dockerfile-dockerfile_lint|
+    2. Hadolint.................|syntastic-dockerfile-hadolint|
 
 ------------------------------------------------------------------------------
 1. dockerfile-lint                      *syntastic-dockerfile-dockerfile_lint*
@@ -1952,6 +1970,22 @@ Installation~
 Install it with: >
     npm install -g dockerfile_lint
 <
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+------------------------------------------------------------------------------
+2. Hadolint                                    *syntastic-dockerfile-hadolint*
+
+Name:        hadolint
+Maintainer:  Jesper B. Rosenkilde <jbr@humppa.dk>
+
+"Hadolint" is a dockerfile linter written in Haskell. See the project's page
+at GitHub for details:
+
+    https://github.com/lukasmartinelli/hadolint
+
 Checker options~
 
 This checker is initialised using the "makeprgBuild()" function and thus it
@@ -4884,59 +4918,11 @@ SYNTAX CHECKERS FOR R                                   *syntastic-checkers-r*
 
 The following checkers are available for R (filetype "r"):
 
-    1. lint.....................|syntastic-r-lint|
-    2. lintr....................|syntastic-r-lintr|
-    3. svtools..................|syntastic-r-svtools|
+    1. lintr....................|syntastic-r-lintr|
+    2. svtools..................|syntastic-r-svtools|
 
 ------------------------------------------------------------------------------
-1. lint                                                     *syntastic-r-lint*
-
-Name:        lint
-Maintainer:  LCD 47 <lcd047@gmail.com>
-
-This is a style checker for R files, using the R package "lint":
-
-    http://cran.r-project.org/web/packages/lint/
-
-Checker option~
-
-                                                 *'g:syntastic_r_lint_styles'*
-Type: string
-Default: "lint.style"
-R list of style tests to apply.
-
-Set 'g:syntastic_r_lint_styles' to something like this: >
-    let g:syntastic_r_lint_styles =
-        \ 'list(spacing.indentation.notabs, spacing.indentation.evenindent)'
-<
-See "lint"'s manual for possible values:
-
-    http://cran.r-project.org/web/packages/lint/lint.pdf
-
-Note~
-
-This checker doesn't call the "makeprgBuild()" function, and thus it ignores
-the usual 'g:syntastic_r_lint_<option>' variables. The only exception is
-'g:syntastic_r_lint_exec', which can still be used to override the "R"
-executable.
-
-Limitations~
-
-The checker uses column numbers only when running into syntax errors.  If
-you're checking files containing tab characters, then Vim's 'tabstop' must
-match R's idea of tabstop, otherwise column numbers will be shifted. At the
-time of this writing R's tabstop is hardcoded to 8, so you should probably
-add something like this to your vimrc: >
-    set tabstop=8
-<
-The "lint" package will only show at most 5 messages of a kind. At the time of
-this writing this is not configurable.
-
-Beware also that the checker is pretty slow when using the default style
-setting of "lint.style".
-
-------------------------------------------------------------------------------
-2. lintr                                                   *syntastic-r-lintr*
+1. lintr                                                   *syntastic-r-lintr*
 
 Name:        lintr
 Maintainer:  Jim Hester <james.f.hester@gmail.com>
@@ -4984,7 +4970,7 @@ executable.
 See also: |syntastic-rmd-lintr|.
 
 ------------------------------------------------------------------------------
-3. svtools                                               *syntastic-r-svtools*
+2. svtools                                               *syntastic-r-svtools*
 
 Name:        svtools
 Maintainer:  LCD 47 <lcd047@gmail.com>
@@ -5953,6 +5939,7 @@ SYNTAX CHECKERS FOR SOLIDITY                     *syntastic-checkers-solidity*
 The following checkers are available for Solidity (filetype "solidity"):
 
     1. solc.....................|syntastic-solidity-solc|
+    2. Solium...................|syntastic-solidity-solium|
 
 ------------------------------------------------------------------------------
 1. solc                                              *syntastic-solidity-solc*
@@ -5977,6 +5964,27 @@ You probably also need a plugin to set |filetype| for Solidity files, such as
 
     https://github.com/tomlion/vim-solidity
 
+------------------------------------------------------------------------------
+2. Solium                                          *syntastic-solidity-solium*
+
+Name:        solium
+Maintainer:  Matthijs van den Bos <matthijs@vandenbos.org>
+
+"Solium" is a linter for "Solidity" files. See the project's page for details:
+
+    https://github.com/duaraghav8/Solium
+
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+Note~
+
+You probably also need a plugin to set |filetype| for Solidity files, such as
+"vim-solidity":
+
+    https://github.com/tomlion/vim-solidity
 
 ==============================================================================
 SYNTAX CHECKERS FOR SQL                               *syntastic-checkers-sql*
