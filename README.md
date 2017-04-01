@@ -1,4 +1,4 @@
-![VIM](https://camo.githubusercontent.com/bec48ea0e886e5489a8819486bf74075fe626067/68747470733a2f2f7261772e6769746875622e636f6d2f656c6d636173742f656c6d2d76696d2f6d61737465722f73637265656e73686f74732f6c6f676f2e706e67)
+![VIM](https://dnp4pehkvoo6n.cloudfront.net/43c5af597bd5c1a64eb1829f011c208f/as/Ultimate%20Vimrc.svg)
 
 # The Ultimate vimrc
 
