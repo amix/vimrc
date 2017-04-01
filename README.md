@@ -122,6 +122,8 @@ You can also install your own plugins, for instance, via pathogen you can instal
 
 ## Key Mappings
 
+The [leader](http://learnvimscriptthehardway.stevelosh.com/chapters/06.html#leader) is `,`, so whenever you see `<leader>` it means `,`.
+
 ### Plugin related mappings
 
 Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) and see and manage the current buffers (`<leader>o`):
