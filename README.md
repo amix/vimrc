@@ -2,14 +2,14 @@
 
 # The Ultimate vimrc
 
-Over the last 10 years I have used and tweaked Vim. This is the ultimate vimrc (or at least my version of it).
+Over the last 10 years, I have used and tweaked Vim. This configuration is the ultimate vimrc (or at least my version of it).
 
 There are two versions:
 
 * **The Basic**: If you want something small just copy [basic.vim](https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim) into your ~/.vimrc and you will have a good basic setup
-* **The Awesome**: Includes a ton of useful plugins, color schemes and configurations
+* **The Awesome**: Includes a ton of useful plugins, color schemes, and configurations
 
-I would of course recommend using the awesome version.
+I would, of course, recommend using the awesome version.
 
 ## How to install the Awesome version?
 The awesome version includes a lot of great plugins, configurations and color schemes that make Vim a lot better. To install it simply do following from your terminal:
@@ -17,12 +17,12 @@ The awesome version includes a lot of great plugins, configurations and color sc
 	git clone https://github.com/amix/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_awesome_vimrc.sh
 
-I also recommend using [the Hack font](http://sourcefoundry.org/hack/) (it's free and awesome font designed for source code). The Awesome vimrc is already setup to try to use it.
+I also recommend using [the Hack font](http://sourcefoundry.org/hack/) (it's a free and awesome font designed for source code). The Awesome vimrc is already setup to try to use it.
 
 ## How to install the Basic version?
-The basic version is basically just one file and no plugins. Simply copy [basic.vim](https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim) and paste it into your vimrc.
+The basic version is just one file and no plugins. Just copy [basic.vim](https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim) and paste it into your vimrc.
 
-This is useful to install on remote servers where you don't need many plugins and you don't do many edits.
+The basic version is useful to install on remote servers where you don't need many plugins, and you don't do many edits.
 
 	git clone git://github.com/amix/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_basic_vimrc.sh
@@ -39,7 +39,7 @@ If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: 
 
 ## How to update to latest version?
 
-Simply just do a git rebase!
+Just do a git rebase!
 
     cd ~/.vim_runtime
     git pull --rebase
@@ -48,9 +48,11 @@ Simply just do a git rebase!
 ## Some screenshots
 
 Colors when editing a Python file:
+
 ![Screenshot 1](http://files1.wedoist.com/e952fdb343b1e617b90d256e474d0370/as/screenshot_1.png)
 
-Opening recently opened files [mru.vim](https://github.com/vim-scripts/mru.vim):
+Opening recently opened files with the [mru.vim](https://github.com/vim-scripts/mru.vim) plugin:
+
 ![Screenshot 2](http://files1.wedoist.com/1967b0e48af40e513d1a464e08196990/as/screenshot_2.png)
 
 [NERD Tree](https://github.com/scrooloose/nerdtree) plugin in a terminal window:
@@ -65,7 +67,7 @@ Distraction free mode using [goyo.vim](https://github.com/junegunn/goyo.vim) and
 
 ## Included Plugins
 
-I recommend reading the docs of these plugins to understand them better. Each of them provide a much better Vim experience!
+I recommend reading the docs of these plugins to understand them better. Each plugin provides a much better Vim experience!
 
 * [ag.vim](https://github.com/rking/ag.vim): Vim plugin for `the_silver_searcher` (ag) -- a wicked fast grep
 * [bufexplorer.zip](https://github.com/vim-scripts/bufexplorer.zip): Quickly and easily switch between buffers. This plugin can be opened with `<leader+o>`
@@ -108,37 +110,38 @@ Remove all clutter and focus only on the essential. Similar to iA Writer or Writ
 
 ## How to include your own stuff?
 
-After you have installed the setup you can create **~/.vim_runtime/my_configs.vim** to fill in any configurations that are important for you. For instance, my **my_configs.vim** looks like this:
+After you have installed the setup, you can create **~/.vim_runtime/my_configs.vim** to fill in any configurations that are important for you. For instance, my **my_configs.vim** looks like this:
 
 	~/.vim_runtime (master)> cat my_configs.vim
 	map <leader>ct :cd ~/Desktop/Todoist/todoist<cr>
 	map <leader>cw :cd ~/Desktop/Wedoist/wedoist<cr> 
 
-You can also install your own plugins, for instance, via pathogen you can install [vim-rails](https://github.com/tpope/vim-rails):
+You can also install your plugins, for instance, via pathogen you can install [vim-rails](https://github.com/tpope/vim-rails):
 
 	cd ~/.vim_runtime
 	git clone git://github.com/tpope/vim-rails.git sources_non_forked/vim-rails
-	
+
 
 ## Key Mappings
 
 The [leader](http://learnvimscriptthehardway.stevelosh.com/chapters/06.html#leader) is `,`, so whenever you see `<leader>` it means `,`.
 
+
 ### Plugin related mappings
 
-Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) and see and manage the current buffers (`<leader>o`):
+Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) to see and manage the current buffers (`<leader>o`):
     
     map <leader>o :BufExplorer<cr>
 
-Open [MRU.vim](https://github.com/vim-scripts/mru.vim) and see the recently open files (`<leader>f`):
+Open [MRU.vim](https://github.com/vim-scripts/mru.vim) to see the recently open files (`<leader>f`):
 
     map <leader>f :MRU<CR>
 
-Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin (`<leader>j` or `<ctrl>f`):
+Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a file or a buffer (`<leader>j` or `<ctrl>f`):
     
     let g:ctrlp_map = '<c-f>'
 
-Managing the [NERD Tree](https://github.com/scrooloose/nerdtree) plugin:
+[NERD Tree](https://github.com/scrooloose/nerdtree) mappings:
 
     map <leader>nn :NERDTreeToggle<cr>
     map <leader>nb :NERDTreeFromBookmark 
@@ -147,6 +150,7 @@ Managing the [NERD Tree](https://github.com/scrooloose/nerdtree) plugin:
 [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It has a special look when editing Markdown, reStructuredText and textfiles. It only has one mapping. (`<leader>z`)
 
     map <leader>z :Goyo<cr>
+
 
 ### Normal mode mappings
 
@@ -160,7 +164,7 @@ Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
 	map <c-space> ?
 	map <silent> <leader><cr> :noh<cr>
 
-Disable highlight when `<leader><cr>` is pressed:
+Disable highlights when you press `<leader><cr>`:
 	
 	map <silent> <leader><cr> :noh<cr>
 
@@ -171,7 +175,7 @@ Smart way to move between windows (`<ctrl>j` etc.):
 	map <C-h> <C-W>h
 	map <C-l> <C-W>l
 
-Closing of current buffer(s) (`<leader>bd` and (`<leader>ba`)):
+Closing of the current buffer(s) (`<leader>bd` and (`<leader>ba`)):
 	
 	" Close current buffer
 	map <leader>bd :Bclose<cr>
@@ -190,18 +194,14 @@ Useful mappings for managing tabs:
 	" Super useful when editing files in the same directory
 	map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 	
-Switch CWD to the directory of the open buffer:
+Switch [CWD](http://vim.wikia.com/wiki/Set_working_directory_to_the_current_file) to the directory of the open buffer:
 	
 	map <leader>cd :cd %:p:h<cr>:pwd<cr>
 	
-Open `ag.vim` and put the cursor in the right position:
+Open `ag.vim` for fast search:
 	
 	map <leader>g :Ag 
 
-Remove the Windows ^M - when the encodings gets messed up:
-	
-	noremap <leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
-	
 Quickly open a buffer for scripbble:
 	
 	map <leader>q :e ~/buffer<cr>
@@ -209,23 +209,6 @@ Quickly open a buffer for scripbble:
 Toggle paste mode on and off:
 	
 	map <leader>pp :setlocal paste!<cr>
-
-
-### Insert mode mappings
-
-Quickly insert parenthesis/brackets/etc.:
-
-    inoremap $1 ()<esc>i
-    inoremap $2 []<esc>i
-    inoremap $3 {}<esc>i
-    inoremap $4 {<esc>o}<esc>O
-    inoremap $q ''<esc>i
-    inoremap $e ""<esc>i
-    inoremap $t <><esc>i
-
-Insert the current date and time (useful for timestamps):
-
-    iab xdate <c-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
 
 
 ### Visual mode mappings
@@ -251,7 +234,24 @@ Surround the visual selection in parenthesis/brackets/etc.:
     vnoremap $$ <esc>`>a"<esc>`<i"<esc>
     vnoremap $q <esc>`>a'<esc>`<i'<esc>
     vnoremap $e <esc>`>a"<esc>`<i"<esc>
-	
+
+
+### Insert mode mappings
+
+Quickly insert parenthesis/brackets/etc.:
+
+    inoremap $1 ()<esc>i
+    inoremap $2 []<esc>i
+    inoremap $3 {}<esc>i
+    inoremap $4 {<esc>o}<esc>O
+    inoremap $q ''<esc>i
+    inoremap $e ""<esc>i
+    inoremap $t <><esc>i
+
+Insert the current date and time (useful for timestamps):
+
+    iab xdate <c-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
+
 
 ### Command line mappings
 
@@ -274,19 +274,20 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
 
 ### Spell checking
-Pressing `<leader>ss` will toggle and untoggle spell checking
+Pressing `<leader>ss` will toggle spell checking:
 
     map <leader>ss :setlocal spell!<cr>
 
-Shortcuts using `<leader>` instead of special chars
+Shortcuts using `<leader>` instead of special characters:
 
     map <leader>sn ]s
     map <leader>sp [s
     map <leader>sa zg
     map <leader>s? z=
 
-### Cope	
-Do :help cope if you are unsure what cope is. It's super useful!
+
+### Cope
+Query `:help cope` if you are unsure what cope is. It's super useful!
 
 When you search with `ag.vim`, display your results in cope by doing:
 `<leader>cc`
@@ -297,14 +298,15 @@ To go to the next search result do:
 To go to the previous search results do:
 `<leader>p`
 
-Vimscript mappings:
+Cope mappings:
 
     map <leader>cc :botright cope<cr>
     map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
     map <leader>n :cn<cr>
     map <leader>p :cp<cr>
 
+
 ## How to uninstall
-Do following:
+Just do following:
 * Remove `~/.vim_runtime`
 * Remove any lines that reference `.vim_runtime` in your `~/.vimrc`
