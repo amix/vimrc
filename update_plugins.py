@@ -16,7 +16,7 @@ from os import path
 
 #--- Globals ----------------------------------------------
 PLUGINS = """
-ag.vim https://github.com/rking/ag.vim
+ack.vim https://github.com/mileszs/ack.vim
 bufexplorer https://github.com/corntrace/bufexplorer
 ctrlp.vim https://github.com/ctrlpvim/ctrlp.vim
 mayansmoke https://github.com/vim-scripts/mayansmoke

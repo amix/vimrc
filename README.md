@@ -66,7 +66,7 @@ Distraction free mode using [goyo.vim](https://github.com/junegunn/goyo.vim) and
 
 I recommend reading the docs of these plugins to understand them better. Each plugin provides a much better Vim experience!
 
-* [ag.vim](https://github.com/rking/ag.vim): Vim plugin for `the_silver_searcher` (ag) -- a wicked fast grep
+* [ack.vim](https://github.com/mileszs/ack.vim): Vim plugin for `the_silver_searcher` (ag) or ack -- a wicked fast grep
 * [bufexplorer.zip](https://github.com/vim-scripts/bufexplorer.zip): Quickly and easily switch between buffers. This plugin can be opened with `<leader+o>`
 * [ctrlp.vim](https://github.com/ctrlpvim/ctrlp.vim): Fuzzy file, buffer, mru and tag finder. It's mapped to `<Ctrl+F>`
 * [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2): 
@@ -195,9 +195,9 @@ Switch [CWD](http://vim.wikia.com/wiki/Set_working_directory_to_the_current_file
 	
 	map <leader>cd :cd %:p:h<cr>:pwd<cr>
 	
-Open `ag.vim` for fast search:
+Open `ack.vim` for fast search:
 	
-	map <leader>g :Ag 
+	map <leader>g :Ack 
 
 Quickly open a buffer for scripbble:
 	
@@ -215,7 +215,7 @@ Visual mode pressing `*` or `#` searches for the current selection:
 	vnoremap <silent> * :call VisualSelection('f')<CR>
 	vnoremap <silent> # :call VisualSelection('b')<CR>
 
-When you press gv you `ag.vim` after the selected text:
+When you press gv you `Ack.vim` after the selected text:
 
 	vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 
@@ -286,7 +286,7 @@ Shortcuts using `<leader>` instead of special characters:
 ### Cope
 Query `:help cope` if you are unsure what cope is. It's super useful!
 
-When you search with `ag.vim`, display your results in cope by doing:
+When you search with `Ack.vim`, display your results in cope by doing:
 `<leader>cc`
 
 To go to the next search result do:
