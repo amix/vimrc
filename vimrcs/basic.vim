@@ -65,6 +65,10 @@ nmap <leader>w :w!<cr>
 " (useful for handling the permission-denied error)
 command W w !sudo tee % > /dev/null
 
+nnoremap <leader>ev :vi ~/.vimrc<cr>
+nnoremap <leader>sv :source ~/.vimrc<cr>
+nnoremap <leader>s :mksession<cr>
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -237,7 +241,9 @@ map <leader>bd :Bclose<cr>:tabclose<cr>gT
 map <leader>ba :bufdo bd<cr>
 
 map <leader>l :bnext<cr>
+map <F8> :bn<cr>
 map <leader>h :bprevious<cr>
+map <F7> :bp<cr>
 
 " Useful mappings for managing tabs
 map <leader>tn :tabnew<cr>
