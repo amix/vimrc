@@ -162,3 +162,10 @@ nnoremap <silent> <leader>c :call SyntasticCheckCoffeescript()<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:gitgutter_enabled=0
 nnoremap <silent> <leader>d :GitGutterToggle<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Vim-Session
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:session_directory="~/tmp"
+let g:session_autoload="no"
+
