@@ -1,0 +1,6 @@
+[submodule "sources_non_forked/supertab"]
+	path = sources_non_forked/supertab
+	url = https://github.com/ervandew/supertab
+[submodule "sources_non_forked/bufonly"]
+	path = sources_non_forked/bufonly
+	url = https://github.com/schickling/vim-bufonly
