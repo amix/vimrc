@@ -1,0 +1,8 @@
+/Makefile
+/test/*
+/Gemfile
+/Gemfile.lock
+/Guardfile
+/*.zip
+/node.tar.gz
+tags
