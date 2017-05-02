@@ -8,6 +8,37 @@ set cpo&vim
 
 " Public functions {{{1
 
+function! syntastic#preprocess#bandit(errors) abort " {{{2
+    let out = []
+    let json = s:_decode_JSON(join(a:errors, ''))
+
+    if type(json) == type({}) && has_key(json, 'results') && type(json['results']) == type([])
+        for issue in json['results']
+            if type(issue) == type({})
+                try
+                    call add(out,
+                        \ issue['filename'] . ':' .
+                        \ issue['line_number'] . ':' .
+                        \ { 'LOW': 'I', 'MEDIUM': 'W', 'HIGH': 'E' }[issue['issue_severity']] . ':' .
+                        \ issue['test_id'][1:] . ':' .
+                        \ issue['issue_text'] .
+                        \ ' [' . issue['test_name'] .  '] (confidence: ' . issue['issue_confidence'] . ')')
+                catch /\m^Vim\%((\a\+)\)\=:E716/
+                    call syntastic#log#warn('checker python/bandit: unrecognized error item ' . string(issue))
+                    let out = []
+                    break
+                endtry
+            else
+                call syntastic#log#warn('checker python/bandit: unrecognized error item ' . string(issue))
+            endif
+        endfor
+    else
+        call syntastic#log#warn('checker python/bandit: unrecognized error format (crashed checker?)')
+    endif
+
+    return out
+endfunction " }}}2
+
 function! syntastic#preprocess#cabal(errors) abort " {{{2
     let out = []
     let star = 0
@@ -435,7 +466,7 @@ echomsg string(out)
 endfunction " }}}2
 
 function! syntastic#preprocess#tslint(errors) abort " {{{2
-    return map(copy(a:errors), 'substitute(v:val, ''\m^\(([^)]\+)\)\s\(.\+\)$'', ''\2 \1'', "")')
+    return map(copy(a:errors), 'substitute(v:val, ''\v^((ERROR|WARNING): )?\zs(\([^)]+\))\s(.+)$'', ''\4 \3'', "")')
 endfunction " }}}2
 
 function! syntastic#preprocess#validator(errors) abort " {{{2

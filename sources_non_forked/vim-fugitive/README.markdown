@@ -35,9 +35,15 @@ and you never get any warnings about the file changing outside Vim.
 making it like `git add` when called from a work tree file and like
 `git checkout` when called from the index or a blob in history.
 
-Use `:Gbrowse` to open the current file on GitHub, with optional line
-range (try it in visual mode!).  If your current repository isn't on
-GitHub, `git instaweb` will be spun up instead.
+Use `:Gbrowse` to open the current file on the web front-end of your favorite
+hosting provider, with optional line range (try it in visual mode!).  Built-in
+support is provided for `git instaweb`, and plugins are available for popular
+providers such as [GitHub][rhubarb.vim], [GitLab][fugitive-gitlab.vim], and
+[Bitbucket][fubitive.vim].
+
+[rhubarb.vim]: https://github.com/tpope/vim-rhubarb
+[fugitive-gitlab.vim]: https://github.com/shumphrey/fugitive-gitlab.vim
+[fubitive.vim]: https://github.com/tommcdo/vim-fubitive
 
 Add `%{fugitive#statusline()}` to `'statusline'` to get an indicator
 with the current branch in (surprise!) your statusline.

@@ -36,8 +36,14 @@ function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item) " {{{1
 endfunction " }}}1
 
 function! SyntaxCheckers_vim_vimlint_IsAvailable() dict " {{{1
-    let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim', 1)
-    let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim', 1)
+    try
+        " Vim 7.2-051 and later
+        let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim', 1)
+        let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim', 1)
+    catch /\m^Vim\%((\a\+)\)\=:E118/
+        let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim')
+        let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim')
+    endtry
     call self.log("globpath(&runtimepath, 'autoload/vimlparser.vim', 1) = " . string(vimlparser) . ', ' .
                 \ "globpath(&runtimepath, 'autoload/vimlint.vim', 1) = " .    string(vimlint))
     return vimlparser !=# '' && vimlint !=# ''

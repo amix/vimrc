@@ -39,10 +39,17 @@ snippet letm "let mut variable declaration with type inference"
 	let mut ${1}  = ${2};
 snippet lettm "let mut variable declaration with explicit type annotation"
 	let mut ${1}: ${2}  = ${3};
+snippet pri "print!"
+	print!("${1}");
+snippet pri, "print! with format param"
+	print!("${1}", ${2});
 snippet pln "println!"
 	println!("${1}");
 snippet pln, "println! with format param"
 	println!("${1}", ${2});
+snippet fmt "format!"
+	format!("${1}", ${2});
+
 # Modules
 snippet ec "extern crate"
 	extern crate ${1:sync};

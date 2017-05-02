@@ -274,7 +274,7 @@ TO USE A CUSTOM GREP COMMAND
 
 To use a custom invocation for grep, use this:
 >
-  let g:gitgutter_grep_command = 'grep --color=never -e'
+  let g:gitgutter_grep_command = 'grep'
 <
 
 TO TURN OFF VIM-GITGUTTER BY DEFAULT

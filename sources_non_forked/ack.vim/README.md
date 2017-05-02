@@ -78,9 +78,9 @@ The quickfix results window is augmented with these convenience mappings:
     ?    a quick summary of these keys, repeat to close
     o    to open (same as Enter)
     O    to open and close the quickfix window
-    go   to preview file, open but maintain focus on ack.vim results
+    go   to preview file, keeping focus on the results
     t    to open in new tab
-    T    to open in new tab without moving to it
+    T    to open in new tab, keeping focus on the results
     h    to open in horizontal split
     H    to open in horizontal split, keeping focus on the results
     v    to open in vertical split

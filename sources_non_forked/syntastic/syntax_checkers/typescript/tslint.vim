@@ -30,8 +30,10 @@ function! SyntaxCheckers_typescript_tslint_GetLocList() dict
         \ 'args_after': '--format verbose',
         \ 'fname_before': (s:tslint_new ? '' : '-f') })
 
-    " (comment-format) ts/app.ts[12, 36]: comment must start with lowercase letter
-    let errorformat = '%f[%l\, %c]: %m'
+    let errorformat =
+        \ '%EERROR: %f[%l\, %c]: %m,' .
+        \ '%WWARNING: %f[%l\, %c]: %m,' .
+        \ '%E%f[%l\, %c]: %m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,

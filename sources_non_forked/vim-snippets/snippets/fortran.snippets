@@ -91,6 +91,8 @@ snippet func
 	end function $1
 snippet pr
 	write(*,*) $0
+snippet dpr
+	write(*,*) '$1 = ', $1
 snippet read
 	read(unit = ${1:fp}, file = ${2:filename}, iostat = ${3:ierr}) $0
 snippet write

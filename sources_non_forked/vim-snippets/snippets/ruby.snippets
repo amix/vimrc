@@ -703,9 +703,9 @@ snippet is
 snippet isn
 	it { should_not ${0} }
 snippet iexp
-	it { expect(${1:object}).${1} ${0} }
+	it { expect(${1:object}).${2} ${0} }
 snippet iexpb
-	it { expect { ${1:object} }.${1} ${0} }
+	it { expect { ${1:object} }.${2} ${0} }
 snippet iiexp
 	it { is_expected.to ${0} }
 snippet iiexpn

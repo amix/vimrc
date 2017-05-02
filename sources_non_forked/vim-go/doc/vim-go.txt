@@ -21,8 +21,10 @@ CONTENTS                                                         *go-contents*
   5. Text Objects.................................|go-text-objects|
   6. Functions....................................|go-functions|
   7. Settings.....................................|go-settings|
-  8. Troubleshooting..............................|go-troubleshooting|
-  9. Credits......................................|go-credits|
+  8. FAQ/Troubleshooting..........................|go-troubleshooting|
+  9. Development..................................|go-development|
+ 10. Donation.....................................|go-donation|
+ 11. Credits......................................|go-credits|
 
 ==============================================================================
 INTRO                                                               *go-intro*
@@ -100,7 +102,7 @@ command.
 
     Plugin 'fatih/vim-go'
 
-*  Vim |packages| (since Vim 7.4.1528)
+*  Vim |packages| 
 >
     git clone https://github.com/fatih/vim-go.git \
       ~/.vim/pack/plugins/start/vim-go
@@ -1350,6 +1352,13 @@ default it's using `vet`, `golint` and `errcheck`.
 >
   let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
 <
+                                                   *'g:go_metalinter_excludes'*
+
+Specifies the linters to be excluded from the |:GoMetaLinter| command. By
+default it's empty
+>
+  let g:go_metalinter_excludes = []
+<
                                                    *'g:go_metalinter_command'*
 
 Overrides the command to be executed when |:GoMetaLinter| is called. This is
@@ -1530,7 +1539,29 @@ default it's 60 seconds. Must be in milliseconds.
       let g:go_statusline_duration = 60000
 <
 ==============================================================================
-TROUBLESHOOTING                                         *go-troubleshooting*
+DEVELOPMENT                                               *go-development*
+
+vim-go supports test files written in VimL. Please check `autoload` folder for
+examples. If you add a new feature be sure you also include the `_test.vim`
+file next to the script. Test functions should be starting with `Test_`,
+example:
+>
+ function Test_run_fmt()
+   call assert_equal(expected, actual)
+   ...
+ endfunction
+<
+You can locally test it by running:
+>
+ make
+<
+This will run all tests and print either `PASS` or `FAIL` to indicate the final
+status of all tests. Additionally, each new pull request will trigger a new
+Travis-ci job.
+
+
+==============================================================================
+FAQ TROUBLESHOOTING                                     *go-troubleshooting*
 
 I get "not an editor command" error when I invoke :GoXXX~
 
@@ -1568,13 +1599,61 @@ If you see errors like this:
 >
   Error installing golang.org/x/tools/cmd/goimports
 <
-that means your local Go setup is broken or the remote website is down.  For
+that means your local Go setup is broken or the remote website is down. For
 example sometimes code.google.com times out. To test, just execute a simple
 `go get`:
-
+>
   go get golang.org/x/tools/cmd/goimports
 <
 You'll see a more detailed error. If this works, vim-go will work too.
+
+
+How do I use vim-go with syntastic?~
+
+Sometimes when using both `vim-go` and `syntastic` Vim will start lagging
+while saving and opening files. The following fixes this:
+>
+ let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+ let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+<
+Another issue with `vim-go` and `syntastic` is that the location list window
+that contains the output of commands such as `:GoBuild` and `:GoTest` might
+not appear.  To resolve this:
+>
+ let g:go_list_type = "quickfix"
+<
+
+Using with NeoVim~
+
+Note: Neovim currently is not a first class citizen for vim-go. You are free
+to open bug, however I'm not using Neovim so it's hard for me to test it.
+vim-go might not work well as good as in Vim. I'm happy to accept pull requests
+or very detailed bug reports. If you're interested to improve the state of
+Neovim in vim-go you're always welcome!
+
+Run `:GoRun` in a new tab, horizontal split or vertical split terminal
+>
+ au FileType go nmap <leader>rt <Plug>(go-run-tab)
+ au FileType go nmap <leader>rs <Plug>(go-run-split)
+ au FileType go nmap <leader>rv <Plug>(go-run-vertical)
+<
+By default new terminals are opened in a vertical split. To change it
+>
+ let g:go_term_mode = "split"
+>
+
+==============================================================================
+DONATION                                                         *go-donation*
+
+People have asked for this for a long time, now you can be a fully supporter
+by being a patreon at: https://www.patreon.com/fatih
+
+By being a patron, you are enabling vim-go to grow and mature, helping me to
+invest in bug fixes, new documentation, and improving both current and future
+features. It's completely optional and is just a direct way to support Vim-go's
+ongoing development. Thanks!
+
+Check it out: https://www.patreon.com/fatih
 
 
 ==============================================================================

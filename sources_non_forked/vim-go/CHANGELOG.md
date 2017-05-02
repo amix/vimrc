@@ -1,5 +1,13 @@
 ## unplanned
 
+IMPROVEMENTS
+
+* :GoMetaLinter can now exclude linters with the new `g:go_metalinter_excludes` option [gh-1253]
+
+BUG FIXES:
+
+* job: fix race between channel close and job exit [gh-1247]
+
 ## 1.12 - (March 29, 2017)
 
 FEATURES:

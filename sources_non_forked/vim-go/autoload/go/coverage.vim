@@ -288,7 +288,7 @@ function s:coverage_job(args)
 
   let start_options = {
         \ 'callback': callbacks.callback,
-        \ 'close_cb': callbacks.close_cb,
+        \ 'exit_cb': callbacks.exit_cb,
         \ }
 
   " modify GOPATH if needed
