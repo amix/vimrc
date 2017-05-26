@@ -806,7 +806,7 @@ then all files ending in .vim or ~ will be ignored.
 There are 2 magic flags that can be appended to the end of each regular
 expression to specify that the regex should match only files or only dirs.
 These flags are "[[dir]]" and "[[file]]". Example: >
-    let NERDTreeIgnore=['.d$[[dir]]', '.o$[[file]]']
+    let NERDTreeIgnore=['\.d$[[dir]]', '\.o$[[file]]']
 <
 This will cause all dirs ending in ".d" to be ignored and all files ending in
 ".o" to be ignored.

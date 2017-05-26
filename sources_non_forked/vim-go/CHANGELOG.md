@@ -1,12 +1,27 @@
 ## unplanned
 
+FEATURES:
+
+* New `:GoKeyify` command that turns unkeyed struct literals into keyed struct literals. [gh-1258]
+* New `g:go_addtags_transform` setting to change the transform rule (snakecase, camelcase, etc..) for `:GoAddTags` command [gh-1275]
+* New snippet shortcut assigned to `ife` that expands to `if err := foo(); err != nil { ... }` [gh-1268]
+
 IMPROVEMENTS
 
 * :GoMetaLinter can now exclude linters with the new `g:go_metalinter_excludes` option [gh-1253]
+* Override `<C-LeftMouse>` mapping so `:GoDef` is used by default (as we do the same for `CTRL-]`, `gd`, etc. [gh-1264]
 
 BUG FIXES:
 
 * job: fix race between channel close and job exit [gh-1247]
+* internal: fix system calls when using tcsh [gh-1276]
+* path: return the unmodified GOPATH if autodetect is disabled [gh-1280]
+* fix jumping to quickfix window when autom gometalinter on save was enabled [gh-1293]
+
+BACKWARDS INCOMPATIBILITIES:
+
+* `:GoLint` works on the whole directory instead of the current file. To use it for the current file give it as an argument, i.e `:GoLint foo.go` [gh-1295]
+* `go_snippet_case_type` is removed in favor of the new `go_addtags_transform` setting [gh-1299]
 
 ## 1.12 - (March 29, 2017)
 

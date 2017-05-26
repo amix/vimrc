@@ -4633,6 +4633,7 @@ The following checkers are available for PHP (filetype "php"):
     2. PHP_CodeSniffer..........|syntastic-php-phpcs|
     3. PHPLint..................|syntastic-php-phplint|
     4. PHP Mess Detector........|syntastic-php-phpmd|
+    5. PHPStan..................|syntastic-php-phpstan|
 
 ------------------------------------------------------------------------------
 1. PHP                                                     *syntastic-php-php*
@@ -4706,6 +4707,24 @@ Maintainer:  Martin Grenfell <martin.grenfell@gmail.com>
 details:
 
     http://phpmd.org
+
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+------------------------------------------------------------------------------
+5. PHP Static Analysis Tool                            *syntastic-php-phpstan*
+
+Name:        phpstan
+Maintainer:  Przepompownia <przepompownia@users.noreply.github.com>
+
+"PHPStan" focuses on finding errors in your code without actually running it.
+See the project's page iat GitHub for details:
+
+    https://github.com/phpstan/phpstan
+
+Syntastic supports "PHPStan" versions 0.7 and later.
 
 Checker options~
 
@@ -6123,6 +6142,13 @@ Installation~
 You can install "Slim-Lint" with "gem": >
     gem install slim_lint
 <
+Note~
+
+You probably also need a plugin to set |filetype| for Slim files, such as
+"vim-slim":
+
+     https://github.com/slim-template/vim-slim
+
 ------------------------------------------------------------------------------
 2. Slimrb                                              *syntastic-slim-slimrb*
 
@@ -6138,6 +6164,13 @@ Checker options~
 
 This checker is initialised using the "makeprgBuild()" function and thus it
 accepts the standard options described at |syntastic-config-makeprg|.
+
+Note~
+
+You probably also need a plugin to set |filetype| for Slim files, such as
+"vim-slim":
+
+     https://github.com/slim-template/vim-slim
 
 ==============================================================================
 SYNTAX CHECKERS FOR SML                               *syntastic-checkers-sml*

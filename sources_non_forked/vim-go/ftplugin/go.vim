@@ -33,6 +33,8 @@ if get(g:, "go_def_mapping_enabled", 1)
   " useful again for Go source code
   nnoremap <buffer> <silent> gd :GoDef<cr>
   nnoremap <buffer> <silent> <C-]> :GoDef<cr>
+  nnoremap <buffer> <silent> <C-LeftMouse> <LeftMouse>:GoDef<cr>
+  nnoremap <buffer> <silent> g<LeftMouse> <LeftMouse>:GoDef<cr>
   nnoremap <buffer> <silent> <C-w><C-]> :<C-u>call go#def#Jump("split")<CR>
   nnoremap <buffer> <silent> <C-w>] :<C-u>call go#def#Jump("split")<CR>
   nnoremap <buffer> <silent> <C-t> :<C-U>call go#def#StackPop(v:count1)<cr>

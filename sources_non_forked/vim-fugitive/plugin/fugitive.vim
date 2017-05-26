@@ -298,6 +298,9 @@ endfunction
 function! s:repo_tree(...) dict abort
   if self.dir() =~# '/\.git$'
     let dir = self.dir()[0:-6]
+    if dir !~# '/'
+      let dir .= '/'
+    endif
   else
     let dir = s:configured_tree(self.git_dir)
   endif
@@ -972,11 +975,14 @@ function! s:StageToggle(lnum1,lnum2) abort
         continue
       endif
       execute lnum
-      if filename =~ ' -> '
-        let cmd = ['mv','--'] + reverse(split(filename,' -> '))
-        let filename = cmd[-1]
-      elseif section ==# 'staged'
-        let cmd = ['reset','-q','--',filename]
+      if section ==# 'staged'
+        if filename =~ ' -> '
+          let files_to_unstage = split(filename,' -> ')
+        else
+          let files_to_unstage = [filename]
+        endif
+        let filename = files_to_unstage[-1]
+        let cmd = ['reset','-q','--'] + files_to_unstage
       elseif getline(lnum) =~# '^#\tdeleted:'
         let cmd = ['rm','--',filename]
       elseif getline(lnum) =~# '^#\tmodified:'
@@ -1118,7 +1124,7 @@ function! s:Commit(args, ...) abort
       elseif error ==# '!'
         return s:Status()
       else
-        call s:throw(error)
+        call s:throw(empty(error)?join(errors, ' '):error)
       endif
     endif
   catch /^fugitive:/
@@ -1385,6 +1391,7 @@ function! s:Edit(cmd,bang,...) abort
             endif
           endif
         endfor
+        diffoff!
       endif
     endif
   endif
@@ -2894,7 +2901,7 @@ function! s:cfile() abort
         let ref = matchstr(getline('.'),'\x\{40\}')
         echoerr "warning: unknown context ".matchstr(getline('.'),'^\l*')
 
-      elseif getline('.') =~# '^[+-]\{3\} [abciwo12]\=/'
+      elseif getline('.') =~# '^[+-]\{3\} [abciow12]\=/'
         let ref = getline('.')[4:]
 
       elseif getline('.') =~# '^[+-]' && search('^@@ -\d\+,\d\+ +\d\+,','bnW')
@@ -2908,7 +2915,7 @@ function! s:cfile() abort
           let lnum -= 1
         endwhile
         let offset += matchstr(getline(lnum), type.'\zs\d\+')
-        let ref = getline(search('^'.type.'\{3\} [abciwo12]/','bnW'))[4:-1]
+        let ref = getline(search('^'.type.'\{3\} [abciow12]/','bnW'))[4:-1]
         let dcmds = [offset, 'normal!zv']
 
       elseif getline('.') =~# '^rename from '
@@ -2917,22 +2924,22 @@ function! s:cfile() abort
         let ref = 'b/'.getline('.')[10:]
 
       elseif getline('.') =~# '^@@ -\d\+,\d\+ +\d\+,'
-        let diff = getline(search('^diff --git \%([abciwo12]/.*\|/dev/null\) \%([abciwo12]/.*\|/dev/null\)', 'bcnW'))
+        let diff = getline(search('^diff --git \%([abciow12]/.*\|/dev/null\) \%([abciow12]/.*\|/dev/null\)', 'bcnW'))
         let offset = matchstr(getline('.'), '+\zs\d\+')
 
-        let dref = matchstr(diff, '\Cdiff --git \zs\%([abciwo12]/.*\|/dev/null\)\ze \%([abciwo12]/.*\|/dev/null\)')
-        let ref = matchstr(diff, '\Cdiff --git \%([abciwo12]/.*\|/dev/null\) \zs\%([abciwo12]/.*\|/dev/null\)')
+        let dref = matchstr(diff, '\Cdiff --git \zs\%([abciow12]/.*\|/dev/null\)\ze \%([abciow12]/.*\|/dev/null\)')
+        let ref = matchstr(diff, '\Cdiff --git \%([abciow12]/.*\|/dev/null\) \zs\%([abciow12]/.*\|/dev/null\)')
         let dcmd = 'Gdiff! +'.offset
 
-      elseif getline('.') =~# '^diff --git \%([abciwo12]/.*\|/dev/null\) \%([abciwo12]/.*\|/dev/null\)'
-        let dref = matchstr(getline('.'),'\Cdiff --git \zs\%([abciwo12]/.*\|/dev/null\)\ze \%([abciwo12]/.*\|/dev/null\)')
-        let ref = matchstr(getline('.'),'\Cdiff --git \%([abciwo12]/.*\|/dev/null\) \zs\%([abciwo12]/.*\|/dev/null\)')
+      elseif getline('.') =~# '^diff --git \%([abciow12]/.*\|/dev/null\) \%([abciow12]/.*\|/dev/null\)'
+        let dref = matchstr(getline('.'),'\Cdiff --git \zs\%([abciow12]/.*\|/dev/null\)\ze \%([abciow12]/.*\|/dev/null\)')
+        let ref = matchstr(getline('.'),'\Cdiff --git \%([abciow12]/.*\|/dev/null\) \zs\%([abciow12]/.*\|/dev/null\)')
         let dcmd = 'Gdiff!'
 
-      elseif getline('.') =~# '^index ' && getline(line('.')-1) =~# '^diff --git \%([abciwo12]/.*\|/dev/null\) \%([abciwo12]/.*\|/dev/null\)'
+      elseif getline('.') =~# '^index ' && getline(line('.')-1) =~# '^diff --git \%([abciow12]/.*\|/dev/null\) \%([abciow12]/.*\|/dev/null\)'
         let line = getline(line('.')-1)
-        let dref = matchstr(line,'\Cdiff --git \zs\%([abciwo12]/.*\|/dev/null\)\ze \%([abciwo12]/.*\|/dev/null\)')
-        let ref = matchstr(line,'\Cdiff --git \%([abciwo12]/.*\|/dev/null\) \zs\%([abciwo12]/.*\|/dev/null\)')
+        let dref = matchstr(line,'\Cdiff --git \zs\%([abciow12]/.*\|/dev/null\)\ze \%([abciow12]/.*\|/dev/null\)')
+        let ref = matchstr(line,'\Cdiff --git \%([abciow12]/.*\|/dev/null\) \zs\%([abciow12]/.*\|/dev/null\)')
         let dcmd = 'Gdiff!'
 
       elseif line('$') == 1 && getline('.') =~ '^\x\{40\}$'
@@ -2957,9 +2964,9 @@ function! s:cfile() abort
         let prefixes.a = myhash.'^:'
         let prefixes.b = myhash.':'
       endif
-      let ref = s:sub(ref, '^\(\w\)/', 'get(prefixes, submatch(1), "HEAD:")')
+      let ref = substitute(ref, '^\(\w\)/', '\=get(prefixes, submatch(1), "HEAD:")', '')
       if exists('dref')
-        let dref = s:sub(dref, '^\(\w\)/', 'get(prefixes, submatch(1), "HEAD:")')
+        let dref = substitute(dref, '^\(\w\)/', '\=get(prefixes, submatch(1), "HEAD:")', '')
       endif
 
       if ref ==# '/dev/null'

@@ -102,7 +102,7 @@ command.
 
     Plugin 'fatih/vim-go'
 
-*  Vim |packages| 
+*  Vim |packages|
 >
     git clone https://github.com/fatih/vim-go.git \
       ~/.vim/pack/plugins/start/vim-go
@@ -167,7 +167,7 @@ COMMANDS                                                         *go-commands*
                                                                      *:GoLint*
 :GoLint [packages]
 
-    Run golint for the current Go file, or for given packages.
+    Run golint for the current directory, or for given packages.
 
                                                                       *:GoDoc*
 :GoDoc [word]
@@ -219,14 +219,17 @@ COMMANDS                                                         *go-commands*
     If [!] is not given the first error is jumped to.
 
                                                                       *:GoDef*
-:GoDef 
+:GoDef
 gd
 CTRL-]
+g<C-LeftMouse>
+<C-LeftMouse>
 
-    Goto declaration/definition for the declaration under the cursor. By default
-    the CTRL-] key and the mapping `gd` are enabled to invoke :GoDef for the
-    identifier under the cursor. See |'g:go_def_mapping_enabled'| to disable
-    them.  No explicit arguments are supported.
+    Goto declaration/definition for the declaration under the cursor. By
+    default the CTRL-] shortcut, the mapping `gd` and <C-LeftMouse>,
+    g<LeftMouse> are enabled to invoke :GoDef for the identifier under the
+    cursor. See |'g:go_def_mapping_enabled'| to disable them. No explicit
+    arguments are supported.
 
     vim-go also keeps a per-window location stack, roughly analogous to how
     Vim's internal |tags| functionality works. This is pushed to every time a
@@ -605,7 +608,7 @@ CTRL-t
     Changes the build tags for various commands. If you have any file that
     uses a custom build tag, such as `//+build integration` , this command can
     be used to pass it to all tools that accepts tags, such as guru, gorenate,
-    etc.. 
+    etc..
 
     The build tags is cleared (unset) if `""` is given. If no arguments is
     given it prints the current custom build tags.
@@ -742,7 +745,22 @@ CTRL-t
 
     Toggles |'g:go_template_autocreate'|.
 
+                                                               *:GoKeyify*
+:GoKeyify
 
+    Uses `keyify` to turn unkeyed struct literals into keyed ones.
+
+    For example:
+>
+      Person{"John", "Smith"}
+<
+    Becomes:
+>
+      Person{
+        Name: "John",
+        Surname: "Smith",
+      }
+<
 ==============================================================================
 MAPPINGS                                                        *go-mappings*
 
@@ -1128,9 +1146,10 @@ Use this option to define the command to be used for |:GoDef|. By default
 <
                                                   *'g:go_def_mapping_enabled'*
 
-Use this option to enable/disable the default mapping of CTRL-] and (`gd`) for
-GoDef and CTRL-t for :GoDefPop. Disabling it allows you to map something else
-to these keys or mappings. Default is enabled. >
+Use this option to enable/disable the default mapping of CTRL-],
+<C-LeftMouse>, g<C-LeftMouse> and (`gd`) for GoDef and CTRL-t for :GoDefPop.
+Disabling it allows you to map something else to these keys or mappings.
+Default is enabled. >
 
   let g:go_def_mapping_enabled = 1
 <
@@ -1170,28 +1189,6 @@ is used. Use "neosnippet" for neosnippet.vim: >
 
   let g:go_snippet_engine = "ultisnips"
 <
-                                                    *'g:go_snippet_case_type'*
-
-Use this option to define the default conversion type of snippet expansion for
-field tags. For the following case, if `snakecase` is used the `json` snippet
-will expand to:
->
-  type T struct {
-    FooBarQuz string `json:"foo_bar_quz"
-  }
-<
-
-If "camelcase" is used:
->
-  type T struct {
-    FooBarQuz string `json:"fooBarQuz"
-  }
-<
-By default "snakecase" is used. Current values are: ["snakecase",
-"camelcase"].
->
-  let g:go_snippet_case_type = "snakecase"
-<
                                                            *'g:go_get_update'*
 
 Use this option to disable updating dependencies with |:GoInstallBinaries|. By
@@ -1213,7 +1210,7 @@ set, so the relevant commands defaults are being used.
                                                            *'g:go_build_tags'*
 
 These options that will be automatically passed to the `-tags` option of
-various tools, such as `guru`, `gorename`, etc... This is a permanatent
+various tools, such as `guru`, `gorename`, etc... This is a permanent
 setting. A more useful way is to use |:GoBuildTags| to dynamically change or
 remove build tags. By default it's not set.
 >
@@ -1538,6 +1535,31 @@ default it's 60 seconds. Must be in milliseconds.
 >
       let g:go_statusline_duration = 60000
 <
+
+                                                   *'g:go_addtags_transform'*
+
+Sets the `transform` option for `gomodifytags` when using |:GoAddTags| or if
+it's being used for snippet expansion of single fields.  Possible options are:
+`snakecase`, `camelcase`. For the following case, if `snakecase` is used the
+field will be transformed to:
+>
+  type T struct {
+    FooBarQuz string `json:"foo_bar_quz"
+  }
+<
+
+If "camelcase" is used:
+>
+  type T struct {
+    FooBarQuz string `json:"fooBarQuz"
+  }
+<
+By default "snakecase" is used. Current values are: ["snakecase",
+"camelcase"].
+>
+      let g:go_addtags_transform = 'snakecase'
+<
+
 ==============================================================================
 DEVELOPMENT                                               *go-development*
 

@@ -94,19 +94,29 @@ function! go#util#osarch() abort
   return go#util#goos() . '_' . go#util#goarch()
 endfunction
 
-" System runs a shell command. It will reset the shell to /bin/sh for Unix-like
-" systems if it is executable.
+" System runs a shell command. If possible, it will temporary set 
+" the shell to /bin/sh for Unix-like systems providing a Bourne
+" POSIX like environment.
 function! go#util#System(str, ...) abort
+  " Preserve original shell and shellredir values
   let l:shell = &shell
+  let l:shellredir = &shellredir
+
+  " Use a Bourne POSIX like shell. Some parts of vim-go expect
+  " commands to be executed using bourne semantics #988 and #1276.
+  " Alter shellredir to match bourne. Especially important if login shell
+  " is set to any of the csh or zsh family #1276.
   if !go#util#IsWin() && executable('/bin/sh')
-    let &shell = '/bin/sh'
+      set shell=/bin/sh shellredir=>%s\ 2>&1
   endif
 
   try
     let l:output = call('system', [a:str] + a:000)
     return l:output
   finally
+    " Restore original values
     let &shell = l:shell
+    let &shellredir = l:shellredir
   endtry
 endfunction
 
@@ -203,7 +213,7 @@ endfunction
 " snippetcase converts the given word to given preferred snippet setting type
 " case.
 function! go#util#snippetcase(word) abort
-  let l:snippet_case = get(g:, 'go_snippet_case_type', "snakecase")
+  let l:snippet_case = get(g:, 'go_addtags_transform', "snakecase")
   if l:snippet_case == "snakecase"
     return go#util#snakecase(a:word)
   elseif l:snippet_case == "camelcase"
@@ -233,51 +243,6 @@ function! go#util#camelcase(word) abort
   else
     return substitute(word,'\C\(_\)\=\(.\)','\=submatch(1)==""?tolower(submatch(2)) : toupper(submatch(2))','g')
   endif
-endfunction
-
-function! go#util#AddTags(line1, line2, ...) abort
-  " default is json
-  let l:keys = ["json"]
-  if a:0
-    let l:keys = a:000
-  endif
-
-  let l:line1 = a:line1
-  let l:line2 = a:line2
-
-  " If we're inside a struct and just call this function let us add the tags
-  " to all fields
-  " TODO(arslan): I don't like using patterns. Check if we can move it to
-  " `motion` and do it via AST based position
-  let ln1 = searchpair('struct {', '', '}', 'bcnW')
-  if ln1 == 0
-    echon "vim-go: " | echohl ErrorMsg | echon "cursor is outside the struct" | echohl None
-    return
-  endif
-
-  " searchpair only returns a single position
-  let ln2 = search('}', "cnW")
-
-  " if no range is given we apply for the whole struct
-  if l:line1 == l:line2
-    let l:line1 = ln1 + 1
-    let l:line2 = ln2 - 1
-  endif
-
-  for line in range(l:line1, l:line2)
-    " get the field name (word) that are not part of a commented line
-    let l:matched = matchstr(getline(line), '\(\/\/.*\)\@<!\w\+')
-    if empty(l:matched)
-      continue
-    endif
-
-    let word = go#util#snippetcase(l:matched)
-    let tags = map(copy(l:keys), 'printf("%s:%s", v:val,"\"'. word .'\"")')
-    let updated_line = printf("%s `%s`", getline(line), join(tags, " "))
-
-    " finally, update the line inplace
-    call setline(line, updated_line)
-  endfor
 endfunction
 
 " TODO(arslan): I couldn't parameterize the highlight types. Check if we can
