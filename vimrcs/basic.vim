@@ -140,6 +140,9 @@ endif
 " Add a bit extra margin to the left
 set foldcolumn=1
 
+" Show line number 
+set nu 
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
