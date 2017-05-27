@@ -3,6 +3,9 @@ set -e
 
 cd ~/.vim_runtime
 
+echo "Installing plugins..."
+./update_plugins.py > /dev/null
+
 echo 'set runtimepath+=~/.vim_runtime
 
 source ~/.vim_runtime/vimrcs/basic.vim
