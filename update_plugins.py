@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 try:
     import concurrent.futures as futures
 except ImportError:
@@ -9,7 +10,12 @@ except ImportError:
 import zipfile
 import shutil
 import tempfile
-import requests
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
 
 from os import path
 
@@ -63,8 +69,8 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     temp_zip_path = path.join(temp_dir, plugin_name)
 
     # Download and extract file in temp dir
-    req = requests.get(zip_path)
-    open(temp_zip_path, 'wb').write(req.content)
+    resp = urlopen(zip_path)
+    open(temp_zip_path, 'wb').write(resp.read())
 
     zip_f = zipfile.ZipFile(temp_zip_path)
     zip_f.extractall(temp_dir)
