@@ -3,9 +3,9 @@ snippet mod
 		(
 		) where
 
-		import Prelude
+	import Prelude
 
-		${0}
+	${0}
 snippet imp
 	import ${0:Data.List}
 snippet impq
@@ -50,3 +50,8 @@ snippet testunit
 				Assert.equal
 					"Hello, world!"
 					"Hello, sailor!"
+snippet if
+	if ${1} then
+		${2:${VISUAL}}
+	else
+		${0}

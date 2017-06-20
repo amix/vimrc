@@ -40,7 +40,7 @@
 " in your mapping will look like this:
 "
 "   nnoremap <silent> <Plug>MyMap
-"   \   :<C-U>execute 'silent! call repeat#setreg("\<lt>Plug>MyMap", v:register)'<Bar>
+"   \   :<C-U>silent! call repeat#setreg("\<lt>Plug>MyMap", v:register)<Bar>
 "   \   call <SID>MyFunction(v:register, ...)<Bar>
 "   \   silent! call repeat#set("\<lt>Plug>MyMap")<CR>
 

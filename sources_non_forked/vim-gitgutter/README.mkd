@@ -215,6 +215,7 @@ By default the signs are updated as follows:
 | Switch buffer             | To notice change to git index        | `g:gitgutter_eager`    |
 | Switch tab                | To notice change to git index        | `g:gitgutter_eager`    |
 | Focus the GUI             | To notice change to git index        | `g:gitgutter_eager` (not gVim on Windows) |
+| After shell command       | To notice change to git index        | `g:gitgutter_eager`    |
 | Read a file into a buffer | To display initial signs             | [always]               |
 | Save a buffer             | So non-realtime signs are up to date | [always]               |
 | Change a file outside Vim | To notice `git stash`                | [always]               |
@@ -338,11 +339,11 @@ See above for configuring maps for hunk-jumping and staging/undoing.
 
 #### Use a custom `grep` command
 
-If you use an alternative to grep, or your grep does not support the `color` flag, you can tell vim-gitgutter to use it here. It only needs to support extended POSIX regex.
+If you use an alternative to grep, you can tell vim-gitgutter to use it here.
 
 ```viml
 " Default:
-let g:gitgutter_grep_command = 'grep --color=never -e'
+let g:gitgutter_grep_command = 'grep'
 ```
 
 #### To turn off vim-gitgutter by default
@@ -427,6 +428,58 @@ Let's say, for example, you want to remove trailing whitespace from all changed 
 ```
 
 
+#### Cycle through hunks in all buffers
+
+`]c` and `[c` jump from one hunk to the next in the current buffer.  You can use this code to jump to the next hunk no matter which buffer it's in.
+
+```viml
+function! NextHunkAllBuffers()
+  let line = line('.')
+  GitGutterNextHunk
+  if line('.') != line
+    return
+  endif
+
+  let bufnr = bufnr('')
+  while 1
+    bnext
+    if bufnr('') == bufnr
+      return
+    endif
+    if !empty(GitGutterGetHunks())
+      normal! 1G
+      GitGutterNextHunk
+      return
+    endif
+  endwhile
+endfunction
+
+function! PrevHunkAllBuffers()
+  let line = line('.')
+  GitGutterPrevHunk
+  if line('.') != line
+    return
+  endif
+
+  let bufnr = bufnr('')
+  while 1
+    bprevious
+    if bufnr('') == bufnr
+      return
+    endif
+    if !empty(GitGutterGetHunks())
+      normal! G
+      GitGutterPrevHunk
+      return
+    endif
+  endwhile
+endfunction
+
+nmap <silent> ]c :call NextHunkAllBuffers()<CR>
+nmap <silent> [c :call PrevHunkAllBuffers()<CR>
+```
+
+
 ### FAQ
 
 > Why can't I unstage staged changes?
@@ -474,7 +527,7 @@ Here are some things you can check:
 * Your git config is compatible with the version of git returned by the command above.
 * Your Vim supports signs (`:echo has('signs')` should give `1`).
 * Your file is being tracked by git and has unstaged changes.
-* If your grep does not support the `color` flag, add `let g:gitgutter_grep_command = 'grep -e'` to your `~/.vimrc`.
+* If you have aliased or configured `grep` to use any flags, add `let g:gitgutter_grep_command = 'grep'` to your `~/.vimrc`.
 
 
 ### Shameless Plug

@@ -2,6 +2,31 @@
 
 FEATURES:
 
+* New `:GoKeyify` command that turns unkeyed struct literals into keyed struct literals. [gh-1258]
+* New `g:go_addtags_transform` setting to change the transform rule (snakecase, camelcase, etc..) for `:GoAddTags` command [gh-1275]
+* New snippet shortcut assigned to `ife` that expands to `if err := foo(); err != nil { ... }` [gh-1268]
+
+IMPROVEMENTS
+
+* :GoMetaLinter can now exclude linters with the new `g:go_metalinter_excludes` option [gh-1253]
+* Override `<C-LeftMouse>` mapping so `:GoDef` is used by default (as we do the same for `CTRL-]`, `gd`, etc. [gh-1264]
+
+BUG FIXES:
+
+* job: fix race between channel close and job exit [gh-1247]
+* internal: fix system calls when using tcsh [gh-1276]
+* path: return the unmodified GOPATH if autodetect is disabled [gh-1280]
+* fix jumping to quickfix window when autom gometalinter on save was enabled [gh-1293]
+
+BACKWARDS INCOMPATIBILITIES:
+
+* `:GoLint` works on the whole directory instead of the current file. To use it for the current file give it as an argument, i.e `:GoLint foo.go` [gh-1295]
+* `go_snippet_case_type` is removed in favor of the new `go_addtags_transform` setting [gh-1299]
+
+## 1.12 - (March 29, 2017)
+
+FEATURES:
+
 * New `:GoAddTags` and `:GoRemoveTags` command based on the tool
   [gomodifytags](https://github.com/fatih/gomodifytags). This fixes many old
   bugs that were due prior regexp based implementation. For the usage please
@@ -20,6 +45,7 @@ if err != nil {
 
 IMPROVEMENTS:
 
+* vim-go works now even if GOPATH is not set (starting with Go 1.8) [gh-1248]
 * Lowercase `<Leader>` in mappings examples for consistent documentation across the README [gh-1192]
 * All of files should be written in utf-8 if the file will be passed to external command. [gh-1184]
 * `:GoAddTags` is now able to add options to existing tags with the syntax
@@ -27,6 +53,8 @@ IMPROVEMENTS:
 * Document 'noshowmode' requirement for echo_go_info [gh-1197]
 * Improve godoc view for vertical splits [gh-1195]
 * Set GOPATH for both possible go guru execution paths (sync and async) [gh-1193]
+* Improve docs for :GoDef usage [gh-1242]
+* Highlight trimming syntax for Go templates [gh-1235]
 
 BUG FIXES:
 
@@ -44,12 +72,13 @@ BUG FIXES:
 * Fix `:GoAddTags` not working if any field comment would contain `{}` [gh-1189]
 * Respect go_fmt_options when running goimports [gh-1211]
 * Set the filename in the location-list when there is an error with :GoFmt [gh-1199]
+* Fix `:GoInstall` to accept additional arguments if async mode was enabled [gh-1246]
 
 BACKWARDS INCOMPATIBILITIES:
 
 * The command `:GoGuruTags` is removed in favour of the new command
   `:GoBuildTags`. This command will be used now not just for `guru`, also for
-  all new commands such as `guru` [gh-1232]
+  all new commands such as `gorename` [gh-1232]
 * The setting `g:go_guru_tags` is removed in favour of the new setting
   `g:go_build_tags` [gh-1232]
 

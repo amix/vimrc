@@ -17,7 +17,6 @@ from os import path
 #--- Globals ----------------------------------------------
 PLUGINS = """
 ack.vim https://github.com/mileszs/ack.vim
-ag.vim https://github.com/rking/ag.vim
 bufexplorer https://github.com/corntrace/bufexplorer
 ctrlp.vim https://github.com/ctrlpvim/ctrlp.vim
 mayansmoke https://github.com/vim-scripts/mayansmoke
@@ -52,6 +51,7 @@ vim-flake8 https://github.com/nvie/vim-flake8
 vim-pug https://github.com/digitaltoad/vim-pug
 vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
 lightline.vim https://github.com/itchyny/lightline.vim
+vim-abolish https://github.com/tpope/vim-abolish
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'

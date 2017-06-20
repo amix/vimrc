@@ -136,6 +136,10 @@ endfunction
 " formated.
 function! go#fmt#run(bin_name, source, target)
   let cmd = s:fmt_cmd(a:bin_name, a:source, a:target)
+  if empty(cmd)
+    return
+  endif
+
   if cmd[0] == "goimports"
     " change GOPATH too, so goimports can pick up the correct library
     let old_gopath = $GOPATH
@@ -162,7 +166,7 @@ function! s:fmt_cmd(bin_name, source, target)
   " if not the user get's a warning via go#path#CheckBinPath()
   let bin_path = go#path#CheckBinPath(a:bin_name)
   if empty(bin_path)
-    return
+    return []
   endif
 
   " start constructing the command
@@ -176,7 +180,7 @@ function! s:fmt_cmd(bin_name, source, target)
     if !exists('b:goimports_vendor_compatible')
       let out = go#util#System(bin_path . " --help")
       if out !~ "-srcdir"
-        call go#util#EchoWarning(printf("vim-go: goimports (%s) does not support srcdir. Update with: :GoUpdateBinaries", bin_path))
+        call go#util#EchoWarning(printf("vim-go: goimports (%s) does not support srcdir. Update with: :GoUpdateBinaries", , bin_path))
       else
         let b:goimports_vendor_compatible = 1
       endif

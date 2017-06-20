@@ -21,8 +21,10 @@ CONTENTS                                                         *go-contents*
   5. Text Objects.................................|go-text-objects|
   6. Functions....................................|go-functions|
   7. Settings.....................................|go-settings|
-  8. Troubleshooting..............................|go-troubleshooting|
-  9. Credits......................................|go-credits|
+  8. FAQ/Troubleshooting..........................|go-troubleshooting|
+  9. Development..................................|go-development|
+ 10. Donation.....................................|go-donation|
+ 11. Credits......................................|go-credits|
 
 ==============================================================================
 INTRO                                                               *go-intro*
@@ -100,7 +102,7 @@ command.
 
     Plugin 'fatih/vim-go'
 
-*  Vim |packages| (since Vim 7.4.1528)
+*  Vim |packages|
 >
     git clone https://github.com/fatih/vim-go.git \
       ~/.vim/pack/plugins/start/vim-go
@@ -165,7 +167,7 @@ COMMANDS                                                         *go-commands*
                                                                      *:GoLint*
 :GoLint [packages]
 
-    Run golint for the current Go file, or for given packages.
+    Run golint for the current directory, or for given packages.
 
                                                                       *:GoDoc*
 :GoDoc [word]
@@ -217,15 +219,17 @@ COMMANDS                                                         *go-commands*
     If [!] is not given the first error is jumped to.
 
                                                                       *:GoDef*
-:GoDef [identifier]
+:GoDef
 gd
 CTRL-]
+g<C-LeftMouse>
+<C-LeftMouse>
 
-    Goto declaration/definition for the given [identifier]. If no argument is
-    given, it will jump to the declaration under the cursor. By default the
-    CTRL-] key and the mapping `gd` are enabled to invoke :GoDef for the
-    identifier under the cursor. See |'g:go_def_mapping_enabled'| to disable
-    them.
+    Goto declaration/definition for the declaration under the cursor. By
+    default the CTRL-] shortcut, the mapping `gd` and <C-LeftMouse>,
+    g<LeftMouse> are enabled to invoke :GoDef for the identifier under the
+    cursor. See |'g:go_def_mapping_enabled'| to disable them. No explicit
+    arguments are supported.
 
     vim-go also keeps a per-window location stack, roughly analogous to how
     Vim's internal |tags| functionality works. This is pushed to every time a
@@ -604,7 +608,7 @@ CTRL-t
     Changes the build tags for various commands. If you have any file that
     uses a custom build tag, such as `//+build integration` , this command can
     be used to pass it to all tools that accepts tags, such as guru, gorenate,
-    etc.. 
+    etc..
 
     The build tags is cleared (unset) if `""` is given. If no arguments is
     given it prints the current custom build tags.
@@ -741,7 +745,22 @@ CTRL-t
 
     Toggles |'g:go_template_autocreate'|.
 
+                                                               *:GoKeyify*
+:GoKeyify
 
+    Uses `keyify` to turn unkeyed struct literals into keyed ones.
+
+    For example:
+>
+      Person{"John", "Smith"}
+<
+    Becomes:
+>
+      Person{
+        Name: "John",
+        Surname: "Smith",
+      }
+<
 ==============================================================================
 MAPPINGS                                                        *go-mappings*
 
@@ -1127,9 +1146,10 @@ Use this option to define the command to be used for |:GoDef|. By default
 <
                                                   *'g:go_def_mapping_enabled'*
 
-Use this option to enable/disable the default mapping of CTRL-] and (`gd`) for
-GoDef and CTRL-t for :GoDefPop. Disabling it allows you to map something else
-to these keys or mappings. Default is enabled. >
+Use this option to enable/disable the default mapping of CTRL-],
+<C-LeftMouse>, g<C-LeftMouse> and (`gd`) for GoDef and CTRL-t for :GoDefPop.
+Disabling it allows you to map something else to these keys or mappings.
+Default is enabled. >
 
   let g:go_def_mapping_enabled = 1
 <
@@ -1169,28 +1189,6 @@ is used. Use "neosnippet" for neosnippet.vim: >
 
   let g:go_snippet_engine = "ultisnips"
 <
-                                                    *'g:go_snippet_case_type'*
-
-Use this option to define the default conversion type of snippet expansion for
-field tags. For the following case, if `snakecase` is used the `json` snippet
-will expand to:
->
-  type T struct {
-    FooBarQuz string `json:"foo_bar_quz"
-  }
-<
-
-If "camelcase" is used:
->
-  type T struct {
-    FooBarQuz string `json:"fooBarQuz"
-  }
-<
-By default "snakecase" is used. Current values are: ["snakecase",
-"camelcase"].
->
-  let g:go_snippet_case_type = "snakecase"
-<
                                                            *'g:go_get_update'*
 
 Use this option to disable updating dependencies with |:GoInstallBinaries|. By
@@ -1212,7 +1210,7 @@ set, so the relevant commands defaults are being used.
                                                            *'g:go_build_tags'*
 
 These options that will be automatically passed to the `-tags` option of
-various tools, such as `guru`, `gorename`, etc... This is a permanatent
+various tools, such as `guru`, `gorename`, etc... This is a permanent
 setting. A more useful way is to use |:GoBuildTags| to dynamically change or
 remove build tags. By default it's not set.
 >
@@ -1350,6 +1348,13 @@ Specifies the currently enabled linters for the |:GoMetaLinter| command. By
 default it's using `vet`, `golint` and `errcheck`.
 >
   let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
+<
+                                                   *'g:go_metalinter_excludes'*
+
+Specifies the linters to be excluded from the |:GoMetaLinter| command. By
+default it's empty
+>
+  let g:go_metalinter_excludes = []
 <
                                                    *'g:go_metalinter_command'*
 
@@ -1530,8 +1535,55 @@ default it's 60 seconds. Must be in milliseconds.
 >
       let g:go_statusline_duration = 60000
 <
+
+                                                   *'g:go_addtags_transform'*
+
+Sets the `transform` option for `gomodifytags` when using |:GoAddTags| or if
+it's being used for snippet expansion of single fields.  Possible options are:
+`snakecase`, `camelcase`. For the following case, if `snakecase` is used the
+field will be transformed to:
+>
+  type T struct {
+    FooBarQuz string `json:"foo_bar_quz"
+  }
+<
+
+If "camelcase" is used:
+>
+  type T struct {
+    FooBarQuz string `json:"fooBarQuz"
+  }
+<
+By default "snakecase" is used. Current values are: ["snakecase",
+"camelcase"].
+>
+      let g:go_addtags_transform = 'snakecase'
+<
+
 ==============================================================================
-TROUBLESHOOTING                                         *go-troubleshooting*
+DEVELOPMENT                                               *go-development*
+
+vim-go supports test files written in VimL. Please check `autoload` folder for
+examples. If you add a new feature be sure you also include the `_test.vim`
+file next to the script. Test functions should be starting with `Test_`,
+example:
+>
+ function Test_run_fmt()
+   call assert_equal(expected, actual)
+   ...
+ endfunction
+<
+You can locally test it by running:
+>
+ make
+<
+This will run all tests and print either `PASS` or `FAIL` to indicate the final
+status of all tests. Additionally, each new pull request will trigger a new
+Travis-ci job.
+
+
+==============================================================================
+FAQ TROUBLESHOOTING                                     *go-troubleshooting*
 
 I get "not an editor command" error when I invoke :GoXXX~
 
@@ -1569,13 +1621,61 @@ If you see errors like this:
 >
   Error installing golang.org/x/tools/cmd/goimports
 <
-that means your local Go setup is broken or the remote website is down.  For
+that means your local Go setup is broken or the remote website is down. For
 example sometimes code.google.com times out. To test, just execute a simple
 `go get`:
-
+>
   go get golang.org/x/tools/cmd/goimports
 <
 You'll see a more detailed error. If this works, vim-go will work too.
+
+
+How do I use vim-go with syntastic?~
+
+Sometimes when using both `vim-go` and `syntastic` Vim will start lagging
+while saving and opening files. The following fixes this:
+>
+ let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+ let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+<
+Another issue with `vim-go` and `syntastic` is that the location list window
+that contains the output of commands such as `:GoBuild` and `:GoTest` might
+not appear.  To resolve this:
+>
+ let g:go_list_type = "quickfix"
+<
+
+Using with NeoVim~
+
+Note: Neovim currently is not a first class citizen for vim-go. You are free
+to open bug, however I'm not using Neovim so it's hard for me to test it.
+vim-go might not work well as good as in Vim. I'm happy to accept pull requests
+or very detailed bug reports. If you're interested to improve the state of
+Neovim in vim-go you're always welcome!
+
+Run `:GoRun` in a new tab, horizontal split or vertical split terminal
+>
+ au FileType go nmap <leader>rt <Plug>(go-run-tab)
+ au FileType go nmap <leader>rs <Plug>(go-run-split)
+ au FileType go nmap <leader>rv <Plug>(go-run-vertical)
+<
+By default new terminals are opened in a vertical split. To change it
+>
+ let g:go_term_mode = "split"
+>
+
+==============================================================================
+DONATION                                                         *go-donation*
+
+People have asked for this for a long time, now you can be a fully supporter
+by being a patreon at: https://www.patreon.com/fatih
+
+By being a patron, you are enabling vim-go to grow and mature, helping me to
+invest in bug fixes, new documentation, and improving both current and future
+features. It's completely optional and is just a direct way to support Vim-go's
+ongoing development. Thanks!
+
+Check it out: https://www.patreon.com/fatih
 
 
 ==============================================================================

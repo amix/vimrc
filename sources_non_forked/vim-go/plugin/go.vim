@@ -21,6 +21,7 @@ let s:packages = [
       \ "github.com/fatih/gomodifytags",
       \ "github.com/zmb3/gogetdoc",
       \ "github.com/josharian/impl",
+      \ "github.com/dominikh/go-tools/cmd/keyify",
       \ ]
 
 " These commands are available on any filetypes
@@ -33,15 +34,15 @@ command! -nargs=? -complete=dir GoPath call go#path#GoPath(<f-args>)
 " target install directory. GoInstallBinaries doesn't install binaries if they
 " exist, to update current binaries pass 1 to the argument.
 function! s:GoInstallBinaries(updateBinaries)
-  if $GOPATH == "" && go#util#gopath() == ""
-    echohl Error
-    echomsg "vim.go: $GOPATH is not set"
-    echohl None
+  let err = s:CheckBinaries()
+  if err != 0
     return
   endif
 
-  let err = s:CheckBinaries()
-  if err != 0
+  if go#path#Default() == ""
+    echohl Error
+    echomsg "vim.go: $GOPATH is not set and 'go env GOPATH' returns empty"
+    echohl None
     return
   endif
 

@@ -143,6 +143,13 @@ else {
 }
 endsnippet
 
+# if inline error
+snippet ife "If with inline erro"
+if err := ${1:condition}; err != nil {
+	${0:${VISUAL}}
+}
+endsnippet
+
 # error snippet
 snippet errn "Error return " !b
 if err != nil {

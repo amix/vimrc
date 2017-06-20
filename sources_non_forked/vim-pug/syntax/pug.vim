@@ -37,7 +37,9 @@ syn match   pugComment '\(\s\+\|^\)\/\/.*$' contains=pugCommentTodo,@Spell
 syn region  pugCommentBlock start="\z(\s\+\|^\)\/\/.*$" end="^\%(\z1\s\|\s*$\)\@!" contains=pugCommentTodo,@Spell keepend
 syn region  pugHtmlConditionalComment start="<!--\%(.*\)>" end="<!\%(.*\)-->" contains=pugCommentTodo,@Spell
 syn region  pugAngular2 start="(" end=")" contains=htmlEvent
-syn region  pugAttributes matchgroup=pugAttributesDelimiter start="(" end=")" contained contains=@htmlJavascript,pugHtmlArg,pugAngular2,htmlArg,htmlEvent,htmlCssDefinition nextgroup=@pugComponent
+syn region  pugJavascriptString start=+"+  skip=+\\\("\|$\)+  end=+"\|$+ contained
+syn region  pugJavascriptString start=+'+  skip=+\\\('\|$\)+  end=+'\|$+ contained
+syn region  pugAttributes matchgroup=pugAttributesDelimiter start="(" end=")" contained contains=pugJavascriptString,pugHtmlArg,pugAngular2,htmlArg,htmlEvent,htmlCssDefinition nextgroup=@pugComponent
 syn match   pugClassChar "\." containedin=htmlTagName nextgroup=pugClass
 syn match   pugBlockExpansionChar ":\s\+" contained nextgroup=pugTag,pugClassChar,pugIdChar
 syn match   pugIdChar "#[[{]\@!" contained nextgroup=pugId
@@ -99,6 +101,7 @@ hi def link pugCommentTodo            Todo
 hi def link pugComment                Comment
 hi def link pugCommentBlock           Comment
 hi def link pugHtmlConditionalComment pugComment
+hi def link pugJavascriptString       String
 
 let b:current_syntax = "pug"
 

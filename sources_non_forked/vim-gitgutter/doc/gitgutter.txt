@@ -138,6 +138,7 @@ Commands for staging or undoing individual hunks:
 
   :GitGutterPreviewHunk                                 *:GitGutterPreviewHunk*
       Preview the hunk the cursor is in.
+      Use |:pclose| or |CTRL-W_CTRL-Z| to close the preview window.
 
 ===============================================================================
 5. AUTOCOMMAND                                               *GitGutterAutocmd*
@@ -273,7 +274,7 @@ TO USE A CUSTOM GREP COMMAND
 
 To use a custom invocation for grep, use this:
 >
-  let g:gitgutter_grep_command = 'grep --color=never -e'
+  let g:gitgutter_grep_command = 'grep'
 <
 
 TO TURN OFF VIM-GITGUTTER BY DEFAULT

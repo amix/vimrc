@@ -384,7 +384,7 @@ function! snipMate#DefaultPool(scopes, trigger, result) abort
 		let s:lookup_state.extends = []
 
 		for expr in s:snippet_filenames(scope, escape(a:trigger, "*[]?{}`'$|#%"))
-			for path in g:snipMate.snippet_dirs
+			for path in s:snippet_dirs()
 				for file in s:Glob(path, expr)
 					source `=file`
 				endfor
@@ -416,6 +416,10 @@ fun! snipMate#GetSnippets(scopes, trigger) abort
 	return result
 endf
 
+function! s:snippet_dirs() abort
+	return get(g:snipMate, 'snippet_dirs', split(&rtp, ','))
+endfunction
+
 function! snipMate#OpenSnippetFiles() abort
 	let files = []
 	let scopes_done = []
@@ -425,7 +429,7 @@ function! snipMate#OpenSnippetFiles() abort
 		let files += s:snippet_filenames(scope, '')
 	endfor
 	call filter(files, "v:val !~# '\\*'")
-	for path in g:snipMate.snippet_dirs
+	for path in s:snippet_dirs()
 		let fullpaths = map(copy(files), 'printf("%s/%s", path, v:val)')
 		let exists += filter(copy(fullpaths), 'filereadable(v:val)')
 		let notexists += map(filter(copy(fullpaths),

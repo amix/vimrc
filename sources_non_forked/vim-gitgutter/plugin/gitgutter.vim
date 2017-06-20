@@ -196,30 +196,17 @@ augroup gitgutter
   endif
 
   if g:gitgutter_eager
-    autocmd BufWritePost,FileChangedShellPost * call gitgutter#process_buffer(bufnr(''), 0)
-
-    " When you enter a new tab, BufEnter is only fired if the buffer you enter
-    " is not the one you came from.
-    "
-    " For example:
-    "
-    "   `:tab split` fires TabEnter but not BufEnter.
-    "   `:tab new`   fires TabEnter and BufEnter.
-    "
-    " As and when both TabEnter and BufEnter are fired, we do not want to
-    " process the entered buffer twice.  We avoid this by setting and clearing
-    " a flag.
+    autocmd BufWritePost,FileChangedShellPost,ShellCmdPost * call gitgutter#process_buffer(bufnr(''), 0)
 
     autocmd BufEnter *
           \  if gettabvar(tabpagenr(), 'gitgutter_didtabenter') |
           \   call settabvar(tabpagenr(), 'gitgutter_didtabenter', 0) |
+          \   call gitgutter#all() |
           \ else |
           \   call gitgutter#process_buffer(bufnr(''), 0) |
           \ endif
 
-    autocmd TabEnter *
-          \ call settabvar(tabpagenr(), 'gitgutter_didtabenter', 1) |
-          \ call gitgutter#all()
+    autocmd TabEnter * call settabvar(tabpagenr(), 'gitgutter_didtabenter', 1)
 
     if !has('gui_win32')
       autocmd FocusGained * call gitgutter#all()

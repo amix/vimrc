@@ -1,7 +1,14 @@
 # Shebang. Executing bash via /usr/bin/env makes scripts more portable.
 snippet #!
 	#!/usr/bin/env sh
-	
+
+snippet s#!
+	#!/usr/bin/env sh
+	set -euo pipefail
+
+snippet safe
+	set -euo pipefail
+
 snippet bash
 	#!/usr/bin/env bash
 

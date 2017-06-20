@@ -303,7 +303,7 @@ function s:def_job(args) abort
 
   let start_options = {
         \ 'callback': callbacks.callback,
-        \ 'close_cb': callbacks.close_cb,
+        \ 'exit_cb': callbacks.exit_cb,
         \ }
 
   if &modified

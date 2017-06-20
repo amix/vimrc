@@ -31,7 +31,7 @@ endf
 " Public {{{1
 fu! ctrlp#line#init(bufnr)
 	let [lines, bufnr] = [[], exists('s:bufnr') ? s:bufnr : a:bufnr]
-	let bufs = exists('s:lnmode') && s:lnmode ? ctrlp#buffers('id') : [bufnr]
+	let bufs = exists('s:lnmode') && !empty(s:lnmode) ? ctrlp#buffers('id') : [bufnr]
 	for bufnr in bufs
 		let [lfb, bufn] = [getbufline(bufnr, 1, '$'), bufname(bufnr)]
 		if lfb == [] && bufn != ''

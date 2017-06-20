@@ -10,6 +10,10 @@ if !exists("g:go_metalinter_enabled")
   let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
 endif
 
+if !exists("g:go_metalinter_excludes")
+  let g:go_metalinter_excludes = []
+endif
+
 if !exists("g:go_golint_bin")
   let g:go_golint_bin = "golint"
 endif
@@ -38,6 +42,10 @@ function! go#lint#Gometa(autosave, ...) abort
     let linters = a:autosave ? g:go_metalinter_autosave_enabled : g:go_metalinter_enabled
     for linter in linters
       let cmd += ["--enable=".linter]
+    endfor
+
+    for exclude in g:go_metalinter_excludes
+      let cmd += ["--exclude=".exclude]
     endfor
 
     " path
@@ -115,12 +123,11 @@ function! go#lint#Golint(...) abort
   endif
 
   if a:0 == 0
-    let goargs = shellescape(expand('%'))
+    let out = go#util#System(bin_path)
   else
-    let goargs = go#util#Shelljoin(a:000)
+    let out = go#util#System(bin_path . " " . go#util#Shelljoin(a:000))
   endif
 
-  let out = go#util#System(bin_path . " " . goargs)
   if empty(out)
     echon "vim-go: " | echohl Function | echon "[lint] PASS" | echohl None
     return
@@ -247,28 +254,23 @@ function s:lint_job(args)
     caddexpr a:msg
     let &errorformat = old_errorformat
 
-    " TODO(arslan): cursor still jumps to first error even If I don't want
-    " it. Seems like there is a regression somewhere, but not sure where.
+    " TODO(jinleileiking): give a configure to jump or not
+    let l:winnr = winnr()
+
     copen
+
+    exe l:winnr . "wincmd w"
+
   endfunction
 
-  function! s:close_cb(chan) closure
-    let l:job = ch_getjob(a:chan)
-    let l:status = job_status(l:job)
-
-    let exitval = 1
-    if l:status == "dead"
-      let l:info = job_info(l:job)
-      let exitval = l:info.exitval
-    endif
-
+  function! s:exit_cb(job, exitval) closure
     let status = {
           \ 'desc': 'last status',
           \ 'type': "gometaliner",
           \ 'state': "finished",
           \ }
 
-    if exitval
+    if a:exitval
       let status.state = "failed"
     endif
 
@@ -297,7 +299,7 @@ function s:lint_job(args)
 
   let start_options = {
         \ 'callback': funcref("s:callback"),
-        \ 'close_cb': funcref("s:close_cb"),
+        \ 'exit_cb': funcref("s:exit_cb"),
         \ }
 
   call job_start(a:args.cmd, start_options)
