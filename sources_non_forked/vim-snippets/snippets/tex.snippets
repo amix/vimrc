@@ -203,33 +203,33 @@ snippet citey \citeyear
 snippet fcite \footcite[]{}
 	\\footcite[${1}]{${2}}${0}
 #Formating text: italic, bold, underline, small capital, emphase ..
-snippet it italic text
-	\\textit{${0:${VISUAL:text}}}
+snippet ita italic text
+	\\textit{${1:${VISUAL:text}}} ${0}
 snippet bf bold face text
-	\\textbf{${0:${VISUAL:text}}}
+	\\textbf{${1:${VISUAL:text}}} ${0}
 snippet under underline text
-	\\underline{${0:${VISUAL:text}}}
+	\\underline{${1:${VISUAL:text}}} ${0}
 snippet emp emphasize text
-	\\emph{${0:${VISUAL:text}}}
+	\\emph{${1:${VISUAL:text}}} ${0}
 snippet sc small caps text
-	\\textsc{${0:${VISUAL:text}}}
+	\\textsc{${1:${VISUAL:text}}} ${0}
 #Choosing font
 snippet sf sans serife text
-	\\textsf{${0:${VISUAL:text}}}
+	\\textsf{${1:${VISUAL:text}}} ${0}
 snippet rm roman font text
-	\\textrm{${0:${VISUAL:text}}}
+	\\textrm{${1:${VISUAL:text}}} ${0}
 snippet tt typewriter (monospace) text
-	\\texttt{${0:${VISUAL:text}}}
+	\\texttt{${1:${VISUAL:text}}} ${0}
 #Math font
 snippet mf mathfrak
-	\\mathfrak{${0:${VISUAL:text}}}
+	\\mathfrak{${1:${VISUAL:text}}} ${0}
 snippet mc mathcal
-	\\mathcal{${0:${VISUAL:text}}}
+	\\mathcal{${1:${VISUAL:text}}} ${0}
 snippet ms mathscr
-	\\mathscr{${0:${VISUAL:text}}}
+	\\mathscr{${1:${VISUAL:text}}} ${0}
 #misc
 snippet ft \footnote
-	\\footnote{${0:${VISUAL:text}}}
+	\\footnote{${1:${VISUAL:text}}} ${0}
 snippet fig figure environment (includegraphics)
 	\\begin{figure}
 	\\begin{center}
@@ -259,12 +259,19 @@ snippet subfig subfigure environment
 	\\label{fig:${5}}
 	\\end{subfigure}
 	${0}
-snippet tikzcd tikzcd environment
-	\begin{equation}
-	\begin{tikzcd}
+snippet tikzcd tikzcd environment in equation
+	\\begin{equation}
+	\\begin{tikzcd}
 		${1}
-	\end{tikzcd}
-	\end{equation}
+	\\end{tikzcd}
+	\\end{equation}
+	${0}
+snippet tikzcd* tikzcd environment in equation*
+	\\begin{equation*}
+	\\begin{tikzcd}
+		${1}
+	\\end{tikzcd}
+	\\end{equation*}
 	${0}
 #math
 snippet stackrel \stackrel{}{}

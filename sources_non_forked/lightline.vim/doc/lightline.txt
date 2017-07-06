@@ -4,7 +4,7 @@ Version: 0.1
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2016/10/24 08:12:28.
+Last Change: 2017/05/28 01:07:02.
 
 CONTENTS					*lightline-contents*
 
@@ -29,39 +29,40 @@ The *lightline* plugin is a light and configurable statusline/tabline for Vim.
 SPIRIT						*lightline-spirit*
 
 	Minimalism
-	    The core script is very small.
+	    The core script is very small to achive enough functions as a
+	    statusline plugin.
 
 	Configurability
-	    You can create your own component and easily add to the
-	    statusline/tabline.
+	    You can create your own component and easily add to the statusline
+	    and the tabline.
 
 	Orthogonality
-	    Any plugin should not change the settings of another plugin.
-	    Such plugin-crossing settings should be written by users in
-	    .vimrc.
+	    The plugin does not rely on the implementation of other plugins.
+	    Such plugin crossing settings should be configured by users.
 
-	You might find this plugin is not so useful by default. This plugin
-	does not provide the branch information, which is a very basic
-	component in existing plugins. The reason is that branch component is
-	one of plugin-crossing settings so users should write the settings
-	using the APIs of the both plugins. Hospitality makes a plugin messy.
-	Good APIs keep a plugin clean.
+	You find this plugin does not integrate with other plugins by default.
+	This plugin does not provide branch information, which is a basic
+	component in existing statusline plugins. It is a design of
+	lightline.vim that such plugin crossing configuration should be
+	written by users. Once a plugin starts to integrate with some famous
+	plugins, it should be kept updated to follow the changes of the
+	plugins and should accept integration requests with new plugins.
+	Instead, lightline.vim is designed very carefully so that users can
+	easily integrate with other plugins. Good APIs keep a plugin clean.
 
 ------------------------------------------------------------------------------
 OPTIONS						*lightline-option*
 
 	g:lightline				*g:lightline*
-		All the options are stored into this global variable.
+		All the configurations are stored in this global variable.
 
 	g:lightline.active			*g:lightline.active*
 	g:lightline.inactive			*g:lightline.inactive*
 	g:lightline.tabline			*g:lightline.tabline*
-		Dictionaries to specify the statusline/tabline components.
-		The components are gathered from either |g:lightline.component|,
-		|g:lightline.component_function| or
-		|g:lightline.component_expand|.
+		Dictionaries to store the statusline/tabline components.
 		Note that right groups of components are stored from right to
-		left. The default values are:
+		left.
+		The default values are:
 >
 		let g:lightline.active = {
 		    \ 'left': [ [ 'mode', 'paste' ],
@@ -78,10 +79,7 @@ OPTIONS						*lightline-option*
 		    \ 'right': [ [ 'close' ] ] }
 <
 	g:lightline.tab				*g:lightline.tab*
-		Dictionaries to specify the components in each tabs.
-		The components are gathered from either
-		|g:lightline.tab_component| or
-		|g:lightline.tab_component_function|.
+		A dictionary to store the tab components in each tabs.
 		The default values are:
 >
 		let g:lightline.tab = {
@@ -89,7 +87,7 @@ OPTIONS						*lightline-option*
 		    \ 'inactive': [ 'tabnum', 'filename', 'modified' ] }
 <
 	g:lightline.component			*g:lightline.component*
-		Dictionary for statusline/tabline components.
+		A dictionary for statusline/tabline components.
 		The default value is:
 >
 		let g:lightline.component = {
@@ -116,11 +114,11 @@ OPTIONS						*lightline-option*
 <
 	g:lightline.component_visible_condition
 						*g:lightline.component_visible_condition*
-		Dictionary to store the visible condition of the components.
-		Each expression should correspond to the condition each
-		component is not empty. This configuration is used to control
-		the visibility of the subseparators. You cannot use this
-		configuration to control the visibility of the components.
+		A dictionary to store the visible condition of the components.
+		Note that this configuration is used to control the visibility
+		of the subseparators, not to control the visibility of the
+		components themselves. Each expression should correspond to
+		the condition on which each component is not empty.
 		The default value is:
 >
 		let g:lightline.component_visible_condition = {
@@ -129,52 +127,47 @@ OPTIONS						*lightline-option*
 		    \ 'paste': '&paste',
 		    \ 'spell': '&spell' }
 <
-		Users are recommended to set this option together with the
-		component itself.
-
 	g:lightline.component_function		*g:lightline.component_function*
-		Another dictionary for components. This is more convenient
-		because the user does not have to set both component and
-		component_visible_condition. If a component set to both component and
-		component_function, the setting of component_function has priority.
+		A dictionary to store the function components.
+		This is useful to write a complex component configuration and
+		to integrate with other plugins. If a component set in both
+		component and component_function, the configuration of
+		component_function has priority.
 
 		The default value is:
 >
 		let g:lightline.component_function = {}
 <
-		For example, if you want a component for read-only mark, which
-		disappears in help windows:
+		For example, if you want to display the name of the git branch,
+		install |vim-fugitive| plugin and then configure as:
 >
 		let g:lightline = {
 			\ 'active': {
 			\   'left': [ [ 'mode', 'paste' ],
-			\             [ 'myreadonly', 'filename', 'modified' ] ],
+			\             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
 			\ },
 			\ 'component_function': {
-			\   'myreadonly': 'LightlineReadonly'
+			\   'gitbranch': 'fugitive#head'
 			\ },
 			\ }
-		function! LightlineReadonly()
-			return &ft !~? 'help' && &readonly ? 'RO' : ''
-		endfunction
 <
 	g:lightline.component_function_visible_condition
 						*g:lightline.component_function_visible_condition*
-		Dictionary to store the visible conditions of the function
+		A dictionary to store the visible conditions of the function
 		components. Each expression should correspond to the condition
 		each component is not empty. This configuration is used to
 		control the visibility of the subseparators. You can use this
 		configuration to reduce the number of function calls for
-		function components by setting the value 1 (to tell lightline
+		performance improvement by setting the value 1 (to tell lightline
 		that the component is always visible).
 		The default value is:
 >
 		let g:lightline.component_function_visible_condition = {}
 <
 	g:lightline.component_expand		*g:lightline.component_expand*
-		Another dictionary for components. You can create a component
-		which has a special color. For example, error components or
-		warning components. The functions should return one of:
+		A dictionary to store expanding components. You can create
+		warning and critical components. The values should be the name
+		of functions should return either one of:
 			+ a string
 			+ an array of three elements:
 				[[ left ], [ middle ], [ right ]]
@@ -281,7 +274,6 @@ OPTIONS						*lightline-option*
 		    \ 'tabline': 1
 		    \ }
 <
-
 ==============================================================================
 FONT						*lightline-font*
 You can use the patched font you used for |vim-powerline| and |powerline|.

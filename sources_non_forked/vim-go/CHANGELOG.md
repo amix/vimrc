@@ -1,8 +1,44 @@
 ## unplanned
 
+IMPROVEMENTS
+
+* Files created with `_test.go` extension have a new template with a ready to go test function. The template can be changed with the  `g:go_template_test_file` setting. [gh-1318]
+* Improve performance for highly used operations by caching `go env` calls [gh-1320]
+* `:GoCoverage` can accept arguments now. i.e: `:GoCoverage -run TestFoo` [gh-1326]
+* `:GoDecls` and `:GoDeclsDir` shows a warning if [ctrlp.vim](https://github.com/ctrlpvim/ctrlp.vim) is not installed
+* `:GoBuild` now compiles the package with the `-i` flag added. This means that subsequent calls are much more faster due caching of packages [gh-1330]
+* `:GoCoverage` echos now the progress if `g:go_echo_command_info` is enabled [gh-1333]
+* Add `g:go_doc_max_height` setting to control the maximum height of the window created by `:GoDoc` and `K` mapping [gh-1335]
+
+BUG FIXES:
+
+* Fix obtaining package's import path for the current directory. This fixes some issues we had if the user was using multiple GOPATH's [gh-1321]
+* Fix documentation for vim-go & syntastic integration for errcheck using [gh-1323]
+* Fix showing an output if a test has finished when `:GoTest` is called [gh-1327]
+
+## 1.13 - (June 6, 2017)
+
 FEATURES:
 
-* New `:GoKeyify` command that turns unkeyed struct literals into keyed struct literals. [gh-1258]
+* New `:GoKeyify` command that turns unkeyed struct literals into keyed struct literals. [gh-1258]. i.e:
+
+```
+Example{"foo", "bar", "qux"}
+```
+
+will be converted to:
+
+```
+Example{
+  foo: "foo",
+  bar: "bar",
+  qux: "qux",
+}
+```
+
+Checkout the demo here: https://twitter.com/fatih/status/860410299714764802
+
+
 * New `g:go_addtags_transform` setting to change the transform rule (snakecase, camelcase, etc..) for `:GoAddTags` command [gh-1275]
 * New snippet shortcut assigned to `ife` that expands to `if err := foo(); err != nil { ... }` [gh-1268]
 
@@ -10,6 +46,18 @@ IMPROVEMENTS
 
 * :GoMetaLinter can now exclude linters with the new `g:go_metalinter_excludes` option [gh-1253]
 * Override `<C-LeftMouse>` mapping so `:GoDef` is used by default (as we do the same for `CTRL-]`, `gd`, etc. [gh-1264]
+* add support for `go_list_type` setting in `:GoFmt` and `:GoImports` commands [gh-1304]
+* add support for `go_list_type` setting in `:GoMetaLinter` commands [gh-1309]
+* `go_fmt_options` can be now a dictionary to allow us to specifcy the
+  options for multiple binaries [gh-1308]. i.e:
+
+```
+  let g:go_fmt_options = {
+    \ 'gofmt': '-s',
+    \ 'goimports': '-local mycompany.com',
+    \ }
+```
+* If win-vim(x64) with Cygwin is used, `cygpath` is used for constructing the paths [gh-1092]
 
 BUG FIXES:
 
@@ -17,11 +65,23 @@ BUG FIXES:
 * internal: fix system calls when using tcsh [gh-1276]
 * path: return the unmodified GOPATH if autodetect is disabled [gh-1280]
 * fix jumping to quickfix window when autom gometalinter on save was enabled [gh-1293]
-
+* fix highlighting for `interface` and `structs` words when `go_highlight_types` is enabled [gh-1301]
+* fix cwd for running `:GoRun` when used with neovim [gh-1296]
+* `:GoFmt` handles files that are symlinked into GOPATH better (note that this behaviour is discouraged, but we're trying our best to handle all edge case :)) [gh-1310]
+* `:GoTest` is able to parse error messages that include a colon `:` [gh-1316]
+* `:GoTestCompile` under the hood doesn't produces a test binary anymore. Sometimes a race condition would happen which would not delete the test binary. [gh-1317]
+* `:GoDef` jumps now to definition for build tags defined with `:GoBuildTags` (only guru) [gh-1319]
+ 
 BACKWARDS INCOMPATIBILITIES:
 
 * `:GoLint` works on the whole directory instead of the current file. To use it for the current file give it as an argument, i.e `:GoLint foo.go` [gh-1295]
 * `go_snippet_case_type` is removed in favor of the new `go_addtags_transform` setting [gh-1299]
+* `go_imports_bin` is removed to avoid confusion as it would lead to race
+  conditions when set to `gofmt` along with the usage of `go_fmt_command`
+  [gh-1212] [gh-1308]
+* commands such as `:GoTest` has been refactored for easy maintainability. If
+  you use any custom script that was using the function `go#cmd#Test`, it
+  should be renamed to `go#test#Test`
 
 ## 1.12 - (March 29, 2017)
 
@@ -67,7 +127,7 @@ BUG FIXES:
 * Fix `:GoAddTags` to allow modifying existing comments [gh-984]
 * Fix `:GoAddTags` to work with nested structs [gh-990]
 * Fix `:GoAddTags` adding tags twice for existing tags [gh-1064]
-* Fix `:GoAddTags` not working for fiels of types `interface{}` [gh-1091]
+* Fix `:GoAddTags` not working for fields of types `interface{}` [gh-1091]
 * Fix `:GoAddTags` not working for fields with one line comments [gh-1181]
 * Fix `:GoAddTags` not working if any field comment would contain `{}` [gh-1189]
 * Respect go_fmt_options when running goimports [gh-1211]
@@ -252,7 +312,7 @@ IMPROVEMENTS:
   `:GoDef`, `:GoReferrers`, etc.. [gh-944]
 * **:GoDoc** uses now the `-modified` flag under the hood (for `gogetdoc), which allows us to get documentation for the identifier under the cursor ina modified buffer. [gh-1014]
 * Cleanup and improve documentation [gh-987]
-* Add new `g:go_gocode_socket_type` setting to change the underlying socket type passed to `gocode`. Usefull to fallback to `tcp` on cases such as Bash on Windows [gh-1000]
+* Add new `g:go_gocode_socket_type` setting to change the underlying socket type passed to `gocode`. Useful to fallback to `tcp` on cases such as Bash on Windows [gh-1000]
 * `:GoSameIds` is now automatically re-evaluated in cases of buffer reloads (such as `:GoRename`) [gh-998]
 * Improve docs about `go_auto_sameids` [gh-1017]
 * Improve error message by printing the full path if an incompatible `goimports` is being used [gh-1006]
@@ -352,7 +412,7 @@ IMPROVEMENTS:
 BUG FIXES:
 * Fix `(go-freevars)` plug mapping to work as in visual mode instead of noncompatible normal mode [gh-832]
 * Commands based on guru now shows a more meaningful error message instead of just showing the exit status (-1)
-* Fix `:GoCoverage` accidently enabling syntax highlighting for users who don't use syntax (i.e syntax off) [gh-827]
+* Fix `:GoCoverage` accidentally enabling syntax highlighting for users who don't use syntax (i.e syntax off) [gh-827]
 * Fix `:GoCoverage` colors to work for xterm as well [gh-863]
 * Fix commenting out block of texts for Go templates (filetype gothtmltmpl) [gh-813]
 * Fix `:GoImplements` failing because of an empty scope definition. Now we default to current package to make it usable.

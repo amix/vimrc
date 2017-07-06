@@ -13,6 +13,7 @@ let g:loaded_ctrlp_line = 1
 cal add(g:ctrlp_ext_vars, {
 	\ 'init': 'ctrlp#line#init(s:crbufnr)',
 	\ 'accept': 'ctrlp#line#accept',
+	\ 'act_farg' : 'dict',
 	\ 'lname': 'lines',
 	\ 'sname': 'lns',
 	\ 'type': 'tabe',
@@ -50,11 +51,17 @@ fu! ctrlp#line#init(bufnr)
 	retu lines
 endf
 
-fu! ctrlp#line#accept(mode, str)
-	let info = matchlist(a:str, '\t|[^|]\+|\(\d\+\):\(\d\+\)|$')
+fu! ctrlp#line#accept(dict)
+	let mode = a:dict['action']
+	let str = a:dict['line']
+	let input = a:dict['input']
+	let info = matchlist(str, '\t|[^|]\+|\(\d\+\):\(\d\+\)|$')
 	let bufnr = str2nr(get(info, 1))
 	if bufnr
-		cal ctrlp#acceptfile(a:mode, bufnr, get(info, 2))
+		cal ctrlp#acceptfile(mode, bufnr, get(info, 2))
+		let @/ = input
+		call search(input, 'c')
+		call histadd("search", input)
 	en
 endf
 

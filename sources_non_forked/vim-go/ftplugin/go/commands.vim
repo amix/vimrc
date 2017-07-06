@@ -34,9 +34,11 @@ command! -nargs=? -bang GoBuildTags call go#cmd#BuildTags(<bang>0, <f-args>)
 command! -nargs=* -bang GoGenerate call go#cmd#Generate(<bang>0,<f-args>)
 command! -nargs=* -bang -complete=file GoRun call go#cmd#Run(<bang>0,<f-args>)
 command! -nargs=* -bang GoInstall call go#cmd#Install(<bang>0, <f-args>)
-command! -nargs=* -bang GoTest call go#cmd#Test(<bang>0, 0, <f-args>)
-command! -nargs=* -bang GoTestFunc call go#cmd#TestFunc(<bang>0, <f-args>)
-command! -nargs=* -bang GoTestCompile call go#cmd#Test(<bang>0, 1, <f-args>)
+
+" -- test
+command! -nargs=* -bang GoTest call go#test#Test(<bang>0, 0, <f-args>)
+command! -nargs=* -bang GoTestFunc call go#test#Func(<bang>0, <f-args>)
+command! -nargs=* -bang GoTestCompile call go#test#Test(<bang>0, 1, <f-args>)
 
 " -- cover
 command! -nargs=* -bang GoCoverage call go#coverage#Buffer(<bang>0, <f-args>)
@@ -84,6 +86,13 @@ command! -bang GoAlternate call go#alternate#Switch(<bang>0, '')
 if globpath(&rtp, 'plugin/ctrlp.vim') != ""
   command! -nargs=? -complete=file GoDecls call ctrlp#init(ctrlp#decls#cmd(0, <q-args>))
   command! -nargs=? -complete=dir GoDeclsDir call ctrlp#init(ctrlp#decls#cmd(1, <q-args>))
+else
+  function! s:ctrlp_warning()
+    call go#util#EchoError("ctrlp.vim plugin is not installed. Please install from: https://github.com/ctrlpvim/ctrlp.vim")
+  endfunction
+
+  command! -nargs=? -complete=file GoDecls call <SID>ctrlp_warning()
+  command! -nargs=? -complete=file GoDeclsDir call <SID>ctrlp_warning()
 endif
 
 " -- impl

@@ -1614,7 +1614,8 @@ SYNTAX CHECKERS FOR COFFEESCRIPT                   *syntastic-checkers-coffee*
 The following checkers are available for CoffeeScript (filetype "coffee"):
 
     1. Coffee...................|syntastic-coffee-coffee|
-    2. CoffeeLint...............|syntastic-coffee-coffeelint|
+    2. Coffee->JSHint...........|syntastic-coffee-coffee_jshint|
+    3. CoffeeLint...............|syntastic-coffee-coffeelint|
 
 ------------------------------------------------------------------------------
 1. Coffee                                            *syntastic-coffee-coffee*
@@ -1634,7 +1635,28 @@ This checker is initialised using the "makeprgBuild()" function and thus it
 accepts the standard options described at |syntastic-config-makeprg|.
 
 ------------------------------------------------------------------------------
-2. CoffeeLint                                    *syntastic-coffee-coffeelint*
+2. Coffee->JSHint                             *syntastic-coffee-coffee_jshint*
+
+Name:        coffee_jshint
+Maintainer:  John Krauss <john@johnkrauss.com>
+
+"Coffee->JSHint" is a JSHint validator for CoffeeScript. See the project's
+page at GitHub for details:
+
+    https://github.com/marviq/coffee-jshint
+
+Installation~
+
+Install it with "npm": >
+    npm install -g coffee-jshint
+<
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+Accepts the standard options described at |syntastic-config-makeprg|.
+
+------------------------------------------------------------------------------
+3. CoffeeLint                                    *syntastic-coffee-coffeelint*
 
 Name:        coffeelint
 Maintainer:  Lincoln Stoll <l@lds.li>

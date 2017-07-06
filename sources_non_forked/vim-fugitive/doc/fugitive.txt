@@ -40,6 +40,7 @@ that are part of Git repositories).
                         <CR>  |:Gedit|
                         -     |:Git| add
                         -     |:Git| reset (staged files)
+                        a     Show alternative format
                         cA    |:Gcommit| --amend --reuse-message=HEAD
                         ca    |:Gcommit| --amend
                         cc    |:Gcommit|
@@ -197,11 +198,14 @@ that are part of Git repositories).
                         directory except when started with a /, in which case
                         it is relative to the work tree.  Add a ! to pass -f.
 
-                                                *fugitive-:Gremove*
-:Gremove                Wrapper around git-rm that deletes the buffer
+                                                *fugitive-:Gdelete*
+:Gdelete                Wrapper around git-rm that deletes the buffer
                         afterward.  When invoked in an index file, --cached is
                         passed.  Add a ! to pass -f and forcefully discard the
                         buffer.
+
+                                                *fugitive-:Gremove*
+:Gremove                Like :Gdelete, but keep the (now empty) buffer around.
 
                                                 *fugitive-:Gblame*
 :Gblame [flags]         Run git-blame on the file and open the results in a

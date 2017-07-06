@@ -7,7 +7,7 @@ let g:loaded_nerdtree_ui_glue_autoload = 1
 function! nerdtree#ui_glue#createDefaultBindings()
     let s = '<SNR>' . s:SID() . '_'
 
-    call NERDTreeAddKeyMap({ 'key': '<MiddleRelease>', 'scope': "all", 'callback': s."handleMiddleMouse" })
+    call NERDTreeAddKeyMap({ 'key': '<MiddleMouse>', 'scope': 'all', 'callback': s . 'handleMiddleMouse' })
     call NERDTreeAddKeyMap({ 'key': '<LeftRelease>', 'scope': "all", 'callback': s."handleLeftClick" })
     call NERDTreeAddKeyMap({ 'key': '<2-LeftMouse>', 'scope': "DirNode", 'callback': s."activateDirNode" })
     call NERDTreeAddKeyMap({ 'key': '<2-LeftMouse>', 'scope': "FileNode", 'callback': s."activateFileNode" })
@@ -336,16 +336,22 @@ endfunction
 
 " FUNCTION: s:handleMiddleMouse() {{{1
 function! s:handleMiddleMouse()
-    let curNode = g:NERDTreeFileNode.GetSelected()
-    if curNode ==# {}
-        call nerdtree#echo("Put the cursor on a node first" )
+
+    " A middle mouse click does not automatically position the cursor as one
+    " would expect. Forcing the execution of a regular left mouse click here
+    " fixes this problem.
+    execute "normal! \<LeftMouse>"
+
+    let l:currentNode = g:NERDTreeFileNode.GetSelected()
+    if empty(l:currentNode)
+        call nerdtree#echoError('use the pointer to select a node')
         return
     endif
 
-    if curNode.path.isDirectory
-        call nerdtree#openExplorer(curNode)
+    if l:currentNode.path.isDirectory
+        call l:currentNode.openExplorer()
     else
-        call curNode.open({'where': 'h'})
+        call l:currentNode.open({'where': 'h'})
     endif
 endfunction
 
@@ -441,21 +447,19 @@ function! s:jumpToSibling(currentNode, forward)
 endfunction
 
 " FUNCTION: nerdtree#ui_glue#openBookmark(name) {{{1
-" put the cursor on the given bookmark and, if its a file, open it
+" Open the Bookmark that has the specified name. This function provides the
+" implementation for the ":OpenBookmark" command.
 function! nerdtree#ui_glue#openBookmark(name)
     try
-        let targetNode = g:NERDTreeBookmark.GetNodeForName(a:name, 0, b:NERDTree)
-        call targetNode.putCursorHere(0, 1)
-        redraw!
-    catch /^NERDTree.BookmarkedNodeNotFoundError/
-        call nerdtree#echo("note - target node is not cached")
-        let bookmark = g:NERDTreeBookmark.BookmarkFor(a:name)
-        let targetNode = g:NERDTreeFileNode.New(bookmark.path, b:NERDTree)
+        let l:bookmark = g:NERDTreeBookmark.BookmarkFor(a:name)
+    catch /^NERDTree.BookmarkNotFoundError/
+        call nerdtree#echoError('bookmark "' . a:name . '" not found')
+        return
     endtry
-    if targetNode.path.isDirectory
-        call targetNode.openExplorer()
+    if l:bookmark.path.isDirectory
+        call l:bookmark.open(b:NERDTree)
     else
-        call targetNode.open({'where': 'p'})
+        call l:bookmark.open(b:NERDTree, {'where': 'p'})
     endif
 endfunction
 

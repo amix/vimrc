@@ -18,7 +18,7 @@
  - [Contributing](#contributing)
  - [Credit](#credit)
 
-###Contributors
+### Contributors
 - [eapache](https://github.com/eapache)
 - [aschrab](https://github.com/aschrab)
 - [kristijanhusak](https://github.com/kristijanhusak)

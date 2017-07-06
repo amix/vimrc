@@ -6,6 +6,7 @@ cd $(dirname $0)
 
 # install dependencies
 go get github.com/fatih/gomodifytags
+go get golang.org/x/tools/cmd/goimports
 
 # cleanup test.log
 if [ -f "test.log" ]; then

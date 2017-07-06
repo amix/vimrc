@@ -529,6 +529,10 @@ Here are some things you can check:
 * Your file is being tracked by git and has unstaged changes.
 * If you have aliased or configured `grep` to use any flags, add `let g:gitgutter_grep_command = 'grep'` to your `~/.vimrc`.
 
+> Why is the whole file marked as added when I edit it?
+
+* If you use zsh, and you set `CDPATH`, make sure `CDPATH` doesn't include the current directory.
+
 
 ### Shameless Plug
 

@@ -117,6 +117,10 @@ The following features and functionality are provided by the NERD tree:
     again.  If no NERD tree exists for this tab then this command acts the
     same as the |:NERDTree| command.
 
+:NERDTreeFocus                                                *:NERDTreeFocus*
+    Opens (or reopens) the NERD Tree if it is not currently visible;
+    otherwise, the cursor is moved to the already-open NERD Tree.
+
 :NERDTreeMirror                                              *:NERDTreeMirror*
     Shares an existing NERD tree, from another tab, in the current tab.
     Changes made to one tree are reflected in both as they are actually the
@@ -158,7 +162,7 @@ click bookmarks or use the |NERDTree-o| mapping to activate them. See also,
 ------------------------------------------------------------------------------
 2.2.2. Bookmark commands                            *NERDTreeBookmarkCommands*
 
-Note that the following commands are only available in the NERD tree buffer.
+Note: The following commands are only available within the NERDTree buffer.
 
 :Bookmark [<name>]
     Bookmark the current node as <name>. If there is already a <name>
@@ -178,10 +182,11 @@ Note that the following commands are only available in the NERD tree buffer.
     (i.e. directory nodes above it will be opened) and the cursor will be
     placed on it.
 
-:OpenBookmark <bookmark>
-    <bookmark> must point to a file. The file is opened as though |NERDTree-o|
-    was applied. If the node is cached under the current root then it will be
-    revealed and the cursor will be placed on it.
+:OpenBookmark <name>
+    The Bookmark named <name> is opened as if |NERDTree-o| was applied to
+    its entry in the Bookmark table. If the Bookmark points to a directory,
+    it is made the new root of the current NERDTree. If the Bookmark points
+    to a file, that file is opened for editing in another window.
 
 :ClearBookmarks [<bookmarks>]
     Remove all the given bookmarks. If no bookmarks are given then remove all
@@ -282,13 +287,13 @@ previous window.
 ------------------------------------------------------------------------------
                                                                  *NERDTree-go*
 Default key: go
-Map option: None
+Map option: NERDTreeMapPreview
 Applies to: files.
 
 If a file node is selected, it is opened in the previous window, but the
 cursor does not move.
 
-The key combo for this mapping is always "g" + NERDTreeMapActivateNode (see
+The default key combo for this mapping is "g" + NERDTreeMapActivateNode (see
 |NERDTree-o|).
 
 ------------------------------------------------------------------------------
@@ -324,12 +329,12 @@ window.
 ------------------------------------------------------------------------------
                                                                  *NERDTree-gi*
 Default key: gi
-Map option: None
+Map option: NERDTreeMapPreviewSplit
 Applies to: files.
 
 The same as |NERDTree-i| except that the cursor is not moved.
 
-The key combo for this mapping is always "g" + NERDTreeMapOpenSplit (see
+The default key combo for this mapping is "g" + NERDTreeMapOpenSplit (see
 |NERDTree-i|).
 
 ------------------------------------------------------------------------------
@@ -344,12 +349,12 @@ the new window.
 ------------------------------------------------------------------------------
                                                                  *NERDTree-gs*
 Default key: gs
-Map option: None
+Map option: NERDTreeMapPreviewVSplit
 Applies to: files.
 
 The same as |NERDTree-s| except that the cursor is not moved.
 
-The key combo for this mapping is always "g" + NERDTreeMapOpenVSplit (see
+The default key combo for this mapping is "g" + NERDTreeMapOpenVSplit (see
 |NERDTree-s|).
 
 ------------------------------------------------------------------------------
@@ -618,6 +623,9 @@ NERD tree. These options should be set in your vimrc.
 |'NERDTreeCaseSensitiveSort'|   Tells the NERD tree whether to be case
                                 sensitive or not when sorting nodes.
 
+|'NERDTreeNaturalSort'|         Tells the NERD tree whether to use
+                                natural sort order or not when sorting nodes.
+
 |'NERDTreeSortHiddenFirst'|     Tells the NERD tree whether to take the dot
                                 at the beginning of the hidden file names
                                 into account when sorting nodes.
@@ -637,11 +645,11 @@ NERD tree. These options should be set in your vimrc.
 
 |'NERDTreeBookmarksFile'|       Where the bookmarks are stored.
 
-|'NERDTreeBookmarksSort'|       Whether the bookmarks list is sorted on
-                                display.
+|'NERDTreeBookmarksSort'|       Control how the Bookmark table is sorted.
 
-|'NERDTreeMouseMode'|           Tells the NERD tree how to handle mouse
-                                clicks.
+|'NERDTreeMarkBookmarks'|       Render bookmarked nodes with markers.
+
+|'NERDTreeMouseMode'|           Manage the interpretation of mouse clicks.
 
 |'NERDTreeQuitOnOpen'|          Closes the tree window after opening a file.
 
@@ -742,6 +750,33 @@ account. The above nodes would then be sorted like this: >
     boner.c
 <
 ------------------------------------------------------------------------------
+                                                       *'NERDTreeNaturalSort'*
+Values: 0 or 1.
+Default: 0.
+
+By default the NERD tree does not sort nodes in natural sort order, i.e. nodes
+could appear like this: >
+    z1.txt
+    z10.txt
+    z100.txt
+    z11.txt
+    z110.txt
+    z2.txt
+    z20.txt
+    z3.txt
+<
+But if you set this option to 1 then the natural sort order will be used. The
+above nodes would then be sorted like this: >
+    z1.txt
+    z2.txt
+    z3.txt
+    z10.txt
+    z11.txt
+    z20.txt
+    z100.txt
+    z110.txt
+<
+------------------------------------------------------------------------------
                                                          *'NERDTreeChDirMode'*
 
 Values: 0, 1 or 2.
@@ -835,11 +870,24 @@ This is where bookmarks are saved. See |NERDTreeBookmarkCommands|.
 
 ------------------------------------------------------------------------------
                                                      *'NERDTreeBookmarksSort'*
+Values: 0, 1, or 2
+Default: 1
+
+This option controls the method by which the list of user bookmarks is
+sorted. When sorted, bookmarks will render in alphabetical order by name.
+
+If set to 0, the bookmarks list is not sorted.
+If set to 1, the bookmarks list is sorted in a case-insensitive manner.
+If set to 2, the bookmarks list is sorted in a case-sensitive manner.
+
+------------------------------------------------------------------------------
+                                                     *'NERDTreeMarkBookmarks'*
 Values: 0 or 1
 Default: 1
 
-If set to 0 then the bookmarks list is not sorted.
-If set to 1 the bookmarks list is sorted.
+If set to 1, Bookmarks will be specially marked whenever the NERDTree is
+rendered. Users of the |'NERDTreeMinimalUI'| setting may prefer to disable
+this setting for even less visual clutter.
 
 ------------------------------------------------------------------------------
                                                        *'NERDTreeMouseMode'*

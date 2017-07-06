@@ -68,7 +68,7 @@ function! go#list#PopulateWin(winnr, items) abort
   call setloclist(a:winnr, a:items, 'r')
 endfunction
 
-" Parse parses the given items based on the specified errorformat nad
+" Parse parses the given items based on the specified errorformat and
 " populates the location list.
 function! go#list#ParseFormat(listtype, errformat, items, title) abort
   let l:listtype = go#list#Type(a:listtype)

@@ -46,8 +46,8 @@ function! go#def#Jump(mode) abort
       call add(cmd, "-modified")
     endif
 
-    if exists('g:go_guru_tags')
-      let tags = get(g:, 'go_guru_tags')
+    if exists('g:go_build_tags')
+      let tags = get(g:, 'go_build_tags')
       call extend(cmd, ["-tags", tags])
     endif
 

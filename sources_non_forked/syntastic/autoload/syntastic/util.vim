@@ -76,7 +76,7 @@ function! syntastic#util#tmpdir() abort " {{{2
     if (has('unix') || has('mac')) && executable('mktemp') && !has('win32unix')
         " TODO: option "-t" to mktemp(1) is not portable
         let tmp = $TMPDIR !=# '' ? $TMPDIR : $TMP !=# '' ? $TMP : '/tmp'
-        let out = split(syntastic#util#system('mktemp -q -d ' . tmp . '/vim-syntastic-' . getpid() . '-XXXXXXXX'), "\n")
+        let out = split(syntastic#util#system('mktemp -q -d ' . tmp . '/vim-syntastic-' . s:_fuzz() . '-XXXXXXXX'), "\n")
         if v:shell_error == 0 && len(out) == 1
             let tempdir = out[0]
         endif
@@ -84,13 +84,13 @@ function! syntastic#util#tmpdir() abort " {{{2
 
     if tempdir ==# ''
         if has('win32') || has('win64')
-            let tempdir = $TEMP . syntastic#util#Slash() . 'vim-syntastic-' . getpid()
+            let tempdir = $TEMP . syntastic#util#Slash() . 'vim-syntastic-' . s:_fuzz()
         elseif has('win32unix')
-            let tempdir = syntastic#util#CygwinPath('/tmp/vim-syntastic-'  . getpid())
+            let tempdir = syntastic#util#CygwinPath('/tmp/vim-syntastic-'  . s:_fuzz())
         elseif $TMPDIR !=# ''
-            let tempdir = $TMPDIR . '/vim-syntastic-' . getpid()
+            let tempdir = $TMPDIR . '/vim-syntastic-' . s:_fuzz()
         else
-            let tempdir = '/tmp/vim-syntastic-' . getpid()
+            let tempdir = '/tmp/vim-syntastic-' . s:_fuzz()
         endif
 
         try
@@ -401,9 +401,6 @@ function! syntastic#util#setLastTick(buf) abort " {{{2
     call setbufvar(a:buf, 'syntastic_lasttick', getbufvar(a:buf, 'changedtick'))
 endfunction " }}}2
 
-let s:_wid_base = 'syntastic_' . getpid() . '_' . reltimestr(g:_SYNTASTIC_START) . '_'
-let s:_wid_pool = 0
-
 " Add unique IDs to windows
 function! syntastic#util#setWids() abort " {{{2
     for tab in range(1, tabpagenr('$'))
@@ -614,7 +611,17 @@ endfunction "}}}2
 let s:_getbufvar = function(v:version > 703 || (v:version == 703 && has('patch831')) ? 'getbufvar' : 's:_getbufvar_dumb')
 lockvar s:_getbufvar
 
+function! s:_fuzz_dumb() abort " {{{2
+    return 'tmp'
+endfunction " }}}2
+
+let s:_fuzz = function(exists('*getpid') ? 'getpid' : 's:_fuzz_dumb')
+lockvar s:_fuzz
+
 " }}}1
+
+let s:_wid_base = 'syntastic_' . s:_fuzz() . '_' . reltimestr(g:_SYNTASTIC_START) . '_'
+let s:_wid_pool = 0
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

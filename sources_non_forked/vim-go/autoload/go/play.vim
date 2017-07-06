@@ -20,7 +20,7 @@ function! go#play#Share(count, line1, line2) abort
   call delete(share_file)
 
   if go#util#ShellError() != 0
-    echo 'A error has occured. Run this command to see what the problem is:'
+    echo 'A error has occurred. Run this command to see what the problem is:'
     echo command
     return
   endif

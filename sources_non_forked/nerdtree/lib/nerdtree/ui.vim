@@ -313,6 +313,10 @@ function! s:UI._renderBookmarks()
         call cursor(line(".")+1, col("."))
     endif
 
+    if g:NERDTreeBookmarksSort == 1 || g:NERDTreeBookmarksSort == 2
+        call g:NERDTreeBookmark.SortBookmarksList()
+    endif
+
     for i in g:NERDTreeBookmark.Bookmarks()
         call setline(line(".")+1, i.str())
         call cursor(line(".")+1, col("."))

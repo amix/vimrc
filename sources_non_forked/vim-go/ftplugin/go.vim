@@ -63,7 +63,7 @@ if get(g:, "go_auto_type_info", 0) || get(g:, "go_auto_sameids", 0)
 endif
 
 " NOTE(arslan): experimental, disabled by default, doesn't work well. No
-" documentation as well. If anyone feels adventerous, enable the following and
+" documentation as well. If anyone feels adventurous, enable the following and
 " try to search for Go identifiers ;)
 "
 " if get(g:, "go_sameid_search_enabled", 0)
@@ -82,7 +82,7 @@ endif
 "   endif
 "   let cur_offset = go#util#OffsetCursor()
 
-"   " reverse list to make it easy to find the prev occurence
+"   " reverse list to make it easy to find the prev occurrence
 "   if a:mode
 "    call reverse(matches)
 "   endif

@@ -39,7 +39,7 @@ endfunction
 function! go#path#Default() abort
   if $GOPATH == ""
     " use default GOPATH via go env
-    return go#util#gopath()
+    return go#util#env("gopath")
   endif
 
   return $GOPATH
@@ -172,6 +172,17 @@ function! go#path#CheckBinPath(binpath) abort
   endif
 
   let $PATH = old_path
+
+   " When you are using:
+   " 1) Windows system
+   " 2) Has cygpath executable
+   " 3) Use *sh* as 'shell'
+   "
+   " This converts your <path> to $(cygpath '<path>') to make cygwin working in
+   " shell of cygwin way
+   if go#util#IsWin() && executable('cygpath') && &shell !~ '.*sh.*'
+     return printf("$(cygpath '%s')", a:bin_path)
+   endif
 
   return go_bin_path . go#util#PathSep() . basename
 endfunction

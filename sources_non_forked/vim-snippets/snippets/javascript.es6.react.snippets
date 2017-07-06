@@ -4,7 +4,8 @@ snippet ri1
 
 # Import both React and Component
 snippet ri2
-	import React, { Component, PropTypes } from 'react'
+	import React, { Component } from 'react'
+	import PropTypes from 'prop-types'
 
 # React class
 snippet rcla
@@ -40,7 +41,7 @@ snippet rcdp
 
 # Presentational component
 snippet rcom
-	(props) => {
+	props => {
 		return (
 			${0:<div></div>}
 		)

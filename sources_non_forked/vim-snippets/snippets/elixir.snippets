@@ -88,8 +88,18 @@ snippet def
 snippet defd
 	@doc """
 	${1:doc string}
+
 	"""
 	def ${2:name} do
+		${0}
+	end
+snippet defsd
+	@doc """
+	${1:doc string}
+
+	"""
+	@spec ${2:name} :: ${3:no_return}
+	def ${2} do
 		${0}
 	end
 snippet defim
@@ -117,6 +127,7 @@ snippet defr
 snippet doc
 	@doc """
 	${0}
+
 	"""
 snippet docf
 	@doc false
@@ -125,6 +136,7 @@ snippet fn
 snippet mdoc
 	@moduledoc """
 	${0}
+
 	"""
 snippet mdocf
 	@moduledoc false

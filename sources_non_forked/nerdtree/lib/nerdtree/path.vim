@@ -1,12 +1,6 @@
 "we need to use this number many times for sorting... so we calculate it only
 "once here
 let s:NERDTreeSortStarIndex = index(g:NERDTreeSortOrder, '*')
-" used in formating sortKey, e.g. '%04d'
-if exists("log10")
-    let s:sortKeyFormat = "%0" . float2nr(ceil(log10(len(g:NERDTreeSortOrder)))) . "d"
-else
-    let s:sortKeyFormat = "%04d"
-endif
 
 "CLASS: Path
 "============================================================
@@ -52,7 +46,7 @@ function! s:Path.cacheDisplayString() abort
             call add(self._bookmarkNames, i.name)
         endif
     endfor
-    if !empty(self._bookmarkNames)
+    if !empty(self._bookmarkNames) && g:NERDTreeMarkBookmarks == 1
         let self.cachedDisplayString .= ' {' . join(self._bookmarkNames) . '}'
     endif
 
@@ -368,8 +362,23 @@ function! s:Path.getSortOrderIndex()
     return s:NERDTreeSortStarIndex
 endfunction
 
+"FUNCTION: Path._splitChunks(path) {{{1
+"returns a list of path chunks
+function! s:Path._splitChunks(path)
+    let chunks = split(a:path, '\(\D\+\|\d\+\)\zs')
+    let i = 0
+    while i < len(chunks)
+        "convert number literals to numbers
+        if match(chunks[i], '^\d\+$') == 0
+            let chunks[i] = str2nr(chunks[i])
+        endif
+        let i = i + 1
+    endwhile
+    return chunks
+endfunction
+
 "FUNCTION: Path.getSortKey() {{{1
-"returns a string used in compare function for sorting
+"returns a key used in compare function for sorting
 function! s:Path.getSortKey()
     if !exists("self._sortKey")
         let path = self.getLastPathComponent(1)
@@ -379,7 +388,11 @@ function! s:Path.getSortKey()
         if !g:NERDTreeCaseSensitiveSort
             let path = tolower(path)
         endif
-        let self._sortKey = printf(s:sortKeyFormat, self.getSortOrderIndex()) . path
+        if !g:NERDTreeNaturalSort
+            let self._sortKey = [self.getSortOrderIndex(), path]
+        else
+            let self._sortKey = [self.getSortOrderIndex()] + self._splitChunks(path)
+        endif
     endif
 
     return self._sortKey

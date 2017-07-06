@@ -68,6 +68,15 @@ function! s:shellslash(path) abort
   endif
 endfunction
 
+let s:executables = {}
+
+function! s:executable(binary) abort
+  if !has_key(s:executables, a:binary)
+    let s:executables[a:binary] = executable(a:binary)
+  endif
+  return s:executables[a:binary]
+endfunction
+
 let s:git_versions = {}
 
 function! s:git_command() abort
@@ -400,13 +409,13 @@ function! s:repo_git_chomp(...) dict abort
 endfunction
 
 function! s:repo_git_chomp_in_tree(...) dict abort
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let dir = getcwd()
   try
-    execute cd.'`=s:repo().tree()`'
+    execute cd s:fnameescape(s:repo().tree())
     return call(s:repo().git_chomp, a:000, s:repo())
   finally
-    execute cd.'`=dir`'
+    execute cd s:fnameescape(dir)
   endtry
 endfunction
 
@@ -696,13 +705,13 @@ call s:add_methods('buffer',['getvar','setvar','getline','repo','type','spec','n
 call s:command("-bang -nargs=? -complete=customlist,s:GitComplete Git :execute s:Git(<bang>0,<q-args>)")
 
 function! s:ExecuteInTree(cmd) abort
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let dir = getcwd()
   try
-    execute cd.'`=s:repo().tree()`'
+    execute cd s:fnameescape(s:repo().tree())
     execute a:cmd
   finally
-    execute cd.'`=dir`'
+    execute cd s:fnameescape(dir)
   endtry
 endfunction
 
@@ -756,8 +765,8 @@ function! s:DirComplete(A,L,P) abort
   return matches
 endfunction
 
-call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Gcd  :cd<bang>  `=s:repo().bare() ? s:repo().dir(<q-args>) : s:repo().tree(<q-args>)`")
-call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Glcd :lcd<bang> `=s:repo().bare() ? s:repo().dir(<q-args>) : s:repo().tree(<q-args>)`")
+call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Gcd  :exe 'cd<bang>'  s:fnameescape(s:repo().bare() ? s:repo().dir(<q-args>) : s:repo().tree(<q-args>))")
+call s:command("-bar -bang -nargs=? -complete=customlist,s:DirComplete Glcd :exe 'lcd<bang>' s:fnameescape(s:repo().bare() ? s:repo().dir(<q-args>) : s:repo().tree(<q-args>))")
 
 " Section: Gstatus
 
@@ -1057,14 +1066,14 @@ call s:command("-nargs=? -complete=customlist,s:CommitComplete Gcommit :execute 
 
 function! s:Commit(args, ...) abort
   let repo = a:0 ? a:1 : s:repo()
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let dir = getcwd()
   let msgfile = repo.dir('COMMIT_EDITMSG')
   let outfile = tempname()
   let errorfile = tempname()
   try
     try
-      execute cd.s:fnameescape(repo.tree())
+      execute cd s:fnameescape(repo.tree())
       if s:winshell()
         let command = ''
         let old_editor = $GIT_EDITOR
@@ -1082,7 +1091,7 @@ function! s:Commit(args, ...) abort
       endif
       let error = v:shell_error
     finally
-      execute cd.'`=dir`'
+      execute cd s:fnameescape(dir)
     endtry
     if !has('gui_running')
       redraw!
@@ -1292,10 +1301,10 @@ call s:command("-bar -bang -nargs=* -range=0 -complete=customlist,s:EditComplete
 function! s:Grep(cmd,bang,arg) abort
   let grepprg = &grepprg
   let grepformat = &grepformat
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let dir = getcwd()
   try
-    execute cd.'`=s:repo().tree()`'
+    execute cd s:fnameescape(s:repo().tree())
     let &grepprg = s:repo().git_command('--no-pager', 'grep', '-n', '--no-color')
     let &grepformat = '%f:%l:%m,%m %f match%ts,%f'
     exe a:cmd.'! '.escape(matchstr(a:arg,'\v\C.{-}%($|[''" ]\@=\|)@='),'|')
@@ -1324,7 +1333,7 @@ function! s:Grep(cmd,bang,arg) abort
   finally
     let &grepprg = grepprg
     let &grepformat = grepformat
-    execute cd.'`=dir`'
+    execute cd s:fnameescape(dir)
   endtry
 endfunction
 
@@ -1352,17 +1361,17 @@ function! s:Log(cmd, line1, line2, ...) abort
   endif
   let grepformat = &grepformat
   let grepprg = &grepprg
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let dir = getcwd()
   try
-    execute cd.'`=s:repo().tree()`'
+    execute cd s:fnameescape(s:repo().tree())
     let &grepprg = escape(call(s:repo().git_command,cmd,s:repo()),'%#')
     let &grepformat = '%Cdiff %.%#,%C--- %.%#,%C+++ %.%#,%Z@@ -%\d%\+\,%\d%\+ +%l\,%\d%\+ @@,%-G-%.%#,%-G+%.%#,%-G %.%#,%A%f::%m,%-G%.%#'
     exe a:cmd
   finally
     let &grepformat = grepformat
     let &grepprg = grepprg
-    execute cd.'`=dir`'
+    execute cd s:fnameescape(dir)
   endtry
 endfunction
 
@@ -1803,12 +1812,12 @@ function! s:Diff(vert,keepfocus,...) abort
   elseif (empty(args) || args[0] == ':') && s:buffer().commit() =~# '^[0-1]\=$' && s:repo().git_chomp_in_tree('ls-files', '--unmerged', '--', s:buffer().path()) !=# ''
     let vert = empty(a:vert) ? s:diff_modifier(3) : a:vert
     let nr = bufnr('')
-    execute 'leftabove '.vert.'split `=fugitive#buffer().repo().translate(s:buffer().expand('':2''))`'
+    execute 'leftabove '.vert.'split' s:fnameescape(fugitive#repo().translate(s:buffer().expand(':2')))
     execute 'nnoremap <buffer> <silent> dp :diffput '.nr.'<Bar>diffupdate<CR>'
     let nr2 = bufnr('')
     call s:diffthis()
     wincmd p
-    execute 'rightbelow '.vert.'split `=fugitive#buffer().repo().translate(s:buffer().expand('':3''))`'
+    execute 'rightbelow '.vert.'split' s:fnameescape(fugitive#repo().translate(s:buffer().expand(':3')))
     execute 'nnoremap <buffer> <silent> dp :diffput '.nr.'<Bar>diffupdate<CR>'
     let nr3 = bufnr('')
     call s:diffthis()
@@ -1915,7 +1924,7 @@ function! s:MoveComplete(A,L,P) abort
   endif
 endfunction
 
-function! s:Remove(force) abort
+function! s:Remove(after, force) abort
   if s:buffer().commit() ==# ''
     let cmd = ['rm']
   elseif s:buffer().commit() ==# '0'
@@ -1933,7 +1942,7 @@ function! s:Remove(force) abort
     return 'echoerr '.string(v:errmsg)
   else
     call fugitive#reload_status()
-    return 'edit'.(a:force ? '!' : '')
+    return a:after . (a:force ? '!' : '')
   endif
 endfunction
 
@@ -1941,7 +1950,8 @@ augroup fugitive_remove
   autocmd!
   autocmd User Fugitive if s:buffer().commit() =~# '^0\=$' |
         \ exe "command! -buffer -bar -bang -nargs=1 -complete=customlist,s:MoveComplete Gmove :execute s:Move(<bang>0,<q-args>)" |
-        \ exe "command! -buffer -bar -bang Gremove :execute s:Remove(<bang>0)" |
+        \ exe "command! -buffer -bar -bang Gremove :execute s:Remove('edit',<bang>0)" |
+        \ exe "command! -buffer -bar -bang Gdelete :execute s:Remove('bdelete',<bang>0)" |
         \ endif
 augroup END
 
@@ -1987,10 +1997,10 @@ function! s:Blame(bang,line1,line2,count,args) abort
     let cmd += ['--', s:buffer().path()]
     let basecmd = escape(call(s:repo().git_command,cmd,s:repo()),'!')
     try
-      let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+      let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
       if !s:repo().bare()
         let dir = getcwd()
-        execute cd.'`=s:repo().tree()`'
+        execute cd s:fnameescape(s:repo().tree())
       endif
       if a:count
         execute 'write !'.substitute(basecmd,' blame ',' blame -L '.a:line1.','.a:line2.' ','g')
@@ -2003,7 +2013,7 @@ function! s:Blame(bang,line1,line2,count,args) abort
           silent! execute '%write !'.basecmd.' > '.temp.' 2> '.error
         endif
         if exists('l:dir')
-          execute cd.'`=dir`'
+          execute cd s:fnameescape(dir)
           unlet dir
         endif
         if v:shell_error
@@ -2076,7 +2086,7 @@ function! s:Blame(bang,line1,line2,count,args) abort
       endif
     finally
       if exists('l:dir')
-        execute cd.'`=dir`'
+        execute cd s:fnameescape(dir)
       endif
     endtry
     return ''
@@ -2170,8 +2180,8 @@ function! s:BlameSyntax() abort
   let arg = exists('b:fugitive_blame_arguments') ? b:fugitive_blame_arguments : ''
   syn match FugitiveblameBoundary "^\^"
   syn match FugitiveblameBlank                      "^\s\+\s\@=" nextgroup=FugitiveblameAnnotation,fugitiveblameOriginalFile,FugitiveblameOriginalLineNumber skipwhite
-  syn match FugitiveblameHash       "\%(^\^\=\)\@<=\x\{7,40\}\>" nextgroup=FugitiveblameAnnotation,FugitiveblameOriginalLineNumber,fugitiveblameOriginalFile skipwhite
-  syn match FugitiveblameUncommitted "\%(^\^\=\)\@<=0\{7,40\}\>" nextgroup=FugitiveblameAnnotation,FugitiveblameOriginalLineNumber,fugitiveblameOriginalFile skipwhite
+  syn match FugitiveblameHash       "\%(^\^\=\)\@<=\<\x\{7,40\}\>" nextgroup=FugitiveblameAnnotation,FugitiveblameOriginalLineNumber,fugitiveblameOriginalFile skipwhite
+  syn match FugitiveblameUncommitted "\%(^\^\=\)\@<=\<0\{7,40\}\>" nextgroup=FugitiveblameAnnotation,FugitiveblameOriginalLineNumber,fugitiveblameOriginalFile skipwhite
   syn region FugitiveblameAnnotation matchgroup=FugitiveblameDelimiter start="(" end="\%( \d\+\)\@<=)" contained keepend oneline
   syn match FugitiveblameTime "[0-9:/+-][0-9:/+ -]*[0-9:/+-]\%( \+\d\+)\)\@=" contained containedin=FugitiveblameAnnotation
   exec 'syn match FugitiveblameLineNumber         " *\d\+)\@=" contained containedin=FugitiveblameAnnotation'.conceal
@@ -2197,7 +2207,7 @@ function! s:BlameSyntax() abort
       continue
     endif
     let seen[hash] = 1
-    if &t_Co > 16 && exists('g:CSApprox_loaded')
+    if &t_Co > 16 && get(g:, 'CSApprox_loaded') && !empty(findfile('autoload/csapprox/per_component.vim', escape(&rtp, ' ')))
           \ && empty(get(s:hash_colors, hash))
       let [s, r, g, b; __] = map(matchlist(hash, '\(\x\x\)\(\x\x\)\(\x\x\)'), 'str2nr(v:val,16)')
       let color = csapprox#per_component#Approximate(r, g, b)
@@ -2226,6 +2236,8 @@ endfunction
 " Section: Gbrowse
 
 call s:command("-bar -bang -range=0 -nargs=* -complete=customlist,s:EditComplete Gbrowse :execute s:Browse(<bang>0,<line1>,<count>,<f-args>)")
+
+let s:redirects = {}
 
 function! s:Browse(bang,line1,count,...) abort
   try
@@ -2332,13 +2344,24 @@ function! s:Browse(bang,line1,count,...) abort
     else
       let remote_for_url = remote
     endif
-    if fugitive#git_version() =~# '^[01]\.|^2\.[0-6]\.'
+    if fugitive#git_version() =~# '^[01]\.\|^2\.[0-6]\.'
       let raw = s:repo().git_chomp('config','remote.'.remote_for_url.'.url')
     else
       let raw = s:repo().git_chomp('remote','get-url',remote_for_url)
     endif
     if raw ==# ''
       let raw = remote
+    endif
+
+    if raw =~# '^https\=://' && s:executable('curl')
+      if !has_key(s:redirects, raw)
+        let s:redirects[raw] = matchstr(system('curl -I ' .
+              \ s:shellesc(raw . '/info/refs?service=git-upload-pack')),
+              \ 'Location: \zs\S\+\ze/info/refs?')
+      endif
+      if len(s:redirects[raw])
+        let raw = s:redirects[raw]
+      endif
     endif
 
     for Handler in g:fugitive_browse_handlers
@@ -2517,7 +2540,7 @@ function! s:BufReadIndex() abort
       call s:ReplaceCmd(s:repo().git_command('ls-files','--stage'),index)
       set ft=git nospell
     else
-      let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+      let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
       let dir = getcwd()
       if fugitive#git_version() =~# '^0\|^1\.[1-7]\.'
         let cmd = s:repo().git_command('status')
@@ -2529,10 +2552,10 @@ function! s:BufReadIndex() abort
               \ 'status')
       endif
       try
-        execute cd.'`=s:repo().tree()`'
+        execute cd s:fnameescape(s:repo().tree())
         call s:ReplaceCmd(cmd, index)
       finally
-        execute cd.'`=dir`'
+        execute cd s:fnameescape(dir)
       endtry
       set ft=gitcommit
       set foldtext=fugitive#foldtext()

@@ -324,7 +324,7 @@ if g:go_highlight_types != 0
   syn match goTypeConstructor      /\<\w\+{/he=e-1
   syn match goTypeDecl             /\<type\>/ nextgroup=goTypeName skipwhite skipnl
   syn match goTypeName             /\w\+/ contained nextgroup=goDeclType skipwhite skipnl
-  syn match goDeclType             /\<interface\|struct\>/ skipwhite skipnl
+  syn match goDeclType             /\<\(interface\|struct\)\>/ skipwhite skipnl
   hi def link     goReceiverType      Type
 else
   syn keyword goDeclType           struct interface

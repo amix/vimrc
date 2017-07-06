@@ -76,6 +76,10 @@ snippet inject "@inject directive"
 @inject('$1', '$2')
 endsnippet
 
+snippet lang "@lang directive" i
+@lang('$1')
+endsnippet
+
 snippet php "@php directive"
 @php
 	${1:${VISUAL}}
@@ -124,11 +128,11 @@ snippet yield "@yield directive"
 @yield('$1')
 endsnippet
 
-snippet { "{{ }} statement."
+snippet { "{{ }} statement." i
 {{ $1 }}
 endsnippet
 
-snippet {! "{!! !!} statement"
+snippet {! "{!! !!} statement" i
 {!! $1 !!}
 endsnippet
 

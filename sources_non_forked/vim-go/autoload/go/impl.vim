@@ -71,12 +71,12 @@ endif
 
 function! s:root_dirs() abort
   let dirs = []
-  let root = go#util#goroot()
+  let root = go#util#env("goroot")
   if root !=# '' && isdirectory(root)
     call add(dirs, root)
   endif
 
-  let paths = map(split(go#util#gopath(), go#util#PathListSep()), "substitute(v:val, '\\\\', '/', 'g')")
+  let paths = map(split(go#util#env("gopath"), go#util#PathListSep()), "substitute(v:val, '\\\\', '/', 'g')")
   if go#util#ShellError()
     return []
   endif

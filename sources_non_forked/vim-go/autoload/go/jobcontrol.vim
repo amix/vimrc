@@ -52,7 +52,7 @@ function! s:spawn(bang, desc, args) abort
         \ 'desc': a:desc,
         \ 'bang': a:bang,
         \ 'winnr': winnr(),
-        \ 'importpath': go#package#ImportPath(expand('%:p:h')),
+        \ 'importpath': go#package#ImportPath(),
         \ 'state': "RUNNING",
         \ 'stderr' : [],
         \ 'stdout' : [],
