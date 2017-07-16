@@ -1,0 +1,155 @@
+*cscove.txt*            cscove, a smart cscope helper for vim.          *cscove*
+
+1. About cscove                                    |cscove-about|
+2. Key Mappings                                    |cscove-keymappings|
+3. Functions                                       |cscove-funtions|
+4. Commands                                        |cscove-commands|
+5. Options                                         |cscove-options|
+
+=============================================================================
+1. ABOUT cscove ~
+                                                               *cscove-about*
+
+Cscove(new name for this plugin, since cscope.vim is used too widely.) is a
+smart cscope helper for vim.
+
+It will try to find a proper cscope database for current file, then connect to
+it. If there is no proper cscope database for current file, you are prompted to
+specify a folder with a string like --
+
+    Can not find proper cscope db, please input a path to create cscope db for.
+
+Then the plugin will create cscope database for you, connect to it, and find
+what you want. The found result will be listed in a location list window. Next
+time when you open the same file or other file that the cscope database can be
+used for, the plugin will connect to the cscope database automatically. You
+need not take care of anything about cscope database.
+
+When you have a file edited/added in those folders for which cscope databases
+have been created, cscove will automatically update the corresponding database.
+
+Cscove frees you from creating/connecting/updating cscope database, let you
+focus on code browsing.
+
+=============================================================================
+2. KEY MAPPINGS ~
+                                                               *cscove-keymappings*
+The default key mappings has been removed from the plugin itself, since users
+may prefer different choices.
+So to use the plugin, you must define your own key mappings first.
+
+Below is the minimum key mappings.
+
+    nnoremap <leader>fa :call CscopeFindInteractive(expand('<cword>'))<CR>
+    nnoremap <leader>l :call ToggleLocationList()<CR>
+
+Some optional key mappings to search directly.
+
+    " s: Find this C symbol
+    nnoremap  <leader>fs :call CscopeFind('s', expand('<cword>'))<CR>
+    " g: Find this definition
+    nnoremap  <leader>fg :call CscopeFind('g', expand('<cword>'))<CR>
+    " d: Find functions called by this function
+    nnoremap  <leader>fd :call CscopeFind('d', expand('<cword>'))<CR>
+    " c: Find functions calling this function
+    nnoremap  <leader>fc :call CscopeFind('c', expand('<cword>'))<CR>
+    " t: Find this text string
+    nnoremap  <leader>ft :call CscopeFind('t', expand('<cword>'))<CR>
+    " e: Find this egrep pattern
+    nnoremap  <leader>fe :call CscopeFind('e', expand('<cword>'))<CR>
+    " f: Find this file
+    nnoremap  <leader>ff :call CscopeFind('f', expand('<cword>'))<CR>
+    " i: Find files #including this file
+    nnoremap  <leader>fi :call CscopeFind('i', expand('<cword>'))<CR>
+
+=============================================================================
+3. FUNCTIONS ~
+                                                               *cscove-functions*
+
+The plugin provides three public functions.
+
+CscopeFind({querytype}, {pattern})
+            search your {pattern} with {querytype} in the database suitable
+            for current file.
+
+CscopeFindInteractive({pattern})
+            provide an interactive interface for finding what you want.
+
+CscopeUpdateDB()
+            update all existing cscope databases in case that you disable cscope
+            database auto update.
+
+ToggleLocationList()
+            toggle the location list for found results.
+
+=============================================================================
+4. Commands ~
+                                                               *cscove-commands*
+You may need these commands sometimes.
+                                                               *CscopeList*
+
+List all existing cscope databases that cscove has created for you.
+
+    :CscopeList
+
+Here is example output from |:CscopeList|
+
+     ID                   LOADTIMES    PATH
+    *1337668712           3            /works/vim/src
+
+    '*'         means the db has been connected.
+    ID          id of the db.
+    LOADTIMES   how many times this db has ever been used.
+    PATH        which folder the db is for.
+                                                               *CscopeClear*
+
+Remove the database for specified folder or all existing cscope databases that
+cscove has created for you if no folder provided.
+You can use <Tab> for completion.
+
+    :CscopeClear <full_path>
+
+    :CscopeClear
+
+=============================================================================
+5. OPTIONS ~
+                                                               *cscove-options*
+
+                                                                *'g:cscope_open_location'*
+Use this option to stop opening location list after searching
+  let g:cscope_open_location = 0
+                                                                *'g:cscope_auto_update'*
+Use this option to disable cscope database auto update.
+  let g:cscope_auto_update = 0
+
+Then you can update your cscope databases manually by:
+  call CscopeUpdateDB()
+                                                                *'g:cscope_silent'*
+Use this option to toggle messages for database updated.
+  let g:cscope_silent = 1
+
+                                                                *'g:cscope_cmd'*
+Use the option to specify the path to cscope excutalbe, if it is not in PATH.
+  let g:cscope_cmd = '/home/brook/bin/cscope'
+
+                                                                *'g:cscope_split_threshold'*
+Specify a number. If total files found for a directory exceeds it, then a
+separated cscope database will be created for modified/added files to avoid
+long time for updating cscope database.
+  let g:cscope_split_threshold = 9999
+
+                                                                *'g:cscope_interested_files'*
+Specify the extentions you want to include when building cscope database, the
+default extentions are listed in interested.txt.
+  let g:cscope_interested_files = '\.c$\|\.cpp$\|\.h$\|\.hpp'
+
+                                                                *'g:cscope_ignored_dir'*
+Specify the sub directories you want to exclude when building cscope database, for
+example:
+  let g:cscope_ignored_dir = 'node_modules$\|dist$'
+
+                                                                *'g:cscope_preload_path'*
+Preload path settings help you to load some common libraries by default. For example,
+    let g:cscope_preload_path="/usr/include/c++/;/works/phplib/trunk/php"
+
+" vim: set expandtab sts=2 ts=2 sw=2 tw=78 ft=help norl:
