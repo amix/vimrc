@@ -14,6 +14,10 @@ Vim, then you should use an older version of the MRU plugin.
 The recently used filenames are stored in a file specified by the Vim
 MRU_File variable.
 
+The Github repository for the MRU plugin is available at:
+
+      http://github.com/yegappan/mru
+
 Usage
 
 To list and edit files from the MRU list, you can use the ":MRU" command.
@@ -36,7 +40,8 @@ previous window has a modified buffer or is the preview window or is used by
 some other plugin, then the file is opened in a new window.
 
 You can press the 'o' key to open the file name under the cursor in the
-MRU window in a new window.
+MRU window in a new window. You can also press <Shift-Enter> instead of 'o'
+to open the file in a new window.
 
 To open a file from the MRU window in read-only mode (view), press the 'v'
 key.
@@ -46,19 +51,20 @@ file is already opened in a window in the current or in another tab, then
 the cursor is moved to that tab. Otherwise, a new tab is opened.
 
 You can open multiple files from the MRU window by specifying a count before
-pressing '<Enter>' or 'v' or 'o' or 't'. You can also visually select
-multiple filenames and invoke the commands to open the files. Each selected
-file will be opened in a separate window or tab.
+pressing '<Enter>' or 'v' or 'o' or 't'. You can also visually (using
+linewise visual mode) select multiple filenames and invoke the commands to
+open the files. Each selected file will be opened in a separate window or
+tab.
 
 You can press the 'u' key in the MRU window to update the file list. This is
 useful if you keep the MRU window open always.
 
-You can close the MRU window by pressing the 'q' key or using one of the Vim
-window commands.
+You can close the MRU window by pressing the 'q' key or the <Esc> key or
+using one of the Vim window commands.
 
 To display only files matching a pattern from the MRU list in the MRU
 window, you can specify a pattern to the ":MRU" command. For example, to
-display only file names containing "vim" in them, you can use the following
+display only file names matching "vim" in them, you can use the following
 command ":MRU vim".  When you specify a partial file name and only one
 matching filename is found, then the ":MRU" command will edit that file.
 
@@ -78,6 +84,16 @@ file and then modify the path to open another file present in the same path.
 Whenever the MRU list changes, the MRU file is updated with the latest MRU
 list. When you have multiple instances of Vim running at the same time, the
 latest MRU list will show up in all the instances of Vim.
+
+The MRUFilename syntax group is used to highlight the file names in the MRU
+window. By default, this syntax group is linked to the Identifier highlight
+group. You can change the highlight group by adding the following line in
+your .vimrc:
+
+   highlight link MRUFileName LineNr
+
+The MRU buffer uses the 'mru file type. You can use this file type to add
+custom auto commands, syntax highlighting, etc.
 
 Configuration
 
@@ -163,4 +179,14 @@ The default setting for this is 10. You can change this to increase the
 number of file names displayed in a single sub-menu:
 
       let MRU_Max_Submenu_Entries = 15
+
+In the MRU window, the filenames are displayed in two parts. The first part
+contains the file name without the path and the second part contains the
+full path to the file in parenthesis. This format is controlled by the
+MRU_Filename_Format variable. If you prefer to change this to some other
+format, then you can modify the MRU_Filename_Format variable. For example,
+to display the full path without splitting it, you can set this variable
+as shown below:
+
+      let MRU_Filename_Format={'formatter':'v:val', 'parser':'.*'}
 
