@@ -9,12 +9,15 @@ IMPROVEMENTS
 * `:GoBuild` now compiles the package with the `-i` flag added. This means that subsequent calls are much more faster due caching of packages [gh-1330]
 * `:GoCoverage` echos now the progress if `g:go_echo_command_info` is enabled [gh-1333]
 * Add `g:go_doc_max_height` setting to control the maximum height of the window created by `:GoDoc` and `K` mapping [gh-1335]
+* The `af` text object is able to include the assignment variable for anonymous functions. Can be disabled with `g:go_textobj_include_variable = 0` [gh-1345]
 
 BUG FIXES:
 
 * Fix obtaining package's import path for the current directory. This fixes some issues we had if the user was using multiple GOPATH's [gh-1321]
 * Fix documentation for vim-go & syntastic integration for errcheck using [gh-1323]
 * Fix showing an output if a test has finished when `:GoTest` is called [gh-1327]
+* Fix warning when goimports doesn't support srcdir [gh-1344]
+* Fix brokwn code folding with go_highlight_types [gh-1338]
 
 ## 1.13 - (June 6, 2017)
 

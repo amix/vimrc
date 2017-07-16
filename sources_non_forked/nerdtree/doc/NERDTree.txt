@@ -1,4 +1,4 @@
-*NERD_tree.txt*   A tree explorer plugin that owns your momma!
+*NERDTree.txt*   A tree explorer plugin that owns your momma!
 
 
 

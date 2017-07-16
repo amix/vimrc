@@ -2857,7 +2857,9 @@ Checker options~
 This checker is initialised using the "makeprgBuild()" function and thus it
 accepts the standard options described at |syntastic-config-makeprg|.
 
-Note~
+Notes~
+
+Automatically fixing errors (option "--fix") is not supported.
 
 You can also use "eslint_d" (https://github.com/mantoni/eslint_d.js), version
 2.1.0 or later, instead of "ESLint". Just point 'g:syntastic_html_eslint_exec'

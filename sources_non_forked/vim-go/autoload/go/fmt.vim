@@ -184,7 +184,7 @@ function! s:fmt_cmd(bin_name, source, target)
     if !exists('b:goimports_vendor_compatible')
       let out = go#util#System(bin_path . " --help")
       if out !~ "-srcdir"
-        call go#util#EchoWarning(printf("vim-go: goimports (%s) does not support srcdir. Update with: :GoUpdateBinaries", , bin_path))
+        call go#util#EchoWarning(printf("vim-go: goimports (%s) does not support srcdir. Update with: :GoUpdateBinaries", bin_path))
       else
         let b:goimports_vendor_compatible = 1
       endif

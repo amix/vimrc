@@ -32,3 +32,14 @@ if [ -f "FAILED" ]; then
   exit 1
 fi
 echo 2>&1 "PASS"
+
+# Run vimhelplint
+[ -d vim-vimhelplint ] || git clone https://github.com/machakann/vim-vimhelplint
+echo "Running vimhelplint"
+lint=$(vim -esN --cmd 'set rtp+=./vim-vimhelplint' -c 'filetype plugin on' \
+        -c 'e ../doc/vim-go.txt' -c 'verb VimhelpLintEcho' -c q 2>&1)
+if [ -n "$lint" ]; then 
+       exit 1
+else
+       exit 0
+fi

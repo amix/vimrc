@@ -690,8 +690,8 @@ CTRL-t
       :GoAddTags xml db
 <
     If [option] is passed it'll either add a new tag with an option or will
-    modify existing tags. An example of adding `omitempty` to all `json` fields
-    would be:
+    modify existing tags. An example of adding `omitempty` to all `json`
+    fields would be:
 >
       :GoAddTags json,omitempty
 <
@@ -981,6 +981,8 @@ af            "a function", select contents from a function definition to the
                closing bracket. If |'g:go_textobj_include_function_doc'| is
                enabled it also includes the comment doc for a function
                declaration. This text-object also supports literal functions.
+               If |'g:go_textobj_include_variable'| is enabled it also
+               includes the variable of an function assignment
 
                                                *go-v_if* *go-if*
 if            "inside a function", select contents of a function,
@@ -1348,6 +1350,13 @@ Consider the comment above a function to be part of the function when using
 the `af` text object and `[[` motion. By default it's enabled. >
 
   let g:go_textobj_include_function_doc = 1
+<
+                                             *'g:go_textobj_include_variable'*
+
+Consider the variable of an function assignment to be part of the anonymous
+function when using the `af` text object. By default it's enabled. >
+
+  let g:go_textobj_include_variable = 1
 <
                                                   *'g:go_metalinter_autosave'*
 
