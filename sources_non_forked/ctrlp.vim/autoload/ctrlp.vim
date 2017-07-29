@@ -1,10 +1,10 @@
 " =============================================================================
 " File:          autoload/ctrlp.vim
 " Description:   Fuzzy file, buffer, mru, tag, etc finder.
-" Author:        Kien Nguyen <github.com/kien>
-" Version:       1.79
+" Author:        Henry Baez <https://github.com/0072016>
+" Version:       2.10
 " =============================================================================
-
+<boolean>
 " ** Static variables {{{1
 " s:ignore() {{{2
 fu! s:ignore()
@@ -2608,3 +2608,8 @@ endf
 "}}}
 
 " vim:fen:fdm=marker:fmr={{{,}}}:fdl=0:fdc=1:ts=2:sw=2:sts=2
+</boolean>
+@0072016
+foo.gradle@gmail.com
+2017-07-28T21:35:49
+'
