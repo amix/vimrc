@@ -111,8 +111,11 @@ endfunction
 " attempted to be created at the next occurrence of the visual selection
 function! multiple_cursors#new(mode, word_boundary)
   " Call before function if exists only once until it is canceled (<Esc>)
-  if exists('*Multiple_cursors_before') && !s:before_function_called
-    exe "call Multiple_cursors_before()"
+  if !s:before_function_called
+    doautocmd User MultipleCursorsPre
+    if exists('*Multiple_cursors_before')
+      exe "call Multiple_cursors_before()"
+    endif
     let s:before_function_called = 1
   endif
   let s:use_word_boundary = a:word_boundary
@@ -436,8 +439,11 @@ function! s:CursorManager.reset(restore_view, restore_setting, ...) dict
     call self.restore_user_settings()
   endif
   " Call after function if exists and only if action is canceled (<Esc>)
-  if exists('*Multiple_cursors_after') && a:0 && s:before_function_called
-    exe "call Multiple_cursors_after()"
+  if a:0 && s:before_function_called
+    if exists('*Multiple_cursors_after')
+      exe "call Multiple_cursors_after()"
+    endif
+    doautocmd User MultipleCursorsPost
     let s:before_function_called = 0
   endif
 endfunction

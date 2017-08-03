@@ -55,17 +55,17 @@ snippet cla class .. extends .. constructor: ..
 # If
 snippet if
 	if ${1:condition}
-		${0:# body...}
+		${0:${VISUAL}}
 # If __ Else
 snippet ife
 	if ${1:condition}
-		${2:# body...}
+		${2:${VISUAL}}
 	else
 		${0:# body...}
 # Else if
 snippet eif
 	else if ${1:condition}
-		${0:# body...}
+		${0:${VISUAL}}
 # Ternary If
 snippet ifte
 	if ${1:condition} then ${2:value} else ${0:other}
@@ -84,7 +84,7 @@ snippet log
 # Try __ Catch
 snippet try
 	try
-		${1}
+		${1:${VISUAL}}
 	catch ${2:error}
 		${0}
 # Require

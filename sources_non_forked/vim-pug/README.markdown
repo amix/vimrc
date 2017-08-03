@@ -2,6 +2,8 @@
 
 Vim syntax highlighting for Pug (formerly Jade) templates.
 
+For best results consider using this with an (improved) HTML5 syntax plugin.
+
 Installation
 ------------
 

@@ -1,7 +1,7 @@
 snippet <?
 	<?php
 
-	${0}
+	${0:${VISUAL}}
 snippet dst "declare(strict_types=1)"
 	declare(strict_types=${1:1});
 snippet ec
@@ -17,37 +17,38 @@ snippet ?
 	<?php ${0} ?>
 snippet ?f
 	<?php foreach ($${1:vars} as $${2:$var}): ?>
-		${0}
+		${0:${VISUAL}}
 	<?php endforeach ?>
 snippet ?i
 	<?php if ($${1:var}): ?>
-		${0}
+		${0:${VISUAL}}
 	<?php endif ?>
 snippet ns
 	namespace ${1:Foo\Bar\Baz};
-	${0}
+	
+	${0:${VISUAL}}
 snippet c
 	class ${1:`vim_snippets#Filename()`}
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 snippet i
 	interface ${1:`vim_snippets#Filename()`}
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 snippet t.
 	$this->
 snippet f
 	function ${1}(${3})
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 # method
 snippet m
 	${1:protected} function ${2:foo}()
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 snippet sm "PHP Class Setter"
 	/**
@@ -93,9 +94,9 @@ snippet E
 	$_ENV['${1:variable}']
 snippet F
 	$_FILES['${1:variable}']
-snippet G
+snippet G "_GET array"
 	$_GET['${1:variable}']
-snippet P
+snippet P "_POST array"
 	$_POST['${1:variable}']
 snippet R
 	$_REQUEST['${1:variable}']
@@ -158,7 +159,7 @@ snippet doc_c
 	 */
 	${1:}class ${2:}
 	{
-		${0}
+		${0:${VISUAL}}
 	} // END $1class $2
 # Constant Definition - post doc
 snippet doc_dp
@@ -232,7 +233,7 @@ snippet interface
 	 */
 	interface ${1:`vim_snippets#Filename()`}
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 # Trait
 snippet trait
@@ -244,7 +245,7 @@ snippet trait
 	 */
 	trait ${1:`vim_snippets#Filename()`}
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 # class ...
 snippet class
@@ -267,7 +268,7 @@ snippet nc
 
 	${2:abstract }class ${3:`vim_snippets#Filename()`}
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 # define(...)
 snippet def "define('VARIABLE_NAME', 'definition')"
@@ -277,45 +278,43 @@ snippet def?
 	${1}defined('${2}')
 snippet wh "while (condition) { ... }"
 	while (${1:/* condition */}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet do "do { ... } while (condition)"
 	do {
-		${0}
+		${0:${VISUAL}}
 	} while (${1});
 snippet if "if (condition) { ... }"
 	if (${1}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet ifn "if (!condition) { ... }"
 	if (!${1}) {
-		${2}
+		${0:${VISUAL}}
 	}
 snippet ifil "<?php if (condition): ?> ... <?php endif; ?>"
 	<?php if (${1}): ?>
-		${0}
+		${0:${VISUAL}}
 	<?php endif; ?>
 snippet ife "if (cond) { ... } else { ... }"
 	if (${1}) {
-		${2}
+		${0:${VISUAL}}
 	} else {
-		${3}
+		${2}
 	}
-	${0}
 snippet ifeil "<?php if (condition): ?> ... <?php else: ?> ... <?php endif; ?>"
 	<?php if (${1}): ?>
-		${2}
+		${0:${VISUAL}}
 	<?php else: ?>
-		${3}
+		${2}
 	<?php endif; ?>
-	${0}
 snippet el "else { ... }"
 	else {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet eif "elseif(condition) { ... }"
 	elseif (${1}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet switch "switch($var) { case 'xyz': ... default: .... }"
 	switch ($${1:variable}) {
@@ -329,23 +328,23 @@ snippet switch "switch($var) { case 'xyz': ... default: .... }"
 	}
 snippet case "case 'value': ... break"
 	case '${1:value}':
-		${2}
+		${0:${VISUAL}}
 		break;
 snippet for "for ($i = 0; $i < $count; $i++) { ... }"
 	for ($${2:i} = 0; $$2 < ${1:count}; $$2${3:++}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet foreach "foreach ($var as $value) { .. }"
 	foreach ($${1:variable} as $${2:value}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet foreachil "<?php foreach ($var as $value): ?>  ... <?php endforeach; ?>"
 	<?php foreach ($${1:variable} as $${2:value}): ?>
-		${0}
+		${0:${VISUAL}}
 	<?php endforeach; ?>
 snippet foreachk "foreach ($var as $key => $value) { .. }"
 	foreach ($${1:variable} as $${2:key} => $${3:value}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet foreachkil "<?php foreach ($var as $key => $value): ?>  ... <?php endforeach; ?>"
 	<?php foreach ($${1:variable} as $${2:key} => $${3:value}): ?>
@@ -355,7 +354,7 @@ snippet array "$... = ['' => ]"
 	$${1:arrayName} = ['${2}' => ${3}];
 snippet try "try { ... } catch (Exception $e) { ... }"
 	try {
-		${0}
+		${0:${VISUAL}}
 	} catch (${1:Exception} $e) {
 	}
 # lambda with closure
@@ -590,48 +589,70 @@ snippet CSVIterator
 	
 	} // end class
 # phpunit
-snippet ase "$this->assertEquals()"
-	$this->assertEquals(${1:expected}, ${2:actual});
-snippet asne "$this->assertNotEquals()"
-	$this->assertNotEquals(${1:expected}, ${2:actual});
-snippet asf "$this->assertFalse()"
+snippet ase "$this->assertEquals($a, $b)"
+	$this->assertEquals(${1:$expected}, ${2:$actual});
+snippet asne "$this->assertNotEquals($a, $b)"
+	$this->assertNotEquals(${1:$expected}, ${2:$actual});
+snippet asf "$this->assertFalse($a)"
 	$this->assertFalse(${1});
-snippet ast "$this->assertTrue()"
+snippet ast "$this->assertTrue($a)"
 	$this->assertTrue(${1});
-snippet asfex "$this->assertFileExists()"
+snippet asfex "$this->assertFileExists('path/to/file')"
 	$this->assertFileExists(${1:'path/to/file'});
-snippet asfnex "$this->assertFileNotExists()"
+snippet asfnex "$this->assertFileNotExists('path/to/file')"
 	$this->assertFileNotExists(${1:'path/to/file'});
-snippet ascon "$this->assertContains()"
+snippet ascon "$this->assertContains($needle, $haystack)"
 	$this->assertContains(${1:$needle}, ${2:$haystack});
-snippet ashk "$this->assertArrayHasKey()"
+snippet asncon "$this->assertNotContains($needle, $haystack)"
+	$this->assertNotContains(${1:$needle}, ${2:$haystack});
+snippet ascono "$this->assertContainsOnly($needle, $haystack)"
+	$this->assertContainsOnly(${1:$needle}, ${2:$haystack});
+snippet asconoi "$this->assertContainsOnlyInstancesOf(Example::class, $haystack)"
+	$this->assertContainsOnlyInstancesOf(${1:Example}::class, ${2:$haystack});
+snippet ashk "$this->assertArrayHasKey($key, $array)"
 	$this->assertArrayHasKey(${1:$key}, ${2:$array});
-snippet asnhk "$this->assertArrayNotHasKey()"
+snippet asnhk "$this->assertArrayNotHasKey($key, $array)"
 	this->assertArrayNotHasKey(${1:$key}, ${2:$array});
-snippet ascha "$this->assertClassHasAttribute()"
-	$this->assertClassHasAttribute(${1:$attributeName}, '${2:$className}');
-snippet asi "$this->assertInstanceOf(...)"
-	$this->assertInstanceOf(${1:expected}, ${2:actual});
+snippet ascha "$this->assertClassHasAttribute($name, Example::class)"
+	$this->assertClassHasAttribute(${1:$attributeName}, ${2:Example}::class);
+snippet asi "$this->assertInstanceOf(Example::class, $actual)"
+	$this->assertInstanceOf(${1:Example}::class, ${2:$actual});
+snippet ast "$this->assertInternalType('string', $actual)"
+	$this->assertInternalType(${1:'string'}, ${2:actual});
+snippet asco "$this->assertCount($count, $haystack)"
+	$this->assertCount(${1:$expectedCount}, ${2:$haystack});
+snippet asnco "$this->assertNotCount($count, $haystack)"
+	$this->assertNotCount(${1:$count}, ${2:$haystack});
+snippet assub "$this->assertArraySubset($subset, $array)"
+	$this->assertArraySubset(${1:$subset}, ${2:$array});
+snippet asnu "$this->assertNull($a)"
+	$this->assertNull(${1});
+snippet asnnu "$this->assertNotNull($a)"
+	$this->assertNotNull(${1});
 snippet test "public function testXYZ() { ... }"
 	public function test${1}()
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 snippet setup "protected function setUp() { ... }"
 	protected function setUp()
 	{
-		${0}
+		${0:${VISUAL}}
 	}
 snippet teardown "protected function tearDown() { ... }"
 	protected function tearDown()
 	{
-		${0}
+		${0:${VISUAL}}
 	}
+snippet proph "$observer = $this->prophesize(SomeClass::class);"
+	$${1:observer} = $this->prophesize(${2:SomeClass}::class);
+snippet mock "$mock = $this->createMock(SomeClass::class);"
+	$${1:mock} = $this->createMock(${2:SomeClass}::class);
 snippet exp "phpunit expects"
 	expects($this->${1:once}())
 		->method('${2}')
-		->with($this->equalTo(${3})${4})
-		->will($this->returnValue(${5}));
+		->with(${3})
+		->willReturn(${4});
 snippet testcmt "phpunit comment with group"
 	/**
 	* @group ${1}

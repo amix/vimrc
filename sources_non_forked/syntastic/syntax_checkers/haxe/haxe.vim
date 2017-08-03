@@ -19,12 +19,10 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_haxe_haxe_GetLocList() dict
-    if exists('b:vaxe_hxml')
-        let hxml = b:vaxe_hxml
-    elseif exists('g:vaxe_hxml')
-        let hxml = g:vaxe_hxml
-    else
-        let hxml = syntastic#util#findGlobInParent('*.hxml', expand('%:p:h', 1))
+    let buf = bufnr('')
+    let hxml = syntastic#util#bufRawVar(buf, 'vaxe_hxml')
+    if hxml ==# ''
+        let hxml = syntastic#util#findGlobInParent('*.hxml', fnamemodify(bufname(buf), ':p:h'))
     endif
     let hxml = fnamemodify(hxml, ':p')
 
@@ -32,9 +30,12 @@ function! SyntaxCheckers_haxe_haxe_GetLocList() dict
 
     if hxml !=# ''
         let makeprg = self.makeprgBuild({
-            \ 'fname': syntastic#util#shescape(fnamemodify(hxml, ':t')) })
+            \ 'fname': syntastic#util#shescape(fnamemodify(hxml, ':t')),
+            \ 'args_after' :  ['--no-output'] })
 
-        let errorformat = '%E%f:%l: characters %c-%n : %m'
+        let errorformat =
+            \ '%W%f:%l: characters %c-%n : Warning : %m,' .
+            \ '%E%f:%l: characters %c-%n : %m'
 
         let loclist = SyntasticMake({
             \ 'makeprg': makeprg,

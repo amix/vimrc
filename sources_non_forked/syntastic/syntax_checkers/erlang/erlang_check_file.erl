@@ -13,27 +13,57 @@ main([File]) ->
     %% `rebar.config` is looked for,
     %% but it is not necessarily the one in the project root.
     %% I.e. it may be one deeper in the project file hierarchy.
-    RebarFile = rebar_file(Dir),
-    %% `rebar.config` might contain relative paths.
-    %% They are relative to the file! Not to the project root.
-    RebarOpts = rebar_opts(Dir ++ "/" ++ RebarFile),
+    Profile = which_compile_opts_profile(filename:absname(File)),
+    CompileOpts = case which_build_tool(Dir, Profile) of
+        {rebar, RebarFile} ->
+            %% `rebar.config` might contain relative paths.
+            %% They are relative to the file! Not to the project root.
+            %% rebar specific begin
+            rebar_opts(RebarFile);
+            %% rebar specific end
+        {erlangmk, ErlangMkDir} ->
+            %% Erlang.mk specific begin
+            erlangmk_opts(ErlangMkDir, Profile);
+            %% Erlang.mk specific end
+        undefined ->
+            fallback_opts()
+    end,
     code:add_patha(filename:absname("ebin")),
     %% `compile:file/2` requires the `{i, Path}` to be relative
     %% to CWD - no surprise here.
-    compile:file(File, Defs ++ translate_paths(Dir, RebarOpts));
+    compile:file(File, Defs ++ translate_paths(Dir, CompileOpts));
 
 main(_) ->
     io:format("Usage: ~s <file>~n", [escript:script_name()]),
     halt(1).
 
-rebar_file(Dir) ->
-    DirList = filename:split(Dir),
-    case lists:last(DirList) of
-        "test" ->
-            "rebar.test.config";
-        _ ->
-            "rebar.config"
+which_compile_opts_profile(File) ->
+    case filename:basename(filename:dirname(File)) of
+        "test" -> test;
+        _      -> normal
     end.
+
+which_build_tool(Dir, Profile) ->
+    %% rebar specific begin
+    RebarFile = rebar_file(Dir, Profile),
+    %% rebar specific end
+    case filelib:is_file(RebarFile) of
+        true ->
+            {rebar, RebarFile};
+        false ->
+            %% Erlang.mk specific begin
+            ErlangMk = erlangmk_file(Dir),
+            %% Erlang.mk specific end
+            case filelib:is_file(ErlangMk) of
+                true  -> {erlangmk, Dir};
+                false -> undefined
+            end
+    end.
+
+rebar_file(Dir, normal) -> filename:join(Dir, "rebar.config");
+rebar_file(Dir, test)   -> filename:join(Dir, "rebar.test.config").
+
+erlangmk_file(Dir) -> filename:join(Dir, "erlang.mk").
 
 rebar_opts(RebarFile) ->
     Dir = get_root(filename:dirname(RebarFile)),
@@ -53,6 +83,165 @@ rebar_opts(RebarFile) ->
         {error, _} ->
             rebar_opts("rebar.config")
     end.
+
+erlangmk_opts(BaseDir, Profile) ->
+    Make =
+        case os:getenv("MAKE") of
+            false ->
+                case os:find_executable("gmake") of
+                    false -> "make";
+                    Path  -> Path
+                end;
+            Cmd ->
+                case (lists:member($/, Cmd) orelse lists:member($\\, Cmd)) of
+                    true  -> Cmd;
+                    false -> os:find_executable(Cmd)
+                end
+        end,
+    ERLC_OPTS_Target =
+        case Profile of
+            normal -> "show-ERLC_OPTS";
+            test   -> "show-TEST_ERLC_OPTS"
+        end,
+    Args = [
+        "--no-print-directory",
+        "-C", BaseDir,
+        "show-ERL_LIBS",
+        ERLC_OPTS_Target
+    ],
+    try
+        Port = erlang:open_port({spawn_executable, Make}, [
+            {args, Args},
+            exit_status, use_stdio, stderr_to_stdout]),
+        case erlangmk_port_receive_loop(Port, "", BaseDir) of
+            {error, _} ->
+                fallback_opts();
+            {ok, {ErlLibs, ErlcOpts}} ->
+                [code:add_pathsa(filelib:wildcard(
+                                   filename:join([ErlLib, "*", "ebin"])))
+                 || ErlLib <- ErlLibs],
+                ErlcOpts
+        end
+    catch
+        error:_ ->
+            fallback_opts()
+    end.
+
+erlangmk_port_receive_loop(Port, Stdout, BaseDir) ->
+    receive
+        {Port, {exit_status, 0}} ->
+            erlangmk_format_opts(Stdout, BaseDir);
+        {Port, {exit_status, _}} ->
+            {error, {erlangmk, make_target_failure}};
+        {Port, {data, Out}} ->
+            erlangmk_port_receive_loop(Port, Stdout ++ Out, BaseDir)
+    end.
+
+erlangmk_format_opts(Stdout, BaseDir) ->
+    case string:tokens(Stdout, "\n") of
+        [ErlLibsLine | ErlcOptsLines] ->
+            ErlLibs = erlangmk_format_erl_libs(ErlLibsLine),
+            ErlcOpts = erlangmk_format_erlc_opts(ErlcOptsLines, BaseDir),
+            {ok, {ErlLibs, ErlcOpts}};
+        _ ->
+            {error, {erlangmk, incorrect_output}}
+    end.
+
+erlangmk_format_erl_libs(ErlLibsLine) ->
+    case os:type() of
+        {win32, _} -> string:tokens(ErlLibsLine, ";");
+        _          -> string:tokens(ErlLibsLine, ":")
+    end.
+
+erlangmk_format_erlc_opts(ErlcOptsLines, BaseDir) ->
+    erlangmk_format_erlc_opts(ErlcOptsLines, [], BaseDir).
+
+erlangmk_format_erlc_opts(["+" ++ Option | Rest], Opts, BaseDir) ->
+    case make_term(Option) of
+        {error, _} -> erlangmk_format_erlc_opts(Rest, Opts, BaseDir);
+        Opt        -> erlangmk_format_erlc_opts(Rest, [Opt | Opts], BaseDir)
+    end;
+erlangmk_format_erlc_opts(["-I" ++ Opt | Rest], Opts, BaseDir)
+  when Opt =/= "" ->
+    erlangmk_format_erlc_opts(["-I", Opt | Rest], Opts, BaseDir);
+erlangmk_format_erlc_opts(["-I", [C | _] = Dir | Rest], Opts, BaseDir)
+  when C =/= $- andalso C =/= $+ ->
+    AbsDir = filename:absname(Dir, BaseDir),
+    erlangmk_format_erlc_opts(Rest, [{i, AbsDir} | Opts], BaseDir);
+erlangmk_format_erlc_opts(["-W" ++ Warn | Rest], Opts, BaseDir)
+  when Warn =/= "" ->
+    erlangmk_format_erlc_opts(["-W", Warn | Rest], Opts, BaseDir);
+erlangmk_format_erlc_opts(["-W", Warn | Rest], Opts, BaseDir) ->
+    case Warn of
+        "all" ->
+            erlangmk_format_erlc_opts(Rest, [{warn_format, 999} | Opts],
+                BaseDir);
+        "error" ->
+            erlangmk_format_erlc_opts(Rest, [warnings_as_errors | Opts],
+                BaseDir);
+        "" ->
+            erlangmk_format_erlc_opts(Rest, [{warn_format, 1} | Opts],
+                BaseDir);
+        _ ->
+            try list_to_integer(Warn) of
+                Level ->
+                    erlangmk_format_erlc_opts(Rest,
+                        [{warn_format, Level} | Opts], BaseDir)
+            catch
+                error:badarg ->
+                    erlangmk_format_erlc_opts(Rest, Opts, BaseDir)
+            end
+    end;
+erlangmk_format_erlc_opts(["-D" ++ Opt | Rest], Opts, BaseDir)
+  when Opt =/= "" ->
+    erlangmk_format_erlc_opts(["-D", Opt | Rest], Opts, BaseDir);
+erlangmk_format_erlc_opts(["-D", [C | _] = Val0 | Rest], Opts, BaseDir)
+  when C =/= $- andalso C =/= $+ ->
+    {Key0, Val1} = split_at_equals(Val0, []),
+    Key = list_to_atom(Key0),
+    case Val1 of
+        [] ->
+            erlangmk_format_erlc_opts(Rest, [{d, Key} | Opts], BaseDir);
+        Val2 ->
+            case make_term(Val2) of
+                {error, _} ->
+                    erlangmk_format_erlc_opts(Rest, Opts, BaseDir);
+                Val ->
+                    erlangmk_format_erlc_opts(Rest, [{d, Key, Val} | Opts], BaseDir)
+            end
+    end;
+erlangmk_format_erlc_opts([PathFlag, [_ | _] = Dir | Rest], Opts, BaseDir)
+  when PathFlag =:= "-pa" orelse PathFlag =:= "-pz" ->
+    AbsDir = filename:absname(Dir, BaseDir),
+    case PathFlag of
+        "-pa" -> code:add_patha(AbsDir);
+        "-pz" -> code:add_pathz(AbsDir)
+    end,
+    erlangmk_format_erlc_opts(Rest, Opts, BaseDir);
+erlangmk_format_erlc_opts([_ | Rest], Opts, BaseDir) ->
+    erlangmk_format_erlc_opts(Rest, Opts, BaseDir);
+erlangmk_format_erlc_opts([], Opts, _) ->
+    lists:reverse(Opts).
+
+%% Function imported from erl_compile.erl from Erlang 19.1.
+make_term(Str) ->
+    case erl_scan:string(Str) of
+        {ok, Tokens, _} ->
+            case erl_parse:parse_term(Tokens ++ [{dot, 1}]) of
+                {ok, Term}      -> Term;
+                {error, Reason} -> {error, Reason}
+            end;
+        {error, Reason, _} ->
+            {error, Reason}
+    end.
+
+%% Function imported from erl_compile.erl from Erlang 19.1.
+split_at_equals([$=|T], Acc) ->
+    {lists:reverse(Acc),T};
+split_at_equals([H|T], Acc) ->
+    split_at_equals(T, [H|Acc]);
+split_at_equals([], Acc) ->
+    {lists:reverse(Acc),[]}.
 
 fallback_opts() ->
     code:add_pathsa(filelib:wildcard("deps/*/ebin")),

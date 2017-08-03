@@ -143,10 +143,25 @@ else {
 }
 endsnippet
 
+# if inline error
+snippet ife "If with inline erro"
+if err := ${1:condition}; err != nil {
+	${0:${VISUAL}}
+}
+endsnippet
+
 # error snippet
 snippet errn "Error return " !b
 if err != nil {
 	return err
+}
+${0}
+endsnippet
+
+# error log snippet
+snippet errl "Error with log.Fatal(err)" !b
+if err != nil {
+	log.Fatal(err)
 }
 ${0}
 endsnippet
@@ -167,7 +182,7 @@ if err != nil {
 ${0}
 endsnippet
 
-# error test 
+# error test
 snippet errt "Error test fatal " !b
 if err != nil {
 	t.Fatal(err)

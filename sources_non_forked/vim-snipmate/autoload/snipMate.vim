@@ -6,7 +6,7 @@ endif
 try
 	call tlib#input#List('mi', '', [])
 catch /.*/
-	echoe "you're missing tlib. See install instructions at ".expand('<sfile>:h:h').'/README.md'
+	echoe "tlib is missing. See install instructions at ".expand('<sfile>:h:h').'/README.md'
 endtry
 
 fun! Filename(...) abort
@@ -117,7 +117,14 @@ function! snipMate#sniplist_str(snippet, stops) abort
 		if type(item) == type('')
 			let str .= item
 		elseif type(item) == type([])
-			let str .= snipMate#placeholder_str(item[0], a:stops)
+			let placeholder = snipMate#placeholder_str(item[0], a:stops)
+			if len(item) > 1 && type(item[1]) == type({})
+				let placeholder = substitute(placeholder,
+							\ get(item[1], 'pat', ''),
+							\ get(item[1], 'sub', ''),
+							\ get(item[1], 'flags', ''))
+			endif
+			let str .= placeholder
 		endif
 
 		let pos += 1
@@ -377,7 +384,7 @@ function! snipMate#DefaultPool(scopes, trigger, result) abort
 		let s:lookup_state.extends = []
 
 		for expr in s:snippet_filenames(scope, escape(a:trigger, "*[]?{}`'$|#%"))
-			for path in g:snipMate.snippet_dirs
+			for path in s:snippet_dirs()
 				for file in s:Glob(path, expr)
 					source `=file`
 				endfor
@@ -409,6 +416,10 @@ fun! snipMate#GetSnippets(scopes, trigger) abort
 	return result
 endf
 
+function! s:snippet_dirs() abort
+	return get(g:snipMate, 'snippet_dirs', split(&rtp, ','))
+endfunction
+
 function! snipMate#OpenSnippetFiles() abort
 	let files = []
 	let scopes_done = []
@@ -418,7 +429,7 @@ function! snipMate#OpenSnippetFiles() abort
 		let files += s:snippet_filenames(scope, '')
 	endfor
 	call filter(files, "v:val !~# '\\*'")
-	for path in g:snipMate.snippet_dirs
+	for path in s:snippet_dirs()
 		let fullpaths = map(copy(files), 'printf("%s/%s", path, v:val)')
 		let exists += filter(copy(fullpaths), 'filereadable(v:val)')
 		let notexists += map(filter(copy(fullpaths),

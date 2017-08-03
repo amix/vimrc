@@ -28,7 +28,7 @@ SPECIFIC_ADMONITIONS = ["attention", "caution", "danger",
 #http://docutils.sourceforge.net/docs/ref/rst/directives.html
 DIRECTIVES = ['topic','sidebar','math','epigraph',
 			  'parsed-literal','code','highlights',
-			  'pull-quote','compound','container',
+			  'pull-quote','compound','container','table','csv-table',
 			  'list-table','class','sectnum',
 			  'role','default-role','unicode',
 			  'raw']
@@ -238,6 +238,7 @@ if di == 'im':
 if di == 'fi':
 	content="""
 	:alt: {0}
+
 	{0}""".format(real_name)
 `
 ..`!p snip.rv = " %s" % link if link else ""` $1`!p
@@ -279,6 +280,23 @@ snippet ro "Text Roles" w
 \ :$1`!p snip.rv=complete(t[1],
 						  TEXT_ROLES+look_up_directives(TEXT_ROLES_REGEX,
 														path))`:\`$2\`\
+endsnippet
+
+snippet eu "Embedded URI" i
+`!p
+if has_cjk(vim.current.line):
+	snip.rv = "\ "`\`${1:${VISUAL:Text}} <${2:URI}>\`_`!p
+if has_cjk(vim.current.line):
+	snip.rv ="\ "
+else:
+	snip.rv = ""
+`$0
+endsnippet
+
+snippet fnt "Footnote or Citation" i
+[${1:Label}]_ $0
+
+.. [$1] ${2:Reference}
 endsnippet
 
 ############

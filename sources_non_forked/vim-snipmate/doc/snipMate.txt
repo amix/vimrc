@@ -148,7 +148,8 @@ g:snipMate.snippet_version
                                     1   Use the newer parser
                                 If unset, SnipMate defaults to version 0. The
                                 value of this option is also used for all
-                                .snippet files.
+                                .snippet files. See |SnipMate-parser-versions|
+                                for more information.
 
 g:snipMate.override
                                 As detailed below, when two snippets with the
@@ -265,14 +266,18 @@ Note: Hard tabs in the expansion text are required. When the snippet is
 expanded in the text and 'expandtab' is set, each tab will be replaced with
 spaces based on 'softtabstop' if nonzero or 'shiftwidth' otherwise.
 
-Which version parser the snippets in a file should be used with can be
-specified with a version line, e.g.: >
+
+SnipMate currently provides two versions for the snippet parser. The
+differences between them can be found at |SnipMate-parser-versions|. Which
+version parser the snippets in a file should be used with can be specified
+with a version line, e.g.: >
 
     version 1
 
 Specification of a version applies to the snippets following it. Multiple
 version specifications can appear in a single file to intermix version 0 and
-version 1 snippets.
+version 1 snippets. The default is determined by the
+g:snipMate.snippet_version option. |SnipMate-options|
 
 Comments can be made in .snippets files by starting a line with a # character.
 However these can't be used inside of snippet definitions: >
@@ -286,7 +291,7 @@ However these can't be used inside of snippet definitions: >
 
 This should hopefully be clear with the included syntax highlighting.
 
-                                                            *snipMate-extends*
+                                                            *SnipMate-extends*
 Borrowing from UltiSnips, .snippets files can also contain an extends
 directive, for example: >
 
@@ -295,6 +300,11 @@ directive, for example: >
 will tell SnipMate to also read html, javascript, and css snippets.
 
 SNIPPET SYNTAX                             *snippet-syntax* *SnipMate-syntax*
+
+As mentioned above, there are two versions of the snippet parser. They are
+selected by the g:snipMate.snippet_version option (|SnipMate-options|) or the
+version directive in .snippets files. Differences will be mentioned throughout
+with a summary at |SnipMate-parser-versions|.
 
 Anywhere in a snippet, a backslash escapes the character following it,
 regardless of whether that character is special or not. That is, '\a' will
@@ -366,13 +376,15 @@ edited. These look like a tab stop without a placeholder; $1 for example. In
 the event that no placeholder is specified for a certain tab stop--say $1--the
 first instance becomes the tab stop and the rest become mirrors.
 
-Additionally substitutions similar to |:substitute| can be performed. For
-instance ${1/foo/bar/g} will replace all instances of "foo" in the $1 mirror
-with "bar". This uses |substitute()| behind the scenes.
+Additionally, in version 1 of the parser, substitutions similar to
+|:substitute| can be performed. For instance ${1/foo/bar/g} will replace all
+instances of "foo" in the $1 mirror with "bar". This uses |substitute()|
+behind the scenes.
 
 Note: Just like with tab stops, braces can be used to avoid ambiguities: ${1}2
 is a mirror of the first tab stop followed by a 2. Version 0 of the snippet
-parser offers no way to resolve such ambiguities.
+parser offers no way to resolve such ambiguities. Version 0 also requires that
+a tabstop have a placeholder before its mirrors work.
 
 As an example, >
 
@@ -436,6 +448,39 @@ Example: >
         <div>
             ${0:${VISUAL:<!-- content -->}}
         </div>
+<
+                                                    *SnipMate-parser-versions*
+Parser Versions~
+
+SnipMate provides two versions for its snippet parser. Version 0 is the legacy
+regex based version and is updated sparingly. Version 1 is the revamped
+version with new features. Any newly developed features will likely only be
+available to version 1 users.
+
+Which version is used is determined by version directives in snippet files
+(|SnipMate-snippet-files|) and by the g:snipMate.snippet_version option
+(|SnipMate-options|).
+
+A complete list of current differences is as follows:
+- Backslash escaping is guaranteed to work in version 1. In certain edge cases
+  this may not work in version 0.
+- Certain syntactic errors, such as a missing closing brace for a tabstop, are
+  more gracefully handled in version 1. In most cases, the parser will either
+  discard the error or, as in the previous example, end an item at the end of
+  line. Version 0 may not be predictable in this regard.
+- Braces are not mandatory in version 1. SnipMate will determine which
+  instance of a stop ID to use based on the presence of a placeholder, or
+  whichever instance occurs first. Braces can therefore be used to
+  disambiguate between stop 12, $12, and stop 1 followed by a 2, ${1}2. In
+  other words, version 0 makes a distinction between a mirror and a stop while
+  version 1 resolves the differences for you.
+- Placeholders are not mandatory to enable mirror support in version 1.
+- Version 0 uses the confusing syntax {VISUAL} to refer to visual content.
+  Version 1 treats it as just another stop ID, so both $VISUAL and ${VISUAL}
+  work. Plus version 1 allows a default value in case no visual selection has
+  been made.
+- Transformations similar to |:substitute| can be preformed on any mirror,
+  including visual content.
 
 ==============================================================================
 SNIPPET SOURCES                                     *SnipMate-snippet-sources*

@@ -26,11 +26,12 @@ augroup syntastic
 augroup END
 
 function! SyntaxCheckers_rst_sphinx_GetLocList() dict
+    let buf = bufnr('')
 
-    let srcdir = syntastic#util#var('rst_sphinx_source_dir')
-    call self.log('g:syntastic_rst_sphinx_source_dir =', srcdir)
+    let srcdir = syntastic#util#bufVar(buf, 'rst_sphinx_source_dir')
+    call self.log('syntastic_rst_sphinx_source_dir =', srcdir)
     if srcdir ==# ''
-        let config = syntastic#util#findFileInParent('conf.py',  expand('%:p:h', 1))
+        let config = syntastic#util#findFileInParent('conf.py',  fnamemodify(bufname(buf), ':p:h'))
         if config ==# '' || !filereadable(config)
             call self.log('conf.py file not found')
             return []
@@ -38,10 +39,10 @@ function! SyntaxCheckers_rst_sphinx_GetLocList() dict
         let srcdir = fnamemodify(config, ':p:h')
     endif
 
-    let confdir = syntastic#util#var('rst_sphinx_config_dir')
-    call self.log('g:syntastic_rst_sphinx_config_dir =', confdir)
+    let confdir = syntastic#util#bufVar(buf, 'rst_sphinx_config_dir')
+    call self.log('syntastic_rst_sphinx_config_dir =', confdir)
     if confdir ==# ''
-        let config = syntastic#util#findFileInParent('conf.py',  expand('%:p:h', 1))
+        let config = syntastic#util#findFileInParent('conf.py',  fnamemodify(bufname(buf), ':p:h'))
         let confdir = (config !=# '' && filereadable(config)) ? fnamemodify(config, ':p:h') : srcdir
     endif
 

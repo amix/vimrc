@@ -67,25 +67,25 @@ endsnippet
 
 snippet act "Symfony2 action" b
 /**
- * @Route("${3}", name="${4}")
+ * @Route("$3", name="$4")
  * @Method({${5:"POST"}})
  * @Template()
  */
-public function ${1}Action(${2})
+public function $1Action($2)
 {
-	${6}
+	$6
 }
 endsnippet
 
 snippet actt "Symfony2 action and template" b
 /**
- * @Route("${3}", name="${4}")
+ * @Route("$3", name="$4")
  * @Method({${5:"GET"}})
  * @Template()
  */
-public function ${1}Action(${2})
+public function $1Action($2)
 {
-	${6}
+	$6
 	return [];
 }`!p
 relpath = os.path.relpath(path)`
@@ -116,8 +116,8 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 {
 	protected function configure()
 	{
-		$this->setName('${1}')
-			->setDescription('${2}')
+		$this->setName('$1')
+			->setDescription('$2')
 			->setDefinition([
 				new InputArgument('', InputArgument::REQUIRED, ''),
 				new InputOption('', null, InputOption::VALUE_NONE, ''),
@@ -186,14 +186,14 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 	/**
 	 * {@inheritDoc}
 	 */
-	public function transform(${1})
+	public function transform($1)
 	{
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function reverseTransform(${2})
+	public function reverseTransform($2)
 	{
 	}
 }
@@ -279,7 +279,7 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 	 */
 	public function getName()
 	{
-		return '${1}';
+		return '$1';
 	}
 }
 endsnippet
@@ -307,54 +307,54 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 endsnippet
 
 snippet redir "Symfony2 redirect" b
-$this->redirect($this->generateUrl('${1}', ${2}));
+$this->redirect($this->generateUrl('$1', $2));
 endsnippet
 
 snippet usecontroller "Symfony2 use Symfony\..\Controller" b
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;${1}
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;$1
 endsnippet
 
 snippet usereauest "Symfony2 use Symfony\..\Request" b
-use Symfony\Component\HttpFoundation\Request;${1}
+use Symfony\Component\HttpFoundation\Request;$1
 endsnippet
 
 snippet useroute "Symfony2 use Sensio\..\Route" b
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;${1}
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;$1
 endsnippet
 
 snippet useresponse "Symfony2 use Symfony\..\Response" b
-use Symfony\Component\HttpFoundation\Response;${1}
+use Symfony\Component\HttpFoundation\Response;$1
 endsnippet
 
 snippet usefile "Symfony2 use Symfony\..\File" b
-use Symfony\Component\HttpFoundation\File\UploadedFile;${1}
+use Symfony\Component\HttpFoundation\File\UploadedFile;$1
 endsnippet
 
 snippet useassert "Symfony2 use Symfony\..\Constraints as Assert" b
-use Symfony\Component\Validator\Constraints as Assert;${1}
+use Symfony\Component\Validator\Constraints as Assert;$1
 endsnippet
 
 snippet usetemplate "Symfony2 use Sensio\..\Template" b
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;${1}
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;$1
 endsnippet
 
 snippet usecache "Symfony2 use Sensio\..\Cache" b
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;${1}
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;$1
 endsnippet
 
 snippet usemethod "Symfony2 use Sensio\..\Method" b
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;${1}
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;$1
 endsnippet
 
 snippet usearray "Symfony2 use Doctrine\..\ArrayCollection" b
-use Doctrine\Common\Collections\ArrayCollection;${1}
+use Doctrine\Common\Collections\ArrayCollection;$1
 endsnippet
 
 snippet useorm "Symfony2 use Doctrine\..\Mapping as ORM" b
-use Doctrine\ORM\Mapping as ORM;${1}
+use Doctrine\ORM\Mapping as ORM;$1
 endsnippet
 
 snippet usesecure "Symfony2 use JMS\..\Secure" b
-use JMS\SecurityExtraBundle\Annotation\Secure;${1}
+use JMS\SecurityExtraBundle\Annotation\Secure;$1
 endsnippet
 

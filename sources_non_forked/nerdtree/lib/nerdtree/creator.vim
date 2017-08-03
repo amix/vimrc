@@ -14,7 +14,7 @@ function! s:Creator._bindMappings()
 
     command! -buffer -nargs=? Bookmark :call nerdtree#ui_glue#bookmarkNode('<args>')
     command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=1 RevealBookmark :call nerdtree#ui_glue#revealBookmark('<args>')
-    command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=1 OpenBookmark :call nerdtree#ui_glue#openBookmark('<args>')
+    command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=1 OpenBookmark call nerdtree#ui_glue#openBookmark('<args>')
     command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=* ClearBookmarks call nerdtree#ui_glue#clearBookmarks('<args>')
     command! -buffer -complete=customlist,nerdtree#completeBookmarks -nargs=+ BookmarkToRoot call g:NERDTreeBookmark.ToRoot('<args>', b:NERDTree)
     command! -buffer -nargs=0 ClearAllBookmarks call g:NERDTreeBookmark.ClearAll() <bar> call b:NERDTree.render()

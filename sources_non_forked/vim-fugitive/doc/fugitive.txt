@@ -40,6 +40,7 @@ that are part of Git repositories).
                         <CR>  |:Gedit|
                         -     |:Git| add
                         -     |:Git| reset (staged files)
+                        a     Show alternative format
                         cA    |:Gcommit| --amend --reuse-message=HEAD
                         ca    |:Gcommit| --amend
                         cc    |:Gcommit|
@@ -181,7 +182,9 @@ that are part of Git repositories).
                         to the right or bottom, depending on 'diffopt' and
                         the width of the window relative to 'textwidth'.  Use
                         |do| and |dp| and write to the index file to simulate
-                        "git add --patch".
+                        "git add --patch". For the three-way diff, there is
+                        also d2o and d3o pulling the hunk to the middle from
+                        the left or the right window, respectively.
 
                                                 *fugitive-:Gsdiff*
 :Gsdiff [revision]      Like |:Gdiff|, but always split horizontally.
@@ -195,11 +198,14 @@ that are part of Git repositories).
                         directory except when started with a /, in which case
                         it is relative to the work tree.  Add a ! to pass -f.
 
-                                                *fugitive-:Gremove*
-:Gremove                Wrapper around git-rm that deletes the buffer
+                                                *fugitive-:Gdelete*
+:Gdelete                Wrapper around git-rm that deletes the buffer
                         afterward.  When invoked in an index file, --cached is
                         passed.  Add a ! to pass -f and forcefully discard the
                         buffer.
+
+                                                *fugitive-:Gremove*
+:Gremove                Like :Gdelete, but keep the (now empty) buffer around.
 
                                                 *fugitive-:Gblame*
 :Gblame [flags]         Run git-blame on the file and open the results in a
@@ -232,9 +238,7 @@ that are part of Git repositories).
                         Upstream providers can be added by installing an
                         appropriate Vim plugin.  For example, GitHub can be
                         supported by installing rhubarb.vim, available at
-                        <https://github.com/tpope/vim-rhubarb>.  (Native
-                        support for GitHub is currently included, but that is
-                        slated to be removed.)
+                        <https://github.com/tpope/vim-rhubarb>.
 
                         The hosting provider is determined by looking at the
                         remote for the current or specified branch and falls

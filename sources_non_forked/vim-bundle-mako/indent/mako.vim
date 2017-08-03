@@ -42,8 +42,6 @@
 "       0.1 - 06 June 2009
 "       - Initial public release of mako indent file
 
-let sw=2    " default shiftwidth of 2 spaces
-
 if exists("b:did_indent")
     finish
 endif
@@ -53,6 +51,9 @@ setlocal nosmartindent
 setlocal noautoindent
 setlocal nocindent
 setlocal nolisp
+setlocal expandtab
+setlocal softtabstop=2
+setlocal shiftwidth=2
 
 setlocal indentexpr=GetMakoIndent()
 setlocal indentkeys+=*<Return>,<>>,<bs>,end,:

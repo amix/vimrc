@@ -34,12 +34,13 @@ snippet -
 		${0}
 snippet let
 	let
-		${1} = ${2}
+		${1} =
+			${2}
 	in
 		${0}
 snippet if
 	if ${1} then
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 snippet ty

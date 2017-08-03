@@ -19,8 +19,25 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_go_gotype_GetLocList() dict
+    let buf = bufnr('')
+
+    if !exists('s:go_new')
+        let command = syntastic#util#shescape(syntastic#util#bufVar(buf, 'go_go_exec', 'go')) . ' version'
+        let version_output = syntastic#util#system(command)
+        call self.log('finding go version: ' . string(command) . ': ' .
+            \ string(split(version_output, "\n", 1)) .
+            \ (v:shell_error ? ' (exit code ' . v:shell_error . ')' : ''))
+        let parsed_ver = syntastic#util#parseVersion(version_output)
+        if len(parsed_ver)
+            let s:go_new = syntastic#util#versionIsAtLeast(parsed_ver, [1, 8])
+        else
+            call syntastic#log#error("checker " . self.getCName() . ": can't parse go version (abnormal termination?)")
+            return []
+        endif
+    endif
+
     let makeprg = self.makeprgBuild({
-        \ 'args': (expand('%', 1) =~# '\m_test\.go$' ? '-a' : ''),
+        \ 'args': (bufname(buf) =~# '\m_test\.go$' ? (s:go_new ? '-t' : '-a') : ''),
         \ 'fname': '.' })
 
     let errorformat =
@@ -34,7 +51,7 @@ function! SyntaxCheckers_go_gotype_GetLocList() dict
     return SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'cwd': expand('%:p:h', 1),
+        \ 'cwd': fnamemodify(bufname(buf), ':p:h'),
         \ 'defaults': {'type': 'e'} })
 endfunction
 

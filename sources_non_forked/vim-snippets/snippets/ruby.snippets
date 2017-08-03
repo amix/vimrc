@@ -39,7 +39,7 @@ snippet case
 	end
 snippet when
 	when ${1:condition}
-		${0}
+		${0:${VISUAL}}
 snippet def
 	def ${1:method_name}
 		${0}
@@ -56,17 +56,17 @@ snippet descendants
 	end
 snippet if
 	if ${1:condition}
-		${0}
+		${0:${VISUAL}}
 	end
 snippet ife
 	if ${1:condition}
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 	end
 snippet eif
 	elsif ${1:condition}
-		${0}
+		${0:${VISUAL}}
 snippet ifee
 	if ${1:condition}
 		$2
@@ -77,7 +77,7 @@ snippet ifee
 	end
 snippet unless
 	unless ${1:condition}
-		${0}
+		${0:${VISUAL}}
 	end
 snippet unlesse
 	unless ${1:condition}
@@ -95,7 +95,7 @@ snippet unlesee
 	end
 snippet wh
 	while ${1:condition}
-		${0}
+		${0:${VISUAL}}
 	end
 snippet for
 	for ${1:e} in ${2:c}
@@ -103,7 +103,7 @@ snippet for
 	end
 snippet until
 	until ${1:condition}
-		${0}
+		${0:${VISUAL}}
 	end
 snippet cla class .. end
 	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
@@ -141,21 +141,6 @@ snippet cla-
 snippet mod module .. end
 	module ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
 		${0}
-	end
-snippet mod module .. ClassMethods .. end
-	module ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
-		module ClassMethods
-			${0}
-		end
-
-		module InstanceMethods
-
-		end
-
-		def self.included(receiver)
-			receiver.extend         ClassMethods
-			receiver.send :include, InstanceMethods
-		end
 	end
 # attr_reader
 snippet r
@@ -718,9 +703,9 @@ snippet is
 snippet isn
 	it { should_not ${0} }
 snippet iexp
-	it { expect(${1:object}).${1} ${0} }
+	it { expect(${1:object}).${2} ${0} }
 snippet iexpb
-	it { expect { ${1:object} }.${1} ${0} }
+	it { expect { ${1:object} }.${2} ${0} }
 snippet iiexp
 	it { is_expected.to ${0} }
 snippet iiexpn

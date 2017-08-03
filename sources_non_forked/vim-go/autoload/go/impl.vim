@@ -18,7 +18,7 @@ function! go#impl#Impl(...) abort
       return
     endif
   elseif a:0 == 1
-    " we assume the user only passed the interface type, 
+    " we assume the user only passed the interface type,
     " i.e: ':GoImpl io.Writer'
     let receiveType = expand("<cword>")
     let recv = printf("%s *%s", tolower(receiveType)[0], receiveType)
@@ -44,7 +44,7 @@ function! go#impl#Impl(...) abort
   end
 
   let pos = getpos('.')
-  put ='' 
+  put =''
   put =result
   call setpos('.', pos)
 endfunction
@@ -71,12 +71,12 @@ endif
 
 function! s:root_dirs() abort
   let dirs = []
-  let root = go#util#goroot()
+  let root = go#util#env("goroot")
   if root !=# '' && isdirectory(root)
     call add(dirs, root)
   endif
 
-  let paths = map(split(go#util#gopath(), go#util#PathListSep()), "substitute(v:val, '\\\\', '/', 'g')")
+  let paths = map(split(go#util#env("gopath"), go#util#PathListSep()), "substitute(v:val, '\\\\', '/', 'g')")
   if go#util#ShellError()
     return []
   endif

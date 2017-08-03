@@ -30,7 +30,7 @@ snippet ch
 # case
 snippet cs
 	case ${1:value}:
-		${0}
+		${0:${VISUAL}}
 # const
 snippet c
 	const ${1:NAME} = ${0:0}
@@ -50,7 +50,7 @@ snippet df
 snippet dfr
 	defer func() {
 		if err := recover(); err != nil {
-			${0}
+			${0:${VISUAL}}
 		}
 	}()
 # int
@@ -72,18 +72,18 @@ snippet inf
 # if condition
 snippet if
 	if ${1:/* condition */} {
-		${2}
+		${2:${VISUAL}}
 	}
 snippet ife
 	if ${1:/* condition */} {
-		${2}
+		${2:${VISUAL}}
 	} else {
 		${0}
 	}
 # else snippet
 snippet el
 	else {
-		${1}
+		${0:${VISUAL}}
 	}
 # error snippet
 snippet ir
@@ -106,28 +106,20 @@ snippet f3
 # float64
 snippet f6
 	float64
-# if else
-snippet ie
-	if ${1:/* condition */} {
-		${2}
-	} else {
-		${3}
-	}
-	${0}
 # for int loop
 snippet for
 	for ${1}{
-		${0}
+		${0:${VISUAL}}
 	}
 # for int loop
 snippet fori
 	for ${2:i} := 0; $2 < ${1:count}; $2${3:++} {
-		${0}
+		${0:${VISUAL}}
 	}
 # for range loop
 snippet forr
 	for ${1:e} := range ${2:collection} {
-		${0}
+		${0:${VISUAL}}
 	}
 # function simple
 snippet fun
@@ -225,9 +217,8 @@ snippet ga
 	}(${0})
 snippet test test function
 	func Test${1:name}(t *testing.T) {
-		${2}
+		${0:${VISUAL}}
 	}
-	${0}
 snippet bench benchmark function
 	func Benchmark${1:name}(b *testing.B) {
 		for i := 0; i < b.N; i++ {
@@ -235,3 +226,29 @@ snippet bench benchmark function
 		}
 	}
 	${0}
+# composite literals
+snippet cl
+	type ${1:name} struct {
+		${2:attrName} ${3:attrType}
+	}
+# if key in a map
+snippet om
+	if ${1:value}, ok := ${2:map}[${3:key}]; ok == true {
+		${4:/* code */}
+	}
+
+# Grouped globals with anonymous struct
+snippet gg
+	var ${1:var} = struct{
+		${2:name} ${3:type}
+	}{
+		$2: ${4:value},
+	}
+
+# Marshalable json alias
+snippet ja
+	type ${1:parentType}Alias $1
+
+	func (p *$1) MarshalJSON() ([]byte, error) {
+		return json.Marshal(&struct{ *$1Alias }{(*$1Alias)(p)})
+	}

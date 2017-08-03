@@ -52,11 +52,6 @@ function! nerdtree#completeBookmarks(A,L,P)
     return filter(g:NERDTreeBookmark.BookmarkNames(), 'v:val =~# "^' . a:A . '"')
 endfunction
 
-"FUNCTION: nerdtree#compareBookmarks(dir) {{{2
-function! nerdtree#compareBookmarks(first, second)
-    return a:first.compareTo(a:second)
-endfunction
-
 "FUNCTION: nerdtree#compareNodes(dir) {{{2
 function! nerdtree#compareNodes(n1, n2)
     return a:n1.path.compareTo(a:n2.path)
@@ -64,9 +59,33 @@ endfunction
 
 "FUNCTION: nerdtree#compareNodesBySortKey(n1, n2) {{{2
 function! nerdtree#compareNodesBySortKey(n1, n2)
-    if a:n1.path.getSortKey() <# a:n2.path.getSortKey()
+    let sortKey1 = a:n1.path.getSortKey()
+    let sortKey2 = a:n2.path.getSortKey()
+
+    let i = 0
+    while i < min([len(sortKey1), len(sortKey2)])
+        " Compare chunks upto common length.
+        " If chunks have different type, the one which has
+        " integer type is the lesser.
+        if type(sortKey1[i]) == type(sortKey2[i])
+            if sortKey1[i] <# sortKey2[i]
+                return - 1
+            elseif sortKey1[i] ># sortKey2[i]
+                return 1
+            endif
+        elseif sortKey1[i] == type(0)
+            return -1
+        elseif sortKey2[i] == type(0)
+            return 1
+        endif
+        let i = i + 1
+    endwhile
+
+    " Keys are identical upto common length.
+    " The key which has smaller chunks is the lesser one.
+    if len(sortKey1) < len(sortKey2)
         return -1
-    elseif a:n1.path.getSortKey() ># a:n2.path.getSortKey()
+    elseif len(sortKey1) > len(sortKey2)
         return 1
     else
         return 0
@@ -89,10 +108,12 @@ function! nerdtree#deprecated(func, ...)
 endfunction
 
 " FUNCTION: nerdtree#exec(cmd) {{{2
-" same as :exec cmd  but eventignore=all is set for the duration
+" Same as :exec cmd but with eventignore set for the duration
+" to disable the autocommands used by NERDTree (BufEnter,
+" BufLeave and VimEnter)
 function! nerdtree#exec(cmd)
     let old_ei = &ei
-    set ei=all
+    set ei=BufEnter,BufLeave,VimEnter
     exec a:cmd
     let &ei = old_ei
 endfunction

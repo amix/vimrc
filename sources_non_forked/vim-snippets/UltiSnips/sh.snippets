@@ -41,10 +41,10 @@ IFS=$'\n\t'
 endsnippet
 
 snippet temp "Tempfile"
-${1:TMPFILE}="$(mktemp -t ${2:`!p
+${1:TMPFILE}="$(mktemp -t ${3:--suffix=${4:.SUFFIX}} ${2:`!p
 snip.rv = re.sub(r'[^a-zA-Z]', '_', snip.fn) or "untitled"
-`})"
-${3:${4/(.+)/trap "/}${4:rm -f '$${1/.*\s//}'}${4/(.+)/" 0               # EXIT\n/}${5/(.+)/trap "/}${5:rm -f '$${1/.*\s//}'; exit 1}${5/(.+)/" 2       # INT\n/}${6/(.+)/trap "/}${6:rm -f '$${1/.*\s//}'; exit 1}${6/(.+)/" 1 15    # HUP TERM\n/}}
+`}.XXXXXX)"
+${5:${6/(.+)/trap "/}${6:rm -f '$${1/.*\s//}'}${6/(.+)/" 0               # EXIT\n/}${7/(.+)/trap "/}${7:rm -f '$${1/.*\s//}'; exit 1}${7/(.+)/" 2       # INT\n/}${8/(.+)/trap "/}${8:rm -f '$${1/.*\s//}'; exit 1}${8/(.+)/" 1 15    # HUP TERM\n/}}
 
 endsnippet
 

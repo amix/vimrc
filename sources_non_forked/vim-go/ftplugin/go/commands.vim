@@ -12,15 +12,15 @@ command! -range=% GoCallstack call go#guru#Callstack(<count>)
 command! -range=% GoFreevars call go#guru#Freevars(<count>)
 command! -range=% GoChannelPeers call go#guru#ChannelPeers(<count>)
 command! -range=% GoReferrers call go#guru#Referrers(<count>)
-command! -nargs=? GoGuruTags call go#guru#Tags(<f-args>)
-
-
-command! -nargs=* -range GoAddTags call go#util#AddTags(<line1>, <line2>, <f-args>)
 
 command! -range=0 GoSameIds call go#guru#SameIds()
 command! -range=0 GoSameIdsClear call go#guru#ClearSameIds()
 command! -range=0 GoSameIdsToggle call go#guru#ToggleSameIds()
 command! -range=0 GoSameIdsAutoToggle call go#guru#AutoToogleSameIds()
+
+" -- tags
+command! -nargs=* -range GoAddTags call go#tags#Add(<line1>, <line2>, <count>, <f-args>)
+command! -nargs=* -range GoRemoveTags call go#tags#Remove(<line1>, <line2>, <count>, <f-args>)
 
 " -- tool
 command! -nargs=0 GoFiles echo go#tool#Files()
@@ -30,12 +30,15 @@ command! -nargs=0 GoAutoTypeInfoToggle call go#complete#ToggleAutoTypeInfo()
 
 " -- cmd
 command! -nargs=* -bang GoBuild call go#cmd#Build(<bang>0,<f-args>)
+command! -nargs=? -bang GoBuildTags call go#cmd#BuildTags(<bang>0, <f-args>)
 command! -nargs=* -bang GoGenerate call go#cmd#Generate(<bang>0,<f-args>)
 command! -nargs=* -bang -complete=file GoRun call go#cmd#Run(<bang>0,<f-args>)
 command! -nargs=* -bang GoInstall call go#cmd#Install(<bang>0, <f-args>)
-command! -nargs=* -bang GoTest call go#cmd#Test(<bang>0, 0, <f-args>)
-command! -nargs=* -bang GoTestFunc call go#cmd#TestFunc(<bang>0, <f-args>)
-command! -nargs=* -bang GoTestCompile call go#cmd#Test(<bang>0, 1, <f-args>)
+
+" -- test
+command! -nargs=* -bang GoTest call go#test#Test(<bang>0, 0, <f-args>)
+command! -nargs=* -bang GoTestFunc call go#test#Func(<bang>0, <f-args>)
+command! -nargs=* -bang GoTestCompile call go#test#Test(<bang>0, 1, <f-args>)
 
 " -- cover
 command! -nargs=* -bang GoCoverage call go#coverage#Buffer(<bang>0, <f-args>)
@@ -83,6 +86,13 @@ command! -bang GoAlternate call go#alternate#Switch(<bang>0, '')
 if globpath(&rtp, 'plugin/ctrlp.vim') != ""
   command! -nargs=? -complete=file GoDecls call ctrlp#init(ctrlp#decls#cmd(0, <q-args>))
   command! -nargs=? -complete=dir GoDeclsDir call ctrlp#init(ctrlp#decls#cmd(1, <q-args>))
+else
+  function! s:ctrlp_warning()
+    call go#util#EchoError("ctrlp.vim plugin is not installed. Please install from: https://github.com/ctrlpvim/ctrlp.vim")
+  endfunction
+
+  command! -nargs=? -complete=file GoDecls call <SID>ctrlp_warning()
+  command! -nargs=? -complete=file GoDeclsDir call <SID>ctrlp_warning()
 endif
 
 " -- impl
@@ -90,5 +100,8 @@ command! -nargs=* -buffer -complete=customlist,go#impl#Complete GoImpl call go#i
 
 " -- template
 command! -nargs=0 GoTemplateAutoCreateToggle call go#template#ToggleAutoCreate()
+
+" -- keyify
+command! -nargs=0 GoKeyify call go#keyify#Keyify()
 
 " vim: sw=2 ts=2 et

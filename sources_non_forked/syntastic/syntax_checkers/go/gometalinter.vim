@@ -19,9 +19,10 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_go_gometalinter_GetLocList() dict
+    let buf = bufnr('')
     let makeprg = self.makeprgBuild({
         \ 'args': '-t',
-        \ 'fname': syntastic#util#shexpand('%:p:h') })
+        \ 'fname': syntastic#util#shescape(fnamemodify(bufname(buf), ':p:h')) })
 
     let errorformat =
         \ '%f:%l:%c:%trror: %m,' .

@@ -34,19 +34,20 @@ function! SyntaxCheckers_asm_gcc_IsAvailable() dict " {{{1
 endfunction " }}}1
 
 function! SyntaxCheckers_asm_gcc_GetLocList() dict " {{{1
+    let buf = bufnr('')
     return syntastic#c#GetLocList('asm', 'gcc', {
         \ 'errorformat':
         \     '%-G%f:%s:,' .
         \     '%f:%l:%c: %trror: %m,' .
         \     '%f:%l:%c: %tarning: %m,' .
         \     '%f:%l: %m',
-        \ 'main_flags': '-x assembler -fsyntax-only' . (g:syntastic_asm_generic ? '' : ' -masm=' . s:GetDialect()) })
+        \ 'main_flags': '-x assembler -fsyntax-only' . (g:syntastic_asm_generic ? '' : ' -masm=' . s:GetDialect(buf)) })
 endfunction " }}}1
 
 " Utilities {{{1
 
-function! s:GetDialect() " {{{2
-    return syntastic#util#var('asm_dialect', expand('%:e', 1) ==? 'asm' ? 'intel' : 'att')
+function! s:GetDialect(buf) " {{{2
+    return syntastic#util#bufVar(a:buf, 'asm_dialect', fnamemodify(bufname(a:buf), ':e') ==? 'asm' ? 'intel' : 'att')
 endfunction " }}}2
 
 " }}}1

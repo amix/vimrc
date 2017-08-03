@@ -4,7 +4,7 @@
 " s:statuses is a global reference to all statuses. It stores the statuses per
 " import paths (map[string]status), where each status is unique per its
 " type. Current status dict is in form:
-" { 
+" {
 "   'desc'        : 'Job description',
 "   'state'       : 'Job state, such as success, failure, etc..',
 "   'type'        : 'Job type, such as build, test, etc..'
@@ -53,9 +53,9 @@ function! go#statusline#Show() abort
 
   " only update highlight if status has changed.
   if status_text != s:last_status
-    if status.state =~ "success" || status.state =~ "finished"
+    if status.state =~ "success" || status.state =~ "finished" || status.state =~ "pass"
       hi goStatusLineColor cterm=bold ctermbg=76 ctermfg=22
-    elseif status.state =~ "started" || status.state =~ "analysing"
+    elseif status.state =~ "started" || status.state =~ "analysing" || status.state =~ "compiling"
       hi goStatusLineColor cterm=bold ctermbg=208 ctermfg=88
     elseif status.state =~ "failed"
       hi goStatusLineColor cterm=bold ctermbg=196 ctermfg=52

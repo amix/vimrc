@@ -30,28 +30,17 @@ function go#job#Spawn(args)
     call add(self.messages, a:msg)
   endfunction
 
-  function cbs.close_cb(chan) dict
-    let l:job = ch_getjob(a:chan)
-    let l:status = job_status(l:job)
-
-    " the job might be in fail status, we assume by default it's failed.
-    " However if it's dead, we can use the real exitval
-    let exitval = 1
-    if l:status == "dead"
-      let l:info = job_info(l:job)
-      let exitval = l:info.exitval
-    endif
-
+  function cbs.exit_cb(job, exitval) dict
     if has_key(self, 'custom_cb')
-      call self.custom_cb(l:job, exitval, self.messages)
+      call self.custom_cb(a:job, a:exitval, self.messages)
     endif
 
     if has_key(self, 'error_info_cb')
-      call self.error_info_cb(l:job, exitval, self.messages)
+      call self.error_info_cb(a:job, a:exitval, self.messages)
     endif
 
     if get(g:, 'go_echo_command_info', 1)
-      if exitval == 0
+      if a:exitval == 0
         call go#util#EchoSuccess("SUCCESS")
       else
         call go#util#EchoError("FAILED")
@@ -59,7 +48,7 @@ function go#job#Spawn(args)
     endif
 
     let l:listtype = go#list#Type("quickfix")
-    if exitval == 0
+    if a:exitval == 0
       call go#list#Clean(l:listtype)
       call go#list#Window(l:listtype)
       return
@@ -99,9 +88,9 @@ function go#job#Spawn(args)
     let cbs.callback = a:args.callback
   endif
 
-  " override close callback handler if user provided it
-  if has_key(a:args, 'close_cb')
-    let cbs.close_cb = a:args.close_cb
+  " override exit callback handler if user provided it
+  if has_key(a:args, 'exit_cb')
+    let cbs.exit_cb = a:args.exit_cb
   endif
 
   return cbs

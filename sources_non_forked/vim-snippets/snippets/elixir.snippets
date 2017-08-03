@@ -1,16 +1,22 @@
 snippet do
 	do
-		${0}
+		${0:${VISUAL}}
 	end
+snippet put IO.puts
+	IO.puts "${0}"
+snippet ins IO.inspect
+	IO.inspect ${0}
+snippet insl IO.inspect with label
+	IO.inspect(${0}label: "${1:label}")
 snippet if if .. do .. end
 	if ${1} do
-		${0}
+		${0:${VISUAL}}
 	end
 snippet if: if .. do: ..
 	if ${1:condition}, do: ${0}
 snippet ife if .. do .. else .. end
 	if ${1:condition} do
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 	end
@@ -18,13 +24,13 @@ snippet ife: if .. do: .. else:
 	if ${1:condition}, do: ${2}, else: ${0}
 snippet unless unless .. do .. end
 	unless ${1} do
-		${0}
+		${0:${VISUAL}}
 	end
 snippet unless: unless .. do: ..
 	unless ${1:condition}, do: ${0}
 snippet unlesse unless .. do .. else .. end
 	unless ${1:condition} do
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 	end
@@ -33,7 +39,7 @@ snippet unlesse: unless .. do: .. else:
 snippet cond
 	cond do
 		${1} ->
-			${0}
+		${0:${VISUAL}}
 	end
 snippet case
 	case ${1} do
@@ -44,14 +50,14 @@ snippet for
 	for ${1:item} <- ${2:items} do
 		${0}
 	end
+snippet for:
+	for ${1:item} <- ${2:items}, do: ${0}
 snippet fori
 	for ${1:item} <- ${2:items}, into: ${3} do
 		${0}
 	end
 snippet wi
-	with(
-		${1:item} <- ${2:items}
-	) do
+	with ${1:item} <- ${2:items} do
 		${0}
 	end
 snippet wie
@@ -63,6 +69,16 @@ snippet wie
 		${4} ->
 			${0}
 	end
+snippet sp
+	@spec ${1:name}(${2:args}) :: ${3:returns}
+snippet op
+	@opaque ${1:type_name} :: ${2:type}
+snippet ty
+	@type ${1:type_name} :: ${2:type}
+snippet typ
+	@typep ${1:type_name} :: ${2:type}
+snippet cb
+	@callback ${1:name}(${2:args}) :: ${3:returns}
 snippet df
 	def ${1:name}, do: ${2}
 snippet def
@@ -72,8 +88,18 @@ snippet def
 snippet defd
 	@doc """
 	${1:doc string}
+
 	"""
 	def ${2:name} do
+		${0}
+	end
+snippet defsd
+	@doc """
+	${1:doc string}
+
+	"""
+	@spec ${2:name} :: ${3:no_return}
+	def ${2} do
 		${0}
 	end
 snippet defim
@@ -101,6 +127,7 @@ snippet defr
 snippet doc
 	@doc """
 	${0}
+
 	"""
 snippet docf
 	@doc false
@@ -109,6 +136,7 @@ snippet fn
 snippet mdoc
 	@moduledoc """
 	${0}
+
 	"""
 snippet mdocf
 	@moduledoc false
@@ -143,7 +171,7 @@ snippet exunit
 	end
 snippet try try .. rescue .. end
 	try do
-		${1}
+		${1:${VISUAL}}
 	rescue
 		${2} -> ${0}
 	end
@@ -157,3 +185,15 @@ snippet qu
 snippet beh
 	@behaviour ${1:Mix.Task}
 	${0}
+snippet >e pipe to each
+	|> Enum.each(fn ${1} -> ${0} end)
+snippet >m pipe to map
+	|> Enum.map(fn ${1} -> ${0} end)
+snippet >f pipe to filter
+	|> Enum.filter(fn ${1} -> ${0} end)
+snippet >r pipe to reduce
+	|> Enum.reduce(${1:acc}, fn ${2}, ${3:acc} -> ${0} end)
+snippet >i pipe to inspect
+	|> IO.inspect
+snippet >il pipe to inspect with label
+	|> IO.inspect(label: "${1:label}")

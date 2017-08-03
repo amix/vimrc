@@ -36,14 +36,22 @@ function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item) " {{{1
 endfunction " }}}1
 
 function! SyntaxCheckers_vim_vimlint_IsAvailable() dict " {{{1
-    let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim', 1)
-    let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim', 1)
+    try
+        " Vim 7.2-051 and later
+        let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim', 1)
+        let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim', 1)
+    catch /\m^Vim\%((\a\+)\)\=:E118/
+        let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim')
+        let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim')
+    endtry
     call self.log("globpath(&runtimepath, 'autoload/vimlparser.vim', 1) = " . string(vimlparser) . ', ' .
                 \ "globpath(&runtimepath, 'autoload/vimlint.vim', 1) = " .    string(vimlint))
     return vimlparser !=# '' && vimlint !=# ''
 endfunction " }}}1
 
 function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1
+    let buf = bufnr('')
+
     " EVL102: unused variable v
     " EVL103: unused argument v
     " EVL104: variable may not be initialized on some execution path: v
@@ -67,17 +75,15 @@ function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1
         \ 'EVL204': 3,
         \ 'EVL205': 3 }
 
-    if exists('g:syntastic_vimlint_options') || exists('b:syntastic_vimlint_options')
-        let opts = syntastic#util#var('vimlint_options')
-        if type(opts) == type({})
-            let options = filter(copy(opts), 'v:key =~# "\\m^EVL"')
-            call extend(param, options, 'force')
-        endif
+    let opts = syntastic#util#bufVar(buf, 'vimlint_options')
+    if type(opts) == type({})
+        let options = filter(copy(opts), 'v:key =~# "\\m^EVL"')
+        call extend(param, options, 'force')
     endif
 
     call self.log('options =', param)
 
-    return vimlint#vimlint(expand('%', 1), param)
+    return vimlint#vimlint(bufname(buf), param)
 endfunction " }}}1
 
 " Utilities {{{1

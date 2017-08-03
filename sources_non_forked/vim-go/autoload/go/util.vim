@@ -53,7 +53,7 @@ let s:env_cache = {}
 
 " env returns the go environment variable for the given key. Where key can be
 " GOARCH, GOOS, GOROOT, etc... It caches the result and returns the cached
-" version. 
+" version.
 function! go#util#env(key) abort
   let l:key = tolower(a:key)
   if has_key(s:env_cache, l:key)
@@ -74,39 +74,57 @@ function! go#util#env(key) abort
   return l:var
 endfunction
 
+" goarch returns 'go env GOARCH'. This is an internal function and shouldn't
+" be used. Instead use 'go#util#env("goarch")'
 function! go#util#goarch() abort
   return substitute(go#util#System('go env GOARCH'), '\n', '', 'g')
 endfunction
 
+" goos returns 'go env GOOS'. This is an internal function and shouldn't
+" be used. Instead use 'go#util#env("goos")'
 function! go#util#goos() abort
   return substitute(go#util#System('go env GOOS'), '\n', '', 'g')
 endfunction
 
+" goroot returns 'go env GOROOT'. This is an internal function and shouldn't
+" be used. Instead use 'go#util#env("goroot")'
 function! go#util#goroot() abort
   return substitute(go#util#System('go env GOROOT'), '\n', '', 'g')
 endfunction
 
+" gopath returns 'go env GOPATH'. This is an internal function and shouldn't
+" be used. Instead use 'go#util#env("gopath")'
 function! go#util#gopath() abort
   return substitute(go#util#System('go env GOPATH'), '\n', '', 'g')
 endfunction
 
 function! go#util#osarch() abort
-  return go#util#goos() . '_' . go#util#goarch()
+  return go#util#env("goos") . '_' . go#util#env("goarch")
 endfunction
 
-" System runs a shell command. It will reset the shell to /bin/sh for Unix-like
-" systems if it is executable.
+" System runs a shell command. If possible, it will temporary set 
+" the shell to /bin/sh for Unix-like systems providing a Bourne
+" POSIX like environment.
 function! go#util#System(str, ...) abort
+  " Preserve original shell and shellredir values
   let l:shell = &shell
+  let l:shellredir = &shellredir
+
+  " Use a Bourne POSIX like shell. Some parts of vim-go expect
+  " commands to be executed using bourne semantics #988 and #1276.
+  " Alter shellredir to match bourne. Especially important if login shell
+  " is set to any of the csh or zsh family #1276.
   if !go#util#IsWin() && executable('/bin/sh')
-    let &shell = '/bin/sh'
+      set shell=/bin/sh shellredir=>%s\ 2>&1
   endif
 
   try
     let l:output = call('system', [a:str] + a:000)
     return l:output
   finally
+    " Restore original values
     let &shell = l:shell
+    let &shellredir = l:shellredir
   endtry
 endfunction
 
@@ -203,7 +221,7 @@ endfunction
 " snippetcase converts the given word to given preferred snippet setting type
 " case.
 function! go#util#snippetcase(word) abort
-  let l:snippet_case = get(g:, 'go_snippet_case_type', "snakecase")
+  let l:snippet_case = get(g:, 'go_addtags_transform', "snakecase")
   if l:snippet_case == "snakecase"
     return go#util#snakecase(a:word)
   elseif l:snippet_case == "camelcase"
@@ -235,51 +253,6 @@ function! go#util#camelcase(word) abort
   endif
 endfunction
 
-function! go#util#AddTags(line1, line2, ...) abort
-  " default is json
-  let l:keys = ["json"]
-  if a:0
-    let l:keys = a:000
-  endif
-
-  let l:line1 = a:line1
-  let l:line2 = a:line2
-
-  " If we're inside a struct and just call this function let us add the tags
-  " to all fields
-  " TODO(arslan): I don't like using patterns. Check if we can move it to
-  " `motion` and do it via AST based position
-  let ln1 = searchpair('struct {', '', '}', 'bcnW')
-  if ln1 == 0
-    echon "vim-go: " | echohl ErrorMsg | echon "cursor is outside the struct" | echohl None
-    return
-  endif
-
-  " searchpair only returns a single position
-  let ln2 = search('}', "cnW")
-
-  " if no range is given we apply for the whole struct
-  if l:line1 == l:line2
-    let l:line1 = ln1 + 1
-    let l:line2 = ln2 - 1
-  endif
-
-  for line in range(l:line1, l:line2)
-    " get the field name (word) that are not part of a commented line
-    let l:matched = matchstr(getline(line), '\(\/\/.*\)\@<!\w\+')
-    if empty(l:matched)
-      continue
-    endif
-
-    let word = go#util#snippetcase(l:matched)
-    let tags = map(copy(l:keys), 'printf("%s:%s", v:val,"\"'. word .'\"")')
-    let updated_line = printf("%s `%s`", getline(line), join(tags, " "))
-
-    " finally, update the line inplace
-    call setline(line, updated_line)
-  endfor
-endfunction
-
 " TODO(arslan): I couldn't parameterize the highlight types. Check if we can
 " simplify the following functions
 "
@@ -303,6 +276,19 @@ endfunction
 
 function! go#util#EchoInfo(msg)
   redraw | echohl Debug | echom "vim-go: " . a:msg | echohl None
+endfunction
+
+function! go#util#GetLines()
+  let buf = getline(1, '$')
+  if &encoding != 'utf-8'
+    let buf = map(buf, 'iconv(v:val, &encoding, "utf-8")')
+  endif
+  if &l:fileformat == 'dos'
+    " XXX: line2byte() depend on 'fileformat' option.
+    " so if fileformat is 'dos', 'buf' must include '\r'.
+    let buf = map(buf, 'v:val."\r"')
+  endif
+  return buf
 endfunction
 
 " vim: sw=2 ts=2 et

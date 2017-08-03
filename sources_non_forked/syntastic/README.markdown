@@ -58,15 +58,15 @@ their script to find them.
 
 At the time of this writing, syntastic has checking plugins for ACPI
 Source Language, ActionScript, Ada, Ansible configurations, API Blueprint,
-AppleScript, AsciiDoc, Assembly languages, BEMHTML, Bro, Bourne shell, C,
-C++, C#, Cabal, Chef, CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart,
+AppleScript, AsciiDoc, Assembly languages, BEMHTML, Bro, Bourne shell, C, C++,
+C#, Cabal, Chef, CMake, CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart,
 DocBook, Dockerfile, Dust, Elixir, Erlang, eRuby, Fortran, Gentoo metadata,
-GLSL, Go, Haml, Haskell, Haxe, Handlebars, HSS, HTML, Java, JavaScript, JSON,
-JSX, LESS, Lex, Limbo, LISP, LLVM intermediate language, Lua, Markdown,
-MATLAB, Mercury, NASM, Nix, Objective-C, Objective-C++, OCaml, Perl, Perl
-POD, PHP, gettext Portable Object, OS X and iOS property lists, Pug (formerly
-Jade), Puppet, Python, QML, R, Racket, RDF TriG, RDF Turtle, Relax NG,
-reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim, SML, Solidity,
+GLSL, Go, Haml, Haskell, Haxe, Handlebars, HSS, HTML, Java, JavaScript,
+JSON, JSX, Julia, LESS, Lex, Limbo, LISP, LLVM intermediate language, Lua,
+Markdown, MATLAB, Mercury, NASM, Nix, Objective-C, Objective-C++, OCaml, Perl,
+Perl POD, PHP, gettext Portable Object, OS X and iOS property lists, Pug
+(formerly Jade), Puppet, Python, QML, R, Racket, RDF TriG, RDF Turtle, Relax
+NG, reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim, SML, Solidity,
 Sphinx, SQL, Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog, VHDL,
 Vim help, VimL, xHtml, XML, XSLT, XQuery, YACC, YAML, YANG data models, z80,
 Zope page templates, and Zsh. See the [manual][checkers] for details about the
@@ -101,10 +101,10 @@ enabled.
 Syntastic itself has rather relaxed requirements: it doesn't have any external
 dependencies, and it needs a version of [Vim][vim] compiled with a few common
 features: `autocmd`, `eval`, `file_in_path`, `modify_fname`, `quickfix`,
-`reltime`, and `user_commands`. Not all possible combinations of features that
-include the ones above make equal sense on all operating systems, but Vim
-version 7 or later with the "normal", "big", or "huge" feature sets should be
-fine.
+`reltime`, `statusline`, and `user_commands`. Not all possible combinations of
+features that include the ones above make equal sense on all operating systems,
+but Vim version 7 or later with the "normal", "big", or "huge" feature sets
+should be fine.
 
 Syntastic should work with any modern plugin managers for Vim, such as
 [NeoBundle][neobundle], [Pathogen][pathogen], [Vim-Addon-Manager][vam],

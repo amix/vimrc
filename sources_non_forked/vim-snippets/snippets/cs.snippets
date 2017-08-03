@@ -56,35 +56,41 @@
 #
 # Feedback is welcome!
 #
-# Main 
+# Main
 snippet sim
-	${1:public }static int Main(string[] args) {
+	${1:public} static int Main(string[] args)
+	{
 		${0}
 		return 0;
 	}
 snippet simc
-	public class Application {
-		${1:public }static int Main(string[] args) {
+	public class Application
+	{
+		${1:public} static int Main(string[] args)
+		{
 			${0}
 			return 0;
 		}
 	}
 snippet svm
-	${1:public }static void Main(string[] args) {
+	${1:public} static void Main(string[] args)
+	{
 		${0}
 	}
 # if condition
 snippet if
-	if (${1:true}) {
-		${0}
+	if (${1:true})
+	{
+		${0:${VISUAL}}
 	}
 snippet el
-	else {
-		${0}
+	else
+	{
+		${0:${VISUAL}}
 	}
 snippet ifs
 	if (${1})
-		${0}
+		${0:${VISUAL}}
 # ternary conditional
 snippet t
 	${1} ? ${2} : ${0}
@@ -92,81 +98,99 @@ snippet ?
 	${1} ? ${2} : ${0}
 # do while loop
 snippet do
-	do {
-		${0}
+	do
+	{
+		${0:${VISUAL}}
 	} while (${1:true});
 # while loop
 snippet wh
-	while (${1:true}) {
-		${0}
+	while (${1:true})
+	{
+		${0:${VISUAL}}
 	}
 # for loop
 snippet for
-	for (int ${1:i} = 0; $1 < ${2:count}; $1${3:++}) {
+	for (int ${1:i} = 0; $1 < ${2:count}; $1${3:++})
+	{
 		${0}
 	}
 snippet forr
-	for (int ${1:i} = ${2:length}; $1 >= 0; $1--) {
+	for (int ${1:i} = ${2:length}; $1 >= 0; $1--)
+	{
 		${0}
 	}
 # foreach
 snippet fore
-	foreach (${1:var} ${2:entry} in ${3}) {
+	foreach (${1:var} ${2:entry} in ${3})
+	{
 		${0}
 	}
 snippet foreach
-	foreach (${1:var} ${2:entry} in ${3}) {
+	foreach (${1:var} ${2:entry} in ${3})
+	{
 		${0}
 	}
 snippet each
-	foreach (${1:var} ${2:entry} in ${3}) {
+	foreach (${1:var} ${2:entry} in ${3})
+	{
 		${0}
 	}
 # interfaces
 snippet interface
-	public interface ${1:`vim_snippets#Filename()`} {
+	public interface ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 snippet if+
-	public interface ${1:`vim_snippets#Filename()`} {
+	public interface ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 # class bodies
 snippet class
-	public class ${1:`vim_snippets#Filename()`} {
+	public class ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 snippet cls
-	${2:public} class ${1:`vim_snippets#Filename()`} {
+	${2:public} class ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 snippet cls+
-	public class ${1:`vim_snippets#Filename()`} {
+	public class ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 snippet cls+^
-	public static class ${1:`vim_snippets#Filename()`} {
+	public static class ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 snippet cls&
-	internal class ${1:`vim_snippets#Filename()`} {
+	internal class ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 snippet cls&^
-	internal static class ${1:`vim_snippets#Filename()`} {
+	internal static class ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 snippet cls|
-	protected class ${1:`vim_snippets#Filename()`} {
+	protected class ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 snippet cls|%
-	protected abstract class ${1:`vim_snippets#Filename()`} {
+	protected abstract class ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 # constructor
 snippet ctor
-	public ${1:`vim_snippets#Filename()`}() {
+	public ${1:`vim_snippets#Filename()`}()
+	{
 		${0}
 	}
 # properties - auto properties by default.
@@ -266,101 +290,124 @@ snippet ps-
 	private string ${1} { get; set; }
 # members - void
 snippet m
-	${1:public} ${2:void} ${3}(${4}) {
+	${1:public} ${2:void} ${3}(${4})
+	{
 		${0}
 	}
 snippet m+
-	public ${1:void} ${2}(${3}) {
+	public ${1:void} ${2}(${3})
+	{
 		${0}
 	}
 snippet m&
-	internal ${1:void} ${2}(${3}) {
+	internal ${1:void} ${2}(${3})
+	{
 		${0}
 	}
 snippet m|
-	protected ${1:void} ${2}(${3}) {
+	protected ${1:void} ${2}(${3})
+	{
 		${0}
 	}
 snippet m-
-	private ${1:void} ${2}(${3}) {
+	private ${1:void} ${2}(${3})
+	{
 		${0}
 	}
 # members - int
 snippet mi
-	${1:public} int ${2}(${3}) {
+	${1:public} int ${2}(${3})
+	{
 		${0:return 0;}
 	}
 snippet mi+
-	public int ${1}(${2}) {
+	public int ${1}(${2})
+	{
 		${0:return 0;}
 	}
 snippet mi&
-	internal int ${1}(${2}) {
+	internal int ${1}(${2})
+	{
 		${0:return 0;}
 	}
 snippet mi|
-	protected int ${1}(${2}) {
+	protected int ${1}(${2})
+	{
 		${0:return 0;}
 	}
 snippet mi-
-	private int ${1}(${2}) {
+	private int ${1}(${2})
+	{
 		${0:return 0;}
 	}
 # members - bool
 snippet mb
-	${1:public} bool ${2}(${3}) {
+	${1:public} bool ${2}(${3})
+	{
 		${0:return false;}
 	}
 snippet mb+
-	public bool ${1}(${2}) {
+	public bool ${1}(${2})
+	{
 		${0:return false;}
 	}
 snippet mb&
-	internal bool ${1}(${2}) {
+	internal bool ${1}(${2})
+	{
 		${0:return false;}
 	}
 snippet mb|
-	protected bool ${1}(${2}) {
+	protected bool ${1}(${2})
+	{
 		${0:return false;}
 	}
 snippet mb-
-	private bool ${1}(${2}) {
+	private bool ${1}(${2})
+	{
 		${0:return false;}
 	}
 # members - string
 snippet ms
-	${1:public} string ${2}(${3}) {
+	${1:public} string ${2}(${3})
+	{
 		${0:return "";}
 	}
 snippet ms+
-	public string ${1}(${2}) {
+	public string ${1}(${2})
+	{
 		${0:return "";}
 	}
 snippet ms&
-	internal string ${1}(${2}) {
+	internal string ${1}(${2})
+	{
 		${0:return "";}
 	}
 snippet ms|
-	protected string ${1:}(${2:}) {
+	protected string ${1:}(${2:})
+	{
 		${0:return "";}
 	}
 snippet ms-
-	private string ${1}(${2}) {
+	private string ${1}(${2})
+	{
 		${0:return "";}
 	}
 # structure
 snippet struct
-	public struct ${1:`vim_snippets#Filename()`} {
+	public struct ${1:`vim_snippets#Filename()`}
+	{
 		${0}
 	}
 # enumeration
 snippet enum
-	enum ${1} {
+	enum ${1}
+	{
 		${0}
 	}
-	
+
 snippet enum+
-	public enum ${1} {
+	public enum ${1}
+	{
 		${0}
 	}
 # preprocessor directives
@@ -378,7 +425,7 @@ snippet <p
 snippet <ex
 	<exception cref="${1:System.Exception}">${2}</exception>
 snippet <r
-	<returns>${1}</returns>{
+	<returns>${1}</returns>
 snippet <s
 	<see cref="${1}"/>
 snippet <rem
@@ -391,16 +438,19 @@ snippet cw
 
 # equals override
 snippet eq
-	public override bool Equals(object obj) {
-		if (obj == null || GetType() != obj.GetType()) {
+	public override bool Equals(object obj)
+	{
+		if (obj == null || GetType() != obj.GetType())
+		{
 			return false;
 		}
 		${0:throw new NotImplementedException();}
 		return base.Equals(obj);
 	}
-# exception 
+# exception
 snippet exc
-	public class ${1:MyException} : ${2:Exception} {
+	public class ${1:MyException} : ${2:Exception}
+	{
 		public $1() { }
 		public $1(string message) : base(message) { }
 		public $1(string message, Exception inner) : base(message, inner) { }
@@ -409,26 +459,30 @@ snippet exc
 			System.Runtime.Serialization.StreamingContext context)
 				: base(info, context) { }
 	}
-# indexer 
+# indexer
 snippet index
-	public ${1:object} this[${2:int} index] {
+	public ${1:object} this[${2:int} index]
+	{
 		get { ${0} }
 		set { ${0} }
 	}
-# eventhandler 
+# eventhandler
 snippet inv
 	EventHandler temp = ${1:MyEvent};
-	if (${2:temp} != null) {
+	if (${2:temp} != null)
+	{
 		$2();
 	}
 # lock
 snippet lock
-	lock (${1:this}) {
+	lock (${1:this})
+	{
 		${0}
 	}
 # namespace
 snippet namespace
-	namespace ${1:MyNamespace} {
+	namespace ${1:MyNamespace}
+	{
 		${0}
 	}
 # property
@@ -436,35 +490,42 @@ snippet prop
 	public ${1:int} ${2:MyProperty} { get; set; }
 snippet propf
 	private ${1:int} ${2:myVar};
-		public $1 ${3:MyProperty} {
-			get { return $2; }
-			set { $2 = value; }
-		}
+	public $1 ${3:MyProperty}
+	{
+		get { return $2; }
+		set { $2 = value; }
+	}
 snippet propg
 	public ${1:int} ${2:MyProperty} { get; private set; }
-# switch    
+# switch
 snippet switch
-	switch (${1:switch_on}) {
+	switch (${1:switch_on})
+	{
 		${0}
 		default:
 	}
 # try
 snippet try
-	try {
-			${0}
+	try
+	{
+		${0:${VISUAL}}
 	}
-	catch (${1:System.Exception}) {
-			throw;
+	catch (${1:System.Exception})
+	{
+		throw;
 	}
 snippet tryf
-	try {
-		${0}
+	try
+	{
+		${0:${VISUAL}}
 	}
-	finally {
+	finally
+	{
 		${1}
 	}
 # using
 snippet usi
-	using(${1:resource}) {
+	using (${1:resource})
+	{
 		${0}
 	}

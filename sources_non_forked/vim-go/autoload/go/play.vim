@@ -20,7 +20,7 @@ function! go#play#Share(count, line1, line2) abort
   call delete(share_file)
 
   if go#util#ShellError() != 0
-    echo 'A error has occured. Run this command to see what the problem is:'
+    echo 'A error has occurred. Run this command to see what the problem is:'
     echo command
     return
   endif
@@ -70,7 +70,7 @@ function! s:get_visual_selection() abort
   return join(lines, "\n")
 endfunction
 
-" following two functions are from: https://github.com/mattn/gist-vim 
+" following two functions are from: https://github.com/mattn/gist-vim
 " thanks  @mattn
 function! s:get_browser_command() abort
   let go_play_browser_command = get(g:, 'go_play_browser_command', '')

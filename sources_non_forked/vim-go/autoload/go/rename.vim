@@ -41,6 +41,12 @@ function! go#rename#Rename(bang, ...) abort
 
   let cmd = [bin_path, "-offset", offset, "-to", to_identifier]
 
+  " check for any tags
+  if exists('g:go_build_tags')
+    let tags = get(g:, 'go_build_tags')
+    call extend(cmd, ["-tags", tags])
+  endif
+
   if go#util#has_job()
     call go#util#EchoProgress(printf("renaming to '%s' ...", to_identifier))
     call s:rename_job({
@@ -65,28 +71,25 @@ function s:rename_job(args)
 
   let status_dir =  expand('%:p:h')
 
-  function! s:close_cb(chan) closure
-    let l:job = ch_getjob(a:chan)
-    let l:info = job_info(l:job)
-
+  function! s:exit_cb(job, exitval) closure
     let status = {
           \ 'desc': 'last status',
           \ 'type': "gorename",
           \ 'state': "finished",
           \ }
 
-    if l:info.exitval
+    if a:exitval
       let status.state = "failed"
     endif
 
     call go#statusline#Update(status_dir, status)
 
-    call s:parse_errors(l:info.exitval, a:args.bang, messages)
+    call s:parse_errors(a:exitval, a:args.bang, messages)
   endfunction
 
   let start_options = {
-        \ 'callback': function("s:callback"),
-        \ 'close_cb': function("s:close_cb"),
+        \ 'callback': funcref("s:callback"),
+        \ 'exit_cb': funcref("s:exit_cb"),
         \ }
 
   " modify GOPATH if needed

@@ -45,6 +45,7 @@ let g:syntastic_python_checkers = ['flake8'] " 修改检查器的地方
 " let g:syntastic_python_python_exec = 'path/to/python3'
 " display all of the errors from all of the checkers together
 let g:syntastic_aggregate_errors = 1
+let g:syntastic_html_checkers=['']
 
 " mapping move focus to tab* use: ,t1 ,t2 ...
 map <leader>t1 :tabnext 1<cr>
@@ -108,10 +109,13 @@ augroup END
 
 " if use gvim then change guifont
 if has('gui_running')
-  set guifont=Lucida_Console:h12
+  set guifont=Source\ Code\ Pro\ for\ Powerline:h12
 endif
 
 " map $t to <>
 vnoremap $t <esc>`>a><esc>`<i<<esc>
 inoremap $t <><esc>i
+
+set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936,big5,euc-jp,euc-kr,latin1 
+set encoding=utf-8
 

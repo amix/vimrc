@@ -53,9 +53,9 @@ use Illuminate\Support\ServiceProvider;
 class ${2:`!v expand('%:t:r')`} extends ServiceProvider {
     
     public function register() {
-        $this->app->bind('${4}Service', function ($app) {
-            return new ${5}(
-                $app->make('Repositories\\${6}Interface')
+        $this->app->bind('$4Service', function ($app) {
+            return new $5(
+                $app->make('Repositories\\$6Interface')
             );
         });
     }
@@ -121,7 +121,7 @@ class ${2:`!v expand('%:t:r')`} extends \Eloquent {
 
     public $timestamps = ${5:false};
 
-    protected $hidden  = [${6}];
+    protected $hidden  = [$6];
 
     protected $guarded = [${7:'id'}];
 }
@@ -208,10 +208,10 @@ snippet l_r "Laravel Repository" b
  * \date        `!v strftime('%d-%m-%y')`
  */
 
-namespace ${1:Repositories\\${2}};
+namespace ${1:Repositories\\$2};
 
-class ${3:`!v expand('%:t:r')`} extends \\${6} implements ${4:$3RepositoryInterface} {
-    ${7}
+class ${3:`!v expand('%:t:r')`} extends \\$6 implements ${4:$3RepositoryInterface} {
+    $7
 }
 endsnippet
 
@@ -227,7 +227,7 @@ snippet l_s "Laravel Service" b
  * \date        `!v strftime('%d-%m-%y')`
  */
 
-namespace Services\\${1};
+namespace Services\\$1;
 
 use ${3:Repositories\\${4:Interface}};
 
@@ -265,6 +265,6 @@ class ${2:`!v expand('%:t:r')`} extends Facade {
      *
      * \return      string
      */
-    protected static function getFacadeAccessor() { return '${4:${3}Service}'; }
+    protected static function getFacadeAccessor() { return '${4:$3Service}'; }
 }
 endsnippet

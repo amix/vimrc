@@ -148,6 +148,7 @@ The minimum and maximum heights:
 
 The maximum number of results:
   results:{n} - list maximum {n} results (default: sync with max height).
+                0 mean no-limit.
 
 Note: When a setting isn't set, its default value will be used.
 
@@ -847,7 +848,7 @@ Example: >
 When this is set to 1, the <bs> on empty prompt exit CtrlP.
 
                                                           *ctrlp-default-value*
-Otherwize, you can use below to change default value.
+Otherwise, you can use below to change default value.
 Example: >
   let g:ctrlp_path_nolim = 1
 
@@ -1496,6 +1497,9 @@ Special thanks:~
 
 ===============================================================================
 CHANGELOG                                                     *ctrlp-changelog*
+
+    * New option |g:ctrlp_custom_tag_files| to specify custom tag files.
+    * Accept 0 for g:ctrlp_match_window no-limited window size.
 
 Before 2016/11/28~
 

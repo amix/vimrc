@@ -4,6 +4,28 @@ extends c
 
 # We want to overwrite everything in parent ft.
 priority -49
+###########################################################################
+#			    Global functions 						  #
+###########################################################################
+
+global !p
+
+def write_docstring_args(arglist, snip):
+	args = str(arglist).split(',')
+
+	if len(args) > 1:
+		c = 0
+		for arg in args:
+			if c == 0:
+				snip.rv += arg
+				c = 1
+			else:
+				snip += '*       : %s' % arg.strip()
+	else:
+		snip.rv = args[0]
+
+
+endglobal
 
 ###########################################################################
 #                            TextMate Snippets                            #
@@ -27,7 +49,7 @@ endsnippet
 snippet ns "namespace .. (namespace)"
 namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`}
 {
-	${VISUAL}${0}
+	${VISUAL}$0
 }${1/.+/ \/* /m}$1${1/.+/ *\/ /m}
 endsnippet
 
@@ -61,7 +83,7 @@ snippet cla "An entire .h generator" b
 class ${1:`!v substitute(substitute(vim_snippets#Filename('$1','ClassName'),'^.','\u&',''), '_\(\w\)', '\u\1', 'g')`}
 {
 private:
-	${3}
+	$3
 
 public:
 	$1();
@@ -69,5 +91,20 @@ public:
 };
 
 #endif /* $2 */
+endsnippet
+
+
+snippet fnc "Basic c++ doxygen function template" b
+/**
+* @brief: ${4:brief}
+*
+* @param: `!p write_docstring_args(t[3],snip)`
+*
+* @return: `!p snip.rv = t[1]`
+*/
+${1:ReturnType} ${2:FunctionName}(${3:param})
+{
+  ${0:FunctionBody}
+}
 endsnippet
 # vim:ft=snippets:

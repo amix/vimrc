@@ -6,6 +6,10 @@ if !exists("g:go_textobj_include_function_doc")
   let g:go_textobj_include_function_doc = 1
 endif
 
+if !exists("g:go_textobj_include_variable")
+  let g:go_textobj_include_variable = 1
+endif
+
 " ( ) motions
 " { } motions
 " s for sentence
@@ -20,7 +24,7 @@ function! go#textobj#Function(mode) abort
   if &modified
     " Write current unsaved buffer to a temp file and use the modified content
     let l:tmpname = tempname()
-    call writefile(getline(1, '$'), l:tmpname)
+    call writefile(go#util#GetLines(), l:tmpname)
     let fname = l:tmpname
   endif
 
@@ -60,6 +64,16 @@ function! go#textobj#Function(mode) abort
     " want's to include doc comments for function declarations
     if has_key(info, 'doc') && g:go_textobj_include_function_doc
       call cursor(info.doc.line, info.doc.col)
+    elseif info['sig']['name'] == '' && g:go_textobj_include_variable
+      " one liner anonymous functions
+      if info.lbrace.line == info.rbrace.line
+        " jump to first nonblack char, to get the correct column
+        call cursor(info.lbrace.line, 0 )
+        normal! ^
+        call cursor(info.func.line, col("."))
+      else
+        call cursor(info.func.line, info.rbrace.col)
+      endif
     else
       call cursor(info.func.line, info.func.col)
     endif
@@ -67,7 +81,7 @@ function! go#textobj#Function(mode) abort
     normal! v
     call cursor(info.rbrace.line, info.rbrace.col)
     return
-  endif 
+  endif
 
   " rest is inner mode, a:mode == 'i'
 
@@ -107,7 +121,7 @@ function! go#textobj#FunctionJump(mode, direction) abort
   if &modified
     " Write current unsaved buffer to a temp file and use the modified content
     let l:tmpname = tempname()
-    call writefile(getline(1, '$'), l:tmpname)
+    call writefile(go#util#GetLines(), l:tmpname)
     let fname = l:tmpname
   endif
 

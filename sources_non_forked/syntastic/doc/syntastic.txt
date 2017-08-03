@@ -164,7 +164,7 @@ When syntax errors are detected a flag will be shown. The content of the flag
 is derived from the |'syntastic_stl_format'| option.
 
 Please note that these settings might conflict with other Vim plugins that
-change the way statusline works. Refer to the |syntastic-compatibility| notes
+change the way 'statusline' works. Refer to the |syntastic-compatibility| notes
 below and to the respective plugins' documentation for possible solutions.
 
 In particular see |syntastic-airline| below if you're using the "airline" Vim

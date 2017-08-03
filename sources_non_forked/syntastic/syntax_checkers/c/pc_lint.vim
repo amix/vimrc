@@ -23,7 +23,8 @@ if !exists('g:syntastic_pc_lint_config_file')
 endif
 
 function! SyntaxCheckers_c_pc_lint_GetLocList() dict
-    let config = syntastic#util#findFileInParent(g:syntastic_pc_lint_config_file, expand('%:p:h', 1))
+    let buf = bufnr('')
+    let config = syntastic#util#findFileInParent(g:syntastic_pc_lint_config_file, fnamemodify(bufname(buf), ':p:h'))
     call self.log('config =', config)
 
     " -hFs1         - show filename, add space after messages, try to make message 1 line

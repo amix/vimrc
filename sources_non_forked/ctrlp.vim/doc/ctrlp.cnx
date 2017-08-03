@@ -1,4 +1,4 @@
-*ctrlp.txt*       模糊的 文件, 缓冲区, 最近最多使用, 标签, ... 检索. v1.79
+*ctrlp.txt*       支持模糊匹配的 文件, 缓冲区, 最近最多使用, 标签, ... 检索. v1.79
 *CtrlP* *ControlP* *'ctrlp'* *'ctrl-p'*
 ===============================================================================
 #                                                                             #
@@ -68,7 +68,7 @@ OPTIONS                                                         *ctrlp-options*
   |ctrlp_arg_map|...............是否拦截<c-y> 和 <c-o> 命令。
   |ctrlp_follow_symlinks|.......是否跟随链接。
   |ctrlp_lazy_update|...........停止输入时才更新。
-  |ctrlp_default_input|.........为提示符面板提供一个种子。
+  |ctrlp_default_input|.........为提示符面板提供一个初始字符串。
   |ctrlp_abbrev|................输入缩写。
   |ctrlp_key_loop|..............为多字节输入开启输入事件循环。
   |ctrlp_prompt_mappings|.......改变提示符面板内部的按键绑定。
@@ -76,6 +76,7 @@ OPTIONS                                                         *ctrlp-options*
   |ctrlp_open_single_match|.....当只有一个候选时自动接受。
   |ctrlp_brief_prompt|..........提示符为空的时候使用<bs>退出 CtrlP。
   |ctrlp_match_current_file|....在匹配条目中包含当前文件。
+  |ctrlp_types|.................內建类型的名称。
 
   最近最多使用模式:
   |ctrlp_mruf_max|..............记录的最近最多使用的最大数据。
@@ -154,6 +155,7 @@ OPTIONS                                                         *ctrlp-options*
 
 结果集的最大数目:
   results:{n} - 列出最多 {n} 条结果 (默认: 和最大高度同步).
+                0代表没有限制。
 
 注意: 当一个设置项没有被设置时，将会使用默认值。
 
@@ -254,7 +256,7 @@ OPTIONS                                                         *ctrlp-options*
 考虑清楚。
 
                                                       *'g:ctrlp_custom_ignore'*
-作为对 |'wildignore'| 的补充，用来设置你只是想在CtrlP中隐藏的文件和目录。使用正
+作为对 |'wildignore'| 和 |g:ctrlp_show_hidden| 的补充，用来设置你只是想在CtrlP中隐藏的文件和目录。使用正
 则表达式来指定匹配模式: >
   let g:ctrlp_custom_ignore = ''
 <
@@ -439,13 +441,19 @@ OPTIONS                                                         *ctrlp-options*
 
 
                                                  *'g:ctrlp_match_current_file'*
-在匹配条目中包含当前文件:
+在匹配条目中包含当前文件: >
   let g:ctrlp_match_current_file = 1
 
 默认情况下，当前文件不包含在列表中。
 
 注意: 当使用 |g:ctrlp_match_func| 时不会应用这个选项。
 
+                                                              *'g:ctrlp_types'*
+通过设置这个列表变量的值来定制核心类型: >
+  let g:ctrlp_types = ['mru', 'fil']
+
+类型默认为: >
+  let g:ctrlp_types = ['fil', 'buf', 'mru'].
 
                                                              *'g:ctrlp_abbrev'*
 定义可以在提示面包内被扩展（内部的或者可见的）的输入缩写: >
@@ -817,13 +825,24 @@ MRU mode options:~
 :CtrlP [起始目录]
    用文件搜索模式打开CtrlP。
 
-   如果没有给定参数，|g:ctrlp_working_path_mode| 会被用来决定起始目录。
+   如果没有给定参数，|g:ctrlp_working_path_mode| 会被用来决定起始目录。临时覆盖
+   这个参数 的方法见 |:CtrlPCurFile| 和 |:CtrlPCurWD| 。
 
    在输入时你可以使用 <tab> 自动补全[起始目录]。
 
                                                                  *:CtrlPBuffer*
 :CtrlPBuffer
    用缓冲区搜索模式打开CtrlP。
+
+                                                                *:CtrlPCurFile*
+:CtrlPCurFile
+    行为类似变量 |g:ctrlp_working_path_mode| = '' 时执行 |:CtrlP| ，忽略这个变量
+    现在的值。
+
+                                                                  *:CtrlPCurWD*
+:CtrlPCurWD
+    行为类似变量 |g:ctrlp_working_path_mode| = '' 时执行 |:CtrlP| ，忽略这个变量
+    现在的值。
 
                                                                     *:CtrlPMRU*
 :CtrlPMRU
@@ -1259,7 +1278,8 @@ h)  使用?打开帮助文件。
 缓冲标签模式选项:~
 
                                                    *'g:ctrlp_buftag_ctags_bin'*
-如果ctags没有在环境变量中配置，使用该选项来指定它的位置: >
+如果ctags没有在环境变量中配置，或者一个二进制ctags文件存在于
+/opt/local/bin 或 /usr/local/bin，使用该选项来指定它的位置: >
   let g:ctrlp_buftag_ctags_bin = ''
 <
 
@@ -1410,6 +1430,31 @@ Git 仓库:   https://github.com/ctrlpvim/ctrlp.vim
 
 ===============================================================================
 更新日志                                                      *ctrlp-changelog*
+
+    * 新选项 |g:ctrlp_custom_tag_files| 用来指定自定义的标签文件。
+    * 设置 g:ctrlp_match_window 为0来不限制窗口大小
+
+Before 2016/11/28~
+
+    + 新命令: |YankLine()| 来复制整个文件。
+    + 新选项: |g:ctrlp_types| 来选择內建类型。
+    + 新特性: 异步在新线程中调用 |g:ctrlp_user_command| 。 设置
+              |g:user_command_async|  为1来启用。
+    + 为 delphi, rust 和 golang提供buffertag支持。
+    + 新选项: |g:ctrlp_brief_prompt|,
+              |g:match_current_file|,
+              |g:ctrlp_compare_lim|.
+    + 新功能: 自动忽略扩展。
+    + 为 ant, tex, dosbatch, matlab 和 vhdl提供buffertag支持。
+    + 新选项 |g:ctrlp_line_prefix| 来结合第三方插件。
+    + 新选项 |g:open_single_match| 在 matches 中打开单个文件。
+    + 添加启动方式 <plug>(ctrlp) 。
+    + 接受 bang for CtrlPBookmarkDirAdd 来避免确认。
+    + 处理像 "g:ctrlp_TYPE_MODE" 大小写混合的变量名。
+                   例如: let g:ctrlp_path_sort
+    + 新选项: |g:ctrlp_custom_ancestors|
+
+在2014/08/08之前~
 
     + 新的支持高亮的缓冲区浏览模式 (建议 |+conceal|)
     + 新选项: |g:ctrlp_bufname_mod|,

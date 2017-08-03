@@ -164,7 +164,7 @@ function! go#tool#Exists(importpath) abort
 endfunction
 
 
-" following two functions are from: https://github.com/mattn/gist-vim 
+" following two functions are from: https://github.com/mattn/gist-vim
 " thanks  @mattn
 function! s:get_browser_command() abort
     let go_play_browser_command = get(g:, 'go_play_browser_command', '')

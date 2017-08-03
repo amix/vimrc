@@ -1,18 +1,8 @@
 let s:sock_type = (has('win32') || has('win64')) ? 'tcp' : 'unix'
 
 function! s:gocodeCurrentBuffer() abort
-  let buf = getline(1, '$')
-  if &encoding != 'utf-8'
-    let buf = map(buf, 'iconv(v:val, &encoding, "utf-8")')
-  endif
-  if &l:fileformat == 'dos'
-    " XXX: line2byte() depend on 'fileformat' option.
-    " so if fileformat is 'dos', 'buf' must include '\r'.
-    let buf = map(buf, 'v:val."\r"')
-  endif
   let file = tempname()
-  call writefile(buf, file)
-
+  call writefile(go#util#GetLines(), file)
   return file
 endfunction
 
@@ -37,11 +27,11 @@ function! s:gocodeCommand(cmd, preargs, args) abort
   let $GOROOT = go#util#env("goroot")
 
   let socket_type = get(g:, 'go_gocode_socket_type', s:sock_type)
-  let cmd = printf('%s -sock %s %s %s %s', 
-        \ go#util#Shellescape(bin_path), 
-        \ socket_type, 
-        \ join(a:preargs), 
-        \ go#util#Shellescape(a:cmd), 
+  let cmd = printf('%s -sock %s %s %s %s',
+        \ go#util#Shellescape(bin_path),
+        \ socket_type,
+        \ join(a:preargs),
+        \ go#util#Shellescape(a:cmd),
         \ join(a:args)
         \ )
 
@@ -65,7 +55,7 @@ endfunction
 
 let s:optionsEnabled = 0
 function! s:gocodeEnableOptions() abort
-  if s:optionsEnabled 
+  if s:optionsEnabled
     return
   endif
 
@@ -113,7 +103,7 @@ function! go#complete#GetInfo() abort
     return ""
   endif
 
-  " only one candiate is found
+  " only one candidate is found
   if len(out) == 2
     return split(out[1], ',,')[0]
   endif

@@ -1,0 +1,21 @@
+language: go
+
+env:
+  global:
+    - DEPS=$HOME/deps
+    - PATH=$DEPS/bin:$PATH
+    - PATCH="v8.0.0134"
+
+install: |
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+  # check out if we can pre-compiled Vim releases somehow,
+  git clone --branch $PATCH --depth 1 https://github.com/vim/vim
+  cd vim
+  ./configure --prefix=$DEPS --with-features=huge --disable-gui
+  make
+  make install
+  cd -
+
+script: ./scripts/test.sh

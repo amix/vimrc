@@ -30,7 +30,10 @@ function! SyntaxCheckers_dart_dartanalyzer_GetHighlightRegex(error)
 endfunction
 
 function! SyntaxCheckers_dart_dartanalyzer_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '--machine' })
+    if !exists('s:format_machine')
+        let s:format_machine = syntastic#util#versionIsAtLeast(self.getVersion(), [1, 23]) ? '--format=machine' : '--machine'
+    endif
+    let makeprg = self.makeprgBuild({ 'args_after': s:format_machine })
 
     " Machine readable format looks like:
     " SEVERITY|TYPE|ERROR_CODE|FILENAME|LINE_NUMBER|COLUMN|LENGTH|MESSAGE
