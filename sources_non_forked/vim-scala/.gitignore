@@ -1,0 +1,6 @@
+# Ignore Vim tag files
+tags
+
+# Ignore Vim swap files
+.*.swp
+.*.swo

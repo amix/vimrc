@@ -1,0 +1,133 @@
+*scala.txt* Syntax highlighting and helper functions for the Scala language.
+
+This plugin is only available if 'compatible' is not set.
+{Vi does not have any of this}
+
+==============================================================================
+INTRODUCTION                                    *scala*
+
+Syntax highlighting and helper functions for the scala language. Extras
+include:
+
+  - Sorting of import statements, configurable to your conventions.
+  - Tagbar support to navigate definitions within a file in the plugin's
+    sidebar window.
+  - ...and probably more that we've forgotten to update in this doc.
+
+==============================================================================
+OPTIONS                                         *scala-options*
+
+Use these options to control behavior of the plugin. Default values are
+indicated in the examples.
+
+                                           *'g:scala_use_builtin_tagbar_defs'*
+If you are using the Tagbar Vim plugin, vim-scala includes a Tagbar type
+definition and ctags definition for Scala, so you can use Tagbar immediately.
+If you have your own ctags definition in `~/.ctags` and prefer to use it, set
+this option to 0 (we would appreciate contributions if you've improved the
+ctags definition!).
+
+Note that Tagbar's ctags definition for Scala is not used to generate a
+|tags| file that Vim can use to navigate to definitions in other files, only
+for the plugin sidebar. Feel free to copy `vim-scala/ctags/scala.ctags` into
+your own `~/.ctags` if you wish to generate |tags| files.
+>
+    let g:scala_use_builtin_tagbar_defs = 1
+<
+                                           *'g:scala_use_default_keymappings'*
+Set this option to disable definition of all mappings provided by vim-scala.
+See |scala-mappings|.
+>
+    let g:scala_use_default_keymappings = 1
+<
+
+                                                   *'g:scala_scaladoc_indent'*
+By default, the plugin indents documentation comments according to the
+standard Javadoc format.
+    /**
+     * This is a doc comment using Javadoc-style indentation.
+     */
+Set this option to enable the indentation standard as recommended for Scaladoc
+comments.
+    /** This is a Scaladoc comment using 
+      * the recommended indentation.
+      */
+>
+    let g:scala_scaladoc_indent = 1
+<
+                                                     
+==============================================================================
+COMMANDS                                        *scala-commands*
+
+                                                *:SortScalaImports*
+:SortScalaImports       There are two modes in which this command can operate.
+                        By default it walks all import groups at the top of
+                        the Scala file and orders their lines alphabetically.
+                        A group is a series of lines starting with the
+                        import keyword separated by one or more blank lines.
+
+                        The second, more advanced mode, can be activated by
+                        setting
+
+                          let g:scala_sort_across_groups=1
+
+                        This makes this command include all imports in the
+                        sorting regardless of blank lines in between them and
+                        puts them in three predefined groups instead.
+                        The three groups in which the imports can fall are:
+
+                          1. Scala and Java core
+                          2. Third party libraries
+                          3. First party code (ie. your own)
+
+                        Java and Scala core imports are identified by the
+                        java(x) and scala namespaces.
+                        Everything else that isn't a first party namespace
+                        will be a third party import.
+                        You can define a regex that matches first party
+                        namespaces by setting
+
+                          g:scala_first_party_namespaces
+
+                        For example in a standard Play app this would be
+                        set to
+                          g:scala_first_party_namespaces=
+                             \ '\(controllers\|views\|models\)'
+
+==============================================================================
+MAPPINGS                                        *scala-mappings*
+
+Currently the only mappings defined are for FuzzyFinder users--these will
+only be enabled if FuzzyFinder is detected.
+
+                                                *scala-leader-fs*
+<Leader>fs              "Find src". Primes |:FufFile| with `src/main/scala`,
+                        and goes deeper still if only a single directory
+                        exists below that. Helpful for package namespacing
+                        like `src/main/scala/com/myorg`.
+
+                                                *scala-leader-ft*
+<Leader>ft              "Find test". Like |scala-leader-fs|, but with
+                        `src/test/scala`.
+
+                                                *scala-leader-fr*
+<Leader>fr              "Find from root". For the rarer cases when you want to
+                        start FuzzyFinder at project root (parent of `src/`).
+
+Disabling Mappings~
+
+If you wish to disable the default key mappings, write the following line in
+your ~/.vimrc: >
+
+    let g:scala_use_default_keymappings = 0
+
+==============================================================================
+CREDITS                                          *scala-credits*
+
+Developed by Derek Wyatt, building on initial work by Stefan Matthias Aust.
+Distributed under the Apache 2 license.
+
+Project's home and Git repository: https://github.com/derekwyatt/vim-scala
+
+------------------------------------------------------------------------------
+ vim:tw=78:ts=8:ft=help:norl:
