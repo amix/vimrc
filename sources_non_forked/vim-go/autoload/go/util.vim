@@ -43,6 +43,14 @@ function! go#util#IsWin() abort
   return 0
 endfunction
 
+ " Checks if using:
+ " 1) Windows system,
+ " 2) And has cygpath executable,
+ " 3) And uses *sh* as 'shell'
+function! go#util#IsUsingCygwinShell()
+  return go#util#IsWin() && executable('cygpath') && &shell =~ '.*sh.*'
+endfunction
+
 function! go#util#has_job() abort
   " job was introduced in 7.4.xxx however there are multiple bug fixes and one
   " of the latest is 8.0.0087 which is required for a stable async API.
@@ -102,7 +110,7 @@ function! go#util#osarch() abort
   return go#util#env("goos") . '_' . go#util#env("goarch")
 endfunction
 
-" System runs a shell command. If possible, it will temporary set 
+" System runs a shell command. If possible, it will temporary set
 " the shell to /bin/sh for Unix-like systems providing a Bourne
 " POSIX like environment.
 function! go#util#System(str, ...) abort

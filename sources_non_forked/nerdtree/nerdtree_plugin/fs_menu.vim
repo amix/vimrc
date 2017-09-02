@@ -212,14 +212,40 @@ endfunction
 
 " FUNCTION: NERDTreeListNodeWin32() {{{1
 function! NERDTreeListNodeWin32()
-    let treenode = g:NERDTreeFileNode.GetSelected()
-    if treenode != {}
-        let metadata = split(system('DIR /Q ' . shellescape(treenode.path.str()) . ' | FINDSTR "^[012][0-9]/[0-3][0-9]/[12][0-9][0-9][0-9]"'), '\n')
-        call nerdtree#echo(metadata[0])
-    else
-        call nerdtree#echo("No information avaialable")
+    let l:node = g:NERDTreeFileNode.GetSelected()
+
+    if !empty(l:node)
+
+        let l:save_shell = &shell
+        set shell&
+
+        if exists('+shellslash')
+            let l:save_shellslash = &shellslash
+            set noshellslash
+        endif
+
+        let l:command = 'DIR /Q '
+                    \ . shellescape(l:node.path.str())
+                    \ . ' | FINDSTR "^[012][0-9]/[0-3][0-9]/[12][0-9][0-9][0-9]"'
+
+        let l:metadata = split(system(l:command), "\n")
+
+        if v:shell_error == 0
+            call nerdtree#echo(l:metadata[0])
+        else
+            call nerdtree#echoError('shell command failed')
+        endif
+
+        let &shell = l:save_shell
+
+        if exists('l:save_shellslash')
+            let &shellslash = l:save_shellslash
+        endif
+
+        return
     endif
 
+    call nerdtree#echo('node not recognized')
 endfunction
 
 " FUNCTION: NERDTreeCopyNode() {{{1

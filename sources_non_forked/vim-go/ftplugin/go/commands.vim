@@ -23,7 +23,7 @@ command! -nargs=* -range GoAddTags call go#tags#Add(<line1>, <line2>, <count>, <
 command! -nargs=* -range GoRemoveTags call go#tags#Remove(<line1>, <line2>, <count>, <f-args>)
 
 " -- tool
-command! -nargs=0 GoFiles echo go#tool#Files()
+command! -nargs=* -complete=customlist,go#tool#ValidFiles GoFiles echo go#tool#Files(<f-args>)
 command! -nargs=0 GoDeps echo go#tool#Deps()
 command! -nargs=* GoInfo call go#tool#Info(0)
 command! -nargs=0 GoAutoTypeInfoToggle call go#complete#ToggleAutoTypeInfo()

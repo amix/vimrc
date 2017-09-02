@@ -58,17 +58,21 @@ function! go#doc#OpenBrowser(...) abort
 endfunction
 
 function! go#doc#Open(newmode, mode, ...) abort
+  " With argument: run "godoc [arg]".
   if len(a:000)
-    " check if we have 'godoc' and use it automatically
     let bin_path = go#path#CheckBinPath('godoc')
     if empty(bin_path)
       return
     endif
 
-    let command = printf("%s %s", bin_path, join(a:000, ' '))
+    let command = printf("%s %s", go#util#Shellescape(bin_path), join(a:000, ' '))
     let out = go#util#System(command)
+  " Without argument: run gogetdoc on cursor position.
   else
     let out = s:gogetdoc(0)
+    if out == -1
+      return
+    endif
   endif
 
   if go#util#ShellError() != 0
@@ -137,7 +141,7 @@ function! s:gogetdoc(json) abort
     return -1
   endif
 
-  let cmd =  [bin_path]
+  let cmd = [go#util#Shellescape(bin_path)]
 
   let offset = go#util#OffsetCursor()
   let fname = expand("%:p:gs!\\!/!")

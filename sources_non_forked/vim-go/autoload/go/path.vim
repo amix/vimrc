@@ -83,8 +83,16 @@ function! go#path#Detect() abort
   " fetched from a customizable list. The user should define any new package
   " management tool by it's own.
 
-  " src folder outside $GOPATH
-  let src_root = finddir("src", current_dir .";")
+  " src folders outside $GOPATH
+  let src_roots = finddir("src", current_dir .";", -1)
+
+  " for cases like GOPATH/src/foo/src/bar, pick up GOPATH/src instead of
+  " GOPATH/src/foo/src
+  let src_root = ""
+  if len(src_roots) > 0
+    let src_root = src_roots[-1]
+  endif
+
   if !empty(src_root)
     let src_path = fnamemodify(src_root, ':p:h:h') . go#util#PathSep()
 
@@ -129,6 +137,9 @@ function! go#path#BinPath() abort
     let bin_path = $GOBIN
   else
     let go_paths = split(go#path#Default(), go#util#PathListSep())
+    if len(go_paths) == 0
+      return "" "nothing found
+    endif
     let bin_path = expand(go_paths[0] . "/bin/")
   endif
 
@@ -157,6 +168,11 @@ function! go#path#CheckBinPath(binpath) abort
       let binpath = exepath(binpath)
     endif
     let $PATH = old_path
+
+    if go#util#IsUsingCygwinShell() == 1
+      return go#path#CygwinPath(binpath)
+    endif
+
     return binpath
   endif
 
@@ -173,18 +189,15 @@ function! go#path#CheckBinPath(binpath) abort
 
   let $PATH = old_path
 
-   " When you are using:
-   " 1) Windows system
-   " 2) Has cygpath executable
-   " 3) Use *sh* as 'shell'
-   "
-   " This converts your <path> to $(cygpath '<path>') to make cygwin working in
-   " shell of cygwin way
-   if go#util#IsWin() && executable('cygpath') && &shell !~ '.*sh.*'
-     return printf("$(cygpath '%s')", a:bin_path)
-   endif
+  if go#util#IsUsingCygwinShell() == 1
+    return go#path#CygwinPath(a:binpath)
+  endif
 
   return go_bin_path . go#util#PathSep() . basename
+endfunction
+
+function! go#path#CygwinPath(path)
+   return substitute(a:path, '\\', '/', "g")
 endfunction
 
 " vim: sw=2 ts=2 et

@@ -59,6 +59,11 @@ Official documentation can be found under [doc/vim-go.txt](doc/vim-go.txt). You 
 ```
 :help vim-go
 ```
+
+Depending on your installation, you may have to generate the plugin's [help
+tags](https://github.com/vim/vim/blob/v8.0.0711/runtime/doc/helphelp.txt#L206-L227)
+manually (eg. `:helptags ALL`).
+
 We also have an [official vim-go
 tutorial](https://github.com/fatih/vim-go-tutorial).
 

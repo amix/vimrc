@@ -2,9 +2,11 @@ snippet mod
 	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` exposing (${1})
 	${0}
 snippet imp
-	import ${0:List}
+	import ${0:Http}
 snippet impe
-	import ${1:List} exposing (${0:map})
+	import ${1:Html} exposing (${0:..})
+snippet impae
+	import ${1:Json.Encode} as ${2:Encode} exposing (${0:Value})
 snippet fn
 	${1:fn} : ${2:a} -> ${3:a}
 	$1 ${4} =
@@ -49,3 +51,8 @@ snippet ty
 snippet tya
 	type alias ${1:Model} =
 		${0}
+snippet test
+	test "${1}" <| \_ -> $0
+snippet doc
+	{-| ${0}
+	-}

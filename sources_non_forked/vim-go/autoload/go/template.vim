@@ -21,7 +21,7 @@ function! go#template#create() abort
       let l:template_file = get(g:, 'go_template_file', "hello_world.go")
     endif
     let l:template_path = go#util#Join(l:root_dir, "templates", l:template_file)
-    exe '0r ' . fnameescape(l:template_path)
+    silent exe '0r ' . fnameescape(l:template_path)
   elseif l:package_name == -1 && l:go_template_use_pkg == 1
     " cwd is now the dir of the package
     let l:path = fnamemodify(getcwd(), ':t')
@@ -32,9 +32,6 @@ function! go#template#create() abort
     call append(0, l:content)
   endif
   $delete _
-
-  " Remove the '... [New File]' message line from the command line
-  echon
 
   execute cd . fnameescape(dir)
 endfunction

@@ -68,9 +68,9 @@ Perl POD, PHP, gettext Portable Object, OS X and iOS property lists, Pug
 (formerly Jade), Puppet, Python, QML, R, Racket, RDF TriG, RDF Turtle, Relax
 NG, reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim, SML, Solidity,
 Sphinx, SQL, Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog, VHDL,
-Vim help, VimL, xHtml, XML, XSLT, XQuery, YACC, YAML, YANG data models, z80,
-Zope page templates, and Zsh. See the [manual][checkers] for details about the
-corresponding supported checkers (`:help syntastic-checkers` in Vim).
+Vim help, VimL, Vue.js, xHtml, XML, XSLT, XQuery, YACC, YAML, YANG data models,
+z80, Zope page templates, and Zsh. See the [manual][checkers] for details about
+the corresponding supported checkers (`:help syntastic-checkers` in Vim).
 
 A number of third-party Vim plugins also provide checkers for syntastic, for
 example: [merlin][merlin], [omnisharp-vim][omnisharp], [rust.vim][rust],
@@ -437,15 +437,15 @@ scripts.
 __4.12. Q. How can I check scripts written for different versions of Ruby?__
 
 A. Install a Ruby version manager such as [rvm][rvm] or [rbenv][rbenv],
-activate the environment for the relevant version of Ruby, and install in it
-the checkers you want to use.  Set `g:syntastic_ruby_checkers` accordingly in
-your `vimrc`, and run [Vim][vim] from the virtual environment.
+activate the relevant version of Ruby, and install in it the checkers you want
+to use.  Set `g:syntastic_ruby_checkers` accordingly in your `vimrc`, and run
+[Vim][vim] under the relevant Ruby version.
 
-If you're starting Vim from a desktop manager rather than from a terminal you
-might need to write wrapper scripts around your checkers, to activate the
-virtual environment before running the actual checks.  Then you'll need to
-point the relevant `g:syntastic_ruby_<checker>_exec` variables to the wrapper
-scripts.
+If you're starting Vim from a desktop manager rather than from a terminal
+and depending on the version manager you use you might need to write wrapper
+scripts around your checkers, to activate the relevant version of Ruby
+before running the actual checks.  Then you'll need to point the relevant
+`g:syntastic_ruby_<checker>_exec` variables to the wrapper scripts.
 
 <a name="faqperl"></a>
 

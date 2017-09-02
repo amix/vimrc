@@ -1015,11 +1015,18 @@ also affect window sizes.)
 7.1. airline                                               *syntastic-airline*
 
 The "airline" Vim plugin (https://github.com/vim-airline/vim-airline) comes
-packaged with a mechanism of showing flags on the |'statusline'| according
-to your |'syntastic_stl_format'|. When using this plugin you do NOT need to
-follow the recommendation outlined in the |syntastic-statusline-flag| section
-above to modify your |'statusline'|; "airline" will make all necessary changes
-automatically.
+with an extension for showing syntastic-related flags on the |'statusline'|.
+
+"airline" versions v0.8 and earlier use |'syntastic_stl_format'| to format the
+|'statusline'| flags. Newer versions ignore |'syntastic_stl_format'|, and require
+you to set variables 'airline#extensions#syntastic#stl_format_err' and
+'airline#extensions#syntastic#stl_format_warn' separately for errors and
+warnings (with the same syntax as |'syntastic_stl_format'|) if you want to
+change the flags from the defaults.
+
+When using "airline" you should NOT follow the recommendation outlined in
+the |syntastic-statusline-flag| section above to modify your |'statusline'|.
+"airline" shall make all necessary changes automatically.
 
 ------------------------------------------------------------------------------
 7.2. The csh and tcsh shells                                   *syntastic-csh*

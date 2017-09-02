@@ -1,15 +1,20 @@
-"CLASS: Opener
-"============================================================
+" ============================================================================
+" CLASS: Opener
+"
+" The Opener class defines an API for "opening" operations.
+" ============================================================================
+
+
 let s:Opener = {}
 let g:NERDTreeOpener = s:Opener
 
-"FUNCTION: s:Opener._bufInWindows(bnum){{{1
-"[[STOLEN FROM VTREEEXPLORER.VIM]]
-"Determine the number of windows open to this buffer number.
-"Care of Yegappan Lakshman.  Thanks!
+" FUNCTION: s:Opener._bufInWindows(bnum) {{{1
+" [[STOLEN FROM VTREEEXPLORER.VIM]]
+" Determine the number of windows open to this buffer number.
+" Care of Yegappan Lakshman.  Thanks!
 "
-"Args:
-"bnum: the subject buffers buffer number
+" Args:
+" bnum: the subject buffers buffer number
 function! s:Opener._bufInWindows(bnum)
     let cnt = 0
     let winnum = 1
@@ -26,14 +31,15 @@ function! s:Opener._bufInWindows(bnum)
 
     return cnt
 endfunction
-"FUNCTION: Opener._checkToCloseTree(newtab) {{{1
-"Check the class options and global options (i.e. NERDTreeQuitOnOpen) to see
-"if the tree should be closed now.
+
+" FUNCTION: Opener._checkToCloseTree(newtab) {{{1
+" Check the class options and global options (i.e. NERDTreeQuitOnOpen) to see
+" if the tree should be closed now.
 "
-"Args:
-"a:newtab - boolean. If set, only close the tree now if we are opening the
-"target in a new tab. This is needed because we have to close tree before we
-"leave the tab
+" Args:
+" a:newtab - boolean. If set, only close the tree now if we are opening the
+" target in a new tab. This is needed because we have to close tree before we
+" leave the tab
 function! s:Opener._checkToCloseTree(newtab)
     if self._keepopen
         return
@@ -44,9 +50,8 @@ function! s:Opener._checkToCloseTree(newtab)
     endif
 endfunction
 
-
-"FUNCTION: s:Opener._firstUsableWindow(){{{1
-"find the window number of the first normal window
+" FUNCTION: s:Opener._firstUsableWindow() {{{1
+" find the window number of the first normal window
 function! s:Opener._firstUsableWindow()
     let i = 1
     while i <= winnr("$")
@@ -62,7 +67,7 @@ function! s:Opener._firstUsableWindow()
     return -1
 endfunction
 
-"FUNCTION: Opener._gotoTargetWin() {{{1
+" FUNCTION: Opener._gotoTargetWin() {{{1
 function! s:Opener._gotoTargetWin()
     if b:NERDTree.isWinTree()
         if self._where == 'v'
@@ -89,12 +94,12 @@ function! s:Opener._gotoTargetWin()
     endif
 endfunction
 
-"FUNCTION: s:Opener._isWindowUsable(winnumber) {{{1
-"Returns 0 if opening a file from the tree in the given window requires it to
-"be split, 1 otherwise
+" FUNCTION: s:Opener._isWindowUsable(winnumber) {{{1
+" Returns 0 if opening a file from the tree in the given window requires it to
+" be split, 1 otherwise
 "
-"Args:
-"winnumber: the number of the window in question
+" Args:
+" winnumber: the number of the window in question
 function! s:Opener._isWindowUsable(winnumber)
     "gotta split if theres only one window (i.e. the NERD tree)
     if winnr("$") ==# 1
@@ -120,21 +125,21 @@ function! s:Opener._isWindowUsable(winnumber)
     return !modified || self._bufInWindows(winbufnr(a:winnumber)) >= 2
 endfunction
 
-"FUNCTION: Opener.New(path, opts) {{{1
-"Args:
+" FUNCTION: Opener.New(path, opts) {{{1
+" Args:
 "
-"a:path: The path object that is to be opened.
+" a:path: The path object that is to be opened.
 "
-"a:opts:
+" a:opts:
 "
-"A dictionary containing the following keys (all optional):
-"  'where': Specifies whether the node should be opened in new split/tab or in
-"           the previous window. Can be either 'v' or 'h' or 't' (for open in
-"           new tab)
-"  'reuse': if a window is displaying the file then jump the cursor there. Can
-"           'all', 'currenttab' or empty to not reuse.
-"  'keepopen': dont close the tree window
-"  'stay': open the file, but keep the cursor in the tree win
+" A dictionary containing the following keys (all optional):
+"   'where': Specifies whether the node should be opened in new split/tab or in
+"            the previous window. Can be either 'v' or 'h' or 't' (for open in
+"            new tab)
+"   'reuse': if a window is displaying the file then jump the cursor there. Can
+"            'all', 'currenttab' or empty to not reuse.
+"   'keepopen': dont close the tree window
+"   'stay': open the file, but keep the cursor in the tree win
 function! s:Opener.New(path, opts)
     let newObj = copy(self)
 
@@ -155,7 +160,7 @@ function! s:Opener.New(path, opts)
     return newObj
 endfunction
 
-"FUNCTION: Opener._newSplit() {{{1
+" FUNCTION: Opener._newSplit() {{{1
 function! s:Opener._newSplit()
     " Save the user's settings for splitbelow and splitright
     let savesplitbelow=&splitbelow
@@ -215,23 +220,27 @@ function! s:Opener._newSplit()
     let &splitright=savesplitright
 endfunction
 
-"FUNCTION: Opener._newVSplit() {{{1
+" FUNCTION: Opener._newVSplit() {{{1
 function! s:Opener._newVSplit()
-    let winwidth = winwidth(".")
-    if winnr("$")==#1
-        let winwidth = g:NERDTreeWinSize
+    let l:winwidth = winwidth('.')
+
+    if winnr('$') == 1
+        let l:winwidth = g:NERDTreeWinSize
     endif
 
-    call nerdtree#exec("wincmd p")
+    call nerdtree#exec('wincmd p')
     vnew
 
-    "resize the nerd tree back to the original size
+    let l:currentWindowNumber = winnr()
+
+    " Restore the NERDTree to its original width.
     call g:NERDTree.CursorToTreeWin()
-    exec("silent vertical resize ". winwidth)
-    call nerdtree#exec('wincmd p')
+    execute 'silent vertical resize ' . l:winwidth
+
+    call nerdtree#exec(l:currentWindowNumber . 'wincmd w')
 endfunction
 
-"FUNCTION: Opener.open(target) {{{1
+" FUNCTION: Opener.open(target) {{{1
 function! s:Opener.open(target)
     if self._path.isDirectory
         call self._openDirectory(a:target)
@@ -240,7 +249,7 @@ function! s:Opener.open(target)
     endif
 endfunction
 
-"FUNCTION: Opener._openFile() {{{1
+" FUNCTION: Opener._openFile() {{{1
 function! s:Opener._openFile()
     if self._reuseWindow()
         return
@@ -253,7 +262,7 @@ function! s:Opener._openFile()
     endif
 endfunction
 
-"FUNCTION: Opener._openDirectory(node) {{{1
+" FUNCTION: Opener._openDirectory(node) {{{1
 function! s:Opener._openDirectory(node)
     if self._nerdtree.isWinTree()
         call self._gotoTargetWin()
@@ -274,7 +283,7 @@ function! s:Opener._openDirectory(node)
     endif
 endfunction
 
-"FUNCTION: Opener._previousWindow() {{{1
+" FUNCTION: Opener._previousWindow() {{{1
 function! s:Opener._previousWindow()
     if !self._isWindowUsable(winnr("#")) && self._firstUsableWindow() ==# -1
         call self._newSplit()
@@ -294,16 +303,16 @@ function! s:Opener._previousWindow()
     endif
 endfunction
 
-"FUNCTION: Opener._restoreCursorPos(){{{1
+" FUNCTION: Opener._restoreCursorPos() {{{1
 function! s:Opener._restoreCursorPos()
     call nerdtree#exec('normal ' . self._tabnr . 'gt')
     call nerdtree#exec(bufwinnr(self._bufnr) . 'wincmd w')
 endfunction
 
-"FUNCTION: Opener._reuseWindow(){{{1
-"put the cursor in the first window we find for this file
+" FUNCTION: Opener._reuseWindow() {{{1
+" put the cursor in the first window we find for this file
 "
-"return 1 if we were successful
+" return 1 if we were successful
 function! s:Opener._reuseWindow()
     if empty(self._reuse)
         return 0
@@ -334,7 +343,7 @@ function! s:Opener._reuseWindow()
     return 0
 endfunction
 
-"FUNCTION: Opener._saveCursorPos(){{{1
+" FUNCTION: Opener._saveCursorPos() {{{1
 function! s:Opener._saveCursorPos()
     let self._bufnr = bufnr("")
     let self._tabnr = tabpagenr()

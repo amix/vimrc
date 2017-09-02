@@ -31,10 +31,6 @@ function go#job#Spawn(args)
   endfunction
 
   function cbs.exit_cb(job, exitval) dict
-    if has_key(self, 'custom_cb')
-      call self.custom_cb(a:job, a:exitval, self.messages)
-    endif
-
     if has_key(self, 'error_info_cb')
       call self.error_info_cb(a:job, a:exitval, self.messages)
     endif
@@ -45,6 +41,10 @@ function go#job#Spawn(args)
       else
         call go#util#EchoError("FAILED")
       endif
+    endif
+
+    if has_key(self, 'custom_cb')
+      call self.custom_cb(a:job, a:exitval, self.messages)
     endif
 
     let l:listtype = go#list#Type("quickfix")

@@ -1,13 +1,20 @@
-"we need to use this number many times for sorting... so we calculate it only
-"once here
-let s:NERDTreeSortStarIndex = index(g:NERDTreeSortOrder, '*')
+" ============================================================================
+" CLASS: Path
+"
+" The Path class provides an abstracted representation of a file system
+" pathname.  Various operations on pathnames are provided and a number of
+" representations of a given path name can be accessed here.
+" ============================================================================
 
-"CLASS: Path
-"============================================================
+
+" This constant is used throughout this script for sorting purposes.
+let s:NERDTreeSortStarIndex = index(g:NERDTreeSortOrder, '*')
+lockvar s:NERDTreeSortStarIndex
+
 let s:Path = {}
 let g:NERDTreePath = s:Path
 
-"FUNCTION: Path.AbsolutePathFor(str) {{{1
+" FUNCTION: Path.AbsolutePathFor(str) {{{1
 function! s:Path.AbsolutePathFor(str)
     let prependCWD = 0
     if nerdtree#runningWindows()
@@ -24,7 +31,7 @@ function! s:Path.AbsolutePathFor(str)
     return toReturn
 endfunction
 
-"FUNCTION: Path.bookmarkNames() {{{1
+" FUNCTION: Path.bookmarkNames() {{{1
 function! s:Path.bookmarkNames()
     if !exists("self._bookmarkNames")
         call self.cacheDisplayString()
@@ -32,7 +39,7 @@ function! s:Path.bookmarkNames()
     return self._bookmarkNames
 endfunction
 
-"FUNCTION: Path.cacheDisplayString() {{{1
+" FUNCTION: Path.cacheDisplayString() {{{1
 function! s:Path.cacheDisplayString() abort
     let self.cachedDisplayString = self.getLastPathComponent(1)
 
@@ -59,7 +66,7 @@ function! s:Path.cacheDisplayString() abort
     endif
 endfunction
 
-"FUNCTION: Path.changeToDir() {{{1
+" FUNCTION: Path.changeToDir() {{{1
 function! s:Path.changeToDir()
     let dir = self.str({'format': 'Cd'})
     if self.isDirectory ==# 0
@@ -74,16 +81,16 @@ function! s:Path.changeToDir()
     endtry
 endfunction
 
-"FUNCTION: Path.compareTo() {{{1
+" FUNCTION: Path.compareTo() {{{1
 "
-"Compares this Path to the given path and returns 0 if they are equal, -1 if
-"this Path is "less than" the given path, or 1 if it is "greater".
+" Compares this Path to the given path and returns 0 if they are equal, -1 if
+" this Path is "less than" the given path, or 1 if it is "greater".
 "
-"Args:
-"path: the path object to compare this to
+" Args:
+" path: the path object to compare this to
 "
-"Return:
-"1, -1 or 0
+" Return:
+" 1, -1 or 0
 function! s:Path.compareTo(path)
     let thisPath = self.getLastPathComponent(1)
     let thatPath = a:path.getLastPathComponent(1)
@@ -118,16 +125,16 @@ function! s:Path.compareTo(path)
     endif
 endfunction
 
-"FUNCTION: Path.Create(fullpath) {{{1
+" FUNCTION: Path.Create(fullpath) {{{1
 "
-"Factory method.
+" Factory method.
 "
-"Creates a path object with the given path. The path is also created on the
-"filesystem. If the path already exists, a NERDTree.Path.Exists exception is
-"thrown. If any other errors occur, a NERDTree.Path exception is thrown.
+" Creates a path object with the given path. The path is also created on the
+" filesystem. If the path already exists, a NERDTree.Path.Exists exception is
+" thrown. If any other errors occur, a NERDTree.Path exception is thrown.
 "
-"Args:
-"fullpath: the full filesystem path to the file/dir to create
+" Args:
+" fullpath: the full filesystem path to the file/dir to create
 function! s:Path.Create(fullpath)
     "bail if the a:fullpath already exists
     if isdirectory(a:fullpath) || filereadable(a:fullpath)
@@ -155,12 +162,12 @@ function! s:Path.Create(fullpath)
     return s:Path.New(a:fullpath)
 endfunction
 
-"FUNCTION: Path.copy(dest) {{{1
+" FUNCTION: Path.copy(dest) {{{1
 "
-"Copies the file/dir represented by this Path to the given location
+" Copies the file/dir represented by this Path to the given location
 "
-"Args:
-"dest: the location to copy this dir/file to
+" Args:
+" dest: the location to copy this dir/file to
 function! s:Path.copy(dest)
     if !s:Path.CopyingSupported()
         throw "NERDTree.CopyingNotSupportedError: Copying is not supported on this OS"
@@ -181,20 +188,20 @@ function! s:Path.copy(dest)
     endif
 endfunction
 
-"FUNCTION: Path.CopyingSupported() {{{1
+" FUNCTION: Path.CopyingSupported() {{{1
 "
-"returns 1 if copying is supported for this OS
+" returns 1 if copying is supported for this OS
 function! s:Path.CopyingSupported()
     return exists('g:NERDTreeCopyCmd') || (exists('g:NERDTreeCopyDirCmd') && exists('g:NERDTreeCopyFileCmd'))
 endfunction
 
-"FUNCTION: Path.copyingWillOverwrite(dest) {{{1
+" FUNCTION: Path.copyingWillOverwrite(dest) {{{1
 "
-"returns 1 if copy this path to the given location will cause files to
-"overwritten
+" returns 1 if copy this path to the given location will cause files to
+" overwritten
 "
-"Args:
-"dest: the location this path will be copied to
+" Args:
+" dest: the location this path will be copied to
 function! s:Path.copyingWillOverwrite(dest)
     if filereadable(a:dest)
         return 1
@@ -208,13 +215,13 @@ function! s:Path.copyingWillOverwrite(dest)
     endif
 endfunction
 
-"FUNCTION: Path.createParentDirectories(path) {{{1
+" FUNCTION: Path.createParentDirectories(path) {{{1
 "
-"create parent directories for this path if needed
-"without throwing any errors if those directories already exist
+" create parent directories for this path if needed
+" without throwing any errors if those directories already exist
 "
-"Args:
-"path: full path of the node whose parent directories may need to be created
+" Args:
+" path: full path of the node whose parent directories may need to be created
 function! s:Path.createParentDirectories(path)
     let dir_path = fnamemodify(a:path, ':h')
     if !isdirectory(dir_path)
@@ -222,11 +229,11 @@ function! s:Path.createParentDirectories(path)
     endif
 endfunction
 
-"FUNCTION: Path.delete() {{{1
+" FUNCTION: Path.delete() {{{1
 "
-"Deletes the file or directory represented by this path.
+" Deletes the file or directory represented by this path.
 "
-"Throws NERDTree.Path.Deletion exceptions
+" Throws NERDTree.Path.Deletion exceptions
 function! s:Path.delete()
     if self.isDirectory
 
@@ -250,10 +257,10 @@ function! s:Path.delete()
     endfor
 endfunction
 
-"FUNCTION: Path.displayString() {{{1
+" FUNCTION: Path.displayString() {{{1
 "
-"Returns a string that specifies how the path should be represented as a
-"string
+" Returns a string that specifies how the path should be represented as a
+" string
 function! s:Path.displayString()
     if self.cachedDisplayString ==# ""
         call self.cacheDisplayString()
@@ -262,14 +269,14 @@ function! s:Path.displayString()
     return self.cachedDisplayString
 endfunction
 
-"FUNCTION: Path.edit() {{{1
+" FUNCTION: Path.edit() {{{1
 function! s:Path.edit()
     exec "edit " . self.str({'format': 'Edit'})
 endfunction
 
-"FUNCTION: Path.extractDriveLetter(fullpath) {{{1
+" FUNCTION: Path.extractDriveLetter(fullpath) {{{1
 "
-"If running windows, cache the drive letter for this path
+" If running windows, cache the drive letter for this path
 function! s:Path.extractDriveLetter(fullpath)
     if nerdtree#runningWindows()
         if a:fullpath =~ '^\(\\\\\|\/\/\)'
@@ -285,14 +292,14 @@ function! s:Path.extractDriveLetter(fullpath)
 
 endfunction
 
-"FUNCTION: Path.exists() {{{1
-"return 1 if this path points to a location that is readable or is a directory
+" FUNCTION: Path.exists() {{{1
+" return 1 if this path points to a location that is readable or is a directory
 function! s:Path.exists()
     let p = self.str()
     return filereadable(p) || isdirectory(p)
 endfunction
 
-"FUNCTION: Path._escChars() {{{1
+" FUNCTION: Path._escChars() {{{1
 function! s:Path._escChars()
     if nerdtree#runningWindows()
         return " `\|\"#%&,?()\*^<>$"
@@ -301,12 +308,12 @@ function! s:Path._escChars()
     return " \\`\|\"#%&,?()\*^<>[]$"
 endfunction
 
-"FUNCTION: Path.getDir() {{{1
+" FUNCTION: Path.getDir() {{{1
 "
-"Returns this path if it is a directory, else this paths parent.
+" Returns this path if it is a directory, else this paths parent.
 "
-"Return:
-"a Path object
+" Return:
+" a Path object
 function! s:Path.getDir()
     if self.isDirectory
         return self
@@ -315,12 +322,12 @@ function! s:Path.getDir()
     endif
 endfunction
 
-"FUNCTION: Path.getParent() {{{1
+" FUNCTION: Path.getParent() {{{1
 "
-"Returns a new path object for this paths parent
+" Returns a new path object for this paths parent
 "
-"Return:
-"a new Path object
+" Return:
+" a new Path object
 function! s:Path.getParent()
     if nerdtree#runningWindows()
         let path = self.drive . '\' . join(self.pathSegments[0:-2], '\')
@@ -331,13 +338,13 @@ function! s:Path.getParent()
     return s:Path.New(path)
 endfunction
 
-"FUNCTION: Path.getLastPathComponent(dirSlash) {{{1
+" FUNCTION: Path.getLastPathComponent(dirSlash) {{{1
 "
-"Gets the last part of this path.
+" Gets the last part of this path.
 "
-"Args:
-"dirSlash: if 1 then a trailing slash will be added to the returned value for
-"directory nodes.
+" Args:
+" dirSlash: if 1 then a trailing slash will be added to the returned value for
+" directory nodes.
 function! s:Path.getLastPathComponent(dirSlash)
     if empty(self.pathSegments)
         return ''
@@ -349,8 +356,8 @@ function! s:Path.getLastPathComponent(dirSlash)
     return toReturn
 endfunction
 
-"FUNCTION: Path.getSortOrderIndex() {{{1
-"returns the index of the pattern in g:NERDTreeSortOrder that this path matches
+" FUNCTION: Path.getSortOrderIndex() {{{1
+" returns the index of the pattern in g:NERDTreeSortOrder that this path matches
 function! s:Path.getSortOrderIndex()
     let i = 0
     while i < len(g:NERDTreeSortOrder)
@@ -362,8 +369,8 @@ function! s:Path.getSortOrderIndex()
     return s:NERDTreeSortStarIndex
 endfunction
 
-"FUNCTION: Path._splitChunks(path) {{{1
-"returns a list of path chunks
+" FUNCTION: Path._splitChunks(path) {{{1
+" returns a list of path chunks
 function! s:Path._splitChunks(path)
     let chunks = split(a:path, '\(\D\+\|\d\+\)\zs')
     let i = 0
@@ -377,8 +384,8 @@ function! s:Path._splitChunks(path)
     return chunks
 endfunction
 
-"FUNCTION: Path.getSortKey() {{{1
-"returns a key used in compare function for sorting
+" FUNCTION: Path.getSortKey() {{{1
+" returns a key used in compare function for sorting
 function! s:Path.getSortKey()
     if !exists("self._sortKey")
         let path = self.getLastPathComponent(1)
@@ -399,14 +406,14 @@ function! s:Path.getSortKey()
 endfunction
 
 
-"FUNCTION: Path.isUnixHiddenFile() {{{1
-"check for unix hidden files
+" FUNCTION: Path.isUnixHiddenFile() {{{1
+" check for unix hidden files
 function! s:Path.isUnixHiddenFile()
     return self.getLastPathComponent(0) =~# '^\.'
 endfunction
 
-"FUNCTION: Path.isUnixHiddenPath() {{{1
-"check for unix path with hidden components
+" FUNCTION: Path.isUnixHiddenPath() {{{1
+" check for unix path with hidden components
 function! s:Path.isUnixHiddenPath()
     if self.getLastPathComponent(0) =~# '^\.'
         return 1
@@ -420,8 +427,8 @@ function! s:Path.isUnixHiddenPath()
     endif
 endfunction
 
-"FUNCTION: Path.ignore(nerdtree) {{{1
-"returns true if this path should be ignored
+" FUNCTION: Path.ignore(nerdtree) {{{1
+" returns true if this path should be ignored
 function! s:Path.ignore(nerdtree)
     "filter out the user specified paths to ignore
     if a:nerdtree.ui.isIgnoreFilterEnabled()
@@ -450,8 +457,8 @@ function! s:Path.ignore(nerdtree)
     return 0
 endfunction
 
-"FUNCTION: Path._ignorePatternMatches(pattern) {{{1
-"returns true if this path matches the given ignore pattern
+" FUNCTION: Path._ignorePatternMatches(pattern) {{{1
+" returns true if this path matches the given ignore pattern
 function! s:Path._ignorePatternMatches(pattern)
     let pat = a:pattern
     if strpart(pat,len(pat)-7) == '[[dir]]'
@@ -469,10 +476,10 @@ function! s:Path._ignorePatternMatches(pattern)
     return self.getLastPathComponent(0) =~# pat
 endfunction
 
-"FUNCTION: Path.isAncestor(path) {{{1
-"return 1 if this path is somewhere above the given path in the filesystem.
+" FUNCTION: Path.isAncestor(path) {{{1
+" return 1 if this path is somewhere above the given path in the filesystem.
 "
-"a:path should be a dir
+" a:path should be a dir
 function! s:Path.isAncestor(path)
     if !self.isDirectory
         return 0
@@ -483,8 +490,8 @@ function! s:Path.isAncestor(path)
     return stridx(that, this) == 0
 endfunction
 
-"FUNCTION: Path.isUnder(path) {{{1
-"return 1 if this path is somewhere under the given path in the filesystem.
+" FUNCTION: Path.isUnder(path) {{{1
+" return 1 if this path is somewhere under the given path in the filesystem.
 function! s:Path.isUnder(path)
     if a:path.isDirectory == 0
         return 0
@@ -495,7 +502,7 @@ function! s:Path.isUnder(path)
     return stridx(this, that . s:Path.Slash()) == 0
 endfunction
 
-"FUNCTION: Path.JoinPathStrings(...) {{{1
+" FUNCTION: Path.JoinPathStrings(...) {{{1
 function! s:Path.JoinPathStrings(...)
     let components = []
     for i in a:000
@@ -504,19 +511,19 @@ function! s:Path.JoinPathStrings(...)
     return '/' . join(components, '/')
 endfunction
 
-"FUNCTION: Path.equals() {{{1
+" FUNCTION: Path.equals() {{{1
 "
-"Determines whether 2 path objects are "equal".
-"They are equal if the paths they represent are the same
+" Determines whether 2 path objects are "equal".
+" They are equal if the paths they represent are the same
 "
-"Args:
-"path: the other path obj to compare this with
+" Args:
+" path: the other path obj to compare this with
 function! s:Path.equals(path)
     return self.str() ==# a:path.str()
 endfunction
 
-"FUNCTION: Path.New() {{{1
-"The Constructor for the Path object
+" FUNCTION: Path.New() {{{1
+" The Constructor for the Path object
 function! s:Path.New(path)
     let newPath = copy(self)
 
@@ -528,26 +535,37 @@ function! s:Path.New(path)
     return newPath
 endfunction
 
-"FUNCTION: Path.Slash() {{{1
-"return the slash to use for the current OS
+" FUNCTION: Path.Slash() {{{1
+" Return the path separator used by the underlying file system.  Special
+" consideration is taken for the use of the 'shellslash' option on Windows
+" systems.
 function! s:Path.Slash()
-    return nerdtree#runningWindows() ? '\' : '/'
+
+    if nerdtree#runningWindows()
+        if exists('+shellslash') && &shellslash
+            return '/'
+        endif
+
+        return '\'
+    endif
+
+    return '/'
 endfunction
 
-"FUNCTION: Path.Resolve() {{{1
-"Invoke the vim resolve() function and return the result
-"This is necessary because in some versions of vim resolve() removes trailing
-"slashes while in other versions it doesn't.  This always removes the trailing
-"slash
+" FUNCTION: Path.Resolve() {{{1
+" Invoke the vim resolve() function and return the result
+" This is necessary because in some versions of vim resolve() removes trailing
+" slashes while in other versions it doesn't.  This always removes the trailing
+" slash
 function! s:Path.Resolve(path)
     let tmp = resolve(a:path)
     return tmp =~# '.\+/$' ? substitute(tmp, '/$', '', '') : tmp
 endfunction
 
-"FUNCTION: Path.readInfoFromDisk(fullpath) {{{1
+" FUNCTION: Path.readInfoFromDisk(fullpath) {{{1
 "
 "
-"Throws NERDTree.Path.InvalidArguments exception.
+" Throws NERDTree.Path.InvalidArguments exception.
 function! s:Path.readInfoFromDisk(fullpath)
     call self.extractDriveLetter(a:fullpath)
 
@@ -598,22 +616,22 @@ function! s:Path.readInfoFromDisk(fullpath)
     endif
 endfunction
 
-"FUNCTION: Path.refresh(nerdtree) {{{1
+" FUNCTION: Path.refresh(nerdtree) {{{1
 function! s:Path.refresh(nerdtree)
     call self.readInfoFromDisk(self.str())
     call g:NERDTreePathNotifier.NotifyListeners('refresh', self, a:nerdtree, {})
     call self.cacheDisplayString()
 endfunction
 
-"FUNCTION: Path.refreshFlags(nerdtree) {{{1
+" FUNCTION: Path.refreshFlags(nerdtree) {{{1
 function! s:Path.refreshFlags(nerdtree)
     call g:NERDTreePathNotifier.NotifyListeners('refreshFlags', self, a:nerdtree, {})
     call self.cacheDisplayString()
 endfunction
 
-"FUNCTION: Path.rename() {{{1
+" FUNCTION: Path.rename() {{{1
 "
-"Renames this node on the filesystem
+" Renames this node on the filesystem
 function! s:Path.rename(newPath)
     if a:newPath ==# ''
         throw "NERDTree.InvalidArgumentsError: Invalid newPath for renaming = ". a:newPath
@@ -632,28 +650,28 @@ function! s:Path.rename(newPath)
     call g:NERDTreeBookmark.Write()
 endfunction
 
-"FUNCTION: Path.str() {{{1
+" FUNCTION: Path.str() {{{1
+" Return a string representation of this Path object.
 "
-"Returns a string representation of this Path
+" Args:
+" This function takes a single dictionary (optional) with keys and values that
+" specify how the returned pathname should be formatted.
 "
-"Takes an optional dictionary param to specify how the output should be
-"formatted.
-"
-"The dict may have the following keys:
+" The dictionary may have the following keys:
 "  'format'
 "  'escape'
 "  'truncateTo'
 "
-"The 'format' key may have a value of:
-"  'Cd' - a string to be used with the :cd command
-"  'Edit' - a string to be used with :e :sp :new :tabedit etc
-"  'UI' - a string used in the NERD tree UI
+" The 'format' key may have a value of:
+"  'Cd' - a string to be used with ":cd" and similar commands
+"  'Edit' - a string to be used with ":edit" and similar commands
+"  'UI' - a string to be displayed in the NERDTree user interface
 "
-"The 'escape' key, if specified will cause the output to be escaped with
-"shellescape()
+" The 'escape' key, if specified, will cause the output to be escaped with
+" Vim's internal "shellescape()" function.
 "
-"The 'truncateTo' key causes the resulting string to be truncated to the value
-"'truncateTo' maps to. A '<' char will be prepended.
+" The 'truncateTo' key shortens the length of the path to that given by the
+" value associated with 'truncateTo'. A '<' is prepended.
 function! s:Path.str(...)
     let options = a:0 ? a:1 : {}
     let toReturn = ""
@@ -688,7 +706,7 @@ function! s:Path.str(...)
     return toReturn
 endfunction
 
-"FUNCTION: Path._strForUI() {{{1
+" FUNCTION: Path._strForUI() {{{1
 function! s:Path._strForUI()
     let toReturn = '/' . join(self.pathSegments, '/')
     if self.isDirectory && toReturn != '/'
@@ -697,37 +715,37 @@ function! s:Path._strForUI()
     return toReturn
 endfunction
 
-"FUNCTION: Path._strForCd() {{{1
-"
-" returns a string that can be used with :cd
+" FUNCTION: Path._strForCd() {{{1
+" Return a string representation of this Path that is suitable for use as an
+" argument to Vim's internal ":cd" command.
 function! s:Path._strForCd()
-    return escape(self.str(), self._escChars())
+    return fnameescape(self.str())
 endfunction
 
-"FUNCTION: Path._strForEdit() {{{1
-"
-"Return: the string for this path that is suitable to be used with the :edit
-"command
+" FUNCTION: Path._strForEdit() {{{1
+" Return a string representation of this Path that is suitable for use as an
+" argument to Vim's internal ":edit" command.
 function! s:Path._strForEdit()
-    let p = escape(self.str(), self._escChars())
 
-    "make it relative
-    let p = fnamemodify(p, ':.')
+    " Make the path relative to the current working directory, if possible.
+    let l:result = fnamemodify(self.str(), ':.')
 
-    "handle the edge case where the file begins with a + (vim interprets
-    "the +foo in `:e +foo` as an option to :edit)
-    if p[0] == "+"
-        let p = '\' . p
+    " On Windows, the drive letter may be removed by "fnamemodify()".  Add it
+    " back, if necessary.
+    if nerdtree#runningWindows() && l:result[0] == s:Path.Slash()
+        let l:result = self.drive . l:result
     endif
 
-    if p ==# ''
-        let p = '.'
+    let l:result = fnameescape(l:result)
+
+    if empty(l:result)
+        let l:result = '.'
     endif
 
-    return p
+    return l:result
 endfunction
 
-"FUNCTION: Path._strForGlob() {{{1
+" FUNCTION: Path._strForGlob() {{{1
 function! s:Path._strForGlob()
     let lead = s:Path.Slash()
 
@@ -744,24 +762,22 @@ function! s:Path._strForGlob()
     return toReturn
 endfunction
 
-"FUNCTION: Path._str() {{{1
-"
-"Gets the string path for this path object that is appropriate for the OS.
-"EG, in windows c:\foo\bar
-"    in *nix  /foo/bar
+" FUNCTION: Path._str() {{{1
+" Return the absolute pathname associated with this Path object.  The pathname
+" returned is appropriate for the underlying file system.
 function! s:Path._str()
-    let lead = s:Path.Slash()
+    let l:separator = s:Path.Slash()
+    let l:leader = l:separator
 
-    "if we are running windows then slap a drive letter on the front
     if nerdtree#runningWindows()
-        let lead = self.drive . '\'
+        let l:leader = self.drive . l:separator
     endif
 
-    return lead . join(self.pathSegments, s:Path.Slash())
+    return l:leader . join(self.pathSegments, l:separator)
 endfunction
 
-"FUNCTION: Path.strTrunk() {{{1
-"Gets the path without the last segment on the end.
+" FUNCTION: Path.strTrunk() {{{1
+" Gets the path without the last segment on the end.
 function! s:Path.strTrunk()
     return self.drive . '/' . join(self.pathSegments[0:-2], '/')
 endfunction
@@ -782,13 +798,13 @@ function! s:Path.tabnr()
     return 0
 endfunction
 
-"FUNCTION: Path.WinToUnixPath(pathstr){{{1
-"Takes in a windows path and returns the unix equiv
+" FUNCTION: Path.WinToUnixPath(pathstr){{{1
+" Takes in a windows path and returns the unix equiv
 "
-"A class level method
+" A class level method
 "
-"Args:
-"pathstr: the windows path to convert
+" Args:
+" pathstr: the windows path to convert
 function! s:Path.WinToUnixPath(pathstr)
     if !nerdtree#runningWindows()
         return a:pathstr

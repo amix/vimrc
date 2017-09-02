@@ -65,8 +65,8 @@ Features
 --------
 
 * Lots of style-customization options (contrast, color invertion, italics usage etc.)
-* Extended filetype highlighting: Html, Xml, Vim (and ES6 with [yajs.vim](https://github.com/othree/yajs.vim)), Clojure, C, Python, JavaScript, CoffeeScript, Ruby, Objective-C, Go, Lua, MoonScript, Java, Markdown, Haskell
-* Supported plugins: [EasyMotion][], [vim-sneak][], [Indent Guides][], [indentLine][], [Rainbow Parentheses][], [Airline][], [Lightline][], [GitGutter][], [Signify][], [ShowMarks][], [Signature][], [Syntastic][], [CtrlP][], [Startify][]
+* Extended filetype highlighting: Html, Xml, Vim, Clojure, C, Python, JavaScript, TypeScript, PureScript, CoffeeScript, Ruby, Objective-C, Go, Lua, MoonScript, Java, Markdown, Haskell, Elixir
+* Supported plugins: [EasyMotion][], [vim-sneak][], [Indent Guides][], [indentLine][], [Rainbow Parentheses][], [Airline][], [Lightline][], [GitGutter][], [Signify][], [ShowMarks][], [Signature][], [Syntastic][], [Ale][], [CtrlP][], [Startify][], [NERDTree][], [Dirvish][]
 
    [EasyMotion]: https://github.com/Lokaltog/vim-easymotion
    [vim-sneak]: https://github.com/justinmk/vim-sneak
@@ -80,8 +80,11 @@ Features
    [ShowMarks]: http://www.vim.org/scripts/script.php?script_id=152
    [Signature]: https://github.com/kshenoy/vim-signature
    [Syntastic]: https://github.com/scrooloose/syntastic
+   [Ale]: https://github.com/w0rp/ale
    [CtrlP]: https://github.com/kien/ctrlp.vim
    [Startify]: https://github.com/mhinz/vim-startify
+   [NERDTree]: https://github.com/scrooloose/nerdtree
+   [Dirvish]: https://github.com/justinmk/vim-dirvish
 
 Contributions
 -------------
@@ -93,8 +96,8 @@ See [gruvbox-contrib][] repo for contributions, ports and extras.
 ToDo
 ----
 
-* Filetype syntax highlighting (R, TeX, Swift, Erlang, Purescript and I'm still dissatisfied with CSS)
-* Plugin support (MiniBufExplorer, Tagbar, Netrw, VimPLug)
+* Filetype syntax highlighting (R, TeX, Swift, Erlang)
+* Plugin support (Tagbar, VimPlug)
 
 Self-Promotion
 --------------

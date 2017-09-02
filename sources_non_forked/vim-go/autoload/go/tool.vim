@@ -1,11 +1,42 @@
-function! go#tool#Files() abort
-  if go#util#IsWin()
-    let format = '{{range $f := .GoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}'
-  else
-    let format = "{{range $f := .GoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}"
+" From "go list -h".
+function! go#tool#ValidFiles(...)
+  let l:list = ["GoFiles", "CgoFiles", "IgnoredGoFiles", "CFiles", "CXXFiles",
+    \ "MFiles", "HFiles", "FFiles", "SFiles", "SwigFiles", "SwigCXXFiles",
+    \ "SysoFiles", "TestGoFiles", "XTestGoFiles"]
+
+  " Used as completion
+  if len(a:000) > 0
+    let l:list = filter(l:list, 'strpart(v:val, 0, len(a:1)) == a:1')
   endif
-  let command = 'go list -f '.shellescape(format)
-  let out = go#tool#ExecuteInDir(command)
+
+  return l:list
+endfunction
+
+function! go#tool#Files(...) abort
+  if len(a:000) > 0
+    let source_files = a:000
+  else
+    let source_files = ['GoFiles']
+  endif
+
+  let combined = ''
+  for sf in source_files
+    " Strip dot in case people used ":GoFiles .GoFiles".
+    let sf = substitute(sf, '^\.', '', '')
+
+    " Make sure the passed options are valid.
+    if index(go#tool#ValidFiles(), sf) == -1
+      echoerr "unknown source file variable: " . sf
+    endif
+
+    if go#util#IsWin()
+      let combined .= '{{range $f := .' . sf . '}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}'
+    else
+      let combined .= "{{range $f := ." . sf . "}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}"
+    endif
+  endfor
+
+  let out = go#tool#ExecuteInDir('go list -f ' . shellescape(combined))
   return split(out, '\n')
 endfunction
 

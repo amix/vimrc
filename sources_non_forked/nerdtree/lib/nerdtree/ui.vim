@@ -21,7 +21,7 @@ endfunction
 "prints out the quick help
 function! s:UI._dumpHelp()
     if self.getShowHelp()
-        let help  = "\" NERD tree (" . nerdtree#version() . ") quickhelp~\n"
+        let help  = "\" NERDTree (" . nerdtree#version() . ") quickhelp~\n"
         let help .= "\" ============================\n"
         let help .= "\" File node mappings~\n"
         let help .= "\" ". (g:NERDTreeMouseMode ==# 3 ? "single" : "double") ."-click,\n"

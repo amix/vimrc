@@ -3,7 +3,7 @@
 " Description: Retro groove color scheme for Airline
 " Author: morhetz <morhetz@gmail.com>
 " Source: https://github.com/morhetz/gruvbox
-" Last Modified: 22 Aug 2014
+" Last Modified: 12 Aug 2017
 " -----------------------------------------------------------------------------
 
 let g:airline#themes#gruvbox#palette = {}
@@ -17,7 +17,7 @@ function! airline#themes#gruvbox#refresh()
   let error_group = airline#themes#get_highlight2(['Normal', 'bg'], ['WarningMsg', 'fg'])
 
   let s:N1 = airline#themes#get_highlight2(['Normal', 'bg'], ['StatusLineNC', 'bg'])
-  let s:N2 = airline#themes#get_highlight2(['StatusLineNC', 'bg'], ['StatusLineNC', 'fg'])
+  let s:N2 = airline#themes#get_highlight2(['StatusLineNC', 'bg'], ['Pmenu', 'bg'])
   let s:N3 = airline#themes#get_highlight2(['StatusLineNC', 'bg'], ['CursorLine', 'bg'])
   let g:airline#themes#gruvbox#palette.normal = airline#themes#generate_color_map(s:N1, s:N2, s:N3)
   let g:airline#themes#gruvbox#palette.normal_modified = { 'airline_c': modified_group }
@@ -28,7 +28,7 @@ function! airline#themes#gruvbox#refresh()
 
   let s:I1 = airline#themes#get_highlight2(['Normal', 'bg'], ['Identifier', 'fg'])
   let s:I2 = s:N2
-  let s:I3 = airline#themes#get_highlight2(['Normal', 'fg'], ['StatusLineNC', 'fg'])
+  let s:I3 = airline#themes#get_highlight2(['Normal', 'fg'], ['Pmenu', 'bg'])
   let g:airline#themes#gruvbox#palette.insert = airline#themes#generate_color_map(s:I1, s:I2, s:I3)
   let g:airline#themes#gruvbox#palette.insert_modified = g:airline#themes#gruvbox#palette.normal_modified
   let g:airline#themes#gruvbox#palette.insert.airline_warning = g:airline#themes#gruvbox#palette.normal.airline_warning
@@ -46,7 +46,7 @@ function! airline#themes#gruvbox#refresh()
   let g:airline#themes#gruvbox#palette.replace.airline_error = g:airline#themes#gruvbox#palette.normal.airline_error
   let g:airline#themes#gruvbox#palette.replace_modified.airline_error = g:airline#themes#gruvbox#palette.normal_modified.airline_error
 
-  let s:V1 = airline#themes#get_highlight2(['Normal', 'bg'], ['ModeMsg', 'fg'])
+  let s:V1 = airline#themes#get_highlight2(['Normal', 'bg'], ['Question', 'fg'])
   let s:V2 = s:N2
   let s:V3 = airline#themes#get_highlight2(['Normal', 'bg'], ['TabLine', 'fg'])
   let g:airline#themes#gruvbox#palette.visual = airline#themes#generate_color_map(s:V1, s:V2, s:V3)

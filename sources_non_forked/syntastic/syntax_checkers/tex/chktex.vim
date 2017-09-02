@@ -27,12 +27,12 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_tex_chktex_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '-q -v1' })
+    let makeprg = self.makeprgBuild({ 'args_after': ['-q', '-f', "%k:%n:%f:%l:%c:%m\n"] })
 
     let errorformat =
-        \ '%EError %n in %f line %l: %m,' .
-        \ '%WWarning %n in %f line %l: %m,' .
-        \ (g:syntastic_tex_chktex_showmsgs ? '%WMessage %n in %f line %l: %m,' : '') .
+        \ '%EError:%n:%f:%l:%v:%m,' .
+        \ '%WWarning:%n:%f:%l:%v:%m,' .
+        \ (g:syntastic_tex_chktex_showmsgs ? '%WMessage:%n:%f:%l:%v:%m,' : '') .
         \ '%Z%p^,' .
         \ '%-G%.%#'
 

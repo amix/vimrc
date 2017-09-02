@@ -103,7 +103,22 @@ snippet spec
 	spec :: Spec
 	spec =
 		describe "${1}" $ do
-			$0
+			it "${2}" $
+				$0
+snippet specf
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` (main, spec) where
+
+	import Test.Hspec
+	import Test.Hspec.Runner (configFastFail, defaultConfig, hspecWith)
+
+	main :: IO ()
+	main = hspecWith defaultConfig {configFastFail = True} spec
+
+	spec :: Spec
+	spec =
+		describe "${1}" $ do
+			it "${2}" $
+				$0
 snippet desc
 	describe "${1}" $ do
 		$0
@@ -113,3 +128,5 @@ snippet it
 snippet itp
 	it "${1}" $ property $
 		$0
+snippet sb
+	\`shouldBe\` $0

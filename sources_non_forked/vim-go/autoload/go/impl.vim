@@ -33,7 +33,7 @@ function! go#impl#Impl(...) abort
     return
   endif
 
-  let result = go#util#System(printf("%s '%s' '%s'", binpath, recv, iface))
+  let result = go#util#System(join(go#util#Shelllist([binpath, recv, iface], ' ')))
   if go#util#ShellError() != 0
     call go#util#EchoError(result)
     return

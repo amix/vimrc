@@ -1,12 +1,6 @@
+" mapped to :GoAddTags
 function! go#tags#Add(start, end, count, ...) abort
   let fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
-  if &modified
-    " Write current unsaved buffer to a temp file and use the modified content
-    let l:tmpname = tempname()
-    call writefile(getline(1, '$'), l:tmpname)
-    let fname = l:tmpname
-  endif
-
   let offset = 0
   if a:count == -1
     let offset = go#util#OffsetCursor()
@@ -14,22 +8,11 @@ function! go#tags#Add(start, end, count, ...) abort
 
   let test_mode = 0
   call call("go#tags#run", [a:start, a:end, offset, "add", fname, test_mode] + a:000)
-
-  " if exists, delete it as we don't need it anymore
-  if exists("l:tmpname")
-    call delete(l:tmpname)
-  endif
 endfunction
 
+" mapped to :GoRemoveTags
 function! go#tags#Remove(start, end, count, ...) abort
   let fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
-  if &modified
-    " Write current unsaved buffer to a temp file and use the modified content
-    let l:tmpname = tempname()
-    call writefile(getline(1, '$'), l:tmpname)
-    let fname = l:tmpname
-  endif
-
   let offset = 0
   if a:count == -1
     let offset = go#util#OffsetCursor()
@@ -37,17 +20,16 @@ function! go#tags#Remove(start, end, count, ...) abort
 
   let test_mode = 0
   call call("go#tags#run", [a:start, a:end, offset, "remove", fname, test_mode] + a:000)
-
-  " if exists, delete it as we don't need it anymore
-  if exists("l:tmpname")
-    call delete(l:tmpname)
-  endif
 endfunction
 
 " run runs gomodifytag. This is an internal test so we can test it
 function! go#tags#run(start, end, offset, mode, fname, test_mode, ...) abort
   " do not split this into multiple lines, somehow tests fail in that case
   let args = {'mode': a:mode,'start': a:start,'end': a:end,'offset': a:offset,'fname': a:fname,'cmd_args': a:000}
+
+  if &modified
+    let args["modified"] = 1
+  endif
 
   let result = s:create_cmd(args)
   if has_key(result, 'err')
@@ -57,8 +39,15 @@ function! go#tags#run(start, end, offset, mode, fname, test_mode, ...) abort
 
   let command = join(result.cmd, " ")
 
-  call go#cmd#autowrite()
-  let out = go#util#System(command)
+  if &modified
+    let filename = expand("%:p:gs!\\!/!")
+    let content  = join(go#util#GetLines(), "\n")
+    let in = filename . "\n" . strlen(content) . "\n" . content
+    let out = go#util#System(command, in)
+  else
+    let out = go#util#System(command)
+  endif
+
   if go#util#ShellError() != 0
     call go#util#EchoError(out)
     return
@@ -103,6 +92,16 @@ func s:write_out(out) abort
     call setline(line, lines[index])
     let index += 1
   endfor
+
+  if has_key(result, 'errors')
+    let l:winnr = winnr()
+    let l:listtype = go#list#Type("quickfix")
+    call go#list#ParseFormat(l:listtype, "%f:%l:%c:%m", result['errors'], "gomodifytags")
+    call go#list#Window(l:listtype, len(result['errors']))
+
+    "prevent jumping to quickfix list
+    exe l:winnr . "wincmd w" 
+  endif
 endfunc
 
 
@@ -116,6 +115,7 @@ func s:create_cmd(args) abort
   if empty(bin_path)
     return {'err': "gomodifytags does not exist"}
   endif
+  let bin_path = go#util#Shellescape(bin_path)
 
   let l:start = a:args.start
   let l:end = a:args.end
@@ -127,8 +127,12 @@ func s:create_cmd(args) abort
   " start constructing the command
   let cmd = [bin_path]
   call extend(cmd, ["-format", "json"])
-  call extend(cmd, ["-file", a:args.fname])
+  call extend(cmd, ["-file", go#util#Shellescape(a:args.fname)])
   call extend(cmd, ["-transform", l:modifytags_transform])
+
+  if has_key(a:args, "modified")
+    call add(cmd, "-modified")
+  endif
 
   if l:offset != 0
     call extend(cmd, ["-offset", l:offset])

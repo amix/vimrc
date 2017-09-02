@@ -25,7 +25,8 @@ function! go#def#Jump(mode) abort
       let $GOPATH = old_gopath
       return
     endif
-    let command = printf("%s -f=%s -o=%s -t", bin_path, fname, go#util#OffsetCursor())
+    let command = printf("%s -f=%s -o=%s -t", go#util#Shellescape(bin_path),
+      \ go#util#Shellescape(fname), go#util#OffsetCursor())
     let out = go#util#System(command)
     if exists("l:tmpname")
       call delete(l:tmpname)
@@ -96,6 +97,7 @@ function! s:jump_to_declaration_cb(mode, bin_name, job, exit_status, data) abort
   endif
 
   call go#def#jump_to_declaration(a:data[0], a:mode, a:bin_name)
+  call go#util#EchoSuccess(fnamemodify(a:data[0], ":t"))
 endfunction
 
 function! go#def#jump_to_declaration(out, mode, bin_name) abort
@@ -153,9 +155,11 @@ function! go#def#jump_to_declaration(out, mode, bin_name) abort
       endif
 
       if a:mode == "tab"
-        let &switchbuf = "usetab"
+        let &switchbuf = "useopen,usetab,newtab"
         if bufloaded(filename) == 0
           tab split
+        else
+           let cmd = 'sbuf'
         endif
       elseif a:mode == "split"
         split
@@ -164,7 +168,7 @@ function! go#def#jump_to_declaration(out, mode, bin_name) abort
       endif
 
       " open the file and jump to line and column
-      exec cmd filename
+      exec cmd fnameescape(filename)
     endif
   endif
   call cursor(line, col)

@@ -3,7 +3,7 @@ priority -50
 global !p
 def create_table(snip):
     # retrieving single line from current string and treat it like tabstops count
-    placeholders_string = snip.buffer[snip.line].strip().split("x",1)
+    placeholders_string = snip.buffer[snip.line].strip()[2:].split("x",1)
     rows_amount = int(placeholders_string[0])
     columns_amount = int(placeholders_string[1])
 
@@ -84,9 +84,8 @@ snippet fnt "Footnote"
 [^$1]:${2:Text}
 endsnippet
 
-post_jump "create_table(snip)"
+pre_expand "create_table(snip)"
 snippet "tb(\d+x\d+)" "Customizable table" br
-`!p snip.rv = match.group(1)`
 endsnippet
 
 # vim:ft=snippets:

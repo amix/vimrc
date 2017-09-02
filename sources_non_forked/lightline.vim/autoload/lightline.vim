@@ -2,7 +2,7 @@
 " Filename: autoload/lightline.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2016/12/03 12:08:08.
+" Last Change: 2017/08/21 08:19:52.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -118,6 +118,7 @@ let s:_lightline = {
       \   'component_type': {
       \     'tabs': 'tabsel', 'close': 'raw'
       \   },
+      \   'component_raw': {},
       \   'tab_component': {},
       \   'tab_component_function': {
       \     'filename': 'lightline#tab#filename', 'modified': 'lightline#tab#modified',
@@ -338,7 +339,9 @@ endfunction
 function! s:convert(name, index) abort
   if has_key(s:lightline.component_expand, a:name)
     let type = get(s:lightline.component_type, a:name, a:index)
-    return filter(s:map(s:evaluate_expand(s:lightline.component_expand[a:name]), '[v:val, 1, v:key == 1 ? "' . type . '" : "' . a:index . '"]'), 'v:val[0] != []')
+    let is_raw = get(s:lightline.component_raw, a:name) || type ==# 'raw'
+    return filter(s:map(s:evaluate_expand(s:lightline.component_expand[a:name]),
+          \ '[v:val, 1 + ' . is_raw . ', v:key == 1 && ' . (type !=# 'raw') . ' ? "' . type . '" : "' . a:index . '"]'), 'v:val[0] != []')
   else
     return [[[a:name], 0, a:index]]
   endif
@@ -393,7 +396,7 @@ function! s:line(tabline, inactive) abort
   endif
   let [l, r] = a:tabline ? [s:lightline.tab_llen, s:lightline.tab_rlen] : [s:lightline.llen, s:lightline.rlen]
   let [p, s] = a:tabline ? [s:lightline.tabline_separator, s:lightline.tabline_subseparator] : [s:lightline.separator, s:lightline.subseparator]
-  let [c, f, t] = [s:lightline.component, s:lightline.component_function, s:lightline.component_type]
+  let [c, f, t, w] = [s:lightline.component, s:lightline.component_function, s:lightline.component_type, s:lightline.component_raw]
   let mode = a:tabline ? 'tabline' : a:inactive ? 'inactive' : 'active'
   let l_ = has_key(s:lightline, mode) ? s:lightline[mode].left : s:lightline.active.left
   let [lt, lc, ll] = s:expand(copy(l_))
@@ -403,7 +406,7 @@ function! s:line(tabline, inactive) abort
     let _ .= '%#LightlineLeft_' . mode . '_' . ll[i] . '#'
     for j in range(len(lt[i]))
       let x = lc[i][j] ? lt[i][j] : has_key(f, lt[i][j]) ? (exists('*' . f[lt[i][j]]) ? '%{' . f[lt[i][j]] . '()}' : '%{exists("*' . f[lt[i][j]] . '")?' . f[lt[i][j]] . '():""}') : get(c, lt[i][j], '')
-      let _ .= has_key(t, lt[i][j]) && t[lt[i][j]] ==# 'raw' || x ==# '' ? x : '%( ' . x . ' %)'
+      let _ .= has_key(t, lt[i][j]) && t[lt[i][j]] ==# 'raw' || get(w, lt[i][j]) || lc[i][j] ==# 2 || x ==# '' ? x : '%( ' . x . ' %)'
       if j < len(lt[i]) - 1 && s.left !=# ''
         let _ .= s:subseparator(lt[i][(j):], s.left, lc[i][(j):])
       endif
@@ -418,7 +421,7 @@ function! s:line(tabline, inactive) abort
     let _ .= '%#LightlineRight_' . mode . '_' . rl[i] . '#'
     for j in range(len(rt[i]))
       let x = rc[i][j] ? rt[i][j] : has_key(f, rt[i][j]) ? (exists('*' . f[rt[i][j]]) ? '%{' . f[rt[i][j]] . '()}' : '%{exists("*' . f[rt[i][j]] . '")?' . f[rt[i][j]] . '():""}') : get(c, rt[i][j], '')
-      let _ .= has_key(t, rt[i][j]) && t[rt[i][j]] ==# 'raw' || x ==# '' ? x : '%( ' . x . ' %)'
+      let _ .= has_key(t, rt[i][j]) && t[rt[i][j]] ==# 'raw' || get(w, rt[i][j]) || rc[i][j] ==# 2 || x ==# '' ? x : '%( ' . x . ' %)'
       if j < len(rt[i]) - 1 && s.right !=# ''
         let _ .= s:subseparator(rt[i][(j):], s.right, rc[i][(j):])
       endif

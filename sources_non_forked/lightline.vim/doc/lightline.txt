@@ -4,7 +4,7 @@ Version: 0.1
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2017/05/28 01:07:02.
+Last Change: 2017/08/21 08:33:12.
 
 CONTENTS					*lightline-contents*
 
@@ -188,11 +188,22 @@ OPTIONS						*lightline-option*
 		|g:lightline.component_expand|. The types are used to specify
 		the color. Specifically, the type raw is used to specify a
 		component which should not be wrapped by item group: %(...%).
+		If you want to specify the type of a raw component, please use
+		|g:lightline.component_raw|.
 		The default value is: >
 
 		let g:lightline.component_type = {
 		    \ 'tabs': 'tabsel',
 		    \ 'close': 'raw' }
+<
+	g:lightline.component_raw		*g:lightline.component_raw*
+		A dictionary to specify the raw type components. When you
+		register a component to this dictionary (like >
+		let g:lightline.component_raw = { 'example': 1 }
+<		), the example component is not wrapped by item group: %(...%).
+		The default value is: >
+
+		let g:lightline.component_raw = {}
 <
 	g:lightline.tab_component		*g:lightline.tab_component*
 		A dictionary for components in one tab.

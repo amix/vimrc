@@ -25,8 +25,9 @@ if exists('g:lightline')
   let s:blue   = s:getGruvColor('GruvboxBlue')
   let s:aqua   = s:getGruvColor('GruvboxAqua')
   let s:orange = s:getGruvColor('GruvboxOrange')
+  let s:green = s:getGruvColor('GruvboxGreen')
 
-  let s:p = {'normal':{}, 'inactive':{}, 'insert':{}, 'replace':{}, 'visual':{}, 'tabline':{}}
+  let s:p = {'normal':{}, 'inactive':{}, 'insert':{}, 'replace':{}, 'visual':{}, 'tabline':{}, 'terminal':{}}
   let s:p.normal.left = [ [ s:bg0, s:fg4 ], [ s:fg4, s:bg2 ] ]
   let s:p.normal.right = [ [ s:bg0, s:fg4 ], [ s:fg4, s:bg2 ] ]
   let s:p.normal.middle = [ [ s:fg4, s:bg1 ] ]
@@ -36,6 +37,9 @@ if exists('g:lightline')
   let s:p.insert.left = [ [ s:bg0, s:blue ], [ s:fg1, s:bg2 ] ]
   let s:p.insert.right = [ [ s:bg0, s:blue ], [ s:fg1, s:bg2 ] ]
   let s:p.insert.middle = [ [ s:fg4, s:bg2 ] ]
+  let s:p.terminal.left = [ [ s:bg0, s:green ], [ s:fg1, s:bg2 ] ]
+  let s:p.terminal.right = [ [ s:bg0, s:green ], [ s:fg1, s:bg2 ] ]
+  let s:p.terminal.middle = [ [ s:fg4, s:bg2 ] ]
   let s:p.replace.left = [ [ s:bg0, s:aqua ], [ s:fg1, s:bg2 ] ]
   let s:p.replace.right = [ [ s:bg0, s:aqua ], [ s:fg1, s:bg2 ] ]
   let s:p.replace.middle = [ [ s:fg4, s:bg2 ] ]

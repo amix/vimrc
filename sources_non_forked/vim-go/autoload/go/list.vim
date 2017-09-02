@@ -3,8 +3,10 @@ if !exists("g:go_list_type")
 endif
 
 " Window opens the list with the given height up to 10 lines maximum.
-" Otherwise g:go_loclist_height is used. If no or zero height is given it
-" closes the window
+" Otherwise g:go_loclist_height is used. 
+"
+" If no or zero height is given it closes the window by default.  
+" To prevent this, set g:go_list_autoclose = 0
 function! go#list#Window(listtype, ...) abort
   let l:listtype = go#list#Type(a:listtype)
   " we don't use lwindow to close the location list as we need also the
@@ -13,10 +15,13 @@ function! go#list#Window(listtype, ...) abort
   " location list increases/decreases, cwindow will not resize when a new
   " updated height is passed. lopen in the other hand resizes the screen.
   if !a:0 || a:1 == 0
-    if l:listtype == "locationlist"
-      lclose
-    else
-      cclose
+    let autoclose_window = get(g:, 'go_list_autoclose', 1)
+    if autoclose_window
+      if l:listtype == "locationlist"
+        lclose
+      else
+        cclose
+      endif
     endif
     return
   endif

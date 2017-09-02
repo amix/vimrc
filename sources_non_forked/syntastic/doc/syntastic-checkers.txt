@@ -121,6 +121,7 @@ SYNTAX CHECKERS BY LANGUAGE                          *syntastic-checkers-lang*
     VHDL.....................................|syntastic-checkers-vhdl|
     Vim help.................................|syntastic-checkers-help|
     VimL.....................................|syntastic-checkers-vim|
+    Vue.js...................................|syntastic-checkers-vue|
 
     xHTML....................................|syntastic-checkers-xhtml|
     XML......................................|syntastic-checkers-xml|
@@ -2867,7 +2868,8 @@ to it:
 
     https://github.com/mantoni/eslint_d.js#editor-integration
 
-See also: |syntastic-javascript-eslint|, |syntastic-typescript-eslint|.
+See also: |syntastic-javascript-eslint|, |syntastic-typescript-eslint|,
+|syntastic-vue-eslint|.
 
 ------------------------------------------------------------------------------
 2. gjslint                                            *syntastic-html-gjslint*
@@ -2935,7 +2937,7 @@ See also: |syntastic-xhtml-tidy|.
 Name:        HTMLHint
 Maintainer:  LCD 47 <lcd047@gmail.com>
 
-"JSHint" is a static code analysis tool for HTML. See the project's page for
+"HTMLHint" is a static code analysis tool for HTML. See the project's page for
 details:
 
     http://htmlhint.com/
@@ -3425,7 +3427,8 @@ version 2.1.0 or later, instead of "ESLint". Just point
 
     https://github.com/mantoni/eslint_d.js#editor-integration
 
-See also: |syntastic-html-eslint|, |syntastic-typescript-eslint|.
+See also: |syntastic-html-eslint|, |syntastic-typescript-eslint|,
+|syntastic-vue-eslint|.
 
 ------------------------------------------------------------------------------
 3. Flow                                            *syntastic-javascript-flow*
@@ -5720,11 +5723,12 @@ running "rubocop --version" from the shell. If it complains about "Parser"
 "Ruby" than you are running, your configuration is not directly supported by
 syntastic.
 
-While passing around the blame for this does have a certain entertaining value
-(cf. https://github.com/bbatsov/rubocop/issues/1819), the problem is real,
-since "Ruby" syntax did change between versions. The solution is to run a
-system such as "rbenv" (http://rbenv.org/) or "rvm" (https://rvm.io/), that
-allows you to run multiple versions of "Ruby" without conflicts: >
+While passing around the blame for this does have a certain entertaining
+value (cf. https://github.com/bbatsov/rubocop/issues/1819), the problem
+is real, since "Ruby" syntax did change between versions. The solution
+is to run a version manager such as "rbenv" (http://rbenv.org/) or "rvm"
+(https://rvm.io/), that allows you to run multiple versions of "Ruby" without
+conflicts: >
     $ rbenv version
     2.1.3 (set by /usr/local/var/rbenv/version)
     
@@ -5768,11 +5772,12 @@ running "ruby-lint --version" from the shell. If it complains about "Parser"
 "Ruby" than you are running, your configuration is not directly supported by
 syntastic.
 
-While passing around the blame for this does have a certain entertaining value
-(cf. https://github.com/bbatsov/rubocop/issues/1819), the problem is real,
-since "Ruby" syntax did change between versions. The solution is to run a
-system such as "rbenv" (http://rbenv.org/) or "rvm" (https://rvm.io/), that
-allows you to run multiple versions of "Ruby" without conflicts: >
+While passing around the blame for this does have a certain entertaining
+value (cf. https://github.com/bbatsov/rubocop/issues/1819), the problem
+is real, since "Ruby" syntax did change between versions. The solution
+is to run a version manager such as "rbenv" (http://rbenv.org/) or "rvm"
+(https://rvm.io/), that allows you to run multiple versions of "Ruby" without
+conflicts: >
     $ rbenv version
     2.1.3 (set by /usr/local/var/rbenv/version)
     
@@ -6377,6 +6382,14 @@ Default: 1
 Whether to show informational messages ("chktex" option "-m"). By default
 informational messages are shown as warnings.
 
+Note~
+
+If you're checking files containing tab characters, then Vim's 'tabstop'
+must match "ChkTeX"'s idea of tabstop, otherwise column numbers will be
+shifted. At the time of this writing, "ChkTeX"'s tabstop is hardcoded to 8,
+so you should probably add something like this to your vimrc: >
+    set tabstop=8
+<
 ------------------------------------------------------------------------------
 2. lacheck                                             *syntastic-tex-lacheck*
 
@@ -6726,7 +6739,8 @@ as "typescript-vim":
 
     https://github.com/leafgarland/typescript-vim
 
-See also: |syntastic-html-eslint|, |syntastic-javascript-eslint|.
+See also: |syntastic-html-eslint|, |syntastic-javascript-eslint|,
+|syntastic-vue-eslint|.
 
 ------------------------------------------------------------------------------
 2. TSLint                                        *syntastic-typescript-tslint*
@@ -7025,6 +7039,72 @@ Checker options~
 
 This checker is initialised using the "makeprgBuild()" function and thus it
 accepts the standard options described at |syntastic-config-makeprg|.
+
+==============================================================================
+SYNTAX CHECKERS FOR VUE.JS                            *syntastic-checkers-vue*
+
+The following checkers are available for Vue.js (filetype "vue"):
+
+    1. ESLint...................|syntastic-vue-eslint|
+    2. pug_lint_vue.............|syntastic-vue-pug_lint_vue|
+
+------------------------------------------------------------------------------
+1. ESLint                                               *syntastic-vue-eslint*
+
+Name:        eslint
+Maintainer:  LCD 47 <lcd047@gmail.com>
+
+"ESLint" is a tool for identifying and reporting on patterns found in
+ECMAScript/JavaScript code. It can also detect problems in JavaScript
+components of Vue.js files. See the project's page for details:
+
+    https://github.com/nzakas/eslint
+
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+Notes~
+
+Automatically fixing errors (option "--fix") is not supported.
+
+You can also use "eslint_d" (https://github.com/mantoni/eslint_d.js), version
+2.1.0 or later, instead of "ESLint". Just point 'g:syntastic_vue_eslint_exec'
+to it:
+
+    https://github.com/mantoni/eslint_d.js#editor-integration
+
+See also: |syntastic-html-eslint|, |syntastic-javascript-eslint|,
+|syntastic-typescript-eslint|.
+
+------------------------------------------------------------------------------
+2. pug_lint_vue                                   *syntastic-vue-pug_lint_vue*
+
+Name:        pug_lint_vue
+Maintainer:  Tim Carry <tim@pixelastic.com>
+
+"pug-lint-vue" is a linter for Pug templates inside of Vue.js components. See
+the project's page at GitHub for details:
+
+    https://github.com/sourceboat/pug-lint-vue
+
+Installation~
+
+Install it with: >
+    npm install -g pug-lint-vue
+<
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+Note~
+
+You probably also need a plugin to set |filetype| for Vue.js files, such as
+"vim-vue":
+
+    https://github.com/posva/vim-vue
 
 ==============================================================================
 SYNTAX CHECKERS FOR XHTML                           *syntastic-checkers-xhtml*

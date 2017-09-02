@@ -10,7 +10,8 @@ function! go#keyify#Keyify()
   endif
 
   " Get result of command as json, that contains `start`, `end` and `replacement`
-  let command = printf("%s -json %s:#%s", bin_path, fname, go#util#OffsetCursor())
+  let command = printf("%s -json %s:#%s", go#util#Shellescape(bin_path),
+    \ go#util#Shellescape(fname), go#util#OffsetCursor())
   let output = go#util#System(command)
   silent! let result = json_decode(output)
 
