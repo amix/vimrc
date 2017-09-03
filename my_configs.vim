@@ -19,7 +19,7 @@ map <S-L> gt
 " mv current tab left
 map <C-H> :execute 'tabmove ' . (tabpagenr()-2)<CR>
 " mv current tab right
-map <C-L> :execute 'tabmove ' . tabpagenr()<CR>
+map <C-L> :execute 'tabmove ' . (tabpagenr()+1)<CR>
 
 " new tab
 map <C-t><C-t> :tabnew<CR>
