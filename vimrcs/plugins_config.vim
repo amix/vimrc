@@ -37,7 +37,7 @@ map <leader>f :MRU<CR>
 let g:yankstack_yank_keys = ['y', 'd']
 
 nmap <c-p> <Plug>yankstack_substitute_older_paste
-nmap <c-n> <Plug>yankstack_substitute_newer_paste
+"nmap <c-n> <Plug>yankstack_substitute_newer_paste
 
 
 """"""""""""""""""""""""""""""
@@ -89,7 +89,7 @@ map <leader>nf :NERDTreeFind<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-multiple-cursors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:multi_cursor_next_key="\<C-s>"
+let g:multi_cursor_next_key="\<C-n>"
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
