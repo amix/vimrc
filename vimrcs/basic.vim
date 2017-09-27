@@ -130,7 +130,9 @@ set noerrorbells
 set novisualbell
 set t_vb=
 set tm=500
-
+" Enable mouse event
+set mouse=a
+let g:NERDTreeMouseMode=3
 " Properly disable sound on errors on MacVim
 if has("gui_macvim")
     autocmd GUIEnter * set vb t_vb=
