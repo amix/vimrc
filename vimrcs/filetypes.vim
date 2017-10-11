@@ -21,6 +21,13 @@ au FileType python set cindent
 au FileType python set cinkeys-=0#
 au FileType python set indentkeys-=0#
 
+au BufRead,BufNewFile *.wpy set ft=vue
+au BufRead,BufNewFile *.wpy set syntax=vue
+autocmd FileType vue,html,javascript,css set ai
+autocmd FileType vue,html,javascript,css set sw=2
+autocmd FileType vue,html,javascript,css set ts=2
+autocmd FileType vue,html,javascript,css set sts=2
+
 
 """"""""""""""""""""""""""""""
 " => JavaScript section

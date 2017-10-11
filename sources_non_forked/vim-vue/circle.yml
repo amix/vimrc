@@ -1,0 +1,10 @@
+dependencies:
+  override:
+    - sudo add-apt-repository ppa:jonathonf/vim -y
+    - sudo apt-get update
+    - sudo apt-get install vim
+    - bash test/install.sh
+
+test:
+  override:
+    - vim -u test/vimrc -c 'Vader! test/*.vader'
