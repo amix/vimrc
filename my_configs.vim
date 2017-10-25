@@ -1,13 +1,13 @@
 if has("mac") || has("macunix")
-    set gfn=Hack:h16,Source\ Code\ Pro:h16,Menlo:h16
+    set gfn=Hack:h14,Source\ Code\ Pro:h14,Menlo:h14
 elseif has("win16") || has("win32")
-    set gfn=Hack:h18,Source\ Code\ Pro:h16,Bitstream\ Vera\ Sans\ Mono:h15
+    set gfn=Hack:h14,Source\ Code\ Pro:h14,Bitstream\ Vera\ Sans\ Mono:h14
 elseif has("gui_gtk2")
-    set gfn=Hack\ 18,Source\ Code\ Pro\ 16,Bitstream\ Vera\ Sans\ Mono\ 15
+    set gfn=Hack\ 14,Source\ Code\ Pro\ 14,Bitstream\ Vera\ Sans\ Mono\ 14
 elseif has("linux")
-    set gfn=Hack\ 18,Source\ Code\ Pro\ 16,Bitstream\ Vera\ Sans\ Mono\ 15
+    set gfn=Hack\ 14,Source\ Code\ Pro\ 14,Bitstream\ Vera\ Sans\ Mono\ 14
 elseif has("unix")
-    set gfn=Monospace\ 20
+    set gfn=Monospace\ 14
 endif
 
 " move around tabs. conflict with the original screen top/bottom
@@ -50,4 +50,9 @@ let g:jsx_ext_required = 0
 
 " Eslint
 " let g:syntastic_javascript_checkers = ['eslint']
+
+" disable Syntastic by default
+let g:syntastic_mode_map = { 'mode': 'passive' }
+
+" setl foldmethod=manual
 
