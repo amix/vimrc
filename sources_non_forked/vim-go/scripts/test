@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# Run all tests.
+#
+
+set -euC
+vimgodir=$(cd -P "$(dirname "$0")/.." > /dev/null && pwd)
+cd "$vimgodir"
+
+### Setup Vim and other dependencies.
+#####################################
+if [ -z "${1:-}" ]; then
+  echo "unknown version: '${1:-}'"
+  echo "First argument must be 'vim-7.4', 'vim-8.0', or 'nvim'."
+  exit 1
+fi
+
+vim=$1
+vimdir="/tmp/vim-go-test/$vim-install"
+export GOPATH=$vimdir
+export PATH=${GOPATH}/bin:$PATH
+
+if [ ! -f "$vimdir/bin/vim" ]; then
+	echo "$vimdir/bin/vim doesn't exist; did you install it with the install-vim script?"
+	exit 1
+fi
+
+### Run tests.
+##############
+# Clean stale log file.
+[ -f '/tmp/vim-go-test/test.log' ] && rm '/tmp/vim-go-test/test.log'
+[ -f '/tmp/vim-go-test/FAILED' ] && rm '/tmp/vim-go-test/FAILED'
+
+# Run the actual tests.
+fail=0
+for test_file in "$vimgodir"/autoload/go/*_test.vim; do
+  "$vimgodir/scripts/run-vim" $vim -e +"silent e $test_file" -S ./scripts/runtest.vim
+
+  # Append logs
+  cat '/tmp/vim-go-test/test.tmp' | tee '/tmp/vim-go-test/test.log'
+  rm '/tmp/vim-go-test/test.tmp'
+done
+
+echo
+if [ -f "/tmp/vim-go-test/FAILED" ]; then
+  echo 2>&1 "Some tests FAILED"
+  exit 1
+fi
+echo 2>&1 "All tests PASSED"
+
+# vim:ts=2:sts=2:sw=2:et
