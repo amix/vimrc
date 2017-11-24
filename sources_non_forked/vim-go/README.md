@@ -8,64 +8,63 @@
 
 This plugin adds Go language support for Vim, with the following main features:
 
-* Build with `:GoBuild`, install with `:GoInstall` or test
-  with `:GoTest` (run single tests via `:GoTestFunc`)
-* Show test coverage with `:GoCoverage` or in browser with `:GoCoverageBrowser` 
-* Goto definition with `:GoDef`
-* Quick jump to declarations with `:GoDecls` or `:GoDeclsDir`
-* Show documentation with `:GoDoc` inside or in browser with `:GoDocBrowser`
-* Quickly execute your current file/files with `:GoRun`
-* Advanced source analysis tools utilizing guru, such as `:GoImplements`,
-  `:GoCallees`, and `:GoReferrers`
-* Change or display `GOPATH` with `:GoPath`
-* Multiple 3rd linter support with `:GoMetaLinter`
-* Renaming identifiers with `:GoRename`
-* Share your code to [play.golang.org](http://play.golang.org) with `:GoPlay`
-* Switch between `*.go` and `*_test.go` code with `:GoAlternate`
-* Add/Remove tags on struct fields with `:GoAddTags`
-* Add import paths via `:GoImport` or remove them with `:GoDrop`
-* Custom vim text objects such as `a function (af)` or `inner function (if)`
-* ... and many more! Please see [doc/vim-go.txt](doc/vim-go.txt) for more information.
-
+* Compile your package with `:GoBuild`, install it with `:GoInstall` or test it
+  with `:GoTest`. Run a single tests with `:GoTestFunc`).
+* Quickly execute your current file(s) with `:GoRun`.
+* Improved syntax highlighting and folding.
+* Completion support via `gocode`.
+* `gofmt` or `goimports` on save keeps the cursor position and undo history.
+* Go to symbol/declaration with `:GoDef`.
+* Look up documentation with `:GoDoc` or `:GoDocBrowser`.
+* Easily import packages via `:GoImport`, remove them via `:GoDrop`.
+* Automatic `GOPATH` detection which works with `gb` and `godep`. Change or
+  display `GOPATH` with `:GoPath`.
+* See which code is covered by tests with `:GoCoverage`.
+* Add or remove tags on struct fields with `:GoAddTags` and `:GoRemoveTags`.
+* Call `gometalinter` with `:GoMetaLinter` to invoke all possible linters
+  (`golint`, `vet`, `errcheck`, `deadcode`, etc.) and put the result in the
+  quickfix or location list.
+* Lint your code with `:GoLint`, run your code through `:GoVet` to catch static
+  errors, or make sure errors are checked with `:GoErrCheck`.
+* Advanced source analysis tools utilizing `guru`, such as `:GoImplements`,
+  `:GoCallees`, and `:GoReferrers`.
+* Precise type-safe renaming of identifiers with `:GoRename`.
+* ... and many more! Please see [doc/vim-go.txt](doc/vim-go.txt) for more
+  information.
 
 ## Install
 
-Master branch is a **development** branch. Please use with caution.
-I recommend to use the [**latest stable release**](https://github.com/fatih/vim-go/releases/latest)
+The [**latest stable release**](https://github.com/fatih/vim-go/releases/latest) is the
+recommended version to use. If you choose to use the master branch instead,
+please do so with caution; it is a _development_ branch.
 
-Vim-go follows the standard runtime path structure. Below are some helper lines
+vim-go follows the standard runtime path structure. Below are some helper lines
 for popular package managers:
 
-*  [Pathogen](https://github.com/tpope/vim-pathogen)
-    * `git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go`
-*  [vim-plug](https://github.com/junegunn/vim-plug)
-    * `Plug 'fatih/vim-go'`
-*  [Vim packages](http://vimhelp.appspot.com/repeat.txt.html#packages)
-    * `git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go`
+* [Vim 8 packages](http://vimhelp.appspot.com/repeat.txt.html#packages)
+  * `git clone https://github.com/fatih/vim-go.git ~/.vim/pack/plugins/start/vim-go`
+* [Pathogen](https://github.com/tpope/vim-pathogen)
+  * `git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go`
+* [vim-plug](https://github.com/junegunn/vim-plug)
+  * `Plug 'fatih/vim-go'`
 
-After installing, please install all necessary binaries. We have a handy
-command for it:
+You will also need to install all the necessary binaries. vim-go makes it easy
+to install all of them by providing a command, `:GoInstallBinaries`, which will
+`go get` all the required binaries.
 
-```
-:GoInstallBinaries
-```
-
-for more information please check out the [documentation](doc/vim-go.txt)
+Check out the Install section in [the documentation](doc/vim-go.txt) for more
+detailed instructions (`:help go-install`).
 
 ## Usage
 
-Official documentation can be found under [doc/vim-go.txt](doc/vim-go.txt). You can display it from within Vim with:
+The full documentation can be found at [doc/vim-go.txt](doc/vim-go.txt). You can
+display it from within Vim with `:help vim-go`.
 
-```
-:help vim-go
-```
+Depending on your installation method, you may have to generate the plugin's
+[`help tags`](http://vimhelp.appspot.com/helphelp.txt.html#%3Ahelptags)
+manually (e.g. `:helptags ALL`).
 
-Depending on your installation, you may have to generate the plugin's [help
-tags](https://github.com/vim/vim/blob/v8.0.0711/runtime/doc/helphelp.txt#L206-L227)
-manually (eg. `:helptags ALL`).
-
-We also have an [official vim-go
-tutorial](https://github.com/fatih/vim-go-tutorial).
+We also have an [official vim-go tutorial](https://github.com/fatih/vim-go-tutorial).
 
 ## License
 

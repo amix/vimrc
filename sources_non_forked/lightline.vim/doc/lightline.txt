@@ -4,7 +4,7 @@ Version: 0.1
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2017/08/21 08:33:12.
+Last Change: 2017/11/18 20:07:05.
 
 CONTENTS					*lightline-contents*
 
@@ -109,8 +109,9 @@ OPTIONS						*lightline-option*
 		    \ 'spell': '%{&spell?&spelllang:""}',
 		    \ 'lineinfo': '%3l:%-2v',
 		    \ 'line': '%l',
-		    \ 'column': '%c'
-		    \ 'close': '%999X X ' }
+		    \ 'column': '%c',
+		    \ 'close': '%999X X ',
+		    \ 'winnr': '%{winnr()}' }
 <
 	g:lightline.component_visible_condition
 						*g:lightline.component_visible_condition*
@@ -228,7 +229,7 @@ OPTIONS						*lightline-option*
 		Currently, wombat, solarized, powerline, jellybeans, Tomorrow,
 		Tomorrow_Night, Tomorrow_Night_Blue, Tomorrow_Night_Eighties,
 		PaperColor, seoul256, landscape, one, Dracula, darcula,
-		Molokai and 16color are available.
+		molokai, materia, material, OldHope, nord and 16color are available.
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'
@@ -1223,7 +1224,9 @@ Problem 12:					*lightline-problem-12*
 Problem 13:					*lightline-problem-13*
 	How to change the lightline colorscheme on the fly.
 
-		Add the following settings to your .vimrc(_vimrc).
+		To update your lightline colorscheme in sync with your vim
+		colorscheme (only for select colorschemes which exist for
+		both), add the following settings to your .vimrc(_vimrc).
 >
 		augroup LightlineColorscheme
 		  autocmd!
@@ -1244,6 +1247,27 @@ Problem 13:					*lightline-problem-13*
 		  catch
 		  endtry
 		endfunction
+<
+		If you have not settled on a single lightline colorscheme, you
+		can easily switch between lightline colorschemes by adding the
+		following LightlineColorscheme command to your .vimrc(_vimrc).
+>
+		function! s:set_lightline_colorscheme(name) abort
+		  let g:lightline.colorscheme = a:name
+		  call lightline#init()
+		  call lightline#colorscheme()
+		  call lightline#update()
+		endfunction
+
+		function! s:lightline_colorschemes(...) abort
+		  return join(map(
+		        \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
+		        \ "fnamemodify(v:val,':t:r')"),
+		        \ "\n")
+		endfunction
+
+		command! -nargs=1 -complete=custom,s:lightline_colorschemes LightlineColorscheme
+		      \ call s:set_lightline_colorscheme(<q-args>)
 <
 Problem 14:					*lightline-problem-14*
 	The 'E541' warning appears on the right hand side.

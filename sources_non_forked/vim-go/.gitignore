@@ -1,7 +1,2 @@
 doc/tags
 .DS_Store
-
-# Test specific files
-FAILED
-test.log
-scripts/vim-vimhelplint

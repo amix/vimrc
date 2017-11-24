@@ -21,12 +21,19 @@ function! s:TreeDirNode.AbsoluteTreeRoot()
 endfunction
 
 " FUNCTION: TreeDirNode.activate([options]) {{{1
-unlet s:TreeDirNode.activate
 function! s:TreeDirNode.activate(...)
-    let opts = a:0 ? a:1 : {}
-    call self.toggleOpen(opts)
-    call self.getNerdtree().render()
-    call self.putCursorHere(0, 0)
+    let l:options = (a:0 > 0) ? a:1 : {}
+
+    call self.toggleOpen(l:options)
+
+    " Note that we only re-render the NERDTree for this node if we did NOT
+    " create a new node and render it in a new window or tab.  In the latter
+    " case, rendering the NERDTree for this node could overwrite the text of
+    " the new NERDTree!
+    if !has_key(l:options, 'where') || empty(l:options['where'])
+        call self.getNerdtree().render()
+        call self.putCursorHere(0, 0)
+    endif
 endfunction
 
 " FUNCTION: TreeDirNode.addChild(treenode, inOrder) {{{1

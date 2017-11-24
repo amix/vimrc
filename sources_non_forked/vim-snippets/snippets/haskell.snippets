@@ -31,8 +31,12 @@ snippet importq
 snippet inst
 	instance ${1:Monoid} ${2:Type} where
 		${0}
+snippet ty
+	type ${1:Type} = ${0:Type}
 snippet type
 	type ${1:Type} = ${0:Type}
+snippet da
+	data ${1:Type} = ${2:$1} ${0:Int}
 snippet data
 	data ${1:Type} = ${2:$1} ${0:Int}
 snippet newtype
@@ -52,6 +56,12 @@ snippet const
 	${1:name} :: ${2:a}
 	$1 = ${0:undefined}
 snippet fn
+	${1:fn} :: ${2:a} -> ${3:a}
+	$1 ${4} = ${0:undefined}
+snippet fn0
+	${1:fn} :: ${2:a}
+	$1 = ${0:undefined}
+snippet fn1
 	${1:fn} :: ${2:a} -> ${3:a}
 	$1 ${4} = ${0:undefined}
 snippet fn2
@@ -130,3 +140,6 @@ snippet itp
 		$0
 snippet sb
 	\`shouldBe\` $0
+snippet doc
+	{-| ${0}
+	-}

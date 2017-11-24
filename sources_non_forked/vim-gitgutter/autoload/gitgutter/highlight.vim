@@ -19,7 +19,7 @@ function! gitgutter#highlight#define_highlights() abort
   execute "highlight GitGutterAddInvisible    guifg=bg guibg=" . guibg . " ctermfg=" . ctermbg . " ctermbg=" . ctermbg
   execute "highlight GitGutterChangeInvisible guifg=bg guibg=" . guibg . " ctermfg=" . ctermbg . " ctermbg=" . ctermbg
   execute "highlight GitGutterDeleteInvisible guifg=bg guibg=" . guibg . " ctermfg=" . ctermbg . " ctermbg=" . ctermbg
-  highlight default link GitGutterChangeDeleteInvisible GitGutterChangeInvisble
+  highlight default link GitGutterChangeDeleteInvisible GitGutterChangeInvisible
 
   highlight default link GitGutterAdd          GitGutterAddDefault
   highlight default link GitGutterChange       GitGutterChangeDefault

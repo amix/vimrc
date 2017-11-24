@@ -1,4 +1,5 @@
 Next
+    - Fix broken "t" and "T" mappings, tabs now open at end (lifecrisis) #759
     - Update doc with already existing mapping variables (asnr) #699
     - Fix the broken g:NERDTreeBookmarksSort setting (lifecrisis) #696
     - Correct NERDTreeIgnore pattern in doc (cntoplolicon) #648

@@ -13,9 +13,34 @@ snippet for
 	end
 snippet forp
 	for ${1:i},${2:v} in pairs(${3:table_name}) do
-	   ${0:-- body}
+		${0:-- body}
 	end
 snippet fori
 	for ${1:i},${2:v} in ipairs(${3:table_name}) do
-	   ${0:-- body}
+		${0:-- body}
 	end
+snippet if
+	if ${1:condition} then
+		${2:-- body}
+	end
+snippet ife
+	if ${1:condition} then
+		${2:-- if condition}
+	else
+		${0:-- else}
+	end
+snippet elif
+	elseif ${1:condition} then
+		${0:--body}
+snippet repeat
+	repeat
+		${1:--body}
+	until ${0:condition}
+snippet while
+	while ${1:condition} do
+		${0:--body}
+	end
+snippet print
+	print("${1:string}")
+snippet im
+	import "${1:import file}"

@@ -1,6 +1,6 @@
 "============================================================================
 "File:        scala.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Rickey Visinski <rickeyvisinski at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -21,10 +21,11 @@ set cpo&vim
 function! SyntaxCheckers_scala_scalac_GetLocList() dict
     call syntastic#log#deprecationWarn('scala_options', 'scala_scalac_args')
 
-    let makeprg = self.makeprgBuild({ 'args_after': '-Ystop-after:parser' })
+    let makeprg = self.makeprgBuild({ 'args': '-Ystop-after:parser' })
 
     let errorformat =
         \ '%E%f:%l: %trror: %m,' .
+        \ '%W%f:%l: %tarning:%m,' .
         \ '%Z%p^,' .
         \ '%-G%.%#'
 

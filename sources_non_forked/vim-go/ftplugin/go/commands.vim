@@ -1,5 +1,5 @@
 " -- gorename
-command! -nargs=? GoRename call go#rename#Rename(<bang>0,<f-args>)
+command! -nargs=? -complete=customlist,go#rename#Complete GoRename call go#rename#Rename(<bang>0, <f-args>)
 
 " -- guru
 command! -nargs=* -complete=customlist,go#package#Complete GoGuruScope call go#guru#Scope(<f-args>)
@@ -82,18 +82,9 @@ command! -nargs=* -complete=customlist,go#package#Complete GoErrCheck call go#li
 " -- alternate
 command! -bang GoAlternate call go#alternate#Switch(<bang>0, '')
 
-" -- ctrlp
-if globpath(&rtp, 'plugin/ctrlp.vim') != ""
-  command! -nargs=? -complete=file GoDecls call ctrlp#init(ctrlp#decls#cmd(0, <q-args>))
-  command! -nargs=? -complete=dir GoDeclsDir call ctrlp#init(ctrlp#decls#cmd(1, <q-args>))
-else
-  function! s:ctrlp_warning()
-    call go#util#EchoError("ctrlp.vim plugin is not installed. Please install from: https://github.com/ctrlpvim/ctrlp.vim")
-  endfunction
-
-  command! -nargs=? -complete=file GoDecls call <SID>ctrlp_warning()
-  command! -nargs=? -complete=file GoDeclsDir call <SID>ctrlp_warning()
-endif
+" -- decls
+command! -nargs=? -complete=file GoDecls call go#decls#Decls(0, <q-args>)
+command! -nargs=? -complete=dir GoDeclsDir call go#decls#Decls(1, <q-args>)
 
 " -- impl
 command! -nargs=* -buffer -complete=customlist,go#impl#Complete GoImpl call go#impl#Impl(<f-args>)
@@ -103,5 +94,8 @@ command! -nargs=0 GoTemplateAutoCreateToggle call go#template#ToggleAutoCreate()
 
 " -- keyify
 command! -nargs=0 GoKeyify call go#keyify#Keyify()
+
+" -- fillstruct
+command! -nargs=0 GoFillStruct call go#fillstruct#FillStruct()
 
 " vim: sw=2 ts=2 et

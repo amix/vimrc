@@ -1,6 +1,6 @@
 "============================================================================
 "File:        erlang.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Pawel Salata <rockplayer.pl at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute

@@ -1,6 +1,6 @@
 "============================================================================
 "File:        dockerfile_lint.vim
-"Description: Syntax checking plugin for syntastic.vim using dockerfile-lint
+"Description: Syntax checking plugin for syntastic using dockerfile-lint
 "             (https://github.com/projectatomic/dockerfile_lint).
 "Maintainer:  Tim Carry <tim at pixelastic dot com>
 "License:     This program is free software. It comes without any warranty,

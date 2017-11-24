@@ -43,6 +43,14 @@ function! go#util#IsWin() abort
   return 0
 endfunction
 
+" IsMac returns 1 if current OS is macOS or 0 otherwise.
+function! go#util#IsMac() abort
+  return has('mac') ||
+        \ has('macunix') ||
+        \ has('gui_macvim') ||
+        \ go#util#System('uname') =~? '^darwin'
+endfunction
+
  " Checks if using:
  " 1) Windows system,
  " 2) And has cygpath executable,
@@ -110,30 +118,52 @@ function! go#util#osarch() abort
   return go#util#env("goos") . '_' . go#util#env("goarch")
 endfunction
 
-" System runs a shell command. If possible, it will temporary set
-" the shell to /bin/sh for Unix-like systems providing a Bourne
-" POSIX like environment.
-function! go#util#System(str, ...) abort
+" Run a shell command.
+"
+" It will temporary set the shell to /bin/sh for Unix-like systems if possible,
+" so that we always use a standard POSIX-compatible Bourne shell (and not e.g.
+" csh, fish, etc.) See #988 and #1276.
+function! s:system(cmd, ...) abort
   " Preserve original shell and shellredir values
   let l:shell = &shell
   let l:shellredir = &shellredir
 
-  " Use a Bourne POSIX like shell. Some parts of vim-go expect
-  " commands to be executed using bourne semantics #988 and #1276.
-  " Alter shellredir to match bourne. Especially important if login shell
-  " is set to any of the csh or zsh family #1276.
   if !go#util#IsWin() && executable('/bin/sh')
       set shell=/bin/sh shellredir=>%s\ 2>&1
   endif
 
   try
-    let l:output = call('system', [a:str] + a:000)
-    return l:output
+    return call('system', [a:cmd] + a:000)
   finally
     " Restore original values
     let &shell = l:shell
     let &shellredir = l:shellredir
   endtry
+endfunction
+
+" System runs a shell command "str". Every arguments after "str" is passed to
+" stdin.
+function! go#util#System(str, ...) abort
+  return call('s:system', [a:str] + a:000)
+endfunction
+
+" Exec runs a shell command "cmd", which must be a list, one argument per item.
+" Every list entry will be automatically shell-escaped
+" Every other argument is passed to stdin.
+function! go#util#Exec(cmd, ...) abort
+  if len(a:cmd) == 0
+    call go#util#EchoError("go#util#Exec() called with empty a:cmd")
+    return
+  endif
+
+  " CheckBinPath will show a warning for us.
+  let l:bin = go#path#CheckBinPath(a:cmd[0])
+  if empty(l:bin)
+    return ["", 1]
+  endif
+
+  let l:out = call('s:system', [go#util#Shelljoin([l:bin] + a:cmd[1:])] + a:000)
+  return [l:out, go#util#ShellError()]
 endfunction
 
 function! go#util#ShellError() abort
@@ -242,50 +272,71 @@ endfunction
 " snakecase converts a string to snake case. i.e: FooBar -> foo_bar
 " Copied from tpope/vim-abolish
 function! go#util#snakecase(word) abort
-  let word = substitute(a:word,'::','/','g')
-  let word = substitute(word,'\(\u\+\)\(\u\l\)','\1_\2','g')
-  let word = substitute(word,'\(\l\|\d\)\(\u\)','\1_\2','g')
-  let word = substitute(word,'[.-]','_','g')
+  let word = substitute(a:word, '::', '/', 'g')
+  let word = substitute(word, '\(\u\+\)\(\u\l\)', '\1_\2', 'g')
+  let word = substitute(word, '\(\l\|\d\)\(\u\)', '\1_\2', 'g')
+  let word = substitute(word, '[.-]', '_', 'g')
   let word = tolower(word)
   return word
 endfunction
 
-" camelcase converts a string to camel case. i.e: FooBar -> fooBar
-" Copied from tpope/vim-abolish
+" camelcase converts a string to camel case. e.g. FooBar or foo_bar will become
+" fooBar.
+" Copied from tpope/vim-abolish.
 function! go#util#camelcase(word) abort
   let word = substitute(a:word, '-', '_', 'g')
   if word !~# '_' && word =~# '\l'
-    return substitute(word,'^.','\l&','')
+    return substitute(word, '^.', '\l&', '')
   else
-    return substitute(word,'\C\(_\)\=\(.\)','\=submatch(1)==""?tolower(submatch(2)) : toupper(submatch(2))','g')
+    return substitute(word, '\C\(_\)\=\(.\)', '\=submatch(1)==""?tolower(submatch(2)) : toupper(submatch(2))','g')
   endif
 endfunction
 
-" TODO(arslan): I couldn't parameterize the highlight types. Check if we can
-" simplify the following functions
+" pascalcase converts a string to 'PascalCase'. e.g. fooBar or foo_bar will
+" become FooBar.
+function! go#util#pascalcase(word) abort
+  let word = go#util#camelcase(a:word)
+  return toupper(word[0]) . word[1:]
+endfunction
+
+" Echo a message to the screen and highlight it with the group in a:hi.
 "
-" NOTE(arslan): echon doesn't work well with redraw, thus echo doesn't print
-" even though we order it. However echom seems to be work fine.
+" The message can be a list or string; every line with be :echomsg'd separately.
+function! s:echo(msg, hi)
+  let l:msg = []
+  if type(a:msg) != type([])
+    let l:msg = split(a:msg, "\n")
+  else
+    let l:msg = a:msg
+  endif
+
+  " Tabs display as ^I or <09>, so manually expand them.
+  let l:msg = map(l:msg, 'substitute(v:val, "\t", "        ", "")')
+
+  exe 'echohl ' . a:hi
+  for line in l:msg
+    echom "vim-go: " . line
+  endfor
+  echohl None
+endfunction
+
 function! go#util#EchoSuccess(msg)
-  redraw | echohl Function | echom "vim-go: " . a:msg | echohl None
+  call s:echo(a:msg, 'Function')
 endfunction
-
 function! go#util#EchoError(msg)
-  redraw | echohl ErrorMsg | echom "vim-go: " . a:msg | echohl None
+  call s:echo(a:msg, 'ErrorMsg')
 endfunction
-
 function! go#util#EchoWarning(msg)
-  redraw | echohl WarningMsg | echom "vim-go: " . a:msg | echohl None
+  call s:echo(a:msg, 'WarningMsg')
 endfunction
-
 function! go#util#EchoProgress(msg)
-  redraw | echohl Identifier | echom "vim-go: " . a:msg | echohl None
+  call s:echo(a:msg, 'Identifier')
 endfunction
-
 function! go#util#EchoInfo(msg)
-  redraw | echohl Debug | echom "vim-go: " . a:msg | echohl None
+  call s:echo(a:msg, 'Debug')
 endfunction
 
+" Get all lines in the buffer as a a list.
 function! go#util#GetLines()
   let buf = getline(1, '$')
   if &encoding != 'utf-8'
@@ -297,6 +348,51 @@ function! go#util#GetLines()
     let buf = map(buf, 'v:val."\r"')
   endif
   return buf
+endfunction
+
+" Convert the current buffer to the "archive" format of
+" golang.org/x/tools/go/buildutil:
+" https://godoc.org/golang.org/x/tools/go/buildutil#ParseOverlayArchive
+"
+" > The archive consists of a series of files. Each file consists of a name, a
+" > decimal file size and the file contents, separated by newlinews. No newline
+" > follows after the file contents.
+function! go#util#archive()
+    let l:buffer = join(go#util#GetLines(), "\n")
+    return expand("%:p:gs!\\!/!") . "\n" . strlen(l:buffer) . "\n" . l:buffer
+endfunction
+
+
+" Make a named temporary directory which starts with "prefix".
+"
+" Unfortunately Vim's tempname() is not portable enough across various systems;
+" see: https://github.com/mattn/vim-go/pull/3#discussion_r138084911
+function! go#util#tempdir(prefix) abort
+  " See :help tempfile
+  if go#util#IsWin()
+    let l:dirs = [$TMP, $TEMP, 'c:\tmp', 'c:\temp']
+  else
+    let l:dirs = [$TMPDIR, '/tmp', './', $HOME]
+  endif
+
+  let l:dir = ''
+  for l:d in dirs
+    if !empty(l:d) && filewritable(l:d) == 2
+      let l:dir = l:d
+      break
+    endif
+  endfor
+
+  if l:dir == ''
+    echoerr 'Unable to find directory to store temporary directory in'
+    return
+  endif
+
+  " Not great randomness, but "good enough" for our purpose here.
+  let l:rnd = sha256(printf('%s%s', localtime(), fnamemodify(bufname(''), ":p")))
+  let l:tmp = printf("%s/%s%s", l:dir, a:prefix, l:rnd)
+  call mkdir(l:tmp, 'p', 0700)
+  return l:tmp
 endfunction
 
 " vim: sw=2 ts=2 et

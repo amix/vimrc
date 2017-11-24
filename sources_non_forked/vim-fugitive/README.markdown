@@ -90,7 +90,7 @@ directory.  Edit a file from the repository.
 
 `:Gbrowse` delegates to `git web--browse`, which is less than perfect
 when it comes to finding the right browser.  You can tell it the correct
-browser to use with `git config --global web.browser ...`.  On OS X, for
+browser to use with `git config --global web.browser ...`.  On macOS, for
 example, you might want to set this to `open`.  See `git web--browse --help`
 for details.
 

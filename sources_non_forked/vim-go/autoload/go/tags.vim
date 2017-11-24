@@ -95,12 +95,12 @@ func s:write_out(out) abort
 
   if has_key(result, 'errors')
     let l:winnr = winnr()
-    let l:listtype = go#list#Type("quickfix")
+    let l:listtype = go#list#Type("GoModifyTags")
     call go#list#ParseFormat(l:listtype, "%f:%l:%c:%m", result['errors'], "gomodifytags")
     call go#list#Window(l:listtype, len(result['errors']))
 
     "prevent jumping to quickfix list
-    exe l:winnr . "wincmd w" 
+    exe l:winnr . "wincmd w"
   endif
 endfunc
 
@@ -210,3 +210,5 @@ func s:create_cmd(args) abort
 
   return {'cmd': cmd}
 endfunc
+
+" vim: sw=2 ts=2 et

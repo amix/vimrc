@@ -258,31 +258,31 @@ snippet hr "<hr>"
 endsnippet
 
 snippet html "HTML basic structure" b
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="UTF-8" />
-			<meta name="viewport" content="width=device-width" />
-			<title>${1:`!p snip.rv = snip.basename.replace('-', ' ').capitalize()`}</title>
-		</head>
-		<body>
-			${0:body}
-		</body>
-	</html>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>${1:`!p snip.rv = snip.basename.replace('-', ' ').capitalize()`}</title>
+	</head>
+	<body>
+		${0:body}
+	</body>
+</html>
 endsnippet
 
 snippet htmll "HTML basic structure with the lang attribute" b
-	<!DOCTYPE html>
-	<html lang="${1:es}">
-		<head>
-			<meta charset="UTF-8" />
-			<meta name="viewport" content="width=device-width" />
-			<title>${2:`!p snip.rv = snip.basename.replace('-', ' ').capitalize()`}</title>
-		</head>
-		<body>
-			${0:body}
-		</body>
-	</html>
+<!DOCTYPE html>
+<html lang="${1:es}">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>${2:`!p snip.rv = snip.basename.replace('-', ' ').capitalize()`}</title>
+	</head>
+	<body>
+		${0:body}
+	</body>
+</html>
 endsnippet
 
 snippet i "<i>" w
@@ -318,7 +318,7 @@ snippet label "<label>"
 endsnippet
 
 snippet legend "<legend>"
-<legend>$1</leyend>
+<legend>$1</legend>
 endsnippet
 
 snippet li "list item" w
@@ -432,15 +432,15 @@ snippet small "<small>" w
 endsnippet
 
 snippet span "<span>" w
-<span> ${0:${VISUAL}} </span>
+<span>${0:${VISUAL}}</span>
 endsnippet
 
 snippet span# "<span> with ID & class" w
-<span`!p snip.rv=' id="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""``!p snip.rv=' class="' if t[2] else ""`${2:name}`!p snip.rv = '"' if t[2] else ""`> ${0:${VISUAL}} </span>
+<span`!p snip.rv=' id="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""``!p snip.rv=' class="' if t[2] else ""`${2:name}`!p snip.rv = '"' if t[2] else ""`>${0:${VISUAL}}</span>
 endsnippet
 
 snippet span. "<span> with class" w
-<span`!p snip.rv=' class="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""`> ${0:${VISUAL}} </span>
+<span`!p snip.rv=' class="' if t[1] else ""`${1:name}`!p snip.rv = '"' if t[1] else ""`>${0:${VISUAL}}</span>
 endsnippet
 
 snippet strong "<strong>" w

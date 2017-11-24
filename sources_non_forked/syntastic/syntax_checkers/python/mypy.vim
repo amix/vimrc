@@ -1,6 +1,6 @@
 "============================================================================
 "File:        mypy.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Author:      Russ Hewgill <Russ dot Hewgill at gmail dot com>
 "
 "============================================================================

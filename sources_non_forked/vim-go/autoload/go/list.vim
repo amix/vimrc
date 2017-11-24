@@ -2,13 +2,16 @@ if !exists("g:go_list_type")
   let g:go_list_type = ""
 endif
 
+if !exists("g:go_list_type_commands")
+  let g:go_list_type_commands = {}
+endif
+
 " Window opens the list with the given height up to 10 lines maximum.
-" Otherwise g:go_loclist_height is used. 
+" Otherwise g:go_loclist_height is used.
 "
-" If no or zero height is given it closes the window by default.  
+" If no or zero height is given it closes the window by default.
 " To prevent this, set g:go_list_autoclose = 0
 function! go#list#Window(listtype, ...) abort
-  let l:listtype = go#list#Type(a:listtype)
   " we don't use lwindow to close the location list as we need also the
   " ability to resize the window. So, we are going to use lopen and lclose
   " for a better user experience. If the number of errors in a current
@@ -17,7 +20,7 @@ function! go#list#Window(listtype, ...) abort
   if !a:0 || a:1 == 0
     let autoclose_window = get(g:, 'go_list_autoclose', 1)
     if autoclose_window
-      if l:listtype == "locationlist"
+      if a:listtype == "locationlist"
         lclose
       else
         cclose
@@ -36,7 +39,7 @@ function! go#list#Window(listtype, ...) abort
     endif
   endif
 
-  if l:listtype == "locationlist"
+  if a:listtype == "locationlist"
     exe 'lopen ' . height
   else
     exe 'copen ' . height
@@ -44,20 +47,18 @@ function! go#list#Window(listtype, ...) abort
 endfunction
 
 
-" Get returns the current list of items from the location list
+" Get returns the current items from the list
 function! go#list#Get(listtype) abort
-  let l:listtype = go#list#Type(a:listtype)
-  if l:listtype == "locationlist"
+  if a:listtype == "locationlist"
     return getloclist(0)
   else
     return getqflist()
   endif
 endfunction
 
-" Populate populate the location list with the given items
+" Populate populate the list with the given items
 function! go#list#Populate(listtype, items, title) abort
-  let l:listtype = go#list#Type(a:listtype)
-  if l:listtype == "locationlist"
+  if a:listtype == "locationlist"
     call setloclist(0, a:items, 'r')
 
     " The last argument ({what}) is introduced with 7.4.2200:
@@ -69,20 +70,15 @@ function! go#list#Populate(listtype, items, title) abort
   endif
 endfunction
 
-function! go#list#PopulateWin(winnr, items) abort
-  call setloclist(a:winnr, a:items, 'r')
-endfunction
-
 " Parse parses the given items based on the specified errorformat and
-" populates the location list.
+" populates the list.
 function! go#list#ParseFormat(listtype, errformat, items, title) abort
-  let l:listtype = go#list#Type(a:listtype)
   " backup users errorformat, will be restored once we are finished
   let old_errorformat = &errorformat
 
   " parse and populate the location list
   let &errorformat = a:errformat
-  if l:listtype == "locationlist"
+  if a:listtype == "locationlist"
     lgetexpr a:items
     if has("patch-7.4.2200") | call setloclist(0, [], 'a', {'title': a:title}) | endif
   else
@@ -95,10 +91,9 @@ function! go#list#ParseFormat(listtype, errformat, items, title) abort
 endfunction
 
 " Parse parses the given items based on the global errorformat and
-" populates the location list.
+" populates the list.
 function! go#list#Parse(listtype, items) abort
-  let l:listtype = go#list#Type(a:listtype)
-  if l:listtype == "locationlist"
+  if a:listtype == "locationlist"
     lgetexpr a:items
   else
     cgetexpr a:items
@@ -107,8 +102,7 @@ endfunction
 
 " JumpToFirst jumps to the first item in the location list
 function! go#list#JumpToFirst(listtype) abort
-  let l:listtype = go#list#Type(a:listtype)
-  if l:listtype == "locationlist"
+  if a:listtype == "locationlist"
     ll 1
   else
     cc 1
@@ -117,22 +111,57 @@ endfunction
 
 " Clean cleans the location list
 function! go#list#Clean(listtype) abort
-  let l:listtype = go#list#Type(a:listtype)
-  if l:listtype == "locationlist"
+  if a:listtype == "locationlist"
     lex []
   else
     cex []
   endif
 endfunction
 
-function! go#list#Type(listtype) abort
+function! s:listtype(listtype) abort
   if g:go_list_type == "locationlist"
     return "locationlist"
   elseif g:go_list_type == "quickfix"
     return "quickfix"
-  else
-    return a:listtype
   endif
+
+  return a:listtype
+endfunction
+
+" s:default_list_type_commands is the defaults that will be used for each of
+" the supported commands (see documentation for g:go_list_type_commands). When
+" defining a default, quickfix should be used if the command operates on
+" multiple files, while locationlist should be used if the command operates on a
+" single file or buffer. Keys that begin with an underscore are not supported
+" in g:go_list_type_commands.
+let s:default_list_type_commands = {
+      \ "GoBuild":      "quickfix",
+      \ "GoErrCheck":   "quickfix",
+      \ "GoFmt":        "locationlist",
+      \ "GoGenerate":   "quickfix",
+      \ "GoInstall":    "quickfix",
+      \ "GoLint":       "quickfix",
+      \ "GoMetaLinter": "quickfix",
+      \ "GoModifyTags": "locationlist",
+      \ "GoRename":     "quickfix",
+      \ "GoRun":        "quickfix",
+      \ "GoTest":       "quickfix",
+      \ "GoVet":        "quickfix",
+      \ "_guru":        "locationlist",
+      \ "_term":        "locationlist",
+      \ "_job":         "locationlist",
+  \ }
+
+function! go#list#Type(for) abort
+  let l:listtype = s:listtype(get(s:default_list_type_commands, a:for))
+  if l:listtype == "0"
+    call go#util#EchoError(printf(
+          \ "unknown list type command value found ('%s'). Please open a bug report in the vim-go repo.",
+          \ a:for))
+    let l:listtype = "quickfix"
+  endif
+
+  return get(g:go_list_type_commands, a:for, l:listtype)
 endfunction
 
 " vim: sw=2 ts=2 et

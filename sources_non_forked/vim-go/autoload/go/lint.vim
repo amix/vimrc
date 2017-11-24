@@ -48,6 +48,13 @@ function! go#lint#Gometa(autosave, ...) abort
       let cmd += ["--exclude=".exclude]
     endfor
 
+    " gometalinter has a --tests flag to tell its linters whether to run
+    " against tests. While not all of its linters respect this flag, for those
+    " that do, it means if we don't pass --tests, the linter won't run against
+    " test files. One example of a linter that will not run against tests if
+    " we do not specify this flag is errcheck.
+    let cmd += ["--tests"]
+
     " path
     let cmd += [expand('%:p:h')]
   else
@@ -60,7 +67,7 @@ function! go#lint#Gometa(autosave, ...) abort
   " For async mode (s:lint_job), we want to override the default deadline only
   " if we have a deadline configured.
   "
-  " For sync mode (go#tool#ExecuteInDir), always explicitly pass the 5 seconds
+  " For sync mode (go#util#System), always explicitly pass the 5 seconds
   " deadline if there is no other deadline configured. If a deadline is
   " configured, then use it.
 
@@ -87,9 +94,9 @@ function! go#lint#Gometa(autosave, ...) abort
 
   let meta_command = join(cmd, " ")
 
-  let out = go#tool#ExecuteInDir(meta_command)
+  let out = go#util#System(meta_command)
 
-  let l:listtype = "quickfix"
+  let l:listtype = go#list#Type("GoMetaLinter")
   if go#util#ShellError() == 0
     redraw | echo
     call go#list#Clean(l:listtype)
@@ -134,7 +141,7 @@ function! go#lint#Golint(...) abort
     return
   endif
 
-  let l:listtype = "quickfix"
+  let l:listtype = go#list#Type("GoLint")
   call go#list#Parse(l:listtype, out)
   let errors = go#list#Get(l:listtype)
   call go#list#Window(l:listtype, len(errors))
@@ -152,7 +159,7 @@ function! go#lint#Vet(bang, ...) abort
     let out = go#util#System('go tool vet ' . go#util#Shelljoin(a:000))
   endif
 
-  let l:listtype = "quickfix"
+  let l:listtype = go#list#Type("GoVet")
   if go#util#ShellError() != 0
     let errors = go#tool#ParseErrors(split(out, '\n'))
     call go#list#Populate(l:listtype, errors, 'Vet')
@@ -192,7 +199,7 @@ function! go#lint#Errcheck(...) abort
   let command =  go#util#Shellescape(bin_path) . ' -abspath ' . import_path
   let out = go#tool#ExecuteInDir(command)
 
-  let l:listtype = "quickfix"
+  let l:listtype = go#list#Type("GoErrCheck")
   if go#util#ShellError() != 0
     let errformat = "%f:%l:%c:\ %m, %f:%l:%c\ %#%m"
 
@@ -246,7 +253,7 @@ function s:lint_job(args)
   " autowrite is not enabled for jobs
   call go#cmd#autowrite()
 
-  let l:listtype = go#list#Type("quickfix")
+  let l:listtype = go#list#Type("GoMetaLinter")
   let l:errformat = '%f:%l:%c:%t%*[^:]:\ %m,%f:%l::%t%*[^:]:\ %m'
 
   function! s:callback(chan, msg) closure

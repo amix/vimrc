@@ -76,9 +76,9 @@ The quickfix results window is augmented with these convenience mappings:
     ?    a quick summary of these keys, repeat to close
     o    to open (same as Enter)
     O    to open and close the quickfix window
-    go   to preview file, keeping focus on the results
+    go   to preview file, open but maintain focus on ack.vim results
     t    to open in new tab
-    T    to open in new tab, keeping focus on the results
+    T    to open in new tab without moving to it
     h    to open in horizontal split
     H    to open in horizontal split, keeping focus on the results
     v    to open in vertical split
@@ -86,6 +86,10 @@ The quickfix results window is augmented with these convenience mappings:
     q    to close the quickfix window
 
 ### Gotchas
+
+To search for a pattern that contains whitespace, you need to enclose the
+pattern in single quotes. For example: `:Ack 'foo bar'` to search for
+'foo bar'.
 
 Some characters have special meaning, and need to be escaped in your search
 pattern. For instance, `#`. You need to escape it with `:Ack '\\\#define

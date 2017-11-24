@@ -59,8 +59,7 @@ snippet desc "Description" b
 endsnippet
 
 snippet it "Individual item" b
-\item $1
-$0
+\item $0
 endsnippet
 
 snippet part "Part" b
@@ -145,5 +144,12 @@ endsnippet
 
 snippet lp "Long parenthesis"
 \left(${1:${VISUAL:contents}}\right)$0
+endsnippet
+
+snippet "mint(ed)?( (\S+))?" "Minted code typeset" br
+\begin{minted}{${1:`!p
+snip.rv = match.group(3) if match.group(2) is not None else "language"`}}
+${2:${VISUAL:code}}
+\end{minted}$0
 endsnippet
 # vim:ft=snippets:

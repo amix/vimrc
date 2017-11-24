@@ -6,11 +6,13 @@ function! go#impl#Impl(...) abort
 
   let recv = ""
   let iface = ""
+  let interactive = 0
+
+  let pos = getpos('.')
 
   if a:0 == 0
-    " user didn't passed anything,  just called ':GoImpl'
-    let receiveType = expand("<cword>")
-    let recv = printf("%s *%s", tolower(receiveType)[0], receiveType)
+    " Interactive mode if user didn't pass any arguments.
+    let recv = s:getReceiver()
     let iface = input("vim-go: generating method stubs for interface: ")
     redraw!
     if empty(iface)
@@ -20,8 +22,7 @@ function! go#impl#Impl(...) abort
   elseif a:0 == 1
     " we assume the user only passed the interface type,
     " i.e: ':GoImpl io.Writer'
-    let receiveType = expand("<cword>")
-    let recv = printf("%s *%s", tolower(receiveType)[0], receiveType)
+    let recv = s:getReceiver()
     let iface = a:1
   elseif a:0 > 2
     " user passed receiver and interface type both,
@@ -33,20 +34,41 @@ function! go#impl#Impl(...) abort
     return
   endif
 
-  let result = go#util#System(join(go#util#Shelllist([binpath, recv, iface], ' ')))
-  if go#util#ShellError() != 0
-    call go#util#EchoError(result)
-    return
+  " Make sure we put the generated code *after* the struct.
+  if getline(".") =~ "struct "
+    normal! $%
   endif
 
-  if result ==# ''
-    return
-  end
+  try
+    let dirname = fnameescape(expand('%:p:h'))
+    let result = go#util#System(join(go#util#Shelllist([binpath, '-dir', dirname, recv, iface], ' ')))
+    let result = substitute(result, "\n*$", "", "")
+    if go#util#ShellError() != 0
+      call go#util#EchoError(result)
+      return
+    endif
 
-  let pos = getpos('.')
-  put =''
-  put =result
-  call setpos('.', pos)
+    if result ==# ''
+      return
+    end
+
+    put =''
+    put =result
+  finally
+    call setpos('.', pos)
+  endtry
+endfunction
+
+function! s:getReceiver()
+  let receiveType = expand("<cword>")
+  if receiveType == "type"
+    normal! w
+    let receiveType = expand("<cword>")
+  elseif receiveType == "struct"
+    normal! ge
+    let receiveType = expand("<cword>")
+  endif
+  return printf("%s *%s", tolower(receiveType)[0], receiveType)
 endfunction
 
 if exists('*uniq')

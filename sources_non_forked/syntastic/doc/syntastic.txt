@@ -70,7 +70,7 @@ CONTENTS                                                  *syntastic-contents*
 1. Intro                                                     *syntastic-intro*
 
 Syntastic is a syntax checking plugin that runs files through external syntax
-checkers. This can be done on demand, or automatically as files are saved
+linters. This can be done on demand, or automatically as files are saved
 and opened. If syntax errors are detected, the user is notified and is happy
 because they didn't have to compile their code or execute their script to find
 them.
@@ -83,7 +83,7 @@ plugins and uses their output to provide the syntastic functionality.
 Take a look at the list of supported filetypes and checkers: |syntastic-checkers|.
 
 Note: This doc only deals with using syntastic. To learn how to write syntax
-checker integrations, see the guide on the GitHub wiki:
+checker integrations see the guide on the GitHub wiki:
 
     https://github.com/vim-syntastic/syntastic/wiki/Syntax-Checker-Guide
 
@@ -98,7 +98,7 @@ You can see the list of checkers available for the current filetype with the
 `:SyntasticInfo` command.
 
 You probably want to override the configured list of checkers for the
-filetypes you use, and also change the arguments passed to specific checkers
+filetypes you use, and also change the arguments passed to specific linters
 to suit your needs. See |syntastic-checker-options| below for details.
 
 Use `:SyntasticCheck` to manually check right now. Use `:Errors` to open the
@@ -143,7 +143,7 @@ activate/deactivate these features.
     * The |location-list| can be populated with the errors for the associated
       buffer
     * Erroneous parts of lines can be highlighted (this functionality is only
-      provided by some syntax checkers)
+      provided by some checkers)
     * Balloons (if the |+balloon_eval| feature is compiled in) can be used to
       display error messages for erroneous lines when hovering the mouse over
       them
@@ -224,7 +224,7 @@ update the |location-list| automatically.
 ------------------------------------------------------------------------------
 2.4. Error highlighting                               *syntastic-highlighting*
 
-Some checkers provide enough information for syntastic to be able to highlight
+Some linters provide enough information for syntastic to be able to highlight
 errors. By default the SpellBad syntax highlight group is used to color errors,
 and the SpellCap group is used for warnings. If you wish to customize the
 colors for highlighting you can use the following groups:
@@ -611,8 +611,8 @@ There are also checker-specific variants of this option, providing finer
 control. They are named |'syntastic_<filetype>_<checker>_quiet_messages'|.
 
 For a particular checker, if both a |'syntastic_quiet_messages'| filter and
-a checker-specific filter are present, they are both applied (to the list of
-errors produced by the said checker). In case of conflicting values for the
+a checker-specific filter are present, they are both applied to the list of
+errors produced by the said checker. In case of conflicting values for the
 same keys, the values of the checker-specific filters take precedence.
 
                                                             *filter-overrides*
@@ -685,15 +685,15 @@ should be safe.
                                                      *'syntastic_exit_checks'*
 Type: boolean
 Default: 0 when running under "cmd.exe" on Windows, 1 otherwise
-Syntastic attempts to catch abnormal termination conditions from checkers by
+Syntastic attempts to catch abnormal termination conditions from linters by
 looking at their exit codes. The "cmd.exe" shell on Windows make these checks
-meaningless, by returning 1 to Vim when the checkers exit with non-zero codes.
+meaningless, by returning 1 to Vim when the linters exit with non-zero codes.
 The above variable can be used to disable exit code checks in syntastic.
 
                                                            *'syntastic_shell'*
 Type: string
 Default: Vim's 'shell'
-This is the (full path to) the shell syntastic will use to run the checkers.
+This is the (full path to) the shell syntastic will use to run the linters.
 On UNIX and Mac OS-X this shell must accept Bourne-compatible syntax for
 file "stdout" and "stderr" redirections ">file" and "2>file". Examples of
 compatible shells are "zsh", "bash", "ksh", and of course the original Bourne
@@ -701,7 +701,7 @@ compatible shells are "zsh", "bash", "ksh", and of course the original Bourne
 
 This shell is independent of Vim's 'shell', and it isn't used for interactive
 operations. It must take care to initialize all environment variables needed
-by the checkers you're using. Example: >
+by the linters you're using. Example: >
     let g:syntastic_shell = "/bin/sh"
 <
                                              *'syntastic_nested_autocommands'*
@@ -769,7 +769,7 @@ use this in an autocmd to configure specific checkers for particular paths: >
         \ let b:syntastic_checkers = ["pylint"] | endif
 <
 If neither |'g:syntastic_<filetype>_checkers'| nor |'b:syntastic_checkers'|
-is set, a default list of checker is used. Beware however that this list
+is set a default list of checkers is used. Beware however that this list is
 deliberately kept minimal, for performance reasons.
 
 You can specify checkers for other filetypes anywhere in these lists, by
@@ -801,7 +801,7 @@ takes precedence over both 'b:syntastic_<filetype>_<checker>_exec' and
 ------------------------------------------------------------------------------
 5.3. Configuring specific checkers                  *syntastic-config-makeprg*
 
-Checkers are run by constructing a command line and by passing it to a shell
+Linters are run by constructing a command line and by passing it to a shell
 (see |'shell'| and |'syntastic_shell'|). In most cases this command line is
 built using an internal function named "makeprgBuild()", which provides a
 number of options that allow you to customise every part of the command that
@@ -855,7 +855,7 @@ empty, you can set it to an empty string, e.g.: >
                                         *'syntastic_<filetype>_<checker>_exe'*
 The 'exe' option is special. Normally it is the same as the 'exec' attribute
 described above, but you can use it to add environment variables to the
-command line, or to change the way the checker is run. For example this setup
+command line, or to change the way the linter is run. For example this setup
 allows you to run PC-Lint on Linux, under Wine emulation: >
     let  g:syntastic_c_pc_lint_exec = "wine"
     let  g:syntastic_c_pc_lint_exe = "wine c:/path/to/lint-nt.exe"
@@ -911,7 +911,7 @@ The syntax is of course identical to that of |syntastic_quiet_messages|.
                                                              *syntastic-debug*
 
 Syntastic can log a trace of its working to Vim's |message-history|. To verify
-the command line constructed by syntastic to run a checker, set the variable
+the command line constructed by syntastic to run a linter, set the variable
 |'syntastic_debug'| to a non-zero value, run the checker, then run `:mes` to
 display the messages, and look for "makeprg" in the output.
 
@@ -919,7 +919,7 @@ From a user's perspective, the useful values for |'syntastic_debug'| are 1, 3,
 and 33:
 
      1 - logs syntastic's workflow
-     3 - logs workflow, checker's output, and |location-list| manipulations
+     3 - logs workflow, linter's output, and |location-list| manipulations
     33 - logs workflow and checker-specific details (such as version checks).
 
 Debug logs can be saved to a file; see |'syntastic_debug_file'| for details.
@@ -962,7 +962,7 @@ composite filetypes to simple ones using |'syntastic_filetype_map'|, e.g.: >
 The standard plugin |netrw| allows Vim to transparently edit files over
 network and inside archives. Currently syntastic doesn't support this mode
 of operation. It can only check files that can be accessed directly by local
-checkers, without any translation or conversion.
+linters, without any translation or conversion.
 
 ------------------------------------------------------------------------------
 6.3. The 'shellslash' option                            *syntastic-shellslash*
@@ -1166,7 +1166,7 @@ stick with |quickfix| lists: >
 ------------------------------------------------------------------------------
 7.14. vim-virtualenv                                *syntastic-vim-virtualenv*
 
-At the time of this writing, syntastic can't run checkers installed
+At the time of this writing, syntastic can't run linters installed
 in Python virtual environments activated by "vim-virtualenv" (see
 https://github.com/jmcantrell/vim-virtualenv). This is a limitation of
 "vim-virtualenv".
@@ -1188,7 +1188,7 @@ have to set |g:ycm_show_diagnostics_ui| to 0. E.g.: >
 If you're running MacVim together with the "zsh" shell (http://www.zsh.org/)
 you need to be aware that MacVim does not source your .zshrc file, but will
 source a .zshenv file. Consequently you have to move any setup steps relevant
-to the checkers you're using from .zshrc to .zshenv, otherwise your checkers
+to the linters you're using from .zshrc to .zshenv, otherwise your linters
 will misbehave when run by syntastic. This is particularly important for
 programs such as "rvm" (https://rvm.io/) or "rbenv" (http://rbenv.org/), that
 rely on setting environment variables.

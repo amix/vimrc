@@ -1,6 +1,6 @@
 "============================================================================
 "File:        javac.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Jochen Keil <jochen.keil at gmail dot com>
 "             Dmitry Geurkov <d.geurkov at gmail dot com>
 "License:     This program is free software. It comes without any warranty,

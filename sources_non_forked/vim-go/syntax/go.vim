@@ -3,36 +3,13 @@
 " license that can be found in the LICENSE file.
 "
 " go.vim: Vim syntax file for Go.
-"
-" Options:
-"   There are some options for customizing the highlighting; the recommended
-"   settings are the default values, but you can write:
-"     let OPTION_NAME = 0
-"   in your ~/.vimrc file to disable particular options. You can also write:
-"     let OPTION_NAME = 1
-"   to enable particular options. At present, all options default to off:
-"
-"   - go_highlight_array_whitespace_error
-"     Highlights white space after "[]".
-"   - go_highlight_chan_whitespace_error
-"     Highlights white space around the communications operator that don't follow
-"     the standard style.
-"   - go_highlight_extra_types
-"     Highlights commonly used library types (io.Reader, etc.).
-"   - go_highlight_space_tab_error
-"     Highlights instances of tabs following spaces.
-"   - go_highlight_trailing_whitespace_error
-"     Highlights trailing white space.
-"   - go_highlight_string_spellcheck
-"     Specifies that strings should be spell checked
-"   - go_highlight_format_strings
-"     Highlights printf-style operators inside string literals.
 
 " Quit when a (custom) syntax file was already loaded
 if exists("b:current_syntax")
   finish
 endif
 
+" Set settings to default values.
 if !exists("g:go_highlight_array_whitespace_error")
   let g:go_highlight_array_whitespace_error = 0
 endif
@@ -89,10 +66,22 @@ if !exists("g:go_highlight_generate_tags")
   let g:go_highlight_generate_tags = 0
 endif
 
+if !exists("g:go_highlight_variable_assignments")
+  let g:go_highlight_variable_assignments = 0
+endif
+
+if !exists("g:go_highlight_variable_declarations")
+  let g:go_highlight_variable_declarations = 0
+endif
+
 let s:fold_block = 1
 let s:fold_import = 1
 let s:fold_varconst = 1
+let s:fold_package_comment = 1
+let s:fold_comment = 0
+
 if exists("g:go_fold_enable")
+  " Enabled by default.
   if index(g:go_fold_enable, 'block') == -1
     let s:fold_block = 0
   endif
@@ -101,6 +90,14 @@ if exists("g:go_fold_enable")
   endif
   if index(g:go_fold_enable, 'varconst') == -1
     let s:fold_varconst = 0
+  endif
+  if index(g:go_fold_enable, 'package_comment') == -1
+    let s:fold_package_comment = 0
+  endif
+ 
+  " Disabled by default.
+  if index(g:go_fold_enable, 'comment') > -1
+    let s:fold_comment = 1
   endif
 endif
 
@@ -155,8 +152,14 @@ hi def link     goPredefinedIdentifiers    goBoolean
 " Comments; their contents
 syn keyword     goTodo              contained TODO FIXME XXX BUG
 syn cluster     goCommentGroup      contains=goTodo
-syn region      goComment           start="/\*" end="\*/" contains=@goCommentGroup,@Spell
+
 syn region      goComment           start="//" end="$" contains=goGenerate,@goCommentGroup,@Spell
+if s:fold_comment
+  syn region    goComment           start="/\*" end="\*/" contains=@goCommentGroup,@Spell fold
+  syn match     goComment           "\v(^\s*//.*\n)+" contains=goGenerate,@goCommentGroup,@Spell fold
+else
+  syn region    goComment           start="/\*" end="\*/" contains=@goCommentGroup,@Spell
+endif
 
 hi def link     goComment           Comment
 hi def link     goTodo              Todo
@@ -382,6 +385,18 @@ hi def link     goTypeName          Type
 hi def link     goTypeDecl          Keyword
 hi def link     goDeclType          Keyword
 
+" Variable Assignments
+if g:go_highlight_variable_assignments != 0
+  syn match goVarAssign /\v[_.[:alnum:]]+(,\s*[_.[:alnum:]]+)*\ze(\s*([-^+|^\/%&]|\*|\<\<|\>\>|\&\^)?\=[^=])/
+  hi def link   goVarAssign         Special
+endif
+
+" Variable Declarations
+if g:go_highlight_variable_declarations != 0
+  syn match goVarDefs /\v\w+(,\s*\w+)*\ze(\s*:\=)/
+  hi def link   goVarDefs           Special
+endif
+
 " Build Constraints
 if g:go_highlight_build_constraints != 0
   syn match   goBuildKeyword      display contained "+build"
@@ -403,15 +418,22 @@ if g:go_highlight_build_constraints != 0
   hi def link goBuildCommentStart Comment
   hi def link goBuildDirectives   Type
   hi def link goBuildKeyword      PreProc
+endif
 
+if g:go_highlight_build_constraints != 0 || s:fold_package_comment
   " One or more line comments that are followed immediately by a "package"
   " declaration are treated like package documentation, so these must be
   " matched as comments to avoid looking like working build constraints.
   " The he, me, and re options let the "package" itself be highlighted by
   " the usual rules.
-  syn region  goPackageComment    start=/\v(\/\/.*\n)+\s*package/
-        \ end=/\v\n\s*package/he=e-7,me=e-7,re=e-7
-        \ contains=@goCommentGroup,@Spell
+  exe 'syn region  goPackageComment    start=/\v(\/\/.*\n)+\s*package/'
+        \ . ' end=/\v\n\s*package/he=e-7,me=e-7,re=e-7'
+        \ . ' contains=@goCommentGroup,@Spell'
+        \ . (s:fold_package_comment ? ' fold' : '')
+  exe 'syn region  goPackageComment    start=/\v\/\*.*\n(.*\n)*\s*\*\/\npackage/'
+        \ . ' end=/\v\n\s*package/he=e-7,me=e-7,re=e-7'
+        \ . ' contains=@goCommentGroup,@Spell'
+        \ . (s:fold_package_comment ? ' fold' : '')
   hi def link goPackageComment    Comment
 endif
 

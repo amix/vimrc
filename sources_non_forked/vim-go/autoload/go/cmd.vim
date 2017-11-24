@@ -9,20 +9,17 @@ endfunction
 " default it tries to call simply 'go build', but it first tries to get all
 " dependent files for the current folder and passes it to go build.
 function! go#cmd#Build(bang, ...) abort
-  " expand all wildcards(i.e: '%' to the current file name)
-  let goargs = map(copy(a:000), "expand(v:val)")
-
-  " escape all shell arguments before we pass it to make
-  if !has('nvim')
-    let goargs = go#util#Shelllist(goargs, 1)
-  endif
-  " create our command arguments. go build discards any results when it
+  " Create our command arguments. go build discards any results when it
   " compiles multiple packages. So we pass the `errors` package just as an
   " placeholder with the current folder (indicated with '.'). We also pass -i
   " that tries to install the dependencies, this has the side effect that it
   " caches the build results, so every other build is faster.
-  let args = ["build"]  + goargs + ["-i", ".", "errors"]
+  let args =
+        \ ["build"] +
+        \ map(copy(a:000), "expand(v:val)") +
+        \ ["-i", ".", "errors"]
 
+  " Vim async.
   if go#util#has_job()
     if get(g:, 'go_echo_command_info', 1)
       call go#util#EchoProgress("building dispatched ...")
@@ -31,50 +28,52 @@ function! go#cmd#Build(bang, ...) abort
     call s:cmd_job({
           \ 'cmd': ['go'] + args,
           \ 'bang': a:bang,
+          \ 'for': 'GoBuild',
           \})
-    return
+
+  " Nvim async.
   elseif has('nvim')
     if get(g:, 'go_echo_command_info', 1)
       call go#util#EchoProgress("building dispatched ...")
     endif
 
-    " if we have nvim, call it asynchronously and return early ;)
-    call go#jobcontrol#Spawn(a:bang, "build", args)
-    return
-  endif
+    call go#jobcontrol#Spawn(a:bang, "build", "GoBuild", args)
 
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
-  let default_makeprg = &makeprg
-  let &makeprg = "go " . join(args, ' ')
-
-  let l:listtype = go#list#Type("quickfix")
-  " execute make inside the source folder so we can parse the errors
-  " correctly
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
-  let dir = getcwd()
-  try
-    execute cd . fnameescape(expand("%:p:h"))
-    if l:listtype == "locationlist"
-      silent! exe 'lmake!'
-    else
-      silent! exe 'make!'
-    endif
-    redraw!
-  finally
-    execute cd . fnameescape(dir)
-  endtry
-
-  let errors = go#list#Get(l:listtype)
-  call go#list#Window(l:listtype, len(errors))
-  if !empty(errors) && !a:bang
-    call go#list#JumpToFirst(l:listtype)
+  " Vim 7.4 without async
   else
-    call go#util#EchoSuccess("[build] SUCCESS")
-  endif
+    let old_gopath = $GOPATH
+    let $GOPATH = go#path#Detect()
+    let default_makeprg = &makeprg
+    let &makeprg = "go " . join(go#util#Shelllist(args), ' ')
 
-  let &makeprg = default_makeprg
-  let $GOPATH = old_gopath
+    let l:listtype = go#list#Type("GoBuild")
+    " execute make inside the source folder so we can parse the errors
+    " correctly
+    let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+    let dir = getcwd()
+    try
+      execute cd . fnameescape(expand("%:p:h"))
+      if l:listtype == "locationlist"
+        silent! exe 'lmake!'
+      else
+        silent! exe 'make!'
+      endif
+      redraw!
+    finally
+      execute cd . fnameescape(dir)
+    endtry
+
+    let errors = go#list#Get(l:listtype)
+    call go#list#Window(l:listtype, len(errors))
+    if !empty(errors) && !a:bang
+      call go#list#JumpToFirst(l:listtype)
+    else
+      call go#util#EchoSuccess("[build] SUCCESS")
+    endif
+
+    let &makeprg = default_makeprg
+    let $GOPATH = old_gopath
+  endif
 endfunction
 
 
@@ -149,7 +148,7 @@ function! go#cmd#Run(bang, ...) abort
     let &makeprg = "go run " . go#util#Shelljoin(map(copy(a:000), "expand(v:val)"), 1)
   endif
 
-  let l:listtype = go#list#Type("quickfix")
+  let l:listtype = go#list#Type("GoRun")
 
   if l:listtype == "locationlist"
     exe 'lmake!'
@@ -186,6 +185,7 @@ function! go#cmd#Install(bang, ...) abort
     call s:cmd_job({
           \ 'cmd': ['go', 'install'] + goargs,
           \ 'bang': a:bang,
+          \ 'for': 'GoInstall',
           \})
     return
   endif
@@ -198,7 +198,7 @@ function! go#cmd#Install(bang, ...) abort
   let goargs = go#util#Shelljoin(map(copy(a:000), "expand(v:val)"), 1)
   let &makeprg = "go install " . goargs
 
-  let l:listtype = go#list#Type("quickfix")
+  let l:listtype = go#list#Type("GoInstall")
   " execute make inside the source folder so we can parse the errors
   " correctly
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -243,7 +243,7 @@ function! go#cmd#Generate(bang, ...) abort
     let &makeprg = "go generate " . goargs . ' ' . gofiles
   endif
 
-  let l:listtype = go#list#Type("quickfix")
+  let l:listtype = go#list#Type("GoGenerate")
 
   echon "vim-go: " | echohl Identifier | echon "generating ..."| echohl None
   if l:listtype == "locationlist"

@@ -1,6 +1,6 @@
 "============================================================================
 "File:        hlint.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Nicolas Wu <nicolas.wu at gmail dot com>
 "License:     BSD
 "============================================================================

@@ -61,10 +61,10 @@ Source Language, ActionScript, Ada, Ansible configurations, API Blueprint,
 AppleScript, AsciiDoc, Assembly languages, BEMHTML, Bro, Bourne shell, C, C++,
 C#, Cabal, Chef, CMake, CoffeeScript, Coco, Coq, CSS, Cucumber, CUDA, D, Dart,
 DocBook, Dockerfile, Dust, Elixir, Erlang, eRuby, Fortran, Gentoo metadata,
-GLSL, Go, Haml, Haskell, Haxe, Handlebars, HSS, HTML, Java, JavaScript,
-JSON, JSX, Julia, LESS, Lex, Limbo, LISP, LLVM intermediate language, Lua,
-Markdown, MATLAB, Mercury, NASM, Nix, Objective-C, Objective-C++, OCaml, Perl,
-Perl POD, PHP, gettext Portable Object, OS X and iOS property lists, Pug
+GLSL, Go, Haml, Haskell, Haxe, Handlebars, HSS, HTML, Java, JavaScript, JSON,
+JSX, Julia, LESS, Lex, Limbo, LISP, LLVM intermediate language, Lua, Markdown,
+MATLAB, Mercury, NASM, Nix, Objective-C, Objective-C++, OCaml, Perl, Perl
+6, Perl POD, PHP, gettext Portable Object, OS X and iOS property lists, Pug
 (formerly Jade), Puppet, Python, QML, R, Racket, RDF TriG, RDF Turtle, Relax
 NG, reStructuredText, RPM spec, Ruby, SASS/SCSS, Scala, Slim, SML, Solidity,
 Sphinx, SQL, Stylus, Tcl, TeX, Texinfo, Twig, TypeScript, Vala, Verilog, VHDL,

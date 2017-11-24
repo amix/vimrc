@@ -68,10 +68,10 @@ function! nerdtree#ui_glue#createDefaultBindings()
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapJumpNextSibling, 'scope': "Node", 'callback': s."jumpToNextSibling" })
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapJumpPrevSibling, 'scope': "Node", 'callback': s."jumpToPrevSibling" })
 
-    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTab, 'scope': "Node", 'callback': s."openInNewTab" })
-    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTabSilent, 'scope': "Node", 'callback': s."openInNewTabSilent" })
-    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTab, 'scope': "Bookmark", 'callback': s."openInNewTab" })
-    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTabSilent, 'scope': "Bookmark", 'callback': s."openInNewTabSilent" })
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTab, 'scope': 'Node', 'callback': s . 'openInNewTab' })
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTabSilent, 'scope': 'Node', 'callback': s . 'openInNewTabSilent' })
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTab, 'scope': 'Bookmark', 'callback': s . 'openInNewTab' })
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTabSilent, 'scope': 'Bookmark', 'callback': s . 'openInNewTabSilent' })
 
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenExpl, 'scope': "DirNode", 'callback': s."openExplorer" })
 
@@ -90,10 +90,15 @@ function! s:activateAll()
     endif
 endfunction
 
-"FUNCTION: s:activateDirNode() {{{1
-"handle the user activating a tree node
-function! s:activateDirNode(node)
-    call a:node.activate()
+" FUNCTION: s:activateDirNode(directoryNode) {{{1
+function! s:activateDirNode(directoryNode)
+
+    if a:directoryNode.isRoot() && a:directoryNode.isOpen
+        call nerdtree#echo('cannot close tree root')
+        return
+    endif
+
+    call a:directoryNode.activate()
 endfunction
 
 "FUNCTION: s:activateFileNode() {{{1
@@ -184,24 +189,28 @@ function! s:closeChildren(node)
 endfunction
 
 " FUNCTION: s:closeCurrentDir(node) {{{1
-" closes the parent dir of the current node
+" Close the parent directory of the current node.
 function! s:closeCurrentDir(node)
-    let parent = a:node.parent
-    while g:NERDTreeCascadeOpenSingleChildDir && !parent.isRoot()
-        let childNodes = parent.getVisibleChildren()
-        if len(childNodes) == 1 && childNodes[0].path.isDirectory
-            let parent = parent.parent
-        else
-            break
-        endif
-    endwhile
-    if parent ==# {} || parent.isRoot()
-        call nerdtree#echo("cannot close tree root")
-    else
-        call parent.close()
-        call b:NERDTree.render()
-        call parent.putCursorHere(0, 0)
+
+    if a:node.isRoot()
+        call nerdtree#echo('cannot close parent of tree root')
+        return
     endif
+
+    let l:parent = a:node.parent
+
+    while l:parent.isCascadable()
+        let l:parent = l:parent.parent
+    endwhile
+
+    if l:parent.isRoot()
+        call nerdtree#echo('cannot close tree root')
+        return
+    endif
+
+    call l:parent.close()
+    call b:NERDTree.render()
+    call l:parent.putCursorHere(0, 0)
 endfunction
 
 " FUNCTION: s:closeTreeWindow() {{{1
@@ -494,12 +503,14 @@ endfunction
 
 " FUNCTION: s:openInNewTab(target) {{{1
 function! s:openInNewTab(target)
-    call a:target.activate({'where': 't'})
+    let l:opener = g:NERDTreeOpener.New(a:target.path, {'where': 't'})
+    call l:opener.open(a:target)
 endfunction
 
 " FUNCTION: s:openInNewTabSilent(target) {{{1
 function! s:openInNewTabSilent(target)
-    call a:target.activate({'where': 't', 'stay': 1})
+    let l:opener = g:NERDTreeOpener.New(a:target.path, {'where': 't', 'stay': 1})
+    call l:opener.open(a:target)
 endfunction
 
 " FUNCTION: s:openNodeRecursively(node) {{{1
