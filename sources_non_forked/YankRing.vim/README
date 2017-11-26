@@ -1,0 +1,127 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=1234
+
+Vim already maintains a list of numbered registers containing the last 9 deletes.  These previous deletes can be referenced using [register]p, so "1p will paste the last delete, "2p the 2nd last delete.  For more information see |quote_number|.
+
+Vim does not provide any mechanism to reference previous yanked, deleted or changed text.  In Emacs this feature is called the "kill ring".
+
+The YankRing plugin allows the user to configure the number of yanked, deleted and changed text.  A split window can be used to choose which element(s) from the yankring you wish to paste.  Alternately after text has been pasted (using p), it can be replaced with a previous value from the yankring with a single key stroke.
+
+The captured text is stored in a file (location configurable) and is instantly available (also configurable) to any other instance of Vim also running on the same machine.  This can especially be useful on *nix machines when you are sshed in running Vim in multiple terminals.
+
+Storing the capture text in a file allows the text to be shared easily between multiple instances of Vim running in X, Windows, SSH or Screen.
+
+A tutorial is included to take you through the various features of the plugin.  After you have installed the plugin just run:
+     :h yankring.txt
+     :h yankring-tutorial
+
+The yankring can be interacted with in two ways:  a GUI or via maps.
+
+The yankring supports all of Vim motions and text-objects.  There are very few new keystrokes the user must learn.   One keystroke to open the yankring to choose which item to paste is all that is required.  It has been designed work seamlessly with Vim
+
+All the mappings and behaviours are configurable via global variables you can optionally specify in your vimrc.
+
+The plugin can be toggled on and off, and supports:
+    Ranges
+    Registers
+    Counts
+    All visual modes (characterwise, linewise and blockwise)
+    All motions
+    All text-objects
+
+Examples:
+    yy - Adds the current line to the yankring.
+    dd - Adds the current line to the yankring and deletes it.
+   5yw - Adds 5 words to the yankring.
+  "ade - Deletes the word, and puts it into both the yankring and the "a register.
+    cw - Changes the word and stores the previous value in the yankring.
+10"zyy - Places 10 lines into both the yankring and the "z register.
+ :1,4YRYankRange   - Similar to 1,4y
+ :3,$YRDeleteRange  - Similar to 3,$d
+
+If you wish to paste previous values from the yankring and do not want to use the GUI, there are only two additional maps you must learn (these are configurable via your vimrc if needed).  The purpose of the yankring is to gain access to previously yanked (or deleted) elements.  The YRReplace command will replace the previously pasted text with a different entry from the yankring.  By default, I choose <C-P> (P for previous) to replace the text last pasted while moving backwards through your previous text from the yankring and <C-N> (N for next) to replace the previous paste while moving forward through the yankring.
+
+A separate buffer window to allow you to easily interact with the contents of the yankring.  The window is similar to many other plugins: TagList, SelectBuf and so on.  You can use the mouse or standard Vim keys (p, gp, P, ...).  Visual mode is used to support counts, pasting multiple times and reversing the order of pasted elements.
+
+The GUI significantly simplifies your interaction with the yankring for basic functions.  But often it useful to take advantage of the more powerful features of the yankring.
+
+Here is a small section from the tutorial (using maps) so you have some idea of how you interact with the plugin gaining access to previous yanks.  Using the GUI for basic operations is self explanatory.
+
+:h yankring-tutorial
+
+---- Partial Tutorial ----
+To understand how to use the yankring, the following example should demonstrate the various features.
+
+Assume we have this buffer: 
+        one
+        two
+        three
+        four
+        five
+
+Now yank (yy) each line separately starting at line 1.  Display the
+contents of the yankring. 
+        :YRShow  
+            --- YankRing ---
+            Elem  Content
+            5     five^@
+            4     four^@
+            3     three^@
+            2     two^@
+            1     one^@
+Since we yanked the text starting at line 1 and finishing at line 5, the most current yankring element is the last one, the contents of line 5.  
+"five^@" is displayed, the "^@" is a newline character (since we issued a "yy").
+
+Now, go to the end of the file and press p.  The resulting buffer appears as: 
+        one
+        two
+        three
+        four
+        five
+        five
+Now press <C-P> to move backwards through the yankring, this results in: 
+        one
+        two
+        three
+        four
+        five
+        four
+Now press 2<C-P>.  This would be the same as pressing <C-P> two times in a row.  This results in: 
+        one
+        two
+        three
+        four
+        five
+        two
+Now press <C-N> to move forwards through the yankring, this results in: 
+        one
+        two
+        three
+        four
+        five
+        three
+
+You can create a map to display a buffer displaying the yankring's contents:
+    nnoremap <silent> <F11> :YRShow<CR>
+
+YRShow creates a new split buffer (you can configure where it should be and it's size)
+        :YRShow  
+            AutoClose=1;Cmds:<enter>,[g]p,[p]P,d,r,a,u,q,<space>;Help=?
+            --- YankRing ---
+            Elem  Content
+            3     three^@
+            2     two^@
+            1     one^@
+            5     five^@
+            4     four^@
+You can simply hit "p", <enter>, double click on an item and it will be pasted into your document.  The window will automatically close (by default) after you have made a choice.  The element will be pasted into the correct buffer if you have multiple split windows.
+
+You can paste multiple items using visual mode.
+You can also remove items from the yankring.
+
+---- Partial Tutorial ----
+
+Concentrating on the last line of the buffer you could see how we were able to replace our pasted text with lines yanked previously.  This is a feature Vim only has for deletes, and is limited to 9.  This plugin enables the same features for both yanks, deletes and changes, the size of the history is configurable.
+
+
+
+

@@ -11,15 +11,27 @@ There are two versions:
 
 I would, of course, recommend using the awesome version.
 
+
 ## How to install the Awesome version?
+
 The awesome version includes a lot of great plugins, configurations and color schemes that make Vim a lot better. To install it simply do following from your terminal:
 
-	git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
-	sh ~/.vim_runtime/install_awesome_vimrc.sh
+    git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
+    sh ~/.vim_runtime/install_awesome_vimrc.sh
 
-I also recommend using [the Hack font](http://sourcefoundry.org/hack/) (it's a free and awesome font designed for source code). The Awesome vimrc is already setup to try to use it.
+
+## Fonts
+
+I recommend using [IBM Plex Mono font](https://ibm.github.io/type/) (it's an open-source and awesome font that can make your code beautiful). The Awesome vimrc is already setup to try to use it.
+
+Some other fonts that Awesome will try to use:
+
+* [Hack](http://sourcefoundry.org/hack/)
+* [Source Code Pro](https://adobe-fonts.github.io/source-code-pro/)
+
 
 ## How to install the Basic version?
+
 The basic version is just one file and no plugins. Just copy [basic.vim](https://github.com/amix/vimrc/blob/master/vimrcs/basic.vim) and paste it into your vimrc.
 
 The basic version is useful to install on remote servers where you don't need many plugins, and you don't do many edits.
@@ -36,6 +48,7 @@ Use [msysgit](http://msysgit.github.com/) to checkout the repository and run the
 ## How to install on Linux
 
 If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: `alias vi=vim`. Otherwise, `apt-get install vim`
+
 
 ## How to update to latest version?
 
