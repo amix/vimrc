@@ -169,3 +169,9 @@ nnoremap <silent> <leader>d :GitGutterToggle<cr>
 let g:session_directory="~/tmp"
 let g:session_autoload="no"
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Tagbar
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nmap <F8> :TagbarToggle<CR>
+let g:tagbar_left=1
+

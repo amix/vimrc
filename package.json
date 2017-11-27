@@ -1,0 +1,23 @@
+{
+  "name": "vimrc",
+  "version": "1.0.0",
+  "description": "![VIM](https://dnp4pehkvoo6n.cloudfront.net/43c5af597bd5c1a64eb1829f011c208f/as/Ultimate%20Vimrc.svg)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChrisOHu/vimrc.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChrisOHu/vimrc/issues"
+  },
+  "homepage": "https://github.com/ChrisOHu/vimrc#readme",
+  "dependencies": {
+    "tern": "^0.21.0",
+    "tern-closure": "^0.1.3"
+  }
+}
