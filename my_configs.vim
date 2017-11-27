@@ -1,13 +1,13 @@
 if has("mac") || has("macunix")
-    set gfn=Hack:h14,Source\ Code\ Pro:h14,Menlo:h14
+    set gfn=Hack:h10,Source\ Code\ Pro:h10,Menlo:h10
 elseif has("win16") || has("win32")
-    set gfn=Hack:h14,Source\ Code\ Pro:h14,Bitstream\ Vera\ Sans\ Mono:h14
+    set gfn=Hack:h10,Source\ Code\ Pro:h10,Bitstream\ Vera\ Sans\ Mono:h10
 elseif has("gui_gtk2")
-    set gfn=Hack\ 14,Source\ Code\ Pro\ 14,Bitstream\ Vera\ Sans\ Mono\ 14
+    set gfn=Hack\ 10,Source\ Code\ Pro\ 10,Bitstream\ Vera\ Sans\ Mono\ 10
 elseif has("linux")
-    set gfn=Hack\ 14,Source\ Code\ Pro\ 14,Bitstream\ Vera\ Sans\ Mono\ 14
+    set gfn=Hack\ 10,Source\ Code\ Pro\ 10,Bitstream\ Vera\ Sans\ Mono\ 10
 elseif has("unix")
-    set gfn=Monospace\ 14
+    set gfn=Monospace\ 10
 endif
 
 " move around tabs. conflict with the original screen top/bottom
@@ -25,6 +25,8 @@ map <C-L> :execute 'tabmove ' . (tabpagenr()+1)<CR>
 map <C-t><C-t> :tabnew<CR>
 " close tab
 map <C-t><C-w> :tabclose<CR> 
+" show all open tabs
+map <C-t><C-a> :tabs<CR> 
 
 " toggle NerdTree
 map <F4> :NERDTreeToggle<CR>
