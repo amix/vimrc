@@ -28,10 +28,10 @@ map <C-t><C-w> :tabclose<CR>
 " show all open tabs
 map <C-t><C-a> :tabs<CR> 
 
-" toggle NerdTree
-map <F7> :NERDTreeToggle<CR>
 " toggle TagBar
-nmap <F8> :TagbarToggle<CR>
+nmap <F11> :TagbarToggle<CR>
+" toggle NerdTree
+map <F12> :NERDTreeToggle<CR>
 
 set expandtab
 set shiftwidth=2
