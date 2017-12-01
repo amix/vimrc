@@ -4,40 +4,40 @@ snippet #!
 
 snippet if
 	if ${1:condition}; then
-		${0:# statements}
+		${0:${VISUAL}}
 	fi
 snippet ife
 	if ${1:condition}; then
-		${2:# statements}
+		${2:${VISUAL}}
 	else
 		${0:# statements}
 	fi
 snippet eif
 	elif ${1:condition}; then
-		${0:# statements}
+		${0:${VISUAL}}
 snippet for
 	for (( ${2:i} = 0; $2 < ${1:count}; $2++ )); do
-		${0:# statements}
+		${0:${VISUAL}}
 	done
 snippet fori
 	for ${1:needle} in ${2:haystack}; do
-		${0:#statements}
+		${0:${VISUAL}}
 	done
 snippet fore
 	for ${1:item} in ${2:list}; do
-		${0:# statements}
+		${0:${VISUAL}}
 	done
 snippet wh
 	while ${1:condition}; do
-		${0:# statements}
+		${0:${VISUAL}}
 	done
 snippet until
 	until ${1:condition}; do
-		${0:# statements}
+		${0:${VISUAL}}
 	done
 snippet repeat
 	repeat ${1:integer}; do
-		${0:# statements}
+		${0:${VISUAL}}
 	done
 snippet case
 	case ${1:word} in
@@ -46,7 +46,7 @@ snippet case
 	esac
 snippet select
 	select ${1:answer} in ${2:choices}; do
-		${0:# statements}
+		${0:${VISUAL}}
 	done
 snippet (
 	( ${0:#statements} )

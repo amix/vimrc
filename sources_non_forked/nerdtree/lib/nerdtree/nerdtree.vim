@@ -21,7 +21,7 @@ function! s:NERDTree.changeRoot(node)
 
     "change dir to the dir of the new root if instructed to
     if g:NERDTreeChDirMode ==# 2
-        exec "cd " . self.root.path.str({'format': 'Edit'})
+        call self.root.path.changeToDir()
     endif
 
     call self.render()
@@ -184,6 +184,10 @@ endfunction
 "FUNCTION: s:NERDTree.previousBuf() {{{1
 function! s:NERDTree.previousBuf()
     return self._previousBuf
+endfunction
+
+function! s:NERDTree.setPreviousBuf(bnum)
+    let self._previousBuf = a:bnum
 endfunction
 
 "FUNCTION: s:NERDTree.render() {{{1

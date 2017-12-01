@@ -27,24 +27,24 @@ snippet print
 # ifeq
 snippet if
 	ifeq (${1:cond0}, ${2:cond1})
-		${0}
+		${0:${VISUAL}}
 	endif
 # ifeq ... else ... endif
 snippet ife
 	ifeq (${1:cond0}, ${2:cond1})
-		${3}
+		${3:${VISUAL}}
 	else
 		${0}
 	endif
 # else ...
 snippet el
 	else
-		${0}
+		${0:${VISUAL}}
 # .DEFAULT_GOAL := target
 snippet default
 	.DEFAULT_GOAL := ${1}
 # help target for self-documented Makefile
 snippet help
 	help: ## Prints help for targets with comments
-		@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $\$1, $\$2}'
+		@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $\$1, $\$2}'
 	${0}

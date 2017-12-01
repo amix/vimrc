@@ -26,6 +26,14 @@ snippet doc
 	! Description: $1
 	! """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 	$0
+snippet dox
+	!> @brief ${1}
+	!!
+	!> ${2}
+	!> @author `g:snips_author`
+	${0}
+snippet doxp
+	!> @param[${1}]${0}
 # Variables definitions
 # Boolean
 snippet bool
@@ -49,7 +57,7 @@ snippet type
 snippet const
 	${1:type}, parameter :: $2 = $0
 snippet arr
-	${1:type}, allocatable, dimension(${2::}) :: $0
+	${1:type}, ${2:allocatable, }dimension(${3::}) :: $0
 snippet intent
 	${1:type}, intent(inout) :: $0
 # Array
@@ -57,7 +65,7 @@ snippet /
 	(/ $1 /) ${2:,&} $0
 snippet if
 	if (${1:condition}) then
-		$2
+		$0
 	end if
 snippet case
 	select case (${1:expr})
@@ -66,8 +74,8 @@ snippet case
 			$3
 	end select $0
 snippet do
-	do ${1:i} = ${2:start},${3:end}, ${4:incr}
-		$4
+	do ${1:i} = ${2:start}, ${3:end}, ${4:incr}
+		$0
 	end do
 snippet dow
 	do while (${1:condition})
@@ -83,11 +91,13 @@ snippet func
 	end function $1
 snippet pr
 	write(*,*) $0
+snippet dpr
+	write(*,*) '$1 = ', $1
 snippet read
-	read( unit = ${1:fp}, file = ${2:filename}${3:, iostat = IERR }) $0
+	read(unit = ${1:fp}, file = ${2:filename}, iostat = ${3:ierr}) $0
 snippet write
-	write( unit = ${1:fp}, file = ${2:filename}${3:, iostat = IERR }) $0
+	write(unit = ${1:fp}, file = ${2:filename}, iostat = ${3:ierr}) $0
 snippet open
-	open (unit = ${1:fp}, file = ${2:filename}, status = unknown${3:, iostat = IERR }) $0
+	open(unit = ${1:fp}, file = ${2:filename}, status = ${3:unknown}, iostat = ${4:ierr}) $0
 snippet close
-	close ( unit = ${1:fp} ) $0
+	close(unit = ${1:fp}) $0

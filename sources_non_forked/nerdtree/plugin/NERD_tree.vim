@@ -46,6 +46,7 @@ endfunction
 call s:initVariable("g:NERDTreeAutoCenter", 1)
 call s:initVariable("g:NERDTreeAutoCenterThreshold", 3)
 call s:initVariable("g:NERDTreeCaseSensitiveSort", 0)
+call s:initVariable("g:NERDTreeNaturalSort", 0)
 call s:initVariable("g:NERDTreeSortHiddenFirst", 1)
 call s:initVariable("g:NERDTreeChDirMode", 0)
 call s:initVariable("g:NERDTreeCreatePrefix", "silent")
@@ -57,6 +58,7 @@ call s:initVariable("g:NERDTreeBookmarksFile", expand('$HOME') . '/.NERDTreeBook
 call s:initVariable("g:NERDTreeBookmarksSort", 1)
 call s:initVariable("g:NERDTreeHighlightCursorline", 1)
 call s:initVariable("g:NERDTreeHijackNetrw", 1)
+call s:initVariable('g:NERDTreeMarkBookmarks', 1)
 call s:initVariable("g:NERDTreeMouseMode", 1)
 call s:initVariable("g:NERDTreeNotificationThreshold", 100)
 call s:initVariable("g:NERDTreeQuitOnOpen", 0)
@@ -67,7 +69,7 @@ call s:initVariable("g:NERDTreeShowHidden", 0)
 call s:initVariable("g:NERDTreeShowLineNumbers", 0)
 call s:initVariable("g:NERDTreeSortDirs", 1)
 
-if !nerdtree#runningWindows()
+if !nerdtree#runningWindows() && !nerdtree#runningCygwin()
     call s:initVariable("g:NERDTreeDirArrowExpandable", "▸")
     call s:initVariable("g:NERDTreeDirArrowCollapsible", "▾")
 else
@@ -75,6 +77,7 @@ else
     call s:initVariable("g:NERDTreeDirArrowCollapsible", "~")
 endif
 call s:initVariable("g:NERDTreeCascadeOpenSingleChildDir", 1)
+call s:initVariable("g:NERDTreeCascadeSingleChildDir", 1)
 
 if !exists("g:NERDTreeSortOrder")
     let g:NERDTreeSortOrder = ['\/$', '*', '\.swp$',  '\.bak$', '\~$']
@@ -103,6 +106,8 @@ call s:initVariable("g:NERDTreeWinSize", 31)
 "Note: the space after the command is important
 if nerdtree#runningWindows()
     call s:initVariable("g:NERDTreeRemoveDirCmd", 'rmdir /s /q ')
+    call s:initVariable("g:NERDTreeCopyDirCmd", 'xcopy /s /e /i /y /q ')
+    call s:initVariable("g:NERDTreeCopyFileCmd", 'copy /y ')
 else
     call s:initVariable("g:NERDTreeRemoveDirCmd", 'rm -rf ')
     call s:initVariable("g:NERDTreeCopyCmd", 'cp -r ')

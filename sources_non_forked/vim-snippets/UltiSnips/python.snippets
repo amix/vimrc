@@ -19,7 +19,7 @@ endsnippet
 snippet with "with" b
 with ${1:expr}`!p snip.rv = " as " if t[2] else ""`${2:var}:
 	${3:${VISUAL:pass}}
-${0}
+$0
 endsnippet
 
 snippet for "for loop" b
@@ -484,6 +484,11 @@ def __index__(self):
 
 def __coerce__(self, other):
 	${25:pass}
+endsnippet
+
+snippet deff
+def ${1:fname}(`!p snip.rv = vim.eval('indent(".") ? "self" : ""')`$2):
+	$0
 endsnippet
 
 snippet def "function with docstrings" b

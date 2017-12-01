@@ -1,7 +1,14 @@
 # Shebang. Executing bash via /usr/bin/env makes scripts more portable.
 snippet #!
 	#!/usr/bin/env sh
-	
+
+snippet s#!
+	#!/usr/bin/env sh
+	set -euo pipefail
+
+snippet safe
+	set -euo pipefail
+
 snippet bash
 	#!/usr/bin/env bash
 
@@ -12,26 +19,26 @@ snippet sbash
 
 snippet if
 	if [[ ${1:condition} ]]; then
-		${0:#statements}
+		${0:${VISUAL}}
 	fi
 snippet elif
 	elif [[ ${1:condition} ]]; then
-		${0:#statements}
+		${0:${VISUAL}}
 snippet for
 	for (( ${2:i} = 0; $2 < ${1:count}; $2++ )); do
-		${0:#statements}
+		${0:${VISUAL}}
 	done
 snippet fori
 	for ${1:needle} in ${2:haystack} ; do
-		${0:#statements}
+		${0:${VISUAL}}
 	done
 snippet wh
 	while [[ ${1:condition} ]]; do
-		${0:#statements}
+		${0:${VISUAL}}
 	done
 snippet until
 	until [[ ${1:condition} ]]; do
-		${0:#statements}
+		${0:${VISUAL}}
 	done
 snippet case
 	case ${1:word} in

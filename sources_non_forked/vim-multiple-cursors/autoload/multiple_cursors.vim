@@ -100,6 +100,17 @@ function! multiple_cursors#get_latency_debug_file()
   return s:latency_debug_file
 endfunction
 
+
+function! s:fire_pre_triggers()
+  if !s:before_function_called
+    doautocmd User MultipleCursorsPre
+    if exists('*Multiple_cursors_before')
+      exe "call Multiple_cursors_before()"
+    endif
+    let s:before_function_called = 1
+  endif
+endfunction
+
 " Creates a new cursor. Different logic applies depending on the mode the user
 " is in and the current state of the buffer.
 " 1. In normal mode, a new cursor is created at the end of the word under Vim's
@@ -111,10 +122,7 @@ endfunction
 " attempted to be created at the next occurrence of the visual selection
 function! multiple_cursors#new(mode, word_boundary)
   " Call before function if exists only once until it is canceled (<Esc>)
-  if exists('*Multiple_cursors_before') && !s:before_function_called
-    exe "call Multiple_cursors_before()"
-    let s:before_function_called = 1
-  endif
+  call s:fire_pre_triggers()
   let s:use_word_boundary = a:word_boundary
   if a:mode ==# 'n'
     " Reset all existing cursors, don't restore view and setting
@@ -269,10 +277,7 @@ function! multiple_cursors#find(start, end, pattern)
 
     " If we've created any cursors, we need to call the before function, end
     " function will be called via normal routes
-    if exists('*Multiple_cursors_before') && !s:before_function_called
-      exe "call Multiple_cursors_before()"
-      let s:before_function_called = 1
-    endif
+    call s:fire_pre_triggers()
 
     call s:wait_for_user_input('v')
   endif
@@ -436,8 +441,11 @@ function! s:CursorManager.reset(restore_view, restore_setting, ...) dict
     call self.restore_user_settings()
   endif
   " Call after function if exists and only if action is canceled (<Esc>)
-  if exists('*Multiple_cursors_after') && a:0 && s:before_function_called
-    exe "call Multiple_cursors_after()"
+  if a:0 && s:before_function_called
+    if exists('*Multiple_cursors_after')
+      exe "call Multiple_cursors_after()"
+    endif
+    doautocmd User MultipleCursorsPost
     let s:before_function_called = 0
   endif
 endfunction
@@ -1008,13 +1016,28 @@ function! s:get_visual_region(pos)
   return region
 endfunction
 
+function! s:strpart(s, i, l)
+  if a:l == 0
+    return ''
+  endif
+  let [s, l] = ['', 0]
+  for c in split(a:s[a:i :], '\zs')
+    let s .= c
+    let l += len(c)
+    if l >= a:l
+      break
+    endif
+  endfor
+  return s
+endfunction
+
 " Return the content of the buffer between the input region. This is used to
 " find the next match in the buffer
 " Mode change: Normal -> Normal
 " Cursor change: None
 function! s:get_text(region)
   let lines = getline(a:region[0][0], a:region[1][0])
-  let lines[-1] = lines[-1][:a:region[1][1] - 1]
+  let lines[-1] = s:strpart(lines[-1], 0, a:region[1][1])
   let lines[0] = lines[0][a:region[0][1] - 1:]
   return join(lines, "\n")
 endfunction

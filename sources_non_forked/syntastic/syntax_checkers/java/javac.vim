@@ -1,6 +1,6 @@
 "============================================================================
 "File:        javac.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Jochen Keil <jochen.keil at gmail dot com>
 "             Dmitry Geurkov <d.geurkov at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
@@ -223,7 +223,7 @@ endfunction " }}}2
 function! s:SaveClasspath() " {{{2
     " build classpath from lines
     let path = ''
-    let lines = getline(1, line('$'))
+    let lines = getline(1, '$')
     for l in lines
         let path = s:AddToClasspath(path, l)
     endfor
@@ -281,7 +281,7 @@ endfunction " }}}2
 
 function! s:SaveConfig() " {{{2
     " get lines
-    let lines = getline(1, line('$'))
+    let lines = getline(1, '$')
     if g:syntastic_java_javac_config_file_enabled
         " save config file lines
         call writefile(lines, expand(g:syntastic_java_javac_config_file, 1))

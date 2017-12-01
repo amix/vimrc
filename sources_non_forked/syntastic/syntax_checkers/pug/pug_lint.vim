@@ -1,6 +1,6 @@
 "============================================================================
 "File:        pug_lint.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Ben Parnell <benjaminparnell.94@gmail.com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute

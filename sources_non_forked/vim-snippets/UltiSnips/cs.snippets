@@ -16,7 +16,7 @@ namespace ${1:MyNamespace}
 endsnippet
 
 snippet class "class" w
-class ${1:MyClass}
+${1:public} class ${2:MyClass}
 {
 	$0
 }
@@ -259,7 +259,7 @@ finally
 endsnippet
 
 snippet throw "throw"
-throw new ${1}Exception("${2}");
+throw new $1Exception("$2");
 endsnippet
 
 
@@ -288,6 +288,10 @@ snippet cw "Console.WriteLine" b
 Console.WriteLine("$1");
 endsnippet
 
+snippet cr "Console.ReadLine" b
+Console.ReadLine();
+endsnippet
+
 # as you first type comma-separated parameters on the right, {n} values appear in the format string
 snippet cwp "Console.WriteLine with parameters" b
 Console.WriteLine("${2:`!p
@@ -300,9 +304,9 @@ MessageBox.Show("${1:message}");
 endsnippet
 
 
-##################
-#  full methods  #
-##################
+#############
+#  methods  #
+#############
 
 snippet equals "Equals method" b
 public override bool Equals(object obj)
@@ -316,13 +320,53 @@ public override bool Equals(object obj)
 }
 endsnippet
 
+snippet mth "Method" b
+${1:public} ${2:void} ${3:MyMethod}(${4})
+{
+	$0
+}
+endsnippet
+
+snippet mths "Static method" b
+${1:public} static ${2:void} ${3:MyMethod}(${4})
+{
+	$0
+}
+endsnippet
+
+###############
+# constructor #
+###############
+
+snippet ctor "Constructor" b
+${1:public} ${2:`!p snip.rv = snip.basename or "untitled"`}(${3})
+{
+	$0
+}
+endsnippet
 
 ##############
 #  comments  #
 ##############
 
-snippet /// "XML comment" b
+snippet /// "XML summary comment" b
 /// <summary>
-/// $1
+/// $0
 /// </summary>
+endsnippet
+
+snippet <p "XML pramameter comment" w
+<param name="${1}">${2}</param>
+endsnippet
+
+snippet <ex "XML exception comment" w
+<exception cref="${1:System.Exception}">${2}</exception>
+endsnippet
+
+snippet <r "XML returns comment" w
+<returns>$0</returns>
+endsnippet
+
+snippet <c "XML code comment" w
+<code>$0</code>
 endsnippet

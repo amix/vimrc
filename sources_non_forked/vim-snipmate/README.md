@@ -96,6 +96,20 @@ will load the `ruby-rails` scope whenever the `ruby` scope is active. The
 buffer. The [vim-rails](https://github.com/tpope/vim-rails) plugin automatically
 does `:SnipMateLoadScope rails` when editing a Rails project for example.
 
+> What are the snippet parser versions and what's the difference between them?
+
+Originally SnipMate used regex to parse a snippet. Determining where stops were,
+what the placeholders were, where mirrors were, etc. were all done with regex.
+Needless to say this was a little fragile. When the time came for a rewritten
+parser, some incompatibilities were a little necessary. Rather than break
+everyone's snippets everywhere, we provided both the new (version 1) and the old
+(version 0) and let the user choose between them.
+
+Version 0 is considered legacy and not a lot of effort is going to go into
+improving or even maintaining it. Version 1 is the future, and one can expect
+new features to only exist for version 1 users. A full list of differences can
+be found in the docs at `:h SnipMate-parser-versions`.
+
 ## Release Notes ##
 
 ### 0.89 - 2016-05-29 ###

@@ -1,6 +1,6 @@
 "============================================================================
 "File:        rnv.vim
-"Description: RelaxNG RNV syntax checking plugin for syntastic.vim
+"Description: RelaxNG RNV syntax checking plugin for syntastic
 "Maintainer:  Remko Tronçon <remko at el-tramo dot be>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute

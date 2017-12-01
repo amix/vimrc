@@ -18,7 +18,7 @@
  - [Contributing](#contributing)
  - [Credit](#credit)
 
-###Contributors
+### Contributors
 - [eapache](https://github.com/eapache)
 - [aschrab](https://github.com/aschrab)
 - [kristijanhusak](https://github.com/kristijanhusak)
@@ -187,6 +187,9 @@ endfunction
 ```
 
 With this locking and unlocking we prevent neocomplete to trigger it's function calls until we are finished with multiple cursors editing.
+
+Plugins themselves can register `User` autocommands on `MultipleCursorsPre` and
+`MultipleCursorsPost` for automatic integration.
 
 ### Highlight
 The plugin uses the highlight group `multiple_cursors_cursor` and `multiple_cursors_visual` to highlight the virtual cursors and their visual selections respectively. You can customize them by putting something similar like the following in your vimrc:

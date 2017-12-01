@@ -1,6 +1,7 @@
 # .erb and .rhmtl files
 
 # Includes html.snippets
+extends html
 
 # Rails *****************************
 snippet rc
@@ -119,7 +120,7 @@ snippet sslt
 	<%= stylesheet_link_tag "${0}" %>
 snippet if
 	<% if ${1} %>
-		${0}
+		${0:${VISUAL}}
 	<% end %>
 snippet ife
 	<% if ${1} %>

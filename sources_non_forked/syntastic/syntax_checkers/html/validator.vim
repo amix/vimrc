@@ -1,6 +1,6 @@
 "============================================================================
 "File:        validator.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  LCD 47 <lcd047 at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -31,7 +31,8 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_html_validator_GetLocList() dict
-    let fname = syntastic#util#shexpand('%')
+    let buf = bufnr('')
+    let fname = syntastic#util#shescape(fnamemodify(bufname(buf), ':p'))
     let makeprg = self.getExecEscaped() . ' -q -L -s --compressed -F out=gnu -F asciiquotes=yes' .
         \ (g:syntastic_html_validator_parser !=# '' ? ' -F parser=' . g:syntastic_html_validator_parser : '') .
         \ (g:syntastic_html_validator_nsfilter !=# '' ? ' -F nsfilter=' . g:syntastic_html_validator_nsfilter : '') .

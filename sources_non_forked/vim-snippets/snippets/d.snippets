@@ -88,13 +88,13 @@ snippet fsw
 	}
 snippet try
 	try {
-		${1}
+		${1:${VISUAL}}
 	} catch(${2:Exception} ${3:e}) {
 		${4}
 	}
 snippet tcf
 	try {
-		${0}
+		${0:${VISUAL}}
 	} catch(${1:Exception} ${2:e}) {
 		${3}
 	} finally {
@@ -102,7 +102,7 @@ snippet tcf
 	}
 snippet wh
 	while(${1:cond}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet dowh
 	do {

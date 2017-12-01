@@ -118,6 +118,14 @@ snippet else
 	else {
 		${0}
 	}
+
+# if inline error
+snippet ife
+abbr if err := ...; err != nil { ... }
+	if err := ${1:condition}; err != nil {
+		${0}
+	}
+
 # error snippet
 snippet errn
 abbr if err != nil { ... }
@@ -130,6 +138,13 @@ snippet errt
 abbr if err != nil { ... }
 	if err != nil {
 		t.Fatal(err)
+	}
+
+# error snippet in log.Fatal
+snippet errl
+abbr if err != nil { ... }
+	if err != nil {
+		log.Fatal(err)
 	}
 
 # error snippet with two return values
@@ -149,10 +164,23 @@ abbr if err != nil { return }
 	}
 	${0}
 
+# error snippet with panic
+snippet errp
+abbr if err != nil { ... }
+	if err != nil {
+		panic(${1})
+	}
+	${0}
+
 # json snippet
 snippet json
 abbr \`json:key\`
 	\`json:"${1:keyName}"\`
+
+# yaml snippet
+snippet yaml
+abbr \`yaml:key\`
+	\`yaml:"${1:keyName}"\`
 
 # fallthrough
 snippet ft

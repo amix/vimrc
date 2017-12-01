@@ -4,14 +4,14 @@
 
 Indent Text Objects
 
-INTRODUCTION                      |idntobj-introduction|
-TEXT OBJECTS                      |idntobj-objects|
-BLANK LINES                       |idntobj-blanklines|
-ABOUT                             |idntobj-about|
+INTRODUCTION                      |indtobj-introduction|
+TEXT OBJECTS                      |indtobj-objects|
+BLANK LINES                       |indtobj-blanklines|
+ABOUT                             |indtobj-about|
 
 
 ==============================================================================
-INTRODUCTION                                            *idntobj-introduction*
+INTRODUCTION                                            *indtobj-introduction*
 
 Vim text objects provide a convenient way to select and operate on various
 types of objects. These objects include regions surrounded by various types of
@@ -24,7 +24,7 @@ structure can be quickly selected, for example.
 
 
 ==============================================================================
-TEXT OBJECTS                          *ai* *ii* *aI* *iI*     *idntobj-objects*
+TEXT OBJECTS                          *ai* *ii* *aI* *iI*     *indtobj-objects*
 
 This plugin defines two new text objects. These are very similar - they differ
 only in whether they include the line below the block or not.
@@ -78,7 +78,7 @@ structure.
 
 
 ==============================================================================
-BLANK LINES                                               *idntobj-blanklines*
+BLANK LINES                                               *indtobj-blanklines*
 
 When scanning code blocks, the plugin usually ignores blank lines. There is an
 exception to this, however, when the block being selected is not indented. In
@@ -94,7 +94,7 @@ This exceptional behaviour can be disabled by executing the following line
 
 
 ==============================================================================
-ABOUT                                                          *idntobj-about*
+ABOUT                                                          *indtobj-about*
 
 vim-indent-object was written by Michael Smith <msmith@msmith.id.au>. The
 project repository is kept at:

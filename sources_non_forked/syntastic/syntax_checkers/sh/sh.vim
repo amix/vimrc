@@ -1,6 +1,6 @@
 "============================================================================
 "File:        sh.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Gregor Uhlenheuer <kongo2002 at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -19,21 +19,23 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_sh_sh_IsAvailable() dict " {{{1
-    call self.log('shell =', s:GetShell())
-    return s:IsShellValid()
+    let buf = bufnr('')
+    call self.log('shell =', s:GetShell(buf))
+    return s:IsShellValid(buf)
 endfunction " }}}1
 
 function! SyntaxCheckers_sh_sh_GetLocList() dict " {{{1
-    if s:GetShell() ==# 'zsh'
+    let buf = bufnr('')
+    if s:GetShell(buf) ==# 'zsh'
         return s:ForwardToZshChecker()
     endif
 
-    if !s:IsShellValid()
+    if !s:IsShellValid(buf)
         return []
     endif
 
     let makeprg = self.makeprgBuild({
-        \ 'exe': s:GetShell(),
+        \ 'exe': s:GetShell(buf),
         \ 'args_after': '-n' })
 
     let errorformat = '%f: line %l: %m'
@@ -45,29 +47,29 @@ endfunction " }}}1
 
 " Utilities {{{1
 
-function! s:GetShell() " {{{2
-    if !exists('b:shell') || b:shell ==# ''
-        let b:shell = ''
-        let shebang = syntastic#util#parseShebang()['exe']
+function! s:GetShell(buf) " {{{2
+    let shell = syntastic#util#getbufvar(a:buf, 'shell')
+    if shell ==# ''
+        let shebang = syntastic#util#parseShebang(a:buf)['exe']
         if shebang !=# ''
             if shebang[-strlen('bash'):-1] ==# 'bash'
-                let b:shell = 'bash'
+                let shell = 'bash'
             elseif shebang[-strlen('zsh'):-1] ==# 'zsh'
-                let b:shell = 'zsh'
+                let shell = 'zsh'
             elseif shebang[-strlen('sh'):-1] ==# 'sh'
-                let b:shell = 'sh'
+                let shell = 'sh'
             endif
         endif
         " try to use env variable in case no shebang could be found
-        if b:shell ==# ''
-            let b:shell = fnamemodify($SHELL, ':t')
+        if shell ==# ''
+            let shell = fnamemodify($SHELL, ':t')
         endif
     endif
-    return b:shell
+    return shell
 endfunction " }}}2
 
-function! s:IsShellValid() " {{{2
-    let shell = s:GetShell()
+function! s:IsShellValid(buf) " {{{2
+    let shell = s:GetShell(a:buf)
     return shell !=# '' && executable(shell)
 endfunction " }}}2
 

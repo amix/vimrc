@@ -1,6 +1,6 @@
 "============================================================================
 "File:        lintr.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Jim Hester <james.f.hester at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -38,7 +38,7 @@ set cpo&vim
 
 function! SyntaxCheckers_r_lintr_GetHighlightRegex(item)
     let term = matchstr(a:item['text'], "\\m'\\zs[^']\\+\\ze'")
-    return term != '' ? '\V' . escape(term, '\') : ''
+    return term !=# '' ? '\V' . escape(term, '\') : ''
 endfunction
 
 function! SyntaxCheckers_r_lintr_IsAvailable() dict
@@ -50,11 +50,13 @@ function! SyntaxCheckers_r_lintr_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_r_lintr_GetLocList() dict
+    let buf = bufnr('')
+
     let setwd = syntastic#util#isRunningWindows() ? 'setwd("' . escape(getcwd(), '"\') . '"); ' : ''
     let makeprg = self.getExecEscaped() . ' --slave --no-restore --no-save' .
         \ ' -e ' . syntastic#util#shescape(setwd . 'suppressPackageStartupMessages(library(lintr)); ' .
         \       'lint(cache = ' . g:syntastic_r_lintr_cache . ', commandArgs(TRUE), ' . g:syntastic_r_lintr_linters . ')') .
-        \ ' --args ' . syntastic#util#shexpand('%')
+        \ ' --args ' . syntastic#util#shescape(bufname(buf))
 
     let errorformat =
         \ '%W%f:%l:%c: style: %m,' .

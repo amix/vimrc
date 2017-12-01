@@ -14,13 +14,13 @@ snippet f function
 	endf
 snippet t try ... catch statement
 	try
-		${1}
+		${1:${VISUAL}}
 	catch ${2}
 		${0}
 	endtry
 snippet for for ... in loop
 	for ${1} in ${2}
-		${0}
+		${0:${VISUAL}}
 	endfor
 snippet forkv for [key, value] in loop
 	for [${1},${2}] in items(${3})
@@ -29,15 +29,15 @@ snippet forkv for [key, value] in loop
 	endfor
 snippet wh while loop
 	while ${1}
-		${0}
+		${0:${VISUAL}}
 	endw
 snippet if if statement
 	if ${1}
-		${0}
+		${0:${VISUAL}}
 	endif
 snippet ife if ... else statement
 	if ${1}
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 	endif
@@ -50,3 +50,19 @@ snippet bun Vundle.vim Plugin definition
 	Plugin '${0}'
 snippet plug Vundle.vim Plugin definition
 	Plugin '${0}'
+snippet let
+	let ${1:variable} = ${0: value}
+snippet se
+	set ${1:setting};
+snippet set
+	set ${1:setting} = ${0:value}
+snippet nn
+	nnoremap ${1} ${2}<CR>
+snippet no
+	noremap ${1} ${2}
+snippet vm
+	vmap ${1} ${2}
+snippet im
+	imap ${1} ${2}
+snippet exe
+	execute ${1}

@@ -1,6 +1,6 @@
 "============================================================================
 "File:        pc_lint.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Steve Bragg <steve at empresseffects dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -23,7 +23,8 @@ if !exists('g:syntastic_pc_lint_config_file')
 endif
 
 function! SyntaxCheckers_c_pc_lint_GetLocList() dict
-    let config = syntastic#util#findFileInParent(g:syntastic_pc_lint_config_file, expand('%:p:h', 1))
+    let buf = bufnr('')
+    let config = syntastic#util#findFileInParent(g:syntastic_pc_lint_config_file, fnamemodify(bufname(buf), ':p:h'))
     call self.log('config =', config)
 
     " -hFs1         - show filename, add space after messages, try to make message 1 line

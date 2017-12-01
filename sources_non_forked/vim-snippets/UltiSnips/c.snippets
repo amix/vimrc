@@ -5,7 +5,7 @@
 priority -50
 
 snippet def "#define ..."
-#define ${1}
+#define $1
 endsnippet
 
 snippet #ifndef "#ifndef ... #define ... #endif"
@@ -16,7 +16,7 @@ endsnippet
 
 snippet #if "#if #endif" b
 #if ${1:0}
-${VISUAL}${0}
+${VISUAL}$0
 #endif
 endsnippet
 
@@ -32,20 +32,20 @@ endsnippet
 snippet main "main() (main)"
 int main(int argc, char *argv[])
 {
-	${VISUAL}${0}
+	${VISUAL}$0
 	return 0;
 }
 endsnippet
 
 snippet for "for loop (for)"
 for (${2:i} = 0; $2 < ${1:count}; ${3:++$2}) {
-	${VISUAL}${0}
+	${VISUAL}$0
 }
 endsnippet
 
 snippet fori "for int loop (fori)"
 for (${4:int} ${2:i} = 0; $2 < ${1:count}; ${3:++$2}) {
-	${VISUAL}${0}
+	${VISUAL}$0
 }
 endsnippet
 
@@ -60,7 +60,7 @@ else:
 	snip.rv = snip.c`}
 #define $1
 
-${VISUAL}${0}
+${VISUAL}$0
 
 #endif /* end of include guard: $1 */
 endsnippet
@@ -71,7 +71,7 @@ endsnippet
 
 snippet eli "else if .. (eli)"
 else if (${1:/* condition */}) {
-	${VISUAL}${0}
+	${VISUAL}$0
 }
 endsnippet
 
@@ -86,14 +86,14 @@ struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`} {
 endsnippet
 
 snippet fun "function" b
-${1:void} ${2:function_name}(${3})
+${1:void} ${2:function_name}($3)
 {
-	${VISUAL}${0}
+	${VISUAL}$0
 }
 endsnippet
 
 snippet fund "function declaration" b
-${1:void} ${2:function_name}(${3});
+${1:void} ${2:function_name}($3);
 endsnippet
 
 # vim:ft=snippets:

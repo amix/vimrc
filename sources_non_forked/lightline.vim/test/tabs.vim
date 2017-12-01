@@ -61,7 +61,7 @@ function! s:suite.tabnew_20_tabfirst()
     tabnew
   endfor
   tabfirst
-  call s:assert.equals(lightline#tabs(), [[], [s:tab(1, 1)], [s:tab(2), s:tab(3), s:tab(4), s:tab(5), '...', s:tab(17), s:tab(18), s:tab(19), s:tab(20, 0, 1)]])
+  call s:assert.equals(lightline#tabs(), [[], [s:tab(1, 1)], [s:tab(2), s:tab(3), s:tab(4), '%<' . s:tab(5), '...', '%<' . s:tab(17), '%<' . s:tab(18), '%<' . s:tab(19), '%<' . s:tab(20, 0, 1)]])
 endfunction
 
 function! s:suite.tabnew_20_tabfirst_tabnext()
@@ -70,7 +70,7 @@ function! s:suite.tabnew_20_tabfirst_tabnext()
   endfor
   tabfirst
   tabnext
-  call s:assert.equals(lightline#tabs(), [[s:tab(1)], [s:tab(2, 1)], [s:tab(3), s:tab(4), s:tab(5), s:tab(6), '...', s:tab(18), s:tab(19), s:tab(20, 0, 1)]])
+  call s:assert.equals(lightline#tabs(), [[s:tab(1)], [s:tab(2, 1)], [s:tab(3), s:tab(4), s:tab(5), '%<' . s:tab(6), '...', '%<' . s:tab(18), '%<' . s:tab(19), '%<' . s:tab(20, 0, 1)]])
 endfunction
 
 function! s:suite.tabnew_20_tabnext_10()
@@ -78,7 +78,7 @@ function! s:suite.tabnew_20_tabnext_10()
     tabnew
   endfor
   tabnext 10
-  call s:assert.equals(lightline#tabs(), [[s:tab(1), s:tab(2), '...', s:tab(8), s:tab(9)], [s:tab(10, 1)], [s:tab(11), s:tab(12), '...', s:tab(19), s:tab(20, 0, 1)]])
+  call s:assert.equals(lightline#tabs(), [[s:tab(1), s:tab(2), '...', s:tab(8), s:tab(9)], [s:tab(10, 1)], [s:tab(11), s:tab(12), '...', '%<' . s:tab(19), '%<' . s:tab(20, 0, 1)]])
 endfunction
 
 function! s:suite.tabnew_20_tabprevious()

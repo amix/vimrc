@@ -1,6 +1,6 @@
 "============================================================================
 "File:        shellcheck.vim
-"Description: Shell script syntax/style checking plugin for syntastic.vim
+"Description: Shell script syntax/style checking plugin for syntastic
 "============================================================================
 
 if exists('g:loaded_syntastic_sh_shellcheck_checker')
@@ -12,8 +12,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_sh_shellcheck_GetLocList() dict " {{{1
+    let buf = bufnr('')
     let makeprg = self.makeprgBuild({
-        \ 'args': s:GetShell(),
+        \ 'args': s:GetShell(buf),
         \ 'args_after': '-f gcc' })
 
     let errorformat =
@@ -38,15 +39,15 @@ endfunction " }}}1
 
 " Utilities {{{1
 
-function! s:GetShell() " {{{2
+function! s:GetShell(buf) " {{{2
     let sh = ''
 
-    if syntastic#util#parseShebang()['exe'] ==# ''
-        if syntastic#util#rawVar('is_kornshell', 0) || syntastic#util#rawVar('is_posix', 0)
+    if syntastic#util#parseShebang(a:buf)['exe'] ==# ''
+        if syntastic#util#bufRawVar(a:buf, 'is_kornshell', 0) || syntastic#util#bufRawVar(a:buf, 'is_posix', 0)
             let sh = 'ksh'
-        elseif syntastic#util#rawVar('is_bash', 0)
+        elseif syntastic#util#bufRawVar(a:buf, 'is_bash', 0)
             let sh = 'bash'
-        elseif syntastic#util#rawVar('is_sh', 0)
+        elseif syntastic#util#bufRawVar(a:buf, 'is_sh', 0)
             let sh = 'sh'
         endif
     endif

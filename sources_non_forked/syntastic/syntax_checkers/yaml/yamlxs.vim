@@ -1,6 +1,6 @@
 "============================================================================
 "File:        yamlxs.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  LCD 47 <lcd047 at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -29,13 +29,14 @@ function! SyntaxCheckers_yaml_yamlxs_IsAvailable() dict
 
     " don't call executable() here, to allow things like
     " let g:syntastic_perl_interpreter='/usr/bin/env perl'
-    silent! call syntastic#util#system(self.getExecEscaped() . ' ' . s:Modules() . ' -e ' . syntastic#util#shescape('exit(0)'))
+    silent! call syntastic#util#system(self.getExecEscaped() . ' ' . s:Modules(bufnr('')) . ' -e ' . syntastic#util#shescape('exit(0)'))
     return v:shell_error == 0
 endfunction
 
 function! SyntaxCheckers_yaml_yamlxs_GetLocList() dict
+    let buf = bufnr('')
     let makeprg = self.makeprgBuild({
-        \ 'args_before': s:Modules() . ' -e ' . syntastic#util#shescape('YAML::XS::LoadFile($ARGV[0])') })
+        \ 'args_before': s:Modules(buf) . ' -e ' . syntastic#util#shescape('YAML::XS::LoadFile($ARGV[0])') })
 
     let errorformat =
         \ '%EYAML::XS::Load Error: The problem:,' .
@@ -51,12 +52,13 @@ function! SyntaxCheckers_yaml_yamlxs_GetLocList() dict
         \ 'defaults': {'bufnr': bufnr('')} })
 endfunction
 
-function s:Modules()
-    if type(g:syntastic_perl_lib_path) == type('')
-        call syntastic#log#oneTimeWarn('variable g:syntastic_perl_lib_path should be a list')
-        let includes = split(g:syntastic_perl_lib_path, ',')
+function s:Modules(buf)
+    let lib_path = syntastic#util#bufVar(a:buf, 'perl_lib_path')
+    if type(lib_path) == type('')
+        call syntastic#log#oneTimeWarn('variable syntastic_perl_lib_path should be a list')
+        let includes = split(lib_path, ',')
     else
-        let includes = copy(syntastic#util#var('perl_lib_path'))
+        let includes = copy(lib_path)
     endif
     return join(map(includes, '"-I" . v:val') + ['-MYAML::XS'])
 endfunction

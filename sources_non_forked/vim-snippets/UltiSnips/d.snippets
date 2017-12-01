@@ -23,7 +23,7 @@ mixin ${1:/*mixed_in*/} ${2:/*name*/};
 endsnippet
 
 snippet new "new (new)"
-new ${1}(${2});
+new $1($2);
 endsnippet
 
 snippet scpn "@safe const pure nothrow (scpn)"
@@ -98,7 +98,7 @@ endsnippet
 
 snippet enf "enforce (enf)" b
 enforce(${1:/*condition*/},
-	new ${2}Exception(${3:/*args*/}));
+	new $2Exception(${3:/*args*/}));
 endsnippet
 
 # Branches
@@ -106,14 +106,14 @@ endsnippet
 snippet if "if .. (if)"
 if(${1:/*condition*/})
 {
-	${VISUAL}${0}
+	${VISUAL}$0
 }
 endsnippet
 
 snippet ife "if .. else (ife)" b
 if(${1:/*condition*/})
 {
-	${2}
+	$2
 }
 else
 {
@@ -124,14 +124,14 @@ endsnippet
 snippet el "else (el)" b
 else
 {
-	${VISUAL}${1}
+	${VISUAL}$1
 }
 endsnippet
 
 snippet elif "else if (elif)" b
 else if(${1:/*condition*/})
 {
-	${VISUAL}${0}
+	${VISUAL}$0
 }
 endsnippet
 
@@ -139,10 +139,10 @@ snippet sw "switch (sw)"
 switch(${1:/*var*/})
 {
 	case ${2:/*value*/}:
-		${3}
+		$3
 		break;
 	case ${4:/*value*/}:
-		${5}
+		$5
 		break;
 	${7:/*more cases*/}
 	default:
@@ -154,10 +154,10 @@ snippet fsw "final switch (fsw)"
 final switch(${1:/*var*/})
 {
 	case ${2:/*value*/}:
-		${3}
+		$3
 		break;
 	case ${4:/*value*/}:
-		${5}
+		$5
 		break;
 	${7:/*more cases*/}
 }
@@ -165,7 +165,7 @@ endsnippet
 
 snippet case "case (case)" b
 case ${1:/*value*/}:
-	${2}
+	$2
 	break;
 endsnippet
 
@@ -178,42 +178,42 @@ endsnippet
 snippet do "do while (do)" b
 do
 {
-	${VISUAL}${2}
+	${VISUAL}$2
 } while(${1:/*condition*/});
 endsnippet
 
 snippet wh "while (wh)" b
 while(${1:/*condition*/})
 {
-	${VISUAL}${2}
+	${VISUAL}$2
 }
 endsnippet
 
 snippet for "for (for)" b
 for (${4:size_t} ${2:i} = 0; $2 < ${1:count}; ${3:++$2})
 {
-	${VISUAL}${0}
+	${VISUAL}$0
 }
 endsnippet
 
 snippet forever "forever (forever)" b
 for(;;)
 {
-	${VISUAL}${0}
+	${VISUAL}$0
 }
 endsnippet
 
 snippet fore "foreach (fore)"
 foreach(${1:/*elem*/}; ${2:/*range*/})
 {
-	${VISUAL}${3}
+	${VISUAL}$3
 }
 endsnippet
 
 snippet forif "foreach if (forif)" b
 foreach(${1:/*elem*/}; ${2:/*range*/}) if(${3:/*condition*/})
 {
-	${VISUAL}${4}
+	${VISUAL}$4
 }
 endsnippet
 
@@ -222,7 +222,7 @@ snippet in "in contract (in)" b
 in
 {
 	assert(${1:/*condition*/}, "${2:error message}");
-	${3}
+	$3
 }
 body
 endsnippet
@@ -231,7 +231,7 @@ snippet out "out contract (out)" b
 out${1:(result)}
 {
 	assert(${2:/*condition*/}, "${3:error message}");
-	${4}
+	$4
 }
 body
 endsnippet
@@ -240,7 +240,7 @@ snippet inv "invariant (inv)" b
 invariant()
 {
 	assert(${1:/*condition*/}, "${2:error message}");
-	${3}
+	$3
 }
 endsnippet
 
@@ -249,21 +249,21 @@ endsnippet
 snippet fun "function definition (fun)"
 ${1:void} ${2:/*function name*/}(${3:/*args*/}) ${4:@safe pure nothrow}
 {
-	${VISUAL}${5}
+	${VISUAL}$5
 }
 endsnippet
 
 snippet void "void function definition (void)"
 void ${1:/*function name*/}(${2:/*args*/}) ${3:@safe pure nothrow}
 {
-	${VISUAL}${4}
+	${VISUAL}$4
 }
 endsnippet
 
 snippet this "ctor (this)" w
 this(${1:/*args*/})
 {
-	${VISUAL}${2}
+	${VISUAL}$2
 }
 endsnippet
 
@@ -295,16 +295,16 @@ endsnippet
 snippet scope "scope (scope)" b
 scope(${1:exit})
 {
-	${VISUAL}${2}
+	${VISUAL}$2
 }
 endsnippet
 
 # With
 
 snippet with "with (with)"
-with(${1})
+with($1)
 {
-	${VISUAL}${2}
+	${VISUAL}$2
 }
 endsnippet
 
@@ -315,7 +315,7 @@ try
 {
 	${VISUAL}${1:/*code to try*/}
 }
-catch(${2}Exception e)
+catch($2Exception e)
 {
 	${3:/*handle exception*/}
 }
@@ -326,7 +326,7 @@ try
 {
 	${VISUAL}${1:/*code to try*/}
 }
-catch(${2}Exception e)
+catch($2Exception e)
 {
 	${3:/*handle exception*/}
 }
@@ -337,14 +337,14 @@ finally
 endsnippet
 
 snippet catch "catch (catch)" b
-catch(${1}Exception e)
+catch($1Exception e)
 {
 	${2:/*handle exception*/}
 }
 endsnippet
 
 snippet thr "throw (thr)"
-throw new ${1}Exception("${2}");
+throw new $1Exception("$2");
 endsnippet
 
 
@@ -353,35 +353,35 @@ endsnippet
 snippet struct "struct (struct)"
 struct ${1:`!p snip.rv = (snip.basename or "name")`}
 {
-	${2}
+	$2
 }
 endsnippet
 
 snippet union "union (union)"
 union ${1:`!p snip.rv = (snip.basename or "name")`}
 {
-	${2}
+	$2
 }
 endsnippet
 
 snippet class "class (class)"
 class ${1:`!p snip.rv = (snip.basename or "name")`}
 {
-	${2}
+	$2
 }
 endsnippet
 
 snippet inter "interface (inter)"
 interface ${1:`!p snip.rv = (snip.basename or "name")`}
 {
-	${2}
+	$2
 }
 endsnippet
 
 snippet enum "enum (enum)"
 enum ${1:`!p snip.rv = (snip.basename or "name")`}
 {
-	${2}
+	$2
 }
 endsnippet
 
@@ -390,7 +390,7 @@ endsnippet
 
 snippet exc "exception declaration (exc)" b
 /// ${3:/*documentation*/}
-class ${1}Exception : ${2}Exception
+class $1Exception : $2Exception
 {
 	public this(string msg, string file = __FILE__, int line = __LINE__)
 	{
@@ -405,14 +405,14 @@ endsnippet
 snippet version "version (version)" b
 version(${1:/*version name*/})
 {
-	${VISUAL}${2}
+	${VISUAL}$2
 }
 endsnippet
 
 snippet debug "debug" b
 debug
 {
-	${VISUAL}${1}
+	${VISUAL}$1
 }
 endsnippet
 
@@ -422,7 +422,7 @@ endsnippet
 snippet temp "template (temp)" b
 template ${2:/*name*/}(${1:/*args*/})
 {
-	${3}
+	$3
 }
 endsnippet
 
@@ -440,7 +440,7 @@ endsnippet
 snippet unittest "unittest (unittest)" b
 unittest
 {
-	${1}
+	$1
 }
 endsnippet
 
@@ -450,21 +450,21 @@ endsnippet
 snippet opDis "opDispatch (opDis)" b
 ${1:/*return type*/} opDispatch(string s)()
 {
-	${2};
+	$2;
 }
 endsnippet
 
 snippet op= "opAssign (op=)" b
-void opAssign(${1} rhs) ${2:@safe pure nothrow}
+void opAssign($1 rhs) ${2:@safe pure nothrow}
 {
-	${2}
+	$2
 }
 endsnippet
 
 snippet opCmp "opCmp (opCmp)" b
-int opCmp(${1} rhs) @safe const pure nothrow
+int opCmp($1 rhs) @safe const pure nothrow
 {
-	${2}
+	$2
 }
 endsnippet
 
@@ -484,7 +484,7 @@ endsnippet
 snippet toString "toString (toString)" b
 string toString() @safe const pure nothrow
 {
-	${1}
+	$1
 }
 endsnippet
 
@@ -493,7 +493,7 @@ endsnippet
 
 
 snippet todo "TODO (todo)"
-// TODO: ${1}
+// TODO: $1
 endsnippet
 
 
@@ -509,16 +509,16 @@ snippet fdoc "function ddoc block (fdoc)" b
 /// ${1:description}
 ///
 /// ${2:Params:  ${3:param} = ${4:param description}
-///			 ${5}}
+///			 $5}
 ///
 /// ${6:Returns: ${7:return value}}
 ///
-/// ${8:Throws:  ${9}Exception ${10}}
+/// ${8:Throws:  $9Exception $10}
 endsnippet
 
 snippet Par "Params (Par)"
 Params:  ${1:param} = ${2:param description}
-///			${3}
+///			$3
 endsnippet
 
 snippet Ret "Returns (Ret)"
@@ -526,7 +526,7 @@ Returns:  ${1:return value/s}
 endsnippet
 
 snippet Thr "Throws (Thr)"
-Throws:  ${1}Exception ${2}
+Throws:  $1Exception $2
 endsnippet
 
 snippet Example "Examples (Example)"
@@ -556,7 +556,7 @@ snippet gpl "GPL (gpl)" b
 //
 // Copyright (C) ${1:Author}, `!v strftime("%Y")`
 
-${2}
+$2
 endsnippet
 
 snippet boost "Boost (boost)" b
@@ -565,7 +565,7 @@ snippet boost "Boost (boost)" b
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-${2}
+$2
 endsnippet
 
 
@@ -577,8 +577,8 @@ snippet module "New module (module)" b
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-module ${2}.`!v vim_snippets#Filename('$1', 'name')`;
+module $2.`!v vim_snippets#Filename('$1', 'name')`;
 
 
-${3}
+$3
 endsnippet

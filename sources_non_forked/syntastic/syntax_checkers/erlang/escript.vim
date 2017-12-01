@@ -1,6 +1,6 @@
 "============================================================================
 "File:        erlang.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Pawel Salata <rockplayer.pl at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -25,11 +25,13 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_erlang_escript_GetLocList() dict
-    if expand('%:e', 1) ==# 'hrl'
+    let buf = bufnr('')
+
+    if fnamemodify(bufname(buf), ':e') ==# 'hrl'
         return []
     endif
 
-    let shebang = syntastic#util#parseShebang()
+    let shebang = syntastic#util#parseShebang(buf)
     if shebang['exe'] ==# 'escript'
         let args = '-s'
         let post_args = ''
@@ -39,7 +41,7 @@ function! SyntaxCheckers_erlang_escript_GetLocList() dict
     endif
     let makeprg = self.makeprgBuild({
         \ 'args_after': args,
-        \ 'fname': syntastic#util#shexpand('%:p'),
+        \ 'fname': syntastic#util#shexpand(fnamemodify(bufname(buf), ':p')),
         \ 'post_args_after': post_args })
 
     let errorformat =

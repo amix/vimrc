@@ -6,6 +6,10 @@ if !exists("g:go_textobj_include_function_doc")
   let g:go_textobj_include_function_doc = 1
 endif
 
+if !exists("g:go_textobj_include_variable")
+  let g:go_textobj_include_variable = 1
+endif
+
 " ( ) motions
 " { } motions
 " s for sentence
@@ -13,14 +17,14 @@ endif
 " < >
 " t for tag
 
-function! go#textobj#Function(mode)
+function! go#textobj#Function(mode) abort
   let offset = go#util#OffsetCursor()
 
   let fname = shellescape(expand("%:p"))
   if &modified
     " Write current unsaved buffer to a temp file and use the modified content
     let l:tmpname = tempname()
-    call writefile(getline(1, '$'), l:tmpname)
+    call writefile(go#util#GetLines(), l:tmpname)
     let fname = l:tmpname
   endif
 
@@ -60,6 +64,16 @@ function! go#textobj#Function(mode)
     " want's to include doc comments for function declarations
     if has_key(info, 'doc') && g:go_textobj_include_function_doc
       call cursor(info.doc.line, info.doc.col)
+    elseif info['sig']['name'] == '' && g:go_textobj_include_variable
+      " one liner anonymous functions
+      if info.lbrace.line == info.rbrace.line
+        " jump to first nonblack char, to get the correct column
+        call cursor(info.lbrace.line, 0 )
+        normal! ^
+        call cursor(info.func.line, col("."))
+      else
+        call cursor(info.func.line, info.rbrace.col)
+      endif
     else
       call cursor(info.func.line, info.func.col)
     endif
@@ -67,7 +81,7 @@ function! go#textobj#Function(mode)
     normal! v
     call cursor(info.rbrace.line, info.rbrace.col)
     return
-  endif 
+  endif
 
   " rest is inner mode, a:mode == 'i'
 
@@ -84,7 +98,7 @@ function! go#textobj#Function(mode)
   call cursor(info.rbrace.line-1, 1)
 endfunction
 
-function! go#textobj#FunctionJump(mode, direction)
+function! go#textobj#FunctionJump(mode, direction) abort
   " get count of the motion. This should be done before all the normal
   " expressions below as those reset this value(because they have zero
   " count!). We abstract -1 because the index starts from 0 in motion.
@@ -107,7 +121,7 @@ function! go#textobj#FunctionJump(mode, direction)
   if &modified
     " Write current unsaved buffer to a temp file and use the modified content
     let l:tmpname = tempname()
-    call writefile(getline(1, '$'), l:tmpname)
+    call writefile(go#util#GetLines(), l:tmpname)
     let fname = l:tmpname
   endif
 
@@ -177,4 +191,4 @@ function! go#textobj#FunctionJump(mode, direction)
   keepjumps call cursor(info.func.line, 1)
 endfunction
 
-" vim:ts=2:sw=2:et
+" vim: sw=2 ts=2 et

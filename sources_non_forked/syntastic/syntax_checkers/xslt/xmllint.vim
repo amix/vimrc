@@ -1,6 +1,6 @@
 "============================================================================
 "File:        xslt.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Sebastian Kusnier <sebastian at kusnier dot net>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute

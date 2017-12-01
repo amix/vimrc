@@ -1,0 +1,64 @@
+snippet if if
+	if ${1}
+		${0}
+	end
+
+snippet ife if ... else
+	if ${1}
+		${2}
+	else
+		${0}
+	end
+
+snippet el else
+	else
+		${0}
+
+snippet eif elsif
+	elseif ${1}
+		${0}
+
+snippet wh while
+	while ${1}
+		${0}
+	end
+
+snippet for for
+	for ${1:i} = ${2:1:n}
+		${0}
+	end
+
+snippet parfor parfor
+	parfor ${1:i} = ${2:1:n}
+		${0}
+	end
+
+snippet fun function
+	function [${3:out}] = ${1:`vim_snippets#Filename("$1", "fun_name")`}(${2}) 
+	${0}
+
+snippet try try ... catch
+	try
+		${1}
+	catch ${2:err}
+		${0}
+	end
+
+snippet switch switch
+	switch ${1:n}
+		case ${2:0}
+			${0}
+	end
+
+snippet @ anonymous function
+	@(${1:x}) ${0:x*x}
+
+snippet cl class 
+	classdef ${1:`vim_snippets#Filename("$1", "class_name")`}
+	   properties
+		  ${2}
+	   end
+	   methods
+		  ${0}
+	   end
+	end

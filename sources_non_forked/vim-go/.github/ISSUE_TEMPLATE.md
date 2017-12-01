@@ -1,28 +1,22 @@
-### Actual behavior
+### What did you do? (required. The issue will be **closed** when not provided.)
 
-Write here what's happening ...
 
-### Expected behavior
+### What did you expect to happen?
 
-Write here what you're expecting ...
 
-### Steps to reproduce:
+### What happened instead?
 
-Please create a reproducible case of your problem. Re produce it 
-with a minimal `vimrc` with all plugins disabled and only `vim-go`
-enabled:
 
-1.
-2.
-3.
+### Configuration (**MUST** fill this out):
 
-### Configuration
+* Vim version (first two lines from `:version`):
 
-Add here your current configuration and additional information that might be
-useful, such as:
+* Go version (`go version`):
 
-* `vimrc` you used to reproduce
-* vim version:
-* vim-go version
-* go version
+* Go environment (`go env`):
+
+* vim-go version:
+
+* `vimrc` you used to reproduce (use a *minimal* vimrc with other plugins disabled; do not link to a 2,000 line vimrc):
+
 

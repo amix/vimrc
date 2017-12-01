@@ -1,6 +1,6 @@
 "============================================================================
 "File:        lua.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Gregor Uhlenheuer <kongo2002 at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -47,7 +47,7 @@ endfunction
 function! SyntaxCheckers_lua_luac_GetLocList() dict
     let makeprg = self.makeprgBuild({ 'args_after': '-p' })
 
-    let errorformat = 'luac: %#%f:%l: %m'
+    let errorformat = '%*\f: %#%f:%l: %m'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,

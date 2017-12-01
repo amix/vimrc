@@ -1,14 +1,16 @@
-# module and export all
+# module
 snippet mod
-	-module(${1:`vim_snippets#Filename('', 'my')`}).
-
+	-module(${1:`vim_snippets#Filename()`}).
+# module and export all
+snippet modall
+	-module(${1:`vim_snippets#Filename()`}).
 	-compile([export_all]).
-
+	 
 	start() ->
-	    ${0}
-
+		${0}
+	 
 	stop() ->
-	    ok.
+		ok.
 # define directive
 snippet def
 	-define(${1:macro}, ${2:body}).
@@ -46,7 +48,7 @@ snippet fun
 # try...catch
 snippet try
 	try
-	    ${1}
+	    ${1:${VISUAL}}
 	catch
 	    ${2:_:_} -> ${0:got_some_exception}
 	end
@@ -73,7 +75,7 @@ snippet %p
 	%% @private
 # OTP application
 snippet application
-	-module(${1:`vim_snippets#Filename('', 'my')`}).
+	-module(${1:`vim_snippets#Filename()`}).
 
 	-behaviour(application).
 
@@ -91,7 +93,7 @@ snippet application
 	    ok.
 # OTP supervisor
 snippet supervisor
-	-module(${1:`vim_snippets#Filename('', 'my')`}).
+	-module(${1:`vim_snippets#Filename()`}).
 
 	-behaviour(supervisor).
 
@@ -114,7 +116,7 @@ snippet supervisor
 	    {ok, {RestartStrategy, Children}}.
 # OTP gen_server
 snippet gen_server
-	-module(${0:`vim_snippets#Filename('', 'my')`}).
+	-module(${0:`vim_snippets#Filename()`}).
 
 	-behaviour(gen_server).
 
@@ -170,7 +172,7 @@ snippet gen_server
 	%%%===================================================================
 # OTP gen_fsm
 snippet gen_fsm
-	-module(${0:`vim_snippets#Filename('', 'my')`}).
+	-module(${0:`vim_snippets#Filename()`}).
 
 	-behaviour(gen_fsm).
 
@@ -348,7 +350,7 @@ snippet gen_fsm
 	%%%===================================================================
 # OTP gen_event
 snippet gen_event
-	-module(${0:`vim_snippets#Filename('', 'my')`}).
+	-module(${0:`vim_snippets#Filename()`}).
 
 	-behaviour(gen_event).
 
@@ -484,7 +486,7 @@ snippet gen_event
 	%%%===================================================================
 # EUnit snippets
 snippet eunit
-	-module(${1:`vim_snippets#Filename('', 'my')`}).
+	-module(${1:`vim_snippets#Filename()`}).
 	-include_lib("eunit/include/eunit.hrl").
 
 	${0}
@@ -515,7 +517,7 @@ snippet asexc
 	?assertException(${1:Class}, ${2:Pattern}, ${0:Expression})
 # common_test test_SUITE
 snippet testsuite
-	-module(${0:`vim_snippets#Filename('', 'my')`}).
+	-module(${0:`vim_snippets#Filename()`}).
 
 	-include_lib("common_test/include/ct.hrl").
 

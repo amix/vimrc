@@ -1,6 +1,6 @@
 "============================================================================
 "File:        sqlint.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Steve Purcell <steve@sanityinc.com>
 "License:     MIT
 "============================================================================

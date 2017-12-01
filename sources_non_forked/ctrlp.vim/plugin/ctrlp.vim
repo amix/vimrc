@@ -18,9 +18,9 @@ if !exists('g:ctrlp_map') | let g:ctrlp_map = '<c-p>' | en
 if !exists('g:ctrlp_cmd') | let g:ctrlp_cmd = 'CtrlP' | en
 
 com! -n=? -com=dir CtrlP         cal ctrlp#init(0, { 'dir': <q-args> })
-com! -n=? -com=dir CtrlPMRUFiles cal ctrlp#init(2, { 'dir': <q-args> })
+com! -n=? -com=dir CtrlPMRUFiles cal ctrlp#init('mru', { 'dir': <q-args> })
 
-com! -bar CtrlPBuffer   cal ctrlp#init(1)
+com! -bar CtrlPBuffer   cal ctrlp#init('buf')
 com! -n=? CtrlPLastMode cal ctrlp#init(-1, { 'args': <q-args> })
 
 com! -bar CtrlPClearCache     cal ctrlp#clr()
@@ -29,9 +29,9 @@ com! -bar CtrlPClearAllCaches cal ctrlp#clra()
 com! -bar ClearCtrlPCache     cal ctrlp#clr()
 com! -bar ClearAllCtrlPCaches cal ctrlp#clra()
 
-com! -bar CtrlPCurWD   cal ctrlp#init(0, { 'mode': '' })
-com! -bar CtrlPCurFile cal ctrlp#init(0, { 'mode': 'c' })
-com! -bar CtrlPRoot    cal ctrlp#init(0, { 'mode': 'r' })
+com! -bar CtrlPCurWD   cal ctrlp#init('fil', { 'mode': '' })
+com! -bar CtrlPCurFile cal ctrlp#init('fil', { 'mode': 'c' })
+com! -bar CtrlPRoot    cal ctrlp#init('fil', { 'mode': 'r' })
 
 exe 'nn <silent> <plug>(ctrlp) :<c-u>'.g:ctrlp_cmd.'<cr>'
 
@@ -39,7 +39,9 @@ if g:ctrlp_map != '' && !hasmapto('<plug>(ctrlp)')
 	exe 'map' g:ctrlp_map '<plug>(ctrlp)'
 en
 
-cal ctrlp#mrufiles#init()
+if !exists('g:ctrlp_types') || index(g:ctrlp_types, 'mru') >= 0
+	cal ctrlp#mrufiles#init()
+en
 
 com! -bar CtrlPTag      cal ctrlp#init(ctrlp#tag#id())
 com! -bar CtrlPQuickfix cal ctrlp#init(ctrlp#quickfix#id())
@@ -55,10 +57,10 @@ com! -bar CtrlPRTS       cal ctrlp#init(ctrlp#rtscript#id())
 com! -bar CtrlPUndo      cal ctrlp#init(ctrlp#undo#id())
 
 com! -n=? -com=buffer CtrlPLine
-	\ cal ctrlp#init(ctrlp#line#cmd(1, <q-args>))
+	\ cal ctrlp#init(ctrlp#line#cmd('buf', <q-args>))
 
 com! -n=? -com=buffer CtrlPChange
-	\ cal ctrlp#init(ctrlp#changes#cmd(0, <q-args>))
+	\ cal ctrlp#init(ctrlp#changes#cmd('fil', <q-args>))
 
 com! -bar CtrlPChangeAll   cal ctrlp#init(ctrlp#changes#cmd(1))
 com! -bar CtrlPMixed       cal ctrlp#init(ctrlp#mixed#id())

@@ -1,4 +1,30 @@
 Next
+    - Fix broken "t" and "T" mappings, tabs now open at end (lifecrisis) #759
+    - Update doc with already existing mapping variables (asnr) #699
+    - Fix the broken g:NERDTreeBookmarksSort setting (lifecrisis) #696
+    - Correct NERDTreeIgnore pattern in doc (cntoplolicon) #648
+    - Remove empty segments when splitting path (sooth-sayer) #574
+    - Suppress autocmds less agressively (wincent) #578 #691
+    - Add an Issues template to ask for more info initially.
+    - Fix markdown headers in readme (josephfrazier) #676
+    - Don't touch @o and @h registers when rendering
+    - Fix bug with files and directories with dollar signs (alegen) #649
+    - Reuse/reopen existing window trees where possible #244
+    - Remove NERDTree.previousBuf()
+    - Change color of arrow (Leeiio) #630
+    - Improved a tip in README.markdown (ggicci) #628
+    - Shorten delete confimration of empty directory to 'y' (mikeperri) #530
+    - Fix API call to open directory tree in window (devm33) #533
+    - Change default arrows on non-Windows platforms (gwilk) #546
+    - Update to README - combine cd and git clone (zwhitchcox) #584
+    - Update to README - Tip: start NERDTree when vim starts (therealplato) #593 
+    - Escape filename when moving an open buffer (zacharyvoase) #595
+    - Fixed incorrect :helptags command in README (curran) #619
+    - Fixed incomplete escaping of folder arrows (adityanatraj) #548
+    - Added NERDTreeCascadeSingleChildDir option (juanibiapina) #558
+    - Replace strchars() with backward compatible workaround.
+    - Add support for copy command in Windows (SkylerLipthay) #231
+    - Fixed typo in README.markdown - :Helptags -> :helptags
     - Rename "primary" and "secondary" trees to "tab" and "window" trees.
     - Move a bunch of buffer level variables into the NERDTree and UI classes.
     - Display cascading dirs on one line to save vertical/horizontal space (@matt-gardner: brainstorming/testing)

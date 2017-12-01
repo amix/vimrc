@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Run all tests inside a Docker container
+#
+
+set -euC
+vimgodir=$(cd -P "$(dirname "$0")/.." > /dev/null && pwd)
+cd "$vimgodir"
+
+docker build --tag vim-go-test .
+docker run --rm vim-go-test
+
+# vim:ts=2:sts=2:sw=2:et

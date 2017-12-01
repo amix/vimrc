@@ -1,6 +1,6 @@
 "============================================================================
 "File:        ruby.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Martin Grenfell <martin.grenfell at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -31,7 +31,8 @@ function! SyntaxCheckers_eruby_ruby_GetLocList() dict
         let s:ruby_new = syntastic#util#versionIsAtLeast(self.getVersion(), [1, 9])
     endif
 
-    let fname = "'" . escape(expand('%', 1), "\\'") . "'"
+    let buf = bufnr('')
+    let fname = "'" . escape(bufname(buf), "\\'") . "'"
 
     " TODO: encodings became useful in ruby 1.9 :)
     if s:ruby_new
@@ -69,7 +70,7 @@ function! SyntaxCheckers_eruby_ruby_GetLocList() dict
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
         \ 'env': env,
-        \ 'defaults': { 'bufnr': bufnr(''), 'vcol': 1 } })
+        \ 'defaults': { 'bufnr': buf, 'vcol': 1 } })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

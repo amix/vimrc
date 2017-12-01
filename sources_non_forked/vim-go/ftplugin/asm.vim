@@ -1,7 +1,7 @@
 " asm.vim: Vim filetype plugin for Go assembler.
 
 if exists("b:did_ftplugin")
-    finish
+  finish
 endif
 let b:did_ftplugin = 1
 
@@ -15,3 +15,5 @@ setlocal commentstring=//\ %s
 setlocal noexpandtab
 
 command! -nargs=0 AsmFmt call go#asmfmt#Format()
+
+" vim: sw=2 ts=2 et

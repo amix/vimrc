@@ -6,7 +6,7 @@ endif
 try
 	call tlib#input#List('mi', '', [])
 catch /.*/
-	echoe "you're missing tlib. See install instructions at ".expand('<sfile>:h:h').'/README.md'
+	echoe "tlib is missing. See install instructions at ".expand('<sfile>:h:h').'/README.md'
 endtry
 
 fun! Filename(...) abort
@@ -28,13 +28,9 @@ function! snipMate#expandSnip(snip, version, col) abort
 		let [snippet, b:snip_state.stops] = snipmate#parse#snippet(a:snip)
 		" Build stop/mirror info
 		let b:snip_state.stop_count = s:build_stops(snippet, b:snip_state.stops, lnum, col, indent)
-		let snipLines = map(copy(snippet),
-					\ 'snipMate#sniplist_str(v:val, b:snip_state.stops)')
 	else
 		let snippet = snipmate#legacy#process_snippet(a:snip)
 		let [b:snip_state.stops, b:snip_state.stop_count] = snipmate#legacy#build_stops(snippet, lnum, col - indent, indent)
-		let snipLines = split(substitute(snippet, printf('%s\d\+\|%s{\d\+.\{-}}',
-					\ g:snipmate#legacy#sigil, g:snipmate#legacy#sigil), '', 'g'), "\n", 1)
 	endif
 
 	" Abort if the snippet is empty
@@ -42,23 +38,7 @@ function! snipMate#expandSnip(snip, version, col) abort
 		return ''
 	endif
 
-	" Expand snippet onto current position
-	let afterCursor = strpart(line, col - 1)
-	" Keep text after the cursor
-	if afterCursor != "\t" && afterCursor != ' '
-		let line = strpart(line, 0, col - 1)
-		let snipLines[-1] .= afterCursor
-	else
-		let afterCursor = ''
-		" For some reason the cursor needs to move one right after this
-		if line != '' && col == 1 && &ve != 'all' && &ve != 'onemore'
-			let col += 1
-		endif
-	endif
-
-	" Insert snippet with proper indentation
-	call setline(lnum, line . snipLines[0])
-	call append(lnum, map(snipLines[1:], "empty(v:val) ? v:val : '" . strpart(line, 0, indent - 1) . "' . v:val"))
+	let col = s:insert_snippet_text(snippet, lnum, col, indent)
 
 	" Open any folds snippet expands into
 	if &foldenable
@@ -77,6 +57,50 @@ function! snipMate#expandSnip(snip, version, col) abort
 	return b:snip_state.set_stop(0)
 endfunction
 
+function! s:insert_snippet_text(snippet, lnum, col, indent)
+	let line = getline(a:lnum)
+	let col = a:col
+	let snippet = type(a:snippet) == type([]) ? a:snippet : split(a:snippet, "\n", 1)
+	let lnum = a:lnum
+
+	" Keep text after the cursor
+	let afterCursor = strpart(line, col - 1)
+	if afterCursor != "\t" && afterCursor != ' '
+		let line = strpart(line, 0, col - 1)
+	else
+		let afterCursor = ''
+		" For some reason the cursor needs to move one right after this
+		if line != '' && col == 1 && &ve != 'all' && &ve != 'onemore'
+			let col += 1
+		endif
+	endif
+
+	call setline(lnum, '')
+	call append(lnum, repeat([''], len(snippet) - 1))
+
+	for item in snippet
+		let add = lnum == a:lnum ? line : strpart(line, 0, a:indent - 1)
+
+		if !(empty(item) || (type(item) == type([]) && empty(item[0])))
+			if type(item) == type([])
+				call setline(lnum, add .
+							\ snipMate#sniplist_str(item, b:snip_state.stops))
+			else
+				call setline(lnum, add .
+							\ substitute(item, printf('%s\d\+\|%s{\d\+.\{-}}',
+							\ g:snipmate#legacy#sigil, g:snipmate#legacy#sigil),
+							\ '', 'g'))
+			endif
+		endif
+
+		let lnum += 1
+	endfor
+
+	call setline(lnum - 1, getline(lnum - 1) . afterCursor)
+
+	return col
+endfunction
+
 function! snipMate#placeholder_str(num, stops) abort
 	return snipMate#sniplist_str(a:stops[a:num].placeholder, a:stops)
 endfunction
@@ -93,7 +117,14 @@ function! snipMate#sniplist_str(snippet, stops) abort
 		if type(item) == type('')
 			let str .= item
 		elseif type(item) == type([])
-			let str .= snipMate#placeholder_str(item[0], a:stops)
+			let placeholder = snipMate#placeholder_str(item[0], a:stops)
+			if len(item) > 1 && type(item[1]) == type({})
+				let placeholder = substitute(placeholder,
+							\ get(item[1], 'pat', ''),
+							\ get(item[1], 'sub', ''),
+							\ get(item[1], 'flags', ''))
+			endif
+			let str .= placeholder
 		endif
 
 		let pos += 1
@@ -110,7 +141,7 @@ function! s:build_stops(snippet, stops, lnum, col, indent) abort
 
 	for line in a:snippet
 		let col = s:build_loc_info(line, stops, lnum, col, [])
-		if line isnot line[-1]
+		if line isnot a:snippet[-1]
 			let lnum += 1
 			let col = a:indent
 		endif
@@ -353,7 +384,7 @@ function! snipMate#DefaultPool(scopes, trigger, result) abort
 		let s:lookup_state.extends = []
 
 		for expr in s:snippet_filenames(scope, escape(a:trigger, "*[]?{}`'$|#%"))
-			for path in g:snipMate.snippet_dirs
+			for path in s:snippet_dirs()
 				for file in s:Glob(path, expr)
 					source `=file`
 				endfor
@@ -385,6 +416,10 @@ fun! snipMate#GetSnippets(scopes, trigger) abort
 	return result
 endf
 
+function! s:snippet_dirs() abort
+	return get(g:snipMate, 'snippet_dirs', split(&rtp, ','))
+endfunction
+
 function! snipMate#OpenSnippetFiles() abort
 	let files = []
 	let scopes_done = []
@@ -394,7 +429,7 @@ function! snipMate#OpenSnippetFiles() abort
 		let files += s:snippet_filenames(scope, '')
 	endfor
 	call filter(files, "v:val !~# '\\*'")
-	for path in g:snipMate.snippet_dirs
+	for path in s:snippet_dirs()
 		let fullpaths = map(copy(files), 'printf("%s/%s", path, v:val)')
 		let exists += filter(copy(fullpaths), 'filereadable(v:val)')
 		let notexists += map(filter(copy(fullpaths),
@@ -488,8 +523,18 @@ fun! snipMate#WordBelowCursor() abort
 endf
 
 fun! snipMate#GetSnippetsForWordBelowCursorForComplete(word) abort
-	let snippets = map(snipMate#GetSnippetsForWordBelowCursor(a:word, 0), 'v:val[0]')
-	return filter(snippets, 'v:val =~# "\\V\\^' . escape(a:word, '"\') . '"')
+	let matches = snipMate#GetSnippetsForWordBelowCursor(a:word, 0)
+	let snippets = []
+	for [trigger, dict] in matches
+		if get(g:snipMate, 'description_in_completion', 0)
+			call extend(snippets, map(keys(dict),
+						\ '{ "word" : trigger, "menu" : v:val, "dup" : 1 }'))
+		else
+			call add(snippets, { "word" : trigger })
+		endif
+	endfor
+	return filter(snippets,
+				\ 'v:val.word =~# "\\V\\^' . escape(a:word, '"\') . '"')
 endf
 
 fun! snipMate#CanBeTriggered() abort

@@ -1,6 +1,6 @@
 "============================================================================
 "File:        basex.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  James Wright <james dot jw at hotmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -18,10 +18,11 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_xquery_basex_GetLocList() dict
+    let buf = bufnr('')
     let makeprg = self.makeprgBuild({
         \ 'args_after': '-z',
         \ 'fname_before': '-q',
-        \ 'fname': syntastic#util#shescape('inspect:module("' . escape(expand('%:p', 1), '"') . '")') })
+        \ 'fname': syntastic#util#shescape('inspect:module("' . escape(fnamemodify(bufname(buf), ':p'), '"') . '")') })
 
     let errorformat =
         \ '%f:%l:%c:%t:%n:%m,' .

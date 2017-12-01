@@ -1,6 +1,6 @@
 "============================================================================
 "File:        w3.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Martin Grenfell <martin.grenfell at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -23,8 +23,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_html_w3_GetLocList() dict
+    let buf = bufnr('')
     let makeprg = self.getExecEscaped() . ' -q -L -s -F output=json ' .
-        \ '-F uploaded_file=@' . syntastic#util#shexpand('%:p') . '\;type=text/html ' .
+        \ '-F uploaded_file=@' . syntastic#util#shescape(fnamemodify(bufname(buf), ':p')) . '\;type=text/html ' .
         \ g:syntastic_html_w3_api
 
     let errorformat =

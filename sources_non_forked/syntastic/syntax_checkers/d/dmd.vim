@@ -1,6 +1,6 @@
 "============================================================================
 "File:        d.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Alfredo Di Napoli <alfredo dot dinapoli at gmail dot com>
 "License:     Based on the original work of Gregor Uhlenheuer and his
 "             cpp.vim checker so credits are dued.
@@ -44,8 +44,9 @@ function! SyntaxCheckers_d_dmd_IsAvailable() dict " {{{1
 endfunction " }}}1
 
 function! SyntaxCheckers_d_dmd_GetLocList() dict " {{{1
+    let buf = bufnr('')
     if !exists('g:syntastic_d_include_dirs')
-        let g:syntastic_d_include_dirs = s:GetIncludes(self, expand('%:p:h'))
+        let g:syntastic_d_include_dirs = s:GetIncludes(self, fnamemodify(bufname(buf), ':p:h'))
     endif
 
     return syntastic#c#GetLocList('d', 'dmd', {

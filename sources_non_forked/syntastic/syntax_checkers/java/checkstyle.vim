@@ -1,6 +1,6 @@
 "============================================================================
 "File:        checkstyle.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Dmitry Geurkov <d.geurkov at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -40,6 +40,8 @@ endfunction
 
 function! SyntaxCheckers_java_checkstyle_GetLocList() dict
 
+    let buf = bufnr('')
+
     " classpath
     if !exists('s:sep')
         let s:sep = syntastic#util#isRunningWindows() || has('win32unix') ? ';' : ':'
@@ -58,7 +60,7 @@ function! SyntaxCheckers_java_checkstyle_GetLocList() dict
         \ '-f', 'xml' ])
 
     " filename
-    let fname = syntastic#util#shescape( expand('%:p:h', 1) . syntastic#util#Slash() . expand('%:t', 1) )
+    let fname = syntastic#util#shescape( fnamemodify(bufname(buf), ':p:h') . syntastic#util#Slash() . fnamemodify(bufname(buf), ':t') )
     if has('win32unix')
         let fname = substitute(syntastic#util#system('cygpath -m ' . fname), '\m\%x00', '', 'g')
     endif

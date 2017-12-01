@@ -1,6 +1,6 @@
 "============================================================================
 "File:        vimlint.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  LCD 47 <lcd047 at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -36,14 +36,22 @@ function! SyntaxCheckers_vim_vimlint_GetHighlightRegex(item) " {{{1
 endfunction " }}}1
 
 function! SyntaxCheckers_vim_vimlint_IsAvailable() dict " {{{1
-    let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim', 1)
-    let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim', 1)
+    try
+        " Vim 7.2-051 and later
+        let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim', 1)
+        let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim', 1)
+    catch /\m^Vim\%((\a\+)\)\=:E118/
+        let vimlparser = globpath(&runtimepath, 'autoload/vimlparser.vim')
+        let vimlint    = globpath(&runtimepath, 'autoload/vimlint.vim')
+    endtry
     call self.log("globpath(&runtimepath, 'autoload/vimlparser.vim', 1) = " . string(vimlparser) . ', ' .
                 \ "globpath(&runtimepath, 'autoload/vimlint.vim', 1) = " .    string(vimlint))
     return vimlparser !=# '' && vimlint !=# ''
 endfunction " }}}1
 
 function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1
+    let buf = bufnr('')
+
     " EVL102: unused variable v
     " EVL103: unused argument v
     " EVL104: variable may not be initialized on some execution path: v
@@ -67,16 +75,15 @@ function! SyntaxCheckers_vim_vimlint_GetLocList() dict " {{{1
         \ 'EVL204': 3,
         \ 'EVL205': 3 }
 
-    if exists('g:syntastic_vimlint_options')
-        if type(g:syntastic_vimlint_options) == type({})
-            let options = filter(copy(g:syntastic_vimlint_options), 'v:key =~# "\\m^EVL"')
-            call extend(param, options, 'force')
-        endif
+    let opts = syntastic#util#bufVar(buf, 'vimlint_options')
+    if type(opts) == type({})
+        let options = filter(copy(opts), 'v:key =~# "\\m^EVL"')
+        call extend(param, options, 'force')
     endif
 
     call self.log('options =', param)
 
-    return vimlint#vimlint(expand('%', 1), param)
+    return vimlint#vimlint(bufname(buf), param)
 endfunction " }}}1
 
 " Utilities {{{1
@@ -98,8 +105,7 @@ endfunction " }}}2
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'vim',
-    \ 'name': 'vimlint',
-    \ 'exec': '' })
+    \ 'name': 'vimlint' })
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

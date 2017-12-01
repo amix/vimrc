@@ -29,7 +29,8 @@ function! g:SyntasticModeMap.synch() abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticModeMap.allowsAutoChecking(filetype) abort " {{{2
-    let fts = split(a:filetype, '\m\.')
+    let registry = g:SyntasticRegistry.Instance()
+    let fts = registry.resolveFiletypes(a:filetype)
 
     if self.isPassive()
         return self._isOneFiletypeActive(fts)
@@ -38,13 +39,13 @@ function! g:SyntasticModeMap.allowsAutoChecking(filetype) abort " {{{2
     endif
 endfunction " }}}2
 
-function! g:SyntasticModeMap.doAutoChecking() abort " {{{2
-    let local_mode = get(b:, 'syntastic_mode', '')
+function! g:SyntasticModeMap.doAutoChecking(buf) abort " {{{2
+    let local_mode = getbufvar(a:buf, 'syntastic_mode')
     if local_mode ==# 'active' || local_mode ==# 'passive'
         return local_mode ==# 'active'
     endif
 
-    return self.allowsAutoChecking(&filetype)
+    return self.allowsAutoChecking(getbufvar(a:buf, '&filetype'))
 endfunction " }}}2
 
 function! g:SyntasticModeMap.isPassive() abort " {{{2
@@ -72,7 +73,7 @@ function! g:SyntasticModeMap.echoMode() abort " {{{2
 endfunction " }}}2
 
 function! g:SyntasticModeMap.modeInfo(filetypes) abort " {{{2
-    echomsg 'Syntastic version: ' . g:_SYNTASTIC_VERSION . ' (Vim ' . v:version . ', ' . g:_SYNTASTIC_UNAME . ')'
+    echomsg 'Syntastic version: ' . g:syntastic_version
     let type = len(a:filetypes) ? a:filetypes[0] : &filetype
     echomsg 'Info for filetype: ' . type
 
@@ -96,7 +97,7 @@ function! g:SyntasticModeMap.modeInfo(filetypes) abort " {{{2
             echomsg 'Local mode: ' . b:syntastic_mode
         endif
 
-        echomsg 'The current file will ' . (self.doAutoChecking() ? '' : 'not ') . 'be checked automatically'
+        echomsg 'The current file will ' . (self.doAutoChecking(bufnr('')) ? '' : 'not ') . 'be checked automatically'
     endif
 endfunction " }}}2
 

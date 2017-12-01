@@ -1,6 +1,6 @@
 "============================================================================
 "File:        lisp.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Karl Yngve Lervåg <karl.yngve@lervag.net>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -19,13 +19,13 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_lisp_clisp_GetLocList() dict
+    let buf = bufnr('')
     let tmpdir = syntastic#util#tmpdir()
-    let out = tmpdir !=# '.' ? ('-o ' . syntastic#util#shescape(tmpdir . syntastic#util#Slash() . 'syntastic_' . getpid())) : ''
 
     let makeprg = self.makeprgBuild({
         \ 'args_after': '-q',
         \ 'fname_before': '-c',
-        \ 'post_args_after': out })
+        \ 'post_args_after': ['-o', tmpdir] })
 
     let errorformat  =
         \ '%-G;%.%#,' .
@@ -40,7 +40,7 @@ function! SyntaxCheckers_lisp_clisp_GetLocList() dict
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'defaults': {'bufnr': bufnr('')} })
+        \ 'defaults': {'bufnr': buf} })
 
     call syntastic#util#rmrf(tmpdir)
 

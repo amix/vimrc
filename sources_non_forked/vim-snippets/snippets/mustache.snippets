@@ -1,17 +1,14 @@
-# if {{#value}} ... {{/value}}
-snippet if
+snippet if # {{#value}} ... {{/value}}
 	{{#${1:value}}}
-	${0}
+	${0:${VISUAL}}
 	{{/$1}}
-# if not {{^value}} ... {{/value}}
-snippet ifn
+snippet ifn # {{^value}} ... {{/value}}
 	{{^${1:value}}}
-	${0}
+	${0:${VISUAL}}
 	{{/$1}}
-# if else {{#value}} ... {{/value}} {{^value}} ... {{/value}}
-snippet ife
+snippet ife # {{#value}} ... {{/value}} {{^value}} ... {{/value}}
 	{{#${1:value}}}
-	${2}
+	${2:${VISUAL}}
 	{{/$1}}
 	{{^$1}}
 	${3}

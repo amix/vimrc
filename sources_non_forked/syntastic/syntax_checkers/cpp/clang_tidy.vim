@@ -1,6 +1,6 @@
 "============================================================================
 "File:        clang_tidy.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Benjamin Bannier <bbannier at gmail dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -17,7 +17,6 @@ let g:loaded_syntastic_cpp_clang_tidy_checker = 1
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'cpp',
     \ 'name': 'clang_tidy',
-    \ 'exec': 'clang-tidy',
     \ 'redirect': 'c/clang_tidy'})
 
 " vim: set sw=4 sts=4 et fdm=marker:

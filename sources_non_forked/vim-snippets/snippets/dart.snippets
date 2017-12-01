@@ -1,14 +1,15 @@
 snippet lib
-	#library('${1}');
+	library ${1};
 	${0}
 snippet im
-	#import('${1}');
+	import 'package:${1}/${2}.dart';
 	${0}
-snippet so
-	#source('${1}');
-	${0}
+snippet rgx
+	new RegExp(r'${1}')
+snippet var
+	var ${1} = ${2};
 snippet main
-	static void main() {
+	main() {
 	  ${0}
 	}
 snippet st
@@ -71,12 +72,12 @@ snippet as
 	assert(${0:/* condition */});
 snippet try
 	try {
-	  ${0}
+	  ${0:${VISUAL}}
 	} catch (${1:Exception e}) {
 	}
 snippet tryf
 	try {
-	  ${0}
+	  ${0:${VISUAL}}
 	} catch (${1:Exception e}) {
 	} finally {
 	}

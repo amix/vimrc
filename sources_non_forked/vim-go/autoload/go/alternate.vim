@@ -4,7 +4,7 @@ if !exists("g:go_alternate_mode")
 endif
 
 " Test alternates between the implementation of code and the test code.
-function! go#alternate#Switch(bang, cmd)
+function! go#alternate#Switch(bang, cmd) abort
   let file = expand('%')
   if empty(file)
     call go#util#EchoError("no buffer name")
@@ -28,3 +28,5 @@ function! go#alternate#Switch(bang, cmd)
     execute ":" . a:cmd . " " . alt_file
   endif
 endfunction
+
+" vim: sw=2 ts=2 et

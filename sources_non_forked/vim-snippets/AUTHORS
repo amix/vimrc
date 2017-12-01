@@ -1,0 +1,383 @@
+Authors
+===============================================================================
+
+Generated with "git log --oneline --pretty="%an" | sort | uniq > AUTHORS
+
+Aaron Broder
+Adnan Zafar
+afolmert
+aisensiy
+Alexander Ross
+Alexandre de Oliveira
+Alexey Shevchenko
+Alex Tan
+Allen.M
+Alvin Chan
+ALX-Liu-Xiao
+Andrea Giardini
+Andreas Krennmair
+Andreas Steinel
+Andrei Cristian Petcu
+Andrej Radovic
+Andre Walker
+Andrey Paskal
+Andy Waite
+Angel Alonso
+Ángel Alonso
+Anne Douwe Bouma
+Anthony Wilson
+Arvind
+ashfinal
+Audrius Kažukauskas
+Austin Wood
+Aydar Khabibullin
+babybeasimple
+Benjamin Nørgaard
+Bernhard Graf
+Bill Casarin
+binaryplease
+Björn
+Björn-Egil Dahlberg
+BlackEagle
+Boone Severson
+bounceme
+Bradlee Speice
+Brandon Dulaney
+Brandon Hilkert
+Brian Hogan
+Brian van Burken
+Bruno Sutic
+Camilo Payan
+carme
+Cézar Antáres
+Chad Paradis
+Chen Zhongzheng
+Ches Martin
+ChickenNuggers
+Chipairon
+Chris Dueck
+Chris Nicola
+Chris Sims
+Christian
+Christian Höltje
+Christian Neumüller
+Christopher Joslyn
+chrisyue
+Ciro Santilli
+Ciro Santilli 六四事件 法轮功
+Claudio Maradonna
+Connor Atherton
+Cooper LeBrun
+Corentin Peuvrel
+Craig Paterson
+Craig P Jolicoeur
+crazymaster
+daa84
+Daeyun Shin
+Dale Roberts
+Daniel Hahler
+Dan Loewenherz
+Danny Navarro
+daoo
+Darrell Hamilton
+David Arvelo
+David Barnett
+David C. Bishop
+David Deryl Downey - AKA Deryl R. Doucette
+David Rodríguez de Dios
+David Sanson
+dengyaolong
+Derek Morey
+dhilipsiva
+djdt
+Dmitry Dementev
+Donny Yang
+DSIW
+dzikie drożdże
+Eduardo Gurgel
+Eli Gundry
+emzap79
+Enric Lluelles
+Enrico Maria De Angelis
+Erich Heine
+Erik Westrup
+Ernest
+Eugene Kalinin
+Eustaquio Rangel
+Eustáquio Rangel
+Fatih Arslan
+Felix Jung
+Filipe Giusti
+Florent Lévigne
+Florian Sattler
+frans
+Fuad Saud
+Gabriel Chavez
+Gaël Chamoulaud
+Gea-Suan Lin
+George Guimarães
+George Lee
+Georgios Samaras
+Gert
+gfixler
+Gilad Peleg
+gk
+goonnow
+Gueunet Charles
+Gui Lin
+guneysus
+Gustavo Chain
+Gustavo Ferreira
+Hans-Guenter
+Harald Wartig
+Henrik Kjelsberg
+HIRAKI Satoru
+Holger Rapp
+Honza
+Honza Pokorny
+hulufei
+Igor Goldvekht
+Ilker Cetinkaya
+indi
+Indra Susila
+Ionică Bizău
+Iuri Fernandes
+Jack Stalnaker
+Jacobo de Vera
+Jacques Kvam
+jake romer
+Jakub Stasiak
+James Turley
+Jan Mollowitz
+Jason S. Jones
+Jean Jordaan
+Jeffrey Tratner
+Jens Hoepken
+jiangyc0
+Jim Deville
+Jinzhu
+Joey Curtin
+Johannes Wienke
+jonasac
+Jonas Bygdén
+Jonathan Martin
+Jorge García
+Jorge López Pérez
+Joseph Lin
+Josh Bode
+Josh Davis
+Josh Matthews
+Josh Vandergrift
+Josh Wainwright
+JuanPablo
+Julian Bennecker
+Julien Deniau
+Julien Pivard
+Julien Stechele
+Julien STECHELE
+Kalinin Eugene
+kenshin54
+Kentaro Imai
+Kevin Koltz
+Kevin Lui
+Kevin Mees
+Kevin Murray
+Kevin Schaul
+Konstantin
+Konstantin Gorodinskiy
+Laas Toom
+Laurent Georget
+laxtiz
+Leandro Moreira
+Leonardo B
+Leonidez Acosta
+linduxed
+Li Xin
+Louis
+Louis Pilfold
+Lucas Hoffmann
+Luis Carlos Cruz
+Luis Carlos Cruz Carballo
+Luiz Gonzaga dos Santos Filho
+majjoha
+mangege
+Marc Camuzat
+Marcelo D Montu
+Marcelo Jacobus
+Marcin Kulik
+Marcus Kammer
+Marc Weber
+Mario de Frutos
+Markus Benning
+marocchino
+Martin Atukunda
+Martin Heuschober
+Martxel Lasa
+Matěj Cepl
+Mathew Attlee
+Mathieu Comandon
+Matthew Barry
+Matthias Viehweger
+Mattia Tezzele
+Matt Rasband
+Matt Stevens
+Mauro Porras P
+Maximiliano Robaina
+Mayeu (Cast)
+Meng Zhuo
+Michael Gehring
+Michael Hinrichs
+Michael Rutter
+Michael Thessel
+Michi Huber
+Mickey
+midchildan
+Mike Foley
+Mike Smullin
+Miki Tebeka
+Minjong Chung
+M. Maxwell Watson
+mMontu
+mockturtl
+m-pilia
+Muhammad Hallaj Subery
+mwcz
+Namit
+Nan Cloudio Jiang
+Nan Zheng
+Nate Mara
+netei
+Ngo The Trung
+Nguyen Le
+Nick Janetakis
+Nicklasos
+Nick Papanastasiou
+Nicolas G. Querol
+Nico Suhl
+No Ducks
+Norman Messtorff
+obaoba
+oddlydrawn
+Oleg Voronkovich
+Ole Hansen
+Oliver Andrich
+Ondrej Slinták
+onemanstartup
+opennota
+Paco Esteban
+Panagiotis Mavrogiorgos
+Paolo Cretaro
+Pascal
+Paulo Romeira
+Pawel Jankowski
+phcerdan
+Philippe Mongeau
+Philipp Jovanovic
+Piotr Jawniak
+Piotr Yordanov
+Pirogov Evgenij
+Pompeu
+Povilas Balzaravicius Pawka
+Procras
+protream
+pydave
+r4d2
+Radosław Szymczyszyn
+Ralph-Wang
+Raül Torralba
+raydeal
+rcolombo
+Rekky
+René
+Rene Vergara
+Renzo Poddighe
+Reyes Yang
+ricardogcolombo
+Ricardo Jesus
+Rich Layte
+Roberto Miranda
+robin
+Robin Grindrod
+Rok Garbas
+Roland Sommer
+Rory McNamara
+rsw0x
+rtorralba
+Ruben Vereecken
+Ryan Bright
+Ryan Pineo
+Ryan Wang
+Sam Shepherd
+Santiago Gallego
+sasidhar-d
+Sathors
+Sebastian Röder
+Sebastian Wiesner
+Sergey Lebedev
+Sergey Zasenko
+Serhiy Oplakanets
+SevereOverfl0w
+Simeon F. Willbanks
+Simeon Willbanks
+Simon Désaulniers
+sirex
+skv
+Sokovikov
+Srijan Choudhary
+Steeve
+stefan
+Stephen Tudor
+Stephen Woods
+Steve Brown
+Steven Humphrey
+Steven Oliver
+Stuart Grimshaw
+Sudar
+¨switch87¨
+Tevin Zhang
+theocrite
+Thiago de Arruda
+Thomas Duerr
+Thomas Szymanski
+tinyladi
+Tobias Witt
+Tobie Warburton
+Tomasz Wisniewski
+Tom Vincent
+Tony
+Tony Narlock
+toogley
+Torbjørn Vatn
+tormaroe
+ToruIwashita
+Travis Holton
+Trevor Sullivan
+troydm
+tUrG0n
+twabiko
+Tyler Ball
+tyronepost
+Tyrone Post
+Vadim Khohlov
+Vincent Hsu
+Vladimir Rybas
+Vladislav Khvostov
+Vorzard
+Vzaa
+Waldecir Santos
+Wildsky Fann
+William Ma
+William Travis Holton
+X4fyr
+xz.zhang
+Yamamoto Yuji
+Yannick Brehon
+yerv000
+Yike Lu
+yuhuanbo
+Yu Huanbo
+Yves Lange
+yvhn
+zauguin
+Zaven Muradyan
+ZPH

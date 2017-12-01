@@ -1,6 +1,6 @@
 "============================================================================
 "File:        matlab.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Maintainer:  Jason Graham <jason at the-graham dot com>
 "License:     This program is free software. It comes without any warranty,
 "             to the extent permitted by applicable law. You can redistribute
@@ -19,7 +19,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_matlab_mlint_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args_after': '-id $*' })
+    let makeprg = self.makeprgBuild({ 'args_after': '-id' })
 
     let errorformat =
         \ 'L %l (C %c): %*[a-zA-Z0-9]: %m,'.

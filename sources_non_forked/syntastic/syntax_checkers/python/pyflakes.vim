@@ -1,6 +1,6 @@
 "============================================================================
 "File:        pyflakes.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Authors:     Martin Grenfell <martin.grenfell@gmail.com>
 "             kstep <me@kstep.me>
 "             Parantapa Bhattacharya <parantapa@gmail.com>
