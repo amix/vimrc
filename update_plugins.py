@@ -82,14 +82,13 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
         pass
 
     shutil.move(plugin_temp_path, plugin_dest_path)
-
+    print(zip_path)
     print('Updated {0}'.format(plugin_name))
 
 
 def update(plugin):
     name, github_url = plugin.split(' ')
     zip_path = GITHUB_ZIP % github_url
-    print zip_path
     download_extract_replace(name, zip_path,
                              temp_directory, SOURCE_DIR)
 
