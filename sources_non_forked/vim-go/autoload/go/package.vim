@@ -46,7 +46,7 @@ function! go#package#Paths() abort
     let dirs += [s:goroot]
   endif
 
-  let workspaces = split(go#path#Detect(), go#util#PathListSep())
+  let workspaces = split(go#path#Default(), go#util#PathListSep())
   if workspaces != []
     let dirs += workspaces
   endif

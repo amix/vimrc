@@ -146,7 +146,7 @@ function! s:GoInstallBinaries(updateBinaries, ...)
         echo "vim-go: ". binary ." not found. Installing ". importPath . " to folder " . go_bin_path
       endif
 
-      let out = go#util#System(cmd . l:goGetFlags . shellescape(importPath))
+      let out = go#util#System(printf('%s %s %s', cmd, l:goGetFlags, shellescape(importPath)))
       if go#util#ShellError() != 0
         echom "Error installing " . importPath . ": " . out
       endif
@@ -260,6 +260,19 @@ augroup vim-go
   " in the same window doesn't highlight the most recently matched
   " identifier's positions.
   autocmd BufWinEnter *.go call go#guru#ClearSameIds()
-augroup END
+
+  autocmd BufEnter *.go
+        \  if get(g:, 'go_autodetect_gopath', 0) && !exists('b:old_gopath')
+        \|   let b:old_gopath = exists('$GOPATH') ? $GOPATH : -1
+        \|   let $GOPATH = go#path#Detect()
+        \| endif
+  autocmd BufLeave *.go
+        \  if exists('b:old_gopath')
+        \|   if b:old_gopath isnot -1
+        \|     let $GOPATH = b:old_gopath
+        \|   endif
+        \|   unlet b:old_gopath
+        \| endif
+augroup end
 
 " vim: sw=2 ts=2 et

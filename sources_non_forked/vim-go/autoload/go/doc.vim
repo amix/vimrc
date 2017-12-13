@@ -29,7 +29,19 @@ function! go#doc#OpenBrowser(...) abort
     let name = out["name"]
     let decl = out["decl"]
 
-    let godoc_url = "https://godoc.org/" . import
+    let godoc_url = get(g:, 'go_doc_url', 'https://godoc.org')
+    if godoc_url isnot 'https://godoc.org'
+      " strip last '/' character if available
+      let last_char = strlen(godoc_url) - 1
+      if godoc_url[last_char] == '/'
+        let godoc_url = strpart(godoc_url, 0, last_char)
+      endif
+
+      " custom godoc installations expects it
+      let godoc_url .= "/pkg"
+    endif
+
+    let godoc_url .= "/" . import
     if decl !~ "^package"
       let godoc_url .= "#" . name
     endif

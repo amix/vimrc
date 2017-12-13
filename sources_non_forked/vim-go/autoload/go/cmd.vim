@@ -41,8 +41,6 @@ function! go#cmd#Build(bang, ...) abort
 
   " Vim 7.4 without async
   else
-    let old_gopath = $GOPATH
-    let $GOPATH = go#path#Detect()
     let default_makeprg = &makeprg
     let &makeprg = "go " . join(go#util#Shelllist(args), ' ')
 
@@ -72,7 +70,6 @@ function! go#cmd#Build(bang, ...) abort
     endif
 
     let &makeprg = default_makeprg
-    let $GOPATH = old_gopath
   endif
 endfunction
 
@@ -125,9 +122,6 @@ function! go#cmd#Run(bang, ...) abort
     " anything. Once this is implemented we're going to make :GoRun async
   endif
 
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
-
   if go#util#IsWin()
     exec '!go run ' . go#util#Shelljoin(go#tool#Files())
     if v:shell_error
@@ -136,7 +130,6 @@ function! go#cmd#Run(bang, ...) abort
       redraws! | echon "vim-go: [run] " | echohl Function | echon "SUCCESS"| echohl None
     endif
 
-    let $GOPATH = old_gopath
     return
   endif
 
@@ -165,7 +158,6 @@ function! go#cmd#Run(bang, ...) abort
     call go#list#JumpToFirst(l:listtype)
   endif
 
-  let $GOPATH = old_gopath
   let &makeprg = default_makeprg
 endfunction
 
@@ -190,8 +182,6 @@ function! go#cmd#Install(bang, ...) abort
     return
   endif
 
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
   let default_makeprg = &makeprg
 
   " :make expands '%' and '#' wildcards, so they must also be escaped
@@ -220,19 +210,15 @@ function! go#cmd#Install(bang, ...) abort
   if !empty(errors) && !a:bang
     call go#list#JumpToFirst(l:listtype)
   else
-    call go#util#EchoSuccess("installed to ". go#path#Detect())
+    call go#util#EchoSuccess("installed to ". go#path#Default())
   endif
 
-  let $GOPATH = old_gopath
   let &makeprg = default_makeprg
 endfunction
 
 " Generate runs 'go generate' in similar fashion to go#cmd#Build()
 function! go#cmd#Generate(bang, ...) abort
   let default_makeprg = &makeprg
-
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
 
   " :make expands '%' and '#' wildcards, so they must also be escaped
   let goargs = go#util#Shelljoin(map(copy(a:000), "expand(v:val)"), 1)
@@ -264,7 +250,6 @@ function! go#cmd#Generate(bang, ...) abort
   endif
 
   let &makeprg = default_makeprg
-  let $GOPATH = old_gopath
 endfunction
 
 " ---------------------
@@ -311,10 +296,6 @@ function s:cmd_job(args) abort
         \ 'exit_cb': callbacks.exit_cb,
         \ }
 
-  " modify GOPATH if needed
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
-
   " pre start
   let dir = getcwd()
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -325,7 +306,6 @@ function s:cmd_job(args) abort
 
   " post start
   execute cd . fnameescape(dir)
-  let $GOPATH = old_gopath
 endfunction
 
 " vim: sw=2 ts=2 et

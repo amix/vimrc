@@ -15,7 +15,7 @@ fun! gotest#write_file(path, contents) abort
   call mkdir(fnamemodify(l:full_path, ':h'), 'p')
   call writefile(a:contents, l:full_path)
   exe 'cd ' . l:dir . '/src'
-  silent exe 'e ' . a:path
+  silent exe 'e! ' . a:path
 
   " Set cursor.
   let l:lnum = 1

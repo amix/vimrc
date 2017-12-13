@@ -16,7 +16,7 @@ from os import path
 
 #--- Globals ----------------------------------------------
 PLUGINS = """
-YankRing.vim https://github.com/vim-scripts/YankRing.vim
+vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
 ack.vim https://github.com/mileszs/ack.vim
 bufexplorer https://github.com/corntrace/bufexplorer
 ctrlp.vim https://github.com/ctrlpvim/ctrlp.vim
@@ -89,7 +89,6 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
 def update(plugin):
     name, github_url = plugin.split(' ')
     zip_path = GITHUB_ZIP % github_url
-    print zip_path
     download_extract_replace(name, zip_path,
                              temp_directory, SOURCE_DIR)
 

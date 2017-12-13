@@ -1,16 +1,11 @@
 function! go#impl#Impl(...) abort
-  let binpath = go#path#CheckBinPath('impl')
-  if empty(binpath)
-    return
-  endif
-
   let recv = ""
   let iface = ""
   let interactive = 0
 
   let pos = getpos('.')
 
-  if a:0 == 0
+  if a:0 is 0
     " Interactive mode if user didn't pass any arguments.
     let recv = s:getReceiver()
     let iface = input("vim-go: generating method stubs for interface: ")
@@ -19,7 +14,7 @@ function! go#impl#Impl(...) abort
       call go#util#EchoError('usage: interface type is not provided')
       return
     endif
-  elseif a:0 == 1
+  elseif a:0 is 1
     " we assume the user only passed the interface type,
     " i.e: ':GoImpl io.Writer'
     let recv = s:getReceiver()
@@ -41,19 +36,19 @@ function! go#impl#Impl(...) abort
 
   try
     let dirname = fnameescape(expand('%:p:h'))
-    let result = go#util#System(join(go#util#Shelllist([binpath, '-dir', dirname, recv, iface], ' ')))
+    let [result, err] = go#util#Exec(['impl', '-dir', dirname, recv, iface])
     let result = substitute(result, "\n*$", "", "")
-    if go#util#ShellError() != 0
+    if err
       call go#util#EchoError(result)
       return
     endif
 
-    if result ==# ''
+    if result is# ''
       return
     end
 
     put =''
-    put =result
+    silent put =result
   finally
     call setpos('.', pos)
   endtry
@@ -99,10 +94,6 @@ function! s:root_dirs() abort
   endif
 
   let paths = map(split(go#util#env("gopath"), go#util#PathListSep()), "substitute(v:val, '\\\\', '/', 'g')")
-  if go#util#ShellError()
-    return []
-  endif
-
   if !empty(filter(paths, 'isdirectory(v:val)'))
     call extend(dirs, paths)
   endif
@@ -120,11 +111,12 @@ function! s:go_packages(dirs) abort
 endfunction
 
 function! s:interface_list(pkg) abort
-  let contents = split(go#util#System('go doc ' . a:pkg), "\n")
-  if go#util#ShellError()
+  let [contents, err] = go#util#Exec(['go', 'doc', a:pkg])
+  if err
     return []
   endif
 
+  let contents = split(contents, "\n")
   call filter(contents, 'v:val =~# ''^type\s\+\h\w*\s\+interface''')
   return map(contents, 'a:pkg . "." . matchstr(v:val, ''^type\s\+\zs\h\w*\ze\s\+interface'')')
 endfunction

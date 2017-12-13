@@ -2,7 +2,7 @@
 " Filename: autoload/lightline/colorscheme/material.vim
 " Author: Lokesh Krishna
 " License: MIT License
-" Last Change: 2017/10/30 16:35:27.
+" Last Change: 2017/11/25 11:13:42.
 " =============================================================================
 
 " Common colors
@@ -16,7 +16,7 @@ let s:yellow = '#ffcb6b'
 
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 
-if &background ==# 'light'
+if lightline#colorscheme#background() ==# 'light'
   " Light variant
   let s:bg     = '#ffffff'
   let s:gray1  = '#2e3c43'
