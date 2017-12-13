@@ -4,14 +4,14 @@
 " :GoPath is used
 let s:initial_go_path = ""
 
-" GoPath sets or returns the current GOPATH. If no arguments are passed it
+" GoPath sets or echos the current GOPATH. If no arguments are passed it
 " echoes the current GOPATH, if an argument is passed it replaces the current
 " GOPATH with it. If two double quotes are passed (the empty string in go),
 " it'll clear the GOPATH and will restore to the initial GOPATH.
 function! go#path#GoPath(...) abort
   " no argument, show GOPATH
   if len(a:000) == 0
-    echo go#path#Detect()
+    echo go#path#Default()
     return
   endif
 
@@ -72,11 +72,6 @@ endfunction
 function! go#path#Detect() abort
   let gopath = go#path#Default()
 
-  " don't lookup for godeps if autodetect is disabled.
-  if !get(g:, "go_autodetect_gopath", 0)
-    return gopath
-  endif
-
   let current_dir = fnameescape(expand('%:p:h'))
 
   " TODO(arslan): this should be changed so folders or files should be
@@ -123,7 +118,6 @@ function! go#path#Detect() abort
   let gopath = substitute(gopath, ":$", "", "")
   return gopath
 endfunction
-
 
 " BinPath returns the binary path of installed go tools.
 function! go#path#BinPath() abort

@@ -3,12 +3,12 @@ notifications:
   email: false
 matrix:
   include:
-    - env: SCRIPT=test VIM_VERSION=vim-7.4
-    - env: SCRIPT=test VIM_VERSION=vim-8.0
-    - env: SCRIPT=test VIM_VERSION=nvim
+    - env: SCRIPT="test -c" VIM_VERSION=vim-7.4
+    - env: SCRIPT="test -c" VIM_VERSION=vim-8.0
+    - env: SCRIPT="test -c" VIM_VERSION=nvim
     - env: SCRIPT=lint VIM_VERSION=vim-8.0
 install:
   - ./scripts/install-vim $VIM_VERSION
-  - pip install --user vim-vint
+  - pip install --user vim-vint covimerage codecov
 script:
   - ./scripts/$SCRIPT $VIM_VERSION

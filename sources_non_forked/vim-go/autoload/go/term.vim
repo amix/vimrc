@@ -18,10 +18,6 @@ function! go#term#newmode(bang, cmd, mode) abort
     let mode = g:go_term_mode
   endif
 
-  " modify GOPATH if needed
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
-
   " execute go build in the files directory
   let l:winnr = winnr()
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -53,9 +49,6 @@ function! go#term#newmode(bang, cmd, mode) abort
   endif
 
   execute cd . fnameescape(dir)
-
-  " restore back GOPATH
-  let $GOPATH = old_gopath
 
   let job.id = id
   let job.cmd = a:cmd

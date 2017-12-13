@@ -300,10 +300,6 @@ function s:coverage_job(args)
         \ 'exit_cb': callbacks.exit_cb,
         \ }
 
-  " modify GOPATH if needed
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
-
   " pre start
   let dir = getcwd()
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -320,7 +316,6 @@ function s:coverage_job(args)
 
   " post start
   execute cd . fnameescape(dir)
-  let $GOPATH = old_gopath
 endfunction
 
 " coverage_callback is called when the coverage execution is finished

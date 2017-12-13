@@ -38,6 +38,10 @@ if !exists("g:go_highlight_functions")
   let g:go_highlight_functions = 0
 endif
 
+if !exists("g:go_highlight_function_arguments")
+  let g:go_highlight_function_arguments = 0
+endif
+
 if !exists("g:go_highlight_methods")
   let g:go_highlight_methods = 0
 endif
@@ -94,7 +98,7 @@ if exists("g:go_fold_enable")
   if index(g:go_fold_enable, 'package_comment') == -1
     let s:fold_package_comment = 0
   endif
- 
+
   " Disabled by default.
   if index(g:go_fold_enable, 'comment') > -1
     let s:fold_comment = 1
@@ -229,14 +233,14 @@ endif
 " var, const
 if s:fold_varconst
   syn region    goVar               start='var ('   end='^\s*)$' transparent fold
-                        \ contains=ALLBUT,goParen,goBlock,goFunction,goTypeName,goReceiverType,goReceiverVar
+                        \ contains=ALLBUT,goParen,goBlock,goFunction,goTypeName,goReceiverType,goReceiverVar,goArgumentName,goArgumentType,goSimpleArguments
   syn region    goConst             start='const (' end='^\s*)$' transparent fold
-                        \ contains=ALLBUT,goParen,goBlock,goFunction,goTypeName,goReceiverType,goReceiverVar
+                        \ contains=ALLBUT,goParen,goBlock,goFunction,goTypeName,goReceiverType,goReceiverVar,goArgumentName,goArgumentType,goSimpleArguments
 else
-  syn region    goVar               start='var ('   end='^\s*)$' transparent 
-                        \ contains=ALLBUT,goParen,goBlock,goFunction,goTypeName,goReceiverType,goReceiverVar
+  syn region    goVar               start='var ('   end='^\s*)$' transparent
+                        \ contains=ALLBUT,goParen,goBlock,goFunction,goTypeName,goReceiverType,goReceiverVar,goArgumentName,goArgumentType,goSimpleArguments
   syn region    goConst             start='const (' end='^\s*)$' transparent
-                        \ contains=ALLBUT,goParen,goBlock,goFunction,goTypeName,goReceiverType,goReceiverVar
+                        \ contains=ALLBUT,goParen,goBlock,goFunction,goTypeName,goReceiverType,goReceiverVar,goArgumentName,goArgumentType,goSimpleArguments
 endif
 
 " Single-line var, const, and import.
@@ -343,14 +347,22 @@ endif
 hi def link     goOperator          Operator
 
 " Functions;
-if g:go_highlight_functions != 0
-  syn match goDeclaration       /\<func\>/ nextgroup=goReceiver,goFunction skipwhite skipnl
-  syn match goReceiver          /(\(\w\|[ *]\)\+)/ contained nextgroup=goFunction contains=goReceiverVar skipwhite skipnl
-  syn match goReceiverVar       /\w\+/ nextgroup=goPointerOperator,goReceiverType skipwhite skipnl contained
+if g:go_highlight_functions isnot 0 || g:go_highlight_function_arguments isnot 0
+  syn match goFunctionCall      /\w\+\ze(/ contains=goBuiltins,goDeclaration
+  syn match goDeclaration       /\<func\>/ nextgroup=goReceiver,goFunction,goSimpleArguments skipwhite skipnl
+  syn match goReceiverVar       /\w\+\ze\s\+\(\w\|\*\)/ nextgroup=goPointerOperator,goReceiverType skipwhite skipnl contained
   syn match goPointerOperator   /\*/ nextgroup=goReceiverType contained skipwhite skipnl
+  syn match goFunction          /\w\+/ nextgroup=goSimpleArguments contained skipwhite skipnl
   syn match goReceiverType      /\w\+/ contained
-  syn match goFunction          /\w\+/ contained
-  syn match goFunctionCall      /\w\+\ze(/ contains=GoBuiltins,goDeclaration
+if g:go_highlight_function_arguments isnot 0
+  syn match goSimpleArguments   /(\(\w\|\_s\|[*\.\[\],\{\}<>-]\)*)/ contained contains=goArgumentName nextgroup=goSimpleArguments skipwhite skipnl
+  syn match goArgumentName      /\w\+\(\s*,\s*\w\+\)*\ze\s\+\(\w\|\.\|\*\|\[\)/ contained nextgroup=goArgumentType skipwhite skipnl
+  syn match goArgumentType      /\([^,)]\|\_s\)\+,\?/ contained nextgroup=goArgumentName skipwhite skipnl
+                        \ contains=goVarArgs,goType,goSignedInts,goUnsignedInts,goFloats,goComplexes,goDeclType,goBlock
+  hi def link   goReceiverVar       goArgumentName
+  hi def link   goArgumentName      Identifier
+endif
+  syn match goReceiver          /(\s*\w\+\(\s\+\*\?\s*\w\+\)\?\s*)\ze\s*\w/ contained nextgroup=goFunction contains=goReceiverVar skipwhite skipnl
 else
   syn keyword goDeclaration func
 endif

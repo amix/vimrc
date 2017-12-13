@@ -100,10 +100,6 @@ function s:rename_job(args)
         \ 'exit_cb': funcref("s:exit_cb"),
         \ }
 
-  " modify GOPATH if needed
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
-
   call go#statusline#Update(status_dir, {
         \ 'desc': "current status",
         \ 'type': "gorename",
@@ -111,8 +107,6 @@ function s:rename_job(args)
         \})
 
   call job_start(a:args.cmd, start_options)
-
-  let $GOPATH = old_gopath
 endfunction
 
 function s:parse_errors(exit_val, bang, out)

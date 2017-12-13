@@ -227,24 +227,30 @@ function! s:closeTreeWindow()
     endif
 endfunction
 
-" FUNCTION: s:deleteBookmark(bm) {{{1
-" if the cursor is on a bookmark, prompt to delete
-function! s:deleteBookmark(bm)
-    echo  "Are you sure you wish to delete the bookmark:\n\"" . a:bm.name . "\" (yN):"
+" FUNCTION: s:deleteBookmark(bookmark) {{{1
+" Prompt the user to confirm the deletion of the selected bookmark.
+function! s:deleteBookmark(bookmark)
+    let l:message = "Delete the bookmark \"" . a:bookmark.name
+                \ . "\" from the bookmark list?"
 
-    if  nr2char(getchar()) ==# 'y'
-        try
-            call a:bm.delete()
-            call b:NERDTree.root.refresh()
-            call b:NERDTree.render()
-            redraw
-        catch /^NERDTree/
-            call nerdtree#echoWarning("Could not remove bookmark")
-        endtry
-    else
-        call nerdtree#echo("delete aborted" )
+    let l:choices = "&Yes\n&No"
+
+    echo | redraw
+    let l:selection = confirm(l:message, l:choices, 1, 'Warning')
+
+    if l:selection != 1
+        call nerdtree#echo('bookmark not deleted')
+        return
     endif
 
+    try
+        call a:bookmark.delete()
+        silent call b:NERDTree.root.refresh()
+        call b:NERDTree.render()
+        echo | redraw
+    catch /^NERDTree/
+        call nerdtree#echoWarning('could not remove bookmark')
+    endtry
 endfunction
 
 " FUNCTION: s:displayHelp() {{{1
@@ -255,10 +261,16 @@ function! s:displayHelp()
     call b:NERDTree.ui.centerView()
 endfunction
 
-" FUNCTION: s:findAndRevealPath() {{{1
-function! s:findAndRevealPath()
+" FUNCTION: s:findAndRevealPath(path) {{{1
+function! s:findAndRevealPath(path)
+    let l:path = a:path
+
+    if empty(l:path)
+        let l:path = expand('%:p')
+    endif
+    
     try
-        let p = g:NERDTreePath.New(expand("%:p"))
+        let p = g:NERDTreePath.New(l:path)
     catch /^NERDTree.InvalidArgumentsError/
         call nerdtree#echo("no file for the current buffer")
         return
@@ -581,7 +593,7 @@ function! nerdtree#ui_glue#setupCommands()
     command! -n=0 -bar NERDTreeClose :call g:NERDTree.Close()
     command! -n=1 -complete=customlist,nerdtree#completeBookmarks -bar NERDTreeFromBookmark call g:NERDTreeCreator.CreateTabTree('<args>')
     command! -n=0 -bar NERDTreeMirror call g:NERDTreeCreator.CreateMirror()
-    command! -n=0 -bar NERDTreeFind call s:findAndRevealPath()
+    command! -n=? -complete=file -bar NERDTreeFind call s:findAndRevealPath('<args>')
     command! -n=0 -bar NERDTreeFocus call NERDTreeFocus()
     command! -n=0 -bar NERDTreeCWD call NERDTreeCWD()
 endfunction

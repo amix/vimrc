@@ -207,10 +207,6 @@ function s:test_job(args) abort
         \ 'exit_cb': funcref("s:exit_cb"),
         \ }
 
-  " modify GOPATH if needed
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
-
   " pre start
   let dir = getcwd()
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -221,7 +217,6 @@ function s:test_job(args) abort
 
   " post start
   execute cd . fnameescape(dir)
-  let $GOPATH = old_gopath
 endfunction
 
 " show_errors parses the given list of lines of a 'go test' output and returns
@@ -295,20 +290,27 @@ function! s:parse_errors(lines) abort
       "   '\t/usr/local/go/src/time.go:1313 +0x5d'
       let tokens = matchlist(line, '^\t\+\(.\{-}\.go\):\(\d\+\) \(+0x.*\)')
     else
-      " matches lines produced by `go test`. All lines produced by `go test`
-      " that we're interested in start with zero or more spaces (increasing
-      " depth of subtests is represented by a similar increase in the number
-      " of spaces at the start of output lines. Top level tests start with
-      " zero leading spaces). Lines that indicate test status (e.g. RUN, FAIL,
-      " PASS) start after the spaces. Lines that indicate test failure
-      " location or test log message location (e.g.  "testing.T".Log) begin
-      " with the appropriate number of spaces for the current test level,
-      " followed by a tab, a filename , a colon, the line number, another
-      " colon, a space, and the failure or log message.
+      " Matches lines produced by `go test`. When the test binary cannot be
+      " compiled, the errors will be a filename, followed by a colon, followed
+      " by the line number, followed by another colon, a space, and then the
+      " compiler error.
+      " e.g.:
+      "   'quux.go:123: undefined: foo'
+      "
+      " When the test binary can be successfully compiled, but tests fail, all
+      " lines produced by `go test` that we're interested in start with zero
+      " or more spaces (increasing depth of subtests is represented by a
+      " similar increase in the number of spaces at the start of output lines.
+      " Top level tests start with zero leading spaces). Lines that indicate
+      " test status (e.g. RUN, FAIL, PASS) start after the spaces. Lines that
+      " indicate test failure location or test log message location (e.g.
+      " "testing.T".Log) begin with the appropriate number of spaces for the
+      " current test level, followed by a tab, a filename , a colon, the line
+      " number, another colon, a space, and the failure or log message.
       "
       " e.g.:
       "   '\ttime_test.go:30: Likely problem: the time zone files have not been installed.'
-      let tokens = matchlist(line, '^ *\t\+\(.\{-}\.go\):\(\d\+\):\s*\(.*\)')
+      let tokens = matchlist(line, '^\%( *\t\+\)\?\(.\{-}\.go\):\(\d\+\):\s*\(.*\)')
     endif
 
     if !empty(tokens) " Check whether the line may refer to a file.
