@@ -67,12 +67,22 @@
 
 " default colors/groups
 " you may define your own colors in you vimrc file, in the form as below:
-hi MarkWord1  ctermbg=Cyan     ctermfg=Black  guibg=#8CCBEA    guifg=Black
-hi MarkWord2  ctermbg=Green    ctermfg=Black  guibg=#A4E57E    guifg=Black
-hi MarkWord3  ctermbg=Yellow   ctermfg=Black  guibg=#FFDB72    guifg=Black
-hi MarkWord4  ctermbg=Red      ctermfg=Black  guibg=#FF7272    guifg=Black
-hi MarkWord5  ctermbg=Magenta  ctermfg=Black  guibg=#FFB3FF    guifg=Black
-hi MarkWord6  ctermbg=Blue     ctermfg=Black  guibg=#9999FF    guifg=Black
+hi MarkWord1   ctermbg=Cyan        ctermfg=Black  guibg=#ff7f50    guifg=Black
+hi MarkWord2   ctermbg=Green       ctermfg=Black  guibg=#A4E57E    guifg=Black
+hi MarkWord3   ctermbg=Yellow      ctermfg=Black  guibg=#FFDB72    guifg=Black
+hi MarkWord4   ctermbg=Red         ctermfg=Black  guibg=#ff4500    guifg=Black
+hi MarkWord5   ctermbg=Magenta     ctermfg=Black  guibg=#ff00ff    guifg=Black
+hi MarkWord6   ctermbg=Blue        ctermfg=Black  guibg=#87ceeb    guifg=Black
+hi MarkWord7   ctermbg=DarkBlue    ctermfg=Black  guibg=#0000FF    guifg=White
+hi MarkWord8   ctermbg=DarkGreen   ctermfg=Black  guibg=#00FF00    guifg=Black
+hi MarkWord9   ctermbg=DarkCyan    ctermfg=Black  guibg=#00FFFF    guifg=Black
+hi MarkWord10  ctermbg=DarkRed     ctermfg=Black  guibg=#FF0000    guifg=White
+hi MarkWord11  ctermbg=DarkMagenta ctermfg=Black  guibg=#FF00FF    guifg=White
+hi MarkWord12  ctermbg=Brown       ctermfg=Black  guibg=#8b008b    guifg=White
+hi MarkWord13  ctermbg=Grey        ctermfg=Black  guibg=#fafad2    guifg=Black
+hi MarkWord14  ctermbg=Green       ctermfg=Black  guibg=#adff2f    guifg=Black
+
+let g:mwCycleMax=14
 
 " Anti reinclusion guards
 if exists('g:loaded_mark') && !exists('g:force_reload_mark')
@@ -217,13 +227,6 @@ endfunction
 function! s:InitMarkVariables()
 	if !exists("g:mwHistAdd")
 		let g:mwHistAdd = "/@"
-	endif
-	if !exists("g:mwCycleMax")
-		let i = 1
-		while hlexists("MarkWord" . i)
-			let i = i + 1
-		endwhile
-		let g:mwCycleMax = i - 1
 	endif
 	if !exists("g:mwCycle")
 		let g:mwCycle = 1

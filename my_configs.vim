@@ -1,13 +1,13 @@
 if has("mac") || has("macunix")
-    set gfn=Hack:h10,Source\ Code\ Pro:h10,Menlo:h10
+    set gfn=Hack:h9,Source\ Code\ Pro:h9,Menlo:h9
 elseif has("win16") || has("win32")
-    set gfn=Hack:h10,Source\ Code\ Pro:h10,Bitstream\ Vera\ Sans\ Mono:h10
+    set gfn=Hack:h9,Source\ Code\ Pro:h9,Bitstream\ Vera\ Sans\ Mono:h9
 elseif has("gui_gtk2")
-    set gfn=Hack\ 10,Source\ Code\ Pro\ 10,Bitstream\ Vera\ Sans\ Mono\ 10
+    set gfn=Hack\ 9,Source\ Code\ Pro\ 9,Bitstream\ Vera\ Sans\ Mono\ 9
 elseif has("linux")
-    set gfn=Hack\ 10,Source\ Code\ Pro\ 10,Bitstream\ Vera\ Sans\ Mono\ 10
+    set gfn=Hack\ 9,Source\ Code\ Pro\ 9,Bitstream\ Vera\ Sans\ Mono\ 9
 elseif has("unix")
-    set gfn=Monospace\ 10
+    set gfn=Monospace\ 9
 endif
 
 " move around tabs. conflict with the original screen top/bottom
