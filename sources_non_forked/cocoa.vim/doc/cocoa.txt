@@ -1,0 +1,154 @@
+*cocoa.txt*  Plugin for Cocoa/Objective-C development.
+
+cocoa.vim                                                              *cocoa*
+Last Change: March 30, 2010
+Author: Michael Sanders
+
+|cocoa-introduction| Introduction
+|cocoa-installation| Installation
+|cocoa-overview|     Overview of features
+|cocoa-mappings|     Mappings
+|cocoa-commands|     Commands
+|cocoa-license|      License
+|cocoa-contact|      Contact
+
+For Vim version 7.0 or later.
+This plugin only works if 'compatible' is not set.
+{Vi does not have any of these features.}
+
+==============================================================================
+INTRODUCTION                                                     *cocoa-intro*
+
+Cocoa.vim is a collection of scripts designed to make it easier to develop
+Cocoa/Objective-C applications. It includes enhanced syntax highlighting, code
+completion, documentation lookup, as well as a number of other features that
+can be used to integrate Vim with Xcode, allowing you to essentially replace
+Xcode's editor with Vim.
+
+==============================================================================
+INSTALLATION                                              *cocoa-installation*
+
+Documentation lookup and code completion for Cocoa.vim currently only work on
+OS X 10.5+ (although the other parts should work on any platform). To install,
+simply unzip cocoa.zip to your home vim directory (typically ~/.vim).
+
+                                                     *cocoa-suggested-plugins*
+The code completion in cocoa.vim uses snipMate, if you have it installed, to
+allow you to conveniently <tab> over the parameters in functions and
+methods. If you like cocoa.vim, you may also find objc_matchbracket.vim
+useful.
+
+                                                      *leopard-security-alert*
+Documentation works by showing the page in your default browser, which
+apparently causes Leopard to warn you of opening an html file for every word
+you look up. To fix this, see this page: http://tinyurl.com/remove-annoying-alert
+
+==============================================================================
+FEATURE OVERVIEW                                              *cocoa-features*
+
+	1. Enhanced syntax highlighting; Vim's syntax highlighting for
+	   Objective-C seemed a bit incomplete to me, so I have added a few
+	   niceties, such as highlighting Cocoa keywords and differentiating
+	   the method name and passed objects in method calls and definitions.
+	2. Xcode-like mappings; mappings such as <d-r> (where "d" is "command")
+	   to build & run and <d-0> to switch to the project window help to
+	   integrate Xcode and Vim. For a complete list of the mappings in
+	   cocoa.vim, see |cocoa-mappings|.
+	3. Methods for the current file can be listed and navigated to with
+	   the |:ListMethods| command.
+	4. A template of methods declared in a header file (.h) can be built
+	   in an implementation file (.m) with |:BuildMethods|.
+	5. Cocoa/C Documentation can be looked up with the |:CocoaDoc| command,
+	   or simply with Vim's |K|.
+	6. Code completion for classes, methods, functions, constants, types,
+	   and notifications can be invoked with <c-x><c-o>. Parameters for
+	   methods and functions are automatically converted to snippets to
+	   <tab> over if you have snipMate installed.
+
+==============================================================================
+MAPPINGS                                     *cocoa-mappings* *g:objc_man_key*
+
+Cocoa.vim maps the following keys, some for convenience and others to
+integrate with Xcode:
+(Disclaimer: Sorry, I could not use the swirly symbols because vim/git was
+having encoding issues. Just pretend that e.g. <d-r> means cmd-r.)
+
+	|<Leader>|A - Alternate between header (.h) and implementation (.m) file
+	K - Look up documentation for word under cursor[1]
+	<d-m-up> - <Leader>A
+	<d-r> - Build & Run (Go)
+	<d-cr> - CMD-R
+	<d-b> - Build
+	<shift-k> - Clean
+	<d-0> - Go to Project
+	<d-2> - :ListMethods
+	<F5> (in insert mode) - Show omnicompletion menu
+	<d-/> - Comment out line
+	<d-[> - Decrease indent
+	<d-]> - Increase indent
+
+	([1] This can be customized by the variable g:objc_man_key.)
+
+==============================================================================
+COMMANDS                                                      *cocoa-commands*
+
+                                                                *:ListMethods*
+:ListMethods		Open a split window containing the methods, functions,
+			and #pragma marks of the current file.
+                                                               *:BuildMethods*
+:BuildMethods [headerfile]
+			Build a template of methods in an implementation (.m)
+			from a list declared in a header file (.h). If no
+			argument is given, the corresponding header file is
+			used (e.g. "foo.m" -> "foo.h").
+
+==============================================================================
+CODE COMPLETION                                             *cocoa-completion*
+
+When cocoa.vim is installed the 'omnifunc' is automatically set to
+'cocoacomplete#Complete'. This allows you to complete classes, functions,
+methods, etc. with <c-x><c-o>. These keywords are saved from header files in
+~/.vim/lib/cocoa_indexes; they have been built for you, although you can build
+them again by running ~/.vim/lib/extras/cocoa_definitions.py.
+
+Completions with parameters (i.e., functions and methods) are automatically
+converted to |snipMate| if it is installed. To invoke the snippet, simply
+press a whitespace character (space, tab, or return), and then navigate the
+snippet as you would in snipMate.
+
+==============================================================================
+LICENSE                                                        *cocoa-license*
+
+Cocoa.vim is released under the MIT license:
+
+Copyright 2009-2010 Michael Sanders. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+The software is provided "as is", without warranty of any kind, express or
+implied, including but not limited to the warranties of merchantability,
+fitness for a particular purpose and noninfringement. In no event shall the
+authors or copyright holders be liable for any claim, damages or other
+liability, whether in an action of contract, tort or otherwise, arising from,
+out of or in connection with the software or the use or other dealings in the
+software.
+
+==============================================================================
+CONTACT                                         *cocoa-contact* *cocoa-author*
+
+To contact the author (Michael Sanders), you may email:
+
+	msanders42+cocoa.vim <at> gmail <dot> com
+
+Thanks for your interest in the script!
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:enc=utf-8:

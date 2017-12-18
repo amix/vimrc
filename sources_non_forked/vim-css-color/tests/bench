@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+s=startuptime.txt
+vim --startuptime $s -o -c qa "$@"
+perl -lane'$sum += $F[1] if m!/\.vim/after/syntax/css\.vim$!; END {print $sum}' $s
+rm $s

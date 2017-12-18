@@ -1,0 +1,19 @@
+--exclude=node_modules
+--exclude=gulp
+
+--languages=-JavaScript
+--langdef=js
+--langmap=js:.js
+--regex-js=/^(var)?[ \t]*([A-Za-z0-9_$]*\.)*([A-Za-z0-9_$]+)[ \t]*=[ \t]*\[/\3/a,array/
+--regex-js=/^(var)?[ \t]*([A-Za-z0-9_$]*\.)*([A-Za-z0-9_$]+)[ \t]*=[ \t]*\{/\3/o,object/
+--regex-js=/^(var)?[ \t]*([A-Za-z0-9_$]*\.)*([A-Za-z0-9_$]+)[ \t]*=[^{\[]*$/\3/r,var/
+
+--regex-js=/^var[ \t]+([A-Za-z0-9._$]+)[ \t]*=[ \t]*[A-Za-z0-9_$]+.extend/\1/f,function/
+--regex-js=/^[ \t]*([A-Za-z0-9_$]*\.)*([A-Za-z0-9_$]+)[ \t]*[:=][ \t]*function/\2/f,function/
+--regex-js=/^[ \t]*function[ \t]*([A-Za-z0-9_$]+)[ \t]*\(/\1/f,function/
+--regex-js=/^[ \t]*var[ \t]+([A-Za-z0-9_$]*\.)*([A-Za-z0-9_$]+)[ \t]*=[ \t]function/\2/f,function/
+
+--regex-js=/(jQuery|\$)\([ \t]*([^ \t]*)[ \t]*\)\.bind\([ \t]*['"](.*)['"]/\2.\3/f,function/
+
+--regex-js=/^[ \t]*describe[ \t]*\([ \t]*["'](.*)["']/\1/f,function/
+--regex-js=/^([ \t]*)(describe|context|it)[ \t]*\([ \t]*["'](.*)["']/.\1\3/f,function/

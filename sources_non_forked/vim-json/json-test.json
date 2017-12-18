@@ -1,0 +1,107 @@
+// this comment should be highlighted as an error
+
+{
+	unquotedKeyword:'singleQuotedString',
+	'singleQuotedKeyword':true,
+	"decimalCantStartWithPeriod":.1,
+	"semicolonAtEndOfThisObject":"trailingComma",
+};
+
+
+//even with concealment, strings and numbers & booleans are distinct
+{
+    "string": "this is a string, with a escaped \" inside",
+    "string": "500",
+    "NOT a string": 500,
+    "string": "true",
+    "NOT a string": true
+}
+
+
+// normative JSON examples from http://json.org/example.html
+{"menu": {
+  "id": "file",
+  "value": "File",
+  "popup": {
+    "menuitem": [
+      {"value": "New", "onclick": "CreateNewDoc()"},
+      {"value": "Open", "onclick": "OpenDoc()"},
+      {"value": "Close", "onclick": "CloseDoc()"}
+    ]
+  }
+}}
+
+{
+    "glossary": {
+        "title": "example glossary",
+		"GlossDiv": {
+			"title": "S",
+			"GlossList": {
+                "GlossEntry": {
+                    "ID": "SGML",
+					"SortAs": "SGML",
+					"GlossTerm": "Standard Generalized Markup Language",
+					"Acronym": "SGML",
+					"Abbrev": "ISO 8879:1986",
+					"GlossDef": {
+                        "para": "A meta-markup language, used to create markup languages such as DocBook.",
+						"GlossSeeAlso": ["GML", "XML"]
+                    },
+					"GlossSee": "markup"
+                }
+            }
+        }
+    }
+}
+
+
+{"widget": {
+    "debug": "on",
+    "window": {
+        "title": "Sample Konfabulator Widget",
+        "name": "main_window",
+        "width": 500,
+        "height": 500
+    },
+    "image": { 
+        "src": "Images/Sun.png",
+        "name": "sun1",
+        "hOffset": 250,
+        "vOffset": 250,
+        "alignment": "center"
+    },
+    "text": {
+        "data": "Click Here",
+        "size": 36,
+        "style": "bold",
+        "name": "text1",
+        "hOffset": 250,
+        "vOffset": 100,
+        "alignment": "center",
+        "onMouseUp": "sun1.opacity = (sun1.opacity / 100) * 90;"
+    }
+}}    
+
+//missing comma errors
+{
+  "object1": "missingComma"
+  "object2": "value"
+}
+[
+  { "object1": 1 }
+  { "object2": 2 }
+]
+{
+  "object1": []
+  "object2": []
+}
+{
+  "object1": {}
+  "object2": []
+}
+{
+  "object1": true
+  "object2": 2
+}
+
+//this file is deliberately mis-indented, try gg=G to indent it properly
