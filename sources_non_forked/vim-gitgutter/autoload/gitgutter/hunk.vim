@@ -51,7 +51,7 @@ function! gitgutter#hunk#next_hunk(count) abort
       if hunk[2] > current_line
         let hunk_count += 1
         if hunk_count == a:count
-          execute 'normal!' hunk[2] . 'G'
+          execute 'normal!' hunk[2] . 'Gzv'
           return
         endif
       endif
@@ -69,7 +69,7 @@ function! gitgutter#hunk#prev_hunk(count) abort
         let hunk_count += 1
         if hunk_count == a:count
           let target = hunk[2] == 0 ? 1 : hunk[2]
-          execute 'normal!' target . 'G'
+          execute 'normal!' target . 'Gzv'
           return
         endif
       endif

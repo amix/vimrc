@@ -302,7 +302,7 @@ endsnippet
 snippet "\b(case|sw(itch)?)" "case <variable> when <expression> ... end" r
 case ${1:variable}
 when ${2:expression}
-$0
+  $0
 end
 endsnippet
 
@@ -324,6 +324,18 @@ snippet ###
 =begin
 	$0
 =end
+endsnippet
+
+snippet priv "private " m
+private
+
+$0
+endsnippet
+
+snippet prot "protected" m
+protected
+
+$0
 endsnippet
 
 # vim: set ts=2 sw=2 expandtab:

@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# Run a "bare" Vim with just vim-go and ignoring ~/.vim
+#
+
+set -euC
+vimgodir=$(cd -P "$(dirname "$0")/.." > /dev/null && pwd)
+cd "$vimgodir"
+
+coverage=0
+while getopts "c" option; do
+  case "$option" in
+      c) coverage=1; ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ -z "${1:-}" ]; then
+  echo "unknown version: '${1:-}'"
+  echo "First argument must be 'vim-7.4', 'vim-8.0', or 'nvim'."
+  exit 1
+fi
+
+dir="/tmp/vim-go-test/$1-install"
+export GOPATH=$dir
+export PATH=${GOPATH}/bin:$PATH
+shift
+
+if [ ! -f "$dir/bin/vim" ]; then
+  echo "$dir/bin/vim doesn't exist; did you install it with the install-vim script?"
+  exit 1
+fi
+
+if [ $coverage -eq 1 ]; then
+  covimerage -q run --report-file /tmp/vim-go-test/cov-profile.txt --append \
+    $dir/bin/vim --noplugin -u NONE -N \
+      +"set shm+=WAFI rtp=$dir/share/vim/vimgo packpath=$dir/share/vim/vimgo,$vimgodir" \
+      +'filetype plugin indent on' \
+      +'packloadall!' \
+      "$@"
+else
+  $dir/bin/vim --noplugin -u NONE -N \
+    +"set shm+=WAFI rtp=$dir/share/vim/vimgo packpath=$dir/share/vim/vimgo,$vimgodir" \
+    +'filetype plugin indent on' \
+    +'packloadall!' \
+    "$@"
+fi
+
+
+# vim:ts=2:sts=2:sw=2:et

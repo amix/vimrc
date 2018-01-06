@@ -4,14 +4,14 @@
 " :GoPath is used
 let s:initial_go_path = ""
 
-" GoPath sets or returns the current GOPATH. If no arguments are passed it
+" GoPath sets or echos the current GOPATH. If no arguments are passed it
 " echoes the current GOPATH, if an argument is passed it replaces the current
 " GOPATH with it. If two double quotes are passed (the empty string in go),
 " it'll clear the GOPATH and will restore to the initial GOPATH.
 function! go#path#GoPath(...) abort
   " no argument, show GOPATH
   if len(a:000) == 0
-    echo go#path#Detect()
+    echo go#path#Default()
     return
   endif
 
@@ -72,19 +72,22 @@ endfunction
 function! go#path#Detect() abort
   let gopath = go#path#Default()
 
-  " don't lookup for godeps if autodetect is disabled.
-  if !get(g:, "go_autodetect_gopath", 1)
-    return gopath
-  endif
-
   let current_dir = fnameescape(expand('%:p:h'))
 
   " TODO(arslan): this should be changed so folders or files should be
   " fetched from a customizable list. The user should define any new package
   " management tool by it's own.
 
-  " src folder outside $GOPATH
-  let src_root = finddir("src", current_dir .";")
+  " src folders outside $GOPATH
+  let src_roots = finddir("src", current_dir .";", -1)
+
+  " for cases like GOPATH/src/foo/src/bar, pick up GOPATH/src instead of
+  " GOPATH/src/foo/src
+  let src_root = ""
+  if len(src_roots) > 0
+    let src_root = src_roots[-1]
+  endif
+
   if !empty(src_root)
     let src_path = fnamemodify(src_root, ':p:h:h') . go#util#PathSep()
 
@@ -116,7 +119,6 @@ function! go#path#Detect() abort
   return gopath
 endfunction
 
-
 " BinPath returns the binary path of installed go tools.
 function! go#path#BinPath() abort
   let bin_path = ""
@@ -129,6 +131,9 @@ function! go#path#BinPath() abort
     let bin_path = $GOBIN
   else
     let go_paths = split(go#path#Default(), go#util#PathListSep())
+    if len(go_paths) == 0
+      return "" "nothing found
+    endif
     let bin_path = expand(go_paths[0] . "/bin/")
   endif
 
@@ -157,13 +162,17 @@ function! go#path#CheckBinPath(binpath) abort
       let binpath = exepath(binpath)
     endif
     let $PATH = old_path
+
+    if go#util#IsUsingCygwinShell() == 1
+      return go#path#CygwinPath(binpath)
+    endif
+
     return binpath
   endif
 
   " just get the basename
   let basename = fnamemodify(binpath, ":t")
   if !executable(basename)
-
     call go#util#EchoError(printf("could not find '%s'. Run :GoInstallBinaries to fix it", basename))
 
     " restore back!
@@ -173,18 +182,15 @@ function! go#path#CheckBinPath(binpath) abort
 
   let $PATH = old_path
 
-   " When you are using:
-   " 1) Windows system
-   " 2) Has cygpath executable
-   " 3) Use *sh* as 'shell'
-   "
-   " This converts your <path> to $(cygpath '<path>') to make cygwin working in
-   " shell of cygwin way
-   if go#util#IsWin() && executable('cygpath') && &shell !~ '.*sh.*'
-     return printf("$(cygpath '%s')", a:bin_path)
-   endif
+  if go#util#IsUsingCygwinShell() == 1
+    return go#path#CygwinPath(a:binpath)
+  endif
 
   return go_bin_path . go#util#PathSep() . basename
+endfunction
+
+function! go#path#CygwinPath(path)
+   return substitute(a:path, '\\', '/', "g")
 endfunction
 
 " vim: sw=2 ts=2 et

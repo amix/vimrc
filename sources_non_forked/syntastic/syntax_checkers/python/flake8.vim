@@ -1,6 +1,6 @@
 "============================================================================
 "File:        flake8.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Authors:     Sylvain Soliman <Sylvain dot Soliman+git at gmail dot com>
 "             kstep <me@kstep.me>
 "
@@ -23,7 +23,9 @@ function! SyntaxCheckers_python_flake8_GetLocList() dict
 
     let errorformat =
         \ '%E%f:%l: could not compile,%-Z%p^,' .
+        \ '%A%f:%l:%c: %t%n: %m,' .
         \ '%A%f:%l:%c: %t%n %m,' .
+        \ '%A%f:%l: %t%n: %m,' .
         \ '%A%f:%l: %t%n %m,' .
         \ '%-G%.%#'
 
@@ -39,6 +41,7 @@ function! SyntaxCheckers_python_flake8_GetLocList() dict
         " F*** are PyFlakes codes
         " C*** are McCabe complexity messages
         " N*** are naming conventions from pep8-naming
+        " H*** are OpenStack messages
 
         if has_key(e, 'nr')
             let e['text'] .= printf(' [%s%03d]', e['type'], e['nr'])
@@ -50,11 +53,11 @@ function! SyntaxCheckers_python_flake8_GetLocList() dict
             call remove(e, 'nr')
         endif
 
-        if e['type'] =~? '\m^[CNW]'
+        if e['type'] =~? '\m^[CHNW]'
             let e['subtype'] = 'Style'
         endif
 
-        let e['type'] = e['type'] =~? '\m^[EFC]' ? 'E' : 'W'
+        let e['type'] = e['type'] =~? '\m^[EFHC]' ? 'E' : 'W'
     endfor
 
     return loclist

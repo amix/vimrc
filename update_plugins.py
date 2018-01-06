@@ -16,12 +16,13 @@ from os import path
 
 #--- Globals ----------------------------------------------
 PLUGINS = """
+vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
 ack.vim https://github.com/mileszs/ack.vim
 bufexplorer https://github.com/corntrace/bufexplorer
 ctrlp.vim https://github.com/ctrlpvim/ctrlp.vim
 mayansmoke https://github.com/vim-scripts/mayansmoke
 nerdtree https://github.com/scrooloose/nerdtree
-nginx-vim-syntax https://github.com/evanmiller/nginx-vim-syntax
+nginx.vim https://github.com/chr4/nginx.vim
 open_file_under_cursor.vim https://github.com/amix/open_file_under_cursor.vim
 snipmate-snippets https://github.com/scrooloose/snipmate-snippets
 tlib https://github.com/vim-scripts/tlib
@@ -49,8 +50,9 @@ vim-gitgutter https://github.com/airblade/vim-gitgutter
 gruvbox https://github.com/morhetz/gruvbox
 vim-flake8 https://github.com/nvie/vim-flake8
 vim-pug https://github.com/digitaltoad/vim-pug
-vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
 lightline.vim https://github.com/itchyny/lightline.vim
+vim-abolish https://github.com/tpope/tpope-vim-abolish
+mru.vim https://github.com/vim-scripts/mru.vim
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'

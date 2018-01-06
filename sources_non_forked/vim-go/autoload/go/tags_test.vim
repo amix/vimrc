@@ -1,28 +1,22 @@
-func Test_add_tags()
-  let input_file = tempname()
-  call writefile(readfile("test-fixtures/tags/add_all_input.go"), input_file)
-
-  let expected = join(readfile("test-fixtures/tags/add_all_golden.go"), "\n")
-
-  " run for offset 40, which is inside the struct
-  call go#tags#run(0, 0, 40, "add", input_file, 1)
-
-  let actual = join(readfile(input_file), "\n")
-
-  call assert_equal(expected, actual)
+func! Test_add_tags() abort
+  try
+    let l:tmp = gotest#load_fixture('tags/add_all_input.go')
+    silent call go#tags#run(0, 0, 40, "add", bufname(''), 1)
+    call gotest#assert_fixture('tags/add_all_golden.go')
+  finally
+    call delete(l:tmp, 'rf')
+  endtry
 endfunc
 
 
-func Test_remove_tags()
-  let input_file = tempname()
-  call writefile(readfile("test-fixtures/tags/remove_all_input.go"), input_file)
-
-  let expected = join(readfile("test-fixtures/tags/remove_all_golden.go"), "\n")
-
-  " run for offset 40, which is inside the struct
-  call go#tags#run(0, 0, 40, "remove", input_file, 1)
-
-  let actual = join(readfile(input_file), "\n")
-
-  call assert_equal(expected, actual)
+func! Test_remove_tags() abort
+  try
+    let l:tmp = gotest#load_fixture('tags/remove_all_input.go')
+    silent call go#tags#run(0, 0, 40, "remove", bufname(''), 1)
+    call gotest#assert_fixture('tags/remove_all_golden.go')
+  finally
+    call delete(l:tmp, 'rf')
+  endtry
 endfunc
+
+" vim:ts=2:sts=2:sw=2:et

@@ -55,3 +55,17 @@ snippet if
 		${2:${VISUAL}}
 	else
 		${0}
+snippet doc
+	{-| ${0}
+	-}
+snippet ty
+	type ${1:Type} =
+		${0}
+snippet da
+	data ${1:Type} =
+		${0:$1}
+snippet nty
+	newtype ${1:Type} =
+		${2:$1} ${0:Int}
+snippet fi
+	foreign import ${1} :: ${2}

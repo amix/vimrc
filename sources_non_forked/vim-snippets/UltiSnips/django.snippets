@@ -292,25 +292,25 @@ endsnippet
 
 snippet createview "Generic Create View" b
 class ${1:MODEL_NAME}CreateView(CreateView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 
 snippet deleteview "Generic Delete View" b
 class ${1:MODEL_NAME}DeleteView(DeleteView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 
 snippet detailview "Generic Detail View" b
 class ${1:MODEL_NAME}DetailView(DetailView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 
 snippet listview "Generic List View" b
 class ${1:MODEL_NAME}ListView(ListView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 
@@ -345,7 +345,7 @@ endsnippet
 
 snippet updateview "Generic Update View" b
 class ${1:MODEL_NAME}UpdateView(UpdateView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 

@@ -1,0 +1,7 @@
+policies:
+  ProhibitUnnecessaryDoubleQuote:
+    enabled: false
+  ProhibitEqualTildeOperator:
+    enabled: false
+  ProhibitNoAbortFunction:
+    enabled: false

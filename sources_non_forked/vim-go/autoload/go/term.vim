@@ -18,10 +18,6 @@ function! go#term#newmode(bang, cmd, mode) abort
     let mode = g:go_term_mode
   endif
 
-  " modify GOPATH if needed
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
-
   " execute go build in the files directory
   let l:winnr = winnr()
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -54,9 +50,6 @@ function! go#term#newmode(bang, cmd, mode) abort
 
   execute cd . fnameescape(dir)
 
-  " restore back GOPATH
-  let $GOPATH = old_gopath
-
   let job.id = id
   let job.cmd = a:cmd
   startinsert
@@ -77,6 +70,7 @@ function! go#term#newmode(bang, cmd, mode) abort
   call jobresize(id, width, height)
 
   let s:jobs[id] = job
+  stopinsert
   return id
 endfunction
 
@@ -104,7 +98,7 @@ function! s:on_exit(job_id, exit_status, event) dict abort
   endif
   let job = s:jobs[a:job_id]
 
-  let l:listtype = "locationlist"
+  let l:listtype = go#list#Type("_term")
 
   " usually there is always output so never branch into this clause
   if empty(job.stdout)

@@ -1,11 +1,42 @@
-function! go#tool#Files() abort
-  if go#util#IsWin()
-    let format = '{{range $f := .GoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}'
-  else
-    let format = "{{range $f := .GoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}"
+" From "go list -h".
+function! go#tool#ValidFiles(...)
+  let l:list = ["GoFiles", "CgoFiles", "IgnoredGoFiles", "CFiles", "CXXFiles",
+    \ "MFiles", "HFiles", "FFiles", "SFiles", "SwigFiles", "SwigCXXFiles",
+    \ "SysoFiles", "TestGoFiles", "XTestGoFiles"]
+
+  " Used as completion
+  if len(a:000) > 0
+    let l:list = filter(l:list, 'strpart(v:val, 0, len(a:1)) == a:1')
   endif
-  let command = 'go list -f '.shellescape(format)
-  let out = go#tool#ExecuteInDir(command)
+
+  return l:list
+endfunction
+
+function! go#tool#Files(...) abort
+  if len(a:000) > 0
+    let source_files = a:000
+  else
+    let source_files = ['GoFiles']
+  endif
+
+  let combined = ''
+  for sf in source_files
+    " Strip dot in case people used ":GoFiles .GoFiles".
+    let sf = substitute(sf, '^\.', '', '')
+
+    " Make sure the passed options are valid.
+    if index(go#tool#ValidFiles(), sf) == -1
+      echoerr "unknown source file variable: " . sf
+    endif
+
+    if go#util#IsWin()
+      let combined .= '{{range $f := .' . sf . '}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}\{{$f}}{{printf \"\n\"}}{{end}}'
+    else
+      let combined .= "{{range $f := ." . sf . "}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}{{range $f := .CgoFiles}}{{$.Dir}}/{{$f}}{{printf \"\\n\"}}{{end}}"
+    endif
+  endfor
+
+  let out = go#tool#ExecuteInDir('go list -f ' . shellescape(combined))
   return split(out, '\n')
 endfunction
 
@@ -131,10 +162,17 @@ function! go#tool#FilterValids(items) abort
 endfunction
 
 function! go#tool#ExecuteInDir(cmd) abort
-  let old_gopath = $GOPATH
-  let old_goroot = $GOROOT
-  let $GOPATH = go#path#Detect()
-  let $GOROOT = go#util#env("goroot")
+  " Verify that the directory actually exists. If the directory does not
+  " exist, then assume that the a:cmd should not be executed. Callers expect
+  " to check v:shell_error (via go#util#ShellError()), so execute a command
+  " that will return an error as if a:cmd was run and exited with an error.
+  " This helps avoid errors when working with plugins that use virtual files
+  " that don't actually exist on the file system (e.g. vim-fugitive's
+  " GitDiff).
+  if !isdirectory(expand("%:p:h"))
+    let [out, err] = go#util#Exec(["false"])
+    return ''
+  endif
 
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
   let dir = getcwd()
@@ -144,9 +182,6 @@ function! go#tool#ExecuteInDir(cmd) abort
   finally
     execute cd . fnameescape(dir)
   endtry
-
-  let $GOROOT = old_goroot
-  let $GOPATH = old_gopath
   return out
 endfunction
 
@@ -163,7 +198,6 @@ function! go#tool#Exists(importpath) abort
     return 0
 endfunction
 
-
 " following two functions are from: https://github.com/mattn/gist-vim
 " thanks  @mattn
 function! s:get_browser_command() abort
@@ -171,12 +205,14 @@ function! s:get_browser_command() abort
     if go_play_browser_command == ''
         if go#util#IsWin()
             let go_play_browser_command = '!start rundll32 url.dll,FileProtocolHandler %URL%'
-        elseif has('mac') || has('macunix') || has('gui_macvim') || go#util#System('uname') =~? '^darwin'
+        elseif go#util#IsMac()
             let go_play_browser_command = 'open %URL%'
         elseif executable('xdg-open')
             let go_play_browser_command = 'xdg-open %URL%'
         elseif executable('firefox')
             let go_play_browser_command = 'firefox %URL% &'
+        elseif executable('chromium')
+            let go_play_browser_command = 'chromium %URL% &'
         else
             let go_play_browser_command = ''
         endif

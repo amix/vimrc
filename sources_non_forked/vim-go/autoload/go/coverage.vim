@@ -53,6 +53,7 @@ function! go#coverage#Buffer(bang, ...) abort
           \ 'cmd': ['go', 'test', '-coverprofile', l:tmpname] + a:000,
           \ 'custom_cb': function('s:coverage_callback', [l:tmpname]),
           \ 'bang': a:bang,
+          \ 'for': 'GoTest',
           \ })
     return
   endif
@@ -94,9 +95,9 @@ function! go#coverage#Clear() abort
   if exists("s:toggle") | let s:toggle = 0 | endif
 
   " remove the autocmd we defined
-  if exists("#BufWinLeave#<buffer>")
-    autocmd! BufWinLeave <buffer>
-  endif
+  augroup vim-go-coverage
+    autocmd!
+  augroup end
 endfunction
 
 " Browser creates a new cover profile with 'go test -coverprofile' and opens
@@ -108,6 +109,7 @@ function! go#coverage#Browser(bang, ...) abort
           \ 'cmd': ['go', 'test', '-coverprofile', l:tmpname],
           \ 'custom_cb': function('s:coverage_browser_callback', [l:tmpname]),
           \ 'bang': a:bang,
+          \ 'for': 'GoTest',
           \ })
     return
   endif
@@ -256,7 +258,10 @@ function! go#coverage#overlay(file) abort
   endfor
 
   " clear the matches if we leave the buffer
-  autocmd BufWinLeave <buffer> call go#coverage#Clear()
+  augroup vim-go-coverage
+    autocmd!
+    autocmd BufWinLeave <buffer> call go#coverage#Clear()
+  augroup end
 
   for m in matches
     call matchaddpos(m.group, m.pos)
@@ -295,10 +300,6 @@ function s:coverage_job(args)
         \ 'exit_cb': callbacks.exit_cb,
         \ }
 
-  " modify GOPATH if needed
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
-
   " pre start
   let dir = getcwd()
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
@@ -315,7 +316,6 @@ function s:coverage_job(args)
 
   " post start
   execute cd . fnameescape(dir)
-  let $GOPATH = old_gopath
 endfunction
 
 " coverage_callback is called when the coverage execution is finished

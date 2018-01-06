@@ -638,7 +638,6 @@ Set this to 1 to save every MRU file path $HOME/$filepath in the $HOME dir
   let g:ctrlp_tilde_homedir = 0
 <
 Note: This applies also to all dir paths stored by :CtrlPBookmarkDirAdd!
-<
 
                                                       *'g:ctrlp_mruf_relative'*
 Set this to 1 to show only MRU files in the current working directory: >
@@ -873,12 +872,12 @@ COMMANDS                                                       *ctrlp-commands*
 
                                                                 *:CtrlPCurFile*
 :CtrlPCurFile
-    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = '' and ignores
+    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = 'c' and ignores
     the variable's current value.
 
                                                                   *:CtrlPCurWD*
 :CtrlPCurWD
-    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = '' and ignores
+    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = 'd' and ignores
     the variable's current value.
 
                                                                     *:CtrlPMRU*

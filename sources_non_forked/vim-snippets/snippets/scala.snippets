@@ -58,6 +58,10 @@ snippet try
 		${0}
 	}
 #match
+snippet mat
+	${1:${VISUAL}} match {
+		case ${2} => ${0}
+	}
 snippet match
 	${1: obj} match {
 		case ${2:e} => ${3}
@@ -65,7 +69,7 @@ snippet match
 	}
 #case
 snippet case
-	case ${1:value} => ${0}
+	case ${1:${VISUAL}} => ${0}
 ############################
 # methods and arguments
 #

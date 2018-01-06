@@ -1,0 +1,3 @@
+if !reflect.DeepEqual({{+got+}}, {{+want+}}) {
+	t.Errorf("\ngot:  %#v\nwant: %#v\n", {{+~\~2+}}, {{+~\~2+}})	
+}

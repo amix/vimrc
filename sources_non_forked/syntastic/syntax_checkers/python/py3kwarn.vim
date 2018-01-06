@@ -1,6 +1,6 @@
 "============================================================================
 "File:        py3kwarn.vim
-"Description: Syntax checking plugin for syntastic.vim
+"Description: Syntax checking plugin for syntastic
 "Authors:     Liam Curry <liam@curry.name>
 "
 "============================================================================

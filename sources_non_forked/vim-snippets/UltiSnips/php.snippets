@@ -257,4 +257,30 @@ snip.rv = re.match(r'.*(?=\.)', fn).group()
 }
 endsnippet
 
+snippet testcase6 "class XYZTest extends TestCase { ... }"
+<?php
+
+namespace `!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`;
+
+use PHPUnit\Framework\TestCase;
+
+/**
+ * @author `!v g:snips_author`
+ */
+class `!p
+snip.rv = re.match(r'.*(?=\.)', fn).group()
+` extends TestCase
+{
+	public function test$1()
+	{
+		${0:${VISUAL}}
+	}
+}
+endsnippet
+
 # :vim:ft=snippets:

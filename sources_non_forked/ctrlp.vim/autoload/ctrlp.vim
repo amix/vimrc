@@ -1006,7 +1006,9 @@ fu! s:KeyLoop()
 	wh exists('s:init') && s:keyloop
 		try
 			set t_ve=
-			set guicursor=a:NONE
+			if guicursor != ''
+				set guicursor=a:NONE
+			en
 			let nr = getchar()
 		fina
 			let &t_ve = t_ve
@@ -2009,7 +2011,7 @@ fu! s:bufnrfilpath(line)
 		if (a:line =~ '[\/]\?\[\d\+\*No Name\]$')
 			let bufnr = str2nr(matchstr(a:line, '[\/]\?\[\zs\d\+\ze\*No Name\]$'))
 			let filpath = bufnr
-		else
+		els
 			let bufnr = bufnr(a:line)
 			retu [bufnr, a:line]
 		en
@@ -2414,7 +2416,7 @@ fu! s:buildpat(lst)
 			let c = a:lst[item - 1]
 			let pat .= (c == '/' ? '[^/]\{-}' : '[^'.c.'/]\{-}').a:lst[item]
 		endfo
-	else
+	els
 		for item in range(1, len(a:lst) - 1)
 			let pat .= '[^'.a:lst[item - 1].']\{-}'.a:lst[item]
 		endfo
