@@ -37,4 +37,14 @@ endif
     " vim-vue
     let g:vue_disable_pre_processors = 1 " otherwise input will be slow
 
+    " ale
+    let g:ale_sign_column_always = 1 " always display that gutter
+    let g:airline#extensions#ale#enabled = 1 " display errors or warnings with `vim-airline`
+
+    " airline
+    let g:airline_theme = 'solarized'
+    let g:airline_solarized_bg = 'light'
+    let g:airline_powerline_fonts = 1
+
+
 
