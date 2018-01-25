@@ -97,6 +97,7 @@ endfunction
 command! PrettyXML call DoPrettyXML()
 
 
+command! PrettyJson :execute '%!python -m json.tool'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins Configuration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
