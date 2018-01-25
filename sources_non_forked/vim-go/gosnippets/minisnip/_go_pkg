@@ -1,2 +1,0 @@
-// Package {{+~expand('%:p:h:t')+}} {{++}}
-package {{+~\~2+}}
