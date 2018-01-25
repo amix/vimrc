@@ -4,7 +4,6 @@ set number relativenumber
 set cursorline
 
 " solorized color scheme
-syntax enable
 set background=dark
 colorscheme solarized
 
@@ -43,8 +42,7 @@ endif
 
     " airline
     let g:airline_theme = 'solarized'
-    let g:airline_solarized_bg = 'light'
+    let g:airline_solarized_bg = 'dark'
     let g:airline_powerline_fonts = 1
-
-
-
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#formatter = 'unique_tail'

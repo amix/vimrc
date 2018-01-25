@@ -5,4 +5,5 @@ sources_forked/yankring/doc/tags
 sources_non_forked/tlib/doc/tags
 sources_non_forked/ctrlp.vim/doc/tags*
 tags
+my_plugins/**/*
 .DS_Store
