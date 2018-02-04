@@ -608,6 +608,12 @@ returning ${1:variable} do${2/(^(?<var>\s*[a-z_][a-zA-Z0-9_]*\s*)(,\g<var>)*,?\s
 end
 endsnippet
 
+snippet cmm "Create Migration Model Class"
+class Migration${1/(?:^|_)(\w)/\u$1/g} < ApplicationRecord
+	self.table_name = :${1:model_name}s
+end
+endsnippet
+
 snippet t. "t.binary (tcbi)"
 t.binary :${1:title}${2:, :limit => ${3:2}.megabytes}
 t.$0

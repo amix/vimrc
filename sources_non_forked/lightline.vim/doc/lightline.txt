@@ -4,7 +4,7 @@ Version: 0.1
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2017/11/18 20:07:05.
+Last Change: 2017/12/24 21:34:15.
 
 CONTENTS					*lightline-contents*
 
@@ -29,7 +29,7 @@ The *lightline* plugin is a light and configurable statusline/tabline for Vim.
 SPIRIT						*lightline-spirit*
 
 	Minimalism
-	    The core script is very small to achive enough functions as a
+	    The core script is very small to achieve enough functions as a
 	    statusline plugin.
 
 	Configurability
@@ -157,7 +157,7 @@ OPTIONS						*lightline-option*
 		A dictionary to store the visible conditions of the function
 		components. Each expression should correspond to the condition
 		each component is not empty. This configuration is used to
-		control the visibility of the subseparators. You can use this
+		control the visibility of the sub-separators. You can use this
 		configuration to reduce the number of function calls for
 		performance improvement by setting the value 1 (to tell lightline
 		that the component is always visible).
@@ -229,7 +229,8 @@ OPTIONS						*lightline-option*
 		Currently, wombat, solarized, powerline, jellybeans, Tomorrow,
 		Tomorrow_Night, Tomorrow_Night_Blue, Tomorrow_Night_Eighties,
 		PaperColor, seoul256, landscape, one, Dracula, darcula,
-		molokai, materia, material, OldHope, nord and 16color are available.
+		molokai, materia, material, OldHope, nord, 16color and deus
+		are available.
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'
@@ -1200,7 +1201,7 @@ Problem 11:					*lightline-problem-11*
 Problem 12:					*lightline-problem-12*
 	How to make the plus sign red like |powerline|?
 
-		Use the following setings.
+		Use the following settings.
 >
 		let g:lightline = {
 		      \ 'component': {

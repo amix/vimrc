@@ -44,10 +44,6 @@ function! go#term#newmode(bang, cmd, mode) abort
 
   let id = termopen(a:cmd, job)
 
-  if l:winnr !=# winnr()
-    exe l:winnr . "wincmd w"
-  endif
-
   execute cd . fnameescape(dir)
 
   let job.id = id
@@ -58,12 +54,13 @@ function! go#term#newmode(bang, cmd, mode) abort
   let height = get(g:, 'go_term_height', winheight(0))
   let width = get(g:, 'go_term_width', winwidth(0))
 
-  " we are careful how to resize. for example it's vertical we don't change
+  " we are careful how to resize. for example it's vsplit we don't change
   " the height. The below command resizes the buffer
-  if a:mode == "split"
-    exe 'resize ' . height
-  elseif a:mode == "vertical"
+
+  if mode =~ "vertical" || mode =~ "vsplit" || mode =~ "vnew"
     exe 'vertical resize ' . width
+  elseif mode =~ "split" || mode =~ "new"
+    exe 'resize ' . height
   endif
 
   " we also need to resize the pty, so there you go...
@@ -71,6 +68,11 @@ function! go#term#newmode(bang, cmd, mode) abort
 
   let s:jobs[id] = job
   stopinsert
+
+  if l:winnr !=# winnr()
+    exe l:winnr . "wincmd w"
+  endif
+
   return id
 endfunction
 

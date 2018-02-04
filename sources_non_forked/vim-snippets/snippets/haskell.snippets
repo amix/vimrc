@@ -49,6 +49,12 @@ snippet module
 	) where
 	`expand('%') =~ 'Main' ? "\nmain :: IO ()\nmain = undefined" : ""`
 
+snippet mod
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`
+		( ${1}
+		) where
+
+	`expand('%') =~ 'Main' ? "\nmain :: IO ()\nmain = undefined" : ""`
 snippet main
 	main :: IO ()
 	main = ${0:undefined}

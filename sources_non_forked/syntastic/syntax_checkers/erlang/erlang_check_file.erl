@@ -69,6 +69,7 @@ rebar_opts(RebarFile) ->
     Dir = get_root(filename:dirname(RebarFile)),
     case file:consult(RebarFile) of
         {ok, Terms} ->
+            %% Add deps for a rebar (version < 3) project
             RebarLibDirs = proplists:get_value(lib_dirs, Terms, []),
             lists:foreach(
                 fun(LibDir) ->
@@ -76,8 +77,14 @@ rebar_opts(RebarFile) ->
                 end, RebarLibDirs),
             RebarDepsDir = proplists:get_value(deps_dir, Terms, "deps"),
             code:add_pathsa(filelib:wildcard(RebarDepsDir ++ "/*/ebin")),
-            IncludeDeps = {i, filename:join(Dir, RebarDepsDir)},
-            proplists:get_value(erl_opts, Terms, []) ++ [IncludeDeps];
+
+            %% Add deps for rebar 3
+            code:add_pathsa(filelib:wildcard(Dir ++ "/_build/default/lib/*/ebin")),
+            %% Add include dependencies
+            IncludeDeps = [{i, IPath} || IPath <- filelib:wildcard(Dir ++ "/_build/default/lib/*")] ++
+                            [{i, filename:join(Dir, RebarDepsDir)}, %% rebar 2 dependencies
+                             {i, filename:join(Dir, "apps")}], %% rebar 3 multi-apps
+            proplists:get_value(erl_opts, Terms, []) ++ IncludeDeps;
         {error, _} when RebarFile == "rebar.config" ->
           fallback_opts();
         {error, _} ->
@@ -258,12 +265,19 @@ apps_dir_from_src(SrcFile) ->
     SrcDir = filename:dirname(SrcFile),
     filename:join(SrcDir, "../../ebin").
 
+%% Find the root directory of the project
 get_root(Dir) ->
     Path = filename:split(filename:absname(Dir)),
     filename:join(get_root(lists:reverse(Path), Path)).
 
 get_root([], Path) ->
     Path;
+%% Strip off /apps/<appname>/src from the end of the path
+%% (rebar 3 multi-app project)
+get_root(["src", _Appname, "apps" | Tail], _Path) ->
+    lists:reverse(Tail);
+%% Strip off /src or /test from the end of the path
+%% (single-app project)
 get_root(["src" | Tail], _Path) ->
     lists:reverse(Tail);
 get_root(["test" | Tail], _Path) ->

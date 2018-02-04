@@ -132,6 +132,7 @@ SYNTAX CHECKERS BY LANGUAGE                          *syntastic-checkers-lang*
     YACC.....................................|syntastic-checkers-yacc|
     YAML.....................................|syntastic-checkers-yaml|
     YANG.....................................|syntastic-checkers-yang|
+    YARA.....................................|syntastic-checkers-yara|
 
     Z80......................................|syntastic-checkers-z80|
     Zope Page Templates......................|syntastic-checkers-zpt|
@@ -1119,7 +1120,7 @@ one option per line (cf. |syntastic-config-files|).
 Note~
 
 By default you can set "ClangTidy" parameters in
-'g:syntastic_ppc_clang_tidy_args', and compilation parameters (defines,
+'g:syntastic_cpp_clang_tidy_args', and compilation parameters (defines,
 optimisation flags, etc.) in the configuration file.
 
 If you want "ClangTidy" to use compilation databases
@@ -7628,6 +7629,36 @@ You probably also need a plugin to set |filetype| for YANG files, such as
 "yang.vim":
 
     https://github.com/nathanalderson/yang.vim
+
+==============================================================================
+SYNTAX CHECKERS FOR YARA                             *syntastic-checkers-yara*
+
+The following checkers are available for YARA rule files (filetype "yara"):
+
+    1. yarac....................|syntastic-yara-yarac|
+
+------------------------------------------------------------------------------
+1. yarac                                                *syntastic-yara-yarac*
+
+Name:        yarac
+Maintainer:  Albert Song <albb@teamt5.org>
+
+"yarac" is the official compiler for YARA rule files. See the project's page
+at GitHub for more information:
+
+    https://github.com/VirusTotal/yara
+
+Checker options~
+
+This checker is initialised using the "makeprgBuild()" function and thus it
+accepts the standard options described at |syntastic-config-makeprg|.
+
+Note~
+
+You probably also need a plugin to set |filetype| for YARA rule files, such as
+"vim-yara":
+
+    https://github.com/yaunj/vim-yara
 
 ==============================================================================
 SYNTAX CHECKERS FOR Z80                               *syntastic-checkers-z80*

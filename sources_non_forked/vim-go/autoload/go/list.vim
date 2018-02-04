@@ -78,16 +78,18 @@ function! go#list#ParseFormat(listtype, errformat, items, title) abort
 
   " parse and populate the location list
   let &errorformat = a:errformat
-  if a:listtype == "locationlist"
-    lgetexpr a:items
-    if has("patch-7.4.2200") | call setloclist(0, [], 'a', {'title': a:title}) | endif
-  else
-    cgetexpr a:items
-    if has("patch-7.4.2200") | call setqflist([], 'a', {'title': a:title}) | endif
-  endif
-
-  "restore back
-  let &errorformat = old_errorformat
+  try
+    if a:listtype == "locationlist"
+      lgetexpr a:items
+      if has("patch-7.4.2200") | call setloclist(0, [], 'a', {'title': a:title}) | endif
+    else
+      cgetexpr a:items
+      if has("patch-7.4.2200") | call setqflist([], 'a', {'title': a:title}) | endif
+    endif
+  finally
+    "restore back
+    let &errorformat = old_errorformat
+  endtry
 endfunction
 
 " Parse parses the given items based on the global errorformat and
@@ -135,21 +137,22 @@ endfunction
 " single file or buffer. Keys that begin with an underscore are not supported
 " in g:go_list_type_commands.
 let s:default_list_type_commands = {
-      \ "GoBuild":      "quickfix",
-      \ "GoErrCheck":   "quickfix",
-      \ "GoFmt":        "locationlist",
-      \ "GoGenerate":   "quickfix",
-      \ "GoInstall":    "quickfix",
-      \ "GoLint":       "quickfix",
-      \ "GoMetaLinter": "quickfix",
-      \ "GoModifyTags": "locationlist",
-      \ "GoRename":     "quickfix",
-      \ "GoRun":        "quickfix",
-      \ "GoTest":       "quickfix",
-      \ "GoVet":        "quickfix",
-      \ "_guru":        "locationlist",
-      \ "_term":        "locationlist",
-      \ "_job":         "locationlist",
+      \ "GoBuild":              "quickfix",
+      \ "GoErrCheck":           "quickfix",
+      \ "GoFmt":                "locationlist",
+      \ "GoGenerate":           "quickfix",
+      \ "GoInstall":            "quickfix",
+      \ "GoLint":               "quickfix",
+      \ "GoMetaLinter":         "quickfix",
+      \ "GoMetaLinterAutoSave": "locationlist",
+      \ "GoModifyTags":         "locationlist",
+      \ "GoRename":             "quickfix",
+      \ "GoRun":                "quickfix",
+      \ "GoTest":               "quickfix",
+      \ "GoVet":                "quickfix",
+      \ "_guru":                "locationlist",
+      \ "_term":                "locationlist",
+      \ "_job":                 "locationlist",
   \ }
 
 function! go#list#Type(for) abort

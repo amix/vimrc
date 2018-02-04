@@ -1,6 +1,6 @@
 " repeat.vim - Let the repeat command repeat plugin maps
 " Maintainer:   Tim Pope
-" Version:      1.1
+" Version:      1.2
 " GetLatestVimScripts: 2136 1 :AutoInstall: repeat.vim
 
 " Installation:
@@ -111,7 +111,8 @@ endfunction
 
 function! repeat#wrap(command,count)
     let preserve = (g:repeat_tick == b:changedtick)
-    exe 'norm! '.(a:count ? a:count : '').a:command . (&foldopen =~# 'undo\|all' ? 'zv' : '')
+    call feedkeys((a:count ? a:count : '').a:command, 'n')
+    exe (&foldopen =~# 'undo\|all' ? 'norm! zv' : '')
     if preserve
         let g:repeat_tick = b:changedtick
     endif

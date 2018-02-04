@@ -53,7 +53,7 @@ function! go#def#Jump(mode) abort
     if go#util#has_job()
       let l:spawn_args = {
             \ 'cmd': cmd,
-            \ 'custom_cb': function('s:jump_to_declaration_cb', [a:mode, bin_name]),
+            \ 'complete': function('s:jump_to_declaration_cb', [a:mode, bin_name]),
             \ }
 
       if &modified
@@ -292,16 +292,12 @@ function! go#def#Stack(...) abort
 endfunction
 
 function s:def_job(args) abort
-  function! s:error_info_cb(job, exit_status, data) closure
-    " do not print anything during async definition search&jump
-  endfunction
-
-  let a:args.error_info_cb = funcref('s:error_info_cb')
   let callbacks = go#job#Spawn(a:args)
 
   let start_options = {
         \ 'callback': callbacks.callback,
         \ 'exit_cb': callbacks.exit_cb,
+        \ 'close_cb': callbacks.close_cb,
         \ }
 
   if &modified

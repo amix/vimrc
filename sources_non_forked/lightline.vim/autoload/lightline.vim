@@ -2,7 +2,7 @@
 " Filename: autoload/lightline.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2017/11/11 13:29:26.
+" Last Change: 2017/12/31 15:55:00.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -84,20 +84,20 @@ endfunction
 
 let s:_lightline = {
       \   'active': {
-      \     'left': [ [ 'mode', 'paste' ], [ 'readonly', 'filename', 'modified' ] ],
-      \     'right': [ [ 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+      \     'left': [['mode', 'paste'], ['readonly', 'filename', 'modified']],
+      \     'right': [['lineinfo'], ['percent'], ['fileformat', 'fileencoding', 'filetype']]
       \   },
       \   'inactive': {
-      \     'left': [ [ 'filename' ] ],
-      \     'right': [ [ 'lineinfo' ], [ 'percent' ] ]
+      \     'left': [['filename']],
+      \     'right': [['lineinfo'], ['percent']]
       \   },
       \   'tabline': {
-      \     'left': [ [ 'tabs' ] ],
-      \     'right': [ [ 'close' ] ]
+      \     'left': [['tabs']],
+      \     'right': [['close']]
       \   },
       \   'tab': {
-      \     'active': [ 'tabnum', 'filename', 'modified' ],
-      \     'inactive': [ 'tabnum', 'filename', 'modified' ]
+      \     'active': ['tabnum', 'filename', 'modified'],
+      \     'inactive': ['tabnum', 'filename', 'modified']
       \   },
       \   'component': {
       \     'mode': '%{lightline#mode()}',
@@ -295,7 +295,7 @@ function! lightline#highlight(...) abort
 endfunction
 
 function! s:subseparator(components, subseparator, expanded) abort
-  let [a, c, f, v, u ] = [ a:components, s:lightline.component, s:lightline.component_function, s:lightline.component_visible_condition, s:lightline.component_function_visible_condition ]
+  let [a, c, f, v, u] = [a:components, s:lightline.component, s:lightline.component_function, s:lightline.component_visible_condition, s:lightline.component_function_visible_condition]
   let xs = map(range(len(a:components)), 'a:expanded[v:val] ? "1" :
         \ has_key(f, a[v:val]) ? (has_key(u, a[v:val]) ? "(".u[a[v:val]].")" : (exists("*".f[a[v:val]]) ? "" : "exists(\"*".f[a[v:val]]."\")&&").f[a[v:val]]."()!=#\"\"") :
         \ has_key(v, a[v:val]) ? "(".v[a[v:val]].")" : has_key(c, a[v:val]) ? "1" : "0"')

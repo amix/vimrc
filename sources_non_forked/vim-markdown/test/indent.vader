@@ -1,0 +1,73 @@
+Given markdown;
+* item1
+
+Do (insert enter at list end):
+  A\<cr>item2
+
+Expect (auto insert * and indent level is same):
+  * item1
+  * item2
+
+Given markdown;
+
+Execute:
+  syntax off
+
+Do (insert enter at list end with syntax off):
+  i* item1\<cr>item2
+
+Expect (auto insert * and indent level is same):
+  * item1
+  * item2
+
+Execute:
+  syntax on
+
+Given markdown;
+```
+* item1
+
+Do (insert after list items in code block):
+  jotext
+
+Expect (no autoindent in code block):
+  ```
+  * item1
+  text
+
+Given markdown;
+* item1
+
+a
+
+Do (insert enter after list):
+  jji\<cr>b
+
+Expect (no autoindent outside list):
+  * item1
+
+
+  ba
+
+Given markdown;
+-   a
+
+    # b
+
+Do (insert header after list):
+  jjwi#
+
+Expect (no indent header after list):
+  -   a
+
+  ## b
+
+Given markdown;
+* item1
+
+Do (new line from the first item of the list and add the second item):
+  o* item2
+
+Expect (insert 4 spaces to the head of second item):
+  * item1
+      * item2

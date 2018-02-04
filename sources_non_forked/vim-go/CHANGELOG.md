@@ -1,5 +1,75 @@
 ## unplanned
 
+IMPROVEMENTS:
+
+* Add descriptions to neosnippet abbrevations.
+  [[GH-1639]](https://github.com/fatih/vim-go/pull/1639)
+* Show messages in the location list instead of the quickfix list when
+  `gometalinter` is run automatically when saving a buffer. Whether the
+  location list or quickfix list is used can be customized in the usual ways.
+  [[GH-1652]](https://github.com/fatih/vim-go/pull/1652)
+
+BUG FIXES:
+
+* Create quickfix list correctly when tests timeout.
+  [[GH-1633]](https://github.com/fatih/vim-go/pull/1633)
+* Apply `g:go_test_timeout` when running `:GoTestFunc`.
+  [[GH-1631]](https://github.com/fatih/vim-go/pull/1631)
+* The user's configured `g:go_doc_url` variable wasn't working correctly in the
+  case when the "gogetdoc" command isn't installed.
+  [[GH-1629]](https://github.com/fatih/vim-go/pull/1629)
+* Highlight format specifiers with an index (e.g. `%[2]d`).
+  [[GH-1634]](https://github.com/fatih/vim-go/pull/1634)
+* Respect `g:go_test_show_name` change for `:GoTest` when it changes during a
+  Vim session.
+  [[GH-1641]](https://github.com/fatih/vim-go/pull/1641)
+* Show `g:go_test_show_name` value for `:GoTest` failures if it's available.
+  [[GH-1641]](https://github.com/fatih/vim-go/pull/1641)
+* Make sure linter errors for the file being saved are shown in vim74 and nvim.
+  [[GH-1640]](https://github.com/fatih/vim-go/pull/1640)
+* Make sure only linter errors for the file being saved are shown in vim8.
+  Previously, all linter errors for all files in the current file's directory
+  were being shown.
+  [[GH-1640]](https://github.com/fatih/vim-go/pull/1640)
+* Make sure gometalinter is run on the given directories when arguments are
+  given to :GoMetaLinter.
+  [[GH-1640]](https://github.com/fatih/vim-go/pull/1640)
+* Do not run disabled linters with `gometalinter`.
+  [[GH-1648]](https://github.com/fatih/vim-go/pull/1648)
+* Do not prompt user to press enter after when `gometalinter` is called in
+  autosave mode.
+  [[GH-1654]](https://github.com/fatih/vim-go/pull/1654)
+* Fix potential race conditions when using vim8 jobs.
+  [[GH-1656]](https://github.com/fatih/vim-go/pull/1656)
+* Treat `'autowriteall'` the same as `'autowrite'` when determining whether to
+  write a buffer before calling some commands.
+  [[GH-1653]](https://github.com/fatih/vim-go/pull/1653)
+* Show the file location of test errors when the message is empty or begins
+  with a newline.
+  [[GH-1664]](https://github.com/fatih/vim-go/pull/1664)
+
+
+BACKWARDS INCOMPATIBILITIES:
+
+* Highlighting function and method declarations/calls is fixed. To fix it we
+  had to remove the meaning of the previous settings. The following setting is
+  removed:
+
+  * `go_highlight_methods`
+
+  in favor of the following settings and changes: 
+
+  * `go_highlight_functions`: This highlights now all function and method
+    declarations (whereas previously it would also highlight function and
+    method calls, not anymore)
+  * `go_highlight_function_calls`: This higlights now all all function and
+    method calls.
+  [[GH-1557]](https://github.com/fatih/vim-go/pull/1557)
+* Rename g`g:go_metalinter_excludes` to `g:go_metalinter_disabled`.
+  [[GH-1648]](https://github.com/fatih/vim-go/pull/1648)
+
+## 1.16 - (December 29, 2017)
+
 FEATURES:
 
 * Add `g:go_doc_url` to change the `godoc` server from `godoc.org` to a custom
@@ -61,6 +131,11 @@ BUG FIXES:
   [[GH-1587]](https://github.com/fatih/vim-go/pull/1587).
 * Fix installation of `gocode` on MS-Windows.
   [[GH-1606]](https://github.com/fatih/vim-go/pull/1606).
+* Fix template creation for files in directories that don't exist yet.
+  [[GH-1618]](https://github.com/fatih/vim-go/pull/1618).
+* Fix behavior of terminal windows and resize terminal windows correctly for
+  all valid `g:go_term_mode` values.
+  [[GH-1611]](https://github.com/fatih/vim-go/pull/1611).
 
 BACKWARDS INCOMPATIBILITIES:
 
@@ -76,6 +151,11 @@ BACKWARDS INCOMPATIBILITIES:
   changed for all commands run from Vim.
   [[GH-1461]](https://github.com/fatih/vim-go/pull/1461) and
   [[GH-1525]](https://github.com/fatih/vim-go/pull/1525).
+* Update `:GoFillStruct` to check the current line (vs. the exact cursor
+  position) for a struct literal to fill. To support this, fillstruct made
+  [backwards imcompatible
+  changes](https://github.com/davidrjenni/reftools/pull/8).
+  [[GH-1607]](https://github.com/fatih/vim-go/pull/1607).
 
 ## 1.15 - (October 3, 2017)
 

@@ -1,5 +1,5 @@
 function! go#cmd#autowrite() abort
-  if &autowrite == 1
+  if &autowrite == 1 || &autowriteall == 1
     silent! wall
   endif
 endfunction
@@ -269,7 +269,7 @@ function s:cmd_job(args) abort
   " autowrite is not enabled for jobs
   call go#cmd#autowrite()
 
-  function! s:error_info_cb(job, exit_status, data) closure abort
+  function! s:complete(job, exit_status, data) closure abort
     let status = {
           \ 'desc': 'last status',
           \ 'type': a:args.cmd[1],
@@ -288,12 +288,13 @@ function s:cmd_job(args) abort
     call go#statusline#Update(status_dir, status)
   endfunction
 
-  let a:args.error_info_cb = funcref('s:error_info_cb')
+  let a:args.complete = funcref('s:complete')
   let callbacks = go#job#Spawn(a:args)
 
   let start_options = {
         \ 'callback': callbacks.callback,
         \ 'exit_cb': callbacks.exit_cb,
+        \ 'close_cb': callbacks.close_cb,
         \ }
 
   " pre start

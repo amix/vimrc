@@ -1,0 +1,1258 @@
+Before:
+  unlet! b:mkd_known_filetypes
+  unlet! b:mkd_included_filetypes
+  unlet! g:vim_markdown_math
+
+Given markdown;
+a **b** c
+
+Execute (bold):
+  AssertNotEqual SyntaxOf('a'), 'htmlBold'
+  AssertEqual SyntaxOf('b'), 'htmlBold'
+  AssertNotEqual SyntaxOf('c'), 'htmlBold'
+
+Given markdown;
+a __b__ c
+
+Execute (bold):
+  AssertNotEqual SyntaxOf('a'), 'htmlBold'
+  AssertEqual SyntaxOf('b'), 'htmlBold'
+  AssertNotEqual SyntaxOf('c'), 'htmlBold'
+
+Given markdown;
+a *b* c
+
+Execute (italic):
+  AssertNotEqual SyntaxOf('a'), 'htmlItalic'
+  AssertEqual SyntaxOf('b'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('c'), 'htmlItalic'
+
+Given markdown;
+a _b_ c
+
+Execute (italic):
+  AssertNotEqual SyntaxOf('a'), 'htmlItalic'
+  AssertEqual SyntaxOf('b'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('c'), 'htmlItalic'
+
+Given markdown;
+_a_b_
+
+Execute (italic text has underscores):
+  AssertEqual SyntaxOf('a'), 'htmlItalic'
+  AssertEqual SyntaxOf('b'), 'htmlItalic'
+
+Given markdown;
+a \*b\* c
+
+Execute (not italic with escaped asterisks):
+  AssertNotEqual SyntaxOf('a'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('b'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('c'), 'htmlItalic'
+
+Given markdown;
+a \_b\_ c
+
+Execute (not italic with escaped underscores):
+  AssertNotEqual SyntaxOf('a'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('b'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('c'), 'htmlItalic'
+
+Given markdown;
+a _b\_c_ d
+
+Execute (italic with escaped underscores):
+  AssertNotEqual SyntaxOf('a'), 'htmlItalic'
+  AssertEqual SyntaxOf('b'), 'htmlItalic'
+  AssertEqual SyntaxOf('c'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('d'), 'htmlItalic'
+
+Given markdown;
+a_b_c
+
+Execute (not italic underscores within text):
+  AssertNotEqual SyntaxOf('a'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('b'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('c'), 'htmlItalic'
+
+Given markdown;
+a *b\*c* d
+
+Execute (italic with escaped asterisks):
+  AssertNotEqual SyntaxOf('a'), 'htmlItalic'
+  AssertEqual SyntaxOf('b'), 'htmlItalic'
+  AssertEqual SyntaxOf('c'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('d'), 'htmlItalic'
+
+Given markdown;
+a __b\_\_c__ d
+
+Execute (bold with escaped underscores):
+  AssertNotEqual SyntaxOf('a'), 'htmlBold'
+  AssertEqual SyntaxOf('b'), 'htmlBold'
+  AssertEqual SyntaxOf('c'), 'htmlBold'
+  AssertNotEqual SyntaxOf('d'), 'htmlBold'
+
+Given markdown;
+_a b
+c_ d
+
+Execute (italic with underscores in multiple lines):
+  AssertEqual SyntaxOf('a'), 'htmlItalic'
+  AssertEqual SyntaxOf('b'), 'htmlItalic'
+  AssertEqual SyntaxOf('c'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('d'), 'htmlItalic'
+
+Given markdown;
+__a b
+c__ d
+
+Execute (bold with underscores in multiple lines):
+  AssertEqual SyntaxOf('a'), 'htmlBold'
+  AssertEqual SyntaxOf('b'), 'htmlBold'
+  AssertEqual SyntaxOf('c'), 'htmlBold'
+  AssertNotEqual SyntaxOf('d'), 'htmlBold'
+
+Given markdown;
+___a b
+c___ d
+
+Execute (bold italic with underscores in multiple lines):
+  AssertEqual SyntaxOf('a'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('b'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('c'), 'htmlBoldItalic'
+  AssertNotEqual SyntaxOf('d'), 'htmlBoldItalic'
+
+Given markdown;
+*a b
+c* d
+
+Execute (italic with asterisks in multiple lines):
+  AssertEqual SyntaxOf('a'), 'htmlItalic'
+  AssertEqual SyntaxOf('b'), 'htmlItalic'
+  AssertEqual SyntaxOf('c'), 'htmlItalic'
+  AssertNotEqual SyntaxOf('d'), 'htmlItalic'
+
+Given markdown;
+**a b
+c** d
+
+Execute (bold with asterisks in multiple lines):
+  AssertEqual SyntaxOf('a'), 'htmlBold'
+  AssertEqual SyntaxOf('b'), 'htmlBold'
+  AssertEqual SyntaxOf('c'), 'htmlBold'
+  AssertNotEqual SyntaxOf('d'), 'htmlBold'
+
+Given markdown;
+***a b
+c*** d
+
+Execute (bold italic with asterisks in multiple lines):
+  AssertEqual SyntaxOf('a'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('b'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('c'), 'htmlBoldItalic'
+  AssertNotEqual SyntaxOf('d'), 'htmlBoldItalic'
+
+Given markdown;
+*a
+
+Execute (not italic with an asterisk):
+  AssertNotEqual SyntaxOf('a'), 'htmlItalic'
+
+Given markdown;
+[__](a) b
+
+Execute (not bold with double underscores):
+  AssertNotEqual SyntaxOf('_'), 'htmlBold'
+  AssertNotEqual SyntaxOf('a'), 'htmlBold'
+  AssertNotEqual SyntaxOf('b'), 'htmlBold'
+
+Given markdown;
+_a_
+
+Execute (conceal italic):
+  if has('conceal')
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 1
+    setlocal conceallevel=0
+  endif
+
+Execute (disable conceal):
+  if has('conceal')
+    let g:vim_markdown_conceal=0
+    syn off | syn on
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 0
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 0
+
+    let g:vim_markdown_conceal=1
+    syn off | syn on
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 1
+
+    setlocal conceallevel=0
+    unlet g:vim_markdown_conceal
+    syn off | syn on
+  endif
+
+Given markdown;
+*a*
+
+Execute (conceal italic):
+  if has('conceal')
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 1
+    setlocal conceallevel=0
+  endif
+
+Execute (disable conceal):
+  if has('conceal')
+    let g:vim_markdown_conceal=0
+    syn off | syn on
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 0
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 0
+
+    let g:vim_markdown_conceal=1
+    syn off | syn on
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 1
+
+    setlocal conceallevel=0
+    unlet g:vim_markdown_conceal
+    syn off | syn on
+  endif
+
+Given markdown;
+__a__
+
+Execute (conceal bold):
+  if has('conceal')
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 1
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 1
+    AssertEqual synconcealed(1, 5)[0], 1
+    setlocal conceallevel=0
+  endif
+
+Execute (disable conceal):
+  if has('conceal')
+    let g:vim_markdown_conceal=0
+    syn off | syn on
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 0
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 0
+
+    let g:vim_markdown_conceal=1
+    syn off | syn on
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 1
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 1
+    AssertEqual synconcealed(1, 5)[0], 1
+
+    setlocal conceallevel=0
+    unlet g:vim_markdown_conceal
+    syn off | syn on
+  endif
+
+Given markdown;
+**a**
+
+Execute (conceal bold):
+  if has('conceal')
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 1
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 1
+    AssertEqual synconcealed(1, 5)[0], 1
+    setlocal conceallevel=0
+  endif
+
+Execute (disable conceal):
+  if has('conceal')
+    let g:vim_markdown_conceal=0
+    syn off | syn on
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 0
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 0
+
+    let g:vim_markdown_conceal=1
+    syn off | syn on
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 1
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 1
+    AssertEqual synconcealed(1, 5)[0], 1
+
+    setlocal conceallevel=0
+    unlet g:vim_markdown_conceal
+    syn off | syn on
+  endif
+
+Given markdown;
+___a___
+
+Execute (conceal italic bold):
+  if has('conceal')
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 1
+    AssertEqual synconcealed(1, 3)[0], 1
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 1
+    AssertEqual synconcealed(1, 6)[0], 1
+    AssertEqual synconcealed(1, 7)[0], 1
+    setlocal conceallevel=0
+  endif
+
+Execute (disable conceal):
+  if has('conceal')
+    let g:vim_markdown_conceal=0
+    syn off | syn on
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 0
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 0
+    AssertEqual synconcealed(1, 6)[0], 0
+    AssertEqual synconcealed(1, 7)[0], 0
+
+    let g:vim_markdown_conceal=1
+    syn off | syn on
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 1
+    AssertEqual synconcealed(1, 3)[0], 1
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 1
+    AssertEqual synconcealed(1, 6)[0], 1
+    AssertEqual synconcealed(1, 7)[0], 1
+
+    setlocal conceallevel=0
+    unlet g:vim_markdown_conceal
+    syn off | syn on
+  endif
+
+Given markdown;
+***a***
+
+Execute (conceal italic bold):
+  if has('conceal')
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 1
+    AssertEqual synconcealed(1, 3)[0], 1
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 1
+    AssertEqual synconcealed(1, 6)[0], 1
+    AssertEqual synconcealed(1, 7)[0], 1
+    setlocal conceallevel=0
+  endif
+
+Execute (disable conceal):
+  if has('conceal')
+    let g:vim_markdown_conceal=0
+    syn off | syn on
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 0
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 0
+    AssertEqual synconcealed(1, 6)[0], 0
+    AssertEqual synconcealed(1, 7)[0], 0
+
+    let g:vim_markdown_conceal=1
+    syn off | syn on
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 1
+    AssertEqual synconcealed(1, 3)[0], 1
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 1
+    AssertEqual synconcealed(1, 6)[0], 1
+    AssertEqual synconcealed(1, 7)[0], 1
+
+    setlocal conceallevel=0
+    unlet g:vim_markdown_conceal
+    syn off | syn on
+  endif
+
+# Links
+
+Given markdown;
+[a](b)
+
+Execute (link with title):
+  AssertEqual SyntaxOf('a'), 'mkdLink'
+  AssertEqual SyntaxOf('b'), 'mkdURL'
+
+Given markdown;
+[a
+b](c)
+
+Execute (link text with newline):
+  AssertEqual SyntaxOf('a'), 'mkdLink'
+  AssertEqual SyntaxOf('b'), 'mkdLink'
+  AssertEqual SyntaxOf('c'), 'mkdURL'
+
+Given markdown;
+[a] b [c](d)
+
+Execute (link text with bracket sections):
+  AssertNotEqual SyntaxOf('a'), 'mkdLink'
+  AssertNotEqual SyntaxOf('b'), 'mkdLink'
+  AssertEqual SyntaxOf('c'), 'mkdLink'
+  AssertEqual SyntaxOf('d'), 'mkdURL'
+
+Given markdown;
+[^a]: b
+
+Execute (footnote is not link):
+  AssertNotEqual SyntaxOf('a'), 'mkdLinkDef'
+
+Given markdown;
+(a)
+
+(b)
+
+Execute (parenthesis not in link):
+  AssertNotEqual SyntaxOf('a'), 'mkdURL'
+  AssertNotEqual SyntaxOf('b'), 'mkdURL'
+
+Given markdown;
+[a](b) c [d](e)
+
+Execute (multiple links on a line):
+  AssertNotEqual SyntaxOf('c'), 'mkdLink'
+  AssertNotEqual SyntaxOf('c'), 'mkdURL'
+
+Given markdown;
+[a] (b)
+
+Execute (space is not allowed between link text and parenthesis):
+  AssertNotEqual SyntaxOf('a'), 'mkdLink'
+  AssertNotEqual SyntaxOf('b'), 'mkdURL'
+
+Given markdown;
+[a](b)
+
+Execute (conceal link):
+  if has('conceal')
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 1
+    AssertEqual synconcealed(1, 4)[0], 1
+    AssertEqual synconcealed(1, 4)[0], 1
+    AssertEqual synconcealed(1, 5)[0], 1
+    AssertEqual synconcealed(1, 6)[0], 1
+    setlocal conceallevel=0
+  endif
+
+Execute (disable conceal):
+  if has('conceal')
+    let g:vim_markdown_conceal=0
+    syn off | syn on
+    setlocal conceallevel=2
+    AssertEqual synconcealed(1, 1)[0], 0
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 0
+    AssertEqual synconcealed(1, 6)[0], 0
+
+    let g:vim_markdown_conceal=1
+    syn off | syn on
+    AssertEqual synconcealed(1, 1)[0], 1
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 1
+    AssertEqual synconcealed(1, 4)[0], 1
+    AssertEqual synconcealed(1, 4)[0], 1
+    AssertEqual synconcealed(1, 5)[0], 1
+    AssertEqual synconcealed(1, 6)[0], 1
+
+    setlocal conceallevel=0
+    unlet g:vim_markdown_conceal
+    syn off | syn on
+  endif
+
+# Autolinks
+
+Given markdown;
+a <http://b> c
+
+Execute (autolink):
+  AssertNotEqual SyntaxOf('a'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('<'), 'mkdDelimiter'
+  AssertEqual SyntaxOf('b'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('>'), 'mkdDelimiter'
+  AssertNotEqual SyntaxOf('c'), 'mkdInlineURL'
+
+Given markdown;
+http://12monkeys.foo
+
+Execute (autolink with domain starting with a number):
+  AssertEqual SyntaxOf('12monkeys'), 'mkdInlineURL'
+
+Given markdown;
+<HtTp://a>
+
+Execute (autolink with scheme case is insensitive):
+  AssertEqual SyntaxOf('a'), 'mkdInlineURL'
+
+Given markdown;
+<a>
+
+Execute (autolink without scheme is not a link):
+  AssertNotEqual SyntaxOf('a'), 'mkdInlineURL'
+
+Given markdown;
+< http://a >
+<http://b c>
+<http://d
+e>
+
+Execute (autolink with space is not a link):
+  AssertNotEqual SyntaxOf('a'), 'mkdInlineURL'
+  AssertNotEqual SyntaxOf('b'), 'mkdInlineURL'
+  AssertNotEqual SyntaxOf('c'), 'mkdInlineURL'
+  AssertNotEqual SyntaxOf('d'), 'mkdInlineURL'
+  AssertNotEqual SyntaxOf('e'), 'mkdInlineURL'
+
+Given markdown;
+\<http://a>
+
+Execute (autolinks can be backslash escaped):
+  AssertNotEqual SyntaxOf('<'), 'mkdDelimiter'
+
+Given markdown;
+a (http://b.bb) c
+
+Execute (autolink in parenthesis):
+  AssertNotEqual SyntaxOf('a'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('('), 'mkdDelimiter'
+  AssertEqual SyntaxOf('b'), 'mkdInlineURL'
+  AssertEqual SyntaxOf(')'), 'mkdDelimiter'
+  AssertNotEqual SyntaxOf('c'), 'mkdInlineURL'
+
+Given markdown;
+[![a](http://b)](http://c)
+
+Execute (autolink in link text):
+  AssertEqual SyntaxOf('!'), 'mkdDelimiter'
+  AssertEqual SyntaxOf('a'), 'mkdLink'
+  AssertEqual SyntaxOf('b'), 'mkdURL'
+  AssertEqual SyntaxOf('c'), 'mkdURL'
+
+Given markdown;
+# [h1link](url)
+
+## [h2link](url)
+
+### [h3link](url)
+
+#### [h4link](url)
+
+##### [h5link](url)
+
+###### [h6link](url)
+
+[h1link_b](url)
+===============
+
+[h2link_b](url)
+---------------
+
+Execute (link in headers):
+  AssertEqual SyntaxOf('h1link'), 'mkdLink'
+  AssertEqual SyntaxOf('h2link'), 'mkdLink'
+  AssertEqual SyntaxOf('h3link'), 'mkdLink'
+  AssertEqual SyntaxOf('h4link'), 'mkdLink'
+  AssertEqual SyntaxOf('h5link'), 'mkdLink'
+  AssertEqual SyntaxOf('h6link'), 'mkdLink'
+  AssertEqual SyntaxOf('h1link_b'), 'mkdLink'
+  AssertEqual SyntaxOf('h2link_b'), 'mkdLink'
+
+Given markdown;
+# http://h1link.foo
+
+## http://h2link.foo
+
+### http://h3link.foo
+
+#### http://h4link.foo
+
+##### http://h5link.foo
+
+###### http://h6link.foo
+
+http://h1link_b.foo
+===================
+
+http://h2link_b.foo
+-------------------
+
+Execute (inline url in headers):
+  AssertEqual SyntaxOf('h1link'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('h2link'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('h3link'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('h4link'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('h5link'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('h6link'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('h1link_b'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('h2link_b'), 'mkdInlineURL'
+
+Given markdown;
+> [a](b)
+> http://foo.bar
+
+Execute (link in blockquote):
+  AssertEqual SyntaxOf('a'), 'mkdLink'
+  AssertEqual SyntaxOf('foo'), 'mkdInlineURL'
+
+Given markdown;
+[https://domain.tld](https://domain.com) not_a_link
+
+Execute (link with url title):
+  AssertEqual SyntaxOf('https://domain.tld'), 'mkdInlineURL'
+  AssertEqual SyntaxOf('https://domain.com'), 'mkdInlineURL'
+  AssertNotEqual SyntaxOf('not_a_link'), 'mkdInlineURL'
+
+# Code Blocks
+
+Given markdown;
+~~~
+code
+~~~
+
+Execute (code blocks can be fenced with tildes):
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+~~~~
+code
+~~~~~
+
+Execute (code blocks can be fenced with tildes longer than 3):
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+````
+code
+`````
+
+Execute (code blocks can be fenced with backticks longer than 3):
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+~~~ruby
+code
+~~~
+
+Execute (code blocks can have a language specifier):
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+```c++
+code
+```
+
+text
+
+Execute (code blocks can be fenced with backticks and a language specifier):
+  AssertEqual SyntaxOf('code'), 'mkdCode'
+  AssertNotEqual SyntaxOf('text'), 'mkdCode'
+
+# Indent Code Blocks
+
+Given markdown;
+a
+
+    b
+    c
+
+Execute (indent code blocks):
+  AssertNotEqual SyntaxOf('a'), 'mkdCode'
+  AssertEqual SyntaxOf('b'), 'mkdCode'
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+# a
+
+b
+
+    c
+
+Execute (indent code blocks after header):
+  AssertNotEqual SyntaxOf('a'), 'mkdCode'
+  AssertNotEqual SyntaxOf('b'), 'mkdCode'
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+-   a
+
+    b
+
+        c
+
+Execute (indent code blocks after list):
+  AssertNotEqual SyntaxOf('a'), 'mkdCode'
+  AssertNotEqual SyntaxOf('b'), 'mkdCode'
+  AssertEqual SyntaxOf('c'), 'mkdCode'
+
+Given markdown;
+    a
+    b
+
+Execute (indent code block at beginning of file):
+  AssertEqual SyntaxOf('a'), 'mkdCode'
+  AssertEqual SyntaxOf('b'), 'mkdCode'
+
+Given markdown;
+```c++
+#include <iostream>
+code
+```
+
+```ruby
+def a
+end
+```
+
+Execute (fenced code block syntax with a language specifier):
+  let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'MarkdownRefreshSyntax')
+  call b:func(0)
+  AssertEqual SyntaxOf('include'), 'cInclude'
+  AssertEqual SyntaxOf('code'), 'mkdSnippetCPP'
+  AssertEqual SyntaxOf('def'), 'rubyDefine'
+
+Given markdown;
+``` c++
+#include <iostream>
+code
+```
+
+```  vim
+let g:a = 1
+```
+
+```	ruby
+def a
+end
+```
+
+```
+ruby
+class B
+end
+```
+
+Execute (fenced code block syntax with a language specifier after whitespace):
+  let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'MarkdownRefreshSyntax')
+  call b:func(0)
+  AssertEqual SyntaxOf('include'), 'cInclude'
+  AssertEqual SyntaxOf('code'), 'mkdSnippetCPP'
+  AssertEqual SyntaxOf('g:a'), 'vimVar'
+  AssertEqual SyntaxOf('def'), 'rubyDefine'
+  AssertNotEqual SyntaxOf('class'), 'rubyClass'
+
+Given markdown;
+```vim
+let g:a = 1
+```
+
+```viml
+let g:b = 1
+```
+
+Execute (fenced code block syntax with alias language specifier):
+  let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'MarkdownRefreshSyntax')
+  call b:func(0)
+  AssertEqual SyntaxOf('g:a'), 'vimVar'
+  AssertEqual SyntaxOf('g:b'), 'vimVar'
+
+Given markdown;
+```csharp
+var s = "foo";
+```
+
+Execute (fenced code block languages setting):
+  let g:vim_markdown_fenced_languages = ['csharp=cs']
+  source ../ftplugin/markdown.vim
+  let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'MarkdownRefreshSyntax')
+  call b:func(0)
+  AssertEqual SyntaxOf('foo'), 'csString'
+  unlet g:vim_markdown_fenced_languages
+
+Given markdown;
+```vim
+let g:a = 1
+```
+
+Execute (fenced code block includes language syntax with reopening same buffer):
+  let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'MarkdownRefreshSyntax')
+  call b:func(0)
+  split
+  quit
+  edit
+  set filetype=markdown
+  execute "normal! i```vim\<cr>let g:a = 1\<cr>```"
+  call b:func(1)
+  AssertEqual SyntaxOf('g:a'), 'vimVar'
+
+Given markdown;
+```a+b-
+code
+```
+
+Execute (fenced code block syntax with an unknown language specifier):
+  let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'MarkdownRefreshSyntax')
+  call b:func(0)
+  AssertEqual SyntaxOf('code'), 'mkdSnippetA_B_'
+
+Given markdown;
+```
+=
+a
+-
+```
+
+Execute (first = or - in fenced code block is not setex headers):
+  AssertEqual SyntaxOf('='), 'mkdCode'
+  AssertEqual SyntaxOf('-'), 'mkdCode'
+
+Given markdown;
+``` {style=""}
+a
+```
+
+Execute (fenced code block with extended info strings):
+  AssertEqual SyntaxOf('a'), 'mkdCode'
+
+# Code Blocks in pre and code tag
+
+Given markdown;
+<pre>
+a
+</pre>
+
+Execute (code block in pre tag):
+  AssertEqual SyntaxOf('a'), 'mkdCode'
+
+Given markdown;
+<code>
+a
+</code>
+
+Execute (code block in code tag):
+  AssertEqual SyntaxOf('a'), 'mkdCode'
+
+Given markdown;
+\<pre\>
+a
+\</pre\>
+
+Execute (not code block in escaped pre tag):
+  AssertNotEqual SyntaxOf('a'), 'mkdCode'
+
+Given markdown;
+\<code\>
+a
+\</code\>
+
+Execute (not code block in escaped code tag):
+  AssertNotEqual SyntaxOf('a'), 'mkdCode'
+
+# Math
+
+Given markdown;
+a $x$ b
+c $$y$$ d
+\$e\$
+\$\$f\$\$
+
+Execute (math):
+  AssertNotEqual SyntaxOf('x')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('y')[0:2], 'tex'
+  let g:vim_markdown_math=1
+  syn off | syn on
+  AssertNotEqual SyntaxOf('a')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('b')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('c')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('d')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('e')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('f')[0:2], 'tex'
+  AssertEqual SyntaxOf('x')[0:2], 'tex'
+  AssertEqual SyntaxOf('y')[0:2], 'tex'
+  let g:vim_markdown_math=0
+  syn off | syn on
+  AssertNotEqual SyntaxOf('x')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('y')[0:2], 'tex'
+
+Given markdown;
+a
+
+$
+b
+$
+
+c
+
+Execute (multiline math):
+  let g:vim_markdown_math=1
+  syn off | syn on
+  AssertNotEqual SyntaxOf('a')[0:2], 'tex'
+  AssertEqual SyntaxOf('b')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('c')[0:2], 'tex'
+
+Given markdown;
+$ \sqrt{a}{b} $
+$$ \frac{a}{b} $$
+
+Execute (math tex highlighting):
+  let g:vim_markdown_math=0
+  syn off | syn on
+  AssertNotEqual SyntaxOf('sqrt'), 'texStatement'
+  AssertNotEqual SyntaxOf('frac'), 'texStatement'
+  let g:vim_markdown_math=1
+  syn off | syn on
+  AssertEqual SyntaxOf('sqrt'), 'texStatement'
+  AssertEqual SyntaxOf('frac'), 'texStatement'
+
+Given markdown;
+$a b[$ c
+
+Execute (math ends with $):
+  let g:vim_markdown_math=1
+  syn off | syn on
+  AssertEqual SyntaxOf('a')[0:2], 'tex'
+  AssertEqual SyntaxOf('b')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('c')[0:2], 'tex'
+
+Given markdown;
+$$a b[$$ c
+
+Execute (math ends with $$):
+  let g:vim_markdown_math=1
+  syn off | syn on
+  AssertEqual SyntaxOf('a')[0:2], 'tex'
+  AssertEqual SyntaxOf('b')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('c')[0:2], 'tex'
+
+Given markdown;
+$(0 \le 1)$
+
+Execute (math conceal in $):
+  if has('conceal')
+    setlocal conceallevel=2
+    let g:vim_markdown_math=1
+    syn off | syn on
+    AssertEqual synconcealed(1, 1)[0], 1, '$'
+    AssertEqual synconcealed(1, 2)[0], 0
+    AssertEqual synconcealed(1, 3)[0], 0
+    AssertEqual synconcealed(1, 4)[0], 0
+    AssertEqual synconcealed(1, 5)[0], 1, '\le'
+    AssertEqual synconcealed(1, 6)[0], 1
+    AssertEqual synconcealed(1, 7)[0], 1
+    AssertEqual synconcealed(1, 8)[0], 0
+    AssertEqual synconcealed(1, 9)[0], 0
+    AssertEqual synconcealed(1, 10)[0], 0
+    AssertEqual synconcealed(1, 11)[0], 1, '$'
+    setlocal conceallevel=0
+  endif
+
+Given markdown;
+$$
+\omega
+0 \le 1
+$$
+
+Execute (math conceal in $$):
+  if has('conceal')
+    setlocal conceallevel=2
+    let g:vim_markdown_math=1
+    syn off | syn on
+    AssertEqual synconcealed(1, 1)[0], 1, '$$'
+    AssertEqual synconcealed(2, 1)[0], 1, '\omega'
+    AssertEqual synconcealed(3, 1)[0], 0, '0'
+    AssertEqual synconcealed(3, 3)[0], 1, '\le'
+    AssertEqual synconcealed(3, 7)[0], 0, '1'
+    AssertEqual synconcealed(4, 1)[0], 1, '$$'
+    setlocal conceallevel=0
+  endif
+
+# YAML frontmatter
+
+Given markdown;
+---
+a: b
+---
+
+Execute (YAML frontmatter is controlled by the option):
+  AssertNotEqual SyntaxOf('a')[0:3], 'yaml'
+  let g:vim_markdown_frontmatter=1
+  syn off | syn on
+  AssertEqual SyntaxOf('a')[0:3], 'yaml'
+  let g:vim_markdown_frontmatter=0
+  syn off | syn on
+  AssertNotEqual SyntaxOf('a')[0:3], 'yaml'
+
+Given markdown;
+
+---
+a: b
+---
+
+Execute (YAML frontmatter only works if it's the first thing in the file):
+  let g:vim_markdown_frontmatter=1
+  syn off | syn on
+  AssertNotEqual SyntaxOf('a')[0:3], 'yaml'
+
+Given markdown;
+---
+a: b
+---
+
+---
+
+Execute (rules are not mistaken by YAML frontmatter delimiters):
+  let g:vim_markdown_frontmatter=1
+  syn off | syn on
+  AssertEqual SyntaxAt(5, 1), 'mkdRule'
+  unlet g:vim_markdown_frontmatter
+
+# TOML frontmatter
+
+Given markdown;
++++
+a = "b"
++++
+
+Execute (TOML frontmatter is controlled by the option):
+  syn off | syn on
+  AssertNotEqual SyntaxOf('b'), 'tomlString'
+  let g:vim_markdown_toml_frontmatter=1
+  syn off | syn on
+  AssertEqual SyntaxOf('b'), 'tomlString'
+  let g:vim_markdown_toml_frontmatter=0
+  syn off | syn on
+  AssertNotEqual SyntaxOf('b'), 'tomlString'
+
+Given markdown;
+
++++
+a = "b"
++++
+
+Execute (TOML frontmatter only works if it's the first thing in the file):
+  let g:vim_markdown_toml_frontmatter=1
+  syn off | syn on
+  AssertNotEqual SyntaxOf('b'), 'tomlString'
+  unlet g:vim_markdown_toml_frontmatter
+
+# JSON frontmatter
+
+Given markdown;
+{
+  "a": "b"
+}
+
+Execute (JSON frontmatter is controlled by the option):
+  syn off | syn on
+  AssertNotEqual SyntaxOf('a'), 'jsonKeyword'
+  let g:vim_markdown_json_frontmatter=1
+  syn off | syn on
+  AssertEqual SyntaxOf('a'), 'jsonKeyword'
+  let g:vim_markdown_json_frontmatter=0
+  syn off | syn on
+  AssertNotEqual SyntaxOf('a'), 'jsonKeyword'
+
+Given markdown;
+
+{
+  "a": "b"
+}
+
+Execute (JSON frontmatter only works if it's the first thing in the file):
+  let g:vim_markdown_json_frontmatter=1
+  syn off | syn on
+  AssertNotEqual SyntaxOf('a'), 'jsonKeyword'
+  unlet g:vim_markdown_json_frontmatter
+
+# Header
+
+Given markdown;
+# #a
+ccc
+
+## #b
+ddd
+
+Execute (header title starts with #):
+  AssertEqual SyntaxOf('a'), 'htmlH1'
+  AssertEqual SyntaxOf('b'), 'htmlH2'
+
+Given markdown;
+# h1 space
+
+#h1 nospace
+
+#  h1 2 spaces
+
+# h1 trailing hash #
+
+## h2 space
+
+##h2 nospace
+
+## h2 trailing hash ##
+
+### h3 space
+
+###h3 nospace
+
+### h3 trailing hash ###
+
+#### h4
+
+##### h5
+
+###### h6
+
+Execute (atx headers):
+  AssertEqual SyntaxOf('# h1 space'), 'htmlH1'
+  AssertEqual SyntaxOf('#h1 nospace'), 'htmlH1'
+  AssertEqual SyntaxOf('#  h1 2 spaces'), 'htmlH1'
+  AssertEqual SyntaxOf('# h1 trailing hash #'), 'htmlH1'
+  AssertEqual SyntaxOf('## h2 space'), 'htmlH2'
+  AssertEqual SyntaxOf('##h2 nospace'), 'htmlH2'
+  AssertEqual SyntaxOf('## h2 trailing hash ##'), 'htmlH2'
+  AssertEqual SyntaxOf('### h3 space'), 'htmlH3'
+  AssertEqual SyntaxOf('###h3 nospace'), 'htmlH3'
+  AssertEqual SyntaxOf('### h3 trailing hash ###'), 'htmlH3'
+  AssertEqual SyntaxOf('#### h4'), 'htmlH4'
+  AssertEqual SyntaxOf('##### h5'), 'htmlH5'
+  AssertEqual SyntaxOf('###### h6'), 'htmlH6'
+
+Given markdown;
+# h1 before h2
+
+## h2 between h1s
+
+# h1 after h2
+
+Execute (atx headers relative positions):
+  AssertEqual SyntaxOf('# h1 before h2'), 'htmlH1'
+  AssertEqual SyntaxOf('## h2 between h1s'), 'htmlH2'
+  AssertEqual SyntaxOf('# h1 after h2'), 'htmlH1'
+
+Given markdown;
+setex h1
+========
+
+setex h2
+--------
+
+setex h1 single punctuation
+=
+
+setex h1 punctuation longer than header
+================================
+
+Execute (setex headers):
+  AssertEqual SyntaxOf('setex h1'), 'htmlH1'
+  AssertEqual SyntaxOf('^========$'), 'htmlH1'
+  AssertEqual SyntaxOf('setex h2'), 'htmlH2'
+  AssertEqual SyntaxOf('--------'), 'htmlH2'
+  AssertEqual SyntaxOf('setex h1 single punctuation'), 'htmlH1'
+  AssertEqual SyntaxOf('^=$'), 'htmlH1'
+  AssertEqual SyntaxOf('setex h1 punctuation longer than header'), 'htmlH1'
+  AssertEqual SyntaxOf('^================================$'), 'htmlH1'
+
+Given markdown;
+- not Setex
+- because list
+
+Execute (prevent list vs Setex confusion):
+  AssertNotEqual SyntaxOf('- not Setex'), 'htmlH2'
+  AssertNotEqual SyntaxOf('- becuase list'), 'htmlH2'
+
+Given markdown;
+setex h1 before atx
+===================
+
+## atx h2
+
+### atx h3
+
+# atx h1
+
+setex h2
+------------------
+
+### atx h3 2
+
+Execute (mixed atx and setex headers):
+  AssertEqual SyntaxOf('setex h1 before atx'), 'htmlH1'
+  AssertEqual SyntaxOf('==================='), 'htmlH1'
+  AssertEqual SyntaxOf('## atx h2'), 'htmlH2'
+  AssertEqual SyntaxOf('### atx h3'), 'htmlH3'
+  AssertEqual SyntaxOf('# atx h1'), 'htmlH1'
+  AssertEqual SyntaxOf('setex h2'), 'htmlH2'
+  AssertEqual SyntaxOf('------------------'), 'htmlH2'
+
+# List
+
+Given markdown;
+- a & b
+1. c > d
+
+Execute (& and > are not marked as htmlError in lists):
+  AssertEqual SyntaxOf('-'), 'mkdListItem'
+  AssertEqual SyntaxOf('1.'), 'mkdListItem'
+  AssertNotEqual SyntaxOf('&'), 'htmlError'
+  AssertNotEqual SyntaxOf('>'), 'htmlError'
+
+Given markdown;
+1. a  
+2. b
+
+Execute (list after line break):
+  AssertEqual SyntaxOf('1'), 'mkdListItem'
+  AssertEqual SyntaxOf('2'), 'mkdListItem'
+
+# HTML
+
+Given markdown;
+a
+
+<p>b</p>
+
+- <span>c</span>
+
+Execute (HTML tag in text):
+  AssertEqual SyntaxOf('p'), 'htmlTagName'
+  AssertEqual SyntaxOf('<p>'), 'htmlTag'
+  AssertEqual SyntaxOf('</p>'), 'htmlEndTag'
+  AssertEqual SyntaxOf('span'), 'htmlTagName'
+  AssertEqual SyntaxOf('<span>'), 'htmlTag'
+  AssertEqual SyntaxOf('</span>'), 'htmlEndTag'

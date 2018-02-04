@@ -144,13 +144,17 @@ snippet rec
 			${0}
 	end
 snippet req
-	require ${0:module_name}
+	require ${0:Logger}
 snippet imp
 	import ${0:module_name}
 snippet ali
 	alias ${0:module_name}
 snippet test
 	test "${1:test name}" do
+		${0}
+	end
+snippet testc
+	test "${1:test_name}", ctx do
 		${0}
 	end
 snippet testa

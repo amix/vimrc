@@ -261,62 +261,50 @@ function! s:displayHelp()
     call b:NERDTree.ui.centerView()
 endfunction
 
-" FUNCTION: s:findAndRevealPath(path) {{{1
-function! s:findAndRevealPath(path)
-    let l:path = a:path
+" FUNCTION: s:findAndRevealPath(pathStr) {{{1
+function! s:findAndRevealPath(pathStr)
+    let l:pathStr = !empty(a:pathStr) ? a:pathStr : expand('%:p')
 
-    if empty(l:path)
-        let l:path = expand('%:p')
+    if empty(l:pathStr)
+        call nerdtree#echoWarning('no file for the current buffer')
+        return
     endif
-    
+
     try
-        let p = g:NERDTreePath.New(l:path)
+        let l:pathObj = g:NERDTreePath.New(l:pathStr)
     catch /^NERDTree.InvalidArgumentsError/
-        call nerdtree#echo("no file for the current buffer")
+        call nerdtree#echoWarning('invalid path')
         return
     endtry
 
-    if p.isUnixHiddenPath()
-        let showhidden=g:NERDTreeShowHidden
-        let g:NERDTreeShowHidden = 1
-    endif
-
     if !g:NERDTree.ExistsForTab()
         try
-            let cwd = g:NERDTreePath.New(getcwd())
+            let l:cwd = g:NERDTreePath.New(getcwd())
         catch /^NERDTree.InvalidArgumentsError/
-            call nerdtree#echo("current directory does not exist.")
-            let cwd = p.getParent()
+            call nerdtree#echo('current directory does not exist.')
+            let l:cwd = l:pathObj.getParent()
         endtry
 
-        if p.isUnder(cwd)
-            call g:NERDTreeCreator.CreateTabTree(cwd.str())
+        if l:pathObj.isUnder(l:cwd)
+            call g:NERDTreeCreator.CreateTabTree(l:cwd.str())
         else
-            call g:NERDTreeCreator.CreateTabTree(p.getParent().str())
+            call g:NERDTreeCreator.CreateTabTree(l:pathObj.getParent().str())
         endif
     else
-        if !p.isUnder(g:NERDTreeFileNode.GetRootForTab().path)
-            if !g:NERDTree.IsOpen()
-                call g:NERDTreeCreator.ToggleTabTree('')
-            else
-                call g:NERDTree.CursorToTreeWin()
-            endif
-            call b:NERDTree.ui.setShowHidden(g:NERDTreeShowHidden)
-            call s:chRoot(g:NERDTreeDirNode.New(p.getParent(), b:NERDTree))
-        else
-            if !g:NERDTree.IsOpen()
-                call g:NERDTreeCreator.ToggleTabTree("")
-            endif
+        NERDTreeFocus
+
+        if !l:pathObj.isUnder(b:NERDTree.root.path)
+            call s:chRoot(g:NERDTreeDirNode.New(l:pathObj.getParent(), b:NERDTree))
         endif
     endif
-    call g:NERDTree.CursorToTreeWin()
-    let node = b:NERDTree.root.reveal(p)
-    call b:NERDTree.render()
-    call node.putCursorHere(1,0)
 
-    if p.isUnixHiddenFile()
-        let g:NERDTreeShowHidden = showhidden
+    if l:pathObj.isHiddenUnder(b:NERDTree.root.path)
+        call b:NERDTree.ui.setShowHidden(1)
     endif
+
+    let l:node = b:NERDTree.root.reveal(l:pathObj)
+    call b:NERDTree.render()
+    call l:node.putCursorHere(1, 0)
 endfunction
 
 "FUNCTION: s:handleLeftClick() {{{1

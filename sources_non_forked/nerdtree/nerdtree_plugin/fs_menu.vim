@@ -335,4 +335,5 @@ function! NERDTreeExecuteFile()
         call system("open '" . treenode.path.str() . "'")
     endif
 endfunction
+
 " vim: set sw=4 sts=4 et fdm=marker:

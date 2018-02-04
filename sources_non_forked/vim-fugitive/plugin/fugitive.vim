@@ -2750,6 +2750,8 @@ function! s:BufReadObject() abort
     endtry
 
     return ''
+  catch /^fugitive: rev-parse/
+    return ''
   catch /^fugitive:/
     return 'echoerr v:errmsg'
   endtry

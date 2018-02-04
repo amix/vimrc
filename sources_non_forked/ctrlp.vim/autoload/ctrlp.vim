@@ -439,6 +439,14 @@ fu! ctrlp#addfile(ch, file)
 	cal s:BuildPrompt(1)
 endf
 
+fu! s:safe_printf(format, ...)
+	try
+		retu call('printf', [a:format] + a:000)
+	cat
+		retu a:format
+	endt
+endf
+
 fu! s:UserCmd(lscmd)
 	let [path, lscmd] = [s:dyncwd, a:lscmd]
 	let do_ign =
@@ -461,9 +469,9 @@ fu! s:UserCmd(lscmd)
 		let g:ctrlp_allfiles = []
 		let s:job = job_start([&shell, &shellcmdflag, printf(lscmd, path)], {'callback': 'ctrlp#addfile'})
 	elsei has('patch-7.4-597') && !(has('win32') || has('win64'))
-		let g:ctrlp_allfiles = systemlist(printf(lscmd, path))
+		let g:ctrlp_allfiles = systemlist(s:safe_printf(lscmd, path))
 	el
-		let g:ctrlp_allfiles = split(system(printf(lscmd, path)), "\n")
+		let g:ctrlp_allfiles = split(system(s:safe_printf(lscmd, path)), "\n")
 	en
 	if exists('+ssl') && exists('ssl')
 		let &ssl = ssl

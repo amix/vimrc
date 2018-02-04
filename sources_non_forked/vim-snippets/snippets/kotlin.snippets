@@ -1,0 +1,36 @@
+snippet fun
+	fun ${1:name}(${2}): ${3:String} {
+		${4}
+	}
+snippet pfun
+	private fun ${1:name}(${2}): ${3:String} {
+		${4}
+	}
+snippet ret
+	return ${0}
+snippet whe
+	when (${1:${VISUAL}}) {
+		${2} -> ${3}
+	}
+snippet cla
+	class ${1} {
+		${0:${VISUAL}}
+	}
+snippet cobj
+	companion object {
+		${0:${VISUAL}}
+	}
+snippet obj
+	object ${1} {
+		${0:${VISUAL}}
+	}
+snippet if
+	if (${1}) {
+		${0:${VISUAL}}
+	}
+snippet ife
+	if (${1}) {
+		${2:${VISUAL}}
+	} else {
+		${0}
+	}

@@ -634,17 +634,27 @@ endfunction " }}}2
 function! syntastic#preprocess#mypy(errors) abort " {{{2
     let out = []
     for e in a:errors
-        " new format
-        let parts = matchlist(e, '\v^(.{-1,}):(\d+): error: (.+)')
-        if len(parts) > 3
-            call add(out, join(parts[1:3], ':'))
+        " column numbers
+        let parts = matchlist(e, '\v^(.{-1,}):(\d+):(\d+): ([ew])%(rror|arning): (.+)')
+        if len(parts) > 5
+            let parts[3] += 1
+            call add(out, join(parts[1:5], ':'))
             continue
         endif
 
-        " old format
+        " no column numbers
+        let parts = matchlist(e, '\v^(.{-1,}):(\d+): ([ew])%(rror|arning): (.+)')
+        if len(parts) > 4
+            call add(out, join(parts[1:4], ':'))
+            continue
+        endif
+
+        " obsolete format
         let parts = matchlist(e, '\v^(.{-1,}), line (\d+): (.+)')
         if len(parts) > 3
-            call add(out, join(parts[1:3], ':'))
+            let parts[4] = parts[3]
+            let parts[3] = 'e'
+            call add(out, join(parts[1:4], ':'))
         endif
     endfor
     return out

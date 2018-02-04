@@ -153,8 +153,7 @@ function! go#fmt#update_file(source, target)
 endfunction
 
 " run runs the gofmt/goimport command for the given source file and returns
-" the the output of the executed command. Target is the real file to be
-" formated.
+" the output of the executed command. Target is the real file to be formatted.
 function! go#fmt#run(bin_name, source, target)
   let cmd = s:fmt_cmd(a:bin_name, a:source, a:target)
   if empty(cmd)

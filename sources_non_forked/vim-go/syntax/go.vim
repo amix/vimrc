@@ -42,8 +42,8 @@ if !exists("g:go_highlight_function_arguments")
   let g:go_highlight_function_arguments = 0
 endif
 
-if !exists("g:go_highlight_methods")
-  let g:go_highlight_methods = 0
+if !exists("g:go_highlight_function_calls")
+  let g:go_highlight_function_calls = 0
 endif
 
 if !exists("g:go_highlight_fields")
@@ -202,7 +202,19 @@ else
 endif
 
 if g:go_highlight_format_strings != 0
-  syn match       goFormatSpecifier   /\([^%]\(%%\)*\)\@<=%[-#0 +]*\%(\*\|\d\+\)\=\%(\.\%(\*\|\d\+\)\)*[vTtbcdoqxXUeEfgGsp]/ contained containedin=goString
+  " [n] notation is valid for specifying explicit argument indexes
+  " 1. Match a literal % not preceded by a %.
+  " 2. Match any number of -, #, 0, space, or +
+  " 3. Match * or [n]* or any number or nothing before a .
+  " 4. Match * or [n]* or any number or nothing after a .
+  " 5. Match [n] or nothing before a verb
+  " 6. Match a formatting verb
+  syn match       goFormatSpecifier   /\
+        \([^%]\(%%\)*\)\
+        \@<=%[-#0 +]*\
+        \%(\%(\%(\[\d\+\]\)\=\*\)\|\d\+\)\=\
+        \%(\.\%(\%(\%(\[\d\+\]\)\=\*\)\|\d\+\)\=\)\=\
+        \%(\[\d\+\]\)\=[vTtbcdoqxXUeEfFgGsp]/ contained containedin=goString,goRawString
   hi def link     goFormatSpecifier   goSpecialString
 endif
 
@@ -348,7 +360,6 @@ hi def link     goOperator          Operator
 
 " Functions;
 if g:go_highlight_functions isnot 0 || g:go_highlight_function_arguments isnot 0
-  syn match goFunctionCall      /\w\+\ze(/ contains=goBuiltins,goDeclaration
   syn match goDeclaration       /\<func\>/ nextgroup=goReceiver,goFunction,goSimpleArguments skipwhite skipnl
   syn match goReceiverVar       /\w\+\ze\s\+\(\w\|\*\)/ nextgroup=goPointerOperator,goReceiverType skipwhite skipnl contained
   syn match goPointerOperator   /\*/ nextgroup=goReceiverType contained skipwhite skipnl
@@ -367,13 +378,12 @@ else
   syn keyword goDeclaration func
 endif
 hi def link     goFunction          Function
-hi def link     goFunctionCall      Type
 
-" Methods;
-if g:go_highlight_methods != 0
-  syn match goMethodCall            /\.\w\+\ze(/hs=s+1
+" Function calls;
+if g:go_highlight_function_calls != 0
+  syn match goFunctionCall      /\w\+\ze(/ contains=goBuiltins,goDeclaration
 endif
-hi def link     goMethodCall        Type
+hi def link     goFunctionCall      Type
 
 " Fields;
 if g:go_highlight_fields != 0

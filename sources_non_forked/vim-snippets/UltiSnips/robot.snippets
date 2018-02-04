@@ -8,7 +8,7 @@ priority -50
 #  Built In library  #
 ######################
 snippet cat "Catenate"
-Catenate    SEPARATOR=${1:---}    ${2:Hello}    ${3:world}
+\${${1:name}}=    Catenate    SEPARATOR=${2:---}    ${3:Hello}    ${4:world}
 endsnippet
 
 snippet eval "Evaluate"
@@ -109,6 +109,10 @@ snippet sgv "Set Global Variable"
 Set Global Variable    \${${1:name}}    ${2:${value}}
 endsnippet
 
+snippet sbe "Should Be Equal"
+Should Be Equal    "\${${1:var}}"    "${2:expected value}"    ${3:"optional error msg"}	${4:ignore_case=True}
+endsnippet
+
 snippet sleep "Sleep"
 Sleep    ${1:2 minutes 10 seconds}
 endsnippet
@@ -140,6 +144,12 @@ endsnippet
 snippet pause "Pause test execution"
 Import library    Dialogs
 Pause execution
+endsnippet
+
+snippet tpause "Teardown Pause - pause test execution only on failure"
+[Teardown]    Run Keyword If Test Failed    Run Keywords
+...    Import library    Dialogs    AND
+...    Pause execution
 endsnippet
 
 
