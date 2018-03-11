@@ -22,7 +22,7 @@ The awesome version includes a lot of great plugins, configurations and color sc
 
 ## Fonts
 
-I recommend using [IBM Plex Mono font](https://ibm.github.io/type/) (it's an open-source and awesome font that can make your code beautiful). The Awesome vimrc is already setup to try to use it.
+I recommend using [IBM Plex Mono font](https://github.com/IBM/plex) (it's an open-source and awesome font that can make your code beautiful). The Awesome vimrc is already setup to try to use it.
 
 Some other fonts that Awesome will try to use:
 
