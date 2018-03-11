@@ -83,7 +83,7 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
         pass
 
     shutil.move(plugin_temp_path, plugin_dest_path)
-
+    print(zip_path)
     print('Updated {0}'.format(plugin_name))
 
 
