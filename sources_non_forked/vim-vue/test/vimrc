@@ -1,0 +1,13 @@
+set nocompatible
+
+let &packpath = expand('<sfile>:p:h:h')
+
+" Remove first and last entry from runtimepath, to prevent loading plugins from ~/.vim
+let &runtimepath = substitute(&runtimepath, '\v^.{-},(.*),.*$', '\1', '')
+
+filetype plugin indent on
+syntax on
+
+set expandtab
+set shiftwidth=2
+set softtabstop=2
