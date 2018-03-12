@@ -2,6 +2,7 @@
 " => General configuration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nu
+set nofoldenable
 
 if has('gui_running')
   set lines=60 columns=108 linespace=0
