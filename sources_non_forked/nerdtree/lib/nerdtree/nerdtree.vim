@@ -21,7 +21,7 @@ function! s:NERDTree.changeRoot(node)
 
     "change dir to the dir of the new root if instructed to
     if g:NERDTreeChDirMode ==# 2
-        exec "cd " . self.root.path.str({'format': 'Edit'})
+        call self.root.path.changeToDir()
     endif
 
     call self.render()
@@ -38,17 +38,26 @@ function! s:NERDTree.Close()
     endif
 
     if winnr("$") != 1
+        " Use the window ID to identify the currently active window or fall
+        " back on the buffer ID if win_getid/win_gotoid are not available, in
+        " which case we'll focus an arbitrary window showing the buffer.
+        let l:useWinId = exists('*win_getid') && exists('*win_gotoid')
+
         if winnr() == s:NERDTree.GetWinNum()
             call nerdtree#exec("wincmd p")
-            let bufnr = bufnr("")
+            let l:activeBufOrWin = l:useWinId ? win_getid() : bufnr("")
             call nerdtree#exec("wincmd p")
         else
-            let bufnr = bufnr("")
+            let l:activeBufOrWin = l:useWinId ? win_getid() : bufnr("")
         endif
 
         call nerdtree#exec(s:NERDTree.GetWinNum() . " wincmd w")
         close
-        call nerdtree#exec(bufwinnr(bufnr) . " wincmd w")
+        if l:useWinId
+            call nerdtree#exec("call win_gotoid(" . l:activeBufOrWin . ")")
+        else
+            call nerdtree#exec(bufwinnr(l:activeBufOrWin) . " wincmd w")
+        endif
     else
         close
     endif
@@ -195,3 +204,5 @@ endfunction
 function! s:NERDTree.render()
     call self.ui.render()
 endfunction
+
+" vim: set sw=4 sts=4 et fdm=marker:

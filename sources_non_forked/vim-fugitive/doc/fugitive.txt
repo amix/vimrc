@@ -77,17 +77,17 @@ that are part of Git repositories).
 
                                                 *fugitive-:Gmerge*
 :Gmerge [args]          Calls git-merge and loads errors and conflicted files
-                        into the quickfix list.  Opens a |:Gcommit| style
+                        into the |quickfix| list.  Opens a |:Gcommit| style
                         split window for the commit message if the merge
                         succeeds.  If called during a merge conflict, the
                         conflicted files from the current index are loaded
-                        into the quickfix list.
+                        into the |quickfix| list.
 
                                                 *fugitive-:Gpull*
 :Gpull [args]           Like |:Gmerge|, but for git-pull.
 
                                                 *fugitive-:Gpush*
-:Gpush [args]           Invoke git-push, load the results into the quickfix
+:Gpush [args]           Invoke git-push, load the results into the |quickfix|
                         list, and invoke |:cwindow| to reveal any errors.
                         |:Dispatch| is used if available for asynchronous
                         invocation.
@@ -103,20 +103,20 @@ that are part of Git repositories).
 
                                                 *fugitive-:Glog*
 :Glog [args]            Load all previous revisions of the current file into
-                        the quickfix list.  Additional git-log arguments can
+                        the |quickfix| list.  Additional git-log arguments can
                         be given (for example, --reverse).  If "--" appears as
                         an argument, no file specific filtering is done, and
                         previous commits rather than previous file revisions
                         are loaded.
 
 :{range}Glog [args]     Use git-log -L to load previous revisions of the given
-                        range of the current file into the quickfix list.  The
-                        cursor is positioned on the first line of the first
-                        diff hunk for each commit.
+                        range of the current file into the |quickfix| list.
+                        The cursor is positioned on the first line of the
+                        first diff hunk for each commit.
 
                                                 *fugitive-:Gllog*
 :Gllog [args]           Like |:Glog|, but use the location list instead of the
-                        quickfix list.
+                        |quickfix| list.
 
                                         *fugitive-:Gedit* *fugitive-:Ge*
 :Gedit [revision]       |:edit| a |fugitive-revision|.

@@ -47,11 +47,11 @@ landscape is my colorscheme, which is a high-contrast cui-supported colorscheme,
 
 ## Why yet another clone of powerline?
 + [vim-powerline](https://github.com/Lokaltog/vim-powerline) is a nice plugin, but deprecated.
-+ [powerline](https://github.com/Lokaltog/powerline) is a nice plugin, but difficult to configure.
-+ [vim-airline](https://github.com/bling/vim-airline) is a nice plugin, but it uses too much functions of other plugins, which should be done by users in `.vimrc`.
++ [powerline](https://github.com/powerline/powerline) is a nice plugin, but difficult to configure.
++ [vim-airline](https://github.com/vim-airline/vim-airline) is a nice plugin, but it uses too much functions of other plugins, which should be done by users in `.vimrc`.
 
 ## Spirit of this plugin
-+ Minimalism. The core script is very small to achive enough functions as a statusline plugin.
++ Minimalism. The core script is very small to achieve enough functions as a statusline plugin.
 + Configurability. You can create your own component and easily add to the statusline and the tabline.
 + Orthogonality. The plugin does not rely on the implementation of other plugins. Such plugin crossing settings should be configured by users.
 
@@ -110,7 +110,7 @@ if !has('gui_running')
 endif
 ```
 
-Your statusline appears to work correctly? If yes, great, thanks for choosing lightline.vim! If no, please file a issue report to the [issue tracker](https://github.com/itchyny/lightline.vim/issues).
+Your statusline appears to work correctly? If yes, great, thanks for choosing lightline.vim! If no, please file an issue report to the [issue tracker](https://github.com/itchyny/lightline.vim/issues).
 
 By the way, `-- INSERT --` is unnecessary anymore because the mode information is displayed in the statusline.
 ![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/13.png)

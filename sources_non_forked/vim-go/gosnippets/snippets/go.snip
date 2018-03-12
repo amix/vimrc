@@ -128,21 +128,21 @@ abbr if err := ...; err != nil { ... }
 
 # error snippet
 snippet errn
-abbr if err != nil { ... }
+abbr if err != nil { return err }
 	if err != nil {
 		return err
 	}
 	${0}
 # error snippet in TestFunc
 snippet errt
-abbr if err != nil { ... }
+abbr if err != nil { t.Fatal(err) }
 	if err != nil {
 		t.Fatal(err)
 	}
 
 # error snippet in log.Fatal
 snippet errl
-abbr if err != nil { ... }
+abbr if err != nil { log.Fatal(err) }
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -157,7 +157,7 @@ abbr if err != nil { return [...], err }
 
 # error snippet handle and return
 snippet errh
-abbr if err != nil { return }
+abbr if err != nil { ... return }
 	if err != nil {
 		${1}
 		return
@@ -166,7 +166,7 @@ abbr if err != nil { return }
 
 # error snippet with panic
 snippet errp
-abbr if err != nil { ... }
+abbr if err != nil { panic(...) }
 	if err != nil {
 		panic(${1})
 	}

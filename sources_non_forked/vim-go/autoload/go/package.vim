@@ -46,7 +46,7 @@ function! go#package#Paths() abort
     let dirs += [s:goroot]
   endif
 
-  let workspaces = split(go#path#Detect(), go#util#PathListSep())
+  let workspaces = split(go#path#Default(), go#util#PathListSep())
   if workspaces != []
     let dirs += workspaces
   endif
@@ -80,6 +80,7 @@ function! go#package#FromPath(arg) abort
   for dir in dirs
     if len(dir) && match(path, dir) == 0
       let workspace = dir
+      break
     endif
   endfor
 
@@ -87,10 +88,12 @@ function! go#package#FromPath(arg) abort
     return -1
   endif
 
+  let path = substitute(path, '/*$', '', '')
+  let workspace = substitute(workspace . '/src/', '/+', '', '')
   if isdirectory(path)
-    return substitute(path, workspace . 'src/', '', '')
+    return substitute(path, workspace, '', '')
   else
-    return substitute(substitute(path, workspace . 'src/', '', ''),
+    return substitute(substitute(path, workspace, '', ''),
           \ '/' . fnamemodify(path, ':t'), '', '')
   endif
 endfunction

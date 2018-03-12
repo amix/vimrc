@@ -65,6 +65,17 @@ function! syntastic#postprocess#guards(errors) abort " {{{2
     return a:errors
 endfunction " }}}2
 
+" convert error messages from UTF-8 to the current encoding
+function! syntastic#postprocess#iconv(errors) abort " {{{2
+    if has('iconv') && &encoding !=# '' && &encoding !=# 'utf-8'
+        for e in a:errors
+            let e['text'] = iconv(e['text'], "utf-8", &encoding)
+        endfor
+    endif
+
+    return a:errors
+endfunction " }}}2
+
 " }}}1
 
 let &cpo = s:save_cpo

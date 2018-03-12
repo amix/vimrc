@@ -253,7 +253,7 @@ endfunction " }}}2
 function! syntastic#util#findFileInParent(what, where) abort " {{{2
     let old_suffixesadd = &suffixesadd
     let &suffixesadd = ''
-    let file = findfile(a:what, escape(a:where, ' ') . ';')
+    let file = findfile(a:what, escape(a:where, ' ,') . ';')
     let &suffixesadd = old_suffixesadd
     return file
 endfunction " }}}2
@@ -307,8 +307,14 @@ function! syntastic#util#fname2buf(fname) abort " {{{2
 
     " this is a best-effort attempt to escape file patterns (cf. :h file-pattern)
     " XXX it fails for filenames containing something like \{2,3}
+    let buf = -1
     for md in [':~:.', ':~', ':p']
-        let buf = bufnr('^' . escape(fnamemodify(a:fname, md), '\*?,{}[') . '$')
+        try
+            " Older versions of Vim can throw E94 here
+            let buf = bufnr('^' . escape(fnamemodify(a:fname, md), '\*?,{}[') . '$')
+        catch
+            " catch everything
+        endtry
         if buf != -1
             break
         endif

@@ -2,7 +2,7 @@
 " Filename: autoload/lightline/colorscheme.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2015/03/18 08:37:17.
+" Last Change: 2017/11/29 12:54:05.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -223,6 +223,35 @@ function! lightline#colorscheme#flatten(p) abort
   endfor
   return a:p
 endfunction
+
+if has('gui_running')
+  function! lightline#colorscheme#background() abort
+    return &background
+  endfunction
+else
+  " &background is set inappropriately when the colorscheme sets ctermbg of the Normal group
+  function! lightline#colorscheme#background() abort
+    let bg_color = synIDattr(synIDtrans(hlID('Normal')), 'bg', 'cterm')
+    if bg_color !=# ''
+      if bg_color < 16
+        return &background
+      elseif 232 <= bg_color && bg_color < 244
+        return 'dark'
+      elseif 244 <= bg_color
+        return 'light'
+      endif
+    endif
+    let fg_color = synIDattr(synIDtrans(hlID('Normal')), 'fg', 'cterm')
+    if fg_color !=# ''
+      if fg_color < 8 || 232 <= fg_color && fg_color < 244
+        return 'light'
+      elseif 8 <= fg_color && fg_color < 16 || 244 <= fg_color
+        return 'dark'
+      endif
+    endif
+    return &background
+  endfunction
+endif
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

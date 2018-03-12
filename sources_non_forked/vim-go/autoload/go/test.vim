@@ -1,14 +1,18 @@
 " Test runs `go test` in the current directory. If compile is true, it'll
 " compile the tests instead of running them (useful to catch errors in the
-" test files). Any other argument is appendend to the final `go test` command
+" test files). Any other argument is appended to the final `go test` command.
 function! go#test#Test(bang, compile, ...) abort
   let args = ["test"]
 
   " don't run the test, only compile it. Useful to capture and fix errors.
   if a:compile
-    " we're going to tell to run a test function that doesn't exist. This
-    " triggers a build of the test file itself but no tests will run.
-    call extend(args, ["-run", "499EE4A2-5C85-4D35-98FC-7377CD87F263"])
+    let testfile = tempname() . ".vim-go.test"
+    call extend(args, ["-c", "-o", testfile])
+  endif
+
+  if exists('g:go_build_tags')
+    let tags = get(g:, 'go_build_tags')
+    call extend(args, ["-tags", tags])
   endif
 
   if a:0
@@ -33,9 +37,9 @@ function! go#test#Test(bang, compile, ...) abort
 
   if get(g:, 'go_echo_command_info', 1)
     if a:compile
-      echon "vim-go: " | echohl Identifier | echon "compiling tests ..." | echohl None
+      call go#util#EchoProgress("compiling tests ...")
     else
-      echon "vim-go: " | echohl Identifier | echon "testing ..." | echohl None
+      call go#util#EchoProgress("testing...")
     endif
   endif
 
@@ -57,7 +61,7 @@ function! go#test#Test(bang, compile, ...) abort
     if get(g:, 'go_term_enabled', 0)
       let id = go#term#new(a:bang, ["go"] + args)
     else
-      let id = go#jobcontrol#Spawn(a:bang, "test", args)
+      let id = go#jobcontrol#Spawn(a:bang, "test", "GoTest", args)
     endif
 
     return id
@@ -68,18 +72,18 @@ function! go#test#Test(bang, compile, ...) abort
 
   let command = "go " . join(args, ' ')
   let out = go#tool#ExecuteInDir(command)
+  " TODO(bc): When the output is JSON, the JSON should be run through a
+  " filter to produce lines that are more easily described by errorformat.
 
-  let l:listtype = "quickfix"
+  let l:listtype = go#list#Type("GoTest")
 
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
   let dir = getcwd()
   execute cd fnameescape(expand("%:p:h"))
 
   if go#util#ShellError() != 0
-    let errors = s:parse_errors(split(out, '\n'))
-    let errors = go#tool#FilterValids(errors)
-
-    call go#list#Populate(l:listtype, errors, command)
+    call go#list#ParseFormat(l:listtype, s:errorformat(), split(out, '\n'), command)
+    let errors = go#list#Get(l:listtype)
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang
       call go#list#JumpToFirst(l:listtype)
@@ -87,15 +91,15 @@ function! go#test#Test(bang, compile, ...) abort
       " failed to parse errors, output the original content
       call go#util#EchoError(out)
     endif
-    echon "vim-go: " | echohl ErrorMsg | echon "[test] FAIL" | echohl None
+    call go#util#EchoError("[test] FAIL")
   else
     call go#list#Clean(l:listtype)
     call go#list#Window(l:listtype)
 
     if a:compile
-      echon "vim-go: " | echohl Function | echon "[test] SUCCESS" | echohl None
+      call go#util#EchoSuccess("[test] SUCCESS")
     else
-      echon "vim-go: " | echohl Function | echon "[test] PASS" | echohl None
+      call go#util#EchoSuccess("[test] PASS")
     endif
   endif
   execute cd . fnameescape(dir)
@@ -125,12 +129,16 @@ function! go#test#Func(bang, ...) abort
 
   if a:0
     call extend(args, a:000)
+  else
+    " only add this if no custom flags are passed
+    let timeout  = get(g:, 'go_test_timeout', '10s')
+    call add(args, printf("-timeout=%s", timeout))
   endif
 
   call call('go#test#Test', args)
 endfunction
 
-function s:test_job(args) abort
+function! s:test_job(args) abort
   let status_dir = expand('%:p:h')
   let started_at = reltime()
 
@@ -149,12 +157,19 @@ function s:test_job(args) abort
   " autowrite is not enabled for jobs
   call go#cmd#autowrite()
 
+  let l:exited = 0
+  let l:closed = 0
+  let l:exitval = 0
   let messages = []
+
   function! s:callback(chan, msg) closure
     call add(messages, a:msg)
   endfunction
 
   function! s:exit_cb(job, exitval) closure
+    let exited = 1
+    let exitval = a:exitval
+
     let status = {
           \ 'desc': 'last status',
           \ 'type': "test",
@@ -172,12 +187,12 @@ function s:test_job(args) abort
     if get(g:, 'go_echo_command_info', 1)
       if a:exitval == 0
         if a:args.compile_test
-          call go#util#EchoSuccess("SUCCESS")
+          call go#util#EchoSuccess("[test] SUCCESS")
         else
-          call go#util#EchoSuccess("PASS")
+          call go#util#EchoSuccess("[test] PASS")
         endif
       else
-        call go#util#EchoError("FAILED")
+        call go#util#EchoError("[test] FAIL")
       endif
     endif
 
@@ -188,24 +203,24 @@ function s:test_job(args) abort
 
     call go#statusline#Update(status_dir, status)
 
-    let l:listtype = go#list#Type("quickfix")
-    if a:exitval == 0
-      call go#list#Clean(l:listtype)
-      call go#list#Window(l:listtype)
-      return
+    if closed
+      call s:show_errors(a:args, l:exitval, messages)
     endif
+  endfunction
 
-    call s:show_errors(a:args, a:exitval, messages)
+  function! s:close_cb(ch) closure
+    let closed = 1
+
+    if exited
+      call s:show_errors(a:args, l:exitval, messages)
+    endif
   endfunction
 
   let start_options = {
         \ 'callback': funcref("s:callback"),
         \ 'exit_cb': funcref("s:exit_cb"),
+        \ 'close_cb': funcref("s:close_cb"),
         \ }
-
-  " modify GOPATH if needed
-  let old_gopath = $GOPATH
-  let $GOPATH = go#path#Detect()
 
   " pre start
   let dir = getcwd()
@@ -217,33 +232,41 @@ function s:test_job(args) abort
 
   " post start
   execute cd . fnameescape(dir)
-  let $GOPATH = old_gopath
 endfunction
 
 " show_errors parses the given list of lines of a 'go test' output and returns
 " a quickfix compatible list of errors. It's intended to be used only for go
-" test output. 
+" test output.
 function! s:show_errors(args, exit_val, messages) abort
-  let l:listtype = go#list#Type("quickfix")
+    let l:listtype = go#list#Type("GoTest")
+    if a:exit_val == 0
+      call go#list#Clean(l:listtype)
+      call go#list#Window(l:listtype)
+      return
+    endif
+
+  " TODO(bc): When messages is JSON, the JSON should be run through a
+  " filter to produce lines that are more easily described by errorformat.
+
+  let l:listtype = go#list#Type("GoTest")
 
   let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
   try
     execute cd a:args.jobdir
-    let errors = s:parse_errors(a:messages)
-    let errors = go#tool#FilterValids(errors)
+    call go#list#ParseFormat(l:listtype, s:errorformat(), a:messages, join(a:args.cmd))
+    let errors = go#list#Get(l:listtype)
   finally
     execute cd . fnameescape(a:args.dir)
   endtry
 
   if !len(errors)
     " failed to parse errors, output the original content
-    call go#util#EchoError(join(a:messages, " "))
+    call go#util#EchoError(a:messages)
     call go#util#EchoError(a:args.dir)
     return
   endif
 
   if a:args.winnr == winnr()
-    call go#list#Populate(l:listtype, errors, join(a:args.cmd))
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:args.bang
       call go#list#JumpToFirst(l:listtype)
@@ -251,37 +274,152 @@ function! s:show_errors(args, exit_val, messages) abort
   endif
 endfunction
 
-function! s:parse_errors(lines) abort
-  let errors = []
 
-  " NOTE(arslan): once we get JSON output everything will be easier :)
-  " https://github.com/golang/go/issues/2981
-  for line in a:lines
-    let fatalerrors = matchlist(line, '^\(fatal error:.*\)$')
-    let tokens = matchlist(line, '^\s*\(.\{-}\.go\):\(\d\+\):\s*\(.*\)')
+let s:efm= ""
+let s:go_test_show_name=0
 
-    if !empty(fatalerrors)
-      call add(errors, {"text": fatalerrors[1]})
-    elseif !empty(tokens)
-      " strip endlines of form ^M
-      let out = substitute(tokens[3], '\r$', '', '')
+function! s:errorformat() abort
+  " NOTE(arslan): once we get JSON output everything will be easier :).
+  " TODO(bc): When the output is JSON, the JSON should be run through a
+  " filter to produce lines that are more easily described by errorformat.
+  "   https://github.com/golang/go/issues/2981.
+  let goroot = go#util#goroot()
 
-      call add(errors, {
-            \ "filename" : fnamemodify(tokens[1], ':p'),
-            \ "lnum"     : tokens[2],
-            \ "text"     : out,
-            \ })
-    elseif !empty(errors)
-      " Preserve indented lines.
-      " This comes up especially with multi-line test output.
-      if match(line, '^\s') >= 0
-        call add(errors, {"text": line})
-      endif
-    endif
-  endfor
+  let show_name=get(g:, 'go_test_show_name', 0)
+  if s:efm != "" && s:go_test_show_name == show_name
+    return s:efm
+  endif
+  let s:go_test_show_name = show_name
 
-  return errors
+  " each level of test indents the test output 4 spaces. Capturing groups
+  " (e.g. \(\)) cannot be used in an errorformat, but non-capturing groups can
+  " (e.g. \%(\)).
+  let indent = '%\\%(    %\\)%#'
+
+  " match compiler errors
+  let format = "%f:%l:%c: %m"
+
+  " ignore `go test -v` output for starting tests
+  let format .= ",%-G=== RUN   %.%#"
+  " ignore `go test -v` output for passing tests
+  let format .= ",%-G" . indent . "--- PASS: %.%#"
+
+  " Match failure lines.
+  "
+  " Test failures start with '--- FAIL: ', followed by the test name followed
+  " by a space the duration of the test in parentheses
+  "
+  " e.g.:
+  "   '--- FAIL: TestSomething (0.00s)'
+  if show_name
+    let format .= ",%G" . indent . "--- FAIL: %m (%.%#)"
+  else
+    let format .= ",%-G" . indent . "--- FAIL: %.%#"
+  endif
+
+  " Matches test output lines.
+  "
+  " All test output lines start with the test indentation and a tab, followed
+  " by the filename, a colon, the line number, another colon, a space, and the
+  " message. e.g.:
+  "   '\ttime_test.go:30: Likely problem: the time zone files have not been installed.'
+  let format .= ",%A" . indent . "%\\t%\\+%f:%l: %m"
+  " also match lines that don't have a message (i.e. the message begins with a
+  " newline or is the empty string):
+  " e.g.:
+  "     t.Errorf("\ngot %v; want %v", actual, expected)
+  "     t.Error("")
+  let format .= ",%A" . indent . "%\\t%\\+%f:%l: "
+
+  " Match the 2nd and later lines of multi-line output. These lines are
+  " indented the number of spaces for the level of nesting of the test,
+  " followed by two tabs, followed by the message.
+  "
+  " Treat these lines as if they are stand-alone lines of output by using %G.
+  " It would also be valid to treat these lines as if they were the
+  " continuation of a multi-line error by using %C instead of %G, but that
+  " would also require that all test errors using a %A or %E modifier to
+  " indicate that they're multiple lines of output, but in that case the lines
+  " get concatenated in the quickfix list, which is not what users typically
+  " want when writing a newline into their test output.
+  let format .= ",%G" . indent . "%\\t%\\{2}%m"
+
+  " set the format for panics.
+
+  " handle panics from test timeouts
+  let format .= ",%+Gpanic: test timed out after %.%\\+"
+
+  " handle non-timeout panics
+  " In addition to 'panic', check for 'fatal error' to support older versions
+  " of Go that used 'fatal error'.
+  "
+  " Panics come in two flavors. When the goroutine running the tests panics,
+  " `go test` recovers and tries to exit more cleanly. In that case, the panic
+  " message is suffixed with ' [recovered]'. If the panic occurs in a
+  " different goroutine, it will not be suffixed with ' [recovered]'.
+  let format .= ",%+Afatal error: %.%# [recovered]"
+  let format .= ",%+Apanic: %.%# [recovered]"
+  let format .= ",%+Afatal error: %.%#"
+  let format .= ",%+Apanic: %.%#"
+
+  " Match address lines in stacktraces produced by panic.
+  "
+  " Address lines in the stack trace have leading tabs, followed by the path
+  " to the file. The file path is followed by a colon and then the line number
+  " within the file where the panic occurred. After that there's a space and
+  " hexadecimal number.
+  "
+  " e.g.:
+  "   '\t/usr/local/go/src/time.go:1313 +0x5d'
+
+  " panicaddress, and readyaddress are identical except for
+  " panicaddress sets the filename and line number.
+  let panicaddress = "%\\t%f:%l +0x%[0-9A-Fa-f]%\\+"
+  let readyaddress = "%\\t%\\f%\\+:%\\d%\\+ +0x%[0-9A-Fa-f]%\\+"
+  " stdlib address is identical to readyaddress, except it matches files
+  " inside GOROOT.
+  let stdlibaddress = "%\\t" . goroot . "%\\f%\\+:%\\d%\\+ +0x%[0-9A-Fa-f]%\\+"
+
+  " Match and ignore the running goroutine line.
+  let format .= ",%-Cgoroutine %\\d%\\+ [running]:"
+  " Match address lines that refer to stdlib, but consider them informational
+  " only. This is to catch the lines after the first address line in the
+  " running goroutine of a panic stack trace. Ideally, this wouldn't be
+  " necessary, but when a panic happens in the goroutine running a test, it's
+  " recovered and another panic is created, so the stack trace actually has
+  " the line that caused the original panic a couple of addresses down the
+  " stack.
+  let format .= ",%-C" . stdlibaddress
+  " Match address lines in the first matching goroutine. This means the panic
+  " message will only be shown as the error message in the first address of
+  " the running goroutine's stack.
+  let format .= ",%Z" . panicaddress
+
+  " Match and ignore panic address without being part of a multi-line message.
+  " This is to catch those lines that come after the top most non-standard
+  " library line in stack traces.
+  let format .= ",%-G" . readyaddress
+
+  " Match and ignore exit status lines (produced when go test panics) whether
+  " part of a multi-line message or not, because these lines sometimes come
+  " before and sometimes after panic stacktraces.
+  let format .= ",%-Cexit status %[0-9]%\\+"
+  "let format .= ",exit status %[0-9]%\\+"
+
+  " Match and ignore exit failure lines whether part of a multi-line message
+  " or not, because these lines sometimes come before and sometimes after
+  " panic stacktraces.
+  let format .= ",%-CFAIL%\\t%.%#"
+  "let format .= ",FAIL%\\t%.%#"
+
+  " Match and ignore everything else in multi-line messages.
+  let format .= ",%-C%.%#"
+  " Match and ignore everything else not in a multi-line message:
+  let format .= ",%-G%.%#"
+
+  let s:efm = format
+
+  return s:efm
 endfunction
 
 " vim: sw=2 ts=2 et
-"

@@ -88,7 +88,10 @@ function! gitgutter#diff#run_diff(realtime, preserve_full_diff) abort
     let op_mark_start = getpos("'[")
     let op_mark_end   = getpos("']")
 
+    let current_buffer = bufnr('')
+    execute 'buffer '.bufnr
     execute 'keepalt noautocmd silent write!' buff_file
+    execute 'buffer '.current_buffer
 
     call setbufvar(bufnr, "&mod", modified)
     call setpos("'[", op_mark_start)

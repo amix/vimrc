@@ -55,7 +55,22 @@ function! s:promptToDelBuffer(bufnum, msg)
         " Is not it better to close single tabs with this file only ?
         let s:originalTabNumber = tabpagenr()
         let s:originalWindowNumber = winnr()
-        exec "tabdo windo if winbufnr(0) == " . a:bufnum . " | exec ':enew! ' | endif"
+        " Go to the next buffer in buffer list if at least one extra buffer is listed
+        " Otherwise open a new empty buffer
+        if v:version >= 800
+            let l:listedBufferCount = len(getbufinfo({'buflisted':1}))
+        elseif v:version >= 702
+            let l:listedBufferCount = len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
+        else
+            " Ignore buffer count in this case to make sure we keep the old
+            " behavior
+            let l:listedBufferCount = 0
+        endif
+        if l:listedBufferCount > 1
+            exec "tabdo windo if winbufnr(0) == " . a:bufnum . " | exec ':bnext! ' | endif"
+        else
+            exec "tabdo windo if winbufnr(0) == " . a:bufnum . " | exec ':enew! ' | endif"
+        endif
         exec "tabnext " . s:originalTabNumber
         exec s:originalWindowNumber . "wincmd w"
         " 3. We don't need a previous buffer anymore
@@ -202,24 +217,60 @@ endfunction
 " FUNCTION: NERDTreeListNode() {{{1
 function! NERDTreeListNode()
     let treenode = g:NERDTreeFileNode.GetSelected()
-    if treenode != {}
-        let metadata = split(system('ls -ld ' . shellescape(treenode.path.str())), '\n')
+    if !empty(treenode)
+        if has("osx")
+            let stat_cmd = 'stat -f "%z" '
+        else
+            let stat_cmd = 'stat -c "%s" '
+        endif
+
+        let cmd = 'size=$(' . stat_cmd . shellescape(treenode.path.str()) . ') && ' .
+        \         'size_with_commas=$(echo $size | sed -e :a -e "s/\(.*[0-9]\)\([0-9]\{3\}\)/\1,\2/;ta") && ' .
+        \         'ls -ld ' . shellescape(treenode.path.str()) . ' | sed -e "s/ $size / $size_with_commas /"'
+
+        let metadata = split(system(cmd),'\n')
         call nerdtree#echo(metadata[0])
     else
-        call nerdtree#echo("No information avaialable")
+        call nerdtree#echo("No information available")
     endif
 endfunction
 
 " FUNCTION: NERDTreeListNodeWin32() {{{1
 function! NERDTreeListNodeWin32()
-    let treenode = g:NERDTreeFileNode.GetSelected()
-    if treenode != {}
-        let metadata = split(system('DIR /Q ' . shellescape(treenode.path.str()) . ' | FINDSTR "^[012][0-9]/[0-3][0-9]/[12][0-9][0-9][0-9]"'), '\n')
-        call nerdtree#echo(metadata[0])
-    else
-        call nerdtree#echo("No information avaialable")
+    let l:node = g:NERDTreeFileNode.GetSelected()
+
+    if !empty(l:node)
+
+        let l:save_shell = &shell
+        set shell&
+
+        if exists('+shellslash')
+            let l:save_shellslash = &shellslash
+            set noshellslash
+        endif
+
+        let l:command = 'DIR /Q '
+                    \ . shellescape(l:node.path.str())
+                    \ . ' | FINDSTR "^[012][0-9]/[0-3][0-9]/[12][0-9][0-9][0-9]"'
+
+        let l:metadata = split(system(l:command), "\n")
+
+        if v:shell_error == 0
+            call nerdtree#echo(l:metadata[0])
+        else
+            call nerdtree#echoError('shell command failed')
+        endif
+
+        let &shell = l:save_shell
+
+        if exists('l:save_shellslash')
+            let &shellslash = l:save_shellslash
+        endif
+
+        return
     endif
 
+    call nerdtree#echo('node not recognized')
 endfunction
 
 " FUNCTION: NERDTreeCopyNode() {{{1
@@ -284,4 +335,5 @@ function! NERDTreeExecuteFile()
         call system("open '" . treenode.path.str() . "'")
     endif
 endfunction
+
 " vim: set sw=4 sts=4 et fdm=marker:

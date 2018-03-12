@@ -439,6 +439,14 @@ fu! ctrlp#addfile(ch, file)
 	cal s:BuildPrompt(1)
 endf
 
+fu! s:safe_printf(format, ...)
+	try
+		retu call('printf', [a:format] + a:000)
+	cat
+		retu a:format
+	endt
+endf
+
 fu! s:UserCmd(lscmd)
 	let [path, lscmd] = [s:dyncwd, a:lscmd]
 	let do_ign =
@@ -461,9 +469,9 @@ fu! s:UserCmd(lscmd)
 		let g:ctrlp_allfiles = []
 		let s:job = job_start([&shell, &shellcmdflag, printf(lscmd, path)], {'callback': 'ctrlp#addfile'})
 	elsei has('patch-7.4-597') && !(has('win32') || has('win64'))
-		let g:ctrlp_allfiles = systemlist(printf(lscmd, path))
+		let g:ctrlp_allfiles = systemlist(s:safe_printf(lscmd, path))
 	el
-		let g:ctrlp_allfiles = split(system(printf(lscmd, path)), "\n")
+		let g:ctrlp_allfiles = split(system(s:safe_printf(lscmd, path)), "\n")
 	en
 	if exists('+ssl') && exists('ssl')
 		let &ssl = ssl
@@ -1006,7 +1014,9 @@ fu! s:KeyLoop()
 	wh exists('s:init') && s:keyloop
 		try
 			set t_ve=
-			set guicursor=a:NONE
+			if guicursor != ''
+				set guicursor=a:NONE
+			en
 			let nr = getchar()
 		fina
 			let &t_ve = t_ve
@@ -2009,7 +2019,7 @@ fu! s:bufnrfilpath(line)
 		if (a:line =~ '[\/]\?\[\d\+\*No Name\]$')
 			let bufnr = str2nr(matchstr(a:line, '[\/]\?\[\zs\d\+\ze\*No Name\]$'))
 			let filpath = bufnr
-		else
+		els
 			let bufnr = bufnr(a:line)
 			retu [bufnr, a:line]
 		en
@@ -2414,7 +2424,7 @@ fu! s:buildpat(lst)
 			let c = a:lst[item - 1]
 			let pat .= (c == '/' ? '[^/]\{-}' : '[^'.c.'/]\{-}').a:lst[item]
 		endfo
-	else
+	els
 		for item in range(1, len(a:lst) - 1)
 			let pat .= '[^'.a:lst[item - 1].']\{-}'.a:lst[item]
 		endfo

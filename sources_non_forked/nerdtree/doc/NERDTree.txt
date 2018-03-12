@@ -126,20 +126,20 @@ The following features and functionality are provided by the NERD tree:
     Changes made to one tree are reflected in both as they are actually the
     same buffer.
 
-    If only one other NERD tree exists, that tree is automatically mirrored. If
-    more than one exists, the script will ask which tree to mirror.
+    If only one other NERD tree exists, that tree is automatically mirrored.
+    If more than one exists, the script will ask which tree to mirror.
 
 :NERDTreeClose                                                *:NERDTreeClose*
     Close the NERD tree in this tab.
 
-:NERDTreeFind                                                  *:NERDTreeFind*
-    Find the current file in the tree.
+:NERDTreeFind [<path>]                                         *:NERDTreeFind*
+    Without the optional argument, find and reveal the file for the active
+    buffer in the NERDTree window.  With the <path> argument, find and
+    reveal the specified path.
 
-    If no tree exists and the current file is under vim's CWD, then init a
-    tree at the CWD and reveal the file. Otherwise init a tree in the current
-    file's directory.
-
-    In any case, the current file is revealed and the cursor is placed on it.
+    Focus will be shifted to the NERDTree window, and the cursor will be
+    placed on the tree node for the determined path.  If a NERDTree for the
+    current tab does not exist, a new one will be initialized.
 
 :NERDTreeCWD                                                    *:NERDTreeCWD*
     Change tree root to current directory. If no NERD tree exists for this
@@ -996,17 +996,16 @@ Other examples: >
 
 ------------------------------------------------------------------------------
                                                         *'NERDTreeStatusline'*
-Values: Any valid statusline setting.
-Default: %{b:NERDTree.root.path.strForOS(0)}
+Values: Any valid |'statusline'| setting.
+Default: %{exists('b:NERDTree')?b:NERDTree.root.path.str():''}
 
-Tells the script what to use as the |'statusline'| setting for NERD tree
-windows.
+Defines the value for the |'statusline'| setting in NERDTree windows.
 
-Note that the statusline is set using |:let-&| not |:set| so escaping spaces
-isn't necessary.
+Note: The setting is actually applied using |:let-&|, not |:set|, so
+escaping spaces is not necessary.
 
 Setting this option to -1 will will deactivate it so that your global
-statusline setting is used instead.
+|'statusline'| setting is used.
 
 ------------------------------------------------------------------------------
                                                             *'NERDTreeWinPos'*
@@ -1128,13 +1127,12 @@ NERDTreeAddKeyMap({options})                             *NERDTreeAddKeyMap()*
     Additionally, a "scope" argument may be supplied. This constrains the
     mapping so that it is only activated if the cursor is on a certain object.
     That object is then passed into the handling method. Possible values are:
-        "FileNode" - a file node
-        "DirNode" - a directory node
-        "Node" - a file or directory node
-        "Bookmark" - A bookmark
-        "all" - the keymap is not constrained to any scope (default). When
-        thei is used, the handling function is not passed any arguments.
 
+      "FileNode" .... a file node
+      "DirNode" ..... a directory node
+      "Node" ........ a file node OR a directory node
+      "Bookmark" .... a bookmark
+      "all" ......... global scope; handler receives no arguments (default)
 
     Example: >
         call NERDTreeAddKeyMap({

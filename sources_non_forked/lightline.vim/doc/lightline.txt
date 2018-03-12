@@ -4,7 +4,7 @@ Version: 0.1
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2017/05/28 01:07:02.
+Last Change: 2017/12/24 21:34:15.
 
 CONTENTS					*lightline-contents*
 
@@ -29,7 +29,7 @@ The *lightline* plugin is a light and configurable statusline/tabline for Vim.
 SPIRIT						*lightline-spirit*
 
 	Minimalism
-	    The core script is very small to achive enough functions as a
+	    The core script is very small to achieve enough functions as a
 	    statusline plugin.
 
 	Configurability
@@ -109,8 +109,9 @@ OPTIONS						*lightline-option*
 		    \ 'spell': '%{&spell?&spelllang:""}',
 		    \ 'lineinfo': '%3l:%-2v',
 		    \ 'line': '%l',
-		    \ 'column': '%c'
-		    \ 'close': '%999X X ' }
+		    \ 'column': '%c',
+		    \ 'close': '%999X X ',
+		    \ 'winnr': '%{winnr()}' }
 <
 	g:lightline.component_visible_condition
 						*g:lightline.component_visible_condition*
@@ -156,7 +157,7 @@ OPTIONS						*lightline-option*
 		A dictionary to store the visible conditions of the function
 		components. Each expression should correspond to the condition
 		each component is not empty. This configuration is used to
-		control the visibility of the subseparators. You can use this
+		control the visibility of the sub-separators. You can use this
 		configuration to reduce the number of function calls for
 		performance improvement by setting the value 1 (to tell lightline
 		that the component is always visible).
@@ -188,11 +189,22 @@ OPTIONS						*lightline-option*
 		|g:lightline.component_expand|. The types are used to specify
 		the color. Specifically, the type raw is used to specify a
 		component which should not be wrapped by item group: %(...%).
+		If you want to specify the type of a raw component, please use
+		|g:lightline.component_raw|.
 		The default value is: >
 
 		let g:lightline.component_type = {
 		    \ 'tabs': 'tabsel',
 		    \ 'close': 'raw' }
+<
+	g:lightline.component_raw		*g:lightline.component_raw*
+		A dictionary to specify the raw type components. When you
+		register a component to this dictionary (like >
+		let g:lightline.component_raw = { 'example': 1 }
+<		), the example component is not wrapped by item group: %(...%).
+		The default value is: >
+
+		let g:lightline.component_raw = {}
 <
 	g:lightline.tab_component		*g:lightline.tab_component*
 		A dictionary for components in one tab.
@@ -217,7 +229,8 @@ OPTIONS						*lightline-option*
 		Currently, wombat, solarized, powerline, jellybeans, Tomorrow,
 		Tomorrow_Night, Tomorrow_Night_Blue, Tomorrow_Night_Eighties,
 		PaperColor, seoul256, landscape, one, Dracula, darcula,
-		Molokai and 16color are available.
+		molokai, materia, material, OldHope, nord, 16color and deus
+		are available.
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'
@@ -1188,7 +1201,7 @@ Problem 11:					*lightline-problem-11*
 Problem 12:					*lightline-problem-12*
 	How to make the plus sign red like |powerline|?
 
-		Use the following setings.
+		Use the following settings.
 >
 		let g:lightline = {
 		      \ 'component': {
@@ -1212,7 +1225,9 @@ Problem 12:					*lightline-problem-12*
 Problem 13:					*lightline-problem-13*
 	How to change the lightline colorscheme on the fly.
 
-		Add the following settings to your .vimrc(_vimrc).
+		To update your lightline colorscheme in sync with your vim
+		colorscheme (only for select colorschemes which exist for
+		both), add the following settings to your .vimrc(_vimrc).
 >
 		augroup LightlineColorscheme
 		  autocmd!
@@ -1233,6 +1248,27 @@ Problem 13:					*lightline-problem-13*
 		  catch
 		  endtry
 		endfunction
+<
+		If you have not settled on a single lightline colorscheme, you
+		can easily switch between lightline colorschemes by adding the
+		following LightlineColorscheme command to your .vimrc(_vimrc).
+>
+		function! s:set_lightline_colorscheme(name) abort
+		  let g:lightline.colorscheme = a:name
+		  call lightline#init()
+		  call lightline#colorscheme()
+		  call lightline#update()
+		endfunction
+
+		function! s:lightline_colorschemes(...) abort
+		  return join(map(
+		        \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
+		        \ "fnamemodify(v:val,':t:r')"),
+		        \ "\n")
+		endfunction
+
+		command! -nargs=1 -complete=custom,s:lightline_colorschemes LightlineColorscheme
+		      \ call s:set_lightline_colorscheme(<q-args>)
 <
 Problem 14:					*lightline-problem-14*
 	The 'E541' warning appears on the right hand side.

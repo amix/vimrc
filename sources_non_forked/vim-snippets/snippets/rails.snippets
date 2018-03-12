@@ -347,6 +347,19 @@ snippet mct
 	create_table :${1:table_name} do |t|
 		${0}
 	end
+snippet mrev reversible do |dir| ... dir.up .. dir.down .. end
+	reversible do |dir|
+		dir.up do
+			${0}
+		end
+
+		dir.down do
+		end
+	end
+snippet cmm class Migration... < ApplicationModel .. self.table_name .. end
+	class Migration${1:class_name} < ApplicationRecord
+		self.table_name = :${2:model_name}s
+	end
 snippet migration class .. < ActiveRecord::Migration .. def up .. def down .. end
 	class `substitute( substitute(vim_snippets#Filename(), '^\d\+_', '',''), '\(_\|^\)\(.\)', '\u\2', 'g')` < ActiveRecord::Migration
 		def up

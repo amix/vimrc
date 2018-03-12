@@ -264,6 +264,43 @@ function! syntastic#preprocess#perl(errors) abort " {{{2
     return syntastic#util#unique(out)
 endfunction " }}}2
 
+function! syntastic#preprocess#perl6(errors) abort " {{{2
+    if a:errors[0] ==# 'Syntax OK'
+        return []
+    endif
+
+    let errs = s:_decode_JSON(join(a:errors, ''))
+
+    let out = []
+    if type(errs) == type({})
+        try
+            for val in values(errs)
+                let line = get(val, 'line', 0)
+                let pos = get(val, 'pos', 0)
+                if pos && has('byte_offset')
+                    let line_pos = byte2line(pos + 1)
+                    let column = line_pos > 0 ? pos - line2byte(line_pos) + 2 : 0
+                else
+                    let column = 0
+                endif
+
+                call add(out, join([
+                    \ get(val, 'filename', ''),
+                    \ line,
+                    \ column,
+                    \ get(val, 'message', '') ], ':'))
+            endfor
+        catch /\m^Vim\%((\a\+)\)\=:E716/
+            call syntastic#log#warn('checker perl6/perl6: unrecognized error item ' . string(val))
+            let out = []
+        endtry
+    else
+        call syntastic#log#warn('checker perl6/perl6: unrecognized error format')
+    endif
+
+    return out
+endfunction " }}}2
+
 function! syntastic#preprocess#prospector(errors) abort " {{{2
     let errs = join(a:errors, '')
     if errs ==# ''
@@ -597,17 +634,27 @@ endfunction " }}}2
 function! syntastic#preprocess#mypy(errors) abort " {{{2
     let out = []
     for e in a:errors
-        " new format
-        let parts = matchlist(e, '\v^(.{-1,}):(\d+): error: (.+)')
-        if len(parts) > 3
-            call add(out, join(parts[1:3], ':'))
+        " column numbers
+        let parts = matchlist(e, '\v^(.{-1,}):(\d+):(\d+): ([ew])%(rror|arning): (.+)')
+        if len(parts) > 5
+            let parts[3] += 1
+            call add(out, join(parts[1:5], ':'))
             continue
         endif
 
-        " old format
+        " no column numbers
+        let parts = matchlist(e, '\v^(.{-1,}):(\d+): ([ew])%(rror|arning): (.+)')
+        if len(parts) > 4
+            call add(out, join(parts[1:4], ':'))
+            continue
+        endif
+
+        " obsolete format
         let parts = matchlist(e, '\v^(.{-1,}), line (\d+): (.+)')
         if len(parts) > 3
-            call add(out, join(parts[1:3], ':'))
+            let parts[4] = parts[3]
+            let parts[3] = 'e'
+            call add(out, join(parts[1:4], ':'))
         endif
     endfor
     return out

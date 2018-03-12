@@ -209,6 +209,8 @@ snippet bf bold face text
 	\\textbf{${1:${VISUAL:text}}} ${0}
 snippet under underline text
 	\\underline{${1:${VISUAL:text}}} ${0}
+snippet over overline text
+	\\overline{${1:${VISUAL:text}}} ${0}
 snippet emp emphasize text
 	\\emph{${1:${VISUAL:text}}} ${0}
 snippet sc small caps text
@@ -339,3 +341,6 @@ snippet urlc
 	\\url{`@+`} ${0}
 snippet hrefc
 	\\href{`@+`}{${1}} ${0}
+# enquote from package csquotes
+snippet enq enquote
+	\\enquote{${1:${VISUAL:text}}} ${0}
