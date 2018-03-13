@@ -49,6 +49,18 @@ Plugin 'VundleVim/Vundle.vim'
 " My Plugins
 Plugin 'plasticboy/vim-markdown'
 
+" https://github.com/maksimr/vim-jsbeautify.git
+Plugin 'maksimr/vim-jsbeautify'
+autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
+" for json
+autocmd FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
+" for jsx
+autocmd FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
+" for html
+autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+" for css or scss
+autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+
 " All of your Plugins must bebundleore the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
