@@ -50,7 +50,7 @@ The basic version is useful to install on remote servers where you don't need ma
 
 ## How to install on Windows?
 
-Use [msysgit](http://msysgit.github.com/) to checkout the repository and run the installation instructions above. No special instructions needed ;-)
+Use [gitforwindows](http://gitforwindows.org/) to checkout the repository and run the installation instructions above. No special instructions needed ;-)
 
 
 ## How to install on Linux
