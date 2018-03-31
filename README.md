@@ -137,7 +137,7 @@ After you have installed the setup, you can create **~/.vim_runtime/my_configs.v
 You can also install your plugins, for instance, via pathogen you can install [vim-rails](https://github.com/tpope/vim-rails):
 
 	cd ~/.vim_runtime
-	git clone git://github.com/tpope/vim-rails.git sources_non_forked/vim-rails
+	git clone git://github.com/tpope/vim-rails.git my_plugins/vim-rails
 
 
 ## Key Mappings
