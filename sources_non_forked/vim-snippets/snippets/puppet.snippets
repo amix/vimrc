@@ -1,87 +1,60 @@
 # Snippets for use with VIM and http://www.vim.org/scripts/script.php?script_id=2540
 #
-# Please contact R.I.Pienaar <rip@devco.net> for additions and feedback,
+# Please contact Jorge Vidal <im@jor.ge> for additions and feedback,
 # see it in action @ http://www.devco.net/archives/2009/09/22/vim_and_puppet.php
+# Many thanks to the original author R.I.Pienaar <rip@devco.net>
 
-# Header to match http://docs.puppetlabs.com/guides/style_guide.html#puppet-doc
+# Header using Puppet Strings (YARD tags) https://puppet.com/docs/puppet/latest/modules_documentation.html
+# More info: https://github.com/puppetlabs/puppet-strings
 snippet classheader
-	# == Class: ${1:`vim_snippets#Filename(expand('%:p:s?.*modules/??:h:h'), 'name')`}
+	# ${1:`vim_snippets#Filename(expand('%:p:s?.*modules/??:h:h'), 'class-name')`}
+	# ${2:A description of what this class does}
 	#
-	# ${2:Full description of class $1 here}
+	# @summary ${3:A short summary of the purpose of this class}
 	#
-	# === Parameters
+	# @param ${4:parameter1} [${5:String}]
+	#   ${6:Explanation of what this parameter affects.}
 	#
-	# Document parameters here.
+	# @example Simple use
+	#   class { '$1': }
 	#
-	# [*parameter1*]
-	#   Explanation of what this parameter affects and what it defaults to.
-	#   e.g. "Specify one or more upstream ntp servers as an array."
+	# @example Use with params
+	#   class { '$1':
+	#     $$4 => '${7:undef}',
+	#   }
 	#
-	# === Variables
+	# @author ${8:`g:snips_author`} <${9:`g:snips_email`}>
 	#
-	# Here you should define a list of variables that this module would require.
+	# @note Copyright `strftime("%Y")` $8
 	#
-	# [*variable1*]
-	#   Explanation of how this variable affects the funtion of this class and
-	#   if it has a default. e.g. "The parameter enc_ntp_servers must be set by the
-	#   External Node Classifier as a comma separated list of hostnames."
-	#
-	# === Examples
-	#
-	#  class { '$1':
-	#    parameter1 => [ 'just', 'an', 'example', ]
-	#  }
-	#
-	# === Authors
-	#
-	# `g:snips_author` <`g:snips_email`>
-	#
-	# === Copyright
-	#
-	# Copyright `strftime("%Y")` `g:snips_author`
-	#
-	class $1 (${3}){
-		${4}
+	class $1(
+		$$4 = undef,
+	) {
+		${0}
 	}
 
 snippet defheader
-	# == Define: ${1:`vim_snippets#Filename(expand('%:p:s?.*modules/??:r:s?/manifests/?::?'), 'name')`}
+	# ${1:`vim_snippets#Filename(expand('%:p:s?.*modules/??:h:h'), 'define-name')`}
+	# ${2:A description of what this define does}
 	#
-	# ${2:Full description of defined resource type $1 here}
+	# @summary ${3:A short summary of the purpose of this define}
 	#
-	# === Parameters
+	# @param ${4:parameter1} [${5:String}]
+	#   ${6:Explanation of what this parameter affects.}
 	#
-	# Document parameters here
-	#
-	# [*namevar*]
-	#   If there is a parameter that defaults to the value of the title string
-	#   when not explicitly set, you must always say so.  This parameter can be
-	#   referred to as a "namevar," since it's functionally equivalent to the
-	#   namevar of a core resource type.
-	#
-	# [*basedir*]
-	#   Description of this variable.  For example, "This parameter sets the
-	#   base directory for this resource type.  It should not contain a trailing
-	#   slash."
-	#
-	# === Examples
-	#
-	# Provide some examples on how to use this type:
-	#
+	# @example Simple use
 	#   $1 { 'namevar':
-	#     basedir => '/tmp/src',
+	#     $$4 => '${7:undef}',
 	#   }
 	#
-	# === Authors
+	# @author ${8:`g:snips_author`} <${9:`g:snips_email`}>
 	#
-	# `g:snips_author` <`g:snips_email`>
+	# @note Copyright `strftime("%Y")` $8
 	#
-	# === Copyright
-	#
-	# Copyright `strftime("%Y")` `g:snips_author`
-	#
-	define $1(${3}) {
-		${4}
+	define $1(
+		$$4 = undef,
+	) {
+		${0}
 	}
 
 # Language Constructs

@@ -42,10 +42,10 @@ snippet defcreate
 			if @$1.save
 				flash[:notice] = '$2 was successfully created.'
 				format.html { redirect_to(@$1) }
-				format.xml  { render xml: @$1, status: :created, location: @$1 }
+				format.json  { render json: @$1, status: :created, location: @$1 }
 			else
 				format.html { render action: 'new' }
-				format.xml  { render xml: @$1.errors, status: :unprocessable_entity }
+				format.json  { render json: @$1.errors, status: :unprocessable_entity }
 			end
 		end
 	end
@@ -56,7 +56,7 @@ snippet defdestroy
 
 		respond_to do |format|
 			format.html { redirect_to($1s_url) }
-			format.xml  { head :ok }
+			format.json  { head :ok }
 		end
 	end
 snippet defedit
@@ -69,7 +69,7 @@ snippet defindex
 
 		respond_to do |format|
 			format.html # index.html.erb
-			format.xml  { render xml: @$1s }
+			format.json  { render json: @$1s }
 		end
 	end
 snippet defnew
@@ -78,7 +78,7 @@ snippet defnew
 
 		respond_to do |format|
 			format.html # new.html.erb
-			format.xml  { render xml: @$1 }
+			format.json  { render json: @$1 }
 		end
 	end
 snippet defshow
@@ -87,7 +87,7 @@ snippet defshow
 
 		respond_to do |format|
 			format.html # show.html.erb
-			format.xml  { render xml: @$1 }
+			format.json  { render json: @$1 }
 		end
 	end
 snippet defupdate
@@ -98,10 +98,10 @@ snippet defupdate
 			if @$1.update($1_params)
 				flash[:notice] = '$2 was successfully updated.'
 				format.html { redirect_to(@$1) }
-				format.xml  { head :ok }
+				format.json  { head :ok }
 			else
 				format.html { render action: 'edit' }
-				format.xml  { render xml: @$1.errors, status: :unprocessable_entity }
+				format.json  { render json: @$1.errors, status: :unprocessable_entity }
 			end
 		end
 	end

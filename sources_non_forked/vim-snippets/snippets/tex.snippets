@@ -292,7 +292,9 @@ snippet block block environment
 	\\begin{block}{${1:title}}
 		${0:${VISUAL}}
 	\\end{block}
-snippet alert alertblock environment
+snippet alert alert text
+	\\alert{${1:${VISUAL:text}}} ${0}
+snippet alertblock alertblock environment
 	\\begin{alertblock}{${1:title}}
 		${0:${VISUAL}}
 	\\end{alertblock}
@@ -309,6 +311,12 @@ snippet col2 two-column environment
 			${0}
 		\\end{column}
 	\\end{columns}
+snippet multicol2 two-column environment with multicol
+	\\begin{multicols}{2}
+		${1}
+		\columnbreak
+		${0}
+	\\end{multicols}
 snippet \{ \{ \}
 	\\{ ${0} \\}
 #delimiter

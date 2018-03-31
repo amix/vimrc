@@ -2,6 +2,8 @@
 
 VIM="/Applications/MacVim.app/Contents/MacOS/Vim -v"
 
+export VIM_GITGUTTER_TEST=1
+
 $VIM -u NONE -U NONE -N                      \
   --cmd 'set rtp+=../'                       \
   --cmd 'let g:gitgutter_async=0'            \

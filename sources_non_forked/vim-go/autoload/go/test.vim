@@ -94,7 +94,6 @@ function! go#test#Test(bang, compile, ...) abort
     call go#util#EchoError("[test] FAIL")
   else
     call go#list#Clean(l:listtype)
-    call go#list#Window(l:listtype)
 
     if a:compile
       call go#util#EchoSuccess("[test] SUCCESS")
@@ -139,9 +138,6 @@ function! go#test#Func(bang, ...) abort
 endfunction
 
 function! s:test_job(args) abort
-  let status_dir = expand('%:p:h')
-  let started_at = reltime()
-
   let status = {
         \ 'desc': 'current status',
         \ 'type': "test",
@@ -152,23 +148,29 @@ function! s:test_job(args) abort
     let status.state = "compiling"
   endif
 
-  call go#statusline#Update(status_dir, status)
-
   " autowrite is not enabled for jobs
   call go#cmd#autowrite()
 
-  let l:exited = 0
-  let l:closed = 0
-  let l:exitval = 0
-  let messages = []
+  let state = {
+        \ 'exited': 0,
+        \ 'closed': 0,
+        \ 'exitval': 0,
+        \ 'messages': [],
+        \ 'args': a:args,
+        \ 'compile_test': a:args.compile_test,
+        \ 'status_dir': expand('%:p:h'),
+        \ 'started_at': reltime()
+      \ }
 
-  function! s:callback(chan, msg) closure
-    call add(messages, a:msg)
+  call go#statusline#Update(state.status_dir, status)
+
+  function! s:callback(chan, msg) dict
+    call add(self.messages, a:msg)
   endfunction
 
-  function! s:exit_cb(job, exitval) closure
-    let exited = 1
-    let exitval = a:exitval
+  function! s:exit_cb(job, exitval) dict
+    let self.exited = 1
+    let self.exitval = a:exitval
 
     let status = {
           \ 'desc': 'last status',
@@ -176,7 +178,7 @@ function! s:test_job(args) abort
           \ 'state': "pass",
           \ }
 
-    if a:args.compile_test
+    if self.compile_test
       let status.state = "success"
     endif
 
@@ -186,7 +188,7 @@ function! s:test_job(args) abort
 
     if get(g:, 'go_echo_command_info', 1)
       if a:exitval == 0
-        if a:args.compile_test
+        if self.compile_test
           call go#util#EchoSuccess("[test] SUCCESS")
         else
           call go#util#EchoSuccess("[test] PASS")
@@ -196,31 +198,33 @@ function! s:test_job(args) abort
       endif
     endif
 
-    let elapsed_time = reltimestr(reltime(started_at))
+    let elapsed_time = reltimestr(reltime(self.started_at))
     " strip whitespace
     let elapsed_time = substitute(elapsed_time, '^\s*\(.\{-}\)\s*$', '\1', '')
     let status.state .= printf(" (%ss)", elapsed_time)
 
-    call go#statusline#Update(status_dir, status)
+    call go#statusline#Update(self.status_dir, status)
 
-    if closed
-      call s:show_errors(a:args, l:exitval, messages)
+    if self.closed
+      call s:show_errors(self.args, self.exitval, self.messages)
     endif
   endfunction
 
-  function! s:close_cb(ch) closure
-    let closed = 1
+  function! s:close_cb(ch) dict
+    let self.closed = 1
 
-    if exited
-      call s:show_errors(a:args, l:exitval, messages)
+    if self.exited
+      call s:show_errors(self.args, self.exitval, self.messages)
     endif
   endfunction
 
+  " explicitly bind the callbacks to state so that self within them always
+  " refers to state. See :help Partial for more information.
   let start_options = {
-        \ 'callback': funcref("s:callback"),
-        \ 'exit_cb': funcref("s:exit_cb"),
-        \ 'close_cb': funcref("s:close_cb"),
-        \ }
+        \ 'callback': funcref("s:callback", [], state),
+        \ 'exit_cb': funcref("s:exit_cb", [], state),
+        \ 'close_cb': funcref("s:close_cb", [], state)
+      \ }
 
   " pre start
   let dir = getcwd()
@@ -241,7 +245,6 @@ function! s:show_errors(args, exit_val, messages) abort
     let l:listtype = go#list#Type("GoTest")
     if a:exit_val == 0
       call go#list#Clean(l:listtype)
-      call go#list#Window(l:listtype)
       return
     endif
 

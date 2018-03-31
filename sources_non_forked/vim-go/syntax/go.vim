@@ -453,7 +453,7 @@ if g:go_highlight_build_constraints != 0 || s:fold_package_comment
         \ . ' contains=@goCommentGroup,@Spell'
         \ . (s:fold_package_comment ? ' fold' : '')
   exe 'syn region  goPackageComment    start=/\v\/\*.*\n(.*\n)*\s*\*\/\npackage/'
-        \ . ' end=/\v\n\s*package/he=e-7,me=e-7,re=e-7'
+        \ . ' end=/\v\*\/\n\s*package/he=e-7,me=e-7,re=e-7'
         \ . ' contains=@goCommentGroup,@Spell'
         \ . (s:fold_package_comment ? ' fold' : '')
   hi def link goPackageComment    Comment

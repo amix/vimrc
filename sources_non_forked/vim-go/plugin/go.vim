@@ -31,6 +31,7 @@ endif
 " needed by the user with GoInstallBinaries
 let s:packages = {
       \ 'asmfmt':        ['github.com/klauspost/asmfmt/cmd/asmfmt'],
+      \ 'dlv':           ['github.com/derekparker/delve/cmd/dlv'],
       \ 'errcheck':      ['github.com/kisielk/errcheck'],
       \ 'fillstruct':    ['github.com/davidrjenni/reftools/cmd/fillstruct'],
       \ 'gocode':        ['github.com/nsf/gocode', {'windows': '-ldflags -H=windowsgui'}],

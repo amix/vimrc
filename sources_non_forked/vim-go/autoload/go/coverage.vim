@@ -45,7 +45,7 @@ function! go#coverage#Buffer(bang, ...) abort
   let l:tmpname = tempname()
 
   if get(g:, 'go_echo_command_info', 1)
-    echon "vim-go: " | echohl Identifier | echon "testing ..." | echohl None
+    call go#util#EchoProgress("testing...")
   endif
 
   if go#util#has_job()

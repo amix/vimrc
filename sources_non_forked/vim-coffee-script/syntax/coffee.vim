@@ -32,7 +32,7 @@ hi def link coffeeConditional Conditional
 syn match coffeeException /\<\%(try\|catch\|finally\)\>/ display
 hi def link coffeeException Exception
 
-syn match coffeeKeyword /\<\%(new\|in\|of\|by\|and\|or\|not\|is\|isnt\|class\|extends\|super\|do\|yield\|debugger\|import\|export\|default\|await\)\>/
+syn match coffeeKeyword /\<\%(new\|in\|of\|from\|by\|and\|or\|not\|is\|isnt\|class\|extends\|super\|do\|yield\|debugger\|import\|export\|default\|await\)\>/
 \                       display
 " The `own` keyword is only a keyword after `for`.
 syn match coffeeKeyword /\<for\s\+own\>/ contained containedin=coffeeRepeat

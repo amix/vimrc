@@ -185,7 +185,7 @@ function! s:Creator._createTreeWin()
     let splitLocation = g:NERDTreeWinPos ==# "left" ? "topleft " : "botright "
     let splitSize = g:NERDTreeWinSize
 
-    if !exists('t:NERDTreeBufName')
+    if !g:NERDTree.ExistsForTab()
         let t:NERDTreeBufName = self._nextBufferName()
         silent! exec splitLocation . 'vertical ' . splitSize . ' new'
         silent! exec "edit " . t:NERDTreeBufName

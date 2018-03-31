@@ -17,6 +17,7 @@ endif
 " < >
 " t for tag
 
+" Select a function in visual mode.
 function! go#textobj#Function(mode) abort
   let offset = go#util#OffsetCursor()
 
@@ -98,23 +99,8 @@ function! go#textobj#Function(mode) abort
   call cursor(info.rbrace.line-1, 1)
 endfunction
 
-function! go#textobj#FunctionJump(mode, direction) abort
-  " get count of the motion. This should be done before all the normal
-  " expressions below as those reset this value(because they have zero
-  " count!). We abstract -1 because the index starts from 0 in motion.
-  let l:cnt = v:count1 - 1
-
-  " set context mark so we can jump back with  '' or ``
-  normal! m'
-
-  " select already previously selected visual content and continue from there.
-  " If it's the first time starts with the visual mode. This is needed so
-  " after selecting something in visual mode, every consecutive motion
-  " continues.
-  if a:mode == 'v'
-    normal! gv
-  endif
-
+" Get the location of the previous or next function.
+function! go#textobj#FunctionLocation(direction, cnt) abort
   let offset = go#util#OffsetCursor()
 
   let fname = shellescape(expand("%:p"))
@@ -131,7 +117,7 @@ function! go#textobj#FunctionJump(mode, direction) abort
   endif
 
   let command = printf("%s -format vim -file %s -offset %s", bin_path, fname, offset)
-  let command .= ' -shift ' . l:cnt
+  let command .= ' -shift ' . a:cnt
 
   if a:direction == 'next'
     let command .= ' -mode next'
@@ -154,9 +140,33 @@ function! go#textobj#FunctionJump(mode, direction) abort
     call delete(l:tmpname)
   endif
 
-  " convert our string dict representation into native Vim dictionary type
-  let result = eval(out)
-  if type(result) != 4 || !has_key(result, 'fn')
+  let l:result = json_decode(out)
+  if type(l:result) != 4 || !has_key(l:result, 'fn')
+    return 0
+  endif
+
+  return l:result
+endfunction
+
+function! go#textobj#FunctionJump(mode, direction) abort
+  " get count of the motion. This should be done before all the normal
+  " expressions below as those reset this value(because they have zero
+  " count!). We abstract -1 because the index starts from 0 in motion.
+  let l:cnt = v:count1 - 1
+
+  " set context mark so we can jump back with  '' or ``
+  normal! m'
+
+  " select already previously selected visual content and continue from there.
+  " If it's the first time starts with the visual mode. This is needed so
+  " after selecting something in visual mode, every consecutive motion
+  " continues.
+  if a:mode == 'v'
+    normal! gv
+  endif
+
+  let l:result = go#textobj#FunctionLocation(a:direction, l:cnt)
+  if l:result is 0
     return
   endif
 

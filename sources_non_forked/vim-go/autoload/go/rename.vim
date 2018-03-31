@@ -72,20 +72,22 @@ function! go#rename#Rename(bang, ...) abort
 endfunction
 
 function s:rename_job(args)
-  let exited = 0
-  let closed = 0
-  let exitval = 0
-  let messages = []
+  let state = {
+        \ 'exited': 0,
+        \ 'closed': 0,
+        \ 'exitval': 0,
+        \ 'messages': [],
+        \ 'status_dir': expand('%:p:h'),
+        \ 'bang': a:args.bang
+      \ }
 
-  function! s:callback(chan, msg) closure
-    call add(messages, a:msg)
+  function! s:callback(chan, msg) dict
+    call add(self.messages, a:msg)
   endfunction
 
-  let status_dir =  expand('%:p:h')
-
-  function! s:exit_cb(job, exitval) closure
-    let exited = 1
-    let exitval = a:exitval
+  function! s:exit_cb(job, exitval) dict
+    let self.exited = 1
+    let self.exitval = a:exitval
 
     let status = {
           \ 'desc': 'last status',
@@ -97,28 +99,30 @@ function s:rename_job(args)
       let status.state = "failed"
     endif
 
-    call go#statusline#Update(status_dir, status)
+    call go#statusline#Update(self.status_dir, status)
 
-    if closed
-      call s:parse_errors(a:exitval, a:args.bang, messages)
+    if self.closed
+      call s:parse_errors(self.exitval, self.bang, self.messages)
     endif
   endfunction
 
-  function! s:close_cb(ch) closure
-    let closed = 1
+  function! s:close_cb(ch) dict
+    let self.closed = 1
 
-    if exited
-      call s:parse_errors(exitval, a:args.bang, messages)
+    if self.exited
+      call s:parse_errors(self.exitval, self.bang, self.messages)
     endif
   endfunction
 
+  " explicitly bind the callbacks to state so that self within them always
+  " refers to state. See :help Partial for more information.
   let start_options = {
-        \ 'callback': funcref("s:callback"),
-        \ 'exit_cb': funcref("s:exit_cb"),
-        \ 'close_cb': funcref("s:close_cb"),
+        \ 'callback': funcref("s:callback", [], state),
+        \ 'exit_cb': funcref("s:exit_cb", [], state),
+        \ 'close_cb': funcref("s:close_cb", [], state),
         \ }
 
-  call go#statusline#Update(status_dir, {
+  call go#statusline#Update(state.status_dir, {
         \ 'desc': "current status",
         \ 'type': "gorename",
         \ 'state': "started",
@@ -156,7 +160,6 @@ function s:parse_errors(exit_val, bang, out)
   " strip out newline on the end that gorename puts. If we don't remove, it
   " will trigger the 'Hit ENTER to continue' prompt
   call go#list#Clean(l:listtype)
-  call go#list#Window(l:listtype)
   call go#util#EchoSuccess(a:out[0])
 
   " refresh the buffer so we can see the new content

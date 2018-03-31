@@ -1,12 +1,14 @@
 ## vim-gitgutter
 
-A Vim plugin which shows a git diff in the 'gutter' (sign column).  It shows whether each line has been added, modified, and where lines have been removed.  You can also stage and undo individual hunks.
+A Vim plugin which shows a git diff in the 'gutter' (sign column).  It shows which lines have been added, modified, or removed.  You can also preview, stage, and undo individual hunks.  The plugin also provides a hunk text object.
+
+The signs are always up to date and the plugin never saves your buffer.
 
 Features:
 
 * Shows signs for added, modified, and removed lines.
-* Runs the diffs asynchronously in terminal Vim/MacVim (7.4.1826+), gVim (7.4.1850+), MacVim GUI (7.4.1832+), and NeoVim.
-* Ensures signs are always as up to date as possible (but without running more than necessary).
+* Runs the diffs asynchronously where possible.
+* Ensures signs are always up to date.
 * Quick jumping between blocks of changed lines ("hunks").
 * Stage/undo/preview individual hunks.
 * Provides a hunk text object.
@@ -21,9 +23,8 @@ Features:
 
 Constraints:
 
-* Supports git only.
-
-If you work with other version control systems, I recommend [vim-signify](https://github.com/mhinz/vim-signify).
+* Supports git only.  If you work with other version control systems, I recommend [vim-signify](https://github.com/mhinz/vim-signify).
+* Relies on the `FocusGained` event.  If your terminal doesn't report focus events, either use something like [Terminus][] or set `let g:gitgutter_terminal_reports_focus=0`.
 
 
 ### Screenshot
@@ -39,7 +40,7 @@ In the screenshot above you can see:
 
 ### Installation
 
-Before installation, please check your Vim supports signs by running `:echo has('signs')`.  `1` means you're all set; `0` means you need to install a Vim with signs support.  If you're compiling Vim yourself you need the 'big' or 'huge' feature set.  [MacVim][] supports signs.
+Before installation, please check your Vim supports signs by running `:echo has('signs')`.  `1` means you're all set; `0` means you need to install a Vim with signs support.  If you're compiling Vim yourself you need the 'big' or 'huge' feature set.  MacVim supports signs.
 
 You install vim-gitgutter like any other vim plugin.
 
@@ -100,16 +101,13 @@ cp -r vim-gitgutter/* ~/.vim/
 See `:help add-global-plugin`.
 
 
-If you are on Windows you may find the command prompt pops up briefly every time vim-gitgutter runs.  You can avoid this by installing both [vim-misc](https://github.com/xolox/vim-misc) and [vim-shell](https://github.com/xolox/vim-shell).  If you have those two plugins but don't want vim-gitgutter to use them, you can opt out with `let g:gitgutter_avoid_cmd_prompt_on_windows = 0` in your `~/.vimrc`.
-
-
 ### Getting started
 
-When you make a change to a file tracked by git, the diff markers should appear automatically.  The delay is governed by vim's `updatetime` option; the default value is 4 seconds but I suggest reducing it to around 250ms (add `set updatetime=250` to your vimrc).
+When you make a change to a file tracked by git, the diff markers should appear automatically.  The delay is governed by vim's `updatetime` option; the default value is `4000`, i.e. 4 seconds, but I suggest reducing it to around 100ms (add `set updatetime=100` to your vimrc).
 
 You can jump between hunks with `[c` and `]c`.  You can preview, stage, and undo hunks with `<leader>hp`, `<leader>hs`, and `<leader>hu` respectively.
 
-You cannot currently unstage a staged hunk.
+You cannot unstage a staged hunk.
 
 
 #### Activation
@@ -136,7 +134,7 @@ Note that if you have line highlighting on and signs off, you will have an empty
 
 If you switch off both line highlighting and signs, you won't see the sign column.  That is unless you configure the sign column always to be there (see Sign Column section).
 
-To keep your Vim snappy, vim-gitgutter will suppress itself when a file has more than 500 changes.  As soon as the number of changes falls below the limit vim-gitgutter will show the signs again.  You can configure the threshold with:
+To keep your Vim snappy, vim-gitgutter will suppress the signs when a file has more than 500 changes.  As soon as the number of changes falls below the limit vim-gitgutter will show the signs again.  You can configure the threshold with:
 
 ```viml
 let g:gitgutter_max_signs = 500  " default value
@@ -203,33 +201,6 @@ let g:gitgutter_map_keys = 0
 Finally, you can force vim-gitgutter to update its signs across all visible buffers with `:GitGutterAll`.
 
 See the customisation section below for how to change the defaults.
-
-
-### When are the signs updated?
-
-By default the signs are updated as follows:
-
-| Event                     | Reason for update                    | Configuration          |
-|---------------------------|--------------------------------------|------------------------|
-| Stop typing               | So the signs are real time           | `g:gitgutter_realtime` |
-| Switch buffer             | To notice change to git index        | `g:gitgutter_eager`    |
-| Switch tab                | To notice change to git index        | `g:gitgutter_eager`    |
-| Focus the GUI             | To notice change to git index        | `g:gitgutter_eager` (not gVim on Windows) |
-| After shell command       | To notice change to git index        | `g:gitgutter_eager`    |
-| Read a file into a buffer | To display initial signs             | [always]               |
-| Save a buffer             | So non-realtime signs are up to date | [always]               |
-| Change a file outside Vim | To notice `git stash`                | [always]               |
-
-The length of time Vim waits after you stop typing before it triggers the plugin is governed by the setting `updatetime`.  This defaults to `4000` milliseconds which is rather too long.  I recommend around `250` milliseconds but it depends on your system and your preferences.  Note that in terminal Vim pre-7.4.427 an `updatetime` of less than approximately `1000` milliseconds can lead to random highlighting glitches; the lower the `updatetime`, the more glitches.
-
-If you experience a lag, you can trade speed for accuracy:
-
-```viml
-let g:gitgutter_realtime = 0
-let g:gitgutter_eager = 0
-```
-
-Note the realtime updating requires Vim 7.3.105 or higher.
 
 
 ### Customisation
@@ -351,7 +322,7 @@ If you use an alternative to grep, you can tell vim-gitgutter to use it here.
 
 ```viml
 " Default:
-let g:gitgutter_grep_command = 'grep'
+let g:gitgutter_grep = 'grep'
 ```
 
 #### To turn off vim-gitgutter by default
@@ -490,56 +461,52 @@ nmap <silent> [c :call PrevHunkAllBuffers()<CR>
 
 ### FAQ
 
+> How can I turn off realtime updates?
+
+Add this to your vim configuration (in an `/after/plugin` directory):
+
+```viml
+" .vim/after/plugin/gitgutter.vim
+autocmd! gitgutter CursorHold,CursorHoldI
+```
+
+
 > Why can't I unstage staged changes?
 
-Unstaging staged hunks is feasible but not quite as easy as it sounds.  There are three relevant versions of a file at any one time:
-
-1. The version at HEAD in the repo.
-2. The version staged in the index.
-3. The version in the working tree, in your vim buffer.
-
-`git-diff` without arguments shows you how 3 and 2 differ; this is what vim-gitgutter shows too.
-
-`git-diff --staged` shows you how 2 and 1 differ.
-
-Let's say you are looking at a file in vim which has some unstaged changes.  Now you stage a hunk, either via vim-gitgutter or another means.  The hunk is no longer marked in vim-gitgutter because it is the same in 3 and 2.
-
-Now you want to unstage that hunk.  To see it, you need the difference between 2 and 1.  For vim-gitgutter to show those differences, it would need to show you 2 instead of 3 in your vim buffer.  But 2 is virtual so vim-gitgutter would need to handle it without touching 3.
-
-I intend to implement this but I can't commit to any deadline.
+This plugin is for showing changes between the working tree and the index (and staging/undoing those changes).  Unstaging a staged hunk would require showing changes between the index and HEAD, which is out of scope.
 
 > Why are the colours in the sign column weird?
 
 Your colorscheme is configuring the `SignColumn` highlight group weirdly.  Please see the section above on customising the sign column.
 
-> There's a noticeable lag when vim-gitter runs; how can I avoid it?
-
-By default vim-gitgutter runs often so the signs are as accurate as possible.  The delay is governed by `updatetime`; see [above](#when-are-the-signs-updated) for more information.
-
-If you don't want realtime updates and would like to trade a little accuracy for speed, add this to your `~/.vimrc`:
-
-```viml
-let g:gitgutter_realtime = 0
-let g:gitgutter_eager = 0
-```
-
 > What happens if I also use another plugin which uses signs (e.g. Syntastic)?
 
 Vim only allows one sign per line.  Before adding a sign to a line, vim-gitgutter checks whether a sign has already been added by somebody else.  If so it doesn't do anything.  In other words vim-gitgutter won't overwrite another plugin's signs.  It also won't remove another plugin's signs.
 
-> Why aren't any signs showing at all?
+
+### Troubleshooting
+
+#### When no signs are showing at all
 
 Here are some things you can check:
 
-* `:echo system("git --version")` succeeds.
-* Your git config is compatible with the version of git returned by the command above.
-* Your Vim supports signs (`:echo has('signs')` should give `1`).
-* Your file is being tracked by git and has unstaged changes.
-* If you have aliased or configured `grep` to use any flags, add `let g:gitgutter_grep_command = 'grep'` to your `~/.vimrc`.
+* Try adding `let g:gitgutter_grep=''` to your vimrc.  If it works, the problem is grep producing non-plain output; e.g. ANSI escape codes or colours.
+* Verify `:echo system("git --version")` succeeds.
+* Verify your git config is compatible with the version of git returned by the command above.
+* Verify your Vim supports signs (`:echo has('signs')` should give `1`).
+* Verify your file is being tracked by git and has unstaged changes.
 
-> Why is the whole file marked as added when I edit it?
+#### When the whole file is marked as added
 
 * If you use zsh, and you set `CDPATH`, make sure `CDPATH` doesn't include the current directory.
+
+#### When signs take a few seconds to appear
+
+* Try reducing `updatetime`, e.g. `set updatetime=100`.
+
+#### When signs don't update after focusing Vim
+
+* Your terminal probably isn't reporting focus events.  Either try installing [Terminus][] or set `let g:gitgutter_terminal_reports_focus=0`.
 
 
 ### Shameless Plug
@@ -561,4 +528,4 @@ Copyright Andrew Stewart, AirBlade Software Ltd.  Released under the MIT licence
   [pathogen]: https://github.com/tpope/vim-pathogen
   [siv]: http://pluralsight.com/training/Courses/TableOfContents/smash-into-vim
   [airblade]: http://airbladesoftware.com/peepcode-vim
-  [macvim]: http://code.google.com/p/macvim/
+  [terminus]: https://github.com/wincent/terminus

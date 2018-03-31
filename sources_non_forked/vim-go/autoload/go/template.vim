@@ -24,7 +24,7 @@ function! go#template#create() abort
       let l:template_file = get(g:, 'go_template_file', "hello_world.go")
     endif
     let l:template_path = go#util#Join(l:root_dir, "templates", l:template_file)
-    silent exe '0r ' . fnameescape(l:template_path)
+    silent exe 'keepalt 0r ' . fnameescape(l:template_path)
   elseif l:package_name == -1 && l:go_template_use_pkg == 1
     " cwd is now the dir of the package
     let l:path = fnamemodify(getcwd(), ':t')

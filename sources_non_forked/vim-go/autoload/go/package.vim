@@ -54,8 +54,14 @@ function! go#package#Paths() abort
   return dirs
 endfunction
 
+let s:import_paths = {}
 " ImportPath returns the import path in the current directory it was executed
 function! go#package#ImportPath() abort
+  let dir = expand("%:p:h")
+  if has_key(s:import_paths, dir)
+    return s:import_paths[dir]
+  endif
+
   let out = go#tool#ExecuteInDir("go list")
   if go#util#ShellError() != 0
     return -1
@@ -68,6 +74,8 @@ function! go#package#ImportPath() abort
   if import_path[0] ==# '_'
     return -1
   endif
+
+  let s:import_paths[dir] = import_path
 
   return import_path
 endfunction

@@ -40,12 +40,9 @@ let s:settings_if_default = {
       \ 'skip_key': '<C-x>',
       \ }
 
-let s:default_insert_maps = {}
 let s:default_normal_maps = {'!':1, '@':1, '=':1, 'q':1, 'r':1, 't':1, 'T':1, 'y':1, '[':1, ']':1, '\':1, 'd':1, 'f':1, 'F':1, 'g':1, '"':1, 'z':1, 'c':1, 'm':1, '<':1, '>':1}
 let s:default_visual_maps = {'i':1, 'a':1, 'f':1, 'F':1, 't':1, 'T':1}
 
-let g:multi_cursor_insert_maps =
-      \ get(g:, 'multi_cursor_insert_maps', s:default_insert_maps)
 let g:multi_cursor_normal_maps =
       \ get(g:, 'multi_cursor_normal_maps', s:default_normal_maps)
 let g:multi_cursor_visual_maps =

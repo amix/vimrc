@@ -105,7 +105,6 @@ function! go#lint#Gometa(autosave, ...) abort
 
   if l:err == 0
     call go#list#Clean(l:listtype)
-    call go#list#Window(l:listtype)
     echon "vim-go: " | echohl Function | echon "[metalinter] PASS" | echohl None
   else
     " GoMetaLinter can output one of the two, so we look for both:
@@ -147,7 +146,7 @@ function! go#lint#Golint(...) abort
   endif
 
   let l:listtype = go#list#Type("GoLint")
-  call go#list#Parse(l:listtype, out)
+  call go#list#Parse(l:listtype, out, "GoLint")
   let errors = go#list#Get(l:listtype)
   call go#list#Window(l:listtype, len(errors))
   call go#list#JumpToFirst(l:listtype)
@@ -166,8 +165,9 @@ function! go#lint#Vet(bang, ...) abort
 
   let l:listtype = go#list#Type("GoVet")
   if go#util#ShellError() != 0
-    let errors = go#tool#ParseErrors(split(out, '\n'))
-    call go#list#Populate(l:listtype, errors, 'Vet')
+    let errorformat="%-Gexit status %\\d%\\+," . &errorformat
+    call go#list#ParseFormat(l:listtype, l:errorformat, out, "GoVet")
+    let errors = go#list#Get(l:listtype)
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang
       call go#list#JumpToFirst(l:listtype)
@@ -175,7 +175,6 @@ function! go#lint#Vet(bang, ...) abort
     echon "vim-go: " | echohl ErrorMsg | echon "[vet] FAIL" | echohl None
   else
     call go#list#Clean(l:listtype)
-    call go#list#Window(l:listtype)
     redraw | echon "vim-go: " | echohl Function | echon "[vet] PASS" | echohl None
   endif
 endfunction
@@ -228,7 +227,6 @@ function! go#lint#Errcheck(...) abort
     endif
   else
     call go#list#Clean(l:listtype)
-    call go#list#Window(l:listtype)
     echon "vim-go: " | echohl Function | echon "[errcheck] PASS" | echohl None
   endif
 
@@ -246,10 +244,18 @@ function! go#lint#ToggleMetaLinterAutoSave() abort
 endfunction
 
 function! s:lint_job(args, autosave)
-  let status_dir = expand('%:p:h')
-  let started_at = reltime()
+  let state = {
+        \ 'status_dir': expand('%:p:h'),
+        \ 'started_at': reltime(),
+        \ 'messages': [],
+        \ 'exited': 0,
+        \ 'closed': 0,
+        \ 'exit_status': 0,
+        \ 'winnr': winnr(),
+        \ 'autosave': a:autosave
+      \ }
 
-  call go#statusline#Update(status_dir, {
+  call go#statusline#Update(state.status_dir, {
         \ 'desc': "current status",
         \ 'type': "gometalinter",
         \ 'state': "analysing",
@@ -259,26 +265,18 @@ function! s:lint_job(args, autosave)
   call go#cmd#autowrite()
 
   if a:autosave
-    let l:listtype = go#list#Type("GoMetaLinterAutoSave")
+    let state.listtype = go#list#Type("GoMetaLinterAutoSave")
   else
-    let l:listtype = go#list#Type("GoMetaLinter")
+    let state.listtype = go#list#Type("GoMetaLinter")
   endif
 
-  let l:errformat = '%f:%l:%c:%t%*[^:]:\ %m,%f:%l::%t%*[^:]:\ %m'
-
-  let l:messages = []
-  let l:exited = 0
-  let l:closed = 0
-  let l:exit_status = 0
-  let l:winnr = winnr()
-
-  function! s:callback(chan, msg) closure
-    call add(messages, a:msg)
+  function! s:callback(chan, msg) dict closure
+    call add(self.messages, a:msg)
   endfunction
 
-  function! s:exit_cb(job, exitval) closure
-    let exited = 1
-    let exit_status = a:exitval
+  function! s:exit_cb(job, exitval) dict
+    let self.exited = 1
+    let self.exit_status = a:exitval
 
     let status = {
           \ 'desc': 'last status',
@@ -290,50 +288,63 @@ function! s:lint_job(args, autosave)
       let status.state = "failed"
     endif
 
-    let elapsed_time = reltimestr(reltime(started_at))
+    let elapsed_time = reltimestr(reltime(self.started_at))
     " strip whitespace
     let elapsed_time = substitute(elapsed_time, '^\s*\(.\{-}\)\s*$', '\1', '')
     let status.state .= printf(" (%ss)", elapsed_time)
 
-    call go#statusline#Update(status_dir, status)
+    call go#statusline#Update(self.status_dir, status)
 
-    if closed
-      call s:show_errors()
+    if self.closed
+      call self.show_errors()
     endif
   endfunction
 
-  function! s:close_cb(ch) closure
-    let closed = 1
+  function! s:close_cb(ch) dict
+    let self.closed = 1
 
-    if exited
-      call s:show_errors()
+    if self.exited
+      call self.show_errors()
     endif
   endfunction
 
 
-  function! s:show_errors() closure
+  function state.show_errors()
+    let l:winnr = winnr()
+
     " make sure the current window is the window from which gometalinter was
     " run when the listtype is locationlist so that the location list for the
     " correct window will be populated.
-    if l:listtype == 'locationlist'
-      exe l:winnr . "wincmd w"
+    if self.listtype == 'locationlist'
+      exe self.winnr . "wincmd w"
     endif
 
     let l:errorformat = '%f:%l:%c:%t%*[^:]:\ %m,%f:%l::%t%*[^:]:\ %m'
-    call go#list#ParseFormat(l:listtype, l:errorformat, messages, 'GoMetaLinter')
+    call go#list#ParseFormat(self.listtype, l:errorformat, self.messages, 'GoMetaLinter')
 
-    let errors = go#list#Get(l:listtype)
-    call go#list#Window(l:listtype, len(errors))
+    let errors = go#list#Get(self.listtype)
+    call go#list#Window(self.listtype, len(errors))
+
+    " move to the window that was active before processing the errors, because
+    " the user may have moved around within the window or even moved to a
+    " different window since saving. Moving back to current window as of the
+    " start of this function avoids the perception that the quickfix window
+    " steals focus when linting takes a while.
+    if self.autosave
+      exe l:winnr . "wincmd w"
+    endif
 
     if get(g:, 'go_echo_command_info', 1)
       call go#util#EchoSuccess("linting finished")
     endif
   endfunction
 
+  " explicitly bind the callbacks to state so that self within them always
+  " refers to state. See :help Partial for more information.
   let start_options = {
-        \ 'callback': funcref("s:callback"),
-        \ 'exit_cb': funcref("s:exit_cb"),
-        \ 'close_cb': funcref("s:close_cb"),
+        \ 'callback': funcref("s:callback", [], state),
+        \ 'exit_cb': funcref("s:exit_cb", [], state),
+        \ 'close_cb': funcref("s:close_cb", [], state),
         \ }
 
   call job_start(a:args.cmd, start_options)

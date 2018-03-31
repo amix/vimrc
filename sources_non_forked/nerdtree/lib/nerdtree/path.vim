@@ -246,7 +246,13 @@ function! s:Path.delete()
             throw "NERDTree.PathDeletionError: Could not delete directory: '" . self.str() . "'"
         endif
     else
-        let success = delete(self.str())
+        if exists('g:NERDTreeRemoveFileCmd')
+            let cmd = g:NERDTreeRemoveFileCmd . self.str({'escape': 1})
+            let success = system(cmd)
+        else
+            let success = delete(self.str())
+        endif
+
         if success != 0
             throw "NERDTree.PathDeletionError: Could not delete file: '" . self.str() . "'"
         endif
@@ -409,7 +415,7 @@ endfunction
 
 " FUNCTION: Path.isHiddenUnder(path) {{{1
 function! s:Path.isHiddenUnder(path)
-    
+
     if !self.isUnder(a:path)
         return 0
     endif
@@ -418,7 +424,7 @@ function! s:Path.isHiddenUnder(path)
     let l:segments = self.pathSegments[l:startIndex : ]
 
     for l:segment in l:segments
-        
+
         if l:segment =~# '^\.'
             return 1
         endif

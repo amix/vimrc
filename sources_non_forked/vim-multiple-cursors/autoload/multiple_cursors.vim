@@ -103,7 +103,7 @@ endfunction
 
 function! s:fire_pre_triggers()
   if !s:before_function_called
-    doautocmd User MultipleCursorsPre
+    silent doautocmd User MultipleCursorsPre
     if exists('*Multiple_cursors_before')
       exe "call Multiple_cursors_before()"
     endif
@@ -445,7 +445,7 @@ function! s:CursorManager.reset(restore_view, restore_setting, ...) dict
     if exists('*Multiple_cursors_after')
       exe "call Multiple_cursors_after()"
     endif
-    doautocmd User MultipleCursorsPost
+    silent doautocmd User MultipleCursorsPost
     let s:before_function_called = 0
   endif
 endfunction
@@ -516,7 +516,6 @@ function! s:CursorManager.update_current() dict
     if s:to_mode ==# 'V'
       exec "normal! gvv\<Esc>"
     endif
-
     " Sets the cursor at the right place
     exec "normal! gv\<Esc>"
     call cur.update_visual_selection(s:get_visual_region(s:pos('.')))
@@ -525,17 +524,18 @@ function! s:CursorManager.update_current() dict
     " This should be executed after user input is processed, when unnamed
     " register already contains the text.
     call cur.save_unnamed_register()
-
     call cur.remove_visual_selection()
-  elseif s:from_mode ==# 'i' && s:to_mode ==# 'n' && self.current_index != self.size() - 1
+  elseif s:from_mode ==# 'i' && s:to_mode ==# 'n' && self.current_index != 0
     normal! h
   elseif s:from_mode ==# 'n'
     " Save contents of unnamed register after each operation in Normal mode.
     call cur.save_unnamed_register()
   endif
-  let vdelta = line('$') - s:saved_linecount
+  let pos = s:pos('.')
+
   " If the total number of lines changed in the buffer, we need to potentially
   " adjust other cursor locations
+  let vdelta = line('$') - s:saved_linecount
   if vdelta != 0
     if self.current_index != self.size() - 1
       let cur_column_offset = (cur.column() - col('.')) * -1
@@ -547,7 +547,7 @@ function! s:CursorManager.update_current() dict
         let c = self.get(i)
         " If there're other cursors on the same line, we need to adjust their
         " columns. This needs to happen before we adjust their line!
-        if cur.line() == c.line()
+        if cur.line() == c.line() || cur.position == pos
           if vdelta > 0
             " Added a line
             let hdelta = cur_column_offset
@@ -583,7 +583,6 @@ function! s:CursorManager.update_current() dict
     endif
   endif
 
-  let pos = s:pos('.')
   if cur.position == pos
     return 0
   endif
@@ -598,7 +597,8 @@ endfunction
 
 " Start tracking cursor updates
 function! s:CursorManager.start_loop() dict
-  let self.starting_index = self.current_index
+  let self.current_index  = 0
+  let self.starting_index = 0
 endfunction
 
 " Returns true if we're cycled through all the cursors
@@ -1210,28 +1210,51 @@ function! s:wait_for_user_input(mode)
     let s:saved_keys = ""
   endif
 
-  if s:from_mode ==# 'i' && has_key(g:multi_cursor_insert_maps, s:last_char())
-    let c = getchar(0)
-    let char_type = type(c)
+  " ambiguous mappings are note supported; e.g.:
+  "   imap jj JJ
+  "   imap jjj JJJ
+  " will always trigger the 'jj' mapping
+  if s:from_mode ==# 'i' && mapcheck(s:char, "i") != ""
     let poll_count = 0
-    while char_type == 0 && c == 0 && poll_count < &timeoutlen
-      sleep 1m
+    let map_dict = {}
+    while poll_count < &timeoutlen
       let c = getchar(0)
       let char_type = type(c)
-      let poll_count += 1
+      let poll_count += 1.5
+      if char_type == 0 && c != 0
+        let s:char .= nr2char(c)
+      elseif char_type == 1 " char with more than 8 bits (as string)
+        let s:char .= c
+      endif
+      let map_dict = maparg(s:char, "i", 0, 1)
+      " break if chars exactly match mapping or if chars don't match beging of mapping anymore
+      if map_dict != {} || mapcheck(s:char, "i") == ""
+        if get(map_dict, 'expr', 0)
+          " handle case where {rhs} is a function
+          exec 'let char_mapping = ' . map_dict['rhs']
+        else
+          let char_mapping = get(map_dict, 'rhs', s:char)
+        endif
+        " handle case where mapping is <esc>
+        exec 'let s:char = "'.substitute(char_mapping, '<', '\\<', 'g').'"'
+        break
+      endif
+      sleep 1m
     endwhile
-
-    if char_type == 0 && c != 0
-      let s:char .= nr2char(c)
-    elseif char_type == 1 " char with more than 8 bits (as string)
-      let s:char .= c
-    endif
   elseif s:from_mode !=# 'i' && s:char[0] ==# ":"
     call feedkeys(s:char)
     call s:cm.reset(1, 1)
     return
-  elseif s:from_mode ==# 'n'
+  elseif s:from_mode ==# 'n' || s:from_mode =~# 'v\|V'
     while match(s:last_char(), "\\d") == 0
+      if match(s:char, '\(^\|\a\)0') == 0
+        " fixes an edge case concerning the `0` key.
+        " The 0 key behaves differently from [1-9].
+        " It's consumed immediately when it is the
+        " first key typed while we're waiting for input.
+        " References: issue #152, pull #241
+        break
+      endif
       let s:char .= s:get_char()
     endwhile
   endif

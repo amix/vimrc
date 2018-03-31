@@ -22,10 +22,11 @@ CONTENTS                                                         *go-contents*
   6. Functions....................................|go-functions|
   7. Settings.....................................|go-settings|
   8. Syntax highlighting..........................|go-syntax|
-  9. FAQ/Troubleshooting..........................|go-troubleshooting|
- 10. Development..................................|go-development|
- 11. Donation.....................................|go-donation|
- 12. Credits......................................|go-credits|
+  9. Debugger.....................................|go-debug|
+ 10. FAQ/Troubleshooting..........................|go-troubleshooting|
+ 11. Development..................................|go-development|
+ 12. Donation.....................................|go-donation|
+ 13. Credits......................................|go-credits|
 
 ==============================================================================
 INTRO                                                               *go-intro*
@@ -37,16 +38,16 @@ and individual features can be toggled easily. vim-go leverages a number of
 tools developed by the Go community to provide a seamless Vim experience.
 
   * Compile your package with |:GoBuild|, install it with |:GoInstall| or
-    test it with |:GoTest|. Run a single tests with |:GoTestFunc|).
+    test it with |:GoTest|. Run a single test with |:GoTestFunc|).
   * Quickly execute your current file(s) with |:GoRun|.
   * Improved syntax highlighting and folding.
+  * Debug programs with integrated `delve` support with |:GoDebugStart|.
   * Completion support via `gocode`.
   * `gofmt` or `goimports` on save keeps the cursor position and undo history.
   * Go to symbol/declaration with |:GoDef|.
   * Look up documentation with |:GoDoc| or |:GoDocBrowser|.
   * Easily import packages via |:GoImport|, remove them via |:GoDrop|.
-  * Automatic `GOPATH` detection which works with `gb` and `godep`. Change or
-    display `GOPATH` with |:GoPath|.
+  * Precise type-safe renaming of identifiers with |:GoRename|.
   * See which code is covered by tests with |:GoCoverage|.
   * Add or remove tags on struct fields with |:GoAddTags| and |:GoRemoveTags|.
   * Call `gometalinter` with |:GoMetaLinter| to invoke all possible linters
@@ -56,7 +57,8 @@ tools developed by the Go community to provide a seamless Vim experience.
     static errors, or make sure errors are checked with |:GoErrCheck|.
   * Advanced source analysis tools utilizing `guru`, such as |:GoImplements|,
     |:GoCallees|, and |:GoReferrers|.
-  * Precise type-safe renaming of identifiers with |:GoRename|.
+  * Automatic `GOPATH` detection which works with `gb` and `godep`. Change or
+    display `GOPATH` with |:GoPath|.
   * Integrated and improved snippets, supporting `ultisnips`, `neosnippet`,
     and `vim-minisnip`.
   * Share your current code to play.golang.org with |:GoPlay|.
@@ -1100,7 +1102,7 @@ cleaned for each package after `60` seconds. This can be changed with the
                                                        *go#complete#GetInfo()*
 
 Returns the description of the identifer under the cursor. Can be used to plug
-into the statusline. This function is also used for |'g:go_auto_type_info'|.
+into the statusline.
 
 ==============================================================================
 SETTINGS                                                        *go-settings*
@@ -1658,6 +1660,18 @@ By default "snakecase" is used. Current values are: ["snakecase",
 >
       let g:go_addtags_transform = 'snakecase'
 <
+                                                                *'g:go_debug'*
+
+A list of options to debug; useful for development and/or reporting bugs.
+
+Currently accepted values:
+
+  debugger-state     Expose debugger state in 'g:go_debug_diag'.
+  debugger-commands  Echo communication between vim-go and `dlv`; requests and
+                     responses are recorded in `g:go_debug_commands`.
+>
+      let g:go_debug = []
+<
 
 ==============================================================================
 SYNTAX HIGHLIGHTING                                 *ft-go-syntax* *go-syntax*
@@ -1814,6 +1828,212 @@ filetype.
 The `gohtmltmpl` filetype is automatically set for `*.tmpl` files; the
 `gotexttmpl` is never automatically set and needs to be set manually.
 
+
+==============================================================================
+DEBUGGER                                                            *go-debug*
+
+Vim-go comes with a special "debugger mode". This starts a `dlv` process in
+the background and provides various commands to communicate with it.
+
+This debugger is similar to Visual Studio or Eclipse and has the following
+features:
+
+  * Show stack trace and jumps.
+  * List local variables.
+  * List function arguments.
+  * Expand values of struct or array/slice.
+  * Show balloon on the symbol.
+  * Show output of stdout/stderr.
+  * Toggle breakpoint.
+  * Stack operation continue/next/step out.
+
+This feature requires Vim 8.0.0087 or newer with the |+job| feature. Neovim
+does _not_ work (yet).
+This requires Delve 1.0.0 or newer, and it is recommended to use Go 1.10 or
+newer, as its new caching will speed up recompiles.
+
+                                                              *go-debug-intro*
+GETTING STARTED WITH THE DEBUGGER~
+
+Use |:GoDebugStart| or |:GoDebugTest| to start the debugger. The first
+argument is the package name, and any arguments after that will be passed on
+to the program; for example:
+>
+    :GoDebugStart . -someflag value
+<
+This may take few seconds. After the code is compiled you'll see three new
+windows: the stack trace on left side, the variable list on the bottom-left,
+and program output at the bottom.
+
+You can add breakpoints with |:GoDebugBreakpoint| (<F9>) and run your program
+with |:GoDebugContinue| (<F5>).
+
+The program will halt on the breakpoint, at which point you can inspect the
+program state. You can go to the next line with |:GoDebugNext| (<F10>) or step
+in with |:GoDebugStep| (<F11>).
+
+The variable window in the bottom left (`GODEBUG_VARIABLES`) will display all
+local variables. Struct values are displayed as `{...}`, array/slices as
+`[4]`. Use <CR> on the variable name to expand the values.
+
+The `GODEBUG_OUTPUT` window displays output from the program and the Delve
+debugger.
+
+The `GODEBUG_STACKTRACE` window can be used to jump to different places in the
+call stack.
+
+When you're done use |:GoDebugStop| to close the debugging windows and halt
+the `dlv` process, or |:GoDebugRestart| to recompile the code.
+
+                                                           *go-debug-commands*
+DEBUGGER COMMANDS~
+
+Only |:GoDebugStart| and |:GoDebugBreakpoint| are available by default; the
+rest of the commands and mappings become available after starting debug mode.
+
+                                                               *:GoDebugStart*
+:GoDebugStart [pkg] [program-args]
+
+    Start the debug mode for [pkg]; this does several things:
+
+      * Setup the debug windows according to |'g:go_debug_windows'|.
+      * Make the `:GoDebug*` commands and `(go-debug-*)` mappings available.
+
+    The current directory is used if [pkg] is empty. Any other arguments will
+    be passed to the program.
+
+    Use |:GoDebugStop| to stop `dlv` and exit debugging mode.
+
+                                                                *:GoDebugTest*
+:GoDebugTest [pkg] [program-args]
+
+    Behaves the same as |:GoDebugStart| but runs `dlv test` instead of
+    `dlv debug` so you can debug tests.
+
+    Use `-test.flag` to pass flags to `go test` when debugging a test; for
+    example `-test.v` or `-test.run TestFoo`
+
+
+                                                             *:GoDebugRestart*
+:GoDebugRestart
+
+    Stop the program (if running) and restart `dlv` to recompile the package.
+    The current window layout and breakpoints will be left intact.
+
+                                                                *:GoDebugStop*
+                                                             *(go-debug-stop)*
+:GoDebugStop
+
+    Stop `dlv` and remove all debug-specific commands, mappings, and windows.
+
+                                                          *:GoDebugBreakpoint*
+                                                       *(go-debug-breakpoint)*
+:GoDebugBreakpoint [linenr]
+
+    Toggle breakpoint for the [linenr]. [linenr] defaults to the current line
+    if it is omitted. A line with a breakpoint will have the
+    {godebugbreakpoint} |:sign| placed on it. The line the program is
+    currently halted on will have the {godebugcurline} sign.
+
+                                    *hl-GoDebugCurrent* *hl-GoDebugBreakpoint*
+    A line with a breakpoint will be highlighted with the {GoDebugBreakpoint}
+    group; the line the program is currently halted on will be highlighted
+    with {GoDebugCurrent}.
+
+    Mapped to <F9> by default.
+
+                                                            *:GoDebugContinue*
+                                                         *(go-debug-continue)*
+:GoDebugContinue
+
+    Continue execution until breakpoint or program termination. It will start
+    the program if it hasn't been started yet.
+
+    Mapped to <F5> by default.
+
+                                                                *:GoDebugNext*
+                                                             *(go-debug-next)*
+:GoDebugNext
+
+    Advance execution by one line, also called "step over" by some other
+    debuggers.
+    It will behave as |:GoDebugContinue| if the program isn't started.
+
+    Mapped to <F10> by default.
+
+                                                                *:GoDebugStep*
+                                                             *(go-debug-step)*
+:GoDebugStep
+
+    Advance execution by one step, stopping at the next line of code that will
+    be executed (regardless of location).
+    It will behave as |:GoDebugContinue| if the program isn't started.
+
+    Mapped to <F11> by default.
+
+                                                             *:GoDebugStepOut*
+                                                          *(go-debug-stepout)*
+
+:GoDebugStepOut
+
+    Run all the code in the current function and halt when the function
+    returns ("step out of the current function").
+    It will behave as |:GoDebugContinue| if the program isn't started.
+
+                                                                 *:GoDebugSet*
+:GoDebugSet {var} {value}
+
+    Set the variable {var} to {value}. Example:
+>
+      :GoDebugSet truth 42
+<
+    This only works for `float`, `int` and variants, `uint` and variants,
+    `bool`, and pointers (this is a `delve` limitation, not a vim-go
+    limitation).
+
+                                                               *:GoDebugPrint*
+                                                            *(go-debug-print)*
+:GoDebugPrint {expr}
+
+    Print the result of a Go expression.
+>
+    :GoDebugPrint truth == 42
+    truth == 42 true
+<
+    Mapped to <F6> by default, which will evaluate the <cword> under the
+    cursor.
+
+                                                           *go-debug-settings*
+DEBUGGER SETTINGS~
+
+                                                        *'g:go_debug_windows'*
+
+Controls the window layout for debugging mode. This is a |dict| with three
+possible keys: "stack", "out", and "vars"; the windows will created in that
+order with the commands in the value.
+A window will not be created if a key is missing or empty.
+
+Defaults:
+>
+  let g:go_debug_windows = {
+        \ 'stack': 'leftabove 20vnew',
+        \ 'out':   'botright 10new',
+        \ 'vars':  'leftabove 30vnew',
+  \ }
+<
+Show only variables on the right-hand side: >
+
+  let g:go_debug_windows = {
+        \ 'vars':  'rightbelow 60vnew',
+  \ }
+<
+                                                        *'g:go_debug_address'*
+
+Server address `dlv` will listen on; must be in `hostname:port` format.
+Defaults to `127.0.0.1:8181`:
+>
+  let g:go_debug_address = '127.0.0.1:8181'
+<
 
 ==============================================================================
 FAQ TROUBLESHOOTING                                     *go-troubleshooting*

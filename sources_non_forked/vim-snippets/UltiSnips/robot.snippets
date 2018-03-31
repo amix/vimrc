@@ -29,7 +29,7 @@ Return From Keyword    ${1:${optional return value}}
 endsnippet
 
 snippet rfki "Return From Keyword If"
-Return From Keyword If    ${1:${condition}}    ${2:${optional return value}}
+Return From Keyword If    '\${${1:rc}}' != '${2:abc}'    ${3:${optional return value}}
 endsnippet
 
 snippet rk "Run Keyword"
@@ -54,7 +54,7 @@ Run Keyword And Return    ${1:${kw}}    ${2:${args}}
 endsnippet
 
 snippet rkari "Run Keyword And Return If"
-Run Keyword And Return If    ${1:{condition}}    ${2:${kw}}    ${3:${args}}
+Run Keyword And Return If    '\${${1:rc}}' != '${2:abc}'    ${3:${kw}}    ${4:${args}}
 endsnippet
 
 snippet rkars "Run Keyword And Return Status"
@@ -62,9 +62,12 @@ snippet rkars "Run Keyword And Return Status"
 endsnippet
 
 snippet rki "Run Keyword If"
-Run Keyword If    ${1:${rc} < 0}    ${2:${VISUAL:Some keyword returning a value}}
-...    ELSE IF    ${3:'${str}' == 'abc'}    ${4:Another keyword}
-...    ELSE    ${5:Final keyword}
+Run Keyword If    '\${${1:rc}}' != '${2:abc}'
+...               ${3:${VISUAL:Some keyword returning a value}}
+...    ELSE IF    '\${${4:str}}' != '${5:def}'
+...               ${6:Another keyword}
+...    ELSE
+...               ${7:Final keyword}
 endsnippet
 
 snippet rkiactf "Run Keyword If Any Critical Tests Failed"
@@ -102,7 +105,7 @@ Run Keywords
 endsnippet
 
 snippet rku "Run Keyword Unless"
-Run Keyword Unless    ${1:${condition}}    ${2:${kw}}    ${3:${args}}
+Run Keyword Unless    '\${${1:rc}}' != '${2:abc}'    ${3:${kw}}    ${4:${args}}
 endsnippet
 
 snippet sgv "Set Global Variable"
@@ -130,7 +133,9 @@ snippet sv "Set Variable"
 endsnippet
 
 snippet svi "Set Variable If"
-\${${1:var}}=    Set Variable If    ${2:${condition}}    ${3:${value true}}    ${4:${value false}}
+\${${1:var}}=    Set Variable If    '\${${2:rc}}' != '${3:abc}'
+`!p snip.rv = '...' + ' ' * (len(t[1]) + 23)` ${4:${value true}}
+`!p snip.rv = '...' + ' ' * (len(t[1]) + 23)` ${5:${value false}}
 endsnippet
 
 snippet wuks "Wait Until Keyword Succeeds"

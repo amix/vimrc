@@ -40,7 +40,7 @@ function! s:GoMinisnip() abort
   endif
 
   if exists('g:minisnip_dir')
-    let g:minisnip_dir .= ':' . globpath(&rtp, 'gosnippets/minisnip')
+    let g:minisnip_dir .= go#util#PathListSep() . globpath(&rtp, 'gosnippets/minisnip')
   else
     let g:minisnip_dir = globpath(&rtp, 'gosnippets/minisnip')
   endif

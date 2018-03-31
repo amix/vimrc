@@ -252,6 +252,11 @@ snippet fn "fmt.Println(...)"
 fmt.Println("${1:${VISUAL}}")
 endsnippet
 
+# Fmt Errorf debug
+snippet fe "fmt.Errorf(...)"
+fmt.Errorf("${1:${VISUAL}}")
+endsnippet
+
 # log printf
 snippet lf "log.Printf(...)"
 log.Printf("${1:${VISUAL}} = %+v\n", $1)

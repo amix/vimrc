@@ -4,45 +4,50 @@
                            Vim Git Gutter
 
 
-Author:            Andy Stewart <http://airbladesoftware.com/>
+Author:            Andy Stewart <https://airbladesoftware.com/>
 Plugin Homepage:   <https://github.com/airblade/vim-gitgutter>
 
-===============================================================================
-CONTENTS                                                    *GitGutterContents*
-
-  1.  Introduction ................. |GitGutterIntroduction|
-  2.  Installation ................. |GitGutterInstallation|
-  3.  Usage ........................ |GitGutterUsage|
-  4.  Commands ..................... |GitGutterCommands|
-  5.  Autocommand .................. |GitGutterAutocmd|
-  6.  CUSTOMISATION................. |GitGutterCustomisation|
-  7.  FAQ .......................... |GitGutterFAQ|
 
 ===============================================================================
-1. INTRODUCTION                                         *GitGutterIntroduction*
-                                                                    *GitGutter*
+CONTENTS                                                            *gitgutter*
 
-Vim Git Gutter is a Vim plugin which shows a git diff in the 'gutter' (sign
-column). It shows whether each line has been added, modified, and where lines
-have been removed.
+  Introduction ................. |gitgutter-introduction|
+  Installation ................. |gitgutter-installation|
+  Commands ..................... |gitgutter-commands|
+  Mappings ..................... |gitgutter-mappings|
+  Autocommand .................. |gitgutter-autocommand|
+  Options ...................... |gitgutter-options|
+  Highlights ................... |gitgutter-highlights|
+  FAQ .......................... |gitgutter-faq|
+  TROUBLESHOOTING .............. |gitgutter-troubleshooting|
 
-This is a port of the Git Gutter plugin for Sublime Text 2.
 
 ===============================================================================
-2. INSTALLATION                                         *GitGutterInstallation*
+INTRODUCTION                                           *gitgutter-introduction*
 
-* Pathogen:
+GitGutter is a Vim plugin which shows a git diff in the 'gutter' (sign column).
+It shows which lines have been added, modified, or removed.  You can also
+preview, stage, and undo individual hunks.  The plugin also provides a hunk
+text object.
+
+The signs are always up to date and the plugin never saves your buffer.
+
+
+===============================================================================
+INSTALLATION                                           *gitgutter-installation*
+
+Pathogen:~
 >
   cd ~/.vim/bundle
   git clone git://github.com/airblade/vim-gitgutter.git
 <
-* Voom:
+Voom:~
 
 Edit your plugin manifest (`voom edit`) and add:
 >
   airblade/vim-gitgutter
 <
-* VimPlug:
+VimPlug:~
 
 Place this in your .vimrc:
 >
@@ -53,7 +58,7 @@ Then run the following in Vim:
   :source %
   :PlugInstall
 <
-* NeoBundle:
+NeoBundle:~
 
 Place this in your .vimrc:
 >
@@ -64,7 +69,7 @@ Then run the following in Vim:
   :source %
   :NeoBundleInstall
 <
-* No plugin manager:
+No plugin manager:~
 
 Copy vim-gitgutter's subdirectories into your vim configuration directory:
 >
@@ -73,133 +78,346 @@ Copy vim-gitgutter's subdirectories into your vim configuration directory:
 <
 See |add-global-plugin|.
 
-===============================================================================
-3. USAGE                                                       *GitGutterUsage*
-
-You don't have to do anything: it just works.
 
 ===============================================================================
-4. COMMANDS                                                 *GitGutterCommands*
+COMMANDS                                                   *gitgutter-commands*
 
-Commands for turning Git Gutter on and off:
+Commands for turning vim-gitgutter on and off:~
 
-  :GitGutterDisable                                         *:GitGutterDisable*
-      Explicitly turn Git Gutter off.
+                                                  *gitgutter-:GitGutterDisable*
+:GitGutterDisable       Turn vim-gitgutter off for all buffers.
 
-  :GitGutterEnable                                           *:GitGutterEnable*
-      Explicitly turn Git Gutter on.
+                                                   *gitgutter-:GitGutterEnable*
+:GitGutterEnable        Turn vim-gitgutter on for all buffers.
 
-  :GitGutterToggle                                           *:GitGutterToggle*
-      Explicitly turn Git Gutter on if it was off and vice versa.
+                                                   *gitgutter-:GitGutterToggle*
+:GitGutterToggle        Toggle vim-gitgutter on or off for all buffers.
 
-  :GitGutter                                                       *:GitGutter*
-      Update signs for the current buffer.
+                                                         *gitgutter-:GitGutter*
+:GitGutter              Update signs for the current buffer.  You shouldn't
+                        need to run this.
 
-  :GitGutterAll                                                 *:GitGutterAll*
-      Update signs across all buffers.
+                                                      *gitgutter-:GitGutterAll*
+:GitGutterAll           Update signs for all buffers.  You shouldn't need to
+                        run this.
 
-Commands for turning signs on and off (defaults to on):
 
-  :GitGutterSignsEnable                                 *:GitGutterSignsEnable*
-      Explicitly turn line signs on.
+Commands for turning signs on and off (defaults to on):~
 
-  :GitGutterSignsDisable                               *:GitGutterSignsDisable*
-      Explicitly turn line signs off.
+                                              *gitgutter-:GitGutterSignsEnable*
+:GitGutterSignsEnable   Show signs for the diff.
 
-  :GitGutterSignsToggle                                 *:GitGutterSignsToggle*
-      Explicitly turn line signs on if it was off and vice versa.
+                                             *gitgutter-:GitGutterSignsDisable*
+:GitGutterSignsDisable  Do not show signs for the diff.
 
-Commands for turning line highlighting on and off (defaults to off):
+                                              *gitgutter-:GitGutterSignsToggle*
+:GitGutterSignsToggle   Toggle signs on or off.
 
-  :GitGutterLineHighlightsEnable               *:GitGutterLineHighlightsEnable*
-      Explicitly turn line highlighting on.
 
-  :GitGutterLineHighlightsDisable             *:GitGutterLineHighlightsDisable*
-      Explicitly turn line highlighting off.
+Commands for turning line highlighting on and off (defaults to off):~
 
-  :GitGutterLineHighlightsToggle               *:GitGutterLineHighlightsToggle*
-      Explicitly turn line highlighting on if it was off and vice versa.
+                                     *gitgutter-:GitGutterLineHighlightsEnable*
+:GitGutterLineHighlightsEnable  Turn on line highlighting.
 
-Commands for jumping between marked hunks:
+                                    *gitgutter-:GitGutterLineHighlightsDisable*
+:GitGutterLineHighlightsDisable Turn off line highlighting.
 
-  :GitGutterNextHunk                                       *:GitGutterNextHunk*
-      Jump to the next marked hunk.  Takes a count.
+                                     *gitgutter-:GitGutterLineHighlightsToggle*
+:GitGutterLineHighlightsToggle  Turn line highlighting on or off.
 
-  :GitGutterPrevHunk                                       *:GitGutterPrevHunk*
-      Jump to the previous marked hunk.  Takes a count.
 
-Commands for staging or undoing individual hunks:
+Commands for jumping between hunks:~
 
-  :GitGutterStageHunk                                     *:GitGutterStageHunk*
-      Stage the hunk the cursor is in.
+                                                 *gitgutter-:GitGutterNextHunk*
+:GitGutterNextHunk      Jump to the next [count] hunk.
 
-  :GitGutterUndoHunk                                       *:GitGutterUndoHunk*
-      Undo the hunk the cursor is in.
+                                                 *gitgutter-:GitGutterPrevHunk*
+:GitGutterPrevHunk      Jump to the previous [count] hunk.
 
-  :GitGutterPreviewHunk                                 *:GitGutterPreviewHunk*
-      Preview the hunk the cursor is in.
-      Use |:pclose| or |CTRL-W_CTRL-Z| to close the preview window.
+
+Commands for operating on a hunk:~
+
+                                                *gitgutter-:GitGutterStageHunk*
+:GitGutterStageHunk     Stage the hunk the cursor is in.
+
+                                                 *gitgutter-:GitGutterUndoHunk*
+:GitGutterUndoHunk      Undo the hunk the cursor is in.
+
+                                              *gitgutter-:GitGutterPreviewHunk*
+:GitGutterPreviewHunk   Preview the hunk the cursor is in.
+                        Use |:pclose| or |CTRL-W_CTRL-Z| to close the preview
+                        window.
+
 
 ===============================================================================
-5. AUTOCOMMAND                                               *GitGutterAutocmd*
+AUTOCOMMAND                                             *gitgutter-autocommand*
+
+User GitGutter~
 
 After updating a buffer's signs vim-gitgutter fires a |User| |autocmd| with the
 event GitGutter.  You can listen for this event, for example:
 >
   autocmd User GitGutter call updateMyStatusLine()
 <
+A dictionary `g:gitgutter_hook_context` is made available during its execution,
+which contains an entry `bufnr` that contains the buffer number being updated.
+
 
 ===============================================================================
-6. CUSTOMISATION                                       *GitGutterCustomisation*
+MAPPINGS                                                   *gitgutter-mappings*
 
-You can customise:
+You can disable all these mappings with:
+>
+    let g:gitgutter_map_keys = 0
+<
 
-- The sign column's colours
-- The signs' colours and symbols
-- Line highlights
-- The base of the diff
-- Extra arguments for git-diff
-- Key mappings
-- The grep executable used
-- Whether or not vim-gitgutter is on initially (defaults to on)
-- Whether or not signs are shown (defaults to yes)
-- Whether or not line highlighting is on initially (defaults to off)
-- Whether or not vim-gitgutter runs in realtime (defaults to yes)
-- Whether or not vim-gitgutter runs eagerly (defaults to yes)
-- Whether or not vim-gitgutter runs asynchronously (defaults to yes)
+Hunk operations:~
 
-Please note that vim-gitgutter won't override any colours or highlights you've
-set in your colorscheme.
+These can be repeated with `.` if you have vim-repeat installed.
 
-SIGN COLUMN
+                                                         *gitgutter-<Leader>hp*
+<Leader>hp              Preview the hunk under the cursor.
 
-By default vim-gitgutter will make the sign column look like the line number
-column (i.e. the |hl-LineNr| highlight group).
+                                                         *gitgutter-<Leader>hs*
+<Leader>hs              Stage the hunk under the cursor.
+
+                                                         *gitgutter-<Leader>hu*
+<Leader>hu              Undo the hunk under the cursor.
+
+You can change these mappings like this:
+>
+    nmap ghp <Plug>GitGutterPreviewHunk
+    nmap ghs <Plug>GitGutterStageHunk
+    nmap ghu <Plug>GitGutterUndoHunk
+<
+
+Hunk jumping:~
+
+                                                                 *gitgutter-]c*
+]c                      Jump to the next [count] hunk.
+
+                                                                 *gitgutter-[c*
+[c                      Jump to the previous [count] hunk.
+
+You can change these mappings like this:
+>
+    nmap [c <Plug>GitGutterPrevHunk
+    nmap ]c <Plug>GitGutterNextHunk
+<
+
+Hunk text object:~
+
+                          *gitgutter-ic* *gitgutter-ac* *gitgutter-text-object*
+"ic" operates on the current hunk's lines.  "ac" does the same but also includes
+trailing empty lines.
+>
+    omap ic <Plug>GitGutterTextObjectInnerPending
+    omap ac <Plug>GitGutterTextObjectOuterPending
+    xmap ic <Plug>GitGutterTextObjectInnerVisual
+    xmap ac <Plug>GitGutterTextObjectOuterVisual
+<
+
+
+===============================================================================
+OPTIONS                                                     *gitgutter-options*
+
+The most important option is 'updatetime' which determines how long (in
+milliseconds) the plugin will wait after you stop typing before it updates the
+signs.  Vim's default is 4000.  I recommend 100.
+
+Most important option:~
+
+    'updatetime'
+
+Git:~
+
+    |g:gitgutter_git_executable|
+    |g:gitgutter_diff_args|
+    |g:gitgutter_diff_base|
+
+Grep:~
+
+    |g:gitgutter_grep|
+
+Signs:~
+
+    |g:gitgutter_signs|
+    |g:gitgutter_highlight_lines|
+    |g:gitgutter_max_signs|
+    |g:gitgutter_sign_added|
+    |g:gitgutter_sign_modified|
+    |g:gitgutter_sign_removed|
+    |g:gitgutter_sign_removed_first_line|
+    |g:gitgutter_sign_modified_removed|
+    |g:gitgutter_sign_column_always|
+    |g:gitgutter_override_sign_column_highlight|
+
+Terminal:~
+
+    |g:gitgutter_terminal_reports_focus|
+
+General:~
+
+    |g:gitgutter_enabled|
+    |g:gitgutter_map_keys|
+    |g:gitgutter_async|
+    |g:gitgutter_log|
+
+
+                                                   *g:gitgutter_git_executable*
+Default: 'git'
+
+This option determines what git binary to use.  Set this if git is not on your
+path.
+
+                                                        *g:gitgutter_diff_args*
+Default: empty
+
+Use this option to pass any extra arguments to git-diff.  For example:
+>
+    let g:gitgutter_diff_args = '-w'
+<
+
+                                                        *g:gitgutter_diff_base*
+Default: empty
+
+By default buffers are diffed against the index.  Use this option to diff against
+a revision instead.  For example:
+>
+    let g:gitgutter_diff_base = '<some commit SHA>'
+<
+
+                                                             *g:gitgutter_grep*
+Default: 'grep'
+
+The plugin pipes the output of git-diff into grep to minimise the amount of data
+vim has to process.  Set this option if grep is not on your path.
+
+grep must produce plain-text output without any ANSI escape codes or colours.
+Use this option to turn off colours if necessary.
+>
+    let g:gitgutter_grep = 'grep --color=never'
+<
+If you do not want to use grep at all (perhaps to debug why signs are not
+showing), set this option to an empty string:
+>
+    let g:gitgutter_grep = ''
+<
+
+                                                            *g:gitgutter_signs*
+Default: 1
+
+Determines whether or not to show signs.
+
+                                                  *g:gitgutter_highlight_lines*
+Default: 0
+
+Determines whether or not to show line highlights.
+
+                                                        *g:gitgutter_max_signs*
+Default: 500
+
+Sets the maximum number of signs to show in a buffer.  Vim is slow at updating
+signs, so to avoid slowing down the GUI the number of signs is capped.  When
+the number of changed lines exceeds this value, the plugin removes all signs
+and displays a warning message.
+
+                                          *g:gitgutter_sign_added*
+                                          *g:gitgutter_sign_modified*
+                                          *g:gitgutter_sign_removed*
+                                          *g:gitgutter_sign_removed_first_line*
+                                          *g:gitgutter_sign_modified_removed*
+Defaults:
+>
+    let g:gitgutter_sign_added              = '+'
+    let g:gitgutter_sign_modified           = '~'
+    let g:gitgutter_sign_removed            = '_'
+    let g:gitgutter_sign_removed_first_line = '‾'
+    let g:gitgutter_sign_modified_removed   = '~_'
+<
+You can use unicode characters but not images.  Signs must not take up more than
+2 columns.
+
+                                               *g:gitgutter_sign_column_always*
+Default: 0
+
+This legacy option controls whether the sign column should always be shown, even
+if there are no signs to display.
+
+From Vim 7.4.2201, use 'signcolumn' instead:
+>
+    set signcolumn=yes
+<
+
+                                   *g:gitgutter_override_sign_column_highlight*
+Default: 1
+
+Controls whether to make the sign column look like the line-number column (i.e.
+the |hl-LineNr| highlight group).
 
 To customise your sign column's background color, first tell vim-gitgutter to
 leave it alone:
 >
-  let g:gitgutter_override_sign_column_highlight = 0
+    let g:gitgutter_override_sign_column_highlight = 0
 <
 
 And then either update your colorscheme's |hlSignColumn| highlight group or set
 it in your |vimrc|:
 
   Desired appearance                  Command ~
-  Same as line number column          highlight clear SignColumn
+  Same as line-number column          highlight clear SignColumn
   User-defined (terminal Vim)         highlight SignColumn ctermbg={whatever}
   User-defined (graphical Vim)        highlight SignColumn guibg={whatever}
 
-SIGNS' COLOURS AND SYMBOLS
 
-To customise the colours, set up the following highlight groups in your
+                                           *g:gitgutter_terminal_reports_focus*
+Default: 1
+
+Normally the plugin uses |FocusGained| to force-update all buffers when Vim
+receives focus.  However some terminals do not report focus events and so the
+|FocusGained| autocommand never fires.
+
+If this applies to you, either install something like Terminus
+(https://github.com/wincent/terminus) to make |FocusGained| work or set this
+option to 0.
+
+When this option is 0, the plugin force-updates the buffer on |BufEnter|
+(instead of only updating if the buffer's contents has changed since the last
+update).
+
+                                                          *g:gitgutter_enabled*
+Default: 1
+
+Controls whether or not the plugin is on at startup.
+
+                                                         *g:gitgutter_map_keys*
+Default: 1
+
+Controls whether or not the plugin provides mappings.  See |gitgutter-mapppings|.
+
+                                                            *g:gitgutter_async*
+Default: 1
+
+Controls whether or not diffs are run in the background.  This has no effect if
+your Vim does not support background jobs.
+
+                                                              *g:gitgutter_log*
+Default: 0
+
+When switched on, the plugin logs to gitgutter.log in the directory where it is
+installed.  Additionally it logs channel activity to channel.log.
+
+
+===============================================================================
+HIGHLIGHTS                                               *gitgutter-highlights*
+
+To change the signs' colours, set up the following highlight groups in your
 colorscheme or |vimrc|:
-
 >
-  GitGutterAdd          " an added line
-  GitGutterChange       " a changed line
-  GitGutterDelete       " at least one removed line
-  GitGutterChangeDelete " a changed line followed by at least one removed line
+    GitGutterAdd          " an added line
+    GitGutterChange       " a changed line
+    GitGutterDelete       " at least one removed line
+    GitGutterChangeDelete " a changed line followed by at least one removed line
 <
 
 You can either set these with `highlight GitGutterAdd {key}={arg}...` or link
@@ -208,134 +426,94 @@ them to existing highlight groups with, say:
   highlight link GitGutterAdd DiffAdd
 <
 
-To customise the symbols, add the following to your |vimrc|:
->
-  let g:gitgutter_sign_added = 'xx'
-  let g:gitgutter_sign_modified = 'yy'
-  let g:gitgutter_sign_removed = 'zz'
-  let g:gitgutter_sign_modified_removed = 'ww'
-<
-
-LINE HIGHLIGHTS
-
-Similarly to the signs' colours, set up the following highlight groups in your
+To change the line highlights, set up the following highlight groups in your
 colorscheme or |vimrc|:
 >
-  GitGutterAddLine          " default: links to DiffAdd
-  GitGutterChangeLine       " default: links to DiffChange
-  GitGutterDeleteLine       " default: links to DiffDelete
-  GitGutterChangeDeleteLine " default: links to GitGutterChangeLineDefault
+    GitGutterAddLine          " default: links to DiffAdd
+    GitGutterChangeLine       " default: links to DiffChange
+    GitGutterDeleteLine       " default: links to DiffDelete
+    GitGutterChangeDeleteLine " default: links to GitGutterChangeLineDefault
 <
 
-THE BASE OF THE DIFF
-
-By default buffers are diffed against the index.  To diff against a commit
-instead:
->
-  let g:gitgutter_diff_base = '<commit SHA>'
-<
-
-EXTRA ARGUMENTS FOR GIT-DIFF
-
-To pass extra arguments to git-diff, add this to your |vimrc|:
->
-  let g:gitgutter_diff_args = '-w'
-<
-
-KEY MAPPINGS
-
-To disable all key maps:
->
-  let g:gitgutter_map_keys = 0
-<
-
-To change the hunk-jumping maps (defaults shown):
->
-  nmap [c <Plug>GitGutterPrevHunk
-  nmap ]c <Plug>GitGutterNextHunk
-<
-
-To change the hunk-staging/undoing/previewing maps (defaults shown):
->
-  nmap <Leader>hs <Plug>GitGutterStageHunk
-  nmap <Leader>hu <Plug>GitGutterUndoHunk
-  nmap <Leader>hp <Plug>GitGutterPreviewHunk
-<
-
-To change the hunk text object maps (defaults shown):
->
-  omap ic <Plug>GitGutterTextObjectInnerPending
-  omap ac <Plug>GitGutterTextObjectOuterPending
-  xmap ic <Plug>GitGutterTextObjectInnerVisual
-  xmap ac <Plug>GitGutterTextObjectOuterVisual
-<
-
-TO USE A CUSTOM GREP COMMAND
-
-To use a custom invocation for grep, use this:
->
-  let g:gitgutter_grep_command = 'grep'
-<
-
-TO TURN OFF VIM-GITGUTTER BY DEFAULT
-
-Add to your |vimrc|
->
-  let g:gitgutter_enabled = 0
-<
-
-TO TURN OFF SIGNS BY DEFAULT
-
-Add to your |vimrc|
->
-  let g:gitgutter_signs = 0
-<
-
-Note that the sign column will still be present if you have line highlighting
-switched on.
-
-TO TURN ON LINE HIGHLIGHTING BY DEFAULT
-
-Add to your |vimrc|
->
-  let g:gitgutter_highlight_lines = 1
-<
-
-TO STOP VIM-GITGUTTER RUNNING IN REALTIME
-
-Add to your |vimrc|
->
-  let g:gitgutter_realtime = 0
-<
-
-TO STOP VIM-GITGUTTER RUNNING EAGERLY
-
-Add to your |vimrc|
->
-  let g:gitgutter_eager = 0
-<
-
-TO TURN OFF ASYNCHRONOUS UPDATES
-
-By default diffs are run asynchronously.  To run diffs synchronously
-instead:
-
-Add to your |vimrc|
->
-let g:gitgutter_async = 0
-<
 
 ===============================================================================
-7. FAQ                                                           *GitGutterFAQ*
+FAQ                                                             *gitgutter-faq*
 
-a. Why are the colours in the sign column weird?
+a. How do I turn off realtime updates?
+
+  Add this to your vim configuration in an |after-directory|:
+>
+    autocmd! gitgutter CursorHold,CursorHoldI
+<
+b. Why can't I unstage staged changes?
+
+  This plugin is for showing changes between the working tree and the index
+  (and staging/undoing those changes). Unstaging a staged hunk would require
+  showing changes between the index and HEAD, which is out of scope.
+
+c. Why are the colours in the sign column weird?
 
   Your colorscheme is configuring the |hl-SignColumn| highlight group weirdly.
-  Please see |GitGutterCustomisation| on customising the sign column.
+  Please see |g:gitgutter_override_sign_column_highlight| on customising the
+  sign column.
 
-b. What happens if I also use another plugin which uses signs (e.g. Syntastic)?
+d. What happens if I also use another plugin which uses signs (e.g. Syntastic)?
 
-  Vim only allows one sign per line. Before adding a sign to a line,
-  vim-gitgutter checks whether a sign has already been added by somebody else.
-  If so it doesn't do anything. In other words vim-gitgutter won't overwrite
-  another plugin's signs. It also won't remove another plugin's signs.
+  Vim only allows one sign per line.  Vim-gitgutter will not interfere with
+  signs it did not add.
+
+
+===============================================================================
+TROUBLESHOOTING                                     *gitgutter-troubleshooting*
+
+When no signs are showing at all:~
+
+1. Try bypassing grep with:
+>
+    let g:gitgutter_grep = ''
+<
+  If it works, the problem is grep outputting ANSI escape codes.  Use this
+  option to pass arguments to grep to turn off the escape codes.
+
+2. Verify git is on your path:
+>
+    :echo system('git --version')
+<
+
+3. Verify your git config is compatible with the version of git return by the
+   command above.
+
+4. Verify your Vim supports signs.  The following should give 1:
+>
+    :echo has('signs')
+<
+
+5. Check whether the plugin thinks git knows about your file:
+>
+    :echo getbufvar('','gitgutter').path
+<
+  If the result is -2, the plugin thinks your file is not tracked by git.
+
+
+When the whole file is marked as added:~
+
+If you use zsh, and you set "CDPATH", make sure "CDPATH" does not include the
+current directory.
+
+
+When signs take a few seconds to appear:~
+
+Try reducing 'updatetime':
+>
+    set updatetime=100
+<
+
+
+When signs don't update after focusing Vim:~
+
+Your terminal probably isn't reporting focus events.  Either try installing
+Terminus (https://github.com/wincent/terminus) or set:
+>
+    let g:gitgutter_terminal_reports_focus = 0
+<
+

@@ -694,6 +694,16 @@ NERD tree. These options should be set in your vimrc.
 |'NERDTreeCreatePrefix'|        Specify a prefix to be used when creating the
                                 NERDTree window.
 
+|'NERDTreeRemoveFileCmd'|       Specify a custom shell command to be used when
+                                deleting files. Note that it should include
+                                one space character at the end of the command
+                                and it applies only to files.
+
+|'NERDTreeRemoveDirCmd'|        Specify a custom shell command to be used when
+                                deleting directories. Note that it should
+                                include one space character at the end of the
+                                command and it applies only to directories.
+
 ------------------------------------------------------------------------------
 3.2. Customisation details                             *NERDTreeOptionDetails*
 

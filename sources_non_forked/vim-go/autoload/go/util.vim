@@ -330,6 +330,7 @@ function! go#util#EchoWarning(msg)
   call s:echo(a:msg, 'WarningMsg')
 endfunction
 function! go#util#EchoProgress(msg)
+  redraw
   call s:echo(a:msg, 'Identifier')
 endfunction
 function! go#util#EchoInfo(msg)
@@ -362,7 +363,6 @@ function! go#util#archive()
     return expand("%:p:gs!\\!/!") . "\n" . strlen(l:buffer) . "\n" . l:buffer
 endfunction
 
-
 " Make a named temporary directory which starts with "prefix".
 "
 " Unfortunately Vim's tempname() is not portable enough across various systems;
@@ -384,7 +384,7 @@ function! go#util#tempdir(prefix) abort
   endfor
 
   if l:dir == ''
-    echoerr 'Unable to find directory to store temporary directory in'
+    call go#util#EchoError('Unable to find directory to store temporary directory in')
     return
   endif
 
@@ -393,6 +393,11 @@ function! go#util#tempdir(prefix) abort
   let l:tmp = printf("%s/%s%s", l:dir, a:prefix, l:rnd)
   call mkdir(l:tmp, 'p', 0700)
   return l:tmp
+endfunction
+
+" Report if the user enabled a debug flag in g:go_debug.
+function! go#util#HasDebug(flag)
+  return index(get(g:, 'go_debug', []), a:flag) >= 0
 endfunction
 
 " vim: sw=2 ts=2 et
