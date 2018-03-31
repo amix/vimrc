@@ -1,0 +1,66 @@
+===============================================================================
+ALE Less Integration                                         *ale-less-options*
+
+
+===============================================================================
+lessc                                                          *ale-less-lessc*
+
+g:ale_less_lessc_executable                       *g:ale_less_lessc_executable*
+                                                  *b:ale_less_lessc_executable*
+  Type: |String|
+  Default: `'lessc'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_less_lessc_options                             *g:ale_less_lessc_options*
+                                                     *b:ale_less_lessc_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to lessc.
+
+
+g:ale_less_lessc_use_global                       *g:ale_less_lessc_use_global*
+                                                  *b:ale_less_lessc_use_global*
+  Type: |String|
+  Default: `0`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+prettier                                                    *ale-less-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+
+
+===============================================================================
+stylelint                                                  *ale-less-stylelint*
+
+g:ale_less_stylelint_executable               *g:ale_less_stylelint_executable*
+                                              *b:ale_less_stylelint_executable*
+  Type: |String|
+  Default: `'stylelint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_less_stylelint_options                     *g:ale_less_stylelint_options*
+                                                 *b:ale_less_stylelint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to stylelint.
+
+
+g:ale_less_stylelint_use_global               *g:ale_less_stylelint_use_global*
+                                              *b:ale_less_stylelint_use_global*
+  Type: |String|
+  Default: `0`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -1,0 +1,66 @@
+===============================================================================
+ALE Haskell Integration                                   *ale-haskell-options*
+
+
+===============================================================================
+brittany                                                 *ale-haskell-brittany*
+
+g:ale_haskell_brittany_executable           *g:ale_haskell_brittany_executable*
+                                            *b:ale_haskell_brittany_executable*
+  Type: |String|
+  Default: `'brittany'`
+
+  This variable can be changed to use a different executable for brittany.
+
+===============================================================================
+ghc                                                           *ale-haskell-ghc*
+
+g:ale_haskell_ghc_options                           *g:ale_haskell_ghc_options*
+                                                    *b:ale_haskell_ghc_options*
+  Type: |String|
+  Default: `'-fno-code -v0'`
+
+  This variable can be changed to modify flags given to ghc.
+
+===============================================================================
+hdevtools                                               *ale-haskell-hdevtools*
+
+g:ale_haskell_hdevtools_executable         *g:ale_haskell_hdevtools_executable*
+                                           *b:ale_haskell_hdevtools_executable*
+  Type: |String|
+  Default: `'hdevtools'`
+
+  This variable can be changed to use a different executable for hdevtools.
+
+
+g:ale_haskell_hdevtools_options               *g:ale_haskell_hdevtools_options*
+                                              *b:ale_haskell_hdevtools_options*
+  Type: |String|
+  Default: `'-g -Wall'`
+
+  This variable can be changed to modify flags given to hdevtools.
+
+===============================================================================
+hfmt                                                         *ale-haskell-hfmt*
+
+g:ale_haskell_hfmt_executable                   *g:ale_haskell_hfmt_executable*
+                                                *b:ale_haskell_hfmt_executable*
+  Type: |String|
+  Default: `'hfmt'`
+
+  This variable can be changed to use a different executable for hfmt.
+
+===============================================================================
+stack-build                                           *ale-haskell-stack-build*
+
+g:ale_haskell_stack_build_options           *g:ale_haskell_stack_build_options*
+                                            *b:ale_haskell_stack_build_options*
+  Type: |String|
+  Default: `'--fast'`
+
+  We default to using `'--fast'`. Since Stack generates binaries, your
+  programs will be slower unless you separately rebuild them outside of ALE.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -1,0 +1,107 @@
+===============================================================================
+ALE Go Integration                                             *ale-go-options*
+
+
+===============================================================================
+Integration Information
+
+The `gometalinter` linter is disabled by default. ALE enables `gofmt`,
+`golint` and `go vet` by default. It also supports `staticcheck`, `go
+build` and `gosimple`.
+
+To enable `gometalinter`, update |g:ale_linters| as appropriate:
+>
+  " Enable all of the linters you want for Go.
+  let g:ale_linters = {'go': ['gometalinter', 'gofmt']}
+<
+A possible configuration is to enable `gometalinter` and `gofmt` but paired
+with the `--fast` option, set by |g:ale_go_gometalinter_options|. This gets you
+the benefit of running a number of linters, more than ALE would by default,
+while ensuring it doesn't run any linters known to be slow or resource
+intensive.
+
+
+===============================================================================
+gobuild                                                        *ale-go-gobuild*
+
+g:ale_go_gobuild_options                             *g:ale_go_gobuild_options*
+                                                     *b:ale_go_gobuild_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the gobuild linter.
+  They are injected directly after "go test".
+
+
+===============================================================================
+gofmt                                                            *ale-go-gofmt*
+
+g:ale_go_gofmt_options                                 *g:ale_go_gofmt_options*
+                                                       *b:ale_go_gofmt_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the gofmt fixer.
+
+
+===============================================================================
+gometalinter                                              *ale-go-gometalinter*
+
+`gometalinter` is a `lint_file` linter, which only lints files that are
+written to disk. This differs from the default behavior of linting the buffer.
+See: |ale-lint-file|
+
+g:ale_go_gometalinter_executable             *g:ale_go_gometalinter_executable*
+                                             *b:ale_go_gometalinter_executable*
+  Type: |String|
+  Default: `'gometalinter'`
+
+  The executable that will be run for gometalinter.
+
+
+g:ale_go_gometalinter_options                   *g:ale_go_gometalinter_options*
+                                                *b:ale_go_gometalinter_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to alter the command-line arguments to the
+  gometalinter invocation.
+
+  Since `gometalinter` runs a number of linters that can consume a lot of
+  resources it's recommended to set this option to a value of `--fast` if you
+  use `gometalinter` as one of the linters in |g:ale_linters|. This disables a
+  number of linters known to be slow or consume a lot of resources.
+
+
+g:ale_go_gometalinter_package                   *g:ale_go_gometalinter_package*
+                                                *b:ale_go_gometalinter_package*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, the whole Go package will be checked instead of only the
+  current file.
+
+
+===============================================================================
+staticcheck                                                *ale-go-staticcheck*
+
+g:ale_go_staticcheck_options                     *g:ale_go_staticcheck_options*
+                                                 *b:ale_go_staticcheck_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the staticcheck
+  linter.
+
+
+g:ale_go_staticcheck_package                     *g:ale_go_staticcheck_package*
+                                                 *b:ale_go_staticcheck_package*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, the whole Go package will be checked instead of only the
+  current file.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

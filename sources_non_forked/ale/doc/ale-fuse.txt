@@ -1,0 +1,25 @@
+===============================================================================
+ALE FusionScript Integration                                 *ale-fuse-options*
+
+
+===============================================================================
+fusion-lint                                               *ale-fuse-fusionlint*
+
+g:ale_fusion_fusionlint_executable           *g:ale_fuse_fusionlint_executable*
+                                             *b:ale_fuse_fusionlint_executable*
+  Type: |String|
+  Default: `'fusion-lint'`
+
+  This variable can be changed to change the path to fusion-lint.
+
+
+g:ale_fuse_fusionlint_options                   *g:ale_fuse_fusionlint_options*
+                                                *b:ale_fuse_fusionlint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to fusion-lint.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

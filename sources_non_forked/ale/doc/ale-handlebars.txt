@@ -1,0 +1,25 @@
+===============================================================================
+ALE Handlebars Integration                             *ale-handlebars-options*
+
+
+===============================================================================
+ember-template-lint                          *ale-handlebars-embertemplatelint*
+
+g:ale_handlebars_embertemplatelint_executable
+                                *g:ale_handlebars_embertemplatelint_executable*
+  Type: |String|                  *b:ale_handlebars_embertemplatelint_executable*
+  Default: `'ember-template-lint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_handlebars_embertemplatelint_use_global
+                                *g:ale_handlebars_embertemplatelint_use_global*
+  Type: |Number|                  *b:ale_handlebars_embertemplatelint_use_global*
+  Default: `0`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -1,0 +1,43 @@
+===============================================================================
+ALE Verilog/SystemVerilog Integration                     *ale-verilog-options*
+
+
+===============================================================================
+ALE can use two different linters for Verilog HDL:
+
+  iverilog:
+    Using `iverilog -t null -Wall`
+
+  verilator
+    Using `verilator --lint-only -Wall`
+
+By default, both 'verilog' and 'systemverilog' filetypes are checked.
+
+You can limit 'systemverilog' files to be checked using only 'verilator' by
+defining 'g:ale_linters' variable:
+>
+    au FileType systemverilog
+    \ let g:ale_linters = {'systemverilog' : ['verilator'],}
+<
+
+===============================================================================
+iverilog                                                 *ale-verilog-iverilog*
+
+  No additional options
+
+
+===============================================================================
+verilator                                               *ale-verilog-verilator*
+
+g:ale_verilog_verilator_options               *g:ale_verilog_verilator_options*
+                                              *b:ale_verilog_verilator_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify 'verilator' command arguments
+
+  For example `'-sv --default-language "1800-2012"'` if you want to enable
+  SystemVerilog parsing and select the 2012 version of the language.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

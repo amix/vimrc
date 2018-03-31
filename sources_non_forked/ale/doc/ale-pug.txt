@@ -1,0 +1,44 @@
+===============================================================================
+ALE Pug Integration                                           *ale-pug-options*
+
+
+===============================================================================
+puglint                                                       *ale-pug-puglint*
+
+The puglint linter will detect configuration files based on the path to the
+filename automatically. Configuration files will be loaded in this order:
+
+1. `.pug-lintrc`
+2. `.pug-lintrc.js`
+3. `.pug-lintrc.json`
+4. `package.json`
+
+You might need to create a configuration file for your project to get
+meaningful results.
+
+g:ale_pug_puglint_executable                     *g:ale_pug_puglint_executable*
+                                                 *b:ale_pug_puglint_executable*
+  Type: |String|
+  Default: `'pug-lint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_pug_puglint_options                           *g:ale_pug_puglint_options*
+                                                    *b:ale_pug_puglint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to pug-lint.
+
+
+g:ale_pug_puglint_use_global                     *g:ale_pug_puglint_use_global*
+                                                 *b:ale_pug_puglint_use_global*
+  Type: |Number|
+  Default: `0`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

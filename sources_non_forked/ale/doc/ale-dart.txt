@@ -1,0 +1,38 @@
+===============================================================================
+ALE Dart Integration                                         *ale-dart-options*
+
+
+===============================================================================
+dartanalyzer                                            *ale-dart-dartanalyzer*
+
+Installation
+-------------------------------------------------------------------------------
+
+Install Dart via whatever means. `dartanalyzer` will be included in the SDK.
+
+You can add the SDK to `$PATH`, as described here:
+https://www.dartlang.org/tools/sdk
+
+If you have installed Dart on Linux, you can also try the following: >
+  " Set the executable path for dartanalyzer to the absolute path to it.
+  let g:ale_dart_dartanalyzer_executable = '/usr/lib/dart/bin/dartanalyzer'
+<
+... or similarly for wherever your Dart SDK lives. This should work without
+having to modify `$PATH`.
+
+ALE can only check for problems with `dartanalyzer` with the file on disk.
+See |ale-lint-file-linters|
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_dart_dartanalyzer_executable         *g:ale_dart_dartanalyzer_executable*
+                                           *b:ale_dart_dartanalyzer_executable*
+  Type: |String|
+  Default: `'dartanalyzer'`
+
+  This variable can be set to change the path to dartanalyzer.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

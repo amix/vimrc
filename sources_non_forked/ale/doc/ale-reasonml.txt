@@ -1,0 +1,54 @@
+===============================================================================
+ALE ReasonML Integration                                 *ale-reasonml-options*
+
+
+===============================================================================
+merlin                                                    *ale-reasonml-merlin*
+
+  To use merlin linter for ReasonML source code you need to make sure Merlin
+  for Vim is correctly configured. See the corresponding Merlin wiki page for
+  detailed instructions
+  (https://github.com/the-lambda-church/merlin/wiki/vim-from-scratch).
+
+===============================================================================
+ols                                                          *ale-reasonml-ols*
+
+  The `ocaml-language-server` is the engine that powers OCaml and ReasonML
+  editor support using the Language Server Protocol. See the installation
+  instructions:
+  https://github.com/freebroccolo/ocaml-language-server#installation
+
+g:ale_reason_ols_executable                       *g:ale_reason_ols_executable*
+                                                  *b:ale_reason_ols_executable*
+  Type: |String|
+  Default: `'ocaml-language-server'`
+
+  This variable can be set to change the executable path for `ols`.
+
+g:ale_reason_ols_use_global                       *g:ale_reason_ols_use_global*
+                                                  *b:ale_reason_ols_use_global*
+  Type: |String|
+  Default: `0`
+
+  This variable can be set to `1` to always use the globally installed
+  executable. See also |ale-integrations-local-executables|.
+
+===============================================================================
+refmt                                                      *ale-reasonml-refmt*
+
+g:ale_reasonml_refmt_executable               *g:ale_reasonml_refmt_executable*
+                                              *b:ale_reasonml_refmt_executable*
+  Type: |String|
+  Default: `'refmt'`
+
+  This variable can be set to pass the path of the refmt fixer.
+
+g:ale_reasonml_refmt_options                     *g:ale_reasonml_refmt_options*
+                                                 *b:ale_reasonml_refmt_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the refmt fixer.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

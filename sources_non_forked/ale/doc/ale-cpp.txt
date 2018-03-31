@@ -1,0 +1,206 @@
+===============================================================================
+ALE C++ Integration                                           *ale-cpp-options*
+
+
+===============================================================================
+Global Options
+
+The following C options also apply to some C++ linters too.
+
+* |g:ale_c_build_dir_names|
+* |g:ale_c_build_dir|
+* |g:ale_c_parse_makefile|
+
+
+===============================================================================
+clang                                                           *ale-cpp-clang*
+
+g:ale_cpp_clang_executable                         *g:ale_cpp_clang_executable*
+                                                   *b:ale_cpp_clang_executable*
+  Type: |String|
+  Default: `'clang++'`
+
+  This variable can be changed to use a different executable for clang.
+
+
+g:ale_cpp_clang_options                               *g:ale_cpp_clang_options*
+                                                      *b:ale_cpp_clang_options*
+  Type: |String|
+  Default: `'-std=c++14 -Wall'`
+
+  This variable can be changed to modify flags given to clang.
+
+
+===============================================================================
+clangcheck                                                 *ale-cpp-clangcheck*
+
+`clang-check` will be run only when files are saved to disk, so that
+`compile_commands.json` files can be used. It is recommended to use this
+linter in combination with `compile_commands.json` files.
+Therefore, `clang-check` linter reads the options |g:ale_c_build_dir| and
+|g:ale_c_build_dir_names|. Also, setting |g:ale_c_build_dir| actually
+overrides |g:ale_c_build_dir_names|.
+
+
+g:ale_cpp_clangcheck_executable               *g:ale_cpp_clangcheck_executable*
+                                              *b:ale_cpp_clangcheck_executable*
+  Type: |String|
+  Default: `'clang-check'`
+
+  This variable can be changed to use a different executable for clangcheck.
+
+
+g:ale_cpp_clangcheck_options                     *g:ale_cpp_clangcheck_options*
+                                                 *b:ale_cpp_clangcheck_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to clang-check.
+
+  This variable should not be set to point to build subdirectory with
+  `-p path/to/build` option, as it is handled by the |g:ale_c_build_dir|
+  option.
+
+
+===============================================================================
+clang-format                                              *ale-cpp-clangformat*
+
+See |ale-c-clangformat| for information about the available options.
+Note that the C options are also used for C++.
+
+
+===============================================================================
+clangtidy                                                   *ale-cpp-clangtidy*
+
+`clang-tidy` will be run only when files are saved to disk, so that
+`compile_commands.json` files can be used. It is recommended to use this
+linter in combination with `compile_commands.json` files.
+Therefore, `clang-tidy` linter reads the options |g:ale_c_build_dir| and
+|g:ale_c_build_dir_names|. Also, setting |g:ale_c_build_dir| actually
+overrides |g:ale_c_build_dir_names|.
+
+
+g:ale_cpp_clangtidy_checks                         *g:ale_cpp_clangtidy_checks*
+                                                   *b:ale_cpp_clangtidy_checks*
+  Type: |List|
+  Default: `['*']`
+
+  The checks to enable for clang-tidy with the `-checks` argument.
+
+  All options will be joined with commas, and escaped appropriately for
+  the shell. The `-checks` flag can be removed entirely by setting this
+  option to an empty List.
+
+
+g:ale_cpp_clangtidy_executable                 *g:ale_cpp_clangtidy_executable*
+                                               *b:ale_cpp_clangtidy_executable*
+  Type: |String|
+  Default: `'clang-tidy'`
+
+  This variable can be changed to use a different executable for clangtidy.
+
+
+g:ale_cpp_clangtidy_options                       *g:ale_cpp_clangtidy_options*
+                                                  *b:ale_cpp_clangtidy_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to clang-tidy.
+
+  - Setting this variable to a non-empty string,
+  - and working in a buffer where no compilation database is found using
+    |g:ale_c_build_dir_names| or |g:ale_c_build_dir|,
+  will cause the `--` argument to be passed to `clang-tidy`, which will mean
+  that detection of `compile_commands.json` files for compile command
+  databases will be disabled.
+  Only set this option if you want to control compiler flags
+  entirely manually, and no `compile_commands.json` file is in one
+  of the |g:ale_c_build_dir_names| directories of the project tree.
+
+
+===============================================================================
+cppcheck                                                     *ale-cpp-cppcheck*
+
+g:ale_cpp_cppcheck_executable                   *g:ale_cpp_cppcheck_executable*
+                                                *b:ale_cpp_cppcheck_executable*
+  Type: |String|
+  Default: `'cppcheck'`
+
+  This variable can be changed to use a different executable for cppcheck.
+
+
+g:ale_cpp_cppcheck_options                         *g:ale_cpp_cppcheck_options*
+                                                   *b:ale_cpp_cppcheck_options*
+  Type: |String|
+  Default: `'--enable=style'`
+
+  This variable can be changed to modify flags given to cppcheck.
+
+
+===============================================================================
+cpplint                                                       *ale-cpp-cpplint*
+
+g:ale_cpp_cpplint_executable                     *g:ale_cpp_cpplint_executable*
+                                                 *b:ale_cpp_cpplint_executable*
+  Type: |String|
+  Default: `'cpplint'`
+
+  This variable can be changed to use a different executable for cpplint.
+
+
+g:ale_cpp_cpplint_options                           *g:ale_cpp_cpplint_options*
+                                                    *b:ale_cpp_cpplint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to cpplint.
+
+
+===============================================================================
+flawfinder                                                 *ale-cpp-flawfinder*
+
+g:ale_cpp_flawfinder_executable               *g:ale_cpp_flawfinder_executable*
+                                              *b:ale_cpp_flawfinder_executable*
+  Type: |String|
+  Default: `'flawfinder'`
+
+  This variable can be changed to use a different executable for flawfinder.
+
+
+g:ale_cpp_flawfinder_minlevel                   *g:ale_cpp_flawfinder_minlevel*
+                                                *b:ale_cpp_flawfinder_minlevel*
+  Type: |Number|
+  Default: `1`
+
+  This variable can be changed to ignore risks under the given risk threshold.
+
+
+g:ale_cpp_flawfinder_options                             *g:ale-cpp-flawfinder*
+                                                         *b:ale-cpp-flawfinder*
+  Type: |String|
+  Default: `''`
+
+  This variable can be used to pass extra options into the flawfinder command.
+
+
+===============================================================================
+gcc                                                               *ale-cpp-gcc*
+
+g:ale_cpp_gcc_executable                             *g:ale_cpp_gcc_executable*
+                                                     *b:ale_cpp_gcc_executable*
+  Type: |String|
+  Default: `'gcc'`
+
+  This variable can be changed to use a different executable for gcc.
+
+
+g:ale_cpp_gcc_options                                   *g:ale_cpp_gcc_options*
+                                                        *b:ale_cpp_gcc_options*
+  Type: |String|
+  Default: `'-std=c++14 -Wall'`
+
+  This variable can be changed to modify flags given to gcc.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

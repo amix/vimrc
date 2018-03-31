@@ -1,0 +1,37 @@
+===============================================================================
+ALE OCaml Integration                                       *ale-ocaml-options*
+
+
+===============================================================================
+merlin                                                       *ale-ocaml-merlin*
+
+  To use merlin linter for OCaml source code you need to make sure Merlin for
+  Vim is correctly configured. See the corresponding Merlin wiki page for
+  detailed instructions
+  (https://github.com/the-lambda-church/merlin/wiki/vim-from-scratch).
+
+===============================================================================
+ols                                                             *ale-ocaml-ols*
+
+  The `ocaml-language-server` is the engine that powers OCaml and ReasonML
+  editor support using the Language Server Protocol. See the installation
+  instructions:
+  https://github.com/freebroccolo/ocaml-language-server#installation
+
+g:ale_ocaml_ols_executable                         *g:ale_ocaml_ols_executable*
+                                                   *b:ale_ocaml_ols_executable*
+  Type: |String|
+  Default: `'ocaml-language-server'`
+
+  This variable can be set to change the executable path for `ols`.
+
+g:ale_ocaml_ols_use_global                         *g:ale_ocaml_ols_use_global*
+                                                   *b:ale_ocaml_ols_use_global*
+  Type: |String|
+  Default: `0`
+
+  This variable can be set to `1` to always use the globally installed
+  executable. See also |ale-integrations-local-executables|.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

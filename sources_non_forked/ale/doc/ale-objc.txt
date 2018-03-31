@@ -1,0 +1,17 @@
+===============================================================================
+ALE Objective-C Integration                                  *ale-objc-options*
+
+
+===============================================================================
+clang                                                          *ale-objc-clang*
+
+g:ale_objc_clang_options                             *g:ale_objc_clang_options*
+                                                     *b:ale_objc_clang_options*
+  Type: |String|
+  Default: `'-std=c11 -Wall'`
+
+  This variable can be changed to modify flags given to clang.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

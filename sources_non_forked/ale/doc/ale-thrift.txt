@@ -1,0 +1,46 @@
+===============================================================================
+ALE Thrift Integration                                     *ale-thrift-options*
+
+
+===============================================================================
+thrift                                                      *ale-thrift-thrift*
+
+The `thrift` linter works by compiling the buffer's contents and reporting any
+errors reported by the parser and the configured code generator(s).
+
+g:ale_thrift_thrift_executable                 *g:ale_thrift_thrift_executable*
+                                               *b:ale_thrift_thrift_executable*
+  Type: |String|
+  Default: `'thrift'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_thrift_thrift_generators                 *g:ale_thrift_thrift_generators*
+                                               *b:ale_thrift_thrift_generators*
+  Type: |List| of |String|s
+  Default: `['cpp']`
+
+  This list must contain one or more named code generators. Generator options
+  can be included as part of each string, e.g. `['py:dynamic']`.
+
+
+g:ale_thrift_thrift_includes                     *g:ale_thrift_thrift_includes*
+                                                 *b:ale_thrift_thrift_includes*
+  Type: |List| of |String|s
+  Default: `[]`
+
+  This list contains paths that will be searched for thrift `include`
+  directives.
+
+
+g:ale_thrift_thrift_options                       *g:ale_thrift_thrift_options*
+                                                  *b:ale_thrift_thrift_options*
+  Type: |String|
+  Default: `'-strict'`
+
+  This variable can be changed to customize the additional command-line
+  arguments that are passed to the thrift compiler.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
