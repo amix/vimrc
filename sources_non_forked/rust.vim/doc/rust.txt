@@ -1,7 +1,7 @@
-*rust.txt*      Filetype plugin for Rust
+*ft_rust.txt*      Filetype plugin for Rust
 
 ==============================================================================
-CONTENTS                                                      *rust* *ft-rust*
+CONTENTS                                                      *rust*
 
 1. Introduction                                                   |rust-intro|
 2. Settings                                                    |rust-settings|
@@ -88,11 +88,49 @@ g:ftplugin_rust_source_path~
 	    let g:ftplugin_rust_source_path = $HOME.'/dev/rust'
 <
 
-                                                       *g:cargo_manifest_name*
-g:cargo_manifest_name~
-	Set this option to the name of the manifest file for your projects. If
-	not specified it defaults to 'Cargo.toml' : >
-	    let g:cargo_manifest_name = 'Cargo.toml'
+                                                       *g:rustfmt_command*
+g:rustfmt_command~
+	Set this option to the name of the 'rustfmt' executable in your $PATH. If
+	not specified it defaults to 'rustfmt' : >
+	    let g:rustfmt_command = 'rustfmt'
+<
+                                                       *g:rustfmt_autosave*
+g:rustfmt_autosave~
+	Set this option to 1 to run |:RustFmt| automatically when saving a
+	buffer. If not specified it defaults to 0 : >
+	    let g:rustfmt_autosave = 0
+<
+                                                       *g:rustfmt_fail_silently*
+g:rustfmt_fail_silently~
+	Set this option to 1 to prevent 'rustfmt' from populating the
+	|location-list| with errors. If not specified it defaults to 0: >
+	    let g:rustfmt_fail_silently = 0
+<
+                                                       *g:rustfmt_options*
+g:rustfmt_options~
+	Set this option to a string of options to pass to 'rustfmt'. The
+	write-mode is already set to 'overwrite'. If not specified it
+	defaults to '' : >
+	    let g:rustfmt_options = ''
+<
+
+                                                          *g:rust_playpen_url*
+g:rust_playpen_url~
+	Set this option to override the url for the playpen to use: >
+	    let g:rust_playpen_url = 'https://play.rust-lang.org/'
+<
+
+                                                        *g:rust_shortener_url*
+g:rust_shortener_url~
+	Set this option to override the url for the url shortener: >
+	    let g:rust_shortener_url = 'https://is.gd/'
+<
+
+                                                        *g:rust_clip_command*
+g:rust_clip_command~
+	Set this option to the command used in your OS to copy the Rust Play
+	url to the clipboard: >
+	    let g:rust_clip_command = 'xclip -selection clipboard'
 <
 
 ==============================================================================
@@ -156,6 +194,36 @@ COMMANDS                                                       *rust-commands*
 
 		If |g:rustc_path| is defined, it is used as the path to rustc.
 		Otherwise it is assumed rustc can be found in $PATH.
+
+:RustPlay                                                          *:RustPlay*
+		This command will only work if you have web-api.vim installed
+		(available at https://github.com/mattn/webapi-vim).  It sends the
+		current selection, or if nothing is selected, the entirety of the
+		current buffer to the Rust playpen, and emits a message with the
+		shortened URL to the playpen.
+
+		|g:rust_playpen_url| is the base URL to the playpen, by default
+		"https://play.rust-lang.org/".
+
+		|g:rust_shortener_url| is the base url for the shorterner, by
+		default "https://is.gd/"
+
+		|g:rust_clip_command| is the command to run to copy the
+		playpen url to the clipboard of your system.
+
+:RustFmt                                                       *:RustFmt*
+		Runs |g:rustfmt_command| on the current buffer. If
+		|g:rustfmt_options| is set then those will be passed to the
+		executable.
+
+		If |g:rustfmt_fail_silently| is 0 (the default) then it
+		will populate the |location-list| with the errors from
+		|g:rustfmt_command|. If |g:rustfmt_fail_silently| is set to 1
+		then it will not populate the |location-list|.
+
+:RustFmtRange                                                  *:RustFmtRange*
+		Runs |g:rustfmt_command| with selected range. See
+		|:RustFmt| for any other information.
 
 ==============================================================================
 MAPPINGS                                                       *rust-mappings*

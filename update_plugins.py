@@ -53,6 +53,7 @@ vim-pug https://github.com/digitaltoad/vim-pug
 lightline.vim https://github.com/itchyny/lightline.vim
 vim-abolish https://github.com/tpope/tpope-vim-abolish
 mru.vim https://github.com/vim-scripts/mru.vim
+rust.vim https://github.com/rust-lang/rust.vim
 vim-markdown https://github.com/plasticboy/vim-markdown
 """.strip()
 
