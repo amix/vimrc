@@ -62,9 +62,7 @@ If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: 
 
 Just do a git rebase!
 
-    cd ~/.vim_runtime
-    git pull --rebase
-
+    git -C ~/.vim_runtime pull --rebase
 
 ## Some screenshots
 
