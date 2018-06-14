@@ -13,24 +13,8 @@ function! ale#definition#SetMap(map) abort
     let s:go_to_definition_map = a:map
 endfunction
 
-" This function is used so we can check the execution of commands without
-" running them.
-function! ale#definition#Execute(expr) abort
-    execute a:expr
-endfunction
-
 function! ale#definition#ClearLSPData() abort
     let s:go_to_definition_map = {}
-endfunction
-
-function! ale#definition#Open(options, filename, line, column) abort
-    if a:options.open_in_tab
-        call ale#definition#Execute('tabedit ' . fnameescape(a:filename))
-    else
-        call ale#definition#Execute('edit ' . fnameescape(a:filename))
-    endif
-
-    call cursor(a:line, a:column)
 endfunction
 
 function! ale#definition#HandleTSServerResponse(conn_id, response) abort
@@ -38,12 +22,12 @@ function! ale#definition#HandleTSServerResponse(conn_id, response) abort
     \&& has_key(s:go_to_definition_map, a:response.request_seq)
         let l:options = remove(s:go_to_definition_map, a:response.request_seq)
 
-        if get(a:response, 'success', v:false) is v:true
+        if get(a:response, 'success', v:false) is v:true && !empty(a:response.body)
             let l:filename = a:response.body[0].file
             let l:line = a:response.body[0].start.line
             let l:column = a:response.body[0].start.offset
 
-            call ale#definition#Open(l:options, l:filename, l:line, l:column)
+            call ale#util#Open(l:filename, l:line, l:column, l:options)
         endif
     endif
 endfunction
@@ -67,7 +51,7 @@ function! ale#definition#HandleLSPResponse(conn_id, response) abort
             let l:line = l:item.range.start.line + 1
             let l:column = l:item.range.start.character
 
-            call ale#definition#Open(l:options, l:filename, l:line, l:column)
+            call ale#util#Open(l:filename, l:line, l:column, l:options)
             break
         endfor
     endif

@@ -445,19 +445,29 @@ a. How do I turn off realtime updates?
 >
     autocmd! gitgutter CursorHold,CursorHoldI
 <
-b. Why can't I unstage staged changes?
+
+b. I turned off realtime updates, how can I have signs updated when I save a
+   file?
+
+  If you really want to update the signs when you save a file, add this to your
+  |vimrc|:
+>
+    autocmd BufWritePost * GitGutter
+<
+
+c. Why can't I unstage staged changes?
 
   This plugin is for showing changes between the working tree and the index
   (and staging/undoing those changes). Unstaging a staged hunk would require
   showing changes between the index and HEAD, which is out of scope.
 
-c. Why are the colours in the sign column weird?
+d. Why are the colours in the sign column weird?
 
   Your colorscheme is configuring the |hl-SignColumn| highlight group weirdly.
   Please see |g:gitgutter_override_sign_column_highlight| on customising the
   sign column.
 
-d. What happens if I also use another plugin which uses signs (e.g. Syntastic)?
+e. What happens if I also use another plugin which uses signs (e.g. Syntastic)?
 
   Vim only allows one sign per line.  Vim-gitgutter will not interfere with
   signs it did not add.

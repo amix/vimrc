@@ -62,8 +62,8 @@ function! go#package#ImportPath() abort
     return s:import_paths[dir]
   endif
 
-  let out = go#tool#ExecuteInDir("go list")
-  if go#util#ShellError() != 0
+  let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list'])
+  if l:err != 0
     return -1
   endif
 
@@ -107,10 +107,11 @@ function! go#package#FromPath(arg) abort
 endfunction
 
 function! go#package#CompleteMembers(package, member) abort
-  silent! let content = go#util#System('godoc ' . a:package)
-  if go#util#ShellError() || !len(content)
+  let [l:content, l:err] = go#util#Exec(['godoc', a:package])
+  if l:err || !len(content)
     return []
   endif
+
   let lines = filter(split(content, "\n"),"v:val !~ '^\\s\\+$'")
   try
     let mx1 = '^\s\+\(\S+\)\s\+=\s\+.*'

@@ -25,7 +25,7 @@ case "$vim" in
     # This follows the version in Arch Linux. Vim's master branch isn't always
     # stable, and we don't want to have the build fail because Vim introduced a
     # bug.
-    tag="v8.0.1176"
+    tag="v8.0.1542"
     giturl="https://github.com/vim/vim"
     ;;
 

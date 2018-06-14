@@ -1,17 +1,5 @@
 scriptencoding utf-8
 
-if !exists('g:go_debug_windows')
-  let g:go_debug_windows = {
-        \ 'stack': 'leftabove 20vnew',
-        \ 'out':   'botright 10new',
-        \ 'vars':  'leftabove 30vnew',
-        \ }
-endif
-
-if !exists('g:go_debug_address')
-  let g:go_debug_address = '127.0.0.1:8181'
-endif
-
 if !exists('s:state')
   let s:state = {
       \ 'rpcid': 1,
@@ -25,7 +13,7 @@ if !exists('s:state')
       \}
 
   if go#util#HasDebug('debugger-state')
-    let g:go_debug_diag = s:state
+     call go#config#SetDebugDiag(s:state)
   endif
 endif
 
@@ -71,9 +59,6 @@ endfunction
 
 function! s:call_jsonrpc(method, ...) abort
   if go#util#HasDebug('debugger-commands')
-    if !exists('g:go_debug_commands')
-      let g:go_debug_commands = []
-    endif
     echom 'sending to dlv ' . a:method
   endif
 
@@ -274,6 +259,11 @@ function! go#debug#Stop() abort
 
   set noballooneval
   set balloonexpr=
+
+  augroup vim-go-debug
+    autocmd!
+  augroup END
+  augroup! vim-go-debug
 endfunction
 
 function! s:goto_file() abort
@@ -416,8 +406,9 @@ function! s:start_cb(ch, json) abort
     return
   endif
 
-  if exists('g:go_debug_windows["stack"]') && g:go_debug_windows['stack'] != ''
-    exe 'silent ' . g:go_debug_windows['stack']
+  let debugwindows = go#config#DebugWindows()
+  if has_key(debugwindows, "stack") && debugwindows['stack'] != ''
+    exe 'silent ' . debugwindows['stack']
     silent file `='__GODEBUG_STACKTRACE__'`
     setlocal buftype=nofile bufhidden=wipe nomodified nobuflisted noswapfile nowrap nonumber nocursorline
     setlocal filetype=godebugstacktrace
@@ -425,16 +416,16 @@ function! s:start_cb(ch, json) abort
     nmap <buffer> q <Plug>(go-debug-stop)
   endif
 
-  if exists('g:go_debug_windows["out"]') && g:go_debug_windows['out'] != ''
-    exe 'silent ' . g:go_debug_windows['out']
+  if has_key(debugwindows, "out") && debugwindows['out'] != ''
+    exe 'silent ' . debugwindows['out']
     silent file `='__GODEBUG_OUTPUT__'`
     setlocal buftype=nofile bufhidden=wipe nomodified nobuflisted noswapfile nowrap nonumber nocursorline
     setlocal filetype=godebugoutput
     nmap <buffer> q <Plug>(go-debug-stop)
   endif
 
-  if exists('g:go_debug_windows["vars"]') && g:go_debug_windows['vars'] != ''
-    exe 'silent ' . g:go_debug_windows['vars']
+  if has_key(debugwindows, "vars") && debugwindows['vars'] != ''
+    exe 'silent ' . debugwindows['vars']
     silent file `='__GODEBUG_VARIABLES__'`
     setlocal buftype=nofile bufhidden=wipe nomodified nobuflisted noswapfile nowrap nonumber nocursorline
     setlocal filetype=godebugvariables
@@ -462,16 +453,20 @@ function! s:start_cb(ch, json) abort
   nnoremap <silent> <Plug>(go-debug-stop)       :<C-u>call go#debug#Stop()<CR>
   nnoremap <silent> <Plug>(go-debug-print)      :<C-u>call go#debug#Print(expand('<cword>'))<CR>
 
-  nmap <F5>   <Plug>(go-debug-continue)
-  nmap <F6>   <Plug>(go-debug-print)
-  nmap <F9>   <Plug>(go-debug-breakpoint)
-  nmap <F10>  <Plug>(go-debug-next)
-  nmap <F11>  <Plug>(go-debug-step)
-
   set balloonexpr=go#debug#BalloonExpr()
   set ballooneval
 
   exe bufwinnr(oldbuf) 'wincmd w'
+
+  augroup vim-go-debug
+    autocmd!
+    autocmd FileType go nmap <buffer> <F5>   <Plug>(go-debug-continue)
+    autocmd FileType go nmap <buffer> <F6>   <Plug>(go-debug-print)
+    autocmd FileType go nmap <buffer> <F9>   <Plug>(go-debug-breakpoint)
+    autocmd FileType go nmap <buffer> <F10>  <Plug>(go-debug-next)
+    autocmd FileType go nmap <buffer> <F11>  <Plug>(go-debug-step)
+  augroup END
+  doautocmd vim-go-debug FileType go
 endfunction
 
 function! s:err_cb(ch, msg) abort
@@ -484,7 +479,7 @@ function! s:out_cb(ch, msg) abort
   let s:state['message'] += [a:msg]
 
   " TODO: why do this in this callback?
-  if stridx(a:msg, g:go_debug_address) != -1
+  if stridx(a:msg, go#config#DebugAddress()) != -1
     call ch_setoptions(a:ch, {
       \ 'out_cb': function('s:logger', ['OUT: ']),
       \ 'err_cb': function('s:logger', ['ERR: ']),
@@ -504,6 +499,8 @@ endfunction
 " Start the debug mode. The first argument is the package name to compile and
 " debug, anything else will be passed to the running program.
 function! go#debug#Start(is_test, ...) abort
+  call go#cmd#autowrite()
+
   if has('nvim')
     call go#util#EchoError('This feature only works in Vim for now; Neovim is not (yet) supported. Sorry :-(')
     return
@@ -521,7 +518,7 @@ function! go#debug#Start(is_test, ...) abort
   let s:start_args = a:000
 
   if go#util#HasDebug('debugger-state')
-    let g:go_debug_diag = s:state
+    call go#config#SetDebugDiag(s:state)
   endif
 
   " cd in to test directory; this is also what running "go test" does.
@@ -555,15 +552,18 @@ function! go#debug#Start(is_test, ...) abort
     let l:cmd = [
           \ dlv,
           \ (a:is_test ? 'test' : 'debug'),
+          \ l:pkgname,
           \ '--output', tempname(),
           \ '--headless',
           \ '--api-version', '2',
-          \ '--log',
-          \ '--listen', g:go_debug_address,
+          \ '--log', 'debugger',
+          \ '--listen', go#config#DebugAddress(),
           \ '--accept-multiclient',
     \]
-    if get(g:, 'go_build_tags', '') isnot ''
-      let l:cmd += ['--build-flags', '--tags=' . g:go_build_tags]
+
+    let buildtags = go#config#BuildTags()
+    if buildtags isnot ''
+      let l:cmd += ['--build-flags', '--tags=' . buildtags]
     endif
     let l:cmd += l:args
 
@@ -800,6 +800,8 @@ function! go#debug#Stack(name) abort
 endfunction
 
 function! go#debug#Restart() abort
+  call go#cmd#autowrite()
+
   try
     call job_stop(s:state['job'])
     while has_key(s:state, 'job') && job_status(s:state['job']) is# 'run'
@@ -890,15 +892,5 @@ endfunction
 
 sign define godebugbreakpoint text=> texthl=GoDebugBreakpoint
 sign define godebugcurline text== linehl=GoDebugCurrent texthl=GoDebugCurrent
-
-fun! s:hi()
-  hi GoDebugBreakpoint term=standout ctermbg=117 ctermfg=0 guibg=#BAD4F5  guifg=Black
-  hi GoDebugCurrent    term=reverse  ctermbg=12  ctermfg=7 guibg=DarkBlue guifg=White
-endfun
-augroup vim-go-breakpoint
-  autocmd!
-  autocmd ColorScheme * call s:hi()
-augroup end
-call s:hi()
 
 " vim: sw=2 ts=2 et

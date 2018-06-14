@@ -4,6 +4,7 @@ command! -nargs=? -complete=customlist,go#rename#Complete GoRename call go#renam
 " -- guru
 command! -nargs=* -complete=customlist,go#package#Complete GoGuruScope call go#guru#Scope(<f-args>)
 command! -range=% GoImplements call go#guru#Implements(<count>)
+command! -range=% GoPointsTo call go#guru#PointsTo(<count>)
 command! -range=% GoWhicherrs call go#guru#Whicherrs(<count>)
 command! -range=% GoCallees call go#guru#Callees(<count>)
 command! -range=% GoDescribe call go#guru#Describe(<count>)
@@ -104,5 +105,8 @@ if !exists(':GoDebugStart')
   command! -nargs=* -complete=customlist,go#package#Complete GoDebugTest  call go#debug#Start(1, <f-args>)
   command! -nargs=? GoDebugBreakpoint call go#debug#Breakpoint(<f-args>)
 endif
+
+" -- issue
+command! -nargs=0 GoReportGitHubIssue call go#issue#New()
 
 " vim: sw=2 ts=2 et

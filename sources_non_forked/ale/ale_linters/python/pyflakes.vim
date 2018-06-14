@@ -2,7 +2,7 @@
 " Description: pyflakes for python files
 
 call ale#Set('python_pyflakes_executable', 'pyflakes')
-call ale#Set('python_pyflakes_use_global', 0)
+call ale#Set('python_pyflakes_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#python#pyflakes#GetExecutable(buffer) abort
     return ale#python#FindExecutable(a:buffer, 'python_pyflakes', ['pyflakes'])
@@ -11,7 +11,13 @@ endfunction
 function! ale_linters#python#pyflakes#GetCommand(buffer) abort
     let l:executable = ale_linters#python#pyflakes#GetExecutable(a:buffer)
 
-    return ale#Escape(l:executable) . ' %t'
+    let l:exec_args = l:executable =~? 'pipenv$'
+    \   ? ' run pyflakes'
+    \   : ''
+
+    return ale#Escape(l:executable)
+    \   . l:exec_args
+    \   . ' %t'
 endfunction
 
 function! ale_linters#python#pyflakes#Handle(buffer, lines) abort

@@ -10,6 +10,8 @@ runtime! syntax/gotexttmpl.vim
 runtime! syntax/html.vim
 unlet b:current_syntax
 
+syn cluster htmlPreproc add=gotplAction,goTplComment
+
 let b:current_syntax = "gohtmltmpl"
 
 " vim: sw=2 ts=2 et

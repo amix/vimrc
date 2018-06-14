@@ -126,62 +126,74 @@ snippet cha "Chapter" b
 $0
 endsnippet
 
-snippet sec "Section" b
-\section{${1:section name}}%
+snippet sec "Section"
+\section{${1:${VISUAL:section name}}}%
 \label{sec:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 $0
 endsnippet
 
-snippet sec* "Section" b
-\section*{${1:section name}}%
+snippet sec* "Section"
+\section*{${1:${VISUAL:section name}}}%
 \label{sec:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 ${0}
 endsnippet
 
 
-snippet sub "Subsection" b
-\subsection{${1:subsection name}}%
+snippet sub "Subsection"
+\subsection{${1:${VISUAL:subsection name}}}%
 \label{sub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 $0
 endsnippet
 
-snippet sub* "Subsection" b
-\subsection*{${1:subsection name}}%
+snippet sub* "Subsection"
+\subsection*{${1:${VISUAL:subsection name}}}%
 \label{sub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 ${0}
 endsnippet
 
-snippet ssub "Subsubsection" b
-\subsubsection{${1:subsubsection name}}%
+snippet ssub "Subsubsection"
+\subsubsection{${1:${VISUAL:subsubsection name}}}%
 \label{ssub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 $0
 endsnippet
 
-snippet ssub* "Subsubsection" b
-\subsubsection*{${1:subsubsection name}}%
+snippet ssub* "Subsubsection"
+\subsubsection*{${1:${VISUAL:subsubsection name}}}%
 \label{ssub:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 ${0}
 endsnippet
 
-snippet par "Paragraph" b
-\paragraph{${1:paragraph name}}%
+snippet par "Paragraph"
+\paragraph{${1:${VISUAL:paragraph name}}}%
 \label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 $0
 endsnippet
 
-snippet subp "Subparagraph" b
-\subparagraph{${1:subparagraph name}}%
+snippet subp "Subparagraph"
+\subparagraph{${1:${VISUAL:subparagraph name}}}%
 \label{par:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
 
 $0
 endsnippet
+
+snippet ac "Acroynm normal" b
+\ac{${1:acronym}}
+$0
+endsnippet
+
+snippet acl "Acroynm expanded" b
+\acl{${1:acronym}}
+$0
+endsnippet
+
+
 
 snippet ni "Non-indented paragraph" b
 \noindent
@@ -197,9 +209,15 @@ snippet lp "Long parenthesis"
 endsnippet
 
 snippet "mint(ed)?( (\S+))?" "Minted code typeset" br
-\begin{minted}{${1:`!p
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{${1:`!p
 snip.rv = match.group(3) if match.group(2) is not None else "language"`}}
 ${2:${VISUAL:code}}
-\end{minted}$0
+\end{minted}
+\caption{${3:caption name}}
+\label{lst:${4:${3/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3\E)/ga}}}
+\end{listing}
+
+$0
 endsnippet
 # vim:ft=snippets:

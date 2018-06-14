@@ -44,13 +44,13 @@ function! go#coverage#Buffer(bang, ...) abort
   let s:toggle = 1
   let l:tmpname = tempname()
 
-  if get(g:, 'go_echo_command_info', 1)
+  if go#config#EchoCommandInfo()
     call go#util#EchoProgress("testing...")
   endif
 
   if go#util#has_job()
     call s:coverage_job({
-          \ 'cmd': ['go', 'test', '-coverprofile', l:tmpname] + a:000,
+          \ 'cmd': ['go', 'test', '-tags', go#config#BuildTags(), '-coverprofile', l:tmpname] + a:000,
           \ 'complete': function('s:coverage_callback', [l:tmpname]),
           \ 'bang': a:bang,
           \ 'for': 'GoTest',
@@ -64,15 +64,15 @@ function! go#coverage#Buffer(bang, ...) abort
   endif
 
   let disabled_term = 0
-  if get(g:, 'go_term_enabled')
+  if go#config#TermEnabled()
     let disabled_term = 1
-    let g:go_term_enabled = 0
+    call go#config#SetTermEnabled(0)
   endif
 
   let id = call('go#test#Test', args)
 
   if disabled_term
-    let g:go_term_enabled = 1
+    call go#config#SetTermEnabled(1)
   endif
 
   if has('nvim')
@@ -106,7 +106,7 @@ function! go#coverage#Browser(bang, ...) abort
   let l:tmpname = tempname()
   if go#util#has_job()
     call s:coverage_job({
-          \ 'cmd': ['go', 'test', '-coverprofile', l:tmpname],
+          \ 'cmd': ['go', 'test', '-tags', go#config#BuildTags(), '-coverprofile', l:tmpname],
           \ 'complete': function('s:coverage_browser_callback', [l:tmpname]),
           \ 'bang': a:bang,
           \ 'for': 'GoTest',
@@ -126,10 +126,8 @@ function! go#coverage#Browser(bang, ...) abort
     return
   endif
 
-
   if go#util#ShellError() == 0
-    let openHTML = 'go tool cover -html='.l:tmpname
-    call go#tool#ExecuteInDir(openHTML)
+    call go#tool#ExecuteInDir(['go', 'tool', 'cover', '-html=' . l:tmpname])
   endif
 
   call delete(l:tmpname)
@@ -332,8 +330,7 @@ endfunction
 
 function! s:coverage_browser_callback(coverfile, job, exit_status, data)
   if a:exit_status == 0
-    let openHTML = 'go tool cover -html='.a:coverfile
-    call go#tool#ExecuteInDir(openHTML)
+    call go#tool#ExecuteInDir(['go', 'tool', 'cover', '-html=' . a:coverfile])
   endif
 
   call delete(a:coverfile)
@@ -366,8 +363,7 @@ function! s:coverage_browser_handler(job, exit_status, data) abort
 
   let l:tmpname = s:coverage_browser_handler_jobs[a:job.id]
   if a:exit_status == 0
-    let openHTML = 'go tool cover -html='.l:tmpname
-    call go#tool#ExecuteInDir(openHTML)
+    call go#tool#ExecuteInDir(['go', 'tool', 'cover', '-html=' . l:tmpname])
   endif
 
   call delete(l:tmpname)

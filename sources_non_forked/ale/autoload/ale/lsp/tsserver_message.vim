@@ -61,3 +61,19 @@ function! ale#lsp#tsserver_message#Definition(buffer, line, column) abort
     \   'file': expand('#' . a:buffer . ':p'),
     \}]
 endfunction
+
+function! ale#lsp#tsserver_message#References(buffer, line, column) abort
+    return [0, 'ts@references', {
+    \   'line': a:line,
+    \   'offset': a:column,
+    \   'file': expand('#' . a:buffer . ':p'),
+    \}]
+endfunction
+
+function! ale#lsp#tsserver_message#Quickinfo(buffer, line, column) abort
+    return [0, 'ts@quickinfo', {
+    \   'line': a:line,
+    \   'offset': a:column,
+    \   'file': expand('#' . a:buffer . ':p'),
+    \}]
+endfunction

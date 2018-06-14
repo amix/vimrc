@@ -14,6 +14,7 @@ let s:gopath = $GOPATH
 if !exists('g:test_verbose')
   let g:test_verbose = 0
 endif
+let g:go_echo_command_info = 0
 
 " Source the passed test file.
 source %

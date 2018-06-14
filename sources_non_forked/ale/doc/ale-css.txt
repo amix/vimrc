@@ -30,7 +30,7 @@ g:ale_css_stylelint_options                       *g:ale_css_stylelint_options*
 g:ale_css_stylelint_use_global                 *g:ale_css_stylelint_use_global*
                                                *b:ale_css_stylelint_use_global*
   Type: |String|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 

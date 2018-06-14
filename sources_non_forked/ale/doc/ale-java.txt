@@ -25,6 +25,14 @@ g:ale_java_javac_classpath                         *g:ale_java_javac_classpath*
   This variable can be set to change the global classpath for Java.
 
 
+g:ale_java_javac_executable                       *g:ale_java_javac_executable*
+                                                  *b:ale_java_javac_executable*
+  Type: |String|
+  Default: `'javac'`
+
+  This variable can be set to change the executable path used for javac.
+
+
 g:ale_java_javac_options                             *g:ale_java_javac_options*
                                                      *b:ale_java_javac_options*
   Type: |String|
@@ -52,6 +60,20 @@ g:ale_java_google_java_format_options   *g:ale_java_google_java_format_options*
   Default: `''`
 
   This variable can be set to pass additional options
+
+
+===============================================================================
+pmd                                                              *ale-java-pmd*
+
+g:ale_java_pmd_options                                 *g:ale_java_pmd_options*
+                                                       *b:ale_java_pmd_options*
+
+  Type: String
+  Default: '-R category/java/bestpractices'
+
+  This variable can be changed to modify flags given to PMD. Do not specify -f
+  and -d. They are added automatically.
+
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

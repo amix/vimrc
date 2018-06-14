@@ -2,7 +2,7 @@
 " Description: JSHint for Javascript files
 
 call ale#Set('javascript_jshint_executable', 'jshint')
-call ale#Set('javascript_jshint_use_global', 0)
+call ale#Set('javascript_jshint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#javascript#jshint#GetExecutable(buffer) abort
     return ale#node#FindExecutable(a:buffer, 'javascript_jshint', [

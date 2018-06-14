@@ -28,7 +28,7 @@ g:ale_reason_ols_executable                       *g:ale_reason_ols_executable*
 g:ale_reason_ols_use_global                       *g:ale_reason_ols_use_global*
                                                   *b:ale_reason_ols_use_global*
   Type: |String|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   This variable can be set to `1` to always use the globally installed
   executable. See also |ale-integrations-local-executables|.

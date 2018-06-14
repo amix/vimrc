@@ -2,7 +2,7 @@
 " Description: Integration of Google-java-format with ALE.
 
 call ale#Set('google_java_format_executable', 'google-java-format')
-call ale#Set('google_java_format_use_global', 0)
+call ale#Set('google_java_format_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('google_java_format_options', '')
 
 function! ale#fixers#google_java_format#Fix(buffer) abort

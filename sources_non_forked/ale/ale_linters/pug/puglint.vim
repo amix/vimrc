@@ -3,7 +3,7 @@
 
 call ale#Set('pug_puglint_options', '')
 call ale#Set('pug_puglint_executable', 'pug-lint')
-call ale#Set('pug_puglint_use_global', 0)
+call ale#Set('pug_puglint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#pug#puglint#GetExecutable(buffer) abort
     return ale#node#FindExecutable(a:buffer, 'pug_puglint', [

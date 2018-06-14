@@ -1,4 +1,4 @@
-FROM golang:1.9.2
+FROM golang:1.10.1
 
 RUN apt-get update -y && \
   apt-get install -y build-essential curl git libncurses5-dev python3-pip && \

@@ -26,7 +26,7 @@ function! go#statusline#Show() abort
   " lazy initialiation of the cleaner
   if !s:timer_id
     " clean every 60 seconds all statuses
-    let interval = get(g:, 'go_statusline_duration', 60000)
+    let interval = go#config#StatuslineDuration()
     let s:timer_id = timer_start(interval, function('go#statusline#Clear'), {'repeat': -1})
   endif
 

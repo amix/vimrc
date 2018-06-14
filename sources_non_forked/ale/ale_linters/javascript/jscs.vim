@@ -2,7 +2,7 @@
 " Description: jscs for JavaScript files
 
 call ale#Set('javascript_jscs_executable', 'jscs')
-call ale#Set('javascript_jscs_use_global', 0)
+call ale#Set('javascript_jscs_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#javascript#jscs#GetExecutable(buffer) abort
     return ale#node#FindExecutable(a:buffer, 'javascript_jscs', [

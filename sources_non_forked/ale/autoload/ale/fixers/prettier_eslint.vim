@@ -4,7 +4,7 @@
 
 function! ale#fixers#prettier_eslint#SetOptionDefaults() abort
     call ale#Set('javascript_prettier_eslint_executable', 'prettier-eslint')
-    call ale#Set('javascript_prettier_eslint_use_global', 0)
+    call ale#Set('javascript_prettier_eslint_use_global', get(g:, 'ale_use_global_executables', 0))
     call ale#Set('javascript_prettier_eslint_options', '')
 endfunction
 

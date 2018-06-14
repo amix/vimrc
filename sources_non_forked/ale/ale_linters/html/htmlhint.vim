@@ -3,7 +3,7 @@
 
 call ale#Set('html_htmlhint_options', '')
 call ale#Set('html_htmlhint_executable', 'htmlhint')
-call ale#Set('html_htmlhint_use_global', 0)
+call ale#Set('html_htmlhint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#html#htmlhint#GetExecutable(buffer) abort
     return ale#node#FindExecutable(a:buffer, 'html_htmlhint', [

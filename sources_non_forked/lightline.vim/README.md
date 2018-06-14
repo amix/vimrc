@@ -31,10 +31,6 @@ https://github.com/itchyny/lightline.vim
 
 ![lightline.vim - seoul256](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/seoul256.png)
 
-### Dracula
-
-![lightline.vim - Dracula](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/Dracula.png)
-
 ### one
 
 ![lightline.vim - one](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/one.png)
@@ -43,7 +39,7 @@ https://github.com/itchyny/lightline.vim
 
 ![lightline.vim - landscape](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/landscape.png)
 
-landscape is my colorscheme, which is a high-contrast cui-supported colorscheme, available at https://github.com/itchyny/landscape.vim
+landscape is my colorscheme, which is a high-contrast cterm-supported colorscheme, available at https://github.com/itchyny/landscape.vim
 
 ## Why yet another clone of powerline?
 + [vim-powerline](https://github.com/Lokaltog/vim-powerline) is a nice plugin, but deprecated.

@@ -36,9 +36,15 @@ g:ale_haskell_hdevtools_executable         *g:ale_haskell_hdevtools_executable*
 g:ale_haskell_hdevtools_options               *g:ale_haskell_hdevtools_options*
                                               *b:ale_haskell_hdevtools_options*
   Type: |String|
-  Default: `'-g -Wall'`
+  Default: `get(g:, 'hdevtools_options', '-g -Wall')`
 
   This variable can be changed to modify flags given to hdevtools.
+
+  The hdevtools documentation recommends setting GHC options for `hdevtools`
+  with `g:hdevtools_options`. ALE will use the value of `g:hdevtools_options`
+  for the value of `g:ale_haskell_hdevtools_options` by default, so this
+  option can be respected and overridden specifically for ALE.
+
 
 ===============================================================================
 hfmt                                                         *ale-haskell-hfmt*

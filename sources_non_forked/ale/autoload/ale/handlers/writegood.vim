@@ -4,7 +4,7 @@
 function! ale#handlers#writegood#ResetOptions() abort
     call ale#Set('writegood_options', '')
     call ale#Set('writegood_executable', 'write-good')
-    call ale#Set('writegood_use_global', 0)
+    call ale#Set('writegood_use_global', get(g:, 'ale_use_global_executables', 0))
 endfunction
 
 " Reset the options so the tests can test how they are set.

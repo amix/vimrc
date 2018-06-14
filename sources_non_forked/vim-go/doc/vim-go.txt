@@ -106,7 +106,7 @@ manager's install command.
 <
 *  https://github.com/gmarik/vundle >
 
-    Plugin 'fatih/vim-go'
+    Plugin 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 <
 *  Manual (not recommended) >
 
@@ -156,6 +156,11 @@ The following plugins are supported for use with vim-go:
 
 ==============================================================================
 COMMANDS                                                         *go-commands*
+
+                                                        *:GoReportGitHubIssue*
+:GoReportGitHubIssue
+    GoReportGitHubIssue opens the default browser and starts a new bug report
+    with useful system information.
 
                                                                      *:GoPath*
 :GoPath [path]
@@ -642,12 +647,12 @@ CTRL-t
 :GoBuildTags [tags]
 
     Changes the build tags for various commands. If you have any file that
-    uses a custom build tag, such as `//+build integration` , this command can
-    be used to pass it to all tools that accepts tags, such as guru, gorename,
-    etc..
+    uses a custom build tag, such as `// +build integration` , this command
+    can be used to pass it to all tools that accepts tags, such as guru,
+    gorename, etc.
 
-    The build tags is cleared (unset) if `""` is given. If no arguments is
-    given it prints the current custom build tags.
+    The build tags is cleared (unset) if `""` is given. If no arguments are
+    given it prints the current build tags.
 
                                                                      *:AsmFmt*
 :AsmFmt
@@ -676,6 +681,12 @@ CTRL-t
         \| command! -bang AS call go#alternate#Switch(<bang>0, 'split')
     augroup END
 <
+
+                                                                 *:GoPointsTo*
+:GoPointsTo
+
+    Show all variables to which the pointer under the cursor may point to.
+
                                                                 *:GoWhicherrs*
 :GoWhicherrs
 
@@ -1030,6 +1041,10 @@ Show send/receive corresponding to selected channel op
 
 Show all refs to entity denoted by selected identifier
 
+                                                               *(go-pointsto)*
+
+Show all variables to which the pointer under the cursor may point to.
+
                                                              *(go-metalinter)*
 
 Calls `go-metalinter` for the current directory
@@ -1070,6 +1085,12 @@ if            "inside a function", select contents of a function,
               excluding the function definition and the closing bracket. This
               text-object also supports literal functions
 
+                                               *go-v_ac* *go-ac*
+ac            "a comment", select contents of the current comment block.
+
+                                               *go-v_ic* *go-ic*
+ic            "inner comment", select contents of the current comment block,
+              excluding the start and end comment markers.
 
 vim-go also defines the following text motion objects:
 
@@ -1090,10 +1111,10 @@ FUNCTIONS                                                       *go-functions*
                                                         *go#statusline#Show()*
 
 Shows the status of a job running asynchronously. Can be used to plug into the
-statusline. It works to show the status per package instead of per
-file. Assume you have three files open, all belonging to the same package, if
-the package build (`:GoBuild`) is successful, all statusline's will show
-`success`, if you it fails all file's statusline will show `failed`.
+statusline. It works to show the status per package instead of per file.
+Assume you have three files open, all belonging to the same package, if the
+package build (`:GoBuild`) is successful, all statuslines will show `success`,
+if it fails all windows' statuslines will show `failed`.
 
 To avoid always showing old status information, the status information is
 cleaned for each package after `60` seconds. This can be changed with the
@@ -1336,10 +1357,10 @@ By default it's not set, so the relevant commands defaults are being used.
 <
                                                            *'g:go_build_tags'*
 
-These options that will be automatically passed to the `-tags` option of
-various tools, such as `guru`, `gorename`, etc... This is a permanent
-setting. A more useful way is to use |:GoBuildTags| to dynamically change or
-remove build tags. By default it's not set.
+Space-separated list of build tags passed to the `-tags` flag of tools that
+support it.
+There is also the |:GoBuildTags| convenience command to change or remove build
+tags.
 >
   let g:go_build_tags = ''
 <
@@ -1666,6 +1687,8 @@ A list of options to debug; useful for development and/or reporting bugs.
 
 Currently accepted values:
 
+  shell-commands     Echo all shell commands that vim-go runs (does not
+                     include async jobs).
   debugger-state     Expose debugger state in 'g:go_debug_diag'.
   debugger-commands  Echo communication between vim-go and `dlv`; requests and
                      responses are recorded in `g:go_debug_commands`.
@@ -2093,11 +2116,22 @@ Also see |:GoGuruScope| and |'g:go_guru_scope'|.
 
 Vim becomes slow while editing Go files~
 
-This is usually caused by `g:go_highlight_*` options. Try disabling them if
-you've enabled some of them.
+The most common cause for this is using an older version of Vim that doesn't
+support asynchronous jobs. |'g:go_auto_sameids'| and |'g:go_auto_type_info'|
+run jobs that can cause noticable delays when used with vim74. The problem is
+most pronounced on vim74, but can occur on vim8 and nvim. On vim8 and nvim,
+the problem should be restricted to a short period when the first buffer in a
+package is first loaded.
 
-Other common culprits are |'g:go_auto_sameids'| and |go#statusline#Show()|.
+If you see unexpected characters rendered in the current window, the problem
+is most likely due to |'g:go_auto_sameids'| or |'g:go_auto_type_info'|. First,
+try using another mode for |'g:go_info_mode'|. If that doesn't work, try
+disabling |'g:go_auto_sameids'| and |'g:go_auto_type_info'|.
 
+To a lesser extent, this can be caused by `g:go_highlight_*` options. If Vim
+is just slower than normal, but doesn't render unexpected characters in the
+currrent window, then the problem is most likely the `g:go_highlight_*`
+options. Try disabling them if you've enabled some of them.
 
 I get errors when using GoInstallBinaries~
 

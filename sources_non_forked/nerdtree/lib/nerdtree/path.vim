@@ -663,6 +663,8 @@ function! s:Path.rename(newPath)
         throw "NERDTree.InvalidArgumentsError: Invalid newPath for renaming = ". a:newPath
     endif
 
+    call s:Path.createParentDirectories(a:newPath)
+
     let success =  rename(self.str(), a:newPath)
     if success != 0
         throw "NERDTree.PathRenameError: Could not rename: '" . self.str() . "'" . 'to:' . a:newPath
@@ -719,8 +721,10 @@ function! s:Path.str(...)
 
     if has_key(options, 'truncateTo')
         let limit = options['truncateTo']
-        if len(toReturn) > limit-1
-            let toReturn = toReturn[(len(toReturn)-limit+1):]
+        if strdisplaywidth(toReturn) > limit-1
+            while strdisplaywidth(toReturn) > limit-1 && strchars(toReturn) > 0
+                let toReturn = substitute(toReturn, '^.', '', '')
+            endwhile
             if len(split(toReturn, '/')) > 1
                 let toReturn = '</' . join(split(toReturn, '/')[1:], '/') . '/'
             else

@@ -7,10 +7,6 @@ function! ale_linters#dart#language_server#GetExecutable(buffer) abort
     return ale#Var(a:buffer, 'dart_language_server_executable')
 endfunction
 
-function! ale_linters#dart#language_server#GetLanguage(buffer) abort
-    return 'dart'
-endfunction
-
 function! ale_linters#dart#language_server#GetProjectRoot(buffer) abort
     " Note: pub only looks for pubspec.yaml, there's no point in adding
     " support for pubspec.yml
@@ -24,7 +20,6 @@ call ale#linter#Define('dart', {
 \   'lsp': 'stdio',
 \   'executable_callback': 'ale_linters#dart#language_server#GetExecutable',
 \   'command_callback': 'ale_linters#dart#language_server#GetExecutable',
-\   'language_callback': 'ale_linters#dart#language_server#GetLanguage',
+\   'language': 'dart',
 \   'project_root_callback': 'ale_linters#dart#language_server#GetProjectRoot',
 \})
-

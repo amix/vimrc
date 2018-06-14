@@ -3,11 +3,19 @@
 
 " CLI options
 let g:ale_html_tidy_executable = get(g:, 'ale_html_tidy_executable', 'tidy')
+" remove in 2.0
 " Look for the old _args variable first.
+let s:deprecation_warning_echoed = 0
 let s:default_options = get(g:, 'ale_html_tidy_args', '-q -e -language en')
 let g:ale_html_tidy_options = get(g:, 'ale_html_tidy_options', s:default_options)
 
 function! ale_linters#html#tidy#GetCommand(buffer) abort
+    " remove in 2.0
+    if exists('g:ale_html_tidy_args') && !s:deprecation_warning_echoed
+        execute 'echom ''Rename your g:ale_html_tidy_args setting to g:ale_html_tidy_options instead. Support for this will removed in ALE 2.0.'''
+        let s:deprecation_warning_echoed = 1
+    endif
+
     " Specify file encoding in options
     " (Idea taken from https://github.com/scrooloose/syntastic/blob/master/syntax_checkers/html/tidy.vim)
     let l:file_encoding = get({

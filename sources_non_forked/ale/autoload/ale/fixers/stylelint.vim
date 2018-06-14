@@ -2,7 +2,7 @@
 " Description: Fixing files with stylelint.
 
 call ale#Set('stylelint_executable', 'stylelint')
-call ale#Set('stylelint_use_global', 0)
+call ale#Set('stylelint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale#fixers#stylelint#GetExecutable(buffer) abort
       return ale#node#FindExecutable(a:buffer, 'stylelint', [

@@ -16,7 +16,7 @@ g:ale_elm_format_executable                       *g:ale_elm_format_executable*
 g:ale_elm_format_use_global                       *g:ale_elm_format_use_global*
                                                   *b:ale_elm_format_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -34,7 +34,7 @@ elm-make                                                     *ale-elm-elm-make*
 g:ale_elm_make_executable                           *g:ale_elm_make_executable*
                                                     *b:ale_elm_make_executable*
   Type: |String|
-  Default: `'elm-make'`
+  Default: `'elm'`
 
   See |ale-integrations-local-executables|
 
@@ -42,7 +42,7 @@ g:ale_elm_make_executable                           *g:ale_elm_make_executable*
 g:ale_elm_make_use_global                           *g:ale_elm_make_use_global*
                                                     *b:ale_elm_make_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 

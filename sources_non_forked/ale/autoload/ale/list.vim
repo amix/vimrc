@@ -1,6 +1,19 @@
 " Author: Bjorn Neergaard <bjorn@neersighted.com>, modified by Yann fery <yann@fery.me>
 " Description: Manages the loclist and quickfix lists
 
+" This flag dictates if ale open the configured loclist
+let g:ale_open_list = get(g:, 'ale_open_list', 0)
+" This flag dictates if ale keeps open loclist even if there is no error in loclist
+let g:ale_keep_list_window_open = get(g:, 'ale_keep_list_window_open', 0)
+" This flag dictates that quickfix windows should be opened vertically
+let g:ale_list_vertical = get(g:, 'ale_list_vertical', 0)
+" The window size to set for the quickfix and loclist windows
+let g:ale_list_window_size = get(g:, 'ale_list_window_size', 10)
+" A string format for the loclist messages.
+let g:ale_loclist_msg_format = get(g:, 'ale_loclist_msg_format',
+\   get(g:, 'ale_echo_msg_format', '%code: %%s')
+\)
+
 if !exists('s:timer_args')
     let s:timer_args = {}
 endif

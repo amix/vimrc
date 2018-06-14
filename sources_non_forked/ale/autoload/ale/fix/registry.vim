@@ -17,6 +17,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['python'],
 \       'description': 'Fix PEP8 issues with autopep8.',
 \   },
+\   'black': {
+\       'function': 'ale#fixers#black#Fix',
+\       'suggested_filetypes': ['python'],
+\       'description': 'Fix PEP8 issues with black.',
+\   },
 \   'prettier_standard': {
 \       'function': 'ale#fixers#prettier_standard#Fix',
 \       'suggested_filetypes': ['javascript'],
@@ -89,6 +94,11 @@ let s:default_registry = {
 \       'function': 'ale#fixers#rufo#Fix',
 \       'suggested_filetypes': ['ruby'],
 \       'description': 'Fix ruby files with rufo',
+\   },
+\   'scalafmt': {
+\       'function': 'ale#fixers#scalafmt#Fix',
+\       'suggested_filetypes': ['scala'],
+\       'description': 'Fix Scala files using scalafmt',
 \   },
 \   'standard': {
 \       'function': 'ale#fixers#standard#Fix',
@@ -179,6 +189,21 @@ let s:default_registry = {
 \       'function': 'ale#fixers#jq#Fix',
 \       'suggested_filetypes': ['json'],
 \       'description': 'Fix JSON files with jq.',
+\   },
+\   'perltidy': {
+\       'function': 'ale#fixers#perltidy#Fix',
+\       'suggested_filetypes': ['perl'],
+\       'description': 'Fix Perl files with perltidy.',
+\   },
+\   'xo': {
+\       'function': 'ale#fixers#xo#Fix',
+\       'suggested_filetypes': ['javascript'],
+\       'description': 'Fix JavaScript files using xo --fix.',
+\   },
+\   'qmlfmt': {
+\       'function': 'ale#fixers#qmlfmt#Fix',
+\       'suggested_filetypes': ['qml'],
+\       'description': 'Fix QML files with qmlfmt.',
 \   },
 \}
 
@@ -272,6 +297,14 @@ function! s:ShouldSuggestForType(suggested_filetypes, type_list) abort
     return 0
 endfunction
 
+function! s:IsGenericFixer(suggested_filetypes) abort
+    if empty(a:suggested_filetypes)
+        return 1
+    endif
+
+    return 0
+endfunction
+
 function! s:FormatEntry(key, entry) abort
     let l:aliases_str = ''
 
@@ -289,6 +322,27 @@ function! s:FormatEntry(key, entry) abort
     \   l:aliases_str,
     \   a:entry.description,
     \)
+endfunction
+
+" Get list of applicable fixers for filetype, including generic fixers
+function! ale#fix#registry#GetApplicableFixers(filetype) abort
+    let l:type_list = split(a:filetype, '\.')
+    let l:fixer_name_list = []
+
+    for l:key in sort(keys(s:entries))
+        let l:suggested_filetypes = s:entries[l:key].suggested_filetypes
+
+        if s:IsGenericFixer(l:suggested_filetypes) || s:ShouldSuggestForType(l:suggested_filetypes, l:type_list)
+            call add(l:fixer_name_list, l:key)
+        endif
+    endfor
+
+    return l:fixer_name_list
+endfunction
+
+" Function that returns autocomplete candidates for ALEFix command
+function! ale#fix#registry#CompleteFixers(ArgLead, CmdLine, CursorPos) abort
+    return filter(ale#fix#registry#GetApplicableFixers(&filetype), 'v:val =~? a:ArgLead')
 endfunction
 
 " Suggest functions to use from the registry.
@@ -310,7 +364,7 @@ function! ale#fix#registry#Suggest(filetype) abort
     let l:generic_fixer_list = []
 
     for l:key in sort(keys(s:entries))
-        if empty(s:entries[l:key].suggested_filetypes)
+        if s:IsGenericFixer(s:entries[l:key].suggested_filetypes)
             call add(
             \   l:generic_fixer_list,
             \   s:FormatEntry(l:key, s:entries[l:key]),

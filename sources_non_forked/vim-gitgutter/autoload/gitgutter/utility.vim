@@ -1,5 +1,5 @@
 function! gitgutter#utility#supports_overscore_sign()
-  if s:windows()
+  if gitgutter#utility#windows()
     return &encoding ==? 'utf-8'
   else
     return &termencoding ==? &encoding || &termencoding == ''
@@ -11,7 +11,7 @@ function! gitgutter#utility#setbufvar(buffer, varname, val)
   let needs_setting = empty(dict)
   let dict[a:varname] = a:val
   if needs_setting
-    call setbufvar(a:buffer, 'gitgutter', dict)
+    call setbufvar(+a:buffer, 'gitgutter', dict)
   endif
 endfunction
 
@@ -114,7 +114,7 @@ function! gitgutter#utility#set_repo_path(bufnr) abort
   " *               -2 - not tracked by git
 
   call gitgutter#utility#setbufvar(a:bufnr, 'path', -1)
-  let cmd = gitgutter#utility#cd_cmd(a:bufnr, g:gitgutter_git_executable.' ls-files --error-unmatch --full-name '.gitgutter#utility#shellescape(s:filename(a:bufnr)))
+  let cmd = gitgutter#utility#cd_cmd(a:bufnr, g:gitgutter_git_executable.' ls-files --error-unmatch --full-name -- '.gitgutter#utility#shellescape(s:filename(a:bufnr)))
 
   if g:gitgutter_async && gitgutter#async#available()
     if has('lambda')
@@ -161,7 +161,7 @@ function! s:set_path(bufnr, path)
 endfunction
 
 function! gitgutter#utility#cd_cmd(bufnr, cmd) abort
-  let cd = s:unc_path(a:bufnr) ? 'pushd' : (s:windows() ? 'cd /d' : 'cd')
+  let cd = s:unc_path(a:bufnr) ? 'pushd' : (gitgutter#utility#windows() ? 'cd /d' : 'cd')
   return cd.' '.s:dir(a:bufnr).' && '.a:cmd
 endfunction
 
@@ -205,6 +205,6 @@ function! s:strip_trailing_new_line(line) abort
   return substitute(a:line, '\n$', '', '')
 endfunction
 
-function! s:windows()
+function! gitgutter#utility#windows()
   return has('win64') || has('win32') || has('win16')
 endfunction

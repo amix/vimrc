@@ -3,6 +3,31 @@ ALE Scala Integration                                       *ale-scala-options*
 
 
 ===============================================================================
+scalafmt                                                   *ale-scala-scalafmt*
+
+If Nailgun is used, override `g:ale_scala_scalafmt_executable` like so: >
+  let g:ale_scala_scalafmt_executable = 'ng'
+
+
+g:ale_scala_scalafmt_executable               *g:ale_scala_scalafmt_executable*
+                                              *b:ale_scala_scalafmt_executable*
+  Type: |String|
+  Default: `'scalafmt'`
+
+  Override the invoked `scalafmt` binary. This is useful for running `scalafmt`
+  with Nailgun.
+
+
+g:ale_scala_scalafmt_options                     *g:ale_scala_scalafmt_options*
+                                                 *b:ale_scala_scalafmt_options*
+  Type: |String|
+  Default: `''`
+
+  A string containing additional options to pass to `'scalafmt'`, or
+  `'ng scalafmt'` if Nailgun is used.
+
+
+===============================================================================
 scalastyle                                               *ale-scala-scalastyle*
 
 `scalastyle` requires a configuration file for a project to run. When no

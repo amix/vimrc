@@ -27,7 +27,7 @@ g:ale_textlint_options                                 *g:ale_textlint_options*
 g:ale_textlint_use_global                           *g:ale_textlint_use_global*
                                                     *b:ale_textlint_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 

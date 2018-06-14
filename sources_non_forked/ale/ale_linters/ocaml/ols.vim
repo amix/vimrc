@@ -2,7 +2,7 @@
 " Description: A language server for OCaml
 
 call ale#Set('ocaml_ols_executable', 'ocaml-language-server')
-call ale#Set('ocaml_ols_use_global', 0)
+call ale#Set('ocaml_ols_use_global', get(g:, 'ale_use_global_executables', 0))
 
 call ale#linter#Define('ocaml', {
 \   'name': 'ols',

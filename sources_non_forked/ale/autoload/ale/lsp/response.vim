@@ -1,6 +1,20 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Parsing and transforming of LSP server responses.
 
+" Constants for error codes.
+" Defined by JSON RPC
+let s:PARSE_ERROR = -32700
+let s:INVALID_REQUEST = -32600
+let s:METHOD_NOT_FOUND = -32601
+let s:INVALID_PARAMS = -32602
+let s:INTERNAL_ERROR = -32603
+let s:SERVER_ERROR_START = -32099
+let s:SERVER_ERROR_END = -32000
+let s:SERVER_NOT_INITIALIZED = -32002
+let s:UNKNOWN_ERROR_CODE = -32001
+" Defined by the protocol.
+let s:REQUEST_CANCELLED = -32800
+
 " Constants for message severity codes.
 let s:SEVERITY_ERROR = 1
 let s:SEVERITY_WARNING = 2
@@ -71,4 +85,32 @@ function! ale#lsp#response#ReadTSServerDiagnostics(response) abort
     endfor
 
     return l:loclist
+endfunction
+
+function! ale#lsp#response#GetErrorMessage(response) abort
+    if type(get(a:response, 'error', 0)) isnot type({})
+        return ''
+    endif
+
+    let l:code = get(a:response.error, 'code')
+
+    " Only report things for these error codes.
+    if l:code isnot s:INVALID_PARAMS && l:code isnot s:INTERNAL_ERROR
+        return ''
+    endif
+
+    let l:message = get(a:response.error, 'message', '')
+
+    if empty(l:message)
+        return ''
+    endif
+
+    " Include the traceback as details, if it's there.
+    let l:traceback = get(get(a:response.error, 'data', {}), 'traceback', [])
+
+    if type(l:traceback) is type([]) && !empty(l:traceback)
+        let l:message .= "\n" . join(l:traceback, "\n")
+    endif
+
+    return l:message
 endfunction

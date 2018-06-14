@@ -16,6 +16,7 @@ endfunction
 " Finds the file's path relative to the repo root.
 function! gitgutter#init_buffer(bufnr)
   if gitgutter#utility#is_active(a:bufnr)
+    call s:setup_maps()
     let p = gitgutter#utility#repo_path(a:bufnr, 0)
     if type(p) != s:t_string || empty(p)
       call gitgutter#utility#set_repo_path(a:bufnr)
@@ -80,6 +81,42 @@ function! gitgutter#toggle() abort
 endfunction
 
 " }}}
+
+function! s:setup_maps()
+  if !g:gitgutter_map_keys
+    return
+  endif
+
+  if !hasmapto('<Plug>GitGutterPrevHunk') && maparg('[c', 'n') ==# ''
+    nmap <buffer> [c <Plug>GitGutterPrevHunk
+  endif
+  if !hasmapto('<Plug>GitGutterNextHunk') && maparg(']c', 'n') ==# ''
+    nmap <buffer> ]c <Plug>GitGutterNextHunk
+  endif
+
+  if !hasmapto('<Plug>GitGutterStageHunk') && maparg('<Leader>hs', 'n') ==# ''
+    nmap <buffer> <Leader>hs <Plug>GitGutterStageHunk
+  endif
+  if !hasmapto('<Plug>GitGutterUndoHunk') && maparg('<Leader>hu', 'n') ==# ''
+    nmap <buffer> <Leader>hu <Plug>GitGutterUndoHunk
+  endif
+  if !hasmapto('<Plug>GitGutterPreviewHunk') && maparg('<Leader>hp', 'n') ==# ''
+    nmap <buffer> <Leader>hp <Plug>GitGutterPreviewHunk
+  endif
+
+  if !hasmapto('<Plug>GitGutterTextObjectInnerPending') && maparg('ic', 'o') ==# ''
+    omap <buffer> ic <Plug>GitGutterTextObjectInnerPending
+  endif
+  if !hasmapto('<Plug>GitGutterTextObjectOuterPending') && maparg('ac', 'o') ==# ''
+    omap <buffer> ac <Plug>GitGutterTextObjectOuterPending
+  endif
+  if !hasmapto('<Plug>GitGutterTextObjectInnerVisual') && maparg('ic', 'x') ==# ''
+    xmap <buffer> ic <Plug>GitGutterTextObjectInnerVisual
+  endif
+  if !hasmapto('<Plug>GitGutterTextObjectOuterVisual') && maparg('ac', 'x') ==# ''
+    xmap <buffer> ac <Plug>GitGutterTextObjectOuterVisual
+  endif
+endfunction
 
 function! s:has_fresh_changes(bufnr) abort
   return getbufvar(a:bufnr, 'changedtick') != gitgutter#utility#getbufvar(a:bufnr, 'tick')

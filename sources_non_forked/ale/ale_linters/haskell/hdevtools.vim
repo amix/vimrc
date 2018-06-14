@@ -2,7 +2,7 @@
 " Description: hdevtools for Haskell files
 
 call ale#Set('haskell_hdevtools_executable', 'hdevtools')
-call ale#Set('haskell_hdevtools_options', '-g -Wall')
+call ale#Set('haskell_hdevtools_options', get(g:, 'hdevtools_options', '-g -Wall'))
 
 function! ale_linters#haskell#hdevtools#GetExecutable(buffer) abort
     return ale#Var(a:buffer, 'haskell_hdevtools_executable')

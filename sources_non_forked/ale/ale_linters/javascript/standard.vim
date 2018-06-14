@@ -2,7 +2,7 @@
 " Description: standardjs for JavaScript files
 
 call ale#Set('javascript_standard_executable', 'standard')
-call ale#Set('javascript_standard_use_global', 0)
+call ale#Set('javascript_standard_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('javascript_standard_options', '')
 
 function! ale_linters#javascript#standard#GetExecutable(buffer) abort

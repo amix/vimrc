@@ -4,7 +4,8 @@
 
 call ale#Set('javascript_flow_executable', 'flow')
 call ale#Set('javascript_flow_use_home_config', 0)
-call ale#Set('javascript_flow_use_global', 0)
+call ale#Set('javascript_flow_use_global', get(g:, 'ale_use_global_executables', 0))
+call ale#Set('javascript_flow_use_respect_pragma', 1)
 
 function! ale_linters#javascript#flow#GetExecutable(buffer) abort
     let l:flow_config = ale#path#FindNearestFile(a:buffer, '.flowconfig')
@@ -47,8 +48,8 @@ function! ale_linters#javascript#flow#GetCommand(buffer, version_lines) abort
 
     " If we can parse the version number, then only use --respect-pragma
     " if the version is >= 0.36.0, which added the argument.
-    let l:use_respect_pragma = empty(l:version)
-    \   || ale#semver#GTE(l:version, [0, 36])
+    let l:use_respect_pragma = ale#Var(a:buffer, 'javascript_flow_use_respect_pragma')
+    \   && (empty(l:version) || ale#semver#GTE(l:version, [0, 36]))
 
     return ale#Escape(l:executable)
     \   . ' check-contents'

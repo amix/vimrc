@@ -28,7 +28,7 @@ function! s:source.gather_candidates(args, context) abort
     return []
   endif
 
-  let l:include = get(g:, 'go_decls_includes', 'func,type')
+  let l:include = go#config#DeclsIncludes()
   let l:command = printf('%s -format vim -mode decls -include %s -%s %s', l:bin_path, l:include, l:mode, shellescape(l:path))
   let l:candidates = []
   try

@@ -18,9 +18,9 @@ function! ale_linters#perl#perlcritic#GetExecutable(buffer) abort
 endfunction
 
 function! ale_linters#perl#perlcritic#GetProfile(buffer) abort
-
     " first see if we've been overridden
     let l:profile = ale#Var(a:buffer, 'perl_perlcritic_profile')
+
     if l:profile is? ''
         return ''
     endif
@@ -31,6 +31,7 @@ endfunction
 
 function! ale_linters#perl#perlcritic#GetCommand(buffer) abort
     let l:critic_verbosity = '%l:%c %m\n'
+
     if ale#Var(a:buffer, 'perl_perlcritic_showrules')
         let l:critic_verbosity = '%l:%c %m [%p]\n'
     endif
@@ -38,17 +39,11 @@ function! ale_linters#perl#perlcritic#GetCommand(buffer) abort
     let l:profile = ale_linters#perl#perlcritic#GetProfile(a:buffer)
     let l:options = ale#Var(a:buffer, 'perl_perlcritic_options')
 
-    let l:command = ale#Escape(ale_linters#perl#perlcritic#GetExecutable(a:buffer))
-    \   . " --verbose '". l:critic_verbosity . "' --nocolor"
-
-    if l:profile isnot? ''
-        let l:command .= ' --profile ' . ale#Escape(l:profile)
-    endif
-    if l:options isnot? ''
-        let l:command .= ' ' . l:options
-    endif
-
-    return l:command
+    return ale#Escape(ale_linters#perl#perlcritic#GetExecutable(a:buffer))
+    \   . ' --verbose ' . ale#Escape(l:critic_verbosity)
+    \   . ' --nocolor'
+    \   . (!empty(l:profile) ? ' --profile ' . ale#Escape(l:profile) : '')
+    \   . (!empty(l:options) ? ' ' . l:options : '')
 endfunction
 
 

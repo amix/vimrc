@@ -45,7 +45,7 @@ g:ale_javascript_eslint_options               *g:ale_javascript_eslint_options*
 g:ale_javascript_eslint_use_global         *g:ale_javascript_eslint_use_global*
                                            *b:ale_javascript_eslint_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -98,9 +98,20 @@ g:ale_javascript_flow_use_home_config   *g:ale_javascript_flow_use_home_config*
 g:ale_javascript_flow_use_global             *g:ale_javascript_flow_use_global*
                                              *b:ale_javascript_flow_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
+
+
+g:ale_javascript_flow_use_respect_pragma
+                                     *g:ale_javascript_flow_use_respect_pragma*
+                                     *b:ale_javascript_flow_use_respect_pragma*
+  Type: |Number|
+  Default: `1`
+
+  By default, ALE will use the `--respect-pragma` option for `flow`, so only
+  files with the `@flow` pragma are checked by ALE. This option can be set to
+  `0` to disable that behaviour, so all files can be checked by `flow`.
 
 
 ===============================================================================
@@ -126,7 +137,7 @@ g:ale_javascript_jscs_executable             *g:ale_javascript_jscs_executable*
 g:ale_javascript_jscs_use_global             *g:ale_javascript_jscs_use_global*
                                              *b:ale_javascript_jscs_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -145,7 +156,7 @@ g:ale_javascript_jshint_executable         *g:ale_javascript_jshint_executable*
 g:ale_javascript_jshint_use_global         *g:ale_javascript_jshint_use_global*
                                            *b:ale_javascript_jshint_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -172,7 +183,7 @@ g:ale_javascript_prettier_options           *g:ale_javascript_prettier_options*
 g:ale_javascript_prettier_use_global     *g:ale_javascript_prettier_use_global*
                                          *b:ale_javascript_prettier_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -202,7 +213,7 @@ g:ale_javascript_prettier_eslint_use_global
                                   *g:ale_javascript_prettier_eslint_use_global*
                                   *b:ale_javascript_prettier_eslint_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -233,7 +244,7 @@ g:ale_javascript_prettier_standard_use_global
                                 *g:ale_javascript_prettier_standard_use_global*
                                 *b:ale_javascript_prettier_standard_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -262,7 +273,7 @@ g:ale_javascript_standard_options           *g:ale_javascript_standard_options*
 g:ale_javascript_standard_use_global     *g:ale_javascript_standard_use_global*
                                          *b:ale_javascript_standard_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -289,7 +300,7 @@ g:ale_javascript_xo_options                       *g:ale_javascript_xo_options*
 g:ale_javascript_xo_use_global                 *g:ale_javascript_xo_use_global*
                                                *b:ale_javascript_xo_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 

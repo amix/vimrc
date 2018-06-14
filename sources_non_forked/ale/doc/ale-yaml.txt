@@ -31,7 +31,7 @@ g:ale_yaml_swaglint_executable                 *g:ale_yaml_swaglint_executable*
 g:ale_yaml_swaglint_use_global                 *g:ale_yaml_swaglint_use_global*
                                                *b:ale_yaml_swaglint_use_global*
   Type: |String|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 

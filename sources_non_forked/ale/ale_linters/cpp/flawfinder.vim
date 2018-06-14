@@ -4,6 +4,7 @@
 call ale#Set('cpp_flawfinder_executable', 'flawfinder')
 call ale#Set('cpp_flawfinder_options', '')
 call ale#Set('cpp_flawfinder_minlevel', 1)
+call ale#Set('c_flawfinder_error_severity', 6)
 
 function! ale_linters#cpp#flawfinder#GetExecutable(buffer) abort
    return ale#Var(a:buffer, 'cpp_flawfinder_executable')

@@ -2,7 +2,7 @@
 " Description: Fixing Python imports with isort.
 
 call ale#Set('python_isort_executable', 'isort')
-call ale#Set('python_isort_use_global', 0)
+call ale#Set('python_isort_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale#fixers#isort#Fix(buffer) abort
     let l:executable = ale#python#FindExecutable(

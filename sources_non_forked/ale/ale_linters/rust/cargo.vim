@@ -4,6 +4,8 @@
 
 call ale#Set('rust_cargo_use_check', 1)
 call ale#Set('rust_cargo_check_all_targets', 0)
+call ale#Set('rust_cargo_check_examples', 0)
+call ale#Set('rust_cargo_check_tests', 0)
 call ale#Set('rust_cargo_default_feature_behavior', 'default')
 call ale#Set('rust_cargo_include_features', '')
 
@@ -31,6 +33,12 @@ function! ale_linters#rust#cargo#GetCommand(buffer, version_output) abort
     let l:use_all_targets = l:use_check
     \   && ale#Var(a:buffer, 'rust_cargo_check_all_targets')
     \   && ale#semver#GTE(l:version, [0, 22, 0])
+    let l:use_examples = l:use_check
+    \   && ale#Var(a:buffer, 'rust_cargo_check_examples')
+    \   && ale#semver#GTE(l:version, [0, 22, 0])
+    let l:use_tests = l:use_check
+    \   && ale#Var(a:buffer, 'rust_cargo_check_tests')
+    \   && ale#semver#GTE(l:version, [0, 22, 0])
 
     let l:include_features = ale#Var(a:buffer, 'rust_cargo_include_features')
     if !empty(l:include_features)
@@ -50,6 +58,8 @@ function! ale_linters#rust#cargo#GetCommand(buffer, version_output) abort
     return 'cargo '
     \   . (l:use_check ? 'check' : 'build')
     \   . (l:use_all_targets ? ' --all-targets' : '')
+    \   . (l:use_examples ? ' --examples' : '')
+    \   . (l:use_tests ? ' --tests' : '')
     \   . ' --frozen --message-format=json -q'
     \   . l:default_feature
     \   . l:include_features

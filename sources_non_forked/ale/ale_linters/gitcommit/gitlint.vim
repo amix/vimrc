@@ -4,7 +4,7 @@
 let g:ale_gitcommit_gitlint_executable =
 \   get(g:, 'ale_gitcommit_gitlint_executable', 'gitlint')
 let g:ale_gitcommit_gitlint_options = get(g:, 'ale_gitcommit_gitlint_options', '')
-let g:ale_gitcommit_gitlint_use_global = get(g:, 'ale_gitcommit_gitlint_use_global', 0)
+let g:ale_gitcommit_gitlint_use_global = get(g:, 'ale_gitcommit_gitlint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 
 function! ale_linters#gitcommit#gitlint#GetExecutable(buffer) abort
@@ -27,6 +27,10 @@ function! ale_linters#gitcommit#gitlint#Handle(buffer, lines) abort
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         let l:code = l:match[2]
+
+        if l:code is# 'T2' && !ale#Var(a:buffer, 'warn_about_trailing_whitespace')
+            continue
+        endif
 
         let l:item = {
         \   'lnum': l:match[1] + 0,

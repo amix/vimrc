@@ -3,8 +3,9 @@
 
 let s:classpath_sep = has('unix') ? ':' : ';'
 
-let g:ale_java_javac_options = get(g:, 'ale_java_javac_options', '')
-let g:ale_java_javac_classpath = get(g:, 'ale_java_javac_classpath', '')
+call ale#Set('java_javac_executable', 'javac')
+call ale#Set('java_javac_options', '')
+call ale#Set('java_javac_classpath', '')
 
 function! ale_linters#java#javac#GetImportPaths(buffer) abort
     let l:pom_path = ale#path#FindNearestFile(a:buffer, 'pom.xml')
@@ -33,6 +34,10 @@ function! s:BuildClassPathOption(buffer, import_paths) abort
     return !empty(l:class_paths)
     \   ? '-cp ' . ale#Escape(join(l:class_paths, s:classpath_sep))
     \   : ''
+endfunction
+
+function! ale_linters#java#javac#GetExecutable(buffer) abort
+    return ale#Var(a:buffer, 'java_javac_executable')
 endfunction
 
 function! ale_linters#java#javac#GetCommand(buffer, import_paths) abort
@@ -72,11 +77,13 @@ function! ale_linters#java#javac#GetCommand(buffer, import_paths) abort
 
     " Create .class files in a temporary directory, which we will delete later.
     let l:class_file_directory = ale#engine#CreateDirectory(a:buffer)
+    let l:executable = ale_linters#java#javac#GetExecutable(a:buffer)
 
     " Always run javac from the directory the file is in, so we can resolve
     " relative paths correctly.
     return ale#path#BufferCdString(a:buffer)
-    \ . 'javac -Xlint'
+    \ . ale#Escape(l:executable)
+    \ . ' -Xlint'
     \ . ' ' . l:cp_option
     \ . ' ' . l:sp_option
     \ . ' -d ' . ale#Escape(l:class_file_directory)
@@ -119,7 +126,7 @@ endfunction
 
 call ale#linter#Define('java', {
 \   'name': 'javac',
-\   'executable': 'javac',
+\   'executable_callback': 'ale_linters#java#javac#GetExecutable',
 \   'command_chain': [
 \       {'callback': 'ale_linters#java#javac#GetImportPaths', 'output_stream': 'stdout'},
 \       {'callback': 'ale_linters#java#javac#GetCommand', 'output_stream': 'stderr'},

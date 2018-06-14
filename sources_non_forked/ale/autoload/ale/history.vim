@@ -1,6 +1,9 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Tools for managing command history
 
+" A flag for controlling the maximum size of the command history to store.
+let g:ale_max_buffer_history_size = get(g:, 'ale_max_buffer_history_size', 20)
+
 " Return a shallow copy of the command history for a given buffer number.
 function! ale#history#Get(buffer) abort
     return copy(getbufvar(a:buffer, 'ale_history', []))

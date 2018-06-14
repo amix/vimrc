@@ -3,7 +3,7 @@ scriptencoding utf-8
 " Description: Fixing C/C++ files with clang-format.
 
 call ale#Set('c_clangformat_executable', 'clang-format')
-call ale#Set('c_clangformat_use_global', 0)
+call ale#Set('c_clangformat_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('c_clangformat_options', '')
 
 function! ale#fixers#clangformat#GetExecutable(buffer) abort

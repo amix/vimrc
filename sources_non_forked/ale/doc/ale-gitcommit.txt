@@ -19,18 +19,20 @@ g:ale_gitcommit_gitlint_options               *g:ale_gitcommit_gitlint_options*
   Default: `''`
 
   This variable can be changed to add command-line arguments to the gitlint
-  invocation.
+  invocation. For example, you can specify the path to a configuration file. >
 
-  For example, to dinamically set the gitlint configuration file path, you
-  may want to set >
+    let g:ale_gitcommit_gitlint_options = '-C /home/user/.config/gitlint.ini'
+<
+  You can also disable particular error codes using this option. For example,
+  you can ignore errors for git commits with a missing body. >
 
-  let g:ale_gitcommit_gitlint_options = '-C /home/user/.config/gitlint.ini'
+    let g:ale_gitcommit_gitlint_options = '--ignore B6'
 <
 
 g:ale_gitcommit_gitlint_use_global         *g:ale_gitcommit_gitlint_use_global*
                                            *b:ale_gitcommit_gitlint_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   This variable controls whether or not ALE will search for gitlint in a
   virtualenv directory first. If this variable is set to `1`, then ALE will

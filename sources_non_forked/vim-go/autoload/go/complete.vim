@@ -1,12 +1,10 @@
-let s:sock_type = (has('win32') || has('win64')) ? 'tcp' : 'unix'
-
 function! s:gocodeCommand(cmd, args) abort
   let bin_path = go#path#CheckBinPath("gocode")
   if empty(bin_path)
     return []
   endif
 
-  let socket_type = get(g:, 'go_gocode_socket_type', s:sock_type)
+  let socket_type = go#config#GocodeSocketType()
 
   let cmd = [bin_path]
   let cmd = extend(cmd, ['-sock', socket_type])
@@ -45,27 +43,26 @@ function! s:sync_gocode(cmd, args, input) abort
   return l:result
 endfunction
 
-" TODO(bc): reset when gocode isn't running
 let s:optionsEnabled = 0
 function! s:gocodeEnableOptions() abort
   if s:optionsEnabled
     return
   endif
 
-  let bin_path = go#path#CheckBinPath("gocode")
-  if empty(bin_path)
+  let l:bin_path = go#path#CheckBinPath("gocode")
+  if empty(l:bin_path)
     return
   endif
 
   let s:optionsEnabled = 1
 
-  call go#util#System(printf('%s set propose-builtins %s', go#util#Shellescape(bin_path), s:toBool(get(g:, 'go_gocode_propose_builtins', 1))))
-  call go#util#System(printf('%s set autobuild %s', go#util#Shellescape(bin_path), s:toBool(get(g:, 'go_gocode_autobuild', 1))))
-  call go#util#System(printf('%s set unimported-packages %s', go#util#Shellescape(bin_path), s:toBool(get(g:, 'go_gocode_unimported_packages', 0))))
+  call go#util#Exec(['gocode', 'set', 'propose-builtins', s:toBool(go#config#GocodeProposeBuiltins())])
+  call go#util#Exec(['gocode', 'set', 'autobuild', s:toBool(go#config#GocodeAutobuild())])
+  call go#util#Exec(['gocode', 'set', 'unimported-packages', s:toBool(go#config#GocodeUnimportedPackages())])
 endfunction
 
 function! s:toBool(val) abort
-  if a:val | return 'true ' | else | return 'false' | endif
+  if a:val | return 'true' | else | return 'false' | endif
 endfunction
 
 function! s:gocodeAutocomplete() abort
@@ -85,7 +82,7 @@ function! go#complete#GetInfo() abort
 endfunction
 
 function! go#complete#Info(auto) abort
-  if go#util#has_job()
+  if go#util#has_job(1)
     return s:async_info(a:auto)
   else
     return s:sync_info(a:auto)
@@ -252,13 +249,13 @@ function! go#complete#Complete(findstart, base) abort
 endfunction
 
 function! go#complete#ToggleAutoTypeInfo() abort
-  if get(g:, "go_auto_type_info", 0)
-    let g:go_auto_type_info = 0
+  if go#config#AutoTypeInfo()
+    call go#config#SetAutoTypeInfo(0)
     call go#util#EchoProgress("auto type info disabled")
     return
   end
 
-  let g:go_auto_type_info = 1
+  call go#config#SetAutoTypeInfo(1)
   call go#util#EchoProgress("auto type info enabled")
 endfunction
 

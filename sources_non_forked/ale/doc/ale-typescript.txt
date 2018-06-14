@@ -59,7 +59,7 @@ g:ale_typescript_tslint_rules_dir           *g:ale_typescript_tslint_rules_dir*
 g:ale_typescript_tslint_use_global         *g:ale_typescript_tslint_use_global*
                                            *b:ale_typescript_tslint_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -91,7 +91,7 @@ g:ale_typescript_tsserver_config_path   *g:ale_typescript_tsserver_config_path*
 g:ale_typescript_tsserver_use_global     *g:ale_typescript_tsserver_use_global*
                                          *b:ale_typescript_tsserver_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   This variable controls whether or not ALE will search for a local path for
   tsserver first. If this variable is set to `1`, then ALE will always use the

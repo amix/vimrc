@@ -2,7 +2,7 @@
 " Description: Integration of elm-format with ALE.
 
 call ale#Set('elm_format_executable', 'elm-format')
-call ale#Set('elm_format_use_global', 0)
+call ale#Set('elm_format_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('elm_format_options', '--yes')
 
 function! ale#fixers#elm_format#GetExecutable(buffer) abort

@@ -2,7 +2,7 @@
 " Description: This file adds support for linting Swagger / OpenAPI documents using swaglint
 
 call ale#Set('yaml_swaglint_executable', 'swaglint')
-call ale#Set('yaml_swaglint_use_global', 0)
+call ale#Set('yaml_swaglint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#yaml#swaglint#GetExecutable(buffer) abort
     return ale#node#FindExecutable(a:buffer, 'yaml_swaglint', [

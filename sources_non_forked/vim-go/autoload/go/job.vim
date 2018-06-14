@@ -33,7 +33,7 @@
 function go#job#Spawn(args)
   let cbs = {}
   let state = {
-        \ 'winnr': winnr(),
+        \ 'winid': win_getid(winnr()),
         \ 'dir': getcwd(),
         \ 'jobdir': fnameescape(expand("%:p:h")),
         \ 'messages': [],
@@ -73,7 +73,7 @@ function go#job#Spawn(args)
     let self.exit_status = a:exitval
     let self.exited = 1
 
-    if get(g:, 'go_echo_command_info', 1)
+    if go#config#EchoCommandInfo()
       if a:exitval == 0
         call go#util#EchoSuccess("SUCCESS")
       else
@@ -104,15 +104,20 @@ function go#job#Spawn(args)
   let cbs.close_cb = function('s:close_cb', [], state)
 
   function state.show_errors(job, exit_status, data)
+    let l:winid = win_getid(winnr())
+    call win_gotoid(self.winid)
+
     let l:listtype = go#list#Type(self.for)
     if a:exit_status == 0
       call go#list#Clean(l:listtype)
+      call win_gotoid(l:winid)
       return
     endif
 
     let l:listtype = go#list#Type(self.for)
     if len(a:data) == 0
       call go#list#Clean(l:listtype)
+      call win_gotoid(l:winid)
       return
     endif
 
@@ -132,10 +137,11 @@ function go#job#Spawn(args)
     if empty(errors)
       " failed to parse errors, output the original content
       call go#util#EchoError(self.messages + [self.dir])
+      call win_gotoid(l:winid)
       return
     endif
 
-    if self.winnr == winnr()
+    if self.winid == l:winid
       call go#list#Window(l:listtype, len(errors))
       if !self.bang
         call go#list#JumpToFirst(l:listtype)

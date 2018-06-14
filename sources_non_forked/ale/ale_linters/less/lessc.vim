@@ -3,7 +3,7 @@
 
 call ale#Set('less_lessc_executable', 'lessc')
 call ale#Set('less_lessc_options', '')
-call ale#Set('less_lessc_use_global', 0)
+call ale#Set('less_lessc_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#less#lessc#GetExecutable(buffer) abort
     return ale#node#FindExecutable(a:buffer, 'less_lessc', [

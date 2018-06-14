@@ -1,8 +1,3 @@
-" By default use edit (current buffer view) to switch
-if !exists("g:go_alternate_mode")
-  let g:go_alternate_mode = "edit"
-endif
-
 " Test alternates between the implementation of code and the test code.
 function! go#alternate#Switch(bang, cmd) abort
   let file = expand('%')
@@ -23,7 +18,7 @@ function! go#alternate#Switch(bang, cmd) abort
     call go#util#EchoError("couldn't find ".alt_file)
     return
   elseif empty(a:cmd)
-    execute ":" . g:go_alternate_mode . " " . alt_file
+    execute ":" . go#config#AlternateMode() . " " . alt_file
   else
     execute ":" . a:cmd . " " . alt_file
   endif

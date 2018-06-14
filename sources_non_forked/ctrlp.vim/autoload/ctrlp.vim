@@ -563,7 +563,7 @@ fu! s:MatchIt(items, pat, limit, exc)
 	for item in a:items
 		let id += 1
 		try
-			if (s:matchcrfile || !( s:ispath && item == a:exc )) &&
+			if (s:matchcrfile || !( s:ispath && item ==# a:exc )) &&
 						\call(s:mfunc, [item, pat]) >= 0
 				cal add(lines, item)
 			en
@@ -1956,7 +1956,7 @@ endf
 
 fu! s:dictindex(dict, expr)
 	for key in keys(a:dict)
-		if a:dict[key] == a:expr | retu key | en
+		if a:dict[key] ==# a:expr | retu key | en
 	endfo
 	retu -1
 endf
@@ -2028,7 +2028,7 @@ fu! s:bufnrfilpath(line)
 endf
 
 fu! ctrlp#normcmd(cmd, ...)
-	let buftypes = [ 'quickfix', 'help' ]
+	let buftypes = [ 'quickfix', 'help', 'nofile' ]
 	if a:0 < 2 && s:nosplit() | retu a:cmd | en
 	let norwins = filter(range(1, winnr('$')),
 		\ 'index(buftypes, getbufvar(winbufnr(v:val), "&bt")) == -1 || s:isterminal(winbufnr(v:val))')
@@ -2618,6 +2618,7 @@ fu! ctrlp#init(type, ...)
 		en
 	en
 	cal ctrlp#setlines(s:settype(type))
+	set ft=ctrlp
 	cal ctrlp#syntax()
 	cal s:SetDefTxt()
 	let curName = s:CurTypeName()

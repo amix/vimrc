@@ -34,13 +34,13 @@ fi
 if [ $coverage -eq 1 ]; then
   covimerage -q run --report-file /tmp/vim-go-test/cov-profile.txt --append \
     $dir/bin/vim --noplugin -u NONE -N \
-      +"set shm+=WAFI rtp=$dir/share/vim/vimgo packpath=$dir/share/vim/vimgo,$vimgodir" \
+      +"set shm+=WAFI rtp^=$vimgodir packpath=$dir/share/vim/vimgo" \
       +'filetype plugin indent on' \
       +'packloadall!' \
       "$@"
 else
   $dir/bin/vim --noplugin -u NONE -N \
-    +"set shm+=WAFI rtp=$dir/share/vim/vimgo packpath=$dir/share/vim/vimgo,$vimgodir" \
+    +"set shm+=WAFI rtp^=$vimgodir packpath=$dir/share/vim/vimgo" \
     +'filetype plugin indent on' \
     +'packloadall!' \
     "$@"

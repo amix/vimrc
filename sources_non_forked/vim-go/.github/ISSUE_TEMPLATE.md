@@ -9,14 +9,13 @@
 
 ### Configuration (**MUST** fill this out):
 
-* Vim version (first two lines from `:version`):
-
-* Go version (`go version`):
-
-* Go environment (`go env`):
-
 * vim-go version:
 
 * `vimrc` you used to reproduce (use a *minimal* vimrc with other plugins disabled; do not link to a 2,000 line vimrc):
 
+* Vim version (first three lines from `:version`):
+
+* Go version (`go version`):
+
+* Go environment (`go env`):
 

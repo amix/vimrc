@@ -1,5 +1,79 @@
 ## unplanned
 
+FEATURES:
+
+* Two new text objects has been added: 
+  * `ic` (inner comment) selects the content of the comment, excluding the start/end markers (i.e: `//`, `/*`)
+  * `ac` (a comment) selects the content of the whole commment block, including markers
+  To use this new feature, make sure you use use the latest version of
+  [motion](https://github.com/fatih/motion). You can update the tool from Vim
+  via `:GoUpdateBinaries`
+  [[GH-1779]](https://github.com/fatih/vim-go/pull/1779)
+* Add `:GoPointsTo` to show all variables to which the pointer under the cursor
+  may point to.
+  [[GH-1751]](https://github.com/fatih/vim-go/pull/1751)
+* Add `:GoReportGitHubIssue` to initialize a new GitHub issue with as much data
+  that our template requests as possible.
+  [[GH-1738]](https://github.com/fatih/vim-go/pull/1738)
+
+IMPROVEMENTS:
+
+* Add build tags (with `g:go_build_tags`) to all commands that support it.
+  [[GH-1705]](https://github.com/fatih/vim-go/pull/1705)
+* Some command which operate on files (rather than Vim buffers) will now show a
+  warning if there are unsaved buffers, similar to Vim's `:make`.
+  [[GH-1754]](https://github.com/fatih/vim-go/pull/1754)
+* Don't return an error from `:GoGuru` functions when the import path is
+  unknown and scope is unneeded.
+  [[GH-1826]](https://github.com/fatih/vim-go/pull/1826)
+* Performance improvements for the `go.vim` syntax file.
+  [[GH-1799]](https://github.com/fatih/vim-go/pull/1799)
+* Allow `GoDebugBreakpoint` and `GoDebugCurrent` highlight groups to be
+  overridden by user configuration.
+  [[GH-1850]](https://github.com/vim-go/pull/1850)
+* Strip trailing carriage returns from quickfix errors that are parsed
+  manually. [[GH-1861]](https://github.com/fatih/vim-go/pull/1861).
+* Cleanup title of terminal window.
+  [[GH-1861]](https://github.com/fatih/vim-go/pull/1861).
+
+BUG FIXES:
+
+* Update the correct window's location list after a long running async job
+  completes, even when the user changes their window layout while the job is
+  running.
+  [[GH-1734]](https://github.com/fatih/vim-go/pull/1734)
+* Apply debugger mappings only for Go buffers, and not all buffers.
+  [[GH-1696]](https://github.com/fatih/vim-go/pull/1696)
+* The `gohtmltmpl` filetype will now highlight `{{ .. }}` syntax HTML attributes
+  and some other locations.
+  [[GH-1790]](https://github.com/fatih/vim-go/pull/1790)
+* Update using the correct logging flag option that was caused with the recent
+  delve changes
+  [[GH-1809]](https://github.com/fatih/vim-go/pull/1809)
+* Fix gocode option string values that would cause gocode settings not to set
+  correctly
+  [[GH-1818]](https://github.com/fatih/vim-go/pull/1818)
+* Fix Neovim handling of guru output.
+  [[GH-1846]](https://github.com/fatih/vim-go/pull/1846)
+
+BACKWARDS INCOMPATIBILITIES:
+
+* We switched to a [maintained fork of * gocode](https://github.com/mdempsky/gocode). 
+  The new fork doesn't support the following settings anymore and therefore are 
+  invalid. Please remove them from your vimrc until those are again supported 
+  by `gocode`.
+
+```
+g:go_gocode_autobuild
+g:go_gocode_propose_builtins
+g:go_gocode_unimported_packages
+```
+
+  Checkout the issue for more details [[GH-1851]](https://github.com/fatih/vim-go/pull/1851)
+
+ 
+
+
 ## 1.17 - (March 27, 2018)
 
 FEATURES:

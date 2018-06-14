@@ -1,6 +1,10 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Completion support for LSP linters
 
+let g:ale_completion_delay = get(g:, 'ale_completion_delay', 100)
+let g:ale_completion_excluded_words = get(g:, 'ale_completion_excluded_words', [])
+let g:ale_completion_max_suggestions = get(g:, 'ale_completion_max_suggestions', 50)
+
 let s:timer_id = -1
 let s:last_done_pos = []
 
@@ -28,6 +32,8 @@ let s:LSP_COMPLETION_REFERENCE_KIND = 18
 " the insert cursor is. If one of these matches, we'll check for completions.
 let s:should_complete_map = {
 \   '<default>': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$',
+\   'typescript': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$|''$|"$',
+\   'rust': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$|::$',
 \}
 
 " Regular expressions for finding the start column to replace with completion.
@@ -38,6 +44,8 @@ let s:omni_start_map = {
 " A map of exact characters for triggering LSP completions.
 let s:trigger_character_map = {
 \   '<default>': ['.'],
+\   'typescript': ['.', '''', '"'],
+\   'rust': ['.', '::'],
 \}
 
 function! s:GetFiletypeValue(map, filetype) abort
@@ -74,33 +82,49 @@ function! ale#completion#GetTriggerCharacter(filetype, prefix) abort
     return ''
 endfunction
 
-function! ale#completion#Filter(suggestions, prefix) abort
+function! ale#completion#Filter(buffer, suggestions, prefix) abort
+    let l:excluded_words = ale#Var(a:buffer, 'completion_excluded_words')
+
     " For completing...
     "   foo.
     "       ^
     " We need to include all of the given suggestions.
     if a:prefix is# '.'
-        return a:suggestions
+        let l:filtered_suggestions = a:suggestions
+    else
+        let l:filtered_suggestions = []
+
+        " Filter suggestions down to those starting with the prefix we used for
+        " finding suggestions in the first place.
+        "
+        " Some completion tools will include suggestions which don't even start
+        " with the characters we have already typed.
+        for l:item in a:suggestions
+            " A List of String values or a List of completion item Dictionaries
+            " is accepted here.
+            let l:word = type(l:item) == type('') ? l:item : l:item.word
+
+            " Add suggestions if the suggestion starts with a case-insensitive
+            " match for the prefix.
+            if l:word[: len(a:prefix) - 1] is? a:prefix
+                call add(l:filtered_suggestions, l:item)
+            endif
+        endfor
     endif
 
-    let l:filtered_suggestions = []
-
-    " Filter suggestions down to those starting with the prefix we used for
-    " finding suggestions in the first place.
-    "
-    " Some completion tools will include suggestions which don't even start
-    " with the characters we have already typed.
-    for l:item in a:suggestions
-        " A List of String values or a List of completion item Dictionaries
-        " is accepted here.
-        let l:word = type(l:item) == type('') ? l:item : l:item.word
-
-        " Add suggestions if the suggestion starts with a case-insensitive
-        " match for the prefix.
-        if l:word[: len(a:prefix) - 1] is? a:prefix
-            call add(l:filtered_suggestions, l:item)
+    if !empty(l:excluded_words)
+        " Copy the List if needed. We don't want to modify the argument.
+        " We shouldn't make a copy if we don't need to.
+        if l:filtered_suggestions is a:suggestions
+            let l:filtered_suggestions = copy(a:suggestions)
         endif
-    endfor
+
+        " Remove suggestions with words in the exclusion List.
+        call filter(
+        \   l:filtered_suggestions,
+        \   'index(l:excluded_words, type(v:val) is type('''') ? v:val : v:val.word) < 0',
+        \)
+    endif
 
     return l:filtered_suggestions
 endfunction
@@ -178,7 +202,9 @@ function! ale#completion#ParseTSServerCompletions(response) abort
 endfunction
 
 function! ale#completion#ParseTSServerCompletionEntryDetails(response) abort
+    let l:buffer = bufnr('')
     let l:results = []
+    let l:names_with_details = []
 
     for l:suggestion in a:response.body
         let l:displayParts = []
@@ -212,10 +238,44 @@ function! ale#completion#ParseTSServerCompletionEntryDetails(response) abort
         \})
     endfor
 
+    let l:names = getbufvar(l:buffer, 'ale_tsserver_completion_names', [])
+
+    if !empty(l:names) && len(l:names) != len(l:results)
+        let l:names_with_details = map(copy(l:results), 'v:val.word')
+        let l:missing_names = filter(
+        \   copy(l:names),
+        \   'index(l:names_with_details, v:val) < 0',
+        \)
+
+        for l:name in l:missing_names
+            call add(l:results, {
+            \   'word': l:name,
+            \   'kind': 'v',
+            \   'icase': 1,
+            \   'menu': '',
+            \   'info': '',
+            \})
+        endfor
+    endif
+
     return l:results
 endfunction
 
+function! ale#completion#NullFilter(buffer, item) abort
+   return 1
+endfunction
+
 function! ale#completion#ParseLSPCompletions(response) abort
+    let l:buffer = bufnr('')
+    let l:info = get(b:, 'ale_completion_info', {})
+    let l:Filter = get(l:info, 'completion_filter', v:null)
+
+    if l:Filter is v:null
+        let l:Filter = function('ale#completion#NullFilter')
+    else
+        let l:Filter = ale#util#GetFunction(l:Filter)
+    endif
+
     let l:item_list = []
 
     if type(get(a:response, 'result')) is type([])
@@ -228,6 +288,16 @@ function! ale#completion#ParseLSPCompletions(response) abort
     let l:results = []
 
     for l:item in l:item_list
+        if !call(l:Filter, [l:buffer, l:item])
+            continue
+        endif
+
+        let l:word = matchstr(l:item.label, '\v^[^(]+')
+
+        if empty(l:word)
+            continue
+        endif
+
         " See :help complete-items for Vim completion kinds
         if l:item.kind is s:LSP_COMPLETION_METHOD_KIND
             let l:kind = 'm'
@@ -244,13 +314,17 @@ function! ale#completion#ParseLSPCompletions(response) abort
         endif
 
         call add(l:results, {
-        \   'word': l:item.label,
+        \   'word': l:word,
         \   'kind': l:kind,
         \   'icase': 1,
-        \   'menu': l:item.detail,
-        \   'info': l:item.documentation,
+        \   'menu': get(l:item, 'detail', ''),
+        \   'info': get(l:item, 'documentation', ''),
         \})
     endfor
+
+    if has_key(l:info, 'prefix')
+        return ale#completion#Filter(l:buffer, l:results, l:info.prefix)
+    endif
 
     return l:results
 endfunction
@@ -264,19 +338,25 @@ function! ale#completion#HandleTSServerResponse(conn_id, response) abort
         return
     endif
 
+    let l:buffer = bufnr('')
     let l:command = get(a:response, 'command', '')
 
     if l:command is# 'completions'
         let l:names = ale#completion#Filter(
+        \   l:buffer,
         \   ale#completion#ParseTSServerCompletions(a:response),
         \   b:ale_completion_info.prefix,
         \)[: g:ale_completion_max_suggestions - 1]
+
+        " We need to remember some names for tsserver, as it doesn't send
+        " details back for everything we send.
+        call setbufvar(l:buffer, 'ale_tsserver_completion_names', l:names)
 
         if !empty(l:names)
             let b:ale_completion_info.request_id = ale#lsp#Send(
             \   b:ale_completion_info.conn_id,
             \   ale#lsp#tsserver_message#CompletionEntryDetails(
-            \       bufnr(''),
+            \       l:buffer,
             \       b:ale_completion_info.line,
             \       b:ale_completion_info.column,
             \       l:names,
@@ -349,6 +429,10 @@ function! s:GetLSPCompletions(linter) abort
     if l:request_id
         let b:ale_completion_info.conn_id = l:id
         let b:ale_completion_info.request_id = l:request_id
+
+        if has_key(a:linter, 'completion_filter')
+            let b:ale_completion_info.completion_filter = a:linter.completion_filter
+        endif
     endif
 endfunction
 
@@ -378,10 +462,7 @@ function! ale#completion#GetCompletions() abort
 
     for l:linter in ale#linter#Get(&filetype)
         if !empty(l:linter.lsp)
-            if l:linter.lsp is# 'tsserver'
-            \|| get(g:, 'ale_completion_experimental_lsp_support', 0)
-                call s:GetLSPCompletions(l:linter)
-            endif
+            call s:GetLSPCompletions(l:linter)
         endif
     endfor
 endfunction

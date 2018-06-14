@@ -688,6 +688,8 @@ snippet expb
 	expect { ${1:object} }.to ${0}
 snippet experr
 	expect { ${1:object} }.to raise_error ${2:StandardError}, /${0:message_regex}/
+snippet allow
+	allow(${1:object}).to ${0}
 snippet shared
 	shared_examples ${0:'shared examples name'}
 snippet ibl

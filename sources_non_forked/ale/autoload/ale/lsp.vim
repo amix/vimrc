@@ -6,7 +6,7 @@
 let s:connections = []
 let g:ale_lsp_next_message_id = 1
 
-function! s:NewConnection() abort
+function! s:NewConnection(initialization_options) abort
     " id: The job ID as a Number, or the server address as a string.
     " data: The message data received so far.
     " executable: An executable only set for program connections.
@@ -18,6 +18,7 @@ function! s:NewConnection() abort
     \   'projects': {},
     \   'open_documents': [],
     \   'callback_list': [],
+    \   'initialization_options': a:initialization_options,
     \}
 
     call add(s:connections, l:conn)
@@ -207,6 +208,11 @@ function! ale#lsp#HandleOtherInitializeResponses(conn, response) abort
 endfunction
 
 function! ale#lsp#HandleMessage(conn, message) abort
+    if type(a:message) != type('')
+        " Ignore messages that aren't strings.
+        return
+    endif
+
     let a:conn.data .= a:message
 
     " Parse the objects now if we can, and keep the remaining text.
@@ -266,7 +272,7 @@ endfunction
 "
 " The job ID will be returned for for the program if it ran, otherwise
 " 0 will be returned.
-function! ale#lsp#StartProgram(executable, command, project_root, callback) abort
+function! ale#lsp#StartProgram(executable, command, project_root, callback, initialization_options) abort
     if !executable(a:executable)
         return 0
     endif
@@ -274,7 +280,7 @@ function! ale#lsp#StartProgram(executable, command, project_root, callback) abor
     let l:conn = s:FindConnection('executable', a:executable)
 
     " Get the current connection or a new one.
-    let l:conn = !empty(l:conn) ? l:conn : s:NewConnection()
+    let l:conn = !empty(l:conn) ? l:conn : s:NewConnection(a:initialization_options)
     let l:conn.executable = a:executable
 
     if !has_key(l:conn, 'id') || !ale#job#IsRunning(l:conn.id)
@@ -300,10 +306,10 @@ function! ale#lsp#StartProgram(executable, command, project_root, callback) abor
 endfunction
 
 " Connect to an address and set up a callback for handling responses.
-function! ale#lsp#ConnectToAddress(address, project_root, callback) abort
+function! ale#lsp#ConnectToAddress(address, project_root, callback, initialization_options) abort
     let l:conn = s:FindConnection('id', a:address)
     " Get the current connection or a new one.
-    let l:conn = !empty(l:conn) ? l:conn : s:NewConnection()
+    let l:conn = !empty(l:conn) ? l:conn : s:NewConnection(a:initialization_options)
 
     if !has_key(l:conn, 'channel') || ch_status(l:conn.channel) isnot# 'open'
         let l:conn.channnel = ch_open(a:address, {
@@ -378,7 +384,7 @@ function! ale#lsp#Send(conn_id, message, ...) abort
         " Only send the init message once.
         if !l:project.init_request_id
             let [l:init_id, l:init_data] = ale#lsp#CreateMessageData(
-            \   ale#lsp#message#Initialize(l:project_root),
+            \   ale#lsp#message#Initialize(l:project_root, l:conn.initialization_options),
             \)
 
             let l:project.init_request_id = l:init_id

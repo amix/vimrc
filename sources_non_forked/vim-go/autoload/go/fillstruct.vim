@@ -3,6 +3,8 @@ function! go#fillstruct#FillStruct() abort
       \ '-file', bufname(''),
       \ '-offset', go#util#OffsetCursor(),
       \ '-line', line('.')]
+      " Needs: https://github.com/davidrjenni/reftools/pull/14
+      "\ '-tags', go#config#BuildTags()]
 
   " Read from stdin if modified.
   if &modified

@@ -11,6 +11,25 @@ function! ale#util#FeedKeys(...) abort
     return call('feedkeys', a:000)
 endfunction
 
+" Show a message in as small a window as possible.
+"
+" Vim 8 does not support echoing long messages from asynchronous callbacks,
+" but NeoVim does. Small messages can be echoed in Vim 8, and larger messages
+" have to be shown in preview windows.
+function! ale#util#ShowMessage(string) abort
+    " We have to assume the user is using a monospace font.
+    if has('nvim') || (a:string !~? "\n" && len(a:string) < &columns)
+        execute 'echo a:string'
+    else
+        call ale#preview#Show(split(a:string, "\n"))
+    endif
+endfunction
+
+" A wrapper function for execute, so we can test executing some commands.
+function! ale#util#Execute(expr) abort
+    execute a:expr
+endfunction
+
 if !exists('g:ale#util#nul_file')
     " A null file for sending output to nothing.
     let g:ale#util#nul_file = '/dev/null'
@@ -31,6 +50,42 @@ function! ale#util#GetFunction(string_or_ref) abort
     endif
 
     return a:string_or_ref
+endfunction
+
+function! ale#util#Open(filename, line, column, options) abort
+    if get(a:options, 'open_in_tab', 0)
+        call ale#util#Execute('tabedit ' . fnameescape(a:filename))
+    else
+        call ale#util#Execute('edit ' . fnameescape(a:filename))
+    endif
+
+    call cursor(a:line, a:column)
+endfunction
+
+let g:ale#util#error_priority = 5
+let g:ale#util#warning_priority = 4
+let g:ale#util#info_priority = 3
+let g:ale#util#style_error_priority = 2
+let g:ale#util#style_warning_priority = 1
+
+function! ale#util#GetItemPriority(item) abort
+    if a:item.type is# 'I'
+        return g:ale#util#info_priority
+    endif
+
+    if a:item.type is# 'W'
+        if get(a:item, 'sub_type', '') is# 'style'
+            return g:ale#util#style_warning_priority
+        endif
+
+        return g:ale#util#warning_priority
+    endif
+
+    if get(a:item, 'sub_type', '') is# 'style'
+        return g:ale#util#style_error_priority
+    endif
+
+    return g:ale#util#error_priority
 endfunction
 
 " Compare two loclist items for ALE, sorted by their buffers, filenames, and
@@ -67,6 +122,23 @@ function! ale#util#LocItemCompare(left, right) abort
     endif
 
     if a:left.col > a:right.col
+        return 1
+    endif
+
+    " When either of the items lacks a problem type, then the two items should
+    " be considered equal. This is important for loclist jumping.
+    if !has_key(a:left, 'type') || !has_key(a:right, 'type')
+        return 0
+    endif
+
+    let l:left_priority = ale#util#GetItemPriority(a:left)
+    let l:right_priority = ale#util#GetItemPriority(a:right)
+
+    if l:left_priority < l:right_priority
+        return -1
+    endif
+
+    if l:left_priority > l:right_priority
         return 1
     endif
 
@@ -136,6 +208,17 @@ function! ale#util#BinarySearch(loclist, buffer, line, column) abort
             \&& a:loclist[l:index + 1].bufnr == a:buffer
             \&& a:loclist[l:index + 1].lnum == a:line
             \&& a:loclist[l:index + 1].col <= a:column
+                let l:index += 1
+            endwhile
+
+            " Scan forwards to find the last item on the column for the item
+            " we found, which will have the most serious problem.
+            let l:item_column = a:loclist[l:index].col
+
+            while l:index < l:max
+            \&& a:loclist[l:index + 1].bufnr == a:buffer
+            \&& a:loclist[l:index + 1].lnum == a:line
+            \&& a:loclist[l:index + 1].col == l:item_column
                 let l:index += 1
             endwhile
 
@@ -287,8 +370,10 @@ if !exists('s:patial_timers')
 endif
 
 function! s:ApplyPartialTimer(timer_id) abort
-    let [l:Callback, l:args] = remove(s:partial_timers, a:timer_id)
-    call call(l:Callback, [a:timer_id] + l:args)
+    if has_key(s:partial_timers, a:timer_id)
+        let [l:Callback, l:args] = remove(s:partial_timers, a:timer_id)
+        call call(l:Callback, [a:timer_id] + l:args)
+    endif
 endfunction
 
 " Given a delay, a callback, a List of arguments, start a timer with
@@ -310,4 +395,14 @@ function! ale#util#StopPartialTimer(timer_id) abort
     if has_key(s:partial_timers, a:timer_id)
         call remove(s:partial_timers, a:timer_id)
     endif
+endfunction
+
+" Given a possibly multi-byte string and a 1-based character position on a
+" line, return the 1-based byte position on that line.
+function! ale#util#Col(str, chr) abort
+    if a:chr < 2
+        return a:chr
+    endif
+
+    return strlen(join(split(a:str, '\zs')[0:a:chr - 2], '')) + 1
 endfunction

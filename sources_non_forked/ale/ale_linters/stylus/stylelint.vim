@@ -2,7 +2,7 @@
 
 call ale#Set('stylus_stylelint_executable', 'stylelint')
 call ale#Set('stylus_stylelint_options', '')
-call ale#Set('stylus_stylelint_use_global', 0)
+call ale#Set('stylus_stylelint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#stylus#stylelint#GetExecutable(buffer) abort
     return ale#node#FindExecutable(a:buffer, 'stylus_stylelint', [

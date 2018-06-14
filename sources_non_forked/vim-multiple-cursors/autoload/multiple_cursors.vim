@@ -283,6 +283,22 @@ function! multiple_cursors#find(start, end, pattern)
   endif
 endfunction
 
+" apply multiple_cursors#find() on the whole buffer
+function! multiple_cursors#select_all(mode, word_boundary)
+  if a:mode == 'v'
+    let a_save = @a
+    normal! gv"ay
+    let pattern = @a
+    let @a = a_save
+  elseif a:mode == 'n'
+    let pattern = expand('<cword>')
+  endif
+  if a:word_boundary == 1
+    let pattern = '\<'.pattern.'\>'
+  endif
+  call multiple_cursors#find(1, line('$'), pattern)
+endfunction
+
 "===============================================================================
 " Cursor class
 "===============================================================================
@@ -1044,8 +1060,8 @@ endfunction
 
 " Wrapper around getchar() that returns the string representation of the user
 " input
-function! s:get_char()
-  let c = getchar()
+function! s:get_char(...)
+  let c = (a:0 == 0) ? getchar() : getchar(a:1)
   " If the character is a number, then it's not a special key
   if type(c) == 0
     let c = nr2char(c)
@@ -1056,7 +1072,7 @@ endfunction
 " Quits multicursor mode and clears all cursors. Return true if exited
 " successfully.
 function! s:exit()
-  if s:last_char() !=# g:multi_cursor_quit_key
+  if s:char !=# g:multi_cursor_quit_key
     return 0
   endif
   let exit = 0
@@ -1179,6 +1195,10 @@ function! s:end_latency_measure()
   let s:skip_latency_measure = 0
 endfunction
 
+function! s:get_time_in_ms()
+  return str2nr(substitute(reltimestr(reltime()), '\.\(...\).*', '\1', ''))
+endfunction
+
 function! s:last_char()
   return s:char[len(s:char)-1]
 endfunction
@@ -1215,17 +1235,9 @@ function! s:wait_for_user_input(mode)
   "   imap jjj JJJ
   " will always trigger the 'jj' mapping
   if s:from_mode ==# 'i' && mapcheck(s:char, "i") != ""
-    let poll_count = 0
     let map_dict = {}
-    while poll_count < &timeoutlen
-      let c = getchar(0)
-      let char_type = type(c)
-      let poll_count += 1.5
-      if char_type == 0 && c != 0
-        let s:char .= nr2char(c)
-      elseif char_type == 1 " char with more than 8 bits (as string)
-        let s:char .= c
-      endif
+    let s_time = s:get_time_in_ms()
+    while 1
       let map_dict = maparg(s:char, "i", 0, 1)
       " break if chars exactly match mapping or if chars don't match beging of mapping anymore
       if map_dict != {} || mapcheck(s:char, "i") == ""
@@ -1233,13 +1245,20 @@ function! s:wait_for_user_input(mode)
           " handle case where {rhs} is a function
           exec 'let char_mapping = ' . map_dict['rhs']
         else
-          let char_mapping = get(map_dict, 'rhs', s:char)
+          let char_mapping = maparg(s:char, "i")
         endif
         " handle case where mapping is <esc>
         exec 'let s:char = "'.substitute(char_mapping, '<', '\\<', 'g').'"'
         break
       endif
-      sleep 1m
+      if s:get_time_in_ms() > (s_time + &timeoutlen)
+        break
+      endif
+      let new_char = s:get_char(0)
+      let s:char .= new_char
+      if new_char == ''
+        sleep 50m
+      endif
     endwhile
   elseif s:from_mode !=# 'i' && s:char[0] ==# ":"
     call feedkeys(s:char)
@@ -1264,13 +1283,42 @@ function! s:wait_for_user_input(mode)
   " Clears any echoes we might've added
   normal! :<Esc>
 
+  " add chars to s:char if it start like a special/quit key
+  let is_special_key = 0
+  let sk_list = get(s:special_keys, s:from_mode, [])
+  let is_special_key = (index(sk_list, s:char) != -1)
+  let is_quit_key = 0
+  let s_time = s:get_time_in_ms()
+  while 1
+    let start_special_key = (index(map(sk_list[:], 'v:val[0:len(s:char)-1] == s:char'), 1) > -1)
+    let start_quit_key = (g:multi_cursor_quit_key[0:len(s:char)-1] == s:char)
+    if start_special_key == 0 && start_quit_key == 0
+      break
+    else
+      let is_special_key = (index(sk_list, s:char) != -1)
+      let is_quit_key = (g:multi_cursor_quit_key == s:char)
+      if is_special_key == 1 || is_quit_key == 1
+        break
+      else
+        if s:get_time_in_ms() > (s_time + &timeoutlen)
+          break
+        endif
+        let new_char = s:get_char(0)
+        let s:char .= new_char
+        if new_char == ''
+          sleep 50m
+        endif
+      endif
+    end
+  endwhile
+
   if s:exit()
     return
   endif
 
   " If the key is a special key and we're in the right mode, handle it
-  if index(get(s:special_keys, s:from_mode, []), s:last_char()) != -1
-    call s:handle_special_key(s:last_char(), s:from_mode)
+  if is_special_key == 1
+    call s:handle_special_key(s:char, s:from_mode)
     call s:skip_latency_measure()
   else
     call s:cm.start_loop()

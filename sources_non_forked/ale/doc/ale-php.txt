@@ -37,7 +37,7 @@ g:ale_php_langserver_executable               *g:ale_php_langserver_executable*
 g:ale_php_langserver_use_global               *g:ale_php_langserver_use_global*
                                               *b:ale_php_langserver_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   This variable can be set to `1` to force the language server to be run with
   the executable set for |g:ale_php_langserver_executable|.
@@ -48,7 +48,7 @@ g:ale_php_langserver_use_global               *g:ale_php_langserver_use_global*
 ===============================================================================
 phan                                                             *ale-php-phan*
 
-WARNING: please do not use this linter if you have an configuration file
+WARNING: please use the phan_client linter if you have an configuration file
 for your project because the phan will look into your entirely project and
 ale will display in the current buffer warnings that may belong to other file.
 
@@ -57,8 +57,22 @@ g:ale_php_phan_minimum_severity               *g:ale_php_phan_minimum_severity*
   Type: |Number|
   Default: `0`
 
-  This variable defines the minimum severity level
+  This variable defines the minimum severity level.
 
+g:ale_php_phan_executable                           *g:ale_php_phan_executable*
+                                                    *b:ale_php_phan_executable*
+  Type: |String|
+  Default: `'phan'`
+
+  This variable sets executable used for phan or phan_client.
+
+g:ale_php_phan_use_client                           *g:ale_php_phan_use_client*
+                                                    *b:ale_php_phan_use_client*
+  Type: |Number|
+  Default: `get(g:, 'ale_php_phan_use_client', 0)`
+
+  This variable can be set to 1 to use the phan_client with phan daemon mode
+  instead of the phan standalone.
 
 ===============================================================================
 phpcbf                                                         *ale-php-phpcbf*
@@ -84,7 +98,7 @@ g:ale_php_phpcbf_standard                           *g:ale_php_phpcbf_standard*
 g:ale_php_phpcbf_use_global                       *g:ale_php_phpcbf_use_global*
                                                   *b:ale_php_phpcbf_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -113,7 +127,7 @@ g:ale_php_phpcs_standard                             *g:ale_php_phpcs_standard*
 g:ale_php_phpcs_use_global                         *g:ale_php_phpcs_use_global*
                                                    *b:ale_php_phpcs_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -179,9 +193,16 @@ g:ale_php_cs_fixer_executable                    *g:ale_php_cs_fixer_executable*
 g:ale_php_cs_fixer_use_global                    *g:ale_php_cs_fixer_use_global*
                                                  *b:ale_php_cs_fixer_use_global*
   Type: |Boolean|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   This variable force globally installed fixer.
+
+g:ale_php_cs_fixer_options                          *g:ale_php_cs_fixer_options*
+                                                    *b:ale_php_cs_fixer_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to php-cs-fixer.
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

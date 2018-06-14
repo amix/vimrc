@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# Benchmark the syntax/go.vim file.
+#
+# The first argument is the Vim version to test (as in run-vim), the rest of the
+# agument are g:go_highlight_* settings (without that prefix). You can use "ALL"
+# to set all the options.
+#
+
+set -euC
+vimgodir=$(cd -P "$(dirname "$0")/.." > /dev/null && pwd)
+cd "$vimgodir"
+
+if [ -z "${1:-}" ]; then
+  echo "unknown version: '${1:-}'"
+  echo "First argument must be 'vim-7.4', 'vim-8.0', or 'nvim'."
+  exit 1
+fi
+
+if [ -z "${2:-}" ]; then
+  echo "file not set"
+  echo "Second argument must be a Go file to benchmark, as 'filename:linenr'"
+  exit 1
+fi
+
+vim=$1
+file="$(echo "$2" | cut -d : -f 1)"
+line="$(echo "$2" | cut -d : -f 2)"
+if [ -z "$line" -o "$line" = "$file" ]; then
+  echo "Second argument must be a Go file to benchmark, as 'filename:linenr'"
+  exit 1
+fi
+
+shift; shift
+export RUNBENCH_SETTINGS=$@
+export RUNBENCH_OUT="$(mktemp -p "${TMPDIR:-/tmp}" vimgo-bench.XXXXX)"
+
+"$vimgodir/scripts/run-vim" $vim \
+  +"silent e $file" \
+  +"normal! ${line}G" \
+  -S ./scripts/runbench.vim
+
+echo "Report written to:"
+echo "$RUNBENCH_OUT"

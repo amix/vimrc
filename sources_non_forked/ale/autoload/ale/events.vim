@@ -19,7 +19,7 @@ function! ale#events#SaveEvent(buffer) abort
     endif
 
     if ale#Var(a:buffer, 'fix_on_save')
-        let l:will_fix = ale#fix#Fix('save_file')
+        let l:will_fix = ale#fix#Fix(a:buffer, 'save_file')
         let l:should_lint = l:should_lint && !l:will_fix
     endif
 

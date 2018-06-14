@@ -169,7 +169,7 @@ endsnippet
 # error multiple return
 snippet errn, "Error return with two return values" !b
 if err != nil {
-	return ${1:nil}, err
+	return ${1:nil}, ${2:err}
 }
 ${0}
 endsnippet

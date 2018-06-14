@@ -157,6 +157,26 @@ g:ale_cpp_cpplint_options                           *g:ale_cpp_cpplint_options*
 
 
 ===============================================================================
+cquery                                                         *ale-cpp-cquery*
+
+g:ale_cpp_cquery_executable                       *g:ale_cpp_cquery_executable*
+                                                  *b:ale_cpp_cquery_executable*
+  Type: |String|
+  Default: `'cquery'`
+
+  This variable can be changed to use a different executable for cquery.
+
+
+g:ale_cpp_cquery_cache_directory             *g:ale_cpp_cquery_cache_directory*
+                                             *b:ale_cpp_cquery_cache_directory*
+  Type: |String|
+  Default: `'~/.cache/cquery'`
+
+  This variable can be changed to decide which directory cquery uses for its
+  cache.
+
+
+===============================================================================
 flawfinder                                                 *ale-cpp-flawfinder*
 
 g:ale_cpp_flawfinder_executable               *g:ale_cpp_flawfinder_executable*

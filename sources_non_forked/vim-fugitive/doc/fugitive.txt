@@ -41,10 +41,11 @@ that are part of Git repositories).
                         -     |:Git| add
                         -     |:Git| reset (staged files)
                         a     Show alternative format
-                        cA    |:Gcommit| --amend --reuse-message=HEAD
                         ca    |:Gcommit| --amend
                         cc    |:Gcommit|
-                        cva   |:Gcommit| --amend --verbose
+                        ce    |:Gcommit| --amend --no-edit
+                        cw    |:Gcommit| --amend --only
+                        cva   |:Gcommit| --verbose --amend
                         cvc   |:Gcommit| --verbose
                         D     |:Gdiff|
                         ds    |:Gsdiff|
@@ -85,6 +86,10 @@ that are part of Git repositories).
 
                                                 *fugitive-:Gpull*
 :Gpull [args]           Like |:Gmerge|, but for git-pull.
+
+                                                *fugitive-:Grebase*
+:Grebase [args]         Like |:Gmerge|, but for git-rebase.  Interactive
+                        rebase not suppported.
 
                                                 *fugitive-:Gpush*
 :Gpush [args]           Invoke git-push, load the results into the |quickfix|
@@ -196,7 +201,13 @@ that are part of Git repositories).
 :Gmove {destination}    Wrapper around git-mv that renames the buffer
                         afterward.  The destination is relative to the current
                         directory except when started with a /, in which case
-                        it is relative to the work tree.  Add a ! to pass -f.
+                        it is relative to the work tree.  (This is a holdover
+                        from before |:Grename| and will be removed.)  Add a !
+                        to pass -f.
+
+                                                *fugitive-:Grename*
+:Grename {destination}  Like |:Gmove| but operates relative to the parent
+                        directory of the current file.
 
                                                 *fugitive-:Gdelete*
 :Gdelete                Wrapper around git-rm that deletes the buffer
@@ -339,16 +350,16 @@ HEAD^:Makefile  The file named Makefile in the parent of HEAD
 
 STATUSLINE                                      *fugitive-statusline*
 
-                                                *fugitive#statusline()*
-Add %{fugitive#statusline()} to your statusline to get an indicator including
+                                *FugitiveStatusline()* *fugitive#statusline()*
+Add %{FugitiveStatusline()} to your statusline to get an indicator including
 the current branch and the currently edited file's commit.  If you don't have
 a statusline, this one matches the default when 'ruler' is set:
 >
-    set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
+    set statusline=%<%f\ %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
 <
-                                                *fugitive#head(...)*
-Use fugitive#head() to return the name of the current branch. If the current
-HEAD is detached, fugitive#head() will return the empty string, unless the
+                                *FugitiveHead(...)* *fugitive#head(...)*
+Use FugitiveHead() to return the name of the current branch. If the current
+HEAD is detached, FugitiveHead() will return the empty string, unless the
 optional argument is given, in which case the hash of the current commit will
 be truncated to the given number of characters.
 

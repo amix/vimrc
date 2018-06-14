@@ -27,8 +27,8 @@ function! go#import#SwitchImport(enabled, localname, path, bang) abort
   endif
 
   if a:bang == "!"
-    let out = go#util#System("go get -u -v ".shellescape(path))
-    if go#util#ShellError() != 0
+    let [l:out, l:err] = go#util#Exec(['go', 'get', '-u', '-v', path])
+    if err != 0
       call s:Error("Can't find import: " . path . ":" . out)
     endif
   endif

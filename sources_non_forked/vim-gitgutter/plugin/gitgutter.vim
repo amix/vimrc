@@ -76,6 +76,14 @@ call gitgutter#highlight#define_sign_column_highlight()
 call gitgutter#highlight#define_highlights()
 call gitgutter#highlight#define_signs()
 
+" Prevent infinite loop where:
+" - executing a job in the foreground launches a new window which takes the focus;
+" - when the job finishes, focus returns to gvim;
+" - the FocusGained event triggers a new job (see below).
+if gitgutter#utility#windows() && !(g:gitgutter_async && gitgutter#async#available())
+  set noshelltemp
+endif
+
 " }}}
 
 " Primary functions {{{
@@ -159,46 +167,37 @@ command! -bar GitGutterDebug call gitgutter#debug#debug()
 nnoremap <silent> <expr> <Plug>GitGutterNextHunk &diff ? ']c' : ":\<C-U>execute v:count1 . 'GitGutterNextHunk'\<CR>"
 nnoremap <silent> <expr> <Plug>GitGutterPrevHunk &diff ? '[c' : ":\<C-U>execute v:count1 . 'GitGutterPrevHunk'\<CR>"
 
-if g:gitgutter_map_keys
-  if !hasmapto('<Plug>GitGutterPrevHunk') && maparg('[c', 'n') ==# ''
-    nmap [c <Plug>GitGutterPrevHunk
-  endif
-  if !hasmapto('<Plug>GitGutterNextHunk') && maparg(']c', 'n') ==# ''
-    nmap ]c <Plug>GitGutterNextHunk
-  endif
-endif
-
-
 nnoremap <silent> <Plug>GitGutterStageHunk   :GitGutterStageHunk<CR>
 nnoremap <silent> <Plug>GitGutterUndoHunk    :GitGutterUndoHunk<CR>
 nnoremap <silent> <Plug>GitGutterPreviewHunk :GitGutterPreviewHunk<CR>
 
-if g:gitgutter_map_keys
-  if !hasmapto('<Plug>GitGutterStageHunk') && maparg('<Leader>hs', 'n') ==# ''
-    nmap <Leader>hs <Plug>GitGutterStageHunk
-  endif
-  if !hasmapto('<Plug>GitGutterUndoHunk') && maparg('<Leader>hu', 'n') ==# ''
-    nmap <Leader>hu <Plug>GitGutterUndoHunk
-  endif
-  if !hasmapto('<Plug>GitGutterPreviewHunk') && maparg('<Leader>hp', 'n') ==# ''
-    nmap <Leader>hp <Plug>GitGutterPreviewHunk
-  endif
-
-  if !hasmapto('<Plug>GitGutterTextObjectInnerPending') && maparg('ic', 'o') ==# ''
-    omap ic <Plug>GitGutterTextObjectInnerPending
-  endif
-  if !hasmapto('<Plug>GitGutterTextObjectOuterPending') && maparg('ac', 'o') ==# ''
-    omap ac <Plug>GitGutterTextObjectOuterPending
-  endif
-  if !hasmapto('<Plug>GitGutterTextObjectInnerVisual') && maparg('ic', 'x') ==# ''
-    xmap ic <Plug>GitGutterTextObjectInnerVisual
-  endif
-  if !hasmapto('<Plug>GitGutterTextObjectOuterVisual') && maparg('ac', 'x') ==# ''
-    xmap ac <Plug>GitGutterTextObjectOuterVisual
-  endif
-endif
-
 " }}}
+
+function! s:flag_inactive_tabs()
+  let active_tab = tabpagenr()
+  for i in range(1, tabpagenr('$'))
+    if i != active_tab
+      call settabvar(i, 'gitgutter_force', 1)
+    endif
+  endfor
+endfunction
+
+function! s:on_bufenter()
+  if exists('t:gitgutter_didtabenter') && t:gitgutter_didtabenter
+    let t:gitgutter_didtabenter = 0
+    let force = !g:gitgutter_terminal_reports_focus
+
+    if exists('t:gitgutter_force') && t:gitgutter_force
+      let t:gitgutter_force = 0
+      let force = 1
+    endif
+
+    call gitgutter#all(force)
+  else
+    call gitgutter#init_buffer(bufnr(''))
+    call gitgutter#process_buffer(bufnr(''), !g:gitgutter_terminal_reports_focus)
+  endif
+endfunction
 
 " Autocommands {{{
 
@@ -207,14 +206,7 @@ augroup gitgutter
 
   autocmd TabEnter * let t:gitgutter_didtabenter = 1
 
-  autocmd BufEnter *
-        \ if exists('t:gitgutter_didtabenter') && t:gitgutter_didtabenter |
-        \   let t:gitgutter_didtabenter = 0 |
-        \   call gitgutter#all(!g:gitgutter_terminal_reports_focus) |
-        \ else |
-        \   call gitgutter#init_buffer(bufnr('')) |
-        \   call gitgutter#process_buffer(bufnr(''), !g:gitgutter_terminal_reports_focus) |
-        \ endif
+  autocmd BufEnter * call s:on_bufenter()
 
   autocmd CursorHold,CursorHoldI            * call gitgutter#process_buffer(bufnr(''), 0)
   autocmd FileChangedShellPost,ShellCmdPost * call gitgutter#process_buffer(bufnr(''), 1)
@@ -224,7 +216,7 @@ augroup gitgutter
   "   vim -o file1 file2
   autocmd VimEnter * if winnr() != winnr('$') | call gitgutter#all(0) | endif
 
-  autocmd FocusGained * call gitgutter#all(1)
+  autocmd FocusGained * call gitgutter#all(1) | call s:flag_inactive_tabs()
 
   autocmd ColorScheme * call gitgutter#highlight#define_sign_column_highlight() | call gitgutter#highlight#define_highlights()
 

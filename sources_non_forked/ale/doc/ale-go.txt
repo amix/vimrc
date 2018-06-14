@@ -73,8 +73,8 @@ g:ale_go_gometalinter_options                   *g:ale_go_gometalinter_options*
   number of linters known to be slow or consume a lot of resources.
 
 
-g:ale_go_gometalinter_package                   *g:ale_go_gometalinter_package*
-                                                *b:ale_go_gometalinter_package*
+g:ale_go_gometalinter_lint_package         *g:ale_go_gometalinter_lint_package*
+                                           *b:ale_go_gometalinter_lint_package*
   Type: |Number|
   Default: `0`
 
@@ -94,8 +94,8 @@ g:ale_go_staticcheck_options                     *g:ale_go_staticcheck_options*
   linter.
 
 
-g:ale_go_staticcheck_package                     *g:ale_go_staticcheck_package*
-                                                 *b:ale_go_staticcheck_package*
+g:ale_go_staticcheck_lint_package           *g:ale_go_staticcheck_lint_package*
+                                            *b:ale_go_staticcheck_lint_package*
   Type: |Number|
   Default: `0`
 

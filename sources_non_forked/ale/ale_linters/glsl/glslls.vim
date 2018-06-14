@@ -18,10 +18,6 @@ function! ale_linters#glsl#glslls#GetCommand(buffer) abort
     return ale#Escape(l:executable) . l:logfile_args . ' --stdin'
 endfunction
 
-function! ale_linters#glsl#glslls#GetLanguage(buffer) abort
-    return 'glsl'
-endfunction
-
 function! ale_linters#glsl#glslls#GetProjectRoot(buffer) abort
     let l:project_root = ale#c#FindProjectRoot(a:buffer)
 
@@ -33,6 +29,6 @@ call ale#linter#Define('glsl', {
 \   'lsp': 'stdio',
 \   'executable_callback': 'ale_linters#glsl#glslls#GetExecutable',
 \   'command_callback': 'ale_linters#glsl#glslls#GetCommand',
-\   'language_callback': 'ale_linters#glsl#glslls#GetLanguage',
+\   'language': 'glsl',
 \   'project_root_callback': 'ale_linters#glsl#glslls#GetProjectRoot',
 \})

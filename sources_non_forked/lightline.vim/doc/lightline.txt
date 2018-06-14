@@ -4,7 +4,7 @@ Version: 0.1
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2017/12/24 21:34:15.
+Last Change: 2018/04/28 00:08:18.
 
 CONTENTS					*lightline-contents*
 
@@ -228,9 +228,8 @@ OPTIONS						*lightline-option*
 		The colorscheme for lightline.vim.
 		Currently, wombat, solarized, powerline, jellybeans, Tomorrow,
 		Tomorrow_Night, Tomorrow_Night_Blue, Tomorrow_Night_Eighties,
-		PaperColor, seoul256, landscape, one, Dracula, darcula,
-		molokai, materia, material, OldHope, nord, 16color and deus
-		are available.
+		PaperColor, seoul256, landscape, one, darcula, molokai, materia,
+		material, OldHope, nord, 16color and deus are available.
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'
@@ -577,7 +576,7 @@ defines the colors for the components on the left hand side, in normal mode.
 defines the colors for the selected tab in tabline. In general, each palette
 follows the following style:
 >
-	let s:p.{mode}.{where} = [ [ {guifg}, {guibg}, {cuifg}, {cuibg} ], ... ]
+	let s:p.{mode}.{where} = [ [ {guifg}, {guibg}, {ctermfg}, {ctermbg} ], ... ]
 <
 
 
@@ -621,7 +620,7 @@ colors.
 For the complete list of components the color of which you should define in
 your colorscheme, see the colorscheme files in lightline.
 
-It is sometimes painful to write all the colors for both gui and cui.
+It is sometimes painful to write all the colors for both gui and cterm.
 Actually, lightline has some useful functions for writing colorschemes. For
 example, see
 	lightline.vim/autoload/lightline/colorscheme/Tomorrow_Night.vim
@@ -630,7 +629,7 @@ normal colorscheme form using:
 >
 	let g:lightline#colorscheme#Tomorrow_Night#palette = lightline#colorscheme#fill(s:p)
 <
-This function fills the cui colors for a palette which has only gui colors, or
+This function fills the cterm colors for a palette which has only gui colors, or
 vice versa. However, note that using the convenient function sources an
 additional Vim script file (autoload/lightline/colorscheme.vim), which causes
 a little slow down. If you want to avoid this situation, write all the colors

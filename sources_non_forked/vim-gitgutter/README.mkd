@@ -470,6 +470,13 @@ Add this to your vim configuration (in an `/after/plugin` directory):
 autocmd! gitgutter CursorHold,CursorHoldI
 ```
 
+> I turned off realtime updates, how can I have signs updated when I save a file?
+
+If you really want to update the signs when you save a file, add this to your vimrc:
+
+```viml
+autocmd BufWritePost * GitGutter
+```
 
 > Why can't I unstage staged changes?
 

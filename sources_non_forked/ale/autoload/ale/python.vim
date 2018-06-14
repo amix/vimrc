@@ -15,6 +15,7 @@ let g:ale_virtualenv_dir_names = get(g:, 'ale_virtualenv_dir_names', [
 
 function! ale#python#FindProjectRootIni(buffer) abort
     for l:path in ale#path#Upwards(expand('#' . a:buffer . ':p:h'))
+        " If you change this, update ale-python-root documentation.
         if filereadable(l:path . '/MANIFEST.in')
         \|| filereadable(l:path . '/setup.cfg')
         \|| filereadable(l:path . '/pytest.ini')

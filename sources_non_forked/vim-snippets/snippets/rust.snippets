@@ -191,3 +191,16 @@ snippet as "assert!"
 	assert!(${1:predicate});
 snippet ase "assert_eq!"
 	assert_eq!(${1:expected}, ${2:actual});
+# Implementations
+snippet asref "AsRef trait implementation"
+	impl AsRef<${1:Ref}> for ${2:Type} {
+		fn as_ref(&self) -> &${3:$1} {
+			&self.${0:field}
+		}
+	}
+snippet asmut "AsMut trait implementation"
+	impl AsMut<${1:Ref}> for ${2:Type} {
+		fn as_mut(&mut self) -> &mut ${3:$1} {
+			&mut self.${0:field}
+		}
+	}

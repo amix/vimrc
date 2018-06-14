@@ -10,7 +10,8 @@ g:ale_markdown_mdl_executable                   *g:ale_markdown_mdl_executable*
   Type: |String|
   Default: `'mdl'`
 
-  See |ale-integrations-local-executables|
+  Override the invoked mdl binary. This is useful for running mdl from
+  binstubs or a bundle.
 
 
 g:ale_markdown_mdl_options                         *g:ale_markdown_mdl_options*

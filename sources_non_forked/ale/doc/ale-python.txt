@@ -3,6 +3,31 @@ ALE Python Integration                                     *ale-python-options*
 
 
 ===============================================================================
+ALE Python Project Root Behavior                              *ale-python-root*
+
+For some linters, ALE will search for a Python project root by looking at the
+files in directories on or above where a file being checked is. ALE applies
+the following methods, in order:
+
+1. Find the first directory containing a common Python configuration file.
+2. If no configuration file can be found, use the first directory which does
+   not contain a readable file named `__init__.py`.
+
+ALE will look for configuration files with the following filenames. >
+
+  MANIFEST.in
+  setup.cfg
+  pytest.ini
+  tox.ini
+  mypy.ini
+  pycodestyle.cfg
+  flake8.cfg
+<
+
+The first directory containing any of the files named above will be used.
+
+
+===============================================================================
 autopep8                                                  *ale-python-autopep8*
 
 g:ale_python_autopep8_executable             *g:ale_python_autopep8_executable*
@@ -24,7 +49,34 @@ g:ale_python_autopep8_options                   *g:ale_python_autopep8_options*
 g:ale_python_autopep8_use_global             *g:ale_python_autopep8_use_global*
                                              *b:ale_python_autopep8_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+black                                                        *ale-python-black*
+
+g:ale_python_black_executable                   *g:ale_python_black_executable*
+                                                *b:ale_python_black_executable*
+  Type: |String|
+  Default: `'black'`
+
+  See |ale-integrations-local-executables|
+
+autopep8
+g:ale_python_black_options                         *g:ale_python_black_options*
+                                                   *b:ale_python_black_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to black.
+
+
+g:ale_python_black_use_global                   *g:ale_python_black_use_global*
+                                                *b:ale_python_black_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -32,12 +84,24 @@ g:ale_python_autopep8_use_global             *g:ale_python_autopep8_use_global*
 ===============================================================================
 flake8                                                      *ale-python-flake8*
 
+g:ale_python_flake8_change_directory     *g:ale_python_flake8_change_directory*
+                                         *b:ale_python_flake8_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will switch to the directory the Python file being
+  checked with `flake8` is in before checking it. This helps `flake8` find
+  configuration files more easily. This option can be turned off if you want
+  to control the directory Python is executed from yourself.
+
+
 g:ale_python_flake8_executable                 *g:ale_python_flake8_executable*
                                                *b:ale_python_flake8_executable*
   Type: |String|
   Default: `'flake8'`
 
-  This variable can be changed to modify the executable used for flake8.
+  This variable can be changed to modify the executable used for flake8. Set
+  this to `'pipenv'` to invoke `'pipenv` `run` `flake8'`.
 
 
 g:ale_python_flake8_options                       *g:ale_python_flake8_options*
@@ -61,7 +125,7 @@ g:ale_python_flake8_options                       *g:ale_python_flake8_options*
 g:ale_python_flake8_use_global                 *g:ale_python_flake8_use_global*
                                                *b:ale_python_flake8_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   This variable controls whether or not ALE will search for flake8 in a
   virtualenv directory first. If this variable is set to `1`, then ALE will
@@ -84,7 +148,7 @@ g:ale_python_isort_executable                   *g:ale_python_isort_executable*
 g:ale_python_isort_use_global                   *g:ale_python_isort_use_global*
                                                 *b:ale_python_isort_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -96,6 +160,8 @@ The minimum supported version of mypy that ALE supports is v0.4.4. This is
 the first version containing the `--shadow-file` option ALE needs to be able
 to check for errors while you type.
 
+`mypy` will be run from a detected project root, per |ale-python-root|.
+
 
 g:ale_python_mypy_executable                     *g:ale_python_mypy_executable*
                                                  *b:ale_python_mypy_executable*
@@ -103,6 +169,8 @@ g:ale_python_mypy_executable                     *g:ale_python_mypy_executable*
   Default: `'mypy'`
 
   See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `mypy'`.
 
 g:ale_python_mypy_ignore_invalid_syntax
                                       *g:ale_python_mypy_ignore_invalid_syntax*
@@ -127,7 +195,7 @@ g:ale_python_mypy_options                           *g:ale_python_mypy_options*
 g:ale_python_mypy_use_global                     *g:ale_python_mypy_use_global*
                                                  *b:ale_python_mypy_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -141,6 +209,8 @@ g:ale_python_prospector_executable         *g:ale_python_prospector_executable*
   Default: `'prospector'`
 
   See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `prospector'`.
 
 
 g:ale_python_prospector_options               *g:ale_python_prospector_options*
@@ -167,7 +237,7 @@ g:ale_python_prospector_options               *g:ale_python_prospector_options*
 g:ale_python_prospector_use_global         *g:ale_python_prospector_use_global*
                                            *b:ale_python_prospector_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -183,6 +253,8 @@ g:ale_python_pycodestyle_executable       *g:ale_python_pycodestyle_executable*
 
   See |ale-integrations-local-executables|
 
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pycodestyle'`.
+
 
 g:ale_python_pycodestyle_options             *g:ale_python_pycodestyle_options*
                                              *b:ale_python_pycodestyle_options*
@@ -196,13 +268,38 @@ g:ale_python_pycodestyle_options             *g:ale_python_pycodestyle_options*
 g:ale_python_pycodestyle_use_global       *g:ale_python_pycodestyle_use_global*
                                           *b:ale_python_pycodestyle_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
 
 ===============================================================================
+pyflakes                                                  *ale-python-pyflakes*
+
+
+g:ale_python_pyflakes_executable             *g:ale_python_pyflakes_executable*
+                                             *b:ale_python_pyflakes_executable*
+  Type: |String|
+  Default: `'pyflakes'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pyflakes'`.
+
+
+===============================================================================
 pylint                                                      *ale-python-pylint*
+
+g:ale_python_pylint_change_directory     *g:ale_python_pylint_change_directory*
+                                         *b:ale_python_pylint_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will switch to the directory the Python file being
+  checked with `pylint` is in before checking it. This helps `pylint` find
+  configuration files more easily. This option can be turned off if you want
+  to control the directory Python is executed from yourself.
+
 
 g:ale_python_pylint_executable                 *g:ale_python_pylint_executable*
                                                *b:ale_python_pylint_executable*
@@ -210,6 +307,8 @@ g:ale_python_pylint_executable                 *g:ale_python_pylint_executable*
   Default: `'pylint'`
 
   See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pylint'`.
 
 
 g:ale_python_pylint_options                       *g:ale_python_pylint_options*
@@ -235,13 +334,16 @@ g:ale_python_pylint_options                       *g:ale_python_pylint_options*
 g:ale_python_pylint_use_global                 *g:ale_python_pylint_use_global*
                                                *b:ale_python_pylint_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
 
 ===============================================================================
 pyls                                                          *ale-python-pyls*
+
+`pyls` will be run from a detected project root, per |ale-python-root|.
+
 
 g:ale_python_pyls_executable                     *g:ale_python_pyls_executable*
                                                  *b:ale_python_pyls_executable*
@@ -250,11 +352,13 @@ g:ale_python_pyls_executable                     *g:ale_python_pyls_executable*
 
   See |ale-integrations-local-executables|
 
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pyls'`.
+
 
 g:ale_python_pyls_use_global                     *g:ale_python_pyls_use_global*
                                                  *b:ale_python_pyls_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
@@ -273,7 +377,7 @@ g:ale_python_yapf_executable                     *g:ale_python_yapf_executable*
 g:ale_python_yapf_use_global                     *g:ale_python_yapf_use_global*
                                                  *b:ale_python_yapf_use_global*
   Type: |Number|
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 

@@ -50,27 +50,6 @@ snippet esc
 # comment
 snippet //
 	<!-- ${1} -->${0}
-# Generic Doctype
-snippet doctype HTML 4.01 Strict
-	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-	"http://www.w3.org/TR/html4/strict.dtd">
-snippet doctype HTML 4.01 Transitional
-	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-	"http://www.w3.org/TR/html4/loose.dtd">
-snippet doctype HTML 5
-	<!DOCTYPE HTML>
-snippet doctype XHTML 1.0 Frameset
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-snippet doctype XHTML 1.0 Strict
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-snippet doctype XHTML 1.0 Transitional
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-snippet doctype XHTML 1.1
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 # HTML Doctype 4.01 Strict
 snippet docts
 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
@@ -872,7 +851,9 @@ snippet ul+
 snippet var
 	<var>${0}</var>
 snippet video
-	<video src="${1} height="${2}" width="${3}" preload="${5:none}" autoplay="${6:autoplay}>${7}</video>
+	<video src="${1}" height="${2}" width="${3}" preload="${4:none}" autoplay="${5:autoplay}">${6}</video>
+snippet video.
+	<video class="${1}" src="${2}" height="${3}" width="${4}" preload="${5:none}" autoplay="${6:autoplay}">${7}</video>
 snippet wbr
 	<wbr />
 snippet viewport

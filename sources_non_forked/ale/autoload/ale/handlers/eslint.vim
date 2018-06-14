@@ -5,7 +5,7 @@ let s:sep = has('win32') ? '\' : '/'
 
 call ale#Set('javascript_eslint_options', '')
 call ale#Set('javascript_eslint_executable', 'eslint')
-call ale#Set('javascript_eslint_use_global', 0)
+call ale#Set('javascript_eslint_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('javascript_eslint_suppress_eslintignore', 0)
 call ale#Set('javascript_eslint_suppress_missing_config', 0)
 

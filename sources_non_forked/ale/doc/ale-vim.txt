@@ -5,6 +5,14 @@ ALE Vim Integration                                           *ale-vim-options*
 ===============================================================================
 vint                                                             *ale-vim-vint*
 
+g:ale_vim_vint_executable                           *g:ale_vim_vint_executable*
+                                                    *b:ale_vim_vint_executable*
+  Type: |String|
+  Default: `'vint'`
+
+  This option can be set to change the executable path for Vint.
+
+
 g:ale_vim_vint_show_style_issues             *g:ale_vim_vint_show_style_issues*
                                              *b:ale_vim_vint_show_style_issues*
   Type: |Number|

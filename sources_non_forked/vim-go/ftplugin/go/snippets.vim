@@ -47,7 +47,7 @@ function! s:GoMinisnip() abort
 endfunction
 
 
-let s:engine = get(g:, 'go_snippet_engine', 'automatic')
+let s:engine = go#config#SnippetEngine()
 if s:engine is? "automatic"
   if get(g:, 'did_plugin_ultisnips') is 1
     call s:GoUltiSnips()

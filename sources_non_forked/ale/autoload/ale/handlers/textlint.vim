@@ -2,7 +2,7 @@
 " Description: textlint, a proofreading tool (https://textlint.github.io/)
 
 call ale#Set('textlint_executable', 'textlint')
-call ale#Set('textlint_use_global', 0)
+call ale#Set('textlint_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('textlint_options', '')
 
 function! ale#handlers#textlint#GetExecutable(buffer) abort

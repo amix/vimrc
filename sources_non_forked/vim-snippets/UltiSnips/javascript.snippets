@@ -26,7 +26,7 @@ endglobal
 #                            TextMate Snippets                            #
 ###########################################################################
 snippet get "Get Elements"
-getElement${1/(T)|.*/(?1:s)/}By${1:T}${1/(T)|(I)|.*/(?1:agName)(?2:d)/}('$2')
+getElement${1/(T)|(C)|.*/(?1:s)(?2:s)/}By${1:T}${1/(T)|(I)|(C).*/(?1:agName)(?2:d)(?3:lassName)/}('$2')
 endsnippet
 
 snippet '':f "object method string"
@@ -68,7 +68,7 @@ ${1:var }${2:function_name} = function $2`!p snip.rv = space_before_function_par
 }`!p snip.rv = semi(snip)`
 endsnippet
 
-snippet af "Anonymous Function" i
+snippet anf "Anonymous Function" i
 function`!p snip.rv = space_before_function_paren(snip)`($1) {
 	${VISUAL}$0
 }

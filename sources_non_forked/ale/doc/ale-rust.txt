@@ -59,6 +59,26 @@ g:ale_rust_cargo_check_all_targets         *g:ale_rust_cargo_check_all_targets*
   is used. See |g:ale_rust_cargo_use_check|,
 
 
+g:ale_rust_cargo_check_tests                     *g:ale_rust_cargo_check_tests*
+                                                 *b:ale_rust_cargo_check_tests*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, ALE will set the `--tests` option when `cargo check`
+  is used. This allows for linting of tests which are normally excluded.
+  See |g:ale_rust_cargo_use_check|,
+
+
+g:ale_rust_cargo_check_examples               *g:ale_rust_cargo_check_examples*
+                                              *b:ale_rust_cargo_check_examples*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, ALE will set the `--examples` option when `cargo check`
+  is used. This allows for linting of examples which are normally excluded.
+  See |g:ale_rust_cargo_use_check|,
+
+
 g:ale_rust_cargo_default_feature_behavior
                                     *g:ale_rust_cargo_default_feature_behavior*
                                     *b:ale_rust_cargo_default_feature_behavior*

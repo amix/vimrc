@@ -5,17 +5,13 @@ snippet doc
 snippet let
 	let ${1} = ${0};
 snippet fn
-	let ${1} => {
-		${0}
-	};
-snippet fn0
-	let ${1} () => {
+	let ${1} = (${2}) => {
 		${0}
 	};
 snippet fun
 	fun ${1} => ${0}
 snippet ty
-	type ${1} = ${1};
+	type ${1} = ${0};
 snippet mod
 	module ${1} = {
 		${0}
@@ -25,11 +21,13 @@ snippet modty
 		${0}
 	};
 snippet sw
-	switch ${1} {
+	switch (${1}) {
 	| ${2} => ${0}
 	}
 snippet |
 	| ${1} => ${0}
+snippet p
+	|> ${0}
 snippet if
 	if (${1}) {
 		${2}

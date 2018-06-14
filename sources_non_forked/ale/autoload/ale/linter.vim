@@ -3,15 +3,19 @@ call ale#Set('wrap_command_as_one_argument', 0)
 " Description: Linter registration and lazy-loading
 "   Retrieves linters as requested by the engine, loading them if needed.
 
+let s:runtime_loaded_map = {}
 let s:linters = {}
 
 " Default filetype aliases.
 " The user defined aliases will be merged with this Dictionary.
+"
+" NOTE: Update the g:ale_linter_aliases documentation when modifying this.
 let s:default_ale_linter_aliases = {
 \   'Dockerfile': 'dockerfile',
 \   'csh': 'sh',
 \   'plaintex': 'tex',
 \   'systemverilog': 'verilog',
+\   'vimwiki': 'markdown',
 \   'zsh': 'sh',
 \}
 
@@ -38,6 +42,7 @@ let s:default_ale_linters = {
 
 " Testing/debugging helper to unload all linters.
 function! ale#linter#Reset() abort
+    let s:runtime_loaded_map = {}
     let s:linters = {}
 endfunction
 
@@ -47,6 +52,10 @@ endfunction
 
 function! s:IsBoolean(value) abort
     return type(a:value) == type(0) && (a:value == 0 || a:value == 1)
+endfunction
+
+function! s:LanguageGetter(buffer) dict abort
+    return l:self.language
 endfunction
 
 function! ale#linter#PreProcess(linter) abort
@@ -183,16 +192,55 @@ function! ale#linter#PreProcess(linter) abort
     endif
 
     if l:needs_lsp_details
-        let l:obj.language_callback = get(a:linter, 'language_callback')
+        if has_key(a:linter, 'language')
+            if has_key(a:linter, 'language_callback')
+                throw 'Only one of `language` or `language_callback` '
+                \   . 'should be set'
+            endif
 
-        if !s:IsCallback(l:obj.language_callback)
-            throw '`language_callback` must be a callback for LSP linters'
+            let l:obj.language = get(a:linter, 'language')
+
+            if type(l:obj.language) != type('')
+                throw '`language` must be a string'
+            endif
+
+            " Make 'language_callback' return the 'language' value.
+            let l:obj.language_callback = function('s:LanguageGetter')
+        else
+            let l:obj.language_callback = get(a:linter, 'language_callback')
+
+            if !s:IsCallback(l:obj.language_callback)
+                throw '`language_callback` must be a callback for LSP linters'
+            endif
         endif
 
         let l:obj.project_root_callback = get(a:linter, 'project_root_callback')
 
         if !s:IsCallback(l:obj.project_root_callback)
             throw '`project_root_callback` must be a callback for LSP linters'
+        endif
+
+        if has_key(a:linter, 'completion_filter')
+            let l:obj.completion_filter = a:linter.completion_filter
+
+            if !s:IsCallback(l:obj.completion_filter)
+                throw '`completion_filter` must be a callback'
+            endif
+        endif
+
+        if has_key(a:linter, 'initialization_options_callback')
+            if has_key(a:linter, 'initialization_options')
+                throw 'Only one of `initialization_options` or '
+                \   . '`initialization_options_callback` should be set'
+            endif
+
+            let l:obj.initialization_options_callback = a:linter.initialization_options_callback
+
+            if !s:IsCallback(l:obj.initialization_options_callback)
+                throw '`initialization_options_callback` must be a callback if defined'
+            endif
+        elseif has_key(a:linter, 'initialization_options')
+            let l:obj.initialization_options = a:linter.initialization_options
         endif
     endif
 
@@ -242,20 +290,20 @@ function! ale#linter#Define(filetype, linter) abort
     call add(s:linters[a:filetype], l:new_linter)
 endfunction
 
+" Prevent any linters from being loaded for a given filetype.
+function! ale#linter#PreventLoading(filetype) abort
+    let s:runtime_loaded_map[a:filetype] = 1
+endfunction
+
 function! ale#linter#GetAll(filetypes) abort
     let l:combined_linters = []
 
     for l:filetype in a:filetypes
-        " Load linter defintions from files if we haven't loaded them yet.
-        if !has_key(s:linters, l:filetype)
+        " Load linters from runtimepath if we haven't done that yet.
+        if !has_key(s:runtime_loaded_map, l:filetype)
             execute 'silent! runtime! ale_linters/' . l:filetype . '/*.vim'
 
-            " Always set an empty List for the loaded linters if we don't find
-            " any. This will prevent us from executing the runtime command
-            " many times, redundantly.
-            if !has_key(s:linters, l:filetype)
-                let s:linters[l:filetype] = []
-            endif
+            let s:runtime_loaded_map[l:filetype] = 1
         endif
 
         call extend(l:combined_linters, get(s:linters, l:filetype, []))
@@ -418,12 +466,20 @@ function! ale#linter#StartLSP(buffer, linter, callback) abort
         return {}
     endif
 
+    let l:initialization_options = {}
+    if has_key(a:linter, 'initialization_options_callback')
+        let l:initialization_options = ale#util#GetFunction(a:linter.initialization_options_callback)(a:buffer)
+    elseif has_key(a:linter, 'initialization_options')
+        let l:initialization_options = a:linter.initialization_options
+    endif
+
     if a:linter.lsp is# 'socket'
         let l:address = ale#linter#GetAddress(a:buffer, a:linter)
         let l:conn_id = ale#lsp#ConnectToAddress(
         \   l:address,
         \   l:root,
         \   a:callback,
+        \   l:initialization_options,
         \)
     else
         let l:executable = ale#linter#GetExecutable(a:buffer, a:linter)
@@ -441,6 +497,7 @@ function! ale#linter#StartLSP(buffer, linter, callback) abort
         \   l:command,
         \   l:root,
         \   a:callback,
+        \   l:initialization_options,
         \)
     endif
 

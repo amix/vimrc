@@ -60,36 +60,35 @@ function! ctrlp#decls#enter() abort
   let s:current_dir = fnameescape(expand('%:p:h'))
   let s:decls = []
 
-  let bin_path = go#path#CheckBinPath('motion')
-  if empty(bin_path)
-    return
-  endif
-  let command = printf("%s -format vim -mode decls", bin_path)
-  let command .= " -include ".  get(g:, "go_decls_includes", "func,type")
+  let l:cmd = ['motion',
+        \ '-format', 'vim',
+        \ '-mode', 'decls',
+        \ '-include', go#config#DeclsIncludes(),
+        \ ]
 
   call go#cmd#autowrite()
 
   if s:mode == 0
     " current file mode
-    let fname = expand("%:p")
+    let l:fname = expand("%:p")
     if exists('s:target')
-      let fname = s:target
+      let l:fname = s:target
     endif
 
-    let command .= printf(" -file %s", fname)
+    let cmd += ['-file', l:fname]
   else
     " all functions mode
-    let dir = expand("%:p:h")
+    let l:dir = expand("%:p:h")
     if exists('s:target')
-      let dir = s:target
+      let l:dir = s:target
     endif
 
-    let command .= printf(" -dir %s", dir)
+    let cmd += ['-dir', l:dir]
   endif
 
-  let out = go#util#System(command)
-  if go#util#ShellError() != 0
-    call go#util#EchoError(out)
+  let [l:out, l:err] = go#util#Exec(l:cmd)
+  if l:err
+    call go#util#EchoError(l:out)
     return
   endif
 

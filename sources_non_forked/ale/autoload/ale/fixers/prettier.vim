@@ -3,7 +3,7 @@
 " Description: Integration of Prettier with ALE.
 
 call ale#Set('javascript_prettier_executable', 'prettier')
-call ale#Set('javascript_prettier_use_global', 0)
+call ale#Set('javascript_prettier_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('javascript_prettier_options', '')
 
 function! ale#fixers#prettier#GetExecutable(buffer) abort

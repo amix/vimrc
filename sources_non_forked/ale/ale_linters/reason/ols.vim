@@ -2,7 +2,7 @@
 " Description: A language server for Reason
 
 call ale#Set('reason_ols_executable', 'ocaml-language-server')
-call ale#Set('reason_ols_use_global', 0)
+call ale#Set('reason_ols_use_global', get(g:, 'ale_use_global_executables', 0))
 
 call ale#linter#Define('reason', {
 \   'name': 'ols',

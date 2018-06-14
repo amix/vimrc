@@ -16,7 +16,7 @@ g:ale_handlebars_embertemplatelint_executable
 g:ale_handlebars_embertemplatelint_use_global
                                 *g:ale_handlebars_embertemplatelint_use_global*
   Type: |Number|                  *b:ale_handlebars_embertemplatelint_use_global*
-  Default: `0`
+  Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
