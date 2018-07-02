@@ -51,6 +51,19 @@ nmap <leader>w :w!<cr>
 " (useful for handling the permission-denied error)
 command W w !sudo tee % > /dev/null
 
+" Show number and set to relative number
+set number
+set relativenumber
+
+" Toggle relative number
+nnoremap <silent> <leader>nb :set relativenumber!<CR>
+
+" Make j and k move to the next row, not the file line
+nnoremap j gj
+nnoremap k gk
+
+" Remap esc key to jk
+inoremap jk <esc>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
