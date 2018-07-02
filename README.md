@@ -109,8 +109,8 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 
 ## Included color schemes
 
-* [peaksea](https://github.com/vim-scripts/peaksea): The default
-* [vim-colors-solarized](https://github.com/altercation/vim-colors-solarized)
+* [peaksea](https://github.com/vim-scripts/peaksea)
+* [vim-colors-solarized](https://github.com/altercation/vim-colors-solarized): The default
 * [vim-irblack](https://github.com/wgibbs/vim-irblack)
 * [mayansmoke](https://github.com/vim-scripts/mayansmoke)
 * [vim-pyte](https://github.com/therubymug/vim-pyte)
