@@ -330,13 +330,13 @@ and the work tree file for everything else.  Example revisions follow.
 
 Revision        Meaning ~
 HEAD            .git/HEAD
-master          .git/refs/heads/master
-HEAD^{}         The commit referenced by HEAD
-HEAD^           The parent of the commit referenced by HEAD
-HEAD:           The tree referenced by HEAD
-/HEAD           The file named HEAD in the work tree
+refs/heads/x    .git/refs/heads/x
+@               The commit referenced by @ aka HEAD
+master^         The parent of the commit referenced by master
+master:         The tree referenced by master
+/master         The file named master in the work tree
 Makefile        The file named Makefile in the work tree
-HEAD^:Makefile  The file named Makefile in the parent of HEAD
+@^:Makefile     The file named Makefile in the parent of HEAD
 :Makefile       The file named Makefile in the index (writable)
 -               The current file in HEAD
 ^               The current file in the previous commit

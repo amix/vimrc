@@ -17,11 +17,18 @@ endfunction
 " but NeoVim does. Small messages can be echoed in Vim 8, and larger messages
 " have to be shown in preview windows.
 function! ale#util#ShowMessage(string) abort
+    if !has('nvim')
+        call ale#preview#CloseIfTypeMatches('ale-preview.message')
+    endif
+
     " We have to assume the user is using a monospace font.
     if has('nvim') || (a:string !~? "\n" && len(a:string) < &columns)
         execute 'echo a:string'
     else
-        call ale#preview#Show(split(a:string, "\n"))
+        call ale#preview#Show(split(a:string, "\n"), {
+        \   'filetype': 'ale-preview.message',
+        \   'stay_here': 1,
+        \})
     endif
 endfunction
 
@@ -38,6 +45,33 @@ if !exists('g:ale#util#nul_file')
         let g:ale#util#nul_file = 'nul'
     endif
 endif
+
+" Given a job, a buffered line of data, a list of parts of lines, a mode data
+" is being read in, and a callback, join the lines of output for a NeoVim job
+" or socket together, and call the callback with the joined output.
+"
+" Note that jobs and IDs are the same thing on NeoVim.
+function! ale#util#JoinNeovimOutput(job, last_line, data, mode, callback) abort
+    if a:mode is# 'raw'
+        call a:callback(a:job, join(a:data, "\n"))
+        return ''
+    endif
+
+    let l:lines = a:data[:-2]
+
+    if len(a:data) > 1
+        let l:lines[0] = a:last_line . l:lines[0]
+        let l:new_last_line = a:data[-1]
+    else
+        let l:new_last_line = a:last_line . get(a:data, 0, '')
+    endif
+
+    for l:line in l:lines
+        call a:callback(a:job, l:line)
+    endfor
+
+    return l:new_last_line
+endfunction
 
 " Return the number of lines for a given buffer.
 function! ale#util#GetLineCount(buffer) abort
@@ -56,7 +90,10 @@ function! ale#util#Open(filename, line, column, options) abort
     if get(a:options, 'open_in_tab', 0)
         call ale#util#Execute('tabedit ' . fnameescape(a:filename))
     else
-        call ale#util#Execute('edit ' . fnameescape(a:filename))
+        " Open another file only if we need to.
+        if bufnr(a:filename) isnot bufnr('')
+            call ale#util#Execute('edit ' . fnameescape(a:filename))
+        endif
     endif
 
     call cursor(a:line, a:column)
@@ -239,16 +276,6 @@ function! ale#util#InSandbox() abort
     endtry
 
     return 0
-endfunction
-
-" Get the number of milliseconds since some vague, but consistent, point in
-" the past.
-"
-" This function can be used for timing execution, etc.
-"
-" The time will be returned as a Number.
-function! ale#util#ClockMilliseconds() abort
-    return float2nr(reltimefloat(reltime()) * 1000)
 endfunction
 
 " Given a single line, or a List of lines, and a single pattern, or a List

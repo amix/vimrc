@@ -36,7 +36,7 @@ function! go#tool#Files(...) abort
     endif
   endfor
 
-  let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-f', l:combined])
+  let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-tags', go#config#BuildTags(), '-f', l:combined])
   return split(l:out, '\n')
 endfunction
 
@@ -46,7 +46,7 @@ function! go#tool#Deps() abort
   else
     let format = "{{range $f := .Deps}}{{$f}}\n{{end}}"
   endif
-  let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-f', l:format])
+  let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-tags', go#config#BuildTags(), '-f', l:format])
   return split(l:out, '\n')
 endfunction
 
@@ -57,14 +57,14 @@ function! go#tool#Imports() abort
   else
     let format = "{{range $f := .Imports}}{{$f}}{{printf \"\\n\"}}{{end}}"
   endif
-  let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-f', l:format])
+  let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-tags', go#config#BuildTags(), '-f', l:format])
   if l:err != 0
     echo out
     return imports
   endif
 
   for package_path in split(out, '\n')
-    let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-f', '{{.Name}}', l:package_path])
+    let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-tags', go#config#BuildTags(), '-f', '{{.Name}}', l:package_path])
     if l:err != 0
       echo out
       return imports
@@ -88,7 +88,7 @@ function! go#tool#Info(auto) abort
 endfunction
 
 function! go#tool#PackageName() abort
-  let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-f', '{{.Name}}'])
+  let [l:out, l:err] = go#tool#ExecuteInDir(['go', 'list', '-tags', go#config#BuildTags(), '-f', '{{.Name}}'])
   if l:err != 0
       return -1
   endif

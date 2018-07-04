@@ -30,8 +30,26 @@ endfunction
 function! ale#fixers#prettier#ApplyFixForVersion(buffer, version_output) abort
     let l:executable = ale#fixers#prettier#GetExecutable(a:buffer)
     let l:options = ale#Var(a:buffer, 'javascript_prettier_options')
-
     let l:version = ale#semver#GetVersion(l:executable, a:version_output)
+    let l:parser = ''
+
+    " Append the --parser flag depending on the current filetype (unless it's
+    " already set in g:javascript_prettier_options).
+    if empty(expand('#' . a:buffer . ':e')) && match(l:options, '--parser') == -1
+        let l:prettier_parsers = ['typescript', 'css', 'less', 'scss', 'json', 'json5', 'graphql', 'markdown', 'vue']
+        let l:parser = 'babylon'
+
+        for l:filetype in split(getbufvar(a:buffer, '&filetype'), '\.')
+            if index(l:prettier_parsers, l:filetype) > -1
+                let l:parser = l:filetype
+                break
+            endif
+        endfor
+    endif
+
+    if !empty(l:parser)
+        let l:options = (!empty(l:options) ? l:options . ' ' : '') . '--parser ' . l:parser
+    endif
 
     " 1.4.0 is the first version with --stdin-filepath
     if ale#semver#GTE(l:version, [1, 4, 0])

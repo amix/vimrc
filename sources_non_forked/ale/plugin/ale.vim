@@ -32,12 +32,6 @@ if !s:has_features
     finish
 endif
 
-" remove in 2.0
-if has('nvim') && !has('nvim-0.2.0') && !get(g:, 'ale_use_deprecated_neovim')
-    execute 'echom ''ALE support for NeoVim versions below 0.2.0 is deprecated.'''
-    execute 'echom ''Use `let g:ale_use_deprecated_neovim = 1` to silence this warning for now.'''
-endif
-
 " Set this flag so that other plugins can use it, like airline.
 let g:loaded_ale = 1
 
@@ -221,35 +215,13 @@ nnoremap <silent> <Plug>(ale_find_references) :ALEFindReferences<Return>
 nnoremap <silent> <Plug>(ale_hover) :ALEHover<Return>
 
 " Set up autocmd groups now.
-call ale#autocmd#InitAuGroups()
+call ale#events#Init()
 
 " Housekeeping
 
 augroup ALECleanupGroup
     autocmd!
     " Clean up buffers automatically when they are unloaded.
-    autocmd BufDelete * call ale#engine#Cleanup(str2nr(expand('<abuf>')))
+    autocmd BufDelete * if exists('*ale#engine#Cleanup') | call ale#engine#Cleanup(str2nr(expand('<abuf>'))) | endif
     autocmd QuitPre * call ale#events#QuitEvent(str2nr(expand('<abuf>')))
 augroup END
-
-" Backwards Compatibility
-
-" remove in 2.0
-function! ALELint(delay) abort
-    if !get(g:, 'ale_deprecation_ale_lint', 0)
-        execute 'echom ''ALELint() is deprecated, use ale#Queue() instead.'''
-        let g:ale_deprecation_ale_lint = 1
-    endif
-
-    call ale#Queue(a:delay)
-endfunction
-
-" remove in 2.0
-function! ALEGetStatusLine() abort
-    if !get(g:, 'ale_deprecation_ale_get_status_line', 0)
-        execute 'echom ''ALEGetStatusLine() is deprecated.'''
-        let g:ale_deprecation_ale_get_status_line = 1
-    endif
-
-    return ale#statusline#Status()
-endfunction

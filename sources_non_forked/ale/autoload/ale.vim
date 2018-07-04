@@ -6,35 +6,12 @@
 let g:ale_echo_msg_error_str = get(g:, 'ale_echo_msg_error_str', 'Error')
 let g:ale_echo_msg_info_str = get(g:, 'ale_echo_msg_info_str', 'Info')
 let g:ale_echo_msg_warning_str = get(g:, 'ale_echo_msg_warning_str', 'Warning')
+" Ignoring linters, for disabling some, or ignoring LSP diagnostics.
+let g:ale_linters_ignore = get(g:, 'ale_linters_ignore', {})
 
 let s:lint_timer = -1
 let s:queued_buffer_number = -1
 let s:should_lint_file_for_buffer = {}
-let s:error_delay_ms = 1000 * 60 * 2
-
-let s:timestamp_map = {}
-
-" Given a key for a script variable for tracking the time to wait until
-" a given function should be called, a funcref for a function to call, and
-" a List of arguments, call the function and return whatever value it returns.
-"
-" If the function throws an exception, then the function will not be called
-" for a while, and 0 will be returned instead.
-function! ale#CallWithCooldown(timestamp_key, func, arglist) abort
-    let l:now = ale#util#ClockMilliseconds()
-
-    if l:now < get(s:timestamp_map, a:timestamp_key, -1)
-        return 0
-    endif
-
-    let s:timestamp_map[a:timestamp_key] = l:now + s:error_delay_ms
-
-    let l:return_value = call(a:func, a:arglist)
-
-    let s:timestamp_map[a:timestamp_key] = -1
-
-    return l:return_value
-endfunction
 
 " Return 1 if a file is too large for ALE to handle.
 function! ale#FileTooLarge(buffer) abort
@@ -114,30 +91,22 @@ function! ale#Queue(delay, ...) abort
     let l:linting_flag = get(a:000, 0, '')
     let l:buffer = get(a:000, 1, bufnr(''))
 
-    return ale#CallWithCooldown(
-    \   'dont_queue_until',
-    \   function('s:ALEQueueImpl'),
-    \   [a:delay, l:linting_flag, l:buffer],
-    \)
-endfunction
-
-function! s:ALEQueueImpl(delay, linting_flag, buffer) abort
-    if a:linting_flag isnot# '' && a:linting_flag isnot# 'lint_file'
+    if l:linting_flag isnot# '' && l:linting_flag isnot# 'lint_file'
         throw "linting_flag must be either '' or 'lint_file'"
     endif
 
-    if type(a:buffer) != type(0)
+    if type(l:buffer) != type(0)
         throw 'buffer_number must be a Number'
     endif
 
-    if ale#ShouldDoNothing(a:buffer)
+    if ale#ShouldDoNothing(l:buffer)
         return
     endif
 
     " Remember that we want to check files for this buffer.
     " We will remember this until we finally run the linters, via any event.
-    if a:linting_flag is# 'lint_file'
-        let s:should_lint_file_for_buffer[a:buffer] = 1
+    if l:linting_flag is# 'lint_file'
+        let s:should_lint_file_for_buffer[l:buffer] = 1
     endif
 
     if s:lint_timer != -1
@@ -145,24 +114,24 @@ function! s:ALEQueueImpl(delay, linting_flag, buffer) abort
         let s:lint_timer = -1
     endif
 
-    let l:linters = ale#linter#Get(getbufvar(a:buffer, '&filetype'))
+    let l:linters = ale#linter#Get(getbufvar(l:buffer, '&filetype'))
 
     " Don't set up buffer data and so on if there are no linters to run.
     if empty(l:linters)
         " If we have some previous buffer data, then stop any jobs currently
         " running and clear everything.
-        if has_key(g:ale_buffer_info, a:buffer)
-            call ale#engine#RunLinters(a:buffer, [], 1)
+        if has_key(g:ale_buffer_info, l:buffer)
+            call ale#engine#RunLinters(l:buffer, [], 1)
         endif
 
         return
     endif
 
     if a:delay > 0
-        let s:queued_buffer_number = a:buffer
+        let s:queued_buffer_number = l:buffer
         let s:lint_timer = timer_start(a:delay, function('ale#Lint'))
     else
-        call ale#Lint(-1, a:buffer)
+        call ale#Lint(-1, l:buffer)
     endif
 endfunction
 
@@ -178,39 +147,34 @@ function! ale#Lint(...) abort
         let l:buffer = bufnr('')
     endif
 
-    return ale#CallWithCooldown(
-    \   'dont_lint_until',
-    \   function('s:ALELintImpl'),
-    \   [l:buffer],
-    \)
-endfunction
-
-function! s:ALELintImpl(buffer) abort
-    if ale#ShouldDoNothing(a:buffer)
+    if ale#ShouldDoNothing(l:buffer)
         return
     endif
 
     " Use the filetype from the buffer
-    let l:linters = ale#linter#Get(getbufvar(a:buffer, '&filetype'))
+    let l:filetype = getbufvar(l:buffer, '&filetype')
+    let l:linters = ale#linter#Get(l:filetype)
     let l:should_lint_file = 0
 
     " Check if we previously requested checking the file.
-    if has_key(s:should_lint_file_for_buffer, a:buffer)
-        unlet s:should_lint_file_for_buffer[a:buffer]
+    if has_key(s:should_lint_file_for_buffer, l:buffer)
+        unlet s:should_lint_file_for_buffer[l:buffer]
         " Lint files if they exist.
-        let l:should_lint_file = filereadable(expand('#' . a:buffer . ':p'))
+        let l:should_lint_file = filereadable(expand('#' . l:buffer . ':p'))
     endif
 
-    call ale#engine#RunLinters(a:buffer, l:linters, l:should_lint_file)
+    " Apply ignore lists for linters only if needed.
+    let l:ignore_config = ale#Var(l:buffer, 'linters_ignore')
+    let l:linters = !empty(l:ignore_config)
+    \   ? ale#engine#ignore#Exclude(l:filetype, l:linters, l:ignore_config)
+    \   : l:linters
+
+    call ale#engine#RunLinters(l:buffer, l:linters, l:should_lint_file)
 endfunction
 
 " Reset flags indicating that files should be checked for all buffers.
 function! ale#ResetLintFileMarkers() abort
     let s:should_lint_file_for_buffer = {}
-endfunction
-
-function! ale#ResetErrorDelays() abort
-    let s:timestamp_map = {}
 endfunction
 
 let g:ale_has_override = get(g:, 'ale_has_override', {})

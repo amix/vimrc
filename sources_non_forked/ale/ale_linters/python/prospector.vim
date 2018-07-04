@@ -30,6 +30,10 @@ endfunction
 function! ale_linters#python#prospector#Handle(buffer, lines) abort
     let l:output = []
 
+    if empty(a:lines)
+        return []
+    endif
+
     let l:prospector_error = json_decode(join(a:lines, ''))
 
     for l:error in l:prospector_error.messages

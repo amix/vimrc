@@ -14,11 +14,6 @@ if !has_key(s:, 'job_info_map')
     let s:job_info_map = {}
 endif
 
-" Associates LSP connection IDs with linter names.
-if !has_key(s:, 'lsp_linter_map')
-    let s:lsp_linter_map = {}
-endif
-
 if !has_key(s:, 'executable_cache_map')
     let s:executable_cache_map = {}
 endif
@@ -77,16 +72,6 @@ function! ale#engine#InitBufferInfo(buffer) abort
     endif
 
     return 0
-endfunction
-
-" Clear LSP linter data for the linting engine.
-function! ale#engine#ClearLSPData() abort
-    let s:lsp_linter_map = {}
-endfunction
-
-" Just for tests.
-function! ale#engine#SetLSPLinterMap(replacement_map) abort
-    let s:lsp_linter_map = a:replacement_map
 endfunction
 
 " This function is documented and part of the public API.
@@ -241,88 +226,6 @@ function! s:HandleExit(job_id, exit_code) abort
     call ale#engine#HandleLoclist(l:linter.name, l:buffer, l:loclist)
 endfunction
 
-function! s:HandleLSPDiagnostics(conn_id, response) abort
-    let l:linter_name = s:lsp_linter_map[a:conn_id]
-    let l:filename = ale#path#FromURI(a:response.params.uri)
-    let l:buffer = bufnr(l:filename)
-
-    if l:buffer <= 0
-        return
-    endif
-
-    let l:loclist = ale#lsp#response#ReadDiagnostics(a:response)
-
-    call ale#engine#HandleLoclist(l:linter_name, l:buffer, l:loclist)
-endfunction
-
-function! s:HandleTSServerDiagnostics(response, error_type) abort
-    let l:buffer = bufnr(a:response.body.file)
-    let l:info = get(g:ale_buffer_info, l:buffer, {})
-
-    if empty(l:info)
-        return
-    endif
-
-    let l:thislist = ale#lsp#response#ReadTSServerDiagnostics(a:response)
-
-    " tsserver sends syntax and semantic errors in separate messages, so we
-    " have to collect the messages separately for each buffer and join them
-    " back together again.
-    if a:error_type is# 'syntax'
-        let l:info.syntax_loclist = l:thislist
-    else
-        let l:info.semantic_loclist = l:thislist
-    endif
-
-    let l:loclist = get(l:info, 'semantic_loclist', [])
-    \   + get(l:info, 'syntax_loclist', [])
-
-    call ale#engine#HandleLoclist('tsserver', l:buffer, l:loclist)
-endfunction
-
-function! s:HandleLSPErrorMessage(linter_name, response) abort
-    if !g:ale_history_enabled || !g:ale_history_log_output
-        return
-    endif
-
-    if empty(a:linter_name)
-        return
-    endif
-
-    let l:message = ale#lsp#response#GetErrorMessage(a:response)
-
-    if empty(l:message)
-        return
-    endif
-
-    " This global variable is set here so we don't load the debugging.vim file
-    " until someone uses :ALEInfo.
-    let g:ale_lsp_error_messages = get(g:, 'ale_lsp_error_messages', {})
-
-    if !has_key(g:ale_lsp_error_messages, a:linter_name)
-        let g:ale_lsp_error_messages[a:linter_name] = []
-    endif
-
-    call add(g:ale_lsp_error_messages[a:linter_name], l:message)
-endfunction
-
-function! ale#engine#HandleLSPResponse(conn_id, response) abort
-    let l:method = get(a:response, 'method', '')
-    let l:linter_name = get(s:lsp_linter_map, a:conn_id, '')
-
-    if get(a:response, 'jsonrpc', '') is# '2.0' && has_key(a:response, 'error')
-        call s:HandleLSPErrorMessage(l:linter_name, a:response)
-    elseif l:method is# 'textDocument/publishDiagnostics'
-        call s:HandleLSPDiagnostics(a:conn_id, a:response)
-    elseif get(a:response, 'type', '') is# 'event'
-    \&& get(a:response, 'event', '') is# 'semanticDiag'
-        call s:HandleTSServerDiagnostics(a:response, 'semantic')
-    elseif get(a:response, 'type', '') is# 'event'
-    \&& get(a:response, 'event', '') is# 'syntaxDiag'
-        call s:HandleTSServerDiagnostics(a:response, 'syntax')
-    endif
-endfunction
-
 function! ale#engine#SetResults(buffer, loclist) abort
     let l:linting_is_done = !ale#engine#IsCheckingBuffer(a:buffer)
 
@@ -367,9 +270,6 @@ function! ale#engine#SetResults(buffer, loclist) abort
 
         " Call user autocommands. This allows users to hook into ALE's lint cycle.
         silent doautocmd <nomodeline> User ALELintPost
-        " remove in 2.0
-        " Old DEPRECATED name; call it for backwards compatibility.
-        silent doautocmd <nomodeline> User ALELint
     endif
 endfunction
 
@@ -739,44 +639,6 @@ function! s:StopCurrentJobs(buffer, include_lint_file_jobs) abort
     let l:info.active_linter_list = l:new_active_linter_list
 endfunction
 
-function! s:CheckWithLSP(buffer, linter) abort
-    let l:info = g:ale_buffer_info[a:buffer]
-    let l:lsp_details = ale#linter#StartLSP(
-    \   a:buffer,
-    \   a:linter,
-    \   function('ale#engine#HandleLSPResponse'),
-    \)
-
-    if empty(l:lsp_details)
-        return 0
-    endif
-
-    let l:id = l:lsp_details.connection_id
-    let l:root = l:lsp_details.project_root
-
-    " Remember the linter this connection is for.
-    let s:lsp_linter_map[l:id] = a:linter.name
-
-    let l:change_message = a:linter.lsp is# 'tsserver'
-    \   ? ale#lsp#tsserver_message#Geterr(a:buffer)
-    \   : ale#lsp#message#DidChange(a:buffer)
-    let l:request_id = ale#lsp#Send(l:id, l:change_message, l:root)
-
-    " If this was a file save event, also notify the server of that.
-    if a:linter.lsp isnot# 'tsserver'
-    \&& getbufvar(a:buffer, 'ale_save_event_fired', 0)
-      let l:save_message = ale#lsp#message#DidSave(a:buffer)
-      let l:request_id = ale#lsp#Send(l:id, l:save_message, l:root)
-    endif
-
-    if l:request_id != 0
-        if index(l:info.active_linter_list, a:linter.name) < 0
-            call add(l:info.active_linter_list, a:linter.name)
-        endif
-    endif
-
-    return l:request_id != 0
-endfunction
 
 function! s:RemoveProblemsForDisabledLinters(buffer, linters) abort
     " Figure out which linters are still enabled, and remove
@@ -832,7 +694,7 @@ endfunction
 " Returns 1 if the linter was successfully run.
 function! s:RunLinter(buffer, linter) abort
     if !empty(a:linter.lsp)
-        return s:CheckWithLSP(a:buffer, a:linter)
+        return ale#lsp_linter#CheckWithLSP(a:buffer, a:linter)
     else
         let l:executable = ale#linter#GetExecutable(a:buffer, a:linter)
 
@@ -914,7 +776,7 @@ endfunction
 " The time taken will be a very rough approximation, and more time may be
 " permitted than is specified.
 function! ale#engine#WaitForJobs(deadline) abort
-    let l:start_time = ale#util#ClockMilliseconds()
+    let l:start_time = ale#events#ClockMilliseconds()
 
     if l:start_time == 0
         throw 'Failed to read milliseconds from the clock!'
@@ -945,7 +807,7 @@ function! ale#engine#WaitForJobs(deadline) abort
 
         for l:job_id in l:job_list
             if ale#job#IsRunning(l:job_id)
-                let l:now = ale#util#ClockMilliseconds()
+                let l:now = ale#events#ClockMilliseconds()
 
                 if l:now - l:start_time > a:deadline
                     " Stop waiting after a timeout, so we don't wait forever.
@@ -982,7 +844,7 @@ function! ale#engine#WaitForJobs(deadline) abort
 
     if l:has_new_jobs
         " We have to wait more. Offset the timeout by the time taken so far.
-        let l:now = ale#util#ClockMilliseconds()
+        let l:now = ale#events#ClockMilliseconds()
         let l:new_deadline = a:deadline - (l:now - l:start_time)
 
         if l:new_deadline <= 0

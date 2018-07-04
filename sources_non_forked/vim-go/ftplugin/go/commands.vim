@@ -109,4 +109,7 @@ endif
 " -- issue
 command! -nargs=0 GoReportGitHubIssue call go#issue#New()
 
+" -- iferr
+command! -nargs=0 GoIfErr call go#iferr#Generate()
+
 " vim: sw=2 ts=2 et

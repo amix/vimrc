@@ -26,34 +26,11 @@ function! s:KillHandler(timer) abort
     call job_stop(l:job, 'kill')
 endfunction
 
-" Note that jobs and IDs are the same thing on NeoVim.
-function! ale#job#JoinNeovimOutput(job, last_line, data, mode, callback) abort
-    if a:mode is# 'raw'
-        call a:callback(a:job, join(a:data, "\n"))
-        return ''
-    endif
-
-    let l:lines = a:data[:-2]
-
-    if len(a:data) > 1
-        let l:lines[0] = a:last_line . l:lines[0]
-        let l:new_last_line = a:data[-1]
-    else
-        let l:new_last_line = a:last_line . get(a:data, 0, '')
-    endif
-
-    for l:line in l:lines
-        call a:callback(a:job, l:line)
-    endfor
-
-    return l:new_last_line
-endfunction
-
 function! s:NeoVimCallback(job, data, event) abort
     let l:info = s:job_map[a:job]
 
     if a:event is# 'stdout'
-        let l:info.out_cb_line = ale#job#JoinNeovimOutput(
+        let l:info.out_cb_line = ale#util#JoinNeovimOutput(
         \   a:job,
         \   l:info.out_cb_line,
         \   a:data,
@@ -61,7 +38,7 @@ function! s:NeoVimCallback(job, data, event) abort
         \   ale#util#GetFunction(l:info.out_cb),
         \)
     elseif a:event is# 'stderr'
-        let l:info.err_cb_line = ale#job#JoinNeovimOutput(
+        let l:info.err_cb_line = ale#util#JoinNeovimOutput(
         \   a:job,
         \   l:info.err_cb_line,
         \   a:data,

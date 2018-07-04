@@ -2595,6 +2595,20 @@ fu! s:ExitIfSingleCandidate()
 	return 0
 endfu
 
+fu! s:IsBuiltin()
+	let builtins = ['tag', 'dir', 'bft', 'rts', 'bkd', 'lns', 'chs', 'mix', 'udo', 'qfx']
+	let curtype = s:getextvar('sname')
+	return s:itemtype < len(s:coretypes) || index(builtins, curtype) > -1
+endfu
+
+fu! s:DetectFileType(type, ft)
+	if s:IsBuiltin() || empty(a:ft) || a:ft ==# 'ctrlp'
+		retu 'ctrlp'
+	el
+		retu 'ctrlp.' . a:ft
+	en
+endfu
+
 fu! ctrlp#init(type, ...)
 	if exists('s:init') || s:iscmdwin() | retu | en
 	let [s:ermsg, v:errmsg] = [v:errmsg, '']
@@ -2618,7 +2632,7 @@ fu! ctrlp#init(type, ...)
 		en
 	en
 	cal ctrlp#setlines(s:settype(type))
-	set ft=ctrlp
+	let &filetype = s:DetectFileType(type, &filetype)
 	cal ctrlp#syntax()
 	cal s:SetDefTxt()
 	let curName = s:CurTypeName()

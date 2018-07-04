@@ -35,6 +35,8 @@ CONTENTS                                                         *ale-contents*
       foodcritic..........................|ale-chef-foodcritic|
     clojure...............................|ale-clojure-options|
       joker...............................|ale-clojure-joker|
+    cloudformation........................|ale-cloudformation-options|
+      cfn-python-lint.....................|ale-cloudformation-cfn-python-lint|
     cmake.................................|ale-cmake-options|
       cmakelint...........................|ale-cmake-cmakelint|
     cpp...................................|ale-cpp-options|
@@ -57,6 +59,7 @@ CONTENTS                                                         *ale-contents*
       nvcc................................|ale-cuda-nvcc|
     dart..................................|ale-dart-options|
       dartanalyzer........................|ale-dart-dartanalyzer|
+      dartfmt.............................|ale-dart-dartfmt|
     dockerfile............................|ale-dockerfile-options|
       hadolint............................|ale-dockerfile-hadolint|
     elixir................................|ale-elixir-options|
@@ -183,6 +186,8 @@ CONTENTS                                                         *ale-contents*
       puglint.............................|ale-pug-puglint|
     puppet................................|ale-puppet-options|
       puppetlint..........................|ale-puppet-puppetlint|
+    pyrex (cython)........................|ale-pyrex-options|
+      cython..............................|ale-pyrex-cython|
     python................................|ale-python-options|
       autopep8............................|ale-python-autopep8|
       black...............................|ale-python-black|
@@ -194,6 +199,7 @@ CONTENTS                                                         *ale-contents*
       pyflakes............................|ale-python-pyflakes|
       pylint..............................|ale-python-pylint|
       pyls................................|ale-python-pyls|
+      pyre................................|ale-python-pyre|
       yapf................................|ale-python-yapf|
     qml...................................|ale-qml-options|
       qmlfmt..............................|ale-qml-qmlfmt|
@@ -226,6 +232,7 @@ CONTENTS                                                         *ale-contents*
       prettier............................|ale-scss-prettier|
       stylelint...........................|ale-scss-stylelint|
     sh....................................|ale-sh-options|
+      sh-language-server..................|ale-sh-language-server|
       shell...............................|ale-sh-shell|
       shellcheck..........................|ale-sh-shellcheck|
       shfmt...............................|ale-sh-shfmt|
@@ -302,6 +309,9 @@ control functionality used for checking for problems. Try using the
 |ALEFixSuggest| command for browsing tools that can be used to fix problems
 for the current buffer.
 
+If you are interested in contributing to the development of ALE, read the
+developer documentation. See |ale-development|
+
 ===============================================================================
 2. Supported Languages & Tools                                    *ale-support*
 
@@ -317,7 +327,7 @@ Notes:
 * API Blueprint: `drafter`
 * AsciiDoc: `alex`!!, `proselint`, `redpen`, `write-good`
 * Awk: `gawk`
-* Bash: `shell` (-n flag), `shellcheck`, `shfmt`
+* Bash: `language-server`, `shell` (-n flag), `shellcheck`, `shfmt`
 * Bourne Shell: `shell` (-n flag), `shellcheck`, `shfmt`
 * C: `cppcheck`, `cpplint`!!, `clang`, `clangtidy`!!, `clang-format`, `flawfinder`, `gcc`
 * C++ (filetype cpp): `clang`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`
@@ -325,6 +335,7 @@ Notes:
 * C#: `mcs`, `mcsc`!!
 * Chef: `foodcritic`
 * Clojure: `joker`
+* CloudFormation: `cfn-python-lint`
 * CMake: `cmakelint`
 * CoffeeScript: `coffee`, `coffeelint`
 * Crystal: `crystal`!!
@@ -333,9 +344,9 @@ Notes:
 * Cython (pyrex filetype): `cython`
 * D: `dmd`
 * Dafny: `dafny`!!
-* Dart: `dartanalyzer`!!, `language_server`
+* Dart: `dartanalyzer`!!, `language_server`, dartfmt!!
 * Dockerfile: `hadolint`
-* Elixir: `credo`, `dialyxir`, `dogma`!!
+* Elixir: `credo`, `dialyxir`, `dogma`, `mix`!!
 * Elm: `elm-format, elm-make`
 * Erb: `erb`, `erubi`, `erubis`
 * Erlang: `erlc`, `SyntaxErl`
@@ -380,7 +391,7 @@ Notes:
 * proto: `protoc-gen-lint`
 * Pug: `pug-lint`
 * Puppet: `puppet`, `puppet-lint`
-* Python: `autopep8`, `black`, `flake8`, `isort`, `mypy`, `prospector`, `pycodestyle`, `pyls`, `pylint`!!, `yapf`
+* Python: `autopep8`, `black`, `flake8`, `isort`, `mypy`, `prospector`, `pycodestyle`, `pyls`, `pyre`, `pylint`!!, `yapf`
 * QML: `qmlfmt`, `qmllint`
 * R: `lintr`
 * ReasonML: `merlin`, `ols`, `refmt`
@@ -935,6 +946,14 @@ g:ale_fixers                                                     *g:ale_fixers*
   `b:ale_fixers` can be set to a |List| of callbacks instead, which can be
   more convenient.
 
+  A special `'*'` key be used as a wildcard filetype for configuring fixers
+  for every other type of file. For example: >
+
+    " Fix Python files with 'bar'.
+    " Don't fix 'html' files.
+    " Fix everything else with 'foo'.
+    let g:ale_fixers = {'python': ['bar'], 'html': [], '*': ['foo']}
+<
 
 g:ale_fix_on_save                                           *g:ale_fix_on_save*
 b:ale_fix_on_save                                           *b:ale_fix_on_save*
@@ -1114,6 +1133,7 @@ g:ale_linter_aliases                                     *g:ale_linter_aliases*
   \   'csh': 'sh',
   \   'plaintex': 'tex',
   \   'systemverilog': 'verilog',
+  \   'verilog_systemverilog': ['verilog_systemverilog', 'verilog'],
   \   'vimwiki': 'markdown',
   \   'zsh': 'sh',
   \}
@@ -1218,6 +1238,32 @@ g:ale_linters_explicit                                 *g:ale_linters_explicit*
   will be enabled. The default behavior for ALE is to enable as many linters
   as possible, unless otherwise specified.
 
+
+g:ale_linters_ignore                                     *g:ale_linters_ignore*
+                                                         *b:ale_linters_ignore*
+
+  Type: |Dictionary| or |List|
+  Default: `{}`
+
+  Linters to ignore. Commands for ignored linters will not be run, and
+  diagnostics for LSP linters will be ignored. (See |ale-lsp|)
+
+  This setting can be set to a |Dictionary| mapping filetypes to linter names,
+  just like |g:ale_linters|, to list linters to ignore. Ignore lists will be
+  applied after everything else. >
+
+  " Select flake8 and pylint, and ignore pylint, so only flake8 is run.
+  let g:ale_linters = {'python': ['flake8', 'pylint']}
+  let g:ale_linters_ignore = {'python': ['pylint']}
+<
+  This setting can be set to simply a |List| of linter names, which is
+  especially more convenient when using the setting in ftplugin files for
+  particular buffers. >
+
+  " The same as above, in a ftplugin/python.vim.
+  let b:ale_linters = ['flake8', 'pylint']
+  let b:ale_linters_ignore = ['pylint']
+<
 
 g:ale_list_vertical                                       *g:ale_list_vertical*
                                                           *b:ale_list_vertical*
@@ -1967,9 +2013,13 @@ ALEDisableBuffer                                             *ALEDisableBuffer*
                                                                    *:ALEDetail*
 ALEDetail                                                           *ALEDetail*
 
-  Show the full linter message for the current line in the preview window.
-  This will only have an effect on lines that contain a linter message. The
-  preview window can be easily closed with the `q` key.
+  Show the full linter message for the problem nearest to the cursor on the
+  given line in the preview window. The preview window can be easily closed
+  with the `q` key. If there is no message to show, the window will not be
+  opened.
+
+  If a loclist item has a `detail` key set, the message for that key will be
+  preferred over `text`. See |ale-loclist-format|.
 
   A plug mapping `<Plug>(ale_detail)` is defined for this command.
 
@@ -2153,13 +2203,16 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
 
                          This argument is required, unless the linter is an
                          LSP linter. In which case, this argument must not be
-                         defined, as LSP linters handle diangostics
+                         defined, as LSP linters handle diagnostics
                          automatically. See |ale-lsp-linters|.
 
                          The keys for each item in the List will be handled in
                          the following manner:
                                                            *ale-loclist-format*
                          `text` - This error message is required.
+                         `detail` - An optional, more descriptive message.
+                           This message can be displayed with the |ALEDetail|
+                           command instead of the message for `text`, if set.
                          `lnum` - The line number is required. Any strings
                            will be automatically converted to numbers by
                            using `str2nr()`.
@@ -2319,8 +2372,16 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
 
                          When this argument is set to `'stdio'`, then the
                          linter will be defined as an LSP linter which keeps a
-                         process for a language server runnning, and
+                         process for a language server running, and
                          communicates with it directly via a |channel|.
+                         `executable` or `executable_callback` must be set,
+                         and `command` or `command_callback` must be set.
+
+                         When this argument is set to `'socket'`, then the
+                         linter will be defined as an LSP linter via a TCP
+                         socket connection. `address_callback` must be set
+                         with a callback returning an address to connect to.
+                         ALE will not start a server automatically.
 
                          When this argument is not empty, only one of either
                          `language` or `language_callback` must be defined,
@@ -2335,6 +2396,13 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                          An optional `initialization_options` or
                          `initialization_options_callback` may be defined to
                          pass initialization options to the LSP.
+
+  `address_callback`       A |String| or |Funcref| for a callback function
+                         accepting a buffer number. A |String| should be
+                         returned with an address to connect to.
+
+                         This argument must only be set if the `lsp` argument
+                         is set to `'socket'`.
 
   `project_root_callback`  A |String| or |Funcref| for a callback function
                          accepting a buffer number. A |String| should be
@@ -2564,5 +2632,5 @@ free to send an email to devw0rp@gmail.com.
 Please drink responsibly, or not at all, which is ironically the preference
 of w0rp, who is teetotal.
 
-
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

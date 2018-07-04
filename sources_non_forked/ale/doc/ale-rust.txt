@@ -108,6 +108,15 @@ g:ale_rust_cargo_include_features           *g:ale_rust_cargo_include_features*
   When defined, ALE will set the `--features` option when invoking `cargo` to
   perform the lint check. See |g:ale_rust_cargo_default_feature_behavior|.
 
+g:ale_rust_cargo_avoid_whole_workspace *g:ale_rust_cargo_avoid_whole_workspace*
+                                       *b:ale_rust_cargo_avoid_whole_workspace*
+  Type: |Number|
+  Default: `1`
+
+  When set to 1, and ALE is used to edit a crate that is part of a Cargo
+  workspace, avoid building the entire entire workspace by invoking
+  `cargo` directly in the crate's directory. Otherwise, behave as usual.
+
 
 ===============================================================================
 rls                                                              *ale-rust-rls*

@@ -356,9 +356,21 @@ function! s:RunFixer(options) abort
     call ale#fix#ApplyFixes(l:buffer, l:input)
 endfunction
 
-function! s:GetCallbacks(buffer, linters) abort
-    if len(a:linters)
-        let l:callback_list = a:linters
+function! s:AddSubCallbacks(full_list, callbacks) abort
+    if type(a:callbacks) == type('')
+        call add(a:full_list, a:callbacks)
+    elseif type(a:callbacks) == type([])
+        call extend(a:full_list, a:callbacks)
+    else
+        return 0
+    endif
+
+    return 1
+endfunction
+
+function! s:GetCallbacks(buffer, fixers) abort
+    if len(a:fixers)
+        let l:callback_list = a:fixers
     elseif type(get(b:, 'ale_fixers')) is type([])
         " Lists can be used for buffer-local variables only
         let l:callback_list = b:ale_fixers
@@ -367,16 +379,18 @@ function! s:GetCallbacks(buffer, linters) abort
         " callbacks to run.
         let l:fixers = ale#Var(a:buffer, 'fixers')
         let l:callback_list = []
+        let l:matched = 0
 
         for l:sub_type in split(&filetype, '\.')
-            let l:sub_type_callacks = get(l:fixers, l:sub_type, [])
-
-            if type(l:sub_type_callacks) == type('')
-                call add(l:callback_list, l:sub_type_callacks)
-            else
-                call extend(l:callback_list, l:sub_type_callacks)
+            if s:AddSubCallbacks(l:callback_list, get(l:fixers, l:sub_type))
+                let l:matched = 1
             endif
         endfor
+
+        " If we couldn't find fixers for a filetype, default to '*' fixers.
+        if !l:matched
+            call s:AddSubCallbacks(l:callback_list, get(l:fixers, '*'))
+        endif
     endif
 
     if empty(l:callback_list)

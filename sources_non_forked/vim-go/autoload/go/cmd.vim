@@ -114,10 +114,16 @@ endfunction
 
 " Run runs the current file (and their dependencies if any) in a new terminal.
 function! go#cmd#RunTerm(bang, mode, files) abort
+  let cmd = "go run "
+  let tags = go#config#BuildTags()
+  if len(tags) > 0
+    let cmd .= "-tags " . go#util#Shellescape(tags) . " "
+  endif
+
   if empty(a:files)
-    let cmd = "go run ".  go#util#Shelljoin(go#tool#Files())
+    let cmd .= go#util#Shelljoin(go#tool#Files())
   else
-    let cmd = "go run ".  go#util#Shelljoin(map(copy(a:files), "expand(v:val)"), 1)
+    let cmd .= go#util#Shelljoin(map(copy(a:files), "expand(v:val)"), 1)
   endif
   call go#term#newmode(a:bang, cmd, a:mode)
 endfunction
@@ -138,8 +144,14 @@ function! go#cmd#Run(bang, ...) abort
     " anything. Once this is implemented we're going to make :GoRun async
   endif
 
+  let cmd = "go run "
+  let tags = go#config#BuildTags()
+  if len(tags) > 0
+    let cmd .= "-tags " . go#util#Shellescape(tags) . " "
+  endif
+
   if go#util#IsWin()
-    exec '!go run ' . go#util#Shelljoin(go#tool#Files())
+    exec '!' . cmd . go#util#Shelljoin(go#tool#Files())
     if v:shell_error
       redraws! | echon "vim-go: [run] " | echohl ErrorMsg | echon "FAILED"| echohl None
     else
@@ -152,9 +164,9 @@ function! go#cmd#Run(bang, ...) abort
   " :make expands '%' and '#' wildcards, so they must also be escaped
   let default_makeprg = &makeprg
   if a:0 == 0
-    let &makeprg = 'go run ' . go#util#Shelljoin(go#tool#Files(), 1)
+    let &makeprg = cmd . go#util#Shelljoin(go#tool#Files(), 1)
   else
-    let &makeprg = "go run " . go#util#Shelljoin(map(copy(a:000), "expand(v:val)"), 1)
+    let &makeprg = cmd . go#util#Shelljoin(map(copy(a:000), "expand(v:val)"), 1)
   endif
 
   let l:listtype = go#list#Type("GoRun")

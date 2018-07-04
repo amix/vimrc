@@ -2,22 +2,41 @@
 " Description: Preview windows for showing whatever information in.
 
 " Open a preview window and show some lines in it.
-" An optional second argument can set an alternative filetype for the window.
+" A second argument can be passed as a Dictionary with options. They are...
+"
+" filetype  - The filetype to use, defaulting to 'ale-preview'
+" stay_here - If 1, stay in the window you came from.
 function! ale#preview#Show(lines, ...) abort
-    let l:filetype = get(a:000, 0, 'ale-preview')
+    let l:options = get(a:000, 0, {})
 
     silent pedit ALEPreviewWindow
     wincmd P
+
     setlocal modifiable
     setlocal noreadonly
     setlocal nobuflisted
-    let &l:filetype = l:filetype
+    let &l:filetype = get(l:options, 'filetype', 'ale-preview')
     setlocal buftype=nofile
     setlocal bufhidden=wipe
     :%d
     call setline(1, a:lines)
     setlocal nomodifiable
     setlocal readonly
+
+    if get(l:options, 'stay_here')
+        wincmd p
+    endif
+endfunction
+
+" Close the preview window if the filetype matches the given one.
+function! ale#preview#CloseIfTypeMatches(filetype) abort
+    for l:win in getwininfo()
+        let l:wintype = gettabwinvar(l:win.tabnr, l:win.winnr, '&filetype')
+
+        if l:wintype is# a:filetype
+            silent! pclose!
+        endif
+    endfor
 endfunction
 
 " Show a location selection preview window, given some items.
@@ -35,7 +54,7 @@ function! ale#preview#ShowSelection(item_list) abort
         \)
     endfor
 
-    call ale#preview#Show(l:lines, 'ale-preview-selection')
+    call ale#preview#Show(l:lines, {'filetype': 'ale-preview-selection'})
     let b:ale_preview_item_list = a:item_list
 endfunction
 

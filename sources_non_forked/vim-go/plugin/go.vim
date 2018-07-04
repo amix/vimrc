@@ -47,6 +47,7 @@ let s:packages = {
       \ 'impl':          ['github.com/josharian/impl'],
       \ 'keyify':        ['github.com/dominikh/go-tools/cmd/keyify'],
       \ 'motion':        ['github.com/fatih/motion'],
+      \ 'iferr':         ['github.com/koron/iferr'],
 \ }
 
 " These commands are available on any filetypes

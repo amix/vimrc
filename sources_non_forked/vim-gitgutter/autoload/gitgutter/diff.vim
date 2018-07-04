@@ -146,6 +146,10 @@ endfunction
 function! gitgutter#diff#handler(bufnr, diff) abort
   call gitgutter#debug#log(a:diff)
 
+  if !bufexists(a:bufnr)
+    return
+  endif
+
   call gitgutter#hunk#set_hunks(a:bufnr, gitgutter#diff#parse_diff(a:diff))
   let modified_lines = gitgutter#diff#process_hunks(a:bufnr, gitgutter#hunk#hunks(a:bufnr))
 

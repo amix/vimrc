@@ -853,6 +853,27 @@ CTRL-t
       }
 <
 
+                                                                    *:GoIfErr*
+:GoIfErr
+
+    Generate if err != nil { return ... } automatically which infer the type
+    of return values and the numbers.
+
+    For example:
+>
+      func doSomething() (string, error) {
+          f, err := os.Open("file")
+      }
+<
+    Becomes:
+>
+      func doSomething() (string, error) {
+          f, err := os.Open("file")
+          if err != nil {
+              return "", err
+          }
+      }
+<
 ==============================================================================
 MAPPINGS                                                        *go-mappings*
 
@@ -1065,6 +1086,10 @@ Alternates between the implementation and test code in a new vertical split
 
 Calls `:GoImport` for the current package
 
+                                                                  *(go-iferr)*
+
+Generate if err != nil { return ... } automatically which infer the type of
+return values and the numbers.
 
 ==============================================================================
 TEXT OBJECTS                                                 *go-text-objects*
@@ -2090,7 +2115,7 @@ Many vim-go commands use the `guru` commandline tool to get information. Some
 a reasonable amount of performance `guru` limits this analysis to a selected
 list of packages. This is known as the "guru scope".
 
-The default is to use the package the curent buffer belongs to, but this may
+The default is to use the package the current buffer belongs to, but this may
 not always be correct. For example for the file `guthub.com/user/pkg/a/a.go`
 the scope will be set to `github.com/user/pkg/a`, but you probably want
 `github.com/user/pkg`

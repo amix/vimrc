@@ -3,6 +3,25 @@ ALE Shell Integration                                          *ale-sh-options*
 
 
 ===============================================================================
+sh-language-server                                     *ale-sh-language-server*
+
+g:ale_sh_language_server_executable        *g:ale_sh_language_server_executable*
+                                           *b:ale_sh_language_server_executable*
+  Type: |String|
+  Default: `'bash-language-server'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_sh_language_server_use_global        *g:ale_sh_language_server_use_global*
+                                           *b:ale_sh_language_server_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 shell                                                            *ale-sh-shell*
 
 g:ale_sh_shell_default_shell                     *g:ale_sh_shell_default_shell*

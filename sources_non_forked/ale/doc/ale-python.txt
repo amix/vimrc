@@ -364,6 +364,30 @@ g:ale_python_pyls_use_global                     *g:ale_python_pyls_use_global*
 
 
 ===============================================================================
+pyre                                                          *ale-python-pyre*
+
+`pyre` will be run from a detected project root, per |ale-python-root|.
+
+
+g:ale_python_pyre_executable                     *g:ale_python_pyre_executable*
+                                                 *b:ale_python_pyre_executable*
+  Type: |String|
+  Default: `'pyre'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pyre'`.
+
+
+g:ale_python_pyre_use_global                     *g:ale_python_pyre_use_global*
+                                                 *b:ale_python_pyre_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 yapf                                                          *ale-python-yapf*
 
 g:ale_python_yapf_executable                     *g:ale_python_yapf_executable*

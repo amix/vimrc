@@ -214,10 +214,15 @@ function! ale#debugging#Info() abort
     " This must be done after linters are loaded.
     let l:variable_list = s:GetLinterVariables(l:filetype, l:enabled_names)
 
+    let l:fixers = ale#fix#registry#SuggestedFixers(l:filetype)
+    let l:fixers = uniq(sort(l:fixers[0] + l:fixers[1]))
+    let l:fixers_string = join(map(copy(l:fixers), '"\n  " . v:val'), '')
+
     call s:Echo(' Current Filetype: ' . l:filetype)
     call s:Echo('Available Linters: ' . string(l:all_names))
     call s:EchoLinterAliases(l:all_linters)
     call s:Echo('  Enabled Linters: ' . string(l:enabled_names))
+    call s:Echo(' Suggested Fixers: ' . l:fixers_string)
     call s:Echo(' Linter Variables:')
     call s:Echo('')
     call s:EchoLinterVariables(l:variable_list)

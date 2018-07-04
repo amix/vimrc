@@ -4,21 +4,27 @@
 call ale#Set('ruby_reek_show_context', 0)
 call ale#Set('ruby_reek_show_wiki_link', 0)
 
-function! ale_linters#ruby#reek#Handle(buffer, lines) abort
-    let l:output = []
+function! ale_linters#ruby#reek#VersionCheck(buffer) abort
+    " If we have previously stored the version number in a cache, then
+    " don't look it up again.
+    if ale#semver#HasVersion('reek')
+        " Returning an empty string skips this command.
+        return ''
+    endif
 
-    for l:error in ale#util#FuzzyJSONDecode(a:lines, [])
-        for l:location in l:error.lines
-            call add(l:output, {
-            \    'lnum': l:location,
-            \    'type': 'W',
-            \    'text': s:BuildText(a:buffer, l:error),
-            \    'code': l:error.smell_type,
-            \})
-        endfor
-    endfor
+    return 'reek --version'
+endfunction
 
-    return l:output
+function! ale_linters#ruby#reek#GetCommand(buffer, version_output) abort
+    let l:version = ale#semver#GetVersion('reek', a:version_output)
+
+    " Tell reek what the filename is if the version of reek is new enough.
+    let l:display_name_args = ale#semver#GTE(l:version, [5, 0, 0])
+    \   ? ' --stdin-filename %s'
+    \   : ''
+
+    return 'reek -f json --no-progress --no-color'
+    \   . l:display_name_args
 endfunction
 
 function! s:BuildText(buffer, error) abort
@@ -37,9 +43,29 @@ function! s:BuildText(buffer, error) abort
     return join(l:parts, ' ')
 endfunction
 
+function! ale_linters#ruby#reek#Handle(buffer, lines) abort
+    let l:output = []
+
+    for l:error in ale#util#FuzzyJSONDecode(a:lines, [])
+        for l:location in l:error.lines
+            call add(l:output, {
+            \    'lnum': l:location,
+            \    'type': 'W',
+            \    'text': s:BuildText(a:buffer, l:error),
+            \    'code': l:error.smell_type,
+            \})
+        endfor
+    endfor
+
+    return l:output
+endfunction
+
 call ale#linter#Define('ruby', {
-\    'name': 'reek',
-\    'executable': 'reek',
-\    'command': 'reek -f json --no-progress --no-color',
+\   'name': 'reek',
+\   'executable': 'reek',
+\   'command_chain': [
+\       {'callback': 'ale_linters#ruby#reek#VersionCheck'},
+\       {'callback': 'ale_linters#ruby#reek#GetCommand'},
+\   ],
 \    'callback': 'ale_linters#ruby#reek#Handle',
 \})
