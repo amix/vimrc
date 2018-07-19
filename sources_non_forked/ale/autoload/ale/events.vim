@@ -39,35 +39,48 @@ function! ale#events#SaveEvent(buffer) abort
     endif
 endfunction
 
-function! s:LintOnEnter(buffer) abort
-    if ale#Var(a:buffer, 'enabled')
-    \&& g:ale_lint_on_enter
-    \&& has_key(b:, 'ale_file_changed')
-        call remove(b:, 'ale_file_changed')
+function! ale#events#LintOnEnter(buffer) abort
+    " Unmark a file as being changed outside of Vim after we try to check it.
+    call setbufvar(a:buffer, 'ale_file_changed', 0)
+
+    if ale#Var(a:buffer, 'enabled') && g:ale_lint_on_enter
         call ale#Queue(0, 'lint_file', a:buffer)
     endif
 endfunction
 
-function! ale#events#EnterEvent(buffer) abort
+function! ale#events#ReadOrEnterEvent(buffer) abort
+    " Apply pattern options if the variable is set.
+    if get(g:, 'ale_pattern_options_enabled', 1)
+    \&& !empty(get(g:, 'ale_pattern_options'))
+        call ale#pattern_options#SetOptions(a:buffer)
+    endif
+
     " When entering a buffer, we are no longer quitting it.
     call setbufvar(a:buffer, 'ale_quitting', 0)
     let l:filetype = getbufvar(a:buffer, '&filetype')
     call setbufvar(a:buffer, 'ale_original_filetype', l:filetype)
 
-    call s:LintOnEnter(a:buffer)
+    " If the file changed outside of Vim, check it on BufEnter,BufRead
+    if getbufvar(a:buffer, 'ale_file_changed')
+        call ale#events#LintOnEnter(a:buffer)
+    endif
 endfunction
 
 function! ale#events#FileTypeEvent(buffer, new_filetype) abort
-    let l:filetype = getbufvar(a:buffer, 'ale_original_filetype', '')
+    " The old filetype will be set to an empty string by the BuFEnter event,
+    " and not linting when the old filetype hasn't been set yet prevents
+    " buffers being checked when you enter them when linting on enter is off.
+    let l:old_filetype = getbufvar(a:buffer, 'ale_original_filetype', v:null)
 
-    " If we're setting the filetype for the first time after it was blank,
-    " and the option for linting on enter is off, then we should set this
-    " filetype as the original filetype. Otherwise ALE will still appear to
-    " lint files because of the BufEnter event, etc.
-    if empty(l:filetype) && !ale#Var(a:buffer, 'lint_on_enter')
+    if l:old_filetype isnot v:null
+    \&& !empty(a:new_filetype)
+    \&& a:new_filetype isnot# l:old_filetype
+        " Remember what the new filetype is.
         call setbufvar(a:buffer, 'ale_original_filetype', a:new_filetype)
-    elseif a:new_filetype isnot# l:filetype
-        call ale#Queue(300, 'lint_file', a:buffer)
+
+        if g:ale_lint_on_filetype_changed
+            call ale#Queue(300, 'lint_file', a:buffer)
+        endif
     endif
 endfunction
 
@@ -75,7 +88,7 @@ function! ale#events#FileChangedEvent(buffer) abort
     call setbufvar(a:buffer, 'ale_file_changed', 1)
 
     if bufnr('') == a:buffer
-        call s:LintOnEnter(a:buffer)
+        call ale#events#LintOnEnter(a:buffer)
     endif
 endfunction
 
@@ -87,7 +100,7 @@ function! ale#events#Init() abort
         autocmd!
 
         " These events always need to be set up.
-        autocmd BufEnter,BufRead * call ale#pattern_options#SetOptions(str2nr(expand('<abuf>')))
+        autocmd BufEnter,BufRead * call ale#events#ReadOrEnterEvent(str2nr(expand('<abuf>')))
         autocmd BufWritePost * call ale#events#SaveEvent(str2nr(expand('<abuf>')))
 
         if g:ale_enabled
@@ -99,11 +112,8 @@ function! ale#events#Init() abort
                 autocmd TextChangedI * call ale#Queue(g:ale_lint_delay)
             endif
 
-            " Handle everything that needs to happen when buffers are entered.
-            autocmd BufEnter * call ale#events#EnterEvent(str2nr(expand('<abuf>')))
-
             if g:ale_lint_on_enter
-                autocmd BufWinEnter,BufRead * call ale#Queue(0, 'lint_file', str2nr(expand('<abuf>')))
+                autocmd BufWinEnter * call ale#events#LintOnEnter(str2nr(expand('<abuf>')))
                 " Track when the file is changed outside of Vim.
                 autocmd FileChangedShellPost * call ale#events#FileChangedEvent(str2nr(expand('<abuf>')))
             endif

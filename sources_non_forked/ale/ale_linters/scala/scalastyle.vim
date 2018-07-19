@@ -1,11 +1,11 @@
 " Author: Kevin Kays - https://github.com/okkays
 " Description: Support for the scalastyle checker.
 
-let g:ale_scala_scalastyle_options =
-\   get(g:, 'ale_scala_scalastyle_options', '')
-
-let g:ale_scalastyle_config_loc =
+call ale#Set('scala_scalastyle_options', '')
+" TODO: Remove support for the old option name in ALE 3.0.
+call ale#Set('scala_scalastyle_config',
 \   get(g:, 'ale_scalastyle_config_loc', '')
+\)
 
 function! ale_linters#scala#scalastyle#Handle(buffer, lines) abort
     " Look for help output from scalastyle first, which indicates that no
@@ -66,23 +66,13 @@ function! ale_linters#scala#scalastyle#GetCommand(buffer) abort
 
     " If all else fails, try the global config.
     if empty(l:scalastyle_config)
-        let l:scalastyle_config = get(g:, 'ale_scalastyle_config_loc', '')
+        let l:scalastyle_config = ale#Var(a:buffer, 'scala_scalastyle_config')
     endif
 
-    " Build the command using the config file and additional options.
-    let l:command = 'scalastyle'
-
-    if !empty(l:scalastyle_config)
-        let l:command .= ' --config ' . ale#Escape(l:scalastyle_config)
-    endif
-
-    if !empty(g:ale_scala_scalastyle_options)
-        let l:command .= ' ' . g:ale_scala_scalastyle_options
-    endif
-
-    let l:command .= ' %t'
-
-    return l:command
+    return 'scalastyle'
+    \ . (!empty(l:scalastyle_config) ? ' --config ' . ale#Escape(l:scalastyle_config) : '')
+    \ . ale#Pad(ale#Var(a:buffer, 'scala_scalastyle_options'))
+    \ . ' %t'
 endfunction
 
 call ale#linter#Define('scala', {

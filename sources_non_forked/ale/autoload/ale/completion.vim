@@ -1,6 +1,17 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Completion support for LSP linters
 
+" The omnicompletion menu is shown through a special Plug mapping which is
+" only valid in Insert mode. This way, feedkeys() won't send these keys if you
+" quit Insert mode quickly enough.
+inoremap <silent> <Plug>(ale_show_completion_menu) <C-x><C-o>
+" If we hit the key sequence in normal mode, then we won't show the menu, so
+" we should restore the old settings right away.
+nnoremap <silent> <Plug>(ale_show_completion_menu) :call ale#completion#RestoreCompletionOptions()<CR>
+cnoremap <silent> <Plug>(ale_show_completion_menu) <Nop>
+vnoremap <silent> <Plug>(ale_show_completion_menu) <Nop>
+onoremap <silent> <Plug>(ale_show_completion_menu) <Nop>
+
 let g:ale_completion_delay = get(g:, 'ale_completion_delay', 100)
 let g:ale_completion_excluded_words = get(g:, 'ale_completion_excluded_words', [])
 let g:ale_completion_max_suggestions = get(g:, 'ale_completion_max_suggestions', 50)
@@ -129,7 +140,16 @@ function! ale#completion#Filter(buffer, suggestions, prefix) abort
     return l:filtered_suggestions
 endfunction
 
-function! s:ReplaceCompleteopt() abort
+function! s:ReplaceCompletionOptions() abort
+    " Remember the old omnifunc value, if there is one.
+    " If we don't store an old one, we'll just never reset the option.
+    " This will stop some random exceptions from appearing.
+    if !exists('b:ale_old_omnifunc') && !empty(&l:omnifunc)
+        let b:ale_old_omnifunc = &l:omnifunc
+    endif
+
+    let &l:omnifunc = 'ale#completion#OmniFunc'
+
     if !exists('b:ale_old_completopt')
         let b:ale_old_completopt = &l:completeopt
     endif
@@ -138,6 +158,22 @@ function! s:ReplaceCompleteopt() abort
         let &l:completeopt = 'menu,menuone,preview,noselect,noinsert'
     else
         let &l:completeopt = 'menu,menuone,noselect,noinsert'
+    endif
+endfunction
+
+function! ale#completion#RestoreCompletionOptions() abort
+    " Reset settings when completion is done.
+    if exists('b:ale_old_omnifunc')
+        if b:ale_old_omnifunc isnot# 'pythoncomplete#Complete'
+            let &l:omnifunc = b:ale_old_omnifunc
+        endif
+
+        unlet b:ale_old_omnifunc
+    endif
+
+    if exists('b:ale_old_completopt')
+        let &l:completeopt = b:ale_old_completopt
+        unlet b:ale_old_completopt
     endif
 endfunction
 
@@ -163,33 +199,30 @@ function! ale#completion#OmniFunc(findstart, base) abort
             let b:ale_completion_result = function(l:parser)(l:response)
         endif
 
-        call s:ReplaceCompleteopt()
+        call s:ReplaceCompletionOptions()
 
         return get(b:, 'ale_completion_result', [])
     endif
 endfunction
 
 function! ale#completion#Show(response, completion_parser) abort
-    " Remember the old omnifunc value, if there is one.
-    " If we don't store an old one, we'll just never reset the option.
-    " This will stop some random exceptions from appearing.
-    if !exists('b:ale_old_omnifunc') && !empty(&l:omnifunc)
-        let b:ale_old_omnifunc = &l:omnifunc
+    if ale#util#Mode() isnot# 'i'
+        return
     endif
 
     " Set the list in the buffer, temporarily replace omnifunc with our
     " function, and then start omni-completion.
     let b:ale_completion_response = a:response
     let b:ale_completion_parser = a:completion_parser
-    let &l:omnifunc = 'ale#completion#OmniFunc'
-    call s:ReplaceCompleteopt()
-    call ale#util#FeedKeys("\<C-x>\<C-o>", 'n')
+    call s:ReplaceCompletionOptions()
+    call ale#util#FeedKeys("\<Plug>(ale_show_completion_menu)")
 endfunction
 
 function! s:CompletionStillValid(request_id) abort
     let [l:line, l:column] = getcurpos()[1:2]
 
-    return has_key(b:, 'ale_completion_info')
+    return ale#util#Mode() is# 'i'
+    \&& has_key(b:, 'ale_completion_info')
     \&& b:ale_completion_info.request_id == a:request_id
     \&& b:ale_completion_info.line == l:line
     \&& b:ale_completion_info.column == l:column
@@ -477,7 +510,7 @@ function! s:TimerHandler(...) abort
 
     " When running the timer callback, we have to be sure that the cursor
     " hasn't moved from where it was when we requested completions by typing.
-    if s:timer_pos == [l:line, l:column]
+    if s:timer_pos == [l:line, l:column] && ale#util#Mode() is# 'i'
         call ale#completion#GetCompletions()
     endif
 endfunction
@@ -518,19 +551,7 @@ endfunction
 function! ale#completion#Done() abort
     silent! pclose
 
-    " Reset settings when completion is done.
-    if exists('b:ale_old_omnifunc')
-        if b:ale_old_omnifunc isnot# 'pythoncomplete#Complete'
-            let &l:omnifunc = b:ale_old_omnifunc
-        endif
-
-        unlet b:ale_old_omnifunc
-    endif
-
-    if exists('b:ale_old_completopt')
-        let &l:completeopt = b:ale_old_completopt
-        unlet b:ale_old_completopt
-    endif
+    call ale#completion#RestoreCompletionOptions()
 
     let s:last_done_pos = getcurpos()[1:2]
 endfunction

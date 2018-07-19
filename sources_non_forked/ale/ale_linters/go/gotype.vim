@@ -3,9 +3,8 @@
 
 function! ale_linters#go#gotype#GetCommand(buffer) abort
     if expand('#' . a:buffer . ':p') =~# '_test\.go$'
-        return
+        return ''
     endif
-
 
     return ale#path#BufferCdString(a:buffer) . ' gotype .'
 endfunction

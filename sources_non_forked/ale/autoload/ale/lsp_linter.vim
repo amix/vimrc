@@ -114,6 +114,18 @@ function! ale#lsp_linter#HandleLSPResponse(conn_id, response) abort
     endif
 endfunction
 
+function! ale#lsp_linter#GetOptions(buffer, linter) abort
+    let l:initialization_options = {}
+
+    if has_key(a:linter, 'initialization_options_callback')
+        let l:initialization_options = ale#util#GetFunction(a:linter.initialization_options_callback)(a:buffer)
+    elseif has_key(a:linter, 'initialization_options')
+        let l:initialization_options = a:linter.initialization_options
+    endif
+
+    return l:initialization_options
+endfunction
+
 " Given a buffer, an LSP linter, and a callback to register for handling
 " messages, start up an LSP linter and get ready to receive errors or
 " completions.
@@ -128,13 +140,7 @@ function! ale#lsp_linter#StartLSP(buffer, linter, callback) abort
         return {}
     endif
 
-    let l:initialization_options = {}
-
-    if has_key(a:linter, 'initialization_options_callback')
-        let l:initialization_options = ale#util#GetFunction(a:linter.initialization_options_callback)(a:buffer)
-    elseif has_key(a:linter, 'initialization_options')
-        let l:initialization_options = a:linter.initialization_options
-    endif
+    let l:initialization_options = ale#lsp_linter#GetOptions(a:buffer, a:linter)
 
     if a:linter.lsp is# 'socket'
         let l:address = ale#linter#GetAddress(a:buffer, a:linter)
@@ -147,14 +153,14 @@ function! ale#lsp_linter#StartLSP(buffer, linter, callback) abort
     else
         let l:executable = ale#linter#GetExecutable(a:buffer, a:linter)
 
-        if !executable(l:executable)
+        if empty(l:executable) || !executable(l:executable)
             return {}
         endif
 
-        let l:command = ale#job#PrepareCommand(
-        \   a:buffer,
-        \   ale#linter#GetCommand(a:buffer, a:linter),
-        \)
+        let l:command = ale#linter#GetCommand(a:buffer, a:linter)
+        " Format the command, so %e can be formatted into it.
+        let l:command = ale#command#FormatCommand(a:buffer, l:executable, l:command, 0)[1]
+        let l:command = ale#job#PrepareCommand(a:buffer, l:command)
         let l:conn_id = ale#lsp#StartProgram(
         \   l:executable,
         \   l:command,

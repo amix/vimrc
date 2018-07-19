@@ -35,15 +35,11 @@ endif
 " Set this flag so that other plugins can use it, like airline.
 let g:loaded_ale = 1
 
-" Set the TMPDIR environment variable if it is not set automatically.
-" This can automatically fix some environments.
-if has('unix') && empty($TMPDIR)
-    let $TMPDIR = '/tmp'
-endif
-
 " This global variable is used internally by ALE for tracking information for
 " each buffer which linters are being run against.
 let g:ale_buffer_info = {}
+" This global Dictionary tracks data for fixing code. Don't mess with it.
+let g:ale_fix_buffer_data = {}
 
 " User Configuration
 

@@ -96,9 +96,26 @@ function! ale#engine#ManageDirectory(buffer, directory) abort
     call add(g:ale_buffer_info[a:buffer].temporary_directory_list, a:directory)
 endfunction
 
+function! ale#engine#CreateFile(buffer) abort
+    " This variable can be set to 1 in tests to stub this out.
+    if get(g:, 'ale_create_dummy_temporary_file')
+        return 'TEMP'
+    endif
+
+    let l:temporary_file = ale#util#Tempname()
+    call ale#engine#ManageFile(a:buffer, l:temporary_file)
+
+    return l:temporary_file
+endfunction
+
 " Create a new temporary directory and manage it in one go.
 function! ale#engine#CreateDirectory(buffer) abort
-    let l:temporary_directory = tempname()
+    " This variable can be set to 1 in tests to stub this out.
+    if get(g:, 'ale_create_dummy_temporary_file')
+        return 'TEMP_DIR'
+    endif
+
+    let l:temporary_directory = ale#util#Tempname()
     " Create the temporary directory for the file, unreadable by 'other'
     " users.
     call mkdir(l:temporary_directory, '', 0750)
@@ -189,6 +206,7 @@ function! s:HandleExit(job_id, exit_code) abort
     let l:linter = l:job_info.linter
     let l:output = l:job_info.output
     let l:buffer = l:job_info.buffer
+    let l:executable = l:job_info.executable
     let l:next_chain_index = l:job_info.next_chain_index
 
     if g:ale_history_enabled
@@ -212,7 +230,7 @@ function! s:HandleExit(job_id, exit_code) abort
     endif
 
     if l:next_chain_index < len(get(l:linter, 'command_chain', []))
-        call s:InvokeChain(l:buffer, l:linter, l:next_chain_index, l:output)
+        call s:InvokeChain(l:buffer, l:executable, l:linter, l:next_chain_index, l:output)
         return
     endif
 
@@ -221,7 +239,12 @@ function! s:HandleExit(job_id, exit_code) abort
         call ale#history#RememberOutput(l:buffer, a:job_id, l:output[:])
     endif
 
-    let l:loclist = ale#util#GetFunction(l:linter.callback)(l:buffer, l:output)
+    try
+        let l:loclist = ale#util#GetFunction(l:linter.callback)(l:buffer, l:output)
+    " Handle the function being unknown, or being deleted.
+    catch /E700/
+        let l:loclist = []
+    endtry
 
     call ale#engine#HandleLoclist(l:linter.name, l:buffer, l:loclist)
 endfunction
@@ -440,6 +463,12 @@ endfunction
 " Returns 1 when the job was started successfully.
 function! s:RunJob(options) abort
     let l:command = a:options.command
+
+    if empty(l:command)
+        return 0
+    endif
+
+    let l:executable = a:options.executable
     let l:buffer = a:options.buffer
     let l:linter = a:options.linter
     let l:output_stream = a:options.output_stream
@@ -447,11 +476,12 @@ function! s:RunJob(options) abort
     let l:read_buffer = a:options.read_buffer
     let l:info = g:ale_buffer_info[l:buffer]
 
-    if empty(l:command)
-        return 0
-    endif
-
-    let [l:temporary_file, l:command] = ale#command#FormatCommand(l:buffer, l:command, l:read_buffer)
+    let [l:temporary_file, l:command] = ale#command#FormatCommand(
+    \   l:buffer,
+    \   l:executable,
+    \   l:command,
+    \   l:read_buffer,
+    \)
 
     if s:CreateTemporaryFileForJob(l:buffer, l:temporary_file)
         " If a temporary filename has been formatted in to the command, then
@@ -512,6 +542,7 @@ function! s:RunJob(options) abort
         let s:job_info_map[l:job_id] = {
         \   'linter': l:linter,
         \   'buffer': l:buffer,
+        \   'executable': l:executable,
         \   'output': [],
         \   'next_chain_index': l:next_chain_index,
         \}
@@ -604,8 +635,9 @@ function! ale#engine#ProcessChain(buffer, linter, chain_index, input) abort
     \}
 endfunction
 
-function! s:InvokeChain(buffer, linter, chain_index, input) abort
+function! s:InvokeChain(buffer, executable, linter, chain_index, input) abort
     let l:options = ale#engine#ProcessChain(a:buffer, a:linter, a:chain_index, a:input)
+    let l:options.executable = a:executable
 
     return s:RunJob(l:options)
 endfunction
@@ -699,7 +731,7 @@ function! s:RunLinter(buffer, linter) abort
         let l:executable = ale#linter#GetExecutable(a:buffer, a:linter)
 
         if ale#engine#IsExecutable(a:buffer, l:executable)
-            return s:InvokeChain(a:buffer, a:linter, 0, [])
+            return s:InvokeChain(a:buffer, l:executable, a:linter, 0, [])
         endif
     endif
 

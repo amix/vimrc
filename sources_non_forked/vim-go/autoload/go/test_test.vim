@@ -89,15 +89,6 @@ func! Test_GoTestTestCompilerError() abort
 endfunc
 
 func! s:test(file, expected, ...) abort
-  if has('nvim')
-    " nvim mostly shows test errors correctly, but the the expected errors are
-    " slightly different; buffer numbers are not the same and stderr doesn't
-    " seem to be redirected to the job, so the lines from the panic aren't in
-    " the output to be parsed, and hence are not in the quickfix lists. Once
-    " those two issues are resolved, this early return should be removed so
-    " the tests will run for Neovim, too.
-    return
-  endif
   let $GOPATH = fnameescape(fnamemodify(getcwd(), ':p')) . 'test-fixtures/test'
   silent exe 'e ' . $GOPATH . '/src/' . a:file
 

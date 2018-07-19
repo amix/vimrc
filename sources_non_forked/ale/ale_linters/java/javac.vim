@@ -84,10 +84,10 @@ function! ale_linters#java#javac#GetCommand(buffer, import_paths) abort
     return ale#path#BufferCdString(a:buffer)
     \ . ale#Escape(l:executable)
     \ . ' -Xlint'
-    \ . ' ' . l:cp_option
-    \ . ' ' . l:sp_option
+    \ . ale#Pad(l:cp_option)
+    \ . ale#Pad(l:sp_option)
     \ . ' -d ' . ale#Escape(l:class_file_directory)
-    \ . ' ' . ale#Var(a:buffer, 'java_javac_options')
+    \ . ale#Pad(ale#Var(a:buffer, 'java_javac_options'))
     \ . ' %t'
 endfunction
 

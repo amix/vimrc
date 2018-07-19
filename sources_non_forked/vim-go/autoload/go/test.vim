@@ -34,28 +34,21 @@ function! go#test#Test(bang, compile, ...) abort
     endif
   endif
 
-  if go#util#has_job()
+  if go#util#has_job() || has('nvim')
     " use vim's job functionality to call it asynchronously
-    let job_args = {
-          \ 'cmd': ['go'] + args,
+    let job_options  = {
           \ 'bang': a:bang,
-          \ 'winid': win_getid(winnr()),
-          \ 'dir': getcwd(),
-          \ 'compile_test': a:compile,
-          \ 'jobdir': fnameescape(expand("%:p:h")),
+          \ 'for': 'GoTest',
+          \ 'statustype': 'test',
+          \ 'errorformat': s:errorformat(),
           \ }
 
-    call s:test_job(job_args)
-    return
-  elseif has('nvim')
-    " use nvims's job functionality
-    if go#config#TermEnabled()
-      let id = go#term#new(a:bang, ["go"] + args)
-    else
-      let id = go#jobcontrol#Spawn(a:bang, "test", "GoTest", args)
+    if a:compile
+      let job_options.statustype = 'compile ' . job_options.statustype
     endif
 
-    return id
+    call s:test_job(['go'] + args, job_options)
+    return
   endif
 
   call go#cmd#autowrite()
@@ -129,155 +122,12 @@ function! go#test#Func(bang, ...) abort
   call call('go#test#Test', args)
 endfunction
 
-function! s:test_job(args) abort
-  let status = {
-        \ 'desc': 'current status',
-        \ 'type': "test",
-        \ 'state': "started",
-        \ }
-
-  if a:args.compile_test
-    let status.state = "compiling"
-  endif
-
+function! s:test_job(cmd, args) abort
   " autowrite is not enabled for jobs
   call go#cmd#autowrite()
 
-  let state = {
-        \ 'exited': 0,
-        \ 'closed': 0,
-        \ 'exitval': 0,
-        \ 'messages': [],
-        \ 'args': a:args,
-        \ 'compile_test': a:args.compile_test,
-        \ 'status_dir': expand('%:p:h'),
-        \ 'started_at': reltime()
-      \ }
-
-  call go#statusline#Update(state.status_dir, status)
-
-  function! s:callback(chan, msg) dict
-    call add(self.messages, a:msg)
-  endfunction
-
-  function! s:exit_cb(job, exitval) dict
-    let self.exited = 1
-    let self.exitval = a:exitval
-
-    let status = {
-          \ 'desc': 'last status',
-          \ 'type': "test",
-          \ 'state': "pass",
-          \ }
-
-    if self.compile_test
-      let status.state = "success"
-    endif
-
-    if a:exitval
-      let status.state = "failed"
-    endif
-
-    if go#config#EchoCommandInfo()
-      if a:exitval == 0
-        if self.compile_test
-          call go#util#EchoSuccess("[test] SUCCESS")
-        else
-          call go#util#EchoSuccess("[test] PASS")
-        endif
-      else
-        call go#util#EchoError("[test] FAIL")
-      endif
-    endif
-
-    let elapsed_time = reltimestr(reltime(self.started_at))
-    " strip whitespace
-    let elapsed_time = substitute(elapsed_time, '^\s*\(.\{-}\)\s*$', '\1', '')
-    let status.state .= printf(" (%ss)", elapsed_time)
-
-    call go#statusline#Update(self.status_dir, status)
-
-    if self.closed
-      call s:show_errors(self.args, self.exitval, self.messages)
-    endif
-  endfunction
-
-  function! s:close_cb(ch) dict
-    let self.closed = 1
-
-    if self.exited
-      call s:show_errors(self.args, self.exitval, self.messages)
-    endif
-  endfunction
-
-  " explicitly bind the callbacks to state so that self within them always
-  " refers to state. See :help Partial for more information.
-  let start_options = {
-        \ 'callback': funcref("s:callback", [], state),
-        \ 'exit_cb': funcref("s:exit_cb", [], state),
-        \ 'close_cb': funcref("s:close_cb", [], state)
-      \ }
-
-  " pre start
-  let dir = getcwd()
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
-  let jobdir = fnameescape(expand("%:p:h"))
-  execute cd . jobdir
-
-  call job_start(a:args.cmd, start_options)
-
-  " post start
-  execute cd . fnameescape(dir)
+  call go#job#Spawn(a:cmd, a:args)
 endfunction
-
-" show_errors parses the given list of lines of a 'go test' output and returns
-" a quickfix compatible list of errors. It's intended to be used only for go
-" test output.
-function! s:show_errors(args, exit_val, messages) abort
-  let l:winid = win_getid(winnr())
-
-  call win_gotoid(a:args.winid)
-
-  let l:listtype = go#list#Type("GoTest")
-  if a:exit_val == 0
-    call go#list#Clean(l:listtype)
-    call win_gotoid(l:winid)
-    return
-  endif
-
-  " TODO(bc): When messages is JSON, the JSON should be run through a
-  " filter to produce lines that are more easily described by errorformat.
-
-  let l:listtype = go#list#Type("GoTest")
-
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
-  try
-    execute cd a:args.jobdir
-    call go#list#ParseFormat(l:listtype, s:errorformat(), a:messages, join(a:args.cmd))
-    let errors = go#list#Get(l:listtype)
-  finally
-    execute cd . fnameescape(a:args.dir)
-  endtry
-
-  if !len(errors)
-    " failed to parse errors, output the original content
-    call go#util#EchoError(a:messages)
-    call go#util#EchoError(a:args.dir)
-    call win_gotoid(l:winid)
-    return
-  endif
-
-  if a:args.winid != l:winid
-    call win_gotoid(l:winid)
-    return
-  endif
-
-  call go#list#Window(l:listtype, len(errors))
-  if !empty(errors) && !a:args.bang
-    call go#list#JumpToFirst(l:listtype)
-  endif
-endfunction
-
 
 let s:efm = ""
 let s:go_test_show_name = 0

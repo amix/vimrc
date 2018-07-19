@@ -14,9 +14,9 @@ function! ale_linters#glsl#glslang#GetExecutable(buffer) abort
 endfunction
 
 function! ale_linters#glsl#glslang#GetCommand(buffer) abort
-    return ale_linters#glsl#glslang#GetExecutable(a:buffer)
-    \   . ' ' . ale#Var(a:buffer, 'glsl_glslang_options')
-    \   . ' ' . '-C %t'
+    return ale#Escape(ale_linters#glsl#glslang#GetExecutable(a:buffer))
+    \   . ale#Pad(ale#Var(a:buffer, 'glsl_glslang_options'))
+    \   . ' -C %t'
 endfunction
 
 function! ale_linters#glsl#glslang#Handle(buffer, lines) abort

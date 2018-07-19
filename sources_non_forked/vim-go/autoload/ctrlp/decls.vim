@@ -117,7 +117,7 @@ function! ctrlp#decls#enter() abort
     call add(s:decls, printf("%s\t%s |%s:%s:%s|\t%s",
           \ decl.ident . space,
           \ decl.keyword,
-          \ fnamemodify(decl.filename, ":t"),
+          \ fnamemodify(decl.filename, ":."),
           \ decl.line,
           \ decl.col,
           \ decl.full,

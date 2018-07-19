@@ -42,9 +42,9 @@ endfunction
 
 call ale#linter#Define('nasm', {
 \   'name': 'nasm',
-\   'executable': 'nasm',
 \   'output_stream': 'stderr',
 \   'lint_file': 1,
+\   'executable_callback': 'ale_linters#nasm#nasm#GetExecutable',
 \   'command_callback': 'ale_linters#nasm#nasm#GetCommand',
 \   'callback': 'ale_linters#nasm#nasm#Handle',
 \})

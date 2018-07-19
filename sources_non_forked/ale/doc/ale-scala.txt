@@ -41,8 +41,8 @@ To disable `scalastyle` globally, use |g:ale_linters| like so: >
 See |g:ale_linters| for more information on disabling linters.
 
 
-g:ale_scalastyle_config_loc                       *g:ale_scalastyle_config_loc*
-
+g:ale_scala_scalastyle_config                   *g:ale_scala_scalastyle_config*
+                                                *b:ale_scala_scalastyle_config*
   Type: |String|
   Default: `''`
 
@@ -54,7 +54,7 @@ g:ale_scalastyle_config_loc                       *g:ale_scalastyle_config_loc*
 
 
 g:ale_scala_scalastyle_options                 *g:ale_scala_scalastyle_options*
-
+                                               *b:ale_scala_scalastyle_options*
   Type: |String|
   Default: `''`
 

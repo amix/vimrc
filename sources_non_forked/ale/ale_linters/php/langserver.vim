@@ -25,6 +25,5 @@ call ale#linter#Define('php', {
 \   'lsp': 'stdio',
 \   'executable_callback': 'ale_linters#php#langserver#GetExecutable',
 \   'command_callback': 'ale_linters#php#langserver#GetCommand',
-\   'language': 'php',
 \   'project_root_callback': 'ale_linters#php#langserver#GetProjectRoot',
 \})

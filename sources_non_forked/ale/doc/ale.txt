@@ -131,6 +131,7 @@ CONTENTS                                                         *ale-contents*
     kotlin................................|ale-kotlin-options|
       kotlinc.............................|ale-kotlin-kotlinc|
       ktlint..............................|ale-kotlin-ktlint|
+      languageserver......................|ale-kotlin-languageserver|
     latex.................................|ale-latex-options|
       write-good..........................|ale-latex-write-good|
     less..................................|ale-less-options|
@@ -145,6 +146,7 @@ CONTENTS                                                         *ale-contents*
     markdown..............................|ale-markdown-options|
       mdl.................................|ale-markdown-mdl|
       prettier............................|ale-markdown-prettier|
+      remark-lint.........................|ale-markdown-remark-lint|
       textlint............................|ale-markdown-textlint|
       write-good..........................|ale-markdown-write-good|
     mercury...............................|ale-mercury-options|
@@ -186,6 +188,7 @@ CONTENTS                                                         *ale-contents*
       puglint.............................|ale-pug-puglint|
     puppet................................|ale-puppet-options|
       puppetlint..........................|ale-puppet-puppetlint|
+      puppet-languageserver...............|ale-puppet-languageserver|
     pyrex (cython)........................|ale-pyrex-options|
       cython..............................|ale-pyrex-cython|
     python................................|ale-python-options|
@@ -273,6 +276,7 @@ CONTENTS                                                         *ale-contents*
       write-good..........................|ale-vim-help-write-good|
     vue...................................|ale-vue-options|
       prettier............................|ale-vue-prettier|
+      vls.................................|ale-vue-vls|
     xhtml.................................|ale-xhtml-options|
       write-good..........................|ale-xhtml-write-good|
     xml...................................|ale-xml-options|
@@ -366,7 +370,7 @@ Notes:
 * Java: `checkstyle`, `javac`, `google-java-format`, `PMD`
 * JavaScript: `eslint`, `flow`, `jscs`, `jshint`, `prettier`, `prettier-eslint`, `prettier-standard`, `standard`, `xo`
 * JSON: `fixjson`, `jsonlint`, `jq`, `prettier`
-* Kotlin: `kotlinc`, `ktlint`
+* Kotlin: `kotlinc`!!, `ktlint`!!, `languageserver`
 * LaTeX (tex): `alex`!!, `chktex`, `lacheck`, `proselint`, `redpen`, `vale`, `write-good`
 * Less: `lessc`, `prettier`, `stylelint`
 * LLVM: `llc`
@@ -390,7 +394,7 @@ Notes:
 * Pony: `ponyc`
 * proto: `protoc-gen-lint`
 * Pug: `pug-lint`
-* Puppet: `puppet`, `puppet-lint`
+* Puppet: `languageserver`, `puppet`, `puppet-lint`
 * Python: `autopep8`, `black`, `flake8`, `isort`, `mypy`, `prospector`, `pycodestyle`, `pyls`, `pyre`, `pylint`!!, `yapf`
 * QML: `qmlfmt`, `qmllint`
 * R: `lintr`
@@ -418,7 +422,7 @@ Notes:
 * Verilog: `iverilog`, `verilator`
 * Vim: `vint`
 * Vim help^: `alex`!!, `proselint`, `write-good`
-* Vue: `prettier`
+* Vue: `prettier`, `vls`
 * XHTML: `alex`!!, `proselint`, `write-good`
 * XML: `xmllint`
 * YAML: `swaglint`, `yamllint`
@@ -444,14 +448,20 @@ have even saved your changes. ALE will check your code in the following
 circumstances, which can be configured with the associated options.
 
 * When you modify a buffer.                - |g:ale_lint_on_text_changed|
+* On leaving insert mode. (off by default) - |g:ale_lint_on_insert_leave|
 * When you open a new or modified buffer.  - |g:ale_lint_on_enter|
 * When you save a buffer.                  - |g:ale_lint_on_save|
 * When the filetype changes for a buffer.  - |g:ale_lint_on_filetype_changed|
 * If ALE is used to check code manually.   - |:ALELint|
 
-In addition to the above options, ALE can also check buffers for errors when
-you leave insert mode with |g:ale_lint_on_insert_leave|, which is off by
-default. It is worth reading the documentation for every option.
+                                                 *ale-lint-settings-on-startup*
+
+It is worth reading the documentation for every option. You should configure
+which events ALE will use before ALE is loaded, so it can optimize which
+autocmd commands to run. You can force autocmd commands to be reloaded with
+`:ALEDisable | ALEEnable`
+
+This also applies to the autocmd commands used for |g:ale_echo_cursor|.
 
                                                         *ale-lint-file-linters*
 
@@ -640,9 +650,6 @@ ALE supports the following LSP/tsserver features.
 
 -------------------------------------------------------------------------------
 5.1 Completion                                                 *ale-completion*
-
-NOTE: At the moment, only `tsserver` for TypeScript code is supported for
-completion.
 
 ALE offers limited support for automatic completion of code while you type.
 Completion is only supported while a least one LSP linter is enabled. ALE
@@ -841,6 +848,9 @@ g:ale_echo_cursor                                           *g:ale_echo_cursor*
   which contains a warning or error. This option can be set to `0` to disable
   this behaviour.
   The format of the message can be customizable in |g:ale_echo_msg_format|.
+
+  You should set this setting once before ALE is loaded, and restart Vim if
+  you want to change your preferences. See |ale-lint-settings-on-startup|.
 
 
 g:ale_echo_delay                                             *g:ale_echo_delay*
@@ -1042,19 +1052,16 @@ g:ale_lint_on_enter                                       *g:ale_lint_on_enter*
   Type: |Number|
   Default: `1`
 
-  When this option is set to `1`, the |BufWinEnter| and |BufRead| events will
-  be used to apply linters when buffers are first opened. If this is not
-  desired, this variable can be set to `0` in your vimrc file to disable this
-  behaviour.
+  When this option is set to `1`, the |BufWinEnter| event will be used to
+  apply linters when buffers are first opened. If this is not desired, this
+  variable can be set to `0` in your vimrc file to disable this behavior.
 
   The |FileChangedShellPost| and |BufEnter| events will be used to check if
   files have been changed outside of Vim. If a file is changed outside of
   Vim, it will be checked when it is next opened.
 
-  A |BufWinLeave| event will be used to look for the |E924|, |E925|, or |E926|
-  errors after moving from a loclist or quickfix window to a new buffer. If
-  prompts for these errors are opened after moving to new buffers, then ALE
-  will automatically send the `<CR>` key needed to close the prompt.
+  You should set this setting once before ALE is loaded, and restart Vim if
+  you want to change your preferences. See |ale-lint-settings-on-startup|.
 
 
 g:ale_lint_on_filetype_changed                 *g:ale_lint_on_filetype_changed*
@@ -1062,14 +1069,13 @@ g:ale_lint_on_filetype_changed                 *g:ale_lint_on_filetype_changed*
   Type: |Number|
   Default: `1`
 
-  This option will cause ALE to run whenever the filetype is changed. A short
-  delay will be used before linting will be done, so the filetype can be
-  changed quickly several times in a row, but resulting in only one lint
-  cycle.
+  This option will cause ALE to run when the filetype for a file is changed
+  after a buffer has first been loaded. A short delay will be used before
+  linting will be done, so the filetype can be changed quickly several times
+  in a row, but resulting in only one lint cycle.
 
-  If |g:ale_lint_on_enter| is set to `0`, then ALE will not lint a file when
-  the filetype is initially set. Otherwise ALE would still lint files when
-  buffers are opened, and the option for doing so is turned off.
+  You should set this setting once before ALE is loaded, and restart Vim if
+  you want to change your preferences. See |ale-lint-settings-on-startup|.
 
 
 g:ale_lint_on_save                                         *g:ale_lint_on_save*
@@ -1087,17 +1093,22 @@ g:ale_lint_on_save                                         *g:ale_lint_on_save*
 g:ale_lint_on_text_changed                         *g:ale_lint_on_text_changed*
 
   Type: |String|
-  Default: `always`
+  Default: `'always'`
 
-  By default, ALE will check files with the various supported programs when
-  text is changed by using the |TextChanged| event. If this behaviour is not
-  desired, then this option can be disabled by setting it to `never`. The
-  |g:ale_lint_delay| variable will be used to set a |timer_start()| on a
-  delay, and each change to a file will continue to call |timer_stop()| and
-  |timer_start()| repeatedly until the timer ticks by, and the linters will be
-  run. The checking of files will run in the background, so it should not
-  inhibit editing files. This option can also be set to `insert` or `normal`
-  to lint when text is changed only in insert or normal mode respectively.
+  This option controls how ALE will check your files as you make changes.
+  The following values can be used.
+
+  `'always'`, `'1'`, or `1` - Check buffers on |TextChanged| or |TextChangedI|.
+  `'normal'`            - Check buffers only on |TextChanged|.
+  `'insert'`            - Check buffers only on |TextChangedI|.
+  `'never'`, `'0'`, or `0`  - Never check buffers on changes.
+
+  ALE will check buffers after a short delay, with a timer which resets on
+  each change. The delay can be configured by adjusting the |g:ale_lint_delay|
+  variable.
+
+  You should set this setting once before ALE is loaded, and restart Vim if
+  you want to change your preferences. See |ale-lint-settings-on-startup|.
 
 
 g:ale_lint_on_insert_leave                         *g:ale_lint_on_insert_leave*
@@ -1115,6 +1126,9 @@ g:ale_lint_on_insert_leave                         *g:ale_lint_on_insert_leave*
     " Make using Ctrl+C do the same as Escape, to trigger autocmd commands
     inoremap <C-c> <Esc>
 <
+  You should set this setting once before ALE is loaded, and restart Vim if
+  you want to change your preferences. See |ale-lint-settings-on-startup|.
+
 
 g:ale_linter_aliases                                     *g:ale_linter_aliases*
                                                          *b:ale_linter_aliases*
@@ -1360,7 +1374,7 @@ g:ale_open_list                                               *g:ale_open_list*
 g:ale_pattern_options                                   *g:ale_pattern_options*
 
   Type: |Dictionary|
-  Default: `{}`
+  Default: undefined
 
   This option maps regular expression patterns to |Dictionary| values for
   buffer variables. This option can be set to automatically configure
@@ -1389,12 +1403,10 @@ g:ale_pattern_options                                   *g:ale_pattern_options*
 g:ale_pattern_options_enabled                   *g:ale_pattern_options_enabled*
 
   Type: |Number|
-  Default: `!empty(g:ale_pattern_options)`
+  Default: undefined
 
-  This option can be used for turning the behaviour of setting
-  |g:ale_pattern_options| on or off. By default, setting a single key for
-  |g:ale_pattern_options| will turn this option on, as long as the setting is
-  configured before ALE is loaded.
+  This option can be used for disabling pattern options. If set to `0`, ALE
+  will not set buffer variables per |g:ale_pattern_options|.
 
 
 g:ale_set_balloons                                         *g:ale_set_balloons*
@@ -1636,7 +1648,7 @@ g:ale_virtualenv_dir_names                         *g:ale_virtualenv_dir_names*
 b:ale_virtualenv_dir_names                         *b:ale_virtualenv_dir_names*
 
   Type: |List|
-  Default: `['.env', 'env', 've-py3', 've', 'virtualenv', 'venv']`
+  Default: `['.env', '.venv', 'env', 've-py3', 've', 'virtualenv', 'venv']`
 
   A list of directory names to be used when searching upwards from Python
   files to discover virtulenv directories with.
@@ -2075,6 +2087,29 @@ ALEStopAllLSPs                                                 *ALEStopAllLSPs*
 ===============================================================================
 9. API                                                                *ale-api*
 
+ALE offers a number of functions for running linters or fixers, or defining
+them. The following functions are part of the publicly documented part of that
+API, and should be expected to continue to work.
+
+
+ale#Env(variable_name, value)                                       *ale#Env()*
+
+  Given a variable name and a string value, produce a string for including in
+  a command for setting environment variables. This function can be used for
+  building a command like so. >
+
+    :echo string(ale#Env('VAR', 'some value') . 'command')
+    'VAR=''some value'' command'      # On Linux or Mac OSX
+    'set VAR="some value" && command' # On Windows
+
+
+ale#Pad(string)                                                     *ale#Pad()*
+
+  Given a string or any |empty()| value, return either the string prefixed
+  with a single space, or an empty string. This function can be used to build
+  parts of a command from variables.
+
+
 ale#Queue(delay, [linting_flag, buffer_number])                   *ale#Queue()*
 
   Run linters for the current buffer, based on the filetype of the buffer,
@@ -2099,8 +2134,17 @@ ale#Queue(delay, [linting_flag, buffer_number])                   *ale#Queue()*
 ale#engine#CreateDirectory(buffer)               *ale#engine#CreateDirectory()*
 
   Create a new temporary directory with a unique name, and manage that
-  directory with |ale#engine#ManageDirectory()|, so it will be removed as
-  soon as possible.
+  directory with |ale#engine#ManageDirectory()|, so it will be removed as soon
+  as possible.
+
+  It is advised to only call this function from a callback function for
+  returning a linter command to run.
+
+
+ale#engine#CreateFile(buffer)                         *ale#engine#CreateFile()*
+
+  Create a new temporary file with a unique name, and manage that file with
+  |ale#engine#ManageFile()|, so it will be removed as soon as possible.
 
   It is advised to only call this function from a callback function for
   returning a linter command to run.
@@ -2205,6 +2249,10 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                          LSP linter. In which case, this argument must not be
                          defined, as LSP linters handle diagnostics
                          automatically. See |ale-lsp-linters|.
+
+                         If the function named does not exist, including if
+                         the function is later deleted, ALE will behave as if
+                         the callback returned an empty list.
 
                          The keys for each item in the List will be handled in
                          the following manner:
@@ -2383,9 +2431,12 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                          with a callback returning an address to connect to.
                          ALE will not start a server automatically.
 
-                         When this argument is not empty, only one of either
-                         `language` or `language_callback` must be defined,
-                         and `project_root_callback` must be defined.
+                         When this argument is not empty
+                         `project_root_callback` must be defined.
+
+                         `language` or `language_callback` can be defined to
+                         describe the language for a file. The filetype will
+                         be used as the language by default.
 
                          LSP linters handle diagnostics automatically, so
                          the `callback` argument must not be defined.
@@ -2418,8 +2469,9 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                          being checked. This string will be sent to the LSP to
                          tell it what type of language is being checked.
 
-                         This argument must only be set if the `lsp` argument
-                         is also set to a non-empty string.
+                         If this or `language_callback` isn't set, the
+                         language will default to the value of the filetype
+                         given to |ale#linter#Define|.
 
   `language_callback`      A |String| or |Funcref| for a callback function
                          accepting a buffer number. A |String| should be
@@ -2490,14 +2542,22 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
   For example: >
   'command': 'ghc -fno-code -v0 %t',
 <
+  Any substring `%e` will be replaced with the escaped executable supplied
+  with `executable` or `executable_callback`. This provides a convenient way
+  to define a command string which needs to include a dynamic executable name,
+  but which is otherwise static.
+
+  For example: >
+  'command': '%e --some-argument',
+<
   The character sequence `%%` can be used to emit a literal `%` into a
   command, so literal character sequences `%s` and `%t` can be escaped by
   using `%%s` and `%%t` instead, etc.
 
   If a callback for a command generates part of a command string which might
-  possibly contain `%%`, `%s`, or `%t` where the special formatting behaviour
-  is not desired, the |ale#engine#EscapeCommandPart()| function can be used to
-  replace those characters to avoid formatting issues.
+  possibly contain `%%`, `%s`, `%t`, or `%e`, where the special formatting
+  behavior is not desired, the |ale#engine#EscapeCommandPart()| function can
+  be used to replace those characters to avoid formatting issues.
 
                                                   *ale-linter-loading-behavior*
                                                  *ale-linter-loading-behaviour*

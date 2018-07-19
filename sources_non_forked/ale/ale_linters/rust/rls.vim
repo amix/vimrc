@@ -30,6 +30,5 @@ call ale#linter#Define('rust', {
 \   'lsp': 'stdio',
 \   'executable_callback': 'ale_linters#rust#rls#GetExecutable',
 \   'command_callback': 'ale_linters#rust#rls#GetCommand',
-\   'language': 'rust',
 \   'project_root_callback': 'ale_linters#rust#rls#GetProjectRoot',
 \})

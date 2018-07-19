@@ -1,6 +1,6 @@
 " fugitive.vim - A Git wrapper so awesome, it should be illegal
 " Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      2.3
+" Version:      2.4
 " GetLatestVimScripts: 2975 1 :AutoInstall: fugitive.vim
 
 if exists('g:loaded_fugitive')
@@ -110,7 +110,7 @@ function! FugitiveExtractGitDir(path) abort
 endfunction
 
 function! FugitiveDetect(path) abort
-  if exists('b:git_dir') && (b:git_dir ==# '' || b:git_dir =~# '/$')
+  if exists('b:git_dir') && b:git_dir =~# '^$\|/$\|^fugitive:'
     unlet b:git_dir
   endif
   if !exists('b:git_dir')
@@ -156,7 +156,10 @@ augroup fugitive
 
   autocmd BufNewFile,BufReadPost * call FugitiveDetect(expand('%:p'))
   autocmd FileType           netrw call FugitiveDetect(fnamemodify(get(b:, 'netrw_curdir', @%), ':p'))
-  autocmd User NERDTreeInit,NERDTreeNewRoot call FugitiveDetect(b:NERDTree.root.path.str())
+  autocmd User NERDTreeInit,NERDTreeNewRoot
+        \ if exists('b:NERDTree.root.path.str') |
+        \   call FugitiveDetect(b:NERDTree.root.path.str()) |
+        \ endif
   autocmd VimEnter * if expand('<amatch>')==''|call FugitiveDetect(getcwd())|endif
   autocmd CmdWinEnter * call FugitiveDetect(expand('#:p'))
 

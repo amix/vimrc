@@ -242,6 +242,9 @@ endfunction
 " Add a function for fixing problems to the registry.
 " (name, func, filetypes, desc, aliases)
 function! ale#fix#registry#Add(name, func, filetypes, desc, ...) abort
+    " This command will throw from the sandbox.
+    let &equalprg=&equalprg
+
     if type(a:name) != type('')
         throw '''name'' must be a String'
     endif

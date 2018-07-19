@@ -10,6 +10,7 @@ CONTENTS                                             *ale-development-contents*
   2. Design Goals.........................|ale-design-goals|
   3. Coding Standards.....................|ale-coding-standards|
   4. Testing ALE..........................|ale-development-tests|
+    4.1. Writing Linter Tests.............|ale-development-linter-tests|
 
 ===============================================================================
 1. Introduction                                  *ale-development-introduction*
@@ -111,6 +112,9 @@ these are reported with ALE's `custom-linting-rules` script. See
 * Don't use the `shellescape()` function. It doesn't escape arguments properly
   on Windows. Use `ale#Escape()` instead, which will avoid escaping where it
   isn't needed, and generally escape arguments better on Windows.
+* Don't use the `tempname()` function. It doesn't work when `$TMPDIR` isn't
+  set. Use `ale#util#Tempname()` instead, which temporarily sets `$TMPDIR`
+  appropriately where needed.
 
 Apply the following guidelines when writing Vader test files.
 
@@ -170,6 +174,9 @@ Look at existing tests in the codebase for examples of how to write tests.
 Refer to the Vader documentation for general information on how to write Vader
 tests: https://github.com/junegunn/vader.vim
 
+See |ale-development-linter-tests| for more information on how to write linter
+tests.
+
 When you add new linters or fixers, make sure to add them into the table in
 the README, and also into the |ale-support| list in the main help file. If you
 forget to keep them both in sync, you should see an error like the following
@@ -218,6 +225,83 @@ margin. For example, if you add a heading for an `aardvark` tool to
 <
 Make sure to make the table of contents match the headings, and to keep the
 doc tags on the right margin.
+
+===============================================================================
+4.1 Writing Linter Tests                         *ale-development-linter-tests*
+
+Tests for ALE linters take two forms.
+
+1. Tests for handling the output of commands.
+2. Tests for checking which commands are run, or connections are made.
+
+Tests of the first form should go in the `test/handler` directory, and should
+be written like so. >
+
+  Before:
+    " Load the file which defines the linter.
+    runtime ale_linters/filetype/linter_name_here.vim
+
+  After:
+    " Unload all linters again.
+    call ale#linter#Reset()
+
+  Execute(The output should be correct):
+
+  " Test that the right loclist items are parsed from the handler.
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': 'Something went wrong',
+  \   },
+  \ ],
+  \ ale_linters#filetype#linter_name#Handle(bufnr(''), [
+  \ '1:Something went wrong',
+  \ ]
+<
+Tests for what ALE runs should go in the `test/command_callback` directory,
+and should be written like so. >
+
+  Before:
+    " Load the linter and set up a series of commands, reset linter variables,
+    " clear caches, etc.
+    "
+    " Vader's 'Save' command will be called here for linter variables.
+    call ale#assert#SetUpLinterTest('filetype', 'linter_name')
+
+  After:
+    " Reset linters, variables, etc.
+    "
+    " Vader's 'Restore' command will be called here.
+    call ale#assert#TearDownLinterTest()
+
+  Execute(The default command should be correct):
+    " AssertLinter checks the executable and command.
+    " Pass expected_executable, expected_command
+    AssertLinter 'some-command', ale#Escape('some-command') . ' --foo'
+
+  Execute(Check chained commands):
+    " WithChainResults can be called with 1 or more list for passing output
+    " to chained commands. The output for each callback defaults to an empty
+    " list.
+    WithChainResults ['v2.1.2']
+    " Given a List of commands, check all of them.
+    " Given a String, only the last command in the chain will be checked.
+    AssertLinter 'some-command', [
+    \ ale#Escape('some-command') . ' --version',
+    \ ale#Escape('some-command') . ' --foo',
+    \]
+<
+The full list of commands that will be temporarily defined for linter tests
+given the above setup are as follows.
+
+`WithChainResults [...]`           - Define output for command chain functions.
+`AssertLinter executable, command` - Check the executable and command.
+`AssertLinterNotExecuted`          - Check that linters will not be executed.
+`AssertLSPLanguage language`       - Check the language given to an LSP server.
+`AssertLSPOptions options_dict`    - Check the options given to an LSP server.
+`AssertLSPProject project_root`    - Check the root given to an LSP server.
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

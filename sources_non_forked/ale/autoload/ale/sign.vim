@@ -45,25 +45,23 @@ if !hlexists('ALESignColumnWithErrors')
     highlight link ALESignColumnWithErrors error
 endif
 
+function! ale#sign#SetUpDefaultColumnWithoutErrorsHighlight() abort
+    redir => l:output
+        0verbose silent highlight SignColumn
+    redir end
+
+    let l:highlight_syntax = join(split(l:output)[2:])
+    let l:match = matchlist(l:highlight_syntax, '\vlinks to (.+)$')
+
+    if !empty(l:match)
+        execute 'highlight link ALESignColumnWithoutErrors ' . l:match[1]
+    elseif l:highlight_syntax isnot# 'cleared'
+        execute 'highlight ALESignColumnWithoutErrors ' . l:highlight_syntax
+    endif
+endfunction
+
 if !hlexists('ALESignColumnWithoutErrors')
-    function! s:SetSignColumnWithoutErrorsHighlight() abort
-        redir => l:output
-            silent highlight SignColumn
-        redir end
-
-        let l:highlight_syntax = join(split(l:output)[2:])
-
-        let l:match = matchlist(l:highlight_syntax, '\vlinks to (.+)$')
-
-        if !empty(l:match)
-            execute 'highlight link ALESignColumnWithoutErrors ' . l:match[1]
-        elseif l:highlight_syntax isnot# 'cleared'
-            execute 'highlight ALESignColumnWithoutErrors ' . l:highlight_syntax
-        endif
-    endfunction
-
-    call s:SetSignColumnWithoutErrorsHighlight()
-    delfunction s:SetSignColumnWithoutErrorsHighlight
+    call ale#sign#SetUpDefaultColumnWithoutErrorsHighlight()
 endif
 
 " Signs show up on the left for error markers.

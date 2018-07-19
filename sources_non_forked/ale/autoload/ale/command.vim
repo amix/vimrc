@@ -13,20 +13,25 @@ function! s:TemporaryFilename(buffer) abort
 
     " Create a temporary filename, <temp_dir>/<original_basename>
     " The file itself will not be created by this function.
-    return tempname() . (has('win32') ? '\' : '/') . l:filename
+    return ale#util#Tempname() . (has('win32') ? '\' : '/') . l:filename
 endfunction
 
 " Given a command string, replace every...
 " %s -> with the current filename
 " %t -> with the name of an unused file in a temporary directory
 " %% -> with a literal %
-function! ale#command#FormatCommand(buffer, command, pipe_file_if_needed) abort
+function! ale#command#FormatCommand(buffer, executable, command, pipe_file_if_needed) abort
     let l:temporary_file = ''
     let l:command = a:command
 
     " First replace all uses of %%, used for literal percent characters,
     " with an ugly string.
     let l:command = substitute(l:command, '%%', '<<PERCENTS>>', 'g')
+
+    " Replace %e with the escaped executable, if available.
+    if !empty(a:executable) && l:command =~# '%e'
+        let l:command = substitute(l:command, '%e', '\=ale#Escape(a:executable)', 'g')
+    endif
 
     " Replace all %s occurrences in the string with the name of the current
     " file.

@@ -84,7 +84,7 @@ function! ale#path#IsAbsolute(filename) abort
     return a:filename[:0] is# '/' || a:filename[1:2] is# ':\'
 endfunction
 
-let s:temp_dir = ale#path#Simplify(fnamemodify(tempname(), ':h'))
+let s:temp_dir = ale#path#Simplify(fnamemodify(ale#util#Tempname(), ':h'))
 
 " Given a filename, return 1 if the file represents some temporary file
 " created by Vim.

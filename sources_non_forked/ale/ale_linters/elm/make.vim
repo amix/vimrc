@@ -128,14 +128,7 @@ function! ale_linters#elm#make#HandleElm018Line(line, output) abort
 endfunction
 
 function! ale_linters#elm#make#FileIsBuffer(path) abort
-    let l:is_windows = has('win32')
-    let l:temp_dir = l:is_windows ? $TMP : $TMPDIR
-
-    if has('win32')
-        return a:path[0:len(l:temp_dir) - 1] is? l:temp_dir
-    else
-        return a:path[0:len(l:temp_dir) - 1] is# l:temp_dir
-    endif
+    return ale#path#IsTempName(a:path)
 endfunction
 
 function! ale_linters#elm#make#ParseMessage(message) abort

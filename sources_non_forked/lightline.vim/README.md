@@ -92,7 +92,7 @@ add the following configuration to your `.vimrc`.
 set laststatus=2
 ```
 
-If the statusline does not be coloured like
+If the statusline is not coloured like
 ![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/20.png)
 
 then modify `TERM` in your shell configuration (`.zshrc` for example)

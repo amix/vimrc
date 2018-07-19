@@ -1,5 +1,11 @@
 ## unplanned
 
+IMPROVEMENTS:
+* Unify async job handling for Vim8 and Neovim.
+  [[GH-1864]](https://github.com/fatih/vim-go/pull/1864)
+
+## 1.18 - (July 18, 2018)
+
 FEATURES:
 
 * Add **:GoIfErr** command together with the `<Plug>(go-iferr)` plug key to
@@ -7,21 +13,22 @@ FEATURES:
   automatically which infer the type of return values and the numbers.
   For example:
 
-```
-func doSomething() (string, error) {
-    f, err := os.Open("file")
-}
-```
-Becomes:
+  ```
+  func doSomething() (string, error) {
+      f, err := os.Open("file")
+  }
+  ```
+  
+  Becomes:
 
-```
-func doSomething() (string, error) {
-    f, err := os.Open("file")
-    if err != nil {
-        return "", err
-    }
-}
-```
+  ```
+  func doSomething() (string, error) {
+      f, err := os.Open("file")
+      if err != nil {
+          return "", err
+      }
+  }
+  ```
 
 * Two new text objects has been added: 
   * `ic` (inner comment) selects the content of the comment, excluding the start/end markers (i.e: `//`, `/*`)
@@ -56,6 +63,10 @@ IMPROVEMENTS:
   manually. [[GH-1861]](https://github.com/fatih/vim-go/pull/1861).
 * Cleanup title of terminal window.
   [[GH-1861]](https://github.com/fatih/vim-go/pull/1861).
+* Add `:GoImpl` is able to complete interfaces by their full import path in
+  addition to the current package name (i.e: `:GoImpl t *T github.com/BurntSushi/toml.Unmarshaller` 
+  is now possible)
+  [[GH-1884]](https://github.com/fatih/vim-go/pull/1884)
 
 BUG FIXES:
 
@@ -76,24 +87,14 @@ BUG FIXES:
   [[GH-1818]](https://github.com/fatih/vim-go/pull/1818)
 * Fix Neovim handling of guru output.
   [[GH-1846]](https://github.com/fatih/vim-go/pull/1846)
-
-BACKWARDS INCOMPATIBILITIES:
-
-* We switched to a [maintained fork of * gocode](https://github.com/mdempsky/gocode). 
-  The new fork doesn't support the following settings anymore and therefore are 
-  invalid. Please remove them from your vimrc until those are again supported 
-  by `gocode`.
-
-```
-g:go_gocode_autobuild
-g:go_gocode_propose_builtins
-g:go_gocode_unimported_packages
-```
-
-  Checkout the issue for more details [[GH-1851]](https://github.com/fatih/vim-go/pull/1851)
-
- 
-
+* Execute commands correctly when they are in $GOBIN but not $PATH.
+  [[GH-1866]](https://github.com/fatih/vim-go/pull/1866)
+* Open files correctly with ctrlp.
+  [[GH-1878]](https://github.com/fatih/vim-go/pull/1878)
+* Fix checking guru binary path 
+  [[GH-1886]](https://github.com/fatih/vim-go/pull/1886)
+* Add build tags to `:GoDef` if only it's present 
+  [[GH-1882]](https://github.com/fatih/vim-go/pull/1882)
 
 ## 1.17 - (March 27, 2018)
 

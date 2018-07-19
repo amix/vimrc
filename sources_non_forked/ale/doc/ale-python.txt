@@ -22,6 +22,8 @@ ALE will look for configuration files with the following filenames. >
   mypy.ini
   pycodestyle.cfg
   flake8.cfg
+  Pipfile
+  Pipfile.lock
 <
 
 The first directory containing any of the files named above will be used.
@@ -143,6 +145,14 @@ g:ale_python_isort_executable                   *g:ale_python_isort_executable*
   Default: `'isort'`
 
   See |ale-integrations-local-executables|
+
+
+g:ale_python_isort_options                         *g:ale_python_isort_options*
+                                                   *b:ale_python_isort_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to isort.
 
 
 g:ale_python_isort_use_global                   *g:ale_python_isort_use_global*

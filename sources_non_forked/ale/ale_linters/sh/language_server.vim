@@ -28,6 +28,5 @@ call ale#linter#Define('sh', {
 \   'lsp': 'stdio',
 \   'executable_callback': 'ale_linters#sh#language_server#GetExecutable',
 \   'command_callback': 'ale_linters#sh#language_server#GetCommand',
-\   'language': 'sh',
 \   'project_root_callback': 'ale_linters#sh#language_server#GetProjectRoot',
 \})

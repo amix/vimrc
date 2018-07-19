@@ -30,8 +30,8 @@ function! go#cmd#Build(bang, ...) abort
         \ map(copy(a:000), "expand(v:val)") +
         \ [".", "errors"]
 
-  " Vim async.
-  if go#util#has_job()
+  " Vim and Neovim async.
+  if go#util#has_job() || has('nvim')
     if go#config#EchoCommandInfo()
       call go#util#EchoProgress("building dispatched ...")
     endif
@@ -41,14 +41,6 @@ function! go#cmd#Build(bang, ...) abort
           \ 'bang': a:bang,
           \ 'for': 'GoBuild',
           \})
-
-  " Nvim async.
-  elseif has('nvim')
-    if go#config#EchoCommandInfo()
-      call go#util#EchoProgress("building dispatched ...")
-    endif
-
-    call go#jobcontrol#Spawn(a:bang, "build", "GoBuild", args)
 
   " Vim 7.4 without async
   else
@@ -297,44 +289,7 @@ function s:cmd_job(args) abort
   " autowrite is not enabled for jobs
   call go#cmd#autowrite()
 
-  function! s:complete(job, exit_status, data) closure abort
-    let status = {
-          \ 'desc': 'last status',
-          \ 'type': a:args.cmd[1],
-          \ 'state': "success",
-          \ }
-
-    if a:exit_status
-      let status.state = "failed"
-    endif
-
-    let elapsed_time = reltimestr(reltime(started_at))
-    " strip whitespace
-    let elapsed_time = substitute(elapsed_time, '^\s*\(.\{-}\)\s*$', '\1', '')
-    let status.state .= printf(" (%ss)", elapsed_time)
-
-    call go#statusline#Update(status_dir, status)
-  endfunction
-
-  let a:args.complete = funcref('s:complete')
-  let callbacks = go#job#Spawn(a:args)
-
-  let start_options = {
-        \ 'callback': callbacks.callback,
-        \ 'exit_cb': callbacks.exit_cb,
-        \ 'close_cb': callbacks.close_cb,
-        \ }
-
-  " pre start
-  let dir = getcwd()
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
-  let jobdir = fnameescape(expand("%:p:h"))
-  execute cd . jobdir
-
-  call job_start(a:args.cmd, start_options)
-
-  " post start
-  execute cd . fnameescape(dir)
+  call go#job#Spawn(a:args.cmd, a:args)
 endfunction
 
 " vim: sw=2 ts=2 et

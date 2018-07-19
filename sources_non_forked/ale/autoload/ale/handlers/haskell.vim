@@ -2,7 +2,7 @@
 " Description: Error handling for the format GHC outputs.
 
 " Remember the directory used for temporary files for Vim.
-let s:temp_dir = fnamemodify(tempname(), ':h')
+let s:temp_dir = fnamemodify(ale#util#Tempname(), ':h')
 " Build part of a regular expression for matching ALE temporary filenames.
 let s:temp_regex_prefix =
 \   '\M'

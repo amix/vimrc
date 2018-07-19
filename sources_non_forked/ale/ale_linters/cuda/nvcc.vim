@@ -10,7 +10,7 @@ endfunction
 
 function! ale_linters#cuda#nvcc#GetCommand(buffer) abort
     " Unused: use ale#util#nul_file
-    " let l:output_file = tempname() . '.ii'
+    " let l:output_file = ale#util#Tempname() . '.ii'
     " call ale#engine#ManageFile(a:buffer, l:output_file)
 
     return ale#Escape(ale_linters#cuda#nvcc#GetExecutable(a:buffer))

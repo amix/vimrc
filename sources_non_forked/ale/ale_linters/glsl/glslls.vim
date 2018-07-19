@@ -29,6 +29,5 @@ call ale#linter#Define('glsl', {
 \   'lsp': 'stdio',
 \   'executable_callback': 'ale_linters#glsl#glslls#GetExecutable',
 \   'command_callback': 'ale_linters#glsl#glslls#GetCommand',
-\   'language': 'glsl',
 \   'project_root_callback': 'ale_linters#glsl#glslls#GetProjectRoot',
 \})

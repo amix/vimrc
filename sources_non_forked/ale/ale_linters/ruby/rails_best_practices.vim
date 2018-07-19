@@ -1,8 +1,8 @@
 " Author: Eddie Lebow https://github.com/elebow
 " Description: rails_best_practices, a code metric tool for rails projects
 
-let g:ale_ruby_rails_best_practices_options =
-\   get(g:, 'ale_ruby_rails_best_practices_options', '')
+call ale#Set('ruby_rails_best_practices_options', '')
+call ale#Set('ruby_rails_best_practices_executable', 'rails_best_practices')
 
 function! ale_linters#ruby#rails_best_practices#Handle(buffer, lines) abort
     let l:output = []
@@ -22,8 +22,12 @@ function! ale_linters#ruby#rails_best_practices#Handle(buffer, lines) abort
     return l:output
 endfunction
 
+function! ale_linters#ruby#rails_best_practices#GetExecutable(buffer) abort
+    return ale#Var(a:buffer, 'ruby_rails_best_practices_executable')
+endfunction
+
 function! ale_linters#ruby#rails_best_practices#GetCommand(buffer) abort
-    let l:executable = ale#handlers#rails_best_practices#GetExecutable(a:buffer)
+    let l:executable = ale_linters#ruby#rails_best_practices#GetExecutable(a:buffer)
     let l:exec_args = l:executable =~? 'bundle$'
     \   ? ' exec rails_best_practices'
     \   : ''
@@ -46,7 +50,7 @@ endfunction
 
 call ale#linter#Define('ruby', {
 \    'name': 'rails_best_practices',
-\    'executable_callback': 'ale#handlers#rails_best_practices#GetExecutable',
+\    'executable_callback': 'ale_linters#ruby#rails_best_practices#GetExecutable',
 \    'command_callback': 'ale_linters#ruby#rails_best_practices#GetCommand',
 \    'callback': 'ale_linters#ruby#rails_best_practices#Handle',
 \    'lint_file': 1,

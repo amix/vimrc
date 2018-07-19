@@ -20,6 +20,5 @@ call ale#linter#Define('dart', {
 \   'lsp': 'stdio',
 \   'executable_callback': 'ale_linters#dart#language_server#GetExecutable',
 \   'command_callback': 'ale_linters#dart#language_server#GetExecutable',
-\   'language': 'dart',
 \   'project_root_callback': 'ale_linters#dart#language_server#GetProjectRoot',
 \})

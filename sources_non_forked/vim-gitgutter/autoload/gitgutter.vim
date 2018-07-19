@@ -3,11 +3,19 @@ let s:t_string = type('')
 " Primary functions {{{
 
 function! gitgutter#all(force) abort
-  for bufnr in s:uniq(tabpagebuflist())
-    let file = expand('#'.bufnr.':p')
-    if !empty(file)
-      call gitgutter#init_buffer(bufnr)
-      call gitgutter#process_buffer(bufnr, a:force)
+  let visible = tabpagebuflist()
+
+  for bufnr in range(1, bufnr('$') + 1)
+    if buflisted(bufnr)
+      let file = expand('#'.bufnr.':p')
+      if !empty(file)
+        if index(visible, bufnr) != -1
+          call gitgutter#init_buffer(bufnr)
+          call gitgutter#process_buffer(bufnr, a:force)
+        elseif a:force
+          call s:reset_tick(bufnr)
+        endif
+      endif
     endif
   endfor
 endfunction
@@ -16,10 +24,10 @@ endfunction
 " Finds the file's path relative to the repo root.
 function! gitgutter#init_buffer(bufnr)
   if gitgutter#utility#is_active(a:bufnr)
-    call s:setup_maps()
     let p = gitgutter#utility#repo_path(a:bufnr, 0)
     if type(p) != s:t_string || empty(p)
       call gitgutter#utility#set_repo_path(a:bufnr)
+      call s:setup_maps()
     endif
   endif
 endfunction
@@ -52,15 +60,12 @@ endfunction
 
 function! gitgutter#disable() abort
   " get list of all buffers (across all tabs)
-  let buflist = []
-  for i in range(tabpagenr('$'))
-    call extend(buflist, tabpagebuflist(i + 1))
-  endfor
-
-  for bufnr in s:uniq(buflist)
-    let file = expand('#'.bufnr.':p')
-    if !empty(file)
-      call s:clear(bufnr)
+  for bufnr in range(1, bufnr('$') + 1)
+    if buflisted(bufnr)
+      let file = expand('#'.bufnr.':p')
+      if !empty(file)
+        call s:clear(bufnr)
+      endif
     endif
   endfor
 
@@ -132,19 +137,3 @@ function! s:clear(bufnr)
   call gitgutter#hunk#reset(a:bufnr)
   call s:reset_tick(a:bufnr)
 endfunction
-
-if exists('*uniq')  " Vim 7.4.218
-  function! s:uniq(list)
-    return uniq(sort(a:list))
-  endfunction
-else
-  function! s:uniq(list)
-    let processed = []
-    for e in a:list
-      if index(processed, e) == -1
-        call add(processed, e)
-      endif
-    endfor
-    return processed
-  endfunction
-endif

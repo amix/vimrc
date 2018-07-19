@@ -11,7 +11,7 @@ endfunction
 
 function! ale_linters#xml#xmllint#GetCommand(buffer) abort
     return ale#Escape(ale_linters#xml#xmllint#GetExecutable(a:buffer))
-    \   . ' ' . ale#Var(a:buffer, 'xml_xmllint_options')
+    \   . ale#Pad(ale#Var(a:buffer, 'xml_xmllint_options'))
     \   . ' --noout -'
 endfunction
 

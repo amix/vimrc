@@ -20,14 +20,12 @@ function! ale_linters#thrift#thrift#GetCommand(buffer) abort
         let l:generators = ['cpp']
     endif
 
-    let l:output_dir = tempname()
-    call mkdir(l:output_dir)
-    call ale#engine#ManageDirectory(a:buffer, l:output_dir)
+    let l:output_dir = ale#engine#CreateDirectory(a:buffer)
 
     return ale#Escape(ale_linters#thrift#thrift#GetExecutable(a:buffer))
-    \   . ' ' . join(map(copy(l:generators), "'--gen ' . v:val"))
-    \   . ' ' . join(map(copy(l:includes), "'-I ' . v:val"))
-    \   . ' ' . ale#Var(a:buffer, 'thrift_thrift_options')
+    \   . ale#Pad(join(map(copy(l:generators), "'--gen ' . v:val")))
+    \   . ale#Pad(join(map(copy(l:includes), "'-I ' . v:val")))
+    \   . ale#Pad(ale#Var(a:buffer, 'thrift_thrift_options'))
     \   . ' -out ' . ale#Escape(l:output_dir)
     \   . ' %t'
 endfunction

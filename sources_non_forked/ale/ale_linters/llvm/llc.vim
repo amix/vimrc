@@ -9,8 +9,7 @@ endfunction
 
 function! ale_linters#llvm#llc#GetCommand(buffer) abort
     return ale#Escape(ale_linters#llvm#llc#GetExecutable(a:buffer))
-    \   . ' -filetype=null -o='
-    \   . ale#Escape(g:ale#util#nul_file)
+    \   . ' -filetype=null -o=' . g:ale#util#nul_file
 endfunction
 
 function! ale_linters#llvm#llc#HandleErrors(buffer, lines) abort

@@ -15,9 +15,9 @@ function! ale_linters#awk#gawk#GetCommand(buffer) abort
     " note the --source 'BEGIN ...' is to prevent
     " gawk from attempting to execute the body of the script
     " it is linting.
-    return ale_linters#awk#gawk#GetExecutable(a:buffer)
+    return ale#Escape(ale_linters#awk#gawk#GetExecutable(a:buffer))
     \   . " --source 'BEGIN { exit } END { exit 1 }'"
-    \   . ' ' . ale#Var(a:buffer, 'awk_gawk_options')
+    \   .  ale#Pad(ale#Var(a:buffer, 'awk_gawk_options'))
     \   . ' ' . '-f %t --lint /dev/null'
 endfunction
 

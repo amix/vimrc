@@ -268,14 +268,32 @@ endfunction
 " See :help sandbox
 function! ale#util#InSandbox() abort
     try
-        function! s:SandboxCheck() abort
-        endfunction
-    catch /^Vim\%((\a\+)\)\=:E48/
+        let &equalprg=&equalprg
+    catch /E48/
         " E48 is the sandbox error.
         return 1
     endtry
 
     return 0
+endfunction
+
+function! ale#util#Tempname() abort
+    let l:clear_tempdir = 0
+
+    if exists('$TMPDIR') && empty($TMPDIR)
+        let l:clear_tempdir = 1
+        let $TMPDIR = '/tmp'
+    endif
+
+    try
+        let l:name = tempname() " no-custom-checks
+    finally
+        if l:clear_tempdir
+            let $TMPDIR = ''
+        endif
+    endtry
+
+    return l:name
 endfunction
 
 " Given a single line, or a List of lines, and a single pattern, or a List

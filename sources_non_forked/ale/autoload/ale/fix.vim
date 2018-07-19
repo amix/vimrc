@@ -1,10 +1,3 @@
-" This global Dictionary tracks the ALE fix data for jobs, etc.
-" This Dictionary should not be accessed outside of the plugin. It is only
-" global so it can be modified in Vader tests.
-if !has_key(g:, 'ale_fix_buffer_data')
-    let g:ale_fix_buffer_data = {}
-endif
-
 if !has_key(s:, 'job_info_map')
     let s:job_info_map = {}
 endif
@@ -219,6 +212,7 @@ function! s:RunJob(options) abort
 
     let [l:temporary_file, l:command] = ale#command#FormatCommand(
     \   l:buffer,
+    \   '',
     \   l:command,
     \   l:read_buffer,
     \)
