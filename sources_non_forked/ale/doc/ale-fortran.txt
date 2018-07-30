@@ -33,4 +33,23 @@ g:ale_fortran_gcc_use_free_form               *g:ale_fortran_gcc_use_free_form*
 
 
 ===============================================================================
+language_server                                    *ale-fortran-language-server*
+
+g:ale_fortran_language_server_executable  *g:ale_fortran_language_server_executable*
+                                         *b:ale_fortran_language_server_executable*
+  Type: |String|
+  Default: `'fortls'`
+
+  This variable can be changed to modify the executable used for the Fortran
+  Language Server.
+
+g:ale_fortran_language_server_use_global  *g:ale_fortran_language_server_use_global*
+                                         *b:ale_fortran_language_server_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

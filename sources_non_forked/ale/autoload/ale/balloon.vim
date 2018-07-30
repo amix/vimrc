@@ -34,26 +34,25 @@ function! ale#balloon#Expr() abort
 endfunction
 
 function! ale#balloon#Disable() abort
-    if has('balloon_eval_term')
-        set noballoonevalterm
+    if has('balloon_eval')
+        set noballooneval
+        set balloonexpr=
     endif
 
-    set noballooneval
-    set balloonexpr=
+    if has('balloon_eval_term')
+        set noballoonevalterm
+        set balloonexpr=
+    endif
 endfunction
 
 function! ale#balloon#Enable() abort
-    if !has('balloon_eval') && !has('balloon_eval_term')
-        return
-    endif
-
     if has('balloon_eval')
         set ballooneval
+        set balloonexpr=ale#balloon#Expr()
     endif
 
     if has('balloon_eval_term')
         set balloonevalterm
+        set balloonexpr=ale#balloon#Expr()
     endif
-
-    set balloonexpr=ale#balloon#Expr()
 endfunction

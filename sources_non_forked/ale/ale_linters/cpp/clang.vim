@@ -14,10 +14,10 @@ function! ale_linters#cpp#clang#GetCommand(buffer, output) abort
     " -iquote with the directory the file is in makes #include work for
     "  headers in the same directory.
     return ale#Escape(ale_linters#cpp#clang#GetExecutable(a:buffer))
-    \   . ' -S -x c++ -fsyntax-only '
-    \   . '-iquote ' . ale#Escape(fnamemodify(bufname(a:buffer), ':p:h')) . ' '
-    \   . l:cflags
-    \   . ale#Var(a:buffer, 'cpp_clang_options') . ' -'
+    \   . ' -S -x c++ -fsyntax-only'
+    \   . ' -iquote ' . ale#Escape(fnamemodify(bufname(a:buffer), ':p:h'))
+    \   . ale#Pad(l:cflags)
+    \   . ale#Pad(ale#Var(a:buffer, 'cpp_clang_options')) . ' -'
 endfunction
 
 call ale#linter#Define('cpp', {
@@ -28,5 +28,5 @@ call ale#linter#Define('cpp', {
 \       {'callback': 'ale#c#GetMakeCommand', 'output_stream': 'stdout'},
 \       {'callback': 'ale_linters#cpp#clang#GetCommand'},
 \   ],
-\   'callback': 'ale#handlers#gcc#HandleGCCFormat',
+\   'callback': 'ale#handlers#gcc#HandleGCCFormatWithIncludes',
 \})

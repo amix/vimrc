@@ -40,9 +40,9 @@ function! ale#definition#HandleLSPResponse(conn_id, response) abort
         " The result can be a Dictionary item, a List of the same, or null.
         let l:result = get(a:response, 'result', v:null)
 
-        if type(l:result) is type({})
+        if type(l:result) is v:t_dict
             let l:result = [l:result]
-        elseif type(l:result) isnot type([])
+        elseif type(l:result) isnot v:t_list
             let l:result = []
         endif
 
@@ -60,43 +60,50 @@ endfunction
 function! s:GoToLSPDefinition(linter, options) abort
     let l:buffer = bufnr('')
     let [l:line, l:column] = getcurpos()[1:2]
+    let l:lsp_details = ale#lsp_linter#StartLSP(l:buffer, a:linter)
 
-    let l:Callback = a:linter.lsp is# 'tsserver'
-    \   ? function('ale#definition#HandleTSServerResponse')
-    \   : function('ale#definition#HandleLSPResponse')
-
-    let l:lsp_details = ale#lsp_linter#StartLSP(l:buffer, a:linter, l:Callback)
+    if a:linter.lsp isnot# 'tsserver'
+        let l:column = min([l:column, len(getline(l:line))])
+    endif
 
     if empty(l:lsp_details)
         return 0
     endif
 
     let l:id = l:lsp_details.connection_id
+    let l:root = l:lsp_details.project_root
 
-    if a:linter.lsp is# 'tsserver'
-        let l:message = ale#lsp#tsserver_message#Definition(
-        \   l:buffer,
-        \   l:line,
-        \   l:column
-        \)
-    else
-        " Send a message saying the buffer has changed first, or the
-        " definition position probably won't make sense.
-        call ale#lsp#NotifyForChanges(l:lsp_details)
+    function! OnReady(...) abort closure
+        let l:Callback = a:linter.lsp is# 'tsserver'
+        \   ? function('ale#definition#HandleTSServerResponse')
+        \   : function('ale#definition#HandleLSPResponse')
+        call ale#lsp#RegisterCallback(l:id, l:Callback)
 
-        let l:column = min([l:column, len(getline(l:line))])
+        if a:linter.lsp is# 'tsserver'
+            let l:message = ale#lsp#tsserver_message#Definition(
+            \   l:buffer,
+            \   l:line,
+            \   l:column
+            \)
+        else
+            " Send a message saying the buffer has changed first, or the
+            " definition position probably won't make sense.
+            call ale#lsp#NotifyForChanges(l:id, l:root, l:buffer)
 
-        " For LSP completions, we need to clamp the column to the length of
-        " the line. python-language-server and perhaps others do not implement
-        " this correctly.
-        let l:message = ale#lsp#message#Definition(l:buffer, l:line, l:column)
-    endif
+            " For LSP completions, we need to clamp the column to the length of
+            " the line. python-language-server and perhaps others do not implement
+            " this correctly.
+            let l:message = ale#lsp#message#Definition(l:buffer, l:line, l:column)
+        endif
 
-    let l:request_id = ale#lsp#Send(l:id, l:message, l:lsp_details.project_root)
+        let l:request_id = ale#lsp#Send(l:id, l:message, l:lsp_details.project_root)
 
-    let s:go_to_definition_map[l:request_id] = {
-    \   'open_in_tab': get(a:options, 'open_in_tab', 0),
-    \}
+        let s:go_to_definition_map[l:request_id] = {
+        \   'open_in_tab': get(a:options, 'open_in_tab', 0),
+        \}
+    endfunction
+
+    call ale#lsp#WaitForCapability(l:id, l:root, 'definition', function('OnReady'))
 endfunction
 
 function! ale#definition#GoTo(options) abort

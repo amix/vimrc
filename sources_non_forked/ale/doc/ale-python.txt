@@ -398,6 +398,36 @@ g:ale_python_pyre_use_global                     *g:ale_python_pyre_use_global*
 
 
 ===============================================================================
+vulture                                                    *ale-python-vulture*
+
+g:ale_python_vulture_change_directory   *g:ale_python_vulture_change_directory*
+                                        *b:ale_python_vulture_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will switch to the directory the Python file being
+  checked with `vulture` is in before checking it and check the whole project
+  directory instead of checking only the file opened in the current buffer.
+  This helps `vulture` to know the context and avoid false-negative results.
+
+
+g:ale_python_vulture_executable               *g:ale_python_vulture_executable*
+                                              *b:ale_python_vulture_executable*
+  Type: |String|
+  Default: `'vulture'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_vulture_use_global               *g:ale_python_vulture_use_global*
+                                              *b:ale_python_vulture_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 yapf                                                          *ale-python-yapf*
 
 g:ale_python_yapf_executable                     *g:ale_python_yapf_executable*

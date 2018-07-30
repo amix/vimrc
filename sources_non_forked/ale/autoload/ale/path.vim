@@ -105,6 +105,21 @@ function! ale#path#GetAbsPath(base_directory, filename) abort
     return ale#path#Simplify(a:base_directory . l:sep . a:filename)
 endfunction
 
+" Given a path, return the directory name for that path, with no trailing
+" slashes. If the argument is empty(), return an empty string.
+function! ale#path#Dirname(path) abort
+    if empty(a:path)
+        return ''
+    endif
+
+    " For /foo/bar/ we need :h:h to get /foo
+    if a:path[-1:] is# '/'
+        return fnamemodify(a:path, ':h:h')
+    endif
+
+    return fnamemodify(a:path, ':h')
+endfunction
+
 " Given a buffer number and a relative or absolute path, return 1 if the
 " two paths represent the same file on disk.
 function! ale#path#IsBufferPath(buffer, complex_filename) abort

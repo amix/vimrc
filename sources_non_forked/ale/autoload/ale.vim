@@ -95,7 +95,7 @@ function! ale#Queue(delay, ...) abort
         throw "linting_flag must be either '' or 'lint_file'"
     endif
 
-    if type(l:buffer) != type(0)
+    if type(l:buffer) isnot v:t_number
         throw 'buffer_number must be a Number'
     endif
 
@@ -192,12 +192,7 @@ endfunction
 " Every variable name will be prefixed with 'ale_'.
 function! ale#Var(buffer, variable_name) abort
     let l:full_name = 'ale_' . a:variable_name
-    let l:vars = getbufvar(str2nr(a:buffer), '', 0)
-
-    if l:vars is 0
-        " Look for variables from deleted buffers, saved from :ALEFix
-        let l:vars = get(get(g:ale_fix_buffer_data, a:buffer, {}), 'vars', {})
-    endif
+    let l:vars = getbufvar(str2nr(a:buffer), '', {})
 
     return get(l:vars, l:full_name, g:[l:full_name])
 endfunction

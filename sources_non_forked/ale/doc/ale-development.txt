@@ -115,6 +115,10 @@ these are reported with ALE's `custom-linting-rules` script. See
 * Don't use the `tempname()` function. It doesn't work when `$TMPDIR` isn't
   set. Use `ale#util#Tempname()` instead, which temporarily sets `$TMPDIR`
   appropriately where needed.
+* Use `snake_case` names for linter names, so they can be used as part of
+  variable names. You can define `aliases` for linters, for other names people
+  might try to configure linters with.
+* Use |v:t_TYPE| variables instead of `type()`, which are more readable.
 
 Apply the following guidelines when writing Vader test files.
 
@@ -145,9 +149,10 @@ ALE is tested with a suite of tests executed in Travis CI and AppVeyor. ALE
 runs tests with the following versions of Vim in the following environments.
 
 1. Vim 8.0.0027 on Linux via Travis CI.
-2. NeoVim 0.2.0 on Linux via Travis CI.
-3. NeoVim 0.3.0 on Linux via Travis CI.
-4. Vim 8 (stable builds) on Windows via AppVeyor.
+2. Vim 8.1.0204 on Linux via Travis CI.
+3. NeoVim 0.2.0 on Linux via Travis CI.
+4. NeoVim 0.3.0 on Linux via Travis CI.
+5. Vim 8 (stable builds) on Windows via AppVeyor.
 
 If you are developing ALE code on Linux, Mac OSX, or BSD, you can run ALEs
 tests by installing Docker and running the `run-tests` script. Follow the

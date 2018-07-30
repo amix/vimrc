@@ -15,13 +15,23 @@ function! ale#lsp#NewConnection(initialization_options) abort
     " open_documents: A Dictionary mapping buffers to b:changedtick, keeping
     "   track of when documents were opened, and when we last changed them.
     " callback_list: A list of callbacks for handling LSP responses.
+    " initialization_options: Options to send to the server.
+    " capabilities: Features the server supports.
     let l:conn = {
+    \   'is_tsserver': 0,
     \   'id': '',
     \   'data': '',
     \   'projects': {},
     \   'open_documents': {},
     \   'callback_list': [],
     \   'initialization_options': a:initialization_options,
+    \   'capabilities': {
+    \       'hover': 0,
+    \       'references': 0,
+    \       'completion': 0,
+    \       'completion_trigger_characters': [],
+    \       'definition': 0,
+    \   },
     \}
 
     call add(s:connections, l:conn)
@@ -42,6 +52,11 @@ function! s:FindConnection(key, value) abort
     endfor
 
     return {}
+endfunction
+
+" Get the capabilities for a connection, or an empty Dictionary.
+function! ale#lsp#GetConnectionCapabilities(id) abort
+    return get(s:FindConnection('id', a:id), 'capabilities', {})
 endfunction
 
 function! ale#lsp#GetNextMessageID() abort
@@ -174,6 +189,16 @@ function! s:MarkProjectAsInitialized(conn, project) abort
 
     " Remove the messages now.
     let a:conn.message_queue = []
+
+    " Call capabilities callbacks queued for the project.
+    for [l:capability, l:Callback] in a:project.capabilities_queue
+        if a:conn.is_tsserver || a:conn.capabilities[l:capability]
+            call call(l:Callback, [a:conn.id, a:project.root])
+        endif
+    endfor
+
+    " Clear the queued callbacks now.
+    let a:project.capabilities_queue = []
 endfunction
 
 function! s:HandleInitializeResponse(conn, response) abort
@@ -182,6 +207,38 @@ function! s:HandleInitializeResponse(conn, response) abort
 
     if !empty(l:project)
         call s:MarkProjectAsInitialized(a:conn, l:project)
+    endif
+endfunction
+
+" Update capabilities from the server, so we know which features the server
+" supports.
+function! s:UpdateCapabilities(conn, capabilities) abort
+    if type(a:capabilities) isnot v:t_dict
+        return
+    endif
+
+    if get(a:capabilities, 'hoverProvider') is v:true
+        let a:conn.capabilities.hover = 1
+    endif
+
+    if get(a:capabilities, 'referencesProvider') is v:true
+        let a:conn.capabilities.references = 1
+    endif
+
+    if !empty(get(a:capabilities, 'completionProvider'))
+        let a:conn.capabilities.completion = 1
+    endif
+
+    if type(get(a:capabilities, 'completionProvider')) is v:t_dict
+        let l:chars = get(a:capabilities.completionProvider, 'triggerCharacters')
+
+        if type(l:chars) is v:t_list
+            let a:conn.capabilities.completion_trigger_characters = l:chars
+        endif
+    endif
+
+    if get(a:capabilities, 'definitionProvider') is v:true
+        let a:conn.capabilities.definition = 1
     endif
 endfunction
 
@@ -200,6 +257,8 @@ function! ale#lsp#HandleOtherInitializeResponses(conn, response) abort
 
     if get(a:response, 'method', '') is# ''
         if has_key(get(a:response, 'result', {}), 'capabilities')
+            call s:UpdateCapabilities(a:conn, a:response.result.capabilities)
+
             for [l:dir, l:project] in l:uninitialized_projects
                 call s:MarkProjectAsInitialized(a:conn, l:project)
             endfor
@@ -216,7 +275,7 @@ function! ale#lsp#HandleOtherInitializeResponses(conn, response) abort
 endfunction
 
 function! ale#lsp#HandleMessage(conn, message) abort
-    if type(a:message) != type('')
+    if type(a:message) isnot v:t_string
         " Ignore messages that aren't strings.
         return
     endif
@@ -254,22 +313,43 @@ function! s:HandleCommandMessage(job_id, message) abort
     call ale#lsp#HandleMessage(l:conn, a:message)
 endfunction
 
-function! ale#lsp#RegisterProject(conn, project_root) abort
+" Given a connection ID, mark it as a tsserver connection, so it will be
+" handled that way.
+function! ale#lsp#MarkConnectionAsTsserver(conn_id) abort
+    let l:conn = s:FindConnection('id', a:conn_id)
+
+    if !empty(l:conn)
+        let l:conn.is_tsserver = 1
+    endif
+endfunction
+
+" Register a project for an LSP connection.
+"
+" This function will throw if the connection doesn't exist.
+function! ale#lsp#RegisterProject(conn_id, project_root) abort
+    let l:conn = s:FindConnection('id', a:conn_id)
+
     " Empty strings can't be used for Dictionary keys in NeoVim, due to E713.
     " This appears to be a nonsensical bug in NeoVim.
     let l:key = empty(a:project_root) ? '<<EMPTY>>' : a:project_root
 
-    if !has_key(a:conn.projects, l:key)
+    if !has_key(l:conn.projects, l:key)
         " Tools without project roots are ready right away, like tsserver.
-        let a:conn.projects[l:key] = {
+        let l:conn.projects[l:key] = {
+        \   'root': a:project_root,
         \   'initialized': empty(a:project_root),
         \   'init_request_id': 0,
         \   'message_queue': [],
+        \   'capabilities_queue': [],
         \}
     endif
 endfunction
 
 function! ale#lsp#GetProject(conn, project_root) abort
+    if empty(a:conn)
+        return {}
+    endif
+
     let l:key = empty(a:project_root) ? '<<EMPTY>>' : a:project_root
 
     return get(a:conn.projects, l:key, {})
@@ -279,7 +359,7 @@ endfunction
 "
 " The job ID will be returned for for the program if it ran, otherwise
 " 0 will be returned.
-function! ale#lsp#StartProgram(executable, command, project_root, callback, initialization_options) abort
+function! ale#lsp#StartProgram(executable, command, init_options) abort
     if !executable(a:executable)
         return 0
     endif
@@ -287,7 +367,7 @@ function! ale#lsp#StartProgram(executable, command, project_root, callback, init
     let l:conn = s:FindConnection('executable', a:executable)
 
     " Get the current connection or a new one.
-    let l:conn = !empty(l:conn) ? l:conn : ale#lsp#NewConnection(a:initialization_options)
+    let l:conn = !empty(l:conn) ? l:conn : ale#lsp#NewConnection(a:init_options)
     let l:conn.executable = a:executable
 
     if !has_key(l:conn, 'id') || !ale#job#IsRunning(l:conn.id)
@@ -305,18 +385,15 @@ function! ale#lsp#StartProgram(executable, command, project_root, callback, init
     endif
 
     let l:conn.id = l:job_id
-    " Add the callback to the List if it's not there already.
-    call uniq(sort(add(l:conn.callback_list, a:callback)))
-    call ale#lsp#RegisterProject(l:conn, a:project_root)
 
     return l:job_id
 endfunction
 
 " Connect to an address and set up a callback for handling responses.
-function! ale#lsp#ConnectToAddress(address, project_root, callback, initialization_options) abort
+function! ale#lsp#ConnectToAddress(address, init_options) abort
     let l:conn = s:FindConnection('id', a:address)
     " Get the current connection or a new one.
-    let l:conn = !empty(l:conn) ? l:conn : ale#lsp#NewConnection(a:initialization_options)
+    let l:conn = !empty(l:conn) ? l:conn : ale#lsp#NewConnection(a:init_options)
 
     if !has_key(l:conn, 'channel_id') || !ale#socket#IsOpen(l:conn.channel_id)
         let l:conn.channel_id = ale#socket#Open(a:address, {
@@ -329,11 +406,19 @@ function! ale#lsp#ConnectToAddress(address, project_root, callback, initializati
     endif
 
     let l:conn.id = a:address
-    " Add the callback to the List if it's not there already.
-    call uniq(sort(add(l:conn.callback_list, a:callback)))
-    call ale#lsp#RegisterProject(l:conn, a:project_root)
 
     return a:address
+endfunction
+
+" Given a connection ID and a callback, register that callback for handling
+" messages if the connection exists.
+function! ale#lsp#RegisterCallback(conn_id, callback) abort
+    let l:conn = s:FindConnection('id', a:conn_id)
+
+    if !empty(l:conn)
+        " Add the callback to the List if it's not there already.
+        call uniq(sort(add(l:conn.callback_list, a:callback)))
+    endif
 endfunction
 
 " Stop all LSP connections, closing all jobs and channels, and removing any
@@ -373,11 +458,6 @@ function! ale#lsp#Send(conn_id, message, ...) abort
     let l:project_root = get(a:000, 0, '')
 
     let l:conn = s:FindConnection('id', a:conn_id)
-
-    if empty(l:conn)
-        return 0
-    endif
-
     let l:project = ale#lsp#GetProject(l:conn, l:project_root)
 
     if empty(l:project)
@@ -411,45 +491,22 @@ function! ale#lsp#Send(conn_id, message, ...) abort
     return l:id == 0 ? -1 : l:id
 endfunction
 
-" The Document details Dictionary should contain the following keys.
-"
-"  buffer - The buffer number for the document.
-"  connection_id - The connection ID for the LSP server.
-"  command - The command to run to start the LSP connection.
-"  project_root - The project root for the LSP project.
-"  language_id - The language ID for the project, like 'python', 'rust', etc.
-
-" Create a new Dictionary containing more connection details, with the
-" following information added:
-"
-"   conn - An existing LSP connection for the document.
-"   document_open - 1 if the document is currently open, 0 otherwise.
-function! s:ExtendDocumentDetails(details) abort
-    let l:extended = copy(a:details)
-    let l:conn = s:FindConnection('id', a:details.connection_id)
-
-    let l:extended.conn = l:conn
-    let l:extended.document_open = !empty(l:conn)
-    \   && has_key(l:conn.open_documents, a:details.buffer)
-
-    return l:extended
-endfunction
-
 " Notify LSP servers or tsserver if a document is opened, if needed.
 " If a document is opened, 1 will be returned, otherwise 0 will be returned.
-function! ale#lsp#OpenDocument(basic_details) abort
-    let l:d = s:ExtendDocumentDetails(a:basic_details)
+function! ale#lsp#OpenDocument(conn_id, project_root, buffer, language_id) abort
+    let l:conn = s:FindConnection('id', a:conn_id)
     let l:opened = 0
 
-    if !empty(l:d.conn) && !l:d.document_open
-        if empty(l:d.language_id)
-            let l:message = ale#lsp#tsserver_message#Open(l:d.buffer)
+    " FIXME: Return 1 if the document is already open?
+    if !empty(l:conn) && !has_key(l:conn.open_documents, a:buffer)
+        if l:conn.is_tsserver
+            let l:message = ale#lsp#tsserver_message#Open(a:buffer)
         else
-            let l:message = ale#lsp#message#DidOpen(l:d.buffer, l:d.language_id)
+            let l:message = ale#lsp#message#DidOpen(a:buffer, a:language_id)
         endif
 
-        call ale#lsp#Send(l:d.connection_id, l:message, l:d.project_root)
-        let l:d.conn.open_documents[l:d.buffer] = getbufvar(l:d.buffer, 'changedtick')
+        call ale#lsp#Send(a:conn_id, l:message, a:project_root)
+        let l:conn.open_documents[a:buffer] = getbufvar(a:buffer, 'changedtick')
         let l:opened = 1
     endif
 
@@ -458,25 +515,50 @@ endfunction
 
 " Notify LSP servers or tsserver that a document has changed, if needed.
 " If a notification is sent, 1 will be returned, otherwise 0 will be returned.
-function! ale#lsp#NotifyForChanges(basic_details) abort
-    let l:d = s:ExtendDocumentDetails(a:basic_details)
+function! ale#lsp#NotifyForChanges(conn_id, project_root, buffer) abort
+    let l:conn = s:FindConnection('id', a:conn_id)
     let l:notified = 0
 
-    if l:d.document_open
-        let l:new_tick = getbufvar(l:d.buffer, 'changedtick')
+    if !empty(l:conn) && has_key(l:conn.open_documents, a:buffer)
+        let l:new_tick = getbufvar(a:buffer, 'changedtick')
 
-        if l:d.conn.open_documents[l:d.buffer] < l:new_tick
-            if empty(l:d.language_id)
-                let l:message = ale#lsp#tsserver_message#Change(l:d.buffer)
+        if l:conn.open_documents[a:buffer] < l:new_tick
+            if l:conn.is_tsserver
+                let l:message = ale#lsp#tsserver_message#Change(a:buffer)
             else
-                let l:message = ale#lsp#message#DidChange(l:d.buffer)
+                let l:message = ale#lsp#message#DidChange(a:buffer)
             endif
 
-            call ale#lsp#Send(l:d.connection_id, l:message, l:d.project_root)
-            let l:d.conn.open_documents[l:d.buffer] = l:new_tick
+            call ale#lsp#Send(a:conn_id, l:message, a:project_root)
+            let l:conn.open_documents[a:buffer] = l:new_tick
             let l:notified = 1
         endif
     endif
 
     return l:notified
+endfunction
+
+" Given some LSP details that must contain at least `connection_id` and
+" `project_root` keys,
+function! ale#lsp#WaitForCapability(conn_id, project_root, capability, callback) abort
+    let l:conn = s:FindConnection('id', a:conn_id)
+    let l:project = ale#lsp#GetProject(l:conn, a:project_root)
+
+    if empty(l:project)
+        return 0
+    endif
+
+    if type(get(l:conn.capabilities, a:capability, v:null)) isnot v:t_number
+        throw 'Invalid capability ' . a:capability
+    endif
+
+    if l:project.initialized
+        if l:conn.is_tsserver || l:conn.capabilities[a:capability]
+            " The project has been initialized, so call the callback now.
+            call call(a:callback, [a:conn_id, a:project_root])
+        endif
+    else
+        " Call the callback later, once we have the information we need.
+        call add(l:project.capabilities_queue, [a:capability, a:callback])
+    endif
 endfunction

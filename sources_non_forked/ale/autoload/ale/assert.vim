@@ -30,7 +30,7 @@ function! ale#assert#Linter(expected_executable, expected_command) abort
         let l:callbacks = map(copy(l:linter.command_chain), 'v:val.callback')
 
         " If the expected command is a string, just check the last one.
-        if type(a:expected_command) is type('')
+        if type(a:expected_command) is v:t_string
             if len(l:callbacks) is 1
                 let l:command = call(l:callbacks[0], [l:buffer])
             else

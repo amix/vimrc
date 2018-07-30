@@ -52,3 +52,26 @@ function! ale#test#SetFilename(path) abort
 
     silent! noautocmd execute 'file ' . fnameescape(ale#path#Simplify(l:full_path))
 endfunction
+
+function! s:RemoveModule(results) abort
+    for l:item in a:results
+      if has_key(l:item, 'module')
+        call remove(l:item, 'module')
+      endif
+    endfor
+endfunction
+
+" Return loclist data without the module string, only in newer Vim versions.
+function! ale#test#GetLoclistWithoutModule() abort
+    let l:results = getloclist(0)
+    call s:RemoveModule(l:results)
+
+    return l:results
+endfunction
+
+function! ale#test#GetQflistWithoutModule() abort
+    let l:results = getqflist()
+    call s:RemoveModule(l:results)
+
+    return l:results
+endfunction

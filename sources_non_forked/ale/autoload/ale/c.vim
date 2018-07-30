@@ -2,10 +2,14 @@
 " Description: Functions for integrating with C-family linters.
 
 call ale#Set('c_parse_makefile', 0)
+call ale#Set('c_parse_compile_commands', 0)
 let s:sep = has('win32') ? '\' : '/'
 
+" Set just so tests can override it.
+let g:__ale_c_project_filenames = ['.git/HEAD', 'configure', 'Makefile', 'CMakeLists.txt']
+
 function! ale#c#FindProjectRoot(buffer) abort
-    for l:project_filename in ['.git/HEAD', 'configure', 'Makefile', 'CMakeLists.txt']
+    for l:project_filename in g:__ale_c_project_filenames
         let l:full_path = ale#path#FindNearestFile(a:buffer, l:project_filename)
 
         if !empty(l:full_path)
@@ -23,11 +27,11 @@ function! ale#c#FindProjectRoot(buffer) abort
     return ''
 endfunction
 
-function! ale#c#ParseCFlagsToList(path_prefix, cflags) abort
+function! ale#c#ParseCFlags(path_prefix, cflag_line) abort
     let l:cflags_list = []
     let l:previous_options = []
 
-    for l:option in a:cflags
+    for l:option in split(a:cflag_line, '-')
         call add(l:previous_options, l:option)
         " Check if cflag contained a '-' and should not have been splitted
         let l:option_list = split(l:option, '\zs')
@@ -59,32 +63,122 @@ function! ale#c#ParseCFlagsToList(path_prefix, cflags) abort
         endif
     endfor
 
-    return l:cflags_list
+    return join(l:cflags_list, ' ')
 endfunction
 
-function! ale#c#ParseCFlags(buffer, stdout_make) abort
+function! ale#c#ParseCFlagsFromMakeOutput(buffer, make_output) abort
     if !g:ale_c_parse_makefile
-        return []
+        return ''
     endif
 
     let l:buffer_filename = expand('#' . a:buffer . ':t')
-    let l:cflags = []
-    for l:lines in split(a:stdout_make, '\\n')
-        if stridx(l:lines, l:buffer_filename) >= 0
-            let l:cflags = split(l:lines, '-')
+    let l:cflag_line = ''
+
+    " Find a line matching this buffer's filename in the make output.
+    for l:line in a:make_output
+        if stridx(l:line, l:buffer_filename) >= 0
+            let l:cflag_line = l:line
             break
         endif
     endfor
 
     let l:makefile_path = ale#path#FindNearestFile(a:buffer, 'Makefile')
-    return ale#c#ParseCFlagsToList(fnamemodify(l:makefile_path, ':p:h'), l:cflags)
+    let l:makefile_dir = fnamemodify(l:makefile_path, ':p:h')
+
+    return ale#c#ParseCFlags(l:makefile_dir, l:cflag_line)
+endfunction
+
+" Given a buffer number, find the build subdirectory with compile commands
+" The subdirectory is returned without the trailing /
+function! ale#c#FindCompileCommands(buffer) abort
+    " Look above the current source file to find compile_commands.json
+    let l:json_file = ale#path#FindNearestFile(a:buffer, 'compile_commands.json')
+
+    if !empty(l:json_file)
+        return l:json_file
+    endif
+
+    " Search in build directories if we can't find it in the project.
+    for l:path in ale#path#Upwards(expand('#' . a:buffer . ':p:h'))
+        for l:dirname in ale#Var(a:buffer, 'c_build_dir_names')
+            let l:c_build_dir = l:path . s:sep . l:dirname
+            let l:json_file = l:c_build_dir . s:sep . 'compile_commands.json'
+
+            if filereadable(l:json_file)
+                return l:json_file
+            endif
+        endfor
+    endfor
+
+    return ''
+endfunction
+
+" Cache compile_commands.json data in a Dictionary, so we don't need to read
+" the same files over and over again. The key in the dictionary will include
+" the last modified time of the file.
+if !exists('s:compile_commands_cache')
+    let s:compile_commands_cache = {}
+endif
+
+function! s:GetListFromCompileCommandsFile(compile_commands_file) abort
+    if empty(a:compile_commands_file)
+        return []
+    endif
+
+    let l:time = getftime(a:compile_commands_file)
+
+    if l:time < 0
+        return []
+    endif
+
+    let l:key = a:compile_commands_file . ':' . l:time
+
+    if has_key(s:compile_commands_cache, l:key)
+        return s:compile_commands_cache[l:key]
+    endif
+
+    let l:data = []
+    silent! let l:data = json_decode(join(readfile(a:compile_commands_file), ''))
+
+    if !empty(l:data)
+        let s:compile_commands_cache[l:key] = l:data
+
+        return l:data
+    endif
+
+    return []
+endfunction
+
+function! ale#c#ParseCompileCommandsFlags(buffer, dir, json_list) abort
+    for l:item in a:json_list
+        if bufnr(l:item.file) is a:buffer
+            return ale#c#ParseCFlags(a:dir, l:item.command)
+        endif
+    endfor
+
+    return ''
+endfunction
+
+function! ale#c#FlagsFromCompileCommands(buffer, compile_commands_file) abort
+    let l:dir = ale#path#Dirname(a:compile_commands_file)
+    let l:json_list = s:GetListFromCompileCommandsFile(a:compile_commands_file)
+
+    return ale#c#ParseCompileCommandsFlags(a:buffer, l:dir, l:json_list)
 endfunction
 
 function! ale#c#GetCFlags(buffer, output) abort
     let l:cflags = ' '
 
-    if g:ale_c_parse_makefile && !empty(a:output)
-        let l:cflags = join(ale#c#ParseCFlags(a:buffer, join(a:output, '\n')), ' ') . ' '
+    if ale#Var(a:buffer, 'c_parse_makefile') && !empty(a:output)
+        let l:cflags = ale#c#ParseCFlagsFromMakeOutput(a:buffer, a:output)
+    endif
+
+    if ale#Var(a:buffer, 'c_parse_compile_commands')
+        let l:json_file = ale#c#FindCompileCommands(a:buffer)
+
+        if !empty(l:json_file)
+            let l:cflags = ale#c#FlagsFromCompileCommands(a:buffer, l:json_file)
+        endif
     endif
 
     if l:cflags is# ' '
@@ -95,8 +189,9 @@ function! ale#c#GetCFlags(buffer, output) abort
 endfunction
 
 function! ale#c#GetMakeCommand(buffer) abort
-    if g:ale_c_parse_makefile
+    if ale#Var(a:buffer, 'c_parse_makefile')
         let l:makefile_path = ale#path#FindNearestFile(a:buffer, 'Makefile')
+
         if !empty(l:makefile_path)
             return 'cd '. fnamemodify(l:makefile_path, ':p:h') . ' && make -n'
         endif
@@ -158,19 +253,3 @@ let g:ale_c_build_dir_names = get(g:, 'ale_c_build_dir_names', [
 \   'build',
 \   'bin',
 \])
-
-" Given a buffer number, find the build subdirectory with compile commands
-" The subdirectory is returned without the trailing /
-function! ale#c#FindCompileCommands(buffer) abort
-    for l:path in ale#path#Upwards(expand('#' . a:buffer . ':p:h'))
-        for l:dirname in ale#Var(a:buffer, 'c_build_dir_names')
-            let l:c_build_dir = l:path . s:sep . l:dirname
-
-            if filereadable(l:c_build_dir . '/compile_commands.json')
-                return l:c_build_dir
-            endif
-        endfor
-    endfor
-
-    return ''
-endfunction

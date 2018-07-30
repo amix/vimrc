@@ -29,7 +29,7 @@ function! s:GetBuildDirectory(buffer) abort
         return l:build_dir
     endif
 
-    return ale#c#FindCompileCommands(a:buffer)
+    return ale#path#Dirname(ale#c#FindCompileCommands(a:buffer))
 endfunction
 
 function! ale_linters#cpp#clangtidy#GetCommand(buffer) abort

@@ -557,7 +557,7 @@ function! s:RunJob(options) abort
     if get(g:, 'ale_run_synchronously') == 1
         " Run a command synchronously if this test option is set.
         let s:job_info_map[l:job_id].output = systemlist(
-        \   type(l:command) == type([])
+        \   type(l:command) is v:t_list
         \   ?  join(l:command[0:1]) . ' ' . ale#Escape(l:command[2])
         \   : l:command
         \)

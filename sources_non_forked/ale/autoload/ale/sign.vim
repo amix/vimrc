@@ -211,7 +211,7 @@ function! s:BuildSignMap(buffer, current_sign_list, grouped_items) abort
 
     if l:max_signs is 0
         let l:selected_grouped_items = []
-    elseif type(l:max_signs) is type(0) && l:max_signs > 0
+    elseif type(l:max_signs) is v:t_number && l:max_signs > 0
         let l:selected_grouped_items = a:grouped_items[:l:max_signs - 1]
     else
         let l:selected_grouped_items = a:grouped_items

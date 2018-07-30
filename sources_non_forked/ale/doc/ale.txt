@@ -26,9 +26,11 @@ CONTENTS                                                         *ale-contents*
       gawk................................|ale-awk-gawk|
     c.....................................|ale-c-options|
       clang...............................|ale-c-clang|
+      clangd..............................|ale-c-clangd|
       clang-format........................|ale-c-clangformat|
       clangtidy...........................|ale-c-clangtidy|
       cppcheck............................|ale-c-cppcheck|
+      cquery..............................|ale-c-cquery|
       flawfinder..........................|ale-c-flawfinder|
       gcc.................................|ale-c-gcc|
     chef..................................|ale-chef-options|
@@ -76,6 +78,7 @@ CONTENTS                                                         *ale-contents*
     fish..................................|ale-fish-options|
     fortran...............................|ale-fortran-options|
       gcc.................................|ale-fortran-gcc|
+      language_server.....................|ale-fortran-language-server|
     fountain..............................|ale-fountain-options|
     fusionscript..........................|ale-fuse-options|
       fusion-lint.........................|ale-fuse-fusionlint|
@@ -98,6 +101,7 @@ CONTENTS                                                         *ale-contents*
     haskell...............................|ale-haskell-options|
       brittany............................|ale-haskell-brittany|
       ghc.................................|ale-haskell-ghc|
+      cabal-ghc...........................|ale-haskell-cabal-ghc|
       hdevtools...........................|ale-haskell-hdevtools|
       hfmt................................|ale-haskell-hfmt|
       stack-build.........................|ale-haskell-stack-build|
@@ -203,6 +207,7 @@ CONTENTS                                                         *ale-contents*
       pylint..............................|ale-python-pylint|
       pyls................................|ale-python-pyls|
       pyre................................|ale-python-pyre|
+      vulture.............................|ale-python-vulture|
       yapf................................|ale-python-yapf|
     qml...................................|ale-qml-options|
       qmlfmt..............................|ale-qml-qmlfmt|
@@ -333,7 +338,7 @@ Notes:
 * Awk: `gawk`
 * Bash: `language-server`, `shell` (-n flag), `shellcheck`, `shfmt`
 * Bourne Shell: `shell` (-n flag), `shellcheck`, `shfmt`
-* C: `cppcheck`, `cpplint`!!, `clang`, `clangtidy`!!, `clang-format`, `flawfinder`, `gcc`
+* C: `cppcheck`, `cpplint`!!, `clang`, `clangd`, `clangtidy`!!, `clang-format`, `cquery`, `flawfinder`, `gcc`
 * C++ (filetype cpp): `clang`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`
 * CUDA: `nvcc`!!
 * C#: `mcs`, `mcsc`!!
@@ -355,7 +360,7 @@ Notes:
 * Erb: `erb`, `erubi`, `erubis`
 * Erlang: `erlc`, `SyntaxErl`
 * Fish: `fish` (-n flag)
-* Fortran: `gcc`
+* Fortran: `gcc`, `language_server`
 * Fountain: `proselint`
 * FusionScript: `fusion-lint`
 * Git Commit Messages: `gitlint`
@@ -364,7 +369,7 @@ Notes:
 * GraphQL: `eslint`, `gqlint`, `prettier`
 * Haml: `haml-lint`
 * Handlebars: `ember-template-lint`
-* Haskell: `brittany`, `ghc`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `stack-ghc-mod`, `hlint`, `hdevtools`, `hfmt`
+* Haskell: `brittany`, `ghc`, `cabal-ghc`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `stack-ghc-mod`, `hlint`, `hdevtools`, `hfmt`
 * HTML: `alex`!!, `HTMLHint`, `proselint`, `tidy`, `write-good`
 * Idris: `idris`
 * Java: `checkstyle`, `javac`, `google-java-format`, `PMD`
@@ -395,7 +400,7 @@ Notes:
 * proto: `protoc-gen-lint`
 * Pug: `pug-lint`
 * Puppet: `languageserver`, `puppet`, `puppet-lint`
-* Python: `autopep8`, `black`, `flake8`, `isort`, `mypy`, `prospector`, `pycodestyle`, `pyls`, `pyre`, `pylint`!!, `yapf`
+* Python: `autopep8`, `black`, `flake8`, `isort`, `mypy`, `prospector`, `pycodestyle`, `pyls`, `pyre`, `pylint`!!, `vulture`!!, `yapf`
 * QML: `qmlfmt`, `qmllint`
 * R: `lintr`
 * ReasonML: `merlin`, `ols`, `refmt`
@@ -1413,8 +1418,7 @@ g:ale_set_balloons                                         *g:ale_set_balloons*
                                                            *b:ale_set_balloons*
 
   Type: |Number|
-  Default: `(has('balloon_eval') && has('gui_running'))`
-           `|| (has('balloon_eval_term') && !has('gui_running'))`
+  Default: `has('balloon_eval') && has('gui_running')`
 
   When this option is set to `1`, balloon messages will be displayed for
   problems or hover information if available.
@@ -1423,6 +1427,12 @@ g:ale_set_balloons                                         *g:ale_set_balloons*
   there are no problems to show, and one of the linters is an LSP linter
   supporting "Hover" information, per |ale-hover|, then brief information
   about the symbol under the cursor will be displayed in a balloon.
+
+  Balloons can be enabled for terminal versions of Vim that support balloons,
+  but some versions of Vim will produce strange mouse behavior when balloons
+  are enabled. To configure balloons for your terminal, you should first
+  configure your |ttymouse| setting, and then consider setting
+  `g:ale_set_balloons` to `1` before ALE is loaded.
 
   `b:ale_set_balloons` can be set to `0` to disable balloons for a buffer.
   Balloons cannot be enabled for a specific buffer when not initially enabled

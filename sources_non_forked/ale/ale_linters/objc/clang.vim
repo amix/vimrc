@@ -19,5 +19,5 @@ call ale#linter#Define('objc', {
 \   'output_stream': 'stderr',
 \   'executable': 'clang',
 \   'command_callback': 'ale_linters#objc#clang#GetCommand',
-\   'callback': 'ale#handlers#gcc#HandleGCCFormat',
+\   'callback': 'ale#handlers#gcc#HandleGCCFormatWithIncludes',
 \})

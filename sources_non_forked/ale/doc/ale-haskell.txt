@@ -23,6 +23,17 @@ g:ale_haskell_ghc_options                           *g:ale_haskell_ghc_options*
   This variable can be changed to modify flags given to ghc.
 
 ===============================================================================
+cabal-ghc                                               *ale-haskell-cabal-ghc*
+
+g:ale_haskell_cabal_ghc_options               *g:ale_haskell_cabal_ghc_options*
+                                              *b:ale_haskell_cabal_ghc_options*
+  Type: |String|
+  Default: `'-fno-code -v0'`
+
+  This variable can be changed to modify flags given to ghc through cabal
+  exec.
+
+===============================================================================
 hdevtools                                               *ale-haskell-hdevtools*
 
 g:ale_haskell_hdevtools_executable         *g:ale_haskell_hdevtools_executable*

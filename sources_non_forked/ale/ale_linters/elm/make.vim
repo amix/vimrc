@@ -136,7 +136,7 @@ function! ale_linters#elm#make#ParseMessage(message) abort
 endfunction
 
 function! ale_linters#elm#make#ParseMessageItem(item) abort
-    if type(a:item) == type('')
+    if type(a:item) is v:t_string
         return a:item
     else
         return a:item.string

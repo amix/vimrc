@@ -7,15 +7,6 @@ function! go#job#Spawn(cmd, args)
   return go#job#Start(a:cmd, l:options)
 endfunction
 
-" Spawn starts an asynchronous job. See the description of go#job#Options to
-" understand the args parameter.
-"
-" Spawn returns a job.
-function! go#job#Spawn(cmd, args)
-  let l:options = go#job#Options(a:args)
-  return go#job#Start(a:cmd, l:options)
-endfunction
-
 " Options returns callbacks to be used with job_start. It is abstracted to be
 " used with various go commands, such as build, test, install, etc.. This
 " allows us to avoid writing the same callback over and over for some

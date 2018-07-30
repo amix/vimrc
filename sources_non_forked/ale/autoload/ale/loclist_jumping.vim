@@ -66,6 +66,7 @@ function! ale#loclist_jumping#Jump(direction, wrap) abort
     let l:nearest = ale#loclist_jumping#FindNearest(a:direction, a:wrap)
 
     if !empty(l:nearest)
+        normal! m`
         call cursor(l:nearest)
     endif
 endfunction
@@ -82,6 +83,7 @@ function! ale#loclist_jumping#JumpToIndex(index) abort
     let l:item = l:loclist[a:index]
 
     if !empty(l:item)
+        normal! m`
         call cursor([l:item.lnum, l:item.col])
     endif
 endfunction

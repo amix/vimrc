@@ -13,7 +13,8 @@ function! ale_linters#haskell#stack_build#GetCommand(buffer) abort
 endfunction
 
 call ale#linter#Define('haskell', {
-\   'name': 'stack-build',
+\   'name': 'stack_build',
+\   'aliases': ['stack-build'],
 \   'output_stream': 'stderr',
 \   'executable': 'stack',
 \   'command_callback': 'ale_linters#haskell#stack_build#GetCommand',

@@ -4,11 +4,11 @@
 " Given a filetype and a configuration for ignoring linters, return a List of
 " Strings for linter names to ignore.
 function! ale#engine#ignore#GetList(filetype, config) abort
-    if type(a:config) is type([])
+    if type(a:config) is v:t_list
         return a:config
     endif
 
-    if type(a:config) is type({})
+    if type(a:config) is v:t_dict
         let l:names_to_remove = []
 
         for l:part in split(a:filetype , '\.')

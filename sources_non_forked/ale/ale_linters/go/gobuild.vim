@@ -70,7 +70,8 @@ function! ale_linters#go#gobuild#Handler(buffer, lines) abort
 endfunction
 
 call ale#linter#Define('go', {
-\   'name': 'go build',
+\   'name': 'gobuild',
+\   'aliases': ['go build'],
 \   'executable': 'go',
 \   'command_chain': [
 \     {'callback': 'ale_linters#go#gobuild#GoEnv', 'output_stream': 'stdout'},

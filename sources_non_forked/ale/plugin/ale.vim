@@ -110,10 +110,7 @@ let g:ale_set_highlights = get(g:, 'ale_set_highlights', has('syntax'))
 let g:ale_echo_cursor = get(g:, 'ale_echo_cursor', 1)
 
 " This flag can be set to 0 to disable balloon support.
-let g:ale_set_balloons = get(g:, 'ale_set_balloons',
-\   (has('balloon_eval') && has('gui_running'))
-\   || (has('balloon_eval_term') && !has('gui_running'))
-\)
+let g:ale_set_balloons = get(g:, 'ale_set_balloons', has('balloon_eval') && has('gui_running'))
 
 " This flag can be set to 0 to disable warnings for trailing whitespace
 let g:ale_warn_about_trailing_whitespace = get(g:, 'ale_warn_about_trailing_whitespace', 1)

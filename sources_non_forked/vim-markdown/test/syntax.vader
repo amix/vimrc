@@ -1139,19 +1139,19 @@ Given markdown;
 ###### h6
 
 Execute (atx headers):
-  AssertEqual SyntaxOf('# h1 space'), 'htmlH1'
-  AssertEqual SyntaxOf('#h1 nospace'), 'htmlH1'
-  AssertEqual SyntaxOf('#  h1 2 spaces'), 'htmlH1'
-  AssertEqual SyntaxOf('# h1 trailing hash #'), 'htmlH1'
-  AssertEqual SyntaxOf('## h2 space'), 'htmlH2'
-  AssertEqual SyntaxOf('##h2 nospace'), 'htmlH2'
-  AssertEqual SyntaxOf('## h2 trailing hash ##'), 'htmlH2'
-  AssertEqual SyntaxOf('### h3 space'), 'htmlH3'
-  AssertEqual SyntaxOf('###h3 nospace'), 'htmlH3'
-  AssertEqual SyntaxOf('### h3 trailing hash ###'), 'htmlH3'
-  AssertEqual SyntaxOf('#### h4'), 'htmlH4'
-  AssertEqual SyntaxOf('##### h5'), 'htmlH5'
-  AssertEqual SyntaxOf('###### h6'), 'htmlH6'
+  AssertEqual SyntaxOf(' h1 space'), 'htmlH1'
+  AssertEqual SyntaxOf('h1 nospace'), 'htmlH1'
+  AssertEqual SyntaxOf('  h1 2 spaces'), 'htmlH1'
+  AssertEqual SyntaxOf(' h1 trailing hash '), 'htmlH1'
+  AssertEqual SyntaxOf(' h2 space'), 'htmlH2'
+  AssertEqual SyntaxOf('h2 nospace'), 'htmlH2'
+  AssertEqual SyntaxOf(' h2 trailing hash '), 'htmlH2'
+  AssertEqual SyntaxOf(' h3 space'), 'htmlH3'
+  AssertEqual SyntaxOf('h3 nospace'), 'htmlH3'
+  AssertEqual SyntaxOf(' h3 trailing hash '), 'htmlH3'
+  AssertEqual SyntaxOf(' h4'), 'htmlH4'
+  AssertEqual SyntaxOf(' h5'), 'htmlH5'
+  AssertEqual SyntaxOf(' h6'), 'htmlH6'
 
 Given markdown;
 # h1 before h2
@@ -1161,9 +1161,9 @@ Given markdown;
 # h1 after h2
 
 Execute (atx headers relative positions):
-  AssertEqual SyntaxOf('# h1 before h2'), 'htmlH1'
-  AssertEqual SyntaxOf('## h2 between h1s'), 'htmlH2'
-  AssertEqual SyntaxOf('# h1 after h2'), 'htmlH1'
+  AssertEqual SyntaxOf(' h1 before h2'), 'htmlH1'
+  AssertEqual SyntaxOf(' h2 between h1s'), 'htmlH2'
+  AssertEqual SyntaxOf(' h1 after h2'), 'htmlH1'
 
 Given markdown;
 setex h1
@@ -1214,9 +1214,9 @@ setex h2
 Execute (mixed atx and setex headers):
   AssertEqual SyntaxOf('setex h1 before atx'), 'htmlH1'
   AssertEqual SyntaxOf('==================='), 'htmlH1'
-  AssertEqual SyntaxOf('## atx h2'), 'htmlH2'
-  AssertEqual SyntaxOf('### atx h3'), 'htmlH3'
-  AssertEqual SyntaxOf('# atx h1'), 'htmlH1'
+  AssertEqual SyntaxOf(' atx h2'), 'htmlH2'
+  AssertEqual SyntaxOf(' atx h3'), 'htmlH3'
+  AssertEqual SyntaxOf(' atx h1'), 'htmlH1'
   AssertEqual SyntaxOf('setex h2'), 'htmlH2'
   AssertEqual SyntaxOf('------------------'), 'htmlH2'
 

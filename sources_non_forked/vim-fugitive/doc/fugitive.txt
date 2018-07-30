@@ -199,11 +199,7 @@ that are part of Git repositories).
 
                                                 *fugitive-:Gmove*
 :Gmove {destination}    Wrapper around git-mv that renames the buffer
-                        afterward.  The destination is relative to the current
-                        directory except when started with a /, in which case
-                        it is relative to the work tree.  (This is a holdover
-                        from before |:Grename| and will be removed.)  Add a !
-                        to pass -f.
+                        afterward.  Add a ! to pass -f.
 
                                                 *fugitive-:Grename*
 :Grename {destination}  Like |:Gmove| but operates relative to the parent
@@ -234,11 +230,10 @@ that are part of Git repositories).
                         <CR>  q, then open commit
                         o     open commit in horizontal split
                         O     open commit in new tab
+                        p     open commit in preview window
                         -     reblame at commit
                         ~     reblame at [count]th first grandparent
                         P     reblame at [count]th parent (like HEAD^[count])
-
-:[range]Gblame [flags]  Run git-blame on the given range.
 
                                                 *fugitive-:Gbrowse*
 :Gbrowse                Open the current file, blob, tree, commit, or tag
@@ -250,12 +245,6 @@ that are part of Git repositories).
                         appropriate Vim plugin.  For example, GitHub can be
                         supported by installing rhubarb.vim, available at
                         <https://github.com/tpope/vim-rhubarb>.
-
-                        The hosting provider is determined by looking at the
-                        remote for the current or specified branch and falls
-                        back to "origin".  In the special case of a "."
-                        remote, a local instance of git-instaweb will be
-                        started and used.
 
 :Gbrowse {revision}     Like :Gbrowse, but for a given |fugitive-revision|.  A
                         useful value here is -, which ties the URL to the
@@ -334,19 +323,19 @@ refs/heads/x    .git/refs/heads/x
 @               The commit referenced by @ aka HEAD
 master^         The parent of the commit referenced by master
 master:         The tree referenced by master
-/master         The file named master in the work tree
+./master        The file named master in the work tree
 Makefile        The file named Makefile in the work tree
 @^:Makefile     The file named Makefile in the parent of HEAD
 :Makefile       The file named Makefile in the index (writable)
+@:%             The current file in HEAD
 -               The current file in HEAD
 ^               The current file in the previous commit
 ~3              The current file 3 commits ago
 :               .git/index (Same as |:Gstatus|)
-:0              The current file in the index
-:1              The current file's common ancestor during a conflict
-:2              The current file in the target branch during a conflict
-:3              The current file in the merged branch during a conflict
-:/foo           The most recent commit with "foo" in the message
+:%              The current file in the index
+:1:%            The current file's common ancestor during a conflict
+:2:%            The current file in the target branch during a conflict
+:3:%            The current file in the merged branch during a conflict
 
 STATUSLINE                                      *fugitive-statusline*
 

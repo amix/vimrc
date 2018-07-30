@@ -88,7 +88,7 @@ function! ale#lsp#response#ReadTSServerDiagnostics(response) abort
 endfunction
 
 function! ale#lsp#response#GetErrorMessage(response) abort
-    if type(get(a:response, 'error', 0)) isnot type({})
+    if type(get(a:response, 'error', 0)) isnot v:t_dict
         return ''
     endif
 
@@ -108,12 +108,12 @@ function! ale#lsp#response#GetErrorMessage(response) abort
     " Include the traceback or error data as details, if present.
     let l:error_data = get(a:response.error, 'data', {})
 
-    if type(l:error_data) is type('')
+    if type(l:error_data) is v:t_string
         let l:message .= "\n" . l:error_data
     else
         let l:traceback = get(l:error_data, 'traceback', [])
 
-        if type(l:traceback) is type([]) && !empty(l:traceback)
+        if type(l:traceback) is v:t_list && !empty(l:traceback)
             let l:message .= "\n" . join(l:traceback, "\n")
         endif
     endif

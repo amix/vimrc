@@ -5,7 +5,10 @@ Contents ~
 
  1. Introduction                                    |vim-markdown-introduction|
  2. Installation                                    |vim-markdown-installation|
- 3. Options                                              |vim-markdown-options|
+ 3. Basic usage                                      |vim-markdown-basic-usage|
+  1. Folding                                             |vim-markdown-folding|
+  2. Concealing                                       |vim-markdown-concealing|
+ 4. Options                                              |vim-markdown-options|
   1. Disable Folding                             |vim-markdown-disable-folding|
   2. Change fold style                         |vim-markdown-change-fold-style|
   3. Set header folding level           |vim-markdown-set-header-folding-level|
@@ -26,12 +29,16 @@ Contents ~
                 |vim-markdown-do-not-require-.md-extensions-for-markdown-links|
   13. Auto-write when following link
                                   |vim-markdown-auto-write-when-following-link|
-  14. Change default file extension           |vim-markdown-auto-extension-ext|
- 4. Mappings                                            |vim-markdown-mappings|
- 5. Commands                                            |vim-markdown-commands|
- 6. Credits                                              |vim-markdown-credits|
- 7. License                                              |vim-markdown-license|
- 8. References                                        |vim-markdown-references|
+  14. Change default file extension
+                                   |vim-markdown-change-default-file-extension|
+  15. Do not automatically insert bulletpoints
+                        |vim-markdown-do-not-automatically-insert-bulletpoints|
+  16. Change how to open new files  |vim-markdown-change-how-to-open-new-files|
+ 5. Mappings                                            |vim-markdown-mappings|
+ 6. Commands                                            |vim-markdown-commands|
+ 7. Credits                                              |vim-markdown-credits|
+ 8. License                                              |vim-markdown-license|
+ 9. References                                        |vim-markdown-references|
 
 ===============================================================================
                                                     *vim-markdown-introduction*
@@ -73,6 +80,52 @@ If you are not using any package manager, download the tarball [5] and do this:
   cd ~/.vim
   tar --strip=1 -zxf vim-markdown-master.tar.gz
 <
+===============================================================================
+                                                     *vim-markdown-basic-usage*
+Basic usage ~
+
+-------------------------------------------------------------------------------
+                                                         *vim-markdown-folding*
+Folding ~
+
+Folding is enabled for headers by default.
+
+The following commands are useful to open and close folds:
+
+                                                              *vim-markdown-zr*
+- 'zr': reduces fold level throughout the buffer
+                                                              *vim-markdown-zR*
+- 'zR': opens all folds
+                                                              *vim-markdown-zm*
+- 'zm': increases fold level throughout the buffer
+                                                              *vim-markdown-zM*
+- 'zM': folds everything all the way
+                                                              *vim-markdown-za*
+- 'za': open a fold your cursor is on
+                                                              *vim-markdown-zA*
+- 'zA': open a fold your cursor is on recursively
+                                                              *vim-markdown-zc*
+- 'zc': close a fold your cursor is on
+                                                              *vim-markdown-zC*
+- 'zC': close a fold your cursor is on recursively
+
+Options are available to disable folding or change folding style.
+
+Try ':help fold-expr' and ':help fold-commands' for details.
+
+-------------------------------------------------------------------------------
+                                                      *vim-markdown-concealing*
+Concealing ~
+
+Concealing is set for some syntax such as bold, italic, code block and link.
+
+Concealing lets you conceal text with other text. The actual source text is not
+modified. If you put your cursor on the concealed line, the conceal goes away.
+
+Options are available to disable or change concealing.
+
+Try ':help concealcursor' and ':help conceallevel' for details.
+
 ===============================================================================
                                                          *vim-markdown-options*
 Options ~
@@ -144,7 +197,7 @@ never increases its default size (half screen), it only shrinks.
 Text emphasis restriction to single-lines ~
 
 By default text emphasis works across multiple lines until a closing token is
-found. However, it's possible to restrict text emphasis to a single line (ie,
+found. However, it's possible to restrict text emphasis to a single line (i.e.,
 for it to be applied a closing token must be found on the same line). To do so:
 >
   let g:vim_markdown_emphasis_multiline = 0
@@ -197,9 +250,9 @@ Default is "['c++=cpp', 'viml=vim', 'bash=sh', 'ini=dosini']".
                                             *vim-markdown-follow-named-anchors*
 Follow named anchors ~
 
-This feature allows ge to follow named anchors in links of the form
-'file#anchor' or just '#anchor', where file may omit the '.md' extension as
-usual. Two variables control its operation:
+This feature allows the 'ge' command to follow named anchors in links of the
+form 'file#anchor' or just '#anchor', where file may omit the '.md' extension
+as usual. Two variables control its operation:
 >
   let g:vim_markdown_follow_anchor = 1
 <
@@ -311,13 +364,39 @@ this option will automatically save any edits you made before moving you:
   let g:vim_markdown_autowrite = 1
 <
 -------------------------------------------------------------------------------
-                                              *vim-markdown-auto-extension-ext*
+                                   *vim-markdown-change-default-file-extension*
 Change default file extension ~
 
 If you would like to use a file extension other than '.md' you may do so using
 the 'vim_markdown_auto_extension_ext' variable:
 >
   let g:vim_markdown_auto_extension_ext = 'txt'
+<
+-------------------------------------------------------------------------------
+                        *vim-markdown-do-not-automatically-insert-bulletpoints*
+Do not automatically insert bulletpoints ~
+
+Automatically inserting bulletpoints can lead to problems when wrapping text
+(see issue #232 for details), so it can be disabled:
+>
+  let g:vim_markdown_auto_insert_bullets = 0
+<
+In that case, you probably also want to set the new list item indent to 0 as
+well, or you will have to remove an indent each time you add a new list item:
+>
+  let g:vim_markdown_new_list_item_indent = 0
+<
+-------------------------------------------------------------------------------
+                                    *vim-markdown-change-how-to-open-new-files*
+Change how to open new files ~
+
+By default when following a link the target file will be opened in your current
+buffer. This behavior can change if you prefer using splits or tabs by using
+the 'vim_markdown_edit_url_in' variable. Possible values are 'tab', 'vsplit',
+'hsplit', 'current' opening in a new tab, vertical split, horizontal split, and
+current buffer respectively. Defaults to current buffer if not set:
+>
+  let g:vim_markdown_edit_url_in = 'tab'
 <
 ===============================================================================
                                                         *vim-markdown-mappings*
