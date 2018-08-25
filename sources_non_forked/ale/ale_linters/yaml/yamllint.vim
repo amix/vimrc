@@ -1,18 +1,10 @@
 " Author: KabbAmine <amine.kabb@gmail.com>
 
-let g:ale_yaml_yamllint_executable =
-\   get(g:, 'ale_yaml_yamllint_executable', 'yamllint')
-
-let g:ale_yaml_yamllint_options =
-\   get(g:, 'ale_yaml_yamllint_options', '')
-
-function! ale_linters#yaml#yamllint#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'yaml_yamllint_executable')
-endfunction
+call ale#Set('yaml_yamllint_executable', 'yamllint')
+call ale#Set('yaml_yamllint_options', '')
 
 function! ale_linters#yaml#yamllint#GetCommand(buffer) abort
-    return ale_linters#yaml#yamllint#GetExecutable(a:buffer)
-    \   . ' ' . ale#Var(a:buffer, 'yaml_yamllint_options')
+    return '%e' . ale#Pad(ale#Var(a:buffer, 'yaml_yamllint_options'))
     \   . ' -f parsable %t'
 endfunction
 
@@ -52,7 +44,7 @@ endfunction
 
 call ale#linter#Define('yaml', {
 \   'name': 'yamllint',
-\   'executable_callback': 'ale_linters#yaml#yamllint#GetExecutable',
+\   'executable_callback': ale#VarFunc('yaml_yamllint_executable'),
 \   'command_callback': 'ale_linters#yaml#yamllint#GetCommand',
 \   'callback': 'ale_linters#yaml#yamllint#Handle',
 \})

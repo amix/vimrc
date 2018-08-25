@@ -4,10 +4,6 @@
 call ale#Set('cpp_cppcheck_executable', 'cppcheck')
 call ale#Set('cpp_cppcheck_options', '--enable=style')
 
-function! ale_linters#cpp#cppcheck#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'cpp_cppcheck_executable')
-endfunction
-
 function! ale_linters#cpp#cppcheck#GetCommand(buffer) abort
     " Search upwards from the file for compile_commands.json.
     "
@@ -23,8 +19,7 @@ function! ale_linters#cpp#cppcheck#GetCommand(buffer) abort
     \   : ''
 
     return l:cd_command
-    \   . ale#Escape(ale_linters#cpp#cppcheck#GetExecutable(a:buffer))
-    \   . ' -q --language=c++ '
+    \   . '%e -q --language=c++ '
     \   . l:compile_commands_option
     \   . ale#Var(a:buffer, 'cpp_cppcheck_options')
     \   . ' %t'
@@ -33,7 +28,7 @@ endfunction
 call ale#linter#Define('cpp', {
 \   'name': 'cppcheck',
 \   'output_stream': 'both',
-\   'executable_callback': 'ale_linters#cpp#cppcheck#GetExecutable',
+\   'executable_callback': ale#VarFunc('cpp_cppcheck_executable'),
 \   'command_callback': 'ale_linters#cpp#cppcheck#GetCommand',
 \   'callback': 'ale#handlers#cppcheck#HandleCppCheckFormat',
 \})

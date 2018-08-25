@@ -4,16 +4,10 @@
 call ale#Set('idris_idris_executable', 'idris')
 call ale#Set('idris_idris_options', '--total --warnpartial --warnreach --warnipkg')
 
-function! ale_linters#idris#idris#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'idris_idris_executable')
-endfunction
-
 function! ale_linters#idris#idris#GetCommand(buffer) abort
     let l:options = ale#Var(a:buffer, 'idris_idris_options')
 
-    return ale#Escape(ale_linters#idris#idris#GetExecutable(a:buffer))
-    \   . (!empty(l:options) ? ' ' . l:options : '')
-    \   . ' --check %s'
+    return '%e' . ale#Pad(l:options) . ' --check %s'
 endfunction
 
 function! ale_linters#idris#idris#Handle(buffer, lines) abort
@@ -80,8 +74,7 @@ endfunction
 
 call ale#linter#Define('idris', {
 \   'name': 'idris',
-\   'executable_callback': 'ale_linters#idris#idris#GetExecutable',
+\   'executable_callback': ale#VarFunc('idris_idris_executable'),
 \   'command_callback': 'ale_linters#idris#idris#GetCommand',
 \   'callback': 'ale_linters#idris#idris#Handle',
 \})
-

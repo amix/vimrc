@@ -7,10 +7,6 @@
 " ============================================================================
 
 
-" This constant is used throughout this script for sorting purposes.
-let s:NERDTreeSortStarIndex = index(g:NERDTreeSortOrder, '*')
-lockvar s:NERDTreeSortStarIndex
-
 let s:Path = {}
 let g:NERDTreePath = s:Path
 
@@ -374,7 +370,8 @@ function! s:Path.getSortOrderIndex()
         endif
         let i = i + 1
     endwhile
-    return s:NERDTreeSortStarIndex
+
+    return index(g:NERDTreeSortOrder, '*')
 endfunction
 
 " FUNCTION: Path._splitChunks(path) {{{1
@@ -395,7 +392,7 @@ endfunction
 " FUNCTION: Path.getSortKey() {{{1
 " returns a key used in compare function for sorting
 function! s:Path.getSortKey()
-    if !exists("self._sortKey")
+    if !exists("self._sortKey") || g:NERDTreeSortOrder !=# g:NERDTreeOldSortOrder
         let path = self.getLastPathComponent(1)
         if !g:NERDTreeSortHiddenFirst
             let path = substitute(path, '^[._]', '', '')
@@ -820,7 +817,7 @@ function! s:Path.tabnr()
     let str = self.str()
     for t in range(tabpagenr('$'))
         for b in tabpagebuflist(t+1)
-            if str == expand('#' . b . ':p')
+            if str ==# expand('#' . b . ':p')
                 return t+1
             endif
         endfor

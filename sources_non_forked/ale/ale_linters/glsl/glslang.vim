@@ -4,17 +4,11 @@
 " TODO: Once https://github.com/KhronosGroup/glslang/pull/1047 is accepted,
 " we can use stdin.
 
-let g:ale_glsl_glslang_executable =
-\ get(g:, 'ale_glsl_glslang_executable', 'glslangValidator')
-
-let g:ale_glsl_glslang_options = get(g:, 'ale_glsl_glslang_options', '')
-
-function! ale_linters#glsl#glslang#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'glsl_glslang_executable')
-endfunction
+call ale#Set('glsl_glslang_executable', 'glslangValidator')
+call ale#Set('glsl_glslang_options', '')
 
 function! ale_linters#glsl#glslang#GetCommand(buffer) abort
-    return ale#Escape(ale_linters#glsl#glslang#GetExecutable(a:buffer))
+    return '%e'
     \   . ale#Pad(ale#Var(a:buffer, 'glsl_glslang_options'))
     \   . ' -C %t'
 endfunction
@@ -40,7 +34,7 @@ endfunction
 
 call ale#linter#Define('glsl', {
 \   'name': 'glslang',
-\   'executable_callback': 'ale_linters#glsl#glslang#GetExecutable',
+\   'executable_callback': ale#VarFunc('glsl_glslang_executable'),
 \   'command_callback': 'ale_linters#glsl#glslang#GetCommand',
 \   'callback': 'ale_linters#glsl#glslang#Handle',
 \})

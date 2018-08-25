@@ -23,6 +23,11 @@ function! ale#node#FindExecutable(buffer, base_var_name, path_list) abort
     return ale#Var(a:buffer, a:base_var_name . '_executable')
 endfunction
 
+" As above, but curry the arguments so only the buffer number is required.
+function! ale#node#FindExecutableFunc(base_var_name, path_list) abort
+    return {buf -> ale#node#FindExecutable(buf, a:base_var_name, a:path_list)}
+endfunction
+
 " Create a executable string which executes a Node.js script command with a
 " Node.js executable if needed.
 "

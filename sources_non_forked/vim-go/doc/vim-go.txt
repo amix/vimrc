@@ -76,7 +76,7 @@ tools developed by the Go community to provide a seamless Vim experience.
 ==============================================================================
 INSTALL                                                           *go-install*
 
-vim-go requires at least Vim 7.4.1689 or Neovim 0.2.2. On macOS, if you are
+vim-go requires at least Vim 7.4.2009 or Neovim 0.2.2. On macOS, if you are
 still using your system version of vim, you can use homebrew to keep your
 version of Vim up-to-date with the following terminal command:
 >

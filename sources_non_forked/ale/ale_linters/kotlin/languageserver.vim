@@ -3,15 +3,6 @@
 
 call ale#Set('kotlin_languageserver_executable', 'kotlin-language-server')
 
-function! ale_linters#kotlin#languageserver#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'kotlin_languageserver_executable')
-endfunction
-
-function! ale_linters#kotlin#languageserver#GetCommand(buffer) abort
-    let l:executable = ale_linters#kotlin#languageserver#GetExecutable(a:buffer)
-    return ale#Escape(l:executable)
-endfunction
-
 function! ale_linters#kotlin#languageserver#GetProjectRoot(buffer) abort
     let l:gradle_root = ale#gradle#FindProjectRoot(a:buffer)
 
@@ -31,8 +22,8 @@ endfunction
 call ale#linter#Define('kotlin', {
 \   'name': 'languageserver',
 \   'lsp': 'stdio',
-\   'executable_callback': 'ale_linters#kotlin#languageserver#GetExecutable',
-\   'command_callback': 'ale_linters#kotlin#languageserver#GetCommand',
+\   'executable_callback': ale#VarFunc('kotlin_languageserver_executable'),
+\   'command': '%e',
 \   'language': 'kotlin',
 \   'project_root_callback': 'ale_linters#kotlin#languageserver#GetProjectRoot',
 \})

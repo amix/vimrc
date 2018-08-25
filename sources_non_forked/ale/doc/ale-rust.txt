@@ -5,8 +5,9 @@ ALE Rust Integration                                         *ale-rust-options*
 ===============================================================================
 Integration Information
 
-  Since Vim does not detect the rust file type out-of-the-box, you need the
-  runtime files for rust from here: https://github.com/rust-lang/rust.vim
+  If Vim does not detect the Rust file type out-of-the-box, you need the runtime
+  files for Rust distributed in Vim >=8.0.0501 or upstream:
+  https://github.com/rust-lang/rust.vim
 
   Note that there are three possible linters for Rust files:
 
@@ -147,11 +148,11 @@ rustc                                                          *ale-rust-rustc*
 g:ale_rust_rustc_options                             *g:ale_rust_rustc_options*
                                                      *b:ale_rust_rustc_options*
   Type: |String|
-  Default: `'-Z no-trans'`
+  Default: `'-Z no-codegen'`
 
   The variable can be used to change the options passed to `rustc`.
 
-  `-Z no-trans` should only work with nightly builds of Rust. Be careful when
+  `-Z no-codegen` should only work with nightly builds of Rust. Be careful when
   setting the options, as running `rustc` could execute code or generate
   binary files.
 

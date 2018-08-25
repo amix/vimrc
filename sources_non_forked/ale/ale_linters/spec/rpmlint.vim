@@ -26,19 +26,12 @@
 " And this is always output at the end and should just be ignored:
 "   0 packages and 1 specfiles checked; 4 errors, 0 warnings.
 
-let g:ale_spec_rpmlint_executable =
-\   get(g:, 'ale_spec_rpmlint_executable', 'rpmlint')
-
-let g:ale_spec_rpmlint_options =
-\   get(g:, 'ale_spec_rpmlint_options', '')
-
-function! ale_linters#spec#rpmlint#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'spec_rpmlint_executable')
-endfunction
+call ale#Set('spec_rpmlint_executable', 'rpmlint')
+call ale#Set('spec_rpmlint_options', '')
 
 function! ale_linters#spec#rpmlint#GetCommand(buffer) abort
-    return ale_linters#spec#rpmlint#GetExecutable(a:buffer)
-    \   . ' ' . ale#Var(a:buffer, 'spec_rpmlint_options')
+    return '%e'
+    \   . ale#Pad(ale#Var(a:buffer, 'spec_rpmlint_options'))
     \   . ' -o "NetworkEnabled False"'
     \   . ' -v'
     \   . ' %t'
@@ -79,7 +72,7 @@ endfunction
 
 call ale#linter#Define('spec', {
 \   'name': 'rpmlint',
-\   'executable_callback': 'ale_linters#spec#rpmlint#GetExecutable',
+\   'executable_callback': ale#VarFunc('spec_rpmlint_executable'),
 \   'command_callback': 'ale_linters#spec#rpmlint#GetCommand',
 \   'callback': 'ale_linters#spec#rpmlint#Handle',
 \})

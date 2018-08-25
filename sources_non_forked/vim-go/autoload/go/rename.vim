@@ -27,7 +27,7 @@ function! go#rename#Rename(bang, ...) abort
   let offset = printf('%s:#%d', fname, pos)
   let cmd = [bin_path, "-offset", offset, "-to", to_identifier, '-tags', go#config#BuildTags()]
 
-  if go#util#has_job()
+  if go#util#has_job() || has('nvim')
     call go#util#EchoProgress(printf("renaming to '%s' ...", to_identifier))
     call s:rename_job({
           \ 'cmd': cmd,
@@ -41,63 +41,37 @@ function! go#rename#Rename(bang, ...) abort
 endfunction
 
 function s:rename_job(args)
-  let state = {
-        \ 'exited': 0,
-        \ 'closed': 0,
-        \ 'exitval': 0,
-        \ 'messages': [],
-        \ 'status_dir': expand('%:p:h'),
-        \ 'bang': a:args.bang
-      \ }
-
-  function! s:callback(chan, msg) dict
-    call add(self.messages, a:msg)
-  endfunction
-
-  function! s:exit_cb(job, exitval) dict
-    let self.exited = 1
-    let self.exitval = a:exitval
-
-    let status = {
-          \ 'desc': 'last status',
-          \ 'type': "gorename",
-          \ 'state': "finished",
-          \ }
-
-    if a:exitval
-      let status.state = "failed"
-    endif
-
-    call go#statusline#Update(self.status_dir, status)
-
-    if self.closed
-      call s:parse_errors(self.exitval, self.bang, self.messages)
-    endif
-  endfunction
-
-  function! s:close_cb(ch) dict
-    let self.closed = 1
-
-    if self.exited
-      call s:parse_errors(self.exitval, self.bang, self.messages)
-    endif
-  endfunction
-
-  " explicitly bind the callbacks to state so that self within them always
-  " refers to state. See :help Partial for more information.
-  let start_options = {
-        \ 'callback': funcref("s:callback", [], state),
-        \ 'exit_cb': funcref("s:exit_cb", [], state),
-        \ 'close_cb': funcref("s:close_cb", [], state),
+  let l:job_opts = {
+        \ 'bang': a:args.bang,
+        \ 'for': 'GoRename',
+        \ 'statustype': 'gorename',
         \ }
 
-  call go#statusline#Update(state.status_dir, {
-        \ 'desc': "current status",
-        \ 'type': "gorename",
-        \ 'state': "started",
-        \})
+  " autowrite is not enabled for jobs
+  call go#cmd#autowrite()
+  let l:cbs = go#job#Options(l:job_opts)
 
-  call job_start(a:args.cmd, start_options)
+  " wrap l:cbs.exit_cb in s:exit_cb.
+  let l:cbs.exit_cb = funcref('s:exit_cb', [l:cbs.exit_cb])
+
+  call go#job#Start(a:args.cmd, l:cbs)
+endfunction
+
+function! s:reload_changed() abort
+  " reload all files to reflect the new changes. We explicitly call
+  " checktime to trigger a reload of all files. See
+  " http://www.mail-archive.com/vim@vim.org/msg05900.html for more info
+  " about the autoread bug
+  let current_autoread = &autoread
+  set autoread
+  silent! checktime
+  let &autoread = current_autoread
+endfunction
+
+" s:exit_cb reloads any changed buffers and then calls next.
+function! s:exit_cb(next, job, exitval) abort
+  call s:reload_changed()
+  call call(a:next, [a:job, a:exitval])
 endfunction
 
 function s:parse_errors(exit_val, bang, out)
@@ -132,9 +106,6 @@ function s:parse_errors(exit_val, bang, out)
   call go#util#EchoSuccess(a:out[0])
 
   " refresh the buffer so we can see the new content
-  " TODO(arslan): also find all other buffers and refresh them too. For this
-  " we need a way to get the list of changes from gorename upon an success
-  " change.
   silent execute ":e"
 endfunction
 

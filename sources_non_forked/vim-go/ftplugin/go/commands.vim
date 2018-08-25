@@ -26,7 +26,7 @@ command! -nargs=* -range GoRemoveTags call go#tags#Remove(<line1>, <line2>, <cou
 " -- tool
 command! -nargs=* -complete=customlist,go#tool#ValidFiles GoFiles echo go#tool#Files(<f-args>)
 command! -nargs=0 GoDeps echo go#tool#Deps()
-command! -nargs=* GoInfo call go#tool#Info(0)
+command! -nargs=0 GoInfo call go#tool#Info()
 command! -nargs=0 GoAutoTypeInfoToggle call go#complete#ToggleAutoTypeInfo()
 
 " -- cmd

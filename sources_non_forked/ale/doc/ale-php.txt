@@ -1,24 +1,6 @@
 ===============================================================================
 ALE PHP Integration                                           *ale-php-options*
 
-
-===============================================================================
-hack                                                             *ale-php-hack*
-
-There are no options for this linter.
-
-
-===============================================================================
-hackfmt                                                       *ale-php-hackfmt*
-
-g:ale_php_hackfmt_options                           *g:ale_php_hackfmt_options*
-                                                    *b:ale_php_hackfmt_options*
-  Type: |String|
-  Default: `''`
-
-  This variable can be set to pass additional options to the hackfmt fixer.
-
-
 ===============================================================================
 langserver                                                 *ale-php-langserver*
 
@@ -131,6 +113,13 @@ g:ale_php_phpcs_use_global                         *g:ale_php_phpcs_use_global*
 
   See |ale-integrations-local-executables|
 
+
+g:ale_php_phpcs_options                               *g:ale_php_phpcs_options*
+                                                      *b:ale_php_phpcs_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to php-cs
 
 ===============================================================================
 phpmd                                                           *ale-php-phpmd*

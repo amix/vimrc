@@ -4,23 +4,24 @@ if exists("g:go_loaded_install")
 endif
 let g:go_loaded_install = 1
 
-" Not using the has('patch-7.4.1689') syntax because that wasn't added until
+" Not using the has('patch-7.4.2009') syntax because that wasn't added until
 " 7.4.237, and we want to be sure this works for everyone (this is also why
 " we're not using utils#EchoError()).
 "
-" Version 7.4.1689 was chosen because that's what the most recent Ubuntu LTS
-" release (16.04) uses.
+" Version 7.4.2009 was chosen because that's greater than what the most recent Ubuntu LTS
+" release (16.04) uses and has a couple of features we need (e.g. execute()
+" and :message clear).
 if
       \ go#config#VersionWarning() != 0 &&
-      \ (v:version < 704 || (v:version == 704 && !has('patch1689')))
+      \ (v:version < 704 || (v:version == 704 && !has('patch2009')))
       \ && !has('nvim')
   echohl Error
-  echom "vim-go requires Vim 7.4.1689 or Neovim, but you're using an older version."
+  echom "vim-go requires Vim 7.4.2009 or Neovim, but you're using an older version."
   echom "Please update your Vim for the best vim-go experience."
   echom "If you really want to continue you can set this to make the error go away:"
   echom "    let g:go_version_warning = 0"
   echom "Note that some features may error out or behave incorrectly."
-  echom "Please do not report bugs unless you're using Vim 7.4.1689 or newer."
+  echom "Please do not report bugs unless you're using Vim 7.4.2009 or newer."
   echohl None
 
   " Make sure people see this.
@@ -45,7 +46,7 @@ let s:packages = {
       \ 'gotags':        ['github.com/jstemmer/gotags'],
       \ 'guru':          ['golang.org/x/tools/cmd/guru'],
       \ 'impl':          ['github.com/josharian/impl'],
-      \ 'keyify':        ['github.com/dominikh/go-tools/cmd/keyify'],
+      \ 'keyify':        ['honnef.co/go/tools/cmd/keyify'],
       \ 'motion':        ['github.com/fatih/motion'],
       \ 'iferr':         ['github.com/koron/iferr'],
 \ }
@@ -200,7 +201,7 @@ endfunction
 function! s:auto_type_info()
   " GoInfo automatic update
   if get(g:, "go_auto_type_info", 0)
-    call go#tool#Info(1)
+    call go#tool#Info()
   endif
 endfunction
 

@@ -1,7 +1,7 @@
 " Author: Daniel Schemala <istjanichtzufassen@gmail.com>
 " Description: rustc for rust files
 
-call ale#Set('rust_rustc_options', '-Z no-trans')
+call ale#Set('rust_rustc_options', '-Z no-codegen')
 
 function! ale_linters#rust#rustc#RustcCommand(buffer) abort
     " Try to guess the library search path. If the project is managed by cargo,

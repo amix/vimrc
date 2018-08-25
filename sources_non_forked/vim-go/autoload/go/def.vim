@@ -42,10 +42,11 @@ function! go#def#Jump(mode) abort
 
     call extend(cmd, ["definition", fname . ':#' . go#util#OffsetCursor()])
 
-    if go#util#has_job()
+    if go#util#has_job() || has('nvim')
       let l:spawn_args = {
             \ 'cmd': cmd,
             \ 'complete': function('s:jump_to_declaration_cb', [a:mode, bin_name]),
+            \ 'for': '_',
             \ }
 
       if &modified

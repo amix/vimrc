@@ -14,7 +14,7 @@ let g:loaded_ale_dont_use_this_in_other_plugins_please = 1
 
 " A flag for detecting if the required features are set.
 if has('nvim')
-    let s:has_features = has('timers')
+    let s:has_features = has('timers') && has('nvim-0.2.0')
 else
     " Check if Job and Channel functions are available, instead of the
     " features. This works better on old MacVim versions.
@@ -24,7 +24,7 @@ endif
 if !s:has_features
     " Only output a warning if editing some special files.
     if index(['', 'gitcommit'], &filetype) == -1
-        execute 'echoerr ''ALE requires NeoVim >= 0.1.5 or Vim 8 with +timers +job +channel'''
+        execute 'echoerr ''ALE requires NeoVim >= 0.2.0 or Vim 8 with +timers +job +channel'''
         execute 'echoerr ''Please update your editor appropriately.'''
     endif
 

@@ -5,35 +5,11 @@
 
 call ale#Set('go_gobuild_options', '')
 
-function! ale_linters#go#gobuild#ResetEnv() abort
-    unlet! s:go_env
-endfunction
-
-function! ale_linters#go#gobuild#GoEnv(buffer) abort
-    if exists('s:go_env')
-        return ''
-    endif
-
-    return 'go env GOPATH GOROOT'
-endfunction
-
-function! ale_linters#go#gobuild#GetCommand(buffer, goenv_output) abort
+function! ale_linters#go#gobuild#GetCommand(buffer) abort
     let l:options = ale#Var(a:buffer, 'go_gobuild_options')
 
-    if !exists('s:go_env')
-        let s:go_env = {
-        \   'GOPATH': a:goenv_output[0],
-        \   'GOROOT': a:goenv_output[1],
-        \}
-    endif
-
-    let l:gopath_env_command = has('win32')
-    \   ? 'set GOPATH=' . ale#Escape(s:go_env.GOPATH) . ' && '
-    \   : 'GOPATH=' . ale#Escape(s:go_env.GOPATH) . ' '
-
     " Run go test in local directory with relative path
-    return l:gopath_env_command
-    \   . ale#path#BufferCdString(a:buffer)
+    return ale#path#BufferCdString(a:buffer)
     \   . 'go test'
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . ' -c -o /dev/null ./'
@@ -73,10 +49,8 @@ call ale#linter#Define('go', {
 \   'name': 'gobuild',
 \   'aliases': ['go build'],
 \   'executable': 'go',
-\   'command_chain': [
-\     {'callback': 'ale_linters#go#gobuild#GoEnv', 'output_stream': 'stdout'},
-\     {'callback': 'ale_linters#go#gobuild#GetCommand', 'output_stream': 'stderr'},
-\   ],
+\   'command_callback': 'ale_linters#go#gobuild#GetCommand',
+\   'output_stream': 'stderr',
 \   'callback': 'ale_linters#go#gobuild#Handler',
 \   'lint_file': 1,
 \})

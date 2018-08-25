@@ -1,21 +1,10 @@
 " Author: Vincent Lequertier <https://github.com/SkySymbol>, Chris Weyl <cweyl@alumni.drew.edu>
 " Description: This file adds support for checking perl with perl critic
 
-let g:ale_perl_perlcritic_executable =
-\   get(g:, 'ale_perl_perlcritic_executable', 'perlcritic')
-
-let g:ale_perl_perlcritic_profile =
-\   get(g:, 'ale_perl_perlcritic_profile', '.perlcriticrc')
-
-let g:ale_perl_perlcritic_options =
-\   get(g:, 'ale_perl_perlcritic_options', '')
-
-let g:ale_perl_perlcritic_showrules =
-\   get(g:, 'ale_perl_perlcritic_showrules', 0)
-
-function! ale_linters#perl#perlcritic#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'perl_perlcritic_executable')
-endfunction
+call ale#Set('perl_perlcritic_executable', 'perlcritic')
+call ale#Set('perl_perlcritic_profile', '.perlcriticrc')
+call ale#Set('perl_perlcritic_options', '')
+call ale#Set('perl_perlcritic_showrules', 0)
 
 function! ale_linters#perl#perlcritic#GetProfile(buffer) abort
     " first see if we've been overridden
@@ -39,11 +28,11 @@ function! ale_linters#perl#perlcritic#GetCommand(buffer) abort
     let l:profile = ale_linters#perl#perlcritic#GetProfile(a:buffer)
     let l:options = ale#Var(a:buffer, 'perl_perlcritic_options')
 
-    return ale#Escape(ale_linters#perl#perlcritic#GetExecutable(a:buffer))
+    return '%e'
     \   . ' --verbose ' . ale#Escape(l:critic_verbosity)
     \   . ' --nocolor'
     \   . (!empty(l:profile) ? ' --profile ' . ale#Escape(l:profile) : '')
-    \   . (!empty(l:options) ? ' ' . l:options : '')
+    \   . ale#Pad(l:options)
 endfunction
 
 
@@ -66,7 +55,7 @@ endfunction
 call ale#linter#Define('perl', {
 \   'name': 'perlcritic',
 \   'output_stream': 'stdout',
-\   'executable_callback': 'ale_linters#perl#perlcritic#GetExecutable',
+\   'executable_callback': ale#VarFunc('perl_perlcritic_executable'),
 \   'command_callback': 'ale_linters#perl#perlcritic#GetCommand',
 \   'callback': 'ale_linters#perl#perlcritic#Handle',
 \})

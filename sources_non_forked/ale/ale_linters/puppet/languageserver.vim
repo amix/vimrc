@@ -3,16 +3,6 @@
 
 call ale#Set('puppet_languageserver_executable', 'puppet-languageserver')
 
-function! ale_linters#puppet#languageserver#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'puppet_languageserver_executable')
-endfunction
-
-function! ale_linters#puppet#languageserver#GetCommand(buffer) abort
-    let l:exe = ale#Escape(ale_linters#puppet#languageserver#GetExecutable(a:buffer))
-
-    return l:exe . ' --stdio'
-endfunction
-
 function! ale_linters#puppet#languageserver#GetProjectRoot(buffer) abort
     " Note: The metadata.json file is recommended for Puppet 4+ modules, but
     " there's no requirement to have it, so fall back to the other possible
@@ -38,8 +28,8 @@ endfunction
 call ale#linter#Define('puppet', {
 \   'name': 'languageserver',
 \   'lsp': 'stdio',
-\   'executable_callback': 'ale_linters#puppet#languageserver#GetExecutable',
-\   'command_callback': 'ale_linters#puppet#languageserver#GetCommand',
+\   'executable_callback': ale#VarFunc('puppet_languageserver_executable'),
+\   'command': '%e --stdio',
 \   'language': 'puppet',
 \   'project_root_callback': 'ale_linters#puppet#languageserver#GetProjectRoot',
 \})

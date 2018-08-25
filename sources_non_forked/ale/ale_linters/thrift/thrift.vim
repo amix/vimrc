@@ -5,10 +5,6 @@ call ale#Set('thrift_thrift_generators', ['cpp'])
 call ale#Set('thrift_thrift_includes', [])
 call ale#Set('thrift_thrift_options', '-strict')
 
-function! ale_linters#thrift#thrift#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'thrift_thrift_executable')
-endfunction
-
 function! ale_linters#thrift#thrift#GetCommand(buffer) abort
     let l:generators = ale#Var(a:buffer, 'thrift_thrift_generators')
     let l:includes = ale#Var(a:buffer, 'thrift_thrift_includes')
@@ -22,7 +18,7 @@ function! ale_linters#thrift#thrift#GetCommand(buffer) abort
 
     let l:output_dir = ale#engine#CreateDirectory(a:buffer)
 
-    return ale#Escape(ale_linters#thrift#thrift#GetExecutable(a:buffer))
+    return '%e'
     \   . ale#Pad(join(map(copy(l:generators), "'--gen ' . v:val")))
     \   . ale#Pad(join(map(copy(l:includes), "'-I ' . v:val")))
     \   . ale#Pad(ale#Var(a:buffer, 'thrift_thrift_options'))
@@ -83,7 +79,7 @@ call ale#linter#Define('thrift', {
 \   'name': 'thrift',
 \   'executable': 'thrift',
 \   'output_stream': 'both',
-\   'executable_callback': 'ale_linters#thrift#thrift#GetExecutable',
+\   'executable_callback': ale#VarFunc('thrift_thrift_executable'),
 \   'command_callback': 'ale_linters#thrift#thrift#GetCommand',
 \   'callback': 'ale_linters#thrift#thrift#Handle',
 \})

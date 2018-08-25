@@ -4,8 +4,12 @@
 " Author: John Eikenberry <jae@zhar.net>
 " Description: updated to work with go1.10
 
+call ale#Set('go_govet_options', '')
+
 function! ale_linters#go#govet#GetCommand(buffer) abort
+    let l:options = ale#Var(a:buffer, 'go_govet_options')
     return ale#path#BufferCdString(a:buffer) . ' go vet .'
+    \   . (!empty(l:options) ? ' ' . l:options : '')
 endfunction
 
 call ale#linter#Define('go', {

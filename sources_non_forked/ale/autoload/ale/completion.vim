@@ -424,6 +424,58 @@ function! ale#completion#HandleLSPResponse(conn_id, response) abort
     \)
 endfunction
 
+function! s:OnReady(linter, lsp_details, ...) abort
+    let l:buffer = a:lsp_details.buffer
+    let l:id = a:lsp_details.connection_id
+
+    " If we have sent a completion request already, don't send another.
+    if b:ale_completion_info.request_id
+        return
+    endif
+
+    let l:Callback = a:linter.lsp is# 'tsserver'
+    \   ? function('ale#completion#HandleTSServerResponse')
+    \   : function('ale#completion#HandleLSPResponse')
+    call ale#lsp#RegisterCallback(l:id, l:Callback)
+
+    if a:linter.lsp is# 'tsserver'
+        let l:message = ale#lsp#tsserver_message#Completions(
+        \   l:buffer,
+        \   b:ale_completion_info.line,
+        \   b:ale_completion_info.column,
+        \   b:ale_completion_info.prefix,
+        \)
+    else
+        " Send a message saying the buffer has changed first, otherwise
+        " completions won't know what text is nearby.
+        call ale#lsp#NotifyForChanges(l:id, l:buffer)
+
+        " For LSP completions, we need to clamp the column to the length of
+        " the line. python-language-server and perhaps others do not implement
+        " this correctly.
+        let l:message = ale#lsp#message#Completion(
+        \   l:buffer,
+        \   b:ale_completion_info.line,
+        \   min([
+        \       b:ale_completion_info.line_length,
+        \       b:ale_completion_info.column,
+        \   ]),
+        \   ale#completion#GetTriggerCharacter(&filetype, b:ale_completion_info.prefix),
+        \)
+    endif
+
+    let l:request_id = ale#lsp#Send(l:id, l:message)
+
+    if l:request_id
+        let b:ale_completion_info.conn_id = l:id
+        let b:ale_completion_info.request_id = l:request_id
+
+        if has_key(a:linter, 'completion_filter')
+            let b:ale_completion_info.completion_filter = a:linter.completion_filter
+        endif
+    endif
+endfunction
+
 function! s:GetLSPCompletions(linter) abort
     let l:buffer = bufnr('')
     let l:lsp_details = ale#lsp_linter#StartLSP(l:buffer, a:linter)
@@ -433,58 +485,10 @@ function! s:GetLSPCompletions(linter) abort
     endif
 
     let l:id = l:lsp_details.connection_id
-    let l:root = l:lsp_details.project_root
 
-    function! OnReady(...) abort closure
-        " If we have sent a completion request already, don't send another.
-        if b:ale_completion_info.request_id
-            return
-        endif
+    let l:OnReady = function('s:OnReady', [a:linter, l:lsp_details])
 
-        let l:Callback = a:linter.lsp is# 'tsserver'
-        \   ? function('ale#completion#HandleTSServerResponse')
-        \   : function('ale#completion#HandleLSPResponse')
-        call ale#lsp#RegisterCallback(l:id, l:Callback)
-
-        if a:linter.lsp is# 'tsserver'
-            let l:message = ale#lsp#tsserver_message#Completions(
-            \   l:buffer,
-            \   b:ale_completion_info.line,
-            \   b:ale_completion_info.column,
-            \   b:ale_completion_info.prefix,
-            \)
-        else
-            " Send a message saying the buffer has changed first, otherwise
-            " completions won't know what text is nearby.
-            call ale#lsp#NotifyForChanges(l:id, l:root, l:buffer)
-
-            " For LSP completions, we need to clamp the column to the length of
-            " the line. python-language-server and perhaps others do not implement
-            " this correctly.
-            let l:message = ale#lsp#message#Completion(
-            \   l:buffer,
-            \   b:ale_completion_info.line,
-            \   min([
-            \       b:ale_completion_info.line_length,
-            \       b:ale_completion_info.column,
-            \   ]),
-            \   ale#completion#GetTriggerCharacter(&filetype, b:ale_completion_info.prefix),
-            \)
-        endif
-
-        let l:request_id = ale#lsp#Send(l:id, l:message, l:lsp_details.project_root)
-
-        if l:request_id
-            let b:ale_completion_info.conn_id = l:id
-            let b:ale_completion_info.request_id = l:request_id
-
-            if has_key(a:linter, 'completion_filter')
-                let b:ale_completion_info.completion_filter = a:linter.completion_filter
-            endif
-        endif
-    endfunction
-
-    call ale#lsp#WaitForCapability(l:id, l:root, 'completion', function('OnReady'))
+    call ale#lsp#WaitForCapability(l:id, 'completion', l:OnReady)
 endfunction
 
 function! ale#completion#GetCompletions() abort

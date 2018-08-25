@@ -5,12 +5,6 @@ call ale#Set('html_htmlhint_options', '')
 call ale#Set('html_htmlhint_executable', 'htmlhint')
 call ale#Set('html_htmlhint_use_global', get(g:, 'ale_use_global_executables', 0))
 
-function! ale_linters#html#htmlhint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'html_htmlhint', [
-    \   'node_modules/.bin/htmlhint',
-    \])
-endfunction
-
 function! ale_linters#html#htmlhint#GetCommand(buffer) abort
     let l:options = ale#Var(a:buffer, 'html_htmlhint_options')
     let l:config = l:options !~# '--config'
@@ -25,14 +19,14 @@ function! ale_linters#html#htmlhint#GetCommand(buffer) abort
         let l:options = substitute(l:options, '--format=unix', '', '')
     endif
 
-    return ale#Escape(ale_linters#html#htmlhint#GetExecutable(a:buffer))
-    \   . (!empty(l:options) ? ' ' . l:options : '')
-    \   . ' --format=unix %t'
+    return '%e' . ale#Pad(l:options) . ' --format=unix %t'
 endfunction
 
 call ale#linter#Define('html', {
 \   'name': 'htmlhint',
-\   'executable_callback': 'ale_linters#html#htmlhint#GetExecutable',
+\   'executable_callback': ale#node#FindExecutableFunc('html_htmlhint', [
+\       'node_modules/.bin/htmlhint',
+\   ]),
 \   'command_callback': 'ale_linters#html#htmlhint#GetCommand',
 \   'callback': 'ale#handlers#unix#HandleAsError',
 \})

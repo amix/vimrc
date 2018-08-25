@@ -3,15 +3,10 @@
 
 call ale#Set('dart_dartanalyzer_executable', 'dartanalyzer')
 
-function! ale_linters#dart#dartanalyzer#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'dart_dartanalyzer_executable')
-endfunction
-
 function! ale_linters#dart#dartanalyzer#GetCommand(buffer) abort
-    let l:executable = ale_linters#dart#dartanalyzer#GetExecutable(a:buffer)
     let l:path = ale#path#FindNearestFile(a:buffer, '.packages')
 
-    return ale#Escape(l:executable)
+    return '%e'
     \   . (!empty(l:path) ? ' --packages ' . ale#Escape(l:path) : '')
     \   . ' %s'
 endfunction
@@ -34,7 +29,7 @@ endfunction
 
 call ale#linter#Define('dart', {
 \   'name': 'dartanalyzer',
-\   'executable_callback': 'ale_linters#dart#dartanalyzer#GetExecutable',
+\   'executable_callback': ale#VarFunc('dart_dartanalyzer_executable'),
 \   'command_callback': 'ale_linters#dart#dartanalyzer#GetCommand',
 \   'callback': 'ale_linters#dart#dartanalyzer#Handle',
 \   'lint_file': 1,

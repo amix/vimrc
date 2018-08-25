@@ -4,16 +4,11 @@
 call ale#Set('mercury_mmc_executable', 'mmc')
 call ale#Set('mercury_mmc_options', '--make --output-compile-error-lines 100')
 
-function! ale_linters#mercury#mmc#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'mercury_mmc_executable')
-endfunction
-
 function! ale_linters#mercury#mmc#GetCommand(buffer) abort
     let l:module_name = expand('#' . a:buffer . ':t:r')
 
     return ale#path#BufferCdString(a:buffer)
-    \ . ale_linters#mercury#mmc#GetExecutable(a:buffer)
-    \ . ' --errorcheck-only '
+    \ . '%e --errorcheck-only '
     \ . ale#Var(a:buffer, 'mercury_mmc_options')
     \ . ' ' . l:module_name
 endfunction
@@ -38,7 +33,7 @@ endfunction
 call ale#linter#Define('mercury', {
 \   'name': 'mmc',
 \   'output_stream': 'stderr',
-\   'executable_callback': 'ale_linters#mercury#mmc#GetExecutable',
+\   'executable_callback': ale#VarFunc('mercury_mmc_executable'),
 \   'command_callback': 'ale_linters#mercury#mmc#GetCommand',
 \   'callback': 'ale_linters#mercury#mmc#Handle',
 \   'lint_file': 1,

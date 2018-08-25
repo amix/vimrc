@@ -45,6 +45,7 @@ else
 endif
 
 call s:set('g:gitgutter_sign_modified_removed',    '~_')
+call s:set('g:gitgutter_git_args',                   '')
 call s:set('g:gitgutter_diff_args',                  '')
 call s:set('g:gitgutter_diff_base',                  '')
 call s:set('g:gitgutter_map_keys',                    1)
@@ -201,6 +202,10 @@ augroup gitgutter
   autocmd VimEnter * if winnr() != winnr('$') | call gitgutter#all(0) | endif
 
   autocmd FocusGained,ShellCmdPost * call gitgutter#all(1)
+
+  if exists('##VimResume')
+    autocmd VimResume * call gitgutter#all(1)
+  endif
 
   autocmd ColorScheme * call gitgutter#highlight#define_sign_column_highlight() | call gitgutter#highlight#define_highlights()
 

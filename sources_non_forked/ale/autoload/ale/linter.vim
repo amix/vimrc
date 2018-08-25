@@ -26,11 +26,13 @@ let s:default_ale_linter_aliases = {
 "
 " Only cargo is enabled for Rust by default.
 " rpmlint is disabled by default because it can result in code execution.
+" hhast is disabled by default because it executes code in the project root.
 "
 " NOTE: Update the g:ale_linters documentation when modifying this.
 let s:default_ale_linters = {
 \   'csh': ['shell'],
 \   'go': ['gofmt', 'golint', 'go vet'],
+\   'hack': ['hack'],
 \   'help': [],
 \   'perl': ['perlcritic'],
 \   'python': ['flake8', 'mypy', 'pylint'],
@@ -51,7 +53,7 @@ endfunction
 " Do not call this function.
 function! ale#linter#GetLintersLoaded() abort
     " This command will throw from the sandbox.
-    let &equalprg=&equalprg
+    let &l:equalprg=&l:equalprg
 
     return s:linters
 endfunction
@@ -293,7 +295,7 @@ endfunction
 
 function! ale#linter#Define(filetype, linter) abort
     " This command will throw from the sandbox.
-    let &equalprg=&equalprg
+    let &l:equalprg=&l:equalprg
 
     if !has_key(s:linters, a:filetype)
         let s:linters[a:filetype] = []

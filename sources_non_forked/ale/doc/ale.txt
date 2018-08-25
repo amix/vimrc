@@ -43,9 +43,11 @@ CONTENTS                                                         *ale-contents*
       cmakelint...........................|ale-cmake-cmakelint|
     cpp...................................|ale-cpp-options|
       clang...............................|ale-cpp-clang|
+      clangd..............................|ale-cpp-clangd|
       clangcheck..........................|ale-cpp-clangcheck|
       clang-format........................|ale-cpp-clangformat|
       clangtidy...........................|ale-cpp-clangtidy|
+      clazy...............................|ale-cpp-clazy|
       cppcheck............................|ale-cpp-cppcheck|
       cpplint.............................|ale-cpp-cpplint|
       cquery..............................|ale-cpp-cquery|
@@ -90,12 +92,17 @@ CONTENTS                                                         *ale-contents*
     go....................................|ale-go-options|
       gobuild.............................|ale-go-gobuild|
       gofmt...............................|ale-go-gofmt|
+      govet...............................|ale-go-govet|
       gometalinter........................|ale-go-gometalinter|
       staticcheck.........................|ale-go-staticcheck|
     graphql...............................|ale-graphql-options|
       eslint..............................|ale-graphql-eslint|
       gqlint..............................|ale-graphql-gqlint|
       prettier............................|ale-graphql-prettier|
+    hack..................................|ale-hack-options|
+      hack................................|ale-hack-hack|
+      hackfmt.............................|ale-hack-hackfmt|
+      hhast...............................|ale-hack-hhast|
     handlebars............................|ale-handlebars-options|
       ember-template-lint.................|ale-handlebars-embertemplatelint|
     haskell...............................|ale-haskell-options|
@@ -104,10 +111,14 @@ CONTENTS                                                         *ale-contents*
       cabal-ghc...........................|ale-haskell-cabal-ghc|
       hdevtools...........................|ale-haskell-hdevtools|
       hfmt................................|ale-haskell-hfmt|
+      hlint...............................|ale-haskell-hlint|
       stack-build.........................|ale-haskell-stack-build|
+      stylish-haskell.....................|ale-haskell-stylish-haskell|
+      hie.................................|ale-haskell-hie|
     html..................................|ale-html-options|
       htmlhint............................|ale-html-htmlhint|
       tidy................................|ale-html-tidy|
+      stylelint...........................|ale-html-stylelint|
       write-good..........................|ale-html-write-good|
     idris.................................|ale-idris-options|
       idris...............................|ale-idris-idris|
@@ -161,8 +172,10 @@ CONTENTS                                                         *ale-contents*
       write-good..........................|ale-nroff-write-good|
     objc..................................|ale-objc-options|
       clang...............................|ale-objc-clang|
+      clangd..............................|ale-objc-clangd|
     objcpp................................|ale-objcpp-options|
       clang...............................|ale-objcpp-clang|
+      clangd..............................|ale-objcpp-clangd|
     ocaml.................................|ale-ocaml-options|
       merlin..............................|ale-ocaml-merlin|
       ols.................................|ale-ocaml-ols|
@@ -171,8 +184,6 @@ CONTENTS                                                         *ale-contents*
       perlcritic..........................|ale-perl-perlcritic|
       perltidy............................|ale-perl-perltidy|
     php...................................|ale-php-options|
-      hack................................|ale-php-hack|
-      hackfmt.............................|ale-php-hackfmt|
       langserver..........................|ale-php-langserver|
       phan................................|ale-php-phan|
       phpcbf..............................|ale-php-phpcbf|
@@ -287,8 +298,11 @@ CONTENTS                                                         *ale-contents*
     xml...................................|ale-xml-options|
       xmllint.............................|ale-xml-xmllint|
     yaml..................................|ale-yaml-options|
+      prettier............................|ale-yaml-prettier|
       swaglint............................|ale-yaml-swaglint|
       yamllint............................|ale-yaml-yamllint|
+    yang..................................|ale-yang-options|
+      yang-lsp............................|ale-yang-lsp|
   8. Commands/Keybinds....................|ale-commands|
   9. API..................................|ale-api|
   10. Special Thanks......................|ale-special-thanks|
@@ -339,7 +353,7 @@ Notes:
 * Bash: `language-server`, `shell` (-n flag), `shellcheck`, `shfmt`
 * Bourne Shell: `shell` (-n flag), `shellcheck`, `shfmt`
 * C: `cppcheck`, `cpplint`!!, `clang`, `clangd`, `clangtidy`!!, `clang-format`, `cquery`, `flawfinder`, `gcc`
-* C++ (filetype cpp): `clang`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`
+* C++ (filetype cpp): `clang`, `clangd`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `clazy`!!, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`
 * CUDA: `nvcc`!!
 * C#: `mcs`, `mcsc`!!
 * Chef: `foodcritic`
@@ -367,9 +381,10 @@ Notes:
 * GLSL: glslang, `glslls`
 * Go: `gofmt`, `goimports`, `go vet`!!, `golint`, `gotype`!!, `gometalinter`!!, `go build`!!, `gosimple`!!, `staticcheck`!!
 * GraphQL: `eslint`, `gqlint`, `prettier`
+* Hack: `hack`, `hackfmt`, `hhast`
 * Haml: `haml-lint`
 * Handlebars: `ember-template-lint`
-* Haskell: `brittany`, `ghc`, `cabal-ghc`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `stack-ghc-mod`, `hlint`, `hdevtools`, `hfmt`
+* Haskell: `brittany`, `ghc`, `cabal-ghc`, `stylish-haskell`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `stack-ghc-mod`, `hlint`, `hdevtools`, `hfmt`, `hie`
 * HTML: `alex`!!, `HTMLHint`, `proselint`, `tidy`, `write-good`
 * Idris: `idris`
 * Java: `checkstyle`, `javac`, `google-java-format`, `PMD`
@@ -389,11 +404,11 @@ Notes:
 * Nim: `nim check`!!
 * nix: `nix-instantiate`
 * nroff: `alex`!!, `proselint`, `write-good`
-* Objective-C: `clang`
-* Objective-C++: `clang`
+* Objective-C: `clang`, `clangd`
+* Objective-C++: `clang`, `clangd`
 * OCaml: `merlin` (see |ale-ocaml-merlin|), `ols`
 * Perl: `perl -c`, `perl-critic`, `perltidy`
-* PHP: `hack`, `hackfmt`, `langserver`, `phan`, `php -l`, `phpcs`, `phpmd`, `phpstan`, `phpcbf`, `php-cs-fixer`
+* PHP: `langserver`, `phan`, `php -l`, `phpcs`, `phpmd`, `phpstan`, `phpcbf`, `php-cs-fixer`
 * PO: `alex`!!, `msgfmt`, `proselint`, `write-good`
 * Pod: `alex`!!, `proselint`, `write-good`
 * Pony: `ponyc`
@@ -430,7 +445,8 @@ Notes:
 * Vue: `prettier`, `vls`
 * XHTML: `alex`!!, `proselint`, `write-good`
 * XML: `xmllint`
-* YAML: `swaglint`, `yamllint`
+* YAML: `prettier`, `swaglint`, `yamllint`
+* YANG: `yang-lsp`
 
 ===============================================================================
 3. Linting                                                           *ale-lint*
@@ -646,10 +662,10 @@ servers. LSP linters can be used in combination with any other linter, and
 will automatically connect to LSP servers when needed. ALE also supports
 `tsserver` for TypeScript, which uses a different but very similar protocol.
 
-ALE supports the following LSP/tsserver features.
+ALE supports the following LSP/tsserver features:
 
 1. Diagnostics/linting - Enabled via selecting linters as usual.
-2. Completion (Only for tsserver)
+2. Completion
 3. Go to definition
 
 
@@ -657,7 +673,7 @@ ALE supports the following LSP/tsserver features.
 5.1 Completion                                                 *ale-completion*
 
 ALE offers limited support for automatic completion of code while you type.
-Completion is only supported while a least one LSP linter is enabled. ALE
+Completion is only supported while at least one LSP linter is enabled. ALE
 will only suggest symbols provided by the LSP servers.
 
 Suggestions will be made while you type after completion is enabled.
@@ -669,6 +685,16 @@ items can be controlled with |g:ale_completion_max_suggestions|.
 If you don't like some of the suggestions you see, you can filter them out
 with |g:ale_completion_excluded_words| or |b:ale_completion_excluded_words|.
 
+                                                *ale-completion-completopt-bug*
+
+ALE implements completion as you type by temporarily adjusting |completeopt|
+before opening the omnicomplete menu with <C-x><C-o>. In some versions of Vim,
+the value set for the option will not be respected. If you experience issues
+with Vim automatically inserting text while you type, set the following option
+in vimrc, and your issues should go away. >
+
+  set completeopt=menu,menuone,preview,noselect,noinsert
+<
 
 -------------------------------------------------------------------------------
 5.2 Go To Definition                                     *ale-go-to-definition*
@@ -1201,6 +1227,7 @@ g:ale_linters                                                   *g:ale_linters*
   {
   \   'csh': ['shell'],
   \   'go': ['gofmt', 'golint', 'go vet'],
+  \   'hack': ['hack'],
   \   'help': [],
   \   'perl': ['perlcritic'],
   \   'python': ['flake8', 'mypy', 'pylint'],
@@ -2318,6 +2345,13 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                          `type` - Defaults to `'E'`.
                          `nr` - Defaults to `-1`.
 
+                           Numeric error code. If `nr` is not `-1`, `code`
+                           likely should contain the string representation of
+                           the same value.
+                         `code` - No default; may be unset.
+
+                           Human-readable |String| error code.
+
   `executable`             A |String| naming the executable itself which
                          will be run. This value will be used to check if the
                          program requested is installed or not.
@@ -2662,7 +2696,7 @@ ALEFixPost                                                 *ALEFixPost-autocmd*
     augroup ALEProgress
         autocmd!
         autocmd User ALELintPre  hi Statusline ctermfg=darkgrey
-        autocmd User ALELintPOST hi Statusline ctermfg=NONE
+        autocmd User ALELintPost hi Statusline ctermfg=NONE
     augroup end
 <
   Or to display the progress in the statusline:

@@ -45,6 +45,17 @@ g:ale_go_gofmt_options                                 *g:ale_go_gofmt_options*
 
 
 ===============================================================================
+govet                                                            *ale-go-govet*
+
+g:ale_go_govet_options                                 *g:ale_go_govet_options*
+                                                       *b:ale_go_govet_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the go vet linter.
+
+
+===============================================================================
 gometalinter                                              *ale-go-gometalinter*
 
 `gometalinter` is a `lint_file` linter, which only lints files that are

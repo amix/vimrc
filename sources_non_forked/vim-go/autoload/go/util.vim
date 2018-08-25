@@ -61,7 +61,7 @@ endfunction
 
 " Check if Vim jobs API is supported.
 "
-" The (optional) first paramter can be added to indicate the 'cwd' or 'env'
+" The (optional) first parameter can be added to indicate the 'cwd' or 'env'
 " parameters will be used, which wasn't added until a later version.
 function! go#util#has_job(...) abort
   " cwd and env parameters to job_start was added in this version.

@@ -31,7 +31,7 @@ nnoremap <silent> <Plug>(go-coverage-browser) :<C-u>call go#coverage#Browser(!g:
 
 nnoremap <silent> <Plug>(go-files) :<C-u>call go#tool#Files()<CR>
 nnoremap <silent> <Plug>(go-deps) :<C-u>call go#tool#Deps()<CR>
-nnoremap <silent> <Plug>(go-info) :<C-u>call go#tool#Info(0)<CR>
+nnoremap <silent> <Plug>(go-info) :<C-u>call go#tool#Info()<CR>
 nnoremap <silent> <Plug>(go-import) :<C-u>call go#import#SwitchImport(1, '', expand('<cword>'), '')<CR>
 nnoremap <silent> <Plug>(go-imports) :<C-u>call go#fmt#Format(1)<CR>
 

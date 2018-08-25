@@ -9,13 +9,6 @@ func! Test_Gometa() abort
   " clear the quickfix lists
   call setqflist([], 'r')
 
-  " call go#lint#ToggleMetaLinterAutoSave from lint.vim so that the file will
-  " be autoloaded and the default for g:go_metalinter_enabled will be set so
-  " we can capture it to restore it after the test is run.
-  silent call go#lint#ToggleMetaLinterAutoSave()
-  " And restore it back to its previous value
-  silent call go#lint#ToggleMetaLinterAutoSave()
-
   let g:go_metalinter_enabled = ['golint']
 
   call go#lint#Gometa(0, $GOPATH . '/src/foo')
@@ -41,13 +34,6 @@ func! Test_GometaWithDisabled() abort
 
   " clear the quickfix lists
   call setqflist([], 'r')
-
-  " call go#lint#ToggleMetaLinterAutoSave from lint.vim so that the file will
-  " be autoloaded and the default for g:go_metalinter_disabled will be set so
-  " we can capture it to restore it after the test is run.
-  silent call go#lint#ToggleMetaLinterAutoSave()
-  " And restore it back to its previous value
-  silent call go#lint#ToggleMetaLinterAutoSave()
 
   let g:go_metalinter_disabled = ['vet']
 
@@ -76,13 +62,6 @@ func! Test_GometaAutoSave() abort
 
   " clear the location lists
   call setloclist(l:winnr, [], 'r')
-
-  " call go#lint#ToggleMetaLinterAutoSave from lint.vim so that the file will
-  " be autoloaded and the default for g:go_metalinter_autosave_enabled will be
-  " set so we can capture it to restore it after the test is run.
-  silent call go#lint#ToggleMetaLinterAutoSave()
-  " And restore it back to its previous value
-  silent call go#lint#ToggleMetaLinterAutoSave()
 
   let g:go_metalinter_autosave_enabled = ['golint']
 

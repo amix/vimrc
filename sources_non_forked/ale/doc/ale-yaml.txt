@@ -1,7 +1,21 @@
 ===============================================================================
 ALE YAML Integration                                         *ale-yaml-options*
 
+===============================================================================
+prettier                                                    *ale-yaml-prettier*
 
+Website: https://github.com/prettier/prettier
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install prettier either globally or locally: >
+
+  npm install prettier -g  # global
+  npm install prettier     # local
+<
+  
 ===============================================================================
 swaglint                                                    *ale-yaml-swaglint*
 

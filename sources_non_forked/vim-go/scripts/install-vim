@@ -16,8 +16,7 @@ vim=${1:-}
 
 case "$vim" in
   "vim-7.4")
-    # This is what the most recent Ubuntu LTS (16.04) ships with.
-    tag="v7.4.1689"
+    tag="v7.4.2009"
     giturl="https://github.com/vim/vim"
     ;;
 

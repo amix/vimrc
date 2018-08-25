@@ -5,10 +5,28 @@ IMPROVEMENTS:
   [[GH-1864]](https://github.com/fatih/vim-go/pull/1864)
 * Document Vim and Neovim requirements in README.md and help file.
   [[GH-1889]](https://github.com/fatih/vim-go/pull/1889)
+* Highlight `context.Context` when `g:go_highlight_extra_types` is set.
+  [[GH-1903]](https://github.com/fatih/vim-go/pull/1903)
+* Run gometalinter asynchronously in Neovim.
+  [[GH-1901]](https://github.com/fatih/vim-go/pull/1901)
+* Run gorename asynchronously in Vim8 and Neovim.
+  [[GH-1894]](https://github.com/fatih/vim-go/pull/1894)
+* Install keyify from its canonical import path.
+  [[GH-1924]](https://github.com/fatih/vim-go/pull/1924)
 
 BUG FIXES:
 * Fix `:GoRun %` on Windows.
-  [[GH-1900]](github.com/fatih/vim-go/pull/1900)
+  [[GH-1900]](https://github.com/fatih/vim-go/pull/1900)
+* Fix `go#complete#GetInfo()` to return a description of the identifier.
+  [[GH-1905]](https://github.com/fatih/vim-go/pull/1905)
+* Restore support for running tests in the Neovim terminal.
+  [[GH-1895]](https://github.com/fatih/vim-go/pull/1895)
+* Fix `:GoInfo` when `g:go_info_mode` is `gocode`
+  [[GH-1915]](https://github.com/fatih/vim-go/pull/1915)
+
+BACKWARDS INCOMPATIBILITIES:
+* Bump minimum required version of Vim to 7.4.2009.
+  [[GH-1899]](https://github.com/fatih/vim-go/pull/1899)
 
 ## 1.18 - (July 18, 2018)
 

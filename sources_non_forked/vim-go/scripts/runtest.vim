@@ -16,6 +16,15 @@ if !exists('g:test_verbose')
 endif
 let g:go_echo_command_info = 0
 
+function! s:logmessages() abort
+  " Add all messages (usually errors).
+  redir => s:mess
+    silent messages
+  redir END
+  let s:logs = s:logs + filter(split(s:mess, "\n"), 'v:val !~ "^Messages maintainer"')
+  silent messages clear
+endfunction
+
 " Source the passed test file.
 source %
 
@@ -31,12 +40,14 @@ let g:vim_go_root = fnamemodify(getcwd(), ':p')
 redir @q
   silent function /^Test_
 redir END
-let s:tests = split(substitute(@q, 'function \(\k*()\)', '\1', 'g'))
+let s:tests = split(substitute(@q, 'function \(\k\+()\)', '\1', 'g'))
 
+" log any messages that we may already accumulated.
+call s:logmessages()
 " Iterate over all tests and execute them.
 for s:test in sort(s:tests)
-  " Since we extract the tests from a regexp the "abort" keyword is also in the
-  " list, which is not a test name :-)
+  " Since we extract the tests from a regexp the "abort" keyword is also in
+  " the list, which is not a test name :-)
   if s:test == 'abort'
     continue
   endif
@@ -56,6 +67,8 @@ for s:test in sort(s:tests)
 
   let s:elapsed_time = substitute(reltimestr(reltime(s:started)), '^\s*\(.\{-}\)\s*$', '\1', '')
   let s:done += 1
+
+  call s:logmessages()
 
   if len(v:errors) > 0
     let s:fail += 1
@@ -78,12 +91,6 @@ if s:fail > 0
 endif
 
 let s:total_elapsed_time = substitute(reltimestr(reltime(s:total_started)), '^\s*\(.\{-}\)\s*$', '\1', '')
-
-" Add all messages (usually errors).
-redir => s:mess
-  silent messages
-redir END
-let s:logs = s:logs + filter(split(s:mess, "\n"), 'v:val !~ "^Messages maintainer"')
 
 " Also store all internal messages from s:logs as well.
 silent! split /tmp/vim-go-test/test.tmp

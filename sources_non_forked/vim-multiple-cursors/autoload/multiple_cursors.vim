@@ -1262,7 +1262,7 @@ function! s:wait_for_user_input(mode)
     endwhile
   elseif s:from_mode !=# 'i' && s:char[0] ==# ":"
     call feedkeys(s:char)
-    call s:cm.reset(1, 1)
+    call s:cm.reset(1, 1, 1)
     return
   elseif s:from_mode ==# 'n' || s:from_mode =~# 'v\|V'
     while match(s:last_char(), "\\d") == 0

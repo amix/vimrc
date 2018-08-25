@@ -34,6 +34,10 @@ function! go#test#Test(bang, compile, ...) abort
     endif
   endif
 
+  if has('nvim') && go#config#TermEnabled()
+    call go#term#new(a:bang, ["go"] + args)
+  endif
+
   if go#util#has_job() || has('nvim')
     " use vim's job functionality to call it asynchronously
     let job_options  = {

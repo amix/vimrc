@@ -5,12 +5,8 @@
 let g:ale_xml_xmllint_executable = get(g:, 'ale_xml_xmllint_executable', 'xmllint')
 let g:ale_xml_xmllint_options = get(g:, 'ale_xml_xmllint_options', '')
 
-function! ale_linters#xml#xmllint#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'xml_xmllint_executable')
-endfunction
-
 function! ale_linters#xml#xmllint#GetCommand(buffer) abort
-    return ale#Escape(ale_linters#xml#xmllint#GetExecutable(a:buffer))
+    return '%e'
     \   . ale#Pad(ale#Var(a:buffer, 'xml_xmllint_options'))
     \   . ' --noout -'
 endfunction
@@ -63,7 +59,7 @@ endfunction
 call ale#linter#Define('xml', {
 \   'name': 'xmllint',
 \   'output_stream': 'stderr',
-\   'executable_callback': 'ale_linters#xml#xmllint#GetExecutable',
+\   'executable_callback': ale#VarFunc('xml_xmllint_executable'),
 \   'command_callback': 'ale_linters#xml#xmllint#GetCommand',
 \   'callback': 'ale_linters#xml#xmllint#Handle',
 \ })

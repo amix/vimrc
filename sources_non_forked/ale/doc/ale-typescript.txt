@@ -19,6 +19,16 @@ See |ale-javascript-prettier| for information about the available options.
 ===============================================================================
 tslint                                                  *ale-typescript-tslint*
 
+This linter isn't recommended, because TSLint can't be used for checking for
+problems while you type. You should probably use the tsserver plugin instead.
+
+Follow the instructions on the plugin website for installing it:
+https://github.com/angelozerr/tsserver-plugins
+
+Then disable TSLint in vimrc or any other Vim configuration file. >
+  let g:ale_linters_ignore = {'typescript': ['tslint']}
+<
+
 g:ale_typescript_tslint_executable         *g:ale_typescript_tslint_executable*
                                            *b:ale_typescript_tslint_executable*
   Type: |String|

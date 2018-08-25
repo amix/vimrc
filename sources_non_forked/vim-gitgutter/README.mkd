@@ -212,6 +212,7 @@ You can customise:
 * The signs' colours and symbols
 * Line highlights
 * The base of the diff
+* Extra arguments for `git` when running `git diff`
 * Extra arguments for `git diff`
 * Key mappings
 * Whether or not vim-gitgutter is on initially (defaults to on)
@@ -296,6 +297,14 @@ By default buffers are diffed against the index.  However you can diff against a
 let g:gitgutter_diff_base = '<commit SHA>'
 ```
 
+
+#### Extra arguments for `git` when running `git diff`
+
+If you want to pass extra arguments to `git` when running `git diff`, do so like this:
+
+```viml
+let g:gitgutter_git_args = '--git-dir-""'
+```
 
 #### Extra arguments for `git diff`
 

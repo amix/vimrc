@@ -27,6 +27,17 @@ function! ale#fixers#prettier#Fix(buffer) abort
     \}
 endfunction
 
+function! ale#fixers#prettier#ProcessPrettierDOutput(buffer, output) abort
+    " If the output is an error message, don't use it.
+    for l:line in a:output[:10]
+        if l:line =~# '^\w*Error:'
+            return []
+        endif
+    endfor
+
+    return a:output
+endfunction
+
 function! ale#fixers#prettier#ApplyFixForVersion(buffer, version_output) abort
     let l:executable = ale#fixers#prettier#GetExecutable(a:buffer)
     let l:options = ale#Var(a:buffer, 'javascript_prettier_options')
@@ -36,12 +47,23 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version_output) abort
     " Append the --parser flag depending on the current filetype (unless it's
     " already set in g:javascript_prettier_options).
     if empty(expand('#' . a:buffer . ':e')) && match(l:options, '--parser') == -1
-        let l:prettier_parsers = ['typescript', 'css', 'less', 'scss', 'json', 'json5', 'graphql', 'markdown', 'vue']
-        let l:parser = 'babylon'
+        let l:prettier_parsers = {
+        \    'typescript': 'typescript',
+        \    'css': 'css',
+        \    'less': 'less',
+        \    'scss': 'scss',
+        \    'json': 'json',
+        \    'json5': 'json5',
+        \    'graphql': 'graphql',
+        \    'markdown': 'markdown',
+        \    'vue': 'vue',
+        \    'yaml': 'yaml',
+        \}
+        let l:parser = ''
 
         for l:filetype in split(getbufvar(a:buffer, '&filetype'), '\.')
-            if index(l:prettier_parsers, l:filetype) > -1
-                let l:parser = l:filetype
+            if has_key(l:prettier_parsers, l:filetype)
+                let l:parser = l:prettier_parsers[l:filetype]
                 break
             endif
         endfor
@@ -49,6 +71,17 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version_output) abort
 
     if !empty(l:parser)
         let l:options = (!empty(l:options) ? l:options . ' ' : '') . '--parser ' . l:parser
+    endif
+
+    " Special error handling needed for prettier_d
+    if l:executable =~# 'prettier_d$'
+        return {
+        \   'command': ale#path#BufferCdString(a:buffer)
+        \       . ale#Escape(l:executable)
+        \       . (!empty(l:options) ? ' ' . l:options : '')
+        \       . ' --stdin-filepath %s --stdin',
+        \   'process_with': 'ale#fixers#prettier#ProcessPrettierDOutput',
+        \}
     endif
 
     " 1.4.0 is the first version with --stdin-filepath

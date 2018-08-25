@@ -475,15 +475,23 @@ function! s:UI.toggleIgnoreFilter()
 endfunction
 
 " FUNCTION: s:UI.toggleShowBookmarks() {{{1
-" toggles the display of bookmarks
+" Toggle the visibility of the Bookmark table.
 function! s:UI.toggleShowBookmarks()
     let self._showBookmarks = !self._showBookmarks
+
     if self.getShowBookmarks()
         call self.nerdtree.render()
         call g:NERDTree.CursorToBookmarkTable()
     else
+
+        if empty(g:NERDTreeFileNode.GetSelected())
+            call b:NERDTree.root.putCursorHere(0, 0)
+            normal! 0
+        endif
+
         call self.renderViewSavingPosition()
     endif
+
     call self.centerView()
 endfunction
 

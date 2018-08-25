@@ -247,7 +247,7 @@ function! s:TreeDirNode._glob(pattern, all)
     if self.path.str() == getcwd()
         let l:pathSpec = ','
     else
-        let l:pathSpec = fnamemodify(self.path.str({'format': 'Glob'}), ':.')
+        let l:pathSpec = escape(fnamemodify(self.path.str({'format': 'Glob'}), ':.'), ',')
 
         " On Windows, the drive letter may be removed by "fnamemodify()".
         if nerdtree#runningWindows() && l:pathSpec[0] == g:NERDTreePath.Slash()
@@ -607,8 +607,12 @@ endfunction
 " FUNCTION: TreeDirNode.sortChildren() {{{1
 " Sort "self.children" by alphabetical order and directory priority.
 function! s:TreeDirNode.sortChildren()
+    if count(g:NERDTreeSortOrder, '*') < 1
+        call add(g:NERDTreeSortOrder, '*')
+    endif
     let CompareFunc = function("nerdtree#compareNodesBySortKey")
     call sort(self.children, CompareFunc)
+    let g:NERDTreeOldSortOrder = g:NERDTreeSortOrder
 endfunction
 
 " FUNCTION: TreeDirNode.toggleOpen([options]) {{{1
