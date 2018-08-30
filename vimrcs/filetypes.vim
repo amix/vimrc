@@ -75,3 +75,9 @@ endif
 " => Twig section
 """"""""""""""""""""""""""""""
 autocmd BufRead *.twig set syntax=html filetype=html
+
+
+""""""""""""""""""""""""""""""
+" => GL Shading Language
+""""""""""""""""""""""""""""""
+autocmd! BufNewFile,BufRead *.vs,*.fs set ft=glsl
