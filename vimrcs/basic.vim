@@ -106,6 +106,9 @@ set lazyredraw
 " For regular expressions turn magic on
 set magic
 
+" For display line numbers 
+set number
+
 " Show matching brackets when text indicator is over them
 set showmatch 
 " How many tenths of a second to blink when matching brackets
