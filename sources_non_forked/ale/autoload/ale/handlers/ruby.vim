@@ -13,8 +13,10 @@ function! s:HandleSyntaxError(buffer, lines) abort
 
     for l:line in a:lines
         let l:match = matchlist(l:line, l:pattern)
+
         if len(l:match) == 0
             let l:match = matchlist(l:line, l:column)
+
             if len(l:match) != 0
                 let l:output[len(l:output) - 1]['col'] = len(l:match[1])
             endif
@@ -35,3 +37,10 @@ function! ale#handlers#ruby#HandleSyntaxErrors(buffer, lines) abort
     return s:HandleSyntaxError(a:buffer, a:lines)
 endfunction
 
+function! ale#handlers#ruby#EscapeExecutable(executable, bundle_exec) abort
+    let l:exec_args = a:executable =~? 'bundle'
+    \   ? ' exec ' . a:bundle_exec
+    \   : ''
+
+    return ale#Escape(a:executable) . l:exec_args
+endfunction

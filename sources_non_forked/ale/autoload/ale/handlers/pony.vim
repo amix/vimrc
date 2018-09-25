@@ -14,7 +14,6 @@ endfunction
 function! ale#handlers#pony#HandlePonycFormat(buffer, lines) abort
     " Look for lines like the following.
     " /home/code/pony/classes/Wombat.pony:22:30: can't lookup private fields from outside the type
-
     let l:pattern = '\v^([^:]+):(\d+):(\d+)?:? (.+)$'
     let l:output = []
 

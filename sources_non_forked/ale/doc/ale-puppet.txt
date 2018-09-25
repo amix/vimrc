@@ -3,6 +3,26 @@ ALE Puppet Integration                                     *ale-puppet-options*
 
 
 ===============================================================================
+puppet                                                      *ale-puppet-puppet*
+
+g:ale_puppet_puppet_executable                 *g:ale_puppet_puppet_executable*
+                                               *b:ale_puppet_puppet_executable*
+  Type: |String|
+  Default: `'puppet'`
+
+  This variable can be changed to specify the executable used for puppet.
+
+
+g:ale_puppet_puppet_options                       *g:ale_puppet_puppet_options*
+                                                  *b:ale_puppet_puppet_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the
+  puppet parser validate invocation.
+
+
+===============================================================================
 puppetlint                                              *ale-puppet-puppetlint*
 
 g:ale_puppet_puppetlint_executable         *g:ale_puppet_puppetlint_executable*

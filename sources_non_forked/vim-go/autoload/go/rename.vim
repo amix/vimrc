@@ -27,8 +27,7 @@ function! go#rename#Rename(bang, ...) abort
   let offset = printf('%s:#%d', fname, pos)
   let cmd = [bin_path, "-offset", offset, "-to", to_identifier, '-tags', go#config#BuildTags()]
 
-  if go#util#has_job() || has('nvim')
-    call go#util#EchoProgress(printf("renaming to '%s' ...", to_identifier))
+  if go#util#has_job()
     call s:rename_job({
           \ 'cmd': cmd,
           \ 'bang': a:bang,

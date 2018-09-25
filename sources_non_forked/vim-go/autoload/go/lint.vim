@@ -42,7 +42,7 @@ function! go#lint#Gometa(autosave, ...) abort
 
     " Include only messages for the active buffer for autosave.
     let include = [printf('--include=^%s:.*$', fnamemodify(expand('%:p'), ":."))]
-    if go#util#has_job() || has('nvim')
+    if go#util#has_job()
       let include = [printf('--include=^%s:.*$', expand('%:p:t'))]
     endif
     let cmd += include
@@ -56,7 +56,7 @@ function! go#lint#Gometa(autosave, ...) abort
 
   let cmd += goargs
 
-  if go#util#has_job() || has('nvim')
+  if go#util#has_job()
     call s:lint_job({'cmd': cmd}, a:autosave)
     return
   endif
@@ -207,36 +207,10 @@ function! s:lint_job(args, autosave)
     let l:opts.for = "GoMetaLinterAutoSave"
   endif
 
-  let l:cbs = go#job#Options(l:opts)
-
-  if a:autosave
-    " move to the window that was active before processing the errors, because
-    " the user may have moved around within the window or even moved to a
-    " different window since saving. Moving back to current window as of the
-    " start of this function avoids the perception that the quickfix window
-    " steals focus when linting takes a while.
-
-    function! s:exit_cb(next, job, exitval)
-      let l:winid = win_getid(winnr())
-      call call(a:next, [a:job, a:exitval])
-      call win_gotoid(l:winid)
-    endfunction
-    " wrap l:cbs.exit_cb in s:exit_cb.
-    let l:cbs.exit_cb = funcref('s:exit_cb', [l:cbs.exit_cb])
-
-    function! s:close_cb(next, ch)
-      let l:winid = win_getid(winnr())
-      call call(a:next, [a:ch])
-      call win_gotoid(l:winid)
-    endfunction
-    " wrap l:cbs.close_cb in s:close_cb.
-    let l:cbs.close_cb = funcref('s:close_cb', [l:cbs.close_cb])
-  endif
-
   " autowrite is not enabled for jobs
   call go#cmd#autowrite()
 
-  call go#job#Start(a:args.cmd, l:cbs)
+  call go#job#Spawn(a:args.cmd, l:opts)
 endfunction
 
 " vim: sw=2 ts=2 et

@@ -4,6 +4,7 @@
 if !exists('g:ale_puppet_puppetlint_executable')
     let g:ale_puppet_puppetlint_executable = 'puppet-lint'
 endif
+
 if !exists('g:ale_puppet_puppetlint_options')
     let g:ale_puppet_puppetlint_options = ''
 endif

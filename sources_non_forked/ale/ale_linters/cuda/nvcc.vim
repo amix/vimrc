@@ -8,7 +8,6 @@ function! ale_linters#cuda#nvcc#GetCommand(buffer) abort
     " Unused: use ale#util#nul_file
     " let l:output_file = ale#util#Tempname() . '.ii'
     " call ale#engine#ManageFile(a:buffer, l:output_file)
-
     return '%e -cuda'
     \   . ale#Pad(ale#c#IncludeOptions(ale#c#FindLocalHeaderPaths(a:buffer)))
     \   . ale#Pad(ale#Var(a:buffer, 'cuda_nvcc_options'))
@@ -23,7 +22,6 @@ function! ale_linters#cuda#nvcc#HandleNVCCFormat(buffer, lines) abort
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
-
         let l:item = {
         \   'lnum': str2nr(l:match[2]),
         \   'type': l:match[4] =~# 'error' ? 'E' : 'W',

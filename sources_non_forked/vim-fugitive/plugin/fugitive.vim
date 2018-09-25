@@ -44,7 +44,7 @@ function! FugitiveReal(...) abort
 endfunction
 
 function! FugitiveRoute(...) abort
-  return fugitive#Route(a:0 ? a:1 : ':/', FugitiveGitDir(a:0 > 1 ? a:2 : -1))
+  return fugitive#Route(a:0 ? a:1 : bufnr(''), FugitiveGitDir(a:0 > 1 ? a:2 : -1))
 endfunction
 
 function! FugitivePath(...) abort
@@ -57,6 +57,9 @@ endfunction
 
 function! FugitiveParse(...) abort
   let path = s:Slash(a:0 ? a:1 : @%)
+  if path !~# '^fugitive:'
+    return ['', '']
+  endif
   let vals = matchlist(path, '\c^fugitive:\%(//\)\=\(.\{-\}\)\%(//\|::\)\(\x\{40\}\|[0-3]\)\(/.*\)\=$')
   if len(vals)
     return [(vals[2] =~# '^.$' ? ':' : '') . vals[2] . substitute(vals[3], '^/', ':', ''), vals[1]]
@@ -200,6 +203,10 @@ function! FugitiveDetect(path) abort
   endif
 endfunction
 
+function! FugitiveFind(...) abort
+  return call('FugitiveRoute', a:000)
+endfunction
+
 function! FugitiveGenerate(...) abort
   return call('FugitiveRoute', a:000)
 endfunction
@@ -209,6 +216,21 @@ function! s:Slash(path) abort
     return tr(a:path, '\', '/')
   else
     return a:path
+  endif
+endfunction
+
+function! s:ProjectionistDetect() abort
+  let file = s:Slash(get(g:, 'projectionist_file', ''))
+  let dir = FugitiveExtractGitDir(file)
+  let base = matchstr(file, '^fugitive://.\{-\}//\x\+')
+  if empty(base)
+    let base = FugitiveTreeForGitDir(dir)
+  endif
+  if len(base)
+    if exists('+shellslash') && !&shellslash
+      let base = tr(base, '/', '\')
+    endif
+    call projectionist#append(base, FugitiveCommonDir(dir) . '/info/projections.json')
   endif
 endfunction
 
@@ -258,4 +280,6 @@ augroup fugitive
   endif
 
   autocmd User Flags call Hoist('buffer', function('FugitiveStatusline'))
+
+  autocmd User ProjectionistDetect call s:ProjectionistDetect()
 augroup END

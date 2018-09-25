@@ -5,6 +5,7 @@ call ale#Set('javascript_importjs_executable', 'importjs')
 
 function! ale#fixers#importjs#ProcessOutput(buffer, output) abort
     let l:result = ale#util#FuzzyJSONDecode(a:output, [])
+
     return split(get(l:result, 'fileContent', ''), "\n")
 endfunction
 

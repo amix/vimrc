@@ -4,7 +4,6 @@
 function! ale_linters#solidity#solhint#Handle(buffer, lines) abort
     " Matches patterns like the following:
     " /path/to/file/file.sol: line 1, col 10, Error - 'addOne' is defined but never used. (no-unused-vars)
-
     let l:pattern = '\v^[^:]+: line (\d+), col (\d+), (Error|Warning) - (.*) \((.*)\)$'
     let l:output = []
 

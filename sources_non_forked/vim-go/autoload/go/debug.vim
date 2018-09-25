@@ -25,12 +25,12 @@ function! s:groutineID() abort
   return s:state['currentThread'].goroutineID
 endfunction
 
-function! s:exit(job, status) abort
+function! s:complete(job, exit_status, data) abort
   if has_key(s:state, 'job')
     call remove(s:state, 'job')
   endif
   call s:clearState()
-  if a:status > 0
+  if a:exit_status > 0
     call go#util#EchoError(s:state['message'])
   endif
 endfunction
@@ -567,14 +567,18 @@ function! go#debug#Start(is_test, ...) abort
     endif
     let l:cmd += l:args
 
-    call go#util#EchoProgress('Starting GoDebug...')
     let s:state['message'] = []
-    let s:state['job'] = job_start(l:cmd, {
-      \ 'out_cb': function('s:out_cb'),
-      \ 'err_cb': function('s:err_cb'),
-      \ 'exit_cb': function('s:exit'),
-      \ 'stoponexit': 'kill',
-    \})
+    let l:opts = {
+          \ 'for': '_',
+          \ 'statustype': 'debug',
+          \ 'complete': function('s:complete'),
+          \ }
+    let l:opts = go#job#Options(l:opts)
+    let l:opts.out_cb = function('s:out_cb')
+    let l:opts.err_cb = function('s:err_cb')
+    let l:opts.stoponexit = 'kill'
+
+    let s:state['job'] = go#job#Start(l:cmd, l:opts)
   catch
     call go#util#EchoError(v:exception)
   endtry

@@ -74,7 +74,7 @@ endfunc
 
 func! Test_GoTestVet() abort
   let expected = [
-        \ {'lnum': 6, 'bufnr': 16, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'Errorf format %v reads arg #1, but call has only 0 args'},
+        \ {'lnum': 6, 'bufnr': 16, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'Errorf format %v reads arg #1, but call has 0 args'},
       \ ]
   call s:test('veterror/veterror.go', expected)
 endfunc

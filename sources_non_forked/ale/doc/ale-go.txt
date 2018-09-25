@@ -7,7 +7,7 @@ Integration Information
 
 The `gometalinter` linter is disabled by default. ALE enables `gofmt`,
 `golint` and `go vet` by default. It also supports `staticcheck`, `go
-build` and `gosimple`.
+build`,  `gosimple`, and `golangserver`.
 
 To enable `gometalinter`, update |g:ale_linters| as appropriate:
 >
@@ -19,6 +19,15 @@ with the `--fast` option, set by |g:ale_go_gometalinter_options|. This gets you
 the benefit of running a number of linters, more than ALE would by default,
 while ensuring it doesn't run any linters known to be slow or resource
 intensive.
+
+g:ale_go_go_executable                                    *g:ale_go_go_options*
+                                                          *b:ale_go_go_options*
+
+  Type: |String|
+  Default: `'go'`
+
+  The executable that will be run for the `gobuild` and `govet` linters, and
+  the gomod` fixer.
 
 
 ===============================================================================
@@ -107,6 +116,59 @@ g:ale_go_staticcheck_options                     *g:ale_go_staticcheck_options*
 
 g:ale_go_staticcheck_lint_package           *g:ale_go_staticcheck_lint_package*
                                             *b:ale_go_staticcheck_lint_package*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, the whole Go package will be checked instead of only the
+  current file.
+
+
+===============================================================================
+golangserver                                              *ale-go-golangserver*
+
+g:ale_go_langserver_executable                 *g:ale_go_langserver_executable*
+                                               *b:ale_go_langserver_executable*
+  Type: |String|
+  Default: `'go-langserver'`
+
+  Location of the go-langserver binary file.
+
+g:ale_go_langserver_options                       *g:ale_go_langserver_options*
+                                                  *b:ale_go_langserver_options*
+  Type: |String|
+  Default: `''`
+
+  Additional options passed to the go-langserver command. Note that the
+  `-gocodecompletion` option is ignored because it is handled automatically
+  by the |g:ale_completion_enabled| variable.
+
+
+===============================================================================
+golangci-lint                                            *ale-go-golangci-lint*
+
+`golangci-lint` is a `lint_file` linter, which only lints files that are
+written to disk. This differs from the default behavior of linting the buffer.
+See: |ale-lint-file|
+
+g:ale_go_golangci_lint_executable           *g:ale_go_golangci_lint_executable*
+                                            *b:ale_go_golangci_lint_executable*
+  Type: |String|
+  Default: `'golangci-lint'`
+
+  The executable that will be run for golangci-lint.
+
+
+g:ale_go_golangci_lint_options                 *g:ale_go_golangci_lint_options*
+                                               *b:ale_go_golangci_lint_options*
+  Type: |String|
+  Default: `'--enable-all'`
+
+  This variable can be changed to alter the command-line arguments to the
+  golangci-lint invocation.
+
+
+g:ale_go_golangci_lint_package                 *g:ale_go_golangci_lint_package*
+                                               *b:ale_go_golangci_lint_package*
   Type: |Number|
   Default: `0`
 

@@ -2,10 +2,22 @@ let s:suite = themis#suite('link')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before_each()
-  hi clear
+  call s:clear()
   let g:lightline = {}
   call lightline#init()
   call lightline#colorscheme()
+endfunction
+
+function! s:clear()
+  hi clear
+  redir => hi
+    silent! hi
+  redir END
+  for line in split(hi, '\n')
+    if match(line, 'links to') > 0
+      exec 'hi link' matchstr(line, '^\S*') 'NONE'
+    endif
+  endfor
 endfunction
 
 function! s:hi(name)
@@ -19,11 +31,11 @@ function! s:suite.link()
   call lightline#link()
   call s:assert.match(s:hi('LightlineLeft_active_0'), 'LightlineLeft_normal_0')
   call s:assert.match(s:hi('LightlineLeft_active_1'), 'LightlineLeft_normal_1')
-  call s:assert.match(s:hi('LightlineLeft_active_2'), 'E411: highlight group not found')
+  call s:assert.match(s:hi('LightlineLeft_active_2'), 'E411: highlight group not found\|cleared')
   call s:assert.match(s:hi('LightlineRight_active_0'), 'LightlineRight_normal_0')
   call s:assert.match(s:hi('LightlineRight_active_1'), 'LightlineRight_normal_1')
   call s:assert.match(s:hi('LightlineRight_active_2'), 'LightlineRight_normal_2')
-  call s:assert.match(s:hi('LightlineRight_active_3'), 'E411: highlight group not found')
+  call s:assert.match(s:hi('LightlineRight_active_3'), 'E411: highlight group not found\|cleared')
   call s:assert.match(s:hi('LightlineMiddle_active'), 'LightlineMiddle_normal')
 endfunction
 
@@ -31,11 +43,11 @@ function! s:suite.insert()
   call lightline#link('i')
   call s:assert.match(s:hi('LightlineLeft_active_0'), 'LightlineLeft_insert_0')
   call s:assert.match(s:hi('LightlineLeft_active_1'), 'LightlineLeft_insert_1')
-  call s:assert.match(s:hi('LightlineLeft_active_2'), 'E411: highlight group not found')
+  call s:assert.match(s:hi('LightlineLeft_active_2'), 'E411: highlight group not found\|cleared')
   call s:assert.match(s:hi('LightlineRight_active_0'), 'LightlineRight_insert_0')
   call s:assert.match(s:hi('LightlineRight_active_1'), 'LightlineRight_insert_1')
   call s:assert.match(s:hi('LightlineRight_active_2'), 'LightlineRight_insert_2')
-  call s:assert.match(s:hi('LightlineRight_active_3'), 'E411: highlight group not found')
+  call s:assert.match(s:hi('LightlineRight_active_3'), 'E411: highlight group not found\|cleared')
   call s:assert.match(s:hi('LightlineMiddle_active'), 'LightlineMiddle_insert')
 endfunction
 
@@ -43,11 +55,11 @@ function! s:suite.visual()
   call lightline#link('v')
   call s:assert.match(s:hi('LightlineLeft_active_0'), 'LightlineLeft_visual_0')
   call s:assert.match(s:hi('LightlineLeft_active_1'), 'LightlineLeft_visual_1')
-  call s:assert.match(s:hi('LightlineLeft_active_2'), 'E411: highlight group not found')
+  call s:assert.match(s:hi('LightlineLeft_active_2'), 'E411: highlight group not found\|cleared')
   call s:assert.match(s:hi('LightlineRight_active_0'), 'LightlineRight_visual_0')
   call s:assert.match(s:hi('LightlineRight_active_1'), 'LightlineRight_visual_1')
   call s:assert.match(s:hi('LightlineRight_active_2'), 'LightlineRight_visual_2')
-  call s:assert.match(s:hi('LightlineRight_active_3'), 'E411: highlight group not found')
+  call s:assert.match(s:hi('LightlineRight_active_3'), 'E411: highlight group not found\|cleared')
   call s:assert.match(s:hi('LightlineMiddle_active'), 'LightlineMiddle_visual')
 endfunction
 
@@ -55,11 +67,11 @@ function! s:suite.replace()
   call lightline#link('R')
   call s:assert.match(s:hi('LightlineLeft_active_0'), 'LightlineLeft_replace_0')
   call s:assert.match(s:hi('LightlineLeft_active_1'), 'LightlineLeft_replace_1')
-  call s:assert.match(s:hi('LightlineLeft_active_2'), 'E411: highlight group not found')
+  call s:assert.match(s:hi('LightlineLeft_active_2'), 'E411: highlight group not found\|cleared')
   call s:assert.match(s:hi('LightlineRight_active_0'), 'LightlineRight_replace_0')
   call s:assert.match(s:hi('LightlineRight_active_1'), 'LightlineRight_replace_1')
   call s:assert.match(s:hi('LightlineRight_active_2'), 'LightlineRight_replace_2')
-  call s:assert.match(s:hi('LightlineRight_active_3'), 'E411: highlight group not found')
+  call s:assert.match(s:hi('LightlineRight_active_3'), 'E411: highlight group not found\|cleared')
   call s:assert.match(s:hi('LightlineMiddle_active'), 'LightlineMiddle_replace')
 endfunction
 

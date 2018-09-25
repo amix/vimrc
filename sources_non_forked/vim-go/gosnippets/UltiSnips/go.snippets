@@ -363,6 +363,28 @@ func Test${1:Function}(t *testing.T) {
 }
 endsnippet
 
+# test table snippet
+snippet tt
+var tests = []struct {
+	name string
+	expected string
+	given string
+}{
+	{"${1}", "${2}", "${3}",},
+}
+for _, tt := range tests {
+	tt := tt
+	t.Run(tt.name, func(t *testing.T){
+		actual := ${0:${VISUAL}}(tt.given)
+		if actual != tt.expected {
+				t.Errorf("$0(%s): expected %s, actual %s", tt.given, tt.expected, actual)
+		}
+
+	})
+}
+endsnippet
+
+
 snippet hf "http.HandlerFunc" !b
 func ${1:handler}(w http.ResponseWriter, r *http.Request) {
 	${0:fmt.Fprintf(w, "hello world")}

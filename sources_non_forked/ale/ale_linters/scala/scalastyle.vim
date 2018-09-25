@@ -53,12 +53,14 @@ function! ale_linters#scala#scalastyle#GetCommand(buffer) abort
     \   'scalastyle_config.xml',
     \   'scalastyle-config.xml'
     \]
+
     for l:config in l:potential_configs
         let l:scalastyle_config = ale#path#ResolveLocalPath(
         \   a:buffer,
         \   l:config,
         \   ''
         \)
+
         if !empty(l:scalastyle_config)
             break
         endif

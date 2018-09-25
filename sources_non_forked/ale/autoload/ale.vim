@@ -27,7 +27,7 @@ let s:getcmdwintype_exists = exists('*getcmdwintype')
 function! ale#ShouldDoNothing(buffer) abort
     " The checks are split into separate if statements to make it possible to
     " profile each check individually with Vim's profiling tools.
-
+    "
     " Do nothing if ALE is disabled.
     if !getbufvar(a:buffer, 'ale_enabled', get(g:, 'ale_enabled', 0))
         return 1
@@ -59,6 +59,11 @@ function! ale#ShouldDoNothing(buffer) abort
 
     " Do nothing for directories.
     if l:filename is# '.'
+        return 1
+    endif
+
+    " Don't start linting and so on when an operator is pending.
+    if ale#util#Mode(1) is# 'no'
         return 1
     endif
 

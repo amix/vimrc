@@ -194,51 +194,52 @@ function! s:UI.getPath(ln)
     return toReturn
 endfunction
 
-" FUNCTION: s:UI.getLineNum(file_node){{{1
-" returns the line number this node is rendered on, or -1 if it isnt rendered
-function! s:UI.getLineNum(file_node)
-    " if the node is the root then return the root line no.
-    if a:file_node.isRoot()
+" FUNCTION: s:UI.getLineNum(node) {{{1
+" Return the line number where the given node is rendered.  Return -1 if the
+" given node is not visible.
+function! s:UI.getLineNum(node)
+
+    if a:node.isRoot()
         return self.getRootLineNum()
     endif
 
-    let totalLines = line("$")
+    let l:pathComponents = [substitute(self.nerdtree.root.path.str({'format': 'UI'}), '/\s*$', '', '')]
+    let l:currentPathComponent = 1
 
-    " the path components we have matched so far
-    let pathcomponents = [substitute(self.nerdtree.root.path.str({'format': 'UI'}), '/ *$', '', '')]
-    " the index of the component we are searching for
-    let curPathComponent = 1
+    let l:fullPath = a:node.path.str({'format': 'UI'})
 
-    let fullpath = a:file_node.path.str({'format': 'UI'})
+    for l:lineNumber in range(self.getRootLineNum() + 1, line('$'))
+        let l:currentLine = getline(l:lineNumber)
+        let l:indentLevel = self._indentLevelFor(l:currentLine)
 
-    let lnum = self.getRootLineNum()
-    while lnum > 0
-        let lnum = lnum + 1
-        " have we reached the bottom of the tree?
-        if lnum ==# totalLines+1
-            return -1
+        if l:indentLevel != l:currentPathComponent
+            continue
         endif
 
-        let curLine = getline(lnum)
+        let l:currentLine = self._stripMarkup(l:currentLine)
+        let l:currentPath =  join(l:pathComponents, '/') . '/' . l:currentLine
 
-        let indent = self._indentLevelFor(curLine)
-        if indent ==# curPathComponent
-            let curLine = self._stripMarkup(curLine)
-
-            let curPath =  join(pathcomponents, '/') . '/' . curLine
-            if stridx(fullpath, curPath, 0) ==# 0
-                if fullpath ==# curPath || strpart(fullpath, len(curPath)-1,1) ==# '/'
-                    let curLine = substitute(curLine, '/ *$', '', '')
-                    call add(pathcomponents, curLine)
-                    let curPathComponent = curPathComponent + 1
-
-                    if fullpath ==# curPath
-                        return lnum
-                    endif
-                endif
-            endif
+        " Directories: If the current path "starts with" the full path, then
+        " either the paths are equal or the line is a cascade containing the
+        " full path.
+        if l:fullPath[-1:] == '/' && stridx(l:currentPath, l:fullPath) == 0
+            return l:lineNumber
         endif
-    endwhile
+
+        " Files: The paths must exactly match.
+        if l:fullPath ==# l:currentPath
+            return l:lineNumber
+        endif
+
+        " Otherwise: If the full path starts with the current path and the
+        " current path is a directory, we add a new path component.
+        if stridx(l:fullPath, l:currentPath) == 0 && l:currentPath[-1:] == '/'
+            let l:currentLine = substitute(l:currentLine, '/\s*$', '', '')
+            call add(l:pathComponents, l:currentLine)
+            let l:currentPathComponent += 1
+        endif
+    endfor
+
     return -1
 endfunction
 

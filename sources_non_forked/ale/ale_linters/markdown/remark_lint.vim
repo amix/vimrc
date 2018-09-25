@@ -24,10 +24,12 @@ function! ale_linters#markdown#remark_lint#Handle(buffer, lines) abort
         \   'type': l:match[6] is# 'error' ? 'E' : 'W',
         \   'text': l:match[7],
         \}
+
         if l:match[3] isnot# ''
             let l:item.end_lnum = l:match[4] + 0
             let l:item.end_col = l:match[5] + 0
         endif
+
         call add(l:output, l:item)
     endfor
 

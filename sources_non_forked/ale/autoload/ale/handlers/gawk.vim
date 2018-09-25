@@ -9,9 +9,11 @@ function! ale#handlers#gawk#HandleGawkFormat(buffer, lines) abort
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         let l:ecode = 'E'
+
         if l:match[2] is? 'warning:'
             let l:ecode = 'W'
         endif
+
         call add(l:output, {
         \   'lnum': l:match[1] + 0,
         \   'col': 0,

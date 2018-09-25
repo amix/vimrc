@@ -2,7 +2,7 @@
 
 call ale#Set('thrift_thrift_executable', 'thrift')
 call ale#Set('thrift_thrift_generators', ['cpp'])
-call ale#Set('thrift_thrift_includes', [])
+call ale#Set('thrift_thrift_includes', ['.'])
 call ale#Set('thrift_thrift_options', '-strict')
 
 function! ale_linters#thrift#thrift#GetCommand(buffer) abort
@@ -42,12 +42,14 @@ function! ale_linters#thrift#thrift#Handle(buffer, lines) abort
         let l:line = a:lines[l:index]
 
         let l:match = matchlist(l:line, l:pattern)
+
         if empty(l:match)
             let l:index += 1
             continue
         endif
 
         let l:severity = l:match[1]
+
         if l:severity is# 'WARNING'
             let l:type = 'W'
         else
@@ -57,6 +59,7 @@ function! ale_linters#thrift#thrift#Handle(buffer, lines) abort
         " If our text looks like "(last token was ';')", the *next* line
         " should contain a more descriptive error message.
         let l:text = l:match[4]
+
         if l:text =~# '\(last token was .*\)'
             let l:index += 1
             let l:text = get(a:lines, l:index, 'Unknown error ' . l:text)

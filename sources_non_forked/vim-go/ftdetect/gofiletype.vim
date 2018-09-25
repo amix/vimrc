@@ -31,4 +31,23 @@ au BufReadPost *.s call s:gofiletype_post()
 
 au BufRead,BufNewFile *.tmpl set filetype=gohtmltmpl
 
+" Set the filetype if the first non-comment and non-blank line starts with
+" 'module <path>'.
+au BufNewFile,BufRead go.mod call s:gomod()
+
+fun! s:gomod()
+  for l:i in range(1, line('$'))
+    let l:l = getline(l:i)
+    if l:l ==# '' || l:l[:1] ==# '//'
+      continue
+    endif
+
+    if l:l =~# '^module .\+'
+      set filetype=gomod
+    endif
+
+    break
+  endfor
+endfun
+
 " vim: sw=2 ts=2 et

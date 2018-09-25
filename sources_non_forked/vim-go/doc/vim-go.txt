@@ -806,6 +806,11 @@ CTRL-t
 
     Toggles |'g:go_fmt_autosave'|.
 
+                                                     *:GoModFmtAutoSaveToggle*
+:GoModFmtAutoSaveToggle
+
+    Toggles |'g:go_mod_fmt_autosave'|.
+
                                                      *:GoAsmFmtAutoSaveToggle*
 :GoAsmFmtAutoSaveToggle
 
@@ -880,6 +885,13 @@ CTRL-t
           }
       }
 <
+                                                                  *:GoModFmt*
+:GoModFmt
+
+    Filter the current go.mod buffer through "go mod edit -fmt" command.  It
+    tries to preserve cursor position and avoids replacing the buffer with
+    stderr output.
+
 ==============================================================================
 MAPPINGS                                                        *go-mappings*
 
@@ -1097,6 +1109,10 @@ Calls `:GoImport` for the current package
 Generate if err != nil { return ... } automatically which infer the type of
 return values and the numbers.
 
+                                                                *(go-mod-fmt)*
+
+Calls |:GoModFmt| for the current buffer
+
 ==============================================================================
 TEXT OBJECTS                                                 *go-text-objects*
 
@@ -1287,7 +1303,15 @@ doesn't break. However it's slows (creates/deletes a file for every save) and
 it's causing problems on some Vim versions. By default it's disabled. >
 
   let g:go_fmt_experimental = 0
+
 <
+                                                     *'g:go_mod_fmt_autosave'*
+
+Use this option to auto |:GoModFmt| on save. By default it's enabled >
+
+  let g:go_mod_fmt_autosave = 1
+<
+
                                                *'g:go_doc_keywordprg_enabled'*
 
 Use this option to run `godoc` on words under the cursor with |K|; this will
@@ -1497,10 +1521,10 @@ that was called. Supported values are "", "quickfix", and "locationlist".
 Specifies the type of list to use for command outputs (such as errors from
 builds, results from static analysis commands, etc...). When an expected key
 is not present in the dictionary, |'g:go_list_type'| will be used instead.
-Supported keys are "GoBuild", "GoErrCheck", "GoFmt", "GoInstall", "GoLint",
-"GoMetaLinter", "GoMetaLinterAutoSave", "GoModifyTags" (used for both
-:GoAddTags and :GoRemoveTags), "GoRename", "GoRun", and "GoTest".  Supported
-values for each command are "quickfix" and "locationlist".
+Supported keys are "GoBuild", "GoErrCheck", "GoFmt", "GoModFmt", "GoInstall",
+"GoLint", "GoMetaLinter", "GoMetaLinterAutoSave", "GoModifyTags" (used for
+both :GoAddTags and :GoRemoveTags), "GoRename", "GoRun", and "GoTest".
+Supported values for each command are "quickfix" and "locationlist".
 >
   let g:go_list_type_commands = {}
 <
@@ -1575,14 +1599,6 @@ same.
         \ '? go#util#pascalcase(expand("<cword>"))' .
         \ ': go#util#camelcase(expand("<cword>"))'
 <
-                                                     *'g:go_gocode_autobuild'*
-
-Specifies whether `gocode` should automatically build out-of-date packages
-when their source fields are modified, in order to obtain the freshest
-autocomplete results for them.  By default it is enabled.
->
-  let g:go_gocode_autobuild = 1
-<
                                               *'g:go_gocode_propose_builtins'*
 
 Specifies whether `gocode` should add built-in types, functions and constants
@@ -1590,14 +1606,14 @@ to an autocompletion proposals. By default it is enabled.
 >
   let g:go_gocode_propose_builtins = 1
 <
-                                           *'g:go_gocode_unimported_packages'*
+                                               *'g:go_gocode_propose_source'*
 
-Specifies whether `gocode` should include suggestions from unimported
-packages. By default it is disabled.
+Specifies whether `gocode` should use source files instead of binary packages
+for autocompletion proposals. When disabled, only identifiers from the current
+package and packages that have been installed will proposed.
 >
-  let g:go_gocode_unimported_packages = 0
+  let g:go_gocode_propose_source = 1
 <
-
                                                    *'g:go_gocode_socket_type'*
 
 Specifies whether `gocode` should use a different socket type. By default
@@ -1881,6 +1897,13 @@ filetype.
 
 The `gohtmltmpl` filetype is automatically set for `*.tmpl` files; the
 `gotexttmpl` is never automatically set and needs to be set manually.
+
+==============================================================================
+                                                    *gomod* *ft-gomod-syntax*
+go.mod file syntax~
+
+The `gomod` 'filetype' provides syntax highlighting for Go's module file 
+`go.mod`
 
 
 ==============================================================================
@@ -2244,6 +2267,18 @@ By default new terminals are opened in a vertical split. To change it
 >
  let g:go_term_mode = "split"
 >
+
+How can I customize the highlighting?~
+
+All the highlight groups used by vim-go are prefixed with `go` (e.g.
+`goType`) and are defined in the files in the `syntax` directory. To change
+the highlighting for any group, add a `highlight` command for the group to
+your vimrc.  To turn off the highlighting for any group, add `highlight link
+group-name NONE` (where `group-name` is the name of the group whose highlight
+you'd like to turn off) to your vimrc.
+
+Some people may wish to highlight Go's builtins as keywords. To do so, one
+should simply add `highlight link goBuiltins Keyword` to the `vimrc` file.
 
 ==============================================================================
 DEVELOPMENT                                               *go-development*

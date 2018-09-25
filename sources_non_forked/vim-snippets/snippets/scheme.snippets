@@ -1,17 +1,17 @@
 snippet +
-	(+	${1}
+	(+ ${1}
 		${0})
 
 snippet -
-	(-	${1}
+	(- ${1}
 		${0})
 
 snippet /
-	(/	${1}
+	(/ ${1}
 		${0})
 
 snippet *
-	(*	${1}
+	(* ${1}
 		${0})
 
 # Definition
@@ -22,12 +22,12 @@ snippet def
 # Definition with lambda
 snippet defl
 	(define ${1:name}
-			(lambda (x)(${0:definition})))
+		(lambda (x)(${0:definition})))
 
 # Condition
 snippet cond
-	(cond	((${1:predicate}) (${2:action}))
-			((${3:predicate}) (${0:action})))
+	(cond ((${1:predicate}) (${2:action}))
+		((${3:predicate}) (${0:action})))
 
 # If statement
 snippet if

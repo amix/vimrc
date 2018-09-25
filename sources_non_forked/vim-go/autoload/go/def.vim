@@ -42,20 +42,20 @@ function! go#def#Jump(mode) abort
 
     call extend(cmd, ["definition", fname . ':#' . go#util#OffsetCursor()])
 
-    if go#util#has_job() || has('nvim')
+    if go#util#has_job()
+      let l:state = {}
       let l:spawn_args = {
             \ 'cmd': cmd,
-            \ 'complete': function('s:jump_to_declaration_cb', [a:mode, bin_name]),
+            \ 'complete': function('s:jump_to_declaration_cb', [a:mode, bin_name], l:state),
             \ 'for': '_',
+            \ 'statustype': 'searching declaration',
             \ }
 
       if &modified
         let l:spawn_args.input = stdin_content
       endif
 
-      call go#util#EchoProgress("searching declaration ...")
-
-      call s:def_job(spawn_args)
+      call s:def_job(spawn_args, l:state)
       return
     endif
 
@@ -77,13 +77,17 @@ function! go#def#Jump(mode) abort
   call go#def#jump_to_declaration(out, a:mode, bin_name)
 endfunction
 
-function! s:jump_to_declaration_cb(mode, bin_name, job, exit_status, data) abort
+function! s:jump_to_declaration_cb(mode, bin_name, job, exit_status, data) abort dict
   if a:exit_status != 0
     return
   endif
 
   call go#def#jump_to_declaration(a:data[0], a:mode, a:bin_name)
   call go#util#EchoSuccess(fnamemodify(a:data[0], ":t"))
+
+  " capture the active window so that after the exit_cb and close_cb callbacks
+  " can return to it when a:mode caused a split.
+  let self.winid = win_getid(winnr())
 endfunction
 
 function! go#def#jump_to_declaration(out, mode, bin_name) abort
@@ -283,8 +287,25 @@ function! go#def#Stack(...) abort
   endif
 endfunction
 
-function s:def_job(args) abort
+function s:def_job(args, state) abort
   let l:start_options = go#job#Options(a:args)
+
+  let l:state = a:state
+  function! s:exit_cb(next, job, exitval) dict
+    call call(a:next, [a:job, a:exitval])
+    if has_key(self, 'winid')
+      call win_gotoid(self.winid)
+    endif
+  endfunction
+  let l:start_options.exit_cb = funcref('s:exit_cb', [l:start_options.exit_cb], l:state)
+
+  function! s:close_cb(next, ch) dict
+    call call(a:next, [a:ch])
+    if has_key(self, 'winid')
+      call win_gotoid(self.winid)
+    endif
+  endfunction
+  let l:start_options.close_cb = funcref('s:close_cb', [l:start_options.close_cb], l:state)
 
   if &modified
     let l:tmpname = tempname()
@@ -293,7 +314,7 @@ function s:def_job(args) abort
     let l:start_options.in_name = l:tmpname
   endif
 
-  call go#job#Start(a:args.cmd, start_options)
+  call go#job#Start(a:args.cmd, l:start_options)
 endfunction
 
 " vim: sw=2 ts=2 et

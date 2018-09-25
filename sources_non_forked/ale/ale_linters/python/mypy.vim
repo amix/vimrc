@@ -5,8 +5,14 @@ call ale#Set('python_mypy_executable', 'mypy')
 call ale#Set('python_mypy_ignore_invalid_syntax', 0)
 call ale#Set('python_mypy_options', '')
 call ale#Set('python_mypy_use_global', get(g:, 'ale_use_global_executables', 0))
+call ale#Set('python_mypy_auto_pipenv', 0)
 
 function! ale_linters#python#mypy#GetExecutable(buffer) abort
+    if (ale#Var(a:buffer, 'python_auto_pipenv') || ale#Var(a:buffer, 'python_mypy_auto_pipenv'))
+    \ && ale#python#PipenvPresent(a:buffer)
+        return 'pipenv'
+    endif
+
     return ale#python#FindExecutable(a:buffer, 'python_mypy', ['mypy'])
 endfunction
 

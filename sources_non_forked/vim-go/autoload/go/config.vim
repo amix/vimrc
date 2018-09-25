@@ -135,10 +135,6 @@ function! go#config#SetGuruScope(scope) abort
   endif
 endfunction
 
-function! go#config#GocodeUnimportedPackages() abort
-  return get(g:, 'go_gocode_unimported_packages', 0)
-endfunction
-
 let s:sock_type = (has('win32') || has('win64')) ? 'tcp' : 'unix'
 function! go#config#GocodeSocketType() abort
   return get(g:, 'go_gocode_socket_type', s:sock_type)
@@ -148,8 +144,8 @@ function! go#config#GocodeProposeBuiltins() abort
   return get(g:, 'go_gocode_propose_builtins', 1)
 endfunction
 
-function! go#config#GocodeAutobuild() abort
-  return get(g:, 'go_gocode_autobuild', 1)
+function! go#config#GocodeProposeSource() abort
+  return get(g:, 'go_gocode_propose_source', 1)
 endfunction
 
 function! go#config#EchoCommandInfo() abort
@@ -280,6 +276,14 @@ endfunction
 
 function! go#config#SetAsmfmtAutosave(value) abort
   let g:go_asmfmt_autosave = a:value
+endfunction
+
+function! go#config#ModFmtAutosave() abort
+	return get(g:, "go_mod_fmt_autosave", 1)
+endfunction
+
+function! go#config#SetModFmtAutosave(value) abort
+  let g:go_mod_fmt_autosave = a:value
 endfunction
 
 function! go#config#DocMaxHeight() abort
@@ -416,7 +420,7 @@ function! go#config#HighlightVariableDeclarations() abort
   return get(g:, 'go_highlight_variable_declarations', 0)
 endfunction
 
-function go#config#FoldEnable(...) abort
+function! go#config#FoldEnable(...) abort
   if a:0 > 0
     return index(go#config#FoldEnable(), a:1) > -1
   endif

@@ -91,7 +91,6 @@ function! s:GetDetails(error) abort
     let l:detail = ''
 
     for l:extra_error in a:error.extra
-
         if has_key(l:extra_error, 'message')
             for l:extra_message in l:extra_error.message
                 let l:detail = s:ExtraErrorMsg(l:detail, l:extra_message.descr)
@@ -105,7 +104,6 @@ function! s:GetDetails(error) abort
                 endfor
             endfor
         endif
-
     endfor
 
     return l:detail
@@ -161,7 +159,6 @@ function! ale_linters#javascript#flow#Handle(buffer, lines) abort
         endif
 
         call add(l:output, l:errorToAdd)
-
     endfor
 
     return l:output

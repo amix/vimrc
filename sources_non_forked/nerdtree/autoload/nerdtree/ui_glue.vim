@@ -142,18 +142,9 @@ function! s:chRoot(node)
 endfunction
 
 " FUNCTION: s:nerdtree#ui_glue#chRootCwd() {{{1
-" changes the current root to CWD
+" Change the NERDTree root to match the current working directory.
 function! nerdtree#ui_glue#chRootCwd()
-    try
-        let cwd = g:NERDTreePath.New(getcwd())
-    catch /^NERDTree.InvalidArgumentsError/
-        call nerdtree#echo("current directory does not exist.")
-        return
-    endtry
-    if cwd.str() == g:NERDTreeFileNode.GetRootForTab().path.str()
-       return
-    endif
-    call s:chRoot(g:NERDTreeDirNode.New(cwd, b:NERDTree))
+    NERDTreeCWD
 endfunction
 
 " FUNCTION: nnerdtree#ui_glue#clearBookmarks(bookmarks) {{{1
@@ -357,35 +348,6 @@ function! s:handleMiddleMouse()
     endif
 endfunction
 
-" FUNCTION: s:jumpToChild(direction) {{{2
-" Args:
-" direction: 0 if going to first child, 1 if going to last
-function! s:jumpToChild(currentNode, direction)
-    if a:currentNode.isRoot()
-        return nerdtree#echo("cannot jump to " . (a:direction ? "last" : "first") .  " child")
-    end
-    let dirNode = a:currentNode.parent
-    let childNodes = dirNode.getVisibleChildren()
-
-    let targetNode = childNodes[0]
-    if a:direction
-        let targetNode = childNodes[len(childNodes) - 1]
-    endif
-
-    if targetNode.equals(a:currentNode)
-        let siblingDir = a:currentNode.parent.findOpenDirSiblingWithVisibleChildren(a:direction)
-        if siblingDir != {}
-            let indx = a:direction ? siblingDir.getVisibleChildCount()-1 : 0
-            let targetNode = siblingDir.getChildByIndex(indx, 1)
-        endif
-    endif
-
-    call targetNode.putCursorHere(1, 0)
-
-    call b:NERDTree.ui.centerView()
-endfunction
-
-
 " FUNCTION: nerdtree#ui_glue#invokeKeyMap(key) {{{1
 "this is needed since I cant figure out how to invoke dict functions from a
 "key map
@@ -393,41 +355,55 @@ function! nerdtree#ui_glue#invokeKeyMap(key)
     call g:NERDTreeKeyMap.Invoke(a:key)
 endfunction
 
-" FUNCTION: s:jumpToFirstChild() {{{1
-" wrapper for the jump to child method
+" FUNCTION: s:jumpToFirstChild(node) {{{1
 function! s:jumpToFirstChild(node)
     call s:jumpToChild(a:node, 0)
 endfunction
 
-" FUNCTION: s:jumpToLastChild() {{{1
-" wrapper for the jump to child method
+" FUNCTION: s:jumpToLastChild(node) {{{1
 function! s:jumpToLastChild(node)
     call s:jumpToChild(a:node, 1)
 endfunction
 
+" FUNCTION: s:jumpToChild(node, last) {{{2
+" Jump to the first or last child node at the same file system level.
+"
+" Args:
+" node: the node on which the cursor currently sits
+" last: 1 (true) if jumping to last child, 0 (false) if jumping to first
+function! s:jumpToChild(node, last)
+    let l:node = a:node.path.isDirectory ? a:node.getCascadeRoot() : a:node
+
+    if l:node.isRoot()
+        return
+    endif
+
+    let l:parent = l:node.parent
+    let l:children = l:parent.getVisibleChildren()
+
+    let l:target = a:last ? l:children[len(l:children) - 1] : l:children[0]
+
+    call l:target.putCursorHere(1, 0)
+    call b:NERDTree.ui.centerView()
+endfunction
+
 " FUNCTION: s:jumpToParent(node) {{{1
-" Move the cursor to the parent of the specified node. For a cascade, move to
-" the parent of the cascade's highest node. At the root, do nothing.
+" Move the cursor to the parent of the specified node.  For a cascade, move to
+" the parent of the cascade's first node.  At the root node, do nothing.
 function! s:jumpToParent(node)
-    let l:parent = a:node.parent
+    let l:node = a:node.path.isDirectory ? a:node.getCascadeRoot() : a:node
 
-    " If "a:node" represents a directory, back out of its cascade.
-    if a:node.path.isDirectory
-        while !empty(l:parent) && !l:parent.isRoot()
-            if index(l:parent.getCascade(), a:node) >= 0
-                let l:parent = l:parent.parent
-            else
-                break
-            endif
-        endwhile
+    if l:node.isRoot()
+        return
     endif
 
-    if !empty(l:parent)
-        call l:parent.putCursorHere(1, 0)
-        call b:NERDTree.ui.centerView()
-    else
+    if empty(l:node.parent)
         call nerdtree#echo('could not jump to parent node')
+        return
     endif
+
+    call l:node.parent.putCursorHere(1, 0)
+    call b:NERDTree.ui.centerView()
 endfunction
 
 " FUNCTION: s:jumpToRoot() {{{1
@@ -447,19 +423,22 @@ function! s:jumpToPrevSibling(node)
     call s:jumpToSibling(a:node, 0)
 endfunction
 
-" FUNCTION: s:jumpToSibling(currentNode, forward) {{{2
-" moves the cursor to the sibling of the current node in the given direction
+" FUNCTION: s:jumpToSibling(node, forward) {{{2
+" Move the cursor to the next or previous node at the same file system level.
 "
 " Args:
-" forward: 1 if the cursor should move to the next sibling, 0 if it should
-" move back to the previous sibling
-function! s:jumpToSibling(currentNode, forward)
-    let sibling = a:currentNode.findSibling(a:forward)
+" node: the node on which the cursor currently sits
+" forward: 0 to jump to previous sibling, 1 to jump to next sibling
+function! s:jumpToSibling(node, forward)
+    let l:node = a:node.path.isDirectory ? a:node.getCascadeRoot() : a:node
+    let l:sibling = l:node.findSibling(a:forward)
 
-    if !empty(sibling)
-        call sibling.putCursorHere(1, 0)
-        call b:NERDTree.ui.centerView()
+    if empty(l:sibling)
+        return
     endif
+
+    call l:sibling.putCursorHere(1, 0)
+    call b:NERDTree.ui.centerView()
 endfunction
 
 " FUNCTION: nerdtree#ui_glue#openBookmark(name) {{{1

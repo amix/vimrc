@@ -20,3 +20,25 @@ function! ale#ruby#FindRailsRoot(buffer) abort
 
     return ''
 endfunction
+
+" Find the nearest dir containing a potential ruby project.
+function! ale#ruby#FindProjectRoot(buffer) abort
+    let l:dir = ale#ruby#FindRailsRoot(a:buffer)
+
+    if isdirectory(l:dir)
+      return l:dir
+    endif
+
+    for l:name in ['.solargraph.yml', 'Rakefile', 'Gemfile']
+        let l:dir = fnamemodify(
+        \   ale#path#FindNearestFile(a:buffer, l:name),
+        \   ':h'
+        \)
+
+        if l:dir isnot# '.' && isdirectory(l:dir)
+            return l:dir
+        endif
+    endfor
+
+    return ''
+endfunction

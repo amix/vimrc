@@ -26,19 +26,11 @@ function! go#test#Test(bang, compile, ...) abort
     call add(args, printf("-timeout=%s", timeout))
   endif
 
-  if go#config#EchoCommandInfo()
-    if a:compile
-      call go#util#EchoProgress("compiling tests ...")
-    else
-      call go#util#EchoProgress("testing...")
-    endif
-  endif
-
   if has('nvim') && go#config#TermEnabled()
     call go#term#new(a:bang, ["go"] + args)
   endif
 
-  if go#util#has_job() || has('nvim')
+  if go#util#has_job()
     " use vim's job functionality to call it asynchronously
     let job_options  = {
           \ 'bang': a:bang,
@@ -53,6 +45,14 @@ function! go#test#Test(bang, compile, ...) abort
 
     call s:test_job(['go'] + args, job_options)
     return
+  endif
+
+  if go#config#EchoCommandInfo()
+    if a:compile
+      call go#util#EchoProgress("compiling tests ...")
+    else
+      call go#util#EchoProgress("testing...")
+    endif
   endif
 
   call go#cmd#autowrite()
@@ -152,12 +152,12 @@ function! s:errorformat() abort
   " each level of test indents the test output 4 spaces. Capturing groups
   " (e.g. \(\)) cannot be used in an errorformat, but non-capturing groups can
   " (e.g. \%(\)).
-  let indent = '%\\%(    %\\)%#'
+  let indent = '%\\%(    %\\)'
 
   " ignore `go test -v` output for starting tests
   let format = "%-G=== RUN   %.%#"
   " ignore `go test -v` output for passing tests
-  let format .= ",%-G" . indent . "--- PASS: %.%#"
+  let format .= ",%-G" . indent . "%#--- PASS: %.%#"
 
   " Match failure lines.
   "
@@ -167,24 +167,25 @@ function! s:errorformat() abort
   " e.g.:
   "   '--- FAIL: TestSomething (0.00s)'
   if show_name
-    let format .= ",%G" . indent . "--- FAIL: %m (%.%#)"
+    let format .= ",%G" . indent . "%#--- FAIL: %m (%.%#)"
   else
-    let format .= ",%-G" . indent . "--- FAIL: %.%#"
+    let format .= ",%-G" . indent . "%#--- FAIL: %.%#"
   endif
 
+  " Go 1.10 test output {{{1
   " Matches test output lines.
   "
   " All test output lines start with the test indentation and a tab, followed
   " by the filename, a colon, the line number, another colon, a space, and the
   " message. e.g.:
   "   '\ttime_test.go:30: Likely problem: the time zone files have not been installed.'
-  let format .= ",%A" . indent . "%\\t%\\+%f:%l: %m"
+  let format .= ",%A" . indent . "%#%\\t%\\+%f:%l: %m"
   " also match lines that don't have a message (i.e. the message begins with a
   " newline or is the empty string):
   " e.g.:
   "     t.Errorf("\ngot %v; want %v", actual, expected)
   "     t.Error("")
-  let format .= ",%A" . indent . "%\\t%\\+%f:%l: "
+  let format .= ",%A" . indent . "%#%\\t%\\+%f:%l: "
 
   " Match the 2nd and later lines of multi-line output. These lines are
   " indented the number of spaces for the level of nesting of the test,
@@ -197,7 +198,17 @@ function! s:errorformat() abort
   " indicate that they're multiple lines of output, but in that case the lines
   " get concatenated in the quickfix list, which is not what users typically
   " want when writing a newline into their test output.
-  let format .= ",%G" . indent . "%\\t%\\{2}%m"
+  let format .= ",%G" . indent . "%#%\\t%\\{2}%m"
+  " }}}1
+
+  " Go 1.11 test output {{{1
+  " Match test output lines similarly to Go 1.10 test output lines, but they
+  " use an indent level where the Go 1.10 test output uses tabs, so they'll
+  " always have at least one level indentation...
+  let format .= ",%A" . indent . "%\\+%f:%l: %m"
+  let format .= ",%A" . indent . "%\\+%f:%l: "
+  let format .= ",%G" . indent . "%\\{2\\,}%m"
+  " }}}1
 
   " set the format for panics.
 
@@ -261,16 +272,16 @@ function! s:errorformat() abort
   let format .= ",%-Cexit status %[0-9]%\\+"
   "let format .= ",exit status %[0-9]%\\+"
 
-  " Match and ignore exit failure lines whether part of a multi-line message
+  " Match and ignore failure lines whether part of a multi-line message
   " or not, because these lines sometimes come before and sometimes after
   " panic stacktraces.
   let format .= ",%-CFAIL%\\t%.%#"
   "let format .= ",FAIL%\\t%.%#"
 
-  " match compiler errors
-  " These are very smilar to errors from test output, but lack leading tabs
-  " for the first line of an error, and subsequent lines only have one tab
-  " instead of two.
+  " match compiler errors.
+  " These are very smilar to errors from <=go1.10 test output, but lack
+  " leading tabs for the first line of an error, and subsequent lines only
+  " have one tab instead of two.
   let format .= ",%A%f:%l:%c: %m"
   let format .= ",%A%f:%l: %m"
   " It would be nice if this weren't necessary, but panic lines from tests are

@@ -2,6 +2,14 @@
 ALE Python Integration                                     *ale-python-options*
 
 
+g:ale_python_auto_pipenv                             *g:ale_python_auto_pipenv*
+                                                     *b:ale_python_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
 ===============================================================================
 ALE Python Project Root Behavior                              *ale-python-root*
 
@@ -137,6 +145,15 @@ g:ale_python_flake8_use_global                 *g:ale_python_flake8_use_global*
   Both variables can be set with `b:` buffer variables instead.
 
 
+g:ale_python_flake8_auto_pipenv               *g:ale_python_flake8_auto_pipenv*
+                                              *b:ale_python_flake8_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 isort                                                        *ale-python-isort*
 
@@ -211,6 +228,15 @@ g:ale_python_mypy_use_global                     *g:ale_python_mypy_use_global*
   See |ale-integrations-local-executables|
 
 
+g:ale_python_mypy_auto_pipenv                   *g:ale_python_mypy_auto_pipenv*
+                                                *b:ale_python_mypy_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 prospector                                              *ale-python-prospector*
 
@@ -253,6 +279,15 @@ g:ale_python_prospector_use_global         *g:ale_python_prospector_use_global*
   See |ale-integrations-local-executables|
 
 
+g:ale_python_prospector_auto_pipenv       *g:ale_python_prospector_auto_pipenv*
+                                          *b:ale_python_prospector_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 pycodestyle                                            *ale-python-pycodestyle*
 
@@ -284,6 +319,15 @@ g:ale_python_pycodestyle_use_global       *g:ale_python_pycodestyle_use_global*
   See |ale-integrations-local-executables|
 
 
+g:ale_python_pycodestyle_auto_pipenv     *g:ale_python_pycodestyle_auto_pipenv*
+                                         *b:ale_python_pycodestyle_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 pyflakes                                                  *ale-python-pyflakes*
 
@@ -296,6 +340,15 @@ g:ale_python_pyflakes_executable             *g:ale_python_pyflakes_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `pyflakes'`.
+
+
+g:ale_python_pyflakes_auto_pipenv           *g:ale_python_pyflakes_auto_pipenv*
+                                            *b:ale_python_pyflakes_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
 
 
 ===============================================================================
@@ -350,6 +403,15 @@ g:ale_python_pylint_use_global                 *g:ale_python_pylint_use_global*
   See |ale-integrations-local-executables|
 
 
+g:ale_python_pylint_auto_pipenv               *g:ale_python_pylint_auto_pipenv*
+                                              *b:ale_python_pylint_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 pyls                                                          *ale-python-pyls*
 
@@ -374,6 +436,15 @@ g:ale_python_pyls_use_global                     *g:ale_python_pyls_use_global*
   See |ale-integrations-local-executables|
 
 
+g:ale_python_pyls_auto_pipenv                   *g:ale_python_pyls_auto_pipenv*
+                                                *b:ale_python_pyls_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 pyre                                                          *ale-python-pyre*
 
@@ -396,6 +467,15 @@ g:ale_python_pyre_use_global                     *g:ale_python_pyre_use_global*
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
+
+
+g:ale_python_pyre_auto_pipenv                   *g:ale_python_pyre_auto_pipenv*
+                                                *b:ale_python_pyre_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
 
 
 ===============================================================================

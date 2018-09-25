@@ -15,21 +15,6 @@ function! s:DisablePostamble() abort
     endif
 endfunction
 
-function! s:CleanupEveryBuffer() abort
-    for l:key in keys(g:ale_buffer_info)
-        " The key could be a filename or a buffer number, so try and
-        " convert it to a number. We need a number for the other
-        " functions.
-        let l:buffer = str2nr(l:key)
-
-        if l:buffer > 0
-            " Stop all jobs and clear the results for everything, and delete
-            " all of the data we stored for the buffer.
-            call ale#engine#Cleanup(l:buffer)
-        endif
-    endfor
-endfunction
-
 function! ale#toggle#Toggle() abort
     let g:ale_enabled = !get(g:, 'ale_enabled')
 
@@ -40,7 +25,7 @@ function! ale#toggle#Toggle() abort
             call ale#balloon#Enable()
         endif
     else
-        call s:CleanupEveryBuffer()
+        call ale#engine#CleanupEveryBuffer()
         call s:DisablePostamble()
 
         if exists('*ale#balloon#Disable')
@@ -64,7 +49,7 @@ function! ale#toggle#Disable() abort
 endfunction
 
 function! ale#toggle#Reset() abort
-    call s:CleanupEveryBuffer()
+    call ale#engine#CleanupEveryBuffer()
     call ale#highlight#UpdateHighlights()
 endfunction
 
@@ -76,6 +61,7 @@ function! ale#toggle#ToggleBuffer(buffer) abort
     " linting locally when linting is disabled globally
     if l:enabled && !g:ale_enabled
         execute 'echom ''ALE cannot be enabled locally when disabled globally'''
+
         return
     endif
 

@@ -5,12 +5,18 @@ call ale#Set('python_flake8_executable', 'flake8')
 call ale#Set('python_flake8_options', '')
 call ale#Set('python_flake8_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('python_flake8_change_directory', 1)
+call ale#Set('python_flake8_auto_pipenv', 0)
 
 function! s:UsingModule(buffer) abort
     return ale#Var(a:buffer, 'python_flake8_options') =~# ' *-m flake8'
 endfunction
 
 function! ale_linters#python#flake8#GetExecutable(buffer) abort
+    if (ale#Var(a:buffer, 'python_auto_pipenv') || ale#Var(a:buffer, 'python_flake8_auto_pipenv'))
+    \ && ale#python#PipenvPresent(a:buffer)
+        return 'pipenv'
+    endif
+
     if !s:UsingModule(a:buffer)
         return ale#python#FindExecutable(a:buffer, 'python_flake8', ['flake8'])
     endif

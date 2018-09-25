@@ -22,6 +22,7 @@ function! ale_linters#cucumber#cucumber#Handle(buffer, lines) abort
     endtry
 
     let l:output = []
+
     for l:element in get(l:json, 'elements', [])
         for l:step in l:element['steps']
             if l:step['result']['status'] is# 'undefined'

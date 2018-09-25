@@ -33,4 +33,10 @@ g:ale_objc_clangd_options                           *g:ale_objc_clangd_options*
 
 
 ===============================================================================
+uncrustify                                                *ale-objc-uncrustify*
+
+See |ale-c-uncrustify| for information about the available options.
+
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

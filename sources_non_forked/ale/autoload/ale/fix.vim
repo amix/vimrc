@@ -30,7 +30,14 @@ function! ale#fix#ApplyQueuedFixes() abort
             call winrestview(l:save)
         endif
 
-        call setline(1, l:data.output)
+        " If the file is in DOS mode, we have to remove carriage returns from
+        " the ends of lines before calling setline(), or we will see them
+        " twice.
+        let l:lines_to_set = getbufvar(l:buffer, '&fileformat') is# 'dos'
+        \   ? map(copy(l:data.output), 'substitute(v:val, ''\r\+$'', '''', '''')')
+        \   : l:data.output
+
+        call setline(1, l:lines_to_set)
 
         if l:data.should_save
             if empty(&buftype)
@@ -71,6 +78,7 @@ function! ale#fix#ApplyFixes(buffer, output) abort
         if l:data.lines_before != l:lines
             call remove(g:ale_fix_buffer_data, a:buffer)
             execute 'echoerr ''The file was changed before fixing finished'''
+
             return
         endif
     endif

@@ -25,7 +25,7 @@ endfunction
 function! ale#fixers#eslint#ProcessEslintDOutput(buffer, output) abort
     " If the output is an error message, don't use it.
     for l:line in a:output[:10]
-        if l:line =~# '^Error:'
+        if l:line =~# '\v^Error:|^Could not connect'
             return []
         endif
     endfor

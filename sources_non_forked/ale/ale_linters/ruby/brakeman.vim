@@ -1,8 +1,9 @@
 " Author: Eddie Lebow https://github.com/elebow
 " Description: Brakeman, a static analyzer for Rails security
 
-let g:ale_ruby_brakeman_options =
-\   get(g:, 'ale_ruby_brakeman_options', '')
+call ale#Set('ruby_brakeman_options', '')
+call ale#Set('ruby_brakeman_executable', 'brakeman')
+call ale#Set('ruby_brakeman_options', '')
 
 function! ale_linters#ruby#brakeman#Handle(buffer, lines) abort
     let l:output = []
@@ -33,14 +34,17 @@ function! ale_linters#ruby#brakeman#GetCommand(buffer) abort
         return ''
     endif
 
-    return 'brakeman -f json -q '
+    let l:executable = ale#Var(a:buffer, 'ruby_brakeman_executable')
+
+    return ale#handlers#ruby#EscapeExecutable(l:executable, 'brakeman')
+    \    . ' -f json -q '
     \    . ale#Var(a:buffer, 'ruby_brakeman_options')
     \    . ' -p ' . ale#Escape(l:rails_root)
 endfunction
 
 call ale#linter#Define('ruby', {
 \    'name': 'brakeman',
-\    'executable': 'brakeman',
+\    'executable_callback': ale#VarFunc('ruby_brakeman_executable'),
 \    'command_callback': 'ale_linters#ruby#brakeman#GetCommand',
 \    'callback': 'ale_linters#ruby#brakeman#Handle',
 \    'lint_file': 1,

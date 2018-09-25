@@ -8,7 +8,6 @@ function! ale_linters#tex#lacheck#Handle(buffer, lines) abort
     "
     " "book.tex", line 37: possible unwanted space at "{"
     " "book.tex", line 38: missing `\ ' after "etc."
-
     let l:pattern = '^".\+", line \(\d\+\): \(.\+\)$'
     let l:output = []
 

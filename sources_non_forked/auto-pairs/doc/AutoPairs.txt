@@ -178,7 +178,7 @@ System Shortcuts:
     <M-b>: BackInsert (|g:AutoPairsShortcutBackInsert|)
 
 
-    To rebind keys <M-p>, <M-e> or <M-n> or in case of conflicts conflicts with
+    To rebind keys <M-p>, <M-e> or <M-n> or in case of conflicts with
     another keys:
 
         let g:AutoPairsShortcutToggle = '<another key>'

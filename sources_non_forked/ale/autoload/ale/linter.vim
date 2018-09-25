@@ -99,7 +99,7 @@ function! ale#linter#PreProcess(filetype, linter) abort
     endif
 
     if index(['', 'socket', 'stdio', 'tsserver'], l:obj.lsp) < 0
-        throw '`lsp` must be either `''lsp''` or `''tsserver''` if defined'
+        throw '`lsp` must be either `''lsp''`, `''stdio''`, `''socket''` or `''tsserver''` if defined'
     endif
 
     if !l:needs_executable

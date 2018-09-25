@@ -25,9 +25,9 @@ function! ale_linters#xml#xmllint#Handle(buffer, lines) abort
     let l:output = []
 
     for l:line in a:lines
-
         " Parse error/warning lines
         let l:match_message = matchlist(l:line, l:pattern_message)
+
         if !empty(l:match_message)
           let l:line = l:match_message[2] + 0
           let l:type = l:match_message[4] =~? 'warning' ? 'W' : 'E'
@@ -44,13 +44,13 @@ function! ale_linters#xml#xmllint#Handle(buffer, lines) abort
 
         " Parse column position
         let l:match_column_token = matchlist(l:line, l:pattern_column_token)
+
         if !empty(l:output) && !empty(l:match_column_token)
           let l:previous = l:output[len(l:output) - 1]
           let l:previous['col'] = len(l:match_column_token[0])
 
           continue
         endif
-
     endfor
 
     return l:output

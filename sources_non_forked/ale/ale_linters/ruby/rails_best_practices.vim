@@ -22,26 +22,18 @@ function! ale_linters#ruby#rails_best_practices#Handle(buffer, lines) abort
     return l:output
 endfunction
 
-function! ale_linters#ruby#rails_best_practices#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'ruby_rails_best_practices_executable')
-endfunction
-
 function! ale_linters#ruby#rails_best_practices#GetCommand(buffer) abort
-    let l:executable = ale_linters#ruby#rails_best_practices#GetExecutable(a:buffer)
-    let l:exec_args = l:executable =~? 'bundle$'
-    \   ? ' exec rails_best_practices'
-    \   : ''
-
     let l:rails_root = ale#ruby#FindRailsRoot(a:buffer)
 
     if l:rails_root is? ''
         return ''
     endif
 
+    let l:executable = ale#Var(a:buffer, 'ruby_rails_best_practices_executable')
     let l:output_file = ale#Has('win32') ? '%t ' : '/dev/stdout '
     let l:cat_file = ale#Has('win32') ? '; type %t' : ''
 
-    return ale#Escape(l:executable) . l:exec_args
+    return ale#handlers#ruby#EscapeExecutable(l:executable, 'rails_best_practices')
     \    . ' --silent -f json --output-file ' . l:output_file
     \    . ale#Var(a:buffer, 'ruby_rails_best_practices_options')
     \    . ale#Escape(l:rails_root)
@@ -50,7 +42,7 @@ endfunction
 
 call ale#linter#Define('ruby', {
 \    'name': 'rails_best_practices',
-\    'executable_callback': 'ale_linters#ruby#rails_best_practices#GetExecutable',
+\    'executable_callback': ale#VarFunc('ruby_rails_best_practices_executable'),
 \    'command_callback': 'ale_linters#ruby#rails_best_practices#GetCommand',
 \    'callback': 'ale_linters#ruby#rails_best_practices#Handle',
 \    'lint_file': 1,

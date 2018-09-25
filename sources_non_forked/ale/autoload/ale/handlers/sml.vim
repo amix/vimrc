@@ -11,8 +11,10 @@ function! ale#handlers#sml#GetCmFile(buffer) abort
     let l:as_list = 1
 
     let l:cmfile = ''
+
     for l:path in ale#path#Upwards(expand('#' . a:buffer . ':p:h'))
         let l:results = glob(l:path . '/' . l:pattern, 0, l:as_list)
+
         if len(l:results) > 0
             " If there is more than one CM file, we take the first one
             " See :help ale-sml-smlnj for how to configure this.
@@ -46,6 +48,7 @@ endfunction
 function! ale#handlers#sml#GetExecutableSmlnjCm(buffer) abort
     return s:GetExecutable(a:buffer, 'smlnj-cm')
 endfunction
+
 function! ale#handlers#sml#GetExecutableSmlnjFile(buffer) abort
     return s:GetExecutable(a:buffer, 'smlnj-file')
 endfunction
@@ -53,7 +56,6 @@ endfunction
 function! ale#handlers#sml#Handle(buffer, lines) abort
     " Try to match basic sml errors
     " TODO(jez) We can get better errorfmt strings from Syntastic
-
     let l:out = []
     let l:pattern = '^.*\:\([0-9\.]\+\)\ \(\w\+\)\:\ \(.*\)'
     let l:pattern2 = '^.*\:\([0-9]\+\)\.\?\([0-9]\+\).* \(\(Warning\|Error\): .*\)'
@@ -83,7 +85,6 @@ function! ale#handlers#sml#Handle(buffer, lines) abort
           \})
           continue
         endif
-
     endfor
 
     return l:out

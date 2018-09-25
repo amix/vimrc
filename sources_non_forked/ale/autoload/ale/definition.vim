@@ -49,7 +49,7 @@ function! ale#definition#HandleLSPResponse(conn_id, response) abort
         for l:item in l:result
             let l:filename = ale#path#FromURI(l:item.uri)
             let l:line = l:item.range.start.line + 1
-            let l:column = l:item.range.start.character
+            let l:column = l:item.range.start.character + 1
 
             call ale#util#Open(l:filename, l:line, l:column, l:options)
             break

@@ -29,13 +29,13 @@ if
 endif
 
 " these packages are used by vim-go and can be automatically installed if
-" needed by the user with GoInstallBinaries
+" needed by the user with GoInstallBinaries.
 let s:packages = {
       \ 'asmfmt':        ['github.com/klauspost/asmfmt/cmd/asmfmt'],
       \ 'dlv':           ['github.com/derekparker/delve/cmd/dlv'],
       \ 'errcheck':      ['github.com/kisielk/errcheck'],
       \ 'fillstruct':    ['github.com/davidrjenni/reftools/cmd/fillstruct'],
-      \ 'gocode':        ['github.com/nsf/gocode', {'windows': ['-ldflags', '-H=windowsgui']}],
+      \ 'gocode':        ['github.com/mdempsky/gocode', {'windows': ['-ldflags', '-H=windowsgui']}],
       \ 'godef':         ['github.com/rogpeppe/godef'],
       \ 'gogetdoc':      ['github.com/zmb3/gogetdoc'],
       \ 'goimports':     ['golang.org/x/tools/cmd/goimports'],
@@ -99,9 +99,9 @@ function! s:GoInstallBinaries(updateBinaries, ...)
     set noshellslash
   endif
 
-  let l:cmd = ['go', 'get', '-v']
+  let l:dl_cmd = ['go', 'get', '-v', '-d']
   if get(g:, "go_get_update", 1) != 0
-    let l:cmd += ['-u']
+    let l:dl_cmd += ['-u']
   endif
 
   " Filter packages from arguments (if any).
@@ -127,16 +127,21 @@ function! s:GoInstallBinaries(updateBinaries, ...)
   for [binary, pkg] in items(l:packages)
     let l:importPath = pkg[0]
 
-    let l:run_cmd = copy(l:cmd)
+    let l:run_cmd = copy(l:dl_cmd)
     if len(l:pkg) > 1 && get(l:pkg[1], l:platform, '') isnot ''
       let l:run_cmd += get(l:pkg[1], l:platform, '')
     endif
 
-    let binname = "go_" . binary . "_bin"
+    let bin_setting_name = "go_" . binary . "_bin"
 
-    let bin = binary
-    if exists("g:{binname}")
-      let bin = g:{binname}
+    if exists("g:{bin_setting_name}")
+      let bin = g:{bin_setting_name}
+    else
+      if go#util#IsWin()
+        let bin = binary . '.exe'
+      else
+        let bin = binary
+      endif
     endif
 
     if !executable(bin) || a:updateBinaries == 1
@@ -146,7 +151,15 @@ function! s:GoInstallBinaries(updateBinaries, ...)
         echo "vim-go: ". binary ." not found. Installing ". importPath . " to folder " . go_bin_path
       endif
 
+      " first download the binary
       let [l:out, l:err] = go#util#Exec(l:run_cmd + [l:importPath])
+      if l:err
+        echom "Error downloading " . l:importPath . ": " . l:out
+      endif
+
+      " and then build and install it
+      let l:build_cmd = ['go', 'build', '-o', go_bin_path . go#util#PathSep() . bin, l:importPath]
+      let [l:out, l:err] = go#util#Exec(l:build_cmd + [l:importPath])
       if l:err
         echom "Error installing " . l:importPath . ": " . l:out
       endif
@@ -157,6 +170,12 @@ function! s:GoInstallBinaries(updateBinaries, ...)
   let $PATH = old_path
   if resetshellslash
     set shellslash
+  endif
+
+  if a:updateBinaries == 1
+    call go#util#EchoInfo('updating finished!')
+  else
+    call go#util#EchoInfo('installing finished!')
   endif
 endfunction
 
@@ -201,14 +220,14 @@ endfunction
 function! s:auto_type_info()
   " GoInfo automatic update
   if get(g:, "go_auto_type_info", 0)
-    call go#tool#Info()
+    call go#tool#Info(0)
   endif
 endfunction
 
 function! s:auto_sameids()
   " GoSameId automatic update
   if get(g:, "go_auto_sameids", 0)
-    call go#guru#SameIds()
+    call go#guru#SameIds(0)
   endif
 endfunction
 
@@ -223,6 +242,13 @@ function! s:asmfmt_autosave()
   " Go asm formatting on save
   if get(g:, "go_asmfmt_autosave", 0)
     call go#asmfmt#Format()
+  endif
+endfunction
+
+function! s:modfmt_autosave()
+  " go.mod code formatting on save
+  if get(g:, "go_mod_fmt_autosave", 1)
+    call go#mod#Format()
   endif
 endfunction
 
@@ -253,6 +279,7 @@ augroup vim-go
   endif
 
   autocmd BufWritePre *.go call s:fmt_autosave()
+  autocmd BufWritePre *.mod call s:modfmt_autosave()
   autocmd BufWritePre *.s call s:asmfmt_autosave()
   autocmd BufWritePost *.go call s:metalinter_autosave()
   autocmd BufNewFile *.go call s:template_autocreate()

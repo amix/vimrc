@@ -257,3 +257,8 @@ snippet ja
 	func (p *$1) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&struct{ *$1Alias }{(*$1Alias)(p)})
 	}
+
+snippet errwr # Error handling with errors.Wrap
+	if ${1}err != nil {
+		return errors.Wrap(err, "${2}")
+	}

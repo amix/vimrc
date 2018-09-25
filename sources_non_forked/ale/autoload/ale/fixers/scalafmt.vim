@@ -15,7 +15,6 @@ function! ale#fixers#scalafmt#GetCommand(buffer) abort
     return ale#Escape(l:executable) . l:exec_args
     \   . (empty(l:options) ? '' : ' ' . l:options)
     \   . ' %t'
-
 endfunction
 
 function! ale#fixers#scalafmt#Fix(buffer) abort

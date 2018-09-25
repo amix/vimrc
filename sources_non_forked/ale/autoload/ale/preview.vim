@@ -15,13 +15,13 @@ function! ale#preview#Show(lines, ...) abort
     setlocal modifiable
     setlocal noreadonly
     setlocal nobuflisted
-    let &l:filetype = get(l:options, 'filetype', 'ale-preview')
     setlocal buftype=nofile
     setlocal bufhidden=wipe
     :%d
     call setline(1, a:lines)
     setlocal nomodifiable
     setlocal readonly
+    let &l:filetype = get(l:options, 'filetype', 'ale-preview')
 
     if get(l:options, 'stay_here')
         wincmd p

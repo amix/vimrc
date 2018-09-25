@@ -54,6 +54,7 @@ endif
 function! ale#util#JoinNeovimOutput(job, last_line, data, mode, callback) abort
     if a:mode is# 'raw'
         call a:callback(a:job, join(a:data, "\n"))
+
         return ''
     endif
 
@@ -404,7 +405,7 @@ endfunction
 " the buffer.
 function! ale#util#Writefile(buffer, lines, filename) abort
     let l:corrected_lines = getbufvar(a:buffer, '&fileformat') is# 'dos'
-    \   ? map(copy(a:lines), 'v:val . "\r"')
+    \   ? map(copy(a:lines), 'substitute(v:val, ''\r*$'', ''\r'', '''')')
     \   : a:lines
 
     call writefile(l:corrected_lines, a:filename) " no-custom-checks

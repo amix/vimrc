@@ -99,6 +99,13 @@ function! ale#handlers#eslint#Handle(buffer, lines) abort
         \}]
     endif
 
+    if a:lines == ['Could not connect']
+        return [{
+        \   'lnum': 1,
+        \   'text': 'Could not connect to eslint_d. Try updating eslint_d or killing it.',
+        \}]
+    endif
+
     " Matches patterns line the following:
     "
     " /path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]

@@ -3,6 +3,7 @@
 
 function! ale_linters#sml#smlnj_cm#GetCommand(buffer) abort
     let l:cmfile = ale#handlers#sml#GetCmFile(a:buffer)
+
     return 'sml -m ' . l:cmfile . ' < /dev/null'
 endfunction
 

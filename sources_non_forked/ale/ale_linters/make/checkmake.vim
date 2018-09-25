@@ -13,6 +13,7 @@ function! ale_linters#make#checkmake#Handle(buffer, lines) abort
         \    'text': l:match[3],
         \})
     endfor
+
     return l:output
 endfunction
 

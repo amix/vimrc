@@ -141,6 +141,7 @@ let s:default_list_type_commands = {
       \ "GoLint":               "quickfix",
       \ "GoMetaLinter":         "quickfix",
       \ "GoMetaLinterAutoSave": "locationlist",
+      \ "GoModFmt":             "locationlist",
       \ "GoModifyTags":         "locationlist",
       \ "GoRename":             "quickfix",
       \ "GoRun":                "quickfix",

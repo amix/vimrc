@@ -45,7 +45,7 @@ func! Test_Jump_leaves_lists() abort
     call setqflist(copy(expected), 'r' )
 
     let l:bufnr = bufnr('%')
-    call cursor(6, 3)
+    call cursor(6, 7)
     call go#def#Jump('')
 
     let start = reltime()

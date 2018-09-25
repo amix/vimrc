@@ -6,6 +6,7 @@ call ale#Set('objc_clangd_options', '')
 
 function! ale_linters#objc#clangd#GetProjectRoot(buffer) abort
     let l:project_root = ale#path#FindNearestFile(a:buffer, 'compile_commands.json')
+
     return !empty(l:project_root) ? fnamemodify(l:project_root, ':h') : ''
 endfunction
 

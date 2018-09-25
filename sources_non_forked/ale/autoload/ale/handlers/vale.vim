@@ -23,6 +23,7 @@ function! ale#handlers#vale#Handle(buffer, lines) abort
     endif
 
     let l:output = []
+
     for l:error in l:errors[keys(l:errors)[0]]
         call add(l:output, {
         \   'lnum': l:error['Line'],

@@ -106,64 +106,6 @@ function! s:sync_guru(args) abort
   return l:out
 endfunc
 
-" use vim or neovim job api as appropriate
-function! s:job_start(cmd, start_options) abort
-  if go#util#has_job()
-    return job_start(a:cmd, a:start_options)
-  endif
-
-  let opts = {'stdout_buffered': v:true, 'stderr_buffered': v:true}
-
-  let stdout_buf = ""
-  function opts.on_stdout(job_id, data, event) closure
-    let l:data = a:data
-    let l:data[0] = stdout_buf . l:data[0]
-    let stdout_buf = ""
-
-    if l:data[-1] != ""
-      let stdout_buf = l:data[-1]
-    endif
-
-    let l:data = l:data[:-2]
-    if len(l:data) == 0
-      return
-    endif
-
-    call a:start_options.callback(a:job_id, join(l:data, "\n"))
-  endfunction
-
-  let stderr_buf = ""
-  function opts.on_stderr(job_id, data, event) closure
-    let l:data = a:data
-    let l:data[0] = stderr_buf . l:data[0]
-    let stderr_buf = ""
-
-    if l:data[-1] != ""
-      let stderr_buf = l:data[-1]
-    endif
-
-    let l:data = l:data[:-2]
-    if len(l:data) == 0
-      return
-    endif
-
-    call a:start_options.callback(a:job_id, join(l:data, "\n"))
-  endfunction
-
-  function opts.on_exit(job_id, exit_code, event) closure
-    call a:start_options.exit_cb(a:job_id, a:exit_code)
-    call a:start_options.close_cb(a:job_id)
-  endfunction
-
-  " use a shell for input redirection if needed
-  let cmd = a:cmd
-  if has_key(a:start_options, 'in_io') && a:start_options.in_io ==# 'file' && !empty(a:start_options.in_name)
-    let cmd = ['/bin/sh', '-c', go#util#Shelljoin(a:cmd) . ' <' . a:start_options.in_name]
-  endif
-
-  return jobstart(cmd, opts)
-endfunction
-
 " async_guru runs guru in async mode with the given arguments
 function! s:async_guru(args) abort
   let result = s:guru_cmd(a:args)
@@ -172,91 +114,50 @@ function! s:async_guru(args) abort
     return
   endif
 
-  if !has_key(a:args, 'disable_progress')
-    if a:args.needs_scope
-      call go#util#EchoProgress("analysing with scope " . result.scope .
-            \ " (see ':help go-guru-scope' if this doesn't work)...")
-    endif
-  endif
-
   let state = {
-        \ 'status_dir': expand('%:p:h'),
-        \ 'statusline_type': printf("%s", a:args.mode),
         \ 'mode': a:args.mode,
-        \ 'status': {},
-        \ 'exitval': 0,
-        \ 'closed': 0,
-        \ 'exited': 0,
-        \ 'messages': [],
         \ 'parse' : get(a:args, 'custom_parse', funcref("s:parse_guru_output"))
       \ }
 
-  function! s:callback(chan, msg) dict
-    call add(self.messages, a:msg)
+  function! s:complete(job, exit_status, messages) dict abort
+    let output = join(a:messages, "\n")
+    call self.parse(a:exit_status, output, self.mode)
   endfunction
+  " explicitly bind complete to state so that within it, self will
+  " always refer to state. See :help Partial for more information.
+  let state.complete = function('s:complete', [], state)
 
-  function! s:exit_cb(job, exitval) dict
-    let self.exited = 1
+  let opts = {
+        \ 'statustype': get(a:args, 'statustype', a:args.mode),
+        \ 'for': '_',
+        \ 'errorformat': "%f:%l.%c-%[%^:]%#:\ %m,%f:%l:%c:\ %m",
+        \ 'complete': state.complete,
+        \ }
 
-    let status = {
-          \ 'desc': 'last status',
-          \ 'type': self.statusline_type,
-          \ 'state': "finished",
-          \ }
+  if has_key(a:args, 'disable_progress')
+    let opts.statustype = ''
+  endif
 
-    if a:exitval
-      let self.exitval = a:exitval
-      let status.state = "failed"
-    endif
-
-    call go#statusline#Update(self.status_dir, status)
-
-    if self.closed
-      call self.complete()
-    endif
-  endfunction
-
-  function! s:close_cb(ch) dict
-    let self.closed = 1
-
-    if self.exited
-      call self.complete()
-    endif
-  endfunction
-
-  function state.complete() dict
-    let out = join(self.messages, "\n")
-
-    call self.parse(self.exitval, out, self.mode)
-  endfunction
-
-  " explicitly bind the callbacks to state so that self within them always
-  " refers to state. See :help Partial for more information.
-  let start_options = {
-        \ 'callback': function('s:callback', [], state),
-        \ 'exit_cb': function('s:exit_cb', [], state),
-        \ 'close_cb': function('s:close_cb', [], state)
-       \ }
+  let opts = go#job#Options(l:opts)
 
   if has_key(result, 'stdin_content')
     let l:tmpname = tempname()
     call writefile(split(result.stdin_content, "\n"), l:tmpname, "b")
-    let l:start_options.in_io = "file"
-    let l:start_options.in_name = l:tmpname
+    let l:opts.in_io = "file"
+    let l:opts.in_name = l:tmpname
   endif
 
-  call go#statusline#Update(state.status_dir, {
-        \ 'desc': "current status",
-        \ 'type': state.statusline_type,
-        \ 'state': "analysing",
-        \})
+  call go#job#Start(result.cmd, opts)
 
-  return s:job_start(result.cmd, start_options)
+  if a:args.needs_scope && go#config#EchoCommandInfo() && !has_key(a:args, 'disable_progress')
+    call go#util#EchoProgress("analysing with scope " . result.scope .
+          \ " (see ':help go-guru-scope' if this doesn't work)...")
+  endif
 endfunc
 
 " run_guru runs the given guru argument
 function! s:run_guru(args) abort
-  if has('nvim') || go#util#has_job()
+  if go#util#has_job()
     let res = s:async_guru(a:args)
   else
     let res = s:sync_guru(a:args)
@@ -320,7 +221,7 @@ function! go#guru#Describe(selected) abort
   call s:run_guru(args)
 endfunction
 
-function! go#guru#DescribeInfo() abort
+function! go#guru#DescribeInfo(showstatus) abort
   " json_encode() and friends are introduced with this patch (7.4.1304)
   " vim: https://groups.google.com/d/msg/vim_dev/vLupTNhQhZ8/cDGIk0JEDgAJ
   " nvim: https://github.com/neovim/neovim/pull/4131
@@ -411,7 +312,7 @@ function! go#guru#DescribeInfo() abort
       return
     endif
 
-    call go#util#EchoInfo(info)
+    echo "vim-go: " | echohl Function | echon info | echohl None
   endfunction
 
   let args = {
@@ -504,7 +405,7 @@ function! go#guru#Referrers(selected) abort
   call s:run_guru(args)
 endfunction
 
-function! go#guru#SameIds() abort
+function! go#guru#SameIds(showstatus) abort
   " we use matchaddpos() which was introduce with 7.4.330, be sure we have
   " it: http://ftp.vim.org/vim/patches/7.4/7.4.330
   if !exists("*matchaddpos")
@@ -527,6 +428,9 @@ function! go#guru#SameIds() abort
         \ 'needs_scope': 0,
         \ 'custom_parse': function('s:same_ids_highlight'),
         \ }
+  if !a:showstatus
+    let args.disable_progress = 1
+  endif
 
   call s:run_guru(args)
 endfunction

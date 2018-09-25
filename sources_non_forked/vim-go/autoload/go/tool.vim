@@ -76,12 +76,12 @@ function! go#tool#Imports() abort
   return imports
 endfunction
 
-function! go#tool#Info() abort
+function! go#tool#Info(showstatus) abort
   let l:mode = go#config#InfoMode()
   if l:mode == 'gocode'
-    call go#complete#Info()
+    call go#complete#Info(a:showstatus)
   elseif l:mode == 'guru'
-    call go#guru#DescribeInfo()
+    call go#guru#DescribeInfo(a:showstatus)
   else
     call go#util#EchoError('go_info_mode value: '. l:mode .' is not valid. Valid values are: [gocode, guru]')
   endif

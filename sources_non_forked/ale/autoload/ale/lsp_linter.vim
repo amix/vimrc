@@ -55,14 +55,27 @@ function! s:HandleTSServerDiagnostics(response, error_type) abort
     endif
 
     let l:thislist = ale#lsp#response#ReadTSServerDiagnostics(a:response)
+    let l:no_changes = 0
 
     " tsserver sends syntax and semantic errors in separate messages, so we
     " have to collect the messages separately for each buffer and join them
     " back together again.
     if a:error_type is# 'syntax'
+        if len(l:thislist) is 0 && len(get(l:info, 'syntax_loclist', [])) is 0
+            let l:no_changes = 1
+        endif
+
         let l:info.syntax_loclist = l:thislist
     else
+        if len(l:thislist) is 0 && len(get(l:info, 'semantic_loclist', [])) is 0
+            let l:no_changes = 1
+        endif
+
         let l:info.semantic_loclist = l:thislist
+    endif
+
+    if l:no_changes
+        return
     endif
 
     let l:loclist = get(l:info, 'semantic_loclist', [])
@@ -99,9 +112,10 @@ endfunction
 
 function! ale#lsp_linter#HandleLSPResponse(conn_id, response) abort
     let l:method = get(a:response, 'method', '')
-    let l:linter_name = get(s:lsp_linter_map, a:conn_id, '')
 
     if get(a:response, 'jsonrpc', '') is# '2.0' && has_key(a:response, 'error')
+        let l:linter_name = get(s:lsp_linter_map, a:conn_id, '')
+
         call s:HandleLSPErrorMessage(l:linter_name, a:response)
     elseif l:method is# 'textDocument/publishDiagnostics'
         call s:HandleLSPDiagnostics(a:conn_id, a:response)

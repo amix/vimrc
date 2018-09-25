@@ -115,8 +115,8 @@ g:ale_rust_cargo_avoid_whole_workspace *g:ale_rust_cargo_avoid_whole_workspace*
   Default: `1`
 
   When set to 1, and ALE is used to edit a crate that is part of a Cargo
-  workspace, avoid building the entire entire workspace by invoking
-  `cargo` directly in the crate's directory. Otherwise, behave as usual.
+  workspace, avoid building the entire workspace by invoking `cargo` directly
+  in the crate's directory. Otherwise, behave as usual.
 
 
 ===============================================================================

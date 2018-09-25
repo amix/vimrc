@@ -24,6 +24,7 @@ function! ale#lsp#Register(executable_or_address, project, init_options) abort
         " capabilities_queue: The list of callbacks to call with capabilities.
         " capabilities: Features the server supports.
         let s:connections[l:conn_id] = {
+        \   'id': l:conn_id,
         \   'is_tsserver': 0,
         \   'data': '',
         \   'root': a:project,
@@ -98,6 +99,7 @@ function! s:CreateTSServerMessageData(message) abort
     endif
 
     let l:data = json_encode(l:obj) . "\n"
+
     return [l:is_notification ? 0 : l:obj.seq, l:data]
 endfunction
 

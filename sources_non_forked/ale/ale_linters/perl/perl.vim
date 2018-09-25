@@ -14,11 +14,16 @@ let s:begin_failed_skip_pattern = '\v' . join([
 \], '|')
 
 function! ale_linters#perl#perl#Handle(buffer, lines) abort
+    if empty(a:lines)
+        return []
+    endif
+
     let l:pattern = '\(.\+\) at \(.\+\) line \(\d\+\)'
     let l:output = []
     let l:basename = expand('#' . a:buffer . ':t')
 
     let l:type = 'E'
+
     if a:lines[-1] =~# 'syntax OK'
         let l:type = 'W'
     endif

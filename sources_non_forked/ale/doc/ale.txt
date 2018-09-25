@@ -33,6 +33,7 @@ CONTENTS                                                         *ale-contents*
       cquery..............................|ale-c-cquery|
       flawfinder..........................|ale-c-flawfinder|
       gcc.................................|ale-c-gcc|
+      uncrustify..........................|ale-c-uncrustify|
     chef..................................|ale-chef-options|
       foodcritic..........................|ale-chef-foodcritic|
     clojure...............................|ale-clojure-options|
@@ -53,14 +54,18 @@ CONTENTS                                                         *ale-contents*
       cquery..............................|ale-cpp-cquery|
       flawfinder..........................|ale-cpp-flawfinder|
       gcc.................................|ale-cpp-gcc|
+      uncrustify..........................|ale-cpp-uncrustify|
     c#....................................|ale-cs-options|
       mcs.................................|ale-cs-mcs|
       mcsc................................|ale-cs-mcsc|
+      uncrustify..........................|ale-cs-uncrustify|
     css...................................|ale-css-options|
       prettier............................|ale-css-prettier|
       stylelint...........................|ale-css-stylelint|
     cuda..................................|ale-cuda-options|
       nvcc................................|ale-cuda-nvcc|
+    d.....................................|ale-d-options|
+      uncrustify..........................|ale-d-uncrustify|
     dart..................................|ale-dart-options|
       dartanalyzer........................|ale-dart-dartanalyzer|
       dartfmt.............................|ale-dart-dartfmt|
@@ -95,6 +100,8 @@ CONTENTS                                                         *ale-contents*
       govet...............................|ale-go-govet|
       gometalinter........................|ale-go-gometalinter|
       staticcheck.........................|ale-go-staticcheck|
+      golangserver........................|ale-go-golangserver|
+      golangci-lint.......................|ale-go-golangci-lint|
     graphql...............................|ale-graphql-options|
       eslint..............................|ale-graphql-eslint|
       gqlint..............................|ale-graphql-gqlint|
@@ -127,6 +134,8 @@ CONTENTS                                                         *ale-contents*
       javac...............................|ale-java-javac|
       google-java-format..................|ale-java-google-java-format|
       pmd.................................|ale-java-pmd|
+      javalsp.............................|ale-java-javalsp|
+      uncrustify..........................|ale-java-uncrustify|
     javascript............................|ale-javascript-options|
       eslint..............................|ale-javascript-eslint|
       flow................................|ale-javascript-flow|
@@ -143,6 +152,8 @@ CONTENTS                                                         *ale-contents*
       jsonlint............................|ale-json-jsonlint|
       jq..................................|ale-json-jq|
       prettier............................|ale-json-prettier|
+    julia.................................|ale-julia-options|
+      languageserver......................|ale-julia-languageserver|
     kotlin................................|ale-kotlin-options|
       kotlinc.............................|ale-kotlin-kotlinc|
       ktlint..............................|ale-kotlin-ktlint|
@@ -173,12 +184,17 @@ CONTENTS                                                         *ale-contents*
     objc..................................|ale-objc-options|
       clang...............................|ale-objc-clang|
       clangd..............................|ale-objc-clangd|
+      uncrustify..........................|ale-objc-uncrustify|
     objcpp................................|ale-objcpp-options|
       clang...............................|ale-objcpp-clang|
       clangd..............................|ale-objcpp-clangd|
+      uncrustify..........................|ale-objcpp-uncrustify|
     ocaml.................................|ale-ocaml-options|
       merlin..............................|ale-ocaml-merlin|
       ols.................................|ale-ocaml-ols|
+      ocamlformat.........................|ale-ocaml-ocamlformat|
+    pawn..................................|ale-pawn-options|
+      uncrustify..........................|ale-pawn-uncrustify|
     perl..................................|ale-perl-options|
       perl................................|ale-perl-perl|
       perlcritic..........................|ale-perl-perlcritic|
@@ -202,6 +218,7 @@ CONTENTS                                                         *ale-contents*
     pug...................................|ale-pug-options|
       puglint.............................|ale-pug-puglint|
     puppet................................|ale-puppet-options|
+      puppet..............................|ale-puppet-puppet|
       puppetlint..........................|ale-puppet-puppetlint|
       puppet-languageserver...............|ale-puppet-languageserver|
     pyrex (cython)........................|ale-pyrex-options|
@@ -237,6 +254,7 @@ CONTENTS                                                         *ale-contents*
       rubocop.............................|ale-ruby-rubocop|
       ruby................................|ale-ruby-ruby|
       rufo................................|ale-ruby-rufo|
+      solargraph..........................|ale-ruby-solargraph|
     rust..................................|ale-rust-options|
       cargo...............................|ale-rust-cargo|
       rls.................................|ale-rust-rls|
@@ -245,6 +263,7 @@ CONTENTS                                                         *ale-contents*
     sass..................................|ale-sass-options|
       stylelint...........................|ale-sass-stylelint|
     scala.................................|ale-scala-options|
+      sbtserver...........................|ale-scala-sbtserver|
       scalafmt............................|ale-scala-scalafmt|
       scalastyle..........................|ale-scala-scalastyle|
     scss..................................|ale-scss-options|
@@ -262,6 +281,8 @@ CONTENTS                                                         *ale-contents*
       solium..............................|ale-solidity-solium|
     spec..................................|ale-spec-options|
       rpmlint.............................|ale-spec-rpmlint|
+    sql...................................|ale-sql-options|
+      sqlfmt..............................|ale-sql-sqlfmt|
     stylus................................|ale-stylus-options|
       stylelint...........................|ale-stylus-stylelint|
     tcl...................................|ale-tcl-options|
@@ -283,6 +304,8 @@ CONTENTS                                                         *ale-contents*
       prettier............................|ale-typescript-prettier|
       tslint..............................|ale-typescript-tslint|
       tsserver............................|ale-typescript-tsserver|
+    vala..................................|ale-vala-options|
+      uncrustify..........................|ale-vala-uncrustify|
     verilog/systemverilog.................|ale-verilog-options|
       iverilog............................|ale-verilog-iverilog|
       verilator...........................|ale-verilog-verilator|
@@ -352,10 +375,10 @@ Notes:
 * Awk: `gawk`
 * Bash: `language-server`, `shell` (-n flag), `shellcheck`, `shfmt`
 * Bourne Shell: `shell` (-n flag), `shellcheck`, `shfmt`
-* C: `cppcheck`, `cpplint`!!, `clang`, `clangd`, `clangtidy`!!, `clang-format`, `cquery`, `flawfinder`, `gcc`
-* C++ (filetype cpp): `clang`, `clangd`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `clazy`!!, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`
+* C: `cppcheck`, `cpplint`!!, `clang`, `clangd`, `clangtidy`!!, `clang-format`, `cquery`, `flawfinder`, `gcc`, `uncrustify`
+* C++ (filetype cpp): `clang`, `clangd`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `clazy`!!, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`, `uncrustify`
 * CUDA: `nvcc`!!
-* C#: `mcs`, `mcsc`!!
+* C#: `mcs`, `mcsc`!!, `uncrustify`
 * Chef: `foodcritic`
 * Clojure: `joker`
 * CloudFormation: `cfn-python-lint`
@@ -365,7 +388,7 @@ Notes:
 * CSS: `csslint`, `prettier`, `stylelint`
 * Cucumber: `cucumber`
 * Cython (pyrex filetype): `cython`
-* D: `dmd`
+* D: `dmd`, `uncrustify`
 * Dafny: `dafny`!!
 * Dart: `dartanalyzer`!!, `language_server`, dartfmt!!
 * Dockerfile: `hadolint`
@@ -379,7 +402,7 @@ Notes:
 * FusionScript: `fusion-lint`
 * Git Commit Messages: `gitlint`
 * GLSL: glslang, `glslls`
-* Go: `gofmt`, `goimports`, `go vet`!!, `golint`, `gotype`!!, `gometalinter`!!, `go build`!!, `gosimple`!!, `staticcheck`!!
+* Go: `gofmt`, `goimports`, `go mod`!!, `go vet`!!, `golint`, `gotype`!!, `gometalinter`!!, `go build`!!, `gosimple`!!, `staticcheck`!!, `golangserver`, `golangci-lint`!!
 * GraphQL: `eslint`, `gqlint`, `prettier`
 * Hack: `hack`, `hackfmt`, `hhast`
 * Haml: `haml-lint`
@@ -387,9 +410,10 @@ Notes:
 * Haskell: `brittany`, `ghc`, `cabal-ghc`, `stylish-haskell`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `stack-ghc-mod`, `hlint`, `hdevtools`, `hfmt`, `hie`
 * HTML: `alex`!!, `HTMLHint`, `proselint`, `tidy`, `write-good`
 * Idris: `idris`
-* Java: `checkstyle`, `javac`, `google-java-format`, `PMD`
+* Java: `checkstyle`, `javac`, `google-java-format`, `PMD`, `javalsp`, `uncrustify`
 * JavaScript: `eslint`, `flow`, `jscs`, `jshint`, `prettier`, `prettier-eslint`, `prettier-standard`, `standard`, `xo`
 * JSON: `fixjson`, `jsonlint`, `jq`, `prettier`
+* Julia: `languageserver`
 * Kotlin: `kotlinc`!!, `ktlint`!!, `languageserver`
 * LaTeX (tex): `alex`!!, `chktex`, `lacheck`, `proselint`, `redpen`, `vale`, `write-good`
 * Less: `lessc`, `prettier`, `stylelint`
@@ -404,9 +428,10 @@ Notes:
 * Nim: `nim check`!!
 * nix: `nix-instantiate`
 * nroff: `alex`!!, `proselint`, `write-good`
-* Objective-C: `clang`, `clangd`
-* Objective-C++: `clang`, `clangd`
-* OCaml: `merlin` (see |ale-ocaml-merlin|), `ols`
+* Objective-C: `clang`, `clangd`, `uncrustify`
+* Objective-C++: `clang`, `clangd`, `uncrustify`
+* OCaml: `merlin` (see |ale-ocaml-merlin|), `ols`, `ocamlformat`
+* Pawn: `uncrustify`
 * Perl: `perl -c`, `perl-critic`, `perltidy`
 * PHP: `langserver`, `phan`, `php -l`, `phpcs`, `phpmd`, `phpstan`, `phpcbf`, `php-cs-fixer`
 * PO: `alex`!!, `msgfmt`, `proselint`, `write-good`
@@ -422,16 +447,16 @@ Notes:
 * reStructuredText: `alex`!!, `proselint`, `redpen`, `rstcheck`, `vale`, `write-good`
 * Re:VIEW: `redpen`
 * RPM spec: `rpmlint`
-* Ruby: `brakeman`, `rails_best_practices`!!, `reek`, `rubocop`, `ruby`, `rufo`
+* Ruby: `brakeman`, `rails_best_practices`!!, `reek`, `rubocop`, `ruby`, `rufo`, `solargraph`
 * Rust: `cargo`!!, `rls`, `rustc` (see |ale-integration-rust|), `rustfmt`
 * SASS: `sass-lint`, `stylelint`
 * SCSS: `prettier`, `sass-lint`, `scss-lint`, `stylelint`
-* Scala: `fsc`, `scalac`, `scalafmt`, `scalastyle`
+* Scala: `fsc`, `sbtserver`, `scalac`, `scalafmt`, `scalastyle`
 * Slim: `slim-lint`
 * SML: `smlnj`
 * Solidity: `solhint`, `solium`
 * Stylus: `stylelint`
-* SQL: `sqlint`
+* SQL: `sqlint`, `sqlfmt`
 * Swift: `swiftlint`, `swiftformat`
 * Tcl: `nagelfar`!!
 * Terraform: `tflint`
@@ -439,6 +464,7 @@ Notes:
 * Text^: `alex`!!, `proselint`, `redpen`, `textlint`, `vale`, `write-good`
 * Thrift: `thrift`
 * TypeScript: `eslint`, `prettier`, `tslint`, `tsserver`, `typecheck`
+* VALA: `uncrustify`
 * Verilog: `iverilog`, `verilator`
 * Vim: `vint`
 * Vim help^: `alex`!!, `proselint`, `write-good`
@@ -501,12 +527,13 @@ circumstances.
 ALE will report problems with your code in the following ways, listed with
 their relevant options.
 
-* By updating loclist. (On by default)       - |g:ale_set_loclist|
-* By updating quickfix. (Off by default)     - |g:ale_set_quickfix|
-* By setting error highlights.               - |g:ale_set_highlights|
-* By creating signs in the sign column.      - |g:ale_set_signs|
-* By echoing messages based on your cursor.  - |g:ale_echo_cursor|
-* By showing balloons for your mouse cursor  - |g:ale_set_balloons|
+* By updating loclist. (On by default)             - |g:ale_set_loclist|
+* By updating quickfix. (Off by default)           - |g:ale_set_quickfix|
+* By setting error highlights.                     - |g:ale_set_highlights|
+* By creating signs in the sign column.            - |g:ale_set_signs|
+* By echoing messages based on your cursor.        - |g:ale_echo_cursor|
+* By displaying the preview based on your cursor.  - |g:ale_cursor_detail|
+* By showing balloons for your mouse cursor        - |g:ale_set_balloons|
 
 Please consult the documentation for each option, which can reveal some other
 ways of tweaking the behaviour of each way of displaying problems. You can
@@ -779,6 +806,20 @@ g:ale_change_sign_column_color                 *g:ale_change_sign_column_color*
   windows.
 
 
+g:ale_close_preview_on_insert                   *g:ale_close_preview_on_insert*
+
+  Type: |Number|
+  Default: `0`
+
+  When this option is set to `1`, ALE's |preview-window| will be automatically
+  closed upon entering Insert Mode. This option can be used in combination
+  with |g:ale_cursor_detail| for automatically displaying the preview window
+  on problem lines, and automatically closing it again when editing text.
+
+  This setting must be set to `1` before ALE is loaded for this behavior
+  to be enabled. See |ale-lint-settings-on-startup|.
+
+
 g:ale_command_wrapper                                   *g:ale_command_wrapper*
                                                         *b:ale_command_wrapper*
   Type: |String|
@@ -867,6 +908,27 @@ g:ale_completion_max_suggestions             *g:ale_completion_max_suggestions*
   Adjust this option as needed, depending on the complexity of your codebase
   and your available processing power.
 
+g:ale_cursor_detail                                       *g:ale_cursor_detail*
+
+  Type: |Number|
+  Default: `0`
+
+  When this option is set to `1`, ALE's |preview-window| will be automatically
+  opened when the cursor moves onto lines with problems. ALE will search for
+  problems using the same logic that |g:ale_echo_cursor| uses. The preview
+  window will be closed automatically when you move away from the line.
+
+  Messages are only displayed after a short delay. See |g:ale_echo_delay|.
+
+  The preview window is opened without stealing focus, which means your cursor
+  will stay in the same buffer as it currently is.
+
+  The preview window can be closed automatically upon entering Insert mode
+  by setting |g:ale_close_preview_on_insert| to `1`.
+
+  Either this setting or |g:ale_echo_cursor| must be set to `1` before ALE is
+  loaded for messages to be displayed. See |ale-lint-settings-on-startup|.
+
 
 g:ale_echo_cursor                                           *g:ale_echo_cursor*
 
@@ -877,11 +939,14 @@ g:ale_echo_cursor                                           *g:ale_echo_cursor*
   cursor is near a warning or error. ALE will attempt to find the warning or
   error at a column nearest to the cursor when the cursor is resting on a line
   which contains a warning or error. This option can be set to `0` to disable
-  this behaviour.
-  The format of the message can be customizable in |g:ale_echo_msg_format|.
+  this behavior.
 
-  You should set this setting once before ALE is loaded, and restart Vim if
-  you want to change your preferences. See |ale-lint-settings-on-startup|.
+  Messages are only displayed after a short delay. See |g:ale_echo_delay|.
+
+  The format of the message can be customized with |g:ale_echo_msg_format|.
+
+  Either this setting or |g:ale_cursor_detail| must be set to `1` before ALE
+  is loaded for messages to be displayed. See |ale-lint-settings-on-startup|.
 
 
 g:ale_echo_delay                                             *g:ale_echo_delay*
@@ -890,7 +955,7 @@ g:ale_echo_delay                                             *g:ale_echo_delay*
   Default: `10`
 
   Given any integer, this option controls the number of milliseconds before
-  ALE will echo a message for a problem near the cursor.
+  ALE will echo or preview a message for a problem near the cursor.
 
   The value can be increased to decrease the amount of processing ALE will do
   for files displaying a large number of problems.

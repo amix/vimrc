@@ -34,4 +34,21 @@ g:ale_ocaml_ols_use_global                         *g:ale_ocaml_ols_use_global*
   executable. See also |ale-integrations-local-executables|.
 
 ===============================================================================
+ocamlformat                                             *ale-ocaml-ocamlformat*
+
+g:ale_ocaml_ocamlformat_executable         *g:ale_ocaml_ocamlformat_executable*
+                                           *b:ale_ocaml_ocamlformat_executable*
+  Type: |String|
+  Default: `'ocamlformat'`
+
+  This variable can be set to pass the path of the ocamlformat fixer.
+
+g:ale_ocaml_ocamlformat_options               *g:ale_ocaml_ocamlformat_options*
+                                              *b:ale_ocaml_ocamlformat_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the ocamlformat fixer.
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

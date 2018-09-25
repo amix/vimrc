@@ -142,8 +142,8 @@ The following features and functionality are provided by the NERD tree:
     current tab does not exist, a new one will be initialized.
 
 :NERDTreeCWD                                                    *:NERDTreeCWD*
-    Change tree root to current directory. If no NERD tree exists for this
-    tab, a new tree will be opened.
+    Change the NERDTree root to the current working directory.  If no
+    NERDTree exists for this tab, a new one is opened.
 
 ------------------------------------------------------------------------------
 2.2. Bookmarks                                             *NERDTreeBookmarks*
@@ -522,7 +522,7 @@ Default key: cd
 Map option: NERDTreeMapChdir
 Applies to: files and directories.
 
-Change vims current working directory to that of the selected node.
+Change Vim's current working directory to that of the selected node.
 
 ------------------------------------------------------------------------------
                                                                  *NERDTree-CD*
@@ -530,7 +530,7 @@ Default key: CD
 Map option: NERDTreeMapCWD
 Applies to: no restrictions.
 
-Change tree root to vims current working directory.
+Change the NERDTree root to Vim's current working directory.
 
 ------------------------------------------------------------------------------
                                                                   *NERDTree-I*

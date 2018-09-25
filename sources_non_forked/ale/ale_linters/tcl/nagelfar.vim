@@ -15,7 +15,6 @@ function! ale_linters#tcl#nagelfar#Handle(buffer, lines) abort
     " Line   5: W Found constant "bepa" which is also a variable.
     " Line  13: E Wrong number of arguments (3) to "set"
     " Line  93: N Close brace not aligned with line 90 (4 0)
-
     let l:pattern = '^Line\s\+\([0-9]\+\): \([NEW]\) \(.*\)$'
     let l:output = []
 

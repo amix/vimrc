@@ -28,7 +28,7 @@ g:ale_thrift_thrift_generators                 *g:ale_thrift_thrift_generators*
 g:ale_thrift_thrift_includes                     *g:ale_thrift_thrift_includes*
                                                  *b:ale_thrift_thrift_includes*
   Type: |List| of |String|s
-  Default: `[]`
+  Default: `['.']`
 
   This list contains paths that will be searched for thrift `include`
   directives.

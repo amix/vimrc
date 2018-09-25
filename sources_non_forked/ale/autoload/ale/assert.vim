@@ -101,6 +101,14 @@ function! ale#assert#LSPProject(expected_root) abort
     AssertEqual a:expected_root, l:root
 endfunction
 
+function! ale#assert#LSPAddress(expected_address) abort
+    let l:buffer = bufnr('')
+    let l:linter = s:GetLinter()
+    let l:address = ale#util#GetFunction(l:linter.address_callback)(l:buffer)
+
+    AssertEqual a:expected_address, l:address
+endfunction
+
 " A dummy function for making sure this module is loaded.
 function! ale#assert#SetUpLinterTest(filetype, name) abort
     " Set up a marker so ALE doesn't create real random temporary filenames.
@@ -141,6 +149,7 @@ function! ale#assert#SetUpLinterTest(filetype, name) abort
     command! -nargs=+ AssertLSPOptions :call ale#assert#LSPOptions(<args>)
     command! -nargs=+ AssertLSPLanguage :call ale#assert#LSPLanguage(<args>)
     command! -nargs=+ AssertLSPProject :call ale#assert#LSPProject(<args>)
+    command! -nargs=+ AssertLSPAddress :call ale#assert#LSPAddress(<args>)
 endfunction
 
 function! ale#assert#TearDownLinterTest() abort
@@ -169,6 +178,10 @@ function! ale#assert#TearDownLinterTest() abort
 
     if exists(':AssertLSPProject')
         delcommand AssertLSPProject
+    endif
+
+    if exists(':AssertLSPAddress')
+        delcommand AssertLSPAddress
     endif
 
     if exists('g:dir')

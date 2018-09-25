@@ -9,6 +9,15 @@ function! s:gocodeCommand(cmd, args) abort
   let cmd = [bin_path]
   let cmd = extend(cmd, ['-sock', socket_type])
   let cmd = extend(cmd, ['-f', 'vim'])
+
+  if go#config#GocodeProposeBuiltins()
+    let cmd = extend(cmd, ['-builtin'])
+  endif
+
+  if go#config#GocodeProposeSource()
+    let cmd = extend(cmd, ['-source'])
+  endif
+
   let cmd = extend(cmd, [a:cmd])
   let cmd = extend(cmd, a:args)
 
@@ -43,31 +52,7 @@ function! s:sync_gocode(cmd, args, input) abort
   return l:result
 endfunction
 
-let s:optionsEnabled = 0
-function! s:gocodeEnableOptions() abort
-  if s:optionsEnabled
-    return
-  endif
-
-  let l:bin_path = go#path#CheckBinPath("gocode")
-  if empty(l:bin_path)
-    return
-  endif
-
-  let s:optionsEnabled = 1
-
-  call go#util#Exec(['gocode', 'set', 'propose-builtins', s:toBool(go#config#GocodeProposeBuiltins())])
-  call go#util#Exec(['gocode', 'set', 'autobuild', s:toBool(go#config#GocodeAutobuild())])
-  call go#util#Exec(['gocode', 'set', 'unimported-packages', s:toBool(go#config#GocodeUnimportedPackages())])
-endfunction
-
-function! s:toBool(val) abort
-  if a:val | return 'true' | else | return 'false' | endif
-endfunction
-
 function! s:gocodeAutocomplete() abort
-  call s:gocodeEnableOptions()
-
   " use the offset as is, because the cursor position is the position for
   " which autocomplete candidates are needed.
   return s:sync_gocode('autocomplete',
@@ -81,60 +66,36 @@ function! go#complete#GetInfo() abort
   return s:sync_info(0)
 endfunction
 
-function! go#complete#Info() abort
+function! go#complete#Info(showstatus) abort
   if go#util#has_job(1)
-    return s:async_info(1)
+    return s:async_info(1, a:showstatus)
   else
     return s:sync_info(1)
   endif
 endfunction
 
-function! s:async_info(echo)
-  if exists("s:async_info_job")
-    call job_stop(s:async_info_job)
-    unlet s:async_info_job
-  endif
+function! s:async_info(echo, showstatus)
+  let state = {'echo': a:echo}
 
-  let state = {
-        \ 'exited': 0,
-        \ 'exit_status': 0,
-        \ 'closed': 0,
-        \ 'messages': [],
-        \ 'echo': a:echo
-      \ }
-
-  function! s:callback(chan, msg) dict
-    let l:msg = a:msg
-    if &encoding != 'utf-8'
-      let l:msg = iconv(l:msg, 'utf-8', &encoding)
-    endif
-    call add(self.messages, l:msg)
-  endfunction
-
-  function! s:exit_cb(job, exitval) dict
-    let self.exit_status = a:exitval
-    let self.exited = 1
-
-    if self.closed
-      call self.complete()
-    endif
-  endfunction
-
-  function! s:close_cb(ch) dict
-    let self.closed = 1
-    if self.exited
-      call self.complete()
-    endif
-  endfunction
-
-  function state.complete() dict
-    if self.exit_status != 0
+  function! s:complete(job, exit_status, messages) abort dict
+    if a:exit_status != 0
       return
     endif
 
-    let result = s:info_filter(self.echo, join(self.messages, "\n"))
+    if &encoding != 'utf-8'
+      let i = 0
+      while i < len(a:messages)
+        let a:messages[i] = iconv(a:messages[i], 'utf-8', &encoding)
+        let i += 1
+      endwhile
+    endif
+
+    let result = s:info_filter(self.echo, join(a:messages, "\n"))
     call s:info_complete(self.echo, result)
   endfunction
+  " explicitly bind complete to state so that within it, self will
+  " always refer to state. See :help Partial for more information.
+  let state.complete = function('s:complete', [], state)
 
   " add 1 to the offset, so that the position at the cursor will be included
   " in gocode's search
@@ -146,23 +107,32 @@ function! s:async_info(echo)
     \ "GOROOT": go#util#env("goroot")
     \ }
 
+  let opts = {
+        \ 'bang': 1,
+        \ 'complete': state.complete,
+        \ 'for': '_',
+        \ }
+
+  if a:showstatus
+    let opts.statustype = 'gocode'
+  endif
+
+  let opts = go#job#Options(l:opts)
+
   let cmd = s:gocodeCommand('autocomplete',
         \ [expand('%:p'), offset])
 
-  " TODO(bc): Don't write the buffer to a file; pass the buffer directrly to
+  " TODO(bc): Don't write the buffer to a file; pass the buffer directly to
   " gocode's stdin. It shouldn't be necessary to use {in_io: 'file', in_name:
   " s:gocodeFile()}, but unfortunately {in_io: 'buffer', in_buf: bufnr('%')}
-  " should work.
-  let options = {
+  " doesn't work.
+  call extend(opts, {
         \ 'env': env,
         \ 'in_io': 'file',
         \ 'in_name': s:gocodeFile(),
-        \ 'callback': funcref("s:callback", [], state),
-        \ 'exit_cb': funcref("s:exit_cb", [], state),
-        \ 'close_cb': funcref("s:close_cb", [], state)
-      \ }
+        \ })
 
-  let s:async_info_job = job_start(cmd, options)
+  call go#job#Start(cmd, opts)
 endfunction
 
 function! s:gocodeFile()

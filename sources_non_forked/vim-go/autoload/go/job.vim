@@ -33,7 +33,10 @@ endfunction
 "     function will be passed three arguments: the job, its exit code, and the
 "     list of messages received from the channel. The default is a no-op. A
 "     custom value can modify the messages before they are processed by the
-"     returned exit_cb and close_cb callbacks.
+"     returned exit_cb and close_cb callbacks. When the function is called,
+"     the current window will be the window that was hosting the buffer when
+"     the job was started. After it returns, the current window will be
+"     restored to what it was before the function was called.
 
 " The return value is a dictionary with these keys:
 "   'callback':
@@ -87,23 +90,32 @@ function! go#job#Options(args)
 
   " do nothing in state.complete by default.
   function state.complete(job, exit_status, data)
+    if has_key(self, 'custom_complete')
+      let l:winid = win_getid(winnr())
+      " Always set the active window to the window that was active when the job
+      " was started. Among other things, this makes sure that the correct
+      " window's location list will be populated when the list type is
+      " 'location' and the user has moved windows since starting the job.
+      call win_gotoid(self.winid)
+      call self.custom_complete(a:job, a:exit_status, a:data)
+      call win_gotoid(l:winid)
+    endif
+
+    call self.show_errors(a:job, a:exit_status, a:data)
   endfunction
 
   function state.show_status(job, exit_status) dict
+    if self.statustype == ''
+      return
+    endif
+
     if go#config#EchoCommandInfo()
-      let prefix = ""
-      if self.statustype != ''
-        let prefix = '[' . self.statustype . '] '
-      endif
+      let prefix = '[' . self.statustype . '] '
       if a:exit_status == 0
         call go#util#EchoSuccess(prefix . "SUCCESS")
       else
         call go#util#EchoError(prefix . "FAIL")
       endif
-    endif
-
-    if self.statustype == ''
-      return
     endif
 
     let status = {
@@ -127,10 +139,15 @@ function! go#job#Options(args)
   endfunction
 
   if has_key(a:args, 'complete')
-    let state.complete = a:args.complete
+    let state.custom_complete = a:args.complete
   endif
 
   function! s:start(args) dict
+    if go#config#EchoCommandInfo() && self.statustype != ""
+      let prefix = '[' . self.statustype . '] '
+      call go#util#EchoSuccess(prefix . "dispatched")
+    endif
+
     if self.statustype != ''
       let status = {
             \ 'desc': 'current status',
@@ -164,7 +181,6 @@ function! go#job#Options(args)
 
     if self.closed || has('nvim')
       call self.complete(a:job, self.exit_status, self.messages)
-      call self.show_errors(a:job, self.exit_status, self.messages)
     endif
   endfunction
   " explicitly bind exit_cb to state so that within it, self will always refer
@@ -177,7 +193,6 @@ function! go#job#Options(args)
     if self.exited
       let job = ch_getjob(a:ch)
       call self.complete(job, self.exit_status, self.messages)
-      call self.show_errors(job, self.exit_status, self.messages)
     endif
   endfunction
   " explicitly bind close_cb to state so that within it, self will
@@ -225,7 +240,7 @@ function! go#job#Options(args)
 
     if empty(errors)
       " failed to parse errors, output the original content
-      call go#util#EchoError(self.messages + [self.dir])
+      call go#util#EchoError([self.dir] + self.messages)
       call win_gotoid(l:winid)
       return
     endif
@@ -254,10 +269,21 @@ function! go#job#Start(cmd, options)
     let l:options = s:neooptions(l:options)
   endif
 
+  " Verify that the working directory for the job actually exists. Return
+  " early if the directory does not exist. This helps avoid errors when
+  " working with plugins that use virtual files that don't actually exist on
+  " the file system.
+  let filedir = expand("%:p:h")
+  if has_key(l:options, 'cwd') && !isdirectory(l:options.cwd)
+      return
+  elseif !isdirectory(filedir)
+    return
+  endif
+
   if !has_key(l:options, 'cwd')
     " pre start
     let dir = getcwd()
-    execute l:cd fnameescape(expand("%:p:h"))
+    execute l:cd fnameescape(filedir)
   endif
 
   if has_key(l:options, '_start')
@@ -267,11 +293,10 @@ function! go#job#Start(cmd, options)
     unlet l:options._start
   endif
 
-
   if has('nvim')
     let l:input = []
-    if has_key(l:options, 'in_io') && l:options.in_io ==# 'file' && !empty(l:options.in_name)
-      let l:input = readfile(l:options.in_name, 1)
+    if has_key(a:options, 'in_io') && a:options.in_io ==# 'file' && !empty(a:options.in_name)
+      let l:input = readfile(a:options.in_name, "b")
     endif
 
     let job = jobstart(a:cmd, l:options)
@@ -306,49 +331,77 @@ function! s:neooptions(options)
         continue
       endif
 
+      " dealing with the channel lines of Neovim sucks. The docs (:help
+      " channel-lines) say:
+      " stream event handlers may receive partial (incomplete) lines. For a
+      " given invocation of on_stdout etc, `a:data` is not guaranteed to end
+      " with a newline.
+      "   - `abcdefg` may arrive as `['abc']`, `['defg']`.
+      "   - `abc\nefg` may arrive as `['abc', '']`, `['efg']` or `['abc']`,
+      "     `['','efg']`, or even `['ab']`, `['c','efg']`.
       if key == 'callback'
         let l:options['callback'] = a:options['callback']
 
         if !has_key(a:options, 'out_cb')
-          let l:options['stdout_buffered'] = v:true
-
           function! s:callback2on_stdout(ch, data, event) dict
-            let l:data = a:data
-            let l:data[0] = self.stdout_buf . l:data[0]
-            let self.stdout_buf = ""
+            " a single empty string means EOF was reached.
+            if len(a:data) == 1 && a:data[0] == ''
+              " when there's nothing buffered, return early so that an
+              " erroneous message will not be added.
+              if self.stdout_buf == ''
+                return
+              endif
 
-            if l:data[-1] != ""
+              let l:data = [self.stdout_buf]
+              let self.stdout_buf = ''
+            else
+              let l:data = copy(a:data)
+              let l:data[0] = self.stdout_buf . l:data[0]
+
+              " The last element may be a partial line; save it for next time.
               let self.stdout_buf = l:data[-1]
+
+              let l:data = l:data[:-2]
+
+              if len(l:data) == 0
+                return
+              endif
             endif
 
-            let l:data = l:data[:-2]
-            if len(l:data) == 0
-              return
-            endif
-
-            call self.callback(a:ch, join(l:data, "\n"))
+            for l:msg in l:data
+              call self.callback(a:ch, l:msg)
+            endfor
           endfunction
           let l:options['on_stdout'] = function('s:callback2on_stdout', [], l:options)
         endif
 
         if !has_key(a:options, 'err_cb')
-          let l:options['stderr_buffered'] = v:true
-
           function! s:callback2on_stderr(ch, data, event) dict
-            let l:data = a:data
-            let l:data[0] = self.stderr_buf . l:data[0]
-            let self.stderr_buf = ""
+            " a single empty string means EOF was reached.
+            if len(a:data) == 1 && a:data[0] == ''
+              " when there's nothing buffered, return early so that an
+              " erroneous message will not be added.
+              if self.stderr_buf == ''
+                return
+              endif
+              let l:data = [self.stderr_buf]
+              let self.stderr_buf = ''
+            else
+              let l:data = copy(a:data)
+              let l:data[0] = self.stderr_buf . l:data[0]
 
-            if l:data[-1] != ""
+              " The last element may be a partial line; save it for next time.
               let self.stderr_buf = l:data[-1]
+
+              let l:data = l:data[:-2]
+              if len(l:data) == 0
+                return
+              endif
             endif
 
-            let l:data = l:data[:-2]
-            if len(l:data) == 0
-              return
-            endif
-
-            call self.callback(a:ch, join(l:data, "\n"))
+            for l:msg in l:data
+              call self.callback(a:ch, l:msg)
+            endfor
           endfunction
           let l:options['on_stderr'] = function('s:callback2on_stderr', [], l:options)
         endif
@@ -358,22 +411,32 @@ function! s:neooptions(options)
 
       if key == 'out_cb'
         let l:options['out_cb'] = a:options['out_cb']
-        let l:options['stdout_buffered'] = v:true
         function! s:on_stdout(ch, data, event) dict
-          let l:data = a:data
-          let l:data[0] = self.stdout_buf . l:data[0]
-          let self.stdout_buf = ""
+          " a single empty string means EOF was reached.
+          if len(a:data) == 1 && a:data[0] == ''
+            " when there's nothing buffered, return early so that an
+            " erroneous message will not be added.
+            if self.stdout_buf == ''
+              return
+            endif
+            let l:data = [self.stdout_buf]
+            let self.stdout_buf = ''
+          else
+            let l:data = copy(a:data)
+            let l:data[0] = self.stdout_buf . l:data[0]
 
-          if l:data[-1] != ""
+            " The last element may be a partial line; save it for next time.
             let self.stdout_buf = l:data[-1]
+
+            let l:data = l:data[:-2]
+            if len(l:data) == 0
+              return
+            endif
           endif
 
-          let l:data = l:data[:-2]
-          if len(l:data) == 0
-            return
-          endif
-
-          call self.out_cb(a:ch, join(l:data, "\n"))
+            for l:msg in l:data
+              call self.out_cb(a:ch, l:msg)
+            endfor
         endfunction
         let l:options['on_stdout'] = function('s:on_stdout', [], l:options)
 
@@ -382,22 +445,32 @@ function! s:neooptions(options)
 
       if key == 'err_cb'
         let l:options['err_cb'] = a:options['err_cb']
-        let l:options['stderr_buffered'] = v:true
         function! s:on_stderr(ch, data, event) dict
-          let l:data = a:data
-          let l:data[0] = self.stderr_buf . l:data[0]
-          let self.stderr_buf = ""
+          " a single empty string means EOF was reached.
+          if len(a:data) == 1 && a:data[0] == ''
+            " when there's nothing buffered, return early so that an
+            " erroneous message will not be added.
+            if self.stderr_buf == ''
+              return
+            endif
+            let l:data = [self.stderr_buf]
+            let self.stderr_buf = ''
+          else
+            let l:data = copy(a:data)
+            let l:data[0] = self.stderr_buf . l:data[0]
 
-          if l:data[-1] != ""
+            " The last element may be a partial line; save it for next time.
             let self.stderr_buf = l:data[-1]
+
+            let l:data = l:data[:-2]
+            if len(l:data) == 0
+              return
+            endif
           endif
 
-          let l:data = l:data[:-2]
-          if len(l:data) == 0
-            return
-          endif
-
-          call self.err_cb(a:ch, join(l:data, "\n"))
+          for l:msg in l:data
+            call self.err_cb(a:ch, l:msg)
+          endfor
         endfunction
         let l:options['on_stderr'] = function('s:on_stderr', [], l:options)
 
@@ -418,6 +491,12 @@ function! s:neooptions(options)
         continue
       endif
 
+      if key == 'stoponexit'
+        if a:options['stoponexit'] == ''
+          let l:options['detach'] = 1
+        endif
+        continue
+      endif
   endfor
   return l:options
 endfunction

@@ -42,6 +42,7 @@ function! ale_linters#rust#cargo#GetCommand(buffer, version_output) abort
     \   && ale#semver#GTE(l:version, [0, 22, 0])
 
     let l:include_features = ale#Var(a:buffer, 'rust_cargo_include_features')
+
     if !empty(l:include_features)
         let l:include_features = ' --features ' . ale#Escape(l:include_features)
     endif
@@ -59,6 +60,7 @@ function! ale_linters#rust#cargo#GetCommand(buffer, version_output) abort
     endif
 
     let l:default_feature_behavior = ale#Var(a:buffer, 'rust_cargo_default_feature_behavior')
+
     if l:default_feature_behavior is# 'all'
         let l:include_features = ''
         let l:default_feature = ' --all-features'

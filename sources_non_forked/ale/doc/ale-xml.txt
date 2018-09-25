@@ -21,6 +21,14 @@ g:ale_xml_xmllint_options                           *g:ale_xml_xmllint_options*
   This variable can be set to pass additional options to xmllint.
 
 
+g:ale_xml_xmllint_indentsize                     *g:ale_xml_xmllint_indentsize*
+                                                 *b:ale_xml_xmllint_indentsize*
+  Type: |Number|
+  Default: 2
+
+  This variable can be sent to specify the amount of spaces used for
+  indentation.
+
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
 

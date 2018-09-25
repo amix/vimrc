@@ -153,6 +153,32 @@ function! s:TreeDirNode.getCascade()
     return [self] + visChild.getCascade()
 endfunction
 
+" FUNCTION: TreeDirNode.getCascadeRoot() {{{1
+" Return the first directory node in the cascade in which this directory node
+" is rendered.
+function! s:TreeDirNode.getCascadeRoot()
+
+    " Don't search above the current NERDTree root node.
+    if self.isRoot()
+        return self
+    endif
+
+    let l:cascadeRoot = self
+    let l:parent = self.parent
+
+    while !empty(l:parent) && !l:parent.isRoot()
+
+        if index(l:parent.getCascade(), self) == -1
+            break
+        endif
+
+        let l:cascadeRoot = l:parent
+        let l:parent = l:parent.parent
+    endwhile
+
+    return l:cascadeRoot
+endfunction
+
 " FUNCTION: TreeDirNode.getChildCount() {{{1
 " Returns the number of children this node has
 function! s:TreeDirNode.getChildCount()

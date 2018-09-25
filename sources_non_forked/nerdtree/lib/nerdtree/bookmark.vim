@@ -343,7 +343,12 @@ function! s:Bookmark.Write()
     for j in s:Bookmark.InvalidBookmarks()
         call add(bookmarkStrings, j)
     endfor
-    call writefile(bookmarkStrings, g:NERDTreeBookmarksFile)
+
+    try
+        call writefile(bookmarkStrings, g:NERDTreeBookmarksFile)
+    catch
+        call nerdtree#echoError("Failed to write bookmarks file. Make sure g:NERDTreeBookmarksFile points to a valid location.")
+    endtry
 endfunction
 
 " vim: set sw=4 sts=4 et fdm=marker:

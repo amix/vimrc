@@ -14,7 +14,7 @@ command! -range=% GoFreevars call go#guru#Freevars(<count>)
 command! -range=% GoChannelPeers call go#guru#ChannelPeers(<count>)
 command! -range=% GoReferrers call go#guru#Referrers(<count>)
 
-command! -range=0 GoSameIds call go#guru#SameIds()
+command! -range=0 GoSameIds call go#guru#SameIds(1)
 command! -range=0 GoSameIdsClear call go#guru#ClearSameIds()
 command! -range=0 GoSameIdsToggle call go#guru#ToggleSameIds()
 command! -range=0 GoSameIdsAutoToggle call go#guru#AutoToogleSameIds()
@@ -23,10 +23,13 @@ command! -range=0 GoSameIdsAutoToggle call go#guru#AutoToogleSameIds()
 command! -nargs=* -range GoAddTags call go#tags#Add(<line1>, <line2>, <count>, <f-args>)
 command! -nargs=* -range GoRemoveTags call go#tags#Remove(<line1>, <line2>, <count>, <f-args>)
 
+" -- mod
+command! -nargs=0 -range GoModFmt call go#mod#Format()
+
 " -- tool
 command! -nargs=* -complete=customlist,go#tool#ValidFiles GoFiles echo go#tool#Files(<f-args>)
 command! -nargs=0 GoDeps echo go#tool#Deps()
-command! -nargs=0 GoInfo call go#tool#Info()
+command! -nargs=0 GoInfo call go#tool#Info(1)
 command! -nargs=0 GoAutoTypeInfoToggle call go#complete#ToggleAutoTypeInfo()
 
 " -- cmd
