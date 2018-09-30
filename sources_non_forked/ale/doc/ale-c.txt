@@ -282,4 +282,35 @@ g:ale_c_uncrustify_options                         *g:ale_c_uncrustify_options*
 
 
 ===============================================================================
+ccls                                                               *ale-c-ccls*
+
+g:ale_c_ccls_executable                               *g:ale_c_ccls_executable*
+                                                      *b:ale_c_ccls_executable*
+  Type: |String|
+  Default: `'ccls'`
+
+  This variable can be changed to use a different executable for ccls.
+
+
+g:ale_c_ccls_init_options                           *g:ale_c_ccls_init_options*
+                                                    *b:ale_c_ccls_init_options*
+  Type: |Dictionary|
+  Default: `{}`
+
+  This variable can be changed to customize ccls initialization options.
+  Example: >
+      {
+    \   'cacheDirectory': '/tmp/ccls',
+    \   'cacheFormat': 'binary',
+    \   'diagnostics': {
+    \     'onOpen': 0,
+    \     'opChange': 1000,
+    \   },
+    \ }
+<
+  Visit https://github.com/MaskRay/ccls/wiki/Initialization-options for all
+  available options and explanations.
+
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

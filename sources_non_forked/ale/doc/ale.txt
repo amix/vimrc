@@ -34,6 +34,7 @@ CONTENTS                                                         *ale-contents*
       flawfinder..........................|ale-c-flawfinder|
       gcc.................................|ale-c-gcc|
       uncrustify..........................|ale-c-uncrustify|
+      ccls................................|ale-c-ccls|
     chef..................................|ale-chef-options|
       foodcritic..........................|ale-chef-foodcritic|
     clojure...............................|ale-clojure-options|
@@ -55,6 +56,7 @@ CONTENTS                                                         *ale-contents*
       flawfinder..........................|ale-cpp-flawfinder|
       gcc.................................|ale-cpp-gcc|
       uncrustify..........................|ale-cpp-uncrustify|
+      ccls................................|ale-cpp-ccls|
     c#....................................|ale-cs-options|
       mcs.................................|ale-cs-mcs|
       mcsc................................|ale-cs-mcsc|
@@ -115,6 +117,7 @@ CONTENTS                                                         *ale-contents*
     haskell...............................|ale-haskell-options|
       brittany............................|ale-haskell-brittany|
       ghc.................................|ale-haskell-ghc|
+      ghc-mod.............................|ale-haskell-ghc-mod|
       cabal-ghc...........................|ale-haskell-cabal-ghc|
       hdevtools...........................|ale-haskell-hdevtools|
       hfmt................................|ale-haskell-hfmt|
@@ -185,6 +188,7 @@ CONTENTS                                                         *ale-contents*
       clang...............................|ale-objc-clang|
       clangd..............................|ale-objc-clangd|
       uncrustify..........................|ale-objc-uncrustify|
+      ccls................................|ale-objc-ccls|
     objcpp................................|ale-objcpp-options|
       clang...............................|ale-objcpp-clang|
       clangd..............................|ale-objcpp-clangd|
@@ -206,6 +210,7 @@ CONTENTS                                                         *ale-contents*
       phpcs...............................|ale-php-phpcs|
       phpmd...............................|ale-php-phpmd|
       phpstan.............................|ale-php-phpstan|
+      psalm...............................|ale-php-psalm|
       php-cs-fixer........................|ale-php-php-cs-fixer|
     po....................................|ale-po-options|
       write-good..........................|ale-po-write-good|
@@ -375,8 +380,8 @@ Notes:
 * Awk: `gawk`
 * Bash: `language-server`, `shell` (-n flag), `shellcheck`, `shfmt`
 * Bourne Shell: `shell` (-n flag), `shellcheck`, `shfmt`
-* C: `cppcheck`, `cpplint`!!, `clang`, `clangd`, `clangtidy`!!, `clang-format`, `cquery`, `flawfinder`, `gcc`, `uncrustify`
-* C++ (filetype cpp): `clang`, `clangd`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `clazy`!!, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`, `uncrustify`
+* C: `cppcheck`, `cpplint`!!, `clang`, `clangd`, `clangtidy`!!, `clang-format`, `cquery`, `flawfinder`, `gcc`, `uncrustify`, `ccls`
+* C++ (filetype cpp): `clang`, `clangd`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `clazy`!!, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`, `uncrustify`, `ccls`
 * CUDA: `nvcc`!!
 * C#: `mcs`, `mcsc`!!, `uncrustify`
 * Chef: `foodcritic`
@@ -407,7 +412,7 @@ Notes:
 * Hack: `hack`, `hackfmt`, `hhast`
 * Haml: `haml-lint`
 * Handlebars: `ember-template-lint`
-* Haskell: `brittany`, `ghc`, `cabal-ghc`, `stylish-haskell`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `stack-ghc-mod`, `hlint`, `hdevtools`, `hfmt`, `hie`
+* Haskell: `brittany`, `ghc`, `cabal-ghc`, `stylish-haskell`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `hlint`, `hdevtools`, `hfmt`, `hie`
 * HTML: `alex`!!, `HTMLHint`, `proselint`, `tidy`, `write-good`
 * Idris: `idris`
 * Java: `checkstyle`, `javac`, `google-java-format`, `PMD`, `javalsp`, `uncrustify`
@@ -428,12 +433,12 @@ Notes:
 * Nim: `nim check`!!
 * nix: `nix-instantiate`
 * nroff: `alex`!!, `proselint`, `write-good`
-* Objective-C: `clang`, `clangd`, `uncrustify`
+* Objective-C: `clang`, `clangd`, `uncrustify`, `ccls`
 * Objective-C++: `clang`, `clangd`, `uncrustify`
 * OCaml: `merlin` (see |ale-ocaml-merlin|), `ols`, `ocamlformat`
 * Pawn: `uncrustify`
 * Perl: `perl -c`, `perl-critic`, `perltidy`
-* PHP: `langserver`, `phan`, `php -l`, `phpcs`, `phpmd`, `phpstan`, `phpcbf`, `php-cs-fixer`
+* PHP: `langserver`, `phan`, `php -l`, `phpcs`, `phpmd`, `phpstan`, `phpcbf`, `php-cs-fixer`, `psalm`!!
 * PO: `alex`!!, `msgfmt`, `proselint`, `write-good`
 * Pod: `alex`!!, `proselint`, `write-good`
 * Pony: `ponyc`
@@ -1202,6 +1207,12 @@ g:ale_lint_on_text_changed                         *g:ale_lint_on_text_changed*
   ALE will check buffers after a short delay, with a timer which resets on
   each change. The delay can be configured by adjusting the |g:ale_lint_delay|
   variable.
+                                               *ale-linting-interrupts-mapping*
+
+  Due to a bug in Vim, ALE can interrupt mappings with pending key presses,
+  per |timeoutlen|. If this happens, follow the advice for enabling
+  |g:ale_lint_on_insert_leave| below, and set this option to `'normal'`, or
+  disable it entirely.
 
   You should set this setting once before ALE is loaded, and restart Vim if
   you want to change your preferences. See |ale-lint-settings-on-startup|.
@@ -1217,7 +1228,7 @@ g:ale_lint_on_insert_leave                         *g:ale_lint_on_insert_leave*
 
   ALE will not lint files when you escape insert mode with |CTRL-C| by
   default. You can make ALE lint files with this option when you use |CTRL-C|
-  with the following keybind. >
+  with the following mapping. >
 
     " Make using Ctrl+C do the same as Escape, to trigger autocmd commands
     inoremap <C-c> <Esc>

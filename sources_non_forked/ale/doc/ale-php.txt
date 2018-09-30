@@ -170,6 +170,16 @@ g:ale_php_phpstan_configuration               *g:ale_php_phpstan_configuration*
 
 
 ===============================================================================
+psalm                                                           *ale-php-psalm*
+
+g:ale_php_psalm_executable                         *g:ale_php_psalm_executable*
+                                                   *b:ale_php_psalm_executable*
+  Type: |String|
+  Default: `'psalm'`
+
+  This variable sets the executable used for psalm.
+
+===============================================================================
 php-cs-fixer                                              *ale-php-php-cs-fixer*
 
 g:ale_php_cs_fixer_executable                    *g:ale_php_cs_fixer_executable*

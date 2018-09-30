@@ -18,6 +18,12 @@ g:ale_scss_stylelint_executable               *g:ale_scss_stylelint_executable*
 
   See |ale-integrations-local-executables|
 
+g:ale_scss_stylelint_options                     *g:ale_scss_stylelint_options*
+                                                 *b:ale_scss_stylelint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to stylelint.
 
 g:ale_scss_stylelint_use_global               *g:ale_scss_stylelint_use_global*
                                               *b:ale_scss_stylelint_use_global*

@@ -4,29 +4,40 @@ if exists("g:go_loaded_install")
 endif
 let g:go_loaded_install = 1
 
-" Not using the has('patch-7.4.2009') syntax because that wasn't added until
-" 7.4.237, and we want to be sure this works for everyone (this is also why
-" we're not using utils#EchoError()).
-"
-" Version 7.4.2009 was chosen because that's greater than what the most recent Ubuntu LTS
-" release (16.04) uses and has a couple of features we need (e.g. execute()
-" and :message clear).
-if
-      \ go#config#VersionWarning() != 0 &&
-      \ (v:version < 704 || (v:version == 704 && !has('patch2009')))
-      \ && !has('nvim')
-  echohl Error
-  echom "vim-go requires Vim 7.4.2009 or Neovim, but you're using an older version."
-  echom "Please update your Vim for the best vim-go experience."
-  echom "If you really want to continue you can set this to make the error go away:"
-  echom "    let g:go_version_warning = 0"
-  echom "Note that some features may error out or behave incorrectly."
-  echom "Please do not report bugs unless you're using Vim 7.4.2009 or newer."
-  echohl None
+function! s:checkVersion() abort
+  " Not using the has('patch-7.4.2009') syntax because that wasn't added until
+  " 7.4.237, and we want to be sure this works for everyone (this is also why
+  " we're not using utils#EchoError()).
+  "
+  " Version 7.4.2009 was chosen because that's greater than what the most recent Ubuntu LTS
+  " release (16.04) uses and has a couple of features we need (e.g. execute()
+  " and :message clear).
 
-  " Make sure people see this.
-  sleep 2
-endif
+  let l:unsupported = 0
+  if go#config#VersionWarning() != 0
+    if has('nvim')
+      let l:unsupported = !has('nvim-0.3.1')
+    else
+      let l:unsupported = (v:version < 704 || (v:version == 704 && !has('patch2009')))
+    endif
+
+    if l:unsupported == 1
+      echohl Error
+      echom "vim-go requires Vim 7.4.2009 or Neovim 0.3.1, but you're using an older version."
+      echom "Please update your Vim for the best vim-go experience."
+      echom "If you really want to continue you can set this to make the error go away:"
+      echom "    let g:go_version_warning = 0"
+      echom "Note that some features may error out or behave incorrectly."
+      echom "Please do not report bugs unless you're using Vim 7.4.2009 or newer or Neovim 0.3.1."
+      echohl None
+
+      " Make sure people see this.
+      sleep 2
+    endif
+  endif
+endfunction
+
+call s:checkVersion()
 
 " these packages are used by vim-go and can be automatically installed if
 " needed by the user with GoInstallBinaries.

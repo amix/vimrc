@@ -6,13 +6,28 @@ function! ale#fixers#generic_python#AddLinesBeforeControlStatements(buffer, line
     let l:new_lines = []
     let l:last_indent_size = 0
     let l:last_line_is_blank = 0
+    let l:in_docstring = 0
 
     for l:line in a:lines
         let l:indent_size = len(matchstr(l:line, '^ *'))
 
+        if !l:in_docstring
+            " Make sure it is not just a single line docstring and then verify
+            " it's starting a new docstring
+            if match(l:line, '\v^ *("""|'''''').*("""|'''''')') == -1
+            \&& match(l:line, '\v^ *("""|'''''')') >= 0
+                let l:in_docstring = 1
+            endif
+        else
+            if match(l:line, '\v^ *.*("""|'''''')') >= 0
+                let l:in_docstring = 0
+            endif
+        endif
+
         if !l:last_line_is_blank
+        \&& !l:in_docstring
         \&& l:indent_size <= l:last_indent_size
-        \&& match(l:line, '\v^ *(return|if|for|while|break|continue)') >= 0
+        \&& match(l:line, '\v^ *(return|if|for|while|break|continue)(\(| |$)') >= 0
             call add(l:new_lines, '')
         endif
 

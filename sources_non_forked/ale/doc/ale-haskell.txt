@@ -23,6 +23,16 @@ g:ale_haskell_ghc_options                           *g:ale_haskell_ghc_options*
   This variable can be changed to modify flags given to ghc.
 
 ===============================================================================
+ghc-mod                                                   *ale-haskell-ghc-mod*
+
+g:ale_haskell_ghc_mod_executable             *g:ale_haskell_ghc_mod_executable*
+                                             *b:ale_haskell_ghc_mod_executable*
+  Type: |String|
+  Default: `'ghc-mod'`
+
+  This variable can be changed to use a different executable for ghc-mod.
+
+===============================================================================
 cabal-ghc                                               *ale-haskell-cabal-ghc*
 
 g:ale_haskell_cabal_ghc_options               *g:ale_haskell_cabal_ghc_options*
@@ -76,6 +86,15 @@ g:ale_haskell_hlint_executable                 *g:ale_haskell_hlint_executable*
   Default: `'hlint'`
 
   This variable can be changed to use a different executable for hlint.
+
+
+g:ale_haskell_hlint_options                       g:ale_haskell_hlint_options
+                                                  b:ale_haskell_hlint_options
+  Type: String
+  Default: ''
+
+  This variable can be used to pass extra options to the underlying hlint
+  executable.
 
 ===============================================================================
 stack-build                                           *ale-haskell-stack-build*
