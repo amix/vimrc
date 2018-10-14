@@ -1,0 +1,55 @@
+# Generic tags
+
+snippet {
+	{{ ${0} }}
+
+# Template tags
+
+snippet extends
+	{% extends "${0:base.html}" %}
+snippet autoescape
+	{% autoescape ${0:xhtml_escape | None} %}
+snippet apply
+	{% apply ${1:function} %}
+	  ${0}
+	{% end %}
+snippet block
+	{% block ${1} %}
+	  ${0}
+	{% end %}
+snippet for
+	{% for ${1:item} in ${2} %}
+	  ${0}
+	{% end %}
+snippet from
+	{% from ${1:x} import ${0:y} %}
+snippet if
+	{% if ${1:condition} %}
+	  ${0}
+	{% end %}
+snippet eif
+	{% elif ${0:condition} %}
+snippet el
+	{% else %}
+snippet import
+	{% import ${0:module} %}
+snippet include
+	{% include "${0:filename}" %}
+snippet module
+	{% module ${0:expression} %}
+snippet raw
+	{% raw ${0:expression} %}
+snippet set
+	{% set ${1:x} = ${0:y} %}
+snippet try
+	{% try %}
+	  ${1:${VISUAL}}
+	{% except %}
+	  ${2}
+	{% finallly %}
+	  ${0}
+	{% end %}
+snippet wh
+	{% while ${1:condition} %}
+	  ${0}
+	{% end %}

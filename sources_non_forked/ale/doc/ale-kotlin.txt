@@ -1,0 +1,105 @@
+===============================================================================
+ALE Kotlin Integration                                     *ale-kotlin-options*
+                                                       *ale-integration-kotlin*
+
+===============================================================================
+Integration Information
+
+  Make sure your setup has support for the kotlin file type. A filetype plugin
+  can be found here: https://github.com/udalov/kotlin-vim
+
+
+  Note: Make sure you have a working kotlin compiler
+
+
+===============================================================================
+kotlinc                                                    *ale-kotlin-kotlinc*
+
+g:ale_kotlin_kotlinc_options                     *g:ale_kotlin_kotlinc_options*
+  Type: |String|
+  Default: `''`
+
+  Additional options to pass to the kotlin compiler
+
+g:ale_kotlin_kotlinc_enable_config         *g:ale_kotlin_kotlinc_enable_config*
+  Type: |Number|
+  Default: `0`
+
+  Setting this variable to `1` tells the linter to load a configuration file.
+  This should be set in your vimrc
+
+g:ale_kotlin_kotlinc_config_file             *g:ale_kotlin_kotlinc_config_file*
+  Type: |String|
+  Default: `'.ale_kotlin_kotlinc_config'`
+
+  Filename of the configuration file. This should be set in your vimrc
+
+g:ale_kotlin_kotlinc_classpath                 *g:ale_kotlin_kotlinc_classpath*
+  Type: |String|
+  Default: `''`
+
+  A string containing the paths (separated by the appropriate path separator)
+  of the source directories.
+
+g:ale_kotlin_kotlinc_sourcepath               *g:ale_kotlin_kotlinc_sourcepath*
+  Type: |String|
+  Default: `''`
+
+  A string containing the paths (separated by space) of the source
+  directories.
+
+g:ale_kotlin_kotlinc_use_module_file     *g:ale_kotlin_kotlinc_use_module_file*
+  Type: |Number|
+  Default: `0`
+
+  This option indicates whether the linter should use a module file. It is off
+  by default.
+
+g:ale_kotlin_kotlinc_module_filename     *g:ale_kotlin_kotlinc_module_filename*
+  Type: |String|
+  Default: `'module.xml'`
+
+  The filename of the module file that the linter should pass to the kotlin
+  compiler.
+
+
+===============================================================================
+ktlint                                                      *ale-kotlin-ktlint*
+
+g:ale_kotlin_ktlint_executable                 *g:ale_kotlin_ktlint_executable*
+  Type: |String|
+  Default: `''`
+
+  The Ktlint executable.
+
+  Posix-compliant shell scripts are the only executables that can be found on
+  Ktlint's github release page. If you are not on such a system, your best
+  bet will be to download the ktlint jar and set this option to something
+  similar to `'java -jar /path/to/ktlint.jar'`
+
+g:ale_kotlin_ktlint_rulesets                     *g:ale_kotlin_ktlint_rulesets*
+  Type: |List| of |String|s
+  Default: []
+
+  This list should contain paths to ruleset jars and/or strings of maven
+  artifact triples. Example:
+  >
+  let g:ale_kotlin_ktlint_rulesets = ['/path/to/custom-rulset.jar',
+  'com.ktlint.rulesets:mycustomrule:1.0.0']
+
+
+===============================================================================
+languageserver                                      *ale-kotlin-languageserver*
+
+g:ale_kotlin_languageserver_executable *g:ale_kotlin_languageserver_executable*
+  Type: |String|
+  Default: `''`
+
+  The kotlin-language-server executable.
+
+  Executables are located inside the bin/ folder of the language server
+  release.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -1,0 +1,23 @@
+language: go
+go:
+  - 1.11.x
+notifications:
+  email: false
+matrix:
+  include:
+    - env: SCRIPT="test -c" VIM_VERSION=vim-7.4
+    - env: SCRIPT="test -c" VIM_VERSION=vim-8.0
+    - env: SCRIPT="test -c" VIM_VERSION=nvim
+    - env: ENV=vimlint SCRIPT=lint VIM_VERSION=vim-8.0
+      language: python
+      python: 3.6
+install:
+  - ./scripts/install-vim $VIM_VERSION
+  - |
+    if [ "$ENV" = "vimlint" ]; then
+      pip install vim-vint covimerage codecov pathlib
+    else
+      pip install --user vim-vint covimerage codecov pathlib
+    fi
+script:
+  - ./scripts/$SCRIPT $VIM_VERSION

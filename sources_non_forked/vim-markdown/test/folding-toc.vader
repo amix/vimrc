@@ -1,0 +1,178 @@
+" Tests atx and setext folding, and :Toc.
+
+Before:
+  source ../after/ftplugin/markdown.vim
+
+After:
+  setlocal foldexpr=0
+  setlocal foldmethod=manual
+
+Given markdown;
+# chap 1
+
+hello
+world
+
+```bash
+# some bash scripting
+pwd
+
+# this is another comment
+# other
+echo "foo"
+```
+
+## chap 1.1
+
+- dog
+- cat
+
+~~~~bash
+mkdir foo
+# comment in ~
+~~~~
+
+### chap 1.1.1
+
+- dragons
+- fenixs
+
+# chap 2
+
+another
+
+## chap 2.1
+
+- uk
+- japan
+- china
+
+
+# chap 3
+
+nothing here
+
+chap 4
+======
+
+setext are evil
+
+chap 4.1
+--------
+
+evil indeed
+
+````bash
+# get system info
+uname -a
+````
+
+Execute (fold level):
+  AssertEqual foldlevel(1), 0, '# chap 1'
+  AssertEqual foldlevel(3), 1, 'hello'
+  AssertEqual foldlevel(6), 1, '```bash'
+  AssertEqual foldlevel(7), 1, '# some bash scripting'
+  AssertEqual foldlevel(15), 1, '## chap 1.1'
+  AssertEqual foldlevel(21), 2, 'mkdir foo'
+  AssertEqual foldlevel(22), 2, 'comment in ~'
+  AssertEqual foldlevel(25), 2, '### chap 1.1.1'
+  AssertEqual foldlevel(27), 3, '- dragons'
+  AssertEqual foldlevel(30), 1, '# chap 2'
+  AssertEqual foldlevel(32), 1, 'another'
+  AssertEqual foldlevel(34), 1, '# chap 2.1'
+  AssertEqual foldlevel(37), 2, '- japan'
+  AssertEqual foldlevel(41), 1, '# chap 3'
+  AssertEqual foldlevel(45), 1, 'chap 4\n======'
+  AssertEqual foldlevel(48), 1, 'setext are evil'
+  AssertEqual foldlevel(50), 2, 'chap 4.1\n------'
+
+Execute (fold text result):
+  AssertEqual foldtextresult(2), '+-- 28 lines: hello'
+  AssertEqual foldtextresult(31), '+-- 10 lines: another'
+  AssertEqual foldtextresult(42), '+--  3 lines: nothing here'
+  AssertEqual foldtextresult(45), '+-- 14 lines: chap 4'
+
+Execute (fold level with setting):
+  let g:vim_markdown_folding_level = 2
+  source ../after/ftplugin/markdown.vim
+  AssertEqual foldlevel(1), 0, '# chap 1'
+  AssertEqual foldlevel(3), 1, 'hello'
+  AssertEqual foldlevel(6), 1, '```bash'
+  AssertEqual foldlevel(7), 1, '# some bash scripting'
+  AssertEqual foldlevel(15), 0, '## chap 1.1'
+  AssertEqual foldlevel(21), 2, 'mkdir foo'
+  AssertEqual foldlevel(22), 2, 'comment in ~'
+  AssertEqual foldlevel(25), 2, '### chap 1.1.1'
+  AssertEqual foldlevel(27), 3, '- dragons'
+  AssertEqual foldlevel(30), 0, '# chap 2'
+  AssertEqual foldlevel(32), 1, 'another'
+  AssertEqual foldlevel(34), 0, '# chap 2.1'
+  AssertEqual foldlevel(37), 2, '- japan'
+  AssertEqual foldlevel(41), 0, '# chap 3'
+  AssertEqual foldlevel(45), 1, 'chap 4\n======'
+  AssertEqual foldlevel(48), 1, 'setext are evil'
+  AssertEqual foldlevel(50), 1, 'chap 4.1\n------'
+  let g:vim_markdown_folding_level = 0
+
+Execute (check TOC):
+  :Toc
+  :lclose
+  let res = getloclist(0)
+  let elem = res[0]
+  AssertEqual elem.lnum, 1
+  AssertEqual elem.text, '# chap 1'
+  let elem = res[1]
+  AssertEqual elem.lnum, 15
+  AssertEqual elem.text, '## chap 1.1'
+  let elem = res[2]
+  AssertEqual elem.lnum, 25
+  AssertEqual elem.text, '### chap 1.1.1'
+  let elem = res[3]
+  AssertEqual elem.lnum, 30
+  AssertEqual elem.text, '# chap 2'
+  let elem = res[4]
+  AssertEqual elem.lnum, 34
+  AssertEqual elem.text, '## chap 2.1'
+  let elem = res[5]
+  AssertEqual elem.lnum, 41
+  AssertEqual elem.text, '# chap 3'
+  let elem = res[6]
+  AssertEqual elem.lnum, 45
+  AssertEqual elem.text, 'chap 4'
+  let elem = res[7]
+  AssertEqual elem.lnum, 50
+  AssertEqual elem.text, 'chap 4.1'
+
+Given markdown;
+---
+layout: article
+title: A test of the heading folding when there is YAML frontmatter
+tags: markdown yaml vim-markdown
+---
+body
+
+heading
+-------
+
+Execute (fold level of yaml front matter):
+  let g:vim_markdown_frontmatter = 1
+  source ../after/ftplugin/markdown.vim
+  AssertEqual foldlevel(1), 0, '---'
+  AssertEqual foldlevel(2), 0, 'layout: article'
+  AssertEqual foldlevel(4), 0, 'tags: markdown yaml vim-markdown'
+  AssertEqual foldlevel(5), 0, '---'
+  AssertEqual foldlevel(6), 0, 'body'
+  AssertEqual foldlevel(8), 2, 'heading'
+  AssertEqual foldlevel(9), 2, '-------'
+  unlet g:vim_markdown_frontmatter
+
+Execute (check Toc of yaml front matter):
+  let g:vim_markdown_frontmatter = 1
+  :Toc
+  :lclose
+  let res = getloclist(0)
+  AssertEqual len(res), 1
+  let elem = res[0]
+  AssertEqual elem.lnum, 8
+  AssertEqual elem.text, 'heading'
+  unlet g:vim_markdown_frontmatter

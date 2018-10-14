@@ -1,0 +1,222 @@
+# Snippets for phpspec, to use add the following to your .vimrc
+# `autocmd BufRead,BufNewFile,BufEnter *Spec.php UltiSnipsAddFiletypes php-phpspec`
+
+priority -50
+
+snippet spec "class XYZSpec extends ObjectBehaviour"
+<?php
+
+namespace `!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`;
+
+use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
+
+/**
+ * @author `!v g:snips_author`
+ */
+class `!p
+snip.rv = re.match(r'.*(?=\.)', fn).group()
+` extends ObjectBehavior
+{
+	function it_$1()
+	{
+		${0:${VISUAL}}
+	}
+}
+endsnippet
+
+snippet it "function it_does_something() { ... }"
+function it_$1()
+{
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet let "function let() { ... }"
+function let()
+{
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet letgo "function letgo() { ... }"
+function letgo()
+{
+	${0:${VISUAL}}
+}
+endsnippet
+
+# Object construction
+snippet cw "$this->beConstructedWith($arg)"
+$this->beConstructedWith($1);
+endsnippet
+
+snippet ct "$this->beConstructedThrough($methodName, [$arg])"
+$this->beConstructedThrough(${1:'methodName'}, [${2:'$arg'}]);
+endsnippet
+
+# Identity and comparison matchers
+snippet sreturn "$this->XYZ()->shouldReturn('value')"
+$this->${1:method}()->shouldReturn(${2:'value'});
+endsnippet
+
+snippet snreturn "$this->XYZ()->shouldNotReturn('value')"
+$this->${1:method}()->shouldNotReturn(${2:'value'});
+endsnippet
+
+snippet sbe "$this->XYZ()->shouldBe('value')"
+$this->${1:method}()->shouldBe(${2:'value'});
+endsnippet
+
+snippet snbe "$this->XYZ()->shouldNotBe('value')"
+$this->${1:method}()->shouldNotBe(${2:'value'});
+endsnippet
+
+snippet sequal "$this->XYZ()->shouldEqual('value')"
+$this->${1:method}()->shouldEqual(${2:'value'});
+endsnippet
+
+snippet snequal "$this->XYZ()->shouldNotEqual('value')"
+$this->${1:method}()->shouldNotEqual(${2:'value'});
+endsnippet
+
+snippet sbequalto "$this->XYZ()->shouldBeEqualTo('value')"
+$this->${1:method}()->shouldBeEqualTo(${2:'value'});
+endsnippet
+
+snippet snbequalto "$this->XYZ()->shouldNotBeEqualTo('value')"
+$this->${1:method}()->shouldNotBeEqualTo(${2:'value'});
+endsnippet
+
+snippet sblike "$this->XYZ()->shouldBeLike('value')"
+$this->${1:method}()->shouldBeLike(${2:'value'});
+endsnippet
+
+snippet snblike "$this->XYZ()->shouldNotBeLike('value')"
+$this->${1:method}()->shouldNotBeLike(${2:'value'});
+endsnippet
+
+# Throw matcher
+snippet sthrowm "$this->shouldThrow('\Exception')->duringXYZ($arg)"
+$this->shouldThrow(${1:'\Exception'})->during${2:Method}(${3:'$arg'});
+endsnippet
+
+snippet sthrowi "$this->shouldThrow('\Exception')->duringInstantiation()"
+$this->shouldThrow(${1:'\Exception'})->duringInstantiation();
+endsnippet
+
+# Type matchers
+snippet stype "$this->shouldHaveType('Type')"
+$this->shouldHaveType($1);
+endsnippet
+
+snippet sntype "$this->shouldNotHaveType('Type')"
+$this->shouldNotHaveType($1);
+endsnippet
+
+snippet srinstance "$this->shouldReturnAnInstanceOf('Type')"
+$this->shouldReturnAnInstanceOf($1);
+endsnippet
+
+snippet snrinstance "$this->shouldNotReturnAnInstanceOf('Type')"
+$this->shouldNotReturnAnInstanceOf($1);
+endsnippet
+
+snippet sbinstance "$this->shouldBeAnInstanceOf('Type')"
+$this->shouldBeAnInstanceOf($1);
+endsnippet
+
+snippet snbinstance "$this->shouldNotBeAnInstanceOf('Type')"
+$this->shouldNotBeAnInstanceOf($1);
+endsnippet
+
+snippet simplement "$this->shouldImplement('Type')"
+$this->shouldImplement($1);
+endsnippet
+
+snippet snimplement "$this->shouldNotImplement('Type')"
+$this->shouldNotImplement($1);
+endsnippet
+
+# Object state matchers
+snippet sbstate "$this->shouldBeXYZ()"
+$this->shouldBe$1();
+endsnippet
+
+snippet snbstate "$this->shouldNotBeXYZ()"
+$this->shouldNotBe$1();
+endsnippet
+
+# Count matchers
+snippet scount "$this->XYZ()->shouldHaveCount(7)"
+$this->${1:method}()->shouldHaveCount(${2:7});
+endsnippet
+
+snippet sncount "$this->XYZ()->shouldNotHaveCount(7)"
+$this->${1:method}()->shouldNotHaveCount(${2:7});
+endsnippet
+
+# Scalar type matchers
+snippet sbscalar "$this->XYZ()->shouldBeString|Array|Bool()"
+$this->${1:method}()->shouldBe${2:String|Array|Bool}();
+endsnippet
+
+snippet snbscalar "$this->XYZ()->shouldNotBeString|Array|Bool()"
+$this->${1:method}()->shouldNotBe${2:String|Array|Bool}();
+endsnippet
+
+# Contain matcher
+snippet scontain "$this->XYZ()->shouldContain('value')"
+$this->${1:method}()->shouldContain(${2:'value'});
+endsnippet
+
+snippet sncontain "$this->XYZ()->shouldNotContain('value')"
+$this->${1:method}()->shouldNotContain(${2:'value'});
+endsnippet
+
+# Array matchers
+snippet skey "$this->XYZ()->shouldHaveKey('key')"
+$this->${1:method}()->shouldHaveKey(${2:'key'});
+endsnippet
+
+snippet snkey "$this->XYZ()->shouldNotHaveKey('key')"
+$this->${1:method}()->shouldNotHaveKey(${2:'key'});
+endsnippet
+
+snippet skeyvalue "$this->XYZ()->shouldHaveKeyWithValue('key', 'value')"
+$this->${1:method}()->shouldHaveKeyWithValue(${2:'key'}, ${3:'value'});
+endsnippet
+
+snippet snkeyvalue "$this->XYZ()->shouldNotHaveKeyWithValue('key', 'value')"
+$this->${1:method}()->shouldNotHaveKeyWithValue(${2:'key'}, ${3:'value'});
+endsnippet
+
+# String matchers
+snippet sstart "$this->XYZ()->shouldStartWith('string')"
+$this->${1:method}()->shouldStartWith(${2:'string'});
+endsnippet
+
+snippet snstart "$this->XYZ()->shouldNotStartWith('string')"
+$this->${1:method}()->shouldNotStartWith(${2:'string'});
+endsnippet
+
+snippet send "$this->XYZ()->shouldEndWith('string')"
+$this->${1:method}()->shouldEndWith(${2:'string'});
+endsnippet
+
+snippet snend "$this->XYZ()->shouldNotEndWith('string')"
+$this->${1:method}()->shouldNotEndWith(${2:'string'});
+endsnippet
+
+snippet smatch "$this->XYZ()->shouldMatch('/wizard/i')"
+$this->${1:method}()->shouldMatch(${2:'/wizard/i'});
+endsnippet
+
+snippet snmatch "$this->XYZ()->shouldNotMatch('/wizard/i')"
+$this->${1:method}()->shouldNotMatch(${2:'/wizard/i'});
+endsnippet

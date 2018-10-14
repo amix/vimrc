@@ -1,0 +1,206 @@
+#################
+# Rust Snippets #
+#################
+
+# Functions
+snippet fn "Function definition"
+	fn ${1:function_name}(${2})${3} {
+		${0}
+	}
+snippet pfn "Function definition"
+	pub fn ${1:function_name}(${2})${3} {
+		${0}
+	}
+snippet test "Unit test function"
+	#[test]
+	fn ${1:test_function_name}() {
+		${0}
+	}
+snippet bench "Bench function" b
+	#[bench]
+	fn ${1:bench_function_name}(b: &mut test::Bencher) {
+		b.iter(|| {
+			${0}
+		})
+	}
+snippet new "Constructor function"
+	pub fn new(${2}) -> ${1:Name} {
+		$1 { ${3} }
+	}
+snippet main "Main function"
+	pub fn main() {
+		${0}
+	}
+snippet let "let variable declaration with type inference"
+	let ${1} = ${2};
+snippet lett "let variable declaration with explicit type annotation"
+	let ${1}: ${2} = ${3};
+snippet letm "let mut variable declaration with type inference"
+	let mut ${1} = ${2};
+snippet lettm "let mut variable declaration with explicit type annotation"
+	let mut ${1}: ${2} = ${3};
+snippet pri "print!"
+	print!("${1}");
+snippet pri, "print! with format param"
+	print!("${1}{${2}}", ${3});
+snippet pln "println!"
+	println!("${1}");
+snippet pln, "println! with format param"
+	println!("${1}{${2}}", ${3});
+snippet fmt "format!"
+	format!("${1}{${2}}", ${3});
+
+# Modules
+snippet ec "extern crate"
+	extern crate ${1:sync};
+snippet ecl "extern crate log"
+	#[macro_use]
+	extern crate log;
+snippet mod
+	mod ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} {
+		${0}
+	} /* $1 */
+snippet testmod "Test module" b
+	#[cfg(test)]
+	mod tests {
+		use super::${1:*};
+
+		test${0}
+	}
+# Attributes
+snippet allow "allow lint attribute" b
+	#[allow(${1:unused_variable})]
+snippet cfg "cfg attribute" b
+	#[cfg(${1:target_os = "linux"})]
+snippet feat "feature attribute" b
+	#![feature(${1:plugin})]
+snippet der "#[derive(..)]" b
+	#[derive(${1:Debug})]
+snippet attr "#[..]" b
+	#[${1:inline}]
+snippet crate "Define create meta attributes"
+	// Crate name
+	#![crate_name = "${1:crate_name}"]
+	// Additional metadata attributes
+	#![desc = "${2:Descrption.}"]
+	#![license = "${3:BSD}"]
+	#![comment = "${4:Comment.}"]
+	// Specify the output type
+	#![crate_type = "${5:lib}"]
+# Common types
+snippet opt "Option<T>"
+	Option<${1:i32}>
+snippet res "Result<T, E>"
+	Result<${1:~str}, ${2:()}>
+# Control structures
+snippet if
+	if ${1} {
+		${0:${VISUAL}}
+	}
+snippet ife "if / else"
+	if ${1} {
+		${2:${VISUAL}}
+	} else {
+		${0}
+	}
+snippet el "else"
+	else {
+		${0:${VISUAL}}
+	}
+snippet eli "else if"
+	else if ${1} {
+		${0:${VISUAL}}
+	}
+snippet mat "match pattern"
+	match ${1} {
+		${2} => ${3}
+	}
+snippet case "Case clause of pattern match"
+	${1:_} => ${2:expression}
+snippet loop "loop {}" b
+	loop {
+		${0:${VISUAL}}
+	}
+snippet wh "while loop"
+	while ${1:condition} {
+		${0:${VISUAL}}
+	}
+snippet for "for ... in ... loop"
+	for ${1:i} in ${2} {
+		${0}
+	}
+# TODO commenting
+snippet todo "TODO comment"
+	// [TODO]: ${0:Description}
+snippet fixme "FIXME comment"
+	// FIXME: $0
+# Struct
+snippet st "Struct definition"
+	struct ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} {
+		${0}
+	}
+snippet impl "Struct/Trait implementation"
+	impl ${1:Type/Trait}${2: for ${3:Type}} {
+		${0}
+	}
+snippet stn "Struct with new constructor"
+	pub struct ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} {
+		${0}
+	}
+
+	impl $1 {
+		pub fn new(${2}) -> Self {
+			$1 { ${3} }
+		}
+	}
+snippet type "Type alias"
+	type ${1:NewName} = $2;
+snippet enum "enum definition"
+	enum ${1:Name} {
+		${2},
+	}
+# Traits
+snippet trait "Trait definition"
+	trait ${1:Name} {
+		${0}
+	}
+snippet drop "Drop trait implementation (destructor)"
+	impl Drop for ${1:Name} {
+		fn drop(&mut self) {
+			${0}
+		}
+	}
+# Statics
+snippet ss "static string declaration"
+	static ${1}: &'static str = "${0}";
+snippet stat "static item declaration"
+	static ${1}: ${2:usize} = ${0};
+# Concurrency
+snippet scoped "spawn a scoped thread"
+	thread::scoped(${1:move }|| {
+		${0}
+	});
+snippet spawn "spawn a thread"
+	thread::spawn(${1:move }|| {
+		${0}
+	});
+snippet chan "Declare (Sender, Receiver) pair of asynchronous channel()"
+	let (${1:tx}, ${2:rx}): (Sender<${3:i32}>, Receiver<${4:i32}>) = channel();
+# Testing
+snippet as "assert!"
+	assert!(${1:predicate});
+snippet ase "assert_eq!"
+	assert_eq!(${1:expected}, ${2:actual});
+# Implementations
+snippet asref "AsRef trait implementation"
+	impl AsRef<${1:Ref}> for ${2:Type} {
+		fn as_ref(&self) -> &${3:$1} {
+			&self.${0:field}
+		}
+	}
+snippet asmut "AsMut trait implementation"
+	impl AsMut<${1:Ref}> for ${2:Type} {
+		fn as_mut(&mut self) -> &mut ${3:$1} {
+			&mut self.${0:field}
+		}
+	}

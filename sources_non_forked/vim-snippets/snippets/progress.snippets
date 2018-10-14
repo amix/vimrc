@@ -1,0 +1,58 @@
+# Progress/OpenEdge ABL snippets
+# define
+snippet defbuf
+	DEFINE BUFFER b_${1:TableName} FOR $1 ${0}.
+snippet defvar
+	DEFINE VARIABLE ${1:VariableName} AS ${0}.
+snippet nl
+	NO-LOCK
+snippet ne
+	NO-ERROR
+snippet nle
+	NO-LOCK NO-ERROR
+snippet ini
+	INITIAL ${0:?}
+snippet nu
+	NO-UNDO
+snippet err
+	ERROR
+snippet ff
+	FIND FIRST ${1:BufferName}
+	${2:WHERE $1.${3}} ${0}
+snippet input
+	DEFINE INPUT PARAMETER ${1:ParamName} AS ${0}.
+snippet output
+	DEFINE OUTPUT PARAMETER ${1:ParamName} AS ${0:ParamType}.
+snippet proc
+
+	/******************************************************************************/
+
+	PROCEDURE ${1:ProcName}:
+
+		${0}
+
+	END PROCEDURE. /* $1 */
+
+	/******************************************************************************/
+
+snippet alert
+	MESSAGE "${1:MessageContent}" ${2:Data} VIEW-AS ALERT-BOX.
+snippet if
+	IF ${1:Condition}
+	THEN ${2:Action}
+	${3:ELSE ${4:OtherWise}}
+snippet do
+	DO${1: Clauses}:
+		${0}
+	END.
+# datatypes
+snippet int
+	INTEGER
+snippet char
+	CHARACTER
+snippet log
+	LOGICAL
+snippet dec
+	DECIMAL
+snippet sep
+	/* ------------------------------------------------------------------------- */

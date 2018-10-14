@@ -1,0 +1,92 @@
+priority -50
+
+#################
+# From snipmate #
+#################
+snippet def "definition" b
+<%def name="${1:name}">
+	${2:}
+</%def>
+endsnippet
+
+snippet call "call" b
+<%call expr="${1:name}">
+	${2:}
+</%call>
+endsnippet
+
+snippet doc "doc" b
+<%doc>
+	${1:}
+</%doc>
+endsnippet
+
+snippet text "text" b
+<%text>
+	${1:}
+</%text>
+endsnippet
+
+snippet for "for" b
+% for ${1:i} in ${2:iter}:
+	${3:}
+% endfor
+endsnippet
+
+snippet if "if " b
+% if ${1:condition}:
+	${2:}
+% endif
+endsnippet
+
+snippet if "if/else" b
+% if ${1:condition}:
+	${2:}
+% else:
+	${3:}
+% endif
+endsnippet
+
+snippet try "try" b
+% try:
+	${1:}
+% except${2:}:
+	${3:pass}
+% endtry
+endsnippet
+
+snippet wh "wh" b
+% while ${1:}:
+	${2:}
+% endwhile
+endsnippet
+
+snippet $ "$" i
+${${1:}}
+endsnippet
+
+snippet <% "<%" b
+<% ${1:} %>
+endsnippet
+
+snippet <!% "<!%" b
+<!% ${1:} %>
+endsnippet
+
+snippet inherit "inherit" b
+<%inherit file="${1:filename}" />
+endsnippet
+
+snippet include "include" b
+<%include file="${1:filename}" />
+endsnippet
+
+snippet namespace "namespace" b
+<%namespace file="${1:name}" />
+endsnippet
+
+snippet page "page" b
+<%page args="${1:}" />
+endsnippet
+
+# vim:ft=snippets:

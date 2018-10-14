@@ -1,0 +1,7 @@
+std::vector<char> v;
+if (FILE *${2:fp} = fopen(${1:"filename"}, "r")) {
+	char buf[1024];
+	while (size_t len = fread(buf, 1, sizeof(buf), $2))
+		v.insert(v.end(), buf, buf + len);
+	fclose($2);
+}${3}

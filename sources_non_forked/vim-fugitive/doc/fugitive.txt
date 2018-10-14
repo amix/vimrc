@@ -1,0 +1,362 @@
+*fugitive.txt*  A Git wrapper so awesome, it should be illegal
+
+Author:  Tim Pope <http://tpo.pe/>
+License: Same terms as Vim itself (see |license|)
+
+This plugin is only available if 'compatible' is not set.
+
+INTRODUCTION                                    *fugitive*
+
+Whenever you edit a file from a Git repository, a set of commands is defined
+that serve as a gateway to Git.
+
+COMMANDS                                        *fugitive-commands*
+
+These commands are local to the buffers in which they work (generally, buffers
+that are part of Git repositories).
+
+                                                *fugitive-:Git*
+:Git [args]             Run an arbitrary git command. Similar to :!git [args]
+                        but chdir to the repository tree first.
+
+                                                *fugitive-:Git!*
+:Git! [args]            Like |:Git|, but capture the output into a temp file,
+                        and edit that temp file.
+
+                                                *fugitive-:Gcd*
+:Gcd [directory]        |:cd| relative to the repository.
+
+                                                *fugitive-:Glcd*
+:Glcd [directory]       |:lcd| relative to the repository.
+
+                                                *fugitive-:Gstatus*
+:Gstatus                Bring up the output of git-status in the preview
+                        window.  The following maps, which work on the cursor
+                        line file where sensible, are provided:
+
+                        g?    show this help
+                        <C-N> next file
+                        <C-P> previous file
+                        <CR>  |:Gedit|
+                        -     |:Git| add
+                        -     |:Git| reset (staged files)
+                        a     Show alternative format
+                        ca    |:Gcommit| --amend
+                        cc    |:Gcommit|
+                        ce    |:Gcommit| --amend --no-edit
+                        cw    |:Gcommit| --amend --only
+                        cva   |:Gcommit| --verbose --amend
+                        cvc   |:Gcommit| --verbose
+                        D     |:Gdiff|
+                        ds    |:Gsdiff|
+                        dp    |:Git!| diff (p for patch; use :Gw to apply)
+                        dp    |:Git| add --intent-to-add (untracked files)
+                        dv    |:Gvdiff|
+                        O     |:Gtabedit|
+                        o     |:Gsplit|
+                        P     |:Git| add --patch
+                        P     |:Git| reset --patch (staged files)
+                        q     close status
+                        r     reload status
+                        S     |:Gvsplit|
+                        U     |:Git| checkout
+                        U     |:Git| checkout HEAD (staged files)
+                        U     |:Git| clean (untracked files)
+                        U     |:Git| rm (unmerged files)
+                        .     enter |:| command line with file prepopulated
+
+                                                *fugitive-:Gcommit*
+:Gcommit [args]         A wrapper around git-commit.  If there is nothing
+                        to commit, |:Gstatus| is called instead.  Unless the
+                        arguments given would skip the invocation of an editor
+                        (e.g., -m), a split window will be used to obtain a
+                        commit message, or a new tab if -v is given.  Write
+                        and close that window (:wq or |:Gwrite|) to finish the
+                        commit.  Unlike when running the actual git-commit
+                        command, it is possible (but unadvisable) to alter the
+                        index with commands like git-add and git-reset while a
+                        commit message is pending.
+
+                                                *fugitive-:Gmerge*
+:Gmerge [args]          Calls git-merge and loads errors and conflicted files
+                        into the |quickfix| list.  Opens a |:Gcommit| style
+                        split window for the commit message if the merge
+                        succeeds.  If called during a merge conflict, the
+                        conflicted files from the current index are loaded
+                        into the |quickfix| list.
+
+                                                *fugitive-:Gpull*
+:Gpull [args]           Like |:Gmerge|, but for git-pull.
+
+                                                *fugitive-:Grebase*
+:Grebase [args]         Like |:Gmerge|, but for git-rebase.  Interactive
+                        rebase not supported.
+
+                                                *fugitive-:Gpush*
+:Gpush [args]           Invoke git-push, load the results into the |quickfix|
+                        list, and invoke |:cwindow| to reveal any errors.
+                        |:Dispatch| is used if available for asynchronous
+                        invocation.
+
+                                                *fugitive-:Gfetch*
+:Gfetch [args]          Like |:Gpush|, but for git-fetch.
+
+                                                *fugitive-:Ggrep*
+:Ggrep[!] [args]        |:grep|[!] with git-grep as 'grepprg'.
+
+                                                *fugitive-:Glgrep*
+:Glgrep[!] [args]       |:lgrep|[!] with git-grep as 'grepprg'.
+
+                                                *fugitive-:Glog*
+:Glog [args]            Load all previous revisions of the current file into
+                        the |quickfix| list.  Additional git-log arguments can
+                        be given (for example, --reverse).  If "--" appears as
+                        an argument, no file specific filtering is done, and
+                        previous commits rather than previous file revisions
+                        are loaded.
+
+:{range}Glog [args]     Use git-log -L to load previous revisions of the given
+                        range of the current file into the |quickfix| list.
+                        The cursor is positioned on the first line of the
+                        first diff hunk for each commit.
+
+                                                *fugitive-:Gllog*
+:Gllog [args]           Like |:Glog|, but use the location list instead of the
+                        |quickfix| list.
+
+                                        *fugitive-:Gedit* *fugitive-:Ge*
+:Gedit [object]         |:edit| a |fugitive-object|.
+
+                                                *fugitive-:Gsplit*
+:Gsplit [object]        |:split| a |fugitive-object|.
+
+                                                *fugitive-:Gvsplit*
+:Gvsplit [object]       |:vsplit| a |fugitive-object|.
+
+                                                *fugitive-:Gtabedit*
+:Gtabedit [object]      |:tabedit| a |fugitive-object|.
+
+                                                *fugitive-:Gpedit*
+:Gpedit [object]        |:pedit| a |fugitive-object|.
+
+:Gsplit! [args]                 *fugitive-:Gsplit!* *fugitive-:Gvsplit!*
+:Gvsplit! [args]                *fugitive-:Gtabedit!* *fugitive-:Gpedit!*
+:Gtabedit! [args]       Like |:Git!|, but open the resulting temp file in a
+:Gpedit! [args]         split, tab, or preview window.
+
+                                                *fugitive-:Gread*
+:Gread [object]         Empty the buffer and |:read| a |fugitive-object|.
+                        When the argument is omitted, this is similar to
+                        git-checkout on a work tree file or git-add on a stage
+                        file, but without writing anything to disk.
+
+:{range}Gread [object]  |:read| in a |fugitive-object| after {range}.
+
+                                                *fugitive-:Gread!*
+:Gread! [args]          Empty the buffer and |:read| the output of a Git
+                        command.  For example, :Gread! show HEAD:%.
+
+:{range}Gread! [args]  |:read| the output of a Git command after {range}.
+
+                                        *fugitive-:Gw* *fugitive-:Gwrite*
+:Gwrite                 Write to the current file's path and stage the results.
+                        When run in a work tree file, it is effectively git
+                        add.  Elsewhere, it is effectively git-checkout.  A
+                        great deal of effort is expended to behave sensibly
+                        when the work tree or index version of the file is
+                        open in another buffer.
+
+:Gwrite {path}          You can give |:Gwrite| an explicit path of where in
+                        the work tree to write.  You can also give a path like
+                        :0:foo.txt or even :0 to write to just that stage in
+                        the index.
+
+                                                *fugitive-:Gwq*
+:Gwq [path]             Like |:Gwrite| followed by |:quit| if the write
+                        succeeded.
+
+:Gwq! [path]            Like |:Gwrite|! followed by |:quit|! if the write
+                        succeeded.
+
+                                                *fugitive-:Gdiff*
+:Gdiff [object]         Perform a |vimdiff| against the given file, or if a
+                        commit is given, the current file in that commit.
+                        With no argument, the version in the index is used
+                        (which means a three-way diff during a merge conflict,
+                        making it a git-mergetool alternative).  The newer of
+                        the two files is placed to the right or bottom,
+                        depending on 'diffopt', and the width of the window
+                        relative to 'textwidth'.  Use |do| and |dp| and write
+                        to the index file to simulate "git add --patch". For
+                        the three-way diff, there is also d2o and d3o pulling
+                        the hunk to the middle from the left or the right
+                        window, respectively.
+
+                                                *fugitive-:Gsdiff*
+:Gsdiff [object]        Like |:Gdiff|, but always split horizontally.
+
+                                                *fugitive-:Gvdiff*
+:Gvdiff [object]        Like |:Gdiff|, but always split vertically.
+
+                                                *fugitive-:Gmove*
+:Gmove {destination}    Wrapper around git-mv that renames the buffer
+                        afterward.  Add a ! to pass -f.
+
+                                                *fugitive-:Grename*
+:Grename {destination}  Like |:Gmove| but operates relative to the parent
+                        directory of the current file.
+
+                                                *fugitive-:Gdelete*
+:Gdelete                Wrapper around git-rm that deletes the buffer
+                        afterward.  When invoked in an index file, --cached is
+                        passed.  Add a ! to pass -f and forcefully discard the
+                        buffer.
+
+                                                *fugitive-:Gremove*
+:Gremove                Like :Gdelete, but keep the (now empty) buffer around.
+
+                                                *fugitive-:Gblame*
+:Gblame [flags]         Run git-blame on the file and open the results in a
+                        scroll bound vertical split.  You can give any of
+                        ltfnsewMC as flags and they will be passed along to
+                        git-blame.  The following maps, which work on the
+                        cursor line commit where sensible, are provided:
+
+                        g?    show this help
+                        A     resize to end of author column
+                        C     resize to end of commit column
+                        D     resize to end of date/time column
+                        q     close blame and return to blamed window
+                        gq    q, then |:Gedit| to return to work tree version
+                        <CR>  q, then open commit
+                        o     open commit in horizontal split
+                        O     open commit in new tab
+                        p     open commit in preview window
+                        -     reblame at commit
+                        ~     reblame at [count]th first grandparent
+                        P     reblame at [count]th parent (like HEAD^[count])
+
+                                                *fugitive-:Gbrowse*
+:Gbrowse                Open the current file, blob, tree, commit, or tag
+                        in your browser at the upstream hosting provider.
+                        If a range is given, it is appropriately appended to
+                        the URL as an anchor.
+
+                        Upstream providers can be added by installing an
+                        appropriate Vim plugin.  For example, GitHub can be
+                        supported by installing rhubarb.vim, available at
+                        <https://github.com/tpope/vim-rhubarb>.
+
+:Gbrowse {object}       Like :Gbrowse, but for a given |fugitive-object|.
+
+:Gbrowse [...]@{remote} Force using the given remote rather than the remote
+                        for the current branch.  The remote is used to
+                        determine which upstream repository to link to.
+
+:{range}Gbrowse [args]  Appends an anchor to the URL that emphasizes the
+                        selected lines. This also forces the URL to include a
+                        commit rather than a branch name so it remains valid
+                        if the file changes.  You can give a range of "0" to
+                        force this behavior without including an anchor.
+
+:[range]Gbrowse! [args] Like :Gbrowse, but put the URL on the clipboard rather
+                        than opening it.
+
+MAPPINGS                                        *fugitive-mappings*
+
+These maps are available everywhere.
+
+                                                *fugitive-c_CTRL-R_CTRL-G*
+<C-R><C-G>              On the command line, recall the path to the current
+                        |fugitive-object| (that is, a representation of the
+                        object recognized by |:Gedit|).
+
+                                                *fugitive-y_CTRL-G*
+["x]y<C-G>              Yank the commit SHA and path to the current
+                        |fugitive-object|.
+
+These maps are available in committed Git objects.
+
+                                                *fugitive-<CR>*
+<CR>                    Jump to the |fugitive-object| under the cursor.
+
+                                                *fugitive-o*
+o                       Jump to the |fugitive-object| under the cursor in a
+                        new split.
+
+                                                *fugitive-S*
+S                       Jump to the |fugitive-object| under the cursor in a
+                        new vertical split.
+
+                                                *fugitive-O*
+O                       Jump to the |fugitive-object| under the cursor in a
+                        new tab.
+
+                                                *fugitive--*
+-                       Go to the tree containing the current tree or blob.
+
+                                                *fugitive-~*
+~                       Go to the current file in the [count]th first
+                        ancestor.
+
+                                                *fugitive-P*
+P                       Go to the current file in the [count]th parent.
+
+                                                *fugitive-C*
+C                       Go to the commit containing the current file.
+
+                                                *fugitive-a*
+a                       Show the current tag, commit, or tree in an alternate
+                        format.
+
+SPECIFYING OBJECTS                      *fugitive-object* *fugitive-revision*
+
+Fugitive objects are either work tree files or Git revisions as defined in the
+"SPECIFYING REVISIONS" section in the git-rev-parse man page, with expansions
+inspired by |cmdline-special| layered on top.  For commands that accept an
+optional object, the default is the file in the index for work tree files and
+the work tree file for everything else.  Example objects follow.
+
+Object          Meaning ~
+HEAD            .git/HEAD
+refs/heads/x    .git/refs/heads/x (in "common dir" if present)
+@               The commit referenced by @ aka HEAD
+master^         The parent of the commit referenced by master
+master:         The tree referenced by master
+./master        The file named master in the working directory
+Makefile        The file named Makefile in the work tree
+@^:Makefile     The file named Makefile in the parent of HEAD
+:Makefile       The file named Makefile in the index (writable)
+@~2:%           The current file in the grandparent of HEAD
+:%              The current file in the index
+:1:%            The current file's common ancestor during a conflict
+:2:#            The alternate file in the target branch during a conflict
+:3:#5           The file from buffer #5 in the merged branch during a conflict
+!               The commit owning the current file
+!:Makefile      The file named Makefile in the commit owning the current file
+!3^2            The second parent of the commit owning buffer #3
+.git/config     The repo config file
+:               Same as |:Gstatus|
+
+STATUSLINE                                      *fugitive-statusline*
+
+                                *FugitiveStatusline()* *fugitive#statusline()*
+Add %{FugitiveStatusline()} to your statusline to get an indicator including
+the current branch and the currently edited file's commit.  If you don't have
+a statusline, this one matches the default when 'ruler' is set:
+>
+    set statusline=%<%f\ %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
+<
+                                *FugitiveHead(...)* *fugitive#head(...)*
+Use FugitiveHead() to return the name of the current branch. If the current
+HEAD is detached, FugitiveHead() will return the empty string, unless the
+optional argument is given, in which case the hash of the current commit will
+be truncated to the given number of characters.
+
+ABOUT                                           *fugitive-about*
+
+Grab the latest version or report a bug on GitHub:
+
+http://github.com/tpope/vim-fugitive
+
+ vim:tw=78:et:ft=help:norl:

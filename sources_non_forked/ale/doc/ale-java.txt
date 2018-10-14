@@ -1,0 +1,108 @@
+===============================================================================
+ALE Java Integration                                         *ale-java-options*
+
+
+===============================================================================
+checkstyle                                                *ale-java-checkstyle*
+
+g:ale_java_checkstyle_options                   *g:ale_java_checkstyle_options*
+                                                *b:ale_java_checkstyle_options*
+
+  Type: String
+  Default: '-c /google_checks.xml'
+
+  This variable can be changed to modify flags given to checkstyle.
+
+
+===============================================================================
+javac                                                          *ale-java-javac*
+
+g:ale_java_javac_classpath                         *g:ale_java_javac_classpath*
+                                                   *b:ale_java_javac_classpath*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to change the global classpath for Java.
+
+
+g:ale_java_javac_executable                       *g:ale_java_javac_executable*
+                                                  *b:ale_java_javac_executable*
+  Type: |String|
+  Default: `'javac'`
+
+  This variable can be set to change the executable path used for javac.
+
+
+g:ale_java_javac_options                             *g:ale_java_javac_options*
+                                                     *b:ale_java_javac_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to javac.
+
+
+===============================================================================
+google-java-format                                *ale-java-google-java-format*
+
+
+g:ale_java_google_java_format_executable
+                                     *g:ale_java_google_java_format_executable*
+                                     *b:ale_java_google_java_format_executable*
+  Type: |String|
+  Default: `'google-java-format'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_java_google_java_format_options   *g:ale_java_google_java_format_options*
+                                        *b:ale_java_google_java_format_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options
+
+
+===============================================================================
+pmd                                                              *ale-java-pmd*
+
+g:ale_java_pmd_options                                 *g:ale_java_pmd_options*
+                                                       *b:ale_java_pmd_options*
+
+  Type: String
+  Default: '-R category/java/bestpractices'
+
+  This variable can be changed to modify flags given to PMD. Do not specify -f
+  and -d. They are added automatically.
+
+
+===============================================================================
+javalsp                                                      *ale-java-javalsp*
+
+To enable Java LSP linter you need to download and build the vscode-javac
+language server from https://github.com/georgewfraser/vscode-javac. Simply
+download the source code and then build the plugin using maven:
+
+   mvn package
+
+This generates a out/fat-jar.jar file that contains the language server. To
+let ALE use this language server you need to set the g:ale_java_javalsp_jar
+variable to the absolute path of this jar file.
+
+g:ale_java_javalsp_jar                                 *g:ale_java_javalsp_jar*
+                                                       *b:ale_java_javalsp_jar*
+
+  Type: String
+  Default: 'fat-jar.jar
+
+  Path to the location of the vscode-javac language server plugin.
+  and -d. They are added automatically.
+
+
+===============================================================================
+uncrustify                                                *ale-java-uncrustify*
+
+See |ale-c-uncrustify| for information about the available options.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

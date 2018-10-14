@@ -1,0 +1,39 @@
+===============================================================================
+ALE CSS Integration                                           *ale-css-options*
+
+
+===============================================================================
+prettier                                                     *ale-css-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+
+
+===============================================================================
+stylelint                                                   *ale-css-stylelint*
+
+g:ale_css_stylelint_executable                 *g:ale_css_stylelint_executable*
+                                               *b:ale_css_stylelint_executable*
+  Type: |String|
+  Default: `'stylelint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_css_stylelint_options                       *g:ale_css_stylelint_options*
+                                                  *b:ale_css_stylelint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to stylelint.
+
+
+g:ale_css_stylelint_use_global                 *g:ale_css_stylelint_use_global*
+                                               *b:ale_css_stylelint_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

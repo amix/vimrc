@@ -1,0 +1,248 @@
+#--------------------Yii CHtml---------------------------------
+#Yii CHtml::radioButton
+snippet yhrb
+	echo CHtml::radioButton('${1:name}', ${2:false},array(${3:optionName}=>${0:optionValue} );
+
+#Yii CHtml::asset
+snippet yhass
+	echo CHtml::asset('${0:path}');
+
+#Yii CHtml::activeLabelEx
+snippet yhale
+	echo CHtml::activeLabelEx(${1:model}, '${2:attribute}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::encodeArray
+snippet yheca
+	echo CHtml::encodeArray(array(${0}));
+
+#Yii CHtml::normalizeUrl
+snippet yhnurl
+	echo CHtml::normalizeUrl(array('${0}'));
+
+#Yii CHtml::resetButton
+snippet yhsb
+	echo CHtml::submitButton('${1:label}',array('${2:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::linkButton
+snippet yhlinkb
+	echo CHtml::linkButton('${1:lable}',array('${2:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeTextArea
+snippet yhata
+	echo CHtml::activeTextArea(${1:model}, '${2:attribute}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::ajaxButton
+snippet yhajb
+	echo CHtml::ajaxButton('${1:label}', '${2:url}',array('${3:ajaxOptionName}'=>${4:ajaxOptionValue}),array('${5:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeId
+snippet yhai
+	echo CHtml::activeId(${1:model}, '${0:attribute}');
+
+#Yii CHtml::activeCheckBox
+snippet yhacb
+	echo CHtml::activeCheckBox(${1:model}, '${2:attribute}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeHiddenField
+snippet yhahf
+	echo CHtml::activeHiddenField(${1:model}, '${2:attribute}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::encode
+snippet yhec
+	echo CHtml::encode(${0:text});
+
+#Yii CHtml::metaTag
+snippet yhmtag
+	echo CHtml::metaTag('${1:content}', '${2:name}', '${3:httpEquiv}',array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::dropDownList
+snippet yhddl
+	echo CHtml::dropDownList('${1:name}', '${2:select}', array(${3}),array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::listBox
+snippet yhlb
+	echo CHtml::listBox('${1:name}', '${2:select}',array(${3}),array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::script
+snippet yhjs
+	echo CHtml::script('${0:test}');
+
+#Yii CHtml::ajax
+snippet yhaj
+	echo CHtml::ajax(array(${0}));
+
+#Yii CHtml::textField
+snippet yhtf
+	echo CHtml::textField('${1:name}', '${2:value}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activePasswordField
+snippet yhapf
+	echo CHtml::activePasswordField(${1:model}, '${2:attribute}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::listData
+snippet yhld
+	echo CHtml::listData(array(${1}),'${2:valueField}', '${3:textField}','${0:groupField}');
+
+#Yii CHtml::mailto
+snippet yhmt
+	echo CHtml::mailto('${1:text}', '${2:email}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::image
+snippet yhimg
+	echo CHtml::image('${1:src}', '${2:alt}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeListBox
+snippet yhalb
+	echo CHtml::activeListBox(${1:model}, '${2:attribute}', array(${3}),array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeFileField
+snippet yhaff
+	echo CHtml::activeFileField(${1:model}, '${2:attribute}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::closeTag
+snippet yhct
+	echo CHtml::closeTag('${0:tag}');
+
+#Yii CHtml::activeInputField
+snippet yhaif
+	echo CHtml::activeInputField('${1:type}', ${2:model}, '${3:attribute}',array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::scriptFile
+snippet yhjsf
+	echo CHtml::scriptFile('${0:url}');
+
+#Yii CHtml::radioButtonList
+snippet yhrbl
+	echo CHtml::radioButtonList('${1:name}', ${2:select}, array(${3}),array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::cssFile
+snippet yhcssf
+	echo CHtml::cssFile('${1:url}','${0:media}');
+
+#Yii CHtml::error
+snippet yherr
+	echo CHtml::error(${1:model}, '${0:attribute}');
+
+#Yii CHtml::passwordField
+snippet yhpf
+	echo CHtml::passwordField('${1:name}', '${2:value}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::hiddenField
+snippet yhhf
+	echo CHtml::hiddenField('${1:name}', '${2:value}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::cdata
+snippet yhc
+	echo CHtml::cdata(${0:text});
+
+#Yii CHtml::link
+snippet yhlink
+	echo CHtml::link('${1:text}',array(${2}),array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::errorSummary
+snippet yherrs
+	echo CHtml::errorSummary(${1:model},'${2:headerHtml}','${0:footerHtml}');
+
+#Yii CHtml::tag
+snippet yht
+	echo CHtml::tag('${1:tag}',array('${2:optionName}'=>${3:optionValue}),${4:false},${0:true});
+
+#Yii CHtml::ajaxLink
+snippet yhajl
+	echo CHtml::ajaxLink('${1:label}', '${2:url}',array('${3:ajaxOptionName}'=>${4:ajaxOptionValue}),array('${5:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::label
+snippet yhlabel
+	echo CHtml::label('${1:label}', '${2:for}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeName
+snippet yhan
+	echo CHtml::activeName(${1:model}, '${0:attribute}');
+
+#Yii CHtml::statefulForm
+snippet yhsform
+	echo CHtml::statefulForm(array('${1}'), '${2:post}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::fileField
+snippet yhff
+	echo CHtml::fileField('${1:name}', '${2:value}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeTextField
+snippet yhatf
+	echo CHtml::activeTextField(${1:model}, '${2:attribute}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::css
+snippet yhcss
+	echo CHtml::css('${1:test}','${0:media}');
+
+#Yii CHtml::imageButton
+snippet yhimgb
+	echo CHtml::imageButton('${1:src}',array('${2:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::ajaxSubmitButton
+snippet yhajsb
+	echo CHtml::ajaxSubmitButton('${1:label}', '${2:url}',array('${3:ajaxOptionName}'=>${4:ajaxOptionValue}),array('${5:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::button
+snippet yhb
+	echo CHtml::button('${1:label}',array('${2:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::listOptions
+snippet yhlo
+	echo CHtml::listOptions('${1:selection}', array(${2}), array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeCheckBoxList
+snippet yhacbl
+	echo CHtml::activeCheckBoxList(${1:model}, '${2:attribute}', array(${3}),array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::openTag
+snippet yhot
+	echo CHtml::openTag('${1:tag}', array('${2:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::checkBox
+snippet yhcb
+	echo CHtml::checkBox('${1:name}', ${2:false}, array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::textArea
+snippet yhta
+	echo CHtml::textArea('${1:name}', '${2:value}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::linkTag
+snippet yhlinkt
+	echo CHtml::linkTag('${1:relation}', '${2:type}', '${3:href}', '${4:media}',array('${5:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::resetButton
+snippet yhrsb
+	echo CHtml::resetButton('${1:label}',array('${2:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeRadioButtonList
+snippet yharbl
+	echo CHtml::activeRadioButtonList(${1:model}, '${2:attribute}', array(${3}),array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::checkBoxList
+snippet yhcbl
+	echo CHtml::checkBoxList('${1:name}', ${2:select}, array(${3}),array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::form
+snippet yhform
+	echo CHtml::form(array('${1}'), '${2:post}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::beginForm
+snippet yhbeform
+	echo CHtml::beginForm(array('${1}'), '${2:post}',array('${3:optionName}'=>${4:optionValue}));
+	${0}
+	echo CHtml::endForm();
+
+#Yii CHtml::activeDropDownList
+snippet yhaddl
+	echo CHtml::activeDropDownList(${1:model}, '${2:attribute}', array(${3}),array('${4:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeRadioButton
+snippet yharb
+	echo CHtml::activeRadioButton(${1:model}, '${2:attribute}',array('${3:optionName}'=>${0:optionValue}));
+
+#Yii CHtml::activeLabel
+snippet yhal
+	echo CHtml::activeLabel(${1:model}, '${2:attribute}',array('${3:optionName}'=>${0:optionValue}));
+
+

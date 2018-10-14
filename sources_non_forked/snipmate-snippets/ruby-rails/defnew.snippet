@@ -1,0 +1,8 @@
+def new
+	@${1:model_class_name} = ${2:ModelClassName}.new
+
+	respond_to do |wants|
+		wants.html # new.html.erb
+		wants.xml  { render :xml => @$1 }
+	end
+end${3}

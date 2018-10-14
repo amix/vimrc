@@ -1,0 +1,28 @@
+language: generic
+
+sudo: false
+
+install:
+  - git clone --depth=1 https://github.com/thinca/vim-themis /tmp/themis
+  - (if ! test -d $HOME/vim-$VIM_VERSION/bin; then
+       git clone https://github.com/vim/vim $HOME/vim &&
+       cd $HOME/vim &&
+       git checkout v$VIM_VERSION &&
+       ./configure --prefix=$HOME/vim-$VIM_VERSION &&
+       make &&
+       make install;
+     fi)
+
+cache:
+  directories:
+    - $HOME/vim-$VIM_VERSION
+
+env:
+  - VIM_VERSION=8.0.0000
+  - VIM_VERSION=7.4
+  - VIM_VERSION=7.3
+
+script:
+  - export PATH=$HOME/vim-$VIM_VERSION/bin:$PATH
+  - vim --version
+  - /tmp/themis/bin/themis --reporter spec

@@ -1,0 +1,14 @@
+===============================================================================
+ALE Fish Integration                                         *ale-fish-options*
+
+Lints fish files using `fish -n`.
+
+Note that `fish -n` is not foolproof: it sometimes gives false positives or
+errors that are difficult to parse without more context. This integration skips
+displaying errors if an error message is not found.
+
+If ALE is not showing any errors but your file does not run as expected, run
+`fish -n <file.fish>` from the command line.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

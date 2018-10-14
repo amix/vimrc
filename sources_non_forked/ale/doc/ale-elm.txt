@@ -1,0 +1,50 @@
+===============================================================================
+ALE Elm Integration                                           *ale-elm-options*
+
+
+===============================================================================
+elm-format                                                 *ale-elm-elm-format*
+
+g:ale_elm_format_executable                       *g:ale_elm_format_executable*
+                                                  *b:ale_elm_format_executable*
+  Type: |String|
+  Default: `'elm-format'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_format_use_global                       *g:ale_elm_format_use_global*
+                                                  *b:ale_elm_format_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_format_options                             *g:ale_elm_format_options*
+                                                     *b:ale_elm_format_options*
+  Type: |String|
+  Default: `'--yes'`
+
+  This variable can be set to pass additional options to elm-format.
+
+===============================================================================
+elm-make                                                     *ale-elm-elm-make*
+
+g:ale_elm_make_executable                           *g:ale_elm_make_executable*
+                                                    *b:ale_elm_make_executable*
+  Type: |String|
+  Default: `'elm'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_make_use_global                           *g:ale_elm_make_use_global*
+                                                    *b:ale_elm_make_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

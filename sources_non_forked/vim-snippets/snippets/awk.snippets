@@ -1,0 +1,102 @@
+# cannot use /usr/bin/env because it does not support parameters (as -f)
+snippet #! #!/usr/bin/awk -f
+	#!/usr/bin/awk -f
+
+# @include is a gawk extension
+snippet inc @include
+	@include "${1}"${0}
+
+# @load is a gawk extension
+snippet loa @load
+	@load "${1}"${0}
+
+snippet beg BEGIN { ... }
+	BEGIN {
+		${0}
+	}
+
+# BEGINFILE is a gawk extension
+snippet begf BEGINFILE { ... }
+	BEGINFILE {
+		${0}
+	}
+
+snippet end END { ... }
+	END {
+		${0}
+	}
+
+# ENDFILE is a gawk extension
+snippet endf ENDFILE { ... }
+	ENDFILE {
+		${0}
+	}
+
+snippet pri print
+	print ${1:"${2}"}${0}
+
+snippet printf printf
+	printf("${1:%s}\n", ${2})${0}
+
+snippet ign IGNORECASE
+	IGNORECASE = ${1:1}
+
+snippet if if {...}
+	if (${1}) {
+		${0:${VISUAL}}
+	}
+
+snippet ife if ... else ...
+	if (${1}) {
+		${2:${VISUAL}}
+	} else {
+		${0}
+	}
+
+snippet eif else if ...
+	else if (${1}) {
+		${0}
+	}
+
+snippet el else {...}
+	else {
+		${0}
+	}
+
+snippet wh while
+	while (${1}) {
+		${2}
+	}
+
+snippet do do ... while
+	do {
+		${0}
+	} while (${1})
+
+snippet for for
+	for (${2:i} = 0; i < ${1:n}; ${3:++i}) {
+		${0}
+	}
+
+snippet fore for each
+	for (${1:i} in ${2:array}) {
+		${0}
+	}
+
+# the switch is a gawk extension
+snippet sw switch
+	switch (${1}) {
+	case ${2}:
+		${3}
+		break
+	default:
+		${0}
+		break
+	}
+
+# the switch is a gawk extension
+snippet case case
+	case ${1}:
+		${0}
+		break
+

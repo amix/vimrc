@@ -1,0 +1,183 @@
+vim-flake8
+==========
+`vim-flake8` is a Vim plugin that runs the currently open file through Flake8,
+a static syntax and style checker for Python source code.  It supersedes both
+[vim-pyflakes](https://github.com/nvie/vim-pyflakes) and
+[vim-pep8](https://github.com/nvie/vim-pep8).
+
+[Flake8](https://pypi.python.org/pypi/flake8/) is a wrapper around PyFlakes
+(static syntax checker), PEP8 (style checker) and Ned's MacCabe script
+(complexity checker).
+
+
+Installation
+------------
+Use [vim-pathogen](https://github.com/tpope/vim-pathogen) if you're not using
+it already.  Make sure you've installed the
+[flake8](https://pypi.python.org/pypi/flake8/) package.  Then, simply put the
+contents of this repository in your `~/.vim/bundle` directory.
+
+Usage
+-----
+1. Open a Python file
+2. Press `<F7>` to run `flake8` on it
+
+It shows the errors inside a quickfix window, which will allow your to quickly
+jump to the error locations by simply pressing [Enter].
+
+If any of `g:flake8_show_in_gutter` or `g:flake8_show_in_file` are set to `1`, call:
+
+    call flake8#Flake8UnplaceMarkers()
+
+To remove all markers. No default mapping is provided.
+
+Customization
+-------------
+If you don't want to use the `<F7>` key for flake8-checking, simply remap it to
+another key.  It autodetects whether it has been remapped and won't register
+the `<F7>` key if so.  For example, to remap it to `<F3>` instead, use:
+
+    autocmd FileType python map <buffer> <F3> :call Flake8()<CR>
+
+For flake8 configuration options please consult the following page:
+
+http://flake8.pycqa.org/en/latest/user/configuration.html
+
+To customize the location of your flake8 binary, set `g:flake8_cmd`:
+
+    let g:flake8_cmd="/opt/strangebin/flake8000"
+
+To customize the location of quick fix window, set `g:flake8_quickfix_location`:
+
+    let g:flake8_quickfix_location="topleft"
+
+To customize the height of quick fix window, set `g:flake8_quickfix_height`:
+
+    let g:flake8_quickfix_height=7
+
+To customize whether the quickfix window opens, set `g:flake8_show_quickfix`:
+
+    let g:flake8_show_quickfix=0  " don't show
+    let g:flake8_show_quickfix=1  " show (default)
+
+To customize whether the show signs in the gutter, set `g:flake8_show_in_gutter`:
+
+    let g:flake8_show_in_gutter=0  " don't show (default)
+    let g:flake8_show_in_gutter=1  " show
+
+To customize whether the show marks in the file, set `g:flake8_show_in_file`:
+
+    let g:flake8_show_in_file=0  " don't show (default)
+    let g:flake8_show_in_file=1  " show
+
+To customize the number of marks to show, set `g:flake8_max_markers`:
+
+    let g:flake8_max_markers=500  " (default)
+
+To customize the gutter markers, set any of `flake8_error_marker`, `flake8_warning_marker`,
+`flake8_pyflake_marker`, `flake8_complexity_marker`, `flake8_naming_marker`. Setting one to
+the empty string disables it. Ex.:
+
+    flake8_error_marker='EE'     " set error marker to 'EE'
+    flake8_warning_marker='WW'   " set warning marker to 'WW'
+    flake8_pyflake_marker=''     " disable PyFlakes warnings
+    flake8_complexity_marker=''  " disable McCabe complexity warnings
+    flake8_naming_marker=''      " disable naming warnings
+
+To customize the colors used for markers, define the highlight groups, `Flake8_Error`,
+`Flake8_Warning`, `Flake8_PyFlake`, `Flake8_Complexity`, `Flake8_Naming`:
+
+    " to use colors defined in the colorscheme
+    highlight link Flake8_Error      Error
+    highlight link Flake8_Warning    WarningMsg
+    highlight link Flake8_Complexity WarningMsg
+    highlight link Flake8_Naming     WarningMsg
+    highlight link Flake8_PyFlake    WarningMsg
+
+Tips
+----
+A tip might be to run the Flake8 check every time you write a Python file, to
+enable this, add the following line to your `.vimrc` file (thanks
+[Godefroid](https://github.com/gotcha)!):
+
+    autocmd BufWritePost *.py call Flake8()
+
+This plugin goes well together with the following plugin:
+
+- [PyUnit](https://github.com/nvie/vim-pyunit) (unit test helper under `<F8>`
+  and `<F9>`)
+
+
+Max line lengths
+----------------
+
+One particular customization a lot of people like to make is relaxing the
+maximum line length default.  This is a config setting that should be set in
+flake8 itself. (vim-flake8 "just" invokes it and deals with showing the output
+in Vim's quickfix window.)
+
+To do so, put the following into your `~/.config/flake8` file:
+
+    [flake8]
+    max-line-length = 120
+
+
+History
+-------
+1.6: Deprecated configuring flake8 options through Vim settings.  Instead,
+advise users to use the `~/.config/flake8` config file.
+
+    - Decprecated options:
+      - `g:flake8_builtins`
+      - `g:flake8_ignore`
+      - `g:flake8_max_line_length`
+      - `g:flake8_max_complexity`
+
+    - New options:
+      - `g:flake8_quickfix_height`
+
+1.5: Added markers and the option to don't show the quickfix window, also split
+functions into a autoload file. Added:
+
+    - Options:
+      - `g:flake8_show_quickfix`
+      - `g:flake8_show_in_gutter`
+      - `g:flake8_show_in_file`
+      - `g:flake8_max_markers`
+      - `flake8_error_marker`
+      - `flake8_warning_marker`
+      - `flake8_pyflake_marker`
+      - `flake8_complexity_marker`
+      - `flake8_naming_marker`
+    - Functions:
+      - `flake8#Flake8UnplaceMarkers()`
+      - `flake8#Flake8()`
+    - Highlighting:
+      - `Flake8_Error`
+      - `Flake8_Warning`
+      - `Flake8_Complexity`
+      - `Flake8_Naming`
+      - `Flake8_PyFlake`
+
+1.4: Suppress output to stdout.
+
+1.3: Added the following options:
+
+    - `g:flake8_builtins="_,apply"`
+    - `g:flake8_max_complexity=10`
+
+1.2: Added the following options:
+
+    - `g:flake8_cmd="/opt/strangebin/flake8000"`
+    - `g:flake8_max_line_length=120`
+    - `g:flake8_ignore="E501,W293"`
+
+1.1: Added `g:flake8_ignore` option.
+
+1.0: Initial version.
+
+
+License
+-------
+
+Liberally licensed under BSD terms.

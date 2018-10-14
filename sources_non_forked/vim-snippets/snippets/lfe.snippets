@@ -1,0 +1,18 @@
+snippet defmo
+	(defmodule ${1:`vim_snippets#Filename()`}
+		(export ${2:all}))
+	$0
+snippet def
+	(defun $1 ($2)
+		$0)
+snippet ltest
+	(defmodule ${1:`vim_snippets#Filename()`}
+		(behaviour ltest-unit)
+		(export all))
+
+	(include-lib "ltest/include/ltest-macros.lfe")
+
+	$0
+snippet test
+	(deftest $1
+		$0)

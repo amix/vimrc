@@ -1,0 +1,39 @@
+priority -50
+
+extends html
+
+snippet % "<% %>" w
+<% $0 %>
+endsnippet
+
+snippet = "<%= %>" w
+<%= $0 %>
+endsnippet
+
+snippet end "<% end %>" w
+<% end %>
+endsnippet
+
+snippet for
+<%= for ${1:item} <- ${2:$1s} ${3:@conn} do %>
+	$0
+<% end %>
+endsnippet
+
+snippet ft "form_tag" w
+<%= form_tag(${1:"${2:/users}"}, method: ${3::post}) %>
+	$0
+</form>
+endsnippet
+
+snippet lin "link" w
+<%= link ${1:"${2:Submit}"}, to: ${3:"${4:/users}"}, method: ${5::delete} %>
+endsnippet
+
+snippet ff "form_for" w
+<%= form_for @changeset, ${1:"${2:/users}"}, fn f -> %>
+		$0
+
+	<%= submit "Submit" %>
+<% end %>
+endsnippet

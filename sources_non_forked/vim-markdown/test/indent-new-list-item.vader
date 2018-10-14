@@ -1,0 +1,15 @@
+Before:
+  let g:vim_markdown_new_list_item_indent = 2
+
+After:
+  unlet g:vim_markdown_new_list_item_indent
+
+Given markdown;
+* item1
+
+Do (new line from the first item of the list and add the second item):
+  o* item2
+
+Expect (insert 2 spaces to the head of second item):
+  * item1
+    * item2

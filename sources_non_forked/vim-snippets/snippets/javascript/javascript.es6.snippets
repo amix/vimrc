@@ -1,0 +1,55 @@
+snippet const
+	const ${1} = ${0};
+snippet let
+	let ${1} = ${0};
+snippet im "import xyz from 'xyz'"
+	import ${1} from '${2:$1}';
+snippet imas "import * as xyz from 'xyz'"
+	import * as ${1} from '${2:$1}';
+snippet imm "import { member } from 'xyz'"
+	import { ${1} } from '${2}';
+snippet cla
+	class ${1} {
+		${0:${VISUAL}}
+	}
+snippet clax
+	class ${1} extends ${2} {
+		${0:${VISUAL}}
+	}
+snippet clac
+	class ${1} {
+		constructor(${2}) {
+			${0:${VISUAL}}
+		}
+	}
+snippet foro "for (const prop of object}) { ... }"
+	for (const ${1:prop} of ${2:object}) {
+		${0:$1}
+	}
+# Generator
+snippet fun*
+	function* ${1:function_name}(${2}) {
+		${0:${VISUAL}}
+	}
+snippet c=>
+	const ${1:function_name} = (${2}) => {
+		${0:${VISUAL}}
+	}
+snippet caf
+	const ${1:function_name} = (${2}) => {
+		${0:${VISUAL}}
+	}
+snippet =>
+	(${1}) => {
+		${0:${VISUAL}}
+	}
+snippet af
+	(${1}) => {
+		${0:${VISUAL}}
+	}
+snippet sym
+	const ${1} = Symbol('${0}');
+snippet ed
+	export default ${0}
+snippet ${
+	${${1}}${0}

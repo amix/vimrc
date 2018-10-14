@@ -1,0 +1,235 @@
+priority -50
+
+#########################################################################
+#  Python helper code                                                   #
+#########################################################################
+
+global !p
+import vim
+import os.path
+def get_module_namespace_and_basename():
+	"""This function will try to guess the current class or define name you are
+	trying to create. Note that for this to work you should be using the module
+	structure as per the style guide. Examples inputs and it's output
+	* /home/nikolavp/puppet/modules/collectd/manifests/init.pp -> collectd
+	* /home/nikolavp/puppet/modules/collectd/manfistes/mysql.pp -> collectd::mysql
+	"""
+	first_time = True
+	current_file_path_without_ext = vim.eval('expand("%:p:r")') or ""
+	if not current_file_path_without_ext:
+		return "name"
+	parts = os.path.split(current_file_path_without_ext)
+	namespace = ''
+	while parts[0] and parts[0] != '/':
+		if parts[1] == 'init' and first_time and not namespace:
+			first_time = False
+			parts = os.path.split(parts[0])
+			continue
+		if parts[1] == 'manifests':
+			return os.path.split(parts[0])[1] + ('::' + namespace).rstrip(':')
+		else:
+			namespace = parts[1] + '::' + namespace
+		parts = os.path.split(parts[0])
+	# couldn't guess the namespace. The user is editing a raw file in no module like the site.pp file
+	return "name"
+endglobal
+
+###############################################################################
+#  Puppet Language Constructs                                                 #
+#    See http://docs.puppetlabs.com/puppet/latest/reference/lang_summary.html #
+###############################################################################
+
+snippet class "Class declaration" b
+class ${1:`!p snip.rv = get_module_namespace_and_basename()`} {
+	${0:# body}
+}
+endsnippet
+
+snippet define "Definition" b
+define ${1:`!p snip.rv = get_module_namespace_and_basename()`} {
+	${0:# body}
+}
+endsnippet
+
+#################################################################
+#  Puppet Types                                                 #
+#    See http://docs.puppetlabs.com/references/latest/type.html #
+#################################################################
+
+snippet cron "Cron resource type" b
+cron { '${1:name}':
+	user    => ${2:user},
+	command => '${3:command}',
+	minute  => ${3:minute},
+	hour    => ${4:hour},
+}
+endsnippet
+
+snippet exec "Exec resource type" b
+exec { '${1:command}':
+	refreshonly => true,
+}
+endsnippet
+
+snippet file "File resource type" b
+file { '${1:name}':
+	source => "puppet://${2:path}",
+	mode   => ${3:mode},
+}
+endsnippet
+
+snippet File "Defaults for file" b
+File {
+	owner => ${1:username},
+	group => ${2:groupname},
+}
+endsnippet
+
+snippet group "Group resource type" b
+group { '${1:groupname}':
+	ensure => ${3:present},
+	gid    => ${2:gid},
+}
+endsnippet
+
+snippet mount "Mount resource type" b
+mount { '${1:path}':
+	device  => '${2:/dev}',
+	fstype  => '${3:filesystem}',
+	ensure  => mounted,
+	options => 'rw,errors=remount-ro',
+}
+endsnippet
+
+snippet package "Package resource type" b
+package { '${1:name}':
+	ensure => ${2:installed},
+}
+endsnippet
+
+snippet user "user resource type" b
+user { '${1:username}':
+	ensure     => ${2:present},
+	uid        => ${3:uid},
+	gid        => ${4:gid},
+	comment    => ${5:gecos},
+	home       => ${6:homedirectory},
+	managehome => false,
+	require    => Group['${7:group'}],
+}
+endsnippet
+
+snippet service "Service resource type" b
+service { '${1:name}':
+	hasstatus => true,
+	enable    => true,
+	ensure    => running,
+}
+endsnippet
+
+########################################################################
+#  Puppet Functions                                                    #
+#    See http://docs.puppetlabs.com/references/latest/function.html    #
+########################################################################
+
+snippet alert "Alert Function" b
+alert("${1:message}")$0
+endsnippet
+
+snippet crit "Crit Function" b
+crit("${1:message}")$0
+endsnippet
+
+snippet debug "Debug Function" b
+debug("${1:message}")$0
+endsnippet
+
+snippet defined "Defined Function" b
+defined(${1:Resource}["${2:name}"])$0
+endsnippet
+
+snippet emerg "Emerg Function" b
+emerg("${1:message}")$0
+endsnippet
+
+snippet extlookup "Simple Extlookup" b
+$${1:Variable} = extlookup("${2:Lookup}")$0
+endsnippet
+
+snippet extlookup "Extlookup with defaults" b
+$${1:Variable} = extlookup("${2:Lookup}", ${3:Default})$0
+endsnippet
+
+snippet extlookup "Extlookup with defaults and custom data file" b
+$${1:Variable} = extlookup("${2:Lookup}", ${3:Default}, ${4:Data Source})$0
+endsnippet
+
+snippet fail "Fail Function" b
+fail("${1:message}")$0
+endsnippet
+
+snippet hiera "Hiera Function" b
+$${1:Variable} = hiera("${2:Lookup}")$0
+endsnippet
+
+snippet hiera "Hiera with defaults" b
+$${1:Variable} = hiera("${2:Lookup}", ${3:Default})$0
+endsnippet
+
+snippet hiera "Hiera with defaults and override" b
+$${1:Variable} = hiera("${2:Lookup}", ${3:Default}, ${4:Override})$0
+endsnippet
+
+snippet hiera_hash "Hiera Hash Function" b
+$${1:Variable} = hiera_hash("${2:Lookup}")$0
+endsnippet
+
+snippet hiera_hash "Hiera Hash with defaults" b
+$${1:Variable} = hiera_hash("${2:Lookup}", ${3:Default})$0
+endsnippet
+
+snippet hiera_hash "Hiera Hash with defaults and override" b
+$${1:Variable} = hiera_hash("${2:Lookup}", ${3:Default}, ${4:Override})$0
+endsnippet
+
+snippet hiera_include "Hiera Include Function" b
+hiera_include("${1:Lookup}")$0
+endsnippet
+
+snippet include "Include Function" b
+include ${1:classname}$0
+endsnippet
+
+snippet info "Info Function" b
+info("${1:message}")$0
+endsnippet
+
+snippet inline_template "Inline Template Function" b
+inline_template("<%= ${1:template} %>")$0
+endsnippet
+
+snippet notice "Notice Function" b
+notice("${1:message}")$0
+endsnippet
+
+snippet realize "Realize Function" b
+realize(${1:Resource}["${2:name}"])$0
+endsnippet
+
+snippet regsubst "Regsubst Function" b
+regsubst($${1:Target}, '${2:regexp}', '${3:replacement}')$0
+endsnippet
+
+snippet split "Split Function" b
+$${1:Variable} = split($${1:Target}, '${2:regexp}')$0
+endsnippet
+
+snippet versioncmp "Version Compare Function" b
+$${1:Variable} = versioncmp('${1:version}', '${2:version}')$0
+endsnippet
+
+snippet warning "Warning Function" b
+warning("${1:message}")$0
+endsnippet
+
+# vim:ft=snippets:

@@ -1,0 +1,156 @@
+snippet mod
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` exposing (${1})
+	${0}
+snippet imp
+	import ${0:Http}
+snippet impe
+	import ${1:Html} exposing (${0:..})
+snippet impae
+	import ${1:Json.Encode} as ${2:Encode} exposing (${0:Value})
+snippet fn
+	${1:fn} : ${2:a} -> ${3:a}
+	$1 ${4} =
+		${0}
+snippet fn1
+	${1:fn} : ${2:a} -> ${3:a}
+	$1 ${4} =
+		${0}
+snippet fn2
+	${1:fn} : ${2:a} -> ${3:a} -> ${4:a}
+	$1 ${5} =
+		${0}
+snippet fn3
+	${1:fn} : ${2:a} -> ${3:a} -> ${4:a} -> ${5:a}
+	$1 ${6} =
+		${0}
+snippet fn0
+	${1:fn} : ${2:a}
+	$1 =
+		${0}
+snippet case
+	case ${1} of
+		${2} ->
+			${0}
+snippet -
+	${1} ->
+		${0}
+snippet let
+	let
+		${1} =
+			${2}
+	in
+		${0}
+snippet if
+	if ${1} then
+		${2:${VISUAL}}
+	else
+		${0}
+snippet ty
+	type ${1:Msg}
+		= ${0}
+snippet tya
+	type alias ${1:Model} =
+		${0}
+snippet test
+	test "${1}" <| \_ -> $0
+snippet doc
+	{-| ${0}
+	-}
+snippet p
+	|> ${0}
+snippet program Elm 0.18 program
+	import Html exposing (Html)
+
+
+	type alias Model =
+		{}
+
+
+	type Msg
+		= Noop
+
+
+	main : Program Never Model Msg
+	main =
+		Html.program
+			{ init = init
+			, view = view
+			, update = update
+			, subscriptions = subscriptions
+			}
+
+
+	init : ( Model, Cmd Msg )
+	init =
+		{} ! []
+
+
+	update : Msg -> Model -> ( Model, Cmd Msg )
+	update msg model =
+		case msg of
+			Noop ->
+				model ! []
+
+
+	subscriptions : Model -> Sub Msg
+	subscriptions model =
+		Sub.none
+
+
+	view : Model -> Html Msg
+	view model =
+		Html.text "Hello, sailor!"
+snippet element
+	module Main exposing (Model, Msg(..), init, main, subscriptions, update, view)
+
+	import Browser
+	import Html exposing (..)
+	import Json.Encode
+
+
+	main : Program Flags Model Msg
+	main =
+		Browser.element
+			{ init = init
+			, update = update
+			, subscriptions = subscriptions
+			, view = view
+			}
+
+
+	type alias Model =
+		{}
+
+
+	type alias Flags =
+		Json.Encode.Value
+
+
+	init : Flags -> ( Model, Cmd Msg )
+	init flags_ =
+		( {}
+		, Cmd.none
+		)
+
+
+	type Msg
+		= Noop
+
+
+	update : Msg -> Model -> ( Model, Cmd Msg )
+	update msg model =
+		case msg of
+			Noop ->
+				( model
+				, Cmd.none
+				)
+
+
+	subscriptions : Model -> Sub Msg
+	subscriptions model =
+		Sub.none
+
+
+	view : Model -> Html Msg
+	view model =
+		h1 [] [ text "Hello, world!" ]

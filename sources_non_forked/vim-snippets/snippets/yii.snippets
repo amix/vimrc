@@ -1,0 +1,300 @@
+#Yii session offset
+snippet yse
+	Yii::app()->session['${0}'];
+
+#Yii renderDynamic
+snippet yrd
+	$this->renderDynamic('${0:callback}');
+
+#Yii set cache
+snippet ycas
+	Yii::app()->cache->set('${1:key}', ${2:value}, ${3:expire}, new C${4:}CacheDependency(${0}));
+
+#Yii Add cache
+snippet ycad
+	Yii::app()->cache->add('${1:key}', ${2:value}, ${3:expire}, new C${4}CacheDependency(${0}));
+
+#Yii register CSS file
+snippet yregcf
+	Yii::app()->clientScript->registerCssFile('${0:file}');
+
+#Yii requestType
+snippet yreqtype
+	Yii::app()->request->requestType
+
+#Yii isAjaxRequest
+snippet yisajax
+	Yii::app()->request->isAjaxRequest
+
+#Yii translate
+snippet yt
+	Yii::t('${1:category}', '${2:message}',array(${0}));
+
+#Yii register CSS
+snippet yregc
+	Yii::app()->clientScript->registerCss('${1:id}', '${0}');
+
+#Yii log
+snippet ylog
+	Yii::log('${1:msg}', '${0:info}');
+
+#Yii userHostAddress
+snippet yuserip
+	YYii::app()->request->userHostAddress
+
+#Yii register script file
+snippet yregsf
+	Yii::app()->clientScript->registerScriptFile('${1:scriptUrl}', CClientScript::POS_${0:END});
+
+#Yii CLinkPager
+snippet ylinkpager
+	$this->widget('CLinkPager', array('pages'=>$pages,'header'=>'${0}'}))
+
+#Yii CJSON::encode
+snippet yjec
+	CJSON::encode(${0:text});
+
+#CActiveDataProvider
+snippet yadp
+	$dataProvider = new CActiveDataProvider('${1}', array(
+	  'criteria' => array(
+			'condition' => '${2}',
+			'order' => '${3}',
+			'with' => array('${4}')
+		),
+	//'pagination' => false,
+		'pagination' => array(
+			'pageSize'=>${5},
+		),
+	));
+	${0}
+	// $dataProvider->getData() will return a list of Post objects
+
+#Yii renderDynamic internal
+snippet yrdi
+	$this->renderDynamic('${1:callback}', array('${2:key}'=>${0:value}));
+
+#Yii register script
+snippet yregs
+	Yii::app()->clientScript->registerScript('${1:id}', '${2}', CClientScript::POS_${0:READY});
+
+#Yii Flush cache
+snippet ycaf
+	Yii::app()->cache->flush();
+
+#Yii Yii::app()->request->cookies
+snippet yco
+	Yii::app()->request->cookies['${0}']
+
+#Yii user->
+snippet yuser
+	Yii::app()->user->
+
+#Yii refresh
+snippet yrf
+	$this->refresh();
+
+#Yii import
+snippet yimp
+	Yii::import('${0}');
+
+#Yii trace
+snippet ytrace
+	Yii::trace('${0:msg}');
+
+#Yii params
+snippet ypar
+	Yii::app()->params['${0}']
+
+#Yii isPostRequest
+snippet yispost
+	Yii::app()->request->isPostRequest
+
+#Yii IF isAjaxRequest
+snippet yifisajax
+	if(Yii::app()->request->isAjaxRequest == TRUE)
+	{
+		${0}
+	}
+
+#Yii Yii::app()->cache->delete
+snippet ydelcache
+	Yii::app()->cache->delete('${0:key}');
+
+#Yii render view
+snippet yr
+	$this->render('${1:view}',array('${2:key}'=>${0:value}));
+
+#Yii redirect
+snippet yre
+	$this->redirect(array('${1:controller}/${0:action}'));
+
+#Yii Get cache
+snippet ycag
+	Yii::app()->cache->get('${0:key}');
+
+#Yii render text
+snippet yrt
+	$this->renderText('${0}');
+
+#Yii render partial
+snippet yrp
+	$this->renderPartial('${1:view}',array('${2:key}'=>${0:value}));
+
+#----------------Yii Model-----------------------------
+#Yii Model count
+snippet ycountm
+	${1:ModelName}::model()->count(${2:condition}, array('${3:key}'=>${0:value}));
+
+#Yii Model countBySql
+snippet ycountbs
+	${1:ModelName}::model()->countBySql(${2:sql},array('${3:key}'=>${0:value}));
+
+#Yii Model updateAll
+snippet yupdatea
+	${1:ModelName}::model()->updateAll(${2:array('attributes')}, ${3:condition},array('${4:key}'=>${0:value}));
+
+#Yii Model updateByPk
+snippet yupdatebp
+	${1:ModelName}::model()->updateByPk(${2:pk}, ${3:array('attributes')}, ${4:condition},array('${5:key}'=>${0:value}));
+
+#Yii Model deleteAll
+snippet ydela
+	${1:ModelName}::model()->deleteAll(${2:condition},array('${3:key}'=>${0:value}));
+
+#Yii Model deleteByPk
+snippet ydelbp
+	${1:ModelName}::model()->deleteByPk(${2:pk}, ${3:condition}, array('${4:key}'=>${0:value}));
+
+#Yii Model find
+snippet yfind
+	${1:ModelName}::model()->find(${2:condition},array('${3:key}'=>${0:value}));
+
+#Yii Model findAll
+snippet yfinda
+	${1:ModelName}::model()->findAll(${2:condition},array('${3:key}'=>${0:value}));
+
+#Yii Model findByPk
+snippet yfindbp
+	${1:ModelName}::model()->findByPk(${2:pk}, ${3:condition}, array('${4:key}'=>${0:value}));
+
+#Yii Model findAllByPk
+snippet yfindabp
+	${1:ModelName}::model()->findAllByPk(${2:pk}, ${3:condition},array('${4:key}'=>${0:value}));
+
+#Yii Model findBySql
+snippet yfindbs
+	${1:ModelName}::model()->findBySql(${2:sql}, array('${3:key}'=>${0:value}));
+
+#Yii Model findAllByAttributes
+snippet yfindaba
+	${1:ModelName}::model()->findAllByAttributes(array('${2:attributeName}'=>${3:attributeValue}), ${4:condition}, array('${5:key}'=>${0:value}));
+
+#Yii Model exists
+snippet yexists
+	${1:ModelName}::model()->exists(${2:condition}, array('${3:key}'=>${0:value}));
+
+#Yii Create model class
+snippet ymodel
+	<?php
+
+	class ${1:ModelName} extends ${2:CActiveRecord}
+	{
+		/**
+		 * Returns the static model of the specified AR class.
+		 * @return CActiveRecord the static model class
+		 */
+		public static function model($className=__CLASS__)
+		{
+			return parent::model($className);
+		}
+
+		/**
+		 * @return string the associated database table name
+		 */
+		public function tableName()
+		{
+			return '${0:table_name}';
+		}
+
+		/**
+		 * @return array validation rules for model attributes.
+		 */
+		public function rules()
+		{
+			return array(
+			);
+		}
+
+		/**
+		 * @return array relational rules.
+		 */
+		public function relations()
+		{
+			return array(
+			);
+		}
+
+		/**
+		 * @return array customized attribute labels (name=&gt;label)
+		 */
+		public function attributeLabels()
+		{
+			return array(
+			);
+		}
+	}
+
+#------------Yii Controller------------------------------------
+
+#Yii Create controller class
+snippet ycontroller
+	<?php
+
+	/**
+	 * ${1:}
+	 */
+	class ${2:Site}Controller extends ${3:CController}
+	{
+		  public function action${4:Index}()
+		  {
+		      ${0}
+		  }
+
+		// -----------------------------------------------------------
+		// Uncomment the following methods and override them if needed
+		/*
+		public function filters()
+		{
+			// return the filter configuration for this controller, e.g.:
+			return array(
+				'inlineFilterName',
+				array(
+					'class'=>'path.to.FilterClass',
+					'propertyName'=>'propertyValue',
+				),
+			);
+		}
+
+		public function actions()
+		{
+			// return external action classes, e.g.:
+			return array(
+				'action1'=>'path.to.ActionClass',
+				'action2'=>array(
+					'class'=>'path.to.AnotherActionClass',
+					'propertyName'=>'propertyValue',
+				),
+			);
+		}
+		*/
+	}
+
+#Yii Create controller action method
+snippet yact
+	public function action${1:Index}(${2:params})
+	{
+		${0}
+	}
+
+

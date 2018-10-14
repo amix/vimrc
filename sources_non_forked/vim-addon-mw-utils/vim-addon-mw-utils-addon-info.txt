@@ -1,0 +1,9 @@
+{
+  "name" : "vim-addon-mw-utils",
+  "version" : "0.0",
+  "author" : "Marc Weber <marco-oweber@gmx.de>",
+  "maintainer" : "Marc Weber <marco-oweber@gmx.de>",
+  "repository" : {"type": "git", "url": "git://github.com/MarcWeber/vim-addon-manager-known-repositories.git"},
+  "dependencies" : {},
+  "description" : "various utils such as caching interpreted contents of files or advanced glob like things"
+}

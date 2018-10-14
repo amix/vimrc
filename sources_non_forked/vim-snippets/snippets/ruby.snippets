@@ -1,0 +1,718 @@
+snippet enc
+	# encoding: utf-8
+snippet frozen
+	# frozen_string_literal: true
+snippet #!
+	#!/usr/bin/env ruby
+# New Block
+snippet =b
+	=begin rdoc
+		${0}
+	=end
+snippet prot
+	protected
+
+	${0}
+snippet priv
+	private
+
+	${0}
+snippet y
+	:yields: ${0:arguments}
+snippet rb
+	#!/usr/bin/env ruby -wKU
+snippet beg
+	begin
+		${0}
+	rescue ${1:Exception} => ${2:e}
+	end
+snippet req require
+	require '${1}'
+snippet reqr
+	require_relative '${1}'
+snippet #
+	# =>
+snippet case
+	case ${1:object}
+	when ${2:condition}
+		${0}
+	end
+snippet when
+	when ${1:condition}
+		${0:${VISUAL}}
+snippet def
+	def ${1:method_name}
+		${0}
+	end
+snippet deft
+	def test_${1:case_name}
+		${0}
+	end
+snippet descendants
+	class Class
+		def descendants
+			ObjectSpace.each_object(::Class).select { |klass| klass < self }
+		end
+	end
+snippet if
+	if ${1:condition}
+		${0:${VISUAL}}
+	end
+snippet ife
+	if ${1:condition}
+		${2:${VISUAL}}
+	else
+		${0}
+	end
+snippet eif
+	elsif ${1:condition}
+		${0:${VISUAL}}
+snippet ifee
+	if ${1:condition}
+		$2
+	elsif ${3:condition}
+		$4
+	else
+		$0
+	end
+snippet unless
+	unless ${1:condition}
+		${0:${VISUAL}}
+	end
+snippet unlesse
+	unless ${1:condition}
+		$2
+	else
+		$0
+	end
+snippet unlesee
+	unless ${1:condition}
+		$2
+	elsif ${3:condition}
+		$4
+	else
+		$0
+	end
+snippet wh
+	while ${1:condition}
+		${0:${VISUAL}}
+	end
+snippet for
+	for ${1:e} in ${2:c}
+		${0}
+	end
+snippet until
+	until ${1:condition}
+		${0:${VISUAL}}
+	end
+snippet cla class .. end
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+		${0}
+	end
+snippet clai class .. initialize .. end
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+		def initialize(${2:args})
+			${0}
+		end
+	end
+snippet cla< class .. < ParentClass .. initialize .. end
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} < ${2:ParentClass}
+		def initialize(${3:args})
+			${0}
+		end
+	end
+snippet blankslate class BlankSlate .. initialize .. end
+	class ${0:BlankSlate}
+		instance_methods.each { |meth| undef_method(meth) unless meth =~ /\A__/ }
+	end
+snippet claself class << self .. end
+	class << ${1:self}
+		${0}
+	end
+# class .. < DelegateClass .. initialize .. end
+snippet cla-
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} < DelegateClass(${2:ParentClass})
+		def initialize(${3:args})
+			super(${4:del_obj})
+
+			${0}
+		end
+	end
+snippet mod module .. end
+	module ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+		${0}
+	end
+# attr_reader
+snippet r
+	attr_reader :${0:attr_names}
+# attr_writer
+snippet w
+	attr_writer :${0:attr_names}
+# attr_accessor
+snippet rw
+	attr_accessor :${0:attr_names}
+snippet atp
+	attr_protected :${0:attr_names}
+snippet ata
+	attr_accessible :${0:attr_names}
+snippet ana
+	accepts_nested_attributes_for :${0:association}
+# ivc == instance variable cache
+snippet ivc
+	@${1:variable_name} ||= ${0:cached_value}
+# include Enumerable
+snippet Enum
+	include Enumerable
+
+	def each(&block)
+		${0}
+	end
+# include Comparable
+snippet Comp
+	include Comparable
+
+	def <=>(other)
+		${0}
+	end
+# extend Forwardable
+snippet Forw-
+	extend Forwardable
+# def self
+snippet defs
+	def self.${1:class_method_name}
+		${0}
+	end
+# def initialize
+snippet definit
+	def initialize(${1:args})
+		${0}
+	end
+# def method_missing
+snippet defmm
+	def method_missing(meth, *args, &blk)
+		${0}
+	end
+snippet defd
+	def_delegator :${1:@del_obj}, :${2:del_meth}, :${0:new_name}
+snippet defds
+	def_delegators :${1:@del_obj}, :${0:del_methods}
+snippet am
+	alias_method :${1:new_name}, :${0:old_name}
+snippet app
+	if __FILE__ == $PROGRAM_NAME
+		${0}
+	end
+# usage_if()
+snippet usai
+	if ARGV.${1}
+		abort "Usage: #{$PROGRAM_NAME} ${2:ARGS_GO_HERE}"${0}
+	end
+# usage_unless()
+snippet usau
+	unless ARGV.${1}
+		abort "Usage: #{$PROGRAM_NAME} ${2:ARGS_GO_HERE}"${0}
+	end
+snippet array
+	Array.new(${1:10}) { |${2:i}| ${0} }
+snippet hash
+	Hash.new { |${1:hash}, ${2:key}| $1[$2] = ${0} }
+snippet file File.foreach() { |line| .. }
+	File.foreach(${1:'path/to/file'}) { |${2:line}| ${0} }
+snippet file File.read()
+	File.read(${1:'path/to/file'})
+snippet Dir Dir.global() { |file| .. }
+	Dir.glob(${1:'dir/glob/*'}) { |${2:file}| ${0} }
+snippet Dir Dir[".."]
+	Dir[${1:'glob/**/*.rb'}]
+snippet dir
+	Filename.dirname(__FILE__)
+snippet deli
+	delete_if { |${1:e}| ${0} }
+snippet fil
+	fill(${1:range}) { |${2:i}| ${0} }
+# flatten_once()
+snippet flao
+	reduce(Array.new) { |${1:arr}, ${2:a}| $1.push(*$2) }
+snippet zip
+	zip(${1:enums}) { |${2:row}| ${0} }
+# downto(0) { |n| .. }
+snippet dow
+	downto(${1:0}) { |${2:n}| ${0} }
+snippet ste
+	step(${1:2}) { |${2:n}| ${0} }
+snippet tim
+	times { |${1:n}| ${0} }
+snippet upt
+	upto(${1:1.0/0.0}) { |${2:n}| ${0} }
+snippet loo
+	loop { ${0} }
+snippet ea
+	each { |${1:e}| ${0} }
+snippet ead
+	each do |${1:e}|
+		${0}
+	end
+snippet eab
+	each_byte { |${1:byte}| ${0} }
+snippet eac- each_char { |chr| .. }
+	each_char { |${1:chr}| ${0} }
+snippet eac- each_cons(..) { |group| .. }
+	each_cons(${1:2}) { |${2:group}| ${0} }
+snippet eai
+	each_index { |${1:i}| ${0} }
+snippet eaid
+	each_index do |${1:i}|
+		${0}
+	end
+snippet eak
+	each_key { |${1:key}| ${0} }
+snippet eakd
+	each_key do |${1:key}|
+		${0}
+	end
+snippet eal
+	each_line { |${1:line}| ${0} }
+snippet eald
+	each_line do |${1:line}|
+		${0}
+	end
+snippet eap
+	each_pair { |${1:name}, ${2:val}| ${0} }
+snippet eapd
+	each_pair do |${1:name}, ${2:val}|
+		${0}
+	end
+snippet eas-
+	each_slice(${1:2}) { |${2:group}| ${0} }
+snippet easd-
+	each_slice(${1:2}) do |${2:group}|
+		${0}
+	end
+snippet eav
+	each_value { |${1:val}| ${0} }
+snippet eavd
+	each_value do |${1:val}|
+		${0}
+	end
+snippet eawi
+	each_with_index { |${1:e}, ${2:i}| ${0} }
+snippet eawid
+	each_with_index do |${1:e}, ${2:i}|
+		${0}
+	end
+snippet eawo
+	each_with_object(${1:init}) { |${2:e}, ${3:var}| ${0} }
+snippet eawod
+	each_with_object(${1:init}) do |${2:e}, ${3:var}|
+		${0}
+	end
+snippet reve
+	reverse_each { |${1:e}| ${0} }
+snippet reved
+	reverse_each do |${1:e}|
+		${0}
+	end
+snippet inj
+	inject(${1:init}) { |${2:mem}, ${3:var}| ${0} }
+snippet injd
+	inject(${1:init}) do |${2:mem}, ${3:var}|
+		${0}
+	end
+snippet red
+	reduce(${1:init}) { |${2:mem}, ${3:var}| ${0} }
+snippet redd
+	reduce(${1:init}) do |${2:mem}, ${3:var}|
+		${0}
+	end
+snippet map
+	map { |${1:e}| ${0} }
+snippet mapd
+	map do |${1:e}|
+		${0}
+	end
+snippet mapwi-
+	enum_with_index.map { |${1:e}, ${2:i}| ${0} }
+snippet sor
+	sort { |a, b| ${0} }
+snippet sorb
+	sort_by { |${1:e}| ${0} }
+snippet ran
+	sort_by { rand }
+snippet all
+	all? { |${1:e}| ${0} }
+snippet any
+	any? { |${1:e}| ${0} }
+snippet cl
+	classify { |${1:e}| ${0} }
+snippet col
+	collect { |${1:e}| ${0} }
+snippet cold
+	collect do |${1:e}|
+		${0}
+	end
+snippet det
+	detect { |${1:e}| ${0} }
+snippet detd
+	detect do |${1:e}|
+		${0}
+	end
+snippet fet
+	fetch(${1:name}) { |${2:key}| ${0} }
+snippet fin
+	find { |${1:e}| ${0} }
+snippet find
+	find do |${1:e}|
+		${0}
+	end
+snippet fina
+	find_all { |${1:e}| ${0} }
+snippet finad
+	find_all do |${1:e}|
+		${0}
+	end
+snippet gre
+	grep(${1:/pattern/}) { |${2:match}| ${0} }
+snippet sub
+	${1:g}sub(${2:/pattern/}) { |${3:match}| ${0} }
+snippet sca
+	scan(${1:/pattern/}) { |${2:match}| ${0} }
+snippet scad
+	scan(${1:/pattern/}) do |${2:match}|
+		${0}
+	end
+snippet max
+	max { |a, b| ${0} }
+snippet min
+	min { |a, b| ${0} }
+snippet par
+	partition { |${1:e}| ${0} }
+snippet pard
+	partition do |${1:e}|
+		${0}
+	end
+snippet rej
+	reject { |${1:e}| ${0} }
+snippet rejd
+	reject do |${1:e}|
+		${0}
+	end
+snippet sel
+	select { |${1:e}| ${0} }
+snippet seld
+	select do |${1:e}|
+		${0}
+	end
+snippet lam
+	lambda { |${1:args}| ${0} }
+snippet ->
+	-> { ${0} }
+snippet ->a
+	->(${1:args}) { ${0} }
+# I'm pretty sure that ruby users expect do to expand to do .. end
+snippet do
+	do
+		${0}
+	end
+# this is for one or more variables. typing a ", " is that cheap that it may
+# not be worth adding another snippet. should 0/1 placeholders change order?
+# its a good idea to think about the var name, so use it first
+snippet dov
+	do |${1:v}|
+		${2}
+	end
+snippet :
+	${1:key}: ${2:'value'}
+snippet ope
+	open('${1:path/or/url/or/pipe}', '${2:w}') { |${3:io}| ${0} }
+# path_from_here()
+snippet fpath
+	File.join(File.dirname(__FILE__), *['${1:rel path here}'])
+# unix_filter {}
+snippet unif
+	ARGF.each_line${1} do |${2:line}|
+		${0}
+	end
+# option_parse {}
+snippet optp
+	require 'optparse'
+
+	options = { ${0:default: 'args'} }
+
+	ARGV.options do |opts|
+		opts.banner = "Usage: #{File.basename($PROGRAM_NAME)}"
+	end
+snippet opt
+	opts.on('-${1:o}', '--${2:long-option-name}', ${3:String}, '${4:Option description.}') do |${5:opt}|
+		${0}
+	end
+snippet tc
+	require 'test/unit'
+
+	require '${1:library_file_name}'
+
+	class Test${2:$1} < Test::Unit::TestCase
+		def test_${3:case_name}
+			${0}
+		end
+	end
+snippet ts
+	require 'test/unit'
+
+	require 'tc_${1:test_case_file}'
+	require 'tc_${2:test_case_file}'
+snippet as
+	assert ${1:test}, '${2:Failure message.}'
+snippet ase
+	assert_equal ${1:expected}, ${2:actual}
+snippet asne
+	assert_not_equal ${1:unexpected}, ${2:actual}
+snippet asid
+	assert_in_delta ${1:expected_float}, ${2:actual_float}, ${3:2**-20}
+snippet asi
+	assert_includes ${1:collection}, ${2:object}
+snippet asio
+	assert_instance_of ${1:ExpectedClass}, ${2:actual_instance}
+snippet asko
+	assert_kind_of ${1:ExpectedKind}, ${2:actual_instance}
+snippet asn
+	assert_nil ${1:instance}
+snippet asnn
+	assert_not_nil ${1:instance}
+snippet asm
+	assert_match(/${1:expected_pattern}/, ${2:actual_string})
+snippet asnm
+	assert_no_match(/${1:unexpected_pattern}/, ${2:actual_string})
+snippet aso
+	assert_operator ${1:left}, :${2:operator}, ${3:right}
+snippet asr
+	assert_raise ${1:Exception} { ${0} }
+snippet asrd
+	assert_raise ${1:Exception} do
+		${0}
+	end
+snippet asnr
+	assert_nothing_raised ${1:Exception} { ${0} }
+snippet asnrd
+	assert_nothing_raised ${1:Exception} do
+		${0}
+	end
+snippet asrt
+	assert_respond_to ${1:object}, :${2:method}
+snippet ass assert_same(..)
+	assert_same ${1:expected}, ${2:actual}
+snippet ass assert_send(..)
+	assert_send [${1:object}, :${2:message}, ${3:args}]
+snippet asns
+	assert_not_same ${1:unexpected}, ${2:actual}
+snippet ast
+	assert_throws :${1:expected}, -> { ${0} }
+snippet astd
+	assert_throws :${1:expected} do
+		${0}
+	end
+snippet asnt
+	assert_nothing_thrown { ${0} }
+snippet asntd
+	assert_nothing_thrown do
+		${0}
+	end
+snippet fl
+	flunk '${1:Failure message.}'
+# Benchmark.bmbm do .. end
+snippet bm-
+	TESTS = ${1:10_000}
+	Benchmark.bmbm do |results|
+		${0}
+	end
+snippet rep
+	results.report('${1:name}:') { TESTS.times { ${0} } }
+# Marshal.dump(.., file)
+snippet Md
+	File.open('${1:path/to/file.dump}', 'wb') { |${2:file}| Marshal.dump(${3:obj}, $2) }
+# Mashal.load(obj)
+snippet Ml
+	File.open('${1:path/to/file.dump}', 'rb') { |${2:file}| Marshal.load($2) }
+# deep_copy(..)
+snippet deec
+	Marshal.load(Marshal.dump(${1:obj_to_copy}))
+snippet Pn-
+	PStore.new('${1:file_name.pstore}')
+snippet tra
+	transaction(${1:true}) { ${0} }
+# xmlread(..)
+snippet xml-
+	REXML::Document.new(File.read('${1:path/to/file}'))
+# xpath(..) { .. }
+snippet xpa
+	elements.each('${1://Xpath}') do |${2:node}|
+		${0}
+	end
+# class_from_name()
+snippet clafn
+	split('::').inject(Object) { |par, const| par.const_get(const) }
+# singleton_class()
+snippet sinc
+	class << self; self end
+snippet nam
+	namespace :${1:`vim_snippets#Filename()`} do
+		${0}
+	end
+snippet tas
+	desc '${1:Task description}'
+	task ${2:task_name: [:dependent, :tasks]} do
+		${0}
+	end
+# block
+snippet b
+	{ |${1:var}| ${0} }
+snippet begin
+	begin
+		fail 'A test exception.'
+	rescue Exception => e
+		puts e.message
+		puts e.backtrace.inspect
+	else
+		# other exception
+	ensure
+		# always executed
+	end
+
+#debugging
+snippet debug
+	require 'byebug'; byebug
+snippet debug19
+	require 'debugger'; debugger
+snippet debug18
+	require 'ruby-debug'; debugger
+snippet pry
+	require 'pry'; binding.pry
+snippet strf
+	strftime('${1:%Y-%m-%d %H:%M:%S %z}')${0}
+#
+# Minitest snippets
+#
+snippet mb
+	must_be ${0}
+snippet wb
+	wont_be ${0}
+snippet mbe
+	must_be_empty
+snippet wbe
+	wont_be_empty
+snippet mbio
+	must_be_instance_of ${0:Class}
+snippet wbio
+	wont_be_instance_of ${0:Class}
+snippet mbko
+	must_be_kind_of ${0:Class}
+snippet wbko
+	wont_be_kind_of ${0:Class}
+snippet mbn
+	must_be_nil
+snippet wbn
+	wont_be_nil
+snippet mbsa
+	must_be_same_as ${0:other}
+snippet wbsa
+	wont_be_same_as ${0:other}
+snippet mbsi
+	-> { ${0} }.must_be_silent
+snippet mbwd
+	must_be_within_delta ${1:0.1}, ${2:0.1}
+snippet wbwd
+	wont_be_within_delta ${1:0.1}, ${2:0.1}
+snippet mbwe
+	must_be_within_epsilon ${1:0.1}, ${2:0.1}
+snippet wbwe
+	wont_be_within_epsilon ${1:0.1}, ${2:0.1}
+snippet me
+	must_equal ${0:other}
+snippet we
+	wont_equal ${0:other}
+snippet mi
+	must_include ${0:what}
+snippet wi
+	wont_include ${0:what}
+snippet mm
+	must_match /${0:regex}/
+snippet wm
+	wont_match /${0:regex}/
+snippet mout
+	-> { ${1} }.must_output '${0}'
+snippet mra
+	-> { ${1} }.must_raise ${0:Exception}
+snippet mrt
+	must_respond_to :${0:method}
+snippet wrt
+	wont_respond_to :${0:method}
+snippet msend
+	must_send [ ${1:what}, :${2:method}, ${3:args} ]
+snippet mthrow
+	-> { throw :${1:error} }.must_throw :${2:error}
+##########################
+#     Rspec snippets     #
+##########################
+snippet desc
+	describe ${1:`substitute(substitute(vim_snippets#Filename(), '_spec$', '', ''), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
+		${0}
+	end
+snippet descm
+	describe '${1:#method}' do
+		${0:pending 'Not implemented'}
+	end
+snippet cont
+	context '${1:message}' do
+		${0}
+	end
+snippet bef
+	before :${1:each} do
+		${0}
+	end
+snippet aft
+	after :${1:each} do
+		${0}
+	end
+snippet let
+	let(:${1:object}) { ${0} }
+snippet let!
+	let!(:${1:object}) { ${0} }
+snippet subj
+	subject { ${0} }
+snippet s.
+	subject.${0:method}
+snippet spec
+	specify { subject.${0} }
+snippet exp
+	expect(${1:object}).to ${0}
+snippet expb
+	expect { ${1:object} }.to ${0}
+snippet experr
+	expect { ${1:object} }.to raise_error ${2:StandardError}, /${0:message_regex}/
+snippet allow
+	allow(${1:object}).to ${0}
+snippet shared
+	shared_examples ${0:'shared examples name'}
+snippet ibl
+	it_behaves_like ${0:'shared examples name'}
+snippet it
+	it '${1:spec_name}' do
+		${0}
+	end
+snippet its
+	its(:${1:method}) { should ${0} }
+snippet is
+	it { should ${0} }
+snippet isn
+	it { should_not ${0} }
+snippet iexp
+	it { expect(${1:object}).${2} ${0} }
+snippet iexpb
+	it { expect { ${1:object} }.${2} ${0} }
+snippet iiexp
+	it { is_expected.to ${0} }
+snippet iiexpn
+	it { is_expected.not_to ${0} }
+snippet agg
+	aggregate_failures '${1:message}' do
+		${0}
+	end

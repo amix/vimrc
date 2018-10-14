@@ -1,0 +1,34 @@
+snippet bl "{% block xyz %} .. {% endblock xyz %}"
+	{% block ${1} %}
+	${2:${VISUAL}}
+	{% endblock $1 %}
+snippet js "{% javascripts 'xyz' %} .. {% endjavascripts %}"
+	{% javascripts '${1}' %}
+		<script src="{{ asset_url }}"></script>
+	{% endjavascripts %}
+snippet css "{% stylesheets 'xyz' %} .. {% endstylesheets %}"
+	{% stylesheets '${1}' %}
+		<link rel="stylesheet" href="{{ asset_url }}">
+	{% endstylesheets %}
+snippet if "{% if %} .. {% endif %}"
+	{% if ${1} %}
+	${2:${VISUAL}}
+	{% endif %}
+snippet ife "{% if %} .. {% else %} .. {% endif %}"
+	{% if ${1} %}
+	${2:${VISUAL}}
+	{% else %}
+	${0}
+	{% endif %}
+snippet el "{% else %}"
+	{% else %}
+	${0:${VISUAL}}
+snippet eif "{% elseif %}"
+	{% elseif ${1} %}
+	${0}
+snippet for "{% for x in y %} .. {% endfor %}"
+	{% for ${1} in ${2} %}
+	${3}
+	{% endfor %}
+snippet ext "{% extends xyz %}"
+	{% extends ${1} %}
