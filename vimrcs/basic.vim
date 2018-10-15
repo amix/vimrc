@@ -386,3 +386,26 @@ function! VisualSelection(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
+
+
+
+
+
+
+
+
+
+
+
+" 我的自定义配置
+autocmd BufRead,BufNewFile *.vue setlocal filetype=vue.html.javascript.css
+autocmd FileType vue syntax sync fromstart
+
+
+
+
+
+
+
+
+
