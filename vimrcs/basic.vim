@@ -111,6 +111,12 @@ set showmatch
 " How many tenths of a second to blink when matching brackets
 set mat=2
 
+set number
+
+" emmet-vim的快速闭合标签
+let g:user_emmet_leader_key='<C-Z>'
+autocmd FileType html,css,vue,ejs,wxml,wxss EmmetInstall
+
 " No annoying sound on errors
 set noerrorbells
 set novisualbell
@@ -179,8 +185,8 @@ set expandtab
 set smarttab
 
 " 1 tab == 4 spaces
-set shiftwidth=4
-set tabstop=4
+set shiftwidth=2
+set tabstop=2
 
 " Linebreak on 500 characters
 set lbr
@@ -380,3 +386,27 @@ function! VisualSelection(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
+
+
+
+
+
+
+
+
+
+
+
+" 我的自定义配置
+autocmd BufRead,BufNewFile *.vue setlocal filetype=vue.html.javascript.css
+autocmd FileType vue syntax sync fromstart
+
+
+
+
+
+
+
+
+
+
