@@ -250,6 +250,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['c', 'cpp', 'cs', 'objc', 'objcpp', 'd', 'java', 'p', 'vala' ],
 \       'description': 'Fix C, C++, C#, ObjectiveC, ObjectiveC++, D, Java, Pawn, and VALA files with uncrustify.',
 \   },
+\   'terraform': {
+\       'function': 'ale#fixers#terraform#Fix',
+\       'suggested_filetypes': ['hcl', 'terraform'],
+\       'description': 'Fix tf and hcl files with terraform fmt.',
+\   },
 \}
 
 " Reset the function registry to the default entries.

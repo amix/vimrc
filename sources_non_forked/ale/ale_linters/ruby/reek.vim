@@ -30,7 +30,7 @@ function! ale_linters#ruby#reek#GetCommand(buffer, version_output) abort
     \   : ''
 
     return ale#handlers#ruby#EscapeExecutable(l:executable, 'reek')
-    \   . ' -f json --no-progress --no-color'
+    \   . ' -f json --no-progress --no-color --force-exclusion'
     \   . l:display_name_args
 endfunction
 

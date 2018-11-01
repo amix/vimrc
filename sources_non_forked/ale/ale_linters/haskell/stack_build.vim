@@ -16,7 +16,7 @@ call ale#linter#Define('haskell', {
 \   'name': 'stack_build',
 \   'aliases': ['stack-build'],
 \   'output_stream': 'stderr',
-\   'executable': 'stack',
+\   'executable_callback': 'ale#handlers#haskell#GetStackExecutable',
 \   'command_callback': 'ale_linters#haskell#stack_build#GetCommand',
 \   'lint_file': 1,
 \   'callback': 'ale#handlers#haskell#HandleGHCFormat',

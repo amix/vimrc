@@ -35,6 +35,7 @@ let s:default_ale_linters = {
 \   'hack': ['hack'],
 \   'help': [],
 \   'perl': ['perlcritic'],
+\   'perl6': [],
 \   'python': ['flake8', 'mypy', 'pylint'],
 \   'rust': ['cargo'],
 \   'spec': [],
@@ -255,6 +256,24 @@ function! ale#linter#PreProcess(filetype, linter) abort
         elseif has_key(a:linter, 'initialization_options')
             let l:obj.initialization_options = a:linter.initialization_options
         endif
+
+        if has_key(a:linter, 'lsp_config_callback')
+            if has_key(a:linter, 'lsp_config')
+                throw 'Only one of `lsp_config` or `lsp_config_callback` should be set'
+            endif
+
+            let l:obj.lsp_config_callback = a:linter.lsp_config_callback
+
+            if !s:IsCallback(l:obj.lsp_config_callback)
+                throw '`lsp_config_callback` must be a callback if defined'
+            endif
+        elseif has_key(a:linter, 'lsp_config')
+            if type(a:linter.lsp_config) isnot v:t_dict
+                throw '`lsp_config` must be a Dictionary'
+            endif
+
+            let l:obj.lsp_config = a:linter.lsp_config
+        endif
     endif
 
     let l:obj.output_stream = get(a:linter, 'output_stream', 'stdout')
@@ -337,8 +356,9 @@ endfunction
 function! s:GetAliasedFiletype(original_filetype) abort
     let l:buffer_aliases = get(b:, 'ale_linter_aliases', {})
 
-    " b:ale_linter_aliases can be set to a List.
+    " b:ale_linter_aliases can be set to a List or String.
     if type(l:buffer_aliases) is v:t_list
+    \|| type(l:buffer_aliases) is v:t_string
         return l:buffer_aliases
     endif
 

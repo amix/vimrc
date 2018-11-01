@@ -293,6 +293,10 @@ function! go#job#Start(cmd, options)
     unlet l:options._start
   endif
 
+  if go#util#HasDebug('shell-commands')
+    call go#util#EchoInfo('job command: ' . string(a:cmd))
+  endif
+
   if has('nvim')
     let l:input = []
     if has_key(a:options, 'in_io') && a:options.in_io ==# 'file' && !empty(a:options.in_name)
@@ -307,7 +311,12 @@ function! go#job#Start(cmd, options)
       call chanclose(job, 'stdin')
     endif
   else
-    let job = job_start(a:cmd, l:options)
+    let l:cmd = a:cmd
+    if go#util#IsWin()
+      let l:cmd = join(map(copy(a:cmd), function('s:winjobarg')), " ")
+    endif
+
+    let job = job_start(l:cmd, l:options)
   endif
 
   if !has_key(l:options, 'cwd')
@@ -499,6 +508,35 @@ function! s:neooptions(options)
       endif
   endfor
   return l:options
+endfunction
+
+function! go#job#Stop(job) abort
+  if has('nvim')
+    call jobstop(a:job)
+    return
+  endif
+
+  call job_stop(a:job)
+  call go#job#Wait(a:job)
+  return
+endfunction
+
+function! go#job#Wait(job) abort
+  if has('nvim')
+    call jobwait(a:job)
+    return
+  endif
+
+  while job_status(a:job) is# 'run'
+    sleep 50m
+  endwhile
+endfunction
+
+function! s:winjobarg(idx, val) abort
+  if empty(a:val)
+    return '""'
+  endif
+  return a:val
 endfunction
 
 " vim: sw=2 ts=2 et

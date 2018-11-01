@@ -148,9 +148,6 @@ The following plugins are supported for use with vim-go:
   https://github.com/SirVer/ultisnips or
   https://github.com/joereynolds/vim-minisnip
 
-* For a better documentation viewer check out:
-  https://github.com/garyburd/go-explorer
-
 * Integration with `delve` (Neovim only):
   https://github.com/jodosha/vim-godebug
 
@@ -1614,6 +1611,14 @@ package and packages that have been installed will proposed.
 >
   let g:go_gocode_propose_source = 1
 <
+                                           *'g:go_gocode_unimported_packages'*
+
+Specifies whether `gocode` should include suggestions from unimported
+packages. By default it is disabled.
+>
+  let g:go_gocode_unimported_packages = 0
+<
+
                                                    *'g:go_gocode_socket_type'*
 
 Specifies whether `gocode` should use a different socket type. By default
@@ -1902,7 +1907,7 @@ The `gohtmltmpl` filetype is automatically set for `*.tmpl` files; the
                                                     *gomod* *ft-gomod-syntax*
 go.mod file syntax~
 
-The `gomod` 'filetype' provides syntax highlighting for Go's module file 
+The `gomod` 'filetype' provides syntax highlighting for Go's module file
 `go.mod`
 
 
@@ -1924,10 +1929,10 @@ features:
   * Toggle breakpoint.
   * Stack operation continue/next/step out.
 
-This feature requires Vim 8.0.0087 or newer with the |+job| feature. Neovim
-does _not_ work (yet).
-This requires Delve 1.0.0 or newer, and it is recommended to use Go 1.10 or
-newer, as its new caching will speed up recompiles.
+This feature requires either Vim 8.0.0087 or newer with the |+job| feature or
+Neovim. This features also requires Delve 1.0.0 or newer, and it is
+recommended to use Go 1.10 or newer, as its new caching will speed up
+recompiles.
 
                                                               *go-debug-intro*
 GETTING STARTED WITH THE DEBUGGER~
@@ -2110,6 +2115,14 @@ Server address `dlv` will listen on; must be in `hostname:port` format.
 Defaults to `127.0.0.1:8181`:
 >
   let g:go_debug_address = '127.0.0.1:8181'
+<
+
+                                                     *'g:go_highlight_debug'*
+
+Highlight the current line and breakpoints in the debugger.
+
+>
+  let g:go_highlight_debug = 1
 <
 
 ==============================================================================

@@ -18,7 +18,7 @@ function! ale_linters#javascript#jshint#GetCommand(buffer) abort
         let l:command .= ' --config ' . ale#Escape(l:jshint_config)
     endif
 
-    let l:command .= ' -'
+    let l:command .= ' --filename %s -'
 
     return l:command
 endfunction

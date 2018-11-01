@@ -189,6 +189,14 @@ g:multi_cursor_select_all_key
 #### **Q** <kbd>CTRL</kbd>+<kbd>n</kbd> doesn't seem to work in gVIM?
 **A** Try setting `set selection=inclusive` in your `~/.gvimrc`
 
+**A** Alternatively, you can just temporarily disable _exclusive_ selection whenever the plugin is active:
+```VimL
+augroup MultipleCursorsSelectionFix
+    autocmd User MultipleCursorsPre  if &selection ==# 'exclusive' | let g:multi_cursor_save_selection = &selection | set selection=inclusive | endif
+    autocmd User MultipleCursorsPost if exists('g:multi_cursor_save_selection') | let &selection = g:multi_cursor_save_selection | unlet g:multi_cursor_save_selection | endif
+augroup END
+```
+
 #### **Q** is it also working on Mac?
 **A** On Mac OS, [MacVim](https://code.google.com/p/macvim/) is known to work.
 

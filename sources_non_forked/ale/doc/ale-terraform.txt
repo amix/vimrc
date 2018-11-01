@@ -3,6 +3,24 @@ ALE Terraform Integration                               *ale-terraform-options*
 
 
 ===============================================================================
+fmt                                                         *ale-terraform-fmt*
+
+g:ale_terraform_fmt_executable                 *g:ale_terraform_fmt_executable*
+                                               *b:ale_terraform_fmt_executable*
+
+  Type: |String|
+  Default: `'terraform'`
+
+  This variable can be changed to use a different executable for terraform.
+
+
+g:ale_terraform_fmt_options                       *g:ale_terraform_fmt_options*
+                                                  *b:ale_terraform_fmt_options*
+  Type: |String|
+  Default: `''`
+
+
+===============================================================================
 tflint                                                   *ale-terraform-tflint*
 
 g:ale_terraform_tflint_executable           *g:ale_terraform_tflint_executable*

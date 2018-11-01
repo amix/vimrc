@@ -39,10 +39,10 @@ endfunction
 
 " FUNCTION: Path.cacheDisplayString() {{{1
 function! s:Path.cacheDisplayString() abort
-    let self.cachedDisplayString = self.getLastPathComponent(1)
+    let self.cachedDisplayString = g:NERDTreeNodeDelimiter . self.getLastPathComponent(1)
 
     if self.isExecutable
-        let self.cachedDisplayString = self.cachedDisplayString . '*'
+        let self.cachedDisplayString = self.addDelimiter(self.cachedDisplayString) . '*'
     endif
 
     let self._bookmarkNames = []
@@ -52,15 +52,24 @@ function! s:Path.cacheDisplayString() abort
         endif
     endfor
     if !empty(self._bookmarkNames) && g:NERDTreeMarkBookmarks == 1
-        let self.cachedDisplayString .= ' {' . join(self._bookmarkNames) . '}'
+        let self.cachedDisplayString = self.addDelimiter(self.cachedDisplayString) . ' {' . join(self._bookmarkNames) . '}'
     endif
 
     if self.isSymLink
-        let self.cachedDisplayString .=  ' -> ' . self.symLinkDest
+        let self.cachedDisplayString = self.addDelimiter(self.cachedDisplayString) . ' -> ' . self.symLinkDest
     endif
 
     if self.isReadOnly
-        let self.cachedDisplayString .=  ' ['.g:NERDTreeGlyphReadOnly.']'
+        let self.cachedDisplayString = self.addDelimiter(self.cachedDisplayString) . ' ['.g:NERDTreeGlyphReadOnly.']'
+    endif
+endfunction
+
+" FUNCTION: Path.addDelimiter() {{{1
+function! s:Path.addDelimiter(line)
+    if a:line =~# '\(.*' . g:NERDTreeNodeDelimiter . '\)\{2}'
+        return a:line
+    else
+        return a:line . g:NERDTreeNodeDelimiter
     endif
 endfunction
 
@@ -392,7 +401,17 @@ endfunction
 " FUNCTION: Path.getSortKey() {{{1
 " returns a key used in compare function for sorting
 function! s:Path.getSortKey()
-    if !exists("self._sortKey") || g:NERDTreeSortOrder !=# g:NERDTreeOldSortOrder
+    let l:ascending = index(g:NERDTreeSortOrder,'[[timestamp]]')
+    let l:descending = index(g:NERDTreeSortOrder,'[[-timestamp]]')
+    if !exists("self._sortKey") || g:NERDTreeSortOrder !=# g:NERDTreeOldSortOrder || l:ascending >= 0 || l:descending >= 0
+        let self._sortKey = [self.getSortOrderIndex()]
+
+        if l:descending >= 0
+            call insert(self._sortKey, -getftime(self.str()), l:descending == 0 ? 0 : len(self._sortKey))
+        elseif l:ascending >= 0
+            call insert(self._sortKey, getftime(self.str()), l:ascending == 0 ? 0 : len(self._sortKey))
+        endif
+
         let path = self.getLastPathComponent(1)
         if !g:NERDTreeSortHiddenFirst
             let path = substitute(path, '^[._]', '', '')
@@ -400,13 +419,9 @@ function! s:Path.getSortKey()
         if !g:NERDTreeCaseSensitiveSort
             let path = tolower(path)
         endif
-        if !g:NERDTreeNaturalSort
-            let self._sortKey = [self.getSortOrderIndex(), path]
-        else
-            let self._sortKey = [self.getSortOrderIndex()] + self._splitChunks(path)
-        endif
-    endif
 
+        call extend(self._sortKey, (g:NERDTreeNaturalSort ? self._splitChunks(path) : [path]))
+    endif
     return self._sortKey
 endfunction
 

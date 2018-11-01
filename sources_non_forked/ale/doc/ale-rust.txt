@@ -109,6 +109,7 @@ g:ale_rust_cargo_include_features           *g:ale_rust_cargo_include_features*
   When defined, ALE will set the `--features` option when invoking `cargo` to
   perform the lint check. See |g:ale_rust_cargo_default_feature_behavior|.
 
+
 g:ale_rust_cargo_avoid_whole_workspace *g:ale_rust_cargo_avoid_whole_workspace*
                                        *b:ale_rust_cargo_avoid_whole_workspace*
   Type: |Number|
@@ -117,6 +118,36 @@ g:ale_rust_cargo_avoid_whole_workspace *g:ale_rust_cargo_avoid_whole_workspace*
   When set to 1, and ALE is used to edit a crate that is part of a Cargo
   workspace, avoid building the entire workspace by invoking `cargo` directly
   in the crate's directory. Otherwise, behave as usual.
+
+
+g:ale_rust_cargo_use_clippy
+                                                  *g:ale_rust_cargo_use_clippy*
+                                                  *b:ale_rust_cargo_use_clippy*
+  Type: |Number|
+  Default: `0`
+
+  When set to 1, `cargo clippy` will be used instead of `cargo check` or
+  `cargo build` as linter.
+  For details of `cargo clippy`, please visit the following link:
+
+  https://github.com/rust-lang-nursery/rust-clippy
+
+  Since `cargo clippy` is optional toolchain, it's safer to check whether
+  `cargo-clippy` is executable as follows:
+>
+    let g:ale_rust_cargo_use_clippy = executable('cargo-clippy')
+<
+
+g:ale_rust_cargo_clippy_options
+                                              *g:ale_rust_cargo_clippy_options*
+                                              *b:ale_rust_cargo_clippy_options*
+
+  Type: |String|
+  Default: `''`
+
+  When `cargo clippy` is used, this value will be added to a command line to run
+  it. This variable is useful when you want to add some extra options which
+  only `cargo clippy` supports (e.g. `--deny`).
 
 
 ===============================================================================
@@ -167,6 +198,22 @@ g:ale_rust_ignore_error_codes                   *g:ale_rust_ignore_error_codes*
   >
   let g:ale_rust_ignore_error_codes = ['E0432', 'E0433']
 
+g:ale_rust_ignore_secondary_spans           *g:ale_rust_ignore_secondary_spans*
+                                            *b:ale_rust_ignore_secondary_spans*
+  Type: Number
+  Default: 0
+
+	When set to 1, instructs the Rust error repporting to ignore secondary
+	spans. The problem with secondary spans is that they sometimes appear in
+	error messages before the main cause of the error, for example: >
+
+  1 src/main.rs|98 col 5 error| this function takes 4 parameters but 5
+	parameters were supplied: defined here
+  2 src/main.rs|430 col 32 error| this function takes 4 parameters but 5
+	parameters were supplied: expected 4 parameters
+<
+  This is due to the sorting by line numbers. With this option set to 1,
+  the 'defined here' span will not be presented.
 
 ===============================================================================
 rustfmt                                                      *ale-rust-rustfmt*

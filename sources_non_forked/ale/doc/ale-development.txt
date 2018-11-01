@@ -306,6 +306,7 @@ given the above setup are as follows.
 `AssertLinterNotExecuted`          - Check that linters will not be executed.
 `AssertLSPLanguage language`       - Check the language given to an LSP server.
 `AssertLSPOptions options_dict`    - Check the options given to an LSP server.
+`AssertLSPConfig config_dict`      - Check the config given to an LSP server.
 `AssertLSPProject project_root`    - Check the root given to an LSP server.
 `AssertLSPAddress address`         - Check the address to an LSP server.
 

@@ -31,6 +31,11 @@ au BufReadPost *.s call s:gofiletype_post()
 
 au BufRead,BufNewFile *.tmpl set filetype=gohtmltmpl
 
+" remove the autocommands for modsim3, and lprolog files so that their
+" highlight groups, syntax, etc. will not be loaded. *.MOD is included, so
+" that on case insensitive file systems the module2 autocmds will not be
+" executed.
+au! BufNewFile,BufRead *.mod,*.MOD
 " Set the filetype if the first non-comment and non-blank line starts with
 " 'module <path>'.
 au BufNewFile,BufRead go.mod call s:gomod()

@@ -25,10 +25,17 @@ function! ale_linters#elixir#dialyxir#Handle(buffer, lines) abort
     return l:output
 endfunction
 
+function! ale_linters#elixir#dialyxir#GetCommand(buffer) abort
+    let l:project_root = ale#handlers#elixir#FindMixProjectRoot(a:buffer)
+
+    return ale#path#CdString(l:project_root)
+    \ . ' mix help dialyzer && mix dialyzer'
+endfunction
+
 call ale#linter#Define('elixir', {
 \   'name': 'dialyxir',
 \   'executable': 'mix',
-\   'command': 'mix help dialyzer && mix dialyzer',
+\   'command_callback': 'ale_linters#elixir#dialyxir#GetCommand',
 \   'callback': 'ale_linters#elixir#dialyxir#Handle',
 \})
 

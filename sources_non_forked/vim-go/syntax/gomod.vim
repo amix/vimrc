@@ -37,10 +37,26 @@ syntax match gomodReplaceOperator "\v\=\>"
 highlight default link gomodReplaceOperator Operator
 
 
-" highlight semver, note that this is very simple. But it works for now
-syntax match gomodVersion "v\d\+\.\d\+\.\d\+"
-syntax match gomodVersion "v\d\+\.\d\+\.\d\+-\S*"
-syntax match gomodVersion "v\d\+\.\d\+\.\d\++incompatible"
+" highlight versions:
+"  * vX.Y.Z
+"  * vX.0.0-yyyyymmddhhmmss-abcdefabcdef
+"  * vX.Y.Z-pre.0.yyyymmddhhmmss-abcdefabcdef
+"  * vX.Y.(Z+1)-0.yyyymmddhhss-abcdefabcdef
+"  * +incompatible suffix when X > 1
+" match vX.Y.Z and their prereleases
+syntax match gomodVersion "v\d\+\.\d\+\.\d\+\%(-\%(\w\+\.\)\+0\.\d\{14}-\x\+\)\?"
+" match target when most recent version before the target is X.Y.Z
+syntax match gomodVersion "v\d\+\.\d\+\.[1-9]\{1}\d*\%(-0\.\%(\d\{14}-\x\+\)\)\?"
+" match target without a major version before the commit (e.g.  vX.0.0-yyyymmddhhmmss-abcdefabcdef)
+syntax match gomodVersion "v\d\+\.0\.0-\d\{14\}-\x\+"
+
+" match vX.Y.Z and their prereleases for X>1
+syntax match gomodVersion "v[2-9]\{1}\d\?\.\d\+\.\d\+\%(-\%(\w\+\.\)\+0\.\d\{14\}-\x\+\)\?\%(+incompatible\>\)\?"
+" match target when most recent version before the target is X.Y.Z for X>1
+syntax match gomodVersion "v[2-9]\{1}\d\?\.\d\+\.[1-9]\{1}\d*\%(-0\.\%(\d\{14\}-\x\+\)\)\?\%(+incompatible\>\)\?"
+" match target without a major version before the commit (e.g.  vX.0.0-yyyymmddhhmmss-abcdefabcdef) for X>1
+syntax match gomodVersion "v[2-9]\{1}\d\?\.0\.0-\d\{14\}-\x\+\%(+incompatible\>\)\?"
+
 highlight default link gomodVersion Identifier
 
 let b:current_syntax = "gomod"

@@ -3,6 +3,29 @@ ALE Dockerfile Integration                             *ale-dockerfile-options*
 
 
 ===============================================================================
+dockerfile_lint                                *ale-dockerfile-dockerfile_lint*
+
+g:ale_dockerfile_dockerfile_lint_executable
+                                  *g:ale_dockerfile_dockerfile_lint_executable*
+                                  *b:ale_dockerfile_dockerfile_lint_executable*
+  Type: |String|
+  Default: `'dockerfile_lint'`
+
+  This variable can be changed to specify the executable used to run
+  dockerfile_lint.
+
+
+g:ale_dockerfile_dockerfile_lint_options
+                                     *g:ale_dockerfile_dockerfile_lint_options*
+                                     *b:ale_dockerfile_dockerfile_lint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add additional command-line arguments to
+  the dockerfile lint invocation - like custom rule file definitions.
+
+
+===============================================================================
 hadolint                                              *ale-dockerfile-hadolint*
 
   hadolint can be found at: https://github.com/hadolint/hadolint

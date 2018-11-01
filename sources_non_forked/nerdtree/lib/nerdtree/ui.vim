@@ -300,7 +300,7 @@ endfunction
 
 " FUNCTION: s:UI.MarkupReg() {{{1
 function! s:UI.MarkupReg()
-    return '^\(['.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.'] \| \+['.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.'] \| \+\)'
+    return '^ *['.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.']\? '
 endfunction
 
 " FUNCTION: s:UI._renderBookmarks {{{1
@@ -363,30 +363,13 @@ function! s:UI.setShowHidden(val)
 endfunction
 
 " FUNCTION: s:UI._stripMarkup(line){{{1
-" returns the given line with all the tree parts stripped off
+" find the filename in the given line, and return it.
 "
 " Args:
 " line: the subject line
 function! s:UI._stripMarkup(line)
-    let line = a:line
-    " remove the tree parts and the leading space
-    let line = substitute (line, g:NERDTreeUI.MarkupReg(),"","")
-
-    " strip off any read only flag
-    let line = substitute (line, ' \['.g:NERDTreeGlyphReadOnly.'\]', "","")
-
-    " strip off any bookmark flags
-    let line = substitute (line, ' {[^}]*}', "","")
-
-    " strip off any executable flags
-    let line = substitute (line, '*\ze\($\| \)', "","")
-
-    " strip off any generic flags
-    let line = substitute (line, '\[[^]]*\]', "","")
-
-    let line = substitute (line,' -> .*',"","") " remove link to
-
-    return line
+    let l:line = substitute(a:line, '^.\{-}' . g:NERDTreeNodeDelimiter, '', '')
+    return substitute(l:line, g:NERDTreeNodeDelimiter.'.*$', '', '')
 endfunction
 
 " FUNCTION: s:UI.render() {{{1

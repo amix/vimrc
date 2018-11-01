@@ -41,4 +41,17 @@ See https://github.com/jeremyjh/dialyxir#with-explaining-stuff for more
 information.
 
 ===============================================================================
+elixir-ls                                                *ale-elixir-elixir-ls*
+
+Elixir Language Server (https://github.com/JakeBecker/elixir-ls)
+
+g:ale_elixir_elixir_ls_release                 *g:ale_elixir_elixir_ls_release*
+                                               *b:ale_elixir_elixir_ls_release*
+  Type: |String|
+  Default: `'elixir-ls'`
+
+  Location of the elixir-ls release directory. This directory must contain
+  the language server scripts (language_server.sh and language_server.bat).
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

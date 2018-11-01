@@ -135,6 +135,10 @@ function! go#config#SetGuruScope(scope) abort
   endif
 endfunction
 
+function! go#config#GocodeUnimportedPackages() abort
+  return get(g:, 'go_gocode_unimported_packages', 0)
+endfunction
+
 let s:sock_type = (has('win32') || has('win64')) ? 'tcp' : 'unix'
 function! go#config#GocodeSocketType() abort
   return get(g:, 'go_gocode_socket_type', s:sock_type)
@@ -418,6 +422,10 @@ endfunction
 
 function! go#config#HighlightVariableDeclarations() abort
   return get(g:, 'go_highlight_variable_declarations', 0)
+endfunction
+
+function! go#config#HighlightDebug() abort
+  return get(g:, 'go_highlight_debug', 1)
 endfunction
 
 function! go#config#FoldEnable(...) abort

@@ -43,8 +43,8 @@ function! FugitiveReal(...) abort
   endif
 endfunction
 
-function! FugitiveRoute(...) abort
-  return fugitive#Route(a:0 ? a:1 : bufnr(''), FugitiveGitDir(a:0 > 1 ? a:2 : -1))
+function! FugitiveFind(...) abort
+  return fugitive#Find(a:0 ? a:1 : bufnr(''), FugitiveGitDir(a:0 > 1 ? a:2 : -1))
 endfunction
 
 function! FugitivePath(...) abort
@@ -104,6 +104,8 @@ function! FugitiveTreeForGitDir(path) abort
   let dir = a:path
   if dir =~# '/\.git$'
     return len(dir) ==# 5 ? '/' : dir[0:-6]
+  elseif dir ==# ''
+    return ''
   endif
   if !has_key(s:worktree_for_dir, dir)
     let s:worktree_for_dir[dir] = ''
@@ -203,12 +205,12 @@ function! FugitiveDetect(path) abort
   endif
 endfunction
 
-function! FugitiveFind(...) abort
-  return call('FugitiveRoute', a:000)
+function! FugitiveRoute(...) abort
+  return call('FugitiveFind', a:000)
 endfunction
 
 function! FugitiveGenerate(...) abort
-  return call('FugitiveRoute', a:000)
+  throw 'Use FugitiveFind() instead'
 endfunction
 
 function! s:Slash(path) abort
@@ -258,7 +260,7 @@ augroup fugitive
   autocmd FileType gitrebase
         \ let &l:include = '^\%(pick\|squash\|edit\|reword\|fixup\|drop\|[pserfd]\)\>' |
         \ if exists('b:git_dir') |
-        \   let &l:includeexpr = 'v:fname =~# ''^\x\{4,40\}$'' ? FugitiveRoute(v:fname) : ' .
+        \   let &l:includeexpr = 'v:fname =~# ''^\x\{4,40\}$'' ? FugitiveFind(v:fname) : ' .
         \   (len(&l:includeexpr) ? &l:includeexpr : 'v:fname') |
         \ endif |
         \ let b:undo_ftplugin = get(b:, 'undo_ftplugin', 'exe') . '|setl inex= inc='

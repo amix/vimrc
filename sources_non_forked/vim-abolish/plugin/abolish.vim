@@ -29,9 +29,9 @@ endfunction
 
 function! s:send(self,func,...)
   if type(a:func) == type('') || type(a:func) == type(0)
-    let Func = get(a:self,a:func,'')
+    let l:Func = get(a:self,a:func,'')
   else
-    let Func = a:func
+    let l:Func = a:func
   endif
   let s = type(a:self) == type({}) ? a:self : {}
   if type(Func) == type(function('tr'))
@@ -578,45 +578,54 @@ call extend(Abolish.Coercions, {
       \ "function missing": s:function("s:unknown_coercion")
       \}, "keep")
 
-function! s:coerce(transformation)
+function! s:coerce(type) abort
+  if a:type !~# '^\%(line\|char\|block\)'
+    let s:transformation = a:type
+    let &opfunc = matchstr(expand('<sfile>'), '<SNR>\w*')
+    return 'g@'
+  endif
+  let selection = &selection
   let clipboard = &clipboard
   try
-    set clipboard=
+    set selection=inclusive clipboard-=unnamed clipboard-=unnamedplus
     let regbody = getreg('"')
     let regtype = getregtype('"')
     let c = v:count1
     while c > 0
       let c -= 1
-      norm! yiw
+      if a:type ==# 'line'
+        let move = "'[V']"
+      elseif a:type ==# 'block'
+        let move = "`[\<C-V>`]"
+      else
+        let move = "`[v`]"
+      endif
+      silent exe 'normal!' move.'y'
       let word = @@
-      let @@ = s:send(g:Abolish.Coercions,a:transformation,word)
+      let @@ = s:send(g:Abolish.Coercions,s:transformation,word)
       if !exists('begin')
         let begin = getpos("'[")
       endif
       if word !=# @@
         let changed = 1
-        norm! viwpw
-      else
-        norm! w
+        exe 'normal!' move.'p'
       endif
     endwhile
     call setreg('"',regbody,regtype)
     call setpos("'[",begin)
     call setpos(".",begin)
-    if exists("changed")
-      silent! call repeat#set("\<Plug>Coerce".a:transformation)
-    endif
   finally
+    let &selection = selection
     let &clipboard = clipboard
   endtry
 endfunction
 
-nnoremap <silent> <Plug>Coerce :<C-U>call <SID>coerce(nr2char(getchar()))<CR>
+nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar())).'iw'
 
 " }}}1
 
 if !exists("g:abolish_no_mappings") || ! g:abolish_no_mappings
-  nmap cr  <Plug>Coerce
+  nmap cr  <Plug>(abolish-coerce)
 endif
 
 command! -nargs=+ -bang -bar -range=0 -complete=custom,s:Complete Abolish

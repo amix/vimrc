@@ -29,10 +29,17 @@ function! ale_linters#elixir#dogma#Handle(buffer, lines) abort
     return l:output
 endfunction
 
+function! ale_linters#elixir#dogma#GetCommand(buffer) abort
+    let l:project_root = ale#handlers#elixir#FindMixProjectRoot(a:buffer)
+
+    return ale#path#CdString(l:project_root)
+    \ . ' mix help dogma && mix dogma %s --format=flycheck'
+endfunction
+
 call ale#linter#Define('elixir', {
 \   'name': 'dogma',
 \   'executable': 'mix',
-\   'command': 'mix help dogma && mix dogma %s --format=flycheck',
+\   'command_callback': 'ale_linters#elixir#dogma#GetCommand',
 \   'lint_file': 1,
 \   'callback': 'ale_linters#elixir#dogma#Handle',
 \})

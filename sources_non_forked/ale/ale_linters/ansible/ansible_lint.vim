@@ -1,6 +1,12 @@
 " Author: Bjorn Neergaard <bjorn@neersighted.com>
 " Description: ansible-lint for ansible-yaml files
 
+call ale#Set('ansible_ansible_lint_executable', 'ansible-lint')
+
+function! ale_linters#ansible#ansible_lint#GetExecutable(buffer) abort
+    return ale#Var(a:buffer, 'ansible_ansible_lint_executable')
+endfunction
+
 function! ale_linters#ansible#ansible_lint#Handle(buffer, lines) abort
     for l:line in a:lines[:10]
         if match(l:line, '^Traceback') >= 0
@@ -42,8 +48,9 @@ function! ale_linters#ansible#ansible_lint#Handle(buffer, lines) abort
 endfunction
 
 call ale#linter#Define('ansible', {
-\   'name': 'ansible',
-\   'executable': 'ansible',
-\   'command': 'ansible-lint -p %t',
+\   'name': 'ansible_lint',
+\   'aliases': ['ansible', 'ansible-lint'],
+\   'executable_callback': 'ale_linters#ansible#ansible_lint#GetExecutable',
+\   'command': '%e -p %t',
 \   'callback': 'ale_linters#ansible#ansible_lint#Handle',
 \})

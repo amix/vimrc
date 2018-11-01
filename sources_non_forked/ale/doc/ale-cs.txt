@@ -2,6 +2,10 @@
 ALE C# Integration                                             *ale-cs-options*
 
 
+In addition to the linters that are provided with ALE, C# code can be checked
+with the OmniSharp plugin. See here: https://github.com/OmniSharp/omnisharp-vim
+
+
 ===============================================================================
 mcs                                                                *ale-cs-mcs*
 

@@ -17,7 +17,7 @@ function! ale#lsp#reset#StopAllLSPs() abort
 
             for l:linter in ale#linter#Get(getbufvar(l:buffer, '&filetype'))
                 if !empty(l:linter.lsp)
-                    call ale#engine#HandleLoclist(l:linter.name, l:buffer, [])
+                    call ale#engine#HandleLoclist(l:linter.name, l:buffer, [], 0)
                 endif
             endfor
         endfor

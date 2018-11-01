@@ -127,6 +127,13 @@ function! go#util#gopath() abort
   return substitute(s:exec(['go', 'env', 'GOPATH'])[0], '\n', '', 'g')
 endfunction
 
+" gomod returns 'go env GOMOD'. gomod changes depending on the folder. Don't
+" use go#util#env as it caches the value.
+function! go#util#gomod() abort
+  return substitute(s:exec(['go', 'env', 'GOMOD'])[0], '\n', '', 'g')
+endfunction
+
+
 function! go#util#osarch() abort
   return go#util#env("goos") . '_' . go#util#env("goarch")
 endfunction
@@ -137,12 +144,13 @@ endfunction
 " so that we always use a standard POSIX-compatible Bourne shell (and not e.g.
 " csh, fish, etc.) See #988 and #1276.
 function! s:system(cmd, ...) abort
-  " Preserve original shell and shellredir values
+  " Preserve original shell, shellredir and shellcmdflag values
   let l:shell = &shell
   let l:shellredir = &shellredir
+  let l:shellcmdflag = &shellcmdflag
 
   if !go#util#IsWin() && executable('/bin/sh')
-      set shell=/bin/sh shellredir=>%s\ 2>&1
+      set shell=/bin/sh shellredir=>%s\ 2>&1 shellcmdflag=-c
   endif
 
   try
@@ -151,6 +159,7 @@ function! s:system(cmd, ...) abort
     " Restore original values
     let &shell = l:shell
     let &shellredir = l:shellredir
+    let &shellcmdflag = l:shellcmdflag
   endtry
 endfunction
 

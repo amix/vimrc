@@ -255,6 +255,7 @@ function! s:findAndRevealPath(pathStr)
     endif
 
     try
+        let l:pathStr = g:NERDTreePath.Resolve(l:pathStr)
         let l:pathObj = g:NERDTreePath.New(l:pathStr)
     catch /^NERDTree.InvalidArgumentsError/
         call nerdtree#echoWarning('invalid path')
@@ -524,10 +525,17 @@ endfunction
 " Reloads the current root. All nodes below this will be lost and the root dir
 " will be reloaded.
 function! s:refreshRoot()
+    if !g:NERDTree.IsOpen()
+        return
+    endif
     call nerdtree#echo("Refreshing the root node. This could take a while...")
+
+    let l:curWin = winnr()
+    call nerdtree#exec(g:NERDTree.GetWinNum() . "wincmd w")
     call b:NERDTree.root.refresh()
     call b:NERDTree.render()
     redraw
+    call nerdtree#exec(l:curWin . "wincmd w")
     call nerdtree#echo("Refreshing the root node. This could take a while... DONE")
 endfunction
 
@@ -554,6 +562,7 @@ function! nerdtree#ui_glue#setupCommands()
     command! -n=1 -complete=customlist,nerdtree#completeBookmarks -bar NERDTreeFromBookmark call g:NERDTreeCreator.CreateTabTree('<args>')
     command! -n=0 -bar NERDTreeMirror call g:NERDTreeCreator.CreateMirror()
     command! -n=? -complete=file -bar NERDTreeFind call s:findAndRevealPath('<args>')
+    command! -n=0 -bar NERDTreeRefreshRoot call s:refreshRoot()
     command! -n=0 -bar NERDTreeFocus call NERDTreeFocus()
     command! -n=0 -bar NERDTreeCWD call NERDTreeCWD()
 endfunction

@@ -85,6 +85,14 @@ function! ale#assert#LSPOptions(expected_options) abort
     AssertEqual a:expected_options, l:initialization_options
 endfunction
 
+function! ale#assert#LSPConfig(expected_config) abort
+    let l:buffer = bufnr('')
+    let l:linter = s:GetLinter()
+    let l:config = ale#lsp_linter#GetConfig(l:buffer, l:linter)
+
+    AssertEqual a:expected_config, l:config
+endfunction
+
 function! ale#assert#LSPLanguage(expected_language) abort
     let l:buffer = bufnr('')
     let l:linter = s:GetLinter()
@@ -147,6 +155,7 @@ function! ale#assert#SetUpLinterTest(filetype, name) abort
     command! -nargs=+ AssertLinter :call ale#assert#Linter(<args>)
     command! -nargs=0 AssertLinterNotExecuted :call ale#assert#LinterNotExecuted()
     command! -nargs=+ AssertLSPOptions :call ale#assert#LSPOptions(<args>)
+    command! -nargs=+ AssertLSPConfig :call ale#assert#LSPConfig(<args>)
     command! -nargs=+ AssertLSPLanguage :call ale#assert#LSPLanguage(<args>)
     command! -nargs=+ AssertLSPProject :call ale#assert#LSPProject(<args>)
     command! -nargs=+ AssertLSPAddress :call ale#assert#LSPAddress(<args>)
@@ -170,6 +179,10 @@ function! ale#assert#TearDownLinterTest() abort
 
     if exists(':AssertLSPOptions')
         delcommand AssertLSPOptions
+    endif
+
+    if exists(':AssertLSPConfig')
+        delcommand AssertLSPConfig
     endif
 
     if exists(':AssertLSPLanguage')

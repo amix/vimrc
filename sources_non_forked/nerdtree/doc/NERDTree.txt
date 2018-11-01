@@ -145,6 +145,9 @@ The following features and functionality are provided by the NERD tree:
     Change the NERDTree root to the current working directory.  If no
     NERDTree exists for this tab, a new one is opened.
 
+:NERDTreeRefreshRoot                                    *:NERDTreeRefreshRoot*
+    Refreshes the NERD tree root node.
+
 ------------------------------------------------------------------------------
 2.2. Bookmarks                                             *NERDTreeBookmarks*
 
@@ -992,17 +995,33 @@ appended to the array.
 
 The regex '\/$' should be used to match directory nodes.
 
+A special flag can be used to sort by the modification timestamps of files and
+directories. It is either '[[timestamp]]' for ascending, or '[[-timestamp]]'
+for descending. If placed at the beginning of the list, files and directories
+are sorted by timestamp, and then by the remaining items in the sort order
+list. If this flag is in any other position of the list, timestamp sorting is
+done secondarily. See examples 4, 5, and 6 below.
+
 After this sorting is done, the files in each group are sorted alphabetically.
 
 Other examples: >
     (1) ['*', '\/$']
     (2) []
     (3) ['\/$', '\.rb$', '\.php$', '*', '\.swp$',  '\.bak$', '\~$']
+    (4) ['[[timestamp]]']
+    (5) ['\/$', '*', '[[-timestamp]]']
+    (6) ['\.md$', '\.c$', '[[-timestamp]]', '*']
 <
 1. Directories will appear last, everything else will appear above.
 2. Everything will simply appear in alphabetical order.
 3. Dirs will appear first, then ruby and php. Swap files, bak files and vim
    backup files will appear last with everything else preceding them.
+4. All files and directories are sorted by timestamp, oldest first. If any
+   files have identical timestamps, they are sorted alphabetically.
+5. Directories are first, newest to oldest, then everything else, newest to
+   oldest.
+6. Markdown files first, followed by C source files, then everything else.
+   Each group is shown newest to oldest.
 
 ------------------------------------------------------------------------------
                                                         *'NERDTreeStatusline'*
@@ -1014,7 +1033,7 @@ Defines the value for the |'statusline'| setting in NERDTree windows.
 Note: The setting is actually applied using |:let-&|, not |:set|, so
 escaping spaces is not necessary.
 
-Setting this option to -1 will will deactivate it so that your global
+Setting this option to -1 will deactivate it so that your global
 |'statusline'| setting is used.
 
 ------------------------------------------------------------------------------

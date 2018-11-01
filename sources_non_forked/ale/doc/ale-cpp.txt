@@ -103,7 +103,7 @@ overrides |g:ale_c_build_dir_names|.
 g:ale_cpp_clangtidy_checks                         *g:ale_cpp_clangtidy_checks*
                                                    *b:ale_cpp_clangtidy_checks*
   Type: |List|
-  Default: `['*']`
+  Default: `[]`
 
   The checks to enable for clang-tidy with the `-checks` argument.
 

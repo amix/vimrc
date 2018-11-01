@@ -7,6 +7,10 @@ if !exists('g:ale_rust_ignore_error_codes')
     let g:ale_rust_ignore_error_codes = []
 endif
 
+if !exists('g:ale_rust_ignore_secondary_spans')
+    let g:ale_rust_ignore_secondary_spans = 0
+endif
+
 function! s:FindSpan(buffer, span) abort
     if ale#path#IsBufferPath(a:buffer, a:span.file_name) || a:span.file_name is# '<anon>'
         return a:span
@@ -46,6 +50,10 @@ function! ale#handlers#rust#HandleRustErrors(buffer, lines) abort
 
         for l:root_span in l:error.spans
             let l:span = s:FindSpan(a:buffer, l:root_span)
+
+            if ale#Var(a:buffer, 'rust_ignore_secondary_spans') && !get(l:span, 'is_primary', 1)
+                continue
+            endif
 
             if !empty(l:span)
                 call add(l:output, {

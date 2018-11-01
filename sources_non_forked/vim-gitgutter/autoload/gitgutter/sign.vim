@@ -170,7 +170,16 @@ function! s:upsert_new_gitgutter_signs(bufnr, modified_lines) abort
   let other_signs         = gitgutter#utility#getbufvar(a:bufnr, 'other_signs')
   let old_gitgutter_signs = gitgutter#utility#getbufvar(a:bufnr, 'gitgutter_signs')
 
-  for line in a:modified_lines
+  " Handle special case where the first line is the site of two hunks:
+  " lines deleted above at the start of the file, and lines deleted
+  " immediately below.
+  if a:modified_lines[0:1] == [[1, 'removed_first_line'], [1, 'removed']]
+    let modified_lines = [[1, 'removed_above_and_below']] + a:modified_lines[2:]
+  else
+    let modified_lines = a:modified_lines
+  endif
+
+  for line in modified_lines
     let line_number = line[0]  " <number>
     if index(other_signs, line_number) == -1  " don't clobber others' signs
       let name = s:highlight_name_for_change(line[1])
@@ -213,6 +222,8 @@ function! s:highlight_name_for_change(text) abort
     return 'GitGutterLineModified'
   elseif a:text ==# 'modified_removed'
     return 'GitGutterLineModifiedRemoved'
+  elseif a:text ==# 'removed_above_and_below'
+    return 'GitGutterLineRemovedAboveAndBelow'
   endif
 endfunction
 

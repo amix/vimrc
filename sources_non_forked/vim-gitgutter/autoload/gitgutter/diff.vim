@@ -11,10 +11,16 @@ endfunction
 let s:c_flag = s:git_supports_command_line_config_override()
 
 
-let s:temp_index = tempname()
+let s:temp_from = tempname()
 let s:temp_buffer = tempname()
 
-" Returns a diff of the buffer.
+" Returns a diff of the buffer against the index or the working tree.
+"
+" After running the diff we pass it through grep where available to reduce
+" subsequent processing by the plugin.  If grep is not available the plugin
+" does the filtering instead.
+"
+" When diffing against the index:
 "
 " The buffer contents is not the same as the file on disk so we need to pass
 " two instances of the file to git-diff:
@@ -26,11 +32,6 @@ let s:temp_buffer = tempname()
 "     git show :myfile > myfileA
 "
 " and myfileB is the buffer contents.
-"
-" After running the diff we pass it through grep where available to reduce
-" subsequent processing by the plugin.  If grep is not available the plugin
-" does the filtering instead.
-"
 "
 " Regarding line endings:
 "
@@ -57,7 +58,15 @@ let s:temp_buffer = tempname()
 " When writing the temporary files we preserve the original file's extension
 " so that repos using .gitattributes to control EOL conversion continue to
 " convert correctly.
-function! gitgutter#diff#run_diff(bufnr, preserve_full_diff) abort
+"
+" Arguments:
+"
+" bufnr              - the number of the buffer to be diffed
+" from               - 'index' or 'working_tree'; what the buffer is diffed against
+" preserve_full_diff - truthy to return the full diff or falsey to return only
+"                      the hunk headers (@@ -x,y +m,n @@); only possible if
+"                      grep is available.
+function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
   while gitgutter#utility#repo_path(a:bufnr, 0) == -1
     sleep 5m
   endwhile
@@ -66,18 +75,13 @@ function! gitgutter#diff#run_diff(bufnr, preserve_full_diff) abort
     throw 'gitgutter not tracked'
   endif
 
-
   " Wrap compound commands in parentheses to make Windows happy.
   " bash doesn't mind the parentheses.
   let cmd = '('
 
-  " Append buffer number to avoid race conditions between writing and reading
-  " the files when asynchronously processing multiple buffers.
-  "
-  " Without the buffer number, index_file would have a race in the shell
-  " between the second process writing it (with git-show) and the first
-  " reading it (with git-diff).
-  let index_file = s:temp_index.'.'.a:bufnr
+  " Append buffer number to temp filenames to avoid race conditions between
+  " writing and reading the files when asynchronously processing multiple
+  " buffers.
 
   " Without the buffer number, buff_file would have a race between the
   " second gitgutter#process_buffer() writing the file (synchronously, below)
@@ -87,26 +91,39 @@ function! gitgutter#diff#run_diff(bufnr, preserve_full_diff) abort
 
   let extension = gitgutter#utility#extension(a:bufnr)
   if !empty(extension)
-    let index_file .= '.'.extension
     let buff_file .= '.'.extension
   endif
-
-  " Write file from index to temporary file.
-  let index_name = g:gitgutter_diff_base.':'.gitgutter#utility#repo_path(a:bufnr, 1)
-  let cmd .= g:gitgutter_git_executable.' --no-pager show '.index_name.' > '.index_file.' && '
 
   " Write buffer to temporary file.
   " Note: this is synchronous.
   call s:write_buffer(a:bufnr, buff_file)
 
-  " Call git-diff with the temporary files.
+  if a:from ==# 'index'
+    " Without the buffer number, from_file would have a race in the shell
+    " between the second process writing it (with git-show) and the first
+    " reading it (with git-diff).
+    let from_file = s:temp_from.'.'.a:bufnr
+
+    if !empty(extension)
+      let from_file .= '.'.extension
+    endif
+
+    " Write file from index to temporary file.
+    let index_name = g:gitgutter_diff_base.':'.gitgutter#utility#repo_path(a:bufnr, 1)
+    let cmd .= g:gitgutter_git_executable.' --no-pager show '.index_name.' > '.from_file.' && '
+
+  elseif a:from ==# 'working_tree'
+    let from_file = gitgutter#utility#repo_path(a:bufnr, 1)
+  endif
+
+  " Call git-diff.
   let cmd .= g:gitgutter_git_executable.' --no-pager '.g:gitgutter_git_args
   if s:c_flag
     let cmd .= ' -c "diff.autorefreshindex=0"'
     let cmd .= ' -c "diff.noprefix=false"'
     let cmd .= ' -c "core.safecrlf=false"'
   endif
-  let cmd .= ' diff --no-ext-diff --no-color -U0 '.g:gitgutter_diff_args.' -- '.index_file.' '.buff_file
+  let cmd .= ' diff --no-ext-diff --no-color -U0 '.g:gitgutter_diff_args.' -- '.from_file.' '.buff_file
 
   " Pipe git-diff output into grep.
   if !a:preserve_full_diff && !empty(g:gitgutter_grep)
@@ -315,8 +332,14 @@ endfunction
 
 
 " Returns a diff for the current hunk.
-function! gitgutter#diff#hunk_diff(bufnr, full_diff)
+" Assumes there is only 1 current hunk unless the optional argument is given,
+" in which case the cursor is in two hunks and the argument specifies the one
+" to choose.
+"
+" Optional argument: 0 (to use the first hunk) or 1 (to use the second).
+function! gitgutter#diff#hunk_diff(bufnr, full_diff, ...)
   let modified_diff = []
+  let hunk_index = 0
   let keep_line = 1
   " Don't keepempty when splitting because the diff we want may not be the
   " final one.  Instead add trailing NL at end of function.
@@ -324,6 +347,12 @@ function! gitgutter#diff#hunk_diff(bufnr, full_diff)
     let hunk_info = gitgutter#diff#parse_hunk(line)
     if len(hunk_info) == 4  " start of new hunk
       let keep_line = gitgutter#hunk#cursor_in_hunk(hunk_info)
+
+      if a:0 && hunk_index != a:1
+        let keep_line = 0
+      endif
+
+      let hunk_index += 1
     endif
     if keep_line
       call add(modified_diff, line)

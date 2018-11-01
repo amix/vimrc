@@ -122,9 +122,12 @@ function! s:GodocView(newposition, position, content) abort
   setlocal nomodifiable
   sil normal! gg
 
-  " close easily with <esc> or enter
+  " close easily with enter
   noremap <buffer> <silent> <CR> :<C-U>close<CR>
   noremap <buffer> <silent> <Esc> :<C-U>close<CR>
+  " make sure any key that sends an escape as a prefix (e.g. the arrow keys)
+  " don't cause the window to close.
+  nnoremap <buffer> <silent> <Esc>[ <Esc>[
 endfunction
 
 function! s:gogetdoc(json) abort

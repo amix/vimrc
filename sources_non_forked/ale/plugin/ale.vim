@@ -194,6 +194,9 @@ command! -bar ALEFindReferences :call ale#references#Find()
 command! -bar ALEHover :call ale#hover#Show(bufnr(''), getcurpos()[1],
                                             \ getcurpos()[2], {})
 
+" Search for appearances of a symbol, such as a type name or function name.
+command! -nargs=1 ALESymbolSearch :call ale#symbol#Search(<q-args>)
+
 " <Plug> mappings for commands
 nnoremap <silent> <Plug>(ale_previous) :ALEPrevious<Return>
 nnoremap <silent> <Plug>(ale_previous_wrap) :ALEPreviousWrap<Return>

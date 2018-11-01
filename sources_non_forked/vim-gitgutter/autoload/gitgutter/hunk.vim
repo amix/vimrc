@@ -93,6 +93,22 @@ function! s:current_hunk() abort
   return current_hunk
 endfunction
 
+" Returns truthy if the cursor is in two hunks (which can only happen if the
+" cursor is on the first line and lines above have been deleted and lines
+" immediately below have been deleted) or falsey otherwise.
+function! s:cursor_in_two_hunks()
+  let hunks = gitgutter#hunk#hunks(bufnr(''))
+
+  if line('.') == 1 && len(hunks) > 1 && hunks[0][2:3] == [0, 0] && hunks[1][2:3] == [1, 0]
+    return 1
+  endif
+
+  return 0
+endfunction
+
+" A line can be in 0 or 1 hunks, with the following exception: when the first
+" line(s) of a file has been deleted, and the new second line (and
+" optionally below) has been deleted, the new first line is in two hunks.
 function! gitgutter#hunk#cursor_in_hunk(hunk) abort
   let current_line = line('.')
 
@@ -151,13 +167,24 @@ function! s:hunk_op(op)
   if gitgutter#utility#is_active(bufnr)
     " Get a (synchronous) diff.
     let [async, g:gitgutter_async] = [g:gitgutter_async, 0]
-    let diff = gitgutter#diff#run_diff(bufnr, 1)
+    let diff = gitgutter#diff#run_diff(bufnr, 'index', 1)
     let g:gitgutter_async = async
 
     call gitgutter#hunk#set_hunks(bufnr, gitgutter#diff#parse_diff(diff))
 
     if empty(s:current_hunk())
       call gitgutter#utility#warn('cursor is not in a hunk')
+    elseif s:cursor_in_two_hunks()
+      let choice = input('Choose hunk: upper or lower (u/l)? ')
+      " Clear input
+      normal! :<ESC>
+      if choice =~ 'u'
+        call a:op(gitgutter#diff#hunk_diff(bufnr, diff, 0))
+      elseif choice =~ 'l'
+        call a:op(gitgutter#diff#hunk_diff(bufnr, diff, 1))
+      else
+        call gitgutter#utility#warn('did not recognise your choice')
+      endif
     else
       call a:op(gitgutter#diff#hunk_diff(bufnr, diff))
     endif

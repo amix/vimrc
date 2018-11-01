@@ -38,7 +38,7 @@ function! s:HandleLSPDiagnostics(conn_id, response) abort
 
     let l:loclist = ale#lsp#response#ReadDiagnostics(a:response)
 
-    call ale#engine#HandleLoclist(l:linter_name, l:buffer, l:loclist)
+    call ale#engine#HandleLoclist(l:linter_name, l:buffer, l:loclist, 0)
 endfunction
 
 function! s:HandleTSServerDiagnostics(response, error_type) abort
@@ -81,7 +81,7 @@ function! s:HandleTSServerDiagnostics(response, error_type) abort
     let l:loclist = get(l:info, 'semantic_loclist', [])
     \   + get(l:info, 'syntax_loclist', [])
 
-    call ale#engine#HandleLoclist(l:linter_name, l:buffer, l:loclist)
+    call ale#engine#HandleLoclist(l:linter_name, l:buffer, l:loclist, 0)
 endfunction
 
 function! s:HandleLSPErrorMessage(linter_name, response) abort
@@ -140,6 +140,18 @@ function! ale#lsp_linter#GetOptions(buffer, linter) abort
     return l:initialization_options
 endfunction
 
+function! ale#lsp_linter#GetConfig(buffer, linter) abort
+    let l:config = {}
+
+    if has_key(a:linter, 'lsp_config_callback')
+        let l:config = ale#util#GetFunction(a:linter.lsp_config_callback)(a:buffer)
+    elseif has_key(a:linter, 'lsp_config')
+        let l:config = a:linter.lsp_config
+    endif
+
+    return l:config
+endfunction
+
 " Given a buffer, an LSP linter, start up an LSP linter and get ready to
 " receive messages for the document.
 function! ale#lsp_linter#StartLSP(buffer, linter) abort
@@ -188,6 +200,7 @@ function! ale#lsp_linter#StartLSP(buffer, linter) abort
         call ale#lsp#MarkConnectionAsTsserver(l:conn_id)
     endif
 
+    let l:config = ale#lsp_linter#GetConfig(a:buffer, a:linter)
     let l:language_id = ale#util#GetFunction(a:linter.language_callback)(a:buffer)
 
     let l:details = {
@@ -197,6 +210,8 @@ function! ale#lsp_linter#StartLSP(buffer, linter) abort
     \   'project_root': l:root,
     \   'language_id': l:language_id,
     \}
+
+    call ale#lsp#UpdateConfig(l:conn_id, a:buffer, l:config)
 
     if ale#lsp#OpenDocument(l:conn_id, a:buffer, l:language_id)
         if g:ale_history_enabled && !empty(l:command)

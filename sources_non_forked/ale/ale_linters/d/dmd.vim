@@ -1,20 +1,6 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: "dmd for D files"
 
-function! s:FindDUBConfig(buffer) abort
-    " Find a DUB configuration file in ancestor paths.
-    " The most DUB-specific names will be tried first.
-    for l:possible_filename in ['dub.sdl', 'dub.json', 'package.json']
-        let l:dub_file = ale#path#FindNearestFile(a:buffer, l:possible_filename)
-
-        if !empty(l:dub_file)
-            return l:dub_file
-        endif
-    endfor
-
-    return ''
-endfunction
-
 function! ale_linters#d#dmd#DUBCommand(buffer) abort
     " If we can't run dub, then skip this command.
     if !executable('dub')
@@ -22,7 +8,7 @@ function! ale_linters#d#dmd#DUBCommand(buffer) abort
         return ''
     endif
 
-    let l:dub_file = s:FindDUBConfig(a:buffer)
+    let l:dub_file = ale#d#FindDUBConfig(a:buffer)
 
     if empty(l:dub_file)
         return ''

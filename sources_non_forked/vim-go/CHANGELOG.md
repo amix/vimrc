@@ -55,7 +55,15 @@ IMPROVEMENTS:
   [[GH-1978]](https://github.com/fatih/vim-go/pull/1978)
 * Internal: install tools by their custom names
   [[GH-1984]](https://github.com/fatih/vim-go/pull/1984)
-
+* Support the go-debugger features in Neovim.
+  [[GH-2007]](https://github.com/fatih/vim-go/pull/2007)
+* color the statusline for termguicolors and Neovim.
+  [[GH-2014]](https://github.com/fatih/vim-go/pull/2014)
+* add an option to disable highlighting of breakpoints and the current line
+  when debugging.
+  [[GH-2025]](https://github.com/fatih/vim-go/pull/2025)
+* Update autocompletion to work with Go modules.
+  [[GH-1988]](https://github.com/fatih/vim-go/pull/1988)
 
 BUG FIXES:
 * Fix `:GoRun %` on Windows.
@@ -70,6 +78,14 @@ BUG FIXES:
   [[GH-1794]](https://github.com/fatih/vim-go/pull/1794)
 * Fix `:GoImport` when adding to an empty import block (i.e`import ()`)
   [[GH-1938]](https://github.com/fatih/vim-go/pull/1938)
+* Run shell commands with shellcmdflag set to `-c`.
+  [[GH-2006]](https://github.com/fatih/vim-go/pull/2006)
+* Use the correct log output option for delve.
+  [[GH-1992]](https://github.com/fatih/vim-go/pull/1992)
+* Pass empty arguments correctly in async jobs on Windows.
+  [[GH-2011]](https://github.com/fatih/vim-go/pull/2011)
+* Don't close godoc scratch window when using arrow keys.
+  [[GH-2021]](https://github.com/fatih/vim-go/pull/2021)
 
 BACKWARDS INCOMPATIBILITIES:
 * Bump minimum required version of Vim to 7.4.2009.
@@ -153,8 +169,7 @@ BUG FIXES:
 * The `gohtmltmpl` filetype will now highlight `{{ .. }}` syntax HTML attributes
   and some other locations.
   [[GH-1790]](https://github.com/fatih/vim-go/pull/1790)
-* Update using the correct logging flag option that was caused with the recent
-  delve changes
+* Use the correct logging flag argument for delve.
   [[GH-1809]](https://github.com/fatih/vim-go/pull/1809)
 * Fix gocode option string values that would cause gocode settings not to set
   correctly

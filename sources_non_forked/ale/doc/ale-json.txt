@@ -73,6 +73,13 @@ g:ale_json_jq_options                                   *g:ale_json_jq_options*
 
   This option can be changed to pass extra options to `jq`.
 
+g:ale_json_jq_filters                                   *g:ale_json_jq_filters*
+                                                        *b:ale_json_jq_filters*
+  Type: |String|
+  Default: `'.'`
+
+  This option can be changed to pass custom filters to `jq`.
+
 
 ===============================================================================
 prettier                                                    *ale-json-prettier*

@@ -3,6 +3,17 @@ ALE D Integration                                               *ale-d-options*
 
 
 ===============================================================================
+dls                                                                 *ale-d-dls*
+
+g:ale_d_dls_executable                                 *g:ale_d_dls_executable*
+                                                       *b:ale_d_dls_executable*
+  Type: |String|
+  Default: `dls`
+
+See |ale-integrations-local-executables|
+
+
+===============================================================================
 uncrustify                                                   *ale-d-uncrustify*
 
 See |ale-c-uncrustify| for information about the available options.
