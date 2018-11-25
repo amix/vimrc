@@ -22,6 +22,7 @@ ALE will look for configuration files with the following filenames. >
   mypy.ini
   pycodestyle.cfg
   flake8.cfg
+  .flake8rc
   Pipfile
   Pipfile.lock
 <

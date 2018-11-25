@@ -3,23 +3,11 @@
 
 call ale#Set('erlang_syntaxerl_executable', 'syntaxerl')
 
-
-function! ale_linters#erlang#syntaxerl#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'erlang_syntaxerl_executable')
-endfunction
-
-
-function! ale_linters#erlang#syntaxerl#FeatureCheck(buffer) abort
-    return s:GetEscapedExecutable(a:buffer) . ' -h'
-endfunction
-
-
 function! ale_linters#erlang#syntaxerl#GetCommand(buffer, output) abort
     let l:use_b_option = match(a:output, '\C\V-b, --base\>') > -1
 
-    return s:GetEscapedExecutable(a:buffer) . (l:use_b_option ? ' -b %s %t' : ' %t')
+    return '%e' . (l:use_b_option ? ' -b %s %t' : ' %t')
 endfunction
-
 
 function! ale_linters#erlang#syntaxerl#Handle(buffer, lines) abort
     let l:pattern = '\v\C:(\d+):( warning:)? (.+)'
@@ -36,17 +24,11 @@ function! ale_linters#erlang#syntaxerl#Handle(buffer, lines) abort
     return l:loclist
 endfunction
 
-
-function! s:GetEscapedExecutable(buffer) abort
-    return ale#Escape(ale_linters#erlang#syntaxerl#GetExecutable(a:buffer))
-endfunction
-
-
 call ale#linter#Define('erlang', {
 \   'name': 'syntaxerl',
-\   'executable_callback': 'ale_linters#erlang#syntaxerl#GetExecutable',
+\   'executable_callback': ale#VarFunc('erlang_syntaxerl_executable'),
 \   'command_chain': [
-\       {'callback': 'ale_linters#erlang#syntaxerl#FeatureCheck'},
+\       {'callback': {-> '%e -h'}},
 \       {'callback': 'ale_linters#erlang#syntaxerl#GetCommand'},
 \   ],
 \   'callback': 'ale_linters#erlang#syntaxerl#Handle',

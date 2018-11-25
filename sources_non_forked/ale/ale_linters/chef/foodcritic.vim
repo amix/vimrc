@@ -6,17 +6,10 @@
 call ale#Set('chef_foodcritic_executable', 'foodcritic')
 call ale#Set('chef_foodcritic_options', '')
 
-function! ale_linters#chef#foodcritic#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'chef_foodcritic_executable')
-endfunction
-
 function! ale_linters#chef#foodcritic#GetCommand(buffer) abort
-    let l:executable = ale_linters#chef#foodcritic#GetExecutable(a:buffer)
     let l:options = ale#Var(a:buffer, 'chef_foodcritic_options')
 
-    return ale#Escape(l:executable)
-    \   . (!empty(l:options) ? ' ' . escape(l:options, '~') : '')
-    \   . ' %s'
+    return '%e' . ale#Pad(escape(l:options, '~')) . ' %s'
 endfunction
 
 function! ale_linters#chef#foodcritic#Handle(buffer, lines) abort
@@ -41,7 +34,7 @@ endfunction
 
 call ale#linter#Define('chef', {
 \   'name': 'foodcritic',
-\   'executable_callback': 'ale_linters#chef#foodcritic#GetExecutable',
+\   'executable_callback': ale#VarFunc('chef_foodcritic_executable'),
 \   'command_callback': 'ale_linters#chef#foodcritic#GetCommand',
 \   'callback': 'ale_linters#chef#foodcritic#Handle',
 \   'lint_file': 1,

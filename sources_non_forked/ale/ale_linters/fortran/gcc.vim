@@ -2,18 +2,10 @@
 " Description: gcc for Fortran files
 
 " This option can be set to 0 to use -ffixed-form
-if !exists('g:ale_fortran_gcc_use_free_form')
-    let g:ale_fortran_gcc_use_free_form = 1
-endif
-
-if !exists('g:ale_fortran_gcc_executable')
-    let g:ale_fortran_gcc_executable = 'gcc'
-endif
-
+call ale#Set('fortran_gcc_use_free_form', 1)
+call ale#Set('fortran_gcc_executable', 'gcc')
 " Set this option to change the GCC options for warnings for Fortran.
-if !exists('g:ale_fortran_gcc_options')
-    let g:ale_fortran_gcc_options = '-Wall'
-endif
+call ale#Set('fortran_gcc_options', '-Wall')
 
 function! ale_linters#fortran#gcc#Handle(buffer, lines) abort
     " We have to match a starting line and a later ending line together,
@@ -61,26 +53,20 @@ function! ale_linters#fortran#gcc#Handle(buffer, lines) abort
     return l:output
 endfunction
 
-function! ale_linters#fortran#gcc#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'fortran_gcc_executable')
-endfunction
-
 function! ale_linters#fortran#gcc#GetCommand(buffer) abort
     let l:layout_option = ale#Var(a:buffer, 'fortran_gcc_use_free_form')
     \   ? '-ffree-form'
     \   : '-ffixed-form'
 
-    return ale_linters#fortran#gcc#GetExecutable(a:buffer)
-    \   . ' -S -x f95 -fsyntax-only '
-    \   . l:layout_option . ' '
-    \   . ale#Var(a:buffer, 'fortran_gcc_options') . ' '
-    \   . '-'
+    return '%e -S -x f95 -fsyntax-only ' . l:layout_option
+    \   . ale#Pad(ale#Var(a:buffer, 'fortran_gcc_options'))
+    \   . ' -'
 endfunction
 
 call ale#linter#Define('fortran', {
 \   'name': 'gcc',
 \   'output_stream': 'stderr',
-\   'executable_callback': 'ale_linters#fortran#gcc#GetExecutable',
+\   'executable_callback': ale#VarFunc('fortran_gcc_executable'),
 \   'command_callback': 'ale_linters#fortran#gcc#GetCommand',
 \   'callback': 'ale_linters#fortran#gcc#Handle',
 \})

@@ -4,16 +4,6 @@
 call ale#Set('php_langserver_executable', 'php-language-server.php')
 call ale#Set('php_langserver_use_global', get(g:, 'ale_use_global_executables', 0))
 
-function! ale_linters#php#langserver#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'php_langserver', [
-    \   'vendor/bin/php-language-server.php',
-    \])
-endfunction
-
-function! ale_linters#php#langserver#GetCommand(buffer) abort
-    return 'php ' . ale#Escape(ale_linters#php#langserver#GetExecutable(a:buffer))
-endfunction
-
 function! ale_linters#php#langserver#GetProjectRoot(buffer) abort
     let l:git_path = ale#path#FindNearestDirectory(a:buffer, '.git')
 
@@ -23,7 +13,9 @@ endfunction
 call ale#linter#Define('php', {
 \   'name': 'langserver',
 \   'lsp': 'stdio',
-\   'executable_callback': 'ale_linters#php#langserver#GetExecutable',
-\   'command_callback': 'ale_linters#php#langserver#GetCommand',
+\   'executable_callback': ale#node#FindExecutableFunc('php_langserver', [
+\       'vendor/bin/php-language-server.php',
+\   ]),
+\   'command': 'php %e',
 \   'project_root_callback': 'ale_linters#php#langserver#GetProjectRoot',
 \})

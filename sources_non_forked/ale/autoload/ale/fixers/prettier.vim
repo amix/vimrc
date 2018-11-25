@@ -36,12 +36,23 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version_output) abort
     " Append the --parser flag depending on the current filetype (unless it's
     " already set in g:javascript_prettier_options).
     if empty(expand('#' . a:buffer . ':e')) && match(l:options, '--parser') == -1
-        let l:prettier_parsers = ['typescript', 'css', 'less', 'scss', 'json', 'json5', 'graphql', 'markdown', 'vue']
-        let l:parser = 'babylon'
+        let l:prettier_parsers = {
+        \    'typescript': 'typescript',
+        \    'css': 'css',
+        \    'less': 'less',
+        \    'scss': 'scss',
+        \    'json': 'json',
+        \    'json5': 'json5',
+        \    'graphql': 'graphql',
+        \    'markdown': 'markdown',
+        \    'vue': 'vue',
+        \    'yaml': 'yaml',
+        \}
+        let l:parser = ''
 
         for l:filetype in split(getbufvar(a:buffer, '&filetype'), '\.')
-            if index(l:prettier_parsers, l:filetype) > -1
-                let l:parser = l:filetype
+            if has_key(l:prettier_parsers, l:filetype)
+                let l:parser = l:prettier_parsers[l:filetype]
                 break
             endif
         endfor

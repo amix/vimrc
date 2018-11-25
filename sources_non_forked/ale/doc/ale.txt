@@ -96,6 +96,10 @@ CONTENTS                                                         *ale-contents*
       eslint..............................|ale-graphql-eslint|
       gqlint..............................|ale-graphql-gqlint|
       prettier............................|ale-graphql-prettier|
+    hack..................................|ale-hack-options|
+      hack................................|ale-hack-hack|
+      hackfmt.............................|ale-hack-hackfmt|
+      hhast...............................|ale-hack-hhast|
     handlebars............................|ale-handlebars-options|
       ember-template-lint.................|ale-handlebars-embertemplatelint|
     haskell...............................|ale-haskell-options|
@@ -105,6 +109,7 @@ CONTENTS                                                         *ale-contents*
       hdevtools...........................|ale-haskell-hdevtools|
       hfmt................................|ale-haskell-hfmt|
       stack-build.........................|ale-haskell-stack-build|
+      hie.................................|ale-haskell-hie|
     html..................................|ale-html-options|
       htmlhint............................|ale-html-htmlhint|
       tidy................................|ale-html-tidy|
@@ -171,8 +176,6 @@ CONTENTS                                                         *ale-contents*
       perlcritic..........................|ale-perl-perlcritic|
       perltidy............................|ale-perl-perltidy|
     php...................................|ale-php-options|
-      hack................................|ale-php-hack|
-      hackfmt.............................|ale-php-hackfmt|
       langserver..........................|ale-php-langserver|
       phan................................|ale-php-phan|
       phpcbf..............................|ale-php-phpcbf|
@@ -367,9 +370,10 @@ Notes:
 * GLSL: glslang, `glslls`
 * Go: `gofmt`, `goimports`, `go vet`!!, `golint`, `gotype`!!, `gometalinter`!!, `go build`!!, `gosimple`!!, `staticcheck`!!
 * GraphQL: `eslint`, `gqlint`, `prettier`
+* Hack: `hack`, `hackfmt`, `hhast`
 * Haml: `haml-lint`
 * Handlebars: `ember-template-lint`
-* Haskell: `brittany`, `ghc`, `cabal-ghc`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `stack-ghc-mod`, `hlint`, `hdevtools`, `hfmt`
+* Haskell: `brittany`, `ghc`, `cabal-ghc`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `stack-ghc-mod`, `hlint`, `hdevtools`, `hfmt`, `hie`
 * HTML: `alex`!!, `HTMLHint`, `proselint`, `tidy`, `write-good`
 * Idris: `idris`
 * Java: `checkstyle`, `javac`, `google-java-format`, `PMD`
@@ -393,7 +397,7 @@ Notes:
 * Objective-C++: `clang`
 * OCaml: `merlin` (see |ale-ocaml-merlin|), `ols`
 * Perl: `perl -c`, `perl-critic`, `perltidy`
-* PHP: `hack`, `hackfmt`, `langserver`, `phan`, `php -l`, `phpcs`, `phpmd`, `phpstan`, `phpcbf`, `php-cs-fixer`
+* PHP: `langserver`, `phan`, `php -l`, `phpcs`, `phpmd`, `phpstan`, `phpcbf`, `php-cs-fixer`
 * PO: `alex`!!, `msgfmt`, `proselint`, `write-good`
 * Pod: `alex`!!, `proselint`, `write-good`
 * Pony: `ponyc`
@@ -669,6 +673,16 @@ items can be controlled with |g:ale_completion_max_suggestions|.
 If you don't like some of the suggestions you see, you can filter them out
 with |g:ale_completion_excluded_words| or |b:ale_completion_excluded_words|.
 
+                                                *ale-completion-completopt-bug*
+
+ALE implements completion as you type by temporarily adjusting |completeopt|
+before opening the omnicomplete menu with <C-x><C-o>. In some versions of Vim,
+the value set for the option will not be respected. If you experience issues
+with Vim automatically inserting text while you type, set the following option
+in vimrc, and your issues should go away. >
+
+  set completeopt=menu,menuone,preview,noselect,noinsert
+<
 
 -------------------------------------------------------------------------------
 5.2 Go To Definition                                     *ale-go-to-definition*
@@ -1201,6 +1215,7 @@ g:ale_linters                                                   *g:ale_linters*
   {
   \   'csh': ['shell'],
   \   'go': ['gofmt', 'golint', 'go vet'],
+  \   'hack': ['hack'],
   \   'help': [],
   \   'perl': ['perlcritic'],
   \   'python': ['flake8', 'mypy', 'pylint'],
@@ -2317,6 +2332,13 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                            wrong.
                          `type` - Defaults to `'E'`.
                          `nr` - Defaults to `-1`.
+
+                           Numeric error code. If `nr` is not `-1`, `code`
+                           likely should contain the string representation of
+                           the same value.
+                         `code` - No default; may be unset.
+
+                           Human-readable |String| error code.
 
   `executable`             A |String| naming the executable itself which
                          will be run. This value will be used to check if the

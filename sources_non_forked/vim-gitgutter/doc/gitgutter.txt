@@ -232,6 +232,7 @@ Most important option:~
 Git:~
 
     |g:gitgutter_git_executable|
+    |g:gitgutter_git_args|
     |g:gitgutter_diff_args|
     |g:gitgutter_diff_base|
 
@@ -269,6 +270,15 @@ Default: 'git'
 
 This option determines what git binary to use.  Set this if git is not on your
 path.
+
+                                                         *g:gitgutter_git_args*
+Default: empty
+
+Use this option to pass any extra arguments to git when running git-diff.
+For example:
+>
+    let g:gitgutter_git_args = '--git-dir=""'
+<
 
                                                         *g:gitgutter_diff_args*
 Default: empty

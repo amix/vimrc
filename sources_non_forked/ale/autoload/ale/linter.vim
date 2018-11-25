@@ -26,11 +26,13 @@ let s:default_ale_linter_aliases = {
 "
 " Only cargo is enabled for Rust by default.
 " rpmlint is disabled by default because it can result in code execution.
+" hhast is disabled by default because it executes code in the project root.
 "
 " NOTE: Update the g:ale_linters documentation when modifying this.
 let s:default_ale_linters = {
 \   'csh': ['shell'],
 \   'go': ['gofmt', 'golint', 'go vet'],
+\   'hack': ['hack'],
 \   'help': [],
 \   'perl': ['perlcritic'],
 \   'python': ['flake8', 'mypy', 'pylint'],

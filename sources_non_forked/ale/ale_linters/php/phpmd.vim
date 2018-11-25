@@ -6,16 +6,9 @@ let g:ale_php_phpmd_executable = get(g:, 'ale_php_phpmd_executable', 'phpmd')
 " Set to change the ruleset
 let g:ale_php_phpmd_ruleset = get(g:, 'ale_php_phpmd_ruleset', 'cleancode,codesize,controversial,design,naming,unusedcode')
 
-function! ale_linters#php#phpmd#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'php_phpmd_executable')
-endfunction
-
 function! ale_linters#php#phpmd#GetCommand(buffer) abort
-    let l:executable = ale_linters#php#phpmd#GetExecutable(a:buffer)
-
-    return ale#Escape(l:executable)
-    \   . ' %s text '
-    \   . ale#Var(a:buffer, 'php_phpmd_ruleset')
+    return '%e %s text'
+    \   . ale#Pad(ale#Var(a:buffer, 'php_phpmd_ruleset'))
     \   . ' --ignore-violations-on-exit %t'
 endfunction
 
@@ -39,7 +32,7 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'phpmd',
-\   'executable_callback': 'ale_linters#php#phpmd#GetExecutable',
+\   'executable_callback': ale#VarFunc('php_phpmd_executable'),
 \   'command_callback': 'ale_linters#php#phpmd#GetCommand',
 \   'callback': 'ale_linters#php#phpmd#Handle',
 \})

@@ -1,5 +1,13 @@
 
 " Python
+"
+
+" For pylint (make sure to pip3 install pylint)
+" au BufRead *.py set makeprg=pylint\ --reports=n\ --output-format=parseable\ %:p
+" au BufRead *.py set errorformat=%f:%l:\ %m
+
+autocmd FileType python set makeprg=pylint\ --reports=n\ --msg-template=\"{path}:{line}:\ {msg_id}\ {symbol},\ {obj}\ {msg}\"\ %:p
+autocmd FileType python set errorformat=%f:%l:\ %m
 
 highlight BadWhitespace ctermbg=red guibg=red
 

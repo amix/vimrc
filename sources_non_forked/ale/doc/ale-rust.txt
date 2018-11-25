@@ -5,8 +5,9 @@ ALE Rust Integration                                         *ale-rust-options*
 ===============================================================================
 Integration Information
 
-  Since Vim does not detect the rust file type out-of-the-box, you need the
-  runtime files for rust from here: https://github.com/rust-lang/rust.vim
+  If Vim does not detect the Rust file type out-of-the-box, you need the runtime
+  files for Rust distributed in Vim >=8.0.0501 or upstream:
+  https://github.com/rust-lang/rust.vim
 
   Note that there are three possible linters for Rust files:
 

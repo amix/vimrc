@@ -61,7 +61,6 @@ endfunction
 function! nerdtree#compareNodesBySortKey(n1, n2)
     let sortKey1 = a:n1.path.getSortKey()
     let sortKey2 = a:n2.path.getSortKey()
-
     let i = 0
     while i < min([len(sortKey1), len(sortKey2)])
         " Compare chunks upto common length.
@@ -73,9 +72,9 @@ function! nerdtree#compareNodesBySortKey(n1, n2)
             elseif sortKey1[i] ># sortKey2[i]
                 return 1
             endif
-        elseif sortKey1[i] == type(0)
+        elseif type(sortKey1[i]) == v:t_number
             return -1
-        elseif sortKey2[i] == type(0)
+        elseif type(sortKey2[i]) == v:t_number
             return 1
         endif
         let i = i + 1

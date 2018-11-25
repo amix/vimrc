@@ -607,8 +607,12 @@ endfunction
 " FUNCTION: TreeDirNode.sortChildren() {{{1
 " Sort "self.children" by alphabetical order and directory priority.
 function! s:TreeDirNode.sortChildren()
+    if count(g:NERDTreeSortOrder, '*') < 1
+        call add(g:NERDTreeSortOrder, '*')
+    endif
     let CompareFunc = function("nerdtree#compareNodesBySortKey")
     call sort(self.children, CompareFunc)
+    let g:NERDTreeOldSortOrder = g:NERDTreeSortOrder
 endfunction
 
 " FUNCTION: TreeDirNode.toggleOpen([options]) {{{1

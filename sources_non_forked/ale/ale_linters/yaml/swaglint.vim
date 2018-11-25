@@ -4,17 +4,6 @@
 call ale#Set('yaml_swaglint_executable', 'swaglint')
 call ale#Set('yaml_swaglint_use_global', get(g:, 'ale_use_global_executables', 0))
 
-function! ale_linters#yaml#swaglint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'yaml_swaglint', [
-    \   'node_modules/.bin/swaglint',
-    \])
-endfunction
-
-function! ale_linters#yaml#swaglint#GetCommand(buffer) abort
-    return ale_linters#yaml#swaglint#GetExecutable(a:buffer)
-    \    . ' -r compact --stdin'
-endfunction
-
 function! ale_linters#yaml#swaglint#Handle(buffer, lines) abort
     let l:pattern = ': \([^\s]\+\) @ \(\d\+\):\(\d\+\) - \(.\+\)$'
     let l:output = []
@@ -43,7 +32,9 @@ endfunction
 
 call ale#linter#Define('yaml', {
 \   'name': 'swaglint',
-\   'executable_callback': 'ale_linters#yaml#swaglint#GetExecutable',
-\   'command_callback': 'ale_linters#yaml#swaglint#GetCommand',
+\   'executable_callback': ale#node#FindExecutableFunc('yaml_swaglint', [
+\       'node_modules/.bin/swaglint',
+\   ]),
+\   'command': '%e -r compact --stdin',
 \   'callback': 'ale_linters#yaml#swaglint#Handle',
 \})

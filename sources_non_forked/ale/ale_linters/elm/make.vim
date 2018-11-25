@@ -4,12 +4,6 @@
 call ale#Set('elm_make_executable', 'elm')
 call ale#Set('elm_make_use_global', get(g:, 'ale_use_global_executables', 0))
 
-function! ale_linters#elm#make#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'elm_make', [
-    \   'node_modules/.bin/elm',
-    \])
-endfunction
-
 function! ale_linters#elm#make#Handle(buffer, lines) abort
     let l:output = []
     let l:unparsed_lines = []
@@ -147,7 +141,6 @@ endfunction
 " If it doesn't, then this will fail when imports are needed.
 function! ale_linters#elm#make#GetCommand(buffer) abort
     let l:elm_json = ale#path#FindNearestFile(a:buffer, 'elm.json')
-    let l:elm_exe = ale_linters#elm#make#GetExecutable(a:buffer)
 
     if empty(l:elm_json)
         " Fallback to Elm 0.18
@@ -165,18 +158,15 @@ function! ale_linters#elm#make#GetCommand(buffer) abort
     " a sort of flag to tell the compiler not to generate an output file,
     " which is why this is hard coded here.
     " Source: https://github.com/elm-lang/elm-compiler/blob/19d5a769b30ec0b2fc4475985abb4cd94cd1d6c3/builder/src/Generate/Output.hs#L253
-    let l:elm_cmd = ale#Escape(l:elm_exe)
-    \   . ' make'
-    \   . ' --report=json'
-    \   . ' --output=/dev/null'
-
-    return l:dir_set_cmd . ' ' . l:elm_cmd . ' %t'
+    return l:dir_set_cmd . '%e make --report=json --output=/dev/null %t'
 endfunction
 
 call ale#linter#Define('elm', {
-\    'name': 'make',
-\    'executable_callback': 'ale_linters#elm#make#GetExecutable',
-\    'output_stream': 'both',
-\    'command_callback': 'ale_linters#elm#make#GetCommand',
-\    'callback': 'ale_linters#elm#make#Handle'
+\   'name': 'make',
+\   'executable_callback': ale#node#FindExecutableFunc('elm_make', [
+\       'node_modules/.bin/elm',
+\   ]),
+\   'output_stream': 'both',
+\   'command_callback': 'ale_linters#elm#make#GetCommand',
+\   'callback': 'ale_linters#elm#make#Handle'
 \})

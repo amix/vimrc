@@ -157,7 +157,7 @@ let s:default_registry = {
 \   },
 \   'hackfmt': {
 \       'function': 'ale#fixers#hackfmt#Fix',
-\       'suggested_filetypes': ['php'],
+\       'suggested_filetypes': ['hack'],
 \       'description': 'Fix Hack files with hackfmt.',
 \   },
 \   'hfmt': {

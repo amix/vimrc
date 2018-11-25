@@ -6,20 +6,13 @@ let g:ale_php_phpstan_executable = get(g:, 'ale_php_phpstan_executable', 'phpsta
 let g:ale_php_phpstan_level = get(g:, 'ale_php_phpstan_level', '4')
 let g:ale_php_phpstan_configuration = get(g:, 'ale_php_phpstan_configuration', '')
 
-function! ale_linters#php#phpstan#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'php_phpstan_executable')
-endfunction
-
 function! ale_linters#php#phpstan#GetCommand(buffer) abort
-    let l:executable = ale_linters#php#phpstan#GetExecutable(a:buffer)
-
     let l:configuration = ale#Var(a:buffer, 'php_phpstan_configuration')
     let l:configuration_option = !empty(l:configuration)
     \   ? ' -c ' . l:configuration
     \   : ''
 
-    return ale#Escape(l:executable)
-    \   . ' analyze -l'
+    return '%e analyze -l'
     \   . ale#Var(a:buffer, 'php_phpstan_level')
     \   . ' --errorFormat raw'
     \   . l:configuration_option
@@ -47,7 +40,7 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'phpstan',
-\   'executable_callback': 'ale_linters#php#phpstan#GetExecutable',
+\   'executable_callback': ale#VarFunc('php_phpstan_executable'),
 \   'command_callback': 'ale_linters#php#phpstan#GetCommand',
 \   'callback': 'ale_linters#php#phpstan#Handle',
 \})

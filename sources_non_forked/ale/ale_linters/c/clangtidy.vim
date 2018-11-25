@@ -16,10 +16,6 @@ call ale#Set('c_clangtidy_checks', ['*'])
 call ale#Set('c_clangtidy_options', '')
 call ale#Set('c_build_dir', '')
 
-function! ale_linters#c#clangtidy#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'c_clangtidy_executable')
-endfunction
-
 function! s:GetBuildDirectory(buffer) abort
     " Don't include build directory for header files, as compile_commands.json
     " files don't consider headers to be translation units, and provide no
@@ -47,7 +43,7 @@ function! ale_linters#c#clangtidy#GetCommand(buffer) abort
     \   ? ale#Var(a:buffer, 'c_clangtidy_options')
     \   : ''
 
-    return ale#Escape(ale_linters#c#clangtidy#GetExecutable(a:buffer))
+    return '%e'
     \   . (!empty(l:checks) ? ' -checks=' . ale#Escape(l:checks) : '')
     \   . ' %s'
     \   . (!empty(l:build_dir) ? ' -p ' . ale#Escape(l:build_dir) : '')
@@ -57,7 +53,7 @@ endfunction
 call ale#linter#Define('c', {
 \   'name': 'clangtidy',
 \   'output_stream': 'stdout',
-\   'executable_callback': 'ale_linters#c#clangtidy#GetExecutable',
+\   'executable_callback': ale#VarFunc('c_clangtidy_executable'),
 \   'command_callback': 'ale_linters#c#clangtidy#GetCommand',
 \   'callback': 'ale#handlers#gcc#HandleGCCFormat',
 \   'lint_file': 1,

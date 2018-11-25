@@ -5,21 +5,10 @@ call ale#Set('less_lessc_executable', 'lessc')
 call ale#Set('less_lessc_options', '')
 call ale#Set('less_lessc_use_global', get(g:, 'ale_use_global_executables', 0))
 
-function! ale_linters#less#lessc#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'less_lessc', [
-    \   'node_modules/.bin/lessc',
-    \])
-endfunction
-
 function! ale_linters#less#lessc#GetCommand(buffer) abort
-    let l:executable = ale_linters#less#lessc#GetExecutable(a:buffer)
-    let l:dir = expand('#' . a:buffer . ':p:h')
-    let l:options = ale#Var(a:buffer, 'less_lessc_options')
-
-    return ale#Escape(l:executable)
-    \   . ' --no-color --lint'
-    \   . ' --include-path=' . ale#Escape(l:dir)
-    \   . (!empty(l:options) ? ' ' . l:options : '')
+    return '%e --no-color --lint'
+    \   . ' --include-path=' . ale#Escape(expand('#' . a:buffer . ':p:h'))
+    \   . ale#Pad(ale#Var(a:buffer, 'less_lessc_options'))
     \   . ' -'
 endfunction
 
@@ -49,7 +38,9 @@ endfunction
 
 call ale#linter#Define('less', {
 \   'name': 'lessc',
-\   'executable_callback': 'ale_linters#less#lessc#GetExecutable',
+\   'executable_callback': ale#node#FindExecutableFunc('less_lessc', [
+\       'node_modules/.bin/lessc',
+\   ]),
 \   'command_callback': 'ale_linters#less#lessc#GetCommand',
 \   'callback': 'ale_linters#less#lessc#Handle',
 \   'output_stream': 'stderr',

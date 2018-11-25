@@ -6,14 +6,9 @@
 " codes to exclude from shellcheck. For example:
 "
 " let g:ale_sh_shellcheck_exclusions = 'SC2002,SC2004'
-let g:ale_sh_shellcheck_exclusions =
-\   get(g:, 'ale_sh_shellcheck_exclusions', get(g:, 'ale_linters_sh_shellcheck_exclusions', ''))
-
-let g:ale_sh_shellcheck_executable =
-\   get(g:, 'ale_sh_shellcheck_executable', 'shellcheck')
-
-let g:ale_sh_shellcheck_options =
-\   get(g:, 'ale_sh_shellcheck_options', '')
+call ale#Set('sh_shellcheck_exclusions', get(g:, 'ale_linters_sh_shellcheck_exclusions', ''))
+call ale#Set('sh_shellcheck_executable', 'shellcheck')
+call ale#Set('sh_shellcheck_options', '')
 
 function! ale_linters#sh#shellcheck#GetExecutable(buffer) abort
     return ale#Var(a:buffer, 'sh_shellcheck_executable')
