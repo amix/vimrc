@@ -1,0 +1,19 @@
+===============================================================================
+ALE BibTeX Integration                                        *ale-bib-options*
+
+
+===============================================================================
+bibclean                                                     *ale-bib-bibclean*
+
+g:ale_bib_bibclean_executable                   *g:ale_bib_bibclean_executable*
+
+  Type: |String|
+  Default: `'bibclean'`
+
+g:ale_bib_bibclean_options                         *g:ale_bib_bibclean_options*
+
+  Type: |String|
+  Default: `'-align-equals'`
+
+===============================================================================
+vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
