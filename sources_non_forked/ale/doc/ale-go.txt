@@ -27,7 +27,7 @@ g:ale_go_go_executable                                    *g:ale_go_go_options*
   Default: `'go'`
 
   The executable that will be run for the `gobuild` and `govet` linters, and
-  the gomod` fixer.
+  the `gomod` fixer.
 
 
 ===============================================================================
@@ -51,6 +51,25 @@ g:ale_go_gofmt_options                                 *g:ale_go_gofmt_options*
   Default: `''`
 
   This variable can be set to pass additional options to the gofmt fixer.
+
+
+===============================================================================
+golint                                                          *ale-go-golint*
+
+g:ale_go_golint_executable                         *g:ale_go_golint_executable*
+                                                   *b:ale_go_golint_executable*
+  Type: |String|
+  Default: `'golint'`
+
+  This variable can be set to change the golint executable path.
+
+
+g:ale_go_golint_options                               *g:ale_go_golint_options*
+                                                      *b:ale_go_golint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the golint linter.
 
 
 ===============================================================================

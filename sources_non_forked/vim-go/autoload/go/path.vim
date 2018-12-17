@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 " initial_go_path is used to store the initial GOPATH that was set when Vim
 " was started. It's used with :GoPathClear to restore the GOPATH when the user
 " changed it explicitly via :GoPath. Initially it's empty. It's being set when
@@ -142,7 +146,8 @@ function! go#path#BinPath() abort
 endfunction
 
 " CheckBinPath checks whether the given binary exists or not and returns the
-" path of the binary. It returns an empty string doesn't exists.
+" path of the binary, respecting the go_bin_path and go_search_bin_path_first
+" settings. It returns an empty string if the binary doesn't exist.
 function! go#path#CheckBinPath(binpath) abort
   " remove whitespaces if user applied something like 'goimports   '
   let binpath = substitute(a:binpath, '^\s*\(.\{-}\)\s*$', '\1', '')
@@ -155,7 +160,12 @@ function! go#path#CheckBinPath(binpath) abort
   if !empty(go_bin_path)
     " append our GOBIN and GOPATH paths and be sure they can be found there...
     " let us search in our GOBIN and GOPATH paths
-    let $PATH = go_bin_path . go#util#PathListSep() . $PATH
+    " respect the ordering specified by go_search_bin_path_first
+    if go#config#SearchBinPathFirst()
+      let $PATH = go_bin_path . go#util#PathListSep() . $PATH
+    else
+      let $PATH = $PATH . go#util#PathListSep() . go_bin_path
+    endif
   endif
 
   " if it's in PATH just return it
@@ -194,5 +204,9 @@ endfunction
 function! s:CygwinPath(path)
    return substitute(a:path, '\\', '/', "g")
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

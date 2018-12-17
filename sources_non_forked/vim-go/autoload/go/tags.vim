@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 " mapped to :GoAddTags
 function! go#tags#Add(start, end, count, ...) abort
   let fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
@@ -207,5 +211,9 @@ func s:create_cmd(args) abort
 
   return {'cmd': cmd}
 endfunc
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

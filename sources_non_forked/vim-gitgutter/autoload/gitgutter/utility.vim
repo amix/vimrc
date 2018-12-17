@@ -8,7 +8,12 @@ endfunction
 
 function! gitgutter#utility#setbufvar(buffer, varname, val)
   let buffer = +a:buffer
-  let dict = get(getbufvar(buffer, '', {}), 'gitgutter', {})
+  " Default value for getbufvar() was introduced in Vim 7.3.831.
+  let bvars = getbufvar(buffer, '')
+  if empty(bvars)
+    let bvars = {}
+  endif
+  let dict = get(bvars, 'gitgutter', {})
   let needs_setting = empty(dict)
   let dict[a:varname] = a:val
   if needs_setting
@@ -115,7 +120,7 @@ function! gitgutter#utility#set_repo_path(bufnr) abort
   " *               -2 - not tracked by git
 
   call gitgutter#utility#setbufvar(a:bufnr, 'path', -1)
-  let cmd = gitgutter#utility#cd_cmd(a:bufnr, g:gitgutter_git_executable.' ls-files --error-unmatch --full-name -- '.gitgutter#utility#shellescape(s:filename(a:bufnr)))
+  let cmd = gitgutter#utility#cd_cmd(a:bufnr, g:gitgutter_git_executable.' ls-files --error-unmatch --full-name -z -- '.gitgutter#utility#shellescape(s:filename(a:bufnr)))
 
   if g:gitgutter_async && gitgutter#async#available()
     if has('lambda')
@@ -202,8 +207,13 @@ function! s:exists_file(bufnr) abort
   return filereadable(s:abs_path(a:bufnr, 0))
 endfunction
 
+" Get rid of any trailing new line or SOH character.
+"
+" git ls-files -z produces output with null line termination.
+" Vim's system() replaces any null characters in the output
+" with SOH (start of header), i.e. ^A.
 function! s:strip_trailing_new_line(line) abort
-  return substitute(a:line, '\n$', '', '')
+  return substitute(a:line, '[[:cntrl:]]$', '', '')
 endfunction
 
 function! gitgutter#utility#windows()

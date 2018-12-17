@@ -2986,7 +2986,7 @@ function! s:Blame(bang, line1, line2, count, mods, args) abort
     if empty(s:Relative('/'))
       call s:throw('file or blob required')
     endif
-    if filter(copy(a:args),'v:val !~# "^\\%(--root\|--show-name\\|-\\=\\%([ltfnsew]\\|[MC]\\d*\\)\\+\\)$"') != []
+    if filter(copy(a:args),'v:val !~# "^\\%(--first-parent\\|--root\\|--show-name\\|-\\=\\%([ltfnsew]\\|[MC]\\d*\\)\\+\\)$"') != []
       call s:throw('unsupported option')
     endif
     call map(a:args,'s:sub(v:val,"^\\ze[^-]","-")')

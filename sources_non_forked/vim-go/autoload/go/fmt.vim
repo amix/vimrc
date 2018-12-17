@@ -5,6 +5,10 @@
 " fmt.vim: Vim command to format Go files with gofmt (and gofmt compatible
 " toorls, such as goimports).
 
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 "  we have those problems :
 "  http://stackoverflow.com/questions/12741977/prevent-vim-from-updating-its-undo-tree
 "  http://stackoverflow.com/questions/18532692/golang-formatter-and-vim-how-to-destroy-history-record?rq=1
@@ -210,5 +214,9 @@ function! go#fmt#ToggleFmtAutoSave() abort
   call go#config#SetFmtAutosave(1)
   call go#util#EchoProgress("auto fmt enabled")
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

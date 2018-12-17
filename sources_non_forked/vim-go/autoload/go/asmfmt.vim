@@ -15,6 +15,10 @@
 "
 "       Flag to automatically call :Fmt when file is saved.
 
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 let s:got_fmt_error = 0
 
 " This is a trimmed-down version of the logic in fmt.vim.
@@ -64,5 +68,9 @@ function! go#asmfmt#ToggleAsmFmtAutoSave() abort
   call go#config#SetAsmfmtAutosave(0)
   call go#util#EchoProgress("auto asmfmt disabled")
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

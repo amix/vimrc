@@ -2567,15 +2567,24 @@ fu! ctrlp#getvar(var)
 endf
 "}}}1
 " * Initialization {{{1
-fu! ctrlp#setlines(...)
+fu! s:setlines_pre(...)
 	if a:0 | let s:itemtype = a:1 | en
 	cal s:modevar()
+	let g:ctrlp_lines = []
+endf
+
+fu! s:setlines_post()
 	let inits = {'fil': 'ctrlp#files()', 'buf': 'ctrlp#buffers()', 'mru': 'ctrlp#mrufiles#list()'}
 	let types = map(copy(g:ctrlp_types), 'inits[v:val]')
 	if !empty(g:ctrlp_ext_vars)
 		cal map(copy(g:ctrlp_ext_vars), 'add(types, v:val["init"])')
 	en
 	let g:ctrlp_lines = eval(types[s:itemtype])
+endf
+
+fu! ctrlp#setlines(...)
+	cal call('s:setlines_pre', a:000)
+	cal s:setlines_post()
 endf
 
 " Returns [lname, sname]
@@ -2632,8 +2641,16 @@ fu! ctrlp#init(type, ...)
 			retu
 		en
 	en
-	cal ctrlp#setlines(s:settype(type))
+	" Fixed issue ctrlpvim/ctrlp.vim#463 : Opening 'ctrlp' in certain modes
+	" (':CtrlPBufTag', ':CtrlPLine') seems to trigger a partially deffective
+	" intialisation (for example, syntax highlighting not working as expected).
+	" Fix: ctrlp#setlines() split in two, as the second part (now in
+	" s:setlines_post()) seems to need '&filetype', and s:DetectFileType() seems
+	" to need the first part of the old ctrlp#setlines() (now in
+	" s:setlines_pre()).
+	cal s:setlines_pre(s:settype(type))
 	let &filetype = s:DetectFileType(type, &filetype)
+	cal s:setlines_post()
 	cal ctrlp#syntax()
 	cal s:SetDefTxt()
 	let curName = s:CurTypeName()

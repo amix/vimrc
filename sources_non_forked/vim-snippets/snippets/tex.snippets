@@ -321,17 +321,17 @@ snippet \{ \{ \}
 	\\{ ${0} \\}
 #delimiter
 snippet lr left right
-	\\left${1} ${0} \\right$1
+	\\left${1} ${0:${VISUAL}} \\right$1
 snippet lr( left( right)
-	\\left( ${0} \\right)
+	\\left( ${0:${VISUAL}} \\right)
 snippet lr| left| right|
-	\\left| ${0} \\right|
+	\\left| ${0:${VISUAL}} \\right|
 snippet lr{ left\{ right\}
-	\\left\\{ ${0} \\right\\}
+	\\left\\{ ${0:${VISUAL}} \\right\\}
 snippet lr[ left[ right]
-	\\left[ ${0} \\right]
+	\\left[ ${0:${VISUAL}} \\right]
 snippet lra langle rangle
-	\\langle ${0} \\rangle
+	\\langle ${0:${VISUAL}} \\rangle
 # Code listings
 snippet lst
 	\\begin{listing}[language=${1:language}]

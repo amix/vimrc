@@ -4,31 +4,32 @@
 
 priority -50
 
-
-snippet arg "Function Arguments" i
-${1:a}: ${2:T}${3:, arg}
-endsnippet
-
-snippet || "Closure, anonymous function (inline)" i
-${1:move }|$2| { $3 }
-endsnippet
-
-snippet |} "Closure, anonymous function (block)" i
-${1:move }|$2| {
-	$3
+snippet fn "pub fn name(?) -> ? {}"
+fn ${1:function_name}($2)${3/..*/ -> /}$3 {
+	${VISUAL}$0
 }
 endsnippet
 
-snippet macro "macro_rules!" b
-macro_rules! ${1:name} {
-	(${2:matcher}) => (
-		$3
-	)
+snippet pfn "pub fn name(?) -> ? {}"
+pub fn ${1:function_name}($2)${3/..*/ -> /}$3 {
+	${VISUAL}$0
 }
 endsnippet
 
-snippet fd "Struct field definition" w
-${1:name}: ${2:Type},
+snippet pri "print!(..)" b
+print!("$1"${2/..*/, /}$2);
+endsnippet
+
+snippet pln "println!(..)" b
+println!("$1"${2/..*/, /}$2);
+endsnippet
+
+snippet fmt "format!(..)"
+format!("$1"${2/..*/, /}$2);
+endsnippet
+
+snippet it ".iter()" i
+.iter()$0
 endsnippet
 
 # vim:ft=snippets:

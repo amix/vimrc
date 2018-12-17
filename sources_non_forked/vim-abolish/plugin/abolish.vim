@@ -527,7 +527,7 @@ function! s:commands.abbrev.process(bang,line1,line2,count,args)
     let cmd = cmd . " <buffer>"
   endif
   let [bad, good] = s:badgood(a:args)
-  if substitute(bad,'{.\{-\}.}','','g') !~ '^\k\+$'
+  if substitute(bad, '[{},]', '', 'g') !~# '^\k*$'
     call s:throw("E474: Invalid argument (not a keyword: ".string(bad).")")
   endif
   if !self.options.delete && good == ""
@@ -620,12 +620,14 @@ function! s:coerce(type) abort
   endtry
 endfunction
 
-nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar())).'iw'
+nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
+nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
+nnoremap <expr> <plug>(abolish-coerce-word) <sid>coerce(nr2char(getchar())).'iw'
 
 " }}}1
 
 if !exists("g:abolish_no_mappings") || ! g:abolish_no_mappings
-  nmap cr  <Plug>(abolish-coerce)
+  nmap cr  <Plug>(abolish-coerce-word)
 endif
 
 command! -nargs=+ -bang -bar -range=0 -complete=custom,s:Complete Abolish

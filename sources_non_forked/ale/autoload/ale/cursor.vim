@@ -52,16 +52,6 @@ function! ale#cursor#TruncatedEcho(original_message) abort
     endtry
 endfunction
 
-function! s:FindItemAtCursor(buffer) abort
-    let l:info = get(g:ale_buffer_info, a:buffer, {})
-    let l:loclist = get(l:info, 'loclist', [])
-    let l:pos = getcurpos()
-    let l:index = ale#util#BinarySearch(l:loclist, a:buffer, l:pos[1], l:pos[2])
-    let l:loc = l:index >= 0 ? l:loclist[l:index] : {}
-
-    return [l:info, l:loc]
-endfunction
-
 function! s:StopCursorTimer() abort
     if s:cursor_timer != -1
         call timer_stop(s:cursor_timer)
@@ -85,7 +75,7 @@ function! ale#cursor#EchoCursorWarning(...) abort
         return
     endif
 
-    let [l:info, l:loc] = s:FindItemAtCursor(l:buffer)
+    let [l:info, l:loc] = ale#util#FindItemAtCursor(l:buffer)
 
     if g:ale_echo_cursor
         if !empty(l:loc)
@@ -169,7 +159,7 @@ function! ale#cursor#ShowCursorDetail() abort
 
     call s:StopCursorTimer()
 
-    let [l:info, l:loc] = s:FindItemAtCursor(l:buffer)
+    let [l:info, l:loc] = ale#util#FindItemAtCursor(l:buffer)
 
     if !empty(l:loc)
         call s:ShowCursorDetailForItem(l:loc, {'stay_here': 0})

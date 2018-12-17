@@ -452,13 +452,9 @@ In order to change the syntastic component more outstanding, you have to use
 	      \   'syntastic': 'error',
 	      \ }
 	      \ }
-	let g:syntastic_mode_map = { 'mode': 'passive' }
-	augroup AutoSyntastic
-	  autocmd!
-	  autocmd BufWritePost *.c,*.cpp call s:syntastic()
-	augroup END
-	function! s:syntastic()
-	  SyntasticCheck
+	" Syntastic can call a post-check hook, let's update lightline there
+	" For more information: :help syntastic-loclist-callback
+	function! SyntasticCheckHook(errors)
 	  call lightline#update()
 	endfunction
 <
@@ -908,12 +904,9 @@ For users who uses lots of plugins:
 	  return lightline#statusline(0)
 	endfunction
 
-	augroup AutoSyntastic
-	  autocmd!
-	  autocmd BufWritePost *.c,*.cpp call s:syntastic()
-	augroup END
-	function! s:syntastic()
-	  SyntasticCheck
+	" Syntastic can call a post-check hook, let's update lightline there
+	" For more information: :help syntastic-loclist-callback
+	function! SyntasticCheckHook(errors)
 	  call lightline#update()
 	endfunction
 

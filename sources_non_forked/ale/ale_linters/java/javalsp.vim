@@ -2,15 +2,17 @@
 " Description: Support for the Java language server https://github.com/georgewfraser/vscode-javac
 
 call ale#Set('java_javalsp_jar', 'javacs.jar')
+call ale#Set('java_javalsp_executable', 'java')
 
 function! ale_linters#java#javalsp#Executable(buffer) abort
-    return 'java'
+    return ale#Var(a:buffer, 'java_javalsp_executable')
 endfunction
 
 function! ale_linters#java#javalsp#Command(buffer) abort
     let l:jar = ale#Var(a:buffer, 'java_javalsp_jar')
+    let l:executable = ale_linters#java#javalsp#Executable(a:buffer)
 
-    return ale#Escape('java -cp ' . l:jar . ' -Xverify:none org.javacs.Main')
+    return ale#Escape(l:executable) . ' -cp ' . l:jar . ' -Xverify:none org.javacs.Main'
 endfunction
 
 call ale#linter#Define('java', {

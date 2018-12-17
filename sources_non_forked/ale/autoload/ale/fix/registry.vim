@@ -17,6 +17,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['python'],
 \       'description': 'Fix PEP8 issues with autopep8.',
 \   },
+\   'bibclean': {
+\       'function': 'ale#fixers#bibclean#Fix',
+\       'suggested_filetypes': ['bib'],
+\       'description': 'Format bib files using bibclean.',
+\   },
 \   'black': {
 \       'function': 'ale#fixers#black#Fix',
 \       'suggested_filetypes': ['python'],
@@ -56,7 +61,7 @@ let s:default_registry = {
 \   },
 \   'prettier': {
 \       'function': 'ale#fixers#prettier#Fix',
-\       'suggested_filetypes': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'json5', 'graphql', 'markdown', 'vue'],
+\       'suggested_filetypes': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'json5', 'graphql', 'markdown', 'vue', 'html', 'yaml'],
 \       'description': 'Apply prettier to a file.',
 \   },
 \   'prettier_eslint': {
@@ -109,6 +114,11 @@ let s:default_registry = {
 \       'function': 'ale#fixers#standard#Fix',
 \       'suggested_filetypes': ['javascript'],
 \       'description': 'Fix JavaScript files using standard --fix',
+\   },
+\   'standardrb': {
+\       'function': 'ale#fixers#standardrb#Fix',
+\       'suggested_filetypes': ['ruby'],
+\       'description': 'Fix ruby files with standardrb --fix',
 \   },
 \   'stylelint': {
 \       'function': 'ale#fixers#stylelint#Fix',

@@ -75,3 +75,13 @@ function! ale#test#GetQflistWithoutModule() abort
 
     return l:results
 endfunction
+
+function! ale#test#GetPreviewWindowText() abort
+    for l:window in range(1, winnr('$'))
+        if getwinvar(l:window, '&previewwindow', 0)
+            let l:buffer = winbufnr(l:window)
+
+            return getbufline(l:buffer, 1, '$')
+        endif
+    endfor
+endfunction

@@ -66,6 +66,10 @@ function! ale#lsp#response#ReadDiagnostics(response) abort
             let l:loclist_item.detail = l:diagnostic.message . "\n" . join(l:related, "\n")
         endif
 
+        if has_key(l:diagnostic, 'source')
+           let l:loclist_item.detail = printf('[%s] %s', l:diagnostic.source, l:diagnostic.message)
+        endif
+
         call add(l:loclist, l:loclist_item)
     endfor
 

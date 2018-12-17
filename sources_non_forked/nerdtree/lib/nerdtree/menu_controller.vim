@@ -49,7 +49,7 @@ endfunction
 
 "FUNCTION: MenuController._echoPrompt() {{{1
 function! s:MenuController._echoPrompt()
-    echo "NERDTree Menu. Use j/k/enter and the shortcuts indicated"
+    echo "NERDTree Menu. Use " . g:NERDTreeMenuDown . "/" . g:NERDTreeMenuUp . "/enter and the shortcuts indicated"
     echo "=========================================================="
 
     for i in range(0, len(self.menuItems)-1)
@@ -71,9 +71,9 @@ endfunction
 "change the selection (if appropriate) and return 1 if the user has made
 "their choice, 0 otherwise
 function! s:MenuController._handleKeypress(key)
-    if a:key == 'j'
+    if a:key == g:NERDTreeMenuDown
         call self._cursorDown()
-    elseif a:key == 'k'
+    elseif a:key == g:NERDTreeMenuUp
         call self._cursorUp()
     elseif a:key == nr2char(27) "escape
         let self.selection = -1

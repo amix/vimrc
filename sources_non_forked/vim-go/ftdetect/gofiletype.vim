@@ -1,5 +1,9 @@
 " vint: -ProhibitAutocmdWithNoGroup
 
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 " We take care to preserve the user's fileencodings and fileformats,
 " because those settings are global (not buffer local), yet we want
 " to override them for loading Go files, which are defined to be UTF-8.
@@ -54,5 +58,9 @@ fun! s:gomod()
     break
   endfor
 endfun
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

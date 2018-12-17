@@ -4,6 +4,11 @@
 "
 " Check out the docs for more information at /doc/vim-go.txt
 "
+
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 function! go#import#SwitchImport(enabled, localname, path, bang) abort
   let view = winsaveview()
   let path = substitute(a:path, '^\s*\(.\{-}\)\s*$', '\1', '')
@@ -220,5 +225,8 @@ function! s:Error(s) abort
   echohl Error | echo a:s | echohl None
 endfunction
 
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

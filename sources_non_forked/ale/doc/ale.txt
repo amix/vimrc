@@ -21,6 +21,8 @@ CONTENTS                                                         *ale-contents*
     6.1 Highlights........................|ale-highlights|
     6.2 Options for write-good Linter.....|ale-write-good-options|
   7. Integration Documentation............|ale-integrations|
+    ada...................................|ale-ada-options|
+      gcc.................................|ale-ada-gcc|
     ansible...............................|ale-ansible-options|
       ansible-lint........................|ale-ansible-ansible-lint|
     asciidoc..............................|ale-asciidoc-options|
@@ -29,6 +31,8 @@ CONTENTS                                                         *ale-contents*
       gcc.................................|ale-asm-gcc|
     awk...................................|ale-awk-options|
       gawk................................|ale-awk-gawk|
+    bib...................................|ale-bib-options|
+      bibclean............................|ale-bib-bibclean|
     c.....................................|ale-c-options|
       clang...............................|ale-c-clang|
       clangd..............................|ale-c-clangd|
@@ -92,6 +96,7 @@ CONTENTS                                                         *ale-contents*
       erlc................................|ale-erlang-erlc|
       syntaxerl...........................|ale-erlang-syntaxerl|
     eruby.................................|ale-eruby-options|
+      ruumba..............................|ale-eruby-ruumba|
     fish..................................|ale-fish-options|
     fortran...............................|ale-fortran-options|
       gcc.................................|ale-fortran-gcc|
@@ -107,6 +112,7 @@ CONTENTS                                                         *ale-contents*
     go....................................|ale-go-options|
       gobuild.............................|ale-go-gobuild|
       gofmt...............................|ale-go-gofmt|
+      golint..............................|ale-go-golint|
       govet...............................|ale-go-govet|
       gometalinter........................|ale-go-gometalinter|
       staticcheck.........................|ale-go-staticcheck|
@@ -138,10 +144,13 @@ CONTENTS                                                         *ale-contents*
     html..................................|ale-html-options|
       htmlhint............................|ale-html-htmlhint|
       tidy................................|ale-html-tidy|
+      prettier............................|ale-html-prettier|
       stylelint...........................|ale-html-stylelint|
       write-good..........................|ale-html-write-good|
     idris.................................|ale-idris-options|
       idris...............................|ale-idris-idris|
+    ispc..................................|ale-ispc-options|
+      ispc................................|ale-ispc-ispc|
     java..................................|ale-java-options|
       checkstyle..........................|ale-java-checkstyle|
       javac...............................|ale-java-javac|
@@ -224,6 +233,7 @@ CONTENTS                                                         *ale-contents*
       phpstan.............................|ale-php-phpstan|
       psalm...............................|ale-php-psalm|
       php-cs-fixer........................|ale-php-php-cs-fixer|
+      php.................................|ale-php-php|
     po....................................|ale-po-options|
       write-good..........................|ale-po-write-good|
     pod...................................|ale-pod-options|
@@ -250,6 +260,7 @@ CONTENTS                                                         *ale-contents*
       mypy................................|ale-python-mypy|
       prospector..........................|ale-python-prospector|
       pycodestyle.........................|ale-python-pycodestyle|
+      pydocstyle..........................|ale-python-pydocstyle|
       pyflakes............................|ale-python-pyflakes|
       pylint..............................|ale-python-pylint|
       pyls................................|ale-python-pyls|
@@ -274,12 +285,14 @@ CONTENTS                                                         *ale-contents*
       ruby................................|ale-ruby-ruby|
       rufo................................|ale-ruby-rufo|
       solargraph..........................|ale-ruby-solargraph|
+      standardrb..........................|ale-ruby-standardrb|
     rust..................................|ale-rust-options|
       cargo...............................|ale-rust-cargo|
       rls.................................|ale-rust-rls|
       rustc...............................|ale-rust-rustc|
       rustfmt.............................|ale-rust-rustfmt|
     sass..................................|ale-sass-options|
+      sasslint............................|ale-sass-sasslint|
       stylelint...........................|ale-sass-stylelint|
     scala.................................|ale-scala-options|
       sbtserver...........................|ale-scala-sbtserver|
@@ -287,6 +300,7 @@ CONTENTS                                                         *ale-contents*
       scalastyle..........................|ale-scala-scalastyle|
     scss..................................|ale-scss-options|
       prettier............................|ale-scss-prettier|
+      sasslint............................|ale-scss-sasslint|
       stylelint...........................|ale-scss-stylelint|
     sh....................................|ale-sh-options|
       sh-language-server..................|ale-sh-language-server|
@@ -388,12 +402,14 @@ Notes:
 `^` No linters for text or Vim help filetypes are enabled by default.
 `!!` These linters check only files on disk. See |ale-lint-file-linters|
 
+* Ada: `gcc`
 * ASM: `gcc`
 * Ansible: `ansible-lint`
 * API Blueprint: `drafter`
-* AsciiDoc: `alex`!!, `proselint`, `redpen`, `write-good`
+* AsciiDoc: `alex`!!, `proselint`, `redpen`, `write-good`, `vale`
 * Awk: `gawk`
 * Bash: `language-server`, `shell` (-n flag), `shellcheck`, `shfmt`
+* BibTeX: `bibclean`
 * Bourne Shell: `shell` (-n flag), `shellcheck`, `shfmt`
 * C: `cppcheck`, `cpplint`!!, `clang`, `clangd`, `clangtidy`!!, `clang-format`, `cquery`, `flawfinder`, `gcc`, `uncrustify`, `ccls`
 * C++ (filetype cpp): `clang`, `clangd`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `clazy`!!, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`, `uncrustify`, `ccls`
@@ -414,7 +430,7 @@ Notes:
 * Dockerfile: `dockerfile_lint`, `hadolint`
 * Elixir: `credo`, `dialyxir`, `dogma`, `mix`!!, `elixir-ls`
 * Elm: `elm-format, elm-make`
-* Erb: `erb`, `erubi`, `erubis`
+* Erb: `erb`, `erubi`, `erubis`, `ruumba`
 * Erlang: `erlc`, `SyntaxErl`
 * Fish: `fish` (-n flag)
 * Fortran: `gcc`, `language_server`
@@ -429,8 +445,9 @@ Notes:
 * Handlebars: `ember-template-lint`
 * Haskell: `brittany`, `ghc`, `cabal-ghc`, `stylish-haskell`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `hlint`, `hdevtools`, `hfmt`, `hie`
 * HCL: `terraform-fmt`
-* HTML: `alex`!!, `HTMLHint`, `proselint`, `tidy`, `write-good`
+* HTML: `alex`!!, `HTMLHint`, `proselint`, `tidy`, `prettier`, `write-good`
 * Idris: `idris`
+* ISPC: `ispc`!!
 * Java: `checkstyle`, `javac`, `google-java-format`, `PMD`, `javalsp`, `uncrustify`
 * JavaScript: `eslint`, `flow`, `jscs`, `jshint`, `prettier`, `prettier-eslint`, `prettier-standard`, `standard`, `xo`
 * JSON: `fixjson`, `jsonlint`, `jq`, `prettier`
@@ -463,14 +480,14 @@ Notes:
 * proto: `protoc-gen-lint`
 * Pug: `pug-lint`
 * Puppet: `languageserver`, `puppet`, `puppet-lint`
-* Python: `autopep8`, `black`, `flake8`, `isort`, `mypy`, `prospector`, `pycodestyle`, `pyls`, `pyre`, `pylint`!!, `vulture`!!, `yapf`
+* Python: `autopep8`, `black`, `flake8`, `isort`, `mypy`, `prospector`, `pycodestyle`, `pydocstyle`, `pyls`, `pyre`, `pylint`!!, `vulture`!!, `yapf`
 * QML: `qmlfmt`, `qmllint`
 * R: `lintr`
 * ReasonML: `merlin`, `ols`, `refmt`
 * reStructuredText: `alex`!!, `proselint`, `redpen`, `rstcheck`, `vale`, `write-good`
 * Re:VIEW: `redpen`
 * RPM spec: `rpmlint`
-* Ruby: `brakeman`, `rails_best_practices`!!, `reek`, `rubocop`, `ruby`, `rufo`, `solargraph`
+* Ruby: `brakeman`, `rails_best_practices`!!, `reek`, `rubocop`, `ruby`, `rufo`, `solargraph`, `standardrb`
 * Rust: `cargo`!!, `rls`, `rustc` (see |ale-integration-rust|), `rustfmt`
 * SASS: `sass-lint`, `stylelint`
 * SCSS: `prettier`, `sass-lint`, `scss-lint`, `stylelint`
@@ -555,6 +572,7 @@ their relevant options.
 * By setting error highlights.                     - |g:ale_set_highlights|
 * By creating signs in the sign column.            - |g:ale_set_signs|
 * By echoing messages based on your cursor.        - |g:ale_echo_cursor|
+* By inline text based on your cursor.             - |g:ale_virtualtext_cursor|
 * By displaying the preview based on your cursor.  - |g:ale_cursor_detail|
 * By showing balloons for your mouse cursor        - |g:ale_set_balloons|
 
@@ -858,6 +876,9 @@ settings. For example: >
   set mouse=a
   set ttymouse=xterm
 <
+
+Documentation for symbols at the cursor can be retrieved using the
+|ALEDocumentation| command. This command is only available for `tsserver`.
 
 -------------------------------------------------------------------------------
 5.5 Symbol Search                                           *ale-symbol-search*
@@ -1184,6 +1205,9 @@ b:ale_fix_on_save                                           *b:ale_fix_on_save*
   after files are fixed, only when the buffer is open, or re-opened. Changes
   to the file will be saved to the file on disk.
 
+  Files will not be fixed on `:wq`, so you should check your code before
+  closing a buffer.
+
   Fixing files can be disabled or enabled for individual buffers by setting
   `b:ale_fix_on_save` to `0` or `1`.
 
@@ -1362,6 +1386,7 @@ g:ale_linter_aliases                                     *g:ale_linter_aliases*
   \   'systemverilog': 'verilog',
   \   'verilog_systemverilog': ['verilog_systemverilog', 'verilog'],
   \   'vimwiki': 'markdown',
+  \   'vue': ['vue', 'javascript'],
   \   'zsh': 'sh',
   \}
 <
@@ -1410,6 +1435,7 @@ g:ale_linters                                                   *g:ale_linters*
 
   {
   \   'csh': ['shell'],
+  \   'elixir': ['credo', 'dialyxir', 'dogma', 'elixir-ls'],
   \   'go': ['gofmt', 'golint', 'go vet'],
   \   'hack': ['hack'],
   \   'help': [],
@@ -1419,6 +1445,7 @@ g:ale_linters                                                   *g:ale_linters*
   \   'rust': ['cargo'],
   \   'spec': [],
   \   'text': [],
+  \   'vue': ['eslint', 'vls'],
   \   'zsh': ['shell'],
   \}
 <
@@ -1866,6 +1893,49 @@ g:ale_use_global_executables                     *g:ale_use_global_executables*
   options.
 
 
+g:ale_virtualtext_cursor                             *g:ale_virtualtext_cursor*
+
+  Type: |Number|
+  Default: `0`
+
+  When this option is set to `1`, a message will be shown when a cursor is
+  near a warning or error. ALE will attempt to find the warning or error at a
+  column nearest to the cursor when the cursor is resting on a line which
+  contains a warning or error. This option can be set to `0` to disable this
+  behavior.
+
+  Messages are only displayed after a short delay. See |g:ale_virtualtext_delay|.
+
+  Messages can be prefixed prefixed with a string. See |g:ale_virtualtext_prefix|.
+
+  ALE will use the following highlight groups for problems:
+
+  |ALEVirtualTextError|        - Items with `'type': 'E'`
+  |ALEVirtualTextWarning|      - Items with `'type': 'W'`
+  |ALEVirtualTextInfo|         - Items with `'type': 'I'`
+  |ALEVirtualTextStyleError|   - Items with `'type': 'E'` and `'sub_type': 'style'`
+  |ALEVirtualTextStyleWarning| - Items with `'type': 'W'` and `'sub_type': 'style'`
+
+
+g:ale_virtualtext_delay                               *g:ale_virtualtext_delay*
+b:ale_virtualtext_delay                               *b:ale_virtualtext_delay*
+  Type: |Number|
+  Default: `10`
+
+  Given any integer, this option controls the number of milliseconds before
+  ALE will show a message for a problem near the cursor.
+
+  The value can be increased to decrease the amount of processing ALE will do
+  for files displaying a large number of problems.
+
+
+g:ale_virtualtext_prefix                             *g:ale_virtualtext_prefix*
+
+  Type: |String|
+  Default: `'> '`
+
+  Prefix to be used with |g:ale_virtualtext_cursor|.
+
 g:ale_virtualenv_dir_names                         *g:ale_virtualenv_dir_names*
 b:ale_virtualenv_dir_names                         *b:ale_virtualenv_dir_names*
 
@@ -1932,7 +2002,7 @@ ALEError                                                             *ALEError*
 
   Default: `highlight link ALEError SpellBad`
 
-  The highlight used for highlighted errors. See |g:ale_set_highlights|.
+  The highlight for highlighted errors. See |g:ale_set_highlights|.
 
 
 ALEErrorLine                                                     *ALEErrorLine*
@@ -1949,21 +2019,21 @@ ALEErrorSign                                                     *ALEErrorSign*
 
   Default: `highlight link ALEErrorSign error`
 
-  The highlight used for error signs. See |g:ale_set_signs|.
+  The highlight for error signs. See |g:ale_set_signs|.
 
 
 ALEInfo                                                              *ALEInfo.*
                                                             *ALEInfo-highlight*
   Default: `highlight link ALEInfo ALEWarning`
 
-  The highlight used for highlighted info messages. See |g:ale_set_highlights|.
+  The highlight for highlighted info messages. See |g:ale_set_highlights|.
 
 
 ALEInfoSign                                                       *ALEInfoSign*
 
   Default: `highlight link ALEInfoSign ALEWarningSign`
 
-  The highlight used for info message signs. See |g:ale_set_signs|.
+  The highlight for info message signs. See |g:ale_set_signs|.
 
 
 ALEInfoLine                                                       *ALEInfoLine*
@@ -1980,35 +2050,70 @@ ALEStyleError                                                   *ALEStyleError*
 
   Default: `highlight link ALEStyleError ALEError`
 
-  The highlight used for highlighted style errors. See |g:ale_set_highlights|.
+  The highlight for highlighted style errors. See |g:ale_set_highlights|.
 
 
 ALEStyleErrorSign                                           *ALEStyleErrorSign*
 
   Default: `highlight link ALEStyleErrorSign ALEErrorSign`
 
-  The highlight used for style error signs. See |g:ale_set_signs|.
+  The highlight for style error signs. See |g:ale_set_signs|.
 
 
 ALEStyleWarning                                               *ALEStyleWarning*
 
   Default: `highlight link ALEStyleWarning ALEError`
 
-  The highlight used for highlighted style warnings. See |g:ale_set_highlights|.
+  The highlight for highlighted style warnings. See |g:ale_set_highlights|.
 
 
 ALEStyleWarningSign                                       *ALEStyleWarningSign*
 
   Default: `highlight link ALEStyleWarningSign ALEWarningSign`
 
-  The highlight used for style warning signs. See |g:ale_set_signs|.
+  The highlight for style warning signs. See |g:ale_set_signs|.
+
+
+ALEVirtualTextError                                       *ALEVirtualTextError*
+
+  Default: `highlight link ALEVirtualTextError ALEError`
+
+  The highlight for virtualtext errors. See |g:ale_virtualtext_cursor|.
+
+
+ALEVirtualTextInfo                                         *ALEVirtualTextInfo*
+
+  Default: `highlight link ALEVirtualTextInfo ALEVirtualTextWarning`
+
+  The highlight for virtualtext info. See |g:ale_virtualtext_cursor|.
+
+
+ALEVirtualTextStyleError                             *ALEVirtualTextStyleError*
+
+  Default: `highlight link ALEVirtualTextStyleError ALEVirtualTextError`
+
+  The highlight for virtualtext style errors. See |g:ale_virtualtext_cursor|.
+
+
+ALEVirtualTextStyleWarning                         *ALEVirtualTextStyleWarning*
+
+  Default: `highlight link ALEVirtualTextStyleWarning ALEVirtualTextWarning`
+
+  The highlight for virtualtext style warnings. See |g:ale_virtualtext_cursor|.
+
+
+ALEVirtualTextWarning                                   *ALEVirtualTextWarning*
+
+  Default: `highlight link ALEVirtualTextWarning ALEWarning`
+
+  The highlight for virtualtext errors. See |g:ale_virtualtext_cursor|.
 
 
 ALEWarning                                                         *ALEWarning*
 
   Default: `highlight link ALEWarning SpellCap`
 
-  The highlight used for highlighted warnings. See |g:ale_set_highlights|.
+  The highlight for highlighted warnings. See |g:ale_set_highlights|.
 
 
 ALEWarningLine                                                 *ALEWarningLine*
@@ -2025,7 +2130,7 @@ ALEWarningSign                                                 *ALEWarningSign*
 
   Default: `highlight link ALEWarningSign todo`
 
-  The highlight used for warning signs. See |g:ale_set_signs|.
+  The highlight for warning signs. See |g:ale_set_signs|.
 
 
 -------------------------------------------------------------------------------
@@ -2096,6 +2201,17 @@ ALE will use to search for Python executables.
 
 ===============================================================================
 8. Commands/Keybinds                                             *ale-commands*
+
+ALEDocumentation                                             *ALEDocumentation*
+
+  Similar to the |ALEHover| command, retrieve documentation information for
+  the symbol at the cursor. Documentation data will always be shown in a
+  preview window, no matter how small the documentation content is.
+
+  NOTE: This command is only available for `tsserver`.
+
+  A plug mapping `<Plug>(ale_documentation)` is defined for this command.
+
 
 ALEFindReferences                                           *ALEFindReferences*
 

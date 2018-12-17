@@ -204,4 +204,14 @@ g:ale_php_cs_fixer_options                          *g:ale_php_cs_fixer_options*
   This variable can be set to pass additional options to php-cs-fixer.
 
 ===============================================================================
+php                                                                *ale-php-php*
+
+g:ale_php_php_executable                              *g:ale_php_php_executable*
+                                                      *b:ale_php_php_executable*
+  Type: |String|
+  Default: `'php'`
+
+  This variable sets the executable used for php.
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -191,6 +191,20 @@ function Test_filename_leading_dash()
 endfunction
 
 
+function Test_filename_umlaut()
+  call system('touch -- fixtüre.txt && git add -- fixtüre.txt')
+  edit fixtüre.txt
+  normal ggo*
+  call s:trigger_gitgutter()
+
+  let expected = [
+        \ 'line=1  id=3000  name=GitGutterLineAdded',
+        \ 'line=2  id=3001  name=GitGutterLineAdded'
+        \ ]
+  call assert_equal(expected, s:signs('fixtüre.txt'))
+endfunction
+
+
 " FIXME: this test fails when it is the first (or only) test to be run
 function Test_follow_symlink()
   let tmp = 'symlink'
@@ -273,6 +287,7 @@ function Test_untracked_file_within_repo()
   call s:trigger_gitgutter()
 
   call assert_equal([], s:signs(tmp))
+  call assert_equal(-2, b:gitgutter.path)
 
   call system('rm '.tmp)
 endfunction
@@ -632,4 +647,34 @@ function Test_encoding()
   call s:trigger_gitgutter()
 
   call assert_equal([], s:signs('cp932.txt'))
+endfunction
+
+
+function Test_empty_file()
+  " 0-byte file
+  call system('touch empty.txt && git add empty.txt')
+  edit empty.txt
+
+  call s:trigger_gitgutter()
+  call assert_equal([], s:signs('empty.txt'))
+
+
+  " File consisting only of a newline
+  call system('echo "" > newline.txt && git add newline.txt')
+  edit newline.txt
+
+  call s:trigger_gitgutter()
+  call assert_equal([], s:signs('newline.txt'))
+
+
+  " 1 line file without newline
+  " Vim will force a newline unless we tell it not to.
+  call system('echo -n a > oneline.txt && git add oneline.txt')
+  set noeol nofixeol
+  edit! oneline.txt
+
+  call s:trigger_gitgutter()
+  call assert_equal([], s:signs('oneline.txt'))
+
+  set eol fixeol
 endfunction

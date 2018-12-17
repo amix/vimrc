@@ -112,6 +112,9 @@ let g:ale_echo_cursor = get(g:, 'ale_echo_cursor', 1)
 " This flag can be set to 1 to automatically show errors in the preview window.
 let g:ale_cursor_detail = get(g:, 'ale_cursor_detail', 0)
 
+" This flag can be set to 1 to enable virtual text when the cursor moves.
+let g:ale_virtualtext_cursor = get(g:, 'ale_virtualtext_cursor', 0)
+
 " This flag can be set to 1 to automatically close the preview window upon
 " entering Insert Mode.
 let g:ale_close_preview_on_insert = get(g:, 'ale_close_preview_on_insert', 0)
@@ -190,9 +193,11 @@ command! -bar ALEGoToDefinitionInTab :call ale#definition#GoTo({'open_in_tab': 1
 " Find references for tsserver and LSP
 command! -bar ALEFindReferences :call ale#references#Find()
 
-" Get information for the cursor.
-command! -bar ALEHover :call ale#hover#Show(bufnr(''), getcurpos()[1],
-                                            \ getcurpos()[2], {})
+" Show summary information for the cursor.
+command! -bar ALEHover :call ale#hover#ShowAtCursor()
+
+" Show documentation for the cursor.
+command! -bar ALEDocumentation :call ale#hover#ShowDocumentationAtCursor()
 
 " Search for appearances of a symbol, such as a type name or function name.
 command! -nargs=1 ALESymbolSearch :call ale#symbol#Search(<q-args>)
@@ -219,6 +224,7 @@ nnoremap <silent> <Plug>(ale_go_to_definition) :ALEGoToDefinition<Return>
 nnoremap <silent> <Plug>(ale_go_to_definition_in_tab) :ALEGoToDefinitionInTab<Return>
 nnoremap <silent> <Plug>(ale_find_references) :ALEFindReferences<Return>
 nnoremap <silent> <Plug>(ale_hover) :ALEHover<Return>
+nnoremap <silent> <Plug>(ale_documentation) :ALEDocumentation<Return>
 
 " Set up autocmd groups now.
 call ale#events#Init()

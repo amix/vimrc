@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 function! go#keyify#Keyify()
   " Needs: https://github.com/dominikh/go-tools/pull/272
   "\ '-tags', go#config#BuildTags(),
@@ -52,5 +56,9 @@ endfunction
 function! s:chomp(string)
     return substitute(a:string, '\n\+$', '', '')
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

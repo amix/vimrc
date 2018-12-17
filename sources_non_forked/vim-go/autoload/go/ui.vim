@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 let s:buf_nr = -1
 
 "OpenWindow opens a new scratch window and put's the content into the window
@@ -110,5 +114,9 @@ function! go#ui#OpenDefinition(filter) abort
   " center the word
   norm! zz
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

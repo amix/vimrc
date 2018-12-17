@@ -6,15 +6,40 @@ let g:ale_php_phpstan_executable = get(g:, 'ale_php_phpstan_executable', 'phpsta
 let g:ale_php_phpstan_level = get(g:, 'ale_php_phpstan_level', '4')
 let g:ale_php_phpstan_configuration = get(g:, 'ale_php_phpstan_configuration', '')
 
-function! ale_linters#php#phpstan#GetCommand(buffer) abort
+function! ale_linters#php#phpstan#GetExecutable(buffer) abort
+    return ale#Var(a:buffer, 'php_phpstan_executable')
+endfunction
+
+function! ale_linters#php#phpstan#VersionCheck(buffer) abort
+    let l:executable = ale_linters#php#phpstan#GetExecutable(a:buffer)
+
+    " If we have previously stored the version number in a cache, then
+    " don't look it up again.
+    if ale#semver#HasVersion(l:executable)
+        " Returning an empty string skips this command.
+        return ''
+    endif
+
+    let l:executable = ale#Escape(l:executable)
+
+    return l:executable . ' --version'
+endfunction
+
+function! ale_linters#php#phpstan#GetCommand(buffer, version_output) abort
     let l:configuration = ale#Var(a:buffer, 'php_phpstan_configuration')
     let l:configuration_option = !empty(l:configuration)
     \   ? ' -c ' . l:configuration
     \   : ''
 
+    let l:executable = ale_linters#php#phpstan#GetExecutable(a:buffer)
+    let l:version = ale#semver#GetVersion(l:executable, a:version_output)
+    let l:error_format = ale#semver#GTE(l:version, [0, 10, 3])
+    \   ? ' --error-format raw'
+    \   : ' --errorFormat raw'
+
     return '%e analyze -l'
     \   . ale#Var(a:buffer, 'php_phpstan_level')
-    \   . ' --errorFormat raw'
+    \   . l:error_format
     \   . l:configuration_option
     \   . ' %s'
 endfunction
@@ -40,7 +65,10 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'phpstan',
-\   'executable_callback': ale#VarFunc('php_phpstan_executable'),
-\   'command_callback': 'ale_linters#php#phpstan#GetCommand',
+\   'executable_callback': 'ale_linters#php#phpstan#GetExecutable',
+\   'command_chain': [
+\       {'callback': 'ale_linters#php#phpstan#VersionCheck'},
+\       {'callback': 'ale_linters#php#phpstan#GetCommand'},
+\   ],
 \   'callback': 'ale_linters#php#phpstan#Handle',
 \})

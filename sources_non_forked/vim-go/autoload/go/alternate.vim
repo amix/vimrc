@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 " Test alternates between the implementation of code and the test code.
 function! go#alternate#Switch(bang, cmd) abort
   let file = expand('%')
@@ -23,5 +27,9 @@ function! go#alternate#Switch(bang, cmd) abort
     execute ":" . a:cmd . " " . alt_file
   endif
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

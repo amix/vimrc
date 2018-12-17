@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 function! go#rename#Rename(bang, ...) abort
   let to_identifier = ""
   if a:0 == 0
@@ -116,5 +120,9 @@ function! go#rename#Complete(lead, cmdline, cursor)
         \ [l:word, go#util#camelcase(l:word), go#util#pascalcase(l:word)])),
         \ 'strpart(v:val, 0, len(a:lead)) == a:lead')
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

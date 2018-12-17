@@ -76,7 +76,7 @@ tools developed by the Go community to provide a seamless Vim experience.
 ==============================================================================
 INSTALL                                                           *go-install*
 
-vim-go requires at least Vim 7.4.2009 or Neovim 0.2.2. On macOS, if you are
+vim-go requires at least Vim 7.4.2009 or Neovim 0.3.1. On macOS, if you are
 still using your system version of vim, you can use homebrew to keep your
 version of Vim up-to-date with the following terminal command:
 >
@@ -118,6 +118,7 @@ manager's install command.
 
     Copy all of the files into your `~/.vim` directory
 <
+
 You will also need to install all the necessary binaries. vim-go makes it easy
 to install all of them by providing a command, |:GoInstallBinaries|, to
 `go get` all the required binaries. The binaries will be installed to $GOBIN
@@ -195,10 +196,12 @@ COMMANDS                                                         *go-commands*
     displayed and the buffer will be untouched.
 
                                                                      *:GoLint*
-:GoLint [packages]
+:GoLint! [packages]
 
     Run golint for the directory under your current file, or for the given
     packages.
+
+    If [!] is not given the first error is jumped to.
 
                                                                       *:GoDoc*
 :GoDoc [word]
@@ -463,13 +466,15 @@ CTRL-t
     If [!] is not given the first error is jumped to.
 
                                                                  *:GoErrCheck*
-:GoErrCheck [options]
+:GoErrCheck! [options]
 
     Check for unchecked errors in you current package. Errors are populated in
     the quickfix window.
 
     You may optionally pass any valid errcheck flags/options. See
     `errcheck -h` for a full list.
+
+    If [!] is not given the first error is jumped to.
 
                                                                     *:GoFiles*
 :GoFiles [source_files]
@@ -637,7 +642,7 @@ CTRL-t
     disabled it clears and stops automatic highlighting.
 
                                                                *:GoMetaLinter*
-:GoMetaLinter [path]
+:GoMetaLinter! [path]
 
     Calls the underlying `gometalinter` tool and displays all warnings and
     errors in the |quickfix| window. By default the following linters are
@@ -645,6 +650,8 @@ CTRL-t
     |'g:go_metalinter_enabled'| variable. To override the command completely
     use the variable |'g:go_metalinter_command'|. To override the maximum
     linters execution time use |'g:go_metalinter_deadline'| variable.
+
+    If [!] is not given the first error is jumped to.
 
                                                                 *:GoBuildTags*
 :GoBuildTags [tags]
@@ -1357,21 +1364,26 @@ mappings of |:GoDef|. By default it's disabled. >
 
   let g:go_def_reuse_buffer = 0
 <
-                                                          *'g:go_doc_command'*
-
-Command to use for |:GoDoc|; only used when invoked with a package name. The
-`gogetdoc` command is always used when |:GoDoc| is used on the identifier
-under the cursor (i.e. without argument or from |K|). >
-
-  let g:go_doc_command = ["godoc"]
-
-<                                                            *'g:go_bin_path'*
+                                                             *'g:go_bin_path'*
 
 Use this option to change default path for vim-go tools when using
 |:GoInstallBinaries| and |:GoUpdateBinaries|. If not set `$GOBIN` or
 `$GOPATH/bin` is used. >
 
   let g:go_bin_path = ""
+<
+                                                *'g:go_search_bin_path_first'*
+
+This option lets |'g:go_bin_path'| (or its default value) take precedence over
+$PATH when invoking a tool command such as |:GoFmt| or |:GoImports|.
+
+Enabling this option ensures that the binaries installed via
+|:GoInstallBinaries| and |:GoUpdateBinaries| are the same ones that are
+invoked via the tool commands.
+
+By default it is enabled. >
+
+  let g:go_search_bin_path_first = 1
 <
                                                        *'g:go_snippet_engine'*
 
@@ -1609,7 +1621,7 @@ Specifies whether `gocode` should use source files instead of binary packages
 for autocompletion proposals. When disabled, only identifiers from the current
 package and packages that have been installed will proposed.
 >
-  let g:go_gocode_propose_source = 1
+  let g:go_gocode_propose_source = 0
 <
                                            *'g:go_gocode_unimported_packages'*
 
@@ -1739,8 +1751,7 @@ A list of options to debug; useful for development and/or reporting bugs.
 
 Currently accepted values:
 
-  shell-commands     Echo all shell commands that vim-go runs (does not
-                     include async jobs).
+  shell-commands     Echo all shell commands that vim-go runs.
   debugger-state     Expose debugger state in 'g:go_debug_diag'.
   debugger-commands  Echo communication between vim-go and `dlv`; requests and
                      responses are recorded in `g:go_debug_commands`.
@@ -2266,9 +2277,9 @@ Using with NeoVim~
 
 Note: Neovim currently is not a first class citizen for vim-go. You are free
 to open bug, however I'm not using Neovim so it's hard for me to test it.
-vim-go might not work well as good as in Vim. I'm happy to accept pull
-requests or very detailed bug reports. If you're interested to improve the
-state of Neovim in vim-go you're always welcome!
+vim-go might not work as well in Neovim as it does in Vim. I'm happy to accept
+pull requests or very detailed bug reports. If you're interested to improve
+the state of Neovim in vim-go you're always welcome!
 
 Run `:GoRun` in a new tab, horizontal split or vertical split terminal
 >

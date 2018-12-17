@@ -13,6 +13,7 @@ let s:c_flag = s:git_supports_command_line_config_override()
 
 let s:temp_from = tempname()
 let s:temp_buffer = tempname()
+let s:counter = 0
 
 " Returns a diff of the buffer against the index or the working tree.
 "
@@ -89,6 +90,11 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
   " git-diff).
   let buff_file = s:temp_buffer.'.'.a:bufnr
 
+  " Add a counter to avoid a similar race with two quick writes of the same buffer.
+  " Use a modulus greater than a maximum reasonable number of visible buffers.
+  let s:counter = (s:counter + 1) % 20
+  let buff_file .= '.'.s:counter
+
   let extension = gitgutter#utility#extension(a:bufnr)
   if !empty(extension)
     let buff_file .= '.'.extension
@@ -103,6 +109,9 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     " between the second process writing it (with git-show) and the first
     " reading it (with git-diff).
     let from_file = s:temp_from.'.'.a:bufnr
+
+    " Add a counter to avoid a similar race with two quick writes of the same buffer.
+    let from_file .= '.'.s:counter
 
     if !empty(extension)
       let from_file .= '.'.extension
@@ -364,6 +373,13 @@ endfunction
 
 function! s:write_buffer(bufnr, file)
   let bufcontents = getbufline(a:bufnr, 1, '$')
+
+  if bufcontents == [''] && line2byte(1) == -1
+    " Special case: completely empty buffer.
+    " A nearly empty buffer of only a newline has line2byte(1) == 1.
+    call writefile([], a:file)
+    return
+  endif
 
   if getbufvar(a:bufnr, '&fileformat') ==# 'dos'
     call map(bufcontents, 'v:val."\r"')

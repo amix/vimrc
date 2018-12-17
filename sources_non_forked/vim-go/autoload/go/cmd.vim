@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 function! go#cmd#autowrite() abort
   if &autowrite == 1 || &autowriteall == 1
     silent! wall
@@ -281,5 +285,9 @@ function! s:cmd_job(args) abort
 
   call go#job#Spawn(a:args.cmd, a:args)
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

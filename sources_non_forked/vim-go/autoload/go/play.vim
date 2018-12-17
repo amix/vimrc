@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 function! go#play#Share(count, line1, line2) abort
   if !executable('curl')
     echohl ErrorMsg | echomsg "vim-go: require 'curl' command" | echohl None
@@ -65,5 +69,9 @@ function! s:get_visual_selection() abort
   let lines[0] = lines[0][col1 - 1:]
   return join(lines, "\n")
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

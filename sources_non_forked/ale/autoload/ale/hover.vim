@@ -24,7 +24,21 @@ function! ale#hover#HandleTSServerResponse(conn_id, response) abort
 
         if get(a:response, 'success', v:false) is v:true
         \&& get(a:response, 'body', v:null) isnot v:null
-            if get(l:options, 'hover_from_balloonexpr', 0)
+            " If we pass the show_documentation flag, we should show the full
+            " documentation, and always in the preview window.
+            if get(l:options, 'show_documentation', 0)
+                let l:documentation = get(a:response.body, 'documentation', '')
+
+                " displayString is not included here, because it can be very
+                " noisy and run on for many lines for complex types. A less
+                " verbose alternative may be nice in future.
+                if !empty(l:documentation)
+                    call ale#preview#Show(split(l:documentation, "\n"), {
+                    \   'filetype': 'ale-preview.message',
+                    \   'stay_here': 1,
+                    \})
+                endif
+            elseif get(l:options, 'hover_from_balloonexpr', 0)
             \&& exists('*balloon_show')
             \&& ale#Var(l:options.buffer, 'set_balloons')
                 call balloon_show(a:response.body.displayString)
@@ -126,6 +140,7 @@ function! s:OnReady(linter, lsp_details, line, column, opt, ...) abort
     \   'line': a:line,
     \   'column': l:column,
     \   'hover_from_balloonexpr': get(a:opt, 'called_from_balloonexpr', 0),
+    \   'show_documentation': get(a:opt, 'show_documentation', 0),
     \}
 endfunction
 
@@ -153,9 +168,30 @@ endfunction
 " - in the balloon if opt.called_from_balloonexpr and balloon_show is detected
 " - as status message otherwise
 function! ale#hover#Show(buffer, line, col, opt) abort
+    let l:show_documentation = get(a:opt, 'show_documentation', 0)
+
     for l:linter in ale#linter#Get(getbufvar(a:buffer, '&filetype'))
+        " Only tsserver supports documentation requests at the moment.
         if !empty(l:linter.lsp)
+        \&& (!l:show_documentation || l:linter.lsp is# 'tsserver')
             call s:ShowDetails(l:linter, a:buffer, a:line, a:col, a:opt)
         endif
     endfor
+endfunction
+
+" This function implements the :ALEHover command.
+function! ale#hover#ShowAtCursor() abort
+    let l:buffer = bufnr('')
+    let l:pos = getcurpos()
+
+    call ale#hover#Show(l:buffer, l:pos[1], l:pos[2], {})
+endfunction
+
+" This function implements the :ALEDocumentation command.
+function! ale#hover#ShowDocumentationAtCursor() abort
+    let l:buffer = bufnr('')
+    let l:pos = getcurpos()
+    let l:options = {'show_documentation': 1}
+
+    call ale#hover#Show(l:buffer, l:pos[1], l:pos[2], l:options)
 endfunction

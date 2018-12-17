@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 func! Test_GoTermNewMode()
   if !has('nvim')
     return
@@ -46,5 +50,9 @@ func! Test_GoTermNewMode_SplitRight()
     set nosplitright
   endtry
 endfunc
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

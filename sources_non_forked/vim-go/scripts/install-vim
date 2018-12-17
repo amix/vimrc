@@ -91,6 +91,7 @@ fi
 # Make sure all Go tools and other dependencies are installed.
 echo "Installing Go binaries"
 export GOPATH=$installdir
+export GO111MODULE=off
 export PATH=${GOPATH}/bin:$PATH
 "$vimgodir/scripts/run-vim" $vim +':silent :GoUpdateBinaries' +':qa'
 

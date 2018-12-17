@@ -1,6 +1,6 @@
 " fugitive.vim - A Git wrapper so awesome, it should be illegal
 " Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      2.4
+" Version:      2.5
 " GetLatestVimScripts: 2975 1 :AutoInstall: fugitive.vim
 
 if exists('g:loaded_fugitive')
@@ -66,6 +66,10 @@ function! FugitiveParse(...) abort
   endif
   let v:errmsg = 'fugitive: invalid Fugitive URL ' . path
   throw v:errmsg
+endfunction
+
+function! FugitivePrepare(...) abort
+  return call('fugitive#Prepare', a:000)
 endfunction
 
 function! FugitiveConfig(key, ...) abort
@@ -203,14 +207,6 @@ function! FugitiveDetect(path) abort
   if exists('b:git_dir')
     return fugitive#Init()
   endif
-endfunction
-
-function! FugitiveRoute(...) abort
-  return call('FugitiveFind', a:000)
-endfunction
-
-function! FugitiveGenerate(...) abort
-  throw 'Use FugitiveFind() instead'
 endfunction
 
 function! s:Slash(path) abort

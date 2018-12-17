@@ -304,6 +304,12 @@ function! ale#engine#SetResults(buffer, loclist) abort
             call ale#cursor#EchoCursorWarning()
         endif
 
+        if g:ale_virtualtext_cursor
+            " Try and show the warning now.
+            " This will only do something meaningful if we're in normal mode.
+            call ale#virtualtext#ShowCursorWarning()
+        endif
+
         " Reset the save event marker, used for opening windows, etc.
         call setbufvar(a:buffer, 'ale_save_event_fired', 0)
         " Set a marker showing how many times a buffer has been checked.

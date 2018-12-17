@@ -1,5 +1,36 @@
 ## unplanned
 
+IMPROVEMENTS:
+* Disable `g:go_gocode_propose_source` by default.
+  [[GH-2050]](https://github.com/fatih/vim-go/pull/2050)
+* Don't spam users when Vim is run with vi compatibility.
+  [[GH-2055]](https://github.com/fatih/vim-go/pull/2055)
+* Add bang support to lint commands to allow them to be run without jumping to
+  errors.
+  [[GH-2056]](https://github.com/fatih/vim-go/pull/2056)
+* Use `go doc` for `:GoDoc` instead of `godoc`.
+  [[GH-2070]](https://github.com/fatih/vim-go/pull/2070)
+* Detach from and shutdown dlv correctly.
+  [[GH-2075]](https://github.com/fatih/vim-go/pull/2075)
+* Do not require `'autowrite'` or `'autowriteall'` to be set when using
+  autocompletion in module mode.
+  [[GH-2091]](https://github.com/fatih/vim-go/pull/2091)
+
+BUG FIXES:
+* Fix opening of non-existent file from `:GoDeclsDir` when the current
+  directory is not the directory containing the current buffer.
+  [[GH-2048]](https://github.com/fatih/vim-go/pull/2048)
+* Fix jumping to an identifier with godef from a modified buffer.
+  [[GH-2054]](https://github.com/fatih/vim-go/pull/2054)
+* Fix errors when `g:go_debug` contains `debugger-commands`.
+  [[GH-2075]](https://github.com/fatih/vim-go/pull/2075)
+* Fix errors from `:GoDebugStop` in Neovim.
+  [[GH-2075]](https://github.com/fatih/vim-go/pull/2075)
+* Fix `:GoSameIdsToggle`.
+  [[GH-2086]](https://github.com/fatih/vim-go/pull/2086)
+
+## 1.19 - (November 4, 2018)
+
 FEATURES:
 
 * **go.mod file support!** This is the first feature for upcoming Go modules
@@ -64,6 +95,8 @@ IMPROVEMENTS:
   [[GH-2025]](https://github.com/fatih/vim-go/pull/2025)
 * Update autocompletion to work with Go modules.
   [[GH-1988]](https://github.com/fatih/vim-go/pull/1988)
+* Add an option to search $GOPATH/bin or $GOBIN _after_ $PATH.
+  [[GH-2041]](https://github.com/fatih/vim-go/pull/2041)
 
 BUG FIXES:
 * Fix `:GoRun %` on Windows.

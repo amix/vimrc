@@ -329,6 +329,46 @@ g:ale_python_pycodestyle_auto_pipenv     *g:ale_python_pycodestyle_auto_pipenv*
 
 
 ===============================================================================
+pydocstyle                                              *ale-python-pydocstyle*
+
+
+g:ale_python_pydocstyle_executable         *g:ale_python_pydocstyle_executable*
+                                           *b:ale_python_pydocstyle_executable*
+  Type: |String|
+  Default: `'pydocstyle'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pydocstyle'`.
+
+
+g:ale_python_pydocstyle_options               *g:ale_python_pydocstyle_options*
+                                              *b:ale_python_pydocstyle_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the
+  pydocstyle invocation.
+
+
+g:ale_python_pydocstyle_use_global         *g:ale_python_pydocstyle_use_global*
+                                           *b:ale_python_pydocstyle_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_pydocstyle_auto_pipenv       *g:ale_python_pydocstyle_auto_pipenv*
+                                          *b:ale_python_pydocstyle_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
 pyflakes                                                  *ale-python-pyflakes*
 
 

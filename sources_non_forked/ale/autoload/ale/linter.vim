@@ -16,6 +16,7 @@ let s:default_ale_linter_aliases = {
 \   'systemverilog': 'verilog',
 \   'verilog_systemverilog': ['verilog_systemverilog', 'verilog'],
 \   'vimwiki': 'markdown',
+\   'vue': ['vue', 'javascript'],
 \   'zsh': 'sh',
 \}
 
@@ -31,6 +32,7 @@ let s:default_ale_linter_aliases = {
 " NOTE: Update the g:ale_linters documentation when modifying this.
 let s:default_ale_linters = {
 \   'csh': ['shell'],
+\   'elixir': ['credo', 'dialyxir', 'dogma', 'elixir-ls'],
 \   'go': ['gofmt', 'golint', 'go vet'],
 \   'hack': ['hack'],
 \   'help': [],
@@ -40,6 +42,7 @@ let s:default_ale_linters = {
 \   'rust': ['cargo'],
 \   'spec': [],
 \   'text': [],
+\   'vue': ['eslint', 'vls'],
 \   'zsh': ['shell'],
 \}
 

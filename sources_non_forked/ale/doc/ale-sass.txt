@@ -3,6 +3,12 @@ ALE SASS Integration                                         *ale-sass-options*
 
 
 ===============================================================================
+sasslint                                                    *ale-sass-sasslint*
+
+See |ale-scss-sasslint| for information about the available options.
+
+
+===============================================================================
 stylelint                                                  *ale-sass-stylelint*
 
 g:ale_sass_stylelint_executable               *g:ale_sass_stylelint_executable*

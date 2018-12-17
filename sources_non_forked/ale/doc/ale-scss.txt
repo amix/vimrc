@@ -9,6 +9,33 @@ See |ale-javascript-prettier| for information about the available options.
 
 
 ===============================================================================
+sasslint                                                    *ale-scss-sasslint*
+
+g:ale_scss_sasslint_executable                 *g:ale_scss_sasslint_executable*
+                                               *b:ale_scss_sasslint_executable*
+  Type: |String|
+  Default: `'sass-lint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_scss_sasslint_options                       *g:ale_scss_sasslint_options*
+                                                  *b:ale_scss_sasslint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to sass-lint.
+
+
+g:ale_scss_sasslint_use_global                 *g:ale_scss_sasslint_use_global*
+                                               *b:ale_scss_sasslint_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 stylelint                                                  *ale-scss-stylelint*
 
 g:ale_scss_stylelint_executable               *g:ale_scss_stylelint_executable*

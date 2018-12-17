@@ -33,7 +33,7 @@ function! s:Creator._broadcastInitEvent()
     silent doautocmd User NERDTreeInit
 endfunction
 
-" FUNCTION: s:Creator.BufNamePrefix() {{{2
+" FUNCTION: s:Creator.BufNamePrefix() {{{1
 function! s:Creator.BufNamePrefix()
     return 'NERD_tree_'
 endfunction

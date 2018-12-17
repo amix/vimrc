@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 " Write a Go file to a temporary directory and append this directory to $GOPATH.
 "
 " The file will written to a:path, which is relative to the temporary directory,
@@ -126,5 +130,9 @@ func! gotest#assert_quickfix(got, want) abort
     call assert_equal(want_item.valid, got_item.valid, "valid")
   endwhile
 endfunc
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

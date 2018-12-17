@@ -22,14 +22,14 @@ let s:global_variable_list = [
 \    'ale_lint_delay',
 \    'ale_lint_on_enter',
 \    'ale_lint_on_filetype_changed',
+\    'ale_lint_on_insert_leave',
 \    'ale_lint_on_save',
 \    'ale_lint_on_text_changed',
-\    'ale_lint_on_insert_leave',
 \    'ale_linter_aliases',
 \    'ale_linters',
 \    'ale_linters_explicit',
-\    'ale_list_window_size',
 \    'ale_list_vertical',
+\    'ale_list_window_size',
 \    'ale_loclist_msg_format',
 \    'ale_max_buffer_history_size',
 \    'ale_max_signs',
@@ -52,6 +52,7 @@ let s:global_variable_list = [
 \    'ale_statusline_format',
 \    'ale_type_map',
 \    'ale_use_global_executables',
+\    'ale_virtualtext_cursor',
 \    'ale_warn_about_trailing_blank_lines',
 \    'ale_warn_about_trailing_whitespace',
 \]
@@ -236,10 +237,11 @@ function! ale#debugging#Info() abort
 endfunction
 
 function! ale#debugging#InfoToClipboard() abort
-    redir @+>
+    redir => l:output
         silent call ale#debugging#Info()
     redir END
 
+    let @+ = l:output
     call s:Echo('ALEInfo copied to your clipboard')
 endfunction
 

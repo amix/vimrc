@@ -23,6 +23,7 @@ fi
 
 dir="/tmp/vim-go-test/$1-install"
 export GOPATH=$dir
+export GO111MODULE=off
 export PATH=${GOPATH}/bin:$PATH
 shift
 

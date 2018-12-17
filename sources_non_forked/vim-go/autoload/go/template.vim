@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 let s:current_file = expand("<sfile>")
 
 function! go#template#create() abort
@@ -49,5 +53,9 @@ function! go#template#ToggleAutoCreate() abort
   call go#config#SetTemplateAutocreate(1)
   call go#util#EchoProgress("auto template create enabled")
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

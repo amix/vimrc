@@ -1,6 +1,12 @@
 " Author: Patrick Lewis - https://github.com/patricklewis, thenoseman - https://github.com/thenoseman
 " Description: haml-lint for Haml files
 
+call ale#Set('haml_hamllint_executable', 'haml-lint')
+
+function! ale_linters#haml#hamllint#GetExecutable(buffer) abort
+    return ale#Var(a:buffer, 'haml_hamllint_executable')
+endfunction
+
 function! ale_linters#haml#hamllint#GetCommand(buffer) abort
     let l:prefix = ''
 
@@ -21,7 +27,7 @@ function! ale_linters#haml#hamllint#GetCommand(buffer) abort
     endif
 
     return (!empty(l:prefix) ? l:prefix . ' ' : '')
-    \   . 'haml-lint'
+    \   . ale_linters#haml#hamllint#GetExecutable(a:buffer)
     \   . (!empty(l:hamllint_config_file_path) ? ' --config ' . ale#Escape(l:hamllint_config_file_path) : '')
     \   . ' %t'
 endfunction
@@ -45,7 +51,7 @@ endfunction
 
 call ale#linter#Define('haml', {
 \   'name': 'hamllint',
-\   'executable': 'haml-lint',
+\   'executable_callback': 'ale_linters#haml#hamllint#GetExecutable',
 \   'command_callback': 'ale_linters#haml#hamllint#GetCommand',
 \   'callback': 'ale_linters#haml#hamllint#Handle'
 \})

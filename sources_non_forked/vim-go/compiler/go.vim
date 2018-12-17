@@ -9,6 +9,10 @@ if exists("g:current_compiler")
 endif
 let g:current_compiler = "go"
 
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 if exists(":CompilerSet") != 2
   command -nargs=* CompilerSet setlocal <args>
 endif
@@ -37,5 +41,9 @@ CompilerSet errorformat+=%-G%.%#                      " All lines not matching a
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

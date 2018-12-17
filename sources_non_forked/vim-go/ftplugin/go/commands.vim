@@ -17,7 +17,7 @@ command! -range=% GoReferrers call go#guru#Referrers(<count>)
 command! -range=0 GoSameIds call go#guru#SameIds(1)
 command! -range=0 GoSameIdsClear call go#guru#ClearSameIds()
 command! -range=0 GoSameIdsToggle call go#guru#ToggleSameIds()
-command! -range=0 GoSameIdsAutoToggle call go#guru#AutoToogleSameIds()
+command! -range=0 GoSameIdsAutoToggle call go#guru#AutoToggleSameIds()
 
 " -- tags
 command! -nargs=* -range GoAddTags call go#tags#Add(<line1>, <line2>, <count>, <f-args>)
@@ -77,11 +77,11 @@ command! -nargs=1 -bang -complete=customlist,go#package#Complete GoImport call g
 command! -nargs=* -bang -complete=customlist,go#package#Complete GoImportAs call go#import#SwitchImport(1, <f-args>, '<bang>')
 
 " -- linters
-command! -nargs=* GoMetaLinter call go#lint#Gometa(0, <f-args>)
+command! -nargs=* -bang GoMetaLinter call go#lint#Gometa(<bang>0, 0, <f-args>)
 command! -nargs=0 GoMetaLinterAutoSaveToggle call go#lint#ToggleMetaLinterAutoSave()
-command! -nargs=* GoLint call go#lint#Golint(<f-args>)
+command! -nargs=* -bang GoLint call go#lint#Golint(<bang>0, <f-args>)
 command! -nargs=* -bang GoVet call go#lint#Vet(<bang>0, <f-args>)
-command! -nargs=* -complete=customlist,go#package#Complete GoErrCheck call go#lint#Errcheck(<f-args>)
+command! -nargs=* -bang -complete=customlist,go#package#Complete GoErrCheck call go#lint#Errcheck(<bang>0, <f-args>)
 
 " -- alternate
 command! -bang GoAlternate call go#alternate#Switch(<bang>0, '')

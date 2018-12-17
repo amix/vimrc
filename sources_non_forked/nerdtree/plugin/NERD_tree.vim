@@ -86,8 +86,8 @@ let g:NERDTreeOldSortOrder = []
 
 call s:initVariable("g:NERDTreeGlyphReadOnly", "RO")
 
-" ASCII 160: non-breaking space used to delimit items in the tree's nodes.
-call s:initVariable("g:NERDTreeNodeDelimiter", "\u00a0")
+" ASCII 7: bell non-printing character used to delimit items in the tree's nodes.
+call s:initVariable("g:NERDTreeNodeDelimiter", "\x07")
 
 if !exists('g:NERDTreeStatusline')
 
@@ -148,6 +148,8 @@ call s:initVariable("g:NERDTreeMapToggleZoom", "A")
 call s:initVariable("g:NERDTreeMapUpdir", "u")
 call s:initVariable("g:NERDTreeMapUpdirKeepOpen", "U")
 call s:initVariable("g:NERDTreeMapCWD", "CD")
+call s:initVariable("g:NERDTreeMenuDown", "j")
+call s:initVariable("g:NERDTreeMenuUp", "k")
 
 "SECTION: Load class files{{{2
 call nerdtree#loadClassFiles()

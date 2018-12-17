@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 " Spawn starts an asynchronous job. See the description of go#job#Options to
 " understand the args parameter.
 "
@@ -88,7 +92,6 @@ function! go#job#Options(args)
     let state.errorformat = a:args.errorformat
   endif
 
-  " do nothing in state.complete by default.
   function state.complete(job, exit_status, data)
     if has_key(self, 'custom_complete')
       let l:winid = win_getid(winnr())
@@ -538,5 +541,9 @@ function! s:winjobarg(idx, val) abort
   endif
   return a:val
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

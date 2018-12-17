@@ -2,6 +2,11 @@
 " English.
 
 " vint: -ProhibitSetNoCompatible
+
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 set nocompatible nomore shellslash encoding=utf-8 shortmess+=WIF
 lang mess C
 
@@ -31,7 +36,8 @@ source %
 " cd into the folder of the test file.
 let s:cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
 let s:testfile = expand('%:t')
-execute s:cd . expand('%:p:h')
+let s:dir = expand('%:p:h')
+execute s:cd . s:dir
 
 " Export root path to vim-go dir.
 let g:vim_go_root = fnamemodify(getcwd(), ':p')
@@ -64,6 +70,8 @@ for s:test in sort(s:tests)
 
   " Restore GOPATH after each test.
   let $GOPATH = s:gopath
+  " Restore the working directory after each test.
+  execute s:cd . s:dir
 
   let s:elapsed_time = substitute(reltimestr(reltime(s:started)), '^\s*\(.\{-}\)\s*$', '\1', '')
   let s:done += 1
@@ -107,5 +115,9 @@ silent! write
 
 " Our work here is done.
 qall!
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim:ts=2:sts=2:sw=2:et
