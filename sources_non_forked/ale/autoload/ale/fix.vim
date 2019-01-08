@@ -315,10 +315,10 @@ function! s:RunFixer(options) abort
             \   ? call(l:Function, [l:buffer, a:options.output])
             \   : call(l:Function, [l:buffer, a:options.output, copy(l:input)])
         else
-            " Chained commands accept (buffer, [input])
+            " Chained commands accept (buffer, [done, input])
             let l:result = ale#util#FunctionArgCount(l:Function) == 1
             \   ? call(l:Function, [l:buffer])
-            \   : call(l:Function, [l:buffer, copy(l:input)])
+            \   : call(l:Function, [l:buffer, v:null, copy(l:input)])
         endif
 
         if type(l:result) is v:t_number && l:result == 0

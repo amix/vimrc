@@ -1836,13 +1836,13 @@ Highlight function and method declarations.
 >
   let g:go_highlight_functions = 0
 <
-                                         *'g:go_highlight_function_arguments'*
+                                       *'g:go_highlight_function_parameters'*
 
-Highlight the variable names in arguments and return values in function
-declarations. Setting this implies the functionality from
+Highlight the variable names in parameters (including named return parameters)
+in function declarations. Setting this implies the functionality from
 |'g:go_highlight_functions'|.
 >
-  let g:go_highlight_function_arguments = 0
+  let g:go_highlight_function_parameters = 0
 <
                                              *'g:go_highlight_function_calls'*
 

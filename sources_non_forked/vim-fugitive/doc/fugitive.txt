@@ -29,9 +29,9 @@ that are part of Git repositories).
                                                 *fugitive-:Glcd*
 :Glcd [directory]       |:lcd| relative to the repository.
 
-                                                *fugitive-:Gstatus*
-:Gstatus                Bring up the output of git-status in the preview
-                        window.  The following maps, which work on the cursor
+                                        *fugitive-:Gstatus* *fugitive-:G*
+:Gstatus                Bring up a git-status inspired summary in the preview
+:G                      window.  The following maps, which work on the cursor
                         line file where sensible, are provided:
 
                         g?    show this help
@@ -40,42 +40,48 @@ that are part of Git repositories).
                         <CR>  |:Gedit|
                         -     |:Git| add
                         -     |:Git| reset (staged files)
-                        a     Show alternative format
                         ca    |:Gcommit| --amend
                         cc    |:Gcommit|
                         ce    |:Gcommit| --amend --no-edit
                         cw    |:Gcommit| --amend --only
                         cva   |:Gcommit| --verbose --amend
                         cvc   |:Gcommit| --verbose
+                        cf    |:Gcommit| --fixup=
+                        cs    |:Gcommit| --squash=
+                        cA    |:Gcommit| --edit --squash=
+                        =     toggle inline diff
+                        <     show inline diff
+                        >     hide inline diff
                         D     |:Gdiff|
                         ds    |:Gsdiff|
                         dp    |:Git!| diff (p for patch; use :Gw to apply)
                         dp    |:Git| add --intent-to-add (untracked files)
                         dv    |:Gvdiff|
+                        gO    |:Gvsplit|
                         O     |:Gtabedit|
                         o     |:Gsplit|
                         P     |:Git| add --patch
                         P     |:Git| reset --patch (staged files)
+                        s     |:Git| add
+                        u     |:Git| reset
+                        X     |:Git| checkout
+                        X     |:Git| checkout HEAD (staged files)
+                        X     |:Git| clean (untracked files)
+                        X     |:Git| rm (unmerged files)
                         q     close status
-                        r     reload status
-                        S     |:Gvsplit|
-                        U     |:Git| checkout
-                        U     |:Git| checkout HEAD (staged files)
-                        U     |:Git| clean (untracked files)
-                        U     |:Git| rm (unmerged files)
+                        R     reload status
                         .     enter |:| command line with file prepopulated
 
                                                 *fugitive-:Gcommit*
-:Gcommit [args]         A wrapper around git-commit.  If there is nothing
-                        to commit, |:Gstatus| is called instead.  Unless the
-                        arguments given would skip the invocation of an editor
-                        (e.g., -m), a split window will be used to obtain a
-                        commit message, or a new tab if -v is given.  Write
-                        and close that window (:wq or |:Gwrite|) to finish the
-                        commit.  Unlike when running the actual git-commit
-                        command, it is possible (but unadvisable) to alter the
-                        index with commands like git-add and git-reset while a
-                        commit message is pending.
+:Gcommit [args]         A wrapper around git-commit.  Unless the arguments
+                        given would skip the invocation of an editor (e.g.,
+                        -m), a split window will be used to obtain a commit
+                        message, or a new tab if -v is given.  Write and close
+                        that window (:wq or |:Gwrite|) to finish the commit.
+                        Unlike when running the actual git-commit command, it
+                        is possible (but unadvisable) to alter the index with
+                        commands like git-add and git-reset while a commit
+                        message is pending.
 
                                                 *fugitive-:Gmerge*
 :Gmerge [args]          Calls git-merge and loads errors and conflicted files
@@ -90,7 +96,7 @@ that are part of Git repositories).
 
                                                 *fugitive-:Grebase*
 :Grebase [args]         Like |:Gmerge|, but for git-rebase.  Interactive
-                        rebase not supported.
+                        rebase is experimentally supported.
 
                                                 *fugitive-:Gpush*
 :Gpush [args]           Invoke git-push, load the results into the |quickfix|
@@ -108,17 +114,18 @@ that are part of Git repositories).
 :Glgrep[!] [args]       |:lgrep|[!] with git-grep as 'grepprg'.
 
                                                 *fugitive-:Glog*
-:Glog [args]            Load all previous revisions of the current file into
-                        the |quickfix| list.  Additional git-log arguments can
-                        be given (for example, --reverse).  If "--" appears as
-                        an argument, no file specific filtering is done, and
-                        previous commits rather than previous file revisions
-                        are loaded.
+:Glog [args]            Load the commit history into the |quickfix| list.
+                        Additional git-log arguments can be given (for
+                        example, --reverse).  Provide "--" in the argument
+                        list to target all commits.  Otherwise, only commits
+                        changing the current file will be targeted.  This
+                        special casing is slated to be removed.
 
 :{range}Glog [args]     Use git-log -L to load previous revisions of the given
                         range of the current file into the |quickfix| list.
                         The cursor is positioned on the first line of the
-                        first diff hunk for each commit.
+                        first diff hunk for each commit.  Use :0Glog to target
+                        the entire file.
 
                                                 *fugitive-:Gllog*
 :Gllog [args]           Like |:Glog|, but use the location list instead of the
@@ -284,8 +291,8 @@ These maps are available in committed Git objects.
 o                       Jump to the |fugitive-object| under the cursor in a
                         new split.
 
-                                                *fugitive-S*
-S                       Jump to the |fugitive-object| under the cursor in a
+                                                *fugitive-gO*
+gO                      Jump to the |fugitive-object| under the cursor in a
                         new vertical split.
 
                                                 *fugitive-O*
@@ -293,7 +300,8 @@ O                       Jump to the |fugitive-object| under the cursor in a
                         new tab.
 
                                                 *fugitive--*
--                       Go to the tree containing the current tree or blob.
+-                       Go to the tree containing the current tree or blob
+                        (i.e, the parent directory).
 
                                                 *fugitive-~*
 ~                       Go to the current file in the [count]th first

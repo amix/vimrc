@@ -486,7 +486,7 @@ function! s:same_ids_highlight(exit_val, output, mode) abort
     " re-apply SameIds at the current cursor position at the time the buffer
     " is redisplayed: e.g. :edit, :GoRename, etc.
     augroup vim-go-sameids
-      autocmd!
+      autocmd! * <buffer>
       autocmd BufWinEnter <buffer> nested call go#guru#SameIds(0)
     augroup end
   endif
@@ -511,7 +511,7 @@ function! go#guru#ClearSameIds() abort
 
   " remove the autocmds we defined
   augroup vim-go-sameids
-    autocmd!
+    autocmd! * <buffer>
   augroup end
 
   return 0

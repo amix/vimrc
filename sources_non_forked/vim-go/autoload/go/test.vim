@@ -84,7 +84,6 @@ function! go#test#Test(bang, compile, ...) abort
       " failed to parse errors, output the original content
       call go#util#EchoError(out)
     endif
-    call go#util#EchoError("[test] FAIL")
   else
     call go#list#Clean(l:listtype)
 

@@ -173,10 +173,6 @@ endfunction
 function! ale#job#PrepareCommand(buffer, command) abort
     let l:wrapper = ale#Var(a:buffer, 'command_wrapper')
 
-    let l:command = !empty(l:wrapper)
-    \ ? s:PrepareWrappedCommand(l:wrapper, a:command)
-    \ : a:command
-
     " The command will be executed in a subshell. This fixes a number of
     " issues, including reading the PATH variables correctly, %PATHEXT%
     " expansion on Windows, etc.
@@ -184,6 +180,17 @@ function! ale#job#PrepareCommand(buffer, command) abort
     " NeoVim handles this issue automatically if the command is a String,
     " but we'll do this explicitly, so we use the same exact command for both
     " versions.
+    let l:command = !empty(l:wrapper)
+    \ ? s:PrepareWrappedCommand(l:wrapper, a:command)
+    \ : a:command
+
+    " If a custom shell is specified, use that.
+    if exists('g:ale_shell')
+        let l:shell_arguments = get(g:, 'ale_shell_arguments', &shellcmdflag)
+
+        return split(g:ale_shell) + split(l:shell_arguments) + [l:command]
+    endif
+
     if has('win32')
         return 'cmd /s/c "' . l:command . '"'
     endif

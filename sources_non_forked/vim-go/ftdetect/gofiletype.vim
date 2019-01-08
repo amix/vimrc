@@ -25,11 +25,11 @@ function! s:gofiletype_post()
 endfunction
 
 " Note: should not use augroup in ftdetect (see :help ftdetect)
-au BufNewFile *.go setfiletype go | setlocal fileencoding=utf-8 fileformat=unix
+au BufNewFile *.go setfiletype go | if &modifiable | setlocal fileencoding=utf-8 fileformat=unix | endif
 au BufRead *.go call s:gofiletype_pre("go")
 au BufReadPost *.go call s:gofiletype_post()
 
-au BufNewFile *.s setfiletype asm | setlocal fileencoding=utf-8 fileformat=unix
+au BufNewFile *.s setfiletype asm | if &modifiable | setlocal fileencoding=utf-8 fileformat=unix | endif
 au BufRead *.s call s:gofiletype_pre("asm")
 au BufReadPost *.s call s:gofiletype_post()
 

@@ -388,8 +388,9 @@ function! go#config#HighlightFunctions() abort
   return get(g:, 'go_highlight_functions', 0)
 endfunction
 
-function! go#config#HighlightFunctionArguments() abort
-  return get(g:, 'go_highlight_function_arguments', 0)
+function! go#config#HighlightFunctionParameters() abort
+  " fallback to highlight_function_arguments for backwards compatibility
+  return get(g:, 'go_highlight_function_parameters', get(g:, 'go_highlight_function_arguments', 0))
 endfunction
 
 function! go#config#HighlightFunctionCalls() abort

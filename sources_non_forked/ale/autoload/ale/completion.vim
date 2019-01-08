@@ -509,6 +509,12 @@ function! ale#completion#GetCompletions() abort
         return
     endif
 
+    call ale#completion#AlwaysGetCompletions()
+endfunction
+
+" This function can be used to manually trigger autocomplete, even when
+" g:ale_completion_enabled is set to false
+function! ale#completion#AlwaysGetCompletions() abort
     let [l:line, l:column] = getcurpos()[1:2]
 
     let l:prefix = ale#completion#GetPrefix(&filetype, l:line, l:column)

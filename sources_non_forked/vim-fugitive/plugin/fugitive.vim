@@ -72,8 +72,14 @@ function! FugitivePrepare(...) abort
   return call('fugitive#Prepare', a:000)
 endfunction
 
-function! FugitiveConfig(key, ...) abort
-  return fugitive#Config(a:key, FugitiveGitDir(a:0 ? a:1 : -1))
+function! FugitiveConfig(...) abort
+  if a:0 == 2 && type(a:2) != type({})
+    return fugitive#Config(a:1, FugitiveGitDir(a:2))
+  elseif a:0 == 1 && a:1 !~# '^[[:alnum:]-]\+\.'
+    return fugitive#Config(FugitiveGitDir(a:1))
+  else
+    return call('fugitive#Config', a:000)
+  endif
 endfunction
 
 function! FugitiveRemoteUrl(...) abort
@@ -250,6 +256,10 @@ augroup fugitive
         \   call fugitive#MapCfile() |
         \ endif
   autocmd FileType gitcommit
+        \ if exists('b:git_dir') |
+        \   call fugitive#MapCfile('fugitive#MessageCfile()') |
+        \ endif
+  autocmd FileType fugitive
         \ if exists('b:git_dir') |
         \   call fugitive#MapCfile('fugitive#StatusCfile()') |
         \ endif

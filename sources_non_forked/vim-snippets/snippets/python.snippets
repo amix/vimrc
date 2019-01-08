@@ -22,6 +22,11 @@ snippet docs
 	Description: ${0}
 	"""
 
+# Unittest skip
+snippet sk "skip unittests" b
+@unittest.skip(${1:skip_reason})
+endsnippet
+
 snippet wh
 	while ${1:condition}:
 		${0:${VISUAL}}

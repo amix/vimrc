@@ -118,6 +118,7 @@ CONTENTS                                                         *ale-contents*
       staticcheck.........................|ale-go-staticcheck|
       golangserver........................|ale-go-golangserver|
       golangci-lint.......................|ale-go-golangci-lint|
+      bingo...............................|ale-go-bingo|
     graphql...............................|ale-graphql-options|
       eslint..............................|ale-graphql-eslint|
       gqlint..............................|ale-graphql-gqlint|
@@ -438,7 +439,7 @@ Notes:
 * FusionScript: `fusion-lint`
 * Git Commit Messages: `gitlint`
 * GLSL: glslang, `glslls`
-* Go: `gofmt`, `goimports`, `go mod`!!, `go vet`!!, `golint`, `gotype`!!, `gometalinter`!!, `go build`!!, `gosimple`!!, `staticcheck`!!, `golangserver`, `golangci-lint`!!
+* Go: `gofmt`, `goimports`, `go mod`!!, `go vet`!!, `golint`, `gotype`!!, `gometalinter`!!, `go build`!!, `gosimple`!!, `staticcheck`!!, `golangserver`, `golangci-lint`!!, `bingo`
 * GraphQL: `eslint`, `gqlint`, `prettier`
 * Hack: `hack`, `hackfmt`, `hhast`
 * Haml: `haml-lint`
@@ -675,10 +676,14 @@ The values for `g:ale_fixers` can be a list of |String|, |Funcref|, or
 for a function set in the ALE fixer registry.
 
 Each function for fixing errors must accept either one argument `(buffer)` or
-two arguments `(buffer, lines)`, representing the buffer being fixed and the
-lines to fix. The functions must return either `0`, for changing nothing, a
-|List| for new lines to set, or a |Dictionary| for describing a command to be
-run in the background.
+three arguments `(buffer, done, lines)`, representing the buffer being fixed,
+a function to call with results, and the lines to fix. The functions must
+return either `0`, for changing nothing, a |List| for new lines to set, a
+|Dictionary| for describing a command to be run in the background, or `v:true`
+for indicating that results will be provided asynchronously via the `done`
+callback.
+
+NOTE: The `done` function has not been implemented yet.
 
 Functions receiving a variable number of arguments will not receive the second
 argument `lines`. Functions should name two arguments if the `lines` argument
@@ -816,6 +821,9 @@ with |g:ale_completion_max_suggestions|.
 If you don't like some of the suggestions you see, you can filter them out
 with |g:ale_completion_excluded_words| or |b:ale_completion_excluded_words|.
 
+The |ALEComplete| command can be used to show completion suggestions manually,
+even when |g:ale_completion_enabled| is set to `0`.
+
                                                 *ale-completion-completopt-bug*
 
 ALE implements completion as you type by temporarily adjusting |completeopt|
@@ -836,6 +844,8 @@ information returned by LSP servers. The following commands are supported:
 
 |ALEGoToDefinition|      - Open the definition of the symbol under the cursor.
 |ALEGoToDefinitionInTab| - The same, but for opening the file in a new tab.
+|ALEGoToDefinitionInSplit| - The same, but in a new split.
+|ALEGoToDefinitionInVSplit| - The same, but in a new vertical split.
 
 
 -------------------------------------------------------------------------------
@@ -1787,6 +1797,33 @@ g:ale_set_signs                                               *g:ale_set_signs*
   To limit the number of signs ALE will set, see |g:ale_max_signs|.
 
 
+g:ale_shell                                                       *g:ale_shell*
+
+  Type: |String|
+  Default: not set
+
+  Override the shell used by ALE for executing commands. ALE uses 'shell' by
+  default, but falls back in `/bin/sh` if the default shell looks like `fish`
+  or `pwsh`, which are not compatible with all of the commands run by ALE. The
+  shell specified with this option will be used even if it might not work in
+  all cases.
+
+  For Windows, ALE uses `cmd` when this option isn't set. Setting this option
+  will apply shell escaping to the command string, even on Windows.
+
+  NOTE: Consider setting |g:ale_shell_arguments| if this option is defined.
+
+
+g:ale_shell_arguments                                   *g:ale_shell_arguments*
+
+  Type: |String|
+  Default: not set
+
+  This option specifies the arguments to use for executing a command with a
+  custom shell, per |g:ale_shell|. If this option is not set, 'shellcmdflag'
+  will be used instead.
+
+
 g:ale_sign_column_always                             *g:ale_sign_column_always*
 
   Type: |Number|
@@ -2202,6 +2239,17 @@ ALE will use to search for Python executables.
 ===============================================================================
 8. Commands/Keybinds                                             *ale-commands*
 
+ALEComplete                                                       *ALEComplete*
+
+  Manually trigger LSP autocomplete and show the menu. Works only when called
+  from insert mode. >
+
+    inoremap <silent> <C-Space> <C-\><C-O>:AleComplete<CR>
+<
+  A plug mapping `<Plug>(ale_complete)` is defined for this command. >
+
+    imap <C-Space> <Plug>(ale_complete)
+<
 ALEDocumentation                                             *ALEDocumentation*
 
   Similar to the |ALEHover| command, retrieve documentation information for
@@ -2259,6 +2307,22 @@ ALEGoToDefinitionInTab                                 *ALEGoToDefinitionInTab*
   The same as |ALEGoToDefinition|, but opens results in a new tab.
 
   A plug mapping `<Plug>(ale_go_to_definition_in_tab)` is defined for this
+  command.
+
+
+ALEGoToDefinitionInSplit                             *ALEGoToDefinitionInSplit*
+
+  The same as |ALEGoToDefinition|, but opens results in a new split.
+
+  A plug mapping `<Plug>(ale_go_to_definition_in_split)` is defined for this
+  command.
+
+
+ALEGoToDefinitionInVSplit                           *ALEGoToDefinitionInVSplit*
+
+  The same as |ALEGoToDefinition|, but opens results in a new vertical split.
+
+  A plug mapping `<Plug>(ale_go_to_definition_in_vsplit)` is defined for this
   command.
 
 

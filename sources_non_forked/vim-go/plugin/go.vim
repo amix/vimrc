@@ -277,7 +277,7 @@ endfunction
 
 function! s:template_autocreate()
   " create new template from scratch
-  if get(g:, "go_template_autocreate", 1)
+  if get(g:, "go_template_autocreate", 1) && &modifiable
     call go#template#create()
   endif
 endfunction

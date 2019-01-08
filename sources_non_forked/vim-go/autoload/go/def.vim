@@ -84,7 +84,6 @@ function! s:jump_to_declaration_cb(mode, bin_name, job, exit_status, data) abort
   endif
 
   call go#def#jump_to_declaration(a:data[0], a:mode, a:bin_name)
-  call go#util#EchoSuccess(fnamemodify(a:data[0], ":t"))
 
   " capture the active window so that after the exit_cb and close_cb callbacks
   " can return to it when a:mode caused a split.
