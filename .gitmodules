@@ -1,0 +1,3 @@
+[submodule "sources_non_forked/vim-isort"]
+	path = sources_non_forked/vim-isort
+	url = https://github.com/fisadev/vim-isort
