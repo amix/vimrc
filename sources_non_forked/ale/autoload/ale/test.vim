@@ -55,9 +55,9 @@ endfunction
 
 function! s:RemoveModule(results) abort
     for l:item in a:results
-      if has_key(l:item, 'module')
-        call remove(l:item, 'module')
-      endif
+        if has_key(l:item, 'module')
+            call remove(l:item, 'module')
+        endif
     endfor
 endfunction
 
@@ -84,4 +84,104 @@ function! ale#test#GetPreviewWindowText() abort
             return getbufline(l:buffer, 1, '$')
         endif
     endfor
+endfunction
+
+" This function can be called with a timeout to wait for all jobs to finish.
+" If the jobs to not finish in the given number of milliseconds,
+" an exception will be thrown.
+"
+" The time taken will be a very rough approximation, and more time may be
+" permitted than is specified.
+function! ale#test#WaitForJobs(deadline) abort
+    let l:start_time = ale#events#ClockMilliseconds()
+
+    if l:start_time == 0
+        throw 'Failed to read milliseconds from the clock!'
+    endif
+
+    let l:job_list = []
+
+    " Gather all of the jobs from every buffer.
+    for [l:buffer, l:data] in items(ale#command#GetData())
+        call extend(l:job_list, map(keys(l:data.jobs), 'str2nr(v:val)'))
+    endfor
+
+    " NeoVim has a built-in API for this, so use that.
+    if has('nvim')
+        let l:nvim_code_list = jobwait(l:job_list, a:deadline)
+
+        if index(l:nvim_code_list, -1) >= 0
+            throw 'Jobs did not complete on time!'
+        endif
+
+        return
+    endif
+
+    let l:should_wait_more = 1
+
+    while l:should_wait_more
+        let l:should_wait_more = 0
+
+        for l:job_id in l:job_list
+            if ale#job#IsRunning(l:job_id)
+                let l:now = ale#events#ClockMilliseconds()
+
+                if l:now - l:start_time > a:deadline
+                    " Stop waiting after a timeout, so we don't wait forever.
+                    throw 'Jobs did not complete on time!'
+                endif
+
+                " Wait another 10 milliseconds
+                let l:should_wait_more = 1
+                sleep 10ms
+                break
+            endif
+        endfor
+    endwhile
+
+    " Sleep for a small amount of time after all jobs finish.
+    " This seems to be enough to let handlers after jobs end run, and
+    " prevents the occasional failure where this function exits after jobs
+    " end, but before handlers are run.
+    sleep 10ms
+
+    " We must check the buffer data again to see if new jobs started
+    " for command_chain linters.
+    let l:has_new_jobs = 0
+
+    " Check again to see if any jobs are running.
+    for l:info in values(g:ale_buffer_info)
+        for [l:job_id, l:linter] in get(l:info, 'job_list', [])
+            if ale#job#IsRunning(l:job_id)
+                let l:has_new_jobs = 1
+                break
+            endif
+        endfor
+    endfor
+
+    if l:has_new_jobs
+        " We have to wait more. Offset the timeout by the time taken so far.
+        let l:now = ale#events#ClockMilliseconds()
+        let l:new_deadline = a:deadline - (l:now - l:start_time)
+
+        if l:new_deadline <= 0
+            " Enough time passed already, so stop immediately.
+            throw 'Jobs did not complete on time!'
+        endif
+
+        call ale#test#WaitForJobs(l:new_deadline)
+    endif
+endfunction
+
+function! ale#test#FlushJobs() abort
+    " The variable is checked for in a loop, as calling one series of
+    " callbacks can trigger a further series of callbacks.
+    while exists('g:ale_run_synchronously_callbacks')
+        let l:callbacks = g:ale_run_synchronously_callbacks
+        unlet g:ale_run_synchronously_callbacks
+
+        for l:Callback in l:callbacks
+            call l:Callback()
+        endfor
+    endwhile
 endfunction

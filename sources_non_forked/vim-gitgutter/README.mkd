@@ -9,14 +9,16 @@ Features:
 * Shows signs for added, modified, and removed lines.
 * Runs the diffs asynchronously where possible.
 * Ensures signs are always up to date.
+* Never saves the buffer.
 * Quick jumping between blocks of changed lines ("hunks").
 * Stage/undo/preview individual hunks.
 * Provides a hunk text object.
 * Diffs against index (default) or any commit.
+* Allows folding all unchanged text.
 * Handles line endings correctly, even with repos that do CRLF conversion.
 * Optional line highlighting.
 * Fully customisable (signs, sign column, line highlights, mappings, extra git-diff arguments, etc).
-* Can be toggled on/off.
+* Can be toggled on/off, globally or per buffer.
 * Preserves signs from other plugins.
 * Easy to integrate diff stats into status line; built-in integration with [vim-airline](https://github.com/bling/vim-airline/).
 * Works with fish shell (in addition to the usual shells).
@@ -118,6 +120,12 @@ You can explicitly turn vim-gitgutter off and on (defaults to on):
 * turn on with `:GitGutterEnable`
 * toggle with `:GitGutterToggle`.
 
+To toggle vim-gitgutter per buffer:
+
+* turn off with `:GitGutterBufferDisable`
+* turn on with `:GitGutterBufferEnable`
+* toggle with `:GitGutterBufferToggle`
+
 You can turn the signs on and off (defaults to on):
 
 * turn on with `:GitGutterSignsEnable`
@@ -203,6 +211,13 @@ Finally, you can force vim-gitgutter to update its signs across all visible buff
 See the customisation section below for how to change the defaults.
 
 
+### Folding
+
+Use the `GitGutterFold` command to fold all unchanged lines, leaving just the hunks visible.  Use `zr` to unfold 3 lines of context above and below a hunk.
+
+Execute `GitGutterFold` a second time to restore the previous view.
+
+
 ### Customisation
 
 You can customise:
@@ -255,16 +270,30 @@ endif
 
 #### Signs' colours and symbols
 
-To customise the colours, set up the following highlight groups in your colorscheme or `~/.vimrc`:
+By default vim-gitgutter uses your colourscheme's `Diff*` highlight groups' foreground colours for the signs' foreground colours.  For example, your `DiffAdd` foreground colour will be used for the `+` sign's foreground colour.
+
+The signs' background colours will all be set to the sign column's background colour.
+
+If you don't like the default colours, you can either fix your colourscheme's `Diff*` highlights or configure your own `GitGutter*` highlight groups.  These groups are:
 
 ```viml
-GitGutterAdd          " an added line
-GitGutterChange       " a changed line
-GitGutterDelete       " at least one removed line
-GitGutterChangeDelete " a changed line followed by at least one removed line
+GitGutterAdd          " an added line             (default: links to DiffAdd)
+GitGutterChange       " a changed line            (default: links to DiffChange)
+GitGutterDelete       " at least one removed line (default: links to DiffDelete)
+GitGutterChangeDelete " a changed line followed by at least one removed line (default: links to GitGutterChange)
 ```
 
-You can either set these with `highlight GitGutterAdd {key}={arg}...` or link them to existing highlight groups with, say, `highlight link GitGutterAdd DiffAdd`.
+You can either set these with `highlight GitGutterAdd {key}={arg}...` or link them to existing highlight groups with, say, `highlight link GitGutterAdd MyDiffAdd`.
+
+To get vim-gitgutter's original colours (based on git-diff's colours in my terminal):
+
+```viml
+highlight GitGutterAdd    guifg=#009900 guibg=<X> ctermfg=2 ctermbg=<Y>
+highlight GitGutterChange guifg=#bbbb00 guibg=<X> ctermfg=3 ctermbg=<Y>
+highlight GitGutterDelete guifg=#ff2222 guibg=<X> ctermfg=1 ctermbg=<Y>
+```
+
+– where you would replace `<X>` and `<Y>` with the background colour of your `SignColumn` in the gui and the terminal respectively.  For example, with the solarized colorscheme and a dark background, `guibg=#073642` and `ctermbg=0`.
 
 To customise the symbols, add the following to your `~/.vimrc`:
 
@@ -286,6 +315,12 @@ GitGutterAddLine          " default: links to DiffAdd
 GitGutterChangeLine       " default: links to DiffChange
 GitGutterDeleteLine       " default: links to DiffDelete
 GitGutterChangeDeleteLine " default: links to GitGutterChangeLineDefault, i.e. DiffChange
+```
+
+For example, in some colorschemes the `DiffText` highlight group is easier to read than `DiffChange`.  You could use it like this:
+
+```viml
+highlight link GitGutterChangeLine DiffText
 ```
 
 

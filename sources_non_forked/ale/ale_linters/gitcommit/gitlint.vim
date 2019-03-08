@@ -45,7 +45,7 @@ endfunction
 call ale#linter#Define('gitcommit', {
 \   'name': 'gitlint',
 \   'output_stream': 'stderr',
-\   'executable_callback': 'ale_linters#gitcommit#gitlint#GetExecutable',
-\   'command_callback': 'ale_linters#gitcommit#gitlint#GetCommand',
+\   'executable': function('ale_linters#gitcommit#gitlint#GetExecutable'),
+\   'command': function('ale_linters#gitcommit#gitlint#GetCommand'),
 \   'callback': 'ale_linters#gitcommit#gitlint#Handle',
 \})

@@ -3,6 +3,7 @@
 
 call ale#Set('rust_rls_executable', 'rls')
 call ale#Set('rust_rls_toolchain', 'nightly')
+call ale#Set('rust_rls_config', {})
 
 function! ale_linters#rust#rls#GetCommand(buffer) abort
     let l:toolchain = ale#Var(a:buffer, 'rust_rls_toolchain')
@@ -19,7 +20,8 @@ endfunction
 call ale#linter#Define('rust', {
 \   'name': 'rls',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('rust_rls_executable'),
-\   'command_callback': 'ale_linters#rust#rls#GetCommand',
-\   'project_root_callback': 'ale_linters#rust#rls#GetProjectRoot',
+\   'lsp_config': {b -> ale#Var(b, 'rust_rls_config')},
+\   'executable': {b -> ale#Var(b, 'rust_rls_executable')},
+\   'command': function('ale_linters#rust#rls#GetCommand'),
+\   'project_root': function('ale_linters#rust#rls#GetProjectRoot'),
 \})

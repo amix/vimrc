@@ -59,7 +59,7 @@ call ale#linter#Define('nim', {
 \    'name': 'nimcheck',
 \    'executable': 'nim',
 \    'output_stream': 'both',
-\    'command_callback': 'ale_linters#nim#nimcheck#GetCommand',
+\    'command': function('ale_linters#nim#nimcheck#GetCommand'),
 \    'callback': 'ale_linters#nim#nimcheck#Handle',
 \    'lint_file': 1,
 \})

@@ -32,8 +32,8 @@ endfunction
 call ale#linter#Define('tcl', {
 \   'name': 'nagelfar',
 \   'output_stream': 'stdout',
-\   'executable_callback': ale#VarFunc('tcl_nagelfar_executable'),
-\   'command_callback': 'ale_linters#tcl#nagelfar#GetCommand',
+\   'executable': {b -> ale#Var(b, 'tcl_nagelfar_executable')},
+\   'command': function('ale_linters#tcl#nagelfar#GetCommand'),
 \   'callback': 'ale_linters#tcl#nagelfar#Handle',
 \   'lint_file': 1,
 \})

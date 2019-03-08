@@ -14,7 +14,7 @@ function! ale#semver#GetVersion(executable, version_lines) abort
     let l:version = get(s:version_cache, a:executable, [])
 
     for l:line in a:version_lines
-        let l:match = matchlist(l:line, '\v(\d+)\.(\d+)\.(\d+)')
+        let l:match = matchlist(l:line, '\v(\d+)\.(\d+)\.?(\d?)')
 
         if !empty(l:match)
             let l:version = [l:match[1] + 0, l:match[2] + 0, l:match[3] + 0]

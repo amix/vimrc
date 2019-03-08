@@ -9,7 +9,7 @@ function! ale_linters#hack#hhast#GetProjectRoot(buffer) abort
     let l:hhconfig = ale#path#FindNearestFile(a:buffer, '.hhconfig')
 
     if empty(l:hhconfig)
-      return ''
+        return ''
     endif
 
     let l:root = fnamemodify(l:hhconfig, ':h')
@@ -33,8 +33,8 @@ endfunction
 call ale#linter#Define('hack', {
 \   'name': 'hhast',
 \   'lsp': 'stdio',
-\   'executable_callback': 'ale_linters#hack#hhast#GetExecutable',
+\   'executable': function('ale_linters#hack#hhast#GetExecutable'),
 \   'command': '%e --mode lsp --from vim-ale',
-\   'project_root_callback': 'ale_linters#hack#hhast#GetProjectRoot',
-\   'initialization_options_callback': 'ale_linters#hack#hhast#GetInitializationOptions',
+\   'project_root': function('ale_linters#hack#hhast#GetProjectRoot'),
+\   'initialization_options': function('ale_linters#hack#hhast#GetInitializationOptions'),
 \})

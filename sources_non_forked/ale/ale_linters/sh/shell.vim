@@ -51,7 +51,7 @@ endfunction
 call ale#linter#Define('sh', {
 \   'name': 'shell',
 \   'output_stream': 'stderr',
-\   'executable_callback': 'ale_linters#sh#shell#GetExecutable',
-\   'command_callback': 'ale_linters#sh#shell#GetCommand',
+\   'executable': function('ale_linters#sh#shell#GetExecutable'),
+\   'command': function('ale_linters#sh#shell#GetCommand'),
 \   'callback': 'ale_linters#sh#shell#Handle',
 \})

@@ -35,7 +35,7 @@ function! go#doc#OpenBrowser(...) abort
       let godoc_url .= "#" . name
     endif
 
-    call go#tool#OpenBrowser(godoc_url)
+    call go#util#OpenBrowser(godoc_url)
     return
   endif
 
@@ -49,7 +49,7 @@ function! go#doc#OpenBrowser(...) abort
 
   " example url: https://godoc.org/github.com/fatih/set#Set
   let godoc_url = go#config#DocUrl() . "/" . pkg . "#" . exported_name
-  call go#tool#OpenBrowser(godoc_url)
+  call go#util#OpenBrowser(godoc_url)
 endfunction
 
 function! go#doc#Open(newmode, mode, ...) abort

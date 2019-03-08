@@ -7,10 +7,10 @@ function! ale#handlers#markdownlint#Handle(buffer, lines) abort
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:output, {
-            \ 'lnum': l:match[1] + 0,
-            \ 'text': '(' . l:match[2] . l:match[3] . l:match[4] . ')' . l:match[5],
-            \ 'type': 'W',
-        \ })
+        \ 'lnum': l:match[1] + 0,
+        \ 'text': '(' . l:match[2] . l:match[3] . l:match[4] . ')' . l:match[5],
+        \ 'type': 'W',
+        \})
     endfor
 
     return l:output

@@ -64,26 +64,27 @@ function! ale#handlers#sml#Handle(buffer, lines) abort
         let l:match2 = matchlist(l:line, l:pattern2)
 
         if len(l:match2) != 0
-          call add(l:out, {
-          \   'bufnr': a:buffer,
-          \   'lnum': l:match2[1] + 0,
-          \   'col' : l:match2[2] - 1,
-          \   'text': l:match2[3],
-          \   'type': l:match2[3] =~# '^Warning' ? 'W' : 'E',
-          \})
-          continue
+            call add(l:out, {
+            \   'bufnr': a:buffer,
+            \   'lnum': l:match2[1] + 0,
+            \   'col' : l:match2[2] - 1,
+            \   'text': l:match2[3],
+            \   'type': l:match2[3] =~# '^Warning' ? 'W' : 'E',
+            \})
+
+            continue
         endif
 
         let l:match = matchlist(l:line, l:pattern)
 
         if len(l:match) != 0
-          call add(l:out, {
-          \   'bufnr': a:buffer,
-          \   'lnum': l:match[1] + 0,
-          \   'text': l:match[2] . ': ' . l:match[3],
-          \   'type': l:match[2] is# 'error' ? 'E' : 'W',
-          \})
-          continue
+            call add(l:out, {
+            \   'bufnr': a:buffer,
+            \   'lnum': l:match[1] + 0,
+            \   'text': l:match[2] . ': ' . l:match[3],
+            \   'type': l:match[2] is# 'error' ? 'E' : 'W',
+            \})
+            continue
         endif
     endfor
 

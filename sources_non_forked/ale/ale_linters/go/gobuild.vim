@@ -48,8 +48,8 @@ endfunction
 call ale#linter#Define('go', {
 \   'name': 'gobuild',
 \   'aliases': ['go build'],
-\   'executable_callback': ale#VarFunc('go_go_executable'),
-\   'command_callback': 'ale_linters#go#gobuild#GetCommand',
+\   'executable': {b -> ale#Var(b, 'go_go_executable')},
+\   'command': function('ale_linters#go#gobuild#GetCommand'),
 \   'output_stream': 'stderr',
 \   'callback': 'ale_linters#go#gobuild#Handler',
 \   'lint_file': 1,

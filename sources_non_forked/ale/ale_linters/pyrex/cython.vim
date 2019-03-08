@@ -32,7 +32,7 @@ endfunction
 call ale#linter#Define('pyrex', {
 \   'name': 'cython',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('pyrex_cython_executable'),
-\   'command_callback': 'ale_linters#pyrex#cython#GetCommand',
+\   'executable': {b -> ale#Var(b, 'pyrex_cython_executable')},
+\   'command': function('ale_linters#pyrex#cython#GetCommand'),
 \   'callback': 'ale_linters#pyrex#cython#Handle',
 \})

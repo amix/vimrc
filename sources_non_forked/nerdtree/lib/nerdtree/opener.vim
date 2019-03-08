@@ -243,7 +243,7 @@ endfunction
 
 " FUNCTION: Opener._openFile() {{{1
 function! s:Opener._openFile()
-    if !self._stay && !g:NERDTreeQuitOnOpen && exists("b:NERDTreeZoomed") && b:NERDTreeZoomed
+    if !self._stay && !and(g:NERDTreeQuitOnOpen,1) && exists("b:NERDTreeZoomed") && b:NERDTreeZoomed
         call b:NERDTree.ui.toggleZoom()
     endif
 

@@ -79,14 +79,19 @@ g:ale_java_pmd_options                                 *g:ale_java_pmd_options*
 javalsp                                                      *ale-java-javalsp*
 
 To enable Java LSP linter you need to download and build the vscode-javac
-language server from https://github.com/georgewfraser/vscode-javac. Simply
-download the source code and then build the plugin using maven:
+language server from https://github.com/georgewfraser/java-language-server.
+Simply download the source code and then build a distribution:
 
-   mvn package
+   scripts/link_mac.sh
 
-This generates a out/fat-jar.jar file that contains the language server. To
-let ALE use this language server you need to set the g:ale_java_javalsp_jar
-variable to the absolute path of this jar file.
+or
+
+   scripts/link_windows.sh
+
+This generates a dist/mac or dist/windows directory that contains the
+language server. To let ALE use this language server you need to set the
+g:ale_java_javalsp_executable variable to the absolute path of the java
+executable in this directory.
 
 g:ale_java_javalsp_executable                   *g:ale_java_javalsp_executable*
                                                 *b:ale_java_javalsp_executable*
@@ -94,14 +99,6 @@ g:ale_java_javalsp_executable                   *g:ale_java_javalsp_executable*
   Default: `'java'`
 
 This variable can be changed to use a different executable for java.
-
-g:ale_java_javalsp_jar                                 *g:ale_java_javalsp_jar*
-                                                       *b:ale_java_javalsp_jar*
-
-  Type: |String|
-  Default: `'fat-jar.jar'`
-
-  Path to the location of the vscode-javac language server plugin.
 
 
 ===============================================================================

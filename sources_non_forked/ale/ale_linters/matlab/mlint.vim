@@ -37,7 +37,7 @@ endfunction
 
 call ale#linter#Define('matlab', {
 \   'name': 'mlint',
-\   'executable_callback': ale#VarFunc('matlab_mlint_executable'),
+\   'executable': {b -> ale#Var(b, 'matlab_mlint_executable')},
 \   'command': '%e -id %t',
 \   'output_stream': 'stderr',
 \   'callback': 'ale_linters#matlab#mlint#Handle',

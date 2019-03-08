@@ -2,7 +2,7 @@
 " Description: Generic fixer functions for Python.
 
 " Add blank lines before control statements.
-function! ale#fixers#generic_python#AddLinesBeforeControlStatements(buffer, done, lines) abort
+function! ale#fixers#generic_python#AddLinesBeforeControlStatements(buffer, lines) abort
     let l:new_lines = []
     let l:last_indent_size = 0
     let l:last_line_is_blank = 0
@@ -41,7 +41,7 @@ endfunction
 
 " This function breaks up long lines so that autopep8 or other tools can
 " fix the badly-indented code which is produced as a result.
-function! ale#fixers#generic_python#BreakUpLongLines(buffer, done, lines) abort
+function! ale#fixers#generic_python#BreakUpLongLines(buffer, lines) abort
     " Default to a maximum line length of 79
     let l:max_line_length = 79
     let l:conf = ale#path#FindNearestFile(a:buffer, 'setup.cfg')

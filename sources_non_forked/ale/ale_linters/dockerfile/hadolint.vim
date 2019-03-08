@@ -93,7 +93,7 @@ endfunction
 
 call ale#linter#Define('dockerfile', {
 \   'name': 'hadolint',
-\   'executable_callback': 'ale_linters#dockerfile#hadolint#GetExecutable',
-\   'command_callback': 'ale_linters#dockerfile#hadolint#GetCommand',
+\   'executable': function('ale_linters#dockerfile#hadolint#GetExecutable'),
+\   'command': function('ale_linters#dockerfile#hadolint#GetCommand'),
 \   'callback': 'ale_linters#dockerfile#hadolint#Handle',
 \})

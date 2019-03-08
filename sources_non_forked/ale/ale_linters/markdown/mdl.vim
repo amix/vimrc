@@ -38,7 +38,7 @@ endfunction
 
 call ale#linter#Define('markdown', {
 \   'name': 'mdl',
-\   'executable_callback': 'ale_linters#markdown#mdl#GetExecutable',
-\   'command_callback': 'ale_linters#markdown#mdl#GetCommand',
+\   'executable': function('ale_linters#markdown#mdl#GetExecutable'),
+\   'command': function('ale_linters#markdown#mdl#GetCommand'),
 \   'callback': 'ale_linters#markdown#mdl#Handle'
 \})

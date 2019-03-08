@@ -11,7 +11,7 @@ function! ale_linters#clojure#joker#HandleJokerFormat(buffer, lines) abort
         let l:type = 'E'
 
         if l:match[4] is? 'Parse warning'
-          let l:type = 'W'
+            let l:type = 'W'
         endif
 
         call add(l:output, {

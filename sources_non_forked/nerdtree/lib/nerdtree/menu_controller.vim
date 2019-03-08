@@ -15,6 +15,11 @@ function! s:MenuController.New(menuItems)
     return newMenuController
 endfunction
 
+" FUNCTION: s:MenuController.isMinimal() {{{1
+function! s:MenuController.isMinimal()
+    return g:NERDTreeMinimalMenu
+endfunction
+
 " FUNCTION: MenuController.showMenu() {{{1
 " Enter the main loop of the NERDTree menu, prompting the user to select
 " a menu item.
@@ -49,16 +54,27 @@ endfunction
 
 "FUNCTION: MenuController._echoPrompt() {{{1
 function! s:MenuController._echoPrompt()
-    echo "NERDTree Menu. Use " . g:NERDTreeMenuDown . "/" . g:NERDTreeMenuUp . "/enter and the shortcuts indicated"
-    echo "=========================================================="
+    let navHelp = "Use " . g:NERDTreeMenuDown . "/" . g:NERDTreeMenuUp . "/enter"
 
-    for i in range(0, len(self.menuItems)-1)
-        if self.selection == i
-            echo "> " . self.menuItems[i].text
-        else
-            echo "  " . self.menuItems[i].text
-        endif
-    endfor
+    if self.isMinimal()
+        let selection = self.menuItems[self.selection].text
+
+        let shortcuts = map(copy(self.menuItems), "v:val['shortcut']")
+        let shortcuts[self.selection] = " " . split(selection)[0] . " "
+
+        echo "Menu: [" . join(shortcuts, ",") . "] (" . navHelp . " or shortcut): "
+    else
+        echo "NERDTree Menu. " . navHelp . " . or the shortcuts indicated"
+        echo "========================================================="
+
+        for i in range(0, len(self.menuItems)-1)
+            if self.selection == i
+                echo "> " . self.menuItems[i].text
+            else
+                echo "  " . self.menuItems[i].text
+            endif
+        endfor
+    endif
 endfunction
 
 "FUNCTION: MenuController._current(key) {{{1
@@ -129,7 +145,11 @@ endfunction
 "FUNCTION: MenuController._setCmdheight() {{{1
 "sets &cmdheight to whatever is needed to display the menu
 function! s:MenuController._setCmdheight()
-    let &cmdheight = len(self.menuItems) + 3
+    if self.isMinimal()
+        let &cmdheight = 1
+    else
+        let &cmdheight = len(self.menuItems) + 3
+    endif
 endfunction
 
 "FUNCTION: MenuController._saveOptions() {{{1

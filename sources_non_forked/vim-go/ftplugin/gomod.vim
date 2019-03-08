@@ -9,12 +9,22 @@ let b:did_ftplugin = 1
 let s:cpo_save = &cpo
 set cpo&vim
 
-let b:undo_ftplugin = "setl fo< com< cms<"
+let b:undo_ftplugin = "setl fo< com< cms<
+      \ | exe 'au! vim-go-gomod-buffer * <buffer>'"
 
 setlocal formatoptions-=t
 
 setlocal comments=s1:/*,mb:*,ex:*/,://
 setlocal commentstring=//\ %s
+
+" Autocommands
+" ============================================================================
+
+augroup vim-go-gomod-buffer
+  autocmd! * <buffer>
+
+  autocmd BufWritePre <buffer> call go#auto#modfmt_autosave()
+augroup end
 
 " restore Vi compatibility settings
 let &cpo = s:cpo_save

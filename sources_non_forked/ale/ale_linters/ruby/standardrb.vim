@@ -17,7 +17,7 @@ endfunction
 " standardrb is based on RuboCop so the callback is the same
 call ale#linter#Define('ruby', {
 \   'name': 'standardrb',
-\   'executable_callback': ale#VarFunc('ruby_standardrb_executable'),
-\   'command_callback': 'ale_linters#ruby#standardrb#GetCommand',
+\   'executable': {b -> ale#Var(b, 'ruby_standardrb_executable')},
+\   'command': function('ale_linters#ruby#standardrb#GetCommand'),
 \   'callback': 'ale#ruby#HandleRubocopOutput',
 \})

@@ -177,7 +177,7 @@ function! go#cmd#Run(bang, ...) abort
   endtry
 
   let items = go#list#Get(l:listtype)
-  let errors = go#tool#FilterValids(items)
+  let errors = go#util#FilterValids(items)
 
   call go#list#Populate(l:listtype, errors, &makeprg)
   call go#list#Window(l:listtype, len(errors))

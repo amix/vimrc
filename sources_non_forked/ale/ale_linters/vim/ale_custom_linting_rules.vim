@@ -25,7 +25,7 @@ endfunction
 function! ale_linters#vim#ale_custom_linting_rules#GetCommand(buffer) abort
     let l:dir = s:GetALEProjectDir(a:buffer)
 
-    let l:temp_dir = ale#engine#CreateDirectory(a:buffer)
+    let l:temp_dir = ale#command#CreateDirectory(a:buffer)
     let l:temp_file = l:temp_dir . '/example.vim'
 
     let l:lines = getbufline(a:buffer, 1, '$')
@@ -58,8 +58,8 @@ endfunction
 
 call ale#linter#Define('vim', {
 \   'name': 'ale_custom_linting_rules',
-\   'executable_callback': 'ale_linters#vim#ale_custom_linting_rules#GetExecutable',
-\   'command_callback': 'ale_linters#vim#ale_custom_linting_rules#GetCommand',
+\   'executable': function('ale_linters#vim#ale_custom_linting_rules#GetExecutable'),
+\   'command': function('ale_linters#vim#ale_custom_linting_rules#GetCommand'),
 \   'callback': 'ale_linters#vim#ale_custom_linting_rules#Handle',
 \   'read_buffer': 0,
 \})

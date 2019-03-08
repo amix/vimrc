@@ -12,7 +12,7 @@ endfunction
 
 call ale#linter#Define('puppet', {
 \   'name': 'puppetlint',
-\   'executable_callback': ale#VarFunc('puppet_puppetlint_executable'),
-\   'command_callback': 'ale_linters#puppet#puppetlint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'puppet_puppetlint_executable')},
+\   'command': function('ale_linters#puppet#puppetlint#GetCommand'),
 \   'callback': 'ale#handlers#gcc#HandleGCCFormat',
 \})

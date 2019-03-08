@@ -19,10 +19,10 @@ endfunction
 call ale#linter#Define('javascript', {
 \   'name': 'flow-language-server',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#node#FindExecutableFunc('javascript_flow_ls', [
+\   'executable': {b -> ale#node#FindExecutable(b, 'javascript_flow_ls', [
 \       'node_modules/.bin/flow',
-\   ]),
+\   ])},
 \   'command': '%e lsp --from ale-lsp',
-\   'project_root_callback': 'ale_linters#javascript#flow_ls#FindProjectRoot',
+\   'project_root': function('ale_linters#javascript#flow_ls#FindProjectRoot'),
 \   'language': 'javascript',
 \})

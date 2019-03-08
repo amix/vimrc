@@ -13,7 +13,7 @@ endfunction
 call ale#linter#Define('haskell', {
 \   'name': 'ghc_mod',
 \   'aliases': ['ghc-mod'],
-\   'executable_callback': ale#VarFunc('haskell_ghc_mod_executable'),
-\   'command_callback': 'ale_linters#haskell#ghc_mod#GetCommand',
+\   'executable': {b -> ale#Var(b, 'haskell_ghc_mod_executable')},
+\   'command': function('ale_linters#haskell#ghc_mod#GetCommand'),
 \   'callback': 'ale#handlers#haskell#HandleGHCFormat',
 \})

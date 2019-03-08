@@ -24,7 +24,7 @@ endfunction
 call ale#linter#Define('glsl', {
 \   'name': 'glslls',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('glsl_glslls_executable'),
-\   'command_callback': 'ale_linters#glsl#glslls#GetCommand',
-\   'project_root_callback': 'ale_linters#glsl#glslls#GetProjectRoot',
+\   'executable': {b -> ale#Var(b, 'glsl_glslls_executable')},
+\   'command': function('ale_linters#glsl#glslls#GetCommand'),
+\   'project_root': function('ale_linters#glsl#glslls#GetProjectRoot'),
 \})

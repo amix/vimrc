@@ -22,7 +22,7 @@ function! ale#cursor#TruncatedEcho(original_message) abort
     let l:shortmess_options = &l:shortmess
 
     try
-        let l:cursor_position = getcurpos()
+        let l:cursor_position = getpos('.')
 
         " The message is truncated and saved to the history.
         setlocal shortmess+=T
@@ -44,7 +44,7 @@ function! ale#cursor#TruncatedEcho(original_message) abort
         " Reset the cursor position if we moved off the end of the line.
         " Using :norm and :echomsg can move the cursor off the end of the
         " line.
-        if l:cursor_position != getcurpos()
+        if l:cursor_position != getpos('.')
             call setpos('.', l:cursor_position)
         endif
     finally
@@ -114,7 +114,7 @@ function! ale#cursor#EchoCursorWarningWithDelay() abort
 
     call s:StopCursorTimer()
 
-    let l:pos = getcurpos()[0:2]
+    let l:pos = getpos('.')[0:2]
 
     " Check the current buffer, line, and column number against the last
     " recorded position. If the position has actually changed, *then*

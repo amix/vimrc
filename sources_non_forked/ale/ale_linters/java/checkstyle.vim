@@ -44,7 +44,7 @@ endif
 call ale#linter#Define('java', {
 \   'name': 'checkstyle',
 \   'executable': 'checkstyle',
-\   'command_callback': 'ale_linters#java#checkstyle#GetCommand',
+\   'command': function('ale_linters#java#checkstyle#GetCommand'),
 \   'callback': 'ale_linters#java#checkstyle#Handle',
 \   'lint_file': 1,
 \})

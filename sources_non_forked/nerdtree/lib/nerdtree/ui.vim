@@ -62,6 +62,8 @@ function! s:UI._dumpHelp()
         let help .= "\" Bookmark table mappings~\n"
         let help .= "\" double-click,\n"
         let help .= "\" ". g:NERDTreeMapActivateNode .": open bookmark\n"
+        let help .= "\" ". g:NERDTreeMapPreview .": preview file\n"
+        let help .= "\" ". g:NERDTreeMapPreview .": find dir in tree\n"
         let help .= "\" ". g:NERDTreeMapOpenInTab.": open in new tab\n"
         let help .= "\" ". g:NERDTreeMapOpenInTabSilent .": open in new tab silently\n"
         let help .= "\" ". g:NERDTreeMapDeleteBookmark .": delete bookmark\n"
@@ -119,6 +121,9 @@ function! s:UI._dumpHelp()
         let help .= "\" :OpenBookmark <name>\n"
         let help .= "\" :ClearBookmarks [<names>]\n"
         let help .= "\" :ClearAllBookmarks\n"
+        let help .= "\" :ReadBookmarks\n"
+        let help .= "\" :WriteBookmarks\n"
+        let help .= "\" :EditBookmarks\n"
         silent! put =help
     elseif !self.isMinimal()
         let help ="\" Press ". g:NERDTreeMapHelp ." for help\n"
@@ -503,7 +508,7 @@ function! s:UI.toggleZoom()
         exec "silent vertical resize ". size
         let b:NERDTreeZoomed = 0
     else
-        exec "vertical resize"
+        exec "vertical resize ". get(g:, 'NERDTreeWinSizeMax', '')
         let b:NERDTreeZoomed = 1
     endif
 endfunction

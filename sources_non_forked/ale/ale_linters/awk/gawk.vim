@@ -15,8 +15,8 @@ endfunction
 
 call ale#linter#Define('awk', {
 \   'name': 'gawk',
-\   'executable_callback': ale#VarFunc('awk_gawk_executable'),
-\   'command_callback': 'ale_linters#awk#gawk#GetCommand',
+\   'executable': {b -> ale#Var(b, 'awk_gawk_executable')},
+\   'command': function('ale_linters#awk#gawk#GetCommand'),
 \   'callback': 'ale#handlers#gawk#HandleGawkFormat',
 \   'output_stream': 'both'
 \})

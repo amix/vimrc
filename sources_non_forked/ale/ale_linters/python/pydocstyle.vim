@@ -33,8 +33,7 @@ function! ale_linters#python#pydocstyle#Handle(buffer, lines) abort
     " Matches patterns like the following:
     " mydir/myfile.py:33 in public function `myfunction`:
     "         DXXX: Error description
-    let l:fname = ale#Escape(fnamemodify(bufname(a:buffer), ':p:t'))
-    let l:line1_pattern = '\v^' . l:fname . ':\s*(\d+)\s+.*$'
+    let l:line1_pattern = '\v^.*:\s*(\d+)\s+.*$'
     let l:line2_pattern = '\v^.*([a-zA-Z]\d+):\s*(.*)$'
     let l:output = []
 
@@ -68,7 +67,7 @@ endfunction
 
 call ale#linter#Define('python', {
 \   'name': 'pydocstyle',
-\   'executable_callback': 'ale_linters#python#pydocstyle#GetExecutable',
-\   'command_callback': 'ale_linters#python#pydocstyle#GetCommand',
+\   'executable': function('ale_linters#python#pydocstyle#GetExecutable'),
+\   'command': function('ale_linters#python#pydocstyle#GetCommand'),
 \   'callback': 'ale_linters#python#pydocstyle#Handle',
 \})

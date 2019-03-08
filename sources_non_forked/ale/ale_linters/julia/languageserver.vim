@@ -14,8 +14,8 @@ endfunction
 call ale#linter#Define('julia', {
 \   'name': 'languageserver',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('julia_executable'),
-\   'command_callback': 'ale_linters#julia#languageserver#GetCommand',
+\   'executable': {b -> ale#Var(b, 'julia_executable')},
+\   'command': function('ale_linters#julia#languageserver#GetCommand'),
 \   'language': 'julia',
-\   'project_root_callback': 'ale#julia#FindProjectRoot',
+\   'project_root': function('ale#julia#FindProjectRoot'),
 \})

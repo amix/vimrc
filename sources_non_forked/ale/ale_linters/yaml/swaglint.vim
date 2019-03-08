@@ -32,9 +32,9 @@ endfunction
 
 call ale#linter#Define('yaml', {
 \   'name': 'swaglint',
-\   'executable_callback': ale#node#FindExecutableFunc('yaml_swaglint', [
+\   'executable': {b -> ale#node#FindExecutable(b, 'yaml_swaglint', [
 \       'node_modules/.bin/swaglint',
-\   ]),
+\   ])},
 \   'command': '%e -r compact --stdin',
 \   'callback': 'ale_linters#yaml#swaglint#Handle',
 \})

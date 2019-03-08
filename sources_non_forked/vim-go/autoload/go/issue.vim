@@ -7,7 +7,7 @@ let s:templatepath = go#util#Join(expand('<sfile>:p:h:h:h'), '.github', 'ISSUE_T
 function! go#issue#New() abort
   let body = substitute(s:issuebody(), '[^A-Za-z0-9_.~-]', '\="%".printf("%02X",char2nr(submatch(0)))', 'g')
   let url = "https://github.com/fatih/vim-go/issues/new?body=" . l:body
-  call go#tool#OpenBrowser(l:url)
+  call go#util#OpenBrowser(l:url)
 endfunction
 
 function! s:issuebody() abort

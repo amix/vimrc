@@ -39,7 +39,7 @@ endfunction
 call ale#linter#Define('elixir', {
 \   'name': 'dogma',
 \   'executable': 'mix',
-\   'command_callback': 'ale_linters#elixir#dogma#GetCommand',
+\   'command': function('ale_linters#elixir#dogma#GetCommand'),
 \   'lint_file': 1,
 \   'callback': 'ale_linters#elixir#dogma#Handle',
 \})

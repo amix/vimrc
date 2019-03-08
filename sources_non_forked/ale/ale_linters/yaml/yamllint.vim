@@ -44,7 +44,7 @@ endfunction
 
 call ale#linter#Define('yaml', {
 \   'name': 'yamllint',
-\   'executable_callback': ale#VarFunc('yaml_yamllint_executable'),
-\   'command_callback': 'ale_linters#yaml#yamllint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'yaml_yamllint_executable')},
+\   'command': function('ale_linters#yaml#yamllint#GetCommand'),
 \   'callback': 'ale_linters#yaml#yamllint#Handle',
 \})

@@ -121,7 +121,7 @@ function! ale#handlers#eslint#Handle(buffer, lines) abort
         let l:text = l:match[3]
 
         if ale#Var(a:buffer, 'javascript_eslint_suppress_eslintignore')
-            if l:text is# 'File ignored because of a matching ignore pattern. Use "--no-ignore" to override.'
+            if l:text =~# '^File ignored'
                 continue
             endif
         endif

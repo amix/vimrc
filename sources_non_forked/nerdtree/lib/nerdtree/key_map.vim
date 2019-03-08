@@ -51,6 +51,7 @@ function! s:KeyMap.bind()
     else
         let keymapInvokeString = self.key
     endif
+    let keymapInvokeString = escape(keymapInvokeString, '\')
 
     let premap = self.key == "<LeftRelease>" ? " <LeftRelease>" : " "
 

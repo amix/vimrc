@@ -17,7 +17,7 @@ endfunction
 call ale#linter#Define('c', {
 \   'name': 'clangd',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('c_clangd_executable'),
-\   'command_callback': 'ale_linters#c#clangd#GetCommand',
-\   'project_root_callback': 'ale_linters#c#clangd#GetProjectRoot',
+\   'executable': {b -> ale#Var(b, 'c_clangd_executable')},
+\   'command': function('ale_linters#c#clangd#GetCommand'),
+\   'project_root': function('ale_linters#c#clangd#GetProjectRoot'),
 \})

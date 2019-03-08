@@ -3,7 +3,7 @@
 
 call ale#linter#Define('markdown', {
 \   'name': 'textlint',
-\   'executable_callback': 'ale#handlers#textlint#GetExecutable',
-\   'command_callback': 'ale#handlers#textlint#GetCommand',
+\   'executable': function('ale#handlers#textlint#GetExecutable'),
+\   'command': function('ale#handlers#textlint#GetCommand'),
 \   'callback': 'ale#handlers#textlint#HandleTextlintOutput',
 \})

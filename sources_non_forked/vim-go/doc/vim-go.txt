@@ -783,7 +783,7 @@ CTRL-t
                                                                *:GoRemoveTags*
 :[range]GoRemoveTags [key],[option] [key1],[option1] ...
 
-    Rmove field tags for the fields of a struct. If called inside a struct it
+    Remove field tags for the fields of a struct. If called inside a struct it
     automatically remove all field tags. An error message is given if it's
     called outside a struct definition or if the file is not correctly
     formatted
@@ -1176,6 +1176,12 @@ cleaned for each package after `60` seconds. This can be changed with the
 Returns the description of the identifer under the cursor. Can be used to plug
 into the statusline.
 
+
+                                                   *go#tool#DescribeBalloon()*
+
+Suitable to be used as an expression to show the evaluation balloon. See `help
+balloonexpr`.
+
 ==============================================================================
 SETTINGS                                                        *go-settings*
 
@@ -1303,7 +1309,7 @@ fails. By default the location list is shown. >
 
 Use this option to enable fmt's experimental mode. This experimental mode is
 superior to the current mode as it fully saves the undo history, so undo/redo
-doesn't break. However it's slows (creates/deletes a file for every save) and
+doesn't break. However, it's slow (creates/deletes a file for every save) and
 it's causing problems on some Vim versions. By default it's disabled. >
 
   let g:go_fmt_experimental = 0

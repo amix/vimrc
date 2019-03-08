@@ -13,6 +13,6 @@ endfunction
 call ale#linter#Define('css', {
 \   'name': 'csslint',
 \   'executable': 'csslint',
-\   'command_callback': 'ale_linters#css#csslint#GetCommand',
+\   'command': function('ale_linters#css#csslint#GetCommand'),
 \   'callback': 'ale#handlers#css#HandleCSSLintFormat',
 \})

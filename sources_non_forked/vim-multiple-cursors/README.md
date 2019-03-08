@@ -1,7 +1,5 @@
 # vim-multiple-cursors
 [![Build Status](https://travis-ci.org/terryma/vim-multiple-cursors.svg)](https://travis-ci.org/terryma/vim-multiple-cursors)
-[![Issue Stats](http://issuestats.com/github/terryma/vim-multiple-cursors/badge/pr?style=flat)](http://issuestats.com/github/terryma/vim-multiple-cursors)
-[![Issue Stats](http://issuestats.com/github/terryma/vim-multiple-cursors/badge/issue?style=flat)](http://issuestats.com/github/terryma/vim-multiple-cursors)
 
 ## Contents
  - [About](#about)
@@ -195,6 +193,25 @@ augroup MultipleCursorsSelectionFix
     autocmd User MultipleCursorsPre  if &selection ==# 'exclusive' | let g:multi_cursor_save_selection = &selection | set selection=inclusive | endif
     autocmd User MultipleCursorsPost if exists('g:multi_cursor_save_selection') | let &selection = g:multi_cursor_save_selection | unlet g:multi_cursor_save_selection | endif
 augroup END
+```
+
+### **Q** deoplete insert giberrish, how to fix this?
+**A** use the `Multiple_cursors` functions, add this in your vimrc:
+
+```VimL
+    func! Multiple_cursors_before()
+      if deoplete#is_enabled()
+        call deoplete#disable()
+        let g:deoplete_is_enable_before_multi_cursors = 1
+      else
+        let g:deoplete_is_enable_before_multi_cursors = 0
+      endif
+    endfunc
+    func! Multiple_cursors_after()
+      if g:deoplete_is_enable_before_multi_cursors
+        call deoplete#enable()
+      endif
+    endfunc
 ```
 
 #### **Q** is it also working on Mac?

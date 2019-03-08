@@ -18,7 +18,7 @@ endfunction
 call ale#linter#Define('c', {
 \   'name': 'gcc',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('c_gcc_executable'),
+\   'executable': {b -> ale#Var(b, 'c_gcc_executable')},
 \   'command_chain': [
 \       {'callback': 'ale#c#GetMakeCommand', 'output_stream': 'stdout'},
 \       {'callback': 'ale_linters#c#gcc#GetCommand'}

@@ -49,8 +49,8 @@ endfunction
 
 call ale#linter#Define('go', {
 \   'name': 'golangci-lint',
-\   'executable_callback': ale#VarFunc('go_golangci_lint_executable'),
-\   'command_callback': 'ale_linters#go#golangci_lint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'go_golangci_lint_executable')},
+\   'command': function('ale_linters#go#golangci_lint#GetCommand'),
 \   'callback': 'ale_linters#go#golangci_lint#Handler',
 \   'lint_file': 1,
 \})

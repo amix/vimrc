@@ -19,7 +19,7 @@ call ale#linter#Define('eruby', {
 \   'aliases': ['erubylint'],
 \   'executable': 'erb',
 \   'output_stream': 'stderr',
-\   'command_callback': 'ale_linters#eruby#erb#GetCommand',
+\   'command': function('ale_linters#eruby#erb#GetCommand'),
 \   'callback': 'ale#handlers#ruby#HandleSyntaxErrors',
 \})
 

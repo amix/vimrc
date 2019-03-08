@@ -26,6 +26,6 @@ call ale#linter#Define('crystal', {
 \   'executable': 'crystal',
 \   'output_stream': 'both',
 \   'lint_file': 1,
-\   'command_callback': 'ale_linters#crystal#crystal#GetCommand',
+\   'command': function('ale_linters#crystal#crystal#GetCommand'),
 \   'callback': 'ale_linters#crystal#crystal#Handle',
 \})

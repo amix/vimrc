@@ -116,7 +116,7 @@ endfunction
 " Read sign data for a buffer to a list of lines.
 function! ale#sign#ReadSigns(buffer) abort
     redir => l:output
-       silent execute 'sign place buffer=' . a:buffer
+        silent execute 'sign place buffer=' . a:buffer
     redir end
 
     return split(l:output, "\n")

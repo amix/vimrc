@@ -11,14 +11,14 @@ filetype indent on
 syntax on
 
 function! Markdown_GetScriptID(fname) abort
-    let a:snlist = ''
-    redir => a:snlist
+    let l:snlist = ''
+    redir => l:snlist
     silent! scriptnames
     redir END
-    let a:mx = '^\s*\(\d\+\):\s*\(.*\)$'
-    for a:line in split(a:snlist, "\n")
-        if stridx(substitute(a:line, '\\', '/', 'g'), a:fname) >= 0
-            return substitute(a:line, a:mx, '\1', '')
+    let l:mx = '^\s*\(\d\+\):\s*\(.*\)$'
+    for l:line in split(l:snlist, "\n")
+        if stridx(substitute(l:line, '\\', '/', 'g'), a:fname) >= 0
+            return substitute(l:line, l:mx, '\1', '')
         endif
     endfor
 endfunction

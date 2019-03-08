@@ -27,7 +27,7 @@ endfunction
 
 call ale#linter#Define('fuse', {
 \   'name': 'fusionlint',
-\   'executable_callback': ale#VarFunc('fuse_fusionlint_executable'),
-\   'command_callback': 'ale_linters#fuse#fusionlint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'fuse_fusionlint_executable')},
+\   'command': function('ale_linters#fuse#fusionlint#GetCommand'),
 \   'callback': 'ale_linters#fuse#fusionlint#Handle',
 \})

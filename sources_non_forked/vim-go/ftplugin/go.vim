@@ -13,7 +13,8 @@ let b:did_ftplugin = 1
 let s:cpo_save = &cpo
 set cpo&vim
 
-let b:undo_ftplugin = "setl fo< com< cms<"
+let b:undo_ftplugin = "setl fo< com< cms<
+      \ | exe 'au! vim-go-buffer * <buffer>'"
 
 setlocal formatoptions-=t
 
@@ -72,73 +73,42 @@ if go#config#AutoTypeInfo() || go#config#AutoSameids()
   let &l:updatetime= get(g:, "go_updatetime", 800)
 endif
 
-" NOTE(arslan): experimental, disabled by default, doesn't work well. No
-" documentation as well. If anyone feels adventurous, enable the following and
-" try to search for Go identifiers ;)
+" Autocommands
+" ============================================================================
 "
-" if get(g:, "go_sameid_search_enabled", 0)
-"   autocmd FileType go nnoremap <buffer> <silent> * :<c-u>call Sameids_search(0)<CR>
-"   autocmd FileType go nnoremap <buffer> <silent> # :<c-u>call Sameids_search(1)<CR>
-"   autocmd FileType go nnoremap <buffer> <silent> n :<c-u>call Sameids_repeat(0)<CR>
-"   autocmd FileType go nnoremap <buffer> <silent> N :<c-u>call Sameids_repeat(1)<CR>
-"   autocmd FileType go cabbrev nohlsearch <C-r>=Sameids_nohlsearch()<CR>
-" endif
+augroup vim-go-buffer
+  autocmd! * <buffer>
 
-" " mode 0: next 1: prev
-" function! Sameids_repeat(mode)
-"   let matches = getmatches()
-"   if empty(matches)
-"     return
-"   endif
-"   let cur_offset = go#util#OffsetCursor()
+  autocmd CursorHold <buffer> call go#auto#auto_type_info()
+  autocmd CursorHold <buffer> call go#auto#auto_sameids()
 
-"   " reverse list to make it easy to find the prev occurrence
-"   if a:mode
-"    call reverse(matches)
-"   endif
+  " Echo the identifier information when completion is done. Useful to see
+  " the signature of a function, etc...
+  if exists('##CompleteDone')
+    autocmd CompleteDone <buffer> call go#auto#echo_go_info()
+  endif
 
-"   for m in matches
-"     if !has_key(m, "group")
-"       return
-"     endif
+  autocmd BufWritePre <buffer> call go#auto#fmt_autosave()
+  autocmd BufWritePost <buffer> call go#auto#metalinter_autosave()
 
-"     if m.group != "goSameId"
-"       return
-"     endif
+  " clear SameIds when the buffer is unloaded so that loading another buffer
+  " in the same window doesn't highlight the most recently matched
+  " identifier's positions.
+  autocmd BufWinEnter <buffer> call go#guru#ClearSameIds()
 
-"     let offset = go#util#Offset(m.pos1[0], m.pos1[1])
-
-"     if a:mode && cur_offset > offset
-"       call cursor(m.pos1[0], m.pos1[1])
-"       return
-"     elseif !a:mode && cur_offset < offset
-"       call cursor(m.pos1[0], m.pos1[1])
-"       return
-"     endif
-"   endfor
-
-"   " reached start/end, jump to the end/start
-"   let initial_match = matches[0]
-"   if !has_key(initial_match, "group")
-"     return
-"   endif
-
-"   if initial_match.group != "goSameId"
-"     return
-"   endif
-
-"   call cursor(initial_match.pos1[0], initial_match.pos1[1])
-" endfunction
-
-" function! Sameids_search(mode)
-"   call go#guru#SameIds()
-"   call Sameids_repeat(a:mode)
-" endfunction
-
-" function! Sameids_nohlsearch()
-"   call go#guru#ClearSameIds()
-"   return "nohlsearch"
-" endfunction
+  autocmd BufEnter <buffer>
+        \  if go#config#AutodetectGopath() && !exists('b:old_gopath')
+        \|   let b:old_gopath = exists('$GOPATH') ? $GOPATH : -1
+        \|   let $GOPATH = go#path#Detect()
+        \| endif
+  autocmd BufLeave <buffer>
+        \  if exists('b:old_gopath')
+        \|   if b:old_gopath isnot -1
+        \|     let $GOPATH = b:old_gopath
+        \|   endif
+        \|   unlet b:old_gopath
+        \| endif
+augroup end
 
 " restore Vi compatibility settings
 let &cpo = s:cpo_save

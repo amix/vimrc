@@ -25,8 +25,8 @@ endfunction
 call ale#linter#Define('cpp', {
 \   'name': 'clazy',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('cpp_clazy_executable'),
-\   'command_callback': 'ale_linters#cpp#clazy#GetCommand',
+\   'executable': {b -> ale#Var(b, 'cpp_clazy_executable')},
+\   'command': function('ale_linters#cpp#clazy#GetCommand'),
 \   'callback': 'ale#handlers#gcc#HandleGCCFormat',
 \   'lint_file': 1,
 \})

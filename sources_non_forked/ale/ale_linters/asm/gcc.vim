@@ -28,7 +28,7 @@ endfunction
 call ale#linter#Define('asm', {
 \    'name': 'gcc',
 \    'output_stream': 'stderr',
-\    'executable_callback': ale#VarFunc('asm_gcc_executable'),
-\    'command_callback': 'ale_linters#asm#gcc#GetCommand',
+\    'executable': {b -> ale#Var(b, 'asm_gcc_executable')},
+\    'command': function('ale_linters#asm#gcc#GetCommand'),
 \    'callback': 'ale_linters#asm#gcc#Handle',
 \})

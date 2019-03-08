@@ -56,7 +56,7 @@ endfunction
 
 call ale#linter#Define('eruby', {
 \   'name': 'ruumba',
-\   'executable_callback': ale#VarFunc('eruby_ruumba_executable'),
-\   'command_callback': 'ale_linters#eruby#ruumba#GetCommand',
+\   'executable': {b -> ale#Var(b, 'eruby_ruumba_executable')},
+\   'command': function('ale_linters#eruby#ruumba#GetCommand'),
 \   'callback': 'ale_linters#eruby#ruumba#Handle',
 \})

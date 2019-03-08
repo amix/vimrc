@@ -126,14 +126,22 @@ snippet doc
 	@doc """
 	${0}
 	"""
-snippet im
-	@impl true
+snippet docs
+	@doc ~S"""
+	${0}
+	"""
 snippet docf
 	@doc false
+snippet im
+	@impl true
 snippet fn
 	fn ${1:args} -> ${0} end
 snippet mdoc
 	@moduledoc """
+	${0}
+	"""
+snippet mdocs
+	@moduledoc ~S"""
 	${0}
 	"""
 snippet mdocf
@@ -237,3 +245,7 @@ snippet impl
 	def ${1:name} do
 		${0}
 	end
+snippet wl word list
+	~w(${0})
+snippet al atom list
+	~w(${0})a

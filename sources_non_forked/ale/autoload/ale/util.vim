@@ -111,6 +111,7 @@ function! ale#util#Open(filename, line, column, options) abort
     endif
 
     call cursor(a:line, a:column)
+    normal! zz
 endfunction
 
 let g:ale#util#error_priority = 5
@@ -469,7 +470,7 @@ endfunction
 function! ale#util#FindItemAtCursor(buffer) abort
     let l:info = get(g:ale_buffer_info, a:buffer, {})
     let l:loclist = get(l:info, 'loclist', [])
-    let l:pos = getcurpos()
+    let l:pos = getpos('.')
     let l:index = ale#util#BinarySearch(l:loclist, a:buffer, l:pos[1], l:pos[2])
     let l:loc = l:index >= 0 ? l:loclist[l:index] : {}
 

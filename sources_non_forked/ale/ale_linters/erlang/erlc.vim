@@ -4,7 +4,7 @@ let g:ale_erlang_erlc_options = get(g:, 'ale_erlang_erlc_options', '')
 
 function! ale_linters#erlang#erlc#GetCommand(buffer) abort
     let l:output_file = ale#util#Tempname()
-    call ale#engine#ManageFile(a:buffer, l:output_file)
+    call ale#command#ManageFile(a:buffer, l:output_file)
 
     return 'erlc -o ' . ale#Escape(l:output_file)
     \   . ' ' . ale#Var(a:buffer, 'erlang_erlc_options')
@@ -91,6 +91,6 @@ endfunction
 call ale#linter#Define('erlang', {
 \   'name': 'erlc',
 \   'executable': 'erlc',
-\   'command_callback': 'ale_linters#erlang#erlc#GetCommand',
+\   'command': function('ale_linters#erlang#erlc#GetCommand'),
 \   'callback': 'ale_linters#erlang#erlc#Handle',
 \})

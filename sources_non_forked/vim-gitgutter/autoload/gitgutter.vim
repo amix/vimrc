@@ -85,6 +85,27 @@ function! gitgutter#toggle() abort
   endif
 endfunction
 
+
+function! gitgutter#buffer_disable() abort
+  let bufnr = bufnr('')
+  call gitgutter#utility#setbufvar(bufnr, 'enabled', 0)
+  call s:clear(bufnr)
+endfunction
+
+function! gitgutter#buffer_enable() abort
+  let bufnr = bufnr('')
+  call gitgutter#utility#setbufvar(bufnr, 'enabled', 1)
+  call gitgutter#process_buffer(bufnr, 1)
+endfunction
+
+function! gitgutter#buffer_toggle() abort
+  if gitgutter#utility#getbufvar(bufnr(''), 'enabled', 1)
+    call gitgutter#buffer_disable()
+  else
+    call gitgutter#buffer_enable()
+  endif
+endfunction
+
 " }}}
 
 function! s:setup_maps()

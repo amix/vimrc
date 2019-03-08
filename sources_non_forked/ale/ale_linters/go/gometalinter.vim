@@ -50,8 +50,8 @@ endfunction
 
 call ale#linter#Define('go', {
 \   'name': 'gometalinter',
-\   'executable_callback': ale#VarFunc('go_gometalinter_executable'),
-\   'command_callback': 'ale_linters#go#gometalinter#GetCommand',
+\   'executable': {b -> ale#Var(b, 'go_gometalinter_executable')},
+\   'command': function('ale_linters#go#gometalinter#GetCommand'),
 \   'callback': 'ale_linters#go#gometalinter#Handler',
 \   'lint_file': 1,
 \})

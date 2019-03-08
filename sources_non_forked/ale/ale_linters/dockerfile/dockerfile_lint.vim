@@ -55,7 +55,7 @@ endfunction
 
 call ale#linter#Define('dockerfile', {
 \   'name': 'dockerfile_lint',
-\   'executable_callback': ale#VarFunc('dockerfile_dockerfile_lint_executable'),
-\   'command_callback': 'ale_linters#dockerfile#dockerfile_lint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'dockerfile_dockerfile_lint_executable')},
+\   'command': function('ale_linters#dockerfile#dockerfile_lint#GetCommand'),
 \   'callback': 'ale_linters#dockerfile#dockerfile_lint#Handle',
 \})

@@ -420,7 +420,7 @@ endfunction
 
 function! go#job#Wait(job) abort
   if has('nvim')
-    call jobwait(a:job)
+    call jobwait([a:job])
     return
   endif
 

@@ -12,9 +12,9 @@ endfunction
 
 call ale#linter#Define('stylus', {
 \   'name': 'stylelint',
-\   'executable_callback': ale#node#FindExecutableFunc('stylus_stylelint', [
+\   'executable': {b -> ale#node#FindExecutable(b, 'stylus_stylelint', [
 \       'node_modules/.bin/stylelint',
-\   ]),
-\   'command_callback': 'ale_linters#stylus#stylelint#GetCommand',
+\   ])},
+\   'command': function('ale_linters#stylus#stylelint#GetCommand'),
 \   'callback': 'ale#handlers#css#HandleStyleLintFormat',
 \})

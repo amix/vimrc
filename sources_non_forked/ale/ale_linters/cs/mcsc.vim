@@ -30,7 +30,7 @@ function! ale_linters#cs#mcsc#GetCommand(buffer) abort
 
     " register temporary module target file with ale
     " register temporary module target file with ALE.
-    let l:out = ale#engine#CreateFile(a:buffer)
+    let l:out = ale#command#CreateFile(a:buffer)
 
     " The code is compiled as a module and the output is redirected to a
     " temporary file.
@@ -75,7 +75,7 @@ call ale#linter#Define('cs',{
 \   'name': 'mcsc',
 \   'output_stream': 'stderr',
 \   'executable': 'mcs',
-\   'command_callback': 'ale_linters#cs#mcsc#GetCommand',
+\   'command': function('ale_linters#cs#mcsc#GetCommand'),
 \   'callback': 'ale_linters#cs#mcsc#Handle',
 \   'lint_file': 1
 \})

@@ -31,6 +31,7 @@ let s:global_variable_list = [
 \    'ale_list_vertical',
 \    'ale_list_window_size',
 \    'ale_loclist_msg_format',
+\    'ale_lsp_root',
 \    'ale_max_buffer_history_size',
 \    'ale_max_signs',
 \    'ale_maximum_file_size',

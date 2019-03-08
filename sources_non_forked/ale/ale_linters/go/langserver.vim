@@ -10,8 +10,8 @@ function! ale_linters#go#langserver#GetCommand(buffer) abort
     let l:options = substitute(l:options, '-gocodecompletion', '', 'g')
     let l:options = filter(split(l:options, ' '), 'empty(v:val) != 1')
 
-    if(ale#Var(a:buffer, 'completion_enabled') == 1)
-      call add(l:options, '-gocodecompletion')
+    if ale#Var(a:buffer, 'completion_enabled')
+        call add(l:options, '-gocodecompletion')
     endif
 
     let l:options = uniq(sort(l:options))
@@ -22,7 +22,7 @@ endfunction
 call ale#linter#Define('go', {
 \   'name': 'golangserver',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('go_langserver_executable'),
-\   'command_callback': 'ale_linters#go#langserver#GetCommand',
-\   'project_root_callback': 'ale#go#FindProjectRoot',
+\   'executable': {b -> ale#Var(b, 'go_langserver_executable')},
+\   'command': function('ale_linters#go#langserver#GetCommand'),
+\   'project_root': function('ale#go#FindProjectRoot'),
 \})

@@ -52,7 +52,7 @@ endfunction
 
 call ale#linter#Define('terraform', {
 \   'name': 'tflint',
-\   'executable_callback': ale#VarFunc('terraform_tflint_executable'),
-\   'command_callback': 'ale_linters#terraform#tflint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'terraform_tflint_executable')},
+\   'command': function('ale_linters#terraform#tflint#GetCommand'),
 \   'callback': 'ale_linters#terraform#tflint#Handle',
 \})

@@ -93,7 +93,7 @@ endfunction
 
 call ale#linter#Define('rust', {
 \   'name': 'cargo',
-\   'executable_callback': 'ale_linters#rust#cargo#GetCargoExecutable',
+\   'executable': function('ale_linters#rust#cargo#GetCargoExecutable'),
 \   'command_chain': [
 \       {'callback': 'ale_linters#rust#cargo#VersionCheck'},
 \       {'callback': 'ale_linters#rust#cargo#GetCommand'},

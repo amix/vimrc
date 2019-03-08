@@ -108,6 +108,17 @@ g:ale_haskell_stack_build_options           *g:ale_haskell_stack_build_options*
   programs will be slower unless you separately rebuild them outside of ALE.
 
 ===============================================================================
+stack-ghc                                               *ale-haskell-stack-ghc*
+
+g:ale_haskell_stack_ghc_options               *g:ale_haskell_stack_ghc_options*
+                                              *b:ale_haskell_stack_ghc_options*
+  Type: |String|
+  Default: `'-fno-code -v0'`
+
+  This variable can be changed to modify flags given to ghc through `stack
+  ghc`
+
+===============================================================================
 stylish-haskell                                   *ale-haskell-stylish-haskell*
 
 g:ale_haskell_stylish_haskell_executable

@@ -13,6 +13,6 @@ call ale#linter#Define('haskell', {
 \   'name': 'ghc',
 \   'output_stream': 'stderr',
 \   'executable': 'ghc',
-\   'command_callback': 'ale_linters#haskell#ghc#GetCommand',
+\   'command': function('ale_linters#haskell#ghc#GetCommand'),
 \   'callback': 'ale#handlers#haskell#HandleGHCFormat',
 \})

@@ -81,6 +81,6 @@ call ale#linter#Define('scala', {
 \   'name': 'scalastyle',
 \   'executable': 'scalastyle',
 \   'output_stream': 'stdout',
-\   'command_callback': 'ale_linters#scala#scalastyle#GetCommand',
+\   'command': function('ale_linters#scala#scalastyle#GetCommand'),
 \   'callback': 'ale_linters#scala#scalastyle#Handle',
 \})

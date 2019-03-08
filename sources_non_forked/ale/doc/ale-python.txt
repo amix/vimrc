@@ -31,6 +31,9 @@ ALE will look for configuration files with the following filenames. >
   pycodestyle.cfg
   flake8.cfg
   .flake8rc
+  pylama.ini
+  pylintrc
+  .pylintrc
   Pipfile
   Pipfile.lock
 <
@@ -63,6 +66,56 @@ g:ale_python_autopep8_use_global             *g:ale_python_autopep8_use_global*
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
+
+
+===============================================================================
+bandit                                                      *ale-python-bandit*
+
+g:ale_python_bandit_executable                 *g:ale_python_bandit_executable*
+                                               *b:ale_python_bandit_executable*
+  Type: |String|
+  Default: `'bandit'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `bandit'`.
+
+
+g:ale_python_bandit_options                       *g:ale_python_bandit_options*
+                                                  *b:ale_python_bandit_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the
+  bandit invocation.
+
+
+g:ale_python_bandit_use_config                 *g:ale_python_bandit_use_config*
+                                               *b:ale_python_bandit_use_config*
+  Type: |Number|
+  Default: `1`
+
+  If this variable is true and a `.bandit` file exists in the directory of the
+  file being checked or a parent directory, an `--ini` option is added to the
+  `bandit` command for the nearest `.bandit` file.  Set this variable false to
+  disable adding the `--ini` option automatically.
+
+
+g:ale_python_bandit_use_global                 *g:ale_python_bandit_use_global*
+                                               *b:ale_python_bandit_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_bandit_auto_pipenv               *g:ale_python_bandit_auto_pipenv*
+                                              *b:ale_python_bandit_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
 
 
 ===============================================================================
@@ -99,6 +152,16 @@ g:ale_python_black_auto_pipenv                  *g:ale_python_black_auto_pipenv*
 
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
   if true. This is overridden by a manually-set executable.
+
+g:ale_python_black_change_directory       *g:ale_python_black_change_directory*
+                                          *b:ale_python_black_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will switch to the directory the Python file being
+  checked with `black` is in before checking it. This helps `black` find
+  configuration files more easily. This option can be turned off if you want
+  to control the directory Python is executed from yourself.
 
 
 ===============================================================================
@@ -401,6 +464,60 @@ g:ale_python_pyflakes_auto_pipenv           *g:ale_python_pyflakes_auto_pipenv*
 
 
 ===============================================================================
+pylama                                                      *ale-python-pylama*
+
+g:ale_python_pylama_change_directory     *g:ale_python_pylama_change_directory*
+                                         *b:ale_python_pylama_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, `pylama` will be run from a detected project root, per
+  |ale-python-root|.  This is useful because `pylama` only searches for
+  configuration files in its current directory and applies file masks using
+  paths relative to its current directory.  This option can be turned off if
+  you want to control the directory in which `pylama` is executed.
+
+
+g:ale_python_pylama_executable                 *g:ale_python_pylama_executable*
+                                               *b:ale_python_pylama_executable*
+  Type: |String|
+  Default: `'pylama'`
+
+  This variable can be changed to modify the executable used for pylama. Set
+  this to `'pipenv'` to invoke `'pipenv` `run` `pylama'`.
+
+
+g:ale_python_pylama_options                       *g:ale_python_pylama_options*
+                                                  *b:ale_python_pylama_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the pylama
+  invocation.
+
+
+g:ale_python_pylama_use_global                 *g:ale_python_pylama_use_global*
+                                               *b:ale_python_pylama_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  This variable controls whether or not ALE will search for pylama in a
+  virtualenv directory first. If this variable is set to `1`, then ALE will
+  always use |g:ale_python_pylama_executable| for the executable path.
+
+  Both variables can be set with `b:` buffer variables instead.
+
+
+g:ale_python_pylama_auto_pipenv               *g:ale_python_pylama_auto_pipenv*
+                                              *b:ale_python_pylama_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
 pylint                                                      *ale-python-pylint*
 
 g:ale_python_pylint_change_directory     *g:ale_python_pylint_change_directory*
@@ -408,10 +525,12 @@ g:ale_python_pylint_change_directory     *g:ale_python_pylint_change_directory*
   Type: |Number|
   Default: `1`
 
-  If set to `1`, ALE will switch to the directory the Python file being
-  checked with `pylint` is in before checking it. This helps `pylint` find
-  configuration files more easily. This option can be turned off if you want
-  to control the directory Python is executed from yourself.
+  If set to `1`, `pylint` will be run from a detected project root, per
+  |ale-python-root|.  Since `pylint` only checks for `pylintrc` in the packages
+  above its current directory before falling back to user and global `pylintrc`
+  files, this is necessary for `pylint` to use a project `pylintrc` file, if
+  present.  This option can be turned off if you want to control the directory
+  Python is executed from yourself.
 
 
 g:ale_python_pylint_executable                 *g:ale_python_pylint_executable*
@@ -494,6 +613,24 @@ g:ale_python_pyls_auto_pipenv                   *g:ale_python_pyls_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pyls_config                             *g:ale_python_pyls_config*
+                                                     *b:ale_python_pyls_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Dictionary with configuration settings for pyls. For example, to disable
+  the pycodestyle linter: >
+        {
+      \   'pyls': {
+      \     'plugins': {
+      \       'pycodestyle': {
+      \         'enabled': v:false
+      \       }
+      \     }
+      \   },
+      \ }
+<
+
 ===============================================================================
 pyre                                                          *ale-python-pyre*
 
@@ -547,6 +684,15 @@ g:ale_python_vulture_executable               *g:ale_python_vulture_executable*
   Default: `'vulture'`
 
   See |ale-integrations-local-executables|
+
+
+g:ale_python_vulture_options                     *g:ale_python_vulture_options*
+                                                 *b:ale_python_vulture_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the vulture
+  invocation.
 
 
 g:ale_python_vulture_use_global               *g:ale_python_vulture_use_global*

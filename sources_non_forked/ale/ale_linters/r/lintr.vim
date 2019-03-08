@@ -29,7 +29,7 @@ endfunction
 call ale#linter#Define('r', {
 \   'name': 'lintr',
 \   'executable': 'Rscript',
-\   'command_callback': 'ale_linters#r#lintr#GetCommand',
+\   'command': function('ale_linters#r#lintr#GetCommand'),
 \   'callback': 'ale#handlers#gcc#HandleGCCFormat',
 \   'output_stream': 'both',
 \})

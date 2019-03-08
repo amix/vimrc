@@ -3,7 +3,7 @@
 
 call ale#linter#Define('sml', {
 \   'name': 'smlnj',
-\   'executable_callback': 'ale#handlers#sml#GetExecutableSmlnjFile',
+\   'executable': function('ale#handlers#sml#GetExecutableSmlnjFile'),
 \   'command': 'sml',
 \   'callback': 'ale#handlers#sml#Handle',
 \})

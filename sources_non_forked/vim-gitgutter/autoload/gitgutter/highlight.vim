@@ -45,20 +45,20 @@ function! gitgutter#highlight#define_highlights() abort
 
   " Highlights used by the signs.
 
-  execute "highlight GitGutterAddDefault    guifg=#009900 guibg=" . guibg . " ctermfg=2 ctermbg=" . ctermbg
-  execute "highlight GitGutterChangeDefault guifg=#bbbb00 guibg=" . guibg . " ctermfg=3 ctermbg=" . ctermbg
-  execute "highlight GitGutterDeleteDefault guifg=#ff2222 guibg=" . guibg . " ctermfg=1 ctermbg=" . ctermbg
-  highlight default link GitGutterChangeDeleteDefault GitGutterChangeDefault
-
+  " When they are invisible.
   execute "highlight GitGutterAddInvisible    guifg=bg guibg=" . guibg . " ctermfg=" . ctermbg . " ctermbg=" . ctermbg
   execute "highlight GitGutterChangeInvisible guifg=bg guibg=" . guibg . " ctermfg=" . ctermbg . " ctermbg=" . ctermbg
   execute "highlight GitGutterDeleteInvisible guifg=bg guibg=" . guibg . " ctermfg=" . ctermbg . " ctermbg=" . ctermbg
   highlight default link GitGutterChangeDeleteInvisible GitGutterChangeInvisible
 
-  highlight default link GitGutterAdd          GitGutterAddDefault
-  highlight default link GitGutterChange       GitGutterChangeDefault
-  highlight default link GitGutterDelete       GitGutterDeleteDefault
-  highlight default link GitGutterChangeDelete GitGutterChangeDeleteDefault
+  " When they are visible.
+  " By default use Diff* foreground colors with SignColumn's background.
+  for type in ['Add', 'Change', 'Delete']
+    let [guifg, ctermfg] = s:get_foreground_colors('Diff'.type)
+    execute "highlight GitGutter".type."Default guifg=".guifg." guibg=".guibg." ctermfg=".ctermfg." ctermbg=".ctermbg
+    execute "highlight default link GitGutter".type." GitGutter".type."Default"
+  endfor
+  highlight default link GitGutterChangeDelete GitGutterChange
 
   " Highlights used for the whole line.
 
@@ -129,6 +129,21 @@ function! s:define_sign_line_highlights() abort
     sign define GitGutterLineRemovedAboveAndBelow  linehl=
     sign define GitGutterLineModifiedRemoved       linehl=
   endif
+endfunction
+
+function! s:get_foreground_colors(group) abort
+  redir => highlight
+  silent execute 'silent highlight ' . a:group
+  redir END
+
+  let link_matches = matchlist(highlight, 'links to \(\S\+\)')
+  if len(link_matches) > 0 " follow the link
+    return s:get_foreground_colors(link_matches[1])
+  endif
+
+  let ctermfg = s:match_highlight(highlight, 'ctermfg=\([0-9A-Za-z]\+\)')
+  let guifg   = s:match_highlight(highlight, 'guifg=\([#0-9A-Za-z]\+\)')
+  return [guifg, ctermfg]
 endfunction
 
 function! s:get_background_colors(group) abort

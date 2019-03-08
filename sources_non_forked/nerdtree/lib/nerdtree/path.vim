@@ -15,7 +15,7 @@ function! s:Path.AbsolutePathFor(pathStr)
     let l:prependWorkingDir = 0
 
     if nerdtree#runningWindows()
-        let l:prependWorkingDir = a:pathStr !~# '^.:\(\\\|\/\)' && a:pathStr !~# '^\(\\\\\|\/\/\)'
+        let l:prependWorkingDir = a:pathStr !~# '^.:\(\\\|\/\)\?' && a:pathStr !~# '^\(\\\\\|\/\/\)'
     else
         let l:prependWorkingDir = a:pathStr !~# '^/'
     endif
@@ -23,7 +23,13 @@ function! s:Path.AbsolutePathFor(pathStr)
     let l:result = a:pathStr
 
     if l:prependWorkingDir
-        let l:result = getcwd() . s:Path.Slash() . a:pathStr
+        let l:result = getcwd()
+
+        if l:result[-1:] == s:Path.Slash()
+            let l:result = l:result . a:pathStr
+        else
+            let l:result = l:result . s:Path.Slash() . a:pathStr
+        endif
     endif
 
     return l:result

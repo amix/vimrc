@@ -49,6 +49,6 @@ endfunction
 call ale#linter#Define('tex', {
 \   'name': 'chktex',
 \   'executable': 'chktex',
-\   'command_callback': 'ale_linters#tex#chktex#GetCommand',
+\   'command': function('ale_linters#tex#chktex#GetCommand'),
 \   'callback': 'ale_linters#tex#chktex#Handle'
 \})

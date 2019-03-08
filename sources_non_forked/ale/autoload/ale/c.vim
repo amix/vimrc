@@ -46,61 +46,76 @@ function! ale#c#FindProjectRoot(buffer) abort
     return ''
 endfunction
 
-function! ale#c#ParseCFlags(path_prefix, cflag_line) abort
-    let l:cflags_list = []
-    let l:previous_options = ''
+function! ale#c#AreSpecialCharsBalanced(option) abort
+    " Escape \"
+    let l:option_escaped = substitute(a:option, '\\"', '', 'g')
 
-    let l:split_lines = split(a:cflag_line, ' ')
+    " Retain special chars only
+    let l:special_chars = substitute(l:option_escaped, '[^"''()`]', '', 'g')
+    let l:special_chars = split(l:special_chars, '\zs')
+
+    " Check if they are balanced
+    let l:stack = []
+
+    for l:char in l:special_chars
+        if l:char is# ')'
+            if len(l:stack) == 0 || get(l:stack, -1) isnot# '('
+                return 0
+            endif
+
+            call remove(l:stack, -1)
+        elseif l:char is# '('
+            call add(l:stack, l:char)
+        else
+            if len(l:stack) > 0 && get(l:stack, -1) is# l:char
+                call remove(l:stack, -1)
+            else
+                call add(l:stack, l:char)
+            endif
+        endif
+    endfor
+
+    return len(l:stack) == 0
+endfunction
+
+function! ale#c#ParseCFlags(path_prefix, cflag_line) abort
+    let l:split_lines = split(a:cflag_line)
     let l:option_index = 0
 
     while l:option_index < len(l:split_lines)
-        let l:option = l:previous_options . l:split_lines[l:option_index]
-        let l:option_index = l:option_index + 1
+        let l:next_option_index = l:option_index + 1
 
-        " Check if cflag contained an unmatched characters and should not have been splitted
-        let l:option_special = substitute(l:option, '\\"', '', 'g')
-        let l:option_special = substitute(l:option_special, '[^"''()`]', '', 'g')
-        let l:option_special = substitute(l:option_special, '""', '', 'g')
-        let l:option_special = substitute(l:option_special, '''''', '', 'g')
-        let l:option_special = substitute(l:option_special, '``', '', 'g')
-        let l:option_special = substitute(l:option_special, '((', '(', 'g')
-        let l:option_special = substitute(l:option_special, '))', ')', 'g')
-        let l:option_special = substitute(l:option_special, '()', '', 'g')
+        " Join space-separated option
+        while l:next_option_index < len(l:split_lines)
+        \&& stridx(l:split_lines[l:next_option_index], '-') != 0
+            let l:next_option_index += 1
+        endwhile
 
-        if len(l:option_special) > 0 && l:option_index < len(l:split_lines)
-            let l:previous_options = l:option . ' '
-            continue
-        endif
+        let l:option = join(l:split_lines[l:option_index : l:next_option_index-1], ' ')
+        call remove(l:split_lines, l:option_index, l:next_option_index-1)
+        call insert(l:split_lines, l:option, l:option_index)
 
-        " Check if there was spaces after -D/-I and the flag should not have been splitted
-        if l:option is# '-D' || l:option is# '-I'
-            let l:previous_options = l:option
-            continue
-        endif
-
-        let l:previous_options = ''
-
-
-        " Fix relative paths if needed
-        if stridx(l:option, '-I') >= 0 &&
-           \ stridx(l:option, '-I' . s:sep) < 0
-            let l:rel_path = join(split(l:option, '\zs')[2:], '')
-            let l:rel_path = substitute(l:rel_path, '"', '', 'g')
-            let l:rel_path = substitute(l:rel_path, '''', '', 'g')
-            let l:option = ale#Escape('-I' . a:path_prefix .
-                                      \ s:sep . l:rel_path)
-        endif
-
-        " Parse the cflag
-        if stridx(l:option, '-I') >= 0 ||
-           \ stridx(l:option, '-D') >= 0
-            if index(l:cflags_list, l:option) < 0
-                call add(l:cflags_list, l:option)
+        " Ignore invalid or conflicting options
+        if stridx(l:option, '-') != 0
+        \|| stridx(l:option, '-o') == 0
+        \|| stridx(l:option, '-c') == 0
+            call remove(l:split_lines, l:option_index)
+            let l:option_index = l:option_index - 1
+        " Fix relative path
+        elseif stridx(l:option, '-I') == 0
+            if !(stridx(l:option, ':') == 2+1 || stridx(l:option, '/') == 2+0)
+                let l:option = '-I' . a:path_prefix . s:sep . l:option[2:]
+                call remove(l:split_lines, l:option_index)
+                call insert(l:split_lines, l:option, l:option_index)
             endif
         endif
+
+        let l:option_index = l:option_index + 1
     endwhile
 
-    return join(l:cflags_list, ' ')
+    call uniq(l:split_lines)
+
+    return join(l:split_lines, ' ')
 endfunction
 
 function! ale#c#ParseCFlagsFromMakeOutput(buffer, make_output) abort
@@ -187,7 +202,7 @@ function! s:GetLookupFromCompileCommandsFile(compile_commands_file) abort
         let l:file_lookup[l:basename] = get(l:file_lookup, l:basename, []) + [l:entry]
 
         let l:dirbasename = tolower(fnamemodify(l:entry.directory, ':p:h:t'))
-        let l:dir_lookup[l:dirbasename] = get(l:dir_lookup, l:basename, []) + [l:entry]
+        let l:dir_lookup[l:dirbasename] = get(l:dir_lookup, l:dirbasename, []) + [l:entry]
     endfor
 
     if !empty(l:file_lookup) && !empty(l:dir_lookup)
@@ -200,14 +215,14 @@ function! s:GetLookupFromCompileCommandsFile(compile_commands_file) abort
     return l:empty
 endfunction
 
-function! ale#c#ParseCompileCommandsFlags(buffer, dir, file_lookup, dir_lookup) abort
+function! ale#c#ParseCompileCommandsFlags(buffer, file_lookup, dir_lookup) abort
     " Search for an exact file match first.
     let l:basename = tolower(expand('#' . a:buffer . ':t'))
     let l:file_list = get(a:file_lookup, l:basename, [])
 
     for l:item in l:file_list
-        if bufnr(l:item.file) is a:buffer
-            return ale#c#ParseCFlags(a:dir, l:item.command)
+        if bufnr(l:item.file) is a:buffer && has_key(l:item, 'command')
+            return ale#c#ParseCFlags(l:item.directory, l:item.command)
         endif
     endfor
 
@@ -219,7 +234,8 @@ function! ale#c#ParseCompileCommandsFlags(buffer, dir, file_lookup, dir_lookup) 
 
     for l:item in l:dir_list
         if ale#path#Simplify(fnamemodify(l:item.file, ':h')) is? l:dir
-            return ale#c#ParseCFlags(a:dir, l:item.command)
+        \&& has_key(l:item, 'command')
+            return ale#c#ParseCFlags(l:item.directory, l:item.command)
         endif
     endfor
 
@@ -227,12 +243,11 @@ function! ale#c#ParseCompileCommandsFlags(buffer, dir, file_lookup, dir_lookup) 
 endfunction
 
 function! ale#c#FlagsFromCompileCommands(buffer, compile_commands_file) abort
-    let l:dir = ale#path#Dirname(a:compile_commands_file)
     let l:lookups = s:GetLookupFromCompileCommandsFile(a:compile_commands_file)
     let l:file_lookup = l:lookups[0]
     let l:dir_lookup = l:lookups[1]
 
-    return ale#c#ParseCompileCommandsFlags(a:buffer, l:dir, l:file_lookup, l:dir_lookup)
+    return ale#c#ParseCompileCommandsFlags(a:buffer, l:file_lookup, l:dir_lookup)
 endfunction
 
 function! ale#c#GetCFlags(buffer, output) abort

@@ -14,7 +14,7 @@ endfunction
 
 call ale#linter#Define('haskell', {
 \   'name': 'hdevtools',
-\   'executable_callback': ale#VarFunc('haskell_hdevtools_executable'),
-\   'command_callback': 'ale_linters#haskell#hdevtools#GetCommand',
+\   'executable': {b -> ale#Var(b, 'haskell_hdevtools_executable')},
+\   'command': function('ale_linters#haskell#hdevtools#GetCommand'),
 \   'callback': 'ale#handlers#haskell#HandleGHCFormat',
 \})

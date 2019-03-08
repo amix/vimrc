@@ -13,8 +13,8 @@ endfunction
 call ale#linter#Define('cpp', {
 \   'name': 'cpplint',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('cpp_cpplint_executable'),
-\   'command_callback': 'ale_linters#cpp#cpplint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'cpp_cpplint_executable')},
+\   'command': function('ale_linters#cpp#cpplint#GetCommand'),
 \   'callback': 'ale#handlers#cpplint#HandleCppLintFormat',
 \   'lint_file': 1,
 \})

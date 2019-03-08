@@ -50,7 +50,7 @@ endfunction
 call ale#linter#Define('ansible', {
 \   'name': 'ansible_lint',
 \   'aliases': ['ansible', 'ansible-lint'],
-\   'executable_callback': 'ale_linters#ansible#ansible_lint#GetExecutable',
+\   'executable': function('ale_linters#ansible#ansible_lint#GetExecutable'),
 \   'command': '%e -p %t',
 \   'callback': 'ale_linters#ansible#ansible_lint#Handle',
 \})

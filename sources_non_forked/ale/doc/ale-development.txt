@@ -1,4 +1,5 @@
 *ale-development.txt*  For Vim version 8.0.
+*ale-dev*
 *ale-development*
 
 ALE Development Documentation
@@ -143,7 +144,7 @@ Apply the following rules when writing Bash scripts.
 * Try to write scripts so they will run on Linux, BSD, or Mac OSX.
 
 ===============================================================================
-4. Testing ALE                                          *ale-development-tests*
+4. Testing ALE              *ale-development-tests* *ale-dev-tests* *ale-tests*
 
 ALE is tested with a suite of tests executed in Travis CI and AppVeyor. ALE
 runs tests with the following versions of Vim in the following environments.

@@ -13,6 +13,10 @@ function! s:DisablePostamble() abort
     if g:ale_set_highlights
         call ale#highlight#UpdateHighlights()
     endif
+
+    if g:ale_virtualtext_cursor
+        call ale#virtualtext#Clear()
+    endif
 endfunction
 
 function! ale#toggle#Toggle() abort

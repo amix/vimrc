@@ -8,10 +8,10 @@ call ale#Set('javascript_tsserver_use_global', get(g:, 'ale_use_global_executabl
 call ale#linter#Define('javascript', {
 \   'name': 'tsserver',
 \   'lsp': 'tsserver',
-\   'executable_callback': ale#node#FindExecutableFunc('javascript_tsserver', [
+\   'executable': {b -> ale#node#FindExecutable(b, 'javascript_tsserver', [
 \       'node_modules/.bin/tsserver',
-\   ]),
+\   ])},
 \   'command': '%e',
-\   'project_root_callback': {-> ''},
+\   'project_root': function('ale#handlers#tsserver#GetProjectRoot'),
 \   'language': '',
 \})

@@ -87,14 +87,14 @@ endfunction
 " Skip sandbox error which is caused by directives
 " because what we want is syntactic or semantic check.
 function! s:Ignore(item) abort
-    return a:item.type is# 'E' &&
-    \      a:item.text =~# '\vNo permission to (call|directive|assert) sandboxed'
+    return a:item.type is# 'E'
+    \   && a:item.text =~# '\vNo permission to (call|directive|assert) sandboxed'
 endfunction
 
 call ale#linter#Define('prolog', {
 \   'name': 'swipl',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('prolog_swipl_executable'),
-\   'command_callback': 'ale_linters#prolog#swipl#GetCommand',
+\   'executable': {b -> ale#Var(b, 'prolog_swipl_executable')},
+\   'command': function('ale_linters#prolog#swipl#GetCommand'),
 \   'callback': 'ale_linters#prolog#swipl#Handle',
 \})

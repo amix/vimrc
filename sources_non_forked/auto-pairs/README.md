@@ -4,11 +4,13 @@ Insert or delete brackets, parens, quotes in pair.
 
 Installation
 ------------
-copy plugin/auto-pairs.vim to ~/.vim/plugin
 
-or if you are using `pathogen`:
-
-```git clone git://github.com/jiangmiao/auto-pairs.git ~/.vim/bundle/auto-pairs```
+* Manual
+  * Copy `plugin/auto-pairs.vim` to `~/.vim/plugin`
+* [Pathogen](https://github.com/tpope/vim-pathogen)
+  * `git clone git://github.com/jiangmiao/auto-pairs.git ~/.vim/bundle/auto-pairs`
+* [Vundle](https://github.com/VundleVim/Vundle.vim)
+  * `Plugin 'jiangmiao/auto-pairs'`
 
 Features
 --------
@@ -27,7 +29,10 @@ Features
         input: {|} (press <CR> at |)
         output: {
             |
-        }
+        }          (press } to close the pair)
+        output: {
+        }|         (the inserted blank line will be deleted)
+
 
 *   Insert spaces before closing characters, only for [], (), {}
 
@@ -57,13 +62,6 @@ Features
 
 *   Fast Wrap
 
-        input: |'hello' (press (<M-e> at |)
-        output: ('hello')
-
-        wrap string, only support c style string
-        input: |'h\\el\'lo' (press (<M-e> at |)
-        output ('h\\ello\'')
-
         input: |[foo, bar()] (press (<M-e> at |)
         output: ([foo, bar()])
 
@@ -88,25 +86,6 @@ Features
         {
 
         }|
-
-*   Support ``` ''' and """
-
-        input:
-            '''
-
-        output:
-            '''|'''
-
-*   Delete Repeated Pairs in one time
-
-        input: """|""" (press <BS> at |)
-        output: |
-
-        input: {{|}} (press <BS> at |)
-        output: |
-
-        input: [[[[[[|]]]]]] (press <BS> at |)
-        output: |
 
 *  Fly Mode
 
@@ -136,6 +115,11 @@ Features
         }
 
         See Fly Mode section for details
+
+*  Multibyte Pairs
+        
+        Support any multibyte pairs such as <!-- -->, <% %>, """ """
+        See multibyte pairs section for details
 
 Fly Mode
 --------
@@ -175,7 +159,7 @@ Options
 -------
 *   g:AutoPairs
 
-        Default: {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
+        Default: {'(':')', '[':']', '{':'}',"'":"'",'"':'"', "`":"`", '```':'```', '"""':'"""', "'''":"'''"}
 
 *   b:AutoPairs
 
@@ -273,6 +257,108 @@ eg:
 
     " When the filetype is FILETYPE then make AutoPairs only match for parenthesis
     au Filetype FILETYPE let b:AutoPairs = {"(": ")"}
+    au FileType php      let b:AutoPairs = AutoPairsDefine({'<?' : '?>', '<?php': '?>'})
+
+Multibyte Pairs
+---------------
+
+    The default pairs is {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
+    You could also define multibyte pairs such as <!-- -->, <% %> and so on
+
+* Function AutoPairsDefine(addPairs:dict[, removeOpenPairList:list])
+
+        add or delete pairs base on g:AutoPairs
+
+        eg:
+            au FileType html let b:AutoPairs = AutoPairsDefine({'<!--' : '-->'}, ['{'])
+            add <!-- --> pair and remove '{' for html file
+
+        the pair implict start with \V, so if want to match start of line ^ should be write in \^ vim comment {'\^"': ''}
+
+* General usage
+
+        au FileType php      let b:AutoPairs = AutoPairsDefine({'<?' : '?>', '<?php': '?>'})
+
+        the first key of closed pair ? will be mapped
+
+        pairs: '<?' : '?>', '<?php': '?>'
+        input: <?
+        output: <?|?>
+
+        input: <?php
+        output: <?php|?>
+
+        input: he<?php|?> (press <BS> at|)
+        output: he|
+
+        input: <?php|?> (press ? at|)
+        output: <?php?>|
+
+        pair: '[[':']]'
+        input: [[|]] (press <BS>)
+        output: | ([[ and ]] will be deleted the [['s priority is higher than [ for it's longer)
+
+* Modifier
+
+        The text after //  in close pair is modifiers
+
+        n - do not map the first charactor of closed pair to close key
+        m - close key jumps through multi line
+        s - close key jumps only in the same line
+        k[KEY] - map the close key to [KEY]
+
+            by default if open key equals close key the multi line is turn off
+
+            "<?": "?>"      ? jumps only in the same line
+            "<?": "?>//m"   force ? jumping through multi line
+            "<?php":"?>"    ? will jump through multi line
+            "<?php":"?>//s" force ? only jumping in the same line
+            "<?": "?>//n"   do not jump totally
+            "<?": "?>//k]"  use key ] to jump through ?>
+
+        for 'begin' 'end' pair, e is a charactor, if map e to jump will be annoy, so use modifier 'n' to skip key map
+
+        au FileType ruby     let b:AutoPairs = AutoPairsDefine({'begin': 'end//n]'})
+
+
+        input: begin
+        output: begin|end
+
+        input: begin|end (press <BS> on |)
+        output: |
+
+        input: begin|end (press e on |)
+        output: begineend (will not jump for e is not mapped)
+
+* Advanced usage
+
+        au FileType rust     let b:AutoPairs = AutoPairsDefine({'\w\zs<': '>'})
+
+        if press < after a word will generate the pair
+
+        when use regexp MUST use \zs to prevent catching
+        if use '\w<' without \zs,  for text hello<|> press <BS> on | will output 'hell', the 'o' has been deleted
+
+        pair: '\w\zs<': '>'
+        input: h <
+        output: h <
+
+        input: h<
+        output: h<|>
+
+        input: h<|> press <BS>
+        output: h|
+
+        pair: '\w<': '>' (WRONG pair which missed \zs)
+        input: h<|> press <BS>
+        output: | (charactor 'h' is deleted)
+
+
+        the 'begin' 'end' pair write in
+
+        au FileType ruby     let b:AutoPairs = AutoPairsDefine({'\v(^|\W)\zsbegin': 'end//n'})
+
+        will be better, only auto pair when at start of line or follow non-word text
 
 TroubleShooting
 ---------------
@@ -299,7 +385,7 @@ TroubleShooting
     To fix the issue, you need remap or disable the related shortcut.
 
 Known Issues
------------------------
+------------
 Breaks '.' - [issue #3](https://github.com/jiangmiao/auto-pairs/issues/3)
 
     Description: After entering insert mode and inputing `[hello` then leave insert

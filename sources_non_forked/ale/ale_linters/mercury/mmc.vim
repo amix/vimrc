@@ -33,8 +33,8 @@ endfunction
 call ale#linter#Define('mercury', {
 \   'name': 'mmc',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('mercury_mmc_executable'),
-\   'command_callback': 'ale_linters#mercury#mmc#GetCommand',
+\   'executable': {b -> ale#Var(b, 'mercury_mmc_executable')},
+\   'command': function('ale_linters#mercury#mmc#GetCommand'),
 \   'callback': 'ale_linters#mercury#mmc#Handle',
 \   'lint_file': 1,
 \})

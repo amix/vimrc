@@ -8,7 +8,6 @@ if !exists('s:state')
   let s:state = {
       \ 'rpcid': 1,
       \ 'running': 0,
-      \ 'breakpoint': {},
       \ 'currentThread': {},
       \ 'localVars': {},
       \ 'functionArgs': {},
@@ -101,6 +100,9 @@ function! s:call_jsonrpc(method, ...) abort
       call chansend(l:ch, l:req_json)
       while len(s:state.data) == 0
         sleep 50m
+        if get(s:state, 'ready', 0) == 0
+          return
+        endif
       endwhile
       let resp_json = s:state.data[0]
       let s:state.data = s:state.data[1:]
@@ -235,7 +237,11 @@ function! s:stop() abort
 
   if has_key(s:state, 'job')
     call go#job#Wait(s:state['job'])
-    call remove(s:state, 'job')
+
+    " while waiting, the s:complete may have already removed job from s:state.
+    if has_key(s:state, 'job')
+      call remove(s:state, 'job')
+    endif
   endif
 
   if has_key(s:state, 'ready')
@@ -250,16 +256,6 @@ function! s:stop() abort
 endfunction
 
 function! go#debug#Stop() abort
-  " TODO(bc): don't remove breakpoints that were set before debugging started
-  " (see out_cb).
-  " Remove signs.
-  for k in keys(s:state['breakpoint'])
-    let bt = s:state['breakpoint'][k]
-    if bt.id >= 0
-      silent exe 'sign unplace ' . bt.id
-    endif
-  endfor
-
   " Remove all commands and add back the default commands.
   for k in map(split(execute('command GoDebug'), "\n")[1:], 'matchstr(v:val, "^\\s*\\zs\\S\\+")')
     exe 'delcommand' k
@@ -286,8 +282,8 @@ function! go#debug#Stop() abort
   silent! exe bufwinnr(bufnr('__GODEBUG_OUTPUT__')) 'wincmd c'
 
   if has('balloon_eval')
-    set noballooneval
-    set balloonexpr=
+    let &noballooneval=s:ballooneval
+    let &balloonexpr=s:balloonexpr
   endif
 
   augroup vim-go-debug
@@ -413,18 +409,8 @@ function! s:expand_var() abort
   endif
 endfunction
 
-function! s:start_cb(res) abort
-  if empty(a:res) || !has_key(a:res, 'result')
-    return
-  endif
-  for bt in a:res.result.Breakpoints
-    if bt.id >= 0
-      let s:state['breakpoint'][bt.id] = bt
-      exe 'sign place '. bt.id .' line=' . bt.line . ' name=godebugbreakpoint file=' . bt.file
-    endif
-  endfor
-
-  let oldbuf = bufnr('%')
+function! s:start_cb() abort
+  let l:winid = win_getid()
   silent! only!
 
   let winnum = bufwinnr(bufnr('__GODEBUG_STACKTRACE__'))
@@ -480,11 +466,14 @@ function! s:start_cb(res) abort
   nnoremap <silent> <Plug>(go-debug-print)      :<C-u>call go#debug#Print(expand('<cword>'))<CR>
 
   if has('balloon_eval')
+    let s:balloonexpr=&balloonexpr
+    let s:ballooneval=&ballooneval
+
     set balloonexpr=go#debug#BalloonExpr()
     set ballooneval
   endif
 
-  exe bufwinnr(oldbuf) 'wincmd w'
+  call win_gotoid(l:winid)
 
   augroup vim-go-debug
     autocmd! * <buffer>
@@ -560,15 +549,14 @@ function! s:out_cb(ch, msg) abort
     " future messages.
     let s:state['ready'] = 1
 
-    " Tell dlv about the breakpoints that the user added before delve started.
-    let l:breaks = copy(s:state.breakpoint)
-    let s:state['breakpoint'] = {}
-    for l:bt in values(l:breaks)
-      call go#debug#Breakpoint(bt.line)
+    " replace all the breakpoints set before delve started so that the ids won't overlap.
+    let l:breakpoints = s:list_breakpoints()
+    for l:bt in s:list_breakpoints()
+      exe 'sign unplace '. l:bt.id
+      call go#debug#Breakpoint(l:bt.line, l:bt.file)
     endfor
 
-    let res = s:call_jsonrpc('RPCServer.ListBreakpoints')
-    call s:start_cb(res)
+    call s:start_cb()
   endif
 endfunction
 
@@ -753,13 +741,12 @@ endfunction
 
 function! s:eval(arg) abort
   try
-    let res = s:call_jsonrpc('RPCServer.State')
-    let goroutineID = res.result.State.currentThread.goroutineID
-    let res = s:call_jsonrpc('RPCServer.Eval', {
+    let l:res = s:call_jsonrpc('RPCServer.State')
+    let l:res = s:call_jsonrpc('RPCServer.Eval', {
           \ 'expr':  a:arg,
-          \ 'scope': {'GoroutineID': goroutineID}
+          \ 'scope': {'GoroutineID': l:res.result.State.currentThread.goroutineID}
       \ })
-    return s:eval_tree(res.result.Variable, 0)
+    return s:eval_tree(l:res.result.Variable, 0)
   catch
     call go#util#EchoError(v:exception)
     return ''
@@ -809,12 +796,11 @@ endfunction
 
 function! go#debug#Set(symbol, value) abort
   try
-    let res = s:call_jsonrpc('RPCServer.State')
-    let goroutineID = res.result.State.currentThread.goroutineID
+    let l:res = s:call_jsonrpc('RPCServer.State')
     call s:call_jsonrpc('RPCServer.Set', {
           \ 'symbol': a:symbol,
           \ 'value':  a:value,
-          \ 'scope':  {'GoroutineID': goroutineID}
+          \ 'scope':  {'GoroutineID': l:res.result.State.currentThread.goroutineID}
     \ })
   catch
     call go#util#EchoError(v:exception)
@@ -825,8 +811,8 @@ endfunction
 
 function! s:update_stacktrace() abort
   try
-    let res = s:call_jsonrpc('RPCServer.Stacktrace', {'id': s:groutineID(), 'depth': 5})
-    call s:show_stacktrace(res)
+    let l:res = s:call_jsonrpc('RPCServer.Stacktrace', {'id': s:groutineID(), 'depth': 5})
+    call s:show_stacktrace(l:res)
   catch
     call go#util#EchoError(v:exception)
   endtry
@@ -856,7 +842,7 @@ function! go#debug#Stack(name) abort
   endif
 
   " Add a breakpoint to the main.Main if the user didn't define any.
-  if len(s:state['breakpoint']) is 0
+  if len(s:list_breakpoints()) is 0
     if go#debug#Breakpoint() isnot 0
       let s:state.running = 0
       return
@@ -888,23 +874,15 @@ function! go#debug#Restart() abort
   try
     call s:stop()
 
-    let l:breaks = s:state['breakpoint']
     let s:state = {
         \ 'rpcid': 1,
         \ 'running': 0,
-        \ 'breakpoint': {},
         \ 'currentThread': {},
         \ 'localVars': {},
         \ 'functionArgs': {},
         \ 'message': [],
         \}
 
-    " Preserve breakpoints.
-    for bt in values(l:breaks)
-      " TODO: should use correct filename
-      exe 'sign unplace '. bt.id .' file=' . bt.file
-      call go#debug#Breakpoint(bt.line)
-    endfor
     call call('go#debug#Start', s:start_args)
   catch
     call go#util#EchoError(v:exception)
@@ -919,47 +897,45 @@ endfunction
 " Toggle breakpoint. Returns 0 on success and 1 on failure.
 function! go#debug#Breakpoint(...) abort
   let l:filename = fnamemodify(expand('%'), ':p:gs!\\!/!')
+  let l:linenr = line('.')
 
   " Get line number from argument.
   if len(a:000) > 0
-    let linenr = str2nr(a:1)
-    if linenr is 0
+    let l:linenr = str2nr(a:1)
+    if l:linenr is 0
       call go#util#EchoError('not a number: ' . a:1)
       return 0
     endif
-  else
-    let linenr = line('.')
+    if len(a:000) > 1
+      let l:filename = a:2
+    endif
   endif
 
   try
     " Check if we already have a breakpoint for this line.
-    let found = {}
-    for k in keys(s:state.breakpoint)
-      let bt = s:state.breakpoint[k]
-      if bt.file == l:filename && bt.line == linenr
-        let found = bt
+    let l:found = {}
+    for l:bt in s:list_breakpoints()
+      if l:bt.file is# l:filename && l:bt.line is# l:linenr
+        let l:found = l:bt
         break
       endif
     endfor
 
     " Remove breakpoint.
-    if type(found) == v:t_dict && !empty(found)
-      call remove(s:state['breakpoint'], bt.id)
-      exe 'sign unplace '. found.id .' file=' . found.file
+    if type(l:found) == v:t_dict && !empty(l:found)
+      exe 'sign unplace '. l:found.id .' file=' . l:found.file
       if s:isActive()
-        let res = s:call_jsonrpc('RPCServer.ClearBreakpoint', {'id': found.id})
+        let res = s:call_jsonrpc('RPCServer.ClearBreakpoint', {'id': l:found.id})
       endif
     " Add breakpoint.
     else
       if s:isActive()
-        let res = s:call_jsonrpc('RPCServer.CreateBreakpoint', {'Breakpoint': {'file': l:filename, 'line': linenr}})
-        let bt = res.result.Breakpoint
-        exe 'sign place '. bt.id .' line=' . bt.line . ' name=godebugbreakpoint file=' . bt.file
-        let s:state['breakpoint'][bt.id] = bt
+        let l:res = s:call_jsonrpc('RPCServer.CreateBreakpoint', {'Breakpoint': {'file': l:filename, 'line': l:linenr}})
+        let l:bt = res.result.Breakpoint
+        exe 'sign place '. l:bt.id .' line=' . l:bt.line . ' name=godebugbreakpoint file=' . l:bt.file
       else
-        let id = len(s:state['breakpoint']) + 1
-        let s:state['breakpoint'][id] = {'id': id, 'file': l:filename, 'line': linenr}
-        exe 'sign place '. id .' line=' . linenr . ' name=godebugbreakpoint file=' . l:filename
+        let l:id = len(s:list_breakpoints()) + 1
+        exe 'sign place ' . l:id . ' line=' . l:linenr . ' name=godebugbreakpoint file=' . l:filename
       endif
     endif
   catch
@@ -970,8 +946,40 @@ function! go#debug#Breakpoint(...) abort
   return 0
 endfunction
 
+function! s:list_breakpoints()
+  " :sign place
+  " --- Signs ---
+  " Signs for a.go:
+  "     line=15  id=2  name=godebugbreakpoint
+  "     line=16  id=1  name=godebugbreakpoint
+  " Signs for a_test.go:
+  "     line=6  id=3  name=godebugbreakpoint
+
+  let l:signs = []
+  let l:file = ''
+  for l:line in split(execute('sign place'), '\n')[1:]
+    if l:line =~# '^Signs for '
+      let l:file = l:line[10:-2]
+      continue
+    endif
+
+    if l:line !~# 'name=godebugbreakpoint'
+      continue
+    endif
+
+    let l:sign = matchlist(l:line, '\vline\=(\d+) +id\=(\d+)')
+    call add(l:signs, {
+          \ 'id': l:sign[2],
+          \ 'file': fnamemodify(l:file, ':p'),
+          \ 'line': str2nr(l:sign[1]),
+    \ })
+  endfor
+
+  return l:signs
+endfunction
+
 sign define godebugbreakpoint text=> texthl=GoDebugBreakpoint
-sign define godebugcurline text== linehl=GoDebugCurrent texthl=GoDebugCurrent
+sign define godebugcurline    text== texthl=GoDebugCurrent    linehl=GoDebugCurrent
 
 " restore Vi compatibility settings
 let &cpo = s:cpo_save

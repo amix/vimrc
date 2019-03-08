@@ -15,7 +15,7 @@ endfunction
 call ale#linter#Define('go', {
 \   'name': 'golint',
 \   'output_stream': 'both',
-\   'executable_callback': ale#VarFunc('go_golint_executable'),
-\   'command_callback': 'ale_linters#go#golint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'go_golint_executable')},
+\   'command': function('ale_linters#go#golint#GetCommand'),
 \   'callback': 'ale#handlers#unix#HandleAsWarning',
 \})

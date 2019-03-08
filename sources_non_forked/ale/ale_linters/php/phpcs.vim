@@ -44,10 +44,10 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'phpcs',
-\   'executable_callback': ale#node#FindExecutableFunc('php_phpcs', [
+\   'executable': {b -> ale#node#FindExecutable(b, 'php_phpcs', [
 \       'vendor/bin/phpcs',
 \       'phpcs'
-\   ]),
-\   'command_callback': 'ale_linters#php#phpcs#GetCommand',
+\   ])},
+\   'command': function('ale_linters#php#phpcs#GetCommand'),
 \   'callback': 'ale_linters#php#phpcs#Handle',
 \})

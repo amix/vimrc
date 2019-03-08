@@ -7,7 +7,7 @@ endfunction
 
 call ale#linter#Define('scala', {
 \   'name': 'fsc',
-\   'executable_callback': {buf -> s:IsSbt(buf) ? '' : 'fsc'},
+\   'executable': {buf -> s:IsSbt(buf) ? '' : 'fsc'},
 \   'command': '%e -Ystop-after:parser %t',
 \   'callback': 'ale#handlers#scala#HandleScalacLintFormat',
 \   'output_stream': 'stderr',

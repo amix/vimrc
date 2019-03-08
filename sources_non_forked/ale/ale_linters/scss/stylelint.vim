@@ -11,9 +11,9 @@ endfunction
 
 call ale#linter#Define('scss', {
 \   'name': 'stylelint',
-\   'executable_callback': ale#node#FindExecutableFunc('scss_stylelint', [
+\   'executable': {b -> ale#node#FindExecutable(b, 'scss_stylelint', [
 \       'node_modules/.bin/stylelint',
-\   ]),
-\   'command_callback': 'ale_linters#scss#stylelint#GetCommand',
+\   ])},
+\   'command': function('ale_linters#scss#stylelint#GetCommand'),
 \   'callback': 'ale#handlers#css#HandleStyleLintFormat',
 \})

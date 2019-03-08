@@ -37,7 +37,7 @@ endfunction
 
 call ale#linter#Define('coffee', {
 \   'name': 'coffeelint',
-\   'executable_callback': 'ale_linters#coffee#coffeelint#GetExecutable',
-\   'command_callback': 'ale_linters#coffee#coffeelint#GetCommand',
+\   'executable': function('ale_linters#coffee#coffeelint#GetExecutable'),
+\   'command': function('ale_linters#coffee#coffeelint#GetCommand'),
 \   'callback': 'ale_linters#coffee#coffeelint#Handle',
 \})

@@ -38,6 +38,6 @@ call ale#linter#Define('verilog', {
 \   'name': 'iverilog',
 \   'output_stream': 'stderr',
 \   'executable': 'iverilog',
-\   'command_callback': 'ale_linters#verilog#iverilog#GetCommand',
+\   'command': function('ale_linters#verilog#iverilog#GetCommand'),
 \   'callback': 'ale_linters#verilog#iverilog#Handle',
 \})

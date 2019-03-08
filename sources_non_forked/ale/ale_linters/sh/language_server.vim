@@ -26,7 +26,7 @@ endfunction
 call ale#linter#Define('sh', {
 \   'name': 'language_server',
 \   'lsp': 'stdio',
-\   'executable_callback': 'ale_linters#sh#language_server#GetExecutable',
-\   'command_callback': 'ale_linters#sh#language_server#GetCommand',
-\   'project_root_callback': 'ale_linters#sh#language_server#GetProjectRoot',
+\   'executable': function('ale_linters#sh#language_server#GetExecutable'),
+\   'command': function('ale_linters#sh#language_server#GetCommand'),
+\   'project_root': function('ale_linters#sh#language_server#GetProjectRoot'),
 \})

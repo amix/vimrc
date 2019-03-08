@@ -51,6 +51,7 @@ call s:initVariable("g:NERDTreeSortHiddenFirst", 1)
 call s:initVariable("g:NERDTreeChDirMode", 0)
 call s:initVariable("g:NERDTreeCreatePrefix", "silent")
 call s:initVariable("g:NERDTreeMinimalUI", 0)
+call s:initVariable("g:NERDTreeMinimalMenu", 0)
 if !exists("g:NERDTreeIgnore")
     let g:NERDTreeIgnore = ['\~$']
 endif
@@ -86,8 +87,13 @@ let g:NERDTreeOldSortOrder = []
 
 call s:initVariable("g:NERDTreeGlyphReadOnly", "RO")
 
-" ASCII 7: bell non-printing character used to delimit items in the tree's nodes.
-call s:initVariable("g:NERDTreeNodeDelimiter", "\x07")
+if has("conceal")
+    call s:initVariable("g:NERDTreeNodeDelimiter", "\x07")
+elseif (g:NERDTreeDirArrowExpandable == "\u00a0" || g:NERDTreeDirArrowCollapsible == "\u00a0")
+    call s:initVariable("g:NERDTreeNodeDelimiter", "\u00b7")
+else
+    call s:initVariable("g:NERDTreeNodeDelimiter", "\u00a0")
+endif
 
 if !exists('g:NERDTreeStatusline')
 

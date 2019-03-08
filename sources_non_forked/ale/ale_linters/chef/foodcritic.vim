@@ -34,8 +34,8 @@ endfunction
 
 call ale#linter#Define('chef', {
 \   'name': 'foodcritic',
-\   'executable_callback': ale#VarFunc('chef_foodcritic_executable'),
-\   'command_callback': 'ale_linters#chef#foodcritic#GetCommand',
+\   'executable': {b -> ale#Var(b, 'chef_foodcritic_executable')},
+\   'command': function('ale_linters#chef#foodcritic#GetCommand'),
 \   'callback': 'ale_linters#chef#foodcritic#Handle',
 \   'lint_file': 1,
 \})

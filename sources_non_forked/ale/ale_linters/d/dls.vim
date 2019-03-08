@@ -16,7 +16,7 @@ endfunction
 call ale#linter#Define('d', {
 \   'name': 'dls',
 \   'lsp': 'stdio',
-\   'executable_callback': 'ale_linters#d#dls#GetExecutable',
-\   'command_callback': 'ale_linters#d#dls#GetExecutable',
-\   'project_root_callback': 'ale_linters#d#dls#FindProjectRoot',
+\   'executable': function('ale_linters#d#dls#GetExecutable'),
+\   'command': function('ale_linters#d#dls#GetExecutable'),
+\   'project_root': function('ale_linters#d#dls#FindProjectRoot'),
 \})

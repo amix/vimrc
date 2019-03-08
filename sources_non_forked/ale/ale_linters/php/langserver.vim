@@ -13,9 +13,9 @@ endfunction
 call ale#linter#Define('php', {
 \   'name': 'langserver',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#node#FindExecutableFunc('php_langserver', [
+\   'executable': {b -> ale#node#FindExecutable(b, 'php_langserver', [
 \       'vendor/bin/php-language-server.php',
-\   ]),
+\   ])},
 \   'command': 'php %e',
-\   'project_root_callback': 'ale_linters#php#langserver#GetProjectRoot',
+\   'project_root': function('ale_linters#php#langserver#GetProjectRoot'),
 \})

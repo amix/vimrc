@@ -49,11 +49,11 @@ function! ale_linters#idris#idris#Handle(buffer, lines) abort
         let l:errors = matchlist(l:match[5], '\v([wW]arning|[eE]rror) - ?(.*)')
 
         if len(l:errors) > 0
-          let l:ghc_type = l:errors[1]
-          let l:text = l:errors[2]
+            let l:ghc_type = l:errors[1]
+            let l:text = l:errors[2]
         else
-          let l:ghc_type = ''
-          let l:text = l:match[5][:0] is# ' ' ? l:match[5][1:] : l:match[5]
+            let l:ghc_type = ''
+            let l:text = l:match[5][:0] is# ' ' ? l:match[5][1:] : l:match[5]
         endif
 
         if l:ghc_type is? 'Warning'
@@ -75,7 +75,7 @@ endfunction
 
 call ale#linter#Define('idris', {
 \   'name': 'idris',
-\   'executable_callback': ale#VarFunc('idris_idris_executable'),
-\   'command_callback': 'ale_linters#idris#idris#GetCommand',
+\   'executable': {b -> ale#Var(b, 'idris_idris_executable')},
+\   'command': function('ale_linters#idris#idris#GetCommand'),
 \   'callback': 'ale_linters#idris#idris#Handle',
 \})

@@ -6,10 +6,10 @@ call ale#Set('swift_swiftlint_use_global', get(g:, 'ale_use_global_executables',
 
 function! ale_linters#swift#swiftlint#GetExecutable(buffer) abort
     return ale#node#FindExecutable(a:buffer, 'swift_swiftlint', [
-          \ 'Pods/SwiftLint/swiftlint',
-          \ 'ios/Pods/SwiftLint/swiftlint',
-          \ 'swiftlint',
-          \])
+    \ 'Pods/SwiftLint/swiftlint',
+    \ 'ios/Pods/SwiftLint/swiftlint',
+    \ 'swiftlint',
+    \])
 endfunction
 
 function! ale_linters#swift#swiftlint#GetCommand(buffer) abort
@@ -17,7 +17,7 @@ function! ale_linters#swift#swiftlint#GetCommand(buffer) abort
     let l:args = 'lint --use-stdin'
 
     return ale#Escape(l:executable)
-          \ . ' ' .l:args
+    \ . ' ' .l:args
 endfunction
 
 function! ale_linters#swift#swiftlint#Handle(buffer, lines) abort
@@ -26,10 +26,10 @@ function! ale_linters#swift#swiftlint#Handle(buffer, lines) abort
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         let l:item = {
-              \ 'lnum': str2nr(l:match[2]),
-              \ 'type': l:match[4] is# 'error' ? 'E' : 'W',
-              \ 'text': l:match[5],
-              \}
+        \   'lnum': str2nr(l:match[2]),
+        \   'type': l:match[4] is# 'error' ? 'E' : 'W',
+        \   'text': l:match[5],
+        \}
 
         if l:match[4] is# 'error'
             let l:item.type = 'E'
@@ -63,7 +63,7 @@ endfunction
 
 call ale#linter#Define('swift', {
 \   'name': 'swiftlint',
-\   'executable_callback': 'ale_linters#swift#swiftlint#GetExecutable',
-\   'command_callback': 'ale_linters#swift#swiftlint#GetCommand',
+\   'executable': function('ale_linters#swift#swiftlint#GetExecutable'),
+\   'command': function('ale_linters#swift#swiftlint#GetCommand'),
 \   'callback': 'ale_linters#swift#swiftlint#Handle',
 \})

@@ -18,6 +18,6 @@ call ale#linter#Define('objc', {
 \   'name': 'clang',
 \   'output_stream': 'stderr',
 \   'executable': 'clang',
-\   'command_callback': 'ale_linters#objc#clang#GetCommand',
+\   'command': function('ale_linters#objc#clang#GetCommand'),
 \   'callback': 'ale#handlers#gcc#HandleGCCFormatWithIncludes',
 \})

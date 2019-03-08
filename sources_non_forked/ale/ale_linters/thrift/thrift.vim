@@ -16,7 +16,7 @@ function! ale_linters#thrift#thrift#GetCommand(buffer) abort
         let l:generators = ['cpp']
     endif
 
-    let l:output_dir = ale#engine#CreateDirectory(a:buffer)
+    let l:output_dir = ale#command#CreateDirectory(a:buffer)
 
     return '%e'
     \   . ale#Pad(join(map(copy(l:generators), "'--gen ' . v:val")))
@@ -80,9 +80,8 @@ endfunction
 
 call ale#linter#Define('thrift', {
 \   'name': 'thrift',
-\   'executable': 'thrift',
 \   'output_stream': 'both',
-\   'executable_callback': ale#VarFunc('thrift_thrift_executable'),
-\   'command_callback': 'ale_linters#thrift#thrift#GetCommand',
+\   'executable': {b -> ale#Var(b, 'thrift_thrift_executable')},
+\   'command': function('ale_linters#thrift#thrift#GetCommand'),
 \   'callback': 'ale_linters#thrift#thrift#Handle',
 \})

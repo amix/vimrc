@@ -67,7 +67,7 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'phan',
-\   'executable_callback': 'ale_linters#php#phan#GetExecutable',
-\   'command_callback': 'ale_linters#php#phan#GetCommand',
+\   'executable': function('ale_linters#php#phan#GetExecutable'),
+\   'command': function('ale_linters#php#phan#GetCommand'),
 \   'callback': 'ale_linters#php#phan#Handle',
 \})

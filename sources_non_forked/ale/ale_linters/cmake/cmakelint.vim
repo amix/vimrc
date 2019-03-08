@@ -18,7 +18,7 @@ endfunction
 
 call ale#linter#Define('cmake', {
 \   'name': 'cmakelint',
-\   'executable_callback': 'ale_linters#cmake#cmakelint#Executable',
-\   'command_callback': 'ale_linters#cmake#cmakelint#Command',
+\   'executable': function('ale_linters#cmake#cmakelint#Executable'),
+\   'command': function('ale_linters#cmake#cmakelint#Command'),
 \   'callback': 'ale#handlers#unix#HandleAsWarning',
 \})

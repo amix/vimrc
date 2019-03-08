@@ -21,8 +21,8 @@ endfunction
 call ale#linter#Define('cpp', {
 \   'name': 'cquery',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('cpp_cquery_executable'),
+\   'executable': {b -> ale#Var(b, 'cpp_cquery_executable')},
 \   'command': '%e',
-\   'project_root_callback': 'ale_linters#cpp#cquery#GetProjectRoot',
-\   'initialization_options_callback': 'ale_linters#cpp#cquery#GetInitializationOptions',
+\   'project_root': function('ale_linters#cpp#cquery#GetProjectRoot'),
+\   'initialization_options': function('ale_linters#cpp#cquery#GetInitializationOptions'),
 \})

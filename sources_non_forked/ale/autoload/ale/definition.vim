@@ -57,9 +57,14 @@ function! ale#definition#HandleLSPResponse(conn_id, response) abort
     endif
 endfunction
 
-function! s:OnReady(linter, lsp_details, line, column, options, ...) abort
-    let l:buffer = a:lsp_details.buffer
+function! s:OnReady(line, column, options, capability, linter, lsp_details) abort
     let l:id = a:lsp_details.connection_id
+
+    if !ale#lsp#HasCapability(l:id, a:capability)
+        return
+    endif
+
+    let l:buffer = a:lsp_details.buffer
 
     let l:Callback = a:linter.lsp is# 'tsserver'
     \   ? function('ale#definition#HandleTSServerResponse')
@@ -80,7 +85,14 @@ function! s:OnReady(linter, lsp_details, line, column, options, ...) abort
         " For LSP completions, we need to clamp the column to the length of
         " the line. python-language-server and perhaps others do not implement
         " this correctly.
-        let l:message = ale#lsp#message#Definition(l:buffer, a:line, a:column)
+        if a:capability is# 'definition'
+            let l:message = ale#lsp#message#Definition(l:buffer, a:line, a:column)
+        elseif a:capability is# 'typeDefinition'
+            let l:message = ale#lsp#message#TypeDefinition(l:buffer, a:line, a:column)
+        else
+            " XXX: log here?
+            return
+        endif
     endif
 
     let l:request_id = ale#lsp#Send(l:id, l:message)
@@ -90,30 +102,36 @@ function! s:OnReady(linter, lsp_details, line, column, options, ...) abort
     \}
 endfunction
 
-function! s:GoToLSPDefinition(linter, options) abort
+function! s:GoToLSPDefinition(linter, options, capability) abort
     let l:buffer = bufnr('')
-    let [l:line, l:column] = getcurpos()[1:2]
-    let l:lsp_details = ale#lsp_linter#StartLSP(l:buffer, a:linter)
+    let [l:line, l:column] = getpos('.')[1:2]
+    let l:column = min([l:column, len(getline(l:line))])
 
-    if a:linter.lsp isnot# 'tsserver'
-        let l:column = min([l:column, len(getline(l:line))])
-    endif
-
-    if empty(l:lsp_details)
-        return 0
-    endif
-
-    let l:id = l:lsp_details.connection_id
-
-    call ale#lsp#WaitForCapability(l:id, 'definition', function('s:OnReady', [
-    \   a:linter, l:lsp_details, l:line, l:column, a:options
-    \]))
+    let l:Callback = function(
+    \   's:OnReady',
+    \   [l:line, l:column, a:options, a:capability]
+    \)
+    call ale#lsp_linter#StartLSP(l:buffer, a:linter, l:Callback)
 endfunction
 
 function! ale#definition#GoTo(options) abort
     for l:linter in ale#linter#Get(&filetype)
         if !empty(l:linter.lsp)
-            call s:GoToLSPDefinition(l:linter, a:options)
+            call s:GoToLSPDefinition(l:linter, a:options, 'definition')
+        endif
+    endfor
+endfunction
+
+function! ale#definition#GoToType(options) abort
+    for l:linter in ale#linter#Get(&filetype)
+        if !empty(l:linter.lsp)
+            " TODO: handle typeDefinition for tsserver if supported by the
+            " protocol
+            if l:linter.lsp is# 'tsserver'
+                continue
+            endif
+
+            call s:GoToLSPDefinition(l:linter, a:options, 'typeDefinition')
         endif
     endfor
 endfunction

@@ -37,7 +37,7 @@ endfunction
 
 call ale#linter#Define('tex', {
 \   'name': 'lacheck',
-\   'executable_callback': ale#VarFunc('tex_lacheck_executable'),
+\   'executable': {b -> ale#Var(b, 'tex_lacheck_executable')},
 \   'command': '%e %t',
 \   'callback': 'ale_linters#tex#lacheck#Handle'
 \})

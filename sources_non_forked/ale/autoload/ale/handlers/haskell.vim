@@ -66,11 +66,11 @@ function! ale#handlers#haskell#HandleGHCFormat(buffer, lines) abort
         let l:errors = matchlist(l:match[4], '\v([wW]arning|[eE]rror): ?(.*)')
 
         if len(l:errors) > 0
-          let l:ghc_type = l:errors[1]
-          let l:text = l:errors[2]
+            let l:ghc_type = l:errors[1]
+            let l:text = l:errors[2]
         else
-          let l:ghc_type = ''
-          let l:text = l:match[4][:0] is# ' ' ? l:match[4][1:] : l:match[4]
+            let l:ghc_type = ''
+            let l:text = l:match[4][:0] is# ' ' ? l:match[4][1:] : l:match[4]
         endif
 
         if l:ghc_type is? 'Warning'

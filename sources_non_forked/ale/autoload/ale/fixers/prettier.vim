@@ -47,6 +47,15 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version_output) abort
     " Append the --parser flag depending on the current filetype (unless it's
     " already set in g:javascript_prettier_options).
     if empty(expand('#' . a:buffer . ':e')) && match(l:options, '--parser') == -1
+        " Mimic Prettier's defaults. In cases without a file extension or
+        " filetype (scratch buffer), Prettier needs `parser` set to know how
+        " to process the buffer.
+        if ale#semver#GTE(l:version, [1, 16, 0])
+            let l:parser = 'babel'
+        else
+            let l:parser = 'babylon'
+        endif
+
         let l:prettier_parsers = {
         \    'typescript': 'typescript',
         \    'css': 'css',
@@ -60,7 +69,6 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version_output) abort
         \    'yaml': 'yaml',
         \    'html': 'html',
         \}
-        let l:parser = ''
 
         for l:filetype in split(getbufvar(a:buffer, '&filetype'), '\.')
             if has_key(l:prettier_parsers, l:filetype)

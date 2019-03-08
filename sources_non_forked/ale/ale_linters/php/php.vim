@@ -32,7 +32,7 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'php',
-\   'executable_callback': ale#VarFunc('php_php_executable'),
+\   'executable': {b -> ale#Var(b, 'php_php_executable')},
 \   'output_stream': 'stdout',
 \   'command': '%e -l -d error_reporting=E_ALL -d display_errors=1 -d log_errors=0 --',
 \   'callback': 'ale_linters#php#php#Handle',

@@ -42,8 +42,8 @@ endfunction
 
 call ale#linter#Define('ruby', {
 \    'name': 'rails_best_practices',
-\    'executable_callback': ale#VarFunc('ruby_rails_best_practices_executable'),
-\    'command_callback': 'ale_linters#ruby#rails_best_practices#GetCommand',
+\    'executable': {b -> ale#Var(b, 'ruby_rails_best_practices_executable')},
+\    'command': function('ale_linters#ruby#rails_best_practices#GetCommand'),
 \    'callback': 'ale_linters#ruby#rails_best_practices#Handle',
 \    'lint_file': 1,
 \})

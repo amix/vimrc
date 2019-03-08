@@ -18,6 +18,6 @@ call ale#linter#Define('eruby', {
 \   'name': 'erubis',
 \   'executable': 'erubis',
 \   'output_stream': 'stderr',
-\   'command_callback': 'ale_linters#eruby#erubis#GetCommand',
+\   'command': function('ale_linters#eruby#erubis#GetCommand'),
 \   'callback': 'ale#handlers#ruby#HandleSyntaxErrors',
 \})

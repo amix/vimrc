@@ -10,7 +10,7 @@ endfunction
 call ale#linter#Define('pony', {
 \   'name': 'ponyc',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('pony_ponyc_executable'),
-\   'command_callback': 'ale_linters#pony#ponyc#GetCommand',
+\   'executable': {b -> ale#Var(b, 'pony_ponyc_executable')},
+\   'command': function('ale_linters#pony#ponyc#GetCommand'),
 \   'callback': 'ale#handlers#pony#HandlePonycFormat',
 \})

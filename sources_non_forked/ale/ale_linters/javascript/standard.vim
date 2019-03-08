@@ -24,7 +24,7 @@ endfunction
 " standard uses eslint and the output format is the same
 call ale#linter#Define('javascript', {
 \   'name': 'standard',
-\   'executable_callback': 'ale_linters#javascript#standard#GetExecutable',
-\   'command_callback': 'ale_linters#javascript#standard#GetCommand',
+\   'executable': function('ale_linters#javascript#standard#GetExecutable'),
+\   'command': function('ale_linters#javascript#standard#GetCommand'),
 \   'callback': 'ale#handlers#eslint#Handle',
 \})

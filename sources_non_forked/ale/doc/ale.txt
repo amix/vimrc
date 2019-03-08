@@ -14,19 +14,46 @@ CONTENTS                                                         *ale-contents*
   5. Language Server Protocol Support.....|ale-lsp|
     5.1 Completion........................|ale-completion|
     5.2 Go To Definition..................|ale-go-to-definition|
-    5.3 Find References...................|ale-find-references|
-    5.4 Hovering..........................|ale-hover|
-    5.5 Symbol Search.....................|ale-symbol-search|
+    5.3 Go To Type Definition.............|ale-go-to-type-definition|
+    5.4 Find References...................|ale-find-references|
+    5.5 Hovering..........................|ale-hover|
+    5.6 Symbol Search.....................|ale-symbol-search|
   6. Global Options.......................|ale-options|
     6.1 Highlights........................|ale-highlights|
-    6.2 Options for write-good Linter.....|ale-write-good-options|
-  7. Integration Documentation............|ale-integrations|
+  7. Linter/Fixer Options.................|ale-integration-options|
+    7.1 Options for alex..................|ale-alex-options|
+    7.2 Options for write-good............|ale-write-good-options|
+    7.3 Other Linter/Fixer Options........|ale-other-integration-options|
+  8. Commands/Keybinds....................|ale-commands|
+  9. API..................................|ale-api|
+  10. Special Thanks......................|ale-special-thanks|
+  11. Contact.............................|ale-contact|
+
+===============================================================================
+1. Introduction                                              *ale-introduction*
+
+ALE provides the means to run linters asynchronously in Vim in a variety of
+languages and tools. ALE sends the contents of buffers to linter programs
+using the |job-control| features available in Vim 8 and NeoVim. For Vim 8,
+Vim must be compiled with the |job| and |channel| and |timers| features
+as a minimum.
+
+ALE supports the following key features for linting:
+
+1. Running linters when text is changed.
+2. Running linters when files are opened.
+3. Running linters when files are saved. (When a global flag is set.)
+4. Populating the |loclist| with warning and errors.
+5. Setting |signs| with warnings and errors for error markers.
+6. Using |echo| to show error messages when the cursor moves.
+7. Setting syntax highlights for errors.
     ada...................................|ale-ada-options|
       gcc.................................|ale-ada-gcc|
     ansible...............................|ale-ansible-options|
       ansible-lint........................|ale-ansible-ansible-lint|
     asciidoc..............................|ale-asciidoc-options|
       write-good..........................|ale-asciidoc-write-good|
+      textlint............................|ale-asciidoc-textlint|
     asm...................................|ale-asm-options|
       gcc.................................|ale-asm-gcc|
     awk...................................|ale-awk-options|
@@ -52,6 +79,7 @@ CONTENTS                                                         *ale-contents*
       cfn-python-lint.....................|ale-cloudformation-cfn-python-lint|
     cmake.................................|ale-cmake-options|
       cmakelint...........................|ale-cmake-cmakelint|
+      cmake-format........................|ale-cmake-cmakeformat|
     cpp...................................|ale-cpp-options|
       clang...............................|ale-cpp-clang|
       clangd..............................|ale-cpp-clangd|
@@ -138,6 +166,7 @@ CONTENTS                                                         *ale-contents*
       hfmt................................|ale-haskell-hfmt|
       hlint...............................|ale-haskell-hlint|
       stack-build.........................|ale-haskell-stack-build|
+      stack-ghc...........................|ale-haskell-stack-ghc|
       stylish-haskell.....................|ale-haskell-stylish-haskell|
       hie.................................|ale-haskell-hie|
     hcl...................................|ale-hcl-options|
@@ -183,6 +212,7 @@ CONTENTS                                                         *ale-contents*
       languageserver......................|ale-kotlin-languageserver|
     latex.................................|ale-latex-options|
       write-good..........................|ale-latex-write-good|
+      textlint............................|ale-latex-textlint|
     less..................................|ale-less-options|
       lessc...............................|ale-less-lessc|
       prettier............................|ale-less-prettier|
@@ -255,6 +285,7 @@ CONTENTS                                                         *ale-contents*
       cython..............................|ale-pyrex-cython|
     python................................|ale-python-options|
       autopep8............................|ale-python-autopep8|
+      bandit..............................|ale-python-bandit|
       black...............................|ale-python-black|
       flake8..............................|ale-python-flake8|
       isort...............................|ale-python-isort|
@@ -263,6 +294,7 @@ CONTENTS                                                         *ale-contents*
       pycodestyle.........................|ale-python-pycodestyle|
       pydocstyle..........................|ale-python-pydocstyle|
       pyflakes............................|ale-python-pyflakes|
+      pylama..............................|ale-python-pylama|
       pylint..............................|ale-python-pylint|
       pyls................................|ale-python-pyls|
       pyre................................|ale-python-pyre|
@@ -277,6 +309,7 @@ CONTENTS                                                         *ale-contents*
       ols.................................|ale-reasonml-ols|
       refmt...............................|ale-reasonml-refmt|
     restructuredtext......................|ale-restructuredtext-options|
+      textlint............................|ale-restructuredtext-textlint|
       write-good..........................|ale-restructuredtext-write-good|
     ruby..................................|ale-ruby-options|
       brakeman............................|ale-ruby-brakeman|
@@ -319,6 +352,8 @@ CONTENTS                                                         *ale-contents*
       sqlfmt..............................|ale-sql-sqlfmt|
     stylus................................|ale-stylus-options|
       stylelint...........................|ale-stylus-stylelint|
+    sugarss...............................|ale-sugarss-options|
+      stylelint...........................|ale-sugarss-stylelint|
     tcl...................................|ale-tcl-options|
       nagelfar............................|ale-tcl-nagelfar|
     terraform.............................|ale-terraform-options|
@@ -344,6 +379,12 @@ CONTENTS                                                         *ale-contents*
     verilog/systemverilog.................|ale-verilog-options|
       iverilog............................|ale-verilog-iverilog|
       verilator...........................|ale-verilog-verilator|
+      vlog................................|ale-verilog-vlog|
+      xvlog...............................|ale-verilog-xvlog|
+    vhdl..................................|ale-vhdl-options|
+      ghdl................................|ale-vhdl-ghdl|
+      vcom................................|ale-vhdl-vcom|
+      xvhdl...............................|ale-vhdl-xvhdl|
     vim...................................|ale-vim-options|
       vint................................|ale-vim-vint|
     vim help..............................|ale-vim-help-options|
@@ -361,29 +402,6 @@ CONTENTS                                                         *ale-contents*
       yamllint............................|ale-yaml-yamllint|
     yang..................................|ale-yang-options|
       yang-lsp............................|ale-yang-lsp|
-  8. Commands/Keybinds....................|ale-commands|
-  9. API..................................|ale-api|
-  10. Special Thanks......................|ale-special-thanks|
-  11. Contact.............................|ale-contact|
-
-===============================================================================
-1. Introduction                                              *ale-introduction*
-
-ALE provides the means to run linters asynchronously in Vim in a variety of
-languages and tools. ALE sends the contents of buffers to linter programs
-using the |job-control| features available in Vim 8 and NeoVim. For Vim 8,
-Vim must be compiled with the |job| and |channel| and |timers| features
-as a minimum.
-
-ALE supports the following key features for linting:
-
-1. Running linters when text is changed.
-2. Running linters when files are opened.
-3. Running linters when files are saved. (When a global flag is set.)
-4. Populating the |loclist| with warning and errors.
-5. Setting |signs| with warnings and errors for error markers.
-6. Using |echo| to show error messages when the cursor moves.
-7. Setting syntax highlights for errors.
 
 ALE can fix problems with files with the |ALEFix| command, using the same job
 control functionality used for checking for problems. Try using the
@@ -396,124 +414,8 @@ developer documentation. See |ale-development|
 ===============================================================================
 2. Supported Languages & Tools                                    *ale-support*
 
-The following languages and tools are supported.
-
-Notes:
-
-`^` No linters for text or Vim help filetypes are enabled by default.
-`!!` These linters check only files on disk. See |ale-lint-file-linters|
-
-* Ada: `gcc`
-* ASM: `gcc`
-* Ansible: `ansible-lint`
-* API Blueprint: `drafter`
-* AsciiDoc: `alex`!!, `proselint`, `redpen`, `write-good`, `vale`
-* Awk: `gawk`
-* Bash: `language-server`, `shell` (-n flag), `shellcheck`, `shfmt`
-* BibTeX: `bibclean`
-* Bourne Shell: `shell` (-n flag), `shellcheck`, `shfmt`
-* C: `cppcheck`, `cpplint`!!, `clang`, `clangd`, `clangtidy`!!, `clang-format`, `cquery`, `flawfinder`, `gcc`, `uncrustify`, `ccls`
-* C++ (filetype cpp): `clang`, `clangd`, `clangcheck`!!, `clangtidy`!!, `clang-format`, `clazy`!!, `cppcheck`, `cpplint`!!, `cquery`, `flawfinder`, `gcc`, `uncrustify`, `ccls`
-* CUDA: `nvcc`!!
-* C#: `mcs`, `mcsc`!!, `uncrustify`
-* Chef: `foodcritic`
-* Clojure: `joker`
-* CloudFormation: `cfn-python-lint`
-* CMake: `cmakelint`
-* CoffeeScript: `coffee`, `coffeelint`
-* Crystal: `crystal`!!
-* CSS: `csslint`, `prettier`, `stylelint`
-* Cucumber: `cucumber`
-* Cython (pyrex filetype): `cython`
-* D: `dls`, `dmd`, `uncrustify`
-* Dafny: `dafny`!!
-* Dart: `dartanalyzer`!!, `language_server`, dartfmt!!
-* Dockerfile: `dockerfile_lint`, `hadolint`
-* Elixir: `credo`, `dialyxir`, `dogma`, `mix`!!, `elixir-ls`
-* Elm: `elm-format, elm-make`
-* Erb: `erb`, `erubi`, `erubis`, `ruumba`
-* Erlang: `erlc`, `SyntaxErl`
-* Fish: `fish` (-n flag)
-* Fortran: `gcc`, `language_server`
-* Fountain: `proselint`
-* FusionScript: `fusion-lint`
-* Git Commit Messages: `gitlint`
-* GLSL: glslang, `glslls`
-* Go: `gofmt`, `goimports`, `go mod`!!, `go vet`!!, `golint`, `gotype`!!, `gometalinter`!!, `go build`!!, `gosimple`!!, `staticcheck`!!, `golangserver`, `golangci-lint`!!, `bingo`
-* GraphQL: `eslint`, `gqlint`, `prettier`
-* Hack: `hack`, `hackfmt`, `hhast`
-* Haml: `haml-lint`
-* Handlebars: `ember-template-lint`
-* Haskell: `brittany`, `ghc`, `cabal-ghc`, `stylish-haskell`, `stack-ghc`, `stack-build`!!, `ghc-mod`, `hlint`, `hdevtools`, `hfmt`, `hie`
-* HCL: `terraform-fmt`
-* HTML: `alex`!!, `HTMLHint`, `proselint`, `tidy`, `prettier`, `write-good`
-* Idris: `idris`
-* ISPC: `ispc`!!
-* Java: `checkstyle`, `javac`, `google-java-format`, `PMD`, `javalsp`, `uncrustify`
-* JavaScript: `eslint`, `flow`, `jscs`, `jshint`, `prettier`, `prettier-eslint`, `prettier-standard`, `standard`, `xo`
-* JSON: `fixjson`, `jsonlint`, `jq`, `prettier`
-* Julia: `languageserver`
-* Kotlin: `kotlinc`!!, `ktlint`!!, `languageserver`
-* LaTeX (tex): `alex`!!, `chktex`, `lacheck`, `proselint`, `redpen`, `vale`, `write-good`
-* Less: `lessc`, `prettier`, `stylelint`
-* LLVM: `llc`
-* Lua: `luac`, `luacheck`
-* Mail: `alex`!!, `proselint`, `vale`
-* Make: `checkmake`
-* Markdown: `alex`!!, `markdownlint`!!, `mdl`, `prettier`, `proselint`, `redpen`, `remark-lint`, `textlint`, `vale`, `write-good`
-* MATLAB: `mlint`
-* Mercury: `mmc`!!
-* NASM: `nasm`!!
-* Nim: `nim check`!!
-* nix: `nix-instantiate`
-* nroff: `alex`!!, `proselint`, `write-good`
-* Objective-C: `clang`, `clangd`, `uncrustify`, `ccls`
-* Objective-C++: `clang`, `clangd`, `uncrustify`
-* OCaml: `merlin` (see |ale-ocaml-merlin|), `ols`, `ocamlformat`
-* Pawn: `uncrustify`
-* Perl: `perl -c`, `perl-critic`, `perltidy`
-* Perl6: `perl6 -c`
-* PHP: `langserver`, `phan`, `php -l`, `phpcs`, `phpmd`, `phpstan`, `phpcbf`, `php-cs-fixer`, `psalm`!!
-* PO: `alex`!!, `msgfmt`, `proselint`, `write-good`
-* Pod: `alex`!!, `proselint`, `write-good`
-* Pony: `ponyc`
-* Prolog: `swipl`
-* proto: `protoc-gen-lint`
-* Pug: `pug-lint`
-* Puppet: `languageserver`, `puppet`, `puppet-lint`
-* Python: `autopep8`, `black`, `flake8`, `isort`, `mypy`, `prospector`, `pycodestyle`, `pydocstyle`, `pyls`, `pyre`, `pylint`!!, `vulture`!!, `yapf`
-* QML: `qmlfmt`, `qmllint`
-* R: `lintr`
-* ReasonML: `merlin`, `ols`, `refmt`
-* reStructuredText: `alex`!!, `proselint`, `redpen`, `rstcheck`, `vale`, `write-good`
-* Re:VIEW: `redpen`
-* RPM spec: `rpmlint`
-* Ruby: `brakeman`, `rails_best_practices`!!, `reek`, `rubocop`, `ruby`, `rufo`, `solargraph`, `standardrb`
-* Rust: `cargo`!!, `rls`, `rustc` (see |ale-integration-rust|), `rustfmt`
-* SASS: `sass-lint`, `stylelint`
-* SCSS: `prettier`, `sass-lint`, `scss-lint`, `stylelint`
-* Scala: `fsc`, `sbtserver`, `scalac`, `scalafmt`, `scalastyle`
-* Slim: `slim-lint`
-* SML: `smlnj`
-* Solidity: `solhint`, `solium`
-* Stylus: `stylelint`
-* SQL: `sqlint`, `sqlfmt`
-* Swift: `swiftlint`, `swiftformat`
-* Tcl: `nagelfar`!!
-* Terraform: `fmt`, `tflint`
-* Texinfo: `alex`!!, `proselint`, `write-good`
-* Text^: `alex`!!, `proselint`, `redpen`, `textlint`, `vale`, `write-good`
-* Thrift: `thrift`
-* TypeScript: `eslint`, `prettier`, `tslint`, `tsserver`, `typecheck`
-* VALA: `uncrustify`
-* Verilog: `iverilog`, `verilator`
-* Vim: `vint`
-* Vim help^: `alex`!!, `proselint`, `write-good`
-* Vue: `prettier`, `vls`
-* XHTML: `alex`!!, `proselint`, `write-good`
-* XML: `xmllint`
-* YAML: `prettier`, `swaglint`, `yamllint`
-* YANG: `yang-lsp`
+ALE supports a wide variety of languages and tools. See |ale-supported-list|
+for the full list.
 
 ===============================================================================
 3. Linting                                                           *ale-lint*
@@ -676,14 +578,10 @@ The values for `g:ale_fixers` can be a list of |String|, |Funcref|, or
 for a function set in the ALE fixer registry.
 
 Each function for fixing errors must accept either one argument `(buffer)` or
-three arguments `(buffer, done, lines)`, representing the buffer being fixed,
-a function to call with results, and the lines to fix. The functions must
-return either `0`, for changing nothing, a |List| for new lines to set, a
-|Dictionary| for describing a command to be run in the background, or `v:true`
-for indicating that results will be provided asynchronously via the `done`
-callback.
-
-NOTE: The `done` function has not been implemented yet.
+two arguments `(buffer, lines)`, representing the buffer being fixed and the
+lines to fix. The functions must return either `0`, for changing nothing, a
+|List| for new lines to set, a |Dictionary| for describing a command to be
+run in the background, or the result of |ale#command#Run()|.
 
 Functions receiving a variable number of arguments will not receive the second
 argument `lines`. Functions should name two arguments if the `lines` argument
@@ -713,26 +611,6 @@ are supported for running the commands.
 
                       A |List| of |String|s must be returned.
 
-  `chain_with`          An optional key for defining a callback to call next.
-
-                      The callback must accept two or three arguments,
-                      `(buffer, output)` or `(buffer, output, input)` .
-                      Functions receiving a variable number of arguments will
-                      only receive the first two values. The `output` argument
-                      will contain the lines of output from the command run.
-                      The `input` argument is the List of lines for the
-                      buffer, after applying any previous fixers.
-
-                      The callback must return the same values returned for
-                      any fixer function. This allows fixer functions to be
-                      chained recursively.
-
-                      When the command string returned for a fixer is an empty
-                      string, the next command in the chain will still be run.
-                      This allows commands to be skipped, like version checks
-                      that are cached. An empty List will be passed to the
-                      next callback in the chain for the `output`.
-
   `read_buffer`         An optional key for disabling reading the buffer.
 
                       When set to `0`, ALE will not pipe the buffer's data
@@ -740,10 +618,7 @@ are supported for running the commands.
                       the buffer is not read when `read_temporary_file` is
                       `1`.
 
-                      This option defaults to `0` when `chain_with` is defined
-                      as anything other than `v:null`, and defaults to `1`
-                      otherwise. This is so earlier commands in a chain
-                      do not receive the buffer's data by default.
+                      This option defaults to `1`.
 
                                                         *ale-fix-configuration*
 
@@ -847,9 +722,23 @@ information returned by LSP servers. The following commands are supported:
 |ALEGoToDefinitionInSplit| - The same, but in a new split.
 |ALEGoToDefinitionInVSplit| - The same, but in a new vertical split.
 
+-------------------------------------------------------------------------------
+5.3 Go To Type Definition                           *ale-go-to-type-definition*
+
+ALE supports jumping to the files and locations where symbols' types are
+defined through any enabled LSP linters. The locations ALE will jump to depend
+on the information returned by LSP servers. The following commands are
+supported:
+
+|ALEGoToTypeDefinition|      - Open the definition of the symbol's type under
+                             the cursor.
+|ALEGoToTypeDefinitionInTab| - The same, but for opening the file in a new tab.
+|ALEGoToTypeDefinitionInSplit| - The same, but in a new split.
+|ALEGoToTypeDefinitionInVSplit| - The same, but in a new vertical split.
+
 
 -------------------------------------------------------------------------------
-5.3 Find References                                       *ale-find-references*
+5.4 Find References                                       *ale-find-references*
 
 ALE supports finding references for symbols though any enabled LSP linters.
 ALE will display a preview window showing the places where a symbol is
@@ -858,9 +747,11 @@ supported:
 
 |ALEFindReferences| - Find references for the word under the cursor.
 
+Options:
+  `-relative`       Show file paths in the results relative to the working dir
 
 -------------------------------------------------------------------------------
-5.4 Hovering                                                        *ale-hover*
+5.5 Hovering                                                        *ale-hover*
 
 ALE supports "hover" information for printing brief information about symbols
 at the cursor taken from LSP linters. The following commands are supported:
@@ -891,13 +782,15 @@ Documentation for symbols at the cursor can be retrieved using the
 |ALEDocumentation| command. This command is only available for `tsserver`.
 
 -------------------------------------------------------------------------------
-5.5 Symbol Search                                           *ale-symbol-search*
+5.6 Symbol Search                                           *ale-symbol-search*
 
 ALE supports searching for workspace symbols via LSP linters. The following
 commands are supported:
 
 |ALESymbolSearch| - Search for symbols in the workspace.
 
+Options:
+  `-relative`     Show file paths in the results relative to the working dir
 
 ===============================================================================
 6. Global Options                                                 *ale-options*
@@ -1554,6 +1447,22 @@ b:ale_loclist_msg_format                             *b:ale_loclist_msg_format*
 
   The strings for configuring `%severity%` are also used for this option.
 
+g:ale_lsp_root                                                 *g:ale_lsp_root*
+b:ale_lsp_root                                                 *b:ale_lsp_root*
+
+  Type: |Dictionary| or |String|
+  Default: {}
+
+  This option is used to determine the project root for the LSP linter. If the
+  value is a |Dictionary|, it maps a linter to either a string containing the
+  project root or a |Funcref| to call to look up the root. The funcref is
+  provided the buffer number as its argument.
+
+  The buffer-specific variable may additionally be a string containing the
+  project root itself.
+
+  If neither variable yields a result, a linter-specific function is invoked to
+  detect a project root. If this, too, yields no result, the linter is disabled.
 
 g:ale_max_buffer_history_size                   *g:ale_max_buffer_history_size*
 
@@ -2170,11 +2079,67 @@ ALEWarningSign                                                 *ALEWarningSign*
   The highlight for warning signs. See |g:ale_set_signs|.
 
 
--------------------------------------------------------------------------------
-6.2. Options for write-good                            *ale-write-good-options*
+===============================================================================
+7. Linter/Fixer Options                               *ale-integration-options*
 
-The options for the write-good linter are global because it does not make
-sense to have them specified on a per-language basis.
+Linter and fixer options are documented below and in individual help files.
+
+Every option for programs can be set globally, or individually for each
+buffer. For example, `b:ale_python_flake8_executable` will override any
+values set for `g:ale_python_flake8_executable`.
+
+                                           *ale-integrations-local-executables*
+
+Some tools will prefer to search for locally-installed executables, unless
+configured otherwise. For example, the `eslint` linter will search for
+various executable paths in `node_modules`. The `flake8` linter will search
+for virtualenv directories.
+
+If you prefer to use global executables for those tools, set the relevant
+`_use_global` and `_executable` options for those linters. >
+
+  " Use the global executable with a special name for eslint.
+  let g:ale_javascript_eslint_executable = 'special-eslint'
+  let g:ale_javascript_eslint_use_global = 1
+
+  " Use the global executable with a special name for flake8.
+  let g:ale_python_flake8_executable = '/foo/bar/flake8'
+  let g:ale_python_flake8_use_global = 1
+<
+|g:ale_use_global_executables| can be set to `1` in your vimrc file to make
+ALE use global executables for all linters by default.
+
+The option |g:ale_virtualenv_dir_names| controls the local virtualenv paths
+ALE will use to search for Python executables.
+
+
+-------------------------------------------------------------------------------
+7.1. Options for alex                                        *ale-alex-options*
+
+The options for `alex` are shared between all filetypes, so options can be
+configured once.
+
+g:ale_alex_executable                                   *g:ale_alex_executable*
+                                                        *b:ale_alex_executable*
+  Type: |String|
+  Default: `'alex'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_alex_use_global                                   *g:ale_alex_use_global*
+                                                        *b:ale_alex_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+-------------------------------------------------------------------------------
+7.2. Options for write-good                            *ale-write-good-options*
+
+The options for `write-good` are shared between all filetypes, so options can
+be configured once.
 
 g:ale_writegood_executable                         *g:ale_writegood_executable*
                                                    *b:ale_writegood_executable*
@@ -2200,40 +2165,367 @@ g:ale_writegood_use_global                         *g:ale_writegood_use_global*
   See |ale-integrations-local-executables|
 
 
-===============================================================================
-7. Integration Documentation                                 *ale-integrations*
+-------------------------------------------------------------------------------
+7.3. Other Linter/Fixer Options                 *ale-other-integration-options*
 
-Linter and fixer options are documented in individual help files. See the
-table of contents at |ale-contents|.
+ALE supports a very wide variety of tools. Other linter or fixer options are
+documented in additional help files.
 
-Every option for programs can be set globally, or individually for each
-buffer.  For example, `b:ale_python_flake8_executable` will override any
-values set for `g:ale_python_flake8_executable`.
-
-                                           *ale-integrations-local-executables*
-
-Some tools will prefer to search for locally-installed executables, unless
-configured otherwise. For example, the `eslint` linter will search for
-various executable paths in `node_modules`. The `flake8` linter will search
-for virtualenv directories.
-
-If you prefer to use global executables for those tools, set the relevant
-`_use_global` and `_executable` options for those linters. >
-
-  " Use the global executable with a special name for eslint.
-  let g:ale_javascript_eslint_executable = 'special-eslint'
-  let g:ale_javascript_eslint_use_global = 1
-
-  " Use the global executable with a special name for flake8.
-  let g:ale_python_flake8_executable = '/foo/bar/flake8'
-  let g:ale_python_flake8_use_global = 1
-<
-
-|g:ale_use_global_executables| can be set to `1` in your vimrc file to make
-ALE use global executables for all linters by default.
-
-The option |g:ale_virtualenv_dir_names| controls the local virtualenv paths
-ALE will use to search for Python executables.
+  ada.....................................|ale-ada-options|
+    gcc...................................|ale-ada-gcc|
+  ansible.................................|ale-ansible-options|
+    ansible-lint..........................|ale-ansible-ansible-lint|
+  asciidoc................................|ale-asciidoc-options|
+    write-good............................|ale-asciidoc-write-good|
+    textlint..............................|ale-asciidoc-textlint|
+  asm.....................................|ale-asm-options|
+    gcc...................................|ale-asm-gcc|
+  awk.....................................|ale-awk-options|
+    gawk..................................|ale-awk-gawk|
+  bib.....................................|ale-bib-options|
+    bibclean..............................|ale-bib-bibclean|
+  c.......................................|ale-c-options|
+    clang.................................|ale-c-clang|
+    clangd................................|ale-c-clangd|
+    clang-format..........................|ale-c-clangformat|
+    clangtidy.............................|ale-c-clangtidy|
+    cppcheck..............................|ale-c-cppcheck|
+    cquery................................|ale-c-cquery|
+    flawfinder............................|ale-c-flawfinder|
+    gcc...................................|ale-c-gcc|
+    uncrustify............................|ale-c-uncrustify|
+    ccls..................................|ale-c-ccls|
+  chef....................................|ale-chef-options|
+    foodcritic............................|ale-chef-foodcritic|
+  clojure.................................|ale-clojure-options|
+    joker.................................|ale-clojure-joker|
+  cloudformation..........................|ale-cloudformation-options|
+    cfn-python-lint.......................|ale-cloudformation-cfn-python-lint|
+  cmake...................................|ale-cmake-options|
+    cmakelint.............................|ale-cmake-cmakelint|
+    cmake-format..........................|ale-cmake-cmakeformat|
+  cpp.....................................|ale-cpp-options|
+    clang.................................|ale-cpp-clang|
+    clangd................................|ale-cpp-clangd|
+    clangcheck............................|ale-cpp-clangcheck|
+    clang-format..........................|ale-cpp-clangformat|
+    clangtidy.............................|ale-cpp-clangtidy|
+    clazy.................................|ale-cpp-clazy|
+    cppcheck..............................|ale-cpp-cppcheck|
+    cpplint...............................|ale-cpp-cpplint|
+    cquery................................|ale-cpp-cquery|
+    flawfinder............................|ale-cpp-flawfinder|
+    gcc...................................|ale-cpp-gcc|
+    uncrustify............................|ale-cpp-uncrustify|
+    ccls..................................|ale-cpp-ccls|
+  c#......................................|ale-cs-options|
+    mcs...................................|ale-cs-mcs|
+    mcsc..................................|ale-cs-mcsc|
+    uncrustify............................|ale-cs-uncrustify|
+  css.....................................|ale-css-options|
+    prettier..............................|ale-css-prettier|
+    stylelint.............................|ale-css-stylelint|
+  cuda....................................|ale-cuda-options|
+    nvcc..................................|ale-cuda-nvcc|
+  d.......................................|ale-d-options|
+    dls...................................|ale-d-dls|
+    uncrustify............................|ale-d-uncrustify|
+  dart....................................|ale-dart-options|
+    dartanalyzer..........................|ale-dart-dartanalyzer|
+    dartfmt...............................|ale-dart-dartfmt|
+  dockerfile..............................|ale-dockerfile-options|
+    dockerfile_lint.......................|ale-dockerfile-dockerfile_lint|
+    hadolint..............................|ale-dockerfile-hadolint|
+  elixir..................................|ale-elixir-options|
+    mix...................................|ale-elixir-mix|
+    mix_format............................|ale-elixir-mix-format|
+    dialyxir..............................|ale-elixir-dialyxir|
+    elixir-ls.............................|ale-elixir-elixir-ls|
+  elm.....................................|ale-elm-options|
+    elm-format............................|ale-elm-elm-format|
+    elm-make..............................|ale-elm-elm-make|
+  erlang..................................|ale-erlang-options|
+    erlc..................................|ale-erlang-erlc|
+    syntaxerl.............................|ale-erlang-syntaxerl|
+  eruby...................................|ale-eruby-options|
+    ruumba................................|ale-eruby-ruumba|
+  fish....................................|ale-fish-options|
+  fortran.................................|ale-fortran-options|
+    gcc...................................|ale-fortran-gcc|
+    language_server.......................|ale-fortran-language-server|
+  fountain................................|ale-fountain-options|
+  fusionscript............................|ale-fuse-options|
+    fusion-lint...........................|ale-fuse-fusionlint|
+  git commit..............................|ale-gitcommit-options|
+    gitlint...............................|ale-gitcommit-gitlint|
+  glsl....................................|ale-glsl-options|
+    glslang...............................|ale-glsl-glslang|
+    glslls................................|ale-glsl-glslls|
+  go......................................|ale-go-options|
+    gobuild...............................|ale-go-gobuild|
+    gofmt.................................|ale-go-gofmt|
+    golint................................|ale-go-golint|
+    govet.................................|ale-go-govet|
+    gometalinter..........................|ale-go-gometalinter|
+    staticcheck...........................|ale-go-staticcheck|
+    golangserver..........................|ale-go-golangserver|
+    golangci-lint.........................|ale-go-golangci-lint|
+    bingo.................................|ale-go-bingo|
+  graphql.................................|ale-graphql-options|
+    eslint................................|ale-graphql-eslint|
+    gqlint................................|ale-graphql-gqlint|
+    prettier..............................|ale-graphql-prettier|
+  hack....................................|ale-hack-options|
+    hack..................................|ale-hack-hack|
+    hackfmt...............................|ale-hack-hackfmt|
+    hhast.................................|ale-hack-hhast|
+  handlebars..............................|ale-handlebars-options|
+    ember-template-lint...................|ale-handlebars-embertemplatelint|
+  haskell.................................|ale-haskell-options|
+    brittany..............................|ale-haskell-brittany|
+    ghc...................................|ale-haskell-ghc|
+    ghc-mod...............................|ale-haskell-ghc-mod|
+    cabal-ghc.............................|ale-haskell-cabal-ghc|
+    hdevtools.............................|ale-haskell-hdevtools|
+    hfmt..................................|ale-haskell-hfmt|
+    hlint.................................|ale-haskell-hlint|
+    stack-build...........................|ale-haskell-stack-build|
+    stack-ghc.............................|ale-haskell-stack-ghc|
+    stylish-haskell.......................|ale-haskell-stylish-haskell|
+    hie...................................|ale-haskell-hie|
+  hcl.....................................|ale-hcl-options|
+    terraform-fmt.........................|ale-hcl-terraform-fmt|
+  html....................................|ale-html-options|
+    htmlhint..............................|ale-html-htmlhint|
+    tidy..................................|ale-html-tidy|
+    prettier..............................|ale-html-prettier|
+    stylelint.............................|ale-html-stylelint|
+    write-good............................|ale-html-write-good|
+  idris...................................|ale-idris-options|
+    idris.................................|ale-idris-idris|
+  ispc....................................|ale-ispc-options|
+    ispc..................................|ale-ispc-ispc|
+  java....................................|ale-java-options|
+    checkstyle............................|ale-java-checkstyle|
+    javac.................................|ale-java-javac|
+    google-java-format....................|ale-java-google-java-format|
+    pmd...................................|ale-java-pmd|
+    javalsp...............................|ale-java-javalsp|
+    uncrustify............................|ale-java-uncrustify|
+  javascript..............................|ale-javascript-options|
+    eslint................................|ale-javascript-eslint|
+    flow..................................|ale-javascript-flow|
+    importjs..............................|ale-javascript-importjs|
+    jscs..................................|ale-javascript-jscs|
+    jshint................................|ale-javascript-jshint|
+    prettier..............................|ale-javascript-prettier|
+    prettier-eslint.......................|ale-javascript-prettier-eslint|
+    prettier-standard.....................|ale-javascript-prettier-standard|
+    standard..............................|ale-javascript-standard|
+    xo....................................|ale-javascript-xo|
+  json....................................|ale-json-options|
+    fixjson...............................|ale-json-fixjson|
+    jsonlint..............................|ale-json-jsonlint|
+    jq....................................|ale-json-jq|
+    prettier..............................|ale-json-prettier|
+  julia...................................|ale-julia-options|
+    languageserver........................|ale-julia-languageserver|
+  kotlin..................................|ale-kotlin-options|
+    kotlinc...............................|ale-kotlin-kotlinc|
+    ktlint................................|ale-kotlin-ktlint|
+    languageserver........................|ale-kotlin-languageserver|
+  latex...................................|ale-latex-options|
+    write-good............................|ale-latex-write-good|
+    textlint..............................|ale-latex-textlint|
+  less....................................|ale-less-options|
+    lessc.................................|ale-less-lessc|
+    prettier..............................|ale-less-prettier|
+    stylelint.............................|ale-less-stylelint|
+  llvm....................................|ale-llvm-options|
+    llc...................................|ale-llvm-llc|
+  lua.....................................|ale-lua-options|
+    luac..................................|ale-lua-luac|
+    luacheck..............................|ale-lua-luacheck|
+  markdown................................|ale-markdown-options|
+    mdl...................................|ale-markdown-mdl|
+    prettier..............................|ale-markdown-prettier|
+    remark-lint...........................|ale-markdown-remark-lint|
+    textlint..............................|ale-markdown-textlint|
+    write-good............................|ale-markdown-write-good|
+  mercury.................................|ale-mercury-options|
+    mmc...................................|ale-mercury-mmc|
+  nasm....................................|ale-nasm-options|
+    nasm..................................|ale-nasm-nasm|
+  nroff...................................|ale-nroff-options|
+    write-good............................|ale-nroff-write-good|
+  objc....................................|ale-objc-options|
+    clang.................................|ale-objc-clang|
+    clangd................................|ale-objc-clangd|
+    uncrustify............................|ale-objc-uncrustify|
+    ccls..................................|ale-objc-ccls|
+  objcpp..................................|ale-objcpp-options|
+    clang.................................|ale-objcpp-clang|
+    clangd................................|ale-objcpp-clangd|
+    uncrustify............................|ale-objcpp-uncrustify|
+  ocaml...................................|ale-ocaml-options|
+    merlin................................|ale-ocaml-merlin|
+    ols...................................|ale-ocaml-ols|
+    ocamlformat...........................|ale-ocaml-ocamlformat|
+  pawn....................................|ale-pawn-options|
+    uncrustify............................|ale-pawn-uncrustify|
+  perl....................................|ale-perl-options|
+    perl..................................|ale-perl-perl|
+    perlcritic............................|ale-perl-perlcritic|
+    perltidy..............................|ale-perl-perltidy|
+  perl6...................................|ale-perl6-options|
+    perl6.................................|ale-perl6-perl6|
+  php.....................................|ale-php-options|
+    langserver............................|ale-php-langserver|
+    phan..................................|ale-php-phan|
+    phpcbf................................|ale-php-phpcbf|
+    phpcs.................................|ale-php-phpcs|
+    phpmd.................................|ale-php-phpmd|
+    phpstan...............................|ale-php-phpstan|
+    psalm.................................|ale-php-psalm|
+    php-cs-fixer..........................|ale-php-php-cs-fixer|
+    php...................................|ale-php-php|
+  po......................................|ale-po-options|
+    write-good............................|ale-po-write-good|
+  pod.....................................|ale-pod-options|
+    write-good............................|ale-pod-write-good|
+  pony....................................|ale-pony-options|
+    ponyc.................................|ale-pony-ponyc|
+  prolog..................................|ale-prolog-options|
+    swipl.................................|ale-prolog-swipl|
+  proto...................................|ale-proto-options|
+    protoc-gen-lint.......................|ale-proto-protoc-gen-lint|
+  pug.....................................|ale-pug-options|
+    puglint...............................|ale-pug-puglint|
+  puppet..................................|ale-puppet-options|
+    puppet................................|ale-puppet-puppet|
+    puppetlint............................|ale-puppet-puppetlint|
+    puppet-languageserver.................|ale-puppet-languageserver|
+  pyrex (cython)..........................|ale-pyrex-options|
+    cython................................|ale-pyrex-cython|
+  python..................................|ale-python-options|
+    autopep8..............................|ale-python-autopep8|
+    bandit................................|ale-python-bandit|
+    black.................................|ale-python-black|
+    flake8................................|ale-python-flake8|
+    isort.................................|ale-python-isort|
+    mypy..................................|ale-python-mypy|
+    prospector............................|ale-python-prospector|
+    pycodestyle...........................|ale-python-pycodestyle|
+    pydocstyle............................|ale-python-pydocstyle|
+    pyflakes..............................|ale-python-pyflakes|
+    pylama................................|ale-python-pylama|
+    pylint................................|ale-python-pylint|
+    pyls..................................|ale-python-pyls|
+    pyre..................................|ale-python-pyre|
+    vulture...............................|ale-python-vulture|
+    yapf..................................|ale-python-yapf|
+  qml.....................................|ale-qml-options|
+    qmlfmt................................|ale-qml-qmlfmt|
+  r.......................................|ale-r-options|
+    lintr.................................|ale-r-lintr|
+  reasonml................................|ale-reasonml-options|
+    merlin................................|ale-reasonml-merlin|
+    ols...................................|ale-reasonml-ols|
+    refmt.................................|ale-reasonml-refmt|
+  restructuredtext........................|ale-restructuredtext-options|
+    textlint..............................|ale-restructuredtext-textlint|
+    write-good............................|ale-restructuredtext-write-good|
+  ruby....................................|ale-ruby-options|
+    brakeman..............................|ale-ruby-brakeman|
+    rails_best_practices..................|ale-ruby-rails_best_practices|
+    reek..................................|ale-ruby-reek|
+    rubocop...............................|ale-ruby-rubocop|
+    ruby..................................|ale-ruby-ruby|
+    rufo..................................|ale-ruby-rufo|
+    solargraph............................|ale-ruby-solargraph|
+    standardrb............................|ale-ruby-standardrb|
+  rust....................................|ale-rust-options|
+    cargo.................................|ale-rust-cargo|
+    rls...................................|ale-rust-rls|
+    rustc.................................|ale-rust-rustc|
+    rustfmt...............................|ale-rust-rustfmt|
+  sass....................................|ale-sass-options|
+    sasslint..............................|ale-sass-sasslint|
+    stylelint.............................|ale-sass-stylelint|
+  scala...................................|ale-scala-options|
+    sbtserver.............................|ale-scala-sbtserver|
+    scalafmt..............................|ale-scala-scalafmt|
+    scalastyle............................|ale-scala-scalastyle|
+  scss....................................|ale-scss-options|
+    prettier..............................|ale-scss-prettier|
+    sasslint..............................|ale-scss-sasslint|
+    stylelint.............................|ale-scss-stylelint|
+  sh......................................|ale-sh-options|
+    sh-language-server....................|ale-sh-language-server|
+    shell.................................|ale-sh-shell|
+    shellcheck............................|ale-sh-shellcheck|
+    shfmt.................................|ale-sh-shfmt|
+  sml.....................................|ale-sml-options|
+    smlnj.................................|ale-sml-smlnj|
+  solidity................................|ale-solidity-options|
+    solhint...............................|ale-solidity-solhint|
+    solium................................|ale-solidity-solium|
+  spec....................................|ale-spec-options|
+    rpmlint...............................|ale-spec-rpmlint|
+  sql.....................................|ale-sql-options|
+    sqlfmt................................|ale-sql-sqlfmt|
+  stylus..................................|ale-stylus-options|
+    stylelint.............................|ale-stylus-stylelint|
+  sugarss.................................|ale-sugarss-options|
+    stylelint.............................|ale-sugarss-stylelint|
+  tcl.....................................|ale-tcl-options|
+    nagelfar..............................|ale-tcl-nagelfar|
+  terraform...............................|ale-terraform-options|
+    fmt...................................|ale-terraform-fmt|
+    tflint................................|ale-terraform-tflint|
+  tex.....................................|ale-tex-options|
+    chktex................................|ale-tex-chktex|
+    lacheck...............................|ale-tex-lacheck|
+  texinfo.................................|ale-texinfo-options|
+    write-good............................|ale-texinfo-write-good|
+  text....................................|ale-text-options|
+    textlint..............................|ale-text-textlint|
+    write-good............................|ale-text-write-good|
+  thrift..................................|ale-thrift-options|
+    thrift................................|ale-thrift-thrift|
+  typescript..............................|ale-typescript-options|
+    eslint................................|ale-typescript-eslint|
+    prettier..............................|ale-typescript-prettier|
+    tslint................................|ale-typescript-tslint|
+    tsserver..............................|ale-typescript-tsserver|
+  vala....................................|ale-vala-options|
+    uncrustify............................|ale-vala-uncrustify|
+  verilog/systemverilog...................|ale-verilog-options|
+    iverilog..............................|ale-verilog-iverilog|
+    verilator.............................|ale-verilog-verilator|
+    vlog..................................|ale-verilog-vlog|
+    xvlog.................................|ale-verilog-xvlog|
+  vhdl....................................|ale-vhdl-options|
+    ghdl..................................|ale-vhdl-ghdl|
+    vcom..................................|ale-vhdl-vcom|
+    xvhdl.................................|ale-vhdl-xvhdl|
+  vim.....................................|ale-vim-options|
+    vint..................................|ale-vim-vint|
+  vim help................................|ale-vim-help-options|
+    write-good............................|ale-vim-help-write-good|
+  vue.....................................|ale-vue-options|
+    prettier..............................|ale-vue-prettier|
+    vls...................................|ale-vue-vls|
+  xhtml...................................|ale-xhtml-options|
+    write-good............................|ale-xhtml-write-good|
+  xml.....................................|ale-xml-options|
+    xmllint...............................|ale-xml-xmllint|
+  yaml....................................|ale-yaml-options|
+    prettier..............................|ale-yaml-prettier|
+    swaglint..............................|ale-yaml-swaglint|
+    yamllint..............................|ale-yaml-yamllint|
+  yang....................................|ale-yang-options|
+    yang-lsp..............................|ale-yang-lsp|
 
 
 ===============================================================================
@@ -2326,6 +2618,45 @@ ALEGoToDefinitionInVSplit                           *ALEGoToDefinitionInVSplit*
   command.
 
 
+ALEGoToTypeDefinition                                   *ALEGoToTypeDefinition*
+
+  This works similar to |ALEGoToDefinition| but instead jumps to the
+  definition of a type of a symbol under the cursor. ALE will jump to a
+  definition if an LSP server provides a location to jump to. Otherwise, ALE
+  will do nothing.
+
+  You can jump back to the position you were at before going to the definition
+  of something with jump motions like CTRL-O. See |jump-motions|.
+
+  A plug mapping `<Plug>(ale_go_to_type_definition)` is defined for this
+  command.
+
+
+ALEGoToTypeDefinitionInTab                         *ALEGoToTypeDefinitionInTab*
+
+  The same as |ALEGoToTypeDefinition|, but opens results in a new tab.
+
+  A plug mapping `<Plug>(ale_go_to_type_definition_in_tab)` is defined for
+  this command.
+
+
+ALEGoToTypeDefinitionInSplit                     *ALEGoToTypeDefinitionInSplit*
+
+  The same as |ALEGoToTypeDefinition|, but opens results in a new split.
+
+  A plug mapping `<Plug>(ale_go_to_type_definition_in_split)` is defined for
+  this command.
+
+
+ALEGoToTypeDefinitionInVSplit                   *ALEGoToTypeDefinitionInVSplit*
+
+  The same as |ALEGoToTypeDefinition|, but opens results in a new vertical
+  split.
+
+  A plug mapping `<Plug>(ale_go_to_type_definition_in_vsplit)` is defined for
+  this command.
+
+
 ALEHover                                                             *ALEHover*
 
   Print brief information about the symbol under the cursor, taken from any
@@ -2374,14 +2705,36 @@ ALELast                                                               *ALELast*
   `ALEPreviousWrap` and `ALENextWrap` will wrap around the file to find
   the last or first warning or error in the file, respectively.
 
+  `ALEPrevious` and `ALENext` take optional flags arguments to custom their
+  behaviour :
+  `-wrap` enable wrapping around the file
+  `-error`, `-warning` and `-info` enable jumping to errors, warnings or infos
+    respectively, ignoring anything else. They are mutually exclusive and if
+    several are provided the priority is the following: error > warning > info.
+  `-style` and `-nostyle` allow you to jump respectively to style error or
+    warning and to not style error or warning. They also are mutually
+    exclusive and nostyle has priority over style.
+
+  Flags can be combined to create create custom jumping. Thus you can use
+  ":ALENext -wrap -error -nosyle" to jump to the next error which is not a
+  style error while going back to the begining of the file if needed.
+
   `ALEFirst` goes to the first error or warning in the buffer, while `ALELast`
   goes to the last one.
 
   The following |<Plug>| mappings are defined for the commands: >
   <Plug>(ale_previous) - ALEPrevious
   <Plug>(ale_previous_wrap) - ALEPreviousWrap
+  <Plug>(ale_previous_error) - ALEPrevious -error
+  <Plug>(ale_previous_wrap_error) - ALEPrevious -wrap -error
+  <Plug>(ale_previous_warning) - ALEPrevious -warning
+  <Plug>(ale_previous_wrap_warning) - ALEPrevious -wrap -warning
   <Plug>(ale_next) - ALENext
   <Plug>(ale_next_wrap) - ALENextWrap
+  <Plug>(ale_next_error) - ALENext -error
+  <Plug>(ale_next_wrap_error) - ALENext -wrap -error
+  <Plug>(ale_next_warning) - ALENext -warning
+  <Plug>(ale_next_wrap_warning) - ALENext -wrap -warning
   <Plug>(ale_first) - ALEFirst
   <Plug>(ale_last) - ALELast
 <
@@ -2541,32 +2894,140 @@ ale#Queue(delay, [linting_flag, buffer_number])                   *ale#Queue()*
   is broken, or when developing ALE itself.
 
 
-ale#engine#CreateDirectory(buffer)               *ale#engine#CreateDirectory()*
+ale#command#CreateDirectory(buffer)             *ale#command#CreateDirectory()*
 
   Create a new temporary directory with a unique name, and manage that
-  directory with |ale#engine#ManageDirectory()|, so it will be removed as soon
+  directory with |ale#command#ManageDirectory()|, so it will be removed as soon
   as possible.
 
   It is advised to only call this function from a callback function for
   returning a linter command to run.
 
 
-ale#engine#CreateFile(buffer)                         *ale#engine#CreateFile()*
+ale#command#CreateFile(buffer)                       *ale#command#CreateFile()*
 
   Create a new temporary file with a unique name, and manage that file with
-  |ale#engine#ManageFile()|, so it will be removed as soon as possible.
+  |ale#command#ManageFile()|, so it will be removed as soon as possible.
 
   It is advised to only call this function from a callback function for
   returning a linter command to run.
 
 
-ale#engine#EscapeCommandPart(command_part)     *ale#engine#EscapeCommandPart()*
+ale#command#Run(buffer, command, callback, [options])       *ale#command#Run()*
+
+  Start running a job in the background, and pass the results to the given
+  callback later.
+
+  This function can be used for computing the results of ALE linter or fixer
+  functions asynchronously with jobs. `buffer` must match the buffer being
+  linted or fixed, `command` must be a |String| for a shell command to
+  execute, `callback` must be defined as a |Funcref| to call later with the
+  results, and an optional |Dictionary| of `options` can be provided.
+
+  The `callback` will receive the arguments `(buffer, output, metadata)`,
+  where the `buffer` will match the buffer given to the function, the `output`
+  will be a `List` of lines of output from the job that was run, and the
+  `metadata` will be a |Dictionary| with additional information about the job
+  that was run, including:
+
+    `exit_code` - A |Number| with the exit code for the program that was run.
+
+  The result of this function is either a special |Dictionary| ALE will use
+  for waiting for the command to finish, or `0` if the job is not started. The
+  The return value of the `callback` will be used as the eventual result for
+  whatever value is being given to ALE. For example: >
+
+    function! s:GetCommand(buffer, output, meta) abort
+        " Do something with a:output here, from the foo command.
+
+        " This is used as the command to run for linting.
+        return 'final command'
+    endfunction
+
+    " ...
+
+    'command': {b -> ale#command#Run(b, 'foo', function('s:GetCommand'))}
+<
+  The result of a callback can also be the result of another call to this
+  function, so that several commands can be arbitrarily chained together. For
+  example: >
+
+    function! s:GetAnotherCommand(buffer, output, meta) abort
+        " We can finally return this command.
+        return 'last command'
+    endfunction
+
+    function! s:GetCommand(buffer, output, meta) abort
+        " We can return another deferred result.
+        return ale#command#Run(
+        \   a:buffer,
+        \   'second command',
+        \   function('s:GetAnotherCommand')
+        \)
+    endfunction
+
+    " ...
+
+    'command': {b -> ale#command#Run(b, 'foo', function('s:GetCommand'))}
+<
+
+  The following `options` can be provided.
+
+    `output_stream` - Either `'stdout'`, `'stderr'`, `'both'`, or `'none`' for
+                    selecting which output streams to read lines from.
+
+                    The default is `'stdout'`
+
+    `executable`    - An executable for formatting into `%e` in the command.
+                    If this option is not provided, formatting commands with
+                    `%e` will not work.
+
+    `read_buffer`   - If set to `1`, the buffer will be piped into the
+                    command.
+
+                    The default is `0`.
+
+    `input`         - When creating temporary files with `%t` or piping text
+                    into a command `input` can be set to a |List| of text to
+                    use instead of the buffer's text.
+
+
+ale#command#EscapeCommandPart(command_part)   *ale#command#EscapeCommandPart()*
 
   Given a |String|, return a |String| with all `%` characters replaced with
   `%%` instead. This function can be used to escape strings which are
   dynamically generated for commands before handing them over to ALE,
   so that ALE doesn't treat any strings with `%` formatting sequences
   specially.
+
+
+ale#command#ManageDirectory(buffer, directory)  *ale#command#ManageDirectory()*
+
+  Like |ale#command#ManageFile()|, but directories and all of their contents
+  will be deleted, akin to `rm -rf directory`, which could lead to loss of
+  data if mistakes are made. This command will also delete any temporary
+  filenames given to it.
+
+  It is advised to use |ale#command#ManageFile()| instead for deleting single
+  files.
+
+
+ale#command#ManageFile(buffer, filename)             *ale#command#ManageFile()*
+
+  Given a buffer number for a buffer currently running some linting or fixing
+  tasks and a filename, register a filename with ALE for automatic deletion
+  after linting or fixing is complete, or when Vim exits.
+
+  If Vim exits suddenly, ALE will try its best to remove temporary files, but
+  ALE cannot guarantee with absolute certainty that the files will be removed.
+  It is advised to create temporary files in the operating system's managed
+  temporary file directory, such as with |tempname()|.
+
+  Directory names should not be given to this function. ALE will only delete
+  files and symlinks given to this function. This is to prevent entire
+  directories from being accidentally deleted, say in cases of writing
+  `dir . '/' . filename` where `filename` is actually `''`, etc. ALE instead
+  manages directories separately with the |ale#command#ManageDirectory| function.
 
 
 ale#engine#GetLoclist(buffer)                         *ale#engine#GetLoclist()*
@@ -2583,35 +3044,6 @@ ale#engine#IsCheckingBuffer(buffer)             *ale#engine#IsCheckingBuffer()*
   Given a buffer number, returns `1` when ALE is busy checking that buffer.
 
   This function can be used for status lines, tab names, etc.
-
-
-ale#engine#ManageFile(buffer, filename)               *ale#engine#ManageFile()*
-
-  Given a buffer number for a buffer currently running some linting tasks
-  and a filename, register a filename with ALE for automatic deletion after
-  linting is complete, or when Vim exits.
-
-  If Vim exits suddenly, ALE will try its best to remove temporary files, but
-  ALE cannot guarantee with absolute certainty that the files will be removed.
-  It is advised to create temporary files in the operating system's managed
-  temporary file directory, such as with |tempname()|.
-
-  Directory names should not be given to this function. ALE will only delete
-  files and symlinks given to this function. This is to prevent entire
-  directories from being accidentally deleted, say in cases of writing
-  `dir . '/' . filename` where `filename` is actually `''`, etc. ALE instead
-  manages directories separetly with the |ale#engine#ManageDirectory| function.
-
-
-ale#engine#ManageDirectory(buffer, directory)    *ale#engine#ManageDirectory()*
-
-  Like |ale#engine#ManageFile()|, but directories and all of their contents
-  will be deleted, akin to `rm -rf directory`, which could lead to loss of
-  data if mistakes are made. This command will also delete any temporary
-  filenames given to it.
-
-  It is advised to use |ale#engine#ManageFile()| instead for deleting single
-  files.
 
 
 ale#fix#registry#Add(name, func, filetypes, desc, [aliases])
@@ -2703,7 +3135,7 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                            and have been checked at least once.
 
                            Temporary files in directories used for Vim
-                           temporary files with `tempname()` will be asssumed
+                           temporary files with `tempname()` will be assumed
                            to be the buffer being checked, unless the `bufnr`
                            key is also set with a valid number for some other
                            buffer.
@@ -2726,73 +3158,29 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                            Human-readable |String| error code.
 
   `executable`             A |String| naming the executable itself which
-                         will be run. This value will be used to check if the
-                         program requested is installed or not.
+                         will be run, or a |Funcref| for a function to call
+                         for computing the executable, accepting a buffer
+                         number.
 
-                         Either this or the `executable_callback` argument
-                         must be provided.
+                         The result can be computed with |ale#command#Run()|.
 
-  `executable_callback  `  A |String| or |Funcref| for a callback function
-                         accepting a buffer number. A |String| should be
-                         returned for the executable to check. This can be
-                         used in place of `executable` when more complicated
-                         processing is needed.
+                         This value will be used to check if the program
+                         requested is installed or not.
 
-  `command`                A |String| for an  executable to run asynchronously.
+                         If an `executable` is not defined, the command will
+                         be run without checking if a program is executable
+                         first. Defining an executable path is recommended to
+                         avoid starting too many processes.
+
+  `command`                A |String| for a command to run asynchronously, or a
+                         |Funcref| for a function to call for computing the
+                         command, accepting a buffer number.
+
+                         The result can be computed with |ale#command#Run()|.
+
                          This command will be fed the lines from the buffer to
                          check, and will produce the lines of output given to
                          the `callback`.
-
-  `command_callback`       A |String| or |Funcref| for a callback function
-                         accepting a buffer number. A |String| should be
-                         returned for a command to run. This can be used in
-                         place of `command` when more complicated processing
-                         is needed.
-
-                         If an empty string is returned from the callback,
-                         no jobs for linting will be run for that linter.
-                         This can be used for skipping a linter call,
-                         say if no configuration file was found.
-
-                                                            *ale-command-chain*
-  `command_chain`          A |List| of |Dictionary| items defining a series
-                         of commands to be run. At least one |Dictionary|
-                         should be provided. Each Dictionary must contain the
-                         key `callback`, defining a |String| or |Funcref| for
-                         a function returning a |String| for a command to run.
-
-                         The callback functions for each command after the
-                         first command in in the chain should accept two
-                         arguments `(buffer, output)`, a buffer number and a
-                         |List| of lines of output from the previous command
-                         in the chain.
-
-                         The first callback function in a chain accepts only
-                         a `(buffer)` argument, as there are no previous
-                         commands to run which return `output`.
-
-                         If an empty string is returned for a command in a
-                         chain, that command in the chain will be skipped,
-                         and the next function in the chain will be called
-                         immediately instead. If the last command in a chain
-                         returns an empty string, then no linting will be
-                         performed.
-
-                         Commands in the chain will all use the
-                         `output_stream` value provided in the root
-                         |Dictionary|. Each command in the chain can also
-                         provide an `output_stream` key to override this value.
-                         See the `output_stream` description for more
-                         information.
-
-                         Commands in the chain all behave as if `read_buffer`
-                         is set to `0` by default, except for the last command
-                         in the chain, which uses the value set for
-                         `read_buffer` in the root |Dictionary|. Each command
-                         in the chain can also provide a `read_buffer` key
-                         to override these values.
-                         See the `read_buffer` description for more
-                         information.
 
   `output_stream`          A |String| for the output stream the lines of output
                          should be read from for the command which is run. The
@@ -2839,21 +3227,20 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                          linter will be defined as an LSP linter which keeps a
                          process for a language server running, and
                          communicates with it directly via a |channel|.
-                         `executable` or `executable_callback` must be set,
-                         and `command` or `command_callback` must be set.
+                         `executable` and `command` must be set.
 
                          When this argument is set to `'socket'`, then the
                          linter will be defined as an LSP linter via a TCP
-                         socket connection. `address_callback` must be set
-                         with a callback returning an address to connect to.
+                         socket connection. `address` must be set.
+
                          ALE will not start a server automatically.
 
-                         When this argument is not empty
-                         `project_root_callback` must be defined.
+                         When this argument is not empty `project_root` must
+                         be defined.
 
-                         `language` or `language_callback` can be defined to
-                         describe the language for a file. The filetype will
-                         be used as the language by default.
+                         `language` can be defined to describe the language
+                         for a file. The filetype will be used as the language
+                         by default.
 
                          LSP linters handle diagnostics automatically, so
                          the `callback` argument must not be defined.
@@ -2861,45 +3248,41 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                          An optional `completion_filter` callback may be
                          defined for filtering completion results.
 
-                         An optional `initialization_options` or
-                         `initialization_options_callback` may be defined to
-                         pass initialization options to the LSP.
+                         `initialization_options` may be defined to pass
+                         initialization options to the LSP.
 
-                         An optional `lsp_config` or `lsp_config_callback` may
-                         be defined to pass configuration settings to the LSP.
+                         `lsp_config` may be defined to pass configuration
+                         settings to the LSP.
 
-  `address_callback`       A |String| or |Funcref| for a callback function
-                         accepting a buffer number. A |String| should be
-                         returned with an address to connect to.
+  `address`                A |String| representing an address to connect to,
+                         or a |Funcref| accepting a buffer number and
+                         returning the |String|.
+
+                         The result can be computed with |ale#command#Run()|.
 
                          This argument must only be set if the `lsp` argument
                          is set to `'socket'`.
 
-  `project_root_callback`  A |String| or |Funcref| for a callback function
-                         accepting a buffer number. A |String| should be
-                         returned representing the path to the project for the
-                         file being checked with the language server. If an
-                         empty string is returned, the file will not be
+  `project_root`           A |String| representing a path to the project for
+                         the file being checked with the language server, or
+                         a |Funcref| accepting a buffer number and returning
+                         the |String|.
+
+                         If an empty string is returned, the file will not be
                          checked at all.
 
                          This argument must only be set if the `lsp` argument
                          is also set to a non-empty string.
 
   `language`               A |String| representing the name of the language
-                         being checked. This string will be sent to the LSP to
-                         tell it what type of language is being checked.
+                         being checked, or a |Funcref| accepting a buffer
+                         number and returning the |String|. This string will
+                         be sent to the LSP to tell it what type of language
+                         is being checked.
 
-                         If this or `language_callback` isn't set, the
-                         language will default to the value of the filetype
-                         given to |ale#linter#Define|.
-
-  `language_callback`      A |String| or |Funcref| for a callback function
-                         accepting a buffer number. A |String| should be
-                         returned representing the name of the language being
-                         checked.
-
-                         This option can be used instead of `language` if a
-                         linter can check multiple languages.
+                         If a language isn't provided, the language will
+                         default to the value of the filetype given to
+                         |ale#linter#Define|.
 
   `completion_filter`      A |String| or |Funcref| for a callback function
                          accepting a buffer number and a completion item.
@@ -2917,38 +3300,24 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                          setting can make it easier to guess the linter name
                          by offering a few alternatives.
 
-  `initialization_options` A |Dictionary| of initialization options for LSPs.
+  `initialization_options` A |Dictionary| of initialization options for LSPs,
+                         or a |Funcref| for a callback function accepting
+                         a buffer number and returning the |Dictionary|.
+
                          This will be fed (as JSON) to the LSP in the
                          initialize command.
 
-  `initialization_options_callback`
-                         A |String| or |Funcref| for a callback function
-                         accepting a buffer number. A |Dictionary| should be
-                         returned for initialization options to pass the LSP.
-                         This can be used in place of `initialization_options`
-                         when more complicated processing is needed.
+  `lsp_config`             A |Dictionary| for configuring a language server,
+                         or a |Funcref| for a callback function accepting
+                         a buffer number and returning the |Dictionary|.
 
-  `lsp_config`           A |Dictionary| of configuration settings for LSPs.
                          This will be fed (as JSON) to the LSP in the
                          workspace/didChangeConfiguration command.
 
-  `lsp_config_callback`  A |String| or |Funcref| for a callback function
-                         accepting a buffer number. A |Dictionary| should be
-                         returned for configuration settings to pass the LSP.
-                         This can be used in place of `lsp_config` when more
-                         complicated processing is needed.
-
-  Only one of `command`, `command_callback`, or `command_chain` should be
-  specified. `command_callback` is generally recommended when a command string
-  needs to be generated dynamically, or any global options are used.
-  `command_chain` is recommended where any system calls need to be made to
-  retrieve some kind of information before running the final command.
-
   If temporary files or directories are created for commands run with
-  `command_callback` or `command_chain`, then these tempoary files or
-  directories can be managed by ALE, for automatic deletion.
-  See |ale#engine#ManageFile()| and |ale#engine#ManageDirectory| for more
-  information.
+  `command`, then these temporary files or directories can be managed by ALE,
+  for automatic deletion. See |ale#command#ManageFile()| and
+  |ale#command#ManageDirectory| for more information.
 
                                                    *ale-command-format-strings*
 
@@ -2966,16 +3335,16 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
   strings will reference the one temporary file. The temporary file will be
   created inside a temporary directory, and the entire temporary directory
   will be automatically deleted, following the behaviour of
-  |ale#engine#ManageDirectory|. This option can be used for some linters which
+  |ale#command#ManageDirectory|. This option can be used for some linters which
   do not support reading from stdin.
 
   For example: >
   'command': 'ghc -fno-code -v0 %t',
 <
   Any substring `%e` will be replaced with the escaped executable supplied
-  with `executable` or `executable_callback`. This provides a convenient way
-  to define a command string which needs to include a dynamic executable name,
-  but which is otherwise static.
+  with `executable`. This provides a convenient way to define a command string
+  which needs to include a dynamic executable name, but which is otherwise
+  static.
 
   For example: >
   'command': '%e --some-argument',
@@ -2986,7 +3355,7 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
 
   If a callback for a command generates part of a command string which might
   possibly contain `%%`, `%s`, `%t`, or `%e`, where the special formatting
-  behavior is not desired, the |ale#engine#EscapeCommandPart()| function can
+  behavior is not desired, the |ale#command#EscapeCommandPart()| function can
   be used to replace those characters to avoid formatting issues.
 
                                                   *ale-linter-loading-behavior*
@@ -3070,6 +3439,21 @@ ale#statusline#Count(buffer)                           *ale#statusline#Count()*
   `style_error`   -> The number of problems with type `E` and `sub_type == 'style'`
   `style_warning` -> The number of problems with type `W` and `sub_type == 'style'`
   `total`         -> The total number of problems.
+
+
+ale#statusline#FirstProblem(buffer, type)       *ale#statusline#FirstProblem()*
+
+  Returns a copy of the first entry in the `loclist` that matches the supplied
+  buffer number and problem type. If there is no such enty, an empty dictionary
+  is returned.
+  Problem type should be one of the strings listed below:
+
+  `error`         -> Returns the first `loclist` item with type `E` and
+                     `sub_type != 'style'`
+  `warning`       -> First item with type `W` and `sub_type != 'style'`
+  `info`          -> First item with type `I`
+  `style_error`   -> First item with type `E` and `sub_type == 'style'`
+  `style_warning` -> First item with type `W` and `sub_type == 'style'`
 
 
 b:ale_linted                                                     *b:ale_linted*

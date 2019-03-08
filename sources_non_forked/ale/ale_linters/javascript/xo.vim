@@ -20,7 +20,7 @@ endfunction
 " xo uses eslint and the output format is the same
 call ale#linter#Define('javascript', {
 \   'name': 'xo',
-\   'executable_callback': 'ale_linters#javascript#xo#GetExecutable',
-\   'command_callback': 'ale_linters#javascript#xo#GetCommand',
+\   'executable': function('ale_linters#javascript#xo#GetExecutable'),
+\   'command': function('ale_linters#javascript#xo#GetCommand'),
 \   'callback': 'ale#handlers#eslint#Handle',
 \})

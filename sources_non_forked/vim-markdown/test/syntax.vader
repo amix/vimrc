@@ -882,6 +882,23 @@ a
 Execute (not code block in escaped code tag):
   AssertNotEqual SyntaxOf('a'), 'mkdCode'
 
+# Code quotes
+
+Given markdown;
+`a`
+
+Execute (code in code quotes):
+  AssertEqual SyntaxOf('a'), 'mkdCode'
+
+Given markdown;
+`a\` b `c\` d
+
+Execute (code quotes not escaped ending with backslash):
+  AssertEqual SyntaxOf('a\'), 'mkdCode'
+  AssertNotEqual SyntaxOf('b'), 'mkdCode'
+  AssertEqual SyntaxOf('c\'), 'mkdCode'
+  AssertNotEqual SyntaxOf('d'), 'mkdCode'
+
 # Math
 
 Given markdown;

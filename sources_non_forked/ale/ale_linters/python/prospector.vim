@@ -93,8 +93,8 @@ endfunction
 
 call ale#linter#Define('python', {
 \   'name': 'prospector',
-\   'executable_callback': 'ale_linters#python#prospector#GetExecutable',
-\   'command_callback': 'ale_linters#python#prospector#GetCommand',
+\   'executable': function('ale_linters#python#prospector#GetExecutable'),
+\   'command': function('ale_linters#python#prospector#GetCommand'),
 \   'callback': 'ale_linters#python#prospector#Handle',
 \   'lint_file': 1,
 \})

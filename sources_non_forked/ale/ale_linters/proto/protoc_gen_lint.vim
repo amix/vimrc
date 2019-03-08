@@ -22,6 +22,6 @@ call ale#linter#Define('proto', {
 \   'lint_file': 1,
 \   'output_stream': 'stderr',
 \   'executable': 'protoc',
-\   'command_callback': 'ale_linters#proto#protoc_gen_lint#GetCommand',
+\   'command': function('ale_linters#proto#protoc_gen_lint#GetCommand'),
 \   'callback': 'ale#handlers#unix#HandleAsError',
 \})

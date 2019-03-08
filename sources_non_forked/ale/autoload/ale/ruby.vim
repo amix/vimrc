@@ -26,7 +26,7 @@ function! ale#ruby#FindProjectRoot(buffer) abort
     let l:dir = ale#ruby#FindRailsRoot(a:buffer)
 
     if isdirectory(l:dir)
-      return l:dir
+        return l:dir
     endif
 
     for l:name in ['.solargraph.yml', 'Rakefile', 'Gemfile']

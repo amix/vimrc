@@ -31,6 +31,6 @@ endif
 call ale#linter#Define('java', {
 \   'name': 'pmd',
 \   'executable': 'pmd',
-\   'command_callback': 'ale_linters#java#pmd#GetCommand',
+\   'command': function('ale_linters#java#pmd#GetCommand'),
 \   'callback': 'ale_linters#java#pmd#Handle',
 \})

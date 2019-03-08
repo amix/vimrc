@@ -15,8 +15,8 @@ call ale#linter#Define('ruby', {
 \   'name': 'solargraph',
 \   'lsp': 'stdio',
 \   'language': 'ruby',
-\   'executable_callback': ale#VarFunc('ruby_solargraph_executable'),
-\   'command_callback': 'ale_linters#ruby#solargraph#GetCommand',
-\   'project_root_callback': 'ale#ruby#FindProjectRoot',
-\   'initialization_options_callback': ale#VarFunc('ruby_solargraph_options'),
+\   'executable': {b -> ale#Var(b, 'ruby_solargraph_executable')},
+\   'command': function('ale_linters#ruby#solargraph#GetCommand'),
+\   'project_root': function('ale#ruby#FindProjectRoot'),
+\   'initialization_options': {b -> ale#Var(b, 'ruby_solargraph_options')},
 \})

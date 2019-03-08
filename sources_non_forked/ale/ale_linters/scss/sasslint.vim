@@ -22,7 +22,7 @@ endfunction
 
 call ale#linter#Define('scss', {
 \   'name': 'sasslint',
-\   'executable_callback': 'ale_linters#scss#sasslint#GetExecutable',
-\   'command_callback': 'ale_linters#scss#sasslint#GetCommand',
+\   'executable': function('ale_linters#scss#sasslint#GetExecutable'),
+\   'command': function('ale_linters#scss#sasslint#GetCommand'),
 \   'callback': 'ale#handlers#css#HandleCSSLintFormat',
 \})

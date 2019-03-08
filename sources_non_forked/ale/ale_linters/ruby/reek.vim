@@ -69,7 +69,7 @@ endfunction
 
 call ale#linter#Define('ruby', {
 \   'name': 'reek',
-\   'executable_callback': ale#VarFunc('ruby_reek_executable'),
+\   'executable': {b -> ale#Var(b, 'ruby_reek_executable')},
 \   'command_chain': [
 \       {'callback': 'ale_linters#ruby#reek#VersionCheck'},
 \       {'callback': 'ale_linters#ruby#reek#GetCommand'},

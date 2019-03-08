@@ -65,7 +65,7 @@ endfunction
 
 call ale#linter#Define('vim', {
 \   'name': 'vint',
-\   'executable_callback': 'ale_linters#vim#vint#GetExecutable',
+\   'executable': function('ale_linters#vim#vint#GetExecutable'),
 \   'command_chain': [
 \       {'callback': 'ale_linters#vim#vint#VersionCommand', 'output_stream': 'stderr'},
 \       {'callback': 'ale_linters#vim#vint#GetCommand', 'output_stream': 'stdout'},

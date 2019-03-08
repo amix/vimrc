@@ -23,7 +23,7 @@ endfunction
 call ale#linter#Define('go', {
 \   'name': 'bingo',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('go_bingo_executable'),
-\   'command_callback': 'ale_linters#go#bingo#GetCommand',
-\   'project_root_callback': 'ale_linters#go#bingo#FindProjectRoot',
+\   'executable': {b -> ale#Var(b, 'go_bingo_executable')},
+\   'command': function('ale_linters#go#bingo#GetCommand'),
+\   'project_root': function('ale_linters#go#bingo#FindProjectRoot'),
 \})

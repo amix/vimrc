@@ -11,9 +11,9 @@ endfunction
 
 function! ale_linters#bib#bibclean#get_type(str) abort
     if a:str is# '??'
-       return 'E'
+        return 'E'
     else
-       return 'W'
+        return 'W'
     endif
 endfunction
 
@@ -36,30 +36,31 @@ function! ale_linters#bib#bibclean#Handle(buffer, lines) abort
     let l:msg  = ''
 
     for l:line in a:lines
-      if empty(l:msg)
-          let l:mlist = ale_linters#bib#bibclean#match_msg(l:line)
+        if empty(l:msg)
+            let l:mlist = ale_linters#bib#bibclean#match_msg(l:line)
 
-          if !empty(l:mlist)
-              let l:msg = l:mlist[3]
-              let l:type = ale_linters#bib#bibclean#get_type(l:mlist[1])
-          endif
-      else
-          if l:type is# 'E'
-               let l:mlist = ale_linters#bib#bibclean#match_entry(l:line)
-          else
-               let l:mlist = ale_linters#bib#bibclean#match_value(l:line)
-          endif
+            if !empty(l:mlist)
+                let l:msg = l:mlist[3]
+                let l:type = ale_linters#bib#bibclean#get_type(l:mlist[1])
+            endif
+        else
+            if l:type is# 'E'
+                let l:mlist = ale_linters#bib#bibclean#match_entry(l:line)
+            else
+                let l:mlist = ale_linters#bib#bibclean#match_value(l:line)
+            endif
 
-          if !empty(l:mlist)
-            call add(l:output, {
-              \ 'lnum': l:mlist[1],
-              \ 'col': l:mlist[2],
-              \ 'text': l:msg,
-              \ 'type': l:type
-              \})
-             let l:msg = ''
-          endif
-      endif
+            if !empty(l:mlist)
+                call add(l:output, {
+                \ 'lnum': l:mlist[1],
+                \ 'col': l:mlist[2],
+                \ 'text': l:msg,
+                \ 'type': l:type
+                \})
+
+                let l:msg = ''
+            endif
+        endif
     endfor
 
     return l:output
@@ -67,8 +68,8 @@ endfunction
 
 call ale#linter#Define('bib', {
 \   'name': 'bibclean',
-\   'executable_callback': ale#VarFunc('bib_bibclean_executable'),
-\   'command_callback': 'ale_linters#bib#bibclean#GetCommand',
+\   'executable': {b -> ale#Var(b, 'bib_bibclean_executable')},
+\   'command': function('ale_linters#bib#bibclean#GetCommand'),
 \   'output_stream': 'stderr',
 \   'callback': 'ale_linters#bib#bibclean#Handle',
 \})

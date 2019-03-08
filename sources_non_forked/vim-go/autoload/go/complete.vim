@@ -197,16 +197,18 @@ function! s:info_filter(echo, result) abort
   let wordMatch = substitute(wordMatch, "'", "''", "g")
   let filtered = filter(l:candidates, "v:val.info =~ '".wordMatch."'")
 
-  if len(l:filtered) != 1
-    return ""
+  if len(l:filtered) == 0
+    return "no matches"
+  elseif len(l:filtered) > 1
+    return "ambiguous match"
   endif
 
   return l:filtered[0].info
 endfunction
 
 function! s:info_complete(echo, result) abort
-  if a:echo && !empty(a:result)
-    echo "vim-go: " | echohl Function | echon a:result | echohl None
+  if a:echo
+    call go#util#ShowInfo(a:result)
   endif
 
   return a:result

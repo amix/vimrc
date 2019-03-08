@@ -21,7 +21,7 @@ endfunction
 
 call ale#linter#Define('html', {
 \   'name': 'stylelint',
-\   'executable_callback': 'ale_linters#html#stylelint#GetExecutable',
-\   'command_callback': 'ale_linters#html#stylelint#GetCommand',
+\   'executable': function('ale_linters#html#stylelint#GetExecutable'),
+\   'command': function('ale_linters#html#stylelint#GetCommand'),
 \   'callback': 'ale#handlers#css#HandleStyleLintFormat',
 \})

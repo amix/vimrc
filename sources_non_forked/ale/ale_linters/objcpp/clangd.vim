@@ -17,7 +17,7 @@ endfunction
 call ale#linter#Define('objcpp', {
 \   'name': 'clangd',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('objcpp_clangd_executable'),
-\   'command_callback': 'ale_linters#objcpp#clangd#GetCommand',
-\   'project_root_callback': 'ale_linters#objcpp#clangd#GetProjectRoot',
+\   'executable': {b -> ale#Var(b, 'objcpp_clangd_executable')},
+\   'command': function('ale_linters#objcpp#clangd#GetCommand'),
+\   'project_root': function('ale_linters#objcpp#clangd#GetProjectRoot'),
 \})

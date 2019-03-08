@@ -1343,7 +1343,7 @@ Buffer Tag mode options:~
 
                                                    *'g:ctrlp_buftag_ctags_bin'*
 If ctags isn't in your $PATH, or a ctags binary exists in either
-/opt/local/bin or /usr/local/bin, us this to set its location: >
+/opt/local/bin or /usr/local/bin, use this to set its location: >
   let g:ctrlp_buftag_ctags_bin = ''
 <
 

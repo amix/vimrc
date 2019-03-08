@@ -31,9 +31,9 @@ endfunction
 
 call ale#linter#Define('handlebars', {
 \   'name': 'ember-template-lint',
-\   'executable_callback': ale#node#FindExecutableFunc('handlebars_embertemplatelint', [
+\   'executable': {b -> ale#node#FindExecutable(b, 'handlebars_embertemplatelint', [
 \       'node_modules/.bin/ember-template-lint',
-\   ]),
+\   ])},
 \   'command': '%e --json %t',
 \   'callback': 'ale_linters#handlebars#embertemplatelint#Handle',
 \})

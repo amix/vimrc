@@ -40,7 +40,7 @@ endfunction
 
 call ale#linter#Define('haskell', {
 \   'name': 'hlint',
-\   'executable_callback': ale#VarFunc('haskell_hlint_executable'),
-\   'command_callback': 'ale_linters#haskell#hlint#GetCommand' ,
+\   'executable': {b -> ale#Var(b, 'haskell_hlint_executable')},
+\   'command': function('ale_linters#haskell#hlint#GetCommand') ,
 \   'callback': 'ale_linters#haskell#hlint#Handle',
 \})

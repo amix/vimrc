@@ -8,7 +8,7 @@ endfunction
 call ale#linter#Define('go', {
 \   'name': 'gosimple',
 \   'executable': 'gosimple',
-\   'command_callback': 'ale_linters#go#gosimple#GetCommand',
+\   'command': function('ale_linters#go#gosimple#GetCommand'),
 \   'callback': 'ale#handlers#go#Handler',
 \   'output_stream': 'both',
 \   'lint_file': 1,

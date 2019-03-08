@@ -38,8 +38,8 @@ endfunction
 call ale#linter#Define('ispc', {
 \   'name': 'ispc',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('ispc_ispc_executable'),
-\   'command_callback': 'ale_linters#ispc#ispc#GetCommand',
+\   'executable': {b -> ale#Var(b, 'ispc_ispc_executable')},
+\   'command': function('ale_linters#ispc#ispc#GetCommand'),
 \   'callback': 'ale_linters#ispc#ispc#Handle',
 \   'lint_file': 1,
 \})

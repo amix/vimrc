@@ -30,47 +30,8 @@ that are part of Git repositories).
 :Glcd [directory]       |:lcd| relative to the repository.
 
                                         *fugitive-:Gstatus* *fugitive-:G*
-:Gstatus                Bring up a git-status inspired summary in the preview
-:G                      window.  The following maps, which work on the cursor
-                        line file where sensible, are provided:
-
-                        g?    show this help
-                        <C-N> next file
-                        <C-P> previous file
-                        <CR>  |:Gedit|
-                        -     |:Git| add
-                        -     |:Git| reset (staged files)
-                        ca    |:Gcommit| --amend
-                        cc    |:Gcommit|
-                        ce    |:Gcommit| --amend --no-edit
-                        cw    |:Gcommit| --amend --only
-                        cva   |:Gcommit| --verbose --amend
-                        cvc   |:Gcommit| --verbose
-                        cf    |:Gcommit| --fixup=
-                        cs    |:Gcommit| --squash=
-                        cA    |:Gcommit| --edit --squash=
-                        =     toggle inline diff
-                        <     show inline diff
-                        >     hide inline diff
-                        D     |:Gdiff|
-                        ds    |:Gsdiff|
-                        dp    |:Git!| diff (p for patch; use :Gw to apply)
-                        dp    |:Git| add --intent-to-add (untracked files)
-                        dv    |:Gvdiff|
-                        gO    |:Gvsplit|
-                        O     |:Gtabedit|
-                        o     |:Gsplit|
-                        P     |:Git| add --patch
-                        P     |:Git| reset --patch (staged files)
-                        s     |:Git| add
-                        u     |:Git| reset
-                        X     |:Git| checkout
-                        X     |:Git| checkout HEAD (staged files)
-                        X     |:Git| clean (untracked files)
-                        X     |:Git| rm (unmerged files)
-                        q     close status
-                        R     reload status
-                        .     enter |:| command line with file prepopulated
+:G                      Bring up a summary window vaguely akin to git-status.
+:Gstatus                Press g? or see |fugitive-mappings| for usage.
 
                                                 *fugitive-:Gcommit*
 :Gcommit [args]         A wrapper around git-commit.  Unless the arguments
@@ -271,51 +232,182 @@ that are part of Git repositories).
 
 MAPPINGS                                        *fugitive-mappings*
 
-These maps are available everywhere.
+These mappings are available in both the |:Gstatus| buffer and Fugitive object
+buffers, although not all mappings make sense in all buffers.  Mappings that
+operate on the file or hunk under the cursor are generally available in visual
+mode to operate on multiple files or partial hunks.
 
-                                                *fugitive-c_CTRL-R_CTRL-G*
+                                                *fugitive-staging-mappings*
+Staging and resetting mappings ~
+
+                                                *fugitive_s*
+s                       Stage (add) the file or hunk under the cursor.
+
+                                                *fugitive_u*
+u                       Unstage (reset) the file or hunk under the cursor.
+
+                                                *fugitive_-*
+-                       Stage or unstage the file or hunk under the cursor.
+
+                                                *fugitive_CTRL-N*
+<C-N>                   Skip to the next file or hunk.
+
+                                                *fugitive_CTRL-P*
+<C-P>                   Skip to the previous file or hunk.
+
+                                                *fugitive_X*
+X                       Discard the change under the cursor.  This uses
+                        `checkout` or `clean` under the hood.  A command is
+                        echoed that shows how to undo the change.  Consult
+                        `:messages` to see it again.  You can use this during
+                        a merge conflict do discard "our" changes (--theirs)
+                        in the "Unstaged" section or discard "their" changes
+                        (--ours) in the "Staged" section.
+
+                                                *fugitive_=*
+=                       Toggle an inline diff of the file under the cursor.
+
+                                                *fugitive_<*
+<                       Insert an inline diff of the file under the cursor.
+
+                                                *fugitive_>*
+>                       Remove the inline diff of the file under the cursor.
+
+                                                *fugitive_i*
+i                       On untracked files, call |:Git| add --intent-to-add.
+                        Otherwise, move to next hunk, expanding inline diffs
+                        automatically.
+
+                                                *fugitive_dd*
+dd                      Perform a |:Gdiff| on the file under the cursor.
+
+                                                *fugitive_ds*
+ds                      Perform a |:Gsdiff| on the file under the cursor.
+
+                                                *fugitive_dv*
+dv                      Perform a |:Gvdiff| on the file under the cursor.
+
+                                                *fugitive_dp*
+dp                      Invoke |:Git!| diff on the file under the cursor.
+                        Deprecated in favor of inline diffs. On untracked
+                        files, this instead calls |:Git| add --intent-to-add.
+
+P                       Invoke |:Git| add --patch or reset --patch on the file
+                        under the cursor.
+
+                                                *fugitive-navigation-mappings*
+Navigation mappings ~
+
+                                                *fugitive_<CR>*
+<CR>                    Open the file or |fugitive-object| under the cursor.
+
+                                                *fugitive_o*
+o                       Open the file or |fugitive-object| under the cursor in
+                        a new split.
+
+                                                *fugitive_gO*
+gO                      Open the file or |fugitive-object| under the cursor in
+                        a new vertical split.
+
+                                                *fugitive_O*
+O                       Open the file or |fugitive-object| under the cursor in
+                        a new tab.
+
+                                                *fugitive_~*
+~                       Open the current file in the [count]th first ancestor.
+
+                                                *fugitive_P*
+P                       Open the current file in the [count]th parent.
+
+                                                *fugitive_C*
+C                       Open the commit containing the current file.
+
+                                                *fugitive_CTRL-W_C*
+<C-W>C                  Open the commit containing the current file in a new
+                        split.
+
+                                                *fugitive_c*
+Commit mappings ~
+
+cc                      Create a commit.
+
+ca                      Amend the last commit and edit the message.
+
+ce                      Amend the last commit without editing the message.
+
+cw                      Reword the last commit.
+
+cvc                     Create a commit with -v.
+
+cva                     Amend the last commit with -v
+
+cf                      Create a `fixup!` commit for the commit under the
+                        cursor.
+
+cs                      Create a `squash!` commit for the commit under the
+                        cursor.
+
+cA                      Create a `squash!` commit for the commit under the
+                        cursor and edit the message.
+
+                                                *fugitive_r*
+Rebase mappings ~
+
+ri                      Perform an interactive rebase.  Uses ancestor of
+                        commit under cursor as upstream if available.
+
+rf                      Perform an autosquash rebase without editing the todo
+                        list.  Uses ancestor of commit under cursor as
+                        upstream if available.
+
+ru                      Perform an interactive rebase against @{upstream}.
+
+rp                      Perform an interactive rebase against @{push}.
+
+rr                      Continue the current rebase.
+
+rs                      Skip the current commit and continue the current
+                        rebase.
+
+ra                      Abort the current rebase.
+
+re                      Edit the current rebase todo list.
+
+rw                      Perform an interactive rebase with the commit under
+                        the cursor set to `reword`.
+
+rm                      Perform an interactive rebase with the commit under
+                        the cursor set to `edit`.
+
+rd                      Perform an interactive rebase with the commit under
+                        the cursor set to `drop`.
+
+                                                *fugitive-misc-mappings*
+Miscellaneous mappings ~
+
+                                                *fugitive_gq* *fugitive_q*
+gq                      Close the status buffer.
+
+                                                *fugitive_R*
+R                       Reload the status buffer.
+
+                                                *fugitive_.*
+.                       Start a |:| command line with the file under the
+                        cursor prepopulated.
+
+                                                *fugitive_g?*
+g?                      Open this help.
+
+                                                *fugitive-global-mappings*
+Global mappings ~
+
+                                                *fugitive_c_CTRL-R_CTRL-G*
 <C-R><C-G>              On the command line, recall the path to the current
                         |fugitive-object| (that is, a representation of the
                         object recognized by |:Gedit|).
 
-                                                *fugitive-y_CTRL-G*
-["x]y<C-G>              Yank the commit SHA and path to the current
-                        |fugitive-object|.
-
-These maps are available in committed Git objects.
-
-                                                *fugitive-<CR>*
-<CR>                    Jump to the |fugitive-object| under the cursor.
-
-                                                *fugitive-o*
-o                       Jump to the |fugitive-object| under the cursor in a
-                        new split.
-
-                                                *fugitive-gO*
-gO                      Jump to the |fugitive-object| under the cursor in a
-                        new vertical split.
-
-                                                *fugitive-O*
-O                       Jump to the |fugitive-object| under the cursor in a
-                        new tab.
-
-                                                *fugitive--*
--                       Go to the tree containing the current tree or blob
-                        (i.e, the parent directory).
-
-                                                *fugitive-~*
-~                       Go to the current file in the [count]th first
-                        ancestor.
-
-                                                *fugitive-P*
-P                       Go to the current file in the [count]th parent.
-
-                                                *fugitive-C*
-C                       Go to the commit containing the current file.
-
-                                                *fugitive-a*
-a                       Show the current tag, commit, or tree in an alternate
-                        format.
+                                                *fugitive_y_CTRL-G*
+["x]y<C-G>              Yank the path to the current |fugitive-object|.
 
 SPECIFYING OBJECTS                      *fugitive-object* *fugitive-revision*
 
@@ -353,7 +445,7 @@ Add %{FugitiveStatusline()} to your statusline to get an indicator including
 the current branch and the currently edited file's commit.  If you don't have
 a statusline, this one matches the default when 'ruler' is set:
 >
-    set statusline=%<%f\ %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
+        set statusline=%<%f\ %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
 <
                                 *FugitiveHead(...)* *fugitive#head(...)*
 Use FugitiveHead() to return the name of the current branch. If the current

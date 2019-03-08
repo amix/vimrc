@@ -26,7 +26,7 @@ endfunction
 call ale#linter#Define('go', {
 \   'name': 'staticcheck',
 \   'executable': 'staticcheck',
-\   'command_callback': 'ale_linters#go#staticcheck#GetCommand',
+\   'command': function('ale_linters#go#staticcheck#GetCommand'),
 \   'callback': 'ale#handlers#go#Handler',
 \   'output_stream': 'both',
 \   'lint_file': 1,

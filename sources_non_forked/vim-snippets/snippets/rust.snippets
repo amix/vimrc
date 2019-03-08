@@ -44,7 +44,11 @@ snippet pln, "println! with format param"
 	println!("${1}{${2}}", ${3});
 snippet fmt "format!"
 	format!("${1}{${2}}", ${3});
-
+snippet d "dbg! debugging macro"
+	dbg!(${0:${VISUAL}})
+snippet d; "dbg! debugging macro statement"
+	dbg!(&${1});
+	${0}
 # Modules
 snippet ec "extern crate"
 	extern crate ${1:sync};
@@ -72,9 +76,11 @@ snippet testmod "Test module" b
 
 		test${0}
 	}
+snippet ig "#[ignore]"
+	#[ignore]
 # Attributes
 snippet allow "allow lint attribute" b
-	#[allow(${1:unused_variable})]
+	#[allow(${1:unused_variables})]
 snippet cfg "cfg attribute" b
 	#[cfg(${1:target_os = "linux"})]
 snippet feat "feature attribute" b

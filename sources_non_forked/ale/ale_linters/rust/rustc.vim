@@ -27,7 +27,7 @@ endfunction
 call ale#linter#Define('rust', {
 \   'name': 'rustc',
 \   'executable': 'rustc',
-\   'command_callback': 'ale_linters#rust#rustc#RustcCommand',
+\   'command': function('ale_linters#rust#rustc#RustcCommand'),
 \   'callback': 'ale#handlers#rust#HandleRustErrors',
 \   'output_stream': 'stderr',
 \})

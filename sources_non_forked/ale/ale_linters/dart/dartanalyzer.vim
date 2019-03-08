@@ -29,8 +29,8 @@ endfunction
 
 call ale#linter#Define('dart', {
 \   'name': 'dartanalyzer',
-\   'executable_callback': ale#VarFunc('dart_dartanalyzer_executable'),
-\   'command_callback': 'ale_linters#dart#dartanalyzer#GetCommand',
+\   'executable': {b -> ale#Var(b, 'dart_dartanalyzer_executable')},
+\   'command': function('ale_linters#dart#dartanalyzer#GetCommand'),
 \   'callback': 'ale_linters#dart#dartanalyzer#Handle',
 \   'lint_file': 1,
 \})

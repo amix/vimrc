@@ -55,7 +55,7 @@ endfunction
 call ale#linter#Define('perl', {
 \   'name': 'perlcritic',
 \   'output_stream': 'stdout',
-\   'executable_callback': ale#VarFunc('perl_perlcritic_executable'),
-\   'command_callback': 'ale_linters#perl#perlcritic#GetCommand',
+\   'executable': {b -> ale#Var(b, 'perl_perlcritic_executable')},
+\   'command': function('ale_linters#perl#perlcritic#GetCommand'),
 \   'callback': 'ale_linters#perl#perlcritic#Handle',
 \})

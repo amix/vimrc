@@ -89,6 +89,7 @@ function! s:debug(...) abort
     call assert_false(exists(':GoDebugStop'))
 
   finally
+    call go#debug#Breakpoint(6)
     call delete(l:tmp, 'rf')
   endtry
 endfunction

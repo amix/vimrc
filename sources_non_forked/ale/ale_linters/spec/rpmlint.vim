@@ -72,7 +72,7 @@ endfunction
 
 call ale#linter#Define('spec', {
 \   'name': 'rpmlint',
-\   'executable_callback': ale#VarFunc('spec_rpmlint_executable'),
-\   'command_callback': 'ale_linters#spec#rpmlint#GetCommand',
+\   'executable': {b -> ale#Var(b, 'spec_rpmlint_executable')},
+\   'command': function('ale_linters#spec#rpmlint#GetCommand'),
 \   'callback': 'ale_linters#spec#rpmlint#Handle',
 \})

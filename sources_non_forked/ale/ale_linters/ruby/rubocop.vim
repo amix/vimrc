@@ -25,7 +25,7 @@ endfunction
 
 call ale#linter#Define('ruby', {
 \   'name': 'rubocop',
-\   'executable_callback': ale#VarFunc('ruby_rubocop_executable'),
-\   'command_callback': 'ale_linters#ruby#rubocop#GetCommand',
+\   'executable': {b -> ale#Var(b, 'ruby_rubocop_executable')},
+\   'command': function('ale_linters#ruby#rubocop#GetCommand'),
 \   'callback': 'ale#ruby#HandleRubocopOutput',
 \})

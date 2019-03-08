@@ -10,6 +10,6 @@ endfunction
 call ale#linter#Define('graphql', {
 \   'name': 'gqlint',
 \   'executable': 'gqlint',
-\   'command_callback': 'ale_linters#graphql#gqlint#GetCommand',
+\   'command': function('ale_linters#graphql#gqlint#GetCommand'),
 \   'callback': 'ale#handlers#unix#HandleAsWarning',
 \})

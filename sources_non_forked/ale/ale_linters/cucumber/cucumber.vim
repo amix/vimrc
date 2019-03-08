@@ -41,6 +41,6 @@ endfunction
 call ale#linter#Define('cucumber', {
 \   'name': 'cucumber',
 \   'executable': 'cucumber',
-\   'command_callback': 'ale_linters#cucumber#cucumber#GetCommand',
+\   'command': function('ale_linters#cucumber#cucumber#GetCommand'),
 \   'callback': 'ale_linters#cucumber#cucumber#Handle'
 \})

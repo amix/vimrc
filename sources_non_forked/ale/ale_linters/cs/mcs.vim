@@ -32,6 +32,6 @@ call ale#linter#Define('cs',{
 \   'name': 'mcs',
 \   'output_stream': 'stderr',
 \   'executable': 'mcs',
-\   'command_callback': 'ale_linters#cs#mcs#GetCommand',
+\   'command': function('ale_linters#cs#mcs#GetCommand'),
 \   'callback': 'ale_linters#cs#mcs#Handle',
 \})

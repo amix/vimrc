@@ -72,7 +72,7 @@ hi def link     goComment           Comment
 hi def link     goTodo              Todo
 
 if go#config#HighlightGenerateTags()
-  syn match       goGenerateVariables contained /\(\$GOARCH\|\$GOOS\|\$GOFILE\|\$GOLINE\|\$GOPACKAGE\|\$DOLLAR\)\>/
+  syn match       goGenerateVariables contained /\%(\$GOARCH\|\$GOOS\|\$GOFILE\|\$GOLINE\|\$GOPACKAGE\|\$DOLLAR\)\>/
   syn region      goGenerate          start="^\s*//go:generate" end="$" contains=goGenerateVariables
   hi def link     goGenerate          PreProc
   hi def link     goGenerateVariables Special
@@ -113,7 +113,7 @@ if go#config#HighlightFormatStrings()
   " 5. Match [n] or nothing before a verb
   " 6. Match a formatting verb
   syn match       goFormatSpecifier   /\
-        \([^%]\(%%\)*\)\
+        \%([^%]\%(%%\)*\)\
         \@<=%[-#0 +]*\
         \%(\%(\%(\[\d\+\]\)\=\*\)\|\d\+\)\=\
         \%(\.\%(\%(\%(\[\d\+\]\)\=\*\)\|\d\+\)\=\)\=\
@@ -159,7 +159,7 @@ else
 endif
 
 " Single-line var, const, and import.
-syn match       goSingleDecl        /\(import\|var\|const\) [^(]\@=/ contains=goImport,goVar,goConst
+syn match       goSingleDecl        /\%(import\|var\|const\) [^(]\@=/ contains=goImport,goVar,goConst
 
 " Integers
 syn match       goDecimalInt        "\<-\=\d\+\%([Ee][-+]\=\d\+\)\=\>"
@@ -190,7 +190,7 @@ hi def link     goImaginaryFloat    Float
 
 " Spaces after "[]"
 if go#config#HighlightArrayWhitespaceError()
-  syn match goSpaceError display "\(\[\]\)\@<=\s\+"
+  syn match goSpaceError display "\%(\[\]\)\@<=\s\+"
 endif
 
 " Spacing errors around the 'chan' keyword
@@ -199,24 +199,24 @@ if go#config#HighlightChanWhitespaceError()
   "
   " \(\<chan\>\)\@<!<-  (only pick arrow when it doesn't come after a chan)
   " this prevents picking up 'chan<- chan<-' but not '<- chan'
-  syn match goSpaceError display "\(\(\<chan\>\)\@<!<-\)\@<=\s\+\(\<chan\>\)\@="
+  syn match goSpaceError display "\%(\%(\<chan\>\)\@<!<-\)\@<=\s\+\%(\<chan\>\)\@="
 
   " send-only annotation on chan type
   "
   " \(<-\)\@<!\<chan\>  (only pick chan when it doesn't come after an arrow)
   " this prevents picking up '<-chan <-chan' but not 'chan <-'
-  syn match goSpaceError display "\(\(<-\)\@<!\<chan\>\)\@<=\s\+\(<-\)\@="
+  syn match goSpaceError display "\%(\%(<-\)\@<!\<chan\>\)\@<=\s\+\%(<-\)\@="
 
   " value-ignoring receives in a few contexts
-  syn match goSpaceError display "\(\(^\|[={(,;]\)\s*<-\)\@<=\s\+"
+  syn match goSpaceError display "\%(\%(^\|[={(,;]\)\s*<-\)\@<=\s\+"
 endif
 
 " Extra types commonly seen
 if go#config#HighlightExtraTypes()
-  syn match goExtraType /\<bytes\.\(Buffer\)\>/
-  syn match goExtraType /\<context\.\(Context\)\>/
-  syn match goExtraType /\<io\.\(Reader\|ReadSeeker\|ReadWriter\|ReadCloser\|ReadWriteCloser\|Writer\|WriteCloser\|Seeker\)\>/
-  syn match goExtraType /\<reflect\.\(Kind\|Type\|Value\)\>/
+  syn match goExtraType /\<bytes\.\%(Buffer\)\>/
+  syn match goExtraType /\<context\.\%(Context\)\>/
+  syn match goExtraType /\<io\.\%(Reader\|ReadSeeker\|ReadWriter\|ReadCloser\|ReadWriteCloser\|Writer\|WriteCloser\|Seeker\)\>/
+  syn match goExtraType /\<reflect\.\%(Kind\|Type\|Value\)\>/
   syn match goExtraType /\<unsafe\.Pointer\>/
 endif
 
@@ -265,20 +265,20 @@ hi def link     goOperator          Operator
 " Functions;
 if go#config#HighlightFunctions() || go#config#HighlightFunctionParameters()
   syn match goDeclaration       /\<func\>/ nextgroup=goReceiver,goFunction,goSimpleParams skipwhite skipnl
-  syn match goReceiverVar       /\w\+\ze\s\+\(\w\|\*\)/ nextgroup=goPointerOperator,goReceiverType skipwhite skipnl contained
+  syn match goReceiverVar       /\w\+\ze\s\+\%(\w\|\*\)/ nextgroup=goPointerOperator,goReceiverType skipwhite skipnl contained
   syn match goPointerOperator   /\*/ nextgroup=goReceiverType contained skipwhite skipnl
   syn match goFunction          /\w\+/ nextgroup=goSimpleParams contained skipwhite skipnl
   syn match goReceiverType      /\w\+/ contained
-if go#config#HighlightFunctionParameters()
-  syn match goSimpleParams     /(\(\w\|\_s\|[*\.\[\],\{\}<>-]\)*)/ contained contains=goParamName,goType nextgroup=goFunctionReturn skipwhite skipnl
-  syn match goFunctionReturn   /(\(\w\|\_s\|[*\.\[\],\{\}<>-]\)*)/ contained contains=goParamName,goType skipwhite skipnl
-  syn match goParamName        /\w\+\(\s*,\s*\w\+\)*\ze\s\+\(\w\|\.\|\*\|\[\)/ contained nextgroup=goParamType skipwhite skipnl
-  syn match goParamType     /\([^,)]\|\_s\)\+,\?/ contained nextgroup=goParamName skipwhite skipnl
-                        \ contains=goVarArgs,goType,goSignedInts,goUnsignedInts,goFloats,goComplexes,goDeclType,goBlock
-  hi def link   goReceiverVar    goParamName
-  hi def link   goParamName      Identifier
-endif
-  syn match goReceiver          /(\s*\w\+\(\s\+\*\?\s*\w\+\)\?\s*)\ze\s*\w/ contained nextgroup=goFunction contains=goReceiverVar skipwhite skipnl
+  if go#config#HighlightFunctionParameters()
+    syn match goSimpleParams      /(\%(\w\|\_s\|[*\.\[\],\{\}<>-]\)*)/ contained contains=goParamName,goType nextgroup=goFunctionReturn skipwhite skipnl
+    syn match goFunctionReturn   /(\%(\w\|\_s\|[*\.\[\],\{\}<>-]\)*)/ contained contains=goParamName,goType skipwhite skipnl
+    syn match goParamName        /\w\+\%(\s*,\s*\w\+\)*\ze\s\+\%(\w\|\.\|\*\|\[\)/ contained nextgroup=goParamType skipwhite skipnl
+    syn match goParamType        /\%([^,)]\|\_s\)\+,\?/ contained nextgroup=goParamName skipwhite skipnl
+                          \ contains=goVarArgs,goType,goSignedInts,goUnsignedInts,goFloats,goComplexes,goDeclType,goBlock
+    hi def link   goReceiverVar    goParamName
+    hi def link   goParamName      Identifier
+  endif
+  syn match goReceiver          /(\s*\w\+\%(\s\+\*\?\s*\w\+\)\?\s*)\ze\s*\w/ contained nextgroup=goFunction contains=goReceiverVar skipwhite skipnl
 else
   syn keyword goDeclaration func
 endif
@@ -292,7 +292,20 @@ hi def link     goFunctionCall      Type
 
 " Fields;
 if go#config#HighlightFields()
-  syn match goField                 /\.\w\+\([.\ \n\r\:\)\[,]\)\@=/hs=s+1
+  " 1. Match a sequence of word characters coming after a '.'
+  " 2. Require the following but dont match it: ( \@= see :h E59)
+  "    - The symbols: / - + * %   OR
+  "    - The symbols: [] {} <> )  OR
+  "    - The symbols: \n \r space OR
+  "    - The symbols: , : .
+  " 3. Have the start of highlight (hs) be the start of matched
+  "    pattern (s) offsetted one to the right (+1) (see :h E401)
+  syn match       goField   /\.\w\+\
+        \%(\%([\/\-\+*%]\)\|\
+        \%([\[\]{}<\>\)]\)\|\
+        \%([\!=\^|&]\)\|\
+        \%([\n\r\ ]\)\|\
+        \%([,\:.]\)\)\@=/hs=s+1
 endif
 hi def link    goField              Identifier
 
@@ -301,7 +314,7 @@ if go#config#HighlightTypes()
   syn match goTypeConstructor      /\<\w\+{\@=/
   syn match goTypeDecl             /\<type\>/ nextgroup=goTypeName skipwhite skipnl
   syn match goTypeName             /\w\+/ contained nextgroup=goDeclType skipwhite skipnl
-  syn match goDeclType             /\<\(interface\|struct\)\>/ skipwhite skipnl
+  syn match goDeclType             /\<\%(interface\|struct\)\>/ skipwhite skipnl
   hi def link     goReceiverType      Type
 else
   syn keyword goDeclType           struct interface

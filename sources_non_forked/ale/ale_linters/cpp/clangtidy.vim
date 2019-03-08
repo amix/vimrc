@@ -29,8 +29,8 @@ endfunction
 call ale#linter#Define('cpp', {
 \   'name': 'clangtidy',
 \   'output_stream': 'stdout',
-\   'executable_callback': ale#VarFunc('cpp_clangtidy_executable'),
-\   'command_callback': 'ale_linters#cpp#clangtidy#GetCommand',
+\   'executable': {b -> ale#Var(b, 'cpp_clangtidy_executable')},
+\   'command': function('ale_linters#cpp#clangtidy#GetCommand'),
 \   'callback': 'ale#handlers#gcc#HandleGCCFormat',
 \   'lint_file': 1,
 \})

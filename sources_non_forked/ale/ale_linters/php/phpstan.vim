@@ -65,7 +65,7 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'phpstan',
-\   'executable_callback': 'ale_linters#php#phpstan#GetExecutable',
+\   'executable': function('ale_linters#php#phpstan#GetExecutable'),
 \   'command_chain': [
 \       {'callback': 'ale_linters#php#phpstan#VersionCheck'},
 \       {'callback': 'ale_linters#php#phpstan#GetCommand'},

@@ -19,7 +19,7 @@ endfunction
 call ale#linter#Define('qml', {
 \   'name': 'qmlfmt',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('qml_qmlfmt_executable'),
+\   'executable': {b -> ale#Var(b, 'qml_qmlfmt_executable')},
 \   'command': '%e -e',
 \   'callback': 'ale_linters#qml#qmlfmt#Handle',
 \})

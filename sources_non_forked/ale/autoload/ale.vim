@@ -169,11 +169,6 @@ function! ale#Var(buffer, variable_name) abort
     return get(l:vars, l:full_name, g:[l:full_name])
 endfunction
 
-" As above, but curry the arguments so only the buffer number is required.
-function! ale#VarFunc(variable_name) abort
-    return {buf -> ale#Var(buf, a:variable_name)}
-endfunction
-
 " Initialize a variable with a default value, if it isn't already set.
 "
 " Every variable name will be prefixed with 'ale_'.

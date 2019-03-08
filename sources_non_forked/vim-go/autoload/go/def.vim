@@ -22,9 +22,9 @@ function! go#def#Jump(mode) abort
     if &modified
       let l:stdin_content = join(go#util#GetLines(), "\n")
       call add(l:cmd, "-i")
-      let [l:out, l:err] = go#util#Exec(l:cmd, l:stdin_content)
+      let [l:out, l:err] = go#util#ExecInDir(l:cmd, l:stdin_content)
     else
-      let [l:out, l:err] = go#util#Exec(l:cmd)
+      let [l:out, l:err] = go#util#ExecInDir(l:cmd)
     endif
   elseif bin_name == 'guru'
     let cmd = [go#path#CheckBinPath(bin_name)]
@@ -61,9 +61,9 @@ function! go#def#Jump(mode) abort
     endif
 
     if &modified
-      let [l:out, l:err] = go#util#Exec(l:cmd, stdin_content)
+      let [l:out, l:err] = go#util#ExecInDir(l:cmd, l:stdin_content)
     else
-      let [l:out, l:err] = go#util#Exec(l:cmd)
+      let [l:out, l:err] = go#util#ExecInDir(l:cmd)
     endif
   else
     call go#util#EchoError('go_def_mode value: '. bin_name .' is not valid. Valid values are: [godef, guru]')
@@ -106,10 +106,24 @@ function! go#def#jump_to_declaration(out, mode, bin_name) abort
     let parts = split(out, ':')
   endif
 
+  if len(parts) == 0
+    call go#util#EchoError('go jump_to_declaration '. a:bin_name .' output is not valid.')
+    return
+  endif
+
+  let line = 1
+  let col = 1
+  let ident = 0
   let filename = parts[0]
-  let line = parts[1]
-  let col = parts[2]
-  let ident = parts[3]
+  if len(parts) > 1
+    let line = parts[1]
+  endif
+  if len(parts) > 2
+    let col = parts[2]
+  endif
+  if len(parts) > 3
+    let ident = parts[3]
+  endif
 
   " Remove anything newer than the current position, just like basic
   " vim tag support

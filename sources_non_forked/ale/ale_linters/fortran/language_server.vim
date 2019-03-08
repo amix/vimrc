@@ -13,7 +13,7 @@ endfunction
 call ale#linter#Define('fortran', {
 \   'name': 'language_server',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('fortran_language_server_executable'),
+\   'executable': {b -> ale#Var(b, 'fortran_language_server_executable')},
 \   'command': '%e',
-\   'project_root_callback': 'ale_linters#fortran#language_server#GetProjectRoot',
+\   'project_root': function('ale_linters#fortran#language_server#GetProjectRoot'),
 \})

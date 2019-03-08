@@ -36,7 +36,7 @@ call ale#linter#Define('nasm', {
 \   'name': 'nasm',
 \   'output_stream': 'stderr',
 \   'lint_file': 1,
-\   'executable_callback': ale#VarFunc('nasm_nasm_executable'),
-\   'command_callback': 'ale_linters#nasm#nasm#GetCommand',
+\   'executable': {b -> ale#Var(b, 'nasm_nasm_executable')},
+\   'command': function('ale_linters#nasm#nasm#GetCommand'),
 \   'callback': 'ale_linters#nasm#nasm#Handle',
 \})

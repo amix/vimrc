@@ -34,7 +34,7 @@ endfunction
 
 call ale#linter#Define('glsl', {
 \   'name': 'glslang',
-\   'executable_callback': ale#VarFunc('glsl_glslang_executable'),
-\   'command_callback': 'ale_linters#glsl#glslang#GetCommand',
+\   'executable': {b -> ale#Var(b, 'glsl_glslang_executable')},
+\   'command': function('ale_linters#glsl#glslang#GetCommand'),
 \   'callback': 'ale_linters#glsl#glslang#Handle',
 \})

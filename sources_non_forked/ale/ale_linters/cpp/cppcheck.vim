@@ -28,7 +28,7 @@ endfunction
 call ale#linter#Define('cpp', {
 \   'name': 'cppcheck',
 \   'output_stream': 'both',
-\   'executable_callback': ale#VarFunc('cpp_cppcheck_executable'),
-\   'command_callback': 'ale_linters#cpp#cppcheck#GetCommand',
+\   'executable': {b -> ale#Var(b, 'cpp_cppcheck_executable')},
+\   'command': function('ale_linters#cpp#cppcheck#GetCommand'),
 \   'callback': 'ale#handlers#cppcheck#HandleCppCheckFormat',
 \})

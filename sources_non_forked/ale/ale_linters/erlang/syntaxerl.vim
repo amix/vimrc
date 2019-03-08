@@ -26,7 +26,7 @@ endfunction
 
 call ale#linter#Define('erlang', {
 \   'name': 'syntaxerl',
-\   'executable_callback': ale#VarFunc('erlang_syntaxerl_executable'),
+\   'executable': {b -> ale#Var(b, 'erlang_syntaxerl_executable')},
 \   'command_chain': [
 \       {'callback': {-> '%e -h'}},
 \       {'callback': 'ale_linters#erlang#syntaxerl#GetCommand'},

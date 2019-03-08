@@ -5,7 +5,7 @@ function! ale#fixers#qmlfmt#GetExecutable(buffer) abort
 endfunction
 
 function! ale#fixers#qmlfmt#Fix(buffer) abort
-     return {
-     \  'command': ale#Escape(ale#fixers#qmlfmt#GetExecutable(a:buffer)),
-     \}
+    return {
+    \  'command': ale#Escape(ale#fixers#qmlfmt#GetExecutable(a:buffer)),
+    \}
 endfunction

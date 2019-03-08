@@ -277,6 +277,14 @@ JSON syntax highlight requires [vim-json](https://github.com/elzr/vim-json).
 let g:vim_markdown_json_frontmatter = 1
 ```
 
+#### Strikethrough
+
+Strikethrough uses two tildes. `~~Scratch this.~~`
+
+```vim
+let g:vim_markdown_strikethrough = 1
+```
+
 ### Adjust new list item indent
 
 You can adjust a new list indent. For example, you insert a single line like below:

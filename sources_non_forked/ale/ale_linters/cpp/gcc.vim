@@ -19,7 +19,7 @@ call ale#linter#Define('cpp', {
 \   'name': 'gcc',
 \   'aliases': ['g++'],
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('cpp_gcc_executable'),
+\   'executable': {b -> ale#Var(b, 'cpp_gcc_executable')},
 \   'command_chain': [
 \       {'callback': 'ale#c#GetMakeCommand', 'output_stream': 'stdout'},
 \       {'callback': 'ale_linters#cpp#gcc#GetCommand'},

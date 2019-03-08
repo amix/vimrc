@@ -9,7 +9,7 @@ endfunction
 call ale#linter#Define('yang', {
 \   'name': 'yang_lsp',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('yang_lsp_executable'),
-\   'project_root_callback': 'ale_linters#yang#yang_lsp#GetProjectRoot',
+\   'executable': {b -> ale#Var(b, 'yang_lsp_executable')},
+\   'project_root': function('ale_linters#yang#yang_lsp#GetProjectRoot'),
 \   'command': '%e',
 \})

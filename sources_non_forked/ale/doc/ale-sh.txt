@@ -61,6 +61,18 @@ g:ale_sh_shellcheck_options                       *g:ale_sh_shellcheck_options*
   let g:ale_sh_shellcheck_options = '-x'
 <
 
+
+g:ale_sh_shellcheck_dialect                       *g:ale_sh_shellcheck_dialect*
+                                                  *b:ale_sh_shellcheck_dialect*
+  Type: |String|
+  Default: `'auto'`
+
+  This variable specifies the shellcheck dialect (`-s` option).  The value
+  `'auto'` causes ALE to detect the dialect automatically, based on the shebang
+  line (if present) or the value of `b:is_bash`, `b:is_sh`, or `b:is_kornshell`
+  (set and used by |sh.vim|).
+
+
 g:ale_sh_shellcheck_exclusions                 *g:ale_sh_shellcheck_exclusions*
                                                *b:ale_sh_shellcheck_exclusions*
   Type: |String|

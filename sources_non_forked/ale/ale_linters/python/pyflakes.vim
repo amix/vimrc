@@ -43,8 +43,8 @@ endfunction
 
 call ale#linter#Define('python', {
 \   'name': 'pyflakes',
-\   'executable_callback': 'ale_linters#python#pyflakes#GetExecutable',
-\   'command_callback': 'ale_linters#python#pyflakes#GetCommand',
+\   'executable': function('ale_linters#python#pyflakes#GetExecutable'),
+\   'command': function('ale_linters#python#pyflakes#GetCommand'),
 \   'callback': 'ale_linters#python#pyflakes#Handle',
 \   'output_stream': 'both',
 \})

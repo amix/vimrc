@@ -9,7 +9,7 @@ function! ale#handlers#sh#GetShellType(buffer) abort
         " Remove options like -e, etc.
         let l:command = substitute(l:bang_line, ' --\?[a-zA-Z0-9]\+', '', 'g')
 
-        for l:possible_shell in ['bash', 'dash', 'ash', 'tcsh', 'csh', 'zsh', 'sh']
+        for l:possible_shell in ['bash', 'dash', 'ash', 'tcsh', 'csh', 'zsh', 'ksh', 'sh']
             if l:command =~# l:possible_shell . '\s*$'
                 return l:possible_shell
             endif

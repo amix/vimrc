@@ -24,7 +24,7 @@ endfunction
 
 call ale#linter#Define('lua', {
 \   'name': 'luac',
-\   'executable_callback': ale#VarFunc('lua_luac_executable'),
+\   'executable': {b -> ale#Var(b, 'lua_luac_executable')},
 \   'command': '%e -p -',
 \   'output_stream': 'stderr',
 \   'callback': 'ale_linters#lua#luac#Handle',

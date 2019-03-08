@@ -18,7 +18,7 @@ endfunction
 call ale#linter#Define('c', {
 \   'name': 'clang',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('c_clang_executable'),
+\   'executable': {b -> ale#Var(b, 'c_clang_executable')},
 \   'command_chain': [
 \       {'callback': 'ale#c#GetMakeCommand', 'output_stream': 'stdout'},
 \       {'callback': 'ale_linters#c#clang#GetCommand'}

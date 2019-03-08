@@ -24,6 +24,7 @@ Contents ~
    2. YAML Front Matter                        |vim-markdown-yaml-front-matter|
    3. TOML Front Matter                        |vim-markdown-toml-front-matter|
    4. JSON Front Matter                        |vim-markdown-json-front-matter|
+   5. Strikethrough                                |vim-markdown-strikethrough|
   11. Adjust new list item indent    |vim-markdown-adjust-new-list-item-indent|
   12. Do not require .md extensions for Markdown links
                 |vim-markdown-do-not-require-.md-extensions-for-markdown-links|
@@ -317,6 +318,14 @@ Highlight JSON front matter as used by Hugo [7].
 JSON syntax highlight requires vim-json [9].
 >
   let g:vim_markdown_json_frontmatter = 1
+<
+-------------------------------------------------------------------------------
+                                                   *vim-markdown-strikethrough*
+Strikethrough ~
+
+Strikethrough uses two tildes. '~~Scratch this.~~'
+>
+  let g:vim_markdown_strikethrough = 1
 <
 -------------------------------------------------------------------------------
                                      *vim-markdown-adjust-new-list-item-indent*

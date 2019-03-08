@@ -64,7 +64,7 @@ function! go#test#Test(bang, compile, ...) abort
 
   let l:cmd = ['go'] + l:args
 
-  let [l:out, l:err] = go#tool#ExecuteInDir(l:cmd)
+  let [l:out, l:err] = go#util#ExecInDir(l:cmd)
   " TODO(bc): When the output is JSON, the JSON should be run through a
   " filter to produce lines that are more easily described by errorformat.
 

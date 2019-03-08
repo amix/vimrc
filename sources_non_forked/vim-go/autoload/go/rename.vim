@@ -39,7 +39,7 @@ function! go#rename#Rename(bang, ...) abort
     return
   endif
 
-  let [l:out, l:err] = go#tool#ExecuteInDir(l:cmd)
+  let [l:out, l:err] = go#util#ExecInDir(l:cmd)
   call s:parse_errors(l:err, a:bang, split(l:out, '\n'))
 endfunction
 
@@ -89,7 +89,7 @@ function s:parse_errors(exit_val, bang, out)
 
   let l:listtype = go#list#Type("GoRename")
   if a:exit_val != 0
-    let errors = go#tool#ParseErrors(a:out)
+    let errors = go#util#ParseErrors(a:out)
     call go#list#Populate(l:listtype, errors, 'Rename')
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang

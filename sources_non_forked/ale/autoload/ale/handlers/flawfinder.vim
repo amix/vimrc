@@ -1,3 +1,4 @@
+scriptencoding utf-8
 " Author: Christian Gibbons <cgibbons@gmu.edu>
 " Description: This file defines a handler function that should work for the
 " flawfinder format with the -CDQS flags.
@@ -30,7 +31,7 @@ function! ale#handlers#flawfinder#HandleFlawfinderFormat(buffer, lines) abort
         \   'lnum': str2nr(l:match[2]),
         \   'col': str2nr(l:match[3]),
         \   'type': (l:severity < ale#Var(a:buffer, 'c_flawfinder_error_severity'))
-            \   ? 'W' : 'E',
+        \       ? 'W' : 'E',
         \   'text': s:RemoveUnicodeQuotes(join(split(l:match[4])[1:]) . ': ' . l:match[5]),
         \}
 

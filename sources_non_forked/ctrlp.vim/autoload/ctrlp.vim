@@ -1128,8 +1128,9 @@ fu! ctrlp#acceptfile(...)
 	cal s:PrtExit()
 	let tail = s:tail()
 	let j2l = atl != '' ? atl : matchstr(tail, '^ +\zs\d\+$')
+	let openmyself = bufnr == bufnr('%')
 	if bufnr > 0 && ( !empty(s:jmptobuf) && s:jmptobuf =~ md )
-		\ && !( md == 'e' && bufnr == bufnr('%') )
+		\ && !( md == 'e' && openmyself )
 		let [jmpb, bufwinnr] = [1, bufwinnr(bufnr)]
 		let buftab = ( s:jmptobuf =~# '[tTVH]' || s:jmptobuf > 1 )
 			\ ? s:buftab(bufnr, md) : [0, 0]
@@ -1146,12 +1147,12 @@ fu! ctrlp#acceptfile(...)
 		if j2l | cal ctrlp#j2l(j2l) | en
 	el
 		" Determine the command to use
-		let useb = bufnr > 0 && buflisted(bufnr) && ( empty(tail) || useb )
+		let useb = bufnr > 0 && ( buflisted(bufnr) || openmyself ) && ( empty(tail) || useb )
 		let cmd =
 			\ md == 't' || s:splitwin == 1 ? ( useb ? 'tab sb' : 'tabe' ) :
 			\ md == 'h' || s:splitwin == 2 ? ( useb ? 'sb' : 'new' ) :
 			\ md == 'v' || s:splitwin == 3 ? ( useb ? 'vert sb' : 'vne' ) :
-			\ &bt == 'help' ? 'b' :
+			\ &bt == 'help' && openmyself ? 'b' :
 			\ call('ctrlp#normcmd', useb ? ['b', 'bo vert sb'] : ['e'])
 		" Reset &switchbuf option
 		let [swb, &swb] = [&swb, '']

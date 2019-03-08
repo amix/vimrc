@@ -36,8 +36,8 @@ function! ale_linters#perl6#perl6#ExtractError(dict, item, type, buffer) abort
     endif
 
     if has_key(a:dict[a:item], 'line') && !empty(a:dict[a:item]['line'])
-      let l:line = a:dict[a:item]['line']
-      let l:counter -= 1
+        let l:line = a:dict[a:item]['line']
+        let l:counter -= 1
     endif
 
     if has_key(a:dict[a:item], 'column') && !empty(a:dict[a:item]['column'])
@@ -61,7 +61,7 @@ function! ale_linters#perl6#perl6#ExtractError(dict, item, type, buffer) abort
 
 " Currently, filenames and line numbers are not always given in the error output
     if l:counter < 2
-   \&& ( ale#path#IsBufferPath(a:buffer, l:file) || l:file is# '' )
+    \&& ( ale#path#IsBufferPath(a:buffer, l:file) || l:file is# '' )
         return {
         \   'lnum': '' . l:line,
         \   'text': l:text,
@@ -83,7 +83,7 @@ function! ale_linters#perl6#perl6#Handle(buffer, lines) abort
     endif
 
     if a:lines[0] is# 'Syntax OK'
-      return l:output
+        return l:output
     endif
 
     try
@@ -101,8 +101,8 @@ function! ale_linters#perl6#perl6#Handle(buffer, lines) abort
 
     if type(l:json) is v:t_dict
         for l:key in keys(l:json)
-            if has_key(l:json[l:key], 'sorrows') &&
-            \  has_key(l:json[l:key], 'worries')
+            if has_key(l:json[l:key], 'sorrows')
+            \&& has_key(l:json[l:key], 'worries')
                 if !empty(l:json[l:key]['sorrows'])
                     for l:dictionary in get(l:json[l:key], 'sorrows')
                         for l:item in keys(l:dictionary)
@@ -115,7 +115,7 @@ function! ale_linters#perl6#perl6#Handle(buffer, lines) abort
                             \   )
 
                             if l:result isnot# ''
-                              call add(l:output, l:result)
+                                call add(l:output, l:result)
                             endif
                         endfor
                     endfor
@@ -133,7 +133,7 @@ function! ale_linters#perl6#perl6#Handle(buffer, lines) abort
                             \   )
 
                             if l:result isnot# ''
-                              call add(l:output, l:result)
+                                call add(l:output, l:result)
                             endif
                         endfor
                     endfor
@@ -147,7 +147,7 @@ function! ale_linters#perl6#perl6#Handle(buffer, lines) abort
                 \   )
 
                 if l:result isnot# ''
-                  call add(l:output, l:result)
+                    call add(l:output, l:result)
                 endif
             endif
         endfor
@@ -158,9 +158,9 @@ endfunction
 
 call ale#linter#Define('perl6', {
 \   'name': 'perl6',
-\   'executable_callback': 'ale_linters#perl6#perl6#GetExecutable',
+\   'executable': function('ale_linters#perl6#perl6#GetExecutable'),
 \   'output_stream': 'both',
-\   'command_callback': 'ale_linters#perl6#perl6#GetCommand',
+\   'command': function('ale_linters#perl6#perl6#GetCommand'),
 \   'callback': 'ale_linters#perl6#perl6#Handle',
 \})
 

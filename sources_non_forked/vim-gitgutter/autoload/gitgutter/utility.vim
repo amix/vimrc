@@ -53,6 +53,7 @@ endfunction
 " This function does not and should not make any system calls.
 function! gitgutter#utility#is_active(bufnr) abort
   return g:gitgutter_enabled &&
+        \ gitgutter#utility#getbufvar(a:bufnr, 'enabled', 1) &&
         \ !pumvisible() &&
         \ s:is_file_buffer(a:bufnr) &&
         \ s:exists_file(a:bufnr) &&

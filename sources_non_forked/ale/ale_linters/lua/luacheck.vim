@@ -38,7 +38,7 @@ endfunction
 
 call ale#linter#Define('lua', {
 \   'name': 'luacheck',
-\   'executable_callback': ale#VarFunc('lua_luacheck_executable'),
-\   'command_callback': 'ale_linters#lua#luacheck#GetCommand',
+\   'executable': {b -> ale#Var(b, 'lua_luacheck_executable')},
+\   'command': function('ale_linters#lua#luacheck#GetCommand'),
 \   'callback': 'ale_linters#lua#luacheck#Handle',
 \})

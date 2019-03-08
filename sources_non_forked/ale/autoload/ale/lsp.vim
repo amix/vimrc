@@ -21,7 +21,6 @@ function! ale#lsp#Register(executable_or_address, project, init_options) abort
         " init_options: Options to send to the server.
         " config: Configuration settings to send to the server.
         " callback_list: A list of callbacks for handling LSP responses.
-        " message_queue: Messages queued for sending to callbacks.
         " capabilities_queue: The list of callbacks to call with capabilities.
         " capabilities: Features the server supports.
         let s:connections[l:conn_id] = {
@@ -35,14 +34,14 @@ function! ale#lsp#Register(executable_or_address, project, init_options) abort
         \   'init_options': a:init_options,
         \   'config': {},
         \   'callback_list': [],
-        \   'message_queue': [],
-        \   'capabilities_queue': [],
+        \   'init_queue': [],
         \   'capabilities': {
         \       'hover': 0,
         \       'references': 0,
         \       'completion': 0,
         \       'completion_trigger_characters': [],
         \       'definition': 0,
+        \       'typeDefinition': 0,
         \       'symbol_search': 0,
         \   },
         \}
@@ -56,6 +55,15 @@ function! ale#lsp#RemoveConnectionWithID(id) abort
     if has_key(s:connections, a:id)
         call remove(s:connections, a:id)
     endif
+endfunction
+
+function! ale#lsp#ResetConnections() abort
+    let s:connections = {}
+endfunction
+
+" Used only in tests.
+function! ale#lsp#GetConnections() abort
+    return s:connections
 endfunction
 
 " This is only needed for tests
@@ -207,6 +215,10 @@ function! s:UpdateCapabilities(conn, capabilities) abort
         let a:conn.capabilities.definition = 1
     endif
 
+    if get(a:capabilities, 'typeDefinitionProvider') is v:true
+        let a:conn.capabilities.typeDefinition = 1
+    endif
+
     if get(a:capabilities, 'workspaceSymbolProvider') is v:true
         let a:conn.capabilities.symbol_search = 1
     endif
@@ -245,22 +257,15 @@ function! ale#lsp#HandleInitResponse(conn, response) abort
         return
     endif
 
-    " After the server starts, send messages we had queued previously.
-    for l:message_data in a:conn.message_queue
-        call s:SendMessageData(a:conn, l:message_data)
-    endfor
-
-    " Remove the messages now.
-    let a:conn.message_queue = []
+    " The initialized message must be sent before everything else.
+    call ale#lsp#Send(a:conn.id, ale#lsp#message#Initialized())
 
     " Call capabilities callbacks queued for the project.
-    for [l:capability, l:Callback] in a:conn.capabilities_queue
-        if a:conn.capabilities[l:capability]
-            call call(l:Callback, [a:conn.id])
-        endif
+    for l:Callback in a:conn.init_queue
+        call l:Callback()
     endfor
 
-    let a:conn.capabilities_queue = []
+    let a:conn.init_queue = []
 endfunction
 
 function! ale#lsp#HandleMessage(conn_id, message) abort
@@ -314,25 +319,45 @@ function! ale#lsp#MarkConnectionAsTsserver(conn_id) abort
     let l:conn.capabilities.symbol_search = 1
 endfunction
 
+function! s:SendInitMessage(conn) abort
+    let [l:init_id, l:init_data] = ale#lsp#CreateMessageData(
+    \   ale#lsp#message#Initialize(a:conn.root, a:conn.init_options),
+    \)
+    let a:conn.init_request_id = l:init_id
+    call s:SendMessageData(a:conn, l:init_data)
+endfunction
+
 " Start a program for LSP servers.
 "
 " 1 will be returned if the program is running, or 0 if the program could
 " not be started.
 function! ale#lsp#StartProgram(conn_id, executable, command) abort
     let l:conn = s:connections[a:conn_id]
+    let l:started = 0
 
-    if !has_key(l:conn, 'job_id') || !ale#job#IsRunning(l:conn.job_id)
+    if !has_key(l:conn, 'job_id') || !ale#job#HasOpenChannel(l:conn.job_id)
         let l:options = {
         \   'mode': 'raw',
         \   'out_cb': {_, message -> ale#lsp#HandleMessage(a:conn_id, message)},
         \}
-        let l:job_id = ale#job#Start(a:command, l:options)
+
+        if has('win32')
+            let l:job_id = ale#job#StartWithCmd(a:command, l:options)
+        else
+            let l:job_id = ale#job#Start(a:command, l:options)
+        endif
+
+        let l:started = 1
     else
         let l:job_id = l:conn.job_id
     endif
 
     if l:job_id > 0
         let l:conn.job_id = l:job_id
+    endif
+
+    if l:started && !l:conn.is_tsserver
+        call s:SendInitMessage(l:conn)
     endif
 
     return l:job_id > 0
@@ -344,17 +369,24 @@ endfunction
 " not be opened.
 function! ale#lsp#ConnectToAddress(conn_id, address) abort
     let l:conn = s:connections[a:conn_id]
+    let l:started = 0
 
     if !has_key(l:conn, 'channel_id') || !ale#socket#IsOpen(l:conn.channel_id)
         let l:channel_id = ale#socket#Open(a:address, {
         \   'callback': {_, mess -> ale#lsp#HandleMessage(a:conn_id, mess)},
         \})
+
+        let l:started = 1
     else
         let l:channel_id = l:conn.channel_id
     endif
 
     if l:channel_id >= 0
         let l:conn.channel_id = l:channel_id
+    endif
+
+    if l:started
+        call s:SendInitMessage(l:conn)
     endif
 
     return l:channel_id >= 0
@@ -421,26 +453,12 @@ function! ale#lsp#Send(conn_id, message) abort
         return 0
     endif
 
-    " If we haven't initialized the server yet, then send the message for it.
-    if !l:conn.initialized && !l:conn.init_request_id
-        let [l:init_id, l:init_data] = ale#lsp#CreateMessageData(
-        \   ale#lsp#message#Initialize(l:conn.root, l:conn.init_options),
-        \)
-
-        let l:conn.init_request_id = l:init_id
-
-        call s:SendMessageData(l:conn, l:init_data)
+    if !l:conn.initialized
+        throw 'LSP server not initialized yet!'
     endif
 
     let [l:id, l:data] = ale#lsp#CreateMessageData(a:message)
-
-    if l:conn.initialized
-        " Send the message now.
-        call s:SendMessageData(l:conn, l:data)
-    else
-        " Add the message we wanted to send to a List to send later.
-        call add(l:conn.message_queue, l:data)
-    endif
+    call s:SendMessageData(l:conn, l:data)
 
     return l:id == 0 ? -1 : l:id
 endfunction
@@ -491,26 +509,32 @@ function! ale#lsp#NotifyForChanges(conn_id, buffer) abort
     return l:notified
 endfunction
 
-" Given some LSP details that must contain at least `connection_id` and
-" `project_root` keys,
-function! ale#lsp#WaitForCapability(conn_id, capability, callback) abort
+" Wait for an LSP server to be initialized.
+function! ale#lsp#OnInit(conn_id, Callback) abort
     let l:conn = get(s:connections, a:conn_id, {})
 
     if empty(l:conn)
         return
     endif
 
+    if l:conn.initialized
+        call a:Callback()
+    else
+        call add(l:conn.init_queue, a:Callback)
+    endif
+endfunction
+
+" Check if an LSP has a given capability.
+function! ale#lsp#HasCapability(conn_id, capability) abort
+    let l:conn = get(s:connections, a:conn_id, {})
+
+    if empty(l:conn)
+        return 0
+    endif
+
     if type(get(l:conn.capabilities, a:capability, v:null)) isnot v:t_number
         throw 'Invalid capability ' . a:capability
     endif
 
-    if l:conn.initialized
-        if l:conn.capabilities[a:capability]
-            " The project has been initialized, so call the callback now.
-            call call(a:callback, [a:conn_id])
-        endif
-    else
-        " Call the callback later, once we have the information we need.
-        call add(l:conn.capabilities_queue, [a:capability, a:callback])
-    endif
+    return l:conn.capabilities[a:capability]
 endfunction

@@ -14,7 +14,7 @@ endfunction
 call ale#linter#Define('dart', {
 \   'name': 'language_server',
 \   'lsp': 'stdio',
-\   'executable_callback': ale#VarFunc('dart_language_server_executable'),
+\   'executable': {b -> ale#Var(b, 'dart_language_server_executable')},
 \   'command': '%e',
-\   'project_root_callback': 'ale_linters#dart#language_server#GetProjectRoot',
+\   'project_root': function('ale_linters#dart#language_server#GetProjectRoot'),
 \})

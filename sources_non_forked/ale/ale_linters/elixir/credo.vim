@@ -47,6 +47,6 @@ endfunction
 call ale#linter#Define('elixir', {
 \   'name': 'credo',
 \   'executable': 'mix',
-\   'command_callback': 'ale_linters#elixir#credo#GetCommand',
+\   'command': function('ale_linters#elixir#credo#GetCommand'),
 \   'callback': 'ale_linters#elixir#credo#Handle',
 \})

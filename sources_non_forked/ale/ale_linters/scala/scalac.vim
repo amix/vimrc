@@ -8,7 +8,7 @@ endfunction
 
 call ale#linter#Define('scala', {
 \   'name': 'scalac',
-\   'executable_callback': {buf -> s:IsSbt(buf) ? '' : 'scalac'},
+\   'executable': {buf -> s:IsSbt(buf) ? '' : 'scalac'},
 \   'command': '%e -Ystop-after:parser %t',
 \   'callback': 'ale#handlers#scala#HandleScalacLintFormat',
 \   'output_stream': 'stderr',

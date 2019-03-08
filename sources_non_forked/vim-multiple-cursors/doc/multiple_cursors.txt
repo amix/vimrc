@@ -181,6 +181,22 @@ Or remap the following: >
 Q:  <C-n> doesn't seem to work in gVIM?
 A:  Try setting `set selection=inclusive` in your `~/.gvimrc`
 
+Q:  deoplete insert giberrish, how to fix this?
+A:  use the `Multiple_cursors` functions, add this in your vimrc: >
+    func! Multiple_cursors_before()
+      if deoplete#is_enabled()
+        call deoplete#disable()
+        let g:deoplete_is_enable_before_multi_cursors = 1
+      else
+        let g:deoplete_is_enable_before_multi_cursors = 0
+      endif
+    endfunc
+    func! Multiple_cursors_after()
+      if g:deoplete_is_enable_before_multi_cursors
+        call deoplete#enable()
+      endif
+    endfunc
+
 Q:  is it also working on Mac?
 A:  On Mac OS, MacVim[10] is known to work.
 

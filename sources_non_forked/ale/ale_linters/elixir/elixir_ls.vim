@@ -14,8 +14,8 @@ endfunction
 call ale#linter#Define('elixir', {
 \   'name': 'elixir-ls',
 \   'lsp': 'stdio',
-\   'executable_callback': 'ale_linters#elixir#elixir_ls#GetExecutable',
-\   'command_callback': 'ale_linters#elixir#elixir_ls#GetExecutable',
-\   'project_root_callback': 'ale#handlers#elixir#FindMixUmbrellaRoot',
-\   'lsp_config_callback': ale#VarFunc('elixir_elixir_ls_config'),
+\   'executable': function('ale_linters#elixir#elixir_ls#GetExecutable'),
+\   'command': function('ale_linters#elixir#elixir_ls#GetExecutable'),
+\   'project_root': function('ale#handlers#elixir#FindMixUmbrellaRoot'),
+\   'lsp_config': {b -> ale#Var(b, 'elixir_elixir_ls_config')},
 \})

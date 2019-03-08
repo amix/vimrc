@@ -66,7 +66,7 @@ endfunction
 call ale#linter#Define('fortran', {
 \   'name': 'gcc',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('fortran_gcc_executable'),
-\   'command_callback': 'ale_linters#fortran#gcc#GetCommand',
+\   'executable': {b -> ale#Var(b, 'fortran_gcc_executable')},
+\   'command': function('ale_linters#fortran#gcc#GetCommand'),
 \   'callback': 'ale_linters#fortran#gcc#Handle',
 \})
