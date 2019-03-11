@@ -1,0 +1,92 @@
+===============================================================================
+ALE VHDL Integration                                         *ale-vhdl-options*
+
+
+===============================================================================
+ALE can use three different linters for VHDL:
+
+  iverilog:
+    Using `iverilog -t null -Wall`
+
+  ModelSim/Questa
+    Using `vcom -2008 -quiet -lint`
+
+  Vivado
+    Using `xvhdl --2008`
+
+Note all linters default to VHDL-2008 support. This, and other options, can be
+changed with each linter's respective option variable.
+
+Linters/compilers that utilize a "work" directory for analyzing designs- such
+as ModelSim and Vivado- can be passed the location of these directories as
+part of their respective option strings listed below. This is useful for
+holistic analysis of a file (e.g. a design with components, packages, or other
+code defined external to the current file as part of a larger project) or
+when wanting to simply pass an alternative location for the auto-generated
+work directories (such as '/tmp') so as to not muddle the current directory.
+Since these type of linters often use this work directory for holding compiled
+design data as part of a single build process, they sometimes cannot handle
+the frequent, asynchronous application launches when linting while text is
+changing. This can happen in the form of hangs or crashes. To help prevent
+this when using these linters, it may help to run linting less frequently; for
+example, only when a file is saved.
+
+===============================================================================
+ghdl                                                            *ale-vhdl-ghdl*
+
+g:ale_vhdl_ghdl_executable                         *g:ale_vhdl_ghdl_executable*
+                                                   *b:ale_vhdl_ghdl_executable*
+  Type: |String|
+  Default: `'ghdl'`
+
+  This variable can be changed to the path to the 'ghdl' executable.
+
+
+g:ale_vhdl_ghdl_options                               *g:ale_vhdl_ghdl_options*
+                                                      *b:ale_vhdl_ghdl_options*
+  Type: |String|
+  Default: `'--std=08'`
+
+  This variable can be changed to modify the flags/options passed to 'ghdl'.
+
+
+===============================================================================
+vcom                                                            *ale-vhdl-vcom*
+
+g:ale_vhdl_vcom_executable                         *g:ale_vhdl_vcom_executable*
+                                                   *b:ale_vhdl_vcom_executable*
+  Type: |String|
+  Default: `'vcom'`
+
+  This variable can be changed to the path to the 'vcom' executable.
+
+
+g:ale_vhdl_vcom_options                               *g:ale_vhdl_vcom_options*
+                                                      *b:ale_vhdl_vcom_options*
+  Type: |String|
+  Default: `'-2008 -quiet -lint'`
+
+  This variable can be changed to modify the flags/options passed to 'vcom'.
+
+
+===============================================================================
+xvhdl                                                          *ale-vhdl-xvhdl*
+
+g:ale_vhdl_xvhdl_executable                       *g:ale_vhdl_xvhdl_executable*
+                                                  *b:ale_vhdl_xvhdl_executable*
+  Type: |String|
+  Default: `'xvhdl'`
+
+  This variable can be changed to the path to the 'xvhdl' executable.
+
+
+g:ale_vhdl_xvhdl_options                             *g:ale_vhdl_xvhdl_options*
+                                                     *b:ale_vhdl_xvhdl_options*
+  Type: |String|
+  Default: `'--2008'`
+
+  This variable can be changed to modify the flags/options passed to 'xvhdl'.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
