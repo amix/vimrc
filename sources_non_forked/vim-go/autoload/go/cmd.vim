@@ -26,9 +26,7 @@ endfunction
 function! go#cmd#Build(bang, ...) abort
   " Create our command arguments. go build discards any results when it
   " compiles multiple packages. So we pass the `errors` package just as an
-  " placeholder with the current folder (indicated with '.'). We also pass -i
-  " that tries to install the dependencies, this has the side effect that it
-  " caches the build results, so every other build is faster.
+  " placeholder with the current folder (indicated with '.').
   let l:args =
         \ ['build', '-tags', go#config#BuildTags()] +
         \ map(copy(a:000), "expand(v:val)") +
@@ -63,6 +61,7 @@ function! go#cmd#Build(bang, ...) abort
       redraw!
     finally
       execute cd . fnameescape(dir)
+      let &makeprg = default_makeprg
     endtry
 
     let errors = go#list#Get(l:listtype)
@@ -72,8 +71,6 @@ function! go#cmd#Build(bang, ...) abort
     else
       call go#util#EchoSuccess("[build] SUCCESS")
     endif
-
-    let &makeprg = default_makeprg
   endif
 endfunction
 
@@ -169,11 +166,15 @@ function! go#cmd#Run(bang, ...) abort
 
   let l:listtype = go#list#Type("GoRun")
 
-  if l:listtype == "locationlist"
-    exe 'lmake!'
-  else
-    exe 'make!'
-  endif
+  try
+    if l:listtype == "locationlist"
+      exe 'lmake!'
+    else
+      exe 'make!'
+    endif
+  finally
+    let &makeprg = default_makeprg
+  endtry
 
   let items = go#list#Get(l:listtype)
   let errors = go#tool#FilterValids(items)
@@ -184,7 +185,6 @@ function! go#cmd#Run(bang, ...) abort
     call go#list#JumpToFirst(l:listtype)
   endif
 
-  let &makeprg = default_makeprg
 endfunction
 
 " Install installs the package by simple calling 'go install'. If any argument
@@ -226,6 +226,7 @@ function! go#cmd#Install(bang, ...) abort
     redraw!
   finally
     execute cd . fnameescape(dir)
+    let &makeprg = default_makeprg
   endtry
 
   let errors = go#list#Get(l:listtype)
@@ -235,8 +236,6 @@ function! go#cmd#Install(bang, ...) abort
   else
     call go#util#EchoSuccess("installed to ". go#path#Default())
   endif
-
-  let &makeprg = default_makeprg
 endfunction
 
 " Generate runs 'go generate' in similar fashion to go#cmd#Build()
@@ -255,12 +254,17 @@ function! go#cmd#Generate(bang, ...) abort
   let l:listtype = go#list#Type("GoGenerate")
 
   echon "vim-go: " | echohl Identifier | echon "generating ..."| echohl None
-  if l:listtype == "locationlist"
-    silent! exe 'lmake!'
-  else
-    silent! exe 'make!'
-  endif
-  redraw!
+
+  try
+    if l:listtype == "locationlist"
+      silent! exe 'lmake!'
+    else
+      silent! exe 'make!'
+    endif
+  finally
+    redraw!
+    let &makeprg = default_makeprg
+  endtry
 
   let errors = go#list#Get(l:listtype)
   call go#list#Window(l:listtype, len(errors))
@@ -272,7 +276,6 @@ function! go#cmd#Generate(bang, ...) abort
     redraws! | echon "vim-go: " | echohl Function | echon "[generate] SUCCESS"| echohl None
   endif
 
-  let &makeprg = default_makeprg
 endfunction
 
 " ---------------------

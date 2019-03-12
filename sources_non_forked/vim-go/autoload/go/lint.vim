@@ -9,15 +9,22 @@ function! go#lint#Gometa(bang, autosave, ...) abort
     let goargs = a:000
   endif
 
-  let bin_path = go#path#CheckBinPath("gometalinter")
-  if empty(bin_path)
-    return
-  endif
+  if empty(go#config#MetalinterCommand())
+    let bin_path = go#path#CheckBinPath("gometalinter")
+    if empty(bin_path)
+      return
+    endif
 
-  let cmd = [bin_path]
-  let cmd += ["--disable-all"]
+    let cmd = [bin_path]
+    let cmd += ["--disable-all"]
 
-  if a:autosave || empty(go#config#MetalinterCommand())
+    " gometalinter has a --tests flag to tell its linters whether to run
+    " against tests. While not all of its linters respect this flag, for those
+    " that do, it means if we don't pass --tests, the linter won't run against
+    " test files. One example of a linter that will not run against tests if
+    " we do not specify this flag is errcheck.
+    let cmd += ["--tests"]
+
     " linters
     let linters = a:autosave ? go#config#MetalinterAutosaveEnabled() : go#config#MetalinterEnabled()
     for linter in linters
@@ -27,16 +34,9 @@ function! go#lint#Gometa(bang, autosave, ...) abort
     for linter in go#config#MetalinterDisabled()
       let cmd += ["--disable=".linter]
     endfor
-
-    " gometalinter has a --tests flag to tell its linters whether to run
-    " against tests. While not all of its linters respect this flag, for those
-    " that do, it means if we don't pass --tests, the linter won't run against
-    " test files. One example of a linter that will not run against tests if
-    " we do not specify this flag is errcheck.
-    let cmd += ["--tests"]
   else
     " the user wants something else, let us use it.
-    let cmd += split(go#config#MetalinterCommand(), " ")
+    let cmd = split(go#config#MetalinterCommand(), " ")
   endif
 
   if a:autosave
@@ -78,8 +78,8 @@ function! go#lint#Gometa(bang, autosave, ...) abort
     echon "vim-go: " | echohl Function | echon "[metalinter] PASS" | echohl None
   else
     " GoMetaLinter can output one of the two, so we look for both:
-    "   <file>:<line>:[<column>]: <message> (<linter>)
-    "   <file>:<line>:: <message> (<linter>)
+    "   <file>:<line>:<column>:<severity>: <message> (<linter>)
+    "   <file>:<line>::<severity>: <message> (<linter>)
     " This can be defined by the following errorformat:
     let errformat = "%f:%l:%c:%t%*[^:]:\ %m,%f:%l::%t%*[^:]:\ %m"
 
@@ -123,7 +123,9 @@ endfunction
 function! go#lint#Vet(bang, ...) abort
   call go#cmd#autowrite()
 
-  call go#util#EchoProgress('calling vet...')
+  if go#config#EchoCommandInfo()
+    call go#util#EchoProgress('calling vet...')
+  endif
 
   if a:0 == 0
     let [l:out, l:err] = go#util#Exec(['go', 'vet', go#package#ImportPath()])
@@ -140,7 +142,6 @@ function! go#lint#Vet(bang, ...) abort
     if !empty(errors) && !a:bang
       call go#list#JumpToFirst(l:listtype)
     endif
-    call go#util#EchoError('[vet] FAIL')
   else
     call go#list#Clean(l:listtype)
     call go#util#EchoSuccess('[vet] PASS')

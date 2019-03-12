@@ -48,26 +48,38 @@ endfunction
 
 function! ale#c#ParseCFlags(path_prefix, cflag_line) abort
     let l:cflags_list = []
-    let l:previous_options = []
+    let l:previous_options = ''
 
-    let l:split_lines = split(a:cflag_line, '-')
+    let l:split_lines = split(a:cflag_line, ' ')
     let l:option_index = 0
 
     while l:option_index < len(l:split_lines)
-        let l:option = l:split_lines[l:option_index]
+        let l:option = l:previous_options . l:split_lines[l:option_index]
         let l:option_index = l:option_index + 1
-        call add(l:previous_options, l:option)
-        " Check if cflag contained a '-' and should not have been splitted
-        let l:option_list = split(l:option, '\zs')
 
-        if len(l:option_list) > 0 && l:option_list[-1] isnot# ' ' && l:option_index < len(l:split_lines)
+        " Check if cflag contained an unmatched characters and should not have been splitted
+        let l:option_special = substitute(l:option, '\\"', '', 'g')
+        let l:option_special = substitute(l:option_special, '[^"''()`]', '', 'g')
+        let l:option_special = substitute(l:option_special, '""', '', 'g')
+        let l:option_special = substitute(l:option_special, '''''', '', 'g')
+        let l:option_special = substitute(l:option_special, '``', '', 'g')
+        let l:option_special = substitute(l:option_special, '((', '(', 'g')
+        let l:option_special = substitute(l:option_special, '))', ')', 'g')
+        let l:option_special = substitute(l:option_special, '()', '', 'g')
+
+        if len(l:option_special) > 0 && l:option_index < len(l:split_lines)
+            let l:previous_options = l:option . ' '
             continue
         endif
 
-        let l:option = join(l:previous_options, '-')
-        let l:previous_options = []
+        " Check if there was spaces after -D/-I and the flag should not have been splitted
+        if l:option is# '-D' || l:option is# '-I'
+            let l:previous_options = l:option
+            continue
+        endif
 
-        let l:option = '-' . substitute(l:option, '^\s*\(.\{-}\)\s*$', '\1', '')
+        let l:previous_options = ''
+
 
         " Fix relative paths if needed
         if stridx(l:option, '-I') >= 0 &&

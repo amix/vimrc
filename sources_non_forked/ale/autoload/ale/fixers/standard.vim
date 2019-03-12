@@ -14,9 +14,11 @@ endfunction
 
 function! ale#fixers#standard#Fix(buffer) abort
     let l:executable = ale#fixers#standard#GetExecutable(a:buffer)
+    let l:options = ale#Var(a:buffer, 'javascript_standard_options')
 
     return {
     \   'command': ale#node#Executable(a:buffer, l:executable)
+    \   . (!empty(l:options) ? ' ' . l:options : '')
     \       . ' --fix %t',
     \   'read_temporary_file': 1,
     \}

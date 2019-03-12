@@ -1,3 +1,7 @@
+" File   : extended.vim
+" License: MIT
+" Author : Xinyue Ou <xinyue3ou@gmail.com>
+" Date   : 06.01.2019
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Important: 
 "       This requries that you install https://github.com/amix/vimrc !
@@ -28,8 +32,8 @@ set guioptions-=l
 set guioptions-=L
 
 " Colorscheme
-set background=dark
-colorscheme peaksea
+" set background=dark
+" colorscheme peaksea
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

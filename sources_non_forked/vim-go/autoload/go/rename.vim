@@ -89,7 +89,6 @@ function s:parse_errors(exit_val, bang, out)
 
   let l:listtype = go#list#Type("GoRename")
   if a:exit_val != 0
-    call go#util#EchoError("FAILED")
     let errors = go#tool#ParseErrors(a:out)
     call go#list#Populate(l:listtype, errors, 'Rename')
     call go#list#Window(l:listtype, len(errors))

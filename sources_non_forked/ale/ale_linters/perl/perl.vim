@@ -18,7 +18,7 @@ function! ale_linters#perl#perl#Handle(buffer, lines) abort
         return []
     endif
 
-    let l:pattern = '\(.\+\) at \(.\+\) line \(\d\+\)'
+    let l:pattern = '\(..\{-}\) at \(..\{-}\) line \(\d\+\)'
     let l:output = []
     let l:basename = expand('#' . a:buffer . ':t')
 

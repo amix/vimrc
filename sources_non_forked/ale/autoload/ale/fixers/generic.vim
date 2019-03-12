@@ -1,7 +1,7 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Generic functions for fixing files with.
 
-function! ale#fixers#generic#RemoveTrailingBlankLines(buffer, lines) abort
+function! ale#fixers#generic#RemoveTrailingBlankLines(buffer, done, lines) abort
     let l:end_index = len(a:lines) - 1
 
     while l:end_index > 0 && empty(a:lines[l:end_index])
@@ -12,7 +12,7 @@ function! ale#fixers#generic#RemoveTrailingBlankLines(buffer, lines) abort
 endfunction
 
 " Remove all whitespaces at the end of lines
-function! ale#fixers#generic#TrimWhitespace(buffer, lines) abort
+function! ale#fixers#generic#TrimWhitespace(buffer, done, lines) abort
     let l:index = 0
     let l:lines_new = range(len(a:lines))
 

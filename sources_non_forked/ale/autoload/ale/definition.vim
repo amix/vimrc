@@ -86,7 +86,7 @@ function! s:OnReady(linter, lsp_details, line, column, options, ...) abort
     let l:request_id = ale#lsp#Send(l:id, l:message)
 
     let s:go_to_definition_map[l:request_id] = {
-    \   'open_in_tab': get(a:options, 'open_in_tab', 0),
+    \   'open_in': get(a:options, 'open_in', 'current-buffer'),
     \}
 endfunction
 

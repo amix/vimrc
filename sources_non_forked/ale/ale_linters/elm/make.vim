@@ -137,9 +137,7 @@ function! ale_linters#elm#make#ParseMessageItem(item) abort
     endif
 endfunction
 
-" Return the command to execute the linter in the projects directory.
-" If it doesn't, then this will fail when imports are needed.
-function! ale_linters#elm#make#GetCommand(buffer) abort
+function! ale_linters#elm#make#GetPackageFile(buffer) abort
     let l:elm_json = ale#path#FindNearestFile(a:buffer, 'elm.json')
 
     if empty(l:elm_json)
@@ -147,10 +145,55 @@ function! ale_linters#elm#make#GetCommand(buffer) abort
         let l:elm_json = ale#path#FindNearestFile(a:buffer, 'elm-package.json')
     endif
 
+    return l:elm_json
+endfunction
+
+function! ale_linters#elm#make#IsVersionGte19(buffer) abort
+    let l:elm_json = ale_linters#elm#make#GetPackageFile(a:buffer)
+
+    if l:elm_json =~# '-package'
+        return 0
+    else
+        return 1
+    endif
+endfunction
+
+function! ale_linters#elm#make#GetRootDir(buffer) abort
+    let l:elm_json = ale_linters#elm#make#GetPackageFile(a:buffer)
+
     if empty(l:elm_json)
+        return ''
+    else
+        return fnamemodify(l:elm_json, ':p:h')
+    endif
+endfunction
+
+function! ale_linters#elm#make#IsTest(buffer) abort
+    let l:root_dir = ale_linters#elm#make#GetRootDir(a:buffer)
+
+    if empty(l:root_dir)
+        return 0
+    endif
+
+    let l:tests_dir = join([l:root_dir, 'tests', ''], has('win32') ? '\' : '/')
+
+    let l:buffer_path = fnamemodify(bufname(a:buffer), ':p')
+
+    if stridx(l:buffer_path, l:tests_dir) == 0
+        return 1
+    else
+        return 0
+    endif
+endfunction
+
+" Return the command to execute the linter in the projects directory.
+" If it doesn't, then this will fail when imports are needed.
+function! ale_linters#elm#make#GetCommand(buffer) abort
+    let l:root_dir = ale_linters#elm#make#GetRootDir(a:buffer)
+
+    if empty(l:root_dir)
         let l:dir_set_cmd = ''
     else
-        let l:root_dir = fnamemodify(l:elm_json, ':p:h')
         let l:dir_set_cmd = 'cd ' . ale#Escape(l:root_dir) . ' && '
     endif
 
@@ -161,11 +204,24 @@ function! ale_linters#elm#make#GetCommand(buffer) abort
     return l:dir_set_cmd . '%e make --report=json --output=/dev/null %t'
 endfunction
 
+function! ale_linters#elm#make#GetExecutable(buffer) abort
+    let l:is_test = ale_linters#elm#make#IsTest(a:buffer)
+    let l:is_v19 = ale_linters#elm#make#IsVersionGte19(a:buffer)
+
+    if l:is_test && l:is_v19
+        return ale#node#FindExecutable(
+\           a:buffer,
+\           'elm_make',
+\           ['node_modules/.bin/elm-test', 'node_modules/.bin/elm']
+\       )
+    else
+        return ale#node#FindExecutable(a:buffer, 'elm_make', ['node_modules/.bin/elm'])
+    endif
+endfunction
+
 call ale#linter#Define('elm', {
 \   'name': 'make',
-\   'executable_callback': ale#node#FindExecutableFunc('elm_make', [
-\       'node_modules/.bin/elm',
-\   ]),
+\   'executable_callback': 'ale_linters#elm#make#GetExecutable',
 \   'output_stream': 'both',
 \   'command_callback': 'ale_linters#elm#make#GetCommand',
 \   'callback': 'ale_linters#elm#make#Handle'

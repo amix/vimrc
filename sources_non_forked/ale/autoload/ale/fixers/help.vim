@@ -1,7 +1,7 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Generic fixer functions for Vim help documents.
 
-function! ale#fixers#help#AlignTags(buffer, lines) abort
+function! ale#fixers#help#AlignTags(buffer, done, lines) abort
     let l:new_lines = []
 
     for l:line in a:lines

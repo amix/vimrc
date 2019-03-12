@@ -48,7 +48,7 @@ redir @q
 redir END
 let s:tests = split(substitute(@q, 'function \(\k\+()\)', '\1', 'g'))
 
-" log any messages that we may already accumulated.
+" log any messages already accumulated.
 call s:logmessages()
 " Iterate over all tests and execute them.
 for s:test in sort(s:tests)

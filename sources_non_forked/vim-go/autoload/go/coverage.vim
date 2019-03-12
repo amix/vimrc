@@ -85,7 +85,7 @@ function! go#coverage#Clear() abort
 
   " remove the autocmd we defined
   augroup vim-go-coverage
-    autocmd!
+    autocmd! * <buffer>
   augroup end
 endfunction
 
@@ -242,7 +242,7 @@ function! go#coverage#overlay(file) abort
 
   " clear the matches if we leave the buffer
   augroup vim-go-coverage
-    autocmd!
+    autocmd! * <buffer>
     autocmd BufWinLeave <buffer> call go#coverage#Clear()
   augroup end
 
