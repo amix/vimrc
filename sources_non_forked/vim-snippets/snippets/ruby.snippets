@@ -656,6 +656,10 @@ snippet desc
 	describe ${1:`substitute(substitute(vim_snippets#Filename(), '_spec$', '', ''), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
 		${0}
 	end
+snippet rdesc
+	RSpec.describe ${1:`substitute(substitute(vim_snippets#Filename(), '_spec$', '', ''), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
+		${0}
+	end
 snippet descm
 	describe '${1:#method}' do
 		${0:pending 'Not implemented'}

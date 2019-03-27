@@ -145,23 +145,6 @@ function! go#job#Options(args)
     let state.custom_complete = a:args.complete
   endif
 
-  function! s:start(args) dict
-    if go#config#EchoCommandInfo() && self.statustype != ""
-      let prefix = '[' . self.statustype . '] '
-      call go#util#EchoSuccess(prefix . "dispatched")
-    endif
-
-    if self.statustype != ''
-      let status = {
-            \ 'desc': 'current status',
-            \ 'type': self.statustype,
-            \ 'state': "started",
-            \ }
-
-      call go#statusline#Update(self.jobdir, status)
-    endif
-    let self.started_at = reltime()
-  endfunction
   " explicitly bind _start to state so that within it, self will
   " always refer to state. See :help Partial for more information.
   "
@@ -169,35 +152,14 @@ function! go#job#Options(args)
   " outside of this file.
   let cbs._start = function('s:start', [''], state)
 
-  function! s:callback(chan, msg) dict
-    call add(self.messages, a:msg)
-  endfunction
   " explicitly bind callback to state so that within it, self will
   " always refer to state. See :help Partial for more information.
   let cbs.callback = function('s:callback', [], state)
 
-  function! s:exit_cb(job, exitval) dict
-    let self.exit_status = a:exitval
-    let self.exited = 1
-
-    call self.show_status(a:job, a:exitval)
-
-    if self.closed || has('nvim')
-      call self.complete(a:job, self.exit_status, self.messages)
-    endif
-  endfunction
   " explicitly bind exit_cb to state so that within it, self will always refer
   " to state. See :help Partial for more information.
   let cbs.exit_cb = function('s:exit_cb', [], state)
 
-  function! s:close_cb(ch) dict
-    let self.closed = 1
-
-    if self.exited
-      let job = ch_getjob(a:ch)
-      call self.complete(job, self.exit_status, self.messages)
-    endif
-  endfunction
   " explicitly bind close_cb to state so that within it, self will
   " always refer to state. See :help Partial for more information.
   let cbs.close_cb = function('s:close_cb', [], state)
@@ -261,6 +223,48 @@ function! go#job#Options(args)
   return cbs
 endfunction
 
+function! s:start(args) dict
+  if go#config#EchoCommandInfo() && self.statustype != ""
+    let prefix = '[' . self.statustype . '] '
+    call go#util#EchoSuccess(prefix . "dispatched")
+  endif
+
+  if self.statustype != ''
+    let status = {
+          \ 'desc': 'current status',
+          \ 'type': self.statustype,
+          \ 'state': "started",
+          \ }
+
+    call go#statusline#Update(self.jobdir, status)
+  endif
+  let self.started_at = reltime()
+endfunction
+
+function! s:callback(chan, msg) dict
+  call add(self.messages, a:msg)
+endfunction
+
+function! s:exit_cb(job, exitval) dict
+  let self.exit_status = a:exitval
+  let self.exited = 1
+
+  call self.show_status(a:job, a:exitval)
+
+  if self.closed || has('nvim')
+    call self.complete(a:job, self.exit_status, self.messages)
+  endif
+endfunction
+
+function! s:close_cb(ch) dict
+  let self.closed = 1
+
+  if self.exited
+    let job = ch_getjob(a:ch)
+    call self.complete(job, self.exit_status, self.messages)
+  endif
+endfunction
+
 " go#job#Start runs a job. The options are expected to be the options
 " suitable for Vim8 jobs. When called from Neovim, Vim8 options will be
 " transformed to their Neovim equivalents.
@@ -276,17 +280,24 @@ function! go#job#Start(cmd, options)
   " early if the directory does not exist. This helps avoid errors when
   " working with plugins that use virtual files that don't actually exist on
   " the file system.
-  let filedir = expand("%:p:h")
+  let l:filedir = expand("%:p:h")
   if has_key(l:options, 'cwd') && !isdirectory(l:options.cwd)
       return
-  elseif !isdirectory(filedir)
+  elseif !isdirectory(l:filedir)
     return
   endif
 
+  let l:manualcd = 0
   if !has_key(l:options, 'cwd')
     " pre start
+    let l:manualcd = 1
     let dir = getcwd()
     execute l:cd fnameescape(filedir)
+  elseif !(has("patch-8.0.0902") || has('nvim'))
+    let l:manualcd = 1
+    let l:dir = l:options.cwd
+    execute l:cd fnameescape(l:dir)
+    call remove(l:options, 'cwd')
   endif
 
   if has_key(l:options, '_start')
@@ -294,6 +305,11 @@ function! go#job#Start(cmd, options)
     " remove _start to play nicely with vim (when vim encounters an unexpected
     " job option it reports an "E475: invalid argument" error).
     unlet l:options._start
+  endif
+
+  " noblock was added in 8.1.350; remove it if it's not supported.
+  if has_key(l:options, 'noblock') && (has('nvim') || !has("patch-8.1.350"))
+    call remove(l:options, 'noblock')
   endif
 
   if go#util#HasDebug('shell-commands')
@@ -322,9 +338,9 @@ function! go#job#Start(cmd, options)
     let job = job_start(l:cmd, l:options)
   endif
 
-  if !has_key(l:options, 'cwd')
+  if l:manualcd
     " post start
-    execute l:cd fnameescape(dir)
+    execute l:cd fnameescape(l:dir)
   endif
 
   return job
@@ -337,6 +353,9 @@ function! s:neooptions(options)
   let l:options['stdout_buf'] = ''
   let l:options['stderr_buf'] = ''
 
+  let l:err_mode = get(a:options, 'err_mode', get(a:options, 'mode', ''))
+  let l:out_mode = get(a:options, 'out_mode', get(a:options, 'mode', ''))
+
   for key in keys(a:options)
       if key == 'cwd'
         let l:options['cwd'] = a:options['cwd']
@@ -347,17 +366,11 @@ function! s:neooptions(options)
         let l:options['callback'] = a:options['callback']
 
         if !has_key(a:options, 'out_cb')
-          function! s:callback2on_stdout(ch, data, event) dict
-            let self.stdout_buf = s:neocb(a:ch, self.stdout_buf, a:data, self.callback)
-          endfunction
-          let l:options['on_stdout'] = function('s:callback2on_stdout', [], l:options)
+          let l:options['on_stdout'] = function('s:callback2on_stdout', [l:out_mode], l:options)
         endif
 
         if !has_key(a:options, 'err_cb')
-          function! s:callback2on_stderr(ch, data, event) dict
-            let self.stderr_buf = s:neocb(a:ch, self.stderr_buf, a:data, self.callback)
-          endfunction
-          let l:options['on_stderr'] = function('s:callback2on_stderr', [], l:options)
+          let l:options['on_stderr'] = function('s:callback2on_stderr', [l:err_mode], l:options)
         endif
 
         continue
@@ -365,29 +378,20 @@ function! s:neooptions(options)
 
       if key == 'out_cb'
         let l:options['out_cb'] = a:options['out_cb']
-        function! s:on_stdout(ch, data, event) dict
-          let self.stdout_buf = s:neocb(a:ch, self.stdout_buf, a:data, self.out_cb)
-        endfunction
-        let l:options['on_stdout'] = function('s:on_stdout', [], l:options)
+        let l:options['on_stdout'] = function('s:on_stdout', [l:out_mode], l:options)
 
         continue
       endif
 
       if key == 'err_cb'
         let l:options['err_cb'] = a:options['err_cb']
-        function! s:on_stderr(ch, data, event) dict
-          let self.stderr_buf = s:neocb(a:ch, self.stderr_buf, a:data, self.err_cb )
-        endfunction
-        let l:options['on_stderr'] = function('s:on_stderr', [], l:options)
+        let l:options['on_stderr'] = function('s:on_stderr', [l:err_mode], l:options)
 
         continue
       endif
 
       if key == 'exit_cb'
         let l:options['exit_cb'] = a:options['exit_cb']
-        function! s:on_exit(jobid, exitval, event) dict
-          call self.exit_cb(a:jobid, a:exitval)
-        endfunction
         let l:options['on_exit'] = function('s:on_exit', [], l:options)
 
         continue
@@ -405,6 +409,26 @@ function! s:neooptions(options)
       endif
   endfor
   return l:options
+endfunction
+
+function! s:callback2on_stdout(mode, ch, data, event) dict
+  let self.stdout_buf = s:neocb(a:mode, a:ch, self.stdout_buf, a:data, self.callback)
+endfunction
+
+function! s:callback2on_stderr(mode, ch, data, event) dict
+  let self.stderr_buf = s:neocb(a:mode, a:ch, self.stderr_buf, a:data, self.callback)
+endfunction
+
+function! s:on_stdout(mode, ch, data, event) dict
+  let self.stdout_buf = s:neocb(a:mode, a:ch, self.stdout_buf, a:data, self.out_cb)
+endfunction
+
+function! s:on_stderr(mode, ch, data, event) dict
+  let self.stderr_buf = s:neocb(a:mode, a:ch, self.stderr_buf, a:data, self.err_cb )
+endfunction
+
+function! s:on_exit(jobid, exitval, event) dict
+  call self.exit_cb(a:jobid, a:exitval)
 endfunction
 
 function! go#job#Stop(job) abort
@@ -436,15 +460,34 @@ function! s:winjobarg(idx, val) abort
   return a:val
 endfunction
 
-function! s:neocb(ch, buf, data, callback)
+function! s:neocb(mode, ch, buf, data, callback)
   " dealing with the channel lines of Neovim is awful. The docs (:help
   " channel-lines) say:
-  " stream event handlers may receive partial (incomplete) lines. For a
-  " given invocation of on_stdout etc, `a:data` is not guaranteed to end
-  " with a newline.
-  "   - `abcdefg` may arrive as `['abc']`, `['defg']`.
-  "   - `abc\nefg` may arrive as `['abc', '']`, `['efg']` or `['abc']`,
-  "     `['','efg']`, or even `['ab']`, `['c','efg']`.
+  "     stream event handlers may receive partial (incomplete) lines. For a
+  "     given invocation of on_stdout etc, `a:data` is not guaranteed to end
+  "     with a newline.
+  "       - `abcdefg` may arrive as `['abc']`, `['defg']`.
+  "       - `abc\nefg` may arrive as `['abc', '']`, `['efg']` or `['abc']`,
+  "         `['','efg']`, or even `['ab']`, `['c','efg']`.
+  "
+  " Thankfully, though, this is explained a bit better in an issue:
+  " https://github.com/neovim/neovim/issues/3555. Specifically in these two
+  " comments:
+  "     * https://github.com/neovim/neovim/issues/3555#issuecomment-152290804
+  "     * https://github.com/neovim/neovim/issues/3555#issuecomment-152588749
+  "
+  " The key is
+  "     Every item in the list passed to job control callbacks represents a
+  "     string after a newline(Except the first, of course). If the program
+  "     outputs: "hello\nworld" the corresponding list is ["hello", "world"].
+  "     If the program outputs "hello\nworld\n", the corresponding list is
+  "     ["hello", "world", ""]. In other words, you can always determine if
+  "     the last line received is complete or not.
+  " and
+  "     for every list you receive in a callback, all items except the first
+  "     represent newlines.
+
+  let l:buf = ''
 
   " a single empty string means EOF was reached.
   if len(a:data) == 1 && a:data[0] == ''
@@ -455,20 +498,28 @@ function! s:neocb(ch, buf, data, callback)
     endif
 
     let l:data = [a:buf]
-    let l:buf = ''
   else
     let l:data = copy(a:data)
     let l:data[0] = a:buf . l:data[0]
 
     " The last element may be a partial line; save it for next time.
-    let l:buf = l:data[-1]
-
-    let l:data = l:data[:-2]
+    if a:mode != 'raw'
+      let l:buf = l:data[-1]
+      let l:data = l:data[:-2]
+    endif
   endif
 
-  for l:msg in l:data
+  let l:i = 0
+  let l:last = len(l:data) - 1
+  while l:i <= l:last
+    let l:msg = l:data[l:i]
+    if a:mode == 'raw' && l:i < l:last
+      let l:msg = l:msg . "\n"
+    endif
     call a:callback(a:ch, l:msg)
-  endfor
+
+    let l:i += 1
+  endwhile
 
   return l:buf
 endfunction

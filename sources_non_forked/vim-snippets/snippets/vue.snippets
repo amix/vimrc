@@ -1,8 +1,8 @@
 # This snippet file enables vue files to use tabs for html, js and css. It also
-# includes some vue-specific html-like snippets, as well as some general 
+# includes some vue-specific html-like snippets, as well as some general
 # boilerplate code for vue.
 
-extends html, javascript, css 
+extends html, javascript, css
 
 # These snippets form a port of Sarah Drasner's vue-sublime-snippets
 
@@ -14,7 +14,7 @@ snippet slot
 snippet template
 	<template></template>
 
-snippet transition 
+snippet transition
 	<transition></transition>
 
 # The following snippets create more complex boilerplate code.
@@ -28,156 +28,151 @@ snippet vbase
 
 	<script>
 		export default{
-
+			${0}
 		}
 	</script>
+
 	<style scoped>
 
 	</style>
-snippet vimport:c
-	import New from './components/New.vue';
 
-	export default{
+snippet vimport:c
+	import ${1:Name} from './components/$1.vue';
+
+	export default {
 		components: {
-			appNew: New 
+			$1
 		}
 	}
 
-snippet vactionsis now
-
+snippet vactions
 	actions: {
-		updateValue({commit}, payload) {
-			commit(updateValue, payload);
+		${1:updateValue}({commit}, ${2:payload}) {
+			commit($1, $2);
 		}
 	}
 
 # Add in js animation hooks
-snippet vanim:js:el 
-	<transition 
+snippet vanim:js:el
+	<transition
 	  @before-enter="beforeEnter"
 	  @enter="enter"
 	  @after-enter="afterEnter"
 	  @enter-cancelled="enterCancelled"
+
 	  @before-Leave="beforeLeave"
 	  @leave="leave"
 	  @after-leave="afterLeave"
 	  @leave-cancelled="leaveCancelled"
 	  :css="false">
-	 
+
 	 </transition>
-	 
+
 snippet vanim:js:method
 	methods: {
-	  beforeEnter(el) {
-		console.log('beforeEnter');
-	  }, 
-	  enter(el, done) {
-		 console.log('enter');
-		 done();
-	  },
-	  afterEnter(el) {
-		console.log('afterEnter');
-	  }, 
-	  enterCancelled(el, done) {
-		 console.log('enterCancelled');
-	  },
-	  beforeLeave(el) {
-		console.log('beforeLeave');
-	  }, 
-	  leave(el, done) {
-		 console.log('leave');
-		 done();
-	  },
-	  afterLeave(el) {
-		console.log('afterLeave');
-	  }, 
-	  leaveCancelled(el, done) {
-		 console.log('leaveCancelled');
-	  }
+		beforeEnter(el) {
+			console.log('beforeEnter');
+		},
+		enter(el, done) {
+			console.log('enter');
+			done();
+		},
+		afterEnter(el) {
+			console.log('afterEnter');
+		},
+		enterCancelled(el, done) {
+			console.log('enterCancelled');
+		},
+		beforeLeave(el) {
+			console.log('beforeLeave');
+		},
+		leave(el, done) {
+			console.log('leave');
+			done();
+		},
+		afterLeave(el) {
+			console.log('afterLeave');
+		},
+		leaveCancelled(el, done) {
+			console.log('leaveCancelled');
+		}
 	}
 
-snippet vcl 
-	@click=""
+snippet vcl
+	@click="${1}"
 
 snippet vdata
-	data: function () {
-	  return {
-		key: value
-	  };
+	data() {
+		return {
+			${1:key}: ${2:value}
+		};
 	}
 
 snippet vfilter
 	filters: {
-	  fnName: function (v) {
-		return;
-	  }
+		${1:fnName}: function(${2:value}) {
+			return;
+		}
 	}
 
 snippet vfor
-	<div v-for="item in items" :key="item.id">
-	  {{ item }}
+	<div v-for="${1:item} in ${2:items}" :key="$1.id">
+		{{ $1 }}
 	</div
 
 snippet vgetters
 	getters: {
-		value: state => {
-			return state.value;
+		${1:value}: state => {
+			return state.$1;
 		}
 	}
 
-snippet vimport 
-	import New from './components/New.vue';
+snippet vimport
+	import ${1:New} from './components/$1.vue';
 
 snippet vkeep
 	<keep-alive>
-	  <component :is="">
-		<p>default</p>
-	  </component>
+		<component :is="">
+			<p>default</p>
+		</component>
 	</keep-alive>
 
 snippet vmixin
-	// define a mixin object
-	var myMixin = {
-	  created: function () {
-		this.hello()
-	  },
-	  methods: {
-		hello: function () {
-		  console.log('hello from mixin!')
-		}
-	  }
+	const ${1:mixinName} = {
+		mounted() {
+			console.log('hello from mixin!')
+		},
 	}
-	// define a component that uses this mixin
-	var Component = Vue.extend({
-	  mixins: [myMixin]
+	const ${2:Component} = Vue.extend({
+		mixins: [$1]
 	})
-	var component = new Component() // -> "hello from mixin!"
 
 snippet vmutations
-	// define a mixin object
-	var myMixin = {
-	  created: function () {
-		this.hello()
-	  },
-	  methods: {
-		hello: function () {
-		  console.log('hello from mixin!')
+	mutations: {
+		${1:updateValue}(state, ${3:payload}) => {
+			state.${2:value} = $3;
 		}
-	  }
 	}
-	// define a component that uses this mixin
-	var Component = Vue.extend({
-	  mixins: [myMixin]
-	})
-	var component = new Component() // -> "hello from mixin!"
 
 snippet vprops:d
-	propName: {
-	  type: Number,
-	  default: 100
+	${1:propName}: {
+	  type: ${2:Number},
+	  default: ${0}
 	},
 
-snippet vprops 
-	propName: {
-		type: Number
+snippet vprops
+	${1:propName}: {
+		type: ${2:Number}
 	},
+
+snippet vstore
+	import Vue from 'vue';
+	import Vuex from 'vuex';
+
+	Vue.use(Vuex);
+
+	export const store = new Vuex.Store({
+		state: {
+			${1:key}: ${2:value}
+		}
+	});

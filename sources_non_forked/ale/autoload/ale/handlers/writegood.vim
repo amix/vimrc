@@ -65,8 +65,8 @@ function! ale#handlers#writegood#DefineLinter(filetype) abort
     call ale#linter#Define(a:filetype, {
     \   'name': 'writegood',
     \   'aliases': ['write-good'],
-    \   'executable_callback': 'ale#handlers#writegood#GetExecutable',
-    \   'command_callback': 'ale#handlers#writegood#GetCommand',
+    \   'executable': function('ale#handlers#writegood#GetExecutable'),
+    \   'command': function('ale#handlers#writegood#GetCommand'),
     \   'callback': 'ale#handlers#writegood#Handle',
     \})
 endfunction

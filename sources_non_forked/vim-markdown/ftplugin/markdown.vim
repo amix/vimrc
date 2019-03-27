@@ -780,6 +780,8 @@ function! s:MarkdownClearSyntaxVariables()
 endfunction
 
 augroup Mkd
+    " These autocmd calling s:MarkdownRefreshSyntax need to be kept in sync with
+    " the autocmds calling s:MarkdownSetupFolding in after/ftplugin/markdown.vim.
     autocmd! * <buffer>
     autocmd BufWinEnter <buffer> call s:MarkdownRefreshSyntax(1)
     autocmd BufUnload <buffer> call s:MarkdownClearSyntaxVariables()

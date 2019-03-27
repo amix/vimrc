@@ -216,7 +216,7 @@ command! -bar ALEDocumentation :call ale#hover#ShowDocumentationAtCursor()
 " Search for appearances of a symbol, such as a type name or function name.
 command! -nargs=1 ALESymbolSearch :call ale#symbol#Search(<q-args>)
 
-command! -bar ALEComplete :call ale#completion#AlwaysGetCompletions(0)
+command! -bar ALEComplete :call ale#completion#GetCompletions(1)
 
 " <Plug> mappings for commands
 nnoremap <silent> <Plug>(ale_previous) :ALEPrevious<Return>

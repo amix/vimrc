@@ -65,7 +65,7 @@ function! go#auto#metalinter_autosave()
   endif
 
   " run gometalinter on save
-  call go#lint#Gometa(0, 1)
+  call go#lint#Gometa(!g:go_jump_to_error, 1)
 endfunction
 
 function! go#auto#modfmt_autosave()

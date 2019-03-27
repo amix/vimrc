@@ -1,3 +1,4 @@
+scriptencoding utf-8
 " Author: Johannes Wienke <languitar@semipol.de>
 " Description: Error handling for errors in alex output format
 
@@ -44,8 +45,8 @@ function! ale#handlers#alex#DefineLinter(filetype, flags) abort
 
     call ale#linter#Define(a:filetype, {
     \   'name': 'alex',
-    \   'executable_callback': 'ale#handlers#alex#GetExecutable',
-    \   'command_callback': ale#handlers#alex#CreateCommandCallback(a:flags),
+    \   'executable': function('ale#handlers#alex#GetExecutable'),
+    \   'command': ale#handlers#alex#CreateCommandCallback(a:flags),
     \   'output_stream': 'stderr',
     \   'callback': 'ale#handlers#alex#Handle',
     \   'lint_file': 1,

@@ -96,4 +96,54 @@ snippet fund "function declaration" b
 ${1:void} ${2:function_name}($3);
 endsnippet
 
+global !p
+def split_line(text):
+	import textwrap
+	lines = textwrap.wrap(text, 78 - 19)
+	output = list()
+	for line in lines:
+		output.append('*' + ' '*19 + line)
+	snip_line = snip.tabstops[4].end[0]
+	snip.buffer.append(output, snip_line + 1)
+	del snip.buffer[snip_line]
+
+def get_args(arglist):
+	args = [arg.strip() for arg in arglist.split(',') if arg]
+	return args
+endglobal
+
+post_jump "if snip.tabstop == 0 : split_line(snip.tabstops[4].current_text)"
+snippet head "File Header" b
+/******************************************************************************
+* File:             `!p snip.rv = fn`
+*
+* Author:           ${2}  
+* Created:          `date +%m/%d/%y` 
+* Description:      ${4:${VISUAL}}
+*****************************************************************************/
+${0}
+endsnippet
+
+post_jump "if snip.tabstop == 0 : split_line(snip.tabstops[4].current_text)"
+snippet func "Function Header" 
+/******************************************************************************
+* Function:         $1
+* Description:      ${4:${VISUAL}}
+* Where:`!p 
+snip.rv = ""
+snip >> 2
+
+args = get_args(t[2])
+if args:
+	for arg in args:
+		snip.rv += '\n' + '*' + ' '*19 + arg + ' - TODO'
+snip << 2
+`
+* Return:           $5
+* Error:            $6
+*****************************************************************************/
+${1}($2){
+	${0}
+}
+endsnippet
 # vim:ft=snippets:

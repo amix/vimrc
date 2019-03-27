@@ -4,6 +4,8 @@ set rtp+=../build/tabular/
 set rtp+=../build/vim-toml/
 set rtp+=../build/vim-json/
 set rtp+=../build/vader.vim/
+set rtp-=~/.vim
+set rtp-=~/.vim/after
 let $LANG='en_US'
 filetype on
 filetype plugin on

@@ -205,10 +205,13 @@ function! ale#path#FromURI(uri) abort
         let l:encoded_path = a:uri
     endif
 
+    let l:path = ale#uri#Decode(l:encoded_path)
+
     " If the path is like /C:/foo/bar, it should be C:\foo\bar instead.
-    if l:encoded_path =~# '^/[a-zA-Z]:'
-        let l:encoded_path = substitute(l:encoded_path[1:], '/', '\\', 'g')
+    if has('win32') && l:path =~# '^/[a-zA-Z][:|]'
+        let l:path = substitute(l:path[1:], '/', '\\', 'g')
+        let l:path = l:path[0] . ':' . l:path[2:]
     endif
 
-    return ale#uri#Decode(l:encoded_path)
+    return l:path
 endfunction

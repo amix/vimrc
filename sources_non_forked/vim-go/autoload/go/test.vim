@@ -241,7 +241,7 @@ function! s:errorformat() abort
   " e.g.:
   "   '\t/usr/local/go/src/time.go:1313 +0x5d'
 
-  " panicaddress, and readyaddress are identical except for
+  " panicaddress and readyaddress are identical except for
   " panicaddress sets the filename and line number.
   let panicaddress = "%\\t%f:%l +0x%[0-9A-Fa-f]%\\+"
   let readyaddress = "%\\t%\\f%\\+:%\\d%\\+ +0x%[0-9A-Fa-f]%\\+"
@@ -263,6 +263,11 @@ function! s:errorformat() abort
   " message will only be shown as the error message in the first address of
   " the running goroutine's stack.
   let format .= ",%Z" . panicaddress
+
+  " Match and ignore errors from runtime.goparkunlock(). These started
+  " appearing in stack traces from Go 1.12 test timeouts.
+  let format .= ",%-Gruntime.goparkunlock(%.%#"
+  let format .= ",%-G%\\t" . goroot . "%\\f%\\+:%\\d%\\+"
 
   " Match and ignore panic address without being part of a multi-line message.
   " This is to catch those lines that come after the top most non-standard
@@ -290,8 +295,8 @@ function! s:errorformat() abort
   " It would be nice if this weren't necessary, but panic lines from tests are
   " prefixed with a single leading tab, making them very similar to 2nd and
   " later lines of a multi-line compiler error. Swallow it so that it doesn't
-  " cause a quickfix entry since the next entry can add a quickfix entry for
-  " 2nd and later lines of a multi-line compiler error.
+  " cause a quickfix entry since the next %G entry can add a quickfix entry
+  " for 2nd and later lines of a multi-line compiler error.
   let format .= ",%-C%\\tpanic: %.%#"
   let format .= ",%G%\\t%m"
 

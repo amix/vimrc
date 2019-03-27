@@ -50,7 +50,7 @@ func! Test_Jump_leaves_lists() abort
 
     let l:bufnr = bufnr('%')
     call cursor(6, 7)
-    call go#def#Jump('')
+    call go#def#Jump('', 0)
 
     let start = reltime()
     while bufnr('%') == l:bufnr && reltimefloat(reltime(start)) < 10

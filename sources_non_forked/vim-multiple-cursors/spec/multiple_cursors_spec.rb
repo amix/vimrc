@@ -170,9 +170,12 @@ describe "Multiple Cursors op pending & exit from insert|visual mode" do
 
 end
 
-describe "Multiple Cursors when using insert mapings" do
+describe "Multiple Cursors when using insert mappings" do
   let(:filename) { 'test.txt' }
-  let(:options) { ['set timeoutlen=10000', 'imap jj <esc>', 'imap jojo dude'] }
+  let(:options) { ['set timeoutlen=10000',
+                   'imap jj <esc>',
+                   'imap jojo dude',
+                   'imap jk <esc>:%s/bla/hey/g<cr>'] }
   specify "#mapping doing <Esc>" do
     before <<-EOF
       hello world!
@@ -191,6 +194,24 @@ describe "Multiple Cursors when using insert mapings" do
     EOF
   end
 
+  specify "#mapping doing <Esc> and running a command" do
+    before <<-EOF
+      hello world!
+      hello world!
+      bla bla bla
+      bla bla bla
+    EOF
+
+    type 'w<C-n><C-n>ctherejk'
+
+    after <<-EOF
+      hello there!
+      hello there!
+      hey hey hey
+      hey hey hey
+    EOF
+  end
+
   specify "#mapping using more than 2 characters" do
     before <<-EOF
       hello
@@ -204,6 +225,24 @@ describe "Multiple Cursors when using insert mapings" do
     after <<-EOF
       hello dude
       hello dude
+      bla bla bla
+      bla bla bla
+    EOF
+  end
+
+  specify "#unused mapping" do
+    before <<-EOF
+      hello world!
+      hello world!
+      bla bla bla
+      bla bla bla
+    EOF
+
+    type 'w<C-n><C-n>chey joseph blah blah blah<Esc>'
+
+    after <<-EOF
+      hello hey joseph blah blah blah!
+      hello hey joseph blah blah blah!
       bla bla bla
       bla bla bla
     EOF

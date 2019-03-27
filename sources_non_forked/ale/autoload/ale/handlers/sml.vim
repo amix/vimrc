@@ -26,7 +26,6 @@ function! ale#handlers#sml#GetCmFile(buffer) abort
 endfunction
 
 " Only one of smlnj or smlnj-cm can be enabled at a time.
-" executable_callback is called before *every* lint attempt
 function! s:GetExecutable(buffer, source) abort
     if ale#handlers#sml#GetCmFile(a:buffer) is# ''
         " No CM file found; only allow single-file mode to be enabled
