@@ -1,0 +1,9 @@
+[submodule "my_plugins/vim-polyglot"]
+	path = my_plugins/vim-polyglot
+	url = git@github.com:sheerun/vim-polyglot
+[submodule "my_plugins/vim-signify"]
+	path = my_plugins/vim-signify
+	url = git@github.com:mhinz/vim-signify.git
+[submodule "my_plugins/vim-snazzy"]
+	path = my_plugins/vim-snazzy
+	url = git@github.com:connorholyday/vim-snazzy.git
