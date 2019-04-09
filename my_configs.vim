@@ -14,3 +14,5 @@ set shiftwidth=2
 set tabstop=2
 set nofoldenable
 map <C-W>` gg=G<C-o><C-o>
+cnoreabbrev Ack Ack!
+nnoremap <Leader>g :Ack!<Space>
