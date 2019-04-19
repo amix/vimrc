@@ -492,8 +492,7 @@ function! s:openNodeRecursively(node)
     call nerdtree#echo("Recursively opening node. Please wait...")
     call a:node.openRecursively()
     call b:NERDTree.render()
-    redraw
-    call nerdtree#echo("Recursively opening node. Please wait... DONE")
+    redraw!
 endfunction
 
 " FUNCTION: s:previewBookmark(bookmark) {{{1
@@ -544,9 +543,8 @@ function! s:refreshRoot()
     call nerdtree#exec(g:NERDTree.GetWinNum() . "wincmd w")
     call b:NERDTree.root.refresh()
     call b:NERDTree.render()
-    redraw
+    redraw!
     call nerdtree#exec(l:curWin . "wincmd w")
-    call nerdtree#echo("Refreshing the root node. This could take a while... DONE")
 endfunction
 
 " FUNCTION: s:refreshCurrent(node) {{{1
@@ -560,8 +558,7 @@ function! s:refreshCurrent(node)
     call nerdtree#echo("Refreshing node. This could take a while...")
     call node.refresh()
     call b:NERDTree.render()
-    redraw
-    call nerdtree#echo("Refreshing node. This could take a while... DONE")
+    redraw!
 endfunction
 
 " FUNCTION: nerdtree#ui_glue#setupCommands() {{{1

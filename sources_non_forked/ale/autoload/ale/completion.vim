@@ -39,6 +39,9 @@ let s:LSP_COMPLETION_COLOR_KIND = 16
 let s:LSP_COMPLETION_FILE_KIND = 17
 let s:LSP_COMPLETION_REFERENCE_KIND = 18
 
+let s:LSP_INSERT_TEXT_FORMAT_PLAIN = 1
+let s:LSP_INSERT_TEXT_FORMAT_SNIPPET = 2
+
 let s:lisp_regex = '\v[a-zA-Z_\-][a-zA-Z_\-0-9]*$'
 
 " Regular expressions for checking the characters in the line before where
@@ -165,14 +168,18 @@ function! s:ReplaceCompletionOptions() abort
 
     let &l:omnifunc = 'ale#completion#OmniFunc'
 
-    if !exists('b:ale_old_completopt')
-        let b:ale_old_completopt = &l:completeopt
-    endif
+    let l:info = get(b:, 'ale_completion_info', {})
 
-    if &l:completeopt =~# 'preview'
-        let &l:completeopt = 'menu,menuone,preview,noselect,noinsert'
-    else
-        let &l:completeopt = 'menu,menuone,noselect,noinsert'
+    if !get(l:info, 'manual')
+        if !exists('b:ale_old_completeopt')
+            let b:ale_old_completeopt = &l:completeopt
+        endif
+
+        if &l:completeopt =~# 'preview'
+            let &l:completeopt = 'menu,menuone,preview,noselect,noinsert'
+        else
+            let &l:completeopt = 'menu,menuone,noselect,noinsert'
+        endif
     endif
 endfunction
 
@@ -186,9 +193,9 @@ function! ale#completion#RestoreCompletionOptions() abort
         unlet b:ale_old_omnifunc
     endif
 
-    if exists('b:ale_old_completopt')
-        let &l:completeopt = b:ale_old_completopt
-        unlet b:ale_old_completopt
+    if exists('b:ale_old_completeopt')
+        let &l:completeopt = b:ale_old_completeopt
+        unlet b:ale_old_completeopt
     endif
 endfunction
 
@@ -346,7 +353,14 @@ function! ale#completion#ParseLSPCompletions(response) abort
             continue
         endif
 
-        let l:word = matchstr(l:item.label, '\v^[^(]+')
+        if get(l:item, 'insertTextFormat') is s:LSP_INSERT_TEXT_FORMAT_PLAIN
+        \&& type(get(l:item, 'textEdit')) is v:t_dict
+            let l:text = l:item.textEdit.newText
+        else
+            let l:text = l:item.label
+        endif
+
+        let l:word = matchstr(l:text, '\v^[^(]+')
 
         if empty(l:word)
             continue
@@ -385,10 +399,10 @@ function! ale#completion#ParseLSPCompletions(response) abort
     endfor
 
     if has_key(l:info, 'prefix')
-        return ale#completion#Filter(l:buffer, &filetype, l:results, l:info.prefix)
+        let l:results = ale#completion#Filter(l:buffer, &filetype, l:results, l:info.prefix)
     endif
 
-    return l:results
+    return l:results[: g:ale_completion_max_suggestions - 1]
 endfunction
 
 function! ale#completion#HandleTSServerResponse(conn_id, response) abort
@@ -503,22 +517,14 @@ function! s:OnReady(linter, lsp_details) abort
     endif
 endfunction
 
-function! ale#completion#GetCompletions() abort
-    if !g:ale_completion_enabled
-        return
-    endif
-
-    call ale#completion#AlwaysGetCompletions(1)
-endfunction
-
 " This function can be used to manually trigger autocomplete, even when
 " g:ale_completion_enabled is set to false
-function! ale#completion#AlwaysGetCompletions(need_prefix) abort
+function! ale#completion#GetCompletions(manual) abort
     let [l:line, l:column] = getpos('.')[1:2]
 
     let l:prefix = ale#completion#GetPrefix(&filetype, l:line, l:column)
 
-    if a:need_prefix && empty(l:prefix)
+    if !a:manual && empty(l:prefix)
         return
     endif
 
@@ -531,6 +537,7 @@ function! ale#completion#AlwaysGetCompletions(need_prefix) abort
     \   'prefix': l:prefix,
     \   'conn_id': 0,
     \   'request_id': 0,
+    \   'manual': a:manual,
     \}
 
     let l:buffer = bufnr('')
@@ -544,6 +551,10 @@ function! ale#completion#AlwaysGetCompletions(need_prefix) abort
 endfunction
 
 function! s:TimerHandler(...) abort
+    if !g:ale_completion_enabled
+        return
+    endif
+
     let s:timer_id = -1
 
     let [l:line, l:column] = getpos('.')[1:2]
@@ -551,7 +562,7 @@ function! s:TimerHandler(...) abort
     " When running the timer callback, we have to be sure that the cursor
     " hasn't moved from where it was when we requested completions by typing.
     if s:timer_pos == [l:line, l:column] && ale#util#Mode() is# 'i'
-        call ale#completion#GetCompletions()
+        call ale#completion#GetCompletions(0)
     endif
 endfunction
 

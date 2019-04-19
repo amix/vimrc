@@ -127,6 +127,7 @@ formatting.
   * [mix](https://hexdocs.pm/mix/Mix.html) :warning: :floppy_disk:
 * Elm
   * [elm-format](https://github.com/avh4/elm-format)
+  * [elm-lsp](https://github.com/antew/elm-lsp)
   * [elm-make](https://github.com/elm-lang/elm-make)
 * Erb
   * [erb](https://apidock.com/ruby/ERB)
@@ -250,12 +251,14 @@ formatting.
   * [luacheck](https://github.com/mpeterv/luacheck)
 * Mail
   * [alex](https://github.com/wooorm/alex) :floppy_disk:
+  * [languagetool](https://languagetool.org/) :floppy_disk:
   * [proselint](http://proselint.com/)
   * [vale](https://github.com/ValeLint/vale)
 * Make
   * [checkmake](https://github.com/mrtazz/checkmake)
 * Markdown
   * [alex](https://github.com/wooorm/alex) :floppy_disk:
+  * [languagetool](https://languagetool.org/) :floppy_disk:
   * [markdownlint](https://github.com/DavidAnson/markdownlint) :floppy_disk:
   * [mdl](https://github.com/mivok/markdownlint)
   * [prettier](https://github.com/prettier/prettier)
@@ -426,6 +429,7 @@ formatting.
   * [write-good](https://github.com/btford/write-good)
 * Text
   * [alex](https://github.com/wooorm/alex) :warning: :floppy_disk:
+  * [languagetool](https://languagetool.org/) :floppy_disk:
   * [proselint](http://proselint.com/) :warning:
   * [redpen](http://redpen.cc/) :warning:
   * [textlint](https://textlint.github.io/) :warning:

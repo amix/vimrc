@@ -60,8 +60,10 @@ function! s:on_stdout_nvim(_job_id, data, _event) dict abort
   endif
 endfunction
 
-function! s:on_stderr_nvim(_job_id, _data, _event) dict abort
-  call self.handler.err(self.buffer)
+function! s:on_stderr_nvim(_job_id, data, _event) dict abort
+  if a:data != ['']  " With Neovim there is always [''] reported on stderr.
+    call self.handler.err(self.buffer)
+  endif
 endfunction
 
 function! s:on_exit_nvim(_job_id, exit_code, _event) dict abort

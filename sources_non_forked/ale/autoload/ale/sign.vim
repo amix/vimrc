@@ -64,16 +64,21 @@ if !hlexists('ALESignColumnWithoutErrors')
     call ale#sign#SetUpDefaultColumnWithoutErrorsHighlight()
 endif
 
+" Spaces and backslashes need to be escaped for signs.
+function! s:EscapeSignText(sign_text) abort
+    return substitute(a:sign_text, '\\\| ', '\\\0', 'g')
+endfunction
+
 " Signs show up on the left for error markers.
-execute 'sign define ALEErrorSign text=' . g:ale_sign_error
+execute 'sign define ALEErrorSign text=' . s:EscapeSignText(g:ale_sign_error)
 \   . ' texthl=ALEErrorSign linehl=ALEErrorLine'
-execute 'sign define ALEStyleErrorSign text=' . g:ale_sign_style_error
+execute 'sign define ALEStyleErrorSign text=' .  s:EscapeSignText(g:ale_sign_style_error)
 \   . ' texthl=ALEStyleErrorSign linehl=ALEErrorLine'
-execute 'sign define ALEWarningSign text=' . g:ale_sign_warning
+execute 'sign define ALEWarningSign text=' . s:EscapeSignText(g:ale_sign_warning)
 \   . ' texthl=ALEWarningSign linehl=ALEWarningLine'
-execute 'sign define ALEStyleWarningSign text=' . g:ale_sign_style_warning
+execute 'sign define ALEStyleWarningSign text=' . s:EscapeSignText(g:ale_sign_style_warning)
 \   . ' texthl=ALEStyleWarningSign linehl=ALEWarningLine'
-execute 'sign define ALEInfoSign text=' . g:ale_sign_info
+execute 'sign define ALEInfoSign text=' . s:EscapeSignText(g:ale_sign_info)
 \   . ' texthl=ALEInfoSign linehl=ALEInfoLine'
 sign define ALEDummySign
 

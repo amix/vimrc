@@ -52,7 +52,21 @@ g:ale_json_fixjson_use_global                   *g:ale_json_fixjson_use_global*
 ===============================================================================
 jsonlint                                                    *ale-json-jsonlint*
 
-There are no options available.
+g:ale_json_jsonlint_executable                 *g:ale_json_jsonlint_executable*
+                                               *b:ale_json_jsonlint_executable*
+
+  Type: |String|
+  Default: `'jsonlint'`
+
+  The executable that will be run for jsonlint.
+
+g:ale_json_jsonlint_use_global                  *g:ale_json_jsonlint_use_global*
+                                                *b:ale_json_jsonlint_use_global*
+
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
 
 
 ===============================================================================

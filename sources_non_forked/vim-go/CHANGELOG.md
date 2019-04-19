@@ -1,7 +1,17 @@
 ## unplanned
 
+FEATURES:
+* ***gopls support!***
+  * use gopls for autocompletion by default in Vim8 and Neovim.
+  * use gopls for `:GoDef` by setting `g:go_def_mode='gopls'`.
+* Add support for golangci-lint.
+  * set `g:go_metalinter_command='golanci-lint'` to use golangci-lint instead
+    of gometalinter.
+* New `:GoDefType` command to jump to a type definition from an instance of the
+  type.
+
 BACKWARDS INCOMPATABILITIES:
-* g:go_highlight_function_arguments is renamed to g:go_highlight_function_parameters
+* `g:go_highlight_function_arguments` is renamed to `g:go_highlight_function_parameters`
   [[GH-2117]](https://github.com/fatih/vim-go/pull/2117)
 
 IMPROVEMENTS:
@@ -19,12 +29,12 @@ IMPROVEMENTS:
 * Do not require `'autowrite'` or `'autowriteall'` to be set when using
   autocompletion in module mode.
   [[GH-2091]](https://github.com/fatih/vim-go/pull/2091)
-* Fix use of g:go_metalinter_command _and_ apply it even when autosaving.
+* Fix use of `g:go_metalinter_command` _and_ apply it even when autosaving.
   [[GH-2101]](https://github.com/fatih/vim-go/pull/2101)
 * Report errors in quickfix when Delve fails to start (e.g. compiler errors).
   [[GH-2111]](https://github.com/fatih/vim-go/pull/2111)
-* Support undo_ftplugin, make most autocmd's buffer-local, and only do the bare
-  minimum based on file names alone.
+* Support `'undo_ftplugin'`, make most autocmds buffer-local, and only do the
+  bare minimum based on file names alone.
   [[GH-2108]](https://github.com/fatih/vim-go/pull/2108)
 * Write a message when `:GoInfo` can't display any results when `g:go_info_mode='gocode'`.
   [[GH-2122]](https://github.com/fatih/vim-go/pull/2122)
@@ -35,8 +45,21 @@ IMPROVEMENTS:
 * Run `godef` from the current buffer's directory to make sure it works with modules.
   [[GH-2150]](https://github.com/fatih/vim-go/pull/2150)
 * Add a function, `go#tool#DescribeBalloon`, to show information in a balloon
-  with `'balloonexpr`. (Vim8 only).
+  with `'balloonexpr'`. (Vim8 only).
   [[GH-1975]](https://github.com/fatih/vim-go/pull/1975)
+* Add initial support for `gopls`.
+  [[GH-2163]](https://github.com/fatih/vim-go/pull/2163).
+* Add `:GoDefType` to jump to the type definition of the identifier under the
+  cursor.
+  [[GH-2165]](https://github.com/fatih/vim-go/pull/2165)
+* Notify gopls about changes.
+  [[GH-2171]](https://github.com/fatih/vim-go/pull/2171)
+* Respect `g:go_jump_to_error` when running `gometalinter` automatically on
+  save.  [[GH-2176]](https://github.com/fatih/vim-go/pull/2176)
+* Use gopls for code completion by default in Vim8 and Neovim.
+  [[GH-2172]](https://github.com/fatih/vim-go/pull/2172)
+* Add support for golangci-lint.
+  [[GH-2182]](https://github.com/fatih/vim-go/pull/2182)
 
 BUG FIXES:
 * Fix opening of non-existent file from `:GoDeclsDir` when the current
@@ -55,10 +78,10 @@ BUG FIXES:
   [[GH-2097]](https://github.com/fatih/vim-go/pull/2097)
 * Do not clear buffer-local autocmds of other buffers. 
   [[GH-2109]](https://github.com/fatih/vim-go/pull/2109)
-* Highlight return parameter types when g:go_highlight_function_arguments is set.
-  [[GH-2116]](https://github.com/fatih/vim-go/pull/2116)
-* Fix lockup in Neovim when trying to run `:GoDebugTest` when there are no tests.
-  [[GH-2125]](https://github.com/fatih/vim-go/pull/2125)
+* Highlight return parameter types when g:go_highlight_function_arguments is
+  set.  [[GH-2116]](https://github.com/fatih/vim-go/pull/2116)
+* Fix lockup in Neovim when trying to run `:GoDebugTest` when there are no
+  tests.  [[GH-2125]](https://github.com/fatih/vim-go/pull/2125)
 * Keep track of breakpoints correctly when buffer is edited after breakpoints
   are set.
   [[GH-2126]](https://github.com/fatih/vim-go/pull/2126)
@@ -66,6 +89,10 @@ BUG FIXES:
   [[GH-2127]](https://github.com/fatih/vim-go/pull/2127)
 * Fix jumping to module or package using godef.
   [[GH-2141]](https://github.com/fatih/vim-go/pull/2141)
+* Fix errors caused by redefining functions within functions.
+  [[GH-2189]](https://github.com/fatih/vim-go/pull/2189)
+* Highlight pre-release and metadata in versions in go.mod.
+  [[GH-2192]](https://github.com/fatih/vim-go/pull/2192)
 
 ## 1.19 - (November 4, 2018)
 
@@ -80,7 +107,7 @@ FEATURES:
   * Auto format on save feature for `:GoModFmt`, enabled automatically. Can be
     toggled of with the setting `g:go_mod_fmt_autosave` or with the command:
     `GoModFmtAutoSaveToggle`
-  [[GH-1931]](https://github.com/fatih/vim-go/pull/1931)
+    [[GH-1931]](https://github.com/fatih/vim-go/pull/1931)
 
 IMPROVEMENTS:
 * Unify async job handling for Vim8 and Neovim.

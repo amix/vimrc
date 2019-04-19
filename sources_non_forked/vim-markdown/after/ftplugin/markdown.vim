@@ -151,10 +151,20 @@ let b:fenced_block = 0
 let b:front_matter = 0
 let s:vim_markdown_folding_level = get(g:, "vim_markdown_folding_level", 1)
 
-if !get(g:, "vim_markdown_folding_disabled", 0)
-    setlocal foldexpr=Foldexpr_markdown(v:lnum)
-    setlocal foldmethod=expr
-    if get(g:, "vim_markdown_folding_style_pythonic", 0) && get(g:, "vim_markdown_override_foldtext", 1)
-        setlocal foldtext=Foldtext_markdown()
-    endif
-endif
+function! s:MarkdownSetupFolding()
+  if !get(g:, "vim_markdown_folding_disabled", 0)
+      setlocal foldexpr=Foldexpr_markdown(v:lnum)
+      setlocal foldmethod=expr
+      if get(g:, "vim_markdown_folding_style_pythonic", 0) && get(g:, "vim_markdown_override_foldtext", 1)
+          setlocal foldtext=Foldtext_markdown()
+      endif
+  endif
+endfunction
+call s:MarkdownSetupFolding()
+augroup Mkd
+    " These autocmds need to be kept in sync with the autocmds calling
+    " s:MarkdownRefreshSyntax in ftplugin/markdown.vim.
+    autocmd BufWinEnter,BufWritePost <buffer> call s:MarkdownSetupFolding()
+    autocmd InsertEnter,InsertLeave <buffer> call s:MarkdownSetupFolding()
+    autocmd CursorHold,CursorHoldI <buffer> call s:MarkdownSetupFolding()
+augroup END

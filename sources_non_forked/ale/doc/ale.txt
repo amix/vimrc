@@ -22,8 +22,9 @@ CONTENTS                                                         *ale-contents*
     6.1 Highlights........................|ale-highlights|
   7. Linter/Fixer Options.................|ale-integration-options|
     7.1 Options for alex..................|ale-alex-options|
-    7.2 Options for write-good............|ale-write-good-options|
-    7.3 Other Linter/Fixer Options........|ale-other-integration-options|
+    7.2 Options for languagetool..........|ale-languagetool-options|
+    7.3 Options for write-good............|ale-write-good-options|
+    7.4 Other Linter/Fixer Options........|ale-other-integration-options|
   8. Commands/Keybinds....................|ale-commands|
   9. API..................................|ale-api|
   10. Special Thanks......................|ale-special-thanks|
@@ -103,6 +104,7 @@ ALE supports the following key features for linting:
       stylelint...........................|ale-css-stylelint|
     cuda..................................|ale-cuda-options|
       nvcc................................|ale-cuda-nvcc|
+      clang-format........................|ale-cuda-clangformat|
     d.....................................|ale-d-options|
       dls.................................|ale-d-dls|
       uncrustify..........................|ale-d-uncrustify|
@@ -117,8 +119,10 @@ ALE supports the following key features for linting:
       mix_format..........................|ale-elixir-mix-format|
       dialyxir............................|ale-elixir-dialyxir|
       elixir-ls...........................|ale-elixir-elixir-ls|
+      credo...............................|ale-elixir-credo|
     elm...................................|ale-elm-options|
       elm-format..........................|ale-elm-elm-format|
+      elm-lsp.............................|ale-elm-elm-lsp|
       elm-make............................|ale-elm-elm-make|
     erlang................................|ale-erlang-options|
       erlc................................|ale-erlang-erlc|
@@ -699,13 +703,13 @@ with |g:ale_completion_excluded_words| or |b:ale_completion_excluded_words|.
 The |ALEComplete| command can be used to show completion suggestions manually,
 even when |g:ale_completion_enabled| is set to `0`.
 
-                                                *ale-completion-completopt-bug*
+                                               *ale-completion-completeopt-bug*
 
-ALE implements completion as you type by temporarily adjusting |completeopt|
-before opening the omnicomplete menu with <C-x><C-o>. In some versions of Vim,
-the value set for the option will not be respected. If you experience issues
-with Vim automatically inserting text while you type, set the following option
-in vimrc, and your issues should go away. >
+Automatic completion replaces |completeopt| before opening the omnicomplete
+menu with <C-x><C-o>. In some versions of Vim, the value set for the option
+will not be respected. If you experience issues with Vim automatically
+inserting text while you type, set the following option in vimrc, and your
+issues should go away. >
 
   set completeopt=menu,menuone,preview,noselect,noinsert
 <
@@ -2136,7 +2140,19 @@ g:ale_alex_use_global                                   *g:ale_alex_use_global*
 
 
 -------------------------------------------------------------------------------
-7.2. Options for write-good                            *ale-write-good-options*
+7.2. Options for languagetool                        *ale-languagetool-options*
+
+g:ale_languagetool_executable                   *g:ale_languagetool_executable*
+                                                *b:ale_languagetool_executable*
+
+  Type: |String|
+  Default: `'languagetool'`
+
+  The executable to run for languagetool.
+
+
+-------------------------------------------------------------------------------
+7.3. Options for write-good                            *ale-write-good-options*
 
 The options for `write-good` are shared between all filetypes, so options can
 be configured once.
@@ -2166,7 +2182,7 @@ g:ale_writegood_use_global                         *g:ale_writegood_use_global*
 
 
 -------------------------------------------------------------------------------
-7.3. Other Linter/Fixer Options                 *ale-other-integration-options*
+7.4. Other Linter/Fixer Options                 *ale-other-integration-options*
 
 ALE supports a very wide variety of tools. Other linter or fixer options are
 documented in additional help files.
@@ -2227,6 +2243,7 @@ documented in additional help files.
     stylelint.............................|ale-css-stylelint|
   cuda....................................|ale-cuda-options|
     nvcc..................................|ale-cuda-nvcc|
+    clang-format..........................|ale-cuda-clangformat|
   d.......................................|ale-d-options|
     dls...................................|ale-d-dls|
     uncrustify............................|ale-d-uncrustify|
@@ -2241,8 +2258,10 @@ documented in additional help files.
     mix_format............................|ale-elixir-mix-format|
     dialyxir..............................|ale-elixir-dialyxir|
     elixir-ls.............................|ale-elixir-elixir-ls|
+    credo.................................|ale-elixir-credo|
   elm.....................................|ale-elm-options|
     elm-format............................|ale-elm-elm-format|
+    elm-lsp...............................|ale-elm-elm-lsp|
     elm-make..............................|ale-elm-elm-make|
   erlang..................................|ale-erlang-options|
     erlc..................................|ale-erlang-erlc|

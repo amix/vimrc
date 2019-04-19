@@ -60,7 +60,7 @@ function! ale#handlers#rust#HandleRustErrors(buffer, lines) abort
                 \   'lnum': l:span.line_start,
                 \   'end_lnum': l:span.line_end,
                 \   'col': l:span.column_start,
-                \   'end_col': l:span.column_end,
+                \   'end_col': l:span.column_end-1,
                 \   'text': empty(l:span.label) ? l:error.message : printf('%s: %s', l:error.message, l:span.label),
                 \   'type': toupper(l:error.level[0]),
                 \})

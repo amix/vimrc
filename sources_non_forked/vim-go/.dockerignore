@@ -1,4 +1,5 @@
 .local/
+.config/
 .cache/
 .dlv/
 .git/

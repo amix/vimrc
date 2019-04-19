@@ -6,11 +6,14 @@ function! Test_gomodVersion_highlight() abort
   try
     syntax on
 
-    let l:dir= gotest#write_file('gomodtest/go.mod', [
+    let l:dir = gotest#write_file('gomodtest/go.mod', [
           \ 'module github.com/fatih/vim-go',
           \ '',
           \ '\x1frequire (',
           \ '\tversion/simple v1.0.0',
+          \ '\tversion/simple-pre-release v1.0.0-rc',
+          \ '\tversion/simple-pre-release v1.0.0+meta',
+          \ '\tversion/simple-pre-release v1.0.0-rc+meta',
           \ '\tversion/pseudo/premajor v1.0.0-20060102150405-0123456789abcdef',
           \ '\tversion/pseudo/prerelease v1.0.0-prerelease.0.20060102150405-0123456789abcdef',
           \ '\tversion/pseudo/prepatch v1.0.1-0.20060102150405-0123456789abcdef',
@@ -55,11 +58,10 @@ function! Test_gomodVersion_incompatible_highlight() abort
   try
     syntax on
 
-    let l:dir= gotest#write_file('gomodtest/go.mod', [
+    let l:dir = gotest#write_file('gomodtest/go.mod', [
           \ 'module github.com/fatih/vim-go',
           \ '',
           \ '\x1frequire (',
-          \ '\tversion/invalid/incompatible v1.0.0+incompatible',
           \ '\tversion/invalid/premajor/incompatible v1.0.0-20060102150405-0123456789abcdef+incompatible',
           \ '\tversion/invalid/prerelease/incompatible v1.0.0-prerelease.0.20060102150405-0123456789abcdef+incompatible',
           \ '\tversion/invalid/prepatch/incompatible v1.0.1-0.20060102150405-0123456789abcdef+incompatible',

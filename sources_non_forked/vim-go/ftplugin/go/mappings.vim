@@ -53,10 +53,15 @@ nnoremap <silent> <Plug>(go-rename) :<C-u>call go#rename#Rename(!g:go_jump_to_er
 nnoremap <silent> <Plug>(go-decls) :<C-u>call go#decls#Decls(0, '')<CR>
 nnoremap <silent> <Plug>(go-decls-dir) :<C-u>call go#decls#Decls(1, '')<CR>
 
-nnoremap <silent> <Plug>(go-def) :<C-u>call go#def#Jump('')<CR>
-nnoremap <silent> <Plug>(go-def-vertical) :<C-u>call go#def#Jump("vsplit")<CR>
-nnoremap <silent> <Plug>(go-def-split) :<C-u>call go#def#Jump("split")<CR>
-nnoremap <silent> <Plug>(go-def-tab) :<C-u>call go#def#Jump("tab")<CR>
+nnoremap <silent> <Plug>(go-def) :<C-u>call go#def#Jump('', 0)<CR>
+nnoremap <silent> <Plug>(go-def-vertical) :<C-u>call go#def#Jump("vsplit", 0)<CR>
+nnoremap <silent> <Plug>(go-def-split) :<C-u>call go#def#Jump("split", 0)<CR>
+nnoremap <silent> <Plug>(go-def-tab) :<C-u>call go#def#Jump("tab", 0)<CR>
+
+nnoremap <silent> <Plug>(go-def-type) :<C-u>call go#def#Jump('', 1)<CR>
+nnoremap <silent> <Plug>(go-def-type-vertical) :<C-u>call go#def#Jump("vsplit", 1)<CR>
+nnoremap <silent> <Plug>(go-def-type-split) :<C-u>call go#def#Jump("split", 1)<CR>
+nnoremap <silent> <Plug>(go-def-type-tab) :<C-u>call go#def#Jump("tab", 1)<CR>
 
 nnoremap <silent> <Plug>(go-def-pop) :<C-u>call go#def#StackPop()<CR>
 nnoremap <silent> <Plug>(go-def-stack) :<C-u>call go#def#Stack()<CR>

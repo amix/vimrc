@@ -42,7 +42,7 @@ tools developed by the Go community to provide a seamless Vim experience.
   * Quickly execute your current file(s) with |:GoRun|.
   * Improved syntax highlighting and folding.
   * Debug programs with integrated `delve` support with |:GoDebugStart|.
-  * Completion support via `gocode`.
+  * Completion support via `gocode` and `gopls`.
   * `gofmt` or `goimports` on save keeps the cursor position and undo history.
   * Go to symbol/declaration with |:GoDef|.
   * Look up documentation with |:GoDoc| or |:GoDocBrowser|.
@@ -260,7 +260,7 @@ CTRL-]
 g<C-LeftMouse>
 <C-LeftMouse>
 
-    Goto declaration/definition for the declaration under the cursor. By
+    Go to declaration/definition for the identifier under the cursor. By
     default the CTRL-] shortcut, the mapping `gd` and <C-LeftMouse>,
     g<LeftMouse> are enabled to invoke :GoDef for the identifier under the
     cursor. See |'g:go_def_mapping_enabled'| to disable them. No explicit
@@ -272,6 +272,14 @@ g<C-LeftMouse>
     list of file locations you have visited with :GoDef that is retained to
     help you navigate software.
 
+    The per-window location stack is shared with |:GoDefType|.
+
+                                                                  *:GoDefType*
+:GoDefType
+
+    Go to type definition for the identifier under the cursor.
+
+    The per-window location stack is shared with |:GoDef|.
                                                                  *:GoDefStack*
 :GoDefStack [number]
 
@@ -1176,6 +1184,15 @@ cleaned for each package after `60` seconds. This can be changed with the
 Returns the description of the identifer under the cursor. Can be used to plug
 into the statusline.
 
+                                                      *go#complete#Complete()*
+
+Uses `gopls` for autocompletion. By default, it is hooked up to |'omnifunc'|
+for Vim8 and Neovim.
+
+                                                *go#complete#GocodeComplete()*
+
+Uses `gocode` for autocompletion. By default, it is hooked up to |'omnifunc'|
+for Vim 7.4.
 
                                                    *go#tool#DescribeBalloon()*
 
@@ -1350,7 +1367,7 @@ a private internal service. Default is 'https://godoc.org'.
 
 Use this option to define the command to be used for |:GoDef|. By default
 `guru` is being used as it covers all edge cases. But one might also use
-`godef` as it's faster. Current valid options are: `[guru, godef]` >
+`godef` as it's faster. Current valid options are: `[guru, godef, gopls]` >
 
   let g:go_def_mode = 'guru'
 <
@@ -1498,11 +1515,12 @@ it's empty
 <
                                                    *'g:go_metalinter_command'*
 
-Overrides the command to be executed when |:GoMetaLinter| is called. This is
-an advanced settings and is for users who want to have a complete control
-over how `gometalinter` should be executed. By default it's empty.
+Overrides the command to be executed when |:GoMetaLinter| is called.  By
+default it's `gometalinter`. `golangci-lint` is also supported. It can also be
+used as an advanced setting for users who want to have more control over
+the metalinter.
 >
-  let g:go_metalinter_command = ""
+  let g:go_metalinter_command = "gometalinter"
 <
                                                   *'g:go_metalinter_deadline'*
 
@@ -1761,6 +1779,7 @@ Currently accepted values:
   debugger-state     Expose debugger state in 'g:go_debug_diag'.
   debugger-commands  Echo communication between vim-go and `dlv`; requests and
                      responses are recorded in `g:go_debug_commands`.
+  lsp                Record lsp requests and responses in g:go_lsp_log.
 >
       let g:go_debug = []
 <

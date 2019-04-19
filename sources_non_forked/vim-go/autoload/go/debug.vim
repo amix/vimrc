@@ -507,23 +507,7 @@ function! s:out_cb(ch, msg) abort
     if has('nvim')
       let s:state['data'] = []
       let l:state = {'databuf': ''}
-      function! s:on_data(ch, data, event) dict abort closure
-        let l:data = self.databuf
-        for msg in a:data
-          let l:data .= l:msg
-        endfor
-
-        try
-          let l:res = json_decode(l:data)
-          let s:state['data'] = add(s:state['data'], l:res)
-          let self.databuf = ''
-        catch
-          " there isn't a complete message in databuf: buffer l:data and try
-          " again when more data comes in.
-          let self.databuf = l:data
-        finally
-        endtry
-      endfunction
+      
       " explicitly bind callback to state so that within it, self will
       " always refer to state. See :help Partial for more information.
       let l:state.on_data = function('s:on_data', [], l:state)
@@ -558,6 +542,24 @@ function! s:out_cb(ch, msg) abort
 
     call s:start_cb()
   endif
+endfunction
+
+function! s:on_data(ch, data, event) dict abort
+  let l:data = self.databuf
+  for l:msg in a:data
+    let l:data .= l:msg
+  endfor
+
+  try
+    let l:res = json_decode(l:data)
+    let s:state['data'] = add(s:state['data'], l:res)
+    let self.databuf = ''
+  catch
+    " there isn't a complete message in databuf: buffer l:data and try
+    " again when more data comes in.
+    let self.databuf = l:data
+  finally
+  endtry
 endfunction
 
 " Start the debug mode. The first argument is the package name to compile and

@@ -14,7 +14,7 @@ Syntax highlighting, matching rules and mappings for [the original Markdown](htt
 
 ## Installation
 
-If you use [Vundle](https://github.com/gmarik/vundle), add the following line to your `~/.vimrc`:
+If you use [Vundle](https://github.com/gmarik/vundle), add the following lines to your `~/.vimrc`:
 
 ```vim
 Plugin 'godlygeek/tabular'
