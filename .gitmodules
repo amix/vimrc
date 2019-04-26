@@ -1,4 +1,0 @@
-[submodule "my_plugins/cheat.sh-vim"]
-	url = https://github.com/dbeniamine/cheat.sh-vim.git
-[submodule "my_plugins/vizardry"]
-	url = https://github.com/dbeniamine/vizardry.git
