@@ -51,3 +51,10 @@ let g:lightline = {
       \ 'separator': { 'left': ' ', 'right': ' ' },
       \ 'subseparator': { 'left': ' ', 'right': ' ' }
       \ }
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Todo.txt
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Use todo#Complete as the omni complete function for todo files
+au filetype todo setlocal omnifunc=todo#Complete
+
