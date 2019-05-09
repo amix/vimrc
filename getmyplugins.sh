@@ -6,3 +6,11 @@ while IFS='' read -r line || [[ -n "$line"  ]]; do
     git clone $line
 done < "$vimdir/mypluginList"
 popd > /dev/null
+
+if [ -d $vimdir/my_plugins/YouCompleteMe ]; then
+    pushd $vimdir/my_plugins/YouCompleteMe > /dev/null
+    git submodule update --init --recursive
+    python install.py
+    popd > /dev/null
+fi
+
