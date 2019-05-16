@@ -1,0 +1,8 @@
+[submodule "my_plugins/todo.txt-vim"]
+	url = https://github.com/freitass/todo.txt-vim.git
+[submodule "my_plugins/vim-polyglot"]
+	url = https://github.com/sheerun/vim-polyglot.git
+[submodule "my_plugins/vizardry"]
+	url = https://github.com/dbeniamine/vizardry.git
+[submodule "my_plugins/cheat.sh-vim"]
+	url = https://github.com/dbeniamine/cheat.sh-vim.git
