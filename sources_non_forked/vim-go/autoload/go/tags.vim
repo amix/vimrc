@@ -163,17 +163,17 @@ func s:create_cmd(args) abort
       endfor
     endif
 
-    " construct options
+    " default value
+    if empty(l:tags)
+      let l:tags = ["json"]
+    endif
+
+    " construct tags
+    call extend(cmd, ["-add-tags", join(l:tags, ",")])
+
+      " construct options
     if !empty(l:options)
       call extend(cmd, ["-add-options", join(l:options, ",")])
-    else
-      " default value
-      if empty(l:tags)
-        let l:tags = ["json"]
-      endif
-
-      " construct tags
-      call extend(cmd, ["-add-tags", join(l:tags, ",")])
     endif
   elseif l:mode == "remove"
     if empty(l:cmd_args)

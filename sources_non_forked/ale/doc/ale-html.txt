@@ -3,6 +3,14 @@ ALE HTML Integration                                         *ale-html-options*
 
 
 ===============================================================================
+fecs                                                            *ale-html-fecs*
+
+`fecs` options for HTMl is the same as the options for JavaScript,
+and both of them reads `./.fecsrc` as the default configuration file.
+See: |ale-javascript-fecs|.
+
+
+===============================================================================
 htmlhint                                                    *ale-html-htmlhint*
 
 g:ale_html_htmlhint_executable                 *g:ale_html_htmlhint_executable*

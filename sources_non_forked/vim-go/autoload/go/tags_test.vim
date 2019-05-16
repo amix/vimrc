@@ -2,7 +2,7 @@
 let s:cpo_save = &cpo
 set cpo&vim
 
-func! Test_add_tags() abort
+func! TestAddTags() abort
   try
     let l:tmp = gotest#load_fixture('tags/add_all_input.go')
     silent call go#tags#run(0, 0, 40, "add", bufname(''), 1)
@@ -12,6 +12,28 @@ func! Test_add_tags() abort
   endtry
 endfunc
 
+
+func! TestAddTags_WithOptions() abort
+  try
+    let l:tmp = gotest#load_fixture('tags/add_all_input.go')
+    silent call go#tags#run(0, 0, 40, "add", bufname(''), 1, 'json,omitempty')
+    call gotest#assert_fixture('tags/add_all_golden_options.go')
+  finally
+    call delete(l:tmp, 'rf')
+  endtry
+endfunc
+
+func! TestAddTags_AddOptions() abort
+  try
+    let l:tmp = gotest#load_fixture('tags/add_all_input.go')
+    silent call go#tags#run(0, 0, 40, "add", bufname(''), 1, 'json')
+    call gotest#assert_fixture('tags/add_all_golden.go')
+    silent call go#tags#run(0, 0, 40, "add", bufname(''), 1, 'json,omitempty')
+    call gotest#assert_fixture('tags/add_all_golden_options.go')
+  finally
+    call delete(l:tmp, 'rf')
+  endtry
+endfunc
 
 func! Test_remove_tags() abort
   try

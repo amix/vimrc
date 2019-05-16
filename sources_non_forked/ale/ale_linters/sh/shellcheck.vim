@@ -10,10 +10,7 @@ call ale#Set('sh_shellcheck_exclusions', get(g:, 'ale_linters_sh_shellcheck_excl
 call ale#Set('sh_shellcheck_executable', 'shellcheck')
 call ale#Set('sh_shellcheck_dialect', 'auto')
 call ale#Set('sh_shellcheck_options', '')
-
-function! ale_linters#sh#shellcheck#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'sh_shellcheck_executable')
-endfunction
+call ale#Set('sh_shellcheck_change_directory', 1)
 
 function! ale_linters#sh#shellcheck#GetDialectArgument(buffer) abort
     let l:shell_type = ale#handlers#sh#GetShellType(a:buffer)
@@ -39,30 +36,21 @@ function! ale_linters#sh#shellcheck#GetDialectArgument(buffer) abort
     return ''
 endfunction
 
-function! ale_linters#sh#shellcheck#VersionCheck(buffer) abort
-    let l:executable = ale_linters#sh#shellcheck#GetExecutable(a:buffer)
-
-    " Don't check the version again if we've already cached it.
-    return !ale#semver#HasVersion(l:executable)
-    \   ? ale#Escape(l:executable) . ' --version'
-    \   : ''
-endfunction
-
-function! ale_linters#sh#shellcheck#GetCommand(buffer, version_output) abort
-    let l:executable = ale_linters#sh#shellcheck#GetExecutable(a:buffer)
-    let l:version = ale#semver#GetVersion(l:executable, a:version_output)
-
+function! ale_linters#sh#shellcheck#GetCommand(buffer, version) abort
     let l:options = ale#Var(a:buffer, 'sh_shellcheck_options')
     let l:exclude_option = ale#Var(a:buffer, 'sh_shellcheck_exclusions')
     let l:dialect = ale#Var(a:buffer, 'sh_shellcheck_dialect')
-    let l:external_option = ale#semver#GTE(l:version, [0, 4, 0]) ? ' -x' : ''
+    let l:external_option = ale#semver#GTE(a:version, [0, 4, 0]) ? ' -x' : ''
+    let l:cd_string = ale#Var(a:buffer, 'sh_shellcheck_change_directory')
+    \   ? ale#path#BufferCdString(a:buffer)
+    \   : ''
 
     if l:dialect is# 'auto'
         let l:dialect = ale_linters#sh#shellcheck#GetDialectArgument(a:buffer)
     endif
 
-    return ale#path#BufferCdString(a:buffer)
-    \   . ale#Escape(l:executable)
+    return l:cd_string
+    \   . '%e'
     \   . (!empty(l:dialect) ? ' -s ' . l:dialect : '')
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . (!empty(l:exclude_option) ? ' -e ' . l:exclude_option : '')
@@ -108,10 +96,12 @@ endfunction
 
 call ale#linter#Define('sh', {
 \   'name': 'shellcheck',
-\   'executable': function('ale_linters#sh#shellcheck#GetExecutable'),
-\   'command_chain': [
-\       {'callback': 'ale_linters#sh#shellcheck#VersionCheck'},
-\       {'callback': 'ale_linters#sh#shellcheck#GetCommand'},
-\   ],
+\   'executable': {buffer -> ale#Var(buffer, 'sh_shellcheck_executable')},
+\   'command': {buffer -> ale#semver#RunWithVersionCheck(
+\       buffer,
+\       ale#Var(buffer, 'sh_shellcheck_executable'),
+\       '%e --version',
+\       function('ale_linters#sh#shellcheck#GetCommand'),
+\   )},
 \   'callback': 'ale_linters#sh#shellcheck#Handle',
 \})

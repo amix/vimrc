@@ -7,16 +7,16 @@
 # Header using Puppet Strings (YARD tags) https://puppet.com/docs/puppet/latest/modules_documentation.html
 # More info: https://github.com/puppetlabs/puppet-strings
 snippet classheader
-	# ${1:`vim_snippets#Filename(expand('%:p:s?.*modules/??:h:h'), 'class-name')`}
+	# ${1:`vim_snippets#Filename(substitute(expand('%:p:s?\v.{-}/(\w+)/manifests/(.+)\.pp?\1/\2?'), '/', '::', 'g'), 'class-name')`}
 	# ${2:A description of what this class does}
 	#
 	# @summary ${3:A short summary of the purpose of this class}
 	#
-	# @param ${4:parameter1} [${5:String}]
+	# @param ${4:parameter1}
 	#   ${6:Explanation of what this parameter affects.}
 	#
 	# @example Simple use
-	#   class { '$1': }
+	#   include $1
 	#
 	# @example Use with params
 	#   class { '$1':
@@ -28,7 +28,7 @@ snippet classheader
 	# @note Copyright `strftime("%Y")` $8
 	#
 	class $1(
-		$$4 = undef,
+		${5:String} $$4 = undef,
 	) {
 		${0}
 	}

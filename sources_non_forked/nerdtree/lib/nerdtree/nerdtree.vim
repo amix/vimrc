@@ -66,7 +66,7 @@ endfunction
 "FUNCTION: s:NERDTree.CloseIfQuitOnOpen() {{{1
 "Closes the NERD tree window if the close on open option is set
 function! s:NERDTree.CloseIfQuitOnOpen()
-    if and(g:NERDTreeQuitOnOpen,1) && s:NERDTree.IsOpen()
+    if nerdtree#and(g:NERDTreeQuitOnOpen,1) && s:NERDTree.IsOpen()
         call s:NERDTree.Close()
     endif
 endfunction

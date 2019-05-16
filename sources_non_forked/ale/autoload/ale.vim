@@ -8,6 +8,7 @@ let g:ale_echo_msg_info_str = get(g:, 'ale_echo_msg_info_str', 'Info')
 let g:ale_echo_msg_warning_str = get(g:, 'ale_echo_msg_warning_str', 'Warning')
 " Ignoring linters, for disabling some, or ignoring LSP diagnostics.
 let g:ale_linters_ignore = get(g:, 'ale_linters_ignore', {})
+let g:ale_disable_lsp = get(g:, 'ale_disable_lsp', 0)
 
 let s:lint_timer = -1
 let s:getcmdwintype_exists = exists('*getcmdwintype')
@@ -39,6 +40,11 @@ function! ale#ShouldDoNothing(buffer) abort
 
     " Do nothing when there's no filetype.
     if l:filetype is# ''
+        return 1
+    endif
+
+    " Do nothing for diff buffers.
+    if getbufvar(a:buffer, '&diff')
         return 1
     endif
 
@@ -90,8 +96,9 @@ function! s:Lint(buffer, should_lint_file, timer_id) abort
 
     " Apply ignore lists for linters only if needed.
     let l:ignore_config = ale#Var(a:buffer, 'linters_ignore')
-    let l:linters = !empty(l:ignore_config)
-    \   ? ale#engine#ignore#Exclude(l:filetype, l:linters, l:ignore_config)
+    let l:disable_lsp = ale#Var(a:buffer, 'disable_lsp')
+    let l:linters = !empty(l:ignore_config) || l:disable_lsp
+    \   ? ale#engine#ignore#Exclude(l:filetype, l:linters, l:ignore_config, l:disable_lsp)
     \   : l:linters
 
     " Tell other sources that they can start checking the buffer now.
@@ -149,12 +156,19 @@ function! ale#Queue(delay, ...) abort
     endif
 endfunction
 
-let g:ale_has_override = get(g:, 'ale_has_override', {})
+let s:current_ale_version = [2, 4, 0]
 
-" Call has(), but check a global Dictionary so we can force flags on or off
-" for testing purposes.
+" A function used to check for ALE features in files outside of the project.
 function! ale#Has(feature) abort
-    return get(g:ale_has_override, a:feature, has(a:feature))
+    let l:match = matchlist(a:feature, '\c\v^ale-(\d+)\.(\d+)(\.(\d+))?$')
+
+    if !empty(l:match)
+        let l:version = [l:match[1] + 0, l:match[2] + 0, l:match[4] + 0]
+
+        return ale#semver#GTE(s:current_ale_version, l:version)
+    endif
+
+    return 0
 endfunction
 
 " Given a buffer number and a variable name, look for that variable in the

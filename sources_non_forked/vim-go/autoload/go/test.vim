@@ -30,8 +30,8 @@ function! go#test#Test(bang, compile, ...) abort
     call add(args, printf("-timeout=%s", timeout))
   endif
 
-  if has('nvim') && go#config#TermEnabled()
-    call go#term#new(a:bang, ["go"] + args)
+  if go#config#TermEnabled()
+    call go#term#new(a:bang, ["go"] + args, s:errorformat())
   endif
 
   if go#util#has_job()
@@ -75,14 +75,17 @@ function! go#test#Test(bang, compile, ...) abort
   execute cd fnameescape(expand("%:p:h"))
 
   if l:err != 0
+    let l:winid = win_getid(winnr())
     call go#list#ParseFormat(l:listtype, s:errorformat(), split(out, '\n'), l:cmd)
     let errors = go#list#Get(l:listtype)
     call go#list#Window(l:listtype, len(errors))
-    if !empty(errors) && !a:bang
-      call go#list#JumpToFirst(l:listtype)
-    elseif empty(errors)
+    if empty(errors)
       " failed to parse errors, output the original content
       call go#util#EchoError(out)
+    elseif a:bang
+      call win_gotoid(l:winid)
+    else
+      call go#list#JumpToFirst(l:listtype)
     endif
   else
     call go#list#Clean(l:listtype)
@@ -163,9 +166,17 @@ function! s:errorformat() abort
   let format .= ",%-G" . indent . "%#--- PASS: %.%#"
 
   " Match failure lines.
-  "
+
+  " Example failures start with '--- FAIL: ', followed by the example name
+  " followed by a space , followed by the duration of the example in
+  " parantheses. They aren't nested, though, so don't check for indentation.
+  " The errors from them also aren't indented and don't report file location
+  " or line numbers, so those won't show up. This will at least let the user
+  " know which example failed, though.
+  let format .= ',%G--- FAIL: %\\%(Example%\\)%\\@=%m (%.%#)'
+
   " Test failures start with '--- FAIL: ', followed by the test name followed
-  " by a space the duration of the test in parentheses
+  " by a space, followed by the duration of the test in parentheses.
   "
   " e.g.:
   "   '--- FAIL: TestSomething (0.00s)'

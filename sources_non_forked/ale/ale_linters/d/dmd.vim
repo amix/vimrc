@@ -1,7 +1,7 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: "dmd for D files"
 
-function! ale_linters#d#dmd#DUBCommand(buffer) abort
+function! ale_linters#d#dmd#GetDUBCommand(buffer) abort
     " If we can't run dub, then skip this command.
     if !executable('dub')
         " Returning an empty string skips to the DMD command.
@@ -21,7 +21,18 @@ function! ale_linters#d#dmd#DUBCommand(buffer) abort
     \   . ' && dub describe --import-paths'
 endfunction
 
-function! ale_linters#d#dmd#DMDCommand(buffer, dub_output) abort
+function! ale_linters#d#dmd#RunDUBCommand(buffer) abort
+    let l:command = ale_linters#d#dmd#GetDUBCommand(a:buffer)
+
+    if empty(l:command)
+        " If we can't run DUB, just run DMD.
+        return ale_linters#d#dmd#DMDCommand(a:buffer, [], {})
+    endif
+
+    return ale#command#Run(a:buffer, l:command, function('ale_linters#d#dmd#DMDCommand'))
+endfunction
+
+function! ale_linters#d#dmd#DMDCommand(buffer, dub_output, meta) abort
     let l:import_list = []
 
     " Build a list of import paths generated from DUB, if available.
@@ -57,9 +68,7 @@ endfunction
 call ale#linter#Define('d', {
 \   'name': 'dmd',
 \   'executable': 'dmd',
-\   'command_chain': [
-\       {'callback': 'ale_linters#d#dmd#DUBCommand', 'output_stream': 'stdout'},
-\       {'callback': 'ale_linters#d#dmd#DMDCommand', 'output_stream': 'stderr'},
-\   ],
+\   'command': function('ale_linters#d#dmd#RunDUBCommand'),
 \   'callback': 'ale_linters#d#dmd#Handle',
+\   'output_stream': 'stderr',
 \})

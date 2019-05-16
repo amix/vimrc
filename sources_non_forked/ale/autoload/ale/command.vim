@@ -329,30 +329,46 @@ function! ale#command#Run(buffer, command, Callback, ...) abort
     "
     " The `_deferred_job_id` is used for both checking the type of object, and
     " for checking the job ID and status.
-    let l:result = {'_deferred_job_id': l:job_id}
+    "
+    " The original command here is used in tests.
+    let l:result = {
+    \   '_deferred_job_id': l:job_id,
+    \   'executable': get(l:options, 'executable', ''),
+    \   'command': a:command,
+    \}
 
     if get(g:, 'ale_run_synchronously') == 1 && l:job_id
-        " Run a command synchronously if this test option is set.
-        call extend(l:line_list, systemlist(
-        \   type(l:command) is v:t_list
-        \       ? join(l:command[0:1]) . ' ' . ale#Escape(l:command[2])
-        \       : l:command
-        \))
-
-        " Don't capture output when the callbacks aren't set.
-        if !has_key(l:job_options, 'out_cb')
-        \&& !has_key(l:job_options, 'err_cb')
-            let l:line_list = []
-        endif
-
         if !exists('g:ale_run_synchronously_callbacks')
             let g:ale_run_synchronously_callbacks = []
         endif
 
-        call add(
-        \   g:ale_run_synchronously_callbacks,
-        \   {-> l:job_options.exit_cb(l:job_id, v:shell_error)}
-        \)
+        if get(g:, 'ale_run_synchronously_emulate_commands', 0)
+            call add(
+            \   g:ale_run_synchronously_callbacks,
+            \   {exit_code, output -> [
+            \       extend(l:line_list, output),
+            \       l:job_options.exit_cb(l:job_id, exit_code),
+            \   ]}
+            \)
+        else
+            " Run a command synchronously if this test option is set.
+            call extend(l:line_list, systemlist(
+            \   type(l:command) is v:t_list
+            \       ? join(l:command[0:1]) . ' ' . ale#Escape(l:command[2])
+            \       : l:command
+            \))
+
+            " Don't capture output when the callbacks aren't set.
+            if !has_key(l:job_options, 'out_cb')
+            \&& !has_key(l:job_options, 'err_cb')
+                let l:line_list = []
+            endif
+
+            call add(
+            \   g:ale_run_synchronously_callbacks,
+            \   {-> l:job_options.exit_cb(l:job_id, v:shell_error)}
+            \)
+        endif
     endif
 
     return l:result

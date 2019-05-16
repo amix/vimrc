@@ -3,6 +3,13 @@ ALE Clojure Integration                                   *ale-clojure-options*
 
 
 ===============================================================================
+clj-kondo                                               *ale-clojure-clj-kondo*
+
+A minimal and opinionated linter for code that sparks joy.
+
+https://github.com/borkdude/clj-kondo
+
+===============================================================================
 joker                                                       *ale-clojure-joker*
 
 Joker is a small Clojure interpreter and linter written in Go.

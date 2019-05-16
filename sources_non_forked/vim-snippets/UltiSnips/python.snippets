@@ -51,7 +51,9 @@ DOUBLE_QUOTES = '"'
 class Arg(object):
 	def __init__(self, arg):
 		self.arg = arg
-		self.name = arg.split('=')[0].strip()
+		name_and_type = arg.split('=')[0].split(':')
+		self.name = name_and_type[0].strip()
+		self.type = name_and_type[1].strip() if len(name_and_type) == 2 else None
 
 	def __str__(self):
 		return self.name
@@ -61,6 +63,9 @@ class Arg(object):
 
 	def is_kwarg(self):
 		return '=' in self.arg
+
+	def is_vararg(self):
+		return '*' in self.name
 
 
 def get_args(arglist):
@@ -211,7 +216,7 @@ def write_init_body(args, parents, snip):
 	if parents:
 		snip.rv += '\n' + snip.mkline('', indent='')
 
-	for arg in args:
+	for arg in filter(lambda arg: not arg.is_vararg(), args):
 		snip += "self._%s = %s" % (arg, arg)
 
 

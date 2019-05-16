@@ -48,7 +48,7 @@ function! go#config#TermMode() abort
 endfunction
 
 function! go#config#TermEnabled() abort
-  return get(g:, 'go_term_enabled', 0)
+  return has('nvim') && get(g:, 'go_term_enabled', 0)
 endfunction
 
 function! go#config#SetTermEnabled(value) abort
@@ -208,6 +208,10 @@ function! go#config#DebugCommands() abort
   " make sure g:go_debug_commands is set so that it can be added to easily.
   let g:go_debug_commands = get(g:, 'go_debug_commands', [])
   return g:go_debug_commands
+endfunction
+
+function! go#config#DebugLogOutput() abort
+  return get(g:, 'go_debug_log_output', 'debugger, rpc')
 endfunction
 
 function! go#config#LspLog() abort
@@ -460,6 +464,10 @@ endfunction
 
 function! go#config#EchoGoInfo() abort
   return get(g:, "go_echo_go_info", 1)
+endfunction
+
+function! go#config#CodeCompletionEnabled() abort
+  return get(g:, "go_code_completion_enabled", 1)
 endfunction
 
 " Set the default value. A value of "1" is a shortcut for this, for

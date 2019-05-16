@@ -4,10 +4,10 @@
 function! ale#handlers#redpen#HandleRedpenOutput(buffer, lines) abort
     " Only one file was passed to redpen. So response array has only one
     " element.
-    let l:res = json_decode(join(a:lines))[0]
+    let l:res = get(ale#util#FuzzyJSONDecode(a:lines, []), 0, {})
     let l:output = []
 
-    for l:err in l:res.errors
+    for l:err in get(l:res, 'errors', [])
         let l:item = {
         \   'text': l:err.message,
         \   'type': 'W',
