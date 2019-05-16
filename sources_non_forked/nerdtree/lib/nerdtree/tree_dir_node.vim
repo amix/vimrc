@@ -432,7 +432,7 @@ function! s:TreeDirNode._initChildren(silent)
 
     call self.sortChildren()
 
-    redraw!
+    call nerdtree#echo("")
 
     if invalidFilesFound
         call nerdtree#echoWarning(invalidFilesFound . " file(s) could not be loaded into the NERD tree")

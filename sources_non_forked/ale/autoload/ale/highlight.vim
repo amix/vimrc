@@ -49,12 +49,31 @@ endfunction
 
 " Given a loclist for current items to highlight, remove all highlights
 " except these which have matching loclist item entries.
+
 function! ale#highlight#RemoveHighlights() abort
     for l:match in getmatches()
         if l:match.group =~# '^ALE'
             call matchdelete(l:match.id)
         endif
     endfor
+endfunction
+
+function! s:highlight_line(bufnr, lnum, group) abort
+    call matchaddpos(a:group, [a:lnum])
+endfunction
+
+function! s:highlight_range(bufnr, range, group) abort
+    " Set all of the positions, which are chunked into Lists which
+    " are as large as will be accepted by matchaddpos.
+    call map(
+    \   ale#highlight#CreatePositions(
+    \       a:range.lnum,
+    \       a:range.col,
+    \       a:range.end_lnum,
+    \       a:range.end_col
+    \   ),
+    \   'matchaddpos(a:group, v:val)'
+    \)
 endfunction
 
 function! ale#highlight#UpdateHighlights() abort
@@ -79,17 +98,14 @@ function! ale#highlight#UpdateHighlights() abort
             let l:group = 'ALEError'
         endif
 
-        let l:line = l:item.lnum
-        let l:col = l:item.col
-        let l:end_line = get(l:item, 'end_lnum', l:line)
-        let l:end_col = get(l:item, 'end_col', l:col)
+        let l:range = {
+        \   'lnum': l:item.lnum,
+        \   'col': l:item.col,
+        \   'end_lnum': get(l:item, 'end_lnum', l:item.lnum),
+        \   'end_col': get(l:item, 'end_col', l:item.col)
+        \}
 
-        " Set all of the positions, which are chunked into Lists which
-        " are as large as will be accepted by matchaddpos.
-        call map(
-        \   ale#highlight#CreatePositions(l:line, l:col, l:end_line, l:end_col),
-        \   'matchaddpos(l:group, v:val)'
-        \)
+        call s:highlight_range(l:item.bufnr, l:range, l:group)
     endfor
 
     " If highlights are enabled and signs are not enabled, we should still
@@ -111,7 +127,7 @@ function! ale#highlight#UpdateHighlights() abort
             endif
 
             if l:available_groups[l:group]
-                call matchaddpos(l:group, [l:item.lnum])
+                call s:highlight_line(l:item.bufnr, l:item.lnum, l:group)
             endif
         endfor
     endif

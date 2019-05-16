@@ -580,6 +580,14 @@ g:ale_python_pylint_auto_pipenv               *g:ale_python_pylint_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pylint_use_msg_id                 *g:ale_python_pylint_use_msg_id*
+                                               *b:ale_python_pylint_use_msg_id*
+  Type: |Number|
+  Default: `0`
+
+  Use message for output (e.g. I0011) instead of symbolic name of the message
+  (e.g. locally-disabled).
+
 ===============================================================================
 pyls                                                          *ale-python-pyls*
 

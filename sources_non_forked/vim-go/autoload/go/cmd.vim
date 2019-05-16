@@ -115,7 +115,7 @@ function! go#cmd#RunTerm(bang, mode, files) abort
   else
     let cmd .= go#util#Shelljoin(map(copy(a:files), "expand(v:val)"), 1)
   endif
-  call go#term#newmode(a:bang, cmd, a:mode)
+  call go#term#newmode(a:bang, cmd, s:runerrorformat(), a:mode)
 endfunction
 
 " Run runs the current file (and their dependencies if any) and outputs it.
@@ -167,21 +167,25 @@ function! go#cmd#Run(bang, ...) abort
   let l:listtype = go#list#Type("GoRun")
 
   try
+
+    " backup user's errorformat, will be restored once we are finished
+    let l:old_errorformat = &errorformat
+    let &errorformat = s:runerrorformat()
     if l:listtype == "locationlist"
       exe 'lmake!'
     else
       exe 'make!'
     endif
   finally
+    "restore errorformat
+    let &errorformat = l:old_errorformat
     let &makeprg = default_makeprg
   endtry
 
-  let items = go#list#Get(l:listtype)
-  let errors = go#util#FilterValids(items)
+  let l:errors = go#list#Get(l:listtype)
 
-  call go#list#Populate(l:listtype, errors, &makeprg)
-  call go#list#Window(l:listtype, len(errors))
-  if !empty(errors) && !a:bang
+  call go#list#Window(l:listtype, len(l:errors))
+  if !empty(l:errors) && !a:bang
     call go#list#JumpToFirst(l:listtype)
   endif
 
@@ -276,6 +280,12 @@ function! go#cmd#Generate(bang, ...) abort
     redraws! | echon "vim-go: " | echohl Function | echon "[generate] SUCCESS"| echohl None
   endif
 
+endfunction
+
+function! s:runerrorformat()
+  let l:panicaddress = "%\\t%#%f:%l +0x%[0-9A-Fa-f]%\\+"
+  let l:errorformat = '%A' . l:panicaddress . "," . &errorformat
+  return l:errorformat
 endfunction
 
 " ---------------------

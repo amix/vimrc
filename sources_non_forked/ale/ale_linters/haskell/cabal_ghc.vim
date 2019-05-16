@@ -4,7 +4,8 @@
 call ale#Set('haskell_cabal_ghc_options', '-fno-code -v0')
 
 function! ale_linters#haskell#cabal_ghc#GetCommand(buffer) abort
-    return 'cabal exec -- ghc '
+    return ale#path#BufferCdString(a:buffer)
+    \   . 'cabal exec -- ghc '
     \   . ale#Var(a:buffer, 'haskell_cabal_ghc_options')
     \   . ' %t'
 endfunction

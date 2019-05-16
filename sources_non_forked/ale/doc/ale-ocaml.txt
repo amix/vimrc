@@ -51,4 +51,32 @@ g:ale_ocaml_ocamlformat_options               *g:ale_ocaml_ocamlformat_options*
   This variable can be set to pass additional options to the ocamlformat fixer.
 
 ===============================================================================
+ocp-indent                                               *ale-ocaml-ocp-indent*
+
+g:ale_ocaml_ocp_indent_executable           *g:ale_ocaml_ocp_indent_executable*
+                                            *b:ale_ocaml_ocp_indent_executable*
+  Type: |String|
+  Default: `ocp-indent`
+
+  This variable can be set to pass the path of the ocp-indent.
+
+g:ale_ocaml_ocp_indent_options                 *g:ale_ocaml_ocp_indent_options*
+                                               *b:ale_ocaml_ocp_indent_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the ocp-indent.
+
+g:ale_ocaml_ocp_indent_config                   *g:ale_ocaml_ocp_indent_config*
+                                                *b:ale_ocaml_ocp_indent_config*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional config to the ocp-indent.
+  Expand after "--config=".
+
+  "ocp-indent" can also be enabled from ocamlformat config.
+
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

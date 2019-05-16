@@ -25,7 +25,7 @@ function! ale#cursor#TruncatedEcho(original_message) abort
         let l:cursor_position = getpos('.')
 
         " The message is truncated and saved to the history.
-        setlocal shortmess+=T
+        silent! setlocal shortmess+=T
 
         try
             exec "norm! :echomsg l:message\n"

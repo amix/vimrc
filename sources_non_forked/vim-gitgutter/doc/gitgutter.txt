@@ -396,6 +396,11 @@ If this applies to you, either install something like Terminus
 (https://github.com/wincent/terminus) to make |FocusGained| work or set this
 option to 0.
 
+If you use tmux, try this in your tmux.conf:
+>
+    set -g focus-events on
+<
+
 When this option is 0, the plugin force-updates the buffer on |BufEnter|
 (instead of only updating if the buffer's contents has changed since the last
 update).

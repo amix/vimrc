@@ -62,6 +62,18 @@ g:ale_sh_shellcheck_options                       *g:ale_sh_shellcheck_options*
 <
 
 
+g:ale_sh_shellcheck_change_directory     *g:ale_sh_shellcheck_change_directory*
+                                         *b:ale_sh_shellcheck_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will switch to the directory the shell file being
+  checked with `shellcheck` is in before checking it. This helps `shellcheck`
+  determine the path to sourced files more easily. This option can be turned
+  off if you want to control the directory `shellcheck` is executed from
+  yourself.
+
+
 g:ale_sh_shellcheck_dialect                       *g:ale_sh_shellcheck_dialect*
                                                   *b:ale_sh_shellcheck_dialect*
   Type: |String|

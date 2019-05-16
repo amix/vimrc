@@ -13,6 +13,16 @@ g:ale_haskell_brittany_executable           *g:ale_haskell_brittany_executable*
   This variable can be changed to use a different executable for brittany.
 
 ===============================================================================
+floskell                                                 *ale-haskell-floskell*
+
+g:ale_haskell_floskell_executable           *g:ale_haskell_floskell_executable*
+                                            *b:ale_haskell_floskell_executable*
+  Type: |String|
+  Default: `'floskell'`
+
+  This variable can be changed to use a different executable for floskell.
+
+===============================================================================
 ghc                                                           *ale-haskell-ghc*
 
 g:ale_haskell_ghc_options                           *g:ale_haskell_ghc_options*

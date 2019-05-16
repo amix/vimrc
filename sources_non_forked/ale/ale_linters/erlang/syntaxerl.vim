@@ -3,7 +3,17 @@
 
 call ale#Set('erlang_syntaxerl_executable', 'syntaxerl')
 
-function! ale_linters#erlang#syntaxerl#GetCommand(buffer, output) abort
+function! ale_linters#erlang#syntaxerl#RunHelpCommand(buffer) abort
+    let l:executable = ale#Var(a:buffer, 'erlang_syntaxerl_executable')
+
+    return ale#command#Run(
+    \   a:buffer,
+    \   ale#Escape(l:executable) . ' -h',
+    \   function('ale_linters#erlang#syntaxerl#GetCommand'),
+    \)
+endfunction
+
+function! ale_linters#erlang#syntaxerl#GetCommand(buffer, output, meta) abort
     let l:use_b_option = match(a:output, '\C\V-b, --base\>') > -1
 
     return '%e' . (l:use_b_option ? ' -b %s %t' : ' %t')
@@ -27,9 +37,6 @@ endfunction
 call ale#linter#Define('erlang', {
 \   'name': 'syntaxerl',
 \   'executable': {b -> ale#Var(b, 'erlang_syntaxerl_executable')},
-\   'command_chain': [
-\       {'callback': {-> '%e -h'}},
-\       {'callback': 'ale_linters#erlang#syntaxerl#GetCommand'},
-\   ],
+\   'command': {b -> ale_linters#erlang#syntaxerl#RunHelpCommand(b)},
 \   'callback': 'ale_linters#erlang#syntaxerl#Handle',
 \})

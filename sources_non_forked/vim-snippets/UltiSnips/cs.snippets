@@ -16,21 +16,21 @@ namespace ${1:MyNamespace}
 endsnippet
 
 snippet class "class" w
-${1:public} class ${2:MyClass}
+${1:public} class ${2:`!p snip.rv = snip.basename`}
 {
 	$0
 }
 endsnippet
 
 snippet struct "struct" w
-struct ${1:MyStruct}
+struct ${1:`!p snip.rv = snip.basename`}
 {
 	$0
 }
 endsnippet
 
 snippet interface "interface" w
-interface I${1:Interface}
+interface I${1:`!p snip.rv = snip.basename`}
 {
 	$0
 }

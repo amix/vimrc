@@ -81,7 +81,7 @@ function! ale#virtualtext#ShowCursorWarning(...) abort
     call ale#virtualtext#Clear()
 
     if !empty(l:loc)
-        let l:msg = get(l:loc, 'detail', l:loc.text)
+        let l:msg = l:loc.text
         let l:hl_group = 'ALEVirtualTextInfo'
         let l:type = get(l:loc, 'type', 'E')
 

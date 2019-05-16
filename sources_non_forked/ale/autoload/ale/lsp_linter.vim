@@ -10,6 +10,11 @@ endif
 
 " Check if diagnostics for a particular linter should be ignored.
 function! s:ShouldIgnore(buffer, linter_name) abort
+    " Ignore all diagnostics if LSP integration is disabled.
+    if ale#Var(a:buffer, 'disable_lsp')
+        return 1
+    endif
+
     let l:config = ale#Var(a:buffer, 'linters_ignore')
 
     " Don't load code for ignoring diagnostics if there's nothing to ignore.
@@ -27,12 +32,13 @@ function! s:HandleLSPDiagnostics(conn_id, response) abort
     let l:linter_name = s:lsp_linter_map[a:conn_id]
     let l:filename = ale#path#FromURI(a:response.params.uri)
     let l:buffer = bufnr(l:filename)
+    let l:info = get(g:ale_buffer_info, l:buffer, {})
 
-    if s:ShouldIgnore(l:buffer, l:linter_name)
+    if empty(l:info)
         return
     endif
 
-    if l:buffer <= 0
+    if s:ShouldIgnore(l:buffer, l:linter_name)
         return
     endif
 
@@ -49,6 +55,8 @@ function! s:HandleTSServerDiagnostics(response, error_type) abort
     if empty(l:info)
         return
     endif
+
+    call ale#engine#MarkLinterInactive(l:info, l:linter_name)
 
     if s:ShouldIgnore(l:buffer, l:linter_name)
         return
@@ -376,6 +384,10 @@ function! s:CheckWithLSP(linter, details) abort
     if a:linter.lsp is# 'tsserver'
         let l:message = ale#lsp#tsserver_message#Geterr(l:buffer)
         let l:notified = ale#lsp#Send(l:id, l:message) != 0
+
+        if l:notified
+            call ale#engine#MarkLinterActive(l:info, a:linter)
+        endif
     else
         let l:notified = ale#lsp#NotifyForChanges(l:id, l:buffer)
     endif
@@ -385,10 +397,6 @@ function! s:CheckWithLSP(linter, details) abort
     \&& getbufvar(l:buffer, 'ale_save_event_fired', 0)
         let l:save_message = ale#lsp#message#DidSave(l:buffer)
         let l:notified = ale#lsp#Send(l:id, l:save_message) != 0
-    endif
-
-    if l:notified
-        call ale#engine#MarkLinterActive(l:info, a:linter)
     endif
 endfunction
 

@@ -12,6 +12,7 @@ CONTENTS                                             *ale-development-contents*
   3. Coding Standards.....................|ale-coding-standards|
   4. Testing ALE..........................|ale-development-tests|
     4.1. Writing Linter Tests.............|ale-development-linter-tests|
+    4.2. Writing Fixer Tests..............|ale-development-fixer-tests|
 
 ===============================================================================
 1. Introduction                                  *ale-development-introduction*
@@ -288,10 +289,10 @@ and should be written like so. >
     AssertLinter 'some-command', ale#Escape('some-command') . ' --foo'
 
   Execute(Check chained commands):
-    " WithChainResults can be called with 1 or more list for passing output
+    " GivenCommandOutput can be called with 1 or more list for passing output
     " to chained commands. The output for each callback defaults to an empty
     " list.
-    WithChainResults ['v2.1.2']
+    GivenCommandOutput ['v2.1.2']
     " Given a List of commands, check all of them.
     " Given a String, only the last command in the chain will be checked.
     AssertLinter 'some-command', [
@@ -302,7 +303,7 @@ and should be written like so. >
 The full list of commands that will be temporarily defined for linter tests
 given the above setup are as follows.
 
-`WithChainResults [...]`           - Define output for command chain functions.
+`GivenCommandOutput [...]`         - Define output for ale#command#Run.
 `AssertLinter executable, command` - Check the executable and command.
 `AssertLinterNotExecuted`          - Check that linters will not be executed.
 `AssertLSPLanguage language`       - Check the language given to an LSP server.
@@ -310,6 +311,47 @@ given the above setup are as follows.
 `AssertLSPConfig config_dict`      - Check the config given to an LSP server.
 `AssertLSPProject project_root`    - Check the root given to an LSP server.
 `AssertLSPAddress address`         - Check the address to an LSP server.
+
+
+===============================================================================
+4.2 Writing Fixer Tests                           *ale-development-fixer-tests*
+
+Tests for ALE fixers should go in the `test/fixers` directory, and should
+be written like so. >
+
+  Before:
+    " Load the fixer and set up a series of commands, reset fixer variables,
+    " clear caches, etc.
+    "
+    " Vader's 'Save' command will be called here for fixer variables.
+    call ale#assert#SetUpFixerTest('filetype', 'fixer_name')
+
+  After:
+    " Reset fixers, variables, etc.
+    "
+    " Vader's 'Restore' command will be called here.
+    call ale#assert#TearDownFixerTest()
+
+  Execute(The default command should be correct):
+    " AssertFixer checks the result of the loaded fixer function.
+    AssertFixer {'command': ale#Escape('some-command') . ' --foo'}
+
+  Execute(Check chained commands):
+    " Same as above for linter tests.
+    GivenCommandOutput ['v2.1.2']
+    " Given a List of commands, check all of them.
+    " Given anything else, only the last result will be checked.
+    AssertFixer [
+    \ ale#Escape('some-command') . ' --version',
+    \ {'command': ale#Escape('some-command') . ' --foo'}
+    \]
+<
+The full list of commands that will be temporarily defined for fixer tests
+given the above setup are as follows.
+
+`GivenCommandOutput [...]`         - Define output for ale#command#Run.
+`AssertFixer results`              - Check the fixer results
+
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -1,0 +1,77 @@
+===============================================================================
+ALE PowerShell Integration                             *ale-powershell-options*
+
+
+===============================================================================
+powershell                                          *ale-powershell-powershell*
+
+g:ale_powershell_powershell_executable  *g:ale_powershell_powershell_executable*
+                                        *b:ale_powershell_powershell_executable*
+  Type: String
+  Default: `'pwsh'`
+
+  This variable can be changed to use a different executable for powershell.
+
+>
+  " Use powershell.exe rather than the default pwsh
+  let g:ale_powershell_powershell_executable = 'powershell.exe'
+>
+
+===============================================================================
+psscriptanalyzer                              *ale-powershell-psscriptanalyzer*
+
+Installation
+-------------------------------------------------------------------------------
+
+Install PSScriptAnalyzer by any means, so long as it can be automatically
+imported in PowerShell.
+Some PowerShell plugins set the filetype of files to `ps1`. To continue using
+these plugins, use the ale_linter_aliases global to alias `ps1` to `powershell`
+
+>
+  " Allow ps1 filetype to work with powershell linters
+  let g:ale_linter_aliases = {'ps1': 'powershell'}
+<
+
+g:ale_powershell_psscriptanalyzer_executable
+*g:ale_powershell_psscriptanalyzer_executable*
+                                 *b:ale_powershell_psscriptanalyzer_executable*
+  Type: |String|
+  Default: `'pwsh'`
+
+  This variable sets executable used for powershell.
+  
+  For example, on Windows you could set powershell to be Windows Powershell:
+>
+  let g:ale_powershell_psscriptanalyzer_executable = 'powershell.exe'
+<
+
+g:ale_powershell_psscriptanalyzer_module
+*g:ale_powershell_psscriptanalyzer_module*
+                                     *b:ale_powershell_psscriptanalyzer_module*
+  Type: |String
+  Default: `'psscriptanalyzer'`
+
+  This variable sets the name of the psscriptanalyzer module.
+  for psscriptanalyzer invocation.
+
+
+g:ale_powershell_psscriptanalyzer_exclusions 
+*g:ale_powershell_psscriptanalyzer_exclusions*
+                                 *b:ale_powershell_psscriptanalyzer_exclusions*
+  Type: |String|
+  Default: `''`
+
+  Set this variable to exclude test(s) for psscriptanalyzer
+  (-ExcludeRule option).  To exclude more than one option, separate them with
+  commas.
+
+>
+  " Suppress Write-Host and Global vars warnings
+  let g:ale_powershell_psscriptanalyzer_exclusions =
+  \  'PSAvoidUsingWriteHost,PSAvoidGlobalVars'
+<
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

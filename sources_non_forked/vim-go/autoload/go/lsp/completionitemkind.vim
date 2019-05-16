@@ -28,7 +28,7 @@ let s:Event = 23
 let s:Operator = 24
 let s:TypeParameter = 25
 
-function! go#lsp#completionitemkind#Vim(kind)
+function! go#lsp#completionitemkind#Vim(kind) abort
   if a:kind == s:Method || a:kind == s:Function || a:kind == s:Constructor
     return 'f'
   elseif a:kind == s:Variable || a:kind == s:Constant
@@ -38,6 +38,22 @@ function! go#lsp#completionitemkind#Vim(kind)
   elseif a:kind == s:Class || a:kind == s:Interface || a:kind == s:Struct
     return 't'
   endif
+endfunction
+
+function! go#lsp#completionitemkind#IsFunction(kind) abort
+  if a:kind == s:Function
+    return 1
+  endif
+
+  return 0
+endfunction
+
+function! go#lsp#completionitemkind#IsMethod(kind) abort
+  if a:kind == s:Method
+    return 1
+  endif
+
+  return 0
 endfunction
 
 " restore Vi compatibility settings

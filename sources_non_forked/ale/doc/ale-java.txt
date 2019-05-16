@@ -102,6 +102,46 @@ This variable can be changed to use a different executable for java.
 
 
 ===============================================================================
+eclipselsp                                                *ale-java-eclipselsp*
+
+To enable Eclipse LSP linter you need to clone and build the eclipse.jdt.ls
+language server from https://github.com/eclipse/eclipse.jdt.ls. Simply
+clone the source code repo and then build the plugin:
+
+   ./mvnw clean verify
+
+Note: currently, the build can only run when launched with JDK 8. JDK 9 or more
+recent versions can be used to run the server though.
+
+After build completes the files required to run the language server will be
+located inside the repository folder `eclipse.jdt.ls`. Please ensure to set
+|g:ale_java_eclipselsp_path| to the absolute path of that folder.
+
+You could customize compiler options and code assists of the server.
+Under your project folder, modify the file `.settings/org.eclipse.jdt.core.prefs` 
+with options presented at
+https://help.eclipse.org/neon/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/JavaCore.html.
+
+g:ale_java_eclipselsp_path                         *g:ale_java_eclipselsp_path*
+                                                   *b:ale_java_eclipselsp_path*
+
+  Type: |String|
+  Default: `'$HOME/eclipse.jdt.ls'`
+
+  Absolute path to the location of the eclipse.jdt.ls repository folder. Or if
+  you have VSCode extension installed the absolute path to the VSCode extensions
+  folder (e.g. $HOME/.vscode/extensions in Linux).
+
+
+g:ale_java_eclipselsp_executable                *g:ale_java_eclipse_executable*
+                                                *b:ale_java_eclipse_executable*
+  Type: |String|
+  Default: `'java'`
+
+  This variable can be set to change the executable path used for java.
+
+
+===============================================================================
 uncrustify                                                *ale-java-uncrustify*
 
 See |ale-c-uncrustify| for information about the available options.

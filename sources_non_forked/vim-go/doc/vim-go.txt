@@ -32,17 +32,18 @@ CONTENTS                                                         *go-contents*
 INTRO                                                               *go-intro*
 
 Go (golang) support for Vim. vim-go comes with sensible predefined settings
-(e.g. automatic `gofmt` on save), has autocomplete, snippet support, improved
-syntax highlighting, go toolchain commands, etc. It is highly customizable,
-and individual features can be toggled easily. vim-go leverages a number of
-tools developed by the Go community to provide a seamless Vim experience.
+(e.g. automatic `gofmt` on save), has code completion, snippet support,
+improved syntax highlighting, go toolchain commands, etc. It is highly
+customizable, and individual features can be toggled easily. vim-go leverages
+a number of tools developed by the Go community to provide a seamless Vim
+experience.
 
   * Compile your package with |:GoBuild|, install it with |:GoInstall| or
     test it with |:GoTest|. Run a single test with |:GoTestFunc|).
   * Quickly execute your current file(s) with |:GoRun|.
   * Improved syntax highlighting and folding.
   * Debug programs with integrated `delve` support with |:GoDebugStart|.
-  * Completion support via `gocode` and `gopls`.
+  * Code completion support via `gocode` and `gopls`.
   * `gofmt` or `goimports` on save keeps the cursor position and undo history.
   * Go to symbol/declaration with |:GoDef|.
   * Look up documentation with |:GoDoc| or |:GoDocBrowser|.
@@ -127,7 +128,7 @@ or $GOPATH/bin (default: $HOME/go/bin). It requires `git`.
 Depending on your installation method, you may have to generate the plugin's
 |:helptags| manually (e.g. `:helptags ALL`).
 
-Autocompletion is enabled by default via 'omnifunc', which you can trigger
+Code completion is enabled by default via 'omnifunc', which you can trigger
 with |i_CTRL-X_CTRL-O| (`<C-x><C-o>`).
 
 Supported Go plugins~                                         *vim-go-plugins*
@@ -138,8 +139,12 @@ The following plugins are supported for use with vim-go:
   https://github.com/Shougo/neocomplete.vim
 
 * Real-time completion (Neovim and Vim 8):
-  https://github.com/Shougo/deoplete.nvim and
-  https://github.com/zchee/deoplete-go
+  https://github.com/Shougo/deoplete.nvim
+
+  Add the following line to your vimrc. This instructs deoplete to use omni
+  completion for Go files.
+
+    call deoplete#custom#option('omni_patterns', { 'go': '[^. *\t]\.\w*' })
 
 * Display source code navigation in a sidebar:
   https://github.com/majutsushi/tagbar
@@ -148,9 +153,6 @@ The following plugins are supported for use with vim-go:
   https://github.com/Shougo/neosnippet.vim or
   https://github.com/SirVer/ultisnips or
   https://github.com/joereynolds/vim-minisnip
-
-* Integration with `delve` (Neovim only):
-  https://github.com/jodosha/vim-godebug
 
 * Interactive |:GoDecls| and |:GoDeclsDir|:
   https://github.com/ctrlpvim/ctrlp.vim or
@@ -1202,6 +1204,13 @@ balloonexpr`.
 ==============================================================================
 SETTINGS                                                        *go-settings*
 
+                                              *'g:go_code_completion_enabled'*
+
+Enable code completion with |'omnifunc'|. By default it is enabled.
+>
+  let g:go_code_completion_enabled = 1
+<
+
                                                       *'g:go_test_show_name'*
 
 Show the name of each failed test before the errors and logs output by the
@@ -1251,8 +1260,8 @@ updated. By default it's disabled. The delay can be configured with the
 
 Use this option to define the command to be used for |:GoInfo|. By default
 `gocode` is being used as it's the fastest option. But one might also use
-`guru` as it's covers more cases and is more accurate.  Current valid options
-are: `[gocode, guru]` >
+`gopls` or `guru` as they cover more cases and are more accurate.  Current
+valid options are: `[gocode, guru, gopls]` >
 
   let g:go_info_mode = 'gocode'
 <
@@ -1635,15 +1644,15 @@ same.
                                               *'g:go_gocode_propose_builtins'*
 
 Specifies whether `gocode` should add built-in types, functions and constants
-to an autocompletion proposals. By default it is enabled.
+to code completion proposals. By default it is enabled.
 >
   let g:go_gocode_propose_builtins = 1
 <
                                                *'g:go_gocode_propose_source'*
 
 Specifies whether `gocode` should use source files instead of binary packages
-for autocompletion proposals. When disabled, only identifiers from the current
-package and packages that have been installed will proposed.
+for code completion proposals. When disabled, only identifiers from the
+current package and packages that have been installed will proposed.
 >
   let g:go_gocode_propose_source = 0
 <
@@ -1732,8 +1741,8 @@ i.e: |go#statusline#Show()|. By default it's enabled
 <
                                                        *'g:go_echo_go_info'*
 
-Use this option to show the identifier information when completion is done. By
-default it's enabled >
+Use this option to show the identifier information when code completion is
+done. By default it's enabled. >
 
       let g:go_echo_go_info = 1
 <
@@ -2017,8 +2026,9 @@ rest of the commands and mappings become available after starting debug mode.
       * Setup the debug windows according to |'g:go_debug_windows'|.
       * Make the `:GoDebug*` commands and `(go-debug-*)` mappings available.
 
-    The current directory is used if [pkg] is empty. Any other arguments will
-    be passed to the program.
+    The directory of the current buffer is used if [pkg] is empty. Any other
+    arguments will be passed to the program. When [pkg] is relative, it will
+    be interpreted relative to the directory of the current buffer.
 
     Use |:GoDebugStop| to stop `dlv` and exit debugging mode.
 
@@ -2030,7 +2040,6 @@ rest of the commands and mappings become available after starting debug mode.
 
     Use `-test.flag` to pass flags to `go test` when debugging a test; for
     example `-test.v` or `-test.run TestFoo`
-
 
                                                              *:GoDebugRestart*
 :GoDebugRestart
@@ -2153,6 +2162,16 @@ Defaults to `127.0.0.1:8181`:
   let g:go_debug_address = '127.0.0.1:8181'
 <
 
+                                                     *'g:go_debug_log_output'*
+
+Specifies log output options for `dlv`. Value should be a single string
+of comma-separated options suitable for passing to `dlv`.  An empty string
+(`''`) will suppress logging entirely.
+Default: `'debugger, rpc'`:
+>
+  let g:go_debug_log = 'debugger, rpc'
+<
+
                                                      *'g:go_highlight_debug'*
 
 Highlight the current line and breakpoints in the debugger.
@@ -2163,6 +2182,12 @@ Highlight the current line and breakpoints in the debugger.
 
 ==============================================================================
 FAQ TROUBLESHOOTING                                     *go-troubleshooting*
+
+I get "Unknown function: go#config#..." error when I open a Go file.~
+
+This often happens to vim-polyglot users when new config options are added to
+vim-go. Run vim-polyglot's `build` script or make sure that vim-go is loaded
+before vim-polyglot.
 
 I get "not an editor command" error when I invoke :GoXXX~
 
@@ -2364,14 +2389,14 @@ You can install and test all Vim versions by running `make`.
 DONATION                                                         *go-donation*
 
 People have asked for this for a long time, now you can be a fully supporter
-by being a patreon at: https://www.patreon.com/fatih
+by being a patreon at: https://www.patreon.com/bhcleek
 
 By being a patron, you are enabling vim-go to grow and mature, helping me to
 invest in bug fixes, new documentation, and improving both current and future
 features. It's completely optional and is just a direct way to support
 vim-go's ongoing development. Thanks!
 
-Check it out: https://www.patreon.com/fatih
+Check it out: https://www.patreon.com/bhcleek
 
 
 ==============================================================================

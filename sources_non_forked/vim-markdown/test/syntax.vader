@@ -899,6 +899,15 @@ Execute (code quotes not escaped ending with backslash):
   AssertEqual SyntaxOf('c\'), 'mkdCode'
   AssertNotEqual SyntaxOf('d'), 'mkdCode'
 
+Given markdown;
+``a\`` b ``c`\`1`` d
+
+Execute (double code quotes not escaped ending with backslash):
+  AssertEqual SyntaxOf('a\'), 'mkdCode'
+  AssertNotEqual SyntaxOf('b'), 'mkdCode'
+  AssertEqual SyntaxOf('c`\\`1'), 'mkdCode'
+  AssertNotEqual SyntaxOf('d'), 'mkdCode'
+
 # Math
 
 Given markdown;

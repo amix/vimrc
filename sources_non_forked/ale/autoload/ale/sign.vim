@@ -66,7 +66,7 @@ endif
 
 " Spaces and backslashes need to be escaped for signs.
 function! s:EscapeSignText(sign_text) abort
-    return substitute(a:sign_text, '\\\| ', '\\\0', 'g')
+    return substitute(substitute(a:sign_text, ' *$', '', ''), '\\\| ', '\\\0', 'g')
 endfunction
 
 " Signs show up on the left for error markers.

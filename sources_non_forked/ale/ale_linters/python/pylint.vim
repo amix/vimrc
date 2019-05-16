@@ -6,6 +6,7 @@ call ale#Set('python_pylint_options', '')
 call ale#Set('python_pylint_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('python_pylint_change_directory', 1)
 call ale#Set('python_pylint_auto_pipenv', 0)
+call ale#Set('python_pylint_use_msg_id', 0)
 
 function! ale_linters#python#pylint#GetExecutable(buffer) abort
     if (ale#Var(a:buffer, 'python_auto_pipenv') || ale#Var(a:buffer, 'python_pylint_auto_pipenv'))
@@ -64,11 +65,17 @@ function! ale_linters#python#pylint#Handle(buffer, lines) abort
             continue
         endif
 
+        if ale#Var(a:buffer, 'python_pylint_use_msg_id') is# 1
+            let l:code_out = l:code
+        else
+            let l:code_out = l:match[4]
+        endif
+
         call add(l:output, {
         \   'lnum': l:match[1] + 0,
         \   'col': l:match[2] + 1,
         \   'text': l:match[5],
-        \   'code': l:match[4],
+        \   'code': l:code_out,
         \   'type': l:code[:0] is# 'E' ? 'E' : 'W',
         \})
     endfor

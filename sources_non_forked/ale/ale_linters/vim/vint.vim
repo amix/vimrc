@@ -7,29 +7,13 @@ call ale#Set('vim_vint_executable', 'vint')
 let s:enable_neovim = has('nvim') ? ' --enable-neovim' : ''
 let s:format = '-f "{file_path}:{line_number}:{column_number}: {severity}: {description} (see {reference})"'
 
-function! ale_linters#vim#vint#GetExecutable(buffer) abort
-    return ale#Var(a:buffer, 'vim_vint_executable')
-endfunction
-
-function! ale_linters#vim#vint#VersionCommand(buffer) abort
-    let l:executable = ale_linters#vim#vint#GetExecutable(a:buffer)
-
-    " Check the Vint version if we haven't checked it already.
-    return !ale#semver#HasVersion(l:executable)
-    \   ? ale#Escape(l:executable) . ' --version'
-    \   : ''
-endfunction
-
-function! ale_linters#vim#vint#GetCommand(buffer, version_output) abort
-    let l:executable = ale_linters#vim#vint#GetExecutable(a:buffer)
-    let l:version = ale#semver#GetVersion(l:executable, a:version_output)
-
-    let l:can_use_no_color_flag = empty(l:version)
-    \   || ale#semver#GTE(l:version, [0, 3, 7])
+function! ale_linters#vim#vint#GetCommand(buffer, version) abort
+    let l:can_use_no_color_flag = empty(a:version)
+    \   || ale#semver#GTE(a:version, [0, 3, 7])
 
     let l:warning_flag = ale#Var(a:buffer, 'vim_vint_show_style_issues') ? '-s' : '-w'
 
-    return ale#Escape(l:executable)
+    return '%e'
     \   . ' ' . l:warning_flag
     \   . (l:can_use_no_color_flag ? ' --no-color' : '')
     \   . s:enable_neovim
@@ -65,10 +49,12 @@ endfunction
 
 call ale#linter#Define('vim', {
 \   'name': 'vint',
-\   'executable': function('ale_linters#vim#vint#GetExecutable'),
-\   'command_chain': [
-\       {'callback': 'ale_linters#vim#vint#VersionCommand', 'output_stream': 'stderr'},
-\       {'callback': 'ale_linters#vim#vint#GetCommand', 'output_stream': 'stdout'},
-\   ],
+\   'executable': {buffer -> ale#Var(buffer, 'vim_vint_executable')},
+\   'command': {buffer -> ale#semver#RunWithVersionCheck(
+\       buffer,
+\       ale#Var(buffer, 'vim_vint_executable'),
+\       '%e --version',
+\       function('ale_linters#vim#vint#GetCommand'),
+\   )},
 \   'callback': 'ale_linters#vim#vint#Handle',
 \})
