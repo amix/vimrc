@@ -27,13 +27,32 @@ function! ale_linters#javascript#flow#GetExecutable(buffer) abort
     \])
 endfunction
 
-function! ale_linters#javascript#flow#GetCommand(buffer, version) abort
+function! ale_linters#javascript#flow#VersionCheck(buffer) abort
+    let l:executable = ale_linters#javascript#flow#GetExecutable(a:buffer)
+
+    if empty(l:executable)
+        return ''
+    endif
+
+    return ale#Escape(l:executable) . ' --version'
+endfunction
+
+function! ale_linters#javascript#flow#GetCommand(buffer, version_lines) abort
+    let l:executable = ale_linters#javascript#flow#GetExecutable(a:buffer)
+
+    if empty(l:executable)
+        return ''
+    endif
+
+    let l:version = ale#semver#GetVersion(l:executable, a:version_lines)
+
     " If we can parse the version number, then only use --respect-pragma
     " if the version is >= 0.36.0, which added the argument.
     let l:use_respect_pragma = ale#Var(a:buffer, 'javascript_flow_use_respect_pragma')
-    \   && (empty(a:version) || ale#semver#GTE(a:version, [0, 36]))
+    \   && (empty(l:version) || ale#semver#GTE(l:version, [0, 36]))
 
-    return '%e check-contents'
+    return ale#Escape(l:executable)
+    \   . ' check-contents'
     \   . (l:use_respect_pragma ? ' --respect-pragma': '')
     \   . ' --json --from ale %s < %t'
     \   . (!has('win32') ? '; echo' : '')
@@ -67,6 +86,7 @@ function! s:ExtraErrorMsg(current, new) abort
 
     return l:newMsg
 endfunction
+
 
 function! s:GetDetails(error) abort
     let l:detail = ''
@@ -149,12 +169,10 @@ endfunction
 call ale#linter#Define('javascript', {
 \   'name': 'flow',
 \   'executable': function('ale_linters#javascript#flow#GetExecutable'),
-\   'command': {buffer -> ale#semver#RunWithVersionCheck(
-\       buffer,
-\       ale_linters#javascript#flow#GetExecutable(buffer),
-\       '%e --version',
-\       function('ale_linters#javascript#flow#GetCommand'),
-\   )},
+\   'command_chain': [
+\       {'callback': 'ale_linters#javascript#flow#VersionCheck'},
+\       {'callback': 'ale_linters#javascript#flow#GetCommand'},
+\   ],
 \   'callback': 'ale_linters#javascript#flow#Handle',
 \   'read_buffer': 0,
 \})

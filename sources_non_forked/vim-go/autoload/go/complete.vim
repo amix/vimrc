@@ -93,6 +93,22 @@ endfunction
 function! s:async_info(echo, showstatus)
   let state = {'echo': a:echo}
 
+  function! s:complete(job, exit_status, messages) abort dict
+    if a:exit_status != 0
+      return
+    endif
+
+    if &encoding != 'utf-8'
+      let i = 0
+      while i < len(a:messages)
+        let a:messages[i] = iconv(a:messages[i], 'utf-8', &encoding)
+        let i += 1
+      endwhile
+    endif
+
+    let result = s:info_filter(self.echo, join(a:messages, "\n"))
+    call s:info_complete(self.echo, result)
+  endfunction
   " explicitly bind complete to state so that within it, self will
   " always refer to state. See :help Partial for more information.
   let state.complete = function('s:complete', [], state)
@@ -133,23 +149,6 @@ function! s:async_info(echo, showstatus)
         \ })
 
   call go#job#Start(cmd, opts)
-endfunction
-
-function! s:complete(job, exit_status, messages) abort dict
-  if a:exit_status != 0
-    return
-  endif
-
-  if &encoding != 'utf-8'
-    let i = 0
-    while i < len(a:messages)
-      let a:messages[i] = iconv(a:messages[i], 'utf-8', &encoding)
-      let i += 1
-    endwhile
-  endif
-
-  let result = s:info_filter(self.echo, join(a:messages, "\n"))
-  call s:info_complete(self.echo, result)
 endfunction
 
 function! s:gocodeFile()
@@ -242,15 +241,15 @@ function! go#complete#GocodeComplete(findstart, base) abort
     if s =~ '[(){}\{\}]'
       return map(copy(s:completions[1]), 's:trim_bracket(v:val)')
     endif
-    return s:completions
+
+    return s:completions[1]
   endif
 endfunction
 
 function! go#complete#Complete(findstart, base) abort
-  let l:state = {'done': 0, 'matches': [], 'start': -1}
+  let l:state = {'done': 0, 'matches': []}
 
-  function! s:handler(state, start, matches) abort dict
-    let a:state.start = a:start
+  function! s:handler(state, matches) abort dict
     let a:state.matches = a:matches
     let a:state.done = 1
   endfunction
@@ -263,16 +262,15 @@ function! go#complete#Complete(findstart, base) abort
       sleep 10m
     endwhile
 
+    let s:completions = l:state.matches
+
     if len(l:state.matches) == 0
       " no matches. cancel and leave completion mode.
       call go#util#EchoInfo("no matches")
       return -3
     endif
 
-    let s:completions = l:state.matches
-
-    return l:state.start
-
+    return col('.')
   else "findstart = 0 when we need to return the list of completions
     return s:completions
   endif

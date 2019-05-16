@@ -7,29 +7,21 @@ call ale#Set('java_javac_executable', 'javac')
 call ale#Set('java_javac_options', '')
 call ale#Set('java_javac_classpath', '')
 
-function! ale_linters#java#javac#RunWithImportPaths(buffer) abort
-    let l:command = ''
+function! ale_linters#java#javac#GetImportPaths(buffer) abort
     let l:pom_path = ale#path#FindNearestFile(a:buffer, 'pom.xml')
 
     if !empty(l:pom_path) && executable('mvn')
-        let l:command = ale#path#CdString(fnamemodify(l:pom_path, ':h'))
+        return ale#path#CdString(fnamemodify(l:pom_path, ':h'))
         \ . 'mvn dependency:build-classpath'
     endif
 
-    " Try to use Gradle if Maven isn't available.
-    if empty(l:command)
-        let l:command = ale#gradle#BuildClasspathCommand(a:buffer)
+    let l:classpath_command = ale#gradle#BuildClasspathCommand(a:buffer)
+
+    if !empty(l:classpath_command)
+        return l:classpath_command
     endif
 
-    if empty(l:command)
-        return ale_linters#java#javac#GetCommand(a:buffer, [], {})
-    endif
-
-    return ale#command#Run(
-    \   a:buffer,
-    \   l:command,
-    \   function('ale_linters#java#javac#GetCommand')
-    \)
+    return ''
 endfunction
 
 function! s:BuildClassPathOption(buffer, import_paths) abort
@@ -45,7 +37,7 @@ function! s:BuildClassPathOption(buffer, import_paths) abort
     \   : ''
 endfunction
 
-function! ale_linters#java#javac#GetCommand(buffer, import_paths, meta) abort
+function! ale_linters#java#javac#GetCommand(buffer, import_paths) abort
     let l:cp_option = s:BuildClassPathOption(a:buffer, a:import_paths)
     let l:sp_option = ''
 
@@ -99,7 +91,7 @@ function! ale_linters#java#javac#Handle(buffer, lines) abort
     " Main.java:13: warning: [deprecation] donaught() in Testclass has been deprecated
     " Main.java:16: error: ';' expected
     let l:directory = expand('#' . a:buffer . ':p:h')
-    let l:pattern = '\v^(.*):(\d+): (.{-1,}):(.+)$'
+    let l:pattern = '\v^(.*):(\d+): (.+):(.+)$'
     let l:col_pattern = '\v^(\s*\^)$'
     let l:symbol_pattern = '\v^ +symbol: *(class|method) +([^ ]+)'
     let l:output = []
@@ -128,7 +120,9 @@ endfunction
 call ale#linter#Define('java', {
 \   'name': 'javac',
 \   'executable': {b -> ale#Var(b, 'java_javac_executable')},
-\   'command': function('ale_linters#java#javac#RunWithImportPaths'),
-\   'output_stream': 'stderr',
+\   'command_chain': [
+\       {'callback': 'ale_linters#java#javac#GetImportPaths', 'output_stream': 'stdout'},
+\       {'callback': 'ale_linters#java#javac#GetCommand', 'output_stream': 'stderr'},
+\   ],
 \   'callback': 'ale_linters#java#javac#Handle',
 \})

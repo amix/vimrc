@@ -11,35 +11,26 @@ let g:ale_kotlin_kotlinc_module_filename = get(g:, 'ale_kotlin_kotlinc_module_fi
 
 let s:classpath_sep = has('unix') ? ':' : ';'
 
-function! ale_linters#kotlin#kotlinc#RunWithImportPaths(buffer) abort
-    let l:command = ''
-
+function! ale_linters#kotlin#kotlinc#GetImportPaths(buffer) abort
     " exec maven/gradle only if classpath is not set
     if ale#Var(a:buffer, 'kotlin_kotlinc_classpath') isnot# ''
-        return ale_linters#kotlin#kotlinc#GetCommand(a:buffer, [], {})
+        return ''
+    else
+        let l:pom_path = ale#path#FindNearestFile(a:buffer, 'pom.xml')
+
+        if !empty(l:pom_path) && executable('mvn')
+            return ale#path#CdString(fnamemodify(l:pom_path, ':h'))
+            \   . 'mvn dependency:build-classpath'
+        endif
+
+        let l:classpath_command = ale#gradle#BuildClasspathCommand(a:buffer)
+
+        if !empty(l:classpath_command)
+            return l:classpath_command
+        endif
+
+        return ''
     endif
-
-    let l:pom_path = ale#path#FindNearestFile(a:buffer, 'pom.xml')
-
-    if !empty(l:pom_path) && executable('mvn')
-        let l:command = ale#path#CdString(fnamemodify(l:pom_path, ':h'))
-        \   . 'mvn dependency:build-classpath'
-    endif
-
-    " Try to use Gradle if Maven isn't available.
-    if empty(l:command)
-        let l:command = ale#gradle#BuildClasspathCommand(a:buffer)
-    endif
-
-    if empty(l:command)
-        return ale_linters#kotlin#kotlinc#GetCommand(a:buffer, [], {})
-    endif
-
-    return ale#command#Run(
-    \   a:buffer,
-    \   l:command,
-    \   function('ale_linters#kotlin#kotlinc#GetCommand')
-    \)
 endfunction
 
 function! s:BuildClassPathOption(buffer, import_paths) abort
@@ -55,7 +46,7 @@ function! s:BuildClassPathOption(buffer, import_paths) abort
     \   : ''
 endfunction
 
-function! ale_linters#kotlin#kotlinc#GetCommand(buffer, import_paths, meta) abort
+function! ale_linters#kotlin#kotlinc#GetCommand(buffer, import_paths) abort
     let l:kotlinc_opts = ale#Var(a:buffer, 'kotlin_kotlinc_options')
     let l:command = 'kotlinc '
 
@@ -174,7 +165,11 @@ endfunction
 call ale#linter#Define('kotlin', {
 \   'name': 'kotlinc',
 \   'executable': 'kotlinc',
-\   'command': function('ale_linters#kotlin#kotlinc#RunWithImportPaths'),
+\   'command_chain': [
+\       {'callback': 'ale_linters#kotlin#kotlinc#GetImportPaths', 'output_stream': 'stdout'},
+\       {'callback': 'ale_linters#kotlin#kotlinc#GetCommand', 'output_stream': 'stderr'},
+\   ],
 \   'callback': 'ale_linters#kotlin#kotlinc#Handle',
 \   'lint_file': 1,
 \})
+

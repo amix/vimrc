@@ -19,6 +19,9 @@ call ale#linter#Define('c', {
 \   'name': 'clang',
 \   'output_stream': 'stderr',
 \   'executable': {b -> ale#Var(b, 'c_clang_executable')},
-\   'command': {b -> ale#c#RunMakeCommand(b, function('ale_linters#c#clang#GetCommand'))},
+\   'command_chain': [
+\       {'callback': 'ale#c#GetMakeCommand', 'output_stream': 'stdout'},
+\       {'callback': 'ale_linters#c#clang#GetCommand'}
+\   ],
 \   'callback': 'ale#handlers#gcc#HandleGCCFormatWithIncludes',
 \})

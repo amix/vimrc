@@ -32,7 +32,7 @@ let s:default_ale_linter_aliases = {
 " NOTE: Update the g:ale_linters documentation when modifying this.
 let s:default_ale_linters = {
 \   'csh': ['shell'],
-\   'elixir': ['credo', 'dialyxir', 'dogma'],
+\   'elixir': ['credo', 'dialyxir', 'dogma', 'elixir-ls'],
 \   'go': ['gofmt', 'golint', 'go vet'],
 \   'hack': ['hack'],
 \   'help': [],
@@ -340,13 +340,7 @@ function! ale#linter#PreProcess(filetype, linter) abort
         throw '`aliases` must be a List of String values'
     endif
 
-    for l:key in filter(keys(a:linter), 'v:val[-9:] is# ''_callback'' || v:val is# ''command_chain''')
-        if !get(g:, 'ale_ignore_2_4_warnings')
-            execute 'echom l:key . '' is deprecated. Use `let g:ale_ignore_2_4_warnings = 1` to disable this message.'''
-        endif
-
-        break
-    endfor
+    " TODO: Emit deprecation warnings for deprecated options later.
 
     return l:obj
 endfunction

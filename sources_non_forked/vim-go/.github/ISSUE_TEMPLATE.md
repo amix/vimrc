@@ -1,8 +1,5 @@
-### What did you do? (required: The issue will be **closed** when not provided)
+### What did you do? (required. The issue will be **closed** when not provided.)
 
-<!--
-If possible, please provide clear steps for reproducing the problem.
--->
 
 ### What did you expect to happen?
 
@@ -12,18 +9,13 @@ If possible, please provide clear steps for reproducing the problem.
 
 ### Configuration (**MUST** fill this out):
 
-#### vim-go version:
+* vim-go version:
 
-####  `vimrc` you used to reproduce (use a *minimal* vimrc with other plugins disabled; do not link to a 2,000 line vimrc):
-<details><summary>vimrc</summary><br><pre>
+* `vimrc` you used to reproduce (use a *minimal* vimrc with other plugins disabled; do not link to a 2,000 line vimrc):
 
-</pre></details>
+* Vim version (first three lines from `:version`):
 
-#### Vim version (first three lines from `:version`):
+* Go version (`go version`):
 
-####  Go version (`go version`):
+* Go environment (`go env`):
 
-#### Go environment
-<details><summary><code>go env</code> Output:</summary><br><pre>
-
-</pre></details>

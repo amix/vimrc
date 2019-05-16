@@ -214,9 +214,7 @@ function! go#job#Options(args)
     " the job was started.
     if self.winid == l:winid
       call go#list#Window(l:listtype, len(errors))
-      if self.bang
-        call win_gotoid(l:winid)
-      else
+      if !self.bang
         call go#list#JumpToFirst(l:listtype)
       endif
     endif
@@ -491,9 +489,7 @@ function! s:neocb(mode, ch, buf, data, callback)
 
   let l:buf = ''
 
-  " A single empty string means EOF was reached. The first item will never be
-  " an empty string except for when it's the only item and is signaling that
-  " EOF was reached.
+  " a single empty string means EOF was reached.
   if len(a:data) == 1 && a:data[0] == ''
     " when there's nothing buffered, return early so that an
     " erroneous message will not be added.

@@ -31,12 +31,8 @@ function! go#doc#OpenBrowser(...) abort
 
     let godoc_url = go#config#DocUrl()
     let godoc_url .= "/" . import
-    if decl !~ '^package'
-      let anchor = name
-      if decl =~ '^func ('
-        let anchor = substitute(decl, '^func ([^ ]\+ \*\?\([^)]\+\)) ' . name . '(.*', '\1', '') . "." . name
-      endif
-      let godoc_url .= "#" . anchor
+    if decl !~ "^package"
+      let godoc_url .= "#" . name
     endif
 
     call go#util#OpenBrowser(godoc_url)

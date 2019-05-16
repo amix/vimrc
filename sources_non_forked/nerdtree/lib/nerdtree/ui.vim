@@ -280,10 +280,11 @@ endfunction
 
 " FUNCTION: s:UI._indentLevelFor(line) {{{1
 function! s:UI._indentLevelFor(line)
-    " Replace multi-character DirArrows with a single space so the
-    " indentation calculation doesn't get messed up.
-    let l:line = substitute(substitute(a:line, '\V'.g:NERDTreeDirArrowExpandable, ' ', ''), '\V'.g:NERDTreeDirArrowCollapsible, ' ', '')
-    let leadChars = match(l:line, '\M\[^ ]')
+    " have to do this work around because match() returns bytes, not chars
+    let numLeadBytes = match(a:line, '\M\[^ '.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.']')
+    " The next line is a backward-compatible workaround for strchars(a:line(0:numLeadBytes-1]). strchars() is in 7.3+
+    let leadChars = len(split(a:line[0:numLeadBytes-1], '\zs'))
+
     return leadChars / s:UI.IndentWid()
 endfunction
 

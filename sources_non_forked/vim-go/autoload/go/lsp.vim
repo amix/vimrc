@@ -7,7 +7,8 @@ scriptencoding utf-8
 let s:lspfactory = {}
 
 function! s:lspfactory.get() dict abort
-  if !has_key(self, 'current') || empty(self.current)
+  if !has_key(self, 'current')
+    " TODO(bc): check that the lsp is still running.
     let self.current = s:newlsp()
   endif
 
@@ -20,7 +21,7 @@ function! s:lspfactory.reset() dict abort
   endif
 endfunction
 
-function! s:newlsp() abort
+function! s:newlsp()
   if !go#util#has_job()
     " TODO(bc): start the server in the background using a shell that waits for the right output before returning.
     call go#util#EchoError('This feature requires either Vim 8.0.0087 or newer with +job or Neovim.')
@@ -114,27 +115,16 @@ function! s:newlsp() abort
           try
             let l:handler = self.handlers[l:response.id]
 
-            let l:winid = win_getid(winnr())
-            " Always set the active window to the window that was active when
-            " the request was sent. Among other things, this makes sure that
-            " the correct window's location list will be populated when the
-            " list type is 'location' and the user has moved windows since
-            " sending the reques.
-            call win_gotoid(l:handler.winid)
-
             if has_key(l:response, 'error')
               call l:handler.requestComplete(0)
+              call go#util#EchoError(l:response.error.message)
               if has_key(l:handler, 'error')
                 call call(l:handler.error, [l:response.error.message])
-              else
-                call go#util#EchoError(l:response.error.message)
               endif
-              call win_gotoid(l:winid)
               return
             endif
             call l:handler.requestComplete(1)
             call call(l:handler.handleResult, [l:response.result])
-            call win_gotoid(l:winid)
           finally
             call remove(self.handlers, l:response.id)
           endtry
@@ -159,19 +149,9 @@ function! s:newlsp() abort
     if !self.last_request_id
       " TODO(bc): run a server per module and one per GOPATH? (may need to
       " keep track of servers by rootUri).
-      let l:wd = go#util#ModuleRoot()
-      if l:wd == -1
-        call go#util#EchoError('could not determine appropriate working directory for gopls')
-        return
-      endif
+      let l:msg = self.newMessage(go#lsp#message#Initialize(getcwd()))
 
-      if l:wd == ''
-        let l:wd = getcwd()
-      endif
-
-      let l:msg = self.newMessage(go#lsp#message#Initialize(l:wd))
-
-      let l:state = s:newHandlerState('')
+      let l:state = s:newHandlerState('gopls')
       let l:state.handleResult = funcref('self.handleInitializeResult', [], l:self)
       let self.handlers[l:msg.id] = l:state
 
@@ -214,8 +194,8 @@ function! s:newlsp() abort
   endfunction
 
   function! l:lsp.write(msg) dict abort
-    let l:body = json_encode(a:msg)
-    let l:data = 'Content-Length: ' . strlen(l:body) . "\r\n\r\n" . l:body
+      let l:body = json_encode(a:msg)
+      let l:data = 'Content-Length: ' . strlen(l:body) . "\r\n\r\n" . l:body
 
     if go#util#HasDebug('lsp')
       let g:go_lsp_log = add(go#config#LspLog(), "->\n" . l:data)
@@ -271,10 +251,10 @@ function! s:newlsp() abort
   return l:lsp
 endfunction
 
-function! s:noop(...) abort
+function! s:noop()
 endfunction
 
-function! s:newHandlerState(statustype) abort
+function! s:newHandlerState(statustype)
   let l:state = {
         \ 'winid': win_getid(winnr()),
         \ 'statustype': a:statustype,
@@ -344,7 +324,7 @@ endfunction
 " list of strings in the form 'file:line:col: message'. handler will be
 " attached to a dictionary that manages state (statuslines, sets the winid,
 " etc.)
-function! go#lsp#Definition(fname, line, col, handler) abort
+function! go#lsp#Definition(fname, line, col, handler)
   call go#lsp#DidChange(a:fname)
 
   let l:lsp = s:lspfactory.get()
@@ -366,7 +346,7 @@ endfunction
 " list of strings in the form 'file:line:col: message'. handler will be
 " attached to a dictionary that manages state (statuslines, sets the winid,
 " etc.)
-function! go#lsp#TypeDef(fname, line, col, handler) abort
+function! go#lsp#TypeDef(fname, line, col, handler)
   call go#lsp#DidChange(a:fname)
 
   let l:lsp = s:lspfactory.get()
@@ -383,12 +363,8 @@ function! s:typeDefinitionHandler(next, msg) abort dict
   call call(a:next, l:args)
 endfunction
 
-function! go#lsp#DidOpen(fname) abort
+function! go#lsp#DidOpen(fname)
   if get(b:, 'go_lsp_did_open', 0)
-    return
-  endif
-
-  if !filereadable(a:fname)
     return
   endif
 
@@ -401,18 +377,9 @@ function! go#lsp#DidOpen(fname) abort
   let b:go_lsp_did_open = 1
 endfunction
 
-function! go#lsp#DidChange(fname) abort
-  " DidChange is called even when fname isn't open in a buffer (e.g. via
-  " go#lsp#Info); don't report the file as open or as having changed when it's
-  " not actually a buffer.
-  if bufnr(a:fname) == -1
-    return
-  endif
-
-  call go#lsp#DidOpen(a:fname)
-
-  if !filereadable(a:fname)
-    return
+function! go#lsp#DidChange(fname)
+  if get(b:, 'go_lsp_did_open', 0)
+    return go#lsp#DidOpen(a:fname)
   endif
 
   let l:lsp = s:lspfactory.get()
@@ -422,11 +389,7 @@ function! go#lsp#DidChange(fname) abort
   call l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
-function! go#lsp#DidClose(fname) abort
-  if !filereadable(a:fname)
-    return
-  endif
-
+function! go#lsp#DidClose(fname)
   if !get(b:, 'go_lsp_did_open', 0)
     return
   endif
@@ -440,7 +403,7 @@ function! go#lsp#DidClose(fname) abort
   let b:go_lsp_did_open = 0
 endfunction
 
-function! go#lsp#Completion(fname, line, col, handler) abort
+function! go#lsp#Completion(fname, line, col, handler)
   call go#lsp#DidChange(a:fname)
 
   let l:lsp = s:lspfactory.get()
@@ -454,17 +417,10 @@ endfunction
 function! s:completionHandler(next, msg) abort dict
   " gopls returns a CompletionList.
   let l:matches = []
-  let l:start = -1
-
   for l:item in a:msg.items
-    let l:start = l:item.textEdit.range.start.character
-
     let l:match = {'abbr': l:item.label, 'word': l:item.textEdit.newText, 'info': '', 'kind': go#lsp#completionitemkind#Vim(l:item.kind)}
     if has_key(l:item, 'detail')
-        let l:match.info = l:item.detail
-        if go#lsp#completionitemkind#IsFunction(l:item.kind) || go#lsp#completionitemkind#IsMethod(l:item.kind)
-          let l:match.info = printf('func %s %s', l:item.label, l:item.detail)
-        endif
+        let l:item.info = l:item.detail
     endif
 
     if has_key(l:item, 'documentation')
@@ -473,86 +429,12 @@ function! s:completionHandler(next, msg) abort dict
 
     let l:matches = add(l:matches, l:match)
   endfor
-  let l:args = [l:start, l:matches]
+  let l:args = [l:matches]
   call call(a:next, l:args)
 endfunction
 
 function! s:completionErrorHandler(next, error) abort dict
   call call(a:next, [[]])
-endfunction
-
-function! go#lsp#Hover(fname, line, col, handler) abort
-  call go#lsp#DidChange(a:fname)
-
-  let l:lsp = s:lspfactory.get()
-  let l:msg = go#lsp#message#Hover(a:fname, a:line, a:col)
-  let l:state = s:newHandlerState('')
-  let l:state.handleResult = funcref('s:hoverHandler', [function(a:handler, [], l:state)], l:state)
-  let l:state.error = funcref('s:noop')
-  call l:lsp.sendMessage(l:msg, l:state)
-endfunction
-
-function! s:hoverHandler(next, msg) abort dict
-  let l:content = split(a:msg.contents.value, '; ')
-  if len(l:content) > 1
-    let l:curly = stridx(l:content[0], '{')
-    let l:content = extend([l:content[0][0:l:curly]], map(extend([l:content[0][l:curly+1:]], l:content[1:]), '"\t" . v:val'))
-    let l:content[len(l:content)-1] = '}'
-  endif
-
-  let l:args = [l:content]
-  call call(a:next, l:args)
-endfunction
-
-function! go#lsp#Info(showstatus)
-  let l:fname = expand('%:p')
-  let [l:line, l:col] = getpos('.')[1:2]
-
-  call go#lsp#DidChange(l:fname)
-
-  let l:lsp = s:lspfactory.get()
-
-  if a:showstatus
-    let l:state = s:newHandlerState('info')
-  else
-    let l:state = s:newHandlerState('')
-  endif
-
-  let l:state.handleResult = funcref('s:infoDefinitionHandler', [function('s:info', []), a:showstatus], l:state)
-  let l:state.error = funcref('s:noop')
-  let l:msg = go#lsp#message#Definition(l:fname, l:line, l:col)
-  call l:lsp.sendMessage(l:msg, l:state)
-endfunction
-
-function! s:infoDefinitionHandler(next, showstatus, msg) abort dict
-  " gopls returns a []Location; just take the first one.
-  let l:msg = a:msg[0]
-
-  let l:fname = go#path#FromURI(l:msg.uri)
-  let l:line = l:msg.range.start.line+1
-  let l:col = l:msg.range.start.character+1
-
-  let l:lsp = s:lspfactory.get()
-  let l:msg = go#lsp#message#Hover(l:fname, l:line, l:col)
-
-  if a:showstatus
-    let l:state = s:newHandlerState('info')
-  else
-    let l:state = s:newHandlerState('')
-  endif
-
-  let l:state.handleResult = funcref('s:hoverHandler', [function('s:info', [], l:state)], l:state)
-  let l:state.error = funcref('s:noop')
-  call l:lsp.sendMessage(l:msg, l:state)
-endfunction
-
-function! s:info(content) abort dict
-  let l:content = a:content[0]
-  " strip off the method set and fields of structs and interfaces.
-  if l:content =~# '^type [^ ]\+ \(struct\|interface\)'
-    let l:content = substitute(l:content, '{.*', '', '')
-  endif
-  call go#util#ShowInfo(l:content)
 endfunction
 
 " restore Vi compatibility settings
