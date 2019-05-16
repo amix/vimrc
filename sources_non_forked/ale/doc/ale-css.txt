@@ -3,6 +3,14 @@ ALE CSS Integration                                           *ale-css-options*
 
 
 ===============================================================================
+fecs                                                             *ale-css-fecs*
+
+`fecs` options for CSS is the same as the options for JavaScript, and both of
+them reads `./.fecsrc` as the default configuration file. See:
+|ale-javascript-fecs|.
+
+
+===============================================================================
 prettier                                                     *ale-css-prettier*
 
 See |ale-javascript-prettier| for information about the available options.

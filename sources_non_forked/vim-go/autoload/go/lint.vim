@@ -86,15 +86,18 @@ function! go#lint#Gometa(bang, autosave, ...) abort
     call go#list#Clean(l:listtype)
     echon "vim-go: " | echohl Function | echon "[metalinter] PASS" | echohl None
   else
+    let l:winid = win_getid(winnr())
     " Parse and populate our location list
     call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"), 'GoMetaLinter')
 
     let errors = go#list#Get(l:listtype)
     call go#list#Window(l:listtype, len(errors))
 
-    if !a:autosave && !a:bang
-      call go#list#JumpToFirst(l:listtype)
+    if a:autosave || a:bang
+      call win_gotoid(l:winid)
+      return
     endif
+    call go#list#JumpToFirst(l:listtype)
   endif
 endfunction
 
@@ -112,13 +115,18 @@ function! go#lint#Golint(bang, ...) abort
     return
   endif
 
+  let l:winid = win_getid(winnr())
   let l:listtype = go#list#Type("GoLint")
   call go#list#Parse(l:listtype, l:out, "GoLint")
   let l:errors = go#list#Get(l:listtype)
   call go#list#Window(l:listtype, len(l:errors))
-  if !a:bang
-    call go#list#JumpToFirst(l:listtype)
+
+  if a:bang
+    call win_gotoid(l:winid)
+    return
   endif
+
+  call go#list#JumpToFirst(l:listtype)
 endfunction
 
 " Vet calls 'go vet' on the current directory. Any warnings are populated in
@@ -138,12 +146,15 @@ function! go#lint#Vet(bang, ...) abort
 
   let l:listtype = go#list#Type("GoVet")
   if l:err != 0
+    let l:winid = win_getid(winnr())
     let errorformat = "%-Gexit status %\\d%\\+," . &errorformat
     call go#list#ParseFormat(l:listtype, l:errorformat, out, "GoVet")
     let errors = go#list#Get(l:listtype)
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang
       call go#list#JumpToFirst(l:listtype)
+    else
+      call win_gotoid(l:winid)
     endif
   else
     call go#list#Clean(l:listtype)
@@ -171,6 +182,7 @@ function! go#lint#Errcheck(bang, ...) abort
 
   let l:listtype = go#list#Type("GoErrCheck")
   if l:err != 0
+    let l:winid = win_getid(winnr())
     let errformat = "%f:%l:%c:\ %m, %f:%l:%c\ %#%m"
 
     " Parse and populate our location list
@@ -187,6 +199,8 @@ function! go#lint#Errcheck(bang, ...) abort
       call go#list#Window(l:listtype, len(errors))
       if !a:bang
         call go#list#JumpToFirst(l:listtype)
+      else
+        call win_gotoid(l:winid)
       endif
     endif
   else
@@ -255,11 +269,13 @@ function! s:golangcilintcmd(bin_path)
   let cmd = [a:bin_path]
   let cmd += ["run"]
   let cmd += ["--print-issued-lines=false"]
+  let cmd += ['--build-tags', go#config#BuildTags()]
   let cmd += ["--disable-all"]
   " do not use the default exclude patterns, because doing so causes golint
   " problems about missing doc strings to be ignored and other things that
   " golint identifies.
   let cmd += ["--exclude-use-default=false"]
+
   return cmd
 endfunction
 

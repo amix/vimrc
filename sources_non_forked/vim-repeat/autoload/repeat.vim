@@ -40,7 +40,7 @@
 " in your mapping will look like this:
 "
 "   nnoremap <silent> <Plug>MyMap
-"   \   :<C-U>silent! call repeat#setreg("\<lt>Plug>MyMap", v:register)<Bar>
+"   \   :<C-U>execute 'silent! call repeat#setreg("\<lt>Plug>MyMap", v:register)'<Bar>
 "   \   call <SID>MyFunction(v:register, ...)<Bar>
 "   \   silent! call repeat#set("\<lt>Plug>MyMap")<CR>
 
@@ -73,17 +73,34 @@ function! repeat#setreg(sequence,register)
     let g:repeat_reg = [a:sequence, a:register]
 endfunction
 
+
+function! s:default_register()
+    let values = split(&clipboard, ',')
+    if index(values, 'unnamedplus') != -1
+        return '+'
+    elseif index(values, 'unnamed') != -1
+        return '*'
+    else
+        return '"'
+    endif
+endfunction
+
 function! repeat#run(count)
     try
         if g:repeat_tick == b:changedtick
             let r = ''
             if g:repeat_reg[0] ==# g:repeat_sequence && !empty(g:repeat_reg[1])
-                if g:repeat_reg[1] ==# '='
+                " Take the original register, unless another (non-default, we
+                " unfortunately cannot detect no vs. a given default register)
+                " register has been supplied to the repeat command (as an
+                " explicit override).
+                let regname = v:register ==# s:default_register() ? g:repeat_reg[1] : v:register
+                if regname ==# '='
                     " This causes a re-evaluation of the expression on repeat, which
                     " is what we want.
                     let r = '"=' . getreg('=', 1) . "\<CR>"
                 else
-                    let r = '"' . g:repeat_reg[1]
+                    let r = '"' . regname
                 endif
             endif
 
@@ -92,6 +109,9 @@ function! repeat#run(count)
             let cnt = c == -1 ? "" : (a:count ? a:count : (c ? c : ''))
             if ((v:version == 703 && has('patch100')) || (v:version == 704 && !has('patch601')))
                 exe 'norm ' . r . cnt . s
+            elseif v:version <= 703
+                call feedkeys(r . cnt, 'n')
+                call feedkeys(s, '')
             else
                 call feedkeys(s, 'i')
                 call feedkeys(r . cnt, 'ni')

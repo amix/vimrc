@@ -101,11 +101,11 @@ function! s:GoInstallBinaries(updateBinaries, ...)
   " change $GOBIN so go get can automatically install to it
   let $GOBIN = go_bin_path
 
-  " old_path is used to restore users own path
-  let old_path = $PATH
-
   " vim's executable path is looking in PATH so add our go_bin path to it
-  let $PATH = go_bin_path . go#util#PathListSep() . $PATH
+  let Restore_path = go#util#SetEnv('PATH', go_bin_path . go#util#PathListSep() . $PATH)
+
+  " GO111MODULE must be off to install golanci-lint and gometalinter
+  let Restore_modules = go#util#SetEnv('GO111MODULE', 'off')
 
   " when shellslash is set on MS-* systems, shellescape puts single quotes
   " around the output string. cmd on Windows does not handle single quotes
@@ -185,7 +185,9 @@ function! s:GoInstallBinaries(updateBinaries, ...)
   endfor
 
   " restore back!
-  let $PATH = old_path
+  call call(Restore_path, [])
+  call call(Restore_modules, [])
+
   if resetshellslash
     set shellslash
   endif
@@ -234,6 +236,22 @@ function! s:gofiletype_post()
   let &g:fileencodings = s:current_fileencodings
 endfunction
 
+function! s:register()
+  if !(&modifiable && expand('<amatch>') ==# 'go')
+    return
+  endif
+
+  let l:RestoreGopath = function('s:noop')
+  if go#config#AutodetectGopath()
+    let l:RestoreGopath = go#util#SetEnv('GOPATH', go#path#Detect())
+  endif
+  call go#lsp#DidOpen(expand('<afile>:p'))
+  call call(l:RestoreGopath, [])
+endfunction
+
+function! s:noop(...) abort
+endfunction
+
 augroup vim-go
   autocmd!
 
@@ -245,6 +263,10 @@ augroup vim-go
   autocmd BufNewFile *.s if &modifiable | setlocal fileencoding=utf-8 fileformat=unix | endif
   autocmd BufRead *.s call s:gofiletype_pre()
   autocmd BufReadPost *.s call s:gofiletype_post()
+
+  if go#util#has_job()
+    autocmd FileType * call s:register()
+  endif
 augroup end
 
 " restore Vi compatibility settings

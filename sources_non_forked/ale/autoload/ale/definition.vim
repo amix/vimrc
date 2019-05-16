@@ -3,6 +3,9 @@
 
 let s:go_to_definition_map = {}
 
+" Enable automatic updates of the tagstack
+let g:ale_update_tagstack = get(g:, 'ale_update_tagstack', 1)
+
 " Used to get the definition map in tests.
 function! ale#definition#GetMap() abort
     return deepcopy(s:go_to_definition_map)
@@ -17,6 +20,20 @@ function! ale#definition#ClearLSPData() abort
     let s:go_to_definition_map = {}
 endfunction
 
+function! ale#definition#UpdateTagStack() abort
+    let l:should_update_tagstack = exists('*gettagstack') && exists('*settagstack') && g:ale_update_tagstack
+
+    if l:should_update_tagstack
+        " Grab the old location (to jump back to) and the word under the
+        " cursor (as a label for the tagstack)
+        let l:old_location = [bufnr('%'), line('.'), col('.'), 0]
+        let l:tagname = expand('<cword>')
+        let l:winid = win_getid()
+        call settagstack(l:winid, {'items': [{'from': l:old_location, 'tagname': l:tagname}]}, 'a')
+        call settagstack(l:winid, {'curidx': len(gettagstack(l:winid)['items']) + 1})
+    endif
+endfunction
+
 function! ale#definition#HandleTSServerResponse(conn_id, response) abort
     if get(a:response, 'command', '') is# 'definition'
     \&& has_key(s:go_to_definition_map, a:response.request_seq)
@@ -27,6 +44,7 @@ function! ale#definition#HandleTSServerResponse(conn_id, response) abort
             let l:line = a:response.body[0].start.line
             let l:column = a:response.body[0].start.offset
 
+            call ale#definition#UpdateTagStack()
             call ale#util#Open(l:filename, l:line, l:column, l:options)
         endif
     endif
@@ -51,6 +69,7 @@ function! ale#definition#HandleLSPResponse(conn_id, response) abort
             let l:line = l:item.range.start.line + 1
             let l:column = l:item.range.start.character + 1
 
+            call ale#definition#UpdateTagStack()
             call ale#util#Open(l:filename, l:line, l:column, l:options)
             break
         endfor

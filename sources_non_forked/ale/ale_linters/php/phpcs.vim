@@ -36,6 +36,7 @@ function! ale_linters#php#phpcs#Handle(buffer, lines) abort
         \   'col': l:match[2] + 0,
         \   'text': l:text,
         \   'type': l:type is# 'error' ? 'E' : 'W',
+        \   'sub_type': 'style',
         \})
     endfor
 

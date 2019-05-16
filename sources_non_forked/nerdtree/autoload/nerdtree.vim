@@ -10,6 +10,29 @@ endfunction
 " SECTION: General Functions {{{1
 "============================================================
 
+"FUNCTION: nerdtree#and(x,y) {{{2
+" Implements and() function for Vim <= 7.2
+function! nerdtree#and(x,y)
+    if exists("*and")
+        return and(a:x, a:y)
+    else
+        let l:x = a:x
+        let l:y = a:y
+        let l:n = 0
+        let l:result = 0
+        while l:x > 0 && l:y > 0
+            if (l:x % 2) && (l:y % 2)
+                let l:result += float2nr(pow(2, l:n))
+            endif
+            echomsg l:x . ", " . l:y . " => " l:result
+            let l:x = float2nr(l:x / 2)
+            let l:y = float2nr(l:y / 2)
+            let l:n += 1
+        endwhile
+        return l:result
+    endif
+endfunction
+
 "FUNCTION: nerdtree#checkForBrowse(dir) {{{2
 "inits a window tree in the current buffer if appropriate
 function! nerdtree#checkForBrowse(dir)
@@ -169,7 +192,7 @@ endfunction
 "msg: the message to echo
 function! nerdtree#echo(msg)
     redraw
-    echomsg "NERDTree: " . a:msg
+    echomsg empty(a:msg) ? "" : ("NERDTree: " . a:msg)
 endfunction
 
 "FUNCTION: nerdtree#echoError {{{2

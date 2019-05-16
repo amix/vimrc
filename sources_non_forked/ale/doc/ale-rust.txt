@@ -164,10 +164,14 @@ g:ale_rust_rls_executable                           *g:ale_rust_rls_executable*
 g:ale_rust_rls_toolchain                             *g:ale_rust_rls_toolchain*
                                                      *b:ale_rust_rls_toolchain*
   Type: |String|
-  Default: `'nightly'`
+  Default: `''`
 
   This option can be set to change the toolchain used for `rls`. Possible
-  values include `'nightly'`, `'beta'`, and `'stable'`.
+  values include `'nightly'`, `'beta'`, `'stable'`, and `''`. When using
+  option `''`, rls will automatically find the default toolchain set by
+  rustup. If you want to use `rls` from a specific toolchain version, you may
+  also use values like `'channel-yyyy-mm-dd-arch-target'` as long as
+  `'rls +{toolchain_name} -V'` runs correctly in your command line.
 
   The `rls` server will only be started once per executable.
 
