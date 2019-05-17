@@ -7,7 +7,7 @@ let s:go_major_version = ""
 function! go#mod#Format() abort
   " go mod only exists in `v1.11`
   if empty(s:go_major_version)
-    let tokens = matchlist(go#util#System("go version"), '\d\+.\(\d\+\)\(\.\d\+\)\? ')
+    let tokens = matchlist(go#util#Exec(['go', 'version']), '\d\+.\(\d\+\)\(\.\d\+\)\? ')
     let s:go_major_version = str2nr(tokens[1])
   endif
 

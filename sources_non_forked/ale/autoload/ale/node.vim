@@ -32,7 +32,7 @@ endfunction
 "
 " The executable is only prefixed for Windows machines
 function! ale#node#Executable(buffer, executable) abort
-    if ale#Has('win32') && a:executable =~? '\.js$'
+    if has('win32') && a:executable =~? '\.js$'
         let l:node = ale#Var(a:buffer, 'windows_node_executable_path')
 
         return ale#Escape(l:node) . ' ' . ale#Escape(a:executable)

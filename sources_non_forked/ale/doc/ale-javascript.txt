@@ -74,6 +74,33 @@ g:ale_javascript_eslint_suppress_missing_config
 
 
 ===============================================================================
+fecs                                                      *ale-javascript-fecs*
+
+`fecs` is a lint tool for HTML/CSS/JavaScript, can be installed via:
+
+  `$ npm install --save-dev fecs`
+
+And the configuration file is located at `./fecsrc`, see http://fecs.baidu.com
+for more options.
+
+
+g:ale_javascript_fecs_executable             *g:ale_javascript_fecs_executable*
+                                             *b:ale_javascript_fecs_executable*
+  Type: |String|
+  Default: `'fecs'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_javascript_fecs_use_global             *g:ale_javascript_fecs_use_global*
+                                             *b:ale_javascript_fecs_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 flow                                                      *ale-javascript-flow*
 
 g:ale_javascript_flow_executable             *g:ale_javascript_flow_executable*

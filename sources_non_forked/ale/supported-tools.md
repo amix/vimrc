@@ -80,8 +80,10 @@ formatting.
   * [gcc](https://gcc.gnu.org/)
   * [uncrustify](https://github.com/uncrustify/uncrustify)
 * Chef
+  * [cookstyle](https://docs.chef.io/cookstyle.html)
   * [foodcritic](http://www.foodcritic.io/)
 * Clojure
+  * [clj-kondo](https://github.com/borkdude/clj-kondo)
   * [joker](https://github.com/candid82/joker)
 * CloudFormation
   * [cfn-python-lint](https://github.com/awslabs/cfn-python-lint)
@@ -96,6 +98,7 @@ formatting.
   * [crystal](https://crystal-lang.org/) :floppy_disk:
 * CSS
   * [csslint](http://csslint.net/)
+  * [fecs](http://fecs.baidu.com/)
   * [prettier](https://github.com/prettier/prettier)
   * [stylelint](https://github.com/stylelint/stylelint)
 * Cucumber
@@ -123,7 +126,7 @@ formatting.
   * [credo](https://github.com/rrrene/credo)
   * [dialyxir](https://github.com/jeremyjh/dialyxir)
   * [dogma](https://github.com/lpil/dogma)
-  * [elixir-ls](https://github.com/JakeBecker/elixir-ls)
+  * [elixir-ls](https://github.com/JakeBecker/elixir-ls) :warning:
   * [mix](https://hexdocs.pm/mix/Mix.html) :warning: :floppy_disk:
 * Elm
   * [elm-format](https://github.com/avh4/elm-format)
@@ -161,6 +164,7 @@ formatting.
   * [golint](https://godoc.org/github.com/golang/lint)
   * [gometalinter](https://github.com/alecthomas/gometalinter) :warning: :floppy_disk:
   * [go mod](https://golang.org/cmd/go/) :warning: :floppy_disk:
+  * [gopls](https://github.com/golang/go/wiki/gopls) :warning:
   * [gosimple](https://github.com/dominikh/go-tools/tree/master/cmd/gosimple) :warning: :floppy_disk:
   * [gotype](https://godoc.org/golang.org/x/tools/cmd/gotype) :warning: :floppy_disk:
   * [go vet](https://golang.org/cmd/vet/) :floppy_disk:
@@ -180,6 +184,7 @@ formatting.
 * Haskell
   * [brittany](https://github.com/lspitzner/brittany)
   * [cabal-ghc](https://www.haskell.org/cabal/)
+  * [floskell](https://github.com/ennocramer/floskell)
   * [ghc](https://www.haskell.org/ghc/)
   * [ghc-mod](https://github.com/DanielG/ghc-mod)
   * [hdevtools](https://hackage.haskell.org/package/hdevtools)
@@ -193,6 +198,7 @@ formatting.
   * [terraform-fmt](https://github.com/hashicorp/terraform)
 * HTML
   * [alex](https://github.com/wooorm/alex) :floppy_disk:
+  * [fecs](http://fecs.baidu.com/)
   * [HTMLHint](http://htmlhint.com/)
   * [prettier](https://github.com/prettier/prettier)
   * [proselint](http://proselint.com/)
@@ -204,6 +210,7 @@ formatting.
   * [ispc](https://ispc.github.io/) :floppy_disk:
 * Java
   * [checkstyle](http://checkstyle.sourceforge.net)
+  * [eclipselsp](https://github.com/eclipse/eclipse.jdt.ls)
   * [google-java-format](https://github.com/google/google-java-format)
   * [javac](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
   * [javalsp](https://github.com/georgewfraser/vscode-javac)
@@ -211,6 +218,7 @@ formatting.
   * [uncrustify](https://github.com/uncrustify/uncrustify)
 * JavaScript
   * [eslint](http://eslint.org/)
+  * [fecs](http://fecs.baidu.com/)
   * [flow](https://flowtype.org/)
   * [jscs](http://jscs.info/)
   * [jshint](http://jshint.com/)
@@ -294,6 +302,7 @@ formatting.
 * OCaml
   * [merlin](https://github.com/the-lambda-church/merlin) see `:help ale-ocaml-merlin` for configuration instructions
   * [ocamlformat](https://github.com/ocaml-ppx/ocamlformat)
+  * [ocp-indent](https://github.com/OCamlPro/ocp-indent)
   * [ols](https://github.com/freebroccolo/ocaml-language-server)
 * Pawn
   * [uncrustify](https://github.com/uncrustify/uncrustify)
@@ -324,6 +333,9 @@ formatting.
   * [write-good](https://github.com/btford/write-good)
 * Pony
   * [ponyc](https://github.com/ponylang/ponyc)
+* PowerShell
+  * [powershell](https://github.com/PowerShell/PowerShell) :floppy_disk
+  * [psscriptanalyzer](https://github.com/PowerShell/PSScriptAnalyzer) :floppy_disk
 * Prolog
   * [swipl](https://github.com/SWI-Prolog/swipl-devel)
 * proto
@@ -344,6 +356,7 @@ formatting.
   * [prospector](https://github.com/PyCQA/prospector) :warning:
   * [pycodestyle](https://github.com/PyCQA/pycodestyle) :warning:
   * [pydocstyle](https://www.pydocstyle.org/) :warning:
+  * [pyflakes](https://github.com/PyCQA/pyflakes)
   * [pylama](https://github.com/klen/pylama) :floppy_disk:
   * [pylint](https://www.pylint.org/) :floppy_disk:
   * [pyls](https://github.com/palantir/python-language-server) :warning:
@@ -355,6 +368,7 @@ formatting.
   * [qmllint](https://github.com/qt/qtdeclarative/tree/5.11/tools/qmllint)
 * R
   * [lintr](https://github.com/jimhester/lintr)
+  * [styler](https://github.com/r-lib/styler)
 * Racket
   * [raco](https://docs.racket-lang.org/raco/)
 * ReasonML
@@ -416,6 +430,7 @@ formatting.
 * SugarSS
   * [stylelint](https://github.com/stylelint/stylelint)
 * Swift
+  * [sourcekit-lsp](https://github.com/apple/sourcekit-lsp)
   * [swiftformat](https://github.com/nicklockwood/SwiftFormat)
   * [swiftlint](https://github.com/realm/SwiftLint)
 * Tcl
@@ -439,6 +454,7 @@ formatting.
   * [thrift](http://thrift.apache.org/)
 * TypeScript
   * [eslint](http://eslint.org/)
+  * [fecs](http://fecs.baidu.com/)
   * [prettier](https://github.com/prettier/prettier)
   * [tslint](https://github.com/palantir/tslint)
   * [tsserver](https://github.com/Microsoft/TypeScript/wiki/Standalone-Server-%28tsserver%29)

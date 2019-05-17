@@ -115,7 +115,7 @@ function! s:SetListsImpl(timer_id, buffer, loclist) abort
         let l:open_type = ''
 
         if ale#Var(a:buffer, 'list_vertical') == 1
-            let l:open_type = 'vert '
+            let l:open_type = 'vert rightbelow '
         endif
 
         if g:ale_set_quickfix

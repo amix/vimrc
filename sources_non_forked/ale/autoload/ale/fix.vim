@@ -1,3 +1,5 @@
+call ale#Set('fix_on_save_ignore', {})
+
 " Apply fixes queued up for buffers which may be hidden.
 " Vim doesn't let you modify hidden buffers.
 function! ale#fix#ApplyQueuedFixes() abort
@@ -115,6 +117,10 @@ function! s:HandleExit(job_info, buffer, job_output, data) abort
         let l:input = l:output
     else
         let l:input = a:job_info.input
+    endif
+
+    if l:ChainCallback isnot v:null && !get(g:, 'ale_ignore_2_4_warnings')
+        execute 'echom ''chain_with is deprecated. Use `let g:ale_ignore_2_4_warnings = 1` to disable this message.'''
     endif
 
     let l:next_index = l:ChainCallback is v:null
@@ -261,7 +267,21 @@ function! s:AddSubCallbacks(full_list, callbacks) abort
     return 1
 endfunction
 
-function! s:GetCallbacks(buffer, fixers) abort
+function! s:IgnoreFixers(callback_list, filetype, config) abort
+    if type(a:config) is v:t_list
+        let l:ignore_list = a:config
+    else
+        let l:ignore_list = []
+
+        for l:part in split(a:filetype , '\.')
+            call extend(l:ignore_list, get(a:config, l:part, []))
+        endfor
+    endif
+
+    call filter(a:callback_list, 'index(l:ignore_list, v:val) < 0')
+endfunction
+
+function! s:GetCallbacks(buffer, fixing_flag, fixers) abort
     if len(a:fixers)
         let l:callback_list = a:fixers
     elseif type(get(b:, 'ale_fixers')) is v:t_list
@@ -286,8 +306,12 @@ function! s:GetCallbacks(buffer, fixers) abort
         endif
     endif
 
-    if empty(l:callback_list)
-        return []
+    if a:fixing_flag is# 'save_file'
+        let l:config = ale#Var(a:buffer, 'fix_on_save_ignore')
+
+        if !empty(l:config)
+            call s:IgnoreFixers(l:callback_list, &filetype, l:config)
+        endif
     endif
 
     let l:corrected_list = []
@@ -335,7 +359,7 @@ function! ale#fix#Fix(buffer, fixing_flag, ...) abort
     endif
 
     try
-        let l:callback_list = s:GetCallbacks(a:buffer, a:000)
+        let l:callback_list = s:GetCallbacks(a:buffer, a:fixing_flag, a:000)
     catch /E700\|BADNAME/
         let l:function_name = join(split(split(v:exception, ':')[3]))
         let l:echo_message = printf(

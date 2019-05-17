@@ -137,9 +137,31 @@ function! go#util#gomod() abort
   return substitute(s:exec(['go', 'env', 'GOMOD'])[0], '\n', '', 'g')
 endfunction
 
-
 function! go#util#osarch() abort
   return go#util#env("goos") . '_' . go#util#env("goarch")
+endfunction
+
+" go#util#ModuleRoot returns the root directory of the module of the current
+" buffer.
+function! go#util#ModuleRoot() abort
+  let [l:out, l:err] = go#util#ExecInDir(['go', 'env', 'GOMOD'])
+  if l:err != 0
+    return -1
+  endif
+
+  let l:module = split(l:out, '\n', 1)[0]
+
+  " When run with `GO111MODULE=on and not in a module directory, the module will be reported as /dev/null.
+  let l:fakeModule = '/dev/null'
+  if go#util#IsWin()
+    let l:fakeModule = 'NUL'
+  endif
+
+  if l:fakeModule == l:module
+    return expand('%:p:h')
+  endif
+
+  return fnamemodify(l:module, ':p:h')
 endfunction
 
 " Run a shell command.
@@ -511,48 +533,43 @@ function! go#util#ParseErrors(lines) abort
   return errors
 endfunction
 
-" FilterValids filters the given items with only items that have a valid
-" filename. Any non valid filename is filtered out.
-function! go#util#FilterValids(items) abort
-  " Remove any nonvalid filename from the location list to avoid opening an
-  " empty buffer. See https://github.com/fatih/vim-go/issues/287 for
-  " details.
-  let filtered = []
-  let is_readable = {}
-
-  for item in a:items
-    if has_key(item, 'bufnr')
-      let filename = bufname(item.bufnr)
-    elseif has_key(item, 'filename')
-      let filename = item.filename
-    else
-      " nothing to do, add item back to the list
-      call add(filtered, item)
-      continue
-    endif
-
-    if !has_key(is_readable, filename)
-      let is_readable[filename] = filereadable(filename)
-    endif
-    if is_readable[filename]
-      call add(filtered, item)
-    endif
-  endfor
-
-  for k in keys(filter(is_readable, '!v:val'))
-    echo "vim-go: " | echohl Identifier | echon "[run] Dropped " | echohl Constant | echon  '"' . k . '"'
-    echohl Identifier | echon " from location list (nonvalid filename)" | echohl None
-  endfor
-
-  return filtered
-endfunction
-
 function! go#util#ShowInfo(info)
   if empty(a:info)
     return
   endif
 
   echo "vim-go: " | echohl Function | echon a:info | echohl None
+endfunction
+
+" go#util#SetEnv takes the name of an environment variable and what its value
+" should be and returns a function that will restore it to its original value.
+function! go#util#SetEnv(name, value) abort
+  let l:state = {}
+
+  if len(a:name) == 0
+    return function('s:noop', [], l:state)
+  endif
+
+  let l:remove = 0
+  if exists('$' . a:name)
+    let l:oldvalue = eval('$' . a:name)
+  else
+    let l:remove = 1
+  endif
+
+  call execute('let $' . a:name . ' = "' . a:value . '"')
+
+  if l:remove
+    function! s:remove(name) abort
+      call execute('unlet $' . a:name)
+    endfunction
+    return function('s:remove', [a:name], l:state)
+  endif
+
+  return function('go#util#SetEnv', [a:name, l:oldvalue], l:state)
+endfunction
+
+function! s:noop(...) abort dict
 endfunction
 
 " restore Vi compatibility settings

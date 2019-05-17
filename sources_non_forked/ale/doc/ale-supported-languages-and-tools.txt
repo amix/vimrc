@@ -71,8 +71,10 @@ Notes:
   * `gcc`
   * `uncrustify`
 * Chef
+  * `cookstyle`
   * `foodcritic`
 * Clojure
+  * `clj-kondo`
   * `joker`
 * CloudFormation
   * `cfn-python-lint`
@@ -87,6 +89,7 @@ Notes:
   * `crystal`!!
 * CSS
   * `csslint`
+  * `fecs`
   * `prettier`
   * `stylelint`
 * Cucumber
@@ -152,6 +155,7 @@ Notes:
   * `golint`
   * `gometalinter`!!
   * `go mod`!!
+  * `gopls`
   * `gosimple`!!
   * `gotype`!!
   * `go vet`!!
@@ -171,6 +175,7 @@ Notes:
 * Haskell
   * `brittany`
   * `cabal-ghc`
+  * `floskell`
   * `ghc`
   * `ghc-mod`
   * `hdevtools`
@@ -184,6 +189,7 @@ Notes:
   * `terraform-fmt`
 * HTML
   * `alex`!!
+  * `fecs`
   * `HTMLHint`
   * `prettier`
   * `proselint`
@@ -195,6 +201,7 @@ Notes:
   * `ispc`!!
 * Java
   * `checkstyle`
+  * `eclipselsp`
   * `google-java-format`
   * `javac`
   * `javalsp`
@@ -202,6 +209,7 @@ Notes:
   * `uncrustify`
 * JavaScript
   * `eslint`
+  * `fecs`
   * `flow`
   * `jscs`
   * `jshint`
@@ -285,6 +293,7 @@ Notes:
 * OCaml
   * `merlin` (see |ale-ocaml-merlin|)
   * `ocamlformat`
+  * `ocp-indent`
   * `ols`
 * Pawn
   * `uncrustify`
@@ -315,6 +324,9 @@ Notes:
   * `write-good`
 * Pony
   * `ponyc`
+* PowerShell
+  * `powershell`
+  * `psscriptanalyzer`
 * Prolog
   * `swipl`
 * proto
@@ -335,6 +347,7 @@ Notes:
   * `prospector`
   * `pycodestyle`
   * `pydocstyle`
+  * `pyflakes`
   * `pylama`!!
   * `pylint`!!
   * `pyls`
@@ -346,6 +359,7 @@ Notes:
   * `qmllint`
 * R
   * `lintr`
+  * `styler`
 * Racket
   * `raco`
 * ReasonML
@@ -407,6 +421,7 @@ Notes:
 * SugarSS
   * `stylelint`
 * Swift
+  * `sourcekit-lsp`
   * `swiftformat`
   * `swiftlint`
 * Tcl
@@ -430,6 +445,7 @@ Notes:
   * `thrift`
 * TypeScript
   * `eslint`
+  * `fecs`
   * `prettier`
   * `tslint`
   * `tsserver`

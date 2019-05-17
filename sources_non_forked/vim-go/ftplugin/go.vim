@@ -25,10 +25,12 @@ setlocal noexpandtab
 
 compiler go
 
-" Set autocompletion
-setlocal omnifunc=go#complete#Complete
-if !go#util#has_job()
-  setlocal omnifunc=go#complete#GocodeComplete
+if go#config#CodeCompletionEnabled()
+  " Set autocompletion
+  setlocal omnifunc=go#complete#Complete
+  if !go#util#has_job()
+    setlocal omnifunc=go#complete#GocodeComplete
+  endif
 endif
 
 if get(g:, "go_doc_keywordprg_enabled", 1)
@@ -82,9 +84,16 @@ endif
 augroup vim-go-buffer
   autocmd! * <buffer>
 
-  " TODO(bc): notify gopls about changes on CursorHold when the buffer is
-  " modified.
-  " TODO(bc): notify gopls that the file on disk is correct on BufWritePost
+  " The file is registered (textDocument/DidOpen) with gopls in plugin/go.vim
+  " on the FileType event.
+  " TODO(bc): handle all the other events that may be of interest to gopls,
+  " too (e.g.  BufFilePost , CursorHold , CursorHoldI, FileReadPost,
+  " StdinReadPre, BufWritePost, TextChange, TextChangedI)
+  if go#util#has_job()
+    autocmd BufWritePost <buffer> call go#lsp#DidChange(expand('<afile>:p'))
+    autocmd FileChangedShell <buffer> call go#lsp#DidChange(expand('<afile>:p'))
+    autocmd BufDelete <buffer> call go#lsp#DidClose(expand('<afile>:p'))
+  endif
 
   autocmd CursorHold <buffer> call go#auto#auto_type_info()
   autocmd CursorHold <buffer> call go#auto#auto_sameids()

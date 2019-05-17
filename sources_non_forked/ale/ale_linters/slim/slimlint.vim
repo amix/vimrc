@@ -11,7 +11,7 @@ function! ale_linters#slim#slimlint#GetCommand(buffer) abort
     "
     " See https://github.com/sds/slim-lint/blob/master/lib/slim_lint/linter/README.md#rubocop
     if !empty(l:rubocop_config)
-        if ale#Has('win32')
+        if has('win32')
             let l:command = 'set SLIM_LINT_RUBOCOP_CONF=' . ale#Escape(l:rubocop_config) . ' && ' . l:command
         else
             let l:command = 'SLIM_LINT_RUBOCOP_CONF=' . ale#Escape(l:rubocop_config) . ' ' . l:command

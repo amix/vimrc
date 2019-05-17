@@ -1,4 +1,4 @@
-*ale.txt*  For Vim version 8.0.
+*ale.txt*	Plugin to lint and fix files asynchronously
 *ale*
 
 ALE - Asynchronous Lint Engine
@@ -48,364 +48,6 @@ ALE supports the following key features for linting:
 5. Setting |signs| with warnings and errors for error markers.
 6. Using |echo| to show error messages when the cursor moves.
 7. Setting syntax highlights for errors.
-    ada...................................|ale-ada-options|
-      gcc.................................|ale-ada-gcc|
-    ansible...............................|ale-ansible-options|
-      ansible-lint........................|ale-ansible-ansible-lint|
-    asciidoc..............................|ale-asciidoc-options|
-      write-good..........................|ale-asciidoc-write-good|
-      textlint............................|ale-asciidoc-textlint|
-    asm...................................|ale-asm-options|
-      gcc.................................|ale-asm-gcc|
-    awk...................................|ale-awk-options|
-      gawk................................|ale-awk-gawk|
-    bib...................................|ale-bib-options|
-      bibclean............................|ale-bib-bibclean|
-    c.....................................|ale-c-options|
-      clang...............................|ale-c-clang|
-      clangd..............................|ale-c-clangd|
-      clang-format........................|ale-c-clangformat|
-      clangtidy...........................|ale-c-clangtidy|
-      cppcheck............................|ale-c-cppcheck|
-      cquery..............................|ale-c-cquery|
-      flawfinder..........................|ale-c-flawfinder|
-      gcc.................................|ale-c-gcc|
-      uncrustify..........................|ale-c-uncrustify|
-      ccls................................|ale-c-ccls|
-    chef..................................|ale-chef-options|
-      foodcritic..........................|ale-chef-foodcritic|
-    clojure...............................|ale-clojure-options|
-      joker...............................|ale-clojure-joker|
-    cloudformation........................|ale-cloudformation-options|
-      cfn-python-lint.....................|ale-cloudformation-cfn-python-lint|
-    cmake.................................|ale-cmake-options|
-      cmakelint...........................|ale-cmake-cmakelint|
-      cmake-format........................|ale-cmake-cmakeformat|
-    cpp...................................|ale-cpp-options|
-      clang...............................|ale-cpp-clang|
-      clangd..............................|ale-cpp-clangd|
-      clangcheck..........................|ale-cpp-clangcheck|
-      clang-format........................|ale-cpp-clangformat|
-      clangtidy...........................|ale-cpp-clangtidy|
-      clazy...............................|ale-cpp-clazy|
-      cppcheck............................|ale-cpp-cppcheck|
-      cpplint.............................|ale-cpp-cpplint|
-      cquery..............................|ale-cpp-cquery|
-      flawfinder..........................|ale-cpp-flawfinder|
-      gcc.................................|ale-cpp-gcc|
-      uncrustify..........................|ale-cpp-uncrustify|
-      ccls................................|ale-cpp-ccls|
-    c#....................................|ale-cs-options|
-      mcs.................................|ale-cs-mcs|
-      mcsc................................|ale-cs-mcsc|
-      uncrustify..........................|ale-cs-uncrustify|
-    css...................................|ale-css-options|
-      prettier............................|ale-css-prettier|
-      stylelint...........................|ale-css-stylelint|
-    cuda..................................|ale-cuda-options|
-      nvcc................................|ale-cuda-nvcc|
-      clang-format........................|ale-cuda-clangformat|
-    d.....................................|ale-d-options|
-      dls.................................|ale-d-dls|
-      uncrustify..........................|ale-d-uncrustify|
-    dart..................................|ale-dart-options|
-      dartanalyzer........................|ale-dart-dartanalyzer|
-      dartfmt.............................|ale-dart-dartfmt|
-    dockerfile............................|ale-dockerfile-options|
-      dockerfile_lint.....................|ale-dockerfile-dockerfile_lint|
-      hadolint............................|ale-dockerfile-hadolint|
-    elixir................................|ale-elixir-options|
-      mix.................................|ale-elixir-mix|
-      mix_format..........................|ale-elixir-mix-format|
-      dialyxir............................|ale-elixir-dialyxir|
-      elixir-ls...........................|ale-elixir-elixir-ls|
-      credo...............................|ale-elixir-credo|
-    elm...................................|ale-elm-options|
-      elm-format..........................|ale-elm-elm-format|
-      elm-lsp.............................|ale-elm-elm-lsp|
-      elm-make............................|ale-elm-elm-make|
-    erlang................................|ale-erlang-options|
-      erlc................................|ale-erlang-erlc|
-      syntaxerl...........................|ale-erlang-syntaxerl|
-    eruby.................................|ale-eruby-options|
-      ruumba..............................|ale-eruby-ruumba|
-    fish..................................|ale-fish-options|
-    fortran...............................|ale-fortran-options|
-      gcc.................................|ale-fortran-gcc|
-      language_server.....................|ale-fortran-language-server|
-    fountain..............................|ale-fountain-options|
-    fusionscript..........................|ale-fuse-options|
-      fusion-lint.........................|ale-fuse-fusionlint|
-    git commit............................|ale-gitcommit-options|
-      gitlint.............................|ale-gitcommit-gitlint|
-    glsl..................................|ale-glsl-options|
-      glslang.............................|ale-glsl-glslang|
-      glslls..............................|ale-glsl-glslls|
-    go....................................|ale-go-options|
-      gobuild.............................|ale-go-gobuild|
-      gofmt...............................|ale-go-gofmt|
-      golint..............................|ale-go-golint|
-      govet...............................|ale-go-govet|
-      gometalinter........................|ale-go-gometalinter|
-      staticcheck.........................|ale-go-staticcheck|
-      golangserver........................|ale-go-golangserver|
-      golangci-lint.......................|ale-go-golangci-lint|
-      bingo...............................|ale-go-bingo|
-    graphql...............................|ale-graphql-options|
-      eslint..............................|ale-graphql-eslint|
-      gqlint..............................|ale-graphql-gqlint|
-      prettier............................|ale-graphql-prettier|
-    hack..................................|ale-hack-options|
-      hack................................|ale-hack-hack|
-      hackfmt.............................|ale-hack-hackfmt|
-      hhast...............................|ale-hack-hhast|
-    handlebars............................|ale-handlebars-options|
-      ember-template-lint.................|ale-handlebars-embertemplatelint|
-    haskell...............................|ale-haskell-options|
-      brittany............................|ale-haskell-brittany|
-      ghc.................................|ale-haskell-ghc|
-      ghc-mod.............................|ale-haskell-ghc-mod|
-      cabal-ghc...........................|ale-haskell-cabal-ghc|
-      hdevtools...........................|ale-haskell-hdevtools|
-      hfmt................................|ale-haskell-hfmt|
-      hlint...............................|ale-haskell-hlint|
-      stack-build.........................|ale-haskell-stack-build|
-      stack-ghc...........................|ale-haskell-stack-ghc|
-      stylish-haskell.....................|ale-haskell-stylish-haskell|
-      hie.................................|ale-haskell-hie|
-    hcl...................................|ale-hcl-options|
-      terraform-fmt.......................|ale-hcl-terraform-fmt|
-    html..................................|ale-html-options|
-      htmlhint............................|ale-html-htmlhint|
-      tidy................................|ale-html-tidy|
-      prettier............................|ale-html-prettier|
-      stylelint...........................|ale-html-stylelint|
-      write-good..........................|ale-html-write-good|
-    idris.................................|ale-idris-options|
-      idris...............................|ale-idris-idris|
-    ispc..................................|ale-ispc-options|
-      ispc................................|ale-ispc-ispc|
-    java..................................|ale-java-options|
-      checkstyle..........................|ale-java-checkstyle|
-      javac...............................|ale-java-javac|
-      google-java-format..................|ale-java-google-java-format|
-      pmd.................................|ale-java-pmd|
-      javalsp.............................|ale-java-javalsp|
-      uncrustify..........................|ale-java-uncrustify|
-    javascript............................|ale-javascript-options|
-      eslint..............................|ale-javascript-eslint|
-      flow................................|ale-javascript-flow|
-      importjs............................|ale-javascript-importjs|
-      jscs................................|ale-javascript-jscs|
-      jshint..............................|ale-javascript-jshint|
-      prettier............................|ale-javascript-prettier|
-      prettier-eslint.....................|ale-javascript-prettier-eslint|
-      prettier-standard...................|ale-javascript-prettier-standard|
-      standard............................|ale-javascript-standard|
-      xo..................................|ale-javascript-xo|
-    json..................................|ale-json-options|
-      fixjson.............................|ale-json-fixjson|
-      jsonlint............................|ale-json-jsonlint|
-      jq..................................|ale-json-jq|
-      prettier............................|ale-json-prettier|
-    julia.................................|ale-julia-options|
-      languageserver......................|ale-julia-languageserver|
-    kotlin................................|ale-kotlin-options|
-      kotlinc.............................|ale-kotlin-kotlinc|
-      ktlint..............................|ale-kotlin-ktlint|
-      languageserver......................|ale-kotlin-languageserver|
-    latex.................................|ale-latex-options|
-      write-good..........................|ale-latex-write-good|
-      textlint............................|ale-latex-textlint|
-    less..................................|ale-less-options|
-      lessc...............................|ale-less-lessc|
-      prettier............................|ale-less-prettier|
-      stylelint...........................|ale-less-stylelint|
-    llvm..................................|ale-llvm-options|
-      llc.................................|ale-llvm-llc|
-    lua...................................|ale-lua-options|
-      luac................................|ale-lua-luac|
-      luacheck............................|ale-lua-luacheck|
-    markdown..............................|ale-markdown-options|
-      mdl.................................|ale-markdown-mdl|
-      prettier............................|ale-markdown-prettier|
-      remark-lint.........................|ale-markdown-remark-lint|
-      textlint............................|ale-markdown-textlint|
-      write-good..........................|ale-markdown-write-good|
-    mercury...............................|ale-mercury-options|
-      mmc.................................|ale-mercury-mmc|
-    nasm..................................|ale-nasm-options|
-      nasm................................|ale-nasm-nasm|
-    nroff.................................|ale-nroff-options|
-      write-good..........................|ale-nroff-write-good|
-    objc..................................|ale-objc-options|
-      clang...............................|ale-objc-clang|
-      clangd..............................|ale-objc-clangd|
-      uncrustify..........................|ale-objc-uncrustify|
-      ccls................................|ale-objc-ccls|
-    objcpp................................|ale-objcpp-options|
-      clang...............................|ale-objcpp-clang|
-      clangd..............................|ale-objcpp-clangd|
-      uncrustify..........................|ale-objcpp-uncrustify|
-    ocaml.................................|ale-ocaml-options|
-      merlin..............................|ale-ocaml-merlin|
-      ols.................................|ale-ocaml-ols|
-      ocamlformat.........................|ale-ocaml-ocamlformat|
-    pawn..................................|ale-pawn-options|
-      uncrustify..........................|ale-pawn-uncrustify|
-    perl..................................|ale-perl-options|
-      perl................................|ale-perl-perl|
-      perlcritic..........................|ale-perl-perlcritic|
-      perltidy............................|ale-perl-perltidy|
-    perl6.................................|ale-perl6-options|
-      perl6...............................|ale-perl6-perl6|
-    php...................................|ale-php-options|
-      langserver..........................|ale-php-langserver|
-      phan................................|ale-php-phan|
-      phpcbf..............................|ale-php-phpcbf|
-      phpcs...............................|ale-php-phpcs|
-      phpmd...............................|ale-php-phpmd|
-      phpstan.............................|ale-php-phpstan|
-      psalm...............................|ale-php-psalm|
-      php-cs-fixer........................|ale-php-php-cs-fixer|
-      php.................................|ale-php-php|
-    po....................................|ale-po-options|
-      write-good..........................|ale-po-write-good|
-    pod...................................|ale-pod-options|
-      write-good..........................|ale-pod-write-good|
-    pony..................................|ale-pony-options|
-      ponyc...............................|ale-pony-ponyc|
-    prolog................................|ale-prolog-options|
-      swipl...............................|ale-prolog-swipl|
-    proto.................................|ale-proto-options|
-      protoc-gen-lint.....................|ale-proto-protoc-gen-lint|
-    pug...................................|ale-pug-options|
-      puglint.............................|ale-pug-puglint|
-    puppet................................|ale-puppet-options|
-      puppet..............................|ale-puppet-puppet|
-      puppetlint..........................|ale-puppet-puppetlint|
-      puppet-languageserver...............|ale-puppet-languageserver|
-    pyrex (cython)........................|ale-pyrex-options|
-      cython..............................|ale-pyrex-cython|
-    python................................|ale-python-options|
-      autopep8............................|ale-python-autopep8|
-      bandit..............................|ale-python-bandit|
-      black...............................|ale-python-black|
-      flake8..............................|ale-python-flake8|
-      isort...............................|ale-python-isort|
-      mypy................................|ale-python-mypy|
-      prospector..........................|ale-python-prospector|
-      pycodestyle.........................|ale-python-pycodestyle|
-      pydocstyle..........................|ale-python-pydocstyle|
-      pyflakes............................|ale-python-pyflakes|
-      pylama..............................|ale-python-pylama|
-      pylint..............................|ale-python-pylint|
-      pyls................................|ale-python-pyls|
-      pyre................................|ale-python-pyre|
-      vulture.............................|ale-python-vulture|
-      yapf................................|ale-python-yapf|
-    qml...................................|ale-qml-options|
-      qmlfmt..............................|ale-qml-qmlfmt|
-    r.....................................|ale-r-options|
-      lintr...............................|ale-r-lintr|
-    reasonml..............................|ale-reasonml-options|
-      merlin..............................|ale-reasonml-merlin|
-      ols.................................|ale-reasonml-ols|
-      refmt...............................|ale-reasonml-refmt|
-    restructuredtext......................|ale-restructuredtext-options|
-      textlint............................|ale-restructuredtext-textlint|
-      write-good..........................|ale-restructuredtext-write-good|
-    ruby..................................|ale-ruby-options|
-      brakeman............................|ale-ruby-brakeman|
-      rails_best_practices................|ale-ruby-rails_best_practices|
-      reek................................|ale-ruby-reek|
-      rubocop.............................|ale-ruby-rubocop|
-      ruby................................|ale-ruby-ruby|
-      rufo................................|ale-ruby-rufo|
-      solargraph..........................|ale-ruby-solargraph|
-      standardrb..........................|ale-ruby-standardrb|
-    rust..................................|ale-rust-options|
-      cargo...............................|ale-rust-cargo|
-      rls.................................|ale-rust-rls|
-      rustc...............................|ale-rust-rustc|
-      rustfmt.............................|ale-rust-rustfmt|
-    sass..................................|ale-sass-options|
-      sasslint............................|ale-sass-sasslint|
-      stylelint...........................|ale-sass-stylelint|
-    scala.................................|ale-scala-options|
-      sbtserver...........................|ale-scala-sbtserver|
-      scalafmt............................|ale-scala-scalafmt|
-      scalastyle..........................|ale-scala-scalastyle|
-    scss..................................|ale-scss-options|
-      prettier............................|ale-scss-prettier|
-      sasslint............................|ale-scss-sasslint|
-      stylelint...........................|ale-scss-stylelint|
-    sh....................................|ale-sh-options|
-      sh-language-server..................|ale-sh-language-server|
-      shell...............................|ale-sh-shell|
-      shellcheck..........................|ale-sh-shellcheck|
-      shfmt...............................|ale-sh-shfmt|
-    sml...................................|ale-sml-options|
-      smlnj...............................|ale-sml-smlnj|
-    solidity..............................|ale-solidity-options|
-      solhint.............................|ale-solidity-solhint|
-      solium..............................|ale-solidity-solium|
-    spec..................................|ale-spec-options|
-      rpmlint.............................|ale-spec-rpmlint|
-    sql...................................|ale-sql-options|
-      sqlfmt..............................|ale-sql-sqlfmt|
-    stylus................................|ale-stylus-options|
-      stylelint...........................|ale-stylus-stylelint|
-    sugarss...............................|ale-sugarss-options|
-      stylelint...........................|ale-sugarss-stylelint|
-    tcl...................................|ale-tcl-options|
-      nagelfar............................|ale-tcl-nagelfar|
-    terraform.............................|ale-terraform-options|
-      fmt.................................|ale-terraform-fmt|
-      tflint..............................|ale-terraform-tflint|
-    tex...................................|ale-tex-options|
-      chktex..............................|ale-tex-chktex|
-      lacheck.............................|ale-tex-lacheck|
-    texinfo...............................|ale-texinfo-options|
-      write-good..........................|ale-texinfo-write-good|
-    text..................................|ale-text-options|
-      textlint............................|ale-text-textlint|
-      write-good..........................|ale-text-write-good|
-    thrift................................|ale-thrift-options|
-      thrift..............................|ale-thrift-thrift|
-    typescript............................|ale-typescript-options|
-      eslint..............................|ale-typescript-eslint|
-      prettier............................|ale-typescript-prettier|
-      tslint..............................|ale-typescript-tslint|
-      tsserver............................|ale-typescript-tsserver|
-    vala..................................|ale-vala-options|
-      uncrustify..........................|ale-vala-uncrustify|
-    verilog/systemverilog.................|ale-verilog-options|
-      iverilog............................|ale-verilog-iverilog|
-      verilator...........................|ale-verilog-verilator|
-      vlog................................|ale-verilog-vlog|
-      xvlog...............................|ale-verilog-xvlog|
-    vhdl..................................|ale-vhdl-options|
-      ghdl................................|ale-vhdl-ghdl|
-      vcom................................|ale-vhdl-vcom|
-      xvhdl...............................|ale-vhdl-xvhdl|
-    vim...................................|ale-vim-options|
-      vint................................|ale-vim-vint|
-    vim help..............................|ale-vim-help-options|
-      write-good..........................|ale-vim-help-write-good|
-    vue...................................|ale-vue-options|
-      prettier............................|ale-vue-prettier|
-      vls.................................|ale-vue-vls|
-    xhtml.................................|ale-xhtml-options|
-      write-good..........................|ale-xhtml-write-good|
-    xml...................................|ale-xml-options|
-      xmllint.............................|ale-xml-xmllint|
-    yaml..................................|ale-yaml-options|
-      prettier............................|ale-yaml-prettier|
-      swaglint............................|ale-yaml-swaglint|
-      yamllint............................|ale-yaml-yamllint|
-    yang..................................|ale-yang-options|
-      yang-lsp............................|ale-yang-lsp|
 
 ALE can fix problems with files with the |ALEFix| command, using the same job
 control functionality used for checking for problems. Try using the
@@ -500,6 +142,8 @@ ALE offers several options for controlling which linters are run.
 * Selecting linters to run.            - |g:ale_linters|
 * Aliasing filetypes for linters       - |g:ale_linter_aliases|
 * Only running linters you asked for.  - |g:ale_linters_explicit|
+* Disabling only a subset of linters.  - |g:ale_linters_ignore|
+* Disabling LSP linters and `tsserver`.  - |g:ale_disable_lsp|
 
 
 -------------------------------------------------------------------------------
@@ -667,6 +311,9 @@ by default.
 
 |g:ale_fix_on_save| - Fix files when they are saved.
 
+Fixers can be disabled on save with |g:ale_fix_on_save_ignore|. They will
+still be run when you manually run |ALEFix|.
+
 
 ===============================================================================
 5. Language Server Protocol Support                                   *ale-lsp*
@@ -676,40 +323,49 @@ servers. LSP linters can be used in combination with any other linter, and
 will automatically connect to LSP servers when needed. ALE also supports
 `tsserver` for TypeScript, which uses a different but very similar protocol.
 
-ALE supports the following LSP/tsserver features:
-
-1. Diagnostics/linting - Enabled via selecting linters as usual.
-2. Completion
-3. Go to definition
-
+If you want to use another plugin for LSP features and tsserver, you can use
+the |g:ale_disable_lsp| setting to disable ALE's own LSP integrations, or
+ignore particular linters with |g:ale_linters_ignore|.
 
 -------------------------------------------------------------------------------
 5.1 Completion                                                 *ale-completion*
 
-ALE offers limited support for automatic completion of code while you type.
+ALE offers support for automatic completion of code while you type.
 Completion is only supported while at least one LSP linter is enabled. ALE
 will only suggest symbols provided by the LSP servers.
 
-Suggestions will be made while you type after completion is enabled.
-Completion can be enabled by setting |g:ale_completion_enabled| to `1`.  This
-setting must be set to `1` before ALE is loaded. The delay for completion can
-be configured with |g:ale_completion_delay|. ALE will only suggest so many
-possible matches for completion. The maximum number of items can be controlled
-with |g:ale_completion_max_suggestions|.
+                                                     *ale-deoplete-integration*
+
+ALE integrates with Deoplete for offering automatic completion data. ALE's
+completion source for Deoplete is named `'ale'`, and should enabled
+automatically if Deoplete is enabled and configured correctly. Deoplete
+integration should not be combined with ALE's own implementation.
+
+ALE also offers its own completion implementation, which does not require any
+other plugins. Suggestions will be made while you type after completion is
+enabled. ALE's own completion implementation can be enabled by setting
+|g:ale_completion_enabled| to `1`. This setting must be set to `1` before ALE
+is loaded. The delay for completion can be configured with
+|g:ale_completion_delay|. This setting should not be enabled if you wish to
+use ALE as a completion source for other plugins.
+
+ALE will only suggest so many possible matches for completion. The maximum
+number of items can be controlled with |g:ale_completion_max_suggestions|.
 
 If you don't like some of the suggestions you see, you can filter them out
 with |g:ale_completion_excluded_words| or |b:ale_completion_excluded_words|.
 
 The |ALEComplete| command can be used to show completion suggestions manually,
-even when |g:ale_completion_enabled| is set to `0`.
+even when |g:ale_completion_enabled| is set to `0`. For manually requesting
+completion information with Deoplete, consult Deoplete's documentation.
 
                                                *ale-completion-completeopt-bug*
 
-Automatic completion replaces |completeopt| before opening the omnicomplete
-menu with <C-x><C-o>. In some versions of Vim, the value set for the option
-will not be respected. If you experience issues with Vim automatically
-inserting text while you type, set the following option in vimrc, and your
-issues should go away. >
+ALE Automatic completion implementation replaces |completeopt| before opening
+the omnicomplete menu with <C-x><C-o>. In some versions of Vim, the value set
+for the option will not be respected. If you experience issues with Vim
+automatically inserting text while you type, set the following option in
+vimrc, and your issues should go away. >
 
   set completeopt=menu,menuone,preview,noselect,noinsert
 <
@@ -725,6 +381,9 @@ information returned by LSP servers. The following commands are supported:
 |ALEGoToDefinitionInTab| - The same, but for opening the file in a new tab.
 |ALEGoToDefinitionInSplit| - The same, but in a new split.
 |ALEGoToDefinitionInVSplit| - The same, but in a new vertical split.
+
+ALE will update Vim's |tagstack| automatically unless |g:ale_update_tagstack| is
+set to `0`.
 
 -------------------------------------------------------------------------------
 5.3 Go To Type Definition                           *ale-go-to-type-definition*
@@ -901,6 +560,7 @@ g:ale_completion_delay                                 *g:ale_completion_delay*
 
 
 g:ale_completion_enabled                             *g:ale_completion_enabled*
+b:ale_completion_enabled                             *b:ale_completion_enabled*
 
   Type: |Number|
   Default: `0`
@@ -909,6 +569,13 @@ g:ale_completion_enabled                             *g:ale_completion_enabled*
 
   This setting must be set to `1` before ALE is loaded for this behavior
   to be enabled.
+
+  This setting should not be enabled if you wish to use ALE as a completion
+  source for other completion plugins.
+
+  A buffer-local version of this setting `b:ale_completion_enabled` can be set
+  to `0` to disable ALE's automatic completion support for a single buffer.
+  ALE's completion support must be enabled globally to be enabled locally.
 
   See |ale-completion|
 
@@ -969,6 +636,18 @@ g:ale_cursor_detail                                       *g:ale_cursor_detail*
   loaded for messages to be displayed. See |ale-lint-settings-on-startup|.
 
 
+g:ale_disable_lsp                                           *g:ale_disable_lsp*
+                                                            *b:ale_disable_lsp*
+
+  Type: |Number|
+  Default: `0`
+
+  When this option is set to `1`, ALE ignores all linters powered by LSP,
+  and also `tsserver`.
+
+  Please see also |ale-lsp|.
+
+
 g:ale_echo_cursor                                           *g:ale_echo_cursor*
 
   Type: |Number|
@@ -1020,7 +699,7 @@ b:ale_echo_msg_format                                   *b:ale_echo_msg_format*
     `%s`           - replaced with the text for the problem
     `%...code...% `- replaced with the error code
     `%linter%`     - replaced with the name of the linter
-    `%severity%`   - replaced withe severity of the problem
+    `%severity%`   - replaced with the severity of the problem
 
   The strings for `%severity%` can be configured with the following options.
 
@@ -1037,7 +716,7 @@ b:ale_echo_msg_format                                   *b:ale_echo_msg_format*
   |g:ale_echo_cursor| needs to be set to 1 for messages to be displayed.
 
   The echo message format can also be configured separately for each buffer,
-  so different formats can be used for differnt languages. (Say in ftplugin
+  so different formats can be used for different languages. (Say in ftplugin
   files.)
 
 
@@ -1118,6 +797,43 @@ b:ale_fix_on_save                                           *b:ale_fix_on_save*
   Fixing files can be disabled or enabled for individual buffers by setting
   `b:ale_fix_on_save` to `0` or `1`.
 
+  Some fixers can be excluded from being run automatically when you save files
+  with the |g:ale_fix_on_save_ignore| setting.
+
+
+g:ale_fix_on_save_ignore                             *g:ale_fix_on_save_ignore*
+b:ale_fix_on_save_ignore                             *b:ale_fix_on_save_ignore*
+
+  Type: |Dictionary| or |List|
+  Default: `{}`
+
+  Given a |Dictionary| mapping filetypes to |Lists| of fixers to ignore, or
+  just a |List| of fixers to ignore, exclude those fixers from being run
+  automatically when files are saved.
+
+  You can disable some fixers in your ftplugin file: >
+
+  " Disable fixers 'b' and 'c' when fixing on safe for this buffer.
+  let b:ale_fix_on_save_ignore = ['b', 'c']
+  " Alternatively, define ignore lists for different filetypes.
+  let b:ale_fix_on_save_ignore = {'foo': ['b'], 'bar': ['c']}
+<
+  You can disable some fixers globally per filetype like so: >
+
+  let g:ale_fixers = {'foo': ['a', 'b'], 'bar': ['c', 'd']}
+  let g:ale_fix_on_save = 1
+  " For filetype `foo.bar`, only fixers 'b' and 'd' will be run on save.
+  let g:ale_fix_on_save_ignore = {'foo': ['a'], 'bar': ['c']}
+  " Alternatively, disable these fixers on save for all filetypes.
+  let g:ale_fix_on_save_ignore = ['a', 'c']
+<
+  You can ignore fixers based on matching |Funcref| values too: >
+
+  let g:AddBar = {buffer, lines -> lines + ['bar']}
+  let g:ale_fixers = {'foo': g:AddBar}
+  " The lambda fixer will be ignored, as it will be found in the ignore list.
+  let g:ale_fix_on_save_ignore = [g:AddBar]
+<
 
 g:ale_history_enabled                                   *g:ale_history_enabled*
 
@@ -1342,7 +1058,7 @@ g:ale_linters                                                   *g:ale_linters*
 
   {
   \   'csh': ['shell'],
-  \   'elixir': ['credo', 'dialyxir', 'dogma', 'elixir-ls'],
+  \   'elixir': ['credo', 'dialyxir', 'dogma'],
   \   'go': ['gofmt', 'golint', 'go vet'],
   \   'hack': ['hack'],
   \   'help': [],
@@ -1802,6 +1518,14 @@ g:ale_sign_warning                                         *g:ale_sign_warning*
   The sign for warnings in the sign gutter.
 
 
+g:ale_update_tagstack                                   *g:ale_update_tagstack*
+                                                        *b:ale_update_tagstack*
+ Type: |Number|
+ Default: `1`
+
+ This option can be set to disable updating Vim's |tagstack| automatically.
+
+
 g:ale_type_map                                                 *g:ale_type_map*
                                                                *b:ale_type_map*
   Type: |Dictionary|
@@ -2212,8 +1936,10 @@ documented in additional help files.
     uncrustify............................|ale-c-uncrustify|
     ccls..................................|ale-c-ccls|
   chef....................................|ale-chef-options|
+    cookstyle.............................|ale-chef-cookstyle|
     foodcritic............................|ale-chef-foodcritic|
   clojure.................................|ale-clojure-options|
+    clj-kondo.............................|ale-clojure-clj-kondo|
     joker.................................|ale-clojure-joker|
   cloudformation..........................|ale-cloudformation-options|
     cfn-python-lint.......................|ale-cloudformation-cfn-python-lint|
@@ -2239,6 +1965,7 @@ documented in additional help files.
     mcsc..................................|ale-cs-mcsc|
     uncrustify............................|ale-cs-uncrustify|
   css.....................................|ale-css-options|
+    fecs..................................|ale-css-fecs|
     prettier..............................|ale-css-prettier|
     stylelint.............................|ale-css-stylelint|
   cuda....................................|ale-cuda-options|
@@ -2281,15 +2008,16 @@ documented in additional help files.
     glslang...............................|ale-glsl-glslang|
     glslls................................|ale-glsl-glslls|
   go......................................|ale-go-options|
+    bingo.................................|ale-go-bingo|
     gobuild...............................|ale-go-gobuild|
     gofmt.................................|ale-go-gofmt|
-    golint................................|ale-go-golint|
-    govet.................................|ale-go-govet|
-    gometalinter..........................|ale-go-gometalinter|
-    staticcheck...........................|ale-go-staticcheck|
-    golangserver..........................|ale-go-golangserver|
     golangci-lint.........................|ale-go-golangci-lint|
-    bingo.................................|ale-go-bingo|
+    golangserver..........................|ale-go-golangserver|
+    golint................................|ale-go-golint|
+    gometalinter..........................|ale-go-gometalinter|
+    gopls.................................|ale-go-gopls|
+    govet.................................|ale-go-govet|
+    staticcheck...........................|ale-go-staticcheck|
   graphql.................................|ale-graphql-options|
     eslint................................|ale-graphql-eslint|
     gqlint................................|ale-graphql-gqlint|
@@ -2302,6 +2030,7 @@ documented in additional help files.
     ember-template-lint...................|ale-handlebars-embertemplatelint|
   haskell.................................|ale-haskell-options|
     brittany..............................|ale-haskell-brittany|
+    floskell..............................|ale-haskell-floskell|
     ghc...................................|ale-haskell-ghc|
     ghc-mod...............................|ale-haskell-ghc-mod|
     cabal-ghc.............................|ale-haskell-cabal-ghc|
@@ -2315,6 +2044,7 @@ documented in additional help files.
   hcl.....................................|ale-hcl-options|
     terraform-fmt.........................|ale-hcl-terraform-fmt|
   html....................................|ale-html-options|
+    fecs..................................|ale-html-fecs|
     htmlhint..............................|ale-html-htmlhint|
     tidy..................................|ale-html-tidy|
     prettier..............................|ale-html-prettier|
@@ -2330,9 +2060,11 @@ documented in additional help files.
     google-java-format....................|ale-java-google-java-format|
     pmd...................................|ale-java-pmd|
     javalsp...............................|ale-java-javalsp|
+    eclipselsp............................|ale-java-eclipselsp|
     uncrustify............................|ale-java-uncrustify|
   javascript..............................|ale-javascript-options|
     eslint................................|ale-javascript-eslint|
+    fecs..................................|ale-javascript-fecs|
     flow..................................|ale-javascript-flow|
     importjs..............................|ale-javascript-importjs|
     jscs..................................|ale-javascript-jscs|
@@ -2390,6 +2122,7 @@ documented in additional help files.
     merlin................................|ale-ocaml-merlin|
     ols...................................|ale-ocaml-ols|
     ocamlformat...........................|ale-ocaml-ocamlformat|
+    ocp-indent............................|ale-ocaml-ocp-indent|
   pawn....................................|ale-pawn-options|
     uncrustify............................|ale-pawn-uncrustify|
   perl....................................|ale-perl-options|
@@ -2414,6 +2147,9 @@ documented in additional help files.
     write-good............................|ale-pod-write-good|
   pony....................................|ale-pony-options|
     ponyc.................................|ale-pony-ponyc|
+  powershell............................|ale-powershell-options|
+    powershell..........................|ale-powershell-powershell|
+    psscriptanalyzer....................|ale-powershell-psscriptanalyzer|
   prolog..................................|ale-prolog-options|
     swipl.................................|ale-prolog-swipl|
   proto...................................|ale-proto-options|
@@ -2447,6 +2183,7 @@ documented in additional help files.
     qmlfmt................................|ale-qml-qmlfmt|
   r.......................................|ale-r-options|
     lintr.................................|ale-r-lintr|
+    styler................................|ale-r-styler|
   reasonml................................|ale-reasonml-options|
     merlin................................|ale-reasonml-merlin|
     ols...................................|ale-reasonml-ols|
@@ -2497,6 +2234,8 @@ documented in additional help files.
     stylelint.............................|ale-stylus-stylelint|
   sugarss.................................|ale-sugarss-options|
     stylelint.............................|ale-sugarss-stylelint|
+  swift...................................|ale-swift-options|
+    sourcekitlsp..........................|ale-swift-sourcekitlsp|
   tcl.....................................|ale-tcl-options|
     nagelfar..............................|ale-tcl-nagelfar|
   terraform...............................|ale-terraform-options|
@@ -2505,6 +2244,7 @@ documented in additional help files.
   tex.....................................|ale-tex-options|
     chktex................................|ale-tex-chktex|
     lacheck...............................|ale-tex-lacheck|
+    latexindent...........................|ale-tex-latexindent|
   texinfo.................................|ale-texinfo-options|
     write-good............................|ale-texinfo-write-good|
   text....................................|ale-text-options|
@@ -2736,7 +2476,7 @@ ALELast                                                               *ALELast*
 
   Flags can be combined to create create custom jumping. Thus you can use
   ":ALENext -wrap -error -nosyle" to jump to the next error which is not a
-  style error while going back to the begining of the file if needed.
+  style error while going back to the beginning of the file if needed.
 
   `ALEFirst` goes to the first error or warning in the buffer, while `ALELast`
   goes to the last one.
@@ -2883,6 +2623,14 @@ ale#Env(variable_name, value)                                       *ale#Env()*
     :echo string(ale#Env('VAR', 'some value') . 'command')
     'VAR=''some value'' command'      # On Linux or Mac OSX
     'set VAR="some value" && command' # On Windows
+
+
+ale#Has(feature)                                                    *ale#Has()*
+
+  Return `1` if ALE supports a given feature, like |has()| for Vim features.
+
+  ALE versions can be checked with version strings in the format
+  `ale#Has('ale-x.y.z')`, such as `ale#Has('ale-2.4.0')`.
 
 
 ale#Pad(string)                                                     *ale#Pad()*
@@ -3463,7 +3211,7 @@ ale#statusline#Count(buffer)                           *ale#statusline#Count()*
 ale#statusline#FirstProblem(buffer, type)       *ale#statusline#FirstProblem()*
 
   Returns a copy of the first entry in the `loclist` that matches the supplied
-  buffer number and problem type. If there is no such enty, an empty dictionary
+  buffer number and problem type. If there is no such entry, an empty dictionary
   is returned.
   Problem type should be one of the strings listed below:
 

@@ -246,7 +246,7 @@ function! go#guru#DescribeInfo(showstatus) abort
         \ 'selected': -1,
         \ 'needs_scope': 0,
         \ 'custom_parse': function('s:info'),
-        \ 'disable_progress': 1,
+        \ 'disable_progress': a:showstatus == 0,
         \ }
 
   call s:run_guru(args)

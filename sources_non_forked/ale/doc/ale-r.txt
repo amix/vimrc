@@ -25,5 +25,21 @@ g:ale_r_lintr_lint_package                         *g:ale_r_lintr_lint_package*
   of `lintr::lint`. This prevents erroneous namespace warnings when linting 
   package files.
 
+
+===============================================================================
+styler                                                           *ale-r-styler*
+
+g:ale_r_styler_options                                 *g:ale_r_styler_options*
+                                                       *b:ale_r_styler_options*
+  Type: |String|
+  Default: `'styler::tidyverse_style'`
+
+  This option can be configured to change the options for styler.
+
+  The value of this option will be used as the `style` argument for the 
+  `styler::style_file` options. Consult the styler documentation 
+  for more information.
+
+
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

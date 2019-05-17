@@ -39,8 +39,8 @@ function! ale#engine#MarkLinterActive(info, linter) abort
     endif
 endfunction
 
-function! ale#engine#MarkLinterInactive(info, linter) abort
-    call filter(a:info.active_linter_list, 'v:val.name isnot# a:linter.name')
+function! ale#engine#MarkLinterInactive(info, linter_name) abort
+    call filter(a:info.active_linter_list, 'v:val.name isnot# a:linter_name')
 endfunction
 
 function! ale#engine#ResetExecutableCache() abort
@@ -107,24 +107,36 @@ endfunction
 " Register a temporary file to be managed with the ALE engine for
 " a current job run.
 function! ale#engine#ManageFile(buffer, filename) abort
-    " TODO: Emit deprecation warning here later.
+    if !get(g:, 'ale_ignore_2_4_warnings')
+        execute 'echom ''ale#engine#ManageFile is deprecated. Use `let g:ale_ignore_2_4_warnings = 1` to disable this message.'''
+    endif
+
     call ale#command#ManageFile(a:buffer, a:filename)
 endfunction
 
 " Same as the above, but manage an entire directory.
 function! ale#engine#ManageDirectory(buffer, directory) abort
-    " TODO: Emit deprecation warning here later.
+    if !get(g:, 'ale_ignore_2_4_warnings')
+        execute 'echom ''ale#engine#ManageDirectory is deprecated. Use `let g:ale_ignore_2_4_warnings = 1` to disable this message.'''
+    endif
+
     call ale#command#ManageDirectory(a:buffer, a:directory)
 endfunction
 
 function! ale#engine#CreateFile(buffer) abort
-    " TODO: Emit deprecation warning here later.
+    if !get(g:, 'ale_ignore_2_4_warnings')
+        execute 'echom ''ale#engine#CreateFile is deprecated. Use `let g:ale_ignore_2_4_warnings = 1` to disable this message.'''
+    endif
+
     return ale#command#CreateFile(a:buffer)
 endfunction
 
 " Create a new temporary directory and manage it in one go.
 function! ale#engine#CreateDirectory(buffer) abort
-    " TODO: Emit deprecation warning here later.
+    if !get(g:, 'ale_ignore_2_4_warnings')
+        execute 'echom ''ale#engine#CreateDirectory is deprecated. Use `let g:ale_ignore_2_4_warnings = 1` to disable this message.'''
+    endif
+
     return ale#command#CreateDirectory(a:buffer)
 endfunction
 
@@ -183,7 +195,7 @@ function! s:HandleExit(job_info, buffer, output, data) abort
     let l:next_chain_index = a:job_info.next_chain_index
 
     " Remove this job from the list.
-    call ale#engine#MarkLinterInactive(l:buffer_info, l:linter)
+    call ale#engine#MarkLinterInactive(l:buffer_info, l:linter.name)
 
     " Stop here if we land in the handle for a job completing if we're in
     " a sandbox.

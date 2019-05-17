@@ -30,8 +30,8 @@ function! ale_linters#ruby#rails_best_practices#GetCommand(buffer) abort
     endif
 
     let l:executable = ale#Var(a:buffer, 'ruby_rails_best_practices_executable')
-    let l:output_file = ale#Has('win32') ? '%t ' : '/dev/stdout '
-    let l:cat_file = ale#Has('win32') ? '; type %t' : ''
+    let l:output_file = has('win32') ? '%t ' : '/dev/stdout '
+    let l:cat_file = has('win32') ? '; type %t' : ''
 
     return ale#handlers#ruby#EscapeExecutable(l:executable, 'rails_best_practices')
     \    . ' --silent -f json --output-file ' . l:output_file

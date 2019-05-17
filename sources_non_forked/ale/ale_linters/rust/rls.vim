@@ -2,7 +2,7 @@
 " Description: A language server for Rust
 
 call ale#Set('rust_rls_executable', 'rls')
-call ale#Set('rust_rls_toolchain', 'nightly')
+call ale#Set('rust_rls_toolchain', '')
 call ale#Set('rust_rls_config', {})
 
 function! ale_linters#rust#rls#GetCommand(buffer) abort

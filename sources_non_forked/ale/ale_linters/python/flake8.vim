@@ -24,28 +24,25 @@ function! ale_linters#python#flake8#GetExecutable(buffer) abort
     return ale#Var(a:buffer, 'python_flake8_executable')
 endfunction
 
-function! ale_linters#python#flake8#VersionCheck(buffer) abort
+function! ale_linters#python#flake8#RunWithVersionCheck(buffer) abort
     let l:executable = ale_linters#python#flake8#GetExecutable(a:buffer)
 
-    " If we have previously stored the version number in a cache, then
-    " don't look it up again.
-    if ale#semver#HasVersion(l:executable)
-        " Returning an empty string skips this command.
-        return ''
-    endif
-
-    let l:executable = ale#Escape(l:executable)
     let l:module_string = s:UsingModule(a:buffer) ? ' -m flake8' : ''
+    let l:command = ale#Escape(l:executable) . l:module_string . ' --version'
 
-    return l:executable . l:module_string . ' --version'
+    return ale#semver#RunWithVersionCheck(
+    \   a:buffer,
+    \   l:executable,
+    \   l:command,
+    \   function('ale_linters#python#flake8#GetCommand'),
+    \)
 endfunction
 
-function! ale_linters#python#flake8#GetCommand(buffer, version_output) abort
+function! ale_linters#python#flake8#GetCommand(buffer, version) abort
     let l:cd_string = ale#Var(a:buffer, 'python_flake8_change_directory')
     \   ? ale#path#BufferCdString(a:buffer)
     \   : ''
     let l:executable = ale_linters#python#flake8#GetExecutable(a:buffer)
-    let l:version = ale#semver#GetVersion(l:executable, a:version_output)
 
     let l:exec_args = l:executable =~? 'pipenv$'
     \   ? ' run flake8'
@@ -53,7 +50,7 @@ function! ale_linters#python#flake8#GetCommand(buffer, version_output) abort
 
     " Only include the --stdin-display-name argument if we can parse the
     " flake8 version, and it is recent enough to support it.
-    let l:display_name_args = ale#semver#GTE(l:version, [3, 0, 0])
+    let l:display_name_args = ale#semver#GTE(a:version, [3, 0, 0])
     \   ? ' --stdin-display-name %s'
     \   : ''
 
@@ -144,9 +141,6 @@ endfunction
 call ale#linter#Define('python', {
 \   'name': 'flake8',
 \   'executable': function('ale_linters#python#flake8#GetExecutable'),
-\   'command_chain': [
-\       {'callback': 'ale_linters#python#flake8#VersionCheck'},
-\       {'callback': 'ale_linters#python#flake8#GetCommand', 'output_stream': 'both'},
-\   ],
+\   'command': function('ale_linters#python#flake8#RunWithVersionCheck'),
 \   'callback': 'ale_linters#python#flake8#Handle',
 \})

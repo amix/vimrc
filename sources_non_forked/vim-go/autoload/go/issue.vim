@@ -5,7 +5,7 @@ set cpo&vim
 let s:templatepath = go#util#Join(expand('<sfile>:p:h:h:h'), '.github', 'ISSUE_TEMPLATE.md')
 
 function! go#issue#New() abort
-  let body = go#uriEncode(s:issuebody())
+  let body = go#uri#Encode(s:issuebody())
   let url = "https://github.com/fatih/vim-go/issues/new?body=" . l:body
   call go#util#OpenBrowser(l:url)
 endfunction

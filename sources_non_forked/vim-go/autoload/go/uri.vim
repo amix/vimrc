@@ -7,7 +7,11 @@ function! go#uri#Encode(value) abort
 endfunction
 
 function! go#uri#EncodePath(value) abort
-    return s:encode(a:value, '[^/A-Za-z0-9_.~-]')
+    let l:separator = '/'
+    if go#util#IsWin()
+      let l:separator = '\\'
+    endif
+    return s:encode(a:value, '[^' . l:separator . 'A-Za-z0-9_.~-]')
 endfunction
 
 function! s:encode(value, unreserved)

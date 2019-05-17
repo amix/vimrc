@@ -22,26 +22,18 @@ function! ale_linters#rust#cargo#GetCargoExecutable(bufnr) abort
     endif
 endfunction
 
-function! ale_linters#rust#cargo#VersionCheck(buffer) abort
-    return !ale#semver#HasVersion('cargo')
-    \   ? 'cargo --version'
-    \   : ''
-endfunction
-
-function! ale_linters#rust#cargo#GetCommand(buffer, version_output) abort
-    let l:version = ale#semver#GetVersion('cargo', a:version_output)
-
+function! ale_linters#rust#cargo#GetCommand(buffer, version) abort
     let l:use_check = ale#Var(a:buffer, 'rust_cargo_use_check')
-    \   && ale#semver#GTE(l:version, [0, 17, 0])
+    \   && ale#semver#GTE(a:version, [0, 17, 0])
     let l:use_all_targets = l:use_check
     \   && ale#Var(a:buffer, 'rust_cargo_check_all_targets')
-    \   && ale#semver#GTE(l:version, [0, 22, 0])
+    \   && ale#semver#GTE(a:version, [0, 22, 0])
     let l:use_examples = l:use_check
     \   && ale#Var(a:buffer, 'rust_cargo_check_examples')
-    \   && ale#semver#GTE(l:version, [0, 22, 0])
+    \   && ale#semver#GTE(a:version, [0, 22, 0])
     let l:use_tests = l:use_check
     \   && ale#Var(a:buffer, 'rust_cargo_check_tests')
-    \   && ale#semver#GTE(l:version, [0, 22, 0])
+    \   && ale#semver#GTE(a:version, [0, 22, 0])
 
     let l:include_features = ale#Var(a:buffer, 'rust_cargo_include_features')
 
@@ -94,10 +86,12 @@ endfunction
 call ale#linter#Define('rust', {
 \   'name': 'cargo',
 \   'executable': function('ale_linters#rust#cargo#GetCargoExecutable'),
-\   'command_chain': [
-\       {'callback': 'ale_linters#rust#cargo#VersionCheck'},
-\       {'callback': 'ale_linters#rust#cargo#GetCommand'},
-\   ],
+\   'command': {buffer -> ale#semver#RunWithVersionCheck(
+\       buffer,
+\       ale_linters#rust#cargo#GetCargoExecutable(buffer),
+\       '%e --version',
+\       function('ale_linters#rust#cargo#GetCommand'),
+\   )},
 \   'callback': 'ale#handlers#rust#HandleRustErrors',
 \   'output_stream': 'both',
 \   'lint_file': 1,

@@ -143,6 +143,11 @@ function! ale#handlers#eslint#Handle(buffer, lines) abort
         " The code can be something like 'Error/foo/bar', or just 'Error'
         if !empty(get(l:split_code, 1))
             let l:obj.code = join(l:split_code[1:], '/')
+
+            if l:obj.code is# 'no-trailing-spaces'
+            \&& !ale#Var(a:buffer, 'warn_about_trailing_whitespace')
+                continue
+            endif
         endif
 
         for l:col_match in ale#util#GetMatches(l:text, s:col_end_patterns)

@@ -219,9 +219,32 @@ function! ale#c#ParseCompileCommandsFlags(buffer, file_lookup, dir_lookup) abort
     " Search for an exact file match first.
     let l:basename = tolower(expand('#' . a:buffer . ':t'))
     let l:file_list = get(a:file_lookup, l:basename, [])
+    " A source file matching the header filename.
+    let l:source_file = ''
+
+    if empty(l:file_list) && l:basename =~? '\.h$\|\.hpp$'
+        for l:suffix in ['.c', '.cpp']
+            let l:key = fnamemodify(l:basename, ':r') . l:suffix
+            let l:file_list = get(a:file_lookup, l:key, [])
+
+            if !empty(l:file_list)
+                let l:source_file = l:key
+                break
+            endif
+        endfor
+    endif
 
     for l:item in l:file_list
-        if bufnr(l:item.file) is a:buffer && has_key(l:item, 'command')
+        " Load the flags for this file, or for a source file matching the
+        " header file.
+        if has_key(l:item, 'command')
+        \&& (
+        \   bufnr(l:item.file) is a:buffer
+        \   || (
+        \       !empty(l:source_file)
+        \       && l:item.file[-len(l:source_file):] is? l:source_file
+        \   )
+        \)
             return ale#c#ParseCFlags(l:item.directory, l:item.command)
         endif
     endfor
@@ -282,6 +305,20 @@ function! ale#c#GetMakeCommand(buffer) abort
     endif
 
     return ''
+endfunction
+
+function! ale#c#RunMakeCommand(buffer, Callback) abort
+    let l:command = ale#c#GetMakeCommand(a:buffer)
+
+    if empty(l:command)
+        return a:Callback(a:buffer, [])
+    endif
+
+    return ale#command#Run(
+    \   a:buffer,
+    \   l:command,
+    \   {b, output -> a:Callback(a:buffer, output)},
+    \)
 endfunction
 
 " Given a buffer number, search for a project root, and output a List
