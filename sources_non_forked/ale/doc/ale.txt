@@ -334,7 +334,14 @@ ALE offers support for automatic completion of code while you type.
 Completion is only supported while at least one LSP linter is enabled. ALE
 will only suggest symbols provided by the LSP servers.
 
-ALE offers its own completion implementation, which does not require any
+                                                     *ale-deoplete-integration*
+
+ALE integrates with Deoplete for offering automatic completion data. ALE's
+completion source for Deoplete is named `'ale'`, and should enabled
+automatically if Deoplete is enabled and configured correctly. Deoplete
+integration should not be combined with ALE's own implementation.
+
+ALE also offers its own completion implementation, which does not require any
 other plugins. Suggestions will be made while you type after completion is
 enabled. ALE's own completion implementation can be enabled by setting
 |g:ale_completion_enabled| to `1`. This setting must be set to `1` before ALE
@@ -349,7 +356,8 @@ If you don't like some of the suggestions you see, you can filter them out
 with |g:ale_completion_excluded_words| or |b:ale_completion_excluded_words|.
 
 The |ALEComplete| command can be used to show completion suggestions manually,
-even when |g:ale_completion_enabled| is set to `0`.
+even when |g:ale_completion_enabled| is set to `0`. For manually requesting
+completion information with Deoplete, consult Deoplete's documentation.
 
                                                *ale-completion-completeopt-bug*
 
@@ -2237,7 +2245,6 @@ documented in additional help files.
     chktex................................|ale-tex-chktex|
     lacheck...............................|ale-tex-lacheck|
     latexindent...........................|ale-tex-latexindent|
-    texlab................................|ale-tex-texlab|
   texinfo.................................|ale-texinfo-options|
     write-good............................|ale-texinfo-write-good|
   text....................................|ale-text-options|

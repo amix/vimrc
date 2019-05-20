@@ -462,9 +462,6 @@ function! s:completionHandler(next, msg) abort dict
     let l:match = {'abbr': l:item.label, 'word': l:item.textEdit.newText, 'info': '', 'kind': go#lsp#completionitemkind#Vim(l:item.kind)}
     if has_key(l:item, 'detail')
         let l:match.info = l:item.detail
-        if go#lsp#completionitemkind#IsFunction(l:item.kind) || go#lsp#completionitemkind#IsMethod(l:item.kind)
-          let l:match.info = printf('func %s %s', l:item.label, l:item.detail)
-        endif
     endif
 
     if has_key(l:item, 'documentation')
