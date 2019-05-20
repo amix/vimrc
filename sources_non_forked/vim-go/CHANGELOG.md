@@ -8,11 +8,6 @@ IMPROVEMENTS:
   [[GH-2261]](https://github.com/fatih/vim-go/pull/2261)
 * Allow debugging of packages outside of GOPATH without a go.mod file.
   [[GH-2269]](https://github.com/fatih/vim-go/pull/2269)
-* Show which example failed when Example tests fail
-  [[GH-2277]](https://github.com/fatih/vim-go/pull/2277)
-* Show function signature and return types in preview window when autocompleting functions and methods.
-  [[GH-2289]](https://github.com/fatih/vim-go/pull/2289)
-
 
 BUG FIXES:
 * display info about function and function types whose parameters are
@@ -31,10 +26,6 @@ BUG FIXES:
   [[GH-2268]](https://github.com/fatih/vim-go/pull/2268)
 * Set the anchor for method documentation correctly.
   [[GH-2276]](https://github.com/fatih/vim-go/pull/2276)
-* Respect the LSP information for determining where candidate matches start.
-  [[GH-2291]](https://github.com/fatih/vim-go/pull/2291)
-* Restore environment variables with backslashes correctly.
-  [[GH-2292]](https://github.com/fatih/vim-go/pull/2292)
 
 ## 1.20 - (April 22, 2019)
 
