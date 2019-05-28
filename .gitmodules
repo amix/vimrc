@@ -6,3 +6,5 @@
 	url = https://github.com/dbeniamine/vizardry.git
 [submodule "my_plugins/cheat.sh-vim"]
 	url = https://github.com/dbeniamine/cheat.sh-vim.git
+[submodule "sources_non_forked/vim-isort"]
+	url = https://github.com/fisadev/vim-isort.git
