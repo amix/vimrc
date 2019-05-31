@@ -1204,6 +1204,22 @@ balloonexpr`.
 ==============================================================================
 SETTINGS                                                        *go-settings*
 
+                                                     *'g:go_version_warning'*
+
+Enable warning when using an unsupported version of Vim. By default it is
+enabled.
+>
+  let g:go_version_warning = 1
+<
+
+                                                  *'g:go_null_module_warning'*
+
+Enable warning when trying to use lsp features in a null module. By default it
+is enabled.
+>
+  let g:go_null_module_warning = 1
+<
+
                                               *'g:go_code_completion_enabled'*
 
 Enable code completion with |'omnifunc'|. By default it is enabled.
@@ -2182,6 +2198,24 @@ Highlight the current line and breakpoints in the debugger.
 
 ==============================================================================
 FAQ TROUBLESHOOTING                                     *go-troubleshooting*
+
+How do I troubleshoot problems?~
+
+One of the best ways to understand what vim-go is doing and the output from
+the tools to which it delegates is to use leverage the features described in
+|'g:go_debug'|.
+
+Completion and other functions that use `gopls` don't work~
+
+Vim-go is heavily reliant on `gopls` for completion and other functionality.
+`gopls` requires either module mode or GOPATH mode; files that are neither in
+GOPATH nor in a Go module will not be analyzed by `gopls`. Many of the
+features that use `gopls` (e.g. completion, jumping to definitions, showing
+identifier information, et al.) can be configured to delegate to other tools.
+e.g. completion via |'omnifunc'|, |'g:go_info_mode'| and |'g:go_def_mode'| can
+be set to use other tools for now (though some of the alternatives to `gopls`
+are effectively at their end of life and support for them from within vim-go
+may be removed soon).
 
 I get "Unknown function: go#config#..." error when I open a Go file.~
 

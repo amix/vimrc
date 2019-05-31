@@ -349,6 +349,12 @@ is loaded. The delay for completion can be configured with
 |g:ale_completion_delay|. This setting should not be enabled if you wish to
 use ALE as a completion source for other plugins.
 
+ALE provides an 'omnifunc' function |ale#completion#OmniFunc| for triggering
+completion manually with CTRL-X CTRL-O. |i_CTRL-X_CTRL-O| >
+
+  " Use ALE's function for omnicompletion.
+  set omnifunc=ale#completion#OmniFunc
+<
 ALE will only suggest so many possible matches for completion. The maximum
 number of items can be controlled with |g:ale_completion_max_suggestions|.
 
@@ -1991,6 +1997,7 @@ documented in additional help files.
     elm-lsp...............................|ale-elm-elm-lsp|
     elm-make..............................|ale-elm-elm-make|
   erlang..................................|ale-erlang-options|
+    dialyzer..............................|ale-erlang-dialyzer|
     erlc..................................|ale-erlang-erlc|
     syntaxerl.............................|ale-erlang-syntaxerl|
   eruby...................................|ale-eruby-options|
@@ -2229,6 +2236,7 @@ documented in additional help files.
   spec....................................|ale-spec-options|
     rpmlint...............................|ale-spec-rpmlint|
   sql.....................................|ale-sql-options|
+    pgformatter...........................|ale-sql-pgformatter|
     sqlfmt................................|ale-sql-sqlfmt|
   stylus..................................|ale-stylus-options|
     stylelint.............................|ale-stylus-stylelint|
@@ -2239,12 +2247,14 @@ documented in additional help files.
   tcl.....................................|ale-tcl-options|
     nagelfar..............................|ale-tcl-nagelfar|
   terraform...............................|ale-terraform-options|
-    fmt...................................|ale-terraform-fmt|
+    terraform-fmt-fixer...................|ale-terraform-fmt-fixer|
+    terraform.............................|ale-terraform-terraform|
     tflint................................|ale-terraform-tflint|
   tex.....................................|ale-tex-options|
     chktex................................|ale-tex-chktex|
     lacheck...............................|ale-tex-lacheck|
     latexindent...........................|ale-tex-latexindent|
+    texlab................................|ale-tex-texlab|
   texinfo.................................|ale-texinfo-options|
     write-good............................|ale-texinfo-write-good|
   text....................................|ale-text-options|
@@ -2795,6 +2805,13 @@ ale#command#ManageFile(buffer, filename)             *ale#command#ManageFile()*
   directories from being accidentally deleted, say in cases of writing
   `dir . '/' . filename` where `filename` is actually `''`, etc. ALE instead
   manages directories separately with the |ale#command#ManageDirectory| function.
+
+
+ale#completion#OmniFunc(findstart, base)            *ale#completion#OmniFunc()*
+
+  A completion function to use with 'omnifunc'.
+
+  See |ale-completion|.
 
 
 ale#engine#GetLoclist(buffer)                         *ale#engine#GetLoclist()*

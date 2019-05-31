@@ -28,14 +28,13 @@ function! ale#lsp#message#GetNextVersionID() abort
     return l:id
 endfunction
 
-function! ale#lsp#message#Initialize(root_path, initialization_options) abort
-    " TODO: Define needed capabilities.
+function! ale#lsp#message#Initialize(root_path, options, capabilities) abort
     " NOTE: rootPath is deprecated in favour of rootUri
     return [0, 'initialize', {
     \   'processId': getpid(),
     \   'rootPath': a:root_path,
-    \   'capabilities': {},
-    \   'initializationOptions': a:initialization_options,
+    \   'capabilities': a:capabilities,
+    \   'initializationOptions': a:options,
     \   'rootUri': ale#path#ToURI(a:root_path),
     \}]
 endfunction

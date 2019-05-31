@@ -415,6 +415,7 @@ Notes:
   * `solhint`
   * `solium`
 * SQL
+  * `pgformatter`
   * `sqlfmt`
   * `sqlint`
 * Stylus

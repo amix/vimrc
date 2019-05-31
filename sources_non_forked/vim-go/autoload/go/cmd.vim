@@ -9,8 +9,8 @@ function! go#cmd#autowrite() abort
     for l:nr in range(0, bufnr('$'))
       if buflisted(l:nr) && getbufvar(l:nr, '&modified')
         " Sleep one second to make sure people see the message. Otherwise it is
-        " often immediacy overwritten by the async messages (which also don't
-        " invoke the "hit ENTER" prompt).
+        " often immediately overwritten by the async messages (which also
+        " doesn't invoke the "hit ENTER" prompt).
         call go#util#EchoWarning('[No write since last change]')
         sleep 1
         return
