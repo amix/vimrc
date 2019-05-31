@@ -424,6 +424,7 @@ formatting.
   * [solhint](https://github.com/protofire/solhint)
   * [solium](https://github.com/duaraghav8/Solium)
 * SQL
+  * [pgformatter](https://github.com/darold/pgFormatter)
   * [sqlfmt](https://github.com/jackc/sqlfmt)
   * [sqlint](https://github.com/purcell/sqlint)
 * Stylus

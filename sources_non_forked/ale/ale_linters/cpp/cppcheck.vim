@@ -9,19 +9,16 @@ function! ale_linters#cpp#cppcheck#GetCommand(buffer) abort
     "
     " If we find it, we'll `cd` to where the compile_commands.json file is,
     " then use the file to set up import paths, etc.
-    let l:compile_commmands_path = ale#path#FindNearestFile(a:buffer, 'compile_commands.json')
-
-    let l:cd_command = !empty(l:compile_commmands_path)
-    \   ? ale#path#CdString(fnamemodify(l:compile_commmands_path, ':h'))
-    \   : ''
-    let l:compile_commands_option = !empty(l:compile_commmands_path)
-    \   ? '--project=compile_commands.json '
+    let [l:dir, l:json_path] = ale#c#FindCompileCommands(a:buffer)
+    let l:cd_command = !empty(l:dir) ? ale#path#CdString(l:dir) : ''
+    let l:compile_commands_option = !empty(l:json_path)
+    \   ? '--project=' . ale#Escape(l:json_path[len(l:dir) + 1: ])
     \   : ''
 
     return l:cd_command
-    \   . '%e -q --language=c++ '
-    \   . l:compile_commands_option
-    \   . ale#Var(a:buffer, 'cpp_cppcheck_options')
+    \   . '%e -q --language=c++'
+    \   . ale#Pad(l:compile_commands_option)
+    \   . ale#Pad(ale#Var(a:buffer, 'cpp_cppcheck_options'))
     \   . ' %t'
 endfunction
 

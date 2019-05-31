@@ -29,7 +29,7 @@ ALE will look for configuration files with the following filenames. >
   tox.ini
   mypy.ini
   pycodestyle.cfg
-  flake8.cfg
+  .flake8
   .flake8rc
   pylama.ini
   pylintrc

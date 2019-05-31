@@ -3,6 +3,35 @@ ALE Erlang Integration                                     *ale-erlang-options*
 
 
 ===============================================================================
+dialyzer                                                  *ale-erlang-dialyzer*
+
+g:ale_erlang_dialyzer_executable             *g:ale_erlang_dialyzer_executable*
+                                             *b:ale_erlang_dialyzer_executable*
+  Type: |String|
+  Default: `'dialyzer'`
+
+  This variable can be changed to specify the dialyzer executable.
+
+
+g:ale_erlang_dialyzer_plt_file                 *g:ale_erlang_dialyzer_plt_file*
+                                               *b:ale_erlang_dialyzer_plt_file*
+  Type: |String|
+
+  This variable can be changed to specify the path to the PLT file. By
+  default, it will search for the PLT file inside the `_build` directory. If
+  there isn't one, it will fallback to the path `$REBAR_PLT_DIR/dialyzer/plt`.
+  Otherwise, it will default to `$HOME/.dialyzer_plt`.
+
+
+g:ale_erlang_dialyzer_rebar3_profile     *g:ale_erlang_dialyzer_rebar3_profile*
+                                         *b:ale_erlang_dialyzer_rebar3_profile*
+  Type: |String|
+  Default: `'default'`
+
+  This variable can be changed to specify the profile that is used to
+  run dialyzer with rebar3.
+
+-------------------------------------------------------------------------------
 erlc                                                          *ale-erlang-erlc*
 
 g:ale_erlang_erlc_options                           *g:ale_erlang_erlc_options*

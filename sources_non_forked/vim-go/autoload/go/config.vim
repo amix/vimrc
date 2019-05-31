@@ -14,6 +14,10 @@ function! go#config#VersionWarning() abort
   return get(g:, 'go_version_warning', 1)
 endfunction
 
+function! go#config#NullModuleWarning() abort
+  return get(g:, 'go_null_module_warning', 1)
+endfunction
+
 function! go#config#BuildTags() abort
   return get(g:, 'go_build_tags', '')
 endfunction

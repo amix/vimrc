@@ -23,27 +23,9 @@ function! ale#c#GetBuildDirectory(buffer) abort
         return l:build_dir
     endif
 
-    return ale#path#Dirname(ale#c#FindCompileCommands(a:buffer))
-endfunction
+    let [l:root, l:json_file] = ale#c#FindCompileCommands(a:buffer)
 
-
-function! ale#c#FindProjectRoot(buffer) abort
-    for l:project_filename in g:__ale_c_project_filenames
-        let l:full_path = ale#path#FindNearestFile(a:buffer, l:project_filename)
-
-        if !empty(l:full_path)
-            let l:path = fnamemodify(l:full_path, ':h')
-
-            " Correct .git path detection.
-            if fnamemodify(l:path, ':t') is# '.git'
-                let l:path = fnamemodify(l:path, ':h')
-            endif
-
-            return l:path
-        endif
-    endfor
-
-    return ''
+    return ale#path#Dirname(l:json_file)
 endfunction
 
 function! ale#c#AreSpecialCharsBalanced(option) abort
@@ -120,7 +102,7 @@ endfunction
 
 function! ale#c#ParseCFlagsFromMakeOutput(buffer, make_output) abort
     if !g:ale_c_parse_makefile
-        return ''
+        return v:null
     endif
 
     let l:buffer_filename = expand('#' . a:buffer . ':t')
@@ -140,14 +122,17 @@ function! ale#c#ParseCFlagsFromMakeOutput(buffer, make_output) abort
     return ale#c#ParseCFlags(l:makefile_dir, l:cflag_line)
 endfunction
 
-" Given a buffer number, find the build subdirectory with compile commands
-" The subdirectory is returned without the trailing /
+" Given a buffer number, find the project directory containing
+" compile_commands.json, and the path to the compile_commands.json file.
+"
+" If compile_commands.json cannot be found, two empty strings will be
+" returned.
 function! ale#c#FindCompileCommands(buffer) abort
     " Look above the current source file to find compile_commands.json
     let l:json_file = ale#path#FindNearestFile(a:buffer, 'compile_commands.json')
 
     if !empty(l:json_file)
-        return l:json_file
+        return [fnamemodify(l:json_file, ':h'), l:json_file]
     endif
 
     " Search in build directories if we can't find it in the project.
@@ -157,12 +142,42 @@ function! ale#c#FindCompileCommands(buffer) abort
             let l:json_file = l:c_build_dir . s:sep . 'compile_commands.json'
 
             if filereadable(l:json_file)
-                return l:json_file
+                return [l:path, l:json_file]
             endif
         endfor
     endfor
 
-    return ''
+    return ['', '']
+endfunction
+
+" Find the project root for C/C++ projects.
+"
+" The location of compile_commands.json will be used to find project roots.
+"
+" If compile_commands.json cannot be found, other common configuration files
+" will be used to detect the project root.
+function! ale#c#FindProjectRoot(buffer) abort
+    let [l:root, l:json_file] = ale#c#FindCompileCommands(a:buffer)
+
+    " Fall back on detecting the project root based on other filenames.
+    if empty(l:root)
+        for l:project_filename in g:__ale_c_project_filenames
+            let l:full_path = ale#path#FindNearestFile(a:buffer, l:project_filename)
+
+            if !empty(l:full_path)
+                let l:path = fnamemodify(l:full_path, ':h')
+
+                " Correct .git path detection.
+                if fnamemodify(l:path, ':t') is# '.git'
+                    let l:path = fnamemodify(l:path, ':h')
+                endif
+
+                return l:path
+            endif
+        endfor
+    endif
+
+    return l:root
 endfunction
 
 " Cache compile_commands.json data in a Dictionary, so we don't need to read
@@ -194,10 +209,14 @@ function! s:GetLookupFromCompileCommandsFile(compile_commands_file) abort
     let l:raw_data = []
     silent! let l:raw_data = json_decode(join(readfile(a:compile_commands_file), ''))
 
+    if type(l:raw_data) isnot v:t_list
+        let l:raw_data = []
+    endif
+
     let l:file_lookup = {}
     let l:dir_lookup = {}
 
-    for l:entry in l:raw_data
+    for l:entry in (type(l:raw_data) is v:t_list ? l:raw_data : [])
         let l:basename = tolower(fnamemodify(l:entry.file, ':t'))
         let l:file_lookup[l:basename] = get(l:file_lookup, l:basename, []) + [l:entry]
 
@@ -274,25 +293,25 @@ function! ale#c#FlagsFromCompileCommands(buffer, compile_commands_file) abort
 endfunction
 
 function! ale#c#GetCFlags(buffer, output) abort
-    let l:cflags = ' '
+    let l:cflags = v:null
 
     if ale#Var(a:buffer, 'c_parse_makefile') && !empty(a:output)
         let l:cflags = ale#c#ParseCFlagsFromMakeOutput(a:buffer, a:output)
     endif
 
     if ale#Var(a:buffer, 'c_parse_compile_commands')
-        let l:json_file = ale#c#FindCompileCommands(a:buffer)
+        let [l:root, l:json_file] = ale#c#FindCompileCommands(a:buffer)
 
         if !empty(l:json_file)
             let l:cflags = ale#c#FlagsFromCompileCommands(a:buffer, l:json_file)
         endif
     endif
 
-    if l:cflags is# ' '
+    if l:cflags is v:null
         let l:cflags = ale#c#IncludeOptions(ale#c#FindLocalHeaderPaths(a:buffer))
     endif
 
-    return l:cflags
+    return l:cflags isnot v:null ? l:cflags : ''
 endfunction
 
 function! ale#c#GetMakeCommand(buffer) abort

@@ -321,7 +321,69 @@ endfunction
 
 function! s:SendInitMessage(conn) abort
     let [l:init_id, l:init_data] = ale#lsp#CreateMessageData(
-    \   ale#lsp#message#Initialize(a:conn.root, a:conn.init_options),
+    \   ale#lsp#message#Initialize(
+    \       a:conn.root,
+    \       a:conn.init_options,
+    \       {
+    \           'workspace': {
+    \               'applyEdit': v:false,
+    \               'didChangeConfiguration': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'symbol': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'workspaceFolders': v:false,
+    \               'configuration': v:false,
+    \           },
+    \           'textDocument': {
+    \               'synchronization': {
+    \                   'dynamicRegistration': v:false,
+    \                   'willSave': v:false,
+    \                   'willSaveWaitUntil': v:false,
+    \                   'didSave': v:true,
+    \               },
+    \               'completion': {
+    \                   'dynamicRegistration': v:false,
+    \                   'completionItem': {
+    \                       'snippetSupport': v:false,
+    \                       'commitCharactersSupport': v:false,
+    \                       'documentationFormat': ['plaintext'],
+    \                       'deprecatedSupport': v:false,
+    \                       'preselectSupport': v:false,
+    \                   },
+    \                   'contextSupport': v:false,
+    \               },
+    \               'hover': {
+    \                   'dynamicRegistration': v:false,
+    \                   'contentFormat': ['plaintext'],
+    \               },
+    \               'references': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'documentSymbol': {
+    \                   'dynamicRegistration': v:false,
+    \                   'hierarchicalDocumentSymbolSupport': v:false,
+    \               },
+    \               'definition': {
+    \                   'dynamicRegistration': v:false,
+    \                   'linkSupport': v:false,
+    \               },
+    \               'typeDefinition': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'publishDiagnostics': {
+    \                   'relatedInformation': v:true,
+    \               },
+    \               'codeAction': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'rename': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \           },
+    \       },
+    \   ),
     \)
     let a:conn.init_request_id = l:init_id
     call s:SendMessageData(a:conn, l:init_data)

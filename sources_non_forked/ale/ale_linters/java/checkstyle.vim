@@ -17,6 +17,10 @@ function! ale_linters#java#checkstyle#Handle(buffer, lines) abort
         \})
     endfor
 
+    if !empty(l:output)
+        return l:output
+    endif
+
     " old checkstyle versions
     let l:pattern = '\v(.+):(\d+): ([^:]+): (.+)$'
 
