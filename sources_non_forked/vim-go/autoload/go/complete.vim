@@ -216,6 +216,7 @@ function! s:info_complete(echo, result) abort
 endfunction
 
 function! s:trim_bracket(val) abort
+  echom a:val
   let a:val.word = substitute(a:val.word, '[(){}\[\]]\+$', '', '')
   return a:val
 endfunction
@@ -240,7 +241,7 @@ function! go#complete#GocodeComplete(findstart, base) abort
   else
     let s = getline(".")[col('.') - 1]
     if s =~ '[(){}\{\}]'
-      return map(copy(s:completions[1]), 's:trim_bracket(v:val)')
+      return map(copy(s:completions), 's:trim_bracket(v:val)')
     endif
     return s:completions
   endif
@@ -257,7 +258,10 @@ function! go#complete#Complete(findstart, base) abort
 
   "findstart = 1 when we need to get the start of the match
   if a:findstart == 1
-    call go#lsp#Completion(expand('%:p'), line('.'), col('.'), funcref('s:handler', [l:state]))
+    let l:completion = go#lsp#Completion(expand('%:p'), line('.'), col('.'), funcref('s:handler', [l:state]))
+    if l:completion
+      return -3
+    endif
 
     while !l:state.done
       sleep 10m

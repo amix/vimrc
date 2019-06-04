@@ -305,6 +305,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['tex'],
 \       'description' : 'Indent code within environments, commands, after headings and within special code blocks.',
 \   },
+\   'pgformatter': {
+\       'function': 'ale#fixers#pgformatter#Fix',
+\       'suggested_filetypes': ['sql'],
+\       'description': 'A PostgreSQL SQL syntax beautifier',
+\   },
 \}
 
 " Reset the function registry to the default entries.

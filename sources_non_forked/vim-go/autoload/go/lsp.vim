@@ -7,7 +7,7 @@ scriptencoding utf-8
 let s:lspfactory = {}
 
 function! s:lspfactory.get() dict abort
-  if !has_key(self, 'current') || empty(self.current)
+  if !has_key(self, 'current') || empty(self.current) || !has_key(self.current, 'job') || empty(self.current.job)
     let self.current = s:newlsp()
   endif
 
@@ -22,9 +22,17 @@ endfunction
 
 function! s:newlsp() abort
   if !go#util#has_job()
+    let l:oldshortmess=&shortmess
+    if has('nvim')
+      set shortmess-=F
+    endif
     " TODO(bc): start the server in the background using a shell that waits for the right output before returning.
-    call go#util#EchoError('This feature requires either Vim 8.0.0087 or newer with +job or Neovim.')
-    return
+    call go#util#EchoWarning('Features that rely on gopls will not work without either Vim 8.0.0087 or newer with +job or Neovim')
+    " Sleep one second to make sure people see the message. Otherwise it is
+    " often immediately overwritten by an async message.
+    sleep 1
+    let &shortmess=l:oldshortmess
+    return {'sendMessage': funcref('s:noop')}
   endif
 
   " job is the job used to talk to the backing instance of gopls.
@@ -133,8 +141,17 @@ function! s:newlsp() abort
               return
             endif
             call l:handler.requestComplete(1)
+
+            let l:winidBeforeHandler = l:handler.winid
             call call(l:handler.handleResult, [l:response.result])
-            call win_gotoid(l:winid)
+
+            " change the window back to the window that was active when
+            " starting to handle the response _only_ if the handler didn't
+            " update the winid, so that handlers can set the winid if needed
+            " (e.g. :GoDef).
+            if l:handler.winid == l:winidBeforeHandler
+              call win_gotoid(l:winid)
+            endif
           finally
             call remove(self.handlers, l:response.id)
           endtry
@@ -162,11 +179,30 @@ function! s:newlsp() abort
       let l:wd = go#util#ModuleRoot()
       if l:wd == -1
         call go#util#EchoError('could not determine appropriate working directory for gopls')
-        return
+        return -1
       endif
 
       if l:wd == ''
         let l:wd = getcwd()
+      endif
+
+      " do not attempt to send a message to gopls when using neither GOPATH
+      " mode nor module mode.
+      if go#package#FromPath(l:wd) == -2
+        if go#config#NullModuleWarning() && (!has_key(self, 'warned') || !self.warned)
+          let l:oldshortmess=&shortmess
+          if has('nvim')
+            set shortmess-=F
+          endif
+          call go#util#EchoWarning('Features that rely on gopls will not work correctly outside of GOPATH or a module.')
+          let self.warned = 1
+          " Sleep one second to make sure people see the message. Otherwise it is
+          " often immediately overwritten by an async message.
+          sleep 1
+          let &shortmess=l:oldshortmess
+        endif
+
+        return -1
       endif
 
       let l:msg = self.newMessage(go#lsp#message#Initialize(l:wd))
@@ -351,7 +387,7 @@ function! go#lsp#Definition(fname, line, col, handler) abort
   let l:state = s:newHandlerState('definition')
   let l:state.handleResult = funcref('s:definitionHandler', [function(a:handler, [], l:state)], l:state)
   let l:msg = go#lsp#message#Definition(fnamemodify(a:fname, ':p'), a:line, a:col)
-  call l:lsp.sendMessage(l:msg, l:state)
+  return l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
 function! s:definitionHandler(next, msg) abort dict
@@ -373,7 +409,7 @@ function! go#lsp#TypeDef(fname, line, col, handler) abort
   let l:state = s:newHandlerState('type definition')
   let l:msg = go#lsp#message#TypeDefinition(fnamemodify(a:fname, ':p'), a:line, a:col)
   let l:state.handleResult = funcref('s:typeDefinitionHandler', [function(a:handler, [], l:state)], l:state)
-  call l:lsp.sendMessage(l:msg, l:state)
+  return  l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
 function! s:typeDefinitionHandler(next, msg) abort dict
@@ -396,9 +432,13 @@ function! go#lsp#DidOpen(fname) abort
   let l:msg = go#lsp#message#DidOpen(fnamemodify(a:fname, ':p'), join(go#util#GetLines(), "\n") . "\n")
   let l:state = s:newHandlerState('')
   let l:state.handleResult = funcref('s:noop')
-  call l:lsp.sendMessage(l:msg, l:state)
 
+  " TODO(bc): setting a buffer level variable here assumes that a:fname is the
+  " current buffer. Change to a:fname first before setting it and then change
+  " back to active buffer.
   let b:go_lsp_did_open = 1
+
+  return l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
 function! go#lsp#DidChange(fname) abort
@@ -419,7 +459,7 @@ function! go#lsp#DidChange(fname) abort
   let l:msg = go#lsp#message#DidChange(fnamemodify(a:fname, ':p'), join(go#util#GetLines(), "\n") . "\n")
   let l:state = s:newHandlerState('')
   let l:state.handleResult = funcref('s:noop')
-  call l:lsp.sendMessage(l:msg, l:state)
+  return l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
 function! go#lsp#DidClose(fname) abort
@@ -435,9 +475,12 @@ function! go#lsp#DidClose(fname) abort
   let l:msg = go#lsp#message#DidClose(fnamemodify(a:fname, ':p'))
   let l:state = s:newHandlerState('')
   let l:state.handleResult = funcref('s:noop')
-  call l:lsp.sendMessage(l:msg, l:state)
-
+  " TODO(bc): setting a buffer level variable here assumes that a:fname is the
+  " current buffer. Change to a:fname first before setting it and then change
+  " back to active buffer.
   let b:go_lsp_did_open = 0
+
+  return l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
 function! go#lsp#Completion(fname, line, col, handler) abort
@@ -448,7 +491,7 @@ function! go#lsp#Completion(fname, line, col, handler) abort
   let l:state = s:newHandlerState('completion')
   let l:state.handleResult = funcref('s:completionHandler', [function(a:handler, [], l:state)], l:state)
   let l:state.error = funcref('s:completionErrorHandler', [function(a:handler, [], l:state)], l:state)
-  call l:lsp.sendMessage(l:msg, l:state)
+  return l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
 function! s:completionHandler(next, msg) abort dict
@@ -462,6 +505,9 @@ function! s:completionHandler(next, msg) abort dict
     let l:match = {'abbr': l:item.label, 'word': l:item.textEdit.newText, 'info': '', 'kind': go#lsp#completionitemkind#Vim(l:item.kind)}
     if has_key(l:item, 'detail')
         let l:match.info = l:item.detail
+        if go#lsp#completionitemkind#IsFunction(l:item.kind) || go#lsp#completionitemkind#IsMethod(l:item.kind)
+          let l:match.info = printf('func %s %s', l:item.label, l:item.detail)
+        endif
     endif
 
     if has_key(l:item, 'documentation')
@@ -475,7 +521,7 @@ function! s:completionHandler(next, msg) abort dict
 endfunction
 
 function! s:completionErrorHandler(next, error) abort dict
-  call call(a:next, [[]])
+  call call(a:next, [-1, []])
 endfunction
 
 function! go#lsp#Hover(fname, line, col, handler) abort
@@ -486,7 +532,7 @@ function! go#lsp#Hover(fname, line, col, handler) abort
   let l:state = s:newHandlerState('')
   let l:state.handleResult = funcref('s:hoverHandler', [function(a:handler, [], l:state)], l:state)
   let l:state.error = funcref('s:noop')
-  call l:lsp.sendMessage(l:msg, l:state)
+  return l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
 function! s:hoverHandler(next, msg) abort dict
@@ -515,13 +561,13 @@ function! go#lsp#Info(showstatus)
     let l:state = s:newHandlerState('')
   endif
 
-  let l:state.handleResult = funcref('s:infoDefinitionHandler', [function('s:info', []), a:showstatus], l:state)
+  let l:state.handleResult = funcref('s:infoDefinitionHandler', [a:showstatus], l:state)
   let l:state.error = funcref('s:noop')
   let l:msg = go#lsp#message#Definition(l:fname, l:line, l:col)
-  call l:lsp.sendMessage(l:msg, l:state)
+  return l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
-function! s:infoDefinitionHandler(next, showstatus, msg) abort dict
+function! s:infoDefinitionHandler(showstatus, msg) abort dict
   " gopls returns a []Location; just take the first one.
   let l:msg = a:msg[0]
 
@@ -540,11 +586,15 @@ function! s:infoDefinitionHandler(next, showstatus, msg) abort dict
 
   let l:state.handleResult = funcref('s:hoverHandler', [function('s:info', [], l:state)], l:state)
   let l:state.error = funcref('s:noop')
-  call l:lsp.sendMessage(l:msg, l:state)
+  return l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
 function! s:info(content) abort dict
   let l:content = a:content[0]
+
+  " strip godoc summary
+  let l:content = substitute(l:content, '^[^\n]\+\n', '', '')
+
   " strip off the method set and fields of structs and interfaces.
   if l:content =~# '^type [^ ]\+ \(struct\|interface\)'
     let l:content = substitute(l:content, '{.*', '', '')

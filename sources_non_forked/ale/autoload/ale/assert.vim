@@ -96,6 +96,13 @@ function! ale#assert#Fixer(expected_result) abort
     AssertEqual a:expected_result, l:result
 endfunction
 
+function! ale#assert#FixerNotExecuted() abort
+    let l:buffer = bufnr('')
+    let l:result = s:ProcessDeferredCommands(s:FixerFunction(l:buffer))[-1]
+
+    Assert empty(l:result), "The fixer will be executed when it shouldn't be"
+endfunction
+
 function! ale#assert#LinterNotExecuted() abort
     let l:buffer = bufnr('')
     let l:linter = s:GetLinter()
@@ -158,6 +165,7 @@ endfunction
 function! ale#assert#SetUpFixerTestCommands() abort
     command! -nargs=+ GivenCommandOutput :call ale#assert#GivenCommandOutput(<args>)
     command! -nargs=+ AssertFixer :call ale#assert#Fixer(<args>)
+    command! -nargs=0 AssertFixerNotExecuted :call ale#assert#FixerNotExecuted()
 endfunction
 
 " A dummy function for making sure this module is loaded.
@@ -315,5 +323,9 @@ function! ale#assert#TearDownFixerTest() abort
 
     if exists(':AssertFixer')
         delcommand AssertFixer
+    endif
+
+    if exists(':AssertFixerNotExecuted')
+        delcommand AssertFixerNotExecuted
     endif
 endfunction

@@ -11,6 +11,7 @@ let s:pragma_error = '#pragma once in main file'
 " <stdin>:10:27: error: invalid operands to binary - (have ‘int’ and ‘char *’)
 " -:189:7: note: $/${} is unnecessary on arithmetic variables. [SC2004]
 let s:pattern = '\v^([a-zA-Z]?:?[^:]+):(\d+):(\d+)?:? ([^:]+): (.+)$'
+let s:inline_pattern = '\v inlined from .* at \<stdin\>:(\d+):(\d+):$'
 
 function! s:IsHeaderFile(filename) abort
     return a:filename =~? '\v\.(h|hpp)$'
@@ -23,6 +24,28 @@ function! s:RemoveUnicodeQuotes(text) abort
     let l:text = substitute(l:text, '[“”]', '"', 'g')
 
     return l:text
+endfunction
+
+function! s:ParseInlinedFunctionProblems(buffer, lines) abort
+    let l:output = []
+    let l:pos_match = []
+
+    for l:line in a:lines
+        let l:match = matchlist(l:line, s:pattern)
+
+        if !empty(l:match) && !empty(l:pos_match)
+            call add(l:output, {
+            \   'lnum': str2nr(l:pos_match[1]),
+            \   'col': str2nr(l:pos_match[2]),
+            \   'type': (l:match[4] is# 'error' || l:match[4] is# 'fatal error') ? 'E' : 'W',
+            \   'text': s:RemoveUnicodeQuotes(l:match[5]),
+            \})
+        endif
+
+        let l:pos_match = matchlist(l:line, s:inline_pattern)
+    endfor
+
+    return l:output
 endfunction
 
 " Report problems inside of header files just for gcc and clang
@@ -129,6 +152,7 @@ endfunction
 function! ale#handlers#gcc#HandleGCCFormatWithIncludes(buffer, lines) abort
     let l:output = ale#handlers#gcc#HandleGCCFormat(a:buffer, a:lines)
 
+    call extend(l:output, s:ParseInlinedFunctionProblems(a:buffer, a:lines))
     call extend(l:output, s:ParseProblemsInHeaders(a:buffer, a:lines))
 
     return l:output

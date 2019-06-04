@@ -3,6 +3,24 @@ ALE SQL Integration                                           *ale-sql-options*
 
 
 ===============================================================================
+pgformatter                                                 *ale-sql-pgformatter*
+
+g:ale_sql_pgformatter_executable             *g:ale_sql_pgformatter_executable*
+                                             *b:ale_sql_pgformatter_executable*
+  Type: |String|
+  Default: `'pg_format'`
+
+  This variable sets executable used for pgformatter.
+
+g:ale_sql_pgformatter_options                   *g:ale_sql_pgformatter_options*
+                                                *b:ale_sql_pgformatter_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the pgformatter fixer.
+
+
+===============================================================================
 sqlfmt                                                         *ale-sql-sqlfmt*
 
 g:ale_sql_sqlfmt_executable                       *g:ale_sql_sqlfmt_executable*

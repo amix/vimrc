@@ -169,7 +169,7 @@ function! s:ReplaceCompletionOptions() abort
             let b:ale_old_omnifunc = &l:omnifunc
         endif
 
-        let &l:omnifunc = 'ale#completion#OmniFunc'
+        let &l:omnifunc = 'ale#completion#AutomaticOmniFunc'
     endif
 
     if l:source is# 'ale-automatic'
@@ -216,18 +216,6 @@ function! ale#completion#GetCompletionPosition() abort
 endfunction
 
 function! ale#completion#GetCompletionResult() abort
-    " Parse a new response if there is one.
-    if exists('b:ale_completion_response')
-    \&& exists('b:ale_completion_parser')
-        let l:response = b:ale_completion_response
-        let l:parser = b:ale_completion_parser
-
-        unlet b:ale_completion_response
-        unlet b:ale_completion_parser
-
-        let b:ale_completion_result = function(l:parser)(l:response)
-    endif
-
     if exists('b:ale_completion_result')
         return b:ale_completion_result
     endif
@@ -235,7 +223,7 @@ function! ale#completion#GetCompletionResult() abort
     return v:null
 endfunction
 
-function! ale#completion#OmniFunc(findstart, base) abort
+function! ale#completion#AutomaticOmniFunc(findstart, base) abort
     if a:findstart
         return ale#completion#GetCompletionPosition()
     else
@@ -247,15 +235,20 @@ function! ale#completion#OmniFunc(findstart, base) abort
     endif
 endfunction
 
-function! ale#completion#Show(response, completion_parser) abort
+function! ale#completion#Show(result) abort
     if ale#util#Mode() isnot# 'i'
         return
     endif
 
     " Set the list in the buffer, temporarily replace omnifunc with our
     " function, and then start omni-completion.
-    let b:ale_completion_response = a:response
-    let b:ale_completion_parser = a:completion_parser
+    let b:ale_completion_result = a:result
+
+    " Don't try to open the completion menu if there's nothing to show.
+    if empty(b:ale_completion_result)
+        return
+    endif
+
     " Replace completion options shortly before opening the menu.
     call s:ReplaceCompletionOptions()
 
@@ -279,6 +272,7 @@ function! s:CompletionStillValid(request_id) abort
     \&& (
     \   b:ale_completion_info.column == l:column
     \   || b:ale_completion_info.source is# 'deoplete'
+    \   || b:ale_completion_info.source is# 'ale-omnifunc'
     \)
 endfunction
 
@@ -474,8 +468,7 @@ function! ale#completion#HandleTSServerResponse(conn_id, response) abort
         endif
     elseif l:command is# 'completionEntryDetails'
         call ale#completion#Show(
-        \   a:response,
-        \   'ale#completion#ParseTSServerCompletionEntryDetails',
+        \   ale#completion#ParseTSServerCompletionEntryDetails(a:response),
         \)
     endif
 endfunction
@@ -487,8 +480,7 @@ function! ale#completion#HandleLSPResponse(conn_id, response) abort
     endif
 
     call ale#completion#Show(
-    \   a:response,
-    \   'ale#completion#ParseLSPCompletions',
+    \   ale#completion#ParseLSPCompletions(a:response),
     \)
 endfunction
 
@@ -529,10 +521,7 @@ function! s:OnReady(linter, lsp_details) abort
         let l:message = ale#lsp#message#Completion(
         \   l:buffer,
         \   b:ale_completion_info.line,
-        \   min([
-        \       b:ale_completion_info.line_length,
-        \       b:ale_completion_info.column,
-        \   ]) + 1,
+        \   b:ale_completion_info.column,
         \   ale#completion#GetTriggerCharacter(&filetype, b:ale_completion_info.prefix),
         \)
     endif
@@ -570,7 +559,7 @@ function! ale#completion#GetCompletions(source) abort
     let l:prefix = ale#completion#GetPrefix(&filetype, l:line, l:column)
 
     if a:source is# 'ale-automatic' && empty(l:prefix)
-        return
+        return 0
     endif
 
     let l:line_length = len(getline('.'))
@@ -589,11 +578,40 @@ function! ale#completion#GetCompletions(source) abort
     let l:buffer = bufnr('')
     let l:Callback = function('s:OnReady')
 
+    let l:started = 0
+
     for l:linter in ale#linter#Get(&filetype)
         if !empty(l:linter.lsp)
-            call ale#lsp_linter#StartLSP(l:buffer, l:linter, l:Callback)
+            if ale#lsp_linter#StartLSP(l:buffer, l:linter, l:Callback)
+                let l:started = 1
+            endif
         endif
     endfor
+
+    return l:started
+endfunction
+
+function! ale#completion#OmniFunc(findstart, base) abort
+    if a:findstart
+        let l:started = ale#completion#GetCompletions('ale-omnifunc')
+
+        if !l:started
+            " This is the special value for cancelling completions silently.
+            " See :help complete-functions
+            return -3
+        endif
+
+        return ale#completion#GetCompletionPosition()
+    else
+        let l:result = ale#completion#GetCompletionResult()
+
+        while l:result is v:null && !complete_check()
+            sleep 2ms
+            let l:result = ale#completion#GetCompletionResult()
+        endwhile
+
+        return l:result isnot v:null ? l:result : []
+    endif
 endfunction
 
 function! s:TimerHandler(...) abort

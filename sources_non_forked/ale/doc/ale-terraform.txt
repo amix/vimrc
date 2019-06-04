@@ -3,7 +3,7 @@ ALE Terraform Integration                               *ale-terraform-options*
 
 
 ===============================================================================
-fmt                                                         *ale-terraform-fmt*
+terraform-fmt-fixer                                   *ale-terraform-fmt-fixer*
 
 g:ale_terraform_fmt_executable                 *g:ale_terraform_fmt_executable*
                                                *b:ale_terraform_fmt_executable*
@@ -18,6 +18,18 @@ g:ale_terraform_fmt_options                       *g:ale_terraform_fmt_options*
                                                   *b:ale_terraform_fmt_options*
   Type: |String|
   Default: `''`
+
+
+===============================================================================
+terraform                                             *ale-terraform-terraform*
+
+g:ale_terraform_terraform_executable     *g:ale_terraform_terraform_executable*
+                                         *b:ale_terraform_terraform_executable*
+
+  Type: |String|
+  Default: `'terraform'`
+
+  This variable can be changed to use a different executable for terraform.
 
 
 ===============================================================================

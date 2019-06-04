@@ -238,6 +238,12 @@ function! ale#debugging#Info() abort
 endfunction
 
 function! ale#debugging#InfoToClipboard() abort
+    if !has('clipboard')
+        call s:Echo('clipboard not available. Try :ALEInfoToFile instead.')
+
+        return
+    endif
+
     redir => l:output
         silent call ale#debugging#Info()
     redir END
