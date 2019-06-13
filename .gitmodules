@@ -7,3 +7,6 @@
 [submodule "my_plugins/vim-snazzy"]
 	path = my_plugins/vim-snazzy
 	url = git@github.com:connorholyday/vim-snazzy.git
+[submodule "my_plugins/fzf.vim"]
+	path = my_plugins/fzf.vim
+	url = https://github.com/junegunn/fzf.vim.git
