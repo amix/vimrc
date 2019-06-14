@@ -10,3 +10,7 @@
 [submodule "my_plugins/fzf.vim"]
 	path = my_plugins/fzf.vim
 	url = https://github.com/junegunn/fzf.vim.git
+[submodule "my_plugins/vim-vue-syntastic"]
+	path = my_plugins/vim-vue-syntastic
+	url = git@github.com:sekel/vim-vue-syntastic.git
+	branch = master
