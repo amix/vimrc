@@ -34,11 +34,10 @@ nmap <c-n> <Plug>yankstack_substitute_newer_paste
 """"""""""""""""""""""""""""""
 " => FZF
 """"""""""""""""""""""""""""""
-set rtp+=~/.fzf
-map <leader>j :Files<cr>
 nnoremap <C-f> :Files<Cr>
-map <leader>o :Buffers<cr>
-map <leader>g :Ag<CR>
+nmap <Leader>o :Buffers<CR>
+nnoremap <Leader>g :Ag<CR>
+set rtp+=/usr/local/opt/fzf
 
 """"""""""""""""""""""""""""""
 " => ZenCoding
