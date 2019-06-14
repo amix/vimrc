@@ -87,9 +87,7 @@ Distraction free mode using [goyo.vim](https://github.com/junegunn/goyo.vim) and
 
 I recommend reading the docs of these plugins to understand them better. Each plugin provides a much better Vim experience!
 
-* [ack.vim](https://github.com/mileszs/ack.vim): Vim plugin for `the_silver_searcher` (ag) or ack -- a wicked fast grep
-* [bufexplorer.zip](https://github.com/vim-scripts/bufexplorer.zip): Quickly and easily switch between buffers. This plugin can be opened with `<leader+o>`
-* [ctrlp.vim](https://github.com/ctrlpvim/ctrlp.vim): Fuzzy file, buffer, mru and tag finder. It's mapped to `<Ctrl+F>`
+* [fzf.vim](https://github.com/junegunn/fzf.vim)
 * [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2): 
 * [lightline.vim](https://github.com/itchyny/lightline.vim): A light and configurable statusline/tabline for Vim
 * [NERD Tree](https://github.com/scrooloose/nerdtree): A tree explorer plugin for vim
@@ -147,17 +145,17 @@ The [leader](http://learnvimscriptthehardway.stevelosh.com/chapters/06.html#lead
 
 ### Plugin related mappings
 
-Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) to see and manage the current buffers (`<leader>o`):
+Open [fzf.vim](https://github.com/junegunn/fzf.vim) `:Buffers` to see and manage the current buffers (`<leader>o`):
     
-    map <leader>o :BufExplorer<cr>
+    map <leader>o :Buffers<cr>
 
 Open [MRU.vim](https://github.com/vim-scripts/mru.vim) to see the recently open files (`<leader>f`):
 
     map <leader>f :MRU<CR>
 
-Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a file or a buffer (`<leader>j` or `<ctrl>f`):
+Open [fzf.vim](https://github.com/junegunn/fzf.vim) `:Files` plugin to quickly find a file or a buffer (`<ctrl>f`):
     
-    let g:ctrlp_map = '<c-f>'
+    map <C-f> :Files<CR>
 
 [NERD Tree](https://github.com/scrooloose/nerdtree) mappings:
 
@@ -216,9 +214,9 @@ Switch [CWD](http://vim.wikia.com/wiki/Set_working_directory_to_the_current_file
 	
 	map <leader>cd :cd %:p:h<cr>:pwd<cr>
 	
-Open `ack.vim` for fast search:
+Open `fzf.vim` `:Ag` for fast search:
 	
-	map <leader>g :Ack 
+	map <leader>g :Ag<cr>
 
 Quickly open a buffer for scripbble:
 	
