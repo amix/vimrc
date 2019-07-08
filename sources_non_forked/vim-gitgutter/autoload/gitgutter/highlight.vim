@@ -131,40 +131,22 @@ function! s:define_sign_line_highlights() abort
   endif
 endfunction
 
-function! s:get_foreground_colors(group) abort
-  redir => highlight
-  silent execute 'silent highlight ' . a:group
-  redir END
-
-  let link_matches = matchlist(highlight, 'links to \(\S\+\)')
-  if len(link_matches) > 0 " follow the link
-    return s:get_foreground_colors(link_matches[1])
+function! s:get_hl(group, what, mode) abort
+  let r = synIDattr(synIDtrans(hlID(a:group)), a:what, a:mode)
+  if empty(r) || r == -1
+    return 'NONE'
   endif
+  return r
+endfunction
 
-  let ctermfg = s:match_highlight(highlight, 'ctermfg=\([0-9A-Za-z]\+\)')
-  let guifg   = s:match_highlight(highlight, 'guifg=\([#0-9A-Za-z]\+\)')
+function! s:get_foreground_colors(group) abort
+  let ctermfg = s:get_hl(a:group, 'fg', 'cterm')
+  let guifg = s:get_hl(a:group, 'fg', 'gui')
   return [guifg, ctermfg]
 endfunction
 
 function! s:get_background_colors(group) abort
-  redir => highlight
-  silent execute 'silent highlight ' . a:group
-  redir END
-
-  let link_matches = matchlist(highlight, 'links to \(\S\+\)')
-  if len(link_matches) > 0 " follow the link
-    return s:get_background_colors(link_matches[1])
-  endif
-
-  let ctermbg = s:match_highlight(highlight, 'ctermbg=\([0-9A-Za-z]\+\)')
-  let guibg   = s:match_highlight(highlight, 'guibg=\([#0-9A-Za-z]\+\)')
+  let ctermbg = s:get_hl(a:group, 'bg', 'cterm')
+  let guibg = s:get_hl(a:group, 'bg', 'gui')
   return [guibg, ctermbg]
-endfunction
-
-function! s:match_highlight(highlight, pattern) abort
-  let matches = matchlist(a:highlight, a:pattern)
-  if len(matches) == 0
-    return 'NONE'
-  endif
-  return matches[1]
 endfunction

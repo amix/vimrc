@@ -214,6 +214,9 @@ augroup gitgutter
   autocmd ShellCmdPost * call gitgutter#all(1)
   autocmd BufLeave term://* call gitgutter#all(1)
 
+  autocmd BufFilePre  * GitGutterBufferDisable
+  autocmd BufFilePost * GitGutterBufferEnable
+
   " Handle all buffers when focus is gained, but only after it was lost.
   " FocusGained gets triggered on startup with Neovim at least already.
   " Therefore this tracks also if it was lost before.

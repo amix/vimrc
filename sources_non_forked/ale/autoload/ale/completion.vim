@@ -52,6 +52,7 @@ let s:should_complete_map = {
 \   'lisp': s:lisp_regex,
 \   'typescript': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$|''$|"$',
 \   'rust': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$|::$',
+\   'cpp': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$|::$|-\>$',
 \}
 
 " Regular expressions for finding the start column to replace with completion.
@@ -64,6 +65,7 @@ let s:trigger_character_map = {
 \   '<default>': ['.'],
 \   'typescript': ['.', '''', '"'],
 \   'rust': ['.', '::'],
+\   'cpp': ['.', '::', '->'],
 \}
 
 function! s:GetFiletypeValue(map, filetype) abort

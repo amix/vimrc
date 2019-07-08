@@ -79,7 +79,12 @@ endfunction
 " go#complete#GoInfo returns the description of the identifier under the
 " cursor.
 function! go#complete#GetInfo() abort
-  return s:sync_info(0)
+  let l:mode = go#config#InfoMode()
+  if l:mode == 'gopls' && go#util#has_job()
+    return go#lsp#GetInfo()
+  else
+    return s:sync_info(0)
+  endif
 endfunction
 
 function! go#complete#Info(showstatus) abort

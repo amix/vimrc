@@ -116,4 +116,7 @@ command! -nargs=0 GoReportGitHubIssue call go#issue#New()
 " -- iferr
 command! -nargs=0 GoIfErr call go#iferr#Generate()
 
+" -- lsp
+command! -nargs=+ -complete=dir GoAddWorkspace call go#lsp#AddWorkspace(<f-args>)
+
 " vim: sw=2 ts=2 et

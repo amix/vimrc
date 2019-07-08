@@ -11,7 +11,7 @@ endfunction
 function! ale_linters#typescript#xo#GetCommand(buffer) abort
     return ale#Escape(ale_linters#typescript#xo#GetExecutable(a:buffer))
     \   . ale#Pad(ale#Var(a:buffer, 'typescript_xo_options'))
-    \   . ' --reporter unix --stdin --stdin-filename %s'
+    \   . ' --reporter json --stdin --stdin-filename %s'
 endfunction
 
 " xo uses eslint and the output format is the same
@@ -19,5 +19,5 @@ call ale#linter#Define('typescript', {
 \   'name': 'xo',
 \   'executable': function('ale_linters#typescript#xo#GetExecutable'),
 \   'command': function('ale_linters#typescript#xo#GetCommand'),
-\   'callback': 'ale#handlers#eslint#Handle',
+\   'callback': 'ale#handlers#eslint#HandleJSON',
 \})

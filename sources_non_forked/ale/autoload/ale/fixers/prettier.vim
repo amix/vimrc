@@ -39,9 +39,15 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version) abort
     let l:options = ale#Var(a:buffer, 'javascript_prettier_options')
     let l:parser = ''
 
+    let l:filetypes = split(getbufvar(a:buffer, '&filetype'), '\.')
+
+    if index(l:filetypes, 'handlebars') > -1
+        let l:parser = 'glimmer'
+    endif
+
     " Append the --parser flag depending on the current filetype (unless it's
     " already set in g:javascript_prettier_options).
-    if empty(expand('#' . a:buffer . ':e')) && match(l:options, '--parser') == -1
+    if empty(expand('#' . a:buffer . ':e')) && l:parser is# ''  && match(l:options, '--parser') == -1
         " Mimic Prettier's defaults. In cases without a file extension or
         " filetype (scratch buffer), Prettier needs `parser` set to know how
         " to process the buffer.
@@ -65,7 +71,7 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version) abort
         \    'html': 'html',
         \}
 
-        for l:filetype in split(getbufvar(a:buffer, '&filetype'), '\.')
+        for l:filetype in l:filetypes
             if has_key(l:prettier_parsers, l:filetype)
                 let l:parser = l:prettier_parsers[l:filetype]
                 break

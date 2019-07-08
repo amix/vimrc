@@ -125,7 +125,7 @@ g:ale_cpp_clangtidy_options                       *g:ale_cpp_clangtidy_options*
   Type: |String|
   Default: `''`
 
-  This variable can be changed to modify flags given to clang-tidy.
+  This variable can be changed to modify compiler flags given to clang-tidy.
 
   - Setting this variable to a non-empty string,
   - and working in a buffer where no compilation database is found using
@@ -136,6 +136,23 @@ g:ale_cpp_clangtidy_options                       *g:ale_cpp_clangtidy_options*
   Only set this option if you want to control compiler flags
   entirely manually, and no `compile_commands.json` file is in one
   of the |g:ale_c_build_dir_names| directories of the project tree.
+
+
+g:ale_cpp_clangtidy_extra_options           *g:ale_cpp_clangtidy_extra_options*
+                                            *b:ale_cpp_clangtidy_extra_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to clang-tidy.
+
+
+g:ale_cpp_clangtidy_fix_errors                 *g:ale_cpp_clangtidy_fix_errors*
+                                               *b:ale_cpp_clangtidy_fix_errors*
+  Type: |Number|
+  Default: `1`
+
+  This variable can be changed to disable the `-fix-errors` option for the
+  |clangtidy| fixer.
 
 
 ===============================================================================

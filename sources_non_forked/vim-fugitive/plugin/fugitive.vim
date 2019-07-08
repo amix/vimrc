@@ -103,7 +103,7 @@ endfunction
 
 function! FugitiveIsGitDir(path) abort
   let path = substitute(a:path, '[\/]$', '', '') . '/'
-  return getfsize(path.'HEAD') > 10 && (
+  return len(a:path) && getfsize(path.'HEAD') > 10 && (
         \ isdirectory(path.'objects') && isdirectory(path.'refs') ||
         \ getftype(path.'commondir') ==# 'file')
 endfunction
@@ -159,9 +159,11 @@ function! FugitiveExtractGitDir(path) abort
   endif
   let root = resolve(path)
   if root !=# path
-    silent! exe haslocaldir() ? 'lcd .' : 'cd .'
+    silent! exe (haslocaldir() ? 'lcd' : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd') '.'
   endif
   let previous = ""
+  let env_git_dir = len($GIT_DIR) ? s:Slash(simplify(fnamemodify($GIT_DIR, ':p:s?[\/]$??'))) : ''
+  call s:Tree(env_git_dir)
   while root !=# previous
     if root =~# '\v^//%([^/]+/?)?$'
       break
@@ -169,14 +171,10 @@ function! FugitiveExtractGitDir(path) abort
     if index(split($GIT_CEILING_DIRECTORIES, ':'), root) >= 0
       break
     endif
-    if root ==# $GIT_WORK_TREE && FugitiveIsGitDir($GIT_DIR)
-      return simplify(fnamemodify($GIT_DIR, ':p:s?[\/]$??'))
-    endif
-    if FugitiveIsGitDir($GIT_DIR)
-      call s:Tree(simplify(fnamemodify($GIT_DIR, ':p:s?[\/]$??')))
-      if has_key(s:dir_for_worktree, root)
-        return s:dir_for_worktree[root]
-      endif
+    if root ==# $GIT_WORK_TREE && FugitiveIsGitDir(env_git_dir)
+      return env_git_dir
+    elseif has_key(s:dir_for_worktree, root)
+      return s:dir_for_worktree[root]
     endif
     let dir = substitute(root, '[\/]$', '', '') . '/.git'
     let type = getftype(dir)
@@ -234,7 +232,10 @@ function! s:ProjectionistDetect() abort
     if exists('+shellslash') && !&shellslash
       let base = tr(base, '/', '\')
     endif
-    call projectionist#append(base, FugitiveCommonDir(dir) . '/info/projections.json')
+    let file = FugitiveCommonDir(dir) . '/info/projections.json'
+    if filereadable(file)
+      call projectionist#append(base, file)
+    endif
   endif
 endfunction
 

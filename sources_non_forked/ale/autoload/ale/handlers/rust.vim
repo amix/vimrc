@@ -56,14 +56,20 @@ function! ale#handlers#rust#HandleRustErrors(buffer, lines) abort
             endif
 
             if !empty(l:span)
-                call add(l:output, {
+                let l:output_line = {
                 \   'lnum': l:span.line_start,
                 \   'end_lnum': l:span.line_end,
                 \   'col': l:span.column_start,
                 \   'end_col': l:span.column_end-1,
                 \   'text': empty(l:span.label) ? l:error.message : printf('%s: %s', l:error.message, l:span.label),
                 \   'type': toupper(l:error.level[0]),
-                \})
+                \}
+
+                if has_key(l:error, 'rendered') && !empty(l:error.rendered)
+                    let l:output_line.detail = l:error.rendered
+                endif
+
+                call add(l:output, l:output_line)
             endif
         endfor
     endfor

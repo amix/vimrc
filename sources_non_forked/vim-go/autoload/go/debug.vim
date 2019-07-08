@@ -595,10 +595,23 @@ function! go#debug#Start(is_test, ...) abort
 
     " append the package when it's given.
     if len(a:000) > 0
-      let l:pkgname = go#package#FromPath(a:1)
-      if l:pkgname is -1
-        call go#util#EchoError('could not determine package name')
-        return
+      let l:pkgname = a:1
+      if l:pkgname[0] == '.'
+        let l:pkgabspath = fnamemodify(l:pkgname, ':p')
+
+        let l:cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
+        let l:dir = getcwd()
+        execute l:cd fnameescape(expand('%:p:h'))
+
+        try
+          let l:pkgname = go#package#FromPath(l:pkgabspath)
+          if type(l:pkgname) == type(0)
+            call go#util#EchoError('could not determine package name')
+            return
+          endif
+        finally
+          execute l:cd fnameescape(l:dir)
+        endtry
       endif
 
       let l:cmd += [l:pkgname]

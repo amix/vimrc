@@ -173,4 +173,5 @@ function! s:clear(bufnr)
   call gitgutter#sign#remove_dummy_sign(a:bufnr, 1)
   call gitgutter#hunk#reset(a:bufnr)
   call s:reset_tick(a:bufnr)
+  call gitgutter#utility#setbufvar(a:bufnr, 'path', '')
 endfunction
