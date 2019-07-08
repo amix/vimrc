@@ -21,6 +21,11 @@ function! ale_linters#java#javac#RunWithImportPaths(buffer) abort
         let l:command = ale#gradle#BuildClasspathCommand(a:buffer)
     endif
 
+    " Try to use Ant if Gradle and Maven aren't available
+    if empty(l:command)
+        let l:command = ale#ant#BuildClasspathCommand(a:buffer)
+    endif
+
     if empty(l:command)
         return ale_linters#java#javac#GetCommand(a:buffer, [], {})
     endif

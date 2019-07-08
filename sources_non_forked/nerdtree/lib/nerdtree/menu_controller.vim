@@ -31,7 +31,7 @@ function! s:MenuController.showMenu()
         let l:done = 0
 
         while !l:done
-            redraw!
+            mode
             call self._echoPrompt()
 
             let l:key = nr2char(getchar())

@@ -620,6 +620,11 @@ function! s:TreeDirNode.reveal(path, ...)
 
     if self.path.equals(a:path.getParent())
         let n = self.findNode(a:path)
+        " We may be looking for a newly-saved file that isn't in the tree yet.
+        if n == {}
+            call self.refresh()
+            let n = self.findNode(a:path)
+        endif
         if has_key(opts, "open")
             call n.open()
         endif

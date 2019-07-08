@@ -673,6 +673,36 @@ g:ale_python_pyre_auto_pipenv                   *g:ale_python_pyre_auto_pipenv*
 
 
 ===============================================================================
+reorder-python-imports                      *ale-python-reorder_python_imports*
+
+g:ale_python_reorder_python_imports_executable
+                               *g:ale_python_reorder_python_imports_executable*
+                               *b:ale_python_reorder_python_imports_executable*
+  Type: |String|
+  Default: `'reorder-python-imports'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_reorder_python_imports_options
+                                  *g:ale_python_reorder_python_imports_options*
+                                  *b:ale_python_reorder_python_imports_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to reorder-python-imports.
+
+
+g:ale_python_reorder_python_imports_use_global
+                               *g:ale_python_reorder_python_imports_use_global*
+                               *b:ale_python_reorder_python_imports_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 vulture                                                    *ale-python-vulture*
 
 g:ale_python_vulture_change_directory   *g:ale_python_vulture_change_directory*

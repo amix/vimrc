@@ -62,6 +62,7 @@ formatting.
   * [gcc](https://gcc.gnu.org/)
   * [uncrustify](https://github.com/uncrustify/uncrustify)
 * C#
+  * [csc](http://www.mono-project.com/docs/about-mono/languages/csharp/) :floppy_disk: see:`help ale-cs-csc` for details and configuration
   * [mcs](http://www.mono-project.com/docs/about-mono/languages/csharp/) see:`help ale-cs-mcs` for details
   * [mcsc](http://www.mono-project.com/docs/about-mono/languages/csharp/) :floppy_disk: see:`help ale-cs-mcsc` for details and configuration
   * [uncrustify](https://github.com/uncrustify/uncrustify)
@@ -131,7 +132,7 @@ formatting.
 * Elm
   * [elm-format](https://github.com/avh4/elm-format)
   * [elm-lsp](https://github.com/antew/elm-lsp)
-  * [elm-make](https://github.com/elm-lang/elm-make)
+  * [elm-make](https://github.com/elm/compiler)
 * Erb
   * [erb](https://apidock.com/ruby/ERB)
   * [erubi](https://github.com/jeremyevans/erubi)
@@ -347,6 +348,8 @@ formatting.
   * [languageserver](https://github.com/lingua-pupuli/puppet-editor-services)
   * [puppet](https://puppet.com)
   * [puppet-lint](https://puppet-lint.com)
+* PureScript
+  * [purescript-language-server](https://github.com/nwolverson/purescript-language-server)
 * Python
   * [autopep8](https://github.com/hhatto/autopep8)
   * [bandit](https://github.com/PyCQA/bandit) :warning:
@@ -362,6 +365,7 @@ formatting.
   * [pylint](https://www.pylint.org/) :floppy_disk:
   * [pyls](https://github.com/palantir/python-language-server) :warning:
   * [pyre](https://github.com/facebook/pyre-check) :warning:
+  * [reorder-python-imports](https://github.com/asottile/reorder_python_imports)
   * [vulture](https://github.com/jendrikseipp/vulture) :warning: :floppy_disk:
   * [yapf](https://github.com/google/yapf)
 * QML
@@ -375,6 +379,7 @@ formatting.
 * ReasonML
   * [merlin](https://github.com/the-lambda-church/merlin) see `:help ale-reasonml-ols` for configuration instructions
   * [ols](https://github.com/freebroccolo/ocaml-language-server)
+  * [reason-language-server](https://github.com/jaredly/reason-language-server)
   * [refmt](https://github.com/reasonml/reason-cli)
 * reStructuredText
   * [alex](https://github.com/wooorm/alex) :floppy_disk:

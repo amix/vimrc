@@ -10,7 +10,9 @@ function! go#lsp#message#Initialize(wd) abort
             \ 'processId': getpid(),
             \ 'rootUri': go#path#ToURI(a:wd),
             \ 'capabilities': {
-              \ 'workspace': {},
+              \ 'workspace': {
+                \ 'workspaceFolders': v:true,
+              \ },
               \ 'textDocument': {
                 \ 'hover': {
                   \ 'contentFormat': ['plaintext'],
@@ -19,6 +21,14 @@ function! go#lsp#message#Initialize(wd) abort
             \ }
           \ }
        \ }
+endfunction
+
+function! go#lsp#message#workspaceFolders(dirs) abort
+  return map(copy(a:dirs), function('s:workspaceFolderToURI', []))
+endfunction
+
+function s:workspaceFolderToURI(key, val) abort
+  return go#path#ToURI(a:val)
 endfunction
 
 function! go#lsp#message#Definition(file, line, col) abort
@@ -114,6 +124,25 @@ function! go#lsp#message#Hover(file, line, col) abort
           \   'position': s:position(a:line, a:col),
           \ }
        \ }
+endfunction
+
+function! go#lsp#message#AddWorkspaces(dirs) abort
+  let l:dirs = map(copy(a:dirs), function('s:workspaceFodlerToAddURI', []))
+
+  return {
+          \ 'notification': 1,
+          \ 'method': 'workspace/didChangeWorkspaceFolders',
+          \ 'params': {
+          \   'event': {
+          \     'added': l:dirs,
+          \     },
+          \ }
+       \ }
+
+endfunction
+
+function s:workspaceFolderToAddURI(key, val) abort
+  return {'uri': go#path#ToURI(a:val), 'name': a:val}
 endfunction
 
 function! s:position(line, col) abort

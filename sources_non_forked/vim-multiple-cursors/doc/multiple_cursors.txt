@@ -94,17 +94,15 @@ otherwise you'll have a tough time quitting from multicursor mode.
 
 Currently there are four additional global settings one can tweak:
 
-*g:multi_cursor_exit_from_visual_mode* (Default: 1)
+*g:multi_cursor_exit_from_visual_mode* (Default: 0)
 
-If set to 0, then pressing |g:multi_cursor_quit_key| in |visual-mode| will not
-quit and delete all existing cursors. Useful if you want to go back to
-|normal-mode|, and still be able to operate on all the cursors.
+If set to 0, then pressing |g:multi_cursor_quit_key| in |visual-mode| will quit
+and delete all existing cursors, skipping normal mode with multiple cursors.
 
-*g:multi_cursor_exit_from_insert_mode* (Default: 1)
+*g:multi_cursor_exit_from_insert_mode* (Default: 0)
 
-If set to 0, then pressing |g:multi_cursor_quit_key| in |insert-mode| will not
-quit and delete all existing cursors. Useful if you want to go back to Normal
-mode, and still be able to operate on all the cursors.
+If set to 1, then pressing |g:multi_cursor_quit_key| in |insert-mode| will quit
+and delete all existing cursors, skipping normal mode with multiple cursors.
 
 *g:multi_cursor_normal_maps* (Default: see below)
 

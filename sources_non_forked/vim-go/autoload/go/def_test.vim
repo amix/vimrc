@@ -50,7 +50,15 @@ func! Test_Jump_leaves_lists() abort
 
     let l:bufnr = bufnr('%')
     call cursor(6, 7)
+   
+    if !go#util#has_job()
+      let g:go_def_mode='godef'
+    endif
     call go#def#Jump('', 0)
+
+    if !go#util#has_job()
+      unlet g:go_def_mode
+    endif
 
     let start = reltime()
     while bufnr('%') == l:bufnr && reltimefloat(reltime(start)) < 10

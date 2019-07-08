@@ -62,9 +62,13 @@ snippet pqueue
 # std::shared_ptr
 snippet msp
 	std::shared_ptr<${1:T}> ${2} = std::make_shared<$1>(${3});
+snippet amsp
+	auto ${1} = std::make_shared<${2:T}>(${3});
 # std::unique_ptr
 snippet mup
 	std::unique_ptr<${1:T}> ${2} = std::make_unique<$1>(${3});
+snippet amup
+	auto ${1} = std::make_unique<${2:T}>(${3});
 ##
 ## Access Modifiers
 # private

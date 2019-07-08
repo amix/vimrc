@@ -21,7 +21,7 @@ class Source(Base):
 
         self.name = 'ale'
         self.mark = '[L]'
-        self.rank = 100
+        self.rank = 1000
         self.is_bytepos = True
         self.min_pattern_length = 1
 

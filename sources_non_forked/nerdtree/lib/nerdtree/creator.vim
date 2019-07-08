@@ -13,9 +13,6 @@ let g:NERDTreeCreator = s:Creator
 
 " FUNCTION: s:Creator._bindMappings() {{{1
 function! s:Creator._bindMappings()
-    "make <cr> do the same as the activate node mapping
-    nnoremap <silent> <buffer> <cr> :call nerdtree#ui_glue#invokeKeyMap(g:NERDTreeMapActivateNode)<cr>
-
     call g:NERDTreeKeyMap.BindAll()
 
     command! -buffer -nargs=? Bookmark :call nerdtree#ui_glue#bookmarkNode('<args>')
@@ -189,10 +186,13 @@ function! s:Creator._createTreeWin()
         let t:NERDTreeBufName = self._nextBufferName()
         silent! execute l:splitLocation . 'vertical ' . l:splitSize . ' new'
         silent! execute 'edit ' . t:NERDTreeBufName
+        silent! execute 'vertical resize '. l:splitSize
     else
         silent! execute l:splitLocation . 'vertical ' . l:splitSize . ' split'
         silent! execute 'buffer ' . t:NERDTreeBufName
     endif
+
+    setlocal winfixwidth
 
     call self._setCommonBufOptions()
 
@@ -200,7 +200,6 @@ function! s:Creator._createTreeWin()
         clearjumps
     endif
 
-    setlocal winfixwidth
 endfunction
 
 " FUNCTION: s:Creator._isBufHidden(nr) {{{1
@@ -218,14 +217,14 @@ function! s:Creator.New()
     return newCreator
 endfunction
 
-" FUNCTION: s:Creator._nextBufferName() {{{2
+" FUNCTION: s:Creator._nextBufferName() {{{1
 " returns the buffer name for the next nerd tree
 function! s:Creator._nextBufferName()
     let name = s:Creator.BufNamePrefix() . self._nextBufferNumber()
     return name
 endfunction
 
-" FUNCTION: s:Creator._nextBufferNumber() {{{2
+" FUNCTION: s:Creator._nextBufferNumber() {{{1
 " the number to add to the nerd tree buffer name to make the buf name unique
 function! s:Creator._nextBufferNumber()
     if !exists("s:Creator._NextBufNum")

@@ -221,7 +221,7 @@ function! s:stage(hunk_diff)
   let diff = s:adjust_header(bufnr, a:hunk_diff)
   " Apply patch to index.
   call gitgutter#utility#system(
-        \ gitgutter#utility#cd_cmd(bufnr, g:gitgutter_git_executable.' apply --cached --unidiff-zero - '),
+        \ gitgutter#utility#cd_cmd(bufnr, g:gitgutter_git_executable.' '.g:gitgutter_git_args.' apply --cached --unidiff-zero - '),
         \ diff)
 
   " Refresh gitgutter's view of buffer.
@@ -240,10 +240,10 @@ function! s:undo(hunk_diff)
   if removed_only
     call append(lnum, lines)
   elseif added_only
-    execute lnum .','. (lnum+len(lines)-1) .'d'
+    execute lnum .','. (lnum+len(lines)-1) .'d _'
   else
     call append(lnum-1, lines[0:hunk[1]])
-    execute (lnum+hunk[1]) .','. (lnum+hunk[1]+hunk[3]) .'d'
+    execute (lnum+hunk[1]) .','. (lnum+hunk[1]+hunk[3]) .'d _'
   endif
 endfunction
 

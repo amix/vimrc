@@ -57,6 +57,8 @@ landscape is my colorscheme, which is a high-contrast cterm-supported colorschem
 
         git clone https://github.com/itchyny/lightline.vim ~/.vim/bundle/lightline.vim
 
+2. Generate help tags with `:Helptags`.
+
 ### [Vundle](https://github.com/VundleVim/Vundle.vim)
 1. Add the following configuration to your `.vimrc`.
 

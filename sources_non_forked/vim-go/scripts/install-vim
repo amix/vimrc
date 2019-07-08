@@ -30,7 +30,7 @@ case "$vim" in
 
   "nvim")
     # Use latest stable version.
-    tag="v0.3.1"
+    tag="v0.3.2"
     giturl="https://github.com/neovim/neovim"
     ;;
 
@@ -62,7 +62,7 @@ cd "$srcdir"
 if [ "$1" = "nvim" ]; then
 
   # TODO: Use macOS binaries on macOS
-  curl -Ls https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz |
+  curl -Ls https://github.com/neovim/neovim/releases/download/$tag/nvim-linux64.tar.gz |
     tar xzf - -C /tmp/vim-go-test/
   mv /tmp/vim-go-test/nvim-linux64 /tmp/vim-go-test/nvim-install
   mkdir -p "$installdir/share/nvim/runtime/pack/vim-go/start"

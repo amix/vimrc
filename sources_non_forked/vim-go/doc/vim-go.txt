@@ -94,26 +94,26 @@ For Pathogen or Vim |packages|, just clone the repo. For other plugin managers
 you may also need to add the lines to your vimrc to execute the plugin
 manager's install command.
 
-*  Vim 8 |packages|
->
+*  Vim 8 |packages| >
+
     git clone https://github.com/fatih/vim-go.git \
       ~/.vim/pack/plugins/start/vim-go
-
+<
 *  https://github.com/tpope/vim-pathogen >
 
     git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go
 <
 *  https://github.com/junegunn/vim-plug >
 
-    Plug 'fatih/vim-go'
-
+    Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+<
 *  https://github.com/Shougo/neobundle.vim >
 
     NeoBundle 'fatih/vim-go'
 <
 *  https://github.com/gmarik/vundle >
 
-    Plugin 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+    Plugin 'fatih/vim-go'
 <
 *  Manual (not recommended) >
 
@@ -536,7 +536,7 @@ CTRL-t
 
 
                                                                 *:GoGuruScope*
-:GoGuruScope [pattern] [pattern2] ... [patternN]
+:GoGuruScope [pattern] ...
 
     Changes the custom |'g:go_guru_scope'| setting and overrides it with the
     given package patterns. The custom scope is cleared (unset) if `""` is
@@ -906,6 +906,11 @@ CTRL-t
     tries to preserve cursor position and avoids replacing the buffer with
     stderr output.
 
+                                                           *:GoAddWorkspace*
+:GoAddWorkspace [dir] ...
+
+    Add directories to the `gopls` workspace.
+
 ==============================================================================
 MAPPINGS                                                        *go-mappings*
 
@@ -1212,14 +1217,6 @@ enabled.
   let g:go_version_warning = 1
 <
 
-                                                  *'g:go_null_module_warning'*
-
-Enable warning when trying to use lsp features in a null module. By default it
-is enabled.
->
-  let g:go_null_module_warning = 1
-<
-
                                               *'g:go_code_completion_enabled'*
 
 Enable code completion with |'omnifunc'|. By default it is enabled.
@@ -1275,11 +1272,11 @@ updated. By default it's disabled. The delay can be configured with the
                                                             *'g:go_info_mode'*
 
 Use this option to define the command to be used for |:GoInfo|. By default
-`gocode` is being used as it's the fastest option. But one might also use
-`gopls` or `guru` as they cover more cases and are more accurate.  Current
-valid options are: `[gocode, guru, gopls]` >
-
-  let g:go_info_mode = 'gocode'
+`gopls` is used, because it is the fastest and is known to be highly accurate.
+One might also use `guru` for its accuracy or `gocode` for its performance.
+Valid options are `gocode`, `gopls`, and `guru`.
+>
+  let g:go_info_mode = 'gopls'
 <
                                                          *'g:go_auto_sameids'*
 
@@ -1391,10 +1388,11 @@ a private internal service. Default is 'https://godoc.org'.
                                                              *'g:go_def_mode'*
 
 Use this option to define the command to be used for |:GoDef|. By default
-`guru` is being used as it covers all edge cases. But one might also use
-`godef` as it's faster. Current valid options are: `[guru, godef, gopls]` >
-
-  let g:go_def_mode = 'guru'
+`gopls` is used, because it is the fastest. One might also use `guru` for its
+accuracy or `godef` for its performance. Valid options are `godef`, `gopls`,
+and `guru`.
+>
+  let g:go_def_mode = 'gopls'
 <
                                                   *'g:go_def_mapping_enabled'*
 
@@ -1804,7 +1802,8 @@ Currently accepted values:
   debugger-state     Expose debugger state in 'g:go_debug_diag'.
   debugger-commands  Echo communication between vim-go and `dlv`; requests and
                      responses are recorded in `g:go_debug_commands`.
-  lsp                Record lsp requests and responses in g:go_lsp_log.
+  lsp                Echo communication between vim-go and `gopls`. All
+                     communication is shown in a dedicated window.
 >
       let g:go_debug = []
 <
@@ -2043,8 +2042,7 @@ rest of the commands and mappings become available after starting debug mode.
       * Make the `:GoDebug*` commands and `(go-debug-*)` mappings available.
 
     The directory of the current buffer is used if [pkg] is empty. Any other
-    arguments will be passed to the program. When [pkg] is relative, it will
-    be interpreted relative to the directory of the current buffer.
+    arguments will be passed to the program.
 
     Use |:GoDebugStop| to stop `dlv` and exit debugging mode.
 

@@ -44,15 +44,8 @@ function! ale#handlers#eslint#GetCommand(buffer) abort
 
     return ale#node#Executable(a:buffer, l:executable)
     \   . (!empty(l:options) ? ' ' . l:options : '')
-    \   . ' -f unix --stdin --stdin-filename %s'
+    \   . ' -f json --stdin --stdin-filename %s'
 endfunction
-
-let s:col_end_patterns = [
-\   '\vParsing error: Unexpected token (.+) ?',
-\   '\v''(.+)'' is not defined.',
-\   '\v%(Unexpected|Redundant use of) [''`](.+)[''`]',
-\   '\vUnexpected (console) statement',
-\]
 
 function! s:AddHintsForTypeScriptParsingErrors(output) abort
     for l:item in a:output
@@ -90,22 +83,71 @@ function! s:CheckForBadConfig(buffer, lines) abort
     return 0
 endfunction
 
-function! ale#handlers#eslint#Handle(buffer, lines) abort
-    if s:CheckForBadConfig(a:buffer, a:lines)
-        return [{
-        \   'lnum': 1,
-        \   'text': 'eslint configuration error (type :ALEDetail for more information)',
-        \   'detail': join(a:lines, "\n"),
-        \}]
+function! s:parseJSON(buffer, lines) abort
+    try
+        let l:parsed = json_decode(a:lines[-1])
+    catch
+        return []
+    endtry
+
+    if type(l:parsed) != v:t_list || empty(l:parsed)
+        return []
     endif
 
-    if a:lines == ['Could not connect']
-        return [{
-        \   'lnum': 1,
-        \   'text': 'Could not connect to eslint_d. Try updating eslint_d or killing it.',
-        \}]
+    let l:errors = l:parsed[0]['messages']
+
+    if empty(l:errors)
+        return []
     endif
 
+    let l:output = []
+
+    for l:error in l:errors
+        let l:obj = ({
+        \   'lnum': get(l:error, 'line', 0),
+        \   'text': get(l:error, 'message', ''),
+        \   'type': 'E',
+        \})
+
+        if get(l:error, 'severity', 0) is# 1
+            let l:obj.type = 'W'
+        endif
+
+        if has_key(l:error, 'ruleId')
+            let l:code = l:error['ruleId']
+
+            " Sometimes ESLint returns null here
+            if !empty(l:code)
+                let l:obj.code = l:code
+            endif
+        endif
+
+        if has_key(l:error, 'column')
+            let l:obj.col = l:error['column']
+        endif
+
+        if has_key(l:error, 'endColumn')
+            let l:obj.end_col = l:error['endColumn'] - 1
+        endif
+
+        if has_key(l:error, 'endLine')
+            let l:obj.end_lnum = l:error['endLine']
+        endif
+
+        call add(l:output, l:obj)
+    endfor
+
+    return l:output
+endfunction
+
+let s:col_end_patterns = [
+\   '\vParsing error: Unexpected token (.+) ?',
+\   '\v''(.+)'' is not defined.',
+\   '\v%(Unexpected|Redundant use of) [''`](.+)[''`]',
+\   '\vUnexpected (console) statement',
+\]
+
+function! s:parseLines(buffer, lines) abort
     " Matches patterns line the following:
     "
     " /path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]
@@ -119,12 +161,6 @@ function! ale#handlers#eslint#Handle(buffer, lines) abort
 
     for l:match in ale#util#GetMatches(a:lines, [l:pattern, l:parsing_pattern])
         let l:text = l:match[3]
-
-        if ale#Var(a:buffer, 'javascript_eslint_suppress_eslintignore')
-            if l:text =~# '^File ignored'
-                continue
-            endif
-        endif
 
         let l:obj = {
         \   'lnum': l:match[1] + 0,
@@ -143,11 +179,6 @@ function! ale#handlers#eslint#Handle(buffer, lines) abort
         " The code can be something like 'Error/foo/bar', or just 'Error'
         if !empty(get(l:split_code, 1))
             let l:obj.code = join(l:split_code[1:], '/')
-
-            if l:obj.code is# 'no-trailing-spaces'
-            \&& !ale#Var(a:buffer, 'warn_about_trailing_whitespace')
-                continue
-            endif
         endif
 
         for l:col_match in ale#util#GetMatches(l:text, s:col_end_patterns)
@@ -157,9 +188,59 @@ function! ale#handlers#eslint#Handle(buffer, lines) abort
         call add(l:output, l:obj)
     endfor
 
+    return l:output
+endfunction
+
+function! s:FilterResult(buffer, obj) abort
+    if ale#Var(a:buffer, 'javascript_eslint_suppress_eslintignore')
+        if a:obj.text =~# '^File ignored'
+            return 0
+        endif
+    endif
+
+    if has_key(a:obj, 'code') && a:obj.code is# 'no-trailing-spaces'
+    \&& !ale#Var(a:buffer, 'warn_about_trailing_whitespace')
+        return 0
+    endif
+
+    return 1
+endfunction
+
+function! s:HandleESLintOutput(buffer, lines, type) abort
+    if s:CheckForBadConfig(a:buffer, a:lines)
+        return [{
+        \   'lnum': 1,
+        \   'text': 'eslint configuration error (type :ALEDetail for more information)',
+        \   'detail': join(a:lines, "\n"),
+        \}]
+    endif
+
+    if a:lines == ['Could not connect']
+        return [{
+        \   'lnum': 1,
+        \   'text': 'Could not connect to eslint_d. Try updating eslint_d or killing it.',
+        \}]
+    endif
+
+    if a:type is# 'json'
+        let l:output = s:parseJSON(a:buffer, a:lines)
+    else
+        let l:output = s:parseLines(a:buffer, a:lines)
+    endif
+
+    call filter(l:output, {idx, obj -> s:FilterResult(a:buffer, obj)})
+
     if expand('#' . a:buffer . ':t') =~? '\.tsx\?$'
         call s:AddHintsForTypeScriptParsingErrors(l:output)
     endif
 
     return l:output
+endfunction
+
+function! ale#handlers#eslint#HandleJSON(buffer, lines) abort
+    return s:HandleESLintOutput(a:buffer, a:lines, 'json')
+endfunction
+
+function! ale#handlers#eslint#Handle(buffer, lines) abort
+    return s:HandleESLintOutput(a:buffer, a:lines, 'lines')
 endfunction

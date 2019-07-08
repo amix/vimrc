@@ -52,7 +52,7 @@ endfunction
 
 function! ale#highlight#RemoveHighlights() abort
     for l:match in getmatches()
-        if l:match.group =~# '^ALE'
+        if l:match.group =~? '\v^ALE(Style)?(Error|Warning|Info)(Line)?$'
             call matchdelete(l:match.id)
         endif
     endfor

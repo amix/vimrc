@@ -5,9 +5,12 @@
 call ale#Set('cpp_clangtidy_executable', 'clang-tidy')
 " Set this option to check the checks clang-tidy will apply.
 call ale#Set('cpp_clangtidy_checks', [])
-" Set this option to manually set some options for clang-tidy.
+" Set this option to manually set some options for clang-tidy to use as compile
+" flags.
 " This will disable compile_commands.json detection.
 call ale#Set('cpp_clangtidy_options', '')
+" Set this option to manually set options for clang-tidy directly.
+call ale#Set('cpp_clangtidy_extra_options', '')
 call ale#Set('c_build_dir', '')
 
 function! ale_linters#cpp#clangtidy#GetCommand(buffer) abort
@@ -19,8 +22,12 @@ function! ale_linters#cpp#clangtidy#GetCommand(buffer) abort
     \   ? ale#Var(a:buffer, 'cpp_clangtidy_options')
     \   : ''
 
+    " Get the options to pass directly to clang-tidy
+    let l:extra_options = ale#Var(a:buffer, 'cpp_clangtidy_extra_options')
+
     return '%e'
     \   . (!empty(l:checks) ? ' -checks=' . ale#Escape(l:checks) : '')
+    \   . (!empty(l:extra_options) ? ' ' . ale#Escape(l:extra_options) : '')
     \   . ' %s'
     \   . (!empty(l:build_dir) ? ' -p ' . ale#Escape(l:build_dir) : '')
     \   . (!empty(l:options) ? ' -- ' . l:options : '')

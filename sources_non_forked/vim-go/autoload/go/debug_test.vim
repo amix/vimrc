@@ -10,6 +10,10 @@ function! Test_GoDebugStart_RelativePackage() abort
   call s:debug('./debug/debugmain')
 endfunction
 
+function! Test_GoDebugStart_RelativePackage_NullModule() abort
+  call s:debug('./debug/debugmain', 1)
+endfunction
+
 function! Test_GoDebugStart_Package() abort
   call s:debug('debug/debugmain')
 endfunction
@@ -52,13 +56,21 @@ function! Test_GoDebugStart_Errors() abort
   endtry
 endfunction
 
+" s:debug takes 2 optional arguments. The first is a package to debug. The
+" second is a flag to indicate whether to reset GOPATH after
+" gotest#load_fixture is called in order to test behavior outside of GOPATH.
 function! s:debug(...) abort
   if !go#util#has_job()
     return
   endif
 
   try
+    let $oldgopath = $GOPATH
     let l:tmp = gotest#load_fixture('debug/debugmain/debugmain.go')
+
+    if a:0 > 1 && a:2 == 1
+      let $GOPATH = $oldgopath
+    endif
 
     call go#debug#Breakpoint(6)
 

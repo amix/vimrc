@@ -5,5 +5,5 @@ call ale#linter#Define('typescript', {
 \   'name': 'eslint',
 \   'executable': function('ale#handlers#eslint#GetExecutable'),
 \   'command': function('ale#handlers#eslint#GetCommand'),
-\   'callback': 'ale#handlers#eslint#Handle',
+\   'callback': 'ale#handlers#eslint#HandleJSON',
 \})

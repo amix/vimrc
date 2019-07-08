@@ -3,6 +3,13 @@ ALE Handlebars Integration                             *ale-handlebars-options*
 
 
 ===============================================================================
+prettier                                              *ale-handlebars-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+Uses glimmer parser by default.
+
+
+===============================================================================
 ember-template-lint                          *ale-handlebars-embertemplatelint*
 
 g:ale_handlebars_embertemplatelint_executable
