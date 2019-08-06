@@ -42,7 +42,7 @@ set autoread
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
-let mapleader = ","
+let mapleader = " "
 
 " Fast saving
 nmap <leader>w :w!<cr>
@@ -203,6 +203,10 @@ vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Treat long lines as break lines (useful when moving around in them)
+map j gj
+map k gk
+
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
 map <space> /
 map <c-space> ?
@@ -269,8 +273,40 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Remap VIM ESC to normal mode from insert mode using jj  
+" only issue when you need to literally type two jj's in insert mode therefore you must type slowly
+imap jj <Esc>
+
+" Just like traditional Select All, Ctrl+a
+map <C-a> ggVG
+
 " Remap VIM 0 to first non-blank character
 map 0 ^
+
+" Remap VIM H to first non-blank character
+map H ^
+" Remap VIM L to last blank character
+map L $
+
+" Clears highlighting 
+map <C-n> :noh<return>                             
+
+" Replace word by occurence, press '.' to move to the next occurence which auto replaces with new word. I use it to rename variables. So far I haven't found a mapping that does it by scope reliably like vscode.
+nnoremap gr *``cgn
+
+
+" This loop remaps all 'alt key + character' to '\e + character' 
+" On my vim(windows, but some other windows users didn't have a problem)
+" it won't recognize the Meta key when Alt is pressed
+" https://vi.stackexchange.com/questions/2350/how-to-map-alt-key/2363
+
+" for i in range(97,122)
+"     let c = nr2char(i)
+"     execute "set <M-".c.">=\e".c.""
+"     " On the 'j' iteration it would look like this 
+"     " --> execute \"set <M-j>=\ej"
+" endfor
 
 " Move a line of text using ALT+[jk] or Command+[jk] on mac
 nmap <M-j> mz:m+<cr>`z
@@ -299,6 +335,13 @@ if has("autocmd")
 endif
 
 
+
+" These two mappings are a quality of life improvement of copy/pasting from the clipboard
+" Effectively this paste map applies the indent within the pasted content from the indent level that you're at when you invoke the pasting
+" http://tilvim.com/2014/03/18/a-better-paste.html
+map <Leader>p :set paste<CR>o<esc>"*]p:set nopaste<cr>
+vmap <Leader>y "+y
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Spell checking
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -325,7 +368,7 @@ map <leader>q :e ~/buffer<cr>
 map <leader>x :e ~/buffer.md<cr>
 
 " Toggle paste mode on and off
-map <leader>pp :setlocal paste!<cr>
+" map <leader>pp :setlocal paste!<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
