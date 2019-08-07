@@ -18,7 +18,7 @@ To install for multiple users, the repository needs to be cloned to a location a
     # to install for all users with home directories
     sh ~/.vim_runtime/install_awesome_parameterized.sh /opt/vim_runtime --all
 
-## What's Added?
+## Additional Mappings
 
 basic.vim
 
@@ -85,3 +85,17 @@ plugins_config.vim
     " JK motions: Line motions
     map <Leader>j <Plug>(easymotion-j)
     map <Leader>k <Plug>(easymotion-k)
+
+    " Open a NERDTree automatically when vim starts up if no files were specified
+    autocmd StdinReadPre * let s:std_in=1
+    autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+
+    " Open NERDTree automatically when vim starts up on opening a directory
+    autocmd StdinReadPre * let s:std_in=1
+    autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
+
+    " Shortcut to open NERDTree
+    map <C-t> :NERDTreeToggle<CR>
+
+    " Close vim if the only window left open is a NERDTree
+    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
