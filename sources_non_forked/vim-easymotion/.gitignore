@@ -1,0 +1,4 @@
+doc/tags
+tmp*
+*.lock
+.vim-flavor

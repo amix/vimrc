@@ -1,0 +1,15 @@
+language: ruby
+rvm:
+    - 2.0.0
+install:
+    - git clone https://github.com/kana/vim-vspec.git
+    - pip install vim-vint --user
+    - go env
+    - go get -u github.com/haya14busa/reviewdog/cmd/reviewdog
+before_script:
+    - bundle install
+    - bundle show
+script:
+    - >-
+      vint plugin autoload/EasyMotion.vim autoload/EasyMotion/ | reviewdog -name=vint -efm="%f:%l:%c: %m" -reporter=github-pr-check
+    - rake ci
