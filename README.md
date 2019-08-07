@@ -20,11 +20,11 @@ To install for multiple users, the repository needs to be cloned to a location a
 
 Naturally, `/opt/vim_runtime` can be any directory, as long as all the users specified have read access.
 
-## Additional Mappings
+## What was Added?
+
+Some mappings are commented out
 
 basic.vim
-
-    let mapleader = " "
 
     " Treat long lines as break lines (useful when moving around in them)
     map j gj
@@ -67,8 +67,6 @@ basic.vim
     map <Leader>p :set paste<CR>o<esc>"*]p:set nopaste<cr>
     vmap <Leader>y "+y
 
-    " map <leader>pp :setlocal paste!<cr>
-
 plugins_config.vim
 
     let g:EasyMotion_do_mapping = 0 " Disable default mappings
@@ -101,3 +99,21 @@ plugins_config.vim
 
     " Close vim if the only window left open is a NERDTree
     autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+## What was Changed?
+
+basic.vim
+
+    let mapleader = " "
+
+## Removed
+
+basic.vim
+
+    map <leader>pp :setlocal paste!<cr>
+
+plugins_config.vim
+
+    map <leader>nn :NERDTreeToggle<cr>
+    map <leader>nb :NERDTreeFromBookmark<Space>
+    map <leader>nf :NERDTreeFind<cr>
