@@ -94,6 +94,8 @@ Some mappings are commented out
     " Close vim if the only window left open is a NERDTree
     autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+    nmap <leader><c-p> <Plug>yankstack_substitute_newer_paste
+
 ## Removed
 
 `basic.vim`
@@ -108,5 +110,3 @@ Some mappings are commented out
     map <leader>nn :NERDTreeToggle<cr>
     map <leader>nb :NERDTreeFromBookmark<Space>
     map <leader>nf :NERDTreeFind<cr>
-
-`vim-yankstack` plugin
