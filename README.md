@@ -108,3 +108,5 @@ Some mappings are commented out
     map <leader>nn :NERDTreeToggle<cr>
     map <leader>nb :NERDTreeFromBookmark<Space>
     map <leader>nf :NERDTreeFind<cr>
+
+`vim-yankstack` plugin
