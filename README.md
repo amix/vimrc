@@ -77,22 +77,8 @@ Some mappings are commented out
 
 `plugins_config.vim`
 
-    let g:EasyMotion_do_mapping = 0 " Disable default mappings
-
-    " Jump to anywhere you want with minimal keystrokes, with just one key binding.
-    " `s{char}{label}`
-    nmap s <Plug>(easymotion-overwin-f)
-    " or
-    " `s{char}{char}{label}`
-    " Need one more keystroke, but on average, it may be more comfortable.
-    nmap s <Plug>(easymotion-overwin-f2)
-
     " Turn on case-insensitive feature
     let g:EasyMotion_smartcase = 1
-
-    " JK motions: Line motions
-    map <Leader>j <Plug>(easymotion-j)
-    map <Leader>k <Plug>(easymotion-k)
 
     " Open a NERDTree automatically when vim starts up if no files were specified
     autocmd StdinReadPre * let s:std_in=1
@@ -113,6 +99,9 @@ Some mappings are commented out
 `basic.vim`
 
     map <leader>pp :setlocal paste!<cr>
+    " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
+    map <space> /
+    map <c-space> ?
 
 `plugins_config.vim`
 
