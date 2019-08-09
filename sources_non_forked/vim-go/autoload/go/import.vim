@@ -4,6 +4,11 @@
 "
 " Check out the docs for more information at /doc/vim-go.txt
 "
+
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 function! go#import#SwitchImport(enabled, localname, path, bang) abort
   let view = winsaveview()
   let path = substitute(a:path, '^\s*\(.\{-}\)\s*$', '\1', '')
@@ -27,8 +32,8 @@ function! go#import#SwitchImport(enabled, localname, path, bang) abort
   endif
 
   if a:bang == "!"
-    let out = go#util#System("go get -u -v ".shellescape(path))
-    if go#util#ShellError() != 0
+    let [l:out, l:err] = go#util#Exec(['go', 'get', '-u', '-v', path])
+    if err != 0
       call s:Error("Can't find import: " . path . ":" . out)
     endif
   endif
@@ -65,6 +70,9 @@ function! go#import#SwitchImport(enabled, localname, path, bang) abort
       let packageline = line
       let appendline = line
 
+    elseif linestr =~# '^import\s\+(\+)'
+      let appendline = line
+      let appendstr = qlocalpath
     elseif linestr =~# '^import\s\+('
       let appendstr = qlocalpath
       let indentstr = 1
@@ -161,8 +169,16 @@ function! go#import#SwitchImport(enabled, localname, path, bang) abort
         let linesdelta += 3
         let appendstr = qlocalpath
         let indentstr = 1
+        call append(appendline, appendstr)
+      elseif getline(appendline) =~# '^import\s\+(\+)'
+        call setline(appendline, 'import (')
+        call append(appendline + 0, appendstr)
+        call append(appendline + 1, ')')
+        let linesdelta -= 1
+        let indentstr = 1
+      else
+        call append(appendline, appendstr)
       endif
-      call append(appendline, appendstr)
       execute appendline + 1
       if indentstr
         execute 'normal! >>'
@@ -209,5 +225,8 @@ function! s:Error(s) abort
   echohl Error | echo a:s | echohl None
 endfunction
 
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

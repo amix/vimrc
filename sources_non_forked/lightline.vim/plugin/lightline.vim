@@ -2,7 +2,7 @@
 " Filename: plugin/lightline.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2016/03/14 03:31:58.
+" Last Change: 2018/06/22 08:49:00.
 " =============================================================================
 
 if exists('g:loaded_lightline') || v:version < 700
@@ -15,8 +15,10 @@ set cpo&vim
 
 augroup lightline
   autocmd!
-  autocmd WinEnter,BufWinEnter,FileType,ColorScheme,SessionLoadPost * call lightline#update()
-  autocmd ColorScheme,SessionLoadPost * call lightline#highlight()
+  autocmd WinEnter,BufWinEnter,FileType,SessionLoadPost * call lightline#update()
+  autocmd SessionLoadPost * call lightline#highlight()
+  autocmd ColorScheme * if !has('vim_starting') || expand('<amatch>') !=# 'macvim'
+        \ | call lightline#update() | call lightline#highlight() | endif
   autocmd CursorMoved,BufUnload * call lightline#update_once()
 augroup END
 

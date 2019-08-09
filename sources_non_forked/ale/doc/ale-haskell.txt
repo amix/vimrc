@@ -1,0 +1,154 @@
+===============================================================================
+ALE Haskell Integration                                   *ale-haskell-options*
+
+
+===============================================================================
+brittany                                                 *ale-haskell-brittany*
+
+g:ale_haskell_brittany_executable           *g:ale_haskell_brittany_executable*
+                                            *b:ale_haskell_brittany_executable*
+  Type: |String|
+  Default: `'brittany'`
+
+  This variable can be changed to use a different executable for brittany.
+
+===============================================================================
+floskell                                                 *ale-haskell-floskell*
+
+g:ale_haskell_floskell_executable           *g:ale_haskell_floskell_executable*
+                                            *b:ale_haskell_floskell_executable*
+  Type: |String|
+  Default: `'floskell'`
+
+  This variable can be changed to use a different executable for floskell.
+
+===============================================================================
+ghc                                                           *ale-haskell-ghc*
+
+g:ale_haskell_ghc_options                           *g:ale_haskell_ghc_options*
+                                                    *b:ale_haskell_ghc_options*
+  Type: |String|
+  Default: `'-fno-code -v0'`
+
+  This variable can be changed to modify flags given to ghc.
+
+===============================================================================
+ghc-mod                                                   *ale-haskell-ghc-mod*
+
+g:ale_haskell_ghc_mod_executable             *g:ale_haskell_ghc_mod_executable*
+                                             *b:ale_haskell_ghc_mod_executable*
+  Type: |String|
+  Default: `'ghc-mod'`
+
+  This variable can be changed to use a different executable for ghc-mod.
+
+===============================================================================
+cabal-ghc                                               *ale-haskell-cabal-ghc*
+
+g:ale_haskell_cabal_ghc_options               *g:ale_haskell_cabal_ghc_options*
+                                              *b:ale_haskell_cabal_ghc_options*
+  Type: |String|
+  Default: `'-fno-code -v0'`
+
+  This variable can be changed to modify flags given to ghc through cabal
+  exec.
+
+===============================================================================
+hdevtools                                               *ale-haskell-hdevtools*
+
+g:ale_haskell_hdevtools_executable         *g:ale_haskell_hdevtools_executable*
+                                           *b:ale_haskell_hdevtools_executable*
+  Type: |String|
+  Default: `'hdevtools'`
+
+  This variable can be changed to use a different executable for hdevtools.
+
+
+g:ale_haskell_hdevtools_options               *g:ale_haskell_hdevtools_options*
+                                              *b:ale_haskell_hdevtools_options*
+  Type: |String|
+  Default: `get(g:, 'hdevtools_options', '-g -Wall')`
+
+  This variable can be changed to modify flags given to hdevtools.
+
+  The hdevtools documentation recommends setting GHC options for `hdevtools`
+  with `g:hdevtools_options`. ALE will use the value of `g:hdevtools_options`
+  for the value of `g:ale_haskell_hdevtools_options` by default, so this
+  option can be respected and overridden specifically for ALE.
+
+
+===============================================================================
+hfmt                                                         *ale-haskell-hfmt*
+
+g:ale_haskell_hfmt_executable                   *g:ale_haskell_hfmt_executable*
+                                                *b:ale_haskell_hfmt_executable*
+  Type: |String|
+  Default: `'hfmt'`
+
+  This variable can be changed to use a different executable for hfmt.
+
+===============================================================================
+hlint                                                       *ale-haskell-hlint*
+
+g:ale_haskell_hlint_executable                 *g:ale_haskell_hlint_executable*
+                                               *b:ale_haskell_hlint_executable*
+  Type: |String|
+  Default: `'hlint'`
+
+  This variable can be changed to use a different executable for hlint.
+
+
+g:ale_haskell_hlint_options                       g:ale_haskell_hlint_options
+                                                  b:ale_haskell_hlint_options
+  Type: String
+  Default: ''
+
+  This variable can be used to pass extra options to the underlying hlint
+  executable.
+
+===============================================================================
+stack-build                                           *ale-haskell-stack-build*
+
+g:ale_haskell_stack_build_options           *g:ale_haskell_stack_build_options*
+                                            *b:ale_haskell_stack_build_options*
+  Type: |String|
+  Default: `'--fast'`
+
+  We default to using `'--fast'`. Since Stack generates binaries, your
+  programs will be slower unless you separately rebuild them outside of ALE.
+
+===============================================================================
+stack-ghc                                               *ale-haskell-stack-ghc*
+
+g:ale_haskell_stack_ghc_options               *g:ale_haskell_stack_ghc_options*
+                                              *b:ale_haskell_stack_ghc_options*
+  Type: |String|
+  Default: `'-fno-code -v0'`
+
+  This variable can be changed to modify flags given to ghc through `stack
+  ghc`
+
+===============================================================================
+stylish-haskell                                   *ale-haskell-stylish-haskell*
+
+g:ale_haskell_stylish_haskell_executable
+                                     *g:ale_haskell_stylish_haskell_executable*
+                                     *b:ale_haskell_stylish_haskell_executable*
+  Type: |String|
+  Default: `'stylish-haskell'`
+
+  This variable can be changed to use a different executable for stylish-haskell.
+
+===============================================================================
+hie                                                           *ale-haskell-hie*
+
+g:ale_haskell_hie_executable                     *g:ale_haskell_hie_executable*
+                                                 *b:ale_haskell_hie_executable*
+  Type: |String|
+  Default: `'hie'`
+
+  This variable can be changed to use a different executable for the haskell
+  ide engine. i.e. `'hie-wrapper'`
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

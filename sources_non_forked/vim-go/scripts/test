@@ -1,0 +1,101 @@
+#!/bin/sh
+#
+# Run all tests.
+#
+
+set -euC
+vimgodir=$(cd -P "$(dirname "$0")/.." > /dev/null && pwd)
+cd "$vimgodir"
+
+_usage() {
+  echo "Usage: ${0##*/} [-hvc] [-r file] vim_version"
+  echo
+  echo "Options:"
+  echo "  -h     Show this help"
+  echo "  -v     Enable verbose output"
+  echo "  -r     Run only the tests from this file"
+  echo "  -c     Generate and submit code coverage reports"
+  echo
+}
+
+verbose=0
+run=""
+coverage=""
+while getopts "hvcr:" option; do
+  case "$option" in
+      h) _usage; exit 0 ;;
+      v) verbose=1; ;;
+      r) run=$OPTARG ;;
+      c) coverage="-c" ;;
+      *)
+        echo "error: unknown option '$option'"
+        _usage
+        exit 1
+        ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+### Setup Vim and other dependencies.
+#####################################
+if [ -z "${1:-}" ]; then
+  echo "unknown version: '${1:-}'"
+  echo "First argument must be 'vim-7.4', 'vim-8.0', or 'nvim'."
+  exit 1
+fi
+
+vim=$1
+vimdir="/tmp/vim-go-test/$vim-install"
+export GOPATH=$vimdir
+export PATH=${GOPATH}/bin:$PATH
+
+if [ ! -f "$vimdir/bin/vim" ]; then
+  echo "$vimdir/bin/vim doesn't exist; did you install it with the install-vim script?"
+  exit 1
+fi
+
+### Run tests.
+##############
+# Clean stale log file.
+[ -f '/tmp/vim-go-test/test.log' ]        && rm '/tmp/vim-go-test/test.log'
+[ -f '/tmp/vim-go-test/FAILED' ]          && rm '/tmp/vim-go-test/FAILED'
+[ -f '/tmp/vim-go-test/cov-profile.txt' ] && rm '/tmp/vim-go-test/cov-profile.txt'
+[ -f '/tmp/vim-go-test/cov-report.txt' ]  && rm '/tmp/vim-go-test/cov-report.txt'
+
+# Run the actual tests.
+find "$vimgodir" -name '*_test.vim' | while read test_file; do
+  [ -n "$run" -a "$(basename "$test_file")" != "$run" ] && continue
+
+  "$vimgodir/scripts/run-vim" $coverage $vim -e \
+    +"silent e $test_file" \
+    +"let g:test_verbose=$verbose" \
+    -S ./scripts/runtest.vim < /dev/null || (
+      # If Vim exits with non-0 it's almost certainly a bug in the test runner;
+      # should very rarely happen in normal usage.
+      echo 'test runner failure'
+      cat '/tmp/vim-go-test/test.tmp'
+      rm '/tmp/vim-go-test/test.tmp'
+      exit 5
+    )
+
+  # Append logs
+  cat '/tmp/vim-go-test/test.tmp' | tee '/tmp/vim-go-test/test.log'
+  rm '/tmp/vim-go-test/test.tmp'
+done
+
+echo
+if [ -f "/tmp/vim-go-test/FAILED" ]; then
+  echo 2>&1 "Some ($vim) tests FAILED"
+  exit 1
+fi
+echo 2>&1 "All ($vim) tests PASSED"
+
+# Submit coverage reports
+if [ -n "$coverage" ]; then
+  coverage xml --omit '*_test.vim'
+  codecov -X search gcov pycov -f coverage.xml --required \
+    --flags "$(echo "$vim" | sed -s 's/[-.]//g')"
+  rm coverage.xml
+fi
+
+# vim:ts=2:sts=2:sw=2:et

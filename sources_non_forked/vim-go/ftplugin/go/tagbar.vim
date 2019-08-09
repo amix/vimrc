@@ -9,15 +9,19 @@ elseif globpath(&rtp, 'plugin/tagbar.vim') == ""
   finish
 endif
 
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 if !exists("g:go_gotags_bin")
   let g:go_gotags_bin = "gotags"
 endif
 
 
 function! s:SetTagbar()
-  let bin_path = go#path#CheckBinPath(g:go_gotags_bin) 
-  if empty(bin_path) 
-    return 
+  let bin_path = go#path#CheckBinPath(g:go_gotags_bin)
+  if empty(bin_path)
+    return
   endif
 
   if !exists("g:tagbar_type_go")
@@ -53,5 +57,9 @@ endfunction
 
 
 call s:SetTagbar()
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

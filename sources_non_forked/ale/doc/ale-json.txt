@@ -1,0 +1,105 @@
+===============================================================================
+ALE JSON Integration                                         *ale-json-options*
+
+
+===============================================================================
+fixjson                                                      *ale-json-fixjson*
+
+fixjson is a JSON file fixer/formatter for humans using (relaxed) JSON5.
+It provides:
+
+- Pretty-prints JSON input
+- Fixes various failures while humans writing JSON
+  - Fixes trailing commas objects or arrays
+  - Fixes missing commas for elements of objects or arrays
+  - Adds quotes to keys in objects
+  - Newlines in strings
+  - Hex numbers
+  - Fixes single quotes to double quotes
+
+You can install it using npm:
+>
+  $ npm install -g fixjson
+<
+ALE provides fixjson integration as a fixer. See |ale-fix|.
+
+g:ale_json_fixjson_executable                   *g:ale_json_fixjson_executable*
+                                                *b:ale_json_fixjson_executable*
+
+  Type: |String|
+  Default: `'fixjson'`
+
+  The executable that will be run for fixjson.
+
+g:ale_json_fixjson_options                         *g:ale_json_fixjson_options*
+                                                   *b:ale_json_fixjson_options*
+
+  Type: |String|
+  Default: `''`
+
+  This variable can add extra options to the command executed for running
+  fixjson.
+
+g:ale_json_fixjson_use_global                   *g:ale_json_fixjson_use_global*
+                                                *b:ale_json_fixjson_use_global*
+
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+jsonlint                                                    *ale-json-jsonlint*
+
+g:ale_json_jsonlint_executable                 *g:ale_json_jsonlint_executable*
+                                               *b:ale_json_jsonlint_executable*
+
+  Type: |String|
+  Default: `'jsonlint'`
+
+  The executable that will be run for jsonlint.
+
+g:ale_json_jsonlint_use_global                  *g:ale_json_jsonlint_use_global*
+                                                *b:ale_json_jsonlint_use_global*
+
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+jq                                                                *ale-json-jq*
+
+g:ale_json_jq_executable                             *g:ale_json_jq_executable*
+                                                     *b:ale_json_jq_executable*
+  Type: |String|
+  Default: `'jq'`
+
+  This option can be changed to change the path for `jq`.
+
+
+g:ale_json_jq_options                                   *g:ale_json_jq_options*
+                                                        *b:ale_json_jq_options*
+  Type: |String|
+  Default: `''`
+
+  This option can be changed to pass extra options to `jq`.
+
+g:ale_json_jq_filters                                   *g:ale_json_jq_filters*
+                                                        *b:ale_json_jq_filters*
+  Type: |String|
+  Default: `'.'`
+
+  This option can be changed to pass custom filters to `jq`.
+
+
+===============================================================================
+prettier                                                    *ale-json-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

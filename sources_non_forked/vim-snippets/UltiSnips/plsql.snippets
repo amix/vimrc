@@ -1,0 +1,733 @@
+###########################################################################
+#							 PLSQL SNIPPETS								  #
+###########################################################################
+
+global !p
+# Import package
+import datetime
+
+# Return the doc string for PLSQL script
+def docstring_plsql(params):
+	comment = ""
+	if params:
+		comment = "/** Parameters\n"
+		# Split the arguments
+		args = [arg.strip() for arg in params.split(',')]
+		for arg in args:
+			comment += "* {0:30} : \n".format(arg.split(' ')[0].upper())
+		comment += "*/\n"
+	# Return the comment string
+	return comment
+
+def hdr_params(params, level=0, gap="	 "):
+	line = level * gap + "-- -----------------------------------------------"
+	comment = line
+	if params:
+		# Split the arguments
+		args = [arg.strip() for arg in params.split(',')]
+		for arg in args:
+			comment += "\n" + level * gap + "-- {0:20} : ".format(arg.split(' ')[0].upper())
+	# comment += line
+	# Return the comment string
+	return comment
+
+def dyear():
+	""" Returns the current Year in YYYY format
+	"""
+	now = datetime.datetime.now()
+	rv=now.year
+	return rv
+
+def today():
+	""" Returns the current Date in DD-MON-YYYY format
+	"""
+	now = datetime.datetime.now()
+	rv=now.strftime("%d-%b-%Y")
+	return rv
+
+def param(var):
+	""" Returns the string name wrapped value """
+	return "'" + var + " : ' || "
+	
+endglobal
+
+########################################
+#		 SQL Snippets				   #
+########################################
+snippet doc "Document comment"
+	/*
+	 *	${0: comment ...}
+	 */
+endsnippet
+
+snippet hdr "Header Documentation"
+-- #############################################################################
+-- #	  Copyright (c) `!p snip.rv = dyear()` ${1:company}
+-- #				All rights reserved
+-- #
+-- ############################################################################
+-- # Application   : ${2:schema}
+-- # File Name:	   : ${3:`!p snip.rv=snip.fn`}
+-- # Type		   : Table																					 
+-- # Exec Method   : PL/SQL File
+-- # Description   : This script ${5:create} under the schema $2
+-- #										  
+-- # Change History
+-- # -----------------------------------------------------------------------
+-- # Version	 Date		  Author			Remarks
+-- # =======  ===========  ================		============================
+-- # 1.0	  `!p snip.rv = today()`	Amit Maindola		 Initial Version
+-- #############################################################################
+
+endsnippet
+
+snippet pkggbl	"Package Global variables"
+   -- Declare Global Variables
+   g_sysdate									DATE := SYSDATE;
+   g_delimiter									VARCHAR2( 30 ) := '	  ';
+   g_err_length_limit						NUMBER := 1500;
+   g_package_name					   CONSTANT VARCHAR2(30) := '${0}';
+   g_proc_name VARCHAR2(100)					:= NULL;
+   excp_custom									EXCEPTION;
+
+   -- Declare User Global Types
+
+endsnippet
+
+snippet flushca "Flush Cache"
+ALTER SYSTEM FLUSH BUFFER_CACHE;
+endsnippet
+
+snippet flushsp "Flush Shared Pool"
+ALTER SYSTEM FLUSH SHARED_POOL;
+endsnippet
+
+snippet err
+	show errors;
+endsnippet
+
+snippet sel "Select statement"
+SELECT ${0:*} FROM ${1} WHERE 1 = 1;
+endsnippet
+
+snippet selc "Select statement"
+SELECT COUNT(1) FROM ${1} WHERE ${0};
+endsnippet
+
+snippet wrn "Where ROWNNUM"
+WHERE ROWNUM <= 10 ${0:AND}
+endsnippet
+
+snippet arn "AND ROWNNUM"
+AND ROWNUM <= 10 ${0:;}
+endsnippet
+
+snippet ppram "Retuns param in wrapped format"
+	||`!p snip.rv = param(t[1].upper())`$1 $0
+endsnippet
+
+snippet dbo "Show output "
+	DBMS_OUTPUT.put_line('${0}');
+endsnippet
+
+snippet dbop "Show Parameter output "
+	DBMS_OUTPUT.put_line(`!p snip.rv = param(t[1].upper())`$1 $0);
+endsnippet
+
+snippet dbl "Log message in Log Table, Change procedure as defined by you"
+	DEBUG_LOG_PKG.WRITE_LOG(${1:'Test'},${2:$1} ,$0 );
+endsnippet
+
+snippet plog "Print Log output "
+	printlog(`!p snip.rv = param(t[1].upper())`$1 $0);
+endsnippet
+
+snippet dut "DBMS_OUTPUT.put_line"
+	DBMS_UTILITY.get_time;
+endsnippet
+
+snippet bc "Bulk collect into"
+	bulk collect into ${0}
+endsnippet
+
+snippet ei "Execute Immediate"
+	EXECUTE IMMEDIATE '${0:statement}' ;
+endsnippet
+
+snippet eitt "Execute Immediate TRUNCATE Table"
+	EXECUTE IMMEDIATE( 'TRUNCATE TABLE ${0:table}');
+endsnippet
+
+snippet eitp "Execute Immediate ALTER Table Truncate partition"
+	EXECUTE IMMEDIATE( 'ALTER TABLE ${1:table} TRUNCATE PARTITION ${0:partition}');
+endsnippet
+
+snippet prmpt "Prompt message"
+PROMPT ${1:Creating }...
+endsnippet
+
+snippet crseq "Create Sequence"
+DROP SEQUENCE ${1:schema}.${2:name}_s;
+
+CREATE SEQUENCE $1.$2_s
+   START WITH ${3:1}
+   MAXVALUE 999999999999999999999999999
+   MINVALUE 1
+   NOCYCLE
+   NOCACHE
+   NOORDER;
+endsnippet
+
+snippet crsyn "Create Synonym"
+
+CREATE OR REPLACE SYNONYM ${1:schema}.${2:name} FOR ${3:target}.${0};
+
+endsnippet
+
+snippet crind "Create Index"
+DROP INDEX $1.$4;
+
+CREATE INDEX $1.${4:$2_${5}}
+ON ${1:schema}.${2:table}(${3}) ${6:TABLESPACE ${0} };
+endsnippet
+
+########################################
+#		 Table Operation			   #
+########################################
+
+snippet drtab "Drop Table"
+DROP TABLE ${1:schema}.${2:name} CASCADE CONSTRAINTS ${3:PURGE};
+
+endsnippet
+
+snippet crtab "Create Table"
+
+DROP TABLE ${1:schema}.${2:name} CASCADE CONSTRAINTS PURGE;
+
+CREATE TABLE $1.$2
+(
+   ${0}
+)
+${3:TABLESPACE ${4}}
+;
+endsnippet
+
+snippet ccol  "Add VARCHAR2 column to table"
+	${1:,} ${2:name}	VARCHAR2(${0:100})
+endsnippet
+  
+snippet dcol  "Add DATE column to table"
+	${1:,} ${0:name}	DATE
+endsnippet
+  
+snippet ncol  "Add NUMBER column to table"
+	${1:,} ${0:name}	NUMBER
+endsnippet
+
+snippet at "Alter Table"
+	ALTER TABLE ${1:table} ${0}
+endsnippet
+
+
+#########################################
+#	Declare Types and local variable	#
+#########################################
+  
+snippet tr "Type record"
+	TYPE t_${1:rec} IS RECORD (${0:/* columns */} );
+endsnippet
+   
+snippet tt "Type Table"
+	TYPE t_${1:tbl} IS TABLE OF ${0:table_name}%ROWTYPE INDEX BY BINARY_INTEGER;
+endsnippet
+
+snippet tc "Type Cursor"
+	TYPE t_${1:tbl} IS TABLE OF ${0:cur}%ROWTYPE INDEX BY BINARY_INTEGER;
+endsnippet
+
+snippet pn
+	p_${1}		${2:IN}		NUMBER ${3:DEFAULT ${0:NULL}}
+endsnippet
+
+snippet pd
+	p_${1}		${2:IN}		DATE ${3:DEFAULT ${0:SYSDATE}}
+endsnippet
+
+snippet pc
+	P_${1}		${2:IN}		VARCHAR2 ${3:DEFAULT ${0:NULL}}
+endsnippet
+
+snippet ln
+	l_${1}		NUMBER ${2: := ${3} };
+endsnippet
+
+snippet ld
+	l_${1}		DATE ${2: := ${3} };
+endsnippet
+
+snippet lc
+	l_${1}		VARCHAR2(${2:100}) ${3: := ${4} };
+endsnippet
+
+snippet gn
+	g_${1}		NUMBER ${2: := ${3:10} };
+endsnippet
+
+snippet gd
+	g_${1}		DATE ${2: := ${3:SYSDATE} };
+endsnippet
+
+snippet gc
+	g_${1}		VARCHAR2(${2:100}) ${3: := ${4} };
+endsnippet
+
+snippet ltbl
+	l_tbl_${1}		${0};
+endsnippet
+
+snippet lrec
+	l_rec_${1}		${0};
+endsnippet
+
+#########################################
+#		   Condition, Loops				#
+#########################################
+snippet if "If Condition"
+	IF(${1}) THEN
+		${0};
+	END IF;
+endsnippet
+
+snippet ife "IF-Else Condition"
+	IF(${1}) THEN
+		${2};
+	ELSIF
+		${0};
+	END IF;
+endsnippet
+
+snippet els "Else Condition"
+	ELSIF ${1:condition} THEN
+		${0};
+endsnippet
+
+snippet case "Case statement"
+	CASE WHEN (${1}) THEN
+		${2}
+	WHEN (${3}) THEN
+		${4}
+	${0:ELSE}
+	END 
+endsnippet
+
+snippet while "While Loop"
+	WHILE ${1:a} ${2:condition} ${3:b}	LOOP
+		${0};
+	END LOOP;
+endsnippet
+
+snippet fori "For Loop"
+	FOR ${1:indx} in ${2:1}..${3:10}  LOOP
+		${4};
+	END LOOP;
+endsnippet
+
+snippet fort "Table For Loop"
+	FOR ${1:indx} in 1..${2:ttb}.count LOOP
+		${0};
+	END LOOP;
+endsnippet
+
+snippet loop "Loop statement"
+	LOOP
+		${0};
+	END LOOP;
+endsnippet
+
+snippet fora "For All Loop"
+	  IF ( ${1:ttbl}.COUNT > 0 ) THEN
+		 BEGIN
+			FORALL ${2:indx} IN 1 .. $1.COUNT
+				-- Insert/Update
+				${0}
+		 EXCEPTION --Exception Block
+			WHEN OTHERS THEN
+			   l_errmsg	  := 'Error while Bulk updating, Error : ' || SQLERRM;
+			   RAISE excp_custom;
+		 END;
+	  END IF;
+endsnippet
+
+snippet forc "For Cursor Loop"
+	FOR $1_rec IN ${1:cur} ${2:(${3:param})}
+	LOOP
+		${0}
+	END LOOP; -- End $1
+endsnippet
+
+#########################################
+#		  Cursor Operations				#
+#########################################
+snippet dcur "Cursor declaration"
+	CURSOR ${1:cur} IS
+	SELECT ${0}
+		FROM $1
+		WHERE 1 = 1;
+endsnippet
+
+snippet copen "Open Cursor"
+	OPEN ${1:cursor} ${2:( ${3:param} )};
+	FETCH $1
+	INTO ${4:record};
+	${0}
+	IF ( $1 %NOTFOUND ) THEN
+		CLOSE $1;
+		l_errmsg := 'No records fetched in cursor : $1.';
+		RAISE excp_custom;
+	END IF;
+	CLOSE $1;
+endsnippet
+
+snippet copenbc "Open Cursor Bulk collect"
+	OPEN ${1:cursor} ${2:( ${3:param} )};
+	FETCH $1
+	BULK COLLECT INTO ${4:ttbl};
+	CLOSE $1;
+
+	IF ( $4.count = 0 ) THEN
+		l_errmsg := 'No records fetched in cursor : $1.';
+		RAISE excp_custom;{0}
+	END IF;
+endsnippet
+
+#########################################
+#		BEGIN/DECLARE Blocks			#
+#########################################
+snippet decl "Declare Begin block"
+DECLARE
+	${1}
+BEGIN	   
+	${0:null}
+EXCEPTION --Exception Block	  
+   WHEN NO_DATA_FOUND THEN
+		dbms_output.put_line('No Data Found');
+   WHEN OTHERS THEN
+	  dbms_output.put_line('Error while . Error : '||sqlerrm);
+END;
+endsnippet
+
+snippet begin "Begin block"
+BEGIN	   
+   ${0}
+EXCEPTION --Exception Block	  
+   WHEN NO_DATA_FOUND THEN
+	  printlog('No Data Found');
+   WHEN OTHERS THEN
+	  printlog('Error while . Error : '||sqlerrm);
+END;
+endsnippet
+
+snippet excp "Exception Block"
+	EXCEPTION --Exception Block
+	${0}
+		WHEN OTHERS THEN
+		${1};
+	END;
+endsnippet
+
+snippet rae "Raise Application Error"
+RAISE_APPLICATION_ERROR(${1:-20000},${0:''});
+endsnippet
+
+#########################################
+#	   Procedure/Function calling		#
+#########################################
+snippet crjob "Submit DBMS Job"
+-- Submit the job to get the output
+BEGIN
+	DECLARE
+		vjob		  INTEGER;
+	BEGIN
+		DBMS_JOB.submit( vjob, '${1:procedure}${0:('''')};', SYSDATE );
+		DBMS_OUTPUT.put_line( 'Job id : ' || vjob );
+		COMMIT;
+	END;
+END;
+endsnippet
+
+snippet whilejob "Submit DBMS Job with While Loop"
+-- Submit the job to get the output
+
+BEGIN
+	DECLARE
+		vjob		  INTEGER;
+	BEGIN
+		DBMS_JOB.submit ( vjob , '
+DECLARE
+	l_start_date		  DATE := ''${1:01-Jan-2017}'';
+BEGIN
+	WHILE l_start_date < ''${2:01-Jan-2017}''
+	LOOP
+		${3:Procedure}${0:( to_char(l_start_date,''YYYYMMDD'') )};
+		l_start_date		  := TRUNC( l_start_date + 1 );
+	END LOOP;
+EXCEPTION --Exception Block
+	WHEN OTHERS THEN
+		DBMS_OUTPUT.put_line( ''Error while . Error : '' || SQLERRM );
+END;
+			'
+		  , SYSDATE
+		);
+		DBMS_OUTPUT.put_line( 'Job id : ' || vjob );
+		COMMIT;
+	END;
+END;
+endsnippet
+
+  
+#########################################
+#		Function creation scripts		#
+#########################################
+snippet crprintlog "Create Printlog Procedure"
+	------------------------------------------------------------------------------------------------
+	-- PROCEDURE	: PRINTLOG
+	-- Description	: This procedure is used to print log messages in Log file, Table and Console
+	------------------------------------------------------------------------------------------------
+	PROCEDURE printlog (p_message IN VARCHAR2)
+	IS
+		l_errmsg									 VARCHAR2 (10000);
+	BEGIN
+		l_errmsg := SUBSTR ( p_message, 1, g_err_length_limit);
+		fnd_file.put_line ( fnd_file.LOG, l_errmsg); -- Debug log file
+		DBMS_OUTPUT.put_line (l_errmsg); -- Console output
+		DEBUG_LOG_PKG.WRITE_LOG(g_package_name,g_proc_name,p_message); -- Debug table
+	END printlog;
+endsnippet
+
+snippet crgeterr "Create get_errmsg function"
+   -- Form the error message for when others
+   FUNCTION get_errmsg( p_message IN VARCHAR2 DEFAULT NULL )
+	  RETURN VARCHAR2
+   IS
+   BEGIN
+	  RETURN 'Error occured in ' || g_package_name || '.' || g_proc_name || '. ' || NVL( p_message, '' ) || ' Error : ' || SQLERRM;
+   EXCEPTION --Exception Block
+	  WHEN OTHERS THEN
+		 printlog( 'Error while forming messgage. Error : ' || SQLERRM );
+		 RETURN NULL;
+   END;
+endsnippet
+
+snippet crpksfunc "Create package specification function"
+------------------------------------------------------------------------------------------------
+-- Function		: `!p snip.rv = t[1].upper()`
+-- Description	: This Function will ${4:description}.
+`!p snip.rv=hdr_params(t[3]) `
+------------------------------------------------------------------------------------------------
+FUNCTION ${1:func} ${2:(${3:params})} 
+	  RETURN ${0};
+endsnippet
+
+snippet crpksproc "Create package specification procedure"
+------------------------------------------------------------------------------------------------
+-- PROCEDURE	: `!p snip.rv = t[1].upper()`
+-- Description	: This Procedure will ${4:description}.
+`!p snip.rv=hdr_params(t[3],0) `
+------------------------------------------------------------------------------------------------
+PROCEDURE ${1:proc} ${2:(${3:params})} ;
+endsnippet
+
+snippet crpkbfunc "Create package body function"
+	------------------------------------------------------------------------------------------------
+	-- Function		: `!p snip.rv = t[1].upper()`
+	-- Description	: This Function will ${8:description}.
+	`!p snip.rv=hdr_params(t[3],2) `
+	------------------------------------------------------------------------------------------------
+   FUNCTION ${1:func} ${2:(${3:params})} 
+	  RETURN ${4}
+   IS
+	  -- Declare Cursors
+	  -- Declare Variables
+	  ${5:l_}							 $4 ${6:( ${7:length} )};
+   BEGIN
+	  -- Initialize 
+	  g_proc_name								:= '`!p snip.rv = t[1].upper()`';
+	  ${0}
+	  -- Return value
+	  RETURN $5 ;
+   EXCEPTION
+	  WHEN OTHERS
+	  THEN
+		 RETURN NULL;
+   END $1;
+endsnippet
+
+snippet crpkbproc "Create package body procedure"
+
+------------------------------------------------------------------------------------------------
+-- PROCEDURE	: `!p snip.rv = t[1].upper()`
+-- Description	: This Procedure will ${4:description}.
+`!p snip.rv=hdr_params(t[3]) `
+------------------------------------------------------------------------------------------------
+PROCEDURE ${1:proc} ${2:(${3:params})} 
+IS
+   -- Declare cursors
+   -- Declare Out and exception variables
+   l_errmsg										VARCHAR2( 10000 ) := null;
+   excp_skip									EXCEPTION;
+-- Declare Varibales
+
+BEGIN
+   -- Initializing out parameters
+   g_proc_name									:= '`!p snip.rv = t[1].upper()`';
+
+   ${0}
+EXCEPTION -- Exception block of Procedure
+   WHEN excp_custom THEN
+	  ROLLBACK;
+	  printlog( l_errmsg );
+   WHEN OTHERS THEN
+	  ROLLBACK;
+	  l_errmsg									  := get_errmsg;
+	  printlog( l_errmsg );
+END $1;
+
+endsnippet
+
+snippet crpks "Create Package specification"
+CREATE OR REPLACE PACKAGE ${1}.${2}
+AS
+-- #############################################################################
+-- #	  Copyright (c) `!p snip.rv = dyear()` ${3}
+-- #				All rights reserved
+-- #
+-- ############################################################################
+-- #
+-- # Application   : $1
+-- # File Name:	   : `!p snip.rv = t[2].upper()`.pks
+-- # Exec Method   : PL/SQL Stored - Procedure
+-- # Description   : Package used for ${4}
+-- #
+-- # Change History
+-- # -----------------------------------------------------------------------
+-- # Version	 Date		  Author		   Remarks
+-- # =======  ===========  =============	============================
+-- # 1.0	  `!p snip.rv = today()`  Amit Maindola	   Initial Version
+-- #
+-- #
+-- ############################################################################
+   ${0}
+END $2;
+/
+
+SHOW ERROR
+/
+endsnippet
+
+snippet crpkb  "Create package body"
+CREATE OR REPLACE PACKAGE BODY ${1}.${2}
+IS
+-- #############################################################################
+-- #	  Copyright (c) `!p snip.rv = dyear()` ${3}
+-- #				All rights reserved
+-- #
+-- ############################################################################
+-- #
+-- # Application   : $1
+-- # File Name:	   : `!p snip.rv = t[2].upper()`.pkb
+-- # Exec Method   : PL/SQL Stored - Procedure
+-- # Description   : Package used for ${4}
+-- #
+-- # Change History
+-- # -----------------------------------------------------------------------
+-- # Version	 Date		  Author		   Remarks
+-- # =======  ===========  =============	============================
+-- # 1.0	  `!p snip.rv = today()`  Amit Maindola	   Initial Version
+-- #
+-- #
+-- ############################################################################ 
+   -- Declare Global Variables
+   g_sysdate									DATE := SYSDATE;
+   g_delimiter									VARCHAR2( 30 ) := '	  ';
+   g_err_length_limit						NUMBER := 1500;
+   g_package_name					   CONSTANT VARCHAR2(30) := '`!p snip.rv = t[2].upper()`';
+   g_proc_name VARCHAR2(100)					:= NULL;
+   excp_custom									EXCEPTION;
+
+   -- Declare User Global Types
+
+   ------------------------------------------------------------------------------------------------
+   -- PROCEDURE	   : PRINTLOG
+   -- Description  : This procedure is used to print log messages
+   ------------------------------------------------------------------------------------------------
+   PROCEDURE printlog( p_message IN VARCHAR2 )
+   IS
+   BEGIN
+	  DBMS_OUTPUT.PUT_LINE( p_message );
+	  DEBUG_LOG_PKG.WRITE_LOG(g_package_name,g_proc_name,p_message);
+   END printlog;
+
+   -- Form the error message for when others
+   FUNCTION get_errmsg( p_message IN VARCHAR2 DEFAULT NULL )
+	  RETURN VARCHAR2
+   IS
+   BEGIN
+	  RETURN 'Error occured in ' || g_package_name || '.' || g_proc_name || '. ' || NVL( p_message, '' ) || ' Error : ' || SQLERRM;
+   EXCEPTION --Exception Block
+	  WHEN OTHERS THEN
+		 printlog( 'Error while forming messgage. Error : ' || SQLERRM );
+		 RETURN NULL;
+   END;
+
+END $2;
+/
+
+SHOW ERROR
+/
+
+endsnippet
+
+snippet crproc "Create procedure"
+
+CREATE OR REPLACE PROCEDURE ${1:schema}.${2:name} ${3:( ${4:prams} )}
+-- #############################################################################
+-- #	  Copyright (c) `!p snip.rv = dyear()` ${5}
+-- #				All rights reserved
+-- #
+-- ############################################################################
+-- #
+-- # Application   : $1
+-- # File Name:	   : `!p snip.rv = t[2].upper()`.prc
+-- # Exec Method   : PL/SQL Stored - Procedure
+-- # Description   : Package used for ${6}
+-- #
+-- # Change History
+-- # -----------------------------------------------------------------------
+-- # Version	 Date		  Author		   Remarks
+-- # =======  ===========  =============	============================
+-- # 1.0	  `!p snip.rv = today()`  Amit Maindola	   Initial Version
+-- #
+-- #
+-- ############################################################################
+is
+	g_proc_name									 VARCHAR2(30)	   := '`!p snip.rv = t[2].upper()`';
+	l_errmsg									 VARCHAR2( 10000 ) := null;
+	excp_custom									 EXCEPTION;
+	-- Declare cursors
+	-- Declare Varibales
+BEGIN
+   -- Initializing out parameters
+
+   ${0}
+EXCEPTION -- Exception block of Procedure
+   WHEN excp_custom THEN
+	  ROLLBACK;
+	  DEBUG_LOG_PKG.WRITE_LOG(g_proc_name,g_proc_name ,l_errmsg );
+   WHEN OTHERS THEN
+	  ROLLBACK;
+	  l_errmsg									  := 'Exception in procedure. '||SQLERRM;
+	  DEBUG_LOG_PKG.WRITE_LOG(g_proc_name,g_proc_name ,l_errmsg );
+END $2;
+
+endsnippet
+

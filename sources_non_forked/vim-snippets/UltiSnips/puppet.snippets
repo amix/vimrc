@@ -133,103 +133,103 @@ endsnippet
 ########################################################################
 
 snippet alert "Alert Function" b
-alert("${1:message}")${0}
+alert("${1:message}")$0
 endsnippet
 
 snippet crit "Crit Function" b
-crit("${1:message}")${0}
+crit("${1:message}")$0
 endsnippet
 
 snippet debug "Debug Function" b
-debug("${1:message}")${0}
+debug("${1:message}")$0
 endsnippet
 
 snippet defined "Defined Function" b
-defined(${1:Resource}["${2:name}"])${0}
+defined(${1:Resource}["${2:name}"])$0
 endsnippet
 
 snippet emerg "Emerg Function" b
-emerg("${1:message}")${0}
+emerg("${1:message}")$0
 endsnippet
 
 snippet extlookup "Simple Extlookup" b
-$${1:Variable} = extlookup("${2:Lookup}")${0}
+$${1:Variable} = extlookup("${2:Lookup}")$0
 endsnippet
 
 snippet extlookup "Extlookup with defaults" b
-$${1:Variable} = extlookup("${2:Lookup}", ${3:Default})${0}
+$${1:Variable} = extlookup("${2:Lookup}", ${3:Default})$0
 endsnippet
 
 snippet extlookup "Extlookup with defaults and custom data file" b
-$${1:Variable} = extlookup("${2:Lookup}", ${3:Default}, ${4:Data Source})${0}
+$${1:Variable} = extlookup("${2:Lookup}", ${3:Default}, ${4:Data Source})$0
 endsnippet
 
 snippet fail "Fail Function" b
-fail("${1:message}")${0}
+fail("${1:message}")$0
 endsnippet
 
 snippet hiera "Hiera Function" b
-$${1:Variable} = hiera("${2:Lookup}")${0}
+$${1:Variable} = hiera("${2:Lookup}")$0
 endsnippet
 
 snippet hiera "Hiera with defaults" b
-$${1:Variable} = hiera("${2:Lookup}", ${3:Default})${0}
+$${1:Variable} = hiera("${2:Lookup}", ${3:Default})$0
 endsnippet
 
 snippet hiera "Hiera with defaults and override" b
-$${1:Variable} = hiera("${2:Lookup}", ${3:Default}, ${4:Override})${0}
+$${1:Variable} = hiera("${2:Lookup}", ${3:Default}, ${4:Override})$0
 endsnippet
 
 snippet hiera_hash "Hiera Hash Function" b
-$${1:Variable} = hiera_hash("${2:Lookup}")${0}
+$${1:Variable} = hiera_hash("${2:Lookup}")$0
 endsnippet
 
 snippet hiera_hash "Hiera Hash with defaults" b
-$${1:Variable} = hiera_hash("${2:Lookup}", ${3:Default})${0}
+$${1:Variable} = hiera_hash("${2:Lookup}", ${3:Default})$0
 endsnippet
 
 snippet hiera_hash "Hiera Hash with defaults and override" b
-$${1:Variable} = hiera_hash("${2:Lookup}", ${3:Default}, ${4:Override})${0}
+$${1:Variable} = hiera_hash("${2:Lookup}", ${3:Default}, ${4:Override})$0
 endsnippet
 
 snippet hiera_include "Hiera Include Function" b
-hiera_include("${1:Lookup}")${0}
+hiera_include("${1:Lookup}")$0
 endsnippet
 
 snippet include "Include Function" b
-include ${1:classname}${0}
+include ${1:classname}$0
 endsnippet
 
 snippet info "Info Function" b
-info("${1:message}")${0}
+info("${1:message}")$0
 endsnippet
 
 snippet inline_template "Inline Template Function" b
-inline_template("<%= ${1:template} %>")${0}
+inline_template("<%= ${1:template} %>")$0
 endsnippet
 
 snippet notice "Notice Function" b
-notice("${1:message}")${0}
+notice("${1:message}")$0
 endsnippet
 
 snippet realize "Realize Function" b
-realize(${1:Resource}["${2:name}"])${0}
+realize(${1:Resource}["${2:name}"])$0
 endsnippet
 
 snippet regsubst "Regsubst Function" b
-regsubst($${1:Target}, '${2:regexp}', '${3:replacement}')${0}
+regsubst($${1:Target}, '${2:regexp}', '${3:replacement}')$0
 endsnippet
 
 snippet split "Split Function" b
-$${1:Variable} = split($${1:Target}, '${2:regexp}')${0}
+$${1:Variable} = split($${1:Target}, '${2:regexp}')$0
 endsnippet
 
 snippet versioncmp "Version Compare Function" b
-$${1:Variable} = versioncmp('${1:version}', '${2:version}')${0}
+$${1:Variable} = versioncmp('${1:version}', '${2:version}')$0
 endsnippet
 
 snippet warning "Warning Function" b
-warning("${1:message}")${0}
+warning("${1:message}")$0
 endsnippet
 
 # vim:ft=snippets:

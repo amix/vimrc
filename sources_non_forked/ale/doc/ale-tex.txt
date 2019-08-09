@@ -1,0 +1,57 @@
+===============================================================================
+ALE TeX Integration                                           *ale-tex-options*
+
+
+===============================================================================
+chktex                                                         *ale-tex-chktex*
+
+g:ale_tex_chktex_executable                       *g:ale_tex_chktex_executable*
+                                                  *b:ale_tex_chktex_executable*
+  Type: |String|
+  Default: `'chktex'`
+
+  This variable can be changed to change the path to chktex.
+
+
+g:ale_tex_chktex_options                             *g:ale_tex_chktex_options*
+                                                     *b:ale_tex_chktex_options*
+  Type: |String|
+  Default: `'-I'`
+
+  This variable can be changed to modify flags given to chktex.
+
+
+------------------------------------------------------------------------------
+lacheck                                                       *ale-tex-lacheck*
+
+g:ale_lacheck_executable                             *g:ale_lacheck_executable*
+                                                     *b:ale_lacheck_executable*
+  Type: |String|
+  Default: '`lacheck`'
+
+  This variable can be changed to change the path to lacheck.
+
+
+
+===============================================================================
+latexindent                                                *ale-tex-latexindent*
+
+g:ale_tex_latexindent_executable              *g:ale_tex_latexindent_executable*
+                                              *b:ale_tex_latexindent_executable*
+  Type: |String|
+  Default: `'latexindent'`
+
+  This variable can be changed to change the path to latexindent.
+
+
+g:ale_tex_latexindent_options                   *g:ale_tex_latexindent_options*
+                                                *b:ale_tex_latexindent_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to latexindent.
+
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

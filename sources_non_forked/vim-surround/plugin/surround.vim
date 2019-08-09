@@ -263,11 +263,16 @@ function! s:wrap(string,char,type,removed,special)
     elseif keeper =~ '\n$' && after =~ '^\n'
       let after = strpart(after,1)
     endif
-    if before !~ '\n\s*$'
+    if keeper !~ '^\n' && before !~ '\n\s*$'
       let before .= "\n"
       if a:special
         let before .= "\t"
       endif
+    elseif keeper =~ '^\n' && before =~ '\n\s*$'
+      let keeper = strcharpart(keeper,1)
+    endif
+    if type ==# 'V' && keeper =~ '\n\s*\n$'
+      let keeper = strcharpart(keeper,0,strchars(keeper) - 1)
     endif
   endif
   if type ==# 'V'
@@ -478,7 +483,11 @@ function! s:changesurround(...) " {{{1
   call s:dosurround(a,b,a:0 && a:1)
 endfunction " }}}1
 
-function! s:opfunc(type,...) " {{{1
+function! s:opfunc(type, ...) abort " {{{1
+  if a:type ==# 'setup'
+    let &opfunc = matchstr(expand('<sfile>'), '<SNR>\w\+$')
+    return 'g@'
+  endif
   let char = s:inputreplacement()
   if char == ""
     return s:beep()
@@ -541,8 +550,12 @@ function! s:opfunc(type,...) " {{{1
   endif
 endfunction
 
-function! s:opfunc2(arg)
-  call s:opfunc(a:arg,1)
+function! s:opfunc2(...) abort
+  if !a:0 || a:1 ==# 'setup'
+    let &opfunc = matchstr(expand('<sfile>'), '<SNR>\w\+$')
+    return 'g@'
+  endif
+  call s:opfunc(a:1, 1)
 endfunction " }}}1
 
 function! s:closematch(str) " {{{1
@@ -565,11 +578,10 @@ nnoremap <silent> <Plug>SurroundRepeat .
 nnoremap <silent> <Plug>Dsurround  :<C-U>call <SID>dosurround(<SID>inputtarget())<CR>
 nnoremap <silent> <Plug>Csurround  :<C-U>call <SID>changesurround()<CR>
 nnoremap <silent> <Plug>CSurround  :<C-U>call <SID>changesurround(1)<CR>
-nnoremap <silent> <Plug>Yssurround :<C-U>call <SID>opfunc(v:count1)<CR>
-nnoremap <silent> <Plug>YSsurround :<C-U>call <SID>opfunc2(v:count1)<CR>
-" <C-U> discards the numerical argument but there's not much we can do with it
-nnoremap <silent> <Plug>Ysurround  :<C-U>set opfunc=<SID>opfunc<CR>g@
-nnoremap <silent> <Plug>YSurround  :<C-U>set opfunc=<SID>opfunc2<CR>g@
+nnoremap <expr>   <Plug>Yssurround '^'.v:count1.<SID>opfunc('setup').'g_'
+nnoremap <expr>   <Plug>YSsurround <SID>opfunc2('setup').'_'
+nnoremap <expr>   <Plug>Ysurround  <SID>opfunc('setup')
+nnoremap <expr>   <Plug>YSurround  <SID>opfunc2('setup')
 vnoremap <silent> <Plug>VSurround  :<C-U>call <SID>opfunc(visualmode(),visualmode() ==# 'V' ? 1 : 0)<CR>
 vnoremap <silent> <Plug>VgSurround :<C-U>call <SID>opfunc(visualmode(),visualmode() ==# 'V' ? 0 : 1)<CR>
 inoremap <silent> <Plug>Isurround  <C-R>=<SID>insert()<CR>

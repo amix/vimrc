@@ -139,7 +139,7 @@ fu! s:exectags(cmd)
 endf
 
 fu! s:exectagsonfile(fname, ftype)
-	let [ags, ft] = ['-f - --sort=no --excmd=pattern --fields=nKs --extra= ', a:ftype]
+	let [ags, ft] = ['-f - --sort=no --excmd=pattern --fields=nKs --extra= --file-scope=yes ', a:ftype]
 	if type(s:types[ft]) == 1
 		let ags .= s:types[ft]
 		let bin = s:bin

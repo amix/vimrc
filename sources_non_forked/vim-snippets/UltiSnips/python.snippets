@@ -19,7 +19,7 @@ endsnippet
 snippet with "with" b
 with ${1:expr}`!p snip.rv = " as " if t[2] else ""`${2:var}:
 	${3:${VISUAL:pass}}
-${0}
+$0
 endsnippet
 
 snippet for "for loop" b
@@ -51,7 +51,9 @@ DOUBLE_QUOTES = '"'
 class Arg(object):
 	def __init__(self, arg):
 		self.arg = arg
-		self.name = arg.split('=')[0].strip()
+		name_and_type = arg.split('=')[0].split(':')
+		self.name = name_and_type[0].strip()
+		self.type = name_and_type[1].strip() if len(name_and_type) == 2 else None
 
 	def __str__(self):
 		return self.name
@@ -61,6 +63,9 @@ class Arg(object):
 
 	def is_kwarg(self):
 		return '=' in self.arg
+
+	def is_vararg(self):
+		return '*' in self.name
 
 
 def get_args(arglist):
@@ -211,12 +216,14 @@ def write_init_body(args, parents, snip):
 	if parents:
 		snip.rv += '\n' + snip.mkline('', indent='')
 
-	for arg in args:
+	for arg in filter(lambda arg: not arg.is_vararg(), args):
 		snip += "self._%s = %s" % (arg, arg)
 
 
 def write_slots_args(args, snip):
-	args = ['"_%s"' % arg for arg in args]
+	quote = get_quoting_style(snip)
+	arg_format = quote + '_%s' + quote
+	args = [arg_format % arg for arg in args]
 	snip += '__slots__ = (%s,)' % ', '.join(args)
 
 
@@ -635,7 +642,7 @@ endsnippet
 ######################
 
 snippet ae "Assert equal" b
-self.assertEqual(${1:${VISUAL:first}},${2:second})
+self.assertEqual(${1:${VISUAL:first}}, ${2:second})
 endsnippet
 
 snippet at "Assert True" b
@@ -647,7 +654,7 @@ self.assertFalse(${1:${VISUAL:expression}})
 endsnippet
 
 snippet aae "Assert almost equal" b
-self.assertAlmostEqual(${1:${VISUAL:first}},${2:second})
+self.assertAlmostEqual(${1:${VISUAL:first}}, ${2:second})
 endsnippet
 
 snippet ar "Assert raises" b

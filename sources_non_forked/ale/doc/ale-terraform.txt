@@ -1,0 +1,47 @@
+===============================================================================
+ALE Terraform Integration                               *ale-terraform-options*
+
+
+===============================================================================
+fmt                                                         *ale-terraform-fmt*
+
+g:ale_terraform_fmt_executable                 *g:ale_terraform_fmt_executable*
+                                               *b:ale_terraform_fmt_executable*
+
+  Type: |String|
+  Default: `'terraform'`
+
+  This variable can be changed to use a different executable for terraform.
+
+
+g:ale_terraform_fmt_options                       *g:ale_terraform_fmt_options*
+                                                  *b:ale_terraform_fmt_options*
+  Type: |String|
+  Default: `''`
+
+
+===============================================================================
+tflint                                                   *ale-terraform-tflint*
+
+g:ale_terraform_tflint_executable           *g:ale_terraform_tflint_executable*
+                                            *b:ale_terraform_tflint_executable*
+
+  Type: |String|
+  Default: `'tflint'`
+
+  This variable can be changed to use a different executable for tflint.
+
+
+g:ale_terraform_tflint_options                 *g:ale_terraform_tflint_options*
+                                               *b:ale_terraform_tflint_options*
+  Type: |String|
+  Default: `'-f json'`
+
+  This variable can be changed to pass different options to tflint. Ale does
+  expect json output from tflint, so if you change this, you'll probably want
+  to include '-f json' in your new value.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
+

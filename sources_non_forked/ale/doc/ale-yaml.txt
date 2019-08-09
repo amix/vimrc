@@ -1,0 +1,92 @@
+===============================================================================
+ALE YAML Integration                                         *ale-yaml-options*
+
+===============================================================================
+prettier                                                    *ale-yaml-prettier*
+
+Website: https://github.com/prettier/prettier
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install prettier either globally or locally: >
+
+  npm install prettier -g  # global
+  npm install prettier     # local
+<
+  
+===============================================================================
+swaglint                                                    *ale-yaml-swaglint*
+
+Website: https://github.com/byCedric/swaglint
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install swaglint either globally or locally: >
+
+  npm install swaglint -g  # global
+  npm install swaglint     # local
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_swaglint_executable                 *g:ale_yaml_swaglint_executable*
+                                               *b:ale_yaml_swaglint_executable*
+  Type: |String|
+  Default: `'swaglint'`
+
+  This variable can be set to change the path to swaglint.
+
+
+g:ale_yaml_swaglint_use_global                 *g:ale_yaml_swaglint_use_global*
+                                               *b:ale_yaml_swaglint_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+yamllint                                                    *ale-yaml-yamllint*
+
+Website: https://github.com/adrienverge/yamllint
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install yamllint in your a virtualenv directory, locally, or globally: >
+
+  pip install yamllint # After activating virtualenv
+  pip install --user yamllint # Install to ~/.local/bin
+  sudo pip install yamllint # Install globally
+
+See |g:ale_virtualenv_dir_names| for configuring how ALE searches for
+virtualenv directories.
+
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_yamllint_executable                 *g:ale_yaml_yamllint_executable*
+                                               *b:ale_yaml_yamllint_executable*
+  Type: |String|
+  Default: `'yamllint'`
+
+  This variable can be set to change the path to yamllint.
+
+
+g:ale_yaml_yamllint_options                       *g:ale_yaml_yamllint_options*
+                                                  *b:ale_yaml_yamllint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to yamllint.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

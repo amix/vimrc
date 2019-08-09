@@ -1,4 +1,14 @@
 Next
+    - Fix broken "t" and "T" mappings, tabs now open at end (lifecrisis) #759
+    - Update doc with already existing mapping variables (asnr) #699
+    - Fix the broken g:NERDTreeBookmarksSort setting (lifecrisis) #696
+    - Correct NERDTreeIgnore pattern in doc (cntoplolicon) #648
+    - Remove empty segments when splitting path (sooth-sayer) #574
+    - Suppress autocmds less agressively (wincent) #578 #691
+    - Add an Issues template to ask for more info initially.
+    - Fix markdown headers in readme (josephfrazier) #676
+    - Don't touch @o and @h registers when rendering
+    - Fix bug with files and directories with dollar signs (alegen) #649
     - Reuse/reopen existing window trees where possible #244
     - Remove NERDTree.previousBuf()
     - Change color of arrow (Leeiio) #630

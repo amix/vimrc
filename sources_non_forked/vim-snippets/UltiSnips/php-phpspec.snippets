@@ -23,15 +23,15 @@ class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
 ` extends ObjectBehavior
 {
-	function it_${1}()
+	function it_$1()
 	{
-		$0
+		${0:${VISUAL}}
 	}
 }
 endsnippet
 
 snippet it "function it_does_something() { ... }"
-function it_${1}()
+function it_$1()
 {
 	${0:${VISUAL}}
 }
@@ -53,7 +53,7 @@ endsnippet
 
 # Object construction
 snippet cw "$this->beConstructedWith($arg)"
-$this->beConstructedWith(${1});
+$this->beConstructedWith($1);
 endsnippet
 
 snippet ct "$this->beConstructedThrough($methodName, [$arg])"
@@ -112,44 +112,44 @@ endsnippet
 
 # Type matchers
 snippet stype "$this->shouldHaveType('Type')"
-$this->shouldHaveType(${1});
+$this->shouldHaveType($1);
 endsnippet
 
 snippet sntype "$this->shouldNotHaveType('Type')"
-$this->shouldNotHaveType(${1});
+$this->shouldNotHaveType($1);
 endsnippet
 
 snippet srinstance "$this->shouldReturnAnInstanceOf('Type')"
-$this->shouldReturnAnInstanceOf(${1});
+$this->shouldReturnAnInstanceOf($1);
 endsnippet
 
 snippet snrinstance "$this->shouldNotReturnAnInstanceOf('Type')"
-$this->shouldNotReturnAnInstanceOf(${1});
+$this->shouldNotReturnAnInstanceOf($1);
 endsnippet
 
 snippet sbinstance "$this->shouldBeAnInstanceOf('Type')"
-$this->shouldBeAnInstanceOf(${1});
+$this->shouldBeAnInstanceOf($1);
 endsnippet
 
 snippet snbinstance "$this->shouldNotBeAnInstanceOf('Type')"
-$this->shouldNotBeAnInstanceOf(${1});
+$this->shouldNotBeAnInstanceOf($1);
 endsnippet
 
 snippet simplement "$this->shouldImplement('Type')"
-$this->shouldImplement(${1});
+$this->shouldImplement($1);
 endsnippet
 
 snippet snimplement "$this->shouldNotImplement('Type')"
-$this->shouldNotImplement(${1});
+$this->shouldNotImplement($1);
 endsnippet
 
 # Object state matchers
 snippet sbstate "$this->shouldBeXYZ()"
-$this->shouldBe${1}();
+$this->shouldBe$1();
 endsnippet
 
 snippet snbstate "$this->shouldNotBeXYZ()"
-$this->shouldNotBe${1}();
+$this->shouldNotBe$1();
 endsnippet
 
 # Count matchers

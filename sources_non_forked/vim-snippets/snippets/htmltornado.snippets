@@ -43,7 +43,7 @@ snippet set
 	{% set ${1:x} = ${0:y} %}
 snippet try
 	{% try %}
-	  ${1}
+	  ${1:${VISUAL}}
 	{% except %}
 	  ${2}
 	{% finallly %}

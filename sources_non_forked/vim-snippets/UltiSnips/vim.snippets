@@ -13,11 +13,11 @@ snippet guard "script reload guard" b
 if exists('${1:did_`!p snip.rv = snip.fn.replace('.','_')`}') || &cp${2: || version < 700}
 	finish
 endif
-let $1 = 1${3}
+let $1 = 1$3
 endsnippet
 
 snippet f "function" b
-fun ${1:function_name}(${2})
+fun ${1:function_name}($2)
 	${3:" code}
 endf
 endsnippet

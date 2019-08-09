@@ -15,6 +15,10 @@
 "
 "       Flag to automatically call :Fmt when file is saved.
 
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 let s:got_fmt_error = 0
 
 " This is a trimmed-down version of the logic in fmt.vim.
@@ -25,45 +29,48 @@ function! go#asmfmt#Format() abort
 
   " Write the current buffer to a tempfile.
   let l:tmpname = tempname()
-  call writefile(getline(1, '$'), l:tmpname)
+  call writefile(go#util#GetLines(), l:tmpname)
 
   " Run asmfmt.
-  let path = go#path#CheckBinPath("asmfmt")
-  if empty(path)
+  let [l:out, l:err] = go#util#Exec(['asmfmt', '-w', l:tmpname])
+  if l:err
+    call go#util#EchoError(l:out)
     return
   endif
-  let out = go#util#System(path . ' -w ' . l:tmpname)
 
-  " If there's no error, replace the current file with the output.
-  if go#util#ShellError() == 0
-    " Remove undo point caused by BufWritePre.
-    try | silent undojoin | catch | endtry
+  " Remove undo point caused by BufWritePre.
+  try | silent undojoin | catch | endtry
 
-    " Replace the current file with the temp file; then reload the buffer.
-    let old_fileformat = &fileformat
-    " save old file permissions
-    let original_fperm = getfperm(expand('%'))
-    call rename(l:tmpname, expand('%'))
-    " restore old file permissions
-    call setfperm(expand('%'), original_fperm)
-    silent edit!
-    let &fileformat = old_fileformat
-    let &syntax = &syntax
-  endif
+  " Replace the current file with the temp file; then reload the buffer.
+  let old_fileformat = &fileformat
+
+  " save old file permissions
+  let original_fperm = getfperm(expand('%'))
+  call rename(l:tmpname, expand('%'))
+
+  " restore old file permissions
+  call setfperm(expand('%'), original_fperm)
+  silent edit!
+  let &fileformat = old_fileformat
+  let &syntax = &syntax
 
   " Restore the cursor/window positions.
   call winrestview(l:curw)
 endfunction
 
 function! go#asmfmt#ToggleAsmFmtAutoSave() abort
-  if get(g:, "go_asmfmt_autosave", 0)
-    let g:go_asmfmt_autosave = 1
+  if go#config#AsmfmtAutosave()
+    call go#config#SetAsmfmtAutosave(1)
     call go#util#EchoProgress("auto asmfmt enabled")
     return
   end
 
-  let g:go_asmfmt_autosave = 0
+  call go#config#SetAsmfmtAutosave(0)
   call go#util#EchoProgress("auto asmfmt disabled")
 endfunction
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et

@@ -12,12 +12,12 @@ snippet for
 	<% end %>
 snippet if
 	<%= if ${1} do %>
-		${0}
+		${0:${VISUAL}}
 	<% end %>
 snippet ife
 	<%= if ${1} do %>
-		${2}
-	<%= else %>
+		${2:${VISUAL}}
+	<% else %>
 		${0}
 	<% end %>
 snippet ft
@@ -32,3 +32,5 @@ snippet ff
 
 		<%= submit "Submit" %>
 	<% end %>
+snippet pry
+	<% require IEx; IEx.pry %>

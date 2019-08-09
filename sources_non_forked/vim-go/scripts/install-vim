@@ -1,0 +1,112 @@
+#!/bin/sh
+#
+# Install and setup a Vim or Neovim for running tests.
+# This should work on both Travis and people's desktop computers, and be 100%
+# independent from any system installed Vim.
+#
+# It will echo the full path to a Vim binary, e.g.:
+#   /some/path/src/vim
+
+set -euC
+
+vimgodir=$(cd -P "$(dirname "$0")/.." > /dev/null && pwd)
+cd "$vimgodir"
+
+vim=${1:-}
+
+case "$vim" in
+  "vim-7.4")
+    tag="v7.4.2009"
+    giturl="https://github.com/vim/vim"
+    ;;
+
+  "vim-8.0")
+    # This follows the version in Arch Linux. Vim's master branch isn't always
+    # stable, and we don't want to have the build fail because Vim introduced a
+    # bug.
+    tag="v8.0.1542"
+    giturl="https://github.com/vim/vim"
+    ;;
+
+  "nvim")
+    # Use latest stable version.
+    tag="v0.3.1"
+    giturl="https://github.com/neovim/neovim"
+    ;;
+
+  *)
+    echo "unknown version: '${1:-}'"
+    echo "First argument must be 'vim-7.4', 'vim-8.0', or 'nvim'."
+    exit 1
+    ;;
+esac
+
+srcdir="/tmp/vim-go-test/$1-src"
+installdir="/tmp/vim-go-test/$1-install"
+
+# Use cached installdir.
+if [ -d "$installdir" ]; then
+  echo "$installdir exists; skipping build."
+
+  # The ./scripts/test script relies on this.
+  echo "installed to: $installdir"
+  exit 0
+fi
+
+mkdir -p "$srcdir"
+cd "$srcdir"
+
+# Neovim build requires more deps than Vim and is annoying, so we use the
+# binary.
+# 0.2.0 doesn't have a binary build for Linux, so we use 0.2.1-dev for now.
+if [ "$1" = "nvim" ]; then
+
+  # TODO: Use macOS binaries on macOS
+  curl -Ls https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz |
+    tar xzf - -C /tmp/vim-go-test/
+  mv /tmp/vim-go-test/nvim-linux64 /tmp/vim-go-test/nvim-install
+  mkdir -p "$installdir/share/nvim/runtime/pack/vim-go/start"
+  ln -s "$vimgodir" "$installdir/share/nvim/runtime/pack/vim-go/start/vim-go"
+
+  # Consistent paths makes calling things easier.
+  mv "$installdir/bin/nvim" "$installdir/bin/vim"
+  mkdir -p "$installdir/share/vim/vimgo/pack"
+  ln -s "$installdir/share/nvim/runtime/pack/vim-go" "$installdir/share/vim/vimgo/pack/vim-go"
+
+# Build Vim from source.
+else
+  if [ -d "$srcdir/.git" ]; then
+    echo "Skipping clone as $srcdir/.git exists"
+  else
+    echo "Cloning $tag from $giturl"
+    git clone --branch "$tag" --depth 1 "$giturl" "$srcdir"
+  fi
+
+  ./configure --prefix="$installdir" --with-features=huge --disable-gui
+  make install
+  mkdir -p "$installdir/share/vim/vimgo/pack/vim-go/start"
+  ln -s "$vimgodir" "$installdir/share/vim/vimgo/pack/vim-go/start/vim-go"
+fi
+
+# Make sure all Go tools and other dependencies are installed.
+echo "Installing Go binaries"
+export GOPATH=$installdir
+export GO111MODULE=off
+export PATH=${GOPATH}/bin:$PATH
+"$vimgodir/scripts/run-vim" $vim +':silent :GoUpdateBinaries' +':qa'
+
+echo "Installing lint tools"
+(
+  mkdir -p "$installdir/share/vim/vimgo/pack/vim-go/start/"
+  cd "$installdir/share/vim/vimgo/pack/vim-go/start/"
+  [ -d "vim-vimhelplint" ] || git clone --depth 1 --quiet https://github.com/machakann/vim-vimhelplint
+  [ -d "vim-vimlparser" ]  || git clone --depth 1 --quiet https://github.com/ynkdir/vim-vimlparser
+  [ -d "vim-vimlint" ]     || git clone --depth 1 --quiet https://github.com/syngan/vim-vimlint
+)
+
+# Don't really need source after successful install.
+rm -rf "$srcdir"
+
+echo "installed to: $installdir"
+
+# vim:ts=2:sts=2:sw=2:et

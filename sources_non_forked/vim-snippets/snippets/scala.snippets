@@ -7,30 +7,30 @@
 #if
 snippet if
 	if (${1})
-		${0}
+		${0:${VISUAL}}
 #if not
 snippet ifn
 	if (!${1})
-		${0}
+		${0:${VISUAL}}
 #if-else
 snippet ife
 	if (${1})
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 #if-else-if
 snippet ifelif
 	if (${1})
-		${2}
+		${2:${VISUAL}}
 	else if (${3})
-		${0}
+		${0:${VISUAL}}
 snippet eif
 	else if (${3})
-		${0}
+		${0:${VISUAL}}
 #while loop
 snippet wh
 	while (${1:obj}) {
-		${0}
+		${0:${VISUAL}}
 	}
 #for loop(classic)
 snippet for
@@ -50,7 +50,7 @@ snippet fory
 #exceptions
 snippet try
 	try {
-		${1}
+		${1:${VISUAL}}
 	} catch {
 		case e: FileNotFoundException => ${2}
 		case e: IOException => ${3}
@@ -58,6 +58,10 @@ snippet try
 		${0}
 	}
 #match
+snippet mat
+	${1:${VISUAL}} match {
+		case ${2} => ${0}
+	}
 snippet match
 	${1: obj} match {
 		case ${2:e} => ${3}
@@ -65,7 +69,7 @@ snippet match
 	}
 #case
 snippet case
-	case ${1:value} => ${0}
+	case ${1:${VISUAL}} => ${0}
 ############################
 # methods and arguments
 #

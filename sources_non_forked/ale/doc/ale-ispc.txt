@@ -1,0 +1,24 @@
+===============================================================================
+ALE ISPC Integration                                         *ale-ispc-options*
+
+
+===============================================================================
+ispc                                                            *ale-ispc-ispc*
+
+g:ale_ispc_ispc_executable                         *g:ale_ispc_ispc_executable*
+                                                   *b:ale_ispc_ispc_executable*
+  Type: |String|
+  Default: `'ispc'`
+
+  This variable can be changed to use a different executable for ispc.
+
+
+g:ale_ispc_ispc_options                               *g:ale_ispc_ispc_options*
+                                                      *b:ale_ispc_ispc_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to ispc.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

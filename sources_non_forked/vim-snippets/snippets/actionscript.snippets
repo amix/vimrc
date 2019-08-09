@@ -96,7 +96,7 @@ snippet interface
 	}
 snippet try
 	try {
-		${1}
+		${1:${VISUAL}}
 	} catch (error:ErrorType) {
 		${2}
 	} finally {
@@ -115,11 +115,11 @@ snippet forr
 # If Condition
 snippet if
 	if (${1:/* condition */}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet el
 	else {
-		${0}
+		${0:${VISUAL}}
 	}
 # Ternary conditional
 snippet t

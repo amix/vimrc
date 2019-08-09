@@ -1,0 +1,42 @@
+===============================================================================
+ALE Text Integration                                         *ale-text-options*
+
+
+===============================================================================
+textlint                                                    *ale-text-textlint*
+
+The options for the textlint linter are global because it does not make
+sense to have them specified on a per-language basis.
+
+g:ale_textlint_executable                           *g:ale_textlint_executable*
+                                                    *b:ale_textlint_executable*
+  Type: |String|
+  Default: `'textlint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_textlint_options                                 *g:ale_textlint_options*
+                                                       *b:ale_textlint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to textlint.
+
+
+g:ale_textlint_use_global                           *g:ale_textlint_use_global*
+                                                    *b:ale_textlint_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+write-good                                                *ale-text-write-good*
+
+See |ale-write-good-options|
+
+
+===============================================================================
+vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

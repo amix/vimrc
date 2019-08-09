@@ -100,6 +100,17 @@ function! multiple_cursors#get_latency_debug_file()
   return s:latency_debug_file
 endfunction
 
+
+function! s:fire_pre_triggers()
+  if !s:before_function_called
+    silent doautocmd User MultipleCursorsPre
+    if exists('*Multiple_cursors_before')
+      exe "call Multiple_cursors_before()"
+    endif
+    let s:before_function_called = 1
+  endif
+endfunction
+
 " Creates a new cursor. Different logic applies depending on the mode the user
 " is in and the current state of the buffer.
 " 1. In normal mode, a new cursor is created at the end of the word under Vim's
@@ -111,10 +122,7 @@ endfunction
 " attempted to be created at the next occurrence of the visual selection
 function! multiple_cursors#new(mode, word_boundary)
   " Call before function if exists only once until it is canceled (<Esc>)
-  if exists('*Multiple_cursors_before') && !s:before_function_called
-    exe "call Multiple_cursors_before()"
-    let s:before_function_called = 1
-  endif
+  call s:fire_pre_triggers()
   let s:use_word_boundary = a:word_boundary
   if a:mode ==# 'n'
     " Reset all existing cursors, don't restore view and setting
@@ -269,13 +277,26 @@ function! multiple_cursors#find(start, end, pattern)
 
     " If we've created any cursors, we need to call the before function, end
     " function will be called via normal routes
-    if exists('*Multiple_cursors_before') && !s:before_function_called
-      exe "call Multiple_cursors_before()"
-      let s:before_function_called = 1
-    endif
+    call s:fire_pre_triggers()
 
     call s:wait_for_user_input('v')
   endif
+endfunction
+
+" apply multiple_cursors#find() on the whole buffer
+function! multiple_cursors#select_all(mode, word_boundary)
+  if a:mode == 'v'
+    let a_save = @a
+    normal! gv"ay
+    let pattern = @a
+    let @a = a_save
+  elseif a:mode == 'n'
+    let pattern = expand('<cword>')
+  endif
+  if a:word_boundary == 1
+    let pattern = '\<'.pattern.'\>'
+  endif
+  call multiple_cursors#find(1, line('$'), pattern)
 endfunction
 
 "===============================================================================
@@ -436,8 +457,11 @@ function! s:CursorManager.reset(restore_view, restore_setting, ...) dict
     call self.restore_user_settings()
   endif
   " Call after function if exists and only if action is canceled (<Esc>)
-  if exists('*Multiple_cursors_after') && a:0 && s:before_function_called
-    exe "call Multiple_cursors_after()"
+  if a:0 && s:before_function_called
+    if exists('*Multiple_cursors_after')
+      exe "call Multiple_cursors_after()"
+    endif
+    silent doautocmd User MultipleCursorsPost
     let s:before_function_called = 0
   endif
 endfunction
@@ -508,7 +532,6 @@ function! s:CursorManager.update_current() dict
     if s:to_mode ==# 'V'
       exec "normal! gvv\<Esc>"
     endif
-
     " Sets the cursor at the right place
     exec "normal! gv\<Esc>"
     call cur.update_visual_selection(s:get_visual_region(s:pos('.')))
@@ -517,17 +540,18 @@ function! s:CursorManager.update_current() dict
     " This should be executed after user input is processed, when unnamed
     " register already contains the text.
     call cur.save_unnamed_register()
-
     call cur.remove_visual_selection()
-  elseif s:from_mode ==# 'i' && s:to_mode ==# 'n' && self.current_index != self.size() - 1
+  elseif s:from_mode ==# 'i' && s:to_mode ==# 'n' && self.current_index != 0
     normal! h
   elseif s:from_mode ==# 'n'
     " Save contents of unnamed register after each operation in Normal mode.
     call cur.save_unnamed_register()
   endif
-  let vdelta = line('$') - s:saved_linecount
+  let pos = s:pos('.')
+
   " If the total number of lines changed in the buffer, we need to potentially
   " adjust other cursor locations
+  let vdelta = line('$') - s:saved_linecount
   if vdelta != 0
     if self.current_index != self.size() - 1
       let cur_column_offset = (cur.column() - col('.')) * -1
@@ -539,7 +563,7 @@ function! s:CursorManager.update_current() dict
         let c = self.get(i)
         " If there're other cursors on the same line, we need to adjust their
         " columns. This needs to happen before we adjust their line!
-        if cur.line() == c.line()
+        if cur.line() == c.line() || cur.position == pos
           if vdelta > 0
             " Added a line
             let hdelta = cur_column_offset
@@ -575,7 +599,6 @@ function! s:CursorManager.update_current() dict
     endif
   endif
 
-  let pos = s:pos('.')
   if cur.position == pos
     return 0
   endif
@@ -590,7 +613,8 @@ endfunction
 
 " Start tracking cursor updates
 function! s:CursorManager.start_loop() dict
-  let self.starting_index = self.current_index
+  let self.current_index  = 0
+  let self.starting_index = 0
 endfunction
 
 " Returns true if we're cycled through all the cursors
@@ -1008,21 +1032,36 @@ function! s:get_visual_region(pos)
   return region
 endfunction
 
+function! s:strpart(s, i, l)
+  if a:l == 0
+    return ''
+  endif
+  let [s, l] = ['', 0]
+  for c in split(a:s[a:i :], '\zs')
+    let s .= c
+    let l += len(c)
+    if l >= a:l
+      break
+    endif
+  endfor
+  return s
+endfunction
+
 " Return the content of the buffer between the input region. This is used to
 " find the next match in the buffer
 " Mode change: Normal -> Normal
 " Cursor change: None
 function! s:get_text(region)
   let lines = getline(a:region[0][0], a:region[1][0])
-  let lines[-1] = lines[-1][:a:region[1][1] - 1]
+  let lines[-1] = s:strpart(lines[-1], 0, a:region[1][1])
   let lines[0] = lines[0][a:region[0][1] - 1:]
   return join(lines, "\n")
 endfunction
 
 " Wrapper around getchar() that returns the string representation of the user
 " input
-function! s:get_char()
-  let c = getchar()
+function! s:get_char(...)
+  let c = (a:0 == 0) ? getchar() : getchar(a:1)
   " If the character is a number, then it's not a special key
   if type(c) == 0
     let c = nr2char(c)
@@ -1033,7 +1072,7 @@ endfunction
 " Quits multicursor mode and clears all cursors. Return true if exited
 " successfully.
 function! s:exit()
-  if s:last_char() !=# g:multi_cursor_quit_key
+  if s:char !=# g:multi_cursor_quit_key
     return 0
   endif
   let exit = 0
@@ -1156,6 +1195,10 @@ function! s:end_latency_measure()
   let s:skip_latency_measure = 0
 endfunction
 
+function! s:get_time_in_ms()
+  return str2nr(substitute(reltimestr(reltime()), '\.\(...\).*', '\1', ''))
+endfunction
+
 function! s:last_char()
   return s:char[len(s:char)-1]
 endfunction
@@ -1187,28 +1230,54 @@ function! s:wait_for_user_input(mode)
     let s:saved_keys = ""
   endif
 
-  if s:from_mode ==# 'i' && has_key(g:multi_cursor_insert_maps, s:last_char())
-    let c = getchar(0)
-    let char_type = type(c)
-    let poll_count = 0
-    while char_type == 0 && c == 0 && poll_count < &timeoutlen
-      sleep 1m
-      let c = getchar(0)
-      let char_type = type(c)
-      let poll_count += 1
+  " ambiguous mappings are not supported; e.g.:
+  "   imap jj JJ
+  "   imap jjj JJJ
+  " will always trigger the 'jj' mapping
+  if s:from_mode ==# 'i' && mapcheck(s:char, "i") != ""
+    let map_dict = {}
+    let s_time = s:get_time_in_ms()
+    while 1
+      let map_dict = maparg(s:char, "i", 0, 1)
+      " break if chars exactly match mapping
+      if map_dict != {}
+        if get(map_dict, 'expr', 0)
+          " handle case where {rhs} is a function
+          exec 'let char_mapping = ' . map_dict['rhs']
+        else
+          let char_mapping = maparg(s:char, "i")
+        endif
+        " handle case where mapping is <esc>
+        exec 'let s:char = "'.substitute(char_mapping, '<', '\\<', 'g').'"'
+        break
+      endif
+      " break if chars don't match beginning of mapping anymore
+      if mapcheck(s:char, "i") == ""
+        break
+      endif
+      if s:get_time_in_ms() > (s_time + &timeoutlen)
+        break
+      endif
+      let new_char = s:get_char(0)
+      let s:char .= new_char
+      if new_char == ''
+        sleep 50m
+      endif
     endwhile
-
-    if char_type == 0 && c != 0
-      let s:char .= nr2char(c)
-    elseif char_type == 1 " char with more than 8 bits (as string)
-      let s:char .= c
-    endif
   elseif s:from_mode !=# 'i' && s:char[0] ==# ":"
     call feedkeys(s:char)
-    call s:cm.reset(1, 1)
+    call s:cm.reset(1, 1, 1)
     return
-  elseif s:from_mode ==# 'n'
+  elseif s:from_mode ==# 'n' || s:from_mode =~# 'v\|V'
     while match(s:last_char(), "\\d") == 0
+      if match(s:char, '\(^\|\a\)0') == 0
+        " fixes an edge case concerning the `0` key.
+        " The 0 key behaves differently from [1-9].
+        " It's consumed immediately when it is the
+        " first key typed while we're waiting for input.
+        " References: issue #152, pull #241
+        break
+      endif
       let s:char .= s:get_char()
     endwhile
   endif
@@ -1218,13 +1287,42 @@ function! s:wait_for_user_input(mode)
   " Clears any echoes we might've added
   normal! :<Esc>
 
+  " add chars to s:char if it start like a special/quit key
+  let is_special_key = 0
+  let sk_list = get(s:special_keys, s:from_mode, [])
+  let is_special_key = (index(sk_list, s:char) != -1)
+  let is_quit_key = 0
+  let s_time = s:get_time_in_ms()
+  while 1
+    let start_special_key = (index(map(sk_list[:], 'v:val[0:len(s:char)-1] == s:char'), 1) > -1)
+    let start_quit_key = (g:multi_cursor_quit_key[0:len(s:char)-1] == s:char)
+    if start_special_key == 0 && start_quit_key == 0
+      break
+    else
+      let is_special_key = (index(sk_list, s:char) != -1)
+      let is_quit_key = (g:multi_cursor_quit_key == s:char)
+      if is_special_key == 1 || is_quit_key == 1
+        break
+      else
+        if s:get_time_in_ms() > (s_time + &timeoutlen)
+          break
+        endif
+        let new_char = s:get_char(0)
+        let s:char .= new_char
+        if new_char == ''
+          sleep 50m
+        endif
+      endif
+    end
+  endwhile
+
   if s:exit()
     return
   endif
 
   " If the key is a special key and we're in the right mode, handle it
-  if index(get(s:special_keys, s:from_mode, []), s:last_char()) != -1
-    call s:handle_special_key(s:last_char(), s:from_mode)
+  if is_special_key == 1
+    call s:handle_special_key(s:char, s:from_mode)
     call s:skip_latency_measure()
   else
     call s:cm.start_loop()

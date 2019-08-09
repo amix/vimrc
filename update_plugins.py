@@ -16,13 +16,15 @@ from os import path
 
 #--- Globals ----------------------------------------------
 PLUGINS = """
+auto-pairs https://github.com/jiangmiao/auto-pairs
+ale https://github.com/w0rp/ale
+vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
 ack.vim https://github.com/mileszs/ack.vim
-ag.vim https://github.com/rking/ag.vim
 bufexplorer https://github.com/corntrace/bufexplorer
 ctrlp.vim https://github.com/ctrlpvim/ctrlp.vim
 mayansmoke https://github.com/vim-scripts/mayansmoke
 nerdtree https://github.com/scrooloose/nerdtree
-nginx-vim-syntax https://github.com/evanmiller/nginx-vim-syntax
+nginx.vim https://github.com/chr4/nginx.vim
 open_file_under_cursor.vim https://github.com/amix/open_file_under_cursor.vim
 snipmate-snippets https://github.com/scrooloose/snipmate-snippets
 tlib https://github.com/vim-scripts/tlib
@@ -42,7 +44,6 @@ vim-multiple-cursors https://github.com/terryma/vim-multiple-cursors
 vim-fugitive https://github.com/tpope/vim-fugitive
 goyo.vim https://github.com/junegunn/goyo.vim
 vim-zenroom2 https://github.com/amix/vim-zenroom2
-syntastic https://github.com/scrooloose/syntastic
 vim-repeat https://github.com/tpope/vim-repeat
 vim-commentary https://github.com/tpope/vim-commentary
 vim-go https://github.com/fatih/vim-go
@@ -50,8 +51,12 @@ vim-gitgutter https://github.com/airblade/vim-gitgutter
 gruvbox https://github.com/morhetz/gruvbox
 vim-flake8 https://github.com/nvie/vim-flake8
 vim-pug https://github.com/digitaltoad/vim-pug
-vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
 lightline.vim https://github.com/itchyny/lightline.vim
+lightline-ale https://github.com/maximbaz/lightline-ale
+vim-abolish https://github.com/tpope/tpope-vim-abolish
+mru.vim https://github.com/vim-scripts/mru.vim
+vim-markdown https://github.com/plasticboy/vim-markdown
+comfortable-motion.vim https://github.com/yuttie/comfortable-motion.vim
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'
@@ -81,7 +86,6 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
         pass
 
     shutil.move(plugin_temp_path, plugin_dest_path)
-
     print('Updated {0}'.format(plugin_name))
 
 

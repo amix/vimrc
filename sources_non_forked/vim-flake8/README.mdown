@@ -12,9 +12,19 @@ a static syntax and style checker for Python source code.  It supersedes both
 
 Installation
 ------------
-Use [vim-pathogen](https://github.com/tpope/vim-pathogen) if you're not using
-it already.  Make sure you've installed the
-[flake8](https://pypi.python.org/pypi/flake8/) package.  Then, simply put the
+
+Make sure you've installed the
+[flake8](https://pypi.python.org/pypi/flake8/) package.
+
+If you use vim >= 8, install this plugin with:
+```
+mkdir -p ~/.vim/pack/flake8/start/
+cd ~/.vim/pack/flake8/start/
+git clone https://github.com/nvie/vim-flake8.git
+```
+
+Otherwise, install [vim-pathogen](https://github.com/tpope/vim-pathogen)
+if you're not using it already. Then, simply put the
 contents of this repository in your `~/.vim/bundle` directory.
 
 Usage
@@ -37,7 +47,7 @@ If you don't want to use the `<F7>` key for flake8-checking, simply remap it to
 another key.  It autodetects whether it has been remapped and won't register
 the `<F7>` key if so.  For example, to remap it to `<F3>` instead, use:
 
-    autocmd FileType python map <buffer> <F3> :call Flake8()<CR>
+    autocmd FileType python map <buffer> <F3> :call flake8#Flake8()<CR>
 
 For flake8 configuration options please consult the following page:
 
@@ -100,7 +110,7 @@ A tip might be to run the Flake8 check every time you write a Python file, to
 enable this, add the following line to your `.vimrc` file (thanks
 [Godefroid](https://github.com/gotcha)!):
 
-    autocmd BufWritePost *.py call Flake8()
+    autocmd BufWritePost *.py call flake8#Flake8()
 
 This plugin goes well together with the following plugin:
 

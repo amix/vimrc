@@ -28,7 +28,7 @@ SPECIFIC_ADMONITIONS = ["attention", "caution", "danger",
 #http://docutils.sourceforge.net/docs/ref/rst/directives.html
 DIRECTIVES = ['topic','sidebar','math','epigraph',
 			  'parsed-literal','code','highlights',
-			  'pull-quote','compound','container',
+			  'pull-quote','compound','container','table','csv-table',
 			  'list-table','class','sectnum',
 			  'role','default-role','unicode',
 			  'raw']
@@ -41,6 +41,8 @@ INCLUDABLE_DIRECTIVES = ['image', 'figure', 'include']
 # http://stackoverflow.com/questions/2718196/find-all-chinese-text-in-a-string-using-python-and-regex
 CJK_RE = re.compile(u'[⺀-⺙⺛-⻳⼀-⿕々〇〡-〩〸-〺〻㐀-䶵一-鿃豈-鶴侮-頻並-龎]', re.UNICODE)
 
+#http://www.pygal.org/en/stable/documentation/types/index.html
+CHART_TYPES = ["Line", "StackedLine", "HorizontalLine", "Bar", "StackedBar", "HorizontalBar", "Histogram", "XY", "DateLine", "TimeLine", "TimeDeltaLine", "DateTimeLine", "Pie", "Radar", "Box", "Dot", "Funnel", "Gauge", "SolidGauge", "Pyramid", "Treemap"]
 
 def has_cjk(s):
 	"""Detect if s contains CJK characters."""
@@ -238,6 +240,7 @@ if di == 'im':
 if di == 'fi':
 	content="""
 	:alt: {0}
+
 	{0}""".format(real_name)
 `
 ..`!p snip.rv = " %s" % link if link else ""` $1`!p
@@ -279,6 +282,36 @@ snippet ro "Text Roles" w
 \ :$1`!p snip.rv=complete(t[1],
 						  TEXT_ROLES+look_up_directives(TEXT_ROLES_REGEX,
 														path))`:\`$2\`\
+endsnippet
+
+snippet eu "Embedded URI" i
+`!p
+if has_cjk(vim.current.line):
+	snip.rv = "\ "`\`${1:${VISUAL:Text}} <${2:URI}>\`_`!p
+if has_cjk(vim.current.line):
+	snip.rv ="\ "
+else:
+	snip.rv = ""
+`$0
+endsnippet
+
+snippet fnt "Footnote or Citation" i
+[${1:Label}]_ $0
+
+.. [$1] ${2:Reference}
+endsnippet
+
+# Only for Nikola — Static Site Generator
+snippet chart "Pygal chart for Nikola" b
+.. chart:: $1`!p snip.rv=complete(t[1], CHART_TYPES)`
+	:title: '${2:Browser usage evolution (in %)}'
+	:x_labels: [${3:"2002", "2003", "2004", "2005", "2006", "2007"}]
+	
+	'Firefox', [None, None, 0, 16.6, 25, 31]
+	'Chrome',  [None, None, None, None, None, None]
+	'IE',      [85.8, 84.6, 84.7, 74.5, 66, 58.6]
+	'Others',  [14.2, 15.4, 15.3, 8.9, 9, 10.4]
+$0
 endsnippet
 
 ############

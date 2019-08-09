@@ -1,5 +1,26 @@
 priority -50
 
+#
+# Global functions
+#
+
+global !p
+
+def write_instance_vars(arglist, snip):
+	args = str(arglist).split(',')
+	for arg in args:
+		name = arg.strip().replace(':', ' ').split(' ', 1)[0]
+		if name:
+			snip += '  @{} = {}'.format(name, name)
+		else:
+			snip += ''
+
+endglobal
+
+#
+# Snippets
+#
+
 snippet "^#!" "#!/usr/bin/env ruby" r
 #!/usr/bin/env ruby
 $0
@@ -17,8 +38,7 @@ end
 endsnippet
 
 snippet defi "def initialize ..."
-def initialize${1:(${2:*args})}
-	$0
+def initialize($1)`!p write_instance_vars(t[1],snip)`$0
 end
 endsnippet
 
@@ -212,32 +232,6 @@ except:
 end
 endsnippet
 
-snippet "(\S+)\.Each_?w(ith)?_?i(ndex)?" ".each_with_index { |<element>,<i>| <block> }" r
-`!p snip.rv=match.group(1)`.each_with_index { |${1:`!p
-element_name = match.group(1).lstrip('$@')
-ematch = re.search("([A-Za-z][A-Za-z0-9_]+?)s?[^A-Za-z0-9_]*?$", element_name)
-try:
-	wmatch = re.search("([A-Za-z][A-Za-z0-9_]+)$", ematch.group(1))
-	snip.rv = wmatch.group(1).lower()
-except:
-	snip.rv = 'element'
-`},${2:i}| $0 }
-endsnippet
-
-snippet "(\S+)\.each_?w(ith)?_?i(ndex)?" ".each_with_index do |<element>,<i>| <block> end" r
-`!p snip.rv=match.group(1)`.each_with_index do |${1:`!p
-element_name = match.group(1).lstrip('$@')
-ematch = re.search("([A-Za-z][A-Za-z0-9_]+?)s?[^A-Za-z0-9_]*?$", element_name)
-try:
-	wmatch = re.search("([A-Za-z][A-Za-z0-9_]+)$", ematch.group(1))
-	snip.rv = wmatch.group(1).lower()
-except:
-	snip.rv = 'element'
-`},${2:i}|
-	$0
-end
-endsnippet
-
 snippet "(\S+)\.Each_?p(air)?"  ".each_pair { |<key>,<value>| <block> }" r
 `!p snip.rv=match.group(1)`.each_pair { |${1:key},${2:value}| $0 }
 endsnippet
@@ -298,20 +292,6 @@ rescue
 end
 endsnippet
 
-snippet begin "begin ... rescue ... else ... ensure ... end"
-begin
-	${1:# Raise exception}
-rescue Exception => e
-	puts e.message
-	puts e.backtrace.inspect
-	${2:# Rescue}
-else
-	${3:# other exception}
-ensure
-	${0:# always excute}
-end
-endsnippet
-
 snippet rescue
 rescue Exception => e
 	puts e.message
@@ -322,12 +302,8 @@ endsnippet
 snippet "\b(case|sw(itch)?)" "case <variable> when <expression> ... end" r
 case ${1:variable}
 when ${2:expression}
-$0
+  $0
 end
-endsnippet
-
-snippet alias "alias :<new_name> :<old_name>"
-alias :${1:new_name} :${2:old_name}
 endsnippet
 
 snippet class "class <class_name> def initialize ... end end"
@@ -348,6 +324,18 @@ snippet ###
 =begin
 	$0
 =end
+endsnippet
+
+snippet priv "private " m
+private
+
+$0
+endsnippet
+
+snippet prot "protected" m
+protected
+
+$0
 endsnippet
 
 # vim: set ts=2 sw=2 expandtab:

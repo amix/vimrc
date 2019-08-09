@@ -18,11 +18,13 @@ CONTENTS                                            *multiple-cursors-contents*
     2.Usage...................................|multiple-cursors-usage|
     3.Mappings................................|multiple-cursors-mappings|
     4.Global Options..........................|multiple-cursors-global-options|
-    5.Issues..................................|multiple-cursors-issues|
-    6.Contributing............................|multiple-cursors-contributing|
-    7.License.................................|multiple-cursors-license|
-    8.Credit..................................|multiple-cursors-credit|
-    9.References..............................|multiple-cursors-references|
+    5.Interactions with other plugins.........|multiple-cursors-other-plugins|
+    6.Highlight...............................|multiple-cursors-highlight|
+    7.FAQ.....................................|multiple-cursors-faq|
+    8.Contributing............................|multiple-cursors-contributing|
+    9.License.................................|multiple-cursors-license|
+   10.Credit..................................|multiple-cursors-credit|
+   11.References..............................|multiple-cursors-references|
 
 ==============================================================================
 1. Intro                                              *multiple-cursors-intro*
@@ -36,107 +38,56 @@ another attempt at that.
 ==============================================================================
 2. Usage                                              *multiple-cursors-usage*
 
-Out of the box, all you need to know is a single key CTRL-N. Pressing the key
-in Normal mode highlights the current word under the cursor in Visual mode and
-places a virtual cursor at the end of it. Pressing it again finds the next
-ocurrence and places another virtual cursor at the end of the visual
-selection. If you select multiple lines in Visual mode, pressing the key puts
-a virtual cursor at every line and leaves you in Normal mode.
+normal mode / visual mode~
 
-After you've marked all your locations with CTRL-N, you can change the visual
-selection with normal Vim motion commands in Visual mode. You could go to
-Normal mode by pressing v and wield your motion commands there. Single key
-command to switch to Insert mode such as `c` or `s` from Visual mode or `i`,
-`a`, `I`, `A` in Normal mode should work without any issues.
+    - start:      `<C-n>` start multicursor and add a virtual cursor + visual selection on the match
+        + next:   `<C-n>` add a new virtual cursor + visual selection on the next match
+        + skip:   `<C-x>` skip the next match
+        + prev:   `<C-p>` remove current virtual cursor + visual selection and go back on previous match
+    - select all: `<A-n>` start muticursor and directly select all matches
 
-At any time, you can press <Esc> to exit back to regular Vim.
+You can now change the virtual cursors + visual selection with |visual-mode| commands.
+For instance: `c`, `s`, `I`, `A` work without any issues.
+You could also go to |normal-mode| by pressing `v` and use normal commands there.
 
-Two additional keys are also mapped:
+At any time, you can press `<Esc>` to exit back to regular Vim.
 
-CTRL-P in Visual mode will remove the current virtual cursor and go back to
-the previous virtual cursor location. This is useful if you are trigger happy
-with Ctrl-n and accidentally went too far.
+NOTE: start with `g<C-n>` to match without boundaries (behaves like `g*` instead of `*`, see |gstar|)
 
-CTRL-X in Visual mode will remove the current virtual cursor and skip to the
-next virtual cursor location. This is useful if you don't want the current
-selection to be a candidate to operate on later.
+visual mode when multiple lines are selected~
 
-You can also add multiple cursors using a regular expression. The command
-*MultipleCursorsFind* accepts a range and a pattern, and it will create a
-virtual cursor at the end of every match within the range. If no range is
-passed in, then it defaults to the entire buffer.
+    - start: `<C-n>` add virtual cursors on each line
 
-NOTE: If at any time you have lingering cursors on screen, you can press
-CTRL-N in Normal mode and it will remove all prior cursors before starting a
-new one.
+You can now change the virtual cursors with |normal-mode| commands.
+For instance: `ciw`.
+
+command~
+
+The command `MultipleCursorsFind` accepts a range and a pattern (regexp), it
+creates a visual cursor at the end of each match.
+If no range is passed in, then it defaults to the entire buffer.
 
 ==============================================================================
 3. Mappings                                        *multiple-cursors-mappings*
 
-*g:multi_cursor_use_default_mapping* (Default: 1)
-
-Out of the box, only the single key CTRL-N is mapped in regular Vim's Normal
-mode and Visual mode to provide the functionality mentioned above. CTRL-N,
-CTRL-P, CTRL-X, and <ESC> are mapped in the special multicursor mode once
-you've added at least one virtual cursor to the buffer. If you don't like the
-plugin taking over your favorite key bindings, you can turn off the default
-with >
+If you don't like the plugin taking over your favorite key bindings, you can
+turn off the default with >
 
     let g:multi_cursor_use_default_mapping=0
-<
-
-*g:multi_cursor_next_key* (Default: '<C-n>')
-*g:multi_cursor_prev_key* (Default: '<C-p>')
-*g:multi_cursor_skip_key* (Default: '<C-x>')
-*g:multi_cursor_quit_key* (Default: '<Esc>')
-You can map the 'next', 'previous', 'skip', and 'exit' keys like the
-following: >
 
     " Default mapping
-    let g:multi_cursor_next_key='<C-n>'
-    let g:multi_cursor_prev_key='<C-p>'
-    let g:multi_cursor_skip_key='<C-x>'
-    let g:multi_cursor_quit_key='<Esc>'
+    let g:multi_cursor_start_word_key      = '<C-n>'
+    let g:multi_cursor_select_all_word_key = '<A-n>'
+    let g:multi_cursor_start_key           = 'g<C-n>'
+    let g:multi_cursor_select_all_key      = 'g<A-n>'
+    let g:multi_cursor_next_key            = '<C-n>'
+    let g:multi_cursor_prev_key            = '<C-p>'
+    let g:multi_cursor_skip_key            = '<C-x>'
+    let g:multi_cursor_quit_key            = '<Esc>'
 <
-
-*g:multi_cursor_start_key* (Default: 'g:multi_cursor_next_key')
-By default, the same key is used to enter multicursor mode as to select the
-next cursor location.  If you want to use a different key to start multicursor
-mode than for selecting the next location, do like the following: >
-
-    " Map start key separately from next key
-    let g:multi_cursor_start_key='<F6>'
-<
-
-*g:multi_cursor_start_word_key*
-When multicursor mode is started, it selects current word without
-boundaries, i.e. it behaves like `g*`. If you want to use word boundaries in
-Normal mode (as `*` does) but still have old behaviour up your sleeve, you can
-do the following: >
-
-    let g:multi_cursor_start_key='g<C-n>'
-    let g:multi_cursor_start_word_key='<C-n>'
-<
-
-In this configuration <C-n> will start multicursor mode using word boundaries
-(but only in Normal mode, as it does not make much sense to use it in Visual
-mode). Old behaviour without word boundaries is still available using
-g<C-n>.
-
-IMPORTANT: Please note that currently only single keystrokes and special
-keys can be mapped. This contraint is also the reason why multikey commands
-such as `ciw` do not work and cause unexpected behavior in Normal mode. This
-means that a mapping like `<Leader>n` will NOT work correctly. For a list of
-special keys that are supported, see |key-notation|
 
 NOTE: Please make sure to always map something to |g:multi_cursor_quit_key|,
 otherwise you'll have a tough time quitting from multicursor mode.
-
-NOTE: Prior to version 1.3, the recommended way to map the keys is using the
-expression quote syntax in Vim, using something like `"\<C-n>"` or `"\<Esc>"`
-(see h: expr-quote). After 1.3, the recommended way is to use a raw string
-like above. If your key mappings don't appear to work, give the new syntax a
-try.
 
 ==============================================================================
 4. Global Options                            *multiple-cursors-global-options*
@@ -145,47 +96,24 @@ Currently there are four additional global settings one can tweak:
 
 *g:multi_cursor_exit_from_visual_mode* (Default: 1)
 
-If set to 0, then pressing |g:multi_cursor_quit_key| in Visual mode will not
-quit and delete all existing cursors. This is useful if you want to press
-Escape and go back to Normal mode, and still be able to operate on all the
-cursors.
+If set to 0, then pressing |g:multi_cursor_quit_key| in |visual-mode| will not
+quit and delete all existing cursors. Useful if you want to go back to
+|normal-mode|, and still be able to operate on all the cursors.
 
 *g:multi_cursor_exit_from_insert_mode* (Default: 1)
 
-If set to 0, then pressing |g:multi_cursor_quit_key| in Insert mode will not
-quit and delete all existing cursors. This is useful if you want to press
-Escape and go back to Normal mode, and still be able to operate on all the
-cursors.
-
-*g:multi_cursor_insert_maps* (Default: `{}`)
-
-Any key in this map (values are ignored) will cause multi-cursor _Insert_ mode
-to pause for `timeoutlen` waiting for map completion just like normal vim.
-Otherwise keys mapped in insert mode are ignored when multiple cursors are
-active. For example, setting it to `{'\':1}` will make insert-mode mappings
-beginning with the default leader key work in multi-cursor mode. You have to
-manually set this because vim doesn't provide a way to see which keys _start_
-mappings.
+If set to 0, then pressing |g:multi_cursor_quit_key| in |insert-mode| will not
+quit and delete all existing cursors. Useful if you want to go back to Normal
+mode, and still be able to operate on all the cursors.
 
 *g:multi_cursor_normal_maps* (Default: see below)
 
-Default value: `{'!':1, '@':1, '=':1, 'q':1, 'r':1, 't':1, 'T':1, 'y':1, '[':1, ']':1, '\':1, 'd':1, 'f':1, 'F':1, 'g':1, '"':1, 'z':1, 'c':1, 'm':1, '<':1, '>':1}`
+`{'@': 1, 'F': 1, 'T': 1, '[': 1, '\': 1, ']': 1, '!': 1, '"': 1, 'c': 1, 'd': 1, 'f': 1, 'g': 1, 'm': 1, 'q': 1, 'r': 1, 't': 1, 'y': 1, 'z': 1, '<': 1, '=': 1, '>': 1}`
 
 Any key in this map (values are ignored) will cause multi-cursor _Normal_ mode
 to pause for map completion just like normal vim. Otherwise keys mapped in
-normal mode will "fail to replay" when multiple cursors are active. For example,
-changing it from `{}` to `{'d':1}` makes normal-mode mappings beginning with `d`
-(such as `dw` to delete a word) work in multi-cursor mode.
-
-*g:multi_cursor_visual_maps* (Default: )
-
-Default value: `{'i':1, 'a':1, 'f':1, 'F':1, 't':1, 'T':1}`
-
-Any key in this map (values are ignored) will cause multi-cursor _Visual_ mode
-to pause for map completion just like normal vim. Otherwise keys mapped in
-visual mode will "fail to replay" when multiple cursors are active. For example,
-changing it from `{}` to `{'i':1}` makes visual-mode mappings beginning with `i`
-(such as `it` to select an "inner tag block") work in multi-cursor mode.
+normal mode will "fail to replay" when multiple cursors are active. For
+example: `{'d':1}` makes normal-mode command `dw` work in multi-cursor mode.
 
 The default list contents should work for anybody, unless they have remapped a
 key from an operator-pending command to a non-operator-pending command or
@@ -195,30 +123,91 @@ These keys must be manually listed because vim doesn't provide a way to
 automatically see which keys _start_ mappings, and trying to run motion commands
 such as `j` as if they were operator-pending commands can break things.
 
+*g:multi_cursor_visual_maps* (Default: )
 
+`{'T': 1, 'a': 1, 't': 1, 'F': 1, 'f': 1, 'i': 1}`
+
+Same principle as |g:multi_cursor_normal_maps|
+
+==============================================================================
+5. Interactions with other plugins                    *multiple-cursors-other-plugins*
+
+Other plugins may be incompatible in insert mode. That is why we provide
+hooks to disable those plug-ins when vim-multiple-cursors is active:
+
+For example, if you are using `Neocomplete`, add this to your vimrc to prevent
+conflict:
+ >
+    function! Multiple_cursors_before()
+      if exists(':NeoCompleteLock')==2
+        exe 'NeoCompleteLock'
+      endif
+    endfunction
+
+    function! Multiple_cursors_after()
+      if exists(':NeoCompleteUnlock')==2
+        exe 'NeoCompleteUnlock'
+      endif
+    endfunction
+
+Plugins themselves can register |User| |autocommand| on `MultipleCursorsPre` and
+`MultipleCursorsPost` for automatic integration.
+
+==============================================================================
+6. Highlight                                          *multiple-cursors-highlight*
+>
 The plugin uses the highlight group `multiple_cursors_cursor` and
 `multiple_cursors_visual` to highlight the virtual cursors and their visual
 selections respectively. You can customize them by putting something similar
 like the following in your vimrc: >
-
     " Default highlighting (see help :highlight and help :highlight-link)
     highlight multiple_cursors_cursor term=reverse cterm=reverse gui=reverse
     highlight link multiple_cursors_visual Visual
 
-<
+==============================================================================
+7. FAQ                                              *multiple-cursors-faq*
+
+Q:  <A-n> doesn't seem to work in VIM but works in gVIM, why?
+A:  This is a well known terminal/Vim [9], different terminal have different
+    ways to send `Alt+key`.  Try adding this in your `.vimrc` and make sure
+    to replace the string: >
+    if !has('gui_running')
+      map "in Insert mode, type Ctrl+v Alt+n here" <A-n>
+    endif
+Or remap the following: >
+    g:multi_cursor_start_key
+    g:multi_cursor_select_all_key
+
+Q:  <C-n> doesn't seem to work in gVIM?
+A:  Try setting `set selection=inclusive` in your `~/.gvimrc`
+
+Q:  deoplete insert giberrish, how to fix this?
+A:  use the `Multiple_cursors` functions, add this in your vimrc: >
+    func! Multiple_cursors_before()
+      if deoplete#is_enabled()
+        call deoplete#disable()
+        let g:deoplete_is_enable_before_multi_cursors = 1
+      else
+        let g:deoplete_is_enable_before_multi_cursors = 0
+      endif
+    endfunc
+    func! Multiple_cursors_after()
+      if g:deoplete_is_enable_before_multi_cursors
+        call deoplete#enable()
+      endif
+    endfunc
+
+Q:  is it also working on Mac?
+A:  On Mac OS, MacVim[10] is known to work.
+
+Q:  How can I select `n` keywords with several keystrokes? `200<C-n>` does not work.
+A:  You can use :MultipleCursorsFind keyword. I have this binding in my vimrc: >
+    nnoremap <silent> <M-j> :MultipleCursorsFind <C-R>/<CR>
+    vnoremap <silent> <M-j> :MultipleCursorsFind <C-R>/<CR>
+This allows one to search for the keyword using `*` and turn search results into cursors with `Alt-j`.
 
 ==============================================================================
-5. Issues                                            *multiple-cursors-issues*
-
-- Multi key commands like ciw do not work at the moment
-- All user input typed before Vim is able to fan out the last operation to all
-  cursors is lost. This is a implementation decision to keep the input
-  perfectly synced in all locations, at the cost of potentially losing user
-  input.
-- Select mode is not implemented
-
-==============================================================================
-6. Contributing                                *multiple-cursors-contributing*
+8. Contributing                                *multiple-cursors-contributing*
 
 The project is hosted on Github. Patches, feature requests and suggestions are
 always welcome!
@@ -227,19 +216,19 @@ Find the latest version of the plugin here:
     http://github.com/terryma/vim-multiple-cursors
 
 ==============================================================================
-7. License                                          *multiple-cursors-license*
+9. License                                          *multiple-cursors-license*
 
-The project is licensed under the MIT license [7]. Copyrigth 2013 Terry Ma
+The project is licensed under the MIT license [7]. Copyright 2013 Terry Ma
 
 ==============================================================================
-8. Credit                                            *multiple-cursors-credit*
+10. Credit                                           *multiple-cursors-credit*
 
 The plugin is obviously inspired by Sublime Text's awesome multiple selection
 [6] feature. Some inspiration was also taken from Emac's multiple cursors [8]
 implementation.
 
 ==============================================================================
-9. References                                    *multiple-cursors-references*
+10. References                                    *multiple-cursors-references*
 
 [1] https://github.com/paradigm/vim-multicursor
 [2] https://github.com/felixr/vim-multiedit
@@ -249,5 +238,7 @@ implementation.
 [6] http://www.sublimetext.com/docs/2/multiple_selection_with_the_keyboard.html
 [7] http://opensource.org/licenses/MIT
 [8] https://github.com/magnars/multiple-cursors.el
+[9] http://vim.wikia.com/wiki/Get_Alt_key_to_work_in_terminal
+[10] https://code.google.com/p/macvim
 
  vim:tw=78:sw=4:ft=help:norl:

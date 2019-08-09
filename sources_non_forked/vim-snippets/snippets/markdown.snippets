@@ -72,16 +72,15 @@ snippet **
 snippet __
 	__${1:bold}__
 snippet ===
-	`repeat('=', strlen(getline(line(".") - 1)) - strlen(getline('.')))`
+	`repeat('=', strlen(getline(line('.') - 3)))`
 
 	${0}
 snippet -
 	-   ${0}
 snippet ---
-	`repeat('-', strlen(getline(line(".") - 1)) - strlen(getline('.')))`
+	`repeat('-', strlen(getline(line('.') - 3)))`
 
 	${0}
-
 snippet blockquote
 	{% blockquote %}
 	${0:quote}
@@ -98,8 +97,8 @@ snippet blockquote-link
 	{% endblockquote %}
 
 snippet ```
-	\`\`\`
-	${1:code}
+	\`\`\`${1}
+	${0:${VISUAL}}
 	\`\`\`
 
 # Language.

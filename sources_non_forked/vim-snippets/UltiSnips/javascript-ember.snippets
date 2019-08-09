@@ -6,53 +6,63 @@ priority -50
 
 # Application
 snippet eapp "App.Name = Ember.Application.create({});"
-${1:App.Name} = Ember.Application.create({});
-endsnippet
+import Application from '@ember/application';
 
-# Models
-snippet emod "App.ModelName = Ember.Model.extend({...});"
-${1:model_name} = Ember.Model.extend({
+export default Application.extend({
 	${0://Properties here...}
 });
 endsnippet
 
-# View
-snippet eview "App.ViewName = Ember.Model.extend({...});"
-${1:view_name} = Ember.View.extend({
+# Models
+snippet emod "import DS from 'ember-data';"
+import DS from 'ember-data';
+
+export default DS.Model.extend({
 	${0://Properties here...}
 });
 endsnippet
 
 # Controller
-snippet econtroller "App.ControllerName = Ember.Model.extend({...});"
-${1:controller_name} = Ember.ObjectController.extend({
+snippet econtroller "import Controller from '@ember/controller';"
+import Controller from '@ember/controller';
+
+export default Controller.extend({
 	${0://Properties here...}
 });
 endsnippet
 
 # Route
-snippet eroute "App.RouteName = Ember.Route.extend({...});"
-${1:route_name} = Ember.Route.extend({
+snippet eroute "import Route from '@ember/routing/route';"
+import Route from '@ember/routing/route';
+
+export default Route.extend({
 	${0://Properties here...}
 });
 endsnippet
 
-snippet eview "App.ViewName = Ember.Model.create({...});"
-${1:view_name} = Ember.View.create({
+# Component
+snippet ecomponent "import Component from '@ember/component';"
+import Component from '@ember/component';
+
+export default Component.extend({
 	${0://Properties here...}
 });
 endsnippet
 
 # Object
-snippet eobj "App.ObjectName = Ember.Object.extend({...});"
-${1:object_name} = Ember.Object.create({
+snippet eobj "import EmberObject from '@ember/object';"
+import EmberObject from '@ember/object';
+
+export default EmberObject.extend({
 	${0://Properties here...}
 });
 endsnippet
 
 # Mixin
 snippet emix "App.MixinName = Ember.Model.extend({...});"
-${1:view_name} = Ember.Mixin.create({
+import Mixin from '@ember/object/mixin';
+
+export default Mixin.create({
 	${0://Properties here...}
 });
 endsnippet
@@ -66,25 +76,26 @@ snippet eset "this.set('property', value);"
 ${1:this}.set('${2:property}', ${3:value});
 endsnippet
 
-# Computer properties
-snippet cpro "property_name: function() {...}.property(),"
-${1:property_name}: function() {
-	${0://body...}
-}.property('${3:argumenet}'),
+# Computed properties
+snippet cproimport "import { computed } from '@ember/object';"
+import { computed } from '@ember/object';
 endsnippet
 
-snippet cpro ": function() {...}.property('property'),"
-${1:property_name}: function() {
+snippet cpro "property_name: computed('...', function() {...}),"
+${1:property_name}: computed('${3:argument}', function() {
 	${0://body...}
-}.property(),
+}),
 endsnippet
 
+# Observers
+snippet prooimport "import { observer } from '@ember/object';"
+import { observer } from '@ember/object';
+endsnippet
 
-# Observes
-snippet proo "property_name: function() {...}.property()"
-${1:property_name}: function() {
+snippet proo "property_name: observer('...', function() {...}),"
+${1:property_name}: observer('${3:argument}', function() {
 	${0://body...}
-}.observes('${3:property}'),
+}),
 endsnippet
 
 # vim:ft=snippets:

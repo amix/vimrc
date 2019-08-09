@@ -33,7 +33,7 @@ function! s:get_color(group, attr)
 endfunction
 
 function! s:set_color(group, attr, color)
-  let gui = a:color =~ '^#'
+  let gui = has('gui_running') || has('termguicolors') && &termguicolors
   execute printf('hi %s %s%s=%s', a:group, gui ? 'gui' : 'cterm', a:attr, a:color)
 endfunction
 
@@ -122,7 +122,7 @@ function! s:tranquilize()
 endfunction
 
 function! s:hide_statusline()
-  let &l:statusline = repeat(' ', winwidth(0))
+  setlocal statusline=\ 
 endfunction
 
 function! s:hide_linenr()
@@ -239,7 +239,7 @@ function! s:goyo_on(dim)
   set showtabline=0
   set noruler
   set fillchars+=vert:\ 
-  set fillchars+=stl:.
+  set fillchars+=stl:\ 
   set fillchars+=stlnc:\ 
   set sidescroll=1
   set sidescrolloff=0

@@ -124,7 +124,7 @@ endsnippet
 
 snippet model "Model" b
 class ${1:MODELNAME}(models.Model):
-	${0}
+	$0
 	class Meta:
 		verbose_name = "$1"
 		verbose_name_plural = "$1s"
@@ -275,67 +275,67 @@ endsnippet
 # VIEWS SNIPPETS
 
 snippet adminview "Model Admin View" b
-class ${1}Admin(admin.ModelAdmin):
+class $1Admin(admin.ModelAdmin):
 	'''
-		Admin View for ${1}
+		Admin View for $1
 	'''
-	list_display = ('${2}',)
-	list_filter = ('${3}',)
+	list_display = ('$2',)
+	list_filter = ('$3',)
 	inlines = [
-		${4}Inline,
+		$4Inline,
 	]
-	raw_id_fields = ('${5}',)
-	readonly_fields = ('${6}',)
-	search_fields = ['${7}']
-admin.site.register(${1}, ${1}Admin)
+	raw_id_fields = ('$5',)
+	readonly_fields = ('$6',)
+	search_fields = ['$7']
+admin.site.register($1, $1Admin)
 endsnippet
 
 snippet createview "Generic Create View" b
 class ${1:MODEL_NAME}CreateView(CreateView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 
 snippet deleteview "Generic Delete View" b
 class ${1:MODEL_NAME}DeleteView(DeleteView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 
 snippet detailview "Generic Detail View" b
 class ${1:MODEL_NAME}DetailView(DetailView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 
 snippet listview "Generic List View" b
 class ${1:MODEL_NAME}ListView(ListView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 
 snippet stackedinline "Stacked Inline" b
-class ${1}Inline(admin.StackedInline):
+class $1Inline(admin.StackedInline):
 	'''
-	Stacked Inline View for ${1}
+	Stacked Inline View for $1
 	'''
-	model = ${2:${1}}
+	model = ${2:$1}
 	min_num = ${3:3}
 	max_num = ${4:20}
 	extra = ${5:1}
-	raw_id_fields = (${6},)
+	raw_id_fields = ($6,)
 endsnippet
 
 snippet tabularinline "Tabular Inline" b
-class ${1}Inline(admin.TabularInline):
+class $1Inline(admin.TabularInline):
 	'''
-	Tabular Inline View for ${1}
+	Tabular Inline View for $1
 	'''
-	model = ${2:${1}}
+	model = ${2:$1}
 	min_num = ${3:3}
 	max_num = ${4:20}
 	extra = ${5:1}
-	raw_id_fields = (${6},)
+	raw_id_fields = ($6,)
 endsnippet
 
 snippet templateview "Generic Template View" b
@@ -345,7 +345,7 @@ endsnippet
 
 snippet updateview "Generic Update View" b
 class ${1:MODEL_NAME}UpdateView(UpdateView):
-	model = ${1:MODEL_NAME}
+	model = $1
 	template_name = "${2:TEMPLATE_NAME}"
 endsnippet
 

@@ -1,0 +1,53 @@
+" Tests toc window auto-fit to longest header, but without exceeding half screen.
+
+Given markdown;
+# chap 1
+
+# chap 2
+
+# chap 3
+
+# chap 4
+
+# chap 5
+
+# chap 6
+
+# chap 7
+
+# chap 8
+
+# chap 9
+
+# chap 10
+
+# chap 11
+
+# chap 12
+
+## chap 12.1
+
+### chap 12.1.1
+
+#### chap 12.1.1.1
+
+##### chap 12.1.1.1.1
+
+###### chap 12.1.1.1.1.1
+
+# chap 13
+
+Execute (toc window autofit width):
+  set number
+  let g:vim_markdown_toc_autofit = 1
+  let line = '###### chap 12.1.1.1.1.1'
+  AssertEqual getline('33'), line
+  :Toc
+  let real_width = winwidth(0)
+  :lclose
+  let expected_width = len(line) + 2*5 + 1 + 3 - 7
+  AssertEqual real_width, expected_width
+  set nonumber
+" 2 spaces * 5 additional header levels + 1 space for first header +
+" 3 spaces for line numbers - 7 chars ('###### ') that don't show up on the TOC
+

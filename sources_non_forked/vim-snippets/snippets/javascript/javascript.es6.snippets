@@ -10,16 +10,16 @@ snippet imm "import { member } from 'xyz'"
 	import { ${1} } from '${2}';
 snippet cla
 	class ${1} {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet clax
 	class ${1} extends ${2} {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet clac
 	class ${1} {
 		constructor(${2}) {
-			${0}
+			${0:${VISUAL}}
 		}
 	}
 snippet foro "for (const prop of object}) { ... }"
@@ -29,23 +29,23 @@ snippet foro "for (const prop of object}) { ... }"
 # Generator
 snippet fun*
 	function* ${1:function_name}(${2}) {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet c=>
 	const ${1:function_name} = (${2}) => {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet caf
 	const ${1:function_name} = (${2}) => {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet =>
 	(${1}) => {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet af
 	(${1}) => {
-		${0}
+		${0:${VISUAL}}
 	}
 snippet sym
 	const ${1} = Symbol('${0}');

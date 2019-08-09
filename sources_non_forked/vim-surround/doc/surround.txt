@@ -135,6 +135,16 @@ tag, its attributes are kept in the new tag. End your input with > to discard
 the those attributes. If <C-T> is used, the tags will appear on lines by
 themselves.
 
+If f, F, or <C-F> is used, Vim prompts for a function name to insert.  The target
+text will be wrapped in a function call. If f is used, the text is wrapped with
+() parentheses; F adds additional spaces inside the parentheses. <C-F> inserts the
+function name inside the parentheses.
+
+  Old text                  Command           New text ~
+  "hello"                   ysWfprint<cr>     print("hello")
+  "hello"                   ysWFprint<cr>     print( "hello" )
+  "hello"                   ysW<C-f>print<cr> (print "hello")
+
 If s is used, a leading but not trailing space is added.  This is useful for
 removing parentheses from a function call with csbs.
 

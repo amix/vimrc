@@ -1,0 +1,27 @@
+===============================================================================
+ALE Vim Integration                                           *ale-vim-options*
+
+
+===============================================================================
+vint                                                             *ale-vim-vint*
+
+g:ale_vim_vint_executable                           *g:ale_vim_vint_executable*
+                                                    *b:ale_vim_vint_executable*
+  Type: |String|
+  Default: `'vint'`
+
+  This option can be set to change the executable path for Vint.
+
+
+g:ale_vim_vint_show_style_issues             *g:ale_vim_vint_show_style_issues*
+                                             *b:ale_vim_vint_show_style_issues*
+  Type: |Number|
+  Default: `1`
+
+  This variable will enable/disable style issues for Vint. When this option
+  is disabled, only warnings and errors which are not purely style issues
+  will be reported.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

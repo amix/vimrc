@@ -1,0 +1,82 @@
+# Import only React
+snippet ri1
+	import React from 'react'
+
+# Import both React and Component
+snippet ri2
+	import React, { Component } from 'react'
+	import PropTypes from 'prop-types'
+
+# React class
+snippet rcla
+	class ${1:MyComponent} extends Component {
+		render() {
+			return (
+				${0:<div></div>}
+			)
+		}
+	}
+
+# React constructor
+snippet rcon
+	constructor(props) {
+		super(props)
+
+		this.state = {
+			${1}: ${0},
+		}
+	}
+
+# Proptypes for React Class
+snippet rcpt
+	static propTypes = {
+		${1}: PropTypes.${0},
+	}
+
+# Default props for React Class
+snippet rcdp
+	static defaultProps = {
+		${1}: ${0},
+	}
+
+# Presentational component
+snippet rcom
+	props => {
+		return (
+			${0:<div></div>}
+		)
+	}
+
+# Proptypes for Presentational component
+snippet rpt
+	${1}.propTypes = {
+		${2}: PropTypes.${0},
+	}
+
+# Default props for Presentational component
+snippet rdp
+	${1}.defaultProps = {
+		${2}: ${0},
+	}
+
+# Lifecycle Methods
+snippet rcdm
+	componentDidMount() {
+		${0:${VISUAL}}
+	}
+
+# State
+snippet rsst
+	this.setState({
+		${1}: ${0},
+	})
+
+snippet rtst
+	this.state.${0}
+
+# Props
+snippet rp
+	props.${0}
+
+snippet rtp
+	this.props.${0}

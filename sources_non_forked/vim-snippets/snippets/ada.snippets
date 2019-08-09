@@ -90,19 +90,19 @@ snippet fors for some
 
 snippet if if
 	if ${1} then
-		${0}
+		${0:${VISUAL}}
 	end if;
 
 snippet ife if ... else
 	if ${1} then
-		${2}
+		${2:${VISUAL}}
 	else
 		${0}
 	end if;
 
 snippet el else
 	else
-		${0}
+		${0:${VISUAL}}
 
 snippet eif elsif
 	elsif ${1} then
@@ -110,13 +110,13 @@ snippet eif elsif
 
 snippet wh while
 	while ${1} loop
-		${0}
+		${0:${VISUAL}}
 	end loop;
 
 snippet nwh named while
 	${1}:
 	while ${2} loop
-		${0}
+		${0:${VISUAL}}
 	end loop $1;
 
 snippet for for

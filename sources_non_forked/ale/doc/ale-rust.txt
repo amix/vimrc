@@ -1,0 +1,248 @@
+===============================================================================
+ALE Rust Integration                                         *ale-rust-options*
+                                                         *ale-integration-rust*
+
+===============================================================================
+Integration Information
+
+  If Vim does not detect the Rust file type out-of-the-box, you need the runtime
+  files for Rust distributed in Vim >=8.0.0501 or upstream:
+  https://github.com/rust-lang/rust.vim
+
+  Note that there are three possible linters for Rust files:
+
+  1. rustc -- The Rust compiler is used to check the currently edited file.
+     So, if your project consists of multiple files, you will get some errors
+     when you use e.g. a struct which is defined in another file. You can use
+     |g:ale_rust_ignore_error_codes| to ignore some of these errors.
+  2. cargo -- If your project is managed by Cargo, the whole project is
+     checked. That means that all errors are properly shown, but cargo can
+     only operate on the files written on disk, so errors will not be reported
+     while you type.
+  3. rls -- If you have `rls` installed, you might prefer using this linter
+     over cargo. rls implements the Language Server Protocol for incremental
+     compilation of Rust code, and can check Rust files while you type. `rls`
+     requires Rust files to contained in Cargo projects.
+  4. rustfmt -- If you have `rustfmt` installed, you can use it as a fixer to
+     consistently reformat your Rust code.
+
+  Only cargo is enabled by default. To switch to using rustc instead of cargo,
+  configure |g:ale_linters| appropriately: >
+
+  " See the help text for the option for more information.
+  let g:ale_linters = {'rust': ['rustc']}
+<
+
+  Also note that rustc 1.12. or later is needed.
+
+
+===============================================================================
+cargo                                                          *ale-rust-cargo*
+
+g:ale_rust_cargo_use_check                         *g:ale_rust_cargo_use_check*
+                                                   *b:ale_rust_cargo_use_check*
+  Type: |Number|
+  Default: `1`
+
+  When set to `1`, this option will cause ALE to use `cargo check` instead of
+  `cargo build` . `cargo check` is supported since version 1.16.0 of Rust.
+
+  ALE will never use `cargo check` when the version of `cargo` is less than
+  0.17.0.
+
+
+g:ale_rust_cargo_check_all_targets         *g:ale_rust_cargo_check_all_targets*
+                                           *b:ale_rust_cargo_check_all_targets*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, ALE will set the `--all-targets` option when `cargo check`
+  is used. See |g:ale_rust_cargo_use_check|,
+
+
+g:ale_rust_cargo_check_tests                     *g:ale_rust_cargo_check_tests*
+                                                 *b:ale_rust_cargo_check_tests*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, ALE will set the `--tests` option when `cargo check`
+  is used. This allows for linting of tests which are normally excluded.
+  See |g:ale_rust_cargo_use_check|,
+
+
+g:ale_rust_cargo_check_examples               *g:ale_rust_cargo_check_examples*
+                                              *b:ale_rust_cargo_check_examples*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, ALE will set the `--examples` option when `cargo check`
+  is used. This allows for linting of examples which are normally excluded.
+  See |g:ale_rust_cargo_use_check|,
+
+
+g:ale_rust_cargo_default_feature_behavior
+                                    *g:ale_rust_cargo_default_feature_behavior*
+                                    *b:ale_rust_cargo_default_feature_behavior*
+  Type: |String|
+  Default: `default`
+
+  When set to `none`, ALE will set the `--no-default-features` option when
+  invoking `cargo`. Only the features specified in
+  |g:ale_rust_cargo_include_features| will be included when performing the
+  lint check.
+
+  When set to `default`, ALE will instruct `cargo` to build all default
+  features specified in the project's `Cargo.toml` file, in addition to
+  including any additional features defined in
+  |g:ale_rust_cargo_include_features|.
+
+  When set to `all`, ALE will set the `--all-features` option when
+  invoking `cargo`, which will include all features defined in the project's
+  `Cargo.toml` file when performing the lint check.
+
+
+g:ale_rust_cargo_include_features           *g:ale_rust_cargo_include_features*
+                                            *b:ale_rust_cargo_include_features*
+  Type: |String|
+  Default: `''`
+
+  When defined, ALE will set the `--features` option when invoking `cargo` to
+  perform the lint check. See |g:ale_rust_cargo_default_feature_behavior|.
+
+
+g:ale_rust_cargo_avoid_whole_workspace *g:ale_rust_cargo_avoid_whole_workspace*
+                                       *b:ale_rust_cargo_avoid_whole_workspace*
+  Type: |Number|
+  Default: `1`
+
+  When set to 1, and ALE is used to edit a crate that is part of a Cargo
+  workspace, avoid building the entire workspace by invoking `cargo` directly
+  in the crate's directory. Otherwise, behave as usual.
+
+
+g:ale_rust_cargo_use_clippy
+                                                  *g:ale_rust_cargo_use_clippy*
+                                                  *b:ale_rust_cargo_use_clippy*
+  Type: |Number|
+  Default: `0`
+
+  When set to 1, `cargo clippy` will be used instead of `cargo check` or
+  `cargo build` as linter.
+  For details of `cargo clippy`, please visit the following link:
+
+  https://github.com/rust-lang-nursery/rust-clippy
+
+  Since `cargo clippy` is optional toolchain, it's safer to check whether
+  `cargo-clippy` is executable as follows:
+>
+    let g:ale_rust_cargo_use_clippy = executable('cargo-clippy')
+<
+
+g:ale_rust_cargo_clippy_options
+                                              *g:ale_rust_cargo_clippy_options*
+                                              *b:ale_rust_cargo_clippy_options*
+
+  Type: |String|
+  Default: `''`
+
+  When `cargo clippy` is used, this value will be added to a command line to run
+  it. This variable is useful when you want to add some extra options which
+  only `cargo clippy` supports (e.g. `--deny`).
+
+
+===============================================================================
+rls                                                              *ale-rust-rls*
+
+g:ale_rust_rls_executable                           *g:ale_rust_rls_executable*
+                                                    *b:ale_rust_rls_executable*
+  Type: |String|
+  Default: `'rls'`
+
+  This variable can be modified to change the executable path for `rls`.
+
+
+g:ale_rust_rls_toolchain                             *g:ale_rust_rls_toolchain*
+                                                     *b:ale_rust_rls_toolchain*
+  Type: |String|
+  Default: `''`
+
+  This option can be set to change the toolchain used for `rls`. Possible
+  values include `'nightly'`, `'beta'`, `'stable'`, and `''`. When using
+  option `''`, rls will automatically find the default toolchain set by
+  rustup. If you want to use `rls` from a specific toolchain version, you may
+  also use values like `'channel-yyyy-mm-dd-arch-target'` as long as
+  `'rls +{toolchain_name} -V'` runs correctly in your command line.
+
+  The `rls` server will only be started once per executable.
+
+
+g:ale_rust_rls_config                                   *g:ale_rust_rls_config*
+                                                        *b:ale_rust_rls_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Dictionary with configuration settings for rls. For example, to force
+  using clippy as linter: >
+        {
+      \   'rust': {
+      \     'clippy_preference': 'on'
+      \   }
+      \ }
+
+
+===============================================================================
+rustc                                                          *ale-rust-rustc*
+
+
+g:ale_rust_rustc_options                             *g:ale_rust_rustc_options*
+                                                     *b:ale_rust_rustc_options*
+  Type: |String|
+  Default: `'-Z no-codegen'`
+
+  The variable can be used to change the options passed to `rustc`.
+
+  `-Z no-codegen` should only work with nightly builds of Rust. Be careful when
+  setting the options, as running `rustc` could execute code or generate
+  binary files.
+
+
+g:ale_rust_ignore_error_codes                   *g:ale_rust_ignore_error_codes*
+                                                *b:ale_rust_ignore_error_codes*
+  Type: |List| of |String|s
+  Default: `[]`
+
+  This variable can contain error codes which will be ignored. For example, to
+  ignore most errors regarding failed imports, put this in your .vimrc
+  >
+  let g:ale_rust_ignore_error_codes = ['E0432', 'E0433']
+
+g:ale_rust_ignore_secondary_spans           *g:ale_rust_ignore_secondary_spans*
+                                            *b:ale_rust_ignore_secondary_spans*
+  Type: Number
+  Default: 0
+
+	When set to 1, instructs the Rust error repporting to ignore secondary
+	spans. The problem with secondary spans is that they sometimes appear in
+	error messages before the main cause of the error, for example: >
+
+  1 src/main.rs|98 col 5 error| this function takes 4 parameters but 5
+	parameters were supplied: defined here
+  2 src/main.rs|430 col 32 error| this function takes 4 parameters but 5
+	parameters were supplied: expected 4 parameters
+<
+  This is due to the sorting by line numbers. With this option set to 1,
+  the 'defined here' span will not be presented.
+
+===============================================================================
+rustfmt                                                      *ale-rust-rustfmt*
+
+g:ale_rust_rustfmt_options                         *g:ale_rust_rustfmt_options*
+                                                   *b:ale_rust_rustfmt_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the rustfmt fixer.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Run all tests inside a Docker container
+#
+
+set -euC
+vimgodir=$(cd -P "$(dirname "$0")/.." > /dev/null && pwd)
+cd "$vimgodir"
+
+docker build --tag vim-go-test .
+# seccomp=confined is required for dlv to run in a container, hence it's
+# required for vim-go's debug tests.
+docker run --rm --security-opt="seccomp=unconfined" vim-go-test
+
+# vim:ts=2:sts=2:sw=2:et

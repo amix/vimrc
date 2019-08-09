@@ -20,9 +20,9 @@ endif
 nnoremap <silent> <Plug>(go-build) :<C-u>call go#cmd#Build(!g:go_jump_to_error)<CR>
 nnoremap <silent> <Plug>(go-generate) :<C-u>call go#cmd#Generate(!g:go_jump_to_error)<CR>
 nnoremap <silent> <Plug>(go-install) :<C-u>call go#cmd#Install(!g:go_jump_to_error)<CR>
-nnoremap <silent> <Plug>(go-test) :<C-u>call go#cmd#Test(!g:go_jump_to_error, 0)<CR>
-nnoremap <silent> <Plug>(go-test-func) :<C-u>call go#cmd#TestFunc(!g:go_jump_to_error)<CR>
-nnoremap <silent> <Plug>(go-test-compile) :<C-u>call go#cmd#Test(!g:go_jump_to_error, 1)<CR>
+nnoremap <silent> <Plug>(go-test) :<C-u>call go#test#Test(!g:go_jump_to_error, 0)<CR>
+nnoremap <silent> <Plug>(go-test-func) :<C-u>call go#test#Func(!g:go_jump_to_error)<CR>
+nnoremap <silent> <Plug>(go-test-compile) :<C-u>call go#test#Test(!g:go_jump_to_error, 1)<CR>
 
 nnoremap <silent> <Plug>(go-coverage) :<C-u>call go#coverage#Buffer(!g:go_jump_to_error)<CR>
 nnoremap <silent> <Plug>(go-coverage-clear) :<C-u>call go#coverage#Clear()<CR>
@@ -31,7 +31,7 @@ nnoremap <silent> <Plug>(go-coverage-browser) :<C-u>call go#coverage#Browser(!g:
 
 nnoremap <silent> <Plug>(go-files) :<C-u>call go#tool#Files()<CR>
 nnoremap <silent> <Plug>(go-deps) :<C-u>call go#tool#Deps()<CR>
-nnoremap <silent> <Plug>(go-info) :<C-u>call go#tool#Info(0)<CR>
+nnoremap <silent> <Plug>(go-info) :<C-u>call go#tool#Info(1)<CR>
 nnoremap <silent> <Plug>(go-import) :<C-u>call go#import#SwitchImport(1, '', expand('<cword>'), '')<CR>
 nnoremap <silent> <Plug>(go-imports) :<C-u>call go#fmt#Format(1)<CR>
 
@@ -43,16 +43,25 @@ nnoremap <silent> <Plug>(go-callstack) :<C-u>call go#guru#Callstack(-1)<CR>
 xnoremap <silent> <Plug>(go-freevars) :<C-u>call go#guru#Freevars(0)<CR>
 nnoremap <silent> <Plug>(go-channelpeers) :<C-u>call go#guru#ChannelPeers(-1)<CR>
 nnoremap <silent> <Plug>(go-referrers) :<C-u>call go#guru#Referrers(-1)<CR>
-nnoremap <silent> <Plug>(go-sameids) :<C-u>call go#guru#SameIds()<CR>
+nnoremap <silent> <Plug>(go-sameids) :<C-u>call go#guru#SameIds(1)<CR>
+nnoremap <silent> <Plug>(go-pointsto) :<C-u>call go#guru#PointsTo(-1)<CR>
 nnoremap <silent> <Plug>(go-whicherrs) :<C-u>call go#guru#Whicherrs(-1)<CR>
 nnoremap <silent> <Plug>(go-sameids-toggle) :<C-u>call go#guru#ToggleSameIds()<CR>
 
 nnoremap <silent> <Plug>(go-rename) :<C-u>call go#rename#Rename(!g:go_jump_to_error)<CR>
 
-nnoremap <silent> <Plug>(go-def) :<C-u>call go#def#Jump('')<CR>
-nnoremap <silent> <Plug>(go-def-vertical) :<C-u>call go#def#Jump("vsplit")<CR>
-nnoremap <silent> <Plug>(go-def-split) :<C-u>call go#def#Jump("split")<CR>
-nnoremap <silent> <Plug>(go-def-tab) :<C-u>call go#def#Jump("tab")<CR>
+nnoremap <silent> <Plug>(go-decls) :<C-u>call go#decls#Decls(0, '')<CR>
+nnoremap <silent> <Plug>(go-decls-dir) :<C-u>call go#decls#Decls(1, '')<CR>
+
+nnoremap <silent> <Plug>(go-def) :<C-u>call go#def#Jump('', 0)<CR>
+nnoremap <silent> <Plug>(go-def-vertical) :<C-u>call go#def#Jump("vsplit", 0)<CR>
+nnoremap <silent> <Plug>(go-def-split) :<C-u>call go#def#Jump("split", 0)<CR>
+nnoremap <silent> <Plug>(go-def-tab) :<C-u>call go#def#Jump("tab", 0)<CR>
+
+nnoremap <silent> <Plug>(go-def-type) :<C-u>call go#def#Jump('', 1)<CR>
+nnoremap <silent> <Plug>(go-def-type-vertical) :<C-u>call go#def#Jump("vsplit", 1)<CR>
+nnoremap <silent> <Plug>(go-def-type-split) :<C-u>call go#def#Jump("split", 1)<CR>
+nnoremap <silent> <Plug>(go-def-type-tab) :<C-u>call go#def#Jump("tab", 1)<CR>
 
 nnoremap <silent> <Plug>(go-def-pop) :<C-u>call go#def#StackPop()<CR>
 nnoremap <silent> <Plug>(go-def-stack) :<C-u>call go#def#Stack()<CR>
@@ -64,12 +73,14 @@ nnoremap <silent> <Plug>(go-doc-vertical) :<C-u>call go#doc#Open("vnew", "vsplit
 nnoremap <silent> <Plug>(go-doc-split) :<C-u>call go#doc#Open("new", "split")<CR>
 nnoremap <silent> <Plug>(go-doc-browser) :<C-u>call go#doc#OpenBrowser()<CR>
 
-nnoremap <silent> <Plug>(go-metalinter) :<C-u>call go#lint#Gometa(0)<CR>
-nnoremap <silent> <Plug>(go-lint) :<C-u>call go#lint#Golint()<CR>
+nnoremap <silent> <Plug>(go-metalinter) :<C-u>call go#lint#Gometa(!g:go_jump_to_error, 0)<CR>
+nnoremap <silent> <Plug>(go-lint) :<C-u>call go#lint#Golint(!g:go_jump_to_error)<CR>
 nnoremap <silent> <Plug>(go-vet) :<C-u>call go#lint#Vet(!g:go_jump_to_error)<CR>
 
 nnoremap <silent> <Plug>(go-alternate-edit) :<C-u>call go#alternate#Switch(0, "edit")<CR>
 nnoremap <silent> <Plug>(go-alternate-vertical) :<C-u>call go#alternate#Switch(0, "vsplit")<CR>
 nnoremap <silent> <Plug>(go-alternate-split) :<C-u>call go#alternate#Switch(0, "split")<CR>
+
+nnoremap <silent> <Plug>(go-iferr) :<C-u>call go#iferr#Generate()<CR>
 
 " vim: sw=2 ts=2 et

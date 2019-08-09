@@ -31,8 +31,12 @@ snippet importq
 snippet inst
 	instance ${1:Monoid} ${2:Type} where
 		${0}
+snippet ty
+	type ${1:Type} = ${0:Type}
 snippet type
 	type ${1:Type} = ${0:Type}
+snippet da
+	data ${1:Type} = ${2:$1} ${0:Int}
 snippet data
 	data ${1:Type} = ${2:$1} ${0:Int}
 snippet newtype
@@ -45,6 +49,12 @@ snippet module
 	) where
 	`expand('%') =~ 'Main' ? "\nmain :: IO ()\nmain = undefined" : ""`
 
+snippet mod
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`
+		( ${1}
+		) where
+
+	`expand('%') =~ 'Main' ? "\nmain :: IO ()\nmain = undefined" : ""`
 snippet main
 	main :: IO ()
 	main = ${0:undefined}
@@ -52,6 +62,12 @@ snippet const
 	${1:name} :: ${2:a}
 	$1 = ${0:undefined}
 snippet fn
+	${1:fn} :: ${2:a} -> ${3:a}
+	$1 ${4} = ${0:undefined}
+snippet fn0
+	${1:fn} :: ${2:a}
+	$1 = ${0:undefined}
+snippet fn1
 	${1:fn} :: ${2:a} -> ${3:a}
 	$1 ${4} = ${0:undefined}
 snippet fn2
@@ -103,7 +119,22 @@ snippet spec
 	spec :: Spec
 	spec =
 		describe "${1}" $ do
-			$0
+			it "${2}" $
+				$0
+snippet specf
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` (main, spec) where
+
+	import Test.Hspec
+	import Test.Hspec.Runner (configFastFail, defaultConfig, hspecWith)
+
+	main :: IO ()
+	main = hspecWith defaultConfig {configFastFail = True} spec
+
+	spec :: Spec
+	spec =
+		describe "${1}" $ do
+			it "${2}" $
+				$0
 snippet desc
 	describe "${1}" $ do
 		$0
@@ -113,3 +144,8 @@ snippet it
 snippet itp
 	it "${1}" $ property $
 		$0
+snippet sb
+	\`shouldBe\` $0
+snippet doc
+	{-| ${0}
+	-}

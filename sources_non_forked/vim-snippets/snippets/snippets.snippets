@@ -1,10 +1,7 @@
 # snippets for making snippets :)
 snippet snip
-	snippet ${1:trigger}
-		${0}
-snippet msnip
-	snippet ${1:trigger} ${2:description}
-		${0}
+	snippet ${1:trigger} "${2:description}"
+		${0:${VISUAL}}
 snippet v
 	{VISUAL}
 snippet $

@@ -1,4 +1,4 @@
-*ctrlp.txt*       Fuzzy file, buffer, mru, tag, ... finder. v1.79
+*ctrlp.txt*       Fuzzy file, buffer, mru, tag, ... finder. v1.80
 *CtrlP* *ControlP* *'ctrlp'* *'ctrl-p'*
 ===============================================================================
 #                                                                             #
@@ -148,6 +148,7 @@ The minimum and maximum heights:
 
 The maximum number of results:
   results:{n} - list maximum {n} results (default: sync with max height).
+                0 mean no-limit.
 
 Note: When a setting isn't set, its default value will be used.
 
@@ -637,7 +638,6 @@ Set this to 1 to save every MRU file path $HOME/$filepath in the $HOME dir
   let g:ctrlp_tilde_homedir = 0
 <
 Note: This applies also to all dir paths stored by :CtrlPBookmarkDirAdd!
-<
 
                                                       *'g:ctrlp_mruf_relative'*
 Set this to 1 to show only MRU files in the current working directory: >
@@ -847,7 +847,7 @@ Example: >
 When this is set to 1, the <bs> on empty prompt exit CtrlP.
 
                                                           *ctrlp-default-value*
-Otherwize, you can use below to change default value.
+Otherwise, you can use below to change default value.
 Example: >
   let g:ctrlp_path_nolim = 1
 
@@ -872,12 +872,12 @@ COMMANDS                                                       *ctrlp-commands*
 
                                                                 *:CtrlPCurFile*
 :CtrlPCurFile
-    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = '' and ignores
+    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = 'c' and ignores
     the variable's current value.
 
                                                                   *:CtrlPCurWD*
 :CtrlPCurWD
-    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = '' and ignores
+    This acts like |:CtrlP| with |g:ctrlp_working_path_mode| = 'd' and ignores
     the variable's current value.
 
                                                                     *:CtrlPMRU*
@@ -1343,7 +1343,7 @@ Buffer Tag mode options:~
 
                                                    *'g:ctrlp_buftag_ctags_bin'*
 If ctags isn't in your $PATH, or a ctags binary exists in either
-/opt/local/bin or /usr/local/bin, us this to set its location: >
+/opt/local/bin or /usr/local/bin, use this to set its location: >
   let g:ctrlp_buftag_ctags_bin = ''
 <
 
@@ -1496,6 +1496,9 @@ Special thanks:~
 
 ===============================================================================
 CHANGELOG                                                     *ctrlp-changelog*
+
+    * New option |g:ctrlp_custom_tag_files| to specify custom tag files.
+    * Accept 0 for g:ctrlp_match_window no-limited window size.
 
 Before 2016/11/28~
 

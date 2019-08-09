@@ -19,16 +19,27 @@ elseif exists("b:current_syntax")
   finish
 endif
 
+if !exists("b:mako_outer_lang")
+  if exists("g:mako_default_outer_lang")
+    let b:mako_outer_lang = g:mako_default_outer_lang
+  else
+    let b:mako_outer_lang = "html"
+  endif
+endif
 if !exists("main_syntax")
-  let main_syntax = "html"
+  let main_syntax = b:mako_outer_lang
 endif
 
-"Source the html syntax file
-ru! syntax/html.vim
-unlet b:current_syntax
+"Source the outer syntax file
+execute "ru! syntax/" . b:mako_outer_lang . ".vim"
+if exists("b:current_syntax")
+  unlet b:current_syntax
+endif
 
-" tell html.vim what syntax groups should take precedence (see :help html.vim)
-syn cluster htmlPreproc add=makoLine,makoVariable,makoTag,makoDocComment,makoDefEnd,makoText,makoDelim,makoEnd,makoComment,makoEscape
+if b:mako_outer_lang == "html"
+  " tell html.vim what syntax groups should take precedence (see :help html.vim)
+  syn cluster htmlPreproc add=makoLine,makoVariable,makoTag,makoDocComment,makoDefEnd,makoText,makoDelim,makoEnd,makoComment,makoEscape
+endif
 
 "Put the python syntax file in @pythonTop
 syn include @pythonTop syntax/python.vim
@@ -89,4 +100,4 @@ if version >= 508 || !exists("did_mako_syn_inits")
   delc HiLink
 endif
 
-let b:current_syntax = "html"
+let b:current_syntax = b:mako_outer_lang
