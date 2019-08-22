@@ -10,15 +10,48 @@ function! go#lsp#message#Initialize(wd) abort
             \ 'processId': getpid(),
             \ 'rootUri': go#path#ToURI(a:wd),
             \ 'capabilities': {
-              \ 'workspace': {},
+              \ 'workspace': {
+                \ 'workspaceFolders': v:true,
+                \ 'didChangeConfiguration': {
+                  \ 'dynamicRegistration': v:true,
+                \ },
+                \ 'configuration': v:true,
+              \ },
               \ 'textDocument': {
                 \ 'hover': {
                   \ 'contentFormat': ['plaintext'],
                 \ },
               \ }
-            \ }
+            \ },
+            \ 'workspaceFolders': [s:workspaceFolder(0, a:wd)],
           \ }
        \ }
+endfunction
+
+function! go#lsp#message#Initialized() abort
+  return {
+          \ 'notification': 1,
+          \ 'method': 'initialized',
+          \ 'params': {},
+       \ }
+endfunction
+
+function! go#lsp#message#Shutdown() abort
+  return {
+          \ 'notification': 0,
+          \ 'method': 'shutdown',
+       \ }
+endfunction
+
+function! go#lsp#message#Exit() abort
+  return {
+          \ 'notification': 1,
+          \ 'method': 'exit',
+       \ }
+endfunction
+
+function! go#lsp#message#WorkspaceFoldersResult(dirs) abort
+  return map(copy(a:dirs), function('s:workspaceFolder', []))
 endfunction
 
 function! go#lsp#message#Definition(file, line, col) abort
@@ -116,8 +149,49 @@ function! go#lsp#message#Hover(file, line, col) abort
        \ }
 endfunction
 
+function! go#lsp#message#ChangeWorkspaceFolders(add, remove) abort
+  let l:addDirs = map(copy(a:add), function('s:workspaceFolder', []))
+  let l:removeDirs = map(copy(a:add), function('s:workspaceFolder', []))
+
+  return {
+          \ 'notification': 1,
+          \ 'method': 'workspace/didChangeWorkspaceFolders',
+          \ 'params': {
+          \   'event': {
+          \     'removed': l:removeDirs,
+          \     'added': l:addDirs,
+          \     },
+          \ }
+       \ }
+
+endfunction
+
+function! go#lsp#message#ConfigurationResult(items) abort
+  let l:result = []
+
+  " results must be in the same order as the items
+  for l:item in a:items
+    let l:config = {
+          \ 'buildFlags': [],
+          \ 'hoverKind': 'NoDocumentation',
+          \ }
+    let l:buildtags = go#config#BuildTags()
+    if buildtags isnot ''
+      let l:config.buildFlags = extend(l:config.buildFlags, ['-tags', go#config#BuildTags()])
+    endif
+
+    let l:result = add(l:result, l:config)
+  endfor
+
+  return l:result
+endfunction
+
+function s:workspaceFolder(key, val) abort
+  return {'uri': go#path#ToURI(a:val), 'name': a:val}
+endfunction
+
 function! s:position(line, col) abort
-  return {'line': a:line - 1, 'character': a:col-1}
+  return {'line': a:line, 'character': a:col}
 endfunction
 
 " restore Vi compatibility settings

@@ -66,9 +66,9 @@ endfunc
 func! Test_GoTestShowName() abort
   let expected = [
         \ {'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'TestHelloWorld'},
-        \ {'lnum': 6, 'bufnr': 7, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'so long'},
+        \ {'lnum': 6, 'bufnr': 8, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'so long'},
         \ {'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'TestHelloWorld/sub'},
-        \ {'lnum': 9, 'bufnr': 7, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'thanks for all the fish'},
+        \ {'lnum': 9, 'bufnr': 8, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'thanks for all the fish'},
       \ ]
 
   let g:go_test_show_name=1
@@ -78,18 +78,25 @@ endfunc
 
 func! Test_GoTestVet() abort
   let expected = [
-        \ {'lnum': 6, 'bufnr': 10, 'col': 2, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'Errorf format %v reads arg #1, but call has 0 args'},
+        \ {'lnum': 6, 'bufnr': 11, 'col': 2, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'Errorf format %v reads arg #1, but call has 0 args'},
       \ ]
   call s:test('veterror/veterror.go', expected)
 endfunc
 
 func! Test_GoTestTestCompilerError() abort
   let expected = [
-        \ {'lnum': 10, 'bufnr': 8, 'col': 16, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'cannot use r (type struct {}) as type io.Reader in argument to ioutil.ReadAll:'},
+        \ {'lnum': 10, 'bufnr': 9, 'col': 16, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'cannot use r (type struct {}) as type io.Reader in argument to ioutil.ReadAll:'},
         \ {'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'struct {} does not implement io.Reader (missing Read method)'}
       \ ]
 
   call s:test('testcompilerror/testcompilerror_test.go', expected)
+endfunc
+
+func! Test_GoTestExample() abort
+  let expected = [
+        \ {'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'ExampleHelloWorld'}
+      \ ]
+  call s:test('example/example_test.go', expected)
 endfunc
 
 func! s:test(file, expected, ...) abort

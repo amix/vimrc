@@ -151,7 +151,7 @@ if err := ${1:condition}; err != nil {
 endsnippet
 
 # error snippet
-snippet errn "Error return " !b
+snippet errn "Error return" !b
 if err != nil {
 	return err
 }
@@ -326,7 +326,7 @@ endsnippet
 # struct
 snippet st "type T struct { ... }"
 type ${1:Type} struct {
-${0}
+	${0}
 }
 endsnippet
 

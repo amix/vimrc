@@ -76,6 +76,18 @@ function! go#doc#Open(newmode, mode, ...) abort
 endfunction
 
 function! s:GodocView(newposition, position, content) abort
+  " popup window
+  if go#config#DocPopupWindow() && exists('*popup_atcursor') && exists('*popup_clear')
+    call popup_clear()
+
+    call popup_atcursor(split(a:content, '\n'), {
+          \ 'padding': [1, 1, 1, 1],
+          \ 'borderchars': ['-','|','-','|','+','+','+','+'],
+          \ "border": [1, 1, 1, 1],
+          \ })
+    return
+  endif
+
   " reuse existing buffer window if it exists otherwise create a new one
   let is_visible = bufexists(s:buf_nr) && bufwinnr(s:buf_nr) != -1
   if !bufexists(s:buf_nr)

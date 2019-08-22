@@ -64,6 +64,12 @@ for s:test in sort(s:tests)
   endif
   try
     exe 'call ' . s:test
+    " sleep to give events a chance to be processed. This is especially
+    " important for the LSP code to have a chance to run before Vim exits,  in
+    " order to avoid errors trying to write to the gopls channels since Vim
+    " would otherwise stop gopls before the event handlers were run and result
+    " in 'stream closed' errors when the events were run _after_ gopls exited.
+    sleep 50m
   catch
     let v:errors += [v:exception]
   endtry
@@ -76,17 +82,17 @@ for s:test in sort(s:tests)
   let s:elapsed_time = substitute(reltimestr(reltime(s:started)), '^\s*\(.\{-}\)\s*$', '\1', '')
   let s:done += 1
 
-  call s:logmessages()
-
   if len(v:errors) > 0
     let s:fail += 1
     call add(s:logs, printf("--- FAIL %s (%ss)", s:test[:-3], s:elapsed_time))
+    call s:logmessages()
     call extend(s:logs, map(v:errors, '"        ".  v:val'))
 
     " Reset so we can capture failures of the next test.
     let v:errors = []
   else
     if g:test_verbose is 1
+      call s:logmessages()
       call add(s:logs, printf("--- PASS %s (%ss)", s:test[:-3], s:elapsed_time))
     endif
   endif

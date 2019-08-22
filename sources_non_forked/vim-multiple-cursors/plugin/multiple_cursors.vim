@@ -27,8 +27,8 @@ endfunction
 
 " Settings
 let s:settings = {
-      \ 'exit_from_visual_mode': 1,
-      \ 'exit_from_insert_mode': 1,
+      \ 'exit_from_visual_mode': 0,
+      \ 'exit_from_insert_mode': 0,
       \ 'use_default_mapping': 1,
       \ 'debug_latency': 0,
       \ }

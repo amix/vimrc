@@ -2,46 +2,60 @@ call ale#Set('fix_on_save_ignore', {})
 
 " Apply fixes queued up for buffers which may be hidden.
 " Vim doesn't let you modify hidden buffers.
-function! ale#fix#ApplyQueuedFixes() abort
-    let l:buffer = bufnr('')
-    let l:data = get(g:ale_fix_buffer_data, l:buffer, {'done': 0})
+function! ale#fix#ApplyQueuedFixes(buffer) abort
+    let l:data = get(g:ale_fix_buffer_data, a:buffer, {'done': 0})
+    let l:has_bufline_api = exists('*deletebufline') && exists('*setbufline')
 
-    if !l:data.done
+    if !l:data.done || (!l:has_bufline_api && a:buffer isnot bufnr(''))
         return
     endif
 
-    call remove(g:ale_fix_buffer_data, l:buffer)
+    call remove(g:ale_fix_buffer_data, a:buffer)
 
     if l:data.changes_made
-        let l:start_line = len(l:data.output) + 1
-        let l:end_line = len(l:data.lines_before)
-
-        if l:end_line >= l:start_line
-            let l:save = winsaveview()
-            silent execute l:start_line . ',' . l:end_line . 'd_'
-            call winrestview(l:save)
-        endif
-
         " If the file is in DOS mode, we have to remove carriage returns from
         " the ends of lines before calling setline(), or we will see them
         " twice.
-        let l:lines_to_set = getbufvar(l:buffer, '&fileformat') is# 'dos'
+        let l:new_lines = getbufvar(a:buffer, '&fileformat') is# 'dos'
         \   ? map(copy(l:data.output), 'substitute(v:val, ''\r\+$'', '''', '''')')
         \   : l:data.output
+        let l:first_line_to_remove = len(l:new_lines) + 1
 
-        call setline(1, l:lines_to_set)
+        " Use a Vim API for setting lines in other buffers, if available.
+        if l:has_bufline_api
+            call setbufline(a:buffer, 1, l:new_lines)
+            call deletebufline(a:buffer, l:first_line_to_remove, '$')
+        " Fall back on setting lines the old way, for the current buffer.
+        else
+            let l:old_line_length = len(l:data.lines_before)
+
+            if l:old_line_length >= l:first_line_to_remove
+                let l:save = winsaveview()
+                silent execute
+                \   l:first_line_to_remove . ',' . l:old_line_length . 'd_'
+                call winrestview(l:save)
+            endif
+
+            call setline(1, l:new_lines)
+        endif
 
         if l:data.should_save
-            if empty(&buftype)
-                noautocmd :w!
+            if a:buffer is bufnr('')
+                if empty(&buftype)
+                    noautocmd :w!
+                else
+                    set nomodified
+                endif
             else
-                set nomodified
+                call writefile(l:new_lines, expand(a:buffer . ':p')) " no-custom-checks
+                call setbufvar(a:buffer, '&modified', 0)
             endif
         endif
     endif
 
     if l:data.should_save
-        let l:should_lint = g:ale_fix_on_save
+        let l:should_lint = ale#Var(a:buffer, 'fix_on_save')
+        \   && ale#Var(a:buffer, 'lint_on_save')
     else
         let l:should_lint = l:data.changes_made
     endif
@@ -52,7 +66,7 @@ function! ale#fix#ApplyQueuedFixes() abort
     " fixing problems.
     if g:ale_enabled
     \&& l:should_lint
-    \&& !ale#events#QuitRecently(l:buffer)
+    \&& !ale#events#QuitRecently(a:buffer)
         call ale#Queue(0, l:data.should_save ? 'lint_file' : '')
     endif
 endfunction
@@ -83,7 +97,7 @@ function! ale#fix#ApplyFixes(buffer, output) abort
 
     " We can only change the lines of a buffer which is currently open,
     " so try and apply the fixes to the current buffer.
-    call ale#fix#ApplyQueuedFixes()
+    call ale#fix#ApplyQueuedFixes(a:buffer)
 endfunction
 
 function! s:HandleExit(job_info, buffer, job_output, data) abort
@@ -399,5 +413,4 @@ endfunction
 " Set up an autocmd command to try and apply buffer fixes when available.
 augroup ALEBufferFixGroup
     autocmd!
-    autocmd BufEnter * call ale#fix#ApplyQueuedFixes()
-augroup END
+    autocmd BufEnter * call ale#fix#ApplyQueuedFixes(str2nr(expand('<abuf>')))

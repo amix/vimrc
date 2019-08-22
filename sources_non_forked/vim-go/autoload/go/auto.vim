@@ -33,7 +33,7 @@ function! go#auto#echo_go_info()
 endfunction
 
 function! go#auto#auto_type_info()
-  if !go#config#AutoTypeInfo() || !filereadable(expand('%:p'))
+  if !go#config#AutoTypeInfo() || !isdirectory(expand('%:p:h'))
     return
   endif
 
@@ -42,7 +42,7 @@ function! go#auto#auto_type_info()
 endfunction
 
 function! go#auto#auto_sameids()
-  if !go#config#AutoSameids() || !filereadable(expand('%:p'))
+  if !go#config#AutoSameids() || !isdirectory(expand('%:p:h'))
     return
   endif
 
@@ -51,7 +51,7 @@ function! go#auto#auto_sameids()
 endfunction
 
 function! go#auto#fmt_autosave()
-  if !go#config#FmtAutosave() || !filereadable(expand('%:p'))
+  if !(go#config#FmtAutosave() && isdirectory(expand('%:p:h')) && expand('<afile>:p') == expand('%:p'))
     return
   endif
 
@@ -60,7 +60,7 @@ function! go#auto#fmt_autosave()
 endfunction
 
 function! go#auto#metalinter_autosave()
-  if !go#config#MetalinterAutosave() || !filereadable(expand('%:p'))
+  if !go#config#MetalinterAutosave() || !isdirectory(expand('%:p:h'))
     return
   endif
 
@@ -69,7 +69,7 @@ function! go#auto#metalinter_autosave()
 endfunction
 
 function! go#auto#modfmt_autosave()
-  if !go#config#ModFmtAutosave() || !filereadable(expand('%:p'))
+  if !(go#config#ModFmtAutosave() && isdirectory(expand('%:p:h')) && expand('<afile>:p') == expand('%:p'))
     return
   endif
 
@@ -78,7 +78,7 @@ function! go#auto#modfmt_autosave()
 endfunction
 
 function! go#auto#asmfmt_autosave()
-  if !go#config#AsmfmtAutosave() || !filereadable(expand('%:p'))
+  if !(go#config#AsmfmtAutosave() && isdirectory(expand('%:p:h')) && expand('<afile>:p') == expand('%:p'))
     return
   endif
 

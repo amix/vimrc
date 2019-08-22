@@ -94,26 +94,26 @@ For Pathogen or Vim |packages|, just clone the repo. For other plugin managers
 you may also need to add the lines to your vimrc to execute the plugin
 manager's install command.
 
-*  Vim 8 |packages|
->
+*  Vim 8 |packages| >
+
     git clone https://github.com/fatih/vim-go.git \
       ~/.vim/pack/plugins/start/vim-go
-
+<
 *  https://github.com/tpope/vim-pathogen >
 
     git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go
 <
 *  https://github.com/junegunn/vim-plug >
 
-    Plug 'fatih/vim-go'
-
+    Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+<
 *  https://github.com/Shougo/neobundle.vim >
 
     NeoBundle 'fatih/vim-go'
 <
 *  https://github.com/gmarik/vundle >
 
-    Plugin 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+    Plugin 'fatih/vim-go'
 <
 *  Manual (not recommended) >
 
@@ -376,8 +376,8 @@ CTRL-t
 :GoInfo
     Show type information about the identifier under the cursor. For example
     putting it above a function call is going to show the full function
-    signature. By default it uses `gocode` to get the type informations. To
-    change the underlying tool from `gocode` to another tool, see
+    signature. By default it uses `gopls` to get the type informations. To
+    change the underlying tool from `gopls` to another tool, see
     |'g:go_info_mode'|.
 
 
@@ -536,7 +536,7 @@ CTRL-t
 
 
                                                                 *:GoGuruScope*
-:GoGuruScope [pattern] [pattern2] ... [patternN]
+:GoGuruScope [pattern] ...
 
     Changes the custom |'g:go_guru_scope'| setting and overrides it with the
     given package patterns. The custom scope is cleared (unset) if `""` is
@@ -906,6 +906,16 @@ CTRL-t
     tries to preserve cursor position and avoids replacing the buffer with
     stderr output.
 
+                                                            *:GoAddWorkspace*
+:GoAddWorkspace [dir] ...
+
+    Add directories to the `gopls` workspace.
+
+                                                         *:GoLSPDebugBrowser*
+:GoLSPDebugBrowser
+
+    Open a browser to see gopls debugging information.
+
 ==============================================================================
 MAPPINGS                                                        *go-mappings*
 
@@ -1204,6 +1214,14 @@ balloonexpr`.
 ==============================================================================
 SETTINGS                                                        *go-settings*
 
+                                                     *'g:go_version_warning'*
+
+Enable warning when using an unsupported version of Vim. By default it is
+enabled.
+>
+  let g:go_version_warning = 1
+<
+
                                               *'g:go_code_completion_enabled'*
 
 Enable code completion with |'omnifunc'|. By default it is enabled.
@@ -1228,9 +1246,9 @@ set to 10 seconds . >
 <
                                                  *'g:go_play_browser_command'*
 
-Browser to use for |:GoPlay| or |:GoDocBrowser|. The url must be added with
-`%URL%`, and it's advisable to include `&` to make sure the shell returns. For
-example:
+Browser to use for |:GoPlay|, |:GoDocBrowser|, and |:GoLSPDebugBrowser|. The
+url must be added with `%URL%`, and it's advisable to include `&` to make sure
+the shell returns. For example:
 >
   let g:go_play_browser_command = 'firefox-developer %URL% &'
 <
@@ -1259,11 +1277,11 @@ updated. By default it's disabled. The delay can be configured with the
                                                             *'g:go_info_mode'*
 
 Use this option to define the command to be used for |:GoInfo|. By default
-`gocode` is being used as it's the fastest option. But one might also use
-`gopls` or `guru` as they cover more cases and are more accurate.  Current
-valid options are: `[gocode, guru, gopls]` >
-
-  let g:go_info_mode = 'gocode'
+`gopls` is used, because it is the fastest and is known to be highly accurate.
+One might also use `guru` for its accuracy or `gocode` for its performance.
+Valid options are `gocode`, `gopls`, and `guru`.
+>
+  let g:go_info_mode = 'gopls'
 <
                                                          *'g:go_auto_sameids'*
 
@@ -1375,10 +1393,11 @@ a private internal service. Default is 'https://godoc.org'.
                                                              *'g:go_def_mode'*
 
 Use this option to define the command to be used for |:GoDef|. By default
-`guru` is being used as it covers all edge cases. But one might also use
-`godef` as it's faster. Current valid options are: `[guru, godef, gopls]` >
-
-  let g:go_def_mode = 'guru'
+`gopls` is used, because it is the fastest. One might also use `guru` for its
+accuracy or `godef` for its performance. Valid options are `godef`, `gopls`,
+and `guru`.
+>
+  let g:go_def_mode = 'gopls'
 <
                                                   *'g:go_def_mapping_enabled'*
 
@@ -1622,6 +1641,13 @@ just like `:GoBuild`. By default it is disabled.
 >
   let g:go_term_enabled = 0
 <
+                                                   *'g:go_term_close_on_exit'*
+
+This option is Neovim only. If set to 1 it closes the terminal after the
+command run in it exits. By default it is enabled.
+>
+  let g:go_term_close_on_exit = 1
+<
                                                        *'g:go_alternate_mode'*
 
 Specifies the command that |:GoAlternate| uses to open the alternate file.
@@ -1676,7 +1702,8 @@ Specifies whether `gocode` should use a different socket type. By default
 When a new Go file is created, vim-go automatically fills the buffer content
 with a Go code template. By default, the templates under the `templates`
 folder are used.  This can be changed with the |'g:go_template_file'| and
-|'g:go_template_test_file'| settings.
+|'g:go_template_test_file'| settings to either use a different file in the
+same `templates` folder, or to use a file stored elsewhere.
 
 If the new file is created in an already prepopulated package (with other Go
 files), in this case a Go code template with only the Go package declaration
@@ -1691,17 +1718,23 @@ By default it is enabled.
 <
                                                         *'g:go_template_file'*
 
-Specifies the file under the `templates` folder that is used if a new Go file
-is created. Checkout |'g:go_template_autocreate'| for more info. By default
-the `hello_world.go` file is used.
+Specifies either the file under the `templates` folder that is used if a new
+Go file is created. Checkout |'g:go_template_autocreate'| for more info. By
+default the `hello_world.go` file is used.
+
+This variable can be set to an absolute path, so the template files don't have
+to be stored inside the vim-go directory structure. Useful when you want to
+use different templates for different projects.
 >
   let g:go_template_file = "hello_world.go"
 <
                                                    *'g:go_template_test_file'*
 
-Specifies the file under the `templates` folder that is used if a new Go test
-file is created. Checkout |'g:go_template_autocreate'| for more info. By
-default the `hello_world_test.go` file is used.
+Like with |'g:go_template_file'|, this specifies the file to use for test
+tempaltes. The template file should be under the `templates` folder,
+alternatively absolute paths can be used, too. Checkout
+|'g:go_template_autocreate'| for more info. By default, the
+`hello_world_test.go` file is used.
 >
   let g:go_template_test_file = "hello_world_test.go"
 <
@@ -1788,7 +1821,10 @@ Currently accepted values:
   debugger-state     Expose debugger state in 'g:go_debug_diag'.
   debugger-commands  Echo communication between vim-go and `dlv`; requests and
                      responses are recorded in `g:go_debug_commands`.
-  lsp                Record lsp requests and responses in g:go_lsp_log.
+  lsp                Echo communication between vim-go and `gopls`. All
+                     communication is shown in a dedicated window. When
+                     enabled before gopls is started, |:GoLSPDebugBrowser| can
+                     be used to open a browser window to help debug gopls.
 >
       let g:go_debug = []
 <
@@ -2027,8 +2063,7 @@ rest of the commands and mappings become available after starting debug mode.
       * Make the `:GoDebug*` commands and `(go-debug-*)` mappings available.
 
     The directory of the current buffer is used if [pkg] is empty. Any other
-    arguments will be passed to the program. When [pkg] is relative, it will
-    be interpreted relative to the directory of the current buffer.
+    arguments will be passed to the program.
 
     Use |:GoDebugStop| to stop `dlv` and exit debugging mode.
 
@@ -2182,6 +2217,22 @@ Highlight the current line and breakpoints in the debugger.
 
 ==============================================================================
 FAQ TROUBLESHOOTING                                     *go-troubleshooting*
+
+How do I troubleshoot problems?~
+
+One of the best ways to understand what vim-go is doing and the output from
+the tools to which it delegates is to use leverage the features described in
+|'g:go_debug'|.
+
+Completion and other functions that use `gopls` don't work~
+
+Vim-go is heavily reliant on `gopls` for completion and other functionality.
+Many of the features that use `gopls` (e.g. completion, jumping to
+definitions, showing identifier information, et al.) can be configured to
+delegate to other tools. e.g.  completion via |'omnifunc'|, |'g:go_info_mode'|
+and |'g:go_def_mode'| can be set to use other tools for now (though some of
+the alternatives to `gopls` are effectively at their end of life and support
+for them from within vim-go may be removed soon).
 
 I get "Unknown function: go#config#..." error when I open a Go file.~
 

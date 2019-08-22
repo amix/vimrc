@@ -20,19 +20,19 @@ function! s:checkVersion() abort
   let l:unsupported = 0
   if go#config#VersionWarning() != 0
     if has('nvim')
-      let l:unsupported = !has('nvim-0.3.1')
+      let l:unsupported = !has('nvim-0.3.2')
     else
       let l:unsupported = (v:version < 704 || (v:version == 704 && !has('patch2009')))
     endif
 
     if l:unsupported == 1
       echohl Error
-      echom "vim-go requires Vim 7.4.2009 or Neovim 0.3.1, but you're using an older version."
+      echom "vim-go requires Vim 7.4.2009 or Neovim 0.3.2, but you're using an older version."
       echom "Please update your Vim for the best vim-go experience."
       echom "If you really want to continue you can set this to make the error go away:"
       echom "    let g:go_version_warning = 0"
       echom "Note that some features may error out or behave incorrectly."
-      echom "Please do not report bugs unless you're using Vim 7.4.2009 or newer or Neovim 0.3.1."
+      echom "Please do not report bugs unless you're using Vim 7.4.2009 or newer or Neovim 0.3.2."
       echohl None
 
       " Make sure people see this.
@@ -56,7 +56,7 @@ let s:packages = {
       \ 'gogetdoc':      ['github.com/zmb3/gogetdoc'],
       \ 'goimports':     ['golang.org/x/tools/cmd/goimports'],
       \ 'golint':        ['golang.org/x/lint/golint'],
-      \ 'gopls':         ['golang.org/x/tools/cmd/gopls'],
+      \ 'gopls':         ['golang.org/x/tools/gopls@latest', {}, {'after': function('go#lsp#Restart', [])}],
       \ 'gometalinter':  ['github.com/alecthomas/gometalinter'],
       \ 'golangci-lint': ['github.com/golangci/golangci-lint/cmd/golangci-lint'],
       \ 'gomodifytags':  ['github.com/fatih/gomodifytags'],
@@ -104,9 +104,6 @@ function! s:GoInstallBinaries(updateBinaries, ...)
   " vim's executable path is looking in PATH so add our go_bin path to it
   let Restore_path = go#util#SetEnv('PATH', go_bin_path . go#util#PathListSep() . $PATH)
 
-  " GO111MODULE must be off to install golanci-lint and gometalinter
-  let Restore_modules = go#util#SetEnv('GO111MODULE', 'off')
-
   " when shellslash is set on MS-* systems, shellescape puts single quotes
   " around the output string. cmd on Windows does not handle single quotes
   " correctly. Unsetting shellslash forces shellescape to use double quotes
@@ -117,10 +114,7 @@ function! s:GoInstallBinaries(updateBinaries, ...)
     set noshellslash
   endif
 
-  let l:dl_cmd = ['go', 'get', '-v', '-d']
-  if get(g:, "go_get_update", 1) != 0
-    let l:dl_cmd += ['-u']
-  endif
+  let l:get_base_cmd = ['go', 'get', '-v']
 
   " Filter packages from arguments (if any).
   let l:packages = {}
@@ -142,51 +136,93 @@ function! s:GoInstallBinaries(updateBinaries, ...)
     let l:platform = 'windows'
   endif
 
-  for [binary, pkg] in items(l:packages)
-    let l:importPath = pkg[0]
+  let l:oldmore = &more
+  let &more = 0
 
-    let l:run_cmd = copy(l:dl_cmd)
-    if len(l:pkg) > 1 && get(l:pkg[1], l:platform, '') isnot ''
-      let l:run_cmd += get(l:pkg[1], l:platform, '')
-    endif
+  for [l:binary, l:pkg] in items(l:packages)
+    let l:importPath = l:pkg[0]
 
-    let bin_setting_name = "go_" . binary . "_bin"
+    " TODO(bc): how to support this with modules? Do we have to clone and then
+    " install manually? Probably not. I suspect that we can just use GOPATH
+    " mode and then do the legacy method.
+    let bin_setting_name = "go_" . l:binary . "_bin"
 
     if exists("g:{bin_setting_name}")
       let bin = g:{bin_setting_name}
     else
       if go#util#IsWin()
-        let bin = binary . '.exe'
+        let bin = l:binary . '.exe'
       else
-        let bin = binary
+        let bin = l:binary
       endif
     endif
 
     if !executable(bin) || a:updateBinaries == 1
       if a:updateBinaries == 1
-        echo "vim-go: Updating " . binary . ". Reinstalling ". importPath . " to folder " . go_bin_path
+        echo "vim-go: Updating " . l:binary . ". Reinstalling ". importPath . " to folder " . go_bin_path
       else
-        echo "vim-go: ". binary ." not found. Installing ". importPath . " to folder " . go_bin_path
+        echo "vim-go: ". l:binary ." not found. Installing ". importPath . " to folder " . go_bin_path
       endif
 
-      " first download the binary
-      let [l:out, l:err] = go#util#Exec(l:run_cmd + [l:importPath])
-      if l:err
-        echom "Error downloading " . l:importPath . ": " . l:out
+      if l:importPath =~ "@"
+        let Restore_modules = go#util#SetEnv('GO111MODULE', 'on')
+        let l:tmpdir = go#util#tempdir('vim-go')
+        let l:cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
+        let l:dir = getcwd()
+        try
+          execute l:cd . fnameescape(l:tmpdir)
+          let l:get_cmd = copy(l:get_base_cmd)
+
+          " first download the binary
+          let [l:out, l:err] = go#util#Exec(l:get_cmd + [l:importPath])
+          if l:err
+            echom "Error installing " . l:importPath . ": " . l:out
+          endif
+
+          call call(Restore_modules, [])
+        finally
+          execute l:cd . fnameescape(l:dir)
+        endtry
+        call call(Restore_modules, [])
+      else
+        let l:get_cmd = copy(l:get_base_cmd)
+        let l:get_cmd += ['-d']
+        if get(g:, "go_get_update", 1) != 0
+          let l:get_cmd += ['-u']
+        endif
+
+        " GO111MODULE must be off to install gometalinter.
+        let Restore_modules = go#util#SetEnv('GO111MODULE', 'off')
+
+        " first download the binary
+        let [l:out, l:err] = go#util#Exec(l:get_cmd + [l:importPath])
+        if l:err
+          echom "Error downloading " . l:importPath . ": " . l:out
+        endif
+
+        " and then build and install it
+        let l:build_cmd = ['go', 'build', '-o', go_bin_path . go#util#PathSep() . bin, l:importPath]
+        if len(l:pkg) > 1 && get(l:pkg[1], l:platform, '') isnot ''
+          let l:build_cmd += get(l:pkg[1], l:platform, '')
+        endif
+
+        let [l:out, l:err] = go#util#Exec(l:build_cmd)
+        if l:err
+          echom "Error installing " . l:importPath . ": " . l:out
+        endif
+
+
+        call call(Restore_modules, [])
       endif
 
-      " and then build and install it
-      let l:build_cmd = ['go', 'build', '-o', go_bin_path . go#util#PathSep() . bin, l:importPath]
-      let [l:out, l:err] = go#util#Exec(l:build_cmd)
-      if l:err
-        echom "Error installing " . l:importPath . ": " . l:out
+      if len(l:pkg) > 2
+        call call(get(l:pkg[2], 'after', function('s:noop', [])), [])
       endif
     endif
   endfor
 
   " restore back!
   call call(Restore_path, [])
-  call call(Restore_modules, [])
 
   if resetshellslash
     set shellslash
@@ -197,6 +233,8 @@ function! s:GoInstallBinaries(updateBinaries, ...)
   else
     call go#util#EchoInfo('installing finished!')
   endif
+
+  let &more = l:oldmore
 endfunction
 
 " CheckBinaries checks if the necessary binaries to install the Go tool

@@ -90,7 +90,7 @@ function! ale#lsp#response#ReadTSServerDiagnostics(response) abort
         \   'lnum': l:diagnostic.start.line,
         \   'col': l:diagnostic.start.offset,
         \   'end_lnum': l:diagnostic.end.line,
-        \   'end_col': l:diagnostic.end.offset,
+        \   'end_col': l:diagnostic.end.offset - 1,
         \}
 
         if has_key(l:diagnostic, 'code')

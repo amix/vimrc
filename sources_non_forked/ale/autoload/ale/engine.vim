@@ -710,6 +710,10 @@ function! ale#engine#Cleanup(buffer) abort
         return
     endif
 
+    if exists('*ale#lsp#CloseDocument')
+        call ale#lsp#CloseDocument(a:buffer)
+    endif
+
     if !has_key(g:ale_buffer_info, a:buffer)
         return
     endif

@@ -10,13 +10,13 @@ call ale#Set('php_phpcs_use_global', get(g:, 'ale_use_global_executables', 0))
 function! ale_linters#php#phpcs#GetCommand(buffer) abort
     let l:standard = ale#Var(a:buffer, 'php_phpcs_standard')
     let l:standard_option = !empty(l:standard)
-    \   ? '--standard=' . l:standard
+    \   ? '--standard=' . ale#Escape(l:standard)
     \   : ''
-    let l:options = ale#Var(a:buffer, 'php_phpcs_options')
 
-    return '%e -s --report=emacs --stdin-path=%s'
-    \    . ale#Pad(l:standard_option)
-    \    . ale#Pad(l:options)
+    return ale#path#BufferCdString(a:buffer)
+    \   . '%e -s --report=emacs --stdin-path=%s'
+    \   . ale#Pad(l:standard_option)
+    \   . ale#Pad(ale#Var(a:buffer, 'php_phpcs_options'))
 endfunction
 
 function! ale_linters#php#phpcs#Handle(buffer, lines) abort
@@ -36,6 +36,7 @@ function! ale_linters#php#phpcs#Handle(buffer, lines) abort
         \   'col': l:match[2] + 0,
         \   'text': l:text,
         \   'type': l:type is# 'error' ? 'E' : 'W',
+        \   'sub_type': 'style',
         \})
     endfor
 

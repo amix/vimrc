@@ -107,10 +107,10 @@ function! s:Opener._isWindowUsable(winnumber)
     endif
 
     let oldwinnr = winnr()
-    call nerdtree#exec(a:winnumber . "wincmd p")
+    call nerdtree#exec(a:winnumber . "wincmd p", 1)
     let specialWindow = getbufvar("%", '&buftype') != '' || getwinvar('%', '&previewwindow')
     let modified = &modified
-    call nerdtree#exec(oldwinnr . "wincmd p")
+    call nerdtree#exec(oldwinnr . "wincmd p", 1)
 
     "if its a special window e.g. quickfix or another explorer plugin then we
     "have to split
@@ -172,7 +172,7 @@ function! s:Opener._newSplit()
     let below=0
 
     " Attempt to go to adjacent window
-    call nerdtree#exec(back)
+    call nerdtree#exec(back, 1)
 
     let onlyOneWin = (winnr("$") ==# 1)
 
@@ -201,9 +201,9 @@ function! s:Opener._newSplit()
     "resize the tree window if no other window was open before
     if onlyOneWin
         let size = exists("b:NERDTreeOldWindowSize") ? b:NERDTreeOldWindowSize : g:NERDTreeWinSize
-        call nerdtree#exec(there)
+        call nerdtree#exec(there, 1)
         exec("silent ". splitMode ." resize ". size)
-        call nerdtree#exec('wincmd p')
+        call nerdtree#exec('wincmd p', 0)
     endif
 
     " Restore splitmode settings
@@ -219,8 +219,8 @@ function! s:Opener._newVSplit()
         let l:winwidth = g:NERDTreeWinSize
     endif
 
-    call nerdtree#exec('wincmd p')
-    vnew
+    call nerdtree#exec('wincmd p', 1)
+    call nerdtree#exec('vnew', 1)
 
     let l:currentWindowNumber = winnr()
 
@@ -228,7 +228,7 @@ function! s:Opener._newVSplit()
     call g:NERDTree.CursorToTreeWin()
     execute 'silent vertical resize ' . l:winwidth
 
-    call nerdtree#exec(l:currentWindowNumber . 'wincmd w')
+    call nerdtree#exec(l:currentWindowNumber . 'wincmd w', 0)
 endfunction
 
 " FUNCTION: Opener.open(target) {{{1
@@ -290,9 +290,9 @@ function! s:Opener._previousWindow()
     else
         try
             if !self._isWindowUsable(winnr("#"))
-                call nerdtree#exec(self._firstUsableWindow() . "wincmd w")
+                call nerdtree#exec(self._firstUsableWindow() . "wincmd w", 1)
             else
-                call nerdtree#exec('wincmd p')
+                call nerdtree#exec('wincmd p', 1)
             endif
         catch /^Vim\%((\a\+)\)\=:E37/
             call g:NERDTree.CursorToTreeWin()
@@ -305,8 +305,8 @@ endfunction
 
 " FUNCTION: Opener._restoreCursorPos() {{{1
 function! s:Opener._restoreCursorPos()
-    call nerdtree#exec(self._tabnr . 'tabnext')
-    call nerdtree#exec(bufwinnr(self._bufnr) . 'wincmd w')
+    call nerdtree#exec(self._tabnr . 'tabnext', 1)
+    call nerdtree#exec(bufwinnr(self._bufnr) . 'wincmd w', 1)
 endfunction
 
 " FUNCTION: Opener._reuseWindow() {{{1
@@ -321,7 +321,7 @@ function! s:Opener._reuseWindow()
     "check the current tab for the window
     let winnr = bufwinnr('^' . self._path.str() . '$')
     if winnr != -1
-        call nerdtree#exec(winnr . "wincmd w")
+        call nerdtree#exec(winnr . "wincmd w", 0)
         call self._checkToCloseTree(0)
         return 1
     endif
@@ -334,9 +334,9 @@ function! s:Opener._reuseWindow()
     let tabnr = self._path.tabnr()
     if tabnr
         call self._checkToCloseTree(1)
-        call nerdtree#exec(tabnr . 'tabnext')
+        call nerdtree#exec(tabnr . 'tabnext', 1)
         let winnr = bufwinnr('^' . self._path.str() . '$')
-        call nerdtree#exec(winnr . "wincmd w")
+        call nerdtree#exec(winnr . "wincmd w", 0)
         return 1
     endif
 

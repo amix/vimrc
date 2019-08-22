@@ -6,7 +6,7 @@ let s:go_stack = []
 let s:go_stack_level = 0
 
 function! go#def#Jump(mode, type) abort
-  let fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
+  let l:fname = fnamemodify(expand("%"), ':p:gs?\\?/?')
 
   " so guru right now is slow for some people. previously we were using
   " godef which also has it's own quirks. But this issue come up so many
@@ -66,7 +66,7 @@ function! go#def#Jump(mode, type) abort
       let [l:out, l:err] = go#util#ExecInDir(l:cmd)
     endif
   elseif bin_name == 'gopls'
-    let [l:line, l:col] = getpos('.')[1:2]
+    let [l:line, l:col] = go#lsp#lsp#Position()
     " delegate to gopls, with an empty job object and an exit status of 0
     " (they're irrelevant for gopls).
     if a:type

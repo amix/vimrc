@@ -82,6 +82,34 @@ execute 'sign define ALEInfoSign text=' . s:EscapeSignText(g:ale_sign_info)
 \   . ' texthl=ALEInfoSign linehl=ALEInfoLine'
 sign define ALEDummySign
 
+if has('nvim-0.3.2')
+    if !hlexists('ALEErrorSignLineNr')
+        highlight link ALEErrorSignLineNr CursorLineNr
+    endif
+
+    if !hlexists('ALEStyleErrorSignLineNr')
+        highlight link ALEStyleErrorSignLineNr CursorLineNr
+    endif
+
+    if !hlexists('ALEWarningSignLineNr')
+        highlight link ALEWarningSignLineNr CursorLineNr
+    endif
+
+    if !hlexists('ALEStyleWarningSignLineNr')
+        highlight link ALEStyleWarningSignLineNr CursorLineNr
+    endif
+
+    if !hlexists('ALEInfoSignLineNr')
+        highlight link ALEInfoSignLineNr CursorLineNr
+    endif
+
+    sign define ALEErrorSign numhl=ALEErrorSignLineNr
+    sign define ALEStyleErrorSign numhl=ALEStyleErrorSignLineNr
+    sign define ALEWarningSign numhl=ALEWarningSignLineNr
+    sign define ALEStyleWarningSign numhl=ALEStyleWarningSignLineNr
+    sign define ALEInfoSign numhl=ALEInfoSignLineNr
+endif
+
 function! ale#sign#GetSignName(sublist) abort
     let l:priority = g:ale#util#style_warning_priority
 

@@ -5,23 +5,17 @@ call ale#Set('c_cppcheck_executable', 'cppcheck')
 call ale#Set('c_cppcheck_options', '--enable=style')
 
 function! ale_linters#c#cppcheck#GetCommand(buffer) abort
-    " Search upwards from the file for compile_commands.json.
-    "
-    " If we find it, we'll `cd` to where the compile_commands.json file is,
-    " then use the file to set up import paths, etc.
-    let l:compile_commmands_path = ale#path#FindNearestFile(a:buffer, 'compile_commands.json')
-
-    let l:cd_command = !empty(l:compile_commmands_path)
-    \   ? ale#path#CdString(fnamemodify(l:compile_commmands_path, ':h'))
-    \   : ''
-    let l:compile_commands_option = !empty(l:compile_commmands_path)
-    \   ? '--project=compile_commands.json '
+    let l:cd_command = ale#handlers#cppcheck#GetCdCommand(a:buffer)
+    let l:compile_commands_option = ale#handlers#cppcheck#GetCompileCommandsOptions(a:buffer)
+    let l:buffer_path_include = empty(l:compile_commands_option)
+    \   ? ale#handlers#cppcheck#GetBufferPathIncludeOptions(a:buffer)
     \   : ''
 
     return l:cd_command
-    \   . '%e -q --language=c '
-    \   . l:compile_commands_option
-    \   . ale#Var(a:buffer, 'c_cppcheck_options')
+    \   . '%e -q --language=c'
+    \   . ale#Pad(l:compile_commands_option)
+    \   . ale#Pad(ale#Var(a:buffer, 'c_cppcheck_options'))
+    \   . l:buffer_path_include
     \   . ' %t'
 endfunction
 

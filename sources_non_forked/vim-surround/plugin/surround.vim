@@ -336,7 +336,16 @@ function! s:insert(...) " {{{1
   if exists("g:surround_insert_tail")
     call setreg('"',g:surround_insert_tail,"a".getregtype('"'))
   endif
-  if col('.') >= col('$')
+  if &ve != 'all' && col('.') >= col('$')
+    if &ve == 'insert'
+      let extra_cols = virtcol('.') - virtcol('$')
+      if extra_cols > 0
+        let [regval,regtype] = [getreg('"',1,1),getregtype('"')]
+        call setreg('"',join(map(range(extra_cols),'" "'),''),'v')
+        norm! ""p
+        call setreg('"',regval,regtype)
+      endif
+    endif
     norm! ""p
   else
     norm! ""P

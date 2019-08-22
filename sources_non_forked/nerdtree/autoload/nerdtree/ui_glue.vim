@@ -14,6 +14,10 @@ function! nerdtree#ui_glue#createDefaultBindings()
     call NERDTreeAddKeyMap({ 'key': '<2-LeftMouse>', 'scope': "Bookmark", 'callback': s."activateBookmark" })
     call NERDTreeAddKeyMap({ 'key': '<2-LeftMouse>', 'scope': "all", 'callback': s."activateAll" })
 
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapCustomOpen, 'scope':'FileNode', 'callback': s."customOpenFile"})
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapCustomOpen, 'scope':'DirNode', 'callback': s."customOpenDir"})
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapCustomOpen, 'scope':'Bookmark', 'callback': s."customOpenBookmark"})
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapCustomOpen, 'scope':'all', 'callback': s."activateAll" })
 
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapActivateNode, 'scope': "DirNode", 'callback': s."activateDirNode" })
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapActivateNode, 'scope': "FileNode", 'callback': s."activateFileNode" })
@@ -76,6 +80,35 @@ endfunction
 "SECTION: Interface bindings {{{1
 "============================================================
 
+"FUNCTION: s:customOpenFile() {{{1
+" Open file node with the "custom" key, initially <CR>.
+function! s:customOpenFile(node)
+    call a:node.activate(s:initCustomOpenArgs().file)
+endfunction
+
+"FUNCTION: s:customOpenDir() {{{1
+" Open directory node with the "custom" key, initially <CR>.
+function! s:customOpenDir(node)
+    call s:activateDirNode(a:node, s:initCustomOpenArgs().dir)
+endfunction
+
+"FUNCTION: s:customOpenBookmark() {{{1
+" Open bookmark node with the "custom" key, initially <CR>.
+function! s:customOpenBookmark(node)
+    if a:node.path.isDirectory
+        call a:node.activate(b:NERDTree, s:initCustomOpenArgs().dir)
+    else
+        call a:node.activate(b:NERDTree, s:initCustomOpenArgs().file)
+    endif
+endfunction
+
+"FUNCTION: s:initCustomOpenArgs() {{{1
+" Make sure NERDTreeCustomOpenArgs has needed keys
+function! s:initCustomOpenArgs()
+    let g:NERDTreeCustomOpenArgs = get(g:, 'NERDTreeCustomOpenArgs', {})
+    return extend(g:NERDTreeCustomOpenArgs, {'file':{'reuse': 'all', 'where': 'p'}, 'dir':{}}, 'keep')
+endfunction
+
 "FUNCTION: s:activateAll() {{{1
 "handle the user activating the updir line
 function! s:activateAll()
@@ -84,15 +117,16 @@ function! s:activateAll()
     endif
 endfunction
 
-" FUNCTION: s:activateDirNode(directoryNode) {{{1
-function! s:activateDirNode(directoryNode)
+" FUNCTION: s:activateDirNode(directoryNode, options) {{{1
+" Open a directory with optional options
+function! s:activateDirNode(directoryNode, ...)
 
     if a:directoryNode.isRoot() && a:directoryNode.isOpen
         call nerdtree#echo('cannot close tree root')
         return
     endif
 
-    call a:directoryNode.activate()
+    call a:directoryNode.activate((a:0 > 0) ? a:1 : {})
 endfunction
 
 "FUNCTION: s:activateFileNode() {{{1
@@ -367,7 +401,7 @@ function! s:jumpToLastChild(node)
     call s:jumpToChild(a:node, 1)
 endfunction
 
-" FUNCTION: s:jumpToChild(node, last) {{{2
+" FUNCTION: s:jumpToChild(node, last) {{{1
 " Jump to the first or last child node at the same file system level.
 "
 " Args:
@@ -425,7 +459,7 @@ function! s:jumpToPrevSibling(node)
     call s:jumpToSibling(a:node, 0)
 endfunction
 
-" FUNCTION: s:jumpToSibling(node, forward) {{{2
+" FUNCTION: s:jumpToSibling(node, forward) {{{1
 " Move the cursor to the next or previous node at the same file system level.
 "
 " Args:
@@ -540,11 +574,11 @@ function! s:refreshRoot()
     call nerdtree#echo("Refreshing the root node. This could take a while...")
 
     let l:curWin = winnr()
-    call nerdtree#exec(g:NERDTree.GetWinNum() . "wincmd w")
+    call nerdtree#exec(g:NERDTree.GetWinNum() . "wincmd w", 1)
     call b:NERDTree.root.refresh()
     call b:NERDTree.render()
     redraw
-    call nerdtree#exec(l:curWin . "wincmd w")
+    call nerdtree#exec(l:curWin . "wincmd w", 1)
     call nerdtree#echo("")
 endfunction
 

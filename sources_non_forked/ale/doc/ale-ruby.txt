@@ -130,6 +130,26 @@ g:ale_ruby_solargraph_executable             *g:ale_ruby_solargraph_executable*
 
 
 ===============================================================================
+sorbet                                                        *ale-ruby-sorbet*
+
+g:ale_ruby_sorbet_executable                     *g:ale_ruby_sorbet_executable*
+                                                 *b:ale_ruby_sorbet_executable*
+  Type: String
+  Default: `'srb'`
+
+  Override the invoked sorbet binary. Set this to `'bundle'` to invoke
+  `'bundle` `exec` srb'.
+
+
+g:ale_ruby_sorbet_options                           *g:ale_ruby_sorbet_options*
+                                                    *b:ale_ruby_sorbet_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be change to modify flags given to sorbet.
+
+
+===============================================================================
 standardrb                                                *ale-ruby-standardrb*
 
 g:ale_ruby_standardrb_executable              *g:ale_ruby_standardrb_executable*

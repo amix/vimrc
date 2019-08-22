@@ -21,10 +21,12 @@ endfunction
 function! go#config#SetBuildTags(value) abort
   if a:value is ''
     silent! unlet g:go_build_tags
+    call go#lsp#ResetWorkspaceDirectories()
     return
   endif
 
   let g:go_build_tags = a:value
+  call go#lsp#ResetWorkspaceDirectories()
 endfunction
 
 function! go#config#TestTimeout() abort
@@ -45,6 +47,14 @@ endfunction
 
 function! go#config#TermMode() abort
   return get(g:, 'go_term_mode', 'vsplit')
+endfunction
+
+function! go#config#TermCloseOnExit() abort
+  return get(g:, 'go_term_close_on_exit', 1)
+endfunction
+
+function! go#config#SetTermCloseOnExit(value) abort
+  let g:go_term_close_on_exit = a:value
 endfunction
 
 function! go#config#TermEnabled() abort
@@ -114,7 +124,7 @@ function! go#config#ListAutoclose() abort
 endfunction
 
 function! go#config#InfoMode() abort
-  return get(g:, 'go_info_mode', 'gocode')
+  return get(g:, 'go_info_mode', 'gopls')
 endfunction
 
 function! go#config#GuruScope() abort
@@ -174,12 +184,15 @@ function! go#config#DocUrl() abort
   return godoc_url
 endfunction
 
+function! go#config#DocPopupWindow() abort
+  return get(g:, 'go_doc_popup_window', 0)
+endfunction
 function! go#config#DefReuseBuffer() abort
   return get(g:, 'go_def_reuse_buffer', 0)
 endfunction
 
 function! go#config#DefMode() abort
-  return get(g:, 'go_def_mode', 'guru')
+  return get(g:, 'go_def_mode', 'gopls')
 endfunction
 
 function! go#config#DeclsIncludes() abort
@@ -266,10 +279,6 @@ function! go#config#MetalinterEnabled() abort
   endif
 
   return get(g:, "go_metalinter_enabled", default_enabled)
-endfunction
-
-function! go#config#MetalinterDisabled() abort
-  return get(g:, "go_metalinter_disabled", [])
 endfunction
 
 function! go#config#GolintBin() abort

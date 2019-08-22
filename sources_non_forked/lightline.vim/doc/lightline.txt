@@ -4,7 +4,7 @@ Version: 0.1
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2018/04/28 00:08:18.
+Last Change: 2019/08/14 10:46:55.
 
 CONTENTS					*lightline-contents*
 
@@ -226,10 +226,12 @@ OPTIONS						*lightline-option*
 <
 	g:lightline.colorscheme			*g:lightline.colorscheme*
 		The colorscheme for lightline.vim.
-		Currently, wombat, solarized, powerline, jellybeans, Tomorrow,
-		Tomorrow_Night, Tomorrow_Night_Blue, Tomorrow_Night_Eighties,
-		PaperColor, seoul256, landscape, one, darcula, molokai, materia,
-		material, OldHope, nord, 16color and deus are available.
+		Currently, wombat, solarized, powerline, powerlineish,
+		jellybeans, molokai, seoul256, darcula, selenized_dark,
+		Tomorrow, Tomorrow_Night, Tomorrow_Night_Blue,
+		Tomorrow_Night_Bright, Tomorrow_Night_Eighties, PaperColor,
+		landscape, one, materia, material, OldHope, nord, deus,
+		srcery_drk, ayu_mirage and 16color are available.
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'
@@ -986,12 +988,15 @@ Problem 1:					*lightline-problem-1*
 
 			1. Put all the files under $VIM.
 
-		If you are using |vim-pathogen|, install this plugin with the
-		following command.
+		If you are to install this plugin using |vim-pathogen|:
+
+			1. Install this plugin with the following command.
 >
 			git clone https://github.com/itchyny/lightline.vim \
 			    ~/.vim/bundle/lightline.vim
 <
+			2. Generate help tags with |:Helptags|.
+
 		If you are to install this plugin using |Vundle|:
 
 			1. Add the following configuration to your

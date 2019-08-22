@@ -22,10 +22,6 @@ function! go#lint#Gometa(bang, autosave, ...) abort
     for linter in linters
       let cmd += ["--enable=".linter]
     endfor
-
-    for linter in go#config#MetalinterDisabled()
-      let cmd += ["--disable=".linter]
-    endfor
   else
     " the user wants something else, let us use it.
     let cmd = split(go#config#MetalinterCommand(), " ")
@@ -44,7 +40,7 @@ function! go#lint#Gometa(bang, autosave, ...) abort
       endif
       let cmd += include
     elseif l:metalinter == "golangci-lint"
-      let goargs[0] = expand('%:p')
+      let goargs[0] = expand('%:p:h')
     endif
   endif
 
@@ -88,7 +84,13 @@ function! go#lint#Gometa(bang, autosave, ...) abort
   else
     let l:winid = win_getid(winnr())
     " Parse and populate our location list
-    call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"), 'GoMetaLinter')
+
+    let l:messages = split(out, "\n")
+
+    if a:autosave
+      call s:metalinterautosavecomplete(fnamemodify(expand('%:p'), ":."), 0, 1, l:messages)
+    endif
+    call go#list#ParseFormat(l:listtype, errformat, l:messages, 'GoMetaLinter')
 
     let errors = go#list#Get(l:listtype)
     call go#list#Window(l:listtype, len(errors))
@@ -105,7 +107,7 @@ endfunction
 " the location list
 function! go#lint#Golint(bang, ...) abort
   if a:0 == 0
-    let [l:out, l:err] = go#util#Exec([go#config#GolintBin(), go#package#ImportPath()])
+    let [l:out, l:err] = go#util#Exec([go#config#GolintBin(), expand('%:p:h')])
   else
     let [l:out, l:err] = go#util#Exec([go#config#GolintBin()] + a:000)
   endif
@@ -141,7 +143,7 @@ function! go#lint#Vet(bang, ...) abort
   if a:0 == 0
     let [l:out, l:err] = go#util#Exec(['go', 'vet', go#package#ImportPath()])
   else
-    let [l:out, l:err] = go#util#Exec(['go', 'tool', 'vet'] + a:000)
+    let [l:out, l:err] = go#util#ExecInDir(['go', 'tool', 'vet'] + a:000)
   endif
 
   let l:listtype = go#list#Type("GoVet")
@@ -230,6 +232,7 @@ function! s:lint_job(args, bang, autosave)
 
   if a:autosave
     let l:opts.for = "GoMetaLinterAutoSave"
+    let l:opts.complete = funcref('s:metalinterautosavecomplete', [expand('%:p:t')])
   endif
 
   " autowrite is not enabled for jobs
@@ -277,6 +280,21 @@ function! s:golangcilintcmd(bin_path)
   let cmd += ["--exclude-use-default=false"]
 
   return cmd
+endfunction
+
+function! s:metalinterautosavecomplete(filepath, job, exit_code, messages)
+  if len(a:messages) == 0
+    return
+  endif
+
+  let l:file = expand('%:p:t')
+  let l:idx = len(a:messages) - 1
+  while l:idx >= 0
+    if a:messages[l:idx] !~# '^' . a:filepath . ':'
+      call remove(a:messages, l:idx)
+    endif
+    let l:idx -= 1
+  endwhile
 endfunction
 
 " restore Vi compatibility settings

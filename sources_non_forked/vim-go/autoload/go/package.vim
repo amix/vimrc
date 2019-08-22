@@ -82,6 +82,10 @@ function! s:vendordirs() abort
     if l:err != 0
       return []
     endif
+    if empty(l:root)
+      return []
+    endif
+
     let l:root = split(l:root, '\n')[0] . go#util#PathSep() . 'src'
 
     let [l:dir, l:err] = go#util#ExecInDir(['go', 'list', '-f', '{{.Dir}}'])
@@ -111,57 +115,77 @@ function! s:vendordirs() abort
 endfunction
 
 let s:import_paths = {}
-" ImportPath returns the import path of the package for current buffer.
+" ImportPath returns the import path of the package for current buffer. It
+" returns -1 if the import path cannot be determined.
 function! go#package#ImportPath() abort
-  let dir = expand("%:p:h")
+  let l:dir = expand("%:p:h")
   if has_key(s:import_paths, dir)
-    return s:import_paths[dir]
+    return s:import_paths[l:dir]
   endif
 
-  let [l:out, l:err] = go#util#ExecInDir(['go', 'list'])
-  if l:err != 0
+  let l:importpath = go#package#FromPath(l:dir)
+  if type(l:importpath) == type(0)
     return -1
   endif
 
-  let l:importpath = split(out, '\n')[0]
-
-  " go list returns '_CURRENTDIRECTORY' if the directory is not inside GOPATH.
-  " Check it and retun an error if that is the case
-  if l:importpath[0] ==# '_'
-    return -1
-  endif
-
-  let s:import_paths[dir] = l:importpath
+  let s:import_paths[l:dir] = l:importpath
 
   return l:importpath
 endfunction
 
-
 " go#package#FromPath returns the import path of arg. -1 is returned when arg
 " does not specify a package. -2 is returned when arg is a relative path
-" outside of GOPATH and not in a module.
+" outside of GOPATH, not in a module, and not below the current working
+" directory. A relative path is returned when in a null module at or below the
+" current working directory..
 function! go#package#FromPath(arg) abort
   let l:cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let l:dir = getcwd()
 
-  let l:path = a:arg
+  let l:path = fnamemodify(a:arg, ':p')
   if !isdirectory(l:path)
     let l:path = fnamemodify(l:path, ':h')
   endif
 
   execute l:cd fnameescape(l:path)
-  let [l:out, l:err] = go#util#Exec(['go', 'list'])
-  execute l:cd fnameescape(l:dir)
-  if l:err != 0
-    return -1
-  endif
+  try
+    if glob("*.go") == ""
+      " There's no Go code in this directory. We might be in a module directory
+      " which doesn't have any code at this level. To avoid `go list` making a
+      " bunch of HTTP requests to fetch dependencies, short-circuit `go list`
+      " and return -1 immediately.
+      if !empty(s:module())
+        return -1
+      endif
+    endif
+    let [l:out, l:err] = go#util#Exec(['go', 'list'])
+    if l:err != 0
+      return -1
+    endif
 
-  let l:importpath = split(l:out, '\n')[0]
+    let l:importpath = split(l:out, '\n')[0]
+  finally
+    execute l:cd fnameescape(l:dir)
+  endtry
 
-  " go list returns '_CURRENTDIRECTORY' if the directory is neither in GOPATH
-  " nor in a module. Check it and retun an error if that is the case
+  " go list returns '_CURRENTDIRECTORY' if the directory is in a null module
+  " (i.e. neither in GOPATH nor in a module). Return a relative import path
+  " if possible or an error if that is the case.
   if l:importpath[0] ==# '_'
-    return -2
+    let l:relativeimportpath = fnamemodify(l:importpath[1:], ':.')
+    if go#util#IsWin()
+      let l:relativeimportpath = substitute(l:relativeimportpath, '\\', '/', 'g')
+    endif
+
+    if l:relativeimportpath == l:importpath[1:]
+      return '.'
+    endif
+
+    if l:relativeimportpath[0] == '/'
+      return -2
+    endif
+
+    let l:importpath= printf('./%s', l:relativeimportpath)
   endif
 
   return l:importpath

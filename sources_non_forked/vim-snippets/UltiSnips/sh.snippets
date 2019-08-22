@@ -25,12 +25,8 @@ endglobal
 ###########################################################################
 #                            TextMate Snippets                            #
 ###########################################################################
-snippet #!
-`!p snip.rv = '#!/bin/' + getShell() + "\n\n" `
-endsnippet
-
-snippet !env "#!/usr/bin/env (!env)"
-`!p snip.rv = '#!/usr/bin/env ' + getShell() + "\n\n" `
+snippet #! "#!/usr/bin/env (!env)" b
+`!p snip.rv = '#!/usr/bin/env ' + getShell() + "\n" `
 endsnippet
 
 snippet sbash "safe bash options"

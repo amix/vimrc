@@ -71,8 +71,8 @@ function! s:FixList(buffer, list) abort
     return l:new_list
 endfunction
 
-function! s:BufWinId(buffer) abort
-    return exists('*bufwinid') ? bufwinid(str2nr(a:buffer)) : 0
+function! s:WinFindBuf(buffer) abort
+    return exists('*win_findbuf') ? win_findbuf(str2nr(a:buffer)) : [0]
 endfunction
 
 function! s:SetListsImpl(timer_id, buffer, loclist) abort
@@ -88,18 +88,23 @@ function! s:SetListsImpl(timer_id, buffer, loclist) abort
             call setqflist([], 'r', {'title': l:title})
         endif
     elseif g:ale_set_loclist
-        " If windows support is off, bufwinid() may not exist.
+        " If windows support is off, win_findbuf() may not exist.
         " We'll set result in the current window, which might not be correct,
         " but it's better than nothing.
-        let l:id = s:BufWinId(a:buffer)
+        let l:ids = s:WinFindBuf(a:buffer)
 
-        if has('nvim')
-            call setloclist(l:id, s:FixList(a:buffer, a:loclist), ' ', l:title)
-        else
-            call setloclist(l:id, s:FixList(a:buffer, a:loclist))
-            call setloclist(l:id, [], 'r', {'title': l:title})
-        endif
+        for l:id in l:ids
+            if has('nvim')
+                call setloclist(l:id, s:FixList(a:buffer, a:loclist), ' ', l:title)
+            else
+                call setloclist(l:id, s:FixList(a:buffer, a:loclist))
+                call setloclist(l:id, [], 'r', {'title': l:title})
+            endif
+        endfor
     endif
+
+    " Save the current view before opening/closing any window
+    call setbufvar(a:buffer, 'ale_winview', winsaveview())
 
     " Open a window to show the problems if we need to.
     "
@@ -108,8 +113,6 @@ function! s:SetListsImpl(timer_id, buffer, loclist) abort
     if s:ShouldOpen(a:buffer) && !empty(a:loclist)
         let l:winnr = winnr()
         let l:mode = mode()
-        let l:reset_visual_selection = l:mode is? 'v' || l:mode is# "\<c-v>"
-        let l:reset_character_selection = l:mode is? 's' || l:mode is# "\<c-s>"
 
         " open windows vertically instead of default horizontally
         let l:open_type = ''
@@ -131,15 +134,18 @@ function! s:SetListsImpl(timer_id, buffer, loclist) abort
             wincmd p
         endif
 
-        if l:reset_visual_selection || l:reset_character_selection
-            " If we were in a selection mode before, select the last selection.
-            normal! gv
-
-            if l:reset_character_selection
-                " Switch back to Select mode, if we were in that.
+        " Return to original mode when applicable
+        if mode() != l:mode
+            if l:mode is? 'v' || l:mode is# "\<c-v>"
+                " Reset our last visual selection
+                normal! gv
+            elseif l:mode is? 's' || l:mode is# "\<c-s>"
+                " Reset our last character selection
                 normal! "\<c-g>"
             endif
         endif
+
+        call s:RestoreViewIfNeeded(a:buffer)
     endif
 
     " If ALE isn't currently checking for more problems, close the window if
@@ -147,6 +153,30 @@ function! s:SetListsImpl(timer_id, buffer, loclist) abort
     " the window can be closed reliably.
     if !ale#engine#IsCheckingBuffer(a:buffer)
         call s:CloseWindowIfNeeded(a:buffer)
+    endif
+endfunction
+
+" Try to restore the window view after closing any of the lists to avoid making
+" the it moving around, especially useful when on insert mode
+function! s:RestoreViewIfNeeded(buffer) abort
+    let l:saved_view = getbufvar(a:buffer, 'ale_winview', {})
+
+    " Saved view is empty, can't do anything
+    if empty(l:saved_view)
+        return
+    endif
+
+    " Check wether the cursor has moved since linting was actually requested. If
+    " the user has indeed moved lines, do nothing
+    let l:current_view = winsaveview()
+
+    if l:current_view['lnum'] != l:saved_view['lnum']
+        return
+    endif
+
+    " Anchor view by topline if the list is set to open horizontally
+    if ale#Var(a:buffer, 'list_vertical') == 0
+        call winrestview({'topline': l:saved_view['topline']})
     endif
 endfunction
 
@@ -173,21 +203,31 @@ function! s:CloseWindowIfNeeded(buffer) abort
         return
     endif
 
+    let l:did_close_any_list = 0
+
     try
         " Only close windows if the quickfix list or loclist is completely empty,
         " including errors set through other means.
         if g:ale_set_quickfix
             if empty(getqflist())
                 cclose
+                let l:did_close_any_list = 1
             endif
         else
-            let l:win_id = s:BufWinId(a:buffer)
+            let l:win_ids = s:WinFindBuf(a:buffer)
 
-            if g:ale_set_loclist && empty(getloclist(l:win_id))
-                lclose
-            endif
+            for l:win_id in l:win_ids
+                if g:ale_set_loclist && empty(getloclist(l:win_id))
+                    lclose
+                    let l:did_close_any_list = 1
+                endif
+            endfor
         endif
     " Ignore 'Cannot close last window' errors.
     catch /E444/
     endtry
+
+    if l:did_close_any_list
+        call s:RestoreViewIfNeeded(a:buffer)
+    endif
 endfunction

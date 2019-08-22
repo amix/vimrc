@@ -4,7 +4,7 @@ let s:hunk_re = '^@@ -\(\d\+\),\?\(\d*\) +\(\d\+\),\?\(\d*\) @@'
 
 " True for git v1.7.2+.
 function! s:git_supports_command_line_config_override() abort
-  call system(g:gitgutter_git_executable.' -c foo.bar=baz --version')
+  call system(g:gitgutter_git_executable.' '.g:gitgutter_git_args.' -c foo.bar=baz --version')
   return !v:shell_error
 endfunction
 
@@ -68,9 +68,9 @@ let s:counter = 0
 "                      the hunk headers (@@ -x,y +m,n @@); only possible if
 "                      grep is available.
 function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
-  while gitgutter#utility#repo_path(a:bufnr, 0) == -1
-    sleep 5m
-  endwhile
+  if gitgutter#utility#repo_path(a:bufnr, 0) == -1
+    throw 'gitgutter author fail'
+  endif
 
   if gitgutter#utility#repo_path(a:bufnr, 0) == -2
     throw 'gitgutter not tracked'
@@ -119,14 +119,14 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
 
     " Write file from index to temporary file.
     let index_name = g:gitgutter_diff_base.':'.gitgutter#utility#repo_path(a:bufnr, 1)
-    let cmd .= g:gitgutter_git_executable.' --no-pager show '.index_name.' > '.from_file.' && '
+    let cmd .= g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager show '.index_name.' > '.from_file.' && '
 
   elseif a:from ==# 'working_tree'
     let from_file = gitgutter#utility#repo_path(a:bufnr, 1)
   endif
 
   " Call git-diff.
-  let cmd .= g:gitgutter_git_executable.' --no-pager '.g:gitgutter_git_args
+  let cmd .= g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager '.g:gitgutter_git_args
   if s:c_flag
     let cmd .= ' -c "diff.autorefreshindex=0"'
     let cmd .= ' -c "diff.noprefix=false"'

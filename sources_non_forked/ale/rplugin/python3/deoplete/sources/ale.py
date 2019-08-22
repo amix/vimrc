@@ -21,13 +21,23 @@ class Source(Base):
 
         self.name = 'ale'
         self.mark = '[L]'
-        self.rank = 100
+        self.rank = 1000
         self.is_bytepos = True
         self.min_pattern_length = 1
+        # Do not forget to update s:trigger_character_map in completion.vim in
+        # updating entries in this map.
+        self.input_patterns = {
+            '_': r'\.\w*$',
+            'rust': r'(\.|::)\w*$',
+            'typescript': r'(\.|\'|")\w*$',
+            'cpp': r'(\.|::|->)\w*$',
+        }
 
     # Returns an integer for the start position, as with omnifunc.
-    def get_completion_position(self):
-        return self.vim.call('ale#completion#GetCompletionPosition')
+    def get_complete_position(self, context):
+        return self.vim.call(
+            'ale#completion#GetCompletionPositionForDeoplete', context['input']
+        )
 
     def gather_candidates(self, context):
         # Stop early if ALE can't provide completion data for this buffer.

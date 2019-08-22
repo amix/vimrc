@@ -12,12 +12,14 @@ Features:
 * Never saves the buffer.
 * Quick jumping between blocks of changed lines ("hunks").
 * Stage/undo/preview individual hunks.
+* Stage partial hunks.
 * Provides a hunk text object.
 * Diffs against index (default) or any commit.
 * Allows folding all unchanged text.
 * Handles line endings correctly, even with repos that do CRLF conversion.
 * Optional line highlighting.
-* Fully customisable (signs, sign column, line highlights, mappings, extra git-diff arguments, etc).
+* Optional line number highlighting. (Only available in Neovim 0.3.2 or higher)
+* Fully customisable (signs, sign column, line (number) highlights, mappings, extra git-diff arguments, etc).
 * Can be toggled on/off, globally or per buffer.
 * Preserves signs from other plugins.
 * Easy to integrate diff stats into status line; built-in integration with [vim-airline](https://github.com/bling/vim-airline/).
@@ -26,7 +28,7 @@ Features:
 Constraints:
 
 * Supports git only.  If you work with other version control systems, I recommend [vim-signify](https://github.com/mhinz/vim-signify).
-* Relies on the `FocusGained` event.  If your terminal doesn't report focus events, either use something like [Terminus][] or set `let g:gitgutter_terminal_reports_focus=0`.
+* Relies on the `FocusGained` event.  If your terminal doesn't report focus events, either use something like [Terminus][] or set `let g:gitgutter_terminal_reports_focus=0`.  For tmux, `set -g focus-events on` in your tmux.conf.
 
 
 ### Screenshot
@@ -103,6 +105,17 @@ cp -r vim-gitgutter/* ~/.vim/
 See `:help add-global-plugin`.
 
 
+### Windows
+
+I recommend configuring vim-gitgutter with the full path to your git executable.  For example:
+
+```viml
+let g:gitgutter_git_executable = 'C:\Program Files\Git\bin\git.exe'
+```
+
+This is to avoid a problem which occurs if you have file named `git.*` (i.e. with any extension in `PATHEXT`) in your current folder.  `cmd.exe` prioritises the current folder over folders in `PATH` and will try to execute your file instead of the `git` binary.
+
+
 ### Getting started
 
 When you make a change to a file tracked by git, the diff markers should appear automatically.  The delay is governed by vim's `updatetime` option; the default value is `4000`, i.e. 4 seconds, but I suggest reducing it to around 100ms (add `set updatetime=100` to your vimrc).
@@ -138,9 +151,15 @@ And you can turn line highlighting on and off (defaults to off):
 * turn off with `:GitGutterLineHighlightsDisable`
 * toggle with `:GitGutterLineHighlightsToggle`.
 
+With Neovim 0.3.2 or higher, you can turn line number highlighting on and off (defaults to off):
+
+* turn on with `:GitGutterLineNrHighlightsEnable`
+* turn off with `:GitGutterLineNrHighlightsDisable`
+* toggle with `:GitGutterLineNrHighlightsToggle`.
+
 Note that if you have line highlighting on and signs off, you will have an empty sign column – more accurately, a sign column with invisible signs.  This is because line highlighting requires signs and Vim always shows the sign column even if the signs are invisible.
 
-If you switch off both line highlighting and signs, you won't see the sign column.  That is unless you configure the sign column always to be there (see Sign Column section).
+If you switch off both line highlighting and signs, you won't see the sign column.
 
 To keep your Vim snappy, vim-gitgutter will suppress the signs when a file has more than 500 changes.  As soon as the number of changes falls below the limit vim-gitgutter will show the signs again.  You can configure the threshold with:
 
@@ -169,6 +188,18 @@ You can stage or undo an individual hunk when your cursor is in it:
 * stage the hunk with `<Leader>hs` or
 * undo it with `<Leader>hu`.
 
+To stage part of an additions-only hunk by:
+
+* either visually selecting the part you want and staging with your mapping, e.g. `<Leader>hs`;
+* or using a range with the `GitGutterStageHunk` command, e.g. `:42,45GitGutterStageHunk`.
+
+To stage part of any hunk:
+
+* preview the hunk, e.g. `<Leader>hp`;
+* move to the preview window, e.g. `:wincmd P`;
+* delete the lines you do not want to stage;
+* stage the remaining lines: either write (`:w`) the window or stage via `<Leader>hs` or `:GitGutterStageHunk`.
+
 See the FAQ if you want to unstage staged changes.
 
 The `.` command will work with both these if you install [repeat.vim](https://github.com/tpope/vim-repeat).
@@ -180,7 +211,7 @@ nmap <Leader>ha <Plug>GitGutterStageHunk
 nmap <Leader>hr <Plug>GitGutterUndoHunk
 ```
 
-And you can preview a hunk's changes with `<Leader>hp`.  You can of course change this mapping, e.g:
+And you can preview a hunk's changes with `<Leader>hp`.  The location of the preview window is configured with `g:gitgutter_preview_win_location` (default `'bo'`).  You can of course change this mapping, e.g:
 
 ```viml
 nmap <Leader>hv <Plug>GitGutterPreviewHunk
@@ -224,18 +255,20 @@ You can customise:
 
 * The sign column's colours
 * Whether or not the sign column is shown when there aren't any signs (defaults to no)
+* How to handle non-gitgutter signs
 * The signs' colours and symbols
 * Line highlights
 * The base of the diff
 * Extra arguments for `git` when running `git diff`
 * Extra arguments for `git diff`
 * Key mappings
-* Whether or not vim-gitgutter is on initially (defaults to on)
-* Whether or not signs are shown (defaults to yes)
-* Whether or not line highlighting is on initially (defaults to off)
-* Whether or not vim-gitgutter runs in "realtime" (defaults to yes)
-* Whether or not vim-gitgutter runs eagerly (defaults to yes)
-* Whether or not vim-gitgutter runs asynchronously (defaults to yes)
+* Whether vim-gitgutter is on initially (defaults to on)
+* Whether signs are shown (defaults to yes)
+* Whether line highlighting is on initially (defaults to off)
+* Whether line number highlighting is on initially (defaults to off)
+* Whether vim-gitgutter runs asynchronously (defaults to yes)
+* Whether to clobber or preserve non-gitgutter signs
+* The priority of gitgutter's signs.
 
 Please note that vim-gitgutter won't override any colours or highlights you've set in your colorscheme.
 
@@ -260,11 +293,14 @@ highlight SignColumn guibg=whatever      " gVim/MacVim
 By default the sign column will appear when there are signs to show and disappear when there aren't.  To always have the sign column, add to your vimrc:
 
 ```viml
-if exists('&signcolumn')  " Vim 7.4.2201
-  set signcolumn=yes
-else
-  let g:gitgutter_sign_column_always = 1
-endif
+" Vim 7.4.2201
+set signcolumn=yes
+```
+
+GitGutter can preserve or ignore non-gitgutter signs.  For Vim v8.1.0614 and later you can set gitgutter's signs' priorities with `g:gitgutter_sign_priority`, so gitgutter defaults to clobbering other signs.  For Neovim v0.4.0 and later you can set an expanding sign column so gitgutter again defaults to clobbering other signs.  Otherwise, gitgutter defaults to preserving other signs.  You can configure this with:
+
+```viml
+let g:gitgutter_sign_allow_clobber = 1
 ```
 
 
@@ -321,6 +357,26 @@ For example, in some colorschemes the `DiffText` highlight group is easier to re
 
 ```viml
 highlight link GitGutterChangeLine DiffText
+```
+
+
+#### Line number highlights
+
+NOTE: This feature requires Neovim 0.3.2 or higher.
+
+Similarly to the signs' colours, set up the following highlight groups in your colorscheme or `~/.vimrc`:
+
+```viml
+GitGutterAddLineNr          " default: links to CursorLineNr
+GitGutterChangeLineNr       " default: links to CursorLineNr
+GitGutterDeleteLineNr       " default: links to CursorLineNr
+GitGutterChangeDeleteLineNr " default: links to CursorLineNr
+```
+
+Maybe you think `CursorLineNr` is a bit annoying.  For example, you could use `Underlined` for this:
+
+```viml
+highlight link GitGutterChangeLineNr Underlined
 ```
 
 
@@ -382,6 +438,11 @@ Add `let g:gitgutter_signs = 0` to your `~/.vimrc`.
 #### To turn on line highlighting by default
 
 Add `let g:gitgutter_highlight_lines = 1` to your `~/.vimrc`.
+
+
+#### To turn on line number highlighting by default
+
+Add `let g:gitgutter_highlight_linenrs = 1` to your `~/.vimrc`.
 
 
 #### To turn off asynchronous updates
@@ -532,7 +593,7 @@ Your colorscheme is configuring the `SignColumn` highlight group weirdly.  Pleas
 
 > What happens if I also use another plugin which uses signs (e.g. Syntastic)?
 
-Vim only allows one sign per line.  Before adding a sign to a line, vim-gitgutter checks whether a sign has already been added by somebody else.  If so it doesn't do anything.  In other words vim-gitgutter won't overwrite another plugin's signs.  It also won't remove another plugin's signs.
+You can configure whether GitGutter preserves or clobbers other signs using `g:gitgutter_sign_allow_clobber`.  Set to `1` to clobber other signs (default on Vim >= 8.1.0614 and NeoVim >= 0.4.0) or `0` to preserve them.
 
 
 ### Troubleshooting
@@ -557,7 +618,7 @@ Here are some things you can check:
 
 #### When signs don't update after focusing Vim
 
-* Your terminal probably isn't reporting focus events.  Either try installing [Terminus][] or set `let g:gitgutter_terminal_reports_focus=0`.
+* Your terminal probably isn't reporting focus events.  Either try installing [Terminus][] or set `let g:gitgutter_terminal_reports_focus=0`.  For tmux, try `set -g focus-events on` in your tmux.conf.
 
 
 ### Shameless Plug

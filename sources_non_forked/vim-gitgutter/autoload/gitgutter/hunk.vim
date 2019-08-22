@@ -169,8 +169,12 @@ function! gitgutter#hunk#text_object(inner) abort
 endfunction
 
 
-function! gitgutter#hunk#stage() abort
-  call s:hunk_op(function('s:stage'))
+function! gitgutter#hunk#stage(...) abort
+  if a:0 && (a:1 != 1 || a:2 != line('$'))
+    call s:hunk_op(function('s:stage'), a:1, a:2)
+  else
+    call s:hunk_op(function('s:stage'))
+  endif
   silent! call repeat#set("\<Plug>GitGutterStageHunk", -1)
 endfunction
 
@@ -185,8 +189,38 @@ function! gitgutter#hunk#preview() abort
 endfunction
 
 
-function! s:hunk_op(op)
+function! s:hunk_op(op, ...)
   let bufnr = bufnr('')
+
+  if &previewwindow
+    if string(a:op) =~ '_stage'
+      " combine hunk-body in preview window with updated hunk-header
+      let hunk_body = getline(1, '$')
+
+      let [removed, added] = [0, 0]
+      for line in hunk_body
+        if line[0] == '-'
+          let removed += 1
+        elseif line[0] == '+'
+          let added += 1
+        endif
+      endfor
+
+      let hunk_header = b:hunk_header
+      " from count
+      let hunk_header[4] = substitute(hunk_header[4], '\(-\d\+\)\(,\d\+\)\?', '\=submatch(1).",".removed', '')
+      " to count
+      let hunk_header[4] = substitute(hunk_header[4], '\(+\d\+\)\(,\d\+\)\?', '\=submatch(1).",".added', '')
+
+      let hunk_diff = join(hunk_header + hunk_body, "\n")."\n"
+
+      wincmd p
+      pclose
+      call s:stage(hunk_diff)
+    endif
+
+    return
+  endif
 
   if gitgutter#utility#is_active(bufnr)
     " Get a (synchronous) diff.
@@ -210,7 +244,14 @@ function! s:hunk_op(op)
         call gitgutter#utility#warn('did not recognise your choice')
       endif
     else
-      call a:op(gitgutter#diff#hunk_diff(bufnr, diff))
+      let hunk_diff = gitgutter#diff#hunk_diff(bufnr, diff)
+
+      if a:0
+        let hunk_first_line = s:current_hunk()[2]
+        let hunk_diff = s:part_of_diff(hunk_diff, a:1-hunk_first_line, a:2-hunk_first_line)
+      endif
+
+      call a:op(hunk_diff)
     endif
   endif
 endfunction
@@ -221,8 +262,11 @@ function! s:stage(hunk_diff)
   let diff = s:adjust_header(bufnr, a:hunk_diff)
   " Apply patch to index.
   call gitgutter#utility#system(
-        \ gitgutter#utility#cd_cmd(bufnr, g:gitgutter_git_executable.' apply --cached --unidiff-zero - '),
+        \ gitgutter#utility#cd_cmd(bufnr, g:gitgutter_git_executable.' '.g:gitgutter_git_args.' apply --cached --unidiff-zero - '),
         \ diff)
+  if v:shell_error
+    call gitgutter#utility#warn('patch does not apply')
+  endif
 
   " Refresh gitgutter's view of buffer.
   call gitgutter#process_buffer(bufnr, 1)
@@ -240,34 +284,55 @@ function! s:undo(hunk_diff)
   if removed_only
     call append(lnum, lines)
   elseif added_only
-    execute lnum .','. (lnum+len(lines)-1) .'d'
+    execute lnum .','. (lnum+len(lines)-1) .'d _'
   else
     call append(lnum-1, lines[0:hunk[1]])
-    execute (lnum+hunk[1]) .','. (lnum+hunk[1]+hunk[3]) .'d'
+    execute (lnum+hunk[1]) .','. (lnum+hunk[1]+hunk[3]) .'d _'
   endif
 endfunction
 
 
 function! s:preview(hunk_diff)
-  let hunk_lines = split(s:discard_header(a:hunk_diff), "\n")
-  let hunk_lines_length = len(hunk_lines)
-  let previewheight = min([hunk_lines_length, &previewheight])
+  let lines = split(a:hunk_diff, '\n')
+  let header = lines[0:4]
+  let body = lines[5:]
+
+  let body_length = len(body)
+  let previewheight = min([body_length, &previewheight])
 
   silent! wincmd P
   if !&previewwindow
-    noautocmd execute 'bo' previewheight 'new'
+    noautocmd execute g:gitgutter_preview_win_location previewheight 'new'
     set previewwindow
   else
     execute 'resize' previewheight
   endif
 
+  let b:hunk_header = header
+
   setlocal noreadonly modifiable filetype=diff buftype=nofile bufhidden=delete noswapfile
   execute "%delete_"
-  call append(0, hunk_lines)
+  call setline(1, body)
   normal! gg
-  setlocal readonly nomodifiable
+
+  cnoreabbrev <buffer> <expr> w  getcmdtype() == ':' && getcmdline() == 'w'  ? 'GitGutterStageHunk' : 'w'
+  " Staging hunk from the preview window closes the window anyway.
+  cnoreabbrev <buffer> <expr> wq getcmdtype() == ':' && getcmdline() == 'wq' ? 'GitGutterStageHunk' : 'wq'
 
   noautocmd wincmd p
+endfunction
+
+
+" Returns a new hunk diff using the specified lines from the given one.
+" Assumes all lines are additions.
+" a:first, a:last - 0-based indexes into the body of the hunk.
+function! s:part_of_diff(hunk_diff, first, last)
+  let diff_lines = split(a:hunk_diff, '\n', 1)
+
+  " adjust 'to' line count in header
+  let diff_lines[4] = substitute(diff_lines[4], '\(+\d\+\)\(,\d\+\)\?', '\=submatch(1).",".(a:last-a:first+1)', '')
+
+  return join(diff_lines[0:4] + diff_lines[5+a:first:5+a:last], "\n")."\n"
 endfunction
 
 
@@ -305,13 +370,8 @@ endif
 function! s:adjust_hunk_summary(hunk_diff) abort
   let line_adjustment = s:line_adjustment_for_current_hunk()
   let diff = split(a:hunk_diff, '\n', 1)
-  let diff[4] = substitute(diff[4], '+\@<=\(\d\+\)', '\=submatch(1)+line_adjustment', '')
+  let diff[4] = substitute(diff[4], '+\zs\(\d\+\)', '\=submatch(1)+line_adjustment', '')
   return join(diff, "\n")
-endfunction
-
-
-function! s:discard_header(hunk_diff)
-  return join(split(a:hunk_diff, '\n', 1)[5:], "\n")
 endfunction
 
 

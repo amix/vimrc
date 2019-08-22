@@ -151,9 +151,9 @@ ALE is tested with a suite of tests executed in Travis CI and AppVeyor. ALE
 runs tests with the following versions of Vim in the following environments.
 
 1. Vim 8.0.0027 on Linux via Travis CI.
-2. Vim 8.1.0204 on Linux via Travis CI.
+2. Vim 8.1.0519 on Linux via Travis CI.
 3. NeoVim 0.2.0 on Linux via Travis CI.
-4. NeoVim 0.3.0 on Linux via Travis CI.
+4. NeoVim 0.3.5 on Linux via Travis CI.
 5. Vim 8 (stable builds) on Windows via AppVeyor.
 
 If you are developing ALE code on Linux, Mac OSX, or BSD, you can run ALEs
@@ -351,6 +351,7 @@ given the above setup are as follows.
 
 `GivenCommandOutput [...]`         - Define output for ale#command#Run.
 `AssertFixer results`              - Check the fixer results
+`AssertFixerNotExecuted`           - Check that fixers will not be executed.
 
 
 ===============================================================================

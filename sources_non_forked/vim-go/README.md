@@ -68,7 +68,16 @@ Depending on your installation method, you may have to generate the plugin's
 [`help tags`](http://vimhelp.appspot.com/helphelp.txt.html#%3Ahelptags)
 manually (e.g. `:helptags ALL`).
 
-We also have an [official vim-go tutorial](https://github.com/fatih/vim-go-tutorial).
+We also have an [official vim-go tutorial](https://github.com/fatih/vim-go/wiki).
+
+## FAQ and troubleshooting
+
+The FAQ and troubleshooting tips are in the documentation and can be quickly
+accessed using `:help go-troubleshooting`. If you believe you've found a bug or
+shortcoming in vim-go that is neither addressed by help nor in [existing
+issues](https://github.com/fatih/vim-go/issues), please open an issue with
+clear reproduction steps. `:GoReportGitHubIssue` can be used pre-populate a lot
+of the information needed when creating a new issue.
 
 ## License
 

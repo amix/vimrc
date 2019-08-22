@@ -85,7 +85,7 @@ snippet fig "Figure environment" b
 \begin{figure}[${2:htpb}]
 	\centering
 	\includegraphics[width=${3:0.8}\linewidth]{${4:name.ext}}
-	\caption{${4/(\w+)\.\w+/\u$1/}$0}
+	\caption{${4/(\w+)\.\w+/\u$1/}$0}%
 	\label{fig:${4/(\w+)\.\w+/$1/}}
 \end{figure}
 endsnippet

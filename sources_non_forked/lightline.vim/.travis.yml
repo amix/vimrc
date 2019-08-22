@@ -1,7 +1,5 @@
 language: generic
 
-sudo: false
-
 install:
   - git clone --depth=1 https://github.com/thinca/vim-themis /tmp/themis
   - (if ! test -d $HOME/vim-$VIM_VERSION/bin; then
@@ -18,6 +16,8 @@ cache:
     - $HOME/vim-$VIM_VERSION
 
 env:
+  - VIM_VERSION=8.1.1775
+  - VIM_VERSION=8.1.1700
   - VIM_VERSION=8.1.0000
   - VIM_VERSION=8.0.0000
   - VIM_VERSION=7.4

@@ -321,7 +321,69 @@ endfunction
 
 function! s:SendInitMessage(conn) abort
     let [l:init_id, l:init_data] = ale#lsp#CreateMessageData(
-    \   ale#lsp#message#Initialize(a:conn.root, a:conn.init_options),
+    \   ale#lsp#message#Initialize(
+    \       a:conn.root,
+    \       a:conn.init_options,
+    \       {
+    \           'workspace': {
+    \               'applyEdit': v:false,
+    \               'didChangeConfiguration': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'symbol': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'workspaceFolders': v:false,
+    \               'configuration': v:false,
+    \           },
+    \           'textDocument': {
+    \               'synchronization': {
+    \                   'dynamicRegistration': v:false,
+    \                   'willSave': v:false,
+    \                   'willSaveWaitUntil': v:false,
+    \                   'didSave': v:true,
+    \               },
+    \               'completion': {
+    \                   'dynamicRegistration': v:false,
+    \                   'completionItem': {
+    \                       'snippetSupport': v:false,
+    \                       'commitCharactersSupport': v:false,
+    \                       'documentationFormat': ['plaintext'],
+    \                       'deprecatedSupport': v:false,
+    \                       'preselectSupport': v:false,
+    \                   },
+    \                   'contextSupport': v:false,
+    \               },
+    \               'hover': {
+    \                   'dynamicRegistration': v:false,
+    \                   'contentFormat': ['plaintext'],
+    \               },
+    \               'references': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'documentSymbol': {
+    \                   'dynamicRegistration': v:false,
+    \                   'hierarchicalDocumentSymbolSupport': v:false,
+    \               },
+    \               'definition': {
+    \                   'dynamicRegistration': v:false,
+    \                   'linkSupport': v:false,
+    \               },
+    \               'typeDefinition': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'publishDiagnostics': {
+    \                   'relatedInformation': v:true,
+    \               },
+    \               'codeAction': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'rename': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \           },
+    \       },
+    \   ),
     \)
     let a:conn.init_request_id = l:init_id
     call s:SendMessageData(a:conn, l:init_data)
@@ -482,6 +544,35 @@ function! ale#lsp#OpenDocument(conn_id, buffer, language_id) abort
     endif
 
     return l:opened
+endfunction
+
+" Notify LSP servers or tsserver that a document is closed, if opened before.
+" If a document is closed, 1 will be returned, otherwise 0 will be returned.
+"
+" Only the buffer number is required here. A message will be sent to every
+" language server that was notified previously of the document being opened.
+function! ale#lsp#CloseDocument(buffer) abort
+    let l:closed = 0
+
+    " The connection keys are sorted so the messages are easier to test, and
+    " so messages are sent in a consistent order.
+    for l:conn_id in sort(keys(s:connections))
+        let l:conn = s:connections[l:conn_id]
+
+        if l:conn.initialized && has_key(l:conn.open_documents, a:buffer)
+            if l:conn.is_tsserver
+                let l:message = ale#lsp#tsserver_message#Close(a:buffer)
+            else
+                let l:message = ale#lsp#message#DidClose(a:buffer)
+            endif
+
+            call ale#lsp#Send(l:conn_id, l:message)
+            call remove(l:conn.open_documents, a:buffer)
+            let l:closed = 1
+        endif
+    endfor
+
+    return l:closed
 endfunction
 
 " Notify LSP servers or tsserver that a document has changed, if needed.

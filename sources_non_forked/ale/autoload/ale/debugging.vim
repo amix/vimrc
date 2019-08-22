@@ -62,7 +62,7 @@ function! s:Echo(message) abort
     execute 'echo a:message'
 endfunction
 
-function! s:GetLinterVariables(filetype, linter_names) abort
+function! s:GetLinterVariables(filetype, exclude_linter_names) abort
     let l:variable_list = []
     let l:filetype_parts = split(a:filetype, '\.')
 
@@ -73,7 +73,7 @@ function! s:GetLinterVariables(filetype, linter_names) abort
         " Include matching variables.
         if !empty(l:match)
         \&& index(l:filetype_parts, l:match[1]) >= 0
-        \&& index(a:linter_names, l:match[2]) >= 0
+        \&& index(a:exclude_linter_names, l:match[2]) == -1
             call add(l:variable_list, l:key)
         endif
     endfor
@@ -211,10 +211,11 @@ function! ale#debugging#Info() abort
 
     let l:all_names = map(copy(l:all_linters), 'v:val[''name'']')
     let l:enabled_names = map(copy(l:enabled_linters), 'v:val[''name'']')
+    let l:exclude_names = filter(copy(l:all_names), 'index(l:enabled_names, v:val) == -1')
 
     " Load linter variables to display
     " This must be done after linters are loaded.
-    let l:variable_list = s:GetLinterVariables(l:filetype, l:enabled_names)
+    let l:variable_list = s:GetLinterVariables(l:filetype, l:exclude_names)
 
     let l:fixers = ale#fix#registry#SuggestedFixers(l:filetype)
     let l:fixers = uniq(sort(l:fixers[0] + l:fixers[1]))
@@ -238,6 +239,12 @@ function! ale#debugging#Info() abort
 endfunction
 
 function! ale#debugging#InfoToClipboard() abort
+    if !has('clipboard')
+        call s:Echo('clipboard not available. Try :ALEInfoToFile instead.')
+
+        return
+    endif
+
     redir => l:output
         silent call ale#debugging#Info()
     redir END

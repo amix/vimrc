@@ -29,20 +29,44 @@ g:ale_elm_format_options                             *g:ale_elm_format_options*
   This variable can be set to pass additional options to elm-format.
 
 ===============================================================================
-elm-lsp                                                       *ale-elm-elm-lsp*
+elm-ls                                                         *ale-elm-elm-ls*
 
-g:ale_elm_lsp_executable                             *g:ale_elm_lsp_executable*
-                                                     *b:ale_elm_lsp_executable*
+g:ale_elm_ls_executable                               *g:ale_elm_ls_executable*
+                                                      *b:ale_elm_ls_executable*
   Type: |String|
-  Default: `'elm-lsp'`
+  Default: `'elm-language-server'`
 
   See |ale-integrations-local-executables|
 
 
-g:ale_elm_lsp_use_global                             *g:ale_elm_lsp_use_global*
-                                                     *b:ale_elm_lsp_use_global*
+g:ale_elm_ls_use_global                               *g:ale_elm_ls_use_global*
+                                                      *b:ale_elm_ls_use_global*
   Type: |Number|
-  Default: `get(g:, 'ale_use_global_executables', 0)`
+  Default: `get(g:, 'ale_use_global_executables', 1)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_ls_elm_path                                   *g:ale_elm_ls_elm_path*
+                                                        *b:ale_elm_ls_elm_path*
+  Type: |String|
+  Default: `'elm'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_ls_elm_format_path                     *g:ale_elm_ls_elm_format_path*
+                                                 *b:ale_elm_ls_elm_format_path*
+  Type: |String|
+  Default: `'elm-format'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_ls_elm_test_path                         *g:ale_elm_ls_elm_test_path*
+                                                   *b:ale_elm_ls_elm_test_path*
+  Type: |String|
+  Default: `'elm-test'`
 
   See |ale-integrations-local-executables|
 

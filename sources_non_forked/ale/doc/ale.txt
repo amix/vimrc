@@ -84,7 +84,7 @@ have even saved your changes. ALE will check your code in the following
 circumstances, which can be configured with the associated options.
 
 * When you modify a buffer.                - |g:ale_lint_on_text_changed|
-* On leaving insert mode. (off by default) - |g:ale_lint_on_insert_leave|
+* On leaving insert mode.                  - |g:ale_lint_on_insert_leave|
 * When you open a new or modified buffer.  - |g:ale_lint_on_enter|
 * When you save a buffer.                  - |g:ale_lint_on_save|
 * When the filetype changes for a buffer.  - |g:ale_lint_on_filetype_changed|
@@ -341,6 +341,17 @@ completion source for Deoplete is named `'ale'`, and should enabled
 automatically if Deoplete is enabled and configured correctly. Deoplete
 integration should not be combined with ALE's own implementation.
 
+                                                 *ale-asyncomplete-integration*
+
+ALE additionally integrates with asyncomplete.vim for offering automatic
+completion data. ALE's asyncomplete source requires registration and should
+use the defaults provided by the|asyncomplete#sources#ale#get_source_options| function >
+
+  " Use ALE's function for asyncomplete defaults
+  au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#ale#get_source_options({
+      \ 'priority': 10, " Provide your own overrides here
+      \ }))
+>
 ALE also offers its own completion implementation, which does not require any
 other plugins. Suggestions will be made while you type after completion is
 enabled. ALE's own completion implementation can be enabled by setting
@@ -349,6 +360,12 @@ is loaded. The delay for completion can be configured with
 |g:ale_completion_delay|. This setting should not be enabled if you wish to
 use ALE as a completion source for other plugins.
 
+ALE provides an 'omnifunc' function |ale#completion#OmniFunc| for triggering
+completion manually with CTRL-X CTRL-O. |i_CTRL-X_CTRL-O| >
+
+  " Use ALE's function for omnicompletion.
+  set omnifunc=ale#completion#OmniFunc
+<
 ALE will only suggest so many possible matches for completion. The maximum
 number of items can be controlled with |g:ale_completion_max_suggestions|.
 
@@ -947,7 +964,7 @@ g:ale_lint_on_save                                         *g:ale_lint_on_save*
 g:ale_lint_on_text_changed                         *g:ale_lint_on_text_changed*
 
   Type: |String|
-  Default: `'always'`
+  Default: `'normal'`
 
   This option controls how ALE will check your files as you make changes.
   The following values can be used.
@@ -972,9 +989,10 @@ g:ale_lint_on_text_changed                         *g:ale_lint_on_text_changed*
 
 
 g:ale_lint_on_insert_leave                         *g:ale_lint_on_insert_leave*
+                                                   *b:ale_lint_on_insert_leave*
 
   Type: |Number|
-  Default: `0`
+  Default: `1`
 
   When set to `1` in your vimrc file, this option will cause ALE to run
   linters when you leave insert mode.
@@ -986,6 +1004,10 @@ g:ale_lint_on_insert_leave                         *g:ale_lint_on_insert_leave*
     " Make using Ctrl+C do the same as Escape, to trigger autocmd commands
     inoremap <C-c> <Esc>
 <
+  A buffer-local version of this setting `b:ale_lint_on_insert_leave` can be
+  set to `0` to disable linting when leaving insert mode. The setting must
+  be enabled globally to be enabled locally.
+
   You should set this setting once before ALE is loaded, and restart Vim if
   you want to change your preferences. See |ale-lint-settings-on-startup|.
 
@@ -1006,10 +1028,13 @@ g:ale_linter_aliases                                     *g:ale_linter_aliases*
   \   'Dockerfile': 'dockerfile',
   \   'csh': 'sh',
   \   'plaintex': 'tex',
+  \   'rmarkdown': 'r',
   \   'systemverilog': 'verilog',
   \   'verilog_systemverilog': ['verilog_systemverilog', 'verilog'],
   \   'vimwiki': 'markdown',
   \   'vue': ['vue', 'javascript'],
+  \   'xsd': ['xsd', 'xml'],
+  \   'xslt': ['xslt', 'xml'],
   \   'zsh': 'sh',
   \}
 <
@@ -1412,6 +1437,15 @@ g:ale_set_signs                                               *g:ale_set_signs*
   |ALEWarningLine| - All items with `'type': 'W'`
   |ALEInfoLine|    - All items with `'type': 'I'`
 
+  With Neovim 0.3.2 or higher, ALE uses `numhl` option to highlight 'number'
+  column. It uses the following highlight groups.
+
+  |ALEErrorSignLineNr|        - Items with `'type': 'E'`
+  |ALEWarningSignLineNr|      - Items with `'type': 'W'`
+  |ALEInfoSignLineNr|         - Items with `'type': 'I'`
+  |ALEStyleErrorSignLineNr|   - Items with `'type': 'E'` and `'sub_type': 'style'`
+  |ALEStyleWarningSignLineNr| - Items with `'type': 'W'` and `'sub_type': 'style'`
+
   The markers for the highlights can be customized with the following options:
 
   |g:ale_sign_error|
@@ -1696,6 +1730,15 @@ ALEErrorSign                                                     *ALEErrorSign*
   The highlight for error signs. See |g:ale_set_signs|.
 
 
+ALEErrorSignLineNr                                         *ALEErrorSignLineNr*
+
+  Default: `highlight link ALEErrorSignLineNr CursorLineNr`
+
+  The highlight for error signs. See |g:ale_set_signs|.
+
+  NOTE: This highlight is only available on Neovim 0.3.2 or higher.
+
+
 ALEInfo                                                              *ALEInfo.*
                                                             *ALEInfo-highlight*
   Default: `highlight link ALEInfo ALEWarning`
@@ -1720,6 +1763,15 @@ ALEInfoLine                                                       *ALEInfoLine*
   See |g:ale_set_signs| and |g:ale_set_highlights|.
 
 
+ALEInfoSignLineNr                                           *ALEInfoSignLineNr*
+
+  Default: `highlight link ALEInfoSignLineNr CursorLineNr`
+
+  The highlight for error signs. See |g:ale_set_signs|.
+
+  NOTE: This highlight is only available on Neovim 0.3.2 or higher.
+
+
 ALEStyleError                                                   *ALEStyleError*
 
   Default: `highlight link ALEStyleError ALEError`
@@ -1734,6 +1786,15 @@ ALEStyleErrorSign                                           *ALEStyleErrorSign*
   The highlight for style error signs. See |g:ale_set_signs|.
 
 
+ALEStyleErrorSignLineNr                               *ALEStyleErrorSignLineNr*
+
+  Default: `highlight link ALEStyleErrorSignLineNr CursorLineNr`
+
+  The highlight for error signs. See |g:ale_set_signs|.
+
+  NOTE: This highlight is only available on Neovim 0.3.2 or higher.
+
+
 ALEStyleWarning                                               *ALEStyleWarning*
 
   Default: `highlight link ALEStyleWarning ALEError`
@@ -1746,6 +1807,15 @@ ALEStyleWarningSign                                       *ALEStyleWarningSign*
   Default: `highlight link ALEStyleWarningSign ALEWarningSign`
 
   The highlight for style warning signs. See |g:ale_set_signs|.
+
+
+ALEStyleWarningSignLineNr                           *ALEStyleWarningSignLineNr*
+
+  Default: `highlight link ALEStyleWarningSignLineNr CursorLineNr`
+
+  The highlight for error signs. See |g:ale_set_signs|.
+
+  NOTE: This highlight is only available on Neovim 0.3.2 or higher.
 
 
 ALEVirtualTextError                                       *ALEVirtualTextError*
@@ -1805,6 +1875,15 @@ ALEWarningSign                                                 *ALEWarningSign*
   Default: `highlight link ALEWarningSign todo`
 
   The highlight for warning signs. See |g:ale_set_signs|.
+
+
+ALEWarningSignLineNr                                     *ALEWarningSignLineNr*
+
+  Default: `highlight link ALEWarningSignLineNr CursorLineNr`
+
+  The highlight for error signs. See |g:ale_set_signs|.
+
+  NOTE: This highlight is only available on Neovim 0.3.2 or higher.
 
 
 ===============================================================================
@@ -1913,6 +1992,7 @@ documented in additional help files.
 
   ada.....................................|ale-ada-options|
     gcc...................................|ale-ada-gcc|
+    gnatpp................................|ale-ada-gnatpp|
   ansible.................................|ale-ansible-options|
     ansible-lint..........................|ale-ansible-ansible-lint|
   asciidoc................................|ale-asciidoc-options|
@@ -1961,6 +2041,7 @@ documented in additional help files.
     uncrustify............................|ale-cpp-uncrustify|
     ccls..................................|ale-cpp-ccls|
   c#......................................|ale-cs-options|
+    csc...................................|ale-cs-csc|
     mcs...................................|ale-cs-mcs|
     mcsc..................................|ale-cs-mcsc|
     uncrustify............................|ale-cs-uncrustify|
@@ -1988,9 +2069,10 @@ documented in additional help files.
     credo.................................|ale-elixir-credo|
   elm.....................................|ale-elm-options|
     elm-format............................|ale-elm-elm-format|
-    elm-lsp...............................|ale-elm-elm-lsp|
+    elm-ls................................|ale-elm-elm-ls|
     elm-make..............................|ale-elm-elm-make|
   erlang..................................|ale-erlang-options|
+    dialyzer..............................|ale-erlang-dialyzer|
     erlc..................................|ale-erlang-erlc|
     syntaxerl.............................|ale-erlang-syntaxerl|
   eruby...................................|ale-eruby-options|
@@ -2027,6 +2109,7 @@ documented in additional help files.
     hackfmt...............................|ale-hack-hackfmt|
     hhast.................................|ale-hack-hhast|
   handlebars..............................|ale-handlebars-options|
+    prettier..............................|ale-handlebars-prettier|
     ember-template-lint...................|ale-handlebars-embertemplatelint|
   haskell.................................|ale-haskell-options|
     brittany..............................|ale-haskell-brittany|
@@ -2036,6 +2119,7 @@ documented in additional help files.
     cabal-ghc.............................|ale-haskell-cabal-ghc|
     hdevtools.............................|ale-haskell-hdevtools|
     hfmt..................................|ale-haskell-hfmt|
+    hindent...............................|ale-haskell-hindent|
     hlint.................................|ale-haskell-hlint|
     stack-build...........................|ale-haskell-stack-build|
     stack-ghc.............................|ale-haskell-stack-ghc|
@@ -2160,6 +2244,8 @@ documented in additional help files.
     puppet................................|ale-puppet-puppet|
     puppetlint............................|ale-puppet-puppetlint|
     puppet-languageserver.................|ale-puppet-languageserver|
+  purescript..............................|ale-purescript-options|
+    purescript-language-server............|ale-purescript-language-server|
   pyrex (cython)..........................|ale-pyrex-options|
     cython................................|ale-pyrex-cython|
   python..................................|ale-python-options|
@@ -2177,6 +2263,7 @@ documented in additional help files.
     pylint................................|ale-python-pylint|
     pyls..................................|ale-python-pyls|
     pyre..................................|ale-python-pyre|
+    reorder-python-imports................|ale-python-reorder_python_imports|
     vulture...............................|ale-python-vulture|
     yapf..................................|ale-python-yapf|
   qml.....................................|ale-qml-options|
@@ -2187,6 +2274,7 @@ documented in additional help files.
   reasonml................................|ale-reasonml-options|
     merlin................................|ale-reasonml-merlin|
     ols...................................|ale-reasonml-ols|
+    reason-language-server................|ale-reasonml-language-server|
     refmt.................................|ale-reasonml-refmt|
   restructuredtext........................|ale-restructuredtext-options|
     textlint..............................|ale-restructuredtext-textlint|
@@ -2199,6 +2287,7 @@ documented in additional help files.
     ruby..................................|ale-ruby-ruby|
     rufo..................................|ale-ruby-rufo|
     solargraph............................|ale-ruby-solargraph|
+    sorbet................................|ale-ruby-sorbet|
     standardrb............................|ale-ruby-standardrb|
   rust....................................|ale-rust-options|
     cargo.................................|ale-rust-cargo|
@@ -2229,6 +2318,7 @@ documented in additional help files.
   spec....................................|ale-spec-options|
     rpmlint...............................|ale-spec-rpmlint|
   sql.....................................|ale-sql-options|
+    pgformatter...........................|ale-sql-pgformatter|
     sqlfmt................................|ale-sql-sqlfmt|
   stylus..................................|ale-stylus-options|
     stylelint.............................|ale-stylus-stylelint|
@@ -2239,12 +2329,14 @@ documented in additional help files.
   tcl.....................................|ale-tcl-options|
     nagelfar..............................|ale-tcl-nagelfar|
   terraform...............................|ale-terraform-options|
-    fmt...................................|ale-terraform-fmt|
+    terraform-fmt-fixer...................|ale-terraform-fmt-fixer|
+    terraform.............................|ale-terraform-terraform|
     tflint................................|ale-terraform-tflint|
   tex.....................................|ale-tex-options|
     chktex................................|ale-tex-chktex|
     lacheck...............................|ale-tex-lacheck|
     latexindent...........................|ale-tex-latexindent|
+    texlab................................|ale-tex-texlab|
   texinfo.................................|ale-texinfo-options|
     write-good............................|ale-texinfo-write-good|
   text....................................|ale-text-options|
@@ -2797,6 +2889,13 @@ ale#command#ManageFile(buffer, filename)             *ale#command#ManageFile()*
   manages directories separately with the |ale#command#ManageDirectory| function.
 
 
+ale#completion#OmniFunc(findstart, base)            *ale#completion#OmniFunc()*
+
+  A completion function to use with 'omnifunc'.
+
+  See |ale-completion|.
+
+
 ale#engine#GetLoclist(buffer)                         *ale#engine#GetLoclist()*
 
   Given a buffer number, this function will return the list of problems
@@ -3174,6 +3273,33 @@ ale#linter#PreventLoading(filetype)               *ale#linter#PreventLoading()*
   |runtimepath| for that filetype. This function can be called from vimrc or
   similar to prevent ALE from loading linters.
 
+
+ale#lsp_linter#SendRequest(buffer, linter_name, message, [Handler])
+                                                 *ale#lsp_linter#SendRequest()*
+
+  Send a custom request to an LSP linter. The arguments are defined as
+  follows:
+
+  `buffer`       A valid buffer number.
+
+  `linter_name`  A |String| identifying an LSP linter that is available and
+                 enabled for the |filetype| of `buffer`.
+
+  `message`      A |List| in the form `[is_notification, method, parameters]`,
+                 containing three elements:
+                 `is_notification` - an |Integer| that has value 1 if the
+                   request is a notification, 0 otherwise;
+                 `method` - a |String|, identifying an LSP method supported
+                   by `linter`;
+                 `parameters` - a |dictionary| of LSP parameters that are
+                   applicable to `method`.
+
+  `Handler`      Optional argument, meaningful only when `message[0]` is 0.
+                 A |Funcref| that is called when a response to the request is
+                 received, and takes as unique argument a dictionary
+                 representing the response obtained from the server.
+
+
 ale#other_source#ShowResults(buffer, linter_name, loclist)
                                                *ale#other_source#ShowResults()*
 
@@ -3312,7 +3438,7 @@ snazzy looking ale glass logo. Cheers, Mark!
 11. Contact                                                       *ale-contact*
 
 If you like this plugin, and wish to get in touch, check out the GitHub
-page for issues and more at https://github.com/w0rp/ale
+page for issues and more at https://github.com/dense-analysis/ale
 
 If you wish to contact the author of this plugin directly, please feel
 free to send an email to devw0rp@gmail.com.

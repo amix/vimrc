@@ -121,6 +121,7 @@ endif
 
 
 "SECTION: Init variable calls for key mappings {{{2
+call s:initVariable("g:NERDTreeMapCustomOpen", "<CR>")
 call s:initVariable("g:NERDTreeMapActivateNode", "o")
 call s:initVariable("g:NERDTreeMapChangeRoot", "C")
 call s:initVariable("g:NERDTreeMapChdir", "cd")

@@ -25,3 +25,20 @@ function! ale#go#FindProjectRoot(buffer) abort
 
     return ''
 endfunction
+
+
+call ale#Set('go_go111module', '')
+
+" Return a string setting Go-specific environment variables
+function! ale#go#EnvString(buffer) abort
+    let l:env = ''
+
+    " GO111MODULE - turn go modules behavior on/off
+    let l:go111module = ale#Var(a:buffer, 'go_go111module')
+
+    if !empty(l:go111module)
+        let l:env = ale#Env('GO111MODULE', l:go111module) . l:env
+    endif
+
+    return l:env
+endfunction

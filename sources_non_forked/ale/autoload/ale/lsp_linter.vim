@@ -8,6 +8,9 @@ if !has_key(s:, 'lsp_linter_map')
     let s:lsp_linter_map = {}
 endif
 
+" A Dictionary to track one-shot handlers for custom LSP requests
+let s:custom_handlers_map = get(s:, 'custom_handlers_map', {})
+
 " Check if diagnostics for a particular linter should be ignored.
 function! s:ShouldIgnore(buffer, linter_name) abort
     " Ignore all diagnostics if LSP integration is disabled.
@@ -31,7 +34,7 @@ endfunction
 function! s:HandleLSPDiagnostics(conn_id, response) abort
     let l:linter_name = s:lsp_linter_map[a:conn_id]
     let l:filename = ale#path#FromURI(a:response.params.uri)
-    let l:buffer = bufnr(l:filename)
+    let l:buffer = bufnr('^' . l:filename . '$')
     let l:info = get(g:ale_buffer_info, l:buffer, {})
 
     if empty(l:info)
@@ -49,7 +52,7 @@ endfunction
 
 function! s:HandleTSServerDiagnostics(response, error_type) abort
     let l:linter_name = 'tsserver'
-    let l:buffer = bufnr(a:response.body.file)
+    let l:buffer = bufnr('^' . a:response.body.file . '$')
     let l:info = get(g:ale_buffer_info, l:buffer, {})
 
     if empty(l:info)
@@ -407,9 +410,57 @@ endfunction
 " Clear LSP linter data for the linting engine.
 function! ale#lsp_linter#ClearLSPData() abort
     let s:lsp_linter_map = {}
+    let s:custom_handlers_map = {}
 endfunction
 
 " Just for tests.
 function! ale#lsp_linter#SetLSPLinterMap(replacement_map) abort
     let s:lsp_linter_map = a:replacement_map
+endfunction
+
+function! s:HandleLSPResponseToCustomRequests(conn_id, response) abort
+    if has_key(a:response, 'id')
+    \&& has_key(s:custom_handlers_map, a:response.id)
+        let l:Handler = remove(s:custom_handlers_map, a:response.id)
+        call l:Handler(a:response)
+    endif
+endfunction
+
+function! s:OnReadyForCustomRequests(args, linter, lsp_details) abort
+    let l:id = a:lsp_details.connection_id
+    let l:request_id = ale#lsp#Send(l:id, a:args.message)
+
+    if l:request_id > 0 && has_key(a:args, 'handler')
+        let l:Callback = function('s:HandleLSPResponseToCustomRequests')
+        call ale#lsp#RegisterCallback(l:id, l:Callback)
+        let s:custom_handlers_map[l:request_id] = a:args.handler
+    endif
+endfunction
+
+" Send a custom request to an LSP linter.
+function! ale#lsp_linter#SendRequest(buffer, linter_name, message, ...) abort
+    let l:filetype = ale#linter#ResolveFiletype(getbufvar(a:buffer, '&filetype'))
+    let l:linter_list = ale#linter#GetAll(l:filetype)
+    let l:linter_list = filter(l:linter_list, {_, v -> v.name is# a:linter_name})
+
+    if len(l:linter_list) < 1
+        throw 'Linter "' . a:linter_name . '" not found!'
+    endif
+
+    let l:linter = l:linter_list[0]
+
+    if empty(l:linter.lsp)
+        throw 'Linter "' . a:linter_name . '" does not support LSP!'
+    endif
+
+    let l:is_notification = a:message[0]
+    let l:callback_args = {'message': a:message}
+
+    if !l:is_notification && a:0
+        let l:callback_args.handler = a:1
+    endif
+
+    let l:Callback = function('s:OnReadyForCustomRequests', [l:callback_args])
+
+    return ale#lsp_linter#StartLSP(a:buffer, l:linter, l:Callback)
 endfunction

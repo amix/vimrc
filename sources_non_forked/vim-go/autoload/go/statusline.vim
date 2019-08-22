@@ -27,9 +27,8 @@ let s:last_status = ""
 " if not it returns an empty string. This function should be plugged directly
 " into the statusline.
 function! go#statusline#Show() abort
-  " lazy initialiation of the cleaner
+  " lazy initialization of the cleaner
   if !s:timer_id
-    " clean every 60 seconds all statuses
     let interval = go#config#StatuslineDuration()
     let s:timer_id = timer_start(interval, function('go#statusline#Clear'), {'repeat': -1})
   endif
@@ -57,9 +56,9 @@ function! go#statusline#Show() abort
 
   " only update highlight if status has changed.
   if status_text != s:last_status
-    if status.state =~ "success" || status.state =~ "finished" || status.state =~ "pass"
+    if status.state =~ "success" || status.state =~ "finished" || status.state =~ "pass" || status.state =~ 'initialized'
       hi goStatusLineColor cterm=bold ctermbg=76 ctermfg=22 guibg=#5fd700 guifg=#005f00
-    elseif status.state =~ "started" || status.state =~ "analysing" || status.state =~ "compiling"
+    elseif status.state =~ "started" || status.state =~ "analysing" || status.state =~ "compiling" || status.state =~ 'initializing'
       hi goStatusLineColor cterm=bold ctermbg=208 ctermfg=88 guibg=#ff8700 guifg=#870000
     elseif status.state =~ "failed"
       hi goStatusLineColor cterm=bold ctermbg=196 ctermfg=52 guibg=#ff0000 guifg=#5f0000
@@ -83,10 +82,11 @@ function! go#statusline#Update(status_dir, status) abort
   " before we stop the timer, check if we have any previous jobs to be cleaned
   " up. Otherwise every job will reset the timer when this function is called
   " and thus old jobs will never be cleaned
-  call go#statusline#Clear(0)
+  call s:clear()
 
   " also reset the timer, so the user has time to see it in the statusline.
-  " Setting the timer_id to 0 will trigger a new cleaner routine.
+  " Setting the timer_id to 0 will cause a new timer to be created the next
+  " time the go#statusline#Show() is called.
   call timer_stop(s:timer_id)
   let s:timer_id = 0
 endfunction
@@ -94,6 +94,10 @@ endfunction
 " Clear clears all currently stored statusline data. The timer_id argument is
 " just a placeholder so we can pass it to a timer_start() function if needed.
 function! go#statusline#Clear(timer_id) abort
+  call s:clear()
+endfunction
+
+function! s:clear()
   for [status_dir, status] in items(s:statuses)
     let elapsed_time = reltimestr(reltime(status.created_at))
     " strip whitespace

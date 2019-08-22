@@ -175,7 +175,9 @@ describe "Multiple Cursors when using insert mappings" do
   let(:options) { ['set timeoutlen=10000',
                    'imap jj <esc>',
                    'imap jojo dude',
-                   'imap jk <esc>:%s/bla/hey/g<cr>'] }
+                   'imap jk <esc>:%s/bla/hey/g<cr>',
+                   'let g:multi_cursor_exit_from_insert_mode = 1',
+                   'let g:multi_cursor_exit_from_visual_mode = 1'] }
   specify "#mapping doing <Esc>" do
     before <<-EOF
       hello world!

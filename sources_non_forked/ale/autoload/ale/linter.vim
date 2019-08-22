@@ -13,10 +13,13 @@ let s:default_ale_linter_aliases = {
 \   'Dockerfile': 'dockerfile',
 \   'csh': 'sh',
 \   'plaintex': 'tex',
+\   'rmarkdown': 'r',
 \   'systemverilog': 'verilog',
 \   'verilog_systemverilog': ['verilog_systemverilog', 'verilog'],
 \   'vimwiki': 'markdown',
 \   'vue': ['vue', 'javascript'],
+\   'xsd': ['xsd', 'xml'],
+\   'xslt': ['xslt', 'xml'],
 \   'zsh': 'sh',
 \}
 
@@ -355,12 +358,14 @@ function! ale#linter#Define(filetype, linter) abort
     " This command will throw from the sandbox.
     let &l:equalprg=&l:equalprg
 
+    let l:new_linter = ale#linter#PreProcess(a:filetype, a:linter)
+
     if !has_key(s:linters, a:filetype)
         let s:linters[a:filetype] = []
     endif
 
-    let l:new_linter = ale#linter#PreProcess(a:filetype, a:linter)
-
+    " Remove previously defined linters with the same name.
+    call filter(s:linters[a:filetype], 'v:val.name isnot# a:linter.name')
     call add(s:linters[a:filetype], l:new_linter)
 endfunction
 

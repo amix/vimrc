@@ -4,6 +4,8 @@
 let s:version_cache = {}
 
 call ale#Set('java_eclipselsp_path', ale#path#Simplify($HOME . '/eclipse.jdt.ls'))
+call ale#Set('java_eclipselsp_config_path', '')
+call ale#Set('java_eclipselsp_workspace_path', '')
 call ale#Set('java_eclipselsp_executable', 'java')
 
 function! ale_linters#java#eclipselsp#Executable(buffer) abort
@@ -32,11 +34,23 @@ function! ale_linters#java#eclipselsp#JarPath(buffer) abort
         return l:files[0]
     endif
 
+    " Search jar file within system package path
+    let l:files = globpath('/usr/share/java/jdtls/plugins', 'org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
+
+    if len(l:files) == 1
+        return l:files[0]
+    endif
+
     return ''
 endfunction
 
 function! ale_linters#java#eclipselsp#ConfigurationPath(buffer) abort
     let l:path = fnamemodify(ale_linters#java#eclipselsp#JarPath(a:buffer), ':p:h:h')
+    let l:config_path = ale#Var(a:buffer, 'java_eclipselsp_config_path')
+
+    if !empty(l:config_path)
+        return ale#path#Simplify(l:config_path)
+    endif
 
     if has('win32')
         let l:path = l:path . '/config_win'
@@ -76,6 +90,16 @@ function! ale_linters#java#eclipselsp#CommandWithVersion(buffer, version_lines, 
     return ale_linters#java#eclipselsp#Command(a:buffer, l:version)
 endfunction
 
+function! ale_linters#java#eclipselsp#WorkspacePath(buffer) abort
+    let l:wspath = ale#Var(a:buffer, 'java_eclipselsp_workspace_path')
+
+    if !empty(l:wspath)
+        return l:wspath
+    endif
+
+    return ale#path#Dirname(ale#java#FindProjectRoot(a:buffer))
+endfunction
+
 function! ale_linters#java#eclipselsp#Command(buffer, version) abort
     let l:path = ale#Var(a:buffer, 'java_eclipselsp_path')
 
@@ -89,11 +113,11 @@ function! ale_linters#java#eclipselsp#Command(buffer, version) abort
     \ '-noverify',
     \ '-Xmx1G',
     \ '-jar',
-    \ ale_linters#java#eclipselsp#JarPath(a:buffer),
+    \ ale#Escape(ale_linters#java#eclipselsp#JarPath(a:buffer)),
     \ '-configuration',
-    \ ale_linters#java#eclipselsp#ConfigurationPath(a:buffer),
+    \ ale#Escape(ale_linters#java#eclipselsp#ConfigurationPath(a:buffer)),
     \ '-data',
-    \ ale#java#FindProjectRoot(a:buffer)
+    \ ale#Escape(ale_linters#java#eclipselsp#WorkspacePath(a:buffer))
     \ ]
 
     if ale#semver#GTE(a:version, [1, 9])

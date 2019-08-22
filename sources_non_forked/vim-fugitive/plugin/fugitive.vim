@@ -1,6 +1,6 @@
 " fugitive.vim - A Git wrapper so awesome, it should be illegal
 " Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      2.5
+" Version:      3.0
 " GetLatestVimScripts: 2975 1 :AutoInstall: fugitive.vim
 
 if exists('g:loaded_fugitive')
@@ -20,18 +20,14 @@ function! FugitiveGitDir(...) abort
   endif
 endfunction
 
-function! FugitiveCommonDir(...) abort
-  let dir = FugitiveGitDir(a:0 ? a:1 : -1)
-  if empty(dir)
-    return ''
-  endif
-  return fugitive#CommonDir(dir)
-endfunction
-
-function! FugitiveWorkTree(...) abort
-  return s:Tree(FugitiveGitDir(a:0 ? a:1 : -1))
-endfunction
-
+" FugitiveReal() takes a fugitive:// URL and returns the corresponding path in
+" the work tree.  This may be useful to get a cleaner path for inclusion in
+" the statusline, for example.  Note that the file and its parent directories
+" are not guaranteed to exist.
+"
+" This is intended as an abstract API to be used on any "virtual" path.  For a
+" buffer named foo://bar, check for a function named FooReal(), and if it
+" exists, call FooReal("foo://bar").
 function! FugitiveReal(...) abort
   let file = a:0 ? a:1 : @%
   if file =~# '^\a\a\+:' || a:0 > 1
@@ -43,6 +39,13 @@ function! FugitiveReal(...) abort
   endif
 endfunction
 
+" FugitiveFind() takes a Fugitive object and returns the appropriate Vim
+" buffer name.  You can use this to generate Fugitive URLs ("HEAD:README") or
+" to get the absolute path to a file in the Git dir (".git/HEAD"), the common
+" dir (".git/config"), or the work tree (":(top)Makefile").
+"
+" An optional second argument provides the Git dir, or the buffer number of a
+" buffer with a Git dir.  The default is the current buffer.
 function! FugitiveFind(...) abort
   return fugitive#Find(a:0 ? a:1 : bufnr(''), FugitiveGitDir(a:0 > 1 ? a:2 : -1))
 endfunction
@@ -55,12 +58,15 @@ function! FugitivePath(...) abort
   endif
 endfunction
 
+" FugitiveParse() takes a fugitive:// URL and returns a 2 element list
+" containing the Git dir and an object name ("commit:file").  It's effectively
+" then inverse of FugitiveFind().
 function! FugitiveParse(...) abort
   let path = s:Slash(a:0 ? a:1 : @%)
   if path !~# '^fugitive:'
     return ['', '']
   endif
-  let vals = matchlist(path, '\c^fugitive:\%(//\)\=\(.\{-\}\)\%(//\|::\)\(\x\{40\}\|[0-3]\)\(/.*\)\=$')
+  let vals = matchlist(path, '\c^fugitive:\%(//\)\=\(.\{-\}\)\%(//\|::\)\(\x\{40,\}\|[0-3]\)\(/.*\)\=$')
   if len(vals)
     return [(vals[2] =~# '^.$' ? ':' : '') . vals[2] . substitute(vals[3], '^/', ':', ''), vals[1]]
   endif
@@ -68,6 +74,14 @@ function! FugitiveParse(...) abort
   throw v:errmsg
 endfunction
 
+" FugitivePrepare() constructs a Git command string which can be executed with
+" functions like system() and commands like :!.  Integer arguments will be
+" treated as buffer numbers, and the appropriate relative path inserted in
+" their place.
+"
+" If the first argument is a string that looks like a path or an empty string,
+" it will be used as the Git dir.  If it's a buffer number, the Git dir for
+" that buffer will be used.  The default is the current buffer.
 function! FugitivePrepare(...) abort
   return call('fugitive#Prepare', a:000)
 endfunction
@@ -101,9 +115,21 @@ function! FugitiveStatusline(...) abort
   return fugitive#Statusline()
 endfunction
 
+function! FugitiveCommonDir(...) abort
+  let dir = FugitiveGitDir(a:0 ? a:1 : -1)
+  if empty(dir)
+    return ''
+  endif
+  return fugitive#CommonDir(dir)
+endfunction
+
+function! FugitiveWorkTree(...) abort
+  return s:Tree(FugitiveGitDir(a:0 ? a:1 : -1))
+endfunction
+
 function! FugitiveIsGitDir(path) abort
   let path = substitute(a:path, '[\/]$', '', '') . '/'
-  return getfsize(path.'HEAD') > 10 && (
+  return len(a:path) && getfsize(path.'HEAD') > 10 && (
         \ isdirectory(path.'objects') && isdirectory(path.'refs') ||
         \ getftype(path.'commondir') ==# 'file')
 endfunction
@@ -124,10 +150,10 @@ function! s:Tree(path) abort
       let config = readfile(config_file,'',10)
       call filter(config,'v:val =~# "^\\s*worktree *="')
       if len(config) == 1
-        let worktree = matchstr(config[0], '= *\zs.*')
+        let worktree = s:Slash(FugitiveVimPath(matchstr(config[0], '= *\zs.*')))
       endif
     elseif filereadable(dir . '/gitdir')
-      let worktree = fnamemodify(readfile(dir . '/gitdir')[0], ':h')
+      let worktree = s:Slash(fnamemodify(FugitiveVimPath(readfile(dir . '/gitdir')[0]), ':h'))
       if worktree ==# '.'
         unlet! worktree
       endif
@@ -159,9 +185,11 @@ function! FugitiveExtractGitDir(path) abort
   endif
   let root = resolve(path)
   if root !=# path
-    silent! exe haslocaldir() ? 'lcd .' : 'cd .'
+    silent! exe (haslocaldir() ? 'lcd' : exists(':tcd') && haslocaldir(-1) ? 'tcd' : 'cd') '.'
   endif
   let previous = ""
+  let env_git_dir = len($GIT_DIR) ? s:Slash(simplify(fnamemodify(FugitiveVimPath($GIT_DIR), ':p:s?[\/]$??'))) : ''
+  call s:Tree(env_git_dir)
   while root !=# previous
     if root =~# '\v^//%([^/]+/?)?$'
       break
@@ -169,14 +197,10 @@ function! FugitiveExtractGitDir(path) abort
     if index(split($GIT_CEILING_DIRECTORIES, ':'), root) >= 0
       break
     endif
-    if root ==# $GIT_WORK_TREE && FugitiveIsGitDir($GIT_DIR)
-      return simplify(fnamemodify($GIT_DIR, ':p:s?[\/]$??'))
-    endif
-    if FugitiveIsGitDir($GIT_DIR)
-      call s:Tree(simplify(fnamemodify($GIT_DIR, ':p:s?[\/]$??')))
-      if has_key(s:dir_for_worktree, root)
-        return s:dir_for_worktree[root]
-      endif
+    if root ==# $GIT_WORK_TREE && FugitiveIsGitDir(env_git_dir)
+      return env_git_dir
+    elseif has_key(s:dir_for_worktree, root)
+      return s:dir_for_worktree[root]
     endif
     let dir = substitute(root, '[\/]$', '', '') . '/.git'
     let type = getftype(dir)
@@ -186,10 +210,11 @@ function! FugitiveExtractGitDir(path) abort
       return resolve(dir)
     elseif type !=# '' && filereadable(dir)
       let line = get(readfile(dir, '', 1), 0, '')
-      if line =~# '^gitdir: \.' && FugitiveIsGitDir(root.'/'.line[8:-1])
-        return simplify(root.'/'.line[8:-1])
-      elseif line =~# '^gitdir: ' && FugitiveIsGitDir(line[8:-1])
-        return line[8:-1]
+      let file_dir = s:Slash(FugitiveVimPath(matchstr(line, '^gitdir: \zs.*')))
+      if file_dir !~# '^/\|^\a:' && FugitiveIsGitDir(root . '/' . file_dir)
+        return simplify(root . '/' . file_dir)
+      elseif len(file_dir) && FugitiveIsGitDir(file_dir)
+        return file_dir
       endif
     elseif FugitiveIsGitDir(root)
       return root
@@ -215,6 +240,18 @@ function! FugitiveDetect(path) abort
   endif
 endfunction
 
+function! FugitiveVimPath(path) abort
+  if exists('+shellslash') && !&shellslash
+    return tr(a:path, '/', '\')
+  else
+    return a:path
+  endif
+endfunction
+
+function! FugitiveGitPath(path) abort
+  return s:Slash(a:path)
+endfunction
+
 function! s:Slash(path) abort
   if exists('+shellslash')
     return tr(a:path, '\', '/')
@@ -234,7 +271,10 @@ function! s:ProjectionistDetect() abort
     if exists('+shellslash') && !&shellslash
       let base = tr(base, '/', '\')
     endif
-    call projectionist#append(base, FugitiveCommonDir(dir) . '/info/projections.json')
+    let file = FugitiveCommonDir(dir) . '/info/projections.json'
+    if filereadable(file)
+      call projectionist#append(base, file)
+    endif
   endif
 endfunction
 
@@ -266,7 +306,7 @@ augroup fugitive
   autocmd FileType gitrebase
         \ let &l:include = '^\%(pick\|squash\|edit\|reword\|fixup\|drop\|[pserfd]\)\>' |
         \ if len(FugitiveGitDir()) |
-        \   let &l:includeexpr = 'v:fname =~# ''^\x\{4,40\}$'' ? FugitiveFind(v:fname) : ' .
+        \   let &l:includeexpr = 'v:fname =~# ''^\x\{4,\}$'' ? FugitiveFind(v:fname) : ' .
         \   (len(&l:includeexpr) ? &l:includeexpr : 'v:fname') |
         \ endif |
         \ let b:undo_ftplugin = get(b:, 'undo_ftplugin', 'exe') . '|setl inex= inc='
@@ -296,3 +336,20 @@ augroup fugitive
 
   autocmd User ProjectionistDetect call s:ProjectionistDetect()
 augroup END
+
+let g:io_fugitive = {
+      \ 'simplify': function('fugitive#simplify'),
+      \ 'resolve': function('fugitive#resolve'),
+      \ 'getftime': function('fugitive#getftime'),
+      \ 'getfsize': function('fugitive#getfsize'),
+      \ 'getftype': function('fugitive#getftype'),
+      \ 'filereadable': function('fugitive#filereadable'),
+      \ 'filewritable': function('fugitive#filewritable'),
+      \ 'isdirectory': function('fugitive#isdirectory'),
+      \ 'getfperm': function('fugitive#getfperm'),
+      \ 'setfperm': function('fugitive#setfperm'),
+      \ 'readfile': function('fugitive#readfile'),
+      \ 'writefile': function('fugitive#writefile'),
+      \ 'glob': function('fugitive#glob'),
+      \ 'delete': function('fugitive#delete'),
+      \ 'Real': function('FugitiveReal')}

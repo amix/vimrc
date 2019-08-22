@@ -66,6 +66,12 @@ doc: build/html2vimdoc build/vim-tools
 		    -e "s/^- '([^']{1,2})':.*/ \*vim-markdown-\1\*/" -e "# short command" \
 		    -e ":a" -e "s/^(.{1,78})$$/ \1/" -e "ta" -e "# align right" \
 		    -e "G" -e "# append the matched line after the command reference" \
+		    -e "}" \
+		    -e "/^- 'g:vim_markdown_[[:alnum:]_]*'$$/ {" \
+		    -e "h" -e "# save the matched line to the hold space" \
+		    -e "s/^- '([^']*)'$$/ \*\1\*/" -e "# make global variable reference" \
+		    -e ":g" -e "s/^(.{1,78})$$/ \1/" -e "tg" -e "# align right" \
+		    -e "G" -e "# append the matched line after the global variable reference" \
 		    -e "}" > doc/vim-markdown.txt && rm -f doc/tmp.md
 
 .PHONY: doc

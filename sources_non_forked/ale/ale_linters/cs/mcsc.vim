@@ -52,20 +52,34 @@ function! ale_linters#cs#mcsc#Handle(buffer, lines) abort
     " NOTE: pattern also captures file name as linter compiles all
     " files within the source tree rooted at the specified source
     " path and not just the file loaded in the buffer
-    let l:pattern = '^\v(.+\.cs)\((\d+),(\d+)\)\: ([^ ]+) ([^ ]+): (.+)$'
+    let l:patterns = [
+    \    '^\v(.+\.cs)\((\d+),(\d+)\)\:\s+([^ ]+)\s+([cC][sS][^ ]+):\s(.+)$',
+    \    '^\v([^ ]+)\s+([Cc][sS][^ ]+):\s+(.+)$',
+    \]
     let l:output = []
 
     let l:dir = s:GetWorkingDirectory(a:buffer)
 
-    for l:match in ale#util#GetMatches(a:lines, l:pattern)
-        call add(l:output, {
-        \   'filename': ale#path#GetAbsPath(l:dir, l:match[1]),
-        \   'lnum': l:match[2] + 0,
-        \   'col': l:match[3] + 0,
-        \   'type': l:match[4] is# 'error' ? 'E' : 'W',
-        \   'code': l:match[5],
-        \   'text': l:match[6],
-        \})
+    for l:match in ale#util#GetMatches(a:lines, l:patterns)
+        if len(l:match) > 6 && strlen(l:match[5]) > 2 && l:match[5][:1] is? 'CS'
+            call add(l:output, {
+            \   'filename': ale#path#GetAbsPath(l:dir, l:match[1]),
+            \   'lnum': l:match[2] + 0,
+            \   'col': l:match[3] + 0,
+            \   'type': l:match[4] is# 'error' ? 'E' : 'W',
+            \   'code': l:match[5],
+            \   'text': l:match[6] ,
+            \})
+        elseif strlen(l:match[2]) > 2 && l:match[2][:1] is? 'CS'
+            call add(l:output, {
+            \   'filename':'<mcs>',
+            \   'lnum': -1,
+            \   'col': -1,
+            \   'type': l:match[1] is# 'error' ? 'E' : 'W',
+            \   'code': l:match[2],
+            \   'text': l:match[3],
+            \})
+        endif
     endfor
 
     return l:output

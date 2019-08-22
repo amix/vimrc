@@ -3,12 +3,37 @@ if exists("g:loaded_nerdtree_autoload")
 endif
 let g:loaded_nerdtree_autoload = 1
 
-function! nerdtree#version()
-    return '5.0.0'
+let s:rootNERDTreePath = resolve(expand("<sfile>:p:h:h"))
+function! nerdtree#version(...)
+    let l:changelog = readfile(join([s:rootNERDTreePath, "CHANGELOG.md"], nerdtree#slash()))
+    let l:text = 'Unknown'
+    let l:line = 0
+    while l:line <= len(l:changelog)
+        if l:changelog[l:line] =~ '\d\+\.\d\+'
+            let l:text = substitute(l:changelog[l:line], '.*\(\d\+.\d\+\).*', '\1', '')
+            let l:text .= substitute(l:changelog[l:line+1], '^.\{-}\(\.\d\+\).\{-}:\(.*\)', a:0>0 ? '\1:\2' : '\1', '')
+            break
+        endif
+        let l:line += 1
+    endwhile
+    return l:text
 endfunction
 
 " SECTION: General Functions {{{1
 "============================================================
+
+function! nerdtree#slash()
+
+    if nerdtree#runningWindows()
+        if exists('+shellslash') && &shellslash
+            return '/'
+        endif
+
+        return '\'
+    endif
+
+    return '/'
+endfunction
 
 "FUNCTION: nerdtree#and(x,y) {{{2
 " Implements and() function for Vim <= 7.2
@@ -129,13 +154,13 @@ function! nerdtree#deprecated(func, ...)
     endif
 endfunction
 
-" FUNCTION: nerdtree#exec(cmd) {{{2
-" Same as :exec cmd but with eventignore set for the duration
-" to disable the autocommands used by NERDTree (BufEnter,
-" BufLeave and VimEnter)
-function! nerdtree#exec(cmd)
+" FUNCTION: nerdtree#exec(cmd, ignoreAll) {{{2
+" Same as :exec cmd but, if ignoreAll is TRUE, set eventignore=all for the duration
+function! nerdtree#exec(cmd, ignoreAll)
     let old_ei = &ei
-    set ei=BufEnter,BufLeave,VimEnter
+    if a:ignoreAll
+        set ei=all
+    endif
     exec a:cmd
     let &ei = old_ei
 endfunction

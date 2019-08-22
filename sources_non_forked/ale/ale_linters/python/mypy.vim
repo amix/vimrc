@@ -78,4 +78,5 @@ call ale#linter#Define('python', {
 \   'executable': function('ale_linters#python#mypy#GetExecutable'),
 \   'command': function('ale_linters#python#mypy#GetCommand'),
 \   'callback': 'ale_linters#python#mypy#Handle',
+\   'output_stream': 'both'
 \})

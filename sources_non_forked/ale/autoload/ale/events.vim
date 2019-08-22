@@ -128,7 +128,7 @@ function! ale#events#Init() abort
             endif
 
             if g:ale_lint_on_insert_leave
-                autocmd InsertLeave * call ale#Queue(0)
+                autocmd InsertLeave * if ale#Var(str2nr(expand('<abuf>')), 'lint_on_insert_leave') | call ale#Queue(0) | endif
             endif
 
             if g:ale_echo_cursor || g:ale_cursor_detail

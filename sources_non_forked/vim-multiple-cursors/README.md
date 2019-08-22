@@ -61,10 +61,10 @@ call plug#end()
     * next:         `<C-n>` add a new _virtual cursor + selection_ on the next match
     * skip:         `<C-x>` skip the next match
     * prev:         `<C-p>` remove current _virtual cursor + selection_ and go back on previous match
-  * select all:     `<A-n>` start muticursor and directly select all matches
+  * select all:     `<A-n>` start multicursor and directly select all matches
 
-You can now change the _virtual cursors + selection_ with **visual mode** commands.  
-For instance: `c`, `s`, `I`, `A` work without any issues.  
+You can now change the _virtual cursors + selection_ with **visual mode** commands.
+For instance: `c`, `s`, `I`, `A` work without any issues.
 You could also go to **normal mode** by pressing `v` and use normal commands there.
 
 At any time, you can press `<Esc>` to exit back to regular Vim.
@@ -74,11 +74,11 @@ At any time, you can press `<Esc>` to exit back to regular Vim.
 ### visual mode when multiple lines are selected
   * start: `<C-n>` add _virtual cursors_ on each line
 
-You can now change the _virtual cursors_ with **normal mode** commands.  
+You can now change the _virtual cursors_ with **normal mode** commands.
 For instance: `ciw`.
 
 ### command
-The command `MultipleCursorsFind` accepts a range and a pattern (regexp), it creates a _visual cursor_ at the end of each match.  
+The command `MultipleCursorsFind` accepts a range and a pattern (regexp), it creates a _visual cursor_ at the end of each match.
 If no range is passed in, then it defaults to the entire buffer.
 
 
@@ -103,20 +103,20 @@ let g:multi_cursor_quit_key            = '<Esc>'
 ## Settings
 Currently there are four additional global settings one can tweak:
 
-### ```g:multi_cursor_exit_from_visual_mode``` (Default: 1)
-If set to 0, then pressing `g:multi_cursor_quit_key` in _Visual_ mode will not quit and delete all existing cursors.  
-Useful if you want to go back to Normal mode, and still be able to operate on all the cursors.
+### ```g:multi_cursor_exit_from_visual_mode``` (Default: 0)
+If set to 1, then pressing `g:multi_cursor_quit_key` in _Visual_ mode will quit and
+delete all existing cursors, just skipping normal mode with multiple cursors.
 
-### ```g:multi_cursor_exit_from_insert_mode``` (Default: 1)
-If set to 0, then pressing `g:multi_cursor_quit_key` in _Insert_ mode will not quit and delete all existing cursors.  
-Useful if you want to go back to Normal mode, and still be able to operate on all the cursors.
+### ```g:multi_cursor_exit_from_insert_mode``` (Default: 0)
+If set to 1, then pressing `g:multi_cursor_quit_key` in _Insert_ mode will quit and
+delete all existing cursors, just skipping normal mode with multiple cursors.
 
 ### ```g:multi_cursor_normal_maps``` (Default: see below)
 `{'@': 1, 'F': 1, 'T': 1, '[': 1, '\': 1, ']': 1, '!': 1, '"': 1, 'c': 1, 'd': 1, 'f': 1, 'g': 1, 'm': 1, 'q': 1, 'r': 1, 't': 1, 'y': 1, 'z': 1, '<': 1, '=': 1, '>': 1}`
 
 Any key in this map (values are ignored) will cause multi-cursor _Normal_ mode
 to pause for map completion just like normal vim. Otherwise keys mapped in
-normal mode will "fail to replay" when multiple cursors are active.  
+normal mode will "fail to replay" when multiple cursors are active.
 For example: `{'d':1}` makes normal-mode command `dw` work in multi-cursor mode.
 
 The default list contents should work for anybody, unless they have remapped a
@@ -136,7 +136,7 @@ Same principle as `g:multi_cursor_normal_maps`
 
 ### ```Multiple_cursors_before/Multiple_cursors_after``` (Default: `nothing`)
 
-Other plugins may be incompatible in insert mode.  
+Other plugins may be incompatible in insert mode.
 That is why we provide hooks to disable those plug-ins when vim-multiple-cursors is active:
 
 For example, if you are using [Neocomplete](https://github.com/Shougo/neocomplete.vim),
@@ -171,7 +171,7 @@ highlight link multiple_cursors_visual Visual
 ## FAQ
 
 #### **Q** <kbd>ALT</kbd>+<kbd>n</kbd> doesn't seem to work in VIM but works in gVIM, why?
-**A** This is a well known terminal/Vim [issue](http://vim.wikia.com/wiki/Get_Alt_key_to_work_in_terminal), different terminal have different ways to send ```Alt+key```.  
+**A** This is a well known terminal/Vim [issue](http://vim.wikia.com/wiki/Get_Alt_key_to_work_in_terminal), different terminal have different ways to send ```Alt+key```.
 Try adding this in your `.vimrc` and **make sure to replace the string**:
 ```vim
 if !has('gui_running')
