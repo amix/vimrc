@@ -72,7 +72,7 @@ Some mappings are commented out
     " These two mappings are a quality of life improvement of copy/pasting from the clipboard
     " Effectively this paste map applies the indent within the pasted content from the indent level that you're at when you invoke the pasting
     " http://tilvim.com/2014/03/18/a-better-paste.html
-    map <Leader>p :set paste<CR>o<esc>"*]p:set nopaste<cr>
+    map <Leader>p :set paste<CR>o<esc>"+]p:set nopaste<cr>
     vmap <Leader>y "+y
 
 `plugins_config.vim`
