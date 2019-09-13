@@ -40,7 +40,7 @@ command Headerfix call HeaderFix()
 command Headerquery call HeaderQuery()
 
 
-let localleader=,
+let localleader=","
 nnoremap <localleader>hf :Headerfix<CR>
 nnoremap <localleader>hq :Headerquery<CR>
 
