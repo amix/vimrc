@@ -121,7 +121,7 @@ let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ 'active': {
       \   'left': [ ['mode', 'paste'],
-      \             ['fugitive', 'readonly', 'filename', 'modified'] ],
+      \             ['fugitive', 'readonly', 'absolutepath', 'filename', 'modified'] ],
       \   'right': [ [ 'lineinfo' ], ['percent'] ]
       \ },
       \ 'component': {
@@ -177,3 +177,34 @@ let g:ale_lint_on_enter = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:gitgutter_enabled=0
 nnoremap <silent> <leader>d :GitGutterToggle<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Template 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:tmpl_author_email = 'xyharry@google.com'
+let g:tmpl_author_name = 'Xinyue Ou'
+let g:templates_use_licensee = 0
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Vim-lsp + Async
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-lsp
+nnoremap gd :LspDefinition<CR>  " gd in Normal mode triggers gotodefinition
+nnoremap gr :LspReferences<CR>  " gr in Normal mode shows all references
+
+" Send async completion requests.
+" WARNING: Might interfere with other completion plugins.
+let g:lsp_async_completion = 1
+
+" Enable UI for diagnostics
+let g:lsp_signs_enabled = 1           " enable diagnostics signs in the gutter
+let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
+
+" Enabling fuzzy completion
+let g:asyncomplete_smart_completion = 1
+let g:asyncomplete_auto_popup = 1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => SuperTab 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Start selection from the beginning of the list.
+let g:SuperTabDefaultCompletionType = "<c-n>"
