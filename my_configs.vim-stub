@@ -1,0 +1,9 @@
+    
+
+set autoindent
+set noexpandtab
+set tabstop=2
+set shiftwidth=2
+set number
+set listchars=eol:↵,tab:>_,trail:~,extends:>,precedes:<
+set list
