@@ -63,30 +63,59 @@ nnoremap <localleader>hq :Headerquery<CR>
 " Show diff of the current file in a new pane.
 nnoremap <localleader>d :SignifyDiff!<CR>
 
+" Get the Citc path without google3/
+function GetCitCPath() 
+  let l:cwd = getcwd(1)
+  let l:pathmatch = matchlist(l:cwd, '\v(.*)/google3.*$')
+  if len(l:pathmatch) > 0
+    return l:pathmatch[1]
+  else
+    return ''
+  endif
+endfunction
+
 " If the file path start with //, treat it as from the client root.
 function GetGoogle3Path(filepath, clientpath) 
+  if strlen(a:clientpath)  == 0
+    return a:filepath
+  endif
+
   let l:dst_matches = matchlist(a:filepath, '\v//(.*)$')
   if len(l:dst_matches) > 0
-    return clientpath.'/'.l:dst_matches[1]
+    return a:clientpath.'/google3/'.l:dst_matches[1]
   else
     " If not starting with //, return the original path 
     return a:filepath
   endif 
 endfunction
 
-" An edit function that can recognize google3 path.
-function GoogleE(filepath) 
-  let l:cwd = getcwd(1)
-  echom l:cwd
-  let l:cur_matches = matchlist(l:cwd, '\v(.*google3).*$') 
-  if len(l:cur_matches) > 0
-    let l:dst_filepath = GetGoogle3Path(a:filepath, l:cur_matches[1])
-    execute 'e '. l:dst_filepath
-  else
-    execute 'e '. a:filepath
-  endif
+function PathNameFilterHelper(key, val)
+   let l:idx = strridx() 
 endfunction
 
+function GoogleECompletion(ArgLead, CmdLine, CursorPos)
+  let l:citc = GetCitCPath()
+  let l:filepath = GetGoogle3Path(a:ArgLead, l:citc)
+  let l:head = fnamemodify(l:filepath, ':h')
+  let l:tail = fnamemodify(l:filepath, ':t')
+  let l:myList = split(globpath(l:head, l:tail.'*'), "\n")
+  echom l:myList
+  " length +1 for the /
+  " Slicing the results
+  return map(l:myList, 'v:val[strlen(l:head)+1:-1]')
+endfunction
+
+" An edit function that can recognize google3 path.
+" The filepath is relative the google3/
+" eg. you can go to //ads/video.txt wherever you are inside
+" citc by :e //ads/video/.txt.
+function GoogleE(filepath) 
+  let l:citc = GetCitCPath()
+  let l:dst_filepath = GetGoogle3Path(a:filepath, l:citc)
+  execute 'e '. l:dst_filepath
+endfunction
+
+" command -nargs=+ -complete=customlist,GoogleECompletion GoogleE call GoogleE(<f-args>)
 command -nargs=+ -complete=file GoogleE call GoogleE(<f-args>)
 
 " Function to defind a built-in (lowercase) command.
