@@ -110,8 +110,9 @@ endfunction
 " eg. you can go to //ads/video.txt wherever you are inside
 " citc by :e //ads/video/.txt.
 function GoogleE(...) 
+  " if the number of argument is not 0
   if a:0 
-    let l:filepath = a:0
+    let l:filepath = a:1
     let l:citc = GetCitCPath()
     let l:dst_filepath = GetGoogle3Path(l:filepath, l:citc)
     execute 'e '. l:dst_filepath
