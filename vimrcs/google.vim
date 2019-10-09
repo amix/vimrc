@@ -109,14 +109,20 @@ endfunction
 " The filepath is relative the google3/
 " eg. you can go to //ads/video.txt wherever you are inside
 " citc by :e //ads/video/.txt.
-function GoogleE(filepath) 
-  let l:citc = GetCitCPath()
-  let l:dst_filepath = GetGoogle3Path(a:filepath, l:citc)
-  execute 'e '. l:dst_filepath
+function GoogleE(...) 
+  if a:0 
+    let l:filepath = a:0
+    let l:citc = GetCitCPath()
+    let l:dst_filepath = GetGoogle3Path(l:filepath, l:citc)
+    execute 'e '. l:dst_filepath
+  else
+    execute 'e'
+  endif
 endfunction
 
 " command -nargs=+ -complete=customlist,GoogleECompletion GoogleE call GoogleE(<f-args>)
-command -nargs=+ -complete=file GoogleE call GoogleE(<f-args>)
+" help command-complete
+command -nargs=* -complete=file GoogleE call GoogleE(<f-args>)
 
 " Function to defind a built-in (lowercase) command.
 function! CommandCabbr(abbreviation, expansion)
