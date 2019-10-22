@@ -19,7 +19,7 @@ Glug blazedeps
 
 " code format for build file
 Glug codefmt
-Glug codefmt-google
+Glug codefmt-google auto_filetypes+=python,cc,proto,
 autocmd FileType bzl AutoFormatBuffer buildifier
 
 Glug relatedfiles plugin[mappings]=',2'
@@ -134,4 +134,13 @@ command! -nargs=+ CommandCabbr call CommandCabbr(<f-args>)
 " Use it on itself to define a simpler abbreviation for itself.
 execute 'CommandCabbr ccab CommandCabbr'
 execute 'CommandCabbr e GoogleE'
+
+" Play the macro in register q.
+nnoremap <Leader>. @q
+
+" FromProto
+let @f = "ywidata.\<Esc>wwi = proto.\<Esc>pa()\<Esc>jb"
+" ToProto
+let @t = "ywiif (proto->\<Esc>wwi() != data.\<Esc>pa) {\<Enter>\<Enter>}\<Esc>kAproto->\<Esc>pbdwaset_\<Esc>pa(data.\<Esc>pa);\<Esc>jxj"
+
 
