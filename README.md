@@ -126,9 +126,11 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [vim-markdown](https://github.com/tpope/vim-markdown)
 * [nginx.vim](https://github.com/vim-scripts/nginx.vim): Highlights configuration files for nginx
 * [vim-go](https://github.com/fatih/vim-go)
+* [rust.vim](https://github.com/rust-lang/rust.vim)
 * [vim-ruby](https://github.com/vim-ruby/vim-ruby)
 * [typescript-vim](https://github.com/leafgarland/typescript-vim)
 * [vim-javascript](https://github.com/pangloss/vim-javascript)
+* [vim-python-pep8-indent](https://github.com/Vimjas/vim-python-pep8-indent)
 
 
 ## How to include your own stuff?

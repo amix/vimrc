@@ -13,7 +13,7 @@ import requests
 
 from os import path
 
-#--- Globals ----------------------------------------------
+# --- Globals ----------------------------------------------
 PLUGINS = """
 auto-pairs https://github.com/jiangmiao/auto-pairs
 ale https://github.com/w0rp/ale
@@ -61,6 +61,7 @@ gist-vim https://github.com/mattn/gist-vim
 vim-ruby https://github.com/vim-ruby/vim-ruby
 typescript-vim https://github.com/leafgarland/typescript-vim
 vim-javascript https://github.com/pangloss/vim-javascript
+vim-python-pep8-indent https://github.com/Vimjas/vim-python-pep8-indent
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'
