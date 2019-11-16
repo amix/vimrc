@@ -19,7 +19,7 @@ auto-pairs https://github.com/jiangmiao/auto-pairs
 ale https://github.com/w0rp/ale
 vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
 ack.vim https://github.com/mileszs/ack.vim
-bufexplorer https://github.com/corntrace/bufexplorer
+bufexplorer https://github.com/jlanzarotta/bufexplorer
 ctrlp.vim https://github.com/ctrlpvim/ctrlp.vim
 mayansmoke https://github.com/vim-scripts/mayansmoke
 nerdtree https://github.com/scrooloose/nerdtree
