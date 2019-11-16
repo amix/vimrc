@@ -58,6 +58,9 @@ rust.vim https://github.com/rust-lang/rust.vim
 vim-markdown https://github.com/plasticboy/vim-markdown
 comfortable-motion.vim https://github.com/yuttie/comfortable-motion.vim
 gist-vim https://github.com/mattn/gist-vim
+vim-ruby https://github.com/vim-ruby/vim-ruby
+typescript-vim https://github.com/leafgarland/typescript-vim
+vim-javascript https://github.com/pangloss/vim-javascript
 """.strip()
 
 GITHUB_ZIP = '%s/archive/master.zip'

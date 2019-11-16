@@ -10,39 +10,45 @@ if exists("g:loaded_syntastic_rust_rustc_checker")
 endif
 let g:loaded_syntastic_rust_rustc_checker = 1
 
+" vint: -ProhibitAbbreviationOption
 let s:save_cpo = &cpo
 set cpo&vim
+" vint: +ProhibitAbbreviationOption
 
 function! SyntaxCheckers_rust_rustc_GetLocList() dict
     let makeprg = self.makeprgBuild({})
 
     " Old errorformat (before nightly 2016/08/10)
     let errorformat  =
-        \ '%E%f:%l:%c: %\d%#:%\d%# %.%\{-}error:%.%\{-} %m,'   .
-        \ '%W%f:%l:%c: %\d%#:%\d%# %.%\{-}warning:%.%\{-} %m,' .
-        \ '%C%f:%l %m'
-        
+                \ '%E%f:%l:%c: %\d%#:%\d%# %.%\{-}error:%.%\{-} %m,'   .
+                \ '%W%f:%l:%c: %\d%#:%\d%# %.%\{-}warning:%.%\{-} %m,' .
+                \ '%C%f:%l %m'
+
     " New errorformat (after nightly 2016/08/10)
     let errorformat  .=
-        \ ',' .
-        \ '%-G,' .
-        \ '%-Gerror: aborting %.%#,' .
-        \ '%-Gerror: Could not compile %.%#,' .
-        \ '%Eerror: %m,' .
-        \ '%Eerror[E%n]: %m,' .
-        \ '%-Gwarning: the option `Z` is unstable %.%#,' .
-        \ '%Wwarning: %m,' .
-        \ '%Inote: %m,' .
-        \ '%C %#--> %f:%l:%c'
+                \ ',' .
+                \ '%-G,' .
+                \ '%-Gerror: aborting %.%#,' .
+                \ '%-Gerror: Could not compile %.%#,' .
+                \ '%Eerror: %m,' .
+                \ '%Eerror[E%n]: %m,' .
+                \ '%-Gwarning: the option `Z` is unstable %.%#,' .
+                \ '%Wwarning: %m,' .
+                \ '%Inote: %m,' .
+                \ '%C %#--> %f:%l:%c'
 
     return SyntasticMake({
-        \ 'makeprg': makeprg,
-        \ 'errorformat': errorformat })
+                \ 'makeprg': makeprg,
+                \ 'errorformat': errorformat })
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
-    \ 'filetype': 'rust',
-    \ 'name': 'rustc'})
+            \ 'filetype': 'rust',
+            \ 'name': 'rustc'})
 
+" vint: -ProhibitAbbreviationOption
 let &cpo = s:save_cpo
 unlet s:save_cpo
+" vint: +ProhibitAbbreviationOption
+
+" vim: set et sw=4 sts=4 ts=8:

@@ -1,0 +1,109 @@
+RUBY							*ft-ruby-indent*
+
+    Ruby: Access modifier indentation	|ruby-access-modifier-indentation|
+    Ruby: Block style indentation	|ruby-block-style-indentation|
+    Ruby: Assignment style indentation	|ruby-assignment-style-indentation|
+
+					*ruby-access-modifier-indentation*
+					*g:ruby_indent_access_modifier_style*
+ Ruby: Access modifier indentation ~
+
+Different access modifier indentation styles can be used by setting: >
+
+	:let g:ruby_indent_access_modifier_style = 'normal'
+	:let g:ruby_indent_access_modifier_style = 'indent'
+	:let g:ruby_indent_access_modifier_style = 'outdent'
+<
+By default, the "normal" access modifier style is used.
+
+Access modifier style "normal":
+>
+  class Indent
+    private :method
+    protected :method
+    private
+    def method; end
+    protected
+    def method; end
+    public
+    def method; end
+  end
+<
+Access modifier style "indent":
+>
+  class Indent
+    private :method
+    protected :method
+    private
+      def method; end
+    protected
+      def method; end
+    public
+    def method; end
+  end
+<
+Access modifier style "outdent":
+>
+  class Indent
+    private :method
+    protected :method
+  private
+    def method; end
+  protected
+    def method; end
+  public
+    def method; end
+  end
+<
+					*ruby-block-style-indentation*
+					*g:ruby_indent_block_style*
+    Ruby: Block style indentation ~
+
+Different block indentation styles can be used by setting: >
+
+    :let g:ruby_indent_block_style = 'expression'
+    :let g:ruby_indent_block_style = 'do'
+<
+By default, the "expression" block indent style is used.
+
+Block indent style "expression":
+>
+    first
+      .second do |x|
+      something
+    end
+<
+Block indent style "do":
+>
+    first
+      .second do |x|
+        something
+      end
+<
+
+					*ruby-assignment-style-indentation*
+					*g:ruby_indent_assignment_style*
+    Ruby: Assignment style indentation ~
+
+Different styles of indenting assignment for multiline expressions:
+>
+    :let g:ruby_indent_assignment_style = 'hanging'
+    :let g:ruby_indent_assignment_style = 'variable'
+<
+By default, the "hanging" style is used.
+
+Assignment indent style "hanging":
+>
+    x = if condition
+          something
+        end
+<
+Assignment indent style "variable":
+>
+    x = if condition
+      something
+    end
+<
+
+
+ vim:tw=78:sw=4:ts=8:ft=help:norl:
