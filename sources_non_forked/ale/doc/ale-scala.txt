@@ -3,6 +3,32 @@ ALE Scala Integration                                       *ale-scala-options*
 
 
 ===============================================================================
+metals                                                       *ale-scala-metals*
+
+`metals` requires either an SBT project, a Mill project, or a running Bloop
+server.
+
+
+g:ale_scala_metals_executable                    *g:ale_scala_metals_executable*
+                                                 *b:ale_scala_metals_executable*
+  Type: |String|
+  Default: `'metals-vim'`
+
+  Override the invoked `metals` binary.
+
+
+g:ale_scala_metals_project_root                *g:ale_scala_metals_project_root*
+                                               *b:ale_scala_metals_project_root*
+  Type: |String|
+  Default: `''`
+
+  By default the project root is found by searching upwards for `build.sbt`,
+  `build.sc`, `.bloop` or `.metals`.
+  If the project root is elsewhere, you can override the project root
+  directory.
+
+
+===============================================================================
 sbtserver                                                 *ale-scala-sbtserver*
 
 `sbtserver` requires a running ^1.1.x sbt shell to connect to. It will attempt

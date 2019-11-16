@@ -23,6 +23,11 @@ function! s:set(var, default) abort
 endfunction
 
 call s:set('g:gitgutter_preview_win_location',     'bo')
+if exists('*nvim_open_win')
+  call s:set('g:gitgutter_preview_win_floating', 1)
+else
+  call s:set('g:gitgutter_preview_win_floating', 0)
+endif
 call s:set('g:gitgutter_enabled',                     1)
 call s:set('g:gitgutter_max_signs',                 500)
 call s:set('g:gitgutter_signs',                       1)
@@ -49,6 +54,7 @@ endif
 call s:set('g:gitgutter_sign_removed_above_and_below', '[')
 call s:set('g:gitgutter_sign_modified_removed',       '~_')
 call s:set('g:gitgutter_git_args',                      '')
+call s:set('g:gitgutter_diff_relative_to',         'index')
 call s:set('g:gitgutter_diff_args',                     '')
 call s:set('g:gitgutter_diff_base',                     '')
 call s:set('g:gitgutter_map_keys',                       1)
@@ -103,6 +109,8 @@ command! -bar GitGutterBufferDisable call gitgutter#buffer_disable()
 command! -bar GitGutterBufferEnable  call gitgutter#buffer_enable()
 command! -bar GitGutterBufferToggle  call gitgutter#buffer_toggle()
 
+command! -bar GitGutterQuickFix call gitgutter#quickfix()
+
 " }}}
 
 " Line highlights {{{
@@ -137,10 +145,10 @@ command! -bar GitGutterUndoHunk    call gitgutter#hunk#undo()
 command! -bar GitGutterPreviewHunk call gitgutter#hunk#preview()
 
 " Hunk text object
-onoremap <silent> <Plug>GitGutterTextObjectInnerPending :<C-U>call gitgutter#hunk#text_object(1)<CR>
-onoremap <silent> <Plug>GitGutterTextObjectOuterPending :<C-U>call gitgutter#hunk#text_object(0)<CR>
-xnoremap <silent> <Plug>GitGutterTextObjectInnerVisual  :<C-U>call gitgutter#hunk#text_object(1)<CR>
-xnoremap <silent> <Plug>GitGutterTextObjectOuterVisual  :<C-U>call gitgutter#hunk#text_object(0)<CR>
+onoremap <silent> <Plug>(GitGutterTextObjectInnerPending) :<C-U>call gitgutter#hunk#text_object(1)<CR>
+onoremap <silent> <Plug>(GitGutterTextObjectOuterPending) :<C-U>call gitgutter#hunk#text_object(0)<CR>
+xnoremap <silent> <Plug>(GitGutterTextObjectInnerVisual)  :<C-U>call gitgutter#hunk#text_object(1)<CR>
+xnoremap <silent> <Plug>(GitGutterTextObjectOuterVisual)  :<C-U>call gitgutter#hunk#text_object(0)<CR>
 
 
 " Returns the git-diff hunks for the file or an empty list if there
@@ -184,13 +192,19 @@ command! -bar GitGutterDebug call gitgutter#debug#debug()
 
 " Maps {{{
 
-nnoremap <silent> <expr> <Plug>GitGutterNextHunk &diff ? ']c' : ":\<C-U>execute v:count1 . 'GitGutterNextHunk'\<CR>"
-nnoremap <silent> <expr> <Plug>GitGutterPrevHunk &diff ? '[c' : ":\<C-U>execute v:count1 . 'GitGutterPrevHunk'\<CR>"
+nnoremap <silent> <expr> <Plug>(GitGutterNextHunk) &diff ? ']c' : ":\<C-U>execute v:count1 . 'GitGutterNextHunk'\<CR>"
+nnoremap <silent> <expr> <Plug>GitGutterNextHunk   &diff ? ']c' : ":\<C-U>call gitgutter#utility#warn('please change your map \<lt>Plug>GitGutterNextHunk to \<lt>Plug>(GitGutterNextHunk)')\<CR>"
+nnoremap <silent> <expr> <Plug>(GitGutterPrevHunk) &diff ? '[c' : ":\<C-U>execute v:count1 . 'GitGutterPrevHunk'\<CR>"
+nnoremap <silent> <expr> <Plug>GitGutterPrevHunk   &diff ? '[c' : ":\<C-U>call gitgutter#utility#warn('please change your map \<lt>Plug>GitGutterPrevHunk to \<lt>Plug>(GitGutterPrevHunk)')\<CR>"
 
-xnoremap <silent> <Plug>GitGutterStageHunk   :GitGutterStageHunk<CR>
-nnoremap <silent> <Plug>GitGutterStageHunk   :GitGutterStageHunk<CR>
-nnoremap <silent> <Plug>GitGutterUndoHunk    :GitGutterUndoHunk<CR>
-nnoremap <silent> <Plug>GitGutterPreviewHunk :GitGutterPreviewHunk<CR>
+xnoremap <silent> <Plug>(GitGutterStageHunk)   :GitGutterStageHunk<CR>
+xnoremap <silent> <Plug>GitGutterStageHunk     :call gitgutter#utility#warn('please change your map <lt>Plug>GitGutterStageHunk to <lt>Plug>(GitGutterStageHunk)')<CR>
+nnoremap <silent> <Plug>(GitGutterStageHunk)   :GitGutterStageHunk<CR>
+nnoremap <silent> <Plug>GitGutterStageHunk     :call gitgutter#utility#warn('please change your map <lt>Plug>GitGutterStageHunk to <lt>Plug>(GitGutterStageHunk)')<CR>
+nnoremap <silent> <Plug>(GitGutterUndoHunk)    :GitGutterUndoHunk<CR>
+nnoremap <silent> <Plug>GitGutterUndoHunk      :call gitgutter#utility#warn('please change your map <lt>Plug>GitGutterUndoHunk to <lt>Plug>(GitGutterUndoHunk)')<CR>
+nnoremap <silent> <Plug>(GitGutterPreviewHunk) :GitGutterPreviewHunk<CR>
+nnoremap <silent> <Plug>GitGutterPreviewHunk   :call gitgutter#utility#warn('please change your map <lt>Plug>GitGutterPreviewHunk to <lt>Plug>(GitGutterPreviewHunk)')<CR>
 
 " }}}
 
@@ -215,7 +229,11 @@ augroup gitgutter
   autocmd BufEnter * call s:on_bufenter()
 
   autocmd CursorHold,CursorHoldI * call gitgutter#process_buffer(bufnr(''), 0)
-  autocmd FileChangedShellPost   * call gitgutter#process_buffer(bufnr(''), 1)
+  if exists('*timer_start') && has('lambda')
+    autocmd FileChangedShellPost * call timer_start(1, {-> gitgutter#process_buffer(bufnr(''), 1)})
+  else
+    autocmd FileChangedShellPost * call gitgutter#process_buffer(bufnr(''), 1)
+  endif
 
   " Ensure that all buffers are processed when opening vim with multiple files, e.g.:
   "

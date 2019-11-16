@@ -170,6 +170,10 @@ highlight link multiple_cursors_visual Visual
 
 ## FAQ
 
+#### **Q**  Pressing <kbd>i</kbd> after selecting words with <kbd>C-n</kbd> makes the plugin hang, why?
+**A** When selecting words with <kbd>C-n</kbd>, the plugin behaves like in **visual** mode.
+Once you pressed <kbd>i</kbd>, you can still press <kbd>I</kbd> to insert text.
+
 #### **Q** <kbd>ALT</kbd>+<kbd>n</kbd> doesn't seem to work in VIM but works in gVIM, why?
 **A** This is a well known terminal/Vim [issue](http://vim.wikia.com/wiki/Get_Alt_key_to_work_in_terminal), different terminal have different ways to send ```Alt+key```.
 Try adding this in your `.vimrc` and **make sure to replace the string**:

@@ -41,10 +41,13 @@ https://github.com/itchyny/lightline.vim
 
 landscape is my colorscheme, which is a high-contrast cterm-supported colorscheme, available at https://github.com/itchyny/landscape.vim
 
+
+For screenshots of all available colorshemes, see [this file](colorscheme.md).
+
 ## Why yet another clone of powerline?
 + [vim-powerline](https://github.com/Lokaltog/vim-powerline) is a nice plugin, but deprecated.
 + [powerline](https://github.com/powerline/powerline) is a nice plugin, but difficult to configure.
-+ [vim-airline](https://github.com/vim-airline/vim-airline) is a nice plugin, but it uses too much functions of other plugins, which should be done by users in `.vimrc`.
++ [vim-airline](https://github.com/vim-airline/vim-airline) is a nice plugin, but it uses too many functions of other plugins, which should be done by users in `.vimrc`.
 
 ## Spirit of this plugin
 + Minimalism. The core script is very small to achieve enough functions as a statusline plugin.
@@ -105,7 +108,7 @@ then modify `TERM` in your shell configuration (`.zshrc` for example)
 ```sh
 export TERM=xterm-256color
 ```
-and then add the following configure to your `.vimrc`.
+and then add the following configuration to your `.vimrc`.
 ```vim
 if !has('gui_running')
   set t_Co=256
@@ -154,7 +157,7 @@ Instead, lightline.vim provides a simple API that user can easily integrate with
 Once you understand how to configure and how it will be displayed in the statusline, you can also tell how to integrate with your favorite plugins.
 
 Let's start to configure the appearance.
-The statusline is composed by multiple components.
+The statusline is composed of multiple components.
 It shows the current mode, filename, modified status on the left, and file format, encoding, filetype and cursor positions on the right.
 So in order to add something in the statusline, you firstly create a new component and specify the place.
 
@@ -225,7 +228,7 @@ Now let's add some integrations with other plugin.
 The name of the git branch is important these days.
 But lightline.vim does not provide this information by default because it is also one of plugin crossing configurations, and not all people want the integration.
 
-In order to show the branch name in the statusline, install some plugins which provides the branch information.
+In order to show the branch name in the statusline, install some plugins which provide the branch information.
 The [vim-fugitive](https://github.com/tpope/vim-fugitive) plugin is a famous plugin so let's integrate lightline.vim with it.
 If you don't like to install full git integration but just want to display the branch name in the statusline, you can use the [vim-gitbranch](https://github.com/itchyny/vim-gitbranch) plugin which provides `gitbranch#name` function.
 ```vim

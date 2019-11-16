@@ -9,17 +9,20 @@ syntax case match
 
 " match keywords
 syntax keyword gomodModule  module
+syntax keyword gomodGo      go      contained
 syntax keyword gomodRequire require
 syntax keyword gomodExclude exclude
 syntax keyword gomodReplace replace
 
-" require, exclude and replace can be also grouped into block
+" require, exclude, replace, and go can be also grouped into block
 syntax region gomodRequire start='require (' end=')' transparent contains=gomodRequire,gomodVersion
 syntax region gomodExclude start='exclude (' end=')' transparent contains=gomodExclude,gomodVersion
 syntax region gomodReplace start='replace (' end=')' transparent contains=gomodReplace,gomodVersion
+syntax match  gomodGo            '^go .*$'           transparent contains=gomodGo,gomodGoVersion
 
 " set highlights
 highlight default link gomodModule  Keyword
+highlight default link gomodGo      Keyword
 highlight default link gomodRequire Keyword
 highlight default link gomodExclude Keyword
 highlight default link gomodReplace Keyword
@@ -35,6 +38,10 @@ highlight default link gomodString  String
 " replace operator is in the form of '=>'
 syntax match gomodReplaceOperator "\v\=\>"
 highlight default link gomodReplaceOperator Operator
+
+" match go versions
+syntax match gomodGoVersion "1\.\d\+" contained
+highlight default link gomodGoVersion Identifier
 
 
 " highlight versions:

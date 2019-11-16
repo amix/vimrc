@@ -15,16 +15,11 @@ cd "$vimgodir"
 vim=${1:-}
 
 case "$vim" in
-  "vim-7.4")
-    tag="v7.4.2009"
-    giturl="https://github.com/vim/vim"
-    ;;
-
   "vim-8.0")
-    # This follows the version in Arch Linux. Vim's master branch isn't always
+    # This follows the version in Ubuntu LTS. Vim's master branch isn't always
     # stable, and we don't want to have the build fail because Vim introduced a
     # bug.
-    tag="v8.0.1542"
+    tag="v8.0.1453"
     giturl="https://github.com/vim/vim"
     ;;
 
@@ -36,7 +31,7 @@ case "$vim" in
 
   *)
     echo "unknown version: '${1:-}'"
-    echo "First argument must be 'vim-7.4', 'vim-8.0', or 'nvim'."
+    echo "First argument must be 'vim-8.0' or 'nvim'."
     exit 1
     ;;
 esac

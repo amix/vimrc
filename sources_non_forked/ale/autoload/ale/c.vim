@@ -265,6 +265,16 @@ function! s:GetLookupFromCompileCommandsFile(compile_commands_file) abort
     return l:empty
 endfunction
 
+function! ale#c#GetCompileCommand(json_item) abort
+    if has_key(a:json_item, 'command')
+        return a:json_item.command
+    elseif has_key(a:json_item, 'arguments')
+        return join(a:json_item.arguments, ' ')
+    endif
+
+    return ''
+endfunction
+
 function! ale#c#ParseCompileCommandsFlags(buffer, file_lookup, dir_lookup) abort
     " Search for an exact file match first.
     let l:basename = tolower(expand('#' . a:buffer . ':t'))
@@ -287,15 +297,14 @@ function! ale#c#ParseCompileCommandsFlags(buffer, file_lookup, dir_lookup) abort
     for l:item in l:file_list
         " Load the flags for this file, or for a source file matching the
         " header file.
-        if has_key(l:item, 'command')
-        \&& (
+        if (
         \   bufnr(l:item.file) is a:buffer
         \   || (
         \       !empty(l:source_file)
         \       && l:item.file[-len(l:source_file):] is? l:source_file
         \   )
         \)
-            return ale#c#ParseCFlags(l:item.directory, l:item.command)
+            return ale#c#ParseCFlags(l:item.directory, ale#c#GetCompileCommand(l:item))
         endif
     endfor
 
@@ -307,8 +316,7 @@ function! ale#c#ParseCompileCommandsFlags(buffer, file_lookup, dir_lookup) abort
 
     for l:item in l:dir_list
         if ale#path#Simplify(fnamemodify(l:item.file, ':h')) is? l:dir
-        \&& has_key(l:item, 'command')
-            return ale#c#ParseCFlags(l:item.directory, l:item.command)
+            return ale#c#ParseCFlags(l:item.directory, ale#c#GetCompileCommand(l:item))
         endif
     endfor
 

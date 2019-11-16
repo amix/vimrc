@@ -497,8 +497,8 @@ def __coerce__(self, other):
 	${25:pass}
 endsnippet
 
-snippet deff
-def ${1:fname}(`!p snip.rv = vim.eval('indent(".") ? "self" : ""')`$2):
+snippet deff "function or class method"
+def ${1:fname}(`!p snip.rv = "self, " if snip.indent else ""`$2):
 	$0
 endsnippet
 

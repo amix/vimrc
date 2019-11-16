@@ -37,6 +37,7 @@ function! ale#lsp#Register(executable_or_address, project, init_options) abort
         \   'init_queue': [],
         \   'capabilities': {
         \       'hover': 0,
+        \       'rename': 0,
         \       'references': 0,
         \       'completion': 0,
         \       'completion_trigger_characters': [],
@@ -199,6 +200,10 @@ function! s:UpdateCapabilities(conn, capabilities) abort
         let a:conn.capabilities.references = 1
     endif
 
+    if get(a:capabilities, 'renameProvider') is v:true
+        let a:conn.capabilities.rename = 1
+    endif
+
     if !empty(get(a:capabilities, 'completionProvider'))
         let a:conn.capabilities.completion = 1
     endif
@@ -317,6 +322,7 @@ function! ale#lsp#MarkConnectionAsTsserver(conn_id) abort
     let l:conn.capabilities.completion_trigger_characters = ['.']
     let l:conn.capabilities.definition = 1
     let l:conn.capabilities.symbol_search = 1
+    let l:conn.capabilities.rename = 1
 endfunction
 
 function! s:SendInitMessage(conn) abort

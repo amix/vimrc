@@ -25,10 +25,10 @@ endfunction
 " the code. Calling it again reruns the tests and shows the last updated
 " coverage.
 function! go#coverage#Buffer(bang, ...) abort
-  " we use matchaddpos() which was introduce with 7.4.330, be sure we have
-  " it: http://ftp.vim.org/vim/patches/7.4/7.4.330
+
+  " check if the version of Vim being tested supports matchaddpos()
   if !exists("*matchaddpos")
-    call go#util#EchoError("GoCoverage is supported with Vim version 7.4-330 or later")
+    call go#util#EchoError("GoCoverage is not supported by your version of Vim.")
     return -1
   endif
 

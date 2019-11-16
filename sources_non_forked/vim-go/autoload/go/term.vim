@@ -96,6 +96,9 @@ function! s:on_stdout(job_id, data, event) dict abort
 endfunction
 
 function! s:on_exit(job_id, exit_status, event) dict abort
+  let l:winid = win_getid(winnr())
+  call win_gotoid(self.winid)
+
   " change to directory where test were run. if we do not do this
   " the quickfix items will have the incorrect paths. 
   " see: https://github.com/fatih/vim-go/issues/2400
@@ -103,12 +106,11 @@ function! s:on_exit(job_id, exit_status, event) dict abort
   let l:dir = getcwd()
   execute l:cd . fnameescape(expand("%:p:h"))
 
-  let l:winid = win_getid(winnr())
-  call win_gotoid(self.winid)
   let l:listtype = go#list#Type("_term")
 
   if a:exit_status == 0
     call go#list#Clean(l:listtype)
+    execute l:cd l:dir
     call win_gotoid(l:winid)
     return
   endif
@@ -132,6 +134,7 @@ function! s:on_exit(job_id, exit_status, event) dict abort
 
   if empty(l:errors)
     call go#util#EchoError( '[' . l:title . '] ' . "FAIL")
+    execute l:cd l:dir
     call win_gotoid(l:winid)
     return
   endif
@@ -143,6 +146,7 @@ function! s:on_exit(job_id, exit_status, event) dict abort
   endif
 
   if self.bang
+    execute l:cd l:dir
     call win_gotoid(l:winid)
     return
   endif

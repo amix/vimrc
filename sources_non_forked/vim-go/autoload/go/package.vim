@@ -39,7 +39,7 @@ function! s:paths() abort
     if executable('go')
       let s:goroot = go#util#env("goroot")
       if go#util#ShellError() != 0
-        echomsg '''go env GOROOT'' failed'
+        call go#util#EchoError('`go env GOROOT` failed')
       endif
     else
       let s:goroot = $GOROOT

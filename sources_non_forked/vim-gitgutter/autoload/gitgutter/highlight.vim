@@ -30,6 +30,7 @@ function! gitgutter#highlight#line_toggle() abort
   endif
 endfunction
 
+
 function! gitgutter#highlight#linenr_disable() abort
   let g:gitgutter_highlight_linenrs = 0
   call s:define_sign_linenr_highlights()
@@ -42,12 +43,12 @@ function! gitgutter#highlight#linenr_disable() abort
 endfunction
 
 function! gitgutter#highlight#linenr_enable() abort
-  let old_highlight_lines = g:gitgutter_highlight_linenrs
+  let old_highlight_linenrs = g:gitgutter_highlight_linenrs
 
   let g:gitgutter_highlight_linenrs = 1
   call s:define_sign_linenr_highlights()
 
-  if !old_highlight_lines && !g:gitgutter_signs
+  if !old_highlight_linenrs && !g:gitgutter_signs
     call gitgutter#all(1)
   endif
 
@@ -102,6 +103,10 @@ function! gitgutter#highlight#define_highlights() abort
   highlight default link GitGutterChangeLineNr       CursorLineNr
   highlight default link GitGutterDeleteLineNr       CursorLineNr
   highlight default link GitGutterChangeDeleteLineNr CursorLineNr
+
+  " Highlights used intra line.
+  highlight GitGutterAddIntraLine    gui=reverse cterm=reverse
+  highlight GitGutterDeleteIntraLine gui=reverse cterm=reverse
 endfunction
 
 function! gitgutter#highlight#define_signs() abort
@@ -171,12 +176,12 @@ function! s:define_sign_linenr_highlights() abort
   if has('nvim-0.3.2')
     try
       if g:gitgutter_highlight_linenrs
-          sign define GitGutterLineAdded                 numhl=GitGutterAddLineNr
-          sign define GitGutterLineModified              numhl=GitGutterChangeLineNr
-          sign define GitGutterLineRemoved               numhl=GitGutterDeleteLineNr
-          sign define GitGutterLineRemovedFirstLine      numhl=GitGutterDeleteLineNr
-          sign define GitGutterLineRemovedAboveAndBelow  numhl=GitGutterDeleteLineNr
-          sign define GitGutterLineModifiedRemoved       numhl=GitGutterChangeDeleteLineNr
+        sign define GitGutterLineAdded                 numhl=GitGutterAddLineNr
+        sign define GitGutterLineModified              numhl=GitGutterChangeLineNr
+        sign define GitGutterLineRemoved               numhl=GitGutterDeleteLineNr
+        sign define GitGutterLineRemovedFirstLine      numhl=GitGutterDeleteLineNr
+        sign define GitGutterLineRemovedAboveAndBelow  numhl=GitGutterDeleteLineNr
+        sign define GitGutterLineModifiedRemoved       numhl=GitGutterChangeDeleteLineNr
       else
         sign define GitGutterLineAdded                 numhl=
         sign define GitGutterLineModified              numhl=

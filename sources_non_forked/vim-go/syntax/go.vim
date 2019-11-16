@@ -117,7 +117,7 @@ if go#config#HighlightFormatStrings()
         \@<=%[-#0 +]*\
         \%(\%(\%(\[\d\+\]\)\=\*\)\|\d\+\)\=\
         \%(\.\%(\%(\%(\[\d\+\]\)\=\*\)\|\d\+\)\=\)\=\
-        \%(\[\d\+\]\)\=[vTtbcdoqxXUeEfFgGsp]/ contained containedin=goString,goRawString
+        \%(\[\d\+\]\)\=[vTtbcdoqxXUeEfFgGspw]/ contained containedin=goString,goRawString
   hi def link     goFormatSpecifier   goSpecialString
 endif
 
@@ -162,15 +162,21 @@ endif
 syn match       goSingleDecl        /\%(import\|var\|const\) [^(]\@=/ contains=goImport,goVar,goConst
 
 " Integers
-syn match       goDecimalInt        "\<-\=\d\+\%([Ee][-+]\=\d\+\)\=\>"
+syn match       goDecimalInt        "\<-\=\(0\|[1-9]\d*\)\%([Ee][-+]\=\d\+\)\=\>"
 syn match       goHexadecimalInt    "\<-\=0[xX]\x\+\>"
+syn match       goHexadecimalError  "\<-\=0[xX]\x*[^ \t0-9A-Fa-f]\S*\>"
 syn match       goOctalInt          "\<-\=0\o\+\>"
-syn match       goOctalError        "\<-\=0\o*[89]\d*\>"
+syn match       goOctalError        "\<-\=0[XxBb\]]\@!\o*[^ \t0-7]\S*\>"
+syn match       goBinaryInt         "\<-\=0[bB][01]\+\>"
+syn match       goBinaryError       "\<-\=0[bB][01]*[^ \t01]\S*\>"
 
 hi def link     goDecimalInt        Integer
 hi def link     goHexadecimalInt    Integer
+hi def link     goHexadecimalError  Error
 hi def link     goOctalInt          Integer
 hi def link     goOctalError        Error
+hi def link     goBinaryInt         Integer
+hi def link     goBinaryError       Error
 hi def link     Integer             Number
 
 " Floating point
@@ -382,6 +388,13 @@ hi def link goCoverageNormalText Comment
 
 function! s:hi()
   hi def link goSameId Search
+  hi def link goDiagnosticError SpellBad
+  hi def link goDiagnosticWarning SpellRare
+
+  hi def link goDeclsFzfKeyword        Keyword
+  hi def link goDeclsFzfFunction       Function
+  hi def link goDeclsFzfSpecialComment SpecialComment
+  hi def link goDeclsFzfComment        Comment
 
   " :GoCoverage commands
   hi def      goCoverageCovered    ctermfg=green guifg=#A6E22E

@@ -1,3 +1,5 @@
+let s:winid = 0
+
 function! gitgutter#hunk#set_hunks(bufnr, hunks) abort
   call gitgutter#utility#setbufvar(a:bufnr, 'hunks', a:hunks)
   call s:reset_summary(a:bufnr)
@@ -175,24 +177,24 @@ function! gitgutter#hunk#stage(...) abort
   else
     call s:hunk_op(function('s:stage'))
   endif
-  silent! call repeat#set("\<Plug>GitGutterStageHunk", -1)
+  silent! call repeat#set("\<Plug>(GitGutterStageHunk)", -1)
 endfunction
 
 function! gitgutter#hunk#undo() abort
   call s:hunk_op(function('s:undo'))
-  silent! call repeat#set("\<Plug>GitGutterUndoHunk", -1)
+  silent! call repeat#set("\<Plug>(GitGutterUndoHunk)", -1)
 endfunction
 
 function! gitgutter#hunk#preview() abort
   call s:hunk_op(function('s:preview'))
-  silent! call repeat#set("\<Plug>GitGutterPreviewHunk", -1)
+  silent! call repeat#set("\<Plug>(GitGutterPreviewHunk)", -1)
 endfunction
 
 
 function! s:hunk_op(op, ...)
   let bufnr = bufnr('')
 
-  if &previewwindow
+  if s:in_hunk_preview_window()
     if string(a:op) =~ '_stage'
       " combine hunk-body in preview window with updated hunk-header
       let hunk_body = getline(1, '$')
@@ -214,8 +216,8 @@ function! s:hunk_op(op, ...)
 
       let hunk_diff = join(hunk_header + hunk_body, "\n")."\n"
 
-      wincmd p
-      pclose
+      call s:goto_original_window()
+      call s:close_hunk_preview_window()
       call s:stage(hunk_diff)
     endif
 
@@ -225,7 +227,7 @@ function! s:hunk_op(op, ...)
   if gitgutter#utility#is_active(bufnr)
     " Get a (synchronous) diff.
     let [async, g:gitgutter_async] = [g:gitgutter_async, 0]
-    let diff = gitgutter#diff#run_diff(bufnr, 'index', 1)
+    let diff = gitgutter#diff#run_diff(bufnr, g:gitgutter_diff_relative_to, 1)
     let g:gitgutter_async = async
 
     call gitgutter#hunk#set_hunks(bufnr, gitgutter#diff#parse_diff(diff))
@@ -276,7 +278,7 @@ endfunction
 function! s:undo(hunk_diff)
   " Apply reverse patch to buffer.
   let hunk  = gitgutter#diff#parse_hunk(split(a:hunk_diff, '\n')[4])
-  let lines = map(split(a:hunk_diff, '\n')[5:], 'v:val[1:]')
+  let lines = map(split(a:hunk_diff, '\r\?\n')[5:], 'v:val[1:]')
   let lnum  = hunk[2]
   let added_only   = hunk[1] == 0 && hunk[3]  > 0
   let removed_only = hunk[1]  > 0 && hunk[3] == 0
@@ -293,33 +295,16 @@ endfunction
 
 
 function! s:preview(hunk_diff)
-  let lines = split(a:hunk_diff, '\n')
+  let lines = split(a:hunk_diff, '\r\?\n')
   let header = lines[0:4]
   let body = lines[5:]
 
-  let body_length = len(body)
-  let previewheight = min([body_length, &previewheight])
-
-  silent! wincmd P
-  if !&previewwindow
-    noautocmd execute g:gitgutter_preview_win_location previewheight 'new'
-    set previewwindow
-  else
-    execute 'resize' previewheight
+  call s:open_hunk_preview_window()
+  call s:populate_hunk_preview_window(header, body)
+  call s:enable_staging_from_hunk_preview_window()
+  if &previewwindow
+    call s:goto_original_window()
   endif
-
-  let b:hunk_header = header
-
-  setlocal noreadonly modifiable filetype=diff buftype=nofile bufhidden=delete noswapfile
-  execute "%delete_"
-  call setline(1, body)
-  normal! gg
-
-  cnoreabbrev <buffer> <expr> w  getcmdtype() == ':' && getcmdline() == 'w'  ? 'GitGutterStageHunk' : 'w'
-  " Staging hunk from the preview window closes the window anyway.
-  cnoreabbrev <buffer> <expr> wq getcmdtype() == ':' && getcmdline() == 'wq' ? 'GitGutterStageHunk' : 'wq'
-
-  noautocmd wincmd p
 endfunction
 
 
@@ -390,3 +375,150 @@ function! s:line_adjustment_for_current_hunk() abort
   return adj
 endfunction
 
+
+function! s:in_hunk_preview_window()
+  if g:gitgutter_preview_win_floating
+    return win_id2win(s:winid) == winnr()
+  else
+    return &previewwindow
+  endif
+endfunction
+
+
+" Floating window: does not move cursor to floating window.
+" Preview window: moves cursor to preview window.
+function! s:open_hunk_preview_window()
+  if g:gitgutter_preview_win_floating
+    if exists('*nvim_open_win')
+      call s:close_hunk_preview_window()
+
+      let buf = nvim_create_buf(v:false, v:false)
+      " Set default width and height for now.
+      let s:winid = nvim_open_win(buf, v:false, {
+            \ 'relative': 'cursor',
+            \ 'row': 1,
+            \ 'col': 0,
+            \ 'width': 42,
+            \ 'height': &previewheight,
+            \ 'style': 'minimal'
+            \ })
+      call nvim_buf_set_option(buf, 'filetype',  'diff')
+      call nvim_buf_set_option(buf, 'buftype',   'acwrite')
+      call nvim_buf_set_option(buf, 'bufhidden', 'delete')
+      call nvim_buf_set_option(buf, 'swapfile',  v:false)
+      call nvim_buf_set_name(buf, 'gitgutter://hunk-preview')
+
+      " Assumes cursor is in original window.
+      autocmd CursorMoved <buffer> ++once call s:close_hunk_preview_window()
+
+      return
+    endif
+
+    if exists('*popup_create')
+      let s:winid = popup_create('', {
+            \ 'line': 'cursor+1',
+            \ 'col': 'cursor',
+            \ 'moved': 'any',
+            \ })
+
+      call setbufvar(winbufnr(s:winid), '&filetype', 'diff')
+
+      return
+    endif
+  endif
+
+  silent! wincmd P
+  if !&previewwindow
+    noautocmd execute g:gitgutter_preview_win_location &previewheight 'new gitgutter://hunk-preview'
+    let s:winid = win_getid()
+    set previewwindow
+    setlocal filetype=diff buftype=acwrite bufhidden=delete
+    " Reset some defaults in case someone else has changed them.
+    setlocal noreadonly modifiable noswapfile
+  endif
+endfunction
+
+
+" Floating window: does not care where cursor is.
+" Preview window: assumes cursor is in preview window.
+function! s:populate_hunk_preview_window(header, body)
+  let body_length = len(a:body)
+  let height = min([body_length, &previewheight])
+
+  if g:gitgutter_preview_win_floating
+    if exists('*nvim_open_win')
+      " Assumes cursor is not in previewing window.
+      call nvim_buf_set_var(winbufnr(s:winid), 'hunk_header', a:header)
+
+      let width = max(map(copy(a:body), 'strdisplaywidth(v:val)'))
+      call nvim_win_set_width(s:winid, width)
+      call nvim_win_set_height(s:winid, height)
+
+      call nvim_buf_set_lines(winbufnr(s:winid), 0, -1, v:false, [])
+      call nvim_buf_set_lines(winbufnr(s:winid), 0, -1, v:false, a:body)
+      call nvim_buf_set_option(winbufnr(s:winid), 'modified', v:false)
+
+      let ns_id = nvim_create_namespace('GitGutter')
+      call nvim_buf_clear_namespace(winbufnr(s:winid), ns_id, 0, -1)
+      for region in gitgutter#diff_highlight#process(a:body)
+        let group = region[1] == '+' ? 'GitGutterAddIntraLine' : 'GitGutterDeleteIntraLine'
+        call nvim_buf_add_highlight(winbufnr(s:winid), ns_id, group, region[0]-1, region[2]-1, region[3])
+      endfor
+
+      call nvim_win_set_cursor(s:winid, [1,0])
+    endif
+
+    if exists('*popup_create')
+      call popup_settext(s:winid, a:body)
+
+      for region in gitgutter#diff_highlight#process(a:body)
+        let group = region[1] == '+' ? 'GitGutterAddIntraLine' : 'GitGutterDeleteIntraLine'
+        call win_execute(s:winid, "call matchaddpos('".group."', [[".region[0].", ".region[2].", ".(region[3]-region[2]+1)."]])")
+      endfor
+    endif
+
+  else
+    let b:hunk_header = a:header
+    execute 'resize' height
+
+    %delete _
+    call setline(1, a:body)
+    setlocal nomodified
+
+    call clearmatches()
+    for region in gitgutter#diff_highlight#process(a:body)
+      let group = region[1] == '+' ? 'GitGutterAddIntraLine' : 'GitGutterDeleteIntraLine'
+      call matchaddpos(group, [[region[0], region[2], region[3]-region[2]+1]])
+    endfor
+
+    1
+  endif
+endfunction
+
+
+function! s:enable_staging_from_hunk_preview_window()
+  augroup gitgutter_hunk_preview
+    autocmd!
+    execute 'autocmd BufWriteCmd <buffer='.winbufnr(s:winid).'> GitGutterStageHunk'
+  augroup END
+endfunction
+
+
+function! s:goto_original_window()
+  noautocmd wincmd p
+endfunction
+
+
+function! s:close_hunk_preview_window()
+  call setbufvar(winbufnr(s:winid), '&modified', 0)
+
+  if g:gitgutter_preview_win_floating
+    if win_id2win(s:winid) > 0
+      execute win_id2win(s:winid).'wincmd c'
+    endif
+  else
+    pclose
+  endif
+
+  let s:winid = 0
+endfunction

@@ -121,10 +121,10 @@ function! s:source(mode,...) abort
           \ decl.col
           \)
     call add(ret_decls, printf("%s\t%s %s\t%s",
-          \ s:color(decl.ident . space, "Function"),
-          \ s:color(decl.keyword, "Keyword"),
-          \ s:color(pos, "SpecialComment"),
-          \ s:color(decl.full, "Comment"),
+          \ s:color(decl.ident . space, "goDeclsFzfFunction"),
+          \ s:color(decl.keyword, "goDeclsFzfKeyword"),
+          \ s:color(pos, "goDeclsFzfSpecialComment"),
+          \ s:color(decl.full, "goDeclsFzfComment"),
           \))
   endfor
 

@@ -6,6 +6,9 @@ License: Same terms as Vim itself (see |license|)
 Comment stuff out.  Then uncomment it later.  Relies on 'commentstring' to be
 correctly set, or uses b:commentary_format if it is set.
 
+Assign b:commentary_startofline to insert comment characters at column 1
+regardless of indentation.
+
                                                 *gc*
 gc{motion}              Comment or uncomment lines that {motion} moves over.
 

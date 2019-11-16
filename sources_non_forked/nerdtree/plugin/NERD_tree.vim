@@ -48,6 +48,7 @@ call s:initVariable("g:NERDTreeAutoCenterThreshold", 3)
 call s:initVariable("g:NERDTreeCaseSensitiveSort", 0)
 call s:initVariable("g:NERDTreeNaturalSort", 0)
 call s:initVariable("g:NERDTreeSortHiddenFirst", 1)
+call s:initVariable("g:NERDTreeUseTCD", 0)
 call s:initVariable("g:NERDTreeChDirMode", 0)
 call s:initVariable("g:NERDTreeCreatePrefix", "silent")
 call s:initVariable("g:NERDTreeMinimalUI", 0)
@@ -170,16 +171,22 @@ call nerdtree#ui_glue#setupCommands()
 "============================================================
 augroup NERDTree
     "Save the cursor position whenever we close the nerd tree
-    exec "autocmd BufLeave ". g:NERDTreeCreator.BufNamePrefix() ."* if g:NERDTree.IsOpen() | call b:NERDTree.ui.saveScreenState() | endif"
+    exec "autocmd BufLeave,WinLeave ". g:NERDTreeCreator.BufNamePrefix() ."* if g:NERDTree.IsOpen() | call b:NERDTree.ui.saveScreenState() | endif"
 
     "disallow insert mode in the NERDTree
-    exec "autocmd BufEnter ". g:NERDTreeCreator.BufNamePrefix() ."* stopinsert"
+    exec "autocmd BufEnter,WinEnter ". g:NERDTreeCreator.BufNamePrefix() ."* stopinsert"
 augroup END
 
 if g:NERDTreeHijackNetrw
     augroup NERDTreeHijackNetrw
         autocmd VimEnter * silent! autocmd! FileExplorer
         au BufEnter,VimEnter * call nerdtree#checkForBrowse(expand("<amatch>"))
+    augroup END
+endif
+
+if g:NERDTreeChDirMode == 3
+    augroup NERDTreeChDirOnTabSwitch
+        autocmd TabEnter * if g:NERDTree.ExistsForTab()|call g:NERDTree.ForCurrentTab().getRoot().path.changeToDir()|endif
     augroup END
 endif
 

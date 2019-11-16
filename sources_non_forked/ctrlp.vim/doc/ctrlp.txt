@@ -1505,7 +1505,7 @@ Before 2016/11/28~
     + New command: |YankLine()| to yank current line.
     + New option: |g:ctrlp_types| to select builtin modes.
     + New feature: asynchronized spawn of |g:ctrlp_user_command|. This enable
-                  with set |g:user_command_async| to 1.
+                  with set |g:ctrlp_user_command_async| to 1.
     + Support buffertag for delphi, rust and golang.
     + New option: |g:ctrlp_brief_prompt|,
                   |g:match_current_file|,

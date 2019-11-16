@@ -27,6 +27,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['python'],
 \       'description': 'Fix PEP8 issues with black.',
 \   },
+\   'dfmt': {
+\       'function': 'ale#fixers#dfmt#Fix',
+\       'suggested_filetypes': ['d'],
+\       'description': 'Fix D files with dfmt.',
+\   },
 \   'fecs': {
 \       'function': 'ale#fixers#fecs#Fix',
 \       'suggested_filetypes': ['javascript', 'css', 'html'],
@@ -48,6 +53,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['elm'],
 \       'description': 'Apply elm-format to a file.',
 \       'aliases': ['format'],
+\   },
+\   'nimpretty': {
+\       'function': 'ale#fixers#nimpretty#Fix',
+\       'suggested_filetypes': ['nim'],
+\       'description': 'Apply nimpretty to a file.',
 \   },
 \   'eslint': {
 \       'function': 'ale#fixers#eslint#Fix',
@@ -230,6 +240,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['haskell'],
 \       'description': 'Refactor Haskell files with stylish-haskell.',
 \   },
+\   'purty': {
+\       'function': 'ale#fixers#purty#Fix',
+\       'suggested_filetypes': ['purescript'],
+\       'description': 'Format PureScript files with purty.',
+\   },
 \   'ocamlformat': {
 \       'function': 'ale#fixers#ocamlformat#Fix',
 \       'suggested_filetypes': ['ocaml'],
@@ -254,6 +269,11 @@ let s:default_registry = {
 \       'function': 'ale#fixers#sqlfmt#Fix',
 \       'suggested_filetypes': ['sql'],
 \       'description': 'Fix SQL files with sqlfmt.',
+\   },
+\   'sqlformat': {
+\       'function': 'ale#fixers#sqlformat#Fix',
+\       'suggested_filetypes': ['sql'],
+\       'description': 'Fix SQL files with sqlformat.',
 \   },
 \   'google_java_format': {
 \       'function': 'ale#fixers#google_java_format#Fix',
@@ -312,7 +332,7 @@ let s:default_registry = {
 \   },
 \   'styler': {
 \       'function': 'ale#fixers#styler#Fix',
-\       'suggested_filetypes': ['r', 'rmarkdown'],
+\       'suggested_filetypes': ['r', 'rmarkdown', 'rmd'],
 \       'description': 'Fix R files with styler.',
 \   },
 \   'latexindent': {
@@ -334,6 +354,16 @@ let s:default_registry = {
 \       'function': 'ale#fixers#gnatpp#Fix',
 \       'suggested_filetypes': ['ada'],
 \       'description': 'Format Ada files with gnatpp.',
+\   },
+\   'nixpkgs-fmt': {
+\       'function': 'ale#fixers#nixpkgsfmt#Fix',
+\       'suggested_filetypes': ['nix'],
+\       'description': 'A formatter for Nix code',
+\   },
+\   'html-beautify': {
+\       'function': 'ale#fixers#html_beautify#Fix',
+\       'suggested_filetypes': ['html', 'htmldjango'],
+\       'description': 'Fix HTML files with html-beautify.',
 \   },
 \}
 

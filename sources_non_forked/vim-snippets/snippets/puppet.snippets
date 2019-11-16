@@ -207,7 +207,7 @@ snippet define
 	}
 
 snippet service
-	service { "${1:service}" :
+	service { "${1:service}":
 		ensure    => running,
 		enable    => true,
 		require   => [ Package["${2:package}"], File["${3:file}"], ],
@@ -215,7 +215,7 @@ snippet service
 	}
 
 snippet file
-	file { "${1:filename}" :
+	file { "${1:filename}":
 		ensure  => ${2:present},
 		owner   => "${3:root}",
 		group   => "${4:root}",
@@ -227,7 +227,7 @@ snippet file
 	}
 
 snippet archive
-	archive { "${1:filename}" :
+	archive { "${1:filename}":
 		ensure     => ${2:present},
 		url        => "http://${3:url}",
 		extension  => "${4:tgz}",
@@ -237,7 +237,7 @@ snippet archive
 	}
 
 snippet firewall
-	firewall { "${1:comment}" :
+	firewall { "${1:comment}":
 		proto	=> ${2:tcp},
 		action	=> ${3:accept},
 		port	=> ${4},

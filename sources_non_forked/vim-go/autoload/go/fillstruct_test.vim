@@ -62,7 +62,7 @@ func! Test_fillstruct_two_line() abort
           \ '\tAddress: "",',
           \ '}) }'])
   finally
-    "call delete(l:tmp, 'rf')
+    call delete(l:tmp, 'rf')
   endtry
 endfunc
 

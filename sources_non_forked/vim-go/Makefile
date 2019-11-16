@@ -1,4 +1,4 @@
-VIMS ?= vim-7.4 vim-8.0 nvim
+VIMS ?= vim-8.0 nvim
 
 all: install lint test
 

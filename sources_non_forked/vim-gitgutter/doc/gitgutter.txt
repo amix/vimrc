@@ -13,6 +13,7 @@ CONTENTS                                                            *gitgutter*
 
   Introduction ................. |gitgutter-introduction|
   Installation ................. |gitgutter-installation|
+  Windows      ................. |gitgutter-windows|
   Commands ..................... |gitgutter-commands|
   Mappings ..................... |gitgutter-mappings|
   Autocommand .................. |gitgutter-autocommand|
@@ -36,49 +37,26 @@ The signs are always up to date and the plugin never saves your buffer.
 ===============================================================================
 INSTALLATION                                           *gitgutter-installation*
 
-Pathogen:~
->
-  cd ~/.vim/bundle
-  git clone git://github.com/airblade/vim-gitgutter.git
-<
-Voom:~
+Use your favourite package manager, or use Vim's built-in package support.
 
-Edit your plugin manifest (`voom edit`) and add:
+Vim:~
 >
-  airblade/vim-gitgutter
+  mkdir -p ~/.vim/pack/airblade/start
+  cd ~/.vim/pack/airblade/start
+  git clone https://github.com/airblade/vim-gitgutter.git
+  vim -u NONE -c "helptags vim-gitgutter/doc" -c q
 <
-VimPlug:~
 
-Place this in your .vimrc:
+Neovim:~
 >
-    Plug 'airblade/vim-gitgutter'
+  mkdir -p ~/.config/nvim/pack/airblade/start
+  cd ~/.config/nvim/pack/airblade/start
+  git clone https://github.com/airblade/vim-gitgutter.git
+  nvim -u NONE -c "helptags vim-gitgutter/doc" -c q
 <
-Then run the following in Vim:
->
-  :source %
-  :PlugInstall
-<
-NeoBundle:~
-
-Place this in your .vimrc:
->
-  NeoBundle 'airblade/vim-gitgutter'
-<
-Then run the following in Vim:
->
-  :source %
-  :NeoBundleInstall
-<
-No plugin manager:~
-
-Copy vim-gitgutter's subdirectories into your vim configuration directory:
->
-  cd tmp && git clone git://github.com/airblade/vim-gitgutter.git
-  cp vim-gitgutter/* ~/.vim/
-<
-See |add-global-plugin|.
 
 
+===============================================================================
 WINDOWS                                                     *gitgutter-windows*
 
 I recommend configuring vim-gitgutter with the full path to your git executable.
@@ -160,6 +138,10 @@ Commands for jumping between hunks:~
                                                  *gitgutter-:GitGutterPrevHunk*
 :GitGutterPrevHunk      Jump to the previous [count] hunk.
 
+                                                 *gitgutter-:GitGutterQuickFix*
+:GitGutterQuickFix      Load all hunks into the |quickfix| list.  Note this
+                        ignores any unsaved changes in your buffers.
+
 
 Commands for operating on a hunk:~
 
@@ -228,9 +210,9 @@ These can be repeated with `.` if you have vim-repeat installed.
 
 You can change these mappings like this:
 >
-    nmap ghp <Plug>GitGutterPreviewHunk
-    nmap ghs <Plug>GitGutterStageHunk
-    nmap ghu <Plug>GitGutterUndoHunk
+    nmap ghp <Plug>(GitGutterPreviewHunk)
+    nmap ghs <Plug>(GitGutterStageHunk)
+    nmap ghu <Plug>(GitGutterUndoHunk)
 <
 
 Hunk jumping:~
@@ -243,8 +225,8 @@ Hunk jumping:~
 
 You can change these mappings like this:
 >
-    nmap [c <Plug>GitGutterPrevHunk
-    nmap ]c <Plug>GitGutterNextHunk
+    nmap [c <Plug>(GitGutterPrevHunk)
+    nmap ]c <Plug>(GitGutterNextHunk)
 <
 
 Hunk text object:~
@@ -253,10 +235,10 @@ Hunk text object:~
 "ic" operates on the current hunk's lines.  "ac" does the same but also includes
 trailing empty lines.
 >
-    omap ic <Plug>GitGutterTextObjectInnerPending
-    omap ac <Plug>GitGutterTextObjectOuterPending
-    xmap ic <Plug>GitGutterTextObjectInnerVisual
-    xmap ac <Plug>GitGutterTextObjectOuterVisual
+    omap ic <Plug>(GitGutterTextObjectInnerPending)
+    omap ac <Plug>(GitGutterTextObjectOuterPending)
+    xmap ic <Plug>(GitGutterTextObjectInnerVisual)
+    xmap ac <Plug>(GitGutterTextObjectOuterVisual)
 <
 
 
@@ -276,6 +258,7 @@ Git:~
     |g:gitgutter_git_executable|
     |g:gitgutter_git_args|
     |g:gitgutter_diff_args|
+    |g:gitgutter_diff_relative_to|
     |g:gitgutter_diff_base|
 
 Grep:~
@@ -296,6 +279,10 @@ Signs:~
     |g:gitgutter_sign_removed_first_line|
     |g:gitgutter_sign_modified_removed|
     |g:gitgutter_override_sign_column_highlight|
+
+Hunk previews:~
+
+    |g:gitgutter_preview_win_floating|
 
 Terminal:~
 
@@ -339,6 +326,15 @@ Use this option to pass any extra arguments to git-diff.  For example:
     let g:gitgutter_diff_args = '-w'
 <
 
+                                                 *g:gitgutter_diff_relative_to*
+Default: empty
+
+By default buffers are diffed against the index.  Use this option to diff against
+the working tree.  For example:
+>
+    let g:gitgutter_diff_relative_to = 'working_tree'
+<
+
                                                         *g:gitgutter_diff_base*
 Default: empty
 
@@ -347,6 +343,9 @@ a revision instead.  For example:
 >
     let g:gitgutter_diff_base = '<some commit SHA>'
 <
+
+This setting is ignore when the diff is relative to the working tree
+(|g:gitgutter_diff_relative_to|).
 
                                                              *g:gitgutter_grep*
 Default: 'grep'
@@ -436,6 +435,15 @@ it in your |vimrc|:
   User-defined (terminal Vim)         highlight SignColumn ctermbg={whatever}
   User-defined (graphical Vim)        highlight SignColumn guibg={whatever}
 
+
+                                             *g:gitgutter_preview_win_floating*
+Default: 0 (Vim)
+         0 (NeoVim which does not support floating windows)
+         1 (NeoVim which does support floating windows)
+
+Whether to use floating/popup windows for hunk previews.  Note that if you use
+popup windows on Vim you will not be able to stage partial hunks via the
+preview window.
 
                                            *g:gitgutter_terminal_reports_focus*
 Default: 1

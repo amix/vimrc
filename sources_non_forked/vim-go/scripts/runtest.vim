@@ -74,12 +74,16 @@ for s:test in sort(s:tests)
     let v:errors += [v:exception]
   endtry
 
+  let s:elapsed_time = substitute(reltimestr(reltime(s:started)), '^\s*\(.\{-}\)\s*$', '\1', '')
+
   " Restore GOPATH after each test.
   let $GOPATH = s:gopath
   " Restore the working directory after each test.
   execute s:cd . s:dir
 
-  let s:elapsed_time = substitute(reltimestr(reltime(s:started)), '^\s*\(.\{-}\)\s*$', '\1', '')
+  " exit gopls after each test
+  call go#lsp#Exit()
+
   let s:done += 1
 
   if len(v:errors) > 0

@@ -13,14 +13,17 @@ call ale#Set('cpp_clangtidy_options', '')
 call ale#Set('cpp_clangtidy_extra_options', '')
 call ale#Set('c_build_dir', '')
 
-function! ale_linters#cpp#clangtidy#GetCommand(buffer) abort
+function! ale_linters#cpp#clangtidy#GetCommand(buffer, output) abort
     let l:checks = join(ale#Var(a:buffer, 'cpp_clangtidy_checks'), ',')
     let l:build_dir = ale#c#GetBuildDirectory(a:buffer)
+    let l:options = ''
 
     " Get the extra options if we couldn't find a build directory.
-    let l:options = empty(l:build_dir)
-    \   ? ale#Var(a:buffer, 'cpp_clangtidy_options')
-    \   : ''
+    if empty(l:build_dir)
+        let l:options = ale#Var(a:buffer, 'cpp_clangtidy_options')
+        let l:cflags = ale#c#GetCFlags(a:buffer, a:output)
+        let l:options .= !empty(l:options) ? ale#Pad(l:cflags) : l:cflags
+    endif
 
     " Get the options to pass directly to clang-tidy
     let l:extra_options = ale#Var(a:buffer, 'cpp_clangtidy_extra_options')
@@ -37,7 +40,7 @@ call ale#linter#Define('cpp', {
 \   'name': 'clangtidy',
 \   'output_stream': 'stdout',
 \   'executable': {b -> ale#Var(b, 'cpp_clangtidy_executable')},
-\   'command': function('ale_linters#cpp#clangtidy#GetCommand'),
+\   'command': {b -> ale#c#RunMakeCommand(b, function('ale_linters#cpp#clangtidy#GetCommand'))},
 \   'callback': 'ale#handlers#gcc#HandleGCCFormat',
 \   'lint_file': 1,
 \})

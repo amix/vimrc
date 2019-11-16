@@ -11,7 +11,7 @@ function! gitgutter#sign#enable() abort
   let g:gitgutter_signs = 1
   call gitgutter#highlight#define_sign_text_highlights()
 
-  if !old_signs && !g:gitgutter_highlight_lines
+  if !old_signs && !g:gitgutter_highlight_lines && !g:gitgutter_highlight_linenrs
     call gitgutter#all(1)
   endif
 endfunction
@@ -20,7 +20,7 @@ function! gitgutter#sign#disable() abort
   let g:gitgutter_signs = 0
   call gitgutter#highlight#define_sign_text_highlights()
 
-  if !g:gitgutter_highlight_lines
+  if !g:gitgutter_highlight_lines && !g:gitgutter_highlight_linenrs
     call gitgutter#sign#clear_signs(bufnr(''))
   endif
 endfunction

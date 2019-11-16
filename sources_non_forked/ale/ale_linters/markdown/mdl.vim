@@ -17,18 +17,17 @@ function! ale_linters#markdown#mdl#GetCommand(buffer) abort
     let l:options = ale#Var(a:buffer, 'markdown_mdl_options')
 
     return ale#Escape(l:executable) . l:exec_args
-    \   . (!empty(l:options) ? ' ' . l:options : '')
+    \   . ' -j' . (!empty(l:options) ? ' ' . l:options : '')
 endfunction
 
 function! ale_linters#markdown#mdl#Handle(buffer, lines) abort
-    " matches: '(stdin):173: MD004 Unordered list style'
-    let l:pattern = ':\(\d*\): \(.*\)$'
     let l:output = []
 
-    for l:match in ale#util#GetMatches(a:lines, l:pattern)
+    for l:error in ale#util#FuzzyJSONDecode(a:lines, [])
         call add(l:output, {
-        \   'lnum': l:match[1] + 0,
-        \   'text': l:match[2],
+        \   'lnum': l:error['line'],
+        \   'code': l:error['rule']  . '/' . join(l:error['aliases'], '/'),
+        \   'text': l:error['description'],
         \   'type': 'W',
         \})
     endfor

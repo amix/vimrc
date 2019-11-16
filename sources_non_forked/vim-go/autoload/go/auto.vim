@@ -32,22 +32,68 @@ function! go#auto#echo_go_info()
   redraws! | echo "vim-go: " | echohl Function | echon item.info | echohl None
 endfunction
 
-function! go#auto#auto_type_info()
-  if !go#config#AutoTypeInfo() || !isdirectory(expand('%:p:h'))
+let s:timer_id = 0
+
+" go#auto#update_autocmd() will be called on BufEnter,CursorHold. This
+" configures the augroup according to conditions below.
+"
+" | # | has_timer | should_enable | do                                 |
+" |---|-----------|---------------|------------------------------------|
+" | 1 | false     | false         | return early                       |
+" | 2 | true      | true          | return early                       |
+" | 3 | true      | false         | clear the group and stop the timer |
+" | 4 | false     | true          | configure the group                |
+function! go#auto#update_autocmd()
+  let has_timer = get(b:, 'has_timer')
+  let should_enable = go#config#AutoTypeInfo() || go#config#AutoSameids()
+  if (!has_timer && !should_enable) || (has_timer && should_enable)
     return
   endif
 
-  " GoInfo automatic update
-  call go#tool#Info(0)
+  if has_timer
+    augroup vim-go-buffer-auto
+      autocmd! * <buffer>
+    augroup END
+    let b:has_timer = 0
+    call s:timer_stop()
+    return
+  endif
+
+  augroup vim-go-buffer-auto
+    autocmd! * <buffer>
+    autocmd CursorMoved <buffer> call s:timer_restart()
+    autocmd BufLeave <buffer> call s:timer_stop()
+  augroup END
+  let b:has_timer = 1
+  call s:timer_start()
 endfunction
 
-function! go#auto#auto_sameids()
-  if !go#config#AutoSameids() || !isdirectory(expand('%:p:h'))
-    return
+function! s:timer_restart()
+  if isdirectory(expand('%:p:h'))
+    call s:timer_stop()
+    call s:timer_start()
   endif
+endfunction
 
-  " GoSameId automatic update
-  call go#guru#SameIds(0)
+function! s:timer_stop()
+  if s:timer_id
+    call timer_stop(s:timer_id)
+    let s:timer_id = 0
+  endif
+endfunction
+
+function! s:timer_start()
+  let s:timer_id = timer_start(go#config#Updatetime(), function('s:handler'))
+endfunction
+
+function! s:handler(timer_id)
+  if go#config#AutoTypeInfo()
+    call go#tool#Info(0)
+  endif
+  if go#config#AutoSameids()
+    call go#guru#SameIds(0)
+  endif
+  let s:timer_id = 0
 endfunction
 
 function! go#auto#fmt_autosave()

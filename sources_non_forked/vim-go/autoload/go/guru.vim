@@ -232,11 +232,10 @@ function! go#guru#Describe(selected) abort
 endfunction
 
 function! go#guru#DescribeInfo(showstatus) abort
-  " json_encode() and friends are introduced with this patch (7.4.1304)
-  " vim: https://groups.google.com/d/msg/vim_dev/vLupTNhQhZ8/cDGIk0JEDgAJ
-  " nvim: https://github.com/neovim/neovim/pull/4131
+
+  " check if the version of Vim being tested supports json_decode()
   if !exists("*json_decode")
-    call go#util#EchoError("requires 'json_decode'. Update your Vim/Neovim version.")
+    call go#util#EchoError("GoDescribeInfo requires 'json_decode'. Update your Vim/Neovim version.")
     return
   endif
 
@@ -405,44 +404,45 @@ endfunction
 
 " Show all refs to entity denoted by selected identifier
 function! go#guru#Referrers(selected) abort
-  let args = {
-        \ 'mode': 'referrers',
-        \ 'format': 'plain',
-        \ 'selected': a:selected,
-        \ 'needs_scope': 0,
-        \ }
+  let l:mode = go#config#ReferrersMode()
+  if l:mode == 'guru'
+    let args = {
+            \ 'mode': 'referrers',
+            \ 'format': 'plain',
+            \ 'selected': a:selected,
+            \ 'needs_scope': 0,
+            \ }
 
-  call s:run_guru(args)
+    call s:run_guru(args)
+    return
+  elseif l:mode == 'gopls'
+    let [l:line, l:col] = getpos('.')[1:2]
+    let [l:line, l:col] = go#lsp#lsp#Position(l:line, l:col)
+    let l:fname = expand('%:p')
+    call go#lsp#Referrers(l:fname, l:line, l:col, funcref('s:parse_guru_output'))
+    return
+  else
+    call go#util#EchoWarning('unknown value for g:go_referrers_mode')
+  endif
 endfunction
 
 function! go#guru#SameIds(showstatus) abort
-  " we use matchaddpos() which was introduce with 7.4.330, be sure we have
-  " it: http://ftp.vim.org/vim/patches/7.4/7.4.330
+
+  " check if the version of Vim being tested supports matchaddpos()
   if !exists("*matchaddpos")
     call go#util#EchoError("GoSameIds requires 'matchaddpos'. Update your Vim/Neovim version.")
     return
   endif
 
-  " json_encode() and friends are introduced with this patch (7.4.1304)
-  " vim: https://groups.google.com/d/msg/vim_dev/vLupTNhQhZ8/cDGIk0JEDgAJ
-  " nvim: https://github.com/neovim/neovim/pull/4131
+  " check if the version of Vim being tested supports json_decode()
   if !exists("*json_decode")
     call go#util#EchoError("GoSameIds requires 'json_decode'. Update your Vim/Neovim version.")
     return
   endif
 
-  let args = {
-        \ 'mode': 'what',
-        \ 'format': 'json',
-        \ 'selected': -1,
-        \ 'needs_scope': 0,
-        \ 'custom_parse': function('s:same_ids_highlight'),
-        \ }
-  if !a:showstatus
-    let args.disable_progress = 1
-  endif
-
-  call s:run_guru(args)
+  let [l:line, l:col] = getpos('.')[1:2]
+  let [l:line, l:col] = go#lsp#lsp#Position(l:line, l:col)
+  call go#lsp#SameIDs(0, expand('%:p'), l:line, l:col, funcref('s:same_ids_highlight'))
 endfunction
 
 function! s:same_ids_highlight(exit_val, output, mode) abort
@@ -482,11 +482,15 @@ function! s:same_ids_highlight(exit_val, output, mode) abort
   endif
 
   let same_ids = result['sameids']
+
   " highlight the lines
+  let l:matches = []
   for item in same_ids
     let pos = split(item, ':')
-    call matchaddpos('goSameId', [[str2nr(pos[-2]), str2nr(pos[-1]), str2nr(poslen)]])
+    let l:matches = add(l:matches, [str2nr(pos[-2]), str2nr(pos[-1]), str2nr(poslen)])
   endfor
+
+  call matchaddpos('goSameId', l:matches)
 
   if go#config#AutoSameids()
     " re-apply SameIds at the current cursor position at the time the buffer
@@ -501,15 +505,7 @@ endfunction
 " ClearSameIds returns 0 when it removes goSameId groups and non-zero if no
 " goSameId groups are found.
 function! go#guru#ClearSameIds() abort
-  let l:cleared = 0
-
-  let m = getmatches()
-  for item in m
-    if item['group'] == 'goSameId'
-      call matchdelete(item['id'])
-      let l:cleared = 1
-    endif
-  endfor
+  let l:cleared = go#util#ClearGroupFromMatches('goSameId')
 
   if !l:cleared
     return 1
@@ -534,11 +530,11 @@ function! go#guru#AutoToggleSameIds() abort
     call go#util#EchoProgress("sameids auto highlighting disabled")
     call go#guru#ClearSameIds()
     call go#config#SetAutoSameids(0)
-    return
+  else
+    call go#util#EchoSuccess("sameids auto highlighting enabled")
+    call go#config#SetAutoSameids(1)
   endif
-
-  call go#util#EchoSuccess("sameids auto highlighting enabled")
-  call go#config#SetAutoSameids(1)
+  call go#auto#update_autocmd()
 endfunction
 
 
@@ -602,11 +598,9 @@ function! go#guru#DescribeBalloon() abort
     return
   endif
 
-  " json_encode() and friends are introduced with this patch (7.4.1304)
-  " vim: https://groups.google.com/d/msg/vim_dev/vLupTNhQhZ8/cDGIk0JEDgAJ
-  " nvim: https://github.com/neovim/neovim/pull/4131
+  " check if the version of Vim being tested supports json_decode()
   if !exists("*json_decode")
-    call go#util#EchoError("requires 'json_decode'. Update your Vim/Neovim version.")
+    call go#util#EchoError("GoDescribeBalloon requires 'json_decode'. Update your Vim/Neovim version.")
     return
   endif
 

@@ -215,7 +215,6 @@ function! s:SubComplete(A,L,P)
 endfunction
 
 function! s:Complete(A,L,P)
-  let g:L = a:L
   " Vim bug: :Abolish -<Tab> calls this function with a:A equal to 0
   if a:A =~# '^[^/?-]' && type(a:A) != type(0)
     return join(s:words(),"\n")
@@ -314,7 +313,6 @@ function! s:normalize_options(flags)
     let opts = {}
     let flags = a:flags
   endif
-  let g:op1 = copy(opts)
   if flags =~# 'w'
     let opts.boundaries = 2
   elseif flags =~# 'v'
@@ -324,7 +322,6 @@ function! s:normalize_options(flags)
   endif
   let opts.case = (flags !~# 'I' ? get(opts,'case',1) : 0)
   let opts.flags = substitute(flags,'\C[avIiw]','','g')
-  let g:op2 = copy(opts)
   return opts
 endfunction
 
@@ -622,7 +619,7 @@ endfunction
 
 nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
 nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
-nnoremap <expr> <plug>(abolish-coerce-word) <sid>coerce(nr2char(getchar())).'iw'
+nnoremap <expr> <plug>(abolish-coerce-word) <SID>coerce(nr2char(getchar())).'iw'
 
 " }}}1
 

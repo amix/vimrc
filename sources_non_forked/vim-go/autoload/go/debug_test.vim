@@ -24,14 +24,15 @@ function! Test_GoDebugStart_Errors() abort
   endif
 
   try
+    let l:tmp = gotest#load_fixture('debug/compilerror/main.go')
+
     let l:expected = [
           \ {'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': '# debug/compilerror'},
-          \ {'lnum': 6, 'bufnr': 7, 'col': 22, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': ' syntax error: unexpected newline, expecting comma or )'},
+          \ {'lnum': 6, 'bufnr': bufnr('%'), 'col': 22, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': ' syntax error: unexpected newline, expecting comma or )'},
           \ {'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 0, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'exit status 2'}
           \]
     call setqflist([], 'r')
 
-    let l:tmp = gotest#load_fixture('debug/compilerror/main.go')
     call assert_false(exists(':GoDebugStop'))
 
     let l:cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'

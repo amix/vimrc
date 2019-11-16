@@ -14,7 +14,7 @@ function! ale_linters#ruby#reek#GetCommand(buffer, version) abort
     \   ? ' --stdin-filename %s'
     \   : ''
 
-    return ale#handlers#ruby#EscapeExecutable(l:executable, 'reek')
+    return ale#ruby#EscapeExecutable(l:executable, 'reek')
     \   . ' -f json --no-progress --no-color --force-exclusion'
     \   . l:display_name_args
 endfunction

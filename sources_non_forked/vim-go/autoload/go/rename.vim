@@ -20,8 +20,10 @@ function! go#rename#Rename(bang, ...) abort
     let to_identifier = a:1
   endif
 
+  let l:bin = go#config#GorenameCommand()
+
   " return with a warning if the bin doesn't exist
-  let bin_path = go#path#CheckBinPath(go#config#GorenameBin())
+  let bin_path = go#path#CheckBinPath(l:bin)
   if empty(bin_path)
     return
   endif
@@ -29,7 +31,18 @@ function! go#rename#Rename(bang, ...) abort
   let fname = expand('%:p')
   let pos = go#util#OffsetCursor()
   let offset = printf('%s:#%d', fname, pos)
-  let cmd = [bin_path, "-offset", offset, "-to", to_identifier, '-tags', go#config#BuildTags()]
+
+  let args = []
+  if l:bin == 'gorename'
+    let l:args = extend(l:args, ['-tags', go#config#BuildTags(), '-offset', offset, '-to', to_identifier])
+  elseif l:bin == 'gopls'
+    " TODO(bc): use -tags when gopls supports it
+    let l:args = extend(l:args, ['rename', '-w', l:offset, to_identifier])
+  else
+    call go#util#EchoWarning('unexpected rename command')
+  endif
+
+  let l:cmd = extend([l:bin], l:args)
 
   if go#util#has_job()
     call s:rename_job({

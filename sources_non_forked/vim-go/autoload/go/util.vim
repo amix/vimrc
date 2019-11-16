@@ -62,18 +62,7 @@ endfunction
 " The (optional) first parameter can be added to indicate the 'cwd' or 'env'
 " parameters will be used, which wasn't added until a later version.
 function! go#util#has_job(...) abort
-  if has('nvim')
-    return 1
-  endif
-
-  " cwd and env parameters to job_start was added in this version.
-  if a:0 > 0 && a:1 is 1
-    return has('job') && has("patch-8.0.0902")
-  endif
-
-  " job was introduced in 7.4.xxx however there are multiple bug fixes and one
-  " of the latest is 8.0.0087 which is required for a stable async API.
-  return has('job') && has("patch-8.0.0087")
+  return has('job') || has('nvim')
 endfunction
 
 let s:env_cache = {}
@@ -556,13 +545,45 @@ function! go#util#SetEnv(name, value) abort
   call execute('let $' . a:name . " = '" . a:value . "'")
 
   if l:remove
-    function! s:remove(name) abort
-      call execute('unlet $' . a:name)
-    endfunction
-    return function('s:remove', [a:name], l:state)
+    return function('s:unset', [a:name], l:state)
   endif
 
   return function('go#util#SetEnv', [a:name, l:oldvalue], l:state)
+endfunction
+
+function! go#util#ClearGroupFromMatches(group) abort
+  if !exists("*matchaddpos")
+    return 0
+  endif
+
+  let l:cleared = 0
+
+  let m = getmatches()
+  for item in m
+    if item['group'] == a:group
+      call matchdelete(item['id'])
+      let l:cleared = 1
+    endif
+  endfor
+
+  return l:cleared
+endfunction
+
+function! s:unset(name) abort
+  try
+    " unlet $VAR was introducted in Vim 8.0.1832, which is newer than the
+    " minimal version that vim-go supports. Set the environment variable to
+    " the empty string in that case. It's not perfect, but it will work fine
+    " for most things, and is really the best alternative that's available.
+    if !has('patch-8.0.1832')
+      call go#util#SetEnv(a:name, '')
+      return
+    endif
+
+    call execute('unlet $' . a:name)
+  catch
+    call go#util#EchoError(printf('could not unset $%s: %s', a:name, v:exception))
+  endtry
 endfunction
 
 function! s:noop(...) abort dict

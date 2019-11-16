@@ -330,6 +330,7 @@ fu! s:Open()
 endf
 
 fu! s:Close()
+	cal s:async_glob_abort()
 	cal s:buffunc(0)
 	if winnr('$') == 1
 		bw!
@@ -434,9 +435,62 @@ fu! s:GlobPath(dirs, depth)
 	en
 endf
 
-fu! ctrlp#addfile(ch, file)
-	call add(g:ctrlp_allfiles, a:file)
-	cal s:BuildPrompt(1)
+fu! s:async_glob_update_progress(timer)
+	let s:must_wait = 0
+	if exists('s:focus') && get(s:, 'setlines_post_ended', 0)
+		cal s:ForceUpdate()
+	en
+	if exists('s:timer')
+		sil! cal ctrlp#statusline()
+	endif
+
+	if !exists('s:job')
+		call s:stop_timer_if_exists()
+	endif
+endf
+
+fu! s:async_glob_on_stdout(job, data, ...)
+	if type(a:data) ==# type([])
+		call extend(g:ctrlp_allfiles, filter(a:data, 'v:val !=# ""'))
+	else
+		call add(g:ctrlp_allfiles, a:data)
+	endif
+endf
+
+fu! s:async_glob_on_exit(...)
+	let s:must_wait = 0
+	if exists('s:job')
+		unlet s:job
+	endif
+	cal s:stop_timer_if_exists()
+	if exists('s:focus') && get(s:, 'setlines_post_ended', 0)
+		sil! cal ctrlp#statusline()
+		cal s:ForceUpdate()
+	en
+endf
+
+fu! s:async_glob_abort()
+	cal s:stop_job_if_exists()
+	cal s:stop_timer_if_exists()
+	cal s:ForceUpdate()
+endf
+
+fu! s:stop_timer_if_exists()
+	if exists('s:timer')
+		call timer_stop(s:timer)
+		unlet s:timer
+	en
+endf
+
+fu! s:stop_job_if_exists()
+	if exists('s:job')
+		if !has('nvim')
+			cal job_stop(s:job)
+		else
+			cal jobstop(s:job)
+		endif
+		unlet s:job
+	en
 endf
 
 fu! s:safe_printf(format, ...)
@@ -462,12 +516,26 @@ fu! s:UserCmd(lscmd)
 	if (has('win32') || has('win64')) && match(&shell, 'sh') != -1
 		let path = tr(path, '\', '/')
 	en
-	if s:usrcmdasync && v:version >= 800 && exists('*job_start')
-		if exists('s:job')
-			call job_stop(s:job)
-		en
+	if s:usrcmdasync && (v:version >= 800 || has('nvim')) && (exists('*job_start') || exists('*jobstart'))
+		cal s:stop_job_if_exists()
 		let g:ctrlp_allfiles = []
-		let s:job = job_start([&shell, &shellcmdflag, printf(lscmd, path)], {'callback': 'ctrlp#addfile'})
+		let s:must_wait = 1
+		let argv = [&shell, &shellcmdflag, printf(lscmd, path)]
+		if !has('nvim')
+			let s:job = job_start(argv, {
+						\ 'out_cb': function('s:async_glob_on_stdout'), 
+						\ 'exit_cb': function('s:async_glob_on_exit')
+						\ })
+		else
+			let s:job = jobstart(argv, {
+						\ 'on_stdout': function('s:async_glob_on_stdout'),
+						\ 'on_exit': function('s:async_glob_on_exit')
+						\ })
+		endif
+		let s:timer = timer_start(250, function('s:async_glob_update_progress'), {'repeat': -1})
+		while s:must_wait
+			sleep 50m
+		endwhile
 	elsei has('patch-7.4-597') && !(has('win32') || has('win64'))
 		let g:ctrlp_allfiles = systemlist(s:safe_printf(lscmd, path))
 	el
@@ -997,7 +1065,7 @@ fu! s:MapSpecs()
 	if !( exists('s:smapped') && s:smapped == s:bufnr )
 		" Correct arrow keys in terminal
 		if ( has('termresponse') && v:termresponse =~ "\<ESC>" )
-			\ || &term =~? '\vxterm|<k?vt|gnome|screen|linux|ansi|tmux|st(-[-a-z0-9]*)?$'
+			\ || &term =~? '\vxterm|<k?vt|gnome|screen|linux|ansi|tmux|st(-[-a-z0-9]*)?(\:tc)?$'
 			for each in ['\A <up>','\B <down>','\C <right>','\D <left>']
 				exe s:lcmap.' <esc>['.each
 			endfo
@@ -1054,6 +1122,7 @@ fu! s:ToggleByFname()
 endf
 
 fu! s:ToggleType(dir)
+	cal s:async_glob_abort()
 	let max = len(g:ctrlp_ext_vars) + len(s:coretypes) - 1
 	let next = s:walker(max, s:itemtype, a:dir)
 	cal ctrlp#setlines(next)
@@ -1563,6 +1632,9 @@ fu! ctrlp#statusline()
 		let slider  = ' <'.prv.'>={'.item.'}=<'.nxt.'>'
 		let dir     = ' %=%<%#CtrlPMode2# %{getcwd()} %*'
 		let &l:stl  = focus.byfname.regex.slider.marked.dir
+		if exists('s:timer')
+			let &l:stl = '%#CtrlPStats# '.len(g:ctrlp_allfiles).' '.&l:stl
+		en
 	en
 endf
 
@@ -2571,6 +2643,7 @@ endf
 fu! s:setlines_pre(...)
 	if a:0 | let s:itemtype = a:1 | en
 	cal s:modevar()
+	let s:setlines_post_ended = 0
 	let g:ctrlp_lines = []
 endf
 
@@ -2581,6 +2654,7 @@ fu! s:setlines_post()
 		cal map(copy(g:ctrlp_ext_vars), 'add(types, v:val["init"])')
 	en
 	let g:ctrlp_lines = eval(types[s:itemtype])
+	let s:setlines_post_ended = 1
 endf
 
 fu! ctrlp#setlines(...)

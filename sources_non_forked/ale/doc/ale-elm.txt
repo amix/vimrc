@@ -50,7 +50,7 @@ g:ale_elm_ls_use_global                               *g:ale_elm_ls_use_global*
 g:ale_elm_ls_elm_path                                   *g:ale_elm_ls_elm_path*
                                                         *b:ale_elm_ls_elm_path*
   Type: |String|
-  Default: `'elm'`
+  Default: `''`
 
   See |ale-integrations-local-executables|
 
@@ -58,7 +58,7 @@ g:ale_elm_ls_elm_path                                   *g:ale_elm_ls_elm_path*
 g:ale_elm_ls_elm_format_path                     *g:ale_elm_ls_elm_format_path*
                                                  *b:ale_elm_ls_elm_format_path*
   Type: |String|
-  Default: `'elm-format'`
+  Default: `''`
 
   See |ale-integrations-local-executables|
 
@@ -66,9 +66,17 @@ g:ale_elm_ls_elm_format_path                     *g:ale_elm_ls_elm_format_path*
 g:ale_elm_ls_elm_test_path                         *g:ale_elm_ls_elm_test_path*
                                                    *b:ale_elm_ls_elm_test_path*
   Type: |String|
-  Default: `'elm-test'`
+  Default: `''`
 
   See |ale-integrations-local-executables|
+
+
+g:ale_elm_ls_elm_analyse_trigger             *g:ale_elm_ls_elm_analyse_trigger*
+                                             *b:ale_elm_ls_elm_analyse_trigger*
+  Type: |String|
+  Default: `'change'`
+
+  One of 'change', 'save' or 'never'
 
 ===============================================================================
 elm-make                                                     *ale-elm-elm-make*

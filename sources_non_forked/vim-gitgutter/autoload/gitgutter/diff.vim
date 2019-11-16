@@ -187,7 +187,7 @@ function! gitgutter#diff#handler(bufnr, diff) abort
     call gitgutter#sign#clear_signs(a:bufnr)
 
   else
-    if g:gitgutter_signs || g:gitgutter_highlight_lines
+    if g:gitgutter_signs || g:gitgutter_highlight_lines || g:gitgutter_highlight_linenrs
       call gitgutter#sign#update_signs(a:bufnr, modified_lines)
     endif
   endif
@@ -385,6 +385,10 @@ function! s:write_buffer(bufnr, file)
     call map(bufcontents, 'v:val."\r"')
   endif
 
+  if getbufvar(a:bufnr, '&endofline')
+    call add(bufcontents, '')
+  endif
+
   let fenc = getbufvar(a:bufnr, '&fileencoding')
   if fenc !=# &encoding
     call map(bufcontents, 'iconv(v:val, &encoding, "'.fenc.'")')
@@ -394,7 +398,7 @@ function! s:write_buffer(bufnr, file)
     let bufcontents[0]='﻿'.bufcontents[0]
   endif
 
-  call writefile(bufcontents, a:file)
+  call writefile(bufcontents, a:file, 'b')
 endfunction
 
 

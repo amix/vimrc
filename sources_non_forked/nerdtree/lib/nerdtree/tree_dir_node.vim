@@ -523,7 +523,8 @@ endfunction
 " Open an explorer window for this node in the previous window. The explorer
 " can be a NERDTree window or a netrw window.
 function! s:TreeDirNode.openExplorer()
-    call self.open({'where': 'p'})
+    execute "wincmd p"
+    execute "edit ".self.path.str({'format':'Edit'})
 endfunction
 
 " FUNCTION: TreeDirNode.openInNewTab(options) {{{1

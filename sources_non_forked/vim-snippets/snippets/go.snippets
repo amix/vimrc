@@ -222,6 +222,23 @@ snippet test "test function"
 		${0:${VISUAL}}
 	}
 
+snippet testt "table test function"
+	func Test${1:name}(t *testing.T) {
+		tests := []struct {
+			name string
+		}{
+			{
+				name: "${2:test name}",
+			},
+		}
+
+		for _, test := range tests {
+			t.Run(test.name, func(t *testing.T) {
+				${0:${VISUAL}}
+			})
+		}
+	}
+
 snippet bench "benchmark function"
 	func Benchmark${1:name}(b *testing.B) {
 		for i := 0; i < b.N; i++ {

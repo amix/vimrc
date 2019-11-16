@@ -205,9 +205,10 @@ endfunction
 
 function! go#config#DebugWindows() abort
   return get(g:, 'go_debug_windows', {
-            \ 'stack': 'leftabove 20vnew',
-            \ 'out':   'botright 10new',
             \ 'vars':  'leftabove 30vnew',
+            \ 'stack': 'leftabove 20new',
+            \ 'goroutines': 'botright 10new',
+            \ 'out':        'botright 5new',
             \ }
          \ )
 
@@ -224,7 +225,7 @@ function! go#config#DebugCommands() abort
 endfunction
 
 function! go#config#DebugLogOutput() abort
-  return get(g:, 'go_debug_log_output', 'debugger, rpc')
+  return get(g:, 'go_debug_log_output', 'debugger,rpc')
 endfunction
 
 function! go#config#LspLog() abort
@@ -258,7 +259,7 @@ function! go#config#SetTemplateAutocreate(value) abort
 endfunction
 
 function! go#config#MetalinterCommand() abort
-  return get(g:, "go_metalinter_command", "gometalinter")
+  return get(g:, "go_metalinter_command", "golangci-lint")
 endfunction
 
 function! go#config#MetalinterAutosaveEnabled() abort
@@ -365,6 +366,11 @@ function! go#config#PlayOpenBrowser() abort
   return get(g:, "go_play_open_browser", 1)
 endfunction
 
+function! go#config#GorenameCommand() abort
+  " delegate to go#config#GorenameBin for backwards compatability.
+  return get(g:, "go_gorename_command", go#config#GorenameBin())
+endfunction
+
 function! go#config#GorenameBin() abort
   return get(g:, "go_gorename_bin", "gorename")
 endfunction
@@ -460,6 +466,14 @@ function! go#config#HighlightVariableDeclarations() abort
   return get(g:, 'go_highlight_variable_declarations', 0)
 endfunction
 
+function! go#config#HighlightDiagnosticErrors() abort
+  return get(g:, 'go_highlight_diagnostic_errors', 1)
+endfunction
+
+function! go#config#HighlightDiagnosticWarnings() abort
+  return get(g:, 'go_highlight_diagnostic_warnings', 1)
+endfunction
+
 function! go#config#HighlightDebug() abort
   return get(g:, 'go_highlight_debug', 1)
 endfunction
@@ -477,6 +491,31 @@ endfunction
 
 function! go#config#CodeCompletionEnabled() abort
   return get(g:, "go_code_completion_enabled", 1)
+endfunction
+
+function! go#config#Updatetime() abort
+  let go_updatetime = get(g:, 'go_updatetime', 800)
+  return go_updatetime == 0 ? &updatetime : go_updatetime
+endfunction
+
+function! go#config#ReferrersMode() abort
+  return get(g:, 'go_referrers_mode', 'gopls')
+endfunction
+
+function! go#config#GoplsCompleteUnimported() abort
+  return get(g:, 'go_gopls_complete_unimported', 0)
+endfunction
+
+function! go#config#GoplsDeepCompletion() abort
+  return get(g:, 'go_gopls_deep_completion', 1)
+endfunction
+
+function! go#config#GoplsFuzzyMatching() abort
+  return get(g:, 'go_gopls_fuzzy_matching', 1)
+endfunction
+
+function! go#config#GoplsUsePlaceholders() abort
+  return get(g:, 'go_gopls_use_placeholders', 0)
 endfunction
 
 " Set the default value. A value of "1" is a shortcut for this, for

@@ -37,7 +37,7 @@ function! s:getinfo(str, name)
     let l:actual = go#lsp#GetInfo()
     call assert_equal(l:expected, l:actual)
   finally
-    "call delete(l:tmp, 'rf')
+    call delete(l:tmp, 'rf')
     unlet g:go_info_mode
   endtry
 endfunction

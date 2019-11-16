@@ -157,9 +157,9 @@ g:ale_php_phpstan_level                               *g:ale_php_phpstan_level*
   Type: |String|
   Default: `''`
 
-  This variable controls the rule levels. 0 is the loosest and 4 is the
+  This variable controls the rule levels. 0 is the loosest and 7 is the
   strictest. If this option isn't set, the rule level will be controlled by
-  the configuration file. If no configuration file can be detected, `'4'` will
+  the configuration file. If no configuration file can be detected, `'7'` will
   be used instead.
 
 
@@ -188,6 +188,13 @@ g:ale_php_psalm_executable                         *g:ale_php_psalm_executable*
   Default: `'psalm'`
 
   This variable sets the executable used for psalm.
+
+g:ale_psalm_langserver_options                 *g:ale_psalm_langserver_options*
+                                               *b:ale_psalm_langserver_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to psalm.
 
 ===============================================================================
 php-cs-fixer                                              *ale-php-php-cs-fixer*

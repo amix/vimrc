@@ -87,8 +87,13 @@ function! s:Path.changeToDir()
     endif
 
     try
-        execute "cd " . dir
-        call nerdtree#echo("CWD is now: " . getcwd())
+        if g:NERDTreeUseTCD && exists(":tcd") == 2
+            execute "tcd " . dir
+            call nerdtree#echo("Tab's CWD is now: " . getcwd())
+        else
+            execute "cd " . dir
+            call nerdtree#echo("CWD is now: " . getcwd())
+        endif
     catch
         throw "NERDTree.PathChangeError: cannot change CWD to " . dir
     endtry

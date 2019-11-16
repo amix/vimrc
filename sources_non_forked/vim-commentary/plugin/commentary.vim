@@ -44,6 +44,12 @@ function! s:go(...) abort
     endif
   endfor
 
+  if get(b:, 'commentary_startofline')
+    let indent = '^'
+  else
+    let indent = '^\s*'
+  endif
+
   for lnum in range(lnum1,lnum2)
     let line = getline(lnum)
     if strlen(r) > 2 && l.r !~# '\\'
@@ -54,7 +60,7 @@ function! s:go(...) abort
     if uncomment
       let line = substitute(line,'\S.*\s\@<!','\=submatch(0)[strlen(l):-strlen(r)-1]','')
     else
-      let line = substitute(line,'^\%('.matchstr(getline(lnum1),'^\s*').'\|\s*\)\zs.*\S\@<=','\=l.submatch(0).r','')
+      let line = substitute(line,'^\%('.matchstr(getline(lnum1),indent).'\|\s*\)\zs.*\S\@<=','\=l.submatch(0).r','')
     endif
     call setline(lnum,line)
   endfor

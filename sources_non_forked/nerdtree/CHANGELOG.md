@@ -1,19 +1,42 @@
-# Change Log
+# NERDTree Change Log
 
-#### 5.3...
-- **.0**: Add file extension and size to sorting capabilities [#1029](https://github.com/scrooloose/nerdtree/pull/1029)
-#### 5.2...
-- **.9**: Suppress events for intermediate window/tab/buffer changes [#1026](https://github.com/scrooloose/nerdtree/pull/1026)
+<!--
+    Introduce a new MAJOR.MINOR version with a 4-hash header.
+
+    PATCH versions are listed from newest to oldest under their respective MAJOR.MINOR version
+    in an unordered list.  The format is:
+        - **.PATCH**: Pull Request Title (PR Author) [PR Number](Link to PR)
+-->
+
+#### 6.2
+- **.1**: Menu option, 'copy path to clipboard' is aware of VIM clipboard option (jhzn) [#1056](https://github.com/scrooloose/nerdtree/pull/1056)
+- **.0**: Support tab-specific CWDs (PhilRunninger) [#1032](https://github.com/scrooloose/nerdtree/pull/1032)
+#### 6.1
+- **.4**: Add VIM built-in package management to read me file. (pesarkhobeee) [#1049](https://github.com/scrooloose/nerdtree/pull/1049)
+- **.3**: Save/Set screen state also on WinLeave and WinEnter. (PhilRunninger) [#1048](https://github.com/scrooloose/nerdtree/pull/1048)
+- **.2**: Wrap saveScreenState's statements in a try-catch block. (PhilRunninger) [#1047](https://github.com/scrooloose/nerdtree/pull/1047)
+- **.1**: Catch errors when trying to read CHANGELOG.md. (PhilRunninger) [#1045](https://github.com/scrooloose/nerdtree/pull/1045)
+- **.0**: If file path doesn't exist, :NERDTreeFind its parent directory instead. (PhilRunninger) [#1043](https://github.com/scrooloose/nerdtree/pull/1043)
+#### 6.0
+- **.1**: Reintroduce necessary variable mistakenly removed. (PhilRunninger) [#1040](https://github.com/scrooloose/nerdtree/pull/1040)
+- **.0**: Make the behavior of window splits consistent (dragonxlwang, PhilRunninger) [#1035](https://github.com/scrooloose/nerdtree/pull/1035)
+#### 5.3
+- **.3**: Fix (p)ath not displaying in the minimal menu (tuzz) [#1038](https://github.com/scrooloose/nerdtree/pull/1038)
+- **.2**: Enable events when closing NerdTree window. (PhilRunninger) [#1037](https://github.com/scrooloose/nerdtree/pull/1037)
+- **.1**: Fix the `e` key mapping to use netrw if desired (PhilRunninger) [#1031](https://github.com/scrooloose/nerdtree/pull/1031)
+- **.0**: Add file extension and size to sorting capabilities (PhilRunninger) [#1029](https://github.com/scrooloose/nerdtree/pull/1029)
+#### 5.2
+- **.9**: Suppress events for intermediate window/tab/buffer changes (PhilRunninger) [#1026](https://github.com/scrooloose/nerdtree/pull/1026)
 - **.8**: Revert [#1019](https://github.com/scrooloose/nerdtree/pull/1019) to fix nvim artifacts and flickering. (PhilRunninger) [#1021](https://github.com/scrooloose/nerdtree/pull/1021)
-- **.7**: Use :mode only in neovim. MacVim still needs to use :redraw! [#1019](https://github.com/scrooloose/nerdtree/pull/1019)
-- **.6**: In CHANGELOG.md and PR template, make reference to PR a true HTML link. [#1017](https://github.com/scrooloose/nerdtree/pull/1017)
+- **.7**: Use :mode only in neovim. MacVim still needs to use :redraw! (PhilRunninger) [#1019](https://github.com/scrooloose/nerdtree/pull/1019)
+- **.6**: In CHANGELOG.md and PR template, make reference to PR a true HTML link. (PhilRunninger) [#1017](https://github.com/scrooloose/nerdtree/pull/1017)
 - **.5**: Use `:mode` instead of `:redraw!` when updating menu. (PhilRunninger) [#1016](https://github.com/scrooloose/nerdtree/pull/1016)
 - **.4**: When searching for root line num, stop at end of file. (PhilRunninger) [#1015](https://github.com/scrooloose/nerdtree/pull/1015)
 - **.3**: Fix `<CR>` key map on the bookmark (lkebin) [#1014](https://github.com/scrooloose/nerdtree/pull/1014)
 - **.2**: Make Enter work on the `.. ( up a dir )` line (PhilRunninger) [#1013](https://github.com/scrooloose/nerdtree/pull/1013)
 - **.1**: Fix nerdtree#version() on Windows. (PhilRunninger)
 - **.0**: Expand functionality of `<CR>` mapping. (PhilRunninger) [#1011](https://github.com/scrooloose/nerdtree/pull/1011)
-#### 5.1...
+#### 5.1
 - **.3**: Remove @mentions from PR template and change log. They weren't working. (PhilRunninger) [#1009](https://github.com/scrooloose/nerdtree/pull/1009)
 - **.2**: Fix NERDTree opening with the wrong size. (PhilRunninger) [#1008](https://github.com/scrooloose/nerdtree/pull/1008)
 - **.1**: Update Changelog and create PR Template (PhilRunninger) [#1007](https://github.com/scrooloose/nerdtree/pull/1007)

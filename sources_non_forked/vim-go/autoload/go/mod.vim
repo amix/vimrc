@@ -83,18 +83,11 @@ function! go#mod#update_file(source, target)
 
   let l:listtype = go#list#Type("GoModFmt")
 
-  " the title information was introduced with 7.4-2200
-  " https://github.com/vim/vim/commit/d823fa910cca43fec3c31c030ee908a14c272640
-  if has('patch-7.4.2200')
-    " clean up previous list
-    if l:listtype == "quickfix"
-      let l:list_title = getqflist({'title': 1})
-    else
-      let l:list_title = getloclist(0, {'title': 1})
-    endif
+  " clean up previous list
+  if l:listtype == "quickfix"
+    let l:list_title = getqflist({'title': 1})
   else
-    " can't check the title, so assume that the list was for go fmt.
-    let l:list_title = {'title': 'Format'}
+    let l:list_title = getloclist(0, {'title': 1})
   endif
 
   if has_key(l:list_title, "title") && l:list_title['title'] == "Format"

@@ -9,6 +9,16 @@ fecs                                                            *ale-html-fecs*
 and both of them reads `./.fecsrc` as the default configuration file.
 See: |ale-javascript-fecs|.
 
+===============================================================================
+html-beautify                                               *ale-html-beautify*
+
+g:ale_html_beautify_options                       *g:ale_html_beautify_options*
+                                                  *b:ale_html_beautify_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to html-beautify.
+
 
 ===============================================================================
 htmlhint                                                    *ale-html-htmlhint*

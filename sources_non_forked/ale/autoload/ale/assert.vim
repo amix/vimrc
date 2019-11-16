@@ -267,14 +267,22 @@ function! ale#assert#TearDownLinterTest() abort
     endif
 endfunction
 
-function! ale#assert#SetUpFixerTest(filetype, name) abort
+function! ale#assert#SetUpFixerTest(filetype, name, ...) abort
+    " If the suffix of the option names format is different, an additional
+    " argument can be used for that instead.
+    if a:0 > 1
+        throw 'Too many arguments'
+    endif
+
     " Set up a marker so ALE doesn't create real random temporary filenames.
     let g:ale_create_dummy_temporary_file = 1
 
     let l:function_name = ale#fix#registry#GetFunc(a:name)
     let s:FixerFunction = function(l:function_name)
 
-    let l:prefix = 'ale_' . a:filetype . '_' . a:name
+    let l:option_suffix = get(a:000, 0, a:name)
+    let l:prefix = 'ale_' . a:filetype . '_'
+    \   . substitute(l:option_suffix, '-', '_', 'g')
     let b:filter_expr = 'v:val[: len(l:prefix) - 1] is# l:prefix'
 
     for l:key in filter(keys(g:), b:filter_expr)
@@ -286,7 +294,7 @@ function! ale#assert#SetUpFixerTest(filetype, name) abort
         unlet b:[l:key]
     endfor
 
-    execute 'runtime autoload/ale/fixers/' . a:name . '.vim'
+    execute 'runtime autoload/ale/fixers/' . substitute(a:name, '-', '_', 'g') . '.vim'
 
     if !exists('g:dir')
         call ale#test#SetDirectory('/testplugin/test/fixers')

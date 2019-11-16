@@ -103,6 +103,7 @@ Notes:
 * Cython (pyrex filetype)
   * `cython`
 * D
+  * `dfmt`
   * `dls`
   * `dmd`
   * `uncrustify`
@@ -123,7 +124,7 @@ Notes:
   * `mix`!!
 * Elm
   * `elm-format`
-  * `elm-lsp`
+  * `elm-ls`
   * `elm-make`
 * Erb
   * `erb`
@@ -193,6 +194,7 @@ Notes:
 * HTML
   * `alex`!!
   * `fecs`
+  * `html-beautify`
   * `HTMLHint`
   * `prettier`
   * `proselint`
@@ -200,6 +202,8 @@ Notes:
   * `write-good`
 * Idris
   * `idris`
+* Ink
+  * `ink-language-server`
 * ISPC
   * `ispc`!!
 * Java
@@ -279,8 +283,11 @@ Notes:
   * `nasm`!!
 * Nim
   * `nim check`!!
+  * `nimlsp`
+  * `nimpretty`
 * nix
   * `nix-instantiate`
+  * `nixpkgs-fmt`
 * nroff
   * `alex`!!
   * `proselint`
@@ -343,6 +350,7 @@ Notes:
   * `puppet-lint`
 * PureScript
   * `purescript-language-server`
+  * `purty`
 * Python
   * `autopep8`
   * `bandit`
@@ -388,6 +396,7 @@ Notes:
   * `rpmlint`
 * Ruby
   * `brakeman`
+  * `debride`
   * `rails_best_practices`!!
   * `reek`
   * `rubocop`
@@ -406,6 +415,7 @@ Notes:
   * `stylelint`
 * Scala
   * `fsc`
+  * `metals`
   * `sbtserver`
   * `scalac`
   * `scalafmt`
@@ -420,11 +430,13 @@ Notes:
 * SML
   * `smlnj`
 * Solidity
+  * `solc`
   * `solhint`
   * `solium`
 * SQL
   * `pgformatter`
   * `sqlfmt`
+  * `sqlformat`
   * `sqlint`
 * Stylus
   * `stylelint`
@@ -457,6 +469,7 @@ Notes:
   * `eslint`
   * `fecs`
   * `prettier`
+  * `standard`
   * `tslint`
   * `tsserver`
   * `typecheck`

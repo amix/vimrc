@@ -184,13 +184,12 @@ tests: https://github.com/junegunn/vader.vim
 See |ale-development-linter-tests| for more information on how to write linter
 tests.
 
-When you add new linters or fixers, make sure to add them into the table in
-the README, and also into the |ale-support| list in the main help file. If you
-forget to keep them both in sync, you should see an error like the following
-in Travis CI. >
-
+When you add new linters or fixers, make sure to add them into the tables in
+supported-tools.md and |ale-supported-languages-and-tools.txt|. If you forget to
+keep them both in sync, you should see an error like the following in Travis CI.
+>
   ========================================
-  diff README.md and doc/ale.txt tables
+  diff supported-tools.md and doc/ale-supported-languages-and-tools.txt tables
   ========================================
   Differences follow:
 

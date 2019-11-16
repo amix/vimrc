@@ -9,7 +9,8 @@ snippet fun "function"
 	function ${1:function_name}(${2}) {
 		${0:${VISUAL}}
 	}
-snippet fun "async function"
+# Asynchronous Function
+snippet asf "async function"
 	async function ${1:function_name}(${2}) {
 		${0:${VISUAL}}
 	}
@@ -282,6 +283,8 @@ snippet timeout
 	setTimeout(function () {${0}}${2}, ${1:10});
 snippet const
 	const ${1} = ${0};
+snippet constn
+	const ${1} = new ${0};
 snippet let
 	let ${1} = ${0};
 snippet im "import xyz from 'xyz'"

@@ -849,9 +849,17 @@ above nodes would then be sorted like this: >
     z110.txt
 <
 ------------------------------------------------------------------------------
-                                                             *NERDTreeChDirMode*
+                                                                *NERDTreeUseTCD*
+Values: 0 or 1.
+Default: 0.
 
-Values: 0, 1 or 2.
+By default, NERDTree will use the `:cd` command to change the current working
+directory. If this setting is turned on, and the `:tcd` command is available, it
+will be used instead.
+
+------------------------------------------------------------------------------
+                                                             *NERDTreeChDirMode*
+Values: 0, 1, 2, or 3.
 Default: 0.
 
 Use this setting to tell the script when (if at all) to change the current
@@ -870,6 +878,9 @@ If the setting is set to 2 then it behaves the same as if set to 1 except that
 the CWD is changed whenever the tree root is changed. For example, if the CWD
 is /home/marty/foobar and you make the node for /home/marty/foobar/baz the new
 root then the CWD will become /home/marty/foobar/baz.
+
+If the set to 3, then it behaves the same as if set to 2, and the CWD is
+changed whenever changing tabs to whatever the tree root is on that tab.
 
 ------------------------------------------------------------------------------
                                                    *NERDTreeHighlightCursorline*
@@ -980,7 +991,6 @@ then (to single click activate it) you must click somewhere in
 
 ------------------------------------------------------------------------------
                                                             *NERDTreeQuitOnOpen*
-
 Values: 0,1,2 or 3.
 Default: 0
 

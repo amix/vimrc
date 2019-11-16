@@ -71,9 +71,9 @@ endfunction
 function! s:Opener._gotoTargetWin()
     if b:NERDTree.isWinTree()
         if self._where == 'v'
-            vsplit
+            call self._newVSplit()
         elseif self._where == 'h'
-            split
+            call self._newSplit()
         elseif self._where == 't'
             tabnew
         endif
@@ -153,44 +153,18 @@ endfunction
 
 " FUNCTION: Opener._newSplit() {{{1
 function! s:Opener._newSplit()
-    " Save the user's settings for splitbelow and splitright
-    let savesplitbelow=&splitbelow
-    let savesplitright=&splitright
-
-    " 'there' will be set to a command to move from the split window
-    " back to the explorer window
-    "
-    " 'back' will be set to a command to move from the explorer window
-    " back to the newly split window
-    "
-    " 'right' and 'below' will be set to the settings needed for
-    " splitbelow and splitright IF the explorer is the only window.
-    "
-    let there= g:NERDTreeWinPos ==# "left" ? "wincmd h" : "wincmd l"
-    let back = g:NERDTreeWinPos ==# "left" ? "wincmd l" : "wincmd h"
-    let right= g:NERDTreeWinPos ==# "left"
-    let below=0
-
-    " Attempt to go to adjacent window
-    call nerdtree#exec(back, 1)
-
     let onlyOneWin = (winnr("$") ==# 1)
-
-    " If no adjacent window, set splitright and splitbelow appropriately
+    let savesplitright = &splitright
     if onlyOneWin
-        let &splitright=right
-        let &splitbelow=below
-    else
-        " found adjacent window - invert split direction
-        let &splitright=!right
-        let &splitbelow=!below
+        let &splitright = (g:NERDTreeWinPos ==# "left")
     endif
-
+    " If only one window (ie. NERDTree), split vertically instead.
     let splitMode = onlyOneWin ? "vertical" : ""
 
     " Open the new window
     try
-        exec(splitMode." sp ")
+        call nerdtree#exec('wincmd p', 1)
+        call nerdtree#exec(splitMode . " split",1)
     catch /^Vim\%((\a\+)\)\=:E37/
         call g:NERDTree.CursorToTreeWin()
         throw "NERDTree.FileAlreadyOpenAndModifiedError: ". self._path.str() ." is already open and modified."
@@ -200,14 +174,12 @@ function! s:Opener._newSplit()
 
     "resize the tree window if no other window was open before
     if onlyOneWin
-        let size = exists("b:NERDTreeOldWindowSize") ? b:NERDTreeOldWindowSize : g:NERDTreeWinSize
-        call nerdtree#exec(there, 1)
-        exec("silent ". splitMode ." resize ". size)
+        let size = exists('b:NERDTreeOldWindowSize') ? b:NERDTreeOldWindowSize : g:NERDTreeWinSize
+        call nerdtree#exec('wincmd p', 1)
+        call nerdtree#exec('silent '. splitMode .' resize '. size, 1)
         call nerdtree#exec('wincmd p', 0)
     endif
 
-    " Restore splitmode settings
-    let &splitbelow=savesplitbelow
     let &splitright=savesplitright
 endfunction
 
@@ -215,7 +187,10 @@ endfunction
 function! s:Opener._newVSplit()
     let l:winwidth = winwidth('.')
 
-    if winnr('$') == 1
+    let onlyOneWin = (winnr("$") ==# 1)
+    let savesplitright = &splitright
+    if onlyOneWin
+        let &splitright = (g:NERDTreeWinPos ==# "left")
         let l:winwidth = g:NERDTreeWinSize
     endif
 
@@ -229,6 +204,7 @@ function! s:Opener._newVSplit()
     execute 'silent vertical resize ' . l:winwidth
 
     call nerdtree#exec(l:currentWindowNumber . 'wincmd w', 0)
+    let &splitright=savesplitright
 endfunction
 
 " FUNCTION: Opener.open(target) {{{1

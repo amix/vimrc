@@ -246,6 +246,12 @@ function! s:TreeFileNode.openInNewTab(options)
     call self.open(extend({'where': 't'}, a:options))
 endfunction
 
+" FUNCTION: TreeFileNode.openExplorer()
+function! s:TreeFileNode.openExplorer()
+    execute "wincmd p"
+    execute "edit ".self.path.getParent().str({'format':'Edit'})
+endfunction
+
 " FUNCTION: TreeFileNode.putCursorHere(isJump, recurseUpward){{{1
 " Places the cursor on the line number this node is rendered on
 "
