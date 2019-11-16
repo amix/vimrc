@@ -1,11 +1,12 @@
 " Vim indent file
 " Language:         Rust
 " Author:           Chris Morgan <me@chrismorgan.info>
-" Last Change:      2014 Sep 13
+" Last Change:      2017 Mar 21
+" For bugs, patches and license go to https://github.com/rust-lang/rust.vim
 
 " Only load this indent file when no other was loaded.
 if exists("b:did_indent")
-  finish
+	finish
 endif
 let b:did_indent = 1
 
@@ -13,7 +14,7 @@ setlocal cindent
 setlocal cinoptions=L0,(0,Ws,J1,j1
 setlocal cinkeys=0{,0},!^F,o,O,0[,0]
 " Don't think cinwords will actually do anything at all... never mind
-setlocal cinwords=for,if,else,while,loop,impl,mod,unsafe,trait,struct,enum,fn,extern
+setlocal cinwords=for,if,else,while,loop,impl,mod,unsafe,trait,struct,enum,fn,extern,macro
 
 " Some preliminary settings
 setlocal nolisp		" Make sure lisp indenting doesn't supersede us
@@ -25,8 +26,11 @@ setlocal indentexpr=GetRustIndent(v:lnum)
 
 " Only define the function once.
 if exists("*GetRustIndent")
-  finish
+	finish
 endif
+
+let s:save_cpo = &cpo
+set cpo&vim
 
 " Come here when loading the script the first time.
 
@@ -121,10 +125,18 @@ function GetRustIndent(lnum)
 		let prevlinenum = prevnonblank(prevlinenum - 1)
 		let prevline = s:get_line_trimmed(prevlinenum)
 	endwhile
+
+	" Handle where clauses nicely: subsequent values should line up nicely.
+	if prevline[len(prevline) - 1] == ","
+				\ && prevline =~# '^\s*where\s'
+		return indent(prevlinenum) + 6
+	endif
+
 	if prevline[len(prevline) - 1] == ","
 				\ && s:get_line_trimmed(a:lnum) !~ '^\s*[\[\]{}]'
 				\ && prevline !~ '^\s*fn\s'
 				\ && prevline !~ '([^()]\+,$'
+				\ && s:get_line_trimmed(a:lnum) !~ '^\s*\S\+\s*=>'
 		" Oh ho! The previous line ended in a comma! I bet cindent will try to
 		" take this too far... For now, let's normally use the previous line's
 		" indent.
@@ -148,6 +160,8 @@ function GetRustIndent(lnum)
 		"
 		" if baz && (foo ||
 		"            bar) {
+		"
+		" Another case is when the current line is a new match arm.
 		"
 		" There are probably other cases where we don't want to do this as
 		" well. Add them as needed.
@@ -194,3 +208,6 @@ function GetRustIndent(lnum)
 	" Fall back on cindent, which does it mostly right
 	return cindent(a:lnum)
 endfunction
+
+let &cpo = s:save_cpo
+unlet s:save_cpo

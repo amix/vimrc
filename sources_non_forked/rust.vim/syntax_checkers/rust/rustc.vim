@@ -14,13 +14,26 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! SyntaxCheckers_rust_rustc_GetLocList() dict
-    let makeprg = self.makeprgBuild({ 'args': '-Zparse-only' })
+    let makeprg = self.makeprgBuild({})
 
+    " Old errorformat (before nightly 2016/08/10)
     let errorformat  =
         \ '%E%f:%l:%c: %\d%#:%\d%# %.%\{-}error:%.%\{-} %m,'   .
         \ '%W%f:%l:%c: %\d%#:%\d%# %.%\{-}warning:%.%\{-} %m,' .
-        \ '%C%f:%l %m,' .
-        \ '%-Z%.%#'
+        \ '%C%f:%l %m'
+        
+    " New errorformat (after nightly 2016/08/10)
+    let errorformat  .=
+        \ ',' .
+        \ '%-G,' .
+        \ '%-Gerror: aborting %.%#,' .
+        \ '%-Gerror: Could not compile %.%#,' .
+        \ '%Eerror: %m,' .
+        \ '%Eerror[E%n]: %m,' .
+        \ '%-Gwarning: the option `Z` is unstable %.%#,' .
+        \ '%Wwarning: %m,' .
+        \ '%Inote: %m,' .
+        \ '%C %#--> %f:%l:%c'
 
     return SyntasticMake({
         \ 'makeprg': makeprg,

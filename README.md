@@ -90,6 +90,7 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [ack.vim](https://github.com/mileszs/ack.vim): Vim plugin for `the_silver_searcher` (ag) or ack -- a wicked fast grep
 * [bufexplorer.zip](https://github.com/vim-scripts/bufexplorer.zip): Quickly and easily switch between buffers. This plugin can be opened with `<leader+o>`
 * [ctrlp.vim](https://github.com/ctrlpvim/ctrlp.vim): Fuzzy file, buffer, mru and tag finder. It's mapped to `<Ctrl+F>`
+* [comfortable-motion.vim](https://github.com/yuttie/comfortable-motion.vim): Brings physics-based smooth scrolling to the Vim world! 
 * [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2): 
 * [lightline.vim](https://github.com/itchyny/lightline.vim): A light and configurable statusline/tabline for Vim
 * [NERD Tree](https://github.com/scrooloose/nerdtree): A tree explorer plugin for vim
