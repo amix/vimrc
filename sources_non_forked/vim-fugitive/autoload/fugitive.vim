@@ -1400,10 +1400,11 @@ call s:add_methods('buffer', ['repo', 'type'])
 
 function! s:FilterEscape(items, ...) abort
   let items = copy(a:items)
+  call map(items, 's:fnameescape(v:val)')
   if a:0 && type(a:1) == type('')
     call filter(items, 'strpart(v:val, 0, strlen(a:1)) ==# a:1')
   endif
-  return map(items, 's:fnameescape(v:val)')
+  return items
 endfunction
 
 function! s:GlobComplete(lead, pattern) abort
@@ -1469,16 +1470,15 @@ function! fugitive#CompleteObject(base, ...) abort
     let results = []
     if a:base =~# '^refs/'
       let results += map(s:GlobComplete(fugitive#CommonDir(dir) . '/', a:base . '*'), 's:Slash(v:val)')
+      call map(results, 's:fnameescape(v:val)')
     elseif a:base !~# '^\.\=/\|^:('
       let heads = s:CompleteHeads(dir)
       if filereadable(fugitive#Find('.git/refs/stash', dir))
         let heads += ["stash"]
         let heads += sort(s:LinesError(["stash","list","--pretty=format:%gd"], dir)[0])
       endif
-      call filter(heads,'v:val[ 0 : strlen(a:base)-1 ] ==# a:base')
-      let results += heads
+      let results += s:FilterEscape(heads, a:base)
     endif
-    call map(results, 's:fnameescape(v:val)')
     if !empty(tree)
       let results += a:0 == 1 ? fugitive#CompletePath(a:base, dir) : fugitive#CompletePath(a:base)
     endif
@@ -1724,6 +1724,10 @@ function! fugitive#BufReadStatus() abort
       endwhile
     endif
 
+    if empty(s:Tree())
+      let [unstaged, untracked] = [[], []]
+    endif
+
     for dict in staged
       let b:fugitive_files['Staged'][dict.filename] = dict
     endfor
@@ -1819,6 +1823,9 @@ function! fugitive#BufReadStatus() abort
     call s:AddHeader(pull_type, pull)
     if push !=# pull
       call s:AddHeader('Push', push)
+    endif
+    if empty(s:Tree())
+      call s:AddHeader('Bare', 'yes')
     endif
     call s:AddSection('Rebasing ' . rebasing_head, rebasing)
     call s:AddSection('Untracked', untracked)
@@ -4518,14 +4525,11 @@ endfunction
 function! s:diffoff_all(dir) abort
   let curwin = winnr()
   for nr in range(1,winnr('$'))
-    if getwinvar(nr,'&diff')
+    if getwinvar(nr, '&diff') && !empty(getwinvar(nr, 'fugitive_diff_restore'))
       if nr != winnr()
         execute nr.'wincmd w'
-        let restorewinnr = 1
       endif
-      if s:Dir() ==# a:dir
-        call s:diffoff()
-      endif
+      call s:diffoff()
     endif
   endfor
   execute curwin.'wincmd w'
@@ -4626,6 +4630,8 @@ function! fugitive#Diffsplit(autodir, keepfocus, mods, arg, args) abort
       elseif arg =~# '^:\d$'
         exe s:DirCheck()
         let file = s:Relative(arg . ':')
+      elseif arg =~# '^[~^]\d*$'
+        return 'echoerr ' . string('fugitive: change ' . arg . ' to !' . arg . ' to diff against ancestor')
       else
         try
           let file = arg =~# '^:/.' ? fugitive#RevParse(arg) . s:Relative(':') : s:Expand(arg)
@@ -5130,12 +5136,10 @@ function! s:BlameJump(suffix, ...) abort
     let winnr = bufwinnr(blame_bufnr)
     if winnr > 0
       exe winnr.'wincmd w'
+      exe bufnr.'bdelete'
     endif
     execute 'Gedit' s:fnameescape(commit . suffix . ':' . path)
     execute lnum
-    if winnr > 0
-      exe bufnr.'bdelete'
-    endif
   endif
   if exists(':Gblame')
     let my_bufnr = bufnr('')

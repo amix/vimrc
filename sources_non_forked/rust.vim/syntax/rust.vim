@@ -53,6 +53,7 @@ syn keyword   rustKeyword     mod trait nextgroup=rustIdentifier skipwhite skipe
 syn keyword   rustStorage     move mut ref static const
 syn match     rustDefault     /\<default\ze\_s\+\(impl\|fn\|type\|const\)\>/
 syn keyword   rustAwait       await
+syn match     rustKeyword     /\<try\>!\@!/ display
 
 syn keyword rustPubScopeCrate crate contained
 syn match rustPubScopeDelim /[()]/ contained

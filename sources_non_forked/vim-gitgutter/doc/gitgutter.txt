@@ -140,7 +140,9 @@ Commands for jumping between hunks:~
 
                                                  *gitgutter-:GitGutterQuickFix*
 :GitGutterQuickFix      Load all hunks into the |quickfix| list.  Note this
-                        ignores any unsaved changes in your buffers.
+                        ignores any unsaved changes in your buffers. The
+                        |g:gitgutter_use_location_list| option can be set to
+                        populate the location list of the current window instead
 
 
 Commands for operating on a hunk:~
@@ -294,6 +296,7 @@ General:~
     |g:gitgutter_map_keys|
     |g:gitgutter_async|
     |g:gitgutter_log|
+    |g:gitgutter_use_location_list|
 
 
                                              *g:gitgutter_preview_win_location*
@@ -473,7 +476,7 @@ Controls whether or not the plugin is on at startup.
                                                          *g:gitgutter_map_keys*
 Default: 1
 
-Controls whether or not the plugin provides mappings.  See |gitgutter-mapppings|.
+Controls whether or not the plugin provides mappings.  See |gitgutter-mappings|.
 
                                                             *g:gitgutter_async*
 Default: 1
@@ -486,6 +489,12 @@ Default: 0
 
 When switched on, the plugin logs to gitgutter.log in the directory where it is
 installed.  Additionally it logs channel activity to channel.log.
+
+                                                *g:gitgutter_use_location_list*
+Default: 0
+
+When switched on, the :GitGutterQuickFix command populates the location list
+of the current window instead of the global quickfix list.
 
 
 ===============================================================================

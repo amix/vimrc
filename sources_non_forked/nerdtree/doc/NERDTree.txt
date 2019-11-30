@@ -125,6 +125,14 @@ The following features and functionality are provided by the NERDTree:
     again.  If no NERDTree exists for this tab then this command acts the
     same as the |:NERDTree| command.
 
+:NERDTreeToggleVCS [<start-directory> | <bookmark>]            *:NERDTreeToggleVCS*
+    Like |:NERDTreeToggle|, but searches up the directory tree to find the top of
+    the version control system repository, and roots the NERDTree there. It
+    works with Git, Subversion, Mercurial, Bazaar, and Darcs repositories. A
+    couple of examples: >
+        :NERDTreeToggleVCS /home/marty/nerdtree/doc  (opens /home/marty/nerdtree)
+        :NERDTreeToggleVCS              (opens root of repository containing CWD)
+
 :NERDTreeFocus                                                  *:NERDTreeFocus*
     Opens (or reopens) the NERDTree if it is not currently visible;
     otherwise, the cursor is moved to the already-open NERDTree.

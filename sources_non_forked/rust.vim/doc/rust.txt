@@ -426,11 +426,14 @@ functionality from other plugins.
 Running test(s)
 ---------------
 
-:RustTest[!] [options]                                          *:RustTest*
+:[N]RustTest[!] [options]                                       *:RustTest*
 		Runs a test under the cursor when the current buffer is in a
 		cargo project with "cargo test" command. If the command did
 		not find any test function under the cursor, it stops with an
 		error message.
+
+		When N is given, adjust the size of the new window to N lines
+		or columns.
 
 		When ! is given, runs all tests regardless of current cursor
 		position.
@@ -444,7 +447,11 @@ Running test(s)
 		is no way to run specific test function with rustc. [options]
 		is passed to "rustc" command arguments in the case.
 
-
+		Takes optional modifiers (see |<mods>|):  >
+		    :tab RustTest
+		    :belowright 16RustTest
+		    :leftabove vert 80RustTest
+<
 rust.vim Debugging
 ------------------
 

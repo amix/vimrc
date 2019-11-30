@@ -1,7 +1,6 @@
 " Language:     Rust
 " Description:  Vim ftplugin for Rust
 " Maintainer:   Chris Morgan <me@chrismorgan.info>
-" Maintainer:   Kevin Ballard <kevin@sb.org>
 " Last Change:  June 08, 2016
 " For bugs, patches and license go to https://github.com/rust-lang/rust.vim
 
@@ -137,7 +136,7 @@ command! -bar RustInfoToClipboard call rust#debugging#InfoToClipboard()
 command! -bar -nargs=1 RustInfoToFile call rust#debugging#InfoToFile(<f-args>)
 
 " See |:RustTest| for docs
-command! -buffer -nargs=* -bang RustTest call rust#Test(<bang>0, <q-args>)
+command! -buffer -nargs=* -count -bang RustTest call rust#Test(<q-mods>, <count>, <bang>0, <q-args>)
 
 if !exists("b:rust_last_rustc_args") || !exists("b:rust_last_args")
     let b:rust_last_rustc_args = []

@@ -191,7 +191,12 @@ function GetRustIndent(lnum)
     " A line that ends with '.<expr>;' is probably an end of a long list
     " of method operations.
     if prevline =~# '\V\^\s\*.' && l:last_prevline_character ==# ';'
-        return indent(prevlinenum) - s:shiftwidth()
+        call cursor(a:lnum - 1, 1)
+        let l:scope_start = searchpair('{\|(', '', '}\|)', 'nbW',
+                    \ 's:is_string_comment(line("."), col("."))')
+        if l:scope_start != 0 && l:scope_start < a:lnum
+            return indent(l:scope_start) + 4
+        endif
     endif
 
     if l:last_prevline_character ==# ","

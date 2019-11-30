@@ -226,6 +226,51 @@ Expect rust (issue #5):
   }
 
 ############################################
+# Issue #366
+
+Given rust:
+  fn f() {
+      g(|_| {
+          h();
+      })
+      .unwrap();
+      h();
+  }
+
+Do:
+  vip=
+
+Expect rust (issue #366):
+  fn f() {
+      g(|_| {
+          h();
+      })
+      .unwrap();
+      h();
+  }
+
+Given rust:
+  fn f() {
+      let a = g(|_| {
+              h();
+          })
+          .unwrap();
+      h();
+  }
+
+Do:
+  vip=
+
+Expect rust (issue #366, variation #2):
+  fn f() {
+      let a = g(|_| {
+          h();
+      })
+      .unwrap();
+      h();
+  }
+
+############################################
 
 Given rust:
   fn f() {

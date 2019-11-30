@@ -84,11 +84,14 @@ function! s:CheckForBadConfig(buffer, lines) abort
 endfunction
 
 function! s:parseJSON(buffer, lines) abort
-    try
-        let l:parsed = json_decode(a:lines[-1])
-    catch
-        return []
-    endtry
+    let l:parsed = []
+
+    for l:line in a:lines
+        try
+            let l:parsed = extend(l:parsed, json_decode(l:line))
+        catch
+        endtry
+    endfor
 
     if type(l:parsed) != v:t_list || empty(l:parsed)
         return []

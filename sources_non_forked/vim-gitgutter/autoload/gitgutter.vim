@@ -207,5 +207,9 @@ function! gitgutter#quickfix()
       let lnum = 0
     endif
   endfor
-  call setqflist(locations)
+  if !g:gitgutter_use_location_list
+    call setqflist(locations)
+  else
+    call setloclist(0, locations)
+  endif
 endfunction

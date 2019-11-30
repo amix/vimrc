@@ -18,7 +18,7 @@ Features:
 * Diffs against index (default) or any commit.
 * Allows folding all unchanged text.
 * Provides fold text showing whether folded lines have been changed.
-* Can load all hunk locations into quickfix list.
+* Can load all hunk locations into quickfix list or the current window's location list.
 * Handles line endings correctly, even with repos that do CRLF conversion.
 * Optional line highlighting.
 * Optional line number highlighting. (Only available in Neovim 0.3.2 or higher)
@@ -147,7 +147,7 @@ nmap ]h <Plug>(GitGutterNextHunk)
 nmap [h <Plug>(GitGutterPrevHunk)
 ```
 
-You can load all your hunks into the quickfix list with `:GitGutterQuickFix`.  Note this ignores any unsaved changes in your buffers.
+You can load all your hunks into the quickfix list with `:GitGutterQuickFix`.  Note this ignores any unsaved changes in your buffers. If the option `g:gitgutter_use_location_list` is set, this command will load hunks into the current window's location list instead.
 
 You can stage or undo an individual hunk when your cursor is in it:
 
@@ -254,6 +254,7 @@ You can customise:
 * Whether to clobber or preserve non-gitgutter signs
 * The priority of gitgutter's signs.
 * Whether to use a floating/popup window for hunk previews
+* Whether to populate the quickfix list or a location list with all hunks
 
 Please note that vim-gitgutter won't override any colours or highlights you've set in your colorscheme.
 
@@ -452,7 +453,12 @@ let g:gitgutter_async = 0
 
 #### To use floating/popup windows for hunk previews
 
-Add `let g:gitgutter_preview_win_floating = 1` to your vimrc.  Note that on Vim this prevents you staging (partial) hunks via the preview window.
+Add `let g:gitgutter_preview_win_floating = 1` to your `~/.vimrc`.  Note that on Vim this prevents you staging (partial) hunks via the preview window.
+
+
+#### To load all hunks into the current window's location list instead of the quickfix list
+
+Add `let g:gitgutter_use_location_list = 1` to your `~/.vimrc`.
 
 
 ### Extensions
@@ -513,9 +519,25 @@ Let's say, for example, you want to remove trailing whitespace from all changed 
 ```
 
 
+#### Cycle through hunks in current buffer
+
+This is like `:GitGutterNextHunk` but when it gets to the last hunk in the buffer it cycles around to the first.
+
+```viml
+function! GitGutterNextHunkCycle()
+  let line = line('.')
+  silent! GitGutterNextHunk
+  if line('.') == line
+    1
+    GitGutterNextHunk
+  endif
+endfunction
+```
+
+
 #### Cycle through hunks in all buffers
 
-You can use `:GitGutterQuickFix` to load all hunks into the quickfix list.
+You can use `:GitGutterQuickFix` to load all hunks into the quickfix list or the current window's location list.
 
 Alternatively, given that`]c` and `[c` jump from one hunk to the next in the current buffer, you can use this code to jump to the next hunk no matter which buffer it's in.
 
@@ -534,7 +556,7 @@ function! NextHunkAllBuffers()
       return
     endif
     if !empty(GitGutterGetHunks())
-      normal! 1G
+      1
       GitGutterNextHunk
       return
     endif

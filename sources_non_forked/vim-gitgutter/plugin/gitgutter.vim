@@ -61,6 +61,7 @@ call s:set('g:gitgutter_map_keys',                       1)
 call s:set('g:gitgutter_terminal_reports_focus',         1)
 call s:set('g:gitgutter_async',                          1)
 call s:set('g:gitgutter_log',                            0)
+call s:set('g:gitgutter_use_location_list',              0)
 
 call s:set('g:gitgutter_git_executable', 'git')
 if !executable(g:gitgutter_git_executable)
