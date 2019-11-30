@@ -122,7 +122,7 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [vim-coffee-script](https://github.com/kchmck/vim-coffee-script)
 * [vim-less](https://github.com/groenewege/vim-less)
 * [vim-bundle-mako](https://github.com/sophacles/vim-bundle-mako)
-* [vim-markdown](https://github.com/tpope/vim-markdown)
+* [vim-markdown](https://github.com/plasticboy/vim-markdown)
 * [nginx.vim](https://github.com/vim-scripts/nginx.vim): Highlights configuration files for nginx
 * [rust.vim](https://github.com/rust-lang/rust.vim)
 * [vim-ruby](https://github.com/vim-ruby/vim-ruby)
