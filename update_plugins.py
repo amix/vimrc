@@ -25,7 +25,6 @@ mayansmoke https://github.com/vim-scripts/mayansmoke
 nerdtree https://github.com/scrooloose/nerdtree
 nginx.vim https://github.com/chr4/nginx.vim
 open_file_under_cursor.vim https://github.com/amix/open_file_under_cursor.vim
-snipmate-snippets https://github.com/scrooloose/snipmate-snippets
 tlib https://github.com/vim-scripts/tlib
 vim-addon-mw-utils https://github.com/MarcWeber/vim-addon-mw-utils
 vim-bundle-mako https://github.com/sophacles/vim-bundle-mako
