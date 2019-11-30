@@ -150,31 +150,6 @@ You can also install your plugins, for instance, via pathogen you can install [v
 The [leader](http://learnvimscriptthehardway.stevelosh.com/chapters/06.html#leader) is `,`, so whenever you see `<leader>` it means `,`.
 
 
-### Plugin related mappings
-
-Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) to see and manage the current buffers (`<leader>o`):
-    
-    map <leader>o :BufExplorer<cr>
-
-Open [MRU.vim](https://github.com/vim-scripts/mru.vim) to see the recently open files (`<leader>f`):
-
-    map <leader>f :MRU<CR>
-
-Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a file or a buffer (`<leader>j` or `<ctrl>f`):
-    
-    let g:ctrlp_map = '<c-f>'
-
-[NERD Tree](https://github.com/scrooloose/nerdtree) mappings:
-
-    map <leader>nn :NERDTreeToggle<cr>
-    map <leader>nb :NERDTreeFromBookmark 
-    map <leader>nf :NERDTreeFind<cr>
-
-[goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It has a special look when editing Markdown, reStructuredText and textfiles. It only has one mapping. (`<leader>z`)
-
-    map <leader>z :Goyo<cr>
-
-
 ### Normal mode mappings
 
 Fast saving of a buffer (`<leader>w`):
@@ -184,7 +159,7 @@ Fast saving of a buffer (`<leader>w`):
 Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
 	
 	map <space> /
-	map <c-space> ?
+	map <C-space> ?
 	map <silent> <leader><cr> :noh<cr>
 
 Disable highlights when you press `<leader><cr>`:
@@ -215,7 +190,7 @@ Useful mappings for managing tabs:
 	
 	" Opens a new tab with the current buffer's path
 	" Super useful when editing files in the same directory
-	map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
+	map <leader>te :tabedit <C-r>=expand("%:p:h")<cr>/
 	
 Switch [CWD](http://vim.wikia.com/wiki/Set_working_directory_to_the_current_file) to the directory of the open buffer:
 	
@@ -273,7 +248,7 @@ Quickly insert parenthesis/brackets/etc.:
 
 Insert the current date and time (useful for timestamps):
 
-    iab xdate <c-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
+    iab xdate <C-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
 
 
 ### Command line mappings
@@ -294,6 +269,67 @@ Bash like keys for the command line:
 Write the file as sudo (works only on Unix). Super useful when you open a file and you don't have permissions to save your changes. [Vim tip](http://vim.wikia.com/wiki/Su-write):
 
     :W 
+
+
+### Plugin related mappings
+
+Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) to see and manage the current buffers (`<leader>o`):
+    
+    map <leader>o :BufExplorer<cr>
+
+Open [MRU.vim](https://github.com/vim-scripts/mru.vim) to see the recently open files (`<leader>f`):
+
+    map <leader>f :MRU<CR>
+
+Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a file or a buffer (`<leader>j` or `<ctrl>f`):
+    
+    let g:ctrlp_map = '<C-f>'
+
+[NERD Tree](https://github.com/scrooloose/nerdtree) mappings:
+
+    map <leader>nn :NERDTreeToggle<cr>
+    map <leader>nb :NERDTreeFromBookmark 
+    map <leader>nf :NERDTreeFind<cr>
+
+[goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It has a special look when editing Markdown, reStructuredText and textfiles. It only has one mapping. (`<leader>z`)
+
+    map <leader>z :Goyo<cr>
+
+[vim-multiple-cursors](https://github.com/terryma/vim-multiple-cursors) mappings to manage multiple cursors at once:
+
+    let g:multi_cursor_start_word_key      = '<C-s>'
+    let g:multi_cursor_select_all_word_key = '<A-s>'
+    let g:multi_cursor_start_key           = 'g<C-s>'
+    let g:multi_cursor_select_all_key      = 'g<A-s>'
+    let g:multi_cursor_next_key            = '<C-s>'
+    let g:multi_cursor_prev_key            = '<C-p>'
+    let g:multi_cursor_skip_key            = '<C-x>'
+    let g:multi_cursor_quit_key            = '<Esc>'
+
+[vim-yankstack](https://github.com/maxbrunsfeld/vim-yankstack) mappings to manage the kill-ring (clipboard):
+
+    nmap <C-p> <Plug>yankstack_substitute_older_paste
+    nmap <C-n> <Plug>yankstack_substitute_newer_paste
+
+[ctrl-p](https://github.com/ctrlpvim/ctrlp.vim) mappings to easily find and open a file, buffer, etc.:
+
+    let g:ctrlp_map = '<C-f>'
+    map <leader>j :CtrlP<cr>
+    map <C-b> :CtrlPBuffer<cr>
+
+[vim-snipmate](https://github.com/garbas/vim-snipmate) mappings to autocomplete via snippets:
+
+    ino <C-j> <C-r>=snipMate#TriggerSnippet()<cr>
+    snor <C-j> <esc>i<right><C-r>=snipMate#TriggerSnippet()<cr>
+
+[vim-surround](https://github.com/tpope/vim-surround) mappings to easily surround a string with `_()` gettext annotation:
+
+    vmap Si S(i_<esc>f)
+    au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
+
+[ale](https://github.com/dense-analysis/ale) to easily go to the next Ale syntax/lint error:
+
+    nmap <silent> <leader>a <Plug>(ale_next_wrap)
 
 
 ### Spell checking
