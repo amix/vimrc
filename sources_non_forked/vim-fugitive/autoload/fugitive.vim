@@ -2429,12 +2429,6 @@ function! s:ExpireStatus(bufnr) abort
   return ''
 endfunction
 
-function! FugitiveReloadCheck() abort
-  let t = b:fugitive_reltime
-  return [t, reltimestr(reltime(s:last_time, t)),
-        \ reltimestr(reltime(get(s:last_times, s:cpath(s:Dir()), t), t))]
-endfunction
-
 function! s:ReloadWinStatus(...) abort
   if get(b:, 'fugitive_type', '') !=# 'index' || &modified
     return
@@ -2913,9 +2907,9 @@ function! s:PatchSearchExpr(reverse) abort
       let pattern = '^[+-]\s*' . escape(substitute(strpart(line, 1), '^\s*\|\s*$', '', ''), '^$.*[]~\') . '\s*$'
     endif
     if a:reverse
-      return '?' . escape(pattern, '/') . "\<CR>"
+      return '?' . escape(pattern, '/?') . "\<CR>"
     else
-      return '/' . escape(pattern, '/?') . "\<CR>"
+      return '/' . escape(pattern, '/') . "\<CR>"
     endif
   endif
   return a:reverse ? '#' : '*'
@@ -4821,7 +4815,7 @@ function! s:BlameCommitFileLnum(...) abort
     let commit = get(s:LinesError('rev-list', '--ancestry-path', '--reverse', commit . '..' . state.blame_reverse_end)[0], 0, '')
   endif
   let lnum = +matchstr(line, ' \zs\d\+\ze \%((\| *\d\+)\)')
-  let path = matchstr(line, '^\^\=[?*]*\x* \+\%(\d\+ \+\d\+ \+\)\=\zs.\{-\}\ze\s\+\%(\%( \d\+ \)\@<!([^()]*\w \d\+)\|\d\+ \)')
+  let path = matchstr(line, '^\^\=[?*]*\x* \+\%(\d\+ \+\d\+ \+\)\=\zs.\{-\}\ze\s*\d\+ \%((\| *\d\+)\)')
   if empty(path) && lnum
     let path = get(state, 'blame_file', '')
   endif

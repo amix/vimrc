@@ -307,7 +307,7 @@ end
 endsnippet
 
 snippet class "class <class_name> def initialize ... end end"
-class ${1:class_name}
+class ${1:`!p snip.rv = snip.basename.title().replace('_', '')`}
 	def initialize(${2:*args})
 		$0
 	end
@@ -315,7 +315,7 @@ end
 endsnippet
 
 snippet module "module"
-module ${1:module_name}
+module ${1:`!p snip.rv = snip.basename.title().replace('_', '')`}
 	$0
 end
 endsnippet
