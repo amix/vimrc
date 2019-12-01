@@ -64,7 +64,7 @@ Just do a git rebase!
 
     cd ~/.vim_runtime
     git pull --rebase
-    python3 update_plugins.py
+    python update_plugins.py
 
 
 ## Some screenshots
