@@ -89,10 +89,6 @@ function GetGoogle3Path(filepath, clientpath)
   endif 
 endfunction
 
-function PathNameFilterHelper(key, val)
-   let l:idx = strridx() 
-endfunction
-
 function GoogleECompletion(ArgLead, CmdLine, CursorPos)
   let l:citc = GetCitCPath()
   let l:filepath = GetGoogle3Path(a:ArgLead, l:citc)
@@ -138,9 +134,46 @@ execute 'CommandCabbr e GoogleE'
 " Play the macro in register q.
 nnoremap <Leader>. @q
 
-" FromProto
-let @f = "ywidata.\<Esc>wwi = proto.\<Esc>pa()\<Esc>jb"
-" ToProto
-let @t = "ywiif (proto->\<Esc>wwi() != data.\<Esc>pa) {\<Enter>\<Enter>}\<Esc>kAproto->\<Esc>pbdwaset_\<Esc>pa(data.\<Esc>pa);\<Esc>jxj"
+
+" Class Access Operator toggle
+" Only work if current char under the cursor is either . or ->
+function ClassAccessOperatorToggle()
+    " Col number starts at 1 while string index starts at 0.
+    let cur_char = matchstr(getline('.'), '\%' . col('.') . 'c.')
+    " == does not match case, but it is sufficient here. ==# match cases. For more :help expr-<
+    " To do replace . with -> or replace -> with .
+    let line = line(".")
+    if cur_char == '.'
+      execute line . "," . line . "s/\\./->/"
+    endif
+    if cur_char == '-' || cur_char == '>'
+      execute line . "," . line . "s/->/./"
+    endif
+endfunction 
+
+command ClassAccessOperatorToggle call ClassAccessOperatorToggle()
+nnoremap ,p :ClassAccessOperatorToggle<CR>
+
+" Copy the buildable command of the current file to clipboard.
+" If the current file is a/b/c/d/k.h
+" Copy 'blaze build a/b/c/d:k' to clipboard.
+function! GetCurrentFileBuildCmd()
+  " citc:filepath
+  let path = GetSmartFilePath() 
+  let subs = split(path, ':')
+
+  let file = expand('%:p:t')
+  " Need to escapte the dot.
+  let file_subs = split(file, '\.')
+  if len(subs) > 1 && len(file_subs) > 0
+      let output = 'blaze build ' . subs[1] . ':' . file_subs[0]
+      " Copy to secondary clipboard, ctrl+c/v
+      echom l:output
+      let @+ = l:output
+  endif
+endfunction 
+
+
+
 
 
