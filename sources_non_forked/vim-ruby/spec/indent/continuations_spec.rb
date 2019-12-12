@@ -314,4 +314,13 @@ describe "Indenting" do
       end
     EOF
   end
+
+  specify "wrong continuation within regex character class" do
+    # See https://github.com/vim-ruby/vim-ruby/issues/405 for details
+
+    assert_correct_indenting <<~EOF
+      extname = file.extname(url).split(/[?#]/).first
+      target_file = tempfile.new()
+    EOF
+  end
 end

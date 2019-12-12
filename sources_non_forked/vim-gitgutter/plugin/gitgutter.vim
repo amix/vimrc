@@ -244,7 +244,7 @@ augroup gitgutter
   autocmd ShellCmdPost * call gitgutter#all(1)
   autocmd BufLeave term://* call gitgutter#all(1)
 
-  autocmd BufWritePost fugitive://*//0/* call gitgutter#all(1)
+  autocmd User FugitiveChanged call gitgutter#all(1)
 
   autocmd BufFilePre  * GitGutterBufferDisable
   autocmd BufFilePost * GitGutterBufferEnable
