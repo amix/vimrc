@@ -14,3 +14,6 @@
 	path = my_plugins/vim-vue-syntastic
 	url = git@github.com:sekel/vim-vue-syntastic.git
 	branch = master
+[submodule "my_plugins/vim-liquid"]
+	path = my_plugins/vim-liquid
+	url = https://github.com/tpope/vim-liquid.git
