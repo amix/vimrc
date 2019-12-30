@@ -66,7 +66,7 @@ endfunction
 "FUNCTION: KeyMap.invoke() {{{1
 "Call the KeyMaps callback function
 function! s:KeyMap.invoke(...)
-    let Callback = function(self.callback)
+    let Callback = type(self.callback) == type(function("tr")) ? self.callback : function(self.callback)
     if a:0
         call Callback(a:1)
     else

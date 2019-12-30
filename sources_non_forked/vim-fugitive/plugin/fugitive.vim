@@ -304,6 +304,9 @@ function! s:ProjectionistDetect() abort
   endif
 endfunction
 
+if v:version + has('patch061') < 703
+  runtime! autoload/fugitive.vim
+endif
 let g:io_fugitive = {
       \ 'simplify': function('fugitive#simplify'),
       \ 'resolve': function('fugitive#resolve'),

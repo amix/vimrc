@@ -1315,6 +1315,10 @@ following code conventions are used:
 See this blog post for more details:
  http://got-ravings.blogspot.com/2008/09/vim-pr0n-prototype-based-objects.html
 
+A number of API functions take a callback argument to call. The callback can
+be either a string with the name of a function to call, or a |Funcref| object
+which will be called directly.
+
 ------------------------------------------------------------------------------
 4.1. Key map API                                             *NERDTreeKeymapAPI*
 

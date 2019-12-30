@@ -7,6 +7,9 @@
     in an unordered list.  The format is:
         - **.PATCH**: Pull Request Title (PR Author) [PR Number](Link to PR)
 -->
+#### 6.4
+- **.1**: Ensure backward compatibility. v:t_func is not available before Vim 8.0 (Phil Runninger)
+- **.0**: Allow use of function references as callbacks (HiPhish) [#1067](https://github.com/scrooloose/nerdtree/pull/1067)
 #### 6.3
 - **.0**: Add new command that behaves like NERDTreeToggle but defaults to the root of a VCS repository. (willfindlay) [#1060](https://github.com/scrooloose/nerdtree/pull/1060)
 #### 6.2

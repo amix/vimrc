@@ -87,6 +87,13 @@ For screenshots of all available colorshemes, see [this file](colorscheme.md).
 
 2. Install with `:PlugInstall`.
 
+### [dein.vim](https://github.com/Shougo/dein.vim)
+1. Add the following configuration to your `.vimrc`.
+
+        call dein#add('itchyny/lightline.vim')
+
+2. Install with `:call dein#install()`
+
 ## Introduction
 After installing this plugin, you restart the editor and will get a cool statusline.
 ![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/1.png)
@@ -323,7 +330,7 @@ let g:lightline = {
       \ }
 
 function! LightlineMode()
-  return expand('%:t') ==# '__Tagbar__' ? 'Tagbar':
+  return expand('%:t') =~# '^__Tagbar__' ? 'Tagbar':
         \ expand('%:t') ==# 'ControlP' ? 'CtrlP' :
         \ &filetype ==# 'unite' ? 'Unite' :
         \ &filetype ==# 'vimfiler' ? 'VimFiler' :
@@ -376,6 +383,40 @@ endfunction
 
 You can control the visibility and contents by writing simple functions.
 Now you notice how much function component is important for the configurability of lightline.vim.
+
+### more tips
+#### Mode names are too long. Can I use shorter mode names?
+Yes, configure `g:lightline.mode_map`.
+```vim
+let g:lightline = {
+      \ 'mode_map': {
+        \ 'n' : 'N',
+        \ 'i' : 'I',
+        \ 'R' : 'R',
+        \ 'v' : 'V',
+        \ 'V' : 'VL',
+        \ "\<C-v>": 'VB',
+        \ 'c' : 'C',
+        \ 's' : 'S',
+        \ 'S' : 'SL',
+        \ "\<C-s>": 'SB',
+        \ 't': 'T',
+        \ },
+      \ }
+```
+
+#### How can I truncate the components from the right in narrow windows?
+Please include `%<` to one of the right components.
+```vim
+let g:lightline = {
+      \ 'component': {
+      \   'lineinfo': '%3l:%-2v%<',
+      \ },
+      \ }
+```
+
+#### Where can I find the default components?
+See `:h g:lightline.component`.
 
 ## Note for developers of other plugins
 Appearance consistency matters.

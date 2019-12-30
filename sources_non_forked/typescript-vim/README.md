@@ -11,9 +11,14 @@ and other features for TypeScript editing.
 Install
 -------
 
-From Vim 8 onward, the plugin can be installed as simply as:
+From Vim 8 onward, the plugin can be installed as simply as (Unix/Mac):
 ```
 git clone https://github.com/leafgarland/typescript-vim.git ~/.vim/pack/typescript/start/typescript-vim
+```
+
+On Windows/Powershell, use the following:
+```
+git clone https://github.com/leafgarland/typescript-vim.git $home/vimfiles/pack/typescript/start/typescript-vim
 ```
 
 For older versions of Vim, the simplest way to install is via a Vim add-in manager such as

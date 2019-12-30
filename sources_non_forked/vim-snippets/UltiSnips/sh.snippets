@@ -29,14 +29,14 @@ snippet #! "#!/usr/bin/env (!env)" b
 `!p snip.rv = '#!/usr/bin/env ' + getShell() + "\n" `
 endsnippet
 
-snippet sbash "safe bash options"
+snippet sbash "safe bash options" b
 #!/usr/bin/env bash
 set -euo pipefail
 IFS=$'\n\t'
 `!p snip.rv ='\n\n' `
 endsnippet
 
-snippet temp "Tempfile"
+snippet temp "Tempfile" b
 ${1:TMPFILE}="$(mktemp -t ${3:--suffix=${4:.SUFFIX}} ${2:`!p
 snip.rv = re.sub(r'[^a-zA-Z]', '_', snip.fn) or "untitled"
 `}.XXXXXX)"
@@ -44,27 +44,27 @@ ${5:${6/(.+)/trap "/}${6:rm -f '$${1/.*\s//}'}${6/(.+)/" 0               # EXIT\
 
 endsnippet
 
-snippet case "case .. esac (case)"
+snippet /case|sw(itch)?/ "case .. esac (case)" rb
 case ${1:word} in
 	${2:pattern} )
-		$0;;
+		${0:${VISUAL}};;
 esac
 endsnippet
 
-snippet elif "elif .. (elif)"
+snippet elif "elif .. (elif)" b
 elif ${2:[[ ${1:condition} ]]}; then
-	${0:#statements}
+	${0:${VISUAL}}
 endsnippet
 
-snippet for "for ... done (for)"
+snippet for "for ... done (for)" b
 for (( i = 0; i < ${1:10}; i++ )); do
-	${0:#statements}
+	${0:${VISUAL}}
 done
 endsnippet
 
-snippet forin "for ... in ... done (forin)"
+snippet forin "for ... in ... done (forin)" b
 for ${1:i}${2/.+/ in /}${2:words}; do
-	${0:#statements}
+	${0:${VISUAL}}
 done
 endsnippet
 
@@ -74,21 +74,21 @@ snippet here "here document (here)"
 ${1/['"`](.+)['"`]/$1/}
 endsnippet
 
-snippet if "if ... then (if)"
+snippet if "if ... then (if)" b
 if ${2:[[ ${1:condition} ]]}; then
-	${0:#statements}
+	${0:${VISUAL}}
 fi
 endsnippet
 
-snippet until "until ... (done)"
+snippet until "until ... (done)" b
 until ${2:[[ ${1:condition} ]]}; do
-	${0:#statements}
+	${0:${VISUAL}}
 done
 endsnippet
 
-snippet while "while ... (done)"
+snippet /wh(ile)?/ "while ... (done)" rb
 while ${2:[[ ${1:condition} ]]}; do
-	${0:#statements}
+	${0:${VISUAL}}
 done
 endsnippet
 

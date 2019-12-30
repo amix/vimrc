@@ -79,7 +79,7 @@ endfunction
 "specified
 function! s:MenuItem.enabled()
     if self.isActiveCallback != -1
-        return {self.isActiveCallback}()
+        return type(self.isActiveCallback) == type(function("tr")) ? self.isActiveCallback() : {self.isActiveCallback}()
     endif
     return 1
 endfunction
@@ -94,7 +94,11 @@ function! s:MenuItem.execute()
         call mc.showMenu()
     else
         if self.callback != -1
-            call {self.callback}()
+            if type(self.callback) == type(function("tr"))
+                call self.callback()
+            else
+                call {self.callback}()
+            endif
         endif
     endif
 endfunction

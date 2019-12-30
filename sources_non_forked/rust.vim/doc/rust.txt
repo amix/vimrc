@@ -128,15 +128,14 @@ g:rustfmt_autosave~
 	
                                         *g:rustfmt_autosave_if_config_present*
 g:rustfmt_autosave_if_config_present~
-	Set this option to 1 to to have *b:rustfmt_autosave* be set automatically
-	if a `rustfmt.toml` file is present in any parent directly leading to 
+	Set this option to 1 to have *b:rustfmt_autosave* be set automatically
+	if a `rustfmt.toml` file is present in any parent directly leading to
 	the file being edited. If not set, default to 0: >
-
 	    let g:rustfmt_autosave_if_config_present = 0
 <
 	This is useful to have `rustfmt` only execute on save, on projects
 	that have `rustfmt.toml` configuration.
-    
+
 	There is also a buffer-local b:rustfmt_autosave_if_config_present
 	that can be set for the same purpose, which can overrides the global
 	setting.
@@ -160,6 +159,7 @@ g:rustfmt_emit_files~
 	determines whether to run rustfmt with '--emit=files' (when 1 is
 	provided) instead of '--write-mode=overwrite'. >
 	    let g:rustfmt_emit_files = 0
+
 
                                                           *g:rust_playpen_url*
 g:rust_playpen_url~
@@ -192,9 +192,9 @@ Integration with Syntastic                                    *rust-syntastic*
 --------------------------
 
 This plugin automatically integrates with the Syntastic checker. There are two
-checkers provided: 'rustc', and 'cargo'. The later invokes 'Cargo' in order to
+checkers provided: 'rustc', and 'cargo'. The latter invokes 'Cargo' in order to
 build code, and the former delivers a single edited '.rs' file as a compilation
-target directly to the Rust compiler, `rustc`. 
+target directly to the Rust compiler, `rustc`.
 
 Because Cargo is almost exclusively being used for building Rust code these
 days, 'cargo' is the default checker. >
@@ -354,7 +354,8 @@ Playpen integration
 		|g:rust_clip_command| is the command to run to copy the
 		playpen url to the clipboard of your system.
 
-Evaulation of a single Rust file
+
+Evaluation of a single Rust file
 --------------------------------
 
 NOTE: These commands are useful only when working with standalone Rust files,
