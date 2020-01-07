@@ -103,9 +103,23 @@ that are part of Git repositories).
 :Glgrep[!] [args]       |:lgrep|[!] with git-grep as 'grepprg'.
 :0Git[!] grep [args]
 
+                                                *:Git-difftool*
+:Git[!] difftool [args] Invoke `git diff [args]` and load the changes into the
+                        quickfix list.  Each changed hunk gets a separate
+                        quickfix entry unless you pass an option like
+                        --name-only or --name-status.  Jumps to the first
+                        change unless [!] is given.
+
+:Git difftool -y [args] Invoke `git diff [args]`, open each changed file in a
+                        new tab, and invoke `:Gdiffsplit` against the
+                        appropriate commit.
+
+                                                *:Git-mergetool*
+:Git mergetool [args]   Like |:Git-difftool|, but target merge conflicts.
+
                                                  *:Gclog* *:Glog*
 :Gclog[!] [args]        Use git-log [args] to load the commit history into the
-:Glog[!] [args]         |quickfix| list.  Jump to the first commit unless [!]
+:Glog[!] [args]         |quickfix| list.  Jumps to the first commit unless [!]
                         is given.
 
 :{range}Gclog[!] [args] Use git-log -L to load previous revisions of the given

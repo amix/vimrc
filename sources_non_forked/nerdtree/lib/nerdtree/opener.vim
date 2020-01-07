@@ -1,7 +1,7 @@
 " ============================================================================
 " CLASS: Opener
 "
-" The Opener class defines an API for "opening" operations.
+" The Opener class defines an API for 'opening' operations.
 " ============================================================================
 
 
@@ -45,7 +45,7 @@ function! s:Opener._checkToCloseTree(newtab)
         return
     endif
 
-    if (a:newtab && self._where == 't') || !a:newtab
+    if (a:newtab && self._where ==# 't') || !a:newtab
         call g:NERDTree.CloseIfQuitOnOpen()
     endif
 endfunction
@@ -54,9 +54,9 @@ endfunction
 " find the window number of the first normal window
 function! s:Opener._firstUsableWindow()
     let i = 1
-    while i <= winnr("$")
+    while i <= winnr('$')
         let bnum = winbufnr(i)
-        if bnum != -1 && getbufvar(bnum, '&buftype') ==# ''
+        if bnum !=# -1 && getbufvar(bnum, '&buftype') ==# ''
                     \ && !getwinvar(i, '&previewwindow')
                     \ && (!getbufvar(bnum, '&modified') || &hidden)
             return i
@@ -70,23 +70,23 @@ endfunction
 " FUNCTION: Opener._gotoTargetWin() {{{1
 function! s:Opener._gotoTargetWin()
     if b:NERDTree.isWinTree()
-        if self._where == 'v'
+        if self._where ==# 'v'
             call self._newVSplit()
-        elseif self._where == 'h'
+        elseif self._where ==# 'h'
             call self._newSplit()
-        elseif self._where == 't'
+        elseif self._where ==# 't'
             tabnew
         endif
     else
         call self._checkToCloseTree(1)
 
-        if self._where == 'v'
+        if self._where ==# 'v'
             call self._newVSplit()
-        elseif self._where == 'h'
+        elseif self._where ==# 'h'
             call self._newSplit()
-        elseif self._where == 't'
+        elseif self._where ==# 't'
             tabnew
-        elseif self._where == 'p'
+        elseif self._where ==# 'p'
             call self._previousWindow()
         endif
 
@@ -102,15 +102,15 @@ endfunction
 " winnumber: the number of the window in question
 function! s:Opener._isWindowUsable(winnumber)
     "gotta split if theres only one window (i.e. the NERD tree)
-    if winnr("$") ==# 1
+    if winnr('$') ==# 1
         return 0
     endif
 
     let oldwinnr = winnr()
-    call nerdtree#exec(a:winnumber . "wincmd p", 1)
-    let specialWindow = getbufvar("%", '&buftype') != '' || getwinvar('%', '&previewwindow')
+    call nerdtree#exec(a:winnumber . 'wincmd p', 1)
+    let specialWindow = getbufvar('%', '&buftype') !=# '' || getwinvar('%', '&previewwindow')
     let modified = &modified
-    call nerdtree#exec(oldwinnr . "wincmd p", 1)
+    call nerdtree#exec(oldwinnr . 'wincmd p', 1)
 
     "if its a special window e.g. quickfix or another explorer plugin then we
     "have to split
@@ -131,9 +131,9 @@ endfunction
 " a:path: the path object that is to be opened
 " a:opts: a dictionary containing the following optional keys...
 "   'where': specifies whether the node should be opened in new split, in
-"            a new tab or, in the last window; takes values "v", "h", or "t"
+"            a new tab or, in the last window; takes values 'v', 'h', or 't'
 "   'reuse': if file is already shown in a window, jump there; takes values
-"            "all", "currenttab", or empty
+"            'all', 'currenttab', or empty
 "   'keepopen': boolean (0 or 1); if true, the tree window will not be closed
 "   'stay': boolean (0 or 1); if true, remain in tree window after opening
 function! s:Opener.New(path, opts)
@@ -153,21 +153,21 @@ endfunction
 
 " FUNCTION: Opener._newSplit() {{{1
 function! s:Opener._newSplit()
-    let onlyOneWin = (winnr("$") ==# 1)
+    let onlyOneWin = (winnr('$') ==# 1)
     let savesplitright = &splitright
     if onlyOneWin
-        let &splitright = (g:NERDTreeWinPos ==# "left")
+        let &splitright = (g:NERDTreeWinPos ==# 'left')
     endif
     " If only one window (ie. NERDTree), split vertically instead.
-    let splitMode = onlyOneWin ? "vertical" : ""
+    let splitMode = onlyOneWin ? 'vertical' : ''
 
     " Open the new window
     try
         call nerdtree#exec('wincmd p', 1)
-        call nerdtree#exec(splitMode . " split",1)
+        call nerdtree#exec(splitMode . ' split',1)
     catch /^Vim\%((\a\+)\)\=:E37/
         call g:NERDTree.CursorToTreeWin()
-        throw "NERDTree.FileAlreadyOpenAndModifiedError: ". self._path.str() ." is already open and modified."
+        throw 'NERDTree.FileAlreadyOpenAndModifiedError: '. self._path.str() .' is already open and modified.'
     catch /^Vim\%((\a\+)\)\=:/
         "do nothing
     endtry
@@ -187,10 +187,10 @@ endfunction
 function! s:Opener._newVSplit()
     let l:winwidth = winwidth('.')
 
-    let onlyOneWin = (winnr("$") ==# 1)
+    let onlyOneWin = (winnr('$') ==# 1)
     let savesplitright = &splitright
     if onlyOneWin
-        let &splitright = (g:NERDTreeWinPos ==# "left")
+        let &splitright = (g:NERDTreeWinPos ==# 'left')
         let l:winwidth = g:NERDTreeWinSize
     endif
 
@@ -219,7 +219,7 @@ endfunction
 
 " FUNCTION: Opener._openFile() {{{1
 function! s:Opener._openFile()
-    if !self._stay && !and(g:NERDTreeQuitOnOpen,1) && exists("b:NERDTreeZoomed") && b:NERDTreeZoomed
+    if !self._stay && !and(g:NERDTreeQuitOnOpen,1) && exists('b:NERDTreeZoomed') && b:NERDTreeZoomed
         call b:NERDTree.ui.toggleZoom()
     endif
 
@@ -247,7 +247,7 @@ function! s:Opener._openDirectory(node)
     else
         if empty(self._where)
             call b:NERDTree.changeRoot(a:node)
-        elseif self._where == 't'
+        elseif self._where ==# 't'
             call g:NERDTreeCreator.CreateTabTree(a:node.path.str())
         else
             call g:NERDTreeCreator.CreateWindowTree(a:node.path.str())
@@ -261,18 +261,18 @@ endfunction
 
 " FUNCTION: Opener._previousWindow() {{{1
 function! s:Opener._previousWindow()
-    if !self._isWindowUsable(winnr("#")) && self._firstUsableWindow() ==# -1
+    if !self._isWindowUsable(winnr('#')) && self._firstUsableWindow() ==# -1
         call self._newSplit()
     else
         try
-            if !self._isWindowUsable(winnr("#"))
-                call nerdtree#exec(self._firstUsableWindow() . "wincmd w", 1)
+            if !self._isWindowUsable(winnr('#'))
+                call nerdtree#exec(self._firstUsableWindow() . 'wincmd w', 1)
             else
                 call nerdtree#exec('wincmd p', 1)
             endif
         catch /^Vim\%((\a\+)\)\=:E37/
             call g:NERDTree.CursorToTreeWin()
-            throw "NERDTree.FileAlreadyOpenAndModifiedError: ". self._path.str() ." is already open and modified."
+            throw 'NERDTree.FileAlreadyOpenAndModifiedError: '. self._path.str() .' is already open and modified.'
         catch /^Vim\%((\a\+)\)\=:/
             echo v:exception
         endtry
@@ -296,13 +296,13 @@ function! s:Opener._reuseWindow()
 
     "check the current tab for the window
     let winnr = bufwinnr('^' . self._path.str() . '$')
-    if winnr != -1
-        call nerdtree#exec(winnr . "wincmd w", 0)
+    if winnr !=# -1
+        call nerdtree#exec(winnr . 'wincmd w', 0)
         call self._checkToCloseTree(0)
         return 1
     endif
 
-    if self._reuse == 'currenttab'
+    if self._reuse ==# 'currenttab'
         return 0
     endif
 
@@ -312,7 +312,7 @@ function! s:Opener._reuseWindow()
         call self._checkToCloseTree(1)
         call nerdtree#exec(tabnr . 'tabnext', 1)
         let winnr = bufwinnr('^' . self._path.str() . '$')
-        call nerdtree#exec(winnr . "wincmd w", 0)
+        call nerdtree#exec(winnr . 'wincmd w', 0)
         return 1
     endif
 
@@ -321,7 +321,7 @@ endfunction
 
 " FUNCTION: Opener._saveCursorPos() {{{1
 function! s:Opener._saveCursorPos()
-    let self._bufnr = bufnr("")
+    let self._bufnr = bufnr('')
     let self._tabnr = tabpagenr()
 endfunction
 

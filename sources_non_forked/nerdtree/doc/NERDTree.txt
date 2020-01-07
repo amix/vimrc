@@ -1238,7 +1238,7 @@ This character is used to separate the file or directory name from the rest of
 the characters in the line of text. It allows filenames to contain special
 characters that are otherwise used in the NERDTree, such as square brackets,
 braces, trailing asterisk, and leading space. For more details, see the
-responsible pull request: https://github.com/scrooloose/nerdtree/pull/868.
+responsible pull request: https://github.com/preservim/nerdtree/pull/868.
 
 The default value of this variable depends on the features compiled into your
 vim and the values of |NERDTreeDirArrowCollapsible| and
@@ -1498,11 +1498,11 @@ in the fridge for later ;)
 Martyzilla recruited two other unwitting accomplices to become his minions in
 his quest to conquer the Vim plugin world. While he may still love to receive
 your emails, the best way to send suggestions, bug reports, and questions is
-to submit an issue at http://github.com/scrooloose/nerdtree/issues.
+to submit an issue at http://github.com/preservim/nerdtree/issues.
 
 The latest stable and development versions are on Github.
-    Stable: http://github.com/scrooloose/nerdtree (master branch)
-    Development: http://github.com/scrooloose/nerdtree/branches
+    Stable: http://github.com/preservim/nerdtree (master branch)
+    Development: http://github.com/preservim/nerdtree/branches
 
 Title Credit:
   * http://ascii.co.uk/art/tree

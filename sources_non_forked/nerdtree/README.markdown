@@ -1,4 +1,4 @@
-The NERDTree
+The NERDTree [![Vint](https://github.com/preservim/nerdtree/workflows/Vint/badge.svg)](https://github.com/preservim/nerdtree/actions?workflow=Vint)
 =============
 
 Introduction
@@ -12,7 +12,7 @@ This plugin can also be extended with custom mappings using a special API. The
 details of this API and of other NERDTree features are described in the
 included documentation.
 
-![NERDTree Screenshot](https://github.com/scrooloose/nerdtree/raw/master/screenshot.png)
+![NERDTree Screenshot](https://github.com/preservim/nerdtree/raw/master/screenshot.png)
 
 Installation
 ------------
@@ -24,7 +24,7 @@ Below are just some of the methods for installing NERDTree. Do not follow all of
 If you are using VIM version 8 or higher you can use its built-in package management; see `:help packages` for more information. Just run these commands in your terminal:
 
 ```bash
-git clone https://github.com/scrooloose/nerdtree.git ~/.vim/pack/vendor/start/nerdtree
+git clone https://github.com/preservim/nerdtree.git ~/.vim/pack/vendor/start/nerdtree
 vim -u NONE -c "helptags ~/.vim/pack/vendor/start/nerdtree/doc" -c q
 ```
 
@@ -34,7 +34,7 @@ Otherwise, these are some of the several 3rd-party plugin managers you can choos
 
 In the terminal,
 ```bash
-git clone https://github.com/scrooloose/nerdtree.git ~/.vim/bundle/nerdtree
+git clone https://github.com/preservim/nerdtree.git ~/.vim/bundle/nerdtree
 ```
 In your vimrc,
 ```vim
@@ -48,23 +48,23 @@ Then reload vim, run `:helptags ~/.vim/bundle/nerdtree/doc/` or `:Helptags`.
 #### [Vundle.vim](https://github.com/VundleVim/Vundle.vim)
 ```vim
 call vundle#begin()
-Plugin 'scrooloose/nerdtree'
+Plugin 'preservim/nerdtree'
 call vundle#end()
 ```
 
 #### [vim-plug](https://github.com/junegunn/vim-plug)
 ```vim
 call plug#begin()
-Plug 'scrooloose/nerdtree'
+Plug 'preservim/nerdtree'
 call plug#end()
 ```
 
 #### [apt-vim](https://github.com/egalpin/apt-vim)
 ```bash
-apt-vim install -y https://github.com/scrooloose/nerdtree.git
+apt-vim install -y https://github.com/preservim/nerdtree.git
 ```
 
-F.A.Q. (here, and in the [Wiki](https://github.com/scrooloose/nerdtree/wiki))
+F.A.Q. (here, and in the [Wiki](https://github.com/preservim/nerdtree/wiki))
 ------
 
 #### Is there any support for `git` flags?
@@ -133,7 +133,7 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 ---
 #### Can I have different highlighting for different file extensions?
 
-See here: https://github.com/scrooloose/nerdtree/issues/433#issuecomment-92590696
+See here: https://github.com/preservim/nerdtree/issues/433#issuecomment-92590696
 
 ---
 #### How can I change default arrows?

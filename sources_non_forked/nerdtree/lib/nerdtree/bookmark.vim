@@ -33,7 +33,7 @@ endfunction
 " Class method to get all bookmarks. Lazily initializes the bookmarks global
 " variable
 function! s:Bookmark.Bookmarks()
-    if !exists("g:NERDTreeBookmarks")
+    if !exists('g:NERDTreeBookmarks')
         let g:NERDTreeBookmarks = []
     endif
     return g:NERDTreeBookmarks
@@ -53,7 +53,7 @@ endfunction
 
 " FUNCTION: Bookmark.BookmarkFor(name) {{{1
 " Class method that returns the Bookmark object having the specified name.
-" Throws "NERDTree.BookmarkNotFoundError" if no Bookmark is found.
+" Throws NERDTree.BookmarkNotFoundError if no Bookmark is found.
 function! s:Bookmark.BookmarkFor(name)
     let l:result = {}
     for l:bookmark in s:Bookmark.Bookmarks()
@@ -93,7 +93,7 @@ function! s:Bookmark.CacheBookmarks(silent)
         for i in bookmarkStrings
 
             "ignore blank lines
-            if i != ''
+            if i !=# ''
 
                 let name = substitute(i, '^\(.\{-}\) .*$', '\1', '')
                 let path = substitute(i, '^.\{-} \(.*\)$', '\1', '')
@@ -111,7 +111,7 @@ function! s:Bookmark.CacheBookmarks(silent)
         if invalidBookmarksFound
             call s:Bookmark.Write()
             if !a:silent
-                call nerdtree#echo(invalidBookmarksFound . " invalid bookmarks were read. See :help NERDTreeInvalidBookmarks for info.")
+                call nerdtree#echo(invalidBookmarksFound . ' invalid bookmarks were read. See :help NERDTreeInvalidBookmarks for info.')
             endif
         endif
     endif
@@ -120,16 +120,16 @@ endfunction
 " FUNCTION: Bookmark.CompareBookmarksByName(firstBookmark, secondBookmark) {{{1
 " Class method that indicates the relative position of two bookmarks when
 " placed in alphabetical order by name. Case-sensitivity is determined by an
-" option. Supports the "s:Bookmark.SortBookmarksList()" method.
+" option. Supports the s:Bookmark.SortBookmarksList() method.
 function! s:Bookmark.CompareBookmarksByName(firstBookmark, secondBookmark)
     let l:result = 0
-    if g:NERDTreeBookmarksSort == 1
+    if g:NERDTreeBookmarksSort ==# 1
         if a:firstBookmark.name <? a:secondBookmark.name
             let l:result = -1
         elseif a:firstBookmark.name >? a:secondBookmark.name
             let l:result = 1
         endif
-    elseif g:NERDTreeBookmarksSort == 2
+    elseif g:NERDTreeBookmarksSort ==# 2
         if a:firstBookmark.name <# a:secondBookmark.name
             let l:result = -1
         elseif a:firstBookmark.name ># a:secondBookmark.name
@@ -159,13 +159,13 @@ endfunction
 " FUNCTION: s:Edit() {{{1
 " opens the NERDTreeBookmarks file for manual editing
 function! s:Bookmark.Edit()
-    call nerdtree#exec("wincmd w", 1)
-    call nerdtree#exec("edit ".g:NERDTreeBookmarksFile, 1)
+    call nerdtree#exec('wincmd w', 1)
+    call nerdtree#exec('edit '.g:NERDTreeBookmarksFile, 1)
 endfunction
 
 " FUNCTION: Bookmark.getNode(nerdtree, searchFromAbsoluteRoot) {{{1
 " Returns the tree node object associated with this Bookmark.
-" Throws "NERDTree.BookmarkedNodeNotFoundError" if the node is not found.
+" Throws NERDTree.BookmarkedNodeNotFoundError if the node is not found.
 "
 " Args:
 " searchFromAbsoluteRoot: boolean flag, search from the highest cached node
@@ -185,8 +185,8 @@ endfunction
 
 " FUNCTION: Bookmark.GetNodeForName(name, searchFromAbsoluteRoot, nerdtree) {{{1
 " Class method that returns the tree node object for the Bookmark with the
-" given name. Throws "NERDTree.BookmarkNotFoundError" if a Bookmark with the
-" name does not exist. Throws "NERDTree.BookmarkedNodeNotFoundError" if a
+" given name. Throws NERDTree.BookmarkNotFoundError if a Bookmark with the
+" name does not exist. Throws NERDTree.BookmarkedNodeNotFoundError if a
 " tree node for the named Bookmark could not be found.
 function! s:Bookmark.GetNodeForName(name, searchFromAbsoluteRoot, nerdtree)
     let l:bookmark = s:Bookmark.BookmarkFor(a:name)
@@ -196,9 +196,9 @@ endfunction
 " FUNCTION: Bookmark.GetSelected() {{{1
 " returns the Bookmark the cursor is over, or {}
 function! s:Bookmark.GetSelected()
-    let line = getline(".")
+    let line = getline('.')
     let name = substitute(line, '^>\(.\{-}\) .\+$', '\1', '')
-    if name != line
+    if name !=# line
         try
             return s:Bookmark.BookmarkFor(name)
         catch /^NERDTree.BookmarkNotFoundError/
@@ -212,7 +212,7 @@ endfunction
 " Class method to get all invalid bookmark strings read from the bookmarks
 " file
 function! s:Bookmark.InvalidBookmarks()
-    if !exists("g:NERDTreeInvalidBookmarks")
+    if !exists('g:NERDTreeInvalidBookmarks')
         let g:NERDTreeInvalidBookmarks = []
     endif
     return g:NERDTreeInvalidBookmarks
@@ -222,8 +222,8 @@ endfunction
 function! s:Bookmark.mustExist()
     if !self.path.exists()
         call s:Bookmark.CacheBookmarks(1)
-        throw "NERDTree.BookmarkPointsToInvalidLocationError: the bookmark \"".
-            \ self.name ."\" points to a non existing location: \"". self.path.str()
+        throw 'NERDTree.BookmarkPointsToInvalidLocationError: the bookmark "'.
+            \ self.name .'" points to a non existing location: "'. self.path.str()
     endif
 endfunction
 
@@ -231,7 +231,7 @@ endfunction
 " Create a new bookmark object with the given name and path object
 function! s:Bookmark.New(name, path)
     if a:name =~# ' '
-        throw "NERDTree.IllegalBookmarkNameError: illegal name:" . a:name
+        throw 'NERDTree.IllegalBookmarkNameError: illegal name:' . a:name
     endif
 
     let newBookmark = copy(self)
@@ -292,7 +292,7 @@ endfunction
 " Get the string that should be rendered in the view for this bookmark
 function! s:Bookmark.str()
     let pathStrMaxLen = winwidth(g:NERDTree.GetWinNum()) - 4 - strdisplaywidth(self.name)
-    if &nu
+    if &number
         let pathStrMaxLen = pathStrMaxLen - &numberwidth
     endif
 
@@ -335,7 +335,7 @@ function! s:Bookmark.validate()
         return 1
     else
         call s:Bookmark.CacheBookmarks(1)
-        call nerdtree#echo(self.name . "now points to an invalid location. See :help NERDTreeInvalidBookmarks for info.")
+        call nerdtree#echo(self.name . 'now points to an invalid location. See :help NERDTreeInvalidBookmarks for info.')
         return 0
     endif
 endfunction
@@ -349,7 +349,7 @@ function! s:Bookmark.Write()
     endfor
 
     "add a blank line before the invalid ones
-    call add(bookmarkStrings, "")
+    call add(bookmarkStrings, '')
 
     for j in s:Bookmark.InvalidBookmarks()
         call add(bookmarkStrings, j)
@@ -358,7 +358,7 @@ function! s:Bookmark.Write()
     try
         call writefile(bookmarkStrings, g:NERDTreeBookmarksFile)
     catch
-        call nerdtree#echoError("Failed to write bookmarks file. Make sure g:NERDTreeBookmarksFile points to a valid location.")
+        call nerdtree#echoError('Failed to write bookmarks file. Make sure g:NERDTreeBookmarksFile points to a valid location.')
     endtry
 endfunction
 

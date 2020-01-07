@@ -125,6 +125,9 @@ let g:ale_close_preview_on_insert = get(g:, 'ale_close_preview_on_insert', 0)
 " This flag can be set to 0 to disable balloon support.
 let g:ale_set_balloons = get(g:, 'ale_set_balloons', has('balloon_eval') && has('gui_running'))
 
+" Use preview window for hover messages.
+let g:ale_hover_to_preview = get(g:, 'ale_hover_to_preview', 0)
+
 " This flag can be set to 0 to disable warnings for trailing whitespace
 let g:ale_warn_about_trailing_whitespace = get(g:, 'ale_warn_about_trailing_whitespace', 1)
 " This flag can be set to 0 to disable warnings for trailing blank lines

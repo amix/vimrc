@@ -145,8 +145,8 @@ g:ale_python_black_use_global                   *g:ale_python_black_use_global*
   See |ale-integrations-local-executables|
 
 
-g:ale_python_black_auto_pipenv                  *g:ale_python_black_auto_pipenv*
-                                                *b:ale_python_black_auto_pipenv*
+g:ale_python_black_auto_pipenv                 *g:ale_python_black_auto_pipenv*
+                                               *b:ale_python_black_auto_pipenv*
   Type: |Number|
   Default: `0`
 
@@ -263,6 +263,15 @@ to check for errors while you type.
 `mypy` will be run from a detected project root, per |ale-python-root|.
 
 
+g:ale_python_mypy_auto_pipenv                   *g:ale_python_mypy_auto_pipenv*
+                                                *b:ale_python_mypy_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
 g:ale_python_mypy_executable                     *g:ale_python_mypy_executable*
                                                  *b:ale_python_mypy_executable*
   Type: |String|
@@ -271,6 +280,7 @@ g:ale_python_mypy_executable                     *g:ale_python_mypy_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `mypy'`.
+
 
 g:ale_python_mypy_ignore_invalid_syntax
                                       *g:ale_python_mypy_ignore_invalid_syntax*
@@ -292,6 +302,14 @@ g:ale_python_mypy_options                           *g:ale_python_mypy_options*
   invocation.
 
 
+g:ale_python_mypy_show_notes                     *g:ale_python_mypy_show_notes*
+                                                 *b:ale_python_mypy_show_notes*
+  Type: |Number|
+  Default: `1`
+
+  If enabled, notes on lines will be displayed as 'I' (info) messages.
+
+
 g:ale_python_mypy_use_global                     *g:ale_python_mypy_use_global*
                                                  *b:ale_python_mypy_use_global*
   Type: |Number|
@@ -299,14 +317,6 @@ g:ale_python_mypy_use_global                     *g:ale_python_mypy_use_global*
 
   See |ale-integrations-local-executables|
 
-
-g:ale_python_mypy_auto_pipenv                   *g:ale_python_mypy_auto_pipenv*
-                                                *b:ale_python_mypy_auto_pipenv*
-  Type: |Number|
-  Default: `0`
-
-  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
-  if true. This is overridden by a manually-set executable.
 
 
 ===============================================================================

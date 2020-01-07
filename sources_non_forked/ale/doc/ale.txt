@@ -432,6 +432,11 @@ vimrc, and your issues should go away. >
 
   set completeopt=menu,menuone,preview,noselect,noinsert
 <
+
+Or alternatively, if you want to show documentation in popups: >
+
+  set completeopt=menu,menuone,popup,noselect,noinsert
+<
                                                                   *ale-symbols*
 
 ALE provides a set of basic completion symbols. If you want to replace those
@@ -524,6 +529,9 @@ If |g:ale_set_balloons| is set to `1` and your version of Vim supports the
 the mouse over a symbol in a buffer. Diagnostic information will take priority
 over hover information for balloons. If a line contains a problem, that
 problem will be displayed in a balloon instead of hover information.
+
+Hover information can be displayed in the preview window instead by setting
+|g:ale_hover_to_preview| to `1`.
 
 For Vim 8.1+ terminals, mouse hovering is disabled by default. Enabling
 |balloonexpr| commands in terminals can cause scrolling issues in terminals,
@@ -1023,6 +1031,16 @@ g:ale_history_log_output                             *g:ale_history_log_output*
   if you want to save on some memory usage.
 
 
+g:ale_hover_to_preview                                 *g:ale_hover_to_preview*
+                                                       *b:ale_hover_to_preview*
+
+  Type: |Number|
+  Default: `0`
+
+  If set to `1`, hover messages will be displayed in the preview window,
+  instead of in balloons or the message line.
+
+
 g:ale_keep_list_window_open                       *g:ale_keep_list_window_open*
                                                   *b:ale_keep_list_window_open*
   Type: |Number|
@@ -1337,7 +1355,7 @@ b:ale_loclist_msg_format                             *b:ale_loclist_msg_format*
   The strings for configuring `%severity%` are also used for this option.
 
 
-g:ale_lsp_show_message_format                           *g:ale_lsp_show_message_format*
+g:ale_lsp_show_message_format                   *g:ale_lsp_show_message_format*
 
   Type: |String|
   Default: `'%severity%:%linter%: %s'`
@@ -1359,7 +1377,7 @@ g:ale_lsp_show_message_format                           *g:ale_lsp_show_message_
   separately for each buffer like |g:ale_echo_msg_format| can.
 
 
-g:ale_lsp_show_message_severity                         *g:ale_lsp_show_message_severity*
+g:ale_lsp_show_message_severity               *g:ale_lsp_show_message_severity*
 
   Type: |String|
   Default: `'error'`

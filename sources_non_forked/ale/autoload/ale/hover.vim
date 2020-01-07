@@ -42,6 +42,11 @@ function! ale#hover#HandleTSServerResponse(conn_id, response) abort
             \&& exists('*balloon_show')
             \&& ale#Var(l:options.buffer, 'set_balloons')
                 call balloon_show(a:response.body.displayString)
+            elseif g:ale_hover_to_preview
+                call ale#preview#Show(split(a:response.body.displayString, "\n"), {
+                \   'filetype': 'ale-preview.message',
+                \   'stay_here': 1,
+                \})
             else
                 call ale#util#ShowMessage(a:response.body.displayString)
             endif
@@ -98,6 +103,11 @@ function! ale#hover#HandleLSPResponse(conn_id, response) abort
                 \&& exists('*balloon_show')
                 \&& ale#Var(l:options.buffer, 'set_balloons')
                     call balloon_show(l:str)
+                elseif g:ale_hover_to_preview
+                    call ale#preview#Show(split(l:str, "\n"), {
+                    \   'filetype': 'ale-preview.message',
+                    \   'stay_here': 1,
+                    \})
                 else
                     call ale#util#ShowMessage(l:str)
                 endif

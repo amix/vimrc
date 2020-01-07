@@ -15,13 +15,13 @@ function! s:Notifier.NotifyListeners(event, path, nerdtree, params)
     let event = g:NERDTreeEvent.New(a:nerdtree, a:path, a:event, a:params)
 
     for Listener in s:Notifier.GetListenersForEvent(a:event)
-    	let Callback = type(Listener) == type(function("tr")) ? Listener : function(Listener)
+    	let Callback = type(Listener) == type(function('tr')) ? Listener : function(Listener)
         call Callback(event)
     endfor
 endfunction
 
 function! s:Notifier.GetListenersMap()
-    if !exists("s:refreshListenersMap")
+    if !exists('s:refreshListenersMap')
         let s:refreshListenersMap = {}
     endif
     return s:refreshListenersMap

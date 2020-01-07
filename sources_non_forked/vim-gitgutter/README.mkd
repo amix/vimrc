@@ -82,7 +82,7 @@ This is to avoid a problem which occurs if you have file named `git.*` (i.e. wit
 
 ### Getting started
 
-When you make a change to a file tracked by git, the diff markers should appear automatically.  The delay is governed by vim's `updatetime` option; the default value is `4000`, i.e. 4 seconds, but I suggest reducing it to around 100ms (add `set updatetime=100` to your vimrc).
+When you make a change to a file tracked by git, the diff markers should appear automatically.  The delay is governed by vim's `updatetime` option; the default value is `4000`, i.e. 4 seconds, but I suggest reducing it to around 100ms (add `set updatetime=100` to your vimrc).  Note `updatetime` also controls the delay before vim writes its swap file (see `:help updatetime`).
 
 You can jump between hunks with `[c` and `]c`.  You can preview, stage, and undo hunks with `<leader>hp`, `<leader>hs`, and `<leader>hu` respectively.
 
@@ -115,13 +115,15 @@ And you can turn line highlighting on and off (defaults to off):
 * turn off with `:GitGutterLineHighlightsDisable`
 * toggle with `:GitGutterLineHighlightsToggle`.
 
+Note that if you have line highlighting on and signs off, you will have an empty sign column – more accurately, a sign column with invisible signs.  This is because line highlighting requires signs and Vim/NeoVim always shows the sign column when there are signs even if the signs are invisible.
+
 With Neovim 0.3.2 or higher, you can turn line number highlighting on and off (defaults to off):
 
 * turn on with `:GitGutterLineNrHighlightsEnable`
 * turn off with `:GitGutterLineNrHighlightsDisable`
 * toggle with `:GitGutterLineNrHighlightsToggle`.
 
-Note that if you have line highlighting on and signs off, you will have an empty sign column – more accurately, a sign column with invisible signs.  This is because line highlighting requires signs and Vim always shows the sign column even if the signs are invisible.
+The same caveat applies to line number highlighting as to line highlighting just above.
 
 If you switch off both line highlighting and signs, you won't see the sign column.
 
@@ -649,7 +651,7 @@ Here are some things you can check:
 
 #### When signs take a few seconds to appear
 
-* Try reducing `updatetime`, e.g. `set updatetime=100`.
+* Try reducing `updatetime`, e.g. `set updatetime=100`.  Note this also controls the delay before vim writes its swap file.
 
 #### When signs don't update after focusing Vim
 

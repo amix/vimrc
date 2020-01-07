@@ -249,7 +249,8 @@ OPTIONS                                                     *gitgutter-options*
 
 The most important option is 'updatetime' which determines how long (in
 milliseconds) the plugin will wait after you stop typing before it updates the
-signs.  Vim's default is 4000.  I recommend 100.
+signs.  Vim's default is 4000.  I recommend 100.  Note this also controls how
+long vim waits before writing its swap file.
 
 Most important option:~
 
@@ -623,6 +624,8 @@ Try reducing 'updatetime':
 >
     set updatetime=100
 <
+
+Note this also controls how long vim waits before writing its swap file.
 
 
 When signs don't update after focusing Vim:~

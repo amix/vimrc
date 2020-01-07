@@ -261,6 +261,8 @@ function! s:ReplaceCompletionOptions() abort
 
         if &l:completeopt =~# 'preview'
             let &l:completeopt = 'menu,menuone,preview,noselect,noinsert'
+        elseif &l:completeopt =~# 'popup'
+            let &l:completeopt = 'menu,menuone,popup,noselect,noinsert'
         else
             let &l:completeopt = 'menu,menuone,noselect,noinsert'
         endif
@@ -386,7 +388,6 @@ function! s:CompletionStillValid(request_id) abort
     \&& b:ale_completion_info.line == l:line
     \&& (
     \   b:ale_completion_info.column == l:column
-    \   || b:ale_completion_info.source is# 'deoplete'
     \   || b:ale_completion_info.source is# 'ale-omnifunc'
     \   || b:ale_completion_info.source is# 'ale-callback'
     \)
@@ -803,7 +804,9 @@ endfunction
 function! ale#completion#HandleUserData(completed_item) abort
     let l:source = get(get(b:, 'ale_completion_info', {}), 'source', '')
 
-    if l:source isnot# 'ale-automatic' && l:source isnot# 'ale-manual' && l:source isnot# 'ale-callback'
+    if l:source isnot# 'ale-automatic'
+    \&& l:source isnot# 'ale-manual'
+    \&& l:source isnot# 'ale-callback'
         return
     endif
 
