@@ -7,6 +7,7 @@ set cpoptions&vim
 
 command! -nargs=+ Cargo call cargo#cmd(<q-args>)
 command! -nargs=* Cbuild call cargo#build(<q-args>)
+command! -nargs=* Ccheck call cargo#check(<q-args>)
 command! -nargs=* Cclean call cargo#clean(<q-args>)
 command! -nargs=* Cdoc call cargo#doc(<q-args>)
 command! -nargs=+ Cnew call cargo#new(<q-args>)

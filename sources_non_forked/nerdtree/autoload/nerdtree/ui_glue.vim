@@ -284,13 +284,14 @@ endfunction
 " FUNCTION: s:findAndRevealPath(pathStr) {{{1
 function! s:findAndRevealPath(pathStr) abort
     let l:pathStr = !empty(a:pathStr) ? a:pathStr : expand('%:p')
-    if !filereadable(l:pathStr)
-        let l:pathStr = fnamemodify(l:pathStr, ':h')
-    endif
 
     if empty(l:pathStr)
         call nerdtree#echoWarning('no file for the current buffer')
         return
+    endif
+
+    if !filereadable(l:pathStr)
+        let l:pathStr = fnamemodify(l:pathStr, ':h')
     endif
 
     try

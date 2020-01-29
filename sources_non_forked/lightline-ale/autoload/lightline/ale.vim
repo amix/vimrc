@@ -1,3 +1,4 @@
+let s:indicator_infos = get(g:, 'lightline#ale#indicator_infos', 'I: ')
 let s:indicator_warnings = get(g:, 'lightline#ale#indicator_warnings', 'W: ')
 let s:indicator_errors = get(g:, 'lightline#ale#indicator_errors', 'E: ')
 let s:indicator_ok = get(g:, 'lightline#ale#indicator_ok', 'OK')
@@ -7,14 +8,21 @@ let s:indicator_checking = get(g:, 'lightline#ale#indicator_checking', 'Linting.
 """"""""""""""""""""""
 " Lightline components
 
+function! lightline#ale#infos() abort
+  if !lightline#ale#linted()
+    return ''
+  endif
+  let l:counts = ale#statusline#Count(bufnr(''))
+  return l:counts.info == 0 ? '' : printf(s:indicator_infos . '%d', l:counts.info)
+endfunction
+
 function! lightline#ale#warnings() abort
   if !lightline#ale#linted()
     return ''
   endif
   let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:all_non_errors == 0 ? '' : printf(s:indicator_warnings . '%d', all_non_errors)
+  let l:all_warnings = l:counts.warning + l:counts.style_warning
+  return l:all_warnings == 0 ? '' : printf(s:indicator_warnings . '%d', all_warnings)
 endfunction
 
 function! lightline#ale#errors() abort

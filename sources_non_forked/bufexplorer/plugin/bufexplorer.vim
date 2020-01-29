@@ -919,7 +919,7 @@ function! s:SelectBuffer(...)
             endif
 
             " Switch to the selected buffer.
-            execute "keepalt silent b!" _bufNbr
+            execute "keepjumps keepalt silent b!" _bufNbr
         endif
 
         " Make the buffer 'listed' again.
@@ -956,12 +956,6 @@ function! s:RemoveBuffer(mode)
     endif
 
     let mode = a:mode
-
-    " Do not allow this buffer to be deleted if it is the last one.
-    if len(s:MRUList) == 1
-        call s:Error("Sorry, you are not allowed to delete the last buffer")
-        return
-    endif
 
     " These commands are to temporarily suspend the activity of winmanager.
     if exists("b:displayMode") && b:displayMode == "winmanager"

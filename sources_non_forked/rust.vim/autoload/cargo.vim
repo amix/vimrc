@@ -65,6 +65,10 @@ function! cargo#build(args)
     call cargo#cmd("build " . a:args)
 endfunction
 
+function! cargo#check(args)
+    call cargo#cmd("check " . a:args)
+endfunction
+
 function! cargo#clean(args)
     call cargo#cmd("clean " . a:args)
 endfunction

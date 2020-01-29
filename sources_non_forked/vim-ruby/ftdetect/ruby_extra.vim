@@ -57,6 +57,9 @@ au BufNewFile,BufRead [rR]outefile		call s:setf('ruby')
 " SimpleCov
 au BufNewFile,BufRead .simplecov		call s:setf('ruby')
 
+" Sorbet RBI files
+au BufNewFile,BufRead *.rbi		        call s:setf('ruby')
+
 " Thor
 au BufNewFile,BufRead [tT]horfile,*.thor	call s:setf('ruby')
 

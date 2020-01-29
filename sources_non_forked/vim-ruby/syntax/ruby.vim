@@ -91,7 +91,7 @@ if exists("ruby_operators") || exists("ruby_pseudo_operators")
   syn match rubyBooleanOperator    "\%(\w\|[^\x00-\x7F]\)\@1<!!\|&&\|||"
   syn match rubyRangeOperator	   "\.\.\.\="
   syn match rubyAssignmentOperator "=>\@!\|-=\|/=\|\*\*=\|\*=\|&&=\|&=\|||=\||=\|%=\|+=\|>>=\|<<=\|\^="
-  syn match rubyAssignmentOperator "=>\@!" containedin=rubyBlockParameterList " TODO: this is inelegant
+  syn match rubyAssignmentOperator "=>\@!" contained containedin=rubyBlockParameterList " TODO: this is inelegant
   syn match rubyEqualityOperator   "===\|==\|!=\|!\~\|=\~"
 
   syn region rubyBracketOperator matchgroup=rubyOperator start="\%(\%(\w\|[^\x00-\x7F]\)[?!]\=\|[]})]\)\@2<=\[" end="]" contains=ALLBUT,@rubyNotTop
@@ -192,7 +192,7 @@ SynFold ':' syn region rubySymbol matchgroup=rubySymbolDelimiter start="[]})\"':
 
 syn match rubyCapitalizedMethod "\%(\%(^\|[^.]\)\.\s*\)\@<!\<\u\%(\w\|[^\x00-\x7F]\)*\>\%(\s*(\)\@="
 
-syn region rubyParentheses	  start="("				 end=")" contains=ALLBUT,@rubyNotTop containedin=rubyBlockParameterList
+syn region rubyParentheses	  start="("				 end=")" contains=ALLBUT,@rubyNotTop contained containedin=rubyBlockParameterList
 syn region rubyBlockParameterList start="\%(\%(\<do\>\|{\)\_s*\)\@32<=|" end="|" contains=ALLBUT,@rubyNotTop,@rubyProperOperator
 
 if exists('ruby_global_variable_error')

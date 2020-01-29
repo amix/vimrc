@@ -169,8 +169,11 @@ function! nerdtree#exec(cmd, ignoreAll) abort
     if a:ignoreAll
         set eventignore=all
     endif
-    exec a:cmd
-    let &eventignore = old_ei
+    try
+        exec a:cmd
+    finally
+        let &eventignore = old_ei
+    endtry
 endfunction
 
 " FUNCTION: nerdtree#has_opt(options, name) {{{2

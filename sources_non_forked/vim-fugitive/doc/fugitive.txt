@@ -16,58 +16,24 @@ These commands are local to the buffers in which they work (generally, buffers
 that are part of Git repositories).
 
                                                 *:Git* *fugitive-:G*
-:Git {args}             Run an arbitrary git command. Similar to :!git [args]
-:G {args}               but chdir to the repository tree first.  For some
-                        subcommands, a Fugitive command is called instead.
+:Git {args}             Run an arbitrary git command and display any output.
+:G {args}               On UNIX this uses a pty and on other platforms it uses
+                        a pipe, which will cause some behavior differences
+                        such as the absence of progress bars.  Any file the
+                        command edits (for example, a commit message) will be
+                        loaded into a split window.  Closing that window will
+                        resume running the command.  A few Git subcommands
+                        have different behavior; these are documented below.
 
-                                                *:Git!*
-:Git! {args}            Like |:Git|, but capture the output into a temp file,
-:Git --no-pager {args}  and |:split| that temp file.  Use :0Git to
-:Git -P {args}          |:edit| the temp file instead.  A temp file is always
+:Git! {args}            Run an arbitrary git command, capture output to a temp
+:Git --paginate {args}  file, and |:split| that temp file.  Use :0Git to
+:Git -p {args}          |:edit| the temp file instead.  A temp file is always
                         used for diff and log commands.
 
                                                 *:Gstatus*
 :Git                    Bring up a summary window vaguely akin to git-status.
 :G                      Press g? or see |fugitive-maps| for usage.
 :Gstatus
-
-                                                *:Git-commit* *:Gcommit*
-:Git commit [args]      A wrapper around git-commit.  Unless the arguments
-:Gcommit [args]         given would skip the invocation of an editor (e.g.,
-                        -m), a split window will be used to obtain a commit
-                        message, or a new tab if -v is given.  Write and close
-                        the window (:wq) to finish the commit. To cancel, use
-                        an empty message.
-
-                                                *:Git-revert* *:Grevert*
-:Git revert [args]      A wrapper around git-revert.  Similar to |:Gcommit|.
-:Grevert [args]
-
-                                                *:Git-merge* *:Gmerge*
-:Git merge [args]       Calls git-merge and loads errors and conflicted files
-:Gmerge [args]          into the |quickfix| list.  Opens a |:Gcommit| style
-                        split window for the commit message if the merge
-                        succeeds.  If called during a merge conflict, the
-                        conflicted files from the current index are loaded
-                        into the |quickfix| list.
-
-                                                *:Git-pull* *:Gpull*
-:Git pull [args]        Like |:Gmerge|, but for git-pull.
-:Gpull [args]
-
-                                                *:Git-rebase* *:Grebase*
-:Git rebase [args]      Like |:Gmerge|, but for git-rebase.  Interactive
-:Grebase [args]         rebase is experimentally supported.
-
-                                                *:Git-push* *:Gpush*
-:Git push [args]        Invoke git-push, load the results into the |quickfix|
-:Gpush [args]           list, and invoke |:cwindow| to reveal any errors.
-                        |:Dispatch| is used if available for asynchronous
-                        invocation.
-
-                                                *:Git-fetch* *:Gfetch*
-:Git fetch [args]       Like |:Gpush|, but for git-fetch.
-:Gfetch [args]
 
                                                 *:Git-blame* *:Gblame*
 :Git blame [flags]      Run git-blame [flags] on the current file and open the
@@ -111,11 +77,38 @@ that are part of Git repositories).
                         change unless [!] is given.
 
 :Git difftool -y [args] Invoke `git diff [args]`, open each changed file in a
-                        new tab, and invoke `:Gdiffsplit` against the
+                        new tab, and invoke `:Gdiffsplit!` against the
                         appropriate commit.
 
                                                 *:Git-mergetool*
 :Git mergetool [args]   Like |:Git-difftool|, but target merge conflicts.
+
+                                                *:Git-push* *:Gpush*
+:Git push [args]        Invoke git-push, load the results into the |quickfix|
+:Gpush [args]           list, and invoke |:cwindow| to reveal any errors.
+                        |:Dispatch| is used if available for asynchronous
+                        invocation.
+
+                                                *:Git-fetch* *:Gfetch*
+:Git fetch [args]       Like |:Gpush|, but for git-fetch.
+:Gfetch [args]
+
+                                                *:Git-merge* *:Gmerge*
+:Gmerge [args]          Deprecated alias for |:Git| merge. Use |:Git-mergetool|
+                        to get the old behavior of loading merge conflicts
+                        into the quickfix list.
+
+                                                *:Git-pull* *:Gpull*
+:Gpull [args]           Deprecated alias for |:Git| pull.
+
+                                                *:Git-rebase* *:Grebase*
+:Grebase [args]         Deprecated alias for |:Git| rebase.
+
+                                                *:Git-commit* *:Gcommit*
+:Gcommit [args]         Deprecated alias for |:Git| commit.
+
+                                                *:Git-revert* *:Grevert*
+:Grevert [args]         Deprecated alias for |:Git| revert.
 
                                                  *:Gclog* *:Glog*
 :Gclog[!] [args]        Use git-log [args] to load the commit history into the
@@ -208,7 +201,7 @@ that are part of Git repositories).
                         focus on the current window.  During a merge conflict,
                         this is a three-way diff against the "ours" and
                         "theirs" ancestors.  Additional d2o and d3o maps are
-                        provided to to obtain the hunk from the "ours" or
+                        provided to obtain the hunk from the "ours" or
                         "theirs" ancestor, respectively.
 
 :Gdiffsplit! {object}   Like |:Gdiffsplit|, but retain focus on the current
@@ -315,7 +308,7 @@ P                       under the cursor. On untracked files, this instead
                                                 *fugitive_d*
 Diff maps ~
                                                 *fugitive_dp*
-dp                      Invoke |:Git!| diff on the file under the cursor.
+dp                      Invoke |:Git| diff on the file under the cursor.
                         Deprecated in favor of inline diffs.
 
                                                 *fugitive_dd*

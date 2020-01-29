@@ -199,7 +199,7 @@ syntax match   jsDestructuringNoise             contained /[,[\]]/
 syntax region  jsDestructuringPropertyComputed  contained matchgroup=jsDestructuringBraces start=/\[/ end=/]/ contains=@jsExpression skipwhite skipempty nextgroup=jsDestructuringValue,jsDestructuringValueAssignment,jsDestructuringNoise extend fold
 
 " Comments
-syntax keyword jsCommentTodo    contained TODO FIXME XXX TBD
+syntax keyword jsCommentTodo    contained TODO FIXME XXX TBD NOTE
 syntax region  jsComment        start=+//+ end=/$/ contains=jsCommentTodo,@Spell extend keepend
 syntax region  jsComment        start=+/\*+  end=+\*/+ contains=jsCommentTodo,@Spell fold extend keepend
 syntax region  jsEnvComment     start=/\%^#!/ end=/$/ display

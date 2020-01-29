@@ -7,7 +7,12 @@
     in an unordered list.  The format is:
         - **.PATCH**: Pull Request Title (PR Author) [PR Number](Link to PR)
 -->
+#### 6.5
+- **.0**: `NERDTreeToggle <start-directory>` always sets NERDTree root. (PhilRunninger) [#1083](https://github.com/preservim/nerdtree/pull/1083)
 #### 6.4
+- **.6**: NERDTreeFind shows expected message if file doesn't exist e.g. with vim-startify (andys8). [#1081](https://github.com/preservim/nerdtree/pull/1081)
+- **.5**: Ensure events are (or aren't) being ignored correctly. (PhilRunninger) [#1080](https://github.com/preservim/nerdtree/pull/1080)
+- **.4**: Prevent overwriting existing files/dirs on node move. (PhilRunninger) [#1079](https://github.com/preservim/nerdtree/pull/1079)
 - **.3**: Fix regex that finds keyword for minimal menu. (PhilRunninger) [#1075](https://github.com/preservim/nerdtree/pull/1075)
 - **.2**: Lint vimscript, fix errors and warnings, add CI job to review PRs (Caleb Maclennan) [#1071](https://github.com/preservim/nerdtree/pull/1071)
 - **.1**: Ensure backward compatibility. v:t_func is not available before Vim 8.0 (Phil Runninger)

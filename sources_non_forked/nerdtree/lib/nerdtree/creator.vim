@@ -333,14 +333,17 @@ function! s:Creator._tabpagevar(tabnr, var)
     let old_ei = &eventignore
     set eventignore=all
 
-    exec 'tabnext ' . a:tabnr
-    let v = -1
-    if exists('t:' . a:var)
-        exec 'let v = t:' . a:var
-    endif
-    exec 'tabnext ' . currentTab
+    try
+        exec 'tabnext ' . a:tabnr
+        let v = -1
+        if exists('t:' . a:var)
+            exec 'let v = t:' . a:var
+        endif
+        exec 'tabnext ' . currentTab
 
-    let &eventignore = old_ei
+    finally
+        let &eventignore = old_ei
+    endtry
 
     return v
 endfunction
@@ -352,17 +355,20 @@ function! s:Creator.ToggleTabTree(dir)
 endfunction
 
 " FUNCTION: s:Creator.toggleTabTree(dir) {{{1
-" Toggles the NERD tree. I.e the NERD tree is open, it is closed, if it is
-" closed it is restored or initialized (if it doesnt exist)
+" Toggles the NERD tree. I.e if the NERD tree is open, it is closed. If it is
+" closed, it is restored or initialized. If dir is not empty, it will be set
+" as the new root.
 "
 " Args:
-" dir: the full path for the root node (is only used if the NERD tree is being
-" initialized.
+" dir: the full path for the root node (is used if the NERD tree is being
+" initialized, or to change the root to a new dir.)
 function! s:Creator.toggleTabTree(dir)
     if g:NERDTree.ExistsForTab()
         if !g:NERDTree.IsOpen()
             call self._createTreeWin()
-            if !&hidden
+            if !empty(a:dir)
+                call self.createTabTree(a:dir)
+            elseif !&hidden
                 call b:NERDTree.render()
             endif
             call b:NERDTree.ui.restoreScreenState()

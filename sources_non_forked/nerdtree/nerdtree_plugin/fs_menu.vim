@@ -141,12 +141,12 @@ function! s:renameBuffer(bufNum, newNodeName, isDirectory)
         let editStr = g:NERDTreePath.New(a:newNodeName).str({'format': 'Edit'})
     endif
     " 1. ensure that a new buffer is loaded
-    call nerdtree#exec('badd ' . quotedFileName, 1)
+    call nerdtree#exec('badd ' . quotedFileName, 0)
     " 2. ensure that all windows which display the just deleted filename
     " display a buffer for a new filename.
     let s:originalTabNumber = tabpagenr()
     let s:originalWindowNumber = winnr()
-    call nerdtree#exec('tabdo windo if winbufnr(0) ==# ' . a:bufNum . " | exec ':e! " . editStr . "' | endif", 1)
+    call nerdtree#exec('tabdo windo if winbufnr(0) ==# ' . a:bufNum . " | exec ':e! " . editStr . "' | endif", 0)
     call nerdtree#exec('tabnext ' . s:originalTabNumber, 1)
     call nerdtree#exec(s:originalWindowNumber . 'wincmd w', 1)
     " 3. We don't need a previous buffer anymore
@@ -196,6 +196,11 @@ function! NERDTreeMoveNode()
     let curNode = g:NERDTreeFileNode.GetSelected()
     let prompt = s:inputPrompt('move')
     let newNodePath = input(prompt, curNode.path.str(), 'file')
+    while filereadable(newNodePath)
+        call nerdtree#echoWarning('This destination already exists. Try again.')
+        let newNodePath = input(prompt, curNode.path.str(), 'file')
+    endwhile
+
 
     if newNodePath ==# ''
         call nerdtree#echo('Node Renaming Aborted.')

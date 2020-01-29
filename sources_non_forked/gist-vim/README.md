@@ -266,6 +266,9 @@ Then gist-vim will ask for your password in order to create an access
 token. If you have two-factor authentication enabled, gist-vim will also
 prompt you to enter the two-factor key you receive.
 
+NOTE:
+If you want you can set it directly to `g:github_user` and `g:gist_token`.
+
 Whichever type of authentication you use, your GitHub password will not be
 stored, only a OAuth access token produced specifically for gist-vim. The
 token is stored in `~/.gist-vim`. If you stop using the plugin, you can

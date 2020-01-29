@@ -961,7 +961,9 @@ function! s:GistGetAuthHeader() abort
     return printf('basic %s', webapi#base64#b64encode(g:github_user.':'.password))
   endif
   let auth = ''
-  if filereadable(s:gist_token_file)
+  if !empty(get(g:, 'gist_token', $GITHUB_TOKEN))
+    let auth = 'token ' . get(g:, 'gist_token', $GITHUB_TOKEN)
+  elseif filereadable(s:gist_token_file)
     let str = join(readfile(s:gist_token_file), '')
     if type(str) == 1
       let auth = str

@@ -234,6 +234,20 @@ gitgutter#fold#foldtext():  +-- 45 lines (*): abcdef
 You can use `gitgutter#fold#is_changed()` in your own `foldtext` expression to find out whether the folded lines have been changed.
 
 
+### Status line
+
+Call the `GitGutterGetHunkSummary()` function from your status line to get a list of counts of added, modified, and removed lines in the current buffer.  For example:
+
+```viml
+" Your vimrc
+function! GitStatus()
+  let [a,m,r] = GitGutterGetHunkSummary()
+  return printf('+%d ~%d -%d', a, m, r)
+endfunction
+set statusline+=%{GitStatus()}
+```
+
+
 ### Customisation
 
 You can customise:

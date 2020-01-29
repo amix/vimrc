@@ -2,7 +2,7 @@
 " Filename: autoload/lightline.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2019/08/20 14:00:00.
+" Last Change: 2020/01/27 19:41:58.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -432,7 +432,7 @@ function! s:line(tabline, inactive) abort
     let _ .= i < l + len(lt) - len(l_) && ll[i] < l || ll[i] != ll[i + 1] ? p.left : len(lt[i]) ? s.left : ''
   endfor
   let _ .= '%#LightlineMiddle_' . mode . '#%='
-  for i in reverse(range(len(rt)))
+  for i in range(len(rt) - 1, 0, -1)
     let _ .= '%#LightlineRight_' . mode . '_' . rl[i] . '_' . rl[i + 1] . '#'
     let _ .= i < r + len(rt) - len(r_) && rl[i] < r || rl[i] != rl[i + 1] ? p.right : len(rt[i]) ? s.right : ''
     let _ .= '%#LightlineRight_' . mode . '_' . rl[i] . '#'

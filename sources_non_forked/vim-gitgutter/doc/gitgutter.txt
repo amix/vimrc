@@ -17,6 +17,7 @@ CONTENTS                                                            *gitgutter*
   Commands ..................... |gitgutter-commands|
   Mappings ..................... |gitgutter-mappings|
   Autocommand .................. |gitgutter-autocommand|
+  Status line .................. |gitgutter-statusline|
   Options ...................... |gitgutter-options|
   Highlights ................... |gitgutter-highlights|
   FAQ .......................... |gitgutter-faq|
@@ -241,6 +242,23 @@ trailing empty lines.
     omap ac <Plug>(GitGutterTextObjectOuterPending)
     xmap ic <Plug>(GitGutterTextObjectInnerVisual)
     xmap ac <Plug>(GitGutterTextObjectOuterVisual)
+<
+
+
+===============================================================================
+STATUS LINE                                              *gitgutter-statusline*
+
+
+Call the `GitGutterGetHunkSummary()` function from your status line to get a
+list of counts of added, modified, and removed lines in the current buffer.
+For example:
+>
+    " Your vimrc
+    function! GitStatus()
+      let [a,m,r] = GitGutterGetHunkSummary()
+      return printf('+%d ~%d -%d', a, m, r)
+    endfunction
+    set statusline+=%{GitStatus()}
 <
 
 

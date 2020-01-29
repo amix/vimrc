@@ -122,8 +122,9 @@ The following features and functionality are provided by the NERDTree:
 
 :NERDTreeToggle [<start-directory> | <bookmark>]               *:NERDTreeToggle*
     If a NERDTree already exists for this tab, it is reopened and rendered
-    again.  If no NERDTree exists for this tab then this command acts the
-    same as the |:NERDTree| command.
+    again. If <start-directory> or <bookmark> is given, the root of NERDTree
+    is set to that path. If no NERDTree exists for this tab then this command
+    acts the same as the |:NERDTree| command.
 
 :NERDTreeToggleVCS [<start-directory> | <bookmark>]            *:NERDTreeToggleVCS*
     Like |:NERDTreeToggle|, but searches up the directory tree to find the top of

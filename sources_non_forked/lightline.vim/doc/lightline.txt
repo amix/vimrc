@@ -4,7 +4,7 @@ Version: 0.1
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2019/12/27 18:23:29.
+Last Change: 2020/01/28 18:40:21.
 
 CONTENTS					*lightline-contents*
 
@@ -148,7 +148,7 @@ OPTIONS						*lightline-option*
 			\             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
 			\ },
 			\ 'component_function': {
-			\   'gitbranch': 'fugitive#head'
+			\   'gitbranch': 'FugitiveHead'
 			\ },
 			\ }
 <
@@ -316,8 +316,8 @@ nice.
 		return &readonly ? '' : ''
 	endfunction
 	function! LightlineFugitive()
-		if exists('*fugitive#head')
-			let branch = fugitive#head()
+		if exists('*FugitiveHead')
+			let branch = FugitiveHead()
 			return branch !=# '' ? ''.branch : ''
 		endif
 		return ''
@@ -341,8 +341,8 @@ look nice.
 		return &readonly ? '⭤' : ''
 	endfunction
 	function! LightlineFugitive()
-		if exists('*fugitive#head')
-			let branch = fugitive#head()
+		if exists('*FugitiveHead')
+			let branch = FugitiveHead()
 			return branch !=# '' ? '⭠ '.branch : ''
 		endif
 		return ''
@@ -742,8 +742,8 @@ A nice example for non-patched font users.
 		\ (LightlineModified() !=# '' ? ' ' . LightlineModified() : '')
 	endfunction
 	function! LightlineFugitive()
-		if &ft !~? 'vimfiler' && exists('*fugitive#head')
-			return fugitive#head()
+		if &ft !~? 'vimfiler' && exists('*FugitiveHead')
+			return FugitiveHead()
 		endif
 		return ''
 	endfunction
@@ -777,8 +777,8 @@ A nice example for |vim-powerline| font users:
 		\ (LightlineModified() !=# '' ? ' ' . LightlineModified() : '')
 	endfunction
 	function! LightlineFugitive()
-		if &ft !~? 'vimfiler' && exists('*fugitive#head')
-			let branch = fugitive#head()
+		if &ft !~? 'vimfiler' && exists('*FugitiveHead')
+			let branch = FugitiveHead()
 			return branch !=# '' ? '⭠ '.branch : ''
 		endif
 		return ''
@@ -836,9 +836,9 @@ For users who uses lots of plugins:
 
 	function! LightlineFugitive()
 	  try
-	    if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*fugitive#head')
+	    if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && exists('*FugitiveHead')
 	      let mark = ''  " edit here for cool mark
-	      let branch = fugitive#head()
+	      let branch = FugitiveHead()
 	      return branch !=# '' ? mark.branch : ''
 	    endif
 	  catch
