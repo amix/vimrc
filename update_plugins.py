@@ -53,7 +53,8 @@ vim-abolish https://github.com/tpope/tpope-vim-abolish
 mru.vim https://github.com/vim-scripts/mru.vim
 rust.vim https://github.com/rust-lang/rust.vim
 vim-markdown https://github.com/plasticboy/vim-markdown
-gist-vim https://github.com/mattn/gist-vim
+webapi-vim https://github.com/mattn/webapi-vim
+vim-gist https://github.com/mattn/vim-gist
 vim-ruby https://github.com/vim-ruby/vim-ruby
 typescript-vim https://github.com/leafgarland/typescript-vim
 vim-javascript https://github.com/pangloss/vim-javascript
