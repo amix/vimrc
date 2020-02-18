@@ -77,6 +77,8 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
 
     plugin_temp_path = path.join(
         temp_dir, path.join(temp_dir, '%s-master' % plugin_name))
+    if plugin_name =='gist-vim':
+        plugin_temp_path=plugin_temp_path.replace('gist-vim', 'vim-gist')
 
     # Remove the current plugin and replace it with the extracted
     plugin_dest_path = path.join(source_dir, plugin_name)
