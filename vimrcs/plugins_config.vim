@@ -124,12 +124,12 @@ let g:lightline = {
       \ 'component': {
       \   'readonly': '%{&filetype=="help"?"":&readonly?"🔒":""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}'
+      \   'fugitive': '%{exists("*FugitiveHead")?FugitiveHead():""}'
       \ },
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-      \   'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'
+      \   'fugitive': '(exists("*FugitiveHead") && ""!=FugitiveHead())'
       \ },
       \ 'separator': { 'left': ' ', 'right': ' ' },
       \ 'subseparator': { 'left': ' ', 'right': ' ' }
