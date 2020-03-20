@@ -31,6 +31,37 @@ function! gitgutter#fold#level(lnum)
 endfunction
 
 
+function! gitgutter#fold#foldtext()
+  if !gitgutter#fold#is_changed()
+    return foldtext()
+  endif
+
+  return substitute(foldtext(), ':', ' (*):', '')
+endfunction
+
+
+" Returns 1 if any of the folded lines have been changed
+" (added, removed, or modified), 0 otherwise.
+function! gitgutter#fold#is_changed()
+  for hunk in gitgutter#hunk#hunks(bufnr(''))
+    let hunk_begin = hunk[2]
+    let hunk_end   = hunk[2] + (hunk[3] == 0 ? 1 : hunk[3])
+
+    if hunk_end < v:foldstart
+      continue
+    endif
+
+    if hunk_begin > v:foldend
+      break
+    endif
+
+    return 1
+  endfor
+
+  return 0
+endfunction
+
+
 " A line in a hunk has a fold level of 0.
 " A line within 3 lines of a hunk has a fold level of 1.
 " All other lines have a fold level of 2.

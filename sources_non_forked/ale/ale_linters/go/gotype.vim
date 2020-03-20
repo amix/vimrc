@@ -6,7 +6,8 @@ function! ale_linters#go#gotype#GetCommand(buffer) abort
         return ''
     endif
 
-    return ale#path#BufferCdString(a:buffer) . ' gotype -e .'
+    return ale#path#BufferCdString(a:buffer) . ' '
+    \   . ale#go#EnvString(a:buffer) . 'gotype -e .'
 endfunction
 
 call ale#linter#Define('go', {

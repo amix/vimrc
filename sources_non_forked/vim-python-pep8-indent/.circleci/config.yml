@@ -1,0 +1,37 @@
+version: 2
+
+common: &common
+  working_directory: ~/repo
+  docker:
+    - image: blueyed/vim-python-pep8-indent-vims-for-test:3@sha256:e7e3c4f4b021954a40f2f1d88dc470f119dc65603c63724d1c58cbe437fdc2d4
+
+jobs:
+  test:
+    <<: *common
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: |
+            spec/make-coverage
+      - run:
+          name: Report coverage
+          command: |
+            covimerage xml
+            codecov -X search gcov pycov -f coverage.xml
+
+  checkqa:
+    <<: *common
+    steps:
+      - checkout
+      - run:
+          name: Lint
+          command: |
+            vint **/*.vim
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
+      - checkqa

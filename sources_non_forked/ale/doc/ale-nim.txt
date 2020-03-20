@@ -1,0 +1,45 @@
+===============================================================================
+ALE Nim Integration                                           *ale-nim-options*
+
+
+===============================================================================
+nimcheck                                                     *ale-nim-nimcheck*
+
+  ALE does not provide additional configuration options for `nimcheck` at this
+  point.
+
+
+===============================================================================
+nimlsp                                                         *ale-nim-nimlsp*
+
+g:nim_nimlsp_nim_sources                             *g:nim_nimlsp_nim_sources*
+
+  Type: |String|
+  Default: `''`
+
+  Sets the path to Nim source repository as the first argument to `nimlsp`
+  command.
+
+
+===============================================================================
+nimpretty                                                   *ale-nim-nimpretty*
+
+
+g:ale_nim_nimpretty_executable                 *g:ale_nim_nimpretty_executable*
+                                               *b:ale_nim_nimpretty_executable*
+  Type: |String|
+  Default: `'nimpretty'`
+
+  This variable can be changed to use a different executable for nimpretty.
+
+
+g:ale_nim_nimpretty_options                       *g:ale_nim_nimpretty_options*
+                                                  *b:ale_nim_nimpretty_options*
+  Type: |String|
+  Default: `'--maxLineLen:80'`
+
+  This variable can be changed to modify flags given to nimpretty.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

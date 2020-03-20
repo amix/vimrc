@@ -11,6 +11,7 @@ csc                                                                *ale-cs-csc*
 
   The |ale-cs-csc| linter checks for semantic errors when files are opened or
   saved.
+<<<<<<< HEAD
   
   See |ale-lint-file-linters| for more information on linters which do not
   check for problems while you type.
@@ -27,6 +28,23 @@ csc                                                                *ale-cs-csc*
   The down is that the csc compiler does not support the -sytax option any more
   and therefore |ale-cs-csc| linter doese not offer any as you type syntax
   checking like the |ale-cs-mcsc| linter doesn't.
+=======
+
+  See |ale-lint-file-linters| for more information on linters which do not
+  check for problems while you type.
+
+  The csc linter uses the mono csc compiler, providing full C# 7 and newer
+  support, to generate a temporary module target file (/t:module). The module
+  includes all '*.cs' files contained in the directory tree rooted at the path
+  defined by the |g:ale_cs_csc_source| or |b:ale_cs_csc_source| variable and
+  all sub directories.
+
+  It will in future replace the |ale-cs-mcs| and |ale-cs-mcsc| linters as both
+  utilize the mcsc compiler which, according to the mono project, is no longer
+  actively developed, and only receives maintenance updates. However, because
+  the csc compiler does not support the -syntax option, this linter does not
+  offer any as-you-type syntax checking, similar to the |ale-cs-mcsc| linter.
+>>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 
   The paths to search for additional assembly files can be specified using the
   |g:ale_cs_csc_assembly_path| or |b:ale_cs_csc_assembly_path| variables.

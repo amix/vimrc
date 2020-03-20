@@ -5,8 +5,12 @@ priority -50
 ###########################################################################
 
 #! header
-snippet #! "Shebang header for python scripts" b
+snippet #! "#!/usr/bin/env python" b
 #!/usr/bin/env python
+$0
+endsnippet
+
+snippet "^# ?[uU][tT][fF]-?8" "# encoding: UTF-8" r
 # -*- coding: utf-8 -*-
 $0
 endsnippet
@@ -267,7 +271,7 @@ class ${1:MyClass}(${2:object}):
 	`!p snip.rv = triple_quotes(snip)`${3:Docstring for $1. }`!p snip.rv = triple_quotes(snip)`
 
 	def __init__(self$4):
-		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined1.}`!p
+		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined.}`!p
 snip.rv = ""
 snip >> 2
 
@@ -493,8 +497,8 @@ def __coerce__(self, other):
 	${25:pass}
 endsnippet
 
-snippet deff
-def ${1:fname}(`!p snip.rv = vim.eval('indent(".") ? "self" : ""')`$2):
+snippet deff "function or class method"
+def ${1:fname}(`!p snip.rv = "self, " if snip.indent else ""`$2):
 	$0
 endsnippet
 

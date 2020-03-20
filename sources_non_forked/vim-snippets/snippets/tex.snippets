@@ -222,6 +222,10 @@ snippet rm roman font text
 	\\textrm{${1:${VISUAL:text}}}${0}
 snippet tt typewriter (monospace) text
 	\\texttt{${1:${VISUAL:text}}}${0}
+snippet tsub subscripted text
+	\\textsubscript{${1:${VISUAL:text}}}${0}
+snippet tsup superscripted text
+	\\textsuperscript{${1:${VISUAL:text}}}${0}
 #Math font
 snippet mf mathfrak
 	\\mathfrak{${1:${VISUAL:text}}}${0}
@@ -248,7 +252,7 @@ snippet tikz figure environment (tikzpicture)
 		${2}
 	\\end{tikzpicture}
 	\\end{center}
-	\\caption{${3}}
+	\\caption{${3}}%
 	\\label{fig:${4}}
 	\\end{figure}
 	${0}

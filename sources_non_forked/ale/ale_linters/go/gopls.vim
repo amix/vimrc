@@ -6,11 +6,15 @@ call ale#Set('go_gopls_executable', 'gopls')
 call ale#Set('go_gopls_options', '--mode stdio')
 
 function! ale_linters#go#gopls#GetCommand(buffer) abort
-    return '%e' . ale#Pad(ale#Var(a:buffer, 'go_gopls_options'))
+    return ale#go#EnvString(a:buffer)
+    \   . '%e'
+    \   . ale#Pad(ale#Var(a:buffer, 'go_gopls_options'))
 endfunction
 
 function! ale_linters#go#gopls#FindProjectRoot(buffer) abort
-    let l:project_root = ale#path#FindNearestFile(a:buffer, 'go.mod')
+    let l:go_modules_off = ale#Var(a:buffer, 'go_go111module') is# 'off'
+    let l:project_root = l:go_modules_off ?
+    \ '' : ale#path#FindNearestFile(a:buffer, 'go.mod')
     let l:mods = ':h'
 
     if empty(l:project_root)

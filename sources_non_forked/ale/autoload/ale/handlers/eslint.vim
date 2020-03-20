@@ -42,7 +42,18 @@ function! ale#handlers#eslint#GetCommand(buffer) abort
 
     let l:options = ale#Var(a:buffer, 'javascript_eslint_options')
 
-    return ale#node#Executable(a:buffer, l:executable)
+    " ESLint 6 loads plugins/configs/parsers from the project root
+    " By default, the project root is simply the CWD of the running process.
+    " https://github.com/eslint/rfcs/blob/master/designs/2018-simplified-package-loading/README.md
+    " https://github.com/dense-analysis/ale/issues/2787
+    " Identify project root from presence of node_modules dir.
+    " Note: If node_modules not present yet, can't load local deps anyway.
+    let l:modules_dir = ale#path#FindNearestDirectory(a:buffer, 'node_modules')
+    let l:project_dir = !empty(l:modules_dir) ? fnamemodify(l:modules_dir, ':h:h') : ''
+    let l:cd_command = !empty(l:project_dir) ? ale#path#CdString(l:project_dir) : ''
+
+    return l:cd_command
+    \   . ale#node#Executable(a:buffer, l:executable)
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . ' -f json --stdin --stdin-filename %s'
 endfunction
@@ -84,11 +95,22 @@ function! s:CheckForBadConfig(buffer, lines) abort
 endfunction
 
 function! s:parseJSON(buffer, lines) abort
+<<<<<<< HEAD
     try
         let l:parsed = json_decode(a:lines[-1])
     catch
         return []
     endtry
+=======
+    let l:parsed = []
+
+    for l:line in a:lines
+        try
+            let l:parsed = extend(l:parsed, json_decode(l:line))
+        catch
+        endtry
+    endfor
+>>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 
     if type(l:parsed) != v:t_list || empty(l:parsed)
         return []

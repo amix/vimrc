@@ -29,6 +29,10 @@ function! ale#fixers#black#Fix(buffer) abort
 
     let l:options = ale#Var(a:buffer, 'python_black_options')
 
+    if expand('#' . a:buffer . ':e') is? 'pyi'
+        let l:options .= '--pyi'
+    endif
+
     return {
     \   'command': l:cd_string . ale#Escape(l:executable) . l:exec_args
     \       . (!empty(l:options) ? ' ' . l:options : '')

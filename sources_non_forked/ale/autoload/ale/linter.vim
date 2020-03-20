@@ -12,9 +12,15 @@ let s:linters = {}
 let s:default_ale_linter_aliases = {
 \   'Dockerfile': 'dockerfile',
 \   'csh': 'sh',
+\   'javascriptreact': ['javascript', 'jsx'],
 \   'plaintex': 'tex',
 \   'rmarkdown': 'r',
+<<<<<<< HEAD
+=======
+\   'rmd': 'r',
+>>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 \   'systemverilog': 'verilog',
+\   'typescriptreact': ['typescript', 'tsx'],
 \   'verilog_systemverilog': ['verilog_systemverilog', 'verilog'],
 \   'vimwiki': 'markdown',
 \   'vue': ['vue', 'javascript'],

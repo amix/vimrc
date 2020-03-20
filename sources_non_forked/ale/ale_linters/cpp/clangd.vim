@@ -3,9 +3,14 @@
 
 call ale#Set('cpp_clangd_executable', 'clangd')
 call ale#Set('cpp_clangd_options', '')
+call ale#Set('c_build_dir', '')
 
 function! ale_linters#cpp#clangd#GetCommand(buffer) abort
-    return '%e' . ale#Pad(ale#Var(a:buffer, 'cpp_clangd_options'))
+    let l:build_dir = ale#c#GetBuildDirectory(a:buffer)
+
+    return '%e'
+    \    . ale#Pad(ale#Var(a:buffer, 'cpp_clangd_options'))
+    \    . (!empty(l:build_dir) ? ' -compile-commands-dir=' . ale#Escape(l:build_dir) : '')
 endfunction
 
 call ale#linter#Define('cpp', {

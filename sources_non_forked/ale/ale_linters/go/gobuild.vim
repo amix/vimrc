@@ -11,6 +11,7 @@ function! ale_linters#go#gobuild#GetCommand(buffer) abort
 
     " Run go test in local directory with relative path
     return ale#path#BufferCdString(a:buffer)
+    \   . ale#go#EnvString(a:buffer)
     \   . ale#Var(a:buffer, 'go_go_executable') . ' test'
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . ' -c -o /dev/null ./'

@@ -12,6 +12,7 @@ endfunction
 " https://rkeithhill.wordpress.com/2007/10/30/powershell-quicktip-preparsing-scripts-to-check-for-syntax-errors/
 function! ale_linters#powershell#powershell#GetCommand(buffer) abort
     let l:script = ['Param($Script);
+    \   $ErrorView = "Normal";
     \   trap {$_;continue} & {
     \   $Contents = Get-Content -Path $Script;
     \   $Contents = [string]::Join([Environment]::NewLine, $Contents);

@@ -17,6 +17,33 @@ See |ale-javascript-prettier| for information about the available options.
 
 
 ===============================================================================
+standard                                              *ale-typescript-standard*
+
+g:ale_typescript_standard_executable     *g:ale_typescript_standard_executable*
+                                         *b:ale_typescript_standard_executable*
+  Type: |String|
+  Default: `'standard'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_typescript_standard_options           *g:ale_typescript_standard_options*
+                                            *b:ale_typescript_standard_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to standard.
+
+
+g:ale_typescript_standard_use_global     *g:ale_typescript_standard_use_global*
+                                         *b:ale_typescript_standard_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 tslint                                                  *ale-typescript-tslint*
 
 This linter isn't recommended, because TSLint can't be used for checking for

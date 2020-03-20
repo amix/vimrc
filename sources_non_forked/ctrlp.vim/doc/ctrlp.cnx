@@ -1439,7 +1439,7 @@ Before 2016/11/28~
     + 新命令: |YankLine()| 来复制整个文件。
     + 新选项: |g:ctrlp_types| 来选择內建类型。
     + 新特性: 异步在新线程中调用 |g:ctrlp_user_command| 。 设置
-              |g:user_command_async|  为1来启用。
+              |g:ctrlp_user_command_async|  为1来启用。
     + 为 delphi, rust 和 golang提供buffertag支持。
     + 新选项: |g:ctrlp_brief_prompt|,
               |g:match_current_file|,

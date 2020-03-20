@@ -6,7 +6,7 @@ let g:NERDTreeMenuItem = s:MenuItem
 "FUNCTION: MenuItem.All() {{{1
 "get all top level menu items
 function! s:MenuItem.All()
-    if !exists("s:menuItems")
+    if !exists('s:menuItems')
         let s:menuItems = []
     endif
     return s:menuItems
@@ -58,7 +58,7 @@ function! s:MenuItem.CreateSeparator(options)
     let standard_options = { 'text': '--------------------',
                 \ 'shortcut': -1,
                 \ 'callback': -1 }
-    let options = extend(a:options, standard_options, "force")
+    let options = extend(a:options, standard_options, 'force')
 
     return s:MenuItem.Create(options)
 endfunction
@@ -67,7 +67,7 @@ endfunction
 "make a new submenu and add it to global list
 function! s:MenuItem.CreateSubmenu(options)
     let standard_options = { 'callback': -1 }
-    let options = extend(a:options, standard_options, "force")
+    let options = extend(a:options, standard_options, 'force')
 
     return s:MenuItem.Create(options)
 endfunction
@@ -79,7 +79,7 @@ endfunction
 "specified
 function! s:MenuItem.enabled()
     if self.isActiveCallback != -1
-        return {self.isActiveCallback}()
+        return type(self.isActiveCallback) == type(function('tr')) ? self.isActiveCallback() : {self.isActiveCallback}()
     endif
     return 1
 endfunction
@@ -94,7 +94,11 @@ function! s:MenuItem.execute()
         call mc.showMenu()
     else
         if self.callback != -1
-            call {self.callback}()
+            if type(self.callback) == type(function('tr'))
+                call self.callback()
+            else
+                call {self.callback}()
+            endif
         endif
     endif
 endfunction

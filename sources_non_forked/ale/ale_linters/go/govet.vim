@@ -11,6 +11,7 @@ function! ale_linters#go#govet#GetCommand(buffer) abort
     let l:options = ale#Var(a:buffer, 'go_govet_options')
 
     return ale#path#BufferCdString(a:buffer) . ' '
+    \   . ale#go#EnvString(a:buffer)
     \   . ale#Var(a:buffer, 'go_go_executable') . ' vet '
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . ' .'

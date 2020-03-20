@@ -36,11 +36,3 @@ endfunction
 function! ale#handlers#ruby#HandleSyntaxErrors(buffer, lines) abort
     return s:HandleSyntaxError(a:buffer, a:lines)
 endfunction
-
-function! ale#handlers#ruby#EscapeExecutable(executable, bundle_exec) abort
-    let l:exec_args = a:executable =~? 'bundle'
-    \   ? ' exec ' . a:bundle_exec
-    \   : ''
-
-    return ale#Escape(a:executable) . l:exec_args
-endfunction

@@ -165,6 +165,10 @@ like the following in your vimrc: >
 ==============================================================================
 7. FAQ                                              *multiple-cursors-faq*
 
+Q:  Pressing <i> after selecting words with <C-n> makes the plugin hang, why?
+A:  When selecting words with <C-n>, the plugin behaves like in `visual` mode.
+    Once you pressed <i>, you can still press <I> to insert text.
+
 Q:  <A-n> doesn't seem to work in VIM but works in gVIM, why?
 A:  This is a well known terminal/Vim [9], different terminal have different
     ways to send `Alt+key`.  Try adding this in your `.vimrc` and make sure

@@ -125,6 +125,9 @@ let g:ale_close_preview_on_insert = get(g:, 'ale_close_preview_on_insert', 0)
 " This flag can be set to 0 to disable balloon support.
 let g:ale_set_balloons = get(g:, 'ale_set_balloons', has('balloon_eval') && has('gui_running'))
 
+" Use preview window for hover messages.
+let g:ale_hover_to_preview = get(g:, 'ale_hover_to_preview', 0)
+
 " This flag can be set to 0 to disable warnings for trailing whitespace
 let g:ale_warn_about_trailing_whitespace = get(g:, 'ale_warn_about_trailing_whitespace', 1)
 " This flag can be set to 0 to disable warnings for trailing blank lines
@@ -141,6 +144,9 @@ let g:ale_completion_enabled = get(g:, 'ale_completion_enabled', 0)
 
 " Enable automatic detection of pipenv for Python linters.
 let g:ale_python_auto_pipenv = get(g:, 'ale_python_auto_pipenv', 0)
+
+" This variable can be overridden to set the GO111MODULE environment variable.
+let g:ale_go_go111module = get(g:, 'ale_go_go111module', '')
 
 if g:ale_set_balloons
     call ale#balloon#Enable()
@@ -218,6 +224,12 @@ command! -nargs=1 ALESymbolSearch :call ale#symbol#Search(<q-args>)
 
 command! -bar ALEComplete :call ale#completion#GetCompletions('ale-manual')
 
+" Rename symbols using tsserver and LSP
+command! -bar ALERename :call ale#rename#Execute()
+
+" Organize import statements using tsserver
+command! -bar ALEOrganizeImports :call ale#organize_imports#Execute()
+
 " <Plug> mappings for commands
 nnoremap <silent> <Plug>(ale_previous) :ALEPrevious<Return>
 nnoremap <silent> <Plug>(ale_previous_wrap) :ALEPreviousWrap<Return>
@@ -256,6 +268,7 @@ nnoremap <silent> <Plug>(ale_find_references) :ALEFindReferences<Return>
 nnoremap <silent> <Plug>(ale_hover) :ALEHover<Return>
 nnoremap <silent> <Plug>(ale_documentation) :ALEDocumentation<Return>
 inoremap <silent> <Plug>(ale_complete) <C-\><C-O>:ALEComplete<Return>
+nnoremap <silent> <Plug>(ale_rename) :ALERename<Return>
 
 " Set up autocmd groups now.
 call ale#events#Init()

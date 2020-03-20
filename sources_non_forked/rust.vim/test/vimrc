@@ -1,0 +1,30 @@
+" vint: -ProhibitSetNoCompatible
+"
+
+set nocompatible
+filetype off
+
+" This script is currently designed to be run from within Docker, the
+" following paths are intrinsic to the container:
+source /rtp.vim
+
+" Paths need prepending (instead of what is originally done
+" in vim-testbed) in order to supersede the rust.vim that is
+" supplied with Vim.
+exec 'set runtimepath=/vader,/testplugin,' . &runtimepath
+cd /testplugin
+
+filetype plugin indent on
+syntax on
+
+set nocompatible
+set tabstop=8
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+set backspace=2
+set nofoldenable
+set foldmethod=syntax
+set foldlevelstart=10
+set foldnestmax=10
+set ttimeoutlen=0

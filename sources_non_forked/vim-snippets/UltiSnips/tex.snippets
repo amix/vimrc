@@ -85,7 +85,7 @@ snippet fig "Figure environment" b
 \begin{figure}[${2:htpb}]
 	\centering
 	\includegraphics[width=${3:0.8}\linewidth]{${4:name.ext}}
-	\caption{${4/(\w+)\.\w+/\u$1/}$0}
+	\caption{${4/(\w+)\.\w+/\u$1/}$0}%
 	\label{fig:${4/(\w+)\.\w+/$1/}}
 \end{figure}
 endsnippet
@@ -219,5 +219,26 @@ ${2:${VISUAL:code}}
 \end{listing}
 
 $0
+endsnippet
+
+snippet gln "New glossary item" b
+\newglossaryentry{${1:identifier}}
+{
+  name={${2:name}},
+  first={${3:first occurrence}},
+  sort={${4:sort value}},
+  description={${0:description}},
+}
+endsnippet
+snippet glnl "New long glossary item" b
+\longnewglossaryentry{${1:identifier}}
+{
+  name={${2:name}},
+  first={${3:first occurrence}},
+  sort={${4:sort value}},
+}
+{
+  ${0:description}
+}
 endsnippet
 # vim:ft=snippets:

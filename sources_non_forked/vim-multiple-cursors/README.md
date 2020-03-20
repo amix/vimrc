@@ -61,7 +61,7 @@ call plug#end()
     * next:         `<C-n>` add a new _virtual cursor + selection_ on the next match
     * skip:         `<C-x>` skip the next match
     * prev:         `<C-p>` remove current _virtual cursor + selection_ and go back on previous match
-  * select all:     `<A-n>` start muticursor and directly select all matches
+  * select all:     `<A-n>` start multicursor and directly select all matches
 
 You can now change the _virtual cursors + selection_ with **visual mode** commands.
 For instance: `c`, `s`, `I`, `A` work without any issues.
@@ -169,6 +169,10 @@ highlight link multiple_cursors_visual Visual
 ```
 
 ## FAQ
+
+#### **Q**  Pressing <kbd>i</kbd> after selecting words with <kbd>C-n</kbd> makes the plugin hang, why?
+**A** When selecting words with <kbd>C-n</kbd>, the plugin behaves like in **visual** mode.
+Once you pressed <kbd>i</kbd>, you can still press <kbd>I</kbd> to insert text.
 
 #### **Q** <kbd>ALT</kbd>+<kbd>n</kbd> doesn't seem to work in VIM but works in gVIM, why?
 **A** This is a well known terminal/Vim [issue](http://vim.wikia.com/wiki/Get_Alt_key_to_work_in_terminal), different terminal have different ways to send ```Alt+key```.

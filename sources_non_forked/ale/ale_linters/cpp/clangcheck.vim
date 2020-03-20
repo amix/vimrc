@@ -20,7 +20,7 @@ function! ale_linters#cpp#clangcheck#GetCommand(buffer) abort
     " being generated. These are only added if no build directory can be
     " detected.
     return '%e -analyze %s'
-    \   . (empty(l:build_dir) ? ' -extra-arg -Xclang -extra-arg -analyzer-output=text' : '')
+    \   . (empty(l:build_dir) ? ' --extra-arg=-Xclang --extra-arg=-analyzer-output=text --extra-arg=-fno-color-diagnostics': '')
     \   . ale#Pad(l:user_options)
     \   . (!empty(l:build_dir) ? ' -p ' . ale#Escape(l:build_dir) : '')
 endfunction

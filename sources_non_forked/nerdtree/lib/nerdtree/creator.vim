@@ -82,20 +82,20 @@ function! s:Creator.createWindowTree(dir)
     try
         let path = g:NERDTreePath.New(a:dir)
     catch /^NERDTree.InvalidArgumentsError/
-        call nerdtree#echo("Invalid directory name:" . a:name)
+        call nerdtree#echo('Invalid directory name:' . a:dir)
         return
     endtry
 
     "we want the directory buffer to disappear when we do the :edit below
     setlocal bufhidden=wipe
 
-    let previousBuf = expand("#")
+    let previousBuf = expand('#')
 
     "we need a unique name for each window tree buffer to ensure they are
     "all independent
-    exec g:NERDTreeCreatePrefix . " edit " . self._nextBufferName()
+    exec g:NERDTreeCreatePrefix . ' edit ' . self._nextBufferName()
 
-    call self._createNERDTree(path, "window")
+    call self._createNERDTree(path, 'window')
     let b:NERDTree._previousBuf = bufnr(previousBuf)
     call self._setCommonBufOptions()
 
@@ -109,7 +109,7 @@ function! s:Creator._createNERDTree(path, type)
     let b:NERDTree = g:NERDTree.New(a:path, a:type)
 
     " TODO: This assignment is kept for compatibility reasons.  Many other
-    " plugins use "b:NERDTreeRoot" instead of "b:NERDTree.root".  Remove this
+    " plugins use b:NERDTreeRoot instead of b:NERDTree.root.  Remove this
     " assignment in the future.
     let b:NERDTreeRoot = b:NERDTree.root
 
@@ -126,9 +126,9 @@ endfunction
 function! s:Creator.createMirror()
     "get the names off all the nerd tree buffers
     let treeBufNames = []
-    for i in range(1, tabpagenr("$"))
+    for i in range(1, tabpagenr('$'))
         let nextName = self._tabpagevar(i, 'NERDTreeBufName')
-        if nextName != -1 && (!exists("t:NERDTreeBufName") || nextName != t:NERDTreeBufName)
+        if nextName != -1 && (!exists('t:NERDTreeBufName') || nextName != t:NERDTreeBufName)
             call add(treeBufNames, nextName)
         endif
     endfor
@@ -140,7 +140,7 @@ function! s:Creator.createMirror()
     let i = 0
     while i < len(treeBufNames)
         let bufName = treeBufNames[i]
-        let treeRoot = getbufvar(bufName, "NERDTree").root
+        let treeRoot = getbufvar(bufName, 'NERDTree').root
         let options[i+1 . '. ' . treeRoot.path.str() . '  (buf name: ' . bufName . ')'] = bufName
         let i = i + 1
     endwhile
@@ -148,7 +148,7 @@ function! s:Creator.createMirror()
     "work out which tree to mirror, if there is more than 1 then ask the user
     let bufferName = ''
     if len(keys(options)) > 1
-        let choices = ["Choose a tree to mirror"]
+        let choices = ['Choose a tree to mirror']
         let choices = extend(choices, sort(keys(options)))
         let choice = inputlist(choices)
         if choice < 1 || choice > len(options) || choice ==# ''
@@ -159,7 +159,7 @@ function! s:Creator.createMirror()
     elseif len(keys(options)) ==# 1
         let bufferName = values(options)[0]
     else
-        call nerdtree#echo("No trees to mirror")
+        call nerdtree#echo('No trees to mirror')
         return
     endif
 
@@ -227,7 +227,7 @@ endfunction
 " FUNCTION: s:Creator._nextBufferNumber() {{{1
 " the number to add to the nerd tree buffer name to make the buf name unique
 function! s:Creator._nextBufferNumber()
-    if !exists("s:Creator._NextBufNum")
+    if !exists('s:Creator._NextBufNum')
         let s:Creator._NextBufNum = 1
     else
         let s:Creator._NextBufNum += 1
@@ -254,7 +254,7 @@ function! s:Creator._pathForString(str)
         try
             let path = g:NERDTreePath.New(dir)
         catch /^NERDTree.InvalidArgumentsError/
-            call nerdtree#echo("No bookmark or directory found for: " . a:str)
+            call nerdtree#echo('No bookmark or directory found for: ' . a:str)
             return {}
         endtry
     endif
@@ -274,7 +274,7 @@ function! s:Creator._removeTreeBufForTab()
 
         "nerdtree buf may be mirrored/displayed elsewhere
         if self._isBufHidden(buf)
-            exec "bwipeout " . buf
+            exec 'bwipeout ' . buf
         endif
 
     endif
@@ -300,11 +300,11 @@ function! s:Creator._setCommonBufOptions()
     setlocal nowrap
 
     if g:NERDTreeShowLineNumbers
-        setlocal nu
+        setlocal number
     else
-        setlocal nonu
+        setlocal nonumber
         if v:version >= 703
-            setlocal nornu
+            setlocal norelativenumber
         endif
     endif
 
@@ -330,17 +330,20 @@ endfunction
 " FUNCTION: s:Creator._tabpagevar(tabnr, var) {{{1
 function! s:Creator._tabpagevar(tabnr, var)
     let currentTab = tabpagenr()
-    let old_ei = &ei
-    set ei=all
+    let old_ei = &eventignore
+    set eventignore=all
 
-    exec "tabnext " . a:tabnr
-    let v = -1
-    if exists('t:' . a:var)
-        exec 'let v = t:' . a:var
-    endif
-    exec "tabnext " . currentTab
+    try
+        exec 'tabnext ' . a:tabnr
+        let v = -1
+        if exists('t:' . a:var)
+            exec 'let v = t:' . a:var
+        endif
+        exec 'tabnext ' . currentTab
 
-    let &ei = old_ei
+    finally
+        let &eventignore = old_ei
+    endtry
 
     return v
 endfunction
@@ -352,17 +355,20 @@ function! s:Creator.ToggleTabTree(dir)
 endfunction
 
 " FUNCTION: s:Creator.toggleTabTree(dir) {{{1
-" Toggles the NERD tree. I.e the NERD tree is open, it is closed, if it is
-" closed it is restored or initialized (if it doesnt exist)
+" Toggles the NERD tree. I.e if the NERD tree is open, it is closed. If it is
+" closed, it is restored or initialized. If dir is not empty, it will be set
+" as the new root.
 "
 " Args:
-" dir: the full path for the root node (is only used if the NERD tree is being
-" initialized.
+" dir: the full path for the root node (is used if the NERD tree is being
+" initialized, or to change the root to a new dir.)
 function! s:Creator.toggleTabTree(dir)
     if g:NERDTree.ExistsForTab()
         if !g:NERDTree.IsOpen()
             call self._createTreeWin()
-            if !&hidden
+            if !empty(a:dir)
+                call self.createTabTree(a:dir)
+            elseif !&hidden
                 call b:NERDTree.render()
             endif
             call b:NERDTree.ui.restoreScreenState()

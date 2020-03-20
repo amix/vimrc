@@ -162,3 +162,13 @@ function! ale#lsp#message#DidChangeConfiguration(buffer, config) abort
     \   'settings': a:config,
     \}]
 endfunction
+
+function! ale#lsp#message#Rename(buffer, line, column, new_name) abort
+    return [0, 'textDocument/rename', {
+    \   'textDocument': {
+    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \   },
+    \   'position': {'line': a:line - 1, 'character': a:column - 1},
+    \   'newName': a:new_name,
+    \}]
+endfunction

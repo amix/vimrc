@@ -30,6 +30,16 @@ g:ale_go_go_executable                                    *g:ale_go_go_options*
   the `gomod` fixer.
 
 
+g:ale_go_go111module                                     *g:ale_go_go111module*
+                                                         *b:ale_go_go111module*
+  Type: |String|
+  Default: `''`
+
+  Override the value of the `$GO111MODULE` environment variable for
+  golang tools.
+
+
+
 ===============================================================================
 bingo                                                            *ale-go-bingo*
 

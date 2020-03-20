@@ -41,10 +41,13 @@ https://github.com/itchyny/lightline.vim
 
 landscape is my colorscheme, which is a high-contrast cterm-supported colorscheme, available at https://github.com/itchyny/landscape.vim
 
+
+For screenshots of all available colorshemes, see [this file](colorscheme.md).
+
 ## Why yet another clone of powerline?
 + [vim-powerline](https://github.com/Lokaltog/vim-powerline) is a nice plugin, but deprecated.
 + [powerline](https://github.com/powerline/powerline) is a nice plugin, but difficult to configure.
-+ [vim-airline](https://github.com/vim-airline/vim-airline) is a nice plugin, but it uses too much functions of other plugins, which should be done by users in `.vimrc`.
++ [vim-airline](https://github.com/vim-airline/vim-airline) is a nice plugin, but it uses too many functions of other plugins, which should be done by users in `.vimrc`.
 
 ## Spirit of this plugin
 + Minimalism. The core script is very small to achieve enough functions as a statusline plugin.
@@ -52,6 +55,10 @@ landscape is my colorscheme, which is a high-contrast cterm-supported colorschem
 + Orthogonality. The plugin does not rely on the implementation of other plugins. Such plugin crossing settings should be configured by users.
 
 ## Installation
+### [Vim packages](http://vimhelp.appspot.com/repeat.txt.html#packages) (since Vim 7.4.1528)
+
+        git clone https://github.com/itchyny/lightline.vim ~/.vim/pack/plugins/start/lightline
+
 ### [Pathogen](https://github.com/tpope/vim-pathogen)
 1. Install with the following command.
 
@@ -80,6 +87,13 @@ landscape is my colorscheme, which is a high-contrast cterm-supported colorschem
 
 2. Install with `:PlugInstall`.
 
+### [dein.vim](https://github.com/Shougo/dein.vim)
+1. Add the following configuration to your `.vimrc`.
+
+        call dein#add('itchyny/lightline.vim')
+
+2. Install with `:call dein#install()`
+
 ## Introduction
 After installing this plugin, you restart the editor and will get a cool statusline.
 ![lightline.vim - tutorial](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/tutorial/1.png)
@@ -101,7 +115,7 @@ then modify `TERM` in your shell configuration (`.zshrc` for example)
 ```sh
 export TERM=xterm-256color
 ```
-and then add the following configure to your `.vimrc`.
+and then add the following configuration to your `.vimrc`.
 ```vim
 if !has('gui_running')
   set t_Co=256
@@ -150,7 +164,7 @@ Instead, lightline.vim provides a simple API that user can easily integrate with
 Once you understand how to configure and how it will be displayed in the statusline, you can also tell how to integrate with your favorite plugins.
 
 Let's start to configure the appearance.
-The statusline is composed by multiple components.
+The statusline is composed of multiple components.
 It shows the current mode, filename, modified status on the left, and file format, encoding, filetype and cursor positions on the right.
 So in order to add something in the statusline, you firstly create a new component and specify the place.
 
@@ -221,7 +235,7 @@ Now let's add some integrations with other plugin.
 The name of the git branch is important these days.
 But lightline.vim does not provide this information by default because it is also one of plugin crossing configurations, and not all people want the integration.
 
-In order to show the branch name in the statusline, install some plugins which provides the branch information.
+In order to show the branch name in the statusline, install some plugins which provide the branch information.
 The [vim-fugitive](https://github.com/tpope/vim-fugitive) plugin is a famous plugin so let's integrate lightline.vim with it.
 If you don't like to install full git integration but just want to display the branch name in the statusline, you can use the [vim-gitbranch](https://github.com/itchyny/vim-gitbranch) plugin which provides `gitbranch#name` function.
 ```vim
@@ -232,7 +246,7 @@ let g:lightline = {
       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
       \ },
       \ 'component_function': {
-      \   'gitbranch': 'fugitive#head'
+      \   'gitbranch': 'FugitiveHead'
       \ },
       \ }
 ```
@@ -316,7 +330,7 @@ let g:lightline = {
       \ }
 
 function! LightlineMode()
-  return expand('%:t') ==# '__Tagbar__' ? 'Tagbar':
+  return expand('%:t') =~# '^__Tagbar__' ? 'Tagbar':
         \ expand('%:t') ==# 'ControlP' ? 'CtrlP' :
         \ &filetype ==# 'unite' ? 'Unite' :
         \ &filetype ==# 'vimfiler' ? 'VimFiler' :
@@ -369,6 +383,40 @@ endfunction
 
 You can control the visibility and contents by writing simple functions.
 Now you notice how much function component is important for the configurability of lightline.vim.
+
+### more tips
+#### Mode names are too long. Can I use shorter mode names?
+Yes, configure `g:lightline.mode_map`.
+```vim
+let g:lightline = {
+      \ 'mode_map': {
+        \ 'n' : 'N',
+        \ 'i' : 'I',
+        \ 'R' : 'R',
+        \ 'v' : 'V',
+        \ 'V' : 'VL',
+        \ "\<C-v>": 'VB',
+        \ 'c' : 'C',
+        \ 's' : 'S',
+        \ 'S' : 'SL',
+        \ "\<C-s>": 'SB',
+        \ 't': 'T',
+        \ },
+      \ }
+```
+
+#### How can I truncate the components from the right in narrow windows?
+Please include `%<` to one of the right components.
+```vim
+let g:lightline = {
+      \ 'component': {
+      \   'lineinfo': '%3l:%-2v%<',
+      \ },
+      \ }
+```
+
+#### Where can I find the default components?
+See `:h g:lightline.component`.
 
 ## Note for developers of other plugins
 Appearance consistency matters.

@@ -54,14 +54,14 @@ function! ale#path#FindNearestDirectory(buffer, directory_name) abort
     return ''
 endfunction
 
-" Given a buffer, a string to search for, an a global fallback for when
+" Given a buffer, a string to search for, and a global fallback for when
 " the search fails, look for a file in parent paths, and if that fails,
 " use the global fallback path instead.
 function! ale#path#ResolveLocalPath(buffer, search_string, global_fallback) abort
     " Search for a locally installed file first.
     let l:path = ale#path#FindNearestFile(a:buffer, a:search_string)
 
-    " If the serach fails, try the global executable instead.
+    " If the search fails, try the global executable instead.
     if empty(l:path)
         let l:path = a:global_fallback
     endif

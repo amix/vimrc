@@ -1,1 +1,43 @@
 extends javascript
+
+snippet tconst "ts const"
+	const ${1}: ${2:any} = ${3};
+	${0}
+snippet tlet "ts let"
+	let ${1}: ${2:any} = ${3};
+	${0}
+snippet tvar "ts var"
+	var ${1}: ${2:any} = ${3};
+	${0}
+snippet + "var: type"
+	${1}: ${0:any}
+snippet int "interface"
+	interface ${1} {
+		${2}: ${3:any};
+		${0}
+	}
+snippet intx "interface extends"
+	interface ${1} extends ${2} {
+		${3}: ${4:any};
+		${0}
+	}
+snippet tfun "ts function"
+	function ${1}(${2}): ${3:any} {
+		${0}
+	}
+snippet tcla "ts class"
+	class ${1} {
+		${2}
+		constructor(public ${3}: ${4: any}) {
+			${5}
+		}
+		${0}
+	}
+snippet tclax "ts class extends"
+	class ${1} extends ${2} {
+		${3}
+		constructor(public ${4}: ${5: any}) {
+			${6}
+		}
+		${0}
+	}

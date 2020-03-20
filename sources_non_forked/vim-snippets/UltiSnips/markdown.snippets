@@ -1,25 +1,55 @@
 priority -50
 
 global !p
+# A overkill(dirty) table with automatic alignment feature
 def create_table(snip):
-    # retrieving single line from current string and treat it like tabstops count
-    placeholders_string = snip.buffer[snip.line].strip()[2:].split("x",1)
-    rows_amount = int(placeholders_string[0])
-    columns_amount = int(placeholders_string[1])
+	# retrieving single line from current string and treat it like tabstops count
+	placeholders_string = snip.buffer[snip.line].strip()
+	rows_amount = int(placeholders_string[0])
+	columns_amount = int(placeholders_string[1])
 
-    # erase current line
-    snip.buffer[snip.line] = ''
+	prefix_str = "from vimsnippets import display_width;"
 
-    # create anonymous snippet with expected content and number of tabstops
-    anon_snippet_title = ' | '.join(['$' + str(col) for col in range(1,columns_amount+1)]) + "\n"
-    anon_snippet_delimiter = ':-|' * (columns_amount-1) + ":-\n"
-    anon_snippet_body = ""
-    for row in range(1,rows_amount+1):
-        anon_snippet_body += ' | '.join(['$' + str(row*columns_amount+col) for col in range(1,columns_amount+1)]) + "\n"
-    anon_snippet_table = anon_snippet_title + anon_snippet_delimiter + anon_snippet_body
+	# erase current line
+	snip.buffer[snip.line] = ""
 
-    # expand anonymous snippet
-    snip.expand_anon(anon_snippet_table)
+	# create anonymous snippet with expected content and number of tabstops
+	anon_snippet_title = "| "
+	anon_snippet_delimiter = "|"
+	for col in range(1, columns_amount+1):
+		sync_rows = [x*columns_amount+col for x in range(rows_amount+1)]
+		sync_str = ",".join(["t[{0}]".format(x) for x in sync_rows])
+		max_width_str = "max(list(map(display_width, [" + sync_str + "])))"
+		cur_width_str = "display_width(t[" + str(col) + "])"
+		rv_val = "(" + max_width_str + "-" + cur_width_str + ")*' '"
+		anon_snippet_title += "${" + str(col)  + ":head" + str(col)\
+			+ "}`!p " + prefix_str + "snip.rv=" + rv_val + "` | "
+		anon_snippet_delimiter += ":`!p " + prefix_str + "snip.rv = "\
+			+ max_width_str + "*'-'" + "`-|"
+
+	anon_snippet_title += "\n"
+
+	anon_snippet_delimiter += "\n"
+	anon_snippet_body = ""
+	for row in range(1, rows_amount+1):
+		body_row = "| "
+		for col in range(1, columns_amount+1):
+			sync_rows = [x*columns_amount+col for x in range(rows_amount+1)]
+			sync_str = ",".join(["t[{0}]".format(x) for x in sync_rows])
+			max_width_str = "max(list(map(display_width, [" + sync_str + "])))"
+			cur_width_str = "display_width(t[" + str(row*columns_amount+col) + "])"
+			rv_val = "(" + max_width_str + "-" + cur_width_str + ")*' '"
+			placeholder = "R{0}C{1}".format(row, col)
+			body_row += "${" + str(row*columns_amount+col)  + ":" + placeholder\
+				+ "}`!p " + prefix_str + "snip.rv=" + rv_val + "` | "
+
+		body_row += "\n"
+		anon_snippet_body += body_row
+
+	anon_snippet_table = anon_snippet_title + anon_snippet_delimiter + anon_snippet_body
+
+	# expand anonymous snippet
+	snip.expand_anon(anon_snippet_table)
 endglobal
 
 ###########################
@@ -101,8 +131,9 @@ snippet fnt "Footnote"
 [^$1]:${2:Text}
 endsnippet
 
-pre_expand "create_table(snip)"
-snippet "tb(\d+x\d+)" "Customizable table" br
+post_jump "create_table(snip)"
+snippet "tb([1-9][1-9])" "Fancy table" br
+`!p snip.rv = match.group(1)`
 endsnippet
 
 # vim:ft=snippets:

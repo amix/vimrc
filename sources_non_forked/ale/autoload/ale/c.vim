@@ -28,76 +28,107 @@ function! ale#c#GetBuildDirectory(buffer) abort
     return ale#path#Dirname(l:json_file)
 endfunction
 
-function! ale#c#AreSpecialCharsBalanced(option) abort
-    " Escape \"
-    let l:option_escaped = substitute(a:option, '\\"', '', 'g')
-
-    " Retain special chars only
-    let l:special_chars = substitute(l:option_escaped, '[^"''()`]', '', 'g')
-    let l:special_chars = split(l:special_chars, '\zs')
-
-    " Check if they are balanced
+function! ale#c#ShellSplit(line) abort
     let l:stack = []
+    let l:args = ['']
+    let l:prev = ''
 
-    for l:char in l:special_chars
-        if l:char is# ')'
-            if len(l:stack) == 0 || get(l:stack, -1) isnot# '('
-                return 0
-            endif
-
-            call remove(l:stack, -1)
-        elseif l:char is# '('
-            call add(l:stack, l:char)
-        else
-            if len(l:stack) > 0 && get(l:stack, -1) is# l:char
+    for l:char in split(a:line, '\zs')
+        if l:char is# ''''
+            if len(l:stack) > 0 && get(l:stack, -1) is# ''''
                 call remove(l:stack, -1)
-            else
+            elseif (len(l:stack) == 0 || get(l:stack, -1) isnot# '"') && l:prev isnot# '\'
                 call add(l:stack, l:char)
             endif
+        elseif (l:char is# '"' || l:char is# '`') && l:prev isnot# '\'
+            if len(l:stack) > 0 && get(l:stack, -1) is# l:char
+                call remove(l:stack, -1)
+            elseif len(l:stack) == 0 || get(l:stack, -1) isnot# ''''
+                call add(l:stack, l:char)
+            endif
+        elseif (l:char is# '(' || l:char is# '[' || l:char is# '{') && l:prev isnot# '\'
+            if len(l:stack) == 0 || get(l:stack, -1) isnot# ''''
+                call add(l:stack, l:char)
+            endif
+        elseif (l:char is# ')' || l:char is# ']' || l:char is# '}') && l:prev isnot# '\'
+            if len(l:stack) > 0 && get(l:stack, -1) is# {')': '(', ']': '[', '}': '{'}[l:char]
+                call remove(l:stack, -1)
+            endif
+        elseif l:char is# ' ' && len(l:stack) == 0
+            if len(get(l:args, -1)) > 0
+                call add(l:args, '')
+            endif
+
+            continue
         endif
+
+        let l:args[-1] = get(l:args, -1) . l:char
     endfor
 
-    return len(l:stack) == 0
+    return l:args
 endfunction
 
 function! ale#c#ParseCFlags(path_prefix, cflag_line) abort
-    let l:split_lines = split(a:cflag_line)
+    let l:cflags_list = []
+
+    let l:split_lines = ale#c#ShellSplit(a:cflag_line)
     let l:option_index = 0
 
     while l:option_index < len(l:split_lines)
-        let l:next_option_index = l:option_index + 1
-
-        " Join space-separated option
-        while l:next_option_index < len(l:split_lines)
-        \&& stridx(l:split_lines[l:next_option_index], '-') != 0
-            let l:next_option_index += 1
-        endwhile
-
-        let l:option = join(l:split_lines[l:option_index : l:next_option_index-1], ' ')
-        call remove(l:split_lines, l:option_index, l:next_option_index-1)
-        call insert(l:split_lines, l:option, l:option_index)
-
-        " Ignore invalid or conflicting options
-        if stridx(l:option, '-') != 0
-        \|| stridx(l:option, '-o') == 0
-        \|| stridx(l:option, '-c') == 0
-            call remove(l:split_lines, l:option_index)
-            let l:option_index = l:option_index - 1
-        " Fix relative path
-        elseif stridx(l:option, '-I') == 0
-            if !(stridx(l:option, ':') == 2+1 || stridx(l:option, '/') == 2+0)
-                let l:option = '-I' . a:path_prefix . s:sep . l:option[2:]
-                call remove(l:split_lines, l:option_index)
-                call insert(l:split_lines, l:option, l:option_index)
-            endif
-        endif
-
+        let l:option = l:split_lines[l:option_index]
         let l:option_index = l:option_index + 1
+
+        " Include options, that may need relative path fix
+        if stridx(l:option, '-I') == 0
+        \ || stridx(l:option, '-iquote') == 0
+        \ || stridx(l:option, '-isystem') == 0
+        \ || stridx(l:option, '-idirafter') == 0
+            if stridx(l:option, '-I') == 0 && l:option isnot# '-I'
+                let l:arg = join(split(l:option, '\zs')[2:], '')
+                let l:option = '-I'
+            else
+                let l:arg = l:split_lines[l:option_index]
+                let l:option_index = l:option_index + 1
+            endif
+
+            " Fix relative paths if needed
+            if stridx(l:arg, s:sep) != 0 && stridx(l:arg, '/') != 0
+                let l:rel_path = substitute(l:arg, '"', '', 'g')
+                let l:rel_path = substitute(l:rel_path, '''', '', 'g')
+                let l:arg = ale#Escape(a:path_prefix . s:sep . l:rel_path)
+            endif
+
+            call add(l:cflags_list, l:option)
+            call add(l:cflags_list, l:arg)
+        " Options with arg that can be grouped with the option or separate
+        elseif stridx(l:option, '-D') == 0 || stridx(l:option, '-B') == 0
+            call add(l:cflags_list, l:option)
+
+            if l:option is# '-D' || l:option is# '-B'
+                call add(l:cflags_list, l:split_lines[l:option_index])
+                let l:option_index = l:option_index + 1
+            endif
+        " Options that have an argument (always separate)
+        elseif l:option is# '-iprefix' || stridx(l:option, '-iwithprefix') == 0
+        \ || l:option is# '-isysroot' || l:option is# '-imultilib'
+            call add(l:cflags_list, l:option)
+            call add(l:cflags_list, l:split_lines[l:option_index])
+            let l:option_index = l:option_index + 1
+        " Options without argument
+        elseif (stridx(l:option, '-W') == 0 && stridx(l:option, '-Wa,') != 0 && stridx(l:option, '-Wl,') != 0 && stridx(l:option, '-Wp,') != 0)
+        \ || l:option is# '-w' || stridx(l:option, '-pedantic') == 0
+        \ || l:option is# '-ansi' || stridx(l:option, '-std=') == 0
+        \ || (stridx(l:option, '-f') == 0 && stridx(l:option, '-fdump') != 0 && stridx(l:option, '-fdiagnostics') != 0 && stridx(l:option, '-fno-show-column') != 0)
+        \ || stridx(l:option, '-O') == 0
+        \ || l:option is# '-C' || l:option is# '-CC' || l:option is# '-trigraphs'
+        \ || stridx(l:option, '-nostdinc') == 0 || stridx(l:option, '-iplugindir=') == 0
+        \ || stridx(l:option, '--sysroot=') == 0 || l:option is# '--no-sysroot-suffix'
+        \ || stridx(l:option, '-m') == 0
+            call add(l:cflags_list, l:option)
+        endif
     endwhile
 
-    call uniq(l:split_lines)
-
-    return join(l:split_lines, ' ')
+    return join(l:cflags_list, ' ')
 endfunction
 
 function! ale#c#ParseCFlagsFromMakeOutput(buffer, make_output) abort
@@ -234,6 +265,16 @@ function! s:GetLookupFromCompileCommandsFile(compile_commands_file) abort
     return l:empty
 endfunction
 
+function! ale#c#GetCompileCommand(json_item) abort
+    if has_key(a:json_item, 'command')
+        return a:json_item.command
+    elseif has_key(a:json_item, 'arguments')
+        return join(a:json_item.arguments, ' ')
+    endif
+
+    return ''
+endfunction
+
 function! ale#c#ParseCompileCommandsFlags(buffer, file_lookup, dir_lookup) abort
     " Search for an exact file match first.
     let l:basename = tolower(expand('#' . a:buffer . ':t'))
@@ -256,15 +297,14 @@ function! ale#c#ParseCompileCommandsFlags(buffer, file_lookup, dir_lookup) abort
     for l:item in l:file_list
         " Load the flags for this file, or for a source file matching the
         " header file.
-        if has_key(l:item, 'command')
-        \&& (
+        if (
         \   bufnr(l:item.file) is a:buffer
         \   || (
         \       !empty(l:source_file)
         \       && l:item.file[-len(l:source_file):] is? l:source_file
         \   )
         \)
-            return ale#c#ParseCFlags(l:item.directory, l:item.command)
+            return ale#c#ParseCFlags(l:item.directory, ale#c#GetCompileCommand(l:item))
         endif
     endfor
 
@@ -276,8 +316,7 @@ function! ale#c#ParseCompileCommandsFlags(buffer, file_lookup, dir_lookup) abort
 
     for l:item in l:dir_list
         if ale#path#Simplify(fnamemodify(l:item.file, ':h')) is? l:dir
-        \&& has_key(l:item, 'command')
-            return ale#c#ParseCFlags(l:item.directory, l:item.command)
+            return ale#c#ParseCFlags(l:item.directory, ale#c#GetCompileCommand(l:item))
         endif
     endfor
 

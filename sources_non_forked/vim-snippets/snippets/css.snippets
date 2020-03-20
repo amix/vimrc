@@ -36,45 +36,71 @@ snippet @m "@media mediatype { }"
 		${2:${VISUAL}}
 	}${0}
 snippet ac
-	align-content: ${0:stretch};
+	align-content: ${1:stretch};
+snippet ac:s
+	align-content: start;
+snippet ac:e
+	align-content: end;
 snippet ac:c
 	align-content: center;
-snippet ac:fe
-	align-content: flex-end;
 snippet ac:fs
 	align-content: flex-start;
-snippet ac:sa
-	align-content: space-around;
+snippet ac:fe
+	align-content: flex-end;
 snippet ac:sb
 	align-content: space-between;
-snippet ac:s
+snippet ac:sa
+	align-content: space-around;
+snippet ac:se
+	align-content: space-evenly;
+snippet ac:st
 	align-content: stretch;
+snippet ac:b
+	align-content: baseline;
+snippet ac:fb
+	align-content: first baseline;
+snippet ac:lb
+	align-content: last baseline;
 snippet ai
-	align-items: ${0:stretch};
-snippet ai:b
-	align-items: baseline;
+	align-items: ${1:stretch};
+snippet ai:s
+	align-items: start;
+snippet ai:e
+	align-items: end;
 snippet ai:c
 	align-items: center;
-snippet ai:fe
-	align-items: flex-end;
 snippet ai:fs
 	align-items: flex-start;
-snippet ai:s
+snippet ai:fe
+	align-items: flex-end;
+snippet ai:st
 	align-items: stretch;
+snippet ai:b
+	align-items: baseline;
+snippet ai:fb
+	align-items: first baseline;
+snippet ai:lb
+	align-items: last baseline;
 snippet as
-	align-self:  ${0};
-snippet as:a
-	align-self: auto;
-snippet as:b
-	align-self: baseline;
+	align-self: ${1:stretch};
+snippet as:s
+	align-self: start;
+snippet as:e
+	align-self: end;
 snippet as:c
 	align-self: center;
-snippet as:fe
-	align-self: flex-end;
+snippet as:st
+	align-self: stretch;
 snippet as:fs
 	align-self: flex-start;
-snippet as:s
-	align-self: stretch;
+snippet as:fe
+	align-self: flex-end;
+snippet as:b
+	align-self: baseline;
+snippet as:fb
+	align-self: first baseline;
+snippet as:lb
+	align-self: last baseline;
 snippet bg+
 	background: #${1:fff} url(${2}) ${3:0} ${4:0} ${5:no-repeat};${0}
 snippet bga
@@ -423,6 +449,8 @@ snippet d:b
 	display: block;
 snippet d:cp
 	display: compact;
+snippet d:g
+	display: grid;
 snippet d:f
 	display: flex;
 snippet d:ib
@@ -605,24 +633,122 @@ snippet fw:n
 	font-weight: normal;
 snippet f
 	font: ${1};${0}
+snippet g
+	grid: ${1};
+snippet gaf
+	grid-auto-flow: ${1:row};
+snippet gaf+
+	grid-auto-flow: ${1:row} ${2:dense};
+snippet gaf:r
+	grid-auto-flow: row;
+snippet gaf:c
+	grid-auto-flow: column;
+snippet gaf:d
+	grid-auto-flow: dense;
+snippet gaf:rd
+	grid-auto-flow: row dense;
+snippet gaf:cd
+	grid-auto-flow: column dense;
+snippet gar
+	grid-auto-rows: ${1};
+snippet gar:a
+	grid-auto-rows: auto
+snippet gar:mac
+	grid-auto-rows: max-content;
+snippet gar:mic
+	grid-auto-rows: min-content;
+snippet gac
+	grid-auto-columns: ${1};
+snippet gac:a
+	grid-auto-columns: auto
+snippet gac:mac
+	grid-auto-columns: max-content;
+snippet gac:mic
+	grid-auto-columns: min-content;
+snippet gt
+	grid-template: ${1};
+snippet gt+
+	grid-template: ${1} / ${2};
+snippet gtr
+	grid-template-rows: ${1};
+snippet gtc
+	grid-template-columns: ${1};
+snippet gta
+	grid-template-areas: ${1};
+snippet gg
+	grid-gap: ${1};
+snippet gg+
+	grid-gap: ${1} ${2};
+snippet gg:0
+	grid-gap: 0;
+snippet grg
+	grid-row-gap: ${1};
+snippet grg:0
+	grid-row-gap: 0;
+snippet gcg
+	grid-column-gap: ${1};
+snippet gcg:0
+	grid-column-gap: 0;
+snippet gr
+	grid-row: ${1} / ${2};
+snippet grs
+	grid-row-start: ${1};
+snippet gre
+	grid-row-end: ${1};
+snippet gc
+	grid-column: ${1} / ${2};
+snippet gcs
+	grid-column-start: ${1};
+snippet gce
+	grid-column-end: ${1};
 snippet h
 	height: ${1};${0}
 snippet h:a
 	height: auto;
 snippet jc
-	justify-content: ${0:flex-start};
+	justify-content: ${1};
+snippet jc:s
+	justify-content: start;
+snippet jc:e
+	justify-content: end;
 snippet jc:c
 	justify-content: center;
-snippet jc:fe
-	justify-content: flex-end;
 snippet jc:fs
 	justify-content: flex-start;
-snippet jc:sa
-	justify-content: space-around;
+snippet jc:fe
+	justify-content: flex-end;
 snippet jc:sb
 	justify-content: space-between;
+snippet jc:sa
+	justify-content: space-around;
 snippet jc:se
 	justify-content: space-evenly;
+snippet jc:st
+	justify-content: stretch;
+snippet jc:l
+	justify-content: left;
+snippet jc:r
+	justify-content: right;
+snippet ji
+	justify-items: ${1:stretch};
+snippet ji:s
+	justify-items: start;
+snippet ji:e
+	justify-items: end;
+snippet ji:c
+	justify-items: center;
+snippet ji:st
+	justify-items: stretch;
+snippet js
+	justify-self: ${1:stretch};
+snippet js:s
+	justify-self: start;
+snippet js:e
+	justify-self: end;
+snippet js:c
+	justify-self: center;
+snippet js:st
+	justify-self: stretch;
 snippet l
 	left: ${1};${0}
 snippet l:a
@@ -789,6 +915,28 @@ snippet p:2
 	padding: ${1:0} ${2:0};${0}
 snippet p:0
 	padding: 0;
+snippet pc
+	place-content: ${1};
+snippet pc+
+	place-content: ${1} ${2};
+snippet pc:s
+	place-content: start;
+snippet pc:e
+	place-content: end;
+snippet pc:c
+	place-content: center;
+snippet pc:fs
+	place-content: flex-start;
+snippet pc:fe
+	place-content: flex-end;
+snippet pc:sb
+	place-content: space-between;
+snippet pc:sa
+	place-content: space-around;
+snippet pc:se
+	place-content: space-evenly;
+snippet pc:st
+	place-content: stretch;
 snippet pgba
 	page-break-after: ${1};${0}
 snippet pgba:aw
@@ -815,6 +963,17 @@ snippet pgbi:a
 	page-break-inside: auto;
 snippet pgbi:av
 	page-break-inside: avoid;
+snippet pi
+	place-items: ${1:stretch};
+snippet pi+
+	place-items: ${1:stretch} ${2:stretch};
+snippet pi:s
+	place-items: start;
+snippet pi:e
+	place-items: end;
+snippet pi:c
+	place-items: center;
+snippet pi:st
 snippet pos
 	position: ${1};${0}
 snippet pos:a
@@ -825,6 +984,18 @@ snippet pos:r
 	position: relative;
 snippet pos:s
 	position: static;
+snippet ps
+	place-self: ${1:stretch};
+snippet ps+
+	place-self: ${1:stretch} ${2:stretch};
+snippet ps:s
+	place-self: start;
+snippet ps:e
+	place-self: end;
+snippet ps:c
+	place-self: center;
+snippet ps:st
+	place-self: stretch;
 snippet q
 	quotes: ${1};${0}
 snippet q:en

@@ -3,6 +3,18 @@ ALE Solidity Integration                                 *ale-solidity-options*
 
 
 ===============================================================================
+solc                                                        *ale-solidity-solc*
+
+
+g:ale_solidity_solc_options                       *g:ale_solidity_solc_options*
+                                                  *b:ale_solidity_solc_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to solc.
+
+
+===============================================================================
 solhint                                                  *ale-solidity-solhint*
 
   Solhint should work out-of-the-box. You can further configure it using a

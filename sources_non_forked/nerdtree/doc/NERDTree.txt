@@ -122,8 +122,17 @@ The following features and functionality are provided by the NERDTree:
 
 :NERDTreeToggle [<start-directory> | <bookmark>]               *:NERDTreeToggle*
     If a NERDTree already exists for this tab, it is reopened and rendered
-    again.  If no NERDTree exists for this tab then this command acts the
-    same as the |:NERDTree| command.
+    again. If <start-directory> or <bookmark> is given, the root of NERDTree
+    is set to that path. If no NERDTree exists for this tab then this command
+    acts the same as the |:NERDTree| command.
+
+:NERDTreeToggleVCS [<start-directory> | <bookmark>]            *:NERDTreeToggleVCS*
+    Like |:NERDTreeToggle|, but searches up the directory tree to find the top of
+    the version control system repository, and roots the NERDTree there. It
+    works with Git, Subversion, Mercurial, Bazaar, and Darcs repositories. A
+    couple of examples: >
+        :NERDTreeToggleVCS /home/marty/nerdtree/doc  (opens /home/marty/nerdtree)
+        :NERDTreeToggleVCS              (opens root of repository containing CWD)
 
 :NERDTreeFocus                                                  *:NERDTreeFocus*
     Opens (or reopens) the NERDTree if it is not currently visible;
@@ -849,9 +858,17 @@ above nodes would then be sorted like this: >
     z110.txt
 <
 ------------------------------------------------------------------------------
-                                                             *NERDTreeChDirMode*
+                                                                *NERDTreeUseTCD*
+Values: 0 or 1.
+Default: 0.
 
-Values: 0, 1 or 2.
+By default, NERDTree will use the `:cd` command to change the current working
+directory. If this setting is turned on, and the `:tcd` command is available, it
+will be used instead.
+
+------------------------------------------------------------------------------
+                                                             *NERDTreeChDirMode*
+Values: 0, 1, 2, or 3.
 Default: 0.
 
 Use this setting to tell the script when (if at all) to change the current
@@ -870,6 +887,9 @@ If the setting is set to 2 then it behaves the same as if set to 1 except that
 the CWD is changed whenever the tree root is changed. For example, if the CWD
 is /home/marty/foobar and you make the node for /home/marty/foobar/baz the new
 root then the CWD will become /home/marty/foobar/baz.
+
+If the set to 3, then it behaves the same as if set to 2, and the CWD is
+changed whenever changing tabs to whatever the tree root is on that tab.
 
 ------------------------------------------------------------------------------
                                                    *NERDTreeHighlightCursorline*
@@ -980,7 +1000,6 @@ then (to single click activate it) you must click somewhere in
 
 ------------------------------------------------------------------------------
                                                             *NERDTreeQuitOnOpen*
-
 Values: 0,1,2 or 3.
 Default: 0
 
@@ -1043,28 +1062,31 @@ window.  Use one of the follow lines for this setting: >
 Values: a list of regular expressions.
 Default: ['\/$', '*', '\.swp$',  '\.bak$', '\~$']
 
-This setting is a list of regular expressions which are used to specify the
-order of nodes under their parent.
+This setting is a list of regular expressions which are used to group or sort
+the nodes under their parent.
 
 For example, if the setting is: >
     ['\.vim$', '\.c$', '\.h$', '*', 'foobar']
 <
-then all .vim files will be placed at the top, followed by all .c files then
+then all .vim files will be grouped at the top, followed by all .c files then
 all .h files. All files containing the string 'foobar' will be placed at the
 end.  The star is a special flag: it tells the script that every node that
 doesn't match any of the other regexps should be placed here.
 
-If no star is present in NERDTreeSortOrder then one is automatically
-appended to the array.
+If no star is present in NERDTreeSortOrder, then one is automatically
+appended to the end of the list.
 
 The regex '\/$' should be used to match directory nodes.
 
-A special flag can be used to sort by the modification timestamps of files and
-directories. It is either '[[timestamp]]' for ascending, or '[[-timestamp]]'
-for descending. If placed at the beginning of the list, files and directories
-are sorted by timestamp, and then by the remaining items in the sort order
-list. If this flag is in any other position of the list, timestamp sorting is
-done secondarily. See examples 4, 5, and 6 below.
+Files can also be sorted by 1) the modification timestamp, 2) the size, or 3)
+the extension. Directories are always sorted by name. To accomplish this, the
+following special flags are used:
+  [[timestamp]]   [[-timestamp]]   [[size]]   [[-size]]   [[extension]]
+The hyphen specifies a descending sort; extensions are sorted in ascending
+order only. If placed at the beginning of the list, files are sorted according
+to these flags first, and then grouped by the remaining items in the list. If
+the flags are in any other position of the list, this special sorting is done
+secondarily. See examples 4, 5, and 6 below.
 
 After this sorting is done, the files in each group are sorted alphabetically.
 
@@ -1072,20 +1094,20 @@ Examples: >
     (1) ['*', '\/$']
     (2) []
     (3) ['\/$', '\.rb$', '\.php$', '*', '\.swp$',  '\.bak$', '\~$']
-    (4) ['[[timestamp]]']
-    (5) ['\/$', '*', '[[-timestamp]]']
-    (6) ['\.md$', '\.c$', '[[-timestamp]]', '*']
+    (4) ['[[-size]]']
+    (5) ['\/$', '*', '[[timestamp]]']
+    (6) ['foo','\/$','[[extension]]']
 <
 1. Directories will appear last, everything else will appear above.
 2. Everything will simply appear in alphabetical order.
 3. Dirs will appear first, then ruby and php. Swap files, bak files and vim
    backup files will appear last with everything else preceding them.
-4. All files and directories are sorted by timestamp, oldest first. If any
-   files have identical timestamps, they are sorted alphabetically.
-5. Directories are first, newest to oldest, then everything else, newest to
-   oldest.
-6. Markdown files first, followed by C source files, then everything else.
-   Each group is shown newest to oldest.
+4. Everything is sorted by size, largest to smallest, with directories
+   considered to have size 0 bytes.
+5. Directories will appear first alphabetically, followed by files, sorted by
+   timestamp, oldest first.
+6. Files and directories matching 'foo' first, followed by other directories,
+   then all other files. Each section of files is sorted by file extension.
 
 ------------------------------------------------------------------------------
                                                             *NERDTreeStatusline*
@@ -1217,7 +1239,7 @@ This character is used to separate the file or directory name from the rest of
 the characters in the line of text. It allows filenames to contain special
 characters that are otherwise used in the NERDTree, such as square brackets,
 braces, trailing asterisk, and leading space. For more details, see the
-responsible pull request: https://github.com/scrooloose/nerdtree/pull/868.
+responsible pull request: https://github.com/preservim/nerdtree/pull/868.
 
 The default value of this variable depends on the features compiled into your
 vim and the values of |NERDTreeDirArrowCollapsible| and
@@ -1293,6 +1315,10 @@ following code conventions are used:
 
 See this blog post for more details:
  http://got-ravings.blogspot.com/2008/09/vim-pr0n-prototype-based-objects.html
+
+A number of API functions take a callback argument to call. The callback can
+be either a string with the name of a function to call, or a |Funcref| object
+which will be called directly.
 
 ------------------------------------------------------------------------------
 4.1. Key map API                                             *NERDTreeKeymapAPI*
@@ -1473,11 +1499,11 @@ in the fridge for later ;)
 Martyzilla recruited two other unwitting accomplices to become his minions in
 his quest to conquer the Vim plugin world. While he may still love to receive
 your emails, the best way to send suggestions, bug reports, and questions is
-to submit an issue at http://github.com/scrooloose/nerdtree/issues.
+to submit an issue at http://github.com/preservim/nerdtree/issues.
 
 The latest stable and development versions are on Github.
-    Stable: http://github.com/scrooloose/nerdtree (master branch)
-    Development: http://github.com/scrooloose/nerdtree/branches
+    Stable: http://github.com/preservim/nerdtree (master branch)
+    Development: http://github.com/preservim/nerdtree/branches
 
 Title Credit:
   * http://ascii.co.uk/art/tree

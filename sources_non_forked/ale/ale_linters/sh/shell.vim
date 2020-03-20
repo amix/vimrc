@@ -34,8 +34,10 @@ function! ale_linters#sh#shell#Handle(buffer, lines) abort
     " Matches patterns line the following:
     "
     " bash: line 13: syntax error near unexpected token `d'
+    " bash:行0: 未预期的符号“done”附近有语法错误
+    " bash: 列 90: 尋找匹配的「"」時遇到了未預期的檔案結束符
     " sh: 11: Syntax error: "(" unexpected
-    let l:pattern = '\v(line |: ?)(\d+): (.+)$'
+    let l:pattern = '\v([^:]+:\D*)(\d+): (.+)$'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)

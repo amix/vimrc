@@ -7,7 +7,7 @@ call ale#Set('ruby_rubocop_options', '')
 function! ale_linters#ruby#rubocop#GetCommand(buffer) abort
     let l:executable = ale#Var(a:buffer, 'ruby_rubocop_executable')
 
-    return ale#handlers#ruby#EscapeExecutable(l:executable, 'rubocop')
+    return ale#ruby#EscapeExecutable(l:executable, 'rubocop')
     \   . ' --format json --force-exclusion '
     \   . ale#Var(a:buffer, 'ruby_rubocop_options')
     \   . ' --stdin ' . ale#Escape(expand('#' . a:buffer . ':p'))

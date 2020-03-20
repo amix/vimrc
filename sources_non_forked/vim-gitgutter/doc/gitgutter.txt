@@ -13,9 +13,11 @@ CONTENTS                                                            *gitgutter*
 
   Introduction ................. |gitgutter-introduction|
   Installation ................. |gitgutter-installation|
+  Windows      ................. |gitgutter-windows|
   Commands ..................... |gitgutter-commands|
   Mappings ..................... |gitgutter-mappings|
   Autocommand .................. |gitgutter-autocommand|
+  Status line .................. |gitgutter-statusline|
   Options ...................... |gitgutter-options|
   Highlights ................... |gitgutter-highlights|
   FAQ .......................... |gitgutter-faq|
@@ -36,47 +38,37 @@ The signs are always up to date and the plugin never saves your buffer.
 ===============================================================================
 INSTALLATION                                           *gitgutter-installation*
 
-Pathogen:~
->
-  cd ~/.vim/bundle
-  git clone git://github.com/airblade/vim-gitgutter.git
-<
-Voom:~
+Use your favourite package manager, or use Vim's built-in package support.
 
-Edit your plugin manifest (`voom edit`) and add:
+Vim:~
 >
-  airblade/vim-gitgutter
+  mkdir -p ~/.vim/pack/airblade/start
+  cd ~/.vim/pack/airblade/start
+  git clone https://github.com/airblade/vim-gitgutter.git
+  vim -u NONE -c "helptags vim-gitgutter/doc" -c q
 <
-VimPlug:~
 
-Place this in your .vimrc:
+Neovim:~
 >
-    Plug 'airblade/vim-gitgutter'
+  mkdir -p ~/.config/nvim/pack/airblade/start
+  cd ~/.config/nvim/pack/airblade/start
+  git clone https://github.com/airblade/vim-gitgutter.git
+  nvim -u NONE -c "helptags vim-gitgutter/doc" -c q
 <
-Then run the following in Vim:
->
-  :source %
-  :PlugInstall
-<
-NeoBundle:~
 
-Place this in your .vimrc:
->
-  NeoBundle 'airblade/vim-gitgutter'
-<
-Then run the following in Vim:
->
-  :source %
-  :NeoBundleInstall
-<
-No plugin manager:~
 
-Copy vim-gitgutter's subdirectories into your vim configuration directory:
+===============================================================================
+WINDOWS                                                     *gitgutter-windows*
+
+I recommend configuring vim-gitgutter with the full path to your git executable.
+For example:
 >
-  cd tmp && git clone git://github.com/airblade/vim-gitgutter.git
-  cp vim-gitgutter/* ~/.vim/
+    let g:gitgutter_git_executable = 'C:\Program Files\Git\bin\git.exe'
 <
-See |add-global-plugin|.
+This is to avoid a problem which occurs if you have file named "git.*" (i.e.
+with any extension in "PATHEXT") in your current folder.  "cmd.exe" prioritises
+the current folder over folders in 'PATH' and will try to execute your file
+instead of the "git" binary.
 
 
 ===============================================================================
@@ -126,6 +118,19 @@ Commands for turning line highlighting on and off (defaults to off):~
 :GitGutterLineHighlightsToggle  Turn line highlighting on or off.
 
 
+Commands for turning line number highlighting on and off (defaults to off):~
+NOTE: This feature requires Neovim 0.3.2 or higher.
+
+                                   *gitgutter-:GitGutterLineNrHighlightsEnable*
+:GitGutterLineNrHighlightsEnable  Turn on line highlighting.
+
+                                  *gitgutter-:GitGutterLineNrHighlightsDisable*
+:GitGutterLineNrHighlightsDisable Turn off line highlighting.
+
+                                   *gitgutter-:GitGutterLineNrHighlightsToggle*
+:GitGutterLineNrHighlightsToggle  Turn line highlighting on or off.
+
+
 Commands for jumping between hunks:~
 
                                                  *gitgutter-:GitGutterNextHunk*
@@ -134,11 +139,24 @@ Commands for jumping between hunks:~
                                                  *gitgutter-:GitGutterPrevHunk*
 :GitGutterPrevHunk      Jump to the previous [count] hunk.
 
+                                                 *gitgutter-:GitGutterQuickFix*
+:GitGutterQuickFix      Load all hunks into the |quickfix| list.  Note this
+                        ignores any unsaved changes in your buffers. The
+                        |g:gitgutter_use_location_list| option can be set to
+                        populate the location list of the current window instead
+
 
 Commands for operating on a hunk:~
 
                                                 *gitgutter-:GitGutterStageHunk*
-:GitGutterStageHunk     Stage the hunk the cursor is in.
+:GitGutterStageHunk     Stage the hunk the cursor is in.  Use a visual selection
+                        to stage part of an (additions-only) hunk; or use a
+                        range.
+
+                        To stage part of any hunk, first |GitGutterPreviewHunk|
+                        it, then move to the preview window, delete the lines
+                        you do not want to stage, and |write| or
+                        |GitGutterStageHunk|.
 
                                                  *gitgutter-:GitGutterUndoHunk*
 :GitGutterUndoHunk      Undo the hunk the cursor is in.
@@ -147,6 +165,10 @@ Commands for operating on a hunk:~
 :GitGutterPreviewHunk   Preview the hunk the cursor is in.
                         Use |:pclose| or |CTRL-W_CTRL-Z| to close the preview
                         window.
+
+                        To stage part of the hunk, move to the preview window,
+                        delete any lines you do not want to stage, and
+                        |GitGutterStageHunk|.
 
 Commands for folds:~
 
@@ -191,9 +213,9 @@ These can be repeated with `.` if you have vim-repeat installed.
 
 You can change these mappings like this:
 >
-    nmap ghp <Plug>GitGutterPreviewHunk
-    nmap ghs <Plug>GitGutterStageHunk
-    nmap ghu <Plug>GitGutterUndoHunk
+    nmap ghp <Plug>(GitGutterPreviewHunk)
+    nmap ghs <Plug>(GitGutterStageHunk)
+    nmap ghu <Plug>(GitGutterUndoHunk)
 <
 
 Hunk jumping:~
@@ -206,8 +228,8 @@ Hunk jumping:~
 
 You can change these mappings like this:
 >
-    nmap [c <Plug>GitGutterPrevHunk
-    nmap ]c <Plug>GitGutterNextHunk
+    nmap [c <Plug>(GitGutterPrevHunk)
+    nmap ]c <Plug>(GitGutterNextHunk)
 <
 
 Hunk text object:~
@@ -216,10 +238,27 @@ Hunk text object:~
 "ic" operates on the current hunk's lines.  "ac" does the same but also includes
 trailing empty lines.
 >
-    omap ic <Plug>GitGutterTextObjectInnerPending
-    omap ac <Plug>GitGutterTextObjectOuterPending
-    xmap ic <Plug>GitGutterTextObjectInnerVisual
-    xmap ac <Plug>GitGutterTextObjectOuterVisual
+    omap ic <Plug>(GitGutterTextObjectInnerPending)
+    omap ac <Plug>(GitGutterTextObjectOuterPending)
+    xmap ic <Plug>(GitGutterTextObjectInnerVisual)
+    xmap ac <Plug>(GitGutterTextObjectOuterVisual)
+<
+
+
+===============================================================================
+STATUS LINE                                              *gitgutter-statusline*
+
+
+Call the `GitGutterGetHunkSummary()` function from your status line to get a
+list of counts of added, modified, and removed lines in the current buffer.
+For example:
+>
+    " Your vimrc
+    function! GitStatus()
+      let [a,m,r] = GitGutterGetHunkSummary()
+      return printf('+%d ~%d -%d', a, m, r)
+    endfunction
+    set statusline+=%{GitStatus()}
 <
 
 
@@ -228,7 +267,8 @@ OPTIONS                                                     *gitgutter-options*
 
 The most important option is 'updatetime' which determines how long (in
 milliseconds) the plugin will wait after you stop typing before it updates the
-signs.  Vim's default is 4000.  I recommend 100.
+signs.  Vim's default is 4000.  I recommend 100.  Note this also controls how
+long vim waits before writing its swap file.
 
 Most important option:~
 
@@ -239,6 +279,7 @@ Git:~
     |g:gitgutter_git_executable|
     |g:gitgutter_git_args|
     |g:gitgutter_diff_args|
+    |g:gitgutter_diff_relative_to|
     |g:gitgutter_diff_base|
 
 Grep:~
@@ -249,14 +290,20 @@ Signs:~
 
     |g:gitgutter_signs|
     |g:gitgutter_highlight_lines|
+    |g:gitgutter_highlight_linenrs|
     |g:gitgutter_max_signs|
+    |g:gitgutter_sign_priority|
+    |g:gitgutter_sign_allow_clobber|
     |g:gitgutter_sign_added|
     |g:gitgutter_sign_modified|
     |g:gitgutter_sign_removed|
     |g:gitgutter_sign_removed_first_line|
     |g:gitgutter_sign_modified_removed|
-    |g:gitgutter_sign_column_always|
     |g:gitgutter_override_sign_column_highlight|
+
+Hunk previews:~
+
+    |g:gitgutter_preview_win_floating|
 
 Terminal:~
 
@@ -268,7 +315,15 @@ General:~
     |g:gitgutter_map_keys|
     |g:gitgutter_async|
     |g:gitgutter_log|
+    |g:gitgutter_use_location_list|
 
+
+                                             *g:gitgutter_preview_win_location*
+Default: 'bo'
+
+This option determines where the preview window pops up as a result of the
+:GitGutterPreviewHunk command. Other plausible values are 'to', 'bel', 'abo'.
+See the end of the |opening-window| docs.
 
                                                    *g:gitgutter_git_executable*
 Default: 'git'
@@ -293,6 +348,15 @@ Use this option to pass any extra arguments to git-diff.  For example:
     let g:gitgutter_diff_args = '-w'
 <
 
+                                                 *g:gitgutter_diff_relative_to*
+Default: empty
+
+By default buffers are diffed against the index.  Use this option to diff against
+the working tree.  For example:
+>
+    let g:gitgutter_diff_relative_to = 'working_tree'
+<
+
                                                         *g:gitgutter_diff_base*
 Default: empty
 
@@ -301,6 +365,9 @@ a revision instead.  For example:
 >
     let g:gitgutter_diff_base = '<some commit SHA>'
 <
+
+This setting is ignore when the diff is relative to the working tree
+(|g:gitgutter_diff_relative_to|).
 
                                                              *g:gitgutter_grep*
 Default: 'grep'
@@ -329,6 +396,11 @@ Default: 0
 
 Determines whether or not to show line highlights.
 
+                                                *g:gitgutter_highlight_linenrs*
+Default: 0
+
+Determines whether or not to show line number highlights.
+
                                                         *g:gitgutter_max_signs*
 Default: 500
 
@@ -336,6 +408,18 @@ Sets the maximum number of signs to show in a buffer.  Vim is slow at updating
 signs, so to avoid slowing down the GUI the number of signs is capped.  When
 the number of changed lines exceeds this value, the plugin removes all signs
 and displays a warning message.
+
+                                                   *g:gitgutter_sign_priority*
+Default: 10
+
+Sets the |sign-priority| gitgutter assigns to its signs.
+
+                                               *g:gitgutter_sign_allow_clobber*
+Default: 0 (Vim < 8.1.0614, Neovim < 0.4.0)
+         1 (otherwise)
+
+Determines whether gitgutter preserves non-gitgutter signs. When 1, gitgutter
+will not preserve non-gitgutter signs.
 
                                           *g:gitgutter_sign_added*
                                           *g:gitgutter_sign_modified*
@@ -352,17 +436,6 @@ Defaults:
 <
 You can use unicode characters but not images.  Signs must not take up more than
 2 columns.
-
-                                               *g:gitgutter_sign_column_always*
-Default: 0
-
-This legacy option controls whether the sign column should always be shown, even
-if there are no signs to display.
-
-From Vim 7.4.2201, use 'signcolumn' instead:
->
-    set signcolumn=yes
-<
 
                                    *g:gitgutter_override_sign_column_highlight*
 Default: 1
@@ -384,6 +457,15 @@ it in your |vimrc|:
   User-defined (terminal Vim)         highlight SignColumn ctermbg={whatever}
   User-defined (graphical Vim)        highlight SignColumn guibg={whatever}
 
+
+                                             *g:gitgutter_preview_win_floating*
+Default: 0 (Vim)
+         0 (NeoVim which does not support floating windows)
+         1 (NeoVim which does support floating windows)
+
+Whether to use floating/popup windows for hunk previews.  Note that if you use
+popup windows on Vim you will not be able to stage partial hunks via the
+preview window.
 
                                            *g:gitgutter_terminal_reports_focus*
 Default: 1
@@ -413,7 +495,7 @@ Controls whether or not the plugin is on at startup.
                                                          *g:gitgutter_map_keys*
 Default: 1
 
-Controls whether or not the plugin provides mappings.  See |gitgutter-mapppings|.
+Controls whether or not the plugin provides mappings.  See |gitgutter-mappings|.
 
                                                             *g:gitgutter_async*
 Default: 1
@@ -426,6 +508,12 @@ Default: 0
 
 When switched on, the plugin logs to gitgutter.log in the directory where it is
 installed.  Additionally it logs channel activity to channel.log.
+
+                                                *g:gitgutter_use_location_list*
+Default: 0
+
+When switched on, the :GitGutterQuickFix command populates the location list
+of the current window instead of the global quickfix list.
 
 
 ===============================================================================
@@ -457,7 +545,19 @@ colorscheme or |vimrc|:
 
 For example, to use |hl-DiffText| instead of |hl-DiffChange|:
 >
-    highlight link GitGutterChangeLine DiffChange
+    highlight link GitGutterChangeLine DiffText
+<
+To change the line number highlights, set up the following highlight groups in
+your colorscheme or |vimrc|:
+>
+    GitGutterAddLineNr          " default: links to CursorLineNr
+    GitGutterChangeLineNr       " default: links to CursorLineNr
+    GitGutterDeleteLineNr       " default: links to CursorLineNr
+    GitGutterChangeDeleteLineNr " default: links to CursorLineNr
+<
+For example, to use |hl-Underlined| instead of |hl-CursorLineNr|:
+>
+    highlight link GitGutterChangeLineNr Underlined
 <
 
 
@@ -542,6 +642,8 @@ Try reducing 'updatetime':
 >
     set updatetime=100
 <
+
+Note this also controls how long vim waits before writing its swap file.
 
 
 When signs don't update after focusing Vim:~

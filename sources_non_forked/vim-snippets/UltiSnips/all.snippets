@@ -11,6 +11,12 @@ priority -60
 ##############
 global !p
 from vimsnippets import foldmarker, make_box, get_comment_format
+LOREM = """
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod \
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At \
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, \
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+"""
 endglobal
 
 snippet box "A nice box with the current comment symbol" b
@@ -56,11 +62,8 @@ endsnippet
 ##########################
 # LOREM IPSUM GENERATORS #
 ##########################
-snippet lorem "Lorem Ipsum - 50 Words" b
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
-vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-no sea takimata sanctus est Lorem ipsum dolor sit amet.
+snippet "lorem(([1-4])?[0-9])?" "Lorem Ipsum" r
+`!p snip.rv = " ".join(LOREM.split()[:int(match.group(1))]) if match.group(1) else LOREM`
 endsnippet
 
 ##########################
@@ -104,7 +107,7 @@ endsnippet
 #  Misc  #
 ##########
 snippet uuid "Random UUID" w
-`!p if not snip.c: import uuid; snip.rv = uuid.uuid4()`
+`!p if not snip.c: import uuid; snip.rv = str(uuid.uuid4())`
 endsnippet
 
 # vim:ft=snippets:
