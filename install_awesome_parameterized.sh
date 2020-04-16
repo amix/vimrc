@@ -17,7 +17,7 @@ catch
 endtry"
 
 if [ $2 == "--all" ]; then
-    USERS=($(ls -l /home | awk '{if(NR>1)print $9}'))
+    USERS=($(ls /home))
     for user in ${USERS[*]}; do
         homepath=$(eval echo "~$user")
         IFS=''
