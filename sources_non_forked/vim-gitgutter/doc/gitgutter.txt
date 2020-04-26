@@ -1,7 +1,7 @@
 *gitgutter.txt*              A Vim plugin which shows a git diff in the gutter.
 
 
-                           Vim Git Gutter
+                           Vim GitGutter
 
 
 Author:            Andy Stewart <https://airbladesoftware.com/>
@@ -27,12 +27,15 @@ CONTENTS                                                            *gitgutter*
 ===============================================================================
 INTRODUCTION                                           *gitgutter-introduction*
 
-GitGutter is a Vim plugin which shows a git diff in the 'gutter' (sign column).
+GitGutter is a Vim plugin which shows a git diff in the sign column.
 It shows which lines have been added, modified, or removed.  You can also
 preview, stage, and undo individual hunks.  The plugin also provides a hunk
 text object.
 
 The signs are always up to date and the plugin never saves your buffer.
+
+The name "gitgutter" comes from the Sublime Text 3 plugin which inspired this
+one in 2013.
 
 
 ===============================================================================
@@ -177,7 +180,7 @@ Commands for folds:~
 
 
 ===============================================================================
-AUTOCOMMAND                                             *gitgutter-autocommand*
+AUTOCOMMANDS                                           *gitgutter-autocommands*
 
 User GitGutter~
 
@@ -189,6 +192,10 @@ event GitGutter.  You can listen for this event, for example:
 A dictionary `g:gitgutter_hook_context` is made available during its execution,
 which contains an entry `bufnr` that contains the buffer number being updated.
 
+User GitGutterStage~
+
+After staging a hunk or part of a hunk vim-gitgutter fires a |User| |autocmd|
+with the event GitGutterStage.  Staging always happens in the current buffer.
 
 ===============================================================================
 MAPPINGS                                                   *gitgutter-mappings*
@@ -366,6 +373,9 @@ a revision instead.  For example:
     let g:gitgutter_diff_base = '<some commit SHA>'
 <
 
+If you are looking at a previous version of a file with Fugitive (e.g.
+via :0Gclog), gitgutter sets the diff base to the parent of the current revision.
+
 This setting is ignore when the diff is relative to the working tree
 (|g:gitgutter_diff_relative_to|).
 
@@ -519,20 +529,14 @@ of the current window instead of the global quickfix list.
 ===============================================================================
 HIGHLIGHTS                                               *gitgutter-highlights*
 
-To change the signs' colours, set up the following highlight groups in your
-colorscheme or |vimrc|:
+To change the signs' colours, specify these highlight groups in your |vimrc|:
 >
-    GitGutterAdd          " an added line
-    GitGutterChange       " a changed line
-    GitGutterDelete       " at least one removed line
-    GitGutterChangeDelete " a changed line followed by at least one removed line
+    highlight GitGutterAdd    guifg=#009900 ctermfg=2
+    highlight GitGutterChange guifg=#bbbb00 ctermfg=3
+    highlight GitGutterDelete guifg=#ff2222 ctermfg=1
 <
 
-You can either set these with `highlight GitGutterAdd {key}={arg}...` or link
-them to existing highlight groups with, say:
->
-  highlight link GitGutterAdd MyDiffAdd
-<
+See |highlight-guifg| and |highlight-ctermfg| for the values you can use.
 
 To change the line highlights, set up the following highlight groups in your
 colorscheme or |vimrc|:

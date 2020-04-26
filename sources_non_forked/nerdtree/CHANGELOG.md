@@ -1,12 +1,21 @@
 # NERDTree Change Log
-
-<!--
-    Introduce a new MAJOR.MINOR version with a 4-hash header.
-
-    PATCH versions are listed from newest to oldest under their respective MAJOR.MINOR version
-    in an unordered list.  The format is:
+<!-- Introduce a new MAJOR or MINOR version with a 4-hash header.
+     PATCH versions are listed from newest to oldest under their respective MAJOR.MINOR
+     version in an unordered list.  The format is:
         - **.PATCH**: Pull Request Title (PR Author) [PR Number](Link to PR)
 -->
+#### 6.7
+- **.7**: Put '%' argument in bufname() for backwards compatibility. (PhilRunninger) [#1105](https://github.com/preservim/nerdtree/pull/1105)
+- **.6**: If a file's already open in the window, don't edit it again. (PhilRunninger) [#1103](https://github.com/preservim/nerdtree/pull/1103)
+- **.5**: Prevent unneeded tree creation in `:NERDTreeToggle[VCS] <path>` (PhilRunninger) [#1101](https://github.com/preservim/nerdtree/pull/1101)
+- **.4**: Add missing calls to the `shellescape()` function (lifecrisis) [#1099](https://github.com/preservim/nerdtree/pull/1099)
+- **.3**: Fix vsplit to not open empty buffers when opening previously closed file (AwkwardKore) [#1098](https://github.com/preservim/nerdtree/pull/1098)
+- **.2**: Fix infinity loop (on winvim) in FindParentVCSRoot (Eugenij-W) [#1095](https://github.com/preservim/nerdtree/pull/1095)
+- **.1**: File Move: Escape existing directory name when looking for open files. (PhilRunninger) [#1094](https://github.com/preservim/nerdtree/pull/1094)
+- **.0**: Open the parent directory when revealing a non-existent file with :NERDTreeFind (bouk) [#1090](https://github.com/preservim/nerdtree/pull/1090)
+#### 6.6
+- **.1**: [add] How to install using dein.vim (kazukazuinaina) [#1087](https://github.com/preservim/nerdtree/pull/1087)
+- **.0**: Add the ability to turn off directory arrows (PhilRunninger) [#1085](https://github.com/preservim/nerdtree/pull/1085)
 #### 6.5
 - **.0**: `NERDTreeToggle <start-directory>` always sets NERDTree root. (PhilRunninger) [#1083](https://github.com/preservim/nerdtree/pull/1083)
 #### 6.4

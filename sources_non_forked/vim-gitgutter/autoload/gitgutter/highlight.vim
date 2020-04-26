@@ -84,6 +84,20 @@ function! gitgutter#highlight#define_highlights() abort
   highlight default link GitGutterChangeDeleteInvisible GitGutterChangeInvisible
 
   " When they are visible.
+
+  " If GitGutter* highlights are already defined, either by the user or the colourscheme,
+  " set their backgrounds to the sign column's.
+  for type in ["Add", "Change", "Delete"]
+    if hlexists("GitGutter".type)
+      " Were the highlight self-contained we could just declare the
+      " background attributes and they would be merged.  But it might be a
+      " link, in which case it would be overwritten.  So re-declare it in its
+      " entirety.
+      let [guifg, ctermfg] = s:get_foreground_colors('GitGutter'.type)
+      execute "highlight GitGutter".type." guifg=".guifg." guibg=".guibg." ctermfg=".ctermfg." ctermbg=".ctermbg
+    endif
+  endfor
+
   " By default use Diff* foreground colors with SignColumn's background.
   for type in ['Add', 'Change', 'Delete']
     let [guifg, ctermfg] = s:get_foreground_colors('Diff'.type)
@@ -107,6 +121,14 @@ function! gitgutter#highlight#define_highlights() abort
   " Highlights used intra line.
   highlight GitGutterAddIntraLine    gui=reverse cterm=reverse
   highlight GitGutterDeleteIntraLine gui=reverse cterm=reverse
+  " Set diff syntax colours (used in the preview window) - diffAdded,diffChanged,diffRemoved -
+  " to match the signs, if not set aleady.
+  for [dtype,type] in [['Added','Add'], ['Changed','Change'], ['Removed','Delete']]
+    if !hlexists('diff'.dtype)
+      let [guifg, ctermfg] = s:get_foreground_colors('GitGutter'.type)
+      execute "highlight diff".dtype." guifg=".guifg." ctermfg=".ctermfg." guibg=NONE ctermbg=NONE"
+    endif
+  endfor
 endfunction
 
 function! gitgutter#highlight#define_signs() abort

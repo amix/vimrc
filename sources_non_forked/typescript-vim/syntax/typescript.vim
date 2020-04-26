@@ -223,10 +223,11 @@ syn region foldBraces start=/{/ skip=/\(\/\/.*\)\|\(\/.*\/\)/ end=/}/ transparen
 " }}}
 
 " Define the default highlighting.
-" For version 5.7 and earlier: only when not done already
+" For version 5.7 and earlier: only when not done already by this script
 " For version 5.8 and later: only when an item doesn't have highlighting yet
+" For version 8.1.1486 and later: only when not done already by this script (need to override vim's new typescript support)
 if version >= 508 || !exists("did_typescript_syn_inits")
-  if version < 508
+  if version < 508 || has('patch-8.1.1486')
     let did_typescript_syn_inits = 1
     command -nargs=+ HiLink hi link <args>
   else

@@ -4,40 +4,15 @@ call ale#Set('fix_on_save_ignore', {})
 " Vim doesn't let you modify hidden buffers.
 function! ale#fix#ApplyQueuedFixes(buffer) abort
     let l:data = get(g:ale_fix_buffer_data, a:buffer, {'done': 0})
-    let l:has_bufline_api = exists('*deletebufline') && exists('*setbufline')
 
-    if !l:data.done || (!l:has_bufline_api && a:buffer isnot bufnr(''))
+    if !l:data.done || (!ale#util#HasBuflineApi() && a:buffer isnot bufnr(''))
         return
     endif
 
     call remove(g:ale_fix_buffer_data, a:buffer)
 
     if l:data.changes_made
-        " If the file is in DOS mode, we have to remove carriage returns from
-        " the ends of lines before calling setline(), or we will see them
-        " twice.
-        let l:new_lines = getbufvar(a:buffer, '&fileformat') is# 'dos'
-        \   ? map(copy(l:data.output), 'substitute(v:val, ''\r\+$'', '''', '''')')
-        \   : l:data.output
-        let l:first_line_to_remove = len(l:new_lines) + 1
-
-        " Use a Vim API for setting lines in other buffers, if available.
-        if l:has_bufline_api
-            call setbufline(a:buffer, 1, l:new_lines)
-            call deletebufline(a:buffer, l:first_line_to_remove, '$')
-        " Fall back on setting lines the old way, for the current buffer.
-        else
-            let l:old_line_length = len(l:data.lines_before)
-
-            if l:old_line_length >= l:first_line_to_remove
-                let l:save = winsaveview()
-                silent execute
-                \   l:first_line_to_remove . ',' . l:old_line_length . 'd_'
-                call winrestview(l:save)
-            endif
-
-            call setline(1, l:new_lines)
-        endif
+        let l:new_lines = ale#util#SetBufferContents(a:buffer, l:data.output)
 
         if l:data.should_save
             if a:buffer is bufnr('')

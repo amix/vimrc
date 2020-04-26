@@ -209,7 +209,8 @@ function! NERDTreeMoveNode()
 
     try
         if curNode.path.isDirectory
-            let l:openBuffers = filter(range(1,bufnr('$')),'bufexists(v:val) && fnamemodify(bufname(v:val),":p") =~# curNode.path.str() . "/.*"')
+            let l:curPath = escape(curNode.path.str(),'\') . (nerdtree#runningWindows()?'\\':'/') . '.*'
+            let l:openBuffers = filter(range(1,bufnr('$')),'bufexists(v:val) && fnamemodify(bufname(v:val),":p") =~# "'.escape(l:curPath,'\').'"')
         else
             let l:openBuffers = filter(range(1,bufnr('$')),'bufexists(v:val) && fnamemodify(bufname(v:val),":p") ==# curNode.path.str()')
         endif
@@ -387,44 +388,67 @@ endfunction
 
 " FUNCTION: NERDTreeQuickLook() {{{1
 function! NERDTreeQuickLook()
-    let treenode = g:NERDTreeFileNode.GetSelected()
-    if treenode !=# {}
-        call system("qlmanage -p 2>/dev/null '" . treenode.path.str() . "'")
+    let l:node = g:NERDTreeFileNode.GetSelected()
+
+    if empty(l:node)
+        return
     endif
+
+    call system('qlmanage -p 2>/dev/null ' . shellescape(l:node.path.str()))
 endfunction
 
 " FUNCTION: NERDTreeRevealInFinder() {{{1
 function! NERDTreeRevealInFinder()
-    let treenode = g:NERDTreeFileNode.GetSelected()
-    if treenode !=# {}
-        call system("open -R '" . treenode.path.str() . "'")
+    let l:node = g:NERDTreeFileNode.GetSelected()
+
+    if empty(l:node)
+        return
     endif
+
+    call system('open -R ' . shellescape(l:node.path.str()))
 endfunction
 
 " FUNCTION: NERDTreeExecuteFile() {{{1
 function! NERDTreeExecuteFile()
-    let treenode = g:NERDTreeFileNode.GetSelected()
-    if treenode !=# {}
-        call system("open '" . treenode.path.str() . "'")
+    let l:node = g:NERDTreeFileNode.GetSelected()
+
+    if empty(l:node)
+        return
     endif
+
+    call system('open ' . shellescape(l:node.path.str()))
 endfunction
 
 " FUNCTION: NERDTreeRevealFileLinux() {{{1
 function! NERDTreeRevealFileLinux()
-    let treenode = g:NERDTreeFileNode.GetSelected()
-    let parentnode = treenode.parent
-    if parentnode !=# {}
-        call system("xdg-open '" . parentnode.path.str() . "' &")
+    let l:node = g:NERDTreeFileNode.GetSelected()
+
+    if empty(l:node)
+        return
     endif
+
+    " Handle the edge case of "/", which has no parent.
+    if l:node.path.str() ==# '/'
+        call system('xdg-open /')
+        return
+    endif
+
+    if empty(l:node.parent)
+        return
+    endif
+
+    call system('xdg-open ' . shellescape(l:node.parent.path.str()))
 endfunction
 
 " FUNCTION: NERDTreeExecuteFileLinux() {{{1
 function! NERDTreeExecuteFileLinux()
-    let treenode = g:NERDTreeFileNode.GetSelected()
-    if treenode !=# {}
-        call system("xdg-open '" . treenode.path.str() . "' &")
+    let l:node = g:NERDTreeFileNode.GetSelected()
+
+    if empty(l:node)
+        return
     endif
+
+    call system('xdg-open ' . shellescape(l:node.path.str()))
 endfunction
 
 " vim: set sw=4 sts=4 et fdm=marker:
-

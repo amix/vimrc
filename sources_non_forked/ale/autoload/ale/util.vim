@@ -91,17 +91,17 @@ endfunction
 " options['open_in'] can be:
 "   current-buffer (default)
 "   tab
-"   vertical-split
-"   horizontal-split
+"   split
+"   vsplit
 function! ale#util#Open(filename, line, column, options) abort
     let l:open_in = get(a:options, 'open_in', 'current-buffer')
     let l:args_to_open = '+' . a:line . ' ' . fnameescape(a:filename)
 
     if l:open_in is# 'tab'
         call ale#util#Execute('tabedit ' . l:args_to_open)
-    elseif l:open_in is# 'horizontal-split'
+    elseif l:open_in is# 'split'
         call ale#util#Execute('split ' . l:args_to_open)
-    elseif l:open_in is# 'vertical-split'
+    elseif l:open_in is# 'vsplit'
         call ale#util#Execute('vsplit ' . l:args_to_open)
     elseif bufnr(a:filename) isnot bufnr('')
         " Open another file only if we need to.
@@ -336,15 +336,11 @@ function! ale#util#GetMatches(lines, patterns) abort
 endfunction
 
 function! s:LoadArgCount(function) abort
-    let l:Function = a:function
-
-    redir => l:output
-        silent! function Function
-    redir END
-
-    if !exists('l:output')
+    try
+        let l:output = execute('function a:function')
+    catch /E123/
         return 0
-    endif
+    endtry
 
     let l:match = matchstr(split(l:output, "\n")[0], '\v\([^)]+\)')[1:-2]
     let l:arg_list = filter(split(l:match, ', '), 'v:val isnot# ''...''')
@@ -479,4 +475,45 @@ endfunction
 
 function! ale#util#Input(message, value) abort
     return input(a:message, a:value)
+endfunction
+
+function! ale#util#HasBuflineApi() abort
+    return exists('*deletebufline') && exists('*setbufline')
+endfunction
+
+" Sets buffer contents to lines
+function! ale#util#SetBufferContents(buffer, lines) abort
+    let l:has_bufline_api = ale#util#HasBuflineApi()
+
+    if !l:has_bufline_api && a:buffer isnot bufnr('')
+        return
+    endif
+
+    " If the file is in DOS mode, we have to remove carriage returns from
+    " the ends of lines before calling setline(), or we will see them
+    " twice.
+    let l:new_lines = getbufvar(a:buffer, '&fileformat') is# 'dos'
+    \   ? map(copy(a:lines), 'substitute(v:val, ''\r\+$'', '''', '''')')
+    \   : a:lines
+    let l:first_line_to_remove = len(l:new_lines) + 1
+
+    " Use a Vim API for setting lines in other buffers, if available.
+    if l:has_bufline_api
+        call setbufline(a:buffer, 1, l:new_lines)
+        call deletebufline(a:buffer, l:first_line_to_remove, '$')
+    " Fall back on setting lines the old way, for the current buffer.
+    else
+        let l:old_line_length = line('$')
+
+        if l:old_line_length >= l:first_line_to_remove
+            let l:save = winsaveview()
+            silent execute
+            \   l:first_line_to_remove . ',' . l:old_line_length . 'd_'
+            call winrestview(l:save)
+        endif
+
+        call setline(1, l:new_lines)
+    endif
+
+    return l:new_lines
 endfunction

@@ -32,6 +32,8 @@ function! ale_linters#scala#metals#GetProjectRoot(buffer) abort
             \)
         endif
     endfor
+
+    return ''
 endfunction
 
 function! ale_linters#scala#metals#GetCommand(buffer) abort

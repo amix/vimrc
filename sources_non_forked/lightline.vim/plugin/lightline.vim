@@ -2,7 +2,7 @@
 " Filename: plugin/lightline.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2019/07/30 12:00:00.
+" Last Change: 2020/03/16 19:08:41.
 " =============================================================================
 
 if exists('g:loaded_lightline') || v:version < 700
@@ -15,14 +15,13 @@ set cpo&vim
 
 augroup lightline
   autocmd!
-  autocmd WinEnter,BufEnter,SessionLoadPost * call lightline#update()
+  autocmd WinEnter,BufEnter,BufDelete,SessionLoadPost,FileChangedShellPost * call lightline#update()
   if !has('patch-8.1.1715')
     autocmd FileType qf call lightline#update()
   endif
   autocmd SessionLoadPost * call lightline#highlight()
   autocmd ColorScheme * if !has('vim_starting') || expand('<amatch>') !=# 'macvim'
         \ | call lightline#update() | call lightline#highlight() | endif
-  autocmd CursorMoved,BufUnload * call lightline#update_once()
 augroup END
 
 " This quickfix option was introduced at Vim 85850f3a5ef9, which is the commit

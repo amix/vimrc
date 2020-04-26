@@ -29,6 +29,6 @@ call ale#linter#Define('clojure', {
 \   'name': 'clj-kondo',
 \   'output_stream': 'stdout',
 \   'executable': 'clj-kondo',
-\   'command': 'clj-kondo --lint %t',
+\   'command': 'clj-kondo --cache --lint %t',
 \   'callback': 'ale_linters#clojure#clj_kondo#HandleCljKondoFormat',
 \})

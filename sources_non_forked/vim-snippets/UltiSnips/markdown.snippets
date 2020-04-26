@@ -96,6 +96,9 @@ snippet *** "bold italics"
 ***${1:${VISUAL}}***$0
 endsnippet
 
+snippet /* "Comment"
+<!-- ${1:${VISUAL}} -->$0
+endsnippet
 
 ################
 # Common stuff #
@@ -129,6 +132,12 @@ snippet fnt "Footnote"
 [^${1:${VISUAL:Footnote}}]$0
 
 [^$1]:${2:Text}
+endsnippet
+
+snippet detail "Disclosure"
+<details${3: open=""}>
+  ${1:summary>${2}</summary>}$0
+</details>
 endsnippet
 
 post_jump "create_table(snip)"

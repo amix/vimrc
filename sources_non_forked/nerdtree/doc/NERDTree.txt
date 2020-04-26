@@ -1223,13 +1223,19 @@ Values: Any single character.
 Defaults:   Windows: ~ and +    Others: ▾ and ▸
 
 These characters indicate whether a directory is collapsible or expandable.
-
-They can be set to "\u00a0" to hide the arrows, but if you do this you may
-need to change the node delimiter. See |NERDTreeNodeDelimiter|. You cannot use
-the same character for both the arrows and the delimiter. Example: >
+Example: >
     let NERDTreeDirArrowExpandable=">"
     let NERDTreeDirArrowCollapsible="v"
 <
+They can be set to "\u00a0" to replace the arrows with a non-breaking space.
+If you do this you may need to change the node delimiter. See
+|NERDTreeNodeDelimiter|. You cannot use the same character for both the arrows
+and the delimiter.
+
+Alternatively, they can be set to '' (an empty string). This removes the
+arrows and the single space that follows them, shifting the entire tree two
+character positions to the left.
+
 ------------------------------------------------------------------------------
                                                          *NERDTreeNodeDelimiter*
 Values: Any single character.

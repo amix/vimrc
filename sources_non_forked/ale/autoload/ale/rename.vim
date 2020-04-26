@@ -80,7 +80,7 @@ function! ale#rename#HandleTSServerResponse(conn_id, response) abort
     call ale#code_action#HandleCodeAction({
     \ 'description': 'rename',
     \ 'changes': l:changes,
-    \})
+    \}, v:true)
 endfunction
 
 function! ale#rename#HandleLSPResponse(conn_id, response) abort
@@ -134,7 +134,7 @@ function! ale#rename#HandleLSPResponse(conn_id, response) abort
         call ale#code_action#HandleCodeAction({
         \   'description': 'rename',
         \   'changes': l:changes,
-        \})
+        \}, v:true)
     endif
 endfunction
 

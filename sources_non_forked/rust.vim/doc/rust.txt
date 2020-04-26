@@ -125,7 +125,7 @@ g:rustfmt_autosave~
 <
 	There is also a buffer-local b:rustfmt_autosave that can be set for
 	the same purpose, and can override the global setting.
-	
+
                                         *g:rustfmt_autosave_if_config_present*
 g:rustfmt_autosave_if_config_present~
 	Set this option to 1 to have *b:rustfmt_autosave* be set automatically
@@ -185,6 +185,16 @@ g:cargo_makeprg_params~
 	Set this option to the string of parameters to pass to cargo. If not
 	specified it defaults to '$*' : >
 	    let g:cargo_makeprg_params = 'build'
+<
+
+                                                  *g:cargo_shell_command_runner*
+g:cargo_shell_command_runner~
+	Set this option to change how to run shell commands for cargo commands
+	|:Cargo|, |:Cbuild|, |:Crun|, ...
+	By default, |:terminal| is used to run shell command in terminal window
+	asynchronously. But if you prefer |:!| for running the commands, it can
+	be specified: >
+	    let g:cargo_shell_command_runner = '!'
 <
 
 

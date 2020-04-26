@@ -103,6 +103,9 @@ let g:multi_cursor_quit_key            = '<Esc>'
 ## Settings
 Currently there are four additional global settings one can tweak:
 
+### ```g:multi_cursor_support_imap``` (Default: 1)
+If set to 0, insert mappings won't be supported in _Insert_ mode anymore.
+
 ### ```g:multi_cursor_exit_from_visual_mode``` (Default: 0)
 If set to 1, then pressing `g:multi_cursor_quit_key` in _Visual_ mode will quit and
 delete all existing cursors, just skipping normal mode with multiple cursors.

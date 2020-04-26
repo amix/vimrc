@@ -2,7 +2,8 @@
 " TODO refactor: create glob function
 " noremap \og :call<space>glob_linux#FileByGlobCurrentDir('**/*'.input('glob open '),"\\.git\\<bar>\\.hg\\<bar>node_modules\\<bar>\\.pyc" )<cr>
 " noremap \og :call<space>glob_linux#FileByGlobCurrentDir('**/*'.input('glob open '),"default" )<cr>
-function! glob_linux#FileByGlobCurrentDir(glob, exclude_pattern)
+function! glob_linux#FileByGlobCurrentDir(glob, exclude_pattern, ...)
+  let opts = a:0 > 0 ? a:1 : {}
   if a:exclude_pattern == "default"
     let exclude_pattern = '\.git\|\.hg\|node_modules\|\.pyc'
   else
@@ -16,7 +17,7 @@ function! glob_linux#FileByGlobCurrentDir(glob, exclude_pattern)
 
   let exclude = exclude_pattern == '' ? '' : ' | grep -v -e '.shellescape(exclude_pattern)
 
-  let cmd = 'find | grep -e '.shellescape(g).exclude
+  let cmd = get(opts, 'cmd_find', 'find'). ' . | grep -e '.shellescape(g).exclude
   let files = split(system(cmd),"\n")
   " for nom in a:excludes
   "   call filter(files,nom)

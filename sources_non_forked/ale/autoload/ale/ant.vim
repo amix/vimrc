@@ -1,4 +1,4 @@
-" Author: Andrew Lee <andrewl@mbda.fun>.
+" Author: Andrew Lee <andrew.lambda@tuta.io>.
 " Inspired by ale/gradle.vim by Michael Pardo <michael@michaelpardo.com>
 " Description: Functions for working with Ant projects.
 

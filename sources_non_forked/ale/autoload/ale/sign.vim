@@ -23,7 +23,7 @@ let g:ale_sign_offset = get(g:, 'ale_sign_offset', 1000000)
 let g:ale_sign_column_always = get(g:, 'ale_sign_column_always', 0)
 let g:ale_sign_highlight_linenrs = get(g:, 'ale_sign_highlight_linenrs', 0)
 
-let s:supports_sign_groups = has('nvim-0.4.2') || (v:version >= 801 && has('patch614'))
+let s:supports_sign_groups = has('nvim-0.4.2') || has('patch-8.1.614')
 
 if !hlexists('ALEErrorSign')
     highlight link ALEErrorSign error

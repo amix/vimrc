@@ -1,7 +1,7 @@
 " Author: Jerko Steiner <jerko.steiner@gmail.com>
 " Description: Code action support for LSP / tsserver
 
-function! ale#code_action#HandleCodeAction(code_action) abort
+function! ale#code_action#HandleCodeAction(code_action, should_save) abort
     let l:current_buffer = bufnr('')
     let l:changes = a:code_action.changes
 
@@ -17,11 +17,14 @@ function! ale#code_action#HandleCodeAction(code_action) abort
 
     for l:file_code_edit in l:changes
         call ale#code_action#ApplyChanges(
-        \ l:file_code_edit.fileName, l:file_code_edit.textChanges)
+        \ l:file_code_edit.fileName,
+        \ l:file_code_edit.textChanges,
+        \ a:should_save,
+        \ )
     endfor
 endfunction
 
-function! ale#code_action#ApplyChanges(filename, changes) abort
+function! ale#code_action#ApplyChanges(filename, changes, should_save) abort
     let l:current_buffer = bufnr('')
     " The buffer is used to determine the fileformat, if available.
     let l:buffer = bufnr(a:filename)
@@ -106,10 +109,17 @@ function! ale#code_action#ApplyChanges(filename, changes) abort
         call remove(l:lines, -1)
     endif
 
-    call ale#util#Writefile(l:buffer, l:lines, a:filename)
+    if a:should_save
+        call ale#util#Writefile(l:buffer, l:lines, a:filename)
+    else
+        call ale#util#SetBufferContents(l:buffer, l:lines)
+    endif
 
     if l:is_current_buffer
-        call ale#util#Execute(':e!')
+        if a:should_save
+            call ale#util#Execute(':e!')
+        endif
+
         call setpos('.', [0, l:pos[0], l:pos[1], 0])
     endif
 endfunction

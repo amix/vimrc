@@ -5,6 +5,7 @@ let s:go_to_definition_map = {}
 
 " Enable automatic updates of the tagstack
 let g:ale_update_tagstack = get(g:, 'ale_update_tagstack', 1)
+let g:ale_default_navigation = get(g:, 'ale_default_navigation', 'buffer')
 
 " Used to get the definition map in tests.
 function! ale#definition#GetMap() abort
@@ -134,6 +135,10 @@ function! s:GoToLSPDefinition(linter, options, capability) abort
 endfunction
 
 function! ale#definition#GoTo(options) abort
+    if !get(g:, 'ale_ignore_2_7_warnings') && has_key(a:options, 'deprecated_command')
+        execute 'echom '':' . a:options.deprecated_command . ' is deprecated. Use `let g:ale_ignore_2_7_warnings = 1` to disable this message.'''
+    endif
+
     for l:linter in ale#linter#Get(&filetype)
         if !empty(l:linter.lsp)
             call s:GoToLSPDefinition(l:linter, a:options, 'definition')
@@ -142,6 +147,10 @@ function! ale#definition#GoTo(options) abort
 endfunction
 
 function! ale#definition#GoToType(options) abort
+    if !get(g:, 'ale_ignore_2_7_warnings') && has_key(a:options, 'deprecated_command')
+        execute 'echom '':' . a:options.deprecated_command . ' is deprecated. Use `let g:ale_ignore_2_7_warnings = 1` to disable this message.'''
+    endif
+
     for l:linter in ale#linter#Get(&filetype)
         if !empty(l:linter.lsp)
             " TODO: handle typeDefinition for tsserver if supported by the
@@ -153,4 +162,34 @@ function! ale#definition#GoToType(options) abort
             call s:GoToLSPDefinition(l:linter, a:options, 'typeDefinition')
         endif
     endfor
+endfunction
+
+function! ale#definition#GoToCommandHandler(command, ...) abort
+    let l:options = {}
+
+    if len(a:000) > 0
+        for l:option in a:000
+            if l:option is? '-tab'
+                let l:options.open_in = 'tab'
+            elseif l:option is? '-split'
+                let l:options.open_in = 'split'
+            elseif l:option is? '-vsplit'
+                let l:options.open_in = 'vsplit'
+            endif
+        endfor
+    endif
+
+    if !has_key(l:options, 'open_in')
+        let l:default_navigation = ale#Var(bufnr(''), 'default_navigation')
+
+        if index(['tab', 'split', 'vsplit'], l:default_navigation) >= 0
+            let l:options.open_in = l:default_navigation
+        endif
+    endif
+
+    if a:command is# 'type'
+        call ale#definition#GoToType(l:options)
+    else
+        call ale#definition#GoTo(l:options)
+    endif
 endfunction

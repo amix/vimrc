@@ -1,6 +1,14 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Preview windows for showing whatever information in.
 
+if !has_key(s:, 'last_selection_list')
+    let s:last_selection_list = []
+endif
+
+if !has_key(s:, 'last_selection_open_in')
+    let s:last_selection_open_in = 'current-buffer'
+endif
+
 " Open a preview window and show some lines in it.
 " A second argument can be passed as a Dictionary with options. They are...
 "
@@ -67,9 +75,24 @@ function! ale#preview#ShowSelection(item_list, ...) abort
 
     call ale#preview#Show(l:lines, {'filetype': 'ale-preview-selection'})
     let b:ale_preview_item_list = a:item_list
+    let b:ale_preview_item_open_in = get(l:options, 'open_in', 'current-buffer')
+
+    " Remove the last preview
+    let s:last_selection_list = b:ale_preview_item_list
+    let s:last_selection_open_in = b:ale_preview_item_open_in
 endfunction
 
-function! s:Open(open_in_tab) abort
+function! ale#preview#RepeatSelection() abort
+    if empty(s:last_selection_list)
+        return
+    endif
+
+    call ale#preview#ShowSelection(s:last_selection_list, {
+    \   'open_in': s:last_selection_open_in,
+    \})
+endfunction
+
+function! s:Open(open_in) abort
     let l:item_list = get(b:, 'ale_preview_item_list', [])
     let l:item = get(l:item_list, getpos('.')[1] - 1, {})
 
@@ -77,22 +100,20 @@ function! s:Open(open_in_tab) abort
         return
     endif
 
-    if !a:open_in_tab
-        :q!
-    endif
+    :q!
 
     call ale#util#Open(
     \   l:item.filename,
     \   l:item.line,
     \   l:item.column,
-    \   {'open_in_tab': a:open_in_tab},
+    \   {'open_in': a:open_in},
     \)
 endfunction
 
-function! ale#preview#OpenSelectionInBuffer() abort
-    call s:Open(0)
+function! ale#preview#OpenSelection() abort
+    call s:Open(b:ale_preview_item_open_in)
 endfunction
 
 function! ale#preview#OpenSelectionInTab() abort
-    call s:Open(1)
+    call s:Open('tab')
 endfunction

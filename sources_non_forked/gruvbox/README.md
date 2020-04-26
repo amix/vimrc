@@ -13,7 +13,7 @@ Attention
 
 1. [Read this first](https://github.com/morhetz/gruvbox/wiki/Terminal-specific)
 2. Typeface from gallery is [Fantasque Sans Mono](https://github.com/belluzj/fantasque-sans)
-3. Typeface from screenshots below is [Fira Mono](http://www.carrois.com/fira-4-1/)
+3. Typeface from screenshots below is [Fira Mono](https://mozilla.github.io/Fira/)
 
 Screenshots
 -----------

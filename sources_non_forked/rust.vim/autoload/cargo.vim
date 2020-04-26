@@ -1,12 +1,14 @@
-function! cargo#Load() 
+function! cargo#Load()
     " Utility call to get this script loaded, for debugging
 endfunction
 
-function! cargo#cmd(args)
+function! cargo#cmd(args) abort
     " Trim trailing spaces. This is necessary since :terminal command parses
     " trailing spaces as an empty argument.
     let args = substitute(a:args, '\s\+$', '', '')
-    if has('terminal')
+    if exists('g:cargo_shell_command_runner')
+        let cmd = g:cargo_shell_command_runner
+    elseif has('terminal')
         let cmd = 'terminal'
     elseif has('nvim')
         let cmd = 'noautocmd new | terminal'
@@ -96,6 +98,22 @@ endfunction
 
 function! cargo#bench(args)
     call cargo#cmd("bench " . a:args)
+endfunction
+
+function! cargo#update(args)
+    call cargo#cmd("update " . a:args)
+endfunction
+
+function! cargo#search(args)
+    call cargo#cmd("search " . a:args)
+endfunction
+
+function! cargo#publish(args)
+    call cargo#cmd("publish " . a:args)
+endfunction
+
+function! cargo#install(args)
+    call cargo#cmd("install " . a:args)
 endfunction
 
 function! cargo#runtarget(args)

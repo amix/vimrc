@@ -15,7 +15,7 @@ function! ale#organize_imports#HandleTSServerResponse(conn_id, response) abort
     call ale#code_action#HandleCodeAction({
     \   'description': 'Organize Imports',
     \   'changes': l:file_code_edits,
-    \})
+    \}, v:false)
 endfunction
 
 function! s:OnReady(linter, lsp_details) abort

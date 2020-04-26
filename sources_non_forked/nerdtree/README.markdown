@@ -59,6 +59,13 @@ Plug 'preservim/nerdtree'
 call plug#end()
 ```
 
+#### [dein.vim](https://github.com/Shougo/dein.vim)
+```vim
+call dein#begin()
+call dein#add('preservim/nerdtree')
+call dein#end()
+```
+
 #### [apt-vim](https://github.com/egalpin/apt-vim)
 ```bash
 apt-vim install -y https://github.com/preservim/nerdtree.git
@@ -142,4 +149,9 @@ Use these variables in your vimrc. Note that below are default arrow symbols
 ```vim
 let g:NERDTreeDirArrowExpandable = '▸'
 let g:NERDTreeDirArrowCollapsible = '▾'
+```
+You can remove the arrows altogether by setting these variables to empty strings, as shown below. This will remove not only the arrows, but a single space following them, shifting the whole tree two character positions to the left.
+```vim
+let g:NERDTreeDirArrowExpandable = ''
+let g:NERDTreeDirArrowCollapsible = ''
 ```

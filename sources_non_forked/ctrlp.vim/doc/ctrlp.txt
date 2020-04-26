@@ -1107,13 +1107,13 @@ c)  End the string with a colon ':' followed by a Vim command to execute that
 
     See also: Vim's |++opt| and |+cmd|.
 
-d)  Submit two dots '..' to go upward the directory tree by 1 level. To go up
+d)  Input two dots '..' and then hit the <Enter> key to go upward the directory tree by 1 level. To go up
     multiple levels, use one extra dot for each extra level:
 >
          Raw input    Interpreted as
-         ..           ../
-         ...          ../../
-         ....         ../../../
+         ..<Cr>           ../
+         ...<Cr>          ../../
+         ....<Cr>         ../../../
 <
     Note: if the parent directories are large and uncached, this can be slow.
 

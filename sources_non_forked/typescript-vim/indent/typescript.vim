@@ -169,7 +169,7 @@ endfunction
 function s:PrevCodeLine(lnum)
   let l:n = prevnonblank(a:lnum)
   while l:n
-	if getline(l:n) =~ '^\s*\/[/*]' 
+	if getline(l:n) =~ '^\s*\/[/*]'
 	  if (stridx(getline(l:n),'`') > 0 || getline(l:n-1)[-1:] == '\') &&
 			\ s:syn_at(l:n,1) =~? s:syng_str
 		return l:n
@@ -293,8 +293,9 @@ function GetTypescriptIndent()
 	let l:line = ''
   endif
 
-  " the containing paren, bracket, or curly. Many hacks for performance
-  let idx = index([']',')','}'],l:line[0])
+  " the containing paren, bracket, curly, or closing '>'.
+  " Many hacks for performance
+  let idx = index([']',')','}','>'],l:line[0])
   if b:js_cache[0] >= l:lnum && b:js_cache[0] < v:lnum &&
 		\ (b:js_cache[0] > l:lnum || s:Balanced(l:lnum))
 	call call('cursor',b:js_cache[1:])

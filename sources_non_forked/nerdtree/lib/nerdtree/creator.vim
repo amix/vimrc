@@ -366,7 +366,7 @@ function! s:Creator.toggleTabTree(dir)
     if g:NERDTree.ExistsForTab()
         if !g:NERDTree.IsOpen()
             call self._createTreeWin()
-            if !empty(a:dir)
+            if !empty(a:dir) && a:dir !=# b:NERDTree.root.path.str()
                 call self.createTabTree(a:dir)
             elseif !&hidden
                 call b:NERDTree.render()

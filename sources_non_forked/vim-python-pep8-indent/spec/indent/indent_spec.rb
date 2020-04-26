@@ -774,3 +774,23 @@ describe "elif after else" do
     indent.should == 4
   end
 end
+
+describe "elif after two ifs" do
+  before {
+    vim.feedkeys '\<ESC>ggdG'
+  }
+
+  it "keeps its indent to the outer if" do
+    vim.feedkeys 'iif 1:\<CR>if 2:\<CR>pass\<CR>elif 3:\<CR>pass\<CR>'
+    indent.should == 4
+    vim.feedkeys '\<Esc>'
+    indent.should == 0
+    proposed_indent.should == shiftwidth
+    vim.feedkeys 'ielif 4:'
+    indent.should == 0
+    proposed_indent.should == 0
+    vim.feedkeys '\<CR>'
+    indent.should == 4
+    proposed_indent.should == 4
+  end
+end

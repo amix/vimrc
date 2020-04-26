@@ -823,7 +823,7 @@ function! ale#completion#HandleUserData(completed_item) abort
     endif
 
     for l:code_action in get(l:user_data, 'codeActions', [])
-        call ale#code_action#HandleCodeAction(l:code_action)
+        call ale#code_action#HandleCodeAction(l:code_action, v:false)
     endfor
 endfunction
 

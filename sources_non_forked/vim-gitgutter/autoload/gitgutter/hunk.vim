@@ -1,4 +1,6 @@
 let s:winid = 0
+let s:preview_bufnr = 0
+let s:nomodeline = (v:version > 703 || (v:version == 703 && has('patch442'))) ? '<nomodeline>' : ''
 
 function! gitgutter#hunk#set_hunks(bufnr, hunks) abort
   call gitgutter#utility#setbufvar(a:bufnr, 'hunks', a:hunks)
@@ -172,6 +174,8 @@ endfunction
 
 
 function! gitgutter#hunk#stage(...) abort
+  if !s:in_hunk_preview_window() && !gitgutter#utility#has_repo_path(bufnr('')) | return | endif
+
   if a:0 && (a:1 != 1 || a:2 != line('$'))
     call s:hunk_op(function('s:stage'), a:1, a:2)
   else
@@ -181,11 +185,15 @@ function! gitgutter#hunk#stage(...) abort
 endfunction
 
 function! gitgutter#hunk#undo() abort
+  if !gitgutter#utility#has_repo_path(bufnr('')) | return | endif
+
   call s:hunk_op(function('s:undo'))
   silent! call repeat#set("\<Plug>(GitGutterUndoHunk)", -1)
 endfunction
 
 function! gitgutter#hunk#preview() abort
+  if !gitgutter#utility#has_repo_path(bufnr('')) | return | endif
+
   call s:hunk_op(function('s:preview'))
   silent! call repeat#set("\<Plug>(GitGutterPreviewHunk)", -1)
 endfunction
@@ -268,6 +276,10 @@ function! s:stage(hunk_diff)
         \ diff)
   if v:shell_error
     call gitgutter#utility#warn('patch does not apply')
+  else
+    if exists('#User#GitGutterStage')
+      execute 'doautocmd' s:nomodeline 'User GitGutterStage'
+    endif
   endif
 
   " Refresh gitgutter's view of buffer.
@@ -430,7 +442,12 @@ function! s:open_hunk_preview_window()
   silent! wincmd P
   if !&previewwindow
     noautocmd execute g:gitgutter_preview_win_location &previewheight 'new gitgutter://hunk-preview'
-    let s:winid = win_getid()
+    doautocmd WinEnter
+    if exists('*win_getid')
+      let s:winid = win_getid()
+    else
+      let s:preview_bufnr = bufnr('')
+    endif
     set previewwindow
     setlocal filetype=diff buftype=acwrite bufhidden=delete
     " Reset some defaults in case someone else has changed them.
@@ -499,18 +516,21 @@ endfunction
 function! s:enable_staging_from_hunk_preview_window()
   augroup gitgutter_hunk_preview
     autocmd!
-    execute 'autocmd BufWriteCmd <buffer='.winbufnr(s:winid).'> GitGutterStageHunk'
+    let bufnr = s:winid != 0 ? winbufnr(s:winid) : s:preview_bufnr
+    execute 'autocmd BufWriteCmd <buffer='.bufnr.'> GitGutterStageHunk'
   augroup END
 endfunction
 
 
 function! s:goto_original_window()
   noautocmd wincmd p
+  doautocmd WinEnter
 endfunction
 
 
 function! s:close_hunk_preview_window()
-  call setbufvar(winbufnr(s:winid), '&modified', 0)
+  let bufnr = s:winid != 0 ? winbufnr(s:winid) : s:preview_bufnr
+  call setbufvar(bufnr, '&modified', 0)
 
   if g:gitgutter_preview_win_floating
     if win_id2win(s:winid) > 0
@@ -521,4 +541,5 @@ function! s:close_hunk_preview_window()
   endif
 
   let s:winid = 0
+  let s:preview_bufnr = 0
 endfunction

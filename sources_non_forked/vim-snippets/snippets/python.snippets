@@ -123,6 +123,8 @@ snippet ret
 	return ${0}
 snippet .
 	self.
+snippet sa self.attribute = attribute
+	self.${1:attribute} = $1
 snippet try Try/Except
 	try:
 		${1:${VISUAL}}
@@ -182,6 +184,10 @@ snippet ptpython
 # python console debugger (pudb)
 snippet pudb
 	__import__('pudb').set_trace()
+# python console debugger remote (pudb)
+snippet pudbr
+	from pudb.remote import set_trace
+	set_trace()
 # pdb in nosetests
 snippet nosetrace
 	__import__('nose').tools.set_trace()

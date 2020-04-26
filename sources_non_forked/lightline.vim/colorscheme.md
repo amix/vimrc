@@ -48,6 +48,10 @@
 
 ![lightline.vim - ayu mirage](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/ayu_mirage.png)
 
+### ayu_light
+
+![lightline.vim - ayu light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/ayu_light.png)
+
 ### darcula
 
 ![lightline.vim - darcula](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/darcula.png)

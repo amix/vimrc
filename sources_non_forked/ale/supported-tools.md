@@ -494,6 +494,7 @@ formatting.
   * [vcom](https://www.mentor.com/products/fv/questa/)
   * [xvhdl](https://www.xilinx.com/products/design-tools/vivado.html)
 * Vim
+  * [vimls](https://github.com/iamcco/vim-language-server)
   * [vint](https://github.com/Kuniwak/vint)
 * Vim help
   * [alex](https://github.com/wooorm/alex) :warning: :floppy_disk:

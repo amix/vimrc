@@ -33,6 +33,25 @@ g:ale_terraform_terraform_executable     *g:ale_terraform_terraform_executable*
 
 
 ===============================================================================
+terraform-lsp                                     *ale-terraform-terraform-lsp*
+
+g:ale_terraform_langserver_executable   *g:ale_terraform_langserver_executable*
+                                        *b:ale_terraform_langserver_executable*
+  Type: |String|
+  Default: `'terraform-lsp'`
+
+  This variable can be changed to use a different executable for terraform-lsp.
+
+
+g:ale_terraform_langserver_options         *g:ale_terraform_langserver_options*
+                                           *b:ale_terraform_langserver_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to pass custom CLI flags to terraform-lsp.
+
+
+===============================================================================
 tflint                                                   *ale-terraform-tflint*
 
 g:ale_terraform_tflint_executable           *g:ale_terraform_tflint_executable*

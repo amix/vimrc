@@ -3,6 +3,61 @@ ALE Vim Integration                                           *ale-vim-options*
 
 
 ===============================================================================
+vimls                                                           *ale-vim-vimls*
+
+  The `vim-language-server` is the engine that powers VimL editor support
+  using the Language Server Protocol.  See the installation instructions:
+  https://github.com/iamcco/vim-language-server#install
+
+g:ale_vim_vimls_executable                         *g:ale_vim_vimls_executable*
+                                                   *b:ale_vim_vimls_executable*
+  Type: |String|
+  Default: `'vim-language-server'`
+
+  This option can be set to change the executable path for vimls.
+
+
+g:ale_vim_vimls_config                                 *g:ale_vim_vimls_config*
+                                                       *b:ale_vim_vimls_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Dictionary containing configuration settings that will be passed to the
+  language server. For example: >
+    {
+    \  'vim': {
+    \    'iskeyword': '@,48-57,_,192-255,-#',
+    \    'vimruntime': '',
+    \    'runtimepath': '',
+    \    'diagnostic': {
+    \      'enable': v:true
+    \    },
+    \    'indexes': {
+    \      'runtimepath': v:true,
+    \      'gap': 100,
+    \      'count': 3,
+    \      'projectRootPatterns' : ['.git', 'autoload', 'plugin']
+    \    },
+    \    'suggest': {
+    \      'fromVimruntime': v:true,
+    \      'fromRuntimepath': v:false
+    \    },
+    \  }
+    \}
+<
+  Consult the vim-language-server documentation for more information about
+  settings.
+
+
+g:ale_vim_vimls_use_global                         *g:ale_vim_vimls_use_global*
+                                                   *b:ale_vim_vimls_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 vint                                                             *ale-vim-vint*
 
 g:ale_vim_vint_executable                           *g:ale_vim_vint_executable*

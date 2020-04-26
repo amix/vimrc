@@ -1,0 +1,358 @@
+*Gist.vim* Vimscript for creating gists (http://gist.github.com)
+
+Usage                                          |vim-gist-usage|
+Tips                                           |vim-gist-tips|
+License                                        |vim-gist-license|
+Install                                        |vim-gist-install|
+Requirements                                   |vim-gist-requirements|
+Setup                                          |vim-gist-setup|
+FAQ                                            |vim-gist-faq|
+
+This is a vimscript for creating gists (http://gist.github.com)
+
+For the latest version please see https://github.com/mattn/vim-gist.
+
+==============================================================================
+USAGE                                                 *:Gist* *vim-gist-usage*
+
+- Post current buffer to gist, using default privacy option. >
+
+    :Gist
+<
+- Post selected text to gist, using default privacy option.
+  This applies to all permutations listed below (except multi). >
+
+    :'<,'>Gist
+<
+- Create a private gist. >
+
+    :Gist -p
+    :Gist --private
+<
+- Create a public gist.
+  (Only relevant if you've set gists to be private by default.) >
+
+    :Gist -P
+    :Gist --public
+<
+- Post whole text to gist as public.
+  This is only relevant if you've set gists to be private by default.
+>
+    :Gist -P
+<
+- Create a gist anonymously. >
+
+    :Gist -a
+    :Gist --anonymous
+<
+- Create a gist with all open buffers. >
+
+    :Gist -m
+    :Gist --multibuffer
+<
+- Edit the gist (you need to have opened the gist buffer first).
+  You can update the gist with the {:w} command within the gist buffer. >
+
+    :Gist -e
+    :Gist --edit
+<
+- Edit the gist with name "foo.js" (you need to have opened the gist buffer
+  first). >
+
+    :Gist -e foo.js
+<
+- Post/Edit with the description " (you need to have opened the gist buffer
+  first). >
+
+    :Gist -s something
+    :Gist --description something
+    :Gist -e -s something
+<
+- Delete the gist (you need to have opened the gist buffer first).
+  Password authentication is needed. >
+
+    :Gist -d
+    :Gist --delete
+<
+- Fork the gist (you need to have opened the gist buffer first).
+  Password authentication is needed. >
+
+    :Gist -f
+    :Gist --fork
+<
+- Star the gist (you need to have opened the gist buffer first).
+  Password authentication is needed.
+>
+    :Gist +1
+<
+- Unstar the gist (you need to have opened the gist buffer first).
+  Password authentication is needed.
+>
+    :Gist -1
+<
+- Get gist XXXXX. >
+
+    :Gist XXXXX
+<
+- Get gist XXXXX and add to clipboard. >
+
+    :Gist -c XXXXX
+<
+- List your public gists. >
+
+    :Gist -l
+    :Gist --list
+<
+- List gists from user "mattn". >
+
+    :Gist -l mattn
+<
+- List everyone's gists. >
+
+    :Gist -la
+    :Gist --listall
+<
+- List gists from your starred gists.
+>
+    :Gist -ls
+    :Gist --liststar
+
+- While the gist list is visible, the following mappings apply:
+
+  - 'o' or 'Enter' will open the selected gist file in a new buffer
+    and close the vim-gist listing split.
+  - 'b' will open the selected gist file in a browser. If you are in
+    GUI vim you can also achieve this by pressing 'Shift-Enter'.
+  - 'y' will copy the contents of the selected gist to the clipboard,
+    and close the vim-gist listing split.
+  - 'p' will (copy and) paste the contents of the selected gist to the
+    buffer from which vim-gist was called, and close the vim-gist
+    listing split.
+  - 'Esc' will close the vim-gist listing split without performing any
+    further action.
+
+- Open the gist on browser after you post or update it.
+>
+    :Gist -b
+    :Gist --browser
+<
+- Post as new gist after editing on the buffer.
+>
+    :Gist!
+<
+==============================================================================
+TIPS                                                           *vim-gist-tips*
+
+If you set "g:gist_clip_command", gist.vim will copy the gist code with option
+"-c".
+
+  - Mac: >
+    let g:gist_clip_command = 'pbcopy'
+<
+  - Linux: >
+    let g:gist_clip_command = 'xclip -selection clipboard'
+<
+  - Others (cygwin?): >
+    let g:gist_clip_command = 'putclip'
+<
+If you want to detect filetype from the filename: >
+
+    let g:gist_detect_filetype = 1
+<
+If you want to open the browser after the post: >
+
+    let g:gist_open_browser_after_post = 1
+<
+If you want to change the browser: >
+
+    let g:gist_browser_command = 'w3m %URL%'
+<
+or: >
+
+    let g:gist_browser_command = 'opera %URL% &'
+<
+On windows, this should work with your user settings.
+
+If you want to show your private gists with ":Gist -l": >
+
+    let g:gist_show_privates = 1
+<
+If you want your gist to be private by default: >
+
+    let g:gist_post_private = 1
+<
+If you want your gist to be anonymous by default: >
+
+    let g:gist_post_anonymous = 1
+<
+If you want to edit all files for gists containing more than one: >
+
+    let g:gist_get_multiplefile = 1
+<
+If you want to use on GitHub Enterprise: >
+
+    let g:gist_api_url = 'http://your-github-enterprise-domain/api/v3'
+<
+If you want to open gist with current editing buffers: >
+
+    let g:gist_edit_with_buffers = 1
+
+If you want to open gist list/buffer as vertical split: >
+
+    let g:gist_list_vsplit = 1
+
+If you want to modify filetype for the file on github, or add mapping of
+filetype/file-extension: >
+
+    let g:gist_extmap = { ".swift": "swift" }
+<
+    key is file-extension, value is filetype.
+
+If you want to update a gist, embed >
+
+    GistID: xxxxx
+>
+in your local file, then call >
+
+    :Gist
+
+The vim-gist listing split lists gists ids, names (filenames) as well as
+their description. This is done following a table layout, with fixed space
+for each column. For offering quick browsing, vim-gist will truncate all
+output exceeding the available horizontal space, assuring that every gist
+listed only takes one line on the table. Although the gist id field width is
+fixed internally, the user can define the length of the (file)name field on
+the vim-gist listing. This can be done by the following declaration:
+
+    let g:gist_namelength = 20
+
+Note that the default value for gist_namelength is 30. Again, if the gist
+(file)name exceeds the specified number of characters, it will be truncated.
+
+If you want to update a gist when only |:w!|: >
+
+    " :w and :w! update a gist.
+    let g:gist_update_on_write = 1
+
+    " Only :w! updates a gist.
+    let g:gist_update_on_write = 2
+>
+All other values are treated as 1.
+This variable's value is 1 by default.
+
+==============================================================================
+LICENSE                                                     *vim-gist-license*
+
+
+  Copyright 2010 by Yasuhiro Matsumoto
+  modification, are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+
+==============================================================================
+INSTALL                                                     *vim-gist-install*
+
+Copy following files into your plugin directory.
+
+rtp:
+  - autoload/gist.vim
+  - plugin/gist.vim
+
+If you want to uninstall gist.vim, remember to also remove `~/.vim-gist`.
+
+You need to install webapi-vim also:
+
+  http://www.vim.org/scripts/script.php?script_id=4019
+
+If you want to use latest one:
+
+  https://github.com/mattn/webapi-vim
+
+==============================================================================
+REQUIREMENTS                                           *vim-gist-requirements*
+
+  - curl command (http://curl.haxx.se/)
+  - webapi-vim (https://github.com/mattn/webapi-vim)
+  - and, if you want to use your git profile, the git command-line client.
+
+==============================================================================
+SETUP                                                       *vim-gist-setup*
+
+This plugin uses GitHub API v3. The authentication value is stored in `~/.vim-gist`.
+vim-gist provides two ways to authenticate against the GitHub APIs.
+
+First, you need to set your GitHub username in global git config:
+>
+    $ git config --global github.user Username
+<
+Then, gist.vim will ask for your password to create an authorization when you
+first use it.  The password is not stored and only the OAuth access token will
+be kept for later use.  You can revoke the token at any time from the list of
+"Authorized applications" on GitHub's "Account Settings" page.
+(https://github.com/settings/applications)
+
+If you have two-factor authentication enabled on GitHub, you'll see the message
+"Must specify two-factor authentication OTP code." In this case, you need to
+create a "Personal Access Token" on GitHub's "Account Settings" page
+(https://github.com/settings/applications) and place it in a file
+named ~/.vim-gist like this:
+>
+    token xxxxx
+<
+If you happen to have your password already written in ~/.gitconfig like
+below:
+>
+    [github]
+        password = xxxxx
+<
+Then, add following into your ~/.vimrc
+>
+    let g:gist_use_password_in_gitconfig = 1
+<
+This is not secure at all, so strongly discouraged.
+
+NOTE: the username is optional if you only send anonymous gists.
+
+==============================================================================
+FAQ                                                           *vim-gist-faq*
+
+Q. :Gist returns a Forbidden error
+A. Try deleting ~/.vim-gist and authenticating again.
+
+==============================================================================
+THANKS                                                     *vim-gist-thanks*
+
+  AD7six
+  Bruno Bigras
+  c9s
+  Daniel Bretoi
+  Jeremy Michael Cantrell
+  Kien N
+  kongo2002
+  MATSUU Takuto
+  Matthew Weier O'Phinney
+  ornicar
+  Roland Schilter
+  steve
+  tyru
+  Will Gray
+  netj
+
+ vim:tw=78:ts=8:ft=help:norl:

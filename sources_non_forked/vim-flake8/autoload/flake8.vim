@@ -20,6 +20,10 @@ function! flake8#Flake8UnplaceMarkers()
     call s:Warnings()
 endfunction
 
+function! flake8#Flake8ShowError()
+    call s:ShowErrorMessage()
+endfunction
+
 "" }}}
 
 "" ** internal ** {{{
@@ -101,6 +105,7 @@ function! s:Setup()  " {{{
     let s:markerdata['F'].marker = s:flake8_pyflake_marker
     let s:markerdata['C'].marker = s:flake8_complexity_marker
     let s:markerdata['N'].marker = s:flake8_naming_marker
+
 endfunction  " }}}
 
 "" do flake8
@@ -154,11 +159,20 @@ function! s:Flake8()  " {{{
     let &shellpipe=l:old_shellpipe
     let &t_ti=l:old_t_ti
     let &t_te=l:old_t_te
+    " store mapping of line number to error string
 
     " process results
+    let s:resultDict = {} 
+
     let l:results=getqflist()
     let l:has_results=results != []
     if l:has_results
+	" save line number of each error message	
+        for result in l:results
+	    let linenum = result.lnum
+            let s:resultDict[linenum] = result.text
+	endfor
+
         " markers
         if !s:flake8_show_in_gutter == 0 || !s:flake8_show_in_file == 0
             call s:PlaceMarkers(l:results)
@@ -184,8 +198,9 @@ function! s:Flake8()  " {{{
     endif
 endfunction  " }}}
 
-"" markers
 
+
+"" markers
 function! s:PlaceMarkers(results)  " {{{
     " in gutter?
     if !s:flake8_show_in_gutter == 0
@@ -251,6 +266,29 @@ function! s:UnplaceMarkers()  " {{{
             unlet l:val.matchstr
         endif
     endfor
+endfunction  " }}}
+
+function! s:ShowErrorMessage()  " {{{
+    let l:cursorPos = getpos(".")
+    if !exists('s:resultDict')
+	return
+    endif
+
+    " if there is a message on the current line,
+    " then echo it 
+    if has_key(s:resultDict, l:cursorPos[1])
+	let l:errorText = get(s:resultDict, l:cursorPos[1]) 
+	echo strpart(l:errorText, 0, &columns-1)
+	let b:showing_message = 1
+    endif
+
+    " if a message is already being shown,
+    " then clear it
+    if !b:showing_message == 0
+	echo
+	let b:showing_message = 0
+    endif
+
 endfunction  " }}}
 
 "" }}}

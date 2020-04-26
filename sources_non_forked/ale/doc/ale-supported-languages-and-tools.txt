@@ -485,6 +485,7 @@ Notes:
   * `vcom`
   * `xvhdl`
 * Vim
+  * `vimls`
   * `vint`
 * Vim help^
   * `alex`!!
