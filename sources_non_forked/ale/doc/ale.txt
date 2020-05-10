@@ -2279,6 +2279,8 @@ documented in additional help files.
     gcc...................................|ale-asm-gcc|
   awk.....................................|ale-awk-options|
     gawk..................................|ale-awk-gawk|
+  bats....................................|ale-bats-options|
+    shellcheck............................|ale-bats-shellcheck|
   bib.....................................|ale-bib-options|
     bibclean..............................|ale-bib-bibclean|
   c.......................................|ale-c-options|
@@ -2579,6 +2581,7 @@ documented in additional help files.
     sorbet................................|ale-ruby-sorbet|
     standardrb............................|ale-ruby-standardrb|
   rust....................................|ale-rust-options|
+    analyzer..............................|ale-rust-analyzer|
     cargo.................................|ale-rust-cargo|
     rls...................................|ale-rust-rls|
     rustc.................................|ale-rust-rustc|

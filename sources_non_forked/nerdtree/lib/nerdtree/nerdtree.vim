@@ -96,9 +96,9 @@ endfunction
 
 "FUNCTION: s:NERDTree.CursorToTreeWin(){{{1
 "Places the cursor in the nerd tree window
-function! s:NERDTree.CursorToTreeWin()
+function! s:NERDTree.CursorToTreeWin(...)
     call g:NERDTree.MustBeOpen()
-    call nerdtree#exec(g:NERDTree.GetWinNum() . 'wincmd w', 1)
+    call nerdtree#exec(g:NERDTree.GetWinNum() . 'wincmd w', a:0 >0 ? a:1 : 1)
 endfunction
 
 " Function: s:NERDTree.ExistsForBuffer()   {{{1

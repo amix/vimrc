@@ -377,8 +377,14 @@ endfunction
 "  1. If cascaded, we don't know which dir is bookmarked or is a symlink.
 "  2. If the parent is a symlink or is bookmarked, you end up with unparsable
 "     text, and NERDTree cannot get the path of any child node.
+" Also, return false if this directory is the tree root, which should never be
+" part of a cascade.
 function! s:TreeDirNode.isCascadable()
     if g:NERDTreeCascadeSingleChildDir ==# 0
+        return 0
+    endif
+
+    if self.isRoot()
         return 0
     endif
 

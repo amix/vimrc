@@ -5,7 +5,10 @@
         - **.PATCH**: Pull Request Title (PR Author) [PR Number](Link to PR)
 -->
 #### 6.7
-- **.7**: Put '%' argument in bufname() for backwards compatibility. (PhilRunninger) [#1105](https://github.com/preservim/nerdtree/pull/1105)
+- **.10**: Do not consider the tree root to be "cascadable". (lifecrisis) [#1120](https://github.com/preservim/nerdtree/pull/1120)
+- **.9**: Force `:NERDTreeFocus` to allow events to be fired when switching windows. (PhilRunninger) [#1118](https://github.com/preservim/nerdtree/pull/1118)
+- **.8**: Fix example code for the `NERDTreeAddKeyMap()` function. (PhilRunninger) [#1116](https://github.com/preservim/nerdtree/pull/1116)
+- **.7**: Put `'%'` argument in `bufname()` for backwards compatibility. (PhilRunninger) [#1105](https://github.com/preservim/nerdtree/pull/1105)
 - **.6**: If a file's already open in the window, don't edit it again. (PhilRunninger) [#1103](https://github.com/preservim/nerdtree/pull/1103)
 - **.5**: Prevent unneeded tree creation in `:NERDTreeToggle[VCS] <path>` (PhilRunninger) [#1101](https://github.com/preservim/nerdtree/pull/1101)
 - **.4**: Add missing calls to the `shellescape()` function (lifecrisis) [#1099](https://github.com/preservim/nerdtree/pull/1099)

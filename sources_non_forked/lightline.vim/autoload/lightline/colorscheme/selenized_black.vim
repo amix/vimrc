@@ -1,26 +1,26 @@
 " =============================================================================
-" Filename: autoload/lightline/colorscheme/selenized_dark.vim
-" Author: Charles Hall
+" Filename: autoload/lightline/colorscheme/selenized_black.vim
+" Author: itchyny
 " License: MIT License
-" Last Change: 2020/05/02 16:53:17.
+" Last Change: 2020/05/02 16:56:50.
 " =============================================================================
 
-" https://github.com/jan-warchol/selenized/blob/master/the-values.md#selenized-dark
-let s:bg_1      = ['#184956', 0]
-let s:bg_2      = ['#2d5b69', 8]
-let s:dim_0     = ['#72898f', 7]
-let s:red       = ['#fa5750', 1]
-let s:green     = ['#75b938', 2]
+" https://github.com/jan-warchol/selenized/blob/master/the-values.md#selenized-black
+let s:bg_1      = ['#252525', 0]
+let s:bg_2      = ['#3b3b3b', 8]
+let s:dim_0     = ['#777777', 7]
+let s:red       = ['#ed4a46', 1]
+let s:green     = ['#70b433', 2]
 let s:yellow    = ['#dbb32d', 3]
-let s:blue      = ['#4695f7', 4]
-let s:magenta   = ['#f275be', 5]
-let s:cyan      = ['#41c7b9', 6]
-let s:brred     = ['#ff665c', 9]
-let s:brgreen   = ['#84c747', 10]
-let s:bryellow  = ['#ebc13d', 11]
-let s:brblue    = ['#58a3ff', 12]
-let s:brmagenta = ['#ff84cd', 13]
-let s:brcyan    = ['#53d6c7', 14]
+let s:blue      = ['#368aeb', 4]
+let s:magenta   = ['#eb6eb7', 5]
+let s:cyan      = ['#3fc5b7', 6]
+let s:brred     = ['#ff5e56', 9]
+let s:brgreen   = ['#83c746', 10]
+let s:bryellow  = ['#efc541', 11]
+let s:brblue    = ['#4f9cfe', 12]
+let s:brmagenta = ['#ff81ca', 13]
+let s:brcyan    = ['#56d8c9', 14]
 
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 
@@ -46,4 +46,4 @@ let s:p.tabline.right = [[ s:bg_1, s:red ]]
 let s:p.tabline.left = [[ s:cyan, s:bg_2 ]]
 let s:p.tabline.tabsel = [[ s:bg_1, s:blue ]]
 
-let g:lightline#colorscheme#selenized_dark#palette = lightline#colorscheme#flatten(s:p)
+let g:lightline#colorscheme#selenized_black#palette = lightline#colorscheme#flatten(s:p)

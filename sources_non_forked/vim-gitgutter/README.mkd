@@ -137,11 +137,14 @@ The same caveat applies to line number highlighting as to line highlighting just
 
 If you switch off both line highlighting and signs, you won't see the sign column.
 
-To keep your Vim snappy, vim-gitgutter will suppress the signs when a file has more than 500 changes.  As soon as the number of changes falls below the limit vim-gitgutter will show the signs again.  You can configure the threshold with:
+In older Vims (pre 8.1.0614 / Neovim 0.4.0) vim-gitgutter will suppress the signs when a file has more than 500 changes, to avoid slowing down the UI.  As soon as the number of changes falls below the limit vim-gitgutter will show the signs again.  You can configure the threshold with:
 
 ```viml
-let g:gitgutter_max_signs = 500  " default value
+let g:gitgutter_max_signs = 500  " default value (Vim < 8.1.0614, Neovim < 0.4.0)
+let g:gitgutter_max_signs = -1   " default value (otherwise)
 ```
+
+You can also remove the limit by setting `g:gitgutter_max_signs = -1`.
 
 #### Hunks
 
@@ -287,19 +290,14 @@ Please note that vim-gitgutter won't override any colours or highlights you've s
 
 #### Sign column
 
-By default vim-gitgutter will make the sign column look like the line number column.
-
-To customise your sign column's background color, first tell vim-gitgutter to leave it alone:
+Set the `SignColumn` highlight group to change the sign column's colour.  For example:
 
 ```viml
-let g:gitgutter_override_sign_column_highlight = 0
-```
+" vim-gitgutter used to do this by default:
+highlight! link SignColumn LineNr
 
-And then either update your colorscheme's `SignColumn` highlight group or set it in your vimrc:
-
-```viml
-highlight SignColumn ctermbg=whatever    " terminal Vim
-highlight SignColumn guibg=whatever      " gVim/MacVim
+" or you could do this:
+highlight SignColumn guibg=whatever ctermbg=whatever
 ```
 
 By default the sign column will appear when there are signs to show and disappear when there aren't.  To always have the sign column, add to your vimrc:
@@ -318,13 +316,15 @@ let g:gitgutter_sign_allow_clobber = 1
 
 #### Signs' colours and symbols
 
-If you or your colourscheme has defined `GitGutter*` highlight groups, the plugin will use those for the signs' colours.
+If you or your colourscheme has defined `GitGutter*` highlight groups, the plugin will use them for the signs' colours.
 
-Otherwise it will use your colourscheme's `Diff*` highlight groups.
+If you want the background colours to match the sign column, but don't want to update the `GitGutter*` groups yourself, you can get the plugin to do it:
 
-Either way the signs' background colours will be set to the sign column's background colour.
+```viml
+let g:gitgutter_set_sign_backgrounds = 1
+```
 
-If you don't like the colours, specify the ones you want in your vimrc (see `:help highlight-guifg` and `:help highlight-ctermfg`).  For example, to get vim-gitgutter's original colours (based on git-diff's colours in my terminal):
+If no `GitGutter*` highlight groups exist, the plugin will check the `Diff*` highlight groups.  If their foreground colours differ the plugin will use them; if not, these colours will be used:
 
 ```viml
 highlight GitGutterAdd    guifg=#009900 ctermfg=2

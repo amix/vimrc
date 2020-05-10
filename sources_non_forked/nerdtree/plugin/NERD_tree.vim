@@ -217,7 +217,7 @@ endfunction
 
 function! NERDTreeFocus()
     if g:NERDTree.IsOpen()
-        call g:NERDTree.CursorToTreeWin()
+        call g:NERDTree.CursorToTreeWin(0)
     else
         call g:NERDTreeCreator.ToggleTabTree('')
     endif

@@ -9,7 +9,7 @@ Integration Information
   files for Rust distributed in Vim >=8.0.0501 or upstream:
   https://github.com/rust-lang/rust.vim
 
-  Note that there are three possible linters for Rust files:
+  Note that there are several possible linters and fixers for Rust files:
 
   1. rustc -- The Rust compiler is used to check the currently edited file.
      So, if your project consists of multiple files, you will get some errors
@@ -23,7 +23,12 @@ Integration Information
      over cargo. rls implements the Language Server Protocol for incremental
      compilation of Rust code, and can check Rust files while you type. `rls`
      requires Rust files to contained in Cargo projects.
-  4. rustfmt -- If you have `rustfmt` installed, you can use it as a fixer to
+  4. analyzer -- If you have rust-analyzer installed, you might prefer using
+     this linter over cargo and rls. rust-analyzer also implements the
+     Language Server Protocol for incremental compilation of Rust code, and is
+     the next iteration of rls. rust-analyzer, like rls, requires Rust files
+     to contained in Cargo projects.
+  5. rustfmt -- If you have `rustfmt` installed, you can use it as a fixer to
      consistently reformat your Rust code.
 
   Only cargo is enabled by default. To switch to using rustc instead of cargo,
@@ -35,6 +40,25 @@ Integration Information
 
   Also note that rustc 1.12. or later is needed.
 
+
+===============================================================================
+analyzer                                                    *ale-rust-analyzer*
+
+g:ale_rust_analyzer_executable                 *g:ale_rust_analyzer_executable*
+                                               *b:ale_rust_analyzer_executable*
+  Type: |String|
+  Default: `'rust-analyzer'`
+
+  This variable can be modified to change the executable path for
+  `rust-analyzer`.
+
+
+g:ale_rust_analyzer_config                         *g:ale_rust_analyzer_config*
+                                                   *b:ale_rust_analyzer_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Dictionary with configuration settings for rust-analyzer.
 
 ===============================================================================
 cargo                                                          *ale-rust-cargo*

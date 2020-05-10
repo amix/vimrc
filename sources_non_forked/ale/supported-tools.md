@@ -44,6 +44,8 @@ formatting.
   * shell [-n flag](https://www.gnu.org/software/bash/manual/bash.html#index-set)
   * [shellcheck](https://www.shellcheck.net/)
   * [shfmt](https://github.com/mvdan/sh)
+* Bats
+  * [shellcheck](https://www.shellcheck.net/)
 * BibTeX
   * [bibclean](http://ftp.math.utah.edu/pub/bibclean/)
 * Bourne Shell
@@ -417,6 +419,7 @@ formatting.
 * Rust
   * [cargo](https://github.com/rust-lang/cargo) :floppy_disk: (see `:help ale-integration-rust` for configuration instructions)
   * [rls](https://github.com/rust-lang-nursery/rls) :warning:
+  * [rust-analyzer](https://github.com/rust-analyzer/rust-analyzer) :warning:
   * [rustc](https://www.rust-lang.org/) :warning:
   * [rustfmt](https://github.com/rust-lang-nursery/rustfmt)
 * Sass

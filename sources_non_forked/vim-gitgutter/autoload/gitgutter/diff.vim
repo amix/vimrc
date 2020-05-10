@@ -182,7 +182,7 @@ function! gitgutter#diff#handler(bufnr, diff) abort
   let modified_lines = gitgutter#diff#process_hunks(a:bufnr, gitgutter#hunk#hunks(a:bufnr))
 
   let signs_count = len(modified_lines)
-  if signs_count > g:gitgutter_max_signs
+  if g:gitgutter_max_signs != -1 && signs_count > g:gitgutter_max_signs
     call gitgutter#utility#warn_once(a:bufnr, printf(
           \ 'exceeded maximum number of signs (%d > %d, configured by g:gitgutter_max_signs).',
           \ signs_count, g:gitgutter_max_signs), 'max_signs')

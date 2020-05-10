@@ -11,6 +11,14 @@ snippet pfn "Function definition"
 	pub fn ${1:function_name}(${2})${3} {
 		${0}
 	}
+snippet afn "Async function definition"
+	async fn ${1:function_name}(${2})${3} {
+		${0}
+	}
+snippet pafn "Async function definition"
+	pub async fn ${1:function_name}(${2})${3} {
+		${0}
+	}
 snippet bench "Bench function" b
 	#[bench]
 	fn ${1:bench_function_name}(b: &mut test::Bencher) {

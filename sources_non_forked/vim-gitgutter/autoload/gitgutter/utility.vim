@@ -162,12 +162,16 @@ endfunction
 
 
 function! gitgutter#utility#cd_cmd(bufnr, cmd) abort
-  let cd = s:unc_path(a:bufnr) ? 'pushd' : (gitgutter#utility#windows() ? 'cd /d' : 'cd')
+  let cd = s:unc_path(a:bufnr) ? 'pushd' : (gitgutter#utility#windows() && s:dos_shell() ? 'cd /d' : 'cd')
   return cd.' '.s:dir(a:bufnr).' && '.a:cmd
 endfunction
 
 function! s:unc_path(bufnr)
   return s:abs_path(a:bufnr, 0) =~ '^\\\\'
+endfunction
+
+function! s:dos_shell()
+  return &shell == 'cmd.exe' || &shell == 'command.com'
 endfunction
 
 function! s:use_known_shell() abort

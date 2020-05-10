@@ -1,26 +1,26 @@
 " =============================================================================
-" Filename: autoload/lightline/colorscheme/selenized_dark.vim
-" Author: Charles Hall
+" Filename: autoload/lightline/colorscheme/selenized_light.vim
+" Author: itchyny
 " License: MIT License
-" Last Change: 2020/05/02 16:53:17.
+" Last Change: 2020/05/02 16:58:00.
 " =============================================================================
 
-" https://github.com/jan-warchol/selenized/blob/master/the-values.md#selenized-dark
-let s:bg_1      = ['#184956', 0]
-let s:bg_2      = ['#2d5b69', 8]
-let s:dim_0     = ['#72898f', 7]
-let s:red       = ['#fa5750', 1]
-let s:green     = ['#75b938', 2]
-let s:yellow    = ['#dbb32d', 3]
-let s:blue      = ['#4695f7', 4]
-let s:magenta   = ['#f275be', 5]
-let s:cyan      = ['#41c7b9', 6]
-let s:brred     = ['#ff665c', 9]
-let s:brgreen   = ['#84c747', 10]
-let s:bryellow  = ['#ebc13d', 11]
-let s:brblue    = ['#58a3ff', 12]
-let s:brmagenta = ['#ff84cd', 13]
-let s:brcyan    = ['#53d6c7', 14]
+" https://github.com/jan-warchol/selenized/blob/master/the-values.md#selenized-light
+let s:bg_1      = ['#ece3cc', 0]
+let s:bg_2      = ['#d5cdb6', 8]
+let s:dim_0     = ['#909995', 7]
+let s:red       = ['#d2212d', 1]
+let s:green     = ['#489100', 2]
+let s:yellow    = ['#ad8900', 3]
+let s:blue      = ['#0072d4', 4]
+let s:magenta   = ['#ca4898', 5]
+let s:cyan      = ['#009c8f', 6]
+let s:brred     = ['#cc1729', 9]
+let s:brgreen   = ['#428b00', 10]
+let s:bryellow  = ['#a78300', 11]
+let s:brblue    = ['#006dce', 12]
+let s:brmagenta = ['#c44392', 13]
+let s:brcyan    = ['#00978a', 14]
 
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 
@@ -46,4 +46,4 @@ let s:p.tabline.right = [[ s:bg_1, s:red ]]
 let s:p.tabline.left = [[ s:cyan, s:bg_2 ]]
 let s:p.tabline.tabsel = [[ s:bg_1, s:blue ]]
 
-let g:lightline#colorscheme#selenized_dark#palette = lightline#colorscheme#flatten(s:p)
+let g:lightline#colorscheme#selenized_light#palette = lightline#colorscheme#flatten(s:p)

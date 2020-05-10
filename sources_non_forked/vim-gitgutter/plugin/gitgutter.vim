@@ -22,6 +22,13 @@ function! s:set(var, default) abort
   endif
 endfunction
 
+function! s:obsolete(var)
+  if exists(a:var)
+    call gitgutter#utility#warn(a:var.' is obsolete and has no effect.')
+  endif
+endfunction
+
+
 call s:set('g:gitgutter_preview_win_location',     'bo')
 if exists('*nvim_open_win')
   call s:set('g:gitgutter_preview_win_floating', 1)
@@ -29,7 +36,11 @@ else
   call s:set('g:gitgutter_preview_win_floating', 0)
 endif
 call s:set('g:gitgutter_enabled',                     1)
-call s:set('g:gitgutter_max_signs',                 500)
+if exists('*sign_unplace')
+  call s:set('g:gitgutter_max_signs', -1)
+else
+  call s:set('g:gitgutter_max_signs', 500)
+endif
 call s:set('g:gitgutter_signs',                       1)
 call s:set('g:gitgutter_highlight_lines',             0)
 call s:set('g:gitgutter_highlight_linenrs',           0)
@@ -40,7 +51,7 @@ if (has('nvim-0.4.0') || exists('*sign_place')) && !exists('g:gitgutter_sign_all
   let g:gitgutter_sign_allow_clobber = 1
 endif
 call s:set('g:gitgutter_sign_allow_clobber',          0)
-call s:set('g:gitgutter_override_sign_column_highlight', 1)
+call s:set('g:gitgutter_set_sign_backgrounds',           0)
 call s:set('g:gitgutter_sign_added',                   '+')
 call s:set('g:gitgutter_sign_modified',                '~')
 call s:set('g:gitgutter_sign_removed',                 '_')
@@ -65,7 +76,10 @@ call s:set('g:gitgutter_use_location_list',              0)
 
 call s:set('g:gitgutter_git_executable', 'git')
 if !executable(g:gitgutter_git_executable)
-  call gitgutter#utility#warn('cannot find git. Please set g:gitgutter_git_executable.')
+  if g:gitgutter_enabled
+    call gitgutter#utility#warn('cannot find git. Please set g:gitgutter_git_executable.')
+  endif
+  finish
 endif
 
 let default_grep = 'grep'
@@ -83,7 +97,6 @@ if !empty(g:gitgutter_grep)
   endif
 endif
 
-call gitgutter#highlight#define_sign_column_highlight()
 call gitgutter#highlight#define_highlights()
 call gitgutter#highlight#define_signs()
 
@@ -260,7 +273,7 @@ augroup gitgutter
     autocmd VimResume * call gitgutter#all(1)
   endif
 
-  autocmd ColorScheme * call gitgutter#highlight#define_sign_column_highlight() | call gitgutter#highlight#define_highlights()
+  autocmd ColorScheme * call gitgutter#highlight#define_highlights()
 
   " Disable during :vimgrep
   autocmd QuickFixCmdPre  *vimgrep* let g:gitgutter_enabled = 0

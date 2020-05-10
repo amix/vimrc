@@ -1353,12 +1353,12 @@ NERDTreeAddKeyMap({options})                               *NERDTreeAddKeyMap()*
     Example: >
         call NERDTreeAddKeyMap({
                \ 'key': 'foo',
-               \ 'callback': 'NERDTreeCDHandler',
+               \ 'callback': 'NERDTreeEchoPathHandler',
                \ 'quickhelpText': 'echo full path of current node',
                \ 'scope': 'DirNode' })
 
-        function! NERDTreeCDHandler(dirnode)
-            call a:dirnode.changeToDir()
+        function! NERDTreeEchoPathHandler(dirnode)
+            echo a:dirnode.path.str()
         endfunction
 <
     This code should sit in a file like ~/.vim/nerdtree_plugin/mymapping.vim.
