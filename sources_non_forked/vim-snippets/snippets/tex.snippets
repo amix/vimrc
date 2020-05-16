@@ -119,53 +119,53 @@ snippet spl split environment
 	\\end{split}
 # Part
 snippet part document \part
-	\\part{${1:part name}} % (fold)
+	\\part{${1:part name}} % (fold)%
 	\\label{prt:${2:$1}}
 	${0}
 	% part $2 (end)
 # Chapter
 snippet cha \chapter
-	\\chapter{${1:chapter name}}
+	\\chapter{${1:chapter name}}%
 	\\label{cha:${2:$1}}
 	${0}
 # Section
 snippet sec \section
-	\\section{${1:section name}}
+	\\section{${1:section name}}%
 	\\label{sec:${2:$1}}
 	${0}
 # Section without number
 snippet sec* \section*
-	\\section*{${1:section name}}
+	\\section*{${1:section name}}%
 	\\label{sec:${2:$1}}
 	${0}
 # Sub Section
 snippet sub \subsection
-	\\subsection{${1:subsection name}}
+	\\subsection{${1:subsection name}}%
 	\\label{sub:${2:$1}}
 	${0}
 # Sub Section without number
 snippet sub* \subsection*
-	\\subsection*{${1:subsection name}}
+	\\subsection*{${1:subsection name}}%
 	\\label{sub:${2:$1}}
 	${0}
 # Sub Sub Section
 snippet ssub \subsubsection
-	\\subsubsection{${1:subsubsection name}}
+	\\subsubsection{${1:subsubsection name}}%
 	\\label{ssub:${2:$1}}
 	${0}
 # Sub Sub Section without number
 snippet ssub* \subsubsection*
-	\\subsubsection*{${1:subsubsection name}}
+	\\subsubsection*{${1:subsubsection name}}%
 	\\label{ssub:${2:$1}}
 	${0}
 # Paragraph
 snippet par \paragraph
-	\\paragraph{${1:paragraph name}}
+	\\paragraph{${1:paragraph name}}%
 	\\label{par:${2:$1}}
 	${0}
 # Sub Paragraph
 snippet subp \subparagraph
-	\\subparagraph{${1:subparagraph name}}
+	\\subparagraph{${1:subparagraph name}}%
 	\\label{subp:${2:$1}}
 	${0}
 snippet ni \noindent
@@ -204,32 +204,38 @@ snippet fcite \footcite[]{}
 	\\footcite[${1}]{${2}}${0}
 #Formating text: italic, bold, underline, small capital, emphase ..
 snippet ita italic text
-	\\textit{${1:${VISUAL:text}}} ${0}
+	\\textit{${1:${VISUAL:text}}}${0}
 snippet bf bold face text
-	\\textbf{${1:${VISUAL:text}}} ${0}
+	\\textbf{${1:${VISUAL:text}}}${0}
 snippet under underline text
-	\\underline{${1:${VISUAL:text}}} ${0}
+	\\underline{${1:${VISUAL:text}}}${0}
+snippet over overline text
+	\\overline{${1:${VISUAL:text}}}${0}
 snippet emp emphasize text
-	\\emph{${1:${VISUAL:text}}} ${0}
+	\\emph{${1:${VISUAL:text}}}${0}
 snippet sc small caps text
-	\\textsc{${1:${VISUAL:text}}} ${0}
+	\\textsc{${1:${VISUAL:text}}}${0}
 #Choosing font
 snippet sf sans serife text
-	\\textsf{${1:${VISUAL:text}}} ${0}
+	\\textsf{${1:${VISUAL:text}}}${0}
 snippet rm roman font text
-	\\textrm{${1:${VISUAL:text}}} ${0}
+	\\textrm{${1:${VISUAL:text}}}${0}
 snippet tt typewriter (monospace) text
-	\\texttt{${1:${VISUAL:text}}} ${0}
+	\\texttt{${1:${VISUAL:text}}}${0}
+snippet tsub subscripted text
+	\\textsubscript{${1:${VISUAL:text}}}${0}
+snippet tsup superscripted text
+	\\textsuperscript{${1:${VISUAL:text}}}${0}
 #Math font
 snippet mf mathfrak
-	\\mathfrak{${1:${VISUAL:text}}} ${0}
+	\\mathfrak{${1:${VISUAL:text}}}${0}
 snippet mc mathcal
-	\\mathcal{${1:${VISUAL:text}}} ${0}
+	\\mathcal{${1:${VISUAL:text}}}${0}
 snippet ms mathscr
-	\\mathscr{${1:${VISUAL:text}}} ${0}
+	\\mathscr{${1:${VISUAL:text}}}${0}
 #misc
 snippet ft \footnote
-	\\footnote{${1:${VISUAL:text}}} ${0}
+	\\footnote{${1:${VISUAL:text}}}${0}
 snippet fig figure environment (includegraphics)
 	\\begin{figure}
 	\\begin{center}
@@ -246,7 +252,7 @@ snippet tikz figure environment (tikzpicture)
 		${2}
 	\\end{tikzpicture}
 	\\end{center}
-	\\caption{${3}}
+	\\caption{${3}}%
 	\\label{fig:${4}}
 	\\end{figure}
 	${0}
@@ -283,14 +289,18 @@ snippet sum \sum^{}_{}
 snippet lim \lim_{}
 	\\lim_{${1:n \\to \\infty}} ${0}
 snippet frame frame environment
-	\\begin{frame}[${1:t}]{${2:title}}
+	\\begin{frame}[${1:t}]
+		\frametitle{${2:title}}
+		\framesubtitle{${3:subtitle}}
 		${0:${VISUAL}}
 	\\end{frame}
 snippet block block environment
 	\\begin{block}{${1:title}}
 		${0:${VISUAL}}
 	\\end{block}
-snippet alert alertblock environment
+snippet alert alert text
+	\\alert{${1:${VISUAL:text}}} ${0}
+snippet alertblock alertblock environment
 	\\begin{alertblock}{${1:title}}
 		${0:${VISUAL}}
 	\\end{alertblock}
@@ -307,21 +317,27 @@ snippet col2 two-column environment
 			${0}
 		\\end{column}
 	\\end{columns}
+snippet multicol2 two-column environment with multicol
+	\\begin{multicols}{2}
+		${1}
+		\columnbreak
+		${0}
+	\\end{multicols}
 snippet \{ \{ \}
 	\\{ ${0} \\}
 #delimiter
 snippet lr left right
-	\\left${1} ${0} \\right$1
+	\\left${1} ${0:${VISUAL}} \\right$1
 snippet lr( left( right)
-	\\left( ${0} \\right)
+	\\left( ${0:${VISUAL}} \\right)
 snippet lr| left| right|
-	\\left| ${0} \\right|
+	\\left| ${0:${VISUAL}} \\right|
 snippet lr{ left\{ right\}
-	\\left\\{ ${0} \\right\\}
+	\\left\\{ ${0:${VISUAL}} \\right\\}
 snippet lr[ left[ right]
-	\\left[ ${0} \\right]
+	\\left[ ${0:${VISUAL}} \\right]
 snippet lra langle rangle
-	\\langle ${0} \\rangle
+	\\langle ${0:${VISUAL}} \\rangle
 # Code listings
 snippet lst
 	\\begin{listing}[language=${1:language}]
@@ -339,3 +355,6 @@ snippet urlc
 	\\url{`@+`} ${0}
 snippet hrefc
 	\\href{`@+`}{${1}} ${0}
+# enquote from package csquotes
+snippet enq enquote
+	\\enquote{${1:${VISUAL:text}}} ${0}

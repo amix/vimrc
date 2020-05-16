@@ -1,0 +1,7 @@
+[run]
+plugins = covimerage
+data_file = .coverage_covimerage
+source = indent/python.vim
+
+[report]
+include = indent/python.vim

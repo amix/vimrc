@@ -1,0 +1,774 @@
+===============================================================================
+ALE Python Integration                                     *ale-python-options*
+
+
+g:ale_python_auto_pipenv                             *g:ale_python_auto_pipenv*
+                                                     *b:ale_python_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+===============================================================================
+ALE Python Project Root Behavior                              *ale-python-root*
+
+For some linters, ALE will search for a Python project root by looking at the
+files in directories on or above where a file being checked is. ALE applies
+the following methods, in order:
+
+1. Find the first directory containing a common Python configuration file.
+2. If no configuration file can be found, use the first directory which does
+   not contain a readable file named `__init__.py`.
+
+ALE will look for configuration files with the following filenames. >
+
+  MANIFEST.in
+  setup.cfg
+  pytest.ini
+  tox.ini
+  mypy.ini
+  pycodestyle.cfg
+  .flake8
+  .flake8rc
+  pylama.ini
+  pylintrc
+  .pylintrc
+  Pipfile
+  Pipfile.lock
+<
+
+The first directory containing any of the files named above will be used.
+
+
+===============================================================================
+autopep8                                                  *ale-python-autopep8*
+
+g:ale_python_autopep8_executable             *g:ale_python_autopep8_executable*
+                                             *b:ale_python_autopep8_executable*
+  Type: |String|
+  Default: `'autopep8'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_autopep8_options                   *g:ale_python_autopep8_options*
+                                                *b:ale_python_autopep8_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to autopep8.
+
+
+g:ale_python_autopep8_use_global             *g:ale_python_autopep8_use_global*
+                                             *b:ale_python_autopep8_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+bandit                                                      *ale-python-bandit*
+
+g:ale_python_bandit_executable                 *g:ale_python_bandit_executable*
+                                               *b:ale_python_bandit_executable*
+  Type: |String|
+  Default: `'bandit'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `bandit'`.
+
+
+g:ale_python_bandit_options                       *g:ale_python_bandit_options*
+                                                  *b:ale_python_bandit_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the
+  bandit invocation.
+
+
+g:ale_python_bandit_use_config                 *g:ale_python_bandit_use_config*
+                                               *b:ale_python_bandit_use_config*
+  Type: |Number|
+  Default: `1`
+
+  If this variable is true and a `.bandit` file exists in the directory of the
+  file being checked or a parent directory, an `--ini` option is added to the
+  `bandit` command for the nearest `.bandit` file.  Set this variable false to
+  disable adding the `--ini` option automatically.
+
+
+g:ale_python_bandit_use_global                 *g:ale_python_bandit_use_global*
+                                               *b:ale_python_bandit_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_bandit_auto_pipenv               *g:ale_python_bandit_auto_pipenv*
+                                              *b:ale_python_bandit_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
+black                                                        *ale-python-black*
+
+g:ale_python_black_executable                   *g:ale_python_black_executable*
+                                                *b:ale_python_black_executable*
+  Type: |String|
+  Default: `'black'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_black_options                         *g:ale_python_black_options*
+                                                   *b:ale_python_black_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to black.
+
+
+g:ale_python_black_use_global                   *g:ale_python_black_use_global*
+                                                *b:ale_python_black_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_black_auto_pipenv                 *g:ale_python_black_auto_pipenv*
+                                               *b:ale_python_black_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+g:ale_python_black_change_directory       *g:ale_python_black_change_directory*
+                                          *b:ale_python_black_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will switch to the directory the Python file being
+  checked with `black` is in before checking it. This helps `black` find
+  configuration files more easily. This option can be turned off if you want
+  to control the directory Python is executed from yourself.
+
+
+===============================================================================
+flake8                                                      *ale-python-flake8*
+
+g:ale_python_flake8_change_directory     *g:ale_python_flake8_change_directory*
+                                         *b:ale_python_flake8_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will switch to the directory the Python file being
+  checked with `flake8` is in before checking it. This helps `flake8` find
+  configuration files more easily. This option can be turned off if you want
+  to control the directory Python is executed from yourself.
+
+
+g:ale_python_flake8_executable                 *g:ale_python_flake8_executable*
+                                               *b:ale_python_flake8_executable*
+  Type: |String|
+  Default: `'flake8'`
+
+  This variable can be changed to modify the executable used for flake8. Set
+  this to `'pipenv'` to invoke `'pipenv` `run` `flake8'`.
+
+
+g:ale_python_flake8_options                       *g:ale_python_flake8_options*
+                                                  *b:ale_python_flake8_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the flake8
+  invocation.
+
+  For example, to dynamically switch between programs targeting Python 2 and
+  Python 3, you may want to set >
+
+  let g:ale_python_flake8_executable = 'python3'   " or 'python' for Python 2
+  let g:ale_python_flake8_options = '-m flake8'
+<
+  after making sure it's installed for the appropriate Python versions (e.g.
+  `python3 -m pip install --user flake8`).
+
+
+g:ale_python_flake8_use_global                 *g:ale_python_flake8_use_global*
+                                               *b:ale_python_flake8_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  This variable controls whether or not ALE will search for flake8 in a
+  virtualenv directory first. If this variable is set to `1`, then ALE will
+  always use |g:ale_python_flake8_executable| for the executable path.
+
+  Both variables can be set with `b:` buffer variables instead.
+
+
+g:ale_python_flake8_auto_pipenv               *g:ale_python_flake8_auto_pipenv*
+                                              *b:ale_python_flake8_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
+isort                                                        *ale-python-isort*
+
+g:ale_python_isort_executable                   *g:ale_python_isort_executable*
+                                                *b:ale_python_isort_executable*
+  Type: |String|
+  Default: `'isort'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_isort_options                         *g:ale_python_isort_options*
+                                                   *b:ale_python_isort_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to isort.
+
+
+g:ale_python_isort_use_global                   *g:ale_python_isort_use_global*
+                                                *b:ale_python_isort_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+mypy                                                          *ale-python-mypy*
+
+The minimum supported version of mypy that ALE supports is v0.4.4. This is
+the first version containing the `--shadow-file` option ALE needs to be able
+to check for errors while you type.
+
+`mypy` will be run from a detected project root, per |ale-python-root|.
+
+
+g:ale_python_mypy_auto_pipenv                   *g:ale_python_mypy_auto_pipenv*
+                                                *b:ale_python_mypy_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_mypy_executable                     *g:ale_python_mypy_executable*
+                                                 *b:ale_python_mypy_executable*
+  Type: |String|
+  Default: `'mypy'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `mypy'`.
+
+
+g:ale_python_mypy_ignore_invalid_syntax
+                                      *g:ale_python_mypy_ignore_invalid_syntax*
+                                      *b:ale_python_mypy_ignore_invalid_syntax*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, syntax error messages for mypy will be ignored. This option
+  can be used when running other Python linters which check for syntax errors,
+  as mypy can take a while to finish executing.
+
+
+g:ale_python_mypy_options                           *g:ale_python_mypy_options*
+                                                    *b:ale_python_mypy_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the mypy
+  invocation.
+
+
+g:ale_python_mypy_show_notes                     *g:ale_python_mypy_show_notes*
+                                                 *b:ale_python_mypy_show_notes*
+  Type: |Number|
+  Default: `1`
+
+  If enabled, notes on lines will be displayed as 'I' (info) messages.
+
+
+g:ale_python_mypy_use_global                     *g:ale_python_mypy_use_global*
+                                                 *b:ale_python_mypy_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+
+===============================================================================
+prospector                                              *ale-python-prospector*
+
+g:ale_python_prospector_executable         *g:ale_python_prospector_executable*
+                                           *b:ale_python_prospector_executable*
+  Type: |String|
+  Default: `'prospector'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `prospector'`.
+
+
+g:ale_python_prospector_options               *g:ale_python_prospector_options*
+                                              *b:ale_python_prospector_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the prospector
+  invocation.
+
+  For example, to dynamically switch between programs targeting Python 2 and
+  Python 3, you may want to set >
+
+  let g:ale_python_prospector_executable = 'python3'
+  " or 'python' for Python 2
+  let g:ale_python_prospector_options = '--rcfile /path/to/.prospector.yaml'
+  " The virtualenv detection needs to be disabled.
+  let g:ale_python_prospector_use_global = 0
+
+  after making sure it's installed for the appropriate Python versions (e.g.
+  `python3 -m pip install --user prospector`).
+
+
+g:ale_python_prospector_use_global         *g:ale_python_prospector_use_global*
+                                           *b:ale_python_prospector_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_prospector_auto_pipenv       *g:ale_python_prospector_auto_pipenv*
+                                          *b:ale_python_prospector_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
+pycodestyle                                            *ale-python-pycodestyle*
+
+
+g:ale_python_pycodestyle_executable       *g:ale_python_pycodestyle_executable*
+                                          *b:ale_python_pycodestyle_executable*
+  Type: |String|
+  Default: `'pycodestyle'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pycodestyle'`.
+
+
+g:ale_python_pycodestyle_options             *g:ale_python_pycodestyle_options*
+                                             *b:ale_python_pycodestyle_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the
+  pycodestyle invocation.
+
+
+g:ale_python_pycodestyle_use_global       *g:ale_python_pycodestyle_use_global*
+                                          *b:ale_python_pycodestyle_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_pycodestyle_auto_pipenv     *g:ale_python_pycodestyle_auto_pipenv*
+                                         *b:ale_python_pycodestyle_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
+pydocstyle                                              *ale-python-pydocstyle*
+
+
+g:ale_python_pydocstyle_executable         *g:ale_python_pydocstyle_executable*
+                                           *b:ale_python_pydocstyle_executable*
+  Type: |String|
+  Default: `'pydocstyle'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pydocstyle'`.
+
+
+g:ale_python_pydocstyle_options               *g:ale_python_pydocstyle_options*
+                                              *b:ale_python_pydocstyle_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the
+  pydocstyle invocation.
+
+
+g:ale_python_pydocstyle_use_global         *g:ale_python_pydocstyle_use_global*
+                                           *b:ale_python_pydocstyle_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_pydocstyle_auto_pipenv       *g:ale_python_pydocstyle_auto_pipenv*
+                                          *b:ale_python_pydocstyle_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
+pyflakes                                                  *ale-python-pyflakes*
+
+
+g:ale_python_pyflakes_executable             *g:ale_python_pyflakes_executable*
+                                             *b:ale_python_pyflakes_executable*
+  Type: |String|
+  Default: `'pyflakes'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pyflakes'`.
+
+
+g:ale_python_pyflakes_auto_pipenv           *g:ale_python_pyflakes_auto_pipenv*
+                                            *b:ale_python_pyflakes_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
+pylama                                                      *ale-python-pylama*
+
+g:ale_python_pylama_change_directory     *g:ale_python_pylama_change_directory*
+                                         *b:ale_python_pylama_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, `pylama` will be run from a detected project root, per
+  |ale-python-root|.  This is useful because `pylama` only searches for
+  configuration files in its current directory and applies file masks using
+  paths relative to its current directory.  This option can be turned off if
+  you want to control the directory in which `pylama` is executed.
+
+
+g:ale_python_pylama_executable                 *g:ale_python_pylama_executable*
+                                               *b:ale_python_pylama_executable*
+  Type: |String|
+  Default: `'pylama'`
+
+  This variable can be changed to modify the executable used for pylama. Set
+  this to `'pipenv'` to invoke `'pipenv` `run` `pylama'`.
+
+
+g:ale_python_pylama_options                       *g:ale_python_pylama_options*
+                                                  *b:ale_python_pylama_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the pylama
+  invocation.
+
+
+g:ale_python_pylama_use_global                 *g:ale_python_pylama_use_global*
+                                               *b:ale_python_pylama_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  This variable controls whether or not ALE will search for pylama in a
+  virtualenv directory first. If this variable is set to `1`, then ALE will
+  always use |g:ale_python_pylama_executable| for the executable path.
+
+  Both variables can be set with `b:` buffer variables instead.
+
+
+g:ale_python_pylama_auto_pipenv               *g:ale_python_pylama_auto_pipenv*
+                                              *b:ale_python_pylama_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
+pylint                                                      *ale-python-pylint*
+
+g:ale_python_pylint_change_directory     *g:ale_python_pylint_change_directory*
+                                         *b:ale_python_pylint_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, `pylint` will be run from a detected project root, per
+  |ale-python-root|.  Since `pylint` only checks for `pylintrc` in the packages
+  above its current directory before falling back to user and global `pylintrc`
+  files, this is necessary for `pylint` to use a project `pylintrc` file, if
+  present.  This option can be turned off if you want to control the directory
+  Python is executed from yourself.
+
+
+g:ale_python_pylint_executable                 *g:ale_python_pylint_executable*
+                                               *b:ale_python_pylint_executable*
+  Type: |String|
+  Default: `'pylint'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pylint'`.
+
+
+g:ale_python_pylint_options                       *g:ale_python_pylint_options*
+                                                  *b:ale_python_pylint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the pylint
+  invocation.
+
+  For example, to dynamically switch between programs targeting Python 2 and
+  Python 3, you may want to set >
+
+  let g:ale_python_pylint_executable = 'python3'   " or 'python' for Python 2
+  let g:ale_python_pylint_options = '--rcfile /path/to/pylint.rc'
+  " The virtualenv detection needs to be disabled.
+  let g:ale_python_pylint_use_global = 0
+
+  after making sure it's installed for the appropriate Python versions (e.g.
+  `python3 -m pip install --user pylint`).
+
+
+g:ale_python_pylint_use_global                 *g:ale_python_pylint_use_global*
+                                               *b:ale_python_pylint_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_pylint_auto_pipenv               *g:ale_python_pylint_auto_pipenv*
+                                              *b:ale_python_pylint_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pylint_use_msg_id                 *g:ale_python_pylint_use_msg_id*
+                                               *b:ale_python_pylint_use_msg_id*
+  Type: |Number|
+  Default: `0`
+
+  Use message for output (e.g. I0011) instead of symbolic name of the message
+  (e.g. locally-disabled).
+
+===============================================================================
+pyls                                                          *ale-python-pyls*
+
+`pyls` will be run from a detected project root, per |ale-python-root|.
+
+
+g:ale_python_pyls_executable                     *g:ale_python_pyls_executable*
+                                                 *b:ale_python_pyls_executable*
+  Type: |String|
+  Default: `'pyls'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pyls'`.
+
+
+g:ale_python_pyls_use_global                     *g:ale_python_pyls_use_global*
+                                                 *b:ale_python_pyls_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_pyls_auto_pipenv                   *g:ale_python_pyls_auto_pipenv*
+                                                *b:ale_python_pyls_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pyls_config                             *g:ale_python_pyls_config*
+                                                     *b:ale_python_pyls_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Dictionary with configuration settings for pyls. For example, to disable
+  the pycodestyle linter: >
+        {
+      \   'pyls': {
+      \     'plugins': {
+      \       'pycodestyle': {
+      \         'enabled': v:false
+      \       }
+      \     }
+      \   },
+      \ }
+<
+
+===============================================================================
+pyre                                                          *ale-python-pyre*
+
+`pyre` will be run from a detected project root, per |ale-python-root|.
+
+
+g:ale_python_pyre_executable                     *g:ale_python_pyre_executable*
+                                                 *b:ale_python_pyre_executable*
+  Type: |String|
+  Default: `'pyre'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pyre'`.
+
+
+g:ale_python_pyre_use_global                     *g:ale_python_pyre_use_global*
+                                                 *b:ale_python_pyre_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_pyre_auto_pipenv                   *g:ale_python_pyre_auto_pipenv*
+                                                *b:ale_python_pyre_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
+reorder-python-imports                      *ale-python-reorder_python_imports*
+
+g:ale_python_reorder_python_imports_executable
+                               *g:ale_python_reorder_python_imports_executable*
+                               *b:ale_python_reorder_python_imports_executable*
+  Type: |String|
+  Default: `'reorder-python-imports'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_reorder_python_imports_options
+                                  *g:ale_python_reorder_python_imports_options*
+                                  *b:ale_python_reorder_python_imports_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to reorder-python-imports.
+
+
+g:ale_python_reorder_python_imports_use_global
+                               *g:ale_python_reorder_python_imports_use_global*
+                               *b:ale_python_reorder_python_imports_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+vulture                                                    *ale-python-vulture*
+
+g:ale_python_vulture_change_directory   *g:ale_python_vulture_change_directory*
+                                        *b:ale_python_vulture_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will switch to the directory the Python file being
+  checked with `vulture` is in before checking it and check the whole project
+  directory instead of checking only the file opened in the current buffer.
+  This helps `vulture` to know the context and avoid false-negative results.
+
+
+g:ale_python_vulture_executable               *g:ale_python_vulture_executable*
+                                              *b:ale_python_vulture_executable*
+  Type: |String|
+  Default: `'vulture'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_vulture_options                     *g:ale_python_vulture_options*
+                                                 *b:ale_python_vulture_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the vulture
+  invocation.
+
+
+g:ale_python_vulture_use_global               *g:ale_python_vulture_use_global*
+                                              *b:ale_python_vulture_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+yapf                                                          *ale-python-yapf*
+
+g:ale_python_yapf_executable                     *g:ale_python_yapf_executable*
+                                                 *b:ale_python_yapf_executable*
+  Type: |String|
+  Default: `'yapf'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_yapf_use_global                     *g:ale_python_yapf_use_global*
+                                                 *b:ale_python_yapf_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -5,8 +5,12 @@ priority -50
 ###########################################################################
 
 #! header
-snippet #! "Shebang header for python scripts" b
+snippet #! "#!/usr/bin/env python" b
 #!/usr/bin/env python
+$0
+endsnippet
+
+snippet "^# ?[uU][tT][fF]-?8" "# encoding: UTF-8" r
 # -*- coding: utf-8 -*-
 $0
 endsnippet
@@ -51,7 +55,9 @@ DOUBLE_QUOTES = '"'
 class Arg(object):
 	def __init__(self, arg):
 		self.arg = arg
-		self.name = arg.split('=')[0].strip()
+		name_and_type = arg.split('=')[0].split(':')
+		self.name = name_and_type[0].strip()
+		self.type = name_and_type[1].strip() if len(name_and_type) == 2 else None
 
 	def __str__(self):
 		return self.name
@@ -61,6 +67,9 @@ class Arg(object):
 
 	def is_kwarg(self):
 		return '=' in self.arg
+
+	def is_vararg(self):
+		return '*' in self.name
 
 
 def get_args(arglist):
@@ -211,12 +220,14 @@ def write_init_body(args, parents, snip):
 	if parents:
 		snip.rv += '\n' + snip.mkline('', indent='')
 
-	for arg in args:
+	for arg in filter(lambda arg: not arg.is_vararg(), args):
 		snip += "self._%s = %s" % (arg, arg)
 
 
 def write_slots_args(args, snip):
-	args = ['"_%s"' % arg for arg in args]
+	quote = get_quoting_style(snip)
+	arg_format = quote + '_%s' + quote
+	args = [arg_format % arg for arg in args]
 	snip += '__slots__ = (%s,)' % ', '.join(args)
 
 
@@ -260,7 +271,7 @@ class ${1:MyClass}(${2:object}):
 	`!p snip.rv = triple_quotes(snip)`${3:Docstring for $1. }`!p snip.rv = triple_quotes(snip)`
 
 	def __init__(self$4):
-		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined1.}`!p
+		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined.}`!p
 snip.rv = ""
 snip >> 2
 
@@ -486,8 +497,8 @@ def __coerce__(self, other):
 	${25:pass}
 endsnippet
 
-snippet deff
-def ${1:fname}(`!p snip.rv = vim.eval('indent(".") ? "self" : ""')`$2):
+snippet deff "function or class method"
+def ${1:fname}(`!p snip.rv = "self, " if snip.indent else ""`$2):
 	$0
 endsnippet
 
@@ -635,7 +646,7 @@ endsnippet
 ######################
 
 snippet ae "Assert equal" b
-self.assertEqual(${1:${VISUAL:first}},${2:second})
+self.assertEqual(${1:${VISUAL:first}}, ${2:second})
 endsnippet
 
 snippet at "Assert True" b
@@ -647,7 +658,7 @@ self.assertFalse(${1:${VISUAL:expression}})
 endsnippet
 
 snippet aae "Assert almost equal" b
-self.assertAlmostEqual(${1:${VISUAL:first}},${2:second})
+self.assertAlmostEqual(${1:${VISUAL:first}}, ${2:second})
 endsnippet
 
 snippet ar "Assert raises" b

@@ -1,0 +1,43 @@
+===============================================================================
+ALE CMake Integration                                       *ale-cmake-options*
+
+
+===============================================================================
+cmakelint                                                 *ale-cmake-cmakelint*
+
+g:ale_cmake_cmakelint_executable             *g:ale_cmake_cmakelint_executable*
+                                             *b:ale_cmake_cmakelint_executable*
+  Type: |String|
+  Default: `'cmakelint'`
+
+  This variable can be set to change the path the cmakelint.
+
+
+g:ale_cmake_cmakelint_options                   *g:ale_cmake_cmakelint_options*
+                                                *b:ale_cmake_cmakelint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to cmakelint.
+
+
+===============================================================================
+cmake-format                                            *ale-cmake-cmakeformat*
+
+g:ale_cmake_cmakeformat_executable         *g:ale_cmake_cmakeformat_executable*
+                                           *b:ale_cmake_cmakeformat_executable*
+  Type: |String|
+  Default: `'cmakeformat'`
+
+  This variable can be set to change the path the cmake-format.
+
+
+g:ale_cmake_cmakeformat_options               *g:ale_cmake_cmakeformat_options*
+                                              *b:ale_cmake_cmakeformat_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to cmake-format.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

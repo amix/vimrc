@@ -1,0 +1,60 @@
+===============================================================================
+ALE Dockerfile Integration                             *ale-dockerfile-options*
+
+
+===============================================================================
+dockerfile_lint                                *ale-dockerfile-dockerfile_lint*
+
+g:ale_dockerfile_dockerfile_lint_executable
+                                  *g:ale_dockerfile_dockerfile_lint_executable*
+                                  *b:ale_dockerfile_dockerfile_lint_executable*
+  Type: |String|
+  Default: `'dockerfile_lint'`
+
+  This variable can be changed to specify the executable used to run
+  dockerfile_lint.
+
+
+g:ale_dockerfile_dockerfile_lint_options
+                                     *g:ale_dockerfile_dockerfile_lint_options*
+                                     *b:ale_dockerfile_dockerfile_lint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add additional command-line arguments to
+  the dockerfile lint invocation - like custom rule file definitions.
+
+
+===============================================================================
+hadolint                                              *ale-dockerfile-hadolint*
+
+  hadolint can be found at: https://github.com/hadolint/hadolint
+
+
+g:ale_dockerfile_hadolint_use_docker     *g:ale_dockerfile_hadolint_use_docker*
+                                         *b:ale_dockerfile_hadolint_use_docker*
+  Type: |String|
+  Default: `'never'`
+
+  This variable controls if docker and the hadolint image are used to run this
+  linter: if 'never', docker will never be used; 'always' means docker will
+  always be used; 'yes' and docker will be used if the hadolint executable
+  cannot be found.
+
+  For now, the default is 'never'.  This may change as ale's support for using
+  docker to lint evolves.
+
+
+g:ale_dockerfile_hadolint_image               *g:ale_dockerfile_hadolint_image*
+                                              *b:ale_dockerfile_hadolint_image*
+  Type: |String|
+  Default: `'hadolint/hadolint'`
+
+  This variable controls the docker image used to run hadolint.  The default
+  is hadolint's author's build, and can be found at:
+
+    https://hub.docker.com/r/hadolint/hadolint/
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

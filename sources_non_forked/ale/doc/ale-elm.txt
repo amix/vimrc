@@ -1,0 +1,100 @@
+===============================================================================
+ALE Elm Integration                                           *ale-elm-options*
+
+
+===============================================================================
+elm-format                                                 *ale-elm-elm-format*
+
+g:ale_elm_format_executable                       *g:ale_elm_format_executable*
+                                                  *b:ale_elm_format_executable*
+  Type: |String|
+  Default: `'elm-format'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_format_use_global                       *g:ale_elm_format_use_global*
+                                                  *b:ale_elm_format_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_format_options                             *g:ale_elm_format_options*
+                                                     *b:ale_elm_format_options*
+  Type: |String|
+  Default: `'--yes'`
+
+  This variable can be set to pass additional options to elm-format.
+
+===============================================================================
+elm-ls                                                         *ale-elm-elm-ls*
+
+g:ale_elm_ls_executable                               *g:ale_elm_ls_executable*
+                                                      *b:ale_elm_ls_executable*
+  Type: |String|
+  Default: `'elm-language-server'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_ls_use_global                               *g:ale_elm_ls_use_global*
+                                                      *b:ale_elm_ls_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 1)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_ls_elm_path                                   *g:ale_elm_ls_elm_path*
+                                                        *b:ale_elm_ls_elm_path*
+  Type: |String|
+  Default: `''`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_ls_elm_format_path                     *g:ale_elm_ls_elm_format_path*
+                                                 *b:ale_elm_ls_elm_format_path*
+  Type: |String|
+  Default: `''`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_ls_elm_test_path                         *g:ale_elm_ls_elm_test_path*
+                                                   *b:ale_elm_ls_elm_test_path*
+  Type: |String|
+  Default: `''`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_ls_elm_analyse_trigger             *g:ale_elm_ls_elm_analyse_trigger*
+                                             *b:ale_elm_ls_elm_analyse_trigger*
+  Type: |String|
+  Default: `'change'`
+
+  One of 'change', 'save' or 'never'
+
+===============================================================================
+elm-make                                                     *ale-elm-elm-make*
+
+g:ale_elm_make_executable                           *g:ale_elm_make_executable*
+                                                    *b:ale_elm_make_executable*
+  Type: |String|
+  Default: `'elm'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_elm_make_use_global                           *g:ale_elm_make_use_global*
+                                                    *b:ale_elm_make_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

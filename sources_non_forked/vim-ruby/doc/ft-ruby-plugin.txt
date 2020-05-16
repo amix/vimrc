@@ -1,0 +1,79 @@
+RUBY							*ft-ruby-plugin*
+
+    Ruby: Recommended settings		|ruby-recommended|
+    Ruby: Motion commands		|ruby-motion|
+    Ruby: Text objects			|ruby-text-objects|
+
+							*ruby-recommended*
+							*g:ruby_recommended_style*
+ Ruby: Recommended settings ~
+
+The `g:ruby_recommended_style` variable activates indentation settings
+according to the most common ruby convention: two spaces for indentation. It's
+turned on by default to ensure an unsurprising default experience for most
+ruby developers.
+
+If you'd like to enforce your own style, it's possible to apply your own
+preferences in your own configuration in `after/ftplugin/ruby.vim`. You can
+also disable the setting by setting the variable to 0:
+>
+    let g:ruby_recommended_style = 0
+<
+
+							*ruby-motion*
+ Ruby: Motion commands ~
+
+Vim provides motions such as |[m| and |]m| for jumping to the start or end of
+a method definition.  Out of the box, these work for curly-bracket languages,
+but not for Ruby.  The vim-ruby plugin enhances these motions, by making them
+also work on Ruby files.
+
+							*ruby-]m*
+]m			Go to start of next method definition.
+
+							*ruby-]M*
+]M			Go to end of next method definition.
+
+							*ruby-[m*
+[m			Go to start of previous method definition.
+
+							*ruby-[M*
+[M			Go to end of previous method definition.
+
+							*ruby-]]*
+]]			Go to start of next module or class definition.
+
+							*ruby-][*
+][			Go to end of next module or class definition.
+
+							*ruby-[[*
+[[			Go to start of previous module or class definition.
+
+							*ruby-[]*
+[]			Go to end of previous module or class definition.
+
+							*ruby-text-objects*
+ Ruby: Text objects ~
+
+Vim's |text-objects| can be used to select or operate upon regions of text
+that are defined by structure.  The vim-ruby plugin adds text objects for
+operating on methods and classes.
+
+							*ruby-v_am* *ruby-am*
+am			"a method", select from "def" until matching "end"
+			keyword.
+
+							*ruby-v_im* *ruby-im*
+im			"inner method", select contents of "def"/"end" block,
+			excluding the "def" and "end" themselves.
+
+							*ruby-v_aM* *ruby-aM*
+aM			"a class", select from "class" until matching "end"
+			keyword.
+
+							*ruby-v_iM* *ruby-iM*
+iM			"inner class", select contents of "class"/"end"
+			block, excluding the "class" and "end" themselves.
+
+
+ vim:tw=78:sw=4:ts=8:ft=help:norl:

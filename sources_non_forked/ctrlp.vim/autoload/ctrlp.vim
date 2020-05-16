@@ -330,6 +330,7 @@ fu! s:Open()
 endf
 
 fu! s:Close()
+	cal s:async_glob_abort()
 	cal s:buffunc(0)
 	if winnr('$') == 1
 		bw!
@@ -434,9 +435,70 @@ fu! s:GlobPath(dirs, depth)
 	en
 endf
 
-fu! ctrlp#addfile(ch, file)
-	call add(g:ctrlp_allfiles, a:file)
-	cal s:BuildPrompt(1)
+fu! s:async_glob_update_progress(timer)
+	let s:must_wait = 0
+	if exists('s:focus') && get(s:, 'setlines_post_ended', 0)
+		cal s:ForceUpdate()
+	en
+	if exists('s:timer')
+		sil! cal ctrlp#statusline()
+	endif
+
+	if !exists('s:job')
+		call s:stop_timer_if_exists()
+	endif
+endf
+
+fu! s:async_glob_on_stdout(job, data, ...)
+	if type(a:data) ==# type([])
+		call extend(g:ctrlp_allfiles, filter(a:data, 'v:val !=# ""'))
+	else
+		call add(g:ctrlp_allfiles, a:data)
+	endif
+endf
+
+fu! s:async_glob_on_exit(...)
+	let s:must_wait = 0
+	if exists('s:job')
+		unlet s:job
+	endif
+	cal s:stop_timer_if_exists()
+	if exists('s:focus') && get(s:, 'setlines_post_ended', 0)
+		sil! cal ctrlp#statusline()
+		cal s:ForceUpdate()
+	en
+endf
+
+fu! s:async_glob_abort()
+	cal s:stop_job_if_exists()
+	cal s:stop_timer_if_exists()
+	cal s:ForceUpdate()
+endf
+
+fu! s:stop_timer_if_exists()
+	if exists('s:timer')
+		call timer_stop(s:timer)
+		unlet s:timer
+	en
+endf
+
+fu! s:stop_job_if_exists()
+	if exists('s:job')
+		if !has('nvim')
+			cal job_stop(s:job)
+		else
+			cal jobstop(s:job)
+		endif
+		unlet s:job
+	en
+endf
+
+fu! s:safe_printf(format, ...)
+	try
+		retu call('printf', [a:format] + a:000)
+	cat
+		retu a:format
+	endt
 endf
 
 fu! s:UserCmd(lscmd)
@@ -454,16 +516,30 @@ fu! s:UserCmd(lscmd)
 	if (has('win32') || has('win64')) && match(&shell, 'sh') != -1
 		let path = tr(path, '\', '/')
 	en
-	if s:usrcmdasync && v:version >= 800 && exists('*job_start')
-		if exists('s:job')
-			call job_stop(s:job)
-		en
+	if s:usrcmdasync && (v:version >= 800 || has('nvim')) && (exists('*job_start') || exists('*jobstart'))
+		cal s:stop_job_if_exists()
 		let g:ctrlp_allfiles = []
-		let s:job = job_start([&shell, &shellcmdflag, printf(lscmd, path)], {'callback': 'ctrlp#addfile'})
+		let s:must_wait = 1
+		let argv = [&shell, &shellcmdflag, printf(lscmd, path)]
+		if !has('nvim')
+			let s:job = job_start(argv, {
+						\ 'out_cb': function('s:async_glob_on_stdout'), 
+						\ 'exit_cb': function('s:async_glob_on_exit')
+						\ })
+		else
+			let s:job = jobstart(argv, {
+						\ 'on_stdout': function('s:async_glob_on_stdout'),
+						\ 'on_exit': function('s:async_glob_on_exit')
+						\ })
+		endif
+		let s:timer = timer_start(250, function('s:async_glob_update_progress'), {'repeat': -1})
+		while s:must_wait
+			sleep 50m
+		endwhile
 	elsei has('patch-7.4-597') && !(has('win32') || has('win64'))
-		let g:ctrlp_allfiles = systemlist(printf(lscmd, path))
+		let g:ctrlp_allfiles = systemlist(s:safe_printf(lscmd, path))
 	el
-		let g:ctrlp_allfiles = split(system(printf(lscmd, path)), "\n")
+		let g:ctrlp_allfiles = split(system(s:safe_printf(lscmd, path)), "\n")
 	en
 	if exists('+ssl') && exists('ssl')
 		let &ssl = ssl
@@ -532,7 +608,7 @@ fu! s:bufparts(bufnr)
 endf
 fu! ctrlp#buffers(...)
 	let ids = sort(filter(range(1, bufnr('$')), '(empty(getbufvar(v:val, "&bt"))'
-		\ .' || s:isneovimterminal(v:val)) && getbufvar(v:val, "&bl")'), 's:compmreb')
+		\ .' || s:isterminal(v:val)) && getbufvar(v:val, "&bl")'), 's:compmreb')
 	if a:0 && a:1 == 'id'
 		retu ids
 	el
@@ -555,7 +631,7 @@ fu! s:MatchIt(items, pat, limit, exc)
 	for item in a:items
 		let id += 1
 		try
-			if (s:matchcrfile || !( s:ispath && item == a:exc )) &&
+			if (s:matchcrfile || !( s:ispath && item ==# a:exc )) &&
 						\call(s:mfunc, [item, pat]) >= 0
 				cal add(lines, item)
 			en
@@ -989,7 +1065,7 @@ fu! s:MapSpecs()
 	if !( exists('s:smapped') && s:smapped == s:bufnr )
 		" Correct arrow keys in terminal
 		if ( has('termresponse') && v:termresponse =~ "\<ESC>" )
-			\ || &term =~? '\vxterm|<k?vt|gnome|screen|linux|ansi|tmux|st(-[-a-z0-9]*)?$'
+			\ || &term =~? '\vxterm|<k?vt|gnome|screen|linux|ansi|tmux|st(-[-a-z0-9]*)?(\:tc)?$'
 			for each in ['\A <up>','\B <down>','\C <right>','\D <left>']
 				exe s:lcmap.' <esc>['.each
 			endfo
@@ -1046,6 +1122,7 @@ fu! s:ToggleByFname()
 endf
 
 fu! s:ToggleType(dir)
+	cal s:async_glob_abort()
 	let max = len(g:ctrlp_ext_vars) + len(s:coretypes) - 1
 	let next = s:walker(max, s:itemtype, a:dir)
 	cal ctrlp#setlines(next)
@@ -1120,8 +1197,9 @@ fu! ctrlp#acceptfile(...)
 	cal s:PrtExit()
 	let tail = s:tail()
 	let j2l = atl != '' ? atl : matchstr(tail, '^ +\zs\d\+$')
+	let openmyself = bufnr == bufnr('%')
 	if bufnr > 0 && ( !empty(s:jmptobuf) && s:jmptobuf =~ md )
-		\ && !( md == 'e' && bufnr == bufnr('%') )
+		\ && !( md == 'e' && openmyself )
 		let [jmpb, bufwinnr] = [1, bufwinnr(bufnr)]
 		let buftab = ( s:jmptobuf =~# '[tTVH]' || s:jmptobuf > 1 )
 			\ ? s:buftab(bufnr, md) : [0, 0]
@@ -1138,11 +1216,12 @@ fu! ctrlp#acceptfile(...)
 		if j2l | cal ctrlp#j2l(j2l) | en
 	el
 		" Determine the command to use
-		let useb = bufnr > 0 && buflisted(bufnr) && ( empty(tail) || useb )
+		let useb = bufnr > 0 && ( buflisted(bufnr) || openmyself ) && ( empty(tail) || useb )
 		let cmd =
 			\ md == 't' || s:splitwin == 1 ? ( useb ? 'tab sb' : 'tabe' ) :
 			\ md == 'h' || s:splitwin == 2 ? ( useb ? 'sb' : 'new' ) :
 			\ md == 'v' || s:splitwin == 3 ? ( useb ? 'vert sb' : 'vne' ) :
+			\ &bt == 'help' && openmyself ? 'b' :
 			\ call('ctrlp#normcmd', useb ? ['b', 'bo vert sb'] : ['e'])
 		" Reset &switchbuf option
 		let [swb, &swb] = [&swb, '']
@@ -1553,6 +1632,9 @@ fu! ctrlp#statusline()
 		let slider  = ' <'.prv.'>={'.item.'}=<'.nxt.'>'
 		let dir     = ' %=%<%#CtrlPMode2# %{getcwd()} %*'
 		let &l:stl  = focus.byfname.regex.slider.marked.dir
+		if exists('s:timer')
+			let &l:stl = '%#CtrlPStats# '.len(g:ctrlp_allfiles).' '.&l:stl
+		en
 	en
 endf
 
@@ -1582,7 +1664,7 @@ fu! s:formatline(str)
 		let bufnr = s:bufnrfilpath(str)[0]
 		let parts = s:bufparts(bufnr)
 		let str = printf('%'.s:bufnr_width.'s', bufnr)
-		if s:has_conceal
+		if s:has_conceal && has('syntax_items')
 			let str .= printf(' %-13s %s%-36s',
 				\ '<bi>'.parts[0].'</bi>',
 				\ '<bn>'.parts[1], '{'.parts[2].'}</bn>')
@@ -1948,7 +2030,7 @@ endf
 
 fu! s:dictindex(dict, expr)
 	for key in keys(a:dict)
-		if a:dict[key] == a:expr | retu key | en
+		if a:dict[key] ==# a:expr | retu key | en
 	endfo
 	retu -1
 endf
@@ -2006,7 +2088,7 @@ fu! s:bufnrfilpath(line)
 		let filpath = s:dyncwd.s:lash().a:line
 	en
 	let filpath = fnamemodify(filpath, ':p')
-	let bufnr = bufnr('^'.filpath.'$')
+	let bufnr = bufnr('^'.fnameescape(filpath).'$')
 	if (!filereadable(filpath) && bufnr < 1)
 		if (a:line =~ '[\/]\?\[\d\+\*No Name\]$')
 			let bufnr = str2nr(matchstr(a:line, '[\/]\?\[\zs\d\+\ze\*No Name\]$'))
@@ -2020,10 +2102,10 @@ fu! s:bufnrfilpath(line)
 endf
 
 fu! ctrlp#normcmd(cmd, ...)
-	let buftypes = [ 'quickfix', 'help' ]
+	let buftypes = [ 'quickfix', 'help', 'nofile' ]
 	if a:0 < 2 && s:nosplit() | retu a:cmd | en
 	let norwins = filter(range(1, winnr('$')),
-		\ 'index(buftypes, getbufvar(winbufnr(v:val), "&bt")) == -1 || s:isneovimterminal(winbufnr(v:val))')
+		\ 'index(buftypes, getbufvar(winbufnr(v:val), "&bt")) == -1 || s:isterminal(winbufnr(v:val))')
 	for each in norwins
 		let bufnr = winbufnr(each)
 		if empty(bufname(bufnr)) && empty(getbufvar(bufnr, '&ft'))
@@ -2297,8 +2379,8 @@ fu! s:delbuf()
 	cal s:PrtClearCache()
 endf
 
-fu! s:isneovimterminal(buf)
-	retu has('nvim') && getbufvar(a:buf, "&bt") == "terminal"
+fu! s:isterminal(buf)
+	retu getbufvar(a:buf, "&bt") == "terminal"
 endf
 " Entering & Exiting {{{2
 fu! s:getenv()
@@ -2558,15 +2640,26 @@ fu! ctrlp#getvar(var)
 endf
 "}}}1
 " * Initialization {{{1
-fu! ctrlp#setlines(...)
+fu! s:setlines_pre(...)
 	if a:0 | let s:itemtype = a:1 | en
 	cal s:modevar()
+	let s:setlines_post_ended = 0
+	let g:ctrlp_lines = []
+endf
+
+fu! s:setlines_post()
 	let inits = {'fil': 'ctrlp#files()', 'buf': 'ctrlp#buffers()', 'mru': 'ctrlp#mrufiles#list()'}
 	let types = map(copy(g:ctrlp_types), 'inits[v:val]')
 	if !empty(g:ctrlp_ext_vars)
 		cal map(copy(g:ctrlp_ext_vars), 'add(types, v:val["init"])')
 	en
 	let g:ctrlp_lines = eval(types[s:itemtype])
+	let s:setlines_post_ended = 1
+endf
+
+fu! ctrlp#setlines(...)
+	cal call('s:setlines_pre', a:000)
+	cal s:setlines_post()
 endf
 
 " Returns [lname, sname]
@@ -2585,6 +2678,20 @@ fu! s:ExitIfSingleCandidate()
 		return 1
 	en
 	return 0
+endfu
+
+fu! s:IsBuiltin()
+	let builtins = ['tag', 'dir', 'bft', 'rts', 'bkd', 'lns', 'chs', 'mix', 'udo', 'qfx']
+	let curtype = s:getextvar('sname')
+	return s:itemtype < len(s:coretypes) || index(builtins, curtype) > -1
+endfu
+
+fu! s:DetectFileType(type, ft)
+	if s:IsBuiltin() || empty(a:ft) || a:ft ==# 'ctrlp'
+		retu 'ctrlp'
+	el
+		retu 'ctrlp.' . a:ft
+	en
 endfu
 
 fu! ctrlp#init(type, ...)
@@ -2609,7 +2716,16 @@ fu! ctrlp#init(type, ...)
 			retu
 		en
 	en
-	cal ctrlp#setlines(s:settype(type))
+	" Fixed issue ctrlpvim/ctrlp.vim#463 : Opening 'ctrlp' in certain modes
+	" (':CtrlPBufTag', ':CtrlPLine') seems to trigger a partially deffective
+	" intialisation (for example, syntax highlighting not working as expected).
+	" Fix: ctrlp#setlines() split in two, as the second part (now in
+	" s:setlines_post()) seems to need '&filetype', and s:DetectFileType() seems
+	" to need the first part of the old ctrlp#setlines() (now in
+	" s:setlines_pre()).
+	cal s:setlines_pre(s:settype(type))
+	let &filetype = s:DetectFileType(type, &filetype)
+	cal s:setlines_post()
 	cal ctrlp#syntax()
 	cal s:SetDefTxt()
 	let curName = s:CurTypeName()

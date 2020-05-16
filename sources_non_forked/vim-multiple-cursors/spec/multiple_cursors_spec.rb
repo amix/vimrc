@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*- 
+# -*- encoding: utf-8 -*-
 require 'spec_helper'
 
 def set_file_content(string)
@@ -136,6 +136,120 @@ describe "Multiple Cursors op pending & exit from insert|visual mode" do
     EOF
   end
 
+  specify "#normal mode '0': goes to 1st char of line" do
+    before <<-EOF
+      hello jan world
+      hello feb world
+      hello mar world
+    EOF
+
+    type '<C-n><C-n><C-n>vw0dw<Esc><Esc>'
+
+    after <<-EOF
+      jan world
+      feb world
+      mar world
+    EOF
+  end
+
+  specify "#normal mode 'd0': deletes backward to 1st char of line" do
+    before <<-EOF
+      hello jan world
+      hello feb world
+      hello mar world
+    EOF
+
+    type '<C-n><C-n><C-n>vwd0<Esc><Esc>'
+
+    after <<-EOF
+      jan world
+      feb world
+      mar world
+    EOF
+  end
+
+end
+
+describe "Multiple Cursors when using insert mappings" do
+  let(:filename) { 'test.txt' }
+  let(:options) { ['set timeoutlen=10000',
+                   'imap jj <esc>',
+                   'imap jojo dude',
+                   'imap jk <esc>:%s/bla/hey/g<cr>',
+                   'let g:multi_cursor_exit_from_insert_mode = 1',
+                   'let g:multi_cursor_exit_from_visual_mode = 1'] }
+  specify "#mapping doing <Esc>" do
+    before <<-EOF
+      hello world!
+      hello world!
+      bla bla bla
+      bla bla bla
+    EOF
+
+    type 'w<C-n><C-n>cjjidude<Esc>'
+
+    after <<-EOF
+      hello dude!
+      hello !
+      bla bla bla
+      bla bla bla
+    EOF
+  end
+
+  specify "#mapping doing <Esc> and running a command" do
+    before <<-EOF
+      hello world!
+      hello world!
+      bla bla bla
+      bla bla bla
+    EOF
+
+    type 'w<C-n><C-n>ctherejk'
+
+    after <<-EOF
+      hello there!
+      hello there!
+      hey hey hey
+      hey hey hey
+    EOF
+  end
+
+  specify "#mapping using more than 2 characters" do
+    before <<-EOF
+      hello
+      hello
+      bla bla bla
+      bla bla bla
+    EOF
+
+    type '<C-n><C-n>A jojo<Esc>'
+
+    after <<-EOF
+      hello dude
+      hello dude
+      bla bla bla
+      bla bla bla
+    EOF
+  end
+
+  specify "#unused mapping" do
+    before <<-EOF
+      hello world!
+      hello world!
+      bla bla bla
+      bla bla bla
+    EOF
+
+    type 'w<C-n><C-n>chey joseph blah blah blah<Esc>'
+
+    after <<-EOF
+      hello hey joseph blah blah blah!
+      hello hey joseph blah blah blah!
+      bla bla bla
+      bla bla bla
+    EOF
+  end
+
 end
 
 describe "Multiple Cursors when normal_maps is empty" do
@@ -190,7 +304,53 @@ describe "Multiple Cursors when visual_maps is empty" do
 
 end
 
-describe "Multiple Cursors" do
+describe "Multiple Cursors when changing the line count" do
+  let(:filename) { 'test.txt' }
+  let(:options) { ['set backspace=indent,eol,start'] }
+
+  specify "#backspace on first char of the line, then carriage return" do
+    before <<-EOF
+      madec
+
+      antoine
+      andre
+      joseph
+    EOF
+
+    type 'Gvip<C-n>i<BS><cr>'
+
+    after <<-EOF
+      madec
+
+      antoine
+      andre
+      joseph
+    EOF
+  end
+
+  specify "#del at EOL, then carriage return" do
+    before <<-EOF
+      madec
+      antoine
+      joseph
+
+      andre
+    EOF
+
+    type 'vip<C-n>A<DEL><cr>'
+
+    after <<-EOF
+      madec
+      antoine
+      joseph
+
+      andre
+    EOF
+  end
+
+end
+
+describe "Multiple Cursors misc" do
   let(:filename) { 'test.txt' }
   let(:options) { ['set autoindent'] }
 

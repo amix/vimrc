@@ -26,7 +26,7 @@ endglobal
 #                            TextMate Snippets                            #
 ###########################################################################
 snippet get "Get Elements"
-getElement${1/(T)|.*/(?1:s)/}By${1:T}${1/(T)|(I)|.*/(?1:agName)(?2:d)/}('$2')
+getElement${1/(T)|(C)|.*/(?1:s)(?2:s)/}By${1:T}${1/(T)|(I)|(C).*/(?1:agName)(?2:d)(?3:lassName)/}('$2')
 endsnippet
 
 snippet '':f "object method string"
@@ -56,19 +56,28 @@ ${1:class_name}.prototype.${2:method_name} = function`!p snip.rv = space_before_
 
 endsnippet
 
-snippet fun "function (fun)" w
+snippet fun "function (named)" b
 function ${1:function_name}`!p snip.rv = space_before_function_paren(snip)`(${2:argument}) {
 	${VISUAL}$0
 }
 endsnippet
 
-snippet vf "Function assigned to var"
+snippet vf "function (assigned to var)"
 ${1:var }${2:function_name} = function $2`!p snip.rv = space_before_function_paren(snip)`($3) {
 	${VISUAL}$0
 }`!p snip.rv = semi(snip)`
 endsnippet
 
-snippet af "Anonymous Function" i
+# Drop priority so this only triggers when not beginning of line.
+priority -51
+snippet fun "function (anonymous)" w
+function`!p snip.rv = space_before_function_paren(snip)`($1) {
+	${VISUAL}$0
+}$2
+endsnippet
+priority -50
+
+snippet anf "function (anonymous)" i
 function`!p snip.rv = space_before_function_paren(snip)`($1) {
 	${VISUAL}$0
 }

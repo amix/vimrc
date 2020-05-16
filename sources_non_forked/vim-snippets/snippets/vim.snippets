@@ -48,5 +48,33 @@ snippet au augroup ... autocmd block
 	augroup end
 snippet bun Vundle.vim Plugin definition
 	Plugin '${0}'
-snippet plug Vundle.vim Plugin definition
-	Plugin '${0}'
+snippet plug vim-plug Plugin definition
+	Plug '${0}'
+snippet plugdo vim-plug Plugin definition with { 'do': '' }
+	Plug '${1}', { 'do': '${0}' }
+snippet plugon vim-plug Plugin definition with { 'on': '' }
+	Plug '${1}', { 'on': '${0}' }
+snippet plugfor vim-plug Plugin definition with { 'for': '' }
+	Plug '${1}', { 'for': '${0}' }
+snippet plugbr vim-plug Plugin definition with { 'branch': '' }
+	Plug '${1}', { 'branch': '${0}' }
+snippet plugtag vim-plug Plugin definition with { 'tag': '' }
+	Plug '${1}', { 'tag': '${0}' }
+snippet let
+	let ${1:variable} = ${0: value}
+snippet se
+	set ${1:setting};
+snippet set
+	set ${1:setting} = ${0:value}
+snippet nn
+	nnoremap ${1} ${2}<CR>
+snippet no
+	noremap ${1} ${2}
+snippet vm
+	vmap ${1} ${2}
+snippet im
+	imap ${1} ${2}
+snippet exe
+	execute ${1}
+snippet filename
+	`Filename()`

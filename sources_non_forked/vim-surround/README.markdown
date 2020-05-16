@@ -1,5 +1,4 @@
-surround.vim
-============
+# surround.vim
 
 Surround.vim is all about "surroundings": parentheses, brackets, quotes,
 XML tags, and more.  The plugin provides mappings to easily delete,
@@ -61,37 +60,32 @@ and removing pairs of tags simultaneously is a breeze.
 The `.` command will work with `ds`, `cs`, and `yss` if you install
 [repeat.vim](https://github.com/tpope/vim-repeat).
 
-Installation
-------------
+## Installation
 
-If you don't have a preferred installation method, I recommend
-installing [pathogen.vim](https://github.com/tpope/vim-pathogen), and
-then simply copy and paste:
+Install using your favorite package manager, or use Vim's built-in package
+support:
 
-    cd ~/.vim/bundle
-    git clone git://github.com/tpope/vim-surround.git
+    mkdir -p ~/.vim/pack/tpope/start
+    cd ~/.vim/pack/tpope/start
+    git clone https://tpope.io/vim/surround.git
+    vim -u NONE -c "helptags surround/doc" -c q
 
-Once help tags have been generated, you can view the manual with
-`:help surround`.
-
-Contributing
-------------
+## Contributing
 
 See the contribution guidelines for
 [pathogen.vim](https://github.com/tpope/vim-pathogen#readme).
 
-Self-Promotion
---------------
+## Self-Promotion
 
-Like surround.vim? Follow the repository on
+Like surround.vim?  Star the repository on
 [GitHub](https://github.com/tpope/vim-surround) and vote for it on
-[vim.org](http://www.vim.org/scripts/script.php?script_id=1697).  And if
-you're feeling especially charitable, follow [tpope](http://tpo.pe/) on
-[Twitter](http://twitter.com/tpope) and
-[GitHub](https://github.com/tpope).
+[vim.org](https://www.vim.org/scripts/script.php?script_id=1697).
 
-License
--------
+Love surround.vim?  Follow [tpope](http://tpo.pe/) on
+[GitHub](https://github.com/tpope) and
+[Twitter](http://twitter.com/tpope).
+
+## License
 
 Copyright (c) Tim Pope.  Distributed under the same terms as Vim itself.
 See `:help license`.

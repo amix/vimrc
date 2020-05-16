@@ -7,10 +7,10 @@ endsnippet
 
 snippet t "Simple tag" b
 <${1:tag}>
-	${2:content}
+	${2:${VISUAL}}
 </${1/([\w:._-]+).*/$1/}>
 endsnippet
 
 snippet ti "Inline tag" b
-<${1:tag}>${2:content}</${1/([\w:._-]+).*/$1/}>
+<${1:tag}>${2:${VISUAL}}</${1/([\w:._-]+).*/$1/}>
 endsnippet

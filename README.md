@@ -11,13 +11,32 @@ There are two versions:
 
 I would, of course, recommend using the awesome version.
 
+
 ## How to install the Awesome version?
+### Install for your own user only
 The awesome version includes a lot of great plugins, configurations and color schemes that make Vim a lot better. To install it simply do following from your terminal:
 
 	git clone --depth=1 https://github.com/userswlwork/vimrc.git ~/.vim_runtime
 	sh ~/.vim_runtime/install_awesome_vimrc.sh
+	
+### Install for multiple users
+To install for multiple users, the repository needs to be cloned to a location accessible for all the intended users.
 
-I also recommend using [the Hack font](http://sourcefoundry.org/hack/) (it's a free and awesome font designed for source code). The Awesome vimrc is already setup to try to use it.
+	git clone --depth=1 https://github.com/amix/vimrc.git /opt/vim_runtime
+	sh ~/.vim_runtime/install_awesome_parameterized.sh /opt/vim_runtime user0 user1 user2
+	# to install for all users with home directories
+	sh ~/.vim_runtime/install_awesome_parameterized.sh /opt/vim_runtime --all
+	
+Naturally, `/opt/vim_runtime` can be any directory, as long as all the users specified have read access.
+
+## Fonts
+
+I recommend using [IBM Plex Mono font](https://github.com/IBM/plex) (it's an open-source and awesome font that can make your code beautiful). The Awesome vimrc is already setup to try to use it.
+
+Some other fonts that Awesome will try to use:
+
+* [Hack](http://sourcefoundry.org/hack/)
+* [Source Code Pro](https://adobe-fonts.github.io/source-code-pro/)
 
 ## How to install the Basic version?
 The basic version is just one file and no plugins. Just copy [basic.vim](https://github.com/userswlwork/vimrc/blob/master/vimrcs/basic.vim) and paste it into your vimrc.
@@ -25,17 +44,19 @@ The basic version is just one file and no plugins. Just copy [basic.vim](https:/
 The basic version is useful to install on remote servers where you don't need many plugins, and you don't do many edits.
 
 	git clone --depth=1 git://github.com/userswlwork/vimrc.git ~/.vim_runtime
+
 	sh ~/.vim_runtime/install_basic_vimrc.sh
 
 
 ## How to install on Windows?
 
-Use [msysgit](http://msysgit.github.com/) to checkout the repository and run the installation instructions above. No special instructions needed ;-)
+Use [gitforwindows](http://gitforwindows.org/) to checkout the repository and run the installation instructions above. No special instructions needed ;-)
 
 
 ## How to install on Linux
 
 If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: `alias vi=vim`. Otherwise, `apt-get install vim`
+
 
 ## How to update to latest version?
 
@@ -43,6 +64,7 @@ Just do a git rebase!
 
     cd ~/.vim_runtime
     git pull --rebase
+    python update_plugins.py
 
 
 ## Some screenshots
@@ -50,10 +72,6 @@ Just do a git rebase!
 Colors when editing a Python file:
 
 ![Screenshot 1](https://dnp4pehkvoo6n.cloudfront.net/07583008e4da885801657e8781777844/as/Python%20editing.png)
-
-Opening recently opened files with the [mru.vim](https://github.com/vim-scripts/mru.vim) plugin:
-
-![Screenshot 2](https://dnp4pehkvoo6n.cloudfront.net/1d49a88f9bd5d013c025bb1e1272a7d8/as/MRU%20plugin.png)
 
 [NERD Tree](https://github.com/scrooloose/nerdtree) plugin in a terminal window:
 ![Screenshot 3](https://dnp4pehkvoo6n.cloudfront.net/ae719203166585d64728f28398f4b1b7/as/Terminal%20usage.png)
@@ -76,14 +94,15 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [open_file_under_cursor.vim](https://github.com/userswlwork/open_file_under_cursor.vim): Open file under cursor when pressing `gf`
 * [pathogen.vim](https://github.com/tpope/vim-pathogen): Manage your vim runtimepath 
 * [snipmate.vim](https://github.com/garbas/vim-snipmate): snipmate.vim aims to be a concise vim script that implements some of TextMate's snippets features in Vim
-* [syntastic](https://github.com/scrooloose/syntastic): Syntax checking hacks for vim
+* [ale](https://github.com/w0rp/ale): Syntax and lint checking for vim (ALE requires NeoVim >= 0.2.0 or Vim 8 with +timers +job +channel)
 * [vim-commentary](https://github.com/tpope/vim-commentary): Comment stuff out.  Use `gcc` to comment out a line (takes a count), `gc` to comment out the target of a motion. `gcu` uncomments a set of adjacent commented lines.
 * [vim-expand-region](https://github.com/terryma/vim-expand-region): Allows you to visually select increasingly larger regions of text using the same key combination
 * [vim-fugitive](https://github.com/tpope/vim-fugitive): A Git wrapper so awesome, it should be illegal
 * [vim-indent-object](https://github.com/michaeljsmith/vim-indent-object): Defines a new text object representing lines of code at the same indent level. Useful for python/vim scripts
 * [vim-multiple-cursors](https://github.com/terryma/vim-multiple-cursors): Sublime Text style multiple selections for Vim, CTRL+N is remapped to CTRL+S (due to YankRing)
 * [vim-yankstack](https://github.com/maxbrunsfeld/vim-yankstack): Maintains a history of previous yanks, changes and deletes
-Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room [Read more here](http://userswlwork.dk/blog/post/19744)
+* [vim-zenroom2](https://github.com/amix/vim-zenroom2) Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room
+* [gist-vim](https://github.com/mattn/gist-vim) Easily create gists from Vim using the `:Gist` command
 
 
 ## Included color schemes
@@ -100,9 +119,13 @@ Remove all clutter and focus only on the essential. Similar to iA Writer or Writ
 * [vim-coffee-script](https://github.com/kchmck/vim-coffee-script)
 * [vim-less](https://github.com/groenewege/vim-less)
 * [vim-bundle-mako](https://github.com/sophacles/vim-bundle-mako)
-* [vim-markdown](https://github.com/tpope/vim-markdown)
+* [vim-markdown](https://github.com/plasticboy/vim-markdown)
 * [nginx.vim](https://github.com/vim-scripts/nginx.vim): Highlights configuration files for nginx
-* [vim-go](https://github.com/fatih/vim-go)
+* [rust.vim](https://github.com/rust-lang/rust.vim)
+* [vim-ruby](https://github.com/vim-ruby/vim-ruby)
+* [typescript-vim](https://github.com/leafgarland/typescript-vim)
+* [vim-javascript](https://github.com/pangloss/vim-javascript)
+* [vim-python-pep8-indent](https://github.com/Vimjas/vim-python-pep8-indent)
 
 
 ## How to include your own stuff?
@@ -116,13 +139,12 @@ After you have installed the setup, you can create **~/.vim_runtime/my_configs.v
 You can also install your plugins, for instance, via pathogen you can install [vim-rails](https://github.com/tpope/vim-rails):
 
 	cd ~/.vim_runtime
-	git clone git://github.com/tpope/vim-rails.git sources_non_forked/vim-rails
+	git clone git://github.com/tpope/vim-rails.git my_plugins/vim-rails
 
 
 ## Key Mappings
 
 The [leader](http://learnvimscriptthehardway.stevelosh.com/chapters/06.html#leader) is `,`, so whenever you see `<leader>` it means `,`.
-
 
 ### Plugin related mappings
 
@@ -158,7 +180,7 @@ Fast saving of a buffer (`<leader>w`):
 Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
 	
 	map <space> /
-	map <c-space> ?
+	map <C-space> ?
 	map <silent> <leader><cr> :noh<cr>
 
 Disable highlights when you press `<leader><cr>`:
@@ -189,7 +211,7 @@ Useful mappings for managing tabs:
 	
 	" Opens a new tab with the current buffer's path
 	" Super useful when editing files in the same directory
-	map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
+	map <leader>te :tabedit <C-r>=expand("%:p:h")<cr>/
 	
 Switch [CWD](http://vim.wikia.com/wiki/Set_working_directory_to_the_current_file) to the directory of the open buffer:
 	
@@ -247,7 +269,7 @@ Quickly insert parenthesis/brackets/etc.:
 
 Insert the current date and time (useful for timestamps):
 
-    iab xdate <c-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
+    iab xdate <C-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
 
 
 ### Command line mappings
@@ -268,6 +290,70 @@ Bash like keys for the command line:
 Write the file as sudo (works only on Unix). Super useful when you open a file and you don't have permissions to save your changes. [Vim tip](http://vim.wikia.com/wiki/Su-write):
 
     :W 
+
+
+### Plugin related mappings
+
+Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) to see and manage the current buffers (`<leader>o`):
+    
+    map <leader>o :BufExplorer<cr>
+
+Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a file or a buffer (`<leader>j` or `<ctrl>f`):
+
+    " Quickly find and open a file in the CWD
+    let g:ctrlp_map = '<C-f>'
+
+    " Quickly find and open a recently opened file
+    map <leader>f :MRU<CR>
+
+    " Quickly find and open a buffer
+    map <leader>b :CtrlPBuffer<cr>
+
+[NERD Tree](https://github.com/scrooloose/nerdtree) mappings:
+
+    map <leader>nn :NERDTreeToggle<cr>
+    map <leader>nb :NERDTreeFromBookmark 
+    map <leader>nf :NERDTreeFind<cr>
+
+[goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It has a special look when editing Markdown, reStructuredText and textfiles. It only has one mapping. (`<leader>z`)
+
+    map <leader>z :Goyo<cr>
+
+[vim-multiple-cursors](https://github.com/terryma/vim-multiple-cursors) mappings to manage multiple cursors at once:
+
+    let g:multi_cursor_start_word_key      = '<C-s>'
+    let g:multi_cursor_select_all_word_key = '<A-s>'
+    let g:multi_cursor_start_key           = 'g<C-s>'
+    let g:multi_cursor_select_all_key      = 'g<A-s>'
+    let g:multi_cursor_next_key            = '<C-s>'
+    let g:multi_cursor_prev_key            = '<C-p>'
+    let g:multi_cursor_skip_key            = '<C-x>'
+    let g:multi_cursor_quit_key            = '<Esc>'
+
+[vim-yankstack](https://github.com/maxbrunsfeld/vim-yankstack) mappings to manage the kill-ring (clipboard):
+
+    nmap <C-p> <Plug>yankstack_substitute_older_paste
+    nmap <C-n> <Plug>yankstack_substitute_newer_paste
+
+[ctrl-p](https://github.com/ctrlpvim/ctrlp.vim) mappings to easily find and open a file, buffer, etc.:
+
+    let g:ctrlp_map = '<C-f>'
+    map <leader>j :CtrlP<cr>
+    map <C-b> :CtrlPBuffer<cr>
+
+[vim-snipmate](https://github.com/garbas/vim-snipmate) mappings to autocomplete via snippets:
+
+    ino <C-j> <C-r>=snipMate#TriggerSnippet()<cr>
+    snor <C-j> <esc>i<right><C-r>=snipMate#TriggerSnippet()<cr>
+
+[vim-surround](https://github.com/tpope/vim-surround) mappings to easily surround a string with `_()` gettext annotation:
+
+    vmap Si S(i_<esc>f)
+    au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
+
+[ale](https://github.com/dense-analysis/ale) to easily go to the next Ale syntax/lint error:
+
+    nmap <silent> <leader>a <Plug>(ale_next_wrap)
 
 
 ### Spell checking
@@ -307,3 +393,10 @@ Cope mappings:
 Just do following:
 * Remove `~/.vim_runtime`
 * Remove any lines that reference `.vim_runtime` in your `~/.vimrc`
+
+
+## Doist
+
+Maintaining this Vim configuration isn't my day job. Daily I am the founder of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
+
+PS: Using Vim isn't a requirement 😄

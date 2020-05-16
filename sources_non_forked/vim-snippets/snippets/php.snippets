@@ -148,6 +148,12 @@ snippet doc_v
 	 * @var ${4:string}
 	 */
 	${1:var} $${2};
+
+# Class attribute with short comment
+snippet att
+	/** @var ${3:string} */
+	${1:public} $${2};
+
 # Class
 snippet doc_c
 	/**
@@ -617,7 +623,7 @@ snippet ascha "$this->assertClassHasAttribute($name, Example::class)"
 	$this->assertClassHasAttribute(${1:$attributeName}, ${2:Example}::class);
 snippet asi "$this->assertInstanceOf(Example::class, $actual)"
 	$this->assertInstanceOf(${1:Example}::class, ${2:$actual});
-snippet ast "$this->assertInternalType('string', $actual)"
+snippet asit "$this->assertInternalType('string', $actual)"
 	$this->assertInternalType(${1:'string'}, ${2:actual});
 snippet asco "$this->assertCount($count, $haystack)"
 	$this->assertCount(${1:$expectedCount}, ${2:$haystack});

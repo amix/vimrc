@@ -1,0 +1,102 @@
+===============================================================================
+ALE Verilog/SystemVerilog Integration                     *ale-verilog-options*
+
+
+===============================================================================
+ALE can use four different linters for Verilog HDL:
+
+  iverilog:
+    Using `iverilog -t null -Wall`
+
+  verilator
+    Using `verilator --lint-only -Wall`
+
+  ModelSim/Questa
+    Using `vlog -quiet -lint`
+
+  Vivado
+    Using `xvlog`
+
+By default, both 'verilog' and 'systemverilog' filetypes are checked.
+
+You can limit 'systemverilog' files to be checked using only 'verilator' by
+defining 'g:ale_linters' variable:
+>
+    au FileType systemverilog
+    \ let g:ale_linters = {'systemverilog' : ['verilator'],}
+<
+
+Linters/compilers that utilize a "work" directory for analyzing designs- such
+as ModelSim and Vivado- can be passed the location of these directories as
+part of their respective option strings listed below. This is useful for
+holistic analysis of a file (e.g. a design with components, packages, or other
+code defined external to the current file as part of a larger project) or
+when wanting to simply pass an alternative location for the auto-generated
+work directories (such as '/tmp') so as to not muddle the current directory.
+Since these type of linters often use this work directory for holding compiled
+design data as part of a single build process, they sometimes cannot handle
+the frequent, asynchronous application launches when linting while text is
+changing. This can happen in the form of hangs or crashes. To help prevent
+this when using these linters, it may help to run linting less frequently; for
+example, only when a file is saved.
+
+===============================================================================
+iverilog                                                 *ale-verilog-iverilog*
+
+  No additional options
+
+
+===============================================================================
+verilator                                               *ale-verilog-verilator*
+
+g:ale_verilog_verilator_options               *g:ale_verilog_verilator_options*
+                                              *b:ale_verilog_verilator_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify 'verilator' command arguments
+
+  For example `'-sv --default-language "1800-2012"'` if you want to enable
+  SystemVerilog parsing and select the 2012 version of the language.
+
+
+===============================================================================
+vlog                                                         *ale-verilog-vlog*
+
+g:ale_verilog_vlog_executable                   *g:ale_verilog_vlog_executable*
+                                                *b:ale_verilog_vlog_executable*
+  Type: |String|
+  Default: `'vlog'`
+
+  This variable can be changed to the path to the 'vlog' executable.
+
+
+g:ale_verilog_vlog_options                         *g:ale_verilog_vlog_options*
+                                                   *b:ale_verilog_vlog_options*
+  Type: |String|
+  Default: `'-quiet -lint'`
+
+  This variable can be changed to modify the flags/options passed to 'vlog'.
+
+
+===============================================================================
+xvlog                                                       *ale-verilog-xvlog*
+
+g:ale_verilog_xvlog_executable                 *g:ale_verilog_xvlog_executable*
+                                               *b:ale_verilog_xvlog_executable*
+  Type: |String|
+  Default: `'xvlog'`
+
+  This variable can be changed to the path to the 'xvlog' executable.
+
+
+g:ale_verilog_xvlog_options                       *g:ale_verilog_xvlog_options*
+                                                  *b:ale_verilog_xvlog_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify the flags/options passed to 'xvlog'.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

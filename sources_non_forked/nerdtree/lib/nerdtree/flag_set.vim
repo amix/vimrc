@@ -43,14 +43,16 @@ endfunction
 
 "FUNCTION: FlagSet.renderToString() {{{1
 function! s:FlagSet.renderToString()
-    let flagstring = ""
+    let flagstring = ''
     for i in values(self._flags)
         let flagstring .= join(i)
     endfor
 
     if len(flagstring) == 0
-        return ""
+        return ''
     endif
 
     return '[' . flagstring . ']'
 endfunction
+
+" vim: set sw=4 sts=4 et fdm=marker:

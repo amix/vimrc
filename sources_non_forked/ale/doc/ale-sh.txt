@@ -1,0 +1,115 @@
+===============================================================================
+ALE Shell Integration                                          *ale-sh-options*
+
+
+===============================================================================
+sh-language-server                                     *ale-sh-language-server*
+
+g:ale_sh_language_server_executable        *g:ale_sh_language_server_executable*
+                                           *b:ale_sh_language_server_executable*
+  Type: |String|
+  Default: `'bash-language-server'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_sh_language_server_use_global        *g:ale_sh_language_server_use_global*
+                                           *b:ale_sh_language_server_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+shell                                                            *ale-sh-shell*
+
+g:ale_sh_shell_default_shell                     *g:ale_sh_shell_default_shell*
+                                                 *b:ale_sh_shell_default_shell*
+  Type: |String|
+  Default: The current shell (`$SHELL`). Falls back to `'bash'` if that cannot be
+  read or if the current shell is `'fish'`.
+
+  When ALE runs the linter for shells with the `-n` flag, it will attempt to
+  read the shell from the shebang (`#!`) line from the shell script to
+  determine the shell program to run. When this detection fails, this variable
+  will be used instead.
+
+
+===============================================================================
+shellcheck                                                  *ale-sh-shellcheck*
+
+g:ale_sh_shellcheck_executable                 *g:ale_sh_shellcheck_executable*
+                                               *b:ale_sh_shellcheck_executable*
+  Type: |String|
+  Default: `'shellcheck'`
+
+  This variable sets executable used for shellcheck.
+
+
+g:ale_sh_shellcheck_options                       *g:ale_sh_shellcheck_options*
+                                                  *b:ale_sh_shellcheck_options*
+  Type: |String|
+  Default: `''`
+
+  With this variable we are able to pass extra arguments for shellcheck
+  for shellcheck invocation.
+
+  For example, if we want shellcheck to follow external sources (`see SC1091`)
+  we can set the variable as such:
+>
+  let g:ale_sh_shellcheck_options = '-x'
+<
+
+
+g:ale_sh_shellcheck_change_directory     *g:ale_sh_shellcheck_change_directory*
+                                         *b:ale_sh_shellcheck_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will switch to the directory the shell file being
+  checked with `shellcheck` is in before checking it. This helps `shellcheck`
+  determine the path to sourced files more easily. This option can be turned
+  off if you want to control the directory `shellcheck` is executed from
+  yourself.
+
+
+g:ale_sh_shellcheck_dialect                       *g:ale_sh_shellcheck_dialect*
+                                                  *b:ale_sh_shellcheck_dialect*
+  Type: |String|
+  Default: `'auto'`
+
+  This variable specifies the shellcheck dialect (`-s` option).  The value
+  `'auto'` causes ALE to detect the dialect automatically, based on the shebang
+  line (if present) or the value of `b:is_bash`, `b:is_sh`, or `b:is_kornshell`
+  (set and used by |sh.vim|).
+
+
+g:ale_sh_shellcheck_exclusions                 *g:ale_sh_shellcheck_exclusions*
+                                               *b:ale_sh_shellcheck_exclusions*
+  Type: |String|
+  Default: `''`
+
+  Set this variable to exclude test(s) for shellcheck (-e/--exclude option).
+  To exclude more than one option, separate them with commas.
+
+  For example, to ignore some warnings that aren't applicable to files that
+  will be sourced by other scripts, use the buffer-local variant:
+>
+    autocmd BufEnter PKGBUILD,.env
+    \   let b:ale_sh_shellcheck_exclusions = 'SC2034,SC2154,SC2164'
+<
+
+===============================================================================
+shfmt                                                            *ale-sh-shfmt*
+
+g:ale_sh_shfmt_options                                 *g:ale_sh_shfmt_options*
+                                                       *b:ale_sh_shfmt_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the shfmt fixer.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

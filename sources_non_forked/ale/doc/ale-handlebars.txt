@@ -1,0 +1,32 @@
+===============================================================================
+ALE Handlebars Integration                             *ale-handlebars-options*
+
+
+===============================================================================
+prettier                                              *ale-handlebars-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+Uses glimmer parser by default.
+
+
+===============================================================================
+ember-template-lint                          *ale-handlebars-embertemplatelint*
+
+g:ale_handlebars_embertemplatelint_executable
+                                *g:ale_handlebars_embertemplatelint_executable*
+  Type: |String|                  *b:ale_handlebars_embertemplatelint_executable*
+  Default: `'ember-template-lint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_handlebars_embertemplatelint_use_global
+                                *g:ale_handlebars_embertemplatelint_use_global*
+  Type: |Number|                  *b:ale_handlebars_embertemplatelint_use_global*
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

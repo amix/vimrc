@@ -1,0 +1,234 @@
+===============================================================================
+ALE PHP Integration                                           *ale-php-options*
+
+===============================================================================
+langserver                                                 *ale-php-langserver*
+
+g:ale_php_langserver_executable               *g:ale_php_langserver_executable*
+                                              *b:ale_php_langserver_executable*
+  Type: |String|
+  Default: `'php-language-server.php'`
+
+  The variable can be set to configure the executable that will be used for
+  running the PHP language server. `vendor` directory executables will be
+  preferred instead of this setting if |g:ale_php_langserver_use_global| is `0`.
+
+  See: |ale-integrations-local-executables|
+
+
+g:ale_php_langserver_use_global               *g:ale_php_langserver_use_global*
+                                              *b:ale_php_langserver_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  This variable can be set to `1` to force the language server to be run with
+  the executable set for |g:ale_php_langserver_executable|.
+
+  See: |ale-integrations-local-executables|
+
+
+===============================================================================
+phan                                                             *ale-php-phan*
+
+WARNING: please use the phan_client linter if you have an configuration file
+for your project because the phan will look into your entirely project and
+ale will display in the current buffer warnings that may belong to other file.
+
+g:ale_php_phan_minimum_severity               *g:ale_php_phan_minimum_severity*
+                                              *b:ale_php_phan_minimum_severity*
+  Type: |Number|
+  Default: `0`
+
+  This variable defines the minimum severity level.
+
+g:ale_php_phan_executable                           *g:ale_php_phan_executable*
+                                                    *b:ale_php_phan_executable*
+  Type: |String|
+  Default: `'phan'`
+
+  This variable sets executable used for phan or phan_client.
+
+g:ale_php_phan_use_client                           *g:ale_php_phan_use_client*
+                                                    *b:ale_php_phan_use_client*
+  Type: |Number|
+  Default: `get(g:, 'ale_php_phan_use_client', 0)`
+
+  This variable can be set to 1 to use the phan_client with phan daemon mode
+  instead of the phan standalone.
+
+===============================================================================
+phpcbf                                                         *ale-php-phpcbf*
+
+g:ale_php_phpcbf_executable                       *g:ale_php_phpcbf_executable*
+                                                  *b:ale_php_phpcbf_executable*
+  Type: |String|
+  Default: `'phpcbf'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_php_phpcbf_standard                           *g:ale_php_phpcbf_standard*
+                                                    *b:ale_php_phpcbf_standard*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to specify the coding standard used by phpcbf. If no
+  coding standard is specified, phpcbf will default to fixing against the
+  PEAR coding standard, or the standard you have set as the default.
+
+
+g:ale_php_phpcbf_use_global                       *g:ale_php_phpcbf_use_global*
+                                                  *b:ale_php_phpcbf_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+phpcs                                                           *ale-php-phpcs*
+
+g:ale_php_phpcs_executable                         *g:ale_php_phpcs_executable*
+                                                   *b:ale_php_phpcs_executable*
+  Type: |String|
+  Default: `'phpcs'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_php_phpcs_standard                             *g:ale_php_phpcs_standard*
+                                                     *b:ale_php_phpcs_standard*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to specify the coding standard used by phpcs. If no
+  coding standard is specified, phpcs will default to checking against the
+  PEAR coding standard, or the standard you have set as the default.
+
+
+g:ale_php_phpcs_use_global                         *g:ale_php_phpcs_use_global*
+                                                   *b:ale_php_phpcs_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_php_phpcs_options                               *g:ale_php_phpcs_options*
+                                                      *b:ale_php_phpcs_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to php-cs
+
+===============================================================================
+phpmd                                                           *ale-php-phpmd*
+
+g:ale_php_phpmd_executable                         *g:ale_php_phpmd_executable*
+                                                   *b:ale_php_phpmd_executable*
+  Type: |String|
+  Default: `'phpmd'`
+
+  This variable sets executable used for phpmd.
+
+
+g:ale_php_phpmd_ruleset                               *g:ale_php_phpmd_ruleset*
+                                                      *b:ale_php_phpmd_ruleset*
+  Type: |String|
+  Default: `'cleancode,codesize,controversial,design,naming,unusedcode'`
+
+  This variable controls the ruleset used by phpmd. Default is to use all of
+  the available phpmd rulesets
+
+
+===============================================================================
+phpstan                                                       *ale-php-phpstan*
+
+g:ale_php_phpstan_executable                     *g:ale_php_phpstan_executable*
+                                                 *b:ale_php_phpstan_executable*
+  Type: |String|
+  Default: `'phpstan'`
+
+  This variable sets executable used for phpstan.
+
+
+g:ale_php_phpstan_level                               *g:ale_php_phpstan_level*
+                                                      *b:ale_php_phpstan_level*
+  Type: |String|
+  Default: `''`
+
+  This variable controls the rule levels. 0 is the loosest and 7 is the
+  strictest. If this option isn't set, the rule level will be controlled by
+  the configuration file. If no configuration file can be detected, `'7'` will
+  be used instead.
+
+
+g:ale_php_phpstan_configuration               *g:ale_php_phpstan_configuration*
+                                              *b:ale_php_phpstan_configuration*
+  Type: |String|
+  Default: `''`
+
+  This variable sets path to phpstan configuration file.
+
+
+g:ale_php_phpstan_autoload                         *g:ale_php_phpstan_autoload*
+                                                   *b:ale_php_phpstan_autoload*
+  Type: |String|
+  Default: `''`
+
+  This variable sets path to phpstan autoload file.
+
+
+===============================================================================
+psalm                                                           *ale-php-psalm*
+
+g:ale_php_psalm_executable                         *g:ale_php_psalm_executable*
+                                                   *b:ale_php_psalm_executable*
+  Type: |String|
+  Default: `'psalm'`
+
+  This variable sets the executable used for psalm.
+
+g:ale_psalm_langserver_options                 *g:ale_psalm_langserver_options*
+                                               *b:ale_psalm_langserver_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to psalm.
+
+===============================================================================
+php-cs-fixer                                              *ale-php-php-cs-fixer*
+
+g:ale_php_cs_fixer_executable                    *g:ale_php_cs_fixer_executable*
+                                                 *b:ale_php_cs_fixer_executable*
+  Type: |String|
+  Default: `'php-cs-fixer'`
+
+  This variable sets executable used for php-cs-fixer.
+
+g:ale_php_cs_fixer_use_global                    *g:ale_php_cs_fixer_use_global*
+                                                 *b:ale_php_cs_fixer_use_global*
+  Type: |Boolean|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  This variable force globally installed fixer.
+
+g:ale_php_cs_fixer_options                          *g:ale_php_cs_fixer_options*
+                                                    *b:ale_php_cs_fixer_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to php-cs-fixer.
+
+===============================================================================
+php                                                                *ale-php-php*
+
+g:ale_php_php_executable                              *g:ale_php_php_executable*
+                                                      *b:ale_php_php_executable*
+  Type: |String|
+  Default: `'php'`
+
+  This variable sets the executable used for php.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

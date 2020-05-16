@@ -1,0 +1,56 @@
+===============================================================================
+ALE Prolog Integration                                     *ale-prolog-options*
+
+
+===============================================================================
+swipl                                                        *ale-prolog-swipl*
+
+g:ale_prolog_swipl_executable                   *g:ale_prolog_swipl_executable*
+                                                *b:ale_prolog_swipl_executable*
+  Type: |String|
+  Default: `'swipl'`
+
+  The executable that will be run for the `swipl` linter.
+
+g:ale_prolog_swipl_load                               *g:ale_prolog_swipl_load*
+                                                      *b:ale_prolog_swipl_load*
+  Type: |String|
+  Default: `'current_prolog_flag(argv, [File]), load_files(File, [sandboxed(true)]), halt.'`
+
+  The prolog goals that will be passed to |g:ale_prolog_swipl_executable| with `-g` option.
+
+  It does:
+  1. Takes the first command argument (current file path)
+  2. Checks (syntactic / semantic) problems and output to stderr
+
+  NOTE: `sandboxed(true)` prohibits executing some directives such as 'initialization main'.
+
+g:ale_prolog_swipl_timeout                         *g:ale_prolog_swipl_timeout*
+                                                   *b:ale_prolog_swipl_timeout*
+  Type: |Number|
+  Default: `3`
+
+  Timeout seconds to detect long-running linter.
+  It is done by setting SIGALRM.
+  See |g:ale_prolog_swipl_alarm| and |g:ale_prolog_swipl_alarm_handler|.
+
+g:ale_prolog_swipl_alarm                             *g:ale_prolog_swipl_alarm*
+                                                     *b:ale_prolog_swipl_alarm*
+  Type: |String|
+  Default: `'alarm(%t, (%h), _, [])'`
+
+  The prolog goals to be expected to set SIGALRM.
+  `%t` is replaced by |g:ale_prolog_swipl_timeout|.
+  `%h` is replaced by |g:ale_prolog_swipl_alarm_handler|.
+
+g:ale_prolog_swipl_alarm_handler             *g:ale_prolog_swipl_alarm_handler*
+                                             *b:ale_prolog_swipl_alarm_handler*
+  Type: |String|
+  Default: `'writeln(user_error, "ERROR: Exceeded %t seconds, Please change g:prolog_swipl_timeout to modify the limit."), halt(1)'`
+
+  The prolog goals to be expected that will be run on SIGALRM.
+  `%t` is replaced by |g:ale_prolog_swipl_timeout|.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

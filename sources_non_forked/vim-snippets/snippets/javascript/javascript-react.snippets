@@ -1,5 +1,7 @@
 snippet ir
 	import React from 'react';
+snippet irc
+	import React, { Component } from 'react';
 snippet ird
 	import ReactDOM from 'react-dom';
 snippet cdm
@@ -40,11 +42,24 @@ snippet pt
 	static propTypes = {
 		${1}: React.PropTypes.${2:type},
 	}
+snippet rfc
+	const ${1:ComponentName} = (${2:props}) => {
+		return (
+			<div>
+				$1
+			</div>
+		);
+	}
 snippet rcc
 	class ${1:ClassName} extends React.Component {
+		state = {
+
+		}
 		render() {
 			return (
-				${0:<div />}
+				<div>
+					$1
+				</div>
 			);
 		}
 	}

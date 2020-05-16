@@ -7,14 +7,9 @@ let g:loaded_gitgutter = 1
 
 " Initialisation {{{
 
-" Realtime sign updates require Vim 7.3.105+.
 if v:version < 703 || (v:version == 703 && !has("patch105"))
-  let g:gitgutter_realtime = 0
-endif
-
-" Eager updates require gettabvar()/settabvar().
-if !exists("*gettabvar")
-  let g:gitgutter_eager = 0
+  call gitgutter#utility#warn('requires Vim 7.3.105')
+  finish
 endif
 
 function! s:set(var, default) abort
@@ -27,89 +22,147 @@ function! s:set(var, default) abort
   endif
 endfunction
 
+function! s:obsolete(var)
+  if exists(a:var)
+    call gitgutter#utility#warn(a:var.' is obsolete and has no effect.')
+  endif
+endfunction
+
+
+call s:set('g:gitgutter_preview_win_location',     'bo')
+if exists('*nvim_open_win')
+  call s:set('g:gitgutter_preview_win_floating', 1)
+else
+  call s:set('g:gitgutter_preview_win_floating', 0)
+endif
 call s:set('g:gitgutter_enabled',                     1)
-call s:set('g:gitgutter_max_signs',                 500)
+if exists('*sign_unplace')
+  call s:set('g:gitgutter_max_signs', -1)
+else
+  call s:set('g:gitgutter_max_signs', 500)
+endif
 call s:set('g:gitgutter_signs',                       1)
 call s:set('g:gitgutter_highlight_lines',             0)
-call s:set('g:gitgutter_sign_column_always',          0)
-if g:gitgutter_sign_column_always && exists('&signcolumn')
-  set signcolumn=yes
-  let g:gitgutter_sign_column_always = 0
-  call gitgutter#utility#warn('please replace "let g:gitgutter_sign_column_always=1" with "set signcolumn=yes"')
+call s:set('g:gitgutter_highlight_linenrs',           0)
+call s:set('g:gitgutter_sign_priority',              10)
+" Nvim 0.4.0 has an expanding sign column
+" The sign_place() function supports sign priority.
+if (has('nvim-0.4.0') || exists('*sign_place')) && !exists('g:gitgutter_sign_allow_clobber')
+  let g:gitgutter_sign_allow_clobber = 1
 endif
-call s:set('g:gitgutter_override_sign_column_highlight', 1)
-call s:set('g:gitgutter_realtime',                    1)
-call s:set('g:gitgutter_eager',                       1)
-call s:set('g:gitgutter_sign_added',                '+')
-call s:set('g:gitgutter_sign_modified',             '~')
-call s:set('g:gitgutter_sign_removed',              '_')
-try
+call s:set('g:gitgutter_sign_allow_clobber',          0)
+call s:set('g:gitgutter_set_sign_backgrounds',           0)
+call s:set('g:gitgutter_sign_added',                   '+')
+call s:set('g:gitgutter_sign_modified',                '~')
+call s:set('g:gitgutter_sign_removed',                 '_')
+
+if gitgutter#utility#supports_overscore_sign()
   call s:set('g:gitgutter_sign_removed_first_line', '‾')
-catch /E239/
-  let g:gitgutter_sign_removed_first_line = '_^'
-endtry
-
-call s:set('g:gitgutter_sign_modified_removed',    '~_')
-call s:set('g:gitgutter_diff_args',                  '')
-call s:set('g:gitgutter_diff_base',                  '')
-call s:set('g:gitgutter_map_keys',                    1)
-call s:set('g:gitgutter_avoid_cmd_prompt_on_windows', 1)
-call s:set('g:gitgutter_async',                       1)
-call s:set('g:gitgutter_log',                         0)
-call s:set('g:gitgutter_git_executable',          'git')
-
-if !executable(g:gitgutter_git_executable)
-  call gitgutter#utility#warn('cannot find git. Please set g:gitgutter_git_executable.')
+else
+  call s:set('g:gitgutter_sign_removed_first_line', '_^')
 endif
 
-call gitgutter#highlight#define_sign_column_highlight()
+call s:set('g:gitgutter_sign_removed_above_and_below', '[')
+call s:set('g:gitgutter_sign_modified_removed',       '~_')
+call s:set('g:gitgutter_git_args',                      '')
+call s:set('g:gitgutter_diff_relative_to',         'index')
+call s:set('g:gitgutter_diff_args',                     '')
+call s:set('g:gitgutter_diff_base',                     '')
+call s:set('g:gitgutter_map_keys',                       1)
+call s:set('g:gitgutter_terminal_reports_focus',         1)
+call s:set('g:gitgutter_async',                          1)
+call s:set('g:gitgutter_log',                            0)
+call s:set('g:gitgutter_use_location_list',              0)
+
+call s:set('g:gitgutter_git_executable', 'git')
+if !executable(g:gitgutter_git_executable)
+  if g:gitgutter_enabled
+    call gitgutter#utility#warn('cannot find git. Please set g:gitgutter_git_executable.')
+  endif
+  finish
+endif
+
+let default_grep = 'grep'
+call s:set('g:gitgutter_grep', default_grep)
+if !empty(g:gitgutter_grep)
+  if executable(split(g:gitgutter_grep)[0])
+    if $GREP_OPTIONS =~# '--color=always'
+      let g:gitgutter_grep .= ' --color=never'
+    endif
+  else
+    if g:gitgutter_grep !=# default_grep
+      call gitgutter#utility#warn('cannot find '.g:gitgutter_grep.'. Please check g:gitgutter_grep.')
+    endif
+    let g:gitgutter_grep = ''
+  endif
+endif
+
 call gitgutter#highlight#define_highlights()
 call gitgutter#highlight#define_signs()
+
+" Prevent infinite loop where:
+" - executing a job in the foreground launches a new window which takes the focus;
+" - when the job finishes, focus returns to gvim;
+" - the FocusGained event triggers a new job (see below).
+if gitgutter#utility#windows() && !(g:gitgutter_async && gitgutter#async#available())
+  set noshelltemp
+endif
 
 " }}}
 
 " Primary functions {{{
 
-command -bar GitGutterAll call gitgutter#all()
-command -bar GitGutter    call gitgutter#process_buffer(bufnr(''), 0)
+command! -bar GitGutterAll call gitgutter#all(1)
+command! -bar GitGutter    call gitgutter#process_buffer(bufnr(''), 1)
 
-command -bar GitGutterDisable call gitgutter#disable()
-command -bar GitGutterEnable  call gitgutter#enable()
-command -bar GitGutterToggle  call gitgutter#toggle()
+command! -bar GitGutterDisable call gitgutter#disable()
+command! -bar GitGutterEnable  call gitgutter#enable()
+command! -bar GitGutterToggle  call gitgutter#toggle()
+
+command! -bar GitGutterBufferDisable call gitgutter#buffer_disable()
+command! -bar GitGutterBufferEnable  call gitgutter#buffer_enable()
+command! -bar GitGutterBufferToggle  call gitgutter#buffer_toggle()
+
+command! -bar GitGutterQuickFix call gitgutter#quickfix()
 
 " }}}
 
 " Line highlights {{{
 
-command -bar GitGutterLineHighlightsDisable call gitgutter#line_highlights_disable()
-command -bar GitGutterLineHighlightsEnable  call gitgutter#line_highlights_enable()
-command -bar GitGutterLineHighlightsToggle  call gitgutter#line_highlights_toggle()
+command! -bar GitGutterLineHighlightsDisable call gitgutter#highlight#line_disable()
+command! -bar GitGutterLineHighlightsEnable  call gitgutter#highlight#line_enable()
+command! -bar GitGutterLineHighlightsToggle  call gitgutter#highlight#line_toggle()
 
+" }}}
+
+" 'number' column highlights {{{
+command! -bar GitGutterLineNrHighlightsDisable call gitgutter#highlight#linenr_disable()
+command! -bar GitGutterLineNrHighlightsEnable  call gitgutter#highlight#linenr_enable()
+command! -bar GitGutterLineNrHighlightsToggle  call gitgutter#highlight#linenr_toggle()
 " }}}
 
 " Signs {{{
 
-command -bar GitGutterSignsEnable  call gitgutter#signs_enable()
-command -bar GitGutterSignsDisable call gitgutter#signs_disable()
-command -bar GitGutterSignsToggle  call gitgutter#signs_toggle()
+command! -bar GitGutterSignsEnable  call gitgutter#sign#enable()
+command! -bar GitGutterSignsDisable call gitgutter#sign#disable()
+command! -bar GitGutterSignsToggle  call gitgutter#sign#toggle()
 
 " }}}
 
 " Hunks {{{
 
-command -bar -count=1 GitGutterNextHunk call gitgutter#hunk#next_hunk(<count>)
-command -bar -count=1 GitGutterPrevHunk call gitgutter#hunk#prev_hunk(<count>)
+command! -bar -count=1 GitGutterNextHunk call gitgutter#hunk#next_hunk(<count>)
+command! -bar -count=1 GitGutterPrevHunk call gitgutter#hunk#prev_hunk(<count>)
 
-command -bar GitGutterStageHunk   call gitgutter#stage_hunk()
-command -bar GitGutterUndoHunk    call gitgutter#undo_hunk()
-command -bar GitGutterRevertHunk  echomsg 'GitGutterRevertHunk is deprecated. Use GitGutterUndoHunk'<Bar>call gitgutter#undo_hunk()
-command -bar GitGutterPreviewHunk call gitgutter#preview_hunk()
+command! -bar -range=% GitGutterStageHunk call gitgutter#hunk#stage(<line1>,<line2>)
+command! -bar GitGutterUndoHunk    call gitgutter#hunk#undo()
+command! -bar GitGutterPreviewHunk call gitgutter#hunk#preview()
 
 " Hunk text object
-onoremap <silent> <Plug>GitGutterTextObjectInnerPending :<C-U>call gitgutter#hunk#text_object(1)<CR>
-onoremap <silent> <Plug>GitGutterTextObjectOuterPending :<C-U>call gitgutter#hunk#text_object(0)<CR>
-xnoremap <silent> <Plug>GitGutterTextObjectInnerVisual  :<C-U>call gitgutter#hunk#text_object(1)<CR>
-xnoremap <silent> <Plug>GitGutterTextObjectOuterVisual  :<C-U>call gitgutter#hunk#text_object(0)<CR>
+onoremap <silent> <Plug>(GitGutterTextObjectInnerPending) :<C-U>call gitgutter#hunk#text_object(1)<CR>
+onoremap <silent> <Plug>(GitGutterTextObjectOuterPending) :<C-U>call gitgutter#hunk#text_object(0)<CR>
+xnoremap <silent> <Plug>(GitGutterTextObjectInnerVisual)  :<C-U>call gitgutter#hunk#text_object(1)<CR>
+xnoremap <silent> <Plug>(GitGutterTextObjectOuterVisual)  :<C-U>call gitgutter#hunk#text_object(0)<CR>
 
 
 " Returns the git-diff hunks for the file or an empty list if there
@@ -130,7 +183,8 @@ xnoremap <silent> <Plug>GitGutterTextObjectOuterVisual  :<C-U>call gitgutter#hun
 " `line`  - refers to the line number where the change starts
 " `count` - refers to the number of lines the change covers
 function! GitGutterGetHunks()
-  return gitgutter#utility#is_active() ? gitgutter#hunk#hunks() : []
+  let bufnr = bufnr('')
+  return gitgutter#utility#is_active(bufnr) ? gitgutter#hunk#hunks(bufnr) : []
 endfunction
 
 " Returns an array that contains a summary of the hunk status for the current
@@ -142,91 +196,84 @@ endfunction
 
 " }}}
 
-command -bar GitGutterDebug call gitgutter#debug#debug()
+" Folds {{{
+
+command! -bar GitGutterFold call gitgutter#fold#toggle()
+
+" }}}
+
+command! -bar GitGutterDebug call gitgutter#debug#debug()
 
 " Maps {{{
 
-nnoremap <silent> <expr> <Plug>GitGutterNextHunk &diff ? ']c' : ":\<C-U>execute v:count1 . 'GitGutterNextHunk'\<CR>"
-nnoremap <silent> <expr> <Plug>GitGutterPrevHunk &diff ? '[c' : ":\<C-U>execute v:count1 . 'GitGutterPrevHunk'\<CR>"
+nnoremap <silent> <expr> <Plug>(GitGutterNextHunk) &diff ? ']c' : ":\<C-U>execute v:count1 . 'GitGutterNextHunk'\<CR>"
+nnoremap <silent> <expr> <Plug>GitGutterNextHunk   &diff ? ']c' : ":\<C-U>call gitgutter#utility#warn('please change your map \<lt>Plug>GitGutterNextHunk to \<lt>Plug>(GitGutterNextHunk)')\<CR>"
+nnoremap <silent> <expr> <Plug>(GitGutterPrevHunk) &diff ? '[c' : ":\<C-U>execute v:count1 . 'GitGutterPrevHunk'\<CR>"
+nnoremap <silent> <expr> <Plug>GitGutterPrevHunk   &diff ? '[c' : ":\<C-U>call gitgutter#utility#warn('please change your map \<lt>Plug>GitGutterPrevHunk to \<lt>Plug>(GitGutterPrevHunk)')\<CR>"
 
-if g:gitgutter_map_keys
-  if !hasmapto('<Plug>GitGutterPrevHunk') && maparg('[c', 'n') ==# ''
-    nmap [c <Plug>GitGutterPrevHunk
-  endif
-  if !hasmapto('<Plug>GitGutterNextHunk') && maparg(']c', 'n') ==# ''
-    nmap ]c <Plug>GitGutterNextHunk
-  endif
-endif
-
-
-nnoremap <silent> <Plug>GitGutterStageHunk   :GitGutterStageHunk<CR>
-nnoremap <silent> <Plug>GitGutterUndoHunk    :GitGutterUndoHunk<CR>
-nnoremap <silent> <Plug>GitGutterPreviewHunk :GitGutterPreviewHunk<CR>
-
-if g:gitgutter_map_keys
-  if !hasmapto('<Plug>GitGutterStageHunk') && maparg('<Leader>hs', 'n') ==# ''
-    nmap <Leader>hs <Plug>GitGutterStageHunk
-  endif
-  if !hasmapto('<Plug>GitGutterUndoHunk') && maparg('<Leader>hu', 'n') ==# ''
-    nmap <Leader>hu <Plug>GitGutterUndoHunk
-    nmap <Leader>hr <Plug>GitGutterUndoHunk:echomsg '<Leader>hr is deprecated. Use <Leader>hu'<CR>
-  endif
-  if !hasmapto('<Plug>GitGutterPreviewHunk') && maparg('<Leader>hp', 'n') ==# ''
-    nmap <Leader>hp <Plug>GitGutterPreviewHunk
-  endif
-
-  if !hasmapto('<Plug>GitGutterTextObjectInnerPending') && maparg('ic', 'o') ==# ''
-    omap ic <Plug>GitGutterTextObjectInnerPending
-  endif
-  if !hasmapto('<Plug>GitGutterTextObjectOuterPending') && maparg('ac', 'o') ==# ''
-    omap ac <Plug>GitGutterTextObjectOuterPending
-  endif
-  if !hasmapto('<Plug>GitGutterTextObjectInnerVisual') && maparg('ic', 'x') ==# ''
-    xmap ic <Plug>GitGutterTextObjectInnerVisual
-  endif
-  if !hasmapto('<Plug>GitGutterTextObjectOuterVisual') && maparg('ac', 'x') ==# ''
-    xmap ac <Plug>GitGutterTextObjectOuterVisual
-  endif
-endif
+xnoremap <silent> <Plug>(GitGutterStageHunk)   :GitGutterStageHunk<CR>
+xnoremap <silent> <Plug>GitGutterStageHunk     :call gitgutter#utility#warn('please change your map <lt>Plug>GitGutterStageHunk to <lt>Plug>(GitGutterStageHunk)')<CR>
+nnoremap <silent> <Plug>(GitGutterStageHunk)   :GitGutterStageHunk<CR>
+nnoremap <silent> <Plug>GitGutterStageHunk     :call gitgutter#utility#warn('please change your map <lt>Plug>GitGutterStageHunk to <lt>Plug>(GitGutterStageHunk)')<CR>
+nnoremap <silent> <Plug>(GitGutterUndoHunk)    :GitGutterUndoHunk<CR>
+nnoremap <silent> <Plug>GitGutterUndoHunk      :call gitgutter#utility#warn('please change your map <lt>Plug>GitGutterUndoHunk to <lt>Plug>(GitGutterUndoHunk)')<CR>
+nnoremap <silent> <Plug>(GitGutterPreviewHunk) :GitGutterPreviewHunk<CR>
+nnoremap <silent> <Plug>GitGutterPreviewHunk   :call gitgutter#utility#warn('please change your map <lt>Plug>GitGutterPreviewHunk to <lt>Plug>(GitGutterPreviewHunk)')<CR>
 
 " }}}
+
+function! s:on_bufenter()
+  call gitgutter#setup_maps()
+
+  if exists('t:gitgutter_didtabenter') && t:gitgutter_didtabenter
+    let t:gitgutter_didtabenter = 0
+    call gitgutter#all(!g:gitgutter_terminal_reports_focus)
+  else
+    call gitgutter#process_buffer(bufnr(''), !g:gitgutter_terminal_reports_focus)
+  endif
+endfunction
 
 " Autocommands {{{
 
 augroup gitgutter
   autocmd!
 
-  if g:gitgutter_realtime
-    autocmd CursorHold,CursorHoldI * call gitgutter#process_buffer(bufnr(''), 1)
-  endif
+  autocmd TabEnter * let t:gitgutter_didtabenter = 1
 
-  if g:gitgutter_eager
-    autocmd BufWritePost,FileChangedShellPost,ShellCmdPost * call gitgutter#process_buffer(bufnr(''), 0)
+  autocmd BufEnter * call s:on_bufenter()
 
-    autocmd BufEnter *
-          \  if gettabvar(tabpagenr(), 'gitgutter_didtabenter') |
-          \   call settabvar(tabpagenr(), 'gitgutter_didtabenter', 0) |
-          \   call gitgutter#all() |
-          \ else |
-          \   call gitgutter#process_buffer(bufnr(''), 0) |
-          \ endif
-
-    autocmd TabEnter * call settabvar(tabpagenr(), 'gitgutter_didtabenter', 1)
-
-    " Ensure that all buffers are processed when opening vim with multiple files, e.g.:
-    "
-    "   vim -o file1 file2
-    autocmd VimEnter * if winnr() != winnr('$') | :GitGutterAll | endif
-
-    if !has('gui_win32')
-      autocmd FocusGained * call gitgutter#all()
-    endif
-
+  autocmd CursorHold,CursorHoldI * call gitgutter#process_buffer(bufnr(''), 0)
+  if exists('*timer_start') && has('lambda')
+    autocmd FileChangedShellPost * call timer_start(1, {-> gitgutter#process_buffer(bufnr(''), 1)})
   else
-    autocmd BufRead,BufWritePost,FileChangedShellPost * call gitgutter#process_buffer(bufnr(''), 0)
+    autocmd FileChangedShellPost * call gitgutter#process_buffer(bufnr(''), 1)
   endif
 
-  autocmd ColorScheme * call gitgutter#highlight#define_sign_column_highlight() | call gitgutter#highlight#define_highlights()
+  " Ensure that all buffers are processed when opening vim with multiple files, e.g.:
+  "
+  "   vim -o file1 file2
+  autocmd VimEnter * if winnr() != winnr('$') | call gitgutter#all(0) | endif
+
+  autocmd ShellCmdPost * call gitgutter#all(1)
+  autocmd BufLeave term://* call gitgutter#all(1)
+
+  autocmd User FugitiveChanged call gitgutter#all(1)
+
+  autocmd BufFilePre  * GitGutterBufferDisable
+  autocmd BufFilePost * GitGutterBufferEnable
+
+  " Handle all buffers when focus is gained, but only after it was lost.
+  " FocusGained gets triggered on startup with Neovim at least already.
+  " Therefore this tracks also if it was lost before.
+  let s:focus_was_lost = 0
+  autocmd FocusGained * if s:focus_was_lost | let focus_was_lost = 0 | call gitgutter#all(1) | endif
+  autocmd FocusLost * let s:focus_was_lost = 1
+
+  if exists('##VimResume')
+    autocmd VimResume * call gitgutter#all(1)
+  endif
+
+  autocmd ColorScheme * call gitgutter#highlight#define_highlights()
 
   " Disable during :vimgrep
   autocmd QuickFixCmdPre  *vimgrep* let g:gitgutter_enabled = 0

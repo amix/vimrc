@@ -1,0 +1,37 @@
+===============================================================================
+ALE Eruby Integration                                       *ale-eruby-options*
+
+There are four linters for `eruby` files:
+
+- `erb`
+- `erubis`
+- `erubi`
+- `ruumba`
+
+`erb` is in the Ruby standard library and is mostly universal. `erubis` is the
+default parser in Rails between 3.0 and 5.1. `erubi` is the default in Rails
+5.1 and later. `ruumba` can extract Ruby from eruby files and run rubocop on
+the result. To selectively enable a subset, see |g:ale_linters|.
+
+===============================================================================
+ruumba                                                       *ale-eruby-ruumba*
+
+g:ale_eruby_ruumba_executable                   *g:ale_eruby_ruumba_executable*
+                                                *b:ale_eruby_ruumba_executable*
+  Type: String
+  Default: `'ruumba`
+
+  Override the invoked ruumba binary. This is useful for running ruumba
+  from binstubs or a bundle.
+
+
+g:ale_eruby_ruumba_options                          *g:ale_ruby_ruumba_options*
+                                                    *b:ale_ruby_ruumba_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be change to modify flags given to ruumba.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

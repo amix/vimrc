@@ -2,7 +2,7 @@
 " Filename: autoload/lightline/colorscheme/solarized.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2016/08/08 10:31:00.
+" Last Change: 2020/04/06 19:22:53.
 " =============================================================================
 
 let s:cuicolors = {
@@ -53,7 +53,7 @@ let s:blue = [ '#268bd2', s:cuicolors.blue[s:cuiindex] ]
 let s:cyan = [ '#2aa198', s:cuicolors.cyan[s:cuiindex] ]
 let s:green = [ '#859900', s:cuicolors.green[s:cuiindex] ]
 
-if &background ==# 'light'
+if lightline#colorscheme#background() ==# 'light'
   let [ s:base03, s:base3 ] = [ s:base3, s:base03 ]
   let [ s:base02, s:base2 ] = [ s:base2, s:base02 ]
   let [ s:base01, s:base1 ] = [ s:base1, s:base01 ]
@@ -73,7 +73,7 @@ let s:p.inactive.middle = [ [ s:base01, s:base02 ] ]
 let s:p.tabline.left = [ [ s:base03, s:base00 ] ]
 let s:p.tabline.tabsel = [ [ s:base03, s:base1 ] ]
 let s:p.tabline.middle = [ [ s:base0, s:base02 ] ]
-let s:p.tabline.right = copy(s:p.normal.right)
+let s:p.tabline.right = copy(s:p.tabline.left)
 let s:p.normal.error = [ [ s:base03, s:red ] ]
 let s:p.normal.warning = [ [ s:base03, s:yellow ] ]
 

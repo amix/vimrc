@@ -656,6 +656,10 @@ snippet desc
 	describe ${1:`substitute(substitute(vim_snippets#Filename(), '_spec$', '', ''), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
 		${0}
 	end
+snippet rdesc
+	RSpec.describe ${1:`substitute(substitute(vim_snippets#Filename(), '_spec$', '', ''), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
+		${0}
+	end
 snippet descm
 	describe '${1:#method}' do
 		${0:pending 'Not implemented'}
@@ -688,6 +692,8 @@ snippet expb
 	expect { ${1:object} }.to ${0}
 snippet experr
 	expect { ${1:object} }.to raise_error ${2:StandardError}, /${0:message_regex}/
+snippet allow
+	allow(${1:object}).to ${0}
 snippet shared
 	shared_examples ${0:'shared examples name'}
 snippet ibl

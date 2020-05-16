@@ -1,0 +1,357 @@
+*ale-development.txt*  For Vim version 8.0.
+*ale-dev*
+*ale-development*
+
+ALE Development Documentation
+
+===============================================================================
+CONTENTS                                             *ale-development-contents*
+
+  1. Introduction.........................|ale-development-introduction|
+  2. Design Goals.........................|ale-design-goals|
+  3. Coding Standards.....................|ale-coding-standards|
+  4. Testing ALE..........................|ale-development-tests|
+    4.1. Writing Linter Tests.............|ale-development-linter-tests|
+    4.2. Writing Fixer Tests..............|ale-development-fixer-tests|
+
+===============================================================================
+1. Introduction                                  *ale-development-introduction*
+
+This document contains helpful information for ALE developers, including
+design goals, information on how to run the tests, coding standards, and so
+on. You should read this document if you want to get involved with ALE
+development.
+
+===============================================================================
+2. Design Goals                                              *ale-design-goals*
+
+This section lists design goals for ALE, in no particular order. They are as
+follows.
+
+ALE code should be almost 100% VimL. This makes the plugin as portable as
+possible.
+
+ALE should run without needing any other plugins to be installed, to make
+installation simple. ALE can integrate with other plugins for more advanced
+functionality, non-essential functionality, or improving on basic first party
+functionality.
+
+ALE should check files with as many tools as possible by default, except where
+they cause security issues or make excessive use of resources on modern
+machines.
+
+ALE should be free of breaking changes to the public API, which is comprised of
+documented functions and options, until a major version is planned. Breaking
+changes should be preceded by a deprecation phase complete with warnings.
+Changes required for security may be an exception.
+
+ALE supports Vim 8 and above, and NeoVim 0.2.0 or newer. These are the
+earliest versions of Vim and NeoVim which support |job|, |timer|, |closure|,
+and |lambda| features. All ALE code should be written so it is compatible with
+these versions of Vim, or with version checks so particular features can
+degrade or fail gracefully.
+
+Just about everything should be documented and covered with tests.
+
+By and large, people shouldn't pay for the functionality they don't use. Care
+should be taken when adding new features, so supporting new features doesn't
+degrade the general performance of anything ALE does.
+
+LSP support will become more important as time goes on. ALE should provide
+better support for LSP features as time goes on.
+
+When merging pull requests, you should respond with `Cheers! :beers:`, purely
+for comedy value.
+
+===============================================================================
+3. Coding Standards                                      *ale-coding-standards*
+
+The following general coding standards should be adhered to for Vim code.
+
+* Check your Vim code with `Vint` and do everything it says. ALE will check
+  your Vim code with Vint automatically. See: https://github.com/Kuniwak/vint
+  Read ALE's `Dockerfile` to see which version of `Vint` it uses.
+* Try to write descriptive and concise names for variables and functions.
+  Names shouldn't be too short or too long. Think about others reading your
+  code later on.
+* Use `snake_case` names for variables and arguments, and `PascalCase` names
+  for functions. Prefix every variable name with its scope. (`l:`, `g:`, etc.)
+* Try to keep lines no longer than 80 characters, but this isn't an absolute
+  requirement.
+* Use 4 spaces for every level of indentation in Vim code.
+* Add a blank line before every `function`, `if`, `for`, `while`, or `return`,
+  which doesn't start a new level of indentation. This makes the logic in
+  your code easier to follow.
+* End every file with a trailing newline character, but not with extra blank
+  lines. Remove trailing whitespace from the ends of lines.
+* Write the full names of commands instead of abbreviations. For example, write
+  `function` instead of `func`, and `endif` instead of `end`.
+* Write functions with `!`, so files can be reloaded. Use the |abort| keyword
+  for all functions, so functions exit on the first error.
+* Make sure to credit yourself in files you have authored with `Author:`
+  and `Description:` comments.
+
+In addition to the above general guidelines for the style of your code, you
+should also follow some additional rules designed to prevent mistakes. Some of
+these are reported with ALE's `custom-linting-rules` script. See
+|ale-development-tests|.
+
+* Don't leave stray `:echo` lines in code. Use `execute 'echo' ...` if you must
+  echo something.
+* For strings use |is#| instead of |==#|, `is?` instead of `==?`, `isnot#`
+  instead of `!=#`, and `isnot?` instead of `!=?`. This is because `'x' ==# 0`
+  returns 1, while `'x' is# 0` returns 0, so you will experience fewer issues
+  when numbers are compared with strings. `is` and `isnot` also do not throw
+  errors when other objects like List or Dictionaries are compared with
+  strings.
+* Don't use the `getcwd()` function in the ALE codebase. Most of ALE's code
+  runs from asynchronous callback functions, and these functions can execute
+  from essentially random buffers. Therefore, the `getcwd()` output is
+  useless. Use `expand('#' . a:buffer . ':p:h')` instead. Don't use
+  `expand('%...')` for the same reason.
+* Don't use the `simplify()` function. It doesn't simplify paths enough. Use
+  `ale#path#Simplify()` instead.
+* Don't use the `shellescape()` function. It doesn't escape arguments properly
+  on Windows. Use `ale#Escape()` instead, which will avoid escaping where it
+  isn't needed, and generally escape arguments better on Windows.
+* Don't use the `tempname()` function. It doesn't work when `$TMPDIR` isn't
+  set. Use `ale#util#Tempname()` instead, which temporarily sets `$TMPDIR`
+  appropriately where needed.
+* Use `snake_case` names for linter names, so they can be used as part of
+  variable names. You can define `aliases` for linters, for other names people
+  might try to configure linters with.
+* Use |v:t_TYPE| variables instead of `type()`, which are more readable.
+
+Apply the following guidelines when writing Vader test files.
+
+* Use 2 spaces for Vader test files, instead of the 4 spaces for Vim files.
+* If you write `Before` and `After` blocks, you should typically write them at
+  the top of the file, so they run for all tests. There may be some tests
+  where it make sense to modify the `Before` and `After` code part of the way
+  through the file.
+* If you modify any settings or global variables, reset them in `After`
+  blocks. The Vader `Save` and `Restore` commands can be useful for this
+  purpose.
+* If you load or define linters in tests, write `call ale#linter#Reset()` in
+  an `After` block.
+* Just write `Execute` blocks for Vader tests, and don't bother writing `Then`
+  blocks. `Then` blocks execute after `After` blocks in older versions, and
+  that can be confusing.
+
+Apply the following rules when writing Bash scripts.
+
+* Run `shellcheck`, and do everything it says.
+  See: https://github.com/koalaman/shellcheck
+* Try to write scripts so they will run on Linux, BSD, or Mac OSX.
+
+===============================================================================
+4. Testing ALE              *ale-development-tests* *ale-dev-tests* *ale-tests*
+
+ALE is tested with a suite of tests executed in Travis CI and AppVeyor. ALE
+runs tests with the following versions of Vim in the following environments.
+
+1. Vim 8.0.0027 on Linux via Travis CI.
+2. Vim 8.1.0519 on Linux via Travis CI.
+3. NeoVim 0.2.0 on Linux via Travis CI.
+4. NeoVim 0.3.5 on Linux via Travis CI.
+5. Vim 8 (stable builds) on Windows via AppVeyor.
+
+If you are developing ALE code on Linux, Mac OSX, or BSD, you can run ALEs
+tests by installing Docker and running the `run-tests` script. Follow the
+instructions on the Docker site for installing Docker.
+See: https://docs.docker.com/install/
+
+NOTE: Don't forget to add your user to the `docker` group on Linux, or Docker
+just won't work. See: https://docs.docker.com/install/linux/linux-postinstall/
+
+If you run simply `./run-tests` from the ALE repository root directory, the
+latest Docker image for tests will be downloaded if needed, and the script
+will run all of the tests in Vader, Vint checks, and several Bash scripts for
+finding extra issues. Run `./run-tests --help` to see all of the options the
+script supports. Note that the script supports selecting particular test files.
+
+Generally write tests for any changes you make. The following types of tests
+are recommended for the following types of code.
+
+* New/edited error handler callbacks -> Write tests in `test/handler`
+* New/edited command callbacks       -> Write tests in `test/command_callback`
+* New/edited fixer functions         -> Write tests in `test/fixers`
+
+Look at existing tests in the codebase for examples of how to write tests.
+Refer to the Vader documentation for general information on how to write Vader
+tests: https://github.com/junegunn/vader.vim
+
+See |ale-development-linter-tests| for more information on how to write linter
+tests.
+
+When you add new linters or fixers, make sure to add them into the tables in
+supported-tools.md and |ale-supported-languages-and-tools.txt|. If you forget to
+keep them both in sync, you should see an error like the following in Travis CI.
+>
+  ========================================
+  diff supported-tools.md and doc/ale-supported-languages-and-tools.txt tables
+  ========================================
+  Differences follow:
+
+  --- /tmp/readme.qLjNhJdB        2018-07-01 16:29:55.590331972 +0100
+  +++ /tmp/doc.dAi8zfVE   2018-07-01 16:29:55.582331877 +0100
+  @@ -1 +1 @@
+  - ASM: gcc, foobar
+  + ASM: gcc
+<
+Make sure to list documentation entries for linters and fixers in individual
+help files in the table of contents, and to align help tags to the right
+margin. For example, if you add a heading for an `aardvark` tool to
+`ale-python.txt` with a badly aligned doc tag, you will see errors like so. >
+
+  ========================================
+  Look for badly aligned doc tags
+  ========================================
+  Badly aligned tags follow:
+
+  doc/ale-python.txt:aardvark ...
+  ========================================
+  Look for table of contents issues
+  ========================================
+
+  Check for bad ToC sorting:
+
+  Check for mismatched ToC and headings:
+
+  --- /tmp/table-of-contents.mwCFOgSI     2018-07-01 16:33:25.068811878 +0100
+  +++ /tmp/headings.L4WU0hsO      2018-07-01 16:33:25.076811973 +0100
+  @@ -168,6 +168,7 @@
+   pyrex (cython), ale-pyrex-options
+     cython, ale-pyrex-cython
+   python, ale-python-options
+  +  aardvark, ale-python-aardvark
+     autopep8, ale-python-autopep8
+     black, ale-python-black
+     flake8, ale-python-flake8
+<
+Make sure to make the table of contents match the headings, and to keep the
+doc tags on the right margin.
+
+===============================================================================
+4.1 Writing Linter Tests                         *ale-development-linter-tests*
+
+Tests for ALE linters take two forms.
+
+1. Tests for handling the output of commands.
+2. Tests for checking which commands are run, or connections are made.
+
+Tests of the first form should go in the `test/handler` directory, and should
+be written like so. >
+
+  Before:
+    " Load the file which defines the linter.
+    runtime ale_linters/filetype/linter_name_here.vim
+
+  After:
+    " Unload all linters again.
+    call ale#linter#Reset()
+
+  Execute(The output should be correct):
+
+  " Test that the right loclist items are parsed from the handler.
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': 'Something went wrong',
+  \   },
+  \ ],
+  \ ale_linters#filetype#linter_name#Handle(bufnr(''), [
+  \ '1:Something went wrong',
+  \ ]
+<
+Tests for what ALE runs should go in the `test/command_callback` directory,
+and should be written like so. >
+
+  Before:
+    " Load the linter and set up a series of commands, reset linter variables,
+    " clear caches, etc.
+    "
+    " Vader's 'Save' command will be called here for linter variables.
+    call ale#assert#SetUpLinterTest('filetype', 'linter_name')
+
+  After:
+    " Reset linters, variables, etc.
+    "
+    " Vader's 'Restore' command will be called here.
+    call ale#assert#TearDownLinterTest()
+
+  Execute(The default command should be correct):
+    " AssertLinter checks the executable and command.
+    " Pass expected_executable, expected_command
+    AssertLinter 'some-command', ale#Escape('some-command') . ' --foo'
+
+  Execute(Check chained commands):
+    " GivenCommandOutput can be called with 1 or more list for passing output
+    " to chained commands. The output for each callback defaults to an empty
+    " list.
+    GivenCommandOutput ['v2.1.2']
+    " Given a List of commands, check all of them.
+    " Given a String, only the last command in the chain will be checked.
+    AssertLinter 'some-command', [
+    \ ale#Escape('some-command') . ' --version',
+    \ ale#Escape('some-command') . ' --foo',
+    \]
+<
+The full list of commands that will be temporarily defined for linter tests
+given the above setup are as follows.
+
+`GivenCommandOutput [...]`         - Define output for ale#command#Run.
+`AssertLinter executable, command` - Check the executable and command.
+`AssertLinterNotExecuted`          - Check that linters will not be executed.
+`AssertLSPLanguage language`       - Check the language given to an LSP server.
+`AssertLSPOptions options_dict`    - Check the options given to an LSP server.
+`AssertLSPConfig config_dict`      - Check the config given to an LSP server.
+`AssertLSPProject project_root`    - Check the root given to an LSP server.
+`AssertLSPAddress address`         - Check the address to an LSP server.
+
+
+===============================================================================
+4.2 Writing Fixer Tests                           *ale-development-fixer-tests*
+
+Tests for ALE fixers should go in the `test/fixers` directory, and should
+be written like so. >
+
+  Before:
+    " Load the fixer and set up a series of commands, reset fixer variables,
+    " clear caches, etc.
+    "
+    " Vader's 'Save' command will be called here for fixer variables.
+    call ale#assert#SetUpFixerTest('filetype', 'fixer_name')
+
+  After:
+    " Reset fixers, variables, etc.
+    "
+    " Vader's 'Restore' command will be called here.
+    call ale#assert#TearDownFixerTest()
+
+  Execute(The default command should be correct):
+    " AssertFixer checks the result of the loaded fixer function.
+    AssertFixer {'command': ale#Escape('some-command') . ' --foo'}
+
+  Execute(Check chained commands):
+    " Same as above for linter tests.
+    GivenCommandOutput ['v2.1.2']
+    " Given a List of commands, check all of them.
+    " Given anything else, only the last result will be checked.
+    AssertFixer [
+    \ ale#Escape('some-command') . ' --version',
+    \ {'command': ale#Escape('some-command') . ' --foo'}
+    \]
+<
+The full list of commands that will be temporarily defined for fixer tests
+given the above setup are as follows.
+
+`GivenCommandOutput [...]`         - Define output for ale#command#Run.
+`AssertFixer results`              - Check the fixer results
+`AssertFixerNotExecuted`           - Check that fixers will not be executed.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -1,4 +1,4 @@
-*ctrlp.txt*       Fuzzy file, buffer, mru, tag, ... finder. v1.79
+*ctrlp.txt*       Fuzzy file, buffer, mru, tag, ... finder. v1.80
 *CtrlP* *ControlP* *'ctrlp'* *'ctrl-p'*
 ===============================================================================
 #                                                                             #
@@ -1107,13 +1107,13 @@ c)  End the string with a colon ':' followed by a Vim command to execute that
 
     See also: Vim's |++opt| and |+cmd|.
 
-d)  Submit two dots '..' to go upward the directory tree by 1 level. To go up
+d)  Input two dots '..' and then hit the <Enter> key to go upward the directory tree by 1 level. To go up
     multiple levels, use one extra dot for each extra level:
 >
          Raw input    Interpreted as
-         ..           ../
-         ...          ../../
-         ....         ../../../
+         ..<Cr>           ../
+         ...<Cr>          ../../
+         ....<Cr>         ../../../
 <
     Note: if the parent directories are large and uncached, this can be slow.
 
@@ -1343,7 +1343,7 @@ Buffer Tag mode options:~
 
                                                    *'g:ctrlp_buftag_ctags_bin'*
 If ctags isn't in your $PATH, or a ctags binary exists in either
-/opt/local/bin or /usr/local/bin, us this to set its location: >
+/opt/local/bin or /usr/local/bin, use this to set its location: >
   let g:ctrlp_buftag_ctags_bin = ''
 <
 
@@ -1505,7 +1505,7 @@ Before 2016/11/28~
     + New command: |YankLine()| to yank current line.
     + New option: |g:ctrlp_types| to select builtin modes.
     + New feature: asynchronized spawn of |g:ctrlp_user_command|. This enable
-                  with set |g:user_command_async| to 1.
+                  with set |g:ctrlp_user_command_async| to 1.
     + Support buffertag for delphi, rust and golang.
     + New option: |g:ctrlp_brief_prompt|,
                   |g:match_current_file|,

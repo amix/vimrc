@@ -1,0 +1,663 @@
+*vim-markdown*  Vim Markdown
+
+===============================================================================
+Contents ~
+
+ 1. Introduction                                    |vim-markdown-introduction|
+ 2. Installation                                    |vim-markdown-installation|
+ 3. Basic usage                                      |vim-markdown-basic-usage|
+  1. Folding                                             |vim-markdown-folding|
+  2. Concealing                                       |vim-markdown-concealing|
+ 4. Options                                              |vim-markdown-options|
+  1. Disable Folding                             |vim-markdown-disable-folding|
+  2. Change fold style                         |vim-markdown-change-fold-style|
+  3. Set header folding level           |vim-markdown-set-header-folding-level|
+  4. Disable Default Key Mappings   |vim-markdown-disable-default-key-mappings|
+  5. Enable TOC window auto-fit       |vim-markdown-enable-toc-window-auto-fit|
+  6. Text emphasis restriction to single-lines
+                       |vim-markdown-text-emphasis-restriction-to-single-lines|
+  7. Syntax Concealing                         |vim-markdown-syntax-concealing|
+  8. Fenced code block languages     |vim-markdown-fenced-code-block-languages|
+  9. Follow named anchors                   |vim-markdown-follow-named-anchors|
+  10. Syntax extensions                        |vim-markdown-syntax-extensions|
+   1. LaTeX math                                      |vim-markdown-latex-math|
+   2. YAML Front Matter                        |vim-markdown-yaml-front-matter|
+   3. TOML Front Matter                        |vim-markdown-toml-front-matter|
+   4. JSON Front Matter                        |vim-markdown-json-front-matter|
+   5. Strikethrough                                |vim-markdown-strikethrough|
+  11. Adjust new list item indent    |vim-markdown-adjust-new-list-item-indent|
+  12. Do not require .md extensions for Markdown links
+                |vim-markdown-do-not-require-.md-extensions-for-markdown-links|
+  13. Auto-write when following link
+                                  |vim-markdown-auto-write-when-following-link|
+  14. Change default file extension
+                                   |vim-markdown-change-default-file-extension|
+  15. Do not automatically insert bulletpoints
+                        |vim-markdown-do-not-automatically-insert-bulletpoints|
+  16. Change how to open new files  |vim-markdown-change-how-to-open-new-files|
+ 5. Mappings                                            |vim-markdown-mappings|
+ 6. Commands                                            |vim-markdown-commands|
+ 7. Credits                                              |vim-markdown-credits|
+ 8. License                                              |vim-markdown-license|
+ 9. References                                        |vim-markdown-references|
+
+===============================================================================
+                                                    *vim-markdown-introduction*
+Introduction ~
+
+Syntax highlighting, matching rules and mappings for the original Markdown [1]
+and extensions.
+
+===============================================================================
+                                                    *vim-markdown-installation*
+Installation ~
+
+If you use Vundle [2], add the following lines to your '~/.vimrc':
+>
+  Plugin 'godlygeek/tabular'
+  Plugin 'plasticboy/vim-markdown'
+<
+The 'tabular' plugin must come _before_ 'vim-markdown'.
+
+Then run inside Vim:
+>
+  :so ~/.vimrc
+  :PluginInstall
+<
+If you use Pathogen [3], do this:
+>
+  cd ~/.vim/bundle
+  git clone https://github.com/plasticboy/vim-markdown.git
+<
+To install without Pathogen using the Debian vim-addon-manager [4], do this:
+>
+  git clone https://github.com/plasticboy/vim-markdown.git
+  cd vim-markdown
+  sudo make install
+  vim-addon-manager install markdown
+<
+If you are not using any package manager, download the tarball [5] and do this:
+>
+  cd ~/.vim
+  tar --strip=1 -zxf vim-markdown-master.tar.gz
+<
+===============================================================================
+                                                     *vim-markdown-basic-usage*
+Basic usage ~
+
+-------------------------------------------------------------------------------
+                                                         *vim-markdown-folding*
+Folding ~
+
+Folding is enabled for headers by default.
+
+The following commands are useful to open and close folds:
+
+                                                              *vim-markdown-zr*
+- 'zr': reduces fold level throughout the buffer
+                                                              *vim-markdown-zR*
+- 'zR': opens all folds
+                                                              *vim-markdown-zm*
+- 'zm': increases fold level throughout the buffer
+                                                              *vim-markdown-zM*
+- 'zM': folds everything all the way
+                                                              *vim-markdown-za*
+- 'za': open a fold your cursor is on
+                                                              *vim-markdown-zA*
+- 'zA': open a fold your cursor is on recursively
+                                                              *vim-markdown-zc*
+- 'zc': close a fold your cursor is on
+                                                              *vim-markdown-zC*
+- 'zC': close a fold your cursor is on recursively
+
+Options are available to disable folding or change folding style.
+
+Try ':help fold-expr' and ':help fold-commands' for details.
+
+-------------------------------------------------------------------------------
+                                                      *vim-markdown-concealing*
+Concealing ~
+
+Concealing is set for some syntax such as bold, italic, code block and link.
+
+Concealing lets you conceal text with other text. The actual source text is not
+modified. If you put your cursor on the concealed line, the conceal goes away.
+
+Options are available to disable or change concealing.
+
+Try ':help concealcursor' and ':help conceallevel' for details.
+
+===============================================================================
+                                                         *vim-markdown-options*
+Options ~
+
+-------------------------------------------------------------------------------
+                                                 *vim-markdown-disable-folding*
+Disable Folding ~
+
+                                              *g:vim_markdown_folding_disabled*
+- 'g:vim_markdown_folding_disabled'
+
+  Add the following line to your '.vimrc' to disable the folding
+  configuration:
+>
+  let g:vim_markdown_folding_disabled = 1
+<
+  This option only controls Vim Markdown specific folding configuration.
+
+  To enable/disable folding use Vim's standard folding configuration.
+>
+  set [no]foldenable
+<
+-------------------------------------------------------------------------------
+                                               *vim-markdown-change-fold-style*
+Change fold style ~
+
+                                        *g:vim_markdown_folding_style_pythonic*
+- 'g:vim_markdown_folding_style_pythonic'
+
+  To fold in a style like python-mode [6], add the following to your
+  '.vimrc':
+>
+  let g:vim_markdown_folding_style_pythonic = 1
+<
+  'g:vim_markdown_folding_level' setting (default 1) is set to 'foldlevel'.
+  Thus level 1 heading which is served as a document title is expanded by
+  default.
+
+                                             *g:vim_markdown_override_foldtext*
+- 'g:vim_markdown_override_foldtext'
+
+  To prevent foldtext from being set add the following to your '.vimrc':
+>
+  let g:vim_markdown_override_foldtext = 0
+<
+-------------------------------------------------------------------------------
+                                        *vim-markdown-set-header-folding-level*
+Set header folding level ~
+
+                                                 *g:vim_markdown_folding_level*
+- 'g:vim_markdown_folding_level'
+
+  Folding level is a number between 1 and 6. By default, if not specified, it
+  is set to 1.
+>
+  let g:vim_markdown_folding_level = 6
+<
+  Tip: it can be changed on the fly with:
+>
+  :let g:vim_markdown_folding_level = 1
+  :edit
+<
+-------------------------------------------------------------------------------
+                                    *vim-markdown-disable-default-key-mappings*
+Disable Default Key Mappings ~
+
+                                       *g:vim_markdown_no_default_key_mappings*
+- 'g:vim_markdown_no_default_key_mappings'
+
+  Add the following line to your '.vimrc' to disable default key mappings:
+>
+  let g:vim_markdown_no_default_key_mappings = 1
+<
+  You can also map them by yourself with '<Plug>' mappings.
+
+-------------------------------------------------------------------------------
+                                      *vim-markdown-enable-toc-window-auto-fit*
+Enable TOC window auto-fit ~
+
+                                                   *g:vim_markdown_toc_autofit*
+- 'g:vim_markdown_toc_autofit'
+
+  Allow for the TOC window to auto-fit when it's possible for it to shrink.
+  It never increases its default size (half screen), it only shrinks.
+>
+  let g:vim_markdown_toc_autofit = 1
+<
+-------------------------------------------------------------------------------
+                       *vim-markdown-text-emphasis-restriction-to-single-lines*
+Text emphasis restriction to single-lines ~
+
+                                            *g:vim_markdown_emphasis_multiline*
+- 'g:vim_markdown_emphasis_multiline'
+
+  By default text emphasis works across multiple lines until a closing token
+  is found. However, it's possible to restrict text emphasis to a single line
+  (i.e., for it to be applied a closing token must be found on the same
+  line). To do so:
+>
+  let g:vim_markdown_emphasis_multiline = 0
+<
+-------------------------------------------------------------------------------
+                                               *vim-markdown-syntax-concealing*
+Syntax Concealing ~
+
+                                                       *g:vim_markdown_conceal*
+- 'g:vim_markdown_conceal'
+
+  Concealing is set for some syntax.
+
+  For example, conceal '[link text](link url)' as just 'link text'. Also,
+  '_italic_' and '*italic*' will conceal to just _italic_. Similarly
+  '__bold__', '**bold**', '___italic bold___', and '***italic bold***' will
+  conceal to just **bold**, **bold**, **_italic bold_**, and **_italic
+  bold_** respectively.
+
+  To enable conceal use Vim's standard conceal configuration.
+>
+  set conceallevel=2
+<
+  To disable conceal regardless of 'conceallevel' setting, add the following
+  to your '.vimrc':
+>
+  let g:vim_markdown_conceal = 0
+<
+  To disable math conceal with LaTeX math syntax enabled, add the following
+  to your '.vimrc':
+>
+  let g:tex_conceal = ""
+  let g:vim_markdown_math = 1
+<
+                                           *g:vim_markdown_conceal_code_blocks*
+- 'g:vim_markdown_conceal_code_blocks'
+
+  Disabling conceal for code fences requires an additional setting:
+>
+  let g:vim_markdown_conceal_code_blocks = 0
+<
+-------------------------------------------------------------------------------
+                                     *vim-markdown-fenced-code-block-languages*
+Fenced code block languages ~
+
+                                              *g:vim_markdown_fenced_languages*
+- 'g:vim_markdown_fenced_languages'
+
+  You can use filetype name as fenced code block languages for syntax
+  highlighting. If you want to use different name from filetype, you can add
+  it in your '.vimrc' like so:
+>
+  let g:vim_markdown_fenced_languages = ['csharp=cs']
+<
+  This will cause the following to be highlighted using the 'cs' filetype
+  syntax.
+>
+  ```csharp
+  ...
+  ```
+<
+  Default is "['c++=cpp', 'viml=vim', 'bash=sh', 'ini=dosini']".
+
+-------------------------------------------------------------------------------
+                                            *vim-markdown-follow-named-anchors*
+Follow named anchors ~
+
+                                                 *g:vim_markdown_follow_anchor*
+- 'g:vim_markdown_follow_anchor'
+
+  This feature allows the 'ge' command to follow named anchors in links of
+  the form 'file#anchor' or just '#anchor', where file may omit the '.md'
+  extension as usual. Two variables control its operation:
+>
+  let g:vim_markdown_follow_anchor = 1
+<
+  This tells vim-markdown whether to attempt to follow a named anchor in a
+  link or not. When it is 1, and only if a link can be split in two parts by
+  the pattern '#', then the first part is interpreted as the file and the
+  second one as the named anchor. This also includes urls of the form
+  '#anchor', for which the first part is considered empty, meaning that the
+  target file is the current one. After the file is opened, the anchor will
+  be searched.
+
+  Default is '0'.
+
+                                                    *g:vim_markdown_anchorexpr*
+- 'g:vim_markdown_anchorexpr'
+>
+  let g:vim_markdown_anchorexpr = "'<<'.v:anchor.'>>'"
+<
+  This expression will be evaluated substituting 'v:anchor' with a quoted
+  string that contains the anchor to visit. The result of the evaluation will
+  become the real anchor to search in the target file. This is useful in
+  order to convert anchors of the form, say, 'my-section-title' to searches
+  of the form 'My Section Title' or '<<my-section-title>>'.
+
+  Default is "''".
+
+-------------------------------------------------------------------------------
+                                               *vim-markdown-syntax-extensions*
+Syntax extensions ~
+
+The following options control which syntax extensions will be turned on. They
+are off by default.
+
+-------------------------------------------------------------------------------
+                                                      *vim-markdown-latex-math*
+LaTeX math ~
+
+                                                          *g:vim_markdown_math*
+- 'g:vim_markdown_math'
+
+  Used as '$x^2$', '$$x^2$$', escapable as '\$x\$' and '\$\$x\$\$'.
+>
+  let g:vim_markdown_math = 1
+<
+-------------------------------------------------------------------------------
+                                               *vim-markdown-yaml-front-matter*
+YAML Front Matter ~
+
+                                                   *g:vim_markdown_frontmatter*
+- 'g:vim_markdown_frontmatter'
+
+  Highlight YAML front matter as used by Jekyll or Hugo [7].
+>
+  let g:vim_markdown_frontmatter = 1
+<
+-------------------------------------------------------------------------------
+                                               *vim-markdown-toml-front-matter*
+TOML Front Matter ~
+
+                                              *g:vim_markdown_toml_frontmatter*
+- 'g:vim_markdown_toml_frontmatter'
+
+  Highlight TOML front matter as used by Hugo [7].
+
+  TOML syntax highlight requires vim-toml [8].
+>
+  let g:vim_markdown_toml_frontmatter = 1
+<
+-------------------------------------------------------------------------------
+                                               *vim-markdown-json-front-matter*
+JSON Front Matter ~
+
+                                              *g:vim_markdown_json_frontmatter*
+- 'g:vim_markdown_json_frontmatter'
+
+  Highlight JSON front matter as used by Hugo [7].
+
+  JSON syntax highlight requires vim-json [9].
+>
+  let g:vim_markdown_json_frontmatter = 1
+<
+-------------------------------------------------------------------------------
+                                                   *vim-markdown-strikethrough*
+Strikethrough ~
+
+                                                 *g:vim_markdown_strikethrough*
+- 'g:vim_markdown_strikethrough'
+
+  Strikethrough uses two tildes. '~~Scratch this.~~'
+>
+  let g:vim_markdown_strikethrough = 1
+<
+-------------------------------------------------------------------------------
+                                     *vim-markdown-adjust-new-list-item-indent*
+Adjust new list item indent ~
+
+                                          *g:vim_markdown_new_list_item_indent*
+- 'g:vim_markdown_new_list_item_indent'
+
+  You can adjust a new list indent. For example, you insert a single line
+  like below:
+>
+  * item1
+<
+  Then if you type 'o' to insert new line in vim and type '* item2', the
+  result will be:
+>
+  * item1
+      * item2
+<
+  vim-markdown automatically insert the indent. By default, the number of
+  spaces of indent is 4. If you'd like to change the number as 2, just write:
+>
+  let g:vim_markdown_new_list_item_indent = 2
+<
+-------------------------------------------------------------------------------
+                *vim-markdown-do-not-require-.md-extensions-for-markdown-links*
+Do not require .md extensions for Markdown links ~
+
+                                     *g:vim_markdown_no_extensions_in_markdown*
+- 'g:vim_markdown_no_extensions_in_markdown'
+
+  If you want to have a link like this '[link text](link-url)' and follow it
+  for editing in vim using the 'ge' command, but have it open the file "link-
+  url.md" instead of the file "link-url", then use this option:
+>
+  let g:vim_markdown_no_extensions_in_markdown = 1
+<
+  This is super useful for GitLab and GitHub wiki repositories.
+
+  Normal behaviour would be that vim-markup required you to do this '[link
+  text](link-url.md)', but this is not how the Gitlab and GitHub wiki
+  repositories work. So this option adds some consistency between the two.
+
+-------------------------------------------------------------------------------
+                                  *vim-markdown-auto-write-when-following-link*
+Auto-write when following link ~
+
+                                                     *g:vim_markdown_autowrite*
+- 'g:vim_markdown_autowrite'
+
+  If you follow a link like this '[link text](link-url)' using the 'ge'
+  shortcut, this option will automatically save any edits you made before
+  moving you:
+>
+  let g:vim_markdown_autowrite = 1
+<
+-------------------------------------------------------------------------------
+                                   *vim-markdown-change-default-file-extension*
+Change default file extension ~
+
+                                            *g:vim_markdown_auto_extension_ext*
+- 'g:vim_markdown_auto_extension_ext'
+
+  If you would like to use a file extension other than '.md' you may do so
+  using the 'vim_markdown_auto_extension_ext' variable:
+>
+  let g:vim_markdown_auto_extension_ext = 'txt'
+<
+-------------------------------------------------------------------------------
+                        *vim-markdown-do-not-automatically-insert-bulletpoints*
+Do not automatically insert bulletpoints ~
+
+                                           *g:vim_markdown_auto_insert_bullets*
+- 'g:vim_markdown_auto_insert_bullets'
+
+  Automatically inserting bulletpoints can lead to problems when wrapping
+  text (see issue #232 for details), so it can be disabled:
+>
+  let g:vim_markdown_auto_insert_bullets = 0
+<
+  In that case, you probably also want to set the new list item indent to 0
+  as well, or you will have to remove an indent each time you add a new list
+  item:
+>
+  let g:vim_markdown_new_list_item_indent = 0
+<
+-------------------------------------------------------------------------------
+                                    *vim-markdown-change-how-to-open-new-files*
+Change how to open new files ~
+
+                                                   *g:vim_markdown_edit_url_in*
+- 'g:vim_markdown_edit_url_in'
+
+  By default when following a link the target file will be opened in your
+  current buffer. This behavior can change if you prefer using splits or tabs
+  by using the 'vim_markdown_edit_url_in' variable. Possible values are
+  'tab', 'vsplit', 'hsplit', 'current' opening in a new tab, vertical split,
+  horizontal split, and current buffer respectively. Defaults to current
+  buffer if not set:
+>
+  let g:vim_markdown_edit_url_in = 'tab'
+<
+===============================================================================
+                                                        *vim-markdown-mappings*
+Mappings ~
+
+The following work on normal and visual modes:
+
+                                                              *vim-markdown-gx*
+- 'gx': open the link under the cursor in the same browser as the standard
+  'gx' command. '<Plug>Markdown_OpenUrlUnderCursor'
+
+  The standard 'gx' is extended by allowing you to put your cursor anywhere
+  inside a link.
+
+  For example, all the following cursor positions will work:
+>
+  [Example](http://example.com)
+  ^  ^    ^^   ^       ^
+  1  2    34   5       6
+
+  <http://example.com>
+  ^  ^               ^
+  1  2               3
+<
+  Known limitation: does not work for links that span multiple lines.
+
+                                                              *vim-markdown-ge*
+- 'ge': open the link under the cursor in Vim for editing. Useful for
+  relative markdown links. '<Plug>Markdown_EditUrlUnderCursor'
+
+  The rules for the cursor position are the same as the 'gx' command.
+
+                                                              *vim-markdown-]]*
+- ']]': go to next header. '<Plug>Markdown_MoveToNextHeader'
+
+                                                              *vim-markdown-[[*
+- '[[': go to previous header. Contrast with ']c'.
+  '<Plug>Markdown_MoveToPreviousHeader'
+
+                                                              *vim-markdown-][*
+- '][': go to next sibling header if any.
+  '<Plug>Markdown_MoveToNextSiblingHeader'
+
+                                                              *vim-markdown-[]*
+- '[]': go to previous sibling header if any.
+  '<Plug>Markdown_MoveToPreviousSiblingHeader'
+
+                                                              *vim-markdown-]c*
+- ']c': go to Current header. '<Plug>Markdown_MoveToCurHeader'
+
+                                                              *vim-markdown-]u*
+- ']u': go to parent header (Up). '<Plug>Markdown_MoveToParentHeader'
+
+This plugin follows the recommended Vim plugin mapping interface, so to change
+the map ']u' to 'asdf', add to your '.vimrc':
+>
+  map asdf <Plug>Markdown_MoveToParentHeader
+<
+To disable a map use:
+>
+  map <Plug> <Plug>Markdown_MoveToParentHeader
+<
+===============================================================================
+                                                        *vim-markdown-commands*
+Commands ~
+
+The following requires ':filetype plugin on'.
+
+                                                              *:HeaderDecrease*
+- ':HeaderDecrease':
+
+  Decrease level of all headers in buffer: 'h2' to 'h1', 'h3' to 'h2', etc.
+
+  If range is given, only operate in the range.
+
+  If an 'h1' would be decreased, abort.
+
+  For simplicity of implementation, Setex headers are converted to Atx.
+
+                                                              *:HeaderIncrease*
+- ':HeaderIncrease': Analogous to ':HeaderDecrease', but increase levels
+  instead.
+
+                                                                  *:SetexToAtx*
+- ':SetexToAtx':
+
+  Convert all Setex style headers in buffer to Atx.
+
+  If a range is given, e.g. hit ':' from visual mode, only operate on the
+  range.
+
+                                                                 *:TableFormat*
+- ':TableFormat': Format the table under the cursor like this [10].
+
+  Requires Tabular [11].
+
+  The input table _must_ already have a separator line as the second line of
+  the table. That line only needs to contain the correct pipes '|', nothing
+  else is required.
+
+                                                                         *:Toc*
+- ':Toc': create a quickfix vertical window navigable table of contents with
+  the headers.
+
+  Hit '<Enter>' on a line to jump to the corresponding line of the markdown
+  file.
+
+                                                                        *:Toch*
+- ':Toch': Same as ':Toc' but in an horizontal window.
+
+                                                                        *:Toct*
+- ':Toct': Same as ':Toc' but in a new tab.
+
+                                                                        *:Tocv*
+- ':Tocv': Same as ':Toc' for symmetry with ':Toch' and ':Tocv'.
+
+===============================================================================
+                                                         *vim-markdown-credits*
+Credits ~
+
+The main contributors of vim-markdown are:
+
+- **Ben Williams** (A.K.A. **plasticboy**). The original developer of vim-
+  markdown. Homepage [12].
+
+If you feel that your name should be on this list, please make a pull request
+listing your contributions.
+
+===============================================================================
+                                                         *vim-markdown-license*
+License ~
+
+The MIT License (MIT)
+
+Copyright (c) 2012 Benjamin D. Williams
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+===============================================================================
+                                                      *vim-markdown-references*
+References ~
+
+[1] http://daringfireball.net/projects/markdown/
+[2] https://github.com/gmarik/vundle
+[3] https://github.com/tpope/vim-pathogen
+[4] http://packages.qa.debian.org/v/vim-addon-manager.html
+[5] https://github.com/plasticboy/vim-markdown/archive/master.tar.gz
+[6] https://github.com/klen/python-mode
+[7] https://gohugo.io/content/front-matter/
+[8] https://github.com/cespare/vim-toml
+[9] https://github.com/elzr/vim-json
+[10] http://www.cirosantilli.com/markdown-style-guide/#tables
+[11] https://github.com/godlygeek/tabular
+[12] http://plasticboy.com/
+
+vim: ft=help

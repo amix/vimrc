@@ -5,12 +5,16 @@ snippet mod
 snippet modall
 	-module(${1:`vim_snippets#Filename()`}).
 	-compile([export_all]).
-	 
+
 	start() ->
 		${0}
-	 
+
 	stop() ->
 		ok.
+snippet d
+	erlang:display(${0}),
+snippet dt
+	erlang:display({${1}, ${0}}),
 # define directive
 snippet def
 	-define(${1:macro}, ${2:body}).
@@ -30,17 +34,23 @@ snippet ifd
 	-ifdef(${1:TEST}).
 	${0}
 	-endif.
+snippet ifnd
+	-ifndef(${1:TEST}).
+	${0}
+	-endif.
+snippet undef
+	-undef(${1:macro}).
 # if expression
 snippet if
 	if
-	    ${1:guard} ->
-	        ${0:body}
+		${1:guard} ->
+			${0:body}
 	end
 # case expression
 snippet case
 	case ${1:expression} of
-	    ${2:pattern} ->
-	        ${0:body};
+		${2:pattern} ->
+			${0:body};
 	end
 # anonymous function
 snippet fun
@@ -48,14 +58,21 @@ snippet fun
 # try...catch
 snippet try
 	try
-	    ${1:${VISUAL}}
+		${1:${VISUAL}}
 	catch
-	    ${2:_:_} -> ${0:got_some_exception}
+		${2:_:_} -> ${0:got_some_exception}
+	end
+snippet rcv "Receive Expression"
+	receive
+	${1:	${2:pattern}${3: when ${4:guard}} ->
+			${5:body}}
+	${6:after
+		${7:expression} ->
+			${8:body}}
 	end
 # record directive
 snippet rec
-	-record(${1:record}, {
-	    ${2:field}=${3:value}}).
+	-record(${1:record}, {${2:field}=${3:value}}).
 # todo comment
 snippet todo
 	%% TODO: ${0}
@@ -82,15 +99,15 @@ snippet application
 	-export([start/2, stop/1]).
 
 	start(_Type, _StartArgs) ->
-	    case ${0:root_supervisor}:start_link() of
-	        {ok, Pid} ->
-	            {ok, Pid};
-	        Other ->
-		          {error, Other}
-	    end.
+		case ${0:root_supervisor}:start_link() of
+			{ok, Pid} ->
+				{ok, Pid};
+			Other ->
+				{error, Other}
+		end.
 
 	stop(_State) ->
-	    ok.
+		ok.
 # OTP supervisor
 snippet supervisor
 	-module(${1:`vim_snippets#Filename()`}).
@@ -106,14 +123,14 @@ snippet supervisor
 	-define(SERVER, ?MODULE).
 
 	start_link() ->
-	    supervisor:start_link({local, ?SERVER}, ?MODULE, []).
+			supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
 	init([]) ->
-	    Server = {${0:my_server}, {${2}, start_link, []},
-	      permanent, 2000, worker, [${2}]},
-	    Children = [Server],
-	    RestartStrategy = {one_for_one, 0, 1},
-	    {ok, {RestartStrategy, Children}}.
+		Server = {${0:my_server}, {${2}, start_link, []},
+			permanent, 2000, worker, [${2}]},
+		Children = [Server],
+		RestartStrategy = {one_for_one, 0, 1},
+		{ok, {RestartStrategy, Children}}.
 # OTP gen_server
 snippet gen_server
 	-module(${0:`vim_snippets#Filename()`}).
@@ -121,17 +138,10 @@ snippet gen_server
 	-behaviour(gen_server).
 
 	%% API
-	-export([
-	         start_link/0
-	        ]).
+	-export([start_link/0]).
 
 	%% gen_server callbacks
-	-export([init/1,
-	         handle_call/3,
-	         handle_cast/2,
-	         handle_info/2,
-	         terminate/2,
-	         code_change/3]).
+	-export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 	-define(SERVER, ?MODULE).
 
@@ -142,30 +152,30 @@ snippet gen_server
 	%%%===================================================================
 
 	start_link() ->
-	    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+		gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 	%%%===================================================================
 	%%% gen_server callbacks
 	%%%===================================================================
 
 	init([]) ->
-	    {ok, #state{}}.
+		{ok, #state{}}.
 
 	handle_call(_Request, _From, State) ->
-	    Reply = ok,
-	    {reply, Reply, State}.
+		Reply = ok,
+		{reply, Reply, State}.
 
 	handle_cast(_Msg, State) ->
-	    {noreply, State}.
+		{noreply, State}.
 
 	handle_info(_Info, State) ->
-	    {noreply, State}.
+		{noreply, State}.
 
 	terminate(_Reason, _State) ->
-	    ok.
+		ok.
 
 	code_change(_OldVsn, State, _Extra) ->
-	    {ok, State}.
+		{ok, State}.
 
 	%%%===================================================================
 	%%% Internal functions
@@ -180,14 +190,8 @@ snippet gen_fsm
 	-export([start_link/0]).
 
 	%% gen_fsm callbacks
-	-export([init/1,
-			 state_name/2,
-			 state_name/3,
-			 handle_event/3,
-			 handle_sync_event/4,
-			 handle_info/3,
-			 terminate/3,
-			 code_change/4]).
+	-export([init/1, state_name/2, state_name/3, handle_event/3, handle_sync_event/4,
+		handle_info/3, terminate/3, code_change/4]).
 
 	-record(state, {}).
 
@@ -356,15 +360,15 @@ snippet gen_event
 
 	%% API
 	-export([start_link/0,
-			 add_handler/2]).
+		add_handler/2]).
 
 	%% gen_event callbacks
 	-export([init/1,
-			 handle_event/2,
-			 handle_call/2,
-			 handle_info/2,
-			 terminate/2,
-			 code_change/3]).
+		handle_event/2,
+		handle_call/2,
+		handle_info/2,
+		terminate/2,
+		code_change/3]).
 
 	-record(state, {}).
 
@@ -497,6 +501,16 @@ snippet ieunit
 	${0}
 
 	-endif.
+snippet itest
+	-ifdef(TEST).
+
+	${1}_test() ->
+		${0}
+
+	-endif.
+snippet test
+	${1}_test() ->
+		${0}
 snippet as
 	?assert(${0})
 snippet asn
@@ -523,9 +537,9 @@ snippet testsuite
 
 	%% Test server callbacks
 	-export([suite/0, all/0, groups/0,
-		 init_per_suite/1, end_per_suite/1,
-		 init_per_group/2, end_per_group/2,
-		 init_per_testcase/2, end_per_testcase/2]).
+		init_per_suite/1, end_per_suite/1,
+		init_per_group/2, end_per_group/2,
+		init_per_testcase/2, end_per_testcase/2]).
 
 	%% Test cases
 	-export([

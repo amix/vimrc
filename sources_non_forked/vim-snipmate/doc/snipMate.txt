@@ -161,6 +161,13 @@ g:snipMate.override
                                 maps and other settings work. Note: Load order
                                 is determined by 'runtimepath'.
 
+                                Duplicates are only dropped after reading one
+                                snippet file. If multiple files contain a
+                                snippet see always_choose_first
+g:snipMate.always_choose_first
+                                Always choose first snippet if there are
+                                multiple left
+
 g:snipMate.description_in_completion
                                 If set to 1 (default is 0), snippet
                                 descriptions will be included in the popup

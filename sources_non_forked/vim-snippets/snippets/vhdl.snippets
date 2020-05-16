@@ -75,6 +75,16 @@ snippet prc
 			${2}
 		end if;
 	end process;
+# process with clock and reset
+snippet prcr
+	process (${1:clk}, ${2:nrst})
+	begin
+		if ($2 = '${3:0}') then
+			${4}
+		elsif rising_edge($1) then
+			${5}
+		end if;
+	end process;
 # process all
 snippet pra
 	process (${1:all})

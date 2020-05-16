@@ -224,10 +224,10 @@ endsnippet
 
 snippet construct "__construct()" b
 /**
- * @param $2mixed ${1/, /\n     * \@param mixed /g}
+ * @param$2 ${1/, /\n     * \@param /g}
  */
 public function __construct(${1:$dependencies})
-{${1/\$(\w+)(, )*/\n        $this->$1 = $$1;/g}
+{${1/\w* ?\$(\w+)(, )*/\n        $this->$1 = $$1;/g}
 }
 $0
 endsnippet
@@ -249,6 +249,32 @@ if m:
 class `!p
 snip.rv = re.match(r'.*(?=\.)', fn).group()
 ` extends \PHPUnit_Framework_TestCase
+{
+	public function test$1()
+	{
+		${0:${VISUAL}}
+	}
+}
+endsnippet
+
+snippet testcase6 "class XYZTest extends TestCase { ... }"
+<?php
+
+namespace `!p
+relpath = os.path.relpath(path)
+m = re.search(r'[A-Z].+(?=/)', relpath)
+if m:
+	snip.rv = m.group().replace('/', '\\')
+`;
+
+use PHPUnit\Framework\TestCase;
+
+/**
+ * @author `!v g:snips_author`
+ */
+class `!p
+snip.rv = re.match(r'.*(?=\.)', fn).group()
+` extends TestCase
 {
 	public function test$1()
 	{

@@ -1,0 +1,233 @@
+===============================================================================
+ALE Java Integration                                         *ale-java-options*
+
+
+===============================================================================
+checkstyle                                                *ale-java-checkstyle*
+
+g:ale_java_checkstyle_config                     *g:ale_java_checkstyle_config*
+                                                 *b:ale_java_checkstyle_config*
+
+  Type: |String|
+  Default: `'/google_checks.xml'`
+
+  A path to a checkstyle configuration file.
+
+  If a configuration file is specified with |g:ale_java_checkstyle_options|,
+  it will be preferred over this setting.
+
+  The path to the configuration file can be an absolute path or a relative
+  path. ALE will search for the relative path in parent directories.
+
+
+g:ale_java_checkstyle_executable             *g:ale_java_checkstyle_executable*
+                                             *b:ale_java_checkstyle_executable*
+
+  Type: |String|
+  Default: 'checkstyle'
+
+  This variable can be changed to modify the executable used for checkstyle.
+
+
+g:ale_java_checkstyle_options                   *g:ale_java_checkstyle_options*
+                                                *b:ale_java_checkstyle_options*
+
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to checkstyle.
+
+  If a configuration file is specified with `-c`, it will be used instead of
+  configuration files set with |g:ale_java_checkstyle_config|.
+
+
+===============================================================================
+javac                                                          *ale-java-javac*
+
+g:ale_java_javac_classpath                         *g:ale_java_javac_classpath*
+                                                   *b:ale_java_javac_classpath*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to change the global classpath for Java.
+
+
+g:ale_java_javac_executable                       *g:ale_java_javac_executable*
+                                                  *b:ale_java_javac_executable*
+  Type: |String|
+  Default: `'javac'`
+
+  This variable can be set to change the executable path used for javac.
+
+
+g:ale_java_javac_options                             *g:ale_java_javac_options*
+                                                     *b:ale_java_javac_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to javac.
+
+
+===============================================================================
+google-java-format                                *ale-java-google-java-format*
+
+
+g:ale_java_google_java_format_executable
+                                     *g:ale_java_google_java_format_executable*
+                                     *b:ale_java_google_java_format_executable*
+  Type: |String|
+  Default: `'google-java-format'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_java_google_java_format_options   *g:ale_java_google_java_format_options*
+                                        *b:ale_java_google_java_format_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options
+
+
+===============================================================================
+pmd                                                              *ale-java-pmd*
+
+g:ale_java_pmd_options                                 *g:ale_java_pmd_options*
+                                                       *b:ale_java_pmd_options*
+
+  Type: String
+  Default: '-R category/java/bestpractices'
+
+  This variable can be changed to modify flags given to PMD. Do not specify -f
+  and -d. They are added automatically.
+
+
+===============================================================================
+javalsp                                                      *ale-java-javalsp*
+
+To enable Java LSP linter you need to download and build the vscode-javac
+language server from https://github.com/georgewfraser/java-language-server.
+Simply download the source code and then build a distribution:
+
+   scripts/link_mac.sh
+
+or
+
+   scripts/link_windows.sh
+
+This generates a dist/mac or dist/windows directory that contains the
+language server. To let ALE use this language server you need to set the
+g:ale_java_javalsp_executable variable to the absolute path of the launcher
+executable in this directory.
+
+g:ale_java_javalsp_executable                   *g:ale_java_javalsp_executable*
+                                                *b:ale_java_javalsp_executable*
+  Type: |String|
+  Default: `''`
+
+This variable must be set to the absolute path of the language server launcher
+executable. For example:
+>
+  let g:ale_java_javalsp_executable=/java-language-server/dist/mac/bin/launcher
+<
+
+g:ale_java_javalsp_config                           *g:ale_java_javalsp_config*
+                                                    *b:ale_java_javalsp_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+The javalsp linter automatically detects external depenencies for Maven and
+Gradle projects. In case the javalsp fails to detect some of them, you can
+specify them setting a dictionary to |g:ale_java_javalsp_config| variable.
+>
+  let g:ale_java_javalsp_executable =
+  \ {
+  \   'java': {
+  \     'externalDependencies': [
+  \       'junit:junit:jar:4.12:test',   " Maven format
+  \       'junit:junit:4.1'              " Gradle format
+  \     ],
+  \     'classPath': [
+  \       'lib/some-dependency.jar',
+  \       '/android-sdk/platforms/android-28.jar'
+  \     ]
+  \   }
+  \ }
+
+The Java language server will look for the dependencies you specify in
+`externalDependencies` array in your Maven and Gradle caches ~/.m2 and
+~/.gradle.
+
+===============================================================================
+eclipselsp                                                *ale-java-eclipselsp*
+
+To enable Eclipse LSP linter you need to clone and build the eclipse.jdt.ls
+language server from https://github.com/eclipse/eclipse.jdt.ls. Simply
+clone the source code repo and then build the plugin:
+
+   ./mvnw clean verify
+
+Note: currently, the build can only run when launched with JDK 8. JDK 9 or more
+recent versions can be used to run the server though.
+
+After build completes the files required to run the language server will be
+located inside the repository folder `eclipse.jdt.ls`. Please ensure to set
+|g:ale_java_eclipselsp_path| to the absolute path of that folder.
+
+You could customize compiler options and code assists of the server.
+Under your project folder, modify the file `.settings/org.eclipse.jdt.core.prefs`
+with options presented at
+https://help.eclipse.org/neon/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/JavaCore.html.
+
+g:ale_java_eclipselsp_path                         *g:ale_java_eclipselsp_path*
+                                                   *b:ale_java_eclipselsp_path*
+
+  Type: |String|
+  Default: `'$HOME/eclipse.jdt.ls'`
+
+  Absolute path to the location of the eclipse.jdt.ls repository folder. Or if
+  you have VSCode extension installed the absolute path to the VSCode extensions
+  folder (e.g. $HOME/.vscode/extensions/redhat.java-0.4x.0 in Linux).
+
+
+g:ale_java_eclipselsp_executable                *g:ale_java_eclipse_executable*
+                                                *b:ale_java_eclipse_executable*
+  Type: |String|
+  Default: `'java'`
+
+  This variable can be set to change the executable path used for java.
+
+
+g:ale_java_eclipselsp_config_path              *g:ale_java_eclipse_config_path*
+                                               *b:ale_java_eclipse_config_path*
+  Type: |String|
+  Default: `''`
+
+  Set this variable to change the configuration directory path used by
+  eclipselsp (e.g. `$HOME/.jdtls` in Linux).
+  By default ALE will attempt to use the configuration within the installation
+  directory.
+  This setting is particularly useful when eclipselsp is installed in a
+  non-writable directory like `/usr/share/java/jdtls`, as is the case when
+  installed via system package.
+
+
+g:ale_java_eclipselsp_workspace_path     *g:ale_java_eclipselsp_workspace_path*
+                                         *b:ale_java_eclipselsp_workspace_path*
+
+  Type: |String|
+  Default: `''`
+
+  If you have Eclipse installed is good idea to set this variable to the
+  absolute path of the Eclipse workspace. If not set this value will be set to
+  the parent folder of the project root.
+
+
+===============================================================================
+uncrustify                                                *ale-java-uncrustify*
+
+See |ale-c-uncrustify| for information about the available options.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
