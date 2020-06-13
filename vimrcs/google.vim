@@ -1,3 +1,6 @@
+" File              : google.vim
+" Date              : 28.02.2020
+" Last Modified Date: 28.02.2020
 source /usr/share/vim/google/google.vim
 
 
@@ -10,8 +13,7 @@ Glug piper plugin[mappings]
 " :help g4
 Glug g4
 
-Glug youcompleteme-google
-let g:ycm_always_populate_location_list = 1
+
 
 " BlazeDeps
 " Use :BlazeDepsUpdate to update the BUILD file dependency
@@ -19,7 +21,7 @@ Glug blazedeps
 
 " code format for build file
 Glug codefmt
-Glug codefmt-google auto_filetypes+=python,cc,proto,
+Glug codefmt-google auto_filetypes+=python,cc,proto,ts,html
 autocmd FileType bzl AutoFormatBuffer buildifier
 
 Glug relatedfiles plugin[mappings]=',2'
@@ -30,6 +32,14 @@ Glug relatedfiles plugin[mappings]=',2'
 Glug corpweb plugin[mappings]
 
 
+" Kythe LSP
+au User lsp_setup call lsp#register_server({
+    \ 'name': 'Kythe Language Server',
+    \ 'cmd': {server_info->['/google/bin/releases/grok/tools/kythe_languageserver', '--google3']},
+    \ 'whitelist': ['python', 'go', 'java', 'cpp', 'proto'],
+    \})
+
+" CiderLSP
 au User lsp_setup call lsp#register_server({
     \ 'name': 'CiderLSP',
     \ 'cmd': {server_info->[
@@ -40,6 +50,23 @@ au User lsp_setup call lsp#register_server({
     \ 'whitelist': ['c', 'cpp', 'proto', 'textproto', 'go'],
     \})
 let g:asyncomplete_auto_popup = 0
+let g:lsp_signs_error = {'text': '✗'}
+let g:lsp_highlight_references_enabled = 1
+
+let g:lsp_async_completion = 1
+
+" Enable UI for diagnostics
+let g:lsp_signs_enabled = 1           " enable diagnostics signs in the gutter
+let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
+
+" Enabling fuzzy completion
+let g:asyncomplete_smart_completion = 1
+let g:asyncomplete_auto_popup = 1
+
+" asyncomplete
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
 
 
 " Clang include fixer
@@ -104,7 +131,7 @@ endfunction
 " An edit function that can recognize google3 path.
 " The filepath is relative the google3/
 " eg. you can go to //ads/video.txt wherever you are inside
-" citc by :e //ads/video/.txt.
+" citc by :e //ads/video.txt.
 function GoogleE(...) 
   " if the number of argument is not 0
   if a:0 
@@ -131,8 +158,6 @@ command! -nargs=+ CommandCabbr call CommandCabbr(<f-args>)
 execute 'CommandCabbr ccab CommandCabbr'
 execute 'CommandCabbr e GoogleE'
 
-" Play the macro in register q.
-nnoremap <Leader>. @q
 
 
 " Class Access Operator toggle
@@ -144,10 +169,13 @@ function ClassAccessOperatorToggle()
     " To do replace . with -> or replace -> with .
     let line = line(".")
     if cur_char == '.'
-      execute line . "," . line . "s/\\./->/"
+      normal dwi->
     endif
-    if cur_char == '-' || cur_char == '>'
-      execute line . "," . line . "s/->/./"
+    if cur_char == '-' 
+      normal dwi.
+    endif
+    if cur_char == '>'
+      normal hdwi. 
     endif
 endfunction 
 
@@ -166,14 +194,30 @@ function! GetCurrentFileBuildCmd()
   " Need to escapte the dot.
   let file_subs = split(file, '\.')
   if len(subs) > 1 && len(file_subs) > 0
-      let output = 'blaze build ' . subs[1] . ':' . file_subs[0]
+      let output = 'blaze build /' . subs[1] . ':' . file_subs[0]
       " Copy to secondary clipboard, ctrl+c/v
       echom l:output
       let @+ = l:output
   endif
 endfunction 
 
+command GetCurrentFileBuildCmd call GetCurrentFileBuildCmd()
+nmap <script> <silent> <unique> ,bb :GetCurrentFileBuildCmd<CR>
 
 
+function CopyFilePathGoogle() 
+  let path = expand('%:p')
+  let l:dst_matches = matchlist(path, '\v(.*)/google3/(.*)$')
+  if len(l:dst_matches) > 0
+    let @* =  l:dst_matches[2]
+  endif 
+endfunction
 
+command CopyFilePathGoogle call CopyFilePathGoogle()
 
+Glug youcompleteme-google
+nnoremap <silent> <C-]> :YcmCompleter GoTo<CR>
+let g:ycm_always_populate_location_list = 1
+
+" Disable template
+let g:templates_no_autocmd = 1
