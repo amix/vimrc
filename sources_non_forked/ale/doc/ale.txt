@@ -2379,6 +2379,7 @@ documented in additional help files.
     gometalinter..........................|ale-go-gometalinter|
     gopls.................................|ale-go-gopls|
     govet.................................|ale-go-govet|
+    revive................................|ale-go-revive|
     staticcheck...........................|ale-go-staticcheck|
   graphql.................................|ale-graphql-options|
     eslint................................|ale-graphql-eslint|

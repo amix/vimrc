@@ -790,6 +790,9 @@ fu! s:BuildPrompt(upd)
 	if empty(prt[1]) && s:focus
 		exe 'echoh' hibase '| echon "_" | echoh None'
 	en
+	if a:upd
+		cal s:NotifySearch()
+	en
 endf
 " - SetDefTxt() {{{1
 fu! s:SetDefTxt()
@@ -2609,6 +2612,10 @@ fu! ctrlp#clearmarkedlist()
 	let s:marked = {}
 endf
 
+fu! ctrlp#input()
+	retu s:getinput()
+endf
+
 fu! ctrlp#exit()
 	cal s:PrtExit()
 endf
@@ -2735,8 +2742,21 @@ fu! ctrlp#init(type, ...)
 	en
 	cal s:BuildPrompt(1)
 	if s:keyloop | cal s:KeyLoop() | en
-	return 1
+	retu 1
 endf
+
+" - Events {{{1
+fu! s:NotifySearch()
+	let l:cb = s:getextvar('search')
+	if l:cb != -1
+		cal eval(l:cb)
+	en
+endf
+
+fu! ctrlp#update()
+	cal s:ForceUpdate()
+endf
+
 " - Autocmds {{{1
 if has('autocmd')
 	aug CtrlPAug

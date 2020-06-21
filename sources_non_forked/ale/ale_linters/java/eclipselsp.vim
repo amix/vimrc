@@ -7,6 +7,7 @@ call ale#Set('java_eclipselsp_path', ale#path#Simplify($HOME . '/eclipse.jdt.ls'
 call ale#Set('java_eclipselsp_config_path', '')
 call ale#Set('java_eclipselsp_workspace_path', '')
 call ale#Set('java_eclipselsp_executable', 'java')
+call ale#Set('java_eclipselsp_javaagent', '')
 
 function! ale_linters#java#eclipselsp#Executable(buffer) abort
     return ale#Var(a:buffer, 'java_eclipselsp_executable')
@@ -100,12 +101,30 @@ function! ale_linters#java#eclipselsp#WorkspacePath(buffer) abort
     return ale#path#Dirname(ale#java#FindProjectRoot(a:buffer))
 endfunction
 
+function! ale_linters#java#eclipselsp#Javaagent(buffer) abort
+    let l:rets = []
+    let l:raw = ale#Var(a:buffer, 'java_eclipselsp_javaagent')
+
+    if empty(l:raw)
+        return ''
+    endif
+
+    let l:jars = split(l:raw)
+
+    for l:jar in l:jars
+        call add(l:rets, ale#Escape('-javaagent:' . l:jar))
+    endfor
+
+    return join(l:rets, ' ')
+endfunction
+
 function! ale_linters#java#eclipselsp#Command(buffer, version) abort
     let l:path = ale#Var(a:buffer, 'java_eclipselsp_path')
 
     let l:executable = ale_linters#java#eclipselsp#Executable(a:buffer)
 
     let l:cmd = [ ale#Escape(l:executable),
+    \ ale_linters#java#eclipselsp#Javaagent(a:buffer),
     \ '-Declipse.application=org.eclipse.jdt.ls.core.id1',
     \ '-Dosgi.bundles.defaultStartLevel=4',
     \ '-Declipse.product=org.eclipse.jdt.ls.core.product',

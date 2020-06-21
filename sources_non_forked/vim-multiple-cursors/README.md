@@ -1,5 +1,5 @@
 # vim-multiple-cursors
-[![Build Status](https://travis-ci.org/terryma/vim-multiple-cursors.svg)](https://travis-ci.org/terryma/vim-multiple-cursors)
+[![Build Status](https://travis-ci.org/terryma/vim-multiple-cursors.svg?branch=master)](https://travis-ci.org/github/terryma/vim-multiple-cursors)
 
 ## Contents
  - [About](#about)

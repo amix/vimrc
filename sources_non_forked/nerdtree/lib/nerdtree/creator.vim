@@ -249,7 +249,11 @@ function! s:Creator._pathForString(str)
         if dir =~# '^\.'
             let dir = getcwd() . g:NERDTreePath.Slash() . dir
         endif
-        let dir = g:NERDTreePath.Resolve(dir)
+
+        "hack to prevent removing slash if dir is the root of the file system.
+        if dir !=# '/'
+            let dir = g:NERDTreePath.Resolve(dir)
+        endif
 
         try
             let path = g:NERDTreePath.New(dir)

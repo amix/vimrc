@@ -298,12 +298,15 @@ syn keyword ngxDirective large_client_header_buffers
 syn keyword ngxDirective least_conn
 syn keyword ngxDirective least_time
 syn keyword ngxDirective limit_conn
+syn keyword ngxDirective limit_conn_dry_run
 syn keyword ngxDirective limit_conn_log_level
 syn keyword ngxDirective limit_conn_status
 syn keyword ngxDirective limit_conn_zone
+syn keyword ngxDirective limit_except
 syn keyword ngxDirective limit_rate
 syn keyword ngxDirective limit_rate_after
 syn keyword ngxDirective limit_req
+syn keyword ngxDirective limit_req_dry_run
 syn keyword ngxDirective limit_req_log_level
 syn keyword ngxDirective limit_req_status
 syn keyword ngxDirective limit_req_zone

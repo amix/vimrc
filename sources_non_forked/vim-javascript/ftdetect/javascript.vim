@@ -4,5 +4,5 @@ fun! s:SelectJavascript()
   endif
 endfun
 
-autocmd BufNewFile,BufRead *.{js,mjs,jsm,es,es6},Jakefile setfiletype javascript
+autocmd BufNewFile,BufRead *.{js,mjs,cjs,jsm,es,es6},Jakefile setfiletype javascript
 autocmd BufNewFile,BufRead * call s:SelectJavascript()

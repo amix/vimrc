@@ -46,7 +46,7 @@ javac                                                          *ale-java-javac*
 
 g:ale_java_javac_classpath                         *g:ale_java_javac_classpath*
                                                    *b:ale_java_javac_classpath*
-  Type: |String|
+  Type: |String| or |List|
   Default: `''`
 
   This variable can be set to change the global classpath for Java.
@@ -66,6 +66,30 @@ g:ale_java_javac_options                             *g:ale_java_javac_options*
   Default: `''`
 
   This variable can be set to pass additional options to javac.
+
+g:ale_java_javac_sourcepath                       *g:ale_java_javac_sourcepath*
+                                                  *b:ale_java_javac_sourcepath*
+  Type: |String| or |List|
+  Default: `''`
+
+This variable can set multiple source code paths, the source code path is a
+relative path (relative to the project root directory).
+
+Example:
+
+String type:
+Note that the unix system separator is a colon(`:`) window system
+is a semicolon(`;`).
+>
+  let g:ale_java_javac_sourcepath = 'build/gen/source/xx/main:build/gen/source'
+<
+List type:
+>
+  let g:ale_java_javac_sourcepath = [
+    \ 'build/generated/source/querydsl/main',
+    \ 'target/generated-sources/source/querydsl/main'
+  \ ]
+<
 
 
 ===============================================================================
@@ -222,6 +246,17 @@ g:ale_java_eclipselsp_workspace_path     *g:ale_java_eclipselsp_workspace_path*
   absolute path of the Eclipse workspace. If not set this value will be set to
   the parent folder of the project root.
 
+g:ale_java_eclipselsp_javaagent               *g:ale_java_eclipselsp_javaagent*
+                                              *b:ale_java_eclipselsp_javaagent*
+
+  Type: |String|
+  Default: `''`
+
+  A variable to add java agent for annotation processing such as Lombok.
+  If you have multiple java agent files, use space to separate them. For example:
+>
+  let g:ale_java_eclipselsp_javaagent='/eclipse/lombok.jar /eclipse/jacoco.jar'
+<
 
 ===============================================================================
 uncrustify                                                *ale-java-uncrustify*

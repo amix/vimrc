@@ -17,13 +17,13 @@ pub fn ${1:function_name}($2)${3/..*/ -> /}$3 {
 endsnippet
 
 snippet afn "async fn name(?) -> ? {}"
-fn ${1:function_name}($2)${3/..*/ -> /}$3 {
+async fn ${1:function_name}($2)${3/..*/ -> /}$3 {
 	${VISUAL}$0
 }
 endsnippet
 
 snippet pafn "pub async fn name(?) -> ? {}"
-pub fn ${1:function_name}($2)${3/..*/ -> /}$3 {
+pub async fn ${1:function_name}($2)${3/..*/ -> /}$3 {
 	${VISUAL}$0
 }
 endsnippet
@@ -42,6 +42,12 @@ endsnippet
 
 snippet .it ".iter()" i
 .iter()$0
+endsnippet
+
+snippet impl "Struct/Trait implementation" b
+impl ${1:Type/Trait}${2: for ${3:Type}} {
+	$0
+}
 endsnippet
 
 # vim:ft=snippets:

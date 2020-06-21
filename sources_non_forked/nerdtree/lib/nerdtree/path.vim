@@ -332,7 +332,7 @@ function! s:Path._escChars()
         return " `\|\"#%&,?()\*^<>$"
     endif
 
-    return " \\`\|\"#%&,?()\*^<>[]$"
+    return " \\`\|\"#%&,?()\*^<>[]{}$"
 endfunction
 
 " FUNCTION: Path.getDir() {{{1
@@ -546,26 +546,36 @@ endfunction
 " return 1 if this path is somewhere above the given path in the filesystem.
 "
 " a:path should be a dir
-function! s:Path.isAncestor(path)
-    if !self.isDirectory
-        return 0
-    endif
-
-    let this = self.str()
-    let that = a:path.str()
-    return stridx(that, this) ==# 0
+function! s:Path.isAncestor(child)
+    return a:child.isUnder(self)
 endfunction
 
 " FUNCTION: Path.isUnder(path) {{{1
 " return 1 if this path is somewhere under the given path in the filesystem.
-function! s:Path.isUnder(path)
-    if a:path.isDirectory ==# 0
+function! s:Path.isUnder(parent)
+    if a:parent.isDirectory ==# 0
         return 0
     endif
-
-    let this = self.str()
-    let that = a:path.str()
-    return stridx(this, that . s:Path.Slash()) ==# 0
+    if nerdtree#runningWindows() && a:parent.drive !=# self.drive
+        return 0
+    endif
+    let l:this_count = len(self.pathSegments)
+    if l:this_count ==# 0
+        return 0
+    endif
+    let l:that_count = len(a:parent.pathSegments)
+    if l:that_count ==# 0
+        return 1
+    endif
+    if l:that_count >= l:this_count
+        return 0
+    endif
+    for i in range(0, l:that_count-1)
+        if self.pathSegments[i] !=# a:parent.pathSegments[i]
+            return 0
+        endif
+    endfor
+    return 1
 endfunction
 
 " FUNCTION: Path.JoinPathStrings(...) {{{1

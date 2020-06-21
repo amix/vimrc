@@ -8,6 +8,9 @@ syn spell notoplevel
 syn include @fugitiveDiff syntax/diff.vim
 
 syn match fugitiveHeader /^[A-Z][a-z][^:]*:/ nextgroup=fugitiveHash,fugitiveSymbolicRef skipwhite
+syn match fugitiveBareHeader /^Bare:/
+syn match fugitiveHelpHeader /^Help:/ nextgroup=fugitiveHelpTag skipwhite
+syn match fugitiveHelpTag    /\S\+/ contained
 
 syn region fugitiveSection start=/^\%(.*(\d\+)$\)\@=/ contains=fugitiveHeading end=/^$/
 syn cluster fugitiveSection contains=fugitiveSection
@@ -20,8 +23,8 @@ syn match fugitiveDone /^done\>/ contained containedin=@fugitiveSection nextgrou
 syn match fugitiveStop /^stop\>/ contained containedin=@fugitiveSection nextgroup=fugitiveHash skipwhite
 syn match fugitiveModifier /^[MADRCU?]\{1,2} / contained containedin=@fugitiveSection
 syn match fugitiveSymbolicRef /\.\@!\%(\.\.\@!\|[^[:space:][:cntrl:]\:.]\)\+\.\@<!/ contained
-syn match fugitiveHash /^\x\{4,\}\>/ contained containedin=@fugitiveSection
-syn match fugitiveHash /\<\x\{4,\}\>/ contained
+syn match fugitiveHash /^\x\{4,\}\S\@!/ contained containedin=@fugitiveSection
+syn match fugitiveHash /\S\@<!\x\{4,\}\S\@!/ contained
 
 syn region fugitiveHunk start=/^\%(@@\+ -\)\@=/ end=/^\%([A-Za-z?@]\|$\)\@=/ contains=@fugitiveDiff containedin=@fugitiveSection fold
 
@@ -33,7 +36,10 @@ for s:section in ['Untracked', 'Unstaged', 'Staged']
 endfor
 unlet s:section
 
+hi def link fugitiveBareHeader fugitiveHeader
+hi def link fugitiveHelpHeader fugitiveHeader
 hi def link fugitiveHeader Label
+hi def link fugitiveHelpTag Tag
 hi def link fugitiveHeading PreProc
 hi def link fugitiveUntrackedHeading PreCondit
 hi def link fugitiveUnstagedHeading Macro

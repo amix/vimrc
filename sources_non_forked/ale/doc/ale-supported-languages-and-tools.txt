@@ -164,6 +164,7 @@ Notes:
   * `gosimple`!!
   * `gotype`!!
   * `go vet`!!
+  * `revive`!!
   * `staticcheck`!!
 * GraphQL
   * `eslint`

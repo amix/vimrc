@@ -2272,8 +2272,31 @@ augroup END
 
 " Section: :Git
 
+function! s:AskPassArgs(dir) abort
+  if (len($DISPLAY) || len($TERM_PROGRAM) || has('gui_running')) && fugitive#GitVersion(1, 8) &&
+        \ empty($GIT_ASKPASS) && empty($SSH_ASKPASS) && empty(FugitiveConfigGetAll('core.askpass', a:dir))
+    if s:executable(s:ExecPath() . '/git-gui--askpass')
+      return ['-c', 'core.askPass=' . s:ExecPath() . '/git-gui--askpass']
+    elseif s:executable('ssh-askpass')
+      return ['-c', 'core.askPass=ssh-askpass']
+    endif
+  endif
+  return []
+endfunction
+
 function! s:RunJobs() abort
   return exists('*job_start') || exists('*jobstart')
+endfunction
+
+function! s:RunEdit(state, job) abort
+  if get(a:state, 'request', '') == 'edit'
+    call remove(a:state, 'request')
+    let file = readfile(a:state.temp . '.edit')[0]
+    exe substitute(a:state.mods, '\<tab\>', '-tab', 'g') 'keepalt split' s:fnameescape(file)
+    set bufhidden=wipe
+    let s:edit_jobs[bufnr('')] = [a:state, a:job]
+    return 1
+  endif
 endfunction
 
 function! s:RunReceive(state, job, data, ...) abort
@@ -2283,16 +2306,21 @@ function! s:RunReceive(state, job, data, ...) abort
     let data = remove(a:state, 'buffer') . data
   endif
   let escape = "\033]51;[^\007]*"
-  let a:state.buffer = matchstr(data, escape . "$\\|[\r\n]\\+$")
-  if len(a:state.buffer)
-    let data = strpart(data, 0, len(data) - len(a:state.buffer))
+  let a:state.escape_buffer = matchstr(data, escape . '$')
+  if len(a:state.escape_buffer)
+    let data = strpart(data, 0, len(data) - len(a:state.escape_buffer))
   endif
   let cmd = matchstr(data, escape . "\007")[5:-2]
   let data = substitute(data, escape . "\007", '', 'g')
-  echon substitute(data, "\r\\ze\n", '', 'g')
   if cmd =~# '^fugitive:'
     let a:state.request = strpart(cmd, 9)
   endif
+  let data = a:state.echo_buffer . data
+  let a:state.echo_buffer = matchstr(data, "[\r\n]\\+$")
+  if len(a:state.echo_buffer)
+    let data = strpart(data, 0, len(data) - len(a:state.echo_buffer))
+  endif
+  echon substitute(data, "\r\\ze\n", '', 'g')
 endfunction
 
 function! s:RunSend(job, str) abort
@@ -2314,7 +2342,7 @@ endif
 function! s:RunWait(state, job) abort
   let finished = 0
   try
-    while get(a:state, 'request', '') !=# 'edit' && (type(a:job) == type(0) ? jobwait([a:job], 1)[0] == -1 : ch_status(a:job) !=# 'closed')
+    while get(a:state, 'request', '') !=# 'edit' && (type(a:job) == type(0) ? jobwait([a:job], 1)[0] == -1 : ch_status(a:job) !=# 'closed' || job_status(a:job) ==# 'run')
       if !exists('*jobwait')
         sleep 1m
       endif
@@ -2341,13 +2369,7 @@ function! s:RunWait(state, job) abort
     endwhile
     sleep 1m
     echo
-    if get(a:state, 'request', '') == 'edit'
-      call remove(a:state, 'request')
-      let file = readfile(a:state.temp . '.edit')[0]
-      exe substitute(a:state.mods, '\<tab\>', '-tab', 'g') 'keepalt split' s:fnameescape(file)
-      set bufhidden=wipe
-      let s:edit_jobs[bufnr('')] = [a:state, a:job]
-    endif
+    call s:RunEdit(a:state, a:job)
     let finished = 1
   finally
     if !finished
@@ -2538,7 +2560,14 @@ function! fugitive#Command(line1, line2, range, bang, mods, arg) abort
     endif
   endif
   if s:RunJobs()
-    let state = {'dir': dir, 'mods': s:Mods(a:mods), 'temp': tempname(), 'log': []}
+    let state = {
+          \ 'dir': dir,
+          \ 'mods': s:Mods(a:mods),
+          \ 'title': ':Git ' . a:arg,
+          \ 'echo_buffer': '',
+          \ 'escape_buffer': '',
+          \ 'log': [],
+          \ 'temp': tempname()}
     let state.pty = get(g:, 'fugitive_pty', has('unix') && (has('patch-8.0.0744') || has('nvim')))
     if !state.pty
       let args = s:AskPassArgs(dir) + args
@@ -3598,6 +3627,10 @@ function! s:DoToggleHeadHeader(value) abort
   call search('\C^index$', 'wc')
 endfunction
 
+function! s:DoToggleHelpHeader(value) abort
+  exe 'help fugitive-map'
+endfunction
+
 function! s:DoStagePushHeader(value) abort
   let remote = matchstr(a:value, '\zs[^/]\+\ze/')
   if empty(remote)
@@ -4157,14 +4190,13 @@ function! s:GrepSubcommand(line1, line2, range, bang, mods, options) abort
     let args = args[1:-1]
   endif
   let name_only = s:HasOpt(args, '-l', '--files-with-matches', '--name-only', '-L', '--files-without-match')
-  let title = [listnr < 0 ? ':Ggrep' : ':Glgrep'] + args
   if listnr > 0
     exe listnr 'wincmd w'
   else
     call s:BlurStatus()
   endif
   redraw
-  call s:QuickfixCreate(listnr, {'title': (listnr < 0 ? ':Ggrep ' : ':Glgrep ') . s:fnameescape(args)})
+  call s:QuickfixCreate(listnr, {'title': (listnr < 0 ? ':Git grep ' : ':0Git grep ') . s:fnameescape(args)})
   let tempfile = tempname()
   let event = listnr < 0 ? 'grep-fugitive' : 'lgrep-fugitive'
   silent exe s:DoAutocmd('QuickFixCmdPre ' . event)
@@ -4742,18 +4774,6 @@ function! fugitive#FetchComplete(A, L, P, ...) abort
   return s:CompleteSub('fetch', a:A, a:L, a:P, function('s:CompleteRemote'), a:000)
 endfunction
 
-function! s:AskPassArgs(dir) abort
-  if (len($DISPLAY) || len($TERM_PROGRAM) || has('gui_running')) && fugitive#GitVersion(1, 8) &&
-        \ empty($GIT_ASKPASS) && empty($SSH_ASKPASS) && empty(FugitiveConfigGetAll('core.askpass', a:dir))
-    if s:executable(s:ExecPath() . '/git-gui--askpass')
-      return ['-c', 'core.askPass=' . s:ExecPath() . '/git-gui--askpass']
-    elseif s:executable('ssh-askpass')
-      return ['-c', 'core.askPass=ssh-askpass']
-    endif
-  endif
-  return []
-endfunction
-
 function! s:Dispatch(bang, options) abort
   let dir = a:options.dir
   exe s:DirCheck(dir)
@@ -4797,11 +4817,11 @@ endfunction
 
 augroup fugitive_diff
   autocmd!
-  autocmd BufWinLeave *
+  autocmd BufWinLeave * nested
         \ if s:can_diffoff(+expand('<abuf>')) && s:diff_window_count() == 2 |
         \   call s:diffoff_all(s:Dir(+expand('<abuf>'))) |
         \ endif
-  autocmd BufWinEnter *
+  autocmd BufWinEnter * nested
         \ if s:can_diffoff(+expand('<abuf>')) && s:diff_window_count() == 1 |
         \   call s:diffoff() |
         \ endif
@@ -6026,7 +6046,7 @@ function! fugitive#MapJumps(...) abort
     call s:Map('n', 'czP', ':<C-U>Git stash pop --quiet stash@{<C-R>=v:count<CR>}<CR>')
     call s:Map('n', 'czv', ':<C-U>exe "Gedit" fugitive#RevParse("stash@{" . v:count . "}")<CR>', '<silent>')
     call s:Map('n', 'czw', ':<C-U>Git stash --keep-index<C-R>=v:count > 1 ? " --all" : v:count ? " --include-untracked" : ""<CR><CR>')
-    call s:Map('n', 'czz', ':<C-U>Git stash <C-R>=v:count > 1 ? " --all" : v:count ? " --include-untracked" : ""<CR>')
+    call s:Map('n', 'czz', ':<C-U>Git stash <C-R>=v:count > 1 ? " --all" : v:count ? " --include-untracked" : ""<CR><CR>')
     call s:Map('n', 'cz?', ':<C-U>help fugitive_cz<CR>', '<silent>')
 
     call s:Map('n', 'co<Space>', ':Git checkout<Space>')

@@ -440,19 +440,21 @@ function! s:open_hunk_preview_window()
   endif
 
   silent! wincmd P
-  if !&previewwindow
+  if &previewwindow
+    file gitgutter://hunk-preview
+  else
     noautocmd execute g:gitgutter_preview_win_location &previewheight 'new gitgutter://hunk-preview'
     doautocmd WinEnter
-    if exists('*win_getid')
-      let s:winid = win_getid()
-    else
-      let s:preview_bufnr = bufnr('')
-    endif
     set previewwindow
-    setlocal filetype=diff buftype=acwrite bufhidden=delete
-    " Reset some defaults in case someone else has changed them.
-    setlocal noreadonly modifiable noswapfile
   endif
+  if exists('*win_getid')
+    let s:winid = win_getid()
+  else
+    let s:preview_bufnr = bufnr('')
+  endif
+  setlocal filetype=diff buftype=acwrite bufhidden=delete
+  " Reset some defaults in case someone else has changed them.
+  setlocal noreadonly modifiable noswapfile
 endfunction
 
 
@@ -460,16 +462,21 @@ endfunction
 " Preview window: assumes cursor is in preview window.
 function! s:populate_hunk_preview_window(header, body)
   let body_length = len(a:body)
-  let height = min([body_length, &previewheight])
 
   if g:gitgutter_preview_win_floating
     if exists('*nvim_open_win')
+      let height = min([body_length, &previewheight])
+
       " Assumes cursor is not in previewing window.
       call nvim_buf_set_var(winbufnr(s:winid), 'hunk_header', a:header)
+
+      let [_scrolloff, &scrolloff] = [&scrolloff, 0]
 
       let width = max(map(copy(a:body), 'strdisplaywidth(v:val)'))
       call nvim_win_set_width(s:winid, width)
       call nvim_win_set_height(s:winid, height)
+
+      let &scrolloff=_scrolloff
 
       call nvim_buf_set_lines(winbufnr(s:winid), 0, -1, v:false, [])
       call nvim_buf_set_lines(winbufnr(s:winid), 0, -1, v:false, a:body)
@@ -496,11 +503,15 @@ function! s:populate_hunk_preview_window(header, body)
 
   else
     let b:hunk_header = a:header
-    execute 'resize' height
 
     %delete _
     call setline(1, a:body)
     setlocal nomodified
+
+    normal! G$
+    let height = min([winline(), &previewheight])
+    execute 'resize' height
+    1
 
     call clearmatches()
     for region in gitgutter#diff_highlight#process(a:body)
