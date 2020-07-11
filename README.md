@@ -227,7 +227,7 @@ Surround the visual selection in parenthesis/brackets/etc.:
     vnoremap $3 <esc>`>a}<esc>`<i{<esc>
     vnoremap $$ <esc>`>a"<esc>`<i"<esc>
     vnoremap $q <esc>`>a'<esc>`<i'<esc>
-    vnoremap $e <esc>`>a"<esc>`<i"<esc>
+    vnoremap $e <esc>`>a`<esc>`<i`<esc>
 
 
 ### Insert mode mappings
