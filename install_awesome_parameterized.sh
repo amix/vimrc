@@ -31,7 +31,7 @@ else
     SELECTED_USERS=${@:2}
     echo "Selected users: $SELECTED_USERS"
     for user in $SELECTED_USERS; do
-        homepath=$(eval echo "~/$user")
+        homepath=$(eval echo "~$user")
         IFS=''
         echo $VIMRC > ${homepath}/.vimrc
         unset IFS
