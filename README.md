@@ -370,8 +370,8 @@ Just do following:
 * Remove any lines that reference `.vim_runtime` in your `~/.vimrc`
 
 
-## Doist
+## Looking for a remote-first job?
 
-Maintaining this Vim configuration isn't my day job. Daily I am the founder of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
+Maintaining this Vim configuration isn't my day job. Daily I am the founder/CEO of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
 
 PS: Using Vim isn't a requirement 😄
