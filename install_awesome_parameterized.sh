@@ -10,7 +10,7 @@ source $1/vimrcs/basic.vim
 source $1/vimrcs/filetypes.vim
 source $1/vimrcs/plugins_config.vim
 source $1/vimrcs/extended.vim
-source $1/vimrcs/run_code.vim
+
 try
 source $1/my_configs.vim
 catch
