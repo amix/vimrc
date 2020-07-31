@@ -1,7 +1,7 @@
 "=================================================================================
 "
-"   Following code contains the commands on how to run the currently open code.
-"   The default mapping is set to F5 like most code editors out there.
+"   Following file contains the commands on how to run the currently open code.
+"   The default mapping is set to F5 like most code editors.
 "   Change it as you feel comfortable with, keeping in mind that it does not
 "   clash with any other keymapping.
 "   
