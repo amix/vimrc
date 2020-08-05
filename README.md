@@ -66,6 +66,9 @@ Just do a git rebase!
     git pull --rebase
     python update_plugins.py
 
+NOTE: If you get `ModuleNotFoundError: No module named 'requests'`, you must first install the `requests` python module using `pip`, `pip3`, or `easy_install`.
+
+    pip3 install requests
 
 ## Some screenshots
 
