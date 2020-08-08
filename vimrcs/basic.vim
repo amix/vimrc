@@ -59,11 +59,8 @@ command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 " Set 7 lines to the cursor - when moving vertically using j/k
 set so=7
 
-" Avoid garbled characters in Chinese language windows OS
-let $LANG='en' 
-set langmenu=en
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
+" Set display line number
+set nu
 
 " Turn on the Wild menu
 set wildmenu
@@ -152,10 +149,27 @@ if has("gui_running")
     set guioptions-=e
     set t_Co=256
     set guitablabel=%M\ %t
+    " Set bigger font since we usually have big screen now
+    if has('gui_win32')
+      set guifont=DejaVu\ Sans\ Mono:h12
+      " For non-Latin languages, choose available font in 
+      "    your system and set guifontwide below
+      set guifontwide=Microsoft\ Yahei\ Mono:h11
+    else
+      set guifont=DejaVu\ Sans\ Mono\ 12
+    endif
 endif
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
+
+" Set possible file encodings below, you can add more as you want
+set fileencodings=utf-8,chinese,latin-1,gbk,gb18030,gk2312
+
+" Reload menu *after* set fileencoding can avoid 
+"   garbled characters in non-Latin languages such as Chinese
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
