@@ -109,6 +109,7 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [vim-liquid](https://github.com/tpope/vim-liquid): Adds language support for the liquid templating syntax
 * [vim-polyglot](https://github.com/sheerun/vim-polyglot): Support a wide variety of language syntax
 * [vim-signify](https://github.com/mhinz/vim-signify): Use the sign column to indicate added, modified and removed lines in a file that is managed by a version control system
+* [vim-snazzy](https://github.com/connorholyday/vim-snazzy): Elegant vim theme with bright colors. Based on [hyper-snazzy](https://github.com/sindresorhus/hyper-snazzy/) by [Sindre Sorhus](https://sindresorhus.com).
 
 
 
