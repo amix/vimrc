@@ -107,6 +107,7 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 ### Invcluded after fork
 
 * [vim-liquid](https://github.com/tpope/vim-liquid): Adds language support for the liquid templating syntax
+* [vim-polyglot](https://github.com/sheerun/vim-polyglot): Support a wide variety of language syntax
 
 
 
