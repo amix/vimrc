@@ -108,6 +108,7 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 
 * [vim-liquid](https://github.com/tpope/vim-liquid): Adds language support for the liquid templating syntax
 * [vim-polyglot](https://github.com/sheerun/vim-polyglot): Support a wide variety of language syntax
+* [vim-signify](https://github.com/mhinz/vim-signify): Use the sign column to indicate added, modified and removed lines in a file that is managed by a version control system
 
 
 
