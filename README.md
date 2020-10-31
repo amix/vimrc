@@ -102,6 +102,7 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [vim-yankstack](https://github.com/maxbrunsfeld/vim-yankstack): Maintains a history of previous yanks, changes and deletes
 * [vim-zenroom2](https://github.com/amix/vim-zenroom2) Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room
 * [gist-vim](https://github.com/mattn/gist-vim) Easily create gists from Vim using the `:Gist` command
+* [vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides) Is a plugin for visually displaying indent levels in Vim.
 
 
 ## Included color schemes
@@ -330,6 +331,13 @@ Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a fil
 
     nmap <silent> <leader>a <Plug>(ale_next_wrap)
 
+[vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides) the default mapping to toggle the plugin is (`<leader>ig`)
+
+    You can also use the following commands inside Vim:
+    :IndentGuidesEnable
+    :IndentGuidesDisable
+    :IndentGuidesToggle
+
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
@@ -375,3 +383,4 @@ Just do following:
 Maintaining this Vim configuration isn't my day job. Daily I am the founder/CEO of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
 
 PS: Using Vim isn't a requirement 😄
+
