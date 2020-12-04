@@ -131,18 +131,26 @@ javalsp                                                      *ale-java-javalsp*
 
 To enable Java LSP linter you need to download and build the vscode-javac
 language server from https://github.com/georgewfraser/java-language-server.
-Simply download the source code and then build a distribution:
 
-   scripts/link_mac.sh
+Before building the language server you need to install pre-requisites: npm,
+maven, and protobuf. You also need to have Java 13 and JAVA_HOME properly
+set.
 
-or
+After downloading the source code and installing all pre-requisites you can
+build the language server with the included build.sh script:
 
-   scripts/link_windows.sh
+   scripts/build.sh
 
-This generates a dist/mac or dist/windows directory that contains the
-language server. To let ALE use this language server you need to set the
+This will create launch scripts for Linux, Mac, and Windows in the dist folder
+within the repo:
+
+  - lang_server_linux.sh
+  - lang_server_mac.sh
+  - lang_server_windows.sh
+
+To let ALE use this language server you need to set the
 g:ale_java_javalsp_executable variable to the absolute path of the launcher
-executable in this directory.
+executable for your platform.
 
 g:ale_java_javalsp_executable                   *g:ale_java_javalsp_executable*
                                                 *b:ale_java_javalsp_executable*
@@ -152,7 +160,7 @@ g:ale_java_javalsp_executable                   *g:ale_java_javalsp_executable*
 This variable must be set to the absolute path of the language server launcher
 executable. For example:
 >
-  let g:ale_java_javalsp_executable=/java-language-server/dist/mac/bin/launcher
+  let g:ale_java_javalsp_executable=/java-language-server/dist/lang_server_linux.sh
 <
 
 g:ale_java_javalsp_config                           *g:ale_java_javalsp_config*
@@ -164,7 +172,7 @@ The javalsp linter automatically detects external depenencies for Maven and
 Gradle projects. In case the javalsp fails to detect some of them, you can
 specify them setting a dictionary to |g:ale_java_javalsp_config| variable.
 >
-  let g:ale_java_javalsp_executable =
+  let g:ale_java_javalsp_config =
   \ {
   \   'java': {
   \     'externalDependencies': [

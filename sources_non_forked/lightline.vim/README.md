@@ -63,7 +63,8 @@ For screenshots of all available colorshemes, see [this file](colorscheme.md).
 + Orthogonality. The plugin does not rely on the implementation of other plugins. Such plugin crossing settings should be configured by users.
 
 ## Installation
-### [Vim packages](http://vimhelp.appspot.com/repeat.txt.html#packages) (since Vim 7.4.1528)
+### [Vim packages](https://vimhelp.org/repeat.txt.html#packages) (since Vim 7.4.1528)
+1. Clone the plugin with the following command.
 
         git clone https://github.com/itchyny/lightline.vim ~/.vim/pack/plugins/start/lightline
 

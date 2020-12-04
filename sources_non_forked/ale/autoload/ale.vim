@@ -100,13 +100,7 @@ function! s:Lint(buffer, should_lint_file, timer_id) abort
     " Use the filetype from the buffer
     let l:filetype = getbufvar(a:buffer, '&filetype')
     let l:linters = ale#linter#Get(l:filetype)
-
-    " Apply ignore lists for linters only if needed.
-    let l:ignore_config = ale#Var(a:buffer, 'linters_ignore')
-    let l:disable_lsp = ale#Var(a:buffer, 'disable_lsp')
-    let l:linters = !empty(l:ignore_config) || l:disable_lsp
-    \   ? ale#engine#ignore#Exclude(l:filetype, l:linters, l:ignore_config, l:disable_lsp)
-    \   : l:linters
+    let l:linters = ale#linter#RemoveIgnored(a:buffer, l:filetype, l:linters)
 
     " Tell other sources that they can start checking the buffer now.
     let g:ale_want_results_buffer = a:buffer
@@ -163,7 +157,7 @@ function! ale#Queue(delay, ...) abort
     endif
 endfunction
 
-let s:current_ale_version = [2, 7, 0]
+let s:current_ale_version = [3, 0, 0]
 
 " A function used to check for ALE features in files outside of the project.
 function! ale#Has(feature) abort
@@ -263,6 +257,28 @@ function! ale#GetLocItemMessage(item, format_string) abort
     let l:msg = substitute(l:msg, '\V%linter%', '\=l:linter_name', 'g')
     " Replace %s with the text.
     let l:msg = substitute(l:msg, '\V%s', '\=a:item.text', 'g')
+    " Windows may insert carriage return line endings (^M), strip these characters.
+    let l:msg = substitute(l:msg, '\r', '', 'g')
 
     return l:msg
+endfunction
+
+" Given a buffer and a linter or fixer name, return an Array of two-item
+" Arrays describing how to map filenames to and from the local to foreign file
+" systems.
+function! ale#GetFilenameMappings(buffer, name) abort
+    let l:linter_mappings = ale#Var(a:buffer, 'filename_mappings')
+
+    if type(l:linter_mappings) is v:t_list
+        return l:linter_mappings
+    endif
+
+    let l:name = a:name
+
+    if !has_key(l:linter_mappings, l:name)
+        " Use * as a default setting for all tools.
+        let l:name = '*'
+    endif
+
+    return get(l:linter_mappings, l:name, [])
 endfunction

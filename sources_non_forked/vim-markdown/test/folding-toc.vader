@@ -120,28 +120,28 @@ Execute (check TOC):
   let res = getloclist(0)
   let elem = res[0]
   AssertEqual elem.lnum, 1
-  AssertEqual elem.text, '# chap 1'
+  AssertEqual elem.text, 'chap 1'
   let elem = res[1]
   AssertEqual elem.lnum, 15
-  AssertEqual elem.text, '## chap 1.1'
+  AssertEqual elem.text, '  chap 1.1'
   let elem = res[2]
   AssertEqual elem.lnum, 25
-  AssertEqual elem.text, '### chap 1.1.1'
+  AssertEqual elem.text, '    chap 1.1.1'
   let elem = res[3]
   AssertEqual elem.lnum, 30
-  AssertEqual elem.text, '# chap 2'
+  AssertEqual elem.text, 'chap 2'
   let elem = res[4]
   AssertEqual elem.lnum, 34
-  AssertEqual elem.text, '## chap 2.1'
+  AssertEqual elem.text, '  chap 2.1'
   let elem = res[5]
   AssertEqual elem.lnum, 41
-  AssertEqual elem.text, '# chap 3'
+  AssertEqual elem.text, 'chap 3'
   let elem = res[6]
   AssertEqual elem.lnum, 45
   AssertEqual elem.text, 'chap 4'
   let elem = res[7]
   AssertEqual elem.lnum, 50
-  AssertEqual elem.text, 'chap 4.1'
+  AssertEqual elem.text, '  chap 4.1'
 
 Given markdown;
 ---
@@ -174,5 +174,5 @@ Execute (check Toc of yaml front matter):
   AssertEqual len(res), 1
   let elem = res[0]
   AssertEqual elem.lnum, 8
-  AssertEqual elem.text, 'heading'
+  AssertEqual elem.text, '  heading'
   unlet g:vim_markdown_frontmatter

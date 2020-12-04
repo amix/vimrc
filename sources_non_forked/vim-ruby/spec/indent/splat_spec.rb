@@ -20,6 +20,7 @@ describe "Indenting" do
   end
 
   specify "splats with blocks in assignment" do
+    vim.command 'let g:ruby_indent_block_style = "expression"'
     assert_correct_indenting <<~EOF
       x = *
         array.map do

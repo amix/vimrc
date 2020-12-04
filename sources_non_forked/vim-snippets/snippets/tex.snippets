@@ -358,3 +358,59 @@ snippet hrefc
 # enquote from package csquotes
 snippet enq enquote
 	\\enquote{${1:${VISUAL:text}}} ${0}
+
+# Time derivative
+snippet ddt time derivative
+	\\frac{d}{dt} {$1} {$0}
+
+# Limit
+snippet lim limit
+	\\lim_{{$1}} {{$2}} {$0}
+
+# Partial derivative
+snippet pdv partial derivation
+	\\frac{\\partial {$1}}{\partial {$2}} {$0}
+
+# Second order partial derivative
+snippet ppdv second partial derivation
+	\\frac{\partial^2 {$1}}{\partial {$2} \partial {$3}} {$0}
+
+# Ordinary derivative
+snippet dv derivative
+	\\frac{d {$1}}{d {$2}} {$0}
+
+# Summation
+snippet summ summation
+	\\sum_{{$1}} {$0}
+
+# Shorthand for time derivative
+snippet dot dot
+	\\dot{{$1}} {$0}
+
+# Shorthand for second order time derivative
+snippet ddot ddot
+	\\ddot{{$1}} {$0}
+
+# Vector
+snippet vec vector
+	\\vec{{$1}} {$0}
+
+# Cross product
+snippet \x cross product
+	\\times {$0}
+
+# Dot product
+snippet . dot product
+	\\cdot {$0}
+
+# Integral
+snippet int integral
+	\\int_{{$1}}^{{$2}} {$3} \: d{$4} {$5}
+
+# Right arrow
+snippet ra rightarrow
+	\\rightarrow {$0}
+
+# Long right arrow
+snippet lra longrightarrow
+	\\longrightarrow {$0}

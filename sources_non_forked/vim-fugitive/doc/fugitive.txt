@@ -100,6 +100,9 @@ that are part of Git repositories).
                         |quickfix| list.  Jumps to the first commit unless [!]
                         is given.
 
+                        The quickfix list can be slow and awkward for many use
+                        cases.  Consider using |:Git| log instead.
+
 :{range}Gclog[!] [args] Use git-log -L to load previous revisions of the given
                         range of the current file into the |quickfix| list.
                         The cursor is positioned on the first line of the

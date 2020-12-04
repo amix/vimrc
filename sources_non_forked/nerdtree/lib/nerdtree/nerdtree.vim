@@ -27,7 +27,9 @@ function! s:NERDTree.changeRoot(node)
     call self.render()
     call self.root.putCursorHere(0, 0)
 
-    silent doautocmd User NERDTreeNewRoot
+    if exists('#User#NERDTreeNewRoot')
+        doautocmd User NERDTreeNewRoot
+    endif
 endfunction
 
 "FUNCTION: s:NERDTree.Close() {{{1

@@ -75,9 +75,9 @@ fu! ctrlp#utils#globpath(...)
 	retu call('globpath', s:wig_cond ? a:000 : a:000[:1])
 endf
 
-fu! ctrlp#utils#fnesc(path, type, ...)
-	if exists('*fnameescape')
-		if exists('+ssl')
+if exists('*fnameescape')
+	if exists('+ssl')
+		fu! ctrlp#utils#fnesc(path, type, ...)
 			if a:type == 'c'
 				let path = escape(a:path, '%#')
 			elsei a:type == 'f'
@@ -86,11 +86,17 @@ fu! ctrlp#utils#fnesc(path, type, ...)
 				let path = escape(a:path, '?*')
 			en
 			let path = substitute(path, '[', '[[]', 'g')
-		el
-			let path = fnameescape(a:path)
-		en
+			retu a:0 ? escape(path, a:1) : path
+		endf
 	el
-		if exists('+ssl')
+		fu! ctrlp#utils#fnesc(path, type, ...)
+			let path = fnameescape(a:path)
+			retu a:0 ? escape(path, a:1) : path
+		endf
+	en
+el
+	if exists('+ssl')
+		fu! ctrlp#utils#fnesc(path, type, ...)
 			if a:type == 'c'
 				let path = escape(a:path, '%#')
 			elsei a:type == 'f'
@@ -99,12 +105,15 @@ fu! ctrlp#utils#fnesc(path, type, ...)
 				let path = escape(a:path, '?*')
 			en
 			let path = substitute(path, '[', '[[]', 'g')
-		el
+			retu a:0 ? escape(path, a:1) : path
+		endf
+	el
+		fu! ctrlp#utils#fnesc(path, type, ...)
 			let path = escape(a:path, " \t\n*?[{`$\\%#'\"|!<")
-		en
+			retu a:0 ? escape(path, a:1) : path
+		endf
 	en
-	retu a:0 ? escape(path, a:1) : path
-endf
+en
 "}}}
 
 " vim:fen:fdm=marker:fmr={{{,}}}:fdl=0:fdc=1:ts=2:sw=2:sts=2

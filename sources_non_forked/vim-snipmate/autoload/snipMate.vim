@@ -42,7 +42,7 @@ function! snipMate#expandSnip(snip, version, col) abort
 
 	" Open any folds snippet expands into
 	if &foldenable
-		silent! exec lnum . ',' . (lnum + len(snipLines) - 1) . 'foldopen'
+		silent! exec lnum . 'foldopen!'
 	endif
 
 	aug snipmate_changes

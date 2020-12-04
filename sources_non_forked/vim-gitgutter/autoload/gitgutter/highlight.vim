@@ -77,7 +77,7 @@ function! gitgutter#highlight#define_highlights() abort
 
   " When they are visible.
   for type in ["Add", "Change", "Delete"]
-    if hlexists("GitGutter".type)
+    if hlexists("GitGutter".type) && s:get_foreground_colors("GitGutter".type) != ['NONE', 'NONE']
       if g:gitgutter_set_sign_backgrounds
         execute "highlight GitGutter".type." guibg=".guibg." ctermbg=".ctermbg
       endif

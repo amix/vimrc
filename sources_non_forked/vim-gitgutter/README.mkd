@@ -162,7 +162,17 @@ nmap ]h <Plug>(GitGutterNextHunk)
 nmap [h <Plug>(GitGutterPrevHunk)
 ```
 
-You can load all your hunks into the quickfix list with `:GitGutterQuickFix`.  Note this ignores any unsaved changes in your buffers. If the option `g:gitgutter_use_location_list` is set, this command will load hunks into the current window's location list instead.
+When you jump between hunks, a message like `Hunk 4 of 11` is shown on the command line. If you want to turn the message off, you can use:
+
+```viml
+let g:gitgutter_show_msg_on_hunk_jumping = 0
+```
+
+You can load all your hunks into the quickfix list with `:GitGutterQuickFix`.  Note this ignores any unsaved changes in your buffers. If the option `g:gitgutter_use_location_list` is set, this command will load hunks into the current window's location list instead.  Use `:copen` (or `:lopen`) to open the quickfix / location list or add a custom command like this:
+
+```viml
+command! Gqf GitGutterQuickFix | copen
+```
 
 You can stage or undo an individual hunk when your cursor is in it:
 
@@ -339,6 +349,7 @@ let g:gitgutter_sign_added = 'xx'
 let g:gitgutter_sign_modified = 'yy'
 let g:gitgutter_sign_removed = 'zz'
 let g:gitgutter_sign_removed_first_line = '^^'
+let g:gitgutter_sign_removed_above_and_below = '{'
 let g:gitgutter_sign_modified_removed = 'ww'
 ```
 
@@ -648,7 +659,10 @@ Here are some things you can check:
 * Verify `:echo system("git --version")` succeeds.
 * Verify your git config is compatible with the version of git returned by the command above.
 * Verify your Vim supports signs (`:echo has('signs')` should give `1`).
-* Verify your file is being tracked by git and has unstaged changes.
+* Verify your file is being tracked by git and has unstaged changes.  Check whether the plugin thinks git knows about your file: `:echo b:gitgutter.path` should show the path to the file in the repo.
+* Execute `:sign place group=gitgutter`; you should see a list of signs.
+  - If the signs are listed: this is a colorscheme / highlight problem.  Compare `:highlight GitGutterAdd` with `:highlight SignColumn`.
+  - If no signs are listed: the call to git-diff is probably failing.  Add `let g:gitgutter_log=1` to your vimrc, restart, reproduce the problem, and look at the `gitgutter.log` file in the plugin's directory.
 
 #### When the whole file is marked as added
 

@@ -1,4 +1,6 @@
 RUBY							*ft-ruby-plugin*
+							*vim-ruby-plugin*
+
 
     Ruby: Recommended settings		|ruby-recommended|
     Ruby: Motion commands		|ruby-motion|

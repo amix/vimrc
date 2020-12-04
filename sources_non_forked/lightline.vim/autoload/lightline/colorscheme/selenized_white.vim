@@ -26,7 +26,7 @@ let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': 
 
 let s:p.normal.right = [[ s:bg_1, s:blue ], [ s:cyan, s:bg_2 ], [ s:dim_0, s:bg_1 ]]
 let s:p.normal.left = [[ s:bg_1, s:blue ], [ s:cyan, s:bg_2 ]]
-let s:p.normal.middle = [[ s:bg_1, s:bg_1 ]]
+let s:p.normal.middle = [[ s:dim_0, s:bg_1 ]]
 let s:p.normal.error = [[ s:bg_1, s:red ]]
 let s:p.normal.warning = [[ s:bg_1, s:yellow ]]
 

@@ -14,6 +14,7 @@ let s:default_ale_linter_aliases = {
 \   'csh': 'sh',
 \   'javascriptreact': ['javascript', 'jsx'],
 \   'plaintex': 'tex',
+\   'ps1': 'powershell',
 \   'rmarkdown': 'r',
 \   'rmd': 'r',
 \   'systemverilog': 'verilog',
@@ -31,7 +32,7 @@ let s:default_ale_linter_aliases = {
 "
 " No linters are used for plaintext files by default.
 "
-" Only cargo is enabled for Rust by default.
+" Only cargo and rls are enabled for Rust by default.
 " rpmlint is disabled by default because it can result in code execution.
 " hhast is disabled by default because it executes code in the project root.
 "
@@ -44,8 +45,8 @@ let s:default_ale_linters = {
 \   'help': [],
 \   'perl': ['perlcritic'],
 \   'perl6': [],
-\   'python': ['flake8', 'mypy', 'pylint'],
-\   'rust': ['cargo'],
+\   'python': ['flake8', 'mypy', 'pylint', 'pyright'],
+\   'rust': ['cargo', 'rls'],
 \   'spec': [],
 \   'text': [],
 \   'vue': ['eslint', 'vls'],
@@ -74,10 +75,6 @@ endfunction
 
 function! s:IsBoolean(value) abort
     return type(a:value) is v:t_number && (a:value == 0 || a:value == 1)
-endfunction
-
-function! s:LanguageGetter(buffer) dict abort
-    return l:self.language
 endfunction
 
 function! ale#linter#PreProcess(filetype, linter) abort
@@ -113,14 +110,7 @@ function! ale#linter#PreProcess(filetype, linter) abort
 
     if !l:needs_executable
         if has_key(a:linter, 'executable')
-        \|| has_key(a:linter, 'executable_callback')
-            throw '`executable` and `executable_callback` cannot be used when lsp == ''socket'''
-        endif
-    elseif has_key(a:linter, 'executable_callback')
-        let l:obj.executable_callback = a:linter.executable_callback
-
-        if !s:IsCallback(l:obj.executable_callback)
-            throw '`executable_callback` must be a callback if defined'
+            throw '`executable` cannot be used when lsp == ''socket'''
         endif
     elseif has_key(a:linter, 'executable')
         let l:obj.executable = a:linter.executable
@@ -130,54 +120,12 @@ function! ale#linter#PreProcess(filetype, linter) abort
             throw '`executable` must be a String or Function if defined'
         endif
     else
-        throw 'Either `executable` or `executable_callback` must be defined'
+        throw '`executable` must be defined'
     endif
 
     if !l:needs_command
         if has_key(a:linter, 'command')
-        \|| has_key(a:linter, 'command_callback')
-        \|| has_key(a:linter, 'command_chain')
-            throw '`command` and `command_callback` and `command_chain` cannot be used when lsp == ''socket'''
-        endif
-    elseif has_key(a:linter, 'command_chain')
-        let l:obj.command_chain = a:linter.command_chain
-
-        if type(l:obj.command_chain) isnot v:t_list
-            throw '`command_chain` must be a List'
-        endif
-
-        if empty(l:obj.command_chain)
-            throw '`command_chain` must contain at least one item'
-        endif
-
-        let l:link_index = 0
-
-        for l:link in l:obj.command_chain
-            let l:err_prefix = 'The `command_chain` item ' . l:link_index . ' '
-
-            if !s:IsCallback(get(l:link, 'callback'))
-                throw l:err_prefix . 'must define a `callback` function'
-            endif
-
-            if has_key(l:link, 'output_stream')
-                if type(l:link.output_stream) isnot v:t_string
-                \|| index(['stdout', 'stderr', 'both'], l:link.output_stream) < 0
-                    throw l:err_prefix . '`output_stream` flag must be '
-                    \   . "'stdout', 'stderr', or 'both'"
-                endif
-            endif
-
-            if has_key(l:link, 'read_buffer') && !s:IsBoolean(l:link.read_buffer)
-                throw l:err_prefix . 'value for `read_buffer` must be `0` or `1`'
-            endif
-
-            let l:link_index += 1
-        endfor
-    elseif has_key(a:linter, 'command_callback')
-        let l:obj.command_callback = a:linter.command_callback
-
-        if !s:IsCallback(l:obj.command_callback)
-            throw '`command_callback` must be a callback if defined'
+            throw '`command` cannot be used when lsp == ''socket'''
         endif
     elseif has_key(a:linter, 'command')
         let l:obj.command = a:linter.command
@@ -187,22 +135,12 @@ function! ale#linter#PreProcess(filetype, linter) abort
             throw '`command` must be a String or Function if defined'
         endif
     else
-        throw 'Either `command`, `executable_callback`, `command_chain` '
-        \   . 'must be defined'
-    endif
-
-    if (
-    \   has_key(a:linter, 'command')
-    \   + has_key(a:linter, 'command_chain')
-    \   + has_key(a:linter, 'command_callback')
-    \) > 1
-        throw 'Only one of `command`, `command_callback`, or `command_chain` '
-        \   . 'should be set'
+        throw '`command` must be defined'
     endif
 
     if !l:needs_address
-        if has_key(a:linter, 'address') || has_key(a:linter, 'address_callback')
-            throw '`address` or `address_callback` cannot be used when lsp != ''socket'''
+        if has_key(a:linter, 'address')
+            throw '`address` cannot be used when lsp != ''socket'''
         endif
     elseif has_key(a:linter, 'address')
         if type(a:linter.address) isnot v:t_string
@@ -211,41 +149,17 @@ function! ale#linter#PreProcess(filetype, linter) abort
         endif
 
         let l:obj.address = a:linter.address
-    elseif has_key(a:linter, 'address_callback')
-        let l:obj.address_callback = a:linter.address_callback
-
-        if !s:IsCallback(l:obj.address_callback)
-            throw '`address_callback` must be a callback if defined'
-        endif
     else
-        throw '`address` or `address_callback` must be defined for getting the LSP address'
+        throw '`address` must be defined for getting the LSP address'
     endif
 
     if l:needs_lsp_details
-        if has_key(a:linter, 'language_callback')
-            if has_key(a:linter, 'language')
-                throw 'Only one of `language` or `language_callback` '
-                \   . 'should be set'
-            endif
+        " Default to using the filetype as the language.
+        let l:obj.language = get(a:linter, 'language', a:filetype)
 
-            let l:obj.language_callback = get(a:linter, 'language_callback')
-
-            if !s:IsCallback(l:obj.language_callback)
-                throw '`language_callback` must be a callback for LSP linters'
-            endif
-        else
-            " Default to using the filetype as the language.
-            let l:Language = get(a:linter, 'language', a:filetype)
-
-            if type(l:Language) is v:t_string
-                " Make 'language_callback' return the 'language' value.
-                let l:obj.language = l:Language
-                let l:obj.language_callback = function('s:LanguageGetter')
-            elseif type(l:Language) is v:t_func
-                let l:obj.language_callback = l:Language
-            else
-                throw '`language` must be a String or Funcref'
-            endif
+        if type(l:obj.language) isnot v:t_string
+        \&& type(l:obj.language) isnot v:t_func
+            throw '`language` must be a String or Funcref if defined'
         endif
 
         if has_key(a:linter, 'project_root')
@@ -253,16 +167,10 @@ function! ale#linter#PreProcess(filetype, linter) abort
 
             if type(l:obj.project_root) isnot v:t_string
             \&& type(l:obj.project_root) isnot v:t_func
-                throw '`project_root` must be a String or Function if defined'
-            endif
-        elseif has_key(a:linter, 'project_root_callback')
-            let l:obj.project_root_callback = a:linter.project_root_callback
-
-            if !s:IsCallback(l:obj.project_root_callback)
-                throw '`project_root_callback` must be a callback if defined'
+                throw '`project_root` must be a String or Function'
             endif
         else
-            throw '`project_root` or `project_root_callback` must be defined for LSP linters'
+            throw '`project_root` must be defined for LSP linters'
         endif
 
         if has_key(a:linter, 'completion_filter')
@@ -273,37 +181,16 @@ function! ale#linter#PreProcess(filetype, linter) abort
             endif
         endif
 
-        if has_key(a:linter, 'initialization_options_callback')
-            if has_key(a:linter, 'initialization_options')
-                throw 'Only one of `initialization_options` or '
-                \   . '`initialization_options_callback` should be set'
-            endif
-
-            let l:obj.initialization_options_callback = a:linter.initialization_options_callback
-
-            if !s:IsCallback(l:obj.initialization_options_callback)
-                throw '`initialization_options_callback` must be a callback if defined'
-            endif
-        elseif has_key(a:linter, 'initialization_options')
+        if has_key(a:linter, 'initialization_options')
             let l:obj.initialization_options = a:linter.initialization_options
 
             if type(l:obj.initialization_options) isnot v:t_dict
             \&& type(l:obj.initialization_options) isnot v:t_func
-                throw '`initialization_options` must be a String or Function if defined'
+                throw '`initialization_options` must be a Dictionary or Function if defined'
             endif
         endif
 
-        if has_key(a:linter, 'lsp_config_callback')
-            if has_key(a:linter, 'lsp_config')
-                throw 'Only one of `lsp_config` or `lsp_config_callback` should be set'
-            endif
-
-            let l:obj.lsp_config_callback = a:linter.lsp_config_callback
-
-            if !s:IsCallback(l:obj.lsp_config_callback)
-                throw '`lsp_config_callback` must be a callback if defined'
-            endif
-        elseif has_key(a:linter, 'lsp_config')
+        if has_key(a:linter, 'lsp_config')
             if type(a:linter.lsp_config) isnot v:t_dict
             \&& type(a:linter.lsp_config) isnot v:t_func
                 throw '`lsp_config` must be a Dictionary or Function if defined'
@@ -324,19 +211,15 @@ function! ale#linter#PreProcess(filetype, linter) abort
     " file on disk.
     let l:obj.lint_file = get(a:linter, 'lint_file', 0)
 
-    if !s:IsBoolean(l:obj.lint_file)
-        throw '`lint_file` must be `0` or `1`'
+    if !s:IsBoolean(l:obj.lint_file) && type(l:obj.lint_file) isnot v:t_func
+        throw '`lint_file` must be `0`, `1`, or a Function'
     endif
 
     " An option indicating that the buffer should be read.
-    let l:obj.read_buffer = get(a:linter, 'read_buffer', !l:obj.lint_file)
+    let l:obj.read_buffer = get(a:linter, 'read_buffer', 1)
 
     if !s:IsBoolean(l:obj.read_buffer)
         throw '`read_buffer` must be `0` or `1`'
-    endif
-
-    if l:obj.lint_file && l:obj.read_buffer
-        throw 'Only one of `lint_file` or `read_buffer` can be `1`'
     endif
 
     let l:obj.aliases = get(a:linter, 'aliases', [])
@@ -345,14 +228,6 @@ function! ale#linter#PreProcess(filetype, linter) abort
     \|| len(filter(copy(l:obj.aliases), 'type(v:val) isnot v:t_string')) > 0
         throw '`aliases` must be a List of String values'
     endif
-
-    for l:key in filter(keys(a:linter), 'v:val[-9:] is# ''_callback'' || v:val is# ''command_chain''')
-        if !get(g:, 'ale_ignore_2_4_warnings')
-            execute 'echom l:key . '' is deprecated. Use `let g:ale_ignore_2_4_warnings = 1` to disable this message.'''
-        endif
-
-        break
-    endfor
 
     return l:obj
 endfunction
@@ -519,11 +394,19 @@ function! ale#linter#Get(original_filetypes) abort
     return reverse(l:combined_linters)
 endfunction
 
+function! ale#linter#RemoveIgnored(buffer, filetype, linters) abort
+    " Apply ignore lists for linters only if needed.
+    let l:ignore_config = ale#Var(a:buffer, 'linters_ignore')
+    let l:disable_lsp = ale#Var(a:buffer, 'disable_lsp')
+
+    return !empty(l:ignore_config) || l:disable_lsp
+    \   ? ale#engine#ignore#Exclude(a:filetype, a:linters, l:ignore_config, l:disable_lsp)
+    \   : a:linters
+endfunction
+
 " Given a buffer and linter, get the executable String for the linter.
 function! ale#linter#GetExecutable(buffer, linter) abort
-    let l:Executable = has_key(a:linter, 'executable_callback')
-    \   ? function(a:linter.executable_callback)
-    \   : a:linter.executable
+    let l:Executable = a:linter.executable
 
     return type(l:Executable) is v:t_func
     \   ? l:Executable(a:buffer)
@@ -531,24 +414,21 @@ function! ale#linter#GetExecutable(buffer, linter) abort
 endfunction
 
 " Given a buffer and linter, get the command String for the linter.
-" The command_chain key is not supported.
 function! ale#linter#GetCommand(buffer, linter) abort
-    let l:Command = has_key(a:linter, 'command_callback')
-    \   ? function(a:linter.command_callback)
-    \   : a:linter.command
+    let l:Command = a:linter.command
 
-    return type(l:Command) is v:t_func
-    \   ? l:Command(a:buffer)
-    \   : l:Command
+    return type(l:Command) is v:t_func ? l:Command(a:buffer) : l:Command
 endfunction
 
 " Given a buffer and linter, get the address for connecting to the server.
 function! ale#linter#GetAddress(buffer, linter) abort
-    let l:Address = has_key(a:linter, 'address_callback')
-    \   ? function(a:linter.address_callback)
-    \   : a:linter.address
+    let l:Address = a:linter.address
 
-    return type(l:Address) is v:t_func
-    \   ? l:Address(a:buffer)
-    \   : l:Address
+    return type(l:Address) is v:t_func ? l:Address(a:buffer) : l:Address
+endfunction
+
+function! ale#linter#GetLanguage(buffer, linter) abort
+    let l:Language = a:linter.language
+
+    return type(l:Language) is v:t_func ? l:Language(a:buffer) : l:Language
 endfunction

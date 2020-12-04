@@ -28,7 +28,9 @@ endfunction
 
 " FUNCTION: s:Creator._broadcastInitEvent() {{{1
 function! s:Creator._broadcastInitEvent()
-    silent doautocmd User NERDTreeInit
+    if exists('#User#NERDTreeInit')
+        doautocmd User NERDTreeInit
+    endif
 endfunction
 
 " FUNCTION: s:Creator.BufNamePrefix() {{{1
@@ -170,6 +172,7 @@ function! s:Creator.createMirror()
     let t:NERDTreeBufName = bufferName
     call self._createTreeWin()
     exec 'buffer ' .  bufferName
+    call b:NERDTree.ui.restoreScreenState()
     if !&hidden
         call b:NERDTree.render()
     endif
@@ -247,7 +250,7 @@ function! s:Creator._pathForString(str)
 
         "hack to get an absolute path if a relative path is given
         if dir =~# '^\.'
-            let dir = getcwd() . g:NERDTreePath.Slash() . dir
+            let dir = getcwd() . nerdtree#slash() . dir
         endif
 
         "hack to prevent removing slash if dir is the root of the file system.

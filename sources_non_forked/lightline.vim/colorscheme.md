@@ -132,6 +132,10 @@
 
 ![lightline.vim - landscape](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/landscape.png)
 
-### 16color
+### 16color dark
 
-![lightline.vim - 16color](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/16color.png)
+![lightline.vim - 16color dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/16color_dark.png)
+
+### 16color light
+
+![lightline.vim - 16color light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/16color_light.png)

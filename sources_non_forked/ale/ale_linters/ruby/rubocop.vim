@@ -10,7 +10,7 @@ function! ale_linters#ruby#rubocop#GetCommand(buffer) abort
     return ale#ruby#EscapeExecutable(l:executable, 'rubocop')
     \   . ' --format json --force-exclusion '
     \   . ale#Var(a:buffer, 'ruby_rubocop_options')
-    \   . ' --stdin ' . ale#Escape(expand('#' . a:buffer . ':p'))
+    \   . ' --stdin %s'
 endfunction
 
 function! ale_linters#ruby#rubocop#GetType(severity) abort

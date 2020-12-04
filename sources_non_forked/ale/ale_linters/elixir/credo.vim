@@ -46,7 +46,7 @@ function! ale_linters#elixir#credo#GetMode() abort
 endfunction
 
 function! ale_linters#elixir#credo#GetCommand(buffer) abort
-    let l:project_root = ale#handlers#elixir#FindMixProjectRoot(a:buffer)
+    let l:project_root = ale#handlers#elixir#FindMixUmbrellaRoot(a:buffer)
     let l:mode = ale_linters#elixir#credo#GetMode()
 
     return ale#path#CdString(l:project_root)

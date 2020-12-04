@@ -9,13 +9,7 @@ call ale#Set('java_javac_classpath', '')
 call ale#Set('java_javac_sourcepath', '')
 
 function! ale_linters#java#javac#RunWithImportPaths(buffer) abort
-    let l:command = ''
-    let l:pom_path = ale#path#FindNearestFile(a:buffer, 'pom.xml')
-
-    if !empty(l:pom_path) && executable('mvn')
-        let l:command = ale#path#CdString(fnamemodify(l:pom_path, ':h'))
-        \ . 'mvn dependency:build-classpath'
-    endif
+    let l:command = ale#maven#BuildClasspathCommand(a:buffer)
 
     " Try to use Gradle if Maven isn't available.
     if empty(l:command)

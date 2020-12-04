@@ -10,7 +10,7 @@ let s:pragma_error = '#pragma once in main file'
 " <stdin>:8:5: warning: conversion lacks type at end of format [-Wformat=]
 " <stdin>:10:27: error: invalid operands to binary - (have ‘int’ and ‘char *’)
 " -:189:7: note: $/${} is unnecessary on arithmetic variables. [SC2004]
-let s:pattern = '\v^([a-zA-Z]?:?[^:]+):(\d+):(\d+)?:? ([^:]+): (.+)$'
+let s:pattern = '\v^([a-zA-Z]?:?[^:]+):(\d+)?:?(\d+)?:? ([^:]+): (.+)$'
 let s:inline_pattern = '\v inlined from .* at \<stdin\>:(\d+):(\d+):$'
 
 function! s:IsHeaderFile(filename) abort
@@ -117,6 +117,23 @@ function! ale#handlers#gcc#HandleGCCFormat(buffer, lines) abort
             if !empty(l:output)
                 if !has_key(l:output[-1], 'detail')
                     let l:output[-1].detail = l:output[-1].text
+
+                    " handle macro expansion errors/notes
+                    if l:match[5] =~? '^in expansion of macro ‘\w*\w’$'
+                        " if the macro expansion is in the file we're in, add
+                        " the lnum and col keys to the previous error
+                        if l:match[1] is# '<stdin>'
+                        \ && !has_key(l:output[-1], 'col')
+                            let l:output[-1].lnum = str2nr(l:match[2])
+                            let l:output[-1].col = str2nr(l:match[3])
+                        else
+                            " the error is not in the current file, and since
+                            " macro expansion errors don't show the full path to
+                            " the error from the current file, we have to just
+                            " give out a generic error message
+                            let l:output[-1].text = 'Error found in macro expansion. See :ALEDetail'
+                        endif
+                    endif
                 endif
 
                 let l:output[-1].detail = l:output[-1].detail . "\n"

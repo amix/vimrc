@@ -2,7 +2,7 @@ let s:suite = themis#suite('tabs')
 let s:assert = themis#helper('assert')
 
 function! s:suite.before_each()
-  let g:lightline = { 'winwidth': 180 }
+  set columns=180
   call lightline#init()
   tabnew
   tabonly

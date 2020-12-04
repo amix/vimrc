@@ -12,15 +12,7 @@ if v:version < 703 || (v:version == 703 && !has("patch105"))
   finish
 endif
 
-function! s:set(var, default) abort
-  if !exists(a:var)
-    if type(a:default)
-      execute 'let' a:var '=' string(a:default)
-    else
-      execute 'let' a:var '=' a:default
-    endif
-  endif
-endfunction
+let s:nomodeline = (v:version > 703 || (v:version == 703 && has('patch442'))) ? '<nomodeline>' : ''
 
 function! s:obsolete(var)
   if exists(a:var)
@@ -29,52 +21,54 @@ function! s:obsolete(var)
 endfunction
 
 
-call s:set('g:gitgutter_preview_win_location',     'bo')
+let g:gitgutter_preview_win_location = get(g:, 'gitgutter_preview_win_location', 'bo')
 if exists('*nvim_open_win')
-  call s:set('g:gitgutter_preview_win_floating', 1)
+  let g:gitgutter_preview_win_floating = get(g:, 'gitgutter_preview_win_floating', 1)
 else
-  call s:set('g:gitgutter_preview_win_floating', 0)
+  let g:gitgutter_preview_win_floating = get(g:, 'gitgutter_preview_win_floating', 0)
 endif
-call s:set('g:gitgutter_enabled',                     1)
+let g:gitgutter_enabled = get(g:, 'gitgutter_enabled', 1)
 if exists('*sign_unplace')
-  call s:set('g:gitgutter_max_signs', -1)
+  let g:gitgutter_max_signs = get(g:, 'gitgutter_max_signs', -1)
 else
-  call s:set('g:gitgutter_max_signs', 500)
+  let g:gitgutter_max_signs = get(g:, 'gitgutter_max_signs', 500)
 endif
-call s:set('g:gitgutter_signs',                       1)
-call s:set('g:gitgutter_highlight_lines',             0)
-call s:set('g:gitgutter_highlight_linenrs',           0)
-call s:set('g:gitgutter_sign_priority',              10)
+let g:gitgutter_signs             = get(g:, 'gitgutter_signs', 1)
+let g:gitgutter_highlight_lines   = get(g:, 'gitgutter_highlight_lines', 0)
+let g:gitgutter_highlight_linenrs = get(g:, 'gitgutter_highlight_linenrs', 0)
+let g:gitgutter_sign_priority     = get(g:, 'gitgutter_sign_priority', 10)
 " Nvim 0.4.0 has an expanding sign column
 " The sign_place() function supports sign priority.
 if (has('nvim-0.4.0') || exists('*sign_place')) && !exists('g:gitgutter_sign_allow_clobber')
   let g:gitgutter_sign_allow_clobber = 1
 endif
-call s:set('g:gitgutter_sign_allow_clobber',          0)
-call s:set('g:gitgutter_set_sign_backgrounds',           0)
-call s:set('g:gitgutter_sign_added',                   '+')
-call s:set('g:gitgutter_sign_modified',                '~')
-call s:set('g:gitgutter_sign_removed',                 '_')
+let g:gitgutter_sign_allow_clobber   = get(g:, 'gitgutter_sign_allow_clobber', 0)
+let g:gitgutter_set_sign_backgrounds = get(g:, 'gitgutter_set_sign_backgrounds', 0)
+let g:gitgutter_sign_added           = get(g:, 'gitgutter_sign_added', '+')
+let g:gitgutter_sign_modified        = get(g:, 'gitgutter_sign_modified', '~')
+let g:gitgutter_sign_removed         = get(g:, 'gitgutter_sign_removed', '_')
 
 if gitgutter#utility#supports_overscore_sign()
-  call s:set('g:gitgutter_sign_removed_first_line', '‾')
+  let g:gitgutter_sign_removed_first_line = get(g:, 'gitgutter_sign_removed_first_line', '‾')
 else
-  call s:set('g:gitgutter_sign_removed_first_line', '_^')
+  let g:gitgutter_sign_removed_first_line = get(g:, 'gitgutter_sign_removed_first_line', '_^')
 endif
 
-call s:set('g:gitgutter_sign_removed_above_and_below', '[')
-call s:set('g:gitgutter_sign_modified_removed',       '~_')
-call s:set('g:gitgutter_git_args',                      '')
-call s:set('g:gitgutter_diff_relative_to',         'index')
-call s:set('g:gitgutter_diff_args',                     '')
-call s:set('g:gitgutter_diff_base',                     '')
-call s:set('g:gitgutter_map_keys',                       1)
-call s:set('g:gitgutter_terminal_reports_focus',         1)
-call s:set('g:gitgutter_async',                          1)
-call s:set('g:gitgutter_log',                            0)
-call s:set('g:gitgutter_use_location_list',              0)
+let g:gitgutter_sign_removed_above_and_below = get(g:, 'gitgutter_sign_removed_above_and_below', '_¯')
+let g:gitgutter_sign_modified_removed        = get(g:, 'gitgutter_sign_modified_removed', '~_')
+let g:gitgutter_git_args                     = get(g:, 'gitgutter_git_args', '')
+let g:gitgutter_diff_relative_to             = get(g:, 'gitgutter_diff_relative_to', 'index')
+let g:gitgutter_diff_args                    = get(g:, 'gitgutter_diff_args', '')
+let g:gitgutter_diff_base                    = get(g:, 'gitgutter_diff_base', '')
+let g:gitgutter_map_keys                     = get(g:, 'gitgutter_map_keys', 1)
+let g:gitgutter_terminal_reports_focus       = get(g:, 'gitgutter_terminal_reports_focus', 1)
+let g:gitgutter_async                        = get(g:, 'gitgutter_async', 1)
+let g:gitgutter_log                          = get(g:, 'gitgutter_log', 0)
+let g:gitgutter_use_location_list            = get(g:, 'gitgutter_use_location_list', 0)
+let g:gitgutter_close_preview_on_escape      = get(g:, 'gitgutter_close_preview_on_escape', 0)
+let g:gitgutter_show_msg_on_hunk_jumping     = get(g:, 'gitgutter_show_msg_on_hunk_jumping', 1)
 
-call s:set('g:gitgutter_git_executable', 'git')
+let g:gitgutter_git_executable = get(g:, 'gitgutter_git_executable', 'git')
 if !executable(g:gitgutter_git_executable)
   if g:gitgutter_enabled
     call gitgutter#utility#warn('cannot find git. Please set g:gitgutter_git_executable.')
@@ -83,7 +77,7 @@ if !executable(g:gitgutter_git_executable)
 endif
 
 let default_grep = 'grep'
-call s:set('g:gitgutter_grep', default_grep)
+let g:gitgutter_grep = get(g:, 'gitgutter_grep', default_grep)
 if !empty(g:gitgutter_grep)
   if executable(split(g:gitgutter_grep)[0])
     if $GREP_OPTIONS =~# '--color=always'
@@ -225,12 +219,31 @@ nnoremap <silent> <Plug>GitGutterPreviewHunk   :call gitgutter#utility#warn('ple
 function! s:on_bufenter()
   call gitgutter#setup_maps()
 
+  " To keep vim's start-up fast, do not process the buffer when vim is starting.
+  " Instead process it a short time later.  Normally we would rely on our
+  " CursorHold autocommand to handle this but it turns out CursorHold is not
+  " guaranteed to fire if the user has not typed anything yet; so set up a
+  " timer instead.  The disadvantage is that if CursorHold does fire, the
+  " plugin will do a round of unnecessary work; but since there will not have
+  " been any changes to the buffer since the first round, the second round
+  " will be cheap.
+  if has('vim_starting') && !$VIM_GITGUTTER_TEST
+    if exists('*timer_start')
+      call timer_start(&updatetime, 'GitGutterCursorHold')
+    endif
+    return
+  endif
+
   if exists('t:gitgutter_didtabenter') && t:gitgutter_didtabenter
     let t:gitgutter_didtabenter = 0
     call gitgutter#all(!g:gitgutter_terminal_reports_focus)
   else
     call gitgutter#process_buffer(bufnr(''), !g:gitgutter_terminal_reports_focus)
   endif
+endfunction
+
+function! GitGutterCursorHold(timer)
+  execute 'doautocmd' s:nomodeline 'gitgutter CursorHold'
 endfunction
 
 " Autocommands {{{
@@ -241,6 +254,11 @@ augroup gitgutter
   autocmd TabEnter * let t:gitgutter_didtabenter = 1
 
   autocmd BufEnter * call s:on_bufenter()
+
+  " Ensure Vim is always checking for CursorMoved to avoid CursorMoved
+  " being fired at the wrong time in floating preview window on Neovim.
+  " See vim/vim#2053.
+  autocmd CursorMoved * execute ''
 
   autocmd CursorHold,CursorHoldI * call gitgutter#process_buffer(bufnr(''), 0)
   if exists('*timer_start') && has('lambda')
@@ -266,7 +284,7 @@ augroup gitgutter
   " FocusGained gets triggered on startup with Neovim at least already.
   " Therefore this tracks also if it was lost before.
   let s:focus_was_lost = 0
-  autocmd FocusGained * if s:focus_was_lost | let focus_was_lost = 0 | call gitgutter#all(1) | endif
+  autocmd FocusGained * if s:focus_was_lost | let s:focus_was_lost = 0 | call gitgutter#all(1) | endif
   autocmd FocusLost * let s:focus_was_lost = 1
 
   if exists('##VimResume')

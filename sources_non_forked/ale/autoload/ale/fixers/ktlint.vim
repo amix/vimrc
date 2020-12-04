@@ -3,7 +3,6 @@
 
 function! ale#fixers#ktlint#Fix(buffer) abort
     return {
-    \   'command': ale#handlers#ktlint#GetCommand(a:buffer) . ' --format',
-    \   'read_temporary_file': 1,
+    \   'command': ale#handlers#ktlint#GetCommand(a:buffer) . ' --format'
     \}
 endfunction

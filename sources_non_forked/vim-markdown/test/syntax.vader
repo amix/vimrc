@@ -739,12 +739,18 @@ def a
 end
 ```
 
+```ruby {linenos=table,hl_lines=[8,"15-17"],linenostart=199}
+class b
+end
+```
+
 Execute (fenced code block syntax with a language specifier):
   let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'MarkdownRefreshSyntax')
   call b:func(0)
   AssertEqual SyntaxOf('include'), 'cInclude'
   AssertEqual SyntaxOf('code'), 'mkdSnippetCPP'
   AssertEqual SyntaxOf('def'), 'rubyDefine'
+  AssertEqual SyntaxOf('class'), 'rubyClass'
 
 Given markdown;
 ``` c++
@@ -958,12 +964,12 @@ $$ \frac{a}{b} $$
 Execute (math tex highlighting):
   let g:vim_markdown_math=0
   syn off | syn on
-  AssertNotEqual SyntaxOf('sqrt'), 'texStatement'
-  AssertNotEqual SyntaxOf('frac'), 'texStatement'
+  AssertNotEqual SyntaxOf('sqrt')[0:2], 'tex'
+  AssertNotEqual SyntaxOf('frac')[0:2], 'tex'
   let g:vim_markdown_math=1
   syn off | syn on
-  AssertEqual SyntaxOf('sqrt'), 'texStatement'
-  AssertEqual SyntaxOf('frac'), 'texStatement'
+  AssertEqual SyntaxOf('sqrt')[0:2], 'tex'
+  AssertEqual SyntaxOf('frac')[0:2], 'tex'
 
 Given markdown;
 $a b[$ c
@@ -986,7 +992,7 @@ Execute (math ends with $$):
   AssertNotEqual SyntaxOf('c')[0:2], 'tex'
 
 Given markdown;
-$(0 \le 1)$
+$(0 \leq 1)$
 
 Execute (math conceal in $):
   if has('conceal')
@@ -997,20 +1003,21 @@ Execute (math conceal in $):
     AssertEqual synconcealed(1, 2)[0], 0
     AssertEqual synconcealed(1, 3)[0], 0
     AssertEqual synconcealed(1, 4)[0], 0
-    AssertEqual synconcealed(1, 5)[0], 1, '\le'
+    AssertEqual synconcealed(1, 5)[0], 1, '\leq'
     AssertEqual synconcealed(1, 6)[0], 1
     AssertEqual synconcealed(1, 7)[0], 1
-    AssertEqual synconcealed(1, 8)[0], 0
+    AssertEqual synconcealed(1, 8)[0], 1
     AssertEqual synconcealed(1, 9)[0], 0
     AssertEqual synconcealed(1, 10)[0], 0
-    AssertEqual synconcealed(1, 11)[0], 1, '$'
+    AssertEqual synconcealed(1, 11)[0], 0
+    AssertEqual synconcealed(1, 12)[0], 1, '$'
     setlocal conceallevel=0
   endif
 
 Given markdown;
 $$
 \omega
-0 \le 1
+0 \leq 1
 $$
 
 Execute (math conceal in $$):
@@ -1021,8 +1028,8 @@ Execute (math conceal in $$):
     AssertEqual synconcealed(1, 1)[0], 1, '$$'
     AssertEqual synconcealed(2, 1)[0], 1, '\omega'
     AssertEqual synconcealed(3, 1)[0], 0, '0'
-    AssertEqual synconcealed(3, 3)[0], 1, '\le'
-    AssertEqual synconcealed(3, 7)[0], 0, '1'
+    AssertEqual synconcealed(3, 3)[0], 1, '\leq'
+    AssertEqual synconcealed(3, 8)[0], 0, '1'
     AssertEqual synconcealed(4, 1)[0], 1, '$$'
     setlocal conceallevel=0
   endif

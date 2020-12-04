@@ -146,7 +146,13 @@ Commands for jumping between hunks:~
 :GitGutterQuickFix      Load all hunks into the |quickfix| list.  Note this
                         ignores any unsaved changes in your buffers. The
                         |g:gitgutter_use_location_list| option can be set to
-                        populate the location list of the current window instead
+                        populate the location list of the current window
+                        instead.  Use |:copen| (or |:lopen|) to open a buffer
+                        containing the search results in linked form; or add a
+                        custom command like this:
+>
+                          command! Gqf GitGutterQuickFix | copen
+<
 
 
 Commands for operating on a hunk:~
@@ -308,9 +314,14 @@ Signs:~
     |g:gitgutter_sign_modified_removed|
     |g:gitgutter_set_sign_backgrounds|
 
+Hunk jumping:~
+
+    |g:gitgutter_show_msg_on_hunk_jumping|
+
 Hunk previews:~
 
     |g:gitgutter_preview_win_floating|
+    |g:gitgutter_close_preview_on_escape|
 
 Terminal:~
 
@@ -438,6 +449,7 @@ will not preserve non-gitgutter signs.
                                           *g:gitgutter_sign_modified*
                                           *g:gitgutter_sign_removed*
                                           *g:gitgutter_sign_removed_first_line*
+                                          *g:gitgutter_sign_removed_above_and_below*
                                           *g:gitgutter_sign_modified_removed*
 Defaults:
 >
@@ -445,6 +457,7 @@ Defaults:
     let g:gitgutter_sign_modified           = '~'
     let g:gitgutter_sign_removed            = '_'
     let g:gitgutter_sign_removed_first_line = '‾'
+    let g:gitgutter_sign_removed_above_and_below = '_¯'
     let g:gitgutter_sign_modified_removed   = '~_'
 <
 You can use unicode characters but not images.  Signs must not take up more than
@@ -467,6 +480,11 @@ Default: 0 (Vim)
 Whether to use floating/popup windows for hunk previews.  Note that if you use
 popup windows on Vim you will not be able to stage partial hunks via the
 preview window.
+
+                                          *g:gitgutter_close_preview_on_escape*
+Default: 0
+
+Whether pressing <Esc> in a non-floating preview window closes it.
 
                                            *g:gitgutter_terminal_reports_focus*
 Default: 1
@@ -515,6 +533,11 @@ Default: 0
 
 When switched on, the :GitGutterQuickFix command populates the location list
 of the current window instead of the global quickfix list.
+
+                                         *g:gitgutter_show_msg_on_hunk_jumping*
+Default: 1
+
+When switched on, a message like "Hunk 4 of 11" is shown on hunk jumping.
 
 
 ===============================================================================
@@ -631,6 +654,22 @@ When no signs are showing at all:~
 <
   If the result is -2, the plugin thinks your file is not tracked by git.
 
+6. Check whether the signs have been placed:
+>
+    :sign place group=gitgutter
+<
+  If you see a list of signs, this is a colorscheme / highlight problem.
+  Compare these two highlight values:
+>
+    :highlight GitGutterAdd
+    :highlight SignColumn
+<
+  If no signs are listed, the call to git-diff is probably failing.  Turn on
+  logging by adding the following to your vimrc, restart, reproduce the problem,
+  and examing the gitgutter.log file in the plugin's directory.
+>
+    let g:gitgutter_log = 1
+<
 
 When the whole file is marked as added:~
 

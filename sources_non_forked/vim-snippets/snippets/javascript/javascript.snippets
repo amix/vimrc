@@ -311,6 +311,10 @@ snippet foro "for (const prop of object}) { ... }"
 	for (const ${1:prop} of ${2:object}) {
 		${0:$1}
 	}
+snippet forl "for (let prop of object}) { ... }"
+	for (let ${1:prop} of ${2:object}) {
+		${0:$1}
+	}
 snippet fun*
 	function* ${1:function_name}(${2}) {
 		${0:${VISUAL}}
@@ -319,8 +323,16 @@ snippet c=>
 	const ${1:function_name} = (${2}) => {
 		${0:${VISUAL}}
 	}
+snippet ca=>
+	const ${1:function_name} = async (${2}) => {
+		${0:${VISUAL}}
+	}
 snippet caf
 	const ${1:function_name} = (${2}) => {
+		${0:${VISUAL}}
+	}
+snippet casf
+	const ${1:function_name} = async (${2}) => {
 		${0:${VISUAL}}
 	}
 snippet =>
@@ -339,5 +351,7 @@ snippet ed
 	export default ${0}
 snippet ${
 	${${1}}${0}
+snippet as "async"
+	async ${0}
 snippet aw "await"
 	await ${0:${VISUAL}}

@@ -13,6 +13,7 @@ CONTENTS                                             *ale-development-contents*
   4. Testing ALE..........................|ale-development-tests|
     4.1. Writing Linter Tests.............|ale-development-linter-tests|
     4.2. Writing Fixer Tests..............|ale-development-fixer-tests|
+    4.3. Running Tests in a Windows VM....|ale-development-windows-tests|
 
 ===============================================================================
 1. Introduction                                  *ale-development-introduction*
@@ -169,6 +170,11 @@ latest Docker image for tests will be downloaded if needed, and the script
 will run all of the tests in Vader, Vint checks, and several Bash scripts for
 finding extra issues. Run `./run-tests --help` to see all of the options the
 script supports. Note that the script supports selecting particular test files.
+
+Once you get used to dealing with Vim and NeoVim compatibility issues, you
+probably want to use `./run-tests --fast -q` for running tests with only the
+fastest available Vim version, and with success messages from tests
+suppressed.
 
 Generally write tests for any changes you make. The following types of tests
 are recommended for the following types of code.
@@ -352,6 +358,82 @@ given the above setup are as follows.
 `AssertFixer results`              - Check the fixer results
 `AssertFixerNotExecuted`           - Check that fixers will not be executed.
 
+
+===============================================================================
+4.3 Running Tests in a Windows VM               *ale-development-windows-tests*
+
+Tests are run for ALE in a build of Vim 8 for Windows via AppVeyor. These
+tests can frequently break due to minor differences in paths and how escaping
+is done for commands on Windows. If you are a Linux or Mac user, running these
+tests locally can be difficult. Here is a process that will make that easier.
+
+First, you want to install a Windows image with VirtualBox. Install VirtualBox
+and grab a VirtualBox image for Windows such as from here:
+https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/
+
+NOTE: If you need to enter a password for the virtual machine at any point,
+the password is "Passw0rd!" without the double quotes.
+
+NOTE: If your trial period for Windows runs out, run the commands like the
+wallpaper tells you to.
+
+Your virtual machine will need to have PowerShell installed. Before you go any
+further, confirm that PowerShell is installed in your Windows virtual machine.
+
+Consult the VirtualBox documentation on how to install "Guest Additions."
+You probably want to install "Guest Additions" for most things to work
+properly.
+
+After you've loaded your virtual machine image, go into "Settings" for your
+virtual machine, and "Shared Folders." Add a shared folder with the name
+"ale", and set the "Folder Path" to the path to your ALE repository, for
+example: "/home/w0rp/ale"
+
+Find out which drive letter "ale" has been mounted as in Windows. We'll use
+"E:" as the drive letter, for example. Open the command prompt as an
+administrator by typing in `cmd` in the start menu, right clicking on the
+command prompt application, and clicking "Run as administrator." Click "Yes"
+when prompted to ask if you're sure you want to run the command prompt. You
+should type in the following command to mount the "ale" directory for testing,
+where "E:" is replaced with your drive letter. >
+
+  mklink /D C:\testplugin E:
+<
+Close the administrator Command Prompt, and try running the command
+`type C:\testplugin\LICENSE` in a new Command Prompt which you are NOT running
+as administrator. You should see the license for ALE in your terminal. After
+you have confirmed that you have mounted ALE on your machine, search in the
+Start Menu for "power shell," run PowerShell as an administrator, and issue
+the following commands to install the correct Vim and Vader versions for
+running tests. >
+
+  Add-Type -A System.IO.Compression.FileSystem
+
+  Invoke-WebRequest ftp://ftp.vim.org/pub/vim/pc/vim80-586w32.zip -OutFile C:\vim.zip
+  [IO.Compression.ZipFile]::ExtractToDirectory('C:\vim.zip', 'C:\vim')
+  rm C:\vim.zip
+
+  Invoke-WebRequest ftp://ftp.vim.org/pub/vim/pc/vim80-586rt.zip -OutFile C:\rt.zip
+  [IO.Compression.ZipFile]::ExtractToDirectory('C:\rt.zip', 'C:\vim')
+  rm C:\rt.zip
+
+  Invoke-WebRequest https://github.com/junegunn/vader.vim/archive/c6243dd81c98350df4dec608fa972df98fa2a3af.zip -OutFile C:\vader.zip
+  [IO.Compression.ZipFile]::ExtractToDirectory('C:\vader.zip', 'C:\')
+  mv C:\vader.vim-c6243dd81c98350df4dec608fa972df98fa2a3af C:\vader
+  rm C:\vader.zip
+<
+After you have finished installing everything, you can run all of the tests
+in Windows by opening a Command Prompt NOT as an administrator by navigating
+to the directory where you've mounted the ALE code, which must be named
+`C:\testplugin`, and by running the `run-tests.bat` batch file. >
+
+  cd C:\testplugin
+  run-tests
+<
+It will probably take several minutes for all of the tests to run. Be patient.
+You can run a specific test by passing the filename as an argument to the
+batch file, for example: `run-tests test/test_c_flag_parsing.vader` . This will
+give you results much more quickly.
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

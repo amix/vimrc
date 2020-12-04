@@ -318,9 +318,8 @@ Applies to: files.
 If a file node or a bookmark that links to a file is selected, it is opened in
 the previous window, but the cursor does not move.
 
-If a bookmark that links to a directory is selected, that directory is found
-in the current NERDTree. If the directory couldn't be found, a new NERDTree is
-created.
+If a bookmark that links to a directory is selected then that directory
+becomes the new root.
 
 The default key combo for this mapping is "g" + NERDTreeMapActivateNode (see
 |NERDTree-o|).
@@ -350,7 +349,7 @@ The same as |NERDTree-t| except that the focus is kept in the current tab.
                                                                     *NERDTree-i*
 Default key: i
 Map setting: *NERDTreeMapOpenSplit*
-Applies to: files.
+Applies to: files, and bookmarks pointing to files.
 
 Opens the selected file in a new split window and puts the cursor in the new
 window.
@@ -359,7 +358,7 @@ window.
                                                                    *NERDTree-gi*
 Default key: gi
 Map setting: *NERDTreeMapPreviewSplit*
-Applies to: files.
+Applies to: files, and bookmarks pointing to files.
 
 The same as |NERDTree-i| except that the cursor is not moved.
 
@@ -370,7 +369,7 @@ The default key combo for this mapping is "g" + NERDTreeMapOpenSplit (see
                                                                     *NERDTree-s*
 Default key: s
 Map setting: *NERDTreeMapOpenVSplit*
-Applies to: files.
+Applies to: files, and bookmarks pointing to files.
 
 Opens the selected file in a new vertically split window and puts the cursor
 in the new window.
@@ -379,7 +378,7 @@ in the new window.
                                                                    *NERDTree-gs*
 Default key: gs
 Map setting: *NERDTreeMapPreviewVSplit*
-Applies to: files.
+Applies to: files, and bookmarks pointing to files.
 
 The same as |NERDTree-s| except that the cursor is not moved.
 

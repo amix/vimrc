@@ -8,21 +8,21 @@ snippet def
 	(def ${0})
 snippet defm
 	(defmethod ${1:multifn} "${2:doc-string}" ${3:dispatch-val} [${4:args}]
-		${0})
+		${0:code})
 snippet defmm
 	(defmulti ${1:name} "${2:doc-string}" ${0:dispatch-fn})
 snippet defma
 	(defmacro ${1:name} "${2:doc-string}" ${0:dispatch-fn})
 snippet defn
 	(defn ${1:name} "${2:doc-string}" [${3:arg-list}]
-		${0})
+		${0:code})
 snippet defp
 	(defprotocol ${1:name}
-		${0})
+		${0:code})
 snippet defr
 	(defrecord ${1:name} [${2:fields}]
 		${3:protocol}
-		${0})
+		${0:code})
 snippet deft
 	(deftest ${1:name}
 		(is (= ${0:assertion})))
@@ -31,12 +31,12 @@ snippet is
 snippet defty
 	(deftype ${1:Name} [${2:fields}]
 		${3:Protocol}
-		${0})
+		${0:code})
 snippet doseq
 	(doseq [${1:elem} ${2:coll}]
-		${0})
+		${0:code})
 snippet fn
-	(fn [${1:arg-list}] ${0})
+	(fn [${1:arg-list}] ${0:code})
 snippet if
 	(if ${1:test-expr}
 		${2:then-expr}
@@ -50,24 +50,24 @@ snippet imp
 		& {:keys [${1:keys}] :or {${0:defaults}}}
 snippet let
 	(let [${1:name} ${2:expr}]
-		${0})
+		${0:code})
 snippet letfn
 	(letfn [(${1:name}) [${2:args}]
-		${0})])
+		${0:code})])
 snippet map
 	(map ${1:func} ${0:coll})
 snippet mapl
 	(map #(${1:lambda}) ${0:coll})
 snippet met
 	(${1:name} [${2:this} ${3:args}]
-		${0})
+		${0:code})
 snippet ns
 	(ns ${0:name})
 snippet dotimes
 	(dotimes [_ 10]
 		(time
 			(dotimes [_ ${1:times}]
-				${0})))
+				${0:code})))
 snippet pmethod
 	(${1:name} [${2:this} ${0:args}])
 snippet refer

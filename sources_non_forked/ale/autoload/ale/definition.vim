@@ -135,10 +135,6 @@ function! s:GoToLSPDefinition(linter, options, capability) abort
 endfunction
 
 function! ale#definition#GoTo(options) abort
-    if !get(g:, 'ale_ignore_2_7_warnings') && has_key(a:options, 'deprecated_command')
-        execute 'echom '':' . a:options.deprecated_command . ' is deprecated. Use `let g:ale_ignore_2_7_warnings = 1` to disable this message.'''
-    endif
-
     for l:linter in ale#linter#Get(&filetype)
         if !empty(l:linter.lsp)
             call s:GoToLSPDefinition(l:linter, a:options, 'definition')
@@ -147,10 +143,6 @@ function! ale#definition#GoTo(options) abort
 endfunction
 
 function! ale#definition#GoToType(options) abort
-    if !get(g:, 'ale_ignore_2_7_warnings') && has_key(a:options, 'deprecated_command')
-        execute 'echom '':' . a:options.deprecated_command . ' is deprecated. Use `let g:ale_ignore_2_7_warnings = 1` to disable this message.'''
-    endif
-
     for l:linter in ale#linter#Get(&filetype)
         if !empty(l:linter.lsp)
             " TODO: handle typeDefinition for tsserver if supported by the

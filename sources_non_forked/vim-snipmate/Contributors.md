@@ -48,5 +48,6 @@ additional contributions from:
 * [steveno](https://github.com/steveno)
 * [taq](https://github.com/taq)
 * [thisgeek](https://github.com/thisgeek)
+* [tomushkin](https://github.com/tomushkin)
 * [trusktr](https://github.com/trusktr)
 * [Xandaros](https://github.com/Xandaros)

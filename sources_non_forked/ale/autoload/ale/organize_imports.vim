@@ -12,10 +12,13 @@ function! ale#organize_imports#HandleTSServerResponse(conn_id, response) abort
 
     let l:file_code_edits =  a:response.body
 
-    call ale#code_action#HandleCodeAction({
-    \   'description': 'Organize Imports',
-    \   'changes': l:file_code_edits,
-    \}, v:false)
+    call ale#code_action#HandleCodeAction(
+    \   {
+    \       'description': 'Organize Imports',
+    \       'changes': l:file_code_edits,
+    \   },
+    \   {}
+    \)
 endfunction
 
 function! s:OnReady(linter, lsp_details) abort

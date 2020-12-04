@@ -3,6 +3,17 @@ ALE Markdown Integration                                 *ale-markdown-options*
 
 
 ===============================================================================
+markdownlint                                        *ale-markdown-markdownlint*
+
+g:ale_markdown_markdownlint_options       *g:ale_markdown_markdownlint_options*
+                                          *b:ale_markdown_markdownlint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to markdownlint.
+
+
+===============================================================================
 mdl                                                          *ale-markdown-mdl*
 
 g:ale_markdown_mdl_executable                   *g:ale_markdown_mdl_executable*

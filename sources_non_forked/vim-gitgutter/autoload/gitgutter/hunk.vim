@@ -46,39 +46,57 @@ endfunction
 
 function! gitgutter#hunk#next_hunk(count) abort
   let bufnr = bufnr('')
-  if gitgutter#utility#is_active(bufnr)
-    let current_line = line('.')
-    let hunk_count = 0
-    for hunk in gitgutter#hunk#hunks(bufnr)
-      if hunk[2] > current_line
-        let hunk_count += 1
-        if hunk_count == a:count
-          execute 'normal!' hunk[2] . 'Gzv'
-          return
-        endif
-      endif
-    endfor
-    call gitgutter#utility#warn('No more hunks')
+  if !gitgutter#utility#is_active(bufnr) | return | endif
+
+  let hunks = gitgutter#hunk#hunks(bufnr)
+  if empty(hunks)
+    call gitgutter#utility#warn('No hunks in file')
+    return
   endif
+
+  let current_line = line('.')
+  let hunk_count = 0
+  for hunk in hunks
+    if hunk[2] > current_line
+      let hunk_count += 1
+      if hunk_count == a:count
+        execute 'normal!' hunk[2] . 'Gzv'
+        if g:gitgutter_show_msg_on_hunk_jumping
+          redraw | echo printf('Hunk %d of %d', index(hunks, hunk) + 1, len(hunks))
+        endif
+        return
+      endif
+    endif
+  endfor
+  call gitgutter#utility#warn('No more hunks')
 endfunction
 
 function! gitgutter#hunk#prev_hunk(count) abort
   let bufnr = bufnr('')
-  if gitgutter#utility#is_active(bufnr)
-    let current_line = line('.')
-    let hunk_count = 0
-    for hunk in reverse(copy(gitgutter#hunk#hunks(bufnr)))
-      if hunk[2] < current_line
-        let hunk_count += 1
-        if hunk_count == a:count
-          let target = hunk[2] == 0 ? 1 : hunk[2]
-          execute 'normal!' target . 'Gzv'
-          return
-        endif
-      endif
-    endfor
-    call gitgutter#utility#warn('No previous hunks')
+  if !gitgutter#utility#is_active(bufnr) | return | endif
+
+  let hunks = gitgutter#hunk#hunks(bufnr)
+  if empty(hunks)
+    call gitgutter#utility#warn('No hunks in file')
+    return
   endif
+
+  let current_line = line('.')
+  let hunk_count = 0
+  for hunk in reverse(copy(hunks))
+    if hunk[2] < current_line
+      let hunk_count += 1
+      if hunk_count == a:count
+        let target = hunk[2] == 0 ? 1 : hunk[2]
+        execute 'normal!' target . 'Gzv'
+        if g:gitgutter_show_msg_on_hunk_jumping
+          redraw | echo printf('Hunk %d of %d', index(hunks, hunk) + 1, len(hunks))
+        endif
+        return
+      endif
+    endif
+  endfor
+  call gitgutter#utility#warn('No previous hunks')
 endfunction
 
 " Returns the hunk the cursor is currently in or an empty list if the cursor
@@ -455,6 +473,9 @@ function! s:open_hunk_preview_window()
   setlocal filetype=diff buftype=acwrite bufhidden=delete
   " Reset some defaults in case someone else has changed them.
   setlocal noreadonly modifiable noswapfile
+  if g:gitgutter_close_preview_on_escape
+    nnoremap <buffer> <silent> <Esc> :pclose<CR>
+  endif
 endfunction
 
 

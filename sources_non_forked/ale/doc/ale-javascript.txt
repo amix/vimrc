@@ -138,7 +138,7 @@ g:ale_javascript_flow_use_respect_pragma
 
   By default, ALE will use the `--respect-pragma` option for `flow`, so only
   files with the `@flow` pragma are checked by ALE. This option can be set to
-  `0` to disable that behaviour, so all files can be checked by `flow`.
+  `0` to disable that behavior, so all files can be checked by `flow`.
 
 
 ===============================================================================

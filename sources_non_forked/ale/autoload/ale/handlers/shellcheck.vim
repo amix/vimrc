@@ -1,8 +1,32 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: This file adds support for using the shellcheck linter
 
+" Shellcheck supports shell directives to define the shell dialect for scripts
+" that do not have a shebang for some reason.
+" https://github.com/koalaman/shellcheck/wiki/Directive#shell
+function! ale#handlers#shellcheck#GetShellcheckDialectDirective(buffer) abort
+    let l:linenr = 0
+    let l:pattern = '\s\{-}#\s\{-}shellcheck\s\{-}shell=\(.*\)'
+    let l:possible_shell = ['bash', 'dash', 'ash', 'tcsh', 'csh', 'zsh', 'ksh', 'sh']
+
+    while l:linenr < min([50, line('$')])
+        let l:linenr += 1
+        let l:match = matchlist(getline(l:linenr), l:pattern)
+
+        if len(l:match) > 1 && index(l:possible_shell, l:match[1]) >= 0
+            return l:match[1]
+        endif
+    endwhile
+
+    return ''
+endfunction
+
 function! ale#handlers#shellcheck#GetDialectArgument(buffer) abort
-    let l:shell_type = ale#handlers#sh#GetShellType(a:buffer)
+    let l:shell_type = ale#handlers#shellcheck#GetShellcheckDialectDirective(a:buffer)
+
+    if empty(l:shell_type)
+        let l:shell_type = ale#handlers#sh#GetShellType(a:buffer)
+    endif
 
     if !empty(l:shell_type)
         " Use the dash dialect for /bin/ash, etc.
@@ -11,15 +35,6 @@ function! ale#handlers#shellcheck#GetDialectArgument(buffer) abort
         endif
 
         return l:shell_type
-    endif
-
-    " If there's no hashbang, try using Vim's buffer variables.
-    if getbufvar(a:buffer, 'is_bash', 0)
-        return 'bash'
-    elseif getbufvar(a:buffer, 'is_sh', 0)
-        return 'sh'
-    elseif getbufvar(a:buffer, 'is_kornshell', 0)
-        return 'ksh'
     endif
 
     return ''

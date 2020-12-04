@@ -29,8 +29,8 @@ snippet function
 # PowerShell Splatting
 snippet splatting
 	$Params = @{
-		${1:Param1} = '{2:Value1}'
-		${3:Param2} = '{4:Value2}'
+		${1:Param1} = '${2:Value1}'
+		${3:Param2} = '${4:Value2}'
 	}
 	${5:CommandName} @Params
 
@@ -99,4 +99,3 @@ snippet switch
 		${2:condition1} { ${3:action} }
 		${4:condition2} { ${5:action} }
 		default { ${6:action} }
-

@@ -97,6 +97,10 @@ let g:ale_fix_on_save = get(g:, 'ale_fix_on_save', 0)
 " should be used instead.
 let g:ale_enabled = get(g:, 'ale_enabled', 1)
 
+" A Dictionary mapping linter or fixer names to Arrays of two-item Arrays
+" mapping filename paths from one system to another.
+let g:ale_filename_mappings = get(g:, 'ale_filename_mappings', {})
+
 " These flags dictates if ale uses the quickfix or the loclist (loclist is the
 " default, quickfix overrides loclist).
 let g:ale_set_loclist = get(g:, 'ale_set_loclist', 1)
@@ -120,6 +124,9 @@ let g:ale_cursor_detail = get(g:, 'ale_cursor_detail', 0)
 
 " This flag can be set to 1 to enable virtual text when the cursor moves.
 let g:ale_virtualtext_cursor = get(g:, 'ale_virtualtext_cursor', 0)
+
+" This flag can be set to 1 to enable LSP hover messages at the cursor.
+let g:ale_hover_cursor = get(g:, 'ale_hover_cursor', 1)
 
 " This flag can be set to 1 to automatically close the preview window upon
 " entering Insert Mode.
@@ -151,12 +158,19 @@ let g:ale_python_auto_pipenv = get(g:, 'ale_python_auto_pipenv', 0)
 " This variable can be overridden to set the GO111MODULE environment variable.
 let g:ale_go_go111module = get(g:, 'ale_go_go111module', '')
 
-if g:ale_set_balloons
+" If 1, enable a popup menu for commands.
+let g:ale_popup_menu_enabled = get(g:, 'ale_popup_menu_enabled', has('gui_running'))
+
+if g:ale_set_balloons is 1 || g:ale_set_balloons is# 'hover'
     call ale#balloon#Enable()
 endif
 
 if g:ale_completion_enabled
     call ale#completion#Enable()
+endif
+
+if g:ale_popup_menu_enabled
+    call ale#code_action#EnablePopUpMenu()
 endif
 
 " Define commands for moving through warnings and errors.
@@ -188,6 +202,8 @@ command! -bar ALEStopAllLSPs :call ale#lsp#reset#StopAllLSPs()
 
 " A command for linting manually.
 command! -bar ALELint :call ale#Queue(0, 'lint_file')
+" Stop current jobs when linting.
+command! -bar ALELintStop :call ale#engine#Stop(bufnr(''))
 
 " Define a command to get information about current filetype.
 command! -bar ALEInfo :call ale#debugging#Info()
@@ -197,25 +213,15 @@ command! -bar ALEInfoToClipboard :call ale#debugging#InfoToClipboard()
 command! -bar -nargs=1 ALEInfoToFile :call ale#debugging#InfoToFile(<f-args>)
 
 " Fix problems in files.
-command! -bar -nargs=* -complete=customlist,ale#fix#registry#CompleteFixers ALEFix :call ale#fix#Fix(bufnr(''), '', <f-args>)
+command! -bar -bang -nargs=* -complete=customlist,ale#fix#registry#CompleteFixers ALEFix :call ale#fix#Fix(bufnr(''), '<bang>', <f-args>)
 " Suggest registered functions to use for fixing problems.
 command! -bar ALEFixSuggest :call ale#fix#registry#Suggest(&filetype)
 
 " Go to definition for tsserver and LSP
 command! -bar -nargs=* ALEGoToDefinition :call ale#definition#GoToCommandHandler('', <f-args>)
 
-" Deprecated commands we have to keep for now.
-command! -bar ALEGoToDefinitionInTab :call ale#definition#GoTo({'open_in': 'tab', 'deprecated_command': 'ALEGoToDefinitionInTab'})
-command! -bar ALEGoToDefinitionInSplit :call ale#definition#GoTo({'open_in': 'split', 'deprecated_command': 'ALEGoToDefinitionInSplit'})
-command! -bar ALEGoToDefinitionInVSplit :call ale#definition#GoTo({'open_in': 'vsplit', 'deprecated_command': 'ALEGoToDefinitionInVSplit'})
-
 " Go to type definition for tsserver and LSP
 command! -bar -nargs=* ALEGoToTypeDefinition :call ale#definition#GoToCommandHandler('type', <f-args>)
-
-" Deprecated commands we have to keep for now.
-command! -bar ALEGoToTypeDefinitionInTab :call ale#definition#GoToType({'open_in': 'tab', 'deprecated_command': 'ALEGoToTypeDefinitionInTab'})
-command! -bar ALEGoToTypeDefinitionInSplit :call ale#definition#GoToType({'open_in': 'split', 'deprecated_command': 'ALEGoToTypeDefinitionInSplit'})
-command! -bar ALEGoToTypeDefinitionInVSplit :call ale#definition#GoToType({'open_in': 'vsplit', 'deprecated_command': 'ALEGoToTypeDefinitionInVSplit'})
 
 " Repeat a previous selection in the preview window
 command! -bar ALERepeatSelection :call ale#preview#RepeatSelection()
@@ -232,10 +238,17 @@ command! -bar ALEDocumentation :call ale#hover#ShowDocumentationAtCursor()
 " Search for appearances of a symbol, such as a type name or function name.
 command! -nargs=1 ALESymbolSearch :call ale#symbol#Search(<q-args>)
 
+" Complete text with tsserver and LSP
 command! -bar ALEComplete :call ale#completion#GetCompletions('ale-manual')
 
+" Try to find completions for the current symbol that add additional text.
+command! -bar ALEImport :call ale#completion#Import()
+
 " Rename symbols using tsserver and LSP
-command! -bar ALERename :call ale#rename#Execute()
+command! -bar -bang ALERename :call ale#rename#Execute()
+
+" Apply code actions to a range.
+command! -bar -range ALECodeAction :call ale#codefix#Execute(<range>)
 
 " Organize import statements using tsserver
 command! -bar ALEOrganizeImports :call ale#organize_imports#Execute()
@@ -267,21 +280,21 @@ nnoremap <silent> <Plug>(ale_lint) :ALELint<Return>
 nnoremap <silent> <Plug>(ale_detail) :ALEDetail<Return>
 nnoremap <silent> <Plug>(ale_fix) :ALEFix<Return>
 nnoremap <silent> <Plug>(ale_go_to_definition) :ALEGoToDefinition<Return>
+nnoremap <silent> <Plug>(ale_go_to_definition_in_tab) :ALEGoToDefinition -tab<Return>
+nnoremap <silent> <Plug>(ale_go_to_definition_in_split) :ALEGoToDefinition -split<Return>
+nnoremap <silent> <Plug>(ale_go_to_definition_in_vsplit) :ALEGoToDefinition -vsplit<Return>
 nnoremap <silent> <Plug>(ale_go_to_type_definition) :ALEGoToTypeDefinition<Return>
+nnoremap <silent> <Plug>(ale_go_to_type_definition_in_tab) :ALEGoToTypeDefinition -tab<Return>
+nnoremap <silent> <Plug>(ale_go_to_type_definition_in_split) :ALEGoToTypeDefinition -split<Return>
+nnoremap <silent> <Plug>(ale_go_to_type_definition_in_vsplit) :ALEGoToTypeDefinitionIn -vsplit<Return>
 nnoremap <silent> <Plug>(ale_find_references) :ALEFindReferences<Return>
 nnoremap <silent> <Plug>(ale_hover) :ALEHover<Return>
 nnoremap <silent> <Plug>(ale_documentation) :ALEDocumentation<Return>
 inoremap <silent> <Plug>(ale_complete) <C-\><C-O>:ALEComplete<Return>
+nnoremap <silent> <Plug>(ale_import) :ALEImport<Return>
 nnoremap <silent> <Plug>(ale_rename) :ALERename<Return>
+nnoremap <silent> <Plug>(ale_code_action) :ALECodeAction<Return>
 nnoremap <silent> <Plug>(ale_repeat_selection) :ALERepeatSelection<Return>
-
-" Deprecated <Plug> mappings
-nnoremap <silent> <Plug>(ale_go_to_definition_in_tab) :ALEGoToDefinitionInTab<Return>
-nnoremap <silent> <Plug>(ale_go_to_definition_in_split) :ALEGoToDefinitionInSplit<Return>
-nnoremap <silent> <Plug>(ale_go_to_definition_in_vsplit) :ALEGoToDefinitionInVSplit<Return>
-nnoremap <silent> <Plug>(ale_go_to_type_definition_in_tab) :ALEGoToTypeDefinitionInTab<Return>
-nnoremap <silent> <Plug>(ale_go_to_type_definition_in_split) :ALEGoToTypeDefinitionInSplit<Return>
-nnoremap <silent> <Plug>(ale_go_to_type_definition_in_vsplit) :ALEGoToTypeDefinitionInVSplit<Return>
 
 " Set up autocmd groups now.
 call ale#events#Init()

@@ -1,3 +1,5 @@
+# **❗ This plugin is deprecated, use [vim-visual-multi](https://github.com/mg979/vim-visual-multi) instead ❗**
+
 # vim-multiple-cursors
 [![Build Status](https://travis-ci.org/terryma/vim-multiple-cursors.svg?branch=master)](https://travis-ci.org/github/terryma/vim-multiple-cursors)
 

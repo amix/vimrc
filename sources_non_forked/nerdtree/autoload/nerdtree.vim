@@ -30,9 +30,11 @@ endfunction
 " SECTION: General Functions {{{1
 "============================================================
 
-"FUNCTION: nerdtree#slash() {{{2
+" FUNCTION: nerdtree#slash() {{{2
+" Return the path separator used by the underlying file system.  Special
+" consideration is taken for the use of the 'shellslash' option on Windows
+" systems.
 function! nerdtree#slash() abort
-
     if nerdtree#runningWindows()
         if exists('+shellslash') && &shellslash
             return '/'
@@ -108,15 +110,15 @@ function! nerdtree#completeBookmarks(A,L,P) abort
     return filter(g:NERDTreeBookmark.BookmarkNames(), 'v:val =~# "^' . a:A . '"')
 endfunction
 
-"FUNCTION: nerdtree#compareNodes(dir) {{{2
+"FUNCTION: nerdtree#compareNodes(n1, n2) {{{2
 function! nerdtree#compareNodes(n1, n2) abort
-    return a:n1.path.compareTo(a:n2.path)
+    return nerdtree#compareNodePaths(a:n1.path, a:n2.path)
 endfunction
 
-"FUNCTION: nerdtree#compareNodesBySortKey(n1, n2) {{{2
-function! nerdtree#compareNodesBySortKey(n1, n2) abort
-    let sortKey1 = a:n1.path.getSortKey()
-    let sortKey2 = a:n2.path.getSortKey()
+"FUNCTION: nerdtree#compareNodePaths(p1, p2) {{{2
+function! nerdtree#compareNodePaths(p1, p2) abort
+    let sortKey1 = a:p1.getSortKey()
+    let sortKey2 = a:p2.getSortKey()
     let i = 0
     while i < min([len(sortKey1), len(sortKey2)])
         " Compare chunks upto common length.

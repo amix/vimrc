@@ -17,8 +17,8 @@ function! ale#fixers#prettier_standard#Fix(buffer) abort
 
     return {
     \   'command': ale#Escape(ale#fixers#prettier_standard#GetExecutable(a:buffer))
-    \       . ' %t'
+    \       . ' --stdin'
+    \       . ' --stdin-filepath=%s'
     \       . ' ' . l:options,
-    \   'read_temporary_file': 1,
     \}
 endfunction

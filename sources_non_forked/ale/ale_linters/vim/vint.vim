@@ -5,7 +5,7 @@
 call ale#Set('vim_vint_show_style_issues', 1)
 call ale#Set('vim_vint_executable', 'vint')
 let s:enable_neovim = has('nvim') ? ' --enable-neovim' : ''
-let s:format = '-f "{file_path}:{line_number}:{column_number}: {severity}: {description} (see {reference})"'
+let s:format = '-f "{file_path}:{line_number}:{column_number}: {severity}: {policy_name} - {description} (see {reference})"'
 
 function! ale_linters#vim#vint#GetCommand(buffer, version) abort
     let l:can_use_no_color_flag = empty(a:version)
@@ -13,12 +13,17 @@ function! ale_linters#vim#vint#GetCommand(buffer, version) abort
 
     let l:warning_flag = ale#Var(a:buffer, 'vim_vint_show_style_issues') ? '-s' : '-w'
 
+    " Use the --stdin-display-name argument if supported, temp file otherwise.
+    let l:stdin_or_temp = ale#semver#GTE(a:version, [0, 4, 0])
+    \   ? ' --stdin-display-name %s -'
+    \   : ' %t'
+
     return '%e'
     \   . ' ' . l:warning_flag
     \   . (l:can_use_no_color_flag ? ' --no-color' : '')
     \   . s:enable_neovim
     \   . ' ' . s:format
-    \   . ' %t'
+    \   . l:stdin_or_temp
 endfunction
 
 let s:word_regex_list = [

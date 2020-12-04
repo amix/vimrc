@@ -12,6 +12,8 @@ endfunction
 
 let s:c_flag = s:git_supports_command_line_config_override()
 
+let s:temp_from = tempname()
+let s:temp_buffer = tempname()
 let s:counter = 0
 
 " Returns a diff of the buffer against the index or the working tree.
@@ -75,9 +77,6 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     throw 'gitgutter not tracked'
   endif
 
-  let temp_from = tempname()
-  let temp_buffer = tempname()
-
   " Wrap compound commands in parentheses to make Windows happy.
   " bash doesn't mind the parentheses.
   let cmd = '('
@@ -90,7 +89,7 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
   " second gitgutter#process_buffer() writing the file (synchronously, below)
   " and the first gitgutter#process_buffer()'s async job reading it (with
   " git-diff).
-  let buff_file = temp_buffer.'.'.a:bufnr
+  let buff_file = s:temp_buffer.'.'.a:bufnr
 
   " Add a counter to avoid a similar race with two quick writes of the same buffer.
   " Use a modulus greater than a maximum reasonable number of visible buffers.
@@ -110,7 +109,7 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     " Without the buffer number, from_file would have a race in the shell
     " between the second process writing it (with git-show) and the first
     " reading it (with git-diff).
-    let from_file = temp_from.'.'.a:bufnr
+    let from_file = s:temp_from.'.'.a:bufnr
 
     " Add a counter to avoid a similar race with two quick writes of the same buffer.
     let from_file .= '.'.s:counter
@@ -128,7 +127,7 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
   endif
 
   " Call git-diff.
-  let cmd .= g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager '.g:gitgutter_git_args
+  let cmd .= g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager'
   if s:c_flag
     let cmd .= ' -c "diff.autorefreshindex=0"'
     let cmd .= ' -c "diff.noprefix=false"'
@@ -400,7 +399,16 @@ function! s:write_buffer(bufnr, file)
     let bufcontents[0]='﻿'.bufcontents[0]
   endif
 
-  call writefile(bufcontents, a:file, 'b')
+  " The file we are writing to is a temporary file.  Sometimes the parent
+  " directory is deleted outside Vim but, because Vim caches the directory
+  " name at startup and does not check for its existence subsequently, Vim
+  " does not realise.  This causes E482 errors.
+  try
+    call writefile(bufcontents, a:file, 'b')
+  catch /E482/
+    call mkdir(fnamemodify(a:file, ':h'), '', '0700')
+    call writefile(bufcontents, a:file, 'b')
+  endtry
 endfunction
 
 

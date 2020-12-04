@@ -1,13 +1,21 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Preview windows for showing whatever information in.
 
-if !has_key(s:, 'last_selection_list')
-    let s:last_selection_list = []
+if !has_key(s:, 'last__list')
+    let s:last_list = []
 endif
 
-if !has_key(s:, 'last_selection_open_in')
-    let s:last_selection_open_in = 'current-buffer'
+if !has_key(s:, 'last_options')
+    let s:last_options = {}
 endif
+
+function! ale#preview#SetLastSelection(item_list, options) abort
+    let s:last_list = a:item_list
+    let s:last_options = {
+    \   'open_in': get(a:options, 'open_in', 'current-buffer'),
+    \   'use_relative_paths': get(a:options, 'use_relative_paths', 0),
+    \}
+endfunction
 
 " Open a preview window and show some lines in it.
 " A second argument can be passed as a Dictionary with options. They are...
@@ -30,6 +38,10 @@ function! ale#preview#Show(lines, ...) abort
     setlocal nomodifiable
     setlocal readonly
     let &l:filetype = get(l:options, 'filetype', 'ale-preview')
+
+    for l:command in get(l:options, 'commands', [])
+        call execute(l:command)
+    endfor
 
     if get(l:options, 'stay_here')
         wincmd p
@@ -77,19 +89,14 @@ function! ale#preview#ShowSelection(item_list, ...) abort
     let b:ale_preview_item_list = a:item_list
     let b:ale_preview_item_open_in = get(l:options, 'open_in', 'current-buffer')
 
-    " Remove the last preview
-    let s:last_selection_list = b:ale_preview_item_list
-    let s:last_selection_open_in = b:ale_preview_item_open_in
+    " Remember preview state, so we can repeat it later.
+    call ale#preview#SetLastSelection(a:item_list, l:options)
 endfunction
 
 function! ale#preview#RepeatSelection() abort
-    if empty(s:last_selection_list)
-        return
+    if !empty(s:last_list)
+        call ale#preview#ShowSelection(s:last_list, s:last_options)
     endif
-
-    call ale#preview#ShowSelection(s:last_selection_list, {
-    \   'open_in': s:last_selection_open_in,
-    \})
 endfunction
 
 function! s:Open(open_in) abort

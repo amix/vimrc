@@ -21,9 +21,9 @@ jobs:
         - v7.3
     steps:
     - name: Checkout code
-      uses: actions/checkout@master
+      uses: actions/checkout@main
     - name: Checkout vim-themis
-      uses: actions/checkout@master
+      uses: actions/checkout@main
       with:
         repository: thinca/vim-themis
         path: vim-themis

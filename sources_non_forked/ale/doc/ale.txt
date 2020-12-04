@@ -9,8 +9,9 @@ CONTENTS                                                         *ale-contents*
   1. Introduction.........................|ale-introduction|
   2. Supported Languages & Tools..........|ale-support|
   3. Linting..............................|ale-lint|
-    3.1 Adding Language Servers...........|ale-lint-language-servers|
-    3.2 Other Sources.....................|ale-lint-other-sources|
+    3.1 Linting On Other Machines.........|ale-lint-other-machines|
+    3.2 Adding Language Servers...........|ale-lint-language-servers|
+    3.3 Other Sources.....................|ale-lint-other-sources|
   4. Fixing Problems......................|ale-fix|
   5. Language Server Protocol Support.....|ale-lsp|
     5.1 Completion........................|ale-completion|
@@ -19,6 +20,7 @@ CONTENTS                                                         *ale-contents*
     5.4 Find References...................|ale-find-references|
     5.5 Hovering..........................|ale-hover|
     5.6 Symbol Search.....................|ale-symbol-search|
+    5.7 Refactoring: Rename, Actions......|ale-refactor|
   6. Global Options.......................|ale-options|
     6.1 Highlights........................|ale-highlights|
   7. Linter/Fixer Options.................|ale-integration-options|
@@ -127,7 +129,7 @@ their relevant options.
 * By showing balloons for your mouse cursor        - |g:ale_set_balloons|
 
 Please consult the documentation for each option, which can reveal some other
-ways of tweaking the behaviour of each way of displaying problems. You can
+ways of tweaking the behavior of each way of displaying problems. You can
 disable or enable whichever options you prefer.
 
 Most settings can be configured for each buffer. (|b:| instead of |g:|),
@@ -146,9 +148,68 @@ ALE offers several options for controlling which linters are run.
 * Disabling only a subset of linters.  - |g:ale_linters_ignore|
 * Disabling LSP linters and `tsserver`.  - |g:ale_disable_lsp|
 
+You can stop ALE any currently running linters with the |ALELintStop| command.
+Any existing problems will be kept.
 
 -------------------------------------------------------------------------------
-3.1 Adding Language Servers                         *ale-lint-language-servers*
+3.1 Linting On Other Machines                         *ale-lint-other-machines*
+
+ALE offers support for running linters or fixers on files you are editing
+locally on other machines, so long as the other machine has access to the file
+you are editing. This could be a linter or fixer run inside of a Docker image,
+running in a virtual machine, running on a remote server, etc.
+
+In order to run tools on other machines, you will need to configure your tools
+to run via scripts that execute commands on those machines, such as by setting
+the ALE `_executable` options for those tools to a path for a script to run,
+or by using |g:ale_command_wrapper| to specify a script to wrap all commands
+that are run by ALE, before they are executed. For tools that ALE runs where
+ALE looks for locally installed executables first, you may need to set the
+`_use_global` options for those tools to `1`, or you can set
+|g:ale_use_global_executables| to `1` before ALE is loaded to only use global
+executables for all tools.
+
+In order for ALE to properly lint or fix files which are running on another
+file system, you must provide ALE with |List|s of strings for mapping paths to
+and from your local file system and the remote file system, such as the file
+system of your Docker container. See |g:ale_filename_mappings| for all of the
+different ways these filename mappings can be configured.
+
+For example, you might configure `pylint` to run via Docker by creating a
+script like so. >
+
+  #!/usr/bin/env bash
+
+  exec docker run -i --rm -v "$(pwd):/data" cytopia/pylint "$@"
+<
+
+You will run to run Docker commands with `-i` in order to read from stdin.
+
+With the above script in mind, you might configure ALE to lint your Python
+project with `pylint` by providing the path to the script to execute, and
+mappings which describe how to between the two file systems in your
+`python.vim` |ftplugin| file, like so: >
+
+  if expand('%:p') =~# '^/home/w0rp/git/test-pylint/'
+    let b:ale_linters = ['pylint']
+    let b:ale_python_pylint_use_global = 1
+    " This is the path to the script above.
+    let b:ale_python_pylint_executable = '/home/w0rp/git/test-pylint/pylint.sh'
+    " /data matches the path in Docker.
+    let b:ale_filename_mappings = {
+    \ 'pylint': [
+    \   ['/home/w0rp/git/test-pylint', '/data'],
+    \ ],
+    \}
+  endif
+<
+
+You might consider using a Vim plugin for loading Vim configuration files
+specific to each project, if you have a lot of projects to manage.
+
+
+-------------------------------------------------------------------------------
+3.2 Adding Language Servers                         *ale-lint-language-servers*
 
 ALE comes with many default configurations for language servers, so they can
 be detected and run automatically. ALE can connect to other language servers
@@ -189,7 +250,7 @@ address to connect to instead. >
 
 
 -------------------------------------------------------------------------------
-3.2 Other Sources                                      *ale-lint-other-sources*
+3.3 Other Sources                                      *ale-lint-other-sources*
 
 Problems for a buffer can be taken from other sources and rendered by ALE.
 This allows ALE to be used in combination with other plugins which also want
@@ -246,7 +307,7 @@ A plugin might integrate its own checks with ALE like so: >
 
   function! WorkDone(buffer, results) abort
     " Send results to ALE after they have been collected.
-    call ale#other_source#ShowResults(buffer, 'some-name', a:results)
+    call ale#other_source#ShowResults(a:buffer, 'some-name', a:results)
   endfunction
 <
 
@@ -286,6 +347,8 @@ are supported for running the commands.
                       When `%t` is included in a command string, a temporary
                       file will be created, containing the lines from the file
                       after previous adjustment have been done.
+
+                      See |ale-command-format-strings| for formatting options.
 
   `read_temporary_file` When set to `1`, ALE will read the contents of the
                       temporary file created for `%t`. This option can be used
@@ -356,6 +419,10 @@ by default.
 Fixers can be disabled on save with |g:ale_fix_on_save_ignore|. They will
 still be run when you manually run |ALEFix|.
 
+Fixers can be run on another machines, just like linters, such as fixers run
+from a Docker container, running in a virtual machine, running a remote
+server, etc. See |ale-lint-other-machines|.
+
 
 ===============================================================================
 5. Language Server Protocol Support                                   *ale-lsp*
@@ -402,12 +469,56 @@ is loaded. The delay for completion can be configured with
 |g:ale_completion_delay|. This setting should not be enabled if you wish to
 use ALE as a completion source for other plugins.
 
+ALE automatic completion will not work when 'paste' is active. Only set
+'paste' when you are copy and pasting text into your buffers.
+
+ALE automatic completion will interfere with default insert completion with
+`CTRL-N` and so on (|compl-vim|). You can write your own keybinds and a
+function in your |vimrc| file to force insert completion instead, like so: >
+
+  function! SmartInsertCompletion() abort
+    " Use the default CTRL-N in completion menus
+    if pumvisible()
+      return "\<C-n>"
+    endif
+
+    " Exit and re-enter insert mode, and use insert completion
+    return "\<C-c>a\<C-n>"
+  endfunction
+
+  inoremap <silent> <C-n> <C-R>=SmartInsertCompletion()<CR>
+<
 ALE provides an 'omnifunc' function |ale#completion#OmniFunc| for triggering
 completion manually with CTRL-X CTRL-O. |i_CTRL-X_CTRL-O| >
 
   " Use ALE's function for omnicompletion.
   set omnifunc=ale#completion#OmniFunc
 <
+                                                      *ale-completion-fallback*
+
+You can write your own completion function and fallback on other methods of
+completion by checking if there are no results that ALE can determine. For
+example, for Python code, you could fall back on the `python3complete`
+function. >
+
+  function! TestCompletionFunc(findstart, base) abort
+    let l:result = ale#completion#OmniFunc(a:findstart, a:base)
+
+    " Check if ALE couldn't find anything.
+    if (a:findstart && l:result is -3)
+    \|| (!a:findstart && empty(l:result))
+      " Defer to another omnifunc if ALE couldn't find anything.
+      return python3complete#Complete(a:findstart, a:base)
+    endif
+
+    return l:result
+  endfunction
+
+  set omnifunc=TestCompletionFunc
+<
+See |complete-functions| for documentation on how to write completion
+functions.
+
 ALE will only suggest so many possible matches for completion. The maximum
 number of items can be controlled with |g:ale_completion_max_suggestions|.
 
@@ -418,9 +529,21 @@ The |ALEComplete| command can be used to show completion suggestions manually,
 even when |g:ale_completion_enabled| is set to `0`. For manually requesting
 completion information with Deoplete, consult Deoplete's documentation.
 
-When working with TypeScript files, ALE by can support automatic imports
-from external modules. This behavior can be enabled by setting the
-|g:ale_completion_tsserver_autoimport| variable to `1`.
+ALE by can support automatic imports from external modules. This behavior can
+be enabled by setting the |g:ale_completion_autoimport| variable to `1`.
+
+You can manually request imports for symbols at the cursor with the
+|ALEImport| command. The word at the cursor must be an exact match for some
+potential completion result which includes additional text to insert into the
+current buffer, which ALE will assume is code for an import line. This command
+can be useful when your code already contains something you need to import.
+
+You can execute other commands whenever ALE inserts some completion text with
+the |ALECompletePost| event.
+
+When working with TypeScript files, ALE can remove warnings from your
+completions by setting the |g:ale_completion_tsserver_remove_warnings|
+variable to 1.
 
                                                *ale-completion-completeopt-bug*
 
@@ -498,15 +621,9 @@ displayed.
 -------------------------------------------------------------------------------
 5.4 Find References                                       *ale-find-references*
 
-ALE supports finding references for symbols though any enabled LSP linters.
-ALE will display a preview window showing the places where a symbol is
-referenced in a codebase when a command is run. The following commands are
-supported:
-
-|ALEFindReferences| - Find references for the word under the cursor.
-
-Options:
-  `-relative`       Show file paths in the results relative to the working dir
+ALE supports finding references for symbols though any enabled LSP linters
+with the |ALEFindReferences| command. See the documentation for the command
+for a full list of options.
 
 -------------------------------------------------------------------------------
 5.5 Hovering                                                        *ale-hover*
@@ -515,6 +632,10 @@ ALE supports "hover" information for printing brief information about symbols
 at the cursor taken from LSP linters. The following commands are supported:
 
 |ALEHover| - Print information about the symbol at the cursor.
+
+Truncated information will be displayed when the cursor rests on a symbol by
+default, as long as there are no problems on the same line. You can disable
+this behavior by setting |g:ale_hover_cursor| to `0`.
 
 If |g:ale_set_balloons| is set to `1` and your version of Vim supports the
 |balloon_show()| function, then "hover" information also show up when you move
@@ -545,14 +666,38 @@ Documentation for symbols at the cursor can be retrieved using the
 -------------------------------------------------------------------------------
 5.6 Symbol Search                                           *ale-symbol-search*
 
-ALE supports searching for workspace symbols via LSP linters. The following
-commands are supported:
+ALE supports searching for workspace symbols via LSP linters with the
+|ALESymbolSearch| command. See the documentation for the command
+for a full list of options.
 
-|ALESymbolSearch| - Search for symbols in the workspace.
+-------------------------------------------------------------------------------
+5.7 Refactoring: Rename, Actions                                 *ale-refactor*
 
-Options:
-  `-relative`     Show file paths in the results relative to the working dir
+ALE supports renaming symbols in code such as variables or class names with
+the |ALERename| command.
 
+|ALECodeAction| will execute actions on the cursor or applied to a visual
+range selection, such as automatically fixing errors.
+
+Actions will appear in the right click mouse menu by default for GUI versions
+of Vim, unless disabled by setting |g:ale_popup_menu_enabled| to `0`.
+
+Make sure to set your Vim to move the cursor position whenever you right
+click, and enable the mouse menu: >
+
+  set mouse=a
+  set mousemodel=popup_setpos
+<
+You may wish to remove some other menu items you don't want to see: >
+
+  silent! aunmenu PopUp.Select\ Word
+  silent! aunmenu PopUp.Select\ Sentence
+  silent! aunmenu PopUp.Select\ Paragraph
+  silent! aunmenu PopUp.Select\ Line
+  silent! aunmenu PopUp.Select\ Block
+  silent! aunmenu PopUp.Select\ Blockwise
+  silent! aunmenu PopUp.Select\ All
+<
 ===============================================================================
 6. Global Options                                                 *ale-options*
 
@@ -671,6 +816,9 @@ g:ale_completion_enabled                             *g:ale_completion_enabled*
   This setting should not be enabled if you wish to use ALE as a completion
   source for other completion plugins.
 
+  ALE automatic completion will not work when 'paste' is active. Only set
+  'paste' when you are copy and pasting text into your buffers.
+
   A buffer-local version of this setting `b:ale_completion_enabled` can be set
   to `0` to disable ALE's automatic completion support for a single buffer.
   ALE's completion support must be enabled globally to be enabled locally.
@@ -678,7 +826,18 @@ g:ale_completion_enabled                             *g:ale_completion_enabled*
   See |ale-completion|
 
 
-g:ale_completion_tsserver_autoimport     *g:ale_completion_tsserver_autoimport*
+                                    *g:ale_completion_tsserver_remove_warnings*
+g:ale_completion_tsserver_remove_warnings
+
+  Type: Number
+  Default: `0`
+
+  When this option is set to `0`, ALE will return all completion items,
+  including those that are a warning. Warnings can be excluded from completed
+  items by setting it to `1`.
+
+
+g:ale_completion_autoimport                       *g:ale_completion_autoimport*
 
   Type: Number
   Default: `0`
@@ -792,7 +951,7 @@ g:ale_default_navigation                             *g:ale_default_navigation*
   Default: `'buffer'`
 
   The default method for navigating away from the current buffer to another
-  buffer, such as for |ALEFindReferences:|, or |ALEGoToDefinition|.
+  buffer, such as for |ALEFindReferences|, or |ALEGoToDefinition|.
 
 
 g:ale_disable_lsp                                           *g:ale_disable_lsp*
@@ -1048,9 +1207,27 @@ g:ale_history_log_output                             *g:ale_history_log_output*
   if you want to save on some memory usage.
 
 
+g:ale_hover_cursor                                         *g:ale_hover_cursor*
+
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, ALE will show truncated information in the echo line about
+  the symbol at the cursor automatically when the |CursorHold| event is fired.
+  The delay before requesting hover information is based on 'updatetime', as
+  with all |CursorHold| events.
+
+  If there's a problem on the line where the cursor is resting, ALE will not
+  show any hover information.
+
+  See |ale-hover| for more information on hover information.
+
+  This setting must be set to `1` before ALE is loaded for this behavior
+  to be enabled. See |ale-lint-settings-on-startup|.
+
+
 g:ale_hover_to_preview                                 *g:ale_hover_to_preview*
                                                        *b:ale_hover_to_preview*
-
   Type: |Number|
   Default: `0`
 
@@ -1085,13 +1262,16 @@ g:ale_list_window_size                                 *g:ale_list_window_size*
 
 
 g:ale_lint_delay                                             *g:ale_lint_delay*
-
+                                                             *b:ale_lint_delay*
   Type: |Number|
   Default: `200`
 
   This variable controls the milliseconds delay after which the linters will
   be run after text is changed. This option is only meaningful with the
   |g:ale_lint_on_text_changed| variable set to `always`, `insert`, or `normal`.
+
+  A buffer-local option, `b:ale_lint_delay`, can be set to change the delay
+  for different buffers, such as in |ftplugin| files.
 
 
 g:ale_lint_on_enter                                       *g:ale_lint_on_enter*
@@ -1205,6 +1385,7 @@ g:ale_linter_aliases                                     *g:ale_linter_aliases*
   \   'csh': 'sh',
   \   'javascriptreact': ['javascript', 'jsx'],
   \   'plaintex': 'tex',
+  \   'ps1': 'powershell',
   \   'rmarkdown': 'r',
   \   'rmd': 'r',
   \   'systemverilog': 'verilog',
@@ -1249,6 +1430,90 @@ g:ale_linter_aliases                                     *g:ale_linter_aliases*
 <
   No linters will be loaded when the buffer's filetype is empty.
 
+
+g:ale_filename_mappings                               *g:ale_filename_mappings*
+                                                      *b:ale_filename_mappings*
+
+  Type: |Dictionary| or |List|
+  Default: `{}`
+
+  Either a |Dictionary| mapping a linter or fixer name, as displayed in
+  |:ALEInfo|, to a |List| of two-item |List|s for filename mappings, or just a
+  |List| of two-item |List|s. When given some paths to files, the value of
+  this setting will be used to convert filenames on a local file system to
+  filenames on some remote file system, such as paths in a Docker image,
+  virtual machine, or network drive.
+
+  For example: >
+
+  let g:ale_filename_mappings = {
+  \   'pylint': [
+  \       ['/home/john/proj', '/data'],
+  \   ],
+  \}
+<
+  With the above configuration, a filename such as `/home/john/proj/foo.py`
+  will be provided to the linter/fixer as `/data/foo.py`, and paths parsed
+  from linter results such as `/data/foo.py` will be converted back to
+  `/home/john/proj/foo.py`.
+
+  You can use `*` as to apply a |List| of filename mappings to all other
+  linters or fixers not otherwise matched. >
+
+  " Use one List of paths for pylint.
+  " Use another List of paths for everything else.
+  let g:ale_filename_mappings = {
+  \   'pylint': [
+  \       ['/home/john/proj', '/data'],
+  \   ],
+  \   '*': [
+  \       ['/home/john/proj', '/other-data'],
+  \   ],
+  \}
+<
+  If you just want every single linter or fixer to use the same filename
+  mapping, you can just use a |List|. >
+
+  " Same as above, but for ALL linters and fixers.
+  let g:ale_filename_mappings = [
+  \   ['/home/john/proj', '/data'],
+  \]
+<
+  You can provide many such filename paths for multiple projects. Paths are
+  matched by checking if the start of a file path matches the given strings,
+  in a case-sensitive manner. Earlier entries in the |List| will be tried
+  before later entries when mapping to a given file system.
+
+  Buffer-local options can be set to the same values to override the global
+  options, such as in |ftplugin| files.
+
+  NOTE: Only fixers registered with a short name can support filename mapping
+  by their fixer names. See |ale-fix|. Filename mappings set for all tools by
+  using only a |List| for the setting will also be applied to fixers not in
+  the registry.
+
+  NOTE: In order for this filename mapping to work correctly, linters and
+  fixers must exclusively determine paths to files to lint or fix via ALE
+  command formatting as per |ale-command-format-strings|, and paths parsed
+  from linter files must be provided in `filename` keys if a linter returns
+  results for more than one file at a time, as per |ale-loclist-format|. If
+  you discover a linter or fixer which does not behave properly, please report
+  it as an issue.
+
+  If you are running a linter or fixer through Docker or another remote file
+  system, you may have to mount your temporary directory, which you can
+  discover with the following command: >
+
+  :echo fnamemodify(tempname(), ':h:h')
+<
+  You should provide a mapping from this temporary directory to whatever you
+  mount this directory to in Docker, or whatever remote file system you are
+  working with.
+
+  You can inspect the filename mappings ALE will use with the
+  |ale#GetFilenameMappings()| function.
+
+
 g:ale_linters                                                   *g:ale_linters*
                                                                 *b:ale_linters*
   Type: |Dictionary|
@@ -1268,8 +1533,8 @@ g:ale_linters                                                   *g:ale_linters*
   \   'help': [],
   \   'perl': ['perlcritic'],
   \   'perl6': [],
-  \   'python': ['flake8', 'mypy', 'pylint'],
-  \   'rust': ['cargo'],
+  \   'python': ['flake8', 'mypy', 'pylint', 'pyright'],
+  \   'rust': ['cargo', 'rls'],
   \   'spec': [],
   \   'text': [],
   \   'vue': ['eslint', 'vls'],
@@ -1429,6 +1694,7 @@ g:ale_lsp_root                                                 *g:ale_lsp_root*
   If neither variable yields a result, a linter-specific function is invoked to
   detect a project root. If this, too, yields no result, the linter is disabled.
 
+
 g:ale_max_buffer_history_size                   *g:ale_max_buffer_history_size*
 
   Type: |Number|
@@ -1537,6 +1803,19 @@ g:ale_pattern_options_enabled                   *g:ale_pattern_options_enabled*
   will not set buffer variables per |g:ale_pattern_options|.
 
 
+g:ale_popup_menu_enabled                             *g:ale_popup_menu_enabled*
+
+  Type: |Number|
+  Default: `has('gui_running')`
+
+  When this option is set to `1`, ALE will show code actions and rename
+  capabilities in the right click mouse menu when there's a LSP server or
+  tsserver available. See |ale-refactor|.
+
+  This setting must be set to `1` before ALE is loaded for this behavior
+  to be enabled. See |ale-lint-settings-on-startup|.
+
+
 g:ale_rename_tsserver_find_in_comments *g:ale_rename_tsserver_find_in_comments*
 
   Type: |Number|
@@ -1561,7 +1840,7 @@ g:ale_rename_tsserver_find_in_strings   *g:ale_rename_tsserver_find_in_strings*
 g:ale_set_balloons                                         *g:ale_set_balloons*
                                                            *b:ale_set_balloons*
 
-  Type: |Number|
+  Type: |Number| or |String|
   Default: `has('balloon_eval') && has('gui_running')`
 
   When this option is set to `1`, balloon messages will be displayed for
@@ -1571,6 +1850,13 @@ g:ale_set_balloons                                         *g:ale_set_balloons*
   there are no problems to show, and one of the linters is an LSP linter
   supporting "Hover" information, per |ale-hover|, then brief information
   about the symbol under the cursor will be displayed in a balloon.
+
+  This option can be set to `'hover'` to only enable balloons for hover
+  message, so diagnostics are never shown in balloons. You may wish to
+  configure use this setting only in GUI Vim like so: >
+
+  let g:ale_set_balloons = has('gui_running') ? 'hover' : 0
+<
 
   Balloons can be enabled for terminal versions of Vim that support balloons,
   but some versions of Vim will produce strange mouse behavior when balloons
@@ -2284,16 +2570,16 @@ documented in additional help files.
   bib.....................................|ale-bib-options|
     bibclean..............................|ale-bib-bibclean|
   c.......................................|ale-c-options|
-    clang.................................|ale-c-clang|
+    astyle................................|ale-c-astyle|
+    cc....................................|ale-c-cc|
+    ccls..................................|ale-c-ccls|
     clangd................................|ale-c-clangd|
     clang-format..........................|ale-c-clangformat|
     clangtidy.............................|ale-c-clangtidy|
     cppcheck..............................|ale-c-cppcheck|
     cquery................................|ale-c-cquery|
     flawfinder............................|ale-c-flawfinder|
-    gcc...................................|ale-c-gcc|
     uncrustify............................|ale-c-uncrustify|
-    ccls..................................|ale-c-ccls|
   chef....................................|ale-chef-options|
     cookstyle.............................|ale-chef-cookstyle|
     foodcritic............................|ale-chef-foodcritic|
@@ -2306,9 +2592,11 @@ documented in additional help files.
     cmakelint.............................|ale-cmake-cmakelint|
     cmake-format..........................|ale-cmake-cmakeformat|
   cpp.....................................|ale-cpp-options|
-    clang.................................|ale-cpp-clang|
-    clangd................................|ale-cpp-clangd|
+    astyle................................|ale-cpp-astyle|
+    cc....................................|ale-cpp-cc|
+    ccls..................................|ale-cpp-ccls|
     clangcheck............................|ale-cpp-clangcheck|
+    clangd................................|ale-cpp-clangd|
     clang-format..........................|ale-cpp-clangformat|
     clangtidy.............................|ale-cpp-clangtidy|
     clazy.................................|ale-cpp-clazy|
@@ -2316,9 +2604,7 @@ documented in additional help files.
     cpplint...............................|ale-cpp-cpplint|
     cquery................................|ale-cpp-cquery|
     flawfinder............................|ale-cpp-flawfinder|
-    gcc...................................|ale-cpp-gcc|
     uncrustify............................|ale-cpp-uncrustify|
-    ccls..................................|ale-cpp-ccls|
   c#......................................|ale-cs-options|
     csc...................................|ale-cs-csc|
     mcs...................................|ale-cs-mcs|
@@ -2353,6 +2639,7 @@ documented in additional help files.
     elm-make..............................|ale-elm-elm-make|
   erlang..................................|ale-erlang-options|
     dialyzer..............................|ale-erlang-dialyzer|
+    elvis.................................|ale-erlang-elvis|
     erlc..................................|ale-erlang-erlc|
     syntaxerl.............................|ale-erlang-syntaxerl|
   eruby...................................|ale-eruby-options|
@@ -2406,6 +2693,7 @@ documented in additional help files.
     stack-ghc.............................|ale-haskell-stack-ghc|
     stylish-haskell.......................|ale-haskell-stylish-haskell|
     hie...................................|ale-haskell-hie|
+    ormolu................................|ale-haskell-ormolu|
   hcl.....................................|ale-hcl-options|
     terraform-fmt.........................|ale-hcl-terraform-fmt|
   html....................................|ale-html-options|
@@ -2465,7 +2753,9 @@ documented in additional help files.
   lua.....................................|ale-lua-options|
     luac..................................|ale-lua-luac|
     luacheck..............................|ale-lua-luacheck|
+    luafmt................................|ale-lua-luafmt|
   markdown................................|ale-markdown-options|
+    markdownlint..........................|ale-markdown-markdownlint|
     mdl...................................|ale-markdown-mdl|
     prettier..............................|ale-markdown-prettier|
     remark-lint...........................|ale-markdown-remark-lint|
@@ -2515,6 +2805,8 @@ documented in additional help files.
     psalm.................................|ale-php-psalm|
     php-cs-fixer..........................|ale-php-php-cs-fixer|
     php...................................|ale-php-php|
+    tlint.................................|ale-php-tlint|
+    intelephense..........................|ale-php-intelephense|
   po......................................|ale-po-options|
     write-good............................|ale-po-write-good|
   pod.....................................|ale-pod-options|
@@ -2540,6 +2832,7 @@ documented in additional help files.
   pyrex (cython)..........................|ale-pyrex-options|
     cython................................|ale-pyrex-cython|
   python..................................|ale-python-options|
+    autoimport............................|ale-python-autoimport|
     autopep8..............................|ale-python-autopep8|
     bandit................................|ale-python-bandit|
     black.................................|ale-python-black|
@@ -2554,12 +2847,14 @@ documented in additional help files.
     pylint................................|ale-python-pylint|
     pyls..................................|ale-python-pyls|
     pyre..................................|ale-python-pyre|
+    pyright...............................|ale-python-pyright|
     reorder-python-imports................|ale-python-reorder_python_imports|
     vulture...............................|ale-python-vulture|
     yapf..................................|ale-python-yapf|
   qml.....................................|ale-qml-options|
     qmlfmt................................|ale-qml-qmlfmt|
   r.......................................|ale-r-options|
+    languageserver........................|ale-r-languageserver|
     lintr.................................|ale-r-lintr|
     styler................................|ale-r-styler|
   reasonml................................|ale-reasonml-options|
@@ -2600,6 +2895,7 @@ documented in additional help files.
     sasslint..............................|ale-scss-sasslint|
     stylelint.............................|ale-scss-stylelint|
   sh......................................|ale-sh-options|
+    bashate...............................|ale-sh-bashate|
     sh-language-server....................|ale-sh-language-server|
     shell.................................|ale-sh-shell|
     shellcheck............................|ale-sh-shellcheck|
@@ -2650,12 +2946,14 @@ documented in additional help files.
   vala....................................|ale-vala-options|
     uncrustify............................|ale-vala-uncrustify|
   verilog/systemverilog...................|ale-verilog-options|
+    hdl-checker...........................|ale-verilog-hdl-checker|
     iverilog..............................|ale-verilog-iverilog|
     verilator.............................|ale-verilog-verilator|
     vlog..................................|ale-verilog-vlog|
     xvlog.................................|ale-verilog-xvlog|
   vhdl....................................|ale-vhdl-options|
     ghdl..................................|ale-vhdl-ghdl|
+    hdl-checker...........................|ale-vhdl-hdl-checker|
     vcom..................................|ale-vhdl-vcom|
     xvhdl.................................|ale-vhdl-xvhdl|
   vim.....................................|ale-vim-options|
@@ -2673,9 +2971,12 @@ documented in additional help files.
   yaml....................................|ale-yaml-options|
     prettier..............................|ale-yaml-prettier|
     swaglint..............................|ale-yaml-swaglint|
+    yamlfix...............................|ale-yaml-yamlfix|
     yamllint..............................|ale-yaml-yamllint|
   yang....................................|ale-yang-options|
     yang-lsp..............................|ale-yang-lsp|
+  zig.....................................|ale-zig-options|
+    zls...................................|ale-zig-zls|
 
 
 ===============================================================================
@@ -2722,17 +3023,28 @@ ALEFindReferences                                           *ALEFindReferences*
   The default method used for navigating to a new location can be changed
   by modifying |g:ale_default_navigation|.
 
+  You can add `-relative` to the command to view results with relatives paths,
+  instead of absolute paths.
+
   The selection can be opened again with the |ALERepeatSelection| command.
 
   You can jump back to the position you were at before going to a reference of
   something with jump motions like CTRL-O. See |jump-motions|.
 
   A plug mapping `<Plug>(ale_find_references)` is defined for this command.
+  You can define additional plug mapping with any additional options you want
+  like so: >
 
+  nnoremap <silent> <Plug>(my_mapping) :ALEFindReferences -relative<Return>
+<
 
 ALEFix                                                                 *ALEFix*
 
   Fix problems with the current buffer. See |ale-fix| for more information.
+
+  If the command is run with a bang (`:ALEFix!`), all warnings will be
+  suppressed, including warnings about no fixers being defined, and warnings
+  about not being able to apply fixes to a file because it has been changed.
 
   A plug mapping `<Plug>(ale_fix)` is defined for this command.
 
@@ -2766,7 +3078,13 @@ ALEGoToDefinition `<options>`                               *ALEGoToDefinition*
   command. Otherwise, Vim will refuse to leave the buffer you're jumping from
   unless you have saved your edits.
 
-  A plug mapping `<Plug>(ale_go_to_definition)` is defined for this command.
+  The following Plug mappings are defined for this command, which correspond
+  to the following commands.
+
+  `<Plug>(ale_go_to_definition)`           - `:ALEGoToDefinition`
+  `<Plug>(ale_go_to_definition_in_tab)`    - `:ALEGoToDefinition -tab`
+  `<Plug>(ale_go_to_definition_in_split)`  - `:ALEGoToDefinition -split`
+  `<Plug>(ale_go_to_definition_in_vsplit)` - `:ALEGoToDefinition -vsplit`
 
 
 ALEGoToTypeDefinition                                   *ALEGoToTypeDefinition*
@@ -2788,8 +3106,13 @@ ALEGoToTypeDefinition                                   *ALEGoToTypeDefinition*
   You can jump back to the position you were at before going to the definition
   of something with jump motions like CTRL-O. See |jump-motions|.
 
-  A plug mapping `<Plug>(ale_go_to_type_definition)` is defined for this
-  command.
+  The following Plug mappings are defined for this command, which correspond
+  to the following commands.
+
+  `<Plug>(ale_go_to_type_definition)`           - `:ALEGoToTypeDefinition`
+  `<Plug>(ale_go_to_type_definition_in_tab)`    - `:ALEGoToTypeDefinition -tab`
+  `<Plug>(ale_go_to_type_definition_in_split)`  - `:ALEGoToTypeDefinition -split`
+  `<Plug>(ale_go_to_type_definition_in_vsplit)` - `:ALEGoToTypeDefinition -vsplit`
 
 
 ALEHover                                                             *ALEHover*
@@ -2805,6 +3128,23 @@ ALEHover                                                             *ALEHover*
   A plug mapping `<Plug>(ale_hover)` is defined for this command.
 
 
+ALEImport                                                           *ALEImport*
+
+  Try to import a symbol using `tsserver` or a Language Server.
+
+  ALE will look for completions for the word at the cursor which contain
+  additional text edits that possible insert lines to import the symbol. The
+  first match with additional text edits will be used, and may add other code
+  to the current buffer other than import lines.
+
+  If linting is enabled, and |g:ale_lint_on_text_changed| is set to ever check
+  buffers when text is changed, the buffer will be checked again after changes
+  are made.
+
+  A Plug mapping `<Plug>(ale_import)` is defined for this command. This
+  mapping should only be bound for normal mode.
+
+
 ALEOrganizeImports                                         *ALEOrganizeImports*
 
   Organize imports using tsserver. Currently not implemented for LSPs.
@@ -2812,9 +3152,22 @@ ALEOrganizeImports                                         *ALEOrganizeImports*
 
 ALERename                                                           *ALERename*
 
-  Rename a symbol using TypeScript server or Language Server.
+  Rename a symbol using `tsserver` or a Language Server.
 
-  The user will be prompted for a new name.
+  The symbol where the cursor is resting will be the symbol renamed, and a
+  prompt will open to request a new name.
+
+
+ALECodeAction                                                   *ALECodeAction*
+
+  Apply a code action via LSP servers or `tsserver`.
+
+  If there is an error present on a line that can be fixed, ALE will
+  automatically fix a line, unless there are multiple possible code fixes to
+  apply.
+
+  This command can be run in visual mode apply actions, such as applicable
+  refactors. A menu will be shown to select code action to apply.
 
 
 ALERepeatSelection                                         *ALERepeatSelection*
@@ -2829,16 +3182,26 @@ ALESymbolSearch `<query>`                                     *ALESymbolSearch*
   The arguments provided to this command will be used as a search query for
   finding symbols in the workspace, such as functions, types, etc.
 
+  You can add `-relative` to the command to view results with relatives paths,
+  instead of absolute paths.
+
                                                                      *:ALELint*
 ALELint                                                               *ALELint*
 
   Run ALE once for the current buffer. This command can be used to run ALE
   manually, instead of automatically, if desired.
 
-  This command will also run linters where `lint_file` is set to `1`, or in
-  other words linters which check the file instead of the Vim buffer.
+  This command will also run linters where `lint_file` is evaluates to `1`,
+  meaning linters which check the file instead of the Vim buffer.
 
   A plug mapping `<Plug>(ale_lint)` is defined for this command.
+
+
+ALELintStop                                                       *ALELintStop*
+
+  Stop any currently running jobs for checking the current buffer.
+
+  Any problems from previous linter results will continue to be shown.
 
 
 ALEPrevious                                                       *ALEPrevious*
@@ -2858,7 +3221,7 @@ ALELast                                                               *ALELast*
   the last or first warning or error in the file, respectively.
 
   `ALEPrevious` and `ALENext` take optional flags arguments to custom their
-  behaviour :
+  behavior :
   `-wrap` enable wrapping around the file
   `-error`, `-warning` and `-info` enable jumping to errors, warnings or infos
     respectively, ignoring anything else. They are mutually exclusive and if
@@ -3018,6 +3381,15 @@ ale#Env(variable_name, value)                                       *ale#Env()*
     'set VAR="some value" && command' # On Windows
 
 
+ale#GetFilenameMappings(buffer, name)               *ale#GetFilenameMappings()*
+
+  Given a `buffer` and the `name` of either a linter for fixer, return a
+  |List| of two-item |List|s that describe mapping to and from the local and
+  foreign file systems for running a particular linter or fixer.
+
+  See |g:ale_filename_mappings| for details on filename mapping.
+
+
 ale#Has(feature)                                                    *ale#Has()*
 
   Return `1` if ALE supports a given feature, like |has()| for Vim features.
@@ -3040,9 +3412,9 @@ ale#Queue(delay, [linting_flag, buffer_number])                   *ale#Queue()*
   The linters will always be run in the background. Calling this function
   again from the same buffer
 
-  An optional `linting_flag` argument can be given. If `linting_flag`
-  is `'lint_file'`, then linters where the `lint_file` option is set to `1` will be
-  run. Linters with `lint_file` set to `1` are not run by default.
+  An optional `linting_flag` argument can be given. If `linting_flag` is
+  `'lint_file'`, then linters where the `lint_file` option evaluates to `1`
+  will be run. Otherwise, those linters will not be run.
 
   An optional `buffer_number` argument can be given for specifying the buffer
   to check. The active buffer (`bufnr('')`) will be checked by default.
@@ -3132,23 +3504,36 @@ ale#command#Run(buffer, command, callback, [options])       *ale#command#Run()*
 <
   The following `options` can be provided.
 
-    `output_stream` - Either `'stdout'`, `'stderr'`, `'both'`, or `'none`' for
-                    selecting which output streams to read lines from.
+    `output_stream`     - Either `'stdout'`, `'stderr'`, `'both'`, or
+                        `'none`' for selecting which output streams to read
+                        lines from.
 
-                    The default is `'stdout'`
+                        The default is `'stdout'`
 
-    `executable`    - An executable for formatting into `%e` in the command.
-                    If this option is not provided, formatting commands with
-                    `%e` will not work.
+    `executable`        - An executable for formatting into `%e` in the
+                        command. If this option is not provided, formatting
+                        commands with `%e` will not work.
 
-    `read_buffer`   - If set to `1`, the buffer will be piped into the
-                    command.
+    `read_buffer`       - If set to `1`, the buffer will be piped into the
+                        command.
 
-                    The default is `0`.
+                        The default is `0`.
 
-    `input`         - When creating temporary files with `%t` or piping text
-                    into a command `input` can be set to a |List| of text to
-                    use instead of the buffer's text.
+    `input`             - When creating temporary files with `%t` or piping
+                        text into a command `input` can be set to a |List| of
+                        text to use instead of the buffer's text.
+
+    `filename_mappings` - A |List| of two-item |List|s describing filename
+                        mappings to apply for formatted filenames in the
+                        command string, as per |g:ale_filename_mappings|.
+
+                        If the call to this function is being used for a
+                        linter or fixer, the mappings should be provided with
+                        this option, and can be retrieved easily with
+                        |ale#GetFilenameMappings()|.
+
+                        The default is `[]`.
+
 
 
 ale#command#EscapeCommandPart(command_part)   *ale#command#EscapeCommandPart()*
@@ -3363,24 +3748,30 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
                          if a command manually reads from a temporary file
                          instead, etc.
 
+                         This option behaves as if it was set to `0` when the
+                         `lint_file` option evaluates to `1`.
+
                                                                 *ale-lint-file*
-  `lint_file`              A |Number| (`0` or `1`) indicating whether a command
-                         should read the file instead of the Vim buffer. This
-                         option can be used for linters which must check the
-                         file on disk, and which cannot check a Vim buffer
-                         instead.
+  `lint_file`              A |Number| (`0` or `1`), or a |Funcref| for a function
+                         accepting a buffer number for computing either `0` or
+                         `1`, indicating whether a command should read the file
+                         instead of the Vim buffer. This option can be used
+                         for linters which must check the file on disk, and
+                         which cannot check a Vim buffer instead.
 
-                         Linters set with this option will not be run as a
-                         user types, per |g:ale_lint_on_text_changed|. Linters
-                         will instead be run only when events occur against
-                         the file on disk, including |g:ale_lint_on_enter|
-                         and |g:ale_lint_on_save|. Linters with this option
-                         set to `1` will also be run when linters are run
-                         manually, per |ALELintPost-autocmd|.
+                         The result can be computed with |ale#command#Run()|.
 
-                         When this option is set to `1`, `read_buffer` will
-                         be set automatically to `0`. The two options cannot
-                         be used together.
+                         Linters where the eventual value of this option
+                         evaluates to `1` will not be run as a user types, per
+                         |g:ale_lint_on_text_changed|. Linters will instead be
+                         run only when events occur against the file on disk,
+                         including |g:ale_lint_on_enter| and
+                         |g:ale_lint_on_save|. Linters where this option
+                         evaluates to `1` will also be run when the |ALELint|
+                         command is run.
+
+                         When this option is evaluates to `1`, ALE will behave
+                         as if `read_buffer` was set to `0`.
 
                                                               *ale-lsp-linters*
   `lsp`                    A |String| for defining LSP (Language Server Protocol)
@@ -3500,7 +3891,7 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
   contents of the buffer being checked. All occurrences of `%t` in command
   strings will reference the one temporary file. The temporary file will be
   created inside a temporary directory, and the entire temporary directory
-  will be automatically deleted, following the behaviour of
+  will be automatically deleted, following the behavior of
   |ale#command#ManageDirectory|. This option can be used for some linters which
   do not support reading from stdin.
 
@@ -3519,13 +3910,22 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
   command, so literal character sequences `%s` and `%t` can be escaped by
   using `%%s` and `%%t` instead, etc.
 
+  Some |filename-modifiers| can be applied to `%s` and `%t`. Only `:h`, `:t`,
+  `:r`, and `:e` may be applied, other modifiers will be ignored. Filename
+  modifiers can be applied to the format markers by placing them after them.
+
+  For example: >
+  'command': '%s:h %s:e %s:h:t',
+<
+  Given a path `/foo/baz/bar.txt`, the above command string will generate
+  something akin to `'/foo/baz' 'txt' 'baz'`
+
   If a callback for a command generates part of a command string which might
   possibly contain `%%`, `%s`, `%t`, or `%e`, where the special formatting
   behavior is not desired, the |ale#command#EscapeCommandPart()| function can
   be used to replace those characters to avoid formatting issues.
 
                                                   *ale-linter-loading-behavior*
-                                                 *ale-linter-loading-behaviour*
 
   Linters for ALE will be loaded by searching |runtimepath| in the following
   format: >
@@ -3668,6 +4068,23 @@ g:ale_want_results_buffer                           *g:ale_want_results_buffer*
   when the |ALEWantResults| event is signaled. This variable should be read to
   figure out which buffer other sources should lint.
 
+
+ALECompletePost                                       *ALECompletePost-autocmd*
+                                                              *ALECompletePost*
+
+  This |User| autocmd is triggered after ALE inserts an item on
+  |CompleteDone|. This event can be used to run commands after a buffer
+  is changed by ALE as the result of completion. For example, |ALEFix| can
+  be configured to run automatically when completion is done: >
+
+  augroup FixAfterComplete
+      autocmd!
+      " Run ALEFix when completion items are added.
+      autocmd User ALECompletePost ALEFix!
+      " If ALE starts fixing a file, stop linters running for now.
+      autocmd User ALEFixPre ALELintStop
+  augroup END
+<
 
 ALELintPre                                                 *ALELintPre-autocmd*
                                                                    *ALELintPre*

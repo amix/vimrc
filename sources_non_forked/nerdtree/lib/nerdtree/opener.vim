@@ -174,9 +174,8 @@ function! s:Opener._newSplit()
 
     "resize the tree window if no other window was open before
     if onlyOneWin
-        let size = exists('b:NERDTreeOldWindowSize') ? b:NERDTreeOldWindowSize : g:NERDTreeWinSize
         call nerdtree#exec('wincmd p', 1)
-        call nerdtree#exec('silent '. splitMode .' resize '. size, 1)
+        call nerdtree#exec('silent '. splitMode .' resize '. g:NERDTreeWinSize, 1)
         call nerdtree#exec('wincmd p', 0)
     endif
 

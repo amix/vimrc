@@ -20,3 +20,5 @@ function! SID(name) abort
 endfunction
 
 filetype plugin on
+
+call lightline#init()
