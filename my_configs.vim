@@ -23,6 +23,7 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 setlocal foldmethod=manual
+set mouse=a
 set number
 set foldlevel=99999
 set shiftwidth=2
