@@ -29,7 +29,8 @@ set guioptions-=L
 
 " Colorscheme
 set background=dark
-colorscheme peaksea
+colorscheme jellybeans
+hi Search cterm=bold ctermfg=Black ctermbg=Yellow
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
