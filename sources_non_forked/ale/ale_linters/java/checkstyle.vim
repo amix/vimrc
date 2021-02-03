@@ -52,7 +52,7 @@ endfunction
 function! ale_linters#java#checkstyle#GetCommand(buffer) abort
     let l:options = ale#Var(a:buffer, 'java_checkstyle_options')
     let l:config_option = ale#Var(a:buffer, 'java_checkstyle_config')
-    let l:config = l:options !~# '\v(^| )-c' && !empty(l:config_option)
+    let l:config = l:options !~# '\v(^| )-c ' && !empty(l:config_option)
     \   ? s:GetConfig(a:buffer, l:config_option)
     \   : ''
 

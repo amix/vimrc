@@ -1,34 +1,177 @@
-snippet bl "{% block xyz %} .. {% endblock xyz %}"
+# Tags
+snippet apply "twig apply"
+	{% apply ${1} %}
+		${0}
+	{% endapply %}
+snippet autoescape "twig autoescape"
+	{% autoescape %}
+		${0}
+	{% endautoescape %}
+snippet endautoescape "twig endautoescape"
+	{% endautoescape %}${0}
+snippet bl "twig block"
 	{% block ${1} %}
-	${2:${VISUAL}}
-	{% endblock $1 %}
-snippet js "{% javascripts 'xyz' %} .. {% endjavascripts %}"
-	{% javascripts '${1}' %}
-		<script src="{{ asset_url }}"></script>
-	{% endjavascripts %}
-snippet css "{% stylesheets 'xyz' %} .. {% endstylesheets %}"
-	{% stylesheets '${1}' %}
-		<link rel="stylesheet" href="{{ asset_url }}">
-	{% endstylesheets %}
-snippet if "{% if %} .. {% endif %}"
-	{% if ${1} %}
-	${2:${VISUAL}}
-	{% endif %}
-snippet ife "{% if %} .. {% else %} .. {% endif %}"
-	{% if ${1} %}
-	${2:${VISUAL}}
-	{% else %}
-	${0}
-	{% endif %}
-snippet el "{% else %}"
-	{% else %}
-	${0:${VISUAL}}
-snippet eif "{% elseif %}"
-	{% elseif ${1} %}
-	${0}
-snippet for "{% for x in y %} .. {% endfor %}"
+		${0}
+	{% endblock %}
+snippet block "twig block"
+	{% block ${1} %}
+		${0}
+	{% endblock %}
+snippet endblock "twig endblock"
+	{% endblock %}${0}
+snippet cache "twig cache"
+	{% cache %}
+		${0}
+	{% endcache %}
+snippet endcache "twig endcache"
+	{% endcache %}${0}
+snippet css "twig css"
+	{% css %}
+		${0}
+	{% endcss %}
+snippet endcss "twig endcss"
+	{% endcss %}${0}
+snippet dd "twig dd"
+	{% dd ${1} %}${0}
+snippet do "twig do"
+	{% do ${1} %}${0}
+snippet embed "twig embed"
+	{% embed "${1}" %}
+		${0}
+	{% endembed %}
+snippet endembed "twig endembed"
+	{% endembed %}${0}
+snippet exit "twig exit"
+	{% exit ${1} %}
+snippet extends "twig extends"
+	{% extends "${1}" %}${0}
+snippet ext "twig extends"
+	{% extends "${1}" %}${0}
+snippet for "twig for"
 	{% for ${1} in ${2} %}
-	${3}
+		${0}
 	{% endfor %}
-snippet ext "{% extends xyz %}"
-	{% extends ${1} %}
+snippet fore "twig for else"
+	{% for ${1} in ${2} %}
+		${3}
+	{% else %}
+		${0}
+	{% endfor %}
+snippet endfor "twig endfor"
+	{% endfor %}${0}
+snippet from "twig from"
+	{% from "${1}" import ${2} %}${0}
+snippet header "twig header"
+	{% header "${1}" %}${0}
+snippet hook "twig hook"
+	{% hook "${1}" %}${0}
+snippet html "twig html"
+	{% html %}
+		${0}
+	{% endhtml %}
+snippet endhtml "twig endhtml"
+	{% endhtml %}${0}
+snippet if "twig if"
+	{% if ${1} %}
+		${0}
+	{% endif %}
+snippet ife "twig if else"
+	{% if ${1} %}
+		${2}
+	{% else %}
+		${0}
+	{% endif %}
+snippet el "twig else"
+	{% else %}
+snippet eif "twig elseif"
+	{% elseif ${1} %}
+		${0}
+snippet endif "twig endif"
+	{% endif %}${0}
+snippet import "twig import"
+	{% import "${1}" as ${2} %}${0}
+snippet include "twig include"
+	{% include "${1}" %}${0}
+snippet includewith "twig include with parameters"
+	{% include "${1}" with ${2} %}${0}
+snippet js "twig js"
+	{% js %}
+		${0}
+	{% endjs %}
+snippet endjs "twig endjs"
+	{% endjs %}${0}
+snippet macro "twig macro"
+	{% macro ${1}(${2}) %}
+		${0}
+	{% endmacro %}
+snippet endmacro "twig endmacro"
+	{% endmacro %}${0}
+snippet namespace "twig namespace"
+	{% namespace "${1}" %}
+		${0}
+	{% endnamespace %}
+snippet endnamespace "twig endnamespace"
+	{% endnamespace %}${0}
+snippet nav "twig nav"
+	{% nav ${1} in ${2} %}
+		${0}
+	{% endnav %}
+snippet endnav "twig endnav"
+	{% endnav %}${0}
+snippet paginate "twig paginate"
+	{% paginate ${1} as ${2} %}${0}
+snippet redirect "twig redirect"
+	{% redirect "${1}" %}${0}
+snippet requireguest "twig requireguest"
+	{% requireGuest %}${0}
+snippet requirelogin "twig requirelogin"
+	{% requireLogin %}${0}
+snippet requirepermission "twig requirepermission"
+	{% requirePermission "${1}" %}${0}
+snippet set "twig set"
+	{% set ${1} = ${2} %}${0}
+snippet setb "twig set block"
+	{% set ${1} %}
+		${0}
+	{% endset %}
+snippet endset "twig endset"
+	{% endset %}${0}
+snippet switch "twig switch"
+	{% switch ${1} %}
+		{% case "${2}" %}
+			${0}
+		{% default %}
+			
+	{% endswitch %}
+snippet case "twig switch case"
+	{% case "${1}" %}
+		${0}
+snippet default "twig switch default"
+	{% default %}
+		${0}
+snippet endswitch "twig endswitch"
+	{% endswitch %}${0}
+snippet use "twig use"
+	{% use "${1}" %}${0}
+snippet verbatim "twig verbatim"
+	{% verbatim %}
+		${0}
+	{% endverbatim %}
+snippet endverbatim "twig endverbatim"
+	{% endverbatim %}${0}
+snippet with "twig with"
+	{% with %}
+		${0}
+	{% endwith %}
+snippet endwith "twig endwith"
+	{% endwith %}${0}
+
+# Functions
+snippet dump "twig dump"
+	<pre>
+		{{ dump(${1}) }}
+	</pre>
+
+# Filters
+snippet translate "twig translate"
+	{{ "${1}"|t }}${0}

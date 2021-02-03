@@ -34,7 +34,11 @@ endfunction
 function! s:HandleLSPDiagnostics(conn_id, response) abort
     let l:linter_name = s:lsp_linter_map[a:conn_id]
     let l:filename = ale#path#FromURI(a:response.params.uri)
-    let l:buffer = bufnr('^' . l:filename . '$')
+    let l:escaped_name = escape(
+    \   fnameescape(l:filename),
+    \   has('win32') ? '^' : '^,}]'
+    \)
+    let l:buffer = bufnr('^' . l:escaped_name . '$')
     let l:info = get(g:ale_buffer_info, l:buffer, {})
 
     if empty(l:info)
@@ -52,7 +56,11 @@ endfunction
 
 function! s:HandleTSServerDiagnostics(response, error_type) abort
     let l:linter_name = 'tsserver'
-    let l:buffer = bufnr('^' . a:response.body.file . '$')
+    let l:escaped_name = escape(
+    \   fnameescape(a:response.body.file),
+    \   has('win32') ? '^' : '^,}]'
+    \)
+    let l:buffer = bufnr('^' . l:escaped_name . '$')
     let l:info = get(g:ale_buffer_info, l:buffer, {})
 
     if empty(l:info)
@@ -227,7 +235,7 @@ function! ale#lsp_linter#OnInit(linter, details, Callback) abort
     let l:command = a:details.command
 
     let l:config = ale#lsp_linter#GetConfig(l:buffer, a:linter)
-    let l:language_id = ale#util#GetFunction(a:linter.language_callback)(l:buffer)
+    let l:language_id = ale#linter#GetLanguage(l:buffer, a:linter)
 
     call ale#lsp#UpdateConfig(l:conn_id, l:buffer, l:config)
 
@@ -265,7 +273,14 @@ function! s:StartLSP(options, address, executable, command) abort
             call ale#lsp#MarkConnectionAsTsserver(l:conn_id)
         endif
 
-        let l:command = ale#command#FormatCommand(l:buffer, a:executable, a:command, 0, v:false)[1]
+        let l:command = ale#command#FormatCommand(
+        \   l:buffer,
+        \   a:executable,
+        \   a:command,
+        \   0,
+        \   v:false,
+        \   [],
+        \)[1]
         let l:command = ale#job#PrepareCommand(l:buffer, l:command)
         let l:ready = ale#lsp#StartProgram(l:conn_id, a:executable, l:command)
     endif

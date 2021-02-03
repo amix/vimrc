@@ -73,10 +73,6 @@ Colors when editing a Python file:
 
 ![Screenshot 1](https://dnp4pehkvoo6n.cloudfront.net/07583008e4da885801657e8781777844/as/Python%20editing.png)
 
-Opening recently opened files with the [mru.vim](https://github.com/vim-scripts/mru.vim) plugin:
-
-![Screenshot 2](https://dnp4pehkvoo6n.cloudfront.net/1d49a88f9bd5d013c025bb1e1272a7d8/as/MRU%20plugin.png)
-
 [NERD Tree](https://github.com/scrooloose/nerdtree) plugin in a terminal window:
 ![Screenshot 3](https://dnp4pehkvoo6n.cloudfront.net/ae719203166585d64728f28398f4b1b7/as/Terminal%20usage.png)
 
@@ -94,7 +90,6 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2): 
 * [lightline.vim](https://github.com/itchyny/lightline.vim): A light and configurable statusline/tabline for Vim
 * [NERD Tree](https://github.com/scrooloose/nerdtree): A tree explorer plugin for vim
-* [mru.vim](https://github.com/vim-scripts/mru.vim): Plugin to manage Most Recently Used (MRU) files. This plugin can be opened with `<leader+f>`
 * [open_file_under_cursor.vim](https://github.com/amix/open_file_under_cursor.vim): Open file under cursor when pressing `gf`
 * [pathogen.vim](https://github.com/tpope/vim-pathogen): Manage your vim runtimepath 
 * [snipmate.vim](https://github.com/garbas/vim-snipmate): snipmate.vim aims to be a concise vim script that implements some of TextMate's snippets features in Vim
@@ -232,7 +227,7 @@ Surround the visual selection in parenthesis/brackets/etc.:
     vnoremap $3 <esc>`>a}<esc>`<i{<esc>
     vnoremap $$ <esc>`>a"<esc>`<i"<esc>
     vnoremap $q <esc>`>a'<esc>`<i'<esc>
-    vnoremap $e <esc>`>a"<esc>`<i"<esc>
+    vnoremap $e <esc>`>a`<esc>`<i`<esc>
 
 
 ### Insert mode mappings
@@ -278,13 +273,16 @@ Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) to see and ma
     
     map <leader>o :BufExplorer<cr>
 
-Open [MRU.vim](https://github.com/vim-scripts/mru.vim) to see the recently open files (`<leader>f`):
+Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a file or a buffer (`<leader>j` or `<ctrl>f`):
 
+    " Quickly find and open a file in the CWD
+    let g:ctrlp_map = '<C-f>'
+
+    " Quickly find and open a recently opened file
     map <leader>f :MRU<CR>
 
-Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a file or a buffer (`<leader>j` or `<ctrl>f`):
-    
-    let g:ctrlp_map = '<C-f>'
+    " Quickly find and open a buffer
+    map <leader>b :CtrlPBuffer<cr>
 
 [NERD Tree](https://github.com/scrooloose/nerdtree) mappings:
 
@@ -372,8 +370,8 @@ Just do following:
 * Remove any lines that reference `.vim_runtime` in your `~/.vimrc`
 
 
-## Doist
+## Looking for a remote-first job?
 
-Maintaining this Vim configuration isn't my day job. Daily I am the founder of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
+Maintaining this Vim configuration isn't my day job. Daily I am the founder/CEO of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
 
 PS: Using Vim isn't a requirement 😄

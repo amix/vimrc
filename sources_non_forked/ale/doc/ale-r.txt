@@ -3,6 +3,29 @@ ALE R Integration                                               *ale-r-options*
 
 
 ===============================================================================
+languageserver                                           *ale-r-languageserver*
+
+g:ale_r_languageserver_cmd                         *g:ale_r_languageserver_cmd*
+                                                   *b:ale_r_languageserver_cmd*
+  Type: |String|
+  Default: `'languageserver::run()'`
+
+  This option can be configured to change the execution command for
+  languageserver.
+
+  See the languageserver documentation for more options.
+
+
+g:ale_r_languageserver_config                   *g:ale_r_languageserver_config*
+                                                *b:ale_r_languageserver_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  This option can be configured to change settings for languageserver. See the
+  languageserver documentation for more information.
+
+
+===============================================================================
 lintr                                                             *ale-r-lintr*
 
 g:ale_r_lintr_options                                   *g:ale_r_lintr_options*
@@ -22,7 +45,7 @@ g:ale_r_lintr_lint_package                         *g:ale_r_lintr_lint_package*
   Default: `0`
 
   When set to `1`, the file will be checked with `lintr::lint_package` instead
-  of `lintr::lint`. This prevents erroneous namespace warnings when linting 
+  of `lintr::lint`. This prevents erroneous namespace warnings when linting
   package files.
 
 
@@ -36,8 +59,8 @@ g:ale_r_styler_options                                 *g:ale_r_styler_options*
 
   This option can be configured to change the options for styler.
 
-  The value of this option will be used as the `style` argument for the 
-  `styler::style_file` options. Consult the styler documentation 
+  The value of this option will be used as the `style` argument for the
+  `styler::style_file` options. Consult the styler documentation
   for more information.
 
 

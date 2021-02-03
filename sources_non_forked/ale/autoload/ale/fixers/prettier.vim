@@ -34,6 +34,21 @@ function! ale#fixers#prettier#ProcessPrettierDOutput(buffer, output) abort
     return a:output
 endfunction
 
+function! ale#fixers#prettier#GetProjectRoot(buffer) abort
+    let l:config = ale#path#FindNearestFile(a:buffer, '.prettierignore')
+
+    if !empty(l:config)
+        return fnamemodify(l:config, ':h')
+    endif
+
+    " Fall back to the directory of the buffer
+    return fnamemodify(bufname(a:buffer), ':p:h')
+endfunction
+
+function! ale#fixers#prettier#CdProjectRoot(buffer) abort
+    return ale#path#CdString(ale#fixers#prettier#GetProjectRoot(a:buffer))
+endfunction
+
 function! ale#fixers#prettier#ApplyFixForVersion(buffer, version) abort
     let l:executable = ale#fixers#prettier#GetExecutable(a:buffer)
     let l:options = ale#Var(a:buffer, 'javascript_prettier_options')
@@ -97,7 +112,7 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version) abort
     " 1.4.0 is the first version with --stdin-filepath
     if ale#semver#GTE(a:version, [1, 4, 0])
         return {
-        \   'command': ale#path#BufferCdString(a:buffer)
+        \   'command': ale#fixers#prettier#CdProjectRoot(a:buffer)
         \       . ale#Escape(l:executable)
         \       . (!empty(l:options) ? ' ' . l:options : '')
         \       . ' --stdin-filepath %s --stdin',

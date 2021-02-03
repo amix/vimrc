@@ -10,7 +10,7 @@ function! ale_linters#objc#clang#GetCommand(buffer) abort
     " -iquote with the directory the file is in makes #include work for
     "  headers in the same directory.
     return 'clang -S -x objective-c -fsyntax-only '
-    \   . '-iquote ' . ale#Escape(fnamemodify(bufname(a:buffer), ':p:h'))
+    \   . '-iquote %s:h'
     \   . ' ' . ale#Var(a:buffer, 'objc_clang_options') . ' -'
 endfunction
 

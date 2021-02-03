@@ -81,6 +81,8 @@ snippet cb
 	@callback ${1:name}(${2:args}) :: ${3:returns}
 snippet df
 	def ${1:name}, do: ${2}
+snippet dfw
+	def ${1:name}(${2:args}) when ${3:guard}, do:
 snippet def
 	def ${1:name} do
 		${0}
@@ -92,12 +94,21 @@ snippet defd
 	def ${2:name} do
 		${0}
 	end
+snippet defs
+	@spec ${1:name}(${2:arg types}) :: ${3:no_return}
+	def $1(${4:args}) do
+		${0}
+	end
 snippet defsd
 	@doc """
 	${1:doc string}
 	"""
-	@spec ${2:name} :: ${3:no_return}
-	def ${2} do
+	@spec ${2:name}(${3:arg types}) :: ${4:no_return}
+	def $2(${5:args}) do
+		${0}
+	end
+snippet defw
+	def ${1:name}(${2:args}) when ${3:guard} do
 		${0}
 	end
 snippet defim
@@ -112,10 +123,22 @@ snippet defmo
 	defmodule ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
 		${0}
 	end
+snippet %M
+	%__MODULE__{
+		${1:key_name}: ${2:value}
+	}
+snippet enfk
+	@enforce_keys [:${1:key_name}]
 snippet dfp
 	defp ${1:name}, do: ${2}
+snippet dfpw
+	defp ${1:name}(${2:args}) when ${3:guard}, do: ${4}
 snippet defp
 	defp ${1:name} do
+		${0}
+	end
+snippet defpw
+	defp ${1:name}(${2:args}) when ${3:guard} do
 		${0}
 	end
 snippet defpr
@@ -173,11 +196,27 @@ snippet des
 	describe "${1:test group subject}" do
 		${0}
 	end
+snippet destag
+	@describetag :${1:describe tag}
+snippet mtag
+	@moduletag :${1:module tag}
+snippet dt
+	doctest ${1:filename}
+snippet tp
+	@tag :pending
 snippet exunit
 	defmodule ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} do
 		use ExUnit.Case, async: true
 
 		${0}
+	end
+snippet setup
+	setup do
+		${1}
+	end
+snippet setupa
+	setup_all do
+		${1}
 	end
 snippet try try .. rescue .. end
 	try do

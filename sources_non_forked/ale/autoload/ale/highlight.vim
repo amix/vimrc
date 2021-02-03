@@ -210,6 +210,12 @@ function! ale#highlight#SetHighlights(buffer, loclist) abort
     " Set the list in the buffer variable.
     call setbufvar(str2nr(a:buffer), 'ale_highlight_items', l:new_list)
 
+    let l:exclude_list = ale#Var(a:buffer, 'exclude_highlights')
+
+    if !empty(l:exclude_list)
+        call filter(l:new_list, 'empty(ale#util#GetMatches(v:val.text, l:exclude_list))')
+    endif
+
     " Update highlights for the current buffer, which may or may not
     " be the buffer we just set highlights for.
     call ale#highlight#UpdateHighlights()

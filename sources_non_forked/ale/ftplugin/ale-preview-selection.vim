@@ -12,5 +12,5 @@ noremap <buffer> A <NOP>
 noremap <buffer> o <NOP>
 noremap <buffer> O <NOP>
 " Keybinds for opening selection items.
-noremap <buffer> <CR> :call ale#preview#OpenSelectionInBuffer()<CR>
+noremap <buffer> <CR> :call ale#preview#OpenSelection()<CR>
 noremap <buffer> t :call ale#preview#OpenSelectionInTab()<CR>

@@ -18,7 +18,12 @@ function! ale_linters#bib#bibclean#get_type(str) abort
 endfunction
 
 function! ale_linters#bib#bibclean#match_msg(line) abort
-    return matchlist(a:line, '^\(.*\) "stdin", line \(.*\): \(.*\)$')
+    " Legacy message pattern works for bibclean <= v2.11.4. If empty, try
+    " the new message pattern for bibtex > v2.11.4
+    let l:matches_legacy = matchlist(a:line, '^\(.*\) "stdin", line \(\d\+\): \(.*\)$')
+
+    return ! empty(l:matches_legacy) ? l:matches_legacy
+    \ : matchlist(a:line, '^\(.*\) stdin:\(\d\+\):\(.*\)$')
 endfunction
 
 function! ale_linters#bib#bibclean#match_entry(line) abort

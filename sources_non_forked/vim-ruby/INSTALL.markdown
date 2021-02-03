@@ -28,6 +28,9 @@ choosing another installation method.  The version you download will
 supersede the version that ships with Vim, so you will now be
 responsible for keeping it up-to-date.)
 
+If you're looking for stable releases from a particular version, you can find
+them in [github](https://github.com/vim-ruby/vim-ruby/releases).
+
 Manually
 --------
 

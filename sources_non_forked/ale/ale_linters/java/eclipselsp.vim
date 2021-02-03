@@ -7,6 +7,7 @@ call ale#Set('java_eclipselsp_path', ale#path#Simplify($HOME . '/eclipse.jdt.ls'
 call ale#Set('java_eclipselsp_config_path', '')
 call ale#Set('java_eclipselsp_workspace_path', '')
 call ale#Set('java_eclipselsp_executable', 'java')
+call ale#Set('java_eclipselsp_javaagent', '')
 
 function! ale_linters#java#eclipselsp#Executable(buffer) abort
     return ale#Var(a:buffer, 'java_eclipselsp_executable')
@@ -19,25 +20,39 @@ endfunction
 function! ale_linters#java#eclipselsp#JarPath(buffer) abort
     let l:path = ale_linters#java#eclipselsp#TargetPath(a:buffer)
 
-    " Search jar file within repository path when manually built using mvn
-    let l:repo_path = l:path . '/org.eclipse.jdt.ls.product/target/repository'
-    let l:files = globpath(l:repo_path, '**/plugins/org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
+    if has('win32')
+        let l:platform = 'win32'
+    elseif has('macunix')
+        let l:platform = 'macosx'
+    else
+        let l:platform = 'linux'
+    endif
 
-    if len(l:files) == 1
+    " Search jar file within repository path when manually built using mvn
+    let l:files = globpath(l:path, '**/'.l:platform.'/**/plugins/org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
+
+    if len(l:files) >= 1
         return l:files[0]
     endif
 
     " Search jar file within VSCode extensions folder.
-    let l:files = globpath(l:path, '**/plugins/org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
+    let l:files = globpath(l:path, '**/'.l:platform.'/plugins/org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
 
-    if len(l:files) == 1
+    if len(l:files) >= 1
+        return l:files[0]
+    endif
+
+    " Search jar file within unzipped tar.gz file
+    let l:files = globpath(l:path, 'plugins/org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
+
+    if len(l:files) >= 1
         return l:files[0]
     endif
 
     " Search jar file within system package path
     let l:files = globpath('/usr/share/java/jdtls/plugins', 'org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
 
-    if len(l:files) == 1
+    if len(l:files) >= 1
         return l:files[0]
     endif
 
@@ -100,12 +115,30 @@ function! ale_linters#java#eclipselsp#WorkspacePath(buffer) abort
     return ale#path#Dirname(ale#java#FindProjectRoot(a:buffer))
 endfunction
 
+function! ale_linters#java#eclipselsp#Javaagent(buffer) abort
+    let l:rets = []
+    let l:raw = ale#Var(a:buffer, 'java_eclipselsp_javaagent')
+
+    if empty(l:raw)
+        return ''
+    endif
+
+    let l:jars = split(l:raw)
+
+    for l:jar in l:jars
+        call add(l:rets, ale#Escape('-javaagent:' . l:jar))
+    endfor
+
+    return join(l:rets, ' ')
+endfunction
+
 function! ale_linters#java#eclipselsp#Command(buffer, version) abort
     let l:path = ale#Var(a:buffer, 'java_eclipselsp_path')
 
     let l:executable = ale_linters#java#eclipselsp#Executable(a:buffer)
 
     let l:cmd = [ ale#Escape(l:executable),
+    \ ale_linters#java#eclipselsp#Javaagent(a:buffer),
     \ '-Declipse.application=org.eclipse.jdt.ls.core.id1',
     \ '-Dosgi.bundles.defaultStartLevel=4',
     \ '-Declipse.product=org.eclipse.jdt.ls.core.product',
@@ -147,7 +180,8 @@ function! ale_linters#java#eclipselsp#RunWithVersionCheck(buffer) abort
     return ale#command#Run(
     \ a:buffer,
     \ l:command,
-    \ function('ale_linters#java#eclipselsp#CommandWithVersion')
+    \ function('ale_linters#java#eclipselsp#CommandWithVersion'),
+    \ { 'output_stream': 'both' }
     \)
 endfunction
 

@@ -20,6 +20,7 @@ describe "Indenting" do
       }
     EOF
 
+    vim.command 'let g:ruby_indent_block_style = "expression"'
     assert_correct_indenting <<~EOF
       var.
         func1(:param => 'value') {
@@ -40,6 +41,7 @@ describe "Indenting" do
       }
     EOF
 
+    vim.command 'let g:ruby_indent_block_style = "expression"'
     assert_correct_indenting <<~EOF
       foo,
         bar = {
@@ -53,6 +55,7 @@ describe "Indenting" do
   end
 
   specify "nested blocks with a continuation and function call inbetween" do
+    vim.command 'let g:ruby_indent_block_style = "expression"'
     assert_correct_indenting <<~EOF
       var.
         func1(:param => 'value') {

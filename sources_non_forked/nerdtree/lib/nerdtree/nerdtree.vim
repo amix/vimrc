@@ -27,7 +27,9 @@ function! s:NERDTree.changeRoot(node)
     call self.render()
     call self.root.putCursorHere(0, 0)
 
-    silent doautocmd User NERDTreeNewRoot
+    if exists('#User#NERDTreeNewRoot')
+        doautocmd User NERDTreeNewRoot
+    endif
 endfunction
 
 "FUNCTION: s:NERDTree.Close() {{{1
@@ -96,9 +98,9 @@ endfunction
 
 "FUNCTION: s:NERDTree.CursorToTreeWin(){{{1
 "Places the cursor in the nerd tree window
-function! s:NERDTree.CursorToTreeWin()
+function! s:NERDTree.CursorToTreeWin(...)
     call g:NERDTree.MustBeOpen()
-    call nerdtree#exec(g:NERDTree.GetWinNum() . 'wincmd w', 1)
+    call nerdtree#exec(g:NERDTree.GetWinNum() . 'wincmd w', a:0 >0 ? a:1 : 1)
 endfunction
 
 " Function: s:NERDTree.ExistsForBuffer()   {{{1

@@ -588,6 +588,7 @@ function! s:coerce(type) abort
     let regbody = getreg('"')
     let regtype = getregtype('"')
     let c = v:count1
+    let begin = getcurpos()
     while c > 0
       let c -= 1
       if a:type ==# 'line'
@@ -600,9 +601,6 @@ function! s:coerce(type) abort
       silent exe 'normal!' move.'y'
       let word = @@
       let @@ = s:send(g:Abolish.Coercions,s:transformation,word)
-      if !exists('begin')
-        let begin = getpos("'[")
-      endif
       if word !=# @@
         let changed = 1
         exe 'normal!' move.'p'
@@ -618,7 +616,7 @@ function! s:coerce(type) abort
 endfunction
 
 nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
-nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
+vnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
 nnoremap <expr> <plug>(abolish-coerce-word) <SID>coerce(nr2char(getchar())).'iw'
 
 " }}}1

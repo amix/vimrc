@@ -15,7 +15,6 @@ Install prettier either globally or locally: >
   npm install prettier -g  # global
   npm install prettier     # local
 <
-  
 ===============================================================================
 swaglint                                                    *ale-yaml-swaglint*
 
@@ -49,6 +48,43 @@ g:ale_yaml_swaglint_use_global                 *g:ale_yaml_swaglint_use_global*
 
   See |ale-integrations-local-executables|
 
+===============================================================================
+yamlfix                                                      *ale-yaml-yamlfix*
+
+Website: https://lyz-code.github.io/yamlfix
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install yamlfix: >
+
+  pip install yamlfix
+<
+
+Options
+-------------------------------------------------------------------------------
+g:ale_yaml_yamlfix_executable                   *g:ale_yaml_yamlfix_executable*
+                                                *b:ale_yaml_yamlfix_executable*
+  Type: |String|
+  Default: `'yamlfix'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_yaml_yamlfix_options                         *g:ale_yaml_yamlfix_options*
+                                                   *b:ale_yaml_yamlfix_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to yamlfix.
+
+g:ale_yaml_yamlfix_use_global                   *g:ale_yaml_yamlfix_use_global*
+                                                *b:ale_yaml_yamlfix_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
 
 ===============================================================================
 yamllint                                                    *ale-yaml-yamllint*

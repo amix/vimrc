@@ -17,3 +17,10 @@ function! ale#handlers#ccls#GetProjectRoot(buffer) abort
     " Fall back on default project root detection.
     return ale#c#FindProjectRoot(a:buffer)
 endfunction
+
+function! ale#handlers#ccls#GetInitOpts(buffer, init_options_var) abort
+    let l:build_dir = ale#c#GetBuildDirectory(a:buffer)
+    let l:init_options = empty(l:build_dir) ? {} : {'compilationDatabaseDirectory': l:build_dir}
+
+    return extend(l:init_options, ale#Var(a:buffer, a:init_options_var))
+endfunction

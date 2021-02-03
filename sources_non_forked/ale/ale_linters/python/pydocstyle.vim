@@ -16,17 +16,15 @@ function! ale_linters#python#pydocstyle#GetExecutable(buffer) abort
 endfunction
 
 function! ale_linters#python#pydocstyle#GetCommand(buffer) abort
-    let l:dir = fnamemodify(bufname(a:buffer), ':p:h')
     let l:executable = ale_linters#python#pydocstyle#GetExecutable(a:buffer)
-
     let l:exec_args = l:executable =~? 'pipenv$'
     \   ? ' run pydocstyle'
     \   : ''
 
-    return ale#path#CdString(l:dir)
+    return ale#path#BufferCdString(a:buffer)
     \   . ale#Escape(l:executable) . l:exec_args
-    \   . ' ' . ale#Var(a:buffer, 'python_pydocstyle_options')
-    \   . ' ' . ale#Escape(fnamemodify(bufname(a:buffer), ':p:t'))
+    \   . ale#Pad(ale#Var(a:buffer, 'python_pydocstyle_options'))
+    \   . ' %s:t'
 endfunction
 
 function! ale_linters#python#pydocstyle#Handle(buffer, lines) abort

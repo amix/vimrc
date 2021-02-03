@@ -18,7 +18,7 @@ function! ale_linters#ada#gcc#GetCommand(buffer) abort
     " -gnatc: Check syntax and semantics only (no code generation attempted)
     return '%e -x ada -c -gnatc'
     \   . ' -o ' . ale#Escape(l:out_file)
-    \   . ' -I ' . ale#Escape(fnamemodify(bufname(a:buffer), ':p:h'))
+    \   . ' -I %s:h'
     \   . ale#Pad(ale#Var(a:buffer, 'ada_gcc_options'))
     \   . ' %t'
 endfunction

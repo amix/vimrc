@@ -1,0 +1,147 @@
+Given markdown;
+# a
+
+## Foo Level 2
+
+### Foo Level 3
+
+#### Foo Level 4
+
+Bar Level 2
+-----------
+
+### Bar Level 3
+
+Execute (InsertToc format):
+  :2
+  :call append('.', '')
+  :InsertToc
+
+Expect (format):
+  # a
+
+  * [Foo Level 2](#foo-level-2)
+    * [Foo Level 3](#foo-level-3)
+      * [Foo Level 4](#foo-level-4)
+  * [Bar Level 2](#bar-level-2)
+    * [Bar Level 3](#bar-level-3)
+
+  ## Foo Level 2
+
+  ### Foo Level 3
+
+  #### Foo Level 4
+
+  Bar Level 2
+  -----------
+
+  ### Bar Level 3
+
+Given markdown;
+# a
+
+## Foo Level 2
+
+### Foo Level 3
+
+#### Foo Level 4
+
+Bar Level 2
+-----------
+
+### Bar Level 3
+
+Execute (InsertToc only h2 headers):
+  :2
+  :call append('.', '')
+  :InsertToc 2
+
+Expect (only h2 headers):
+  # a
+
+  * [Foo Level 2](#foo-level-2)
+  * [Bar Level 2](#bar-level-2)
+
+  ## Foo Level 2
+
+  ### Foo Level 3
+
+  #### Foo Level 4
+
+  Bar Level 2
+  -----------
+
+  ### Bar Level 3
+
+Given markdown;
+# a
+
+## Foo Level 2
+
+### Foo Level 3
+
+#### Foo Level 4
+
+Bar Level 2
+-----------
+
+## Baz Level 2
+
+## Foobar Level 2
+
+## Foobaz Level 2
+
+## Barfoo Level 2
+
+## Barbaz Level 2
+
+## Bazfoo Level 2
+
+## Bazbar Level 2
+
+## Foobarbaz Level 2
+
+Execute (InsertNToc format, and up to h3 headers):
+  :2
+  :call append('.', '')
+  :InsertNToc 3
+
+Expect (format, and up to h3 headers):
+  # a
+
+   1. [Foo Level 2](#foo-level-2)
+      * [Foo Level 3](#foo-level-3)
+   2. [Bar Level 2](#bar-level-2)
+   3. [Baz Level 2](#baz-level-2)
+   4. [Foobar Level 2](#foobar-level-2)
+   5. [Foobaz Level 2](#foobaz-level-2)
+   6. [Barfoo Level 2](#barfoo-level-2)
+   7. [Barbaz Level 2](#barbaz-level-2)
+   8. [Bazfoo Level 2](#bazfoo-level-2)
+   9. [Bazbar Level 2](#bazbar-level-2)
+  10. [Foobarbaz Level 2](#foobarbaz-level-2)
+
+  ## Foo Level 2
+
+  ### Foo Level 3
+
+  #### Foo Level 4
+
+  Bar Level 2
+  -----------
+
+  ## Baz Level 2
+
+  ## Foobar Level 2
+
+  ## Foobaz Level 2
+
+  ## Barfoo Level 2
+
+  ## Barbaz Level 2
+
+  ## Bazfoo Level 2
+
+  ## Bazbar Level 2
+
+  ## Foobarbaz Level 2

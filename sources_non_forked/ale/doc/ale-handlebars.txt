@@ -14,7 +14,8 @@ ember-template-lint                          *ale-handlebars-embertemplatelint*
 
 g:ale_handlebars_embertemplatelint_executable
                                 *g:ale_handlebars_embertemplatelint_executable*
-  Type: |String|                  *b:ale_handlebars_embertemplatelint_executable*
+                                *b:ale_handlebars_embertemplatelint_executable*
+  Type: |String|
   Default: `'ember-template-lint'`
 
   See |ale-integrations-local-executables|
@@ -22,7 +23,8 @@ g:ale_handlebars_embertemplatelint_executable
 
 g:ale_handlebars_embertemplatelint_use_global
                                 *g:ale_handlebars_embertemplatelint_use_global*
-  Type: |Number|                  *b:ale_handlebars_embertemplatelint_use_global*
+                                *b:ale_handlebars_embertemplatelint_use_global*
+  Type: |Number|
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|

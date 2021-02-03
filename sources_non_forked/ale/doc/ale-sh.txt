@@ -3,6 +3,29 @@ ALE Shell Integration                                          *ale-sh-options*
 
 
 ===============================================================================
+bashate                                                        *ale-sh-bashate*
+
+g:ale_sh_bashate_executable                       *g:ale_sh_bashate_executable*
+                                                  *b:ale_sh_bashate_executable*
+  Type: |String|
+  Default: `'bashate'`
+
+  This variable sets executable used for bashate.
+
+
+g:ale_sh_bashate_options                             *g:ale_sh_bashate_options*
+                                                     *b:ale_sh_bashate_options*
+  Type: |String|
+  Default: `''`
+
+  With this variable we are able to pass extra arguments for bashate. For
+  example to ignore the indentation rule:
+
+>
+  let g:ale_sh_bashate_options = '-i E003'
+<
+
+===============================================================================
 sh-language-server                                     *ale-sh-language-server*
 
 g:ale_sh_language_server_executable        *g:ale_sh_language_server_executable*

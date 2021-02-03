@@ -16,9 +16,9 @@ source $1/my_configs.vim
 catch
 endtry"
 
-if [ $2 == "--all" ]; then
-    USERS=($(ls /home))
-    for user in ${USERS[*]}; do
+if [ "$2" = "--all" ]; then
+    USERS=$(ls -l /home | awk '{if(NR>1)print $9}')
+    for user in $USERS; do
         homepath=$(eval echo "~$user")
         IFS=''
         echo $VIMRC > ${homepath}/.vimrc
@@ -28,9 +28,9 @@ if [ $2 == "--all" ]; then
     echo "Installed the Ultimate Vim configuration successfully! Enjoy :-)"
     exit 0
 else
-    SELECTED_USERS=(${@:2})
-    echo "Selected users: ${SELECTED_USERS[@]}"
-    for user in ${SELECTED_USERS[@]}; do
+    SELECTED_USERS=${@:2}
+    echo "Selected users: $SELECTED_USERS"
+    for user in $SELECTED_USERS; do
         homepath=$(eval echo "~$user")
         IFS=''
         echo $VIMRC > ${homepath}/.vimrc

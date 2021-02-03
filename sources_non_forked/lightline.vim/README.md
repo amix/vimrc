@@ -17,23 +17,31 @@ https://github.com/itchyny/lightline.vim
 
 ### solarized dark
 
-![lightline.vim - solarized_dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/solarized_dark.png)
+![lightline.vim - solarized dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/solarized_dark.png)
 
 ### solarized light
 
-![lightline.vim - solarized_light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/solarized_light.png)
+![lightline.vim - solarized light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/solarized_light.png)
+
+### PaperColor dark
+
+![lightline.vim - PaperColor dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/PaperColor_dark.png)
 
 ### PaperColor light
 
-![lightline.vim - PaperColor](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/PaperColor.png)
+![lightline.vim - PaperColor light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/PaperColor_light.png)
 
 ### seoul256
 
 ![lightline.vim - seoul256](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/seoul256.png)
 
-### one
+### one dark
 
-![lightline.vim - one](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/one.png)
+![lightline.vim - one dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/one_dark.png)
+
+### one light
+
+![lightline.vim - one light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/one_light.png)
 
 ### landscape
 
@@ -55,7 +63,8 @@ For screenshots of all available colorshemes, see [this file](colorscheme.md).
 + Orthogonality. The plugin does not rely on the implementation of other plugins. Such plugin crossing settings should be configured by users.
 
 ## Installation
-### [Vim packages](http://vimhelp.appspot.com/repeat.txt.html#packages) (since Vim 7.4.1528)
+### [Vim packages](https://vimhelp.org/repeat.txt.html#packages) (since Vim 7.4.1528)
+1. Clone the plugin with the following command.
 
         git clone https://github.com/itchyny/lightline.vim ~/.vim/pack/plugins/start/lightline
 

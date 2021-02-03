@@ -220,6 +220,25 @@ g:ale_go_govet_options                                 *g:ale_go_govet_options*
 
 
 ===============================================================================
+revive                                                          *ale-go-revive*
+
+g:ale_go_revive_executable                         *g:ale_go_revive_executable*
+                                                   *b:ale_go_revive_executable*
+  Type: |String|
+  Default: `'revive'`
+
+  This variable can be set to change the revive executable path.
+
+
+g:ale_go_revive_options                               *g:ale_go_revive_options*
+                                                      *b:ale_go_revive_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the revive
+
+
+===============================================================================
 staticcheck                                                *ale-go-staticcheck*
 
 g:ale_go_staticcheck_options                     *g:ale_go_staticcheck_options*

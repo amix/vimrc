@@ -1,7 +1,33 @@
 ###########################################################################
 #                            TextMate Snippets                            #
 ###########################################################################
+# --------------
+# Functions
+# --------------
+global !p
+def printf_expand_args(snip):
+	"""
+	This will look how many placeholders printf has and adds the separated commas
+	at the end.
+	"""
+	
+	# now add so many "," as much as the amount of placeholders
+	amount_placeholders = snip.tabstops[1].current_text.count("%")
 
+	output = ""
+
+	# Add the amount of tabstops
+	for placeholder_index in range(3, amount_placeholders + 3):
+		output += f", ${placeholder_index}"
+	
+	# convert them into tabstops
+	snip.expand_anon(output)
+
+endglobal
+
+# ==============
+# Snippets 
+# ==============
 priority -50
 
 snippet def "#define ..."
@@ -49,6 +75,16 @@ for (${4:int} ${2:i} = 0; $2 < ${1:count}; ${3:++$2}) {
 }
 endsnippet
 
+snippet fora "for-loop" b
+for (${1:var}; ${2:condition}; `!p
+if len(t[1]) > 0:
+	snip.rv = t[1].split('=')[0].split()[-1]
+`++) {
+	
+	$0
+} /* for ($1; $2; `!p if len(t[1]) > 0: snip.rv = t[1].split('=')[0].split()[-1]`++) */
+endsnippet
+
 snippet once "Include header once only guard"
 #ifndef ${1:`!p
 if not snip.c:
@@ -75,8 +111,9 @@ else if (${1:/* condition */}) {
 }
 endsnippet
 
-snippet printf "printf .. (printf)"
-printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+post_jump "printf_expand_args(snip)"
+snippet "printf" "printf with auto-expand args" wr
+printf("$1\n"$2);
 endsnippet
 
 snippet st "struct"

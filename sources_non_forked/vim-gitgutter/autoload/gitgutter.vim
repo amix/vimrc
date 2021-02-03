@@ -1,5 +1,3 @@
-let s:t_string = type('')
-
 " Primary functions {{{
 
 function! gitgutter#all(force) abort
@@ -37,7 +35,7 @@ function! gitgutter#process_buffer(bufnr, force) abort
 
     if a:force || s:has_fresh_changes(a:bufnr)
 
-      let diff = ''
+      let diff = 'NOT SET'
       try
         let diff = gitgutter#diff#run_diff(a:bufnr, g:gitgutter_diff_relative_to, 0)
       catch /gitgutter not tracked/
@@ -47,7 +45,7 @@ function! gitgutter#process_buffer(bufnr, force) abort
         call gitgutter#hunk#reset(a:bufnr)
       endtry
 
-      if diff != 'async'
+      if diff != 'async' && diff != 'NOT SET'
         call gitgutter#diff#handler(a:bufnr, diff)
       endif
 
@@ -156,11 +154,7 @@ function! gitgutter#setup_maps()
 endfunction
 
 function! s:setup_path(bufnr, continuation)
-  let p = gitgutter#utility#repo_path(a:bufnr, 0)
-
-  if type(p) == s:t_string && !empty(p)  " if path is known
-    return
-  endif
+  if gitgutter#utility#has_repo_path(a:bufnr) | return | endif
 
   return gitgutter#utility#set_repo_path(a:bufnr, a:continuation)
 endfunction
@@ -186,9 +180,17 @@ endfunction
 " - it ignores unsaved changes in buffers
 " - it does not change to the repo root
 function! gitgutter#quickfix()
+  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' rev-parse --show-cdup'
+  let path_to_repo = get(systemlist(cmd), 0, '')
+  if !empty(path_to_repo) && path_to_repo[-1:] != '/'
+    let path_to_repo .= '/'
+  endif
+
   let locations = []
-  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager '.g:gitgutter_git_args.
-        \ ' diff --no-ext-diff --no-color -U0 '.g:gitgutter_diff_args
+  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager'.
+        \ ' diff --no-ext-diff --no-color -U0'.
+        \ ' --src-prefix=a/'.path_to_repo.' --dst-prefix=b/'.path_to_repo.' '.
+        \ g:gitgutter_diff_args. ' '. g:gitgutter_diff_base
   let diff = systemlist(cmd)
   let lnum = 0
   for line in diff

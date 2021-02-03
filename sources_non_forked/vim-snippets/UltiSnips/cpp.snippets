@@ -30,6 +30,12 @@ endglobal
 ###########################################################################
 #                            TextMate Snippets                            #
 ###########################################################################
+snippet forc "general for loop (for)"
+for (${6:auto} ${1:i} = ${2:v.begin()}; `!p import re; snip.rv = re.split("[^\w]",t[1])[-1]` ${4:!=} ${3:`!p m = re.search(r'^(?:(.*)(\.|->)begin\(\)|((?:std|boost)::)?begin\((.*)\))$', t[2]); snip.rv = (((m.group(3) if m.group(3) else "") + "end(" + m.group(4) + ")") if m.group(4) else (m.group(1) + m.group(2) + "end()")) if m else ""`}; ${5:++`!p snip.rv = t[1].split(" ")[-1]`}) {
+	${VISUAL}$0
+}
+endsnippet
+
 snippet beginend "$1.begin(), $1.end() (beginend)"
 ${1:v}${1/^.*?(-)?(>)?$/(?2::(?1:>:.))/}begin(), $1${1/^.*?(-)?(>)?$/(?2::(?1:>:.))/}end()
 endsnippet
@@ -106,5 +112,68 @@ ${1:ReturnType} ${2:FunctionName}(${3:param})
 {
 	${0:FunctionBody}
 }
+endsnippet
+
+snippet boost_test "Boost test module" b
+#define BOOST_TEST_MODULE ${1:TestModuleName}
+#include <boost/test/included/unit_test.hpp>
+
+BOOST_AUTO_TEST_CASE(${2:TestCaseName})
+{
+	${0:TestDefinition}
+}
+
+endsnippet
+
+snippet boost_suite "Boost test suite module" b
+#define BOOST_TEST_MODULE ${1:TestModuleName}
+#include <boost/test/included/unit_test.hpp>
+
+BOOST_AUTO_TEST_SUITE(${2:SuiteName})
+
+BOOST_AUTO_TEST_CASE(${3:TestCaseName})
+{
+	${0:TestDefinition}
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+endsnippet
+snippet boost_test_fixture "Boost test module with fixture" b
+#define BOOST_TEST_MODULE ${1:TestModuleName}
+#include <boost/test/included/unit_test.hpp>
+
+struct ${2:FixtureName} {
+	$2() {}
+	virtual ~$2() {}
+	/* define members here */
+};
+
+BOOST_FIXTURE_TEST_CASE(${3:SuiteName}, $2)
+{
+	${0:TestDefinition}
+}
+
+endsnippet
+
+snippet boost_suite_fixture "Boost test suite with fixture" b
+#define BOOST_TEST_MODULE ${1:TestModuleName}
+#include <boost/test/included/unit_test.hpp>
+
+struct ${2:FixtureName} {
+	$2() {}
+	virtual ~$2() {}
+	/* define members here */
+};
+
+BOOST_FIXTURE_TEST_SUITE(${3:SuiteName}, $2)
+
+BOOST_AUTO_TEST_CASE(${4:TestCaseName})
+{
+	${0:TestDefinition}
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
 endsnippet
 # vim:ft=snippets:

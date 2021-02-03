@@ -9,25 +9,19 @@ endfunction
 function! gitgutter#utility#setbufvar(buffer, varname, val)
   let buffer = +a:buffer
   " Default value for getbufvar() was introduced in Vim 7.3.831.
-  let bvars = getbufvar(buffer, '')
-  if empty(bvars)
-    let bvars = {}
+  let ggvars = getbufvar(buffer, 'gitgutter')
+  if type(ggvars) == type('')
+    unlet ggvars
+    let ggvars = {}
+    call setbufvar(buffer, 'gitgutter', ggvars)
   endif
-  let dict = get(bvars, 'gitgutter', {})
-  let needs_setting = empty(dict)
-  let dict[a:varname] = a:val
-  if needs_setting
-    call setbufvar(buffer, 'gitgutter', dict)
-  endif
+  let ggvars[a:varname] = a:val
 endfunction
 
 function! gitgutter#utility#getbufvar(buffer, varname, ...)
-  let bvars = getbufvar(a:buffer, '')
-  if !empty(bvars)
-    let dict = get(bvars, 'gitgutter', {})
-    if has_key(dict, a:varname)
-      return dict[a:varname]
-    endif
+  let ggvars = getbufvar(a:buffer, 'gitgutter')
+  if type(ggvars) == type({}) && has_key(ggvars, a:varname)
+    return ggvars[a:varname]
   endif
   if a:0
     return a:1
@@ -105,6 +99,10 @@ function! gitgutter#utility#system(cmd, ...) abort
   return output
 endfunction
 
+function! gitgutter#utility#has_repo_path(bufnr)
+  return index(['', -1, -2], gitgutter#utility#repo_path(a:bufnr, 0)) == -1
+endfunction
+
 " Path of file relative to repo root.
 "
 " *     empty string - not set
@@ -112,7 +110,7 @@ endfunction
 " *               -1 - pending
 " *               -2 - not tracked by git
 function! gitgutter#utility#repo_path(bufnr, shellesc) abort
-  let p = gitgutter#utility#getbufvar(a:bufnr, 'path')
+  let p = gitgutter#utility#getbufvar(a:bufnr, 'path', '')
   return a:shellesc ? gitgutter#utility#shellescape(p) : p
 endfunction
 
@@ -164,12 +162,16 @@ endfunction
 
 
 function! gitgutter#utility#cd_cmd(bufnr, cmd) abort
-  let cd = s:unc_path(a:bufnr) ? 'pushd' : (gitgutter#utility#windows() ? 'cd /d' : 'cd')
+  let cd = s:unc_path(a:bufnr) ? 'pushd' : (gitgutter#utility#windows() && s:dos_shell() ? 'cd /d' : 'cd')
   return cd.' '.s:dir(a:bufnr).' && '.a:cmd
 endfunction
 
 function! s:unc_path(bufnr)
   return s:abs_path(a:bufnr, 0) =~ '^\\\\'
+endfunction
+
+function! s:dos_shell()
+  return &shell == 'cmd.exe' || &shell == 'command.com'
 endfunction
 
 function! s:use_known_shell() abort
@@ -186,8 +188,21 @@ function! s:restore_shell() abort
   endif
 endfunction
 
+function! gitgutter#utility#get_diff_base(bufnr)
+  let p = resolve(expand('#'.a:bufnr.':p'))
+  let ml = matchlist(p, '\v^fugitive:/.*/(\x{40,})/')
+  if !empty(ml) && !empty(ml[1])
+    return ml[1].'^'
+  endif
+  return g:gitgutter_diff_base
+endfunction
+
 function! s:abs_path(bufnr, shellesc)
   let p = resolve(expand('#'.a:bufnr.':p'))
+
+  " Remove extra parts from fugitive's filepaths
+  let p = substitute(substitute(p, '^fugitive:', '', ''), '\v\.git/\x{40,}/', '', '')
+
   return a:shellesc ? gitgutter#utility#shellescape(p) : p
 endfunction
 

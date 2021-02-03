@@ -11,7 +11,7 @@ function! ale_linters#ruby#standardrb#GetCommand(buffer) abort
     return ale#ruby#EscapeExecutable(l:executable, 'standardrb')
     \   . ' --format json --force-exclusion '
     \   . ale#Var(a:buffer, 'ruby_standardrb_options')
-    \   . ' --stdin ' . ale#Escape(expand('#' . a:buffer . ':p'))
+    \   . ' --stdin %s'
 endfunction
 
 " standardrb is based on RuboCop so the callback is the same

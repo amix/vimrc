@@ -1,4 +1,5 @@
 RUBY							*ft-ruby-omni*
+							*vim-ruby-omni*
 
 Completion of Ruby code requires that Vim be built with |+ruby|.
 

@@ -22,16 +22,6 @@ function! gitgutter#debug#debug()
   call s:separator()
 
   call s:option('updatetime')
-  call s:option('shell')
-  call s:option('shellcmdflag')
-  call s:option('shellpipe')
-  call s:option('shellquote')
-  call s:option('shellredir')
-  call s:option('shellslash')
-  call s:option('shelltemp')
-  call s:option('shelltype')
-  call s:option('shellxescape')
-  call s:option('shellxquote')
 endfunction
 
 
@@ -52,10 +42,10 @@ function! s:git_version()
 endfunction
 
 function! s:grep_version()
-  let v = system('grep --version')
+  let v = system(g:gitgutter_grep.' --version')
   call s:output( substitute(v, '\n$', '', '') )
 
-  let v = system('grep --help')
+  let v = system(g:gitgutter_grep.' --help')
   call s:output( substitute(v, '\%x00', '', 'g') )
 endfunction
 

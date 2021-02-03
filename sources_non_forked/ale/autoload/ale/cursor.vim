@@ -39,6 +39,8 @@ function! ale#cursor#TruncatedEcho(original_message) abort
             endif
 
             exec 'echomsg l:message'
+        catch /E481/
+            " Do nothing if running from a visual selection.
         endtry
 
         " Reset the cursor position if we moved off the end of the line.

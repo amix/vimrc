@@ -50,7 +50,6 @@ vim-pug https://github.com/digitaltoad/vim-pug
 lightline.vim https://github.com/itchyny/lightline.vim
 lightline-ale https://github.com/maximbaz/lightline-ale
 vim-abolish https://github.com/tpope/tpope-vim-abolish
-mru.vim https://github.com/vim-scripts/mru.vim
 rust.vim https://github.com/rust-lang/rust.vim
 vim-markdown https://github.com/plasticboy/vim-markdown
 vim-gist https://github.com/mattn/vim-gist

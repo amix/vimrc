@@ -357,6 +357,10 @@ snippet dump
 	use Data::Dump qw(dump);
 	warn dump ${1:variable}
 
+snippet ddp
+	use DDP;
+	p ${1:variable}
+
 snippet subtest
 	subtest '${1: test_name}' => sub {
 		${2}

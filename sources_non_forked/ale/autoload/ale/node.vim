@@ -12,6 +12,18 @@ function! ale#node#FindExecutable(buffer, base_var_name, path_list) abort
         return ale#Var(a:buffer, a:base_var_name . '_executable')
     endif
 
+    let l:nearest = ale#node#FindNearestExecutable(a:buffer, a:path_list)
+
+    if !empty(l:nearest)
+        return l:nearest
+    endif
+
+    return ale#Var(a:buffer, a:base_var_name . '_executable')
+endfunction
+
+" Given a buffer number, a base variable name, and a list of paths to search
+" for in ancestor directories, detect the executable path for a Node program.
+function! ale#node#FindNearestExecutable(buffer, path_list) abort
     for l:path in a:path_list
         let l:executable = ale#path#FindNearestFile(a:buffer, l:path)
 
@@ -20,7 +32,7 @@ function! ale#node#FindExecutable(buffer, base_var_name, path_list) abort
         endif
     endfor
 
-    return ale#Var(a:buffer, a:base_var_name . '_executable')
+    return ''
 endfunction
 
 " Create a executable string which executes a Node.js script command with a

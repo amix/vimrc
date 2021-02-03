@@ -64,14 +64,6 @@ function! gitgutter#highlight#linenr_toggle() abort
 endfunction
 
 
-function! gitgutter#highlight#define_sign_column_highlight() abort
-  if g:gitgutter_override_sign_column_highlight
-    highlight! link SignColumn LineNr
-  else
-    highlight default link SignColumn LineNr
-  endif
-endfunction
-
 function! gitgutter#highlight#define_highlights() abort
   let [guibg, ctermbg] = s:get_background_colors('SignColumn')
 
@@ -84,12 +76,24 @@ function! gitgutter#highlight#define_highlights() abort
   highlight default link GitGutterChangeDeleteInvisible GitGutterChangeInvisible
 
   " When they are visible.
-  " By default use Diff* foreground colors with SignColumn's background.
-  for type in ['Add', 'Change', 'Delete']
-    let [guifg, ctermfg] = s:get_foreground_colors('Diff'.type)
-    execute "highlight GitGutter".type."Default guifg=".guifg." guibg=".guibg." ctermfg=".ctermfg." ctermbg=".ctermbg
-    execute "highlight default link GitGutter".type." GitGutter".type."Default"
+  for type in ["Add", "Change", "Delete"]
+    if hlexists("GitGutter".type) && s:get_foreground_colors("GitGutter".type) != ['NONE', 'NONE']
+      if g:gitgutter_set_sign_backgrounds
+        execute "highlight GitGutter".type." guibg=".guibg." ctermbg=".ctermbg
+      endif
+      continue
+    elseif s:useful_diff_colours()
+      let [guifg, ctermfg] = s:get_foreground_colors('Diff'.type)
+    else
+      let [guifg, ctermfg] = s:get_foreground_fallback_colors(type)
+    endif
+    execute "highlight GitGutter".type." guifg=".guifg." guibg=".guibg." ctermfg=".ctermfg." ctermbg=".ctermbg
   endfor
+
+  if hlexists("GitGutterChangeDelete") && g:gitgutter_set_sign_backgrounds
+    execute "highlight GitGutterChangeDelete guibg=".guibg." ctermbg=".ctermbg
+  endif
+
   highlight default link GitGutterChangeDelete GitGutterChange
 
   " Highlights used for the whole line.
@@ -107,6 +111,14 @@ function! gitgutter#highlight#define_highlights() abort
   " Highlights used intra line.
   highlight GitGutterAddIntraLine    gui=reverse cterm=reverse
   highlight GitGutterDeleteIntraLine gui=reverse cterm=reverse
+  " Set diff syntax colours (used in the preview window) - diffAdded,diffChanged,diffRemoved -
+  " to match the signs, if not set aleady.
+  for [dtype,type] in [['Added','Add'], ['Changed','Change'], ['Removed','Delete']]
+    if !hlexists('diff'.dtype)
+      let [guifg, ctermfg] = s:get_foreground_colors('GitGutter'.type)
+      execute "highlight diff".dtype." guifg=".guifg." ctermfg=".ctermfg." guibg=NONE ctermbg=NONE"
+    endif
+  endfor
 endfunction
 
 function! gitgutter#highlight#define_signs() abort
@@ -213,4 +225,21 @@ function! s:get_background_colors(group) abort
   let ctermbg = s:get_hl(a:group, 'bg', 'cterm')
   let guibg = s:get_hl(a:group, 'bg', 'gui')
   return [guibg, ctermbg]
+endfunction
+
+function! s:useful_diff_colours()
+  let [guifg_add, ctermfg_add] = s:get_foreground_colors('DiffAdd')
+  let [guifg_del, ctermfg_del] = s:get_foreground_colors('DiffDelete')
+
+  return guifg_add != guifg_del && ctermfg_add != ctermfg_del
+endfunction
+
+function! s:get_foreground_fallback_colors(type)
+  if a:type == 'Add'
+    return ['#009900', '2']
+  elseif a:type == 'Change'
+    return ['#bbbb00', '3']
+  elseif a:type == 'Delete'
+    return ['#ff2222', '1']
+  endif
 endfunction

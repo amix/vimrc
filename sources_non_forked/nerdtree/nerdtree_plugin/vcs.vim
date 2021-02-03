@@ -34,7 +34,7 @@ endfunction
 function! s:FindParentVCSRoot(path)
     let l:path = a:path
     while !empty(l:path) &&
-        \ l:path._str() !~# '^\(\a:\\\|\/\)$' &&
+        \ l:path._str() !~# '^\(\a:[\\\/]\|\/\)$' &&
         \ !isdirectory(l:path._str() . '/.git') &&
         \ !isdirectory(l:path._str() . '/.svn') &&
         \ !isdirectory(l:path._str() . '/.hg') &&
@@ -42,6 +42,6 @@ function! s:FindParentVCSRoot(path)
         \ !isdirectory(l:path._str() . '/_darcs')
         let l:path = l:path.getParent()
     endwhile
-    return (empty(l:path) || l:path._str() =~# '^\(\a:\\\|\/\)$') ? a:path : l:path
+    return (empty(l:path) || l:path._str() =~# '^\(\a:[\\\/]\|\/\)$') ? a:path : l:path
 endfunction
 

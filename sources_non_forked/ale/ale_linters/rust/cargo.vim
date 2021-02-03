@@ -11,6 +11,7 @@ call ale#Set('rust_cargo_default_feature_behavior', 'default')
 call ale#Set('rust_cargo_include_features', '')
 call ale#Set('rust_cargo_use_clippy', 0)
 call ale#Set('rust_cargo_clippy_options', '')
+call ale#Set('rust_cargo_target_dir', '')
 
 function! ale_linters#rust#cargo#GetCargoExecutable(bufnr) abort
     if ale#path#FindNearestFile(a:bufnr, 'Cargo.toml') isnot# ''
@@ -31,6 +32,9 @@ function! ale_linters#rust#cargo#GetCommand(buffer, version) abort
     \   && ale#semver#GTE(a:version, [0, 22, 0])
     let l:use_tests = ale#Var(a:buffer, 'rust_cargo_check_tests')
     \   && ale#semver#GTE(a:version, [0, 22, 0])
+    let l:target_dir = ale#Var(a:buffer, 'rust_cargo_target_dir')
+    let l:use_target_dir = !empty(l:target_dir)
+    \   && ale#semver#GTE(a:version, [0, 17, 0])
 
     let l:include_features = ale#Var(a:buffer, 'rust_cargo_include_features')
 
@@ -82,6 +86,7 @@ function! ale_linters#rust#cargo#GetCommand(buffer, version) abort
     \   . (l:use_all_targets ? ' --all-targets' : '')
     \   . (l:use_examples ? ' --examples' : '')
     \   . (l:use_tests ? ' --tests' : '')
+    \   . (l:use_target_dir ? (' --target-dir ' . ale#Escape(l:target_dir)) : '')
     \   . ' --frozen --message-format=json -q'
     \   . l:default_feature
     \   . l:include_features
