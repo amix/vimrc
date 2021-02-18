@@ -42,8 +42,16 @@ set autoread
 au FocusGained,BufEnter * checktime
 
 " With a map leader it's possible to do extra key combinations
-" like <leader>w saves the current file
-let mapleader = ","
+" like <leader>w saves the current file.
+" To override this behavior and set it back to '\' (or any other
+" character) add the following to your ~/.vim_runtime/eden_configs.vim file:
+"   let g:amix_leader='\'
+"  The method comes from sfp13/spf13-vim.
+if !exists('g:amix_leader')
+	let mapleader = ','
+else
+	let mapleader=g:amix_leader
+endif
 
 " Fast saving
 nmap <leader>w :w!<cr>
