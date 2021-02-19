@@ -42,6 +42,32 @@ The first directory containing any of the files named above will be used.
 
 
 ===============================================================================
+autoimport                                              *ale-python-autoimport*
+
+g:ale_python_autoimport_executable             *g:ale_python_autoimport_executable*
+                                             *b:ale_python_autoimport_executable*
+  Type: |String|
+  Default: `'autoimport'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_autoimport_options                   *g:ale_python_autoimport_options*
+                                                *b:ale_python_autoimport_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to autoimport.
+
+
+g:ale_python_autoimport_use_global             *g:ale_python_autoimport_use_global*
+                                             *b:ale_python_autoimport_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+===============================================================================
 autopep8                                                  *ale-python-autopep8*
 
 g:ale_python_autopep8_executable             *g:ale_python_autopep8_executable*
@@ -169,13 +195,14 @@ flake8                                                      *ale-python-flake8*
 
 g:ale_python_flake8_change_directory     *g:ale_python_flake8_change_directory*
                                          *b:ale_python_flake8_change_directory*
-  Type: |Number|
-  Default: `1`
+  Type: |String|
+  Default: `project`
 
-  If set to `1`, ALE will switch to the directory the Python file being
-  checked with `flake8` is in before checking it. This helps `flake8` find
-  configuration files more easily. This option can be turned off if you want
-  to control the directory Python is executed from yourself.
+  If set to `project`, ALE will switch to the project root before checking file.
+  If set to `file`, ALE will switch to directory the Python file being
+  checked with `flake8` is in before checking it.
+  You can turn it off with `off` option if you want to control the directory
+  Python is executed from yourself.
 
 
 g:ale_python_flake8_executable                 *g:ale_python_flake8_executable*
@@ -598,6 +625,7 @@ g:ale_python_pylint_use_msg_id                 *g:ale_python_pylint_use_msg_id*
   Use message for output (e.g. I0011) instead of symbolic name of the message
   (e.g. locally-disabled).
 
+
 ===============================================================================
 pyls                                                          *ale-python-pyls*
 
@@ -681,6 +709,65 @@ g:ale_python_pyre_auto_pipenv                   *g:ale_python_pyre_auto_pipenv*
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
   if true. This is overridden by a manually-set executable.
 
+
+===============================================================================
+pyright                                                    *ale-python-pyright*
+
+The `pyright` linter requires a recent version of `pyright` which includes
+the `pyright-langserver` executable. You can install `pyright` on your system
+through `npm` with `sudo npm install -g pyright` or similar.
+
+Refer to their README for installation instructions:
+https://github.com/Microsoft/pyright
+
+`pyright` needs to know the path to your Python executable and probably a
+virtualenv to run. ALE will try to detect these automatically.
+See |g:ale_python_pyright_config|.
+
+
+g:ale_python_pyright_executable               *g:ale_python_pyright_executable*
+                                              *b:ale_python_pyright_executable*
+  Type: |String|
+  Default: `'pyright-langserver'`
+
+  The executable for running `pyright`, which is typically installed globally.
+
+
+g:ale_python_pyright_config                       *g:ale_python_pyright_config*
+                                                  *b:ale_python_pyright_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Settings for configuring the `pyright` language server.
+
+  See pyright's documentation for a full list of options:
+  https://github.com/microsoft/pyright/blob/master/docs/settings.md
+
+  ALE will automatically try to set defaults for `venvPath` and `pythonPath`
+  so your project can automatically be checked with the right libraries.
+  You can override these settings with whatever you want in your ftplugin
+  file like so: >
+
+  let b:ale_python_pyright_config = {
+  \ 'python': {
+  \   'pythonPath': '/bin/python',
+  \   'venvPath': '/other/dir',
+  \ },
+  \}
+<
+  If `venvPath` is set, but `pythonPath` is not,
+  ALE will use `venvPath . '/bin/python'` or similar as `pythonPath`.
+
+  A commonly used setting for `pyright` is disabling language services
+  apart from type checking and "hover" (|ale-hover|), you can set this
+  setting like so, or use whatever other settings you want: >
+
+  let b:ale_python_pyright_config = {
+  \ 'pyright': {
+  \   'disableLanguageServices': v:true,
+  \ },
+  \}
+<
 
 ===============================================================================
 reorder-python-imports                      *ale-python-reorder_python_imports*

@@ -104,6 +104,12 @@ To customize the colors used for markers, define the highlight groups, `Flake8_E
     highlight link Flake8_Naming     WarningMsg
     highlight link Flake8_PyFlake    WarningMsg
 
+To show the error message of the current line in the ruler, call `flake8#ShowError()`:
+
+    " add binding to call the function
+    nnoremap <C-K> :call flake8#Flake8ShowError()<cr>
+    
+
 Tips
 ----
 A tip might be to run the Flake8 check every time you write a Python file, to

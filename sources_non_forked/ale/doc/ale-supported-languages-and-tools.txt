@@ -21,6 +21,7 @@ Notes:
   * `drafter`
 * AsciiDoc
   * `alex`!!
+  * `languagetool`!!
   * `proselint`
   * `redpen`
   * `textlint`
@@ -31,10 +32,13 @@ Notes:
 * Awk
   * `gawk`
 * Bash
+  * `bashate`
   * `language-server`
   * `shell` (-n flag)
   * `shellcheck`
   * `shfmt`
+* Bats
+  * `shellcheck`
 * BibTeX
   * `bibclean`
 * Bourne Shell
@@ -42,8 +46,9 @@ Notes:
   * `shellcheck`
   * `shfmt`
 * C
+  * `astyle`
   * `ccls`
-  * `clang`
+  * `clang` (`cc`)
   * `clangd`
   * `clang-format`
   * `clangtidy`!!
@@ -51,7 +56,7 @@ Notes:
   * `cpplint`!!
   * `cquery`
   * `flawfinder`
-  * `gcc`
+  * `gcc` (`cc`)
   * `uncrustify`
 * C#
   * `csc`!!
@@ -59,8 +64,9 @@ Notes:
   * `mcsc`!!
   * `uncrustify`
 * C++ (filetype cpp)
+  * `astyle`
   * `ccls`
-  * `clang`
+  * `clang` (`cc`)
   * `clangcheck`!!
   * `clangd`
   * `clang-format`
@@ -70,7 +76,7 @@ Notes:
   * `cpplint`!!
   * `cquery`
   * `flawfinder`
-  * `gcc`
+  * `gcc` (`cc`)
   * `uncrustify`
 * Chef
   * `cookstyle`
@@ -113,6 +119,8 @@ Notes:
   * `dartanalyzer`!!
   * `dartfmt`!!
   * `language_server`
+* Dhall
+  * `dhall-format`
 * Dockerfile
   * `dockerfile_lint`
   * `hadolint`
@@ -132,6 +140,7 @@ Notes:
   * `erubis`
   * `ruumba`
 * Erlang
+  * `elvis`!!
   * `erlc`
   * `SyntaxErl`
 * Fish
@@ -162,6 +171,7 @@ Notes:
   * `gosimple`!!
   * `gotype`!!
   * `go vet`!!
+  * `revive`!!
   * `staticcheck`!!
 * GraphQL
   * `eslint`
@@ -186,6 +196,7 @@ Notes:
   * `hie`
   * `hindent`
   * `hlint`
+  * `ormolu`
   * `stack-build`!!
   * `stack-ghc`
   * `stylish-haskell`
@@ -256,6 +267,7 @@ Notes:
 * Lua
   * `luac`
   * `luacheck`
+  * `luafmt`
 * Mail
   * `alex`!!
   * `languagetool`!!
@@ -315,6 +327,7 @@ Notes:
 * Perl6
   * `perl6 -c`
 * PHP
+  * `intelephense`
   * `langserver`
   * `phan`
   * `phpcbf`
@@ -324,6 +337,7 @@ Notes:
   * `phpmd`
   * `phpstan`
   * `psalm`!!
+  * `tlint`
 * PO
   * `alex`!!
   * `msgfmt`
@@ -355,6 +369,7 @@ Notes:
   * `purty`
 >>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 * Python
+  * `autoimport`
   * `autopep8`
   * `bandit`
   * `black`
@@ -369,6 +384,7 @@ Notes:
   * `pylint`!!
   * `pyls`
   * `pyre`
+  * `pyright`
   * `reorder-python-imports`
   * `vulture`!!
   * `yapf`
@@ -376,6 +392,7 @@ Notes:
   * `qmlfmt`
   * `qmllint`
 * R
+  * `languageserver`
   * `lintr`
   * `styler`
 * Racket
@@ -411,6 +428,7 @@ Notes:
 * Rust
   * `cargo`!!
   * `rls`
+  * `rust-analyzer`
   * `rustc` (see |ale-integration-rust|)
   * `rustfmt`
 * Sass
@@ -441,11 +459,13 @@ Notes:
   * `sqlfmt`
   * `sqlformat`
   * `sqlint`
+  * `sql-lint`
 * Stylus
   * `stylelint`
 * SugarSS
   * `stylelint`
 * Swift
+  * Apple `swift-format`
   * `sourcekit-lsp`
   * `swiftformat`
   * `swiftlint`
@@ -479,6 +499,7 @@ Notes:
 * VALA
   * `uncrustify`
 * Verilog
+  * `hdl-checker`
   * `iverilog`
   * `verilator`
   * `vlog`
@@ -488,6 +509,7 @@ Notes:
   * `vcom`
   * `xvhdl`
 * Vim
+  * `vimls`
   * `vint`
 * Vim help^
   * `alex`!!
@@ -505,6 +527,9 @@ Notes:
 * YAML
   * `prettier`
   * `swaglint`
+  * `yamlfix`
   * `yamllint`
 * YANG
   * `yang-lsp`
+* Zig
+  * `zls`

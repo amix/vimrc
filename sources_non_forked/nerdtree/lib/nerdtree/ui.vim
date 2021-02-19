@@ -99,6 +99,10 @@ function! s:UI._dumpHelp()
         let help .= '" '. g:NERDTreeMapPreview .": find dir in tree\n"
         let help .= '" '. g:NERDTreeMapOpenInTab.": open in new tab\n"
         let help .= '" '. g:NERDTreeMapOpenInTabSilent .": open in new tab silently\n"
+        let help .= '" '. g:NERDTreeMapOpenSplit .": open split\n"
+        let help .= '" '. g:NERDTreeMapPreviewSplit .": preview split\n"
+        let help .= '" '. g:NERDTreeMapOpenVSplit .": open vsplit\n"
+        let help .= '" '. g:NERDTreeMapPreviewVSplit .": preview vsplit\n"
         let help .= '" '. g:NERDTreeMapCustomOpen .": custom open\n"
         let help .= '" '. g:NERDTreeMapDeleteBookmark .": delete bookmark\n"
 >>>>>>> 27ad0d07862847896f691309a544a206783c94d6
@@ -317,7 +321,11 @@ endfunction
 function! s:UI._indentLevelFor(line)
     " Replace multi-character DirArrows with a single space so the
     " indentation calculation doesn't get messed up.
-    let l:line = substitute(substitute(a:line, '\V'.g:NERDTreeDirArrowExpandable, ' ', ''), '\V'.g:NERDTreeDirArrowCollapsible, ' ', '')
+    if g:NERDTreeDirArrowExpandable ==# ''
+        let l:line = '  '.a:line
+    else
+        let l:line = substitute(substitute(a:line, '\V'.g:NERDTreeDirArrowExpandable, ' ', ''), '\V'.g:NERDTreeDirArrowCollapsible, ' ', '')
+    endif
     let leadChars = match(l:line, '\M\[^ ]')
     return leadChars / s:UI.IndentWid()
 endfunction
@@ -393,7 +401,7 @@ function! s:UI.saveScreenState()
         call g:NERDTree.CursorToTreeWin()
         let self._screenState['oldPos'] = getpos('.')
         let self._screenState['oldTopLine'] = line('w0')
-        let self._screenState['oldWindowSize']= winwidth('')
+        let self._screenState['oldWindowSize'] = winnr('$')==1 ? g:NERDTreeWinSize : winwidth('')
         call nerdtree#exec(win . 'wincmd w', 1)
     catch
     endtry
@@ -541,8 +549,7 @@ endfunction
 " zoom (maximize/minimize) the NERDTree window
 function! s:UI.toggleZoom()
     if exists('b:NERDTreeZoomed') && b:NERDTreeZoomed
-        let size = exists('b:NERDTreeOldWindowSize') ? b:NERDTreeOldWindowSize : g:NERDTreeWinSize
-        call nerdtree#exec('silent vertical resize '. size, 1)
+        call nerdtree#exec('silent vertical resize '. g:NERDTreeWinSize, 1)
         let b:NERDTreeZoomed = 0
     else
         call nerdtree#exec('vertical resize '. get(g:, 'NERDTreeWinSizeMax', ''), 1)

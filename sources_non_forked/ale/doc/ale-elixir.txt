@@ -6,7 +6,7 @@ ALE Elixir Integration                                     *ale-elixir-options*
 mix                                                            *ale-elixir-mix*
 
 
-The `mix` linter is disabled by default, as it can bee too expensive to run.
+The `mix` linter is disabled by default, as it can be too expensive to run.
 See `:help g:ale_linters`
 
 

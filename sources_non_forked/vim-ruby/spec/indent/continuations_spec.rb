@@ -57,6 +57,7 @@ describe "Indenting" do
   end
 
   specify "continuations after round braces" do
+    vim.command 'let g:ruby_indent_block_style = "expression"'
     assert_correct_indenting <<~EOF
       opts.on('--coordinator host=HOST[,port=PORT]',
               'Specify the HOST and the PORT of the coordinator') do |str|
@@ -67,10 +68,6 @@ describe "Indenting" do
   end
 
   describe "assignments" do
-    after :each do
-      vim.command 'let g:ruby_indent_assignment_style = "hanging"'
-    end
-
     specify "continuations after assignment" do
       assert_correct_indenting <<~EOF
         variable =

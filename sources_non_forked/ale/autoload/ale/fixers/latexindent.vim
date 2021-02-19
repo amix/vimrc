@@ -10,9 +10,7 @@ function! ale#fixers#latexindent#Fix(buffer) abort
 
     return {
     \   'command': ale#Escape(l:executable)
-    \       . ' -l -w'
+    \       . ' -l'
     \       . (empty(l:options) ? '' : ' ' . l:options)
-    \       . ' %t',
-    \   'read_temporary_file': 1,
     \}
 endfunction

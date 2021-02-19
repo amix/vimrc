@@ -174,6 +174,7 @@ endfunction
 call ale#linter#Define('kotlin', {
 \   'name': 'kotlinc',
 \   'executable': 'kotlinc',
+\   'output_stream': 'stderr',
 \   'command': function('ale_linters#kotlin#kotlinc#RunWithImportPaths'),
 \   'callback': 'ale_linters#kotlin#kotlinc#Handle',
 \   'lint_file': 1,

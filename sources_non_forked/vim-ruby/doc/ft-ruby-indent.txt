@@ -1,8 +1,10 @@
 RUBY							*ft-ruby-indent*
+							*vim-ruby-indent*
 
     Ruby: Access modifier indentation	|ruby-access-modifier-indentation|
     Ruby: Block style indentation	|ruby-block-style-indentation|
     Ruby: Assignment style indentation	|ruby-assignment-style-indentation|
+    Ruby: Hanging element indentation	|ruby-hanging-element-indentation|
 
 					*ruby-access-modifier-indentation*
 					*g:ruby_indent_access_modifier_style*
@@ -64,7 +66,7 @@ Different block indentation styles can be used by setting: >
     :let g:ruby_indent_block_style = 'expression'
     :let g:ruby_indent_block_style = 'do'
 <
-By default, the "expression" block indent style is used.
+By default, the "do" block indent style is used.
 
 Block indent style "expression":
 >
@@ -105,5 +107,42 @@ Assignment indent style "variable":
     end
 <
 
+					*ruby-hanging-element-indentation*
+					*g:ruby_indent_hanging_elements*
+    Ruby: Hanging element indentation ~
+
+Elements of multiline collections -- such as arrays, hashes, and method
+argument lists -- can have hanging indentation enabled or disabled with the
+following setting.
+>
+    :let g:ruby_indent_hanging_elements = 1
+    :let g:ruby_indent_hanging_elements = 0
+<
+By default, this setting is "1" (true) meaning that hanging indentation is
+enabled in some cases.
+
+Here is an example method call when the setting is true (non-zero):
+>
+    render('product/show',
+           product: product,
+           on_sale: true,
+          )
+<
+And the same method call when the setting is false (zero):
+>
+    render('product/show',
+      product: product,
+      on_sale: true,
+    )
+<
+Note that, even if the setting is turned on, you can still get non-hanging
+indentation by putting each argument on a separate line:
+>
+    render(
+      'product/show',
+      product: product,
+      on_sale: true,
+    )
+<
 
  vim:tw=78:sw=4:ts=8:ft=help:norl:

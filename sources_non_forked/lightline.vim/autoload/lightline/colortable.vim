@@ -2,7 +2,7 @@
 " Filename: autoload/lightline/colortable.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2015/03/29 06:21:39.
+" Last Change: 2020/06/19 11:07:13.
 " =============================================================================
 
 let s:save_cpo = &cpo
@@ -36,6 +36,16 @@ function! lightline#colortable#gui2cui(rgb, fallback) abort
   endif
   let rgb = [rgb[0] > 127 ? 4 : 0, rgb[1] > 127 ? 2 : 0, rgb[2] > 127 ? 1 : 0]
   return rgb[0] + rgb[1] + rgb[2]
+endfunction
+
+function! lightline#colortable#gui2cui_palette(palette) abort
+  for u in values(a:palette)
+    for v in values(u)
+      for w in v
+        let [w[2], w[3]] = [lightline#colortable#gui2cui(w[0], w[2]), lightline#colortable#gui2cui(w[1], w[3])]
+      endfor
+    endfor
+  endfor
 endfunction
 
 let &cpo = s:save_cpo

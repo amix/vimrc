@@ -8,6 +8,7 @@ let s:global_variable_list = [
 \    'ale_completion_delay',
 \    'ale_completion_enabled',
 \    'ale_completion_max_suggestions',
+\    'ale_disable_lsp',
 \    'ale_echo_cursor',
 \    'ale_echo_msg_error_str',
 \    'ale_echo_msg_format',
@@ -28,6 +29,7 @@ let s:global_variable_list = [
 \    'ale_linter_aliases',
 \    'ale_linters',
 \    'ale_linters_explicit',
+\    'ale_linters_ignore',
 \    'ale_list_vertical',
 \    'ale_list_window_size',
 \    'ale_loclist_msg_format',
@@ -196,6 +198,7 @@ function! s:EchoLSPErrorMessages(all_linter_names) abort
 endfunction
 
 function! ale#debugging#Info() abort
+    let l:buffer = bufnr('')
     let l:filetype = &filetype
 
     " We get the list of enabled linters for free by the above function.
@@ -222,10 +225,20 @@ function! ale#debugging#Info() abort
     let l:fixers = uniq(sort(l:fixers[0] + l:fixers[1]))
     let l:fixers_string = join(map(copy(l:fixers), '"\n  " . v:val'), '')
 
+    let l:non_ignored_names = map(
+    \   copy(ale#linter#RemoveIgnored(l:buffer, l:filetype, l:enabled_linters)),
+    \   'v:val[''name'']',
+    \)
+    let l:ignored_names = filter(
+    \   copy(l:enabled_names),
+    \   'index(l:non_ignored_names, v:val) < 0'
+    \)
+
     call s:Echo(' Current Filetype: ' . l:filetype)
     call s:Echo('Available Linters: ' . string(l:all_names))
     call s:EchoLinterAliases(l:all_linters)
     call s:Echo('  Enabled Linters: ' . string(l:enabled_names))
+    call s:Echo('  Ignored Linters: ' . string(l:ignored_names))
     call s:Echo(' Suggested Fixers: ' . l:fixers_string)
     call s:Echo(' Linter Variables:')
     call s:Echo('')

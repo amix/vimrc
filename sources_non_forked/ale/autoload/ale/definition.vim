@@ -5,6 +5,7 @@ let s:go_to_definition_map = {}
 
 " Enable automatic updates of the tagstack
 let g:ale_update_tagstack = get(g:, 'ale_update_tagstack', 1)
+let g:ale_default_navigation = get(g:, 'ale_default_navigation', 'buffer')
 
 " Used to get the definition map in tests.
 function! ale#definition#GetMap() abort
@@ -153,4 +154,34 @@ function! ale#definition#GoToType(options) abort
             call s:GoToLSPDefinition(l:linter, a:options, 'typeDefinition')
         endif
     endfor
+endfunction
+
+function! ale#definition#GoToCommandHandler(command, ...) abort
+    let l:options = {}
+
+    if len(a:000) > 0
+        for l:option in a:000
+            if l:option is? '-tab'
+                let l:options.open_in = 'tab'
+            elseif l:option is? '-split'
+                let l:options.open_in = 'split'
+            elseif l:option is? '-vsplit'
+                let l:options.open_in = 'vsplit'
+            endif
+        endfor
+    endif
+
+    if !has_key(l:options, 'open_in')
+        let l:default_navigation = ale#Var(bufnr(''), 'default_navigation')
+
+        if index(['tab', 'split', 'vsplit'], l:default_navigation) >= 0
+            let l:options.open_in = l:default_navigation
+        endif
+    endif
+
+    if a:command is# 'type'
+        call ale#definition#GoToType(l:options)
+    else
+        call ale#definition#GoTo(l:options)
+    endif
 endfunction

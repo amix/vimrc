@@ -2,9 +2,9 @@
 " Filename: autoload/lightline/colorscheme/molokai.vim
 " Author: challsted
 " License: MIT License
-" Last Change: 2016/11/17 00:27:58.
+" Last Change: 2020/02/15 20:57:45.
 " =============================================================================
-"
+
 let s:black = [ '#232526', 233 ]
 let s:gray = [ '#808080', 244 ]
 let s:white = [ '#f8f8f2', 234 ]

@@ -89,14 +89,26 @@ snippet thr throw
 	${0}
 
 # Messages
-snippet in
-	info("${1}")
-	${0}
+snippet @i
+	@info "${1}" ${0}
 
-snippet wa
-	warn("${1}")
-	${0}
+snippet @w
+	@warn "${1}" ${0}
 
-snippet err
-	error("${1}")
-	${0}
+snippet @e
+	@error "${1}" ${0}
+	
+snippet @d
+	@debug "${1}" ${0}
+
+snippet @t @testset with @test 
+	@testset "${1}" begin
+		${2}
+		@test ${0}
+	end
+	
+snippet @tt @testset with @test_throws
+	@testset "${1}" begin
+		${2}
+		@test_throws ${0}
+	end

@@ -4,7 +4,7 @@
 call ale#Set('python_flake8_executable', 'flake8')
 call ale#Set('python_flake8_options', '')
 call ale#Set('python_flake8_use_global', get(g:, 'ale_use_global_executables', 0))
-call ale#Set('python_flake8_change_directory', 1)
+call ale#Set('python_flake8_change_directory', 'project')
 call ale#Set('python_flake8_auto_pipenv', 0)
 
 function! s:UsingModule(buffer) abort
@@ -38,10 +38,30 @@ function! ale_linters#python#flake8#RunWithVersionCheck(buffer) abort
     \)
 endfunction
 
+function! ale_linters#python#flake8#GetCdString(buffer) abort
+    let l:change_directory = ale#Var(a:buffer, 'python_flake8_change_directory')
+    let l:cd_string = ''
+
+    if l:change_directory is# 'project'
+        let l:project_root = ale#python#FindProjectRootIni(a:buffer)
+
+        if !empty(l:project_root)
+            let l:cd_string = ale#path#CdString(l:project_root)
+        endif
+    endif
+
+    if (l:change_directory is# 'project' && empty(l:cd_string))
+    \|| l:change_directory is# 1
+    \|| l:change_directory is# 'file'
+        let l:cd_string = ale#path#BufferCdString(a:buffer)
+    endif
+
+    return l:cd_string
+endfunction
+
 function! ale_linters#python#flake8#GetCommand(buffer, version) abort
-    let l:cd_string = ale#Var(a:buffer, 'python_flake8_change_directory')
-    \   ? ale#path#BufferCdString(a:buffer)
-    \   : ''
+    let l:cd_string = ale_linters#python#flake8#GetCdString(a:buffer)
+
     let l:executable = ale_linters#python#flake8#GetExecutable(a:buffer)
 
     let l:exec_args = l:executable =~? 'pipenv$'

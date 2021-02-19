@@ -31,6 +31,18 @@ g:ale_erlang_dialyzer_rebar3_profile     *g:ale_erlang_dialyzer_rebar3_profile*
   This variable can be changed to specify the profile that is used to
   run dialyzer with rebar3.
 
+
+-------------------------------------------------------------------------------
+elvis                                                        *ale-erlang-elvis*
+
+g:ale_erlang_elvis_executable                   *g:ale_erlang_elvis_executable*
+                                                *b:ale_erlang_elvis_executable*
+  Type: |String|
+  Default: `'elvis'`
+
+  This variable can be changed to specify the elvis executable.
+
+
 -------------------------------------------------------------------------------
 erlc                                                          *ale-erlang-erlc*
 

@@ -6,9 +6,12 @@
 "
 " Author: Ben Paxton <ben@gn32.uk>
 " Description: moved to generic Golang file from govet
+"
+" Author: mostfunkyduck <mostfunkyduck@protonmail.com>
+" Description: updated to work with go 1.14
 
 function! ale#handlers#go#Handler(buffer, lines) abort
-    let l:pattern = '\v^([a-zA-Z]?:?[^:]+):(\d+):?(\d+)?:? ?(.+)$'
+    let l:pattern = '\v^%(vet: )?([a-zA-Z]?:?[^:]+):(\d+):?(\d+)?:? ?(.+)$'
     let l:output = []
     let l:dir = expand('#' . a:buffer . ':p:h')
 

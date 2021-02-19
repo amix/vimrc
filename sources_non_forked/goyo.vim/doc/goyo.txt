@@ -32,8 +32,6 @@ INSTALLATION                                                 *goyo-installation*
 
 Use your favorite plugin manager.
 
-                                                                  *:PlugInstall*
-
  - {vim-plug}{3}
    1. Add `Plug 'junegunn/goyo.vim'` to .vimrc
    2. Run `:PlugInstall`

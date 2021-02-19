@@ -44,16 +44,21 @@ endfunction
 function! ale#handlers#cppcheck#HandleCppCheckFormat(buffer, lines) abort
     " Look for lines like the following.
     "
-    " [test.cpp:5]: (error) Array 'a[10]' accessed at index 10, which is out of bounds
-    let l:pattern = '\v^\[(.+):(\d+)\]: \(([a-z]+)\) (.+)$'
+    "test.cpp:974:6: error: Array 'n[3]' accessed at index 3, which is out of bounds. [arrayIndexOutOfBounds]\
+    "    n[3]=3;
+    "     ^
+    let l:pattern = '\v^(\f+):(\d+):(\d+): (\w+): (.*) \[(\w+)\]\'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         if ale#path#IsBufferPath(a:buffer, l:match[1])
             call add(l:output, {
-            \   'lnum': str2nr(l:match[2]),
-            \   'type': l:match[3] is# 'error' ? 'E' : 'W',
-            \   'text': l:match[4],
+            \   'lnum':     str2nr(l:match[2]),
+            \   'col':      str2nr(l:match[3]),
+            \   'type':     l:match[4] is# 'error' ? 'E' : 'W',
+            \   'sub_type': l:match[4] is# 'style' ? 'style' : '',
+            \   'text':     l:match[5],
+            \   'code':     l:match[6]
             \})
         endif
     endfor

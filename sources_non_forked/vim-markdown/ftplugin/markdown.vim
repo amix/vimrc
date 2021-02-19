@@ -154,6 +154,58 @@ function! s:GetHeaderLevel(...)
     endif
 endfunction
 
+" Return list of headers and their levels.
+"
+function! s:GetHeaderList()
+    let l:bufnr = bufnr('%')
+    let l:fenced_block = 0
+    let l:front_matter = 0
+    let l:header_list = []
+    let l:vim_markdown_frontmatter = get(g:, "vim_markdown_frontmatter", 0)
+    for i in range(1, line('$'))
+        let l:lineraw = getline(i)
+        let l:l1 = getline(i+1)
+        let l:line = substitute(l:lineraw, "#", "\\\#", "g")
+        " exclude lines in fenced code blocks
+        if l:line =~ '````*' || l:line =~ '\~\~\~\~*'
+            if l:fenced_block == 0
+                let l:fenced_block = 1
+            elseif l:fenced_block == 1
+                let l:fenced_block = 0
+            endif
+        " exclude lines in frontmatters
+        elseif l:vim_markdown_frontmatter == 1
+            if l:front_matter == 1
+                if l:line == '---'
+                    let l:front_matter = 0
+                endif
+            elseif i == 1
+                if l:line == '---'
+                    let l:front_matter = 1
+                endif
+            endif
+        endif
+        " match line against header regex
+        if join(getline(i, i + 1), "\n") =~ s:headersRegexp && l:line =~ '^\S'
+            let l:is_header = 1
+        else
+            let l:is_header = 0
+        endif
+        if l:is_header == 1 && l:fenced_block == 0 && l:front_matter == 0
+            " remove hashes from atx headers
+            if match(l:line, "^#") > -1
+                let l:line = substitute(l:line, '\v^#*[ ]*', '', '')
+                let l:line = substitute(l:line, '\v[ ]*#*$', '', '')
+            endif
+            " append line to list
+            let l:level = s:GetHeaderLevel(i)
+            let l:item = {'level': l:level, 'text': l:line, 'lnum': i, 'bufnr': bufnr}
+            let l:header_list = l:header_list + [l:item]
+        endif
+    endfor
+    return l:header_list
+endfunction
+
 " Returns the level of the header at the given line.
 "
 " If there is no header at the given line, returns `0`.
@@ -175,6 +227,7 @@ endfunction
 function! s:MoveToParentHeader()
     let l:linenum = s:GetParentHeaderLineNumber()
     if l:linenum != 0
+        call setpos("''", getpos('.'))
         call cursor(l:linenum, 1)
     else
         echo 'no parent header'
@@ -303,65 +356,38 @@ function! s:Toc(...)
     endif
 
 
-    let l:bufnr = bufnr('%')
     let l:cursor_line = line('.')
     let l:cursor_header = 0
-    let l:fenced_block = 0
-    let l:front_matter = 0
-    let l:header_list = []
-    let l:header_max_len = 0
-    let l:vim_markdown_toc_autofit = get(g:, "vim_markdown_toc_autofit", 0)
-    let l:vim_markdown_frontmatter = get(g:, "vim_markdown_frontmatter", 0)
-    for i in range(1, line('$'))
-        let l:lineraw = getline(i)
-        let l:l1 = getline(i+1)
-        let l:line = substitute(l:lineraw, "#", "\\\#", "g")
-        if l:line =~ '````*' || l:line =~ '\~\~\~\~*'
-            if l:fenced_block == 0
-                let l:fenced_block = 1
-            elseif l:fenced_block == 1
-                let l:fenced_block = 0
-            endif
-        elseif l:vim_markdown_frontmatter == 1
-            if l:front_matter == 1
-                if l:line == '---'
-                    let l:front_matter = 0
-                endif
-            elseif i == 1
-                if l:line == '---'
-                    let l:front_matter = 1
-                endif
-            endif
-        endif
-        if l:line =~ '^#\+' || (l:l1 =~ '^=\+\s*$' || l:l1 =~ '^-\+\s*$') && l:line =~ '^\S'
-            let l:is_header = 1
-        else
-            let l:is_header = 0
-        endif
-        if l:is_header == 1 && l:fenced_block == 0 && l:front_matter == 0
-            " append line to location list
-            let l:item = {'lnum': i, 'text': l:line, 'valid': 1, 'bufnr': l:bufnr, 'col': 1}
-            let l:header_list = l:header_list + [l:item]
-            " set header number of the cursor position
-            if l:cursor_header == 0
-                if i == l:cursor_line
-                    let l:cursor_header = len(l:header_list)
-                elseif i > l:cursor_line
-                    let l:cursor_header = len(l:header_list) - 1
-                endif
-            endif
-            " keep track of the longest header size (heading level + title)
-            let l:total_len = stridx(l:line, ' ') + strdisplaywidth(l:line)
-            if l:total_len > l:header_max_len
-                let l:header_max_len = l:total_len
-            endif
-        endif
-    endfor
-    call setloclist(0, l:header_list)
+    let l:header_list = s:GetHeaderList()
+    let l:indented_header_list = []
     if len(l:header_list) == 0
         echom "Toc: No headers."
         return
     endif
+    let l:header_max_len = 0
+    let l:vim_markdown_toc_autofit = get(g:, "vim_markdown_toc_autofit", 0)
+    for h in l:header_list
+        " set header number of the cursor position
+        if l:cursor_header == 0
+            let l:header_line = h.lnum
+            if l:header_line == l:cursor_line
+                let l:cursor_header = index(l:header_list, h) + 1
+            elseif l:header_line > l:cursor_line
+                let l:cursor_header = index(l:header_list, h)
+            endif
+        endif
+        " indent header based on level
+        let l:text = repeat('  ', h.level-1) . h.text
+        " keep track of the longest header size (heading level + title)
+        let l:total_len = strdisplaywidth(l:text)
+        if l:total_len > l:header_max_len
+            let l:header_max_len = l:total_len
+        endif
+        " append indented line to list
+        let l:item = {'lnum': h.lnum, 'text': l:text, 'valid': 1, 'bufnr': h.bufnr, 'col': 1}
+        let l:indented_header_list = l:indented_header_list + [l:item]
+    endfor
+    call setloclist(0, l:indented_header_list)
 
     if l:window_type ==# 'horizontal'
         lopen
@@ -369,7 +395,8 @@ function! s:Toc(...)
         vertical lopen
         " auto-fit toc window when possible to shrink it
         if (&columns/2) > l:header_max_len && l:vim_markdown_toc_autofit == 1
-            execute 'vertical resize ' . (l:header_max_len + 1)
+            " header_max_len + 1 space for first header + 3 spaces for line numbers
+            execute 'vertical resize ' . (l:header_max_len + 1 + 3)
         else
             execute 'vertical resize ' . (&columns/2)
         endif
@@ -382,25 +409,82 @@ function! s:Toc(...)
     for i in range(1, line('$'))
         " this is the location-list data for the current item
         let d = getloclist(0)[i-1]
-        " atx headers
-        if match(d.text, "^#") > -1
-            let l:level = len(matchstr(d.text, '#*', 'g'))-1
-            let d.text = substitute(d.text, '\v^#*[ ]*', '', '')
-            let d.text = substitute(d.text, '\v[ ]*#*$', '', '')
-        " setex headers
-        else
-            let l:next_line = getbufline(d.bufnr, d.lnum+1)
-            if match(l:next_line, "=") > -1
-                let l:level = 0
-            elseif match(l:next_line, "-") > -1
-                let l:level = 1
-            endif
-        endif
-        call setline(i, repeat('  ', l:level). d.text)
+        call setline(i, d.text)
     endfor
     setlocal nomodified
     setlocal nomodifiable
     execute 'normal! ' . l:cursor_header . 'G'
+endfunction
+
+function! s:InsertToc(format, ...)
+    if a:0 > 0
+        if type(a:1) != type(0)
+            echohl WarningMsg
+            echomsg '[vim-markdown] Invalid argument, must be an integer >= 2.'
+            echohl None
+            return
+        endif
+        let l:max_level = a:1
+        if l:max_level < 2
+            echohl WarningMsg
+            echomsg '[vim-markdown] Maximum level cannot be smaller than 2.'
+            echohl None
+            return
+        endif
+    else
+        let l:max_level = 0
+    endif
+
+    let l:toc = []
+    let l:header_list = s:GetHeaderList()
+    if len(l:header_list) == 0
+        echom "InsertToc: No headers."
+        return
+    endif
+
+    if a:format ==# 'numbers'
+        let l:h2_count = 0
+        for header in l:header_list
+            if header.level == 2
+                let l:h2_count += 1
+            endif
+        endfor
+        let l:max_h2_number_len = strlen(string(l:h2_count))
+    else
+        let l:max_h2_number_len = 0
+    endif
+
+    let l:h2_count = 0
+    for header in l:header_list
+        let l:level = header.level
+        if l:level == 1
+            " skip level-1 headers
+            continue
+        elseif l:max_level != 0 && l:level > l:max_level
+            " skip unwanted levels
+            continue
+        elseif l:level == 2
+            " list of level-2 headers can be bullets or numbers
+            if a:format ==# 'bullets'
+                let l:indent = ''
+                let l:marker = '* '
+            else
+                let l:h2_count += 1
+                let l:number_len = strlen(string(l:h2_count))
+                let l:indent = repeat(' ', l:max_h2_number_len - l:number_len)
+                let l:marker = l:h2_count . '. '
+            endif
+        else
+            let l:indent = repeat(' ', l:max_h2_number_len + 2 * (l:level - 2))
+            let l:marker = '* '
+        endif
+        let l:text = '[' . header.text . ']'
+        let l:link = '(#' . substitute(tolower(header.text), '\v[ ]+', '-', 'g') . ')'
+        let l:line = l:indent . l:marker . l:text . l:link
+        let l:toc = l:toc + [l:line]
+    endfor
+
+    call append(line('.'), l:toc)
 endfunction
 
 " Convert Setex headers in range `line1 .. line2` to Atx.
@@ -679,6 +763,8 @@ command! -buffer Toc call s:Toc()
 command! -buffer Toch call s:Toc('horizontal')
 command! -buffer Tocv call s:Toc('vertical')
 command! -buffer Toct call s:Toc('tab')
+command! -buffer -nargs=? InsertToc call s:InsertToc('bullets', <args>)
+command! -buffer -nargs=? InsertNToc call s:InsertToc('numbers', <args>)
 
 " Heavily based on vim-notes - http://peterodding.com/code/vim/notes/
 if exists('g:vim_markdown_fenced_languages')
@@ -702,7 +788,7 @@ function! s:MarkdownHighlightSources(force)
     " Look for code blocks in the current file
     let filetypes = {}
     for line in getline(1, '$')
-        let ft = matchstr(line, '```\s*\zs[0-9A-Za-z_+-]*')
+        let ft = matchstr(line, '```\s*\zs[0-9A-Za-z_+-]*\ze.*')
         if !empty(ft) && ft !~ '^\d*$' | let filetypes[ft] = 1 | endif
     endfor
     if !exists('b:mkd_known_filetypes')
@@ -733,7 +819,7 @@ function! s:MarkdownHighlightSources(force)
             else
                 let include = '@' . toupper(filetype)
             endif
-            let command = 'syntax region %s matchgroup=%s start="^\s*```\s*%s$" matchgroup=%s end="\s*```$" keepend contains=%s%s'
+            let command = 'syntax region %s matchgroup=%s start="^\s*```\s*%s.*$" matchgroup=%s end="\s*```$" keepend contains=%s%s'
             execute printf(command, group, startgroup, ft, endgroup, include, has('conceal') && get(g:, 'vim_markdown_conceal', 1) && get(g:, 'vim_markdown_conceal_code_blocks', 1) ? ' concealends' : '')
             execute printf('syntax cluster mkdNonListItem add=%s', group)
 

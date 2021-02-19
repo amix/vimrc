@@ -56,6 +56,7 @@ function! ale#lsp#response#ReadDiagnostics(response) abort
         endif
 
         if has_key(l:diagnostic, 'relatedInformation')
+        \ && l:diagnostic.relatedInformation isnot v:null
             let l:related = deepcopy(l:diagnostic.relatedInformation)
             call map(l:related, {key, val ->
             \   ale#path#FromURI(val.location.uri) .

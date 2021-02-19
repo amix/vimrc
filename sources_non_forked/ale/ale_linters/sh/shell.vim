@@ -1,5 +1,5 @@
 " Author: w0rp <devw0rp@gmail.com>
-" Description: Lints sh files using bash -n
+" Description: Lints shell files by invoking the shell with -n
 
 " Backwards compatibility
 if exists('g:ale_linters_sh_shell_default_shell')

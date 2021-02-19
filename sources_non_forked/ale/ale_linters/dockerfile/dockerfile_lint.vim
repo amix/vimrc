@@ -32,14 +32,29 @@ function! ale_linters#dockerfile#dockerfile_lint#Handle(buffer, lines) abort
             let l:line = get(l:object, 'line', -1)
             let l:message = l:object['message']
 
-            if get(l:object, 'description', 'None') isnot# 'None'
-                let l:message = l:message . '. ' . l:object['description']
+            let l:link = get(l:object, 'reference_url', '')
+
+            if type(l:link) == v:t_list
+                " Somehow, reference_url is returned as two-part list.
+                " Anchor markers in that list are sometimes duplicated.
+                " See https://github.com/projectatomic/dockerfile_lint/issues/134
+                let l:link = join(l:link, '')
+                let l:link = substitute(l:link, '##', '#', '')
             endif
+
+            let l:detail = l:message
+
+            if get(l:object, 'description', 'None') isnot# 'None'
+                let l:detail .= "\n\n" . l:object['description']
+            endif
+
+            let l:detail .= "\n\n" . l:link
 
             call add(l:messages, {
             \   'lnum': l:line,
             \   'text': l:message,
             \   'type': ale_linters#dockerfile#dockerfile_lint#GetType(l:type),
+            \   'detail': l:detail,
             \})
         endfor
     endfor

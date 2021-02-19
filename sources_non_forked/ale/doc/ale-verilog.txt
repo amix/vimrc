@@ -3,7 +3,10 @@ ALE Verilog/SystemVerilog Integration                     *ale-verilog-options*
 
 
 ===============================================================================
-ALE can use four different linters for Verilog HDL:
+ALE can use five different linters for Verilog HDL:
+
+  HDL Checker
+    Using `hdl_checker --lsp`
 
   iverilog:
     Using `iverilog -t null -Wall`
@@ -26,6 +29,9 @@ defining 'g:ale_linters' variable:
     \ let g:ale_linters = {'systemverilog' : ['verilator'],}
 <
 
+===============================================================================
+General notes
+
 Linters/compilers that utilize a "work" directory for analyzing designs- such
 as ModelSim and Vivado- can be passed the location of these directories as
 part of their respective option strings listed below. This is useful for
@@ -39,6 +45,16 @@ the frequent, asynchronous application launches when linting while text is
 changing. This can happen in the form of hangs or crashes. To help prevent
 this when using these linters, it may help to run linting less frequently; for
 example, only when a file is saved.
+
+HDL Checker is an alternative for some of the issues described above. It wraps
+around ghdl, Vivado and ModelSim/Questa and, when using the latter, it can
+handle mixed language (VHDL, Verilog, SystemVerilog) designs.
+
+===============================================================================
+hdl-checker                                           *ale-verilog-hdl-checker*
+
+See |ale-vhdl-hdl-checker|
+
 
 ===============================================================================
 iverilog                                                 *ale-verilog-iverilog*

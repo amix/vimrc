@@ -1,9 +1,23 @@
 ===============================================================================
 ALE C Integration                                               *ale-c-options*
 
+For basic checking of problems with C files, ALE offers the `cc` linter, which
+runs either `clang`, or `gcc`. See |ale-c-cc|.
+
 
 ===============================================================================
 Global Options
+
+g:ale_c_always_make                                       *g:ale_c_always_make*
+                                                          *b:ale_c_always_make*
+  Type: |Number|
+  Default: `has('unix') && !has('macunix')`
+
+  If set to `1`, use `--always-make` for `make`, which means that output will
+  always be parsed from `make` dry runs with GNU make. BSD `make` does not
+  support this option, so you probably want to turn this option off when using
+  a BSD variant.
+
 
 g:ale_c_build_dir_names                               *g:ale_c_build_dir_names*
                                                       *b:ale_c_build_dir_names*
@@ -11,12 +25,12 @@ g:ale_c_build_dir_names                               *g:ale_c_build_dir_names*
   Type: |List|
   Default: `['build', 'bin']`
 
-  A list of directory names to be used when searching upwards from cpp
-  files to discover compilation databases with. For directory named `'foo'`,
-  ALE will search for `'foo/compile_commands.json'` in all directories on and above
-  the directory containing the cpp file to find path to compilation database.
-  This feature is useful for the clang tools wrapped around LibTooling (namely
-  here, clang-tidy)
+  A list of directory names to be used when searching upwards from cpp files
+  to discover compilation databases with. For directory named `'foo'`, ALE
+  will search for `'foo/compile_commands.json'` in all directories on and
+  above the directory containing the cpp file to find path to compilation
+  database.  This feature is useful for the clang tools wrapped around
+  LibTooling (namely here, clang-tidy)
 
 
 g:ale_c_build_dir                                           *g:ale_c_build_dir*
@@ -37,16 +51,13 @@ g:ale_c_build_dir                                           *g:ale_c_build_dir*
 g:ale_c_parse_compile_commands                 *g:ale_c_parse_compile_commands*
                                                *b:ale_c_parse_compile_commands*
   Type: |Number|
-  Default: `0`
+  Default: `1`
 
   If set to `1`, ALE will parse `compile_commands.json` files to automatically
   determine flags for C or C++ compilers. ALE will first search for the
   nearest `compile_commands.json` file, and then look for
   `compile_commands.json` files in the directories for
   |g:ale_c_build_dir_names|.
-
-  If |g:ale_c_parse_makefile| or |b:ale_c_parse_makefile| is set to `1`, the
-  output of `make -n` will be preferred over `compile_commands.json` files.
 
 
 g:ale_c_parse_makefile                                 *g:ale_c_parse_makefile*
@@ -58,24 +69,102 @@ g:ale_c_parse_makefile                                 *g:ale_c_parse_makefile*
   set for C or C++ compilers. This can make it easier to determine the correct
   build flags to use for different files.
 
+  NOTE: When using this option on BSD, you may need to set
+  |g:ale_c_always_make| to `0`, and `make -n` will not provide consistent
+  results if binaries have already been built, so use `make clean` when
+  editing your files.
+
+  WARNING: Running `make -n` automatically can execute arbitrary code, even
+  though it's supposed to be a dry run, so enable this option with care. You
+  might prefer to use the buffer-local version of the option instead with
+  |g:ale_pattern_options|, or you own code for checking which project you're
+  in.
+
+  You might want to disable this option if `make -n` takes too long to run for
+  projects you work on.
+
+  If |g:ale_c_parse_compile_commands| or |b:ale_c_parse_compile_commands| is
+  set to `1`, flags taken from `compile_commands.json` will be preferred over
+  `make -n` output.
+
 
 ===============================================================================
-clang                                                             *ale-c-clang*
+astyle                                                           *ale-c-astyle*
 
-g:ale_c_clang_executable                             *g:ale_c_clang_executable*
-                                                     *b:ale_c_clang_executable*
+g:ale_c_astyle_executable                           *g:ale_c_astyle_executable*
+                                                    *b:ale_c_astyle_executable*
   Type: |String|
-  Default: `'clang'`
+  Default: `'astyle'`
 
-  This variable can be changed to use a different executable for clang.
+  This variable can be changed to use a different executable for astyle.
 
 
-g:ale_c_clang_options                                   *g:ale_c_clang_options*
-                                                        *b:ale_c_clang_options*
+g:ale_c_astyle_project_options                 *g:ale_c_astyle_project_options*
+                                               *b:ale_c_astyle_project_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to use an option file for project level
+  configurations. Provide only the filename of the option file that should be
+  present at the project's root directory.
+
+  For example, if .astylrc is specified, the file is searched in the parent
+  directories of the source file's directory.
+
+
+===============================================================================
+cc                                                                   *ale-c-cc*
+                                                                    *ale-c-gcc*
+                                                                  *ale-c-clang*
+
+g:ale_c_cc_executable                                   *g:ale_c_cc_executable*
+                                                        *b:ale_c_cc_executable*
+  Type: |String|
+  Default: `'<auto>'`
+
+  This variable can be changed to use a different executable for a C compiler.
+
+  ALE will try to use `clang` if Clang is available, otherwise ALE will
+  default to checking C code with `gcc`.
+
+
+g:ale_c_cc_options                                         *g:ale_c_cc_options*
+                                                           *b:ale_c_cc_options*
   Type: |String|
   Default: `'-std=c11 -Wall'`
 
-  This variable can be changed to modify flags given to clang.
+  This variable can be change to modify flags given to the C compiler.
+
+
+===============================================================================
+ccls                                                               *ale-c-ccls*
+
+g:ale_c_ccls_executable                               *g:ale_c_ccls_executable*
+                                                      *b:ale_c_ccls_executable*
+  Type: |String|
+  Default: `'ccls'`
+
+  This variable can be changed to use a different executable for ccls.
+
+
+g:ale_c_ccls_init_options                           *g:ale_c_ccls_init_options*
+                                                    *b:ale_c_ccls_init_options*
+  Type: |Dictionary|
+  Default: `{}`
+
+  This variable can be changed to customize ccls initialization options.
+  Example: >
+      {
+    \   'cacheDirectory': '/tmp/ccls',
+    \   'cacheFormat': 'binary',
+    \   'diagnostics': {
+    \     'onOpen': 0,
+    \     'opChange': 1000,
+    \   },
+    \ }
+<
+  Visit https://github.com/MaskRay/ccls/wiki/Initialization-options for all
+  available options and explanations.
 
 
 ===============================================================================
@@ -261,25 +350,6 @@ g:ale_c_flawfinder_error_severity           *g:ale_c_flawfinder_error_severity*
 
 
 ===============================================================================
-gcc                                                                 *ale-c-gcc*
-
-g:ale_c_gcc_executable                                 *g:ale_c_gcc_executable*
-                                                       *b:ale_c_gcc_executable*
-  Type: |String|
-  Default: `'gcc'`
-
-  This variable can be changed to use a different executable for gcc.
-
-
-g:ale_c_gcc_options                                       *g:ale_c_gcc_options*
-                                                          *b:ale_c_gcc_options*
-  Type: |String|
-  Default: `'-std=c11 -Wall'`
-
-  This variable can be change to modify flags given to gcc.
-
-
-===============================================================================
 uncrustify                                                   *ale-c-uncrustify*
 
 g:ale_c_uncrustify_executable                   *g:ale_c_uncrustify_executable*
@@ -296,37 +366,6 @@ g:ale_c_uncrustify_options                         *g:ale_c_uncrustify_options*
   Default: `''`
 
   This variable can be change to modify flags given to uncrustify.
-
-
-===============================================================================
-ccls                                                               *ale-c-ccls*
-
-g:ale_c_ccls_executable                               *g:ale_c_ccls_executable*
-                                                      *b:ale_c_ccls_executable*
-  Type: |String|
-  Default: `'ccls'`
-
-  This variable can be changed to use a different executable for ccls.
-
-
-g:ale_c_ccls_init_options                           *g:ale_c_ccls_init_options*
-                                                    *b:ale_c_ccls_init_options*
-  Type: |Dictionary|
-  Default: `{}`
-
-  This variable can be changed to customize ccls initialization options.
-  Example: >
-      {
-    \   'cacheDirectory': '/tmp/ccls',
-    \   'cacheFormat': 'binary',
-    \   'diagnostics': {
-    \     'onOpen': 0,
-    \     'opChange': 1000,
-    \   },
-    \ }
-<
-  Visit https://github.com/MaskRay/ccls/wiki/Initialization-options for all
-  available options and explanations.
 
 
 ===============================================================================

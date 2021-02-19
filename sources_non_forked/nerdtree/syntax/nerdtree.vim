@@ -19,31 +19,35 @@ syn match NERDTreeLinkTarget #->.*# containedin=NERDTreeDir,NERDTreeFile
 syn match NERDTreeLinkFile #.* ->#me=e-3 containedin=NERDTreeFile
 syn match NERDTreeLinkDir #.*/ ->#me=e-3 containedin=NERDTreeDir
 
-"highlighing for directory nodes and file nodes
-syn match NERDTreeDirSlash #/# containedin=NERDTreeDir
-
-exec 'syn match NERDTreeClosable #' . escape(g:NERDTreeDirArrowCollapsible, '~') . '\ze .*/# containedin=NERDTreeDir,NERDTreeFile'
-exec 'syn match NERDTreeOpenable #' . escape(g:NERDTreeDirArrowExpandable, '~') . '\ze .*/# containedin=NERDTreeDir,NERDTreeFile'
-
-let s:dirArrows = escape(g:NERDTreeDirArrowCollapsible, '~]\-').escape(g:NERDTreeDirArrowExpandable, '~]\-')
-exec 'syn match NERDTreeDir #[^'.s:dirArrows.' ].*/#'
-syn match NERDTreeExecFile  '^ .*\*\($\| \)' contains=NERDTreeRO,NERDTreeBookmark
-exec 'syn match NERDTreeFile  #^[^"\.'.s:dirArrows.'] *[^'.s:dirArrows.']*# contains=NERDTreeLink,NERDTreeRO,NERDTreeBookmark,NERDTreeExecFile'
-
-"highlighting for readonly files
-exec 'syn match NERDTreeRO # *\zs.*\ze \['.g:NERDTreeGlyphReadOnly.'\]# contains=NERDTreeIgnore,NERDTreeBookmark,NERDTreeFile'
-
-syn match NERDTreeFlags #^ *\zs\[[^\]]*\]# containedin=NERDTreeFile,NERDTreeExecFile
-syn match NERDTreeFlags #\[[^\]]*\]# containedin=NERDTreeDir
-
-"highlighing to conceal the delimiter around the file/dir name
+"highlighting to conceal the delimiter around the file/dir name
 if has('conceal')
     exec 'syn match NERDTreeNodeDelimiters #\%d' . char2nr(g:NERDTreeNodeDelimiter) . '# conceal containedin=ALL'
-    setlocal conceallevel=3 concealcursor=nvic
+    setlocal conceallevel=2 concealcursor=nvic
 else
     exec 'syn match NERDTreeNodeDelimiters #\%d' . char2nr(g:NERDTreeNodeDelimiter) . '# containedin=ALL'
     hi! link NERDTreeNodeDelimiters Ignore
 endif
+
+"highlighing for directory nodes and file nodes
+syn match NERDTreeDirSlash #/# containedin=NERDTreeDir
+
+if g:NERDTreeDirArrowExpandable !=# ''
+    exec 'syn match NERDTreeClosable #' . escape(g:NERDTreeDirArrowCollapsible, '~') . '\ze .*/# containedin=NERDTreeDir,NERDTreeFile'
+    exec 'syn match NERDTreeOpenable #' . escape(g:NERDTreeDirArrowExpandable, '~') . '\ze .*/# containedin=NERDTreeDir,NERDTreeFile'
+    let s:dirArrows = escape(g:NERDTreeDirArrowCollapsible, '~]\-').escape(g:NERDTreeDirArrowExpandable, '~]\-')
+    exec 'syn match NERDTreeDir #[^'.s:dirArrows.' ].*/#'
+    exec 'syn match NERDTreeExecFile #^.*'.g:NERDTreeNodeDelimiter.'\*\($\| \)# contains=NERDTreeRO,NERDTreeBookmark'
+    exec 'syn match NERDTreeFile  #^[^"\.'.s:dirArrows.'] *[^'.s:dirArrows.']*# contains=NERDTreeLink,NERDTreeRO,NERDTreeBookmark,NERDTreeExecFile'
+else
+    exec 'syn match NERDTreeDir #[^'.g:NERDTreeNodeDelimiter.']\{-}/\ze\($\|'.g:NERDTreeNodeDelimiter.'\)#'
+    exec 'syn match NERDTreeExecFile #[^'.g:NERDTreeNodeDelimiter.']\{-}'.g:NERDTreeNodeDelimiter.'\*\($\| \)# contains=NERDTreeRO,NERDTreeBookmark'
+    exec 'syn match NERDTreeFile     #^.*'.g:NERDTreeNodeDelimiter.'.*[^\/]\($\|'.g:NERDTreeNodeDelimiter.'.*\)# contains=NERDTreeLink,NERDTreeRO,NERDTreeBookmark,NERDTreeExecFile'
+endif
+
+"highlighting for readonly files
+exec 'syn match NERDTreeRO #.*'.g:NERDTreeNodeDelimiter.'\zs.*\ze'.g:NERDTreeNodeDelimiter.'.*\['.g:NERDTreeGlyphReadOnly.'\]# contains=NERDTreeIgnore,NERDTreeBookmark,NERDTreeFile'
+
+exec 'syn match NERDTreeFlags #\[[^\]]*\]\ze'.g:NERDTreeNodeDelimiter.'# containedin=NERDTreeFile,NERDTreeExecFile,NERDTreeLinkFile,NERDTreeRO,NERDTreeDir'
 
 syn match NERDTreeCWD #^[</].*$#
 
@@ -89,3 +93,5 @@ hi def link NERDTreeBookmark Statement
 hi def link NERDTreeFlags Number
 
 hi def link NERDTreeCurrentNode Search
+
+hi NERDTreeFile ctermbg=NONE guibg=NONE

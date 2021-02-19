@@ -173,4 +173,24 @@ g:ale_haskell_hie_executable                     *g:ale_haskell_hie_executable*
 
 
 ===============================================================================
+ormolu                                                     *ale-haskell-ormolu*
+
+g:ale_haskell_ormolu_executable               *g:ale_haskell_ormolu_executable*
+                                              *b:ale_haskell_ormolu_executable*
+  Type: |String|
+  Default: `'ormolu'`
+
+  This variable can be changed to use a different executable for ormolu.
+
+
+g:ale_haskell_ormolu_options                     *g:ale_haskell_ormolu_options*
+                                                 *b:ale_haskell_ormolu_options*
+  Type: String
+  Default: ''
+
+  This variable can be used to pass extra options to the underlying ormolu
+  executable.
+
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

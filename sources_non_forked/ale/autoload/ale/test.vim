@@ -145,8 +145,8 @@ function! ale#test#WaitForJobs(deadline) abort
     " end, but before handlers are run.
     sleep 10ms
 
-    " We must check the buffer data again to see if new jobs started
-    " for command_chain linters.
+    " We must check the buffer data again to see if new jobs started for
+    " linters with chained commands.
     let l:has_new_jobs = 0
 
     " Check again to see if any jobs are running.

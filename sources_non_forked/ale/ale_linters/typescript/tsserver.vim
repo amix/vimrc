@@ -9,6 +9,7 @@ call ale#linter#Define('typescript', {
 \   'name': 'tsserver',
 \   'lsp': 'tsserver',
 \   'executable': {b -> ale#node#FindExecutable(b, 'typescript_tsserver', [
+\       '.yarn/sdks/typescript/bin/tsserver',
 \       'node_modules/.bin/tsserver',
 \   ])},
 \   'command': '%e',

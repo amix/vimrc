@@ -1,3 +1,5 @@
+scriptencoding utf8
+
 let s:nomodeline = (v:version > 703 || (v:version == 703 && has('patch442'))) ? '<nomodeline>' : ''
 
 let s:hunk_re = '^@@ -\(\d\+\),\?\(\d*\) +\(\d\+\),\?\(\d*\) @@'
@@ -13,7 +15,6 @@ function! s:git_supports_command_line_config_override() abort
 endfunction
 
 let s:c_flag = s:git_supports_command_line_config_override()
-
 
 let s:temp_from = tempname()
 let s:temp_buffer = tempname()
@@ -122,7 +123,7 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     endif
 
     " Write file from index to temporary file.
-    let index_name = g:gitgutter_diff_base.':'.gitgutter#utility#repo_path(a:bufnr, 1)
+    let index_name = gitgutter#utility#get_diff_base(a:bufnr).':'.gitgutter#utility#repo_path(a:bufnr, 1)
     let cmd .= g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager show '.index_name.' > '.from_file.' && '
 
   elseif a:from ==# 'working_tree'
@@ -130,7 +131,7 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
   endif
 
   " Call git-diff.
-  let cmd .= g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager '.g:gitgutter_git_args
+  let cmd .= g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager'
   if s:c_flag
     let cmd .= ' -c "diff.autorefreshindex=0"'
     let cmd .= ' -c "diff.noprefix=false"'
@@ -184,7 +185,7 @@ function! gitgutter#diff#handler(bufnr, diff) abort
   let modified_lines = gitgutter#diff#process_hunks(a:bufnr, gitgutter#hunk#hunks(a:bufnr))
 
   let signs_count = len(modified_lines)
-  if signs_count > g:gitgutter_max_signs
+  if g:gitgutter_max_signs != -1 && signs_count > g:gitgutter_max_signs
     call gitgutter#utility#warn_once(a:bufnr, printf(
           \ 'exceeded maximum number of signs (%d > %d, configured by g:gitgutter_max_signs).',
           \ signs_count, g:gitgutter_max_signs), 'max_signs')
@@ -402,12 +403,19 @@ function! s:write_buffer(bufnr, file)
     let bufcontents[0]='﻿'.bufcontents[0]
   endif
 
-  call writefile(bufcontents, a:file, 'b')
+  " The file we are writing to is a temporary file.  Sometimes the parent
+  " directory is deleted outside Vim but, because Vim caches the directory
+  " name at startup and does not check for its existence subsequently, Vim
+  " does not realise.  This causes E482 errors.
+  try
+    call writefile(bufcontents, a:file, 'b')
+  catch /E482/
+    call mkdir(fnamemodify(a:file, ':h'), '', '0700')
+    call writefile(bufcontents, a:file, 'b')
+  endtry
 endfunction
 
 
 function! s:save_last_seen_change(bufnr) abort
   call gitgutter#utility#setbufvar(a:bufnr, 'tick', getbufvar(a:bufnr, 'changedtick'))
 endfunction
-
-

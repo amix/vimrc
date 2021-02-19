@@ -6,5 +6,5 @@ call ale#linter#Define('kotlin', {
 \   'executable': 'ktlint',
 \   'command': function('ale#handlers#ktlint#GetCommand'),
 \   'callback': 'ale#handlers#ktlint#Handle',
-\   'lint_file': 1
+\   'output_stream': 'stderr'
 \})

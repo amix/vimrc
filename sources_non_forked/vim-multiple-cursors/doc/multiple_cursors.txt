@@ -94,6 +94,10 @@ otherwise you'll have a tough time quitting from multicursor mode.
 
 Currently there are four additional global settings one can tweak:
 
+*g:multi_cursor_support_imap* (Default: 1)
+
+If set to 0, insert mappings won't be supported in |insert-mode| anymore.
+
 *g:multi_cursor_exit_from_visual_mode* (Default: 0)
 
 If set to 0, then pressing |g:multi_cursor_quit_key| in |visual-mode| will quit

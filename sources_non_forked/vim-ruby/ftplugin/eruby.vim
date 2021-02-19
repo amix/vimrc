@@ -117,7 +117,7 @@ endif
 " TODO: comments=
 setlocal commentstring=<%#%s%>
 
-let b:undo_ftplugin = "setl cms< "
+let b:undo_ftplugin = "setl cms< " .
       \ " | unlet! b:browsefilter b:match_words | " . s:undo_ftplugin
 
 let &cpo = s:save_cpo

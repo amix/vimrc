@@ -25,13 +25,6 @@ Installation
 
 Install PSScriptAnalyzer by any means, so long as it can be automatically
 imported in PowerShell.
-Some PowerShell plugins set the filetype of files to `ps1`. To continue using
-these plugins, use the ale_linter_aliases global to alias `ps1` to `powershell`
-
->
-  " Allow ps1 filetype to work with powershell linters
-  let g:ale_linter_aliases = {'ps1': 'powershell'}
-<
 
 g:ale_powershell_psscriptanalyzer_executable
 *g:ale_powershell_psscriptanalyzer_executable*

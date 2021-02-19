@@ -6,7 +6,6 @@ function! ale_linters#go#gofmt#GetCommand(buffer) abort
     \   . '%e -e %t'
 endfunction
 
-
 call ale#linter#Define('go', {
 \   'name': 'gofmt',
 \   'output_stream': 'stderr',

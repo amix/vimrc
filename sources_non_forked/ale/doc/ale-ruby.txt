@@ -114,6 +114,14 @@ g:ale_ruby_rubocop_options                         *g:ale_ruby_rubocop_options*
   This variable can be changed to modify flags given to rubocop.
 
 
+g:ale_ruby_rubocop_auto_correct_all       *g:ale_ruby_rubocop_auto_correct_all*
+                                          *b:ale_ruby_rubocop_auto_correct_all*
+  Type: Number
+  Default: `0`
+
+  This variable can be changed to make rubocop to correct all offenses (unsafe).
+
+
 ===============================================================================
 ruby                                                            *ale-ruby-ruby*
 
@@ -172,8 +180,8 @@ g:ale_ruby_sorbet_options                           *g:ale_ruby_sorbet_options*
 ===============================================================================
 standardrb                                                *ale-ruby-standardrb*
 
-g:ale_ruby_standardrb_executable              *g:ale_ruby_standardrb_executable*
-                                              *b:ale_ruby_standardrb_executable*
+g:ale_ruby_standardrb_executable             *g:ale_ruby_standardrb_executable*
+                                             *b:ale_ruby_standardrb_executable*
   Type: String
   Default: `'standardrb'`
 
