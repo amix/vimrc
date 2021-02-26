@@ -65,19 +65,19 @@
     " Set vim keycodes to terminal keycodes
     set <Home>=[1~ <End>=[4~ <BS>=
     set <S-Up>=[1;2A <S-Down>=[1;2B <S-Right>=[1;2C <S-Left>=[1;2D
-    set <xF1>=[1;6A <xF2>=[1;6B <xF3>=[1;6C <xF4>=[1;6D
+    set <F13>=[1;6A <F14>=[1;6B <F15>=[1;6C <F16>=[1;6D
     set <S-F3>=[1;2R
     set <S-F6>=[17;2~
 
     " Mapping "fast" keycodes
-    map <xF1> <C-S-Up>
-    map <xF2> <C-S-Down>
-    map <xF3> <C-S-Right>
-    map <xF4> <C-S-Left>
-    map! <xF1> <C-S-Up>
-    map! <xF2> <C-S-Down>
-    map! <xF3> <C-S-Right>
-    map! <xF4> <C-S-Left>
+    map <F13> <C-S-Up>
+    map <F14> <C-S-Down>
+    map <F15> <C-S-Right>
+    map <F16> <C-S-Left>
+    map! <F13> <C-S-Up>
+    map! <F14> <C-S-Down>
+    map! <F15> <C-S-Right>
+    map! <F16> <C-S-Left>
 
   " }
 
@@ -204,7 +204,7 @@
     " Easier generating documents
     map <localleader>da :DoxAuthor<CR>
     map <localleader>df :Dox<CR>
-    " Disble auto-pair when /** @{ */
+    " Disble auto-pair
     map <localleader>db :setlocal paste<CR>:DoxBlock<CR><ESC>:setlocal nopaste<CR>a
     map <localleader>dl :DoxLic<CR>
 
