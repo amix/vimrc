@@ -30,14 +30,34 @@
 
 " Formatting {
 
-  set nowrap                      " Do not wrap long lines
-  set autoindent                  " Indent at the same level of the previous line
-  set shiftwidth=2                " Use indents of 4 spaces
-  set expandtab                   " Tabs are spaces, not tabs
-  set tabstop=2                   " An indentation every four columns
-  set softtabstop=2               " Let backspace delete indent
-  set nojoinspaces                " Prevents inserting two spaces after punctuation on a join (J)
-  set pastetoggle=<F12>           " pastetoggle (same indentation on pastes)
+  set nowrap            " Do not wrap long lines
+  set autoindent        " Indent at the same level of the previous line
+  set nojoinspaces      " Prevents inserting two spaces a join (J)
+  set pastetoggle=<F12> " pastetoggle (same indentation on pastes)
+
+  " Affects what happens when you press >>, << or ==. It also affects how
+  " automatic indentation works.
+  set shiftwidth=2
+
+  " Affects what happens when you press the <TAB> or <BS> keys. Its default
+  " value is the same as the value of 'tabstop', but when using indentation
+  " without hard tabs or mixed indentation, you want to set it to the same value
+  " as 'shiftwidth'. If 'expandtab' is unset, and 'tabstop' is different from
+  " 'softtabstop', the <TAB> key will minimize the amount of spaces inserted by
+  " using multiples of TAB characters.
+  set softtabstop=2
+
+  " 'expandtab' affects what happens when you press the <TAB> key. If
+  " 'expandtab' is set, pressing the <TAB> key will always insert 'softtabstop'
+  " amount of space characters. Otherwise, the amount of spaces inserted is
+  " minimized by using TAB characters.
+  set expandtab         " Tabs are spaces, not tabs
+
+  " Specify indentation for each project
+  try
+  source ~/.vim_runtime/indentation_projects.vim
+  catch
+  endtry
 
 " }
 
@@ -148,9 +168,6 @@
     nmap <localleader>f7 :set foldlevel=7<CR>
     nmap <localleader>f8 :set foldlevel=8<CR>
     nmap <localleader>f9 :set foldlevel=9<CR>
-
-    " Insert newline without entering insert mode
-    nmap <CR> o<Esc>
 
     " Map ctrl x ctrl o to ctrl space
     inoremap <C-Space> <C-x><C-o>
