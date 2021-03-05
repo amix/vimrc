@@ -68,7 +68,7 @@ Just do a git rebase!
 
 NOTE: If you get `ModuleNotFoundError: No module named 'requests'`, you must first install the `requests` python module using `pip`, `pip3`, or `easy_install`.
 
-    pip3 install requests
+    pip install requests
 
 ## Some screenshots
 
