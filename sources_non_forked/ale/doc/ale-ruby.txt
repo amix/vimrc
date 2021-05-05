@@ -41,6 +41,11 @@ g:ale_ruby_debride_options                         *g:ale_ruby_debride_options*
   This variable can be changed to modify flags given to debride.
 
 
+===============================================================================
+prettier                                                    *ale-ruby-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+
 
 ===============================================================================
 rails_best_practices                            *ale-ruby-rails_best_practices*
@@ -175,6 +180,16 @@ g:ale_ruby_sorbet_options                           *g:ale_ruby_sorbet_options*
   Default: `''`
 
   This variable can be changed to modify flags given to sorbet.
+
+
+g:ale_ruby_sorbet_enable_watchman           *g:ale_ruby_sorbet_enable_watchman*
+                                            *b:ale_ruby_sorbet_enable_watchman*
+  Type: |Number|
+  Default: `0`
+
+  Whether or not to use watchman to let the LSP server to know about changes
+  to files from outside of vim. Defaults to disable watchman because it
+  requires watchman to be installed separately from sorbet.
 
 
 ===============================================================================

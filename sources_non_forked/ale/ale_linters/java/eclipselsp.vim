@@ -29,28 +29,28 @@ function! ale_linters#java#eclipselsp#JarPath(buffer) abort
     endif
 
     " Search jar file within repository path when manually built using mvn
-    let l:files = globpath(l:path, '**/'.l:platform.'/**/plugins/org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
+    let l:files = globpath(l:path, '**/'.l:platform.'/**/plugins/org.eclipse.equinox.launcher_*\.jar', 1, 1)
 
     if len(l:files) >= 1
         return l:files[0]
     endif
 
     " Search jar file within VSCode extensions folder.
-    let l:files = globpath(l:path, '**/'.l:platform.'/plugins/org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
+    let l:files = globpath(l:path, '**/'.l:platform.'/plugins/org.eclipse.equinox.launcher_*\.jar', 1, 1)
 
     if len(l:files) >= 1
         return l:files[0]
     endif
 
     " Search jar file within unzipped tar.gz file
-    let l:files = globpath(l:path, 'plugins/org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
+    let l:files = globpath(l:path, 'plugins/org.eclipse.equinox.launcher_*\.jar', 1, 1)
 
     if len(l:files) >= 1
         return l:files[0]
     endif
 
     " Search jar file within system package path
-    let l:files = globpath('/usr/share/java/jdtls/plugins', 'org.eclipse.equinox.launcher_\d\.\d\.\d\d\d\.*\.jar', 1, 1)
+    let l:files = globpath('/usr/share/java/jdtls/plugins', 'org.eclipse.equinox.launcher_*\.jar', 1, 1)
 
     if len(l:files) >= 1
         return l:files[0]

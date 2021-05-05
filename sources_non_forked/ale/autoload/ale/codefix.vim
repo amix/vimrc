@@ -261,7 +261,10 @@ function! ale#codefix#HandleLSPResponse(conn_id, response) abort
 
         " Send the results to the menu callback, if set.
         if l:MenuCallback isnot v:null
-            call l:MenuCallback(map(copy(l:result), '[''lsp'', v:val]'))
+            call l:MenuCallback(
+            \   l:data,
+            \   map(copy(l:result), '[''lsp'', v:val]')
+            \)
 
             return
         endif

@@ -232,8 +232,8 @@ OPTIONS						*lightline-option*
 		Tomorrow, Tomorrow_Night, Tomorrow_Night_Blue,
 		Tomorrow_Night_Bright, Tomorrow_Night_Eighties, PaperColor,
 		landscape, one, materia, material, OldHope, nord, deus,
-		simpleblack, srcery_drk, ayu_mirage, ayu_light, ayu_dark and
-		16color are available.
+		simpleblack, srcery_drk, ayu_mirage, ayu_light, ayu_dark,
+		apprentice and 16color are available.
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'

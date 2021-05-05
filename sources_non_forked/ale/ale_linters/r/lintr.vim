@@ -21,14 +21,13 @@ function! ale_linters#r#lintr#GetCommand(buffer) abort
     let l:cmd_string = 'suppressPackageStartupMessages(library(lintr));'
     \   . l:lint_cmd
 
-    return ale#path#BufferCdString(a:buffer)
-    \   . 'Rscript --vanilla -e '
-    \   . ale#Escape(l:cmd_string) . ' %t'
+    return 'Rscript --vanilla -e ' . ale#Escape(l:cmd_string) . ' %t'
 endfunction
 
 call ale#linter#Define('r', {
 \   'name': 'lintr',
 \   'executable': 'Rscript',
+\   'cwd': '%s:h',
 \   'command': function('ale_linters#r#lintr#GetCommand'),
 \   'callback': 'ale#handlers#gcc#HandleGCCFormat',
 \   'output_stream': 'both',

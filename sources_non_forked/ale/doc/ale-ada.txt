@@ -33,4 +33,34 @@ g:ale_ada_gnatpp_options                             *g:ale_ada_gnatpp_options*
 
 
 ===============================================================================
+ada-language-server                                   *ale-ada-language-server*
+
+g:ale_ada_adals_executable                         *g:ale_ada_adals_executable*
+                                                   *b:ale_ada_adals_executable*
+  Type: |String|
+  Default: `'ada_language_server'`
+
+  This variable can be changed to use a different executable for Ada Language
+  Server.
+
+
+g:ale_ada_adals_project                               *g:ale_ada_adals_project*
+                                                      *b:ale_ada_adals_project*
+  Type: |String|
+  Default: `'default.gpr'`
+
+This variable can be changed to use a different GPR file for
+Ada Language Server.
+
+
+g:ale_ada_adals_encoding                             *g:ale_ada_adals_encoding*
+                                                     *b:ale_ada_adals_encoding*
+  Type: |String|
+  Default: `'utf-8'`
+
+This variable can be changed to use a different file encoding for
+Ada Language Server.
+
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

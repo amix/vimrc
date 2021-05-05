@@ -17,27 +17,26 @@ function! ale_linters#python#pylint#GetExecutable(buffer) abort
     return ale#python#FindExecutable(a:buffer, 'python_pylint', ['pylint'])
 endfunction
 
-function! ale_linters#python#pylint#GetCommand(buffer, version) abort
-    let l:cd_string = ''
-
+function! ale_linters#python#pylint#GetCwd(buffer) abort
     if ale#Var(a:buffer, 'python_pylint_change_directory')
         " pylint only checks for pylintrc in the packages above its current
         " directory before falling back to user and global pylintrc.
         " Run from project root, if found, otherwise buffer dir.
         let l:project_root = ale#python#FindProjectRoot(a:buffer)
-        let l:cd_string = l:project_root isnot# ''
-        \   ? ale#path#CdString(l:project_root)
-        \   : ale#path#BufferCdString(a:buffer)
+
+        return !empty(l:project_root) ? l:project_root : '%s:h'
     endif
 
-    let l:executable = ale_linters#python#pylint#GetExecutable(a:buffer)
+    return ''
+endfunction
 
+function! ale_linters#python#pylint#GetCommand(buffer, version) abort
+    let l:executable = ale_linters#python#pylint#GetExecutable(a:buffer)
     let l:exec_args = l:executable =~? 'pipenv$'
     \   ? ' run pylint'
     \   : ''
 
-    return l:cd_string
-    \   . ale#Escape(l:executable) . l:exec_args
+    return ale#Escape(l:executable) . l:exec_args
     \   . ale#Pad(ale#Var(a:buffer, 'python_pylint_options'))
     \   . ' --output-format text --msg-template="{path}:{line}:{column}: {msg_id} ({symbol}) {msg}" --reports n'
     \   .  (ale#semver#GTE(a:version, [2, 4, 0]) ? ' --from-stdin' : '')
@@ -104,6 +103,7 @@ call ale#linter#Define('python', {
 \       '%e --version',
 \       {buffer, version -> !ale#semver#GTE(version, [2, 4, 0])},
 \   )},
+\   'cwd': function('ale_linters#python#pylint#GetCwd'),
 \   'command': {buffer -> ale#semver#RunWithVersionCheck(
 \       buffer,
 \       ale#Var(buffer, 'python_pylint_executable'),

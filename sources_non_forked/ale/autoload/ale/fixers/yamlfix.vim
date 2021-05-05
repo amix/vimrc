@@ -7,7 +7,6 @@ call ale#Set('yaml_yamlfix_use_global', get(g:, 'ale_use_global_executables', 0)
 
 function! ale#fixers#yamlfix#Fix(buffer) abort
     let l:options = ale#Var(a:buffer, 'yaml_yamlfix_options')
-
     let l:executable = ale#python#FindExecutable(
     \   a:buffer,
     \   'yaml_yamlfix',
@@ -19,7 +18,8 @@ function! ale#fixers#yamlfix#Fix(buffer) abort
     endif
 
     return {
-    \   'command': ale#path#BufferCdString(a:buffer)
-    \   .   ale#Escape(l:executable) . (!empty(l:options) ? ' ' . l:options : '') . ' -',
+    \   'cwd': '%s:h',
+    \   'command': ale#Escape(l:executable)
+    \       . (!empty(l:options) ? ' ' . l:options : '') . ' -',
     \}
 endfunction

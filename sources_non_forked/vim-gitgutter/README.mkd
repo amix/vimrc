@@ -685,8 +685,6 @@ If this plugin has helped you, or you'd like to learn more about Vim, why not ch
 
 This was one of PeepCode's all-time top three bestsellers and is now available at Pluralsight.
 
-You can read reviews on my [website][airblade].
-
 
 ### Intellectual Property
 

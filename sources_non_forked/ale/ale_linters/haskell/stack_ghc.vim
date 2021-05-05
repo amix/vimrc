@@ -4,8 +4,7 @@
 call ale#Set('haskell_stack_ghc_options', '-fno-code -v0')
 
 function! ale_linters#haskell#stack_ghc#GetCommand(buffer) abort
-    return ale#path#BufferCdString(a:buffer)
-    \ . ale#handlers#haskell#GetStackExecutable(a:buffer)
+    return ale#handlers#haskell#GetStackExecutable(a:buffer)
     \ . ' ghc -- '
     \ . ale#Var(a:buffer, 'haskell_stack_ghc_options')
     \ . ' %t'
@@ -16,6 +15,7 @@ call ale#linter#Define('haskell', {
 \   'aliases': ['stack-ghc'],
 \   'output_stream': 'stderr',
 \   'executable': function('ale#handlers#haskell#GetStackExecutable'),
+\   'cwd': '%s:h',
 \   'command': function('ale_linters#haskell#stack_ghc#GetCommand'),
 \   'callback': 'ale#handlers#haskell#HandleGHCFormat',
 \})

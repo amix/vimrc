@@ -59,6 +59,12 @@ that are part of Git repositories).
                         ~     reblame at [count]th first grandparent
                         P     reblame at [count]th parent (like HEAD^[count])
 
+                                                *g:fugitive_dynamic_colors*
+                        In the GUI or a 256 color terminal, commit hashes will
+                        highlighted in different colors. To disable this:
+>
+                        let g:fugitive_dynamic_colors = 0
+<
 :[range]Git blame [...] If a range is given, just that part of the file will
 :Git blame [...] {file} be blamed, and a horizontal split without
                         scrollbinding is used.  You can also give an arbitrary
@@ -78,15 +84,6 @@ that are part of Git repositories).
                                                 *:Git_mergetool*
 :Git mergetool [args]   Like |:Git_difftool|, but target merge conflicts.
 
-                                                *:Git_push*
-:Git push [args]        Invoke git-push, load the results into the |quickfix|
-                        list, and invoke |:cwindow| to reveal any errors.
-                        |:Dispatch| is used if available for asynchronous
-                        invocation.
-
-                                                *:Git_fetch*
-:Git fetch [args]       Like |:Git_push|, but for git-fetch.
-
                                                 *:Ggrep* *:Gcgrep* *:Git_grep*
 :Ggrep[!] [args]        |:grep|[!] with git-grep as 'grepprg'.
 :Git[!] grep [args]
@@ -100,8 +97,9 @@ that are part of Git repositories).
                         |quickfix| list.  Jumps to the first commit unless [!]
                         is given.
 
-                        The quickfix list can be slow and awkward for many use
-                        cases.  Consider using |:Git| log instead.
+                        The quickfix list can be awkward for many use cases
+                        and exhibits extremely poor performance with larger
+                        data sets.  Consider using |:Git| log instead.
 
 :{range}Gclog[!] [args] Use git-log -L to load previous revisions of the given
                         range of the current file into the |quickfix| list.
@@ -214,9 +212,6 @@ that are part of Git repositories).
                                                 *:GBrowse*
 :GBrowse                Open the current file, blob, tree, commit, or tag
                         in your browser at the upstream hosting provider.
-                        If a range is given, it is appropriately appended to
-                        the URL as an anchor.
-
                         Upstream providers can be added by installing an
                         appropriate Vim plugin.  For example, GitHub can be
                         supported by installing rhubarb.vim, available at
@@ -224,15 +219,17 @@ that are part of Git repositories).
 
 :GBrowse {object}       Like :GBrowse, but for a given |fugitive-object|.
 
-:GBrowse [...]@{remote} Force using the given remote rather than the remote
-                        for the current branch.  The remote is used to
-                        determine which upstream repository to link to.
-
 :{range}GBrowse [args]  Appends an anchor to the URL that emphasizes the
                         selected lines. This also forces the URL to include a
                         commit rather than a branch name so it remains valid
                         if the file changes.  You can give a range of "0" to
                         force this behavior without including an anchor.
+
+:GBrowse [...]@{remote} Force using the given remote rather than the remote
+                        for the current branch.  The remote is used to
+                        determine which upstream repository to link to.
+
+:GBrowse {url}          Open an arbitrary URL in your browser.
 
 :[range]GBrowse! [args] Like :GBrowse, but put the URL on the clipboard rather
                         than opening it.
@@ -263,10 +260,9 @@ U                       Unstage everything.
 X                       Discard the change under the cursor.  This uses
                         `checkout` or `clean` under the hood.  A command is
                         echoed that shows how to undo the change.  Consult
-                        `:messages` to see it again.  You can use this during
-                        a merge conflict do discard "our" changes (--theirs)
-                        in the "Unstaged" section or discard "their" changes
-                        (--ours) in the "Staged" section.
+                        `:messages` to see it again.  During a merge conflict,
+                        use 2X to call `checkout --ours` or 3X to call
+                        `checkout --theirs` .
 
                                                 *fugitive_=*
 =                       Toggle an inline diff of the file under the cursor.
@@ -313,7 +309,7 @@ Navigation maps ~
 
                                                 *fugitive_<CR>*
 <CR>                    Open the file or |fugitive-object| under the cursor.
-                        in a blob, this and similar maps jump to the patch
+                        In a blob, this and similar maps jump to the patch
                         from the diff where this was added, or where it was
                         removed if a count was given.  If the line is still in
                         the work tree version, passing a count takes you to
@@ -592,7 +588,9 @@ Makefile        The file named Makefile in the work tree
 !:Makefile      The file named Makefile in the commit owning the current file
 !3^2            The second parent of the commit owning buffer #3
 .git/config     The repo config file
-:               The |fugitive-summary| buffer.
+:               The |fugitive-summary| buffer
+-               A temp file containing the last |:Git| invocation's output
+<cfile>         The file or commit under the cursor
 
 STATUSLINE                                      *fugitive-statusline*
 
@@ -632,8 +630,8 @@ just one space character longer than the legacy version.
 *:Gpull*        Superseded by |:Git| pull.
 *:Grebase*      Superseded by |:Git| rebase.
 *:Grevert*      Superseded by |:Git| revert.
-*:Gpush*        Superseded by |:Git_push|.
-*:Gfetch*       Superseded by |:Git_fetch|.
+*:Gpush*        Superseded by |:Git| push.
+*:Gfetch*       Superseded by |:Git| fetch.
 *:Glog*         Superseded by |:Gclog|.
 *:Gstatus*      Superseded by |:Git| (with no arguments).
 *:Git!*         Superseded by |:Git_--paginate|.

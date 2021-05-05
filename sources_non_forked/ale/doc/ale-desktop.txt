@@ -1,0 +1,21 @@
+===============================================================================
+ALE desktop Integration                                   *ale-desktop-options*
+
+
+===============================================================================
+desktop-file-validate                       *ale-desktop-desktop-file-validate*
+
+ALE supports checking .desktop files with `desktop-file-validate.`
+
+
+g:ale_desktop_desktop_file_validate_options
+                                  *g:ale_desktop_desktop_file_validate_options*
+                                  *b:ale_desktop_desktop_file_validate_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to set options for `desktop-file-validate`,
+  such as `'--warn-kde'`.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

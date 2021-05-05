@@ -1,0 +1,74 @@
+===============================================================================
+ALE OpenApi Integration                                     *ale-openapi-options*
+
+===============================================================================
+ibm_validator                                        *ale-openapi-ibm-validator*
+
+Website: https://github.com/IBM/openapi-validator
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install ibm-openapi-validator either globally or locally: >
+
+  npm install ibm-openapi-validator -g  # global
+  npm install ibm-openapi-validator     # local
+<
+Configuration
+-------------------------------------------------------------------------------
+
+OpenAPI files can be written in YAML or JSON so in order for ALE plugins to
+work with these files we must set the buffer |filetype| to either |openapi.yaml|
+or |openapi.json| respectively. This causes ALE to lint the file with linters
+configured for openapi and yaml files or openapi and json files respectively.
+
+For example setting filetype to |openapi.yaml| on a buffer and the following
+|g:ale_linters| configuration will enable linting of openapi files using both
+|ibm_validator| and |yamlint|:
+
+>
+  let g:ale_linters = {
+    \   'yaml': ['yamllint'],
+    \   'openapi': ['ibm_validator']
+  \}
+<
+
+The following plugin will detect openapi files automatically and set the
+filetype to |openapi.yaml| or |openapi.json|:
+
+  https://github.com/hsanson/vim-openapi
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_openapi_ibm_validator_executable   *g:ale_openapi_ibm_validator_executable*
+                                         *b:ale_openapi_ibm_validator_executable*
+  Type: |String|
+  Default: `'lint-openapi'`
+
+  This variable can be set to change the path to lint-openapi.
+
+
+g:ale_openapi_ibm_validator_options       *g:ale_openapi_ibm_validator_options*
+                                          *b:ale_openapi_ibm_validator_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to lint-openapi.
+
+
+===============================================================================
+prettier                                                   *ale-openapi-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+
+
+===============================================================================
+yamllint                                                  *ale-openapi-yamllint*
+
+See |ale-yaml-yamllint| for information about the available options.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

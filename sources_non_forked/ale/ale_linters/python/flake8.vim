@@ -38,30 +38,28 @@ function! ale_linters#python#flake8#RunWithVersionCheck(buffer) abort
     \)
 endfunction
 
-function! ale_linters#python#flake8#GetCdString(buffer) abort
+function! ale_linters#python#flake8#GetCwd(buffer) abort
     let l:change_directory = ale#Var(a:buffer, 'python_flake8_change_directory')
-    let l:cd_string = ''
+    let l:cwd = ''
 
     if l:change_directory is# 'project'
         let l:project_root = ale#python#FindProjectRootIni(a:buffer)
 
         if !empty(l:project_root)
-            let l:cd_string = ale#path#CdString(l:project_root)
+            let l:cwd = l:project_root
         endif
     endif
 
-    if (l:change_directory is# 'project' && empty(l:cd_string))
+    if (l:change_directory is# 'project' && empty(l:cwd))
     \|| l:change_directory is# 1
     \|| l:change_directory is# 'file'
-        let l:cd_string = ale#path#BufferCdString(a:buffer)
+        let l:cwd = '%s:h'
     endif
 
-    return l:cd_string
+    return l:cwd
 endfunction
 
 function! ale_linters#python#flake8#GetCommand(buffer, version) abort
-    let l:cd_string = ale_linters#python#flake8#GetCdString(a:buffer)
-
     let l:executable = ale_linters#python#flake8#GetExecutable(a:buffer)
 
     let l:exec_args = l:executable =~? 'pipenv$'
@@ -76,8 +74,7 @@ function! ale_linters#python#flake8#GetCommand(buffer, version) abort
 
     let l:options = ale#Var(a:buffer, 'python_flake8_options')
 
-    return l:cd_string
-    \   . ale#Escape(l:executable) . l:exec_args
+    return ale#Escape(l:executable) . l:exec_args
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . ' --format=default'
     \   . l:display_name_args . ' -'
@@ -161,6 +158,7 @@ endfunction
 call ale#linter#Define('python', {
 \   'name': 'flake8',
 \   'executable': function('ale_linters#python#flake8#GetExecutable'),
+\   'cwd': function('ale_linters#python#flake8#GetCwd'),
 \   'command': function('ale_linters#python#flake8#RunWithVersionCheck'),
 \   'callback': 'ale_linters#python#flake8#Handle',
 \})

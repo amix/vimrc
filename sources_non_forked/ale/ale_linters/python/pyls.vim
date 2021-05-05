@@ -2,6 +2,7 @@
 " Description: A language server for Python
 
 call ale#Set('python_pyls_executable', 'pyls')
+call ale#Set('python_pyls_options', '')
 call ale#Set('python_pyls_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('python_pyls_auto_pipenv', 0)
 call ale#Set('python_pyls_config', {})
@@ -22,7 +23,7 @@ function! ale_linters#python#pyls#GetCommand(buffer) abort
     \   ? ' run pyls'
     \   : ''
 
-    return ale#Escape(l:executable) . l:exec_args
+    return ale#Escape(l:executable) . l:exec_args . ale#Pad(ale#Var(a:buffer, 'python_pyls_options'))
 endfunction
 
 call ale#linter#Define('python', {

@@ -9,16 +9,16 @@ call ale#Set('java_javac_classpath', '')
 call ale#Set('java_javac_sourcepath', '')
 
 function! ale_linters#java#javac#RunWithImportPaths(buffer) abort
-    let l:command = ale#maven#BuildClasspathCommand(a:buffer)
+    let [l:cwd, l:command] = ale#maven#BuildClasspathCommand(a:buffer)
 
     " Try to use Gradle if Maven isn't available.
     if empty(l:command)
-        let l:command = ale#gradle#BuildClasspathCommand(a:buffer)
+        let [l:cwd, l:command] = ale#gradle#BuildClasspathCommand(a:buffer)
     endif
 
     " Try to use Ant if Gradle and Maven aren't available
     if empty(l:command)
-        let l:command = ale#ant#BuildClasspathCommand(a:buffer)
+        let [l:cwd, l:command] = ale#ant#BuildClasspathCommand(a:buffer)
     endif
 
     if empty(l:command)
@@ -28,7 +28,8 @@ function! ale_linters#java#javac#RunWithImportPaths(buffer) abort
     return ale#command#Run(
     \   a:buffer,
     \   l:command,
-    \   function('ale_linters#java#javac#GetCommand')
+    \   function('ale_linters#java#javac#GetCommand'),
+    \   {'cwd': l:cwd},
     \)
 endfunction
 
@@ -110,8 +111,7 @@ function! ale_linters#java#javac#GetCommand(buffer, import_paths, meta) abort
 
     " Always run javac from the directory the file is in, so we can resolve
     " relative paths correctly.
-    return ale#path#BufferCdString(a:buffer)
-    \ . '%e -Xlint'
+    return '%e -Xlint'
     \ . ale#Pad(l:cp_option)
     \ . ale#Pad(l:sp_option)
     \ . ' -d ' . ale#Escape(l:class_file_directory)
@@ -154,6 +154,7 @@ endfunction
 call ale#linter#Define('java', {
 \   'name': 'javac',
 \   'executable': {b -> ale#Var(b, 'java_javac_executable')},
+\   'cwd': '%s:h',
 \   'command': function('ale_linters#java#javac#RunWithImportPaths'),
 \   'output_stream': 'stderr',
 \   'callback': 'ale_linters#java#javac#Handle',

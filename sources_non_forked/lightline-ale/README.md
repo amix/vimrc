@@ -6,10 +6,10 @@ This plugin provides [ALE](https://github.com/w0rp/ale) indicator for the [light
 
 ## Table Of Contents
 
-* [Installation](#installation)
-* [Integration](#integration)
-* [Configuration](#configuration)
-* [License](#license)
+- [Installation](#installation)
+- [Integration](#integration)
+- [Configuration](#configuration)
+- [License](#license)
 
 ## Installation
 
@@ -55,6 +55,17 @@ let g:lightline.component_type = {
 let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]] }
 ```
 
+3.1. Lineinfo, fileformat, etc. have to be added additionaly. Final example:
+
+```viml
+let g:lightline.active = {
+            \ 'right': [ [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
+            \            [ 'lineinfo' ],
+	    \            [ 'percent' ],
+	    \            [ 'fileformat', 'fileencoding', 'filetype'] ] }
+
+```
+            
 ## Configuration
 
 ##### `g:lightline#ale#indicator_checking`
@@ -83,18 +94,18 @@ If you would like to replace the default indicators with symbols like on the scr
 
 The following icons from the Font Awesome font are used in the screenshot:
 
-* Checking: [f110](https://fontawesome.com/icons/spinner)
-* Infos: [f129](https://fontawesome.com/icons/info)
-* Warnings: [f071](https://fontawesome.com/icons/exclamation-triangle)
-* Errors: [f05e](https://fontawesome.com/icons/ban)
-* OK: [f00c](https://fontawesome.com/icons/check) (although I prefer to disable this component)
+- Checking: [f110](https://fontawesome.com/icons/spinner)
+- Infos: [f129](https://fontawesome.com/icons/info)
+- Warnings: [f071](https://fontawesome.com/icons/exclamation-triangle)
+- Errors: [f05e](https://fontawesome.com/icons/ban)
+- OK: [f00c](https://fontawesome.com/icons/check) (although I prefer to disable this component)
 
 To specify icons in the configuration, use their unicode codes as `"\uXXXX"` (make sure to wrap them in double quotes). Alternatively copy the icons from a font website, or type <kbd>\<C-v\>u\<4-digit-unicode\></kbd> or <kbd>\<C-v\>U\<8-digit-unicode\></kbd> to insert the literal characters.
 
 See the code points here:
 
-* Font Awesome: https://fontawesome.com/icons
-* Nerd Fonts: https://github.com/ryanoasis/nerd-fonts#glyph-sets
+- Font Awesome: https://fontawesome.com/icons
+- Nerd Fonts: https://github.com/ryanoasis/nerd-fonts#glyph-sets
 
 Here's the configuration snippet used in the screenshot:
 
@@ -108,4 +119,4 @@ let g:lightline#ale#indicator_ok = "\uf00c"
 
 ## License
 
-Released under the [MIT License](LICENSE)
+Released under the [ISC License](LICENSE)

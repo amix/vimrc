@@ -53,8 +53,8 @@ function! ale#fixers#eslint#ApplyFixForVersion(buffer, version) abort
     " Use --fix-to-stdout with eslint_d
     if l:executable =~# 'eslint_d$' && ale#semver#GTE(a:version, [3, 19, 0])
         return {
-        \   'command': ale#handlers#eslint#GetCdString(a:buffer)
-        \       . ale#node#Executable(a:buffer, l:executable)
+        \   'cwd': ale#handlers#eslint#GetCwd(a:buffer),
+        \   'command': ale#node#Executable(a:buffer, l:executable)
         \       . ale#Pad(l:options)
         \       . ' --stdin-filename %s --stdin --fix-to-stdout',
         \   'process_with': 'ale#fixers#eslint#ProcessEslintDOutput',
@@ -64,8 +64,8 @@ function! ale#fixers#eslint#ApplyFixForVersion(buffer, version) abort
     " 4.9.0 is the first version with --fix-dry-run
     if ale#semver#GTE(a:version, [4, 9, 0])
         return {
-        \   'command': ale#handlers#eslint#GetCdString(a:buffer)
-        \       . ale#node#Executable(a:buffer, l:executable)
+        \   'cwd': ale#handlers#eslint#GetCwd(a:buffer),
+        \   'command': ale#node#Executable(a:buffer, l:executable)
         \       . ale#Pad(l:options)
         \       . ' --stdin-filename %s --stdin --fix-dry-run --format=json',
         \   'process_with': 'ale#fixers#eslint#ProcessFixDryRunOutput',
@@ -73,8 +73,8 @@ function! ale#fixers#eslint#ApplyFixForVersion(buffer, version) abort
     endif
 
     return {
-    \   'command': ale#handlers#eslint#GetCdString(a:buffer)
-    \       . ale#node#Executable(a:buffer, l:executable)
+    \   'cwd': ale#handlers#eslint#GetCwd(a:buffer),
+    \   'command': ale#node#Executable(a:buffer, l:executable)
     \       . ale#Pad(l:options)
     \       . (!empty(l:config) ? ' -c ' . ale#Escape(l:config) : '')
     \       . ' --fix %t',

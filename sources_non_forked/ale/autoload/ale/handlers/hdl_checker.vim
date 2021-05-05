@@ -32,6 +32,8 @@ function! ale#handlers#hdl_checker#GetProjectRoot(buffer) abort
     if ale#handlers#hdl_checker#IsDotGit(l:project_root)
         return fnamemodify(l:project_root, ':h:h')
     endif
+
+    return ''
 endfunction
 
 function! ale#handlers#hdl_checker#GetExecutable(buffer) abort

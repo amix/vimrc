@@ -13,8 +13,7 @@ function! ale_linters#php#phpcs#GetCommand(buffer) abort
     \   ? '--standard=' . ale#Escape(l:standard)
     \   : ''
 
-    return ale#path#BufferCdString(a:buffer)
-    \   . '%e -s --report=emacs --stdin-path=%s'
+    return '%e -s --report=emacs --stdin-path=%s'
     \   . ale#Pad(l:standard_option)
     \   . ale#Pad(ale#Var(a:buffer, 'php_phpcs_options'))
 endfunction
@@ -49,6 +48,7 @@ call ale#linter#Define('php', {
 \       'vendor/bin/phpcs',
 \       'phpcs'
 \   ])},
+\   'cwd': '%s:h',
 \   'command': function('ale_linters#php#phpcs#GetCommand'),
 \   'callback': 'ale_linters#php#phpcs#Handle',
 \})

@@ -18,8 +18,8 @@ function! ale_linters#php#intelephense#GetProjectRoot(buffer) abort
     return !empty(l:git_path) ? fnamemodify(l:git_path, ':h:h') : ''
 endfunction
 
-function! ale_linters#php#intelephense#GetInitializationOptions() abort
-    return ale#Get('php_intelephense_config')
+function! ale_linters#php#intelephense#GetInitializationOptions(buffer) abort
+    return ale#Var(a:buffer, 'php_intelephense_config')
 endfunction
 
 call ale#linter#Define('php', {

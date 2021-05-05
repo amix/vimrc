@@ -1,5 +1,11 @@
 #version 1
 #PREAMBLE
+#documentclass without options
+snippet dcl \documentclass{}
+	\\documentclass{${1:class}} ${0}
+#documentclass with options
+snippet dclo \documentclass[]{}
+	\\documentclass[${1:options}]{${2:class}} ${0}
 #newcommand
 snippet nc \newcommand
 	\\newcommand{\\${1:cmd}}[${2:opt}]{${3:realcmd}} ${0}
@@ -19,6 +25,11 @@ snippet begin \begin{} ... \end{} block
 	\\begin{${1:env}}
 		${0:${VISUAL}}
 	\\end{$1}
+
+# Maketitle
+snippet mkt maketitle
+	\\maketitle
+	
 # Tabular
 snippet tab tabular (or arbitrary) environment
 	\\begin{${1:tabular}}{${2:c}}

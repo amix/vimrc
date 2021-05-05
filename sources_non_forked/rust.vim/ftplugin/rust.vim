@@ -47,7 +47,7 @@ setlocal smartindent nocindent
 
 if get(g:, 'rust_recommended_style', 1)
     let b:rust_set_style = 1
-    setlocal tabstop=8 shiftwidth=4 softtabstop=4 expandtab
+    setlocal shiftwidth=4 softtabstop=4 expandtab
     setlocal textwidth=99
 endif
 

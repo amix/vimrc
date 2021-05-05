@@ -37,8 +37,8 @@ function! ale#fixers#prettier_eslint#ApplyFixForVersion(buffer, version) abort
     " 4.4.0 is the first version with --stdin-filepath
     if ale#semver#GTE(a:version, [4, 4, 0])
         return {
-        \   'command': ale#path#BufferCdString(a:buffer)
-        \       . ale#Escape(l:executable)
+        \   'cwd': '%s:h',
+        \   'command': ale#Escape(l:executable)
         \       . l:eslint_config_option
         \       . (!empty(l:options) ? ' ' . l:options : '')
         \       . ' --stdin-filepath %s --stdin',

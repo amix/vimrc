@@ -128,6 +128,10 @@
 
 ![lightline.vim - simpleblack](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/simpleblack.png)
 
+### apprentice
+
+![lightline.vim - apprentice](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/apprentice.png)
+
 ### landscape
 
 ![lightline.vim - landscape](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/landscape.png)

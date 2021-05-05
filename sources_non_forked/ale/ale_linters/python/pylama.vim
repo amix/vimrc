@@ -16,19 +16,20 @@ function! ale_linters#python#pylama#GetExecutable(buffer) abort
     return ale#python#FindExecutable(a:buffer, 'python_pylama', ['pylama'])
 endfunction
 
-function! ale_linters#python#pylama#GetCommand(buffer) abort
-    let l:cd_string = ''
-
+function! ale_linters#python#pylama#GetCwd(buffer) abort
     if ale#Var(a:buffer, 'python_pylama_change_directory')
         " Pylama loads its configuration from the current directory only, and
         " applies file masks using paths relative to the current directory.
         " Run from project root, if found, otherwise buffer dir.
         let l:project_root = ale#python#FindProjectRoot(a:buffer)
-        let l:cd_string = l:project_root isnot# ''
-        \   ? ale#path#CdString(l:project_root)
-        \   : ale#path#BufferCdString(a:buffer)
+
+        return !empty(l:project_root) ? l:project_root : '%s:h'
     endif
 
+    return ''
+endfunction
+
+function! ale_linters#python#pylama#GetCommand(buffer) abort
     let l:executable = ale_linters#python#pylama#GetExecutable(a:buffer)
     let l:exec_args = l:executable =~? 'pipenv$'
     \   ? ' run pylama'
@@ -37,8 +38,7 @@ function! ale_linters#python#pylama#GetCommand(buffer) abort
     " Note: Using %t to lint changes would be preferable, but many pylama
     " checks use surrounding paths (e.g. C0103 module name, E0402 relative
     " import beyond top, etc.).  Neither is ideal.
-    return l:cd_string
-    \   . ale#Escape(l:executable) . l:exec_args
+    return ale#Escape(l:executable) . l:exec_args
     \   . ale#Pad(ale#Var(a:buffer, 'python_pylama_options'))
     \   . ' %s'
 endfunction
@@ -86,6 +86,7 @@ endfunction
 call ale#linter#Define('python', {
 \   'name': 'pylama',
 \   'executable': function('ale_linters#python#pylama#GetExecutable'),
+\   'cwd': function('ale_linters#python#pylama#GetCwd'),
 \   'command': function('ale_linters#python#pylama#GetCommand'),
 \   'callback': 'ale_linters#python#pylama#Handle',
 \   'lint_file': 1,

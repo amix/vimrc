@@ -50,6 +50,7 @@ function! s:go(...) abort
     let indent = '^\s*'
   endif
 
+  let lines = []
   for lnum in range(lnum1,lnum2)
     let line = getline(lnum)
     if strlen(r) > 2 && l.r !~# '\\'
@@ -62,8 +63,9 @@ function! s:go(...) abort
     else
       let line = substitute(line,'^\%('.matchstr(getline(lnum1),indent).'\|\s*\)\zs.*\S\@<=','\=l.submatch(0).r','')
     endif
-    call setline(lnum,line)
+    call add(lines, line)
   endfor
+  call setline(lnum1, lines)
   let modelines = &modelines
   try
     set modelines=0

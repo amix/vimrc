@@ -1,14 +1,22 @@
 " Author: Magnus Ottenklinger - https://github.com/evnu
 
+let g:ale_erlang_erlc_executable = get(g:, 'ale_erlang_erlc_executable', 'erlc')
 let g:ale_erlang_erlc_options = get(g:, 'ale_erlang_erlc_options', '')
+
+function! ale_linters#erlang#erlc#GetExecutable(buffer) abort
+    return ale#Var(a:buffer, 'erlang_erlc_executable')
+endfunction
 
 function! ale_linters#erlang#erlc#GetCommand(buffer) abort
     let l:output_file = ale#util#Tempname()
     call ale#command#ManageFile(a:buffer, l:output_file)
 
-    return 'erlc -o ' . ale#Escape(l:output_file)
-    \   . ' ' . ale#Var(a:buffer, 'erlang_erlc_options')
-    \   . ' %t'
+    let l:command = ale#Escape(ale_linters#erlang#erlc#GetExecutable(a:buffer))
+    \             . ' -o ' . ale#Escape(l:output_file)
+    \             . ' ' . ale#Var(a:buffer, 'erlang_erlc_options')
+    \             . ' %t'
+
+    return l:command
 endfunction
 
 function! ale_linters#erlang#erlc#Handle(buffer, lines) abort
@@ -90,7 +98,7 @@ endfunction
 
 call ale#linter#Define('erlang', {
 \   'name': 'erlc',
-\   'executable': 'erlc',
+\   'executable': function('ale_linters#erlang#erlc#GetExecutable'),
 \   'command': function('ale_linters#erlang#erlc#GetCommand'),
 \   'callback': 'ale_linters#erlang#erlc#Handle',
 \})

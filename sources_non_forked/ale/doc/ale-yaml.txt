@@ -16,6 +16,38 @@ Install prettier either globally or locally: >
   npm install prettier     # local
 <
 ===============================================================================
+spectral                                                    *ale-yaml-spectral*
+
+Website: https://github.com/stoplightio/spectral
+
+Installation
+-------------------------------------------------------------------------------
+
+Install spectral either globally or locally: >
+
+  npm install @stoplight/spectral -g  # global
+  npm install @stoplight/spectral     # local
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_spectral_executable                 *g:ale_yaml_spectral_executable*
+                                               *b:ale_yaml_spectral_executable*
+  Type: |String|
+  Default: `'spectral'`
+
+  This variable can be set to change the path to spectral.
+
+g:ale_yaml_spectral_use_global                 *g:ale_yaml_spectral_use_global*
+                                               *b:ale_yaml_spectral_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 swaglint                                                    *ale-yaml-swaglint*
 
 Website: https://github.com/byCedric/swaglint

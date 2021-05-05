@@ -9,7 +9,7 @@ function! ale_linters#java#checkstyle#Handle(buffer, lines) abort
     let l:output = []
 
     " modern checkstyle versions
-    let l:pattern = '\v\[(WARN|ERROR)\] [a-zA-Z]?:?[^:]+:(\d+):(\d+)?:? (.*) \[(.+)\]$'
+    let l:pattern = '\v\[(WARN|ERROR)\] [a-zA-Z]?:?[^:]+:(\d+):(\d+)?:? (.*) \[(.+)\]'
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:output, {
