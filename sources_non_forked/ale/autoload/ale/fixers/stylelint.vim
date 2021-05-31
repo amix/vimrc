@@ -6,7 +6,7 @@ call ale#Set('stylelint_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('stylelint_options', '')
 
 function! ale#fixers#stylelint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'stylelint', [
+    return ale#path#FindExecutable(a:buffer, 'stylelint', [
     \   'node_modules/stylelint/bin/stylelint.js',
     \   'node_modules/.bin/stylelint',
     \])

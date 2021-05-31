@@ -7,7 +7,7 @@ call ale#Set('javascript_prettier_eslint_use_global', get(g:, 'ale_use_global_ex
 call ale#Set('javascript_prettier_eslint_options', '')
 
 function! ale#fixers#prettier_eslint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'javascript_prettier_eslint', [
+    return ale#path#FindExecutable(a:buffer, 'javascript_prettier_eslint', [
     \   'node_modules/prettier-eslint-cli/dist/index.js',
     \   'node_modules/.bin/prettier-eslint',
     \])

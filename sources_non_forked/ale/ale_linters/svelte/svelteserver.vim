@@ -13,7 +13,7 @@ endfunction
 call ale#linter#Define('svelte', {
 \   'name': 'svelteserver',
 \   'lsp': 'stdio',
-\   'executable': {b -> ale#node#FindExecutable(b, 'svelte_svelteserver', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'svelte_svelteserver', [
 \       'node_modules/.bin/svelteserver',
 \   ])},
 \   'command': '%e --stdio',

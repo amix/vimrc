@@ -66,7 +66,7 @@ function! ale#handlers#solhint#FindConfig(buffer) abort
 endfunction
 
 function! ale#handlers#solhint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'solidity_solhint', s:executables)
+    return ale#path#FindExecutable(a:buffer, 'solidity_solhint', s:executables)
 endfunction
 
 " Given a buffer, return an appropriate working directory for solhint.
@@ -74,7 +74,7 @@ function! ale#handlers#solhint#GetCwd(buffer) abort
     " If solhint is installed in a directory which contains the buffer, assume
     " it is the solhint project root. Otherwise, use nearest node_modules.
     " Note: If node_modules not present yet, can't load local deps anyway.
-    let l:executable = ale#node#FindNearestExecutable(a:buffer, s:executables)
+    let l:executable = ale#path#FindNearestExecutable(a:buffer, s:executables)
 
     if !empty(l:executable)
         let l:nmi = strridx(l:executable, 'node_modules')

@@ -7,7 +7,7 @@ function! ale#handlers#tslint#InitVariables() abort
 endfunction
 
 function! ale#handlers#tslint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'typescript_tslint', [
+    return ale#path#FindExecutable(a:buffer, 'typescript_tslint', [
     \   'node_modules/.bin/tslint',
     \])
 endfunction

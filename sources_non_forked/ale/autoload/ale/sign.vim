@@ -203,6 +203,27 @@ function! ale#sign#ParsePattern() abort
     return l:pattern
 endfunction
 
+" Given a buffer number, return a List of placed signs [line, id, group]
+function! ale#sign#ParseSignsWithGetPlaced(buffer) abort
+    let l:signs = sign_getplaced(a:buffer, { 'group': s:supports_sign_groups ? 'ale' : '' })[0].signs
+    let l:result = []
+    let l:is_dummy_sign_set = 0
+
+    for l:sign in l:signs
+        if l:sign['name'] is# 'ALEDummySign'
+            let l:is_dummy_sign_set = 1
+        else
+            call add(l:result, [
+            \   str2nr(l:sign['lnum']),
+            \   str2nr(l:sign['id']),
+            \   l:sign['name'],
+            \])
+        endif
+    endfor
+
+    return [l:is_dummy_sign_set, l:result]
+endfunction
+
 " Given a list of lines for sign output, return a List of [line, id, group]
 function! ale#sign#ParseSigns(line_list) abort
     let l:pattern =ale#sign#ParsePattern()
@@ -229,9 +250,13 @@ function! ale#sign#ParseSigns(line_list) abort
 endfunction
 
 function! ale#sign#FindCurrentSigns(buffer) abort
-    let l:line_list = ale#sign#ReadSigns(a:buffer)
+    if exists('*sign_getplaced')
+        return ale#sign#ParseSignsWithGetPlaced(a:buffer)
+    else
+        let l:line_list = ale#sign#ReadSigns(a:buffer)
 
-    return ale#sign#ParseSigns(l:line_list)
+        return ale#sign#ParseSigns(l:line_list)
+    endif
 endfunction
 
 " Given a loclist, group the List into with one List per line.

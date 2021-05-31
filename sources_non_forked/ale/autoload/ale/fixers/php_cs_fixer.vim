@@ -6,7 +6,7 @@ call ale#Set('php_cs_fixer_use_global', get(g:, 'ale_use_global_executables', 0)
 call ale#Set('php_cs_fixer_options', '')
 
 function! ale#fixers#php_cs_fixer#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'php_cs_fixer', [
+    return ale#path#FindExecutable(a:buffer, 'php_cs_fixer', [
     \   'vendor/bin/php-cs-fixer',
     \   'php-cs-fixer'
     \])

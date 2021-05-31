@@ -6,7 +6,7 @@ call ale#Set('erlang_erlfmt_use_global', get(g:, 'ale_use_global_executables', 0
 call ale#Set('erlang_erlfmt_options', '')
 
 function! ale#fixers#erlfmt#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'erlang_erlfmt', ['erlfmt'])
+    return ale#path#FindExecutable(a:buffer, 'erlang_erlfmt', ['erlfmt'])
 endfunction
 
 function! ale#fixers#erlfmt#Fix(buffer) abort

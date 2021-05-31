@@ -306,9 +306,6 @@ Exposed functions for lightline.vim.
 	lightline#update()			*lightline#update()*
 		Updates all the statuslines of existing windows.
 
-	lightline#update_once()			*lightline#update_once()*
-		Updates the statuslines only once.
-
 	lightline#enable()			*lightline#enable()*
 		Enables |lightline|.
 

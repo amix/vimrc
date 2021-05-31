@@ -202,7 +202,7 @@ function! ale_linters#elm#make#GetCommand(buffer) abort
     " elm-test needs to know the path of elm-make if elm isn't installed globally.
     " https://github.com/rtfeldman/node-test-runner/blob/57728f10668f2d2ab3179e7e3208bcfa9a1f19aa/README.md#--compiler
     if l:is_v19 && l:is_using_elm_test
-        let l:elm_make_executable = ale#node#FindExecutable(a:buffer, 'elm_make', ['node_modules/.bin/elm'])
+        let l:elm_make_executable = ale#path#FindExecutable(a:buffer, 'elm_make', ['node_modules/.bin/elm'])
         let l:elm_test_compiler_flag = ' --compiler ' . l:elm_make_executable . ' '
     else
         let l:elm_test_compiler_flag = ' '
@@ -222,13 +222,13 @@ function! ale_linters#elm#make#GetExecutable(buffer) abort
     let l:is_v19 = ale_linters#elm#make#IsVersionGte19(a:buffer)
 
     if l:is_test && l:is_v19
-        return ale#node#FindExecutable(
+        return ale#path#FindExecutable(
         \   a:buffer,
         \   'elm_make',
         \   ['node_modules/.bin/elm-test', 'node_modules/.bin/elm']
         \)
     else
-        return ale#node#FindExecutable(a:buffer, 'elm_make', ['node_modules/.bin/elm'])
+        return ale#path#FindExecutable(a:buffer, 'elm_make', ['node_modules/.bin/elm'])
     endif
 endfunction
 

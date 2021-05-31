@@ -11,7 +11,7 @@ function! ale_linters#html#angular#GetProjectRoot(buffer) abort
 endfunction
 
 function! ale_linters#html#angular#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'html_angular', [
+    return ale#path#FindExecutable(a:buffer, 'html_angular', [
     \   'node_modules/@angular/language-server/bin/ngserver',
     \   'node_modules/@angular/language-server/index.js',
     \])

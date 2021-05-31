@@ -172,13 +172,23 @@ Commands for operating on a hunk:~
 
                                               *gitgutter-:GitGutterPreviewHunk*
 :GitGutterPreviewHunk   Preview the hunk the cursor is in.
-                        Use |:pclose| or |CTRL-W_CTRL-Z| to close the preview
-                        window, or set |g:gitgutter_close_preview_on_escape|
-                        and use <Esc>.
 
                         To stage part of the hunk, move to the preview window,
                         delete any lines you do not want to stage, and
                         |GitGutterStageHunk|.
+
+                        To close a non-floating preview window use |:pclose|
+                        or |CTRL-W_z| or |CTRL-W_CTRL-Z|; or normal window-
+                        closing (|:quit| or |:close| or |CTRL-W_c|) if your cursor
+                        is in the preview window.
+
+                        To close a floating window when the cursor is in the
+                        original buffer, move the cursor.
+
+                        To close a floating window when the cursor is in the
+                        floating window use normal window-closing, or move to
+                        the original window with |CTRL-W_p|.  Alternatively set
+                        |g:gitgutter_close_preview_on_escape| and use <Esc>.
 
 Commands for folds:~
 

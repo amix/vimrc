@@ -1,5 +1,5 @@
 " Author: Ricardo Liang <ricardoliang@gmail.com>
-" Author: ourigen <ourigen [at] pm.me>
+" Author: ourigen <https://github.com/ourigen>
 " Description: Texlab language server (Rust rewrite)
 
 call ale#Set('tex_texlab_executable', 'texlab')

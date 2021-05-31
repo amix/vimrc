@@ -44,7 +44,7 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'phpcs',
-\   'executable': {b -> ale#node#FindExecutable(b, 'php_phpcs', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'php_phpcs', [
 \       'vendor/bin/phpcs',
 \       'phpcs'
 \   ])},

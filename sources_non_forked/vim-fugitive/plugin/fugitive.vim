@@ -128,8 +128,8 @@ endfunction
 " structure of the return value as it is not guaranteed.  If you want a full
 " dictionary of every config value, use FugitiveConfigGetRegexp('.*').
 function! FugitiveConfig(...) abort
-  if a:0 == 2 && (type(a:2) != type({}) || has_key(a:2, 'git_dir'))
-    return fugitive#Config(a:1, FugitiveGitDir(a:2))
+  if a:0 >= 2 && (type(a:2) != type({}) || has_key(a:2, 'git_dir'))
+    return call('fugitive#Config', [a:1, FugitiveGitDir(a:2)] + a:000[2:-1])
   elseif a:0 == 1 && (type(a:1) !=# type('') || a:1 !~# '^[[:alnum:]-]\+\.')
     return fugitive#Config(FugitiveGitDir(a:1))
   else

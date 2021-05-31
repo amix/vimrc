@@ -6,7 +6,7 @@ call ale#Set('bazel_buildifier_use_global', get(g:, 'ale_use_global_executables'
 call ale#Set('bazel_buildifier_options', '')
 
 function! ale#fixers#buildifier#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'bazel_buildifier', [
+    return ale#path#FindExecutable(a:buffer, 'bazel_buildifier', [
     \   'buildifier',
     \])
 endfunction

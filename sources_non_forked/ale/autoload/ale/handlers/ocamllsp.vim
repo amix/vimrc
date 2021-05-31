@@ -1,6 +1,13 @@
 " Author: Risto Stevcev <me@risto.codes>
 " Description: Handlers for the official OCaml language server
 
+let s:language_id_of_filetype = {
+\  'menhir': 'ocaml.menhir',
+\  'ocaml': 'ocaml',
+\  'ocamlinterface': 'ocaml.interface',
+\  'ocamllex': 'ocaml.lex'
+\}
+
 function! ale#handlers#ocamllsp#GetExecutable(buffer) abort
     return 'ocamllsp'
 endfunction
@@ -13,7 +20,7 @@ function! ale#handlers#ocamllsp#GetCommand(buffer) abort
 endfunction
 
 function! ale#handlers#ocamllsp#GetLanguage(buffer) abort
-    return getbufvar(a:buffer, '&filetype')
+    return s:language_id_of_filetype[getbufvar(a:buffer, '&filetype')]
 endfunction
 
 function! ale#handlers#ocamllsp#GetProjectRoot(buffer) abort

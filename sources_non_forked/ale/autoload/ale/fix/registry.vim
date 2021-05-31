@@ -303,12 +303,12 @@ let s:default_registry = {
 \   },
 \   'ocamlformat': {
 \       'function': 'ale#fixers#ocamlformat#Fix',
-\       'suggested_filetypes': ['ocaml'],
+\       'suggested_filetypes': ['ocaml', 'ocamlinterface'],
 \       'description': 'Fix OCaml files with ocamlformat.',
 \   },
 \   'ocp-indent': {
 \       'function': 'ale#fixers#ocp_indent#Fix',
-\       'suggested_filetypes': ['ocaml'],
+\       'suggested_filetypes': ['ocaml', 'ocamlinterface'],
 \       'description': 'Fix OCaml files with ocp-indent.',
 \   },
 \   'refmt': {
