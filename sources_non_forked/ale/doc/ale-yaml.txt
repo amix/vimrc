@@ -1,6 +1,28 @@
 ===============================================================================
 ALE YAML Integration                                         *ale-yaml-options*
 
+
+===============================================================================
+circleci                                                    *ale-yaml-circleci*
+
+Website: https://circleci.com/docs/2.0/local-cli
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Follow the instructions on the website, and make sure to test that you can
+validate configuration files with: >
+
+  circleci config validate - < .circleci/config.yml
+<
+
+As long as the validator runs correctly, you should be able to see errors when
+you save the configuration file. The validator doesn't run as you type because
+it sends network requests, and running too often would overload the circleci
+servers.
+
+
 ===============================================================================
 prettier                                                    *ale-yaml-prettier*
 
@@ -15,10 +37,12 @@ Install prettier either globally or locally: >
   npm install prettier -g  # global
   npm install prettier     # local
 <
+
 ===============================================================================
 spectral                                                    *ale-yaml-spectral*
 
 Website: https://github.com/stoplightio/spectral
+
 
 Installation
 -------------------------------------------------------------------------------
@@ -80,6 +104,7 @@ g:ale_yaml_swaglint_use_global                 *g:ale_yaml_swaglint_use_global*
 
   See |ale-integrations-local-executables|
 
+
 ===============================================================================
 yamlfix                                                      *ale-yaml-yamlfix*
 
@@ -117,6 +142,7 @@ g:ale_yaml_yamlfix_use_global                   *g:ale_yaml_yamlfix_use_global*
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
+
 
 ===============================================================================
 yamllint                                                    *ale-yaml-yamllint*

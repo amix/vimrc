@@ -52,9 +52,7 @@ endif
 function! ale#sign#SetUpDefaultColumnWithoutErrorsHighlight() abort
     let l:verbose = &verbose
     set verbose=0
-    redir => l:output
-        0verbose silent highlight SignColumn
-    redir end
+    let l:output = execute('highlight SignColumn', 'silent')
     let &verbose = l:verbose
 
     let l:highlight_syntax = join(split(l:output)[2:])
@@ -171,10 +169,10 @@ endfunction
 
 " Read sign data for a buffer to a list of lines.
 function! ale#sign#ReadSigns(buffer) abort
-    redir => l:output
-        silent execute 'sign place ' . s:GroupCmd() . s:PriorityCmd()
-        \ . ' buffer=' . a:buffer
-    redir end
+    let l:output = execute(
+    \   'sign place ' . s:GroupCmd() . s:PriorityCmd()
+    \   . ' buffer=' . a:buffer
+    \ )
 
     return split(l:output, "\n")
 endfunction

@@ -1,4 +1,4 @@
-if exists("b:did_ftplugin") || !exists('*fugitive#BlameFileType')
+if exists("b:did_ftplugin") || !exists("*FugitiveGitDir")
   finish
 endif
 let b:did_ftplugin = 1

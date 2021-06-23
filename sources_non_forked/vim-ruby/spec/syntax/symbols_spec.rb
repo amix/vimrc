@@ -42,4 +42,12 @@ describe "Syntax highlighting" do
       validates_inclusion_of :gender, in: %w(male female), if: :gender_required?
     EOF
   end
+
+  specify "nested parentheses inside symbols" do
+    assert_correct_highlighting <<~EOF, 'bar\zs)', 'rubySymbol'
+      h = %i(
+        foo(bar)baz
+      )
+    EOF
+  end
 end

@@ -41,7 +41,7 @@ endfunction
 
 function! s:WinShellEsc(arg) abort
   if type(a:arg) == type([])
-    return join(map(copy(a:arg), 's:shellesc(v:val)'))
+    return join(map(copy(a:arg), 's:WinShellEsc(v:val)'))
   elseif a:arg =~# '^[A-Za-z0-9_/:.-]\+$'
     return a:arg
   else
@@ -1480,7 +1480,7 @@ function! fugitive#getfperm(url) abort
   return perm ==# '---------' ? '' : perm
 endfunction
 
-function s:UpdateIndex(dir, info) abort
+function! s:UpdateIndex(dir, info) abort
   let info = join(a:info[0:-2]) . "\t" . a:info[-1] . "\n"
   let [error, exec_error] = s:SystemError([a:dir, 'update-index', '--index-info'], info)
   return !exec_error ? '' : len(error) ? error : 'fugitive: unknown update-index error'
@@ -2807,8 +2807,9 @@ function! fugitive#PagerFor(argv, ...) abort
     return 0
   elseif type(value) == type('')
     return value
-  elseif args[0] =~# '^\%(branch\|config\|diff\|grep\|log\|range-diff\|reflog\|shortlog\|show\|tag\|whatchanged\)$' ||
+  elseif args[0] =~# '^\%(branch\|config\|diff\|grep\|log\|range-diff\|shortlog\|show\|tag\|whatchanged\)$' ||
         \ (args[0] ==# 'stash' && get(args, 1, '') ==# 'show') ||
+        \ (args[0] ==# 'reflog' && get(args, 1, '') !~# '^\%(expire\|delete\|exists\)$') ||
         \ (args[0] ==# 'am' && s:HasOpt(args, '--show-current-patch'))
     return 1
   else
@@ -2861,7 +2862,7 @@ function! fugitive#Command(line1, line2, range, bang, mods, arg) abort
   let name = substitute(get(args, 0, ''), '\%(^\|-\)\(\l\)', '\u\1', 'g')
   let git = s:UserCommandList()
   let options = {'git': git, 'dir': dir, 'flags': flags}
-  if pager is# -1 && exists('*s:' . name . 'Subcommand') && get(args, 1, '') !=# '--help'
+  if pager is# -1 && name =~# '^\a\+$' && exists('*s:' . name . 'Subcommand') && get(args, 1, '') !=# '--help'
     try
       let overrides = s:{name}Subcommand(a:line1, a:line2, a:range, a:bang, a:mods, extend({'subcommand': args[0], 'subcommand_args': args[1:-1]}, options))
       if type(overrides) == type('')
@@ -2936,7 +2937,7 @@ function! fugitive#Command(line1, line2, range, bang, mods, arg) abort
     call extend(env, {'COLUMNS': '' . &columns - 1}, 'keep')
   endif
   if s:RunJobs() && pager isnot# 1
-    let state.pty = get(g:, 'fugitive_pty', has('unix') && !has('win32unix') && (has('patch-8.0.0744') || has('nvim')))
+    let state.pty = get(g:, 'fugitive_pty', has('unix') && !has('win32unix') && (has('patch-8.0.0744') || has('nvim')) && fugitive#GitVersion() !~# '\.windows\>')
     if !state.pty
       let args = s:AskPassArgs(dir) + args
     endif
@@ -2993,9 +2994,19 @@ function! fugitive#Command(line1, line2, range, bang, mods, arg) abort
     return 'call fugitive#Resume()|silent checktime' . after
   elseif pager is# 1
     let pre = s:BuildEnvPrefix(env)
-    silent! execute '!' . escape(pre . s:UserCommand({'git': git, 'dir': dir}, s:disable_colors + flags + ['--no-pager'] + args), '!#%') .
-          \ (&shell =~# 'csh' ? ' >& ' . s:shellesc(state.file) : ' > ' . s:shellesc(state.file) . ' 2>&1')
-    let state.exit_status = v:shell_error
+    try
+      if exists('+guioptions') && &guioptions =~# '!'
+        let guioptions = &guioptions
+        set guioptions-=!
+      endif
+      silent! execute '!' . escape(pre . s:UserCommand({'git': git, 'dir': dir}, s:disable_colors + flags + ['--no-pager'] + args), '!#%') .
+            \ (&shell =~# 'csh' ? ' >& ' . s:shellesc(state.file) : ' > ' . s:shellesc(state.file) . ' 2>&1')
+      let state.exit_status = v:shell_error
+    finally
+      if exists('guioptions')
+        let &guioptions = guioptions
+      endif
+    endtry
     redraw!
     call s:RunSave(state)
     call s:RunFinished(state)
@@ -3968,7 +3979,7 @@ function! s:StageApply(info, reverse, extra) abort
     endif
   endwhile
   if start == 0
-    throw 'fugitive: cold not find hunk'
+    throw 'fugitive: could not find hunk'
   elseif getline(start) !~# '^@@ '
     throw 'fugitive: cannot apply conflict hunk'
   endif
@@ -5487,8 +5498,6 @@ function! fugitive#Diffsplit(autodir, keepfocus, mods, arg, args) abort
       set diffopt-=vertical
     endif
     execute mods 'diffsplit' s:fnameescape(spec)
-    let &l:readonly = &l:readonly
-    redraw
     let w:fugitive_diff_restore = restore
     let winnr = winnr()
     if getwinvar('#', '&diff')

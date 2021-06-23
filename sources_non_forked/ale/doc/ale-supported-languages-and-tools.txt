@@ -568,6 +568,7 @@ Notes:
 * XML
   * `xmllint`
 * YAML
+  * `circleci`!!
   * `prettier`
   * `spectral`
   * `swaglint`

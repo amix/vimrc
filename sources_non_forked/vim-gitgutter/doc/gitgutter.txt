@@ -63,15 +63,20 @@ Neovim:~
 ===============================================================================
 WINDOWS                                                     *gitgutter-windows*
 
-I recommend configuring vim-gitgutter with the full path to your git executable.
+There is a potential risk on Windows due to `cmd.exe` prioritising the current
+folder over folders in `PATH`.  If you have a file named `git.*` (i.e. with
+any extension in `PATHEXT`) in your current folder, it will be executed
+instead of git whenever the plugin calls git.
+
+You can avoid this risk by configuring the full path to your git executable.
 For example:
 >
+    " This path probably won't work
     let g:gitgutter_git_executable = 'C:\Program Files\Git\bin\git.exe'
 <
-This is to avoid a problem which occurs if you have file named "git.*" (i.e.
-with any extension in "PATHEXT") in your current folder.  "cmd.exe" prioritises
-the current folder over folders in 'PATH' and will try to execute your file
-instead of the "git" binary.
+
+Unfortunately I don't know the correct escaping for the path - if you do,
+please let me know!
 
 
 ===============================================================================
@@ -189,6 +194,12 @@ Commands for operating on a hunk:~
                         floating window use normal window-closing, or move to
                         the original window with |CTRL-W_p|.  Alternatively set
                         |g:gitgutter_close_preview_on_escape| and use <Esc>.
+
+                        Two functions are available for your own logic:
+>
+                          gitgutter#hunk#is_preview_window_open()
+                          gitgutter#hunk#close_hunk_preview_window()
+<
 
 Commands for folds:~
 

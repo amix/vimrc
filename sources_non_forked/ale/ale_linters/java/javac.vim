@@ -132,7 +132,9 @@ function! ale_linters#java#javac#Handle(buffer, lines) abort
 
     for l:match in ale#util#GetMatches(a:lines, [l:pattern, l:col_pattern, l:symbol_pattern])
         if empty(l:match[2]) && empty(l:match[3])
-            let l:output[-1].col = len(l:match[1])
+            if !empty(l:match[1]) && !empty(l:output)
+                let l:output[-1].col = len(l:match[1])
+            endif
         elseif empty(l:match[3])
             " Add symbols to 'cannot find symbol' errors.
             if l:output[-1].text is# 'error: cannot find symbol'

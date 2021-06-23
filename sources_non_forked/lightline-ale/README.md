@@ -16,7 +16,7 @@ This plugin provides [ALE](https://github.com/w0rp/ale) indicator for the [light
 Install using a plugin manager of your choice, for example:
 
 ```viml
-call dein#add('w0rp/ale')                 " Dependency: linter
+call dein#add('dense-analysis/ale')       " Dependency: linter
 call dein#add('itchyny/lightline.vim')    " Dependency: status line
 call dein#add('maximbaz/lightline-ale')
 ```

@@ -77,13 +77,16 @@ nvim -u NONE -c "helptags vim-gitgutter/doc" -c q
 
 ### Windows
 
-I recommend configuring vim-gitgutter with the full path to your git executable.  For example:
+There is a potential risk on Windows due to `cmd.exe` prioritising the current folder over folders in `PATH`.  If you have a file named `git.*` (i.e. with any extension in `PATHEXT`) in your current folder, it will be executed instead of git whenever the plugin calls git.
+
+You can avoid this risk by configuring the full path to your git executable.  For example:
 
 ```viml
+" This path probably won't work
 let g:gitgutter_git_executable = 'C:\Program Files\Git\bin\git.exe'
 ```
 
-This is to avoid a problem which occurs if you have file named `git.*` (i.e. with any extension in `PATHEXT`) in your current folder.  `cmd.exe` prioritises the current folder over folders in `PATH` and will try to execute your file instead of the `git` binary.
+Unfortunately I don't know the correct escaping for the path - if you do, please let me know!
 
 
 ### Getting started

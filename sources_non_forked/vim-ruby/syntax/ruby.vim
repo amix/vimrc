@@ -133,10 +133,10 @@ syn match rubyCurlyBraceEscape	  "\\[{}]"  contained display
 syn match rubyAngleBracketEscape  "\\[<>]"  contained display
 syn match rubySquareBracketEscape "\\[[\]]" contained display
 
-syn region rubyNestedParentheses    start="("  skip="\\\\\|\\)"  matchgroup=rubyString end=")"	transparent contained
-syn region rubyNestedCurlyBraces    start="{"  skip="\\\\\|\\}"  matchgroup=rubyString end="}"	transparent contained
-syn region rubyNestedAngleBrackets  start="<"  skip="\\\\\|\\>"  matchgroup=rubyString end=">"	transparent contained
-syn region rubyNestedSquareBrackets start="\[" skip="\\\\\|\\\]" matchgroup=rubyString end="\]"	transparent contained
+syn region rubyNestedParentheses    start="("  skip="\\\\\|\\)"  end=")"	transparent contained
+syn region rubyNestedCurlyBraces    start="{"  skip="\\\\\|\\}"  end="}"	transparent contained
+syn region rubyNestedAngleBrackets  start="<"  skip="\\\\\|\\>"  end=">"	transparent contained
+syn region rubyNestedSquareBrackets start="\[" skip="\\\\\|\\\]" end="\]"	transparent contained
 
 syn cluster rubySingleCharEscape contains=rubyBackslashEscape,rubyQuoteEscape,rubySpaceEscape,rubyParenthesisEscape,rubyCurlyBraceEscape,rubyAngleBracketEscape,rubySquareBracketEscape
 syn cluster rubyNestedBrackets	 contains=rubyNested.\+
