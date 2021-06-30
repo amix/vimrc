@@ -77,24 +77,40 @@ function! ale#path#ResolveLocalPath(buffer, search_string, global_fallback) abor
     return l:path
 endfunction
 
-" Output 'cd <directory> && '
-" This function can be used changing the directory for a linter command.
-function! ale#path#CdString(directory) abort
-    if has('win32')
-        return 'cd /d ' . ale#Escape(a:directory) . ' && '
-    endif
+" Given a buffer number, a base variable name, and a list of paths to search
+" for in ancestor directories, detect the executable path for a program.
+function! ale#path#FindNearestExecutable(buffer, path_list) abort
+    for l:path in a:path_list
+        if ale#path#IsAbsolute(l:path)
+            let l:executable = filereadable(l:path) ? l:path : ''
+        else
+            let l:executable = ale#path#FindNearestFile(a:buffer, l:path)
+        endif
 
-    return 'cd ' . ale#Escape(a:directory) . ' && '
+        if !empty(l:executable)
+            return l:executable
+        endif
+    endfor
+
+    return ''
 endfunction
 
-" Output 'cd <buffer_filename_directory> && '
-" This function can be used changing the directory for a linter command.
-function! ale#path#BufferCdString(buffer) abort
-    if has('win32')
-        return 'cd /d %s:h && '
+" Given a buffer number, a base variable name, and a list of paths to search
+" for in ancestor directories, detect the executable path for a program.
+"
+" The use_global and executable options for the relevant program will be used.
+function! ale#path#FindExecutable(buffer, base_var_name, path_list) abort
+    if ale#Var(a:buffer, a:base_var_name . '_use_global')
+        return ale#Var(a:buffer, a:base_var_name . '_executable')
     endif
 
-    return 'cd %s:h && '
+    let l:nearest = ale#path#FindNearestExecutable(a:buffer, a:path_list)
+
+    if !empty(l:nearest)
+        return l:nearest
+    endif
+
+    return ale#Var(a:buffer, a:base_var_name . '_executable')
 endfunction
 
 " Return 1 if a path is an absolute path.
@@ -136,7 +152,7 @@ function! ale#path#Dirname(path) abort
     endif
 
     " For /foo/bar/ we need :h:h to get /foo
-    if a:path[-1:] is# '/'
+    if a:path[-1:] is# '/' || (has('win32') && a:path[-1:] is# '\')
         return fnamemodify(a:path, ':h:h')
     endif
 

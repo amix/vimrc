@@ -6,7 +6,7 @@ call ale#Set('elm_format_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('elm_format_options', '--yes')
 
 function! ale#fixers#elm_format#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'elm_format', [
+    return ale#path#FindExecutable(a:buffer, 'elm_format', [
     \   'node_modules/.bin/elm-format',
     \])
 endfunction

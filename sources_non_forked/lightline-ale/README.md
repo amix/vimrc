@@ -16,7 +16,7 @@ This plugin provides [ALE](https://github.com/w0rp/ale) indicator for the [light
 Install using a plugin manager of your choice, for example:
 
 ```viml
-call dein#add('w0rp/ale')                 " Dependency: linter
+call dein#add('dense-analysis/ale')       " Dependency: linter
 call dein#add('itchyny/lightline.vim')    " Dependency: status line
 call dein#add('maximbaz/lightline-ale')
 ```
@@ -55,6 +55,17 @@ let g:lightline.component_type = {
 let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]] }
 ```
 
+3.1. Lineinfo, fileformat, etc. have to be added additionaly. Final example:
+
+```viml
+let g:lightline.active = {
+            \ 'right': [ [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
+            \            [ 'lineinfo' ],
+	    \            [ 'percent' ],
+	    \            [ 'fileformat', 'fileencoding', 'filetype'] ] }
+
+```
+            
 ## Configuration
 
 ##### `g:lightline#ale#indicator_checking`

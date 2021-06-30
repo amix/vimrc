@@ -513,16 +513,18 @@ function! ale#c#GetMakeCommand(buffer) abort
         if !empty(l:path)
             let l:always_make = ale#Var(a:buffer, 'c_always_make')
 
-            return ale#path#CdString(fnamemodify(l:path, ':h'))
-            \   . 'make -n' . (l:always_make ? ' --always-make' : '')
+            return [
+            \   fnamemodify(l:path, ':h'),
+            \   'make -n' . (l:always_make ? ' --always-make' : ''),
+            \]
         endif
     endif
 
-    return ''
+    return ['', '']
 endfunction
 
 function! ale#c#RunMakeCommand(buffer, Callback) abort
-    let l:command = ale#c#GetMakeCommand(a:buffer)
+    let [l:cwd, l:command] = ale#c#GetMakeCommand(a:buffer)
 
     if empty(l:command)
         return a:Callback(a:buffer, [])
@@ -532,6 +534,7 @@ function! ale#c#RunMakeCommand(buffer, Callback) abort
     \   a:buffer,
     \   l:command,
     \   {b, output -> a:Callback(a:buffer, output)},
+    \   {'cwd': l:cwd},
     \)
 endfunction
 

@@ -9,7 +9,7 @@ call ale#Set('c_clangformat_style_option', '')
 call ale#Set('c_clangformat_use_local_file', 0)
 
 function! ale#fixers#clangformat#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'c_clangformat', [
+    return ale#path#FindExecutable(a:buffer, 'c_clangformat', [
     \   'clang-format',
     \])
 endfunction

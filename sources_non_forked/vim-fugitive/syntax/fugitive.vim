@@ -26,7 +26,7 @@ syn match fugitiveSymbolicRef /\.\@!\%(\.\.\@!\|[^[:space:][:cntrl:]\:.]\)\+\.\@
 syn match fugitiveHash /^\x\{4,\}\S\@!/ contained containedin=@fugitiveSection
 syn match fugitiveHash /\S\@<!\x\{4,\}\S\@!/ contained
 
-syn region fugitiveHunk start=/^\%(@@\+ -\)\@=/ end=/^\%([A-Za-z?@]\|$\)\@=/ contains=@fugitiveDiff containedin=@fugitiveSection fold
+syn region fugitiveHunk start=/^\%(@@\+ -\)\@=/ end=/^\%([A-Za-z?@]\|$\)\@=/ contains=diffLine,diffRemoved,diffAdded,diffNoEOL containedin=@fugitiveSection fold
 
 for s:section in ['Untracked', 'Unstaged', 'Staged']
   exe 'syn region fugitive' . s:section . 'Section start=/^\%(' . s:section . ' .*(\d\+)$\)\@=/ contains=fugitive' . s:section . 'Heading end=/^$/'

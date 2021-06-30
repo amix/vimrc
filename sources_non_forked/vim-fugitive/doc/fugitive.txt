@@ -59,6 +59,12 @@ that are part of Git repositories).
                         ~     reblame at [count]th first grandparent
                         P     reblame at [count]th parent (like HEAD^[count])
 
+                                                *g:fugitive_dynamic_colors*
+                        In the GUI or a 256 color terminal, commit hashes will
+                        highlighted in different colors. To disable this:
+>
+                        let g:fugitive_dynamic_colors = 0
+<
 :[range]Git blame [...] If a range is given, just that part of the file will
 :Git blame [...] {file} be blamed, and a horizontal split without
                         scrollbinding is used.  You can also give an arbitrary
@@ -78,6 +84,44 @@ that are part of Git repositories).
                                                 *:Git_mergetool*
 :Git mergetool [args]   Like |:Git_difftool|, but target merge conflicts.
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+                                                *:Git_push*
+:Git push [args]        Invoke git-push, load the results into the |quickfix|
+<<<<<<< HEAD
+:Gpush [args]           list, and invoke |:cwindow| to reveal any errors.
+>>>>>>> 27ad0d07862847896f691309a544a206783c94d6
+=======
+                        list, and invoke |:cwindow| to reveal any errors.
+>>>>>>> master
+                        |:Dispatch| is used if available for asynchronous
+                        invocation.
+
+                                                *:Git_fetch*
+:Git fetch [args]       Like |:Git_push|, but for git-fetch.
+
+<<<<<<< HEAD
+                                                *:Git-pull* *:Gpull*
+:Gpull [args]           Deprecated alias for |:Git| pull.
+
+                                                *:Git-rebase* *:Grebase*
+:Grebase [args]         Deprecated alias for |:Git| rebase.
+
+<<<<<<< HEAD
+                                                *fugitive-:Glog*
+:Glog[!] [args]         Use git-log [args] to load the commit history into the
+                        |quickfix| list.  Jump to the first commit unless [!]
+                        is given.
+
+:{range}Glog[!] [args]  Use git-log -L to load previous revisions of the given
+=======
+                                                *:Git-commit* *:Gcommit*
+:Gcommit [args]         Deprecated alias for |:Git| commit.
+=======
+=======
+>>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
                                                 *:Ggrep* *:Gcgrep* *:Git_grep*
 :Ggrep[!] [args]        |:grep|[!] with git-grep as 'grepprg'.
 :Git[!] grep [args]
@@ -206,9 +250,6 @@ that are part of Git repositories).
                                                 *:GBrowse*
 :GBrowse                Open the current file, blob, tree, commit, or tag
                         in your browser at the upstream hosting provider.
-                        If a range is given, it is appropriately appended to
-                        the URL as an anchor.
-
                         Upstream providers can be added by installing an
                         appropriate Vim plugin.  For example, GitHub can be
                         supported by installing rhubarb.vim, available at
@@ -216,15 +257,17 @@ that are part of Git repositories).
 
 :GBrowse {object}       Like :GBrowse, but for a given |fugitive-object|.
 
-:GBrowse [...]@{remote} Force using the given remote rather than the remote
-                        for the current branch.  The remote is used to
-                        determine which upstream repository to link to.
-
 :{range}GBrowse [args]  Appends an anchor to the URL that emphasizes the
                         selected lines. This also forces the URL to include a
                         commit rather than a branch name so it remains valid
                         if the file changes.  You can give a range of "0" to
                         force this behavior without including an anchor.
+
+:GBrowse [...]@{remote} Force using the given remote rather than the remote
+                        for the current branch.  The remote is used to
+                        determine which upstream repository to link to.
+
+:GBrowse {url}          Open an arbitrary URL in your browser.
 
 :[range]GBrowse! [args] Like :GBrowse, but put the URL on the clipboard rather
                         than opening it.
@@ -255,10 +298,16 @@ U                       Unstage everything.
 X                       Discard the change under the cursor.  This uses
                         `checkout` or `clean` under the hood.  A command is
                         echoed that shows how to undo the change.  Consult
+<<<<<<< HEAD
                         `:messages` to see it again.  You can use this during
                         a merge conflict to discard "our" changes (--theirs)
                         in the "Unstaged" section or discard "their" changes
                         (--ours) in the "Staged" section.
+=======
+                        `:messages` to see it again.  During a merge conflict,
+                        use 2X to call `checkout --ours` or 3X to call
+                        `checkout --theirs` .
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 
                                                 *fugitive_=*
 =                       Toggle an inline diff of the file under the cursor.
@@ -305,7 +354,7 @@ Navigation maps ~
 
                                                 *fugitive_<CR>*
 <CR>                    Open the file or |fugitive-object| under the cursor.
-                        in a blob, this and similar maps jump to the patch
+                        In a blob, this and similar maps jump to the patch
                         from the diff where this was added, or where it was
                         removed if a count was given.  If the line is still in
                         the work tree version, passing a count takes you to
@@ -584,7 +633,9 @@ Makefile        The file named Makefile in the work tree
 !:Makefile      The file named Makefile in the commit owning the current file
 !3^2            The second parent of the commit owning buffer #3
 .git/config     The repo config file
-:               The |fugitive-summary| buffer.
+:               The |fugitive-summary| buffer
+-               A temp file containing the last |:Git| invocation's output
+<cfile>         The file or commit under the cursor
 
 STATUSLINE                                      *fugitive-statusline*
 

@@ -5,6 +5,10 @@
 call ale#Set('go_gopls_executable', 'gopls')
 call ale#Set('go_gopls_options', '--mode stdio')
 call ale#Set('go_gopls_init_options', {})
+<<<<<<< HEAD
+=======
+call ale#Set('go_gopls_use_global', get(g:, 'ale_use_global_executables', 0))
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 
 function! ale_linters#go#gopls#GetCommand(buffer) abort
     return ale#go#EnvString(a:buffer)
@@ -29,7 +33,9 @@ endfunction
 call ale#linter#Define('go', {
 \   'name': 'gopls',
 \   'lsp': 'stdio',
-\   'executable': {b -> ale#Var(b, 'go_gopls_executable')},
+\   'executable': {b -> ale#path#FindExecutable(b, 'go_gopls', [
+\       ale#go#GetGoPathExecutable('bin/gopls'),
+\   ])},
 \   'command': function('ale_linters#go#gopls#GetCommand'),
 \   'project_root': function('ale_linters#go#gopls#FindProjectRoot'),
 \   'initialization_options': {b -> ale#Var(b, 'go_gopls_init_options')},

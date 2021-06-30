@@ -340,6 +340,16 @@ function! ale#util#GetMatches(lines, patterns) abort
     return l:matches
 endfunction
 
+" Given a single line, or a List of lines, and a single pattern, or a List of
+" patterns, and a callback function for mapping the items matches, return the
+" result of mapping all of the matches for the lines from the given patterns,
+" using matchlist()
+"
+" Only the first pattern which matches a line will be returned.
+function! ale#util#MapMatches(lines, patterns, Callback) abort
+    return map(ale#util#GetMatches(a:lines, a:patterns), 'a:Callback(v:val)')
+endfunction
+
 function! s:LoadArgCount(function) abort
     try
         let l:output = execute('function a:function')

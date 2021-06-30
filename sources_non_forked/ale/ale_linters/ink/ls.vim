@@ -6,7 +6,7 @@ call ale#Set('ink_ls_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('ink_ls_initialization_options', {})
 
 function! ale_linters#ink#ls#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'ink_ls', [
+    return ale#path#FindExecutable(a:buffer, 'ink_ls', [
     \   'ink-language-server',
     \   'node_modules/.bin/ink-language-server',
     \])

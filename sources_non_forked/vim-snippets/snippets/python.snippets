@@ -241,7 +241,7 @@ snippet addsp
 snippet addarg
 	parser.add_argument("${0:short_arg}", "${1:long_arg}", default=${2:None}, help="${3:Help text}")
 snippet addnarg
-	parser.add_argument("${0:arg}", nargs="${1:*}", default"${2:None}, help="${3:Help text}")
+	parser.add_argument("${0:arg}", nargs="${1:*}", default=${2:None}, help="${3:Help text}")
 snippet addaarg
 	parser.add_argument("${0:arg}", "${1:long_arg}", action="${2:store_true}", default=${3:False}, help="${4:Help text}")
 snippet pargs

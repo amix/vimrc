@@ -5,7 +5,7 @@ call ale#Set('handlebars_embertemplatelint_executable', 'ember-template-lint')
 call ale#Set('handlebars_embertemplatelint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#handlebars#embertemplatelint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'handlebars_embertemplatelint', [
+    return ale#path#FindExecutable(a:buffer, 'handlebars_embertemplatelint', [
     \   'node_modules/.bin/ember-template-lint',
     \])
 endfunction

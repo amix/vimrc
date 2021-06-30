@@ -30,7 +30,7 @@ endfunction
 
 function! gitgutter#utility#warn(message) abort
   echohl WarningMsg
-  echo 'vim-gitgutter: ' . a:message
+  echo a:message
   echohl None
   let v:warningmsg = a:message
 endfunction
@@ -39,7 +39,7 @@ function! gitgutter#utility#warn_once(bufnr, message, key) abort
   if empty(gitgutter#utility#getbufvar(a:bufnr, a:key))
     call gitgutter#utility#setbufvar(a:bufnr, a:key, '1')
     echohl WarningMsg
-    redraw | echom 'vim-gitgutter: ' . a:message
+    redraw | echom a:message
     echohl None
     let v:warningmsg = a:message
   endif

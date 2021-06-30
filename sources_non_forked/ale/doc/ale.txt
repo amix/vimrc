@@ -342,6 +342,12 @@ the buffers being checked.
 When a |Dictionary| is returned for an |ALEFix| callback, the following keys
 are supported for running the commands.
 
+  `cwd`                 An optional |String| for setting the working directory
+                      for the command.
+
+                      If not set, or `v:null`, the `cwd` of the last command
+                      that spawn this one will be used.
+
   `command`             A |String| for the command to run. This key is required.
 
                       When `%t` is included in a command string, a temporary
@@ -555,7 +561,6 @@ vimrc, and your issues should go away. >
 
   set completeopt=menu,menuone,preview,noselect,noinsert
 <
-
 Or alternatively, if you want to show documentation in popups: >
 
   set completeopt=menu,menuone,popup,noselect,noinsert
@@ -647,7 +652,12 @@ Hover information can be displayed in the preview window instead by setting
 |g:ale_hover_to_preview| to `1`.
 
 When using Neovim, if |g:ale_hover_to_floating_preview| or |g:ale_floating_preview|
+<<<<<<< HEAD
 is set to 1, the hover information will show in a floating window.
+=======
+is set to 1, the hover information will show in a floating window. And
+|g:ale_floating_window_border| for the border setting.
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 
 For Vim 8.1+ terminals, mouse hovering is disabled by default. Enabling
 |balloonexpr| commands in terminals can cause scrolling issues in terminals,
@@ -957,8 +967,13 @@ g:ale_default_navigation                             *g:ale_default_navigation*
   buffer, such as for |ALEFindReferences|, or |ALEGoToDefinition|.
 
 
+<<<<<<< HEAD
 g:ale_detail_to_floating_preview                            *g:ale_detail_to_floating_preview*
                                                             *b:ale_detail_to_floating_preview*
+=======
+g:ale_detail_to_floating_preview             *g:ale_detail_to_floating_preview*
+                                             *b:ale_detail_to_floating_preview*
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
   Type: |Number|
   Default: `0`
 
@@ -1189,7 +1204,11 @@ g:ale_fix_on_save_ignore                             *g:ale_fix_on_save_ignore*
   let g:ale_fix_on_save_ignore = [g:AddBar]
 <
 
+<<<<<<< HEAD
 g:ale_floating_preview                                       *g:ale_floating_preview*
+=======
+g:ale_floating_preview                                 *g:ale_floating_preview*
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 
   Type: |Number|
   Default: `0`
@@ -1199,6 +1218,22 @@ g:ale_floating_preview                                       *g:ale_floating_pre
   |g:ale_detail_to_floating_preview| to `1`.
 
 
+<<<<<<< HEAD
+=======
+g:ale_floating_window_border                       *g:ale_floating_window_border*
+
+  Type: |List|
+  Default: `['|', '-', '+', '+', '+', '+']`
+
+  When set to `[]`, window borders are disabled. The elements in the list set
+  the horizontal, top, top-left, top-right, bottom-right and bottom-left
+  border characters, respectively.
+
+  If the terminal supports Unicode, you might try setting the value to
+  ` ['│', '─', '╭', '╮', '╯', '╰']`, to make it look nicer.
+
+
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 g:ale_history_enabled                                   *g:ale_history_enabled*
 
   Type: |Number|
@@ -1257,8 +1292,13 @@ g:ale_hover_to_preview                                 *g:ale_hover_to_preview*
   instead of in balloons or the message line.
 
 
+<<<<<<< HEAD
 g:ale_hover_to_floating_preview                       *g:ale_hover_to_floating_preview*
                                                       *b:ale_hover_to_floating_preview*
+=======
+g:ale_hover_to_floating_preview               *g:ale_hover_to_floating_preview*
+                                              *b:ale_hover_to_floating_preview*
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
   Type: |Number|
   Default: `0`
 
@@ -1418,6 +1458,7 @@ g:ale_linter_aliases                                     *g:ale_linter_aliases*
   \   'ps1': 'powershell',
   \   'rmarkdown': 'r',
   \   'rmd': 'r',
+  \   'svelte': ['svelte', 'javascript'],
   \   'systemverilog': 'verilog',
   \   'typescriptreact': ['typescript', 'tsx'],
   \   'verilog_systemverilog': ['verilog_systemverilog', 'verilog'],
@@ -1559,7 +1600,7 @@ g:ale_linters                                                   *g:ale_linters*
   \   'apkbuild': ['apkbuild_lint', 'secfixes_check'],
   \   'csh': ['shell'],
   \   'elixir': ['credo', 'dialyxir', 'dogma'],
-  \   'go': ['gofmt', 'golint', 'go vet'],
+  \   'go': ['gofmt', 'golint', 'gopls', 'govet'],
   \   'hack': ['hack'],
   \   'help': [],
   \   'inko': ['inko'],
@@ -1568,9 +1609,11 @@ g:ale_linters                                                   *g:ale_linters*
   \   'python': ['flake8', 'mypy', 'pylint', 'pyright'],
   \   'rust': ['cargo', 'rls'],
   \   'spec': [],
+  \   'svelte': ['eslint', 'svelteserver'],
   \   'text': [],
   \   'vue': ['eslint', 'vls'],
   \   'zsh': ['shell'],
+  \   'v': ['v'],
   \}
 <
   This option can be used to enable only a particular set of linters for a
@@ -1710,6 +1753,7 @@ g:ale_lsp_show_message_severity               *g:ale_lsp_show_message_severity*
 
 
 g:ale_lsp_suggestions                                   *g:ale_lsp_suggestions*
+<<<<<<< HEAD
 
   Type: |Number|
   Default: `0`
@@ -1720,20 +1764,14 @@ g:ale_lsp_suggestions                                   *g:ale_lsp_suggestions*
 
 g:ale_lsp_root                                                 *g:ale_lsp_root*
                                                                *b:ale_lsp_root*
+=======
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 
-  Type: |Dictionary| or |String|
-  Default: {}
+  Type: |Number|
+  Default: `0`
 
-  This option is used to determine the project root for the LSP linter. If the
-  value is a |Dictionary|, it maps a linter to either a string containing the
-  project root or a |Funcref| to call to look up the root. The funcref is
-  provided the buffer number as its argument.
-
-  The buffer-specific variable may additionally be a string containing the
-  project root itself.
-
-  If neither variable yields a result, a linter-specific function is invoked to
-  detect a project root. If this, too, yields no result, the linter is disabled.
+  If set to `1`, show hints/suggestions from LSP servers or tsserver, in
+  addition to warnings and errors.
 
 
 g:ale_max_buffer_history_size                   *g:ale_max_buffer_history_size*
@@ -1878,6 +1916,25 @@ g:ale_rename_tsserver_find_in_strings   *g:ale_rename_tsserver_find_in_strings*
   If enabled, this option will tell tsserver to find and replace text in
   strings when calling |ALERename|. It can be enabled by settings the value to
   `1`.
+
+
+g:ale_root                                                         *g:ale_root*
+                                                                   *b:ale_root*
+
+  Type: |Dictionary| or |String|
+  Default: {}
+
+  This option is used to determine the project root for a linter. If the value
+  is a |Dictionary|, it maps a linter to either a |String| containing the
+  project root or a |Funcref| to call to look up the root. The |Funcref| is
+  provided the buffer number as its argument.
+
+  The buffer-specific variable may additionally be a string containing the
+  project root itself.
+
+  If neither variable yields a result, a linter-specific function is invoked to
+  detect a project root. If this, too, yields no result, and the linter is an
+  LSP linter, it will not run.
 
 
 g:ale_set_balloons                                         *g:ale_set_balloons*
@@ -2614,6 +2671,8 @@ documented in additional help files.
     gawk..................................|ale-awk-gawk|
   bats....................................|ale-bats-options|
     shellcheck............................|ale-bats-shellcheck|
+  bazel...................................|ale-bazel-options|
+    buildifier............................|ale-bazel-buildifier|
   bib.....................................|ale-bib-options|
     bibclean..............................|ale-bib-bibclean|
   c.......................................|ale-c-options|
@@ -2663,6 +2722,7 @@ documented in additional help files.
     stylelint.............................|ale-css-stylelint|
   cuda....................................|ale-cuda-options|
     nvcc..................................|ale-cuda-nvcc|
+    clangd................................|ale-cuda-clangd|
     clang-format..........................|ale-cuda-clangformat|
   d.......................................|ale-d-options|
     dfmt..................................|ale-d-dfmt|
@@ -2674,6 +2734,11 @@ documented in additional help files.
     analysis_server.......................|ale-dart-analysis_server|
     dartanalyzer..........................|ale-dart-dartanalyzer|
     dartfmt...............................|ale-dart-dartfmt|
+<<<<<<< HEAD
+=======
+  desktop.................................|ale-desktop-options|
+    desktop-file-validate.................|ale-desktop-desktop-file-validate|
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
   dhall...................................|ale-dhall-options|
     dhall-format..........................|ale-dhall-format|
     dhall-freeze..........................|ale-dhall-freeze|
@@ -2695,6 +2760,7 @@ documented in additional help files.
     dialyzer..............................|ale-erlang-dialyzer|
     elvis.................................|ale-erlang-elvis|
     erlc..................................|ale-erlang-erlc|
+    erlfmt................................|ale-erlang-erlfmt|
     syntaxerl.............................|ale-erlang-syntaxerl|
   eruby...................................|ale-eruby-options|
     ruumba................................|ale-eruby-ruumba|
@@ -2753,12 +2819,13 @@ documented in additional help files.
   hcl.....................................|ale-hcl-options|
     terraform-fmt.........................|ale-hcl-terraform-fmt|
   html....................................|ale-html-options|
+    angular...............................|ale-html-angular|
     fecs..................................|ale-html-fecs|
     html-beautify.........................|ale-html-beautify|
     htmlhint..............................|ale-html-htmlhint|
-    tidy..................................|ale-html-tidy|
     prettier..............................|ale-html-prettier|
     stylelint.............................|ale-html-stylelint|
+    tidy..................................|ale-html-tidy|
     write-good............................|ale-html-write-good|
   idris...................................|ale-idris-options|
     idris.................................|ale-idris-idris|
@@ -2829,6 +2896,7 @@ documented in additional help files.
     nimlsp................................|ale-nim-nimlsp|
     nimpretty.............................|ale-nim-nimpretty|
   nix.....................................|ale-nix-options|
+    nixfmt................................|ale-nix-nixfmt|
     nixpkgs-fmt...........................|ale-nix-nixpkgs-fmt|
   nroff...................................|ale-nroff-options|
     write-good............................|ale-nroff-write-good|
@@ -2851,6 +2919,11 @@ documented in additional help files.
     ibm_validator.........................|ale-openapi-ibm-validator|
     prettier..............................|ale-openapi-prettier|
     yamllint..............................|ale-openapi-yamllint|
+<<<<<<< HEAD
+=======
+  pascal..................................|ale-pascal-options|
+    ptop..................................|ale-pascal-ptop|
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
   pawn....................................|ale-pawn-options|
     uncrustify............................|ale-pawn-uncrustify|
   perl....................................|ale-perl-options|
@@ -2884,6 +2957,7 @@ documented in additional help files.
     swipl.................................|ale-prolog-swipl|
   proto...................................|ale-proto-options|
     protoc-gen-lint.......................|ale-proto-protoc-gen-lint|
+    protolint.............................|ale-proto-protolint|
   pug.....................................|ale-pug-options|
     puglint...............................|ale-pug-puglint|
   puppet..................................|ale-puppet-options|
@@ -2983,8 +3057,14 @@ documented in additional help files.
     stylelint.............................|ale-stylus-stylelint|
   sugarss.................................|ale-sugarss-options|
     stylelint.............................|ale-sugarss-stylelint|
+  svelte..................................|ale-svelte-options|
+    prettier..............................|ale-svelte-prettier|
+    svelteserver..........................|ale-svelte-svelteserver|
   swift...................................|ale-swift-options|
+    apple-swift-format....................|ale-swift-apple-swift-format|
     sourcekitlsp..........................|ale-swift-sourcekitlsp|
+  systemd.................................|ale-systemd-options|
+    systemd-analyze.......................|ale-systemd-analyze|
   tcl.....................................|ale-tcl-options|
     nagelfar..............................|ale-tcl-nagelfar|
   terraform...............................|ale-terraform-options|
@@ -3013,6 +3093,12 @@ documented in additional help files.
     tslint................................|ale-typescript-tslint|
     tsserver..............................|ale-typescript-tsserver|
     xo....................................|ale-typescript-xo|
+<<<<<<< HEAD
+=======
+  v.......................................|ale-v-options|
+    v.....................................|ale-v-v|
+    vfmt..................................|ale-v-vfmt|
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
   vala....................................|ale-vala-options|
     uncrustify............................|ale-vala-uncrustify|
   verilog/systemverilog...................|ale-verilog-options|
@@ -3039,6 +3125,7 @@ documented in additional help files.
   xml.....................................|ale-xml-options|
     xmllint...............................|ale-xml-xmllint|
   yaml....................................|ale-yaml-options|
+    circleci..............................|ale-yaml-circleci|
     prettier..............................|ale-yaml-prettier|
     spectral..............................|ale-yaml-spectral|
     swaglint..............................|ale-yaml-swaglint|
@@ -3575,6 +3662,12 @@ ale#command#Run(buffer, command, callback, [options])       *ale#command#Run()*
 <
   The following `options` can be provided.
 
+    `cwd`               - An optional |String| for setting the working directory
+                        for the command, just as per |ale#linter#Define|.
+
+                        If not set, or `v:null`, the `cwd` of the last command
+                        that spawned this one will be used.
+
     `output_stream`     - Either `'stdout'`, `'stderr'`, `'both'`, or
                         `'none`' for selecting which output streams to read
                         lines from.
@@ -3684,6 +3777,21 @@ ale#fix#registry#Add(name, func, filetypes, desc, [aliases])
   ALE will search for fixers in the registry first by `name`, then by their
   `aliases`.
 
+  For example to register a custom fixer for `luafmt`: >
+
+  function! FormatLua(buffer) abort
+    return {
+    \   'command': 'luafmt --stdin'
+    \}
+  endfunction
+
+  execute ale#fix#registry#Add('luafmt', 'FormatLua', ['lua'], 'luafmt for lua')
+
+  " You can now use it in g:ale_fixers
+  let g:ale_fixers = {
+    \ 'lua': ['luafmt']
+  }
+<
 
 ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
 
@@ -3800,9 +3908,32 @@ ale#linter#Define(filetype, linter)                       *ale#linter#Define()*
 
                          The result can be computed with |ale#command#Run()|.
 
+                         The command string can be formatted with format
+                         markers. See |ale-command-format-strings|.
+
                          This command will be fed the lines from the buffer to
                          check, and will produce the lines of output given to
                          the `callback`.
+
+  `cwd`                    An optional |String| for setting the working
+                         directory for the command, or a |Funcref| for a
+                         function to call for computing the command, accepting
+                         a buffer number. The working directory can be
+                         specified as a format string for determining the path
+                         dynamically. See |ale-command-format-strings|.
+
+                         To set the working directory to the directory
+                         containing the file you're checking, you should
+                         probably use `'%s:h'` as the option value.
+
+                         If this option is absent or the string is empty, the
+                         `command` will be run with no determined working
+                         directory in particular.
+
+                         The directory specified with this option will be used
+                         as the default working directory for all commands run
+                         in a chain with |ale#command#Run()|, unless otherwise
+                         specified.
 
   `output_stream`          A |String| for the output stream the lines of output
                          should be read from for the command which is run. The

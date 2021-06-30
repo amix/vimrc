@@ -3,14 +3,10 @@ call ale#Set('cs_csc_source', '')
 call ale#Set('cs_csc_assembly_path', [])
 call ale#Set('cs_csc_assemblies', [])
 
-function! s:GetWorkingDirectory(buffer) abort
-    let l:working_directory = ale#Var(a:buffer, 'cs_csc_source')
+function! ale_linters#cs#csc#GetCwd(buffer) abort
+    let l:cwd = ale#Var(a:buffer, 'cs_csc_source')
 
-    if !empty(l:working_directory)
-        return l:working_directory
-    endif
-
-    return expand('#' . a:buffer . ':p:h')
+    return !empty(l:cwd) ? l:cwd : expand('#' . a:buffer . ':p:h')
 endfunction
 
 function! ale_linters#cs#csc#GetCommand(buffer) abort
@@ -34,8 +30,7 @@ function! ale_linters#cs#csc#GetCommand(buffer) abort
 
     " The code is compiled as a module and the output is redirected to a
     " temporary file.
-    return ale#path#CdString(s:GetWorkingDirectory(a:buffer))
-    \    . 'csc /unsafe'
+    return 'csc /unsafe'
     \    . ale#Pad(ale#Var(a:buffer, 'cs_csc_options'))
     \    . ale#Pad(l:lib_option)
     \    . ale#Pad(l:r_option)
@@ -57,8 +52,7 @@ function! ale_linters#cs#csc#Handle(buffer, lines) abort
     \    '^\v([^ ]+)\s+([Cc][sS][^ ]+):\s+(.+)$',
     \]
     let l:output = []
-
-    let l:dir = s:GetWorkingDirectory(a:buffer)
+    let l:dir = ale_linters#cs#csc#GetCwd(a:buffer)
 
     for l:match in ale#util#GetMatches(a:lines, l:patterns)
         if len(l:match) > 6 && strlen(l:match[5]) > 2 && l:match[5][:1] is? 'CS'
@@ -89,6 +83,7 @@ call ale#linter#Define('cs',{
 \   'name': 'csc',
 \   'output_stream': 'stdout',
 \   'executable': 'csc',
+\   'cwd': function('ale_linters#cs#csc#GetCwd'),
 \   'command': function('ale_linters#cs#csc#GetCommand'),
 \   'callback': 'ale_linters#cs#csc#Handle',
 \   'lint_file': 1

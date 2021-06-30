@@ -532,7 +532,7 @@ sources such as creating snippets on the fly representing python function
 definitions found in the current file.
 
 Example 2:~
-Add to your ~/.vimrc: For each know snippet add a second version ending in _
+Add to your ~/.vimrc: For each new snippet add a second version ending in _
 adding folding markers >
 
     let g:commentChar = {

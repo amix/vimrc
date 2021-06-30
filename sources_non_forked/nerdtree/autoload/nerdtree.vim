@@ -30,6 +30,7 @@ endfunction
 " SECTION: General Functions {{{1
 "============================================================
 
+<<<<<<< HEAD
 " FUNCTION: nerdtree#closeTreeOnOpen() {{{2
 function! nerdtree#closeTreeOnOpen() abort
     return g:NERDTreeQuitOnOpen == 1 || g:NERDTreeQuitOnOpen == 3
@@ -40,6 +41,30 @@ function! nerdtree#closeBookmarksOnOpen() abort
     return g:NERDTreeQuitOnOpen == 2 || g:NERDTreeQuitOnOpen == 3
 endfunction
 
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+function! nerdtree#slash()
+=======
+"FUNCTION: nerdtree#slash() {{{2
+function! nerdtree#slash() abort
+>>>>>>> 27ad0d07862847896f691309a544a206783c94d6
+
+=======
+=======
+" FUNCTION: nerdtree#closeTreeOnOpen() {{{2
+function! nerdtree#closeTreeOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 1 || g:NERDTreeQuitOnOpen == 3
+endfunction
+
+" FUNCTION: nerdtree#closeBookmarksOnOpen() {{{2
+function! nerdtree#closeBookmarksOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 2 || g:NERDTreeQuitOnOpen == 3
+endfunction
+
+>>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 " FUNCTION: nerdtree#slash() {{{2
 " Return the path separator used by the underlying file system.  Special
 " consideration is taken for the use of the 'shellslash' option on Windows

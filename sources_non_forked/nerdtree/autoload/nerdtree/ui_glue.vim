@@ -108,7 +108,21 @@ function! s:customOpenBookmark(node) abort
 endfunction
 
 "FUNCTION: s:initCustomOpenArgs() {{{1
+<<<<<<< HEAD
 function! s:initCustomOpenArgs() abort
+=======
+<<<<<<< HEAD
+" Make sure NERDTreeCustomOpenArgs has needed keys
+<<<<<<< HEAD
+function! s:initCustomOpenArgs()
+=======
+function! s:initCustomOpenArgs() abort
+>>>>>>> 27ad0d07862847896f691309a544a206783c94d6
+    let g:NERDTreeCustomOpenArgs = get(g:, 'NERDTreeCustomOpenArgs', {})
+    return extend(g:NERDTreeCustomOpenArgs, {'file':{'reuse': 'all', 'where': 'p'}, 'dir':{}}, 'keep')
+=======
+function! s:initCustomOpenArgs() abort
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
     let l:defaultOpenArgs = {'file': {'reuse': 'all', 'where': 'p', 'keepopen':!nerdtree#closeTreeOnOpen()}, 'dir': {}}
     try
         let g:NERDTreeCustomOpenArgs = get(g:, 'NERDTreeCustomOpenArgs', {})
@@ -119,6 +133,10 @@ function! s:initCustomOpenArgs() abort
     finally
         return g:NERDTreeCustomOpenArgs
     endtry
+<<<<<<< HEAD
+=======
+>>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 endfunction
 
 "FUNCTION: s:activateAll() {{{1
@@ -572,7 +590,15 @@ endfunction
 
 " FUNCTION: s:previewBookmark(bookmark) {{{1
 function! s:previewBookmark(bookmark) abort
+<<<<<<< HEAD
     call a:bookmark.activate(b:NERDTree, !a:bookmark.path.isDirectory ? {'stay': 1, 'where': 'p', 'keepopen': 1} : {})
+=======
+    if a:bookmark.path.isDirectory
+        execute 'NERDTreeFind '.a:bookmark.path.str()
+    else
+        call a:bookmark.activate(b:NERDTree, {'stay': 1, 'where': 'p', 'keepopen': 1})
+    endif
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 endfunction
 
 "FUNCTION: s:previewNodeCurrent(node) {{{1

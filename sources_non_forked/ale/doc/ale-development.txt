@@ -181,12 +181,16 @@ Generally write tests for any changes you make. The following types of tests
 are recommended for the following types of code.
 
 * New/edited error handler callbacks -> Write tests in `test/handler`
-* New/edited command callbacks       -> Write tests in `test/command_callback`
+* New/edited linter definition       -> Write tests in `test/linter`
 * New/edited fixer functions         -> Write tests in `test/fixers`
 
 Look at existing tests in the codebase for examples of how to write tests.
 Refer to the Vader documentation for general information on how to write Vader
 tests: https://github.com/junegunn/vader.vim
+
+If you need to add any supporting files for tests, such as empty files present
+to test searching upwards through paths for configuration files, they can be
+added to the `test/test-files` directory.
 
 See |ale-development-linter-tests| for more information on how to write linter
 tests.
@@ -274,8 +278,8 @@ be written like so. >
   \ '1:Something went wrong',
   \ ]
 <
-Tests for what ALE runs should go in the `test/command_callback` directory,
-and should be written like so. >
+Tests for what ALE runs should go in the `test/linter` directory, and should
+be written like so. >
 
   Before:
     " Load the linter and set up a series of commands, reset linter variables,
@@ -311,6 +315,7 @@ The full list of commands that will be temporarily defined for linter tests
 given the above setup are as follows.
 
 `GivenCommandOutput [...]`         - Define output for ale#command#Run.
+`AssertLinterCwd cwd`              - Check the `cwd` for the linter.
 `AssertLinter executable, command` - Check the executable and command.
 `AssertLinterNotExecuted`          - Check that linters will not be executed.
 `AssertLSPLanguage language`       - Check the language given to an LSP server.
@@ -357,6 +362,7 @@ The full list of commands that will be temporarily defined for fixer tests
 given the above setup are as follows.
 
 `GivenCommandOutput [...]`         - Define output for ale#command#Run.
+`AssertFixerCwd cwd`               - Check the `cwd` for the fixer.
 `AssertFixer results`              - Check the fixer results
 `AssertFixerNotExecuted`           - Check that fixers will not be executed.
 

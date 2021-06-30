@@ -201,7 +201,11 @@ function! ale#lsp_linter#GetConfig(buffer, linter) abort
 endfunction
 
 function! ale#lsp_linter#FindProjectRoot(buffer, linter) abort
-    let l:buffer_ale_root = getbufvar(a:buffer, 'ale_lsp_root', {})
+    let l:buffer_ale_root = getbufvar(
+    \   a:buffer,
+    \   'ale_root',
+    \   getbufvar(a:buffer, 'ale_lsp_root', {})
+    \)
 
     if type(l:buffer_ale_root) is v:t_string
         return l:buffer_ale_root
@@ -218,9 +222,15 @@ function! ale#lsp_linter#FindProjectRoot(buffer, linter) abort
         endif
     endif
 
+    let l:global_root = g:ale_root
+
+    if empty(g:ale_root) && exists('g:ale_lsp_root')
+        let l:global_root = g:ale_lsp_root
+    endif
+
     " Try to get a global setting for the root
-    if has_key(g:ale_lsp_root, a:linter.name)
-        let l:Root = g:ale_lsp_root[a:linter.name]
+    if has_key(l:global_root, a:linter.name)
+        let l:Root = l:global_root[a:linter.name]
 
         if type(l:Root) is v:t_func
             return l:Root(a:buffer)
@@ -284,13 +294,15 @@ function! s:StartLSP(options, address, executable, command) abort
             call ale#lsp#MarkConnectionAsTsserver(l:conn_id)
         endif
 
+        let l:cwd = ale#linter#GetCwd(l:buffer, l:linter)
         let l:command = ale#command#FormatCommand(
         \   l:buffer,
         \   a:executable,
         \   a:command,
         \   0,
         \   v:false,
-        \   [],
+        \   l:cwd,
+        \   ale#GetFilenameMappings(l:buffer, l:linter.name),
         \)[1]
         let l:command = ale#job#PrepareCommand(l:buffer, l:command)
         let l:ready = ale#lsp#StartProgram(l:conn_id, a:executable, l:command)

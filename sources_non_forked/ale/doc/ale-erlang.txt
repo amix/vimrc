@@ -72,6 +72,26 @@ g:ale_erlang_erlc_options                           *g:ale_erlang_erlc_options*
 
 
 -------------------------------------------------------------------------------
+erlfmt                                                      *ale-erlang-erlfmt*
+
+g:ale_erlang_erlfmt_executable                 *g:ale_erlang_erlfmt_executable*
+                                               *b:ale_erlang_erlfmt_executable*
+  Type: |String|
+  Default: `'erlfmt'`
+
+  This variable can be changed to specify the erlfmt executable.
+
+
+g:ale_erlang_erlfmt_options                       *g:ale_erlang_erlfmt_options*
+                                                  *b:ale_erlang_erlfmt_options*
+  Type: |String|
+  Default: `''`
+
+  This variable controls additional parameters passed to `erlfmt`, such as
+  `--insert-pragma` or `--print-width`.
+
+
+-------------------------------------------------------------------------------
 syntaxerl                                                *ale-erlang-syntaxerl*
 
 g:ale_erlang_syntaxerl_executable           *g:ale_erlang_syntaxerl_executable*

@@ -5,6 +5,11 @@
         - **.PATCH**: Pull Request Title (PR Author) [PR Number](Link to PR)
 -->
 #### 6.10
+<<<<<<< HEAD
+=======
+- **.9**: `go` on a bookmark directory will NERDTreeFind it. (PhilRunninger) [#1236](https://github.com/preservim/nerdtree/pull/1236)
+- **.8**: Put `Callback` function variables in local scope. (PhilRunninger) [#1230](https://github.com/preservim/nerdtree/pull/1230)
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 - **.7**: Fix mouse-clicking a file to open it. (PhilRunninger) [#1225](https://github.com/preservim/nerdtree/pull/1225)
 - **.6**: Restore the default behavior of the <CR> key. (PhilRunninger) [#1221](https://github.com/preservim/nerdtree/pull/1221)
 - **.5**: Fix `{'keepopen':0}` in NERDTreeCustomOpenArgs (PhilRunninger) [#1217](https://github.com/preservim/nerdtree/pull/1217)

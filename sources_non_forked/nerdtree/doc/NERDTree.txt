@@ -249,7 +249,11 @@ Key      Description                                                  help-tag~
 
 o........Open files, directories and bookmarks......................|NERDTree-o|
 go.......Open selected file, but leave cursor in the NERDTree......|NERDTree-go|
+<<<<<<< HEAD
          Open selected bookmark directory in current NERDTree
+=======
+         Find selected bookmark directory in current NERDTree
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 t........Open selected node/bookmark in a new tab...................|NERDTree-t|
 T........Same as 't' but keep the focus on the current tab..........|NERDTree-T|
 i........Open selected file in a split window.......................|NERDTree-i|

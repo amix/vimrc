@@ -172,6 +172,7 @@ function! s:RunJob(result, options) abort
     let l:read_temporary_file = get(a:result, 'read_temporary_file', 0)
     let l:read_buffer = get(a:result, 'read_buffer', 1)
     let l:output_stream = get(a:result, 'output_stream', 'stdout')
+    let l:cwd = get(a:result, 'cwd', v:null)
 
     if l:read_temporary_file
         let l:output_stream = 'none'
@@ -190,6 +191,7 @@ function! s:RunJob(result, options) abort
     \   'read_buffer': l:read_buffer,
     \   'input': l:input,
     \   'log_output': 0,
+    \   'cwd': l:cwd,
     \   'filename_mappings': ale#GetFilenameMappings(l:buffer, l:fixer_name),
     \})
 

@@ -8,7 +8,7 @@ call ale#Set('typescript_tsserver_use_global', get(g:, 'ale_use_global_executabl
 call ale#linter#Define('typescript', {
 \   'name': 'tsserver',
 \   'lsp': 'tsserver',
-\   'executable': {b -> ale#node#FindExecutable(b, 'typescript_tsserver', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'typescript_tsserver', [
 \       '.yarn/sdks/typescript/bin/tsserver',
 \       'node_modules/.bin/tsserver',
 \   ])},

@@ -19,7 +19,7 @@ endfunction
 call ale#linter#Define('javascript', {
 \   'name': 'flow-language-server',
 \   'lsp': 'stdio',
-\   'executable': {b -> ale#node#FindExecutable(b, 'javascript_flow_ls', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'javascript_flow_ls', [
 \       'node_modules/.bin/flow',
 \   ])},
 \   'command': '%e lsp --from ale-lsp',

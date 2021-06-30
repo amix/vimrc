@@ -10,8 +10,7 @@ function! ale_linters#go#gobuild#GetCommand(buffer) abort
     let l:options = ale#Var(a:buffer, 'go_gobuild_options')
 
     " Run go test in local directory with relative path
-    return ale#path#BufferCdString(a:buffer)
-    \   . ale#go#EnvString(a:buffer)
+    return ale#go#EnvString(a:buffer)
     \   . ale#Var(a:buffer, 'go_go_executable') . ' test'
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . ' -c -o /dev/null ./'
@@ -50,6 +49,7 @@ call ale#linter#Define('go', {
 \   'name': 'gobuild',
 \   'aliases': ['go build'],
 \   'executable': {b -> ale#Var(b, 'go_go_executable')},
+\   'cwd': '%s:h',
 \   'command': function('ale_linters#go#gobuild#GetCommand'),
 \   'output_stream': 'stderr',
 \   'callback': 'ale_linters#go#gobuild#Handler',

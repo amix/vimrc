@@ -28,7 +28,7 @@ endfunction
 call ale#linter#Define('elm', {
 \   'name': 'elm_ls',
 \   'lsp': 'stdio',
-\   'executable': {b -> ale#node#FindExecutable(b, 'elm_ls', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'elm_ls', [
 \       'node_modules/.bin/elm-language-server',
 \       'node_modules/.bin/elm-lsp',
 \       'elm-lsp'

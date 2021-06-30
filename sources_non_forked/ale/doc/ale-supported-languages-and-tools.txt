@@ -43,6 +43,8 @@ Notes:
   * `shfmt`
 * Bats
   * `shellcheck`
+* Bazel
+  * `buildifier`
 * BibTeX
   * `bibclean`
 * Bourne Shell
@@ -107,6 +109,7 @@ Notes:
 * Cucumber
   * `cucumber`
 * CUDA
+  * `clangd`
   * `nvcc`!!
 * Cypher
   * `cypher-lint`
@@ -124,6 +127,8 @@ Notes:
   * `dartanalyzer`!!
   * `dartfmt`!!
   * `language_server`
+* desktop
+  * `desktop-file-validate`
 * Dhall
   * `dhall-format`
   * `dhall-freeze`
@@ -148,8 +153,15 @@ Notes:
   * `ruumba`
 * Erlang
   * `SyntaxErl`
+<<<<<<< HEAD
   * `elvis`!!
   * `erlc`
+=======
+  * `dialyzer`
+  * `elvis`!!
+  * `erlc`
+  * `erlfmt`
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 * Fish
   * `fish` (-n flag)
   * `fish_indent`
@@ -163,7 +175,7 @@ Notes:
 * Git Commit Messages
   * `gitlint`
 * GLSL
-  * glslang
+  * `glslang`
   * `glslls`
 * Go
   * `bingo`
@@ -214,8 +226,13 @@ Notes:
 * HTML
   * `HTMLHint`
   * `alex`!!
+  * `angular`
   * `fecs`
   * `html-beautify`
+<<<<<<< HEAD
+=======
+  * `htmlhint`
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
   * `prettier`
   * `proselint`
   * `tidy`
@@ -311,6 +328,7 @@ Notes:
   * `nimpretty`
 * nix
   * `nix-instantiate`
+  * `nixfmt`
   * `nixpkgs-fmt`
   * `rnix-lsp`
 * nroff
@@ -336,6 +354,11 @@ Notes:
   * `ibm_validator`
   * `prettier`
   * `yamllint`
+<<<<<<< HEAD
+=======
+* Pascal
+  * `ptop`
+>>>>>>> 1cca3b1df2973096bb9526a0d79c7b93c04e66b3
 * Pawn
   * `uncrustify`
 * Perl
@@ -374,6 +397,7 @@ Notes:
   * `swipl`
 * proto
   * `protoc-gen-lint`
+  * `protolint`
 * Pug
   * `pug-lint`
 * Puppet
@@ -482,11 +506,16 @@ Notes:
   * `stylelint`
 * SugarSS
   * `stylelint`
+* Svelte
+  * `prettier`
+  * `svelteserver`
 * Swift
   * Apple `swift-format`
   * `sourcekit-lsp`
   * `swiftformat`
   * `swiftlint`
+* systemd
+  * `systemd-analyze`!!
 * Tcl
   * `nagelfar`!!
 * Terraform
@@ -518,6 +547,9 @@ Notes:
   * `tslint`
   * `tsserver`
   * `typecheck`
+* V
+  * `v`
+  * `vfmt`
 * VALA
   * `uncrustify`
   * `vala_lint`!!
@@ -548,6 +580,7 @@ Notes:
 * XML
   * `xmllint`
 * YAML
+  * `circleci`!!
   * `prettier`
   * `spectral`
   * `swaglint`
@@ -557,3 +590,6 @@ Notes:
   * `yang-lsp`
 * Zig
   * `zls`
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

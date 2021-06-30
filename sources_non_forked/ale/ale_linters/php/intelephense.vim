@@ -26,7 +26,7 @@ call ale#linter#Define('php', {
 \   'name': 'intelephense',
 \   'lsp': 'stdio',
 \   'initialization_options': function('ale_linters#php#intelephense#GetInitializationOptions'),
-\   'executable': {b -> ale#node#FindExecutable(b, 'php_intelephense', [])},
+\   'executable': {b -> ale#path#FindExecutable(b, 'php_intelephense', [])},
 \   'command': '%e --stdio',
 \   'project_root': function('ale_linters#php#intelephense#GetProjectRoot'),
 \})
