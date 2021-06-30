@@ -88,7 +88,7 @@ function! ale_linters#perl6#perl6#Handle(buffer, lines) abort
 
     try
         let l:json = json_decode(join(a:lines, ''))
-    catch /E474/
+    catch /E474\|E491/
         call add(l:output, {
         \   'lnum': '1',
         \   'text': 'Received output in the default Perl6 error format. See :ALEDetail for details',

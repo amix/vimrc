@@ -3,21 +3,6 @@ if exists('g:loaded_nerdtree_autoload')
 endif
 let g:loaded_nerdtree_autoload = 1
 
-<<<<<<< HEAD
-let s:rootNERDTreePath = resolve(expand("<sfile>:p:h:h"))
-function! nerdtree#version(...)
-    let l:changelog = readfile(join([s:rootNERDTreePath, "CHANGELOG.md"], nerdtree#slash()))
-    let l:text = 'Unknown'
-    let l:line = 0
-    while l:line <= len(l:changelog)
-        if l:changelog[l:line] =~ '\d\+\.\d\+'
-            let l:text = substitute(l:changelog[l:line], '.*\(\d\+.\d\+\).*', '\1', '')
-            let l:text .= substitute(l:changelog[l:line+1], '^.\{-}\(\.\d\+\).\{-}:\(.*\)', a:0>0 ? '\1:\2' : '\1', '')
-            break
-        endif
-        let l:line += 1
-    endwhile
-=======
 let s:rootNERDTreePath = resolve(expand('<sfile>:p:h:h'))
 
 "FUNCTION: nerdtree#version(...) {{{1
@@ -39,28 +24,27 @@ function! nerdtree#version(...) abort
         endwhile
     catch
     endtry
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
     return l:text
 endfunction
 
 " SECTION: General Functions {{{1
 "============================================================
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-function! nerdtree#slash()
-=======
-"FUNCTION: nerdtree#slash() {{{2
-function! nerdtree#slash() abort
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
+" FUNCTION: nerdtree#closeTreeOnOpen() {{{2
+function! nerdtree#closeTreeOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 1 || g:NERDTreeQuitOnOpen == 3
+endfunction
 
-=======
+" FUNCTION: nerdtree#closeBookmarksOnOpen() {{{2
+function! nerdtree#closeBookmarksOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 2 || g:NERDTreeQuitOnOpen == 3
+endfunction
+
 " FUNCTION: nerdtree#slash() {{{2
 " Return the path separator used by the underlying file system.  Special
 " consideration is taken for the use of the 'shellslash' option on Windows
 " systems.
 function! nerdtree#slash() abort
->>>>>>> master
     if nerdtree#runningWindows()
         if exists('+shellslash') && &shellslash
             return '/'
@@ -70,28 +54,6 @@ function! nerdtree#slash() abort
     endif
 
     return '/'
-endfunction
-
-"FUNCTION: nerdtree#and(x,y) {{{2
-" Implements and() function for Vim <= 7.4
-function! nerdtree#and(x,y) abort
-    if exists('*and')
-        return and(a:x, a:y)
-    else
-        let l:x = a:x
-        let l:y = a:y
-        let l:n = 0
-        let l:result = 0
-        while l:x > 0 && l:y > 0
-            if (l:x % 2) && (l:y % 2)
-                let l:result += float2nr(pow(2, l:n))
-            endif
-            let l:x = float2nr(l:x / 2)
-            let l:y = float2nr(l:y / 2)
-            let l:n += 1
-        endwhile
-        return l:result
-    endif
 endfunction
 
 "FUNCTION: nerdtree#checkForBrowse(dir) {{{2

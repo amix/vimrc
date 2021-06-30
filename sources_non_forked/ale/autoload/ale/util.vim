@@ -409,7 +409,7 @@ function! ale#util#FuzzyJSONDecode(data, default) abort
         endif
 
         return l:result
-    catch /E474/
+    catch /E474\|E491/
         return a:default
     endtry
 endfunction
@@ -486,7 +486,7 @@ function! ale#util#Input(message, value) abort
 endfunction
 
 function! ale#util#HasBuflineApi() abort
-    return exists('*deletebufline') && exists('*appendbufline') && exists('*getpos') && exists('*setpos')
+    return exists('*deletebufline') && exists('*setbufline')
 endfunction
 
 " Sets buffer contents to lines
@@ -507,11 +507,8 @@ function! ale#util#SetBufferContents(buffer, lines) abort
 
     " Use a Vim API for setting lines in other buffers, if available.
     if l:has_bufline_api
-        let l:save_cursor = getpos('.')
-        call deletebufline(a:buffer, 1, '$')
-        call appendbufline(a:buffer, 1, l:new_lines)
-        call deletebufline(a:buffer, 1, 1)
-        call setpos('.', l:save_cursor)
+        call setbufline(a:buffer, 1, l:new_lines)
+        call deletebufline(a:buffer, l:first_line_to_remove, '$')
     " Fall back on setting lines the old way, for the current buffer.
     else
         let l:old_line_length = line('$')

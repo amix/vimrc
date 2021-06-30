@@ -45,6 +45,16 @@ function! ale_linters#elixir#credo#GetMode() abort
     endif
 endfunction
 
+function! ale_linters#elixir#credo#GetConfigFile() abort
+    let l:config_file = get(g:, 'ale_elixir_credo_config_file', '')
+
+    if empty(l:config_file)
+        return ''
+    endif
+
+    return ' --config-file ' . l:config_file
+endfunction
+
 function! ale_linters#elixir#credo#GetCommand(buffer) abort
     let l:project_root = ale#handlers#elixir#FindMixUmbrellaRoot(a:buffer)
     let l:mode = ale_linters#elixir#credo#GetMode()
@@ -52,6 +62,7 @@ function! ale_linters#elixir#credo#GetCommand(buffer) abort
     return ale#path#CdString(l:project_root)
     \ . 'mix help credo && '
     \ . 'mix credo ' . ale_linters#elixir#credo#GetMode()
+    \ . ale_linters#elixir#credo#GetConfigFile()
     \ . ' --format=flycheck --read-from-stdin %s'
 endfunction
 

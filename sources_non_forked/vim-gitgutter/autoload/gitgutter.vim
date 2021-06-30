@@ -23,11 +23,6 @@ function! gitgutter#process_buffer(bufnr, force) abort
 
   if gitgutter#utility#is_active(a:bufnr)
 
-<<<<<<< HEAD
-    call s:setup_maps(a:bufnr)
-
-=======
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
     if has('patch-7.4.1559')
       let l:Callback = function('gitgutter#process_buffer', [a:bufnr, a:force])
     else
@@ -109,23 +104,11 @@ endfunction
 
 " }}}
 
-<<<<<<< HEAD
-function! s:setup_maps(bufnr)
-=======
 function! gitgutter#setup_maps()
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
   if !g:gitgutter_map_keys
     return
   endif
 
-<<<<<<< HEAD
-  if gitgutter#utility#getbufvar(a:bufnr, 'mapped', 0)
-    return
-  endif
-
-  if !hasmapto('<Plug>GitGutterPrevHunk') && maparg('[c', 'n') ==# ''
-    nmap <buffer> [c <Plug>GitGutterPrevHunk
-=======
   " Note hasmapto() and maparg() operate on the current buffer.
 
   let bufnr = bufnr('')
@@ -136,7 +119,6 @@ function! gitgutter#setup_maps()
 
   if !hasmapto('<Plug>(GitGutterPrevHunk)') && maparg('[c', 'n') ==# ''
     nmap <buffer> [c <Plug>(GitGutterPrevHunk)
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
   endif
   if !hasmapto('<Plug>(GitGutterNextHunk)') && maparg(']c', 'n') ==# ''
     nmap <buffer> ]c <Plug>(GitGutterNextHunk)
@@ -174,19 +156,6 @@ endfunction
 function! s:setup_path(bufnr, continuation)
   if gitgutter#utility#has_repo_path(a:bufnr) | return | endif
 
-<<<<<<< HEAD
-  call gitgutter#utility#setbufvar(a:bufnr, 'mapped', 1)
-endfunction
-
-function! s:setup_path(bufnr, continuation)
-  let p = gitgutter#utility#repo_path(a:bufnr, 0)
-
-  if type(p) == s:t_string && !empty(p)  " if path is known
-    return
-  endif
-
-=======
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
   return gitgutter#utility#set_repo_path(a:bufnr, a:continuation)
 endfunction
 
@@ -203,8 +172,6 @@ function! s:clear(bufnr)
   call gitgutter#hunk#reset(a:bufnr)
   call s:reset_tick(a:bufnr)
   call gitgutter#utility#setbufvar(a:bufnr, 'path', '')
-<<<<<<< HEAD
-=======
 endfunction
 
 
@@ -247,5 +214,4 @@ function! gitgutter#quickfix()
   else
     call setloclist(0, locations)
   endif
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 endfunction

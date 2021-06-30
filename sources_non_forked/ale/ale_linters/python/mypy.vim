@@ -43,12 +43,14 @@ function! ale_linters#python#mypy#GetCommand(buffer) abort
     \   ? ' run mypy'
     \   : ''
 
+    let l:options = ale#Var(a:buffer, 'python_mypy_options')
+
     " We have to always switch to an explicit directory for a command so
     " we can know with certainty the base path for the 'filename' keys below.
     return ale#path#CdString(l:dir)
     \   . ale#Escape(l:executable) . l:exec_args
-    \   . ' --show-column-numbers '
-    \   . ale#Var(a:buffer, 'python_mypy_options')
+    \   . (len(l:options) ? (' ' . l:options) : '')
+    \   . ' --show-column-numbers'
     \   . ' --shadow-file %s %t %s'
 endfunction
 

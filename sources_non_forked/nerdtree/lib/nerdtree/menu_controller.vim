@@ -31,15 +31,11 @@ function! s:MenuController.showMenu()
         let l:done = 0
 
         while !l:done
-<<<<<<< HEAD
-            mode
-=======
             if has('nvim')
                 mode
             else
                 redraw!
             endif
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
             call self._echoPrompt()
 
             let l:key = nr2char(getchar())

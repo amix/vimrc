@@ -157,15 +157,7 @@ function! ale#Queue(delay, ...) abort
     endif
 endfunction
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-let s:current_ale_version = [2, 5, 0]
-=======
-let s:current_ale_version = [2, 6, 0]
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
-=======
-let s:current_ale_version = [3, 0, 0]
->>>>>>> master
+let s:current_ale_version = [3, 1, 0]
 
 " A function used to check for ALE features in files outside of the project.
 function! ale#Has(feature) abort

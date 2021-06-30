@@ -184,8 +184,6 @@ function! s:define_sign_line_highlights() abort
   endif
 endfunction
 
-<<<<<<< HEAD
-=======
 function! s:define_sign_linenr_highlights() abort
   if has('nvim-0.3.2')
     try
@@ -209,7 +207,6 @@ function! s:define_sign_linenr_highlights() abort
   endif
 endfunction
 
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 function! s:get_hl(group, what, mode) abort
   let r = synIDattr(synIDtrans(hlID(a:group)), a:what, a:mode)
   if empty(r) || r == -1

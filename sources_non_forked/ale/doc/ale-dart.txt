@@ -3,6 +3,31 @@ ALE Dart Integration                                         *ale-dart-options*
 
 
 ===============================================================================
+analysis_server                                      *ale-dart-analysis_server*
+
+Installation
+-------------------------------------------------------------------------------
+
+Install Dart via whatever means. `analysis_server` will be included in the SDK.
+
+In case that `dart` is not in your path, try to set the executable option to
+its absolute path. : >
+  " Set the executable path for dart to the absolute path to it.
+  let g:ale_dart_analysis_server_executable = '/usr/local/bin/dart'
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_dart_analysis_server_executable   *g:ale_dart_analysis_server_executable*
+                                        *b:ale_dart_analysis_server_executable*
+  Type: |String|
+  Default: `'dart'`
+
+  This variable can be set to change the path of dart.
+
+
+===============================================================================
 dartanalyzer                                            *ale-dart-dartanalyzer*
 
 Installation

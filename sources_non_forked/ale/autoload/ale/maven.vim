@@ -25,7 +25,7 @@ function! ale#maven#FindExecutable(buffer) abort
     let l:wrapper_cmd = has('unix') ? 'mvnw' : 'mvnw.cmd'
     let l:wrapper_path = ale#path#FindNearestFile(a:buffer, l:wrapper_cmd)
 
-    if executable(l:wrapper_path)
+    if !empty(l:wrapper_path) && executable(l:wrapper_path)
         return l:wrapper_path
     endif
 

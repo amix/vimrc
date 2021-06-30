@@ -90,6 +90,9 @@ let g:ale_lint_on_filetype_changed = get(g:, 'ale_lint_on_filetype_changed', 1)
 " This Dictionary configures the default LSP roots for various linters.
 let g:ale_lsp_root = get(g:, 'ale_lsp_root', {})
 
+" If set to 1, hints and suggestion from LSP servers and tsserver will be shown.
+let g:ale_lsp_suggestions = get(g:, 'ale_lsp_suggestions', 0)
+
 " This flag can be set to 1 to enable automatically fixing files on save.
 let g:ale_fix_on_save = get(g:, 'ale_fix_on_save', 0)
 
@@ -137,6 +140,15 @@ let g:ale_set_balloons = get(g:, 'ale_set_balloons', has('balloon_eval') && has(
 
 " Use preview window for hover messages.
 let g:ale_hover_to_preview = get(g:, 'ale_hover_to_preview', 0)
+
+" Float preview windows in Neovim
+let g:ale_floating_preview = get(g:, 'ale_floating_preview', 0)
+
+" Hovers use floating windows in Neovim
+let g:ale_hover_to_floating_preview = get(g:, 'ale_hover_to_floating_preview', 0)
+
+" Detail uses floating windows in Neovim
+let g:ale_detail_to_floating_preview = get(g:, 'ale_detail_to_floating_preview', 0)
 
 " This flag can be set to 0 to disable warnings for trailing whitespace
 let g:ale_warn_about_trailing_whitespace = get(g:, 'ale_warn_about_trailing_whitespace', 1)

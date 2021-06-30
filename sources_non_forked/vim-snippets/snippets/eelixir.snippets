@@ -38,6 +38,17 @@ snippet ft form_tag
 	<%= form_tag(${1:"/users"}, method: ${2::post}) %>
 		${0}
 	</form>
+
+snippet sl select
+	<%= select ${1:f}, :${2:field}, ${3:[{"key", "value"}]}, prompt: ${4:"Prompt"} %>
+
+snippet sb submit
+	<%= submit ${1:"Submit"} %>
+
+snippet rb radio_button
+	<%= radio_button ${1:f}, :${2:field},  ${3:"value"} %>
+
+
 snippet et error_tag
 	<%= error_tag ${1:f}, :${2:field} %>
 snippet ti text_input

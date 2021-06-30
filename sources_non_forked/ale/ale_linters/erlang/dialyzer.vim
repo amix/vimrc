@@ -3,6 +3,11 @@
 
 let g:ale_erlang_dialyzer_executable =
 \   get(g:, 'ale_erlang_dialyzer_executable', 'dialyzer')
+let g:ale_erlang_dialyzer_options =
+\   get(g:, 'ale_erlang_dialyzer_options', '-Wunmatched_returns'
+\                                        . ' -Werror_handling'
+\                                        . ' -Wrace_conditions'
+\                                        . ' -Wunderspecs')
 let g:ale_erlang_dialyzer_plt_file =
 \   get(g:, 'ale_erlang_dialyzer_plt_file', '')
 let g:ale_erlang_dialyzer_rebar3_profile =
@@ -15,17 +20,10 @@ endfunction
 function! ale_linters#erlang#dialyzer#FindPlt(buffer) abort
     let l:plt_file = ''
     let l:rebar3_profile = ale_linters#erlang#dialyzer#GetRebar3Profile(a:buffer)
-<<<<<<< HEAD
-    let l:plt_file_directory = ale#path#FindNearestDirectory(a:buffer, '_build' . l:rebar3_profile)
-
-    if !empty(l:plt_file_directory)
-        let l:plt_file = split(globpath(l:plt_file_directory, '/*_plt'), '\n')
-=======
     let l:plt_file_directory = ale#path#FindNearestDirectory(a:buffer, '_build/' . l:rebar3_profile)
 
     if !empty(l:plt_file_directory)
         let l:plt_file = globpath(l:plt_file_directory, '*_plt', 0, 1)
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
     endif
 
     if !empty(l:plt_file)
@@ -54,13 +52,12 @@ function! ale_linters#erlang#dialyzer#GetExecutable(buffer) abort
 endfunction
 
 function! ale_linters#erlang#dialyzer#GetCommand(buffer) abort
+    let l:options = ale#Var(a:buffer, 'erlang_dialyzer_options')
+
     let l:command = ale#Escape(ale_linters#erlang#dialyzer#GetExecutable(a:buffer))
     \   . ' -n'
     \   . ' --plt ' . ale#Escape(ale_linters#erlang#dialyzer#GetPlt(a:buffer))
-    \   . ' -Wunmatched_returns'
-    \   . ' -Werror_handling'
-    \   . ' -Wrace_conditions'
-    \   . ' -Wunderspecs'
+    \   . ' ' . l:options
     \   . ' %s'
 
     return l:command

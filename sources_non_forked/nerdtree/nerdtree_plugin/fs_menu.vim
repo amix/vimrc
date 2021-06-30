@@ -41,16 +41,16 @@ endif
 if g:NERDTreePath.CopyingSupported()
     call NERDTreeAddMenuItem({'text': '(c)opy the current node', 'shortcut': 'c', 'callback': 'NERDTreeCopyNode'})
 endif
-<<<<<<< HEAD
-call NERDTreeAddMenuItem({'text': (has("clipboard")?'copy (p)ath to clipboard':'print (p)ath to screen'), 'shortcut': 'p', 'callback': 'NERDTreeCopyPath'})
-=======
 call NERDTreeAddMenuItem({'text': (has('clipboard')?'copy (p)ath to clipboard':'print (p)ath to screen'), 'shortcut': 'p', 'callback': 'NERDTreeCopyPath'})
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 
 if has('unix') || has('osx')
     call NERDTreeAddMenuItem({'text': '(l)ist the current node', 'shortcut': 'l', 'callback': 'NERDTreeListNode'})
 else
     call NERDTreeAddMenuItem({'text': '(l)ist the current node', 'shortcut': 'l', 'callback': 'NERDTreeListNodeWin32'})
+endif
+
+if exists('*system')
+    call NERDTreeAddMenuItem({'text': 'Run (s)ystem command in this directory', 'shortcut':'s', 'callback': 'NERDTreeSystemCommand'})
 endif
 
 "FUNCTION: s:inputPrompt(action){{{1
@@ -376,13 +376,6 @@ endfunction
 " FUNCTION: NERDTreeCopyPath() {{{1
 function! NERDTreeCopyPath()
     let l:nodePath = g:NERDTreeFileNode.GetSelected().path.str()
-<<<<<<< HEAD
-    if has("clipboard")
-        let @* = l:nodePath
-        call nerdtree#echo("The path [" . l:nodePath . "] was copied to your clipboard.")
-    else
-        call nerdtree#echo("The full path is: " . l:nodePath)
-=======
     if has('clipboard')
         if &clipboard ==# 'unnamedplus'
             let @+ = l:nodePath
@@ -392,7 +385,6 @@ function! NERDTreeCopyPath()
         call nerdtree#echo('The path [' . l:nodePath . '] was copied to your clipboard.')
     else
         call nerdtree#echo('The full path is: ' . l:nodePath)
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
     endif
 endfunction
 
@@ -470,6 +462,23 @@ function! NERDTreeExecuteFileWindows()
     endif
 
     call system('cmd.exe /c start "" ' . shellescape(l:node.path.str()))
+endfunction
+
+" FUNCTION: NERDTreeSystemCommand() {{{1
+function! NERDTreeSystemCommand()
+    let l:node = g:NERDTreeFileNode.GetSelected()
+
+    if empty(l:node)
+        return
+    endif
+
+    let l:cwd = getcwd()
+    let l:directory = l:node.path.isDirectory ? l:node.path.str() : l:node.parent.path.str()
+    execute 'cd '.l:directory
+
+    let l:nl = nr2char(10)
+    echo l:nl . system(input(l:directory . (nerdtree#runningWindows() ? '> ' : ' $ ')))
+    execute 'cd '.l:cwd
 endfunction
 
 " vim: set sw=4 sts=4 et fdm=marker:

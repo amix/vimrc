@@ -15,20 +15,6 @@ COMMANDS                                        *fugitive-commands*
 These commands are local to the buffers in which they work (generally, buffers
 that are part of Git repositories).
 
-<<<<<<< HEAD
-                                        *fugitive-:G* *fugitive-:Gstatus*
-:G                      Bring up a summary window vaguely akin to git-status.
-:Gstatus                Press g? or see |fugitive-mappings| for usage.
-
-                                                *fugitive-:Git*
-:Git {args}             Run an arbitrary git command. Similar to :!git [args]
-:G {args}               but chdir to the repository tree first.
-
-                                                *fugitive-:Git!*
-:Git! {args}            Like |:Git|, but capture the output into a temp file,
-                        and |:split| that that temp file.  Use :0Git to
-                        |:edit| the temp file instead.
-=======
                                                 *:Git* *fugitive-:G*
 :Git {args}             Run an arbitrary git command and display any output.
 :G {args}               On UNIX this uses a pty and on other platforms it uses
@@ -72,54 +58,13 @@ that are part of Git repositories).
                         -     reblame at commit
                         ~     reblame at [count]th first grandparent
                         P     reblame at [count]th parent (like HEAD^[count])
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 
 :[range]Git blame [...] If a range is given, just that part of the file will
 :Git blame [...] {file} be blamed, and a horizontal split without
                         scrollbinding is used.  You can also give an arbitrary
                         filename.
 
-<<<<<<< HEAD
-                                                *:Ggrep* *:Gcgrep* *:Git-grep*
-:Ggrep[!] [args]        |:grep|[!] with git-grep as 'grepprg'.
-:Git[!] grep [args]
-
-                                                *:Glgrep*
-:Glgrep[!] [args]       |:lgrep|[!] with git-grep as 'grepprg'.
-:0Git[!] grep [args]
-
-<<<<<<< HEAD
-                                                *fugitive-:Gcommit*
-:Gcommit [args]         A wrapper around git-commit.  Unless the arguments
-                        given would skip the invocation of an editor (e.g.,
-                        -m), a split window will be used to obtain a commit
-                        message, or a new tab if -v is given.  Write and close
-                        the window (:wq) to finish the commit. To cancel, use
-                        an empty message.
-
-                                                *fugitive-:Gmerge*
-:Gmerge [args]          Calls git-merge and loads errors and conflicted files
-                        into the |quickfix| list.  Opens a |:Gcommit| style
-                        split window for the commit message if the merge
-                        succeeds.  If called during a merge conflict, the
-                        conflicted files from the current index are loaded
-                        into the |quickfix| list.
-
-                                                *fugitive-:Gpull*
-:Gpull [args]           Like |:Gmerge|, but for git-pull.
-
-                                                *fugitive-:Grebase*
-:Grebase [args]         Like |:Gmerge|, but for git-rebase.  Interactive
-                        rebase is experimentally supported.
-
-                                                *fugitive-:Gpush*
-:Gpush [args]           Invoke git-push, load the results into the |quickfix|
-                        list, and invoke |:cwindow| to reveal any errors.
-=======
-                                                *:Git-difftool*
-=======
                                                 *:Git_difftool*
->>>>>>> master
 :Git[!] difftool [args] Invoke `git diff [args]` and load the changes into the
                         quickfix list.  Each changed hunk gets a separate
                         quickfix entry unless you pass an option like
@@ -133,42 +78,9 @@ that are part of Git repositories).
                                                 *:Git_mergetool*
 :Git mergetool [args]   Like |:Git_difftool|, but target merge conflicts.
 
-                                                *:Git_push*
-:Git push [args]        Invoke git-push, load the results into the |quickfix|
-<<<<<<< HEAD
-:Gpush [args]           list, and invoke |:cwindow| to reveal any errors.
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
-=======
-                        list, and invoke |:cwindow| to reveal any errors.
->>>>>>> master
-                        |:Dispatch| is used if available for asynchronous
-                        invocation.
-
-                                                *:Git_fetch*
-:Git fetch [args]       Like |:Git_push|, but for git-fetch.
-
-<<<<<<< HEAD
-                                                *:Git-pull* *:Gpull*
-:Gpull [args]           Deprecated alias for |:Git| pull.
-
-                                                *:Git-rebase* *:Grebase*
-:Grebase [args]         Deprecated alias for |:Git| rebase.
-
-<<<<<<< HEAD
-                                                *fugitive-:Glog*
-:Glog[!] [args]         Use git-log [args] to load the commit history into the
-                        |quickfix| list.  Jump to the first commit unless [!]
-                        is given.
-
-:{range}Glog[!] [args]  Use git-log -L to load previous revisions of the given
-=======
-                                                *:Git-commit* *:Gcommit*
-:Gcommit [args]         Deprecated alias for |:Git| commit.
-=======
                                                 *:Ggrep* *:Gcgrep* *:Git_grep*
 :Ggrep[!] [args]        |:grep|[!] with git-grep as 'grepprg'.
 :Git[!] grep [args]
->>>>>>> master
 
                                                 *:Glgrep*
 :Glgrep[!] [args]       |:lgrep|[!] with git-grep as 'grepprg'.
@@ -179,11 +91,11 @@ that are part of Git repositories).
                         |quickfix| list.  Jumps to the first commit unless [!]
                         is given.
 
-                        The quickfix list can be slow and awkward for many use
-                        cases.  Consider using |:Git| log instead.
+                        The quickfix list can be awkward for many use cases
+                        and exhibits extremely poor performance with larger
+                        data sets.  Consider using |:Git| log instead.
 
 :{range}Gclog[!] [args] Use git-log -L to load previous revisions of the given
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
                         range of the current file into the |quickfix| list.
                         The cursor is positioned on the first line of the
                         first diff hunk for each commit.  Use :0Gclog to
@@ -214,21 +126,6 @@ that are part of Git repositories).
                                                 *:Gpedit*
 :Gpedit [object]        |:pedit| a |fugitive-object|.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-:Gsplit! [args]                 *fugitive-:Gsplit!* *fugitive-:Gvsplit!*
-:Gvsplit! [args]                *fugitive-:Gtabedit!* *fugitive-:Gpedit!*
-=======
-:Gsplit! [args]                                 *:Gsplit!* *:Gvsplit!*
-:Gvsplit! [args]                                *:Gtabedit!* *:Gpedit!*
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
-:Gtabedit! [args]       Capture the output of `git [args]` to a temp file and
-:Gpedit! [args]         open it in a split, tab, or preview window.  Use
-                        :0Gsplit! to suppress the split and open it in the
-                        current window.
-
-=======
->>>>>>> master
                                                 *:Gread* *fugitive-:Gr*
 :Gread [object]         Empty the buffer and |:read| a |fugitive-object|.
                         When the argument is omitted, this is similar to
@@ -263,11 +160,7 @@ that are part of Git repositories).
 :Gwq! [path]            Like |:Gwrite|! followed by |:quit|! if the write
                         succeeded.
 
-<<<<<<< HEAD
-                                                *fugitive-:Gdiffsplit*
-=======
                                                 *:Gdiffsplit*
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 :Gdiffsplit [object]    Perform a |vimdiff| against the given file, or if a
                         commit is given, the current file in that commit.
                         With no argument, the version in the index or work
@@ -276,23 +169,6 @@ that are part of Git repositories).
                         width of the window relative to 'textwidth'.  Use
                         Vim's |do| and |dp| to stage and unstage changes.
 
-<<<<<<< HEAD
-                                                *fugitive-:Gdiffsplit!*
-:Gdiffsplit! [object]   During a merge conflict, do a three-way diff against
-                        both ancestors.  Additional d2o and d3o maps are
-                        provided to to obtain the hunk from the "ours" or
-                        "theirs" ancestor, respectively.  If the file is not
-                        conflicted, behaves the same as if no bang was given,
-                        but keeps focus in the original window.
-
-                                                *fugitive-:Gvdiffsplit*
-:Gvdiffsplit [object]   Like |:Gdiffsplit|, but always split vertically.
-
-                                *fugitive-:Ghdiffsplit* *fugitive-:Gsdiff*
-:Ghdiffsplit [object]   Like |:Gdiffsplit|, but always split horizontally.
-
-                                                *fugitive-:Gmove*
-=======
                                                 *:Gdiffsplit!*
 :Gdiffsplit!            Diff against any and all direct ancestors, retaining
                         focus on the current window.  During a merge conflict,
@@ -310,14 +186,8 @@ that are part of Git repositories).
                                                 *:Ghdiffsplit*
 :Ghdiffsplit [object]   Like |:Gdiffsplit|, but always split horizontally.
 
-<<<<<<< HEAD
-                                                *:Gmove*
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
-:Gmove {destination}    Wrapper around git-mv that renames the buffer
-=======
                                                 *:GMove*
 :GMove {destination}    Wrapper around git-mv that renames the buffer
->>>>>>> master
                         afterward.  Add a ! to pass -f.
 
                                                 *:GRename*
@@ -333,38 +203,8 @@ that are part of Git repositories).
                                                 *:GRemove*
 :GRemove                Like |:GDelete|, but keep the (now empty) buffer around.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                                *fugitive-:Gblame*
-:Gblame [flags]         Run git-blame on the file and open the results in a
-                        scroll bound vertical split.  You can give any of
-                        -ltsewMC as flags and they will be passed along to
-                        git-blame.  The following maps, which work on the
-                        cursor line commit where sensible, are provided:
-
-                        g?    show this help
-                        A     resize to end of author column
-                        C     resize to end of commit column
-                        D     resize to end of date/time column
-                        q     close blame and return to blamed window
-                        gq    q, then |:Gedit| to return to work tree version
-                        <CR>  q, then open commit
-                        o     open commit in horizontal split
-                        O     open commit in new tab
-                        p     open commit in preview window
-                        -     reblame at commit
-                        ~     reblame at [count]th first grandparent
-                        P     reblame at [count]th parent (like HEAD^[count])
-
-                                                *fugitive-:Gbrowse*
-=======
-                                                *:Gbrowse*
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
-:Gbrowse                Open the current file, blob, tree, commit, or tag
-=======
                                                 *:GBrowse*
 :GBrowse                Open the current file, blob, tree, commit, or tag
->>>>>>> master
                         in your browser at the upstream hosting provider.
                         If a range is given, it is appropriately appended to
                         the URL as an anchor.
@@ -416,7 +256,7 @@ X                       Discard the change under the cursor.  This uses
                         `checkout` or `clean` under the hood.  A command is
                         echoed that shows how to undo the change.  Consult
                         `:messages` to see it again.  You can use this during
-                        a merge conflict do discard "our" changes (--theirs)
+                        a merge conflict to discard "our" changes (--theirs)
                         in the "Unstaged" section or discard "their" changes
                         (--ours) in the "Staged" section.
 
@@ -438,27 +278,17 @@ I                       Invoke |:Git| add --patch or reset --patch on the file
 P                       under the cursor. On untracked files, this instead
                         calls |:Git| add --intent-to-add.
 
-<<<<<<< HEAD
-=======
                                                 *fugitive_d*
 Diff maps ~
                                                 *fugitive_dp*
 dp                      Invoke |:Git| diff on the file under the cursor.
                         Deprecated in favor of inline diffs.
 
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
                                                 *fugitive_dd*
 dd                      Perform a |:Gdiffsplit| on the file under the cursor.
 
                                                 *fugitive_dv*
 dv                      Perform a |:Gvdiffsplit| on the file under the cursor.
-<<<<<<< HEAD
-
-                                                *fugitive_ds* *fugitive_dh*
-ds                      Perform a |:Ghdiffsplit| on the file under the cursor.
-dh
-=======
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 
                                                 *fugitive_ds* *fugitive_dh*
 ds                      Perform a |:Ghdiffsplit| on the file under the cursor.
@@ -579,21 +409,6 @@ gr                      Jump to file [count] in the "Rebasing" section.
                                                 *fugitive_gi*
 gi                      Open .git/info/exclude in a split.  Use a count to
                         open .gitignore.
-
-                                                *fugitive_gu*
-gu                      Jump to "Unstaged" section.
-
-                                                *fugitive_gU*
-gU                      Jump to "Untracked" section.
-
-                                                *fugitive_gs*
-gs                      Jump to "Staged" section.
-
-                                                *fugitive_gp*
-gp                      Jump to "Unpushed" section.
-
-                                                *fugitive_gP*
-gP                      Jump to "Unpulled" section.
 
                                                 *fugitive_c*
 Commit maps ~
@@ -809,8 +624,8 @@ just one space character longer than the legacy version.
 *:Gpull*        Superseded by |:Git| pull.
 *:Grebase*      Superseded by |:Git| rebase.
 *:Grevert*      Superseded by |:Git| revert.
-*:Gpush*        Superseded by |:Git_push|.
-*:Gfetch*       Superseded by |:Git_fetch|.
+*:Gpush*        Superseded by |:Git| push.
+*:Gfetch*       Superseded by |:Git| fetch.
 *:Glog*         Superseded by |:Gclog|.
 *:Gstatus*      Superseded by |:Git| (with no arguments).
 *:Git!*         Superseded by |:Git_--paginate|.

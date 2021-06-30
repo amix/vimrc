@@ -173,7 +173,8 @@ Commands for operating on a hunk:~
                                               *gitgutter-:GitGutterPreviewHunk*
 :GitGutterPreviewHunk   Preview the hunk the cursor is in.
                         Use |:pclose| or |CTRL-W_CTRL-Z| to close the preview
-                        window.
+                        window, or set |g:gitgutter_close_preview_on_escape|
+                        and use <Esc>.
 
                         To stage part of the hunk, move to the preview window,
                         delete any lines you do not want to stage, and
@@ -484,7 +485,7 @@ preview window.
                                           *g:gitgutter_close_preview_on_escape*
 Default: 0
 
-Whether pressing <Esc> in a non-floating preview window closes it.
+Whether pressing <Esc> in a preview window closes it.
 
                                            *g:gitgutter_terminal_reports_focus*
 Default: 1
@@ -695,3 +696,4 @@ Terminus (https://github.com/wincent/terminus) or set:
     let g:gitgutter_terminal_reports_focus = 0
 <
 
+  vim:tw=78:et:ft=help:norl:

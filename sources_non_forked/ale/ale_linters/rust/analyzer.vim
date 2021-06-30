@@ -17,7 +17,7 @@ endfunction
 call ale#linter#Define('rust', {
 \   'name': 'analyzer',
 \   'lsp': 'stdio',
-\   'lsp_config': {b -> ale#Var(b, 'rust_analyzer_config')},
+\   'initialization_options': {b -> ale#Var(b, 'rust_analyzer_config')},
 \   'executable': {b -> ale#Var(b, 'rust_analyzer_executable')},
 \   'command': function('ale_linters#rust#analyzer#GetCommand'),
 \   'project_root': function('ale_linters#rust#analyzer#GetProjectRoot'),

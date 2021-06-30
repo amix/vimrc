@@ -6,11 +6,7 @@ let s:hunk_re = '^@@ -\(\d\+\),\?\(\d*\) +\(\d\+\),\?\(\d*\) @@'
 
 " True for git v1.7.2+.
 function! s:git_supports_command_line_config_override() abort
-<<<<<<< HEAD
-  call system(g:gitgutter_git_executable.' '.g:gitgutter_git_args.' -c foo.bar=baz --version')
-=======
   call gitgutter#utility#system(g:gitgutter_git_executable.' '.g:gitgutter_git_args.' -c foo.bar=baz --version')
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
   return !v:shell_error
 endfunction
 

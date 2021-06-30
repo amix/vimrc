@@ -32,6 +32,8 @@ function! ale#python#FindProjectRootIni(buffer) abort
         \|| filereadable(l:path . '/.pylintrc')
         \|| filereadable(l:path . '/Pipfile')
         \|| filereadable(l:path . '/Pipfile.lock')
+        \|| filereadable(l:path . '/poetry.lock')
+        \|| filereadable(l:path . '/pyproject.toml')
             return l:path
         endif
     endfor

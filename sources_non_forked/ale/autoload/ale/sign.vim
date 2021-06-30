@@ -50,9 +50,12 @@ if !hlexists('ALESignColumnWithErrors')
 endif
 
 function! ale#sign#SetUpDefaultColumnWithoutErrorsHighlight() abort
+    let l:verbose = &verbose
+    set verbose=0
     redir => l:output
         0verbose silent highlight SignColumn
     redir end
+    let &verbose = l:verbose
 
     let l:highlight_syntax = join(split(l:output)[2:])
     let l:match = matchlist(l:highlight_syntax, '\vlinks to (.+)$')

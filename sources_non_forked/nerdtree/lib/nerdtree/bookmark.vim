@@ -256,7 +256,7 @@ endfunction
 function! s:Bookmark.open(nerdtree, ...)
     let opts = a:0 ? a:1 : {}
 
-    if nerdtree#and(g:NERDTreeQuitOnOpen,2)
+    if nerdtree#closeBookmarksOnOpen()
         call a:nerdtree.ui.toggleShowBookmarks()
     endif
 

@@ -614,6 +614,8 @@ function! ale#completion#ParseLSPCompletions(response) abort
         \   'kind': ale#completion#GetCompletionSymbols(get(l:item, 'kind', '')),
         \   'icase': 1,
         \   'menu': l:detail,
+        \   'dup': get(l:info, 'additional_edits_only', 0)
+        \       ||  g:ale_completion_autoimport,
         \   'info': (type(l:doc) is v:t_string ? l:doc : ''),
         \}
         " This flag is used to tell if this completion came from ALE or not.

@@ -16,10 +16,7 @@ let s:default_ale_linter_aliases = {
 \   'plaintex': 'tex',
 \   'ps1': 'powershell',
 \   'rmarkdown': 'r',
-<<<<<<< HEAD
-=======
 \   'rmd': 'r',
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 \   'systemverilog': 'verilog',
 \   'typescriptreact': ['typescript', 'tsx'],
 \   'verilog_systemverilog': ['verilog_systemverilog', 'verilog'],
@@ -41,11 +38,13 @@ let s:default_ale_linter_aliases = {
 "
 " NOTE: Update the g:ale_linters documentation when modifying this.
 let s:default_ale_linters = {
+\   'apkbuild': ['apkbuild_lint', 'secfixes_check'],
 \   'csh': ['shell'],
 \   'elixir': ['credo', 'dialyxir', 'dogma'],
 \   'go': ['gofmt', 'golint', 'go vet'],
 \   'hack': ['hack'],
 \   'help': [],
+\   'inko': ['inko'],
 \   'perl': ['perlcritic'],
 \   'perl6': [],
 \   'python': ['flake8', 'mypy', 'pylint', 'pyright'],

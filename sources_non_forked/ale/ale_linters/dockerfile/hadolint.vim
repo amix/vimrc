@@ -9,7 +9,7 @@ function! ale_linters#dockerfile#hadolint#Handle(buffer, lines) abort
     "
     " /dev/stdin:19 DL3001 Pipe chain should start with a raw value.
     " /dev/stdin:19:3 unexpected thing
-    let l:pattern = '\v^/dev/stdin:(\d+):?(\d+)? ((DL|SC)(\d+) )?(.+)$'
+    let l:pattern = '\v^/dev/stdin:(\d+):?(\d+)? ((DL|SC)(\d+) )?((.+)?: )?(.+)$'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
@@ -24,9 +24,19 @@ function! ale_linters#dockerfile#hadolint#Handle(buffer, lines) abort
             let l:colnum = l:match[2] + 0
         endif
 
-        let l:type = 'W'
-        let l:text = l:match[6]
-        let l:detail = l:match[6]
+        " Shellcheck knows a 'style' severity - pin it to info level as well.
+        if l:match[7] is# 'style'
+            let l:type = 'I'
+        elseif l:match[7] is# 'info'
+            let l:type = 'I'
+        elseif l:match[7] is# 'warning'
+            let l:type = 'W'
+        else
+            let l:type = 'E'
+        endif
+
+        let l:text = l:match[8]
+        let l:detail = l:match[8]
         let l:domain = 'https://github.com/hadolint/hadolint/wiki/'
 
         if l:match[4] is# 'SC'

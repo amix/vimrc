@@ -207,6 +207,27 @@ g:ale_go_gopls_options                                 *g:ale_go_gopls_options*
   Type: |String|
   Default: `''`
 
+  Command-line options passed to the gopls executable. See `gopls -h`.
+
+
+g:ale_go_gopls_init_options                       *g:ale_go_gopls_init_options*
+                                                  *b:ale_go_gopls_init_options*
+  Type: |Dictionary|
+  Default: `{}`
+
+  LSP initialization options passed to gopls. This can be used to configure
+  the behaviour of gopls.
+
+  Example: >
+  let g:ale_go_gopls_init_options = {'ui.diagnostic.analyses': {
+        \ 'composites': v:false,
+        \ 'unusedparams': v:true,
+        \ 'unusedresult': v:true,
+        \ }}
+<
+
+  For a full list of supported analyzers, see:
+  https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md
 
 ===============================================================================
 govet                                                            *ale-go-govet*

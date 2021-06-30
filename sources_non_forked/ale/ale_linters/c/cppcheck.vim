@@ -10,7 +10,7 @@ function! ale_linters#c#cppcheck#GetCommand(buffer) abort
     let l:buffer_path_include = empty(l:compile_commands_option)
     \   ? ale#handlers#cppcheck#GetBufferPathIncludeOptions(a:buffer)
     \   : ''
-    let l:template = ' --template=''{file}:{line}:{column}: {severity}:{inconclusive:inconclusive:} {message} [{id}]\\n{code}'''
+    let l:template = ' --template=' . ale#Escape('{file}:{line}:{column}: {severity}:{inconclusive:inconclusive:} {message} [{id}]\\n{code}')
 
     return l:cd_command
     \   . '%e -q --language=c'

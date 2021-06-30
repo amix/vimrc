@@ -7,16 +7,11 @@ if !exists('g:ale_verilog_verilator_options')
 endif
 
 function! ale_linters#verilog#verilator#GetCommand(buffer) abort
-    let l:filename = ale#util#Tempname() . '_verilator_linted.v'
-
-    " Create a special filename, so we can detect it in the handler.
-    call ale#command#ManageFile(a:buffer, l:filename)
-    let l:lines = getbufline(a:buffer, 1, '$')
-    call ale#util#Writefile(a:buffer, l:lines, l:filename)
-
+    " the path to the current file is systematically added to the search path
     return 'verilator --lint-only -Wall -Wno-DECLFILENAME '
+    \   . '-I%s:h '
     \   . ale#Var(a:buffer, 'verilog_verilator_options') .' '
-    \   . ale#Escape(l:filename)
+    \   . '%t'
 endfunction
 
 function! ale_linters#verilog#verilator#Handle(buffer, lines) abort
@@ -34,7 +29,7 @@ function! ale_linters#verilog#verilator#Handle(buffer, lines) abort
     "
     " to stay compatible with old versions of the tool, the column number is
     " optional in the researched pattern
-    let l:pattern = '^%\(Warning\|Error\)[^:]*:\([^:]\+\):\(\d\+\):\(\d\+\)\?:\? \(.\+\)$'
+    let l:pattern = '^%\(Warning\|Error\)[^:]*:\s*\([^:]\+\):\(\d\+\):\(\d\+\)\?:\? \(.\+\)$'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
@@ -42,17 +37,14 @@ function! ale_linters#verilog#verilator#Handle(buffer, lines) abort
         \   'lnum': str2nr(l:match[3]),
         \   'text': l:match[5],
         \   'type': l:match[1] is# 'Error' ? 'E' : 'W',
+        \   'filename': l:match[2],
         \}
 
         if !empty(l:match[4])
             let l:item.col = str2nr(l:match[4])
         endif
 
-        let l:file = l:match[2]
-
-        if l:file =~# '_verilator_linted.v'
-            call add(l:output, l:item)
-        endif
+        call add(l:output, l:item)
     endfor
 
     return l:output

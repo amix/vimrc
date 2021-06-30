@@ -176,15 +176,20 @@ endfunction
 
 function! s:use_known_shell() abort
   if has('unix') && &shell !=# 'sh'
-    let [s:shell, s:shellcmdflag, s:shellredir] = [&shell, &shellcmdflag, &shellredir]
+    let [s:shell, s:shellcmdflag, s:shellredir, s:shellpipe, s:shellquote, s:shellxquote] = [&shell, &shellcmdflag, &shellredir, &shellpipe, &shellquote, &shellxquote]
     let &shell = 'sh'
     set shellcmdflag=-c shellredir=>%s\ 2>&1
+  endif
+  if has('win32') && (&shell =~# 'pwsh' || &shell =~# 'powershell')
+    let [s:shell, s:shellcmdflag, s:shellredir, s:shellpipe, s:shellquote, s:shellxquote] = [&shell, &shellcmdflag, &shellredir, &shellpipe, &shellquote, &shellxquote]
+    let &shell = 'cmd.exe'
+    set shellcmdflag=/s\ /c shellredir=>%s\ 2>&1 shellpipe=>%s\ 2>&1 shellquote= shellxquote="
   endif
 endfunction
 
 function! s:restore_shell() abort
-  if has('unix') && exists('s:shell')
-    let [&shell, &shellcmdflag, &shellredir] = [s:shell, s:shellcmdflag, s:shellredir]
+  if (has('unix') || has('win32')) && exists('s:shell')
+    let [&shell, &shellcmdflag, &shellredir, &shellpipe, &shellquote, &shellxquote] = [s:shell, s:shellcmdflag, s:shellredir, s:shellpipe, s:shellquote, s:shellxquote]
   endif
 endfunction
 

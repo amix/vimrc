@@ -34,9 +34,6 @@ function! ale_linters#c#clangtidy#GetCommand(buffer, output) abort
     " Get the options to pass directly to clang-tidy
     let l:extra_options = ale#Var(a:buffer, 'c_clangtidy_extra_options')
 
-    " Get the options to pass directly to clang-tidy
-    let l:extra_options = ale#Var(a:buffer, 'c_clangtidy_extra_options')
-
     return '%e'
     \   . (!empty(l:checks) ? ' -checks=' . ale#Escape(l:checks) : '')
     \   . (!empty(l:extra_options) ? ' ' . ale#Escape(l:extra_options) : '')

@@ -83,7 +83,9 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version) abort
         \    'markdown': 'markdown',
         \    'vue': 'vue',
         \    'yaml': 'yaml',
+        \    'openapi': 'yaml',
         \    'html': 'html',
+        \    'ruby': 'ruby',
         \}
 
         for l:filetype in l:filetypes

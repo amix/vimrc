@@ -65,14 +65,6 @@ function! s:NERDTree.Close()
     endif
 endfunction
 
-"FUNCTION: s:NERDTree.CloseIfQuitOnOpen() {{{1
-"Closes the NERD tree window if the close on open option is set
-function! s:NERDTree.CloseIfQuitOnOpen()
-    if nerdtree#and(g:NERDTreeQuitOnOpen,1) && s:NERDTree.IsOpen()
-        call s:NERDTree.Close()
-    endif
-endfunction
-
 "FUNCTION: s:NERDTree.CursorToBookmarkTable(){{{1
 "Places the cursor at the top of the bookmarks table
 function! s:NERDTree.CursorToBookmarkTable()
@@ -162,11 +154,7 @@ endfunction
 
 "FUNCTION: s:NERDTree.IsOpen() {{{1
 function! s:NERDTree.IsOpen()
-<<<<<<< HEAD
-    return s:NERDTree.GetWinNum() != -1 || bufname('%') =~# '^' . g:NERDTreeCreator.BufNamePrefix() . '\d\+$'
-=======
     return s:NERDTree.GetWinNum() !=# -1
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 endfunction
 
 "FUNCTION: s:NERDTree.isTabTree() {{{1

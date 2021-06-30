@@ -116,7 +116,7 @@ The following features and functionality are provided by the NERDTree:
         :NERDTreeVCS              (opens root of repository containing CWD)
 <
 :NERDTreeFromBookmark <bookmark>                         *:NERDTreeFromBookmark*
-    Opens a fresh NERDTree with the root initialized to the dir for
+    Opens a fresh NERDTree with the root initialized to the directory for
     <bookmark>.  The only reason to use this command over :NERDTree is for
     the completion (which is for bookmarks rather than directories).
 
@@ -126,7 +126,7 @@ The following features and functionality are provided by the NERDTree:
     is set to that path. If no NERDTree exists for this tab then this command
     acts the same as the |:NERDTree| command.
 
-:NERDTreeToggleVCS [<start-directory> | <bookmark>]            *:NERDTreeToggleVCS*
+:NERDTreeToggleVCS [<start-directory> | <bookmark>]         *:NERDTreeToggleVCS*
     Like |:NERDTreeToggle|, but searches up the directory tree to find the top of
     the version control system repository, and roots the NERDTree there. It
     works with Git, Subversion, Mercurial, Bazaar, and Darcs repositories. A
@@ -249,7 +249,7 @@ Key      Description                                                  help-tag~
 
 o........Open files, directories and bookmarks......................|NERDTree-o|
 go.......Open selected file, but leave cursor in the NERDTree......|NERDTree-go|
-         Open selected bookmark dir in current NERDTree
+         Open selected bookmark directory in current NERDTree
 t........Open selected node/bookmark in a new tab...................|NERDTree-t|
 T........Same as 't' but keep the focus on the current tab..........|NERDTree-T|
 i........Open selected file in a split window.......................|NERDTree-i|
@@ -260,10 +260,10 @@ gs.......Same as s, but leave the cursor on the NERDTree...........|NERDTree-gs|
 O........Recursively open the selected directory....................|NERDTree-O|
 x........Close the current nodes parent.............................|NERDTree-x|
 X........Recursively close all children of the current node.........|NERDTree-X|
-e........Edit the current dir.......................................|NERDTree-e|
+e........Edit the current directory.................................|NERDTree-e|
 
 double-click....same as |NERDTree-o|.
-middle-click....same as |NERDTree-i| for files, and |NERDTree-e| for dirs.
+middle-click....same as |NERDTree-i| for files, and |NERDTree-e| for directories.
 
 D........Delete the current bookmark ...............................|NERDTree-D|
 
@@ -274,13 +274,13 @@ J........Jump down inside directories at the current tree depth.....|NERDTree-J|
 <C-J>....Jump down to next sibling of the current directory.......|NERDTree-C-J|
 <C-K>....Jump up to previous sibling of the current directory.....|NERDTree-C-K|
 
-C........Change the tree root to the selected dir...................|NERDTree-C|
+C........Change the tree root to the selected directory.............|NERDTree-C|
 u........Move the tree root up one directory........................|NERDTree-u|
 U........Same as 'u' except the old root node is left open..........|NERDTree-U|
 r........Recursively refresh the current directory..................|NERDTree-r|
 R........Recursively refresh the current root.......................|NERDTree-R|
 m........Display the NERDTree menu..................................|NERDTree-m|
-cd.......Change the CWD to the dir of the selected node............|NERDTree-cd|
+cd.......Change the CWD to the directory of the selected node......|NERDTree-cd|
 CD.......Change tree root to the CWD...............................|NERDTree-CD|
 
 I........Toggle whether hidden files displayed......................|NERDTree-I|
@@ -469,7 +469,7 @@ Jump to the first child of the current nodes parent.
 
 If the cursor is already on the first node then do the following:
     * loop back thru the siblings of the current nodes parent until we find an
-      open dir with children
+      open directory with children
     * go to the first child of that node
 
 ------------------------------------------------------------------------------
@@ -482,7 +482,7 @@ Jump to the last child of the current nodes parent.
 
 If the cursor is already on the last node then do the following:
     * loop forward thru the siblings of the current nodes parent until we find
-      an open dir with children
+      an open directory with children
     * go to the last child of that node
 
 ------------------------------------------------------------------------------
@@ -516,7 +516,7 @@ Default key: u
 Map setting: *NERDTreeMapUpdir*
 Applies to: no restrictions.
 
-Move the tree root up a dir (like doing a "cd ..").
+Move the tree root up a directory (like doing a "cd ..").
 
 ------------------------------------------------------------------------------
                                                                     *NERDTree-U*
@@ -532,8 +532,8 @@ Default key: r
 Map setting: *NERDTreeMapRefresh*
 Applies to: files and directories.
 
-If a dir is selected, recursively refresh that dir, i.e. scan the filesystem
-for changes and represent them in the tree.
+If a directory is selected, recursively refresh that directory, i.e. scan the
+filesystem for changes and represent them in the tree.
 
 If a file node is selected then the above is done on it's parent.
 
@@ -634,8 +634,8 @@ file explorers have.
 
 The script comes with two default menu plugins: exec_menuitem.vim and
 fs_menu.vim. fs_menu.vim adds some basic filesystem operations to the menu for
-creating/deleting/moving/copying files and dirs. exec_menuitem.vim provides a
-menu item to execute executable files.
+creating/deleting/moving/copying files and directories. exec_menuitem.vim
+provides a menu item to execute executable files.
 
 Related tags: |NERDTree-m| |NERDTreeApi|
 
@@ -921,7 +921,7 @@ Default: ['\~$'].
 
 This setting is used to specify which files the NERDTree should ignore.  It
 must be a list of regular expressions. When the NERDTree is rendered, any
-files/dirs that match any of the regex's in NERDTreeIgnore won't be
+files/directories that match any of the regex's in NERDTreeIgnore won't be
 displayed.
 
 For example if you put the following line in your vimrc: >
@@ -929,13 +929,18 @@ For example if you put the following line in your vimrc: >
 <
 then all files ending in .vim or ~ will be ignored.
 
-There are 2 magic flags that can be appended to the end of each regular
-expression to specify that the regex should match only files or only dirs.
-These flags are "[[dir]]" and "[[file]]". Example: >
-    let NERDTreeIgnore=['\.d$[[dir]]', '\.o$[[file]]']
+There are 3 magic flags that can be appended to the end of each regular
+expression to specify that the regex should match only filenames, only lowest
+level directories, or a full path. These flags are "[[dir]]", "[[file]]", and
+"[[path]]". Example: >
+    let NERDTreeIgnore=['\.d$[[dir]]', '\.o$[[file]]', 'tmp/cache$[[path]]']
 <
-This will cause all dirs ending in ".d" to be ignored and all files ending in
-".o" to be ignored.
+This will cause all directories ending in ".d" to be ignored, all files ending
+in ".o" to be ignored, and the "cache" subdirectory of any "tmp" directory to
+be ignored. All other "cache" directories will be displayed.
+
+When using the "[[path]]" tag on Windows, make sure you use escaped
+backslashes for the separators in the regex, eg. 'Temp\\cache$[[path]]'
 
 Note: to tell the NERDTree not to ignore any files you must use the following
 line: >
@@ -1099,8 +1104,8 @@ Examples: >
 <
 1. Directories will appear last, everything else will appear above.
 2. Everything will simply appear in alphabetical order.
-3. Dirs will appear first, then ruby and php. Swap files, bak files and vim
-   backup files will appear last with everything else preceding them.
+3. Directories will appear first, then ruby and php. Swap files, bak files
+   and vim backup files will appear last with everything else preceding them.
 4. Everything is sorted by size, largest to smallest, with directories
    considered to have size 0 bytes.
 5. Directories will appear first alphabetically, followed by files, sorted by
@@ -1174,8 +1179,9 @@ Use one of the following lines for this setting: >
 Values: 0 or 1
 Default: 1.
 
-When displaying dir nodes, this setting tells NERDTree to collapse dirs that
-have only one child. Use one of the following lines for this setting: >
+When displaying directory nodes, this setting tells NERDTree to collapse
+directories that have only one child. Use one of the following lines for this
+setting: >
     let NERDTreeCascadeSingleChildDir=0
     let NERDTreeCascadeSingleChildDir=1
 <
@@ -1184,11 +1190,12 @@ have only one child. Use one of the following lines for this setting: >
 Values: 0 or 1
 Default: 1.
 
-When opening dir nodes, this setting tells NERDTree to recursively open dirs
-that have only one child which is also a dir. NERDTree will stop when it finds
-a dir that contains anything but another single dir. This setting also causes
-the |NERDTree-x| mapping to close dirs in the same manner. This setting may be
-useful for Java projects. Use one of the following lines for this setting: >
+When opening directory nodes, this setting tells NERDTree to recursively open
+directories that have only one child which is also a directory. NERDTree will
+stop when it finds a directory that contains anything but another single
+directory. This setting also causes the |NERDTree-x| mapping to close
+directories in the same manner. This setting may be useful for Java projects.
+Use one of the following lines for this setting: >
     let NERDTreeCascadeOpenSingleChildDir=0
     let NERDTreeCascadeOpenSingleChildDir=1
 <
@@ -1362,8 +1369,8 @@ NERDTreeAddKeyMap({options})                               *NERDTreeAddKeyMap()*
 <
     This code should sit in a file like ~/.vim/nerdtree_plugin/mymapping.vim.
     It adds a (redundant) mapping on 'foo' which changes vim's CWD to that of
-    the current dir node. Note this mapping will only fire when the cursor is
-    on a directory node.
+    the current directory node. Note this mapping will only fire when the
+    cursor is on a directory node.
 
 ------------------------------------------------------------------------------
 4.2. Menu API                                                  *NERDTreeMenuAPI*

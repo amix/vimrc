@@ -27,11 +27,7 @@ function! s:UI._dumpHelp()
         let help  = "\" NERDTree (" . nerdtree#version() . ") quickhelp~\n"
         let help .= "\" ============================\n"
         let help .= "\" File node mappings~\n"
-<<<<<<< HEAD
-        let help .= "\" ". (g:NERDTreeMouseMode ==# 3 ? "single" : "double") ."-click,\n"
-=======
         let help .= '" '. (g:NERDTreeMouseMode ==# 3 ? 'single' : 'double') ."-click,\n"
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
         if self.nerdtree.isTabTree()
             let help .= '" '. g:NERDTreeMapActivateNode .": open in prev window\n"
         else
@@ -43,24 +39,6 @@ function! s:UI._dumpHelp()
         let help .= '" '. g:NERDTreeMapOpenInTab.": open in new tab\n"
         let help .= '" '. g:NERDTreeMapOpenInTabSilent .": open in new tab silently\n"
         let help .= "\" middle-click,\n"
-<<<<<<< HEAD
-        let help .= "\" ". g:NERDTreeMapOpenSplit .": open split\n"
-        let help .= "\" ". g:NERDTreeMapPreviewSplit .": preview split\n"
-        let help .= "\" ". g:NERDTreeMapOpenVSplit .": open vsplit\n"
-        let help .= "\" ". g:NERDTreeMapPreviewVSplit .": preview vsplit\n"
-        let help .= "\" ". g:NERDTreeMapCustomOpen .": custom open\n"
-
-        let help .= "\"\n\" ----------------------------\n"
-        let help .= "\" Directory node mappings~\n"
-        let help .= "\" ". (g:NERDTreeMouseMode ==# 1 ? "double" : "single") ."-click,\n"
-        let help .= "\" ". g:NERDTreeMapActivateNode .": open & close node\n"
-        let help .= "\" ". g:NERDTreeMapOpenRecursively .": recursively open node\n"
-        let help .= "\" ". g:NERDTreeMapOpenInTab.": open in new tab\n"
-        let help .= "\" ". g:NERDTreeMapOpenInTabSilent .": open in new tab silently\n"
-        let help .= "\" ". g:NERDTreeMapCustomOpen .": custom open\n"
-        let help .= "\" ". g:NERDTreeMapCloseDir .": close parent of node\n"
-        let help .= "\" ". g:NERDTreeMapCloseChildren .": close all child nodes of\n"
-=======
         let help .= '" '. g:NERDTreeMapOpenSplit .": open split\n"
         let help .= '" '. g:NERDTreeMapPreviewSplit .": preview split\n"
         let help .= '" '. g:NERDTreeMapOpenVSplit .": open vsplit\n"
@@ -77,7 +55,6 @@ function! s:UI._dumpHelp()
         let help .= '" '. g:NERDTreeMapCustomOpen .": custom open\n"
         let help .= '" '. g:NERDTreeMapCloseDir .": close parent of node\n"
         let help .= '" '. g:NERDTreeMapCloseChildren .": close all child nodes of\n"
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
         let help .= "\"    current node recursively\n"
         let help .= "\" middle-click,\n"
         let help .= '" '. g:NERDTreeMapOpenExpl.": explore selected dir\n"
@@ -85,15 +62,6 @@ function! s:UI._dumpHelp()
         let help .= "\"\n\" ----------------------------\n"
         let help .= "\" Bookmark table mappings~\n"
         let help .= "\" double-click,\n"
-<<<<<<< HEAD
-        let help .= "\" ". g:NERDTreeMapActivateNode .": open bookmark\n"
-        let help .= "\" ". g:NERDTreeMapPreview .": preview file\n"
-        let help .= "\" ". g:NERDTreeMapPreview .": find dir in tree\n"
-        let help .= "\" ". g:NERDTreeMapOpenInTab.": open in new tab\n"
-        let help .= "\" ". g:NERDTreeMapOpenInTabSilent .": open in new tab silently\n"
-        let help .= "\" ". g:NERDTreeMapCustomOpen .": custom open\n"
-        let help .= "\" ". g:NERDTreeMapDeleteBookmark .": delete bookmark\n"
-=======
         let help .= '" '. g:NERDTreeMapActivateNode .": open bookmark\n"
         let help .= '" '. g:NERDTreeMapPreview .": preview file\n"
         let help .= '" '. g:NERDTreeMapPreview .": find dir in tree\n"
@@ -105,7 +73,6 @@ function! s:UI._dumpHelp()
         let help .= '" '. g:NERDTreeMapPreviewVSplit .": preview vsplit\n"
         let help .= '" '. g:NERDTreeMapCustomOpen .": custom open\n"
         let help .= '" '. g:NERDTreeMapDeleteBookmark .": delete bookmark\n"
->>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 
         let help .= "\"\n\" ----------------------------\n"
         let help .= "\" Tree navigation mappings~\n"
