@@ -140,6 +140,7 @@ that are part of Git repositories).
 :Git mergetool [args]   Like |:Git_difftool|, but target merge conflicts.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
                                                 *:Git_push*
 :Git push [args]        Invoke git-push, load the results into the |quickfix|
 <<<<<<< HEAD
@@ -174,6 +175,8 @@ that are part of Git repositories).
 =======
 =======
 >>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
+=======
+>>>>>>> master
                                                 *:Ggrep* *:Gcgrep* *:Git_grep*
 :Ggrep[!] [args]        |:grep|[!] with git-grep as 'grepprg'.
 :Git[!] grep [args]

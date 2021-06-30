@@ -131,6 +131,7 @@ endfunction
 
 "FUNCTION: s:initCustomOpenArgs() {{{1
 <<<<<<< HEAD
+<<<<<<< HEAD
 " Make sure NERDTreeCustomOpenArgs has needed keys
 <<<<<<< HEAD
 function! s:initCustomOpenArgs()
@@ -141,6 +142,9 @@ function! s:initCustomOpenArgs() abort
     return extend(g:NERDTreeCustomOpenArgs, {'file':{'reuse': 'all', 'where': 'p'}, 'dir':{}}, 'keep')
 =======
 function! s:initCustomOpenArgs() abort
+=======
+function! s:initCustomOpenArgs() abort
+>>>>>>> master
     let l:defaultOpenArgs = {'file': {'reuse': 'all', 'where': 'p', 'keepopen':!nerdtree#closeTreeOnOpen()}, 'dir': {}}
     try
         let g:NERDTreeCustomOpenArgs = get(g:, 'NERDTreeCustomOpenArgs', {})
@@ -151,7 +155,10 @@ function! s:initCustomOpenArgs() abort
     finally
         return g:NERDTreeCustomOpenArgs
     endtry
+<<<<<<< HEAD
 >>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
+=======
+>>>>>>> master
 endfunction
 
 "FUNCTION: s:activateAll() {{{1

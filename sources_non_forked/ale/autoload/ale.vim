@@ -160,6 +160,7 @@ endfunction
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 let s:current_ale_version = [2, 5, 0]
 =======
 let s:current_ale_version = [2, 6, 0]
@@ -170,6 +171,9 @@ let s:current_ale_version = [3, 0, 0]
 =======
 let s:current_ale_version = [3, 1, 0]
 >>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
+=======
+let s:current_ale_version = [3, 1, 0]
+>>>>>>> master
 
 " A function used to check for ALE features in files outside of the project.
 function! ale#Has(feature) abort

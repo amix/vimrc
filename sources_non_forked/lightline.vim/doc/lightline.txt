@@ -248,6 +248,7 @@ OPTIONS						*lightline-option*
 		landscape, one, materia, material, OldHope, nord, deus,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		srcery_drk, ayu_mirage and 16color are available.
 >>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 =======
@@ -258,6 +259,10 @@ OPTIONS						*lightline-option*
 		simpleblack, srcery_drk, ayu_mirage, ayu_light, ayu_dark,
 		apprentice and 16color are available.
 >>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
+=======
+		simpleblack, srcery_drk, ayu_mirage, ayu_light, ayu_dark,
+		apprentice and 16color are available.
+>>>>>>> master
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'

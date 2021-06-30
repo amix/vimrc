@@ -49,6 +49,7 @@ endfunction
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 function! nerdtree#slash()
 =======
 "FUNCTION: nerdtree#slash() {{{2
@@ -57,6 +58,8 @@ function! nerdtree#slash() abort
 
 =======
 =======
+=======
+>>>>>>> master
 " FUNCTION: nerdtree#closeTreeOnOpen() {{{2
 function! nerdtree#closeTreeOnOpen() abort
     return g:NERDTreeQuitOnOpen == 1 || g:NERDTreeQuitOnOpen == 3
@@ -67,7 +70,10 @@ function! nerdtree#closeBookmarksOnOpen() abort
     return g:NERDTreeQuitOnOpen == 2 || g:NERDTreeQuitOnOpen == 3
 endfunction
 
+<<<<<<< HEAD
 >>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
+=======
+>>>>>>> master
 " FUNCTION: nerdtree#slash() {{{2
 " Return the path separator used by the underlying file system.  Special
 " consideration is taken for the use of the 'shellslash' option on Windows
