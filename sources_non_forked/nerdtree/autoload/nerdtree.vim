@@ -48,6 +48,7 @@ endfunction
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 function! nerdtree#slash()
 =======
 "FUNCTION: nerdtree#slash() {{{2
@@ -55,6 +56,18 @@ function! nerdtree#slash() abort
 >>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 
 =======
+=======
+" FUNCTION: nerdtree#closeTreeOnOpen() {{{2
+function! nerdtree#closeTreeOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 1 || g:NERDTreeQuitOnOpen == 3
+endfunction
+
+" FUNCTION: nerdtree#closeBookmarksOnOpen() {{{2
+function! nerdtree#closeBookmarksOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 2 || g:NERDTreeQuitOnOpen == 3
+endfunction
+
+>>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
 " FUNCTION: nerdtree#slash() {{{2
 " Return the path separator used by the underlying file system.  Special
 " consideration is taken for the use of the 'shellslash' option on Windows
@@ -70,28 +83,6 @@ function! nerdtree#slash() abort
     endif
 
     return '/'
-endfunction
-
-"FUNCTION: nerdtree#and(x,y) {{{2
-" Implements and() function for Vim <= 7.4
-function! nerdtree#and(x,y) abort
-    if exists('*and')
-        return and(a:x, a:y)
-    else
-        let l:x = a:x
-        let l:y = a:y
-        let l:n = 0
-        let l:result = 0
-        while l:x > 0 && l:y > 0
-            if (l:x % 2) && (l:y % 2)
-                let l:result += float2nr(pow(2, l:n))
-            endif
-            let l:x = float2nr(l:x / 2)
-            let l:y = float2nr(l:y / 2)
-            let l:n += 1
-        endwhile
-        return l:result
-    endif
 endfunction
 
 "FUNCTION: nerdtree#checkForBrowse(dir) {{{2

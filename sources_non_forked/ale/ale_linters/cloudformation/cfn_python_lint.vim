@@ -29,6 +29,7 @@ endfunction
 
 call ale#linter#Define('cloudformation', {
 \   'name': 'cloudformation',
+\   'aliases': ['cfn-lint'],
 \   'executable': 'cfn-lint',
 \   'command': 'cfn-lint --template %t --format parseable',
 \   'callback': 'ale_linters#cloudformation#cfn_python_lint#Handle',

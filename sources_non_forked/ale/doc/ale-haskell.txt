@@ -125,6 +125,18 @@ g:ale_haskell_hlint_options                       g:ale_haskell_hlint_options
 
 
 ===============================================================================
+hls                                                           *ale-haskell-hls*
+
+g:ale_haskell_hls_executable                     *g:ale_haskell_hls_executable*
+                                                 *b:ale_haskell_his_executable*
+  Type: |String|
+  Default: `'haskell-language-server-wrapper'`
+
+  This variable can be changed to use a different executable for the haskell
+  language server.
+
+
+===============================================================================
 stack-build                                           *ale-haskell-stack-build*
 
 g:ale_haskell_stack_build_options           *g:ale_haskell_stack_build_options*

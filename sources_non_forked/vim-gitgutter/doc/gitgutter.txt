@@ -63,15 +63,20 @@ Neovim:~
 ===============================================================================
 WINDOWS                                                     *gitgutter-windows*
 
-I recommend configuring vim-gitgutter with the full path to your git executable.
+There is a potential risk on Windows due to `cmd.exe` prioritising the current
+folder over folders in `PATH`.  If you have a file named `git.*` (i.e. with
+any extension in `PATHEXT`) in your current folder, it will be executed
+instead of git whenever the plugin calls git.
+
+You can avoid this risk by configuring the full path to your git executable.
 For example:
 >
+    " This path probably won't work
     let g:gitgutter_git_executable = 'C:\Program Files\Git\bin\git.exe'
 <
-This is to avoid a problem which occurs if you have file named "git.*" (i.e.
-with any extension in "PATHEXT") in your current folder.  "cmd.exe" prioritises
-the current folder over folders in 'PATH' and will try to execute your file
-instead of the "git" binary.
+
+Unfortunately I don't know the correct escaping for the path - if you do,
+please let me know!
 
 
 ===============================================================================
@@ -172,12 +177,29 @@ Commands for operating on a hunk:~
 
                                               *gitgutter-:GitGutterPreviewHunk*
 :GitGutterPreviewHunk   Preview the hunk the cursor is in.
-                        Use |:pclose| or |CTRL-W_CTRL-Z| to close the preview
-                        window.
 
                         To stage part of the hunk, move to the preview window,
                         delete any lines you do not want to stage, and
                         |GitGutterStageHunk|.
+
+                        To close a non-floating preview window use |:pclose|
+                        or |CTRL-W_z| or |CTRL-W_CTRL-Z|; or normal window-
+                        closing (|:quit| or |:close| or |CTRL-W_c|) if your cursor
+                        is in the preview window.
+
+                        To close a floating window when the cursor is in the
+                        original buffer, move the cursor.
+
+                        To close a floating window when the cursor is in the
+                        floating window use normal window-closing, or move to
+                        the original window with |CTRL-W_p|.  Alternatively set
+                        |g:gitgutter_close_preview_on_escape| and use <Esc>.
+
+                        Two functions are available for your own logic:
+>
+                          gitgutter#hunk#is_preview_window_open()
+                          gitgutter#hunk#close_hunk_preview_window()
+<
 
 Commands for folds:~
 
@@ -484,7 +506,7 @@ preview window.
                                           *g:gitgutter_close_preview_on_escape*
 Default: 0
 
-Whether pressing <Esc> in a non-floating preview window closes it.
+Whether pressing <Esc> in a preview window closes it.
 
                                            *g:gitgutter_terminal_reports_focus*
 Default: 1
@@ -695,3 +717,4 @@ Terminus (https://github.com/wincent/terminus) or set:
     let g:gitgutter_terminal_reports_focus = 0
 <
 
+  vim:tw=78:et:ft=help:norl:

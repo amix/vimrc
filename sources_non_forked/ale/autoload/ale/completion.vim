@@ -269,13 +269,19 @@ function! s:ReplaceCompletionOptions(source) abort
             let b:ale_old_completeopt = &l:completeopt
         endif
 
-        if &l:completeopt =~# 'preview'
-            let &l:completeopt = 'menu,menuone,preview,noselect,noinsert'
-        elseif &l:completeopt =~# 'popup'
-            let &l:completeopt = 'menu,menuone,popup,noselect,noinsert'
-        else
-            let &l:completeopt = 'menu,menuone,noselect,noinsert'
-        endif
+        let l:opt_list = split(&l:completeopt, ',')
+        " The menu and noinsert options must be set, or automatic completion
+        " will be annoying.
+        let l:new_opt_list = ['menu', 'menuone', 'noinsert']
+
+        " Permit some other completion options, provided users have set them.
+        for l:opt in ['preview', 'popup', 'noselect']
+            if index(l:opt_list, l:opt) >= 0
+                call add(l:new_opt_list, l:opt)
+            endif
+        endfor
+
+        let &l:completeopt = join(l:new_opt_list, ',')
     endif
 endfunction
 
@@ -614,6 +620,8 @@ function! ale#completion#ParseLSPCompletions(response) abort
         \   'kind': ale#completion#GetCompletionSymbols(get(l:item, 'kind', '')),
         \   'icase': 1,
         \   'menu': l:detail,
+        \   'dup': get(l:info, 'additional_edits_only', 0)
+        \       ||  g:ale_completion_autoimport,
         \   'info': (type(l:doc) is v:t_string ? l:doc : ''),
         \}
         " This flag is used to tell if this completion came from ALE or not.

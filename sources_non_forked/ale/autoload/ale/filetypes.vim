@@ -4,9 +4,7 @@
 function! ale#filetypes#LoadExtensionMap() abort
     " Output includes:
     "    '*.erl setf erlang'
-    redir => l:output
-        silent exec 'autocmd'
-    redir end
+    let l:output = execute('exec "autocmd"')
 
     let l:map = {}
 

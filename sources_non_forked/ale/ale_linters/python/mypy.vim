@@ -18,7 +18,7 @@ function! ale_linters#python#mypy#GetExecutable(buffer) abort
 endfunction
 
 " The directory to change to before running mypy
-function! s:GetDir(buffer) abort
+function! ale_linters#python#mypy#GetCwd(buffer) abort
     " If we find a directory with "mypy.ini" in it use that,
     " else try and find the "python project" root, or failing
     " that, run from the same folder as the current file
@@ -36,24 +36,19 @@ function! s:GetDir(buffer) abort
 endfunction
 
 function! ale_linters#python#mypy#GetCommand(buffer) abort
-    let l:dir = s:GetDir(a:buffer)
     let l:executable = ale_linters#python#mypy#GetExecutable(a:buffer)
-
     let l:exec_args = l:executable =~? 'pipenv$'
     \   ? ' run mypy'
     \   : ''
 
-    " We have to always switch to an explicit directory for a command so
-    " we can know with certainty the base path for the 'filename' keys below.
-    return ale#path#CdString(l:dir)
-    \   . ale#Escape(l:executable) . l:exec_args
-    \   . ' --show-column-numbers '
-    \   . ale#Var(a:buffer, 'python_mypy_options')
+    return '%e' . l:exec_args
+    \   . ale#Pad(ale#Var(a:buffer, 'python_mypy_options'))
+    \   . ' --show-column-numbers'
     \   . ' --shadow-file %s %t %s'
 endfunction
 
 function! ale_linters#python#mypy#Handle(buffer, lines) abort
-    let l:dir = s:GetDir(a:buffer)
+    let l:dir = ale_linters#python#mypy#GetCwd(a:buffer)
     " Look for lines like the following:
     "
     " file.py:4: error: No library stub file for module 'django.db'
@@ -95,6 +90,7 @@ endfunction
 call ale#linter#Define('python', {
 \   'name': 'mypy',
 \   'executable': function('ale_linters#python#mypy#GetExecutable'),
+\   'cwd': function('ale_linters#python#mypy#GetCwd'),
 \   'command': function('ale_linters#python#mypy#GetCommand'),
 \   'callback': 'ale_linters#python#mypy#Handle',
 \   'output_stream': 'both'

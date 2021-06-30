@@ -1,10 +1,9 @@
 " Description: Handle errors for cppcheck.
 
-function! ale#handlers#cppcheck#GetCdCommand(buffer) abort
+function! ale#handlers#cppcheck#GetCwd(buffer) abort
     let [l:dir, l:json_path] = ale#c#FindCompileCommands(a:buffer)
-    let l:cd_command = !empty(l:dir) ? ale#path#CdString(l:dir) : ''
 
-    return l:cd_command
+    return !empty(l:dir) ? l:dir : ''
 endfunction
 
 function! ale#handlers#cppcheck#GetBufferPathIncludeOptions(buffer) abort

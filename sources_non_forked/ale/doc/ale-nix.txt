@@ -3,6 +3,24 @@ ALE Nix Integration                                           *ale-nix-options*
 
 
 ===============================================================================
+nixfmt                                                         *ale-nix-nixfmt*
+
+g:ale_nix_nixfmt_executable                       *g:ale_nix_nixfmt_executable*
+                                                  *b:ale_nix_nixfmt_executable*
+  Type: String
+  Default: 'nixfmt'
+
+  This variable sets the executable used for nixfmt.
+
+g:ale_nix_nixfmt_options                             *g:ale_nix_nixfmt_options*
+                                                     *b:ale_nix_nixfmt_options*
+  Type: String
+  Default: ''
+
+  This variable can be set to pass additional options to the nixfmt fixer.
+
+
+===============================================================================
 nixpkgs-fmt                                                 *ale-nix-nixpkgs-fmt*
 
 g:ale_nix_nixpkgsfmt_executable                *g:ale_nix_nixpkgsfmt_executable*

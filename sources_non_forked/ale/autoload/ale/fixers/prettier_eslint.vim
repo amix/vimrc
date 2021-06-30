@@ -7,7 +7,7 @@ call ale#Set('javascript_prettier_eslint_use_global', get(g:, 'ale_use_global_ex
 call ale#Set('javascript_prettier_eslint_options', '')
 
 function! ale#fixers#prettier_eslint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'javascript_prettier_eslint', [
+    return ale#path#FindExecutable(a:buffer, 'javascript_prettier_eslint', [
     \   'node_modules/prettier-eslint-cli/dist/index.js',
     \   'node_modules/.bin/prettier-eslint',
     \])
@@ -37,8 +37,8 @@ function! ale#fixers#prettier_eslint#ApplyFixForVersion(buffer, version) abort
     " 4.4.0 is the first version with --stdin-filepath
     if ale#semver#GTE(a:version, [4, 4, 0])
         return {
-        \   'command': ale#path#BufferCdString(a:buffer)
-        \       . ale#Escape(l:executable)
+        \   'cwd': '%s:h',
+        \   'command': ale#Escape(l:executable)
         \       . l:eslint_config_option
         \       . (!empty(l:options) ? ' ' . l:options : '')
         \       . ' --stdin-filepath %s --stdin',

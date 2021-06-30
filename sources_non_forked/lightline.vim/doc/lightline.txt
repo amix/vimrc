@@ -247,12 +247,17 @@ OPTIONS						*lightline-option*
 		Tomorrow_Night_Bright, Tomorrow_Night_Eighties, PaperColor,
 		landscape, one, materia, material, OldHope, nord, deus,
 <<<<<<< HEAD
+<<<<<<< HEAD
 		srcery_drk, ayu_mirage and 16color are available.
 >>>>>>> 27ad0d07862847896f691309a544a206783c94d6
 =======
 		simpleblack, srcery_drk, ayu_mirage, ayu_light, ayu_dark and
 		16color are available.
 >>>>>>> master
+=======
+		simpleblack, srcery_drk, ayu_mirage, ayu_light, ayu_dark,
+		apprentice and 16color are available.
+>>>>>>> 597b7acdc0316524c7c65c79d4dc9bf3f5cfce70
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'
@@ -324,9 +329,6 @@ Exposed functions for lightline.vim.
 
 	lightline#update()			*lightline#update()*
 		Updates all the statuslines of existing windows.
-
-	lightline#update_once()			*lightline#update_once()*
-		Updates the statuslines only once.
 
 	lightline#enable()			*lightline#enable()*
 		Enables |lightline|.

@@ -13,6 +13,14 @@ g:ale_erlang_dialyzer_executable             *g:ale_erlang_dialyzer_executable*
   This variable can be changed to specify the dialyzer executable.
 
 
+g:ale_erlang_dialyzer_options                   *g:ale_erlang_dialyzer_options*
+                                                *b:ale_erlang_dialyzer_options*
+  Type: |String|
+  Default: `'-Wunmatched_returns -Werror_handling -Wrace_conditions -Wunderspec'`
+
+  This variable can be changed to specify the options to pass to the dialyzer
+  executable.
+
 g:ale_erlang_dialyzer_plt_file                 *g:ale_erlang_dialyzer_plt_file*
                                                *b:ale_erlang_dialyzer_plt_file*
   Type: |String|
@@ -46,6 +54,14 @@ g:ale_erlang_elvis_executable                   *g:ale_erlang_elvis_executable*
 -------------------------------------------------------------------------------
 erlc                                                          *ale-erlang-erlc*
 
+g:ale_erlang_erlc_executable                     *g:ale_erlang_erlc_executable*
+                                                 *b:ale_erlang_erlc_executable*
+  Type: |String|
+  Default: `'erlc'`
+
+  This variable can be changed to specify the erlc executable.
+
+
 g:ale_erlang_erlc_options                           *g:ale_erlang_erlc_options*
                                                     *b:ale_erlang_erlc_options*
   Type: |String|
@@ -53,6 +69,26 @@ g:ale_erlang_erlc_options                           *g:ale_erlang_erlc_options*
 
   This variable controls additional parameters passed to `erlc`, such as `-I`
   or `-pa`.
+
+
+-------------------------------------------------------------------------------
+erlfmt                                                      *ale-erlang-erlfmt*
+
+g:ale_erlang_erlfmt_executable                 *g:ale_erlang_erlfmt_executable*
+                                               *b:ale_erlang_erlfmt_executable*
+  Type: |String|
+  Default: `'erlfmt'`
+
+  This variable can be changed to specify the erlfmt executable.
+
+
+g:ale_erlang_erlfmt_options                       *g:ale_erlang_erlfmt_options*
+                                                  *b:ale_erlang_erlfmt_options*
+  Type: |String|
+  Default: `''`
+
+  This variable controls additional parameters passed to `erlfmt`, such as
+  `--insert-pragma` or `--print-width`.
 
 
 -------------------------------------------------------------------------------

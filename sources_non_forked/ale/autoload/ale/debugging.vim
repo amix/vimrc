@@ -33,13 +33,13 @@ let s:global_variable_list = [
 \    'ale_list_vertical',
 \    'ale_list_window_size',
 \    'ale_loclist_msg_format',
-\    'ale_lsp_root',
 \    'ale_max_buffer_history_size',
 \    'ale_max_signs',
 \    'ale_maximum_file_size',
 \    'ale_open_list',
 \    'ale_pattern_options',
 \    'ale_pattern_options_enabled',
+\    'ale_root',
 \    'ale_set_balloons',
 \    'ale_set_highlights',
 \    'ale_set_loclist',
@@ -259,9 +259,7 @@ function! ale#debugging#InfoToClipboard() abort
         return
     endif
 
-    redir => l:output
-        silent call ale#debugging#Info()
-    redir END
+    let l:output = execute('call ale#debugging#Info()')
 
     let @+ = l:output
     call s:Echo('ALEInfo copied to your clipboard')
@@ -270,9 +268,7 @@ endfunction
 function! ale#debugging#InfoToFile(filename) abort
     let l:expanded_filename = expand(a:filename)
 
-    redir => l:output
-        silent call ale#debugging#Info()
-    redir END
+    let l:output = execute('call ale#debugging#Info()')
 
     call writefile(split(l:output, "\n"), l:expanded_filename)
     call s:Echo('ALEInfo written to ' . l:expanded_filename)

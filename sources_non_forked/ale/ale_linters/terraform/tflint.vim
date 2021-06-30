@@ -91,7 +91,7 @@ function! ale_linters#terraform#tflint#GetCommand(buffer) abort
         let l:cmd .= ' ' . l:opts
     endif
 
-    let l:cmd .= ' -f json %t'
+    let l:cmd .= ' -f json'
 
     return l:cmd
 endfunction
@@ -99,6 +99,7 @@ endfunction
 call ale#linter#Define('terraform', {
 \   'name': 'tflint',
 \   'executable': {b -> ale#Var(b, 'terraform_tflint_executable')},
+\   'cwd': '%s:h',
 \   'command': function('ale_linters#terraform#tflint#GetCommand'),
 \   'callback': 'ale_linters#terraform#tflint#Handle',
 \})

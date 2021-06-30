@@ -85,5 +85,12 @@ g:ale_elixir_credo_strict                           *g:ale_elixir_credo_strict*
   Tells credo to run in strict mode or suggest mode.  Set variable to 1 to
   enable --strict mode.
 
+g:ale_elixir_credo_config_file                 g:ale_elixir_credo_config_file
+
+  Type: String
+  Default: ''
+
+  Tells credo to use a custom configuration file.
+
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

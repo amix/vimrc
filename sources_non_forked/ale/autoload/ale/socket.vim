@@ -72,9 +72,8 @@ function! ale#socket#Open(address, options) abort
     elseif exists('*chansend') && exists('*sockconnect')
         " NeoVim 0.3+
         try
-            let l:channel_id = sockconnect('tcp', a:address, {
-            \   'on_data': function('s:NeoVimOutputCallback'),
-            \})
+            let l:channel_id = sockconnect(stridx(a:address, ':') != -1 ? 'tcp' : 'pipe',
+            \   a:address, {'on_data': function('s:NeoVimOutputCallback')})
             let l:channel_info.last_line = ''
         catch /connection failed/
             let l:channel_id = -1
