@@ -14,6 +14,7 @@ function! ale_linters#java#checkstyle#Handle(buffer, lines) abort
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:output, {
         \   'type': l:match[1] is? 'WARN' ? 'W' : 'E',
+        \   'sub_type': 'style',
         \   'lnum': l:match[2] + 0,
         \   'col': l:match[3] + 0,
         \   'text': l:match[4],
@@ -31,6 +32,7 @@ function! ale_linters#java#checkstyle#Handle(buffer, lines) abort
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:output, {
         \   'type': l:match[3] is? 'warning' ? 'W' : 'E',
+        \   'sub_type': 'style',
         \   'lnum': l:match[2] + 0,
         \   'text': l:match[4],
         \})

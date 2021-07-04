@@ -151,8 +151,6 @@ function! ale#c#ParseCFlags(path_prefix, should_quote, raw_arguments) abort
         \ || stridx(l:option, '-isystem') == 0
         \ || stridx(l:option, '-idirafter') == 0
         \ || stridx(l:option, '-iframework') == 0
-        \ || stridx(l:option, '-include') == 0
-        \ || stridx(l:option, '-imacros') == 0
             if stridx(l:option, '-I') == 0 && l:option isnot# '-I'
                 let l:arg = join(split(l:option, '\zs')[2:], '')
                 let l:option = '-I'
@@ -182,6 +180,7 @@ function! ale#c#ParseCFlags(path_prefix, should_quote, raw_arguments) abort
         " Options that have an argument (always separate)
         elseif l:option is# '-iprefix' || stridx(l:option, '-iwithprefix') == 0
         \ || l:option is# '-isysroot' || l:option is# '-imultilib'
+        \ || l:option is# '-include' || l:option is# '-imacros'
             call add(l:items, [0, l:option])
             call add(l:items, [0, l:arguments[l:option_index]])
             let l:option_index = l:option_index + 1

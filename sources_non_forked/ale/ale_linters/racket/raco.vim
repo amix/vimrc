@@ -14,6 +14,7 @@ function! ale_linters#racket#raco#Handle(buffer, lines) abort
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:output, {
+        \   'filename': l:match[2],
         \   'lnum': l:match[3] + 0,
         \   'col': l:match[4] + 0,
         \   'type': 'E',

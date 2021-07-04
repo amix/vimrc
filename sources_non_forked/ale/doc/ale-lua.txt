@@ -46,5 +46,25 @@ g:ale_lua_luafmt_options                             *g:ale_lua_luafmt_options*
   Default: `''`
 
   This variable can be set to pass additional options to the luafmt fixer.
+
+
+===============================================================================
+stylua                                                         *ale-lua-stylua*
+
+g:ale_lua_stylua_executable                       *g:ale_lua_stylua_executable*
+                                                  *b:ale_lua_stylua_executable*
+  Type: |String|
+  Default: `'stylua'`
+
+  This variable can be set to use a different executable for stylua.
+
+g:ale_lua_stylua_options                             *g:ale_lua_stylua_options*
+                                                     *b:ale_lua_stylua_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the stylua fixer.
+
+
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

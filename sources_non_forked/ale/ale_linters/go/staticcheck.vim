@@ -3,7 +3,7 @@
 
 call ale#Set('go_staticcheck_executable', 'staticcheck')
 call ale#Set('go_staticcheck_options', '')
-call ale#Set('go_staticcheck_lint_package', 0)
+call ale#Set('go_staticcheck_lint_package', 1)
 call ale#Set('go_staticcheck_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#go#staticcheck#GetCommand(buffer) abort

@@ -34,6 +34,25 @@ g:ale_markdown_mdl_options                         *g:ale_markdown_mdl_options*
 
 
 ===============================================================================
+pandoc                                                    *ale-markdown-pandoc*
+
+g:ale_markdown_pandoc_executable             *g:ale_markdown_pandoc_executable*
+                                             *b:ale_markdown_pandoc_executable*
+  Type: |String|
+  Default: `'pandoc'`
+
+  This variable can be set to specify where to find the pandoc executable
+
+
+g:ale_markdown_pandoc_options                   *g:ale_markdown_pandoc_options*
+                                                *b:ale_markdown_pandoc_options*
+  Type: |String|
+  Default: `'-f gfm -t gfm -s -'`
+
+  This variable can be set to change the default options passed to pandoc
+
+
+===============================================================================
 prettier                                                *ale-markdown-prettier*
 
 See |ale-javascript-prettier| for information about the available options.

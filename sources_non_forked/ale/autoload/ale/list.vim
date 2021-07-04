@@ -44,6 +44,15 @@ function! s:ShouldOpen(buffer) abort
     return l:val is 1 || (l:val is# 'on_save' && l:saved)
 endfunction
 
+function! s:Deduplicate(list) abort
+    let l:list = a:list
+
+    call sort(l:list, function('ale#util#LocItemCompareWithText'))
+    call uniq(l:list, function('ale#util#LocItemCompareWithText'))
+
+    return l:list
+endfunction
+
 function! ale#list#GetCombinedList() abort
     let l:list = []
 
@@ -51,10 +60,7 @@ function! ale#list#GetCombinedList() abort
         call extend(l:list, l:info.loclist)
     endfor
 
-    call sort(l:list, function('ale#util#LocItemCompareWithText'))
-    call uniq(l:list, function('ale#util#LocItemCompareWithText'))
-
-    return l:list
+    return s:Deduplicate(l:list)
 endfunction
 
 function! s:FixList(buffer, list) abort
@@ -99,11 +105,13 @@ function! s:SetListsImpl(timer_id, buffer, loclist) abort
         " but it's better than nothing.
         let l:ids = s:WinFindBuf(a:buffer)
 
+        let l:loclist = s:Deduplicate(a:loclist)
+
         for l:id in l:ids
             if has('nvim')
-                call setloclist(l:id, s:FixList(a:buffer, a:loclist), ' ', l:title)
+                call setloclist(l:id, s:FixList(a:buffer, l:loclist), ' ', l:title)
             else
-                call setloclist(l:id, s:FixList(a:buffer, a:loclist))
+                call setloclist(l:id, s:FixList(a:buffer, l:loclist))
                 call setloclist(l:id, [], 'r', {'title': l:title})
             endif
         endfor

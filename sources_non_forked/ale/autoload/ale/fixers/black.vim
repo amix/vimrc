@@ -18,20 +18,25 @@ endfunction
 
 function! ale#fixers#black#Fix(buffer) abort
     let l:executable = ale#fixers#black#GetExecutable(a:buffer)
-    let l:exec_args = l:executable =~? 'pipenv$'
-    \   ? ' run black'
-    \   : ''
-    let l:options = ale#Var(a:buffer, 'python_black_options')
+    let l:cmd = [ale#Escape(l:executable)]
 
-    if expand('#' . a:buffer . ':e') is? 'pyi'
-        let l:options .= '--pyi'
+    if l:executable =~? 'pipenv$'
+        call extend(l:cmd, ['run', 'black'])
     endif
 
-    let l:result = {
-    \   'command': ale#Escape(l:executable) . l:exec_args
-    \       . (!empty(l:options) ? ' ' . l:options : '')
-    \       . ' -',
-    \}
+    let l:options = ale#Var(a:buffer, 'python_black_options')
+
+    if !empty(l:options)
+        call add(l:cmd, l:options)
+    endif
+
+    if expand('#' . a:buffer . ':e') is? 'pyi'
+        call add(l:cmd, '--pyi')
+    endif
+
+    call add(l:cmd, '-')
+
+    let l:result = {'command': join(l:cmd, ' ')}
 
     if ale#Var(a:buffer, 'python_black_change_directory')
         let l:result.cwd = '%s:h'

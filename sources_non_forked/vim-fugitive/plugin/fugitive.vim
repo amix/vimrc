@@ -128,32 +128,20 @@ endfunction
 " structure of the return value as it is not guaranteed.  If you want a full
 " dictionary of every config value, use FugitiveConfigGetRegexp('.*').
 function! FugitiveConfig(...) abort
-  if a:0 >= 2 && (type(a:2) != type({}) || has_key(a:2, 'git_dir'))
-    return call('fugitive#Config', [a:1, FugitiveGitDir(a:2)] + a:000[2:-1])
-  elseif a:0 == 1 && (type(a:1) !=# type('') || a:1 !~# '^[[:alnum:]-]\+\.')
-    return fugitive#Config(FugitiveGitDir(a:1))
-  else
-    return call('fugitive#Config', a:000)
-  endif
+  return call('fugitive#Config', a:000)
 endfunction
 
 " FugitiveConfigGet() retrieves a Git configuration value.  An optional second
 " argument provides the Git dir as with FugitiveFind().  Pass a blank string
 " to limit to the global config.
 function! FugitiveConfigGet(name, ...) abort
-  return call('FugitiveConfig', [a:name] + a:000)
+  return get(call('FugitiveConfigGetAll', [a:name] + (a:0 ? [a:1] : [])), 0, get(a:, 2, ''))
 endfunction
 
 " FugitiveConfigGetAll() is like FugitiveConfigGet() but returns a list of
 " all values.
 function! FugitiveConfigGetAll(name, ...) abort
-  if a:0 && type(a:1) ==# type({}) && !has_key(a:1, 'git_dir')
-    let config = a:1
-  else
-    let config = fugitive#Config(FugitiveGitDir(a:0 ? a:1 : -1))
-  endif
-  let name = substitute(a:name, '^[^.]\+\|[^.]\+$', '\L&', 'g')
-  return copy(get(config, name, []))
+  return call('fugitive#ConfigGetAll', [a:name] + a:000)
 endfunction
 
 " FugitiveConfigGetRegexp() retrieves a dictionary of all configuration values
@@ -161,23 +149,7 @@ endfunction
 " using a Vim regexp.  Second argument has same semantics as
 " FugitiveConfigGet().
 function! FugitiveConfigGetRegexp(pattern, ...) abort
-  if a:0 && type(a:1) ==# type({}) && !has_key(a:2, 'git_dir')
-    let config = a:1
-  else
-    let config = fugitive#Config(FugitiveGitDir(a:0 ? a:1 : -1))
-  endif
-  let filtered = map(filter(copy(config), 'v:key =~# "\\." && v:key =~# a:pattern'), 'copy(v:val)')
-  if a:pattern !~# '\\\@<!\%(\\\\\)*\\z[se]'
-    return filtered
-  endif
-  let transformed = {}
-  for [k, v] in items(filtered)
-    let k = matchstr(k, a:pattern)
-    if len(k)
-      let transformed[k] = v
-    endif
-  endfor
-  return transformed
+  return call('fugitive#ConfigGetRegexp', [a:pattern] + a:000)
 endfunction
 
 function! FugitiveRemoteUrl(...) abort
