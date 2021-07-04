@@ -7,7 +7,7 @@ call ale#Set('javascript_prettier_use_global', get(g:, 'ale_use_global_executabl
 call ale#Set('javascript_prettier_options', '')
 
 function! ale#fixers#prettier#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'javascript_prettier', [
+    return ale#path#FindExecutable(a:buffer, 'javascript_prettier', [
     \   'node_modules/.bin/prettier_d',
     \   'node_modules/prettier-cli/index.js',
     \   'node_modules/.bin/prettier',
@@ -32,6 +32,13 @@ function! ale#fixers#prettier#ProcessPrettierDOutput(buffer, output) abort
     endfor
 
     return a:output
+endfunction
+
+function! ale#fixers#prettier#GetCwd(buffer) abort
+    let l:config = ale#path#FindNearestFile(a:buffer, '.prettierignore')
+
+    " Fall back to the directory of the buffer
+    return !empty(l:config) ? fnamemodify(l:config, ':h') : '%s:h'
 endfunction
 
 function! ale#fixers#prettier#ApplyFixForVersion(buffer, version) abort
@@ -67,8 +74,11 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version) abort
         \    'graphql': 'graphql',
         \    'markdown': 'markdown',
         \    'vue': 'vue',
+        \    'svelte': 'svelte',
         \    'yaml': 'yaml',
+        \    'openapi': 'yaml',
         \    'html': 'html',
+        \    'ruby': 'ruby',
         \}
 
         for l:filetype in l:filetypes
@@ -86,8 +96,8 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version) abort
     " Special error handling needed for prettier_d
     if l:executable =~# 'prettier_d$'
         return {
-        \   'command': ale#path#BufferCdString(a:buffer)
-        \       . ale#Escape(l:executable)
+        \   'cwd': '%s:h',
+        \   'command':ale#Escape(l:executable)
         \       . (!empty(l:options) ? ' ' . l:options : '')
         \       . ' --stdin-filepath %s --stdin',
         \   'process_with': 'ale#fixers#prettier#ProcessPrettierDOutput',
@@ -97,8 +107,8 @@ function! ale#fixers#prettier#ApplyFixForVersion(buffer, version) abort
     " 1.4.0 is the first version with --stdin-filepath
     if ale#semver#GTE(a:version, [1, 4, 0])
         return {
-        \   'command': ale#path#BufferCdString(a:buffer)
-        \       . ale#Escape(l:executable)
+        \   'cwd': ale#fixers#prettier#GetCwd(a:buffer),
+        \   'command': ale#Escape(l:executable)
         \       . (!empty(l:options) ? ' ' . l:options : '')
         \       . ' --stdin-filepath %s --stdin',
         \}

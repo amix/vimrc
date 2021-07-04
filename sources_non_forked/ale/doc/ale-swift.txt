@@ -3,6 +3,44 @@ ALE Swift Integration                                       *ale-swift-options*
 
 
 ===============================================================================
+apple-swift-format                               *ale-swift-apple-swift-format*
+
+There are 3 options to enable linting and fixing with Apple's swift-format:
+
+1. Install the local executable in your path, as described here:
+   https://github.com/apple/swift-format
+2. Install the executable via your OS package manager, for instance via
+   Homebrew with `brew install swift-format`
+3. Your Swift project has a dependency on the swift-format package, so it can
+   be run with `swift run swift-format lint ...` In this case, you need to set
+   a variable, see |g:ale_swift_appleswiftformat_use_swiftpm|.
+
+Additionally, ALE tries to locate and use the nearest existing `.swift-format`
+configuration file.
+
+
+g:ale_swift_appleswiftformat_executable *g:ale_swift_appleswiftformat_executable*
+                                      *b:ale_swift_appleswiftformat_executable*
+  Type: |String|
+  Default: `'swift-format'`
+
+  This variable can be modified to change the executable path for
+  `swift-format`.
+
+
+g:ale_swift_appleswiftformat_use_swiftpm *g:ale_swift_appleswiftformat_use_swiftpm*
+                                     *b:ale_swift_appleswiftformat_use_swiftpm*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, this option will cause ALE to use
+  `swift run swift-format lint ...` instead of the global executable. Use this
+  option if your Swift project has a dependency on the swift-format package.
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 sourcekitlsp                                           *ale-swift-sourcekitlsp*
 
 To enable the SourceKit-LSP you need to install and build the executable as
@@ -15,6 +53,7 @@ g:ale_sourcekit_lsp_executable                 *g:ale_sourcekit_lsp_executable*
   Default: `'sourcekit-lsp'`
 
   See |ale-integrations-local-executables|
+
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

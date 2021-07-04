@@ -3,10 +3,10 @@ ALE VHDL Integration                                         *ale-vhdl-options*
 
 
 ===============================================================================
-ALE can use three different linters for VHDL:
+ALE can use four different linters for VHDL:
 
-  iverilog:
-    Using `iverilog -t null -Wall`
+  ghdl:
+    Using `ghdl --std=08`
 
   ModelSim/Questa
     Using `vcom -2008 -quiet -lint`
@@ -14,8 +14,15 @@ ALE can use three different linters for VHDL:
   Vivado
     Using `xvhdl --2008`
 
-Note all linters default to VHDL-2008 support. This, and other options, can be
-changed with each linter's respective option variable.
+  HDL Checker
+    Using `hdl_checker --lsp`
+
+===============================================================================
+General notes
+
+ghdl, ModelSim/Questa and Vivado linters default to VHDL-2008 support. This,
+and other options, can be changed with each linter's respective option
+variable.
 
 Linters/compilers that utilize a "work" directory for analyzing designs- such
 as ModelSim and Vivado- can be passed the location of these directories as
@@ -30,6 +37,10 @@ the frequent, asynchronous application launches when linting while text is
 changing. This can happen in the form of hangs or crashes. To help prevent
 this when using these linters, it may help to run linting less frequently; for
 example, only when a file is saved.
+
+HDL Checker is an alternative for some of the issues described above. It wraps
+around ghdl, Vivado and ModelSim/Questa and, when using the latter, it can
+handle mixed language (VHDL, Verilog, SystemVerilog) designs.
 
 ===============================================================================
 ghdl                                                            *ale-vhdl-ghdl*
@@ -48,6 +59,60 @@ g:ale_vhdl_ghdl_options                               *g:ale_vhdl_ghdl_options*
   Default: `'--std=08'`
 
   This variable can be changed to modify the flags/options passed to 'ghdl'.
+
+
+===============================================================================
+hdl-checker                                              *ale-vhdl-hdl-checker*
+
+HDL Checker is a wrapper for VHDL/Verilg/SystemVerilog tools that aims to
+reduce the boilerplate code needed to set things up. It can automatically
+infer libraries for VHDL sources, determine the compilation order and provide
+some static checks.
+
+You can install it using pip:
+>
+  $ pip install hdl-checker
+
+`hdl-checker` will be run from a detected project root, determined by the
+following methods, in order:
+
+1. Find the first directory containing a configuration file (see
+   |g:ale_hdl_checker_config_file|)
+2. If no configuration file can be found, find the first directory containing
+   a folder named `'.git'
+3. If no such folder is found, use the directory of the current buffer
+
+
+g:ale_hdl_checker_executable
+                                                 *g:ale_hdl_checker_executable*
+                                                 *b:ale_hdl_checker_executable*
+  Type: |String|
+  Default: `'hdl_checker'`
+
+  This variable can be changed to the path to the 'hdl_checker' executable.
+
+
+g:ale_hdl_checker_options                           *g:ale_hdl_checker_options*
+                                                    *b:ale_hdl_checker_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify the flags/options passed to the
+  'hdl_checker' server startup command.
+
+
+g:ale_hdl_checker_config_file                   *g:ale_hdl_checker_config_file*
+                                                *b:ale_hdl_checker_config_file*
+  Type: |String|
+  Default: `'.hdl_checker.config'` (Unix),
+           `'_hdl_checker.config'` (Windows)
+
+  This variable can be changed to modify the config file HDL Checker will try
+  to look for. It will also affect how the project's root directory is
+  determined (see |ale-vhdl-hdl-checker|).
+
+  More info on the configuration file format can be found at:
+  https://github.com/suoto/hdl_checker/wiki/Setting-up-a-project
 
 
 ===============================================================================

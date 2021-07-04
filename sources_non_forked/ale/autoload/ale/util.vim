@@ -16,7 +16,9 @@ endfunction
 " Vim 8 does not support echoing long messages from asynchronous callbacks,
 " but NeoVim does. Small messages can be echoed in Vim 8, and larger messages
 " have to be shown in preview windows.
-function! ale#util#ShowMessage(string) abort
+function! ale#util#ShowMessage(string, ...) abort
+    let l:options = get(a:000, 0, {})
+
     if !has('nvim')
         call ale#preview#CloseIfTypeMatches('ale-preview.message')
     endif
@@ -25,10 +27,13 @@ function! ale#util#ShowMessage(string) abort
     if has('nvim') || (a:string !~? "\n" && len(a:string) < &columns)
         execute 'echo a:string'
     else
-        call ale#preview#Show(split(a:string, "\n"), {
-        \   'filetype': 'ale-preview.message',
-        \   'stay_here': 1,
-        \})
+        call ale#preview#Show(split(a:string, "\n"), extend(
+        \   {
+        \       'filetype': 'ale-preview.message',
+        \       'stay_here': 1,
+        \   },
+        \   l:options,
+        \))
     endif
 endfunction
 
@@ -335,6 +340,16 @@ function! ale#util#GetMatches(lines, patterns) abort
     return l:matches
 endfunction
 
+" Given a single line, or a List of lines, and a single pattern, or a List of
+" patterns, and a callback function for mapping the items matches, return the
+" result of mapping all of the matches for the lines from the given patterns,
+" using matchlist()
+"
+" Only the first pattern which matches a line will be returned.
+function! ale#util#MapMatches(lines, patterns, Callback) abort
+    return map(ale#util#GetMatches(a:lines, a:patterns), 'a:Callback(v:val)')
+endfunction
+
 function! s:LoadArgCount(function) abort
     try
         let l:output = execute('function a:function')
@@ -404,7 +419,7 @@ function! ale#util#FuzzyJSONDecode(data, default) abort
         endif
 
         return l:result
-    catch /E474/
+    catch /E474\|E491/
         return a:default
     endtry
 endfunction
@@ -418,7 +433,10 @@ function! ale#util#Writefile(buffer, lines, filename) abort
     \   ? map(copy(a:lines), 'substitute(v:val, ''\r*$'', ''\r'', '''')')
     \   : a:lines
 
-    call writefile(l:corrected_lines, a:filename, 'S') " no-custom-checks
+    " Set binary flag if buffer doesn't have eol and nofixeol to avoid appending newline
+    let l:flags = !getbufvar(a:buffer, '&eol') && exists('+fixeol') && !&fixeol ? 'bS' : 'S'
+
+    call writefile(l:corrected_lines, a:filename, l:flags) " no-custom-checks
 endfunction
 
 if !exists('s:patial_timers')

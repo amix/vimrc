@@ -186,24 +186,23 @@ function! ale_linters#elm#make#IsTest(buffer) abort
     endif
 endfunction
 
+function! ale_linters#elm#make#GetCwd(buffer) abort
+    let l:root_dir = ale_linters#elm#make#GetRootDir(a:buffer)
+
+    return !empty(l:root_dir) ? l:root_dir : ''
+endfunction
+
 " Return the command to execute the linter in the projects directory.
 " If it doesn't, then this will fail when imports are needed.
 function! ale_linters#elm#make#GetCommand(buffer) abort
     let l:executable = ale_linters#elm#make#GetExecutable(a:buffer)
-    let l:root_dir = ale_linters#elm#make#GetRootDir(a:buffer)
     let l:is_v19 = ale_linters#elm#make#IsVersionGte19(a:buffer)
     let l:is_using_elm_test = l:executable =~# 'elm-test$'
-
-    if empty(l:root_dir)
-        let l:dir_set_cmd = ''
-    else
-        let l:dir_set_cmd = 'cd ' . ale#Escape(l:root_dir) . ' && '
-    endif
 
     " elm-test needs to know the path of elm-make if elm isn't installed globally.
     " https://github.com/rtfeldman/node-test-runner/blob/57728f10668f2d2ab3179e7e3208bcfa9a1f19aa/README.md#--compiler
     if l:is_v19 && l:is_using_elm_test
-        let l:elm_make_executable = ale#node#FindExecutable(a:buffer, 'elm_make', ['node_modules/.bin/elm'])
+        let l:elm_make_executable = ale#path#FindExecutable(a:buffer, 'elm_make', ['node_modules/.bin/elm'])
         let l:elm_test_compiler_flag = ' --compiler ' . l:elm_make_executable . ' '
     else
         let l:elm_test_compiler_flag = ' '
@@ -213,7 +212,9 @@ function! ale_linters#elm#make#GetCommand(buffer) abort
     " a sort of flag to tell the compiler not to generate an output file,
     " which is why this is hard coded here.
     " Source: https://github.com/elm-lang/elm-compiler/blob/19d5a769b30ec0b2fc4475985abb4cd94cd1d6c3/builder/src/Generate/Output.hs#L253
-    return l:dir_set_cmd . '%e make --report=json --output=/dev/null' . l:elm_test_compiler_flag . '%t'
+    return '%e make --report=json --output=/dev/null'
+    \   . l:elm_test_compiler_flag
+    \   . '%t'
 endfunction
 
 function! ale_linters#elm#make#GetExecutable(buffer) abort
@@ -221,13 +222,13 @@ function! ale_linters#elm#make#GetExecutable(buffer) abort
     let l:is_v19 = ale_linters#elm#make#IsVersionGte19(a:buffer)
 
     if l:is_test && l:is_v19
-        return ale#node#FindExecutable(
+        return ale#path#FindExecutable(
         \   a:buffer,
         \   'elm_make',
         \   ['node_modules/.bin/elm-test', 'node_modules/.bin/elm']
         \)
     else
-        return ale#node#FindExecutable(a:buffer, 'elm_make', ['node_modules/.bin/elm'])
+        return ale#path#FindExecutable(a:buffer, 'elm_make', ['node_modules/.bin/elm'])
     endif
 endfunction
 
@@ -235,6 +236,7 @@ call ale#linter#Define('elm', {
 \   'name': 'make',
 \   'executable': function('ale_linters#elm#make#GetExecutable'),
 \   'output_stream': 'both',
+\   'cwd': function('ale_linters#elm#make#GetCwd'),
 \   'command': function('ale_linters#elm#make#GetCommand'),
 \   'callback': 'ale_linters#elm#make#Handle'
 \})

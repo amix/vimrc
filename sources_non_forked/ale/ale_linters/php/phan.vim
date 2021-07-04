@@ -39,7 +39,7 @@ function! ale_linters#php#phan#Handle(buffer, lines) abort
         let l:pattern = '^Phan error: \(\w\+\): \(.\+\) in \(.\+\) on line \(\d\+\)$'
     else
         " /path/to/some-filename.php:18 ERRORTYPE message
-        let l:pattern = '^.*:\(\d\+\)\s\(\w\+\)\s\(.\+\)$'
+        let l:pattern = '^\(.*\):\(\d\+\)\s\(\w\+\)\s\(.\+\)$'
     endif
 
     let l:output = []
@@ -49,13 +49,15 @@ function! ale_linters#php#phan#Handle(buffer, lines) abort
             let l:dict = {
             \   'lnum': l:match[4] + 0,
             \   'text': l:match[2],
+            \   'filename': l:match[3],
             \   'type': 'W',
             \}
         else
             let l:dict = {
-            \   'lnum': l:match[1] + 0,
-            \   'text': l:match[3],
+            \   'lnum': l:match[2] + 0,
+            \   'text': l:match[4],
             \   'type': 'W',
+            \   'filename': l:match[1],
             \}
         endif
 

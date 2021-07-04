@@ -9,7 +9,7 @@ function! ale_linters#asm#gcc#GetCommand(buffer) abort
     " -fsyntax-only doesn't catch everything.
     return '%e -x assembler'
     \   . ' -o ' . g:ale#util#nul_file
-    \   . '-iquote ' . ale#Escape(fnamemodify(bufname(a:buffer), ':p:h'))
+    \   . '-iquote %s:h'
     \   . ' ' . ale#Var(a:buffer, 'asm_gcc_options') . ' -'
 endfunction
 

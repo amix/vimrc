@@ -9,6 +9,6 @@ call ale#linter#Define('ocaml', {
 \   'lsp': 'stdio',
 \   'executable': function('ale#handlers#ols#GetExecutable'),
 \   'command': function('ale#handlers#ols#GetCommand'),
-\   'language_callback': 'ale#handlers#ols#GetLanguage',
+\   'language': function('ale#handlers#ols#GetLanguage'),
 \   'project_root': function('ale#handlers#ols#GetProjectRoot'),
 \})

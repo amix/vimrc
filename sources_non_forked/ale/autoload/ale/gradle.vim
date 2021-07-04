@@ -50,18 +50,25 @@ function! ale#gradle#FindExecutable(buffer) abort
     return ''
 endfunction
 
-" Given a buffer number, build a command to print the classpath of the root
-" project. Returns an empty string if cannot build the command.
+" Given a buffer number, get a working directory and command to print the
+" classpath of the root project.
+"
+" Returns an empty string for the command if Gradle is not detected.
 function! ale#gradle#BuildClasspathCommand(buffer) abort
     let l:executable = ale#gradle#FindExecutable(a:buffer)
-    let l:project_root = ale#gradle#FindProjectRoot(a:buffer)
 
-    if !empty(l:executable) && !empty(l:project_root)
-        return ale#path#CdString(l:project_root)
-        \   . ale#Escape(l:executable)
-        \   . ' -I ' . ale#Escape(s:init_path)
-        \   . ' -q printClasspath'
+    if !empty(l:executable)
+        let l:project_root = ale#gradle#FindProjectRoot(a:buffer)
+
+        if !empty(l:project_root)
+            return [
+            \   l:project_root,
+            \   ale#Escape(l:executable)
+            \   . ' -I ' . ale#Escape(s:init_path)
+            \   . ' -q printClasspath'
+            \]
+        endif
     endif
 
-    return ''
+    return ['', '']
 endfunction

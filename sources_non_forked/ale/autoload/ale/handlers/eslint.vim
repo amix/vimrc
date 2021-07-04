@@ -1,6 +1,12 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Functions for working with eslint, for checking or fixing files.
 
+let s:executables = [
+\   '.yarn/sdks/eslint/bin/eslint.js',
+\   'node_modules/.bin/eslint_d',
+\   'node_modules/eslint/bin/eslint.js',
+\   'node_modules/.bin/eslint',
+\]
 let s:sep = has('win32') ? '\' : '/'
 
 call ale#Set('javascript_eslint_options', '')
@@ -30,11 +36,36 @@ function! ale#handlers#eslint#FindConfig(buffer) abort
 endfunction
 
 function! ale#handlers#eslint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'javascript_eslint', [
-    \   'node_modules/.bin/eslint_d',
-    \   'node_modules/eslint/bin/eslint.js',
-    \   'node_modules/.bin/eslint',
-    \])
+    return ale#path#FindExecutable(a:buffer, 'javascript_eslint', s:executables)
+endfunction
+
+" Given a buffer, return an appropriate working directory for ESLint.
+function! ale#handlers#eslint#GetCwd(buffer) abort
+    " ESLint 6 loads plugins/configs/parsers from the project root
+    " By default, the project root is simply the CWD of the running process.
+    " https://github.com/eslint/rfcs/blob/master/designs/2018-simplified-package-loading/README.md
+    " https://github.com/dense-analysis/ale/issues/2787
+    "
+    " If eslint is installed in a directory which contains the buffer, assume
+    " it is the ESLint project root.  Otherwise, use nearest node_modules.
+    " Note: If node_modules not present yet, can't load local deps anyway.
+    let l:executable = ale#path#FindNearestExecutable(a:buffer, s:executables)
+
+    if !empty(l:executable)
+        let l:modules_index = strridx(l:executable, 'node_modules')
+        let l:modules_root = l:modules_index > -1 ? l:executable[0:l:modules_index - 2] : ''
+
+        let l:sdks_index = strridx(l:executable, ale#path#Simplify('.yarn/sdks'))
+        let l:sdks_root = l:sdks_index > -1 ? l:executable[0:l:sdks_index - 2] : ''
+    else
+        let l:modules_dir = ale#path#FindNearestDirectory(a:buffer, 'node_modules')
+        let l:modules_root = !empty(l:modules_dir) ? fnamemodify(l:modules_dir, ':h:h') : ''
+
+        let l:sdks_dir = ale#path#FindNearestDirectory(a:buffer, ale#path#Simplify('.yarn/sdks'))
+        let l:sdks_root = !empty(l:sdks_dir) ? fnamemodify(l:sdks_dir, ':h:h:h') : ''
+    endif
+
+    return strlen(l:modules_root) > strlen(l:sdks_root) ? l:modules_root : l:sdks_root
 endfunction
 
 function! ale#handlers#eslint#GetCommand(buffer) abort
@@ -42,18 +73,7 @@ function! ale#handlers#eslint#GetCommand(buffer) abort
 
     let l:options = ale#Var(a:buffer, 'javascript_eslint_options')
 
-    " ESLint 6 loads plugins/configs/parsers from the project root
-    " By default, the project root is simply the CWD of the running process.
-    " https://github.com/eslint/rfcs/blob/master/designs/2018-simplified-package-loading/README.md
-    " https://github.com/dense-analysis/ale/issues/2787
-    " Identify project root from presence of node_modules dir.
-    " Note: If node_modules not present yet, can't load local deps anyway.
-    let l:modules_dir = ale#path#FindNearestDirectory(a:buffer, 'node_modules')
-    let l:project_dir = !empty(l:modules_dir) ? fnamemodify(l:modules_dir, ':h:h') : ''
-    let l:cd_command = !empty(l:project_dir) ? ale#path#CdString(l:project_dir) : ''
-
-    return l:cd_command
-    \   . ale#node#Executable(a:buffer, l:executable)
+    return ale#node#Executable(a:buffer, l:executable)
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . ' -f json --stdin --stdin-filename %s'
 endfunction

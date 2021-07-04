@@ -34,7 +34,11 @@ endfunction
 function! s:HandleLSPDiagnostics(conn_id, response) abort
     let l:linter_name = s:lsp_linter_map[a:conn_id]
     let l:filename = ale#path#FromURI(a:response.params.uri)
-    let l:buffer = bufnr('^' . l:filename . '$')
+    let l:escaped_name = escape(
+    \   fnameescape(l:filename),
+    \   has('win32') ? '^' : '^,}]'
+    \)
+    let l:buffer = bufnr('^' . l:escaped_name . '$')
     let l:info = get(g:ale_buffer_info, l:buffer, {})
 
     if empty(l:info)
@@ -52,7 +56,11 @@ endfunction
 
 function! s:HandleTSServerDiagnostics(response, error_type) abort
     let l:linter_name = 'tsserver'
-    let l:buffer = bufnr('^' . a:response.body.file . '$')
+    let l:escaped_name = escape(
+    \   fnameescape(a:response.body.file),
+    \   has('win32') ? '^' : '^,}]'
+    \)
+    let l:buffer = bufnr('^' . l:escaped_name . '$')
     let l:info = get(g:ale_buffer_info, l:buffer, {})
 
     if empty(l:info)
@@ -77,12 +85,18 @@ function! s:HandleTSServerDiagnostics(response, error_type) abort
         endif
 
         let l:info.syntax_loclist = l:thislist
-    else
+    elseif a:error_type is# 'semantic'
         if len(l:thislist) is 0 && len(get(l:info, 'semantic_loclist', [])) is 0
             let l:no_changes = 1
         endif
 
         let l:info.semantic_loclist = l:thislist
+    else
+        if len(l:thislist) is 0 && len(get(l:info, 'suggestion_loclist', [])) is 0
+            let l:no_changes = 1
+        endif
+
+        let l:info.suggestion_loclist = l:thislist
     endif
 
     if l:no_changes
@@ -90,6 +104,7 @@ function! s:HandleTSServerDiagnostics(response, error_type) abort
     endif
 
     let l:loclist = get(l:info, 'semantic_loclist', [])
+    \   + get(l:info, 'suggestion_loclist', [])
     \   + get(l:info, 'syntax_loclist', [])
 
     call ale#engine#HandleLoclist(l:linter_name, l:buffer, l:loclist, 0)
@@ -142,6 +157,10 @@ function! ale#lsp_linter#HandleLSPResponse(conn_id, response) abort
     elseif get(a:response, 'type', '') is# 'event'
     \&& get(a:response, 'event', '') is# 'syntaxDiag'
         call s:HandleTSServerDiagnostics(a:response, 'syntax')
+    elseif get(a:response, 'type', '') is# 'event'
+    \&& get(a:response, 'event', '') is# 'suggestionDiag'
+    \&& get(g:, 'ale_lsp_suggestions', '1') == 1
+        call s:HandleTSServerDiagnostics(a:response, 'suggestion')
     endif
 endfunction
 
@@ -182,7 +201,11 @@ function! ale#lsp_linter#GetConfig(buffer, linter) abort
 endfunction
 
 function! ale#lsp_linter#FindProjectRoot(buffer, linter) abort
-    let l:buffer_ale_root = getbufvar(a:buffer, 'ale_lsp_root', {})
+    let l:buffer_ale_root = getbufvar(
+    \   a:buffer,
+    \   'ale_root',
+    \   getbufvar(a:buffer, 'ale_lsp_root', {})
+    \)
 
     if type(l:buffer_ale_root) is v:t_string
         return l:buffer_ale_root
@@ -199,9 +222,15 @@ function! ale#lsp_linter#FindProjectRoot(buffer, linter) abort
         endif
     endif
 
+    let l:global_root = g:ale_root
+
+    if empty(g:ale_root) && exists('g:ale_lsp_root')
+        let l:global_root = g:ale_lsp_root
+    endif
+
     " Try to get a global setting for the root
-    if has_key(g:ale_lsp_root, a:linter.name)
-        let l:Root = g:ale_lsp_root[a:linter.name]
+    if has_key(l:global_root, a:linter.name)
+        let l:Root = l:global_root[a:linter.name]
 
         if type(l:Root) is v:t_func
             return l:Root(a:buffer)
@@ -227,7 +256,7 @@ function! ale#lsp_linter#OnInit(linter, details, Callback) abort
     let l:command = a:details.command
 
     let l:config = ale#lsp_linter#GetConfig(l:buffer, a:linter)
-    let l:language_id = ale#util#GetFunction(a:linter.language_callback)(l:buffer)
+    let l:language_id = ale#linter#GetLanguage(l:buffer, a:linter)
 
     call ale#lsp#UpdateConfig(l:conn_id, l:buffer, l:config)
 
@@ -265,7 +294,16 @@ function! s:StartLSP(options, address, executable, command) abort
             call ale#lsp#MarkConnectionAsTsserver(l:conn_id)
         endif
 
-        let l:command = ale#command#FormatCommand(l:buffer, a:executable, a:command, 0, v:false)[1]
+        let l:cwd = ale#linter#GetCwd(l:buffer, l:linter)
+        let l:command = ale#command#FormatCommand(
+        \   l:buffer,
+        \   a:executable,
+        \   a:command,
+        \   0,
+        \   v:false,
+        \   l:cwd,
+        \   ale#GetFilenameMappings(l:buffer, l:linter.name),
+        \)[1]
         let l:command = ale#job#PrepareCommand(l:buffer, l:command)
         let l:ready = ale#lsp#StartProgram(l:conn_id, a:executable, l:command)
     endif

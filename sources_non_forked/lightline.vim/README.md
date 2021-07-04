@@ -11,44 +11,29 @@ https://github.com/itchyny/lightline.vim
 
 ![lightline.vim - wombat](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/wombat.png)
 
-### jellybeans
+### solarized (`background=dark`)
 
-![lightline.vim - jellybeans](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/jellybeans.png)
+![lightline.vim - solarized_dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/solarized_dark.png)
 
-### solarized dark
+### solarized (`background=light`)
 
-![lightline.vim - solarized dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/solarized_dark.png)
+![lightline.vim - solarized_light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/solarized_light.png)
 
-### solarized light
+### PaperColor (`background=dark`)
 
-![lightline.vim - solarized light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/solarized_light.png)
+![lightline.vim - PaperColor_dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/PaperColor_dark.png)
 
-### PaperColor dark
+### PaperColor (`background=light`)
 
-![lightline.vim - PaperColor dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/PaperColor_dark.png)
+![lightline.vim - PaperColor_light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/PaperColor_light.png)
 
-### PaperColor light
+### one (`background=dark`)
 
-![lightline.vim - PaperColor light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/PaperColor_light.png)
+![lightline.vim - one_dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/one_dark.png)
 
-### seoul256
+### one (`background=light`)
 
-![lightline.vim - seoul256](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/seoul256.png)
-
-### one dark
-
-![lightline.vim - one dark](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/one_dark.png)
-
-### one light
-
-![lightline.vim - one light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/one_light.png)
-
-### landscape
-
-![lightline.vim - landscape](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/landscape.png)
-
-landscape is my colorscheme, which is a high-contrast cterm-supported colorscheme, available at https://github.com/itchyny/landscape.vim
-
+![lightline.vim - one_light](https://raw.githubusercontent.com/wiki/itchyny/lightline.vim/image/one_light.png)
 
 For screenshots of all available colorshemes, see [this file](colorscheme.md).
 
@@ -63,7 +48,8 @@ For screenshots of all available colorshemes, see [this file](colorscheme.md).
 + Orthogonality. The plugin does not rely on the implementation of other plugins. Such plugin crossing settings should be configured by users.
 
 ## Installation
-### [Vim packages](http://vimhelp.appspot.com/repeat.txt.html#packages) (since Vim 7.4.1528)
+### [Vim packages](https://vimhelp.org/repeat.txt.html#packages) (since Vim 7.4.1528)
+1. Clone the plugin with the following command.
 
         git clone https://github.com/itchyny/lightline.vim ~/.vim/pack/plugins/start/lightline
 

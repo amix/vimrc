@@ -9,11 +9,12 @@ function! ale_linters#java#checkstyle#Handle(buffer, lines) abort
     let l:output = []
 
     " modern checkstyle versions
-    let l:pattern = '\v\[(WARN|ERROR)\] [a-zA-Z]?:?[^:]+:(\d+):(\d+)?:? (.*) \[(.+)\]$'
+    let l:pattern = '\v\[(WARN|ERROR)\] [a-zA-Z]?:?[^:]+:(\d+):(\d+)?:? (.*) \[(.+)\]'
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:output, {
         \   'type': l:match[1] is? 'WARN' ? 'W' : 'E',
+        \   'sub_type': 'style',
         \   'lnum': l:match[2] + 0,
         \   'col': l:match[3] + 0,
         \   'text': l:match[4],
@@ -31,6 +32,7 @@ function! ale_linters#java#checkstyle#Handle(buffer, lines) abort
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:output, {
         \   'type': l:match[3] is? 'warning' ? 'W' : 'E',
+        \   'sub_type': 'style',
         \   'lnum': l:match[2] + 0,
         \   'text': l:match[4],
         \})
@@ -52,7 +54,7 @@ endfunction
 function! ale_linters#java#checkstyle#GetCommand(buffer) abort
     let l:options = ale#Var(a:buffer, 'java_checkstyle_options')
     let l:config_option = ale#Var(a:buffer, 'java_checkstyle_config')
-    let l:config = l:options !~# '\v(^| )-c' && !empty(l:config_option)
+    let l:config = l:options !~# '\v(^| )-c ' && !empty(l:config_option)
     \   ? s:GetConfig(a:buffer, l:config_option)
     \   : ''
 

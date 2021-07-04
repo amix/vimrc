@@ -69,11 +69,11 @@ syn match typescriptNumber "-\=\<\d[0-9_]*L\=\>" display
 syn match typescriptNumber "-\=\<0[xX][0-9a-fA-F][0-9a-fA-F_]*\>" display
 syn match typescriptNumber "-\=\<0[bB][01][01_]*\>" display
 syn match typescriptNumber "-\=\<0[oO]\o[0-7_]*\>" display
-syn region typescriptRegexpString start=+/[^/*]+me=e-1 skip=+\\\\\|\\/+ end=+/[gi]\{0,2\}\s*$+ end=+/[gi]\{0,2\}\s*[;.,)\]}]+me=e-1 contains=@htmlPreproc oneline
+syn region typescriptRegexpString start=+/[^/*]+me=e-1 skip=+\\\\\|\\/+ end=+/[gimsuy]\{0,2\}\s*$+ end=+/[gimsuy]\{0,2\}\s*[;.,)\]}]+me=e-1 contains=@htmlPreproc oneline
 " syntax match typescriptSpecial "\\\d\d\d\|\\x\x\{2\}\|\\u\x\{4\}\|\\."
 " syntax region typescriptStringD start=+"+ skip=+\\\\\|\\$"+ end=+"+ contains=typescriptSpecial,@htmlPreproc
 " syntax region typescriptStringS start=+'+ skip=+\\\\\|\\$'+ end=+'+ contains=typescriptSpecial,@htmlPreproc
-" syntax region typescriptRegexpString start=+/\(\*\|/\)\@!+ skip=+\\\\\|\\/+ end=+/[gim]\{,3}+ contains=typescriptSpecial,@htmlPreproc oneline
+" syntax region typescriptRegexpString start=+/\(\*\|/\)\@!+ skip=+\\\\\|\\/+ end=+/[gimsuy]\{,3}+ contains=typescriptSpecial,@htmlPreproc oneline
 " syntax match typescriptNumber /\<-\=\d\+L\=\>\|\<0[xX]\x\+\>/
 syntax match typescriptFloat /\<-\=\%(\d[0-9_]*\.\d[0-9_]*\|\d[0-9_]*\.\|\.\d[0-9]*\)\%([eE][+-]\=\d[0-9_]*\)\=\>/
 " syntax match typescriptLabel /\(?\s*\)\@<!\<\w\+\(\s*:\)\@=/
@@ -124,7 +124,8 @@ syntax keyword typescriptBranch break continue yield await
 syntax keyword typescriptLabel case default async readonly
 syntax keyword typescriptStatement return with
 
-syntax keyword typescriptGlobalObjects Array Boolean Date Function Infinity JSON Math Number NaN Object Packages RegExp String Symbol netscape
+syntax keyword typescriptGlobalObjects Array Boolean Date Function Infinity JSON Math Number NaN Object Packages RegExp String Symbol netscape ArrayBuffer BigInt64Array BigUint64Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray Buffer Collator DataView DateTimeFormat Intl Iterator Map Set WeakMap WeakSet NumberFormat ParallelArray Promise Proxy Reflect Uint8ClampedArray WebAssembly console document fetch window
+syntax keyword typescriptGlobalNodeObjects  module exports global process __dirname __filename
 
 syntax keyword typescriptExceptions try catch throw finally Error EvalError RangeError ReferenceError SyntaxError TypeError URIError
 
@@ -188,7 +189,7 @@ syntax match typescriptDotNotation "\.style\." nextgroup=typescriptCssStyles
 
 
 "" Code blocks
-syntax cluster typescriptAll contains=typescriptComment,typescriptLineComment,typescriptDocComment,typescriptStringD,typescriptStringS,typescriptStringB,typescriptRegexpString,typescriptNumber,typescriptFloat,typescriptDecorators,typescriptLabel,typescriptSource,typescriptType,typescriptOperator,typescriptBoolean,typescriptNull,typescriptFuncKeyword,typescriptConditional,typescriptGlobal,typescriptRepeat,typescriptBranch,typescriptStatement,typescriptGlobalObjects,typescriptMessage,typescriptIdentifier,typescriptStorageClass,typescriptExceptions,typescriptReserved,typescriptDeprecated,typescriptDomErrNo,typescriptDomNodeConsts,typescriptHtmlEvents,typescriptDotNotation,typescriptBrowserObjects,typescriptDOMObjects,typescriptAjaxObjects,typescriptPropietaryObjects,typescriptDOMMethods,typescriptHtmlElemProperties,typescriptDOMProperties,typescriptEventListenerKeywords,typescriptEventListenerMethods,typescriptAjaxProperties,typescriptAjaxMethods,typescriptFuncArg
+syntax cluster typescriptAll contains=typescriptComment,typescriptLineComment,typescriptDocComment,typescriptStringD,typescriptStringS,typescriptStringB,typescriptRegexpString,typescriptNumber,typescriptFloat,typescriptDecorators,typescriptLabel,typescriptSource,typescriptType,typescriptOperator,typescriptBoolean,typescriptNull,typescriptFuncKeyword,typescriptConditional,typescriptGlobal,typescriptRepeat,typescriptBranch,typescriptStatement,typescriptGlobalObjects,typescriptMessage,typescriptIdentifier,typescriptStorageClass,typescriptExceptions,typescriptReserved,typescriptDeprecated,typescriptDomErrNo,typescriptDomNodeConsts,typescriptHtmlEvents,typescriptDotNotation,typescriptBrowserObjects,typescriptDOMObjects,typescriptAjaxObjects,typescriptPropietaryObjects,typescriptDOMMethods,typescriptHtmlElemProperties,typescriptDOMProperties,typescriptEventListenerKeywords,typescriptEventListenerMethods,typescriptAjaxProperties,typescriptAjaxMethods,typescriptFuncArg,typescriptGlobalNodeObjects
 
 if main_syntax == "typescript"
   syntax sync clear
@@ -204,9 +205,9 @@ syntax keyword typescriptFuncKeyword function
 
 syn match typescriptBraces "[{}\[\]]"
 syn match typescriptParens "[()]"
-syn match typescriptOpSymbols "=\{1,3}\|!==\|!=\|<\|>\|>=\|<=\|++\|+=\|--\|-="
 syn match typescriptEndColons "[;,]"
 syn match typescriptLogicSymbols "\(&&\)\|\(||\)\|\(!\)"
+syn match typescriptOpSymbols "=\{1,3}\|!==\|!=\|<\|>\|>=\|<=\|++\|+=\|--\|-="
 
 " typescriptFold Function {{{
 
@@ -288,6 +289,7 @@ if version >= 508 || !exists("did_typescript_syn_inits")
   HiLink typescriptSpecial Special
   HiLink typescriptSource Special
   HiLink typescriptGlobalObjects Special
+  HiLink typescriptGlobalNodeObjects Special
   HiLink typescriptExceptions Special
 
   HiLink typescriptDomErrNo Constant

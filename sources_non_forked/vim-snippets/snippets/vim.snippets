@@ -43,9 +43,14 @@ snippet ife if ... else statement
 	endif
 snippet au augroup ... autocmd block
 	augroup ${1:AU_NAME}
-		" this one is which you're most likely to use?
+		autocmd!
 		autocmd ${2:BufRead,BufNewFile} ${3:*.ext,*.ext3|<buffer[=N]>} ${0}
-	augroup end
+	augroup END
+snippet auv augroupvisual ... autocmd block with visual placeholder
+	augroup ${1:AU_NAME}
+		autocmd!
+		${0:${VISUAL}}
+	augroup END
 snippet bun Vundle.vim Plugin definition
 	Plugin '${0}'
 snippet plug vim-plug Plugin definition

@@ -29,6 +29,12 @@ function! s:suite.disable_enable()
   call s:assert.equals(exists('#lightline-disable'), 0)
   call s:assert.not_equals(&statusline, '')
   call s:assert.not_equals(&tabline, '')
+  call lightline#disable()
+  call lightline#disable()
+  call lightline#enable()
+  call lightline#enable()
+  call s:assert.equals(exists('#lightline'), 1)
+  call s:assert.equals(exists('#lightline-disable'), 0)
 endfunction
 
 function! s:suite.toggle()

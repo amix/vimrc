@@ -35,9 +35,10 @@ function! s:Subst(format, vars) abort
 endfunction
 
 function! ale_linters#prolog#swipl#Handle(buffer, lines) abort
-    let l:pattern = '\v^(ERROR|Warning)+%(:\s*[^:]+:(\d+)%(:(\d+))?)?:\s*(.*)$'
     let l:output = []
     let l:i = 0
+
+    let l:pattern = '\v^(ERROR|Warning)+%(:\s*[^:]+:(\d+)%(:(\d+))?)?:\s*(.*)$'
 
     while l:i < len(a:lines)
         let l:match = matchlist(a:lines[l:i], l:pattern)
@@ -72,8 +73,17 @@ function! s:GetErrMsg(i, lines, text) abort
     let l:i = a:i + 1
     let l:text = []
 
-    while l:i < len(a:lines) && a:lines[l:i] =~# '^\s'
-        call add(l:text, s:Trim(a:lines[l:i]))
+    let l:pattern = '\v^(ERROR|Warning)?:?(.*)$'
+
+    while l:i < len(a:lines)
+        let l:match = matchlist(a:lines[l:i], l:pattern)
+
+        if empty(l:match) || empty(l:match[2])
+            let l:i += 1
+            break
+        endif
+
+        call add(l:text, s:Trim(l:match[2]))
         let l:i += 1
     endwhile
 

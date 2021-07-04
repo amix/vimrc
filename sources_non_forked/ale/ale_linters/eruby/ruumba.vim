@@ -11,7 +11,7 @@ function! ale_linters#eruby#ruumba#GetCommand(buffer) abort
     return ale#ruby#EscapeExecutable(l:executable, 'ruumba')
     \   . ' --format json --force-exclusion '
     \   . ale#Var(a:buffer, 'eruby_ruumba_options')
-    \   . ' --stdin ' . ale#Escape(expand('#' . a:buffer . ':p'))
+    \   . ' --stdin %s'
 endfunction
 
 function! ale_linters#eruby#ruumba#Handle(buffer, lines) abort

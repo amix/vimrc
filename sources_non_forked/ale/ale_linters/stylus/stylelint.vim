@@ -12,7 +12,7 @@ endfunction
 
 call ale#linter#Define('stylus', {
 \   'name': 'stylelint',
-\   'executable': {b -> ale#node#FindExecutable(b, 'stylus_stylelint', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'stylus_stylelint', [
 \       'node_modules/.bin/stylelint',
 \   ])},
 \   'command': function('ale_linters#stylus#stylelint#GetCommand'),

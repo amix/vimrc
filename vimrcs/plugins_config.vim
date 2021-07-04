@@ -53,9 +53,6 @@ map <leader>j :CtrlP<cr>
 " Quickly find and open a buffer
 map <leader>b :CtrlPBuffer<cr>
 
-" Quickly find and open a recently opened file
-map <leader>f :CtrlPMRU<CR>
-
 let g:ctrlp_max_height = 20
 let g:ctrlp_custom_ignore = 'node_modules\|^\.DS_Store\|^\.git\|^\.coffee'
 
@@ -72,6 +69,7 @@ let g:user_zen_mode='a'
 """"""""""""""""""""""""""""""
 ino <C-j> <C-r>=snipMate#TriggerSnippet()<cr>
 snor <C-j> <esc>i<right><C-r>=snipMate#TriggerSnippet()<cr>
+let g:snipMate = { 'snippet_version' : 1 }
 
 
 """"""""""""""""""""""""""""""
@@ -174,3 +172,9 @@ let g:ale_lint_on_enter = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:gitgutter_enabled=0
 nnoremap <silent> <leader>d :GitGutterToggle<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => EditorConfig (project-specific EditorConfig rule)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:EditorConfig_exclude_patterns = ['fugitive://.*']

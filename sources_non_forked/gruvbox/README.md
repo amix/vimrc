@@ -1,4 +1,4 @@
-<p align="center"><img src="http://svgur.com/i/3Dp.svg"></p>
+<!--p align="center"><img src="http://svgur.com/i/3Dp.svg"></p-->
 
 gruvbox is heavily inspired by [badwolf][], [jellybeans][] and [solarized][].
 

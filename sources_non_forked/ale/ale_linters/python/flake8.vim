@@ -4,7 +4,7 @@
 call ale#Set('python_flake8_executable', 'flake8')
 call ale#Set('python_flake8_options', '')
 call ale#Set('python_flake8_use_global', get(g:, 'ale_use_global_executables', 0))
-call ale#Set('python_flake8_change_directory', 1)
+call ale#Set('python_flake8_change_directory', 'project')
 call ale#Set('python_flake8_auto_pipenv', 0)
 
 function! s:UsingModule(buffer) abort
@@ -38,10 +38,28 @@ function! ale_linters#python#flake8#RunWithVersionCheck(buffer) abort
     \)
 endfunction
 
+function! ale_linters#python#flake8#GetCwd(buffer) abort
+    let l:change_directory = ale#Var(a:buffer, 'python_flake8_change_directory')
+    let l:cwd = ''
+
+    if l:change_directory is# 'project'
+        let l:project_root = ale#python#FindProjectRootIni(a:buffer)
+
+        if !empty(l:project_root)
+            let l:cwd = l:project_root
+        endif
+    endif
+
+    if (l:change_directory is# 'project' && empty(l:cwd))
+    \|| l:change_directory is# 1
+    \|| l:change_directory is# 'file'
+        let l:cwd = '%s:h'
+    endif
+
+    return l:cwd
+endfunction
+
 function! ale_linters#python#flake8#GetCommand(buffer, version) abort
-    let l:cd_string = ale#Var(a:buffer, 'python_flake8_change_directory')
-    \   ? ale#path#BufferCdString(a:buffer)
-    \   : ''
     let l:executable = ale_linters#python#flake8#GetExecutable(a:buffer)
 
     let l:exec_args = l:executable =~? 'pipenv$'
@@ -56,8 +74,7 @@ function! ale_linters#python#flake8#GetCommand(buffer, version) abort
 
     let l:options = ale#Var(a:buffer, 'python_flake8_options')
 
-    return l:cd_string
-    \   . ale#Escape(l:executable) . l:exec_args
+    return ale#Escape(l:executable) . l:exec_args
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . ' --format=default'
     \   . l:display_name_args . ' -'
@@ -141,6 +158,7 @@ endfunction
 call ale#linter#Define('python', {
 \   'name': 'flake8',
 \   'executable': function('ale_linters#python#flake8#GetExecutable'),
+\   'cwd': function('ale_linters#python#flake8#GetCwd'),
 \   'command': function('ale_linters#python#flake8#RunWithVersionCheck'),
 \   'callback': 'ale_linters#python#flake8#Handle',
 \})

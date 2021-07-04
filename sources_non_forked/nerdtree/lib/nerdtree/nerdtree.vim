@@ -27,7 +27,9 @@ function! s:NERDTree.changeRoot(node)
     call self.render()
     call self.root.putCursorHere(0, 0)
 
-    silent doautocmd User NERDTreeNewRoot
+    if exists('#User#NERDTreeNewRoot')
+        doautocmd User NERDTreeNewRoot
+    endif
 endfunction
 
 "FUNCTION: s:NERDTree.Close() {{{1
@@ -60,14 +62,6 @@ function! s:NERDTree.Close()
         endif
     else
         close
-    endif
-endfunction
-
-"FUNCTION: s:NERDTree.CloseIfQuitOnOpen() {{{1
-"Closes the NERD tree window if the close on open option is set
-function! s:NERDTree.CloseIfQuitOnOpen()
-    if nerdtree#and(g:NERDTreeQuitOnOpen,1) && s:NERDTree.IsOpen()
-        call s:NERDTree.Close()
     endif
 endfunction
 

@@ -86,6 +86,7 @@ function! s:default_register()
 endfunction
 
 function! repeat#run(count)
+    let s:errmsg = ''
     try
         if g:repeat_tick == b:changedtick
             let r = ''
@@ -124,9 +125,13 @@ function! repeat#run(count)
             endif
         endif
     catch /^Vim(normal):/
-        return 'echoerr v:errmsg'
+        let s:errmsg = v:errmsg
+        return 0
     endtry
-    return ''
+    return 1
+endfunction
+function! repeat#errmsg()
+    return s:errmsg
 endfunction
 
 function! repeat#wrap(command,count)
@@ -138,7 +143,7 @@ function! repeat#wrap(command,count)
     endif
 endfunction
 
-nnoremap <silent> <Plug>(RepeatDot)      :<C-U>exe repeat#run(v:count)<CR>
+nnoremap <silent> <Plug>(RepeatDot)      :<C-U>if !repeat#run(v:count)<Bar>echoerr repeat#errmsg()<Bar>endif<CR>
 nnoremap <silent> <Plug>(RepeatUndo)     :<C-U>call repeat#wrap('u',v:count)<CR>
 nnoremap <silent> <Plug>(RepeatUndoLine) :<C-U>call repeat#wrap('U',v:count)<CR>
 nnoremap <silent> <Plug>(RepeatRedo)     :<C-U>call repeat#wrap("\<Lt>C-R>",v:count)<CR>

@@ -30,10 +30,10 @@ let s:p.replace.left = [ [ s:base02, s:red ], [ s:base3, s:base01 ] ]
 let s:p.visual.left = [ [ s:base02, s:magenta ], [ s:base3, s:base01 ] ]
 let s:p.normal.middle = [ [ s:base0, s:base02 ] ]
 let s:p.inactive.middle = [ [ s:base00, s:base02 ] ]
-let s:p.tabline.left = [ [ s:base3, s:base00 ] ]
-let s:p.tabline.tabsel = [ [ s:base3, s:base02 ] ]
-let s:p.tabline.middle = [ [ s:base01, s:base1 ] ]
-let s:p.tabline.right = copy(s:p.normal.right)
+let s:p.tabline.left = copy(s:p.normal.middle)
+let s:p.tabline.tabsel = [ [ s:base3, s:base00 ] ]
+let s:p.tabline.middle = copy(s:p.normal.middle)
+let s:p.tabline.right = copy(s:p.tabline.middle)
 let s:p.normal.error = [ [ s:red, s:base02 ] ]
 let s:p.normal.warning = [ [ s:yellow, s:base01 ] ]
 

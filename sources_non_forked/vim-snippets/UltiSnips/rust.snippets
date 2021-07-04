@@ -45,8 +45,8 @@ snippet .it ".iter()" i
 endsnippet
 
 snippet impl "Struct/Trait implementation" b
-impl ${1:Type/Trait}${2: for ${3:Type}} {
-	$0
+impl$4 ${1:Type/Trait}${2: for ${3:Type}}${4:<${5:T}>} {
+	${0}
 }
 endsnippet
 

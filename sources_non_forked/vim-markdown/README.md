@@ -433,6 +433,12 @@ The following requires `:filetype plugin on`.
 
 -   `:Tocv`: Same as `:Toc` for symmetry with `:Toch` and `:Tocv`.
 
+-   `:InsertToc`: Insert table of contents at the current line.
+
+    An optional argument can be used to specify how many levels of headers to display in the table of content, e.g., to display up to and including `h3`, use `:InsertToc 3`.
+
+-   `:InsertNToc`: Same as `:InsertToc`, but the format of `h2` headers in the table of contents is a numbered list, rather than a bulleted list.
+
 ## Credits
 
 The main contributors of vim-markdown are:

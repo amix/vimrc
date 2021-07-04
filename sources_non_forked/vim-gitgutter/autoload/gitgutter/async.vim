@@ -6,6 +6,8 @@ let s:available = has('nvim') || (
       \   )
       \ )
 
+let s:jobs = {}
+
 function! gitgutter#async#available()
   return s:available
 endfunction
@@ -28,11 +30,12 @@ function! gitgutter#async#execute(cmd, bufnr, handler) abort
           \   'on_exit':   function('s:on_exit_nvim')
           \ }))
   else
-    call job_start(command, {
+    let job = job_start(command, {
           \   'out_cb':   function('s:on_stdout_vim', options),
           \   'err_cb':   function('s:on_stderr_vim', options),
           \   'close_cb': function('s:on_exit_vim', options)
           \ })
+    let s:jobs[s:job_id(job)] = 1
   endif
 endfunction
 
@@ -83,6 +86,8 @@ endfunction
 
 function! s:on_exit_vim(channel) dict abort
   let job = ch_getjob(a:channel)
+  let jobid = s:job_id(job)
+  if has_key(s:jobs, jobid) | unlet s:jobs[jobid] | endif
   while 1
     if job_status(job) == 'dead'
       let exit_code = job_info(job).exitval
@@ -94,4 +99,9 @@ function! s:on_exit_vim(channel) dict abort
   if !exit_code
     call self.handler.out(self.buffer, join(self.stdoutbuffer, "\n"))
   endif
+endfunction
+
+function! s:job_id(job)
+  " Vim
+  return job_info(a:job).process
 endfunction

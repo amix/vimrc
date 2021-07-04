@@ -134,7 +134,7 @@ function! s:truncate(str, num)
     let str = substitute(str, mx_first, '\2', '')
   endwhile
   while width + 1 <= a:num
-    let ret .= " "
+    let ret .= ' '
     let width = width + 1
   endwhile
   return ret
@@ -160,7 +160,7 @@ function! s:format_gist(gist) abort
   let desc = substitute(desc, '  ', ' ', 'g')
   " Display a nice formatted (and truncated if needed) table of gists on screen
   " Calculate field lengths for gist-listing formatting on screen
-  redir =>a |exe "sil sign place buffer=".bufnr('')|redir end
+  redir =>a |exe 'sil sign place buffer='.bufnr('')|redir end
   let signlist = split(a, '\n')
   let width = winwidth(0) - ((&number||&relativenumber) ? &numberwidth : 0) - &foldcolumn - (len(signlist) > 2 ? 2 : 0)
   let idlen = 33
@@ -214,7 +214,7 @@ function! s:GistList(gistls, page) abort
     echohl ErrorMsg | echomsg v:errmsg | echohl None
     return
   endif
-  let res = webapi#http#get(url, '', { "Authorization": auth })
+  let res = webapi#http#get(url, '', { 'Authorization': auth })
   if v:shell_error != 0
     bw!
     redraw
@@ -330,7 +330,7 @@ function! gist#list(user, ...) abort
   if len(auth) == 0
     return []
   endif
-  let res = webapi#http#get(url, '', { "Authorization": auth })
+  let res = webapi#http#get(url, '', { 'Authorization': auth })
   return webapi#json#decode(res.content)
 endfunction
 
@@ -339,7 +339,7 @@ function! s:GistGetFileName(gistid) abort
   if len(auth) == 0
     return ''
   endif
-  let res = webapi#http#get(g:gist_api_url.'gists/'.a:gistid, '', { "Authorization": auth })
+  let res = webapi#http#get(g:gist_api_url.'gists/'.a:gistid, '', { 'Authorization': auth })
   let gist = webapi#json#decode(res.content)
   if has_key(gist, 'files')
     return sort(keys(gist.files))[0]
@@ -352,7 +352,7 @@ function! s:GistDetectFiletype(gistid) abort
   if len(auth) == 0
     return ''
   endif
-  let res = webapi#http#get(g:gist_api_url.'gists/'.a:gistid, '', { "Authorization": auth })
+  let res = webapi#http#get(g:gist_api_url.'gists/'.a:gistid, '', { 'Authorization': auth })
   let gist = webapi#json#decode(res.content)
   let filename = sort(keys(gist.files))[0]
   let ext = fnamemodify(filename, ':e')
@@ -380,7 +380,7 @@ endfunction
 
 function! s:GistGet(gistid, clipboard) abort
   redraw | echon 'Getting gist... '
-  let res = webapi#http#get(g:gist_api_url.'gists/'.a:gistid, '', { "Authorization": s:GistGetAuthHeader() })
+  let res = webapi#http#get(g:gist_api_url.'gists/'.a:gistid, '', { 'Authorization': s:GistGetAuthHeader() })
   if res.status =~# '^2'
     try
       let gist = webapi#json#decode(res.content)
@@ -459,10 +459,10 @@ function! s:GistGet(gistid, clipboard) abort
         let content = gist.files[filename].content
         call setline(1, split(content, "\n"))
         let b:gist = {
-        \ "filename": filename,
-        \ "id": gist.id,
-        \ "description": gist.description,
-        \ "private": gist.public =~ 'true',
+        \ 'filename': filename,
+        \ 'id': gist.id,
+        \ 'description': gist.description,
+        \ 'private': gist.public =~# 'true',
         \}
       catch
         let &undolevels = old_undolevels
@@ -533,10 +533,10 @@ function! s:GistListAction(mode) abort
 endfunction
 
 function! s:GistUpdate(content, gistid, gistnm, desc) abort
-  let gist = { "id": a:gistid, "files" : {}, "description": "","public": function('webapi#json#true') }
+  let gist = { 'id': a:gistid, 'files' : {}, 'description': '','public': function('webapi#json#true') }
   if exists('b:gist')
     if has_key(b:gist, 'filename') && len(a:gistnm) > 0
-      let gist.files[b:gist.filename] = { "content": '', "filename": b:gist.filename }
+      let gist.files[b:gist.filename] = { 'content': '', 'filename': b:gist.filename }
       let b:gist.filename = a:gistnm
     endif
     if has_key(b:gist, 'private') && b:gist.private | let gist['public'] = function('webapi#json#false') | endif
@@ -560,25 +560,25 @@ function! s:GistUpdate(content, gistid, gistnm, desc) abort
   if a:desc !=# ' '
     let gist['description'] = a:desc
   else
-    let res = webapi#http#get(g:gist_api_url.'gists/'.a:gistid, '', { "Authorization": auth })
+    let res = webapi#http#get(g:gist_api_url.'gists/'.a:gistid, '', { 'Authorization': auth })
     if res.status =~# '^2'
       let old_gist = webapi#json#decode(res.content)
       let gist['description'] = old_gist.description
     endif
   endif
 
-  let gist.files[filename] = { "content": a:content, "filename": filename }
+  let gist.files[filename] = { 'content': a:content, 'filename': filename }
 
   redraw | echon 'Updating gist... '
   let res = webapi#http#post(g:gist_api_url.'gists/' . a:gistid,
   \ webapi#json#encode(gist), {
-  \   "Authorization": auth,
-  \   "Content-Type": "application/json",
+  \   'Authorization': auth,
+  \   'Content-Type': 'application/json',
   \})
   if res.status =~# '^2'
     let obj = webapi#json#decode(res.content)
     let loc = obj['html_url']
-    let b:gist = {"id": a:gistid, "filename": filename}
+    let b:gist = {'id': a:gistid, 'filename': filename}
     setlocal nomodified
     redraw | echomsg 'Done: '.loc
   else
@@ -598,8 +598,8 @@ function! s:GistDelete(gistid) abort
 
   redraw | echon 'Deleting gist... '
   let res = webapi#http#post(g:gist_api_url.'gists/'.a:gistid, '', {
-  \   "Authorization": auth,
-  \   "Content-Type": "application/json",
+  \   'Authorization': auth,
+  \   'Content-Type': 'application/json',
   \}, 'DELETE')
   if res.status =~# '^2'
     if exists('b:gist')
@@ -651,13 +651,13 @@ endfunction
 "       GistID: 123123
 "
 function! s:GistPost(content, private, desc, anonymous) abort
-  let gist = { "files" : {}, "description": "","public": function('webapi#json#true') }
+  let gist = { 'files' : {}, 'description': '','public': function('webapi#json#true') }
   if a:desc !=# ' ' | let gist['description'] = a:desc | endif
   if a:private | let gist['public'] = function('webapi#json#false') | endif
   let filename = s:get_current_filename(1)
-  let gist.files[filename] = { "content": a:content, "filename": filename }
+  let gist.files[filename] = { 'content': a:content, 'filename': filename }
 
-  let header = {"Content-Type": "application/json"}
+  let header = {'Content-Type': 'application/json'}
   if !a:anonymous
     let auth = s:GistGetAuthHeader()
     if len(auth) == 0
@@ -674,10 +674,10 @@ function! s:GistPost(content, private, desc, anonymous) abort
     let obj = webapi#json#decode(res.content)
     let loc = obj['html_url']
     let b:gist = {
-    \ "filename": filename,
-    \ "id": matchstr(loc, '[^/]\+$'),
-    \ "description": gist['description'],
-    \ "private": a:private,
+    \ 'filename': filename,
+    \ 'id': matchstr(loc, '[^/]\+$'),
+    \ 'description': gist['description'],
+    \ 'private': a:private,
     \}
     if s:update_GistID(b:gist['id'])
       Gist -e
@@ -695,7 +695,7 @@ function! s:GistPostBuffers(private, desc, anonymous) abort
   let bn = bufnr('%')
   let query = []
 
-  let gist = { "files" : {}, "description": "","public": function('webapi#json#true') }
+  let gist = { 'files' : {}, 'description': '','public': function('webapi#json#true') }
   if a:desc !=# ' ' | let gist['description'] = a:desc | endif
   if a:private | let gist['public'] = function('webapi#json#false') | endif
 
@@ -708,12 +708,12 @@ function! s:GistPostBuffers(private, desc, anonymous) abort
     silent! exec 'buffer!' bufnr
     let content = join(getline(1, line('$')), "\n")
     let filename = s:get_current_filename(index)
-    let gist.files[filename] = { "content": content, "filename": filename }
+    let gist.files[filename] = { 'content': content, 'filename': filename }
     let index = index + 1
   endfor
   silent! exec 'buffer!' bn
 
-  let header = {"Content-Type": "application/json"}
+  let header = {'Content-Type': 'application/json'}
   if !a:anonymous
     let auth = s:GistGetAuthHeader()
     if len(auth) == 0
@@ -730,10 +730,10 @@ function! s:GistPostBuffers(private, desc, anonymous) abort
     let obj = webapi#json#decode(res.content)
     let loc = obj['html_url']
     let b:gist = {
-    \ "filename": filename,
-    \ "id": matchstr(loc, '[^/]\+$'),
-    \ "description": gist['description'],
-    \ "private": a:private,
+    \ 'filename': filename,
+    \ 'id': matchstr(loc, '[^/]\+$'),
+    \ 'description': gist['description'],
+    \ 'private': a:private,
     \}
     if s:update_GistID(b:gist['id'])
       Gist -e
@@ -828,7 +828,7 @@ function! gist#Gist(count, bang, line1, line2, ...) abort
         echohl ErrorMsg | echomsg v:errmsg | echohl None
       else
         let gistid = gistidbuf
-        let res = webapi#http#post(g:gist_api_url.'gists/'.gistid.'/star', '', { "Authorization": auth }, 'PUT')
+        let res = webapi#http#post(g:gist_api_url.'gists/'.gistid.'/star', '', { 'Authorization': auth }, 'PUT')
         if res.status =~# '^2'
           echomsg 'Starred' gistid
         else
@@ -842,7 +842,7 @@ function! gist#Gist(count, bang, line1, line2, ...) abort
         echohl ErrorMsg | echomsg v:errmsg | echohl None
       else
         let gistid = gistidbuf
-        let res = webapi#http#post(g:gist_api_url.'gists/'.gistid.'/star', '', { "Authorization": auth }, 'DELETE')
+        let res = webapi#http#post(g:gist_api_url.'gists/'.gistid.'/star', '', { 'Authorization': auth }, 'DELETE')
         if res.status =~# '^2'
           echomsg 'Unstarred' gistid
         else
@@ -857,7 +857,7 @@ function! gist#Gist(count, bang, line1, line2, ...) abort
         return
       else
         let gistid = gistidbuf
-        let res = webapi#http#post(g:gist_api_url.'gists/'.gistid.'/fork', '', { "Authorization": auth })
+        let res = webapi#http#post(g:gist_api_url.'gists/'.gistid.'/fork', '', { 'Authorization': auth })
         if res.status =~# '^2'
           let obj = webapi#json#decode(res.content)
           let gistid = obj['id']
@@ -986,12 +986,12 @@ function! s:GistGetAuthHeader() abort
   let note_url = 'http://www.vim.org/scripts/script.php?script_id=2423'
   let insecureSecret = printf('basic %s', webapi#base64#b64encode(g:github_user.':'.password))
   let res = webapi#http#post(g:gist_api_url.'authorizations', webapi#json#encode({
-              \  "scopes"   : ["gist"],
-              \  "note"     : note,
-              \  "note_url" : note_url,
+              \  'scopes'   : ['gist'],
+              \  'note'     : note,
+              \  'note_url' : note_url,
               \}), {
-              \  "Content-Type"  : "application/json",
-              \  "Authorization" : insecureSecret,
+              \  'Content-Type'  : 'application/json',
+              \  'Authorization' : insecureSecret,
               \})
   let h = filter(res.header, 'stridx(v:val, "X-GitHub-OTP:") == 0')
   if len(h)
@@ -1001,13 +1001,13 @@ function! s:GistGetAuthHeader() abort
       return ''
     endif
     let res = webapi#http#post(g:gist_api_url.'authorizations', webapi#json#encode({
-                \  "scopes"   : ["gist"],
-                \  "note"     : note,
-                \  "note_url" : note_url,
+                \  'scopes'   : ['gist'],
+                \  'note'     : note,
+                \  'note_url' : note_url,
                 \}), {
-                \  "Content-Type"  : "application/json",
-                \  "Authorization" : insecureSecret,
-                \  "X-GitHub-OTP"  : otp,
+                \  'Content-Type'  : 'application/json',
+                \  'Authorization' : insecureSecret,
+                \  'X-GitHub-OTP'  : otp,
                 \})
   endif
   let authorization = webapi#json#decode(res.content)
@@ -1025,138 +1025,138 @@ function! s:GistGetAuthHeader() abort
 endfunction
 
 let s:extmap = extend({
-\".adb": "ada",
-\".ahk": "ahk",
-\".arc": "arc",
-\".as": "actionscript",
-\".asm": "asm",
-\".asp": "asp",
-\".aw": "php",
-\".b": "b",
-\".bat": "bat",
-\".befunge": "befunge",
-\".bmx": "bmx",
-\".boo": "boo",
-\".c-objdump": "c-objdump",
-\".c": "c",
-\".cfg": "cfg",
-\".cfm": "cfm",
-\".ck": "ck",
-\".cl": "cl",
-\".clj": "clj",
-\".cmake": "cmake",
-\".coffee": "coffee",
-\".cpp": "cpp",
-\".cppobjdump": "cppobjdump",
-\".cs": "csharp",
-\".css": "css",
-\".cw": "cw",
-\".d-objdump": "d-objdump",
-\".d": "d",
-\".darcspatch": "darcspatch",
-\".diff": "diff",
-\".duby": "duby",
-\".dylan": "dylan",
-\".e": "e",
-\".ebuild": "ebuild",
-\".eclass": "eclass",
-\".el": "lisp",
-\".erb": "erb",
-\".erl": "erlang",
-\".f90": "f90",
-\".factor": "factor",
-\".feature": "feature",
-\".fs": "fs",
-\".fy": "fy",
-\".go": "go",
-\".groovy": "groovy",
-\".gs": "gs",
-\".gsp": "gsp",
-\".haml": "haml",
-\".hs": "haskell",
-\".html": "html",
-\".hx": "hx",
-\".ik": "ik",
-\".ino": "ino",
-\".io": "io",
-\".j": "j",
-\".java": "java",
-\".js": "javascript",
-\".json": "json",
-\".jsp": "jsp",
-\".kid": "kid",
-\".lhs": "lhs",
-\".lisp": "lisp",
-\".ll": "ll",
-\".lua": "lua",
-\".ly": "ly",
-\".m": "objc",
-\".mak": "mak",
-\".man": "man",
-\".mao": "mao",
-\".matlab": "matlab",
-\".md": "markdown",
-\".minid": "minid",
-\".ml": "ml",
-\".moo": "moo",
-\".mu": "mu",
-\".mustache": "mustache",
-\".mxt": "mxt",
-\".myt": "myt",
-\".n": "n",
-\".nim": "nim",
-\".nu": "nu",
-\".numpy": "numpy",
-\".objdump": "objdump",
-\".ooc": "ooc",
-\".parrot": "parrot",
-\".pas": "pas",
-\".pasm": "pasm",
-\".pd": "pd",
-\".phtml": "phtml",
-\".pir": "pir",
-\".pl": "perl",
-\".po": "po",
-\".py": "python",
-\".pytb": "pytb",
-\".pyx": "pyx",
-\".r": "r",
-\".raw": "raw",
-\".rb": "ruby",
-\".rhtml": "rhtml",
-\".rkt": "rkt",
-\".rs": "rs",
-\".rst": "rst",
-\".s": "s",
-\".sass": "sass",
-\".sc": "sc",
-\".scala": "scala",
-\".scm": "scheme",
-\".scpt": "scpt",
-\".scss": "scss",
-\".self": "self",
-\".sh": "sh",
-\".sml": "sml",
-\".sql": "sql",
-\".st": "smalltalk",
-\".swift": "swift",
-\".tcl": "tcl",
-\".tcsh": "tcsh",
-\".tex": "tex",
-\".textile": "textile",
-\".tpl": "smarty",
-\".twig": "twig",
-\".txt" : "text",
-\".v": "verilog",
-\".vala": "vala",
-\".vb": "vbnet",
-\".vhd": "vhdl",
-\".vim": "vim",
-\".weechatlog": "weechatlog",
-\".xml": "xml",
-\".xq": "xquery",
-\".xs": "xs",
-\".yml": "yaml",
+\'.adb': 'ada',
+\'.ahk': 'ahk',
+\'.arc': 'arc',
+\'.as': 'actionscript',
+\'.asm': 'asm',
+\'.asp': 'asp',
+\'.aw': 'php',
+\'.b': 'b',
+\'.bat': 'bat',
+\'.befunge': 'befunge',
+\'.bmx': 'bmx',
+\'.boo': 'boo',
+\'.c-objdump': 'c-objdump',
+\'.c': 'c',
+\'.cfg': 'cfg',
+\'.cfm': 'cfm',
+\'.ck': 'ck',
+\'.cl': 'cl',
+\'.clj': 'clj',
+\'.cmake': 'cmake',
+\'.coffee': 'coffee',
+\'.cpp': 'cpp',
+\'.cppobjdump': 'cppobjdump',
+\'.cs': 'csharp',
+\'.css': 'css',
+\'.cw': 'cw',
+\'.d-objdump': 'd-objdump',
+\'.d': 'd',
+\'.darcspatch': 'darcspatch',
+\'.diff': 'diff',
+\'.duby': 'duby',
+\'.dylan': 'dylan',
+\'.e': 'e',
+\'.ebuild': 'ebuild',
+\'.eclass': 'eclass',
+\'.el': 'lisp',
+\'.erb': 'erb',
+\'.erl': 'erlang',
+\'.f90': 'f90',
+\'.factor': 'factor',
+\'.feature': 'feature',
+\'.fs': 'fs',
+\'.fy': 'fy',
+\'.go': 'go',
+\'.groovy': 'groovy',
+\'.gs': 'gs',
+\'.gsp': 'gsp',
+\'.haml': 'haml',
+\'.hs': 'haskell',
+\'.html': 'html',
+\'.hx': 'hx',
+\'.ik': 'ik',
+\'.ino': 'ino',
+\'.io': 'io',
+\'.j': 'j',
+\'.java': 'java',
+\'.js': 'javascript',
+\'.json': 'json',
+\'.jsp': 'jsp',
+\'.kid': 'kid',
+\'.lhs': 'lhs',
+\'.lisp': 'lisp',
+\'.ll': 'll',
+\'.lua': 'lua',
+\'.ly': 'ly',
+\'.m': 'objc',
+\'.mak': 'mak',
+\'.man': 'man',
+\'.mao': 'mao',
+\'.matlab': 'matlab',
+\'.md': 'markdown',
+\'.minid': 'minid',
+\'.ml': 'ml',
+\'.moo': 'moo',
+\'.mu': 'mu',
+\'.mustache': 'mustache',
+\'.mxt': 'mxt',
+\'.myt': 'myt',
+\'.n': 'n',
+\'.nim': 'nim',
+\'.nu': 'nu',
+\'.numpy': 'numpy',
+\'.objdump': 'objdump',
+\'.ooc': 'ooc',
+\'.parrot': 'parrot',
+\'.pas': 'pas',
+\'.pasm': 'pasm',
+\'.pd': 'pd',
+\'.phtml': 'phtml',
+\'.pir': 'pir',
+\'.pl': 'perl',
+\'.po': 'po',
+\'.py': 'python',
+\'.pytb': 'pytb',
+\'.pyx': 'pyx',
+\'.r': 'r',
+\'.raw': 'raw',
+\'.rb': 'ruby',
+\'.rhtml': 'rhtml',
+\'.rkt': 'rkt',
+\'.rs': 'rs',
+\'.rst': 'rst',
+\'.s': 's',
+\'.sass': 'sass',
+\'.sc': 'sc',
+\'.scala': 'scala',
+\'.scm': 'scheme',
+\'.scpt': 'scpt',
+\'.scss': 'scss',
+\'.self': 'self',
+\'.sh': 'sh',
+\'.sml': 'sml',
+\'.sql': 'sql',
+\'.st': 'smalltalk',
+\'.swift': 'swift',
+\'.tcl': 'tcl',
+\'.tcsh': 'tcsh',
+\'.tex': 'tex',
+\'.textile': 'textile',
+\'.tpl': 'smarty',
+\'.twig': 'twig',
+\'.txt' : 'text',
+\'.v': 'verilog',
+\'.vala': 'vala',
+\'.vb': 'vbnet',
+\'.vhd': 'vhdl',
+\'.vim': 'vim',
+\'.weechatlog': 'weechatlog',
+\'.xml': 'xml',
+\'.xq': 'xquery',
+\'.xs': 'xs',
+\'.yml': 'yaml',
 \}, get(g:, 'gist_extmap', {}))
 
 let &cpo = s:save_cpo

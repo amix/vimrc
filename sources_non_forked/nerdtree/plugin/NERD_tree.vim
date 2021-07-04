@@ -26,141 +26,114 @@ let loaded_nerd_tree = 1
 let s:old_cpo = &cpoptions
 set cpoptions&vim
 
-"Function: s:initVariable() function {{{2
-"This function is used to initialise a given variable to a given value. The
-"variable is only initialised if it does not exist prior
-"
-"Args:
-"var: the name of the var to be initialised
-"value: the value to initialise var to
-"
-"Returns:
-"1 if the var is set, 0 otherwise
-function! s:initVariable(var, value)
-    if !exists(a:var)
-        exec 'let ' . a:var . ' = ' . "'" . substitute(a:value, "'", "''", 'g') . "'"
-        return 1
-    endif
-    return 0
-endfunction
-
-"SECTION: Init variable calls and other random constants {{{2
-call s:initVariable('g:NERDTreeAutoCenter', 1)
-call s:initVariable('g:NERDTreeAutoCenterThreshold', 3)
-call s:initVariable('g:NERDTreeCaseSensitiveSort', 0)
-call s:initVariable('g:NERDTreeNaturalSort', 0)
-call s:initVariable('g:NERDTreeSortHiddenFirst', 1)
-call s:initVariable('g:NERDTreeUseTCD', 0)
-call s:initVariable('g:NERDTreeChDirMode', 0)
-call s:initVariable('g:NERDTreeCreatePrefix', 'silent')
-call s:initVariable('g:NERDTreeMinimalUI', 0)
-call s:initVariable('g:NERDTreeMinimalMenu', 0)
-if !exists('g:NERDTreeIgnore')
-    let g:NERDTreeIgnore = ['\~$']
-endif
-call s:initVariable('g:NERDTreeBookmarksFile', expand('$HOME') . '/.NERDTreeBookmarks')
-call s:initVariable('g:NERDTreeBookmarksSort', 1)
-call s:initVariable('g:NERDTreeHighlightCursorline', 1)
-call s:initVariable('g:NERDTreeHijackNetrw', 1)
-call s:initVariable('g:NERDTreeMarkBookmarks', 1)
-call s:initVariable('g:NERDTreeMouseMode', 1)
-call s:initVariable('g:NERDTreeNotificationThreshold', 100)
-call s:initVariable('g:NERDTreeQuitOnOpen', 0)
-call s:initVariable('g:NERDTreeRespectWildIgnore', 0)
-call s:initVariable('g:NERDTreeShowBookmarks', 0)
-call s:initVariable('g:NERDTreeShowFiles', 1)
-call s:initVariable('g:NERDTreeShowHidden', 0)
-call s:initVariable('g:NERDTreeShowLineNumbers', 0)
-call s:initVariable('g:NERDTreeSortDirs', 1)
+"SECTION: Initialize variable calls and other random constants {{{2
+let g:NERDTreeAutoCenter            = get(g:, 'NERDTreeAutoCenter',            1)
+let g:NERDTreeAutoCenterThreshold   = get(g:, 'NERDTreeAutoCenterThreshold',   3)
+let g:NERDTreeCaseSensitiveSort     = get(g:, 'NERDTreeCaseSensitiveSort',     0)
+let g:NERDTreeNaturalSort           = get(g:, 'NERDTreeNaturalSort',           0)
+let g:NERDTreeSortHiddenFirst       = get(g:, 'NERDTreeSortHiddenFirst',       1)
+let g:NERDTreeUseTCD                = get(g:, 'NERDTreeUseTCD',                0)
+let g:NERDTreeChDirMode             = get(g:, 'NERDTreeChDirMode',             0)
+let g:NERDTreeCreatePrefix          = get(g:, 'NERDTreeCreatePrefix',          'silent')
+let g:NERDTreeMinimalUI             = get(g:, 'NERDTreeMinimalUI',             0)
+let g:NERDTreeMinimalMenu           = get(g:, 'NERDTreeMinimalMenu',           0)
+let g:NERDTreeIgnore                = get(g:, 'NERDTreeIgnore',                ['\~$'])
+let g:NERDTreeBookmarksFile         = get(g:, 'NERDTreeBookmarksFile',         expand('$HOME') . '/.NERDTreeBookmarks')
+let g:NERDTreeBookmarksSort         = get(g:, 'NERDTreeBookmarksSort',         1)
+let g:NERDTreeHighlightCursorline   = get(g:, 'NERDTreeHighlightCursorline',   1)
+let g:NERDTreeHijackNetrw           = get(g:, 'NERDTreeHijackNetrw',           1)
+let g:NERDTreeMarkBookmarks         = get(g:, 'NERDTreeMarkBookmarks',         1)
+let g:NERDTreeMouseMode             = get(g:, 'NERDTreeMouseMode',             1)
+let g:NERDTreeNotificationThreshold = get(g:, 'NERDTreeNotificationThreshold', 100)
+let g:NERDTreeQuitOnOpen            = get(g:, 'NERDTreeQuitOnOpen',            0)
+let g:NERDTreeRespectWildIgnore     = get(g:, 'NERDTreeRespectWildIgnore',     0)
+let g:NERDTreeShowBookmarks         = get(g:, 'NERDTreeShowBookmarks',         0)
+let g:NERDTreeShowFiles             = get(g:, 'NERDTreeShowFiles',             1)
+let g:NERDTreeShowHidden            = get(g:, 'NERDTreeShowHidden',            0)
+let g:NERDTreeShowLineNumbers       = get(g:, 'NERDTreeShowLineNumbers',       0)
+let g:NERDTreeSortDirs              = get(g:, 'NERDTreeSortDirs',              1)
 
 if !nerdtree#runningWindows() && !nerdtree#runningCygwin()
-    call s:initVariable('g:NERDTreeDirArrowExpandable', '▸')
-    call s:initVariable('g:NERDTreeDirArrowCollapsible', '▾')
+    let g:NERDTreeDirArrowExpandable  = get(g:, 'NERDTreeDirArrowExpandable',  '▸')
+    let g:NERDTreeDirArrowCollapsible = get(g:, 'NERDTreeDirArrowCollapsible', '▾')
 else
-    call s:initVariable('g:NERDTreeDirArrowExpandable', '+')
-    call s:initVariable('g:NERDTreeDirArrowCollapsible', '~')
+    let g:NERDTreeDirArrowExpandable  = get(g:, 'NERDTreeDirArrowExpandable',  '+')
+    let g:NERDTreeDirArrowCollapsible = get(g:, 'NERDTreeDirArrowCollapsible', '~')
 endif
 
-call s:initVariable('g:NERDTreeCascadeOpenSingleChildDir', 1)
-call s:initVariable('g:NERDTreeCascadeSingleChildDir', 1)
+let g:NERDTreeCascadeOpenSingleChildDir = get(g:, 'NERDTreeCascadeOpenSingleChildDir', 1)
+let g:NERDTreeCascadeSingleChildDir     = get(g:, 'NERDTreeCascadeSingleChildDir',     1)
 
-if !exists('g:NERDTreeSortOrder')
-    let g:NERDTreeSortOrder = ['\/$', '*', '\.swp$',  '\.bak$', '\~$']
-endif
+let g:NERDTreeSortOrder    = get(g:, 'NERDTreeSortOrder', ['\/$', '*', '\.swp$', '\.bak$', '\~$'])
 let g:NERDTreeOldSortOrder = []
 
-call s:initVariable('g:NERDTreeGlyphReadOnly', 'RO')
+let g:NERDTreeGlyphReadOnly = get(g:, 'NERDTreeGlyphReadOnly', 'RO')
 
 if has('conceal')
-    call s:initVariable('g:NERDTreeNodeDelimiter', "\x07")
+    let g:NERDTreeNodeDelimiter = get(g:, 'NERDTreeNodeDelimiter', "\x07")
 elseif (g:NERDTreeDirArrowExpandable ==# "\u00a0" || g:NERDTreeDirArrowCollapsible ==# "\u00a0")
-    call s:initVariable('g:NERDTreeNodeDelimiter', "\u00b7")
+    let g:NERDTreeNodeDelimiter = get(g:, 'NERDTreeNodeDelimiter', "\u00b7")
 else
-    call s:initVariable('g:NERDTreeNodeDelimiter', "\u00a0")
+    let g:NERDTreeNodeDelimiter = get(g:, 'NERDTreeNodeDelimiter', "\u00a0")
 endif
 
-if !exists('g:NERDTreeStatusline')
+"the exists() crap here is a hack to stop vim spazzing out when
+"loading a session that was created with an open nerd tree. It spazzes
+"because it doesnt store b:NERDTree(its a b: var, and its a hash)
+let g:NERDTreeStatusline = get(g:, 'NERDTreeStatusline', "%{exists('b:NERDTree')?b:NERDTree.root.path.str():''}")
 
-    "the exists() crap here is a hack to stop vim spazzing out when
-    "loading a session that was created with an open nerd tree. It spazzes
-    "because it doesnt store b:NERDTree(its a b: var, and its a hash)
-    let g:NERDTreeStatusline = "%{exists('b:NERDTree')?b:NERDTree.root.path.str():''}"
-
-endif
-call s:initVariable('g:NERDTreeWinPos', 'left')
-call s:initVariable('g:NERDTreeWinSize', 31)
+let g:NERDTreeWinPos  = get(g:, 'NERDTreeWinPos', 'left')
+let g:NERDTreeWinSize = get(g:, 'NERDTreeWinSize', 31)
 
 "init the shell commands that will be used to copy nodes, and remove dir trees
-"
 "Note: the space after the command is important
 if nerdtree#runningWindows()
-    call s:initVariable('g:NERDTreeRemoveDirCmd', 'rmdir /s /q ')
-    call s:initVariable('g:NERDTreeCopyDirCmd', 'xcopy /s /e /i /y /q ')
-    call s:initVariable('g:NERDTreeCopyFileCmd', 'copy /y ')
+    let g:NERDTreeRemoveDirCmd = get(g:, 'NERDTreeRemoveDirCmd', 'rmdir /s /q ')
+    let g:NERDTreeCopyDirCmd   = get(g:, 'NERDTreeCopyDirCmd',   'xcopy /s /e /i /y /q ')
+    let g:NERDTreeCopyFileCmd  = get(g:, 'NERDTreeCopyFileCmd',  'copy /y ')
 else
-    call s:initVariable('g:NERDTreeRemoveDirCmd', 'rm -rf ')
-    call s:initVariable('g:NERDTreeCopyCmd', 'cp -r ')
+    let g:NERDTreeRemoveDirCmd = get(g:, 'NERDTreeRemoveDirCmd', 'rm -rf ')
+    let g:NERDTreeCopyCmd      = get(g:, 'NERDTreeCopyCmd',      'cp -r ')
 endif
 
-
 "SECTION: Init variable calls for key mappings {{{2
-call s:initVariable('g:NERDTreeMapCustomOpen', '<CR>')
-call s:initVariable('g:NERDTreeMapActivateNode', 'o')
-call s:initVariable('g:NERDTreeMapChangeRoot', 'C')
-call s:initVariable('g:NERDTreeMapChdir', 'cd')
-call s:initVariable('g:NERDTreeMapCloseChildren', 'X')
-call s:initVariable('g:NERDTreeMapCloseDir', 'x')
-call s:initVariable('g:NERDTreeMapDeleteBookmark', 'D')
-call s:initVariable('g:NERDTreeMapMenu', 'm')
-call s:initVariable('g:NERDTreeMapHelp', '?')
-call s:initVariable('g:NERDTreeMapJumpFirstChild', 'K')
-call s:initVariable('g:NERDTreeMapJumpLastChild', 'J')
-call s:initVariable('g:NERDTreeMapJumpNextSibling', '<C-j>')
-call s:initVariable('g:NERDTreeMapJumpParent', 'p')
-call s:initVariable('g:NERDTreeMapJumpPrevSibling', '<C-k>')
-call s:initVariable('g:NERDTreeMapJumpRoot', 'P')
-call s:initVariable('g:NERDTreeMapOpenExpl', 'e')
-call s:initVariable('g:NERDTreeMapOpenInTab', 't')
-call s:initVariable('g:NERDTreeMapOpenInTabSilent', 'T')
-call s:initVariable('g:NERDTreeMapOpenRecursively', 'O')
-call s:initVariable('g:NERDTreeMapOpenSplit', 'i')
-call s:initVariable('g:NERDTreeMapOpenVSplit', 's')
-call s:initVariable('g:NERDTreeMapPreview', 'g' . NERDTreeMapActivateNode)
-call s:initVariable('g:NERDTreeMapPreviewSplit', 'g' . NERDTreeMapOpenSplit)
-call s:initVariable('g:NERDTreeMapPreviewVSplit', 'g' . NERDTreeMapOpenVSplit)
-call s:initVariable('g:NERDTreeMapQuit', 'q')
-call s:initVariable('g:NERDTreeMapRefresh', 'r')
-call s:initVariable('g:NERDTreeMapRefreshRoot', 'R')
-call s:initVariable('g:NERDTreeMapToggleBookmarks', 'B')
-call s:initVariable('g:NERDTreeMapToggleFiles', 'F')
-call s:initVariable('g:NERDTreeMapToggleFilters', 'f')
-call s:initVariable('g:NERDTreeMapToggleHidden', 'I')
-call s:initVariable('g:NERDTreeMapToggleZoom', 'A')
-call s:initVariable('g:NERDTreeMapUpdir', 'u')
-call s:initVariable('g:NERDTreeMapUpdirKeepOpen', 'U')
-call s:initVariable('g:NERDTreeMapCWD', 'CD')
-call s:initVariable('g:NERDTreeMenuDown', 'j')
-call s:initVariable('g:NERDTreeMenuUp', 'k')
+let g:NERDTreeMapCustomOpen      = get(g:, 'NERDTreeMapCustomOpen',      '<CR>')
+let g:NERDTreeMapActivateNode    = get(g:, 'NERDTreeMapActivateNode',    'o')
+let g:NERDTreeMapChangeRoot      = get(g:, 'NERDTreeMapChangeRoot',      'C')
+let g:NERDTreeMapChdir           = get(g:, 'NERDTreeMapChdir',           'cd')
+let g:NERDTreeMapCloseChildren   = get(g:, 'NERDTreeMapCloseChildren',   'X')
+let g:NERDTreeMapCloseDir        = get(g:, 'NERDTreeMapCloseDir',        'x')
+let g:NERDTreeMapDeleteBookmark  = get(g:, 'NERDTreeMapDeleteBookmark',  'D')
+let g:NERDTreeMapMenu            = get(g:, 'NERDTreeMapMenu',            'm')
+let g:NERDTreeMapHelp            = get(g:, 'NERDTreeMapHelp',            '?')
+let g:NERDTreeMapJumpFirstChild  = get(g:, 'NERDTreeMapJumpFirstChild',  'K')
+let g:NERDTreeMapJumpLastChild   = get(g:, 'NERDTreeMapJumpLastChild',   'J')
+let g:NERDTreeMapJumpNextSibling = get(g:, 'NERDTreeMapJumpNextSibling', '<C-j>')
+let g:NERDTreeMapJumpParent      = get(g:, 'NERDTreeMapJumpParent',      'p')
+let g:NERDTreeMapJumpPrevSibling = get(g:, 'NERDTreeMapJumpPrevSibling', '<C-k>')
+let g:NERDTreeMapJumpRoot        = get(g:, 'NERDTreeMapJumpRoot',        'P')
+let g:NERDTreeMapOpenExpl        = get(g:, 'NERDTreeMapOpenExpl',        'e')
+let g:NERDTreeMapOpenInTab       = get(g:, 'NERDTreeMapOpenInTab',       't')
+let g:NERDTreeMapOpenInTabSilent = get(g:, 'NERDTreeMapOpenInTabSilent', 'T')
+let g:NERDTreeMapOpenRecursively = get(g:, 'NERDTreeMapOpenRecursively', 'O')
+let g:NERDTreeMapOpenSplit       = get(g:, 'NERDTreeMapOpenSplit',       'i')
+let g:NERDTreeMapOpenVSplit      = get(g:, 'NERDTreeMapOpenVSplit',      's')
+let g:NERDTreeMapPreview         = get(g:, 'NERDTreeMapPreview',         'g'.NERDTreeMapActivateNode)
+let g:NERDTreeMapPreviewSplit    = get(g:, 'NERDTreeMapPreviewSplit',    'g'.NERDTreeMapOpenSplit)
+let g:NERDTreeMapPreviewVSplit   = get(g:, 'NERDTreeMapPreviewVSplit',   'g'.NERDTreeMapOpenVSplit)
+let g:NERDTreeMapQuit            = get(g:, 'NERDTreeMapQuit',            'q')
+let g:NERDTreeMapRefresh         = get(g:, 'NERDTreeMapRefresh',         'r')
+let g:NERDTreeMapRefreshRoot     = get(g:, 'NERDTreeMapRefreshRoot',     'R')
+let g:NERDTreeMapToggleBookmarks = get(g:, 'NERDTreeMapToggleBookmarks', 'B')
+let g:NERDTreeMapToggleFiles     = get(g:, 'NERDTreeMapToggleFiles',     'F')
+let g:NERDTreeMapToggleFilters   = get(g:, 'NERDTreeMapToggleFilters',   'f')
+let g:NERDTreeMapToggleHidden    = get(g:, 'NERDTreeMapToggleHidden',    'I')
+let g:NERDTreeMapToggleZoom      = get(g:, 'NERDTreeMapToggleZoom',      'A')
+let g:NERDTreeMapUpdir           = get(g:, 'NERDTreeMapUpdir',           'u')
+let g:NERDTreeMapUpdirKeepOpen   = get(g:, 'NERDTreeMapUpdirKeepOpen',   'U')
+let g:NERDTreeMapCWD             = get(g:, 'NERDTreeMapCWD',             'CD')
+let g:NERDTreeMenuDown           = get(g:, 'NERDTreeMenuDown',           'j')
+let g:NERDTreeMenuUp             = get(g:, 'NERDTreeMenuUp',             'k')
 
 "SECTION: Load class files{{{2
 call nerdtree#loadClassFiles()

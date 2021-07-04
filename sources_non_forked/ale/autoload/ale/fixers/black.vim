@@ -17,25 +17,30 @@ function! ale#fixers#black#GetExecutable(buffer) abort
 endfunction
 
 function! ale#fixers#black#Fix(buffer) abort
-    let l:cd_string = ale#Var(a:buffer, 'python_black_change_directory')
-    \   ? ale#path#BufferCdString(a:buffer)
-    \   : ''
-
     let l:executable = ale#fixers#black#GetExecutable(a:buffer)
+    let l:cmd = [ale#Escape(l:executable)]
 
-    let l:exec_args = l:executable =~? 'pipenv$'
-    \   ? ' run black'
-    \   : ''
+    if l:executable =~? 'pipenv$'
+        call extend(l:cmd, ['run', 'black'])
+    endif
 
     let l:options = ale#Var(a:buffer, 'python_black_options')
 
-    if expand('#' . a:buffer . ':e') is? 'pyi'
-        let l:options .= '--pyi'
+    if !empty(l:options)
+        call add(l:cmd, l:options)
     endif
 
-    return {
-    \   'command': l:cd_string . ale#Escape(l:executable) . l:exec_args
-    \       . (!empty(l:options) ? ' ' . l:options : '')
-    \       . ' -',
-    \}
+    if expand('#' . a:buffer . ':e') is? 'pyi'
+        call add(l:cmd, '--pyi')
+    endif
+
+    call add(l:cmd, '-')
+
+    let l:result = {'command': join(l:cmd, ' ')}
+
+    if ale#Var(a:buffer, 'python_black_change_directory')
+        let l:result.cwd = '%s:h'
+    endif
+
+    return l:result
 endfunction

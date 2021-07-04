@@ -33,8 +33,7 @@ function! s:Opener._bufInWindows(bnum)
 endfunction
 
 " FUNCTION: Opener._checkToCloseTree(newtab) {{{1
-" Check the class options and global options (i.e. NERDTreeQuitOnOpen) to see
-" if the tree should be closed now.
+" Check the class options to see if the tree should be closed now.
 "
 " Args:
 " a:newtab - boolean. If set, only close the tree now if we are opening the
@@ -46,7 +45,7 @@ function! s:Opener._checkToCloseTree(newtab)
     endif
 
     if (a:newtab && self._where ==# 't') || !a:newtab
-        call g:NERDTree.CloseIfQuitOnOpen()
+        call g:NERDTree.Close()
     endif
 endfunction
 
@@ -174,9 +173,8 @@ function! s:Opener._newSplit()
 
     "resize the tree window if no other window was open before
     if onlyOneWin
-        let size = exists('b:NERDTreeOldWindowSize') ? b:NERDTreeOldWindowSize : g:NERDTreeWinSize
         call nerdtree#exec('wincmd p', 1)
-        call nerdtree#exec('silent '. splitMode .' resize '. size, 1)
+        call nerdtree#exec('silent '. splitMode .' resize '. g:NERDTreeWinSize, 1)
         call nerdtree#exec('wincmd p', 0)
     endif
 
@@ -219,7 +217,7 @@ endfunction
 
 " FUNCTION: Opener._openFile() {{{1
 function! s:Opener._openFile()
-    if !self._stay && !nerdtree#and(g:NERDTreeQuitOnOpen,1) && exists('b:NERDTreeZoomed') && b:NERDTreeZoomed
+    if !self._stay && self._keepopen && get(b:, 'NERDTreeZoomed', 0)
         call b:NERDTree.ui.toggleZoom()
     endif
 

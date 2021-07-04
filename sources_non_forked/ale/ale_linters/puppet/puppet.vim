@@ -8,13 +8,15 @@ function! ale_linters#puppet#puppet#Handle(buffer, lines) abort
     " Error: Could not parse for environment production: Syntax error at ':' at /root/puppetcode/modules/nginx/manifests/init.pp:43:12
     " Error: Could not parse for environment production: Syntax error at '='; expected '}' at /root/puppetcode/modules/pancakes/manifests/init.pp:5"
     " Error: Could not parse for environment production: Syntax error at 'parameter1' (file: /tmp/modules/mariadb/manifests/slave.pp, line: 4, column: 5)
-    let l:pattern = '^Error: .*: \(.\+\) \((file:\|at\) .\+\.pp\(, line: \|:\)\(\d\+\)\(, column: \|:\)\=\(\d*\)'
+    " Error: Illegal attempt to assign to 'a Name'. Not an assignable reference (file: /tmp/modules/waffles/manifests/syrup.pp, line: 5, column: 11)
+    " Error: Could not parse for environment production: Syntax error at end of input (file: /tmp/modules/bob/manifests/init.pp)
+    let l:pattern = '^Error:\%(.*:\)\? \(.\+\) \((file:\|at\) .\+\.pp\(\(, line: \|:\)\(\d\+\)\(, column: \|:\)\=\(\d*\)\|)$\)'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:output, {
-        \   'lnum': l:match[4] + 0,
-        \   'col': l:match[6] + 0,
+        \   'lnum': l:match[5] + 0,
+        \   'col': l:match[7] + 0,
         \   'text': l:match[1],
         \})
     endfor

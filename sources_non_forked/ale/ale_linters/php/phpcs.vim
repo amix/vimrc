@@ -13,8 +13,7 @@ function! ale_linters#php#phpcs#GetCommand(buffer) abort
     \   ? '--standard=' . ale#Escape(l:standard)
     \   : ''
 
-    return ale#path#BufferCdString(a:buffer)
-    \   . '%e -s --report=emacs --stdin-path=%s'
+    return '%e -s --report=emacs --stdin-path=%s'
     \   . ale#Pad(l:standard_option)
     \   . ale#Pad(ale#Var(a:buffer, 'php_phpcs_options'))
 endfunction
@@ -23,7 +22,7 @@ function! ale_linters#php#phpcs#Handle(buffer, lines) abort
     " Matches against lines like the following:
     "
     " /path/to/some-filename.php:18:3: error - Line indented incorrectly; expected 4 spaces, found 2 (Generic.WhiteSpace.ScopeIndent.IncorrectExact)
-    let l:pattern = '^.*:\(\d\+\):\(\d\+\): \(.\+\) - \(.\+\) (\(.\+\))$'
+    let l:pattern = '^.*:\(\d\+\):\(\d\+\): \(.\+\) - \(.\+\) (\(.\+\)).*$'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
@@ -45,10 +44,11 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'phpcs',
-\   'executable': {b -> ale#node#FindExecutable(b, 'php_phpcs', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'php_phpcs', [
 \       'vendor/bin/phpcs',
 \       'phpcs'
 \   ])},
+\   'cwd': '%s:h',
 \   'command': function('ale_linters#php#phpcs#GetCommand'),
 \   'callback': 'ale_linters#php#phpcs#Handle',
 \})

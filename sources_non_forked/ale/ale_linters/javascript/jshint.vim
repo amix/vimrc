@@ -25,7 +25,7 @@ endfunction
 
 call ale#linter#Define('javascript', {
 \   'name': 'jshint',
-\   'executable': {b -> ale#node#FindExecutable(b, 'javascript_jshint', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'javascript_jshint', [
 \       'node_modules/.bin/jshint',
 \   ])},
 \   'command': function('ale_linters#javascript#jshint#GetCommand'),

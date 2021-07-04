@@ -13,7 +13,7 @@ function! ale#handlers#ktlint#GetCommand(buffer) abort
     return ale#Escape(l:executable)
     \   . (empty(l:options) ? '' : ' ' . l:options)
     \   . (empty(l:rulesets) ? '' : ' ' . l:rulesets)
-    \   . ' %t'
+    \   . ' --stdin'
 endfunction
 
 function! ale#handlers#ktlint#GetRulesets(buffer) abort

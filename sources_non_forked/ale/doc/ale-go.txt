@@ -20,8 +20,8 @@ the benefit of running a number of linters, more than ALE would by default,
 while ensuring it doesn't run any linters known to be slow or resource
 intensive.
 
-g:ale_go_go_executable                                    *g:ale_go_go_options*
-                                                          *b:ale_go_go_options*
+g:ale_go_go_executable                                 *g:ale_go_go_executable*
+                                                       *b:ale_go_go_executable*
 
   Type: |String|
   Default: `'go'`
@@ -194,18 +194,66 @@ g:ale_go_gometalinter_lint_package         *g:ale_go_gometalinter_lint_package*
 ===============================================================================
 gopls                                                            *ale-go-gopls*
 
+gopls is the official Go language server, and is enabled for use with ALE by
+default.
+
+To install the latest stable version of `gopls` to your `$GOPATH`, try the
+following command: >
+
+  GO111MODULE=on go get golang.org/x/tools/gopls@latest
+<
+If `$GOPATH` is readable by ALE, it should probably work without you having to
+do anything else. See the `gopls` README file for more information:
+
+https://github.com/golang/tools/blob/master/gopls/README.md
+
+
 g:ale_go_gopls_executable                           *g:ale_go_gopls_executable*
                                                     *b:ale_go_gopls_executable*
   Type: |String|
   Default: `'gopls'`
 
-  Location of the gopls binary file.
+  See |ale-integrations-local-executables|
+
+  ALE will search for `gopls` in locally installed directories first by
+  default, and fall back on a globally installed `gopls` if it can't be found
+  otherwise.
 
 
 g:ale_go_gopls_options                                 *g:ale_go_gopls_options*
                                                        *b:ale_go_gopls_options*
   Type: |String|
   Default: `''`
+
+  Command-line options passed to the gopls executable. See `gopls -h`.
+
+
+g:ale_go_gopls_init_options                       *g:ale_go_gopls_init_options*
+                                                  *b:ale_go_gopls_init_options*
+  Type: |Dictionary|
+  Default: `{}`
+
+  LSP initialization options passed to gopls. This can be used to configure
+  the behaviour of gopls.
+
+  Example: >
+  let g:ale_go_gopls_init_options = {'ui.diagnostic.analyses': {
+        \ 'composites': v:false,
+        \ 'unusedparams': v:true,
+        \ 'unusedresult': v:true,
+        \ }}
+<
+
+  For a full list of supported analyzers, see:
+  https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md
+
+
+g:ale_go_gopls_use_global                           *g:ale_go_gopls_use_global*
+                                                    *b:ale_go_gopls_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
 
 
 ===============================================================================
@@ -241,6 +289,18 @@ g:ale_go_revive_options                               *g:ale_go_revive_options*
 ===============================================================================
 staticcheck                                                *ale-go-staticcheck*
 
+g:ale_go_staticcheck_executable               *g:ale_go_staticcheck_executable*
+                                              *b:ale_go_staticcheck_executable*
+  Type: |String|
+  Default: `'staticcheck'`
+
+  See |ale-integrations-local-executables|
+
+  ALE will search for `staticcheck` in locally installed directories first by
+  default, and fall back on a globally installed `staticcheck` if it can't be
+  found otherwise.
+
+
 g:ale_go_staticcheck_options                     *g:ale_go_staticcheck_options*
                                                  *b:ale_go_staticcheck_options*
   Type: |String|
@@ -257,6 +317,14 @@ g:ale_go_staticcheck_lint_package           *g:ale_go_staticcheck_lint_package*
 
   When set to `1`, the whole Go package will be checked instead of only the
   current file.
+
+
+g:ale_go_staticcheck_use_global               *g:ale_go_staticcheck_use_global*
+                                              *b:ale_go_staticcheck_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
 
 
 ===============================================================================

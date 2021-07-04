@@ -41,6 +41,11 @@ g:ale_ruby_debride_options                         *g:ale_ruby_debride_options*
   This variable can be changed to modify flags given to debride.
 
 
+===============================================================================
+prettier                                                    *ale-ruby-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+
 
 ===============================================================================
 rails_best_practices                            *ale-ruby-rails_best_practices*
@@ -114,6 +119,14 @@ g:ale_ruby_rubocop_options                         *g:ale_ruby_rubocop_options*
   This variable can be changed to modify flags given to rubocop.
 
 
+g:ale_ruby_rubocop_auto_correct_all       *g:ale_ruby_rubocop_auto_correct_all*
+                                          *b:ale_ruby_rubocop_auto_correct_all*
+  Type: Number
+  Default: `0`
+
+  This variable can be changed to make rubocop to correct all offenses (unsafe).
+
+
 ===============================================================================
 ruby                                                            *ale-ruby-ruby*
 
@@ -169,11 +182,21 @@ g:ale_ruby_sorbet_options                           *g:ale_ruby_sorbet_options*
   This variable can be changed to modify flags given to sorbet.
 
 
+g:ale_ruby_sorbet_enable_watchman           *g:ale_ruby_sorbet_enable_watchman*
+                                            *b:ale_ruby_sorbet_enable_watchman*
+  Type: |Number|
+  Default: `0`
+
+  Whether or not to use watchman to let the LSP server to know about changes
+  to files from outside of vim. Defaults to disable watchman because it
+  requires watchman to be installed separately from sorbet.
+
+
 ===============================================================================
 standardrb                                                *ale-ruby-standardrb*
 
-g:ale_ruby_standardrb_executable              *g:ale_ruby_standardrb_executable*
-                                              *b:ale_ruby_standardrb_executable*
+g:ale_ruby_standardrb_executable             *g:ale_ruby_standardrb_executable*
+                                             *b:ale_ruby_standardrb_executable*
   Type: String
   Default: `'standardrb'`
 

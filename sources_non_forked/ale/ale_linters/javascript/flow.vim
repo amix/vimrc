@@ -22,7 +22,7 @@ function! ale_linters#javascript#flow#GetExecutable(buffer) abort
         return ''
     endif
 
-    return ale#node#FindExecutable(a:buffer, 'javascript_flow', [
+    return ale#path#FindExecutable(a:buffer, 'javascript_flow', [
     \   'node_modules/.bin/flow',
     \])
 endfunction

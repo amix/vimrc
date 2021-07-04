@@ -6,7 +6,7 @@ call ale#Set('javascript_standard_use_global', get(g:, 'ale_use_global_executabl
 call ale#Set('javascript_standard_options', '')
 
 function! ale#fixers#standard#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'javascript_standard', [
+    return ale#path#FindExecutable(a:buffer, 'javascript_standard', [
     \   'node_modules/standardx/bin/cmd.js',
     \   'node_modules/standard/bin/cmd.js',
     \   'node_modules/.bin/standard',
@@ -27,7 +27,7 @@ function! ale#fixers#standard#Fix(buffer) abort
     return {
     \   'command': ale#node#Executable(a:buffer, l:executable)
     \   . (!empty(l:options) ? ' ' . l:options : '')
-    \       . ' --fix %t',
+    \       . ' --fix --stdin < %s > %t',
     \   'read_temporary_file': 1,
     \}
 endfunction

@@ -105,5 +105,5 @@ CtrlP is distributed under Vim's [license][4].
 
 [1]: http://i.imgur.com/aOcwHwt.png
 [2]: https://github.com/ctrlpvim/ctrlp.vim/tree/extensions
-[3]: http://ctrlpvim.github.com/ctrlp.vim#installation
+[3]: http://ctrlpvim.github.io/ctrlp.vim#installation
 [4]: http://vimdoc.sourceforge.net/htmldoc/uganda.html

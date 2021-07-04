@@ -24,6 +24,14 @@ function! ale#path#Simplify(path) abort
     return substitute(simplify(l:win_path), '^\\\+', '\', 'g') " no-custom-checks
 endfunction
 
+" Simplify a path without a Windows drive letter.
+" This function can be used for checking if paths are equal.
+function! ale#path#RemoveDriveLetter(path) abort
+    return has('win32') && a:path[1:2] is# ':\'
+    \   ? ale#path#Simplify(a:path[2:])
+    \   : ale#path#Simplify(a:path)
+endfunction
+
 " Given a buffer and a filename, find the nearest file by searching upwards
 " through the paths relative to the given buffer.
 function! ale#path#FindNearestFile(buffer, filename) abort
@@ -69,20 +77,40 @@ function! ale#path#ResolveLocalPath(buffer, search_string, global_fallback) abor
     return l:path
 endfunction
 
-" Output 'cd <directory> && '
-" This function can be used changing the directory for a linter command.
-function! ale#path#CdString(directory) abort
-    if has('win32')
-        return 'cd /d ' . ale#Escape(a:directory) . ' && '
-    else
-        return 'cd ' . ale#Escape(a:directory) . ' && '
-    endif
+" Given a buffer number, a base variable name, and a list of paths to search
+" for in ancestor directories, detect the executable path for a program.
+function! ale#path#FindNearestExecutable(buffer, path_list) abort
+    for l:path in a:path_list
+        if ale#path#IsAbsolute(l:path)
+            let l:executable = filereadable(l:path) ? l:path : ''
+        else
+            let l:executable = ale#path#FindNearestFile(a:buffer, l:path)
+        endif
+
+        if !empty(l:executable)
+            return l:executable
+        endif
+    endfor
+
+    return ''
 endfunction
 
-" Output 'cd <buffer_filename_directory> && '
-" This function can be used changing the directory for a linter command.
-function! ale#path#BufferCdString(buffer) abort
-    return ale#path#CdString(fnamemodify(bufname(a:buffer), ':p:h'))
+" Given a buffer number, a base variable name, and a list of paths to search
+" for in ancestor directories, detect the executable path for a program.
+"
+" The use_global and executable options for the relevant program will be used.
+function! ale#path#FindExecutable(buffer, base_var_name, path_list) abort
+    if ale#Var(a:buffer, a:base_var_name . '_use_global')
+        return ale#Var(a:buffer, a:base_var_name . '_executable')
+    endif
+
+    let l:nearest = ale#path#FindNearestExecutable(a:buffer, a:path_list)
+
+    if !empty(l:nearest)
+        return l:nearest
+    endif
+
+    return ale#Var(a:buffer, a:base_var_name . '_executable')
 endfunction
 
 " Return 1 if a path is an absolute path.
@@ -95,7 +123,7 @@ function! ale#path#IsAbsolute(filename) abort
     return a:filename[:0] is# '/' || a:filename[1:2] is# ':\'
 endfunction
 
-let s:temp_dir = ale#path#Simplify(fnamemodify(ale#util#Tempname(), ':h'))
+let s:temp_dir = ale#path#Simplify(fnamemodify(ale#util#Tempname(), ':h:h'))
 
 " Given a filename, return 1 if the file represents some temporary file
 " created by Vim.
@@ -124,7 +152,7 @@ function! ale#path#Dirname(path) abort
     endif
 
     " For /foo/bar/ we need :h:h to get /foo
-    if a:path[-1:] is# '/'
+    if a:path[-1:] is# '/' || (has('win32') && a:path[-1:] is# '\')
         return fnamemodify(a:path, ':h:h')
     endif
 

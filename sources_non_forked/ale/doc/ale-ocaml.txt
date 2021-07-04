@@ -11,6 +11,21 @@ merlin                                                       *ale-ocaml-merlin*
   (https://github.com/the-lambda-church/merlin/wiki/vim-from-scratch).
 
 ===============================================================================
+ocamllsp                                                   *ale-ocaml-ocamllsp*
+
+  The `ocaml-lsp-server` is the official OCaml implementation of the Language
+  Server Protocol. See the installation instructions:
+  https://github.com/ocaml/ocaml-lsp#installation
+
+g:ale_ocaml_ocamllsp_use_opam                   *g:ale_ocaml_ocamllsp_use_opam*
+                                                *b:ale_ocaml_ocamllsp_use_opam*
+  Type: |Number|
+  Default: `get(g:, 'ale_ocaml_ocamllsp_use_opam', 1)`
+
+  This variable can be set to change whether or not opam is used to execute
+  the language server.
+
+===============================================================================
 ols                                                             *ale-ocaml-ols*
 
   The `ocaml-language-server` is the engine that powers OCaml and ReasonML

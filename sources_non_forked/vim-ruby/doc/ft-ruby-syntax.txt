@@ -1,4 +1,5 @@
 RUBY						*ruby.vim* *ft-ruby-syntax*
+							*vim-ruby-syntax*
 
     Ruby: Operator highlighting		|ruby_operators|
     Ruby: Whitespace errors		|ruby_space_errors|

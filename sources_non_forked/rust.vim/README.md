@@ -8,28 +8,53 @@ Some things may not work on earlier versions.
 
 ## Installation
 
-Use one of the following package managers:
+For activating the full functionality, this plugin requires either the plugin
+manager or the `.vimrc` to have the following:
 
-* [Vim8 packages][vim8pack]:
-  * `git clone https://github.com/rust-lang/rust.vim ~/.vim/pack/plugins/start/rust.vim`
-* [Vundle][v]:
-  * Add `Plugin 'rust-lang/rust.vim'` to `~/.vimrc`
-  * `:PluginInstall` or `$ vim +PluginInstall +qall`
-  * *Note:* Vundle will not automatically detect Rust files properly if `filetype
-on` is executed before Vundle. Please check the [quickstart][vqs] for more
-details. Errors such as `Not an editor command: RustFmt` may occur if Vundle
-is misconfigured with this plugin.
-* [Pathogen][p]:
-  * `git clone --depth=1 https://github.com/rust-lang/rust.vim.git ~/.vim/bundle/rust.vim`
-* [vim-plug][vp]:
-  * Add `Plug 'rust-lang/rust.vim'` to `~/.vimrc`
-  * `:PlugInstall` or `$ vim +PlugInstall +qall`
-* [dein.vim][d]:
-  * Add `call dein#add('rust-lang/rust.vim')` to `~/.vimrc`
-  * `:call dein#install()`
-* [NeoBundle][nb]:
-  * Add `NeoBundle 'rust-lang/rust.vim'` to `~/.vimrc`
-  * Re-open vim or execute `:source ~/.vimrc`
+```vim
+syntax enable
+filetype plugin indent on
+```
+
+Most plugin managers don't do this automatically, so these statements are
+usually added by users in their `vimrc` _right after_ the plugin manager load
+section.
+
+### [Vim8 packages][vim8pack]
+
+```sh
+git clone https://github.com/rust-lang/rust.vim ~/.vim/pack/plugins/start/rust.vim
+```
+
+### [Vundle][v]
+
+```vim
+Plugin 'rust-lang/rust.vim'
+```
+
+### [Pathogen][p]
+
+```sh
+git clone --depth=1 https://github.com/rust-lang/rust.vim.git ~/.vim/bundle/rust.vim
+```
+
+### [vim-plug][vp]
+
+```vim
+Plug 'rust-lang/rust.vim'
+```
+
+### [dein.vim][d]
+
+```vim
+call dein#add('rust-lang/rust.vim')
+```
+
+### [NeoBundle][nb]
+
+```vim
+NeoBundle 'rust-lang/rust.vim'
+```
 
 ## Features
 
@@ -48,7 +73,8 @@ configure Tagbar to some degree.
 ### Formatting with [rustfmt][rfmt]
 
 The `:RustFmt` command will format your code with
-[rustfmt][rfmt] if installed.
+[rustfmt][rfmt] if installed. `rustfmt` can be installed
+via `rustup component add rustfmt`.
 
 Placing `let g:rustfmt_autosave = 1` in your `~/.vimrc` will
 enable automatic running of `:RustFmt` when you save a buffer.
@@ -67,16 +93,16 @@ If you set g:rust_clip_command RustPlay will copy the url to the clipboard.
 
 - Mac:
 
-        let g:rust_clip_command = 'pbcopy'
+      let g:rust_clip_command = 'pbcopy'
 
 - Linux:
 
-        let g:rust_clip_command = 'xclip -selection clipboard'
+      let g:rust_clip_command = 'xclip -selection clipboard'
 
 ### Running a test under cursor
 
-In cargo project, the `:RustTest` command will run a test under the cursor.
-This is useful when your project is bigger and running all tests take longer time.
+In a Cargo project, the `:RustTest` command will run the test that is under the cursor.
+This is useful when your project is big and running all of the tests takes a long time.
 
 ## Help
 

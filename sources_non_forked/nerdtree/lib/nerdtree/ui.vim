@@ -67,6 +67,10 @@ function! s:UI._dumpHelp()
         let help .= '" '. g:NERDTreeMapPreview .": find dir in tree\n"
         let help .= '" '. g:NERDTreeMapOpenInTab.": open in new tab\n"
         let help .= '" '. g:NERDTreeMapOpenInTabSilent .": open in new tab silently\n"
+        let help .= '" '. g:NERDTreeMapOpenSplit .": open split\n"
+        let help .= '" '. g:NERDTreeMapPreviewSplit .": preview split\n"
+        let help .= '" '. g:NERDTreeMapOpenVSplit .": open vsplit\n"
+        let help .= '" '. g:NERDTreeMapPreviewVSplit .": preview vsplit\n"
         let help .= '" '. g:NERDTreeMapCustomOpen .": custom open\n"
         let help .= '" '. g:NERDTreeMapDeleteBookmark .": delete bookmark\n"
 
@@ -364,7 +368,7 @@ function! s:UI.saveScreenState()
         call g:NERDTree.CursorToTreeWin()
         let self._screenState['oldPos'] = getpos('.')
         let self._screenState['oldTopLine'] = line('w0')
-        let self._screenState['oldWindowSize']= winwidth('')
+        let self._screenState['oldWindowSize'] = winnr('$')==1 ? g:NERDTreeWinSize : winwidth('')
         call nerdtree#exec(win . 'wincmd w', 1)
     catch
     endtry
@@ -512,8 +516,7 @@ endfunction
 " zoom (maximize/minimize) the NERDTree window
 function! s:UI.toggleZoom()
     if exists('b:NERDTreeZoomed') && b:NERDTreeZoomed
-        let size = exists('b:NERDTreeOldWindowSize') ? b:NERDTreeOldWindowSize : g:NERDTreeWinSize
-        call nerdtree#exec('silent vertical resize '. size, 1)
+        call nerdtree#exec('silent vertical resize '. g:NERDTreeWinSize, 1)
         let b:NERDTreeZoomed = 0
     else
         call nerdtree#exec('vertical resize '. get(g:, 'NERDTreeWinSizeMax', ''), 1)

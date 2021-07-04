@@ -30,9 +30,21 @@ endfunction
 " SECTION: General Functions {{{1
 "============================================================
 
-"FUNCTION: nerdtree#slash() {{{2
-function! nerdtree#slash() abort
+" FUNCTION: nerdtree#closeTreeOnOpen() {{{2
+function! nerdtree#closeTreeOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 1 || g:NERDTreeQuitOnOpen == 3
+endfunction
 
+" FUNCTION: nerdtree#closeBookmarksOnOpen() {{{2
+function! nerdtree#closeBookmarksOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 2 || g:NERDTreeQuitOnOpen == 3
+endfunction
+
+" FUNCTION: nerdtree#slash() {{{2
+" Return the path separator used by the underlying file system.  Special
+" consideration is taken for the use of the 'shellslash' option on Windows
+" systems.
+function! nerdtree#slash() abort
     if nerdtree#runningWindows()
         if exists('+shellslash') && &shellslash
             return '/'
@@ -42,28 +54,6 @@ function! nerdtree#slash() abort
     endif
 
     return '/'
-endfunction
-
-"FUNCTION: nerdtree#and(x,y) {{{2
-" Implements and() function for Vim <= 7.4
-function! nerdtree#and(x,y) abort
-    if exists('*and')
-        return and(a:x, a:y)
-    else
-        let l:x = a:x
-        let l:y = a:y
-        let l:n = 0
-        let l:result = 0
-        while l:x > 0 && l:y > 0
-            if (l:x % 2) && (l:y % 2)
-                let l:result += float2nr(pow(2, l:n))
-            endif
-            let l:x = float2nr(l:x / 2)
-            let l:y = float2nr(l:y / 2)
-            let l:n += 1
-        endwhile
-        return l:result
-    endif
 endfunction
 
 "FUNCTION: nerdtree#checkForBrowse(dir) {{{2
@@ -108,15 +98,15 @@ function! nerdtree#completeBookmarks(A,L,P) abort
     return filter(g:NERDTreeBookmark.BookmarkNames(), 'v:val =~# "^' . a:A . '"')
 endfunction
 
-"FUNCTION: nerdtree#compareNodes(dir) {{{2
+"FUNCTION: nerdtree#compareNodes(n1, n2) {{{2
 function! nerdtree#compareNodes(n1, n2) abort
-    return a:n1.path.compareTo(a:n2.path)
+    return nerdtree#compareNodePaths(a:n1.path, a:n2.path)
 endfunction
 
-"FUNCTION: nerdtree#compareNodesBySortKey(n1, n2) {{{2
-function! nerdtree#compareNodesBySortKey(n1, n2) abort
-    let sortKey1 = a:n1.path.getSortKey()
-    let sortKey2 = a:n2.path.getSortKey()
+"FUNCTION: nerdtree#compareNodePaths(p1, p2) {{{2
+function! nerdtree#compareNodePaths(p1, p2) abort
+    let sortKey1 = a:p1.getSortKey()
+    let sortKey2 = a:p2.getSortKey()
     let i = 0
     while i < min([len(sortKey1), len(sortKey2)])
         " Compare chunks upto common length.

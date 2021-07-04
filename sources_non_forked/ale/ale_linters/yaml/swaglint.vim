@@ -32,7 +32,7 @@ endfunction
 
 call ale#linter#Define('yaml', {
 \   'name': 'swaglint',
-\   'executable': {b -> ale#node#FindExecutable(b, 'yaml_swaglint', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'yaml_swaglint', [
 \       'node_modules/.bin/swaglint',
 \   ])},
 \   'command': '%e -r compact --stdin',

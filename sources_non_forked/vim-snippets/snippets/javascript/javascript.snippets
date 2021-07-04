@@ -99,11 +99,11 @@ snippet terr
 snippet ret
 	return ${0:result};
 snippet for "for (...) {...}"
-	for (var ${1:i} = 0, ${2:len} = ${3:Things.length}; $1 < $2; $1++) {
+	for (let ${1:i} = 0, ${2:len} = ${3:Things.length}; $1 < $2; $1++) {
 		${0:${VISUAL}}
 	}
 snippet forr "reversed for (...) {...}"
-	for (var ${2:i} = ${1:Things.length} - 1; $2 >= 0; $2--) {
+	for (let ${2:i} = ${1:Things.length} - 1; $2 >= 0; $2--) {
 		${0:${VISUAL}}
 	}
 snippet wh "(condition) { ... }"
@@ -116,7 +116,7 @@ snippet do "do { ... } while (condition)"
 	} while (${1:/* condition */});
 # For in loop
 snippet fori
-	for (var ${1:prop} in ${2:object}) {
+	for (let ${1:prop} in ${2:object}) {
 		${0:$2[$1]}
 	}
 # Objects
@@ -275,6 +275,8 @@ snippet cprof "console.profile"
 	console.profileEnd();
 snippet ctable "console.table"
 	console.table(${1:"${2:value}"});
+snippet clstr "console.log stringified"
+	console.log(JSON.stringify(${0}, null, 2));
 # Misc
 snippet us
 	'use strict';
@@ -311,6 +313,10 @@ snippet foro "for (const prop of object}) { ... }"
 	for (const ${1:prop} of ${2:object}) {
 		${0:$1}
 	}
+snippet forl "for (let prop of object}) { ... }"
+	for (let ${1:prop} of ${2:object}) {
+		${0:$1}
+	}
 snippet fun*
 	function* ${1:function_name}(${2}) {
 		${0:${VISUAL}}
@@ -319,8 +325,16 @@ snippet c=>
 	const ${1:function_name} = (${2}) => {
 		${0:${VISUAL}}
 	}
+snippet ca=>
+	const ${1:function_name} = async (${2}) => {
+		${0:${VISUAL}}
+	}
 snippet caf
 	const ${1:function_name} = (${2}) => {
+		${0:${VISUAL}}
+	}
+snippet casf
+	const ${1:function_name} = async (${2}) => {
 		${0:${VISUAL}}
 	}
 snippet =>
@@ -339,5 +353,7 @@ snippet ed
 	export default ${0}
 snippet ${
 	${${1}}${0}
+snippet as "async"
+	async ${0}
 snippet aw "await"
 	await ${0:${VISUAL}}

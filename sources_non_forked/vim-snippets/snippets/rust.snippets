@@ -101,7 +101,7 @@ snippet crate "Define create meta attributes"
 	// Crate name
 	#![crate_name = "${1:crate_name}"]
 	// Additional metadata attributes
-	#![desc = "${2:Descrption.}"]
+	#![desc = "${2:Description.}"]
 	#![license = "${3:BSD}"]
 	#![comment = "${4:Comment.}"]
 	// Specify the output type
@@ -110,7 +110,7 @@ snippet crate "Define create meta attributes"
 snippet opt "Option<T>"
 	Option<${1:i32}>
 snippet res "Result<T, E>"
-	Result<${1:~str}, ${2:()}>
+	Result<${1:&str}, ${2:()}>
 # Control structures
 snippet if
 	if ${1} {
@@ -123,7 +123,7 @@ snippet ife "if / else"
 		${0}
 	}
 snippet ifl "if let (...)"
-	if let ${1:Some(${2})} = $3 {
+	if let ${1:Some($2)} = $3 {
 		${0:${VISUAL}}
 	}
 snippet el "else"
@@ -151,7 +151,7 @@ snippet wh "while loop"
 		${0:${VISUAL}}
 	}
 snippet whl "while let (...)"
-	while let ${1:Some(${2})} = $3 {
+	while let ${1:Some($2)} = $3 {
 		${0:${VISUAL}}
 	}
 snippet for "for ... in ... loop"
@@ -165,15 +165,15 @@ snippet fixme "FIXME comment"
 	// FIXME: $0
 # Struct
 snippet st "Struct definition"
-	struct ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}${2:<${3:T}>} {
+	struct ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} {
 		${0}
 	}
 snippet impl "Struct/Trait implementation"
-	impl$4 ${1:Type/Trait}${2: for ${3:Type}}${4:<${5:T}>} {
+	impl ${1:Type/Trait}${2: for $3} {
 		${0}
 	}
 snippet stn "Struct with new constructor"
-	pub struct ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}${2:<${3:T}>} {
+	pub struct ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} {
 		${0}
 	}
 
@@ -198,7 +198,7 @@ snippet trait "Trait definition"
 		${0}
 	}
 snippet drop "Drop trait implementation (destructor)"
-	impl$2 Drop for ${1:Name}${2:<${3:T}>} {
+	impl Drop for $1 {
 		fn drop(&mut self) {
 			${0}
 		}
@@ -209,10 +209,6 @@ snippet ss "static string declaration"
 snippet stat "static item declaration"
 	static ${1}: ${2:usize} = ${0};
 # Concurrency
-snippet scoped "spawn a scoped thread"
-	thread::scoped(${1:move }|| {
-		${0}
-	});
 snippet spawn "spawn a thread"
 	thread::spawn(${1:move }|| {
 		${0}
@@ -253,4 +249,4 @@ snippet rc "Rc::new()"
 snippet unim "unimplemented!()"
 	unimplemented!()
 snippet use "use ...;" b
-	use ${1:std::${2:io}};
+	use ${1:std::$2};

@@ -6,7 +6,7 @@ call ale#Set('typescript_standard_use_global', get(g:, 'ale_use_global_executabl
 call ale#Set('typescript_standard_options', '')
 
 function! ale_linters#typescript#standard#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'typescript_standard', [
+    return ale#path#FindExecutable(a:buffer, 'typescript_standard', [
     \   'node_modules/standardx/bin/cmd.js',
     \   'node_modules/standard/bin/cmd.js',
     \   'node_modules/.bin/standard',

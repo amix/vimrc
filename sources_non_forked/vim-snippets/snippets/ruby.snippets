@@ -24,7 +24,7 @@ snippet rb
 snippet beg
 	begin
 		${0}
-	rescue ${1:Exception} => ${2:e}
+	rescue ${1:StandardError} => ${2:e}
 	end
 snippet req require
 	require '${1}'
@@ -485,22 +485,22 @@ snippet asnm
 snippet aso
 	assert_operator ${1:left}, :${2:operator}, ${3:right}
 snippet asr
-	assert_raise ${1:Exception} { ${0} }
+	assert_raises(${1:StandardError}) { ${0} }
 snippet asrd
-	assert_raise ${1:Exception} do
+	assert_raises ${1:StandardError} do
 		${0}
 	end
 snippet asnr
-	assert_nothing_raised ${1:Exception} { ${0} }
+	assert_nothing_raised(${1:StandardError}) { ${0} }
 snippet asnrd
-	assert_nothing_raised ${1:Exception} do
+	assert_nothing_raised ${1:StandardError} do
 		${0}
 	end
 snippet asrt
 	assert_respond_to ${1:object}, :${2:method}
 snippet ass assert_same(..)
 	assert_same ${1:expected}, ${2:actual}
-snippet ass assert_send(..)
+snippet asss assert_send(..)
 	assert_send [${1:object}, :${2:message}, ${3:args}]
 snippet asns
 	assert_not_same ${1:unexpected}, ${2:actual}
@@ -518,6 +518,24 @@ snippet asntd
 	end
 snippet fl
 	flunk '${1:Failure message.}'
+snippet rf
+	refute ${1:test}, '${2:Failure message.}'
+snippet rfe
+	refute_equal ${1:unexpected}, ${2:actual}
+snippet rfko
+	refute_kind_of ${1:UnexpectedKind}, ${2:actual_instance}
+snippet rfn
+	refute_nil ${1:instance}
+snippet rfo
+	refute_operator ${1:left}, :${2:operator}, ${3:right}
+snippet rfi
+	refute_includes ${1:collection}, ${2:object}
+snippet rfid
+	refute_in_delta ${1:unexpected_float}, ${2:actual_float}, ${3:2**-20}
+snippet rfio
+	refute_instance_of ${1:UnexpectedClass}, ${2:actual_instance}
+snippet rfs
+	refute_same ${1:unexpected}, ${2:actual}
 # Benchmark.bmbm do .. end
 snippet bm-
 	TESTS = ${1:10_000}
@@ -568,7 +586,7 @@ snippet b
 snippet begin
 	begin
 		fail 'A test exception.'
-	rescue Exception => e
+	rescue StandardError => e
 		puts e.message
 		puts e.backtrace.inspect
 	else
@@ -640,7 +658,7 @@ snippet wm
 snippet mout
 	-> { ${1} }.must_output '${0}'
 snippet mra
-	-> { ${1} }.must_raise ${0:Exception}
+	-> { ${1} }.must_raise ${0:StandardError}
 snippet mrt
 	must_respond_to :${0:method}
 snippet wrt

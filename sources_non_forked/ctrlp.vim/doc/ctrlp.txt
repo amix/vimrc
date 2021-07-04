@@ -437,12 +437,12 @@ Note: does not apply when a command defined with |g:ctrlp_user_command| is
 being used.
 
                                                         *'g:ctrlp_lazy_update'*
-Set this to 1 to enable the lazy-update feature: only update the match window
-after typing's been stopped for a certain amount of time: >
+Set this to 1 or bigger to enable the lazy-update feature: only update the
+match window after typing's been stopped for a certain amount of time: >
   let g:ctrlp_lazy_update = 0
 <
-If is 1, update after 250ms. If bigger than 1, the number will be used as the
-delay time in milliseconds.
+If is 1, update after 250ms that value as default tuned. If bigger than 1, the
+number will be used as the delay time in milliseconds.
 
                                                       *'g:ctrlp_default_input'*
 Set this to 1 to enable seeding the prompt with the current file's relative
@@ -462,7 +462,7 @@ Includes the current file in the match entries: >
 
 By default, the current file is excluded from the list.
 
-Note: does not apply when |g:ctrlp_match_func| is used. 
+Note: does not apply when |g:ctrlp_match_func| is used.
 
                                                               *'g:ctrlp_types'*
 Set this to list of names to customize core types: >

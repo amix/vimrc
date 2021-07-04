@@ -141,3 +141,17 @@ function! s:suite.component_type()
     endfor
   endfor
 endfunction
+
+function! s:suite.hi_clear()
+  call lightline#link()
+  colorscheme default
+  call lightline#link()
+  call s:assert.match(s:hi('LightlineLeft_active_0'), 'LightlineLeft_normal_0')
+  call s:assert.match(s:hi('LightlineLeft_active_1'), 'LightlineLeft_normal_1')
+  call s:assert.match(s:hi('LightlineLeft_active_2'), 'E411: highlight group not found\|cleared')
+  call s:assert.match(s:hi('LightlineRight_active_0'), 'LightlineRight_normal_0')
+  call s:assert.match(s:hi('LightlineRight_active_1'), 'LightlineRight_normal_1')
+  call s:assert.match(s:hi('LightlineRight_active_2'), 'LightlineRight_normal_2')
+  call s:assert.match(s:hi('LightlineRight_active_3'), 'E411: highlight group not found\|cleared')
+  call s:assert.match(s:hi('LightlineMiddle_active'), 'LightlineMiddle_normal')
+endfunction

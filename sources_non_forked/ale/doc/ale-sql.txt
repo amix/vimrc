@@ -3,7 +3,7 @@ ALE SQL Integration                                           *ale-sql-options*
 
 
 ===============================================================================
-pgformatter                                                 *ale-sql-pgformatter*
+pgformatter                                               *ale-sql-pgformatter*
 
 g:ale_sql_pgformatter_executable             *g:ale_sql_pgformatter_executable*
                                              *b:ale_sql_pgformatter_executable*

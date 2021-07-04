@@ -54,7 +54,7 @@ syntax match   jsModuleComma        contained /,/ skipwhite skipempty nextgroup=
 syntax region  jsString           start=+\z(["']\)+  skip=+\\\%(\z1\|$\)+  end=+\z1+ end=+$+  contains=jsSpecial extend
 syntax region  jsTemplateString   start=+`+  skip=+\\`+  end=+`+     contains=jsTemplateExpression,jsSpecial extend
 syntax match   jsTaggedTemplate   /\<\K\k*\ze`/ nextgroup=jsTemplateString
-syntax match   jsNumber           /\c\<\%(\d\+\%(e[+-]\=\d\+\)\=\|0b[01]\+\|0o\o\+\|0x\x\+\)\>/
+syntax match   jsNumber           /\c\<\%(\d\+\%(e[+-]\=\d\+\)\=\|0b[01]\+\|0o\o\+\|0x\%(\x\|_\)\+\)n\=\>/
 syntax keyword jsNumber           Infinity
 syntax match   jsFloat            /\c\<\%(\d\+\.\d\+\|\d\+\.\|\.\d\+\)\%(e[+-]\=\d\+\)\=\>/
 
@@ -104,13 +104,13 @@ syntax keyword jsDo                     do              skipwhite skipempty next
 syntax region  jsSwitchCase   contained matchgroup=jsLabel start=/\<\%(case\|default\)\>/ end=/:\@=/ contains=@jsExpression,jsLabel skipwhite skipempty nextgroup=jsSwitchColon keepend
 syntax keyword jsTry                    try             skipwhite skipempty nextgroup=jsTryCatchBlock
 syntax keyword jsFinally      contained finally         skipwhite skipempty nextgroup=jsFinallyBlock
-syntax keyword jsCatch        contained catch           skipwhite skipempty nextgroup=jsParenCatch
+syntax keyword jsCatch        contained catch           skipwhite skipempty nextgroup=jsParenCatch,jsTryCatchBlock
 syntax keyword jsException              throw
 syntax keyword jsAsyncKeyword           async await
 syntax match   jsSwitchColon   contained /::\@!/        skipwhite skipempty nextgroup=jsSwitchBlock
 
 " Keywords
-syntax keyword jsGlobalObjects     ArrayBuffer Array BigInt64Array BigUint64Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray Boolean Buffer Collator DataView Date DateTimeFormat Function Intl Iterator JSON Map Set WeakMap WeakSet Math Number NumberFormat Object ParallelArray Promise Proxy Reflect RegExp String Symbol Uint8ClampedArray WebAssembly console document fetch window
+syntax keyword jsGlobalObjects     ArrayBuffer Array BigInt BigInt64Array BigUint64Array Float32Array Float64Array Int16Array Int32Array Int8Array Uint16Array Uint32Array Uint8Array Uint8ClampedArray Boolean Buffer Collator DataView Date DateTimeFormat Function Intl Iterator JSON Map Set WeakMap WeakRef WeakSet Math Number NumberFormat Object ParallelArray Promise Proxy Reflect RegExp String Symbol Uint8ClampedArray WebAssembly console document fetch window
 syntax keyword jsGlobalNodeObjects  module exports global process __dirname __filename
 syntax match   jsGlobalNodeObjects  /\<require\>/ containedin=jsFuncCall
 syntax keyword jsExceptions         Error EvalError InternalError RangeError ReferenceError StopIteration SyntaxError TypeError URIError

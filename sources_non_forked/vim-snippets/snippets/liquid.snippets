@@ -28,7 +28,7 @@ snippet case
 	{% endcase %}
 snippet when
 	{% when ${1:condition} %}
-		${0}
+		${0:${VISUAL}}
 snippet cycle
 	{% cycle '${1:odd}', '${2:even}' %}
 snippet cyclegroup
@@ -100,7 +100,7 @@ snippet javascript
 		${0}
 	{% endjavascript %}
 snippet comment-
-	{%- comment -%}${0}{%- endcomment -%}
+	{%- comment -%}${0:${VISUAL}}{%- endcomment -%}
 snippet if-
 	{%- if ${1:condition} -%}
 		${0:${VISUAL}}
@@ -128,7 +128,7 @@ snippet case-
 	{%- endcase -%}
 snippet when-
 	{%- when ${1:condition} -%}
-		${0}
+		${0:${VISUAL}}
 snippet cycle-
 	{%- cycle '${1:odd}', '${2:even}' -%}
 snippet cyclegroup-
@@ -151,6 +151,22 @@ snippet include-
 	{%- include '${0:snippet}' -%}
 snippet includewith-
 	{%- include '${1:snippet}', ${2:variable}: ${0:value} -%}
+snippet render-
+	{%- render '${0:snippet}' -%}
+snippet renderwith-
+	{%- render '${1:snippet}', ${2:variable}: ${0:value} -%}
+snippet section-
+	{%- section '${1:snippet}' -%}
+snippet layout-
+	{%- layout '${1:layout}' -%}
+snippet layoutnone-
+	{%- layout none -%}
+snippet paginate-
+	{%- paginate ${1:collection.products} by ${2:12} -%}
+		{%- for ${3:product} in $1 -%}
+			${0}
+		{%- endfor -%}
+	{%- endpaginate -%}
 snippet join
 	| join: '${1:, }'
 snippet first
@@ -265,3 +281,192 @@ snippet asset_img_url
 	| asset_img_url: '${1:medium}'
 snippet img_url
 	| img_url: '${1:medium}'
+snippet _schema
+	{% schema %}
+		{
+			"name": "${1}",
+			"class": "${2}",
+			"settings": [
+				${0}
+			]
+		}
+	{% endschema %}
+snippet _blocks
+	"blocks": [
+		{
+			"type": "${1}",
+			"name": "${2}",
+			"settings": [
+				${0}
+			]
+		}
+	]
+snippet _text
+	{
+		"type": "text",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "${3}",
+		"info": "${4}",
+		"placeholder": "${0}"
+	}
+snippet _textarea
+	{
+		"type": "textarea",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "${3}",
+		"info": "${4}",
+		"placeholder": "${0}"
+	}
+snippet _image_picker
+	{
+		"type": "image_picker",
+		"id": "${1}",
+		"label": "${0}"
+	}
+snippet _radio
+	{
+		"type": "radio",
+		"id": "${1}",
+		"label": "${2}",
+		"options": [
+			{ "value": "${5}", "label": "${0}" }
+		],
+		"default": "${3}",
+		"info": "${4}"
+	}
+snippet _select
+	{
+		"type": "select",
+		"id": "${1}",
+		"label": "${2}",
+		"options": [
+			{
+				"group": "${5}",
+				"value": "${6}",
+				"label": "${0}"
+			}
+		],
+		"default": "${3}",
+		"info": "${4}"
+	}
+snippet _checkbox
+	{
+		"type": "checkbox",
+		"id": "${1}",
+		"label": "${2}",
+		"default": ${3:true},
+		"info": "${0}"
+	}
+snippet _range
+	{
+		"type": "range",
+		"id": "${1}",
+		"min": ${2},
+		"max": ${3},
+		"step": ${4},
+		"unit": "${5}",
+		"label": "${6}",
+		"default": ${0}
+	}
+snippet _color
+	{
+		"type": "color",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "${3}",
+		"info": "${0}"
+	}
+snippet _font
+	{
+		"type": "font_picker",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${3}",
+		"default": "${0:helvetica_n4}"
+	}
+snippet _collection
+	{
+		"type": "collection",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _product
+	{
+		"type": "product",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _blog
+	{
+		"type": "blog",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _page
+	{
+		"type": "page",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _link_list
+	{
+		"type": "link_list",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _url
+	{
+		"type": "url",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _video
+	{
+		"type": "video_url",
+		"id": "${1}",
+		"label": "${2}",
+		"accept": ["youtube", "vimeo"${0}],
+		"default": "${3}",
+		"info": "${4}",
+		"placeholder": "${5}"
+	}
+snippet _richtext
+	{
+		"type": "richtext",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "<p>${0}</p>"
+	}
+snippet _html
+	{
+		"type": "html",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "<div>${0}</div>"
+	}
+snippet _article
+	{
+		"type": "article",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _header
+	{
+		"type": "header",
+		"content": "${1}",
+		"info": "${0}"
+	}
+snippet _paragraph
+	{
+		"type": "paragraph",
+		"content": "${0}"
+	}

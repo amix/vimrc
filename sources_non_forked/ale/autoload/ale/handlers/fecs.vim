@@ -9,7 +9,7 @@ function! ale#handlers#fecs#GetCommand(buffer) abort
 endfunction
 
 function! ale#handlers#fecs#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'javascript_fecs', [
+    return ale#path#FindExecutable(a:buffer, 'javascript_fecs', [
     \   'node_modules/.bin/fecs',
     \   'node_modules/fecs/bin/fecs',
     \])

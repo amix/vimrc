@@ -22,20 +22,20 @@ Integration Information
   3. rls -- If you have `rls` installed, you might prefer using this linter
      over cargo. rls implements the Language Server Protocol for incremental
      compilation of Rust code, and can check Rust files while you type. `rls`
-     requires Rust files to contained in Cargo projects.
+     requires Rust files to be contained in Cargo projects.
   4. analyzer -- If you have rust-analyzer installed, you might prefer using
      this linter over cargo and rls. rust-analyzer also implements the
      Language Server Protocol for incremental compilation of Rust code, and is
      the next iteration of rls. rust-analyzer, like rls, requires Rust files
-     to contained in Cargo projects.
+     to be contained in Cargo projects.
   5. rustfmt -- If you have `rustfmt` installed, you can use it as a fixer to
      consistently reformat your Rust code.
 
-  Only cargo is enabled by default. To switch to using rustc instead of cargo,
-  configure |g:ale_linters| appropriately: >
+  Only cargo and rls are enabled by default. To switch to using rustc instead
+  of cargo, configure |g:ale_linters| appropriately: >
 
   " See the help text for the option for more information.
-  let g:ale_linters = {'rust': ['rustc']}
+  let g:ale_linters = {'rust': ['rustc', 'rls']}
 <
 
   Also note that rustc 1.12. or later is needed.
@@ -59,6 +59,7 @@ g:ale_rust_analyzer_config                         *g:ale_rust_analyzer_config*
   Default: `{}`
 
   Dictionary with configuration settings for rust-analyzer.
+
 
 ===============================================================================
 cargo                                                          *ale-rust-cargo*
@@ -174,6 +175,18 @@ g:ale_rust_cargo_clippy_options
   only `cargo clippy` supports (e.g. `--deny`).
 
 
+g:ale_rust_cargo_target_dir
+                                                  *g:ale_rust_cargo_target_dir*
+                                                  *b:ale_rust_cargo_target_dir*
+
+  Type: |String|
+  Default: `''`
+
+  Use a custom target directory when running the commands for ALE. This can
+  help to avoid "waiting for file lock on build directory" messages when
+  running `cargo` commands manually while ALE is performing its checks.
+
+
 ===============================================================================
 rls                                                              *ale-rust-rls*
 
@@ -240,22 +253,24 @@ g:ale_rust_ignore_error_codes                   *g:ale_rust_ignore_error_codes*
   >
   let g:ale_rust_ignore_error_codes = ['E0432', 'E0433']
 
+
 g:ale_rust_ignore_secondary_spans           *g:ale_rust_ignore_secondary_spans*
                                             *b:ale_rust_ignore_secondary_spans*
   Type: Number
   Default: 0
 
-	When set to 1, instructs the Rust error repporting to ignore secondary
-	spans. The problem with secondary spans is that they sometimes appear in
-	error messages before the main cause of the error, for example: >
+  When set to 1, instructs the Rust error reporting to ignore secondary spans.
+  The problem with secondary spans is that they sometimes appear in error
+  messages before the main cause of the error, for example: >
 
   1 src/main.rs|98 col 5 error| this function takes 4 parameters but 5
-	parameters were supplied: defined here
+    parameters were supplied: defined here
   2 src/main.rs|430 col 32 error| this function takes 4 parameters but 5
-	parameters were supplied: expected 4 parameters
+    parameters were supplied: expected 4 parameters
 <
   This is due to the sorting by line numbers. With this option set to 1,
   the 'defined here' span will not be presented.
+
 
 ===============================================================================
 rustfmt                                                      *ale-rust-rustfmt*

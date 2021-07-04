@@ -1,10 +1,6 @@
 require 'spec_helper'
 
 describe "Indenting" do
-  after :each do
-    vim.command 'let g:ruby_indent_block_style = "expression"'
-  end
-
   specify "indented blocks with expression style" do
     vim.command 'let g:ruby_indent_block_style = "expression"'
 
@@ -103,6 +99,7 @@ describe "Indenting" do
   end
 
   specify "blocks with multiline parameters" do
+    vim.command 'let g:ruby_indent_block_style = "expression"'
     assert_correct_indenting <<~EOF
       def foo
         opts.on('--coordinator host=HOST[,port=PORT]',
