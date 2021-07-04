@@ -31,7 +31,7 @@ Naturally, `/opt/vim_runtime` can be any directory, as long as all the users spe
 
 ## Fonts
 
-I recommend using [IBM Plex Mono font](https://github.com/IBM/plex) (it's an open-source and awesome font that can make your code beautiful). The Awesome vimrc is already setup to try to use it.
+I recommend using [IBM Plex Mono font](https://github.com/IBM/plex) (it's an open-source and awesome font that can make your code look beautiful). The Awesome vimrc is already setup to try to use it.
 
 Some other fonts that Awesome will try to use:
 
