@@ -364,6 +364,13 @@ Shortcuts using `<leader>` instead of special characters:
     map <leader>sa zg
     map <leader>s? z=
 
+### Running Code
+To run code directly from vim, press `F5`. The currently open code will execute without you having to type anything.
+
+Can be used to execute code written in C, C++, Java, Python, Go, Octave, Bash scripts and HTML. To edit how you want your code to be executed, make changes in the file 
+```
+~/vim_runtime/vimrcs/extended.vim
+```
 
 ### Cope
 Query `:help cope` if you are unsure what cope is. It's super useful!
