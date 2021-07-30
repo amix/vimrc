@@ -70,12 +70,17 @@ endsnippet
 
 snippet here "here document (here)"
 <<-${2:'${1:TOKEN}'}
-	$0
-${1/['"`](.+)['"`]/$1/}
+	$0`echo \\n`${1/['"`](.+)['"`]/$1/}
+endsnippet
+
+snippet /ift(est)?/ "if ... then (if)" rb
+if ${2:[ ${1:condition} ]}; then
+	${0:${VISUAL}}
+fi
 endsnippet
 
 snippet if "if ... then (if)" b
-if ${2:[[ ${1:condition} ]]}; then
+if [[ ${1:condition} ]]; then
 	${0:${VISUAL}}
 fi
 endsnippet
@@ -90,6 +95,12 @@ snippet /wh(ile)?/ "while ... (done)" rb
 while ${2:[[ ${1:condition} ]]}; do
 	${0:${VISUAL}}
 done
+endsnippet
+
+snippet func "function() {...}" b
+${1:function} () {
+	${0:${VISUAL}}
+}
 endsnippet
 
 # vim:ft=snippets:

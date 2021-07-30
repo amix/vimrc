@@ -158,6 +158,11 @@ Commands for jumping between hunks:~
 >
                           command! Gqf GitGutterQuickFix | copen
 <
+                                                 *gitgutter-:GitGutterQuickFixCurrentFile*
+:GitGutterQuickFixCurrentFile     Same as :GitGutterQuickFix, but only load hunks for
+                                  the file in the focused buffer. This has the same
+                                  functionality as :GitGutterQuickFix when the focused
+                                  buffer is empty.
 
 
 Commands for operating on a hunk:~

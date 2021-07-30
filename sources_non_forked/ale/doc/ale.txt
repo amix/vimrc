@@ -651,9 +651,9 @@ problem will be displayed in a balloon instead of hover information.
 Hover information can be displayed in the preview window instead by setting
 |g:ale_hover_to_preview| to `1`.
 
-When using Neovim, if |g:ale_hover_to_floating_preview| or |g:ale_floating_preview|
-is set to 1, the hover information will show in a floating window. And
-|g:ale_floating_window_border| for the border setting.
+When using Neovim or Vim with |popupwin|, if |g:ale_hover_to_floating_preview|
+or |g:ale_floating_preview| is set to 1, the hover information will show in a
+floating window. And |g:ale_floating_window_border| for the border setting.
 
 For Vim 8.1+ terminals, mouse hovering is disabled by default. Enabling
 |balloonexpr| commands in terminals can cause scrolling issues in terminals,
@@ -968,8 +968,8 @@ g:ale_detail_to_floating_preview             *g:ale_detail_to_floating_preview*
   Type: |Number|
   Default: `0`
 
-  When this option is set to `1`, Neovim will use a floating window for
-  ALEDetail output.
+  When this option is set to `1`, Neovim or Vim with |popupwin| will use a
+  floating window for ALEDetail output.
 
 
 g:ale_disable_lsp                                           *g:ale_disable_lsp*
@@ -1200,7 +1200,8 @@ g:ale_floating_preview                                 *g:ale_floating_preview*
   Type: |Number|
   Default: `0`
 
-  When set to `1`, Neovim will use a floating window for ale's preview window.
+  When set to `1`, Neovim or Vim with |popupwin| will use a floating window
+  for ale's preview window.
   This is equivalent to setting |g:ale_hover_to_floating_preview| and
   |g:ale_detail_to_floating_preview| to `1`.
 
@@ -1281,7 +1282,8 @@ g:ale_hover_to_floating_preview               *g:ale_hover_to_floating_preview*
   Type: |Number|
   Default: `0`
 
-  If set to `1`, Neovim will use floating windows for hover messages.
+  If set to `1`, Neovim or Vim with |popupwin| will use floating windows for
+  hover messages.
 
 
 g:ale_keep_list_window_open                       *g:ale_keep_list_window_open*
@@ -2698,6 +2700,8 @@ documented in additional help files.
     dafny.................................|ale-dafny-dafny|
   dart....................................|ale-dart-options|
     analysis_server.......................|ale-dart-analysis_server|
+    dart-analyze..........................|ale-dart-analyze|
+    dart-format...........................|ale-dart-format|
     dartanalyzer..........................|ale-dart-dartanalyzer|
     dartfmt...............................|ale-dart-dartfmt|
   desktop.................................|ale-desktop-options|
@@ -2840,6 +2844,7 @@ documented in additional help files.
   llvm....................................|ale-llvm-options|
     llc...................................|ale-llvm-llc|
   lua.....................................|ale-lua-options|
+    lua-format............................|ale-lua-lua-format|
     luac..................................|ale-lua-luac|
     luacheck..............................|ale-lua-luacheck|
     luafmt................................|ale-lua-luafmt|
@@ -2932,6 +2937,7 @@ documented in additional help files.
   pyrex (cython)..........................|ale-pyrex-options|
     cython................................|ale-pyrex-cython|
   python..................................|ale-python-options|
+    autoflake.............................|ale-python-autoflake|
     autoimport............................|ale-python-autoimport|
     autopep8..............................|ale-python-autopep8|
     bandit................................|ale-python-bandit|
@@ -2945,7 +2951,7 @@ documented in additional help files.
     pyflakes..............................|ale-python-pyflakes|
     pylama................................|ale-python-pylama|
     pylint................................|ale-python-pylint|
-    pyls..................................|ale-python-pyls|
+    pylsp.................................|ale-python-pylsp|
     pyre..................................|ale-python-pyre|
     pyright...............................|ale-python-pyright|
     reorder-python-imports................|ale-python-reorder_python_imports|
@@ -3066,6 +3072,7 @@ documented in additional help files.
     verilator.............................|ale-verilog-verilator|
     vlog..................................|ale-verilog-vlog|
     xvlog.................................|ale-verilog-xvlog|
+    yosys.................................|ale-verilog-yosys|
   vhdl....................................|ale-vhdl-options|
     ghdl..................................|ale-vhdl-ghdl|
     hdl-checker...........................|ale-vhdl-hdl-checker|
@@ -3104,7 +3111,7 @@ ALEComplete                                                       *ALEComplete*
   Manually trigger LSP autocomplete and show the menu. Works only when called
   from insert mode. >
 
-    inoremap <silent> <C-Space> <C-\><C-O>:AleComplete<CR>
+    inoremap <silent> <C-Space> <C-\><C-O>:ALEComplete<CR>
 <
   A plug mapping `<Plug>(ale_complete)` is defined for this command. >
 

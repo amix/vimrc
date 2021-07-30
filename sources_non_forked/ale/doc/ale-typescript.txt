@@ -34,6 +34,12 @@ g:ale_deno_unstable                                       *g:ale_deno_unstable*
 
   Enable or disable unstable Deno features and APIs.
 
+g:ale_deno_importMap                                       *g:ale_deno_importMap*
+                                                          *b:ale_deno_importMap*
+  Type: |String|
+  Default: `'import_map.json'`
+
+  Specify the import map filename to load url maps in a deno project.
 
 ===============================================================================
 eslint                                                  *ale-typescript-eslint*

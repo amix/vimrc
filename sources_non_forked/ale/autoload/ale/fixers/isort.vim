@@ -29,6 +29,7 @@ function! ale#fixers#isort#Fix(buffer) abort
     return {
     \   'cwd': '%s:h',
     \   'command': ale#Escape(l:executable) . l:exec_args
+    \   . ale#Pad('--filename %s')
     \   . (!empty(l:options) ? ' ' . l:options : '') . ' -',
     \}
 endfunction

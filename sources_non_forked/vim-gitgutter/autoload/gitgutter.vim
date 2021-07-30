@@ -179,7 +179,7 @@ endfunction
 " - this runs synchronously
 " - it ignores unsaved changes in buffers
 " - it does not change to the repo root
-function! gitgutter#quickfix()
+function! gitgutter#quickfix(current_file)
   let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' rev-parse --show-cdup'
   let path_to_repo = get(systemlist(cmd), 0, '')
   if !empty(path_to_repo) && path_to_repo[-1:] != '/'
@@ -191,6 +191,9 @@ function! gitgutter#quickfix()
         \ ' diff --no-ext-diff --no-color -U0'.
         \ ' --src-prefix=a/'.path_to_repo.' --dst-prefix=b/'.path_to_repo.' '.
         \ g:gitgutter_diff_args. ' '. g:gitgutter_diff_base
+  if a:current_file
+    let cmd = cmd.' -- '.expand('%:p')
+  endif
   let diff = systemlist(cmd)
   let lnum = 0
   for line in diff

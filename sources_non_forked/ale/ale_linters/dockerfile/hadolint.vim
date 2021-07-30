@@ -7,7 +7,7 @@ call ale#Set('dockerfile_hadolint_docker_image', 'hadolint/hadolint')
 function! ale_linters#dockerfile#hadolint#Handle(buffer, lines) abort
     " Matches patterns line the following:
     "
-    " /dev/stdin:19 DL3001 Pipe chain should start with a raw value.
+    " -:19 DL3001 warning: Pipe chain should start with a raw value.
     " /dev/stdin:19:3 unexpected thing
     let l:pattern = '\v^%(/dev/stdin|-):(\d+):?(\d+)? ((DL|SC)(\d+) )?((.+)?: )?(.+)$'
     let l:output = []
@@ -38,6 +38,8 @@ function! ale_linters#dockerfile#hadolint#Handle(buffer, lines) abort
         let l:text = l:match[8]
         let l:detail = l:match[8]
         let l:domain = 'https://github.com/hadolint/hadolint/wiki/'
+        let l:code = ''
+        let l:link = ''
 
         if l:match[4] is# 'SC'
             let l:domain = 'https://github.com/koalaman/shellcheck/wiki/'
@@ -46,9 +48,11 @@ function! ale_linters#dockerfile#hadolint#Handle(buffer, lines) abort
         if l:match[5] isnot# ''
             let l:code = l:match[4] . l:match[5]
             let l:link = ' ( ' . l:domain . l:code . ' )'
+            let l:text = l:code . ': ' . l:detail
             let l:detail = l:code . l:link . "\n\n" . l:detail
         else
             let l:type = 'E'
+            let l:detail = 'hadolint could not parse the file because of a syntax error.'
         endif
 
         call add(l:output, {

@@ -146,7 +146,7 @@ function! s:Flake8()  " {{{
     set t_te=
 
     " perform the grep itself
-    let &grepformat="%f:%l:%c: %m\,%f:%l: %m"
+    let &grepformat="%f:%l:%c: %m\,%f:%l: %m,%-G%\\d"
     let &grepprg=s:flake8_cmd
     silent! grep! "%"
     " close any existing cwindows,

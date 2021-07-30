@@ -601,20 +601,47 @@ a statusline, this one matches the default when 'ruler' is set:
 >
         set statusline=%<%f\ %h%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
 <
-                                *FugitiveHead(...)* *fugitive#head(...)*
-Use FugitiveHead() to return the name of the current branch. If the current
-HEAD is detached, FugitiveHead() will return the empty string, unless the
-optional argument is given, in which case the hash of the current commit will
-be truncated to the given number of characters.
+AUTOCOMMANDS                                    *fugitive-autocommands*
+
+A handful of |User| |autocommands| are provided to allow extending and
+overriding Fugitive behaviors.  Example usage:
+>
+        autocmd User FugitiveBlob call s:BlobOverrides()
+<
+                                                *User_FugitiveIndex*
+FugitiveIndex           After loading the |fugitive-summary| buffer.
+
+                                                *User_FugitiveTag*
+FugitiveTag             After loading a tag object.
+
+                                                *User_FugitiveCommit*
+FugitiveCommit          After loading a commit object.
+
+                                                *User_FugitiveTree*
+FugitiveTree            After loading a tree (directory) object.
+
+                                                *User_FugitiveBlob*
+FugitiveBlob            After loading a blob (file) object.  This includes
+                        both committed blobs which are read only, and staged
+                        blobs which can be edited and written.  Check
+                        &modifiable to distinguish between the two.
+
+                                                *User_FugitiveChanged*
+FugitiveChanged         After any event which can potentially change the
+                        repository, for example, any invocation of |:Git|.
+                        Originally intended for expiring caches, but can have
+                        other uses.
+
+API                                             *fugitive-api*
+
+Officially supported functions are documented inline in plugin/fugitive.vim.
 
 DEPRECATIONS                                    *fugitive-deprecated*
 
-The following commands are softly deprecated in favor of replacements that
-adhere to a new naming scheme.  They will eventually be removed, but probably
-not in the near future.
-
-Remember that |:Git| can be shortened to |:G|, so replacements using it are
-just one space character longer than the legacy version.
+The following commands are deprecated in favor of replacements that adhere to
+a new naming scheme.  Remember that |:Git| can be shortened to |:G|, so
+replacements using it are just one space character longer than the legacy
+version.
 
 *:Gremove*      Superseded by |:GRemove|.
 *:Gdelete*      Superseded by |:GDelete|.
@@ -639,6 +666,14 @@ just one space character longer than the legacy version.
 *:Gvsplit!*     Superseded by :vert Git --paginate.
 *:Gtabsplit!*   Superseded by :tab Git --paginate.
 *:Gpedit!*      Superseded by :Git! --paginate.
+
+                                                *User_Fugitive*
+Fugitive used to support `:autocmd User Fugitive` to run an autocommand after
+loading any buffer belonging to a Git repository, but this is being phased
+out.  Instead, one can leverage regular autocommand events like |BufNewFile|
+and |BufReadPost|, and check !empty(FugitiveGitDir()) to confirm Fugitive has
+found a repository.  See also |fugitive-autocommands| for other, more
+selective events.
 
 ABOUT                                           *fugitive-about*
 

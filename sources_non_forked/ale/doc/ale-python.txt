@@ -10,6 +10,14 @@ g:ale_python_auto_pipenv                             *g:ale_python_auto_pipenv*
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
   if true. This is overridden by a manually-set executable.
 
+g:ale_python_auto_poetry                             *g:ale_python_auto_poetry*
+                                                     *b:ale_python_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
 ===============================================================================
 ALE Python Project Root Behavior                              *ale-python-root*
 
@@ -36,11 +44,39 @@ ALE will look for configuration files with the following filenames. >
   .pylintrc
   Pipfile
   Pipfile.lock
-  poetry.lock 
+  poetry.lock
   pyproject.toml
+  .tool-versions
 <
 
 The first directory containing any of the files named above will be used.
+
+
+===============================================================================
+autoflake                                                *ale-python-autoflake*
+
+g:ale_python_autoflake_executable           *g:ale_python_autoflake_executable*
+                                            *b:ale_python_autoflake_executable*
+  Type: |String|
+  Default: `'autoflake'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_autoflake_options                 *g:ale_python_autoflake_options*
+                                               *b:ale_python_autoflake_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to autoflake.
+
+
+g:ale_python_autoflake_use_global           *g:ale_python_autoflake_use_global*
+                                            *b:ale_python_autoflake_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
 
 
 ===============================================================================
@@ -68,6 +104,7 @@ g:ale_python_autoimport_use_global             *g:ale_python_autoimport_use_glob
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
+
 
 ===============================================================================
 autopep8                                                  *ale-python-autopep8*
@@ -107,6 +144,7 @@ g:ale_python_bandit_executable                 *g:ale_python_bandit_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `bandit'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `bandit'`.
 
 
 g:ale_python_bandit_options                       *g:ale_python_bandit_options*
@@ -146,6 +184,15 @@ g:ale_python_bandit_auto_pipenv               *g:ale_python_bandit_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_bandit_auto_poetry               *g:ale_python_bandit_auto_poetry*
+                                              *b:ale_python_bandit_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 black                                                        *ale-python-black*
 
@@ -181,6 +228,14 @@ g:ale_python_black_auto_pipenv                 *g:ale_python_black_auto_pipenv*
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
   if true. This is overridden by a manually-set executable.
 
+g:ale_python_black_auto_poetry                 *g:ale_python_black_auto_poetry*
+                                               *b:ale_python_black_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
 g:ale_python_black_change_directory       *g:ale_python_black_change_directory*
                                           *b:ale_python_black_change_directory*
   Type: |Number|
@@ -213,7 +268,8 @@ g:ale_python_flake8_executable                 *g:ale_python_flake8_executable*
   Default: `'flake8'`
 
   This variable can be changed to modify the executable used for flake8. Set
-  this to `'pipenv'` to invoke `'pipenv` `run` `flake8'`.
+  this to `'pipenv'` to invoke `'pipenv` `run` `flake8'`. Set this to
+  `'poetry'` to invoke `'poetry` `run` `flake8'`.
 
 
 g:ale_python_flake8_options                       *g:ale_python_flake8_options*
@@ -252,6 +308,15 @@ g:ale_python_flake8_auto_pipenv               *g:ale_python_flake8_auto_pipenv*
   Default: `0`
 
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_flake8_auto_poetry               *g:ale_python_flake8_auto_poetry*
+                                              *b:ale_python_flake8_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
 
 
@@ -310,6 +375,15 @@ g:ale_python_mypy_auto_pipenv                   *g:ale_python_mypy_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_mypy_auto_poetry                   *g:ale_python_mypy_auto_poetry*
+                                                *b:ale_python_mypy_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
 g:ale_python_mypy_executable                     *g:ale_python_mypy_executable*
                                                  *b:ale_python_mypy_executable*
   Type: |String|
@@ -318,6 +392,7 @@ g:ale_python_mypy_executable                     *g:ale_python_mypy_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `mypy'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `mypy'`.
 
 
 g:ale_python_mypy_ignore_invalid_syntax
@@ -368,6 +443,7 @@ g:ale_python_prospector_executable         *g:ale_python_prospector_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `prospector'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `prospector'`.
 
 
 g:ale_python_prospector_options               *g:ale_python_prospector_options*
@@ -408,6 +484,15 @@ g:ale_python_prospector_auto_pipenv       *g:ale_python_prospector_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_prospector_auto_poetry       *g:ale_python_prospector_auto_poetry*
+                                          *b:ale_python_prospector_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 pycodestyle                                            *ale-python-pycodestyle*
 
@@ -420,6 +505,7 @@ g:ale_python_pycodestyle_executable       *g:ale_python_pycodestyle_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `pycodestyle'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `pycodestyle'`.
 
 
 g:ale_python_pycodestyle_options             *g:ale_python_pycodestyle_options*
@@ -448,6 +534,15 @@ g:ale_python_pycodestyle_auto_pipenv     *g:ale_python_pycodestyle_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pycodestyle_auto_poetry     *g:ale_python_pycodestyle_auto_poetry*
+                                         *b:ale_python_pycodestyle_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 pydocstyle                                              *ale-python-pydocstyle*
 
@@ -460,6 +555,7 @@ g:ale_python_pydocstyle_executable         *g:ale_python_pydocstyle_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `pydocstyle'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `pydocstyle'`.
 
 
 g:ale_python_pydocstyle_options               *g:ale_python_pydocstyle_options*
@@ -488,6 +584,15 @@ g:ale_python_pydocstyle_auto_pipenv       *g:ale_python_pydocstyle_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pydocstyle_auto_poetry       *g:ale_python_pydocstyle_auto_poetry*
+                                          *b:ale_python_pydocstyle_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 pyflakes                                                  *ale-python-pyflakes*
 
@@ -500,6 +605,7 @@ g:ale_python_pyflakes_executable             *g:ale_python_pyflakes_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `pyflakes'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `pyflakes'`.
 
 
 g:ale_python_pyflakes_auto_pipenv           *g:ale_python_pyflakes_auto_pipenv*
@@ -508,6 +614,15 @@ g:ale_python_pyflakes_auto_pipenv           *g:ale_python_pyflakes_auto_pipenv*
   Default: `0`
 
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pyflakes_auto_poetry           *g:ale_python_pyflakes_auto_poetry*
+                                            *b:ale_python_pyflakes_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
 
 
@@ -532,7 +647,8 @@ g:ale_python_pylama_executable                 *g:ale_python_pylama_executable*
   Default: `'pylama'`
 
   This variable can be changed to modify the executable used for pylama. Set
-  this to `'pipenv'` to invoke `'pipenv` `run` `pylama'`.
+  this to `'pipenv'` to invoke `'pipenv` `run` `pylama'`. Set this to
+  `'poetry'` to invoke `'poetry` `run` `pylama'`.
 
 
 g:ale_python_pylama_options                       *g:ale_python_pylama_options*
@@ -565,6 +681,15 @@ g:ale_python_pylama_auto_pipenv               *g:ale_python_pylama_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pylama_auto_poetry               *g:ale_python_pylama_auto_poetry*
+                                              *b:ale_python_pylama_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 pylint                                                      *ale-python-pylint*
 
@@ -589,6 +714,7 @@ g:ale_python_pylint_executable                 *g:ale_python_pylint_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `pylint'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `pylint'`.
 
 
 g:ale_python_pylint_options                       *g:ale_python_pylint_options*
@@ -628,6 +754,15 @@ g:ale_python_pylint_auto_pipenv               *g:ale_python_pylint_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pylint_auto_poetry               *g:ale_python_pylint_auto_poetry*
+                                              *b:ale_python_pylint_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
 g:ale_python_pylint_use_msg_id                 *g:ale_python_pylint_use_msg_id*
                                                *b:ale_python_pylint_use_msg_id*
   Type: |Number|
@@ -638,31 +773,32 @@ g:ale_python_pylint_use_msg_id                 *g:ale_python_pylint_use_msg_id*
 
 
 ===============================================================================
-pyls                                                          *ale-python-pyls*
+pylsp                                                          *ale-python-pylsp*
 
-`pyls` will be run from a detected project root, per |ale-python-root|.
+`pylsp` will be run from a detected project root, per |ale-python-root|.
 
 
-g:ale_python_pyls_executable                     *g:ale_python_pyls_executable*
-                                                 *b:ale_python_pyls_executable*
+g:ale_python_pylsp_executable                     *g:ale_python_pylsp_executable*
+                                                 *b:ale_python_pylsp_executable*
   Type: |String|
-  Default: `'pyls'`
+  Default: `'pylsp'`
 
   See |ale-integrations-local-executables|
 
-  Set this to `'pipenv'` to invoke `'pipenv` `run` `pyls'`.
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `pylsp'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `pyls'`.
 
 
-g:ale_python_pyls_use_global                     *g:ale_python_pyls_use_global*
-                                                 *b:ale_python_pyls_use_global*
+g:ale_python_pylsp_use_global                     *g:ale_python_pylsp_use_global*
+                                                 *b:ale_python_pylsp_use_global*
   Type: |Number|
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
 
 
-g:ale_python_pyls_auto_pipenv                   *g:ale_python_pyls_auto_pipenv*
-                                                *b:ale_python_pyls_auto_pipenv*
+g:ale_python_pylsp_auto_pipenv                   *g:ale_python_pylsp_auto_pipenv*
+                                                *b:ale_python_pylsp_auto_pipenv*
   Type: |Number|
   Default: `0`
 
@@ -670,15 +806,24 @@ g:ale_python_pyls_auto_pipenv                   *g:ale_python_pyls_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
-g:ale_python_pyls_config                             *g:ale_python_pyls_config*
-                                                     *b:ale_python_pyls_config*
+g:ale_python_pylsp_auto_poetry                   *g:ale_python_pylsp_auto_poetry*
+                                                *b:ale_python_pylsp_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pylsp_config                             *g:ale_python_pylsp_config*
+                                                     *b:ale_python_pylsp_config*
   Type: |Dictionary|
   Default: `{}`
 
-  Dictionary with configuration settings for pyls. For example, to disable
+  Dictionary with configuration settings for pylsp. For example, to disable
   the pycodestyle linter: >
         {
-      \   'pyls': {
+      \   'pylsp': {
       \     'plugins': {
       \       'pycodestyle': {
       \         'enabled': v:false
@@ -688,24 +833,24 @@ g:ale_python_pyls_config                             *g:ale_python_pyls_config*
       \ }
 <
 
-g:ale_python_pyls_options                           *g:ale_python_pyls_options*
-                                                    *b:ale_python_pyls_options*
+g:ale_python_pylsp_options                           *g:ale_python_pylsp_options*
+                                                    *b:ale_python_pylsp_options*
   Type: |String|
   Default: `''`
 
-  This variable can be changed to add command-line arguments to the pyls
-  invocation. Note that this is not the same thing as ale_python_pyls_config,
-  which allows configuration of how pyls functions; this is intended to
-  provide flexibility in how the pyls command is invoked.
+  This variable can be changed to add command-line arguments to the pylsp
+  invocation. Note that this is not the same thing as ale_python_pylsp_config,
+  which allows configuration of how pylsp functions; this is intended to
+  provide flexibility in how the pylsp command is invoked.
 
-  For example, if you had installed `pyls` but your `pyls` executable was not
-  on your `PATH` for some reason, an alternative way to run the pyls server
+  For example, if you had installed `pylsp` but your `pylsp` executable was not
+  on your `PATH` for some reason, an alternative way to run the pylsp server
   would be:
-  let g:ale_python_pyls_executable = 'python3'
-  let g:ale_python_pyls_options = '-m pyls'
+  let g:ale_python_pylsp_executable = 'python3'
+  let g:ale_python_pylsp_options = '-m pylsp'
 
-  An example stragety for installing `pyls`:
-    `python3 -m pip install --user pyls`
+  An example stragety for installing `pylsp`:
+    `python3 -m pip install --user pylsp`
 
 ===============================================================================
 pyre                                                          *ale-python-pyre*
@@ -721,6 +866,7 @@ g:ale_python_pyre_executable                     *g:ale_python_pyre_executable*
   See |ale-integrations-local-executables|
 
   Set this to `'pipenv'` to invoke `'pipenv` `run` `pyre'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `pyre'`.
 
 
 g:ale_python_pyre_use_global                     *g:ale_python_pyre_use_global*
@@ -737,6 +883,15 @@ g:ale_python_pyre_auto_pipenv                   *g:ale_python_pyre_auto_pipenv*
   Default: `0`
 
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pyre_auto_poetry                   *g:ale_python_pyre_auto_poetry*
+                                                *b:ale_python_pyre_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
 
 

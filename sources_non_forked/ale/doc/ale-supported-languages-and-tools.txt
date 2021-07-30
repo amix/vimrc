@@ -124,6 +124,8 @@ Notes:
   * `dafny`!!
 * Dart
   * `analysis_server`
+  * `dart-analyze`!!
+  * `dart-format`!!
   * `dartanalyzer`!!
   * `dartfmt`!!
   * `language_server`
@@ -285,6 +287,7 @@ Notes:
 * LLVM
   * `llc`
 * Lua
+  * `lua-format`
   * `luac`
   * `luacheck`
   * `luafmt`
@@ -398,6 +401,7 @@ Notes:
   * `purescript-language-server`
   * `purty`
 * Python
+  * `autoflake`!!
   * `autoimport`
   * `autopep8`
   * `bandit`
@@ -411,7 +415,7 @@ Notes:
   * `pyflakes`
   * `pylama`!!
   * `pylint`!!
-  * `pyls`
+  * `pylsp`
   * `pyre`
   * `pyright`
   * `reorder-python-imports`
@@ -425,6 +429,7 @@ Notes:
   * `lintr`
   * `styler`
 * Racket
+  * `racket-langserver`
   * `raco`
 * Re:VIEW
   * `redpen`
@@ -549,6 +554,7 @@ Notes:
   * `verilator`
   * `vlog`
   * `xvlog`
+  * `yosys`
 * VHDL
   * `ghdl`
   * `vcom`

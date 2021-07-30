@@ -29,7 +29,7 @@ endfunction
 
 function! ale_linters#python#vulture#GetCommand(buffer) abort
     let l:executable = ale_linters#python#vulture#GetExecutable(a:buffer)
-    let l:exec_args = l:executable =~? 'pipenv$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
     \   ? ' run vulture'
     \   : ''
     let l:lint_dest = ale#Var(a:buffer, 'python_vulture_change_directory')
