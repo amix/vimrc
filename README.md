@@ -113,8 +113,8 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 
 ## Included color schemes
 
-* [dracula](https://github.com/dracula/vim): The default
-* [peaksea](https://github.com/vim-scripts/peaksea)
+* [peaksea](https://github.com/vim-scripts/peaksea): The default
+* [dracula](https://github.com/dracula/vim)
 * [vim-colors-solarized](https://github.com/altercation/vim-colors-solarized)
 * [vim-irblack](https://github.com/wgibbs/vim-irblack)
 * [mayansmoke](https://github.com/vim-scripts/mayansmoke)

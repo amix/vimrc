@@ -533,6 +533,7 @@ Notes:
   * `write-good`
 * Thrift
   * `thrift`
+  * `thriftcheck`
 * TypeScript
   * `deno`
   * `eslint`

@@ -270,7 +270,7 @@ formatting.
 * JSON
   * [fixjson](https://github.com/rhysd/fixjson)
   * [jq](https://stedolan.github.io/jq/)
-  * [jsonlint](http://zaa.ch/jsonlint/)
+  * [jsonlint](https://github.com/zaach/jsonlint)
   * [prettier](https://github.com/prettier/prettier)
   * [spectral](https://github.com/stoplightio/spectral)
 * Julia
@@ -542,6 +542,7 @@ formatting.
   * [write-good](https://github.com/btford/write-good) :warning:
 * Thrift
   * [thrift](http://thrift.apache.org/)
+  * [thriftcheck](https://github.com/pinterest/thriftcheck)
 * TypeScript
   * [deno](https://deno.land/)
   * [eslint](http://eslint.org/)

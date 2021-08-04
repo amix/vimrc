@@ -460,7 +460,7 @@ integration should not be combined with ALE's own implementation.
 
 ALE additionally integrates with asyncomplete.vim for offering automatic
 completion data. ALE's asyncomplete source requires registration and should
-use the defaults provided by the|asyncomplete#sources#ale#get_source_options| function >
+use the defaults provided by the |asyncomplete#sources#ale#get_source_options| function >
 
   " Use ALE's function for asyncomplete defaults
   au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#ale#get_source_options({
@@ -3053,6 +3053,7 @@ documented in additional help files.
     write-good............................|ale-text-write-good|
   thrift..................................|ale-thrift-options|
     thrift................................|ale-thrift-thrift|
+    thriftcheck...........................|ale-thrift-thriftcheck|
   typescript..............................|ale-typescript-options|
     deno..................................|ale-typescript-deno|
     eslint................................|ale-typescript-eslint|

@@ -1,8 +1,8 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Created:     2007-04-10.
-" @Last Change: 2015-11-23.
+" @Last Change: 2019-04-09.
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    808
+" @Revision:    836
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " GetLatestVimScripts: 1863 1 tlib.vim
 " tlib.vim -- Some utility functions
@@ -14,7 +14,7 @@ if v:version < 700 "{{{2
     echoerr "tlib requires Vim >= 7"
     finish
 endif
-let g:loaded_tlib = 117
+let g:loaded_tlib = 127
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -74,7 +74,17 @@ command! -nargs=1 -complete=command TBrowseOutput call tlib#cmd#BrowseOutput(<q-
 "
 " EXAMPLES: >
 "   TBrowseScriptnames 
-command! -nargs=0 -complete=command TBrowseScriptnames call tlib#cmd#TBrowseScriptnames()
+command! -nargs=0 TBrowseScriptnames call tlib#cmd#TBrowseScriptnames()
+
+
+" :display: :Texecqfl CMD
+" Run CMD and display the quickfix list.
+command! -nargs=1 Texecqfl <args> | call tlib#qfl#QflList(getqflist())
+
+
+" :display: :Texecloc CMD
+" Run CMD and display the quickfix list.
+command! -nargs=1 Texecloc <args> | call tlib#qfl#QflList(getloclist(0))
 
 
 " :display: :Tlibtrace GUARD, VAR1, VAR2...
@@ -85,17 +95,31 @@ command! -nargs=0 -complete=command TBrowseScriptnames call tlib#cmd#TBrowseScri
 " If GUARD is a number that evaluates to true or if it is a string that 
 " matches a |regexp|, which was added using Tlibtrace! (with '!'), 
 " display the values of VAR1, VAR2 ...
-command! -nargs=+ -bang -bar Tlibtrace :
+command! -nargs=+ -bang Tlibtrace :
 
 
-" :Tlibtraceset +RX1, -RX2...
+" :Tlibtraceset[!] [--file=FILE] +RX1 -RX2...
 " If |tlib#trace#Enable()| was called: With the optional <bang>, users 
 " can add and remove GUARDs (actually a |regexp|) that should be traced.
-command! -nargs=+ -bang -bar Tlibtraceset call tlib#trace#Set(<q-args>)
+"
+" If no `+` or `-` is prepended, assume `+`.
+"
+" With the optional bang '!', reset any options.
+command! -nargs=+ -bang Tlibtraceset call tlib#trace#Set(tlib#arg#GetOpts([<f-args>], {'short': 0}), !empty("<bang>"))
 
 
 " :display: :Tlibtrace ASSERTION
-command! -nargs=+ -bang -bar Tlibassert :
+command! -nargs=+ -bang Tlibassert :
+
+" :display: :Tlibtype val, 'type', ...
+command! -nargs=+ Tlibtype :
+
+
+" Browse the current |quickfix| list.
+command! -bar Tbrowseqfl call tlib#qfl#Browse()
+
+" Browse the current |location-list|.
+command! -bar Tbrowseloc call tlib#loclist#Browse()
 
 
 let &cpo = s:save_cpo

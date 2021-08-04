@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    36
+" @Revision:    42
 
 
 function! tlib#time#MSecs() "{{{3
@@ -64,4 +64,21 @@ function! tlib#time#DiffMSecs(a, b, ...) "{{{3
     return 0
 endf
 
+
+function! tlib#time#Command(cmd, ...) abort "{{{3
+    let loops = a:0 >= 1 ? a:1 : 1
+    let silent = a:0 >= 1 ? a:1 : 0
+    let start = tlib#time#Now()
+    for loop in range(loops)
+        if silent
+            silent! exec a:cmd
+        else
+            exec a:cmd
+        endif
+    endfor
+    let end = tlib#time#Now()
+    let diff = tlib#time#Diff(end, start)
+    echom 'Time:' diff
+    return diff
+endf
 

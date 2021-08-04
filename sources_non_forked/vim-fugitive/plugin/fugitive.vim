@@ -13,7 +13,8 @@ let s:bad_git_dir = '/$\|^fugitive:'
 " FugitiveGitDir() returns the detected Git dir for the given buffer number,
 " or the current buffer if no argument is passed.  This will be an empty
 " string if no Git dir was found.  Use !empty(FugitiveGitDir()) to check if
-" Fugitive is active in the current buffer.
+" Fugitive is active in the current buffer.  Do not rely on this for direct
+" filesystem access; use FugitiveFind('.git/whatever') instead.
 function! FugitiveGitDir(...) abort
   if v:version < 704
     return ''

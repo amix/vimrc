@@ -2369,7 +2369,7 @@ function! fugitive#FileReadCmd(...) abort
 endfunction
 
 function! fugitive#FileWriteCmd(...) abort
-  let tmp = tempname()
+  let temp = tempname()
   let amatch = a:0 ? a:1 : expand('<amatch>')
   let autype = a:0 > 1 ? 'Buf' : 'File'
   if exists('#' . autype . 'WritePre')
@@ -2380,17 +2380,13 @@ function! fugitive#FileWriteCmd(...) abort
     if commit !~# '^[0-3]$' || !v:cmdbang && (line("'[") != 1 || line("']") != line('$'))
       return "noautocmd '[,']write" . (v:cmdbang ? '!' : '') . ' ' . s:fnameescape(amatch)
     endif
-    if exists('+guioptions') && &guioptions =~# '!'
-      let guioptions = &guioptions
-      set guioptions-=!
-    endif
-    silent execute "'[,']write !".fugitive#Prepare(dir, 'hash-object', '-w', '--stdin', '--').' > '.tmp
-    let sha1 = readfile(tmp)[0]
+    silent execute "noautocmd keepalt '[,']write ".temp
+    let hash = s:TreeChomp([dir, 'hash-object', '-w', '--', temp])
     let old_mode = matchstr(s:ChompError(['ls-files', '--stage', '.' . file], dir)[0], '^\d\+')
     if empty(old_mode)
       let old_mode = executable(s:Tree(dir) . file) ? '100755' : '100644'
     endif
-    let error = s:UpdateIndex(dir, [old_mode, sha1, commit, file[1:-1]])
+    let error = s:UpdateIndex(dir, [old_mode, hash, commit, file[1:-1]])
     if empty(error)
       setlocal nomodified
       if exists('#' . autype . 'WritePost')
@@ -2400,11 +2396,10 @@ function! fugitive#FileWriteCmd(...) abort
     else
       return 'echoerr '.string('fugitive: '.error)
     endif
+  catch /^fugitive:/
+    return 'echoerr ' . string(v:exception)
   finally
-    if exists('guioptions')
-      let &guioptions = guioptions
-    endif
-    call delete(tmp)
+    call delete(temp)
   endtry
 endfunction
 

@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-11-07.
-" @Revision:    51
+" @Last Change: 2017-04-12.
+" @Revision:    62
 
 
 if !exists('g:tlib#sys#special_protocols')
@@ -16,14 +16,14 @@ if !exists('g:tlib#sys#special_suffixes')
     " A list of |regexp|s matching suffixes that should be handled by 
     " |g:tlib#sys#system_browser|.
     " CAVEAT: Must be a |\V| |regexp|.
-    let g:tlib#sys#special_suffixes = ['xlsx\?', 'docx\?', 'pptx\?', 'accdb', 'mdb', 'sqlite', 'pdf', 'jpg', 'png', 'gif']    "{{{2
+    let g:tlib#sys#special_suffixes = ['xlsx\?', 'docx\?', 'pptx\?', 'accdb', 'mdb', 'sqlite', 'pdf', 'jpg', 'png', 'gif', 'od\[tspg]']    "{{{2
 endif
 
 
 if !exists('g:tlib#sys#system_rx')
     " Open links matching this |regexp| with |g:tlib#sys#system_browser|.
     " CAVEAT: Must be a |\V| |regexp|.
-    let g:tlib#sys#system_rx = printf('\V\%(\^\%(%s\):\|.\%(%s\)\)', join(g:tlib#sys#special_protocols, '\|'), join(g:tlib#sys#special_suffixes, '\|'))   "{{{2
+    let g:tlib#sys#system_rx = printf('\V\%(\^\%(%s\):\|.\%(%s\)\$\)', join(g:tlib#sys#special_protocols, '\|'), join(g:tlib#sys#special_suffixes, '\|'))   "{{{2
 endif
 
 
@@ -39,7 +39,7 @@ if !exists("g:tlib#sys#system_browser")
         let g:tlib#sys#system_browser = "exec 'silent !open' shellescape('%s')"
     elseif exists('$XDG_CURRENT_DESKTOP') && !empty($XDG_CURRENT_DESKTOP)
         let g:tlib#sys#system_browser = "exec 'silent !xdg-open' shellescape('%s') '&'"
-    elseif $GNOME_DESKTOP_SESSION_ID != "" || $DESKTOP_SESSION == 'gnome'
+    elseif !empty($GNOME_DESKTOP_SESSION_ID) || $DESKTOP_SESSION ==# 'gnome'
         let g:tlib#sys#system_browser = "exec 'silent !gnome-open' shellescape('%s')"
     elseif exists("$KDEDIR") && !empty($KDEDIR)
         let g:tlib#sys#system_browser = "exec 'silent !kfmclient exec' shellescape('%s')"
@@ -185,9 +185,7 @@ function! tlib#sys#Open(filename) abort "{{{3
     Tlibtrace 'tlib', a:filename
     if !empty(g:tlib#sys#system_browser) && tlib#sys#IsSpecial(a:filename)
         try
-            let cmd = printf(g:tlib#sys#system_browser, escape(a:filename, ' %#!'))
-            Tlibtrace 'tlib', cmd
-            exec cmd
+            call tlib#sys#OpenWithSystemViewer(a:filename)
             return 1
         catch
             echohl ErrorMsg
@@ -199,13 +197,22 @@ function! tlib#sys#Open(filename) abort "{{{3
 endf
 
 
+" Open filename with the default system viewer.
+function! tlib#sys#OpenWithSystemViewer(filename) abort "{{{3
+    let cmd = printf(g:tlib#sys#system_browser, a:filename)
+    " let cmd = printf(g:tlib#sys#system_browser, escape(a:filename, ' %#!'))
+    Tlibtrace 'tlib', cmd
+    exec cmd
+endf
+
+
 " :def: function! tlib#sys#SystemInDir(dir, expr, ?input='')
 function! tlib#sys#SystemInDir(dir, ...) abort "{{{3
     call tlib#dir#CD(a:dir)
     try
         return call(function('system'), a:000)
     finally
-        cd! -
+        silent cd! -
     endtry
 endf
 

@@ -73,7 +73,7 @@ endfunction
 
 function! ale_linters#ansible#ansible_lint#GetCommand(buffer, version) abort
     let l:commands = {
-    \   '>=5.0.0': '%e --nocolor --parseable-severity -x yaml -',
+    \   '>=5.0.0': '%e --nocolor --parseable-severity -x yaml %s',
     \   '<5.0.0': '%e --nocolor -p %t'
     \}
     let l:command = ale#semver#GTE(a:version, [5, 0]) ? l:commands['>=5.0.0'] : l:commands['<5.0.0']
@@ -91,6 +91,7 @@ call ale#linter#Define('ansible', {
 \       '%e --version',
 \       function('ale_linters#ansible#ansible_lint#GetCommand'),
 \   )},
+\   'lint_file': 1,
 \   'callback': {buffer, lines -> ale#semver#RunWithVersionCheck(
 \       buffer,
 \       ale_linters#ansible#ansible_lint#GetExecutable(buffer),

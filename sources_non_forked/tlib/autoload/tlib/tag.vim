@@ -1,7 +1,7 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    59
+" @Revision:    64
 
 
 " Extra tags for |tlib#tag#Retrieve()| (see there). Can also be buffer-local.
@@ -47,7 +47,7 @@ TLet g:tlib_tag_substitute = {
 " <    tags from the JDK will be included.
 function! tlib#tag#Retrieve(rx, ...) "{{{3
     TVarArg ['extra_tags', 0]
-    " TLogVAR a:rx, extra_tags
+    Tlibtrace 'tlib', a:rx, extra_tags
     if extra_tags
         let tags_orig = &l:tags
         if empty(tags_orig)
@@ -65,7 +65,8 @@ function! tlib#tag#Retrieve(rx, ...) "{{{3
     else
         let taglist = taglist(a:rx)
     endif
-    return taglist
+    Tlibtrace 'tlib', len(taglist)
+    return copy(taglist)
 endf
 
 
@@ -76,7 +77,7 @@ endf
 " :def: function! tlib#tag#Collect(constraints, ?use_extra=1, ?match_front=1)
 function! tlib#tag#Collect(constraints, ...) "{{{3
     TVarArg ['use_extra', 0], ['match_end', 1], ['match_front', 1]
-    " TLogVAR a:constraints, use_extra
+    Tlibtrace 'tlib', a:constraints, use_extra, match_end, match_front
     let rx = get(a:constraints, 'name', '')
     if empty(rx) || rx == '*'
         let rx = '.'
@@ -92,9 +93,9 @@ function! tlib#tag#Collect(constraints, ...) "{{{3
         endif
         let rx = join(rxl, '')
     endif
-    " TLogVAR rx, use_extra
+    Tlibtrace 'tlib', rx, use_extra
     let tags = tlib#tag#Retrieve(rx, use_extra)
-    " TLogDBG len(tags)
+    Tlibtrace 'tlib', len(tags)
     for [field, rx] in items(a:constraints)
         if !empty(rx) && rx != '*'
             " TLogVAR field, rx
@@ -105,7 +106,7 @@ function! tlib#tag#Collect(constraints, ...) "{{{3
             endif
         endif
     endfor
-    " TLogVAR tags
+    Tlibtrace 'tlib', len(tags)
     return tags
 endf
 
