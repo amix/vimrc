@@ -207,18 +207,16 @@ vmap <F5> <Esc>:call CompileRun()<CR>
 func! CompileRun()
 exec "w"
 if &filetype == 'c'
-    exec "!gcc % -o %<"
-    exec "!time ./%<"
+    exec "!gcc % && ./a.out<"
 elseif &filetype == 'cpp'
-    exec "!g++ % -o %<"
-    exec "!time ./%<"
+    exec "!g++ % && ./a.out"
 elseif &filetype == 'java'
     exec "!javac %"
     exec "!time java %"
 elseif &filetype == 'sh'
     exec "!time bash %"
 elseif &filetype == 'python'
-    exec "!time python3 %"
+    exec "!time python %"
 elseif &filetype == 'html'
     exec "!google-chrome % &"
 elseif &filetype == 'go'
