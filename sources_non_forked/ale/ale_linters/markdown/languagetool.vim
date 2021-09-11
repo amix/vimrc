@@ -1,4 +1,4 @@
-" Author: Vincent (wahrwolf [ät] wolfpit.net)
+" Author: Vincent (wahrwolf [at] wolfpit.net)
 " Description: languagetool for markdown files
 
 

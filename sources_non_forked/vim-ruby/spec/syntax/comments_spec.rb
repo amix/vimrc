@@ -40,6 +40,12 @@ describe "Syntax highlighting" do
     EOF
   end
 
+  specify "magic comments - shareable_constant_value" do
+    assert_correct_highlighting <<~'EOF', 'shareable_constant_value', 'rubyMagicComment'
+      # shareable_constant_value: literal
+    EOF
+  end
+
   specify "TODO comments" do
     assert_correct_highlighting <<~'EOF', 'TODO', 'rubyTodo'
       # TODO: turn off the oven

@@ -334,6 +334,33 @@ snippet getopt
 			${0}
 		}
 	}
+
+## Assertions
+snippet asr
+	assert(${1:condition});
+
+snippet anl
+	assert(${1:ptr} != NULL);
+
+## Dynamic Allocation
+snippet mlc
+	${1:ptr} = (${2:type}*) malloc(sizeof($2));
+
+snippet clc
+	${1:ptr} = (${2:type}*) calloc(${3:size}, sizeof($2));
+
+snippet rlc
+	${1:ptr} = realloc($1, ${2:size} * sizeof(${3:type}));
+
+snippet mlcd
+	${1:type} ${2:ptr} = ($1*) malloc(sizeof($1));
+
+snippet clcd
+	${1:type} ${2:ptr} = ($1*) calloc(${3:size}, sizeof($1));
+
+snippet fre
+	free(${1:ptr});
+
 ##
 # TODO section
 snippet todo

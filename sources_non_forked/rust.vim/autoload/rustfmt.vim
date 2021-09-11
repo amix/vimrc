@@ -157,14 +157,7 @@ function! s:RunRustfmt(command, tmpname, from_writepre)
         endif
 
         call s:DeleteLines(len(l:content), line('$'))
-        if has('nvim') && exists('*nvim_buf_set_lines')
-            " setline() gets called for every item on the array,
-            " this results on the neovim buffer callbacks being called n times,
-            " using nvim_buf_set_lines() makes the change in one call.
-            call nvim_buf_set_lines(0, 0, -1, v:true, l:content)
-        else
-            call setline(1, l:content)
-        endif
+        call setline(1, l:content)
 
         " only clear location list if it was previously filled to prevent
         " clobbering other additions

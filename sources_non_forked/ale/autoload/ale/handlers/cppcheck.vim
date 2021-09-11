@@ -43,21 +43,25 @@ endfunction
 function! ale#handlers#cppcheck#HandleCppCheckFormat(buffer, lines) abort
     " Look for lines like the following.
     "
-    "test.cpp:974:6: error: Array 'n[3]' accessed at index 3, which is out of bounds. [arrayIndexOutOfBounds]\
+    "test.cpp:974:6: error:inconclusive Array 'n[3]' accessed at index 3, which is out of bounds. [arrayIndexOutOfBounds]\
     "    n[3]=3;
     "     ^
-    let l:pattern = '\v^(\f+):(\d+):(\d+): (\w+): (.*) \[(\w+)\]\'
+    "" OR if cppcheck doesn't support {column} or {inconclusive:text}:
+    "test.cpp:974:{column}: error:{inconclusive:inconclusive} Array 'n[3]' accessed at index 3, which is out of bounds. [arrayIndexOutOfBounds]\
+    "    n[3]=3;
+    "     ^
+    let l:pattern = '\v(\f+):(\d+):(\d+|\{column\}): (\w+):(\{inconclusive:inconclusive\})? ?(.*) \[(\w+)\]\'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         if ale#path#IsBufferPath(a:buffer, l:match[1])
             call add(l:output, {
             \   'lnum':     str2nr(l:match[2]),
-            \   'col':      str2nr(l:match[3]),
+            \   'col':      match(l:match[3],'{column}') >= 0 ? 1 : str2nr(l:match[3]),
             \   'type':     l:match[4] is# 'error' ? 'E' : 'W',
             \   'sub_type': l:match[4] is# 'style' ? 'style' : '',
-            \   'text':     l:match[5],
-            \   'code':     l:match[6]
+            \   'text':     l:match[6],
+            \   'code':     l:match[7]
             \})
         endif
     endfor

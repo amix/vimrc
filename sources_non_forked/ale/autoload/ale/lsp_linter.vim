@@ -271,6 +271,30 @@ function! ale#lsp_linter#OnInit(linter, details, Callback) abort
         call ale#lsp#NotifyForChanges(l:conn_id, l:buffer)
     endif
 
+    " Tell the relevant buffer that the LSP has started via an autocmd.
+    if l:buffer > 0
+        if l:buffer == bufnr('')
+            silent doautocmd <nomodeline> User ALELSPStarted
+        else
+            execute 'augroup ALELSPStartedGroup' . l:buffer
+                autocmd!
+
+                execute printf(
+                \   'autocmd BufEnter <buffer=%d>'
+                \       . ' doautocmd <nomodeline> User ALELSPStarted',
+                \   l:buffer
+                \)
+
+                " Replicate ++once behavior for backwards compatibility.
+                execute printf(
+                \   'autocmd BufEnter <buffer=%d>'
+                \       . ' autocmd! ALELSPStartedGroup%d',
+                \   l:buffer, l:buffer
+                \)
+            augroup END
+        endif
+    endif
+
     call a:Callback(a:linter, a:details)
 endfunction
 

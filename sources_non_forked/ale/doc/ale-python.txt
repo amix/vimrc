@@ -356,6 +356,15 @@ g:ale_python_isort_auto_pipenv                 *g:ale_python_isort_auto_pipenv*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_isort_auto_poetry                 *g:ale_python_isort_auto_poetry*
+                                               *b:ale_python_isort_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
 ===============================================================================
 mypy                                                          *ale-python-mypy*
 

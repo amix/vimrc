@@ -133,6 +133,23 @@ g:ale_go_langserver_options                       *g:ale_go_langserver_options*
   `-gocodecompletion` option is ignored because it is handled automatically
   by the |g:ale_completion_enabled| variable.
 
+===============================================================================
+golines                                                        *ale-go-golines*
+
+g:ale_go_golines_executable                         *g:ale_go_lines_executable*
+                                                    *b:ale_go_lines_executable*
+  Type: |String|
+  Default: `'golines'`
+
+  Location of the golines binary file
+
+g:ale_go_golines_options                             *g:ale_go_golines_options*
+                                                     *b:ale_go_golines_options*
+  Type: |String|
+  Default: ''
+
+  Additional options passed to the golines command. By default golines has 
+  --max-length=100 (lines above 100 characters will be wrapped)
 
 ===============================================================================
 golint                                                          *ale-go-golint*

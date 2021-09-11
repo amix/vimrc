@@ -17,7 +17,7 @@ Notes:
   * `gcc`
   * `gnatpp`
 * Ansible
-  * `ansible-lint`
+  * `ansible-lint`!!
 * API Blueprint
   * `drafter`
 * APKBUILD
@@ -66,6 +66,7 @@ Notes:
   * `uncrustify`
 * C#
   * `csc`!!
+  * `dotnet-format`
   * `mcs`
   * `mcsc`!!
   * `uncrustify`
@@ -86,7 +87,7 @@ Notes:
   * `uncrustify`
 * Chef
   * `cookstyle`
-  * `foodcritic`
+  * `foodcritic`!!
 * Clojure
   * `clj-kondo`
   * `joker`
@@ -141,7 +142,7 @@ Notes:
 * Elixir
   * `credo`
   * `dialyxir`
-  * `dogma`
+  * `dogma`!!
   * `elixir-ls`
   * `mix`!!
 * Elm
@@ -155,7 +156,7 @@ Notes:
   * `ruumba`
 * Erlang
   * `SyntaxErl`
-  * `dialyzer`
+  * `dialyzer`!!
   * `elvis`!!
   * `erlc`
   * `erlfmt`
@@ -183,6 +184,7 @@ Notes:
   * `goimports`
   * `golangci-lint`!!
   * `golangserver`
+  * `golines`
   * `golint`
   * `gometalinter`!!
   * `gopls`
@@ -240,7 +242,7 @@ Notes:
   * `ispc`!!
 * Java
   * `PMD`
-  * `checkstyle`
+  * `checkstyle`!!
   * `eclipselsp`
   * `google-java-format`
   * `javac`
@@ -259,16 +261,21 @@ Notes:
   * `tsserver`
   * `xo`
 * JSON
+  * `eslint`
   * `fixjson`
   * `jq`
   * `jsonlint`
   * `prettier`
   * `spectral`
+* JSON5
+  * `eslint`
+* JSONC
+  * `eslint`
 * Julia
   * `languageserver`
 * Kotlin
   * `kotlinc`!!
-  * `ktlint`!!
+  * `ktlint`
   * `languageserver`
 * LaTeX (tex)
   * `alex`!!
@@ -389,8 +396,8 @@ Notes:
 * Prolog
   * `swipl`
 * proto
-  * `protoc-gen-lint`
-  * `protolint`
+  * `protoc-gen-lint`!!
+  * `protolint`!!
 * Pug
   * `pug-lint`
 * Puppet
@@ -399,6 +406,7 @@ Notes:
   * `puppet-lint`
 * PureScript
   * `purescript-language-server`
+  * `purs-tidy`
   * `purty`
 * Python
   * `autoflake`!!
@@ -409,7 +417,7 @@ Notes:
   * `flake8`
   * `isort`
   * `mypy`
-  * `prospector`
+  * `prospector`!!
   * `pycodestyle`
   * `pydocstyle`
   * `pyflakes`
@@ -446,10 +454,12 @@ Notes:
   * `textlint`
   * `vale`
   * `write-good`
+* Robot
+  * `rflint`
 * RPM spec
   * `rpmlint`
 * Ruby
-  * `brakeman`
+  * `brakeman`!!
   * `debride`
   * `prettier`
   * `rails_best_practices`!!
@@ -544,7 +554,7 @@ Notes:
   * `tsserver`
   * `typecheck`
 * V
-  * `v`
+  * `v`!!
   * `vfmt`
 * VALA
   * `uncrustify`
@@ -555,7 +565,7 @@ Notes:
   * `verilator`
   * `vlog`
   * `xvlog`
-  * `yosys`
+  * `yosys`!!
 * VHDL
   * `ghdl`
   * `vcom`

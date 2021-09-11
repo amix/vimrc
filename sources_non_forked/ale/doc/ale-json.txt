@@ -3,6 +3,15 @@ ALE JSON Integration                                         *ale-json-options*
 
 
 ===============================================================================
+eslint                                                        *ale-json-eslint*
+
+The `eslint` linter for JSON uses the JavaScript options for `eslint`; see:
+|ale-javascript-eslint|.
+
+You will need a JSON ESLint plugin installed for this to work.
+
+
+===============================================================================
 fixjson                                                      *ale-json-fixjson*
 
 fixjson is a JSON file fixer/formatter for humans using (relaxed) JSON5.

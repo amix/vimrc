@@ -73,7 +73,23 @@ class Arg(object):
 
 
 def get_args(arglist):
-	args = [Arg(arg) for arg in arglist.split(',') if arg]
+	args = []
+	n = len(arglist)
+	i = 0
+	while i < n:
+		l_bracket = 0
+		start = i
+		while i < n and (l_bracket > 0 or arglist[i] != ','):
+			if arglist[i] == '[':
+				l_bracket += 1
+			elif arglist[i] == ']' and l_bracket > 0:
+				l_bracket -= 1
+			i += 1
+		arg = arglist[start:i]
+		if arg:
+			args.append(Arg(arg))
+		i += 1
+
 	args = [arg for arg in args if arg.name != 'self']
 
 	return args

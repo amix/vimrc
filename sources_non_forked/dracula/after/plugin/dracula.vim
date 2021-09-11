@@ -62,6 +62,11 @@ if has('nvim-0.5') && luaeval("pcall(require, 'gitsigns')")
 endif
 " }}}
 " Tree-sitter: {{{
+" The nvim-treesitter library defines many global highlight groups that are
+" linked to the regular vim syntax highlight groups. We only need to redefine
+" those highlight groups when the defaults do not match the dracula
+" specification.
+" https://github.com/nvim-treesitter/nvim-treesitter/blob/master/plugin/nvim-treesitter.vim
 if exists('g:loaded_nvim_treesitter')
   " # Misc
   hi! link TSPunctSpecial Special
@@ -89,6 +94,9 @@ if exists('g:loaded_nvim_treesitter')
   hi! link TSTitle DraculaYellow
   hi! link TSLiteral DraculaYellow
   hi! link TSURI DraculaYellow
+  " HTML and JSX tag attributes. By default, this group is linked to TSProperty,
+  " which in turn links to Identifer (white).
+  hi! link TSTagAttribute DraculaGreenItalic
 endif
 " }}}
 

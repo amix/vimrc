@@ -169,7 +169,7 @@ endfunction
 function! NERDTreeAddNode()
     let curDirNode = g:NERDTreeDirNode.GetSelected()
     let prompt = s:inputPrompt('add')
-    let newNodeName = input(prompt, curDirNode.path.str() . nerdtree#slash(), 'file')
+    let newNodeName = trim(input(prompt, curDirNode.path.str() . nerdtree#slash(), 'file'))
 
     if newNodeName ==# ''
         call nerdtree#echo('Node Creation Aborted.')
@@ -206,7 +206,7 @@ function! NERDTreeMoveNode()
     let newNodePath = input(prompt, curNode.path.str(), 'file')
     while filereadable(newNodePath)
         call nerdtree#echoWarning('This destination already exists. Try again.')
-        let newNodePath = input(prompt, curNode.path.str(), 'file')
+        let newNodePath = trim(input(prompt, curNode.path.str(), 'file'))
     endwhile
 
 
@@ -337,7 +337,7 @@ endfunction
 function! NERDTreeCopyNode()
     let currentNode = g:NERDTreeFileNode.GetSelected()
     let prompt = s:inputPrompt('copy')
-    let newNodePath = input(prompt, currentNode.path.str(), 'file')
+    let newNodePath = trim(input(prompt, currentNode.path.str(), 'file'))
 
     if newNodePath !=# ''
         "strip trailing slash

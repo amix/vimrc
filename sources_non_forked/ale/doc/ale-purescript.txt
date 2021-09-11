@@ -30,6 +30,33 @@ g:ale_purescript_ls_config                         g:ale_purescript_ls_config
 		\  }
 		\}
 ===============================================================================
+purs-tidy                                                 *ale-purescript-tidy*
+
+g:ale_purescript_tidy_executable             *g:ale_purescript_tidy_executable*
+                                             *b:ale_purescript_tidy_executable*
+  Type: |String|
+  Default: `'purs-tidy'`
+
+  This variable can be changed to use a different executable for purs-tidy.
+
+g:ale_purescript_tidy_use_global             *g:ale_purescript_tidy_use_global*
+                                             *b:ale_purescript_tidy_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+g:ale_purescript_tidy_options                   *g:ale_purescript_tidy_options*
+                                                *b:ale_purescript_tidy_options*
+  Type: String
+  Default: `''`
+
+  This variable can be set to pass in additional option to the 'purs-tidy'
+  executable.
+>
+  let g:ale_purescript_options = '--indent 3'
+<
+===============================================================================
 purty                                                    *ale-purescript-purty*
 
 g:ale_purescript_purty_executable           *g:ale_purescript_purty_executable*

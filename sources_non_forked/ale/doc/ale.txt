@@ -1,4 +1,4 @@
-*ale.txt*	Plugin to lint and fix files asynchronously
+*ale.txt* Plugin to lint and fix files asynchronously
 *ale*
 
 ALE - Asynchronous Lint Engine
@@ -2681,6 +2681,7 @@ documented in additional help files.
     uncrustify............................|ale-cpp-uncrustify|
   c#......................................|ale-cs-options|
     csc...................................|ale-cs-csc|
+    dotnet-format.........................|ale-cs-dotnet-format|
     mcs...................................|ale-cs-mcs|
     mcsc..................................|ale-cs-mcsc|
     uncrustify............................|ale-cs-uncrustify|
@@ -2750,6 +2751,7 @@ documented in additional help files.
     gofmt.................................|ale-go-gofmt|
     golangci-lint.........................|ale-go-golangci-lint|
     golangserver..........................|ale-go-golangserver|
+    golines...............................|ale-go-golines|
     golint................................|ale-go-golint|
     gometalinter..........................|ale-go-gometalinter|
     gopls.................................|ale-go-gopls|
@@ -2823,11 +2825,16 @@ documented in additional help files.
     standard..............................|ale-javascript-standard|
     xo....................................|ale-javascript-xo|
   json....................................|ale-json-options|
+    eslint................................|ale-json-eslint|
     fixjson...............................|ale-json-fixjson|
     jsonlint..............................|ale-json-jsonlint|
     jq....................................|ale-json-jq|
     prettier..............................|ale-json-prettier|
     spectral..............................|ale-json-spectral|
+  jsonc...................................|ale-jsonc-options|
+    eslint................................|ale-jsonc-eslint|
+  json5...................................|ale-json5-options|
+    eslint................................|ale-json5-eslint|
   julia...................................|ale-julia-options|
     languageserver........................|ale-julia-languageserver|
   kotlin..................................|ale-kotlin-options|
@@ -2933,6 +2940,7 @@ documented in additional help files.
     puppet-languageserver.................|ale-puppet-languageserver|
   purescript..............................|ale-purescript-options|
     purescript-language-server............|ale-purescript-language-server|
+    purs-tidy.............................|ale-purescript-tidy|
     purty.................................|ale-purescript-purty|
   pyrex (cython)..........................|ale-pyrex-options|
     cython................................|ale-pyrex-cython|
@@ -2971,6 +2979,8 @@ documented in additional help files.
   restructuredtext........................|ale-restructuredtext-options|
     textlint..............................|ale-restructuredtext-textlint|
     write-good............................|ale-restructuredtext-write-good|
+  robot...................................|ale-robot-options|
+    rflint................................|ale-robot-rflint|
   ruby....................................|ale-ruby-options|
     brakeman..............................|ale-ruby-brakeman|
     debride...............................|ale-ruby-debride|
@@ -4299,6 +4309,13 @@ ALEJobStarted                                           *ALEJobStarted-autocmd*
   run. This provides better accuracy for checking linter status with
   |ale#engine#IsCheckingBuffer()| over |ALELintPre-autocmd|, which is actually
   triggered before any linters are executed.
+
+ALELSPStarted                                           *ALELSPStarted-autocmd*
+                                                                *ALELSPStarted*
+
+  This |User| autocommand is trigged immediately after an LSP connection is
+  successfully initialized. This provides a way to perform any additional
+  initialization work, such as setting up buffer-level mappings.
 
 
 ALEWantResults                                         *ALEWantResults-autocmd*

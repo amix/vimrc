@@ -67,9 +67,9 @@ def image_exists():
 def tests_on_docker():
     res = docker_run("bash -lc 'python /home/vimtest/run-tests inside-docker'", ok_fail=True)
     if res == 0:
-        print "Tests OK"
+        print("Tests OK")
     else:
-        print "Tests Failed"
+        print("Tests Failed")
         sys.exit(1)
 
 def inside_docker():
@@ -92,7 +92,7 @@ def main():
         return
 
     if not image_exists():
-        print "Need to take image from remote"
+        print("Need to take image from remote")
         system("docker pull %s" % (IMAGE, ))
 
     if "-i" in sys.argv[1:]:

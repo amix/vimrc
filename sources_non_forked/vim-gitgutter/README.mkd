@@ -283,6 +283,9 @@ You can customise:
 * How to handle non-gitgutter signs
 * The signs' colours and symbols
 * Line highlights
+* Line number highlights (only in Neovim 0.3.2 or higher)
+* The diff syntax colours used in the preview window
+* The intra-line diff highlights used in the preview window
 * Whether the diff is relative to the index (default) or working tree.
 * The base of the diff
 * Extra arguments for `git` when running `git diff`
@@ -392,6 +395,35 @@ Maybe you think `CursorLineNr` is a bit annoying.  For example, you could use `U
 
 ```viml
 highlight link GitGutterChangeLineNr Underlined
+```
+
+
+#### The diff syntax colours used in the preview window
+
+To change the diff syntax colours used in the preview window, set up the `diff*` highlight groups in your colorscheme or `~/.vimrc`:
+
+```viml
+diffAdded   " if not set: use GitGutterAdd's foreground colour
+diffChanged " if not set: use GitGutterChange's foreground colour
+diffRemoved " if not set: use GitGutterDelete's foreground colour
+```
+
+Note the `diff*` highlight groups are used in any buffer whose `'syntax'` is `diff`.
+
+
+#### The intra-line diff highlights used in the preview window
+
+To change the intra-line diff highlights used in the preview window, set up the following highlight groups in your colorscheme or `~/.vimrc`:
+
+```viml
+GitGutterAddIntraLine    " default: gui=reverse cterm=reverse
+GitGutterDeleteIntraLine " default: gui=reverse cterm=reverse
+```
+
+For example, to use `DiffAdd` for intra-line added regions:
+
+```viml
+highlight link GitGutterAddIntraLine DiffAdd
 ```
 
 
