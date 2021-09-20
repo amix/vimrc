@@ -151,7 +151,6 @@ function! ale#c#ParseCFlags(path_prefix, should_quote, raw_arguments) abort
         \ || stridx(l:option, '-isystem') == 0
         \ || stridx(l:option, '-idirafter') == 0
         \ || stridx(l:option, '-iframework') == 0
-        \ || stridx(l:option, '-include') == 0
             if stridx(l:option, '-I') == 0 && l:option isnot# '-I'
                 let l:arg = join(split(l:option, '\zs')[2:], '')
                 let l:option = '-I'
@@ -181,6 +180,7 @@ function! ale#c#ParseCFlags(path_prefix, should_quote, raw_arguments) abort
         " Options that have an argument (always separate)
         elseif l:option is# '-iprefix' || stridx(l:option, '-iwithprefix') == 0
         \ || l:option is# '-isysroot' || l:option is# '-imultilib'
+        \ || l:option is# '-include' || l:option is# '-imacros'
             call add(l:items, [0, l:option])
             call add(l:items, [0, l:arguments[l:option_index]])
             let l:option_index = l:option_index + 1
@@ -490,7 +490,7 @@ function! ale#c#GetCFlags(buffer, output) abort
         endif
     endif
 
-    if s:CanParseMakefile(a:buffer) && !empty(a:output) && !empty(l:cflags)
+    if empty(l:cflags) && s:CanParseMakefile(a:buffer) && !empty(a:output)
         let l:cflags = ale#c#ParseCFlagsFromMakeOutput(a:buffer, a:output)
     endif
 
@@ -505,19 +505,25 @@ function! ale#c#GetMakeCommand(buffer) abort
     if s:CanParseMakefile(a:buffer)
         let l:path = ale#path#FindNearestFile(a:buffer, 'Makefile')
 
+        if empty(l:path)
+            let l:path = ale#path#FindNearestFile(a:buffer, 'GNUmakefile')
+        endif
+
         if !empty(l:path)
             let l:always_make = ale#Var(a:buffer, 'c_always_make')
 
-            return ale#path#CdString(fnamemodify(l:path, ':h'))
-            \   . 'make -n' . (l:always_make ? ' --always-make' : '')
+            return [
+            \   fnamemodify(l:path, ':h'),
+            \   'make -n' . (l:always_make ? ' --always-make' : ''),
+            \]
         endif
     endif
 
-    return ''
+    return ['', '']
 endfunction
 
 function! ale#c#RunMakeCommand(buffer, Callback) abort
-    let l:command = ale#c#GetMakeCommand(a:buffer)
+    let [l:cwd, l:command] = ale#c#GetMakeCommand(a:buffer)
 
     if empty(l:command)
         return a:Callback(a:buffer, [])
@@ -527,6 +533,7 @@ function! ale#c#RunMakeCommand(buffer, Callback) abort
     \   a:buffer,
     \   l:command,
     \   {b, output -> a:Callback(a:buffer, output)},
+    \   {'cwd': l:cwd},
     \)
 endfunction
 

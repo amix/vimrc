@@ -40,21 +40,21 @@ function! ale#handlers#shellcheck#GetDialectArgument(buffer) abort
     return ''
 endfunction
 
+function! ale#handlers#shellcheck#GetCwd(buffer) abort
+    return ale#Var(a:buffer, 'sh_shellcheck_change_directory') ? '%s:h' : ''
+endfunction
+
 function! ale#handlers#shellcheck#GetCommand(buffer, version) abort
     let l:options = ale#Var(a:buffer, 'sh_shellcheck_options')
     let l:exclude_option = ale#Var(a:buffer, 'sh_shellcheck_exclusions')
     let l:dialect = ale#Var(a:buffer, 'sh_shellcheck_dialect')
     let l:external_option = ale#semver#GTE(a:version, [0, 4, 0]) ? ' -x' : ''
-    let l:cd_string = ale#Var(a:buffer, 'sh_shellcheck_change_directory')
-    \   ? ale#path#BufferCdString(a:buffer)
-    \   : ''
 
     if l:dialect is# 'auto'
         let l:dialect = ale#handlers#shellcheck#GetDialectArgument(a:buffer)
     endif
 
-    return l:cd_string
-    \   . '%e'
+    return '%e'
     \   . (!empty(l:dialect) ? ' -s ' . l:dialect : '')
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . (!empty(l:exclude_option) ? ' -e ' . l:exclude_option : '')
@@ -111,6 +111,7 @@ function! ale#handlers#shellcheck#DefineLinter(filetype) abort
     call ale#linter#Define(a:filetype, {
     \   'name': 'shellcheck',
     \   'executable': {buffer -> ale#Var(buffer, 'sh_shellcheck_executable')},
+    \   'cwd': function('ale#handlers#shellcheck#GetCwd'),
     \   'command': {buffer -> ale#semver#RunWithVersionCheck(
     \       buffer,
     \       ale#Var(buffer, 'sh_shellcheck_executable'),

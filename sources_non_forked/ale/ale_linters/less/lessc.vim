@@ -38,7 +38,7 @@ endfunction
 
 call ale#linter#Define('less', {
 \   'name': 'lessc',
-\   'executable': {b -> ale#node#FindExecutable(b, 'less_lessc', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'less_lessc', [
 \       'node_modules/.bin/lessc',
 \   ])},
 \   'command': function('ale_linters#less#lessc#GetCommand'),

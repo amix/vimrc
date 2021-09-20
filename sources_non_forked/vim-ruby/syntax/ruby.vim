@@ -65,7 +65,7 @@ endfunction
 com! -nargs=* SynFold call s:run_syntax_fold(<q-args>)
 
 " Not-Top Cluster {{{1
-syn cluster rubyNotTop contains=@rubyCommentNotTop,@rubyStringNotTop,@rubyRegexpSpecial,@rubyDeclaration,@rubyExceptionHandler,@rubyClassOperator,rubyConditional,rubyModuleName,rubyClassName,rubySymbolDelimiter,rubyParentheses,@Spell
+syn cluster rubyNotTop contains=@rubyCommentNotTop,@rubyStringNotTop,@rubyRegexpSpecial,@rubyDeclaration,@rubyExceptionHandler,@rubyClassOperator,rubyConditional,rubyModuleName,rubyClassName,rubySymbolDelimiter,rubyDoubleQuoteSymbolDelimiter,rubySingleQuoteSymbolDelimiter,rubyParentheses,@Spell
 
 " Whitespace Errors {{{1
 if exists("ruby_space_errors")
@@ -133,10 +133,10 @@ syn match rubyCurlyBraceEscape	  "\\[{}]"  contained display
 syn match rubyAngleBracketEscape  "\\[<>]"  contained display
 syn match rubySquareBracketEscape "\\[[\]]" contained display
 
-syn region rubyNestedParentheses    start="("  skip="\\\\\|\\)"  matchgroup=rubyString end=")"	transparent contained
-syn region rubyNestedCurlyBraces    start="{"  skip="\\\\\|\\}"  matchgroup=rubyString end="}"	transparent contained
-syn region rubyNestedAngleBrackets  start="<"  skip="\\\\\|\\>"  matchgroup=rubyString end=">"	transparent contained
-syn region rubyNestedSquareBrackets start="\[" skip="\\\\\|\\\]" matchgroup=rubyString end="\]"	transparent contained
+syn region rubyNestedParentheses    start="("  skip="\\\\\|\\)"  end=")"	transparent contained
+syn region rubyNestedCurlyBraces    start="{"  skip="\\\\\|\\}"  end="}"	transparent contained
+syn region rubyNestedAngleBrackets  start="<"  skip="\\\\\|\\>"  end=">"	transparent contained
+syn region rubyNestedSquareBrackets start="\[" skip="\\\\\|\\\]" end="\]"	transparent contained
 
 syn cluster rubySingleCharEscape contains=rubyBackslashEscape,rubyQuoteEscape,rubySpaceEscape,rubyParenthesisEscape,rubyCurlyBraceEscape,rubyAngleBracketEscape,rubySquareBracketEscape
 syn cluster rubyNestedBrackets	 contains=rubyNested.\+
@@ -464,6 +464,10 @@ syn match rubyDefinedOperator "\%#=1\<defined?" display
 syn match rubySymbol "\%(\w\|[^\x00-\x7F]\)\%(\w\|[^\x00-\x7F]\)*[?!]\=::\@!"he=e-1 contained containedin=rubyBlockParameterList,rubyCurlyBlock
 syn match rubySymbol "[]})\"':]\@1<!\<\%(\h\|[^\x00-\x7F]\)\%(\w\|[^\x00-\x7F]\)*[!?]\=:[[:space:],;]\@="he=e-1
 syn match rubySymbol "[[:space:],{(]\%(\h\|[^\x00-\x7F]\)\%(\w\|[^\x00-\x7F]\)*[!?]\=:[[:space:],;]\@="hs=s+1,he=e-1
+syn match rubySingleQuoteSymbolDelimiter "'" contained
+syn match rubySymbol "'\%(\\.\|[^']\)*'::\@!"he=e-1 contains=rubyQuoteEscape,rubyBackslashEscape,rubySingleQuoteSymbolDelimiter
+syn match rubyDoubleQuoteSymbolDelimiter "\"" contained
+syn match rubySymbol "\"\%(\\.\|[^\"]\)*\"::\@!"he=e-1 contains=@rubyStringSpecial,rubyDoubleQuoteSymbolDelimiter
 
 " __END__ Directive {{{1
 SynFold '__END__' syn region rubyData matchgroup=rubyDataDirective start="^__END__$" end="\%$"
@@ -564,6 +568,8 @@ hi def link rubyHeredocDelimiter	rubyStringDelimiter
 hi def link rubyPercentRegexpDelimiter	rubyRegexpDelimiter
 hi def link rubyPercentStringDelimiter	rubyStringDelimiter
 hi def link rubyPercentSymbolDelimiter	rubySymbolDelimiter
+hi def link rubyDoubleQuoteSymbolDelimiter rubySymbolDelimiter
+hi def link rubySingleQuoteSymbolDelimiter rubySymbolDelimiter
 hi def link rubyRegexpDelimiter		rubyStringDelimiter
 hi def link rubySymbolDelimiter		rubySymbol
 hi def link rubyString			String

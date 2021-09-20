@@ -3,11 +3,39 @@ ALE HTML Integration                                         *ale-html-options*
 
 
 ===============================================================================
+angular                                                      *ale-html-angular*
+
+ALE supports language server features for Angular. You can install it via `npm`: >
+
+  $ npm install --save-dev @angular/language-server
+<
+Angular 11 and up are supported.
+
+
+g:ale_html_angular_executable                   *g:ale_html_angular_executable*
+                                                *b:ale_html_angular_executable*
+  Type: |String|
+  Default: `'ngserver'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_html_angular_use_global                   *g:ale_html_angular_use_global*
+                                                *b:ale_html_angular_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 fecs                                                            *ale-html-fecs*
 
-`fecs` options for HTMl is the same as the options for JavaScript,
-and both of them reads `./.fecsrc` as the default configuration file.
+`fecs` options for HTML are the same as the options for JavaScript, and both
+of them read `./.fecsrc` as the default configuration file.
+
 See: |ale-javascript-fecs|.
+
 
 ===============================================================================
 html-beautify                                               *ale-html-beautify*
@@ -43,6 +71,40 @@ g:ale_html_htmlhint_use_global                 *g:ale_html_htmlhint_use_global*
                                                *b:ale_html_htmlhint_use_global*
   Type: |String|
   Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+
+===============================================================================
+prettier                                                    *ale-html-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+
+
+===============================================================================
+stylelint                                                  *ale-html-stylelint*
+
+g:ale_html_stylelint_executable               *g:ale_html_stylelint_executable*
+                                              *b:ale_html_stylelint_executable*
+  Type: |String|
+  Default: `'stylelint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_html_stylelint_options                     *g:ale_html_stylelint_options*
+                                                 *b:ale_html_stylelint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to stylelint.
+
+
+g:ale_html_stylelint_use_global               *g:ale_html_stylelint_use_global*
+                                              *b:ale_html_stylelint_use_global*
+  Type: |String|
+  Default: `0`
 
   See |ale-integrations-local-executables|
 
@@ -93,39 +155,6 @@ g:ale_html_tidy_use_global                             *g:html_tidy_use_global*
 
   Type: |Number|
   Default: `get(g:, 'ale_use_global_executables', 0)`
-
-  See |ale-integrations-local-executables|
-
-
-===============================================================================
-prettier                                                    *ale-html-prettier*
-
-See |ale-javascript-prettier| for information about the available options.
-
-
-===============================================================================
-stylelint                                                  *ale-html-stylelint*
-
-g:ale_html_stylelint_executable               *g:ale_html_stylelint_executable*
-                                              *b:ale_html_stylelint_executable*
-  Type: |String|
-  Default: `'stylelint'`
-
-  See |ale-integrations-local-executables|
-
-
-g:ale_html_stylelint_options                     *g:ale_html_stylelint_options*
-                                                 *b:ale_html_stylelint_options*
-  Type: |String|
-  Default: `''`
-
-  This variable can be set to pass additional options to stylelint.
-
-
-g:ale_html_stylelint_use_global               *g:ale_html_stylelint_use_global*
-                                              *b:ale_html_stylelint_use_global*
-  Type: |String|
-  Default: `0`
 
   See |ale-integrations-local-executables|
 

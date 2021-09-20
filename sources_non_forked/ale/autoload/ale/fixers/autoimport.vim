@@ -19,7 +19,9 @@ function! ale#fixers#autoimport#Fix(buffer) abort
     endif
 
     return {
-    \   'command': ale#path#BufferCdString(a:buffer)
-    \   .   ale#Escape(l:executable) . (!empty(l:options) ? ' ' . l:options : '') . ' -',
+    \   'cwd': '%s:h',
+    \   'command': ale#Escape(l:executable)
+    \       . (!empty(l:options) ? ' ' . l:options : '')
+    \       . ' -',
     \}
 endfunction

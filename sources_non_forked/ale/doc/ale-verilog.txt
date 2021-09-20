@@ -3,7 +3,7 @@ ALE Verilog/SystemVerilog Integration                     *ale-verilog-options*
 
 
 ===============================================================================
-ALE can use five different linters for Verilog HDL:
+ALE can use six different linters for Verilog HDL:
 
   HDL Checker
     Using `hdl_checker --lsp`
@@ -19,6 +19,9 @@ ALE can use five different linters for Verilog HDL:
 
   Vivado
     Using `xvlog`
+
+  Yosys
+    Using `ysoys -Q -T -p 'read_verilog'`
 
 By default, both 'verilog' and 'systemverilog' filetypes are checked.
 
@@ -112,6 +115,27 @@ g:ale_verilog_xvlog_options                       *g:ale_verilog_xvlog_options*
   Default: `''`
 
   This variable can be changed to modify the flags/options passed to 'xvlog'.
+
+
+===============================================================================
+yosys                                                       *ale-verilog-yosys*
+
+g:ale_verilog_yosys_executable                 *g:ale_verilog_yosys_executable*
+                                               *b:ale_verilog_yosys_executable*
+  Type: |String|
+  Default: `'yosys'`
+
+  This variable can be changed to the path to the 'yosys' executable.
+
+
+g:ale_verilog_yosys_options                       *g:ale_verilog_yosys_options*
+                                                  *b:ale_verilog_yosys_options*
+  Type: |String|
+  Default: `'-Q -T -p ''read_verilog %s'''`
+
+  This variable can be changed to modify the flags/options passed to 'yosys'.
+  By default, Yosys is an interative program. To obtain linting functionality,
+  the `'read_verilog'` command is used.
 
 
 ===============================================================================

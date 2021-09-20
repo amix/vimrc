@@ -30,22 +30,15 @@ function! ale_linters#elixir#mix#Handle(buffer, lines) abort
 endfunction
 
 function! ale_linters#elixir#mix#GetCommand(buffer) abort
-    let l:project_root = ale#handlers#elixir#FindMixProjectRoot(a:buffer)
-
     let l:temp_dir = ale#command#CreateDirectory(a:buffer)
 
-    let l:mix_build_path = has('win32')
-    \   ? 'set MIX_BUILD_PATH=' . ale#Escape(l:temp_dir) . ' &&'
-    \   : 'MIX_BUILD_PATH=' . ale#Escape(l:temp_dir)
-
-    return ale#path#CdString(l:project_root)
-    \ . l:mix_build_path
-    \ . ' mix compile %s'
+    return ale#Env('MIX_BUILD_PATH', l:temp_dir) . 'mix compile %s'
 endfunction
 
 call ale#linter#Define('elixir', {
 \   'name': 'mix',
 \   'executable': 'mix',
+\   'cwd': function('ale#handlers#elixir#FindMixProjectRoot'),
 \   'command': function('ale_linters#elixir#mix#GetCommand'),
 \   'callback': 'ale_linters#elixir#mix#Handle',
 \   'lint_file': 1,

@@ -148,13 +148,14 @@ Apply the following rules when writing Bash scripts.
 ===============================================================================
 4. Testing ALE              *ale-development-tests* *ale-dev-tests* *ale-tests*
 
-ALE is tested with a suite of tests executed in Travis CI and AppVeyor. ALE
-runs tests with the following versions of Vim in the following environments.
+ALE is tested with a suite of tests executed via GitHub Actions and AppVeyor.
+ALE runs tests with the following versions of Vim in the following
+environments.
 
-1. Vim 8.0.0027 on Linux via Travis CI.
-2. Vim 8.1.0519 on Linux via Travis CI.
-3. NeoVim 0.2.0 on Linux via Travis CI.
-4. NeoVim 0.3.5 on Linux via Travis CI.
+1. Vim 8.0.0027 on Linux via GitHub Actions.
+2. Vim 8.2.2401 on Linux via GitHub Actions.
+3. NeoVim 0.2.0 on Linux via GitHub Actions.
+4. NeoVim 0.4.4 on Linux via GitHub Actions.
 5. Vim 8 (stable builds) on Windows via AppVeyor.
 
 If you are developing ALE code on Linux, Mac OSX, or BSD, you can run ALEs
@@ -180,19 +181,24 @@ Generally write tests for any changes you make. The following types of tests
 are recommended for the following types of code.
 
 * New/edited error handler callbacks -> Write tests in `test/handler`
-* New/edited command callbacks       -> Write tests in `test/command_callback`
+* New/edited linter definition       -> Write tests in `test/linter`
 * New/edited fixer functions         -> Write tests in `test/fixers`
 
 Look at existing tests in the codebase for examples of how to write tests.
 Refer to the Vader documentation for general information on how to write Vader
 tests: https://github.com/junegunn/vader.vim
 
+If you need to add any supporting files for tests, such as empty files present
+to test searching upwards through paths for configuration files, they can be
+added to the `test/test-files` directory.
+
 See |ale-development-linter-tests| for more information on how to write linter
 tests.
 
 When you add new linters or fixers, make sure to add them into the tables in
 supported-tools.md and |ale-supported-languages-and-tools.txt|. If you forget to
-keep them both in sync, you should see an error like the following in Travis CI.
+keep them both in sync, you should see an error like the following in the
+builds run for GitHub Actions.
 >
   ========================================
   diff supported-tools.md and doc/ale-supported-languages-and-tools.txt tables
@@ -272,8 +278,8 @@ be written like so. >
   \ '1:Something went wrong',
   \ ]
 <
-Tests for what ALE runs should go in the `test/command_callback` directory,
-and should be written like so. >
+Tests for what ALE runs should go in the `test/linter` directory, and should
+be written like so. >
 
   Before:
     " Load the linter and set up a series of commands, reset linter variables,
@@ -309,6 +315,7 @@ The full list of commands that will be temporarily defined for linter tests
 given the above setup are as follows.
 
 `GivenCommandOutput [...]`         - Define output for ale#command#Run.
+`AssertLinterCwd cwd`              - Check the `cwd` for the linter.
 `AssertLinter executable, command` - Check the executable and command.
 `AssertLinterNotExecuted`          - Check that linters will not be executed.
 `AssertLSPLanguage language`       - Check the language given to an LSP server.
@@ -355,6 +362,7 @@ The full list of commands that will be temporarily defined for fixer tests
 given the above setup are as follows.
 
 `GivenCommandOutput [...]`         - Define output for ale#command#Run.
+`AssertFixerCwd cwd`               - Check the `cwd` for the fixer.
 `AssertFixer results`              - Check the fixer results
 `AssertFixerNotExecuted`           - Check that fixers will not be executed.
 

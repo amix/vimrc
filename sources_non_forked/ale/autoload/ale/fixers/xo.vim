@@ -1,23 +1,36 @@
 " Author: Albert Marquez - https://github.com/a-marquez
 " Description: Fixing files with XO.
 
-call ale#Set('javascript_xo_executable', 'xo')
-call ale#Set('javascript_xo_use_global', get(g:, 'ale_use_global_executables', 0))
-call ale#Set('javascript_xo_options', '')
+function! ale#fixers#xo#Fix(buffer) abort
+    let l:executable = ale#handlers#xo#GetExecutable(a:buffer)
+    let l:options = ale#handlers#xo#GetOptions(a:buffer)
 
-function! ale#fixers#xo#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'javascript_xo', [
-    \   'node_modules/xo/cli.js',
-    \   'node_modules/.bin/xo',
-    \])
+    return ale#semver#RunWithVersionCheck(
+    \   a:buffer,
+    \   l:executable,
+    \   '%e --version',
+    \   {b, v -> ale#fixers#xo#ApplyFixForVersion(b, v, l:executable, l:options)}
+    \)
 endfunction
 
-function! ale#fixers#xo#Fix(buffer) abort
-    let l:executable = ale#fixers#xo#GetExecutable(a:buffer)
+function! ale#fixers#xo#ApplyFixForVersion(buffer, version, executable, options) abort
+    let l:executable = ale#node#Executable(a:buffer, a:executable)
+    let l:options = ale#Pad(a:options)
+
+    " 0.30.0 is the first version with a working --stdin --fix
+    if ale#semver#GTE(a:version, [0, 30, 0])
+        return {
+        \   'command': l:executable
+        \       . ' --stdin --stdin-filename %s'
+        \       . ' --fix'
+        \       . l:options,
+        \}
+    endif
 
     return {
-    \   'command': ale#node#Executable(a:buffer, l:executable)
-    \       . ' --fix %t',
+    \   'command': l:executable
+    \       . ' --fix %t'
+    \       . l:options,
     \   'read_temporary_file': 1,
     \}
 endfunction

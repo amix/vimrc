@@ -31,7 +31,7 @@ Naturally, `/opt/vim_runtime` can be any directory, as long as all the users spe
 
 ## Fonts
 
-I recommend using [IBM Plex Mono font](https://github.com/IBM/plex) (it's an open-source and awesome font that can make your code beautiful). The Awesome vimrc is already setup to try to use it.
+I recommend using [IBM Plex Mono font](https://github.com/IBM/plex) (it's an open-source and awesome font that can make your code look beautiful). The Awesome vimrc is already setup to try to use it.
 
 Some other fonts that Awesome will try to use:
 
@@ -63,9 +63,14 @@ If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: 
 Just do a git rebase!
 
     cd ~/.vim_runtime
+    git reset --hard
+    git clean -d --force
     git pull --rebase
-    python update_plugins.py
+    python update_plugins.py  # use python3 if python is unavailable
 
+NOTE: If you get `ModuleNotFoundError: No module named 'requests'`, you must first install the `requests` python module using `pip`, `pip3`, or `easy_install`.
+
+    pip install requests
 
 ## Some screenshots
 
@@ -102,11 +107,14 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [vim-yankstack](https://github.com/maxbrunsfeld/vim-yankstack): Maintains a history of previous yanks, changes and deletes
 * [vim-zenroom2](https://github.com/amix/vim-zenroom2) Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room
 * [gist-vim](https://github.com/mattn/gist-vim) Easily create gists from Vim using the `:Gist` command
+* [vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides) Is a plugin for visually displaying indent levels in Vim
+* [editorconfig-vim](https://github.com/editorconfig/editorconfig-vim) EditorConfig helps maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs.
 
 
 ## Included color schemes
 
 * [peaksea](https://github.com/vim-scripts/peaksea): The default
+* [dracula](https://github.com/dracula/vim)
 * [vim-colors-solarized](https://github.com/altercation/vim-colors-solarized)
 * [vim-irblack](https://github.com/wgibbs/vim-irblack)
 * [mayansmoke](https://github.com/vim-scripts/mayansmoke)
@@ -139,6 +147,13 @@ You can also install your plugins, for instance, via pathogen you can install [v
 
 	cd ~/.vim_runtime
 	git clone git://github.com/tpope/vim-rails.git my_plugins/vim-rails
+
+You can also install plugins without any plugin manager (vim 8+ required):  
+	Add `packloadall` to your .vimrc file  
+	Create pack plugin directory:  
+	`mkdir -p ~/.vim/pack/plugins/start`  
+	Clone the plugin that you want in that directory, for example:  
+	`git clone --depth=1 git://github.com/maxmellon/vim-jsx-pretty  ~/.vim/pack/plugins/vim-jsx-pretty`
 
 
 ## Key Mappings
@@ -330,6 +345,13 @@ Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a fil
 
     nmap <silent> <leader>a <Plug>(ale_next_wrap)
 
+[vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides) the default mapping to toggle the plugin is (`<leader>ig`)
+
+    You can also use the following commands inside Vim:
+    :IndentGuidesEnable
+    :IndentGuidesDisable
+    :IndentGuidesToggle
+
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
@@ -343,6 +365,13 @@ Shortcuts using `<leader>` instead of special characters:
     map <leader>sa zg
     map <leader>s? z=
 
+### Running Code
+To run code directly from vim, press `F5`. The currently open code will execute without you having to type anything.
+
+Can be used to execute code written in C, C++, Java, Python, Go, Octave, Bash scripts and HTML. To edit how you want your code to be executed, make changes in the file 
+```
+~/vim_runtime/vimrcs/extended.vim
+```
 
 ### Cope
 Query `:help cope` if you are unsure what cope is. It's super useful!
@@ -375,3 +404,4 @@ Just do following:
 Maintaining this Vim configuration isn't my day job. Daily I am the founder/CEO of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
 
 PS: Using Vim isn't a requirement 😄
+

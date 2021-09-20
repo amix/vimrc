@@ -1,7 +1,12 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    55
+" @Revision:    84
+
+
+if !exists('g:tlib#win#use_winid')
+    let g:tlib#win#use_winid = exists('*win_gotoid') && exists('*win_getid')   "{{{2
+endif
 
 
 " Return vim code to jump back to the original window.
@@ -17,6 +22,70 @@ function! tlib#win#Set(winnr) "{{{3
             " TLogDBG string(tlib#win#List())
             return rv
         endif
+    endif
+    return ''
+endf
+
+
+if g:tlib#win#use_winid
+    let g:tlib#win#null_id = -1
+    function! tlib#win#GetID() abort "{{{3
+        return win_getid()
+    endf
+    function! tlib#win#GotoID(win_id) abort "{{{3
+        call win_gotoid(a:win_id)
+    endf
+else
+    let s:win_id = 0
+    let g:tlib#win#null_id = {}
+    function! tlib#win#GetID() abort "{{{3
+        if !exists('w:tlib_win_id')
+            let s:win_id += 1
+            let w:tlib_win_id = s:win_id
+        endif
+        return {'tabpagenr': tabpagenr(), 'bufnr': bufnr('%'), 'winnr': winnr(), 'win_id': w:tlib_win_id}
+    endf
+    function! tlib#win#GotoID(win_id) abort "{{{3
+        Tlibtrace 'tlib', a:win_id
+        if tabpagenr() != a:win_id.tabpagenr
+            exec 'tabnext' a:win_id.tabpagenr
+        endif
+        for wnr in range(1, winnr('$'))
+            let win_id = getwinvar(wnr, 'tlib_win_id', -1)
+            Tlibtrace 'tlib', wnr, win_id
+            if win_id == a:win_id.win_id
+                Tlibtrace 'tlib', wnr
+                exec wnr 'wincmd w'
+                return
+            endif
+        endfor
+        " Was the window closed? What should we do now?
+        if winnr() != a:win_id.winnr
+            exec a:win_id.winnr 'wincmd w'
+        endif
+        if bufnr('%') != a:win_id.bufnr
+            exec 'hide buffer' a:win_id.bufnr
+        endif
+    endf
+endif
+
+
+" Return vim code to jump back to the original window.
+function! tlib#win#SetById(win_id) "{{{3
+    if a:win_id != g:tlib#win#null_id
+        let win_id = tlib#win#GetID()
+        call tlib#win#GotoID(a:win_id)
+        return printf('call tlib#win#GotoID(%s)', win_id)
+        " " TLogVAR a:winnr
+        " " TLogDBG winnr()
+        " " TLogDBG string(tlib#win#List())
+        " if winnr() != a:winnr && winbufnr(a:winnr) != -1
+        "     let rv = winnr().'wincmd w'
+        "     exec a:winnr .'wincmd w'
+        "     " TLogVAR rv
+        "     " TLogDBG string(tlib#win#List())
+        "     return rv
+        " endif
     endif
     return ''
 endf

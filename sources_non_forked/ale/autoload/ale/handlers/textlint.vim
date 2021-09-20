@@ -6,7 +6,7 @@ call ale#Set('textlint_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('textlint_options', '')
 
 function! ale#handlers#textlint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'textlint', [
+    return ale#path#FindExecutable(a:buffer, 'textlint', [
     \   'node_modules/.bin/textlint',
     \   'node_modules/textlint/bin/textlint.js',
     \])

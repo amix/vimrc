@@ -15,20 +15,15 @@ function! ale_linters#kotlin#kotlinc#RunWithImportPaths(buffer) abort
     let l:command = ''
 
     " exec maven/gradle only if classpath is not set
-    if ale#Var(a:buffer, 'kotlin_kotlinc_classpath') isnot# ''
+    if !empty(ale#Var(a:buffer, 'kotlin_kotlinc_classpath'))
         return ale_linters#kotlin#kotlinc#GetCommand(a:buffer, [], {})
     endif
 
-    let l:pom_path = ale#path#FindNearestFile(a:buffer, 'pom.xml')
-
-    if !empty(l:pom_path) && executable('mvn')
-        let l:command = ale#path#CdString(fnamemodify(l:pom_path, ':h'))
-        \   . 'mvn dependency:build-classpath'
-    endif
+    let [l:cwd, l:command] = ale#maven#BuildClasspathCommand(a:buffer)
 
     " Try to use Gradle if Maven isn't available.
     if empty(l:command)
-        let l:command = ale#gradle#BuildClasspathCommand(a:buffer)
+        let [l:cwd, l:command] = ale#gradle#BuildClasspathCommand(a:buffer)
     endif
 
     if empty(l:command)
@@ -38,7 +33,8 @@ function! ale_linters#kotlin#kotlinc#RunWithImportPaths(buffer) abort
     return ale#command#Run(
     \   a:buffer,
     \   l:command,
-    \   function('ale_linters#kotlin#kotlinc#GetCommand')
+    \   function('ale_linters#kotlin#kotlinc#GetCommand'),
+    \   {'cwd': l:cwd},
     \)
 endfunction
 

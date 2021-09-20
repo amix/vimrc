@@ -6,6 +6,7 @@ let g:ale_php_phpstan_executable = get(g:, 'ale_php_phpstan_executable', 'phpsta
 let g:ale_php_phpstan_level = get(g:, 'ale_php_phpstan_level', '')
 let g:ale_php_phpstan_configuration = get(g:, 'ale_php_phpstan_configuration', '')
 let g:ale_php_phpstan_autoload = get(g:, 'ale_php_phpstan_autoload', '')
+call ale#Set('php_phpstan_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#php#phpstan#GetCommand(buffer, version) abort
     let l:configuration = ale#Var(a:buffer, 'php_phpstan_configuration')
@@ -20,8 +21,9 @@ function! ale_linters#php#phpstan#GetCommand(buffer, version) abort
 
     let l:level =  ale#Var(a:buffer, 'php_phpstan_level')
     let l:config_file_exists = ale#path#FindNearestFile(a:buffer, 'phpstan.neon')
+    let l:dist_config_file_exists = ale#path#FindNearestFile(a:buffer, 'phpstan.neon.dist')
 
-    if empty(l:level) && empty(l:config_file_exists)
+    if empty(l:level) && empty(l:config_file_exists) && empty(l:dist_config_file_exists)
         " if no configuration file is found, then use 4 as a default level
         let l:level = '4'
     endif
@@ -31,8 +33,8 @@ function! ale_linters#php#phpstan#GetCommand(buffer, version) abort
     \   : ''
 
     let l:error_format = ale#semver#GTE(a:version, [0, 10, 3])
-    \   ? ' --error-format raw'
-    \   : ' --errorFormat raw'
+    \   ? ' --error-format json'
+    \   : ' --errorFormat json'
 
     return '%e analyze --no-progress'
     \   . l:error_format
@@ -43,17 +45,17 @@ function! ale_linters#php#phpstan#GetCommand(buffer, version) abort
 endfunction
 
 function! ale_linters#php#phpstan#Handle(buffer, lines) abort
-    " Matches against lines like the following:
-    "
-    " filename.php:15:message
-    " C:\folder\filename.php:15:message
-    let l:pattern = '^\([a-zA-Z]:\)\?[^:]\+:\(\d\+\):\(.*\)$'
+    let l:res = ale#util#FuzzyJSONDecode(a:lines, {'files': []})
     let l:output = []
 
-    for l:match in ale#util#GetMatches(a:lines, l:pattern)
+    if type(l:res.files) is v:t_list
+        return l:output
+    endif
+
+    for l:err in l:res.files[expand('#' . a:buffer .':p')].messages
         call add(l:output, {
-        \   'lnum': l:match[2] + 0,
-        \   'text': l:match[3],
+        \   'lnum': l:err.line,
+        \   'text': l:err.message,
         \   'type': 'E',
         \})
     endfor
@@ -63,10 +65,16 @@ endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'phpstan',
-\   'executable': {b -> ale#Var(b, 'php_phpstan_executable')},
+\   'executable': {buffer -> ale#path#FindExecutable(buffer, 'php_phpstan', [
+\       'vendor/bin/phpstan',
+\       'phpstan'
+\   ])},
 \   'command': {buffer -> ale#semver#RunWithVersionCheck(
 \       buffer,
-\       ale#Var(buffer, 'php_phpstan_executable'),
+\       ale#path#FindExecutable(buffer, 'php_phpstan', [
+\           'vendor/bin/phpstan',
+\           'phpstan'
+\       ]),
 \       '%e --version',
 \       function('ale_linters#php#phpstan#GetCommand'),
 \   )},

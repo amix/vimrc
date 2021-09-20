@@ -146,7 +146,7 @@ function! s:Flake8()  " {{{
     set t_te=
 
     " perform the grep itself
-    let &grepformat="%f:%l:%c: %m\,%f:%l: %m"
+    let &grepformat="%f:%l:%c: %m\,%f:%l: %m,%-G%\\d"
     let &grepprg=s:flake8_cmd
     silent! grep! "%"
     " close any existing cwindows,
@@ -273,6 +273,10 @@ function! s:ShowErrorMessage()  " {{{
     if !exists('s:resultDict')
 	return
     endif
+    if !exists('b:showing_message')
+	" ensure showing msg is always defined
+	let b:showing_message = ' '
+    endif
 
     " if there is a message on the current line,
     " then echo it 
@@ -295,4 +299,3 @@ endfunction  " }}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
-

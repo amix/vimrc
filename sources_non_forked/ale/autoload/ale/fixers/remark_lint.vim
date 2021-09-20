@@ -6,7 +6,7 @@ call ale#Set('markdown_remark_lint_use_global', get(g:, 'ale_use_global_executab
 call ale#Set('markdown_remark_lint_options', '')
 
 function! ale#fixers#remark_lint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'markdown_remark_lint', [
+    return ale#path#FindExecutable(a:buffer, 'markdown_remark_lint', [
     \   'node_modules/remark-cli/cli.js',
     \   'node_modules/.bin/remark',
     \])

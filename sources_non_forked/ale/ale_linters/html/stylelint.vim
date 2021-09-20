@@ -5,7 +5,7 @@ call ale#Set('html_stylelint_options', '')
 call ale#Set('html_stylelint_use_global', 0)
 
 function! ale_linters#html#stylelint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'html_stylelint', [
+    return ale#path#FindExecutable(a:buffer, 'html_stylelint', [
     \   'node_modules/.bin/stylelint',
     \])
 endfunction

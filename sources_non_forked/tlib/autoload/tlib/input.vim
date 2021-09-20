@@ -1,8 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    1366
-
+" @Revision:    1430
 
 " :filedoc:
 " Input-related, select from a list etc.
@@ -312,7 +311,7 @@ function! tlib#input#List(type, ...) "{{{3
         if !empty(filter)
             " let world.initial_filter = [[''], [filter]]
             " let world.initial_filter = [[filter]]
-            " TLogVAR world.initial_filter
+            Tlibtrace 'tlib', world.initial_filter, filter
             call world.SetInitialFilter(filter)
         endif
     endif
@@ -333,10 +332,11 @@ endf
 " (an instance of tlib#World as returned by |tlib#World#New|).
 function! tlib#input#ListW(world, ...) "{{{3
     TVarArg 'cmd'
-    " let time0 = str2float(reltimestr(reltime()))  " DBG
-    " TLogVAR time0
+    let time0 = str2float(reltimestr(reltime()))
+    Tlibtrace 'tlib', time0
     let world = a:world
     if world.pick_last_item >= 1 && stridx(world.type, 'e') == -1 && len(world.base) <= 1
+        call world.CloseScratch(1)
         let rv = get(world.base, 0, world.rv)
         if stridx(world.type, 'm') != -1
             return [rv]
@@ -345,7 +345,7 @@ function! tlib#input#ListW(world, ...) "{{{3
         endif
     endif
     call s:Init(world, cmd)
-    " TLogVAR world.state, world.sticky, world.initial_index
+    Tlibtrace 'tlib', world.state, world.sticky, world.initial_index
     " let statusline  = &l:statusline
     " let laststatus  = &laststatus
     let showmode = &showmode
@@ -361,38 +361,24 @@ function! tlib#input#ListW(world, ...) "{{{3
     try
         while !empty(world.state) && world.state !~ '^exit' && (world.show_empty || !empty(world.base))
             let post_keys = ''
-            " TLogDBG 'while'
-            " TLogVAR world.state
-            " let time01 = str2float(reltimestr(reltime()))  " DBG
-            " TLogVAR time01, time01 - time0
+            Tlibtrace 'tlib', 'while', world.state
+            let time01 = str2float(reltimestr(reltime()))
+            Tlibtrace 'tlib', time01, time01 - time0
             try
                 let world = s:RunStateHandlers(world)
 
-                " if exists('b:tlib_world_event')
-                "     let event = b:tlib_world_event
-                "     unlet! b:tlib_world_event
-                "     if event == 'WinLeave'
-                "         " let world.resume_state = world.state
-                "         let world = tlib#agent#Suspend(world, world.rv)
-                "         break
-                "     endif
-                " endif
-
-                " let time02 = str2float(reltimestr(reltime()))  " DBG
-                " TLogVAR time02, time02 - time0
+                let time02 = str2float(reltimestr(reltime()))
+                Tlibtrace 'tlib', time02, time02 - time0
                 if world.state =~ '\<reset\>'
-                    " TLogDBG 'reset'
-                    " call world.Reset(world.state =~ '\<initial\>')
                     call world.Reset()
                     continue
                 endif
 
                 call s:SetOffset(world)
 
-                " let time02 = str2float(reltimestr(reltime()))  " DBG
-                " TLogVAR time02, time02 - time0
-                " TLogDBG 1
-                " TLogVAR world.state
+                let time02 = str2float(reltimestr(reltime()))
+                Tlibtrace 'tlib', time02, time02 - time0
+                Tlibtrace 'tlib', world.state
                 if world.state == 'scroll'
                     let world.prefidx = world.offset
                     let world.state = 'redisplay'
@@ -402,33 +388,26 @@ function! tlib#input#ListW(world, ...) "{{{3
                     let world.sticky = 1
                 endif
 
-                " TLogVAR world.filter
-                " TLogVAR world.sticky
+                Tlibtrace 'tlib', world.filter
+                Tlibtrace 'tlib', world.sticky
                 if world.state =~ '\<picked\>'
-                    " TLogVAR world.rv
+                    Tlibtrace 'tlib', world.rv
                     throw 'picked'
                 elseif world.state =~ '\<pick\>'
                     let world.rv = world.CurrentItem()
-                    " TLogVAR world.rv
+                    Tlibtrace 'tlib', world.rv
                     throw 'picked'
                 elseif world.state =~ 'display'
                     if world.state =~ '^display'
-                        " let time03 = str2float(reltimestr(reltime()))  " DBG
-                        " TLogVAR time03, time03 - time0
+                        let time03 = str2float(reltimestr(reltime()))
+                        Tlibtrace 'tlib', time03, time03 - time0
                         if world.IsValidFilter()
-
-                            " let time1 = str2float(reltimestr(reltime()))  " DBG
-                            " TLogVAR time1, time1 - time0
+                            let time1 = str2float(reltimestr(reltime()))
+                            Tlibtrace 'tlib', time1, time1 - time0
                             call world.BuildTableList()
-                            " let time2 = str2float(reltimestr(reltime()))  " DBG
-                            " TLogVAR time2, time2 - time0
-                            " TLogDBG 2
-                            " TLogDBG len(world.table)
-                            " TLogVAR world.table
-                            " let world.list  = map(copy(world.table), 'world.GetBaseItem(v:val)')
-                            " TLogDBG 3
+                            let time2 = str2float(reltimestr(reltime()))
+                            Tlibtrace 'tlib', time2, time2 - time0
                             let world.llen = len(world.list)
-                            " TLogVAR world.index_table
                             if empty(world.index_table)
                                 let dindex = range(1, world.llen)
                                 let world.index_width = len(world.llen)
@@ -436,12 +415,11 @@ function! tlib#input#ListW(world, ...) "{{{3
                                 let dindex = world.index_table
                                 let world.index_width = len(max(dindex))
                             endif
-                            " let time3 = str2float(reltimestr(reltime()))  " DBG
-                            " TLogVAR time3, time3 - time0
+                            let time3 = str2float(reltimestr(reltime()))
+                            Tlibtrace 'tlib', time3, time3 - time0
                             if world.llen == 0 && !world.show_empty
                                 call world.ReduceFilter()
                                 let world.offset = 1
-                                " TLogDBG 'ReduceFilter'
                                 continue
                             else
                                 if world.llen == 1
@@ -449,18 +427,15 @@ function! tlib#input#ListW(world, ...) "{{{3
                                     if world.pick_last_item >= 2
                                         " echom 'Pick last item: '. world.list[0]
                                         let world.prefidx = '1'
-                                        " TLogDBG 'pick last item'
                                         throw 'pick'
                                     endif
                                 else
                                     let world.last_item = ''
                                 endif
                             endif
-                            " let time4 = str2float(reltimestr(reltime()))  " DBG
-                            " TLogVAR time4, time4 - time0
-                            " TLogDBG 4
-                            " TLogVAR world.idx, world.llen, world.state
-                            " TLogDBG world.FilterIsEmpty()
+                            let time4 = str2float(reltimestr(reltime()))
+                            Tlibtrace 'tlib', time4, time4 - time0
+                            Tlibtrace 'tlib', world.idx, world.llen, world.state
                             if world.state == 'display'
                                 if world.idx == '' && world.llen < g:tlib#input#sortprefs_threshold && !world.FilterIsEmpty()
                                     call world.SetPrefIdx()
@@ -473,27 +448,22 @@ function! tlib#input#ListW(world, ...) "{{{3
                                     let world.prefidx = 1
                                 endif
                             endif
-                            " let time5 = str2float(reltimestr(reltime()))  " DBG
-                            " TLogVAR time5, time5 - time0
-                            " TLogVAR world.initial_index, world.prefidx
-                            " TLogDBG 5
-                            " TLogDBG len(world.list)
-                            " TLogVAR world.list
+                            let time5 = str2float(reltimestr(reltime()))
+                            Tlibtrace 'tlib', time5, time5 - time0
+                            Tlibtrace 'tlib', world.initial_index, world.prefidx
+                            Tlibtrace 'tlib', len(world.list)
                             let dlist = world.DisplayFormat(world.list)
-                            " TLogVAR world.prefidx
-                            " TLogDBG 6
-                            " let time6 = str2float(reltimestr(reltime()))  " DBG
-                            " TLogVAR time6, time6 - time0
+                            Tlibtrace 'tlib', world.prefidx
+                            let time6 = str2float(reltimestr(reltime()))
+                            Tlibtrace 'tlib', time6, time6 - time0
                             if world.offset_horizontal > 0
-                                call map(dlist, 'v:val[world.offset_horizontal:-1]')
+                                call map(dlist, 'tlib#string#Strcharpart(v:val, world.offset_horizontal)')
                             endif
-                            " let time7 = str2float(reltimestr(reltime()))  " DBG
-                            " TLogVAR time7, time7 - time0
-                            " TLogVAR dindex
+                            let time7 = str2float(reltimestr(reltime()))
+                            Tlibtrace 'tlib', time7, time7 - time0
                             let dlist = map(range(0, world.llen - 1), 'printf("%0'. world.index_width .'d", dindex[v:val]) .": ". dlist[v:val]')
-                            " TLogVAR dlist
-                            " let time8 = str2float(reltimestr(reltime()))  " DBG
-                            " TLogVAR time8, time8 - time0
+                            let time8 = str2float(reltimestr(reltime()))
+                            Tlibtrace 'tlib', time8, time8 - time0
 
                         else
 
@@ -505,30 +475,14 @@ function! tlib#input#ListW(world, ...) "{{{3
                             let world.prefidx = 1
                         endif
                     endif
-                    " TLogVAR world.idx, world.prefidx
+                    Tlibtrace 'tlib', world.idx, world.prefidx
 
-                    " TLogDBG 7
-                    " TLogVAR world.prefidx, world.offset
-                    " TLogDBG (world.prefidx > world.offset + winheight(0) - 1)
-                    " if world.prefidx > world.offset + winheight(0) - 1
-                    "     let listtop = world.llen - winheight(0) + 1
-                    "     let listoff = world.prefidx - winheight(0) + 1
-                    "     let world.offset = min([listtop, listoff])
-                    "     TLogVAR world.prefidx
-                    "     TLogDBG len(list)
-                    "     TLogDBG winheight(0)
-                    "     TLogVAR listtop, listoff, world.offset
-                    " elseif world.prefidx < world.offset
-                    "     let world.offset = world.prefidx
-                    " endif
-                    " TLogDBG 8
-                    " TLogVAR world.initial_display, !tlib#char#IsAvailable()
+                    Tlibtrace 'tlib', world.prefidx, world.offset
+                    Tlibtrace 'tlib', world.initial_display, !tlib#char#IsAvailable()
                     if world.state =~ '\<update\>' || world.initial_display || !tlib#char#IsAvailable()
-                        " TLogDBG len(dlist)
                         call world.DisplayList(world.Query(), dlist)
                         call world.FollowCursor()
                         let world.initial_display = 0
-                        " TLogDBG 9
                     endif
                     if world.state =~ '\<hibernate\>'
                         let world.state = 'suspend'
@@ -548,9 +502,10 @@ function! tlib#input#ListW(world, ...) "{{{3
                     endif
                 endif
                 " TAssert IsNotEmpty(world.scratch)
+                let world.list_wid = tlib#win#GetID()
                 let world.list_wnr = winnr()
 
-                " TLogVAR world.state, world.next_state
+                Tlibtrace 'tlib', world.state, world.next_state
                 if !empty(world.next_state)
                     let world.state = world.next_state
                     let world.next_state = ''
@@ -568,7 +523,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                     endif
                     if has('gui_win32')
                         let exec_cmd = input(query, '')
-                        " TLogVAR exec_cmd
+                        Tlibtrace 'tlib', exec_cmd
                         if exec_cmd == ''
                             let world.state = 'redisplay'
                         else
@@ -576,17 +531,15 @@ function! tlib#input#ListW(world, ...) "{{{3
                         endif
                     elseif has('gui_gtk') || has('gui_gtk2')
                         let c = s:GetModdedChar(world)
-                        " TLogVAR c
+                        Tlibtrace 'tlib', c
                     endif
                 else
-                    " TLogVAR world.timeout
+                    Tlibtrace 'tlib', world.timeout
                     let c = s:GetModdedChar(world)
-                    " TLogVAR c, has_key(world.key_map[world.key_mode],c)
+                    Tlibtrace 'tlib', c, has_key(world.key_map[world.key_mode],c)
                 endif
-                " TLogVAR c
-                " TLogDBG string(sort(keys(world.key_map[world.key_mode])))
-
-                " TLogVAR world.next_agent, world.next_eval
+                Tlibtrace 'tlib', c
+                Tlibtrace 'tlib', world.next_agent, world.next_eval
                 if !empty(world.next_agent)
                     let nagent = world.next_agent
                     let world.next_agent = ''
@@ -604,19 +557,17 @@ function! tlib#input#ListW(world, ...) "{{{3
                 elseif has_key(world.key_map[world.key_mode], c)
                     let sr = @/
                     silent! let @/ = lastsearch
-                    " TLogVAR c, world.key_map[world.key_mode][c]
+                    Tlibtrace 'tlib', c, world.key_map[world.key_mode][c]
                     " TLog "Agent: ". string(world.key_map[world.key_mode][c])
                     let handler = world.key_map[world.key_mode][c]
-                    " " TLogVAR handler
-                    " let world = call(handler.agent, [world, world.GetSelectedItems(world.CurrentItem())])
-                    " call s:CheckAgentReturnValue(c, world)
+                    Tlibtrace 'tlib', handler
                     let world = s:CallAgent(handler, world, world.GetSelectedItems(world.CurrentItem()))
                     silent! let @/ = sr
                     " continue
                 elseif c == 13
                     throw 'pick'
                 elseif c == 27
-                    " TLogVAR c, world.key_mode
+                    Tlibtrace 'tlib', c, world.key_mode
                     if world.key_mode != 'default'
                         let world.key_mode = 'default'
                         let world.state = 'redisplay'
@@ -666,7 +617,7 @@ function! tlib#input#ListW(world, ...) "{{{3
                             let world.state = 'exit empty'
                         endif
                     endif
-                    " TLogVAR world.prefidx, world.state
+                    Tlibtrace 'tlib', world.prefidx, world.state
                 elseif has_key(world.key_map[world.key_mode], 'unknown_key')
                     let agent = world.key_map[world.key_mode].unknown_key.agent
                     " let world = call(agent, [world, c])
@@ -675,17 +626,17 @@ function! tlib#input#ListW(world, ...) "{{{3
                 elseif c >= 32
                     let world.state = 'display'
                     let numbase = get(world.numeric_chars, c, -99999)
-                    " TLogVAR numbase, world.numeric_chars, c
+                    Tlibtrace 'tlib', numbase, world.numeric_chars, c
                     if numbase != -99999
                         let world.idx .= (c - numbase)
                         if len(world.idx) == world.index_width
                             let world.prefidx = world.idx
-                            " TLogVAR world.prefidx
+                            Tlibtrace 'tlib', world.prefidx
                             throw 'pick'
                         endif
                     else
                         let world.idx = ''
-                        " TLogVAR world.filter
+                        Tlibtrace 'tlib', world.filter
                         if world.llen > g:tlib#input#livesearch_threshold
                             let pattern = input('Filter: ', world.CleanFilter(world.filter[0][0]) . nr2char(c))
                             if empty(pattern)
@@ -718,61 +669,50 @@ function! tlib#input#ListW(world, ...) "{{{3
                 call world.ClearAllMarks()
                 call world.MarkCurrent(world.prefidx)
                 let world.state = ''
-                " TLogDBG 'Pick item #'. world.prefidx
 
             finally
-                " TLogDBG 'finally 1', world.state
                 if world.state =~ '\<suspend\>'
                     " if !world.allow_suspend
                     "     echom "Cannot be suspended"
                     "     let world.state = 'redisplay'
                     " endif
                 elseif !empty(world.list) && !empty(world.base)
-                    " TLogVAR world.list
                     if empty(world.state)
                         let world.rv = world.CurrentItem()
-                        " TLogVAR world.state, world.rv
+                        Tlibtrace 'tlib', world.state, world.rv
                     endif
-                    " TLogVAR "postprocess"
                     for handler in world.post_handlers
                         let state = get(handler, 'postprocess', '')
-                        " TLogVAR handler
-                        " TLogVAR state
-                        " TLogVAR world.state
+                        Tlibtrace 'tlib', handler
+                        Tlibtrace 'tlib', state
+                        Tlibtrace 'tlib', world.state
                         if state == world.state
                             let agent = handler.agent
                             let [world, world.rv] = call(agent, [world, world.rv])
-                            " TLogVAR world.state, world.rv
+                            Tlibtrace 'tlib', world.state, world.rv
                             call s:CheckAgentReturnValue(agent, world)
                         endif
                     endfor
                 endif
-                " TLogDBG 'state0='. world.state
             endtry
-            " TLogDBG 'state1='. world.state
         endwh
 
-        " TLogVAR world.state
-        " TLogDBG string(tlib#win#List())
-        " TLogDBG 'exit while loop'
-        " TLogVAR world.list
-        " TLogVAR world.sel_idx
-        " TLogVAR world.idx
-        " TLogVAR world.prefidx
-        " TLogVAR world.rv
-        " TLogVAR world.type, world.state, world.return_agent, world.index_table, world.rv
+        Tlibtrace 'tlib', world.state
+        Tlibtrace 'tlib', len(world.list)
+        Tlibtrace 'tlib', world.sel_idx
+        Tlibtrace 'tlib', world.idx
+        Tlibtrace 'tlib', world.prefidx
+        Tlibtrace 'tlib', world.rv
         if world.state =~ '\<\(empty\|escape\)\>'
             let world.sticky = 0
         endif
         if world.state =~ '\<suspend\>'
-            " TLogDBG 'return suspended'
-            " TLogVAR world.prefidx
+            Tlibtrace 'tlib', world.prefidx
             " exec world.prefidx
             return
         elseif world.state =~ '\<empty\>'
             " TLog "empty"
-            " TLogDBG 'return empty'
-            " TLogVAR world.type
+            Tlibtrace 'tlib', world.type
             if stridx(world.type, 'm') != -1
                 return []
             elseif stridx(world.type, 'i') != -1
@@ -781,23 +721,18 @@ function! tlib#input#ListW(world, ...) "{{{3
                 return ''
             endif
         elseif !empty(world.return_agent)
-            " TLogDBG 'return agent'
-            " TLogVAR world.return_agent
-            call world.CloseScratch()
-            " TLogDBG "return_agent ". string(tlib#win#List())
+            Tlibtrace 'tlib', world.return_agent
+            call world.CloseScratch(1)
             " TAssert IsNotEmpty(world.scratch)
             return call(world.return_agent, [world, world.GetSelectedItems(world.rv)])
         elseif stridx(world.type, 'w') != -1
             " TLog "return_world"
-            " TLogDBG 'return world'
             return world
         elseif stridx(world.type, 'm') != -1
             " TLog "return_multi"
-            " TLogDBG 'return multi'
             return world.GetSelectedItems(world.rv)
         elseif stridx(world.type, 'i') != -1
             " TLog "return_index"
-            " TLogDBG 'return index'
             if empty(world.index_table)
                 return world.rv
             else
@@ -805,14 +740,13 @@ function! tlib#input#ListW(world, ...) "{{{3
             endif
         else
             " TLog "return_else"
-            " TLogDBG 'return normal'
             return world.rv
         endif
 
     finally
         call world.Leave()
 
-        " TLogVAR statusline
+        " Tlibtrace 'tlib', statusline
         " let &l:statusline = statusline
         " let &laststatus = laststatus
         if &showmode != showmode
@@ -824,32 +758,28 @@ function! tlib#input#ListW(world, ...) "{{{3
             silent! aunmenu ]TLibInputListPopupMenu
         endif
 
-        " TLogDBG 'finally 2'
-        " TLogDBG string(world.Methods())
-        " TLogVAR world.state
-        " TLogDBG string(tlib#win#List())
+        Tlibtrace 'tlib', world.state
         if world.state !~ '\<suspend\>'
             " redraw
-            " TLogVAR world.sticky, bufnr("%")
+            Tlibtrace 'tlib', world.sticky, bufnr("%")
             if world.sticky
-                " TLogDBG "sticky"
-                " TLogVAR world.bufnr
-                " TLogDBG bufwinnr(world.bufnr)
+                Tlibtrace 'tlib', world.bufnr
                 if world.scratch_split > 0
                     if bufwinnr(world.bufnr) == -1
-                        " TLogDBG "UseScratch"
                         call world.UseScratch()
                     endif
                     let world = tlib#agent#SuspendToParentWindow(world, world.GetSelectedItems(world.rv))
                 endif
             else
-                " TLogDBG "non sticky"
-                " TLogVAR world.state, world.win_wnr, world.bufnr
-                if world.CloseScratch()
-                    " TLogVAR world.winview
+                Tlibtrace 'tlib', world.state, world.win_id, world.bufnr
+                if world.CloseScratch(1)
+                    Tlibtrace 'tlib', get(world,'winview','')
                     call tlib#win#SetLayout(world.winview)
                 endif
             endif
+        endif
+        if world.state !~ '\<norestore\>'
+            call world.RestoreWindow()
         endif
         " for i in range(0,5)
         "     call getchar(0)
@@ -857,9 +787,10 @@ function! tlib#input#ListW(world, ...) "{{{3
         echo
         redraw!
         if !empty(post_keys)
-            " TLogVAR post_keys
+            Tlibtrace 'tlib', post_keys
             call feedkeys(post_keys)
         endif
+        let world.state = ''
     endtry
 endf
 
@@ -871,7 +802,7 @@ function! s:CallAgent(handler, world, list) abort "{{{3
         let args += a:handler.args
     endif
     let world = call(agent, args)
-    " TLogVAR world.state, world.rv
+    Tlibtrace 'tlib', world.state, world.rv
     call s:CheckAgentReturnValue(agent, world)
     return world
 endf
@@ -887,7 +818,7 @@ endf
 
 
 function! s:Init(world, cmd) "{{{3
-    " TLogVAR a:cmd
+    Tlibtrace 'tlib', a:cmd
     let a:world.initial_display = 1
     if a:cmd =~ '\<sticky\>'
         let a:world.sticky = 1
@@ -905,7 +836,7 @@ function! s:Init(world, cmd) "{{{3
         "     let a:world.state = a:world.resume_state
         " endif
     elseif !a:world.initialized
-        " TLogVAR a:world.initialized, a:world.win_wnr, a:world.bufnr
+        Tlibtrace 'tlib', a:world.initialized, a:world.win_id, a:world.bufnr
         let a:world.filetype = &filetype
         let a:world.fileencoding = &fileencoding
         call a:world.SetMatchMode(tlib#var#Get('tlib#input#filter_mode', 'wb'))
@@ -913,9 +844,9 @@ function! s:Init(world, cmd) "{{{3
         if !has_key(a:world, 'key_mode')
             let a:world.key_mode = 'default'
         endif
-        " TLogVAR has_key(a:world,'key_map')
+        Tlibtrace 'tlib', has_key(a:world,'key_map')
         if has_key(a:world, 'key_map')
-            " TLogVAR has_key(a:world.key_map,a:world.key_mode)
+            Tlibtrace 'tlib', has_key(a:world.key_map,a:world.key_mode)
             if has_key(a:world.key_map, a:world.key_mode)
                 let a:world.key_map[a:world.key_mode] = extend(
                             \ a:world.key_map[a:world.key_mode],
@@ -929,14 +860,14 @@ function! s:Init(world, cmd) "{{{3
                         \ a:world.key_mode : copy(g:tlib#input#keyagents_InputList_s)
                         \ }
         endif
-        " TLogVAR a:world.type
+        Tlibtrace 'tlib', a:world.type
         if stridx(a:world.type, 'm') != -1
             call extend(a:world.key_map[a:world.key_mode], g:tlib#input#keyagents_InputList_m, 'force')
         endif
         for key_mode in keys(a:world.key_map)
             let a:world.key_map[key_mode] = map(a:world.key_map[key_mode], 'type(v:val) == 4 ? v:val : {"agent": v:val}')
         endfor
-        " TLogVAR a:world.key_mode
+        Tlibtrace 'tlib', a:world.key_mode
         if type(a:world.key_handlers) == 3
             call s:ExtendKeyMap(a:world, a:world.key_mode, a:world.key_handlers)
         elseif type(a:world.key_handlers) == 4
@@ -946,12 +877,12 @@ function! s:Init(world, cmd) "{{{3
         else
             throw "tlib#input#ListW: key_handlers must be either a list or a dictionary"
         endif
-        " TLogVAR a:world.type, a:world.key_map
+        Tlibtrace 'tlib', a:world.type, a:world.key_map
         if !empty(a:cmd)
             let a:world.state .= ' '. a:cmd
         endif
     endif
-    " TLogVAR a:world.state, a:world.sticky
+    Tlibtrace 'tlib', a:world.state, a:world.sticky
 endf
 
 
@@ -979,7 +910,7 @@ function! s:PopupmenuExists()
             let rv = 0
         endtry
     endif
-    " TLogVAR rv
+    Tlibtrace 'tlib', rv
     return rv
 endf
 
@@ -1144,9 +1075,9 @@ function! tlib#input#EditList(query, list, ...) "{{{3
     let handlers = a:0 >= 1 && !empty(a:1) ? a:1 : g:tlib#input#handlers_EditList
     let default  = a:0 >= 2 ? a:2 : []
     let timeout  = a:0 >= 3 ? a:3 : 0
-    " TLogVAR handlers
+    Tlibtrace 'tlib', handlers
     let rv = tlib#input#List('me', a:query, copy(a:list), handlers, default, timeout)
-    " TLogVAR rv
+    Tlibtrace 'tlib', rv
     if empty(rv)
         return a:list
     else
@@ -1157,7 +1088,7 @@ endf
 
 
 function! tlib#input#Resume(name, pick, bufnr) "{{{3
-    " TLogVAR a:name, a:pick
+    Tlibtrace 'tlib', a:name, a:pick
     echo
     if bufnr('%') != a:bufnr
         if g:tlib#debug
@@ -1182,10 +1113,8 @@ function! tlib#input#Resume(name, pick, bufnr) "{{{3
     else
         call tlib#autocmdgroup#Init()
         autocmd! TLib BufEnter <buffer>
-        if b:tlib_{a:name}.state =~ '\<suspend\>'
+        if b:tlib_{a:name}.state !~# 'display\>'
             let b:tlib_{a:name}.state = 'redisplay'
-        else
-            let b:tlib_{a:name}.state .= ' redisplay'
         endif
         " call tlib#input#List('resume '. a:name)
         let cmd = 'resume '. a:name
@@ -1245,24 +1174,25 @@ endf
 "       endif
 "   endf
 "   call tlib#input#Edit('foo', b:var, 'FooContinue')
-function! tlib#input#Edit(name, value, callback, ...) "{{{3
-    " TLogVAR a:value
+function! tlib#input#EditW(world, name, value, callback, ...) "{{{3
+    Tlibtrace 'tlib', a:value
     TVarArg ['args', []]
-    let sargs = {'scratch': '__EDIT__'. a:name .'__', 'win_wnr': winnr()}
+    let sargs = {'scratch': '__EDIT__'. a:name .'__', 'win_id': tlib#win#GetID()}
     let scr = tlib#scratch#UseScratch(sargs)
+    let b:tlib_world = a:world
 
     " :nodoc:
-    map <buffer> <c-w>c :call <SID>EditCallback(0)<cr>
+    map <buffer> <c-w>c :call tlib#input#EditCallback(0)<cr>
     " :nodoc:
-    imap <buffer> <c-w>c <c-o>call <SID>EditCallback(0)<cr>
+    imap <buffer> <c-w>c <c-o>call tlib#input#EditCallback(0)<cr>
     " :nodoc:
-    map <buffer> <c-s> :call <SID>EditCallback(1)<cr>
+    map <buffer> <c-s> :call tlib#input#EditCallback(1)<cr>
     " :nodoc:
-    imap <buffer> <c-s> <c-o>call <SID>EditCallback(1)<cr>
+    imap <buffer> <c-s> <c-o>call tlib#input#EditCallback(1)<cr>
     " :nodoc:
-    map <buffer> <c-w><cr> :call <SID>EditCallback(1)<cr>
+    map <buffer> <c-w><cr> :call tlib#input#EditCallback(1)<cr>
     " :nodoc:
-    imap <buffer> <c-w><cr> <c-o>call <SID>EditCallback(1)<cr>
+    imap <buffer> <c-w><cr> <c-o>call tlib#input#EditCallback(1)<cr>
     
     call tlib#normal#WithRegister('gg"tdG', 't')
     call append(1, split(a:value, "\<c-j>", 1))
@@ -1285,14 +1215,17 @@ function! tlib#input#Edit(name, value, callback, ...) "{{{3
     endif
     let b:tlib_scratch_edit_args     = args
     let b:tlib_scratch_edit_scratch  = sargs
-    " exec 'autocmd BufDelete,BufHidden,BufUnload <buffer> call s:EditCallback('. string(a:name) .')'
+    " exec 'autocmd BufDelete,BufHidden,BufUnload <buffer> call tlib#input#EditCallback('. string(a:name) .')'
     " echohl MoreMsg
     " echom 'Press <c-s> to enter, <c-w>c to cancel editing.'
     " echohl NONE
+    let world = getbufvar(scr, 'tlib_world', a:world)
+    let world.state .= ' norestore'
+    return world
 endf
 
 
-function! s:EditCallback(...) "{{{3
+function! tlib#input#EditCallback(...) "{{{3
     TVarArg ['ok', -1]
     " , ['bufnr', -1]
     " autocmd! BufDelete,BufHidden,BufUnload <buffer>
@@ -1304,10 +1237,11 @@ function! s:EditCallback(...) "{{{3
     let cb   = b:tlib_scratch_edit_callback
     let args = b:tlib_scratch_edit_args
     let sargs = b:tlib_scratch_edit_scratch
-    " TLogVAR cb, args, sargs
+    let world = b:tlib_world
+    Tlibtrace 'tlib', cb, args, sargs
+    call call(cb, args + [ok, text, world])
     call tlib#scratch#CloseScratch(b:tlib_scratch_edit_scratch)
-    call tlib#win#Set(sargs.win_wnr)
-    call call(cb, args + [ok, text])
+    call tlib#win#SetById(sargs.win_id)
 endf
 
 

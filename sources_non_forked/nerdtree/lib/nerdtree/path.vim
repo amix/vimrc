@@ -394,7 +394,7 @@ function! s:Path.getSortKey()
             let self._sortKey = [self.getSortOrderIndex()] + metadata
         endif
 
-        let path = self.getLastPathComponent(1)
+        let path = self.getLastPathComponent(0)
         if !g:NERDTreeSortHiddenFirst
             let path = substitute(path, '^[._]', '', '')
         endif
@@ -459,10 +459,10 @@ function! s:Path.ignore(nerdtree)
             endif
         endfor
 
-        for Callback in g:NERDTree.PathFilters()
-            let Callback = type(Callback) ==# type(function('tr')) ? Callback : function(Callback)
-            if Callback({'path': self, 'nerdtree': a:nerdtree})
-                return 1
+        for l:Callback in g:NERDTree.PathFilters()
+            let l:Callback = type(l:Callback) ==# type(function('tr')) ? l:Callback : function(l:Callback)
+            if l:Callback({'path': self, 'nerdtree': a:nerdtree})
+               return 1
             endif
         endfor
     endif
@@ -483,7 +483,10 @@ endfunction
 " returns true if this path matches the given ignore pattern
 function! s:Path._ignorePatternMatches(pattern)
     let pat = a:pattern
-    if strpart(pat,len(pat)-7) ==# '[[dir]]'
+    if strpart(pat,len(pat)-8) ==# '[[path]]'
+        let pat = strpart(pat,0, len(pat)-8)
+        return self.str() =~# pat
+    elseif strpart(pat,len(pat)-7) ==# '[[dir]]'
         if !self.isDirectory
             return 0
         endif

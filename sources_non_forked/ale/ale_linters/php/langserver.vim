@@ -19,7 +19,7 @@ endfunction
 call ale#linter#Define('php', {
 \   'name': 'langserver',
 \   'lsp': 'stdio',
-\   'executable': {b -> ale#node#FindExecutable(b, 'php_langserver', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'php_langserver', [
 \       'vendor/bin/php-language-server.php',
 \   ])},
 \   'command': 'php %e',

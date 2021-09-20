@@ -64,6 +64,14 @@ function! ale#lsp#tsserver_message#Definition(buffer, line, column) abort
     \}]
 endfunction
 
+function! ale#lsp#tsserver_message#TypeDefinition(buffer, line, column) abort
+    return [0, 'ts@typeDefinition', {
+    \   'line': a:line,
+    \   'offset': a:column,
+    \   'file': expand('#' . a:buffer . ':p'),
+    \}]
+endfunction
+
 function! ale#lsp#tsserver_message#References(buffer, line, column) abort
     return [0, 'ts@references', {
     \   'line': a:line,

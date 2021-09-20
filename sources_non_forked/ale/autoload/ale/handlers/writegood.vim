@@ -11,7 +11,7 @@ endfunction
 call ale#handlers#writegood#ResetOptions()
 
 function! ale#handlers#writegood#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'writegood', [
+    return ale#path#FindExecutable(a:buffer, 'writegood', [
     \   'node_modules/.bin/write-good',
     \   'node_modules/write-good/bin/write-good.js',
     \])

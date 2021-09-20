@@ -37,4 +37,40 @@ describe "Indenting" do
       end
     EOF
   end
+
+  specify "endless methods" do
+    # Note: A case that doesn't work at this time:
+    #
+    #   def foo()
+    #     = 42
+    #
+    assert_correct_indenting <<~EOF
+      indented_block do
+        def foo(bar) = puts(bar)
+        def foo!(bar) = puts(bar)
+        def foo?(bar) = puts(bar)
+
+        def foo(bar)=puts(bar)
+
+        def foo(bar) = bar + 1
+
+        def foo() = 1 + 1
+        def foo = 1 + 1
+
+        private def foo(bar) = bar + 1
+
+        def foo(bar) =
+          bar + 1
+
+        def foo(bar = default_function()) = puts(bar)
+
+        def foo(bar = default_function()) =
+          puts(bar)
+
+        def foo(
+          bar
+        ) = puts(bar)
+      end
+    EOF
+  end
 end

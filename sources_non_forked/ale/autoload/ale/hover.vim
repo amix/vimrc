@@ -46,6 +46,10 @@ function! ale#hover#HandleTSServerResponse(conn_id, response) abort
                 call balloon_show(a:response.body.displayString)
             elseif get(l:options, 'truncated_echo', 0)
                 call ale#cursor#TruncatedEcho(split(a:response.body.displayString, "\n")[0])
+            elseif g:ale_hover_to_floating_preview || g:ale_floating_preview
+                call ale#floating_preview#Show(split(a:response.body.displayString, "\n"), {
+                \   'filetype': 'ale-preview.message',
+                \})
             elseif g:ale_hover_to_preview
                 call ale#preview#Show(split(a:response.body.displayString, "\n"), {
                 \   'filetype': 'ale-preview.message',
@@ -226,6 +230,11 @@ function! ale#hover#HandleLSPResponse(conn_id, response) abort
                 call balloon_show(join(l:lines, "\n"))
             elseif get(l:options, 'truncated_echo', 0)
                 call ale#cursor#TruncatedEcho(l:lines[0])
+            elseif g:ale_hover_to_floating_preview || g:ale_floating_preview
+                call ale#floating_preview#Show(l:lines, {
+                \   'filetype': 'ale-preview.message',
+                \   'commands': l:commands,
+                \})
             elseif g:ale_hover_to_preview
                 call ale#preview#Show(l:lines, {
                 \   'filetype': 'ale-preview.message',

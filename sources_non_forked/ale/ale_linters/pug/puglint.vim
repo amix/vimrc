@@ -47,7 +47,7 @@ endfunction
 
 call ale#linter#Define('pug', {
 \   'name': 'puglint',
-\   'executable': {b -> ale#node#FindExecutable(b, 'pug_puglint', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'pug_puglint', [
 \       'node_modules/.bin/pug-lint',
 \   ])},
 \   'output_stream': 'stderr',

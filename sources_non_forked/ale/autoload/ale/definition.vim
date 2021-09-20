@@ -36,7 +36,7 @@ function! ale#definition#UpdateTagStack() abort
 endfunction
 
 function! ale#definition#HandleTSServerResponse(conn_id, response) abort
-    if get(a:response, 'command', '') is# 'definition'
+    if has_key(a:response, 'request_seq')
     \&& has_key(s:go_to_definition_map, a:response.request_seq)
         let l:options = remove(s:go_to_definition_map, a:response.request_seq)
 
@@ -66,9 +66,17 @@ function! ale#definition#HandleLSPResponse(conn_id, response) abort
         endif
 
         for l:item in l:result
-            let l:filename = ale#path#FromURI(l:item.uri)
-            let l:line = l:item.range.start.line + 1
-            let l:column = l:item.range.start.character + 1
+            if has_key(l:item, 'targetUri')
+                " LocationLink items use targetUri
+                let l:filename = ale#path#FromURI(l:item.targetUri)
+                let l:line = l:item.targetRange.start.line + 1
+                let l:column = l:item.targetRange.start.character + 1
+            else
+                " LocationLink items use uri
+                let l:filename = ale#path#FromURI(l:item.uri)
+                let l:line = l:item.range.start.line + 1
+                let l:column = l:item.range.start.character + 1
+            endif
 
             call ale#definition#UpdateTagStack()
             call ale#util#Open(l:filename, l:line, l:column, l:options)
@@ -92,11 +100,19 @@ function! s:OnReady(line, column, options, capability, linter, lsp_details) abor
     call ale#lsp#RegisterCallback(l:id, l:Callback)
 
     if a:linter.lsp is# 'tsserver'
-        let l:message = ale#lsp#tsserver_message#Definition(
-        \   l:buffer,
-        \   a:line,
-        \   a:column
-        \)
+        if a:capability is# 'definition'
+            let l:message = ale#lsp#tsserver_message#Definition(
+            \   l:buffer,
+            \   a:line,
+            \   a:column
+            \)
+        elseif a:capability is# 'typeDefinition'
+            let l:message = ale#lsp#tsserver_message#TypeDefinition(
+            \   l:buffer,
+            \   a:line,
+            \   a:column
+            \)
+        endif
     else
         " Send a message saying the buffer has changed first, or the
         " definition position probably won't make sense.
@@ -145,12 +161,6 @@ endfunction
 function! ale#definition#GoToType(options) abort
     for l:linter in ale#linter#Get(&filetype)
         if !empty(l:linter.lsp)
-            " TODO: handle typeDefinition for tsserver if supported by the
-            " protocol
-            if l:linter.lsp is# 'tsserver'
-                continue
-            endif
-
             call s:GoToLSPDefinition(l:linter, a:options, 'typeDefinition')
         endif
     endfor

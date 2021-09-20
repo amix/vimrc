@@ -1,6 +1,18 @@
 " Author: Masashi Iizuka <liquidz.uo@gmail.com>
 " Description: linter for clojure using clj-kondo https://github.com/borkdude/clj-kondo
 
+call ale#Set('clojure_clj_kondo_options', '--cache')
+
+function! ale_linters#clojure#clj_kondo#GetCommand(buffer) abort
+    let l:options = ale#Var(a:buffer, 'clojure_clj_kondo_options')
+
+    let l:command = 'clj-kondo'
+    \   . ale#Pad(l:options)
+    \   . ' --lint %t'
+
+    return l:command
+endfunction
+
 function! ale_linters#clojure#clj_kondo#HandleCljKondoFormat(buffer, lines) abort
     " output format
     " <filename>:<line>:<column>: <issue type>: <message>
@@ -29,6 +41,6 @@ call ale#linter#Define('clojure', {
 \   'name': 'clj-kondo',
 \   'output_stream': 'stdout',
 \   'executable': 'clj-kondo',
-\   'command': 'clj-kondo --cache --lint %t',
+\   'command': function('ale_linters#clojure#clj_kondo#GetCommand'),
 \   'callback': 'ale_linters#clojure#clj_kondo#HandleCljKondoFormat',
 \})

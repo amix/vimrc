@@ -193,13 +193,13 @@ The Java language server will look for the dependencies you specify in
 ===============================================================================
 eclipselsp                                                *ale-java-eclipselsp*
 
-To enable Eclipse LSP linter you need to clone and build the eclipse.jdt.ls
+To enable Eclipse JDT LSP linter you need to clone and build the eclipse.jdt.ls
 language server from https://github.com/eclipse/eclipse.jdt.ls. Simply
 clone the source code repo and then build the plugin:
 
    ./mvnw clean verify
 
-Note: currently, the build can only run when launched with JDK 8. JDK 9 or more
+Note: currently, the build can only run when launched with JDK 11. More
 recent versions can be used to run the server though.
 
 After build completes the files required to run the language server will be

@@ -1,1 +1,59 @@
 extends cpp
+
+snippet kern "Kernel definition"
+	__global__ void ${1:kernel}(${2:void}) {
+		${0:// TODO: Implement}
+	}
+
+snippet dev "Device function definition"
+	__device__ ${1:int} ${2:foo}(${3:void}) {
+		${0:// TODO: Implement}
+		return 0;
+	}
+	
+snippet call "Kernel call"
+	${1:kernel}<<<${2:args}>>>(${3});${0}
+
+snippet sync "Synchonize threads"
+	__syncthreads();
+
+snippet tid "Thread Index"
+	threadIdx.${0}
+
+snippet bid "Block Index"
+	blockIdx.${0}
+
+snippet bdim "Block Dimension"
+	blockDim.${0}
+
+snippet ii "Get current index (1D)"
+	int ${1:index} = threadIdx.${2:x} + blockIdx.$2 * blockDim.$2;
+
+snippet ix "Get current X index (1D)"
+	int ${1:x} = threadIdx.x + blockIdx.x * blockDim.x;
+
+snippet iy "Get current Y index (1D)"
+	int ${1:y} = threadIdx.y + blockIdx.y * blockDim.y;
+
+snippet iz "Get current Z index (1D)"
+	int ${1:z} = threadIdx.z + blockIdx.z * blockDim.z;
+
+snippet ixy "Get current X,Y index (2D)"
+	int ${1:x} = threadIdx.x + blockIdx.x * blockDim.x;
+	int ${2:y} = threadIdx.y + blockIdx.y * blockDim.y;
+
+snippet ixz "Get current X,Z index (2D)"
+	int ${1:x} = threadIdx.x + blockIdx.x * blockDim.x;
+	int ${3:z} = threadIdx.z + blockIdx.z * blockDim.z;
+
+snippet iyz "Get current Y,Z index (2D)"
+	int ${2:y} = threadIdx.y + blockIdx.y * blockDim.y;
+	int ${3:z} = threadIdx.z + blockIdx.z * blockDim.z;
+
+snippet ixyz "Get current X,Y,Z index (3D)"
+	int ${1:x} = threadIdx.x + blockIdx.x * blockDim.x;
+	int ${2:y} = threadIdx.y + blockIdx.y * blockDim.y;
+	int ${3:z} = threadIdx.z + blockIdx.z * blockDim.z;
+
+snippet share "Shared memory declaration"
+	__shared__ ${1:int} ${2:memo}[${3:SIZE}];${0}

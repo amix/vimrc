@@ -1,0 +1,16 @@
+===============================================================================
+ALE Dafny Integration                                       *ale-dafny-options*
+
+
+===============================================================================
+dafny                                                         *ale-dafny-dafny*
+
+g:ale_dafny_dafny_timelimit                       *g:ale_dafny_dafny_timelimit*
+                                                  *b:ale_dafny_dafny_timelimit*
+  Type: |Number|
+  Default: `10`
+
+  This variable sets the `/timeLimit` used for dafny.
+
+
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

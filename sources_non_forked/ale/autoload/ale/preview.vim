@@ -1,7 +1,7 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Preview windows for showing whatever information in.
 
-if !has_key(s:, 'last__list')
+if !has_key(s:, 'last_list')
     let s:last_list = []
 endif
 
@@ -89,6 +89,13 @@ function! ale#preview#ShowSelection(item_list, ...) abort
     let b:ale_preview_item_list = a:item_list
     let b:ale_preview_item_open_in = get(l:options, 'open_in', 'current-buffer')
 
+    " Jump to an index for a previous selection, if set.
+    if has_key(l:options, 'jump_to_index')
+        let l:pos = getpos('.')
+        let l:pos[1] = l:options.jump_to_index + 1
+        call setpos('.', l:pos)
+    endif
+
     " Remember preview state, so we can repeat it later.
     call ale#preview#SetLastSelection(a:item_list, l:options)
 endfunction
@@ -101,11 +108,15 @@ endfunction
 
 function! s:Open(open_in) abort
     let l:item_list = get(b:, 'ale_preview_item_list', [])
-    let l:item = get(l:item_list, getpos('.')[1] - 1, {})
+    let l:index = getpos('.')[1] - 1
+    let l:item = get(l:item_list, l:index, {})
 
     if empty(l:item)
         return
     endif
+
+    " Remember an index to jump to when repeating a selection.
+    let s:last_options.jump_to_index = l:index
 
     :q!
 

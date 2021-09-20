@@ -20,11 +20,17 @@ endif
 
 " Return 1 if there is a buffer with buftype == 'quickfix' in bufffer list
 function! ale#list#IsQuickfixOpen() abort
-    for l:buf in range(1, bufnr('$'))
-        if getbufvar(l:buf, '&buftype') is# 'quickfix'
-            return 1
-        endif
-    endfor
+    let l:res = getqflist({ 'winid' : winnr() })
+
+    if has_key(l:res, 'winid') && l:res.winid > 0
+        return 1
+    endif
+
+    let l:res = getloclist(0, { 'winid' : winnr() })
+
+    if has_key(l:res, 'winid') && l:res.winid > 0
+        return 1
+    endif
 
     return 0
 endfunction
@@ -38,6 +44,15 @@ function! s:ShouldOpen(buffer) abort
     return l:val is 1 || (l:val is# 'on_save' && l:saved)
 endfunction
 
+function! s:Deduplicate(list) abort
+    let l:list = a:list
+
+    call sort(l:list, function('ale#util#LocItemCompareWithText'))
+    call uniq(l:list, function('ale#util#LocItemCompareWithText'))
+
+    return l:list
+endfunction
+
 function! ale#list#GetCombinedList() abort
     let l:list = []
 
@@ -45,10 +60,7 @@ function! ale#list#GetCombinedList() abort
         call extend(l:list, l:info.loclist)
     endfor
 
-    call sort(l:list, function('ale#util#LocItemCompareWithText'))
-    call uniq(l:list, function('ale#util#LocItemCompareWithText'))
-
-    return l:list
+    return s:Deduplicate(l:list)
 endfunction
 
 function! s:FixList(buffer, list) abort
@@ -93,11 +105,13 @@ function! s:SetListsImpl(timer_id, buffer, loclist) abort
         " but it's better than nothing.
         let l:ids = s:WinFindBuf(a:buffer)
 
+        let l:loclist = s:Deduplicate(a:loclist)
+
         for l:id in l:ids
             if has('nvim')
-                call setloclist(l:id, s:FixList(a:buffer, a:loclist), ' ', l:title)
+                call setloclist(l:id, s:FixList(a:buffer, l:loclist), ' ', l:title)
             else
-                call setloclist(l:id, s:FixList(a:buffer, a:loclist))
+                call setloclist(l:id, s:FixList(a:buffer, l:loclist))
                 call setloclist(l:id, [], 'r', {'title': l:title})
             endif
         endfor
