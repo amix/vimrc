@@ -1,0 +1,909 @@
+0.1
+Initial release
+
+0.2
+- More list convenience functions
+- tlib#EditList()
+- tlib#InputList(): properly handle duplicate items; it type contains 
+'i', the list index + 1 is returned, not the element
+
+0.3
+- tlib#InputList(): Show feedback in statusline instead of the echo area
+- tlib#GetVar(), tlib#GetValue()
+
+0.4
+- tlib#InputList(): Up/Down keys wrap around list
+- tlib#InputList(): FIX: Problem when reducing the filter & using AND
+- tlib#InputList(): Made <a-numeric> work (can be configured via 
+- tlib#InputList(): special display_format: "filename"
+- tlib#Object: experimental support for some kind of OOP
+- tlib#World: Extracted some functions from tlib.vim to tlib/World.vim
+- tlib#FileJoin(), tlib#FileSplit(), tlib#RelativeFilename()
+- tlib#Let()
+- tlib#EnsureDirectoryExists(dir)
+- tlib#DirName(dir)
+- tlib#DecodeURL(url), tlib#EncodeChar(char), tlib#EncodeURL(url)
+- FIX: Problem when using shift-up/down with filtered lists
+
+0.5
+- tlib#InputList(): FIX: Selecting items in filtered view
+- tlib#InputList(): <c-bs>: Remove last AND pattern from filter
+
+0.6
+- tlib#InputList(): Disabled <c-space> map
+- tlib#InputList(): try to be smart about user itentions only if a 
+list's length is < g:tlib_sortprefs_threshold (default: 200)
+- tlib#Object: Super() method
+- tlib#MyRuntimeDir()
+- tlib#GetCacheName(), tlib#CacheSave(), tlib#CacheGet()
+- tlib#Args(), tlib#GetArg()
+- FIX: tlib#InputList(): Display problem with first item
+
+0.7
+- tlib#InputList(): <c-z> ... Suspend/Resume input
+- tlib#InputList(): <c-q> ... Input text on the command line (useful on 
+slow systems when working with very large lists)
+- tlib#InputList(): AND-pattern starting with '!' will work as 'exclude 
+matches'
+- tlib#InputList(): FIX <c-bs> pop OR-patterns properly
+- tlib#InputList(): display_format == filename: don't add '/' to 
+directory names (avoid filesystem access)
+
+0.8
+- FIX: Return empty cache name for buffers that have no files attached to it
+- Some re-arranging
+
+0.9
+- Re-arrangements & modularization (this means many function names have 
+changed, on the other hand only those functions are loaded that are 
+actually needed)
+- tlib#input#List(): Added maps with m-modifiers for <c-q>, <c-z>, <c-a>
+- tlib#input#List(): Make sure &fdm is manual
+- tlib#input#List(): When exiting the list view, consume the next 5 
+characters in the queue (if any)
+- tlib#input#EditList(): Now has cut, copy, paste functionality.
+- Added documentation and examples
+
+0.10
+- tlib#input#List(): (v)split type of commands leave the original window 
+untouched (you may use <c-w> to replace its contents)
+- tlib#file#With(): Check whether an existing buffer is loaded.
+- Scratch related functions went to tlib/scratch.vim so that they are 
+accessible from other scripts.
+- Configure the list window height via g:tlib_inputlist_pct (1..100%)
+
+0.11
+NEW:
+    - The :TLet command replaces :TLLet (which was removed)
+    - :TScratch[!] command (with ! don't split but use the whole window)
+    - tlib#rx#Escape(text, ?magic='m')
+    - tlib#buffer#GetList(?show_hidden=0)
+    - tlib#dir#CD(), tlib#dir#Push(), tlib#dir#Pop()
+    - tlib#input#ListW: A slightly remodeled version of tlib#input#List 
+    that takes a World as second argument.
+    - Added some documentation doc/tlib.txt (most of it is automatically 
+    compiled from the source files)
+CHANGES:
+    - tlib#input#List(): The default keys for AND, NOT have changed to 
+    be more Google-like (space, minus); the keys can be configured via 
+    global variables.
+IMPROVEMENTS:
+    - In file listings, indicate if a file is loaded, listed, modified 
+    etc.
+    - tlib#input#List(): Highlight the filter pattern
+    - tlib#input#List(): <c-up/down> scrolls g:tlib_scroll_lines 
+    (default=10) lines
+FIXES:
+    - tlib#input#List(): Centering line, clear match, clear & restore 
+    the search register
+    - tlib#input#List(): Ensure the window layout doesn't change (if the 
+    number of windows hasn't changed)
+    - tlib#arg#Ex(): Don't escape backslashes by default
+
+0.12
+NEW:
+    - tlib/tab.vim
+CHANGES:
+    - Renamed tlib#win#SetWin() to tlib#win#Set()
+IMPROVEMENTS:
+    - tlib#input#List(): <left>, <right> keys work in some lists
+    - tlib#input#List(): If an index_table is provided this will be used 
+    instead of the item's list index.
+FIXES:
+    - tlib#input#List(): Problem with scrolling, when the list was 
+    shorter than the window (eg when using a vertical window).
+    - tlib#cache#Filename(): Don't rewrite name as relative filename if 
+    explicitly given as argument. Avoid double (back)slashes.
+    - TLet: simplified
+
+0.13
+CHANGES:
+    - Scratch: Set &fdc=0.
+    - The cache directory can be configured via g:tlib_cache
+    - Renamed tlib#buffer#SetBuffer() to tlib#buffer#Set().
+FIXES:
+    - tlib#input#List(): Select the active item per mouse.
+    - TLet: simplified
+
+0.14
+NEW:
+    - tlib#buffer#InsertText()
+CHANGES:
+    - tlib#win#[SG]etLayout(): Use a dictionnary, set &cmdheight.
+FIXES:
+    - Wrong order with pre-defined filters.
+
+0.15
+NEW:
+    - tlib#string#TrimLeft(), tlib#string#TrimRight(), tlib#string#Strip()
+    - Progress bar
+
+0.16
+NEW:
+    - tlib#string#Printf1()
+
+0.17
+NEW:
+    - TBrowseOutput
+- Some minor changes
+
+0.18
+NEW:
+    - tlib/time.vim
+    - g:tlib_inputlist_livesearch_threshold
+CHANGES:
+    - tlib#input#ListD(), World: Don't redisplay the list while typing 
+    new letters; calculate filter regexps only once before filtering the 
+    list.
+    - World.vim: Minor changes to how filenames are handled.
+
+0.19
+NEW:
+    - tag.vim
+FIX:
+    - dir.vim: Use plain dir name in tlib#dir#Ensure()
+    - tlib#input#List(): An initial filter argument creates [[filter]] 
+    and not as before [[''], [filter]].
+    - tlib#input#List(): When type was "si" and the item was picked by 
+    filter, the wrong index was returned.
+    - tlib#input#List(): Don't check if chars are typed when displaying 
+    the list for the first time.
+
+0.20
+- The arguments of tlib#tag#Collect() have changed.
+- tlib#input#List(): The view can be "suspended" on initial display.
+- tlib#input#List(): Follow/trace cursor functionality
+
+0.21
+- tlib#buffer#InsertText(): Respect tabs and (experimental) formatoptions+=or
+- tlib/syntax.vim: Syntax-related functions
+
+0.22
+- FIX: very magic mode for tlib#rx#Escape() (thanks A Politz)
+- FIX: tlib#arg#Ex: escape "!"
+
+0.23
+- Respect the setting of g:tlib_inputlist_filename_indicators
+- tlib#input#List(): Reset syntax on resume; option to make list window "sticky"
+- tlib#agent#ToggleStickyList()
+- Simplified tlib#url#Decode()
+- tlib#arg#Ex(): use fnameescape() if available
+
+0.24
+- s:prototype.SetInitialFilter: accept list as argument
+- Maintain buffer MRU if required
+
+0.25
+- NEW: tlib#notify#TrimMessage(): trim message to prevent "Press ENTER" 
+messages (contributed by Erik Falor)
+- NEW: tlib#notify#Echo()
+- FIX: World.CloseScratch(): Set window
+- FIX: tlib#input#ListW(): Set initial_display = 1 on reset
+
+0.26
+- NEW: tlib#normal#WithRegister()
+- FIX: Try not to change numbered registers
+
+0.27
+- FIX: Cosmetic bug, wrong packaging (thanks Nathan Neff)
+- Meaning of World#filter_format changed; new World#filter_options 
+- Filtering didn't work as advertised
+- tlib#string#Count()
+
+0.28
+- tlib#input#List():
+-- Improved handling of sticky lists; <cr> and <Leftmouse> resume a 
+suspended list and immediately selects the item under the cursor
+-- Experimental "seq" matching style: the conjunctions are sequentially 
+ordered, they are combined with "OR" (disjunctions), the regexp is 
+'magic', and "." is expanded to '.\{-}'
+-- Experimental "cnfd" matching style: Same as cnf but with an "elastic" 
+dot "." that matches '\.\{-}'
+-- Filtering acts as if &ic=1 && $sc=1
+-- Weighting is done by the filter
+- tlib#agent#Input(): Consume <esc> when aborting input()
+- INCOMPATIBLE CHANGE: Changed eligible values of g:tlib_inputlist_match 
+to "cnf", "cnfd", "seq" and "fuzzy"
+- NEW: tlib#buffer#KeepCursorPosition()
+- tlib#buffer#InsertText(): Take care of the extra line when appending 
+text to an empty buffer.
+
+0.29
+- tlib#string#Strip(): Strip also control characters (newlines etc.)
+- tlib#rx#Suffixes(): 'suffixes' as Regexp
+- World#RestoreOrigin(): Don't assume &splitbelow
+
+0.30
+- World#RestoreOrigin(): Don't assume &splitright
+
+0.31
+- :TRequire command
+-tlib#input#List: For i-type list views, make sure agents are called 
+with the base indices.
+
+0.32
+- tlib#agent#Exit: explicitly return empty value (as a consequence, 
+pressing <esc> when browsing an index-list, returns 0 and not "")
+- tlib#signs
+- tlib#input#List: set local statusline
+
+0.33
+- Don't reset statusline
+- Don't use fnamemodify() to split filenames (for performance reasons)
+- scratch: Set ft after setting up scratch options
+- tlib#map#PumAccept(key)
+
+0.34
+- tlib#buffer#HighlightLine(line): call tlib#autocmdgroup#Init() 
+(reported by Sergey Khorev)
+
+0.35
+- tlib#input#EditList(): return the list if the user presses esc
+
+0.36
+- Display a message when the filter is for whatever reason invalid
+- Removed tlib#paragraph#Delete()
+- New: tlib#paragraph#Define(), tlib#textobjects#StandardParagraph()
+- Try to speed up list display (a rewrite of World.DisplayList() etc. is 
+required)
+
+0.37
+- g:tlib_inputlist_livesearch_threshold defaults to 1000
+- tlib#World: optional scratch_pos field
+- tlib#input#List: By default <m-NUMBER> selects by number but NUMBER is 
+interpreted as string
+- tlib#date
+- TTimeCommand
+
+0.38
+- tlib#World#Resize: set winfix{height|width}
+
+0.39
+- g:tlib#cache#dont_purge
+- tlib#vim#RestoreWindow()
+- tlib#ballon#...()
+
+0.40
+- tlib#agent#ViewFile: Use split/sbuffer if nohidden && modified 
+- tlib#buffer#GetList(): order by "basename"
+
+version: "0.41"
+  - World.UseScratch(): keepalt
+  - Really include balloon.vim
+  MD5 checksum: 3fcbc4f7556f5378d39622e62ab8f379
+
+version: "0.42"
+  - tlib#input#List: <s-space> inserts a *-like wildcard (represented as "__")
+  - Check if a cache file cannot be created because a directory of the same name exists (display a message if so)
+  - tlib#cache#Filename: Removed check if a directory of the same name exists (due to inconsistent use)
+  - Minor improvements related to buffer handling (scratch_split)
+  - .gitignore
+  - docs (thanks to blueyed)
+  - There is no "edit" answer possibility.
+  - Fix first purge: do nothing if no timestamp file.
+  - g:tlib_pick_single_item
+  - Removed pick_single_item. Changed the default behavour when a list has only 1 item. See doc for g:tlib_pick_last_item.
+  - Updated help for tlib#input#List(); help_extra attribute
+  - EXPERIMENTAL: cache_var, restore_from_cache, on_leave properties; #Initialize(), #Leave()
+  - added tlib#cmd#BrowseOutputWithCallback function and :TBrowseScriptnames command
+  - tlib#cmd#BrowseOutputWithCallback function and :TBrowseScriptnames command documentation
+  - s:prototype.Initialize(): unlet self.cache_var after restoring values
+  - tlib#input#List: filter-specific help
+  - Removed the seq filter (use cnfd or fuzzy instead)
+  - tlib#input#List: temp_prompt (for help message)
+  MD5 checksum: aa8b5a4602235cc1a5bc9ee45d801b81
+
+version: "0.42"
+  - g:tlib#cache#silent: don't display messages when purging the cache (fixes #9)
+  - Changed message when deleting directories in the cache.
+  - g:tlib#input#use_popup: Don't rely on has('menu') but also check for gtk & win gui (fixes #10)
+  - debug
+  - tlib#input#ListW(): Didn't return a list when type == "m"
+  - docs (solves #11)
+  MD5 checksum: aa8b5a4602235cc1a5bc9ee45d801b81
+
+version: "0.45"
+  - fuzzy mode: prototype.highlight defaults to g:tlib_inputlist_higroup
+  - tlib#scratch: Use noautocmd
+  - tlib#input#ListW(): Use world.RestoreOrigin() instead of tlib#win#SetLayout(world.winview)
+  - tlib#input#ListW(): Revert to tlib#win#SetLayout(world.winview)
+  - tlib#cmd#OutputAsList(): Also save output in g:tlib#cmd#last_output
+  - tlib#agent#Suspend(): Resume on BufEnter
+  - tlib#input#Resume(): Make sure we are in the right buffer
+  - tlib#agent#Suspend(): Use only BufEnter event to trigger a Resume
+  - tlib#input#ListW(): When redisplaying a list, make sure prefix > 0
+  - tlib#vcs: Access vcs (initially only git is supported)
+  - tlib#vcs: improved
+  - tlib#persistent: Persistent data file names
+  - tlib#file#With(): Trigger BufRead autocommands
+  - Duplicate help tags (fixes #13)
+  - Make sure scrolloff is 0 while viewing the list (fixes https://github.com/tomtom/vikitasks_vim/issues/2)
+  MD5 checksum: 0af19ebc0e424727a598a988fdc90f4e
+
+  - Support for tinykeymap (move paragraph)
+  - Moved para_move to autoload/tinykeymap/map
+  - tlib#vcs: some "diff" commands were defined as "ls"; updated hg def; %s is optional
+  MD5 checksum: f2f2fe0893e75bb9423c1ddcd01f38f6
+version: "0.46"
+
+  - tlib#input#List: optimizations
+  - Prepare for multi-mode maps
+  - tlib#input#List: cnfx is new default filter
+  - Filters: minor changes to how the pattern is displayed
+  - g:tlib#input#format_filename: alternative method for formatting filenames
+  - tlib#input#List: allow multiple keymaps / modes
+  - Handle rezise events
+  - Don't initialize the same window twice
+  - Minor optimizations to how help is displayed
+  - Handle VimResize event per buffer
+  - Improve display of filenames & highlighting
+  - Filename highlighter: set Highlight_filename()
+  - RunStateHandlers(): set world variable
+  - Optimize help display
+  MD5 checksum: e3652927722bdc51935eb1a04238546b
+version: "1.00"
+
+  - Set g:tlib_inputlist_and to  ' ' again
+  - g:tlib#input#filename_max_width: maximum display width of filenames
+  - tlib#input#List: <s-esc>, <f10>: run command by name
+  MD5 checksum: a42f90275cdbe9f7d92cac61b884a2d1
+version: "1.01"
+
+  - #UseInputListScratch(): Make sure the TLib autogroup was created (fixes #14)
+  MD5 checksum: 5a6da7fc99c7fc7584e8fc2f7bf86fe4
+version: "1.02"
+
+  - tlib#cache#Value(cfile, generator, ftime, ...): cache value & check timestamp
+  - Replaced g:tlib#cache#silent with g:tlib#cache#verbosity
+  - FormatFilenames: improved handling of utf8 characters
+  - tlib#persistent#Value()
+  - tlib#input#List: Allow filename indiactors defined by the caller
+  - Custom filename_indicators are displayed after (and clearly separted from) the standard indicators
+  - Check the return value of an unknown_key agent
+  - Format filename = "l": Allow ".." as start of a directory name
+  - Format filename = "l": If the filename is just a filename's tail, display it on both sides
+  - Set g:tlib_filename_sep to "\" on Windows (again)
+  - g:tlib#cache#max_filename: If the cache filename is longer than N characters, use |pathshorten()|.
+  MD5 checksum: b64ce6764f39f40bfc95f3916bbb0057
+version: "1.04"
+
+version: "1.05"
+  - tlib#hash: Adler32 & CRC32 (using zlib via ruby) algorithms
+  - tlib#cache#Filename(): If the cache filename is too long, add the Adler32 checksum to the shortened path
+  - tlib#cache#Filename(): Use tlib#hash#Adler32() only if the or() function exists
+  - tlib#hash#Adler32(): Raise error, if or() doesn't exist
+  - tlib#hash#CRC32(): Alternative implementation of crc32 (doesn't work yet, thus currently disabled)
+  - tlib#bitwise: Bitwise operations for older versions of vim
+  - tlib#number: Base conversion
+  - tlib#input#ListW(): Handle mouse clicks more correctly
+  - tlib#bitwise#Num2Bits(): Supports returning floats
+  - tlib#hash#CRC32(): Alternative implementation of crc32 (doesn't work yet)
+  - tlib#hash#CRC32(): Re-enable ruby version
+  - tlib#hash#CRC32B(): Implementation of CRC32B checksum in vimscript (used only if +ruby isn't available)
+  - tlib#hash#CRC32B(): vim version: cache the crc table
+  - tlib#cache#Filename(): Use tlib#hash#CRC32B(file) instead of not Adler32 for filenames too long
+  - tlib#hash#CRC32B(): ruby version: return upper case hex value
+  - g:tlib#hash#use_crc32: define which crc32b version should be used
+  - Moved spec files from vimtlib to tlib_vim
+  - tlib#bitwise#Add() and tlib#bitwise#Sub()
+  - tlib#file#Relative(): Wrong results for filenames that don't exist
+  - Implementation of hash#Adler32 for earlier vim versions; g:tlib#hash#use_adler32
+  - tlib#cache#Filename(): Use adler32 again
+  - addon-info
+  - tlib#file#Absolute(): remove redundant "." parts in full filename
+  - win32: Fix moving window when using :vertical for tlib#inpu#List()
+  - tlib#cache#Filename(): Don't create wrong directory if the cache filename is too long
+  - tlib#file#Join(): if strip_slashes, also strip redundant (back)slashes
+  - tlib#input#ListW(): Always set post_keys variable
+  - tlib#file#With(): escape backslashes
+  - tlib#cmd#OutputAsList(): Support for nesting
+  - tlib#dir#NativeName(dirname)
+  MD5 checksum: 493f9beca44374de386f20d1613155e3
+
+  - Rename g:tlib_debug to g:tlib#debug
+  - Renamed g:tlib_sortprefs_threshold to g:tlib#input#sortprefs_threshold
+  - Renamed g:tlib#input#livesearch_threshold
+  - Renamed g:tlib_inputlist_match to g:tlib#input#filter_mode
+  - Renamed g:tlib_inputlist_higroup to g:tlib#input#higroup
+  - Renamed g:tlib#debug
+  - Moved g:tlib_pick_last_item
+  - Renamed g:tlib#input#and, g:tlib#input#or, g:tlib#input#not
+  - Moved g:tlib_numeric_chars to autoload/tlib/input.vim
+  - Renamed g:tlib#input#keyagents_InputList_s, g:tlib#input#keyagents_InputList_m, g:tlib#input#handlers_EditList
+  - Moved g:tlib_inputlist_pct, g:tlib_inputlist_width_filename, g:tlib_inputlist_filename_indicators, g:tlib_inputlist_shortmessage to autoload/tlib/World.vim
+  - Renamed tlib#input#pick_last_item (2)
+  - prototype.SelectItemsByNames()
+  - filtered_items: Restricted view
+  - prototype.PrintLines()
+  - Restricted view (2)
+  - Moved g:tlib_scroll_lines to autoload/tlib/agent.vim
+  - prototype.PrintLines() (2)
+  - tlib#input: Improved handling of popup menu (allows submenu)
+  - tlib#input: Allow mods in keys
+  - Moved g:tlib_scratch_pos to autoload/tlib/scratch.vim
+  - Moved g:tlib_tags_extra, g:tlib_tag_substitute to autoload/tlib/tag.vim
+  - tlib#agent#CompleteAgentNames(): Respect Arglead
+  - Move g:tlib_viewline_position to autoload/tlib/buffer.vim
+  - Move g:tlib_cache to autoload/tlib/cache.vim
+  - Renamed g:tlib_filename_sep to g:tlib#dir#sep
+  - prototype.UseScratch(): Set b:tlib_world
+  - tlib#input: f9 toggles resticted view
+  - tlib#input: next_agent, next_eval
+  - tlib#input: Revised use of the popup menu
+  - tlib#input: Disable popup menu for gui_gtk
+  - tlib#input: Re-enabled the popup menu for gtk gui
+  - tlib#input: FIX popup menu on Windows
+  - Renamed g:tlib_numeric_chars to g:tlib#input#numeric_chars (disabled per-buffer values) (fixes #35)
+  - Improve scratch list
+  - New: tlib#grep
+  - Merge branch 'master' of https://github.com/bruno-/tlib_vim into pull16
+  - g:tlib_scratch_hidden: Configure how to "hide" the scratch buffer
+  - tlib#grep#Do: don't escape "*" in patterns
+  - Optimize use of visible scratch buffers
+  - World.scratch_hidden parameter
+  - scratch: Always use keepalt & keepjumps
+  MD5 checksum: 2e40449c47dc606ccef57aa0b1e22e8e
+version: "1.06"
+
+version: "1.07"
+  - Help template
+  - prototype.Highlight_filename(): Use matchstr() instead of fnamemodify()
+  - Display buffer-related filename indicators only if g:tlib_inputlist_filename_indicators is true
+  - tlib#file#Join(): strip_slashes defaults to 1
+  MD5 checksum: 6c8fa96fd3747be05df848ee93dd789b
+
+version: "1.08"
+  - list#input: Improved support for file indicators (closes #17)
+  - tlib#char#Get(): Optionally, also return mod
+  - tlib#input#ListW: Use #DisplayFormat(world.list)
+  - Renamed cnfx filter to glob & minor filter-related enhancements
+  - list#input: Make help available as command; help cannot be called via ?
+  - list#input: Improved help message
+  - list#input: Support Home & End keys
+  - list#input: Added glob filter
+  - tlib#agent#ShowInfo: Show full filename
+  - tlib#cmd#BrowseOutputWithCallback: Support calling callback with multiple results
+  - tlib#cmd#ParseScriptname: Properly parse results from :scriptnames
+  - tlib#tab#Set()
+  - Prepare for proper handling of scratch_split == -1
+  - tlib#vim#CopyFunction()
+  - tlib#cache#Value(): If generator is empty, use the optional argument as start value
+  - tlib#persistent#Get() refers to tlib#cache#Get()
+  MD5 checksum: 459ec620168d1ae9b18c69eb3f991832
+
+  - tlib#cache#Filename(): Use sha256() for VIM >= 7.4
+  - tlib#cache#Value(): Undo previous hack
+  - tlib#list#Uniq(): option to remove empty values
+  - tlib#cache#MTime(); tlib#persistent#Save() calls tlib#cache#Save()
+  - tlib#input#ListW: Temporarily set noshowmode
+  - tlib#list#Uniq(): Fix handling of empty items
+  - lis picker: Remove <C-Space> from help
+  - tlib#list#Uniq(): Implementation based on syntastic#util#unique(list) by scrooloose
+  MD5 checksum: b5fb4107d63930c2c8b1f0f6b3a7ff07
+version: "1.09"
+
+  - tlib#cache#Filename(): Use sha256() for VIM >= 7.4
+  - tlib#cache#Value(): Undo previous hack
+  - tlib#list#Uniq(): option to remove empty values
+  - tlib#cache#MTime(); tlib#persistent#Save() calls tlib#cache#Save()
+  - tlib#input#ListW: Temporarily set noshowmode
+  - tlib#list#Uniq(): Fix handling of empty items
+  - lis picker: Remove <C-Space> from help
+  - tlib#list#Uniq(): Implementation based on syntastic#util#unique(list) by scrooloose
+  MD5 checksum: b5fb4107d63930c2c8b1f0f6b3a7ff07
+version: "1.09"
+
+  - tlib#string#Chomp: Optional argument: max number of chars that should be removed
+  MD5 checksum: 8c1b94e25045580874e2f892d509291b
+version: "1.10"
+
+  - tlib#vcs#FindVCS(filename): Wrong parameters to fnamemodifiy if filename is a directory
+  - Some system-related functions (e.g. facilitate use of cygwin tools)
+  - tlib#arg#StringAsKeyArgsEqual(), tlib#arg#StringAsKeyArgs(): Support "key=val" type argument lists
+  - tlib#vcs#Executable()
+  - scripts/create_crc_table.rb
+  - tlib#var#Get(): For namespaces other than global, replace "#" with "_"
+  MD5 checksum: 4a33f2f23e1fc6600b32e7f8323e001e
+version: "1.11"
+
+  - tlib#list#ToDictionary()
+  - tlib#dir#CanonicName(): Use tlib#file#Canonic()
+  - tlib#file#Canonic()
+  MD5 checksum: 7995ab58f31eb6673d20deab8761838e
+version: "1.12"
+
+  - SetInitialFilter(): Use deepcopy()
+  - tlib#var#List(): use keys(namespace) for newer versions of vim
+  - g:tlib#input#user_shortcuts (not functional yet)
+  - tlib#input#List: state "picked"
+  - UseInputListScratch(): Allow customization via self.index_next_syntax
+  - tlib#cmd#Capture()
+  - Facilitate customization of key agents via g:tlib_extend_keyagents_InputList_s, g:tlib_extend_keyagents_InputList_m
+  MD5 checksum: 7dd8b17a1a5b555df979381dcbd4c9aa
+version: "1.13"
+
+  - SetInitialFilter(): Use deepcopy()
+  - tlib#var#List(): use keys(namespace) for newer versions of vim
+  - g:tlib#input#user_shortcuts (not functional yet)
+  - tlib#input#List: state "picked"
+  - UseInputListScratch(): Allow customization via self.index_next_syntax
+  - tlib#cmd#Capture()
+  - Facilitate customization of key agents via g:tlib_extend_keyagents_InputList_s, g:tlib_extend_keyagents_InputList_m
+  MD5 checksum: 7dd8b17a1a5b555df979381dcbd4c9aa
+version: "1.13"
+
+version: "1.14"
+  - FIX #18: Make sure the scratch isn't readonly
+  - FIX: display filter (properly handle backslashes)
+  - Remove loaded_* guard from autoload files
+  - tlib#notify#Echo(): minor changes
+  - tlib#file#Edit() (used by tlib#agent#ViewFile)
+  - tlib#buffer#GetList(): Buffer numbers are converted to numbers
+  - tlib#sys: Change order of functions (move tlib#sys#IsCygwinBin to the (possibly FIX #19)
+  - g:tlib#sys#check_cygpath: Call tlib#sys#IsExecutable('cygpath', 1)  (possibly FIX #19)
+  MD5 checksum: 2cf6386218736a2d09db43c8e751e5a4
+
+version: "1.15"
+  - tlib#file#Join(): New optional argument: maybe_absolute Drop preceding parts if a part looks like an absolute filename
+  - tlib#sys#Open(), tlib#sys#IsSpecial() (moved from viki)
+  - tlib#list#Uniq(): Handle hetergenous lists
+  - FIX #21: duplicate help tag
+  - NEW tlib#dictionary#Rev()
+  - tlib#input#List(): Use <Tab> to complete current word
+  - NEW tlib#arg#GetOpts(); ENH tlib#arg#StringAsKeyArgsEqual()
+  - cache: Allow for in memory cache
+  - NEW tlib#eval#Extend()
+  - Move qfl/loclist browser from trag to tlib
+  - FIX tlib#eval#Extend()
+  - Simplify tlib#eval#Extend()
+  - World.index_next_syntax may be a dict
+  - tlib#qfl#QflList: Use copy()
+  - tlib#arg#GetOpts: Handle exit code
+  MD5 checksum: 13fd8b0e4ba9cd932c57fc40ac3f641f
+
+version: "1.15"
+  - tlib#file#Join(): New optional argument: maybe_absolute Drop preceding parts if a part looks like an absolute filename
+  - tlib#sys#Open(), tlib#sys#IsSpecial() (moved from viki)
+  - tlib#list#Uniq(): Handle hetergenous lists
+  - FIX #21: duplicate help tag
+  - NEW tlib#dictionary#Rev()
+  - tlib#input#List(): Use <Tab> to complete current word
+  - NEW tlib#arg#GetOpts(); ENH tlib#arg#StringAsKeyArgsEqual()
+  - cache: Allow for in memory cache
+  - NEW tlib#eval#Extend()
+  - Move qfl/loclist browser from trag to tlib
+  - FIX tlib#eval#Extend()
+  - Simplify tlib#eval#Extend()
+  - World.index_next_syntax may be a dict
+  - tlib#qfl#QflList: Use copy()
+  - tlib#arg#GetOpts: Handle exit code
+  MD5 checksum: 13fd8b0e4ba9cd932c57fc40ac3f641f
+
+  - tlib#arg#GetOpts: Handle short options
+  - tlib#arg: support short flags & facilitate completion
+  - NEW :TLibTrace
+  - tlib#sys#system_browser: FIX XDG string
+  - NEW tlib#sys#SystemInDir() (used by tlib#vcs#Ls)
+  - tlib#agent#Complete: improve fltrx
+  - Remove tlib#arg#Key(), :TKeyArg
+  - Move :TRequire, :TTimeCommand to macros/tlib.vim
+  - NEW tlib#cmd#TBrowseScriptnames()
+  - TScratch: use empty('<bang>')
+  - NEW :TLibTrace
+  - tlib#qfl: FIX TTagedFilesFilename regexp
+  - Remove tlib#arg#Key()
+  - tlib#buffer#InsertText(): Don't use TKeyArg
+  - tlib#eval#Extend: don't assign value
+  - NEW :TLibTrace, tlib#trace (was tlib#debug)
+  - NEW tlib#string#SplitCommaList()
+  - NEW tlib#time#FormatNow()
+  - tlib#arg#GetOpts: selectively disable "long", "short" flags
+  - tlib#arg#CComplete(): Support values completion (complete_customlist field)
+  - NEW tlib#date#Shift()
+  - tlib#qfl#Balloon(): Handle items with no bufnr
+  - NEW tlib#file#Glob, tlib#file#Globpath
+  - tlib#progressbar#Display(): optional "always" argument
+  - tlib#vcs#GitLsPostprocess(): Try to handle encoded filenames from git ls-files
+  - tlib#vcs#GitLsPostprocess: Eval only \ddd substrings
+  - FIX #22: duplicate tag
+  - tlib#buffer: Use 2match instead of 3match (incompatibility with matchparen)
+  - FIX #23: duplicate help tag
+  - tlib#string#SplitCommaList: optional "sep" argument
+  - Rename TLibTrace -> Tlibtrace; NEW Tlibtraceset command
+  - Rename s:SetSyntax -> tlib#qfl#SetSyntax
+  - mv tlib#rx#Convert to incubator
+  MD5 checksum: f3656fb35b7b3033084d6c5e504aca61
+version: "1.16"
+
+  - tlib#input#List: #ReduceFilter: make sure the regexp is valid
+  - TTimeCommand -> Ttimecommand
+  - tlib#eval#Extend: mode argument for expand() compatibility
+  - tlib#input#List: Key handlers can have additional arguments
+  - tlib#qfl#AgentWithSelected: Set world
+  - prototype.UseInputListScratch: Run tlib_UseInputListScratch hook earlier
+  - tlib#qfl#AgentWithSelected: typo
+  - tlib#arg#GetOpts: type conversion (comma-separated lists etc.)
+  - tlib#arg: validators
+  - NEW tlib#date#IsDate()
+  - tlib#balloon#Remove: Unset &ballooneval, &balloonexpr
+  - NEW tlib#balloon#Expand()
+  - NEW tlib#date#Format()
+  - FIX tlib#date#Shift(..., "+Xm") for months
+  - NEW tlib#trace#Backtrace()
+  - NEW tlib#type#Is(), tlib#type#Are(), tlib#type#Has(), tlib#type#Have()
+  - NEW :Tlibassert
+  MD5 checksum: 3c4125a28ff1860accd254846651c251
+version: "1.17"
+
+  - tlib#input#List: #ReduceFilter: make sure the regexp is valid
+  - TTimeCommand -> Ttimecommand
+  - tlib#eval#Extend: mode argument for expand() compatibility
+  - tlib#input#List: Key handlers can have additional arguments
+  - tlib#qfl#AgentWithSelected: Set world
+  - prototype.UseInputListScratch: Run tlib_UseInputListScratch hook earlier
+  - tlib#qfl#AgentWithSelected: typo
+  - tlib#arg#GetOpts: type conversion (comma-separated lists etc.)
+  - tlib#arg: validators
+  - NEW tlib#date#IsDate()
+  - tlib#balloon#Remove: Unset &ballooneval, &balloonexpr
+  - NEW tlib#balloon#Expand()
+  - NEW tlib#date#Format()
+  - FIX tlib#date#Shift(..., "+Xm") for months
+  - NEW tlib#trace#Backtrace()
+  - NEW tlib#type#Is(), tlib#type#Are(), tlib#type#Has(), tlib#type#Have()
+  - NEW :Tlibassert
+  MD5 checksum: 3c4125a28ff1860accd254846651c251
+version: "1.17"
+
+  - tlib#input#List: #ReduceFilter: make sure the regexp is valid
+  - TTimeCommand -> Ttimecommand
+  - tlib#eval#Extend: mode argument for expand() compatibility
+  - tlib#input#List: Key handlers can have additional arguments
+  - tlib#qfl#AgentWithSelected: Set world
+  - prototype.UseInputListScratch: Run tlib_UseInputListScratch hook earlier
+  - tlib#qfl#AgentWithSelected: typo
+  - tlib#arg#GetOpts: type conversion (comma-separated lists etc.)
+  - tlib#arg: validators
+  - NEW tlib#date#IsDate()
+  - tlib#balloon#Remove: Unset &ballooneval, &balloonexpr
+  - NEW tlib#balloon#Expand()
+  - NEW tlib#date#Format()
+  - FIX tlib#date#Shift(..., "+Xm") for months
+  - NEW tlib#trace#Backtrace()
+  - NEW tlib#type#Is(), tlib#type#Are(), tlib#type#Has(), tlib#type#Have()
+  - NEW :Tlibassert
+  MD5 checksum: 3c4125a28ff1860accd254846651c251
+version: "1.17"
+
+  - tlib#input#List: #ReduceFilter: make sure the regexp is valid
+  - TTimeCommand -> Ttimecommand
+  - tlib#eval#Extend: mode argument for expand() compatibility
+  - tlib#input#List: Key handlers can have additional arguments
+  - tlib#qfl#AgentWithSelected: Set world
+  - prototype.UseInputListScratch: Run tlib_UseInputListScratch hook earlier
+  - tlib#qfl#AgentWithSelected: typo
+  - tlib#arg#GetOpts: type conversion (comma-separated lists etc.)
+  - tlib#arg: validators
+  - NEW tlib#date#IsDate()
+  - tlib#balloon#Remove: Unset &ballooneval, &balloonexpr
+  - NEW tlib#balloon#Expand()
+  - NEW tlib#date#Format()
+  - FIX tlib#date#Shift(..., "+Xm") for months
+  - NEW tlib#trace#Backtrace()
+  - NEW tlib#type#Is(), tlib#type#Are(), tlib#type#Has(), tlib#type#Have()
+  - NEW :Tlibassert
+  MD5 checksum: 3c4125a28ff1860accd254846651c251
+version: "1.17"
+
+  - tlib#arg: Completion for comma-separated lists
+  - Use "silent cd"
+  - NEW tlib#type#DefSchema(); FIX tlib#type#Has()
+  - tlib#cache#Value(): minor change
+  - tlib#date#IsDate() also checks whether the date is valid
+  - ! tlib#sys#Open(): escape special chars only once
+  - tlib#trace#Print: Allow for strings
+  - :Tlibtrace, :Tlibtraceset, :Tlibassert remove `-bar`
+  - NEW :Tlibtype (type/schema assertions); tlib#type#Is() also accepts schemas as "types"
+  - tlib#dir#CD(): Use haslocaldir()
+  - tlib#qfl#AgentGotoQFE: Don't use wincmd w
+  - NEW tlib#string#Input()
+  - FIX g:tlib#sys#system_rx; add OpenOffice exensions to g:tlib#sys#special_suffixes
+  - NEW tlib#selection#GetSelection()
+  - tlib#date#Shift(): Fix "Xm", ++specs
+  - tlib#trace#Set: FIX Properly handly "-label"
+  MD5 checksum: c3a1fe7d3cd86becbd3f7b0ba7ae9cd8
+version: "1.19"
+
+version: "1.20"
+  - tlib#arg: Completion for comma-separated lists
+  - Use "silent cd"
+  - NEW tlib#type#DefSchema(); FIX tlib#type#Has()
+  - tlib#cache#Value(): minor change
+  - tlib#date#IsDate() also checks whether the date is valid
+  - ! tlib#sys#Open(): escape special chars only once
+  - tlib#trace#Print: Allow for strings
+  - :Tlibtrace, :Tlibtraceset, :Tlibassert remove `-bar`
+  - NEW :Tlibtype (type/schema assertions); tlib#type#Is() also accepts schemas as "types"
+  - tlib#dir#CD(): Use haslocaldir()
+  - tlib#qfl#AgentGotoQFE: Don't use wincmd w
+  - NEW tlib#string#Input()
+  - FIX g:tlib#sys#system_rx; add OpenOffice exensions to g:tlib#sys#special_suffixes
+  - NEW tlib#selection#GetSelection()
+  - tlib#date#Shift(): Fix "Xm", ++specs
+  - tlib#trace#Set: FIX Properly handly "-label"
+  MD5 checksum: c919e0782931a8c628c6996903f989d3
+
+  - tlib#date#Shift(): Support for business days 'Nb'
+  - tlib#list#Uniq: Properly handle empty strings
+  - tlib#trace: Use g:tlib#trace#printer and tlib#trace#Printer_{printer}
+  - tlib#dictionary#Rev: Optional argument `opts = {}`; properly handle empty values etc.
+  - NEW g:tlib#trace#hl
+  - NEW spec/dictionary.vim
+  - tlib#agent#CompleteAgentNames: case insensitive
+  - tlib#arg#CComplete: --[no-]debug option
+  - tlib#date#Format: use localtime() if no arg is provided
+  - NEW tlib#file#IsAbsolute
+  - NEW tlib#notify#PrintError()
+  - tlib#trace#Print: FIX s/exec/call/
+  - tlib#type#Is() match full type name
+  - NEW tlib#string#MatchAll()
+  - Tlibtraceset, tlib#trace#Set(): If no `+` or `-` is prepended, assume `+`.
+  - tlib#list#Input: fix highlighting for filenames
+  - tlib#input#ListW: use world.CloseScratch(1)
+  - tlib#agent#ViewFile: Ignore errors in :exec back
+  - NEW tlib#agent#EditFileInWindow()
+  - :Tlibtraceset uses tlib#arg#GetOpts(), i.e. you can set the log file more easily
+  MD5 checksum: 20a48e225f32b9f58808096a5377af04
+version: "1.22"
+
+  - tlib#date#Shift(): Support for business days 'Nb'
+  - tlib#list#Uniq: Properly handle empty strings
+  - tlib#trace: Use g:tlib#trace#printer and tlib#trace#Printer_{printer}
+  - tlib#dictionary#Rev: Optional argument `opts = {}`; properly handle empty values etc.
+  - NEW g:tlib#trace#hl
+  - NEW spec/dictionary.vim
+  - tlib#agent#CompleteAgentNames: case insensitive
+  - tlib#arg#CComplete: --[no-]debug option
+  - tlib#date#Format: use localtime() if no arg is provided
+  - NEW tlib#file#IsAbsolute
+  - NEW tlib#notify#PrintError()
+  - tlib#trace#Print: FIX s/exec/call/
+  - tlib#type#Is() match full type name
+  - NEW tlib#string#MatchAll()
+  - Tlibtraceset, tlib#trace#Set(): If no `+` or `-` is prepended, assume `+`.
+  - tlib#list#Input: fix highlighting for filenames
+  - tlib#input#ListW: use world.CloseScratch(1)
+  - tlib#agent#ViewFile: Ignore errors in :exec back
+  - NEW tlib#agent#EditFileInWindow()
+  - :Tlibtraceset uses tlib#arg#GetOpts(), i.e. you can set the log file more easily
+  MD5 checksum: 20a48e225f32b9f58808096a5377af04
+version: "1.22"
+
+  - bump version 1.23 + misc changes
+  - FIX #24: avoid vim8 features
+  - tlib#win#GetID(): Alternative implementation sets a window variable to identify the window
+  - tlib#arg#GetOpts(): If args is a dict, return it
+  - tlib#file#FilterFiles(): FIX typo
+  - tlib#trace#Set: Experimental support for log levels
+  - tlib#input#ListW: make sure to close scratch when <= 1 items are in the list
+  - FIX #25: set win_nr again; fix some lint warnings
+  - tlib#progressbar#Init(): returns a statusline definition that can be used for restor
+  MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
+version: "1.23"
+
+  - bump version 1.23 + misc changes
+  - FIX #24: avoid vim8 features
+  - tlib#win#GetID(): Alternative implementation sets a window variable to identify the window
+  - tlib#arg#GetOpts(): If args is a dict, return it
+  - tlib#file#FilterFiles(): FIX typo
+  - tlib#trace#Set: Experimental support for log levels
+  - tlib#input#ListW: make sure to close scratch when <= 1 items are in the list
+  - FIX #25: set win_nr again; fix some lint warnings
+  - tlib#progressbar#Init(): returns a statusline definition that can be used for restor
+  MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
+version: "1.23"
+
+  - bump version 1.23 + misc changes
+  - FIX #24: avoid vim8 features
+  - tlib#win#GetID(): Alternative implementation sets a window variable to identify the window
+  - tlib#arg#GetOpts(): If args is a dict, return it
+  - tlib#file#FilterFiles(): FIX typo
+  - tlib#trace#Set: Experimental support for log levels
+  - tlib#input#ListW: make sure to close scratch when <= 1 items are in the list
+  - FIX #25: set win_nr again; fix some lint warnings
+  - tlib#progressbar#Init(): returns a statusline definition that can be used for restor
+  MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
+version: "1.23"
+
+  - bump version 1.23 + misc changes
+  - FIX #24: avoid vim8 features
+  - tlib#win#GetID(): Alternative implementation sets a window variable to identify the window
+  - tlib#arg#GetOpts(): If args is a dict, return it
+  - tlib#file#FilterFiles(): FIX typo
+  - tlib#trace#Set: Experimental support for log levels
+  - tlib#input#ListW: make sure to close scratch when <= 1 items are in the list
+  - FIX #25: set win_nr again; fix some lint warnings
+  - tlib#progressbar#Init(): returns a statusline definition that can be used for restor
+  MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
+version: "1.23"
+
+  - bump version 1.23 + misc changes
+  - FIX #24: avoid vim8 features
+  - tlib#win#GetID(): Alternative implementation sets a window variable to identify the window
+  - tlib#arg#GetOpts(): If args is a dict, return it
+  - tlib#file#FilterFiles(): FIX typo
+  - tlib#trace#Set: Experimental support for log levels
+  - tlib#input#ListW: make sure to close scratch when <= 1 items are in the list
+  - FIX #25: set win_nr again; fix some lint warnings
+  - tlib#progressbar#Init(): returns a statusline definition that can be used for restor
+  MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
+version: "1.23"
+
+  - bump version 1.23 + misc changes
+  - FIX #24: avoid vim8 features
+  - tlib#win#GetID(): Alternative implementation sets a window variable to identify the window
+  - tlib#arg#GetOpts(): If args is a dict, return it
+  - tlib#file#FilterFiles(): FIX typo
+  - tlib#trace#Set: Experimental support for log levels
+  - tlib#input#ListW: make sure to close scratch when <= 1 items are in the list
+  - FIX #25: set win_nr again; fix some lint warnings
+  - tlib#progressbar#Init(): returns a statusline definition that can be used for restor
+  MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
+version: "1.23"
+
+  - bump version 1.23 + misc changes
+  - FIX #24: avoid vim8 features
+  - tlib#win#GetID(): Alternative implementation sets a window variable to identify the window
+  - tlib#arg#GetOpts(): If args is a dict, return it
+  - tlib#file#FilterFiles(): FIX typo
+  - tlib#trace#Set: Experimental support for log levels
+  - tlib#input#ListW: make sure to close scratch when <= 1 items are in the list
+  - FIX #25: set win_nr again; fix some lint warnings
+  - tlib#progressbar#Init(): returns a statusline definition that can be used for restor
+  MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
+version: "1.23"
+
+  - bump version 1.23 + misc changes
+  - FIX #24: avoid vim8 features
+  - tlib#win#GetID(): Alternative implementation sets a window variable to identify the window
+  - tlib#arg#GetOpts(): If args is a dict, return it
+  - tlib#file#FilterFiles(): FIX typo
+  - tlib#trace#Set: Experimental support for log levels
+  - tlib#input#ListW: make sure to close scratch when <= 1 items are in the list
+  - FIX #25: set win_nr again; fix some lint warnings
+  - tlib#progressbar#Init(): returns a statusline definition that can be used for restor
+  MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
+version: "1.23"
+
+  - bump version 1.23 + misc changes
+  - FIX #24: avoid vim8 features
+  - tlib#win#GetID(): Alternative implementation sets a window variable to identify the window
+  - tlib#arg#GetOpts(): If args is a dict, return it
+  - tlib#file#FilterFiles(): FIX typo
+  - tlib#trace#Set: Experimental support for log levels
+  - tlib#input#ListW: make sure to close scratch when <= 1 items are in the list
+  - FIX #25: set win_nr again; fix some lint warnings
+  - tlib#progressbar#Init(): returns a statusline definition that can be used for restor
+  MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
+version: "1.23"
+

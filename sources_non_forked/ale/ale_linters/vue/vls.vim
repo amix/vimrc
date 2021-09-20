@@ -13,7 +13,7 @@ endfunction
 call ale#linter#Define('vue', {
 \   'name': 'vls',
 \   'lsp': 'stdio',
-\   'executable': {b -> ale#node#FindExecutable(b, 'vue_vls', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'vue_vls', [
 \       'node_modules/.bin/vls',
 \   ])},
 \   'command': '%e --stdio',

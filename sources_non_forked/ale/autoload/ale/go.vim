@@ -42,3 +42,17 @@ function! ale#go#EnvString(buffer) abort
 
     return l:env
 endfunction
+
+function! ale#go#GetGoPathExecutable(suffix) abort
+    let l:prefix = $GOPATH
+
+    if !empty($GOPATH)
+        let l:prefix = $GOPATH
+    elseif has('win32')
+        let l:prefix = $USERPROFILE . '/go'
+    else
+        let l:prefix = $HOME . '/go'
+    endif
+
+    return ale#path#Simplify(l:prefix . '/' . a:suffix)
+endfunction

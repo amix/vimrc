@@ -5,6 +5,7 @@ call ale#Set('python_black_executable', 'black')
 call ale#Set('python_black_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('python_black_options', '')
 call ale#Set('python_black_auto_pipenv', 0)
+call ale#Set('python_black_auto_poetry', 0)
 call ale#Set('python_black_change_directory', 1)
 
 function! ale#fixers#black#GetExecutable(buffer) abort
@@ -13,29 +14,39 @@ function! ale#fixers#black#GetExecutable(buffer) abort
         return 'pipenv'
     endif
 
+    if (ale#Var(a:buffer, 'python_auto_poetry') || ale#Var(a:buffer, 'python_black_auto_poetry'))
+    \ && ale#python#PoetryPresent(a:buffer)
+        return 'poetry'
+    endif
+
     return ale#python#FindExecutable(a:buffer, 'python_black', ['black'])
 endfunction
 
 function! ale#fixers#black#Fix(buffer) abort
-    let l:cd_string = ale#Var(a:buffer, 'python_black_change_directory')
-    \   ? ale#path#BufferCdString(a:buffer)
-    \   : ''
-
     let l:executable = ale#fixers#black#GetExecutable(a:buffer)
+    let l:cmd = [ale#Escape(l:executable)]
 
-    let l:exec_args = l:executable =~? 'pipenv$'
-    \   ? ' run black'
-    \   : ''
+    if l:executable =~? 'pipenv\|poetry$'
+        call extend(l:cmd, ['run', 'black'])
+    endif
 
     let l:options = ale#Var(a:buffer, 'python_black_options')
 
-    if expand('#' . a:buffer . ':e') is? 'pyi'
-        let l:options .= '--pyi'
+    if !empty(l:options)
+        call add(l:cmd, l:options)
     endif
 
-    return {
-    \   'command': l:cd_string . ale#Escape(l:executable) . l:exec_args
-    \       . (!empty(l:options) ? ' ' . l:options : '')
-    \       . ' -',
-    \}
+    if expand('#' . a:buffer . ':e') is? 'pyi'
+        call add(l:cmd, '--pyi')
+    endif
+
+    call add(l:cmd, '-')
+
+    let l:result = {'command': join(l:cmd, ' ')}
+
+    if ale#Var(a:buffer, 'python_black_change_directory')
+        let l:result.cwd = '%s:h'
+    endif
+
+    return l:result
 endfunction

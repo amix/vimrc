@@ -18,15 +18,15 @@ function! ale_linters#php#intelephense#GetProjectRoot(buffer) abort
     return !empty(l:git_path) ? fnamemodify(l:git_path, ':h:h') : ''
 endfunction
 
-function! ale_linters#php#intelephense#GetInitializationOptions() abort
-    return ale#Get('php_intelephense_config')
+function! ale_linters#php#intelephense#GetInitializationOptions(buffer) abort
+    return ale#Var(a:buffer, 'php_intelephense_config')
 endfunction
 
 call ale#linter#Define('php', {
 \   'name': 'intelephense',
 \   'lsp': 'stdio',
 \   'initialization_options': function('ale_linters#php#intelephense#GetInitializationOptions'),
-\   'executable': {b -> ale#node#FindExecutable(b, 'php_intelephense', [])},
+\   'executable': {b -> ale#path#FindExecutable(b, 'php_intelephense', [])},
 \   'command': '%e --stdio',
 \   'project_root': function('ale_linters#php#intelephense#GetProjectRoot'),
 \})

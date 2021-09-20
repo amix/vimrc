@@ -26,7 +26,7 @@ g:ale_purescript_ls_config                         g:ale_purescript_ls_config
 		\  'purescript': {
 		\    'addSpagoSources': v:true,
 		\    'addNpmPath': v:true,
-		\    'buildCommand': 'spago build -- --json-errors'
+		\    'buildCommand': 'spago --quiet build --purs-args --json-errors'
 		\  }
 		\}
 ===============================================================================

@@ -1,7 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    40
+" @Revision:    43
 
 " TLet g:tlib#dir#sep = '/'
 TLet g:tlib#dir#sep = exists('+shellslash') && !&shellslash ? '\' : '/'
@@ -65,12 +65,12 @@ endf
 
 " :def: function! tlib#dir#CD(dir, ?locally=0) => CWD
 function! tlib#dir#CD(dir, ...) "{{{3
-    TVarArg ['locally', 0]
+    TVarArg ['locally', haslocaldir()]
     let cmd = locally ? 'lcd! ' : 'cd! '
     " let cwd = getcwd()
     let cmd .= tlib#arg#Ex(a:dir)
     " TLogVAR a:dir, locally, cmd
-    exec cmd
+    exec 'silent' cmd
     " return cwd
     return getcwd()
 endf
@@ -78,7 +78,7 @@ endf
 
 " :def: function! tlib#dir#Push(dir, ?locally=0) => CWD
 function! tlib#dir#Push(dir, ...) "{{{3
-    TVarArg ['locally', 0]
+    TVarArg ['locally', haslocaldir()]
     call add(s:dir_stack, [getcwd(), locally])
     return tlib#dir#CD(a:dir, locally)
 endf

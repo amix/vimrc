@@ -33,6 +33,28 @@ g:ale_terraform_terraform_executable     *g:ale_terraform_terraform_executable*
 
 
 ===============================================================================
+terraform-ls                                       *ale-terraform-terraform-ls*
+
+Official terraform language server. More stable than *terraform-lsp* but
+currently has less features.
+
+g:ale_terraform_ls_executable                   *g:ale_terraform_ls_executable*
+                                                *b:ale_terraform_ls_executable*
+  Type: |String|
+  Default: `'terraform-ls'`
+
+  This variable can be changed to use a different executable for terraform-ls.
+
+
+g:ale_terraform_ls_options                         *g:ale_terraform_ls_options*
+                                                   *b:ale_terraform_ls_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to pass custom CLI flags to terraform-ls.
+
+
+===============================================================================
 terraform-lsp                                     *ale-terraform-terraform-lsp*
 
 g:ale_terraform_langserver_executable   *g:ale_terraform_langserver_executable*

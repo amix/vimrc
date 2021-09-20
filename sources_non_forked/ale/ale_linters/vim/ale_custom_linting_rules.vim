@@ -22,16 +22,20 @@ function! s:GetALEProjectDir(buffer) abort
     return ale#path#Dirname(ale#path#Dirname(ale#path#Dirname(l:executable)))
 endfunction
 
-function! ale_linters#vim#ale_custom_linting_rules#GetCommand(buffer) abort
-    let l:dir = s:GetALEProjectDir(a:buffer)
+function! ale_linters#vim#ale_custom_linting_rules#GetCwd(buffer) abort
+    let l:executable = ale_linters#vim#ale_custom_linting_rules#GetExecutable(a:buffer)
 
+    return ale#path#Dirname(ale#path#Dirname(ale#path#Dirname(l:executable)))
+endfunction
+
+function! ale_linters#vim#ale_custom_linting_rules#GetCommand(buffer) abort
     let l:temp_dir = ale#command#CreateDirectory(a:buffer)
     let l:temp_file = l:temp_dir . '/example.vim'
 
     let l:lines = getbufline(a:buffer, 1, '$')
     call ale#util#Writefile(a:buffer, l:lines, l:temp_file)
 
-    return ale#path#CdString(l:dir) . '%e ' . ale#Escape(l:temp_dir)
+    return '%e ' . ale#Escape(l:temp_dir)
 endfunction
 
 function! ale_linters#vim#ale_custom_linting_rules#Handle(buffer, lines) abort
@@ -59,6 +63,7 @@ endfunction
 call ale#linter#Define('vim', {
 \   'name': 'ale_custom_linting_rules',
 \   'executable': function('ale_linters#vim#ale_custom_linting_rules#GetExecutable'),
+\   'cwd': function('ale_linters#vim#ale_custom_linting_rules#GetCwd'),
 \   'command': function('ale_linters#vim#ale_custom_linting_rules#GetCommand'),
 \   'callback': 'ale_linters#vim#ale_custom_linting_rules#Handle',
 \   'read_buffer': 0,

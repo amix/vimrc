@@ -51,7 +51,7 @@ function! s:KeyMap.bind()
     else
         let keymapInvokeString = self.key
     endif
-    let keymapInvokeString = escape(keymapInvokeString, '\')
+    let keymapInvokeString = escape(keymapInvokeString, '\"')
 
     let premap = self.key ==# '<LeftRelease>' ? ' <LeftRelease>' : ' '
 
@@ -66,11 +66,11 @@ endfunction
 "FUNCTION: KeyMap.invoke() {{{1
 "Call the KeyMaps callback function
 function! s:KeyMap.invoke(...)
-    let Callback = type(self.callback) ==# type(function('tr')) ? self.callback : function(self.callback)
+    let l:Callback = type(self.callback) ==# type(function('tr')) ? self.callback : function(self.callback)
     if a:0
-        call Callback(a:1)
+        call l:Callback(a:1)
     else
-        call Callback()
+        call l:Callback()
     endif
 endfunction
 

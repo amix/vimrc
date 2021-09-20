@@ -7,6 +7,9 @@ if !exists('s:buffer_data')
     let s:buffer_data = {}
 endif
 
+" The regular expression used for formatting filenames with modifiers.
+let s:path_format_regex = '\v\%s(%(:h|:t|:r|:e)*)'
+
 " Used to get the data in tests.
 function! ale#command#GetData() abort
     return deepcopy(s:buffer_data)
@@ -23,6 +26,19 @@ function! ale#command#InitData(buffer) abort
         \   'file_list': [],
         \   'directory_list': [],
         \}
+    endif
+endfunction
+
+" Set the cwd for commands that are about to run.
+" Used internally.
+function! ale#command#SetCwd(buffer, cwd) abort
+    call ale#command#InitData(a:buffer)
+    let s:buffer_data[a:buffer].cwd = a:cwd
+endfunction
+
+function! ale#command#ResetCwd(buffer) abort
+    if has_key(s:buffer_data, a:buffer)
+        let s:buffer_data[a:buffer].cwd = v:null
     endif
 endfunction
 
@@ -151,6 +167,24 @@ function! s:FormatFilename(filename, mappings, modifiers) abort
     return ale#Escape(l:filename)
 endfunction
 
+" Produce a command prefix to check to a particular directory for a command.
+" %s format markers with filename-modifiers can be used as the directory, and
+" will be returned verbatim for formatting in paths relative to files.
+function! ale#command#CdString(directory) abort
+    let l:match = matchstrpos(a:directory, s:path_format_regex)
+    " Do not escape the directory here if it's a valid format string.
+    " This allows us to use sequences like %s:h, %s:h:h, etc.
+    let l:directory = l:match[1:] == [0, len(a:directory)]
+    \   ? a:directory
+    \   : ale#Escape(a:directory)
+
+    if has('win32')
+        return 'cd /d ' . l:directory . ' && '
+    endif
+
+    return 'cd ' . l:directory . ' && '
+endfunction
+
 " Given a command string, replace every...
 " %s -> with the current filename
 " %t -> with the name of an unused file in a temporary directory
@@ -161,10 +195,15 @@ function! ale#command#FormatCommand(
 \   command,
 \   pipe_file_if_needed,
 \   input,
+\   cwd,
 \   mappings,
 \) abort
     let l:temporary_file = ''
     let l:command = a:command
+
+    if !empty(a:cwd)
+        let l:command = ale#command#CdString(a:cwd) . l:command
+    endif
 
     " First replace all uses of %%, used for literal percent characters,
     " with an ugly string.
@@ -181,7 +220,7 @@ function! ale#command#FormatCommand(
         let l:filename = fnamemodify(bufname(a:buffer), ':p')
         let l:command = substitute(
         \   l:command,
-        \   '\v\%s(%(:h|:t|:r|:e)*)',
+        \   s:path_format_regex,
         \   '\=s:FormatFilename(l:filename, a:mappings, submatch(1))',
         \   'g'
         \)
@@ -279,9 +318,16 @@ function! s:ExitCallback(buffer, line_list, Callback, data) abort
     let l:result = a:data.result
     let l:result.value = l:value
 
-    if get(l:result, 'result_callback', v:null) isnot v:null
-        call call(l:result.result_callback, [l:value])
-    endif
+    " Set the default cwd for this buffer in this call stack.
+    call ale#command#SetCwd(a:buffer, l:result.cwd)
+
+    try
+        if get(l:result, 'result_callback', v:null) isnot v:null
+            call call(l:result.result_callback, [l:value])
+        endif
+    finally
+        call ale#command#ResetCwd(a:buffer)
+    endtry
 endfunction
 
 function! ale#command#Run(buffer, command, Callback, ...) abort
@@ -293,6 +339,13 @@ function! ale#command#Run(buffer, command, Callback, ...) abort
 
     let l:output_stream = get(l:options, 'output_stream', 'stdout')
     let l:line_list = []
+    let l:cwd = get(l:options, 'cwd', v:null)
+
+    if l:cwd is v:null
+        " Default the working directory to whatever it was for the last
+        " command run in the chain.
+        let l:cwd = get(get(s:buffer_data, a:buffer, {}), 'cwd', v:null)
+    endif
 
     let [l:temporary_file, l:command, l:file_created] = ale#command#FormatCommand(
     \   a:buffer,
@@ -300,6 +353,7 @@ function! ale#command#Run(buffer, command, Callback, ...) abort
     \   a:command,
     \   get(l:options, 'read_buffer', 0),
     \   get(l:options, 'input', v:null),
+    \   l:cwd,
     \   get(l:options, 'filename_mappings', []),
     \)
     let l:command = ale#job#PrepareCommand(a:buffer, l:command)
@@ -366,10 +420,14 @@ function! ale#command#Run(buffer, command, Callback, ...) abort
     " The `_deferred_job_id` is used for both checking the type of object, and
     " for checking the job ID and status.
     "
+    " The cwd is kept and used as the default value for the next command in
+    " the chain.
+    "
     " The original command here is used in tests.
     let l:result = {
     \   '_deferred_job_id': l:job_id,
     \   'executable': get(l:options, 'executable', ''),
+    \   'cwd': l:cwd,
     \   'command': a:command,
     \}
 

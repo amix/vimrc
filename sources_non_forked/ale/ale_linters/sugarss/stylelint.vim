@@ -13,7 +13,7 @@ endfunction
 
 call ale#linter#Define('sugarss', {
 \   'name': 'stylelint',
-\   'executable': {b -> ale#node#FindExecutable(b, 'sugarss_stylelint', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'sugarss_stylelint', [
 \       'node_modules/.bin/stylelint',
 \   ])},
 \   'command': function('ale_linters#sugarss#stylelint#GetCommand'),

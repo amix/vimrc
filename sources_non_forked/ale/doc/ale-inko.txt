@@ -1,0 +1,22 @@
+===============================================================================
+ALE Inko Integration                                         *ale-inko-options*
+                                                         *ale-integration-inko*
+
+===============================================================================
+Integration Information
+
+  Currently, the only supported linter for Inko is the Inko compiler itself.
+
+===============================================================================
+inko                                                            *ale-inko-inko*
+
+g:ale_inko_inko_executable                         *g:ale_inko_inko_executable*
+                                                   *b:ale_inko_inko_executable*
+  Type: |String|
+  Default: `'inko'`
+
+  This variable can be modified to change the executable path for `inko`.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

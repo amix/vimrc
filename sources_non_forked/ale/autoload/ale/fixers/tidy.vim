@@ -5,7 +5,7 @@ call ale#Set('html_tidy_executable', 'tidy')
 call ale#Set('html_tidy_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale#fixers#tidy#Fix(buffer) abort
-    let l:executable = ale#node#FindExecutable(
+    let l:executable = ale#path#FindExecutable(
     \   a:buffer,
     \   'html_tidy',
     \   ['tidy'],

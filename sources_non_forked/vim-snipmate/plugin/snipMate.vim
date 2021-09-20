@@ -57,6 +57,10 @@ endif
 let g:snipMate['no_match_completion_feedkeys_chars'] =
 			\ get(g:snipMate, 'no_match_completion_feedkeys_chars', "\t")
 
+if !exists('g:snipMate.snippet_version')
+	echom 'The legacy SnipMate parser is deprecated. Please see :h SnipMate-deprecate.'
+endif
+
 " Add default scope aliases, without overriding user settings
 let g:snipMate.scope_aliases = get(g:snipMate, 'scope_aliases', {})
 if exists('g:snipMate_no_default_aliases')

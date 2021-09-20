@@ -27,5 +27,20 @@ describe "Indenting" do
         foo = bar; class One; end
       end
     EOF
+
+    assert_correct_indenting <<~EOF
+      nested do
+        while true do
+          def foo
+            if bar
+              for i in collection
+                def baz
+                end
+              end
+            end
+          end
+        end
+      end
+    EOF
   end
 end

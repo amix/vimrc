@@ -23,6 +23,19 @@ function! ale_linters#rust#cargo#GetCargoExecutable(bufnr) abort
     endif
 endfunction
 
+function! ale_linters#rust#cargo#GetCwd(buffer) abort
+    if ale#Var(a:buffer, 'rust_cargo_avoid_whole_workspace')
+        let l:nearest_cargo = ale#path#FindNearestFile(a:buffer, 'Cargo.toml')
+        let l:nearest_cargo_dir = fnamemodify(l:nearest_cargo, ':h')
+
+        if l:nearest_cargo_dir isnot# '.'
+            return l:nearest_cargo_dir
+        endif
+    endif
+
+    return ''
+endfunction
+
 function! ale_linters#rust#cargo#GetCommand(buffer, version) abort
     let l:use_check = ale#Var(a:buffer, 'rust_cargo_use_check')
     \   && ale#semver#GTE(a:version, [0, 17, 0])
@@ -40,18 +53,6 @@ function! ale_linters#rust#cargo#GetCommand(buffer, version) abort
 
     if !empty(l:include_features)
         let l:include_features = ' --features ' . ale#Escape(l:include_features)
-    endif
-
-    let l:avoid_whole_workspace = ale#Var(a:buffer, 'rust_cargo_avoid_whole_workspace')
-    let l:nearest_cargo_prefix = ''
-
-    if l:avoid_whole_workspace
-        let l:nearest_cargo = ale#path#FindNearestFile(a:buffer, 'Cargo.toml')
-        let l:nearest_cargo_dir = fnamemodify(l:nearest_cargo, ':h')
-
-        if l:nearest_cargo_dir isnot# '.'
-            let l:nearest_cargo_prefix = 'cd '. ale#Escape(l:nearest_cargo_dir) .' && '
-        endif
     endif
 
     let l:default_feature_behavior = ale#Var(a:buffer, 'rust_cargo_default_feature_behavior')
@@ -81,7 +82,7 @@ function! ale_linters#rust#cargo#GetCommand(buffer, version) abort
         endif
     endif
 
-    return l:nearest_cargo_prefix . 'cargo '
+    return 'cargo '
     \   . l:subcommand
     \   . (l:use_all_targets ? ' --all-targets' : '')
     \   . (l:use_examples ? ' --examples' : '')
@@ -96,6 +97,7 @@ endfunction
 call ale#linter#Define('rust', {
 \   'name': 'cargo',
 \   'executable': function('ale_linters#rust#cargo#GetCargoExecutable'),
+\   'cwd': function('ale_linters#rust#cargo#GetCwd'),
 \   'command': {buffer -> ale#semver#RunWithVersionCheck(
 \       buffer,
 \       ale_linters#rust#cargo#GetCargoExecutable(buffer),

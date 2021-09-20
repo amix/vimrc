@@ -1,14 +1,22 @@
 " Author: Magnus Ottenklinger - https://github.com/evnu
 
+let g:ale_erlang_erlc_executable = get(g:, 'ale_erlang_erlc_executable', 'erlc')
 let g:ale_erlang_erlc_options = get(g:, 'ale_erlang_erlc_options', '')
+
+function! ale_linters#erlang#erlc#GetExecutable(buffer) abort
+    return ale#Var(a:buffer, 'erlang_erlc_executable')
+endfunction
 
 function! ale_linters#erlang#erlc#GetCommand(buffer) abort
     let l:output_file = ale#util#Tempname()
     call ale#command#ManageFile(a:buffer, l:output_file)
 
-    return 'erlc -o ' . ale#Escape(l:output_file)
-    \   . ' ' . ale#Var(a:buffer, 'erlang_erlc_options')
-    \   . ' %t'
+    let l:command = ale#Escape(ale_linters#erlang#erlc#GetExecutable(a:buffer))
+    \             . ' -o ' . ale#Escape(l:output_file)
+    \             . ' ' . ale#Var(a:buffer, 'erlang_erlc_options')
+    \             . ' %t'
+
+    return l:command
 endfunction
 
 function! ale_linters#erlang#erlc#Handle(buffer, lines) abort
@@ -17,7 +25,7 @@ function! ale_linters#erlang#erlc#Handle(buffer, lines) abort
     " error.erl:4: variable 'B' is unbound
     " error.erl:3: Warning: function main/0 is unused
     " error.erl:4: Warning: variable 'A' is unused
-    let l:pattern = '\v^([a-zA-Z]?:?[^:]+):(\d+): (Warning: )?(.+)$'
+    let l:pattern = '\v^([a-zA-Z]?:?[^:]+):(\d+):(\d+:)? (Warning: )?(.+)$'
 
     " parse_transforms are a special case. The error message does not indicate a location:
     " error.erl: undefined parse transform 'some_parse_transform'
@@ -57,8 +65,8 @@ function! ale_linters#erlang#erlc#Handle(buffer, lines) abort
         endif
 
         let l:line = l:match[2]
-        let l:warning_or_text = l:match[3]
-        let l:text = l:match[4]
+        let l:warning_or_text = l:match[4]
+        let l:text = l:match[5]
 
         " If this file is a header .hrl, ignore the following expected messages:
         " - 'no module definition'
@@ -90,7 +98,7 @@ endfunction
 
 call ale#linter#Define('erlang', {
 \   'name': 'erlc',
-\   'executable': 'erlc',
+\   'executable': function('ale_linters#erlang#erlc#GetExecutable'),
 \   'command': function('ale_linters#erlang#erlc#GetCommand'),
 \   'callback': 'ale_linters#erlang#erlc#Handle',
 \})

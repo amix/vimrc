@@ -3,8 +3,8 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2015-10-24.
-" @Revision:    31.1.243
+" @Last Change: 2019-01-02.
+" @Revision:    125.1.243
 
 
 " The cache directory. If empty, use |tlib#dir#MyRuntime|.'/cache'.
@@ -45,18 +45,34 @@ TLet g:tlib#cache#dont_purge = ['[\/]\.last_purge$']
 " |pathshorten()|.
 TLet g:tlib#cache#max_filename = 200
 
+TLet g:tlib#cache#use_json = 0
+
+TLet g:tlib#cache#use_encoding = ''
+
+
 let s:cache = {}
 
 
-" :display: tlib#cache#Dir(?mode = 'bg')
+" :display: tlib#cache#Dir(?mode = 'bg', ?ensure_dir = true)
 " The default cache directory.
 function! tlib#cache#Dir(...) "{{{3
-    TVarArg ['mode', 'bg']
+    TVarArg ['mode', 'bg'], ['ensure_dir', 1]
     let dir = tlib#var#Get('tlib_cache', mode)
     if empty(dir)
         let dir = tlib#file#Join([tlib#dir#MyRuntime(), 'cache'])
     endif
+    if ensure_dir
+        call tlib#dir#Ensure(dir)
+    endif
     return dir
+endf
+
+
+" :display: tlib#cache#EncodedFilename(type, file, ?mkdir=0, ?dir='')
+" Encode `file` and call |tlib#cache#Filename()|.
+function! tlib#cache#EncodedFilename(type, file, ...) "{{{3
+    let file = tlib#url#Encode(a:file)
+    return call(function('tlib#cache#Filename'), [a:type, file] + a:000)
 endf
 
 
@@ -90,12 +106,15 @@ function! tlib#cache#Filename(type, ...) "{{{3
     " TLogVAR file, dir, mkdir
     let cache_file = tlib#file#Join([dir, file])
     if len(cache_file) > g:tlib#cache#max_filename
+        " echom "DBG long filename" cache_file
+        " echom "DBG long filename" dir
         if v:version >= 704
-            let shortfilename = pathshorten(file) .'_'. sha256(file)
+            let shortfilename = sha256(file)
         else
-            let shortfilename = pathshorten(file) .'_'. tlib#hash#Adler32(file)
+            let shortfilename = tlib#hash#Adler32(file)
         endif
-        let cache_file = tlib#cache#Filename(a:type, shortfilename, mkdir, dir0)
+        " let cache_file = tlib#cache#Filename(a:type, shortfilename, mkdir, dir0)
+        let cache_file = tlib#file#Join([dir, shortfilename])
     else
         if mkdir && !isdirectory(dir)
             try
@@ -126,15 +145,45 @@ function! s:SetTimestamp(cfile, type) "{{{3
 endf
 
 
-function! tlib#cache#Save(cfile, dictionary, ...) "{{{3
+function! s:PutValue(cfile, value) abort "{{{3
+    let s:cache[a:cfile] = {'mtime': localtime(), 'data': a:value}
+endf
+
+
+function! s:GetValue(cfile, default) abort "{{{3
+    return get(get(s:cache, a:cfile, {}), 'data', a:default)
+endf
+
+
+function! s:GetCacheTime(cfile) abort "{{{3
+    let not_found = !has_key(s:cache, a:cfile)
+    let cftime = not_found ? -1 : s:cache[a:cfile].mtime
+    return cftime
+endf
+
+
+function! tlib#cache#Save(cfile, value, ...) "{{{3
     TVarArg ['options', {}]
     let in_memory = get(options, 'in_memory', 0)
     if in_memory
         " TLogVAR in_memory, a:cfile, localtime()
-        let s:cache[a:cfile] = {'mtime': localtime(), 'data': a:dictionary}
+        call s:PutValue(a:cfile, a:value)
     elseif !empty(a:cfile)
-        " TLogVAR a:dictionary
-        call writefile([string(a:dictionary)], a:cfile, 'b')
+        " TLogVAR a:value
+        let cfile = a:cfile
+        if g:tlib#cache#use_json && exists('*json_encode')
+            try
+                let value = json_encode(a:value)
+                let cfile .= '.json'
+            catch
+                echoerr v:exception
+                let value = string(a:value)
+            endtry
+        else
+            let value = string(a:value)
+        endif
+        Tlibtrace 'tlib', cfile, value
+        call writefile([value], cfile, 'b')
         call s:SetTimestamp(a:cfile, 'write')
     endif
 endf
@@ -152,16 +201,57 @@ function! tlib#cache#Get(cfile, ...) "{{{3
     let in_memory = get(options, 'in_memory', 0)
     if in_memory
         " TLogVAR in_memory, a:cfile
-        return get(get(s:cache, a:cfile, {}), 'data', default)
+        return s:GetValue(a:cfile, default)
     else
         call tlib#cache#MaybePurge()
-        if !empty(a:cfile) && filereadable(a:cfile)
-            let val = readfile(a:cfile, 'b')
-            call s:SetTimestamp(a:cfile, 'read')
-            return eval(join(val, "\n"))
-        else
-            return default
+        if !empty(a:cfile)
+            let jsonfile = a:cfile .'.json'
+            let use_json = g:tlib#cache#use_json && exists('*json_decode') && exists('v:none') && filereadable(jsonfile)
+            if use_json
+                let use_json = 1
+                let cfile = jsonfile
+            else
+                let cfile = a:cfile
+            endif
+            let mt = s:GetCacheTime(cfile)
+            let ft = getftime(cfile)
+            if mt != -1 && mt >= ft
+                return s:GetValue(cfile, default)
+            elseif ft != -1
+                call s:SetTimestamp(cfile, 'read')
+                let val = join(readfile(cfile, 'b'), '\n')
+                try
+                    if use_json
+                        " NOTE: Copy result of json_decode() in order to 
+                        " avoid "E741: value is locked" error in vim8.
+                        let value = json_decode(val)
+                        if value is v:none
+                            let value = default
+                        else
+                            let value = copy(value)
+                        endif
+                    else
+                        let value = eval(val)
+                    endif
+                    call s:PutValue(cfile, value)
+                    return value
+                catch
+                    echohl ErrorMsg
+                    echom v:exception
+                    echom 'tlib#cache#Get: Invalid value in:' cfile
+                    echom 'Value:' string(val)
+                    echom 'Please review the file and delete it if necessary'
+                    echom 'Will use default value:' string(default)
+                    echohl NONE
+                    if g:tlib#debug
+                        let @* = string(val)
+                    endif
+                    " call s:PutValue(cfile, default)
+                    return default
+                endtry
+            endif
         endif
+        return default
     endif
 endf
 
@@ -172,10 +262,14 @@ endf
 function! tlib#cache#Value(cfile, generator, ftime, ...) "{{{3
     TVarArg ['args', []], ['options', {}]
     let in_memory = get(options, 'in_memory', 0)
-    let not_found = in_memory ? !has_key(s:cache, a:cfile) : !filereadable(a:cfile)
-    " TLogVAR in_memory, not_found
-    let cftime = in_memory ? (not_found ? 0 : s:cache[a:cfile].mtime) : getftime(a:cfile)
-    if not_found || (a:ftime != 0 && cftime < a:ftime)
+    if in_memory
+        let cftime = s:GetCacheTime(a:cfile)
+    else
+        let cftime = getftime(a:cfile)
+    endif
+    let ftime = a:ftime
+    " TLogVAR in_memory, cftime
+    if cftime == -1 || ftime == -1 || (ftime != 0 && cftime < ftime)
         " TLogVAR a:generator, args
         let val = call(a:generator, args)
         " TLogVAR val
@@ -191,6 +285,12 @@ function! tlib#cache#Value(cfile, generator, ftime, ...) "{{{3
             return val.val
         endif
     endif
+endf
+
+
+function! tlib#cache#ValueFromName(type, name, ...) abort "{{{3
+    let cfile = tlib#cache#Filename(a:type, tlib#url#Encode(a:name), 1)
+    return call(function('tlib#cache#Value'), [cfile] + a:000)
 endf
 
 
@@ -251,16 +351,12 @@ function! tlib#cache#Purge() "{{{3
     try
         for file in files
             if isdirectory(file)
-                if empty(filter(copy(newer), 'strpart(v:val, 0, len(file)) ==# file'))
+                if empty(filter(copy(newer), 'tlib#string#Strcharpart(v:val, 0, len(file)) ==# file'))
                     call add(deldir, file)
                 endif
             else
                 if getftime(file) < threshold
-                    if delete(file)
-                        call add(msg, "TLib: Could not delete cache file: ". file)
-                    elseif g:tlib#cache#verbosity >= 2
-                        call add(msg, "TLib: Delete cache file: ". file)
-                    endif
+                    call s:Delete(msg, file, '')
                 else
                     call add(newer, file)
                 endif
@@ -273,53 +369,65 @@ function! tlib#cache#Purge() "{{{3
         echo join(msg, "\n")
     endif
     if !empty(deldir)
-        if &shell =~ 'sh\(\.exe\)\?$'
-            let scriptfile = 'deldir.sh'
-            let rmdir = 'rm -rf %s'
-        else
-            let scriptfile = 'deldir.bat'
-            let rmdir = 'rmdir /S /Q %s'
-        endif
-        let enc = g:tlib#cache#script_encoding
-        if has('multi_byte') && enc != &enc
-            call map(deldir, 'iconv(v:val, &enc, enc)')
-        endif
-        let scriptfile = tlib#file#Join([dir, scriptfile])
-        if filereadable(scriptfile)
-            let script = readfile(scriptfile)
-        else
-            let script = []
-        endif
-        let script += map(copy(deldir), 'printf(rmdir, shellescape(v:val, 1))')
-        let script = tlib#list#Uniq(script)
-        call writefile(script, scriptfile)
-        call inputsave()
-        if g:tlib#cache#run_script == 0
-            if g:tlib#cache#verbosity >= 1
-                echohl WarningMsg
-                if g:tlib#cache#verbosity >= 2
-                    echom "TLib: Purged cache. Need to run script to delete directories"
-                endif
-                echom "TLib: Please review and execute: ". scriptfile
-                echohl NONE
+        let deldir = filter(reverse(sort(deldir)), 's:Delete(msg, v:val, "d")')
+        if !empty(deldir)
+            if &shell =~ 'sh\(\.exe\)\?$'
+                let scriptfile = 'deldir.sh'
+                let rmdir = 'rm -rf %s'
+            else
+                let scriptfile = 'deldir.bat'
+                let rmdir = 'rmdir /S /Q %s'
             endif
-        else
-            try
-                let yn = g:tlib#cache#run_script == 2 ? 'y' : tlib#input#Dialog("TLib: About to delete directories by means of a shell script.\nDirectory removal script: ". scriptfile ."\nRun script to delete directories now?", ['yes', 'no', 'edit'], 'no')
-                if yn =~ '^y\%[es]$'
-                    exec 'cd '. fnameescape(dir)
-                    exec '! ' &shell shellescape(scriptfile, 1)
-                    exec 'cd -'
-                    call delete(scriptfile)
-                elseif yn =~ '^e\%[dit]$'
-                    exec 'edit '. fnameescape(scriptfile)
+            let enc = g:tlib#cache#script_encoding
+            if has('multi_byte') && enc != &enc
+                call map(deldir, 'iconv(v:val, &enc, enc)')
+            endif
+            let scriptfile = tlib#file#Join([dir, scriptfile])
+            if filereadable(scriptfile)
+                let script = readfile(scriptfile)
+            else
+                let script = []
+            endif
+            let script += map(copy(deldir), 'printf(rmdir, shellescape(v:val, 1))')
+            let script = tlib#list#Uniq(script)
+            call writefile(script, scriptfile)
+            call inputsave()
+            if g:tlib#cache#run_script == 0
+                if g:tlib#cache#verbosity >= 1
+                    echohl WarningMsg
+                    if g:tlib#cache#verbosity >= 2
+                        echom "TLib: Purged cache. Need to run script to delete directories"
+                    endif
+                    echom "TLib: Please review and execute: ". scriptfile
+                    echohl NONE
                 endif
-            finally
-                call inputrestore()
-            endtry
+            else
+                try
+                    let yn = g:tlib#cache#run_script == 2 ? 'y' : tlib#input#Dialog("TLib: About to delete directories by means of a shell script.\nDirectory removal script: ". scriptfile ."\nRun script to delete directories now?", ['yes', 'no', 'edit'], 'no')
+                    if yn =~ '^y\%[es]$'
+                        exec 'silent cd '. fnameescape(dir)
+                        exec '! ' &shell shellescape(scriptfile, 1)
+                        exec 'silent cd -'
+                        call delete(scriptfile)
+                    elseif yn =~ '^e\%[dit]$'
+                        exec 'edit '. fnameescape(scriptfile)
+                    endif
+                finally
+                    call inputrestore()
+                endtry
+            endif
         endif
     endif
     call s:PurgeTimestamp(dir)
+endf
+
+
+function! s:Delete(msg, file, flags) abort "{{{3
+    let rv = delete(a:file, a:flags)
+    if !rv && g:tlib#cache#verbosity >= 2
+        call add(a:msg, "TLib#cache: Delete ". file)
+    endif
+    return rv
 endf
 
 
@@ -338,7 +446,7 @@ function! tlib#cache#ListFilesInCache(...) "{{{3
     endif
     let files = reverse(split(filess, '\n'))
     let pos0 = len(tlib#dir#CanonicName(dir))
-    call filter(files, 's:ShouldPurge(strpart(v:val, pos0))')
+    call filter(files, 's:ShouldPurge(tlib#string#Strcharpart(v:val, pos0))')
     return files
 endf
 

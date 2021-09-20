@@ -87,8 +87,8 @@ let g:ale_lint_on_save = get(g:, 'ale_lint_on_save', 1)
 " This flag can be set to 1 to enable linting when the filetype is changed.
 let g:ale_lint_on_filetype_changed = get(g:, 'ale_lint_on_filetype_changed', 1)
 
-" This Dictionary configures the default LSP roots for various linters.
-let g:ale_lsp_root = get(g:, 'ale_lsp_root', {})
+" If set to 1, hints and suggestion from LSP servers and tsserver will be shown.
+let g:ale_lsp_suggestions = get(g:, 'ale_lsp_suggestions', 0)
 
 " This flag can be set to 1 to enable automatically fixing files on save.
 let g:ale_fix_on_save = get(g:, 'ale_fix_on_save', 0)
@@ -100,6 +100,9 @@ let g:ale_enabled = get(g:, 'ale_enabled', 1)
 " A Dictionary mapping linter or fixer names to Arrays of two-item Arrays
 " mapping filename paths from one system to another.
 let g:ale_filename_mappings = get(g:, 'ale_filename_mappings', {})
+
+" This Dictionary configures the default project roots for various linters.
+let g:ale_root = get(g:, 'ale_root', {})
 
 " These flags dictates if ale uses the quickfix or the loclist (loclist is the
 " default, quickfix overrides loclist).
@@ -138,6 +141,20 @@ let g:ale_set_balloons = get(g:, 'ale_set_balloons', has('balloon_eval') && has(
 " Use preview window for hover messages.
 let g:ale_hover_to_preview = get(g:, 'ale_hover_to_preview', 0)
 
+" Float preview windows in Neovim
+let g:ale_floating_preview = get(g:, 'ale_floating_preview', 0)
+
+" Hovers use floating windows in Neovim
+let g:ale_hover_to_floating_preview = get(g:, 'ale_hover_to_floating_preview', 0)
+
+" Detail uses floating windows in Neovim
+let g:ale_detail_to_floating_preview = get(g:, 'ale_detail_to_floating_preview', 0)
+
+" Border setting for floating preview windows in Neovim
+" The element in the list presents - horizontal, top, top-left, top-right,
+" bottom-right and bottom-left
+let g:ale_floating_window_border = get(g:, 'ale_floating_window_border', ['|', '-', '+', '+', '+', '+'])
+
 " This flag can be set to 0 to disable warnings for trailing whitespace
 let g:ale_warn_about_trailing_whitespace = get(g:, 'ale_warn_about_trailing_whitespace', 1)
 " This flag can be set to 0 to disable warnings for trailing blank lines
@@ -155,8 +172,14 @@ let g:ale_completion_enabled = get(g:, 'ale_completion_enabled', 0)
 " Enable automatic detection of pipenv for Python linters.
 let g:ale_python_auto_pipenv = get(g:, 'ale_python_auto_pipenv', 0)
 
+" Enable automatic detection of poetry for Python linters.
+let g:ale_python_auto_poetry = get(g:, 'ale_python_auto_poetry', 0)
+
 " This variable can be overridden to set the GO111MODULE environment variable.
 let g:ale_go_go111module = get(g:, 'ale_go_go111module', '')
+
+" Default executable for deno, needed set before plugin start
+let g:ale_deno_executable = get(g:, 'ale_deno_executable', 'deno')
 
 " If 1, enable a popup menu for commands.
 let g:ale_popup_menu_enabled = get(g:, 'ale_popup_menu_enabled', has('gui_running'))

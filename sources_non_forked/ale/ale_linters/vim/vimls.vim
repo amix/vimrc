@@ -52,7 +52,7 @@ call ale#linter#Define('vim', {
 \   'name': 'vimls',
 \   'lsp': 'stdio',
 \   'lsp_config': {b -> ale#Var(b, 'vim_vimls_config')},
-\   'executable': {b -> ale#node#FindExecutable(b, 'vim_vimls', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'vim_vimls', [
 \       'node_modules/.bin/vim-language-server',
 \   ])},
 \   'command': '%e --stdio',

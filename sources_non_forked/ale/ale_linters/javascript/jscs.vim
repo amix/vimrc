@@ -53,7 +53,7 @@ endfunction
 
 call ale#linter#Define('javascript', {
 \   'name': 'jscs',
-\   'executable': {b -> ale#node#FindExecutable(b, 'javascript_jscs', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'javascript_jscs', [
 \       'node_modules/.bin/jscs',
 \   ])},
 \   'command': function('ale_linters#javascript#jscs#GetCommand'),

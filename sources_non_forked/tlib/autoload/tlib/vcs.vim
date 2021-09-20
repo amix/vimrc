@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2012-03-08.
-" @Last Change: 2015-11-07.
-" @Revision:    190
+" @Last Change: 2017-04-10.
+" @Revision:    224
 
 scriptencoding utf-8
 
@@ -14,21 +14,19 @@ TLet g:tlib#vcs#def = {
             \     'dir': '.git',
             \     'ls': 'git ls-files --full-name',
             \     'ls.postprocess': '*tlib#vcs#GitLsPostprocess',
-            \     'diff': 'git diff --no-ext-diff -U0 %s'
-            \ },
+            \     'diff': 'git diff --no-ext-diff -U0 %s',
+            \     'status': 'git status -s',
+            \     'status.filterrx': '^\C[ MADRCU!?]\{2}\s'},
             \ 'hg': {
             \     'dir': '.hg',
             \     'diff': 'hg diff -U0 %s',
-            \     'ls': 'hg manifest'
-            \ },
+            \     'ls': 'hg manifest'},
             \ 'svn': {
             \     'dir': '.svn',
-            \     'diff': 'svn diff --diff-cmd diff --extensions -U0 %s',
-            \ },
+            \     'diff': 'svn diff --diff-cmd diff --extensions -U0 %s'},
             \ 'bzr': {
             \     'dir': '.bzr',
-            \     'diff': 'bzr diff --diff-options=-U0 %s',
-            \ }
+            \     'diff': 'bzr diff --diff-options=-U0 %s'}
             \ }
 
 
@@ -36,7 +34,7 @@ TLet g:tlib#vcs#def = {
 " empty, support for that VCS will be removed. If no key is present, it 
 " is assumed that the VCS "type" is the name of the executable.
 " :display: g:tlib#vcs#executables         {...}
-TLet g:tlib#vcs#executables = {} 
+TLet g:tlib#vcs#executables = {}
 
 
 " If non-empty, use it as a format string to check whether a VCS is 
@@ -60,36 +58,44 @@ function! tlib#vcs#Executable(type) "{{{3
 endf
 
 
+let s:vcs_cache = {}
+autocmd TLib FocusGained * let s:vcs_cache = {}
+
+
 function! tlib#vcs#FindVCS(filename) "{{{3
     let type = ''
     let dir  = ''
-    let dirname = fnamemodify(a:filename, isdirectory(a:filename) ? ':p' : ':p:h')
-    let path = escape(dirname, ';') .';'
-    " TLogVAR a:filename, dirname, path
-    Tlibtrace 'tlib', a:filename, path
-    let depth = -1
-    for vcs in keys(g:tlib#vcs#def)
-        let subdir = g:tlib#vcs#def[vcs].dir
-        let vcsdir = finddir(subdir, path)
-        " TLogVAR vcs, subdir, vcsdir
-        Tlibtrace 'tlib', vcs, subdir, vcsdir
-        if !empty(vcsdir)
-            let vcsdir_depth = len(split(fnamemodify(vcsdir, ':p'), '\/'))
-            if vcsdir_depth > depth
-                let depth = vcsdir_depth
-                let type = vcs
-                let dir = vcsdir
-                " TLogVAR type, depth
+    let filename = fnamemodify(a:filename, ':p')
+    let dirname = isdirectory(filename) ? filename : fnamemodify(filename, ':h')
+    if !has_key(s:vcs_cache, dirname)
+        let path = escape(dirname, ';') .';'
+        " TLogVAR filename, dirname, path
+        Tlibtrace 'tlib', filename, path
+        let depth = -1
+        for vcs in keys(g:tlib#vcs#def)
+            let subdir = g:tlib#vcs#def[vcs].dir
+            let vcsdir = finddir(subdir, path)
+            " TLogVAR vcs, subdir, vcsdir
+            Tlibtrace 'tlib', vcs, subdir, vcsdir
+            if !empty(vcsdir)
+                let vcsdir_depth = len(split(fnamemodify(vcsdir, ':p'), '\/'))
+                if vcsdir_depth > depth
+                    let depth = vcsdir_depth
+                    let type = vcs
+                    let dir = vcsdir
+                    " TLogVAR type, depth
+                endif
             endif
+        endfor
+        Tlibtrace 'tlib', type, dir
+        " TLogVAR type, dir
+        if empty(type)
+            let s:vcs_cache[dirname] = ['', '']
+        else
+            let s:vcs_cache[dirname] = [type, dir]
         endif
-    endfor
-    Tlibtrace 'tlib', type, dir
-    " TLogVAR type, dir
-    if empty(type)
-        return ['', '']
-    else
-        return [type, dir]
     endif
+    return s:vcs_cache[dirname]
 endf
 
 
@@ -97,7 +103,7 @@ function! s:GetCmd(vcstype, cmd)
     let vcsdef = get(g:tlib#vcs#def, a:vcstype, {})
     if has_key(vcsdef, a:cmd)
         let cmd = vcsdef[a:cmd]
-        if cmd =~ '^\*'
+        if cmd =~# '^\*'
             let cmd = substitute(cmd, '^\*', '', '')
         else
             let bin = get(g:tlib#vcs#executables, a:vcstype, '')
@@ -134,7 +140,7 @@ function! tlib#vcs#Ls(...) "{{{3
             if !empty(ls)
                 let rootdir = fnamemodify(vcsdir, ':p:h:h')
                 " TLogVAR vcsdir, rootdir
-                if ls =~ '%s'
+                if ls =~# '%s'
                     let cmd = printf(ls, shellescape(rootdir))
                 else
                     let cmd = ls
@@ -176,7 +182,7 @@ endf
 
 
 function! tlib#vcs#GitLsPostprocess(filename) abort "{{{3
-    if a:filename =~ '^".\{-}"$'
+    if a:filename =~# '^".\{-}"$'
         let filename = matchstr(a:filename, '^"\zs.\{-}\ze"$')
         let filename = substitute(filename, '\%(\\\@<!\\\(\d\d\d\)\)\+', '\=eval(''"''. submatch(0) .''"'')', 'g')
         " let filename = eval(a:filename)
@@ -186,4 +192,39 @@ function! tlib#vcs#GitLsPostprocess(filename) abort "{{{3
         return a:filename
     endif
 endf
+
+
+function! tlib#vcs#Status(...) abort "{{{3
+    let filename = a:0 >= 1 ? a:1 : '%'
+    let vcs = a:0 >= 2 ? a:2 : tlib#vcs#FindVCS(filename)
+    if !empty(vcs)
+        let [vcstype, vcsdir] = vcs
+        let cstatus = s:GetCmd(vcstype, 'status')
+        if !empty(cstatus)
+            let status = exists('*systemlist') ? systemlist(cstatus) : split(system(cstatus), '\n')
+            let sfilter = s:GetCmd(vcstype, 'status.filterrx')
+            if !empty(sfilter)
+                let status = filter(status, 'v:val =~# sfilter')
+            endif
+            return status
+        endif
+    endif
+endf
+
+
+function! tlib#vcs#IsDirty(...) abort "{{{3
+    let filename = a:0 >= 1 ? a:1 : '%'
+    let vcs = a:0 >= 2 ? a:2 : tlib#vcs#FindVCS(filename)
+    let status = tlib#vcs#Status(filename, vcs)
+    return empty(status) ? '' : vcs[0] .'!'
+endf
+
+
+" function! tlib#vcs#EnableTStatus() abort "{{{3
+"     if has('vim_starting')
+"         autocmd VimEnter * TStatusregister1 --event=FocusGained,BufRead,BufWritePost %s tlib#vcs#IsDirty()
+"     else
+"         TStatusregister1 --event=FocusGained,BufRead,BufWritePost %s tlib#vcs#IsDirty()
+"     endif
+" endf
 

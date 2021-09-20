@@ -69,7 +69,7 @@ This plugin can also be found at http://www.vim.org/scripts/script.php?script_id
         git clone https://github.com/jlanzarotta/bufexplorer.git ~/.vim/bundle/bufexplorer.vim
 
 ## License
-Copyright (c) 2001-2020, Jeff Lanzarotta
+Copyright (c) 2001-2021, Jeff Lanzarotta
 
 All rights reserved.
 

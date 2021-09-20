@@ -3,7 +3,7 @@ scriptencoding utf-8
 " Description: Error handling for errors in alex output format
 
 function! ale#handlers#alex#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'alex', [
+    return ale#path#FindExecutable(a:buffer, 'alex', [
     \   'node_modules/.bin/alex',
     \   'node_modules/alex/cli.js',
     \])

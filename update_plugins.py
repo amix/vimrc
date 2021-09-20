@@ -6,6 +6,7 @@ except ImportError:
     except ImportError:
         futures = None
 
+import re
 import zipfile
 import shutil
 import tempfile
@@ -25,7 +26,7 @@ mayansmoke https://github.com/vim-scripts/mayansmoke
 nerdtree https://github.com/scrooloose/nerdtree
 nginx.vim https://github.com/chr4/nginx.vim
 open_file_under_cursor.vim https://github.com/amix/open_file_under_cursor.vim
-tlib https://github.com/vim-scripts/tlib
+tlib https://github.com/tomtom/tlib_vim
 vim-addon-mw-utils https://github.com/MarcWeber/vim-addon-mw-utils
 vim-bundle-mako https://github.com/sophacles/vim-bundle-mako
 vim-coffee-script https://github.com/kchmck/vim-coffee-script
@@ -57,6 +58,10 @@ vim-ruby https://github.com/vim-ruby/vim-ruby
 typescript-vim https://github.com/leafgarland/typescript-vim
 vim-javascript https://github.com/pangloss/vim-javascript
 vim-python-pep8-indent https://github.com/Vimjas/vim-python-pep8-indent
+vim-indent-guides https://github.com/nathanaelkane/vim-indent-guides
+mru.vim https://github.com/vim-scripts/mru.vim
+editorconfig-vim https://github.com/editorconfig/editorconfig-vim
+dracula https://github.com/dracula/vim
 """.strip()
 
 GITHUB_ZIP = "%s/archive/master.zip"
@@ -74,9 +79,9 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     zip_f = zipfile.ZipFile(temp_zip_path)
     zip_f.extractall(temp_dir)
 
-    plugin_temp_path = path.join(
-        temp_dir, path.join(temp_dir, "%s-master" % plugin_name)
-    )
+    content_disp = req.headers.get("Content-Disposition")
+    filename = re.findall("filename=(.+).zip", content_disp)[0]
+    plugin_temp_path = path.join(temp_dir, path.join(temp_dir, filename))
 
     # Remove the current plugin and replace it with the extracted
     plugin_dest_path = path.join(source_dir, plugin_name)
@@ -93,7 +98,10 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
 def update(plugin):
     name, github_url = plugin.split(" ")
     zip_path = GITHUB_ZIP % github_url
-    download_extract_replace(name, zip_path, temp_directory, SOURCE_DIR)
+    try:
+        download_extract_replace(name, zip_path, temp_directory, SOURCE_DIR)
+    except Exception as exp:
+        print("Could not update {}. Error was: {}".format(name, str(exp)))
 
 
 if __name__ == "__main__":

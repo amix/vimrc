@@ -947,12 +947,27 @@ function Test_quickfix()
   call setline(5, ['A', 'B'])
   call setline(9, ['C', 'D'])
   write
+  let bufnr1 = bufnr('')
+
+  edit fixture_dos.txt
+  call setline(2, ['A', 'B'])
+  write
+  let bufnr2 = bufnr('')
 
   GitGutterQuickFix
 
   let expected = [
-        \ {'lnum': 5, 'bufnr': bufnr(''), 'text': '-e'},
-        \ {'lnum': 9, 'bufnr': bufnr(''), 'text': '-i'}
+        \ {'lnum': 5, 'bufnr': bufnr1, 'text': '-e'},
+        \ {'lnum': 9, 'bufnr': bufnr1, 'text': '-i'},
+        \ {'lnum': 2, 'bufnr': bufnr2, 'text': "-b\r"}
+        \ ]
+
+  call s:assert_list_of_dicts(expected, getqflist())
+
+  GitGutterQuickFixCurrentFile
+
+  let expected = [
+        \ {'lnum': 2, 'bufnr': bufnr(''), 'text': "-b\r"},
         \ ]
 
   call s:assert_list_of_dicts(expected, getqflist())

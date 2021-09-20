@@ -2,6 +2,7 @@
 " Description: Functions for integrating with Python linters.
 
 call ale#Set('python_auto_pipenv', '0')
+call ale#Set('python_auto_poetry', '0')
 
 let s:sep = has('win32') ? '\' : '/'
 " bin is used for Unix virtualenv directories, and Scripts is for Windows.
@@ -32,6 +33,9 @@ function! ale#python#FindProjectRootIni(buffer) abort
         \|| filereadable(l:path . '/.pylintrc')
         \|| filereadable(l:path . '/Pipfile')
         \|| filereadable(l:path . '/Pipfile.lock')
+        \|| filereadable(l:path . '/poetry.lock')
+        \|| filereadable(l:path . '/pyproject.toml')
+        \|| filereadable(l:path . '/.tool-versions')
             return l:path
         endif
     endfor
@@ -154,4 +158,9 @@ endfunction
 " Detects whether a pipenv environment is present.
 function! ale#python#PipenvPresent(buffer) abort
     return findfile('Pipfile.lock', expand('#' . a:buffer . ':p:h') . ';') isnot# ''
+endfunction
+
+" Detects whether a poetry environment is present.
+function! ale#python#PoetryPresent(buffer) abort
+    return findfile('poetry.lock', expand('#' . a:buffer . ':p:h') . ';') isnot# ''
 endfunction

@@ -18,7 +18,7 @@ endfunction
 call ale#linter#Define('php', {
 \   'name': 'psalm',
 \   'lsp': 'stdio',
-\   'executable': {b -> ale#node#FindExecutable(b, 'php_psalm', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'php_psalm', [
 \       'vendor/bin/psalm',
 \   ])},
 \   'command': function('ale_linters#php#psalm#GetCommand'),

@@ -5,11 +5,17 @@ call ale#Set('python_pycodestyle_executable', 'pycodestyle')
 call ale#Set('python_pycodestyle_options', '')
 call ale#Set('python_pycodestyle_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('python_pycodestyle_auto_pipenv', 0)
+call ale#Set('python_pycodestyle_auto_poetry', 0)
 
 function! ale_linters#python#pycodestyle#GetExecutable(buffer) abort
     if (ale#Var(a:buffer, 'python_auto_pipenv') || ale#Var(a:buffer, 'python_pycodestyle_auto_pipenv'))
     \ && ale#python#PipenvPresent(a:buffer)
         return 'pipenv'
+    endif
+
+    if (ale#Var(a:buffer, 'python_auto_poetry') || ale#Var(a:buffer, 'python_pycodestyle_auto_poetry'))
+    \ && ale#python#PoetryPresent(a:buffer)
+        return 'poetry'
     endif
 
     return ale#python#FindExecutable(a:buffer, 'python_pycodestyle', ['pycodestyle'])
@@ -18,7 +24,7 @@ endfunction
 function! ale_linters#python#pycodestyle#GetCommand(buffer) abort
     let l:executable = ale_linters#python#pycodestyle#GetExecutable(a:buffer)
 
-    let l:exec_args = l:executable =~? 'pipenv$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
     \   ? ' run pycodestyle'
     \   : ''
 

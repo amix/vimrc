@@ -9,6 +9,14 @@ A minimal and opinionated linter for code that sparks joy.
 
 https://github.com/borkdude/clj-kondo
 
+g:ale_clojure_clj_kondo_options               *g:ale_clojure_clj_kondo_options*
+                                              *b:ale_clojure_clj_kondo_options*
+  Type: |String|
+  Default: `'--cache'`
+
+  This variable can be changed to modify options passed to clj-kondo.
+
+
 ===============================================================================
 joker                                                       *ale-clojure-joker*
 

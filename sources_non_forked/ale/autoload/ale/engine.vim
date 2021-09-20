@@ -413,6 +413,7 @@ function! s:RunJob(command, options) abort
         return 0
     endif
 
+    let l:cwd = a:options.cwd
     let l:executable = a:options.executable
     let l:buffer = a:options.buffer
     let l:linter = a:options.linter
@@ -425,6 +426,7 @@ function! s:RunJob(command, options) abort
     \   'executable': l:executable,
     \}])
     let l:result = ale#command#Run(l:buffer, l:command, l:Callback, {
+    \   'cwd': l:cwd,
     \   'output_stream': l:output_stream,
     \   'executable': l:executable,
     \   'read_buffer': l:read_buffer,
@@ -541,8 +543,22 @@ function! s:RunIfExecutable(buffer, linter, lint_file, executable) abort
         let l:job_type = a:lint_file ? 'file_linter' : 'linter'
         call setbufvar(a:buffer, 'ale_job_type', l:job_type)
 
+        " Get the cwd for the linter and set it before we call GetCommand.
+        " This will ensure that ale#command#Run uses it by default.
+        let l:cwd = ale#linter#GetCwd(a:buffer, a:linter)
+
+        if l:cwd isnot v:null
+            call ale#command#SetCwd(a:buffer, l:cwd)
+        endif
+
         let l:command = ale#linter#GetCommand(a:buffer, a:linter)
+
+        if l:cwd isnot v:null
+            call ale#command#ResetCwd(a:buffer)
+        endif
+
         let l:options = {
+        \   'cwd': l:cwd,
         \   'executable': a:executable,
         \   'buffer': a:buffer,
         \   'linter': a:linter,

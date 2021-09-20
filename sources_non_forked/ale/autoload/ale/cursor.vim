@@ -9,7 +9,6 @@ let g:ale_echo_delay = get(g:, 'ale_echo_delay', 10)
 let g:ale_echo_msg_format = get(g:, 'ale_echo_msg_format', '%code: %%s')
 
 let s:cursor_timer = -1
-let s:last_pos = [0, 0, 0]
 
 function! ale#cursor#TruncatedEcho(original_message) abort
     let l:message = a:original_message
@@ -118,14 +117,18 @@ function! ale#cursor#EchoCursorWarningWithDelay() abort
 
     let l:pos = getpos('.')[0:2]
 
+    if !exists('w:last_pos')
+        let w:last_pos = [0, 0, 0]
+    endif
+
     " Check the current buffer, line, and column number against the last
     " recorded position. If the position has actually changed, *then*
     " we should echo something. Otherwise we can end up doing processing
     " the echo message far too frequently.
-    if l:pos != s:last_pos
+    if l:pos != w:last_pos
         let l:delay = ale#Var(l:buffer, 'echo_delay')
 
-        let s:last_pos = l:pos
+        let w:last_pos = l:pos
         let s:cursor_timer = timer_start(
         \   l:delay,
         \   function('ale#cursor#EchoCursorWarning')
@@ -139,11 +142,16 @@ function! s:ShowCursorDetailForItem(loc, options) abort
     let s:last_detailed_line = line('.')
     let l:message = get(a:loc, 'detail', a:loc.text)
     let l:lines = split(l:message, "\n")
-    call ale#preview#Show(l:lines, {'stay_here': l:stay_here})
 
-    " Clear the echo message if we manually displayed details.
-    if !l:stay_here
-        execute 'echo'
+    if g:ale_floating_preview || g:ale_detail_to_floating_preview
+        call ale#floating_preview#Show(l:lines)
+    else
+        call ale#preview#Show(l:lines, {'stay_here': l:stay_here})
+
+        " Clear the echo message if we manually displayed details.
+        if !l:stay_here
+            execute 'echo'
+        endif
     endif
 endfunction
 

@@ -9,30 +9,44 @@ endfunction
 
 function! ale_linters#terraform#terraform#GetCommand(buffer) abort
     return ale#Escape(ale_linters#terraform#terraform#GetExecutable(a:buffer))
-    \   . ' fmt -no-color --check=true -'
+    \   . ' validate -no-color -json '
+endfunction
+
+function! ale_linters#terraform#terraform#GetType(severity) abort
+    if a:severity is? 'warning'
+        return 'W'
+    endif
+
+    return 'E'
+endfunction
+
+function! ale_linters#terraform#terraform#GetDetail(error) abort
+    return get(a:error, 'detail', get(a:error, 'summary', ''))
 endfunction
 
 function! ale_linters#terraform#terraform#Handle(buffer, lines) abort
-    let l:head = '^Error running fmt: In <standard input>: '
     let l:output = []
-    let l:patterns = [
-    \   l:head.'At \(\d\+\):\(\d\+\): \(.*\)$',
-    \   l:head.'\(.*\)$'
-    \]
 
-    for l:match in ale#util#GetMatches(a:lines, l:patterns)
-        if len(l:match[2]) > 0
+    let l:errors = ale#util#FuzzyJSONDecode(a:lines, {'diagnostics': []})
+    let l:dir = expand('#' . a:buffer . ':p:h')
+    let l:file = expand('#' . a:buffer . ':p')
+
+    for l:error in l:errors['diagnostics']
+        if has_key(l:error, 'range')
             call add(l:output, {
-            \   'lnum': str2nr(l:match[1]),
-            \   'col': str2nr(l:match[2]),
-            \   'text': l:match[3],
-            \   'type': 'E',
+            \   'filename': ale#path#GetAbsPath(l:dir, l:error['range']['filename']),
+            \   'lnum': l:error['range']['start']['line'],
+            \   'col': l:error['range']['start']['column'],
+            \   'text': ale_linters#terraform#terraform#GetDetail(l:error),
+            \   'type': ale_linters#terraform#terraform#GetType(l:error['severity']),
             \})
         else
             call add(l:output, {
-            \   'lnum': line('$'),
-            \   'text': l:match[1],
-            \   'type': 'E',
+            \   'filename': l:file,
+            \   'lnum': 0,
+            \   'col': 0,
+            \   'text': ale_linters#terraform#terraform#GetDetail(l:error),
+            \   'type': ale_linters#terraform#terraform#GetType(l:error['severity']),
             \})
         endif
     endfor
@@ -42,7 +56,7 @@ endfunction
 
 call ale#linter#Define('terraform', {
 \   'name': 'terraform',
-\   'output_stream': 'stderr',
+\   'output_stream': 'stdout',
 \   'executable': function('ale_linters#terraform#terraform#GetExecutable'),
 \   'command': function('ale_linters#terraform#terraform#GetCommand'),
 \   'callback': 'ale_linters#terraform#terraform#Handle',

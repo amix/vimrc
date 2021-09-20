@@ -6,7 +6,7 @@ call ale#Set('purescript_ls_use_global', get(g:, 'ale_use_global_executables', 0
 call ale#Set('purescript_ls_config', {})
 
 function! ale_linters#purescript#ls#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'purescript_ls', [
+    return ale#path#FindExecutable(a:buffer, 'purescript_ls', [
     \   'node_modules/.bin/purescript-language-server',
     \])
 endfunction

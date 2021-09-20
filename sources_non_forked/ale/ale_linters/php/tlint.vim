@@ -20,7 +20,7 @@ function! ale_linters#php#tlint#GetProjectRoot(buffer) abort
 endfunction
 
 function! ale_linters#php#tlint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'php_tlint', [
+    return ale#path#FindExecutable(a:buffer, 'php_tlint', [
     \   'vendor/bin/tlint',
     \   'tlint',
     \])
