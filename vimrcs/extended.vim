@@ -28,8 +28,10 @@ set guioptions-=l
 set guioptions-=L
 
 " Colorscheme
+" Cong --2021.10.3
 set background=dark
-colorscheme peaksea
+colorscheme gruvbox
+" colorscheme peaksea
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
