@@ -323,10 +323,16 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 map <leader>q :e ~/buffer<cr>
 
 " Quickly open a markdown buffer for scribble
-map <leader>x :e ~/buffer.md<cr>
+" Changed by Cong --19.09.2021
+" map <leader>x :e ~/buffer.md<cr> 
 
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
+
+" --cong.w fast quit
+map <leader>q :q<cr> 
+" --cong.w paste
+set clipboard=unnamed
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
