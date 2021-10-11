@@ -7,9 +7,15 @@ scriptencoding utf-8
 let g:ale_virtualtext_delay = get(g:, 'ale_virtualtext_delay', 10)
 let s:cursor_timer = -1
 let s:last_pos = [0, 0, 0]
+let s:has_virt_text = 0
 
 if has('nvim-0.3.2')
     let s:ns_id = nvim_create_namespace('ale')
+    let s:has_virt_text = 1
+elseif has('textprop') && has('popupwin')
+    call prop_type_add('ale', {})
+    let s:last_popup = -1
+    let s:has_virt_text = 1
 endif
 
 if !hlexists('ALEVirtualTextError')
@@ -33,17 +39,25 @@ if !hlexists('ALEVirtualTextInfo')
 endif
 
 function! ale#virtualtext#Clear() abort
-    if !has('nvim-0.3.2')
+    if !s:has_virt_text
         return
     endif
 
     let l:buffer = bufnr('')
 
-    call nvim_buf_clear_highlight(l:buffer, s:ns_id, 0, -1)
+    if has('nvim')
+        call nvim_buf_clear_highlight(l:buffer, s:ns_id, 0, -1)
+    else
+        if s:last_popup != -1
+            call prop_remove({'type': 'ale'})
+            call popup_close(s:last_popup)
+            let s:last_popup = -1
+        endif
+    endif
 endfunction
 
 function! ale#virtualtext#ShowMessage(message, hl_group) abort
-    if !has('nvim-0.3.2')
+    if !s:has_virt_text
         return
     endif
 
@@ -51,7 +65,24 @@ function! ale#virtualtext#ShowMessage(message, hl_group) abort
     let l:buffer = bufnr('')
     let l:prefix = get(g:, 'ale_virtualtext_prefix', '> ')
 
-    call nvim_buf_set_virtual_text(l:buffer, s:ns_id, l:line-1, [[l:prefix.a:message, a:hl_group]], {})
+    if has('nvim')
+        call nvim_buf_set_virtual_text(l:buffer, s:ns_id, l:line-1, [[l:prefix.a:message, a:hl_group]], {})
+    else
+        let l:left_pad = col('$')
+        call prop_add(l:line, l:left_pad, {
+        \ 'type': 'ale',
+        \})
+        let s:last_popup = popup_create(l:prefix.a:message, {
+        \ 'line': -1,
+        \ 'padding': [0, 0, 0, 1],
+        \ 'mask': [[1, 1, 1, 1]],
+        \ 'textprop': 'ale',
+        \ 'highlight': a:hl_group,
+        \ 'fixed': 1,
+        \ 'wrap': 0,
+        \ 'zindex': 2
+        \})
+    endif
 endfunction
 
 function! s:StopCursorTimer() abort

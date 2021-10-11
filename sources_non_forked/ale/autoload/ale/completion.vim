@@ -1001,12 +1001,11 @@ endfunction
 
 function! ale#completion#HandleUserData(completed_item) abort
     let l:user_data_json = get(a:completed_item, 'user_data', '')
-    let l:user_data = !empty(l:user_data_json)
-    \   ? ale#util#FuzzyJSONDecode(l:user_data_json, v:null)
-    \   : v:null
+    let l:user_data = type(l:user_data_json) is v:t_dict
+    \   ? l:user_data_json
+    \   : ale#util#FuzzyJSONDecode(l:user_data_json, {})
 
-    if type(l:user_data) isnot v:t_dict
-    \|| get(l:user_data, '_ale_completion_item', 0) isnot 1
+    if !has_key(l:user_data, '_ale_completion_item')
         return
     endif
 

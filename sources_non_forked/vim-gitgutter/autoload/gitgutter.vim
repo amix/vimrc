@@ -205,6 +205,10 @@ function! gitgutter#quickfix(current_file)
     elseif line =~ '^diff --git "'
       let [_, fnamel, _, fnamer] = split(line, '"')
       let fname = fnamel ==# fnamer ? fnamel : fnamel[2:]
+    elseif line =~ '^diff --cc [^"]'
+      let fname = line[10:]
+    elseif line =~ '^diff --cc "'
+      let [_, fname] = split(line, '"')
     elseif line =~ '^@@'
       let lnum = matchlist(line, '+\(\d\+\)')[1]
     elseif lnum > 0

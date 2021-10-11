@@ -535,3 +535,7 @@ function! ale#util#SetBufferContents(buffer, lines) abort
 
     return l:new_lines
 endfunction
+
+function! ale#util#GetBufferContents(buffer) abort
+    return join(getbufline(a:buffer, 1, '$'), '\n') . '\n'
+endfunction

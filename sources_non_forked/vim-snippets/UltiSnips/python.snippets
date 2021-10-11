@@ -10,6 +10,17 @@ snippet #! "#!/usr/bin/env python" b
 $0
 endsnippet
 
+snippet #!2 "#!/usr/bin/env python2" b
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+$0
+endsnippet
+
+snippet #!3 "#!/usr/bin/env python3" b
+#!/usr/bin/env python3
+$0
+endsnippet
+
 snippet "^# ?[uU][tT][fF]-?8" "# encoding: UTF-8" r
 # -*- coding: utf-8 -*-
 $0
@@ -73,7 +84,23 @@ class Arg(object):
 
 
 def get_args(arglist):
-	args = [Arg(arg) for arg in arglist.split(',') if arg]
+	args = []
+	n = len(arglist)
+	i = 0
+	while i < n:
+		l_bracket = 0
+		start = i
+		while i < n and (l_bracket > 0 or arglist[i] != ','):
+			if arglist[i] == '[':
+				l_bracket += 1
+			elif arglist[i] == ']' and l_bracket > 0:
+				l_bracket -= 1
+			i += 1
+		arg = arglist[start:i]
+		if arg:
+			args.append(Arg(arg))
+		i += 1
+
 	args = [arg for arg in args if arg.name != 'self']
 
 	return args

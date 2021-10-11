@@ -19,7 +19,7 @@ setlocal indentkeys+=0],0)
 "       "+norm! gg=G" '+%print' '+:q!' testfile.js \
 "       | diff -uBZ testfile.js -
 
-let b:undo_indent = 'setlocal indentexpr< smartindent< autoindent< indentkeys<'
+let b:undo_indent = 'setlocal indentexpr< smartindent< autoindent< indentkeys< lisp<'
 
 " Only define the function once.
 if exists('*GetJavascriptIndent')

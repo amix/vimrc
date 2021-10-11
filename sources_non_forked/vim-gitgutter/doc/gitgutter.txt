@@ -608,6 +608,26 @@ For example, to use |hl-Underlined| instead of |hl-CursorLineNr|:
 >
     highlight link GitGutterChangeLineNr Underlined
 <
+To change the diff syntax colours used in the preview window, set up the diff*
+highlight groups in your colorscheme or |vimrc|:
+>
+    diffAdded   " if not set: use GitGutterAdd's foreground colour
+    diffChanged " if not set: use GitGutterChange's foreground colour
+    diffRemoved " if not set: use GitGutterDelete's foreground colour
+<
+Note the diff* highlight groups are used in any buffer whose 'syntax' is
+"diff".
+
+To change the intra-line diff highlights used in the preview window, set up
+the following highlight groups in your colorscheme or |vimrc|:
+>
+    GitGutterAddIntraLine    " default: gui=reverse cterm=reverse
+    GitGutterDeleteIntraLine " default: gui=reverse cterm=reverse
+<
+For example, to use |hl-DiffAdd| for intra-line added regions:
+>
+    highlight link GitGutterAddIntraLine DiffAdd
+<
 
 
 ===============================================================================

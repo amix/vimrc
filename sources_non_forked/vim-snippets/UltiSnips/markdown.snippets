@@ -112,12 +112,12 @@ snippet img "Image"
 endsnippet
 
 snippet ilc "Inline Code" i
-\`$1\`$0
+\`${1:${VISUAL}}\`$0
 endsnippet
 
 snippet cbl "Codeblock" b
-\`\`\`
-$1
+\`\`\`$1
+${2:${VISUAL}}
 \`\`\`
 $0
 endsnippet

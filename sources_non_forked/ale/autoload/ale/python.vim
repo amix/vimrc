@@ -24,6 +24,7 @@ function! ale#python#FindProjectRootIni(buffer) abort
         \|| filereadable(l:path . '/setup.cfg')
         \|| filereadable(l:path . '/pytest.ini')
         \|| filereadable(l:path . '/tox.ini')
+        \|| filereadable(l:path . '/.pyre_configuration.local')
         \|| filereadable(l:path . '/mypy.ini')
         \|| filereadable(l:path . '/pycodestyle.cfg')
         \|| filereadable(l:path . '/.flake8')

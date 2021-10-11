@@ -274,7 +274,7 @@ snippet ja "Marshalable json alias"
 	}
 
 
-snippet errwr "Error handling with errors.Wrap"
+snippet errwr "Error handling with fmt.Errorf"
 	if ${1}err != nil {
-		return errors.Wrap(err, "${2}")
+		return fmt.Errorf("${2} %w", err)
 	}

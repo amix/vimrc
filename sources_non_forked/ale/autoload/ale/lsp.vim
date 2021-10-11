@@ -45,6 +45,7 @@ function! ale#lsp#Register(executable_or_address, project, init_options) abort
         \       'typeDefinition': 0,
         \       'symbol_search': 0,
         \       'code_actions': 0,
+        \       'includeText': 0,
         \   },
         \}
     endif
@@ -262,6 +263,20 @@ function! s:UpdateCapabilities(conn, capabilities) abort
 
     if type(get(a:capabilities, 'workspaceSymbolProvider')) is v:t_dict
         let a:conn.capabilities.symbol_search = 1
+    endif
+
+    if has_key(a:capabilities, 'textDocumentSync')
+        if type(a:capabilities.textDocumentSync) is v:t_dict
+            let l:save = get(a:capabilities.textDocumentSync, 'save', v:false)
+
+            if type(l:save) is v:true
+                let a:conn.capabilities.includeText = 1
+            endif
+
+            if type(l:save) is v:t_dict && get(a:capabilities.textDocumentSync.save, 'includeText', v:false) is v:true
+                let a:conn.capabilities.includeText = 1
+            endif
+        endif
     endif
 endfunction
 

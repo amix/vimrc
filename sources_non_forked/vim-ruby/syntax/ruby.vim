@@ -429,9 +429,10 @@ endif
 " Comments and Documentation {{{1
 syn match   rubySharpBang    "\%^#!.*" display
 syn keyword rubyTodo	     FIXME NOTE TODO OPTIMIZE HACK REVIEW XXX todo contained
-syn match   rubyEncoding     "[[:alnum:]-]\+" contained display
+syn match   rubyEncoding     "[[:alnum:]-_]\+" contained display
 syn match   rubyMagicComment "\c\%<3l#\s*\zs\%(coding\|encoding\):"					contained nextgroup=rubyEncoding skipwhite
 syn match   rubyMagicComment "\c\%<10l#\s*\zs\%(frozen_string_literal\|warn_indent\|warn_past_scope\):" contained nextgroup=rubyBoolean  skipwhite
+syn match   rubyMagicComment "\c\%<10l#\s*\zs\%(shareable_constant_value\):"				contained nextgroup=rubyEncoding  skipwhite
 syn match   rubyComment	     "#.*" contains=@rubyCommentSpecial,rubySpaceError,@Spell
 
 syn cluster rubyCommentSpecial contains=rubySharpBang,rubyTodo,rubyMagicComment

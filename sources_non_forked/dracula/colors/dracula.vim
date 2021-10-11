@@ -232,7 +232,7 @@ hi! link Question     DraculaFgBold
 hi! link Search       DraculaSearch
 call s:h('SignColumn', s:comment)
 hi! link TabLine      DraculaBoundary
-hi! link TabLineFill  DraculaBgDarker
+hi! link TabLineFill  DraculaBgDark
 hi! link TabLineSel   Normal
 hi! link Title        DraculaGreenBold
 hi! link VertSplit    DraculaBoundary

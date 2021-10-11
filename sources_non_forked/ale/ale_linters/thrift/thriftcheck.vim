@@ -13,9 +13,9 @@ endfunction
 function! ale_linters#thrift#thriftcheck#Handle(buffer, lines) abort
     " Matches lines like the following:
     "
-    " file.thrift:1:1:error: "py" namespace must match "^idl\\." (namespace.pattern)
-    " file.thrift:3:5:warning: 64-bit integer constant -2147483649 may not work in all languages (int.64bit)
-    let l:pattern = '\v^[a-zA-Z]?:?[^:]+:(\d+):(\d+):(\l+): (.*) \((.*)\)$'
+    " file.thrift:1:1: error: "py" namespace must match "^idl\\." (namespace.pattern)
+    " file.thrift:3:5: warning: 64-bit integer constant -2147483649 may not work in all languages (int.64bit)
+    let l:pattern = '\v^[a-zA-Z]?:?[^:]+:(\d+):(\d+): ?([^:]+): (.+) \(([^\)]+)\)$'
 
     let l:output = []
 

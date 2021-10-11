@@ -33,6 +33,9 @@ au BufNewFile,BufRead Podfile,*.podspec		call s:setf('ruby')
 " Guard
 au BufNewFile,BufRead Guardfile,.Guardfile	call s:setf('ruby')
 
+" Jb
+au BufNewFile,BufRead *.jb			call s:setf('ruby')
+
 " Jbuilder
 au BufNewFile,BufRead *.jbuilder		call s:setf('ruby')
 

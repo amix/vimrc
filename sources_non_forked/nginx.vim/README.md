@@ -84,3 +84,9 @@ git clone https://github.com/chr4/nginx.vim ~/.vim/bundle/nginx.vim
 ```
 
 Optionally, if you like [Jinja](http://jinja.pocoo.org/) template syntax highlighting, install `lepture/vim-jinja`, too.
+
+
+## License
+
+Copyright (c) Chris Aumann.  Distributed under the same terms as Vim itself.
+See `:help license`.

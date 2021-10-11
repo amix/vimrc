@@ -1256,10 +1256,10 @@ responsible pull request: https://github.com/preservim/nerdtree/pull/868.
 The default value of this variable depends on the features compiled into your
 vim and the values of |NERDTreeDirArrowCollapsible| and
 |NERDTreeDirArrowExpandable|.
-  * If your vim is compiled with the +conceal feature, it is the "\x07" (BELL)
-    character, and it is hidden by setting 'conceallevel' to 3. If you use
-    autocommands, make sure none of them change that setting in the NERDTree_*
-    buffers.
+  * If your vim is compiled with the +conceal feature, it is the "\x07"
+    (BEL) character, and it is hidden by setting 'conceallevel' to 2. If you
+    use autocommands, make sure none of them change that setting in the
+    NERD_Tree_* buffers.
   * If your vim does NOT have the +conceal feature and you're using "\u00a0"
     (non-breaking space) to hide the directory arrows, "\u00b7" (middle dot)
     is used as the default delimiter.

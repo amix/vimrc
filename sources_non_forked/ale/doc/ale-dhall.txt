@@ -6,15 +6,15 @@ g:ale_dhall_executable                                 *g:ale_dhall_executable*
   Type: |String|
   Default: `'dhall'`
 
-g:ale_dhall_options                                       g:ale_dhall_options
-                                                          b:ale_dhall_options
+g:ale_dhall_options                                       *g:ale_dhall_options*
+                                                          *b:ale_dhall_options*
   Type: |String|
   Default: `''`
 
   This variable can be set to pass additional options to the 'dhall` executable.
   This is shared with `dhall-freeze` and `dhall-lint`.
 >
-  let g:dhall_options = '--ascii'
+  let g:ale_dhall_options = '--ascii'
 <
 
 ===============================================================================
@@ -30,15 +30,15 @@ dhall-freeze                                                 *ale-dhall-freeze*
 Dhall
   (https://dhall-lang.org/)
 
-g:ale_dhall_freeze_options                         g:ale_dhall_freeze_options
-                                                   b:ale_dhall_freeze_options
+g:ale_dhall_freeze_options                         *g:ale_dhall_freeze_options*
+                                                   *b:ale_dhall_freeze_options*
   Type: |String|
   Default: `''`
 
   This variable can be set to pass additional options to the 'dhall freeze`
   executable.
 >
-  let g:dhall_freeze_options = '--all'
+  let g:ale_dhall_freeze_options = '--all'
 <
 
 ===============================================================================

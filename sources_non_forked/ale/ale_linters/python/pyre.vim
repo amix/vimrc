@@ -22,12 +22,15 @@ endfunction
 
 function! ale_linters#python#pyre#GetCommand(buffer) abort
     let l:executable = ale_linters#python#pyre#GetExecutable(a:buffer)
-
-    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
-    \   ? ' run pyre persistent'
-    \   : ' persistent'
+    let l:exec_args = (l:executable =~? 'pipenv\|poetry$' ? ' run pyre' : '') . ' persistent'
 
     return ale#Escape(l:executable) . l:exec_args
+endfunction
+
+function! ale_linters#python#pyre#GetCwd(buffer) abort
+    let l:local_config = ale#path#FindNearestFile(a:buffer, '.pyre_configuration.local')
+
+    return fnamemodify(l:local_config, ':h')
 endfunction
 
 call ale#linter#Define('python', {
@@ -37,4 +40,5 @@ call ale#linter#Define('python', {
 \   'command': function('ale_linters#python#pyre#GetCommand'),
 \   'project_root': function('ale#python#FindProjectRoot'),
 \   'completion_filter': 'ale#completion#python#CompletionItemFilter',
+\   'cwd': function('ale_linters#python#pyre#GetCwd'),
 \})

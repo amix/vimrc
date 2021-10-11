@@ -109,8 +109,8 @@ function! gitgutter#highlight#define_highlights() abort
   highlight default link GitGutterChangeDeleteLineNr CursorLineNr
 
   " Highlights used intra line.
-  highlight GitGutterAddIntraLine    gui=reverse cterm=reverse
-  highlight GitGutterDeleteIntraLine gui=reverse cterm=reverse
+  highlight default GitGutterAddIntraLine    gui=reverse cterm=reverse
+  highlight default GitGutterDeleteIntraLine gui=reverse cterm=reverse
   " Set diff syntax colours (used in the preview window) - diffAdded,diffChanged,diffRemoved -
   " to match the signs, if not set aleady.
   for [dtype,type] in [['Added','Add'], ['Changed','Change'], ['Removed','Delete']]

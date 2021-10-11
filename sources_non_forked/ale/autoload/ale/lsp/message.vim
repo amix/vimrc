@@ -77,12 +77,19 @@ function! ale#lsp#message#DidChange(buffer) abort
     \}]
 endfunction
 
-function! ale#lsp#message#DidSave(buffer) abort
-    return [1, 'textDocument/didSave', {
+function! ale#lsp#message#DidSave(buffer, includeText) abort
+    let l:response = [1, 'textDocument/didSave', {
     \   'textDocument': {
     \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \}]
+
+    if a:includeText
+        let l:response[2].textDocument.version = ale#lsp#message#GetNextVersionID()
+        let l:response[2].text = ale#util#GetBufferContents(a:buffer)
+    endif
+
+    return l:response
 endfunction
 
 function! ale#lsp#message#DidClose(buffer) abort

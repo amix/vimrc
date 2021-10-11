@@ -35,6 +35,7 @@ ALE will look for configuration files with the following filenames. >
   setup.cfg
   pytest.ini
   tox.ini
+  .pyre_configuration.local
   mypy.ini
   pycodestyle.cfg
   .flake8
@@ -319,6 +320,69 @@ g:ale_python_flake8_auto_poetry               *g:ale_python_flake8_auto_poetry*
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
 
+===============================================================================
+flakehell                                                *ale-python-flakehell*
+
+g:ale_python_flakehell_change_directory*g:ale_python_flakehell_change_directory*
+                                       *b:ale_python_flakehell_change_directory*
+  Type: |String|
+  Default: `project`
+
+  If set to `project`, ALE will switch to the project root before checking file.
+  If set to `file`, ALE will switch to directory the Python file being
+  checked with `flakehell` is in before checking it.
+  You can turn it off with `off` option if you want to control the directory
+  Python is executed from yourself.
+
+
+g:ale_python_flakehell_executable            *g:ale_python_flakehell_executable*
+                                             *b:ale_python_flakehell_executable*
+  Type: |String|
+  Default: `'flakehell'`
+
+  This variable can be changed to modify the executable used for flakehell. Set
+  this to `'pipenv'` to invoke `'pipenv` `run` `flakehell'`. Set this to
+  `'poetry'` to invoke `'poetry` `run` `flakehell'`. Set this to `'python'` to
+  invoke `'python` `-m` `flakehell'`.
+
+
+g:ale_python_flakehell_options                  *g:ale_python_flakehell_options*
+                                                *b:ale_python_flakehell_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the flakehell
+  lint invocation.
+
+
+g:ale_python_flakehell_use_global            *g:ale_python_flakehell_use_global*
+                                             *b:ale_python_flakehell_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  This variable controls whether or not ALE will search for flakehell in a
+  virtualenv directory first. If this variable is set to `1`, then ALE will
+  always use |g:ale_python_flakehell_executable| for the executable path.
+
+  Both variables can be set with `b:` buffer variables instead.
+
+
+g:ale_python_flakehell_auto_pipenv          *g:ale_python_flakehell_auto_pipenv*
+                                            *b:ale_python_flakehell_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_flakehell_auto_poetry         *g:ale_python_flakehell_auto_poetry*
+                                           *b:ale_python_flakehell_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
 
 ===============================================================================
 isort                                                        *ale-python-isort*
@@ -353,6 +417,15 @@ g:ale_python_isort_auto_pipenv                 *g:ale_python_isort_auto_pipenv*
   Default: `0`
 
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_isort_auto_poetry                 *g:ale_python_isort_auto_poetry*
+                                               *b:ale_python_isort_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
 
 
