@@ -352,6 +352,11 @@ Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a fil
     :IndentGuidesDisable
     :IndentGuidesToggle
 
+[vim-fugitive](https://github.com/tpope/vim-fugitive) to copy the link to the line of a Git repository to the clipboard:
+
+    nnoremap <leader>v :.GBrowse!<CR>
+    xnoremap <leader>v :'<'>GBrowse!<CR>
+
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
