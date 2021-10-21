@@ -1,0 +1,298 @@
+*acp.txt*       補完メニューの自動ポップアップ
+
+        Copyright (c) 2007-2009 Takeshi NISHIDA
+
+AutoComplPop                                              *autocomplpop* *acp*
+
+概要                            |acp-introduction|
+インストール                    |acp-installation|
+使い方                          |acp-usage|
+コマンド                        |acp-commands|
+オプション                      |acp-options|
+SPECIAL THANKS                  |acp-thanks|
+CHANGELOG                       |acp-changelog|
+あばうと                        |acp-about|
+
+
+==============================================================================
+概要                                                *acp-introduction*
+
+このプラグインは、インサートモードで文字を入力したりカーソルを動かしたときに補
+完メニューを自動的に開くようにします。しかし、続けて文字を入力するのを妨げたり
+はしません。
+
+
+==============================================================================
+インストール                                                *acp-installation*
+
+ZIPファイルをランタイムディレクトリに展開します。
+
+以下のようにファイルが配置されるはずです。
+>
+        <your runtime directory>/plugin/acp.vim
+        <your runtime directory>/doc/acp.txt
+        ...
+<
+もしランタイムディレクトリが他のプラグインとごた混ぜになるのが嫌なら、ファイル
+を新規ディレクトリに配置し、そのディレクトリのパスを 'runtimepath' に追加して
+ください。アンインストールも楽になります。
+
+その後 FuzzyFinder のヘルプを有効にするためにタグファイルを更新してください。
+詳しくは|add-local-help|を参照してください。
+
+
+==============================================================================
+使い方                                                              *acp-usage*
+
+このプラグインがインストールされていれば、自動ポップアップは vim の開始時から
+有効になります。
+
+カーソル直前のテキストに応じて、利用する補完の種類を切り替えます。デフォルトの
+補完動作は次の通りです:
+
+        補完モード      filetype    カーソル直前のテキスト ~
+        キーワード補完  *           2文字のキーワード文字
+        ファイル名補完  *           ファイル名文字 + パスセパレータ
+                                    + 0文字以上のファイル名文字
+        オムニ補完      ruby        ".", "::" or 単語を構成する文字以外 + ":"
+        オムニ補完      python      "."
+        オムニ補完      xml         "<", "</" or ("<" + ">"以外の文字列 + " ")
+        オムニ補完      html/xhtml  "<", "</" or ("<" + ">"以外の文字列 + " ")
+        オムニ補完      css         (":", ";", "{", "^", "@", or "!")
+                                    + 0個または1個のスペース
+
+さらに、設定を行うことで、ユーザー定義補完と snipMate トリガー補完
+(|acp-snipMate|) を自動ポップアップさせることができます。
+
+これらの補完動作はカスタマイズ可能です。
+
+                                                                *acp-snipMate*
+snipMate トリガー補完 ~
+
+snipMate トリガー補完では、snipMate プラグイン
+(http://www.vim.org/scripts/script.php?script_id=2540) が提供するスニペットの
+トリガーを補完してそれを展開することができます。
+
+この自動ポップアップを有効にするには、次の関数を plugin/snipMate.vim に追加す
+る必要があります:
+>
+  fun! GetSnipsInCurrentScope()
+    let snips = {}
+    for scope in [bufnr('%')] + split(&ft, '\.') + ['_']
+      call extend(snips, get(s:snippets, scope, {}), 'keep')
+      call extend(snips, get(s:multi_snips, scope, {}), 'keep')
+    endfor
+    return snips
+  endf
+<
+そして|g:acp_behaviorSnipmateLength|オプションを 1 にしてください。
+
+この自動ポップアップには制限があり、カーソル直前の単語は大文字英字だけで構成さ
+れていなければなりません。
+
+                                                               *acp-perl-omni*
+Perl オムニ補完 ~
+
+AutoComplPop は perl-completion.vim
+(http://www.vim.org/scripts/script.php?script_id=2852) をサポートしています。
+
+この自動ポップアップを有効にするには、|g:acp_behaviorPerlOmniLength|オプション
+を 0 以上にしてください。
+
+
+==============================================================================
+コマンド                                                        *acp-commands*
+
+                                                                  *:AcpEnable*
+:AcpEnable
+        自動ポップアップを有効にします。
+
+                                                                 *:AcpDisable*
+:AcpDisable
+        自動ポップアップを無効にします。
+
+                                                                    *:AcpLock*
+:AcpLock
+        自動ポップアップを一時的に停止します。
+
+        別のスクリプトへの干渉を回避する目的なら、このコマンドと|:AcpUnlock| 
+        を利用することを、|:AcpDisable|と|:AcpEnable| を利用するよりも推奨しま
+        す。
+
+                                                                  *:AcpUnlock*
+:AcpUnlock
+        |:AcpLock| で停止された自動ポップアップを再開します。
+
+
+==============================================================================
+オプション                                                          *acp-options*
+
+                                                    *g:acp_enableAtStartup*  >
+  let g:acp_enableAtStartup = 1
+<
+        真なら vim 開始時から自動ポップアップが有効になります。
+
+                                                      *g:acp_mappingDriven*  >
+  let g:acp_mappingDriven = 0
+<
+        真なら|CursorMovedI|イベントではなくキーマッピングで自動ポップアップを
+        行うようにします。カーソルを移動するたびに補完が行われることで重いなど
+        の不都合がある場合に利用してください。ただし他のプラグインとの相性問題
+        や日本語入力での不具合が発生する可能性があります。(逆も然り。)
+
+                                                   *g:acp_ignorecaseOption*  >
+  let g:acp_ignorecaseOption = 1
+<
+        自動ポップアップ時に、'ignorecase' に一時的に設定する値
+
+                                                     *g:acp_completeOption*  >
+  let g:acp_completeOption = '.,w,b,k'
+<
+        自動ポップアップ時に、'complete' に一時的に設定する値
+
+                                                 *g:acp_completeoptPreview*  >
+  let g:acp_completeoptPreview = 0
+<
+        真なら自動ポップアップ時に、 'completeopt' へ "preview" を追加します。
+
+                                        *g:acp_behaviorUserDefinedFunction*  >
+  let g:acp_behaviorUserDefinedFunction = ''
+<
+        ユーザー定義補完の|g:acp_behavior-completefunc|。空ならこの補完は行わ
+        れません。。
+
+                                         *g:acp_behaviorUserDefinedMeets*  >
+  let g:acp_behaviorUserDefinedMeets = ''
+<
+        ユーザー定義補完の|g:acp_behavior-meets|。空ならこの補完は行われません
+        。
+
+                                             *g:acp_behaviorSnipmateLength*  >
+  let g:acp_behaviorSnipmateLength = -1
+<
+        snipMate トリガー補完の自動ポップアップを行うのに必要なカーソルの直前
+        のパターン。
+
+                                             *g:acp_behaviorKeywordCommand*  >
+  let g:acp_behaviorKeywordCommand = "\<C-n>"
+<
+        キーワード補完のコマンド。このオプションには普通 "\<C-n>" か "\<C-p>"
+        を設定します。
+
+                                              *g:acp_behaviorKeywordLength*  >
+  let g:acp_behaviorKeywordLength = 2
+<
+        キーワード補完の自動ポップアップを行うのに必要なカーソルの直前のキーワ
+        ード文字数。負数ならこの補完は行われません。
+
+                                             *g:acp_behaviorKeywordIgnores*  >
+  let g:acp_behaviorKeywordIgnores = []
+<
+        文字列のリスト。カーソル直前の単語がこれらの内いずれかの先頭部分にマッ
+        チする場合、この補完は行われません。
+
+        例えば、 "get" で始まる補完キーワードが多過ぎて、"g", "ge", "get" を入
+        力したときの自動ポップアップがレスポンスの低下を引き起こしている場合、
+        このオプションに ["get"] を設定することでそれを回避することができます。
+
+                                                 *g:acp_behaviorFileLength*  >
+  let g:acp_behaviorFileLength = 0
+<
+        ファイル名補完の自動ポップアップを行うのに必要なカーソルの直前のキーワ
+        ード文字数。負数ならこの補完は行われません。
+
+                                       *g:acp_behaviorRubyOmniMethodLength*  >
+  let g:acp_behaviorRubyOmniMethodLength = 0
+<
+        メソッド補完のための、Ruby オムニ補完の自動ポップアップを行うのに必要
+        なカーソルの直前のキーワード文字数。負数ならこの補完は行われません。
+
+                                       *g:acp_behaviorRubyOmniSymbolLength*  >
+  let g:acp_behaviorRubyOmniSymbolLength = 1
+<
+        シンボル補完のための、Ruby オムニ補完の自動ポップアップを行うのに必要
+        なカーソルの直前のキーワード文字数。負数ならこの補完は行われません。
+
+                                           *g:acp_behaviorPythonOmniLength*  >
+  let g:acp_behaviorPythonOmniLength = 0
+<
+        Python オムニ補完の自動ポップアップを行うのに必要なカーソルの直前のキ
+        ーワード文字数。負数ならこの補完は行われません。
+
+                                             *g:acp_behaviorPerlOmniLength*  >
+  let g:acp_behaviorPerlOmniLength = -1
+<
+        Perl オムニ補完の自動ポップアップを行うのに必要なカーソルの直前のキー
+        ワード文字数。負数ならこの補完は行われません。
+
+        See also: |acp-perl-omni|
+
+                                              *g:acp_behaviorXmlOmniLength*  >
+  let g:acp_behaviorXmlOmniLength = 0
+<
+        XML オムニ補完の自動ポップアップを行うのに必要なカーソルの直前のキーワ
+        ード文字数。負数ならこの補完は行われません。
+
+                                             *g:acp_behaviorHtmlOmniLength*  >
+  let g:acp_behaviorHtmlOmniLength = 0
+<
+        HTML オムニ補完の自動ポップアップを行うのに必要なカーソルの直前のキー
+        ワード文字数。負数ならこの補完は行われません。
+
+                                      *g:acp_behaviorCssOmniPropertyLength*  >
+  let g:acp_behaviorCssOmniPropertyLength = 1
+<
+        プロパティ補完のための、CSS オムニ補完の自動ポップアップを行うのに必要
+        なカーソルの直前のキーワード文字数。負数ならこの補完は行われません。
+
+                                         *g:acp_behaviorCssOmniValueLength*  >
+  let g:acp_behaviorCssOmniValueLength = 0
+<
+        値補完のための、CSS オムニ補完の自動ポップアップを行うのに必要なカーソ
+        ルの直前のキーワード文字数。負数ならこの補完は行われません。
+
+                                                           *g:acp_behavior*  >
+  let g:acp_behavior = {}
+<
+
+        これは内部仕様がわかっている人向けのオプションで、他のオプションでの設
+        定より優先されます。 
+
+        |Dictionary|型で、キーはファイルタイプに対応します。 '*' はデフォルト
+        を表します。値はリスト型です。補完候補が得られるまでリストの先頭アイテ
+        ムから順に評価します。各要素は|Dictionary|で詳細は次の通り：
+
+        "command":                                    *g:acp_behavior-command*
+          補完メニューをポップアップするためのコマンド。
+
+        "completefunc":                          *g:acp_behavior-completefunc*
+          'completefunc' に設定する関数。 "command" が "<C-x><C-u>" のときだけ
+          意味があります。
+
+        "meets":                                        *g:acp_behavior-meets*
+          この補完を行うかどうかを判断する関数の名前。この関数はカーソル直前の
+          テキストを引数に取り、補完を行うなら非 0 の値を返します。
+
+        "onPopupClose":                          *g:acp_behavior-onPopupClose*
+          この補完のポップアップメニューが閉じられたときに呼ばれる関数の名前。
+          この関数が 0 を返した場合、続いて行われる予定の補完は抑制されます。
+
+        "repeat":                                      *g:acp_behavior-repeat*
+          真なら最後の補完が自動的に繰り返されます。
+
+
+==============================================================================
+あばうと                                *acp-about* *acp-contact* *acp-author*
+
+作者:       Takeshi NISHIDA <ns9tks@DELETE-ME.gmail.com>
+ライセンス: MIT Licence
+URL:        http://www.vim.org/scripts/script.php?script_id=1879
+            http://bitbucket.org/ns9tks/vim-autocomplpop/
+
+バグや要望など ~
+
+こちらへどうぞ: http://bitbucket.org/ns9tks/vim-autocomplpop/issues/
+
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:
+
