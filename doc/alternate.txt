@@ -1,0 +1,177 @@
+
+*alternate.txt* Alternate Plugin                  Sat May 13 15:35:38 CDT 2006
+
+Author:  Michael Sharpe  <feline@irendi.com>
+Copyright: (c) 2000-2006 Michael Sharpe
+           We grant permission to use, copy modify, distribute, and sell this
+           software for any purpose without fee, provided that the above 
+           copyright notice and this text are not removed. We make no guarantee
+           about the suitability of this software for any purpose and we are 
+           not liable for any damages resulting from its use. Further, we are 
+           under no obligation to maintain or extend this software. It is 
+           provided on an "as is" basis without any expressed or implied 
+           warranty.
+
+==============================================================================
+1. Contents     *AS* *AV* *AT* *AN* *IH* *IHS* *IHV* *IHT* *IHN* *alternate*
+
+        1. Contents...........................: |alternate|
+        2. Purpose............................: |alternate-purpose|
+        3. Commands...........................: |alternate-commands|
+        4. Configuration......................: |alternate-config|
+        5. Installation.......................: |alternate-installation|
+        6. Bugs/Enhancements..................: |alternate-support|
+        7. Acknowledgments....................: |alternate-acknowledgments|
+
+==============================================================================
+2. Purpose                                                 *alternate-purpose*
+
+The purpose of a.vim is to allow quick and easy switching between source files
+and corresponding header files. Many languages (C, C++, ada, ocaml, lex/yacc)
+have the concept of source/header files or the like. It is quite common during
+development or review to need to edit both files together. This plugin attempts
+to simplify that process. There are commands which while editing a source
+file allow for the quick switching to the corresponding header and vice versa.
+The only difference between the commands is how the switch occurs. More recent 
+functionality allow the switching to a file under the cursor too.  In the
+following sections the commands, configuration and installation procedures are
+described.
+
+==============================================================================
+3. Commands                                               *alternate-commands*
+
+There are 4 commands provided by this plugin. They are
+
+:A switches to the header file corresponding to the source file in the current
+   buffer (or vice versa).
+
+:AS similar to :A except the current buffer is split horizontally such that the
+    source file is on one split and the header is in the other.
+
+:AV similar to :AS except that the split is vertical
+
+:AT similar to :AS and :AV except a new tab is opened instead of a split
+
+:IH switches to the file under cursor (or the file specified with the 
+    command). This command uses the builtin a.vim search path support and the 
+    &path variable in conjunction.
+
+:IHS similar to :IH execpt the current buffer is split horizontally first
+
+:IHS similar to :IH execpt the current buffer is split vertically first
+
+:IHS similar to :IH execpt a new tab is created for the file being switched to
+
+:IHN switches to the next matching file for the original selection
+
+In all cases if the corresponding alternate file is already loaded that buffer
+is preferred. That is this plugin will never load the same file twice.
+
+Some maps are also provided for the IH command (mainly for example purposes)
+<Leader>ih - switches to the file under the cursor using the :IHS command
+<Leader>is - switches to the source file of the header file under the cursor 
+             using the :IHS command and the :A command
+<leader>ihn - switches to the next match in the sequence.
+
+==============================================================================
+4. Configuration                                            *alternate-config*
+
+It is possible to configure three separate pieces of behaviour of this plugin.
+
+a) Extensions: Each language has different extensions for identifying the
+source and header files. Many languages support multiple different but related
+extensions. As such this plugin allow for the complete specification of how
+source and header files correspond to each other via extension maps. There are
+a number of maps built in. For example, the following variable setting
+
+  g:alternateExtensions_CPP = "inc,h,H,HPP,hpp"
+
+indicates that any file with a .CPP exetension can have a corresponding file
+with any of the .inc, .h, .H, .HPP, .hpp extension. The inverse is not
+specified by this map though. Typically each extension will have a mapping. So
+there would exist maps for .h, .inc, .H, .HPP, .hpp too. Extension maps should
+be specified before loading this plugin. Some of the builtin extension maps are
+as follows,
+
+C and C++
+g:alternateExtensions_h = "c,cpp,cxx,cc,CC"
+g:alternateExtensions_H' = "C,CPP,CXX,CC"
+g:alternateExtensions_cpp' = "h,hpp"
+g:alternateExtensions_CPP' = "H,HPP"
+g:alternateExtensions_c' = "h"
+g:alternateExtensions_C' = "H"
+g:alternateExtensions_cxx' = "h"
+
+Ada
+g:alternateExtensions_adb' = "ads"
+g:alternateExtensions_ads' = "adb"
+
+Lex/Yacc
+g:alternateExtensions_l' = "y,yacc,ypp"
+g:alternateExtensions_lex' = "yacc,y,ypp"
+g:alternateExtensions_lpp' = "ypp,y,yacc"
+g:alternateExtensions_y' = "l,lex,lpp"
+g:alternateExtensions_yacc' = "lex,l,lpp"
+g:alternateExtensions_ypp' = "lpp,l,lex"
+
+b) Search Paths: In many projects the location of the source files and the
+corresponding header files is not always the same directory. This plugin allows
+the search path it uses to locate source and header files to be configured.
+The search path is specified by setting the g:alternateSearchPath variable. The
+default setting is as follows,
+
+  g:alternateSearchPath = 'sfr:../source,sfr:../src,sfr:../include,sfr:../inc'
+
+This indicates that the corresponding file will be searched for in ../source,
+../src. ../include and ../inc all relative to the current file being switched
+from. The value of the g:alternateSearchPath variable is simply a comma
+separated list of prefixes and directories. The "sfr:" prefix indicates that 
+the path is relative to the file. Other prefixes are "wdr:" which indicates
+that the directory is relative to the current working directory and "abs:"
+which indicates the path is absolute. If no prefix is specified "sfr:" is
+assumed.
+
+c) Regex Paths: Another type of prefix which can appear in the
+g:alternateSearchPath variable is that of "reg:". It is used to apply a regex
+to the path of the file in the buffer being switched from to locate the
+alternate file. E.g. 'reg:/inc/src/g/' will replace every instance  of 'inc' 
+with 'src' in the source file path. It is possible to use match variables so 
+you could do something like: 'reg:|src/\([^/]*\)|inc/\1||' (see |substitute|, 
+|help pattern| and |sub-replace-special| for more details. The exact syntax of
+a "reg:" specification is
+          reg:<sep><pattern><sep><subst><sep><flag><sep>
+        
+          <sep> seperator character, we often use one of [/|%#] 
+          <pattern> is what you are looking for
+          <subst> is the output pattern
+          <flag> can be g for global replace or empty
+
+d) No Alternate Behaviour: When attempting to alternate/switch from a
+source/header to its corresponding file it is possible that the corresponding
+file does not exist. In this case this plugin will create the missing alternate
+file in the same directory as the current file. Some users find this behaviour
+irritating. This behaviour can be disabled by setting 
+g:alternateNoDefaultAlternate to 1. When this variable is not 0 a message will
+be displayed indicating that no alternate file exists.
+
+==============================================================================
+5. Installation                                       *alternate-installation*
+
+To install this plugin simply drop the a.vim file in to $VIMRUNTIME/plugin
+(global or local) or simply source the file from the vimrc file. Ensure that
+any configuration occurs before the plugin is loaded/sourced.
+
+==============================================================================
+6. Bugs/Enhancements                                       *alternate-support*
+
+Whilst no formal support is provided for this plugin the author is always happy
+to receive bug reports and enhancement requests. Please email all such
+reports/requests to feline@irendi.com.
+
+==============================================================================
+7. Acknowledgments                               *alternate-acknowledgments*
+
+The author would like to thank everyone who has submitted bug reports and
+feature enhancement requests in the past. In particular Bindu Wavell provided
+much of the original code implementing the search path and regex functionality.
+vim:tw=78:ts=8:ft=help
