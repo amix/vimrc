@@ -3114,6 +3114,8 @@ documented in additional help files.
     yamllint..............................|ale-yaml-yamllint|
   yang....................................|ale-yang-options|
     yang-lsp..............................|ale-yang-lsp|
+  zeek....................................|ale-zeek-options|
+    zeek..................................|ale-zeek-zeek|
   zig.....................................|ale-zig-options|
     zls...................................|ale-zig-zls|
 

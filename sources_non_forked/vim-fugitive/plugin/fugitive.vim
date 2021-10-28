@@ -628,7 +628,7 @@ augroup fugitive
   autocmd BufReadCmd index{,.lock}
         \ if FugitiveIsGitDir(expand('<amatch>:p:h')) |
         \   let b:git_dir = s:Slash(expand('<amatch>:p:h')) |
-        \   exe fugitive#BufReadStatus() |
+        \   exe fugitive#BufReadStatus(v:cmdbang) |
         \ elseif filereadable(expand('<amatch>')) |
         \   silent doautocmd BufReadPre |
         \   keepalt read <amatch> |

@@ -601,6 +601,8 @@ Notes:
   * `yamllint`
 * YANG
   * `yang-lsp`
+* Zeek
+  * `zeek`!!
 * Zig
   * `zls`
 

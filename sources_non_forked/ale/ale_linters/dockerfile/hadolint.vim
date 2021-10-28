@@ -55,13 +55,19 @@ function! ale_linters#dockerfile#hadolint#Handle(buffer, lines) abort
             let l:detail = 'hadolint could not parse the file because of a syntax error.'
         endif
 
-        call add(l:output, {
+        let l:line_output = {
         \   'lnum': l:lnum,
         \   'col': l:colnum,
         \   'type': l:type,
         \   'text': l:text,
         \   'detail': l:detail
-        \})
+        \}
+
+        if l:code isnot# ''
+            let l:line_output['code'] = l:code
+        endif
+
+        call add(l:output, l:line_output)
     endfor
 
     return l:output

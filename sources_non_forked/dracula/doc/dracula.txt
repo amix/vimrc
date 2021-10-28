@@ -1,4 +1,4 @@
-*dracula.txt*           For Vim version 8               Last change: 2018 May 08
+*dracula.txt*           For Vim version 8               Last change: 2021 Oct 22
 *dracula* *vim-dracula*
 
                     |\                          ,,       ~
@@ -85,6 +85,13 @@ Include underline attributes in highlighting >
 * *g:dracula_undercurl*
 Include undercurl attributes in highlighting (only if underline enabled) >
     let g:dracula_undercurl = 1
+
+* *g:dracula_full_special_attrs_support*
+Explicitly declare full support for special attributes. By default it is 1
+for graphical applications and 0 for terminals and terminal emulators.  On
+terminal emulators, set to 1 to allow underline/undercurl highlights without
+changing the foreground color. >
+    let g:dracula_full_special_attrs_support = 1
 
 * *g:dracula_inverse*
 Include inverse attributes in highlighting >

@@ -100,6 +100,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['nim'],
 \       'description': 'Apply nimpretty to a file.',
 \   },
+\   'erblint': {
+\       'function': 'ale#fixers#erblint#Fix',
+\       'suggested_filetypes': ['eruby'],
+\       'description': 'Apply erblint --autocorrect to a file.',
+\   },
 \   'eslint': {
 \       'function': 'ale#fixers#eslint#Fix',
 \       'suggested_filetypes': ['javascript', 'typescript'],

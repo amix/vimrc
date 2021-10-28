@@ -11,6 +11,17 @@ Full path fuzzy __file__, __buffer__, __mru__, __tag__, __...__ finder for Vim.
 
 ![ctrlp][1]
 
+## Install
+
+vim 8+ manages packages all on its own. Installing `ctrlp` is this simple:
+
+```bash
+mkdir -p ~/.vim/pack/plugins/start
+git clone --depth=1 https://github.com/ctrlpvim/ctrlp.vim.git ~/.vim/pack/plugins/start/ctrlp
+```
+
+Of course you can use your favorite plugin manager or check the [quick installation guide][3] for a primitive installation method.
+
 ## Basic Usage
 * Run `:CtrlP` or `:CtrlP [starting-directory]` to invoke CtrlP in find file mode.
 * Run `:CtrlPBuffer` or `:CtrlPMRU` to invoke CtrlP in find buffer or find MRU file mode.
@@ -97,13 +108,10 @@ Use `:diffthis` when opening multiple files to run `:diffthis` on the first 4 fi
 
 Check `:help ctrlp-options` for other options.
 
-## Installation
-Use your favorite method or check the homepage for a [quick installation guide][3].
-
 ## License
 CtrlP is distributed under Vim's [license][4].
 
-[1]: http://i.imgur.com/aOcwHwt.png
+[1]: https://i.imgur.com/aOcwHwt.png
 [2]: https://github.com/ctrlpvim/ctrlp.vim/tree/extensions
-[3]: http://ctrlpvim.github.io/ctrlp.vim#installation
+[3]: https://ctrlpvim.github.io/ctrlp.vim#installation
 [4]: http://vimdoc.sourceforge.net/htmldoc/uganda.html

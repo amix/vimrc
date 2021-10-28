@@ -610,5 +610,7 @@ formatting.
   * [yamllint](https://yamllint.readthedocs.io/)
 * YANG
   * [yang-lsp](https://github.com/theia-ide/yang-lsp)
+* Zeek
+  * [zeek](http://zeek.org) :floppy_disk:
 * Zig
   * [zls](https://github.com/zigtools/zls)

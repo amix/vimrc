@@ -64,15 +64,16 @@ function! ale#virtualtext#ShowMessage(message, hl_group) abort
     let l:line = line('.')
     let l:buffer = bufnr('')
     let l:prefix = get(g:, 'ale_virtualtext_prefix', '> ')
+    let l:msg = l:prefix.trim(substitute(a:message, '\n', ' ', 'g'))
 
     if has('nvim')
-        call nvim_buf_set_virtual_text(l:buffer, s:ns_id, l:line-1, [[l:prefix.a:message, a:hl_group]], {})
+        call nvim_buf_set_virtual_text(l:buffer, s:ns_id, l:line-1, [[l:msg, a:hl_group]], {})
     else
         let l:left_pad = col('$')
         call prop_add(l:line, l:left_pad, {
         \ 'type': 'ale',
         \})
-        let s:last_popup = popup_create(l:prefix.a:message, {
+        let s:last_popup = popup_create(l:msg, {
         \ 'line': -1,
         \ 'padding': [0, 0, 0, 1],
         \ 'mask': [[1, 1, 1, 1]],

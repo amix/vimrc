@@ -21,7 +21,7 @@ function! ale#fixers#isort#GetExecutable(buffer) abort
     return ale#python#FindExecutable(a:buffer, 'python_isort', ['isort'])
 endfunction
 
-function! ale#fixers#isort#Fix(buffer) abort
+function! ale#fixers#isort#GetCmd(buffer) abort
     let l:executable = ale#fixers#isort#GetExecutable(a:buffer)
     let l:cmd = [ale#Escape(l:executable)]
 
@@ -29,7 +29,20 @@ function! ale#fixers#isort#Fix(buffer) abort
         call extend(l:cmd, ['run', 'isort'])
     endif
 
-    call add(l:cmd, '--filename %s')
+    return join(l:cmd, ' ')
+endfunction
+
+function! ale#fixers#isort#FixForVersion(buffer, version) abort
+    let l:executable = ale#fixers#isort#GetExecutable(a:buffer)
+    let l:cmd = [ale#Escape(l:executable)]
+
+    if l:executable =~? 'pipenv\|poetry$'
+        call extend(l:cmd, ['run', 'isort'])
+    endif
+
+    if ale#semver#GTE(a:version, [5, 7, 0])
+        call add(l:cmd, '--filename %s')
+    endif
 
     let l:options = ale#Var(a:buffer, 'python_isort_options')
 
@@ -41,6 +54,18 @@ function! ale#fixers#isort#Fix(buffer) abort
 
     return {
     \   'cwd': '%s:h',
-    \   'command': join(l:cmd, ' ')
+    \   'command': join(l:cmd, ' '),
     \}
+endfunction
+
+function! ale#fixers#isort#Fix(buffer) abort
+    let l:executable = ale#fixers#isort#GetExecutable(a:buffer)
+    let l:command = ale#fixers#isort#GetCmd(a:buffer) . ale#Pad('--version')
+
+    return ale#semver#RunWithVersionCheck(
+    \     a:buffer,
+    \     l:executable,
+    \     l:command,
+    \     function('ale#fixers#isort#FixForVersion'),
+    \)
 endfunction

@@ -318,6 +318,7 @@ dv                      Perform a |:Gvdiffsplit| on the file under the cursor.
                                                 *fugitive_ds* *fugitive_dh*
 ds                      Perform a |:Ghdiffsplit| on the file under the cursor.
 dh
+
                                                 *fugitive_dq*
 dq                      Close all but one diff buffer, and |:diffoff|! the
                         last one.
