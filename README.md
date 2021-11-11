@@ -201,7 +201,7 @@ Useful mappings for managing tabs:
 	
 	" Opens a new tab with the current buffer's path
 	" Super useful when editing files in the same directory
-	map <leader>te :tabedit <C-r>=expand("%:p:h")<cr>/
+	map <leader>te :tabedit <C-r>=escape(expand("%:p:h"), " ")<cr>/
 	
 Switch [CWD](http://vim.wikia.com/wiki/Set_working_directory_to_the_current_file) to the directory of the open buffer:
 	
