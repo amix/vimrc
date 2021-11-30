@@ -23,5 +23,6 @@ _?_
 
 Paste debugging info from the Rust Vim plugin via _one_ of the following
 commands: `:RustInfo`,  `:RustInfoToClipboard`, or `:RustInfoToFile <filename>`.
+<!-- To ensure these commands are available, open a Rust source file first. -->
 
 _?_

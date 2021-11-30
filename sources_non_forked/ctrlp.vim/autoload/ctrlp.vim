@@ -1386,6 +1386,7 @@ fu! s:MarkToOpen()
 		en
 	en
 	sil! cal ctrlp#statusline()
+	redr
 endf
 
 fu! s:OpenMulti(...)

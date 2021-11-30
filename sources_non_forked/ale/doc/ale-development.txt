@@ -156,7 +156,8 @@ environments.
 2. Vim 8.2.2401 on Linux via GitHub Actions.
 3. NeoVim 0.2.0 on Linux via GitHub Actions.
 4. NeoVim 0.4.4 on Linux via GitHub Actions.
-5. Vim 8 (stable builds) on Windows via AppVeyor.
+5. NeoVim 0.5.0 on Linux via GitHub Actions.
+6. Vim 8 (stable builds) on Windows via AppVeyor.
 
 If you are developing ALE code on Linux, Mac OSX, or BSD, you can run ALEs
 tests by installing Docker and running the `run-tests` script. Follow the

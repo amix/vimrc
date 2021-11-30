@@ -91,6 +91,39 @@ g:ale_cs_csc_assemblies                               *g:ale_cs_csc_assemblies*
 <
 
 ===============================================================================
+dotnet-format                                            *ale-cs-dotnet-format*
+
+Installation
+-------------------------------------------------------------------------------
+
+Installing .NET SDK should probably ensure that `dotnet` is in your `$PATH`.
+For .NET 6 the `dotnet format` tool is already included in the .NET SDK. For
+.NET 5 or below you will have to manually install it using the instructions
+from listed in this repository: https://github.com/dotnet/format
+
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_cs_dotnet_format_executable           *g:ale_cs_dotnet_format_executable*
+                                            *b:ale_cs_dotnet_format_executable*
+  Type: |String|
+  Default: `'dotnet'`
+
+  This variable can be set to specify an absolute path to the
+  `dotnet` executable (or to specify an alternate executable).
+
+
+g:ale_cs_dotnet_format_options                 *g:ale_cs_dotnet_format_options*
+                                               *b:ale_cs_dotnet_format_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the `dotnet format`
+  fixer.
+
+
+===============================================================================
 mcs                                                                *ale-cs-mcs*
 
   The `mcs` linter looks only for syntax errors while you type. See

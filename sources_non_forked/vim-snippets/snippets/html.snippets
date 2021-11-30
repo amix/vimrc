@@ -399,7 +399,7 @@ snippet h6#
 	<h6 id="${1}">${0}</h6>
 snippet head
 	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta charset="utf-8">
 
 		<title>${1:`substitute(vim_snippets#Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
 		${0}
@@ -609,7 +609,9 @@ snippet meta:d
 snippet meta:compat
 	<meta http-equiv="X-UA-Compatible" content="IE=${1:7,8,edge}">
 snippet meta:refresh
-	<meta http-equiv="refresh" content="text/html;charset=UTF-8">
+	<meta http-equiv="refresh" content="3;url=${0}">
+snippet meta:utf5
+	<meta charset="utf-8">
 snippet meta:utf
 	<meta http-equiv="content-type" content="text/html;charset=UTF-8">
 snippet meter

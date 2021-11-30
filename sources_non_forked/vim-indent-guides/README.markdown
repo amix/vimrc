@@ -1,4 +1,4 @@
-# Indent Guides
+# Indent Guides (unmaintained)
 Indent Guides is a plugin for visually displaying indent levels in Vim.
 
 <img src="http://i.imgur.com/ONgoj.png" width="448" height="448" alt="" />

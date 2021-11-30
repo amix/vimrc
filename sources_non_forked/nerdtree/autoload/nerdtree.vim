@@ -112,18 +112,18 @@ function! nerdtree#compareNodePaths(p1, p2) abort
         " Compare chunks upto common length.
         " If chunks have different type, the one which has
         " integer type is the lesser.
-        if type(sortKey1[i]) ==# type(sortKey2[i])
+        if type(sortKey1[i]) == type(sortKey2[i])
             if sortKey1[i] <# sortKey2[i]
                 return - 1
             elseif sortKey1[i] ># sortKey2[i]
                 return 1
             endif
-        elseif type(sortKey1[i]) ==# v:t_number
+        elseif type(sortKey1[i]) == type(0)
             return -1
-        elseif type(sortKey2[i]) ==# v:t_number
+        elseif type(sortKey2[i]) == type(0)
             return 1
         endif
-        let i = i + 1
+        let i += 1
     endwhile
 
     " Keys are identical upto common length.

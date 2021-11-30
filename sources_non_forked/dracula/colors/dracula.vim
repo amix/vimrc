@@ -85,6 +85,10 @@ if !exists('g:dracula_undercurl')
   let g:dracula_undercurl = g:dracula_underline
 endif
 
+if !exists('g:dracula_full_special_attrs_support')
+  let g:dracula_full_special_attrs_support = has('gui_running')
+endif
+
 if !exists('g:dracula_inverse')
   let g:dracula_inverse = 1
 endif
@@ -111,10 +115,15 @@ function! s:h(scope, fg, ...) " bg, attr_list, special
   let l:attr_list = filter(get(a:, 2, ['NONE']), 'type(v:val) == 1')
   let l:attrs = len(l:attr_list) > 0 ? join(l:attr_list, ',') : 'NONE'
 
-  " Falls back to coloring foreground group on terminals because
-  " nearly all do not support undercurl
+  " If the UI does not have full support for special attributes (like underline and
+  " undercurl) and the highlight does not explicitly set the foreground color,
+  " make the foreground the same as the attribute color to ensure the user will
+  " get some highlight if the attribute is not supported. The default behavior
+  " is to assume that terminals do not have full support, but the user can set
+  " the global variable `g:dracula_full_special_attrs_support` explicitly if the
+  " default behavior is not desirable.
   let l:special = get(a:, 3, ['NONE', 'NONE'])
-  if l:special[0] !=# 'NONE' && l:fg[0] ==# 'NONE' && !has('gui_running')
+  if l:special[0] !=# 'NONE' && l:fg[0] ==# 'NONE' && !g:dracula_full_special_attrs_support
     let l:fg[0] = l:special[0]
     let l:fg[1] = l:special[1]
   endif
@@ -232,7 +241,7 @@ hi! link Question     DraculaFgBold
 hi! link Search       DraculaSearch
 call s:h('SignColumn', s:comment)
 hi! link TabLine      DraculaBoundary
-hi! link TabLineFill  DraculaBgDarker
+hi! link TabLineFill  DraculaBgDark
 hi! link TabLineSel   Normal
 hi! link Title        DraculaGreenBold
 hi! link VertSplit    DraculaBoundary

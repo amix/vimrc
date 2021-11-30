@@ -17,13 +17,13 @@ from os import path
 # --- Globals ----------------------------------------------
 PLUGINS = """
 auto-pairs https://github.com/jiangmiao/auto-pairs
-ale https://github.com/w0rp/ale
+ale https://github.com/dense-analysis/ale
 vim-yankstack https://github.com/maxbrunsfeld/vim-yankstack
 ack.vim https://github.com/mileszs/ack.vim
 bufexplorer https://github.com/jlanzarotta/bufexplorer
 ctrlp.vim https://github.com/ctrlpvim/ctrlp.vim
 mayansmoke https://github.com/vim-scripts/mayansmoke
-nerdtree https://github.com/scrooloose/nerdtree
+nerdtree https://github.com/preservim/nerdtree
 nginx.vim https://github.com/chr4/nginx.vim
 open_file_under_cursor.vim https://github.com/amix/open_file_under_cursor.vim
 tlib https://github.com/tomtom/tlib_vim
@@ -40,6 +40,7 @@ vim-surround https://github.com/tpope/vim-surround
 vim-expand-region https://github.com/terryma/vim-expand-region
 vim-multiple-cursors https://github.com/terryma/vim-multiple-cursors
 vim-fugitive https://github.com/tpope/vim-fugitive
+vim-rhubarb https://github.com/tpope/vim-rhubarb
 goyo.vim https://github.com/junegunn/goyo.vim
 vim-zenroom2 https://github.com/amix/vim-zenroom2
 vim-repeat https://github.com/tpope/vim-repeat
@@ -50,7 +51,7 @@ vim-flake8 https://github.com/nvie/vim-flake8
 vim-pug https://github.com/digitaltoad/vim-pug
 lightline.vim https://github.com/itchyny/lightline.vim
 lightline-ale https://github.com/maximbaz/lightline-ale
-vim-abolish https://github.com/tpope/tpope-vim-abolish
+vim-abolish https://github.com/tpope/vim-abolish
 rust.vim https://github.com/rust-lang/rust.vim
 vim-markdown https://github.com/plasticboy/vim-markdown
 vim-gist https://github.com/mattn/vim-gist

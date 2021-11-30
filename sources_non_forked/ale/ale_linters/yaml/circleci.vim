@@ -28,7 +28,7 @@ endfunction
 call ale#linter#Define('yaml', {
 \   'name': 'circleci',
 \   'executable': {b -> expand('#' . b . ':p') =~? '\.circleci' ? 'circleci' : ''},
-\   'command': 'circleci config validate - < %s',
+\   'command': 'circleci --skip-update-check config validate - < %s',
 \   'callback': 'ale_linters#yaml#circleci#Handle',
 \   'output_stream': 'stderr',
 \   'lint_file': 1,

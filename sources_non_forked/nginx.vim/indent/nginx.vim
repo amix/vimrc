@@ -9,3 +9,5 @@ setlocal indentexpr=
 setlocal cindent
 " Just make sure that the comments are not reset as defs would be.
 setlocal cinkeys-=0#
+
+let b:undo_indent = "setl cin< cink< inde<"

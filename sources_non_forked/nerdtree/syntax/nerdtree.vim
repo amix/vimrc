@@ -36,23 +36,23 @@ if g:NERDTreeDirArrowExpandable !=# ''
     exec 'syn match NERDTreeOpenable #' . escape(g:NERDTreeDirArrowExpandable, '~') . '\ze .*/# containedin=NERDTreeDir,NERDTreeFile'
     let s:dirArrows = escape(g:NERDTreeDirArrowCollapsible, '~]\-').escape(g:NERDTreeDirArrowExpandable, '~]\-')
     exec 'syn match NERDTreeDir #[^'.s:dirArrows.' ].*/#'
-    exec 'syn match NERDTreeExecFile #^.*'.g:NERDTreeNodeDelimiter.'\*\($\| \)# contains=NERDTreeRO,NERDTreeBookmark'
-    exec 'syn match NERDTreeFile  #^[^"\.'.s:dirArrows.'] *[^'.s:dirArrows.']*# contains=NERDTreeLink,NERDTreeRO,NERDTreeBookmark,NERDTreeExecFile'
+    exec 'syn match NERDTreeExecFile #^.*'.g:NERDTreeNodeDelimiter.'\*\($\| \)# contains=NERDTreeRO,NERDTreeBookmarkName'
+    exec 'syn match NERDTreeFile  #^[^"\.'.s:dirArrows.'] *[^'.s:dirArrows.']*# contains=NERDTreeLink,NERDTreeRO,NERDTreeBookmarkName,NERDTreeExecFile'
 else
     exec 'syn match NERDTreeDir #[^'.g:NERDTreeNodeDelimiter.']\{-}/\ze\($\|'.g:NERDTreeNodeDelimiter.'\)#'
-    exec 'syn match NERDTreeExecFile #[^'.g:NERDTreeNodeDelimiter.']\{-}'.g:NERDTreeNodeDelimiter.'\*\($\| \)# contains=NERDTreeRO,NERDTreeBookmark'
-    exec 'syn match NERDTreeFile     #^.*'.g:NERDTreeNodeDelimiter.'.*[^\/]\($\|'.g:NERDTreeNodeDelimiter.'.*\)# contains=NERDTreeLink,NERDTreeRO,NERDTreeBookmark,NERDTreeExecFile'
+    exec 'syn match NERDTreeExecFile #[^'.g:NERDTreeNodeDelimiter.']\{-}'.g:NERDTreeNodeDelimiter.'\*\($\| \)# contains=NERDTreeRO,NERDTreeBookmarkName'
+    exec 'syn match NERDTreeFile     #^.*'.g:NERDTreeNodeDelimiter.'.*[^\/]\($\|'.g:NERDTreeNodeDelimiter.'.*\)# contains=NERDTreeLink,NERDTreeRO,NERDTreeBookmarkName,NERDTreeExecFile'
 endif
 
 "highlighting for readonly files
-exec 'syn match NERDTreeRO #.*'.g:NERDTreeNodeDelimiter.'\zs.*\ze'.g:NERDTreeNodeDelimiter.'.*\['.g:NERDTreeGlyphReadOnly.'\]# contains=NERDTreeIgnore,NERDTreeBookmark,NERDTreeFile'
+exec 'syn match NERDTreeRO #.*'.g:NERDTreeNodeDelimiter.'\zs.*\ze'.g:NERDTreeNodeDelimiter.'.*\['.g:NERDTreeGlyphReadOnly.'\]# contains=NERDTreeIgnore,NERDTreeBookmarkName,NERDTreeFile'
 
 exec 'syn match NERDTreeFlags #\[[^\]]*\]\ze'.g:NERDTreeNodeDelimiter.'# containedin=NERDTreeFile,NERDTreeExecFile,NERDTreeLinkFile,NERDTreeRO,NERDTreeDir'
 
 syn match NERDTreeCWD #^[</].*$#
 
 "highlighting for bookmarks
-syn match NERDTreeBookmark # {.*}#hs=s+1
+syn match NERDTreeBookmarkName # {.*}#hs=s+2,he=e-1
 
 "highlighting for the bookmarks table
 syn match NERDTreeBookmarksLeader #^>#

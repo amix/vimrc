@@ -36,6 +36,7 @@ function! s:go(...) abort
 
   let [l, r] = s:surroundings()
   let uncomment = 2
+  let force_uncomment = a:0 > 2 && a:3
   for lnum in range(lnum1,lnum2)
     let line = matchstr(getline(lnum),'\S.*\s\@<!')
     let [l, r] = s:strip_white_space(l,r,line)
@@ -58,7 +59,11 @@ function! s:go(...) abort
             \'\M' . substitute(l, '\ze\S\s*$', '\\zs\\d\\*\\ze', '') . '\|' . substitute(r, '\S\zs', '\\zs\\d\\*\\ze', ''),
             \'\=substitute(submatch(0)+1-uncomment,"^0$\\|^-\\d*$","","")','g')
     endif
-    if uncomment
+    if force_uncomment
+      if line =~ '^\s*' . l
+        let line = substitute(line,'\S.*\s\@<!','\=submatch(0)[strlen(l):-strlen(r)-1]','')
+      endif
+    elseif uncomment
       let line = substitute(line,'\S.*\s\@<!','\=submatch(0)[strlen(l):-strlen(r)-1]','')
     else
       let line = substitute(line,'^\%('.matchstr(getline(lnum1),indent).'\|\s*\)\zs.*\S\@<=','\=l.submatch(0).r','')
@@ -97,7 +102,7 @@ function! s:textobject(inner) abort
   endif
 endfunction
 
-command! -range -bar Commentary call s:go(<line1>,<line2>)
+command! -range -bar -bang Commentary call s:go(<line1>,<line2>,<bang>0)
 xnoremap <expr>   <Plug>Commentary     <SID>go()
 nnoremap <expr>   <Plug>Commentary     <SID>go()
 nnoremap <expr>   <Plug>CommentaryLine <SID>go() . '_'

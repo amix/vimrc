@@ -271,6 +271,30 @@ function! ale#lsp_linter#OnInit(linter, details, Callback) abort
         call ale#lsp#NotifyForChanges(l:conn_id, l:buffer)
     endif
 
+    " Tell the relevant buffer that the LSP has started via an autocmd.
+    if l:buffer > 0
+        if l:buffer == bufnr('')
+            silent doautocmd <nomodeline> User ALELSPStarted
+        else
+            execute 'augroup ALELSPStartedGroup' . l:buffer
+                autocmd!
+
+                execute printf(
+                \   'autocmd BufEnter <buffer=%d>'
+                \       . ' doautocmd <nomodeline> User ALELSPStarted',
+                \   l:buffer
+                \)
+
+                " Replicate ++once behavior for backwards compatibility.
+                execute printf(
+                \   'autocmd BufEnter <buffer=%d>'
+                \       . ' autocmd! ALELSPStartedGroup%d',
+                \   l:buffer, l:buffer
+                \)
+            augroup END
+        endif
+    endif
+
     call a:Callback(a:linter, a:details)
 endfunction
 
@@ -442,7 +466,9 @@ function! s:CheckWithLSP(linter, details) abort
     " If this was a file save event, also notify the server of that.
     if a:linter.lsp isnot# 'tsserver'
     \&& getbufvar(l:buffer, 'ale_save_event_fired', 0)
-        let l:save_message = ale#lsp#message#DidSave(l:buffer)
+    \&& ale#lsp#HasCapability(l:buffer, 'did_save')
+        let l:include_text = ale#lsp#HasCapability(l:buffer, 'includeText')
+        let l:save_message = ale#lsp#message#DidSave(l:buffer, l:include_text)
         let l:notified = ale#lsp#Send(l:id, l:save_message) != 0
     endif
 endfunction
