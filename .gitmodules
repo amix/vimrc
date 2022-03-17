@@ -1,0 +1,21 @@
+[submodule "my_plugins/coc.nvim"]
+	path = my_plugins/coc.nvim
+	url = https://github.com/neoclide/coc.nvim
+[submodule "my_plugins/papercolor-theme"]
+	path = my_plugins/papercolor-theme
+	url = https://github.com/NLKNguyen/papercolor-theme
+[submodule "my_plugins/quick-scope"]
+	path = my_plugins/quick-scope
+	url = https://github.com/unblevable/quick-scope
+[submodule "my_plugins/vim-signify"]
+	path = my_plugins/vim-signify
+	url = https://github.com/mhinz/vim-signify
+[submodule "my_plugins/vim-skip"]
+	path = my_plugins/vim-skip
+	url = https://github.com/jayflo/vim-skip
+[submodule "my_plugins/vim-startify"]
+	path = my_plugins/vim-startify
+	url = https://github.com/mhinz/vim-startify
+[submodule "my_plugins/vim-translator"]
+	path = my_plugins/vim-translator
+	url = https://github.com/voldikss/vim-translator
