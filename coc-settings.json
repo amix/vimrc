@@ -1,0 +1,36 @@
+{
+    "languageserver": {
+        "intelephense": {
+            "command": "intelephense",
+            "args": [
+                "--stdio"
+            ],
+            "filetypes": [
+                "php"
+            ],
+            "initializationOptions": {
+                "storagePath": "/tmp/intelephense"
+            }
+        },
+        "golang": {
+            "command": "gopls",
+            "rootPatterns": [
+                "go.mod"
+            ],
+            "filetypes": [
+                "go"
+            ]
+        }
+    },
+    "json.format.enable": true,
+    "coc.preferences.formatOnSaveFiletypes": [
+        "json",
+        "go",
+        "php",
+        "ts",
+        "js",
+        "html",
+        "css"
+    ],
+    "go.goplsPath": "/root/.go/bin/gopls"
+}

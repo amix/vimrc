@@ -1,0 +1,7 @@
+coc.nvim
+papercolor-theme
+quick-scope
+vim-signify
+vim-skip
+vim-startify
+vim-translator
