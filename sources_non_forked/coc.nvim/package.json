@@ -1,0 +1,50 @@
+{
+  "name": "coc.nvim",
+  "version": "0.0.80",
+  "description": "LSP based intellisense engine for neovim & vim8.",
+  "main": "./lib/index.js",
+  "engines": {
+    "node": ">=8.10.0"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neoclide/coc.nvim.git"
+  },
+  "keywords": [
+    "complete",
+    "neovim"
+  ],
+  "author": "Qiming Zhao <chemzqm@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/neoclide/coc.nvim/issues"
+  },
+  "homepage": "https://github.com/neoclide/coc.nvim#readme",
+  "jest": {
+    "globals": {
+      "__TEST__": true
+    },
+    "projects": [
+      "<rootDir>"
+    ],
+    "watchman": false,
+    "clearMocks": true,
+    "globalSetup": "./jest.js",
+    "testEnvironment": "node",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "json",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "src/__tests__/.*\\.(test|spec)\\.ts$",
+    "coverageDirectory": "./coverage/"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
+
