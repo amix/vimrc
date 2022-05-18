@@ -1,0 +1,25 @@
+#! /usr/bin/env ruby
+require 'bundler/setup'
+require 'vimrunner'
+dir = File.expand_path('..', __dir__)
+plugin = 'ftdetect/elixir.vim'
+vim = Vimrunner.start_gvim
+vim.add_plugin(dir, plugin)
+vim.normal ':let g:elixir_indent_debug=0<CR>'
+vim.edit! 'large_file.ex'
+# remove all indentation
+vim.normal 'ggVG999<<'
+vim.normal ':profile start profile.log<CR>'
+vim.normal ':profile func *<CR>'
+vim.normal ':profile file *<CR>'
+
+t1 = Time.now
+# force vim to indent the file
+vim.normal 'gg=G'
+vim.normal ':profile pause<CR>'
+vim.normal ':q!<CR>'
+
+Process.wait vim.server.pid
+t2 = Time.now
+
+puts "Took #{t2-t1} seconds to indent large_file.ex. Profile logged to profile.log"

@@ -1,0 +1,3 @@
+#! /usr/bin/env sh
+dirs=`find $1 -iname '*.ex' -o -iname '*.exs' | grep -v '/deps/'`
+bin/test_indent $dirs

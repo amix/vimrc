@@ -1,0 +1,112 @@
+*elixir.txt*	Vim configuration files for Elixir http://elixir-lang.org/
+
+Author: Plataformatec
+License: Apache License Version 2.0
+
+==============================================================================
+CONTENTS					*elixir-contents*
+
+INTRODUCTION			|elixir-introduction|
+INTERFACE			|elixir-interface|
+  FUNCTIONS			  |elixir-functions|
+  KEY MAPPINGS			  |elixir-key-mappings|
+OPTIONS				|elixir-options|
+SETTINGS			|elixir-settings|
+
+==============================================================================
+INTRODUCTION					*elixir-introduction*
+
+*elixir* provides Vim configuration files for Elixir http://elixir-lang.org/
+
+* Syntax highlighting for Elixir and EEx files
+* Filetype detection for `.ex`, `.exs`, `.eex`, `.heex`, `.leex`, and `.sface` files
+* Automatic indentation
+* Integration between Ecto projects and |vim-dadbod| for running SQL queries
+  on defined Ecto repositories
+
+
+Latest Version:
+https://github.com/elixir-editors/vim-elixir
+
+
+==============================================================================
+INTERFACE					*elixir-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS					*elixir-functions*
+
+db#adapter#ecto#canonicalize({url})	*db#adapter#ecto#canonicalize()*
+	TODO
+
+db#adapter#ecto#complete_opaque({url})	*db#adapter#ecto#complete_opaque()*
+	TODO
+
+elixir#indent#indent({lnum})		*elixir#indent#indent()*
+	TODO
+
+elixir#indent#searchpair_back_skip()	*elixir#indent#searchpair_back_skip()*
+	TODO
+
+				*elixir#indent#handle_top_of_file()*
+elixir#indent#handle_top_of_file({context})
+	TODO
+
+				*elixir#indent#handle_follow_prev_nb()*
+elixir#indent#handle_follow_prev_nb({context})
+	TODO
+
+		*elixir#indent#handle_following_trailing_binary_operator()*
+elixir#indent#handle_following_trailing_binary_operator({context})
+	TODO
+
+				*elixir#indent#handle_starts_with_pipe()*
+elixir#indent#handle_starts_with_pipe({context})
+	TODO
+
+				*elixir#indent#handle_starts_with_end()*
+elixir#indent#handle_starts_with_end({context})
+	TODO
+
+			*elixir#indent#handle_starts_with_binary_operator()*
+elixir#indent#handle_starts_with_binary_operator({context})
+	TODO
+
+				*elixir#indent#handle_inside_block()*
+elixir#indent#handle_inside_block({context})
+	TODO
+
+				*elixir#indent#handle_inside_generic_block()*
+elixir#indent#handle_inside_generic_block({context})
+	TODO
+
+elixir#util#get_filename({word})	*elixir#util#get_filename({word})*
+	TODO
+
+
+------------------------------------------------------------------------------
+KEY MAPPINGS					*elixir-key-mappings*
+
+TODO
+
+
+
+==============================================================================
+SETTINGS					*elixir-settings*
+
+					*g:eelixir_default_subtype*
+	TODO
+
+					*g:elixir_indent_debug*
+	TODO
+
+					*g:elixir_indent_max_lookbehind*
+	TODO
+
+					*g:elixir_use_markdown_for_docs*
+	TODO
+
+					*g:path*
+	TODO
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

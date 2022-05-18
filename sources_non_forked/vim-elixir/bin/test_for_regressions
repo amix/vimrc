@@ -1,0 +1,3 @@
+#! /usr/bin/env sh
+rm -rf tmp
+cat bin/projects_to_test.txt | xargs -n 1 -I{} sh -c 'git clone -q git@github.com:{}.git tmp && echo "Testing directory: {}..." && bin/test_directory tmp && rm -rf tmp'

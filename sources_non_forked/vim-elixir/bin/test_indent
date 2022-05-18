@@ -1,0 +1,57 @@
+#! /usr/bin/env ruby
+require 'bundler/setup'
+require 'vimrunner'
+require 'diffy'
+require 'fileutils'
+
+dir = File.expand_path('..', __dir__)
+plugin = 'ftdetect/elixir.vim'
+
+def bm
+  t1 = Time.now
+  yield
+  Time.now - t1
+end
+
+def detect_change(f)
+  pre = File.read(f)
+  pre = strip_doc_blocks(pre)
+  yield
+  post = File.read('test_indent.result')
+  post = strip_doc_blocks(post)
+  pre == post ? nil : Diffy::Diff.new(pre, post)
+end
+
+def strip_doc_blocks(body)
+  body.gsub(/@\w+ """.*"""/m, '')
+end
+
+
+ARGV.each do |f|
+  vim = Vimrunner.start_gvim
+  vim.add_plugin(dir, plugin)
+
+  vim.edit! f
+
+  print "## Testing #{File.expand_path(f)} ... "
+  time = nil
+  diff = detect_change(f) do
+    time = bm do
+      vim.normal 'ggVG999<<'
+      vim.normal 'gg=G'
+      vim.normal ':w! test_indent.result<CR>'
+
+      vim.normal ':q!<CR>'
+      Process.wait vim.server.pid
+    end
+  end
+
+  if diff
+    puts "error [#{time}s]"
+    puts diff
+  else
+    puts "ok [#{time}s]"
+  end
+end
+
+FileUtils.rm 'test_indent.result'

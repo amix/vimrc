@@ -1,0 +1,9 @@
+language: ruby
+rvm:
+  - 2.3.1
+before_install: sudo apt-get install vim-gtk
+before_script:
+  - "vim --version"
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+script: "grep 'focus:.*true' -R spec/indent spec/syntax && exit -1 || CI=true bin/rspec --color -b -f d"
