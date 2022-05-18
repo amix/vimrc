@@ -1,0 +1,2 @@
+2022.05.19 01:09:12 INFO  tracing is disabled for protocol LSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /home/kurtis/.vim_runtime/vimrcs/.metals/lsp.trace.json or /home/kurtis/.cache/metals/lsp.trace.json[0m
+2022.05.19 01:09:13 INFO  logging to file /home/kurtis/.vim_runtime/.metals/metals.log[0m
