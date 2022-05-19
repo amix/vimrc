@@ -39,8 +39,10 @@ setlocal nosmartindent
 " Now, set up our indentation expression and keys that trigger it.
 setlocal indentexpr=GetRubyIndent(v:lnum)
 setlocal indentkeys=0{,0},0),0],!^F,o,O,e,:,.
-setlocal indentkeys+==end,=else,=elsif,=when,=ensure,=rescue,==begin,==end
+setlocal indentkeys+==end,=else,=elsif,=when,=in\ ,=ensure,=rescue,==begin,==end
 setlocal indentkeys+==private,=protected,=public
+
+let b:undo_indent = "setlocal indentexpr< indentkeys< smartindent<"
 
 " Only define the function once.
 if exists("*GetRubyIndent")
@@ -84,7 +86,7 @@ let s:skip_expr =
 " Regex used for words that, at the start of a line, add a level of indent.
 let s:ruby_indent_keywords =
       \ '^\s*\zs\<\%(module\|class\|if\|for' .
-      \   '\|while\|until\|else\|elsif\|case\|when\|unless\|begin\|ensure\|rescue' .
+      \   '\|while\|until\|else\|elsif\|case\|when\|in\|unless\|begin\|ensure\|rescue' .
       \   '\|\%(\K\k*[!?]\?\s\+\)\=def\):\@!\>' .
       \ '\|\%([=,*/%+-]\|<<\|>>\|:\s\)\s*\zs' .
       \    '\<\%(if\|for\|while\|until\|case\|unless\|begin\):\@!\>'
@@ -94,7 +96,7 @@ let s:ruby_endless_def = '\<def\s\+\k\+[!?]\=\%((.*)\|\s\)\s*='
 
 " Regex used for words that, at the start of a line, remove a level of indent.
 let s:ruby_deindent_keywords =
-      \ '^\s*\zs\<\%(ensure\|else\|rescue\|elsif\|when\|end\):\@!\>'
+      \ '^\s*\zs\<\%(ensure\|else\|rescue\|elsif\|when\|in\|end\):\@!\>'
 
 " Regex that defines the start-match for the 'end' keyword.
 "let s:end_start_regex = '\%(^\|[^.]\)\<\%(module\|class\|def\|if\|for\|while\|until\|case\|unless\|begin\|do\)\>'
@@ -106,7 +108,7 @@ let s:end_start_regex =
       \ '\|\%(^\|[^.:@$]\)\@<=\<do:\@!\>'
 
 " Regex that defines the middle-match for the 'end' keyword.
-let s:end_middle_regex = '\<\%(ensure\|else\|\%(\%(^\|;\)\s*\)\@<=\<rescue:\@!\>\|when\|elsif\):\@!\>'
+let s:end_middle_regex = '\<\%(ensure\|else\|\%(\%(^\|;\)\s*\)\@<=\<rescue:\@!\>\|when\|\%(\%(^\|;\)\s*\)\@<=\<in\|elsif\):\@!\>'
 
 " Regex that defines the end-match for the 'end' keyword.
 let s:end_end_regex = '\%(^\|[^.:@$]\)\@<=\<end:\@!\>'
