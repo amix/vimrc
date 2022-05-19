@@ -1,0 +1,48 @@
+{
+  "name": "markdown-preview",
+  "version": "0.0.10",
+  "description": "markdown preview plugin for (neo)vim",
+  "bin": "./app/server.js",
+  "repository": "https://github.com/iamcco/markdown-preview.nvim.git",
+  "author": "年糕小豆汤 <ooiss@qq.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "watch": "tsc -w -p ./",
+    "build-app": "cd app && rm -rf ./.next && next build && next export",
+    "build-lib": "tsc -p ./",
+    "build": "tsc -p ./ && cd app && rm -rf ./.next && next build && next export && yarn && pkg --targets node16-linux-x64,node16-macos-x64,node16-win-x64 --out-path ./bin . && rm -rf ./node_modules ./.next"
+  },
+  "dependencies": {
+    "@chemzqm/neovim": "^5.7.9",
+    "chart.js": "^2.7.3",
+    "highlight.js": "^10.4.1",
+    "log4js": "^6.4.0",
+    "markdown-it": "^12.3.2",
+    "markdown-it-anchor": "^5.2.4",
+    "markdown-it-deflist": "^2.0.3",
+    "markdown-it-emoji": "^1.4.0",
+    "markdown-it-footnote": "^3.0.1",
+    "markdown-it-task-lists": "^2.1.1",
+    "markdown-it-toc-done-right": "^4.0.1",
+    "md-it-meta": "^0.0.2",
+    "msgpack-lite": "^0.1.26",
+    "next": "^7.0.2",
+    "next-routes": "^1.4.2",
+    "plantuml-encoder": "^1.4.0",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "16",
+    "pkg": "^5.6.0",
+    "prettier": "^2.6.2",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.3.0",
+    "typescript": "^4.6.4",
+    "yuuko-tsconfig": "^1.0.0"
+  }
+}

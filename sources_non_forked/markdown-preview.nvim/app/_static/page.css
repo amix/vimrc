@@ -1,0 +1,76 @@
+html,body,#__next,main {
+  min-height: 100vh;
+  margin: 0;
+}
+
+:root {
+  --foreground-color: #24292e;
+  --background-color: #f6f8fa;
+  --border-color: #d1d5da;
+}
+
+body {
+  --secondary-background-color: #f6f8fa;
+}
+
+[data-theme="dark"] {
+  --foreground-color: #c9d1d9;
+  --background-color: #0d1117;
+  --border-color: #30363d;
+  --secondary-background-color: #181a1b;
+}
+
+main {
+  background-color: var(--secondary-background-color);
+}
+
+#toggle-theme {
+  float: left;
+  vertical-align: middle;
+  height: 24px;
+  font-size: 14px;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+#toggle-theme input,
+#toggle-theme span {
+  vertical-align: middle;
+}
+
+#page-ctn {
+  margin: 0 auto;
+  max-width: 900px;
+  color: var(--foreground-color);
+}
+
+#page-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  background-color: var(--background-color);
+  border-color: var(--border-color);
+  border-style: solid;
+  border-width: 1px 1px 0;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  line-height: 24px;
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+#page-header svg {
+  display: inline-block;
+  margin-right: 5px;
+  overflow: hidden;
+  fill: currentColor;
+}
+
+#page-header h3 {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-right: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}

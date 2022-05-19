@@ -1,0 +1,16 @@
+{
+  "name": "markdown-preview",
+  "version": "0.0.1",
+  "description": "markdown preview plugin for (neo)vim",
+  "bin": "./index.js",
+  "repository": "https://github.com/iamcco/markdown-preview.nvim.git",
+  "author": "年糕小豆汤 <ooiss@qq.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "log4js": "6.4.0",
+    "@chemzqm/neovim": "^5.7.9",
+    "socket.io": "2.4.0",
+    "tslib": "1.9.3"
+  }
+}
