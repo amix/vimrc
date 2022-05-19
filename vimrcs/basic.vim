@@ -147,11 +147,13 @@ if $COLORTERM == 'gnome-terminal'
 endif
 
 try
-    colorscheme desert
+    let ayucolor="dark"
+    colorscheme ayu
 catch
 endtry
 
 set background=dark
+set termguicolors
 
 " Set extra options when running in GUI mode
 if has("gui_running")
