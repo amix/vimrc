@@ -2,7 +2,7 @@
 
 Author:  Gregory L. Dietsche <https://www.gregd.org/>
 License: MIT
-Version: 3.1.1
+Version: 3.2.1
 
 INTRODUCTION                                    *vim-lastplace-introduction*
 
@@ -23,7 +23,7 @@ By default it is set to:
 
         let g:lastplace_ignore_buftype = "quickfix,nofile,help"
 
-Folds are automatically opened when jumping to the last edit position. If you
+Closed folds are automatically opened when jumping to the last edit position. If you
 do not like this behavior you can disable it by putting this in your vimrc:
 
         let g:lastplace_open_folds = 0
