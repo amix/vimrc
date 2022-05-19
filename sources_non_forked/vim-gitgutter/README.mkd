@@ -18,6 +18,7 @@ Features:
 * Stage partial hunks.
 * Provides a hunk text object.
 * Diffs against index (default) or any commit.
+* Heeds git's "assume unchanged" bit.
 * Allows folding all unchanged text.
 * Provides fold text showing whether folded lines have been changed.
 * Can load all hunk locations into quickfix list or the current window's location list.
@@ -238,6 +239,11 @@ Finally, you can force vim-gitgutter to update its signs across all visible buff
 See the customisation section below for how to change the defaults.
 
 
+### Vimdiff
+
+Use the `GitGutterDiffOrig` command to open a vimdiff view of the current buffer, respecting `g:gitgutter_diff_relative_to` and `:gitgutter_diff_base`.
+
+
 ### Folding
 
 Use the `GitGutterFold` command to fold all unchanged lines, leaving just the hunks visible.  Use `zr` to unfold 3 lines of context above and below a hunk.
@@ -299,6 +305,7 @@ You can customise:
 * Whether to clobber or preserve non-gitgutter signs
 * The priority of gitgutter's signs.
 * Whether to use a floating/popup window for hunk previews
+* The appearance of a floating/popup window for hunk previews
 * Whether to populate the quickfix list or a location list with all hunks
 
 Please note that vim-gitgutter won't override any colours or highlights you've set in your colorscheme.
@@ -517,6 +524,11 @@ let g:gitgutter_async = 0
 #### To use floating/popup windows for hunk previews
 
 Add `let g:gitgutter_preview_win_floating = 1` to your `~/.vimrc`.  Note that on Vim this prevents you staging (partial) hunks via the preview window.
+
+
+#### The appearance of a floating/popup window for hunk previews
+
+Set `g:gitgutter_floating_window_options` to a dictionary of the options you want.  This dictionary is passed directly to `popup_create()` (Vim) / `nvim_open_win()` (Neovim).
 
 
 #### To load all hunks into the current window's location list instead of the quickfix list

@@ -205,6 +205,20 @@ function Test_filename_with_square_brackets()
 endfunction
 
 
+function Test_filename_with_space()
+  call system('touch fix\ ture.txt && git add fix\ ture.txt')
+  edit fix\ ture.txt
+  normal ggo*
+  call s:trigger_gitgutter()
+
+  let expected = [
+        \ {'lnum': 1, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 2, 'name': 'GitGutterLineAdded'}
+        \ ]
+  call s:assert_signs(expected, 'fix\ ture.txt')
+endfunction
+
+
 function Test_filename_leading_dash()
   call system('touch -- -fixture.txt && git add -- -fixture.txt')
   edit -fixture.txt
@@ -835,6 +849,9 @@ endfunction
 
 
 function Test_fix_file_references()
+  let sid = matchstr(execute('filter autoload/gitgutter/hunk.vim scriptnames'), '\d\+')
+  let FixFileReferences = function("<SNR>".sid."_fix_file_references")
+
   " No special characters
   let hunk_diff = join([
         \ 'diff --git a/fixture.txt b/fixture.txt',
@@ -855,7 +872,7 @@ function Test_fix_file_references()
         \ '+x'
         \ ], "\n")."\n"
 
-  call assert_equal(expected, gitgutter#hunk#fix_file_references(filepath, hunk_diff))
+  call assert_equal(expected, FixFileReferences(filepath, hunk_diff))
 
   " diff.mnemonicPrefix; spaces in filename
   let hunk_diff = join([
@@ -877,7 +894,7 @@ function Test_fix_file_references()
         \ '+x'
         \ ], "\n")."\n"
 
-  call assert_equal(expected, gitgutter#hunk#fix_file_references(filepath, hunk_diff))
+  call assert_equal(expected, FixFileReferences(filepath, hunk_diff))
 
   " Backslashes in filename; quotation marks
   let hunk_diff = join([
@@ -899,7 +916,7 @@ function Test_fix_file_references()
         \ '+x'
         \ ], "\n")."\n"
 
-  call assert_equal(expected, gitgutter#hunk#fix_file_references(filepath, hunk_diff))
+  call assert_equal(expected, FixFileReferences(filepath, hunk_diff))
 endfunction
 
 
@@ -975,39 +992,45 @@ endfunction
 
 
 function Test_common_prefix()
+  let sid = matchstr(execute('filter autoload/gitgutter/diff_highlight.vim scriptnames'), '\d\+')
+  let CommonPrefix = function("<SNR>".sid."_common_prefix")
+
   " zero length
-  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('', 'foo'))
-  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('foo', ''))
+  call assert_equal(-1, CommonPrefix('', 'foo'))
+  call assert_equal(-1, CommonPrefix('foo', ''))
   " nothing in common
-  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+pqrst'))
-  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('abcde', 'pqrst'))
+  call assert_equal(-1, CommonPrefix('-abcde', '+pqrst'))
+  call assert_equal(-1, CommonPrefix('abcde', 'pqrst'))
   " something in common
-  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+abcpq'))
-  call assert_equal(2, gitgutter#diff_highlight#common_prefix('abcde', 'abcpq'))
-  call assert_equal(0, gitgutter#diff_highlight#common_prefix('abc', 'apq'))
+  call assert_equal(-1, CommonPrefix('-abcde', '+abcpq'))
+  call assert_equal(2, CommonPrefix('abcde', 'abcpq'))
+  call assert_equal(0, CommonPrefix('abc', 'apq'))
   " everything in common
-  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+abcde'))
-  call assert_equal(4, gitgutter#diff_highlight#common_prefix('abcde', 'abcde'))
+  call assert_equal(-1, CommonPrefix('-abcde', '+abcde'))
+  call assert_equal(4, CommonPrefix('abcde', 'abcde'))
   " different lengths
-  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+abx'))
-  call assert_equal(1, gitgutter#diff_highlight#common_prefix('abcde', 'abx'))
-  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abx',   '+abcde'))
-  call assert_equal(1, gitgutter#diff_highlight#common_prefix('abx',   'abcde'))
-  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+abc'))
-  call assert_equal(2, gitgutter#diff_highlight#common_prefix('abcde', 'abc'))
+  call assert_equal(-1, CommonPrefix('-abcde', '+abx'))
+  call assert_equal(1, CommonPrefix('abcde', 'abx'))
+  call assert_equal(-1, CommonPrefix('-abx',   '+abcde'))
+  call assert_equal(1, CommonPrefix('abx',   'abcde'))
+  call assert_equal(-1, CommonPrefix('-abcde', '+abc'))
+  call assert_equal(2, CommonPrefix('abcde', 'abc'))
 endfunction
 
 
 function Test_common_suffix()
+  let sid = matchstr(execute('filter autoload/gitgutter/diff_highlight.vim scriptnames'), '\d\+')
+  let CommonSuffix = function("<SNR>".sid."_common_suffix")
+
   " nothing in common
-  call assert_equal([6,6], gitgutter#diff_highlight#common_suffix('-abcde', '+pqrst', 0))
+  call assert_equal([6,6], CommonSuffix('-abcde', '+pqrst', 0))
   " something in common
-  call assert_equal([3,3], gitgutter#diff_highlight#common_suffix('-abcde', '+pqcde', 0))
+  call assert_equal([3,3], CommonSuffix('-abcde', '+pqcde', 0))
   " everything in common
-  call assert_equal([5,5], gitgutter#diff_highlight#common_suffix('-abcde', '+abcde', 5))
+  call assert_equal([5,5], CommonSuffix('-abcde', '+abcde', 5))
   " different lengths
-  call assert_equal([4,2], gitgutter#diff_highlight#common_suffix('-abcde', '+xde', 0))
-  call assert_equal([2,4], gitgutter#diff_highlight#common_suffix('-xde',   '+abcde', 0))
+  call assert_equal([4,2], CommonSuffix('-abcde', '+xde', 0))
+  call assert_equal([2,4], CommonSuffix('-xde',   '+abcde', 0))
 endfunction
 
 
@@ -1096,18 +1119,24 @@ endfunction
 
 
 function Test_lcs()
-  call assert_equal('', gitgutter#diff_highlight#lcs('', 'foo'))
-  call assert_equal('', gitgutter#diff_highlight#lcs('foo', ''))
-  call assert_equal('bar', gitgutter#diff_highlight#lcs('foobarbaz', 'bbart'))
-  call assert_equal('transaction', gitgutter#diff_highlight#lcs('transaction.unexplained_amount', 'amount(transaction)'))
+  let sid = matchstr(execute('filter autoload/gitgutter/diff_highlight.vim scriptnames'), '\d\+')
+  let Lcs = function("<SNR>".sid."_lcs")
+
+  call assert_equal('', Lcs('', 'foo'))
+  call assert_equal('', Lcs('foo', ''))
+  call assert_equal('bar', Lcs('foobarbaz', 'bbart'))
+  call assert_equal('transaction', Lcs('transaction.unexplained_amount', 'amount(transaction)'))
 endfunction
 
 
 function Test_split()
-  call assert_equal(['foo', 'baz'], gitgutter#diff_highlight#split('foobarbaz', 'bar'))
-  call assert_equal(['', 'barbaz'], gitgutter#diff_highlight#split('foobarbaz', 'foo'))
-  call assert_equal(['foobar', ''], gitgutter#diff_highlight#split('foobarbaz', 'baz'))
-  call assert_equal(['1', '2'], gitgutter#diff_highlight#split('1~2', '~'))
+  let sid = matchstr(execute('filter autoload/gitgutter/diff_highlight.vim scriptnames'), '\d\+')
+  let Split = function("<SNR>".sid."_split")
+
+  call assert_equal(['foo', 'baz'], Split('foobarbaz', 'bar'))
+  call assert_equal(['', 'barbaz'], Split('foobarbaz', 'foo'))
+  call assert_equal(['foobar', ''], Split('foobarbaz', 'baz'))
+  call assert_equal(['1', '2'], Split('1~2', '~'))
 endfunction
 
 
@@ -1125,4 +1154,13 @@ function Test_foldtext()
   let v:foldend = 3
   call assert_equal(0, gitgutter#fold#is_changed())
   call assert_equal('+-  3 lines: a', gitgutter#fold#foldtext())
+endfunction
+
+
+function Test_assume_unchanged()
+  call system("git update-index --assume-unchanged fixture.txt")
+  unlet b:gitgutter.path  " it was already set when fixture.txt was loaded in SetUp()
+  normal ggo*
+  call s:trigger_gitgutter()
+  call s:assert_signs([], 'fixture.txt')
 endfunction

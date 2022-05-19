@@ -93,6 +93,15 @@ Commands for turning vim-gitgutter on and off:~
                                                    *gitgutter-:GitGutterToggle*
 :GitGutterToggle        Toggle vim-gitgutter on or off for all buffers.
 
+                                            *gitgutter-:GitGutterBufferDisable*
+:GitGutterBufferDisable Turn vim-gitgutter off for current buffer.
+
+                                             *gitgutter-:GitGutterBufferEnable*
+:GitGutterBufferEnable  Turn vim-gitgutter on for current buffer.
+
+                                             *gitgutter-:GitGutterBufferToggle*
+:GitGutterBufferToggle  Toggle vim-gitgutter on or off for current buffer.
+
                                                          *gitgutter-:GitGutter*
 :GitGutter              Update signs for the current buffer.  You shouldn't
                         need to run this.
@@ -210,6 +219,12 @@ Commands for folds:~
 
                                                      *gitgutter-:GitGutterFold*
 :GitGutterFold          Fold all unchanged lines.  Execute again to undo.
+
+
+Other commands:~
+
+                                                 *gitgutter-:GitGutterDiffOrig*
+:GitGutterDiffOrig      Similar to |:DiffOrig| but shows gitgutter's diff.
 
 
 ===============================================================================
@@ -348,6 +363,7 @@ Hunk jumping:~
 Hunk previews:~
 
     |g:gitgutter_preview_win_floating|
+    |g:gitgutter_floating_window_options|
     |g:gitgutter_close_preview_on_escape|
 
 Terminal:~
@@ -507,6 +523,29 @@ Default: 0 (Vim)
 Whether to use floating/popup windows for hunk previews.  Note that if you use
 popup windows on Vim you will not be able to stage partial hunks via the
 preview window.
+
+                                          *g:gitgutter_floating_window_options*
+Default:
+>
+    " Vim
+    {
+        \ 'line': 'cursor+1',
+        \ 'col': 'cursor',
+        \ 'moved': 'any'
+    }
+
+    " Neovim
+    {
+        \ 'relative': 'cursor',
+        \ 'row': 1,
+        \ 'col': 0,
+        \ 'width': 42,
+        \ 'height': &previewheight,
+        \ 'style': 'minimal'
+    }
+<
+This dictionary is passed directly to |popup_create()| (Vim) or
+|nvim_open_win()| (Neovim).
 
                                           *g:gitgutter_close_preview_on_escape*
 Default: 0

@@ -150,12 +150,6 @@ function! s:lcs(s1, s2)
   return a:s1[endindex - maxlength + 1 : endindex]
 endfunction
 
-if $VIM_GITGUTTER_TEST
-  function! gitgutter#diff_highlight#lcs(s1, s2)
-    return s:lcs(a:s1, a:s2)
-  endfunction
-endif
-
 
 " Returns 0-based index of last character of common prefix
 " If there is no common prefix, returns -1.
@@ -175,12 +169,6 @@ function! s:common_prefix(a, b)
   return i
 endfunction
 
-if $VIM_GITGUTTER_TEST
-  function! gitgutter#diff_highlight#common_prefix(a, b)
-    return s:common_prefix(a:a, a:b)
-  endfunction
-endif
-
 
 " Returns 0-based indices of start of common suffix
 "
@@ -199,12 +187,6 @@ function! s:common_suffix(a, b, start)
   return [sa+1, sb+1]
 endfunction
 
-if $VIM_GITGUTTER_TEST
-  function! gitgutter#diff_highlight#common_suffix(a, b, start)
-    return s:common_suffix(a:a, a:b, a:start)
-  endfunction
-endif
-
 
 " Split a string on another string.
 " Assumes 1 occurrence of the delimiter.
@@ -217,9 +199,3 @@ function! s:split(str, delimiter)
 
   return [a:str[:i-1], a:str[i+len(a:delimiter):]]
 endfunction
-
-if $VIM_GITGUTTER_TEST
-  function! gitgutter#diff_highlight#split(str, delimiter)
-    return s:split(a:str, a:delimiter)
-  endfunction
-endif

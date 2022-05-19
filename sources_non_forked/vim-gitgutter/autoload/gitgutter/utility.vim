@@ -48,8 +48,7 @@ endfunction
 " Returns truthy when the buffer's file should be processed; and falsey when it shouldn't.
 " This function does not and should not make any system calls.
 function! gitgutter#utility#is_active(bufnr) abort
-  return g:gitgutter_enabled &&
-        \ gitgutter#utility#getbufvar(a:bufnr, 'enabled', 1) &&
+  return gitgutter#utility#getbufvar(a:bufnr, 'enabled') &&
         \ !pumvisible() &&
         \ s:is_file_buffer(a:bufnr) &&
         \ s:exists_file(a:bufnr) &&
@@ -109,6 +108,7 @@ endfunction
 " * non-empty string - path
 " *               -1 - pending
 " *               -2 - not tracked by git
+" *               -3 - assume unchanged
 function! gitgutter#utility#repo_path(bufnr, shellesc) abort
   let p = gitgutter#utility#getbufvar(a:bufnr, 'path', '')
   return a:shellesc ? gitgutter#utility#shellescape(p) : p
@@ -117,9 +117,14 @@ endfunction
 
 let s:set_path_handler = {}
 
-function! s:set_path_handler.out(buffer, path) abort
-  let path = s:strip_trailing_new_line(a:path)
-  call gitgutter#utility#setbufvar(a:buffer, 'path', path)
+function! s:set_path_handler.out(buffer, listing) abort
+  let listing = s:strip_trailing_new_line(a:listing)
+  let [status, path] = [listing[0], listing[2:]]
+  if status =~# '[a-z]'
+    call gitgutter#utility#setbufvar(a:buffer, 'path', -3)
+  else
+    call gitgutter#utility#setbufvar(a:buffer, 'path', path)
+  endif
 
   if type(self.continuation) == type(function('tr'))
     call self.continuation()
@@ -141,9 +146,13 @@ function! gitgutter#utility#set_repo_path(bufnr, continuation) abort
   " * non-empty string - path
   " *               -1 - pending
   " *               -2 - not tracked by git
+  " *               -3 - assume unchanged
 
   call gitgutter#utility#setbufvar(a:bufnr, 'path', -1)
-  let cmd = gitgutter#utility#cd_cmd(a:bufnr, g:gitgutter_git_executable.' '.g:gitgutter_git_args.' ls-files --error-unmatch --full-name -z -- '.gitgutter#utility#shellescape(s:filename(a:bufnr)))
+  let cmd = gitgutter#utility#cd_cmd(a:bufnr,
+        \ g:gitgutter_git_executable.' '.g:gitgutter_git_args.
+        \ ' ls-files -v --error-unmatch --full-name -z -- '.
+        \ gitgutter#utility#shellescape(s:filename(a:bufnr)))
 
   if g:gitgutter_async && gitgutter#async#available() && !has('vim_starting')
     let handler = copy(s:set_path_handler)
@@ -152,11 +161,19 @@ function! gitgutter#utility#set_repo_path(bufnr, continuation) abort
     return 'async'
   endif
 
-  let path = gitgutter#utility#system(cmd)
+  let listing = gitgutter#utility#system(cmd)
+
   if v:shell_error
     call gitgutter#utility#setbufvar(a:bufnr, 'path', -2)
+    return
+  endif
+
+  let listing = s:strip_trailing_new_line(listing)
+  let [status, path] = [listing[0], listing[2:]]
+  if status =~# '[a-z]'
+    call gitgutter#utility#setbufvar(a:bufnr, 'path', -3)
   else
-    call gitgutter#utility#setbufvar(a:bufnr, 'path', s:strip_trailing_new_line(path))
+    call gitgutter#utility#setbufvar(a:bufnr, 'path', path)
   endif
 endfunction
 
