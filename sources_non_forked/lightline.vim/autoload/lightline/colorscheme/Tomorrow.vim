@@ -2,8 +2,9 @@
 " Filename: autoload/lightline/colorscheme/Tomorrow.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2013/09/07 12:22:37.
+" Last Change: 2022/03/15 23:57:37.
 " =============================================================================
+
 let s:base03 = '#fafafa'
 let s:base023 = '#dfdfdf'
 let s:base02 = '#c8c8c8'

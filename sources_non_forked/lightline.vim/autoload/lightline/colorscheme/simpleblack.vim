@@ -2,8 +2,9 @@
 " Filename: autoload/lightline/colorscheme/simpleblack.vim
 " Author: lucasprag
 " License: MIT License
-" Last Change: 2019/10/28 22:54:01.
+" Last Change: 2022/03/15 23:58:35.
 " =============================================================================
+
 let s:black = [ '#000000', '0' ]
 let s:black2 = [ '#121212', '233' ]
 
@@ -21,7 +22,6 @@ let s:green = [ '#57ba37', '71' ]
 let s:gold = [ '#f0d50c', '220' ]
 let s:red = [ '#d70000', '160' ]
 let s:none = [ 'NONE', 'NONE' ]
-
 
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 let s:p.normal.left = [ [ s:black, s:blue ], [ s:gray4, s:black2 ] ]
