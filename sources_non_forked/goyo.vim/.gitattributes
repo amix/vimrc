@@ -1,0 +1,6 @@
+.gitattributes export-ignore
+.gitignore     export-ignore
+doc/tags       export-ignore
+*.md           export-ignore
+zip            export-ignore
+test/*         export-ignore
