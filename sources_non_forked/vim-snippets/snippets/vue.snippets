@@ -50,7 +50,7 @@ snippet vactions
 		${1:updateValue}({commit}, ${2:payload}) {
 			commit($1, $2);
 		}
-	}
+	},
 
 # Add in js animation hooks
 snippet vanim:js:el
@@ -106,14 +106,33 @@ snippet vdata
 		return {
 			${1:key}: ${2:value}
 		};
-	}
+	},
+
+snippet vmounted
+	mounted() {
+		console.log('mounted');
+	},
+
+snippet vmethods
+	methods: {
+		${1:method}() {
+			console.log('method');
+		}
+	},
+
+snippet vcomputed
+	computed: {
+		${1:fnName}() {
+			return;
+		}
+	},
 
 snippet vfilter
 	filters: {
 		${1:fnName}: function(${2:value}) {
 			return;
 		}
-	}
+	},
 
 snippet vfor
 	<div v-for="${1:item} in ${2:items}" :key="$1.id">
@@ -125,7 +144,7 @@ snippet vgetters
 		${1:value}: state => {
 			return state.$1;
 		}
-	}
+	},
 
 snippet vimport
 	import ${1:New} from './components/$1.vue';
@@ -152,7 +171,7 @@ snippet vmutations
 		${1:updateValue}(state, ${3:payload}) => {
 			state.${2:value} = $3;
 		}
-	}
+	},
 
 snippet vprops:d
 	${1:propName}: {

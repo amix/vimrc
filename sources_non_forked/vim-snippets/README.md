@@ -157,7 +157,7 @@ Until further work is done on `vim-snipmate`, please don't add folding markers
 into snippets. `vim-snipmate` has some comments about how to patch all snippets
 on the fly adding those.
 
-Currently all snippets from UltiSnips have been put into UltiSnips - some work
+Currently all snippets from UltiSnips have been put into `/UltiSnips` - some work
 on merging should be done (dropping duplicates etc). Also see engines section above.
 
 Related repositories

@@ -1,0 +1,195 @@
+snippet scode Start basic code for assembly
+	.data
+
+
+	.text
+
+
+	.global main
+
+
+	main:
+
+
+snippet scodes Start basic code for assembly with _start label
+	.data
+
+
+	.text
+
+
+	.globl _start
+
+
+	_start:
+
+
+snippet lo Long
+	$1: .long $2
+snippet wo Word
+	$1: .word $2
+snippet by Byte
+	$1: .byte $2
+snippet sp Space
+	$1: .space $2
+snippet ai Ascii
+	$1: .ascii "$2"
+snippet az Asciz
+	$1: .asciz "$2"
+snippet ze Zero
+	$1: .zero "$2"
+snippet qu Quad
+	$1: .quad "$2"
+snippet si Single
+	$1: .single "$2"
+snippet do Double
+	$1: .single "$2"
+snippet fl Float
+	$1: .single "$2"
+snippet oc Octa
+	$1: .single "$2"
+snippet sh Short
+	$1: .single "$2"
+snippet exit0 Exit without error
+	movl \$1, %eax
+	xorl %ebx, %ebx
+	int \$0x80
+
+snippet exit Exit with error
+	mov \$1, %eax
+	mov $1, %ebx
+	int \$0x80
+
+snippet readfstdin Read fixed length text from stdin
+	mov \$3, %eax
+	mov \$2, %ebx
+	mov $1, %ecx
+	mov $2, %edx
+	int \$0x80
+
+snippet writestdout Write text to stdout
+	mov \$4, %eax
+	mov \$1, %ebx
+	mov $1, %ecx
+	mov $2, %edx
+	int \$0x80
+
+snippet writestderr Write text to stderr
+	mov \$4, %eax
+	mov \$2, %ebx
+	mov $1, %ecx
+	mov $2, %edx
+	int \$0x80
+
+snippet * Multiplication
+	mov $1, %eax
+	mul $2
+
+snippet / Division
+	mov $1, %eax
+	div $2
+
+snippet jmpl Conditional lower jump
+	cmp $1, $2
+	jl $3 
+
+snippet jmple Conditional lower or equal jump
+	cmp $1, $2
+	jle $3 
+
+snippet jmpe Conditional equal jump
+	cmp $1, $2
+	je $3 
+
+snippet jmpn Conditional not equal jump
+	cmp $1, $2
+	jn $3
+
+snippet jmpg Conditional greater jump
+	cmp $1, $2
+	jg $3
+
+snippet jmpge Conditional greater or equal jump
+	cmp $1, $2
+	je $3
+
+snippet loopn Loop n times
+	mov $1, %ecx
+
+	et_for:
+		$2
+
+		loop et_for
+
+snippet loopnn Loop n-1 times
+	mov $1, %ecx
+	dec %ecx
+
+	et_for:
+		$2
+
+		loop et_for
+
+snippet loopv Loop through a vector
+	lea $1, %edi
+	xor %ecx, %ecx
+
+	et_for:
+		cmp %ecx, $2
+		je $3
+
+		$4
+
+		inc %ecx
+		jmp et_for
+
+snippet mul Multiply
+	xor %edx, %edx
+	mov $1, %eax
+	mul $2
+snippet mul64 Multiply numbers greater than 2^32
+	mov $1, %edx
+	mov $2, %eax
+	mul $3
+snippet div Divide
+	xor %edx, %edx
+	mov $1, %eax
+	div $2
+snippet div64 Divide numbers greater than 2^32
+	mov $1, %edx
+	mov $2, %eax
+	div $3
+snippet pr Call printf
+	pushl $1
+	call printf
+	popl $2
+snippet sc Call scanf
+	pushl $1
+	call scanf
+	popl $2
+snippet mindex Current index from a matrix
+	xor %edx, %edx
+	movl $1, %eax
+	mull $2
+	addl $3, %eax
+snippet ffl Call fflush
+	pushl \$0
+	call fflush
+	popl $1
+snippet at Call atoi
+	pushl $1
+	call atoi
+	popl $2
+snippet len Call strlen
+	pushl $1
+	call strlen
+	popl $2
+snippet proc Basic procedure
+	$1:
+	pushl %ebp
+	movl %esp, %ebp
+
+	$2
+
+	popl %ebp
+	ret

@@ -1245,3 +1245,19 @@ snippet ::a
 	::after
 snippet ::b
 	::before
+snippet var
+	var(${0:${VISUAL}});
+snippet vard
+	var(${0}, ${1:${VISUAL});
+snippet host 
+	:host {
+		${1:${VISUAL}}
+	}
+snippet host(
+	:host(${1}) {
+		${2:${VISUAL}}
+	}
+snippet part {
+	::part(${1})
+		${2:${VISUAL}}
+	}

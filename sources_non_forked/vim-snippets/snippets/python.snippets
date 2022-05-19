@@ -88,11 +88,11 @@ snippet property
 	@property
 	def ${1:foo}(self) -> ${2:type}:
 		"""${3:doc}"""
-		return self._${1:foo}
+		return self._$1
 
-	@${1:foo}.setter
-	def ${1:foo}(self, value: ${2:type}):
-		self._${1:foo} = value
+	@$1.setter
+	def $1(self, value: $2):
+		self._$1 = value
 
 # Ifs
 snippet if
@@ -159,6 +159,10 @@ snippet ifmain
 # __magic__
 snippet _
 	__${1:init}__
+
+# debugger breakpoint
+snippet br
+	breakpoint()
 # python debugger (pdb)
 snippet pdb
 	__import__('pdb').set_trace()

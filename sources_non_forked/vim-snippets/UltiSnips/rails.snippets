@@ -799,28 +799,6 @@ snippet xput "xhr put"
 xhr :put, :${1:update}, id: ${2:1}, ${3:object}: { $4 }$0
 endsnippet
 
-snippet sweeper "Create sweeper class"
-class ${1:Model}Sweeper < ActionController::Caching::Sweeper
-	observe ${1:Model}
-
-	def after_save(${1/./\l$0/})
-		expire_cache(${1/./\l$0/})
-	end
-
-	def after_destroy(${1/./\l$0/})
-		expire_cache(${1/./\l$0/})
-	end
-
-	private
-
-		def expire_cache(${1/./\l$0/})
-			${0:expire_page ${1/./\l$0/}s_path
-			expire_page ${1/./\l$0/}_path(${1/./\l$0/})}
-		end
-
-end
-endsnippet
-
 snippet col "collection routes"
 collection do
 	${1:get :${2:action}}
