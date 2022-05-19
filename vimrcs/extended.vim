@@ -29,7 +29,6 @@ set guioptions-=L
 
 " Colorscheme
 set background=dark
-let ayucolor="mirage"
 colorscheme ayu
 
 
