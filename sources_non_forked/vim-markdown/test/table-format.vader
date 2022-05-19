@@ -30,6 +30,19 @@ Expect (table is not modified):
   |---|---|
   | c | d |
 
+Given markdown (indented table);
+  | a | b |
+  |---|---|
+  | c | d |
+
+Execute (format well formatted, indented table):
+  TableFormat
+
+Expect (table is not modified):
+    | a | b |
+    |---|---|
+    | c | d |
+
 Given markdown;
 | left |right|  center  ||
 | :- | --: |:---:|:|
@@ -42,3 +55,16 @@ Expect (preserve colons to align text):
   | left | right | center |   |
   |:-----|------:|:------:|:--|
   | left | right | center |   |
+
+Given markdown (indented table with colons);
+  | left |right|  center  ||
+  | :- | --: |:---:|:|
+  | left |right|  center  ||
+
+Execute (format indented table with colons):
+  TableFormat
+
+Expect (preserve colons to align text):
+    | left | right | center |   |
+    |:-----|------:|:------:|:--|
+    | left | right | center |   |
