@@ -241,22 +241,8 @@ OPTIONS                                                         *ctrlp-options*
 <
 注意: 当命令使用 |g:ctrlp_user_command| 定义时该选项无效。
 
-                                                           *'ctrlp-wildignore'*
-你可以使用Vim的 |'wildignore'| 来从结果集中排序文件或目录。
-例子: >
-  " 排除版本控制文件
-  set wildignore+=*/.git/*,*/.hg/*,*/.svn/*        " Linux/MacOSX
-  set wildignore+=*\\.git\\*,*\\.hg\\*,*\\.svn\\*  " Windows ('noshellslash')
-<
-注意 #1: 每个目录设置前的字符 `*/` 是必须的。
-
-注意 #2: |wildignore| 影响 |expand()| ， |globpath()| 和 |glob()| 的结果，这些函数被很
-多插件用来在系统中执行查找。（例如和版本控制系统有关的插件在查找.git/、.hg/等，
-一些其他插件用来在Windows上查找外部的*.exe工具），所以要修改 |wildignore| 时请先
-考虑清楚。
-
                                                       *'g:ctrlp_custom_ignore'*
-作为对 |'wildignore'| 和 |g:ctrlp_show_hidden| 的补充，用来设置你只是想在CtrlP中隐藏的文件和目录。使用正
+除了 |g:ctrlp_show_hidden|，你可以用这个选项设置你想在CtrlP中隐藏的文件和目录。使用正
 则表达式来指定匹配模式: >
   let g:ctrlp_custom_ignore = ''
 <
@@ -274,9 +260,7 @@ OPTIONS                                                         *ctrlp-options*
     \ 'func': 'some#custom#match_function'
     \ }
 <
-注意 #1: 默认情况下， |wildignore| 和 |g:ctrlp_custom_ignore| 只在 |globpath()| 被用
-来扫描文件的情况下使用，这样这些选项在那些使用 |g:ctrlp_user_command| 定义的命
-令中不会生效。
+注意 #1: |g:ctrlp_custom_ignore| 在已经使用 |g:ctrlp_user_command| 的时候不会生效。
 
 注意 #2: 当改变选项的变量类型时，记得先 |:unlet| ，或者重启Vim来避免这个错误：
 "E706: Variable type mismatch" 。
@@ -284,6 +268,9 @@ OPTIONS                                                         *ctrlp-options*
 注意 #3: 当使用函数来忽略类型时，你必须提供CtrlP可以调用的函数的全名。建议使用
 自动加载的函数。函数必须接受两个参数，要匹配的条目和接受的类型，类型可以是目
 录、文件和链接。如果条目被忽略，函数需要返回1，反之，返回0。
+
+注意 #4: 如果设置 |g:ctrlp_use_readdir| 为0，你可以使用 Vim 的 |'wildignore'|
+来将文件和目录排除出搜索结果。
 
                                                           *'g:ctrlp_max_files'*
 扫描文件的最大数量，设置为0时不进行限制: >

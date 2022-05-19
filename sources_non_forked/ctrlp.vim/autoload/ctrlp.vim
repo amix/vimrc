@@ -95,7 +95,7 @@ let [s:pref, s:bpref, s:opts, s:new_opts, s:lc_opts] =
 	\ 'brief_prompt':          ['s:brfprt', 0],
 	\ 'match_current_file':    ['s:matchcrfile', 0],
 	\ 'match_natural_name':    ['s:matchnatural', 0],
-	\ 'compare_lim':           ['s:compare_lim', 3000],
+	\ 'compare_lim':           ['s:compare_lim', 0],
 	\ 'bufname_mod':           ['s:bufname_mod', ':t'],
 	\ 'bufpath_mod':           ['s:bufpath_mod', ':~:.:h'],
 	\ 'formatline_func':       ['s:flfunc', 's:formatline(v:val)'],
@@ -330,7 +330,7 @@ fu! s:Open()
 endf
 
 fu! s:Close()
-	cal s:async_glob_abort()
+	cal s:async_glob_abort(0)
 	cal s:buffunc(0)
 	if winnr('$') == 1
 		bw!
@@ -396,7 +396,7 @@ fu! ctrlp#files()
 		en
 		" Remove base directory
 		cal ctrlp#rmbasedir(g:ctrlp_allfiles)
-		if len(g:ctrlp_allfiles) <= s:compare_lim
+		if !s:compare_lim || len(g:ctrlp_allfiles) <= s:compare_lim
 			cal sort(g:ctrlp_allfiles, 'ctrlp#complen')
 		en
 		cal s:writecache(cafile)
@@ -425,13 +425,17 @@ fu! s:CloseCustomFuncs()
 	en
 endf
 
-if has('patch-8.2-0995')
+if has('patch-8.2-0995') && get(g:, 'ctrlp_use_readdir', 1)
 	fu! s:GlobPath(dirs, depth)
 		let entries = []
-		for e in split(a:dirs, ',')
-			sil let files = readdir(e, '1', {'sort': 'none'})
-			if !s:showhidden | cal filter(files, 'v:val[0] != "."') | en
-			let entries += map(files, 'e.s:lash.v:val')
+		let dirs = substitute(a:dirs, '\\\([%# ]\)', '\1', 'g')
+		for e in split(dirs, ',')
+			try
+				let files = readdir(e, '1', {'sort': 'none'})
+				if !s:showhidden | cal filter(files, 'v:val[0] != "."') | en
+				let entries += map(files, 'e.s:lash.v:val')
+			cat
+			endt
 		endfo
 		let [dnf, depth] = [ctrlp#dirnfile(entries), a:depth + 1]
 		if &wig != '' | cal filter(dnf[1], 'glob(v:val) != ""') | en
@@ -487,10 +491,12 @@ fu! s:async_glob_on_exit(...)
 	en
 endf
 
-fu! s:async_glob_abort()
+fu! s:async_glob_abort(upd)
 	cal s:stop_job_if_exists()
 	cal s:stop_timer_if_exists()
-	cal s:ForceUpdate()
+	if a:upd
+		cal s:ForceUpdate()
+	en
 endf
 
 fu! s:stop_timer_if_exists()
@@ -750,6 +756,9 @@ fu! s:Render(lines, pat)
 	en
 	if s:mw_order == 'btt' | cal reverse(lines) | en
 	let s:lines = copy(lines)
+	if s:nolim == 0 && len(lines) > height
+		let lines = lines[:height-1]
+	en
 	if has('patch-8.1-0') && s:flfunc ==# 's:formatline(v:val)'
 		cal map(lines, function('s:formatline2', [s:curtype()]))
 	el
@@ -1094,7 +1103,7 @@ fu! s:MapSpecs()
 	if !( exists('s:smapped') && s:smapped == s:bufnr )
 		" Correct arrow keys in terminal
 		if ( has('termresponse') && v:termresponse =~ "\<ESC>" )
-			\ || &term =~? '\vxterm|<k?vt|gnome|screen|linux|ansi|tmux|st(-[-a-z0-9]*)?(\:tc)?$'
+			\ || &term =~? '\vxterm|<k?vt|gnome|screen|linux|ansi|tmux|alacritty|st(-[-a-z0-9]*)?(\:tc)?$'
 			for each in ['\A <up>','\B <down>','\C <right>','\D <left>']
 				exe s:lcmap.' <esc>['.each
 			endfo
@@ -1151,7 +1160,7 @@ fu! s:ToggleByFname()
 endf
 
 fu! s:ToggleType(dir)
-	cal s:async_glob_abort()
+	cal s:async_glob_abort(1)
 	let max = len(g:ctrlp_ext_vars) + len(s:coretypes) - 1
 	let next = s:walker(max, s:itemtype, a:dir)
 	cal ctrlp#setlines(next)
@@ -1761,16 +1770,22 @@ fu! s:formatline2(ct, key, str)
 				let str .= printf('  %s', parts[3])
 			en
 		en
+		retu s:lineprefix.str
 	en
-	let cond = a:ct != 'buf' &&s:ispath && ( s:winw - 4 ) < s:strwidth(str)
+	let cond = s:ispath && ( s:winw - 4 ) < strchars(str)
 	retu s:lineprefix.( cond ? s:pathshorten(str) : str )
 endf
 
-
-fu! s:pathshorten(str)
-	retu matchstr(a:str, '^.\{9}').'...'
-		\ .matchstr(a:str, '.\{'.( s:winw - 16 ).'}$')
-endf
+if exists('*strchars') && exists('*strcharpart')
+	fu! s:pathshorten(str)
+		retu strcharpart(a:str, 0, 9).'...'.strcharpart(a:str, strchars(a:str) - s:winw + 16)
+	endf
+el
+	fu! s:pathshorten(str)
+		retu matchstr(a:str, '^.\{9}').'...'
+			\ .matchstr(a:str, '.\{'.( s:winw - 16 ).'}$')
+	endf
+en
 
 fu! s:offset(lines, height)
 	let s:offset = s:mw_order == 'btt' ? ( a:height - s:res_count ) : 0
@@ -2713,6 +2728,15 @@ fu! ctrlp#nosy()
 	retu !( has('syntax') && exists('g:syntax_on') )
 endf
 
+fu! s:hiupdate()
+	for [ke, va] in items(s:hlgrps)
+		let ke = 'CtrlP' . ke
+		if hlexists(ke)
+			exe 'hi link' ke va
+		en
+	endfo
+endf
+
 fu! ctrlp#hicheck(grp, defgrp)
 	if !hlexists(a:grp)
 		exe 'hi link' a:grp a:defgrp
@@ -2846,6 +2870,7 @@ if has('autocmd')
 		au BufEnter ControlP cal s:checkbuf()
 		au BufLeave ControlP noa cal s:Close()
 		au VimLeavePre * cal s:leavepre()
+		au ColorScheme * cal s:hiupdate()
 	aug END
 en
 
