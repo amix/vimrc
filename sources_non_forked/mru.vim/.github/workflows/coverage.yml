@@ -1,0 +1,39 @@
+name: coverage
+on: [push, pull_request]
+jobs:
+  linux:
+    name: linux
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Run Tests
+        run: |
+          uname -a
+          export MRU_PROFILE=1
+          export VIMPRG=vim
+          $VIMPRG --version
+          cd ./test
+          ./run_mru_tests.sh
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.5
+      - name: Install covimerage
+        run: |
+          pip install covimerage
+          covimerage --version
+      - name: Run covimerage
+        run: |
+          cd ./test
+          covimerage write_coverage mru_profile.txt
+      - name: Take coverage
+        run: |
+          cd ./test
+          coverage report
+          coverage xml
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./test/coverage.xml
