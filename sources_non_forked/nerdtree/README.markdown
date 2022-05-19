@@ -1,3 +1,9 @@
+![Help Wanted](http://blog.ncce.org/wp-content/uploads/2013/12/help-wanted.jpg)
+
+**NERDTree** is on the lookout for a new maintainer. See [issue #1280](https://github.com/preservim/nerdtree/issues/1280) to submit your name for consideration.
+
+---
+
 # The NERDTree [![Vint](https://github.com/preservim/nerdtree/workflows/Vint/badge.svg)](https://github.com/preservim/nerdtree/actions?workflow=Vint)
 
 ## Introduction
@@ -183,8 +189,8 @@ nnoremap <C-n> :NERDTreeMirror<CR>:NERDTreeFocus<CR>
 ### How can I change the default arrows?
 
 ```vim
-let g:NERDTreeDirArrowExpandable = '▸'
-let g:NERDTreeDirArrowCollapsible = '▾'
+let g:NERDTreeDirArrowExpandable = '?'
+let g:NERDTreeDirArrowCollapsible = '?'
 ```
 The preceding values are the non-Windows default arrow symbols. Setting these variables to empty strings will remove the arrows completely and shift the entire tree two character positions to the left. See `:h NERDTreeDirArrowExpandable` for more details.
 
