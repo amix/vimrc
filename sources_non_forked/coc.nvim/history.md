@@ -1,3 +1,8 @@
+# 2022-05-17
+
+- Add `QuickPick` module.
+- Add API `window.showQuickPick()` and `window.createQuickPick()`.
+
 # 2022-05-16
 
 - Add properties `title`, `loading` & `borderhighlight` to `InputBox`

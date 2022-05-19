@@ -1983,7 +1983,7 @@ g:coc_process_pid					*g:coc_process_pid*
 <
 	in your vimrc.
 
-g:coc_service_initialized 			 *g:coc_service_initialized*
+g:coc_service_initialized	 			*g:coc_service_initialized*
 
 	Is `1` when coc.nvim initialized, used with autocmd |CocNvimInit|.
 
@@ -3196,13 +3196,13 @@ characters.
 
 Others~
 
+*CocSearch* highlight group for matched characters in list.
 *CocDisabled* highlight for disabled items, eg: menu item.
 *CocCodeLens* for virtual text of codeLens.
 *CocCursorRange* for highlight of activated cursors ranges.
 *CocLinkedEditing* for highlight of activated linked editing ranges.
 *CocHoverRange* for range of current hovered symbol.
-*CocMenuSel* for current menu item in menu dialog, works on neovim only since
-vim doesn't support change highlight group of cursorline inside popup.
+*CocMenuSel* for current menu item in menu dialog.
 *CocSelectedRange* for highlight ranges of outgoing calls.
 *CocSnippetVisual* for highlight snippet placeholders.
 *CocInlayHint* for highlight inlay hint virtual text block, default linked to
@@ -3814,15 +3814,41 @@ A input dialog request user input with optional default value, normally
 created by `window.requestInput`, when `"coc.preferences.promptInput"` is
 false, vim's commandline input prompt is used instead.
 
+On neovim, it uses float window, on vim8, it opens terminal in popup.
+
 Supported key-mappings:
 
-<C-a>         - move cursor to first col.
-<C-e>         - move cursor to last col.
-<esc>         - cancel input, an empty string is received by callback.
-<cr>          - confirm selection of current item, use
-|dialog.confirmKey| to override.
+<C-a>               - move cursor to first col.
+<C-e>               - move cursor to last col.
+<esc>               - cancel input, null is received by callback.
+<cr>                - accept current input selection of current item.
 
-And other insert mode key-mappings that your neovim provided.
+QuickPick related (available when created by |coc-dialog-quickpick|).
+
+<C-f>               - scroll forward quickpick list.
+<C-b>               - scroll backward quickpick list.
+<C-j> <C-n> <down>  - move to next item in quickpick list.
+<C-k> <C-p> <up>    - move to previous item in quickpick list.
+<C-space>           - toggle selection of current item in quickpick list when
+canSelectMany is supported.
+
+Note on neovim, other insert mode key-mappings could work.
+
+Note not possible to configure key-mappings on vim8, to customize key-mappings
+on neovim, use |CocOpenFloatPrompt| with current buffer.
+
+------------------------------------------------------------------------------
+
+							*coc-dialog-quickpick*
+
+A quickpick is a input dialog in the middle with a float window/popup contains
+filtred list items.
+
+A simple fuzzy filter is used by default.
+
+See |coc-config-dialog| for available configurations.
+
+See |coc-dialog-input| for available key-mappings.
 
 ------------------------------------------------------------------------------
 

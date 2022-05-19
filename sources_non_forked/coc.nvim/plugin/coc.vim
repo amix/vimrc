@@ -64,6 +64,24 @@ function! CocPopupCallback(bufnr, arglist) abort
     elseif a:arglist[0] == 'exit'
       execute 'silent! bd! '.a:bufnr
       "call coc#rpc#notify('PromptUpdate', [a:arglist[1]])
+    elseif a:arglist[0] == 'change'
+      let text = a:arglist[1]
+      let current = getbufvar(a:bufnr, 'current', '')
+      if text !=# current
+        call setbufvar(a:bufnr, 'current', text)
+        let cursor = term_getcursor(a:bufnr)
+        let info = {
+              \ 'lnum': cursor[0],
+              \ 'col': cursor[1],
+              \ 'line': text,
+              \ 'changedtick': 0
+              \ }
+        call coc#rpc#notify('CocAutocmd', ['TextChangedI', a:bufnr, info])
+      endif
+    elseif a:arglist[0] == 'send'
+      let key = a:arglist[1]
+      let escaped = strcharpart(key, 1, strchars(key) - 2)
+      call coc#rpc#notify('PromptKeyPress', [a:bufnr, escaped])
     endif
   endif
 endfunction
@@ -321,7 +339,7 @@ function! s:Enable(initialize)
       autocmd WinEnter          * call coc#float#nvim_win_enter(win_getid())
     endif
     if exists('##WinClosed')
-      autocmd WinClosed         * call coc#float#close_related(+expand('<amatch>'))
+      autocmd WinClosed         * call coc#float#on_close(+expand('<amatch>'))
       autocmd WinClosed         * call coc#notify#on_close(+expand('<amatch>'))
     elseif exists('##TabEnter')
       autocmd TabEnter          * call coc#notify#reflow()

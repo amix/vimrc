@@ -72,8 +72,8 @@ function! coc#float#change_height(winid, delta) abort
           \ })
     endif
   else
-    let winids = coc#window#get_var(a:winid, 'related', [])
-    call filter(copy(winids), 'index(["border","pad","scrollbar"],coc#window#get_var(v:val,"kind","")) >= 0')
+    let winids = copy(coc#window#get_var(a:winid, 'related', []))
+    call filter(winids, 'index(["border","pad","scrollbar"],coc#window#get_var(v:val,"kind","")) >= 0')
     call add(winids, a:winid)
     for winid in winids
       if coc#window#get_var(winid, 'kind', '') ==# 'border'
@@ -111,6 +111,9 @@ endfunction
 " - winblend: (optional) winblend option for float window, neovim only.
 " - shadow:  (optional) use shadow as border style, neovim only.
 " - focusable:  (optional) neovim only, default to true.
+" - scrollinside: (optional) neovim only, create scrollbar inside window.
+" - rounded: (optional) use rounded borderchars, ignored when borderchars exists.
+" - borderchars: (optional) borderchars, should be length of 8
 function! coc#float#create_float_win(winid, bufnr, config) abort
   let lines = get(a:config, 'lines', v:null)
   let bufnr = coc#float#create_buf(a:bufnr, lines, 'hide')
@@ -152,13 +155,14 @@ function! coc#float#create_float_win(winid, bufnr, config) abort
     let title = get(a:config, 'title', '')
     let buttons = get(a:config, 'buttons', [])
     let hlgroup = get(a:config, 'highlight',  'CocFloating')
+    let border = s:empty_border(get(a:config, 'border', [])) ? [0, 0, 0, 0] : a:config['border']
     let opts = {
           \ 'title': title,
           \ 'line': line,
           \ 'col': col,
           \ 'fixed': 1,
-          \ 'padding': empty(title) ?  [0, 1, 0, 1] : [0, 0, 0, 0],
-          \ 'borderchars': get(a:config, 'rounded', 0) ? s:rounded_borderchars : s:borderchars,
+          \ 'padding': [0, !border[1], 0, !border[3]],
+          \ 'borderchars': s:get_borderchars(a:config),
           \ 'highlight': hlgroup,
           \ 'cursorline': get(a:config, 'cursorline', 0),
           \ 'minwidth': a:config['width'],
@@ -166,7 +170,8 @@ function! coc#float#create_float_win(winid, bufnr, config) abort
           \ 'maxwidth': a:config['width'],
           \ 'maxheight': a:config['height'],
           \ 'close': get(a:config, 'close', 0) ? 'button' : 'none',
-          \ 'border': s:empty_border(get(a:config, 'border', [])) ? [0, 0, 0, 0] : a:config['border']
+          \ 'border': border,
+          \ 'callback': { -> coc#float#on_close(winid)}
           \ }
     if !empty(get(a:config, 'borderhighlight', v:null))
       let borderhighlight = a:config['borderhighlight']
@@ -192,7 +197,9 @@ function! coc#float#create_float_win(winid, bufnr, config) abort
     let hlgroup = get(a:config, 'highlight', 'CocFloating')
     call setwinvar(winid, '&winhl', 'Normal:'.hlgroup.',NormalNC:'.hlgroup.',FoldColumn:'.hlgroup)
     call setwinvar(winid, 'border', get(a:config, 'border', []))
+    call setwinvar(winid, 'scrollinside', get(a:config, 'scrollinside', 0))
     call setwinvar(winid, '&foldcolumn', s:nvim_enable_foldcolumn(get(a:config, 'border', v:null)))
+    call setwinvar(winid, '&cursorline', get(a:config, 'cursorline', 0))
     " cursorline highlight not work on old neovim
     call s:nvim_set_defaults(winid)
     call nvim_win_set_cursor(winid, [1, 0])
@@ -209,7 +216,7 @@ function! coc#float#create_float_win(winid, bufnr, config) abort
     call setwinvar(winid, '&showbreak', 'NONE')
   endif
   call setwinvar(winid, 'float', 1)
-  call setwinvar(winid, '&wrap', 1)
+  call setwinvar(winid, '&wrap', !get(a:config, 'cursorline', 0))
   call setwinvar(winid, '&linebreak', 1)
   call setwinvar(winid, '&conceallevel', 0)
   call s:add_highlights(winid, a:config, 1)
@@ -239,7 +246,8 @@ function! coc#float#nvim_create_related(winid, config, opts) abort
     call coc#float#close_related(a:winid, 'buttons')
   endif
   if !s:empty_border(border)
-    call coc#float#nvim_border_win(a:config, get(a:opts, 'rounded', 0), a:winid, border, get(a:opts, 'title', ''), !empty(buttons), borderhighlight, shadow, related)
+    let borderchars = s:get_borderchars(a:opts)
+    call coc#float#nvim_border_win(a:config, borderchars, a:winid, border, get(a:opts, 'title', ''), !empty(buttons), borderhighlight, shadow, related)
   elseif exists
     call coc#float#close_related(a:winid, 'border')
   endif
@@ -253,13 +261,13 @@ function! coc#float#nvim_create_related(winid, config, opts) abort
 endfunction
 
 " border window for neovim, content config with border
-function! coc#float#nvim_border_win(config, rounded, winid, border, title, hasbtn, hlgroup, shadow, related) abort
+function! coc#float#nvim_border_win(config, borderchars, winid, border, title, hasbtn, hlgroup, shadow, related) abort
   let winid = coc#float#get_related(a:winid, 'border')
   let row = a:border[0] ? a:config['row'] - 1 : a:config['row']
   let col = a:border[3] ? a:config['col'] - 1 : a:config['col']
   let width = a:config['width'] + a:border[1] + a:border[3]
   let height = a:config['height'] + a:border[0] + a:border[2] + (a:hasbtn ? 2 : 0)
-  let lines = coc#float#create_border_lines(a:border, a:rounded, a:title, a:config['width'], a:config['height'], a:hasbtn)
+  let lines = coc#float#create_border_lines(a:border, a:borderchars, a:title, a:config['width'], a:config['height'], a:hasbtn)
   let bufnr = winid ? winbufnr(winid) : 0
   let bufnr = coc#float#create_buf(bufnr, lines)
   let opt = {
@@ -424,7 +432,7 @@ endfunction
 " Create or refresh scrollbar for winid
 " Need called on create, config, buffer change, scrolled
 function! coc#float#nvim_scrollbar(winid) abort
-  if !has('nvim-0.4.0') || coc#window#get_var(a:winid, 'target_winid', 0)
+  if !has('nvim-0.4.0')
     return
   endif
   let winids = nvim_tabpage_list_wins(nvim_get_current_tabpage())
@@ -446,6 +454,7 @@ function! coc#float#nvim_scrollbar(winid) abort
   let ch = coc#float#content_height(bufnr, cw, getwinvar(a:winid, '&wrap'))
   let closewin = coc#float#get_related(a:winid, 'close')
   let border = getwinvar(a:winid, 'border', [])
+  let scrollinside = getwinvar(a:winid, 'scrollinside', 0) && get(border, 1, 0)
   let winblend = getwinvar(a:winid, '&winblend', 0)
   let move_down = closewin && !get(border, 0, 0)
   let id = coc#float#get_related(a:winid, 'scrollbar')
@@ -464,7 +473,7 @@ function! coc#float#nvim_scrollbar(winid) abort
   let sbuf = coc#float#create_buf(sbuf, repeat([' '], height))
   let opts = {
         \ 'row': move_down ? row + 1 : row,
-        \ 'col': column + width,
+        \ 'col': column + width - scrollinside,
         \ 'relative': relative,
         \ 'width': 1,
         \ 'height': height,
@@ -488,7 +497,9 @@ function! coc#float#nvim_scrollbar(winid) abort
     call setwinvar(id, 'target_winid', a:winid)
     call coc#float#add_related(id, a:winid)
   endif
-  call coc#float#nvim_scroll_adjust(a:winid)
+  if !scrollinside
+    call coc#float#nvim_scroll_adjust(a:winid)
+  endif
   let thumb_height = max([1, float2nr(floor(height * (height + 0.0)/ch))])
   let wininfo = getwininfo(a:winid)[0]
   let start = 0
@@ -514,8 +525,8 @@ function! coc#float#nvim_scrollbar(winid) abort
   endfor
 endfunction
 
-function! coc#float#create_border_lines(border, rounded, title, width, height, hasbtn) abort
-  let borderchars = a:rounded ? s:rounded_borderchars : s:borderchars
+function! coc#float#create_border_lines(border, borderchars, title, width, height, hasbtn) abort
+  let borderchars = a:borderchars
   let list = []
   if a:border[0]
     let top = (a:border[3] ?  borderchars[4]: '')
@@ -684,6 +695,16 @@ function! coc#float#nvim_refresh_scrollbar(winid) abort
   endif
 endfunction
 
+function! coc#float#on_close(winid) abort
+  let winids = coc#float#get_float_win_list()
+  for winid in winids
+    let target = getwinvar(winid, 'target_winid', -1)
+    if target == a:winid
+      call coc#float#close(winid)
+    endif
+  endfor
+endfunction
+
 " Close related windows, or specific kind
 function! coc#float#close_related(winid, ...) abort
   if !coc#float#valid(a:winid)
@@ -696,11 +717,14 @@ function! coc#float#close_related(winid, ...) abort
   let kind = get(a:, 1, '')
   let winids = coc#window#get_var(a:winid, 'related', [])
   for id in winids
-    if s:is_vim
-      " vim doesn't throw
-      noa call popup_close(id)
-    else
-      if empty(kind) || coc#window#get_var(id, 'kind', '') ==# kind
+    let curr = coc#window#get_var(id, 'kind', '')
+    if empty(kind) || curr ==# kind
+      if curr == 'list'
+        call coc#float#close(id)
+      elseif s:is_vim
+        " vim doesn't throw
+        noa call popup_close(id)
+      else
         silent! noa call nvim_win_close(id, 1)
       endif
     endif
@@ -863,7 +887,7 @@ function! coc#float#vim_filter(winid, key, keys) abort
   return 0
 endfunction
 
-function! coc#float#get_related(winid, kind) abort
+function! coc#float#get_related(winid, kind, ...) abort
   if coc#float#valid(a:winid)
     for winid in coc#window#get_var(a:winid, 'related', [])
       if coc#window#get_var(winid, 'kind', '') ==# a:kind
@@ -871,7 +895,19 @@ function! coc#float#get_related(winid, kind) abort
       endif
     endfor
   endif
-  return 0
+  return get(a:, 1, 0)
+endfunction
+
+function! coc#float#get_row(winid) abort
+  let winid = s:is_vim ? a:winid : coc#float#get_related(a:winid, 'border', a:winid)
+  if coc#float#valid(winid)
+    if s:is_vim
+      let pos = popup_getpos(winid)
+      return pos['line'] - 1
+    endif
+    let pos = nvim_win_get_position(winid)
+    return pos[0]
+  endif
 endfunction
 
 " Create temporarily buffer with optional lines and &bufhidden
@@ -1265,13 +1301,15 @@ function! s:win_setview(winid, topline, lnum) abort
 endfunction
 
 function! s:nvim_set_defaults(winid) abort
-  call setwinvar(a:winid, '&cursorline', 0)
   call setwinvar(a:winid, '&signcolumn', 'auto')
   call setwinvar(a:winid, '&list', 0)
   call setwinvar(a:winid, '&number', 0)
   call setwinvar(a:winid, '&relativenumber', 0)
   call setwinvar(a:winid, '&cursorcolumn', 0)
   call setwinvar(a:winid, '&colorcolumn', 0)
+  if exists('*win_execute')
+    call win_execute(a:winid, 'setl fillchars+=eob:\ ')
+  endif
 endfunction
 
 function! s:nvim_add_related(winid, target, kind, winhl, related) abort
@@ -1321,11 +1359,16 @@ function! s:add_highlights(winid, config, create) abort
 endfunction
 
 function! s:empty_border(border) abort
-  if empty(a:border)
-    return 1
-  endif
-  if a:border[0] == 0 && a:border[1] == 0 && a:border[2] == 0 && a:border[3] == 0
+  if empty(a:border) || empty(filter(copy(a:border), 'v:val != 0'))
     return 1
   endif
   return 0
+endfunction
+
+function! s:get_borderchars(config) abort
+  let borderchars = get(a:config, 'borderchars', [])
+  if !empty(borderchars)
+    return borderchars
+  endif
+  return get(a:config, 'rounded', 0) ? s:rounded_borderchars : s:borderchars
 endfunction
