@@ -171,7 +171,7 @@ endfunction
 
 " Note: A colon in the file name has side effects on Windows due to NTFS Alternate Data Streams; avoid it.
 let s:bufprefix = 'gist' . (has('unix') ? ':' : '_')
-function! s:GistList(gistls, page) abort
+function! s:GistList(gistls, page, pagelimit) abort
   if a:gistls ==# '-all'
     let url = g:gist_api_url.'gists/public'
   elseif get(g:, 'gist_show_privates', 0) && a:gistls ==# 'starred'
@@ -196,9 +196,11 @@ function! s:GistList(gistls, page) abort
       exec 'silent noautocmd split' s:bufprefix.a:gistls
     endif
   endif
+
+  let url = url . '?per_page=' . a:pagelimit
   if a:page > 1
     let oldlines = getline(0, line('$'))
-    let url = url . '?page=' . a:page
+    let url = url . '&page=' . a:page
   endif
 
   setlocal modifiable
@@ -527,7 +529,7 @@ function! s:GistListAction(mode) abort
     return
   endif
   if line =~# '^more\.\.\.$'
-    call s:GistList(b:gistls, b:page+1)
+    call s:GistList(b:gistls, b:page+1, g:gist_per_page_limit)
     return
   endif
 endfunction
@@ -761,6 +763,8 @@ function! gist#Gist(count, bang, line1, line2, ...) abort
   let editpost = 0
   let anonymous = get(g:, 'gist_post_anonymous', 0)
   let openbrowser = 0
+  let setpagelimit = 0
+  let pagelimit = g:gist_per_page_limit
   let listmx = '^\%(-l\|--list\)\s*\([^\s]\+\)\?$'
   let bufnamemx = '^' . s:bufprefix .'\(\zs[0-9a-f]\+\ze\|\zs[0-9a-f]\+\ze[/\\].*\)$'
   if strlen(g:github_user) == 0 && anonymous == 0
@@ -788,6 +792,14 @@ function! gist#Gist(count, bang, line1, line2, ...) abort
     elseif arg =~# '^\(-G\|--gitclone\)$\C' && gistidbuf !=# '' && g:gist_api_url ==# 'https://api.github.com/' && has_key(b:, 'gist') && has_key(b:gist, 'id')
       exe '!' printf('git clone git@github.com:%s', b:gist['id'])
       return
+    elseif setpagelimit == 1
+      let setpagelimit = 0
+      let pagelimit = str2nr(arg)
+      if pagelimit < 1 || pagelimit > 100
+        echohl ErrorMsg | echomsg 'Page limit should be between 1 and 100: '.arg | echohl None
+        unlet args
+        return 0
+      endif
     elseif arg =~# '^\(-la\|--listall\)$\C'
       let gistls = '-all'
     elseif arg =~# '^\(-ls\|--liststar\)$\C'
@@ -868,6 +880,14 @@ function! gist#Gist(count, bang, line1, line2, ...) abort
       endif
     elseif arg =~# '^\(-b\|--browser\)$\C'
       let openbrowser = 1
+    elseif arg =~# '^\(-n\|--per-page\)$\C'
+      if len(gistls) > 0
+        let setpagelimit = 1
+      else
+        echohl ErrorMsg | echomsg 'Page limit can be set only for list commands'.arg | echohl None
+        unlet args
+        return 0
+      endif
     elseif arg !~# '^-' && len(gistnm) == 0
       if gistdesc !=# ' '
         let gistdesc = matchstr(arg, '^\s*\zs.*\ze\s*$')
@@ -904,7 +924,7 @@ function! gist#Gist(count, bang, line1, line2, ...) abort
   endif
 
   if len(gistls) > 0
-    call s:GistList(gistls, 1)
+    call s:GistList(gistls, 1, pagelimit)
   elseif len(gistid) > 0 && editpost == 0 && deletepost == 0
     call s:GistGet(gistid, clipboard)
   else
