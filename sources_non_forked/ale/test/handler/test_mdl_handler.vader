@@ -1,0 +1,25 @@
+Before:
+  runtime ale_linters/markdown/mdl.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The mdl handler should parse output correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'code': 'MD002/first-header-h1',
+  \     'text': 'First header should be a top level header',
+  \     'type': 'W'
+  \   },
+  \   {
+  \     'lnum': 18,
+  \     'code': 'MD033/no-inline-html',
+  \     'text': 'Inline HTML',
+  \     'type': 'W'
+  \   }
+  \ ],
+  \ ale_linters#markdown#mdl#Handle(0, [
+  \     '[{"filename":"README.md","line":1,"rule":"MD002","aliases":["first-header-h1"],"description":"First header should be a top level header"},{"filename":"README.md","line":18,"rule":"MD033","aliases":["no-inline-html"],"description":"Inline HTML"}]'
+  \ ])

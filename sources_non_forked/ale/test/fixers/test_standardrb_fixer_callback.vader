@@ -1,0 +1,51 @@
+Before:
+  Save g:ale_ruby_standardrb_executable
+  Save g:ale_ruby_standardrb_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_ruby_standardrb_executable = 'xxxinvalid'
+  let g:ale_ruby_standardrb_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The standardrb callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/ruby/dummy.rb')
+
+  AssertEqual
+  \ {
+  \   'process_with': 'ale#fixers#rubocop#PostProcess',
+  \   'command': ale#Escape(g:ale_ruby_standardrb_executable)
+  \     . ' --fix --force-exclusion --stdin %s',
+  \ },
+  \ ale#fixers#standardrb#Fix(bufnr(''))
+
+Execute(The standardrb callback should include configuration files):
+  call ale#test#SetFilename('../test-files/ruby/with_config/dummy.rb')
+
+  AssertEqual
+  \ {
+  \   'process_with': 'ale#fixers#rubocop#PostProcess',
+  \   'command': ale#Escape(g:ale_ruby_standardrb_executable)
+  \     . ' --config ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/ruby/with_config/.standard.yml'))
+  \     . ' --fix --force-exclusion --stdin %s',
+  \ },
+  \ ale#fixers#standardrb#Fix(bufnr(''))
+
+Execute(The standardrb callback should include custom rubocop options):
+  let g:ale_ruby_standardrb_options = '--except Lint/Debugger'
+  call ale#test#SetFilename('../test-files/ruby/with_config/dummy.rb')
+
+  AssertEqual
+  \ {
+  \   'process_with': 'ale#fixers#rubocop#PostProcess',
+  \   'command': ale#Escape(g:ale_ruby_standardrb_executable)
+  \     . ' --config ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/ruby/with_config/.standard.yml'))
+  \     . ' --except Lint/Debugger'
+  \     . ' --fix --force-exclusion --stdin %s',
+  \ },
+  \ ale#fixers#standardrb#Fix(bufnr(''))

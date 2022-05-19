@@ -1,0 +1,89 @@
+Before:
+  runtime ale_linters/clojure/clj_kondo.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(the clojure clj-kondo handler should be able to handle errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 123,
+  \     'col': 44,
+  \     'type': 'E',
+  \     'text': 'error: Unexpected )',
+  \   },
+  \ ],
+  \ ale_linters#clojure#clj_kondo#HandleCljKondoFormat(0, [
+  \   'test.clj:123:44: error: Unexpected )',
+  \ ])
+
+Execute(the clojure clj-kondo handler should be able to handle warnings):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 654,
+  \     'col': 321,
+  \     'type': 'W',
+  \     'text': 'warning: inline def',
+  \   }
+  \ ],
+  \ ale_linters#clojure#clj_kondo#HandleCljKondoFormat(0, [
+  \   'test.clj:654:321: warning: inline def'
+  \ ])
+
+Execute(the clojure clj-kondo handler should be able to handle exceptions):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 123,
+  \     'col': 321,
+  \     'type': 'E',
+  \     'text': 'Exception: something horrible happen',
+  \   }
+  \ ],
+  \ ale_linters#clojure#clj_kondo#HandleCljKondoFormat(0, [
+  \   'test.clj:123:321: Exception: something horrible happen'
+  \ ])
+
+Execute(the clojure clj-kondo handler should be able to handle errors from stdin):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 16,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'error: Unexpected )',
+  \   },
+  \ ],
+  \ ale_linters#clojure#clj_kondo#HandleCljKondoFormat(0, [
+  \   '<stdin>:16:1: error: Unexpected )',
+  \ ])
+
+Execute(the clojure clj-kondo handler should be able to handle windows files):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 123,
+  \     'col': 44,
+  \     'type': 'E',
+  \     'text': 'error: Unexpected )',
+  \   }
+  \ ],
+  \ ale_linters#clojure#clj_kondo#HandleCljKondoFormat(0, [
+  \   'C:\my\operating\system\is\silly\core.clj:123:44: error: Unexpected )',
+  \ ])
+
+Execute(the clojure clj-kondo handler should be able to lines without row/col):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 0,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'error: Unexpected )',
+  \   },
+  \ ],
+  \ ale_linters#clojure#clj_kondo#HandleCljKondoFormat(0, [
+  \   'test.clj::: error: Unexpected )',
+  \ ])

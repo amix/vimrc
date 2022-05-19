@@ -1,0 +1,30 @@
+Before:
+  runtime ale_linters/xml/xmllint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The xmllint handler should parse error messages correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 22,
+  \     'type': 'W',
+  \     'text': 'warning: Unsupported version ''dummy'''
+  \   },
+  \   {
+  \     'lnum': 34,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'parser error : Start tag expected, ''<'' not found'
+  \   }
+  \ ],
+  \ ale_linters#xml#xmllint#Handle(1, [
+  \   'path/to/file.xml:1: warning: Unsupported version ''dummy''',
+  \   '<?xml version="dummy"?>',
+  \   '                     ^',
+  \   '-:34: parser error : Start tag expected, ''<'' not found',
+  \   'blahblah>',
+  \   '^'
+  \ ])

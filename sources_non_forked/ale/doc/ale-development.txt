@@ -14,6 +14,7 @@ CONTENTS                                             *ale-development-contents*
     4.1. Writing Linter Tests.............|ale-development-linter-tests|
     4.2. Writing Fixer Tests..............|ale-development-fixer-tests|
     4.3. Running Tests in a Windows VM....|ale-development-windows-tests|
+  5. Contributing.........................|ale-development-contributing|
 
 ===============================================================================
 1. Introduction                                  *ale-development-introduction*
@@ -97,8 +98,8 @@ should also follow some additional rules designed to prevent mistakes. Some of
 these are reported with ALE's `custom-linting-rules` script. See
 |ale-development-tests|.
 
-* Don't leave stray `:echo` lines in code. Use `execute 'echo' ...` if you must
-  echo something.
+* Don't leave stray `:echo` lines in code. Write `" no-custom-checks` above
+  the line if you must echo something.
 * For strings use |is#| instead of |==#|, `is?` instead of `==?`, `isnot#`
   instead of `!=#`, and `isnot?` instead of `!=?`. This is because `'x' ==# 0`
   returns 1, while `'x' is# 0` returns 0, so you will experience fewer issues
@@ -153,10 +154,10 @@ ALE runs tests with the following versions of Vim in the following
 environments.
 
 1. Vim 8.0.0027 on Linux via GitHub Actions.
-2. Vim 8.2.2401 on Linux via GitHub Actions.
+2. Vim 8.2.4693 on Linux via GitHub Actions.
 3. NeoVim 0.2.0 on Linux via GitHub Actions.
 4. NeoVim 0.4.4 on Linux via GitHub Actions.
-5. NeoVim 0.5.0 on Linux via GitHub Actions.
+5. NeoVim 0.6.1 on Linux via GitHub Actions.
 6. Vim 8 (stable builds) on Windows via AppVeyor.
 
 If you are developing ALE code on Linux, Mac OSX, or BSD, you can run ALEs
@@ -443,6 +444,24 @@ It will probably take several minutes for all of the tests to run. Be patient.
 You can run a specific test by passing the filename as an argument to the
 batch file, for example: `run-tests test/test_c_flag_parsing.vader` . This will
 give you results much more quickly.
+
+===============================================================================
+5. Contributing                                  *ale-development-contributing*
+
+All integration of new code into ALE is done through GitHub pull requests.
+Using that tool streamlines the process and minimizes the time and effort
+required to e.g. ensure test suites are run for every change.
+
+As for any project hosted by GitHub, the choice of platform demands every
+contributor to take care to setup an account and configure it accordingly.
+
+Due to details of our process, a difference to many other GitHub hosted
+projects is that contributors who wish to keep the author fields for their
+commits unaltered need to configure a public email address in their account
+and profile settings. See: https://docs.github.com/en/account-and-profile/
+
+Unless configuring GitHub to expose contact details, commits will be rewritten
+to appear by `USERNAME <RANDOM_NUMBER+USERNAME@users.noreply.github.com>` .
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

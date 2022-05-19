@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('jsonnet', 'jsonnet_lint')
+  call ale#test#SetFilename('../jsonnet_files/testfile.jsonnet')
+
+After:
+  Restore
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default jsonnet-lint command should be correct):
+  AssertLinter 'jsonnet-lint',
+  \ ale#Escape('jsonnet-lint') . ' %t'
+
+Execute(jsonnet-lint command and options should be customizable):
+  let g:ale_jsonnet_jsonnet_lint_executable = 'jsonnet'
+  let g:ale_jsonnet_jsonnet_lint_options = 'fmt'
+
+  AssertLinter 'jsonnet',
+  \ ale#Escape('jsonnet') . ' fmt %t'

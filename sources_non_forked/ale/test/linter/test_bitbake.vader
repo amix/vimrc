@@ -1,0 +1,13 @@
+Before:
+    call ale#assert#SetUpLinterTest('bitbake', 'oelint_adv')
+
+After:
+    call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+    AssertLinter 'oelint-adv', ale#Escape('oelint-adv') . ' --quiet %s'
+
+Execute(The executable should be configurable):
+    let b:ale_bitbake_oelint_adv_executable = 'xyz'
+
+    AssertLinter 'xyz', ale#Escape('xyz') . ' --quiet %s'

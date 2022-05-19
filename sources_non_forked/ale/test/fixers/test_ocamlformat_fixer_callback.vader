@@ -1,0 +1,36 @@
+Before:
+  Save g:ale_ocaml_ocamlformat_executable
+  Save g:ale_ocaml_ocamlformat_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_ocaml_ocamlformat_executable = 'xxxinvalid'
+  let g:ale_ocaml_ocamlformat_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The ocamlformat callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/ocaml/testfile.re')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --name=%s -',
+  \ },
+  \ ale#fixers#ocamlformat#Fix(bufnr(''))
+
+Execute(The ocamlformat callback should include custom ocamlformat options):
+  let g:ale_ocaml_ocamlformat_options = "-m 78"
+  call ale#test#SetFilename('../test-files/ocaml/testfile.re')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' ' . g:ale_ocaml_ocamlformat_options
+  \     . ' --name=%s -',
+  \ },
+  \ ale#fixers#ocamlformat#Fix(bufnr(''))

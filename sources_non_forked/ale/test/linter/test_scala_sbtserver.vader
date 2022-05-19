@@ -1,0 +1,23 @@
+" Author: ophirr33 <coghlan.ty@gmail.com>
+" Description: Tests for the sbt Server lsp linter
+Before:
+  call ale#assert#SetUpLinterTest('scala', 'sbtserver')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(should set sbtserver for sbt project with build.sbt):
+  call ale#test#SetFilename('../test-files/scala/valid_sbt_project/Main.scala')
+  AssertLSPLanguage 'scala'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#test#GetFilename('../test-files/scala/valid_sbt_project')
+  AssertLSPAddress '127.0.0.1:4273'
+
+Execute(should not set sbtserver for sbt project without build.sbt):
+  call ale#test#SetFilename('../test-files/scala/invalid_sbt_project/Main.scala')
+  AssertLSPLanguage 'scala'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ''
+  AssertLSPAddress '127.0.0.1:4273'

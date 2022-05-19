@@ -1,0 +1,9 @@
+Before:
+  call ale#assert#SetUpLinterTest('systemd', 'systemd_analyze')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'systemd-analyze',
+  \ 'SYSTEMD_LOG_COLOR=0 ' . ale#Escape('systemd-analyze') . ' --user verify %s'

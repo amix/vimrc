@@ -1,0 +1,33 @@
+Before:
+  runtime ale_linters/robot/rflint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Warning and error messages should be handled correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 1,
+  \     'filename': 'test.robot',
+  \     'type': 'W',
+  \     'lnum': 1,
+  \     'col': 2,
+  \     'text': 'RequireSuiteDocumentation',
+  \     'detail': 'No suite documentation',
+  \   },
+  \   {
+  \     'bufnr': 1,
+  \     'filename': 'test.robot',
+  \     'type': 'E',
+  \     'lnum': 3,
+  \     'col': 4,
+  \     'text': 'RequireTestDocumentation',
+  \     'detail': 'No testcase documentation',
+  \   },
+  \ ],
+  \ ale_linters#robot#rflint#Handle(1, [
+  \   'test.robot:W:1:2:RequireSuiteDocumentation:No suite documentation',
+  \   'test.robot:E:3:4:RequireTestDocumentation:No testcase documentation'
+  \])
+

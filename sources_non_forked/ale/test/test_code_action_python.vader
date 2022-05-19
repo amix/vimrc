@@ -1,0 +1,59 @@
+Given python(An example Python file):
+  def main():
+      a = 1
+      c = a + 1
+
+Execute():
+  let g:changes = [
+  \ {'end': {'offset': 7, 'line': 1}, 'newText': 'func_qtffgsv', 'start': {'offset': 5, 'line': 1}},
+  \ {'end': {'offset': 9, 'line': 1}, 'newText': '', 'start': {'offset': 8, 'line': 1}},
+  \ {'end': {'offset': 15, 'line': 3}, 'newText': "    return c\n\n\ndef main():\n    c = func_qtffgsvi()\n", 'start': {'offset': 15, 'line': 3}}
+  \]
+
+  call ale#code_action#ApplyChanges(expand('%:p'), g:changes, {})
+
+Expect(The changes should be applied correctly):
+  def func_qtffgsvi():
+      a = 1
+      c = a + 1
+      return c
+
+
+  def main():
+      c = func_qtffgsvi()
+
+
+Given python(Second python example):
+  import sys
+  import exifread
+
+  def main():
+      with open(sys.argv[1], 'rb') as f:
+          exif = exifread.process_file(f)
+          dt = str(exif['Image DateTime'])
+          date = dt[:10].replace(':', '-')
+
+Execute():
+  let g:changes = [
+  \ {'end': {'offset': 16, 'line': 2}, 'newText': "\n\n\ndef func_ivlpdpao(f):\n    exif = exifread.process_file(f)\n    dt = str(exif['Image DateTime'])\n    date = dt[:10].replace(':', '-')\n    return date\n", 'start': {'offset': 16, 'line': 2}},
+  \ {'end': {'offset': 32, 'line': 6}, 'newText': 'date = func', 'start': {'offset': 9, 'line': 6}},
+  \ {'end': {'offset': 42, 'line': 8}, 'newText': "ivlpdpao(f)\n", 'start': {'offset': 33, 'line': 6}}
+  \]
+
+  call ale#code_action#ApplyChanges(expand('%:p'), g:changes, {})
+
+Expect(The changes should be applied correctly):
+  import sys
+  import exifread
+
+
+  def func_ivlpdpao(f):
+      exif = exifread.process_file(f)
+      dt = str(exif['Image DateTime'])
+      date = dt[:10].replace(':', '-')
+      return date
+
+
+  def main():
+      with open(sys.argv[1], 'rb') as f:
+          date = func_ivlpdpao(f)

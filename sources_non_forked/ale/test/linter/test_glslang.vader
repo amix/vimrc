@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('glsl', 'glslang')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'glslangValidator', ale#Escape('glslangValidator') . ' -C %t'
+
+Execute(The executable should be configurable):
+  let b:ale_glsl_glslang_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' -C %t'
+
+Execute(Options should work):
+  let g:ale_glsl_glslang_options = '--test'
+
+  AssertLinter 'glslangValidator',
+  \ ale#Escape('glslangValidator') . ' --test -C %t'

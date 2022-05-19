@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+
+exit_code=0
+tag_regex='[gb]\?:\?\(ale\|ALE\)[a-zA-Z_\-]\+'
+
+tags="$(mktemp -t tags.XXXXXXXX)"
+refs="$(mktemp -t refs.XXXXXXXX)"
+# Grep for tags and references, and complain if we find a reference without
+# a tag for the reference. Only our tags will be included.
+grep --exclude=tags -roh "\\*$tag_regex\\*" doc | sed 's/*//g' | sort -u > "$tags"
+grep --exclude=tags -roh "|$tag_regex|" doc | sed 's/|//g' | sort -u > "$refs"
+
+exit_code=0
+
+if ! [[ $(comm -23 $refs $tags | wc -l) -eq 0 ]]; then
+  exit_code=1
+fi
+
+rm "$tags"
+rm "$refs"

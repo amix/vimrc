@@ -1,0 +1,21 @@
+Before:
+  call ale#assert#SetUpLinterTest('yaml', 'ls')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(should set correct defaults):
+  AssertLinter 'yaml-language-server', ale#Escape('yaml-language-server') . ' --stdio'
+
+Execute(should set correct LSP values):
+  call ale#test#SetFilename('../test-files/yaml/test.yaml')
+
+  AssertLSPLanguage 'yaml'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/yaml')
+
+Execute(should accept configuration settings):
+  AssertLSPConfig {}
+  let b:ale_yaml_ls_config = {'yaml': {'hover': v:false, 'completion': v:true}}
+  AssertLSPConfig {'yaml': {'hover': v:false, 'completion': v:true}}

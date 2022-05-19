@@ -1,0 +1,26 @@
+Before:
+  Save g:ale_sql_sqlfmt_executable
+  Save g:ale_sql_sqlfmt_options
+
+After:
+  Restore
+
+Execute(The sqlfmt callback should return the correct default values):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('sqlfmt')
+  \     . ' -w',
+  \ },
+  \ ale#fixers#sqlfmt#Fix(bufnr(''))
+
+Execute(The sqlfmt executable and options should be configurable):
+  let g:ale_sql_sqlfmt_executable = '/path/to/sqlfmt'
+  let g:ale_sql_sqlfmt_options = '-u'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/sqlfmt')
+  \     . ' -w'
+  \     . ' -u',
+  \ },
+  \ ale#fixers#sqlfmt#Fix(bufnr(''))

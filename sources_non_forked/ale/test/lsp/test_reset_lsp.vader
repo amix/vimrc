@@ -1,0 +1,98 @@
+Before:
+  Save g:ale_enabled
+  Save g:ale_set_signs
+  Save g:ale_set_quickfix
+  Save g:ale_set_loclist
+  Save g:ale_set_highlights
+  Save g:ale_echo_cursor
+
+  let g:ale_enabled = 0
+  let g:ale_set_signs = 0
+  let g:ale_set_quickfix = 0
+  let g:ale_set_loclist = 0
+  let g:ale_set_highlights = 0
+  let g:ale_echo_cursor = 0
+
+  function EmptyString() abort
+    return ''
+  endfunction
+
+  call ale#engine#InitBufferInfo(bufnr(''))
+  " Call this function first, so we can be sure the module is loaded before we
+  " check if it exists.
+  call ale#lsp_linter#ClearLSPData()
+
+  call ale#linter#Define('testft', {
+  \   'name': 'lsplinter',
+  \   'lsp': 'tsserver',
+  \   'executable': function('EmptyString'),
+  \   'command': function('EmptyString'),
+  \   'project_root': function('EmptyString'),
+  \   'language': function('EmptyString'),
+  \})
+
+  call ale#linter#Define('testft', {
+  \ 'name': 'otherlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd': 'true',
+  \ 'command': 'true',
+  \ 'read_buffer': 0,
+  \})
+
+After:
+  Restore
+
+  unlet! b:ale_save_event_fired
+
+  delfunction EmptyString
+  call ale#linter#Reset()
+
+Given testft(Some file with an imaginary filetype):
+Execute(ALEStopAllLSPs should clear the loclist):
+  let g:ale_buffer_info[bufnr('')].loclist = [
+  \ {
+  \   'text': 'a',
+  \   'lnum': 10,
+  \   'col': 0,
+  \   'bufnr': bufnr(''),
+  \   'vcol': 0,
+  \   'type': 'E',
+  \   'nr': -1,
+  \   'linter_name': 'lsplinter',
+  \ },
+  \ {
+  \   'text': 'a',
+  \   'lnum': 10,
+  \   'col': 0,
+  \   'bufnr': bufnr(''),
+  \   'vcol': 0,
+  \   'type': 'E',
+  \   'nr': -1,
+  \   'linter_name': 'otherlinter',
+  \ },
+  \]
+  let g:ale_buffer_info[bufnr('')].active_linter_list = [
+  \ {'name': 'lsplinter'},
+  \ {'name': 'otherlinter'},
+  \]
+
+  ALEStopAllLSPs
+
+  " The loclist should be updated.
+  AssertEqual g:ale_buffer_info[bufnr('')].loclist, [
+  \ {
+  \   'text': 'a',
+  \   'lnum': 10,
+  \   'col': 0,
+  \   'bufnr': bufnr(''),
+  \   'vcol': 0,
+  \   'type': 'E',
+  \   'nr': -1,
+  \   'linter_name': 'otherlinter',
+  \ },
+  \]
+
+  " The LSP linter should be removed from the active linter list.
+  AssertEqual
+  \ ['otherlinter'],
+  \ map(copy(g:ale_buffer_info[bufnr('')].active_linter_list), 'v:val.name')

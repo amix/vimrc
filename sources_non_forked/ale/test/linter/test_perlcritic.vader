@@ -1,0 +1,36 @@
+Before:
+  call ale#assert#SetUpLinterTest('perl', 'perlcritic')
+  call ale#test#SetFilename('test.pl')
+  let g:ale_perl_perlcritic_profile = ''
+
+After:
+  unlet! b:readme_path
+  call ale#assert#TearDownLinterTest()
+
+Execute(The command should be correct with g:ale_perl_perlcritic_showrules off):
+  let b:ale_perl_perlcritic_showrules = 0
+
+  AssertLinter 'perlcritic', ale#Escape('perlcritic')
+  \   . ' --verbose ' . ale#Escape('%l:%c %m\n') . ' --nocolor'
+
+Execute(The command should be correct with g:ale_perl_perlcritic_showrules on):
+  let b:ale_perl_perlcritic_showrules = 1
+
+  AssertLinter 'perlcritic', ale#Escape('perlcritic')
+  \   . ' --verbose ' . ale#Escape('%l:%c %m [%p]\n') . ' --nocolor'
+
+Execute(The command search for the profile file when set):
+  let b:ale_perl_perlcritic_profile = 'README.md'
+
+  let b:readme_path = ale#path#Simplify(expand('%:p:h:h:h') . '/README.md')
+
+  AssertLinter 'perlcritic', ale#Escape('perlcritic')
+  \   . ' --verbose ' . ale#Escape('%l:%c %m\n') . ' --nocolor'
+  \   . ' --profile ' . ale#Escape(b:readme_path)
+
+Execute(Extra options should be set appropriately):
+  let b:ale_perl_perlcritic_options = 'beep boop'
+
+  AssertLinter 'perlcritic', ale#Escape('perlcritic')
+  \   . ' --verbose ' . ale#Escape('%l:%c %m\n') . ' --nocolor'
+  \   . ' beep boop'

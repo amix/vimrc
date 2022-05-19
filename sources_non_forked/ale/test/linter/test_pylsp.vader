@@ -1,0 +1,70 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'pylsp')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  unlet! b:bin_dir
+  unlet! b:executable
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The pylsp command callback should return default string):
+  AssertLinter 'pylsp', ale#Escape('pylsp')
+
+Execute(The pylsp executable should be configurable):
+  let g:ale_python_pylsp_executable = '~/.local/bin/pylsp'
+
+  AssertLinter '~/.local/bin/pylsp' , ale#Escape('~/.local/bin/pylsp')
+
+Execute(The pylsp command callback should let you set options):
+  let g:ale_python_pylsp_options = '--some-option'
+
+  AssertLinter 'pylsp', ale#Escape('pylsp') . ' --some-option'
+
+Execute(The pylsp executable should be run from the virtualenv path):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/pylsp'
+  \)
+
+  AssertEqual ale#Escape(b:executable),
+  \ ale_linters#python#pylsp#GetCommand(bufnr(''))
+
+Execute(You should be able to override the pylsp virtualenv lookup):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let g:ale_python_pylsp_use_global = 1
+
+  AssertLinter 'pylsp', ale#Escape('pylsp')
+
+Execute(Setting executable to 'pipenv' appends 'run pylsp'):
+  let g:ale_python_pylsp_executable = 'path/to/pipenv'
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLinter 'path/to/pipenv', ale#Escape('path/to/pipenv') . ' run pylsp'
+
+Execute(Pipenv is detected when python_pylsp_auto_pipenv is set):
+  let g:ale_python_pylsp_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinter 'pipenv',
+  \ ale#Escape('pipenv') . ' run pylsp'
+
+Execute(Setting executable to 'poetry' appends 'run pylsp'):
+  let g:ale_python_pylsp_executable = 'path/to/poetry'
+
+  AssertLinter 'path/to/poetry', ale#Escape('path/to/poetry') . ' run pylsp'
+
+Execute(poetry is detected when python_pylsp_auto_poetry is set):
+  let g:ale_python_pylsp_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinter 'poetry',
+  \ ale#Escape('poetry') . ' run pylsp'
+
+Execute(Should accept configuration settings):
+  AssertLSPConfig {}
+  let b:ale_python_pylsp_config = {'pylsp': {'plugins': {'preload': {'enabled': v:false}}}}
+  AssertLSPConfig {'pylsp': {'plugins': {'preload': {'enabled': v:false}}}}

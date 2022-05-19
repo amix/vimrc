@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('tcl', 'nagelfar')
+
+After:
+  unlet! b:command_tail
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'nagelfar.tcl', ale#Escape('nagelfar.tcl') . ' %s'
+
+  let b:ale_tcl_nagelfar_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' %s'
+
+Execute(The options should be configurable):
+  let b:ale_tcl_nagelfar_options = '--something'
+
+  AssertLinter 'nagelfar.tcl', ale#Escape('nagelfar.tcl') . ' --something %s'

@@ -1,0 +1,162 @@
+Before:
+  " Make sure the c.vim file is loaded first.
+  call ale#c#FindProjectRoot(bufnr(''))
+
+  Save g:ale_c_parse_compile_commands
+  Save g:ale_c_parse_makefile
+  Save g:__ale_c_project_filenames
+
+  let g:original_project_filenames = g:__ale_c_project_filenames
+  let g:executable_map = {}
+
+  " Remove the .git/HEAD dir for C import paths for these tests.
+  " The tests run inside of a git repo.
+  let g:__ale_c_project_filenames = filter(
+  \ copy(g:__ale_c_project_filenames),
+  \ 'v:val isnot# ''.git/HEAD'''
+  \)
+
+  let g:ale_c_parse_compile_commands = 0
+  let g:ale_c_parse_makefile = 0
+
+  runtime autoload/ale/engine.vim
+
+  function! ale#engine#IsExecutable(buffer, executable) abort
+    return has_key(g:executable_map, a:executable)
+  endfunction
+
+After:
+  Restore
+
+  unlet! g:original_project_filenames
+  unlet! g:executable_map
+
+  runtime autoload/ale/engine.vim
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The C cc linter should include 'include' directories for projects with a Makefile):
+  call ale#assert#SetUpLinterTest('c', 'cc')
+  call ale#test#SetFilename('../test-files/c/makefile_project/subdir/file.c')
+  let g:ale_c_cc_options = ''
+
+  AssertLinter 'gcc',
+  \ ale#Escape('gcc')
+  \   . ' -S -x c -o ' . (has('win32') ? 'nul': '/dev/null')
+  \   . ' -iquote %s:h'
+  \   . ' -I' . ale#Escape(ale#path#Simplify(g:dir .  '/../test-files/c/makefile_project/include'))
+  \   . ' -'
+
+Execute(The C cc linter should include 'include' directories for projects with a configure file):
+  call ale#assert#SetUpLinterTest('c', 'cc')
+  call ale#test#SetFilename('../test-files/c/configure_project/subdir/file.c')
+  let g:ale_c_cc_options = ''
+
+  AssertLinter 'gcc',
+  \ ale#Escape('gcc')
+  \   . ' -S -x c -o ' . (has('win32') ? 'nul': '/dev/null')
+  \   . ' -iquote %s:h'
+  \   . ' -I' . ale#Escape(ale#path#Simplify(g:dir .  '/../test-files/c/configure_project/include'))
+  \   . ' -'
+
+Execute(The C cc linter should include root directories for projects with .h files in them):
+  call ale#assert#SetUpLinterTest('c', 'cc')
+  call ale#test#SetFilename('../test-files/c/h_file_project/subdir/file.c')
+  let g:ale_c_cc_options = ''
+
+  AssertLinter 'gcc',
+  \ ale#Escape('gcc')
+  \   . ' -S -x c -o ' . (has('win32') ? 'nul': '/dev/null')
+  \   . ' -iquote %s:h'
+  \   . ' -I' . ale#Escape(ale#path#Simplify(g:dir .  '/../test-files/c/h_file_project'))
+  \   . ' -'
+
+Execute(The C cc linter should include root directories for projects with .hpp files in them):
+  call ale#assert#SetUpLinterTest('c', 'cc')
+  call ale#test#SetFilename('../test-files/c/hpp_file_project/subdir/file.c')
+  let g:ale_c_cc_options = ''
+
+  AssertLinter 'gcc',
+  \ ale#Escape('gcc')
+  \   . ' -S -x c -o ' . (has('win32') ? 'nul': '/dev/null')
+  \   . ' -iquote %s:h'
+  \   . ' -I' . ale#Escape(ale#path#Simplify(g:dir .  '/../test-files/c/hpp_file_project'))
+  \   . ' -'
+
+Execute(The C ClangTidy handler should include 'include' directories for projects with a Makefile):
+  call ale#assert#SetUpLinterTest('c', 'clangtidy')
+  call ale#test#SetFilename('../test-files/c/makefile_project/subdir/file.cpp')
+  let g:ale_c_clangtidy_options = ''
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy')
+  \ . ' %s '
+  \ . '-- -I' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/c/makefile_project/include'))
+
+Execute(The C++ cc linter should include 'include' directories for projects with a Makefile):
+  call ale#assert#SetUpLinterTest('cpp', 'cc')
+  call ale#test#SetFilename('../test-files/c/makefile_project/subdir/file.cpp')
+  let g:ale_cpp_cc_options = ''
+
+  AssertLinter 'gcc',
+  \   ale#Escape('gcc')
+  \   . ' -S -x c++ -o ' . (has('win32') ? 'nul': '/dev/null')
+  \   . ' -iquote %s:h'
+  \   . ' -I' . ale#Escape(ale#path#Simplify(g:dir .  '/../test-files/c/makefile_project/include'))
+  \   . ' -'
+
+Execute(The C++ cc linter should include 'include' directories for projects with a configure file):
+  call ale#assert#SetUpLinterTest('cpp', 'cc')
+  call ale#test#SetFilename('../test-files/c/configure_project/subdir/file.cpp')
+  let g:ale_cpp_cc_options = ''
+
+  AssertLinter 'gcc',
+  \   ale#Escape('gcc')
+  \   . ' -S -x c++ -o ' . (has('win32') ? 'nul': '/dev/null')
+  \   . ' -iquote %s:h'
+  \   . ' -I' . ale#Escape(ale#path#Simplify(g:dir .  '/../test-files/c/configure_project/include'))
+  \   . ' -'
+
+Execute(The C++ cc linter should include root directories for projects with .h files in them):
+  call ale#assert#SetUpLinterTest('cpp', 'cc')
+  call ale#test#SetFilename('../test-files/c/h_file_project/subdir/file.cpp')
+  let g:ale_cpp_cc_options = ''
+
+  AssertLinter 'gcc',
+  \   ale#Escape('gcc')
+  \   . ' -S -x c++ -o ' . (has('win32') ? 'nul': '/dev/null')
+  \   . ' -iquote %s:h'
+  \   . ' -I' . ale#Escape(ale#path#Simplify(g:dir .  '/../test-files/c/h_file_project'))
+  \   . ' -'
+
+Execute(The C++ cc linter should include root directories for projects with .hpp files in them):
+  call ale#assert#SetUpLinterTest('cpp', 'cc')
+  call ale#test#SetFilename('../test-files/c/hpp_file_project/subdir/file.cpp')
+  let g:ale_cpp_cc_options = ''
+
+  AssertLinter 'gcc',
+  \   ale#Escape('gcc')
+  \   . ' -S -x c++ -o ' . (has('win32') ? 'nul': '/dev/null')
+  \   . ' -iquote %s:h'
+  \   . ' -I' . ale#Escape(ale#path#Simplify(g:dir .  '/../test-files/c/hpp_file_project'))
+  \   . ' -'
+
+Execute(The C++ ClangTidy handler should include json folders for projects with suitable build directory in them):
+  call ale#assert#SetUpLinterTest('cpp', 'clangtidy')
+  call ale#test#SetFilename('../test-files/c/json_project/subdir/file.cpp')
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy')
+  \   . ' %s '
+  \   . '-p ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/c/json_project/build'))
+
+Execute(The C++ ClangTidy handler should include 'include' directories for projects with a Makefile):
+  call ale#assert#SetUpLinterTest('cpp', 'clangtidy')
+  call ale#test#SetFilename('../test-files/c/makefile_project/subdir/file.cpp')
+  let g:ale_cpp_clangtidy_options = ''
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy')
+  \ . ' %s '
+  \ . '-- -I' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/c/makefile_project/include'))
+

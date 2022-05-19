@@ -24,8 +24,10 @@ endif
 if !s:has_features
     " Only output a warning if editing some special files.
     if index(['', 'gitcommit'], &filetype) == -1
-        execute 'echoerr ''ALE requires NeoVim >= 0.2.0 or Vim 8 with +timers +job +channel'''
-        execute 'echoerr ''Please update your editor appropriately.'''
+        " no-custom-checks
+        echoerr 'ALE requires NeoVim >= 0.2.0 or Vim 8 with +timers +job +channel'
+        " no-custom-checks
+        echoerr 'Please update your editor appropriately.'
     endif
 
     " Stop here, as it won't work.
@@ -228,6 +230,10 @@ command! -bar ALELint :call ale#Queue(0, 'lint_file')
 " Stop current jobs when linting.
 command! -bar ALELintStop :call ale#engine#Stop(bufnr(''))
 
+" Commands to manually populate the quickfixes.
+command! -bar ALEPopulateQuickfix :call ale#list#ForcePopulateErrorList(1)
+command! -bar ALEPopulateLocList  :call ale#list#ForcePopulateErrorList(0)
+
 " Define a command to get information about current filetype.
 command! -bar ALEInfo :call ale#debugging#Info()
 " The same, but copy output to your clipboard.
@@ -245,6 +251,9 @@ command! -bar -nargs=* ALEGoToDefinition :call ale#definition#GoToCommandHandler
 
 " Go to type definition for tsserver and LSP
 command! -bar -nargs=* ALEGoToTypeDefinition :call ale#definition#GoToCommandHandler('type', <f-args>)
+
+" Go to implementation for tsserver and LSP
+command! -bar -nargs=* ALEGoToImplementation :call ale#definition#GoToCommandHandler('implementation', <f-args>)
 
 " Repeat a previous selection in the preview window
 command! -bar ALERepeatSelection :call ale#preview#RepeatSelection()
@@ -269,6 +278,9 @@ command! -bar ALEImport :call ale#completion#Import()
 
 " Rename symbols using tsserver and LSP
 command! -bar -bang ALERename :call ale#rename#Execute()
+
+" Rename file using tsserver
+command! -bar -bang ALEFileRename :call ale#filerename#Execute()
 
 " Apply code actions to a range.
 command! -bar -range ALECodeAction :call ale#codefix#Execute(<range>)
@@ -310,12 +322,16 @@ nnoremap <silent> <Plug>(ale_go_to_type_definition) :ALEGoToTypeDefinition<Retur
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_tab) :ALEGoToTypeDefinition -tab<Return>
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_split) :ALEGoToTypeDefinition -split<Return>
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_vsplit) :ALEGoToTypeDefinitionIn -vsplit<Return>
+nnoremap <silent> <Plug>(ale_go_to_implementation_in_tab) :ALEGoToImplementation -tab<Return>
+nnoremap <silent> <Plug>(ale_go_to_implementation_in_split) :ALEGoToImplementation -split<Return>
+nnoremap <silent> <Plug>(ale_go_to_implementation_in_vsplit) :ALEGoToImplementation -vsplit<Return>
 nnoremap <silent> <Plug>(ale_find_references) :ALEFindReferences<Return>
 nnoremap <silent> <Plug>(ale_hover) :ALEHover<Return>
 nnoremap <silent> <Plug>(ale_documentation) :ALEDocumentation<Return>
 inoremap <silent> <Plug>(ale_complete) <C-\><C-O>:ALEComplete<Return>
 nnoremap <silent> <Plug>(ale_import) :ALEImport<Return>
 nnoremap <silent> <Plug>(ale_rename) :ALERename<Return>
+nnoremap <silent> <Plug>(ale_filerename) :ALEFileRename<Return>
 nnoremap <silent> <Plug>(ale_code_action) :ALECodeAction<Return>
 nnoremap <silent> <Plug>(ale_repeat_selection) :ALERepeatSelection<Return>
 

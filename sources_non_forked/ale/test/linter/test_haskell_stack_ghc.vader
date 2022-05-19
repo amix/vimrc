@@ -1,0 +1,18 @@
+Before:
+  call ale#assert#SetUpLinterTest('haskell', 'stack_ghc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The linter should not be executed when there's no stack.yaml file):
+  AssertLinterNotExecuted
+
+Execute(The linter should be executed when there is a stack.yaml file):
+  call ale#test#SetFilename('../test-files/stack/test.hs')
+
+  AssertLinterCwd '%s:h'
+  AssertLinter 'stack', 'stack ghc -- -fno-code -v0 %t'
+
+  let b:ale_haskell_stack_ghc_options = 'foobar'
+
+  AssertLinter 'stack', 'stack ghc -- foobar %t'

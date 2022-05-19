@@ -1,0 +1,59 @@
+Before:
+  Save g:ale_warn_about_trailing_whitespace
+
+  let g:ale_warn_about_trailing_whitespace = 1
+
+  runtime! ale/handlers/yamllint.vim
+
+After:
+  Restore
+
+  unlet! b:ale_warn_about_trailing_whitespace
+
+  call ale#linter#Reset()
+
+Execute(Problems should be parsed correctly for yamllint):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'type': 'W',
+  \     'text': 'missing document start "---"',
+  \     'code': 'document-start',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'syntax error: expected the node content, but found ''<stream end>''',
+  \   },
+  \ ],
+  \ ale#handlers#yamllint#Handle(bufnr(''), [
+  \   'something.yaml:1:1: [warning] missing document start "---" (document-start)',
+  \   'something.yml:2:1: [error] syntax error: expected the node content, but found ''<stream end>''',
+  \ ])
+
+Execute(The yamllint handler should respect ale_warn_about_trailing_whitespace):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'col': 18,
+  \     'type': 'E',
+  \     'text': 'trailing spaces',
+  \     'code': 'trailing-spaces',
+  \   },
+  \ ],
+  \ ale#handlers#yamllint#Handle(bufnr(''), [
+  \   'something.yml:5:18: [error] trailing spaces (trailing-spaces)',
+  \ ])
+
+  let b:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale#handlers#yamllint#Handle(bufnr(''), [
+  \   'something.yml:5:18: [error] trailing spaces (trailing-spaces)',
+  \ ])

@@ -1,0 +1,224 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+  call ale#test#SetFilename('dummy.txt')
+
+  let g:old_filename = expand('%:p')
+  let g:Callback = ''
+  let g:expr_list = []
+  let g:message_list = []
+  let g:handle_code_action_called = 0
+  let g:code_actions = []
+  let g:options = {}
+  let g:capability_checked = ''
+  let g:conn_id = v:null
+  let g:InitCallback = v:null
+
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/filerename.vim
+  runtime autoload/ale/code_action.vim
+
+  function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
+    let g:conn_id = ale#lsp#Register('executable', '/foo/bar', {})
+    call ale#lsp#MarkDocumentAsOpen(g:conn_id, a:buffer)
+
+    if a:linter.lsp is# 'tsserver'
+        call ale#lsp#MarkConnectionAsTsserver(g:conn_id)
+    endif
+
+    let l:details = {
+    \ 'command': 'foobar',
+    \ 'buffer': a:buffer,
+    \ 'connection_id': g:conn_id,
+    \ 'project_root': '/foo/bar',
+    \}
+
+    let g:InitCallback = {-> ale#lsp_linter#OnInit(a:linter, l:details, a:Callback)}
+  endfunction
+
+  function! ale#lsp#HasCapability(conn_id, capability) abort
+    let g:capability_checked = a:capability
+
+    return 1
+  endfunction
+
+  function! ale#lsp#RegisterCallback(conn_id, callback) abort
+    let g:Callback = a:callback
+  endfunction
+
+  function! ale#lsp#Send(conn_id, message) abort
+    call add(g:message_list, a:message)
+
+    return 42
+  endfunction
+
+  function! ale#util#Execute(expr) abort
+    call add(g:expr_list, a:expr)
+  endfunction
+
+  function! ale#code_action#HandleCodeAction(code_action, options) abort
+    let g:handle_code_action_called = 1
+    Assert get(a:options, 'should_save')
+    call add(g:code_actions, a:code_action)
+  endfunction
+
+  function! ale#util#Input(message, value, completion) abort
+    return 'a-new-name'
+  endfunction
+
+  call ale#filerename#SetMap({
+  \  3: {
+  \    'old_name': 'oldName',
+  \    'new_name': 'aNewName',
+  \  },
+  \})
+
+After:
+  if g:conn_id isnot v:null
+    call ale#lsp#RemoveConnectionWithID(g:conn_id)
+  endif
+
+  call ale#filerename#SetMap({})
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+  unlet! g:capability_checked
+  unlet! g:InitCallback
+  unlet! g:old_filename
+  unlet! g:conn_id
+  unlet! g:Callback
+  unlet! g:message_list
+  unlet! g:expr_list
+  unlet! b:ale_linters
+  unlet! g:options
+  unlet! g:code_actions
+  unlet! g:handle_code_action_called
+
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/filerename.vim
+  runtime autoload/ale/code_action.vim
+
+Execute(Other messages for the tsserver handler should be ignored):
+  call ale#filerename#HandleTSServerResponse(1, {'command': 'foo'})
+  AssertEqual g:handle_code_action_called, 0
+
+Execute(Failed file rename responses should be handled correctly):
+  call ale#filerename#SetMap({3: {'old_name': 'oldName', 'new_name': 'a-test'}})
+  call ale#filerename#HandleTSServerResponse(
+  \ 1,
+  \ {'command': 'getEditsForFileRename', 'request_seq': 3}
+  \)
+  AssertEqual g:handle_code_action_called, 0
+
+Given typescript(Some typescript file):
+  foo
+  somelongerline
+  bazxyzxyzxyz
+
+Execute(Code actions from tsserver should be handled):
+  call ale#filerename#HandleTSServerResponse(1, {
+  \ 'command': 'getEditsForFileRename',
+  \ 'seq': 0,
+  \ 'request_seq': 3,
+  \ 'type': 'response',
+  \ 'success': v:true,
+  \ 'body': [
+  \   {
+  \     'fileName': '/foo/bar/file1.tsx',
+  \     'textChanges': [
+  \       {
+  \         'end': {'offset': 55, 'line': 22},
+  \         'newText': './file2',
+  \         'start': {'offset': 34, 'line': 22},
+  \       }
+  \     ]
+  \   }
+  \ ],
+  \})
+
+  AssertEqual
+  \ [
+  \   {
+  \     'description': 'filerename',
+  \     'changes': [
+  \       {
+  \         'fileName': '/foo/bar/file1.tsx',
+  \         'textChanges': [
+  \           {
+  \             'end': {'offset': 55, 'line': 22},
+  \             'newText': './file2',
+  \             'start': {'offset': 34, 'line': 22},
+  \           }
+  \         ]
+  \       }
+  \     ],
+  \   }
+  \ ],
+  \ g:code_actions
+
+Execute(HandleTSServerResponse does nothing when no data in filerename_map):
+  call ale#filerename#HandleTSServerResponse(1, {
+  \ 'command': 'getEditsForFileRename',
+  \ 'request_seq': -9,
+  \ 'success': v:true,
+  \ 'body': {}
+  \})
+
+  AssertEqual g:handle_code_action_called, 0
+
+Execute(Prints a tsserver error message when unsuccessful):
+  call ale#filerename#HandleTSServerResponse(1, {
+  \ 'command': 'getEditsForFileRename',
+  \ 'request_seq': 3,
+  \ 'success': v:false,
+  \ 'message': 'This file cannot be renamed',
+  \})
+
+  AssertEqual g:handle_code_action_called, 0
+  AssertEqual ['echom ''Error renaming file "oldName" to "aNewName". ' .
+  \ 'Reason: This file cannot be renamed'''], g:expr_list
+
+Execute(Does nothing when no changes):
+  call ale#filerename#HandleTSServerResponse(1, {
+  \ 'command': 'getEditsForFileRename',
+  \ 'request_seq': 3,
+  \ 'success': v:true,
+  \ 'body': [],
+  \})
+
+  AssertEqual g:handle_code_action_called, 0
+  AssertEqual ['echom ''No changes while renaming "oldName" to "aNewName"'''], g:expr_list
+
+Execute(tsserver file rename requests should be sent):
+  call ale#filerename#SetMap({})
+  call ale#linter#Reset()
+
+  runtime ale_linters/typescript/tsserver.vim
+  call setpos('.', [bufnr(''), 2, 5, 0])
+
+  ALEFileRename
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual type(function('type')), type(g:InitCallback)
+  call g:InitCallback()
+
+  AssertEqual 'filerename', g:capability_checked
+  AssertEqual
+  \ 'function(''ale#filerename#HandleTSServerResponse'')',
+  \ string(g:Callback)
+  AssertEqual
+  \ [
+  \   ale#lsp#tsserver_message#Change(bufnr('')),
+  \   [0, 'ts@getEditsForFileRename', {
+  \     'oldFilePath': expand('%:p'),
+  \     'newFilePath': 'a-new-name',
+  \   }]
+  \ ],
+  \ g:message_list
+  AssertEqual {'42': {'old_name': expand('%:p'), 'new_name': 'a-new-name'}},
+  \ ale#filerename#GetMap()

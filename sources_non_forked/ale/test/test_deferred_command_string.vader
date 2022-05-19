@@ -1,0 +1,50 @@
+Before:
+  Save g:ale_run_synchronously
+  Save g:ale_emulate_job_failure
+  Save g:ale_buffer_info
+
+  let g:ale_run_synchronously = 1
+  let g:ale_buffer_info = {}
+  let b:ale_history = []
+
+  call ale#linter#Reset()
+  call ale#assert#SetUpLinterTestCommands()
+  call ale#linter#Define('foobar', {
+  \ 'name': 'lint_file_linter',
+  \ 'callback': 'LintFileCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': {b -> ale#command#Run(b, 'echo', {-> ale#command#Run(b, 'echo', {-> 'foo'})})},
+  \ 'read_buffer': 0,
+  \})
+
+  " Run the test commands in the shell.
+  let g:ale_run_synchronously_emulate_commands = 0
+
+After:
+  Restore
+
+  call ale#assert#TearDownLinterTest()
+  unlet! g:ale_run_synchronously_callbacks
+
+Given foobar (Some imaginary filetype):
+Execute(It should be possible to compute an executable to check based on the result of commands):
+  AssertLinter has('win32') ? 'cmd' : 'echo', 'foo'
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ 1,
+  \ len(filter(copy(b:ale_history), 'string(v:val.command) =~# ''foo'''))
+
+Execute(It handle the deferred command failing):
+  let g:ale_emulate_job_failure = 1
+
+  AssertLinter has('win32') ? 'cmd' : 'echo', 0
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ 0,
+  \ len(filter(copy(b:ale_history), 'string(v:val.command) =~# ''foo'''))

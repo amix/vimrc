@@ -1,0 +1,51 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+  runtime ale_linters/php/phpstan.vim
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(Output without errors should be parsed correctly):
+  call ale#test#SetFilename('phpstan-test-files/foo/test.php')
+
+  AssertEqual
+  \ [],
+  \ ale_linters#php#phpstan#Handle(bufnr(''), [
+  \ '{"totals":{"errors":0,"file_errors":0},"files":[],"errors":[]}',
+  \ ])
+
+Execute(Output with some errors should be parsed correctly):
+  call ale#test#SetFilename('phpstan-test-files/foo/test.php')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 9,
+  \     'text': 'Call to method format() on an unknown class DateTimeImutable.',
+  \     'type': 'E'
+  \   },
+  \   {
+  \     'lnum': 16,
+  \     'text': 'Sample message.',
+  \     'type': 'E'
+  \   },
+  \   {
+  \     'lnum': 192,
+  \     'text': 'Invalid command testCommand.',
+  \     'type': 'E'
+  \   }
+  \ ],
+  \ ale_linters#php#phpstan#Handle(bufnr(''), [json_encode(
+  \ {
+  \     "totals":{"errors": 0, "file_errors": 11},
+  \     "files":{expand('%:p'): {"errors": 3, "messages": [
+  \         {"message": "Call to method format() on an unknown class DateTimeImutable.", "line":9},
+  \         {"message": "Sample message.", "line":16},
+  \         {"message": "Invalid command testCommand.", "line": 192}
+  \     ]}}
+  \ },
+  \)])

@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_sql_pgformatter_executable
+  Save g:ale_sql_pgformatter_options
+
+After:
+  Restore
+
+Execute(The pgFormatter callback should return the correct default values):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('pg_format')
+  \ },
+  \ ale#fixers#pgformatter#Fix(bufnr(''))
+
+Execute(The pgFormatter executable and options should be configurable):
+  let g:ale_sql_pgformatter_executable = '/path/to/pg_format'
+  let g:ale_sql_pgformatter_options = '-n'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/pg_format')
+  \     . ' -n',
+  \ },
+  \ ale#fixers#pgformatter#Fix(bufnr(''))

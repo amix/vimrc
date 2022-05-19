@@ -1,0 +1,177 @@
+Before:
+  Save g:ale_max_buffer_history_size
+  Save g:ale_history_enabled
+  Save g:ale_history_log_output
+  Save g:ale_run_synchronously
+  Save g:ale_enabled
+
+  let g:ale_enabled = 1
+  let g:ale_run_synchronously = 1
+
+  unlet! b:ale_fixers
+  unlet! b:ale_enabled
+  unlet! b:ale_history
+
+  " Temporarily set the shell to /bin/sh, if it isn't already set that way.
+  " This will make it so the test works when running it directly.
+  let g:current_shell = &shell
+
+  if !has('win32')
+    let &shell = '/bin/sh'
+  endif
+
+  let g:history = []
+  let g:ale_buffer_info = {}
+  let g:ale_max_buffer_history_size = 20
+  let g:ale_history_log_output = 0
+
+  function! TestFixer(buffer)
+    return {'command': 'echo foo'}
+  endfunction
+
+  function! CollectResults(buffer, output)
+    return []
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'CollectResults',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': has('win32')
+  \   ? 'echo command history test'
+  \   : '/bin/sh -c ''echo command history test''',
+  \ 'read_buffer': 0,
+  \})
+
+After:
+  Restore
+
+  unlet! g:expected_results
+  unlet! b:ale_fixers
+  unlet! b:ale_enabled
+  " Clear the history we changed.
+  unlet! b:ale_history
+
+  " Reset the shell back to what it was before.
+  let &shell = g:current_shell
+  unlet g:current_shell
+  unlet g:history
+
+  call ale#engine#Cleanup(bufnr(''))
+  call ale#linter#Reset()
+
+  let g:ale_buffer_info = {}
+  let g:ale_max_buffer_history_size = 20
+  delfunction TestFixer
+  delfunction CollectResults
+
+Given foobar (Some imaginary filetype):
+  anything
+
+Execute(History should be set when commands are run):
+  AssertEqual 'foobar', &filetype
+
+  let b:ale_history = []
+  ALELint
+  call ale#test#FlushJobs()
+
+  let g:history = filter(
+  \ copy(ale#history#Get(bufnr(''))),
+  \ 'v:val.job_id isnot# ''executable''',
+  \)
+
+  AssertEqual 1, len(g:history)
+  AssertEqual
+  \ ['command', 'exit_code', 'job_id', 'status'],
+  \ sort(keys(g:history[0]))
+
+  if has('win32')
+    AssertEqual 'cmd /s/c "echo command history test"', g:history[0].command
+  else
+    AssertEqual ['/bin/sh', '-c', '/bin/sh -c ''echo command history test'''], g:history[0].command
+  endif
+
+  AssertEqual 'finished', g:history[0].status
+  AssertEqual 0, g:history[0].exit_code
+  " The Job ID will change each time, but we can check the type.
+  AssertEqual type(1), type(g:history[0].job_id)
+
+Execute(History should be not set when disabled):
+  AssertEqual 'foobar', &filetype
+
+  let g:ale_history_enabled = 0
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual [], ale#history#Get(bufnr(''))
+
+Execute(History should include command output if logging is enabled):
+  AssertEqual 'foobar', &filetype
+
+  let g:ale_history_log_output = 1
+
+  " Retry this test until it works. This one can randomly fail.
+  let b:ale_history = []
+  ALELint
+  call ale#test#FlushJobs()
+
+  let g:history = ale#history#Get(bufnr(''))
+
+  AssertEqual 1, len(g:history)
+  AssertEqual
+  \ ['command history test'],
+  \ map(
+  \   copy(get(g:history[0], 'output', [])),
+  \   'substitute(v:val, ''[\r ]*$'', '''', ''g'')'
+  \ )
+
+Execute(History items should be popped after going over the max):
+  let b:ale_history = map(range(20), '{''status'': ''started'', ''job_id'': v:val, ''command'': ''foobar''}')
+
+  call ale#history#Add(bufnr(''), 'started', 347, 'last command')
+
+  AssertEqual
+  \ (
+  \   map(range(1, 19), '{''status'': ''started'', ''job_id'': v:val, ''command'': ''foobar''}')
+  \   + [{'status': 'started', 'job_id': 347, 'command': 'last command'}]
+  \ ),
+  \ ale#history#Get(bufnr(''))
+
+Execute(Nothing should be added to history if the size is too low):
+  let g:ale_max_buffer_history_size = 0
+
+  call ale#history#Add(bufnr(''), 'started', 347, 'last command')
+
+  AssertEqual [], ale#history#Get(bufnr(''))
+
+  let g:ale_max_buffer_history_size = -2
+
+  call ale#history#Add(1, 'started', 347, 'last command')
+
+  AssertEqual [], ale#history#Get(bufnr(''))
+
+Given foobar(Some file with an imaginary filetype):
+  a
+  b
+  c
+
+Execute(The history should be updated when fixers are run):
+  call ale#test#SetFilename('dummy.txt')
+
+  let b:ale_fixers = {'foobar': ['TestFixer']}
+  let b:ale_enabled = 0
+
+  ALEFix
+
+  AssertEqual ['started'], map(copy(b:ale_history), 'v:val.status')
+
+  call ale#test#FlushJobs()
+
+  AssertEqual ['finished'], map(copy(b:ale_history), 'v:val.status')
+
+  if has('win32')
+    AssertEqual 'cmd /s/c "echo foo ', split(b:ale_history[0].command, '<')[0]
+  else
+    AssertEqual '/bin/sh -c echo foo ', split(join(b:ale_history[0].command), '<')[0]
+  endif

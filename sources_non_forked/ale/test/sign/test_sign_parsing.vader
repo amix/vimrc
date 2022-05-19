@@ -1,0 +1,88 @@
+Execute (Parsing English signs should work):
+  if has('nvim-0.4.2') || has('patch-8.1.614')
+    AssertEqual
+    \ [0, [[9, 1000001, 'ALEWarningSign']]],
+    \ ale#sign#ParseSigns([
+    \   'Signs for app.js:',
+    \   '    line=9  id=1000001  group=ale  name=ALEWarningSign',
+    \ ])
+  else
+    AssertEqual
+    \ [0, [[9, 1000001, 'ALEWarningSign']]],
+    \ ale#sign#ParseSigns([
+    \   'Signs for app.js:',
+    \   '    line=9  id=1000001  name=ALEWarningSign',
+    \ ])
+  endif
+
+Execute (Parsing Russian signs should work):
+  if has('nvim-0.4.2') || has('patch-8.1.614')
+    AssertEqual
+    \ [0, [[1, 1000001, 'ALEErrorSign']]],
+    \ ale#sign#ParseSigns(['    строка=1  id=1000001  группа=ale  имя=ALEErrorSign'])
+  else
+    AssertEqual
+    \ [0, [[1, 1000001, 'ALEErrorSign']]],
+    \ ale#sign#ParseSigns(['    строка=1  id=1000001  имя=ALEErrorSign'])
+  endif
+
+Execute (Parsing Japanese signs should work):
+  if has('nvim-0.4.2') || has('patch-8.1.614')
+    AssertEqual
+    \ [0, [[1, 1000001, 'ALEWarningSign']]],
+    \ ale#sign#ParseSigns(['    行=1  識別子=1000001  グループ=ale  名前=ALEWarningSign'])
+  else
+    AssertEqual
+    \ [0, [[1, 1000001, 'ALEWarningSign']]],
+    \ ale#sign#ParseSigns(['    行=1  識別子=1000001  名前=ALEWarningSign'])
+  endif
+
+Execute (Parsing Spanish signs should work):
+  if has('nvim-0.4.2') || has('patch-8.1.614')
+    AssertEqual
+    \ [0, [[12, 1000001, 'ALEWarningSign']]],
+    \ ale#sign#ParseSigns(['    línea=12 id=1000001  grupo=ale  nombre=ALEWarningSign'])
+  else
+    AssertEqual
+    \ [0, [[12, 1000001, 'ALEWarningSign']]],
+    \ ale#sign#ParseSigns(['    línea=12 id=1000001  nombre=ALEWarningSign'])
+  endif
+
+Execute (Parsing Italian signs should work):
+  if has('nvim-0.4.2') || has('patch-8.1.614')
+    AssertEqual
+    \ [0, [[1, 1000001, 'ALEWarningSign']]],
+    \ ale#sign#ParseSigns(['    riga=1 id=1000001, gruppo=ale  nome=ALEWarningSign'])
+  else
+    AssertEqual
+    \ [0, [[1, 1000001, 'ALEWarningSign']]],
+    \ ale#sign#ParseSigns(['    riga=1 id=1000001, nome=ALEWarningSign'])
+  endif
+
+Execute (Parsing German signs should work):
+  if has('nvim-0.4.2') || has('patch-8.1.614')
+    AssertEqual
+    \ [0, [[235, 1000001, 'ALEErrorSign']]],
+    \ ale#sign#ParseSigns(['    Zeile=235  id=1000001 Gruppe=ale  Name=ALEErrorSign'])
+  else
+    AssertEqual
+    \ [0, [[235, 1000001, 'ALEErrorSign']]],
+    \ ale#sign#ParseSigns(['  Zeile=235  id=1000001 Name=ALEErrorSign'])
+  endif
+
+Execute (The sign parser should indicate if the dummy sign is set):
+  if has('nvim-0.4.2') || has('patch-8.1.614')
+    AssertEqual
+    \ [1, [[1, 1000001, 'ALEErrorSign']]],
+    \ ale#sign#ParseSigns([
+    \   '    строка=1  id=1000001  group=ale  имя=ALEErrorSign',
+    \   '    line=1  id=1000000  group=ale  name=ALEDummySign',
+    \ ])
+  else
+    AssertEqual
+    \ [1, [[1, 1000001, 'ALEErrorSign']]],
+    \ ale#sign#ParseSigns([
+    \   '    строка=1  id=1000001  имя=ALEErrorSign',
+    \   '    line=1  id=1000000  name=ALEDummySign',
+    \ ])
+  endif

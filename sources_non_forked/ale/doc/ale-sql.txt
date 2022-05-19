@@ -3,6 +3,13 @@ ALE SQL Integration                                           *ale-sql-options*
 
 
 ===============================================================================
+dprint                                                         *ale-sql-dprint*
+
+See |ale-dprint-options|
+and https://github.com/dprint/dprint-plugin-sql/releases
+
+
+===============================================================================
 pgformatter                                               *ale-sql-pgformatter*
 
 g:ale_sql_pgformatter_executable             *g:ale_sql_pgformatter_executable*

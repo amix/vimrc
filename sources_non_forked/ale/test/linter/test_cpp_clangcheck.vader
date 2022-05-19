@@ -1,0 +1,35 @@
+Before:
+  call ale#assert#SetUpLinterTest('cpp', 'clangcheck')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'clang-check',
+  \ ale#Escape('clang-check')
+  \   . ' -analyze %s --extra-arg=-Xclang --extra-arg=-analyzer-output=text --extra-arg=-fno-color-diagnostics'
+
+  let b:ale_cpp_clangcheck_executable = 'foobar'
+
+  " The extra arguments in the command are used to prevent .plist files from
+  " being generated.
+  AssertLinter 'foobar',
+  \ ale#Escape('foobar')
+  \   . ' -analyze %s --extra-arg=-Xclang --extra-arg=-analyzer-output=text --extra-arg=-fno-color-diagnostics'
+
+Execute(The options should be configurable):
+  let b:ale_cpp_clangcheck_options = '--something'
+
+  AssertLinter 'clang-check',
+  \ ale#Escape('clang-check')
+  \   . ' -analyze %s'
+  \   . ' --extra-arg=-Xclang --extra-arg=-analyzer-output=text --extra-arg=-fno-color-diagnostics'
+  \   . ' --something'
+
+Execute(The build directory should be used when set):
+  let b:ale_cpp_clangcheck_options = '--something'
+  let b:ale_c_build_dir = '/foo/bar'
+
+  AssertLinter 'clang-check',
+  \ ale#Escape('clang-check')
+  \   . ' -analyze %s --something -p ' . ale#Escape('/foo/bar')

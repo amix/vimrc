@@ -1,0 +1,65 @@
+" Author: januswel, w0rp
+
+Before:
+  " This is just one language for the linter.
+  call ale#assert#SetUpLinterTest('markdown', 'textlint')
+
+  " The configuration is shared between many languages.
+  Save g:ale_textlint_executable
+  Save g:ale_textlint_use_global
+  Save g:ale_textlint_options
+
+  let g:ale_textlint_executable = 'textlint'
+  let g:ale_textlint_use_global = 0
+  let g:ale_textlint_options = ''
+
+  unlet! b:ale_textlint_executable
+  unlet! b:ale_textlint_use_global
+  unlet! b:ale_textlint_options
+
+After:
+  unlet! b:command_tail
+  unlet! b:ale_textlint_executable
+  unlet! b:ale_textlint_use_global
+  unlet! b:ale_textlint_options
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'textlint',
+  \ ale#Escape('textlint') . ' -f json --stdin --stdin-filename %s'
+
+Execute(The executable should be configurable):
+  let b:ale_textlint_executable = 'foobar'
+
+  AssertLinter 'foobar',
+  \ ale#Escape('foobar') . ' -f json --stdin --stdin-filename %s'
+
+Execute(The options should be configurable):
+  let b:ale_textlint_options = '--something'
+
+  AssertLinter 'textlint',
+  \ ale#Escape('textlint') . ' --something -f json --stdin --stdin-filename %s'
+
+Execute(The local executable from .bin should be used if available):
+  call ale#test#SetFilename('../test-files/textlint/with_bin_path/foo.txt')
+
+  AssertLinter
+  \ ale#path#Simplify(g:dir . '/../test-files/textlint/with_bin_path/node_modules/.bin/textlint'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/textlint/with_bin_path/node_modules/.bin/textlint'))
+  \   . ' -f json --stdin --stdin-filename %s'
+
+Execute(The local executable from textlint/bin should be used if available):
+  call ale#test#SetFilename('../test-files/textlint/with_textlint_bin_path/foo.txt')
+
+  if has('win32')
+    AssertLinter
+    \ ale#path#Simplify(g:dir . '/../test-files/textlint/with_textlint_bin_path/node_modules/textlint/bin/textlint.js'),
+    \ ale#Escape('node.exe') . ' ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/textlint/with_textlint_bin_path/node_modules/textlint/bin/textlint.js'))
+    \   . ' -f json --stdin --stdin-filename %s'
+  else
+    AssertLinter
+    \ ale#path#Simplify(g:dir . '/../test-files/textlint/with_textlint_bin_path/node_modules/textlint/bin/textlint.js'),
+    \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/textlint/with_textlint_bin_path/node_modules/textlint/bin/textlint.js'))
+    \   . ' -f json --stdin --stdin-filename %s'
+  endif

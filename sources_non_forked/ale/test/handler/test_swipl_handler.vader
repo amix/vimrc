@@ -1,0 +1,155 @@
+Before:
+  runtime ale_linters/prolog/swipl.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute (The swipl handler should handle oneline warning / error):
+  call ale#test#SetFilename('test.pl')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'col': 1,
+  \     'text': 'Syntax error: Operator expected',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#prolog#swipl#Handle(bufnr(''), [
+  \   'ERROR: /path/to/test.pl:5:1: Syntax error: Operator expected',
+  \ ])
+
+Execute (The swipl handler should handle a warning / error of two lines):
+  call ale#test#SetFilename('test.pl')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 9,
+  \     'col': 0,
+  \     'text': 'Singleton variables: [M]',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#prolog#swipl#Handle(bufnr(''), [
+  \   'Warning: /path/to/test.pl:9:',
+  \   '        Singleton variables: [M]',
+  \ ])
+
+Execute (The swipl handler should handle a warning / error of two lines in the new format):
+  call ale#test#SetFilename('test.pl')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 9,
+  \     'col': 0,
+  \     'text': 'Singleton variables: [M]',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#prolog#swipl#Handle(bufnr(''), [
+  \   'Warning: /path/to/test.pl:9:',
+  \   'Warning:        Singleton variables: [M]',
+  \ ])
+
+Execute (The swipl handler should join three or more lines with '. '):
+  call ale#test#SetFilename('test.pl')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 10,
+  \     'col': 0,
+  \     'text': 'Clauses of fib/2 are not together in the source-file. Earlier definition at /path/to/test.pl:7. Current predicate: f/0. Use :- discontiguous fib/2. to suppress this message',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#prolog#swipl#Handle(bufnr(''), [
+  \   'Warning: /path/to/test.pl:10:',
+  \   '        Clauses of fib/2 are not together in the source-file',
+  \   '          Earlier definition at /path/to/test.pl:7',
+  \   '          Current predicate: f/0',
+  \   '          Use :- discontiguous fib/2. to suppress this message',
+  \ ])
+
+Execute (The swipl handler should ignore warnings / errors 'No permission to call sandboxed ...'):
+  call ale#test#SetFilename('test.pl')
+  AssertEqual
+  \ [],
+  \ ale_linters#prolog#swipl#Handle(bufnr(''), [
+  \   'ERROR: /path/to/test.pl:11:',
+  \   '        No permission to call sandboxed `''$set_predicate_attribute''(_G3416:_G3417,_G3413,_G3414)''',
+  \   '        Reachable from:',
+  \   '                  system:''$set_pattr''(A,B,C,D)',
+  \   '                  system:''$set_pattr''(vimscript:A,B,C)',
+  \   '                  vimscript: (multifile A)',
+  \   'ERROR: /path/to/test.pl:12:',
+  \   '        No permission to call sandboxed `''$set_predicate_attribute''(_G205:_G206,_G202,_G203)''',
+  \   '        Reachable from:',
+  \   '                  system:''$set_pattr''(A,B,C,D)',
+  \   '                  system:''$set_pattr''(vimscript:A,B,C)',
+  \   '                  vimscript: (multifile A)',
+  \   'ERROR: /path/to/test.pl:13:',
+  \   '        No permission to call sandboxed `''$set_predicate_attribute''(_G1808:_G1809,_G1805,_G1806)''',
+  \   '        Reachable from:',
+  \   '                  system:''$set_pattr''(A,B,C,D)',
+  \   '                  system:''$set_pattr''(vimscript:A,B,C)',
+  \   '                  vimscript: (multifile A)',
+  \ ])
+
+Execute (The swipl handler should join three or more lines with '. ' on latest swipl):
+  call ale#test#SetFilename('test.pl')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 10,
+  \     'col': 0,
+  \     'text': 'Clauses of fib/2 are not together in the source-file. Earlier definition at /path/to/test.pl:7. Current predicate: f/0. Use :- discontiguous fib/2. to suppress this message',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#prolog#swipl#Handle(bufnr(''), [
+  \   'Warning: /path/to/test.pl:10:',
+  \   'Warning:        Clauses of fib/2 are not together in the source-file',
+  \   'Warning:          Earlier definition at /path/to/test.pl:7',
+  \   'Warning:          Current predicate: f/0',
+  \   'Warning:          Use :- discontiguous fib/2. to suppress this message',
+  \ ])
+
+Execute (The swipl handler should ignore warnings / errors 'No permission to call sandboxed with latest swpl...'):
+  call ale#test#SetFilename('test.pl')
+  AssertEqual
+  \ [],
+  \ ale_linters#prolog#swipl#Handle(bufnr(''), [
+  \   'ERROR: /path/to/test.pl:11:',
+  \   'ERROR:        No permission to call sandboxed `''$set_predicate_attribute''(_G3416:_G3417,_G3413,_G3414)''',
+  \   'ERROR:        Reachable from:',
+  \   'ERROR:                  system:''$set_pattr''(A,B,C,D)',
+  \   'ERROR:                  system:''$set_pattr''(vimscript:A,B,C)',
+  \   'ERROR:                  vimscript: (multifile A)',
+  \   'ERROR: /path/to/test.pl:12:',
+  \   'ERROR:        No permission to call sandboxed `''$set_predicate_attribute''(_G205:_G206,_G202,_G203)''',
+  \   'ERROR:        Reachable from:',
+  \   'ERROR:                  system:''$set_pattr''(A,B,C,D)',
+  \   'ERROR:                  system:''$set_pattr''(vimscript:A,B,C)',
+  \   'ERROR:                  vimscript: (multifile A)',
+  \   'ERROR: /path/to/test.pl:13:',
+  \   'ERROR:        No permission to call sandboxed `''$set_predicate_attribute''(_G1808:_G1809,_G1805,_G1806)''',
+  \   'ERROR:        Reachable from:',
+  \   'ERROR:                  system:''$set_pattr''(A,B,C,D)',
+  \   'ERROR:                  system:''$set_pattr''(vimscript:A,B,C)',
+  \   'ERROR:                  vimscript: (multifile A)',
+  \ ])
+
+Execute (The swipl handler should handle a warning / error with no line number):
+  call ale#test#SetFilename('test.pl')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 0,
+  \     'text': 'Exported procedure module_name:pred/0 is not defined',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#prolog#swipl#Handle(bufnr(''), [
+  \   'ERROR: Exported procedure module_name:pred/0 is not defined',
+  \ ])

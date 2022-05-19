@@ -1,0 +1,39 @@
+Before:
+  Save g:ale_python_yapf_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_python_yapf_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  Restore
+
+  unlet! b:bin_dir
+
+  call ale#test#RestoreDirectory()
+
+Execute(The yapf callback should return the correct default values):
+  AssertEqual
+  \ 0,
+  \ ale#fixers#yapf#Fix(bufnr(''))
+
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  AssertEqual
+  \ {'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/yapf'))},
+  \ ale#fixers#yapf#Fix(bufnr(''))
+  \
+Execute(The yapf should include the .style.yapf file if present):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/dir_with_yapf_config/foo/bar.py')
+
+  AssertEqual
+  \ {
+  \   'command':
+  \     ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/yapf'))
+  \     . ' --no-local-style'
+  \     . ' --style ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/dir_with_yapf_config/.style.yapf')),
+  \ },
+  \ ale#fixers#yapf#Fix(bufnr(''))

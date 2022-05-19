@@ -1,0 +1,29 @@
+Before:
+  call ale#assert#SetUpLinterTest('elm', 'elm_ls')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default executable path should be correct):
+  call ale#test#SetFilename('../test-files/elm/newapp/src/Main.elm')
+
+  AssertLinter 'elm-language-server', ale#Escape('elm-language-server') . ' --stdio'
+
+Execute(The project root should be detected correctly):
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/elm/newapp/src/Main.elm')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/elm/newapp')
+
+Execute(Should let users configure a global executable and override local paths):
+  call ale#test#SetFilename('../test-files/elm/newapp/src/Main.elm')
+
+  let g:ale_elm_ls_executable = '/path/to/custom/elm-language-server'
+  let g:ale_elm_ls_use_global = 1
+
+  AssertLinter '/path/to/custom/elm-language-server',
+  \ ale#Escape('/path/to/custom/elm-language-server') . ' --stdio'
+
+Execute(The language should be correct):
+  AssertLSPLanguage 'elm'

@@ -1,0 +1,19 @@
+Before:
+  Save g:ale_fixers
+
+After:
+  Restore
+
+Given help(A vim help file with badly aligned tags):
+  foo      *foo*
+  bar  *bar*
+  baz            *bar*
+
+Execute(Tags should be aligned at the right margin):
+  let g:ale_fixers = {'help': ['align_help_tags']}
+  ALEFix
+
+Expect help(Tags should be aligned):
+  foo                                                                       *foo*
+  bar                                                                       *bar*
+  baz                                                                       *bar*

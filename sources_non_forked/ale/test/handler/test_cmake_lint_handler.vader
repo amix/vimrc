@@ -1,0 +1,30 @@
+Before:
+  runtime ale_linters/cmake/cmake_lint.vim
+
+After:
+  Restore
+
+  call ale#linter#Reset()
+
+Execute(The cmake_lint handler should handle basic warnings):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 126,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'code': 'C0301',
+  \     'text': 'Line too long (136/80)',
+  \   },
+  \   {
+  \     'lnum': 139,
+  \     'col': 4,
+  \     'type': 'W',
+  \     'code': 'C0113',
+  \     'text': 'Missing COMMENT in statement which allows it',
+  \   },
+  \ ],
+  \ ale_linters#cmake#cmake_lint#Handle(1, [
+  \   'CMakeLists.txt:126: [C0301] Line too long (136/80)',
+  \   'CMakeLists.txt:139,04: [C0113] Missing COMMENT in statement which allows it',
+  \ ])

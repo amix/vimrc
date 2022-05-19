@@ -1,0 +1,33 @@
+Before:
+  runtime ale_linters/spec/rpmlint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The rpmlint handler should parse error messages correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 42,
+  \     'lnum': 23,
+  \     'text': 'macro-in-comment %version',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'bufnr': 42,
+  \     'lnum': 17,
+  \     'text': 'hardcoded-library-path in %_prefix/lib/%name',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'bufnr': 42,
+  \     'lnum': 1,
+  \     'text': 'specfile-error warning: bogus date in %changelog: Mon Oct 1 2005 - Foo',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#spec#rpmlint#Handle(42, [
+  \   'cyrus-imapd.spec:23: W: macro-in-comment %version',
+  \   'cyrus-imapd.spec:17: E: hardcoded-library-path in %_prefix/lib/%name',
+  \   'apcupsd.spec: E: specfile-error warning: bogus date in %changelog: Mon Oct 1 2005 - Foo',
+  \ ])

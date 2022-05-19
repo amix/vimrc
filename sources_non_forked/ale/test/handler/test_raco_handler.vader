@@ -1,0 +1,27 @@
+Before:
+  runtime ale_linters/racket/raco.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The raco handler should handle errors for the current file correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': 'foo.rkt',
+  \     'lnum': 4,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'dfine: unbound identifier in modulemessage',
+  \   },
+  \ ],
+  \ ale_linters#racket#raco#Handle(bufnr(''), [
+  \   'foo.rkt:4:1: dfine: unbound identifier in modulemessage',
+  \   '  in: dfine',
+  \   '  context...:',
+  \   '   /usr/local/Cellar/racket/6.5/share/racket/pkgs/compiler-lib/compiler/commands/expand.rkt:34:15: loop',
+  \   '   /usr/local/Cellar/racket/6.5/share/racket/pkgs/compiler-lib/compiler/commands/expand.rkt:10:2: show-program',
+  \   '   /usr/local/Cellar/racket/6.5/share/racket/pkgs/compiler-lib/compiler/commands/expand.rkt: [running body]',
+  \   '   /usr/local/Cellar/minimal-racket/6.6/share/racket/collects/raco/raco.rkt: [running body]',
+  \   '   /usr/local/Cellar/minimal-racket/6.6/share/racket/collects/raco/main.rkt: [running body]',
+  \ ])

@@ -1,0 +1,219 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'flake8')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+  GivenCommandOutput ['3.0.0']
+
+After:
+  unlet! b:executable
+  unlet! b:bin_dir
+  call ale#assert#TearDownLinterTest()
+
+Execute(The flake8 callbacks should return the correct default values):
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --version',
+  \ ale#Escape('flake8') . ' --format=default --stdin-display-name %s -',
+  \]
+
+  " The version check should be cached.
+  GivenCommandOutput []
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --format=default --stdin-display-name %s -',
+  \]
+
+  " Try with older versions.
+  call ale#semver#ResetVersionCache()
+  GivenCommandOutput ['2.9.9']
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --version',
+  \ ale#Escape('flake8') . ' --format=default -',
+  \]
+
+Execute(The option for disabling changing directories should work):
+  let g:ale_python_flake8_change_directory = 'off'
+
+  AssertLinterCwd ['', '']
+  call ale#semver#ResetVersionCache()
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --version',
+  \ ale#Escape('flake8') . ' --format=default --stdin-display-name %s -',
+  \]
+
+  let g:ale_python_flake8_change_directory = 0
+
+  AssertLinterCwd ['']
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --format=default --stdin-display-name %s -',
+  \]
+
+  " Invalid options should be considered the same as turning the setting off.
+  let g:ale_python_flake8_change_directory = 'xxx'
+
+  AssertLinterCwd ['']
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --format=default --stdin-display-name %s -',
+  \]
+
+Execute(The option for changing directory to project root should work):
+  call ale#test#SetFilename('../test-files/python/namespace_package_tox/namespace/foo/bar.py')
+
+  AssertLinterCwd ale#python#FindProjectRootIni(bufnr(''))
+  call ale#semver#ResetVersionCache()
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --version',
+  \ ale#Escape('flake8') . ' --format=default --stdin-display-name %s -',
+  \]
+
+Execute(The option for changing directory to file dir should work):
+  let g:ale_python_flake8_change_directory = 'file'
+  call ale#test#SetFilename('../test-files/python/namespace_package_tox/namespace/foo/bar.py')
+
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --version',
+  \ ale#Escape('flake8') . ' --format=default --stdin-display-name %s -',
+  \]
+
+  let g:ale_python_flake8_change_directory = 1
+
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --format=default --stdin-display-name %s -',
+  \]
+
+Execute(The flake8 command callback should let you set options):
+  let g:ale_python_flake8_options = '--some-option'
+
+  GivenCommandOutput ['3.0.4']
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --version',
+  \ ale#Escape('flake8') . ' --some-option'
+  \   . ' --format=default --stdin-display-name %s -',
+  \]
+
+  call ale#semver#ResetVersionCache()
+  GivenCommandOutput ['2.9.9']
+  AssertLinter 'flake8', [
+  \ ale#Escape('flake8') . ' --version',
+  \ ale#Escape('flake8') . ' --some-option --format=default -',
+  \]
+
+Execute(You should be able to set a custom executable and it should be escaped):
+  call ale#test#SetFilename('../test-files/dummy')
+
+  let g:ale_python_flake8_executable = 'executable with spaces'
+
+  AssertLinterCwd ['%s:h', '%s:h']
+  call ale#semver#ResetVersionCache()
+  AssertLinter 'executable with spaces', [
+  \ ale#Escape('executable with spaces') . ' --version',
+  \ ale#Escape('executable with spaces')
+  \   . ' --format=default'
+  \   . ' --stdin-display-name %s -',
+  \]
+
+Execute(The flake8 callbacks should detect virtualenv directories):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/flake8'
+  \)
+
+  AssertLinter b:executable, [
+  \ ale#Escape(b:executable) . ' --version',
+  \ ale#Escape(b:executable)
+  \   . ' --format=default'
+  \   . ' --stdin-display-name %s -',
+  \]
+
+Execute(The FindProjectRoot should detect the project root directory for namespace package via Manifest.in):
+  call ale#test#SetFilename('../test-files/python/namespace_package_manifest/namespace/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/namespace_package_manifest'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+Execute(The FindProjectRoot should detect the project root directory for namespace package via setup.cf):
+  call ale#test#SetFilename('../test-files/python/namespace_package_setup/namespace/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/namespace_package_setup'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+Execute(The FindProjectRoot should detect the project root directory for namespace package via pytest.ini):
+  call ale#test#SetFilename('../test-files/python/namespace_package_pytest/namespace/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/namespace_package_pytest'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+Execute(The FindProjectRoot should detect the project root directory for namespace package via tox.ini):
+  call ale#test#SetFilename('../test-files/python/namespace_package_tox/namespace/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/namespace_package_tox'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+Execute(The FindProjectRoot should detect the project root directory for non-namespace package):
+  call ale#test#SetFilename('../test-files/python/no_virtualenv/subdir/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/no_virtualenv/subdir'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+" Some users currently run flake8 this way, so we should support it.
+Execute(Using `python -m flake8` should be supported for running flake8):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let g:ale_python_flake8_executable = 'python'
+  let g:ale_python_flake8_options = '-m flake8 --some-option'
+
+  GivenCommandOutput ['2.9.9']
+  AssertLinter 'python', [
+  \ ale#Escape('python') . ' -m flake8 --version',
+  \ ale#Escape('python')
+  \   . ' -m flake8 --some-option --format=default -'
+  \]
+
+  call ale#semver#ResetVersionCache()
+
+  " Leading spaces shouldn't matter
+  let g:ale_python_flake8_options = '  -m flake8 --some-option'
+
+  GivenCommandOutput ['2.9.9']
+  AssertLinter 'python', [
+  \ ale#Escape('python') . ' -m flake8 --version',
+  \ ale#Escape('python')
+  \   . '   -m flake8 --some-option --format=default -'
+  \]
+
+Execute(Setting executable to 'pipenv' should append 'run flake8'):
+  let g:ale_python_flake8_executable = 'path/to/pipenv'
+
+  " FIXME: pipenv should check the version with flake8.
+  GivenCommandOutput []
+  AssertLinter 'path/to/pipenv',
+  \ ale#Escape('path/to/pipenv') . ' run flake8 --format=default -'
+
+Execute(Pipenv is detected when python_flake8_auto_pipenv is set):
+  let g:ale_python_flake8_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinterCwd ale#python#FindProjectRootIni(bufnr(''))
+  AssertLinter 'pipenv',
+  \ ale#Escape('pipenv') . ' run flake8 --format=default --stdin-display-name %s -'
+
+Execute(Setting executable to 'poetry' should append 'run flake8'):
+  let g:ale_python_flake8_executable = 'path/to/poetry'
+
+  " FIXME: poetry should check the version with flake8.
+  GivenCommandOutput []
+  AssertLinter 'path/to/poetry',
+  \ ale#Escape('path/to/poetry') . ' run flake8 --format=default -'
+
+Execute(poetry is detected when python_flake8_auto_poetry is set):
+  let g:ale_python_flake8_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinterCwd ale#python#FindProjectRootIni(bufnr(''))
+  AssertLinter 'poetry',
+  \ ale#Escape('poetry') . ' run flake8 --format=default --stdin-display-name %s -'

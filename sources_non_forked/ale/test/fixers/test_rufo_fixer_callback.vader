@@ -1,0 +1,30 @@
+Before:
+  Save g:ale_ruby_rufo_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_ruby_rufo_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The rufo command should contain `bundle exec` when executable is `bundle`):
+  let g:ale_ruby_rufo_executable = 'bundle'
+  call ale#test#SetFilename('../test-files/ruby/dummy.rb')
+
+  AssertEqual
+  \ ale#Escape('bundle') . ' exec rufo %t',
+  \ ale#fixers#rufo#GetCommand(bufnr(''))
+
+Execute(The rufo callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/ruby/dummy.rb')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid') . ' %t'
+  \ },
+  \ ale#fixers#rufo#Fix(bufnr(''))

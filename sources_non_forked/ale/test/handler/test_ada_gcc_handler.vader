@@ -1,0 +1,36 @@
+Before:
+  runtime ale_linters/ada/gcc.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The gcc handler for Ada should parse input correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 8,
+  \     'col': 5,
+  \     'type': 'W',
+  \     'text': 'variable "X" is assigned but never read',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 6,
+  \     'col': 22,
+  \     'type': 'E',
+  \     'text': 'type definition expected',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 8,
+  \     'col': 9,
+  \     'type': 'E',
+  \     'text': 'aspect specifications not allowed here',
+  \   },
+  \ ],
+  \ ale_linters#ada#gcc#Handle(0, [
+  \   'foobar.adb:8:05: warning: variable "X" is assigned but never read',
+  \   'foobar.ads:6:22: type definition expected',
+  \   'foobar.ads:8:09: aspect specifications not allowed here',
+  \ ])

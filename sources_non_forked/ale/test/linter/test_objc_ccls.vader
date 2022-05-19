@@ -1,0 +1,66 @@
+Before:
+  call ale#assert#SetUpLinterTest('objc', 'ccls')
+
+  Save b:ale_c_build_dir_names
+  Save b:ale_objc_ccls_executable
+  Save b:ale_objc_ccls_init_options
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The project root should be detected correctly using compile_commands.json file):
+  call ale#test#SetFilename(tempname() . '/dummy.m')
+
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/ccls/with_compile_commands_json/dummy.m')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/ccls/with_compile_commands_json')
+
+Execute(The project root should be detected correctly using .ccls file):
+  call ale#test#SetFilename(tempname() . '/dummy.m')
+
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/ccls/with_ccls/dummy.m')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/ccls/with_ccls')
+
+Execute(The project root should be detected correctly using .ccls-root file):
+  call ale#test#SetFilename(tempname() . '/dummy.m')
+
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/ccls/with_ccls-root/dummy.m')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/ccls/with_ccls-root')
+
+Execute(The executable should be configurable):
+  AssertLinter 'ccls', ale#Escape('ccls')
+
+  let b:ale_objc_ccls_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar')
+
+Execute(The initialization options should be configurable):
+  AssertLSPOptions {}
+
+  let b:ale_objc_ccls_init_options = { 'cacheDirectory': '/tmp/ccls' }
+
+  AssertLSPOptions { 'cacheDirectory': '/tmp/ccls' }
+
+Execute(The compile command database should be detected correctly):
+  call ale#test#SetFilename('../test-files/ccls/with_ccls/dummy.c')
+
+  AssertLSPOptions {}
+
+  call ale#test#SetFilename('../test-files/ccls/with_compile_commands_json/dummy.c')
+
+  AssertLSPOptions { 'compilationDatabaseDirectory':
+  \  ale#path#Simplify(g:dir . '/../test-files/ccls/with_compile_commands_json') }
+
+  call ale#test#SetFilename('../test-files/ccls/with_build_dir/dummy.c')
+  let b:ale_c_build_dir_names = ['unusual_build_dir_name']
+
+  AssertLSPOptions { 'compilationDatabaseDirectory':
+  \  ale#path#Simplify(g:dir . '/../test-files/ccls/with_build_dir/unusual_build_dir_name') }

@@ -1,0 +1,49 @@
+Before:
+  Save g:ale_python_autoflake_executable
+  Save g:ale_python_autoflake_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_python_autoflake_executable = 'xxxinvalid'
+  let g:ale_python_autoflake_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+  let g:dir = getcwd()
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  Restore
+
+  unlet! b:bin_dir
+
+  call ale#test#RestoreDirectory()
+
+Execute(The autoflake callback should return the correct default values):
+  AssertEqual
+  \ 0,
+  \ ale#fixers#autoflake#Fix(bufnr(''))
+
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/autoflake'))
+  \     . ' --in-place '
+  \     . ' %t',
+  \   'read_temporary_file': 1,
+  \ },
+  \ ale#fixers#autoflake#Fix(bufnr(''))
+
+
+Execute(The autoflake callback should include options):
+  let g:ale_python_autoflake_options = '--some-option'
+
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/autoflake'))
+  \     . ' --some-option'
+  \     . ' --in-place '
+  \     . ' %t',
+  \   'read_temporary_file': 1,
+  \ },
+  \ ale#fixers#autoflake#Fix(bufnr(''))

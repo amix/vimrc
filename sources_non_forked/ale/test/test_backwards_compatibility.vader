@@ -1,0 +1,19 @@
+" These tests, and the code that it covers, may be removed upon a major release.
+
+After:
+  unlet! g:ale_linters_sh_shellcheck_exclusions
+  unlet! g:ale_sh_shellcheck_exclusions
+  unlet! g:ale_linters_sh_shell_default_shell
+  unlet! g:ale_sh_shell_default_shell
+
+Execute(Old variable name for the 'shellcheck' linter should still work):
+  let g:ale_linters_sh_shellcheck_exclusions = 'SC1234'
+  runtime ale_linters/sh/shellcheck.vim
+
+  AssertEqual 'SC1234', g:ale_sh_shellcheck_exclusions
+
+Execute (Old variable name for the 'shell' linter should still work):
+  let g:ale_linters_sh_shell_default_shell = 'woosh'
+  runtime ale_linters/sh/shell.vim
+
+  AssertEqual 'woosh', g:ale_sh_shell_default_shell

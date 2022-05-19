@@ -1,0 +1,158 @@
+Before:
+  runtime autoload/ale/linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/lsp_linter.vim
+
+  let g:address = 'ccls_address'
+  let g:conn_id = -1
+  let g:executable = 'ccls'
+  let g:executable_or_address = ''
+  let g:linter_name = 'ccls'
+  let g:magic_number = 42
+  let g:no_result = 0
+  let g:message_list = []
+  let g:message_id = 1
+  let g:method = '$ccls/call'
+  let g:parameters = {}
+  let g:project_root = '/project/root'
+  let g:response = ''
+  let g:return_value = -1
+
+  let g:linter_list = [{
+  \   'output_stream': 'stdout',
+  \   'lint_file': 0,
+  \   'language': 'cpp',
+  \   'name': g:linter_name,
+  \   'project_root': {b -> g:project_root},
+  \   'aliases': [],
+  \   'read_buffer': 1,
+  \   'command': '%e'
+  \ }]
+
+  let g:callback_result = g:no_result
+
+  " Encode dictionary to jsonrpc
+  function! Encode(obj) abort
+    let l:body = json_encode(a:obj)
+    return 'Content-Length: ' . strlen(l:body) . "\r\n\r\n" . l:body
+  endfunction
+
+  " Replace the StartLSP function to mock an LSP linter
+  function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
+    let g:conn_id = ale#lsp#Register(g:executable_or_address, g:project_root, {})
+    call ale#lsp#MarkDocumentAsOpen(g:conn_id, a:buffer)
+    call ale#lsp#HandleMessage(g:conn_id, Encode({'method': 'initialize'}))
+
+    let l:details = {
+    \ 'command': g:executable,
+    \ 'buffer': a:buffer,
+    \ 'connection_id': g:conn_id,
+    \ 'project_root': g:project_root,
+    \}
+
+    call ale#lsp_linter#OnInit(a:linter, l:details, a:Callback)
+  endfunction
+
+  " Dummy callback
+  function! Callback(response) abort
+    let g:callback_result = a:response.result.value
+  endfunction
+
+  " Replace the GetAll function to mock an LSP linter
+  function! ale#linter#GetAll(filetype) abort
+    return g:linter_list
+  endfunction
+
+  " Replace the Send function to mock an LSP linter
+  function! ale#lsp#Send(conn_id, message) abort
+    call add(g:message_list, a:message)
+    return g:message_id
+  endfunction
+
+  " Code for a test case
+  function! TestCase(is_notification) abort
+    " Test sending a custom request
+    let g:return_value = ale#lsp_linter#SendRequest(
+    \  bufnr('%'),
+    \  g:linter_name,
+    \  [a:is_notification, g:method, g:parameters],
+    \  function('Callback'))
+
+    Assert index(g:message_list, [a:is_notification, g:method, g:parameters]) >= 0
+
+    " Mock an incoming response to the request
+    let g:response = Encode({
+    \  'id': g:message_id,
+    \  'jsonrpc': '2.0',
+    \  'result': {'value': g:magic_number}
+    \ })
+    call ale#lsp#HandleMessage(g:conn_id, g:response)
+
+    AssertEqual
+    \ a:is_notification ? g:no_result : g:magic_number,
+    \ g:callback_result
+  endfunction
+
+After:
+  if g:conn_id isnot v:null
+    call ale#lsp#RemoveConnectionWithID(g:conn_id)
+  endif
+
+  unlet! g:callback_result
+  unlet! g:conn_id
+  unlet! g:executable
+  unlet! g:is_notification
+  unlet! g:linter_name
+  unlet! g:magic_number
+  unlet! g:message_list
+  unlet! g:message_id
+  unlet! g:method
+  unlet! g:no_result
+  unlet! g:parameters
+  unlet! g:project_root
+  unlet! g:response
+  unlet! g:return_value
+
+  delfunction Encode
+  delfunction Callback
+  delfunction TestCase
+
+  runtime autoload/ale/linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/lsp_linter.vim
+
+Given cpp(Empty cpp file):
+Execute(Test custom request to server identified by executable):
+  let g:executable_or_address = g:executable
+  let g:linter_list[0].executable = {b -> g:executable}
+  let g:linter_list[0].lsp = 'stdio'
+  let g:is_notification = 0
+
+  call TestCase(g:is_notification)
+
+Given cpp(Empty cpp file):
+Execute(Test custom notification to server identified by executable):
+  let g:executable_or_address = g:executable
+  let g:linter_list[0].executable = {b -> g:executable}
+  let g:linter_list[0].lsp = 'stdio'
+  let g:is_notification = 1
+
+  call TestCase(g:is_notification)
+
+Given cpp(Empty cpp file):
+Execute(Test custom request to server identified by address):
+  let g:executable_or_address = g:address
+  let g:linter_list[0].address = {b -> g:address}
+  let g:linter_list[0].lsp = 'socket'
+  let g:is_notification = 0
+
+  call TestCase(g:is_notification)
+
+Given cpp(Empty cpp file):
+Execute(Test custom notification to server identified by address):
+  let g:executable_or_address = g:address
+  let g:linter_list[0].address = {b -> g:address}
+  let g:linter_list[0].lsp = 'socket'
+  let g:is_notification = 1
+
+  call TestCase(g:is_notification)

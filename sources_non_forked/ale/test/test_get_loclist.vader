@@ -1,0 +1,31 @@
+Before:
+  let g:loclist = [
+  \ {
+  \   'lnum': 1,
+  \   'bufnr': bufnr('%'),
+  \   'vcol': 0,
+  \   'linter_name': 'eslint',
+  \   'nr': -1,
+  \   'type': 'E',
+  \   'col': 10,
+  \   'text': 'Missing semicolon. (semi)'
+  \ },
+  \ {
+  \   'lnum': 2,
+  \   'bufnr': bufnr('%'),
+  \   'vcol': 0,
+  \   'linter_name': 'eslint',
+  \   'nr': -1,
+  \   'type': 'W',
+  \   'col': 10,
+  \   'text': 'Infix operators must be spaced. (space-infix-ops)'
+  \ },
+  \]
+  let g:ale_buffer_info = {'1': {'loclist': g:loclist}}
+
+After:
+  unlet g:loclist
+  let g:ale_buffer_info = {}
+
+Execute(GetLoclist should return the loclist):
+  AssertEqual g:loclist, ale#engine#GetLoclist(1)

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+exit_code=0
+
+# Documentation tags need to be aligned to the right margin, so look for
+# tags which aren't at the right margin.
+grep ' \*[^*]\+\*$' doc/ -r \
+    | awk '{ sep = index($0, ":"); if (length(substr($0, sep + 1 )) < 79) { print } }' \
+    | grep . && exit_code=1
+
+exit $exit_code

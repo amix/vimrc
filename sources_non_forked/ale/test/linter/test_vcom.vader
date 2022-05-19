@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('vhdl', 'vcom')
+
+After:
+  unlet! b:command_tail
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'vcom', ale#Escape('vcom') . '  -2008 -quiet -lint %t'
+
+  let b:ale_vhdl_vcom_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . '  -2008 -quiet -lint %t'
+
+Execute(The options should be configurable):
+  let b:ale_vhdl_vcom_options = '--something'
+
+  AssertLinter 'vcom', ale#Escape('vcom') . '  --something %t'

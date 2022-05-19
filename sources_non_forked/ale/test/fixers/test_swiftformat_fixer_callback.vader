@@ -1,0 +1,35 @@
+Before:
+  Save g:ale_swift_swiftformat_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_swift_swiftformat_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The swiftformat callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/swift/dummy.swift')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_swift_swiftformat_executable)
+  \     . ' %t ',
+  \ },
+  \ ale#fixers#swiftformat#Fix(bufnr(''))
+
+Execute(The swiftformat callback should include any additional options):
+  call ale#test#SetFilename('../test-files/swift/dummy.swift')
+  let g:ale_swift_swiftformat_options = '--some-option'
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_swift_swiftformat_executable)
+  \     . ' %t --some-option',
+  \ },
+  \ ale#fixers#swiftformat#Fix(bufnr(''))

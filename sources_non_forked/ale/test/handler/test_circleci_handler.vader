@@ -1,0 +1,39 @@
+Before:
+  runtime ale_linters/yaml/circleci.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The circlei handler should return nothing when configs are valid):
+  AssertEqual
+  \ [],
+  \ ale_linters#yaml#circleci#Handle(0, [
+  \ 'Config input is valid.',
+  \ ])
+
+Execute(The circlei handler put errors at the top when something is wrong):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': '[#/jobs] expected type: Mapping, found: Integer',
+  \     'detail': join([
+  \       '[#/jobs] expected type: Mapping, found: Integer',
+  \       'Jobs is a map',
+  \       'SCHEMA:',
+  \       '  type: object',
+  \       'INPUT:',
+  \       '  4',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale_linters#yaml#circleci#Handle(0, [
+  \ 'Error: ERROR IN CONFIG FILE:',
+  \ '[#/jobs] expected type: Mapping, found: Integer',
+  \ 'Jobs is a map',
+  \ 'SCHEMA:',
+  \ '  type: object',
+  \ 'INPUT:',
+  \ '  4',
+  \ ])

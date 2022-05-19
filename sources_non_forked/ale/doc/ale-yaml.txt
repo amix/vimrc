@@ -3,6 +3,37 @@ ALE YAML Integration                                         *ale-yaml-options*
 
 
 ===============================================================================
+actionlint                                                *ale-yaml-actionlint*
+
+Website: https://github.com/rhysd/actionlint
+
+
+Installation
+-------------------------------------------------------------------------------
+
+See installation guide: https://github.com/rhysd/actionlint#quick-start
+
+This linter is disabled by default and must be enabled by setting `g:ale_linters`.
+To enable it only for Github Action YAML files a configuration like this is
+better:
+
+>
+ au BufRead,BufNewFile */.github/*/*.y{,a}ml
+                                \ let b:ale_linters = {'yaml': ['actionlint']}
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_actionlint_executable             *g:ale_yaml_actionlint_executable*
+                                             *b:ale_yaml_actionlint_executable*
+  Type: |String|
+  Default: `'actionlint'`
+
+  This variable can be set to change the path to actionlint.
+
+
+===============================================================================
 circleci                                                    *ale-yaml-circleci*
 
 Website: https://circleci.com/docs/2.0/local-cli
@@ -99,6 +130,59 @@ g:ale_yaml_swaglint_executable                 *g:ale_yaml_swaglint_executable*
 
 g:ale_yaml_swaglint_use_global                 *g:ale_yaml_swaglint_use_global*
                                                *b:ale_yaml_swaglint_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+yaml-language-server                                 *ale-yaml-language-server*
+
+Website: https://github.com/redhat-developer/yaml-language-server
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install yaml-language-server either globally or locally: >
+
+  npm install yaml-language-server -g  # global
+  npm install yaml-language-server     # local
+
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_ls_executable                             *g:ale_yaml_ls_executable*
+                                                     *b:ale_yaml_ls_executable*
+  Type: |String|
+  Default: `'yaml-language-server'`
+
+  This variable can be set to change the path to yaml-language-server.
+
+
+g:ale_yaml_ls_config                                     *g:ale_yaml_ls_config*
+                                                         *b:ale_yaml_ls_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Dictionary containing configuration settings that will be passed to the
+  language server.  For example, to enable schema store: >
+      {
+    \   'yaml': {
+    \     'schemaStore': {
+    \         'enable': v:true,
+    \     },
+    \   },
+    \ }
+<
+  Consult the yaml-language-server documentation for more information about
+  settings.
+
+
+g:ale_yaml_ls_use_global                             *g:ale_yaml_ls_use_global*
+                                                     *b:ale_yaml_ls_use_global*
   Type: |String|
   Default: `get(g:, 'ale_use_global_executables', 0)`
 

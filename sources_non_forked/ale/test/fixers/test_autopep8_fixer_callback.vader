@@ -1,0 +1,37 @@
+Before:
+  Save g:ale_python_autopep8_executable
+  Save g:ale_python_autopep8_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_python_autopep8_executable = 'xxxinvalid'
+  let g:ale_python_autopep8_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+  let g:dir = getcwd()
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  Restore
+
+  unlet! b:bin_dir
+
+  call ale#test#RestoreDirectory()
+
+Execute(The autopep8 callback should return the correct default values):
+  AssertEqual
+  \ 0,
+  \ ale#fixers#autopep8#Fix(bufnr(''))
+
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  AssertEqual
+  \ {'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/autopep8')) . ' -'},
+  \ ale#fixers#autopep8#Fix(bufnr(''))
+
+Execute(The autopep8 callback should include options):
+  let g:ale_python_autopep8_options = '--some-option'
+
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  AssertEqual
+  \ {'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/autopep8')) . ' --some-option -' },
+  \ ale#fixers#autopep8#Fix(bufnr(''))

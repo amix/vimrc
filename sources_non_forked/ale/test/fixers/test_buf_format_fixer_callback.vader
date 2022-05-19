@@ -1,0 +1,21 @@
+Before:
+  Save g:ale_proto_buf_format_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_proto_buf_format_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The buf-format callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/proto/testfile.proto')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid') . ' format %t',
+  \ },
+  \ ale#fixers#buf_format#Fix(bufnr(''))

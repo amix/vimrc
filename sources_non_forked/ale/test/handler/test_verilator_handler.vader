@@ -1,0 +1,52 @@
+Before:
+  runtime ale_linters/verilog/verilator.vim
+
+After:
+  call ale#linter#Reset()
+
+
+Execute (The verilator handler should parse legacy messages with only line numbers):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'type': 'E',
+  \     'text': 'syntax error, unexpected IDENTIFIER',
+  \     'filename': 'foo.v'
+  \   },
+  \   {
+  \     'lnum': 10,
+  \     'type': 'W',
+  \     'text': 'Blocking assignments (=) in sequential (flop or latch) block; suggest delayed assignments (<=).',
+  \     'filename': 'bar.v'
+  \   },
+  \ ],
+  \ ale_linters#verilog#verilator#Handle(bufnr(''), [
+  \ '%Error: foo.v:3: syntax error, unexpected IDENTIFIER',
+  \ '%Warning-BLKSEQ: bar.v:10: Blocking assignments (=) in sequential (flop or latch) block; suggest delayed assignments (<=).',
+  \ ])
+
+
+Execute (The verilator handler should parse new format messages with line and column numbers):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'col' : 1,
+  \     'type': 'E',
+  \     'text': 'syntax error, unexpected endmodule, expecting ;',
+  \     'filename': 'bar.v'
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col' : 6,
+  \     'type': 'W',
+  \     'text': 'Signal is not used: r',
+  \     'filename': 'foo.v'
+  \   },
+  \ ],
+  \ ale_linters#verilog#verilator#Handle(bufnr(''), [
+  \ '%Error: bar.v:3:1: syntax error, unexpected endmodule, expecting ;',
+  \ '%Warning-UNUSED: foo.v:4:6: Signal is not used: r',
+  \ ])
+

@@ -1,0 +1,24 @@
+Before:
+  runtime ale_linters/glsl/glslang.vim
+
+Execute(The glsl glslang handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 4,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': '''gl_ModelViewProjectionMatrix'' : undeclared identifier',
+  \   },
+  \   {
+  \     'lnum': 121,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'text': '''switch'' : last case/default label not followed by statements',
+  \   },
+  \ ],
+  \ ale_linters#glsl#glslang#Handle(bufnr(''), [
+  \ 'ERROR: 0:4: ''gl_ModelViewProjectionMatrix'' : undeclared identifier',
+  \ 'WARNING: 0:121: ''switch'' : last case/default label not followed by statements',
+  \ 'ERROR: 2 compilation errors.  No code generated.',
+  \ ])

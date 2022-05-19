@@ -1,0 +1,52 @@
+After:
+  unlet! b:parse_result
+
+  if exists(':ParseTest')
+    delcommand ParseTest
+  endif
+
+Execute(ale#args#Parse should handle empty input):
+  AssertEqual
+  \ [{}, ''],
+  \ ale#args#Parse([], '')
+  AssertEqual
+  \ [{}, ''],
+  \ ale#args#Parse(['foo', 'bar'], '')
+
+Execute(ale#args#Parse should parse commands correctly):
+  AssertEqual
+  \ [{'foo': '', 'bar': ''}, 'leave  these  alone'],
+  \ ale#args#Parse(['foo', 'bar'], '-foo   -bar  leave  these  alone')
+  AssertEqual
+  \ [{'foo': ''}, 'leave  these  alone'],
+  \ ale#args#Parse(['foo', 'bar'], '-foo   leave  these  alone')
+
+Execute(ale#args#Parse should raise errors for unknown arguments):
+  AssertThrows call ale#args#Parse(['foo', 'bar'], '-nope   leave  these  alone')
+  AssertEqual 'Invalid argument: -nope', g:vader_exception
+
+Execute(ale#args#Parse should stop parsing arguments after --):
+  AssertEqual
+  \ [{'foo': ''}, ' --nope  leave  these  alone'],
+  \ ale#args#Parse(['foo', 'bar'], '-foo --  --nope  leave  these  alone')
+  AssertEqual
+  \ [{}, '--'],
+  \ ale#args#Parse(['foo', 'bar'], '-- --')
+  AssertEqual
+  \ [{}, ''],
+  \ ale#args#Parse(['foo', 'bar'], '--')
+
+Execute(ale#args#Parse should work for an example command):
+  command! -nargs=* ParseTest let b:parse_result = ale#args#Parse(['foo', 'bar'], <q-args>)
+
+  ParseTest
+  AssertEqual [{}, ''], b:parse_result
+
+  ParseTest -foo
+  AssertEqual [{'foo': ''}, ''], b:parse_result
+
+  ParseTest -foo -bar
+  AssertEqual [{'foo': '', 'bar': ''}, ''], b:parse_result
+
+  ParseTest -foo -bar leave  these  alone
+  AssertEqual [{'foo': '', 'bar': ''}, 'leave  these  alone'], b:parse_result

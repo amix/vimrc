@@ -1,0 +1,15 @@
+Before:
+  call ale#assert#SetUpLinterTest('php', 'php')
+  let b:command_tail = ' -l -d error_reporting=E_ALL -d display_errors=1'
+  \   . ' -d log_errors=0 --'
+
+After:
+  unlet! b:command_tail
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'php',  ale#Escape('php') . b:command_tail
+
+  let b:ale_php_php_executable = '/path/to/php'
+
+  AssertLinter '/path/to/php', ale#Escape('/path/to/php') . b:command_tail

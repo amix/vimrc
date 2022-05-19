@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_go_go111module
+
+  call ale#assert#SetUpLinterTest('go', 'gotype')
+  call ale#test#SetFilename('../test-files/go/testfile2.go')
+
+After:
+  unlet! b:ale_go_go111module
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default gotype command should be correct):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'gotype', 'gotype -e .'
+
+Execute(The gotype callback should ignore test files):
+  call ale#test#SetFilename('bla_test.go')
+
+  AssertLinterNotExecuted
+
+Execute(The gotype callback should support Go environment variables):
+  let b:ale_go_go111module = 'on'
+
+  AssertLinter 'gotype', ale#Env('GO111MODULE', 'on') . 'gotype -e .'

@@ -1,0 +1,109 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/handler')
+
+  runtime ale_linters/perl/perl.vim
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(The Perl linter should handle empty output):
+  call ale#test#SetFilename('bar.pl')
+
+  AssertEqual [], ale_linters#perl#perl#Handle(bufnr(''), [])
+
+Execute(The Perl linter should ignore errors from other files):
+  call ale#test#SetFilename('bar.pl')
+
+  AssertEqual
+  \ [
+  \    {'lnum': '2', 'type': 'E', 'text': 'Compilation failed in require'},
+  \ ],
+  \ ale_linters#perl#perl#Handle(bufnr(''), [
+  \   'syntax error at ' . ale#path#Simplify(g:dir . '/foo.pm') . ' line 4, near "aklsdfjmy "',
+  \   'Compilation failed in require at ' . ale#path#Simplify(g:dir . '/bar.pl') . ' line 2.',
+  \   'BEGIN failed--compilation aborted at ' . ale#path#Simplify(g:dir . '/bar.pl') . ' line 2.',
+  \ ])
+
+Execute(The Perl linter should complain about failing to locate modules):
+  AssertEqual
+  \ [
+  \    {
+  \     'lnum': '23',
+  \     'type': 'E',
+  \     'text': 'Can''t locate JustOneDb.pm in @INC (you may need to install the JustOneDb module) (@INC contains: /home/local/sean/work/PostgreSQL/6616/../../../../lib /home/local/sean/work/PostgreSQL/6616/lib lib /etc/perl /usr/local/lib/perl/5.18.2 /usr/local/share/perl/5.18.2 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.18 /usr/share/perl/5.18 /usr/local/lib/site_perl .)',
+  \   },
+  \ ],
+  \ ale_linters#perl#perl#Handle(bufnr(''), [
+  \ 'Can''t locate JustOneDb.pm in @INC (you may need to install the JustOneDb module) (@INC contains: /home/local/sean/work/PostgreSQL/6616/../../../../lib /home/local/sean/work/PostgreSQL/6616/lib lib /etc/perl /usr/local/lib/perl/5.18.2 /usr/local/share/perl/5.18.2 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.18 /usr/share/perl/5.18 /usr/local/lib/site_perl .) at - line 23.',
+  \ 'BEGIN failed--compilation aborted at - line 23.',
+  \ ])
+
+
+Execute(The Perl linter should complain about failing to locate modules):
+  AssertEqual
+  \ [
+  \ {'lnum': '8', 'type': 'E', 'text': 'BEGIN failed--compilation aborted'},
+  \ {'lnum': '10', 'type': 'E', 'text': 'BEGIN failed--compilation aborted'}
+  \ ],
+  \ ale_linters#perl#perl#Handle(bufnr(''), [
+  \ 'Unable to build `ro` accessor for slot `path` in `App::CPANFileUpdate` because the slot cannot be found. at /extlib/Method/Traits.pm line 189.',
+  \ 'BEGIN failed--compilation aborted at - line 8.',
+  \ 'Unable to build `ro` accessor for slot `path` in `App::CPANFileUpdate` because the slot cannot be found. at /extlib/Method/Traits.pm line 189.',
+  \ 'BEGIN failed--compilation aborted at - line 10.',
+  \ ])
+
+Execute(The Perl linter should not report warnings as errors):
+  AssertEqual
+  \ [
+  \ {'lnum': '5', 'type': 'W', 'text': '"my" variable $foo masks earlier declaration in same scope'},
+  \ ],
+  \ ale_linters#perl#perl#Handle(bufnr(''), [
+  \ '"my" variable $foo masks earlier declaration in same scope at - line 5.',
+  \ 't.pl syntax OK',
+  \ ])
+
+Execute(The Perl linter does not default to reporting generic error):
+  AssertEqual
+  \ [
+  \ {'lnum': '8', 'type': 'E', 'text': 'Missing right curly or square bracket'},
+  \ ],
+  \ ale_linters#perl#perl#Handle(bufnr(''), [
+  \ 'Missing right curly or square bracket at - line 8, at end of line',
+  \ 'syntax error at - line 8, at EOF',
+  \ 'Execution of t.pl aborted due to compilation errors.',
+  \ ])
+
+" The first "error" is actually a warning, but the current implementation
+" doesn't have a good way of teasing out the warnings from amongst the
+" errors.  If we're able to do this in future, then we'll want to switch
+" the first "E" to a "W".
+
+Execute(The Perl linter reports errors even when mixed with warnings):
+  AssertEqual
+  \ [
+  \ {'lnum': '5', 'type': 'E', 'text': '"my" variable $foo masks earlier declaration in same scope'},
+  \ {'lnum': '8', 'type': 'E', 'text': 'Missing right curly or square bracket'},
+  \ ],
+  \ ale_linters#perl#perl#Handle(bufnr(''), [
+  \ '"my" variable $foo masks earlier declaration in same scope at - line 5.',
+  \ 'Missing right curly or square bracket at - line 8, at end of line',
+  \ 'syntax error at - line 8, at EOF',
+  \ 'Execution of t.pl aborted due to compilation errors.',
+  \ ])
+
+Execute(The Perl linter reports errors even when an additional file location is included):
+  AssertEqual
+  \ [
+  \ {'lnum': '5', 'type': 'E', 'text': '"my" variable $foo masks earlier declaration in same scope'},
+  \ {'lnum': '6', 'type': 'E', 'text': '"my" variable $foo masks earlier declaration in same scope'},
+  \ {'lnum': '11', 'type': 'E', 'text': 'Global symbol "$asdf" requires explicit package name (did you forget to declare "my $asdf"?)'},
+  \ {'lnum': '12', 'type': 'E', 'text': 'Global symbol "$asdf" requires explicit package name (did you forget to declare "my $asdf"?)'},
+  \ ],
+  \ ale_linters#perl#perl#Handle(bufnr(''), [
+  \ '"my" variable $foo masks earlier declaration in same scope at - line 5.',
+  \ '"my" variable $foo masks earlier declaration in same scope at - line 6, at <DATA> line 1.',
+  \ 'Global symbol "$asdf" requires explicit package name (did you forget to declare "my $asdf"?) at - line 11.',
+  \ 'Global symbol "$asdf" requires explicit package name (did you forget to declare "my $asdf"?) at - line 12, <DATA> line 1.',
+  \ 'Execution of t.pl aborted due to compilation errors.',
+  \ ])

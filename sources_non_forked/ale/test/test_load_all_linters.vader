@@ -1,0 +1,6 @@
+Execute(Exceptions shouldn't be thrown when loading all linters):
+  " This test will look for errors when loading any of the linter files.
+  runtime! ale_linters/*/*.vim
+
+After:
+  call ale#linter#Reset()

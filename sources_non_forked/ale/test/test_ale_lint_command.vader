@@ -1,0 +1,77 @@
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_enabled
+
+  let g:ale_buffer_info = {}
+  let g:ale_enabled = 1
+
+  let g:expected_loclist = [{
+  \ 'bufnr': bufnr('%'),
+  \ 'lnum': 2,
+  \ 'vcol': 0,
+  \ 'col': 3,
+  \ 'text': 'foo bar',
+  \ 'type': 'E',
+  \ 'nr': -1,
+  \ 'pattern': '',
+  \ 'valid': 1,
+  \}]
+
+  function! ToggleTestCallback(buffer, output)
+    return [{
+    \ 'bufnr': a:buffer,
+    \ 'lnum': 2,
+    \ 'vcol': 0,
+    \ 'col': 3,
+    \ 'text': join(split(a:output[0])),
+    \ 'type': 'E',
+    \ 'nr': -1,
+    \}]
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'ToggleTestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': 'echo foo bar',
+  \})
+
+After:
+  Restore
+
+  unlet! g:expected_loclist
+  unlet! b:i
+
+  call ale#engine#Cleanup(bufnr(''))
+  call ale#linter#Reset()
+
+  let g:ale_buffer_info = {}
+
+  delfunction ToggleTestCallback
+
+Given foobar (Some imaginary filetype):
+  foo
+  bar
+  baz
+
+Execute(ALELint should run the linters):
+  AssertEqual 'foobar', &filetype
+
+  " Try to run the linter a few times, as it fails randomly in NeoVim.
+  for b:i in range(5)
+    ALELint
+    call ale#test#WaitForJobs(2000)
+
+    if !has('nvim')
+      " Sleep so the delayed list function can run.
+      " This breaks the tests in NeoVim for some reason.
+      sleep 1ms
+    endif
+
+    if ale#test#GetLoclistWithoutNewerKeys() == g:expected_loclist
+      break
+    endif
+  endfor
+
+  " Check the loclist
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()

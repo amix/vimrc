@@ -1,0 +1,18 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(Detect root of Swift project with Package.swift correctly):
+  call ale#test#SetFilename('test-files/swift/swift-package-project/src/folder/dummy.swift')
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/swift/swift-package-project'),
+  \ ale#swift#FindProjectRoot(bufnr(''))
+
+Execute(Detect no root in case of non-Package.swift project):
+  call ale#test#SetFilename('test-files/swift/non-swift-package-project/src/folder/dummy.swift')
+  AssertEqual
+  \ '',
+  \ ale#swift#FindProjectRoot(bufnr(''))
+

@@ -1,0 +1,85 @@
+Before:
+  call ale#assert#SetUpLinterTest('javascript', 'eslint')
+  runtime autoload/ale/handlers/eslint.vim
+
+  let b:args = ' -f json --stdin --stdin-filename %s'
+
+After:
+  unlet! b:args
+  unlet! b:executable
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinterCwd ''
+  AssertLinter 'eslint', ale#Escape('eslint') . b:args
+
+Execute(create-react-app directories should be detected correctly):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir/testfile.js')
+
+  let b:executable = ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js')
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/eslint/react-app')
+  AssertLinter b:executable,
+  \ (has('win32') ? ale#Escape('node.exe') . ' ' : '')
+  \ . ale#Escape(b:executable) . b:args
+
+Execute(use-global should override create-react-app detection):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir/testfile.js')
+
+  let g:ale_javascript_eslint_use_global = 1
+  let g:ale_javascript_eslint_executable = 'eslint_d'
+
+  let b:executable = 'eslint_d'
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/eslint/react-app')
+  AssertLinter b:executable, ale#Escape(b:executable) . b:args
+
+Execute(other app directories should be detected correctly):
+  call ale#test#SetFilename('../test-files/eslint/other-app/subdir/testfile.js')
+
+  let b:executable = ale#path#Simplify(g:dir . '/../test-files/eslint/node_modules/.bin/eslint')
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/eslint')
+  AssertLinter b:executable, ale#Escape(b:executable) . b:args
+
+Execute(use-global should override other app directories):
+  call ale#test#SetFilename('../test-files/eslint/other-app/subdir/testfile.js')
+
+  let g:ale_javascript_eslint_use_global = 1
+  let g:ale_javascript_eslint_executable = 'eslint_d'
+
+  let b:executable = 'eslint_d'
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/eslint')
+  AssertLinter b:executable, ale#Escape(b:executable) . b:args
+
+Execute(eslint_d should be detected correctly):
+  call ale#test#SetFilename('../test-files/eslint/app-with-eslint-d/testfile.js')
+
+  let b:executable = ale#path#Simplify(g:dir . '/../test-files/eslint/app-with-eslint-d/node_modules/.bin/eslint_d')
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/eslint/app-with-eslint-d')
+  AssertLinter b:executable, ale#Escape(b:executable) . b:args
+
+Execute(eslint.js executables should be run with node on Windows):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir/testfile.js')
+
+  let b:executable = ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js')
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/eslint/react-app')
+  AssertLinter b:executable,
+  \ (has('win32') ? ale#Escape('node.exe') . ' ' : '')
+  \ . ale#Escape(b:executable) . b:args
+
+Execute(eslint.js should be run from a containing project with node_modules):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir-with-package-json/testfile.js')
+
+  let b:executable = ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js')
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/eslint/react-app')
+  AssertLinter b:executable,
+  \ (has('win32') ? ale#Escape('node.exe') . ' ' : '')
+  \ . ale#Escape(b:executable) . b:args
+
+Execute(eslint.js should be run from a containing project with .yarn/sdks):
+  call ale#test#SetFilename('../test-files/eslint/yarn2-app/subdir/testfile.js')
+
+  let b:executable = ale#path#Simplify(g:dir . '/../test-files/eslint/yarn2-app/.yarn/sdks/eslint/bin/eslint.js')
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/eslint/yarn2-app')
+  AssertLinter b:executable,
+  \ (has('win32') ? ale#Escape('node.exe') . ' ' : '')
+  \ . ale#Escape(b:executable) . b:args

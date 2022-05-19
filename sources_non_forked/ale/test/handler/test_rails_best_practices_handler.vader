@@ -1,0 +1,52 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/handler')
+  cd ..
+
+  runtime ale_linters/ruby/rails_best_practices.vim
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(The rails_best_practices handler should parse JSON correctly):
+  call ale#test#SetFilename('test-files/ruby/valid_rails_app/app/models/thing.rb')
+
+  AssertEqual
+  \  [
+  \      {
+  \          'lnum': 5,
+  \          'text': 'use local variable',
+  \          'type': 'W',
+  \      },
+  \      {
+  \          'lnum': 10,
+  \          'text': 'other advice',
+  \          'type': 'W',
+  \      }
+  \  ],
+  \  ale_linters#ruby#rails_best_practices#Handle(bufnr(''), [
+  \  '[',
+  \    '{',
+  \      '"message": "use local variable",',
+  \      '"line_number": "5",',
+  \      printf('"filename": "%s"', substitute(expand('%:p'), '\\', '\\\\', 'g')),
+  \    '},{',
+  \      '"message": "other advice",',
+  \      '"line_number": "10",',
+  \      printf('"filename": "%s"', substitute(expand('%:p'), '\\', '\\\\', 'g')),
+  \    '}',
+  \  ']'
+  \  ])
+
+Execute(The rails_best_practices handler should parse JSON correctly when there is no output from the tool):
+  AssertEqual
+  \ [],
+  \ ale_linters#ruby#rails_best_practices#Handle(347, [
+  \ ])
+
+Execute(The rails_best_practices handler should handle garbage output):
+  AssertEqual
+  \ [],
+  \ ale_linters#ruby#rails_best_practices#Handle(347, [
+  \   'No such command in 2.4.1 of ruby',
+  \ ])

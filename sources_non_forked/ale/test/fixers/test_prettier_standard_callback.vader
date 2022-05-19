@@ -1,0 +1,15 @@
+Before:
+  call ale#assert#SetUpFixerTest('javascript', 'prettier_standard')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The prettier callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/prettier/testfile.js')
+
+  AssertFixer
+  \ {
+  \   'command': ale#Escape(g:ale_javascript_prettier_standard_executable)
+  \     . ' --stdin'
+  \     . ' --stdin-filepath=%s ',
+  \ }

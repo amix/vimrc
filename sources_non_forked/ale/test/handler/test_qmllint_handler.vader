@@ -1,0 +1,19 @@
+Before:
+  runtime ale_linters/qml/qmllint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The qmllint handler should parse error messages correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'Expected token ''}'''
+  \   }
+  \ ],
+  \ ale_linters#qml#qmllint#Handle(1, [
+  \   '/tmp/ab34cd56/Test.qml:2 : Expected token ''}'''
+  \ ])

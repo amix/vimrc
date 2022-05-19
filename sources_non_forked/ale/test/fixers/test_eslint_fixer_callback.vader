@@ -1,0 +1,339 @@
+Before:
+  call ale#assert#SetUpFixerTest('javascript', 'eslint')
+  Save g:ale_command_wrapper
+
+  runtime autoload/ale/handlers/eslint.vim
+
+  let g:ale_command_wrapper = ''
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The executable path should be correct):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir/testfile.js')
+
+  " eslint_d output with an older eslint version is used here.
+  GivenCommandOutput ['v4.4.1 (eslint_d v5.1.0)']
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/react-app'),
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js'))
+  \     . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/.eslintrc.js'))
+  \     . ' --fix %t',
+  \ }
+
+Execute(The ESLint fixer shouldn't run if no configuration file can be found):
+  call ale#test#SetFilename('../no-configuration')
+  AssertFixerNotExecuted
+
+Execute(The ESLint fixer should use a config file option if set for old versions):
+  call ale#test#SetFilename('../no-configuration')
+  let b:ale_javascript_eslint_options = '-c /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': '',
+  \   'command': ale#Escape('eslint') . ' -c /foo.cfg --fix %t',
+  \ }
+
+  let b:ale_javascript_eslint_options = '--bar -c /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': '',
+  \   'command': ale#Escape('eslint') . ' --bar -c /foo.cfg --fix %t',
+  \ }
+
+  let b:ale_javascript_eslint_options = '--config /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': '',
+  \   'command': ale#Escape('eslint') . ' --config /foo.cfg --fix %t',
+  \ }
+
+  let b:ale_javascript_eslint_options = '--bar --config /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': '',
+  \   'command': ale#Escape('eslint') . ' --bar --config /foo.cfg --fix %t',
+  \ }
+
+Execute(The ESLint fixer should use a -c file option if set for eslint_d):
+  let b:ale_javascript_eslint_executable = '/bin/eslint_d'
+  GivenCommandOutput ['v3.19.0 (eslint_d v4.2.0)']
+  call ale#test#SetFilename('../no-configuration')
+  let b:ale_javascript_eslint_options = '-c /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'process_with': 'ale#fixers#eslint#ProcessEslintDOutput',
+  \   'cwd': '',
+  \   'command': ale#Escape('/bin/eslint_d')
+  \     . ' -c /foo.cfg'
+  \     . ' --stdin-filename %s --stdin --fix-to-stdout'
+  \ }
+
+  let b:ale_javascript_eslint_options = '--bar -c /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'process_with': 'ale#fixers#eslint#ProcessEslintDOutput',
+  \   'cwd': '',
+  \   'command': ale#Escape('/bin/eslint_d')
+  \     . ' --bar -c /foo.cfg'
+  \     . ' --stdin-filename %s --stdin --fix-to-stdout'
+  \ }
+
+  let b:ale_javascript_eslint_options = '--config /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'process_with': 'ale#fixers#eslint#ProcessEslintDOutput',
+  \   'cwd': '',
+  \   'command': ale#Escape('/bin/eslint_d')
+  \     . ' --config /foo.cfg'
+  \     . ' --stdin-filename %s --stdin --fix-to-stdout'
+  \ }
+
+  let b:ale_javascript_eslint_options = '--bar --config /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'process_with': 'ale#fixers#eslint#ProcessEslintDOutput',
+  \   'cwd': '',
+  \   'command': ale#Escape('/bin/eslint_d')
+  \     . ' --bar --config /foo.cfg'
+  \     . ' --stdin-filename %s --stdin --fix-to-stdout'
+  \ }
+
+Execute(The ESLint fixer should use a config file option if set for new versions):
+  GivenCommandOutput ['4.9.0']
+  call ale#test#SetFilename('../no-configuration')
+  let b:ale_javascript_eslint_options = '-c /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'process_with': 'ale#fixers#eslint#ProcessFixDryRunOutput',
+  \   'cwd': '',
+  \   'command': ale#Escape('eslint')
+  \     . ' -c /foo.cfg'
+  \     . ' --stdin-filename %s --stdin --fix-dry-run --format=json'
+  \ }
+
+  let b:ale_javascript_eslint_options = '--bar -c /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'process_with': 'ale#fixers#eslint#ProcessFixDryRunOutput',
+  \   'cwd': '',
+  \   'command': ale#Escape('eslint')
+  \     . ' --bar -c /foo.cfg'
+  \     . ' --stdin-filename %s --stdin --fix-dry-run --format=json'
+  \ }
+
+  let b:ale_javascript_eslint_options = '--config /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'process_with': 'ale#fixers#eslint#ProcessFixDryRunOutput',
+  \   'cwd': '',
+  \   'command': ale#Escape('eslint')
+  \     . ' --config /foo.cfg'
+  \     . ' --stdin-filename %s --stdin --fix-dry-run --format=json'
+  \ }
+
+  let b:ale_javascript_eslint_options = '--bar --config /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'process_with': 'ale#fixers#eslint#ProcessFixDryRunOutput',
+  \   'cwd': '',
+  \   'command': ale#Escape('eslint')
+  \     . ' --bar --config /foo.cfg'
+  \     . ' --stdin-filename %s --stdin --fix-dry-run --format=json'
+  \ }
+
+Execute(The lower priority configuration file in a nested directory should be preferred):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir-with-config/testfile.js')
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/react-app'),
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js'))
+  \     . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/subdir-with-config/.eslintrc'))
+  \     . ' --fix %t',
+  \ }
+
+Execute(--config in options should override configuration file detection for old versions):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir-with-config/testfile.js')
+
+  let b:ale_javascript_eslint_options = '--config /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/react-app'),
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js'))
+  \     . ' --config /foo.cfg'
+  \     . ' --fix %t',
+  \ }
+
+  let b:ale_javascript_eslint_options = '-c /foo.cfg'
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/react-app'),
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js'))
+  \     . ' -c /foo.cfg'
+  \     . ' --fix %t',
+  \ }
+
+Execute(package.json should be used as a last resort):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir-with-package-json/testfile.js')
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/react-app'),
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js'))
+  \     . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/.eslintrc.js'))
+  \     . ' --fix %t',
+  \ }
+
+  call ale#test#SetFilename('../test-files/eslint/package.json')
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint'),
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/node_modules/.bin/eslint'))
+  \     . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/package.json'))
+  \     . ' --fix %t',
+  \ }
+
+Execute(The version check should be correct):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir-with-config/testfile.js')
+
+  " We should run the command to get the version the first time.
+  GivenCommandOutput ['4.9.0']
+  AssertFixer [
+  \ (has('win32') ? 'node.exe ' : '')
+  \   . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js'))
+  \   . ' --version',
+  \ {
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/react-app'),
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js'))
+  \     . ' --stdin-filename %s --stdin --fix-dry-run --format=json',
+  \   'process_with': 'ale#fixers#eslint#ProcessFixDryRunOutput',
+  \ },
+  \]
+
+  AssertFixer [
+  \ {
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/react-app'),
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js'))
+  \     . ' --stdin-filename %s --stdin --fix-dry-run --format=json',
+  \   'process_with': 'ale#fixers#eslint#ProcessFixDryRunOutput',
+  \ },
+  \]
+
+Execute(--fix-dry-run should be used for 4.9.0 and up):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir/testfile.js')
+
+  GivenCommandOutput ['4.9.0']
+  AssertFixer
+  \ {
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/react-app'),
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/eslint/bin/eslint.js'))
+  \     . ' --stdin-filename %s --stdin --fix-dry-run --format=json',
+  \   'process_with': 'ale#fixers#eslint#ProcessFixDryRunOutput',
+  \ }
+
+Execute(--fix-to-stdout should be used for eslint_d):
+  call ale#test#SetFilename('../test-files/eslint/app-with-eslint-d/testfile.js')
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/app-with-eslint-d'),
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/app-with-eslint-d/node_modules/.bin/eslint_d'))
+  \     . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/package.json'))
+  \     . ' --fix %t',
+  \ }
+
+  " The option should be used when eslint_d is new enough.
+  " We look at the ESLint version instead of the eslint_d version.
+  GivenCommandOutput ['v3.19.0 (eslint_d v4.2.0)']
+  AssertFixer
+  \ {
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/app-with-eslint-d'),
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/app-with-eslint-d/node_modules/.bin/eslint_d'))
+  \     . ' --stdin-filename %s --stdin --fix-to-stdout',
+  \   'process_with': 'ale#fixers#eslint#ProcessEslintDOutput',
+  \ }
+
+  " The option should be used for new versions too.
+  GivenCommandOutput ['4.9.0']
+  AssertFixer
+  \ {
+  \   'cwd': ale#path#Simplify(g:dir . '/../test-files/eslint/app-with-eslint-d'),
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/app-with-eslint-d/node_modules/.bin/eslint_d'))
+  \     . ' --stdin-filename %s --stdin --fix-to-stdout',
+  \   'process_with': 'ale#fixers#eslint#ProcessEslintDOutput',
+  \ }
+
+Execute(The --fix-dry-run post-processor should handle JSON output correctly):
+  AssertEqual
+  \ [],
+  \ ale#fixers#eslint#ProcessFixDryRunOutput(bufnr(''), [])
+  AssertEqual
+  \ [],
+  \ ale#fixers#eslint#ProcessFixDryRunOutput(bufnr(''), [''])
+  AssertEqual
+  \ [],
+  \ ale#fixers#eslint#ProcessFixDryRunOutput(bufnr(''), ['[{}]'])
+  AssertEqual
+  \ ['foo', 'bar'],
+  \ ale#fixers#eslint#ProcessFixDryRunOutput(bufnr(''), ['[{"output": "foo\nbar"}]'])
+
+Execute(The eslint_d post-processor should permit regular JavaScript content):
+  AssertEqual
+  \ [
+  \   'const x = ''Error: foo''',
+  \   'const y = 3',
+  \ ],
+  \ ale#fixers#eslint#ProcessEslintDOutput(bufnr(''), [
+  \   'const x = ''Error: foo''',
+  \   'const y = 3',
+  \ ])
+
+Execute(The eslint_d post-processor should handle error messages correctly):
+  AssertEqual
+  \ [],
+  \ ale#fixers#eslint#ProcessEslintDOutput(bufnr(''), [
+  \   'Error: No ESLint configuration found.',
+  \ ])
+
+Execute(The eslint_d post-processor should handle failing to connect properly):
+  AssertEqual
+  \ [],
+  \ ale#fixers#eslint#ProcessEslintDOutput(bufnr(''), [
+  \   'Could not connect',
+  \ ])

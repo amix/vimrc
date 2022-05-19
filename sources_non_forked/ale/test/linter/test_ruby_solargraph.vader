@@ -1,0 +1,43 @@
+" Author: Horacio Sanson <https://github.com/hsanson>
+" Description: Tests for solargraph lsp linter.
+Before:
+  call ale#assert#SetUpLinterTest('ruby', 'solargraph')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(command callback should return default string):
+  AssertLinter 'solargraph', ale#Escape('solargraph') . ' stdio'
+
+Execute(command callback executable can be overridden):
+  let g:ale_ruby_solargraph_executable = 'foobar'
+  AssertLinter 'foobar', ale#Escape('foobar') . ' stdio'
+
+Execute(should set solargraph for rails app):
+  call ale#test#SetFilename('../test-files/ruby/valid_rails_app/app/models/thing.rb')
+  AssertLSPLanguage 'ruby'
+  AssertLSPOptions {}
+  AssertLSPProject ale#test#GetFilename('../test-files/ruby/valid_rails_app')
+
+Execute(should set solargraph for ruby app1):
+  call ale#test#SetFilename('../test-files/ruby/valid_ruby_app1/lib/file.rb')
+  AssertLSPLanguage 'ruby'
+  AssertLSPOptions {}
+  AssertLSPProject ale#test#GetFilename('../test-files/ruby/valid_ruby_app1')
+
+Execute(should set solargraph for ruby app2):
+  call ale#test#SetFilename('../test-files/ruby/valid_ruby_app2/lib/file.rb')
+  AssertLSPLanguage 'ruby'
+  AssertLSPOptions {}
+  AssertLSPProject ale#test#GetFilename('../test-files/ruby/valid_ruby_app2')
+
+Execute(should set solargraph for ruby app3):
+  call ale#test#SetFilename('../test-files/ruby/valid_ruby_app3/lib/file.rb')
+  AssertLSPLanguage 'ruby'
+  AssertLSPOptions {}
+  AssertLSPProject ale#test#GetFilename('../test-files/ruby/valid_ruby_app3')
+
+Execute(should accept initialization options):
+  AssertLSPOptions {}
+  let b:ale_ruby_solargraph_options = { 'diagnostics': 'true' }
+  AssertLSPOptions { 'diagnostics': 'true' }

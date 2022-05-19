@@ -1,0 +1,29 @@
+Before:
+  call ale#assert#SetUpLinterTest('terraform', 'terraform_lsp')
+
+After:
+  unlet! b:ale_terraform_langserver_executable
+  unlet! b:ale_terraform_langserver_options
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(Should send correct LSP language):
+  AssertLSPLanguage 'terraform'
+
+Execute(Should load default executable):
+  AssertLinter 'terraform-lsp', ale#Escape('terraform-lsp')
+
+Execute(Should configure custom executable):
+  let b:ale_terraform_langserver_executable = 'foo'
+  AssertLinter 'foo', ale#Escape('foo')
+
+Execute(Should set custom options):
+  let b:ale_terraform_langserver_options = '--bar'
+
+  AssertLinter 'terraform-lsp',
+  \ ale#Escape('terraform-lsp') . ' --bar'
+
+Execute(Should return nearest directory with .terraform if found in parent directory):
+  call ale#test#SetFilename('../test-files/terraform/main.tf')
+
+  AssertLSPProject ale#test#GetFilename('../test-files/terraform')

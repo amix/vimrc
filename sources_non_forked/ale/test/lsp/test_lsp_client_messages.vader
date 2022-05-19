@@ -1,0 +1,389 @@
+Before:
+  let g:ale_lsp_next_version_id = 1
+
+  call ale#test#SetDirectory('/testplugin/test/lsp')
+  call ale#test#SetFilename('foo/bar.ts')
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(ale#lsp#message#Initialize() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'initialize',
+  \   {
+  \    'processId': getpid(),
+  \    'rootPath': '/foo/bar',
+  \    'capabilities': {},
+  \    'initializationOptions': {'foo': 'bar'},
+  \    'rootUri': 'file:///foo/bar',
+  \   }
+  \ ],
+  \ ale#lsp#message#Initialize('/foo/bar', {'foo': 'bar'}, {})
+
+Execute(ale#lsp#message#Initialized() should return correct messages):
+  AssertEqual [1, 'initialized', {}], ale#lsp#message#Initialized()
+
+Execute(ale#lsp#message#Shutdown() should return correct messages):
+  AssertEqual [0, 'shutdown'], ale#lsp#message#Shutdown()
+
+Execute(ale#lsp#message#Exit() should return correct messages):
+  AssertEqual [1, 'exit'], ale#lsp#message#Exit(),
+
+Given typescript(A TypeScript file with 3 lines):
+  foo()
+  bar()
+  baz()
+
+Execute(ale#lsp#message#DidOpen() should return correct messages):
+  let g:ale_lsp_next_version_id = 12
+  AssertEqual
+  \ [
+  \   1,
+  \   'textDocument/didOpen',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \         'languageId': 'typescript',
+  \         'version': 12,
+  \         'text': "foo()\nbar()\nbaz()\n",
+  \     },
+  \   }
+  \ ],
+  \ ale#lsp#message#DidOpen(bufnr(''), 'typescript')
+
+Execute(ale#lsp#message#DidChange() should return correct messages):
+  let g:ale_lsp_next_version_id = 34
+
+  AssertEqual
+  \ [
+  \   1,
+  \   'textDocument/didChange',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \         'version': 34,
+  \     },
+  \     'contentChanges': [{'text': "foo()\nbar()\nbaz()\n"}],
+  \   }
+  \ ],
+  \ ale#lsp#message#DidChange(bufnr(''))
+  " The version numbers should increment.
+  AssertEqual
+  \ 35,
+  \ ale#lsp#message#DidChange(bufnr(''))[2].textDocument.version
+  AssertEqual
+  \ 36,
+  \ ale#lsp#message#DidChange(bufnr(''))[2].textDocument.version
+
+Execute(ale#lsp#message#DidSave() should return correct messages):
+  AssertEqual
+  \ [
+  \   1,
+  \   'textDocument/didSave',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \     },
+  \   }
+  \ ],
+  \ ale#lsp#message#DidSave(bufnr(''), v:false)
+
+Execute(ale#lsp#message#DidSave() should return correct message with includeText capability):
+  AssertEqual
+  \ [
+  \   1,
+  \   'textDocument/didSave',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \         'version': 1,
+  \     },
+  \     'text': ale#util#GetBufferContents(bufnr('')),
+  \   }
+  \ ],
+  \ ale#lsp#message#DidSave(bufnr(''), v:true)
+
+Execute(ale#lsp#message#DidClose() should return correct messages):
+  AssertEqual
+  \ [
+  \   1,
+  \   'textDocument/didClose',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \     },
+  \   }
+  \ ],
+  \ ale#lsp#message#DidClose(bufnr(''))
+
+Execute(ale#lsp#message#Completion() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'textDocument/completion',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \     },
+  \     'position': {'line': 11, 'character': 33},
+  \   }
+  \ ],
+  \ ale#lsp#message#Completion(bufnr(''), 12, 34, '')
+
+Execute(ale#lsp#message#Completion() should return correct messages with a trigger charaacter):
+  AssertEqual
+  \ [
+  \   0,
+  \   'textDocument/completion',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \     },
+  \     'position': {'line': 11, 'character': 33},
+  \     'context': {'triggerKind': 2, 'triggerCharacter': '.'},
+  \   }
+  \ ],
+  \ ale#lsp#message#Completion(bufnr(''), 12, 34, '.')
+  \
+Execute(ale#lsp#message#Definition() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'textDocument/definition',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \     },
+  \     'position': {'line': 11, 'character': 33},
+  \   }
+  \ ],
+  \ ale#lsp#message#Definition(bufnr(''), 12, 34)
+
+Execute(ale#lsp#message#TypeDefinition() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'textDocument/typeDefinition',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \     },
+  \     'position': {'line': 11, 'character': 33},
+  \   }
+  \ ],
+  \ ale#lsp#message#TypeDefinition(bufnr(''), 12, 34)
+
+Execute(ale#lsp#message#Implementation() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'textDocument/implementation',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \     },
+  \     'position': {'line': 11, 'character': 33},
+  \   }
+  \ ],
+  \ ale#lsp#message#Implementation(bufnr(''), 12, 34)
+
+Execute(ale#lsp#message#References() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'textDocument/references',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \     },
+  \     'position': {'line': 11, 'character': 33},
+  \     'context': {'includeDeclaration': v:false},
+  \   }
+  \ ],
+  \ ale#lsp#message#References(bufnr(''), 12, 34)
+
+Execute(ale#lsp#message#Symbol() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'workspace/symbol',
+  \   {
+  \     'query': 'foobar',
+  \   }
+  \ ],
+  \ ale#lsp#message#Symbol('foobar')
+
+Execute(ale#lsp#message#Hover() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'textDocument/hover',
+  \   {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(g:dir . '/foo/bar.ts'),
+  \     },
+  \     'position': {'line': 11, 'character': 33},
+  \   }
+  \ ],
+  \ ale#lsp#message#Hover(bufnr(''), 12, 34)
+
+Execute(ale#lsp#message#DidChangeConfiguration() should return correct messages):
+  let g:ale_lsp_configuration = {
+  \ 'foo': 'bar'
+  \ }
+  AssertEqual
+  \ [
+  \   1,
+  \   'workspace/didChangeConfiguration',
+  \   {
+  \     'settings': {
+  \         'foo': 'bar',
+  \     }
+  \   }
+  \ ],
+  \ ale#lsp#message#DidChangeConfiguration(bufnr(''), g:ale_lsp_configuration)
+
+Execute(ale#lsp#tsserver_message#Open() should return correct messages):
+  AssertEqual
+  \ [
+  \   1,
+  \   'ts@open',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#Open(bufnr(''))
+
+Execute(ale#lsp#tsserver_message#Close() should return correct messages):
+  AssertEqual
+  \ [
+  \   1,
+  \   'ts@close',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#Close(bufnr(''))
+
+Execute(ale#lsp#tsserver_message#Change() should return correct messages):
+  AssertEqual
+  \ [
+  \   1,
+  \   'ts@change',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \     'line': 1,
+  \     'offset': 1,
+  \     'endLine': 1073741824,
+  \     'endOffset': 1,
+  \     'insertString': "foo()\nbar()\nbaz()\n",
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#Change(bufnr(''))
+
+Execute(ale#lsp#tsserver_message#Geterr() should return correct messages):
+  AssertEqual
+  \ [
+  \   1,
+  \   'ts@geterr',
+  \   {
+  \     'files': [ale#path#Simplify(g:dir . '/foo/bar.ts')],
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#Geterr(bufnr(''))
+
+Execute(ale#lsp#tsserver_message#Completions() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'ts@completions',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \     'line': 347,
+  \     'offset': 12,
+  \     'prefix': 'abc',
+  \     'includeExternalModuleExports': 1,
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#Completions(bufnr(''), 347, 12, 'abc', 1)
+
+Execute(ale#lsp#tsserver_message#CompletionEntryDetails() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'ts@completionEntryDetails',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \     'line': 347,
+  \     'offset': 12,
+  \     'entryNames': ['foo', 'bar'],
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#CompletionEntryDetails(bufnr(''), 347, 12, ['foo', 'bar'])
+
+Execute(ale#lsp#tsserver_message#Definition() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'ts@definition',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \     'line': 347,
+  \     'offset': 12,
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#Definition(bufnr(''), 347, 12)
+
+Execute(ale#lsp#tsserver_message#TypeDefinition() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'ts@typeDefinition',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \     'line': 347,
+  \     'offset': 12,
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#TypeDefinition(bufnr(''), 347, 12)
+
+Execute(ale#lsp#tsserver_message#Implementation() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'ts@implementation',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \     'line': 347,
+  \     'offset': 12,
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#Implementation(bufnr(''), 347, 12)
+
+Execute(ale#lsp#tsserver_message#References() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'ts@references',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \     'line': 347,
+  \     'offset': 12,
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#References(bufnr(''), 347, 12)
+
+Execute(ale#lsp#tsserver_message#Quickinfo() should return correct messages):
+  AssertEqual
+  \ [
+  \   0,
+  \   'ts@quickinfo',
+  \   {
+  \     'file': ale#path#Simplify(g:dir . '/foo/bar.ts'),
+  \     'line': 347,
+  \     'offset': 12,
+  \   }
+  \ ],
+  \ ale#lsp#tsserver_message#Quickinfo(bufnr(''), 347, 12)

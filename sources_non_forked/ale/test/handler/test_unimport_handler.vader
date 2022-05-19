@@ -1,0 +1,18 @@
+Before:
+  runtime ale_linters/python/unimport.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The unimport handler should handle import warnings):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 9,
+  \     'type': 'W',
+  \     'text': 'unused: urllib.parse',
+  \   },
+  \ ],
+  \ ale_linters#python#unimport#Handle(1, [
+  \     'urllib.parse at path/to/file.py:9',
+  \ ])

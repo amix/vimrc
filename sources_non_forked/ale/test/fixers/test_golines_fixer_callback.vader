@@ -1,0 +1,54 @@
+Before:
+  Save g:ale_go_golines_executable
+  Save g:ale_go_golines_options
+  Save g:ale_go_go111module
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_go_golines_executable = 'xxxinvalid'
+  let g:ale_go_golines_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  unlet! b:ale_go_go111module
+
+  call ale#test#RestoreDirectory()
+
+Execute(The golines callback should return 0 when the executable isn't executable):
+  AssertEqual
+  \ 0,
+  \ ale#fixers#golines#Fix(bufnr(''))
+
+
+Execute(The golines callback should return the correct default values):
+  let g:ale_go_golines_executable = has('win32') ? 'cmd' : 'echo'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_go_golines_executable),
+  \ },
+  \ ale#fixers#golines#Fix(bufnr(''))
+
+Execute(The golines callback should include custom golines options):
+  let g:ale_go_golines_executable = has('win32') ? 'cmd' : 'echo'
+  let g:ale_go_golines_options = "--max-len --shorten-comments"
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_go_golines_executable)
+  \     . ' ' . g:ale_go_golines_options,
+  \ },
+  \ ale#fixers#golines#Fix(bufnr(''))
+
+Execute(The golines callback should support Go environment variables):
+  let g:ale_go_golines_executable = has('win32') ? 'cmd' : 'echo'
+  let g:ale_go_go111module = 'off'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Env('GO111MODULE', 'off')
+  \     . ale#Escape(g:ale_go_golines_executable)
+  \ },
+  \ ale#fixers#golines#Fix(bufnr(''))

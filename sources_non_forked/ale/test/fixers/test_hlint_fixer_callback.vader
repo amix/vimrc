@@ -1,0 +1,20 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The hlint callback should return the correct default values):
+  call ale#test#SetFilename('../haskell_files/testfile.hs')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('hlint')
+  \     . ' --refactor'
+  \     . ' --refactor-options="--inplace"'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#hlint#Fix(bufnr(''))

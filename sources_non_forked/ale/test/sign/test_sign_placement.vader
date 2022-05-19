@@ -1,0 +1,315 @@
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_echo_cursor
+  Save g:ale_run_synchronously
+  Save g:ale_set_highlights
+  Save g:ale_set_loclist
+  Save g:ale_set_quickfix
+  Save g:ale_set_signs
+  Save g:ale_command_wrapper
+
+  let g:ale_command_wrapper = ''
+  let g:ale_buffer_info = {}
+  let g:ale_run_synchronously = 1
+  let g:ale_set_signs = 1
+  " Disable features we don't need for these tests.
+  let g:ale_set_quickfix = 0
+  let g:ale_set_loclist = 0
+  let g:ale_set_highlights = 0
+  let g:ale_echo_cursor = 0
+
+  call ale#linter#Reset()
+  call ale#sign#Clear()
+
+  function! GenerateResults(buffer, output)
+    return [
+    \ {
+    \   'lnum': 1,
+    \   'col': 1,
+    \   'type': 'E',
+    \   'text': 'foo',
+    \ },
+    \ {
+    \   'lnum': 2,
+    \   'col': 1,
+    \   'type': 'W',
+    \   'text': 'bar',
+    \ },
+    \ {
+    \   'lnum': 3,
+    \   'col': 1,
+    \   'type': 'E',
+    \   'text': 'baz',
+    \ },
+    \ {
+    \   'lnum': 4,
+    \   'col': 1,
+    \   'type': 'E',
+    \   'text': 'use this one',
+    \ },
+    \ {
+    \   'lnum': 4,
+    \   'col': 2,
+    \   'type': 'W',
+    \   'text': 'ignore this one',
+    \ },
+    \ {
+    \   'lnum': 5,
+    \   'col': 1,
+    \   'type': 'W',
+    \   'text': 'ignore this one',
+    \ },
+    \ {
+    \   'lnum': 5,
+    \   'col': 2,
+    \   'type': 'E',
+    \   'text': 'use this one',
+    \ },
+    \]
+  endfunction
+
+  function! ParseSigns()
+    redir => l:output
+      if has('nvim-0.4.2') || has('patch-8.1.614')
+        silent sign place group=ale
+      else
+        silent sign place
+      endif
+    redir END
+
+    return map(
+    \ split(l:output, '\n')[2:],
+    \ 'matchlist(v:val, ''' . ale#sign#ParsePattern() . ''')[1:3]',
+    \)
+  endfunction
+
+  call ale#linter#Define('testft', {
+  \ 'name': 'x',
+  \ 'executable': has('win32') ? 'cmd' : 'true',
+  \ 'command': 'true',
+  \ 'callback': 'GenerateResults',
+  \})
+
+After:
+  Restore
+
+  unlet! g:ale_run_synchronously_callbacks
+  unlet! g:loclist
+  delfunction GenerateResults
+  delfunction ParseSigns
+  call ale#linter#Reset()
+  call ale#sign#Clear()
+
+Execute(ale#sign#GetSignName should return the right sign names):
+  AssertEqual 'ALEErrorSign', ale#sign#GetSignName([{'type': 'E'}])
+  AssertEqual 'ALEStyleErrorSign', ale#sign#GetSignName([{'type': 'E', 'sub_type': 'style'}])
+  AssertEqual 'ALEWarningSign', ale#sign#GetSignName([{'type': 'W'}])
+  AssertEqual 'ALEStyleWarningSign', ale#sign#GetSignName([{'type': 'W', 'sub_type': 'style'}])
+  AssertEqual 'ALEInfoSign', ale#sign#GetSignName([{'type': 'I'}])
+  AssertEqual 'ALEErrorSign', ale#sign#GetSignName([
+  \ {'type': 'E'},
+  \ {'type': 'W'},
+  \ {'type': 'I'},
+  \ {'type': 'E', 'sub_type': 'style'},
+  \ {'type': 'W', 'sub_type': 'style'},
+  \])
+  AssertEqual 'ALEWarningSign', ale#sign#GetSignName([
+  \ {'type': 'W'},
+  \ {'type': 'I'},
+  \ {'type': 'E', 'sub_type': 'style'},
+  \ {'type': 'W', 'sub_type': 'style'},
+  \])
+  AssertEqual 'ALEInfoSign', ale#sign#GetSignName([
+  \ {'type': 'I'},
+  \ {'type': 'E', 'sub_type': 'style'},
+  \ {'type': 'W', 'sub_type': 'style'},
+  \])
+  AssertEqual 'ALEStyleErrorSign', ale#sign#GetSignName([
+  \ {'type': 'E', 'sub_type': 'style'},
+  \ {'type': 'W', 'sub_type': 'style'},
+  \])
+  AssertEqual 'ALEStyleWarningSign', ale#sign#GetSignName([
+  \ {'type': 'W', 'sub_type': 'style'},
+  \])
+
+Given testft(A file with warnings/errors):
+  foo
+  bar
+  baz
+  fourth line
+  fifth line
+
+Execute(The current signs should be set for running a job):
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ [
+  \   ['1', '1000001', 'ALEErrorSign'],
+  \   ['2', '1000002', 'ALEWarningSign'],
+  \   ['3', '1000003', 'ALEErrorSign'],
+  \   ['4', '1000004', 'ALEErrorSign'],
+  \   ['5', '1000005', 'ALEErrorSign'],
+  \ ],
+  \ ParseSigns()
+
+Execute(Loclist items with sign_id values should be kept):
+  if has('nvim-0.4.2') || has('patch-8.1.614')
+    exec 'sign place 1000347 group=ale line=3 name=ALEErrorSign buffer=' . bufnr('')
+    exec 'sign place 1000348 group=ale line=15 name=ALEErrorSign buffer=' . bufnr('')
+    exec 'sign place 1000349 group=ale line=16 name=ALEWarningSign buffer=' . bufnr('')
+  else
+    exec 'sign place 1000347 line=3 name=ALEErrorSign buffer=' . bufnr('')
+    exec 'sign place 1000348 line=15 name=ALEErrorSign buffer=' . bufnr('')
+    exec 'sign place 1000349 line=16 name=ALEWarningSign buffer=' . bufnr('')
+  endif
+
+  let g:loclist = [
+  \ {'bufnr': bufnr(''), 'lnum': 1, 'col': 1, 'type': 'E', 'text': 'a', 'sign_id': 1000348},
+  \ {'bufnr': bufnr(''), 'lnum': 2, 'col': 1, 'type': 'W', 'text': 'b', 'sign_id': 1000349},
+  \ {'bufnr': bufnr(''), 'lnum': 3, 'col': 1, 'type': 'E', 'text': 'c', 'sign_id': 1000347},
+  \ {'bufnr': bufnr(''), 'lnum': 4, 'col': 1, 'type': 'W', 'text': 'd'},
+  \ {'bufnr': bufnr(''), 'lnum': 15, 'col': 2, 'type': 'W', 'text': 'e'},
+  \ {'bufnr': bufnr(''), 'lnum': 16, 'col': 2, 'type': 'E', 'text': 'f'},
+  \]
+
+  call ale#sign#SetSigns(bufnr(''), g:loclist)
+
+  " Sign IDs from before should be kept, and new signs should use
+  " IDs that haven't been used yet.
+  AssertEqual
+  \ [
+  \   {'bufnr': bufnr(''), 'lnum': 3, 'col': 1, 'type': 'E', 'text': 'c', 'sign_id': 1000347},
+  \   {'bufnr': bufnr(''), 'lnum': 4, 'col': 1, 'type': 'W', 'text': 'd', 'sign_id': 1000350},
+  \   {'bufnr': bufnr(''), 'lnum': 15, 'col': 1, 'type': 'E', 'text': 'a', 'sign_id': 1000348},
+  \   {'bufnr': bufnr(''), 'lnum': 15, 'col': 2, 'type': 'W', 'text': 'e', 'sign_id': 1000348},
+  \   {'bufnr': bufnr(''), 'lnum': 16, 'col': 1, 'type': 'W', 'text': 'b', 'sign_id': 1000351},
+  \   {'bufnr': bufnr(''), 'lnum': 16, 'col': 2, 'type': 'E', 'text': 'f', 'sign_id': 1000351},
+  \ ],
+  \ g:loclist
+
+  " Items should be grouped again. We should see error signs, where there
+  " were warnings before, and errors where there were errors and where we
+  " now have new warnings.
+  AssertEqual
+  \ [
+  \   ['15', '1000348', 'ALEErrorSign'],
+  \   ['16', '1000351', 'ALEErrorSign'],
+  \   ['3', '1000347', 'ALEErrorSign'],
+  \   ['4', '1000350', 'ALEWarningSign'],
+  \ ],
+  \ sort(ParseSigns())
+
+Execute(Items for other buffers should be ignored):
+  let g:loclist = [
+  \ {'bufnr': bufnr('') - 1, 'lnum': 1, 'col': 1, 'type': 'E', 'text': 'a'},
+  \ {'bufnr': bufnr('') - 1, 'lnum': 2, 'col': 1, 'type': 'E', 'text': 'a', 'sign_id': 1000347},
+  \ {'bufnr': bufnr(''), 'lnum': 1, 'col': 1, 'type': 'E', 'text': 'a'},
+  \ {'bufnr': bufnr(''), 'lnum': 2, 'col': 1, 'type': 'W', 'text': 'b'},
+  \ {'bufnr': bufnr(''), 'lnum': 3, 'col': 1, 'type': 'E', 'text': 'c'},
+  \ {'bufnr': bufnr(''), 'lnum': 4, 'col': 1, 'type': 'W', 'text': 'd'},
+  \ {'bufnr': bufnr(''), 'lnum': 15, 'col': 2, 'type': 'W', 'text': 'e'},
+  \ {'bufnr': bufnr(''), 'lnum': 16, 'col': 2, 'type': 'E', 'text': 'f'},
+  \ {'bufnr': bufnr('') + 1, 'lnum': 1, 'col': 1, 'type': 'E', 'text': 'a'},
+  \]
+
+  call ale#sign#SetSigns(bufnr(''), g:loclist)
+
+  AssertEqual
+  \ [
+  \   ['1', '1000001', 'ALEErrorSign'],
+  \   ['15', '1000005', 'ALEWarningSign'],
+  \   ['16', '1000006', 'ALEErrorSign'],
+  \   ['2', '1000002', 'ALEWarningSign'],
+  \   ['3', '1000003', 'ALEErrorSign'],
+  \   ['4', '1000004', 'ALEWarningSign'],
+  \ ],
+  \ sort(ParseSigns())
+
+Execute(Signs should be downgraded correctly):
+  call ale#sign#SetSigns(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'lnum': 1, 'col': 1, 'type': 'E', 'text': 'x'},
+  \ {'bufnr': bufnr(''), 'lnum': 2, 'col': 1, 'type': 'W', 'text': 'x'},
+  \])
+
+  AssertEqual
+  \ [
+  \   ['1', '1000001', 'ALEErrorSign'],
+  \   ['2', '1000002', 'ALEWarningSign'],
+  \ ],
+  \ sort(ParseSigns())
+
+  call ale#sign#SetSigns(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'lnum': 1, 'col': 1, 'type': 'W', 'text': 'x'},
+  \ {'bufnr': bufnr(''), 'lnum': 2, 'col': 1, 'type': 'I', 'text': 'x'},
+  \])
+
+  AssertEqual
+  \ [
+  \   ['1', '1000003', 'ALEWarningSign'],
+  \   ['2', '1000004', 'ALEInfoSign'],
+  \ ],
+  \ sort(ParseSigns())
+
+Execute(Signs should be upgraded correctly):
+  call ale#sign#SetSigns(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'lnum': 1, 'col': 1, 'type': 'W', 'text': 'x'},
+  \ {'bufnr': bufnr(''), 'lnum': 2, 'col': 1, 'type': 'I', 'text': 'x'},
+  \])
+
+  AssertEqual
+  \ [
+  \   ['1', '1000001', 'ALEWarningSign'],
+  \   ['2', '1000002', 'ALEInfoSign'],
+  \ ],
+  \ sort(ParseSigns())
+
+  call ale#sign#SetSigns(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'lnum': 1, 'col': 1, 'type': 'E', 'text': 'x'},
+  \ {'bufnr': bufnr(''), 'lnum': 2, 'col': 1, 'type': 'W', 'text': 'x'},
+  \])
+
+  AssertEqual
+  \ [
+  \   ['1', '1000003', 'ALEErrorSign'],
+  \   ['2', '1000004', 'ALEWarningSign'],
+  \ ],
+  \ sort(ParseSigns())
+
+Execute(It should be possible to clear signs with empty lists):
+  let g:loclist = [
+  \ {'bufnr': bufnr(''), 'lnum': 16, 'col': 2, 'type': 'E', 'text': 'f'},
+  \]
+
+  call ale#sign#SetSigns(bufnr(''), g:loclist)
+
+  AssertEqual
+  \ [
+  \   ['16', '1000001', 'ALEErrorSign'],
+  \ ],
+  \ sort(ParseSigns())
+
+  call ale#sign#SetSigns(bufnr(''), [])
+
+  AssertEqual [], ParseSigns()
+
+Execute(No exceptions should be thrown when setting signs for invalid buffers):
+  call ale#sign#SetSigns(123456789, [{'lnum': 15, 'col': 2, 'type': 'W', 'text': 'e'}])
+
+Execute(Signs should be removed when lines have multiple sign IDs on them):
+  " We can fail to remove signs if there are multiple signs on one line,
+  " say after deleting lines in Vim, etc.
+  if has('nvim-0.4.2') || has('patch-8.1.614')
+    exec 'sign place 1000347 group=ale line=3 name=ALEErrorSign buffer=' . bufnr('')
+    exec 'sign place 1000348 group=ale line=3 name=ALEWarningSign buffer=' . bufnr('')
+    exec 'sign place 1000349 group=ale line=10 name=ALEErrorSign buffer=' . bufnr('')
+    exec 'sign place 1000350 group=ale line=10 name=ALEWarningSign buffer=' . bufnr('')
+  else
+    exec 'sign place 1000347 line=3 name=ALEErrorSign buffer=' . bufnr('')
+    exec 'sign place 1000348 line=3 name=ALEWarningSign buffer=' . bufnr('')
+    exec 'sign place 1000349 line=10 name=ALEErrorSign buffer=' . bufnr('')
+    exec 'sign place 1000350 line=10 name=ALEWarningSign buffer=' . bufnr('')
+  endif
+
+  call ale#sign#SetSigns(bufnr(''), [])
+  AssertEqual [], ParseSigns()

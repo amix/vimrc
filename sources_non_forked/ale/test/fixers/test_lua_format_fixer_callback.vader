@@ -1,0 +1,35 @@
+Before:
+  Save g:ale_lua_lua_format_executable
+  Save g:ale_lua_lua_format_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_lua_lua_format_executable = 'xxxinvalid'
+  let g:ale_lua_lua_format_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The lua_format callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/lua/testfile.lua')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid') . ' -i',
+  \ },
+  \ ale#fixers#lua_format#Fix(bufnr(''))
+
+Execute(The lua_format callback should include custom lua_format options):
+  let g:ale_lua_lua_format_options = "--no-chop-down-table"
+  call ale#test#SetFilename('../test-files/lua/testfile.lua')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' ' . g:ale_lua_lua_format_options
+  \     . ' -i',
+  \ },
+  \ ale#fixers#lua_format#Fix(bufnr(''))

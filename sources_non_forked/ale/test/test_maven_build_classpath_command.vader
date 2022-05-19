@@ -1,0 +1,53 @@
+Before:
+  Save $PATH
+  Save $PATHEXT
+
+  let $PATHEXT = '.'
+
+  call ale#test#SetDirectory('/testplugin/test')
+  runtime ale_linters/java/javac.vim
+  let g:expected_wrapper = ''
+  if has('unix')
+    let g:expected_wrapper = 'mvnw'
+  else
+    let g:expected_wrapper = 'mvnw.cmd'
+  endif
+
+After:
+  Restore
+
+  unlet! g:expected_wrapper
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(Should use 'mvnw' in classpath command if available):
+  call ale#test#SetFilename('test-files/maven/maven-java-project/module1/src/main/java/dummy1.java')
+
+  AssertEqual
+  \ [
+  \   ale#path#Simplify(g:dir . '/test-files/maven/maven-java-project/module1'),
+  \   ale#Escape(ale#path#Simplify(g:dir . '/test-files/maven/maven-java-project/module1/' . g:expected_wrapper))
+  \   . ' dependency:build-classpath',
+  \ ],
+  \ ale#maven#BuildClasspathCommand(bufnr(''))
+
+Execute(Should use 'mvn' in classpath command if it is executable and 'mvnw' is unavailable):
+  call ale#test#SetFilename('test-files/maven/maven-java-project/module2/src/main/java/dummy2.java')
+  let $PATH .= (has('win32') ? ';' : ':')
+  \ . ale#path#Simplify(g:dir . '/test-files/maven')
+
+  AssertEqual
+  \ [
+  \   ale#path#Simplify(g:dir . '/test-files/maven/maven-java-project/module2'),
+  \   ale#Escape('mvn')
+  \   . ' dependency:build-classpath',
+  \ ],
+  \ ale#maven#BuildClasspathCommand(bufnr(''))
+
+Execute(Should return empty string if maven cannot be executed):
+  call ale#test#SetFilename('test-files/maven/non-maven-project/src/main/java/dummy.java')
+
+  AssertEqual
+  \ ['', ''],
+  \ ale#maven#BuildClasspathCommand(bufnr(''))

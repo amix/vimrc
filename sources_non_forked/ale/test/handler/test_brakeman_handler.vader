@@ -1,0 +1,83 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/handler')
+
+  runtime ale_linters/ruby/brakeman.vim
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(The brakeman handler should parse JSON correctly):
+  call ale#test#SetFilename('../test-files/ruby/valid_rails_app/app/models/thing.rb')
+
+  AssertEqual
+  \  [
+  \      {
+  \          'filename': expand('%:p'),
+  \          'lnum': 84,
+  \          'text': 'SQL Injection Possible SQL injection (Medium)',
+  \          'type': 'W',
+  \      },
+  \      {
+  \          'filename': expand('%:p'),
+  \          'lnum': 1,
+  \          'text': 'Mass Assignment Potentially dangerous attribute available for mass assignment (Weak)',
+  \          'type': 'W',
+  \      }
+  \  ],
+  \  ale_linters#ruby#brakeman#Handle(bufnr(''), [
+  \  '{',
+  \    '"warnings": [',
+  \      '{',
+  \        '"warning_type": "SQL Injection",',
+  \        '"warning_code": 0,',
+  \        '"fingerprint": "1234",',
+  \        '"check_name": "SQL",',
+  \        '"message": "Possible SQL injection",',
+  \        '"file": "' . substitute(ale#path#Simplify('app/models/thing.rb'), '\\', '\\\\', 'g') . '",',
+  \        '"line": 84,',
+  \        '"link": "http://brakemanscanner.org/docs/warning_types/sql_injection/",',
+  \        '"code": "Thing.connection.execute(params[:data])",',
+  \        '"render_path": null,',
+  \        '"location": {',
+  \          '"type": "method",',
+  \          '"class": "Thing",',
+  \          '"method": "run_raw_sql_from_internet"',
+  \        '},',
+  \        '"user_input": "whatever",',
+  \        '"confidence": "Medium"',
+  \      '},',
+  \      '{',
+  \        '"warning_type": "Mass Assignment",',
+  \        '"warning_code": 60,',
+  \        '"fingerprint": "1235",',
+  \        '"check_name": "ModelAttrAccessible",',
+  \        '"message": "Potentially dangerous attribute available for mass assignment",',
+  \        '"file": "' .  substitute(ale#path#Simplify('app/models/thing.rb'), '\\', '\\\\', 'g') . '",',
+  \        '"line": null,',
+  \        '"link": "http://brakemanscanner.org/docs/warning_types/mass_assignment/",',
+  \        '"code": ":name",',
+  \        '"render_path": null,',
+  \        '"location": {',
+  \          '"type": "model",',
+  \          '"model": "Thing"',
+  \        '},',
+  \        '"user_input": null,',
+  \        '"confidence": "Weak"',
+  \      '}',
+  \    ']',
+  \  '}'
+  \  ])
+
+Execute(The brakeman handler should parse JSON correctly when there is no output from brakeman):
+  AssertEqual
+  \ [],
+  \ ale_linters#ruby#brakeman#Handle(347, [
+  \ ])
+  \
+Execute(The brakeman handler should handle garbage output):
+  AssertEqual
+  \ [],
+  \ ale_linters#ruby#brakeman#Handle(347, [
+  \   'No such command in 2.4.1 of ruby',
+  \ ])

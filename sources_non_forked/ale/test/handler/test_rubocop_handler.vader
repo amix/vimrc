@@ -1,0 +1,76 @@
+Before:
+  runtime ale_linters/ruby/rubocop.vim
+
+After:
+  unlet! g:lines
+  call ale#linter#Reset()
+
+Execute(The rubocop handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 83,
+  \     'col': 29,
+  \     'end_col': 35,
+  \     'text': 'Prefer single-quoted strings...',
+  \     'code': 'Style/SomeCop',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'col': 2,
+  \     'end_col': 2,
+  \     'text': 'Some error',
+  \     'code': 'Style/SomeOtherCop',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 10,
+  \     'col': 5,
+  \     'end_col': 12,
+  \     'text': 'Regular warning',
+  \     'code': 'Style/WarningCop',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 11,
+  \     'col': 1,
+  \     'end_col': 1,
+  \     'text': 'Another error',
+  \     'code': 'Style/SpaceBeforeBlockBraces',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale#ruby#HandleRubocopOutput(347, [
+  \     '{"metadata":{"rubocop_version":"0.47.1","ruby_engine":"ruby","ruby_version":"2.1.5","ruby_patchlevel":"273","ruby_platform":"x86_64-linux-gnu"},"files":[{"path":"my_great_file.rb","offenses":[{"severity":"convention","message":"Prefer single-quoted strings...","cop_name":"Style/SomeCop","corrected":false,"location":{"line":83,"column":29,"length":7}},{"severity":"fatal","message":"Some error","cop_name":"Style/SomeOtherCop","corrected":false,"location":{"line":12,"column":2,"length":1}},{"severity":"warning","message":"Regular warning","cop_name":"Style/WarningCop","corrected":false,"location":{"line":10,"column":5,"length":8}},{"severity":"error","message":"Another error","cop_name":"Style/SpaceBeforeBlockBraces","corrected":false,"location":{"line":11,"column":1,"length":1}}]}],"summary":{"offense_count":4,"target_file_count":1,"inspected_file_count":1}}'
+  \ ])
+
+Execute(The rubocop handler should handle when files are checked and no offenses are found):
+  AssertEqual
+  \ [],
+  \ ale#ruby#HandleRubocopOutput(347, [
+  \     '{"metadata":{"rubocop_version":"0.47.1","ruby_engine":"ruby","ruby_version":"2.1.5","ruby_patchlevel":"273","ruby_platform":"x86_64-linux-gnu"},"files":[{"path":"my_great_file.rb","offenses":[]}],"summary":{"offense_count":0,"target_file_count":1,"inspected_file_count":1}}'
+  \ ])
+
+Execute(The rubocop handler should handle when no files are checked):
+  AssertEqual
+  \ [],
+  \ ale#ruby#HandleRubocopOutput(347, [
+  \     '{"metadata":{"rubocop_version":"0.47.1","ruby_engine":"ruby","ruby_version":"2.1.5","ruby_patchlevel":"273","ruby_platform":"x86_64-linux-gnu"},"files":[],"summary":{"offense_count":0,"target_file_count":0,"inspected_file_count":0}}'
+  \ ])
+
+Execute(The rubocop handler should handle output without any errors):
+  let g:lines = [
+  \ '{"metadata":{"rubocop_version":"0.48.1","ruby_engine":"ruby","ruby_version":"2.4.1","ruby_patchlevel":"111","ruby_platform":"x86_64-darwin16"},"files":[]}',
+  \]
+
+  AssertEqual
+  \ [],
+  \ ale#ruby#HandleRubocopOutput(347, g:lines)
+  \
+  AssertEqual
+  \ [],
+  \ ale#ruby#HandleRubocopOutput(347, ['{}'])
+  AssertEqual
+  \ [],
+  \ ale#ruby#HandleRubocopOutput(347, [])

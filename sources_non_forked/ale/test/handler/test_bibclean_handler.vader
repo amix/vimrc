@@ -1,0 +1,88 @@
+Before:
+  runtime ale_linters/bib/bibclean.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The bibclean handler should parse lines from bibclean <= v2.11.4 correctly):
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': '60',
+  \     'type': 'W',
+  \     'text': 'Unexpected value in ``month = "09"''''.',
+  \     'col': '17'
+  \   },
+  \   {
+  \     'lnum': '63',
+  \     'type': 'E',
+  \     'text': 'Expected comma after last field ``keywords''''.',
+  \     'col': ' 1'
+  \   },
+  \   {
+  \     'lnum': '176',
+  \     'type': 'W',
+  \     'text': 'Unexpected DOI in URL value ``"https://doi.org/DOI"'''': move to separate DOI = "..." key/value in this entry.',
+  \     'col': '14'
+  \   }
+  \ ],
+  \ ale_linters#bib#bibclean#Handle(255, [
+  \ "%% \"stdin\", line 60: Unexpected value in ``month = \"09\"''.",
+  \ "%%  File positions:  input [main.bib]  output [stdout]",
+  \ "%%  Entry   input byte=1681 line=50 column= 1 output byte=1680 line=50 column= 0",
+  \ "%%  Value   input byte=2137 line=60 column=17 output byte=2137 line=60 column=17",
+  \ "%%  Current input byte=2139 line=60 column=19 output byte=2137 line=60 column=17",
+  \ "?? \"stdin\", line 71: Expected comma after last field ``keywords''.",
+  \ "??  File positions:  input [main.bib]  output [stdout]",
+  \ "??  Entry   input byte=2145 line=63 column= 1 output byte=2146 line=63 column= 0",
+  \ "??  Value   input byte=2528 line=71 column= 2 output byte=2527 line=70 column=49",
+  \ "??  Current input byte=2529 line=71 column= 3 output byte=2528 line=70 column=50",
+  \ "%% \"stdin\", line 176: Unexpected DOI in URL value ``\"https://doi.org/DOI\"'': move to separate DOI = \"...\" key/value in this entry.",
+  \ "%%  File positions:  input [stdin]  output [stdout]",
+  \ "%%  Entry   input byte=6813 line=174 column= 1 output byte=8543 line=227 column= 0",
+  \ "%%  Value   input byte=6890 line=176 column=14 output byte=8641 line=229 column=17",
+  \ "%%  Current input byte=6938 line=176 column=62 output byte=8641 line=229 column=17"
+  \ ])
+
+Execute(The bibclean handler should parse lines of bibclean > v2.11.4 correctly):
+  
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': '60',
+  \     'type': 'W',
+  \     'text': 'Unexpected value in ``month = "09"''''.',
+  \     'col': '17'
+  \   },
+  \   {
+  \     'lnum': '63',
+  \     'type': 'E',
+  \     'text': 'Expected comma after last field ``keywords''''.',
+  \     'col': ' 1'
+  \   },
+  \   {
+  \     'lnum': '176',
+  \     'type': 'W',
+  \     'text': 'Unexpected DOI in URL value ``"https://doi.org/DOI"'''': move to separate DOI = "..." key/value in this entry.',
+  \     'col': '14'
+  \   }
+  \ ],
+  \ ale_linters#bib#bibclean#Handle(255, [
+  \ "%% stdin:60:Unexpected value in ``month = \"09\"''.",
+  \ "%%  File positions:  input [main.bib]  output [stdout]",
+  \ "%%  Entry   input byte=1681 line=50 column= 1 output byte=1680 line=50 column= 0",
+  \ "%%  Value   input byte=2137 line=60 column=17 output byte=2137 line=60 column=17",
+  \ "%%  Current input byte=2139 line=60 column=19 output byte=2137 line=60 column=17",
+  \ "?? stdin:71:Expected comma after last field ``keywords''.",
+  \ "??  File positions:  input [main.bib]  output [stdout]",
+  \ "??  Entry   input byte=2145 line=63 column= 1 output byte=2146 line=63 column= 0",
+  \ "??  Value   input byte=2528 line=71 column= 2 output byte=2527 line=70 column=49",
+  \ "??  Current input byte=2529 line=71 column= 3 output byte=2528 line=70 column=50",
+  \ "%% stdin:176:Unexpected DOI in URL value ``\"https://doi.org/DOI\"'': move to separate DOI = \"...\" key/value in this entry.",
+  \ "%%  File positions:  input [stdin]  output [stdout]",
+  \ "%%  Entry   input byte=6813 line=174 column= 1 output byte=8543 line=227 column= 0",
+  \ "%%  Value   input byte=6890 line=176 column=14 output byte=8641 line=229 column=17",
+  \ "%%  Current input byte=6938 line=176 column=62 output byte=8641 line=229 column=17"
+  \ ])
+

@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+
+exit_code=0
+docker_flags=(--rm -v "$PWD:/testplugin" -v "$PWD/test:/home" -w /testplugin "$DOCKER_RUN_IMAGE")
+
+echo '========================================'
+echo 'Running custom linting rules'
+echo '========================================'
+echo 'Custom warnings/errors follow:'
+echo
+
+set -o pipefail
+docker run "${docker_flags[@]}" test/script/custom-linting-rules . || exit_code=$?
+set +o pipefail
+echo
+
+echo '========================================'
+echo 'Checking for duplicate tags'
+echo '========================================'
+echo 'Duplicate tags follow:'
+echo
+
+set -o pipefail
+docker run "${docker_flags[@]}" test/script/check-duplicate-tags . || exit_code=$?
+set +o pipefail
+echo
+
+echo '========================================'
+echo 'Checking for invalid tag references'
+echo '========================================'
+echo 'Invalid tag references tags follow:'
+echo
+
+set -o pipefail
+docker run "${docker_flags[@]}" test/script/check-tag-references || exit_code=$?
+set +o pipefail
+
+echo '========================================'
+echo 'diff supported-tools.md and doc/ale-supported-languages-and-tools.txt tables'
+echo '========================================'
+echo 'Differences follow:'
+echo
+
+set -o pipefail
+docker run "${docker_flags[@]}" test/script/check-supported-tools-tables || exit_code=$?
+set +o pipefail
+
+echo '========================================'
+echo 'Look for badly aligned doc tags'
+echo '========================================'
+echo 'Badly aligned tags follow:'
+echo
+
+set -o pipefail
+docker run "${docker_flags[@]}" test/script/check-tag-alignment || exit_code=$?
+set +o pipefail
+
+echo '========================================'
+echo 'Look for table of contents issues'
+echo '========================================'
+echo
+
+set -o pipefail
+docker run "${docker_flags[@]}" test/script/check-toc || exit_code=$?
+set +o pipefail
+
+echo '========================================'
+echo 'Check Python code'
+echo '========================================'
+echo
+
+docker run --rm -v "$PWD:/testplugin" "$DOCKER_RUN_IMAGE" \
+    python -W ignore -m unittest discover /testplugin/test/python \
+    || exit_code=$?
+echo
+
+exit $exit_code

@@ -16,7 +16,7 @@ onoremap <silent> <Plug>(ale_show_completion_menu) <Nop>
 let g:ale_completion_delay = get(g:, 'ale_completion_delay', 100)
 let g:ale_completion_excluded_words = get(g:, 'ale_completion_excluded_words', [])
 let g:ale_completion_max_suggestions = get(g:, 'ale_completion_max_suggestions', 50)
-let g:ale_completion_autoimport = get(g:, 'ale_completion_autoimport', 0)
+let g:ale_completion_autoimport = get(g:, 'ale_completion_autoimport', 1)
 let g:ale_completion_tsserver_remove_warnings = get(g:, 'ale_completion_tsserver_remove_warnings', 0)
 
 let s:timer_id = -1
@@ -581,7 +581,7 @@ function! ale#completion#ParseLSPCompletions(response) abort
             continue
         endif
 
-        if get(l:item, 'insertTextFormat') is s:LSP_INSERT_TEXT_FORMAT_PLAIN
+        if get(l:item, 'insertTextFormat', s:LSP_INSERT_TEXT_FORMAT_PLAIN) is s:LSP_INSERT_TEXT_FORMAT_PLAIN
         \&& type(get(l:item, 'textEdit')) is v:t_dict
             let l:text = l:item.textEdit.newText
         elseif type(get(l:item, 'insertText')) is v:t_string
@@ -776,7 +776,8 @@ function! s:OnReady(linter, lsp_details) abort
 
     if a:linter.lsp is# 'tsserver'
         if get(g:, 'ale_completion_tsserver_autoimport') is 1
-            execute 'echom `g:ale_completion_tsserver_autoimport` is deprecated. Use `g:ale_completion_autoimport` instead.'''
+            " no-custom-checks
+            echom '`g:ale_completion_tsserver_autoimport` is deprecated. Use `g:ale_completion_autoimport` instead.'
         endif
 
         let l:message = ale#lsp#tsserver_message#Completions(
@@ -911,7 +912,8 @@ function! ale#completion#Import() abort
     endif
 
     let [l:line, l:column] = getpos('.')[1:2]
-    let l:column = searchpos('\V' . escape(l:word, '/\'), 'bn', l:line)[1]
+    let l:column = searchpos('\V' . escape(l:word, '/\'), 'bnc', l:line)[1]
+    let l:column = l:column + len(l:word) - 1
 
     if l:column isnot 0
         let l:started = ale#completion#GetCompletions('ale-import', {

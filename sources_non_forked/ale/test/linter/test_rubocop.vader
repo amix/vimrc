@@ -1,0 +1,26 @@
+Before:
+  call ale#assert#SetUpLinterTest('ruby', 'rubocop')
+  call ale#test#SetFilename('dummy.rb')
+
+  let g:ale_ruby_rubocop_executable = 'rubocop'
+  let g:ale_ruby_rubocop_options = ''
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should default to rubocop):
+  AssertLinter 'rubocop', ale#Escape('rubocop')
+  \   . ' --format json --force-exclusion  --stdin %s'
+
+Execute(Should be able to set a custom executable):
+  let g:ale_ruby_rubocop_executable = 'bin/rubocop'
+
+  AssertLinter 'bin/rubocop' , ale#Escape('bin/rubocop')
+  \   . ' --format json --force-exclusion  --stdin %s'
+
+Execute(Setting bundle appends 'exec rubocop'):
+  let g:ale_ruby_rubocop_executable = 'path to/bundle'
+
+  AssertLinter 'path to/bundle', ale#Escape('path to/bundle')
+  \   . ' exec rubocop'
+  \   . ' --format json --force-exclusion  --stdin %s'

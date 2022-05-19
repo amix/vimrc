@@ -1,0 +1,37 @@
+Before:
+  runtime! ale_linters/apiblueprint/drafter.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(drafter handler should handle errors output):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 25,
+  \     'col': 3,
+  \     'text': "unable to parse response signature, expected 'response [<HTTP status code>] [(<media type>)]'",
+  \     'type': "W",
+  \   },
+  \   {
+  \     'lnum': 25,
+  \     'col': 3,
+  \     'text': "missing response HTTP status code, assuming 'Response 200'",
+  \     'type': "W",
+  \   },
+  \   {
+  \     'lnum': 30,
+  \     'col': 7,
+  \     'end_lnum': 32,
+  \     'end_col': 7,
+  \     'text': "message-body asset is expected to be a pre-formatted code block, separate it by a newline and indent every of its line by 12 spaces or 3 tabs",
+  \     'type': "W",
+  \   },
+  \ ],
+  \ ale_linters#apiblueprint#drafter#HandleErrors(bufnr(''), [
+  \   "",
+  \   "OK.",
+  \   "warning: (3)  unable to parse response signature, expected 'response [<HTTP status code>] [(<media type>)]'; line 25, column 3 - line 25, column 29",
+  \   "warning: (6)  missing response HTTP status code, assuming 'Response 200'; line 25, column 3 - line 25, column 29",
+  \   "warning: (10)  message-body asset is expected to be a pre-formatted code block, separate it by a newline and indent every of its line by 12 spaces or 3 tabs; line 30, column 7 - line 30, column 11; line 31, column 6 - line 31, column 7; line 32, column 6 - line 32, column 7"
+  \ ])

@@ -1,0 +1,27 @@
+Before:
+  runtime ale_linters/erlang/dialyzer.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The dialyzer handler should handle error messages.):
+  AssertEqual
+  \[
+  \  {
+  \      'lnum': 3,
+  \      'lcol': 0,
+  \      'text': 'Callback info about the provider behaviour is not available',
+  \      'type': 'W'
+  \  }
+  \],
+  \ ale_linters#erlang#dialyzer#Handle(bufnr(''), ['erl_tidy_prv_fmt.erl:3: Callback info about the provider behaviour is not available'])
+
+Execute(The dialyzer handler should handle empty file.):
+  AssertEqual
+  \[],
+  \ ale_linters#erlang#dialyzer#Handle(bufnr(''), [])
+
+Execute(The dialyzer handler should handle empty lines.):
+  AssertEqual
+  \[],
+  \ ale_linters#erlang#dialyzer#Handle(bufnr(''), [''])

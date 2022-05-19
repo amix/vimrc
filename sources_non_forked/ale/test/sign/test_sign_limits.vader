@@ -1,0 +1,57 @@
+Before:
+  Save g:ale_max_signs
+
+  let g:ale_max_signs = -1
+
+  function! SetNProblems(sign_count)
+    let l:loclist = []
+    let l:range = range(1, a:sign_count)
+    call setline(1, l:range)
+
+    for l:index in l:range
+      call add(l:loclist, {
+      \ 'bufnr': bufnr(''),
+      \ 'lnum': l:index,
+      \ 'col': 1,
+      \ 'type': 'E',
+      \ 'text': 'a',
+      \})
+    endfor
+
+    call ale#sign#SetSigns(bufnr(''), l:loclist)
+
+    return sort(map(ale#sign#FindCurrentSigns(bufnr(''))[1], 'v:val[0]'), 'n')
+  endfunction
+
+After:
+  Restore
+
+  unlet! b:ale_max_signs
+
+  delfunction SetNProblems
+
+  call ale#sign#Clear()
+
+Execute(There should be no limit on signs with negative numbers):
+  AssertEqual range(1, 42), SetNProblems(42)
+
+Execute(0 signs should be set when the max is 0):
+  let g:ale_max_signs = 0
+
+  AssertEqual [], SetNProblems(42)
+
+Execute(1 signs should be set when the max is 1):
+  let g:ale_max_signs = 1
+
+  AssertEqual [1], SetNProblems(42)
+
+Execute(10 signs should be set when the max is 10):
+  let g:ale_max_signs = 10
+
+  " We'll check that we set signs for the first 10 items, not other lines.
+  AssertEqual range(1, 10), SetNProblems(42)
+
+Execute(5 signs should be set when the max is 5 for the buffer):
+  let b:ale_max_signs = 5
+
+  AssertEqual range(1, 5), SetNProblems(42)

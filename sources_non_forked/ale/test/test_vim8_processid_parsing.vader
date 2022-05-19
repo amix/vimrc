@@ -1,0 +1,5 @@
+Execute(Vim8 Process ID parsing should work):
+  AssertEqual 123, ale#job#ParseVim8ProcessID('process 123 run')
+  AssertEqual 347, ale#job#ParseVim8ProcessID('process 347 failed')
+  AssertEqual 789, ale#job#ParseVim8ProcessID('process 789 dead')
+  AssertEqual 0, ale#job#ParseVim8ProcessID('no process')

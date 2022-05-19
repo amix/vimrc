@@ -19,6 +19,18 @@ function! ale#handlers#cppcheck#GetBufferPathIncludeOptions(buffer) abort
 endfunction
 
 function! ale#handlers#cppcheck#GetCompileCommandsOptions(buffer) abort
+    " The compile_commands.json doesn't apply to headers and cppheck will
+    " bail out if it cannot find a file matching the filter, below. Skip out
+    " now, for headers. Also, suppress FPs; cppcheck is not meant to
+    " process lone header files.
+    let b:buffer_name = bufname(a:buffer)
+    let b:file_extension = fnamemodify(b:buffer_name, ':e')
+
+    if b:file_extension is# 'h' || b:file_extension is# 'hpp'
+        return ale#handlers#cppcheck#GetBufferPathIncludeOptions(a:buffer)
+        \   . ' --suppress=unusedStructMember'
+    endif
+
     " If the current buffer is modified, using compile_commands.json does no
     " good, so include the file's directory instead. It's not quite as good as
     " using --project, but is at least equivalent to running cppcheck on this
@@ -35,8 +47,10 @@ function! ale#handlers#cppcheck#GetCompileCommandsOptions(buffer) abort
     " then use the file to set up import paths, etc.
     let [l:dir, l:json_path] = ale#c#FindCompileCommands(a:buffer)
 
+    " By default, cppcheck processes every config in compile_commands.json.
+    " Use --file-filter to limit to just the buffer file.
     return !empty(l:json_path)
-    \   ? '--project=' . ale#Escape(l:json_path[len(l:dir) + 1: ])
+    \   ? '--project=' . ale#Escape(l:json_path[len(l:dir) + 1: ]) . ' --file-filter=' . ale#Escape(bufname(a:buffer))
     \   : ''
 endfunction
 
@@ -50,7 +64,12 @@ function! ale#handlers#cppcheck#HandleCppCheckFormat(buffer, lines) abort
     "test.cpp:974:{column}: error:{inconclusive:inconclusive} Array 'n[3]' accessed at index 3, which is out of bounds. [arrayIndexOutOfBounds]\
     "    n[3]=3;
     "     ^
-    let l:pattern = '\v(\f+):(\d+):(\d+|\{column\}): (\w+):(\{inconclusive:inconclusive\})? ?(.*) \[(\w+)\]\'
+    "
+    "" OR if using the misra addon:
+    "test.c:1:16: style: misra violation (use --rule-texts=<file> to get proper output) [misra-c2012-2.7]\'
+    "void test( int parm ) {}
+    "               ^
+    let l:pattern = '\v(\f+):(\d+):(\d+|\{column\}): (\w+):(\{inconclusive:inconclusive\})? ?(.*) \[(%(\w[-.]?)+)\]\'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)

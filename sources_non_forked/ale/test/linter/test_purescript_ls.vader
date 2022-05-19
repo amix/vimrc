@@ -1,0 +1,31 @@
+Before:
+  call ale#assert#SetUpLinterTest('purescript', 'ls')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(should set correct defaults):
+  AssertLinter 'purescript-language-server', ale#Escape('purescript-language-server') . ' --stdio'
+
+Execute(should set correct LSP values):
+  call ale#test#SetFilename('../test-files/purescript/spago/Foo.purs')
+
+  AssertLSPLanguage 'purescript'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/purescript/spago')
+
+Execute(should set correct project for bower):
+  call ale#test#SetFilename('../test-files/purescript/bower/Foo.purs')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/purescript/bower')
+
+Execute(should set correct project for psc-package):
+  call ale#test#SetFilename('../test-files/purescript/psc-package/Foo.purs')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/purescript/psc-package')
+
+Execute(should accept configuration settings):
+  AssertLSPConfig {}
+  let b:ale_purescript_ls_config = {'purescript': {'addSpagoSources': v:true}}
+  AssertLSPConfig {'purescript': {'addSpagoSources': v:true}}

@@ -1,0 +1,34 @@
+Before:
+  call ale#assert#SetUpLinterTest('elixir', 'elixir_ls')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(should set correct defaults):
+  if has('win32')
+    AssertLinter 'elixir-ls\language_server.bat', 'elixir-ls\language_server.bat'
+  else
+    AssertLinter 'elixir-ls/language_server.sh', 'elixir-ls/language_server.sh'
+  endif
+
+Execute(should configure elixir-ls release location):
+  let b:ale_elixir_elixir_ls_release = 'boo'
+
+  if has('win32')
+    AssertLinter 'boo\language_server.bat', 'boo\language_server.bat'
+  else
+    AssertLinter 'boo/language_server.sh', 'boo/language_server.sh'
+  endif
+
+Execute(should set correct LSP values):
+  call ale#test#SetFilename('../test-files/elixir/umbrella_project/apps/app1/lib/app.ex')
+
+  AssertLSPLanguage 'elixir'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/elixir/umbrella_project')
+
+Execute(should accept configuration settings):
+  AssertLSPConfig {}
+  let b:ale_elixir_elixir_ls_config = {'elixirLS': {'dialyzerEnabled': v:false}}
+  AssertLSPConfig {'elixirLS': {'dialyzerEnabled': v:false}}

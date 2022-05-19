@@ -1,0 +1,27 @@
+Before:
+  Save g:ale_buffer_info
+
+  let g:ale_buffer_info = {}
+
+  call ale#linter#PreventLoading('testft')
+  call ale#linter#Define('testft', {
+  \ 'name': 'testlinter',
+  \ 'callback': {-> []},
+  \ 'executable': has('win32') ? 'cmd' : 'true',
+  \ 'command': 'sleep 9001',
+  \})
+
+After:
+  Restore
+
+  call ale#linter#Reset()
+
+Given testft (An empty file):
+Execute(ALELintStop should stop ALE from linting):
+  ALELint
+
+  Assert ale#engine#IsCheckingBuffer(bufnr('')), 'ALE did not start checking the buffer'
+
+  ALELintStop
+
+  Assert !ale#engine#IsCheckingBuffer(bufnr('')), 'ALELintStop didn''t work'

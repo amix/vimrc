@@ -1,0 +1,55 @@
+Before:
+  Save g:ale_eruby_erblint_executable
+  Save g:ale_eruby_erblint_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_eruby_erblint_executable = 'xxxinvalid'
+  let g:ale_eruby_erblint_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The erblint callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/eruby/dummy.html.erb')
+
+  AssertEqual
+  \ {
+  \   'process_with': 'ale#fixers#erblint#PostProcess',
+  \   'command': ale#Escape(g:ale_eruby_erblint_executable)
+  \     . ' --autocorrect --stdin %s',
+  \ },
+  \ ale#fixers#erblint#Fix(bufnr(''))
+
+Execute(The erblint callback should include custom erblint options):
+  let g:ale_eruby_erblint_options = '--lint-all'
+  call ale#test#SetFilename('../test-files/ruby/with_config/dummy.rb')
+
+  AssertEqual
+  \ {
+  \   'process_with': 'ale#fixers#erblint#PostProcess',
+  \   'command': ale#Escape(g:ale_eruby_erblint_executable)
+  \     . ' --lint-all'
+  \     . ' --autocorrect --stdin %s',
+  \ },
+  \ ale#fixers#erblint#Fix(bufnr(''))
+
+Execute(The erblint post-processor should remove diagnostics content):
+  AssertEqual
+  \ [
+  \   '<div>',
+  \   '',
+  \   '</div>',
+  \ ],
+  \ ale#fixers#erblint#PostProcess(bufnr(''), [
+  \   'Linting 1 files with 11 autocorrectable linters...',
+  \   '',
+  \   '1 error(s) corrected in ERB files',
+  \   '================ /home/user/demo.html.erb ==================',
+  \   '<div>',
+  \   '',
+  \   '</div>',
+  \ ])

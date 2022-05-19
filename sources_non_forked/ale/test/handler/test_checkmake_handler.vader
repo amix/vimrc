@@ -1,0 +1,23 @@
+Before:
+  runtime ale_linters/make/checkmake.vim
+
+After:
+  call  ale#linter#Reset()
+
+Execute(Parsing checkmake errors should work):
+  silent file Makefile
+
+  AssertEqual
+  \ [
+  \   {
+  \      'bufnr': 42,
+  \      'lnum': 1,
+  \      'type': 'E',
+  \      'code': 'woops',
+  \      'text': 'an error has occurred',
+  \   }
+  \ ],
+  \ ale_linters#make#checkmake#Handle(42, [
+  \   'This shouldnt match',
+  \   '1:woops:an error has occurred',
+  \ ])

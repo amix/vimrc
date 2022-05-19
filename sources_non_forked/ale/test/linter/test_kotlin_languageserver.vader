@@ -1,0 +1,23 @@
+Before:
+  call ale#assert#SetUpLinterTest('kotlin', 'languageserver')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'kotlin-language-server', ale#Escape('kotlin-language-server')
+
+Execute(Gradle project roots with build.gradle should be detected correctly):
+  call ale#test#SetFilename('../test-files/gradle/build-gradle-project/src/main/kotlin/dummy.kt')
+
+  AssertLSPProject ale#test#GetFilename('../test-files/gradle/build-gradle-project')
+
+Execute(Maven project roots with pom.xml should be detected correctly):
+  call ale#test#SetFilename('../test-files/maven/maven-kotlin-project/src/main/kotlin/dummy.kt')
+
+  AssertLSPProject ale#test#GetFilename('../test-files/maven/maven-kotlin-project')
+
+Execute(No root should be detected if configuration files can't be found):
+  call ale#test#SetFilename('../test-files/gradle/non-gradle-project/src/main/kotlin/dummy.kt')
+
+  AssertLSPProject ''

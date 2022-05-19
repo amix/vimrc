@@ -1,0 +1,8 @@
+Before:
+  call ale#assert#SetUpLinterTest('ruby', 'debride')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'debride', ale#Escape('debride') . ' %s'

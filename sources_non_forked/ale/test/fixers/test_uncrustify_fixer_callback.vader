@@ -1,0 +1,108 @@
+Before:
+  Save g:ale_c_uncrustify_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_c_uncrustify_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The clang-format callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/c/dummy.c')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \       . ' --no-backup -l C'
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+Execute(The uncrustify callback should include any additional options):
+  call ale#test#SetFilename('../test-files/c/dummy.c')
+  let b:ale_c_uncrustify_options = '--some-option'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l C --some-option',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+Execute(The uncrustify callback should set proper language):
+  unlet b:ale_c_uncrustify_options
+
+  set filetype=c
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l C',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+  set filetype=cpp
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l CPP',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+  set filetype=cs
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l CS',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+  set filetype=objc
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l OC',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+  set filetype=objcpp
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l OC+',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+  set filetype=d
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l D',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+  set filetype=java
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l JAVA',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+  set filetype=vala
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l VALA',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))
+
+  set filetype=p
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_uncrustify_executable)
+  \     . ' --no-backup -l PAWN',
+  \ },
+  \ ale#fixers#uncrustify#Fix(bufnr(''))

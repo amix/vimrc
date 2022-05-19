@@ -1,0 +1,16 @@
+Before:
+  call ale#assert#SetUpFixerTest('rust', 'rustfmt')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The rustfmt callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/rust/testfile.rs')
+
+  AssertFixer {'command': ale#Escape('rustfmt')}
+
+Execute(The rustfmt callback should include custom rustfmt options):
+  let g:ale_rust_rustfmt_options = "--skip-children"
+  call ale#test#SetFilename('../test-files/rust/testfile.rs')
+
+  AssertFixer {'command': ale#Escape('rustfmt') . ' ' . g:ale_rust_rustfmt_options}

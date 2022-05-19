@@ -1,0 +1,549 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+  call ale#test#SetFilename('dummy.txt')
+  Save g:ale_buffer_info
+
+  let g:ale_buffer_info = {}
+
+  let g:old_filename = expand('%:p')
+  let g:Callback = ''
+  let g:expr_list = []
+  let g:message_list = []
+  let g:handle_code_action_called = 0
+  let g:code_actions = []
+  let g:options = {}
+  let g:capability_checked = ''
+  let g:conn_id = v:null
+  let g:InitCallback = v:null
+
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/codefix.vim
+  runtime autoload/ale/code_action.vim
+
+  function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
+    let g:conn_id = ale#lsp#Register('executable', '/foo/bar', {})
+    call ale#lsp#MarkDocumentAsOpen(g:conn_id, a:buffer)
+
+    if a:linter.lsp is# 'tsserver'
+        call ale#lsp#MarkConnectionAsTsserver(g:conn_id)
+    endif
+
+    let l:details = {
+    \ 'command': 'foobar',
+    \ 'buffer': a:buffer,
+    \ 'connection_id': g:conn_id,
+    \ 'project_root': '/foo/bar',
+    \}
+
+    let g:InitCallback = {-> ale#lsp_linter#OnInit(a:linter, l:details, a:Callback)}
+  endfunction
+
+  function! ale#lsp#HasCapability(conn_id, capability) abort
+    let g:capability_checked = a:capability
+
+    return 1
+  endfunction
+
+  function! ale#lsp#RegisterCallback(conn_id, callback) abort
+    let g:Callback = a:callback
+  endfunction
+
+  function! ale#lsp#Send(conn_id, message) abort
+    call add(g:message_list, a:message)
+
+    return 42
+  endfunction
+
+  function! ale#util#Execute(expr) abort
+    call add(g:expr_list, a:expr)
+  endfunction
+
+  function! ale#code_action#HandleCodeAction(code_action, options) abort
+    let g:handle_code_action_called = 1
+    Assert !get(a:options, 'should_save')
+    call add(g:code_actions, a:code_action)
+  endfunction
+
+  function! ale#util#Input(message, value) abort
+    return '2'
+  endfunction
+
+After:
+  Restore
+
+  if g:conn_id isnot v:null
+    call ale#lsp#RemoveConnectionWithID(g:conn_id)
+  endif
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+  unlet! g:capability_checked
+  unlet! g:InitCallback
+  unlet! g:old_filename
+  unlet! g:conn_id
+  unlet! g:Callback
+  unlet! g:message_list
+  unlet! g:expr_list
+  unlet! b:ale_linters
+  unlet! g:options
+  unlet! g:code_actions
+  unlet! g:handle_code_action_called
+
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/codefix.vim
+  runtime autoload/ale/code_action.vim
+
+Execute(Failed codefix responses should be handled correctly):
+  call ale#codefix#HandleTSServerResponse(
+  \ 1,
+  \ {'command': 'getCodeFixes', 'request_seq': 3}
+  \)
+  AssertEqual g:handle_code_action_called, 0
+
+Given typescript(Some typescript file):
+  foo
+  somelongerline ()
+  bazxyzxyzxyz
+
+Execute(getCodeFixes from tsserver should be handled):
+  call ale#codefix#SetMap({3: {}})
+  call ale#codefix#HandleTSServerResponse(1, {
+    \ 'command': 'getCodeFixes',
+    \ 'request_seq': 3,
+    \ 'success': v:true,
+    \ 'type': 'response',
+    \ 'body': [
+    \   {
+    \     'description': 'Import default "x" from module "./z"',
+    \     'fixName': 'import',
+    \     'changes': [
+    \       {
+    \         'fileName': "/foo/bar/file1.ts",
+    \         'textChanges': [
+    \           {
+    \             'end': {
+    \               'line': 2,
+    \               'offset': 1,
+    \             },
+    \             'newText': 'import x from "./z";^@',
+    \             'start': {
+    \               'line': 2,
+    \               'offset': 1,
+    \             }
+    \           }
+    \         ]
+    \       }
+    \     ]
+    \   }
+    \ ]
+    \})
+
+  AssertEqual g:handle_code_action_called, 1
+  AssertEqual
+  \ [
+  \   {
+  \     'description': 'codefix',
+  \     'changes': [
+  \       {
+  \         'fileName': "/foo/bar/file1.ts",
+  \         'textChanges': [
+  \           {
+  \             'end': {
+  \               'line': 2,
+  \               'offset': 1
+  \             },
+  \             'newText': 'import x from "./z";^@',
+  \             'start': {
+  \               'line': 2,
+  \               'offset': 1
+  \             }
+  \           }
+  \         ]
+  \       }
+  \     ]
+  \   }
+  \ ],
+  \ g:code_actions
+
+Execute(getCodeFixes from tsserver should be handled with user input if there are more than one action):
+  call ale#codefix#SetMap({3: {}})
+  call ale#codefix#HandleTSServerResponse(1, {
+    \ 'command': 'getCodeFixes',
+    \ 'request_seq': 3,
+    \ 'success': v:true,
+    \ 'type': 'response',
+    \ 'body': [
+    \   {
+    \     'description': 'Import default "x" from module "./z"',
+    \     'fixName': 'import',
+    \     'changes': [
+    \       {
+    \         'fileName': "/foo/bar/file1.ts",
+    \         'textChanges': [
+    \           {
+    \             'end': {
+    \               'line': 2,
+    \               'offset': 1,
+    \             },
+    \             'newText': 'import x from "./z";^@',
+    \             'start': {
+    \               'line': 2,
+    \               'offset': 1,
+    \             }
+    \           }
+    \         ]
+    \       }
+    \     ]
+    \   },
+    \   {
+    \     'description': 'Import default "x" from module "./y"',
+    \     'fixName': 'import',
+    \     'changes': [
+    \       {
+    \         'fileName': "/foo/bar/file1.ts",
+    \         'textChanges': [
+    \           {
+    \             'end': {
+    \               'line': 2,
+    \               'offset': 1,
+    \             },
+    \             'newText': 'import x from "./y";^@',
+    \             'start': {
+    \               'line': 2,
+    \               'offset': 1,
+    \             }
+    \           }
+    \         ]
+    \       }
+    \     ]
+    \   }
+    \ ]
+    \})
+
+  AssertEqual g:handle_code_action_called, 1
+  AssertEqual
+  \ [
+  \   {
+  \     'description': 'codefix',
+  \     'changes': [
+  \       {
+  \         'fileName': "/foo/bar/file1.ts",
+  \         'textChanges': [
+  \           {
+  \             'end': {
+  \               'line': 2,
+  \               'offset': 1
+  \             },
+  \             'newText': 'import x from "./y";^@',
+  \             'start': {
+  \               'line': 2,
+  \               'offset': 1
+  \             }
+  \           }
+  \         ]
+  \       }
+  \     ]
+  \   }
+  \ ],
+  \ g:code_actions
+
+Execute(Prints a tsserver error message when getCodeFixes unsuccessful):
+  call ale#codefix#SetMap({3: {}})
+  call ale#codefix#HandleTSServerResponse(1, {
+  \ 'command': 'getCodeFixes',
+  \ 'request_seq': 3,
+  \ 'success': v:false,
+  \ 'message': 'something is wrong',
+  \})
+
+  AssertEqual g:handle_code_action_called, 0
+  AssertEqual ['echom ''Error while getting code fixes. Reason: something is wrong'''], g:expr_list
+
+Execute(Does nothing when where are no code fixes):
+  call ale#codefix#SetMap({3: {}})
+  call ale#codefix#HandleTSServerResponse(1, {
+  \ 'command': 'getCodeFixes',
+  \ 'request_seq': 3,
+  \ 'success': v:true,
+  \ 'body': []
+  \})
+
+  AssertEqual g:handle_code_action_called, 0
+  AssertEqual ['echom ''No code fixes available.'''], g:expr_list
+
+Execute(tsserver codefix requests should be sent):
+  call ale#linter#Reset()
+
+  runtime ale_linters/typescript/tsserver.vim
+  let g:ale_buffer_info = {bufnr(''): {'loclist': [{'lnum': 2, 'col': 5, 'code': 2304, 'linter_name': 'tsserver'}]}}
+  call setpos('.', [bufnr(''), 2, 16, 0])
+
+  " ALECodeAction
+  call ale#codefix#Execute(0)
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual type(function('type')), type(g:InitCallback)
+  call g:InitCallback()
+
+  AssertEqual 'code_actions', g:capability_checked
+  AssertEqual
+  \ 'function(''ale#codefix#HandleTSServerResponse'')',
+  \ string(g:Callback)
+  AssertEqual
+  \ [
+  \   ale#lsp#tsserver_message#Change(bufnr('')),
+  \   [0, 'ts@getCodeFixes', {
+  \     'startLine': 2,
+  \     'startOffset': 16,
+  \     'endLine': 2,
+  \     'endOffset': 17,
+  \     'file': expand('%:p'),
+  \     'errorCodes': [2304],
+  \   }]
+  \ ],
+  \ g:message_list
+
+Execute(tsserver codefix requests should be sent only for error with code):
+  call ale#linter#Reset()
+
+  runtime ale_linters/typescript/tsserver.vim
+  let g:ale_buffer_info = {bufnr(''): {'loclist': [{'lnum': 2, 'col': 16, 'linter_name': 'tsserver'}, {'lnum': 2, 'col': 16, 'code': 2304, 'linter_name': 'tsserver'}]}}
+  call setpos('.', [bufnr(''), 2, 16, 0])
+
+  " ALECodeAction
+  call ale#codefix#Execute(0)
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual type(function('type')), type(g:InitCallback)
+  call g:InitCallback()
+
+  AssertEqual 'code_actions', g:capability_checked
+  AssertEqual
+  \ 'function(''ale#codefix#HandleTSServerResponse'')',
+  \ string(g:Callback)
+  AssertEqual
+  \ [
+  \   ale#lsp#tsserver_message#Change(bufnr('')),
+  \   [0, 'ts@getCodeFixes', {
+  \     'startLine': 2,
+  \     'startOffset': 16,
+  \     'endLine': 2,
+  \     'endOffset': 17,
+  \     'file': expand('%:p'),
+  \     'errorCodes': [2304],
+  \   }]
+  \ ],
+  \ g:message_list
+
+Execute(getApplicableRefactors from tsserver should be handled):
+  call ale#codefix#SetMap({3: {
+  \ 'buffer': expand('%:p'),
+  \ 'line': 1,
+  \ 'column': 2,
+  \ 'end_line': 3,
+  \ 'end_column': 4,
+  \ 'connection_id': 0,
+  \}})
+  call ale#codefix#HandleTSServerResponse(1,
+  \ {'seq': 0, 'request_seq': 3, 'type': 'response', 'success': v:true, 'body': [{'actions': [{'description': 'Extract to constant in enclosing scope', 'name': 'constant_scope_0'}], 'description': 'Extract constant', 'name': 'Extract Symbol'}, {'actions': [{'description': 'Extract to function in module scope', 'name': 'function_scope_1'}], 'description': 'Extract function', 'name': 'Extract Symbol'}], 'command': 'getApplicableRefactors'})
+
+  AssertEqual
+  \ [
+  \   [0, 'ts@getEditsForRefactor', {
+  \     'startLine': 1,
+  \     'startOffset': 2,
+  \     'endLine': 3,
+  \     'endOffset': 5,
+  \     'file': expand('%:p'),
+  \     'refactor': 'Extract Symbol',
+  \     'action': 'function_scope_1',
+  \   }]
+  \ ],
+  \ g:message_list
+
+Execute(getApplicableRefactors should print error on failure):
+  call ale#codefix#SetMap({3: {
+  \ 'buffer': expand('%:p'),
+  \ 'line': 1,
+  \ 'column': 2,
+  \ 'end_line': 3,
+  \ 'end_column': 4,
+  \ 'connection_id': 0,
+  \}})
+  call ale#codefix#HandleTSServerResponse(1,
+  \ {'seq': 0, 'request_seq': 3, 'type': 'response', 'success': v:false, 'message': 'oops', 'command': 'getApplicableRefactors'})
+
+  AssertEqual ['echom ''Error while getting applicable refactors. Reason: oops'''], g:expr_list
+
+Execute(getApplicableRefactors should do nothing if there are no refactors):
+  call ale#codefix#SetMap({3: {
+  \ 'buffer': expand('%:p'),
+  \ 'line': 1,
+  \ 'column': 2,
+  \ 'end_line': 3,
+  \ 'end_column': 4,
+  \ 'connection_id': 0,
+  \}})
+  call ale#codefix#HandleTSServerResponse(1,
+  \ {'seq': 0, 'request_seq': 3, 'type': 'response', 'success': v:true, 'body': [], 'command': 'getApplicableRefactors'})
+
+  AssertEqual ['echom ''No applicable refactors available.'''], g:expr_list
+
+Execute(getEditsForRefactor from tsserver should be handled):
+  call ale#codefix#SetMap({3: {}})
+  call ale#codefix#HandleTSServerResponse(1,
+  \{'seq': 0, 'request_seq': 3, 'type': 'response', 'success': v:true, 'body': {'edits': [{'fileName': '/foo/bar/file.ts', 'textChanges': [{'end': {'offset': 35, 'line': 9}, 'newText': 'newFunction(app);', 'start': {'offset': 3, 'line': 8}}, {'end': {'offset': 4, 'line': 19}, 'newText': '^@function newFunction(app: Router) {^@    app.use(booExpressCsrf());^@    app.use(booExpressRequireHttps);^@}^@', 'start': {'offset': 4, 'line': 19}}]}], 'renameLocation': {'offset': 3, 'line': 8}, 'renameFilename': '/foo/bar/file.ts'}, 'command': 'getEditsForRefactor' }
+  \)
+
+  AssertEqual g:handle_code_action_called, 1
+  AssertEqual
+  \ [
+  \   {
+  \     'description': 'editsForRefactor',
+  \     'changes': [{'fileName': '/foo/bar/file.ts', 'textChanges': [{'end': {'offset': 35, 'line': 9}, 'newText': 'newFunction(app);', 'start': {'offset': 3, 'line': 8}}, {'end': {'offset': 4, 'line': 19}, 'newText': '^@function newFunction(app: Router) {^@    app.use(booExpressCsrf());^@    app.use(booExpressRequireHttps);^@}^@', 'start': {'offset': 4, 'line': 19}}]}],
+  \   }
+  \ ],
+  \ g:code_actions
+
+Execute(getEditsForRefactor should print error on failure):
+  call ale#codefix#SetMap({3: {}})
+  call ale#codefix#HandleTSServerResponse(1,
+  \{'seq': 0, 'request_seq': 3, 'type': 'response', 'success': v:false, 'message': 'oops', 'command': 'getEditsForRefactor' }
+  \)
+
+  AssertEqual ['echom ''Error while getting edits for refactor. Reason: oops'''], g:expr_list
+
+Execute(Failed LSP responses should be handled correctly):
+  call ale#codefix#HandleLSPResponse(
+  \ 1,
+  \ {'method': 'workspace/applyEdit', 'request_seq': 3}
+  \)
+  AssertEqual g:handle_code_action_called, 0
+
+Given python(Some python file):
+  def main():
+      a = 1
+      b = a + 2
+
+Execute("workspace/applyEdit" from LSP should be handled):
+  call ale#codefix#SetMap({3: {}})
+  call ale#codefix#HandleLSPResponse(1,
+  \ {'id': 0, 'jsonrpc': '2.0', 'method': 'workspace/applyEdit', 'params': {'edit': {'changes': {'file:///foo/bar/file.ts': [{'range': {'end': {'character': 27, 'line': 7}, 'start': {'character': 27, 'line': 7}}, 'newText': ', Config'}, {'range': {'end': {'character': 12, 'line': 96}, 'start': {'character': 2, 'line': 94}}, 'newText': 'await newFunction(redis, imageKey, cover, config);'}, {'range': {'end': {'character': 2, 'line': 99}, 'start': {'character': 2, 'line': 99}}, 'newText': '^@async function newFunction(redis: IRedis, imageKey: string, cover: Buffer, config: Config) {^@    try {^@        await redis.set(imageKey, cover, ''ex'', parseInt(config.coverKeyTTL, 10));^@    }^@    catch { }^@}^@'}]}}}})
+
+  AssertEqual g:handle_code_action_called, 1
+  AssertEqual
+  \ [{'description': 'applyEdit', 'changes': [{'fileName': '/foo/bar/file.ts', 'textChanges': [{'end': {'offset': 28, 'line': 8}, 'newText': ', Config', 'start': {'offset': 28, 'line': 8}}, {'end': {'offset': 13, 'line': 97}, 'newText': 'await newFunction(redis, imageKey, cover, config);', 'start': {'offset': 3, 'line': 95}}, {'end': {'offset': 3, 'line': 100}, 'newText': '^@async function newFunction(redis: IRedis, imageKey: string, cover: Buffer, config: Config) {^@    try {^@        await redis.set(imageKey, cover, ''ex'', parseInt(config.coverKeyTTL, 10));^@    }^@    catch { }^@}^@', 'start': {'offset': 3, 'line': 100}}]}]}],
+  \ g:code_actions
+
+Execute(Code Actions from LSP should be handled when returned with documentChanges):
+  call ale#codefix#SetMap({2: {}})
+  call ale#codefix#HandleLSPResponse(1,
+  \ {'id': 2, 'jsonrpc': '2.0', 'result': [{'diagnostics': v:null, 'edit': {'changes': v:null, 'documentChanges': [{'edits': [{'range': {'end': {'character': 4, 'line': 2}, 'start': {'character': 4, 'line': 1}}, 'newText': ''}, {'range': {'end': {'character': 9, 'line': 2}, 'start': {'character': 8, 'line': 2}}, 'newText': '(1)'}], 'textDocument': {'uri': 'file:///foo/bar/test.py', 'version': v:null}}]}, 'kind': 'refactor.inline', 'title': 'Inline variable', 'command': v:null}, {'diagnostics': v:null, 'edit': {'changes': v:null, 'documentChanges': [{'edits': [{'range': {'end': {'character': 0, 'line': 0}, 'start': {'character': 0, 'line': 0}}, 'newText': 'def func_bomdjnxh():^@    a = 1return a^@^@^@'}, {'range': {'end': {'character': 9, 'line': 1}, 'start': {'character': 8, 'line': 1}}, 'newText': 'func_bomdjnxh()^@'}], 'textDocument': {'uri': 'file:///foo/bar/test.py', 'version': v:null}}]}, 'kind': 'refactor.extract', 'title': 'Extract expression into function ''func_bomdjnxh''', 'command': v:null}]})
+
+  AssertEqual g:handle_code_action_called, 1
+  AssertEqual
+  \ [{'description': 'codeaction', 'changes': [{'fileName': '/foo/bar/test.py', 'textChanges': [{'end': {'offset': 1, 'line': 1}, 'newText': 'def func_bomdjnxh():^@    a = 1return a^@^@^@', 'start': {'offset': 1, 'line': 1}}, {'end': {'offset': 10, 'line': 2}, 'newText': 'func_bomdjnxh()^@', 'start': {'offset': 9, 'line': 2}}]}]}],
+  \ g:code_actions
+
+Execute(LSP Code Actions handles CodeAction responses):
+  call ale#codefix#SetMap({3: {
+  \ 'connection_id': 0,
+  \}})
+  call ale#codefix#HandleLSPResponse(1,
+  \ {'id': 3, 'jsonrpc': '2.0', 'result': [{'kind': 'refactor', 'title': 'Extract to inner function in function ''getVideo''', 'command': {'arguments': [{'file': '/foo/bar/file.ts', 'endOffset': 0, 'action': 'function_scope_0', 'startOffset': 1, 'startLine': 65, 'refactor': 'Extract Symbol', 'endLine': 68}], 'title': 'Extract to inner function in function ''getVideo''', 'command': '_typescript.applyRefactoring'}}, {'kind': 'refactor', 'title': 'Extract to function in module scope', 'command': {'arguments': [{'file': '/foo/bar/file.ts', 'endOffset': 0, 'action': 'function_scope_1', 'startOffset': 1, 'startLine': 65, 'refactor': 'Extract Symbol', 'endLine': 68}], 'title': 'Extract to function in module scope', 'command': '_typescript.applyRefactoring'}}]})
+
+  AssertEqual
+  \ [[0, 'workspace/executeCommand', {'arguments': [{'file': '/foo/bar/file.ts', 'action': 'function_scope_1', 'endOffset': 0, 'refactor': 'Extract Symbol', 'endLine': 68, 'startLine': 65, 'startOffset': 1}], 'command': '_typescript.applyRefactoring'}]],
+  \ g:message_list
+
+Execute(LSP Code Actions handles Command responses):
+  call ale#codefix#SetMap({2: {
+  \ 'connection_id': 2,
+  \}})
+  call ale#codefix#HandleLSPResponse(1,
+  \ {'id': 2, 'jsonrpc': '2.0', 'result': [{'title': 'fake for testing'}, {'arguments': [{'documentChanges': [{'edits': [{'range': {'end': {'character': 31, 'line': 2}, 'start': {'character': 31, 'line': 2}}, 'newText': ', createVideo'}], 'textDocument': {'uri': 'file:///foo/bar/file.ts', 'version': 1}}]}], 'title': 'Add ''createVideo'' to existing import declaration from "./video"', 'command': '_typescript.applyWorkspaceEdit'}]})
+
+  AssertEqual
+  \ [[0, 'workspace/executeCommand', {'arguments': [{'documentChanges': [{'edits': [{'range': {'end': {'character': 31, 'line': 2}, 'start': {'character': 31, 'line': 2}}, 'newText': ', createVideo'}], 'textDocument': {'uri': 'file:///foo/bar/file.ts', 'version': 1}}]}], 'command': '_typescript.applyWorkspaceEdit'}]],
+  \ g:message_list
+
+Execute(Prints message when LSP code action returns no results):
+  call ale#codefix#SetMap({3: {}})
+  call ale#codefix#HandleLSPResponse(1,
+  \ {'id': 3, 'jsonrpc': '2.0', 'result': []})
+
+  AssertEqual g:handle_code_action_called, 0
+  AssertEqual ['echom ''No code actions received from server'''], g:expr_list
+
+Execute(LSP code action requests should be sent):
+  call ale#linter#Reset()
+
+  runtime ale_linters/python/jedils.vim
+  let g:ale_buffer_info = {bufnr(''): {'loclist': [{'lnum': 2, 'col': 5, 'end_lnum': 2, 'end_col': 6, 'code': 2304, 'text': 'oops'}]}}
+  call setpos('.', [bufnr(''), 2, 5, 0])
+
+  " ALECodeAction
+  call ale#codefix#Execute(0)
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual type(function('type')), type(g:InitCallback)
+  call g:InitCallback()
+
+  AssertEqual 'code_actions', g:capability_checked
+  AssertEqual
+  \ 'function(''ale#codefix#HandleLSPResponse'')',
+  \ string(g:Callback)
+  AssertEqual
+  \ [
+  \   [0, 'textDocument/codeAction', {
+  \     'context': {
+  \       'diagnostics': [{'range': {'end': {'character': 6, 'line': 1}, 'start': {'character': 4, 'line': 1}}, 'code': 2304, 'message': 'oops'}]
+  \     },
+  \     'range': {'end': {'character': 5, 'line': 1}, 'start': {'character': 4, 'line': 1}},
+  \     'textDocument': {'uri': ale#path#ToFileURI(expand('%:p'))}
+  \   }]
+  \ ],
+  \ g:message_list[-1:]
+
+Execute(LSP code action requests should be sent only for error with code):
+  call ale#linter#Reset()
+
+  runtime ale_linters/python/jedils.vim
+  let g:ale_buffer_info = {bufnr(''): {'loclist': [{'lnum': 2, 'col': 5, 'end_lnum': 2, 'end_col': 6, 'code': 2304, 'text': 'oops'}]}}
+  call setpos('.', [bufnr(''), 2, 5, 0])
+
+  " ALECodeAction
+  call ale#codefix#Execute(0)
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual type(function('type')), type(g:InitCallback)
+  call g:InitCallback()
+
+  AssertEqual 'code_actions', g:capability_checked
+  AssertEqual
+  \ 'function(''ale#codefix#HandleLSPResponse'')',
+  \ string(g:Callback)
+  AssertEqual
+  \ [
+  \   [0, 'textDocument/codeAction', {
+  \     'context': {
+  \       'diagnostics': [{'range': {'end': {'character': 6, 'line': 1}, 'start': {'character': 4, 'line': 1}}, 'code': 2304, 'message': 'oops'}]
+  \     },
+  \     'range': {'end': {'character': 5, 'line': 1}, 'start': {'character': 4, 'line': 1}},
+  \     'textDocument': {'uri': ale#path#ToFileURI(expand('%:p'))}
+  \   }]
+  \ ],
+  \ g:message_list[-1:]

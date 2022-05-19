@@ -1,0 +1,9 @@
+Before:
+  call ale#assert#SetUpLinterTest('kotlin', 'kotlinc')
+  call ale#test#SetFilename('test.kt')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'kotlinc', 'kotlinc    ' . ale#Escape(expand('%:p'))

@@ -1,0 +1,45 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'pydocstyle')
+  call ale#test#SetFilename('example/test.py')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The pydocstyle command callback should return default string):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'pydocstyle', ale#Escape('pydocstyle') . ' %s'
+
+Execute(The pydocstyle command callback should allow options):
+  let g:ale_python_pydocstyle_options = '--verbose'
+
+  AssertLinter 'pydocstyle', ale#Escape('pydocstyle') . ' --verbose %s'
+
+Execute(The pydocstyle executable should be configurable):
+  let g:ale_python_pydocstyle_executable = '~/.local/bin/pydocstyle'
+
+  AssertLinter '~/.local/bin/pydocstyle',
+  \ ale#Escape('~/.local/bin/pydocstyle') . ' %s'
+
+Execute(Setting executable to 'pipenv' appends 'run pydocstyle'):
+  let g:ale_python_pydocstyle_executable = 'path/to/pipenv'
+
+  AssertLinter 'path/to/pipenv',
+  \ ale#Escape('path/to/pipenv') . ' run pydocstyle %s'
+
+Execute(Pipenv is detected when python_pydocstyle_auto_pipenv is set):
+  let g:ale_python_pydocstyle_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinter 'pipenv', ale#Escape('pipenv') . ' run pydocstyle %s'
+
+Execute(Setting executable to 'poetry' appends 'run pydocstyle'):
+  let g:ale_python_pydocstyle_executable = 'path/to/poetry'
+
+  AssertLinter 'path/to/poetry',
+  \ ale#Escape('path/to/poetry') . ' run pydocstyle %s'
+
+Execute(Poetry is detected when python_pydocstyle_auto_poetry is set):
+  let g:ale_python_pydocstyle_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinter 'poetry', ale#Escape('poetry') . ' run pydocstyle %s'

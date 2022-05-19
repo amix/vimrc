@@ -10,6 +10,7 @@ g:ale_python_auto_pipenv                             *g:ale_python_auto_pipenv*
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
   if true. This is overridden by a manually-set executable.
 
+
 g:ale_python_auto_poetry                             *g:ale_python_auto_poetry*
                                                      *b:ale_python_auto_poetry*
   Type: |Number|
@@ -17,6 +18,7 @@ g:ale_python_auto_poetry                             *g:ale_python_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
 
 ===============================================================================
 ALE Python Project Root Behavior                              *ale-python-root*
@@ -37,6 +39,7 @@ ALE will look for configuration files with the following filenames. >
   tox.ini
   .pyre_configuration.local
   mypy.ini
+  .mypy.ini
   pycodestyle.cfg
   .flake8
   .flake8rc
@@ -229,6 +232,7 @@ g:ale_python_black_auto_pipenv                 *g:ale_python_black_auto_pipenv*
   Detect whether the file is inside a pipenv, and set the executable to `pipenv`
   if true. This is overridden by a manually-set executable.
 
+
 g:ale_python_black_auto_poetry                 *g:ale_python_black_auto_poetry*
                                                *b:ale_python_black_auto_poetry*
   Type: |Number|
@@ -236,6 +240,7 @@ g:ale_python_black_auto_poetry                 *g:ale_python_black_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
 
 g:ale_python_black_change_directory       *g:ale_python_black_change_directory*
                                           *b:ale_python_black_change_directory*
@@ -249,12 +254,18 @@ g:ale_python_black_change_directory       *g:ale_python_black_change_directory*
 
 
 ===============================================================================
+cspell                                                      *ale-python-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
 flake8                                                      *ale-python-flake8*
 
 g:ale_python_flake8_change_directory     *g:ale_python_flake8_change_directory*
                                          *b:ale_python_flake8_change_directory*
   Type: |String|
-  Default: `project`
+  Default: `'project'`
 
   If set to `project`, ALE will switch to the project root before checking file.
   If set to `file`, ALE will switch to directory the Python file being
@@ -320,6 +331,7 @@ g:ale_python_flake8_auto_poetry               *g:ale_python_flake8_auto_poetry*
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
 
+
 ===============================================================================
 flakehell                                                *ale-python-flakehell*
 
@@ -383,6 +395,7 @@ g:ale_python_flakehell_auto_poetry         *g:ale_python_flakehell_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
 
 ===============================================================================
 isort                                                        *ale-python-isort*
@@ -504,7 +517,6 @@ g:ale_python_mypy_use_global                     *g:ale_python_mypy_use_global*
   See |ale-integrations-local-executables|
 
 
-
 ===============================================================================
 prospector                                              *ale-python-prospector*
 
@@ -569,7 +581,6 @@ g:ale_python_prospector_auto_poetry       *g:ale_python_prospector_auto_poetry*
 ===============================================================================
 pycodestyle                                            *ale-python-pycodestyle*
 
-
 g:ale_python_pycodestyle_executable       *g:ale_python_pycodestyle_executable*
                                           *b:ale_python_pycodestyle_executable*
   Type: |String|
@@ -619,7 +630,6 @@ g:ale_python_pycodestyle_auto_poetry     *g:ale_python_pycodestyle_auto_poetry*
 ===============================================================================
 pydocstyle                                              *ale-python-pydocstyle*
 
-
 g:ale_python_pydocstyle_executable         *g:ale_python_pydocstyle_executable*
                                            *b:ale_python_pydocstyle_executable*
   Type: |String|
@@ -668,7 +678,6 @@ g:ale_python_pydocstyle_auto_poetry       *g:ale_python_pydocstyle_auto_poetry*
 
 ===============================================================================
 pyflakes                                                  *ale-python-pyflakes*
-
 
 g:ale_python_pyflakes_executable             *g:ale_python_pyflakes_executable*
                                              *b:ale_python_pyflakes_executable*
@@ -925,6 +934,7 @@ g:ale_python_pylsp_options                           *g:ale_python_pylsp_options
   An example stragety for installing `pylsp`:
     `python3 -m pip install --user pylsp`
 
+
 ===============================================================================
 pyre                                                          *ale-python-pyre*
 
@@ -1051,6 +1061,58 @@ g:ale_python_reorder_python_imports_options
 g:ale_python_reorder_python_imports_use_global
                                *g:ale_python_reorder_python_imports_use_global*
                                *b:ale_python_reorder_python_imports_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+unimport                                                  *ale-python-unimport*
+
+`unimport` will be run from a detected project root, per |ale-python-root|.
+
+
+g:ale_python_unimport_auto_pipenv           *g:ale_python_unimport_auto_pipenv*
+                                            *b:ale_python_unimport_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_unimport_auto_poetry           *g:ale_python_unimport_auto_poetry*
+                                            *b:ale_python_unimport_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_unimport_executable              *g:ale_python_unimport_executable*
+                                              *b:ale_python_unimport_executable*
+  Type: |String|
+  Default: `'unimport'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `unimport'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `unimport'`.
+
+
+g:ale_python_unimport_options                    *g:ale_python_unimport_options*
+                                                 *b:ale_python_unimport_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the unimport
+  invocation.
+
+
+g:ale_python_unimport_use_global              *g:ale_python_unimport_use_global*
+                                              *b:ale_python_unimport_use_global*
   Type: |Number|
   Default: `get(g:, 'ale_use_global_executables', 0)`
 

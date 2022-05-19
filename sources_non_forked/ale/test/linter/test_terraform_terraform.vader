@@ -1,0 +1,15 @@
+" Based upon :help ale-development
+Before:
+  call ale#assert#SetUpLinterTest('terraform', 'terraform')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'terraform',
+  \ ale#Escape('terraform') . ' validate -no-color -json '
+
+Execute(The default command should be overriden):
+  let b:ale_terraform_terraform_executable = '/bin/other/terraform'
+  AssertLinter '/bin/other/terraform',
+  \ ale#Escape('/bin/other/terraform') . ' validate -no-color -json '

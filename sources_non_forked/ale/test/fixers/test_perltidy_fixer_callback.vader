@@ -1,0 +1,40 @@
+Before:
+  Save g:ale_perl_perltidy_executable
+  Save g:ale_perl_perltidy_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_perl_perltidy_executable = 'xxxinvalid'
+  let g:ale_perl_perltidy_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The perltidy callback should return the correct default values):
+  call ale#test#SetFilename('../pl_files/testfile.pl')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -b'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#perltidy#Fix(bufnr(''))
+
+Execute(The perltidy callback should include custom perltidy options):
+  let g:ale_perl_perltidy_options = "-r '(a) -> a'"
+  call ale#test#SetFilename('../pl_files/testfile.pl')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -b'
+  \     . ' ' . g:ale_perl_perltidy_options
+  \     . ' %t',
+  \ },
+  \ ale#fixers#perltidy#Fix(bufnr(''))

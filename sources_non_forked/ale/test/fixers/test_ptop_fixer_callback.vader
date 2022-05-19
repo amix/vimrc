@@ -1,0 +1,38 @@
+Before:
+  Save g:ale_pascal_ptop_executable
+  Save g:ale_pascal_ptop_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_pascal_ptop_executable = 'xxxinvalid'
+  let g:ale_pascal_ptop_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The ptop callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/pascal/test.pas')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' %s %t',
+  \ },
+  \ ale#fixers#ptop#Fix(bufnr(''))
+
+Execute(The ptop callback should include custom ptop options):
+  let g:ale_pascal_ptop_options = "-i 2"
+  call ale#test#SetFilename('../test-files/pascal/test.pas')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' ' . g:ale_pascal_ptop_options
+  \     . ' %s %t',
+  \ },
+  \ ale#fixers#ptop#Fix(bufnr(''))

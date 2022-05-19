@@ -1,0 +1,12 @@
+Before:
+  call ale#assert#SetUpLinterTest('yang', 'yang_lsp')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'yang-language-server', ale#Escape('yang-language-server')
+
+  let b:ale_yang_lsp_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar')

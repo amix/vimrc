@@ -1,0 +1,64 @@
+Before:
+  Save g:ale_c_clangformat_executable
+  Save g:c_clangformat_style_option
+  Save g:c_clangformat_use_local_file
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_c_clangformat_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+  let g:dir = getcwd()
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The clang-format callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/c/dummy.c')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_clangformat_executable)
+  \     . ' --assume-filename=' . ale#Escape(bufname(bufnr('')))
+  \ },
+  \ ale#fixers#clangformat#Fix(bufnr(''))
+
+Execute(The clangformat callback should include any additional options):
+  call ale#test#SetFilename('../test-files/c/dummy.c')
+  let g:ale_c_clangformat_options = '--some-option'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_clangformat_executable)
+  \     . ' --assume-filename=' . ale#Escape(bufname(bufnr('')))
+  \     . ' --some-option',
+  \ },
+  \ ale#fixers#clangformat#Fix(bufnr(''))
+
+Execute(The clangformat callback should include style options as well):
+  call ale#test#SetFilename('../test-files/c/dummy.c')
+  let g:ale_c_clangformat_options = '--some-option'
+  let g:ale_c_clangformat_style_option = '{BasedOnStyle: Microsoft, ColumnLimit:80,}'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_clangformat_executable)
+  \     . ' --assume-filename=' . ale#Escape(bufname(bufnr('')))
+  \     . ' --some-option' . " -style='{BasedOnStyle: Microsoft, ColumnLimit:80,}'",
+  \ },
+  \ ale#fixers#clangformat#Fix(bufnr(''))
+
+Execute(The clangformat callback should use local file instead of style options):
+  call ale#test#SetFilename('../test-files/clangformat/with_clangformat/dummy.c')
+  let g:ale_c_clangformat_options = '--some-option'
+  let g:ale_c_clangformat_style_option = '{BasedOnStyle: Microsoft, ColumnLimit:80,}'
+  let g:ale_c_clangformat_use_local_file = 1
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_clangformat_executable)
+  \     . ' --assume-filename=' . ale#Escape(bufname(bufnr('')))
+  \     . ' --some-option' . ' -style=file',
+  \ },
+  \ ale#fixers#clangformat#Fix(bufnr(''))

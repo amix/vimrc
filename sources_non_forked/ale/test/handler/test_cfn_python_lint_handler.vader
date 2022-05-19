@@ -1,0 +1,33 @@
+Before:
+  runtime! ale_linters/cloudformation/cfn_python_lint.vim
+  call ale#test#SetFilename('sample.template.yaml')
+
+After:
+  call ale#linter#Reset()
+
+Execute(The cfn_python_lint handler should parse items correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': '96',
+  \     'col': '7',
+  \     'end_lnum': '96',
+  \     'end_col': '15',
+  \     'text': 'Property Resources/Sample/Properties/FromPort should be of type Integer',
+  \     'code': 'E3012',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': '97',
+  \     'col': '7',
+  \     'end_lnum': '97',
+  \     'end_col': '15',
+  \     'text': 'AllowedPattern and/or AllowedValues for Parameter should be specified at Parameters/SampleIpAddress. Example for AllowedPattern "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$"',
+  \     'code': 'W2509',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#cloudformation#cfn_python_lint#Handle(bufnr(''), [
+  \ fnamemodify(tempname(), ':h') . '/sample.template.yaml:96:7:96:15:E3012:Property Resources/Sample/Properties/FromPort should be of type Integer',
+  \ fnamemodify(tempname(), ':h') . '/sample.template.yaml:97:7:97:15:W2509:AllowedPattern and/or AllowedValues for Parameter should be specified at Parameters/SampleIpAddress. Example for AllowedPattern "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$"',
+  \ ])

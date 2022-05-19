@@ -1,0 +1,316 @@
+Execute(The GCC handler should ignore other lines of output):
+  AssertEqual
+  \ [],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \   'foo',
+  \   'bar',
+  \   'baz',
+  \ ])
+
+Execute(GCC errors from included files should be parsed correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'filename': 'broken.h',
+  \     'type': 'E',
+  \     'text': 'expected identifier or ''('' before ''{'' token',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 2,
+  \     'text': 'Error found in header. See :ALEDetail',
+  \     'detail': join([
+  \       'In file included from <stdin>:3:2:',
+  \       'broken.h:1:1: error: expected identifier or ''('' before ''{'' token',
+  \       ' {{{',
+  \       ' ^',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \   'In file included from <stdin>:3:2:',
+  \   'broken.h:1:1: error: expected identifier or ''('' before ''{'' token',
+  \   ' {{{',
+  \   ' ^',
+  \   'compilation terminated.',
+  \ ])
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'filename': 'b.h',
+  \     'type': 'E',
+  \     'text': 'expected identifier or ''('' before ''{'' token',
+  \   },
+  \   {
+  \     'lnum': 5,
+  \     'text': 'Error found in header. See :ALEDetail',
+  \     'detail': join([
+  \       'In file included from a.h:1:0,',
+  \       '                 from <stdin>:5:',
+  \       'b.h:1:1: error: expected identifier or ''('' before ''{'' token',
+  \       ' {{{',
+  \       ' ^',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \   'In file included from a.h:1:0,',
+  \   '                 from <stdin>:5:',
+  \   'b.h:1:1: error: expected identifier or ''('' before ''{'' token',
+  \   ' {{{',
+  \   ' ^',
+  \   'compilation terminated.',
+  \ ])
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'filename': 'b.h',
+  \     'type': 'E',
+  \     'text': 'unknown type name ''bad_type''',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'filename': 'b.h',
+  \     'type': 'E',
+  \     'text': 'unknown type name ''other_bad_type''',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'text': 'Error found in header. See :ALEDetail',
+  \     'detail': join([
+  \       'In file included from a.h:1:0,',
+  \       '                 from <stdin>:3:',
+  \       'b.h:1:1: error: unknown type name ‘bad_type’',
+  \       ' bad_type x;',
+  \       ' ^',
+  \       'b.h:2:1: error: unknown type name ‘other_bad_type’',
+  \       ' other_bad_type y;',
+  \       ' ^',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \   'In file included from a.h:1:0,',
+  \   '                 from <stdin>:3:',
+  \   'b.h:1:1: error: unknown type name ‘bad_type’',
+  \   ' bad_type x;',
+  \   ' ^',
+  \   'b.h:2:1: error: unknown type name ‘other_bad_type’',
+  \   ' other_bad_type y;',
+  \   ' ^',
+  \   'compilation terminated.',
+  \ ])
+
+Execute(The GCC handler shouldn't complain about #pragma once for headers):
+  silent file! test.h
+
+  AssertEqual
+  \ [],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \   '<stdin>:1:1: warning: #pragma once in main file [enabled by default]',
+  \ ])
+
+  silent file! test.hpp
+
+  AssertEqual
+  \ [],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \   '<stdin>:1:1: warning: #pragma once in main file [enabled by default]',
+  \ ])
+
+Execute(The GCC handler should handle syntax errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 12,
+  \     'type': 'E',
+  \     'text': 'invalid suffix "p" on integer constant'
+  \   },
+  \   {
+  \     'lnum': 17,
+  \     'col': 5,
+  \     'type': 'E',
+  \     'text': 'invalid suffix "n" on integer constant'
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'type': 'E',
+  \     'text': 'variable or field ''foo'' declared void'
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'type': 'E',
+  \     'text': '''cat'' was not declared in this scope'
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'type': 'E',
+  \     'text': 'expected '';'' before ''o'''
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \ '<stdin>:6:12: error: invalid suffix "p" on integer constant',
+  \ '<stdin>:17:5: error: invalid suffix "n" on integer constant',
+  \ '<stdin>:4: error: variable or field ''foo'' declared void',
+  \ '<stdin>:4: error: ''cat'' was not declared in this scope',
+  \ '<stdin>:12: error: expected `;'' before ''o''',
+  \ ])
+
+Execute(The GCC handler should handle notes with no previous message):
+  AssertEqual
+  \ [],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \   '<stdin>:1:1: note: x',
+  \   '<stdin>:1:1: note: x',
+  \ ])
+
+Execute(The GCC handler should attach notes to previous messages):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 12,
+  \     'type': 'E',
+  \     'text': 'Some error',
+  \     'detail': "Some error\n<stdin>:1:1: note: x",
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \   '-:6:12: error: Some error',
+  \   '<stdin>:1:1: note: x',
+  \ ])
+
+Execute(The GCC handler should interpret - as being the current file):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 12,
+  \     'type': 'E',
+  \     'text': 'Some error',
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \ '-:6:12: error: Some error',
+  \ ])
+
+Execute(The GCC handler should handle fatal error messages due to missing files):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'col': 12,
+  \     'type': 'E',
+  \     'text': 'foo.h: No such file or directory'
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \ '<stdin>:3:12: fatal error: foo.h: No such file or directory',
+  \ ])
+
+Execute(The GCC handler should handle errors for inlined header functions):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 50,
+  \     'col': 4,
+  \     'filename': '/usr/include/bits/fcntl2.h',
+  \     'type': 'E',
+  \     'text': 'call to ''__open_missing_mode'' declared with attribute error: open with O_CREAT or O_TMPFILE in second argument needs 3 arguments',
+  \   },
+  \   {
+  \     'lnum': 44,
+  \     'col': 5,
+  \     'filename': '/usr/include/bits/fcntl2.h',
+  \     'type': 'E',
+  \     'text': 'call to ''__open_too_many_args'' declared with attribute error: open can be called either with 2 or 3 arguments, not more',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 10,
+  \     'type': 'E',
+  \     'text': 'call to ''__open_missing_mode'' declared with attribute error: open with O_CREAT or O_TMPFILE in second argument needs 3 arguments',
+  \   },
+  \   {
+  \     'lnum': 13,
+  \     'col': 11,
+  \     'type': 'E',
+  \     'text': 'call to ''__open_too_many_args'' declared with attribute error: open can be called either with 2 or 3 arguments, not more',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'text': 'Error found in header. See :ALEDetail',
+  \     'detail': join([
+  \       'In file included from /usr/include/fcntl.h:328,',
+  \       '                 from <stdin>:1:',
+  \       'In function ‘open’,',
+  \       '    inlined from ‘main’ at <stdin>:7:10:',
+  \       '/usr/include/bits/fcntl2.h:50:4: error: call to ‘__open_missing_mode’ declared with attribute error: open with O_CREAT or O_TMPFILE in second argument needs 3 arguments',
+  \       '    __open_missing_mode ();',
+  \       '    ^~~~~~~~~~~~~~~~~~~~~~',
+  \       'In function ‘open’,',
+  \       '    inlined from ‘main’ at <stdin>:13:11:',
+  \       '/usr/include/bits/fcntl2.h:44:5: error: call to ‘__open_too_many_args’ declared with attribute error: open can be called either with 2 or 3 arguments, not more',
+  \       '     __open_too_many_args ();',
+  \     ], "\n")
+  \   },
+  \],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \ 'In file included from /usr/include/fcntl.h:328,',
+  \ '                 from <stdin>:1:',
+  \ 'In function ‘open’,',
+  \ '    inlined from ‘main’ at <stdin>:7:10:',
+  \ '/usr/include/bits/fcntl2.h:50:4: error: call to ‘__open_missing_mode’ declared with attribute error: open with O_CREAT or O_TMPFILE in second argument needs 3 arguments',
+  \ '    __open_missing_mode ();',
+  \ '    ^~~~~~~~~~~~~~~~~~~~~~',
+  \ 'In function ‘open’,',
+  \ '    inlined from ‘main’ at <stdin>:13:11:',
+  \ '/usr/include/bits/fcntl2.h:44:5: error: call to ‘__open_too_many_args’ declared with attribute error: open can be called either with 2 or 3 arguments, not more',
+  \ '     __open_too_many_args ();',
+  \ '     ^~~~~~~~~~~~~~~~~~~~~~~',
+  \ ])
+
+Execute(The GCC handler should handle macro expansion errors in current file):
+  AssertEqual
+  \ [
+  \   {
+  \    'lnum': 1,
+  \    'col': 19,
+  \    'type': 'E',
+  \    'text': 'error message',
+  \    'detail': "error message\n<stdin>:1:19: note: in expansion of macro 'TEST'",
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \ '<command-line>: error: error message',
+  \ '<stdin>:1:19: note: in expansion of macro ‘TEST’',
+  \ '  1 | std::string str = TEST;',
+  \ '    |                   ^~~~',
+  \ ])
+
+Execute(The GCC handler should handle macro expansion errors in other files):
+  AssertEqual
+  \ [
+  \  {
+  \    'lnum': 0,
+  \    'type': 'E',
+  \    'text': 'Error found in macro expansion. See :ALEDetail',
+  \    'detail': "error message\ninc.h:1:19: note: in expansion of macro 'TEST'",
+  \  },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \ '<command-line>: error: error message',
+  \ 'inc.h:1:19: note: in expansion of macro ‘TEST’',
+  \ '  1 | std::string str = TEST;',
+  \ '    |                   ^~~~',
+  \ ])

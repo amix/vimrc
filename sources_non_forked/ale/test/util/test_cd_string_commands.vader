@@ -1,0 +1,20 @@
+Before:
+  silent! cd /testplugin/test/util
+  let g:dir = getcwd()
+
+After:
+  silent execute 'cd ' . fnameescape(g:dir)
+  unlet! g:dir
+
+Execute(CdString should output the correct command string):
+  " We will check that escaping is done correctly for each platform.
+  AssertEqual
+  \ has('unix') ? 'cd ''/foo bar/baz'' && ' : 'cd /d "/foo bar/baz" && ',
+  \ ale#command#CdString('/foo bar/baz')
+
+Execute(CdString handle substitution and formatting):
+  call ale#test#SetFilename('foo.txt')
+
+  AssertEqual
+  \ has('unix') ? 'cd %s:h && ' : 'cd /d %s:h && ',
+  \ ale#command#CdString('%s:h')

@@ -1,0 +1,20 @@
+Before:
+  call ale#assert#SetUpFixerTest('zig', 'zigfmt')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The zig callback should return the correct default values):
+  AssertFixer {
+  \    'command': ale#Escape('zig') . ' fmt %t',
+  \    'read_temporary_file': 1,
+  \}
+
+Execute(The zig callback should allow custom zig executables):
+  let g:ale_zig_zigfmt_executable = 'foo/bar'
+
+  AssertFixer {
+  \    'command': ale#Escape('foo/bar') . ' fmt %t',
+  \    'read_temporary_file': 1,
+  \}
+

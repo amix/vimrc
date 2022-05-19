@@ -1,0 +1,3 @@
+foolib.a
+-DARGS1
+@subdir/args

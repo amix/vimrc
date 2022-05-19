@@ -1,0 +1,272 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+  call ale#test#SetFilename('dummy.txt')
+
+  let g:Callback = 0
+  let g:message_list = []
+  let g:item_list = []
+  let g:show_message_arg_list = []
+
+  let g:ale_floating_preview = 0
+  let g:ale_hover_to_floating_preview = 0
+  let g:ale_detail_to_floating_preview = 0
+
+  runtime autoload/ale/linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/floating_preview.vim
+  runtime autoload/ale/hover.vim
+
+  let g:floated_lines = []
+  let g:floating_preview_show_called = 0
+
+  " Stub out so we can track the call
+  function! ale#floating_preview#Show(lines, ...) abort
+    let g:floating_preview_show_called = 1
+    let g:floated_lines = a:lines
+  endfunction
+
+  function! ale#lsp_linter#StartLSP(buffer, linter, callback) abort
+    let g:Callback = a:callback
+
+    return {
+    \ 'command': 'foobar',
+    \ 'connection_id': 347,
+    \ 'project_root': '/foo/bar',
+    \}
+  endfunction
+
+  function! ale#lsp#Send(conn_id, message, root) abort
+    call add(g:message_list, a:message)
+
+    return 42
+  endfunction
+
+  function! ale#util#ShowMessage(string, ...) abort
+      call add(g:show_message_arg_list, [a:string] + a:000)
+  endfunction
+
+  function! HandleValidLSPResult(result) abort
+    " The cursor is beyond the length of the line.
+    " We will clamp the cursor position with the line length.
+    call setpos('.', [bufnr(''), 1, 5, 0])
+
+    call ale#hover#SetMap({3: {
+    \ 'buffer': bufnr(''),
+    \ 'line': 1,
+    \ 'column': 5,
+    \}})
+    call ale#hover#HandleLSPResponse(
+    \ 1,
+    \ {
+    \   'id': 3,
+    \   'result': a:result,
+    \ }
+    \)
+  endfunction
+
+
+After:
+  call ale#hover#SetMap({})
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+  unlet! g:Callback
+  unlet! g:message_list
+  unlet! b:ale_linters
+  unlet! g:show_message_arg_list
+
+  delfunction HandleValidLSPResult
+
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/floating_preview.vim
+
+Given python(Some Python file):
+  foo
+  somelongerline
+  bazxyzxyzxyz
+
+Execute(Other messages for the tsserver handler should be ignored):
+  call ale#hover#HandleTSServerResponse(1, {'command': 'foo'})
+
+Execute(Failed hover responses should be handled correctly):
+  call ale#hover#SetMap({3: {}})
+  call ale#hover#HandleTSServerResponse(
+  \ 1,
+  \ {'command': 'quickinfo', 'request_seq': 3}
+  \)
+  AssertEqual {}, ale#hover#GetMap()
+
+Given typescript(Some typescript file):
+  foo
+  somelongerline
+  bazxyzxyzxyz
+
+Execute(tsserver quickinfo responses will null missing bodies should be handled):
+  call ale#hover#SetMap({3: {}})
+  call ale#hover#HandleTSServerResponse(
+  \ 1,
+  \ {
+  \   'command': 'quickinfo',
+  \   'request_seq': 3,
+  \   'success': v:true,
+  \ }
+  \)
+
+  AssertEqual {}, ale#hover#GetMap()
+
+Execute(tsserver quickinfo displayString values should be displayed):
+  call ale#hover#SetMap({3: {'buffer': bufnr('')}})
+  call ale#hover#HandleTSServerResponse(
+  \ 1,
+  \ {
+  \   'command': 'quickinfo',
+  \   'request_seq': 3,
+  \   'success': v:true,
+  \   'body': {'displayString': 'foo bar'},
+  \ }
+  \)
+
+  AssertEqual [['foo bar']], g:show_message_arg_list
+  AssertEqual {}, ale#hover#GetMap()
+
+Execute(LSP hover responses with just a string should be handled):
+  call HandleValidLSPResult({'contents': 'foobar'})
+
+  AssertEqual [['foobar', {'commands': []}]], g:show_message_arg_list
+  AssertEqual {}, ale#hover#GetMap()
+
+Execute(LSP hover null responses should be handled):
+  call HandleValidLSPResult(v:null)
+
+  AssertEqual [], g:show_message_arg_list
+  AssertEqual {}, ale#hover#GetMap()
+
+Execute(LSP hover responses with markup content should be handled):
+  call HandleValidLSPResult({'contents': {'kind': 'markdown', 'value': 'markup'}})
+
+  AssertEqual [['markup', {'commands': []}]], g:show_message_arg_list
+  AssertEqual {}, ale#hover#GetMap()
+
+Execute(LSP hover responses with markup content missing values should be handled):
+  call HandleValidLSPResult({'contents': {'kind': 'markdown'}})
+
+  AssertEqual [], g:show_message_arg_list
+  AssertEqual {}, ale#hover#GetMap()
+
+Execute(LSP hover response with lists of strings should be handled):
+  call HandleValidLSPResult({'contents': [
+  \  "foo\n",
+  \  "bar\n",
+  \]})
+
+  AssertEqual [["foo\n\nbar", {'commands': []}]], g:show_message_arg_list
+  AssertEqual {}, ale#hover#GetMap()
+
+Execute(LSP hover response with lists of strings and marked strings should be handled):
+  call HandleValidLSPResult({'contents': [
+  \  {'language': 'rust', 'value': 'foo'},
+  \  "bar\n",
+  \]})
+
+  AssertEqual [
+  \ [
+  \   "foo\n\nbar",
+  \   {
+  \     'commands': [
+  \       'unlet! b:current_syntax',
+  \       'syntax include @ALE_hover_rust syntax/rust.vim',
+  \       'syntax region ALE_hover_1 start=/\%1l/ end=/\%2l/ contains=@ALE_hover_rust',
+  \     ],
+  \   },
+  \ ],
+  \], g:show_message_arg_list
+  AssertEqual {}, ale#hover#GetMap()
+
+Execute(LSP hover with ale_floating_preview should float):
+  let g:ale_floating_preview = 1
+
+  call HandleValidLSPResult({'contents': "the message\ncontinuing"})
+
+  AssertEqual 1, g:floating_preview_show_called
+  AssertEqual ["the message", "continuing"], g:floated_lines
+
+Execute(LSP hover ale_hover_to_floating_preview should float):
+  let g:ale_hover_to_floating_preview = 1
+
+  call HandleValidLSPResult({'contents': "the message\ncontinuing"})
+
+  AssertEqual 1, g:floating_preview_show_called
+  AssertEqual ["the message", "continuing"], g:floated_lines
+
+
+Execute(LSP hover by default should not float):
+  call HandleValidLSPResult({'contents': "the message\ncontinuing"})
+
+  AssertEqual 0, g:floating_preview_show_called
+
+Execute(tsserver responses for documentation requests should be handled):
+  call ale#hover#SetMap({3: {'show_documentation': 1, 'buffer': bufnr('')}})
+
+  call ale#hover#HandleTSServerResponse(
+  \ 1,
+  \ {
+  \   'command': 'quickinfo',
+  \   'request_seq': 3,
+  \   'success': v:true,
+  \   'body': {
+  \     'documentation': 'foo is a very good method',
+  \     'displayString': 'foo bar',
+  \   },
+  \ }
+  \)
+
+  " The preview window should show the text.
+  AssertEqual ['foo is a very good method'], ale#test#GetPreviewWindowText()
+  silent! pclose
+
+Execute(hover with show_documentation should be in the preview window, not floating):
+  let g:ale_hover_to_floating_preview = 1
+  let g:ale_floating_preview = 1
+
+  call ale#hover#SetMap({3: {'show_documentation': 1, 'buffer': bufnr('')}})
+
+  call ale#hover#HandleTSServerResponse(
+  \ 1,
+  \ {
+  \   'command': 'quickinfo',
+  \   'request_seq': 3,
+  \   'success': v:true,
+  \   'body': {
+  \     'documentation': 'foo is a very good method',
+  \     'displayString': 'foo bar ',
+  \   },
+  \ }
+  \)
+
+  let expected = ["Every statement should end with a semicolon", "second line"]
+
+  AssertEqual 0, g:floating_preview_show_called
+
+Execute(TSServer hover without show_documentation and ale_floating_preview should float):
+  let g:ale_floating_preview = 1
+
+  call ale#hover#SetMap({3: {'buffer': bufnr('')}})
+
+  call ale#hover#HandleTSServerResponse(
+  \ 1,
+  \ {
+  \   'command': 'quickinfo',
+  \   'request_seq': 3,
+  \   'success': v:true,
+  \   'body': {
+  \     'displayString': "the message\ncontinuing",
+  \   },
+  \ }
+  \)
+
+  AssertEqual 1, g:floating_preview_show_called
+  AssertEqual ["the message", "continuing"], g:floated_lines

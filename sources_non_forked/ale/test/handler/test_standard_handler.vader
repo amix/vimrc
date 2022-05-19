@@ -1,0 +1,37 @@
+Before:
+  Save g:ale_javascript_eslint_suppress_eslintignore
+
+  let g:ale_javascript_eslint_suppress_eslintignore = 0
+
+After:
+  Restore
+
+Execute(The standard handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 47,
+  \     'col': 14,
+  \     'text': 'Expected indentation of 2 spaces but found 4.',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 56,
+  \     'col': 41,
+  \     'text': 'Strings must use singlequote.',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 13,
+  \     'col': 3,
+  \     'text': 'Parsing error: Unexpected token',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale#handlers#eslint#Handle(347, [
+  \   'This line should be ignored completely',
+  \   '/path/to/some-filename.js:47:14: Expected indentation of 2 spaces but found 4.',
+  \   '/path/to/some-filename.js:56:41: Strings must use singlequote.',
+  \   'This line should be ignored completely',
+  \   '/path/to/some-filename.js:13:3: Parsing error: Unexpected token',
+  \ ])

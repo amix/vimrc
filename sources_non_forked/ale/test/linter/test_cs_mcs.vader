@@ -1,0 +1,13 @@
+Before:
+  call ale#assert#SetUpLinterTest('cs', 'mcs')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'mcs', 'mcs -unsafe --parse %t'
+
+Execute(The options should be be used in the command):
+  let b:ale_cs_mcs_options = '-pkg:dotnet'
+
+  AssertLinter 'mcs', 'mcs -unsafe --parse -pkg:dotnet %t'

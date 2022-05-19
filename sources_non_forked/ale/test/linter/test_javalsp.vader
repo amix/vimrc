@@ -1,0 +1,80 @@
+
+Before:
+  call ale#assert#SetUpLinterTest('java', 'javalsp')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The javalsp callback should return the correct default value):
+  AssertLinter '', ale#Escape('')
+
+Execute(The javalsp java executable should be configurable):
+  let b:ale_java_javalsp_executable = '/bin/foobar'
+
+  AssertLinter '/bin/foobar', ale#Escape('/bin/foobar')
+
+Execute(The javalsp callback should return backward compatible value):
+  let b:ale_java_javalsp_executable = '/bin/java'
+  let cmd = [
+  \ ale#Escape('/bin/java'),
+  \ '--add-exports jdk.compiler/com.sun.tools.javac.api=javacs',
+  \ '--add-exports jdk.compiler/com.sun.tools.javac.code=javacs',
+  \ '--add-exports jdk.compiler/com.sun.tools.javac.comp=javacs',
+  \ '--add-exports jdk.compiler/com.sun.tools.javac.main=javacs',
+  \ '--add-exports jdk.compiler/com.sun.tools.javac.tree=javacs',
+  \ '--add-exports jdk.compiler/com.sun.tools.javac.model=javacs',
+  \ '--add-exports jdk.compiler/com.sun.tools.javac.util=javacs',
+  \ '--add-opens jdk.compiler/com.sun.tools.javac.api=javacs',
+  \ '-m javacs/org.javacs.Main',
+  \]
+  AssertLinter '/bin/java', join(cmd, ' ')
+
+Execute(The javalsp should have default config):
+  AssertEqual
+  \ {
+  \   'java': {
+  \     'classPath': [],
+  \     'externalDependencies': []
+  \   }
+  \ },
+  \ ale_linters#java#javalsp#Config(bufnr(''))
+
+Execute(The javalsp should have default config if user sets empty hash):
+  let b:ale_java_javalsp_config = {}
+
+  AssertEqual
+  \ {
+  \   'java': {
+  \     'classPath': [],
+  \     'externalDependencies': []
+  \   }
+  \ },
+  \ ale_linters#java#javalsp#Config(bufnr(''))
+
+Execute(The javalsp should have add missing config):
+  let b:ale_java_javalsp_config = { 'java': { 'classPath': ['aaa.jar'] } }
+
+  AssertEqual
+  \ {
+  \   'java': {
+  \     'classPath': ['aaa.jar'],
+  \     'externalDependencies': []
+  \   }
+  \ },
+  \ ale_linters#java#javalsp#Config(bufnr(''))
+
+  let b:ale_java_javalsp_config =
+  \ {
+  \   'java': {
+  \     'externalDependencies': ['unit-test:2.0.0']
+  \   }
+  \ }
+
+  AssertEqual
+  \ {
+  \   'java': {
+  \     'classPath': [],
+  \     'externalDependencies': ['unit-test:2.0.0']
+  \   }
+  \ },
+  \ ale_linters#java#javalsp#Config(bufnr(''))

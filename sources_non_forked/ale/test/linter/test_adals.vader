@@ -1,0 +1,17 @@
+Before:
+  call ale#assert#SetUpLinterTest('ada', 'adals')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Sets adals executable):
+  let g:ale_ada_adals_executable = '/path/to /Ada'
+  AssertLinter '/path/to /Ada', ale#Escape('/path/to /Ada')
+
+Execute(Sets adals encoding):
+  let b:ale_ada_adals_encoding = 'iso-8859-1'
+  AssertLSPConfig {'ada.defaultCharset': 'iso-8859-1', 'ada.projectFile': 'default.gpr'}
+
+Execute(Sets adals project):
+  let g:ale_ada_adals_project = 'myproject.gpr'
+  AssertLSPConfig {'ada.defaultCharset': 'utf-8', 'ada.projectFile': 'myproject.gpr'}

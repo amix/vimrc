@@ -1,0 +1,62 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'vulture')
+  call ale#test#SetFilename('test.py')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  unlet! b:bin_dir
+  unlet! b:executable
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The vulture command callback should lint file directory by default):
+  AssertLinterCwd expand('#' . bufnr('') . ':p:h')
+  AssertLinter 'vulture', ale#Escape('vulture') . '  .'
+
+Execute(The vulture command callback should lint project root, when present):
+  call ale#test#SetFilename('../test-files/python/no_virtualenv/subdir/foo/bar.py')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/no_virtualenv/subdir')
+  AssertLinter 'vulture', ale#Escape('vulture') . '  .'
+
+Execute(The option for disabling change directory works and only lints file):
+  let g:ale_python_vulture_change_directory = 0
+
+  AssertLinterCwd ''
+  AssertLinter 'vulture', ale#Escape('vulture') . '  %s'
+
+Execute(The vulture executable should be configurable, and escaped properly):
+  let g:ale_python_vulture_executable = 'executable with spaces'
+
+  AssertLinter 'executable with spaces', ale#Escape('executable with spaces') . '  .'
+
+Execute(The vulture command callback should let you set options):
+  let g:ale_python_vulture_options = '--some-option'
+
+  AssertLinter 'vulture', ale#Escape('vulture') . ' --some-option .'
+
+Execute(The vulture command callback should detect virtualenv directories and switch to the project root):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/vulture'
+  \)
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/subdir')
+  AssertLinter b:executable, ale#Escape(b:executable) . '  .'
+
+Execute(You should able able to use the global vulture instead):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  let g:ale_python_vulture_use_global = 1
+
+  AssertLinter 'vulture', ale#Escape('vulture') . '  .'
+
+Execute(Setting executable to 'pipenv' appends 'run vulture'):
+  let g:ale_python_vulture_executable = 'path/to/pipenv'
+
+  AssertLinter 'path/to/pipenv', ale#Escape('path/to/pipenv') . ' run vulture' . '  .'
+Execute(Setting executable to 'poetry' appends 'run vulture'):
+  let g:ale_python_vulture_executable = 'path/to/poetry'
+
+  AssertLinter 'path/to/poetry', ale#Escape('path/to/poetry') . ' run vulture' . '  .'

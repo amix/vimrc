@@ -1,0 +1,22 @@
+Before:
+  call ale#assert#SetUpLinterTest('proto', 'buf_lint')
+  call ale#test#SetFilename('test.proto')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'buf',
+  \ ale#Escape('buf')
+  \ . ' lint'
+  \ . ' %s#include_package_files=true'
+
+Execute(The callback should include any additional options):
+  let b:ale_proto_buf_lint_executable = '/tmp/buf'
+  let b:ale_proto_buf_lint_config = '/tmp/buf.yaml'
+
+  AssertLinter '/tmp/buf',
+  \ ale#Escape('/tmp/buf')
+  \ . ' lint'
+  \ . ' --config=' . ale#Escape('/tmp/buf.yaml')
+  \ . ' %s#include_package_files=true'

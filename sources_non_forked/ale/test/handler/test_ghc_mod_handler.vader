@@ -1,0 +1,37 @@
+Execute(HandleGhcFormat should handle ghc-mod problems):
+  call ale#test#SetFilename('check2.hs')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'Failed to load interface for ‘Missing’Use -v to see a list of the files searched for.',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'Suggestion: Use camelCaseFound:  my_variable = ...Why not:  myVariable = ...',
+  \   },
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'type': 'W',
+  \     'text': 'Eta reduceFound:  myFunc x = succ xWhy not:  myFunc = succ',
+  \   },
+  \   {
+  \     'lnum': 28,
+  \     'col': 28,
+  \     'type': 'W',
+  \     'text': 'Defaulting the following constraints to type ‘Integer’ (Num a0) arising from the literal ‘3’ at check2.hs:28:28 (Eq a0) arising from a use of ‘lookup’ at check2.hs:28:21-28 • In the first argument of ‘lookup’, namely ‘3’ In the expression: lookup 3 In the second argument of ‘fmap’, namely ‘(lookup 3 $ zip [1, 2, 3] [4, 5, 6])''’'
+  \   },
+  \ ],
+  \ ale#handlers#haskell#HandleGHCFormat(bufnr(''), [
+  \   'check2.hs:2:1:Failed to load interface for ‘Missing’Use -v to see a list of the files searched for.',
+  \   'check2.hs:2:1: Suggestion: Use camelCaseFound:  my_variable = ...Why not:  myVariable = ...',
+  \   'check2.hs:6:1: Warning: Eta reduceFound:  myFunc x = succ xWhy not:  myFunc = succ',
+  \   'xxx.hs:6:1: Warning: Eta reduceFound:  myFunc x = succ xWhy not:  myFunc = succ',
+  \   printf("check2.hs:28:28: Warning: Defaulting the following constraints to type ‘Integer’ (Num a0) arising from the literal ‘3’ at %s/check2.hs:28:28 (Eq a0) arising from a use of ‘lookup’ at %s/check2.hs:28:21-28 • In the first argument of ‘lookup’, namely ‘3’ In the expression: lookup 3 In the second argument of ‘fmap’, namely ‘(lookup 3 $ zip [1, 2, 3] [4, 5, 6])'’", tempname(), tempname()),
+  \ ])

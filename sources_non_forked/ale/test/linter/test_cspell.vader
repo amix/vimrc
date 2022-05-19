@@ -1,0 +1,71 @@
+Before:
+  call ale#assert#SetUpLinterTest('tex', 'cspell')
+
+  " We have to manually do our own variable reset because SetUpLinterTest calls
+  "  ale#assert#ResetVariables, which specifically only resets variables that
+  "  begin with ale_<filetype>_, per https://github.com/dense-analysis/ale/blob/76c2293e68a6cad3b192062743d25b8daa082205/autoload/ale/assert.vim#L256
+  "
+  " Took a lot of debugging and reading both junegunn/vader.vim and most ALE
+  "  files to find this behavior
+
+  Save g:ale_cspell_executable
+  Save g:ale_cspell_use_global
+  Save g:ale_cspell_options
+
+  unlet! g:ale_cspell_executable
+  unlet! g:ale_cspell_use_global
+  unlet! g:ale_cspell_options
+
+  let g:ale_cspell_executable = 'cspell'
+  let g:ale_cspell_use_global = 0
+  let g:ale_cspell_options = ''
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The global executable should be used when the local one cannot be found):
+  AssertLinter
+  \  'cspell',
+  \  ale#Escape('cspell')
+  \  . ' lint --no-color --no-progress --no-summary -- stdin'
+
+Execute(Should use the node_modules/.bin executable if available):
+  call ale#test#SetFilename('../test-files/cspell/node-modules/test.tex')
+
+  AssertLinter
+  \  ale#path#Simplify(g:dir
+  \    . '/../test-files/cspell/node-modules/node_modules/.bin/cspell'),
+  \  ale#Escape(ale#path#Simplify(g:dir
+  \    . '/../test-files/cspell/node-modules/node_modules/.bin/cspell'))
+  \  . ' lint --no-color --no-progress --no-summary -- stdin'
+
+Execute(Should use the node_modules/cspell executable if available):
+  call ale#test#SetFilename('../test-files/cspell/node-modules-2/test.tex')
+
+  AssertLinter
+  \  ale#path#Simplify(g:dir
+  \    . '/../test-files/cspell/node-modules-2/node_modules/cspell/bin.js'),
+  \  (has('win32') ? 'node.exe ': '')
+  \  . ale#Escape(ale#path#Simplify(g:dir
+  \    . '/../test-files/cspell/node-modules-2/node_modules/cspell/bin.js'))
+  \  . ' lint --no-color --no-progress --no-summary -- stdin'
+
+Execute(Should let users configure a global executable and override local paths):
+  let g:ale_cspell_executable = '/path/to/custom/cspell'
+  let g:ale_cspell_use_global = 1
+
+  AssertLinter
+  \  '/path/to/custom/cspell',
+  \  ale#Escape('/path/to/custom/cspell')
+  \  . ' lint --no-color --no-progress --no-summary -- stdin'
+
+Execute(Additional cspell options should be configurable):
+  call ale#test#SetFilename('../test-files/dummy')
+
+  let g:ale_cspell_options = '--foobar'
+
+  AssertLinter
+  \  'cspell',
+  \  ale#Escape('cspell')
+  \  . ' lint --no-color --no-progress --no-summary --foobar -- stdin'
+

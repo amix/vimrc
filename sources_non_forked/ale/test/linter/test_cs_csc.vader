@@ -1,0 +1,42 @@
+Before:
+  call ale#assert#SetUpLinterTest('cs', 'csc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The csc linter should return the correct default command):
+  AssertLinterCwd expand('%:p:h')
+  AssertLinter 'csc', 'csc /unsafe /out:TEMP /t:module /recurse:' . ale#Escape('*.cs')
+
+Execute(The options should be be used in the command):
+  let g:ale_cs_csc_options = ''
+
+  AssertLinter 'csc', 'csc /unsafe /out:TEMP /t:module /recurse:' . ale#Escape('*.cs')
+
+Execute(The souce path should be be used in the command):
+  let g:ale_cs_csc_source = '../foo/bar'
+
+  AssertLinterCwd '../foo/bar'
+  AssertLinter 'csc', 'csc /unsafe /out:TEMP /t:module /recurse:' . ale#Escape('*.cs')
+
+Execute(The list of search pathes for assemblies should be be used in the command if not empty):
+  let g:ale_cs_csc_assembly_path = ['/usr/lib/mono', '../foo/bar']
+
+  AssertLinter 'csc', 'csc /unsafe'
+  \ . ' /lib:' . ale#Escape('/usr/lib/mono') . ',' . ale#Escape('../foo/bar')
+  \ . ' /out:TEMP /t:module /recurse:' . ale#Escape('*.cs')
+
+  let g:ale_cs_csc_assembly_path = []
+
+  AssertLinter 'csc', 'csc /unsafe /out:TEMP /t:module /recurse:' . ale#Escape('*.cs')
+
+Execute(The list of assemblies should be be used in the command if not empty):
+  let g:ale_cs_csc_assemblies = ['foo.dll', 'bar.dll']
+
+  AssertLinter 'csc', 'csc /unsafe'
+  \ . ' /r:' . ale#Escape('foo.dll') . ',' . ale#Escape('bar.dll')
+  \ . ' /out:TEMP /t:module /recurse:' . ale#Escape('*.cs')
+
+  let g:ale_cs_csc_assemblies = []
+
+  AssertLinter 'csc', 'csc /unsafe /out:TEMP /t:module /recurse:' . ale#Escape('*.cs')

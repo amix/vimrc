@@ -1,0 +1,58 @@
+Before:
+  runtime ale_linters/mercury/mmc.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The mmc handler should handle syntax errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'type': 'E',
+  \     'text': "Syntax error at token ',': operator precedence error."
+  \   }
+  \ ],
+  \ ale_linters#mercury#mmc#Handle(1, [
+  \    "file_name.m:003: Syntax error at token ',': operator precedence error."
+  \ ])
+
+Execute(The mmc handler should handle warnings):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 10,
+  \     'type': 'W',
+  \     'text': 'Warning: reference to uninitialized state variable !.X.'
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'type': 'W',
+  \     'text': 'warning: determinism declaration could be tighter.'
+  \   }
+  \ ],
+  \ ale_linters#mercury#mmc#Handle(1, [
+  \   'file_name.m:010: Warning: reference to uninitialized state variable !.X.',
+  \   "file_name.m:012: In `some_predicate':",
+  \   'file_name.m:012:    warning: determinism declaration could be tighter.'
+  \ ])
+
+Execute(The mmc handler should handle semantic errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 7,
+  \     'type': 'E',
+  \     'text': "error: undefined type `bar'/0."
+  \   },
+  \   {
+  \     'lnum': 15,
+  \     'type': 'E',
+  \     'text': "Error: circular equivalence type `file_name.foo'/0."
+  \   }
+  \ ],
+  \ ale_linters#mercury#mmc#Handle(1, [
+  \    "file_name.m:007: In clause for predicate `foldit'/4:",
+  \    "file_name.m:007:   error: undefined type `bar'/0.",
+  \    "file_name.m:015: Error: circular equivalence type `file_name.foo'/0."
+  \ ])

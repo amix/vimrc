@@ -1,0 +1,15 @@
+Before:
+  call ale#assert#SetUpLinterTest('zig', 'zls')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default executable path should be correct):
+  AssertLinter 'zls', ale#Escape('zls')
+
+Execute(The project root should be detected correctly):
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/zig/main.zig')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/zig')

@@ -1,0 +1,317 @@
+Before:
+  Save g:ale_fix_on_save
+  Save g:ale_enabled
+  Save g:ale_run_synchronously
+  Save g:ale_set_lists_synchronously
+  Save g:ale_buffer_info
+  Save g:ale_linters
+
+  let g:ale_buffer_info = {}
+  let g:ale_run_synchronously = 1
+  unlet! g:ale_run_synchronously_callbacks
+  let g:ale_set_lists_synchronously = 1
+  let b:ale_save_event_fired = 0
+
+  let g:buffer_result = [
+  \ {
+  \   'lnum': 1,
+  \   'col': 1,
+  \   'text': 'buffer error',
+  \   'type': 'E',
+  \ },
+  \ {
+  \   'lnum': 2,
+  \   'col': 1,
+  \   'text': 'buffer warning',
+  \   'type': 'W',
+  \ },
+  \]
+
+  function! LintFileCallback(buffer, output)
+    return [
+    \ {
+    \   'lnum': 1,
+    \   'col': 3,
+    \   'text': 'file warning',
+    \   'type': 'W',
+    \ },
+    \ {
+    \   'lnum': 2,
+    \   'col': 3,
+    \   'text': 'file error',
+    \   'type': 'E',
+    \ },
+    \]
+  endfunction
+
+  function! BufferCallback(buffer, output)
+    return deepcopy(g:buffer_result)
+  endfunction
+
+  function! GetSimplerLoclist()
+    let l:loclist = []
+
+    for l:item in ale#test#GetLoclistWithoutNewerKeys()
+      call add(l:loclist, {
+      \ 'lnum': l:item.lnum,
+      \ 'col': l:item.col,
+      \ 'text': l:item.text,
+      \ 'type': l:item.type,
+      \})
+    endfor
+
+    return l:loclist
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'lint_file_linter',
+  \ 'callback': 'LintFileCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': 'echo',
+  \ 'lint_file': 1,
+  \})
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'buffer_linter',
+  \ 'callback': 'BufferCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': 'echo',
+  \ 'read_buffer': 0,
+  \})
+
+  let g:filename = tempname()
+  call writefile([], g:filename)
+  call ale#test#SetFilename(g:filename)
+
+After:
+  if !g:ale_run_synchronously
+    call ale#engine#Cleanup(bufnr(''))
+  endif
+
+  Restore
+
+  unlet! g:ale_run_synchronously_callbacks
+  unlet! b:ale_save_event_fired
+  unlet! b:ale_enabled
+  unlet g:buffer_result
+  let g:ale_buffer_info = {}
+  call ale#linter#Reset()
+  call setloclist(0, [])
+  delfunction LintFileCallback
+  delfunction BufferCallback
+
+  if filereadable(g:filename)
+    call delete(g:filename)
+  endif
+
+  unlet g:filename
+
+Given foobar (Some imaginary filetype):
+  foo
+  bar
+  baz
+
+Execute(Running linters without 'lint_file' should run only buffer linters):
+  call ale#Queue(0)
+  call ale#test#FlushJobs()
+
+  AssertEqual [
+  \ {
+  \   'lnum': 1,
+  \   'col': 1,
+  \   'text': 'buffer error',
+  \   'type': 'E',
+  \ },
+  \ {
+  \   'lnum': 2,
+  \   'col': 1,
+  \   'text': 'buffer warning',
+  \   'type': 'W',
+  \ },
+  \], GetSimplerLoclist()
+
+Execute(Running linters with 'lint_file' should run all linters):
+  Assert filereadable(expand('%:p')), 'The file was not readable'
+
+  call ale#Queue(0, 'lint_file')
+  call ale#test#FlushJobs()
+
+  AssertEqual [
+  \ {
+  \   'lnum': 1,
+  \   'col': 1,
+  \   'text': 'buffer error',
+  \   'type': 'E',
+  \ },
+  \ {
+  \   'lnum': 1,
+  \   'col': 3,
+  \   'text': 'file warning',
+  \   'type': 'W',
+  \ },
+  \ {
+  \   'lnum': 2,
+  \   'col': 1,
+  \   'text': 'buffer warning',
+  \   'type': 'W',
+  \ },
+  \ {
+  \   'lnum': 2,
+  \   'col': 3,
+  \   'text': 'file error',
+  \   'type': 'E',
+  \ },
+  \], GetSimplerLoclist()
+
+Execute(Linter errors from files should be kept):
+  Assert filereadable(expand('%:p')), 'The file was not readable'
+
+  call ale#Queue(0, 'lint_file')
+  call ale#test#FlushJobs()
+
+  " Change the results for the buffer callback.
+  let g:buffer_result = [
+  \ {
+  \   'lnum': 1,
+  \   'col': 1,
+  \   'text': 'new buffer error',
+  \   'type': 'E',
+  \ },
+  \]
+
+  call ale#Queue(0)
+  call ale#test#FlushJobs()
+
+  AssertEqual [
+  \ {
+  \   'lnum': 1,
+  \   'col': 1,
+  \   'text': 'new buffer error',
+  \   'type': 'E',
+  \ },
+  \ {
+  \   'lnum': 1,
+  \   'col': 3,
+  \   'text': 'file warning',
+  \   'type': 'W',
+  \ },
+  \ {
+  \   'lnum': 2,
+  \   'col': 3,
+  \   'text': 'file error',
+  \   'type': 'E',
+  \ },
+  \], GetSimplerLoclist()
+
+Execute(Linter errors from files should be kept when no other linters are run):
+  let g:ale_linters = {'foobar': ['lint_file_linter']}
+  Assert filereadable(expand('%:p')), 'The file was not readable'
+
+  call ale#Queue(0, 'lint_file')
+  call ale#test#FlushJobs()
+
+  AssertEqual [
+  \ {
+  \   'lnum': 1,
+  \   'col': 3,
+  \   'text': 'file warning',
+  \   'type': 'W',
+  \ },
+  \ {
+  \   'lnum': 2,
+  \   'col': 3,
+  \   'text': 'file error',
+  \   'type': 'E',
+  \ },
+  \], GetSimplerLoclist()
+
+  call ale#Queue(0)
+
+  AssertEqual [
+  \ {
+  \   'lnum': 1,
+  \   'col': 3,
+  \   'text': 'file warning',
+  \   'type': 'W',
+  \ },
+  \ {
+  \   'lnum': 2,
+  \   'col': 3,
+  \   'text': 'file error',
+  \   'type': 'E',
+  \ },
+  \], GetSimplerLoclist()
+
+Execute(The Save event should respect the buffer number):
+  let g:ale_linters = {'foobar': ['lint_file_linter']}
+  Assert filereadable(expand('%:p')), 'The file was not readable'
+
+  call ale#events#SaveEvent(bufnr('') + 1)
+  call ale#test#FlushJobs()
+
+  " We shouldn't get any prblems yet.
+  AssertEqual [], GetSimplerLoclist()
+
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  " We should get them now we used the right buffer number.
+  AssertEqual [
+  \ {
+  \   'lnum': 1,
+  \   'col': 3,
+  \   'text': 'file warning',
+  \   'type': 'W',
+  \ },
+  \ {
+  \   'lnum': 2,
+  \   'col': 3,
+  \   'text': 'file error',
+  \   'type': 'E',
+  \ },
+  \], GetSimplerLoclist()
+
+Execute(The Save event should set b:ale_save_event_fired to 1):
+  let g:ale_lint_on_save = 1
+  let b:ale_enabled = 1
+
+  call ale#linter#Reset()
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  " This flag needs to be set so windows can be opened, etc.
+  AssertEqual 1, b:ale_save_event_fired
+
+Execute(b:ale_save_event_fired should be set to 0 when results are set):
+  let b:ale_save_event_fired = 1
+
+  call ale#engine#SetResults(bufnr(''), [])
+  call ale#test#FlushJobs()
+
+  AssertEqual 0, b:ale_save_event_fired
+
+Execute(lint_file linters should stay running after checking without them):
+  let g:ale_run_synchronously = 0
+
+  " Run all linters, then just the buffer linters.
+  call ale#Queue(0, 'lint_file')
+  call ale#Queue(0)
+
+  " The lint_file linter should still be running.
+  AssertEqual
+  \ ['lint_file_linter', 'buffer_linter'],
+  \ map(copy(g:ale_buffer_info[bufnr('')].active_linter_list), 'v:val.name')
+  " We should have 1 job for each linter.
+  AssertEqual
+  \ 2,
+  \ len(keys(get(get(ale#command#GetData(), bufnr(''), {}), 'jobs', {})))
+
+  call ale#test#WaitForJobs(2000)
+
+Execute(The save event should not lint the buffer when ALE is disabled):
+  let g:ale_enabled = 0
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  AssertEqual [], GetSimplerLoclist()
+  AssertEqual 0, b:ale_save_event_fired

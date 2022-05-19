@@ -1,0 +1,13 @@
+Before:
+  call ale#assert#SetUpLinterTest('qml', 'qmlfmt')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The qml qmlfmt command callback should return the correct default string):
+  AssertLinter 'qmlfmt', ale#Escape('qmlfmt') . ' -e',
+
+Execute(The qmlfmt executable should be configurable):
+  let g:ale_qml_qmlfmt_executable = '~/.local/bin/qmlfmt'
+
+  AssertLinter '~/.local/bin/qmlfmt', ale#Escape('~/.local/bin/qmlfmt') . ' -e'

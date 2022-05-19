@@ -1,0 +1,43 @@
+Before:
+  call ale#assert#SetUpLinterTest('scss', 'sasslint')
+  call ale#test#SetFilename('test.scss')
+  unlet! b:executable
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(should default to source, bin/sass-lint.js):
+  call ale#test#SetFilename('../test-files/sasslint/with-source/test.scss')
+
+  let b:executable = ale#path#Simplify(
+  \   g:dir
+  \   . '/../test-files/sasslint/with-source/node_modules/sass-lint/bin/sass-lint.js'
+  \)
+
+  AssertLinter b:executable,
+  \ (has('win32') ? 'node.exe ' : '')
+  \   . ale#Escape(b:executable)
+  \   . ' -v -q -f compact %t'
+
+Execute(should fallback to bin, .bin/sass-lint):
+  call ale#test#SetFilename('../test-files/sasslint/with-bin/test.scss')
+
+  let b:executable = ale#path#Simplify(
+  \   g:dir
+  \   . '/../test-files/sasslint/with-bin/node_modules/.bin/sass-lint'
+  \)
+
+  AssertLinter b:executable, ale#Escape(b:executable) . ' -v -q -f compact %t'
+
+Execute(should fallback to global bin):
+  AssertLinter 'sass-lint', ale#Escape('sass-lint') . ' -v -q -f compact %t'
+
+Execute(The global executable should be configurable):
+  let b:ale_scss_sasslint_executable = 'foo'
+
+  AssertLinter 'foo', ale#Escape('foo') . ' -v -q -f compact %t'
+
+Execute(The options should be configurable):
+  let b:ale_scss_sasslint_options = '--bar'
+
+  AssertLinter 'sass-lint', ale#Escape('sass-lint') . ' --bar -v -q -f compact %t'

@@ -1,0 +1,8 @@
+Before:
+  call ale#assert#SetUpLinterTest('cypher', 'cypher_lint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command and executable should be correct):
+  AssertLinter 'cypher-lint', 'cypher-lint'

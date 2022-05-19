@@ -1,0 +1,276 @@
+Before:
+  Save g:ale_warn_about_trailing_blank_lines
+  Save g:ale_warn_about_trailing_whitespace
+
+  let g:ale_warn_about_trailing_blank_lines = 1
+  let g:ale_warn_about_trailing_whitespace = 1
+
+  runtime ale_linters/python/flake8.vim
+
+After:
+  Restore
+
+  unlet! b:ale_warn_about_trailing_blank_lines
+  unlet! b:ale_warn_about_trailing_whitespace
+
+  call ale#linter#Reset()
+
+Execute(The flake8 handler should handle basic warnings and syntax errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 6,
+  \     'vcol': 1,
+  \     'type': 'E',
+  \     'text': 'indentation is not a multiple of four',
+  \     'code': 'E111',
+  \     'sub_type': 'style',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 6,
+  \     'vcol': 1,
+  \     'type': 'W',
+  \     'text': 'some warning',
+  \     'code': 'W123',
+  \     'sub_type': 'style',
+  \   },
+  \   {
+  \     'lnum': 8,
+  \     'col': 3,
+  \     'vcol': 1,
+  \     'type': 'E',
+  \     'text': 'SyntaxError: invalid syntax',
+  \     'code': 'E999',
+  \   },
+  \ ],
+  \ ale_linters#python#flake8#Handle(1, [
+  \   'stdin:6:6: E111 indentation is not a multiple of four',
+  \   'stdin:7:6: W123 some warning',
+  \   'stdin:8:3: E999 SyntaxError: invalid syntax',
+  \ ])
+
+Execute(The flake8 handler should set end column indexes for certain errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 25,
+  \     'col': 1,
+  \     'vcol': 1,
+  \     'type': 'E',
+  \     'end_col': 3,
+  \     'text': 'undefined name ''foo''',
+  \     'code': 'F821',
+  \   },
+  \   {
+  \     'lnum': 28,
+  \     'col': 5,
+  \     'vcol': 1,
+  \     'type': 'E',
+  \     'end_col': 9,
+  \     'text': 'hello may be undefined, or defined from star imports: x',
+  \     'code': 'F405',
+  \   },
+  \   {
+  \     'lnum': 104,
+  \     'col': 5,
+  \     'vcol': 1,
+  \     'type': 'E',
+  \     'end_col': 12,
+  \     'text': '''continue'' not properly in loop',
+  \     'code': 'F999',
+  \   },
+  \   {
+  \     'lnum': 106,
+  \     'col': 5,
+  \     'vcol': 1,
+  \     'type': 'E',
+  \     'end_col': 9,
+  \     'text': '''break'' outside loop',
+  \     'code': 'F999',
+  \   },
+  \   {
+  \     'lnum': 109,
+  \     'col': 5,
+  \     'vcol': 1,
+  \     'type': 'E',
+  \     'end_col': 8,
+  \     'text': 'local variable ''test'' is assigned to but never used',
+  \     'code': 'F841',
+  \   },
+  \ ],
+  \ ale_linters#python#flake8#Handle(1, [
+  \ 'foo.py:25:1: F821 undefined name ''foo''',
+  \ 'foo.py:28:5: F405 hello may be undefined, or defined from star imports: x',
+  \ 'foo.py:104:5: F999 ''continue'' not properly in loop',
+  \ 'foo.py:106:5: F999 ''break'' outside loop',
+  \ 'foo.py:109:5: F841 local variable ''test'' is assigned to but never used',
+  \ ])
+
+Execute(The flake8 handler should handle stack traces):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'text': 'ImportError: No module named parser (See :ALEDetail)',
+  \     'detail': join([
+  \       'Traceback (most recent call last):',
+  \       '  File "/usr/local/bin/flake8", line 7, in <module>',
+  \       '    from flake8.main.cli import main',
+  \       '  File "/usr/local/lib/python2.7/dist-packages/flake8/main/cli.py", line 2, in <module>',
+  \       '    from flake8.main import application',
+  \       '  File "/usr/local/lib/python2.7/dist-packages/flake8/main/application.py", line 17, in <module>',
+  \       '    from flake8.plugins import manager as plugin_manager',
+  \       '  File "/usr/local/lib/python2.7/dist-packages/flake8/plugins/manager.py", line 5, in <module>',
+  \       '    import pkg_resources',
+  \       '  File "/usr/lib/python2.7/dist-packages/pkg_resources/__init__.py", line 35, in <module>',
+  \       '    import email.parser',
+  \       'ImportError: No module named parser',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale_linters#python#flake8#Handle(42, [
+  \   'Traceback (most recent call last):',
+  \   '  File "/usr/local/bin/flake8", line 7, in <module>',
+  \   '    from flake8.main.cli import main',
+  \   '  File "/usr/local/lib/python2.7/dist-packages/flake8/main/cli.py", line 2, in <module>',
+  \   '    from flake8.main import application',
+  \   '  File "/usr/local/lib/python2.7/dist-packages/flake8/main/application.py", line 17, in <module>',
+  \   '    from flake8.plugins import manager as plugin_manager',
+  \   '  File "/usr/local/lib/python2.7/dist-packages/flake8/plugins/manager.py", line 5, in <module>',
+  \   '    import pkg_resources',
+  \   '  File "/usr/lib/python2.7/dist-packages/pkg_resources/__init__.py", line 35, in <module>',
+  \   '    import email.parser',
+  \   'ImportError: No module named parser',
+  \ ])
+
+Execute(The flake8 handler should handle names with spaces):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 6,
+  \     'vcol': 1,
+  \     'type': 'E',
+  \     'text': 'indentation is not a multiple of four',
+  \     'code': 'E111',
+  \     'sub_type': 'style',
+  \   },
+  \ ],
+  \ ale_linters#python#flake8#Handle(42, [
+  \   'C:\something\with spaces.py:6:6: E111 indentation is not a multiple of four',
+  \ ])
+
+Execute(Warnings about trailing whitespace should be reported by default):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'vcol': 1,
+  \     'code': 'W291',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \     'text': 'who cares',
+  \   },
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'vcol': 1,
+  \     'code': 'W293',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \     'text': 'who cares',
+  \   },
+  \ ],
+  \ ale_linters#python#flake8#Handle(bufnr(''), [
+  \   'foo.py:6:1: W291 who cares',
+  \   'foo.py:6:1: W293 who cares',
+  \ ])
+
+Execute(Disabling trailing whitespace warnings should work):
+  let b:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale_linters#python#flake8#Handle(bufnr(''), [
+  \   'foo.py:6:1: W291 who cares',
+  \   'foo.py:6:1: W293 who cares',
+  \ ])
+
+Execute(Warnings about trailing blank lines should be reported by default):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'vcol': 1,
+  \     'code': 'W391',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \     'text': 'blank line at end of file',
+  \   },
+  \ ],
+  \ ale_linters#python#flake8#Handle(bufnr(''), [
+  \   'foo.py:6:1: W391 blank line at end of file',
+  \ ])
+
+Execute(Disabling trailing blank line warnings should work):
+  let b:ale_warn_about_trailing_blank_lines = 0
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale_linters#python#flake8#Handle(bufnr(''), [
+  \   'foo.py:6:1: W391 blank line at end of file',
+  \ ])
+
+Execute(F401 should be a warning):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'vcol': 1,
+  \     'code': 'F401',
+  \     'type': 'W',
+  \     'text': 'module imported but unused',
+  \   },
+  \ ],
+  \ ale_linters#python#flake8#Handle(bufnr(''), [
+  \   'foo.py:6:1: F401 module imported but unused',
+  \ ])
+
+Execute(E112 should be a syntax error):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'vcol': 1,
+  \     'code': 'E112',
+  \     'type': 'E',
+  \     'text': 'expected an indented block',
+  \   },
+  \ ],
+  \ ale_linters#python#flake8#Handle(bufnr(''), [
+  \   'foo.py:6:1: E112 expected an indented block',
+  \ ])
+
+Execute(Compatibility with hacking which uses older style flake8):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'vcol': 1,
+  \     'code': 'H306',
+  \     'type': 'W',
+  \     'text': 'imports not in alphabetical order (smtplib, io)',
+  \   },
+  \ ],
+  \ ale_linters#python#flake8#Handle(bufnr(''), [
+  \   'foo.py:6:1: H306: imports not in alphabetical order (smtplib, io)',
+  \ ])

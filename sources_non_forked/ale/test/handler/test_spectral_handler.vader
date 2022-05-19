@@ -1,0 +1,52 @@
+Before:
+  runtime ale_linters/yaml/spectral.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(spectral handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'code': 'oas3-api-servers',
+  \     'text': 'OpenAPI `servers` must be present and non-empty array.',
+  \     'type': 'W'
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'code': 'oas3-schema',
+  \     'text': 'Object should have required property `paths`.',
+  \     'type': 'E'
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'code': 'openapi-tags',
+  \     'text': 'OpenAPI object should have non-empty `tags` array.',
+  \     'type': 'W'
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 6,
+  \     'code': 'info-contact',
+  \     'text': 'Info object should contain `contact` object.',
+  \     'type': 'W'
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 6,
+  \     'code': 'oas3-schema',
+  \     'text': '`info` property should have required property `version`.',
+  \     'type': 'E'
+  \   },
+  \ ],
+  \ ale#handlers#spectral#HandleSpectralOutput(bufnr(''), [
+  \   'openapi.yml:1:1 warning oas3-api-servers "OpenAPI `servers` must be present and non-empty array."',
+  \   'openapi.yml:1:1 error oas3-schema "Object should have required property `paths`."',
+  \   'openapi.yml:1:1 warning openapi-tags "OpenAPI object should have non-empty `tags` array."',
+  \   'openapi.yml:3:6 warning info-contact "Info object should contain `contact` object."',
+  \   'openapi.yml:3:6 error oas3-schema "`info` property should have required property `version`."',
+  \ ])

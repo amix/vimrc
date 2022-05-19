@@ -1,0 +1,17 @@
+Before:
+  runtime ale_linters/zeek/zeek.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The zeek handler should parse input correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'text': 'unknown identifier bar, at or near "bar"'
+  \   },
+  \ ],
+  \ ale_linters#zeek#zeek#HandleErrors(bufnr(''), [
+  \ 'error in /tmp/foo.zeek, line 2: unknown identifier bar, at or near "bar"'
+  \ ])

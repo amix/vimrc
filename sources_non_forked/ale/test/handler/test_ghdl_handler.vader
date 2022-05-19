@@ -1,0 +1,26 @@
+Before:
+  runtime ale_linters/vhdl/ghdl.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The ghdl handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 41,
+  \     'col' : 5,
+  \     'type': 'E',
+  \     'text': "error: 'begin' is expected instead of 'if'"
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'col' : 8,
+  \     'type': 'E',
+  \     'text': ' no declaration for "i0"'
+  \   },
+  \ ],
+  \ ale_linters#vhdl#ghdl#Handle(bufnr(''), [
+  \   "dff_en.vhd:41:5:error: 'begin' is expected instead of 'if'",
+  \   '/path/to/file.vhdl:12:8: no declaration for "i0"',
+  \ ])

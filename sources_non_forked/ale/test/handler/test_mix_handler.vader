@@ -1,0 +1,21 @@
+Before:
+  runtime ale_linters/elixir/mix.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The mix handler should parse lines correctly):
+
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 347,
+  \     'lnum': 87,
+  \     'col': 0,
+  \     'text': 'undefined function update_in/4',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#elixir#mix#Handle(347, [
+  \   '** (CompileError) apps/sim/lib/sim/server.ex:87: undefined function update_in/4'
+  \ ])

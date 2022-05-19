@@ -1,0 +1,42 @@
+Before:
+  call ale#assert#SetUpLinterTest('ada', 'gcc')
+  call ale#test#SetFilename('dummy.adb')
+
+  function! GetOutputDir(command) abort
+    let l:split_command = split(a:command)
+    let l:index = index(l:split_command, '-o')
+    return l:split_command[l:index + 1]
+  endfunction
+
+  let b:out_file = GetOutputDir(ale_linters#ada#gcc#GetCommand(bufnr('')))
+
+After:
+  delfunction GetOutputDir
+
+  unlet! b:out_file
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'gcc',
+  \ ale#Escape('gcc') . ' -x ada -c -gnatc'
+  \ . ' -o ' . b:out_file
+  \ . ' -I %s:h'
+  \ . ' -gnatwa -gnatq %t'
+
+  let b:ale_ada_gcc_executable = 'foo'
+
+  AssertLinter 'foo',
+  \ ale#Escape('foo') . ' -x ada -c -gnatc'
+  \ . ' -o ' . b:out_file
+  \ . ' -I %s:h'
+  \ . ' -gnatwa -gnatq %t'
+
+Execute(The options should be configurable):
+  let g:ale_ada_gcc_options = '--foo --bar'
+
+  AssertLinter 'gcc',
+  \ ale#Escape('gcc') . ' -x ada -c -gnatc'
+  \ . ' -o ' . b:out_file
+  \ . ' -I %s:h'
+  \ . ' --foo --bar %t'

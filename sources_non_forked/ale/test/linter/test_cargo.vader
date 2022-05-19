@@ -1,0 +1,222 @@
+Before:
+  call ale#assert#SetUpLinterTest('rust', 'cargo')
+  call ale#test#SetFilename('../test-files/cargo/test.rs')
+
+  let g:cd = 'cd ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/cargo')) . ' && '
+  let g:suffix = ' --frozen --message-format=json -q'
+  let g:ale_rust_cargo_avoid_whole_workspace = 0
+
+  " Test with version 0.22.0 by default.
+  GivenCommandOutput ['cargo 0.22.0 (3423351a5 2017-10-06)']
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+  unlet! g:cd
+  unlet! g:suffix
+
+Execute(The linter should not be executed when there's no Cargo.toml file):
+  call ale#test#SetFilename('../foo.rs')
+  AssertLinterNotExecuted
+
+Execute(The linter should be executed when there is a Cargo.toml file):
+  GivenCommandOutput []
+  AssertLinter 'cargo', 'cargo build --frozen --message-format=json -q'
+
+Execute(`cargo check` should be used when the version is new enough):
+  GivenCommandOutput ['cargo 0.17.0 (3423351a5 2017-10-06)']
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo check' . g:suffix,
+  \]
+
+  " We should cache the version check
+  GivenCommandOutput []
+  AssertLinter 'cargo', ['cargo check' . g:suffix]
+
+Execute(`cargo build` should be used when cargo is too old):
+  GivenCommandOutput ['cargo 0.16.0 (3423351a5 2017-10-06)']
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo build' . g:suffix,
+  \]
+
+  GivenCommandOutput []
+  AssertLinter 'cargo', ['cargo build' . g:suffix]
+
+Execute(`cargo build` should be used when g:ale_rust_cargo_use_check is set to 0):
+  let g:ale_rust_cargo_use_check = 0
+
+  GivenCommandOutput ['cargo 0.24.0 (3423351a5 2017-10-06)']
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo build' . g:suffix,
+  \]
+
+  " We should cache the version check
+  GivenCommandOutput []
+  AssertLinter 'cargo', ['cargo build' . g:suffix]
+
+Execute(`cargo check` should be used when the version is new enough):
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo check' . g:suffix,
+  \]
+
+  " We should cache the version check
+  GivenCommandOutput []
+  AssertLinter 'cargo', ['cargo check' . g:suffix]
+
+Execute(--all-targets should be used when g:ale_rust_cargo_check_all_targets is set to 1):
+  let g:ale_rust_cargo_check_all_targets = 1
+
+  AssertLinter 'cargo', [ale#Escape('cargo') . ' --version', 'cargo check --all-targets' . g:suffix]
+  " We should cache the version check
+  AssertLinter 'cargo', ['cargo check --all-targets' . g:suffix]
+
+Execute(--tests should be used when g:ale_rust_cargo_check_tests is set to 1):
+  let g:ale_rust_cargo_check_tests = 1
+
+  AssertLinter 'cargo', [ale#Escape('cargo') . ' --version', 'cargo check --tests' . g:suffix]
+
+  " We should cache the version check
+  GivenCommandOutput []
+  AssertLinter 'cargo', ['cargo check --tests' . g:suffix]
+
+Execute(--examples should be used when g:ale_rust_cargo_check_examples is set to 1):
+  let g:ale_rust_cargo_check_examples = 1
+
+  AssertLinter 'cargo', [ale#Escape('cargo') . ' --version', 'cargo check --examples' . g:suffix]
+
+  " We should cache the version check
+  GivenCommandOutput []
+  AssertLinter 'cargo', ['cargo check --examples' . g:suffix]
+
+Execute(--no-default-features should be used when g:ale_rust_cargo_default_feature_behavior is none):
+  let b:ale_rust_cargo_default_feature_behavior = 'none'
+
+  AssertLinter 'cargo', [ale#Escape('cargo') . ' --version', 'cargo check --frozen --message-format=json -q --no-default-features']
+
+Execute(g:ale_rust_cargo_include_features added when g:ale_rust_cargo_default_feature_behavior is none):
+  let b:ale_rust_cargo_default_feature_behavior = 'none'
+  let b:ale_rust_cargo_include_features = 'foo bar'
+
+  AssertLinter 'cargo', [ale#Escape('cargo') . ' --version', 'cargo check --frozen --message-format=json -q --no-default-features --features ' . ale#Escape('foo bar')]
+
+Execute(g:ale_rust_cargo_include_features added and escaped):
+  let b:ale_rust_cargo_default_feature_behavior = 'default'
+  let b:ale_rust_cargo_include_features = "foo bar baz"
+
+  AssertLinter 'cargo', [ale#Escape('cargo') . ' --version', 'cargo check --frozen --message-format=json -q --features ' . ale#Escape('foo bar baz')]
+
+Execute(--all-features should be used when g:ale_rust_cargo_default_feature_behavior is all):
+  let b:ale_rust_cargo_default_feature_behavior = 'all'
+  " When all features are enabled we should ignore extra features to add
+  " since it won't do anything
+  let b:ale_rust_cargo_include_features = 'foo bar'
+
+  GivenCommandOutput ['cargo 0.22.0 (3423351a5 2017-10-06)']
+  AssertLinter 'cargo', [ale#Escape('cargo') . ' --version', 'cargo check --frozen --message-format=json -q --all-features']
+
+Execute(Cargo should run from the crate directory when set to avoid the workspace):
+  let g:ale_rust_cargo_avoid_whole_workspace = 1
+  call ale#test#SetFilename('../test-files/cargo/workspace_paths/subpath/test.rs')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/cargo/workspace_paths/subpath')
+  call ale#semver#ResetVersionCache()
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo check --frozen --message-format=json -q',
+  \]
+
+Execute(Cargo should not run from the crate directory when not set to avoid the workspace):
+  let g:ale_rust_cargo_avoid_whole_workspace = 0
+  call ale#test#SetFilename('../test-files/cargo/workspace_paths/subpath/test.rs')
+
+  AssertLinterCwd ''
+  call ale#semver#ResetVersionCache()
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo check --frozen --message-format=json -q',
+  \]
+
+Execute(When ale_rust_cargo_use_clippy is set, cargo-clippy is used as linter):
+  let b:ale_rust_cargo_use_clippy = 1
+
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo clippy --frozen --message-format=json -q',
+  \]
+
+Execute(When ale_rust_cargo_clippy_options is set, cargo-clippy appends it to commandline):
+  let b:ale_rust_cargo_use_clippy = 1
+  let b:ale_rust_cargo_clippy_options = '-- -D warnings'
+
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo clippy --frozen --message-format=json -q -- -D warnings',
+  \]
+
+Execute(Clippy options work without prepending --):
+  let b:ale_rust_cargo_use_clippy = 1
+  let b:ale_rust_cargo_clippy_options = '-D warnings'
+
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo clippy --frozen --message-format=json -q -- -D warnings',
+  \]
+
+Execute(Build supports all cargo flags):
+  let g:ale_rust_cargo_use_check = 0
+  let g:ale_rust_cargo_check_all_targets = 1
+  let g:ale_rust_cargo_check_tests = 1
+  let g:ale_rust_cargo_check_examples = 1
+  let b:ale_rust_cargo_default_feature_behavior = 'all'
+  let b:ale_rust_cargo_target_dir = 'target/ale'
+
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo build --all-targets --examples --tests --target-dir ' . ale#Escape('target/ale') . ' --frozen --message-format=json -q --all-features',
+  \]
+
+Execute(Clippy supports all cargo flags):
+  let b:ale_rust_cargo_use_clippy = 1
+  let g:ale_rust_cargo_check_all_targets = 1
+  let g:ale_rust_cargo_check_tests = 1
+  let g:ale_rust_cargo_check_examples = 1
+  let b:ale_rust_cargo_default_feature_behavior = 'all'
+  let b:ale_rust_cargo_clippy_options = '-D warnings'
+  let b:ale_rust_cargo_target_dir = 'target/ale'
+
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo clippy --all-targets --examples --tests --target-dir ' . ale#Escape('target/ale') . ' --frozen --message-format=json -q --all-features -- -D warnings',
+  \]
+
+Execute(cargo-check does not refer ale_rust_cargo_clippy_options):
+  let b:ale_rust_cargo_use_clippy = 0
+  let b:ale_rust_cargo_use_check = 1
+  let b:ale_rust_cargo_clippy_options = '-- -D warnings'
+
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo check --frozen --message-format=json -q',
+  \]
+
+Execute(`cargo --target-dir` should be used when the version is new enough and it is set):
+  let b:ale_rust_cargo_target_dir = 'target/ale'
+
+  GivenCommandOutput ['cargo 0.17.0 (3423351a5 2017-10-06)']
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo check --target-dir ' . ale#Escape('target/ale') . g:suffix,
+  \]
+
+Execute(`cargo --target-dir` should not be used when the version is not new enough and it is set):
+  let b:ale_rust_cargo_target_dir = 'target/ale'
+
+  GivenCommandOutput ['cargo 0.16.0 (3423351a5 2017-10-06)']
+  AssertLinter 'cargo', [
+  \ ale#Escape('cargo') . ' --version',
+  \ 'cargo build' . g:suffix,
+  \]

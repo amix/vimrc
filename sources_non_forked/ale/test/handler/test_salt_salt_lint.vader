@@ -1,0 +1,34 @@
+Before:
+  runtime ale_linters/salt/salt_lint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The salt handler should parse lines correctly and show error in severity HIGH):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'code': 207,
+  \     'text': 'File modes should always be encapsulated in quotation marks',
+  \     'type': 'E'
+  \   }
+  \ ],
+  \ ale_linters#salt#salt_lint#Handle(255, [
+  \ '[{"id": "207", "message": "File modes should always be encapsulated in quotation marks", "filename": "test.sls", "linenumber": 5, "line": "    - mode: 0755", "severity": "HIGH"}]'
+  \ ])
+
+
+Execute(The salt handler should parse lines correctly and show error in severity not HIGH):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 27,
+  \     'code': 204,
+  \     'text': 'Lines should be no longer that 160 chars',
+  \     'type': 'W'
+  \   }
+  \ ],
+  \ ale_linters#salt#salt_lint#Handle(255, [
+  \ '[{"id": "204", "message": "Lines should be no longer that 160 chars", "filename": "test2.sls", "linenumber": 27, "line": "this line is definitely longer than 160 chars, this line is definitely longer than 160 chars, this line is definitely longer than 160 chars", "severity": "VERY_LOW"}]'
+  \ ])

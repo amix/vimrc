@@ -1,0 +1,45 @@
+Before:
+  function! Func0()
+  endfunction
+  function! Func1(x)
+  endfunction
+  function! Func2(x,y)
+  endfunction
+  function! Func3(x,y,z)
+  endfunction
+  function! Func3a(x,y,z,...)
+  endfunction
+
+After:
+  delfunction Func0
+  delfunction Func1
+  delfunction Func2
+  delfunction Func3
+  delfunction Func3a
+
+Execute(We should be able to compute the argument count for function names):
+  AssertEqual 0, ale#util#FunctionArgCount('Func0')
+  AssertEqual 1, ale#util#FunctionArgCount('Func1')
+  AssertEqual 2, ale#util#FunctionArgCount('Func2')
+  AssertEqual 3, ale#util#FunctionArgCount('Func3')
+  AssertEqual 3, ale#util#FunctionArgCount('Func3a')
+
+Execute(We should be able to compute the argument count for Funcrefs):
+  AssertEqual 0, ale#util#FunctionArgCount(function('Func0'))
+  AssertEqual 1, ale#util#FunctionArgCount(function('Func1'))
+  AssertEqual 2, ale#util#FunctionArgCount(function('Func2'))
+  AssertEqual 3, ale#util#FunctionArgCount(function('Func3'))
+  AssertEqual 3, ale#util#FunctionArgCount(function('Func3a'))
+
+Execute(We should be able to compute the argument count for lambdas):
+  if has('lambda')
+    AssertEqual 0, ale#util#FunctionArgCount({->1})
+    AssertEqual 1, ale#util#FunctionArgCount({x->1})
+    AssertEqual 2, ale#util#FunctionArgCount({x,y->1})
+    AssertEqual 3, ale#util#FunctionArgCount({x,y,z->1})
+    AssertEqual 3, ale#util#FunctionArgCount({x,y,z,...->1})
+  endif
+
+Execute(We should be able to compute the argument count autoload functions not yet loaded):
+  AssertEqual 1, ale#util#FunctionArgCount(function('ale#fixers#yapf#Fix'))
+  AssertEqual 1, ale#util#FunctionArgCount('ale#fixers#yapf#Fix')

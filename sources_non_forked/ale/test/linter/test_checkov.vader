@@ -1,0 +1,14 @@
+Before:
+  call ale#assert#SetUpLinterTest('terraform', 'checkov')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be direct):
+  AssertLinter 'checkov',
+  \ ale#Escape('checkov') . ' -f %t -o json --quiet '
+
+Execute(It should be possible to override the default command):
+  let b:ale_terraform_checkov_executable = '/bin/other/checkov'
+  AssertLinter '/bin/other/checkov',
+  \ ale#Escape('/bin/other/checkov') . ' -f %t -o json --quiet '

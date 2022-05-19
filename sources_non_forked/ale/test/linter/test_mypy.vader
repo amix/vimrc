@@ -1,0 +1,106 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'mypy')
+  call ale#test#SetFilename('test.py')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  unlet! b:bin_dir
+  unlet! b:executable
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The mypy callbacks should return the correct default values):
+  AssertLinterCwd g:dir
+  AssertLinter 'mypy',
+  \ ale#Escape('mypy')
+  \   . ' --show-column-numbers'
+  \   . ' --shadow-file %s %t %s'
+
+Execute(The mypy executable should be configurable, and escaped properly):
+  let g:ale_python_mypy_executable = 'executable with spaces'
+
+  AssertLinter 'executable with spaces',
+  \ ale#Escape('executable with spaces')
+  \   . ' --show-column-numbers'
+  \   . ' --shadow-file %s %t %s'
+
+Execute(The mypy command callback should let you set options):
+  let g:ale_python_mypy_options = '--some-option'
+
+  AssertLinter 'mypy',
+  \ ale#Escape('mypy')
+  \   . ' --some-option'
+  \   . ' --show-column-numbers'
+  \   . ' --shadow-file %s %t %s'
+
+Execute(The mypy command should switch directories to the detected project root):
+  call ale#test#SetFilename('../test-files/python/no_virtualenv/subdir/foo/bar.py')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/no_virtualenv/subdir')
+  AssertLinter 'mypy',
+  \   ale#Escape('mypy')
+  \   . ' --show-column-numbers'
+  \   . ' --shadow-file %s %t %s'
+
+Execute(The mypy callbacks should detect virtualenv directories and switch to the project root):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let b:executable = ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/mypy')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/subdir')
+  AssertLinter b:executable,
+  \ ale#Escape(b:executable)
+  \   . ' --show-column-numbers'
+  \   . ' --shadow-file %s %t %s'
+
+Execute(The mypy callbacks should cd to directory containing mypy.ini if found):
+  call ale#test#SetFilename('../test-files/python/with_mypy_ini_and_pytest_ini/tests/testsubfolder/my_tests.py')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/with_mypy_ini_and_pytest_ini')
+  AssertLinter 'mypy',
+  \ ale#Escape('mypy')
+  \   . ' --show-column-numbers'
+  \   . ' --shadow-file %s %t %s'
+
+Execute(You should able able to use the global mypy instead):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  let g:ale_python_mypy_use_global = 1
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/subdir')
+  AssertLinter 'mypy',
+  \ ale#Escape('mypy')
+  \   . ' --show-column-numbers'
+  \   . ' --shadow-file %s %t %s'
+
+Execute(Setting executable to 'pipenv' appends 'run mypy'):
+  let g:ale_python_mypy_executable = 'path/to/pipenv'
+
+  AssertLinterCwd expand('#' . bufnr('') . ':p:h')
+  AssertLinter 'path/to/pipenv',
+  \ ale#Escape('path/to/pipenv') . ' run mypy'
+  \   . ' --show-column-numbers --shadow-file %s %t %s'
+
+Execute(Pipenv is detected when python_mypy_auto_pipenv is set):
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+  let g:ale_python_mypy_auto_pipenv = 1
+
+  AssertLinterCwd expand('#' . bufnr('') . ':p:h')
+  AssertLinter 'pipenv',
+  \ ale#Escape('pipenv') . ' run mypy --show-column-numbers --shadow-file %s %t %s'
+
+Execute(Setting executable to 'poetry' appends 'run mypy'):
+  let g:ale_python_mypy_executable = 'path/to/poetry'
+
+  AssertLinterCwd expand('#' . bufnr('') . ':p:h')
+  AssertLinter 'path/to/poetry',
+  \ ale#Escape('path/to/poetry') . ' run mypy'
+  \   . ' --show-column-numbers --shadow-file %s %t %s'
+
+Execute(Poetry is detected when python_mypy_auto_poetry is set):
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+  let g:ale_python_mypy_auto_poetry = 1
+
+  AssertLinterCwd expand('#' . bufnr('') . ':p:h')
+  AssertLinter 'poetry',
+  \ ale#Escape('poetry') . ' run mypy --show-column-numbers --shadow-file %s %t %s'

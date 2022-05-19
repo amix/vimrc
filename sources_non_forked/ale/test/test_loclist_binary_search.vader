@@ -1,0 +1,66 @@
+Before:
+  let g:loclist = [
+  \ {'bufnr': 1, 'lnum': 2, 'col': 10},
+  \ {'bufnr': 1, 'lnum': 3, 'col': 2},
+  \ {'bufnr': 1, 'lnum': 3, 'col': 10},
+  \ {'bufnr': 1, 'lnum': 3, 'col': 12},
+  \ {'bufnr': 1, 'lnum': 3, 'col': 25},
+  \ {'bufnr': 1, 'lnum': 5, 'col': 4},
+  \ {'bufnr': 1, 'lnum': 5, 'col': 5},
+  \ {'bufnr': 1, 'lnum': 9, 'col': 5},
+  \ {'bufnr': 1, 'lnum': 10, 'col': 1},
+  \ {'bufnr': 2, 'lnum': 7, 'col': 10},
+  \ {'bufnr': 2, 'lnum': 9, 'col': 2},
+  \ {'bufnr': 2, 'lnum': 10, 'col': 2},
+  \ {'bufnr': 2, 'lnum': 11, 'col': 2},
+  \]
+
+After:
+  unlet g:loclist
+
+Execute(Exact column matches should be correct):
+  AssertEqual 1, ale#util#BinarySearch(g:loclist, 1, 3, 2)
+
+Execute(Off lines, there should be no match):
+  AssertEqual -1, ale#util#BinarySearch(g:loclist, 1, 4, 2)
+
+Execute(Near column matches should be taken):
+  AssertEqual 2, ale#util#BinarySearch(g:loclist, 1, 3, 11)
+  AssertEqual 3, ale#util#BinarySearch(g:loclist, 1, 3, 13)
+
+Execute(Columns before should be taken when the cursor is far ahead):
+  AssertEqual 4, ale#util#BinarySearch(g:loclist, 1, 3, 300)
+
+Execute(The only problems on lines in later columns should be matched):
+  AssertEqual 7, ale#util#BinarySearch(g:loclist, 1, 9, 1)
+
+Execute(The only problems on lines in earlier columns should be matched):
+  AssertEqual 8, ale#util#BinarySearch(g:loclist, 1, 10, 30)
+
+Execute(Lines for other buffers should not be matched):
+  AssertEqual -1, ale#util#BinarySearch(g:loclist, 1, 7, 10)
+
+Execute(Searches for buffers later in the list should work):
+  AssertEqual 10, ale#util#BinarySearch(g:loclist, 2, 9, 10)
+
+Execute(Searches should work with just one item):
+  let g:loclist = [{'bufnr': 1, 'lnum': 3, 'col': 10}]
+
+  AssertEqual 0, ale#util#BinarySearch(g:loclist, 1, 3, 2)
+
+Execute(Searches should return the last item on a single column):
+  let g:loclist = [
+  \ {'bufnr': 1, 'lnum': 1, 'col': 10, 'type': 'W'},
+  \ {'bufnr': 1, 'lnum': 1, 'col': 10, 'type': 'E'},
+  \ {'bufnr': 1, 'lnum': 1, 'col': 11, 'type': 'W'},
+  \ {'bufnr': 1, 'lnum': 1, 'col': 11, 'type': 'E'},
+  \ {'bufnr': 1, 'lnum': 1, 'col': 20, 'type': 'W'},
+  \ {'bufnr': 1, 'lnum': 1, 'col': 20, 'type': 'E'},
+  \]
+
+  " We should return the index for the last item at some column to the right.
+  AssertEqual 1, ale#util#BinarySearch(g:loclist, 1, 1, 1)
+  " We should return the index for the last item at the column we are on.
+  AssertEqual 3, ale#util#BinarySearch(g:loclist, 1, 1, 11)
+  " We should prefer items to the left of the cursor, over the right.
+  AssertEqual 3, ale#util#BinarySearch(g:loclist, 1, 1, 19)

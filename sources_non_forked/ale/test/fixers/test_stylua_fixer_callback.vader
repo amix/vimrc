@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpFixerTest('lua', 'stylua')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The default command should be correct):
+  AssertFixer {'command': ale#Escape('stylua') . ' -'}
+
+Execute(The stylua callback should include custom stylua options):
+  let g:ale_lua_stylua_executable = 'xxxinvalid'
+  let g:ale_lua_stylua_options = '--search-parent-directories'
+
+  AssertFixer
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' ' . g:ale_lua_stylua_options
+  \     . ' -',
+  \ }

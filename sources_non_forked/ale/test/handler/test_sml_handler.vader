@@ -1,0 +1,119 @@
+Execute (Testing on EOF error):
+  AssertEqual [
+  \ {
+  \   'filename': 'a.sml',
+  \   'lnum': 2,
+  \   'col': 15,
+  \   'type': 'E',
+  \   'text': 'Error: syntax error found at EOF',
+  \ },
+  \],
+  \ ale#handlers#sml#Handle(42, [
+  \ "Standard ML of New Jersey v110.78 [built: Thu Jul 23 11:21:58 2015]",
+  \ "[opening a.sml]",
+  \ "a.sml:2.16 Error: syntax error found at EOF",
+  \ '/usr/lib/smlnj/bin/sml: Fatal error -- Uncaught exception Compile with "syntax error" raised at ../compiler/Parse/main/smlfile.sml:15.24-15.46',
+  \])
+
+Execute (Testing if the handler can handle multiple errors on the same line):
+  AssertEqual [
+  \ {
+  \   'filename': 'a.sml',
+  \   'lnum': 1,
+  \   'col': 5,
+  \   'type': 'E',
+  \   'text': "Error: can't find function arguments in clause",
+  \ },
+  \ {
+  \   'filename': 'a.sml',
+  \   'lnum': 1,
+  \   'col': 12,
+  \   'type': 'E',
+  \   'text': 'Error: unbound variable or constructor: wow',
+  \ },
+  \],
+  \ ale#handlers#sml#Handle(42, [
+  \ "Standard ML of New Jersey v110.78 [built: Thu Jul 23 11:21:58 2015]",
+  \ "[opening test.sml]",
+  \ "a.sml:1.6-1.10 Error: can't find function arguments in clause",
+  \ "a.sml:1.13-1.16 Error: unbound variable or constructor: wow",
+  \ "/usr/lib/smlnj/bin/sml: Fatal error -- Uncaught exception Error with 0",
+  \ "raised at ../compiler/TopLevel/interact/evalloop.sml:66.19-66.27",
+  \])
+
+Execute (Testing rarer errors):
+  AssertEqual [
+  \ {
+  \   'filename': 'a.sml',
+  \   'lnum': 5,
+  \   'col': 18,
+  \   'type': 'E',
+  \   'text': "Error: syntax error found at ID",
+  \ },
+  \ {
+  \   'filename': 'a.sml',
+  \   'lnum': 7,
+  \   'col': 0,
+  \   'type': 'E',
+  \   'text': "Error: value type in structure doesn't match signature spec",
+  \ },
+  \],
+  \ ale#handlers#sml#Handle(42, [
+  \ "Standard ML of New Jersey v110.78 [built: Thu Jul 23 11:21:58 2015]",
+  \ "[opening test.sml]",
+  \ "a.sml:5.19 Error: syntax error found at ID",
+  \ "a.sml:7.1-9.27 Error: value type in structure doesn't match signature spec",
+  \ "/usr/lib/smlnj/bin/sml: Fatal error -- Uncaught exception Error with 0",
+  \ "raised at ../compiler/TopLevel/interact/evalloop.sml:66.19-66.27",
+  \])
+
+Execute (Testing a warning):
+  AssertEqual [
+  \ {
+  \   'filename': 'a.sml',
+  \   'lnum': 4,
+  \   'col': 4,
+  \   'type': 'W',
+  \   'text': "Warning: match nonexhaustive",
+  \ },
+  \],
+  \ ale#handlers#sml#Handle(42, [
+  \ "Standard ML of New Jersey v110.78 [built: Thu Jul 23 11:21:58 2015]",
+  \ "[opening a.sml]",
+  \ "a.sml:4.5-4.12 Warning: match nonexhaustive",
+            \ "0 => ...",
+  \ "val f = fn : int -> int",
+  \ "-",
+  \])
+
+Execute (Testing stdIn):
+  AssertEqual [
+  \ {
+  \   'bufnr': 42,
+  \   'lnum': 1,
+  \   'col': 5,
+  \   'type': 'E',
+  \   'text': "Error: operator and operand don't agree [overload conflict]",
+  \ },
+  \ {
+  \   'bufnr': 42,
+  \   'lnum': 2,
+  \   'col': 4,
+  \   'type': 'E',
+  \   'text': "Error: operator and operand don't agree [overload conflict]",
+  \ },
+  \],
+  \ ale#handlers#sml#Handle(42, [
+  \ "Standard ML of New Jersey v110.79 [built: Sat Oct 26 12:27:04 2019]",
+  \ "- = stdIn:1.6-1.21 Error: operator and operand don't agree [overload conflict]",
+  \ "  operator domain: [+ ty] * [+ ty]",
+  \ "  operand:         string * [int ty]",
+  \ "  in expression:",
+  \ '    "abc" + 123',
+  \ "stdIn:2.5-2.20 Error: operator and operand don't agree [overload conflict]",
+  \ "  operator domain: [+ ty] * [+ ty]",
+  \ "  operand:         [+ ty] * string",
+  \ "  in expression:",
+  \ '    890 + "xyz"',
+  \ "-",
+  \])

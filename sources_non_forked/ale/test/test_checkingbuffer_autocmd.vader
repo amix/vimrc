@@ -1,0 +1,57 @@
+Before:
+  Save g:ale_run_synchronously
+  Save g:ale_buffer_info
+
+  let g:ale_run_synchronously = 1
+  let g:ale_buffer_info = {}
+
+  let g:checking_buffer = 0
+
+  unlet! b:ale_linted
+
+  function! TestCallback(buffer, output)
+    return []
+  endfunction
+
+  call ale#linter#PreventLoading('testft')
+  call ale#linter#Define('testft', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'true',
+  \ 'command': 'true',
+  \})
+
+After:
+  Restore
+
+  unlet! g:checking_buffer
+
+  delfunction TestCallback
+  call ale#linter#Reset()
+
+  augroup VaderTest
+    autocmd!
+  augroup END
+
+  augroup! VaderTest
+
+Given testft (An empty file):
+Execute(ALELintPre should not return success on ale#engine#IsCheckingBuffer):
+  augroup VaderTest
+    autocmd!
+    autocmd User ALELintPre let g:checking_buffer = ale#engine#IsCheckingBuffer(bufnr('')) ? 1 : 0
+  augroup END
+
+  ALELint
+
+  AssertEqual g:checking_buffer, 0
+
+Execute(ALEJobStarted should return success on ale#engine#IsCheckingBuffer):
+  augroup VaderTest
+    autocmd!
+    autocmd User ALEJobStarted let g:checking_buffer = ale#engine#IsCheckingBuffer(bufnr('')) ? 1 : 0
+  augroup END
+
+  ALELint
+
+  AssertEqual g:checking_buffer, 1

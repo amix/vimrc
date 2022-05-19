@@ -1,0 +1,33 @@
+Before:
+  call ale#assert#SetUpLinterTest('rust', 'rls')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default executable path should be correct):
+  AssertLinter 'rls', ale#Escape('rls')
+
+Execute(The toolchain should be configurable):
+  let g:ale_rust_rls_toolchain = 'stable'
+
+  AssertLinter 'rls', ale#Escape('rls') . ' +' . ale#Escape('stable')
+
+Execute(The toolchain should be ommitted if not given):
+  let g:ale_rust_rls_toolchain = ''
+
+  AssertLinter 'rls', ale#Escape('rls')
+
+Execute(The project root should be detected correctly for cargo projects):
+  call ale#test#SetFilename('../test-files/rust/cargo/testfile.rs')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/rust/cargo')
+
+Execute(The project root should be empty when no project files can be detected):
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLSPProject ''
+
+Execute(Should accept configuration settings):
+  AssertLSPConfig {}
+  let b:ale_rust_rls_config = {'rust': {'clippy_preference': 'on'}}
+  AssertLSPConfig {'rust': {'clippy_preference': 'on'}}

@@ -1,0 +1,16 @@
+Before:
+  let b:file = fnamemodify(bufname(''), ':.')
+  call ale#assert#SetUpLinterTest('erlang', 'elvis')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Default command should be correct):
+  AssertLinter 'elvis',
+  \ ale#Escape('elvis') . ' rock --output-format=parsable ' . ale#Escape(b:file)
+
+Execute(Executable should be configurable):
+  let b:ale_erlang_elvis_executable = '/path/to/elvis'
+
+  AssertLinter '/path/to/elvis',
+  \ ale#Escape('/path/to/elvis') . ' rock --output-format=parsable ' . ale#Escape(b:file)

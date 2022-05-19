@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_nix_nixpkgsfmt_executable
+  Save g:ale_nix_nixpkgsfmt_options
+
+After:
+  Restore
+
+Execute(The nixpkgs-fmt callback should return the correct default values):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('nixpkgs-fmt')
+  \ },
+  \ ale#fixers#nixpkgsfmt#Fix(bufnr(''))
+
+Execute(The nixpkgs-fmt executable and options should be configurable):
+  let g:ale_nix_nixpkgsfmt_executable = '/path/to/nixpkgs-fmt'
+  let g:ale_nix_nixpkgsfmt_options = '-h'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/nixpkgs-fmt')
+  \     . ' -h',
+  \ },
+  \ ale#fixers#nixpkgsfmt#Fix(bufnr(''))

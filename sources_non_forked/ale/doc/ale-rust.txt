@@ -26,8 +26,10 @@ Integration Information
   4. analyzer -- If you have rust-analyzer installed, you might prefer using
      this linter over cargo and rls. rust-analyzer also implements the
      Language Server Protocol for incremental compilation of Rust code, and is
-     the next iteration of rls. rust-analyzer, like rls, requires Rust files
-     to be contained in Cargo projects.
+     the next iteration of rls. rust-analyzer either requires Rust files to be
+     contained in Cargo projects or requires the project to be described in
+     the rust-project.json format:
+     https://rust-analyzer.github.io/manual.html#non-cargo-based-projects
   5. rustfmt -- If you have `rustfmt` installed, you can use it as a fixer to
      consistently reformat your Rust code.
 
@@ -38,7 +40,7 @@ Integration Information
   let g:ale_linters = {'rust': ['rustc', 'rls']}
 <
 
-  Also note that rustc 1.12. or later is needed.
+  Also note that rustc 1.18. or later is needed.
 
 
 ===============================================================================
@@ -145,8 +147,7 @@ g:ale_rust_cargo_avoid_whole_workspace *g:ale_rust_cargo_avoid_whole_workspace*
   in the crate's directory. Otherwise, behave as usual.
 
 
-g:ale_rust_cargo_use_clippy
-                                                  *g:ale_rust_cargo_use_clippy*
+g:ale_rust_cargo_use_clippy                       *g:ale_rust_cargo_use_clippy*
                                                   *b:ale_rust_cargo_use_clippy*
   Type: |Number|
   Default: `0`
@@ -163,8 +164,7 @@ g:ale_rust_cargo_use_clippy
     let g:ale_rust_cargo_use_clippy = executable('cargo-clippy')
 <
 
-g:ale_rust_cargo_clippy_options
-                                              *g:ale_rust_cargo_clippy_options*
+g:ale_rust_cargo_clippy_options               *g:ale_rust_cargo_clippy_options*
                                               *b:ale_rust_cargo_clippy_options*
 
   Type: |String|
@@ -175,8 +175,7 @@ g:ale_rust_cargo_clippy_options
   only `cargo clippy` supports (e.g. `--deny`).
 
 
-g:ale_rust_cargo_target_dir
-                                                  *g:ale_rust_cargo_target_dir*
+g:ale_rust_cargo_target_dir                       *g:ale_rust_cargo_target_dir*
                                                   *b:ale_rust_cargo_target_dir*
 
   Type: |String|
@@ -185,6 +184,12 @@ g:ale_rust_cargo_target_dir
   Use a custom target directory when running the commands for ALE. This can
   help to avoid "waiting for file lock on build directory" messages when
   running `cargo` commands manually while ALE is performing its checks.
+
+
+===============================================================================
+cspell                                                        *ale-rust-cspell*
+
+See |ale-cspell-options|
 
 
 ===============================================================================
@@ -234,13 +239,13 @@ rustc                                                          *ale-rust-rustc*
 g:ale_rust_rustc_options                             *g:ale_rust_rustc_options*
                                                      *b:ale_rust_rustc_options*
   Type: |String|
-  Default: `'-Z no-codegen'`
+  Default: `'--emit=mir -o /dev/null'`
 
   The variable can be used to change the options passed to `rustc`.
 
-  `-Z no-codegen` should only work with nightly builds of Rust. Be careful when
-  setting the options, as running `rustc` could execute code or generate
-  binary files.
+  Users of nightly builds of Rust might want to use `-Z no-codegen` instead.
+  Be careful when setting the options, as running `rustc` could execute code
+  or generate binary files.
 
 
 g:ale_rust_ignore_error_codes                   *g:ale_rust_ignore_error_codes*

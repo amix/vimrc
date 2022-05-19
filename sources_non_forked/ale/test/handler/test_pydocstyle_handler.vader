@@ -1,0 +1,116 @@
+Before:
+  Save g:ale_warn_about_trailing_whitespace
+
+  let g:ale_warn_about_trailing_whitespace = 1
+
+  runtime ale_linters/python/pydocstyle.vim
+
+After:
+  Restore
+
+  call ale#linter#Reset()
+
+  silent file something_else.py
+
+" File sample.py
+"    # sample.py file
+"
+"    def main():
+"        """
+"        This is a multi-line description that should produce multiple errors to be
+"        tested by the handler
+"        """
+"        return Fales
+"
+"
+"    if __name__ == '__main__':
+"        main()
+"
+" The command to generate the handler input is:
+"
+"    $ python -m pydocstyle --verbose --source --explain sample.py
+"    [...]
+"    $
+
+Execute(Basic pydocstyle warnings should be handled):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'text': 'Missing docstring in public module',
+  \     'code': 'D100',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 1,
+  \     'text': '1 blank line required between summary line and description (found 0)',
+  \     'code': 'D205',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 1,
+  \     'text': 'First line should end with a period (not ''e'')',
+  \     'code': 'D400',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 1,
+  \     'text': 'First line should be in imperative mood; try rephrasing (found ''This'')',
+  \     'code': 'D401',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#python#pydocstyle#Handle(bufnr(''), [
+  \ 'Checking file ' . fnamemodify(bufname(bufnr('')), ':p') . '.',
+  \ './mydir/myfile.py:1 at module level:',
+  \ '        D100: Missing docstring in public module',
+  \ '',
+  \ '        All modules should normally have docstrings.  [...] all functions and',
+  \ '        classes exported by a module should also have docstrings. Public',
+  \ '        methods (including the __init__ constructor) should also have',
+  \ '        docstrings.',
+  \ '        Note: Public (exported) definitions are either those with names listed',
+  \ '              in __all__ variable (if present), or those that do not start',
+  \ '              with a single underscore.',
+  \ '',
+  \ '  1: #  2:    3: s  4: a  5: m  6: p  7: l        ...',
+  \ '',
+  \ '',
+  \ 'C:\mydir\myfile.py:4 in public function `main`:',
+  \ '        D205: 1 blank line required between summary line and description (found 0)',
+  \ '',
+  \ '        Multi-line docstrings consist of a summary line just like a one-line',
+  \ '        docstring, followed by a blank line, followed by a more elaborate',
+  \ '        description. The summary line may be used by automatic indexing tools;',
+  \ '        it is important that it fits on one line and is separated from the',
+  \ '        rest of the docstring by a blank line.',
+  \ '',
+  \ '  3: d  4: e  5: f  6:    7: m  8: a  9: i        ...',
+  \ '',
+  \ '',
+  \ 'myfile.py:4 in public function `main`:',
+  \ '        D400: First line should end with a period (not ''e'')',
+  \ '',
+  \ '        The [first line of a] docstring is a phrase ending in a period.',
+  \ '',
+  \ '  3: d  4: e  5: f  6:    7: m  8: a  9: i        ...',
+  \ '',
+  \ '',
+  \ ale#Escape(fnamemodify(bufname(bufnr('')), ':t')) . ':4 in public function `main`:',
+  \ '        D401: First line should be in imperative mood; try rephrasing (found ''This'')',
+  \ '',
+  \ '        [Docstring] prescribes the function or method''s effect as a command:',
+  \ '        ("Do this", "Return that"), not as a description; e.g. don''t write',
+  \ '        "Returns the pathname ...".',
+  \ '',
+  \ '  3: d  4: e  5: f  6:    7: m  8: a  9: i        ...',
+  \ ])
+
+Execute(Handler should handle empty output):
+  AssertEqual
+  \ [],
+  \ ale_linters#python#pydocstyle#Handle(bufnr(''), [])

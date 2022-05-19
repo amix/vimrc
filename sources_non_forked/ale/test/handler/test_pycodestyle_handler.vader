@@ -1,0 +1,154 @@
+Before:
+  Save g:ale_warn_about_trailing_blank_lines
+  Save g:ale_warn_about_trailing_whitespace
+
+  let g:ale_warn_about_trailing_blank_lines = 1
+  let g:ale_warn_about_trailing_whitespace = 1
+
+  runtime ale_linters/python/pycodestyle.vim
+
+After:
+  Restore
+
+  unlet! b:ale_warn_about_trailing_blank_lines
+  unlet! b:ale_warn_about_trailing_whitespace
+
+  call ale#linter#Reset()
+  silent file something_else.py
+
+Execute(The pycodestyle handler should parse output):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 8,
+  \     'col': 3,
+  \     'type': 'E',
+  \     'text': 'SyntaxError: invalid syntax',
+  \     'code': 'E999',
+  \   },
+  \   {
+  \     'lnum': 69,
+  \     'col': 11,
+  \     'text': 'multiple imports on one line',
+  \     'code': 'E401',
+  \     'type': 'E',
+  \     'sub_type': 'style',
+  \   },
+  \   {
+  \     'lnum': 77,
+  \     'col': 1,
+  \     'text': 'expected 2 blank lines, found 1',
+  \     'code': 'E302',
+  \     'type': 'E',
+  \     'sub_type': 'style',
+  \   },
+  \   {
+  \     'lnum': 88,
+  \     'col': 5,
+  \     'text': 'expected 1 blank line, found 0',
+  \     'code': 'E301',
+  \     'type': 'E',
+  \     'sub_type': 'style',
+  \   },
+  \   {
+  \     'lnum': 222,
+  \     'col': 34,
+  \     'text': 'deprecated form of raising exception',
+  \     'code': 'W602',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \   },
+  \   {
+  \     'lnum': 544,
+  \     'col': 21,
+  \     'text': '.has_key() is deprecated, use ''in''',
+  \     'code': 'W601',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \   },
+  \ ],
+  \ ale_linters#python#pycodestyle#Handle(bufnr(''), [
+  \   'stdin:8:3: E999 SyntaxError: invalid syntax',
+  \   'stdin:69:11: E401 multiple imports on one line',
+  \   'stdin:77:1: E302 expected 2 blank lines, found 1',
+  \   'stdin:88:5: E301 expected 1 blank line, found 0',
+  \   'stdin:222:34: W602 deprecated form of raising exception',
+  \   'example.py:544:21: W601 .has_key() is deprecated, use ''in''',
+  \ ])
+
+Execute(Warnings about trailing whitespace should be reported by default):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'code': 'W291',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \     'text': 'who cares',
+  \   },
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'code': 'W293',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \     'text': 'who cares',
+  \   },
+  \ ],
+  \ ale_linters#python#pycodestyle#Handle(bufnr(''), [
+  \   'foo.py:6:1: W291 who cares',
+  \   'foo.py:6:1: W293 who cares',
+  \ ])
+
+Execute(Disabling trailing whitespace warnings should work):
+  let b:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale_linters#python#pycodestyle#Handle(bufnr(''), [
+  \   'foo.py:6:1: W291 who cares',
+  \   'foo.py:6:1: W293 who cares',
+  \ ])
+
+Execute(Warnings about trailing blank lines should be reported by default):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'code': 'W391',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \     'text': 'blank line at end of file',
+  \   },
+  \ ],
+  \ ale_linters#python#pycodestyle#Handle(bufnr(''), [
+  \   'foo.py:6:1: W391 blank line at end of file',
+  \ ])
+
+Execute(Disabling trailing blank line warnings should work):
+  let b:ale_warn_about_trailing_blank_lines = 0
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale_linters#python#pycodestyle#Handle(bufnr(''), [
+  \   'foo.py:6:1: W391 blank line at end of file',
+  \ ])
+
+Execute(E112 should be a syntax error):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 1,
+  \     'code': 'E112',
+  \     'type': 'E',
+  \     'text': 'expected an indented block',
+  \   },
+  \ ],
+  \ ale_linters#python#pycodestyle#Handle(bufnr(''), [
+  \   'foo.py:6:1: E112 expected an indented block',
+  \ ])

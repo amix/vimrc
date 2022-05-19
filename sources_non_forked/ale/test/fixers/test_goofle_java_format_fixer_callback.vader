@@ -1,0 +1,27 @@
+Before:
+  Save g:ale_java_google_java_format_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_java_google_java_format_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The google-java-format callback should return 0 when the executable isn't executable):
+  AssertEqual
+  \ 0,
+  \ ale#fixers#google_java_format#Fix(bufnr(''))
+
+Execute(The google-java-format callback should run the command when the executable test passes):
+  let g:ale_java_google_java_format_executable = has('win32') ? 'cmd' : 'echo'
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(ale_java_google_java_format_executable) . '  --replace %t'
+  \ },
+  \ ale#fixers#google_java_format#Fix(bufnr(''))

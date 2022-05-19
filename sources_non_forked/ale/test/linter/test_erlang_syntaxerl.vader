@@ -1,0 +1,45 @@
+Before:
+  call ale#assert#SetUpLinterTest('erlang', 'syntaxerl')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute (The default commands should be correct):
+  AssertLinter 'syntaxerl', [
+  \ ale#Escape('syntaxerl') . ' -h',
+  \ ale#Escape('syntaxerl') . ' %t',
+  \]
+
+Execute (The executable should be configurable):
+  let b:ale_erlang_syntaxerl_executable = 'foobar'
+
+  AssertLinter 'foobar', [
+  \ ale#Escape('foobar') . ' -h',
+  \ ale#Escape('foobar') . ' %t',
+  \]
+
+Execute (The -b option should be used when available):
+  GivenCommandOutput [
+  \ 'Syntax checker for Erlang (0.14.0)',
+  \ 'Usage: syntaxerl [-d | --debug] <FILENAME>',
+  \ '       syntaxerl <-h | --help>',
+  \ '  -d, --debug    Enable debug output',
+  \ '  -h, --help     Show this message',
+  \]
+  AssertLinter 'syntaxerl', [
+  \ ale#Escape('syntaxerl') . ' -h',
+  \ ale#Escape('syntaxerl') . ' %t',
+  \]
+
+  GivenCommandOutput [
+  \ 'Syntax checker for Erlang (0.14.0)',
+  \ 'Usage: syntaxerl [-b | --base <FILENAME>] [-d | --debug] <FILENAME>',
+  \ '       syntaxerl <-h | --help>',
+  \ '  -b, --base     Set original filename',
+  \ '  -d, --debug    Enable debug output',
+  \ '  -h, --help     Show this message',
+  \]
+  AssertLinter 'syntaxerl', [
+  \ ale#Escape('syntaxerl') . ' -h',
+  \ ale#Escape('syntaxerl') . ' -b %s %t',
+  \]

@@ -1,0 +1,24 @@
+Before:
+  runtime ale_linters/python/pyflakes.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The pyflakes handler should handle basic errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 0,
+  \     'text': 'undefined name ''foo''',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 7,
+  \     'text': 'invalid syntax',
+  \   },
+  \ ],
+  \ ale_linters#python#pyflakes#Handle(bufnr(''), [
+  \   'test.py:1: undefined name ''foo''',
+  \   'test.py:1:7: invalid syntax',
+  \ ])

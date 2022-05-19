@@ -1,0 +1,138 @@
+Before:
+  " Load the file which defines the linter.
+  runtime ale_linters/terraform/terraform.vim
+  call ale#test#SetDirectory('/testplugin/test/test-files/terraform')
+  call ale#test#SetFilename('providers.tf')
+
+After:
+  " Unload all linters again.
+  call ale#linter#Reset()
+  call ale#test#RestoreDirectory()
+
+Execute(The output should be correct):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 17,
+  \     'col': 13,
+  \     'filename': ale#path#Simplify(g:dir . '/providers.tf'),
+  \     'type': 'W',
+  \     'text': 'Terraform 0.13 and earlier allowed provider version',
+  \   },
+  \   {
+  \     'lnum': 0,
+  \     'col': 0,
+  \     'filename': ale#path#Simplify(g:dir . '/providers.tf'),
+  \     'type': 'E',
+  \     'text': 'Plugin reinitialization required. Please run "terraform"',
+  \   }
+  \ ],
+  \ ale_linters#terraform#terraform#Handle(bufnr(''), [
+  \ '{',
+  \ '"valid": false,',
+  \ '"error_count": 1,',
+  \ '"warning_count": 1,',
+  \ '"diagnostics": [',
+  \ '  {',
+  \ '    "severity": "warning",',
+  \ '    "summary": "Version constraints inside provider configuration blocks are deprecated",',
+  \ '    "detail": "Terraform 0.13 and earlier allowed provider version",',
+  \ '    "range": {',
+  \ '      "filename": "providers.tf",',
+  \ '      "start": {',
+  \ '        "line": 17,',
+  \ '        "column": 13,',
+  \ '        "byte": 669',
+  \ '      },',
+  \ '      "end": {',
+  \ '        "line": 17,',
+  \ '        "column": 24,',
+  \ '        "byte": 680',
+  \ '      }',
+  \ '    }',
+  \ '  },',
+  \ '  {',
+  \ '    "severity": "error",',
+  \ '    "summary": "Could not load plugin",',
+  \ '    "detail": "Plugin reinitialization required. Please run \"terraform\""',
+  \ '  }',
+  \ '  ]',
+  \ '}',
+  \ ])
+
+Execute(Should use summary if detail not available):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 91,
+  \     'col': 41,
+  \     'filename': ale#path#Simplify(g:dir . '/main.tf'),
+  \     'type': 'E',
+  \     'text': 'storage_os_disk: required field is not set',
+  \   }
+  \ ],
+  \ ale_linters#terraform#terraform#Handle(bufnr(''), [
+  \ '{',
+  \ '  "valid": false,',
+  \ '  "error_count": 1,',
+  \ '  "warning_count": 0,',
+  \ '  "diagnostics": [',
+  \ '    {',
+  \ '      "severity": "error",',
+  \ '      "summary": "storage_os_disk: required field is not set",',
+  \ '      "range": {',
+  \ '        "filename": "main.tf",',
+  \ '        "start": {',
+  \ '          "line": 91,',
+  \ '          "column": 41,',
+  \ '          "byte": 2381',
+  \ '        },',
+  \ '        "end": {',
+  \ '          "line": 91,',
+  \ '          "column": 41,',
+  \ '          "byte": 2381',
+  \ '        }',
+  \ '      }',
+  \ '    }',
+  \ '  ]',
+  \ '}'
+  \ ])
+
+Execute(Should use summary if detail available but empty):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 91,
+  \     'col': 41,
+  \     'filename': ale#path#Simplify(g:dir . '/main.tf'),
+  \     'type': 'E',
+  \     'text': 'storage_os_disk: required field is not set',
+  \   }
+  \ ],
+  \ ale_linters#terraform#terraform#Handle(bufnr(''), [
+  \ '{',
+  \ '  "valid": false,',
+  \ '  "error_count": 1,',
+  \ '  "warning_count": 0,',
+  \ '  "diagnostics": [',
+  \ '    {',
+  \ '      "severity": "error",',
+  \ '      "summary": "storage_os_disk: required field is not set",',
+  \ '      "detail": "",',
+  \ '      "range": {',
+  \ '        "filename": "main.tf",',
+  \ '        "start": {',
+  \ '          "line": 91,',
+  \ '          "column": 41,',
+  \ '          "byte": 2381',
+  \ '        },',
+  \ '        "end": {',
+  \ '          "line": 91,',
+  \ '          "column": 41,',
+  \ '          "byte": 2381',
+  \ '        }',
+  \ '      }',
+  \ '    }',
+  \ '  ]',
+  \ '}'
+  \ ])

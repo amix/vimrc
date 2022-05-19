@@ -1,0 +1,189 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+  call ale#test#SetFilename('dummy.txt')
+
+  let g:Callback = ''
+  let g:expr_list = []
+  let g:message_list = []
+  let g:preview_called = 0
+  let g:item_list = []
+  let g:options = {}
+  let g:capability_checked = ''
+  let g:conn_id = v:null
+  let g:InitCallback = v:null
+
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/preview.vim
+
+  function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
+    let g:conn_id = ale#lsp#Register('executable', '/foo/bar', {})
+    call ale#lsp#MarkDocumentAsOpen(g:conn_id, a:buffer)
+    let l:details = {
+    \ 'buffer': a:buffer,
+    \ 'connection_id': g:conn_id,
+    \ 'project_root': '/foo/bar',
+    \ 'language_id': 'python',
+    \}
+
+    let g:InitCallback = {-> a:Callback(a:linter, l:details)}
+  endfunction
+
+  function! ale#lsp#HasCapability(conn_id, capability) abort
+    let g:capability_checked = a:capability
+
+    return 1
+  endfunction
+
+  function! ale#lsp#RegisterCallback(conn_id, callback) abort
+    let g:Callback = a:callback
+  endfunction
+
+  function! ale#lsp#Send(conn_id, message) abort
+    call add(g:message_list, a:message)
+
+    return 42
+  endfunction
+
+  function! ale#util#Execute(expr) abort
+    call add(g:expr_list, a:expr)
+  endfunction
+
+  function! ale#preview#ShowSelection(item_list, options) abort
+    let g:preview_called = 1
+    let g:item_list = a:item_list
+    let g:options = a:options
+  endfunction
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+  unlet! g:capability_checked
+  unlet! g:InitCallback
+  unlet! g:conn_id
+  unlet! g:Callback
+  unlet! g:message_list
+  unlet! g:expr_list
+  unlet! b:ale_linters
+  unlet! g:options
+  unlet! g:item_list
+  unlet! g:preview_called
+
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/preview.vim
+
+Execute(Other messages for the LSP handler should be ignored):
+  call ale#symbol#HandleLSPResponse(1, {'command': 'foo'})
+
+Execute(Failed symbol responses should be handled correctly):
+  call ale#symbol#SetMap({3: {}})
+  call ale#symbol#HandleLSPResponse(1, {'id': 3})
+  AssertEqual {}, ale#symbol#GetMap()
+
+Execute(LSP symbol responses should be handled):
+  call ale#symbol#SetMap({3: {}})
+  call ale#symbol#HandleLSPResponse(
+  \ 1,
+  \ {
+  \   'id': 3,
+  \   'result': [
+  \     {
+  \       'name': 'foo',
+  \       'location': {
+  \         'uri': ale#path#ToFileURI(ale#path#Simplify(g:dir . '/completion_dummy_file')),
+  \         'range': {
+  \           'start': {'line': 2, 'character': 7},
+  \         },
+  \       },
+  \     },
+  \     {
+  \       'name': 'foobar',
+  \       'location': {
+  \         'uri': ale#path#ToFileURI(ale#path#Simplify(g:dir . '/other_file')),
+  \         'range': {
+  \           'start': {'line': 7, 'character': 15},
+  \         },
+  \       },
+  \     },
+  \   ],
+  \ }
+  \)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': ale#path#Simplify(g:dir . '/completion_dummy_file'),
+  \     'line': 3,
+  \     'column': 8,
+  \     'match': 'foo',
+  \   },
+  \   {
+  \     'filename': ale#path#Simplify(g:dir . '/other_file'),
+  \     'line': 8,
+  \     'column': 16,
+  \     'match': 'foobar',
+  \   },
+  \ ],
+  \ g:item_list
+  AssertEqual {}, ale#symbol#GetMap()
+
+Execute(Preview windows should not be opened for empty LSP symbol responses):
+  call ale#symbol#SetMap({3: {}})
+  call ale#symbol#HandleLSPResponse(
+  \ 1,
+  \ {
+  \   'id': 3,
+  \   'result': [
+  \   ],
+  \ }
+  \)
+
+  Assert !g:preview_called
+  AssertEqual {}, ale#symbol#GetMap()
+  AssertEqual ['echom ''No symbols found.'''], g:expr_list
+
+Given python(Some Python file):
+  foo
+  somelongerline
+  bazxyzxyzxyz
+
+Execute(LSP symbol requests should be sent):
+  runtime ale_linters/python/pylsp.vim
+  let b:ale_linters = ['pylsp']
+  call setpos('.', [bufnr(''), 1, 5, 0])
+
+  ALESymbolSearch foo bar
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual type(function('type')), type(g:InitCallback)
+  call g:InitCallback()
+
+  AssertEqual 'symbol_search', g:capability_checked
+  AssertEqual
+  \ 'function(''ale#symbol#HandleLSPResponse'')',
+  \ string(g:Callback)
+
+  AssertEqual
+  \ [
+  \   [0, 'workspace/symbol', {'query': 'foo bar'}],
+  \ ],
+  \ g:message_list
+
+  AssertEqual {'42': {'buffer': bufnr(''), 'use_relative_paths': 0}}, ale#symbol#GetMap()
+
+Execute('-relative' argument should enable 'use_relative_paths' in HandleLSPResponse):
+  runtime ale_linters/python/pylsp.vim
+  let b:ale_linters = ['pylsp']
+  call setpos('.', [bufnr(''), 1, 5, 0])
+
+  ALESymbolSearch -relative foo bar
+
+  call g:InitCallback()
+
+  AssertEqual {'42': {'buffer': bufnr(''), 'use_relative_paths': 1}}, ale#symbol#GetMap()

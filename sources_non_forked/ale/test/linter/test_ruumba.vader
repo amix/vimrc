@@ -1,0 +1,26 @@
+Before:
+  call ale#assert#SetUpLinterTest('eruby', 'ruumba')
+  call ale#test#SetFilename('dummy.html.erb')
+
+  let g:ale_eruby_ruumba_executable = 'ruumba'
+  let g:ale_eruby_ruumba_options = ''
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should default to ruumba):
+  AssertLinter 'ruumba', ale#Escape('ruumba')
+  \   . ' --format json --force-exclusion  --stdin %s'
+
+Execute(Should be able to set a custom executable):
+  let g:ale_eruby_ruumba_executable = 'bin/ruumba'
+
+  AssertLinter 'bin/ruumba' , ale#Escape('bin/ruumba')
+  \   . ' --format json --force-exclusion  --stdin %s'
+
+Execute(Setting bundle appends 'exec ruumba'):
+  let g:ale_eruby_ruumba_executable = 'path to/bundle'
+
+  AssertLinter 'path to/bundle', ale#Escape('path to/bundle')
+  \   . ' exec ruumba'
+  \   . ' --format json --force-exclusion  --stdin %s'

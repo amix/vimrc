@@ -1,0 +1,9 @@
+Before:
+  call ale#assert#SetUpLinterTest('javascript', 'fecs')
+  runtime autoload/ale/handlers/fecs.vim
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'fecs', ale#Escape('fecs') . ' check --colors=false --rule=true %t'

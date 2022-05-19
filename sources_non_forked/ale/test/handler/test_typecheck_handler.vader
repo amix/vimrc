@@ -1,0 +1,24 @@
+Before:
+  runtime ale_linters/typescript/typecheck.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The typecheck handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 16,
+  \     'col': 7,
+  \     'text': "Type 'A' is not assignable to type 'B'",
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 41,
+  \     'text': "Property 'a' does not exist on type 'A'",
+  \   },
+  \ ],
+  \ ale_linters#typescript#typecheck#Handle(347, [
+  \   "somets.ts[16, 7]: Type 'A' is not assignable to type 'B'",
+  \   "somets.ts[7, 41]: Property 'a' does not exist on type 'A'",
+  \ ])

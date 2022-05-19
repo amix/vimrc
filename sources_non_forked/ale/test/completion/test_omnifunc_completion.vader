@@ -1,0 +1,60 @@
+Before:
+  unlet! b:ale_completion_info
+  unlet! b:ale_completion_result
+
+  let b:lsp_started = 0
+
+  runtime autoload/ale/lsp_linter.vim
+
+  function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
+    return b:lsp_started
+  endfunction
+
+  function! SetCompletionResult(...) abort
+    let b:ale_completion_result = ['foo']
+  endfunction
+
+  function! SetCompletionResponse(...) abort
+    let b:ale_completion_result = ['foo']
+  endfunction
+
+After:
+  unlet! b:ale_completion_info
+  unlet! b:ale_completion_result
+  unlet! b:lsp_started
+
+  delfunction SetCompletionResult
+  delfunction SetCompletionResponse
+
+  runtime autoload/ale/lsp_linter.vim
+
+  call ale#linter#Reset()
+
+Given typescript():
+  let abc = y.
+  let foo = ab
+  let foo = (ab)
+
+Execute(-3 should be returned when completion results cannot be requested):
+  AssertEqual -3, ale#completion#OmniFunc(1, '')
+
+Execute(The start position should be returned when results can be requested):
+  let b:lsp_started = 1
+  call setpos('.', [bufnr(''), 3, 14, 0])
+
+  AssertEqual 11, ale#completion#OmniFunc(1, '')
+
+Execute(The omnifunc function should return async results):
+  " Neovim 0.2.0 and 0.4.4 struggles at running these tests.
+  if !has('nvim')
+    call timer_start(0, function('SetCompletionResult'))
+
+    AssertEqual ['foo'], ale#completion#OmniFunc(0, '')
+  endif
+
+Execute(The omnifunc function should parse and return async responses):
+  if !has('nvim')
+    call timer_start(0, function('SetCompletionResponse'))
+
+    AssertEqual ['foo'], ale#completion#OmniFunc(0, '')
+  endif

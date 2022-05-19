@@ -1,0 +1,37 @@
+Before:
+  call ale#assert#SetUpLinterTest('c', 'cquery')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The project root should be detected correctly using compile_commands.json file):
+  call ale#test#SetFilename(tempname() . '/dummy.c')
+
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/cquery/dummy.c')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/cquery')
+
+Execute(The project root should be detected correctly using .cquery file):
+  call ale#test#SetFilename(tempname() . '/dummy.c')
+
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/cquery/with_cquery/dummy.c')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/cquery/with_cquery')
+
+Execute(The executable should be configurable):
+  AssertLinter 'cquery', ale#Escape('cquery')
+
+  let b:ale_c_cquery_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar')
+
+Execute(The cache directory should be configurable):
+  AssertLSPOptions {'cacheDirectory': expand('$HOME/.cache/cquery')}
+
+  let b:ale_c_cquery_cache_directory = '/foo/bar'
+
+  AssertLSPOptions {'cacheDirectory': '/foo/bar'}

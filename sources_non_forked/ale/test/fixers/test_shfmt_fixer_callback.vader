@@ -1,0 +1,59 @@
+Before:
+  Save g:ale_sh_shfmt_executable
+  Save g:ale_sh_shfmt_options
+  Save &l:expandtab
+  Save &l:shiftwidth
+  Save &l:tabstop
+
+After:
+  Restore
+
+Execute(The shfmt callback should return 'shfmt' as default command):
+  setlocal noexpandtab
+  Assert
+  \ ale#fixers#shfmt#Fix(bufnr('')).command =~# '^' . ale#Escape('shfmt'),
+  \ "Default command name is expected to be 'shfmt'"
+
+Execute(The shfmt callback should return the command with no option as default when noexpandtab is set):
+  let g:ale_sh_shfmt_executable = 'shfmt'
+  let g:ale_sh_shfmt_options = ''
+  setlocal noexpandtab
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('shfmt'),
+  \ },
+  \ ale#fixers#shfmt#Fix(bufnr(''))
+
+Execute(The shfmt callback should return the command specifying indent width by looking shiftwidth as default):
+  let g:ale_sh_shfmt_executable = 'shfmt'
+  let g:ale_sh_shfmt_options = ''
+  setlocal expandtab
+  setlocal shiftwidth=4
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('shfmt') . ' -i 4',
+  \ },
+  \ ale#fixers#shfmt#Fix(bufnr(''))
+
+Execute(The shfmt callback should return the command specifying indent width by looking tabstop when shiftwidth is 0 as default):
+  let g:ale_sh_shfmt_executable = 'shfmt'
+  let g:ale_sh_shfmt_options = ''
+  setlocal expandtab
+  setlocal shiftwidth=0
+  setlocal tabstop=8
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('shfmt') . ' -i 8',
+  \ },
+  \ ale#fixers#shfmt#Fix(bufnr(''))
+
+Execute(The shfmt executable and options should be configurable):
+  let g:ale_sh_shfmt_executable = 'foobar'
+  let g:ale_sh_shfmt_options = '--some-option'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('foobar')
+  \     . ' --some-option',
+  \ },
+  \ ale#fixers#shfmt#Fix(bufnr(''))

@@ -1,0 +1,176 @@
+Before:
+  runtime autoload/ale/lsp.vim
+
+  let g:message_list = []
+
+  function! MarkAllConnectionsInitialized() abort
+    for l:conn in values(ale#lsp#GetConnections())
+      let l:conn.initialized = 1
+    endfor
+  endfunction
+
+  function! MarkDocumentOpened() abort
+    for l:conn in values(ale#lsp#GetConnections())
+      let l:conn.open_documents[bufnr('')] = 1
+    endfor
+  endfunction
+
+  function! ale#lsp#Send(conn_id, message) abort
+    let l:connections = ale#lsp#GetConnections()
+
+    if !l:connections[a:conn_id].initialized
+        throw 'LSP server not initialized yet!'
+    endif
+
+    call add(g:message_list, [a:conn_id] + a:message)
+  endfunction
+
+  call ale#lsp#ResetConnections()
+
+After:
+  unlet! g:message_list
+  delfunction MarkAllConnectionsInitialized
+  delfunction MarkDocumentOpened
+
+  call ale#lsp#ResetConnections()
+
+  runtime autoload/ale/lsp.vim
+
+Execute(No errors should be thrown if the connection is not initialized):
+  call ale#lsp#Register('command', '/foo', {})
+  call MarkDocumentOpened()
+
+  call ale#engine#Cleanup(bufnr(''))
+  AssertEqual [], g:message_list
+
+Execute(No messages should be sent if the document wasn't opened):
+  call ale#lsp#Register('command', '/foo', {})
+  call MarkAllConnectionsInitialized()
+
+  call ale#engine#Cleanup(bufnr(''))
+  AssertEqual [], g:message_list
+
+Execute(A message should be sent if the document was opened):
+  call ale#lsp#Register('command', '/foo', {})
+  call MarkAllConnectionsInitialized()
+
+  call ale#lsp#OpenDocument('command:/foo', bufnr(''), 'lang')
+  call ale#engine#Cleanup(bufnr(''))
+  " We should only send the message once.
+  call ale#engine#Cleanup(bufnr(''))
+
+  AssertEqual
+  \ [
+  \   ['command:/foo', 1, 'textDocument/didOpen', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \       'version': g:ale_lsp_next_version_id - 1,
+  \       'languageId': 'lang',
+  \       'text': "\n",
+  \     },
+  \   }],
+  \   ['command:/foo', 1, 'textDocument/didClose', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \     },
+  \   }],
+  \ ],
+  \ g:message_list
+
+Execute(A message should be sent if the document was opened for tsserver):
+  call ale#lsp#Register('command', '/foo', {})
+  call ale#lsp#MarkConnectionAsTsserver('command:/foo')
+
+  call ale#lsp#OpenDocument('command:/foo', bufnr(''), 'lang')
+  call ale#engine#Cleanup(bufnr(''))
+  " We should only send the message once.
+  call ale#engine#Cleanup(bufnr(''))
+
+  AssertEqual
+  \ [
+  \   ['command:/foo', 1, 'ts@open', {'file': expand('%:p')}],
+  \   ['command:/foo', 1, 'ts@close', {'file': expand('%:p')}],
+  \ ],
+  \ g:message_list
+
+Execute(Re-opening and closing the documents should work):
+  call ale#lsp#Register('command', '/foo', {})
+  call MarkAllConnectionsInitialized()
+
+  call ale#lsp#OpenDocument('command:/foo', bufnr(''), 'lang')
+  call ale#engine#Cleanup(bufnr(''))
+  call ale#lsp#OpenDocument('command:/foo', bufnr(''), 'lang')
+  call ale#engine#Cleanup(bufnr(''))
+
+  AssertEqual
+  \ [
+  \   ['command:/foo', 1, 'textDocument/didOpen', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \       'version': g:ale_lsp_next_version_id - 2,
+  \       'languageId': 'lang',
+  \       'text': "\n",
+  \     },
+  \   }],
+  \   ['command:/foo', 1, 'textDocument/didClose', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \     },
+  \   }],
+  \   ['command:/foo', 1, 'textDocument/didOpen', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \       'version': g:ale_lsp_next_version_id - 1,
+  \       'languageId': 'lang',
+  \       'text': "\n",
+  \     },
+  \   }],
+  \   ['command:/foo', 1, 'textDocument/didClose', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \     },
+  \   }],
+  \ ],
+  \ g:message_list
+
+Execute(Messages for closing documents should be sent to each server):
+  call ale#lsp#Register('command', '/foo', {})
+  call ale#lsp#Register('command', '/bar', {})
+  call MarkAllConnectionsInitialized()
+
+  call ale#lsp#OpenDocument('command:/foo', bufnr(''), 'lang')
+  call ale#lsp#OpenDocument('command:/bar', bufnr(''), 'lang')
+  call ale#engine#Cleanup(bufnr(''))
+  " We should only send the message once.
+  call ale#engine#Cleanup(bufnr(''))
+
+  AssertEqual
+  \ [
+  \   ['command:/foo', 1, 'textDocument/didOpen', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \       'version': g:ale_lsp_next_version_id - 2,
+  \       'languageId': 'lang',
+  \       'text': "\n",
+  \     },
+  \   }],
+  \   ['command:/bar', 1, 'textDocument/didOpen', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \       'version': g:ale_lsp_next_version_id - 1,
+  \       'languageId': 'lang',
+  \       'text': "\n",
+  \     },
+  \   }],
+  \   ['command:/bar', 1, 'textDocument/didClose', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \     },
+  \   }],
+  \   ['command:/foo', 1, 'textDocument/didClose', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \     },
+  \   }],
+  \ ],
+  \ g:message_list

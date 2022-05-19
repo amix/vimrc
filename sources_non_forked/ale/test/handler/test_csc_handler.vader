@@ -1,0 +1,98 @@
+Before:
+  Save g:ale_cs_csc_source
+
+  unlet! g:ale_cs_csc_source
+
+  call ale#test#SetDirectory('/testplugin/test/handler')
+  call ale#test#SetFilename('Test.cs')
+
+  runtime ale_linters/cs/csc.vim
+
+After:
+  unlet! g:ale_cs_csc_source
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(The csc handler should work with the default of the buffer's directory):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 12,
+  \     'col' : 29,
+  \     'text': '; expected',
+  \     'code': 'CS1001',
+  \     'type': 'E',
+  \     'filename': ale#path#Simplify(g:dir . '/Test.cs'),
+  \   },
+  \ ],
+  \ ale_linters#cs#csc#Handle(bufnr(''), [
+  \   'Test.cs(12,29): error CS1001: ; expected',
+  \   'Compilation failed: 2 error(s), 1 warnings',
+  \ ])
+
+Execute(The csc handler should handle cannot find symbol errors):
+  let g:ale_cs_csc_source = '/home/foo/project/bar'
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 12,
+  \     'col' : 29,
+  \     'text': '; expected',
+  \     'code': 'CS1001',
+  \     'type': 'E',
+  \     'filename': ale#path#Simplify('/home/foo/project/bar/Test.cs'),
+  \   },
+  \   {
+  \     'lnum': 101,
+  \     'col': 0,
+  \     'text': 'Unexpected processor directive (no #if for this #endif)',
+  \     'code': 'CS1028',
+  \     'type': 'E',
+  \     'filename': ale#path#Simplify('/home/foo/project/bar/Test.cs'),
+  \   },
+  \   {
+  \     'lnum': 10,
+  \     'col': 12,
+  \     'text': 'some warning',
+  \     'code': 'CS0123',
+  \     'type': 'W',
+  \     'filename': ale#path#Simplify('/home/foo/project/bar/Test.cs'),
+  \   },
+  \ ],
+  \ ale_linters#cs#csc#Handle(bufnr(''), [
+  \   'Test.cs(12,29): error CS1001: ; expected',
+  \   'Test.cs(101,0): error CS1028: Unexpected processor directive (no #if for this #endif)',
+  \   'Test.cs(10,12): warning CS0123: some warning',
+  \   'Compilation failed: 2 error(s), 1 warnings',
+  \ ])
+
+Execute(The csc handler should handle non file specific compiler errors without reporting overal status report as error):
+  let g:ale_cs_csc_source = '/home/foo/project/bar'
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': -1,
+  \     'col' : -1,
+  \     'text': 'No source files specified.',
+  \     'code': 'CS2008',
+  \     'type': 'W',
+  \     'filename': '<csc>',
+  \   },
+  \   {
+  \     'lnum': -1,
+  \     'col': -1,
+  \     'text': 'Outputs without source must have the /out option specified',
+  \     'code': 'CS1562',
+  \     'type': 'E',
+  \     'filename': '<csc>',
+  \   },
+  \ ],
+  \ ale_linters#cs#csc#Handle(bufnr(''), [
+  \   'Microsoft (R) Visual C# Compiler version 2.8.2.62916 (2ad4aabc)',
+  \   'Copyright (C) Microsoft Corporation. All rights reserved.',
+  \   'warning CS2008: No source files specified.',
+  \   'error CS1562: Outputs without source must have the /out option specified',
+  \ ])

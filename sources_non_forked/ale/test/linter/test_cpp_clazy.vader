@@ -1,0 +1,56 @@
+Before:
+  call ale#assert#SetUpLinterTest('cpp', 'clazy')
+  call ale#test#SetFilename('test.cpp')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The clazy command default should be correct):
+  AssertLinter 'clazy-standalone',
+  \ ale#Escape('clazy-standalone') . ' -checks=' . ale#Escape('level1') . ' %s'
+
+Execute(You should be able to remove the -checks option for clazy-standalone):
+  let b:ale_cpp_clazy_checks = []
+
+  AssertLinter 'clazy-standalone', ale#Escape('clazy-standalone') . ' %s'
+
+Execute(You should be able to set other checks for clazy-standalone):
+  let b:ale_cpp_clazy_checks = ['level2', 'level3']
+
+  AssertLinter 'clazy-standalone',
+  \ ale#Escape('clazy-standalone')
+  \   . ' -checks=' . ale#Escape('level2,level3') . ' %s'
+
+Execute(You should be able to manually set compiler flags for clazy-standalone):
+  let b:ale_cpp_clazy_options = '-qt4-compat'
+
+  AssertLinter 'clazy-standalone',
+  \ ale#Escape('clazy-standalone') . ' -checks=' . ale#Escape('level1') . ' -qt4-compat' . ' %s'
+  \
+Execute(The build directory should be configurable):
+  let b:ale_c_build_dir = '/foo/bar'
+
+  AssertLinter 'clazy-standalone',
+  \ ale#Escape('clazy-standalone')
+  \   . ' -checks=' . ale#Escape('level1') . ' -p ' . ale#Escape('/foo/bar') . ' %s'
+
+Execute(The build directory should be used for header files):
+  call ale#test#SetFilename('test.h')
+
+  let b:ale_c_build_dir = '/foo/bar'
+
+  AssertLinter 'clazy-standalone',
+  \ ale#Escape('clazy-standalone')
+  \   . ' -checks=' . ale#Escape('level1') . ' -p ' . ale#Escape('/foo/bar') . ' %s'
+
+  call ale#test#SetFilename('test.hpp')
+
+  AssertLinter 'clazy-standalone',
+  \ ale#Escape('clazy-standalone')
+  \   . ' -checks=' . ale#Escape('level1') . ' -p ' . ale#Escape('/foo/bar') . ' %s'
+
+Execute(The executable should be configurable):
+  let b:ale_cpp_clazy_executable = 'foobar'
+
+  AssertLinter 'foobar',
+  \ ale#Escape('foobar') . ' -checks=' . ale#Escape('level1') . ' %s'

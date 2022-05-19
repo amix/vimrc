@@ -1,0 +1,23 @@
+Before:
+    " Load the file which defines the linter.
+  runtime ale_linters/sql/sqllint.vim
+
+After:
+    " Unload all linters again.
+  call ale#linter#Reset()
+
+Execute (The output should be correct):
+
+  " Test that the right loclist items are parsed from the handler.
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 0,
+  \     'type': '',
+  \     'text': 'stdin:1 [ER_NO_DB_ERROR] No database selected'
+  \   },
+  \ ],
+  \ ale_linters#sql#sqllint#Handle(bufnr(''), [
+  \  'stdin:1 [ER_NO_DB_ERROR] No database selected'
+  \ ])

@@ -1,0 +1,12 @@
+Before:
+  call ale#assert#SetUpFixerTest('html', 'html-beautify', 'beautify')
+
+After:
+  Restore
+
+  call ale#assert#TearDownFixerTest()
+
+Execute(The html-beautify callback should return the correct default command):
+  AssertEqual
+  \ {'command': ale#Escape('html-beautify') . '  -'},
+  \ ale#fixers#html_beautify#Fix(bufnr(''))

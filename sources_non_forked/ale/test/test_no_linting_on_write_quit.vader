@@ -1,0 +1,118 @@
+Before:
+  Save g:ale_echo_cursor
+  Save g:ale_fix_on_save
+  Save g:ale_fixers
+  Save g:ale_lint_on_save
+  Save g:ale_set_highlights
+  Save g:ale_set_lists_synchronously
+  Save g:ale_set_loclist
+  Save g:ale_set_quickfix
+  Save g:ale_set_signs
+
+  let g:ale_run_synchronously = 1
+  let g:ale_set_lists_synchronously = 1
+  " Disable the things we don't need, but leave enabled what we do.
+  let g:ale_echo_cursor = 0
+  let g:ale_set_signs = 0
+  let g:ale_set_quickfix = 0
+  let g:ale_set_loclist = 1
+  let g:ale_set_highlights = 0
+  let g:ale_echo_cursor = 0
+
+  function! TestCallback(buffer, output)
+    return [{'lnum': 1, 'col': 1, 'text': 'xxx'}]
+  endfunction
+
+  function AddLine(buffer, lines) abort
+    return a:lines + ['x']
+  endfunction
+
+  let g:ale_fixers = {
+  \ 'testft': ['AddLine'],
+  \}
+
+  call ale#linter#PreventLoading('testft')
+  call ale#linter#Define('testft', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'true',
+  \ 'command': 'true',
+  \})
+
+Given testft (An empty file):
+
+After:
+  Restore
+
+  unlet! g:ale_run_synchronously
+  unlet! b:ale_quitting
+  delfunction TestCallback
+  delfunction AddLine
+
+  call ale#linter#Reset()
+  call setloclist(0, [])
+
+Execute(No linting should be done on :wq or :x):
+  let g:ale_lint_on_save = 1
+  let g:ale_fix_on_save = 0
+
+  " First try just the SaveEvent, to be sure that we set errors in the test.
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  AssertEqual 1, len(ale#test#GetLoclistWithoutNewerKeys())
+
+  " Now try doing it again, but where we run the quit event first.
+  call setloclist(0, [])
+  call ale#events#QuitEvent(bufnr(''))
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(No linting should be for :w after :q fails):
+  let g:ale_lint_on_save = 1
+  let g:ale_fix_on_save = 0
+
+  call ale#events#QuitEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  " Simulate 2 seconds passing.
+  let b:ale_quitting -= 1000
+
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  AssertEqual 1, len(ale#test#GetLoclistWithoutNewerKeys())
+
+Execute(No linting should be done on :wq or :x after fixing files):
+  let g:ale_lint_on_save = 1
+  let g:ale_fix_on_save = 1
+
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  AssertEqual 1, len(ale#test#GetLoclistWithoutNewerKeys())
+
+  " Now try doing it again, but where we run the quit event first.
+  call setloclist(0, [])
+  call ale#events#QuitEvent(bufnr(''))
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(Linting should be done after :q fails and fixing files):
+  let g:ale_lint_on_save = 1
+  let g:ale_fix_on_save = 1
+
+  call ale#events#QuitEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  " Simulate 2 seconds passing.
+  let b:ale_quitting -= 1000
+
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  AssertEqual 1, len(ale#test#GetLoclistWithoutNewerKeys())

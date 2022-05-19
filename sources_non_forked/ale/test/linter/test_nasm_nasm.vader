@@ -1,0 +1,32 @@
+Before:
+  call ale#assert#SetUpLinterTest('nasm', 'nasm')
+
+  let b:command_tail =
+  \ ' -X gnu -I %s:h' . (has('win32') ? '\' : '/') . ' %s -o ' . (has('win32') ? 'NUL' : '/dev/null')
+  let b:command_tail_opt =
+  \ ' -X gnu -I %s:h' . (has('win32') ? '\' : '/') . ' -w+orphan-labels %s -o ' . (has('win32') ? 'NUL' : '/dev/null')
+
+After:
+  unlet! b:command_tail
+  unlet! b:command_tail_opt
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'nasm', ale#Escape('nasm') . b:command_tail,
+
+  let b:ale_nasm_nasm_executable = '~/nasm'
+
+  AssertLinter '~/nasm', ale#Escape('~/nasm') . b:command_tail
+
+Execute(The options should be configurable):
+  let b:ale_nasm_nasm_options = '-w-macro-params'
+
+  AssertLinter 'nasm', ale#Escape('nasm')
+  \ . ' -X gnu -I %s:h' . (has('win32') ? '\' : '/')
+  \ . ' -w-macro-params %s -o ' . (has('win32') ? 'NUL' : '/dev/null')
+
+Execute(The options should be used in command):
+  let b:ale_nasm_nasm_options = '-w+orphan-labels'
+
+  AssertLinter 'nasm', ale#Escape('nasm') . b:command_tail_opt

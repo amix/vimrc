@@ -1,0 +1,42 @@
+Before:
+  runtime ale_linters/rst/rstcheck.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Warning and error messages should be handled correctly):
+  " For some reason we can't set the directory such that the filenames are
+  " correct here when running the tests from the Docker image, so we have to
+  " just check the basenames of the files instead.
+  AssertEqual
+  \ [
+  \   {
+  \      'filename': 'bad_python.rst',
+  \      'lnum': 7,
+  \      'col': 0,
+  \      'type': 'W',
+  \      'text': '(python) unexpected EOF while parsing',
+  \   },
+  \   {
+  \      'filename': 'bad_cpp.rst',
+  \      'lnum': 9,
+  \      'col': 0,
+  \      'type': 'W',
+  \      'text': '(cpp) error: ''x'' was not declared in this scope',
+  \   },
+  \   {
+  \      'filename': 'bad_rst.rst',
+  \      'lnum': 1,
+  \      'col': 0,
+  \      'type': 'E',
+  \      'text': 'Title overline & underline mismatch.',
+  \   },
+  \ ],
+  \ map(
+  \   ale_linters#rst#rstcheck#Handle(1, [
+  \     'bad_python.rst:7: (ERROR/3) (python) unexpected EOF while parsing',
+  \     'bad_cpp.rst:9: (ERROR/3) (cpp) error: ''x'' was not declared in this scope',
+  \     'bad_rst.rst:1: (SEVERE/4) Title overline & underline mismatch.',
+  \   ]),
+  \   'extend(v:val, {''filename'': fnamemodify(v:val.filename, '':t'')})'
+  \ )

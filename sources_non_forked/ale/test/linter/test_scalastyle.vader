@@ -1,0 +1,34 @@
+Before:
+  call ale#assert#SetUpLinterTest('scala', 'scalastyle')
+
+After:
+  unlet! g:ale_scalastyle_config_loc
+  call ale#linter#Reset()
+
+Execute(Should return the correct default command):
+  AssertLinter 'scalastyle', 'scalastyle %t'
+
+Execute(Should allow using a custom config file):
+  let b:ale_scala_scalastyle_config = '/dooper/config.xml'
+
+  AssertLinter 'scalastyle', 'scalastyle'
+  \   . ' --config ' . ale#Escape('/dooper/config.xml')
+  \   . ' %t'
+
+Execute(Should support a legacy option for the scalastyle config):
+  unlet! g:ale_scala_scalastyle_config
+  let g:ale_scalastyle_config_loc = '/dooper/config.xml'
+
+  call ale#linter#Reset()
+  runtime ale_linters/scala/scalastyle.vim
+
+  AssertLinter 'scalastyle', 'scalastyle'
+  \   . ' --config ' . ale#Escape('/dooper/config.xml')
+  \   . ' %t'
+
+Execute(Should allow using custom options):
+  let b:ale_scala_scalastyle_options = '--warnings false --quiet true'
+
+  AssertLinter 'scalastyle', 'scalastyle'
+  \     . ' --warnings false --quiet true'
+  \     . ' %t'

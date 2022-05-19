@@ -1,0 +1,89 @@
+Before:
+  Save g:ale_warn_about_trailing_whitespace
+
+  let g:ale_warn_about_trailing_whitespace = 1
+
+  runtime ale_linters/gitcommit/gitlint.vim
+
+After:
+  Restore
+
+  unlet! b:ale_warn_about_trailing_whitespace
+
+  call ale#linter#Reset()
+
+Execute(The gitlint handler should handle basic warnings and syntax errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': 'Body message is missing',
+  \     'code': 'B6',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'type': 'E',
+  \     'text': 'Second line is not empty: "to send to upstream"',
+  \     'code': 'B4',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'type': 'E',
+  \     'text': 'Body message is too short (19<20): "to send to upstream"',
+  \     'code': 'B5',
+  \   },
+  \   {
+  \     'lnum': 8,
+  \     'type': 'E',
+  \     'text': 'Title exceeds max length (92>72): "some very long commit subject line where the author can''t wait to explain what he just fixed"',
+  \     'code': 'T1',
+  \   },
+  \ ],
+  \ ale_linters#gitcommit#gitlint#Handle(1, [
+  \   '1: B6 Body message is missing',
+  \   '2: B4 Second line is not empty: "to send to upstream"',
+  \   '3: B5 Body message is too short (19<20): "to send to upstream"',
+  \   '8: T1 Title exceeds max length (92>72): "some very long commit subject line where the author can''t wait to explain what he just fixed"'
+  \ ])
+
+Execute(Disabling trailing whitespace warnings should work):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 8,
+  \     'type': 'E',
+  \     'text': 'Trailing whitespace',
+  \     'code': 'T2',
+  \   },
+  \ ],
+  \ ale_linters#gitcommit#gitlint#Handle(bufnr(''), [
+  \   '8: T2 Trailing whitespace',
+  \])
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 8,
+  \     'type': 'E',
+  \     'text': 'Trailing whitespace',
+  \     'code': 'B2',
+  \   },
+  \ ],
+  \ ale_linters#gitcommit#gitlint#Handle(bufnr(''), [
+  \   '8: B2 Trailing whitespace',
+  \])
+
+  let b:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [],
+  \ ale_linters#gitcommit#gitlint#Handle(bufnr(''), [
+  \   '8: T2 Trailing whitespace',
+  \ ])
+
+  AssertEqual
+  \ [],
+  \ ale_linters#gitcommit#gitlint#Handle(bufnr(''), [
+  \   '8: B2 Trailing whitespace',
+  \ ])

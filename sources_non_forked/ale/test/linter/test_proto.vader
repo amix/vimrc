@@ -1,0 +1,16 @@
+Before:
+  call ale#assert#SetUpLinterTest('proto', 'protoc_gen_lint')
+  call ale#test#SetFilename('test.proto')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'protoc',
+  \ 'protoc' . ' -I ' . ale#Escape(getcwd()) . ' --lint_out=. ' . '%s'
+
+Execute(The callback should include any additional options):
+  let b:ale_proto_protoc_gen_lint_options = '--some-option'
+
+  AssertLinter 'protoc',
+  \ 'protoc' . ' -I ' . ale#Escape(getcwd()) . ' --some-option --lint_out=. ' . '%s'

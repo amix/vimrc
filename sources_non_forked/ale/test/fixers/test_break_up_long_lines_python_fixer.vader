@@ -1,0 +1,39 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(Long lines with basic function calls should be broken up correctly):
+  AssertEqual
+  \ [
+  \   'def foo():',
+  \   '    some_variable = this_is_a_longer_function(',
+  \   'first_argument,',
+  \   ' second_argument,',
+  \   ' third_with_function_call(',
+  \   'foo,',
+  \   ' bar,',
+  \   '))',
+  \ ],
+  \ ale#fixers#generic_python#BreakUpLongLines(bufnr(''), [
+  \   'def foo():',
+  \   '    some_variable = this_is_a_longer_function(first_argument, second_argument, third_with_function_call(foo, bar))',
+  \ ])
+
+Execute(Longer lines should be permitted if a configuration file allows it):
+  call ale#test#SetFilename('../test-files/long-line/foo/bar.py')
+
+  AssertEqual
+  \ [
+  \   'x = this_line_is_between_79_and_90_characters(first, second, third, fourth, fifth)',
+  \   'y = this_line_is_longer_than_90_characters(',
+  \   'much_longer_word,',
+  \   ' another_longer_word,',
+  \   ' a_third_long_word,',
+  \   ')'
+  \ ],
+  \ ale#fixers#generic_python#BreakUpLongLines(bufnr(''), [
+  \   'x = this_line_is_between_79_and_90_characters(first, second, third, fourth, fifth)',
+  \   'y = this_line_is_longer_than_90_characters(much_longer_word, another_longer_word, a_third_long_word)',
+  \ ])

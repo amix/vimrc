@@ -1,0 +1,15 @@
+Before:
+  call ale#assert#SetUpLinterTest('sh', 'bashate')
+  call ale#test#SetFilename('test.sh')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default bashate command should be correct):
+  AssertLinter 'bashate', ale#Escape('bashate') . '  %t'
+
+Execute(The bashate command should accept options):
+  let b:ale_sh_bashate_options = '-i E310 --max-line-length 100'
+
+  AssertLinter 'bashate',
+  \ ale#Escape('bashate') . ' -i E310 --max-line-length 100 %t'

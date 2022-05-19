@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('glsl', 'glslls')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'glslls', ale#Escape('glslls') . ' --stdin'
+
+Execute(Executable should be configurable):
+  let b:ale_glsl_glslls_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' --stdin'
+
+Execute(Setting logfile should work):
+  let b:ale_glsl_glslls_logfile = '/tmp/test.log'
+
+  AssertLinter 'glslls',
+  \ ale#Escape('glslls') . ' --verbose -l /tmp/test.log --stdin'

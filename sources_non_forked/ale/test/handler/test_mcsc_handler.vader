@@ -1,0 +1,88 @@
+Before:
+  Save g:ale_cs_mcsc_source
+
+  unlet! g:ale_cs_mcsc_source
+
+  call ale#test#SetDirectory('/testplugin/test/handler')
+  call ale#test#SetFilename('Test.cs')
+
+  runtime ale_linters/cs/mcsc.vim
+
+After:
+  unlet! g:ale_cs_mcsc_source
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(The mcs handler should work with the default of the buffer's directory):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 12,
+  \     'col' : 29,
+  \     'text': '; expected',
+  \     'code': 'CS1001',
+  \     'type': 'E',
+  \     'filename': ale#path#Simplify(g:dir . '/Test.cs'),
+  \   },
+  \ ],
+  \ ale_linters#cs#mcsc#Handle(bufnr(''), [
+  \   'Test.cs(12,29): error CS1001: ; expected',
+  \   'Compilation failed: 2 error(s), 1 warnings',
+  \ ])
+
+Execute(The mcs handler should handle cannot find symbol errors):
+  let g:ale_cs_mcsc_source = '/home/foo/project/bar'
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 12,
+  \     'col' : 29,
+  \     'text': '; expected',
+  \     'code': 'CS1001',
+  \     'type': 'E',
+  \     'filename': ale#path#Simplify('/home/foo/project/bar/Test.cs'),
+  \   },
+  \   {
+  \     'lnum': 101,
+  \     'col': 0,
+  \     'text': 'Unexpected processor directive (no #if for this #endif)',
+  \     'code': 'CS1028',
+  \     'type': 'E',
+  \     'filename': ale#path#Simplify('/home/foo/project/bar/Test.cs'),
+  \   },
+  \   {
+  \     'lnum': 10,
+  \     'col': 12,
+  \     'text': 'some warning',
+  \     'code': 'CS0123',
+  \     'type': 'W',
+  \     'filename': ale#path#Simplify('/home/foo/project/bar/Test.cs'),
+  \   },
+  \ ],
+  \ ale_linters#cs#mcsc#Handle(bufnr(''), [
+  \   'Test.cs(12,29): error CS1001: ; expected',
+  \   'Test.cs(101,0): error CS1028: Unexpected processor directive (no #if for this #endif)',
+  \   'Test.cs(10,12): warning CS0123: some warning',
+  \   'Compilation failed: 2 error(s), 1 warnings',
+  \ ])
+
+Execute(The mcsc handler should handle non file specific compiler errors without reporting overal status report as error):
+  let g:ale_cs_mcsc_source = '/home/foo/project/bar'
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': -1,
+  \     'col' : -1,
+  \     'text': 'No files to compile were specified',
+  \     'code': 'CS2008',
+  \     'type': 'E',
+  \     'filename': '<mcs>',
+  \   },
+  \ ],
+  \ ale_linters#cs#mcsc#Handle(bufnr(''), [
+  \     'error CS2008: No files to compile were specified',
+  \     'Compilation failed: 1 error(s), 0 warnings',
+  \ ])

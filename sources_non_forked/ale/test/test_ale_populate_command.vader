@@ -1,0 +1,96 @@
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_enabled
+  Save g:ale_set_quickfix
+  Save g:ale_set_loclist
+  Save g:ale_open_list
+
+  let g:ale_buffer_info = {}
+  let g:ale_enabled = 1
+  let g:ale_set_quickfix = 0
+  let g:ale_set_loclist = 0
+  let g:ale_open_list = 1
+
+  let g:expected_loclist = [{
+  \ 'bufnr': bufnr('%'),
+  \ 'lnum': 2,
+  \ 'vcol': 0,
+  \ 'col': 3,
+  \ 'text': 'foo bar',
+  \ 'type': 'E',
+  \ 'nr': -1,
+  \ 'pattern': '',
+  \ 'valid': 1,
+  \}]
+
+  function! ToggleTestCallback(buffer, output)
+    return [{
+    \ 'bufnr': a:buffer,
+    \ 'lnum': 2,
+    \ 'vcol': 0,
+    \ 'col': 3,
+    \ 'text': join(split(a:output[0])),
+    \ 'type': 'E',
+    \ 'nr': -1,
+    \}]
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'ToggleTestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': 'echo foo bar',
+  \})
+
+After:
+  Restore
+
+  unlet! g:expected_loclist
+  unlet! b:i
+
+  call ale#engine#Cleanup(bufnr(''))
+  call ale#linter#Reset()
+
+  " Not sure this is necessary since it was Save/Restore-d
+  let g:ale_buffer_info = {}
+
+  delfunction ToggleTestCallback
+
+Given foobar (Some imaginary filetype):
+  foo
+  bar
+  baz
+
+Execute(ALEPopulateQuickfix should have results):
+  AssertEqual 'foobar', &filetype
+
+  " Clear so we can check that they're unmodified.
+  call setqflist([])
+  call setloclist(winnr(), [])
+
+  " Try to run the linter a few times, as it fails randomly in NeoVim.
+  for b:i in range(5)
+    ALELint
+    call ale#test#WaitForJobs(2000)
+
+    if !has('nvim')
+      " Sleep so the delayed list function can run.
+      " This breaks the tests in NeoVim for some reason.
+      sleep 1ms
+    endif
+
+    if ale#test#GetLoclistWithoutNewerKeys() == g:expected_loclist
+      break
+    endif
+  endfor
+
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual [], ale#test#GetQflistWithoutNewerKeys()
+
+  ALEPopulateLocList
+  AssertNotEqual 0, get(getloclist(0, {'winid':0}), 'winid', 0)
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+
+  ALEPopulateQuickfix
+  AssertEqual g:expected_loclist, ale#test#GetQflistWithoutNewerKeys()

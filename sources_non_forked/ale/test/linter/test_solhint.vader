@@ -1,0 +1,28 @@
+Before:
+  call ale#assert#SetUpLinterTest('solidity', 'solhint')
+  runtime autoload/ale/handlers/solhint.vim
+
+  let b:args = ' --formatter compact %s'
+
+After:
+  unlet! b:args
+  unlet! b:executable
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinterCwd ''
+  AssertLinter 'solhint', ale#Escape('solhint') . b:args
+
+Execute(The options should be configurable):
+  let g:ale_solidity_solhint_options = '--foobar'
+
+  AssertLinter 'solhint', ale#Escape('solhint') . ' --foobar' . b:args
+
+
+Execute(solhint should be run from a containing project with solhint executable):
+  call ale#test#SetFilename('../test-files/solhint/Contract.sol')
+
+  let b:executable = ale#path#Simplify(g:dir . '/../test-files/solhint/node_modules/.bin/solhint')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/solhint')
+  AssertLinter b:executable, ale#Escape(b:executable) . b:args

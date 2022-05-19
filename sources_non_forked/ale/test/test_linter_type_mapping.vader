@@ -1,0 +1,120 @@
+Before:
+  Save g:ale_type_map
+
+After:
+  Restore
+  unlet! b:ale_type_map
+
+Execute(It should be possible to remap errors to style errors):
+  let g:ale_type_map = {'foo': {'E': 'ES'}}
+
+  AssertEqual
+  \ [
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \ ],
+  \ ale#engine#FixLocList(bufnr(''), 'foo', 0, [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \ ])
+
+Execute(It should be possible to remap errors to style errors with buffer-local variables):
+  let b:ale_type_map = {'foo': {'E': 'ES'}}
+
+  AssertEqual
+  \ [
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \ ],
+  \ ale#engine#FixLocList(bufnr(''), 'foo', 0, [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \ ])
+
+Execute(It should be possible to remap warnings to style warnings):
+  let g:ale_type_map = {'foo': {'W': 'WS'}}
+
+  AssertEqual
+  \ [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \ ],
+  \ ale#engine#FixLocList(bufnr(''), 'foo', 0, [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \ ])
+
+Execute(It should be possible to remap style errors to errors):
+  let g:ale_type_map = {'foo': {'ES': 'E'}}
+
+  AssertEqual
+  \ [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \ ],
+  \ ale#engine#FixLocList(bufnr(''), 'foo', 0, [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \ ])
+
+Execute(It should be possible to remap style warnings to warnings):
+  let g:ale_type_map = {'foo': {'WS': 'W'}}
+
+  AssertEqual
+  \ [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \ ],
+  \ ale#engine#FixLocList(bufnr(''), 'foo', 0, [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \ ])
+
+Execute(It should be possible to info problems to warnings):
+  let g:ale_type_map = {'foo': {'I': 'W'}}
+
+  AssertEqual
+  \ [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1, 'linter_name': 'foo'},
+  \ ],
+  \ ale#engine#FixLocList(bufnr(''), 'foo', 0, [
+  \   {'type': 'E', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'E', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'W', 'sub_type': 'style', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \   {'type': 'I', 'lnum': 1, 'text': 'x', 'bufnr': bufnr(''), 'col': 0, 'vcol': 0, 'nr': -1},
+  \ ])

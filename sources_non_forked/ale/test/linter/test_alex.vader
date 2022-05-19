@@ -1,0 +1,34 @@
+Before:
+  call ale#assert#SetUpLinterTest('tex', 'alex')
+  call ale#test#SetFilename('test_file.tex')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The global executable should be used when the local one cannot be found):
+  AssertLinter 'alex',
+  \ ale#Escape('alex') . ' --stdin --text',
+
+Execute(Should use the node_modules/.bin executable, if available):
+  call ale#test#SetFilename('../test-files/alex/node-modules/test_file.tex')
+
+  AssertLinter ale#path#Simplify(g:dir . '/../test-files/alex/node-modules/node_modules/.bin/alex'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/alex/node-modules/node_modules/.bin/alex'))
+  \ . ' --stdin --text',
+
+Execute(Should use the node_modules/alex executable, if available):
+  call ale#test#SetFilename('../test-files/alex/node-modules-2/test_file.tex')
+
+  AssertLinter ale#path#Simplify(g:dir . '/../test-files/alex/node-modules-2/node_modules/alex/cli.js'),
+  \ (has('win32') ? 'node.exe ' : '')
+  \ . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/alex/node-modules-2/node_modules/alex/cli.js'))
+  \ . ' --stdin --text',
+
+Execute(Should let users configure a global executable and override local paths):
+  call ale#test#SetFilename('../test-files/write-good/node-modules-2/test_file.tex')
+
+  let g:ale_alex_executable = '/path/to/custom/alex'
+  let g:ale_alex_use_global = 1
+
+  AssertLinter '/path/to/custom/alex',
+  \ ale#Escape('/path/to/custom/alex') . ' --stdin --text'

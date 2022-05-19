@@ -1,0 +1,34 @@
+Before:
+  runtime ale_linters/tex/lacheck.vim
+  call ale#test#SetDirectory('/testplugin/test/handler')
+
+After:
+  call ale#linter#Reset()
+  call ale#test#RestoreDirectory()
+
+Execute(The lacheck handler should parse lines correctly):
+  call ale#test#SetFilename('../test-files/tex/sample1.tex')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'W',
+  \     'text': 'perhaps you should insert a `~'' before "\ref"'
+  \   }
+  \ ],
+  \ ale_linters#tex#lacheck#Handle(bufnr(''), [
+  \ "** sample1:",
+  \ "\"sample1.tex\", line 1: perhaps you should insert a `~' before \"\\ref\""
+  \ ])
+
+Execute(The lacheck handler should ignore errors from input files):
+  call ale#test#SetFilename('ale_test.tex')
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale_linters#tex#lacheck#Handle(255, [
+  \ "** ale_input:",
+  \ "\"ale_input.tex\", line 1: perhaps you should insert a `~' before \"\\ref\""
+  \ ])

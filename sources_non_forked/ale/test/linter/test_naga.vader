@@ -1,0 +1,10 @@
+Before:
+  call ale#assert#SetUpLinterTest('wgsl', 'naga')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The naga command should be customizable):
+  let g:ale_wgsl_naga_executable = '/path/to/naga'
+  AssertLinter '/path/to/naga',
+  \ ale#Escape('/path/to/naga') . ' --stdin-file-path %s'

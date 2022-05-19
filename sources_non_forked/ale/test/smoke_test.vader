@@ -1,0 +1,181 @@
+Before:
+  Save g:ale_enabled
+  Save g:ale_set_lists_synchronously
+  Save g:ale_buffer_info
+  Save &shell
+
+  let g:ale_enabled = 1
+  let g:ale_buffer_info = {}
+  let g:ale_set_lists_synchronously = 1
+
+  function! TestCallback(buffer, output)
+    " Windows adds extra spaces to the text from echo.
+    return [{
+    \ 'lnum': 2,
+    \ 'col': 3,
+    \ 'text': substitute(a:output[0], ' *$', '', ''),
+    \}]
+  endfunction
+  function! TestCallback2(buffer, output)
+    return [{
+    \ 'lnum': 3,
+    \ 'col': 4,
+    \ 'text': substitute(a:output[0],  ' *$', '', ''),
+    \}]
+  endfunction
+
+  " Running the command in another subshell seems to help here.
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': has('win32') ? 'echo foo bar' : '/bin/sh -c ''echo foo bar''',
+  \})
+
+After:
+  Restore
+
+  unlet! g:i
+  unlet! g:results
+  unlet! g:expected_results
+
+  delfunction TestCallback
+  delfunction TestCallback2
+  call ale#engine#Cleanup(bufnr(''))
+  call ale#linter#Reset()
+
+Given foobar (Some imaginary filetype):
+  foo
+  bar
+  baz
+
+Execute(Linters should run with the default options):
+  AssertEqual 'foobar', &filetype
+
+  let g:expected_results = [{
+  \   'bufnr': bufnr('%'),
+  \   'lnum': 2,
+  \   'vcol': 0,
+  \   'col': 3,
+  \   'text': 'foo bar',
+  \   'type': 'E',
+  \   'nr': -1,
+  \   'pattern': '',
+  \   'valid': 1,
+  \ }]
+
+  " Try the test a few times over in NeoVim 0.3 or Windows or Vim 8.2,
+  " where tests fail randomly.
+  for g:i in range(has('nvim-0.3') || has('win32') || has('patch-8.2.2401') ? 5 : 1)
+    call ale#Queue(0, '')
+    call ale#test#WaitForJobs(2000)
+
+    let g:results = ale#test#GetLoclistWithoutNewerKeys()
+
+    if g:results == g:expected_results
+      break
+    endif
+  endfor
+
+  AssertEqual g:expected_results, g:results
+
+Execute(Linters should run in PowerShell too):
+  if has('win32')
+    set shell=powershell
+
+    AssertEqual 'foobar', &filetype
+
+    " Replace the callback to handle two lines.
+    function! TestCallback(buffer, output)
+      " Windows adds extra spaces to the text from echo.
+      return [
+      \ {
+      \   'lnum': 1,
+      \   'col': 3,
+      \   'text': substitute(a:output[0], ' *$', '', ''),
+      \ },
+      \ {
+      \   'lnum': 2,
+      \   'col': 3,
+      \   'text': substitute(a:output[1], ' *$', '', ''),
+      \ },
+      \]
+    endfunction
+
+    " Recreate the command string to use &&, which PowerShell does not support.
+    call ale#linter#Reset()
+    call ale#linter#Define('foobar', {
+    \ 'name': 'testlinter',
+    \ 'callback': 'TestCallback',
+    \ 'executable': 'cmd',
+    \ 'command': 'echo foo && echo bar',
+    \})
+
+    call ale#Queue(0, '')
+    call ale#test#WaitForJobs(4000)
+
+    AssertEqual [
+    \ {
+    \   'bufnr': bufnr('%'),
+    \   'lnum': 1,
+    \   'vcol': 0,
+    \   'col': 3,
+    \   'text': 'foo',
+    \   'type': 'E',
+    \   'nr': -1,
+    \   'pattern': '',
+    \   'valid': 1,
+    \ },
+    \ {
+    \   'bufnr': bufnr('%'),
+    \   'lnum': 2,
+    \   'vcol': 0,
+    \   'col': 3,
+    \   'text': 'bar',
+    \   'type': 'E',
+    \   'nr': -1,
+    \   'pattern': '',
+    \   'valid': 1,
+    \ },
+    \], ale#test#GetLoclistWithoutNewerKeys()
+  endif
+
+Execute(Previous errors should be removed when linters change):
+  call ale#Queue(0, '')
+  call ale#test#WaitForJobs(2000)
+
+  call ale#linter#Reset()
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter2',
+  \ 'callback': 'TestCallback2',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': has('win32') ? 'echo baz boz' : '/bin/sh -c ''echo baz boz''',
+  \})
+
+  let g:expected_results = [{
+  \ 'bufnr': bufnr('%'),
+  \ 'lnum': 3,
+  \ 'vcol': 0,
+  \ 'col': 4,
+  \ 'text': 'baz boz',
+  \ 'type': 'E',
+  \ 'nr': -1,
+  \ 'pattern': '',
+  \ 'valid': 1,
+  \}]
+
+  " Try the test a few times over in NeoVim 0.3 or VIm 8.2 or Windows,
+  " where tests fail randomly.
+  for g:i in range(has('nvim-0.3') || has('win32') || has('patch-8.2.2401') ? 5 : 1)
+    call ale#Queue(0, '')
+    call ale#test#WaitForJobs(2000)
+
+    let g:results = ale#test#GetLoclistWithoutNewerKeys()
+
+    if g:results == g:expected_results
+      break
+    endif
+  endfor
+
+  AssertEqual g:expected_results, g:results

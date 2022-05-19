@@ -1,0 +1,486 @@
+Before:
+  Save g:ale_completion_enabled
+  Save g:ale_completion_delay
+  Save g:ale_completion_max_suggestions
+  Save &l:omnifunc
+  Save &l:completeopt
+
+  unlet! b:ale_completion_enabled
+  let g:ale_completion_enabled = 1
+  let g:get_completions_called = 0
+  let g:feedkeys_calls = []
+  let g:fake_mode = 'i'
+
+  let b:ale_linters = {
+  \ 'typescript': ['tsserver'],
+  \}
+
+  let &l:completeopt = 'menu,menuone,preview,noselect,noinsert'
+
+  runtime autoload/ale/util.vim
+
+  function! ale#util#FeedKeys(string) abort
+    call add(g:feedkeys_calls, [a:string])
+  endfunction
+
+  " Pretend we're in insert mode for most tests.
+  function! ale#util#Mode(...) abort
+    return g:fake_mode
+  endfunction
+
+  function! CheckCompletionCalled(expect_success) abort
+    let g:get_completions_called = 0
+
+    " We just want to check if the function is called.
+    function! ale#completion#GetCompletions(source)
+      let g:get_completions_called = 1
+    endfunction
+
+    let g:ale_completion_delay = 0
+
+    " Run this check a few times, as it can fail randomly.
+    for l:i in range(has('nvim-0.3') || has('win32') ? 5 : 1)
+      call ale#completion#Queue()
+      sleep 1m
+
+      if g:get_completions_called is a:expect_success
+        break
+      endif
+    endfor
+
+    AssertEqual a:expect_success, g:get_completions_called
+  endfunction
+
+  let g:handle_code_action_called = 0
+  function! MockHandleCodeAction() abort
+    " delfunction! ale#code_action#HandleCodeAction
+    function! ale#code_action#HandleCodeAction(action, options) abort
+      Assert !get(a:options, 'should_save')
+      let g:handle_code_action_called += 1
+    endfunction
+  endfunction
+
+After:
+  Restore
+
+  unlet! b:ale_completion_enabled
+  unlet! g:output
+  unlet! g:fake_mode
+  unlet! g:get_completions_called
+  unlet! g:handle_code_action_called
+  unlet! b:ale_old_omnifunc
+  unlet! b:ale_old_completeopt
+  unlet! b:ale_completion_info
+  unlet! b:ale_completion_result
+  unlet! b:ale_complete_done_time
+  unlet! b:ale_linters
+
+  delfunction CheckCompletionCalled
+  delfunction ale#code_action#HandleCodeAction
+  delfunction MockHandleCodeAction
+
+  if exists('*CompleteCallback')
+    delfunction CompleteCallback
+  endif
+
+  " Stop any timers we left behind.
+  " This stops the tests from failing randomly.
+  call ale#completion#StopTimer()
+
+  " Reset the function. The runtime command below should fix this, but doesn't
+  " seem to fix it.
+  function! ale#util#Mode(...) abort
+    return call('mode', a:000)
+  endfunction
+
+  runtime autoload/ale/completion.vim
+  runtime autoload/ale/code_action.vim
+  runtime autoload/ale/util.vim
+
+Execute(ale#completion#GetCompletions should be called when the cursor position stays the same):
+  call CheckCompletionCalled(1)
+
+Execute(ale#completion#GetCompletions should not be called if the global setting is disabled):
+  let g:ale_completion_enabled = 0
+  call CheckCompletionCalled(0)
+
+Execute(ale#completion#GetCompletions should not be called if the buffer setting is disabled):
+  let b:ale_completion_enabled = 0
+  call CheckCompletionCalled(0)
+
+Given typescript():
+  let abc = y.
+  let foo = ab
+  let foo = (ab)
+
+Execute(ale#completion#GetCompletions should not be called when the cursor position changes):
+  call setpos('.', [bufnr(''), 1, 2, 0])
+
+  " We just want to check if the function is called.
+  function! ale#completion#GetCompletions(source)
+    let g:get_completions_called = 1
+  endfunction
+
+  let g:ale_completion_delay = 0
+  call ale#completion#Queue()
+
+  " Change the cursor position before the callback is triggered.
+  call setpos('.', [bufnr(''), 2, 2, 0])
+
+  sleep 1m
+
+  Assert !g:get_completions_called
+
+Execute(ale#completion#GetCompletions should not be called if you switch to normal mode):
+  let &l:completeopt = 'menu,preview'
+  let g:fake_mode = 'n'
+
+  " We just want to check if the function is called.
+  function! ale#completion#GetCompletions(source)
+    let g:get_completions_called = 1
+  endfunction
+
+  let g:ale_completion_delay = 0
+  call ale#completion#Queue()
+
+  sleep 1m
+
+  Assert !g:get_completions_called
+
+Execute(Completion should not be done shortly after the CompleteDone function):
+  call CheckCompletionCalled(1)
+  call ale#completion#Done()
+  call CheckCompletionCalled(0)
+
+Execute(ale#completion#Show() should remember the omnifunc setting and replace it):
+  let &l:omnifunc = 'FooBar'
+
+  let b:ale_completion_info = {'source': 'ale-automatic'}
+  call ale#completion#Show([{'word': 'x', 'kind': 'v', 'icase': 1}])
+
+  AssertEqual 'FooBar', b:ale_old_omnifunc
+  AssertEqual 'ale#completion#AutomaticOmniFunc', &l:omnifunc
+
+  AssertEqual [], g:feedkeys_calls
+  sleep 1ms
+  AssertEqual [["\<Plug>(ale_show_completion_menu)"]], g:feedkeys_calls
+
+Execute(ale#completion#Show() should remember the completeopt setting and replace it):
+  let &l:completeopt = 'menu'
+
+  let b:ale_completion_info = {'source': 'ale-automatic'}
+  call ale#completion#Show([{'word': 'x', 'kind': 'v', 'icase': 1}])
+
+  AssertEqual 'menu', b:ale_old_completeopt
+  AssertEqual 'menu,menuone,noinsert', &l:completeopt
+
+  AssertEqual [], g:feedkeys_calls
+  sleep 1ms
+  AssertEqual [["\<Plug>(ale_show_completion_menu)"]], g:feedkeys_calls
+
+Execute(ale#completion#Show() should set the preview option if it's set):
+  let &l:completeopt = 'menu,preview'
+
+  let b:ale_completion_info = {'source': 'ale-automatic'}
+  call ale#completion#Show([{'word': 'x', 'kind': 'v', 'icase': 1}])
+
+  AssertEqual 'menu,preview', b:ale_old_completeopt
+  AssertEqual 'menu,menuone,noinsert,preview', &l:completeopt
+
+  AssertEqual [], g:feedkeys_calls
+  sleep 1ms
+  AssertEqual [["\<Plug>(ale_show_completion_menu)"]], g:feedkeys_calls
+
+Execute(ale#completion#Show() should not replace the completeopt setting for manual completion):
+  let b:ale_completion_info = {'source': 'ale-manual'}
+
+  let &l:completeopt = 'menu,preview'
+
+  call ale#completion#Show([{'word': 'x', 'kind': 'v', 'icase': 1}])
+
+  Assert !exists('b:ale_old_completeopt')
+
+  AssertEqual [], g:feedkeys_calls
+  sleep 1ms
+  AssertEqual [["\<Plug>(ale_show_completion_menu)"]], g:feedkeys_calls
+
+Execute(ale#completion#AutomaticOmniFunc() should also remember the completeopt setting and replace it):
+  let &l:completeopt = 'menu,noselect'
+
+  let b:ale_completion_info = {'source': 'ale-automatic'}
+  call ale#completion#AutomaticOmniFunc(0, '')
+
+  AssertEqual 'menu,noselect', b:ale_old_completeopt
+  AssertEqual 'menu,menuone,noinsert,noselect', &l:completeopt
+
+Execute(ale#completion#AutomaticOmniFunc() should set the preview option if it's set):
+  let &l:completeopt = 'menu,preview'
+
+  let b:ale_completion_info = {'source': 'ale-automatic'}
+  call ale#completion#AutomaticOmniFunc(0, '')
+
+  AssertEqual 'menu,preview', b:ale_old_completeopt
+  AssertEqual 'menu,menuone,noinsert,preview', &l:completeopt
+
+Execute(ale#completion#Show() should make the correct feedkeys() call for automatic completion):
+  let b:ale_completion_info = {'source': 'ale-automatic'}
+  call ale#completion#Show([{'word': 'x', 'kind': 'v', 'icase': 1}])
+
+  AssertEqual [], g:feedkeys_calls
+  sleep 1ms
+  AssertEqual [["\<Plug>(ale_show_completion_menu)"]], g:feedkeys_calls
+
+Execute(ale#completion#Show() should make the correct feedkeys() call for manual completion):
+  let b:ale_completion_info = {'source': 'ale-automatic'}
+  call ale#completion#Show([{'word': 'x', 'kind': 'v', 'icase': 1}])
+
+  AssertEqual [], g:feedkeys_calls
+  sleep 1ms
+  AssertEqual [["\<Plug>(ale_show_completion_menu)"]], g:feedkeys_calls
+
+Execute(ale#completion#Show() should not call feedkeys() for other sources):
+  let b:ale_completion_info = {'source': 'other-source'}
+  call ale#completion#Show([{'word': 'x', 'kind': 'v', 'icase': 1}])
+
+  sleep 1ms
+  AssertEqual [], g:feedkeys_calls
+
+Execute(ale#completion#Show() shouldn't do anything if you switch back to normal mode):
+  let &l:completeopt = 'menu,preview'
+  let g:fake_mode = 'n'
+
+  call ale#completion#Show([{'word': 'x', 'kind': 'v', 'icase': 1}])
+
+  AssertEqual 'menu,preview', &l:completeopt
+  Assert !exists('b:ale_old_omnifunc')
+  Assert !exists('b:ale_old_completeopt')
+  Assert !exists('b:ale_completion_result')
+  AssertEqual [], g:feedkeys_calls
+
+Execute(ale#completion#Show() should save the result it is given):
+  call ale#completion#Show([])
+
+  AssertEqual [], b:ale_completion_result
+
+  call ale#completion#Show([{'word': 'x', 'kind': 'v', 'icase': 1}])
+
+  AssertEqual [{'word': 'x', 'kind': 'v', 'icase': 1}], b:ale_completion_result
+
+Execute(ale#completion#Done() should restore old omnifunc values):
+  let b:ale_old_omnifunc = 'FooBar'
+
+  call ale#completion#Done()
+
+  " We reset the old omnifunc setting and remove the buffer variable.
+  AssertEqual 'FooBar', &l:omnifunc
+  Assert !has_key(b:, 'ale_old_omnifunc')
+
+Execute(ale#completion#Done() should restore the old completeopt setting):
+  let b:ale_old_completeopt = 'menu'
+
+  call ale#completion#Done()
+
+  AssertEqual 'menu', &l:completeopt
+  Assert !has_key(b:, 'ale_old_completeopt')
+
+Execute(ale#completion#Done() should leave settings alone when none were remembered):
+  let &l:omnifunc = 'BazBoz'
+  let &l:completeopt = 'menu'
+
+  call ale#completion#Done()
+
+  AssertEqual 'BazBoz', &l:omnifunc
+  AssertEqual 'menu', &l:completeopt
+
+Execute(The completion request_id should be reset when queuing again):
+  let b:ale_completion_info = {'request_id': 123}
+
+  let g:ale_completion_delay = 0
+  call ale#completion#Queue()
+  sleep 1m
+
+  AssertEqual 0, b:ale_completion_info.request_id
+
+Execute(b:ale_completion_info should be set up correctly when requesting completions automatically):
+  let b:ale_completion_result = []
+  call setpos('.', [bufnr(''), 3, 14, 0])
+  call ale#completion#GetCompletions('ale-automatic')
+
+  AssertEqual
+  \ {
+  \   'request_id': 0,
+  \   'conn_id': 0,
+  \   'column': 14,
+  \   'line_length': 14,
+  \   'line': 3,
+  \   'prefix': 'ab',
+  \   'source': 'ale-automatic',
+  \ },
+  \ b:ale_completion_info
+  Assert !exists('b:ale_completion_result')
+
+Execute(b:ale_completion_info should be set up correctly when requesting completions manually):
+  let b:ale_completion_result = []
+  call setpos('.', [bufnr(''), 3, 14, 0])
+  ALEComplete
+
+  AssertEqual
+  \ {
+  \   'request_id': 0,
+  \   'conn_id': 0,
+  \   'column': 14,
+  \   'line_length': 14,
+  \   'line': 3,
+  \   'prefix': 'ab',
+  \   'source': 'ale-manual',
+  \ },
+  \ b:ale_completion_info
+  Assert !exists('b:ale_completion_result')
+
+Execute(b:ale_completion_info should be set up correctly for other sources):
+  let b:ale_completion_result = []
+  call setpos('.', [bufnr(''), 3, 14, 0])
+  call ale#completion#GetCompletions('ale-callback')
+
+  AssertEqual
+  \ {
+  \   'request_id': 0,
+  \   'conn_id': 0,
+  \   'column': 14,
+  \   'line_length': 14,
+  \   'line': 3,
+  \   'prefix': 'ab',
+  \   'source': 'ale-callback',
+  \ },
+  \ b:ale_completion_info
+  Assert !exists('b:ale_completion_result')
+
+Execute(b:ale_completion_info should be set up correctly when requesting completions via callback):
+  let b:ale_completion_result = []
+  call setpos('.', [bufnr(''), 3, 14, 0])
+
+  function! CompleteCallback() abort
+    echo 'Called'
+  endfunction
+
+
+  call ale#completion#GetCompletions('ale-callback', {'callback': funcref('CompleteCallback')})
+
+  AssertEqual
+  \ {
+  \   'request_id': 0,
+  \   'conn_id': 0,
+  \   'column': 14,
+  \   'line_length': 14,
+  \   'line': 3,
+  \   'prefix': 'ab',
+  \   'source': 'ale-callback',
+  \ },
+  \ b:ale_completion_info
+  Assert !exists('b:ale_completion_result')
+
+Execute(The correct keybinds should be configured):
+  redir => g:output
+    silent map <Plug>(ale_show_completion_menu)
+  redir END
+
+  AssertEqual
+  \ [
+  \   'n  <Plug>(ale_show_completion_menu) * :call ale#completion#RestoreCompletionOptions()<CR>',
+  \   'o  <Plug>(ale_show_completion_menu) * <Nop>',
+  \   'v  <Plug>(ale_show_completion_menu) * <Nop>',
+  \ ],
+  \ sort(split(g:output, "\n"))
+
+Execute(Running the normal mode <Plug> keybind should reset the settings):
+  let b:ale_old_omnifunc = 'FooBar'
+  let b:ale_old_completeopt = 'menu'
+
+  " We can't run the keybind, but we can call the function.
+  call ale#completion#RestoreCompletionOptions()
+
+  AssertEqual 'FooBar', &l:omnifunc
+  AssertEqual 'menu', &l:completeopt
+  Assert !has_key(b:, 'ale_old_omnifunc')
+  Assert !has_key(b:, 'ale_old_completeopt')
+
+Execute(HandleUserData should call ale#code_action#HandleCodeAction):
+  let b:ale_completion_info = {'source': 'ale-manual'}
+  call MockHandleCodeAction()
+
+  call ale#completion#HandleUserData({})
+  AssertEqual g:handle_code_action_called, 0
+
+  call ale#completion#HandleUserData({
+  \ 'user_data': ''
+  \})
+  AssertEqual g:handle_code_action_called, 0
+
+  call ale#completion#HandleUserData({
+  \ 'user_data': json_encode({}),
+  \})
+  AssertEqual g:handle_code_action_called, 0
+
+  call ale#completion#HandleUserData({
+  \ 'user_data': json_encode({
+  \   '_ale_completion_item': 1,
+  \   'code_actions': [],
+  \ }),
+  \})
+  AssertEqual g:handle_code_action_called, 0
+
+  call ale#completion#HandleUserData({
+  \ 'user_data': json_encode({
+  \   '_ale_completion_item': 1,
+  \   'code_actions': [
+  \     {'description': '', 'changes': []},
+  \   ],
+  \ }),
+  \})
+  AssertEqual g:handle_code_action_called, 1
+
+  let b:ale_completion_info = {'source': 'ale-automatic'}
+  call ale#completion#HandleUserData({
+  \ 'user_data': json_encode({
+  \   '_ale_completion_item': 1,
+  \   'code_actions': [
+  \     {'description': '', 'changes': []},
+  \   ],
+  \ }),
+  \})
+  AssertEqual g:handle_code_action_called, 2
+
+  let b:ale_completion_info = {'source': 'ale-callback'}
+  call ale#completion#HandleUserData({
+  \ 'user_data': json_encode({
+  \   '_ale_completion_item': 1,
+  \   'code_actions': [
+  \     {'description': '', 'changes': []},
+  \   ],
+  \ }),
+  \})
+  AssertEqual g:handle_code_action_called, 3
+
+  let b:ale_completion_info = {'source': 'ale-omnifunc'}
+  call ale#completion#HandleUserData({
+  \ 'user_data': json_encode({
+  \   '_ale_completion_item': 1,
+  \   'code_actions': [
+  \     {'description': '', 'changes': []},
+  \   ],
+  \ }),
+  \})
+  AssertEqual g:handle_code_action_called, 4
+
+Execute(ale#code_action#HandleCodeAction should not be called when when source is not ALE):
+  call MockHandleCodeAction()
+  let b:ale_completion_info = {'source': 'syntastic'}
+  call ale#completion#HandleUserData({
+  \ 'user_data': json_encode({
+  \   '_ale_completion_item': 1,
+  \   'code_actions': [
+  \     {'description': '', 'changes': []},
+  \   ],
+  \ }),
+  \})
+  AssertEqual g:handle_code_action_called, 0

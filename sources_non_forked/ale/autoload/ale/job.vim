@@ -187,10 +187,16 @@ function! ale#job#PrepareCommand(buffer, command) abort
     \ : a:command
 
     " If a custom shell is specified, use that.
-    if exists('g:ale_shell')
-        let l:shell_arguments = get(g:, 'ale_shell_arguments', &shellcmdflag)
+    if exists('b:ale_shell')
+        let l:ale_shell = b:ale_shell
+    elseif exists('g:ale_shell')
+        let l:ale_shell = g:ale_shell
+    endif
 
-        return split(g:ale_shell) + split(l:shell_arguments) + [l:command]
+    if exists('l:ale_shell')
+        let l:shell_arguments = get(b:, 'ale_shell_arguments', get(g:, 'ale_shell_arguments', &shellcmdflag))
+
+        return split(l:ale_shell) + split(l:shell_arguments) + [l:command]
     endif
 
     if has('win32')

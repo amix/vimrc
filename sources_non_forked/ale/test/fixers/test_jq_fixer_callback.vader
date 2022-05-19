@@ -1,0 +1,26 @@
+Before:
+  Save g:ale_json_jq_executable
+  Save g:ale_json_jq_options
+  Save g:ale_json_jq_filters
+
+After:
+  Restore
+
+Execute(The jq fixer should use the options you set):
+  let g:ale_json_jq_executable = 'foo'
+  let g:ale_json_jq_options = '--bar'
+  let g:ale_json_jq_filters = '.baz'
+
+  AssertEqual
+  \ {'command': ale#Escape('foo') . ' .baz --bar'},
+  \ ale#fixers#jq#Fix(bufnr(''))
+
+Execute(The jq fixer should return 0 when there are no filters):
+  let g:ale_json_jq_executable = 'jq'
+  let g:ale_json_jq_options = ''
+
+  let g:ale_json_jq_filters = ''
+
+  AssertEqual
+  \ 0,
+  \ ale#fixers#jq#Fix(bufnr(''))

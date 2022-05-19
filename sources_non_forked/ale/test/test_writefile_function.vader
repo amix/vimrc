@@ -1,0 +1,117 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+  let g:new_line_test_file = tempname()
+
+After:
+  noautocmd :e! ++ff=unix
+  setlocal buftype=nofile
+
+  if filereadable(g:new_line_test_file)
+    call delete(g:new_line_test_file)
+  endif
+
+  unlet! g:new_line_test_file
+
+  call ale#test#RestoreDirectory()
+
+Given(A file with Windows line ending characters):
+  first
+  second
+  third
+
+Execute(Carriage returns should be included for ale#util#Writefile):
+  call ale#test#SetFilename(g:new_line_test_file)
+
+  setlocal buftype=
+  noautocmd :w
+  noautocmd :e! ++ff=dos
+
+  call ale#util#Writefile(bufnr(''), getline(1, '$'), g:new_line_test_file)
+
+  AssertEqual
+  \ ["first\r", "second\r", "third\r", ''],
+  \ readfile(g:new_line_test_file, 'b')
+
+Given(A file with extra carriage returns):
+  first
+  second
+  third
+  fourth
+
+Execute(Carriage returns should be de-depulicated):
+  call ale#test#SetFilename(g:new_line_test_file)
+
+  setlocal buftype=
+  noautocmd :w
+  noautocmd :e! ++ff=dos
+
+  call ale#util#Writefile(bufnr(''), getline(1, '$'), g:new_line_test_file)
+
+  AssertEqual
+  \ ["first\r", "second\r", "third\r", "fourth\r", ''],
+  \ readfile(g:new_line_test_file, 'b')
+
+Given(A file with Unix line ending characters):
+  first
+  second
+  third
+
+Execute(Unix file lines should be written as normal):
+  call ale#test#SetFilename(g:new_line_test_file)
+
+  setlocal buftype=
+  noautocmd :w
+  noautocmd :e! ++ff=unix
+
+  call ale#util#Writefile(bufnr(''), getline(1, '$'), g:new_line_test_file)
+
+  AssertEqual
+  \ ['first', 'second', 'third', ''],
+  \ readfile(g:new_line_test_file, 'b')
+
+Execute(Newline at end of file should be preserved even when nofixeol):
+  call ale#test#SetFilename(g:new_line_test_file)
+
+  setlocal buftype=
+  noautocmd :w
+  noautocmd :e! ++ff=unix
+  set eol
+  set nofixeol
+
+  call ale#util#Writefile(bufnr(''), getline(1, '$'), g:new_line_test_file)
+
+  AssertEqual
+  \ ['first', 'second', 'third', ''],
+  \ readfile(g:new_line_test_file, 'b')
+
+Execute(Newline should not be appended on write when noeol and nofixeol):
+  call ale#test#SetFilename(g:new_line_test_file)
+
+  setlocal buftype=
+  noautocmd :w
+  noautocmd :e! ++ff=unix
+  set noeol
+  set nofixeol
+
+  call ale#util#Writefile(bufnr(''), getline(1, '$'), g:new_line_test_file)
+
+  AssertEqual
+  \ ['first', 'second', 'third'],
+  \ readfile(g:new_line_test_file, 'b')
+
+Execute(Newline should be appended on write when noeol and fixeol):
+  call ale#test#SetFilename(g:new_line_test_file)
+
+  setlocal buftype=
+  noautocmd :w
+  noautocmd :e! ++ff=unix
+  set noeol
+  set fixeol
+
+  call ale#util#Writefile(bufnr(''), getline(1, '$'), g:new_line_test_file)
+
+  AssertEqual
+  \ ['first', 'second', 'third', ''],
+  \ readfile(g:new_line_test_file, 'b')
+

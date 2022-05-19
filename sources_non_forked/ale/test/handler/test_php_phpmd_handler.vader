@@ -1,0 +1,24 @@
+Before:
+  runtime ale_linters/php/phpmd.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The php static analyzer handler should parse errors from phpmd):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 22,
+  \     'type': 'W',
+  \     'text': "Avoid unused local variables such as '$response'.",
+  \   },
+  \   {
+  \     'lnum': 14,
+  \     'type': 'W',
+  \     'text': "The method test uses an else expression. Else is never necessary and you can simplify the code to work without else.",
+  \   },
+  \ ],
+  \ ale_linters#php#phpmd#Handle(347, [
+  \ "example.php:22     Avoid unused local variables such as '$response'.",
+  \ "example.php:14    The method test uses an else expression. Else is never necessary and you can simplify the code to work without else.",
+  \ ])

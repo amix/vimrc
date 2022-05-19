@@ -1,0 +1,53 @@
+Before:
+  runtime ale_linters/java/checkstyle.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The checkstyle handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 101,
+  \     'col': 0,
+  \     'text': '''method def rcurly'' has incorrect indentation level 4, expected level should be 2.',
+  \     'code': 'Indentation',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \   },
+  \   {
+  \     'lnum': 63,
+  \     'col': 3,
+  \     'text': 'Missing a Javadoc comment.',
+  \     'code': 'JavadocMethod',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \   },
+  \   {
+  \     'lnum': 11,
+  \     'col': 7,
+  \     'text': 'WhitespaceAround: ''if'' is not followed by whitespace.',
+  \     'code': 'WhitespaceAround',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \   },
+  \ ],
+  \ ale_linters#java#checkstyle#Handle(666, [
+  \   '[WARN] whatever:101: ''method def rcurly'' has incorrect indentation level 4, expected level should be 2. [Indentation]',
+  \   '[WARN] whatever:63:3: Missing a Javadoc comment. [JavadocMethod]',
+  \   '[WARN] whatever:11:7: WhitespaceAround: ''if'' is not followed by whitespace. [WhitespaceAround]',
+  \ ])
+
+Execute(The checkstyle handler should parse lines from older checkstyle versions correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 289,
+  \     'text': '''method def modifier'' have incorrect indentation level 4, expected level should be 2.',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \   },
+  \ ],
+  \ ale_linters#java#checkstyle#Handle(666, [
+  \   '/home/languitar/src/rsb-java/rsb-java/src/main/java/rsb/Listener.java:289: warning: ''method def modifier'' have incorrect indentation level 4, expected level should be 2.',
+  \ ])

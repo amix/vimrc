@@ -1,0 +1,42 @@
+Before:
+  call ale#assert#SetUpLinterTest('javascript', 'flow')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(flow should return a command to run if a .flowconfig file exists):
+  call ale#test#SetFilename('../test-files/flow/a/sub/dummy')
+
+  AssertLinter 'flow',
+  \ ale#Escape('flow')
+  \   . ' check-contents --respect-pragma --json --from ale %s < %t'
+  \   . (!has('win32') ? '; echo' : '')
+
+Execute(flow should not use the respect pragma argument if the option is off):
+  call ale#test#SetFilename('../test-files/flow/a/sub/dummy')
+
+  let b:ale_javascript_flow_use_respect_pragma = 0
+
+  AssertLinter 'flow',
+  \ ale#Escape('flow')
+  \   . ' check-contents --json --from ale %s < %t'
+  \   . (!has('win32') ? '; echo' : '')
+
+Execute(flow should should not use --respect-pragma for old versions):
+  call ale#test#SetFilename('../test-files/flow/a/sub/dummy')
+
+  GivenCommandOutput [
+  \ 'Warning: `flow --version` is deprecated in favor of `flow version`',
+  \ 'Flow, a static type checker for JavaScript, version 0.27.0',
+  \]
+  AssertLinter 'flow', [
+  \ ale#Escape('flow') . ' --version',
+  \ ale#Escape('flow')
+  \   . ' check-contents --json --from ale %s < %t'
+  \   . (!has('win32') ? '; echo' : ''),
+  \]
+
+Execute(flow should not return a command to run if no .flowconfig file exists):
+  call ale#test#SetFilename('../test-files/flow/b/sub/dummy')
+
+  AssertLinterNotExecuted

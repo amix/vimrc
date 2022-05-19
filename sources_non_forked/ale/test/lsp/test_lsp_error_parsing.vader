@@ -1,0 +1,74 @@
+Execute(Invalid responses should be handled):
+  AssertEqual '', ale#lsp#response#GetErrorMessage({})
+  AssertEqual '', ale#lsp#response#GetErrorMessage({'error': 0})
+  AssertEqual '', ale#lsp#response#GetErrorMessage({'error': {}})
+  AssertEqual '', ale#lsp#response#GetErrorMessage({
+  \ 'error': {
+  \   'code': 0,
+  \   'message': 'x',
+  \ },
+  \})
+  AssertEqual '', ale#lsp#response#GetErrorMessage({'error': {'code': -32602}})
+  AssertEqual '', ale#lsp#response#GetErrorMessage({'error': {'code': -32603}})
+
+Execute(Messages without tracebacks should be handled):
+  AssertEqual 'xyz', ale#lsp#response#GetErrorMessage({
+  \ 'error': {
+  \   'code': -32602,
+  \   'message': 'xyz',
+  \ },
+  \})
+  AssertEqual 'abc', ale#lsp#response#GetErrorMessage({
+  \ 'error': {
+  \   'code': -32603,
+  \   'message': 'abc',
+  \ },
+  \})
+
+Execute(Invalid traceback data should be tolerated):
+  AssertEqual 'xyz', ale#lsp#response#GetErrorMessage({
+  \ 'error': {
+  \   'code': -32602,
+  \   'message': 'xyz',
+  \   'data': {
+  \   },
+  \ },
+  \})
+  AssertEqual 'xyz', ale#lsp#response#GetErrorMessage({
+  \ 'error': {
+  \   'code': -32602,
+  \   'message': 'xyz',
+  \   'data': {
+  \     'traceback': 0,
+  \   },
+  \ },
+  \})
+  AssertEqual 'xyz', ale#lsp#response#GetErrorMessage({
+  \ 'error': {
+  \   'code': -32602,
+  \   'message': 'xyz',
+  \   'data': {
+  \     'traceback': [],
+  \   },
+  \ },
+  \})
+
+Execute(Messages with tracebacks should be handled):
+  AssertEqual "xyz\n123\n456", ale#lsp#response#GetErrorMessage({
+  \ 'error': {
+  \   'code': -32602,
+  \   'message': 'xyz',
+  \   'data': {
+  \     'traceback': ['123', '456'],
+  \   },
+  \ },
+  \})
+
+Execute(Messages with string data should be handled):
+  AssertEqual "xyz\nUncaught Exception", ale#lsp#response#GetErrorMessage({
+  \ 'error': {
+  \   'code': -32602,
+  \   'message': 'xyz',
+  \   'data': 'Uncaught Exception',
+  \ },
+  \})

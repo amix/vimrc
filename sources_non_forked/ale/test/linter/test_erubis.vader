@@ -1,0 +1,16 @@
+Before:
+  call ale#assert#SetUpLinterTest('eruby', 'erubis')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should not contain any filter code by default):
+  call ale#test#SetFilename('../test-files/ruby/not_a_rails_app/file.rb')
+
+  AssertLinter 'erubis', 'erubis -x %t | ruby -c'
+
+Execute(Executable should filter invalid eRuby when inside a Rails project):
+  call ale#test#SetFilename('../test-files/ruby/valid_rails_app/app/views/my_great_view.html.erb')
+
+  AssertLinter 'erubis',
+  \ 'ruby -r erubis -e ' . ale#Escape('puts Erubis::Eruby.new($stdin.read.gsub(%{<%=},%{<%})).src') . '< %t | ruby -c'

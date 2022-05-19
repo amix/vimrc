@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_purescript_purty_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_purescript_purty_executable = 'my-special-purty'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The purty callback should return the correct options):
+  call ale#test#SetFilename('../purescript_files/testfile.purs')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('my-special-purty')
+  \     . ' --write'
+  \     . ' %t',
+  \   'read_temporary_file': 1,
+  \ },
+  \ ale#fixers#purty#Fix(bufnr(''))

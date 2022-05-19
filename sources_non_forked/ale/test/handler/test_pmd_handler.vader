@@ -1,0 +1,42 @@
+Before:
+  runtime ale_linters/java/pmd.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The pmd handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 18,
+  \     'text': 'Each class should declare at least one constructor',
+  \     'code': 'Code Style - AtLeastOneConstructor',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 36,
+  \     'text': 'Local variable ''node'' could be declared final',
+  \     'code': 'Code Style - LocalVariableCouldBeFinal',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#java#pmd#Handle(666, [
+  \    '"Problem","Package","File","Priority","Line","Description","Rule set","Rule"',
+  \    '"1","rsb.performance.test.ros","/home/languitar/src/rsb-performance-test-api-ros/src/main/java/rsb/performance/test/ros/NodeHolder.java","3","18","Each class should declare at least one constructor","Code Style","AtLeastOneConstructor"',
+  \    '"2","rsb.performance.test.ros","/home/languitar/src/rsb-performance-test-api-ros/src/main/java/rsb/performance/test/ros/NodeHolder.java","1","36","Local variable ''node'' could be declared final","Code Style","LocalVariableCouldBeFinal"'
+  \ ])
+
+Execute(The pmd handler should parse lines correctly for java files that use unnamed packages):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 8,
+  \     'text': 'Avoid unused local variables such as ''stest''.',
+  \     'code': 'Best Practices - UnusedLocalVariable',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#java#pmd#Handle(666, [
+  \    '"Problem","Package","File","Priority","Line","Description","Rule set","Rule"',
+  \    '"1","","/Users/diego/Projects/github.com/dlresende/kata-fizz-buzz/src/main/java/App.java","3","8","Avoid unused local variables such as ''stest''.","Best Practices","UnusedLocalVariable"'
+  \ ])

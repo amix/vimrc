@@ -1,0 +1,40 @@
+Before:
+  Save g:ale_fish_fish_indent_executable
+  Save g:ale_fish_fish_indent_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_fish_fish_indent_executable = 'xxxinvalid'
+  let g:ale_fish_fish_indent_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The fish_indent callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/fish/testfile.fish')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \   . ' -w '
+  \   . ' %t',
+  \ },
+  \ ale#fixers#fish_indent#Fix(bufnr(''))
+
+Execute(The fish_indent callback should include custom fish_indent options):
+  let g:ale_fish_fish_indent_options = "-d"
+  call ale#test#SetFilename('../test-files/fish/testfile.fish')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \   . ' -w '
+  \   . ' -d'
+  \   . ' %t',
+  \ },
+  \ ale#fixers#fish_indent#Fix(bufnr(''))

@@ -1,0 +1,18 @@
+Before:
+  call ale#assert#SetUpLinterTest('chef', 'foodcritic')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'foodcritic', ale#Escape('foodcritic') . ' %s'
+
+Execute(Extra options should be included with escapeed tildes (~)):
+  let b:ale_chef_foodcritic_options = '-t ~F011'
+
+  AssertLinter 'foodcritic', ale#Escape('foodcritic') . ' -t \~F011 %s'
+
+Execute(The executable should be configurable):
+  let b:ale_chef_foodcritic_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' %s'

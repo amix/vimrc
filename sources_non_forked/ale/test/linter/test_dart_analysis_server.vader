@@ -1,0 +1,15 @@
+Before:
+  call ale#assert#SetUpLinterTest('dart', 'analysis_server')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'dart', ale#Escape('dart')
+  \   . ' ./snapshots/analysis_server.dart.snapshot --lsp'
+
+Execute(The executable should be configurable):
+  let g:ale_dart_analysis_server_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar')
+  \   . ' ./snapshots/analysis_server.dart.snapshot --lsp'

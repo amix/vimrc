@@ -1,0 +1,12 @@
+Before:
+  call ale#assert#SetUpLinterTest('haskell', 'ghc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The options should be used in the command):
+  AssertLinter 'ghc', 'ghc -fno-code -v0 %t'
+
+  let b:ale_haskell_ghc_options = 'foobar'
+
+  AssertLinter 'ghc', 'ghc foobar %t'

@@ -1,0 +1,37 @@
+Before:
+  " This is just one language for the linter.
+  call ale#assert#SetUpLinterTest('markdown', 'remark_lint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'remark',
+  \ ale#Escape('remark') . ' --no-stdout --no-color'
+
+Execute(The executable should be configurable):
+  let b:ale_markdown_remark_lint_executable = 'foobar'
+
+  AssertLinter 'foobar',
+  \ ale#Escape('foobar') . ' --no-stdout --no-color'
+
+Execute(The options should be configurable):
+  let b:ale_markdown_remark_lint_options = '--something'
+
+  AssertLinter 'remark',
+  \ ale#Escape('remark') . ' --something --no-stdout --no-color'
+
+Execute(The local executable from .bin should be used if available):
+  call ale#test#SetFilename('../test-files/remark_lint/with_bin_path/foo.md')
+
+  AssertLinter
+  \ ale#path#Simplify(g:dir . '/../test-files/remark_lint/with_bin_path/node_modules/.bin/remark'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/remark_lint/with_bin_path/node_modules/.bin/remark'))
+  \   . ' --no-stdout --no-color'
+
+Execute(The global executable should be uesd if the option is set):
+  let b:ale_markdown_remark_lint_use_global = 1
+  call ale#test#SetFilename('../test-files/remark_lint/with_bin_path/foo.md')
+
+  AssertLinter 'remark', ale#Escape('remark')
+  \   . ' --no-stdout --no-color'

@@ -1,0 +1,469 @@
+Before:
+  Save g:ale_filename_mappings
+
+  let g:ale_filename_mappings = {}
+
+After:
+  unlet! b:temp_name
+  unlet! b:other_bufnr
+
+  Restore
+
+
+Execute(FixLocList should map filenames):
+  " Paths converted back into temporary filenames shouldn't be included.
+  let g:ale_filename_mappings = {
+  \ 'linter2': [['/xxx/', '/data/']],
+  \ 'linter1': [
+  \   ['/bar/', '/data/special/'],
+  \   ['/foo/', '/data/'],
+  \   [
+  \     ale#path#Simplify(fnamemodify(ale#util#Tempname(), ':h:h')) . '/',
+  \     '/x-tmp/',
+  \   ],
+  \ ],
+  \}
+
+  AssertEqual
+  \ [
+  \   '/foo/file.txt',
+  \   v:null,
+  \   '/bar/file.txt',
+  \ ],
+  \ map(
+  \   ale#engine#FixLocList(
+  \     bufnr('%'),
+  \     'linter1',
+  \     0,
+  \     [
+  \       {'text': 'x', 'lnum': 1, 'filename': '/data/file.txt'},
+  \       {'text': 'x', 'lnum': 1, 'filename': '/x-tmp/file.txt'},
+  \       {'text': 'x', 'lnum': 1, 'filename': '/data/special/file.txt'},
+  \     ],
+  \   ),
+  \   'get(v:val, ''filename'', v:null)',
+  \ )
+
+
+Given foo (Some file with lines to count):
+  foo12345678
+  bar12345678
+  baz12345678
+  four12345678
+  five12345678
+  six12345678
+  seven12345678
+  eight12345678
+  nine12345678
+  ten12345678
+
+Execute(FixLocList should set all the default values correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 2,
+  \     'col': 0,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \   {
+  \     'text': 'b',
+  \     'lnum': 2,
+  \     'col': 0,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [{'text': 'a', 'lnum': 2}, {'text': 'b', 'lnum': 2}],
+  \ )
+
+Execute(FixLocList should use the values we supply):
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 3,
+  \     'col': 4,
+  \     'bufnr': 10000,
+  \     'vcol': 0,
+  \     'type': 'W',
+  \     'nr': 42,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [{
+  \     'text': 'a',
+  \     'lnum': 3,
+  \     'col': 4,
+  \     'bufnr': 10000,
+  \     'vcol': 1,
+  \     'type': 'W',
+  \     'nr': 42,
+  \   }],
+  \ )
+
+Execute(FixLocList should set items with lines beyond the end to the last line):
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 10,
+  \     'col': 0,
+  \     'end_lnum': 10,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [{'text': 'a', 'lnum': 11, 'end_lnum': 12}],
+  \ )
+
+Execute(FixLocList should move line 0 to line 1):
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 1,
+  \     'col': 0,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [{'text': 'a', 'lnum': 0}],
+  \ )
+
+Execute(FixLocList should convert line and column numbers correctly):
+  " The numbers should be 10, not 8 as octals.
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 10,
+  \     'col': 10,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [{'text': 'a', 'lnum': '010', 'col': '010'}],
+  \ )
+
+Execute(FixLocList should pass on end_col values):
+  " The numbers should be 10, not 8 as octals.
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 10,
+  \     'col': 10,
+  \     'end_col': 12,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \   {
+  \     'text': 'a',
+  \     'lnum': 10,
+  \     'col': 11,
+  \     'end_col': 12,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [
+  \     {'text': 'a', 'lnum': '010', 'col': '010', 'end_col': '012'},
+  \     {'text': 'a', 'lnum': '010', 'col': '011', 'end_col': 12},
+  \   ],
+  \ )
+
+Execute(FixLocList should pass on end_lnum values):
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 7,
+  \     'col': 10,
+  \     'end_lnum': 10,
+  \     'end_col': 12,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \   {
+  \     'text': 'a',
+  \     'lnum': 7,
+  \     'col': 11,
+  \     'end_lnum': 10,
+  \     'end_col': 12,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [
+  \     {'text': 'a', 'lnum': '07', 'col': '010', 'end_col': '012', 'end_lnum': '010'},
+  \     {'text': 'a', 'lnum': '07', 'col': '011', 'end_col': 12, 'end_lnum': 10},
+  \   ],
+  \ )
+
+Execute(FixLocList should allow subtypes to be set):
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 10,
+  \     'col': 0,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'sub_type': 'style',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [{'text': 'a', 'lnum': 11, 'sub_type': 'style'}],
+  \ )
+
+Execute(FixLocList should accept filenames):
+  let b:other_bufnr = bufnr('/foo/bar/baz', 1)
+
+  " Make sure we actually get another buffer number, or the test is invalid.
+  AssertNotEqual -1, b:other_bufnr
+
+  call ale#test#SetFilename('test.txt')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 2,
+  \     'col': 0,
+  \     'bufnr': bufnr('%'),
+  \     'filename': expand('%:p'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \   {
+  \     'text': 'a',
+  \     'lnum': 3,
+  \     'col': 0,
+  \     'bufnr': bufnr('%'),
+  \     'filename': expand('%:p'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \   {
+  \     'text': 'a',
+  \     'lnum': 4,
+  \     'col': 0,
+  \     'bufnr': b:other_bufnr,
+  \     'filename': '/foo/bar/baz',
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \   {
+  \     'text': 'a',
+  \     'lnum': 5,
+  \     'col': 0,
+  \     'bufnr': b:other_bufnr,
+  \     'filename': '/foo/bar/baz',
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [
+  \     {'text': 'a', 'lnum': 2, 'filename': expand('%:p')},
+  \     {'text': 'a', 'lnum': 3, 'filename': expand('%:p')},
+  \     {'text': 'a', 'lnum': 4, 'filename': '/foo/bar/baz'},
+  \     {'text': 'a', 'lnum': 5, 'filename': '/foo/bar/baz'},
+  \   ],
+  \ )
+
+Execute(FixLocList should interpret temporary filenames as being the current buffer):
+  let b:temp_name = tempname()
+
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 2,
+  \     'col': 0,
+  \     'bufnr': bufnr(''),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \   {
+  \     'text': 'a',
+  \     'lnum': 3,
+  \     'col': 0,
+  \     'bufnr': bufnr(''),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr(''),
+  \   'foobar',
+  \   0,
+  \   [
+  \     {'text': 'a', 'lnum': 2, 'filename': b:temp_name},
+  \     {'text': 'a', 'lnum': 3, 'filename': substitute(b:temp_name, '\\', '/', 'g')},
+  \   ],
+  \ )
+
+Execute(The error code should be passed on):
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 10,
+  \     'col': 0,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \     'code': 'some-code'
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [{'text': 'a', 'lnum': 11, 'code': 'some-code'}],
+  \ )
+
+Execute(FixLocList should mark problems as coming from other sources if requested):
+  AssertEqual
+  \ [
+  \   {
+  \     'text': 'a',
+  \     'lnum': 2,
+  \     'col': 0,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \     'from_other_source': 1,
+  \   },
+  \   {
+  \     'text': 'b',
+  \     'lnum': 2,
+  \     'col': 0,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'linter_name': 'foobar',
+  \     'from_other_source': 1,
+  \   },
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   1,
+  \   [{'text': 'a', 'lnum': 2}, {'text': 'b', 'lnum': 2}],
+  \ )
+
+Given(A file with Japanese multi-byte text):
+  はじめまして!
+  -私はワープです。
+Execute(character positions should be converted to byte positions):
+  AssertEqual
+  \ [
+  \   {'lnum': 1, 'bufnr': bufnr(''), 'col': 0, 'linter_name': 'foobar', 'nr': -1, 'type': 'E', 'vcol': 0, 'text': 'a'},
+  \   {'lnum': 1, 'bufnr': bufnr(''), 'col': 1, 'linter_name': 'foobar', 'nr': -1, 'type': 'E', 'vcol': 0, 'text': 'a'},
+  \   {'lnum': 1, 'bufnr': bufnr(''), 'col': 4, 'linter_name': 'foobar', 'nr': -1, 'type': 'E', 'vcol': 0, 'text': 'a'},
+  \   {'lnum': 1, 'bufnr': bufnr(''), 'col': 7, 'linter_name': 'foobar', 'nr': -1, 'type': 'E', 'vcol': 0, 'text': 'a'},
+  \   {'lnum': 1, 'bufnr': bufnr(''), 'col': 7, 'end_col': 13, 'linter_name': 'foobar', 'nr': -1, 'type': 'E', 'vcol': 0, 'text': 'a'},
+  \   {'lnum': 1, 'bufnr': bufnr(''), 'col': 7, 'end_col': 13, 'end_lnum': 1, 'linter_name': 'foobar', 'nr': -1, 'type': 'E', 'vcol': 0, 'text': 'a'},
+  \   {'lnum': 1, 'bufnr': bufnr(''), 'col': 7, 'end_col': 17, 'end_lnum': 2, 'linter_name': 'foobar', 'nr': -1, 'type': 'E', 'vcol': 0, 'text': 'a'},
+  \   {'lnum': 2, 'bufnr': bufnr(''), 'col': 17, 'linter_name': 'foobar', 'nr': -1, 'type': 'E', 'vcol': 0, 'text': 'a'},
+  \ ],
+  \ ale#engine#FixLocList(
+  \   bufnr('%'),
+  \   'foobar',
+  \   0,
+  \   [
+  \     {'text': 'a', 'lnum': 1, 'col': 0, 'vcol': 1},
+  \     {'text': 'a', 'lnum': 1, 'col': 1, 'vcol': 1},
+  \     {'text': 'a', 'lnum': 1, 'col': 2, 'vcol': 1},
+  \     {'text': 'a', 'lnum': 1, 'col': 3, 'vcol': 1},
+  \     {'text': 'a', 'lnum': 1, 'col': 3, 'end_col': 5, 'vcol': 1},
+  \     {'text': 'a', 'lnum': 1, 'col': 3, 'end_col': 5, 'end_lnum': 1, 'vcol': 1},
+  \     {'text': 'a', 'lnum': 1, 'col': 3, 'end_col': 7, 'end_lnum': 2, 'vcol': 1},
+  \     {'text': 'a', 'lnum': 2, 'col': 7, 'vcol': 1},
+  \   ],
+  \ )

@@ -1,0 +1,32 @@
+Before:
+  Save g:ale_go_go_executable
+  Save g:ale_go_govet_options
+  Save g:ale_go_go111module
+
+  call ale#assert#SetUpLinterTest('go', 'govet')
+
+After:
+  Restore
+
+  unlet! b:ale_go_go111module
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'go', 'go vet  .'
+
+Execute(Extra options should be supported):
+  let g:ale_go_govet_options = '--foo-bar'
+
+  AssertLinterCwd '%s:h'
+  AssertLinter 'go', 'go vet  --foo-bar .'
+
+Execute(The executable should be configurable):
+  let g:ale_go_go_executable = 'foobar'
+
+  AssertLinter 'foobar', 'foobar vet  .'
+
+Execute(Go environment variables should be supported):
+  let b:ale_go_go111module = 'on'
+
+  AssertLinter 'go', ale#Env('GO111MODULE', 'on') . 'go vet  .'

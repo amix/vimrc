@@ -1,0 +1,141 @@
+" Tests for various corner cases of applying code changes from LSP.
+"
+" These can be verified against the reference vscode implementation using the
+" following javascript program:
+"
+"   const { TextDocument } = require('vscode-languageserver-textdocument');
+"   const { TextEdit, Position, Range } = require('vscode-languageserver-types');
+"   function MkPos(line, offset) { return Position.create(line - 1, offset - 1); }
+"   function MkInsert(pos, newText) { return TextEdit.insert(pos, newText); }
+"   function MkDelete(start, end) { return TextEdit.del(Range.create(start, end)); }
+"   function TestChanges(s, es) {
+"     return TextDocument.applyEdits(TextDocument.create(null, null, null, s), es);
+"   }
+"
+"   const fs = require("fs");
+"   const assert = require('assert').strict;
+"   const testRegex = /(?<!vscode skip.*)AssertEqual\s+("[^"]*"),\s*TestChanges\(("[^"]*"),\s*(\[[^\]]*\])/g;
+"   const data = fs.readFileSync(0, "utf-8");
+"   const tests = data.matchAll(testRegex);
+"   for (const test of tests) {
+"     console.log(test[0]);
+"     assert.equal(eval(test[1]), TestChanges(eval(test[2]), eval(test[3])));
+"   }
+"
+" Save it to test_code_action_corner_cases.js and invoke it using:
+"
+"   $ npm install vscode-languageserver-{textdocument,types}
+"   $ node test_code_action_corner_cases.js <test_code_action_corner_cases.vader
+
+Before:
+  Save &fixeol
+  set nofixeol
+
+  Save &fileformats
+  set fileformats=unix
+
+  function! TestChanges(contents, changes) abort
+    let l:file = tempname()
+
+    try
+      call writefile(split(a:contents, '\n', 1), l:file, 'bs')
+
+      call ale#code_action#ApplyChanges(l:file, a:changes, {
+      \ 'should_save': 1,
+      \})
+
+      let l:result = join(readfile(l:file, 'b'), "\n")
+    finally
+      if filereadable(l:file)
+        call delete(l:file)
+      endif
+    endtry
+
+    return l:result
+  endfunction!
+
+  function! MkPos(line, offset) abort
+    return {'line': a:line, 'offset': a:offset}
+  endfunction!
+
+  function! MkInsert(pos, newText) abort
+    return {'start': a:pos, 'end': a:pos, 'newText': a:newText}
+  endfunction!
+
+  function! MkDelete(start, end) abort
+    return {'start': a:start, 'end': a:end, 'newText': ''}
+  endfunction!
+
+After:
+  delfunction TestChanges
+  delfunction MkPos
+  delfunction MkInsert
+  delfunction MkDelete
+
+  Restore
+
+Execute(Preserve (no)eol at eof):
+  AssertEqual "noeol",    TestChanges("noeol",    [])
+  AssertEqual "eol\n",    TestChanges("eol\n",    [])
+  AssertEqual "eols\n\n", TestChanges("eols\n\n", [])
+
+Execute(Respect fixeol):
+  set fixeol
+
+  silent echo "vscode skip" | AssertEqual "noeol\n", TestChanges("noeol", [])
+  silent echo "vscode skip" | AssertEqual "eol\n",   TestChanges("eol\n", [])
+
+Execute(Add/del eol at eof):
+  AssertEqual "addeol\n", TestChanges("addeol",   [MkInsert(MkPos(1, 7), "\n")])
+  AssertEqual "deleol",   TestChanges("deleol\n", [MkDelete(MkPos(1, 7), MkPos(1, 8))])
+
+Execute(One character insertions to first line):
+  AssertEqual "xabc\ndef1\nghi\n", TestChanges("abc\ndef1\nghi\n", [MkInsert(MkPos(1, 0), "x")])
+  AssertEqual "xabc\ndef2\nghi\n", TestChanges("abc\ndef2\nghi\n", [MkInsert(MkPos(1, 1), "x")])
+  AssertEqual "axbc\ndef3\nghi\n", TestChanges("abc\ndef3\nghi\n", [MkInsert(MkPos(1, 2), "x")])
+  AssertEqual "abcx\ndef4\nghi\n", TestChanges("abc\ndef4\nghi\n", [MkInsert(MkPos(1, 4), "x")])
+  AssertEqual "abc\nxdef5\nghi\n", TestChanges("abc\ndef5\nghi\n", [MkInsert(MkPos(1, 5), "x")])
+  AssertEqual "abc\nxdef6\nghi\n", TestChanges("abc\ndef6\nghi\n", [MkInsert(MkPos(1, 6), "x")])
+
+Execute(One character + newline insertions to first line):
+  AssertEqual "x\nabc\ndef1\nghi\n", TestChanges("abc\ndef1\nghi\n", [MkInsert(MkPos(1, 0), "x\n")])
+  AssertEqual "x\nabc\ndef2\nghi\n", TestChanges("abc\ndef2\nghi\n", [MkInsert(MkPos(1, 1), "x\n")])
+  AssertEqual "ax\nbc\ndef3\nghi\n", TestChanges("abc\ndef3\nghi\n", [MkInsert(MkPos(1, 2), "x\n")])
+  AssertEqual "abcx\n\ndef4\nghi\n", TestChanges("abc\ndef4\nghi\n", [MkInsert(MkPos(1, 4), "x\n")])
+  AssertEqual "abc\nx\ndef5\nghi\n", TestChanges("abc\ndef5\nghi\n", [MkInsert(MkPos(1, 5), "x\n")])
+  AssertEqual "abc\nx\ndef6\nghi\n", TestChanges("abc\ndef6\nghi\n", [MkInsert(MkPos(1, 6), "x\n")])
+
+Execute(One character insertions near end):
+  AssertEqual "abc\ndef1\nghxi\n", TestChanges("abc\ndef1\nghi\n", [MkInsert(MkPos(3, 3), "x")])
+  AssertEqual "abc\ndef2\nghix\n", TestChanges("abc\ndef2\nghi\n", [MkInsert(MkPos(3, 4), "x")])
+  AssertEqual "abc\ndef3\nghi\nx", TestChanges("abc\ndef3\nghi\n", [MkInsert(MkPos(3, 5), "x")])
+  AssertEqual "abc\ndef4\nghi\nx", TestChanges("abc\ndef4\nghi\n", [MkInsert(MkPos(3, 6), "x")])
+  AssertEqual "abc\ndef5\nghi\nx", TestChanges("abc\ndef5\nghi\n", [MkInsert(MkPos(4, 1), "x")])
+  AssertEqual "abc\ndef6\nghi\nx", TestChanges("abc\ndef6\nghi\n", [MkInsert(MkPos(4, 2), "x")])
+  AssertEqual "abc\ndef7\nghi\nx", TestChanges("abc\ndef7\nghi\n", [MkInsert(MkPos(5, 1), "x")])
+  AssertEqual "abc\ndef8\nghi\nx", TestChanges("abc\ndef8\nghi\n", [MkInsert(MkPos(5, 2), "x")])
+
+Execute(One character + newline insertions near end):
+  AssertEqual "abc\ndef1\nghx\ni\n", TestChanges("abc\ndef1\nghi\n", [MkInsert(MkPos(3, 3), "x\n")])
+  AssertEqual "abc\ndef2\nghix\n\n", TestChanges("abc\ndef2\nghi\n", [MkInsert(MkPos(3, 4), "x\n")])
+  AssertEqual "abc\ndef3\nghi\nx\n", TestChanges("abc\ndef3\nghi\n", [MkInsert(MkPos(3, 5), "x\n")])
+  AssertEqual "abc\ndef4\nghi\nx\n", TestChanges("abc\ndef4\nghi\n", [MkInsert(MkPos(3, 6), "x\n")])
+  AssertEqual "abc\ndef5\nghi\nx\n", TestChanges("abc\ndef5\nghi\n", [MkInsert(MkPos(4, 1), "x\n")])
+  AssertEqual "abc\ndef6\nghi\nx\n", TestChanges("abc\ndef6\nghi\n", [MkInsert(MkPos(4, 2), "x\n")])
+
+Execute(Newline insertions near end):
+  AssertEqual "abc\ndef1\ngh\ni\n", TestChanges("abc\ndef1\nghi\n", [MkInsert(MkPos(3, 3), "\n")])
+  AssertEqual "abc\ndef2\nghi\n\n", TestChanges("abc\ndef2\nghi\n", [MkInsert(MkPos(3, 4), "\n")])
+  AssertEqual "abc\ndef3\nghi\n\n", TestChanges("abc\ndef3\nghi\n", [MkInsert(MkPos(3, 5), "\n")])
+  AssertEqual "abc\ndef4\nghi\n\n", TestChanges("abc\ndef4\nghi\n", [MkInsert(MkPos(3, 6), "\n")])
+  AssertEqual "abc\ndef5\nghi\n\n", TestChanges("abc\ndef5\nghi\n", [MkInsert(MkPos(4, 1), "\n")])
+
+Execute(Single char deletions):
+  AssertEqual "bc\ndef1\nghi\n",  TestChanges("abc\ndef1\nghi\n", [MkDelete(MkPos(1, 1), MkPos(1, 2))])
+  AssertEqual "ab\ndef2\nghi\n",  TestChanges("abc\ndef2\nghi\n", [MkDelete(MkPos(1, 3), MkPos(1, 4))])
+  AssertEqual "abcdef3\nghi\n",   TestChanges("abc\ndef3\nghi\n", [MkDelete(MkPos(1, 4), MkPos(1, 5))])
+  AssertEqual "abcdef4\nghi\n",   TestChanges("abc\ndef4\nghi\n", [MkDelete(MkPos(1, 4), MkPos(1, 6))])
+  AssertEqual "abc\ndef5\ngh\n",  TestChanges("abc\ndef5\nghi\n", [MkDelete(MkPos(3, 3), MkPos(3, 4))])
+  AssertEqual "abc\ndef6\nghi",   TestChanges("abc\ndef6\nghi\n", [MkDelete(MkPos(3, 4), MkPos(3, 5))])
+  AssertEqual "abc\ndef7\nghi",   TestChanges("abc\ndef7\nghi\n", [MkDelete(MkPos(3, 4), MkPos(3, 6))])
+  AssertEqual "abc\ndef8\nghi\n", TestChanges("abc\ndef8\nghi\n", [MkDelete(MkPos(4, 1), MkPos(4, 2))])

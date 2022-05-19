@@ -1,0 +1,92 @@
+Before:
+  let g:ale_floating_preview = 0
+  let g:ale_hover_to_floating_preview = 0
+  let g:ale_detail_to_floating_preview = 0
+
+  runtime autoload/ale/floating_preview.vim
+
+  let g:floated_lines = []
+  let g:floating_preview_show_called = 0
+
+  " Stub out so we can track the call
+  function! ale#floating_preview#Show(lines, ...) abort
+    let g:floating_preview_show_called = 1
+    let g:floated_lines = a:lines
+  endfunction
+
+  let g:ale_buffer_info = {
+  \ bufnr('%'): {
+  \   'loclist': [
+  \     {
+  \       'lnum': 1,
+  \       'col': 10,
+  \       'bufnr': bufnr('%'),
+  \       'vcol': 0,
+  \       'linter_name': 'notalinter',
+  \       'nr': -1,
+  \       'type': 'E',
+  \       'code': 'semi',
+  \       'text': "Missing semicolon.\r",
+  \       'detail': "Every statement should end with a semicolon\nsecond line",
+  \     },
+  \   ],
+  \ }
+  \}
+
+  call ale#linter#Reset()
+  call ale#linter#PreventLoading('javascript')
+
+After:
+  Restore
+
+  let g:ale_floating_preview = 0
+  let g:ale_hover_to_floating_preview = 0
+  let g:ale_detail_to_floating_preview = 0
+
+  call cursor(1, 1)
+
+  let g:ale_buffer_info = {}
+
+  " Close the preview window if it's open.
+  if &filetype is# 'ale-preview'
+    noautocmd :q!
+  endif
+
+  call ale#linter#Reset()
+
+
+Given javascript(A file with warnings/errors):
+  var x = 3 + 12345678
+  var x = 5*2 + parseInt("10");
+  // comment
+
+Execute(Floating preview is used with ALEDetail when g:ale_floating_preview set):
+  let g:ale_floating_preview = 1
+
+  call cursor(1, 10)
+
+  ALEDetail
+
+  let expected = ["Every statement should end with a semicolon", "second line"]
+
+  AssertEqual 1, g:floating_preview_show_called
+  AssertEqual expected, g:floated_lines
+
+Execute(Floating preview is used with ALEDetail when g:ale_detail_to_floating_preview set):
+  let g:ale_detail_to_floating_preview = 1
+
+  call cursor(1, 10)
+
+  ALEDetail
+
+  let expected = ["Every statement should end with a semicolon", "second line"]
+
+  AssertEqual 1, g:floating_preview_show_called
+  AssertEqual expected, g:floated_lines
+
+Execute(Floating preview is not used with ALEDetail by default):
+  call cursor(1, 10)
+
+  ALEDetail
+
+  AssertEqual 0, g:floating_preview_show_called

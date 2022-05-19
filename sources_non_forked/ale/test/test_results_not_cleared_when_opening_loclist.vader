@@ -1,0 +1,30 @@
+Before:
+  Save g:ale_buffer_info
+
+  call ale#linter#Reset()
+
+After:
+  Restore
+
+  call setloclist(0, [])
+  call clearmatches()
+  call ale#sign#Clear()
+
+Given foobar (Some file):
+  abc
+
+Execute(The loclist shouldn't be cleared when opening the loclist):
+  call ale#engine#InitBufferInfo(bufnr(''))
+  let g:ale_buffer_info[bufnr('')].loclist = [
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 3, 'col': 2},
+  \]
+  call setloclist(0, g:ale_buffer_info[bufnr('')].loclist)
+
+  " The cleanup function is called when the loclist window is closed.
+  " If some cleanup is done for this buffer, for which nothing is wrong,
+  " then the loclist for the window, which is the same window as the window
+  " we are checking, will be cleared.
+  :lopen
+  :q
+
+  AssertEqual 1, len(ale#test#GetLoclistWithoutNewerKeys()), 'The loclist was cleared'

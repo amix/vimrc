@@ -1,0 +1,18 @@
+Before:
+  call ale#assert#SetUpFixerTest('nix', 'statix')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The callback should return the correct default values):
+  AssertFixer { 'command': ale#Escape('statix') . ' fix --stdin' }
+
+Execute(The callback should include a custom runtime):
+  let g:ale_nix_statix_fix_executable = 'foo/bar'
+
+  AssertFixer { 'command': ale#Escape('foo/bar') . ' fix --stdin' }
+
+Execute(The callback should include custom options):
+  let g:ale_nix_statix_fix_options = '--foobar'
+
+  AssertFixer { 'command': ale#Escape('statix') . ' fix --stdin --foobar' }

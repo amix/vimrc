@@ -1,0 +1,82 @@
+Before:
+  function! CheckPath(path) abort
+    return ale#path#IsBufferPath(bufnr(''), ale#path#Simplify(a:path))
+  endfunction
+
+After:
+  delfunction CheckPath
+
+Execute(ale#path#Simplify should adjust paths correctly):
+  if has('unix')
+    " Multiple slashes should be removed correctly.
+    AssertEqual '/foo/bar/baz', ale#path#Simplify('////foo///bar///baz')
+    " Back slashes should be converted to forward slashes.
+    " This means some valid filenames are adjusted incorrectly, but in practice
+    " no filenames for code should contain back slashes, and adjusting slashes
+    " like this makes ALE work in MSYS.
+    AssertEqual 'foo/bar/baz', ale#path#Simplify('foo\bar\baz')
+  else
+    " Multiple slashes should be removed correctly.
+    AssertEqual '\foo\bar\baz', ale#path#Simplify('\\\foo\bar\baz')
+    " Forward slashes should be replaced with back slashes.
+    AssertEqual 'foo\bar\baz', ale#path#Simplify('foo/bar/baz')
+  endif
+
+Execute(ale#path#IsBufferPath should match simple relative paths):
+  call ale#test#SetFilename('app/foo.txt')
+
+  Assert CheckPath('app/foo.txt'), 'No match for foo.txt'
+  Assert !CheckPath('app/bar.txt'), 'Bad match for bar.txt'
+
+Execute(ale#path#IsBufferPath should match relative paths with dots):
+  call ale#test#SetFilename('app/foo.txt')
+
+  " Skip these checks on Windows.
+  if !has('win32')
+    Assert CheckPath('../../app/foo.txt'), 'No match for ../../app/foo.txt'
+  endif
+
+Execute(ale#path#IsBufferPath should match absolute paths):
+  silent file! foo.txt
+
+  Assert CheckPath(getcwd() . '/foo.txt'), 'No match for foo.txt'
+  Assert !CheckPath(getcwd() . '/bar.txt'), 'Bad match for bar.txt'
+
+Execute(ale#path#IsBufferPath should match paths beginning with ./):
+  silent file! foo.txt
+
+  if !has('win32')
+    Assert ale#path#IsBufferPath(bufnr(''), './foo.txt'), 'No match for ./foo.txt'
+  endif
+
+Execute(ale#path#IsBufferPath should match if our path ends with the test path):
+  silent file! foo/bar/baz.txt
+
+  Assert CheckPath('bar/baz.txt'), 'No match for bar/baz.txt'
+
+Execute(ale#path#IsBufferPath should match paths with redundant slashes):
+  silent file! foo.txt
+
+  Assert CheckPath(getcwd() . '////foo.txt'), 'No match for foo.txt'
+
+Execute(ale#path#IsBufferPath should accept various names for stdin):
+  Assert ale#path#IsBufferPath(bufnr(''), '-')
+  Assert ale#path#IsBufferPath(bufnr(''), 'stdin')
+  Assert ale#path#IsBufferPath(bufnr(''), '<stdin>')
+  Assert ale#path#IsBufferPath(bufnr(''), '<somethingelse>')
+
+Execute(ale#path#IsBufferPath should match files in /tmp):
+  call ale#test#SetFilename('app/test.ts')
+
+  Assert ale#path#IsBufferPath(bufnr(''), tempname() . '/test.ts')
+
+Execute(ale#path#IsBufferPath should match Windows paths on Unix):
+  " This test should pass Unix.
+  "
+  " Back slashes in paths should be replaced with forward slashes, even though
+  " back slashes are valid in filenames on Unix.
+  if has('unix')
+    call ale#test#SetFilename('app/foo/test.ts')
+
+    Assert ale#path#IsBufferPath(bufnr(''), 'foo\test.ts')
+  endif

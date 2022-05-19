@@ -1,0 +1,22 @@
+Before:
+  call ale#assert#SetUpLinterTest('r', 'languageserver')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default executable path should be correct):
+  AssertLinter 'Rscript', 'Rscript --no-save --no-restore --no-site-file --no-init-file -e ' . ale#Escape('languageserver::run()')
+
+Execute(The project root should be detected correctly):
+  AssertLSPProject '.'
+
+  call ale#test#SetFilename('../test-files/r/dummy/test.R')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/r')
+
+Execute(Should accept configuration settings):
+  AssertLSPConfig {}
+
+  let b:ale_r_languageserver_config = {'r': {'lsp': {'debug': 'true', 'diagnostics': 'true'}}}
+
+  AssertLSPConfig {'r': {'lsp': {'debug': 'true', 'diagnostics': 'true'}}}

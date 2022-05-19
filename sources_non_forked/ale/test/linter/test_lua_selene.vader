@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('lua', 'selene')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The lua selene command callback should return the correct default string):
+  AssertLinter 'selene', ale#Escape('selene') . ' --display-style=json -'
+
+Execute(The lua selene command callback should let you set options):
+  let g:ale_lua_selene_options = '--num-threads 2'
+
+  AssertLinter 'selene',
+  \ ale#Escape('selene') . ' --num-threads 2 --display-style=json -'
+
+Execute(The selene executable should be configurable):
+  let g:ale_lua_selene_executable = 'selene.sh'
+
+  AssertLinter 'selene.sh', ale#Escape('selene.sh') . ' --display-style=json -'

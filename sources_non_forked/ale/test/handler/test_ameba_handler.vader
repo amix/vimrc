@@ -1,0 +1,44 @@
+Before:
+  runtime ale_linters/crystal/ameba.vim
+
+After:
+  unlet! g:lines
+  call ale#linter#Reset()
+
+Execute(The ameba handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 24,
+  \     'col': 28,
+  \     'end_col': 29,
+  \     'text': 'Trailing whitespace detected',
+  \     'code': 'Layout/TrailingWhitespace',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#crystal#ameba#HandleAmebaOutput(123, [
+  \ '{"sources":[{"path":"my_file_with_issues.cr","issues":[{"rule_name":"Layout/TrailingWhitespace","message":"Trailing whitespace detected","location":{"line":24,"column":28},"end_location":{"line":null,"column":null}}]},{"path":"my_file_without_issues.cr","issues":[]}],"metadata":{"ameba_version":"0.8.1","crystal_version":"0.26.1"},"summary":{"target_sources_count":2,"issues_count":1}}'
+  \ ])
+
+Execute(The ameba handler should handle when files are checked and no offenses are found):
+  AssertEqual
+  \ [],
+  \ ale_linters#crystal#ameba#HandleAmebaOutput(123, [
+  \ '{"sources":[{"path":"my_file_with_issues.cr",issues":[]},{"path":"my_file_without_issues.cr",issues":[]}],"metadata":{ameba_version":"0.8.1",crystal_version":"0.26.1"},"summary":{target_sources_count":2,issues_count":0}}'
+  \ ])
+
+Execute(The ameba handler should handle when no files are checked):
+  AssertEqual
+  \ [],
+  \ ale_linters#crystal#ameba#HandleAmebaOutput(123, [
+  \ '{"sources":[],"metadata":{ameba_version":"0.8.1",crystal_version":"0.26.1"},"summary":{target_sources_count":0,issues_count":0}}'
+  \ ])
+
+Execute(The ameba handler should handle blank output without any errors):
+  AssertEqual
+  \ [],
+  \ ale_linters#crystal#ameba#HandleAmebaOutput(123, ['{}'])
+  AssertEqual
+  \ [],
+  \ ale_linters#crystal#ameba#HandleAmebaOutput(123, [])

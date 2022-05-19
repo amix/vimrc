@@ -1,0 +1,13 @@
+Before:
+  call ale#assert#SetUpLinterTest('ruby', 'ruby')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'ruby', ale#Escape('ruby') . ' -w -c %t'
+
+Execute(The executable should be configurable):
+  let g:ale_ruby_ruby_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' -w -c %t'

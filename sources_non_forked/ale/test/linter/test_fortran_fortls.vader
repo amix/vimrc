@@ -1,0 +1,18 @@
+Before:
+  call ale#assert#SetUpLinterTest('fortran', 'language_server')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default executable path should be correct):
+  AssertLinter 'fortls', ale#Escape('fortls')
+
+Execute(The project root should be detected correctly):
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/fortls-project/test.F90')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/fortls-project')
+
+Execute(The language should be correct):
+  AssertLSPLanguage 'fortran'

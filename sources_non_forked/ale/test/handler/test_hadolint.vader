@@ -1,0 +1,59 @@
+Before:
+  runtime ale_linters/dockerfile/hadolint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The hadolint handler should handle an empty string response):
+  AssertEqual
+  \ [],
+  \ ale_linters#dockerfile#hadolint#Handle(bufnr(''), [])
+
+Execute(The hadolint handler should handle a normal example):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'code': 'DL3006',
+  \     'text': "DL3006: Always tag the version of an image explicitly",
+  \     'detail': "DL3006 ( https://github.com/hadolint/hadolint/wiki/DL3006 )\n\nAlways tag the version of an image explicitly",
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'code': 'DL3033',
+  \     'text': "DL3033: Specify version with `yum install -y <package>-<version>`.",
+  \     'detail': "DL3033 ( https://github.com/hadolint/hadolint/wiki/DL3033 )\n\nSpecify version with `yum install -y <package>-<version>`.",
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'code': 'SC2039',
+  \     'text': "SC2039: In POSIX sh, brace expansion is undefined.",
+  \     'detail': "SC2039 ( https://github.com/koalaman/shellcheck/wiki/SC2039 )\n\nIn POSIX sh, brace expansion is undefined.",
+  \   },
+  \ ],
+  \ ale_linters#dockerfile#hadolint#Handle(bufnr(''), [
+  \ '-:1 DL3006 warning: Always tag the version of an image explicitly',
+  \ '-:4 DL3033 warning: Specify version with `yum install -y <package>-<version>`.',
+  \ '-:12 SC2039 warning: In POSIX sh, brace expansion is undefined.',
+  \ ])
+
+Execute(The hadolint handler should handle parsing errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': "unexpected 'b' expecting '#', ADD, ARG, CMD, COPY, ENTRYPOINT, ENV, EXPOSE, FROM, HEALTHCHECK, LABEL, MAINTAINER, ONBUILD, RUN, SHELL, STOPSIGNAL, USER, VOLUME, WORKDIR, or end of input",
+  \     'detail': "hadolint could not parse the file because of a syntax error.",
+  \   },
+  \ ],
+  \ ale_linters#dockerfile#hadolint#Handle(bufnr(''), [
+  \ '/dev/stdin:1:1 unexpected ''b'' expecting ''#'', ADD, ARG, CMD, COPY, ENTRYPOINT, ENV, EXPOSE, FROM, HEALTHCHECK, LABEL, MAINTAINER, ONBUILD, RUN, SHELL, STOPSIGNAL, USER, VOLUME, WORKDIR, or end of input',
+  \ ])

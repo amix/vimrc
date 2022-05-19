@@ -1,0 +1,26 @@
+Before:
+  runtime ale_linters/asm/gcc.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The asm GCC handler should parse lines from GCC 6.3.1 correctly):
+
+  AssertEqual
+  \ [
+  \    {
+  \      'lnum': 38,
+  \      'text': "too many memory references for `mov'",
+  \      'type': 'E',
+  \    },
+  \    {
+  \      'lnum': 42,
+  \      'text': "incorrect register `%ax' used with `l' suffix",
+  \      'type': 'E',
+  \    },
+  \ ],
+  \ ale_linters#asm#gcc#Handle(357, [
+  \   "{standard input}: Assembler messages:",
+  \   "{standard_input}:38: Error: too many memory references for `mov'",
+  \   "{standard input}:42: Error: incorrect register `%ax' used with `l' suffix",
+  \ ])

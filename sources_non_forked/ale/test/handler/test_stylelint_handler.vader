@@ -1,0 +1,43 @@
+After:
+  unlet! g:error_lines
+
+Execute (stylelint errors should be handled correctly):
+  " Stylelint includes trailing spaces for output. This needs to be taken into
+  " account for parsing errors.
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 108,
+  \     'col': 10,
+  \     'type': 'E',
+  \     'text': 'Unexpected leading zero',
+  \     'code': 'number-leading-zero',
+  \   },
+  \   {
+  \     'lnum': 116,
+  \     'col': 20,
+  \     'type': 'E',
+  \     'text': 'Expected a trailing semicolon',
+  \     'code': 'declaration-block-trailing-semicolon',
+  \   },
+  \ ],
+  \ ale#handlers#css#HandleStyleLintFormat(42, [
+  \   'src/main.css',
+  \   ' 108:10  ✖  Unexpected leading zero         number-leading-zero                 ',
+  \   ' 116:20  ✖  Expected a trailing semicolon   declaration-block-trailing-semicolon',
+  \ ])
+
+Execute (stylelint should complain when no configuration file is used):
+  let g:error_lines = [
+  \ 'Error: No configuration provided for /home/w0rp/.vim/bundle/ale/test.stylus',
+  \ '    at module.exports (/home/w0rp/.vim/bundle/ale/node_modules/stylelint/lib/utils/configurationError.js:8:27)',
+  \ '    at stylelint._fullExplorer.load.then.then.config (/home/w0rp/.vim/bundle/ale/node_modules/stylelint/lib/getConfigForFile.js:39:13)',
+  \]
+
+  AssertEqual
+  \ [{
+  \   'lnum': 1,
+  \   'text': 'stylelint exception thrown (type :ALEDetail for more information)',
+  \   'detail': join(g:error_lines, "\n"),
+  \ }],
+  \ ale#handlers#css#HandleStyleLintFormat(347, g:error_lines[:])

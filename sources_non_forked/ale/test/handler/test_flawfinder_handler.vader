@@ -1,0 +1,57 @@
+Before:
+  Save g:ale_c_flawfinder_error_severity
+
+  unlet! g:ale_c_flawfinder_error_severity
+  unlet! b:ale_c_flawfinder_error_severity
+
+  runtime ale_linters/c/flawfinder.vim
+
+After:
+  unlet! g:ale_c_flawfinder_error_severity
+  Restore
+
+Execute(The Flawfinder handler should ignore other lines of output):
+  AssertEqual
+  \ [],
+  \ ale#handlers#flawfinder#HandleFlawfinderFormat(347, [
+  \   'foo',
+  \   'bar',
+  \   'baz',
+  \ ])
+
+Execute(The Flawfinder handler should work):
+  AssertEqual
+  \ [
+    \   {
+  \     'lnum': 31,
+  \     'col': 4,
+  \     'type': 'W',
+  \     'text': "(buffer) strncpy: Easily used incorrectly",
+  \   },
+  \ ],
+  \ ale#handlers#flawfinder#HandleFlawfinderFormat(347, [
+  \ "<stdin>:31:4:  [1] (buffer) strncpy:Easily used incorrectly",
+  \ ])
+
+Execute(The Flawfinder error severity level should be configurable):
+  let b:ale_c_flawfinder_error_severity = 2
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 12,
+  \     'col': 4,
+  \     'type': 'E',
+  \     'text': "(buffer) char: Statically-sized arrays can be bad",
+  \   },
+  \   {
+  \     'lnum': 31,
+  \     'col': 4,
+  \     'type': 'W',
+  \     'text': "(buffer) strncpy: Easily used incorrectly",
+  \   },
+  \ ],
+  \ ale#handlers#flawfinder#HandleFlawfinderFormat(bufnr(''), [
+  \ "<stdin>:12:4:  [2] (buffer) char:Statically-sized arrays can be bad",
+  \ "<stdin>:31:4:  [1] (buffer) strncpy:Easily used incorrectly",
+  \ ])

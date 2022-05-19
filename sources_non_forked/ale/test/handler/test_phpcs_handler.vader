@@ -1,0 +1,28 @@
+Before:
+  runtime ale_linters/php/phpcs.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(phpcs errors should be handled):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 18,
+  \     'col': 3,
+  \     'type': 'E',
+  \     'sub_type': 'style',
+  \     'text': 'Line indented incorrectly; expected 4 spaces, found 2 (Generic.WhiteSpace.ScopeIndent.IncorrectExact)',
+  \   },
+  \   {
+  \     'lnum': 22,
+  \     'col': 3,
+  \     'type': 'E',
+  \     'sub_type': 'style',
+  \     'text': 'All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks)',
+  \   },
+  \ ],
+  \ ale_linters#php#phpcs#Handle(bufnr(''), [
+  \ '/path/to/some-filename.php:18:3: error - Line indented incorrectly; expected 4 spaces, found 2 (Generic.WhiteSpace.ScopeIndent.IncorrectExact)',
+  \ "/path/to/some-filename.php:22:3: error - All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '\"\n'.",
+  \ ])

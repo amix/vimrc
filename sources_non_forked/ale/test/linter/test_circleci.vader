@@ -1,0 +1,13 @@
+Before:
+  call ale#assert#SetUpLinterTest('yaml', 'circleci')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The linter should not run for every YAML file):
+  AssertLinterNotExecuted
+
+Execute(The linter should for YAML files in a .circleci directory):
+  call ale#test#SetFilename('../test-files/.circleci/config.yml')
+
+  AssertLinter 'circleci', 'circleci --skip-update-check config validate - < %s'

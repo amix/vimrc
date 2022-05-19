@@ -1,0 +1,43 @@
+Before:
+  call ale#assert#SetUpLinterTest('typescript', 'standard')
+  call ale#test#SetFilename('testfile.js')
+  unlet! b:executable
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(bin/cmd.js paths should be preferred):
+  call ale#test#SetFilename('../test-files/standard/with-cmd/testfile.js')
+
+  let b:executable = ale#path#Simplify(
+  \   g:dir
+  \   . '/../test-files/standard/with-cmd/node_modules/standard/bin/cmd.js'
+  \)
+
+  AssertLinter b:executable,
+  \ (has('win32') ? 'node.exe ' : '')
+  \   . ale#Escape(b:executable)
+  \   . ' --stdin %s'
+
+Execute(.bin directories should be used too):
+  call ale#test#SetFilename('../test-files/standard/with-bin/testfile.js')
+
+  let b:executable = ale#path#Simplify(
+  \   g:dir
+  \   . '/../test-files/standard/with-bin/node_modules/.bin/standard'
+  \)
+
+  AssertLinter b:executable, ale#Escape(b:executable) . ' --stdin %s'
+
+Execute(The global executable should be used otherwise):
+  AssertLinter 'standard', ale#Escape('standard') . ' --stdin %s'
+
+Execute(The global executable should be configurable):
+  let b:ale_typescript_standard_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' --stdin %s'
+
+Execute(The options should be configurable):
+  let b:ale_typescript_standard_options = '--wat'
+
+  AssertLinter 'standard', ale#Escape('standard') . ' --wat --stdin %s'

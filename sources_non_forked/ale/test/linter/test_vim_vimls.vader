@@ -1,0 +1,77 @@
+" Author: Jeffrey Lau https://github.com/zoonfafer
+" Description: Tests for the Vim vimls linter
+
+Before:
+  call ale#assert#SetUpLinterTest('vim', 'vimls')
+
+After:
+  if isdirectory(g:dir . '/.git')
+    call delete(g:dir . '/.git', 'd')
+  endif
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(should set correct defaults):
+  AssertLinter 'vim-language-server', ale#Escape('vim-language-server') . ' --stdio'
+
+Execute(should set correct LSP values):
+  call ale#test#SetFilename('../test-files/vim/path_with_autoload/test.vim')
+  AssertLSPLanguage 'vim'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/vim/path_with_autoload')
+
+Execute(should set correct project for .git/):
+  let b:parent_dir = ale#path#Simplify(g:dir . '/..')
+  let b:git_dir = b:parent_dir . '/.git'
+
+  call ale#test#SetFilename('../test-files/vim/test.vim')
+
+  if !isdirectory(b:git_dir)
+    call mkdir(b:git_dir)
+  endif
+
+  AssertLSPProject ale#path#Simplify(b:parent_dir)
+
+  call delete(b:git_dir, 'd')
+  unlet! b:git_dir
+
+Execute(should set correct project for plugin/):
+  call ale#test#SetFilename('../test-files/vim/path_with_plugin/test.vim')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/vim/path_with_plugin')
+
+Execute(should accept configuration settings):
+  AssertLSPConfig {}
+
+  let b:ale_vim_vimls_config = {'vim': {'foobar': v:true}}
+  AssertLSPConfig {'vim': {'foobar': v:true}}
+
+Execute(should set correct project for .vimrc):
+  call ale#test#SetFilename('../test-files/vim/path_with_vimrc/.vimrc')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/vim/path_with_vimrc')
+
+Execute(should set correct project for init.vim):
+  call ale#test#SetFilename('../test-files/vim/path_with_initvim/init.vim')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/vim/path_with_initvim')
+
+Execute(should use the local executable when available):
+  call ale#test#SetFilename('../test-files/vim/file.vim')
+
+  AssertLinter ale#path#Simplify(g:dir . '/../test-files/vim/node_modules/.bin/vim-language-server'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/vim/node_modules/.bin/vim-language-server')) . ' --stdio'
+
+Execute(should let the global executable to be used):
+  let g:ale_vim_vimls_use_global = 1
+  call ale#test#SetFilename('../test-files/vim/file.vim')
+
+  AssertLinter 'vim-language-server',
+  \ ale#Escape('vim-language-server') . ' --stdio'
+
+Execute(should allow the executable to be configured):
+  let g:ale_vim_vimls_executable = 'foobar'
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' --stdio'

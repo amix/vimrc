@@ -1,0 +1,34 @@
+
+Before:
+  call ale#assert#SetUpLinterTest('ruby', 'sorbet')
+  call ale#test#SetFilename('dummy.rb')
+
+  let g:ale_ruby_sorbet_executable = 'srb'
+  let g:ale_ruby_sorbet_options = ''
+  let g:ale_ruby_sorbet_enable_watchman = 0
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should default to srb):
+  AssertLinter 'srb', ale#Escape('srb')
+  \   . ' tc --lsp --disable-watchman'
+
+Execute(Able to enable watchman):
+  let g:ale_ruby_sorbet_enable_watchman = 1
+
+  AssertLinter 'srb', ale#Escape('srb')
+  \   . ' tc --lsp'
+
+Execute(Should be able to set a custom executable):
+  let g:ale_ruby_sorbet_executable = 'bin/srb'
+
+  AssertLinter 'bin/srb' , ale#Escape('bin/srb')
+  \   . ' tc --lsp --disable-watchman'
+
+Execute(Setting bundle appends 'exec srb tc'):
+  let g:ale_ruby_sorbet_executable = 'path to/bundle'
+
+  AssertLinter 'path to/bundle', ale#Escape('path to/bundle')
+  \   . ' exec srb'
+  \   . ' tc --lsp --disable-watchman'

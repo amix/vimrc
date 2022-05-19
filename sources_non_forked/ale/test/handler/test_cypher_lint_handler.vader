@@ -1,0 +1,21 @@
+Before:
+  runtime ale_linters/cypher/cypher_lint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The cypher-lint handler should handle errors for the current file correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 75,
+  \     'type': 'E',
+  \     'text': "Invalid input ',': expected an identifier, shortestPath, allShortestPaths or '('",
+  \   },
+  \ ],
+  \ ale_linters#cypher#cypher_lint#Handle(bufnr(''), [
+  \   "shakespeare.cql:1:75: Invalid input ',': expected an identifier, shortestPath, allShortestPaths or '('",
+  \   "CREATE (shakespeare:Author {firstname:'William', lastname:'Shakespeare'}),,",
+  \   "                                                                          ^",
+  \ ])

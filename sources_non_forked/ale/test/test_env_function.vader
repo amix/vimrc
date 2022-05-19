@@ -1,0 +1,8 @@
+Execute(ale#Env should produce the correct syntax):
+  if has('win32')
+    AssertEqual 'set name=xxx && ', ale#Env('name', 'xxx')
+    AssertEqual 'set name="foo bar" && ', ale#Env('name', 'foo bar')
+  else
+    AssertEqual 'name=''xxx'' ', ale#Env('name', 'xxx')
+    AssertEqual 'name=''foo bar'' ', ale#Env('name', 'foo bar')
+  endif

@@ -1,0 +1,12 @@
+Before:
+  call ale#assert#SetUpLinterTest('pony', 'ponyc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The options should be used in the command):
+  AssertLinter 'ponyc', ale#Escape('ponyc') . ' --pass paint'
+
+  let b:ale_pony_ponyc_options = 'foobar'
+
+  AssertLinter 'ponyc', ale#Escape('ponyc') . ' foobar'

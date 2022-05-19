@@ -1,0 +1,60 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'pyflakes')
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  unlet! b:bin_dir
+  unlet! b:executable
+  call ale#assert#TearDownLinterTest()
+
+Execute(The pyflakes command callback should return default string):
+  AssertLinter 'pyflakes', ale#Escape('pyflakes') . ' %t'
+
+Execute(The pyflakes executable should be configurable):
+  let g:ale_python_pyflakes_executable = '~/.local/bin/pyflakes'
+
+  AssertLinter '~/.local/bin/pyflakes',
+  \ ale#Escape('~/.local/bin/pyflakes') . ' %t'
+
+Execute(The pyflakes executable should be run from the virtualenv path):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/pyflakes'
+  \)
+
+  AssertLinter b:executable, ale#Escape(b:executable) . ' %t'
+
+Execute(You should be able to override the pyflakes virtualenv lookup):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let g:ale_python_pyflakes_use_global = 1
+
+  AssertLinter 'pyflakes', ale#Escape('pyflakes') . ' %t'
+
+Execute(Setting executable to 'pipenv' appends 'run pyflakes'):
+  let g:ale_python_pyflakes_executable = 'path/to/pipenv'
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLinter 'path/to/pipenv',
+  \ ale#Escape('path/to/pipenv') . ' run pyflakes %t',
+
+Execute(Pipenv is detected when python_pyflakes_auto_pipenv is set):
+  let g:ale_python_pyflakes_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinter 'pipenv',
+  \ ale#Escape('pipenv') . ' run pyflakes %t'
+
+Execute(Setting executable to 'poetry' appends 'run pyflakes'):
+  let g:ale_python_pyflakes_executable = 'path/to/poetry'
+
+  AssertLinter 'path/to/poetry',
+  \ ale#Escape('path/to/poetry') . ' run pyflakes %t',
+
+Execute(Poetry is detected when python_pyflakes_auto_poetry is set):
+  let g:ale_python_pyflakes_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinter 'poetry',
+  \ ale#Escape('poetry') . ' run pyflakes %t'

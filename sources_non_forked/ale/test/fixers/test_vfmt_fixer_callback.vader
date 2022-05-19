@@ -1,0 +1,44 @@
+Before:
+  Save g:ale_v_v_executable
+  Save g:ale_v_vfmt_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_v_v_executable = 'xxxinvalid'
+  let g:ale_v_vfmt_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The vfmt callback should return the correct default values):
+  call ale#test#SetFilename('../v_files/testfile.v')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid') . ' fmt',
+  \ },
+  \ ale#fixers#vfmt#Fix(bufnr(''))
+
+Execute(The vfmt callback should include custom vfmt options):
+  let g:ale_v_vfmt_options = "-r '(a) -> a'"
+
+  call ale#test#SetFilename('../v_files/testfile.v')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' fmt ' . g:ale_v_vfmt_options,
+  \ },
+  \ ale#fixers#vfmt#Fix(bufnr(''))
+
+Execute(The vfmt callback should support Go environment variables):
+  call ale#test#SetFilename('../v_files/testfile.v')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid') . ' fmt',
+  \ },
+  \ ale#fixers#vfmt#Fix(bufnr(''))

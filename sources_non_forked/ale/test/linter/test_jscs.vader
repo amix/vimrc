@@ -1,0 +1,15 @@
+Before:
+  call ale#assert#SetUpLinterTest('javascript', 'jscs')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Should return the correct default values):
+  AssertLinter 'jscs',
+  \ ale#Escape('jscs') . ' --reporter inline --no-colors -'
+
+Execute(Should allow using a custom executable):
+  let g:ale_javascript_jscs_executable = 'foobar'
+
+  AssertLinter 'foobar',
+  \ ale#Escape('foobar') . ' --reporter inline --no-colors -'

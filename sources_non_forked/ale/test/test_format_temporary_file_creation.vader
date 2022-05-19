@@ -1,0 +1,63 @@
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_echo_cursor
+  Save g:ale_enabled
+  Save g:ale_run_synchronously
+  Save g:ale_set_highlights
+  Save g:ale_set_loclist
+  Save g:ale_set_quickfix
+  Save g:ale_set_signs
+
+  " Disable the features we don't need to check.
+  let g:ale_buffer_info = {}
+  let g:ale_echo_cursor = 0
+  let g:ale_enabled = 1
+  let g:ale_run_synchronously = 1
+  unlet! g:ale_run_synchronously_callbacks
+  let g:ale_set_highlights = 0
+  let g:ale_set_loclist = 0
+  let g:ale_set_quickfix = 0
+  let g:ale_set_signs = 0
+
+  let g:output = []
+
+  function! TestCallback(buffer, output)
+    " Extract just letters from the output.
+    let g:output = filter(
+    \ map(a:output, 'matchstr(v:val, ''[a-zA-Z]\+'')'),
+    \ '!empty(v:val)'
+    \)
+
+    return []
+  endfunction
+
+  call ale#linter#PreventLoading('foobar')
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'cat',
+  \ 'command': has('win32') ? 'type %t' : 'cat %t',
+  \})
+
+After:
+  Restore
+
+  unlet! g:ale_run_synchronously_callbacks
+  unlet! g:output
+  delfunction TestCallback
+
+  call ale#engine#Cleanup(bufnr(''))
+  call ale#linter#Reset()
+
+Given foobar (Some imaginary filetype):
+  foo
+  bar
+  baz
+
+Execute(ALE should be able to read the %t file):
+  AssertEqual 'foobar', &filetype
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual ['foo', 'bar', 'baz'], g:output

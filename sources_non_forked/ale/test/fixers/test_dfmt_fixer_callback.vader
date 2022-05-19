@@ -1,0 +1,40 @@
+Before:
+  Save g:ale_d_dfmt_executable
+  Save g:ale_d_dfmt_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_d_dfmt_executable = 'xxxinvalid'
+  let g:ale_d_dfmt_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The dfmt callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/d/test.d')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -i'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#dfmt#Fix(bufnr(''))
+
+Execute(The dfmt callback should include custom dfmt options):
+  let g:ale_d_dfmt_options = "--space-after-cast"
+  call ale#test#SetFilename('../test-files/d/test.d')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -i'
+  \     . ' ' . g:ale_d_dfmt_options
+  \     . ' %t',
+  \ },
+  \ ale#fixers#dfmt#Fix(bufnr(''))

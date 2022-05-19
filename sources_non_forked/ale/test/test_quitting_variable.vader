@@ -1,0 +1,39 @@
+Before:
+  Save g:ale_enabled
+
+  unlet! b:ale_quitting
+  let g:ale_enabled = 0
+
+After:
+  Restore
+
+  unlet! b:ale_quitting
+  unlet! b:time_before
+
+Execute(QuitEvent should set b:ale_quitting some time from the clock):
+  let b:time_before = ale#events#ClockMilliseconds()
+
+  call ale#events#QuitEvent(bufnr(''))
+
+  Assert b:ale_quitting >= b:time_before
+  Assert b:ale_quitting <= ale#events#ClockMilliseconds()
+
+Execute(ReadOrEnterEvent should set b:ale_quitting to 0):
+  let b:ale_quitting = 1
+
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  AssertEqual 0, b:ale_quitting
+
+Execute(The QuitRecently function should work when the variable isn't set):
+  AssertEqual 0, ale#events#QuitRecently(bufnr(''))
+
+Execute(The QuitRecently function should return 1 when ALE quit recently):
+  let b:ale_quitting = ale#events#ClockMilliseconds()
+
+  AssertEqual 1, ale#events#QuitRecently(bufnr(''))
+
+Execute(The QuitRecently function should return 0 when a second has passed):
+  let b:ale_quitting = ale#events#ClockMilliseconds() - 1001
+
+  AssertEqual 0, ale#events#QuitRecently(bufnr(''))

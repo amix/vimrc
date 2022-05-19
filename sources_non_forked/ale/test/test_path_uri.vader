@@ -1,0 +1,73 @@
+Before:
+  scriptencoding utf-8
+
+Execute(ale#path#ToFileURI should work for Windows paths):
+  AssertEqual 'file:///C:/foo/bar/baz.tst', ale#path#ToFileURI('C:\foo\bar\baz.tst')
+  AssertEqual 'foo/bar/baz.tst', ale#path#ToFileURI('foo\bar\baz.tst')
+
+Execute(ale#path#FromFileURI should work for Unix paths):
+  AssertEqual '/foo/bar/baz.tst', ale#path#FromFileURI('file:///foo/bar/baz.tst')
+  AssertEqual '/foo/bar/baz.tst', ale#path#FromFileURI('file:/foo/bar/baz.tst')
+  AssertEqual '/foo/bar/baz.tst', ale#path#FromFileURI('FILE:///foo/bar/baz.tst')
+  AssertEqual '/foo/bar/baz.tst', ale#path#FromFileURI('FILE:/foo/bar/baz.tst')
+
+Execute(ale#path#FromFileURI should work for Windows paths):
+  if has('win32')
+    AssertEqual 'C:\foo\bar\baz.tst', ale#path#FromFileURI('file:///C:/foo/bar/baz.tst')
+    AssertEqual 'C:\foo\bar\baz.tst', ale#path#FromFileURI('file:/C:/foo/bar/baz.tst')
+    AssertEqual 'c:\foo\bar\baz.tst', ale#path#FromFileURI('file:///c:/foo/bar/baz.tst')
+    AssertEqual 'c:\foo\bar\baz.tst', ale#path#FromFileURI('file:/c:/foo/bar/baz.tst')
+    AssertEqual 'C:\foo\bar\baz.tst', ale#path#FromFileURI('FILE:///C:/foo/bar/baz.tst')
+    AssertEqual 'C:\foo\bar\baz.tst', ale#path#FromFileURI('FILE:/C:/foo/bar/baz.tst')
+  else
+    AssertEqual '/C:/foo/bar/baz.tst', ale#path#FromFileURI('file:///C:/foo/bar/baz.tst')
+    AssertEqual '/C:/foo/bar/baz.tst', ale#path#FromFileURI('file:/C:/foo/bar/baz.tst')
+    AssertEqual '/c:/foo/bar/baz.tst', ale#path#FromFileURI('file:///c:/foo/bar/baz.tst')
+    AssertEqual '/c:/foo/bar/baz.tst', ale#path#FromFileURI('file:/c:/foo/bar/baz.tst')
+    AssertEqual '/C:/foo/bar/baz.tst', ale#path#FromFileURI('FILE:///C:/foo/bar/baz.tst')
+    AssertEqual '/C:/foo/bar/baz.tst', ale#path#FromFileURI('FILE:/C:/foo/bar/baz.tst')
+  endif
+
+Execute(ale#path#FromFileURI parse Windows paths with a pipe):
+  if has('win32')
+    AssertEqual 'C:\foo\bar\baz.tst', ale#path#FromFileURI('file:///C|/foo/bar/baz.tst')
+    AssertEqual 'C:\foo\bar\baz.tst', ale#path#FromFileURI('file:/C|/foo/bar/baz.tst')
+    AssertEqual 'c:\foo\bar\baz.tst', ale#path#FromFileURI('file:///c|/foo/bar/baz.tst')
+    AssertEqual 'c:\foo\bar\baz.tst', ale#path#FromFileURI('file:/c|/foo/bar/baz.tst')
+    AssertEqual 'C:\foo\bar\baz.tst', ale#path#FromFileURI('FILE:///C|/foo/bar/baz.tst')
+    AssertEqual 'C:\foo\bar\baz.tst', ale#path#FromFileURI('FILE:/C|/foo/bar/baz.tst')
+  else
+    AssertEqual '/C|/foo/bar/baz.tst', ale#path#FromFileURI('file:///C|/foo/bar/baz.tst')
+    AssertEqual '/C|/foo/bar/baz.tst', ale#path#FromFileURI('file:/C|/foo/bar/baz.tst')
+    AssertEqual '/c|/foo/bar/baz.tst', ale#path#FromFileURI('file:///c|/foo/bar/baz.tst')
+    AssertEqual '/c|/foo/bar/baz.tst', ale#path#FromFileURI('file:/c|/foo/bar/baz.tst')
+    AssertEqual '/C|/foo/bar/baz.tst', ale#path#FromFileURI('FILE:///C|/foo/bar/baz.tst')
+    AssertEqual '/C|/foo/bar/baz.tst', ale#path#FromFileURI('FILE:/C|/foo/bar/baz.tst')
+  endif
+
+Execute(ale#path#FromFileURI should handle the colon for the drive letter being encoded):
+  " These URIs shouldn't be created, but we'll handle them anyway.
+  if has('win32')
+    AssertEqual 'C:\foo\bar\baz.tst', ale#path#FromFileURI('file:///C%3A/foo/bar/baz.tst')
+  else
+    AssertEqual '/C:/foo/bar/baz.tst', ale#path#FromFileURI('file:///C%3A/foo/bar/baz.tst')
+  endif
+
+Execute(ale#path#ToFileURI should work for Unix paths):
+  AssertEqual 'file:///foo/bar/baz.tst', ale#path#ToFileURI('/foo/bar/baz.tst')
+  AssertEqual 'foo/bar/baz.tst', ale#path#ToFileURI('foo/bar/baz.tst')
+
+Execute(ale#path#ToFileURI should keep safe characters):
+  AssertEqual '//a-zA-Z0-9$-_.!*''(),', ale#path#ToFileURI('\/a-zA-Z0-9$-_.!*''(),')
+
+Execute(ale#path#ToFileURI should percent encode unsafe characters):
+  AssertEqual '%20%2b%3a%3f%26%3d', ale#path#ToFileURI(' +:?&=')
+
+Execute(ale#path#FromFileURI should decode percent encodings):
+  AssertEqual ' +:?&=', ale#path#FromFileURI('%20%2b%3a%3f%26%3d')
+
+Execute(ale#path#ToFileURI should handle UTF-8):
+  AssertEqual 'file:///T%c3%a9l%c3%a9chargement', ale#path#ToFileURI('/Téléchargement')
+
+Execute(ale#path#FromFileURI should handle UTF-8):
+  AssertEqual '/Téléchargement', ale#path#FromFileURI('file:///T%C3%A9l%C3%A9chargement')

@@ -1,0 +1,96 @@
+Before:
+  runtime ale_linters/d/dmd.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(DMD command line should be correct with imports):
+  AssertEqual
+  \ 'dmd ' .
+  \ '-I' . ale#Escape('source') . ' ' .
+  \ '-I' . ale#Escape('/prefix/include/d') . ' ' .
+  \ '-I' . ale#Escape('/home/user/.dub/packages/pkg-0.0.1/pkg/src') . ' ' .
+  \ ' ' .
+  \ ' ' .
+  \ ' ' .
+  \ '-o- -wi -vcolumns -c %t',
+  \ ale_linters#d#dmd#DMDCommand(bufnr(''), [
+  \ 'source',
+  \ '/prefix/include/d',
+  \ '/home/user/.dub/packages/pkg-0.0.1/pkg/src',
+  \ '',
+  \ '',
+  \ '',
+  \ '',
+  \ '',
+  \ '',
+  \ ], {})
+
+Execute(DMD command line should be correct with imports and version):
+  AssertEqual
+  \ 'dmd ' .
+  \ '-I' . ale#Escape('source') . ' ' .
+  \ '-I' . ale#Escape('/prefix/include/d') . ' ' .
+  \ '-I' . ale#Escape('/home/user/.dub/packages/pkg-0.0.1/pkg/src') . ' ' .
+  \ ' ' .
+  \ '-version=' . ale#Escape('SOME_VERSION') . ' ' .
+  \ ' ' .
+  \ '-o- -wi -vcolumns -c %t',
+  \ ale_linters#d#dmd#DMDCommand(bufnr(''), [
+  \ 'source',
+  \ '/prefix/include/d',
+  \ '/home/user/.dub/packages/pkg-0.0.1/pkg/src',
+  \ '',
+  \ '',
+  \ '',
+  \ 'SOME_VERSION',
+  \ '',
+  \ '',
+  \ ], {})
+
+Execute(DMD command line should be correct):
+  AssertEqual
+  \ 'dmd ' .
+  \ '-I' . ale#Escape('source') . ' ' .
+  \ '-I' . ale#Escape('/prefix/include/d') . ' ' .
+  \ '-I' . ale#Escape('/home/user/.dub/packages/pkg-0.0.1/pkg/src') . ' ' .
+  \ '-J' . ale#Escape('views') . ' ' .
+  \ '-version=' . ale#Escape('SOME_VERSION') . ' ' .
+  \ '-version=' . ale#Escape('SOME_OTHER_VERSION') . ' ' .
+  \ '-debug=' . ale#Escape('SomeFeature') . ' ' .
+  \ '-o- -wi -vcolumns -c %t',
+  \ ale_linters#d#dmd#DMDCommand(bufnr(''), [
+  \ 'source',
+  \ '/prefix/include/d',
+  \ '/home/user/.dub/packages/pkg-0.0.1/pkg/src',
+  \ '',
+  \ 'views',
+  \ '',
+  \ 'SOME_VERSION',
+  \ 'SOME_OTHER_VERSION',
+  \ '',
+  \ 'SomeFeature',
+  \ ], {})
+
+Execute(DMD command line should be correct with CR):
+  " on windows, the function is called with carriage return
+  AssertEqual
+  \ 'dmd ' .
+  \ '-I' . ale#Escape('source') . ' ' .
+  \ '-I' . ale#Escape('C:\prefix\include\d') . ' ' .
+  \ '-I' . ale#Escape('C:\Users\user\AppData\Local\Dub\packages\pkg-0.0.1\pkg\src') . ' ' .
+  \ ' ' .
+  \ ' ' .
+  \ ' ' .
+  \ '-o- -wi -vcolumns -c %t',
+  \ ale_linters#d#dmd#DMDCommand(bufnr(''), [
+  \ "source\r",
+  \ "C:\\prefix\\include\\d\r",
+  \ "C:\\Users\\user\\AppData\\Local\\Dub\\packages\\pkg-0.0.1\\pkg\\src\r",
+  \ "\r",
+  \ "\r",
+  \ "\r",
+  \ "\r",
+  \ "\r",
+  \ "\r",
+  \ ], {})

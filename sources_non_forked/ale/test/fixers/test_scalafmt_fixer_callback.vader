@@ -1,0 +1,66 @@
+Before:
+  Save g:ale_scala_scalafmt_executable
+  Save g:ale_scala_scalafmt_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_scala_scalafmt_executable = 'xxxinvalid'
+  let g:ale_scala_scalafmt_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The scalafmt callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/scala/dummy.scala')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_scala_scalafmt_executable)
+  \     . ' %t',
+  \ },
+  \ ale#fixers#scalafmt#Fix(bufnr(''))
+
+Execute(The scalafmt callback should use ng with scalafmt automatically):
+  let g:ale_scala_scalafmt_executable = 'ng'
+  call ale#test#SetFilename('../test-files/scala/dummy.scala')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('ng')
+  \     . ' scalafmt'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#scalafmt#Fix(bufnr(''))
+
+Execute(The scalafmt callback should include custom scalafmt options):
+  let g:ale_scala_scalafmt_options = '--diff'
+  call ale#test#SetFilename('../test-files/scala/dummy.scala')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_scala_scalafmt_executable)
+  \     . ' --diff'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#scalafmt#Fix(bufnr(''))
+
+Execute(The scalafmt callback should include custom scalafmt options and use ng with scalafmt):
+  let g:ale_scala_scalafmt_options = '--diff'
+  let g:ale_scala_scalafmt_executable = 'ng'
+  call ale#test#SetFilename('../test-files/scala/dummy.scala')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('ng')
+  \     . ' scalafmt'
+  \     . ' --diff'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#scalafmt#Fix(bufnr(''))

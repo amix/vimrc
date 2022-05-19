@@ -1,0 +1,70 @@
+Before:
+  runtime ale_linters/eruby/erblint.vim
+
+After:
+  unlet! g:lines
+  call ale#linter#Reset()
+
+Execute(The erblint handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'col': 0,
+  \     'end_col': 0,
+  \     'text': 'Extra blank line detected.',
+  \     'code': 'ExtraNewline',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 6,
+  \     'col': 0,
+  \     'end_col': 0,
+  \     'text': 'Remove multiple trailing newline at the end of the file.',
+  \     'code': 'FinalNewline',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 9,
+  \     'end_col': 11,
+  \     'text': 'Use 1 space after `<%=` instead of 2 spaces.',
+  \     'code': 'SpaceAroundErbTag',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 9,
+  \     'end_col': 11,
+  \     'text': 'Use 1 space before `%>` instead of 2 spaces.',
+  \     'code': 'SpaceAroundErbTag',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 5,
+  \     'col': 6,
+  \     'end_col': 10,
+  \     'text': 'Extra whitespace detected at end of line.',
+  \     'code': 'TrailingWhitespace',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#eruby#erblint#Handle(347, [
+  \     '{"metadata":{"erb_lint_version":"0.1.1","ruby_engine":"ruby","ruby_version":"3.0.2","ruby_patchlevel":"107","ruby_platform":"arm64-darwin20"},"files":[{"path":"demo.html.erb","offenses":[{"linter":"ExtraNewline","message":"Extra blank line detected.","location":{"start_line":3,"start_column":0,"last_line":4,"last_column":0,"length":1}},{"linter":"FinalNewline","message":"Remove multiple trailing newline at the end of the file.","location":{"start_line":6,"start_column":0,"last_line":8,"last_column":0,"length":2}},{"linter":"SpaceAroundErbTag","message":"Use 1 space after `<%=` instead of 2 spaces.","location":{"start_line":4,"start_column":9,"last_line":4,"last_column":11,"length":2}},{"linter":"SpaceAroundErbTag","message":"Use 1 space before `%>` instead of 2 spaces.","location":{"start_line":4,"start_column":9,"last_line":4,"last_column":11,"length":2}},{"linter":"TrailingWhitespace","message":"Extra whitespace detected at end of line.","location":{"start_line":5,"start_column":6,"last_line":5,"last_column":10,"length":4}}]}],"summary":{"offenses":5,"inspected_files":1,"corrected":0}}'
+  \ ])
+
+Execute(The erblint handler should handle when files are checked and no offenses are found):
+  AssertEqual
+  \ [],
+  \ ale_linters#eruby#erblint#Handle(347, [
+  \     '{"metadata":{"erb_lint_version":"0.1.1","ruby_engine":"ruby","ruby_version":"3.0.2","ruby_patchlevel":"107","ruby_platform":"arm64-darwin20"},"files":[{"path":"demo.html.erb","offenses":[]}],"summary":{"offenses":0,"inspected_files":1,"corrected":0}}'
+  \ ])
+
+Execute(The erblint handler should handle output without any errors):
+  AssertEqual
+  \ [],
+  \ ale_linters#eruby#erblint#Handle(347, ['{}'])
+
+  AssertEqual
+  \ [],
+  \ ale_linters#eruby#erblint#Handle(347, [])

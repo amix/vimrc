@@ -1,0 +1,26 @@
+Before:
+  call ale#assert#SetUpLinterTest('php', 'intelephense')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default executable path should be correct):
+  AssertLinter 'intelephense',
+  \ ale#Escape('intelephense') . ' --stdio'
+
+Execute(The project path should be correct for .git directories):
+  call ale#test#SetFilename('../test-files/php/with-git/test.php')
+  silent! call mkdir('../test-files/php/with-git/.git', 'p')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/php/with-git')
+
+Execute(The project path should be correct for composer.json file):
+  call ale#test#SetFilename('../test-files/php/with-composer/test.php')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/php/with-composer')
+
+Execute(The project cache should be saved in a temp dir):
+  call ale#test#SetFilename('../test-files/php/with-composer/test.php')
+  let g:ale_php_intelephense_config = { 'storagePath': '/tmp/intelephense' }
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/php/with-composer')

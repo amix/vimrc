@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('vhdl', 'ghdl')
+
+After:
+  unlet! b:command_tail
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'ghdl', ale#Escape('ghdl') . ' -s  --std=08 %t'
+
+  let b:ale_vhdl_ghdl_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' -s  --std=08 %t'
+
+Execute(The options should be configurable):
+  let b:ale_vhdl_ghdl_options = '--something'
+
+  AssertLinter 'ghdl', ale#Escape('ghdl') . ' -s  --something %t'

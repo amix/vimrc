@@ -1,0 +1,61 @@
+Before:
+    runtime ale_linters/fish/fish.vim
+
+After:
+    call ale#linter#Reset()
+
+Execute(The fish handler should handle basic warnings and syntax errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 20,
+  \     'col': 23,
+  \     'text': "Unsupported use of '||'. In fish, please use 'COMMAND; or COMMAND'.",
+  \   },
+  \   {
+  \     'lnum': 26,
+  \     'col': 7,
+  \     'text': "Illegal command name '(prompt_pwd)'",
+  \   },
+  \   {
+  \     'lnum': 36,
+  \     'col': 1,
+  \     'text': "'end' outside of a block",
+  \   },
+  \ ],
+  \ ale_linters#fish#fish#Handle(1, [
+  \    "fish_prompt.fish (line 20): Unsupported use of '||'. In fish, please use 'COMMAND; or COMMAND'.",
+  \    'if set -q SSH_CLIENT || set -q SSH_TTY',
+  \    '                      ^',
+  \    "fish_prompt.fish (line 26): Illegal command name '(prompt_pwd)'",
+  \    '      (prompt_pwd) \',
+  \    '      ^',
+  \    "fish_prompt.fish (line 36): 'end' outside of a block",
+  \    'end',
+  \    '^',
+  \    'config.fish (line 45):',
+  \    "abbr --add p 'cd ~/Projects'",
+  \    '^',
+  \ ])
+
+Execute(The fish handler should handle problems where the problem before before the line with the line number):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 23,
+  \     'text': 'Unsupported use of ''||''. In fish, please use ''COMMAND; or COMMAND''.',
+  \   },
+  \   {
+  \     'lnum': 5,
+  \     'col': 1,
+  \     'text': 'wat',
+  \   },
+  \ ],
+  \ ale_linters#fish#fish#Handle(bufnr(''), [
+  \   'Unsupported use of ''||''. In fish, please use ''COMMAND; or COMMAND''.',
+  \   '/tmp/vLz620o/258/test.fish (line 2): if set -q SSH_CLIENT || set -q SSH_TTY',
+  \   '                                                           ^',
+  \   '/tmp/vLz620o/258/test.fish (line 5): wat',
+  \   '                                     ^',
+  \ ])

@@ -1,0 +1,5 @@
+Execute(prettier-eslint should be aliased):
+  AssertEqual 'ale#fixers#prettier_eslint#Fix', ale#fix#registry#GetFunc('prettier-eslint')
+
+Execute(prettier-standard should be aliased):
+  AssertEqual 'ale#fixers#prettier_standard#Fix', ale#fix#registry#GetFunc('prettier-standard')

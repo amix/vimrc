@@ -1,0 +1,19 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(ale#python#poetryPresent is true when a poetry environment is present):
+  call ale#test#SetFilename('test-files/python/poetry/whatever.py')
+
+  AssertEqual
+  \  ale#python#PoetryPresent(bufnr('%')),
+  \  1
+
+Execute(ale#python#poetryPresent is false when no poetry environment is present):
+  call ale#test#SetFilename('test-files/python/no_poetry/whatever.py')
+
+  AssertEqual
+  \  ale#python#PoetryPresent(bufnr('%')),
+  \  0

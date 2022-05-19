@@ -1,0 +1,28 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+  runtime ale_linters/kotlin/javac.vim
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(Should return directory for 'mvnw' if found in parent directory):
+  call ale#test#SetFilename('test-files/maven/maven-java-project/module1/src/main/java/dummy1.java')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/maven/maven-java-project/module1'),
+  \ ale#maven#FindProjectRoot(bufnr(''))
+
+Execute(Should return directory for 'pom.xml' if found in parent directory):
+  call ale#test#SetFilename('test-files/maven/maven-java-project/module2/src/main/java/dummy2.java')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/maven/maven-java-project/module2'),
+  \ ale#maven#FindProjectRoot(bufnr(''))
+
+Execute(Should return empty string if maven files are not found in parent directory):
+  call ale#test#SetFilename('test-files/maven/non-maven-project/src/main/java/dummy.java')
+
+  AssertEqual
+  \ '',
+  \ ale#maven#FindProjectRoot(bufnr(''))

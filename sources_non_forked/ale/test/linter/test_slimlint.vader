@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('slim', 'slimlint')
+  let g:default_command = 'slim-lint %t'
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'slim-lint', 'slim-lint %t'
+
+Execute(The command should have the .rubocop.yml prepended as an env var if one exists):
+  call ale#test#SetFilename('../test-files/slimlint/subdir/file.slim')
+
+  AssertLinter 'slim-lint',
+  \ ale#Env(
+  \   'SLIM_LINT_RUBOCOP_CONF',
+  \   ale#path#Simplify(g:dir . '/../test-files/slimlint/.rubocop.yml')
+  \ )
+  \ . 'slim-lint %t'

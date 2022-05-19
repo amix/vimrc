@@ -1,0 +1,36 @@
+Before:
+  runtime ale_linters/dafny/dafny.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The Dafny handler should parse output correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': 'File.dfy',
+  \     'col': 45,
+  \     'lnum': 123,
+  \     'text': 'A precondition for this call might not hold.',
+  \     'type': 'E'
+  \   },
+  \   {
+  \     'filename': 'File.dfy',
+  \     'col': 90,
+  \     'lnum': 678,
+  \     'text': 'This is the precondition that might not hold.',
+  \     'type': 'W'
+  \   },
+  \   {
+  \     'filename': 'File.dfy',
+  \     'col': 45,
+  \     'lnum': 123,
+  \     'text': "Verification of 'Impl$$_22_Proof.__default.PutKeepsMapsFull' timed out after 2 seconds",
+  \     'type': 'E'
+  \   },
+  \ ],
+  \ ale_linters#dafny#dafny#Handle(0, [
+  \ 'File.dfy(123,45): Error BP5002: A precondition for this call might not hold.',
+  \ 'File.dfy(678,90): Related location: This is the precondition that might not hold.',
+  \ "File.dfy(123,45): Verification of 'Impl$$_22_Proof.__default.PutKeepsMapsFull' timed out after 2 seconds",
+  \ ])

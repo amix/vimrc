@@ -1,0 +1,20 @@
+Before:
+  Save g:ale_purescript_tidy_executable
+  Save g:ale_purescript_tidy_options
+
+  " Use an invalid global executable, so we don’t match it.
+  let g:ale_purescript_tidy_executable = 'odd-purs-tidy'
+  let g:ale_purescript_tidy_options = '--indent 3'
+
+  call ale#assert#SetUpFixerTest('purescript', 'purs-tidy')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The purs-tidy callback should return the correct custom options):
+  AssertFixer
+  \ {
+  \   'command': ale#Escape('odd-purs-tidy')
+  \     . ' format'
+  \     . ' --indent 3'
+  \ }

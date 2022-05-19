@@ -1,0 +1,26 @@
+Before:
+  call ale#assert#SetUpLinterTest('ansible', 'ansible_lint')
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  unlet! b:bin_dir
+  unlet! b:executable
+  call ale#assert#TearDownLinterTest()
+
+Execute(The ansible_lint version <5.0.0 command callback should return default string):
+  GivenCommandOutput ['v4.1.2']
+  AssertLinter 'ansible-lint', ale#Escape('ansible-lint') . ' --nocolor -p %t'
+
+Execute(The ansible_lint version >=5.0.0 command callback should return default string):
+  GivenCommandOutput ['v5.1.2']
+  AssertLinter 'ansible-lint', ale#Escape('ansible-lint') . ' --nocolor --parseable-severity -x yaml %s'
+
+Execute(The ansible_lint version >=6.0.0 command callback should return default string):
+  GivenCommandOutput ['v6.0.2']
+  AssertLinter 'ansible-lint', ale#Escape('ansible-lint') . ' --nocolor -f json -x yaml %s'
+
+Execute(The ansible_lint executable should be configurable):
+  let g:ale_ansible_ansible_lint_executable = '~/.local/bin/ansible-lint'
+  GivenCommandOutput ['v4.1.2']
+  AssertLinter '~/.local/bin/ansible-lint',
+  \ ale#Escape('~/.local/bin/ansible-lint') . ' --nocolor -p %t'

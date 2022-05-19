@@ -1,0 +1,34 @@
+Before:
+  runtime ale_linters/solidity/solc.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Check solc output parsing):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 40,
+  \     'col': 48,
+  \     'text': 'This declaration shadows an existing declaration.',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 23,
+  \     'col': 16,
+  \     'text': 'Member "getSinleSignature" not found or not visible after argument-dependent lookup in type(contract OneToN).',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#solidity#solc#Handle(bufnr(''), [
+  \   'Warning: This declaration shadows an existing declaration.',
+  \   '  --> /path/to/file.sol:40:48:',
+  \   '   |',
+  \   '40 |   function decimals() external view returns (uint8 decimals);',
+  \   '   |                                              ^------------^',
+  \   'Error: Member "getSinleSignature" not found or not visible after argument-dependent lookup in type(contract OneToN).',
+  \   '  --> /path/to/file.sol:23:16: ',
+  \   '   | ',
+  \   '23 |    return OneToN.getSinleSignature(signatures, i);',
+  \   '   |           ^----------------------^',
+  \ ])

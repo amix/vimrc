@@ -1,0 +1,68 @@
+Before:
+  Save g:ale_change_sign_column_color
+  Save &verbose
+
+  function! ParseHighlight(name) abort
+    redir => l:output
+      silent execute 'highlight ' . a:name
+    redir end
+
+    return substitute(join(split(l:output)[2:]), ' Last set.*', '', '')
+  endfunction
+
+  function! SetHighlight(name, syntax) abort
+    let l:match = matchlist(a:syntax, '\vlinks to (.+)$')
+
+    if !empty(l:match)
+      execute 'highlight link ' . a:name . ' ' . l:match[1]
+    else
+      execute 'highlight ' . a:name . ' ' a:syntax
+    endif
+  endfunction
+
+  let g:sign_highlight = ParseHighlight('SignColumn')
+
+After:
+  Restore
+
+  delfunction ParseHighlight
+  call SetHighlight('SignColumn', g:sign_highlight)
+  delfunction SetHighlight
+  unlet! g:sign_highlight
+
+  call ale#sign#Clear()
+
+Execute(The SignColumn highlight shouldn't be changed if the option is off):
+  let g:ale_change_sign_column_color = 0
+  let b:sign_highlight = ParseHighlight('SignColumn')
+
+  call ale#sign#SetSigns(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'lnum': 1, 'col': 1, 'type': 'W', 'text': 'x'},
+  \])
+  AssertEqual b:sign_highlight, ParseHighlight('SignColumn')
+
+  call ale#sign#SetSigns(bufnr(''), [])
+  AssertEqual b:sign_highlight, ParseHighlight('SignColumn')
+
+Execute(The SignColumn highlight should be set and reset):
+  let g:ale_change_sign_column_color = 1
+
+  call ale#sign#SetSigns(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'lnum': 1, 'col': 1, 'type': 'W', 'text': 'x'},
+  \])
+  AssertEqual 'links to ALESignColumnWithErrors', ParseHighlight('SignColumn')
+
+  call ale#sign#SetSigns(bufnr(''), [])
+  AssertEqual 'links to ALESignColumnWithoutErrors', ParseHighlight('SignColumn')
+
+Execute(The SignColumn should be correctly parsed when verbose=1):
+  set verbose=1
+  highlight SignColumn ctermfg=246 ctermbg=7 guifg=#839496 guibg=Grey
+
+  call ale#sign#SetUpDefaultColumnWithoutErrorsHighlight()
+
+  AssertEqual
+  \ has('nvim')
+  \   ? 'ctermfg=246 ctermbg=7 guifg=#839496 guibg=Grey'
+  \   : 'term=standout ctermfg=246 ctermbg=7 guifg=#839496 guibg=Grey',
+  \ ParseHighlight('ALESignColumnWithoutErrors')

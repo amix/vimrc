@@ -1,0 +1,85 @@
+Before:
+  runtime autoload/ale/handlers/atools.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The atools handler should handle basic errors or warings):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'text': 'trailing whitespace',
+  \     'type': 'E',
+  \     'code': 'AL8',
+  \   },
+  \   {
+  \     'lnum': 15,
+  \     'text': '$pkgname should not be used in the source url',
+  \     'type': 'W',
+  \     'code': 'AL29',
+  \   },
+  \ ],
+  \ ale#handlers#atools#Handle(bufnr(''), [
+  \   'IC:[AL8]:APKBUILD:2:trailing whitespace',
+  \   'MC:[AL29]:APKBUILD:15:$pkgname should not be used in the source url',
+  \ ])
+
+" Regardless of the severity, if the certainty is [P]ossible and not [C]ertain
+" or if regardless of the Certainity the Severity is not [I]mportant or [S]erious
+" then it must be a [W]arning
+Execute(If we are not Certain or Importantly Serious, be a Warning):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'text': 'This violation is Serious but Possible false positive, I am a Warning!',
+  \     'type': 'W',
+  \     'code': 'AL',
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'text': 'This violation is Important but Possible false positive, I am a Warning!',
+  \     'type': 'W',
+  \     'code': 'AL',
+  \   },
+  \   {
+  \     'lnum': 5,
+  \     'text': 'This violation is Minor, I am a Warning!',
+  \     'type': 'W',
+  \     'code': 'AL',
+  \   },
+  \   {
+  \     'lnum': 6,
+  \     'text': 'This violation is Style, I am a Warning!',
+  \     'type': 'W',
+  \     'code': 'AL',
+  \   },
+  \ ],
+  \ ale#handlers#atools#Handle(bufnr(''), [
+  \   'SP:[AL]:APKBUILD:3:This violation is Serious but Possible false positive, I am a Warning!',
+  \   'IP:[AL]:APKBUILD:4:This violation is Important but Possible false positive, I am a Warning!',
+  \   'MC:[AL]:APKBUILD:5:This violation is Minor, I am a Warning!',
+  \   'TC:[AL]:APKBUILD:6:This violation is Style, I am a Warning!',
+  \ ])
+
+Execute(We should be error if we are Certain it is Serious or Important):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 7,
+  \     'text': 'This is Certainly Serious, I am an Error!',
+  \     'type': 'E',
+  \     'code': 'AL',
+  \   },
+  \   {
+  \     'lnum': 8,
+  \     'text': 'This is Certainly Important, I am an Error!',
+  \     'type': 'E',
+  \     'code': 'AL',
+  \   },
+  \ ],
+  \ ale#handlers#atools#Handle(bufnr(''), [
+  \    'SC:[AL]:APKBUILD:7:This is Certainly Serious, I am an Error!',
+  \    'IC:[AL]:APKBUILD:8:This is Certainly Important, I am an Error!',
+  \ ])

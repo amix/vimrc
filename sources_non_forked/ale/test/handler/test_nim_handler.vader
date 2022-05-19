@@ -1,0 +1,80 @@
+Before:
+  runtime ale_linters/nim/nimcheck.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Parsing nim errors should work):
+  silent file foobar.nim
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 8,
+  \     'col': 8,
+  \     'text': 'use {.base.} for base methods; baseless methods are deprecated',
+  \     'code': 'UseBase',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'col': 2,
+  \     'text': 'identifier expected, but found ''a.barfoo''',
+  \     'type': 'E',
+  \     'end_col': 9,
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 5,
+  \     'text': '''NotUsed'' is declared but not used',
+  \     'code': 'XDeclaredButNotUsed',
+  \     'type': 'W',
+  \     'end_col': 11,
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'col': 2,
+  \     'text': 'with : character',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 8,
+  \     'text': 'imported and not used: ''strutils''',
+  \     'code': 'UnusedImport',
+  \     'type': 'W',
+  \     'end_col': 15,
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'col': 9,
+  \     'text': 'undeclared identifier: ''total''',
+  \     'type': 'E',
+  \     'end_col': 13,
+  \   },
+  \   {
+  \     'lnum': 14,
+  \     'col': 1,
+  \     'text': '''sum'' cannot be assigned to',
+  \     'type': 'E',
+  \     'end_col': 3,
+  \   },
+  \   {
+  \     'lnum': 15,
+  \     'col': 1,
+  \     'text': 'redefinition of ''getName''; previous declaration here: /nested/folder/foobar.nim(14, 6)',
+  \     'type': 'E',
+  \     'end_col': 7,
+  \   },
+  \ ],
+  \ ale_linters#nim#nimcheck#Handle(bufnr(''), [
+  \ 'Line with wrong( format)',
+  \ 'foobar.nim(8, 8) Warning: use {.base.} for base methods; baseless methods are deprecated [UseBase]',
+  \ 'foobar.nim(12, 2) Error: identifier expected, but found ''a.barfoo''',
+  \ '/nested/folder/foobar.nim(2, 5) Hint: ''NotUsed'' is declared but not used [XDeclaredButNotUsed]',
+  \ 'foobar.nim(12, 2) Error: with : character',
+  \ 'foobar.nim(1, 8) Warning: imported and not used: ''strutils'' [UnusedImport]',
+  \ 'foobar.nim(12, 9) Error: undeclared identifier: ''total''',
+  \ 'foobar.nim(14, 1) Error: ''sum'' cannot be assigned to',
+  \ 'foobar.nim(15, 1) Error: redefinition of ''getName''; previous declaration here: /nested/folder/foobar.nim(14, 6)',
+  \ ])

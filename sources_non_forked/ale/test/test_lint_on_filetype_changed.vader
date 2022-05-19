@@ -1,0 +1,77 @@
+Before:
+  Save &filetype
+  Save g:ale_lint_on_filetype_changed
+
+  let g:ale_lint_on_filetype_changed = 1
+  let g:queue_calls = []
+
+  function! ale#Queue(...)
+    call add(g:queue_calls, a:000)
+  endfunction
+
+After:
+  Restore
+
+  unlet! g:queue_calls
+
+  " Reload the ALE code to load the real function again.
+  runtime autoload/ale.vim
+
+  unlet! b:ale_original_filetype
+
+Execute(The original filetype should be set on BufEnter):
+  let &filetype = 'foobar'
+
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  AssertEqual 'foobar', b:ale_original_filetype
+
+  let &filetype = 'bazboz'
+
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  AssertEqual 'bazboz', b:ale_original_filetype
+
+Execute(Linting should not be queued when the filetype is the same):
+  let b:ale_original_filetype = 'foobar'
+  let g:queue_calls = []
+
+  call ale#events#FileTypeEvent(bufnr(''), 'foobar')
+
+  AssertEqual [], g:queue_calls
+
+Execute(Linting should be queued when the filetype changes):
+  let b:ale_original_filetype = 'foobar'
+  let g:queue_calls = []
+
+  call ale#events#FileTypeEvent(bufnr(''), 'bazboz')
+
+  AssertEqual [[300, 'lint_file', bufnr('')]], g:queue_calls
+  " The original filetype should be updated, so we don't trigger linting
+  " by setting a filetype equal to what it already is.
+  AssertEqual 'bazboz', b:ale_original_filetype
+
+Execute(Linting should be done when the original filetype was blank):
+  let b:ale_original_filetype = ''
+
+  call ale#events#FileTypeEvent(bufnr(''), 'bazboz')
+
+  AssertEqual [[300, 'lint_file', bufnr('')]], g:queue_calls
+  AssertEqual 'bazboz', b:ale_original_filetype
+
+Execute(Linting should not be done when the setting is off):
+  let b:ale_original_filetype = 'foobar'
+  let g:ale_lint_on_filetype_changed = 0
+
+  call ale#events#FileTypeEvent(bufnr(''), 'bazboz')
+
+  AssertEqual [], g:queue_calls
+  " We should still update the old filetype
+  AssertEqual 'bazboz', b:ale_original_filetype
+
+Execute(Linting should be done when the original filetype was not set):
+  unlet! b:ale_original_filetype
+
+  call ale#events#FileTypeEvent(bufnr(''), 'bazboz')
+
+  AssertEqual [], g:queue_calls

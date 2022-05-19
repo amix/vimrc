@@ -1,0 +1,15 @@
+Before:
+  call ale#assert#SetUpLinterTest('openapi', 'ibm_validator')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The yaml ibm-openapi-validator command callback should return the correct default string):
+  AssertLinter 'lint-openapi', ale#Escape('lint-openapi') . ' %t'
+
+Execute(The yaml ibm-openapi-validator command callback should be configurable):
+  let g:ale_openapi_ibm_validator_executable = '~/.local/bin/lint-openapi'
+  let g:ale_openapi_ibm_validator_options = '-c ~/.config'
+
+  AssertLinter '~/.local/bin/lint-openapi', ale#Escape('~/.local/bin/lint-openapi')
+  \ . ' -c ~/.config %t'

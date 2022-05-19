@@ -1,0 +1,32 @@
+Before:
+  call ale#assert#SetUpLinterTest('haskell', 'hls')
+
+  Save &filetype
+  let &filetype = 'haskell'
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The language string should be correct):
+  AssertLSPLanguage 'haskell'
+
+Execute(The default executable should be correct):
+  AssertLinter 'haskell-language-server-wrapper',
+  \ ale#Escape('haskell-language-server-wrapper') . ' --lsp'
+
+Execute(The project root should be detected correctly):
+  AssertLSPProject g:dir
+
+  call ale#test#SetFilename('hls_paths/file.hs')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/hls_paths')
+
+Execute(The executable should be configurable):
+  let g:ale_haskell_hls_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' --lsp'
+
+Execute(Should accept configuration settings):
+  AssertLSPConfig {}
+  let b:ale_haskell_hls_config = {'haskell': {'maxCompletions': 250}}
+  AssertLSPConfig {'haskell': {'maxCompletions': 250}}

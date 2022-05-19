@@ -1,0 +1,483 @@
+Execute(The Rust handler should handle rustc output):
+  call ale#test#SetFilename('src/playpen.rs')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 15,
+  \     'end_lnum': 15,
+  \     'type': 'E',
+  \     'col': 5,
+  \     'end_col': 7,
+  \     'text': 'expected one of `.`, `;`, `?`, `}`, or an operator, found `for`',
+  \   },
+  \   {
+  \      'lnum': 13,
+  \      'end_lnum': 13,
+  \      'type': 'E',
+  \      'col': 7,
+  \      'end_col': 9,
+  \      'text': 'no method named `wat` found for type `std::string::String` in the current scope',
+  \   },
+  \ ],
+  \ ale#handlers#rust#HandleRustErrors(bufnr(''), [
+  \   '',
+  \   'ignore this',
+  \   json_encode({
+  \     'message': 'expected one of `.`, `;`, `?`, `}`, or an operator, found `for`',
+  \     'code': v:null,
+  \     'level': 'error',
+  \     'spans': [
+  \       {
+  \         'file_name': '<anon>',
+  \         'byte_start': 418,
+  \         'byte_end': 421,
+  \         'line_start': 15,
+  \         'line_end': 15,
+  \         'column_start': 5,
+  \         'column_end': 8,
+  \         'is_primary': v:true,
+  \         'label': v:null,
+  \       },
+  \     ],
+  \   }),
+  \   json_encode({
+  \     'message': 'main function not found',
+  \     'code': v:null,
+  \     'level': 'error',
+  \     'spans': [],
+  \   }),
+  \   json_encode({
+  \     'code': v:null,
+  \     'level': 'error',
+  \     'message': 'no method named `wat` found for type `std::string::String` in the current scope',
+  \     'spans': [
+  \       {
+  \         'byte_end': 410,
+  \         'byte_start': 407,
+  \         'column_end': 10,
+  \         'column_start': 7,
+  \         'file_name': '<anon>',
+  \         'is_primary': v:true,
+  \         'label': v:null,
+  \         'line_end': 13,
+  \         'line_start': 13,
+  \       }
+  \     ]
+  \   }),
+  \   json_encode({
+  \     'code': v:null,
+  \     'level': 'error',
+  \     'message': 'aborting due to previous error',
+  \     'spans': [
+  \     ]
+  \   }),
+  \ ])
+
+Execute(The Rust handler should handle cargo output):
+  call ale#test#SetFilename('src/playpen.rs')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 15,
+  \     'end_lnum': 15,
+  \     'type': 'E',
+  \     'col': 5,
+  \     'end_col': 7,
+  \     'text': 'expected one of `.`, `;`, `?`, `}`, or an operator, found `for`',
+  \   },
+  \   {
+  \     'lnum': 13,
+  \     'end_lnum': 13,
+  \     'type': 'E',
+  \     'col': 7,
+  \     'end_col': 9,
+  \     'text': 'no method named `wat` found for type `std::string::String` in the current scope',
+  \   },
+  \ ],
+  \ ale#handlers#rust#HandleRustErrors(bufnr(''), [
+  \   '',
+  \   'ignore this',
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'expected one of `.`, `;`, `?`, `}`, or an operator, found `for`',
+  \       'spans': [
+  \         {
+  \           'byte_end': 11508,
+  \           'byte_start': 11505,
+  \           'column_end': 8,
+  \           'column_start': 5,
+  \           'file_name': ale#path#Simplify('src/playpen.rs'),
+  \           'is_primary': v:true,
+  \           'label': v:null,
+  \           'line_end': 15,
+  \           'line_start': 15,
+  \         }
+  \       ]
+  \     },
+  \   }),
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'no method named `wat` found for type `std::string::String` in the current scope',
+  \       'spans': [
+  \         {
+  \           'byte_end': 11497,
+  \           'byte_start': 11494,
+  \           'column_end': 10,
+  \           'column_start': 7,
+  \           'file_name': ale#path#Simplify('src/playpen.rs'),
+  \           'is_primary': v:true,
+  \           'label': v:null,
+  \           'line_end': 13,
+  \           'line_start': 13,
+  \         }
+  \       ]
+  \     },
+  \   }),
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'aborting due to previous error',
+  \       'spans': [
+  \       ]
+  \     },
+  \   }),
+  \ ])
+
+Execute(The Rust handler should should errors from expansion spans):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 4,
+  \     'end_lnum': 4,
+  \     'type': 'E',
+  \     'col': 21,
+  \     'end_col': 22,
+  \     'text': 'mismatched types: expected bool, found integral variable',
+  \   },
+  \ ],
+  \ ale#handlers#rust#HandleRustErrors(bufnr(''), [
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'mismatched types',
+  \       'spans': [
+  \         {
+  \           'byte_end': 1,
+  \           'byte_start': 1,
+  \           'column_end': 1,
+  \           'column_start': 1,
+  \           'file_name': ale#path#Simplify('src/other.rs'),
+  \           'is_primary': v:true,
+  \           'label': 'some other error',
+  \           'line_end': 4,
+  \           'line_start': 4,
+  \           'expansion': {
+  \             'span': {
+  \               'byte_end': 54,
+  \               'byte_start': 52,
+  \               'column_end': 23,
+  \               'column_start': 21,
+  \               'file_name': ale#path#Simplify('src/playpen.rs'),
+  \               'is_primary': v:true,
+  \               'label': 'expected bool, found integral variable',
+  \               'line_end': 4,
+  \               'line_start': 4,
+  \             }
+  \           }
+  \         }
+  \       ]
+  \     },
+  \   }),
+  \ ])
+
+Execute(The Rust handler should show detailed errors):
+  call ale#test#SetFilename('src/playpen.rs')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 4,
+  \     'end_lnum': 4,
+  \     'type': 'E',
+  \     'col': 21,
+  \     'end_col': 22,
+  \     'text': 'mismatched types: expected bool, found integral variable',
+  \   },
+  \ ],
+  \ ale#handlers#rust#HandleRustErrors(bufnr(''), [
+  \   '',
+  \   'ignore this',
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'mismatched types',
+  \       'spans': [
+  \         {
+  \           'byte_end': 54,
+  \           'byte_start': 52,
+  \           'column_end': 23,
+  \           'column_start': 21,
+  \           'expansion': v:null,
+  \           'file_name': ale#path#Simplify('src/playpen.rs'),
+  \           'is_primary': v:true,
+  \           'label': 'expected bool, found integral variable',
+  \           'line_end': 4,
+  \           'line_start': 4,
+  \         }
+  \       ]
+  \     },
+  \   }),
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'aborting due to previous error(s)',
+  \       'spans': [
+  \       ]
+  \     },
+  \   }),
+  \ ])
+
+Execute(The Rust handler should show detailed clippy errors with rendered field if it's available):
+  call ale#test#SetFilename('src/playpen.rs')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 4,
+  \     'end_lnum': 4,
+  \     'type': 'E',
+  \     'col': 21,
+  \     'end_col': 22,
+  \     'text': 'mismatched types: expected bool, found integral variable',
+  \     'detail': 'this is a detailed description',
+  \   },
+  \ ],
+  \ ale#handlers#rust#HandleRustErrors(bufnr(''), [
+  \   '',
+  \   'ignore this',
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'mismatched types',
+  \       'rendered': 'this is a detailed description',
+  \       'spans': [
+  \         {
+  \           'byte_end': 54,
+  \           'byte_start': 52,
+  \           'column_end': 23,
+  \           'column_start': 21,
+  \           'expansion': v:null,
+  \           'file_name': ale#path#Simplify('src/playpen.rs'),
+  \           'is_primary': v:true,
+  \           'label': 'expected bool, found integral variable',
+  \           'line_end': 4,
+  \           'line_start': 4,
+  \         }
+  \       ]
+  \     },
+  \   }),
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'aborting due to previous error(s)',
+  \       'spans': [
+  \       ]
+  \     },
+  \   }),
+  \ ])
+
+Execute(The Rust handler should find correct files):
+  call ale#test#SetFilename('src/noerrors/mod.rs')
+
+  AssertEqual
+  \ [],
+  \ ale#handlers#rust#HandleRustErrors(bufnr(''), [
+  \   '',
+  \   'ignore this',
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'unresolved import `Undefined`',
+  \       'spans': [
+  \         {
+  \           'byte_end': 103,
+  \           'byte_start': 94,
+  \           'column_end': 14,
+  \           'column_start': 5,
+  \           'file_name': 'src/haserrors/mod.rs',
+  \           'is_primary': v:true,
+  \           'label': 'no `Undefined` in the root',
+  \           'line_end': 1,
+  \           'line_start': 1,
+  \         }
+  \       ]
+  \     },
+  \   }),
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'aborting due to previous error',
+  \       'spans': [
+  \       ]
+  \     },
+  \   }),
+  \ ])
+
+Execute(The Rust handler should remove secondary spans if set):
+  call ale#test#SetFilename('src/noerrors/mod.rs')
+
+  let g:ale_rust_ignore_secondary_spans = 0
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'end_lnum': 1,
+  \     'type': 'E',
+  \     'end_col': 20,
+  \     'col': 1,
+  \     'text': 'this function takes 1 parameter but 0 were supplied: defined here',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'end_lnum': 1,
+  \     'type': 'E',
+  \     'end_col': 45,
+  \     'col': 40,
+  \     'text': 'this function takes 1 parameter but 0 were supplied: expected 1 parameter',
+  \   },
+  \ ],
+  \ ale#handlers#rust#HandleRustErrors(bufnr(''), [
+  \   '',
+  \   'fn test(x: u8) -> u8 { x } fn main() { x(); }',
+  \   json_encode({
+  \     'message': {
+  \       'code': {
+  \         'code': 'E0061',
+  \         'explanation': 'Dummy explanation; not used'
+  \       },
+  \       'level': 'error',
+  \       'message': 'this function takes 1 parameter but 0 were supplied',
+  \       'spans': [
+  \         {
+  \           'byte_end': 20,
+  \           'byte_start': 0,
+  \           'column_end': 21,
+  \           'column_start': 1,
+  \           'file_name': 'src/noerrors/mod.rs',
+  \           'is_primary': v:false,
+  \           'label': 'defined here',
+  \           'line_end': 1,
+  \           'line_start': 1,
+  \         },
+  \         {
+  \           'byte_end': 45,
+  \           'byte_start': 39,
+  \           'column_end': 46,
+  \           'column_start': 40,
+  \           'file_name': '<anon>',
+  \           'is_primary': v:true,
+  \           'label': 'expected 1 parameter',
+  \           'line_end': 1,
+  \           'line_start': 1,
+  \         },
+  \       ]
+  \     },
+  \   }),
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'aborting due to previous error',
+  \       'spans': []
+  \     },
+  \   }),
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'For more information about this error, try `rustc --explain E0061`.',
+  \       'spans': []
+  \     },
+  \   }),
+  \ ])
+
+  let g:ale_rust_ignore_secondary_spans = 1
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'end_lnum': 1,
+  \     'type': 'E',
+  \     'end_col': 45,
+  \     'col': 40,
+  \     'text': 'this function takes 1 parameter but 0 were supplied: expected 1 parameter',
+  \   },
+  \ ],
+  \ ale#handlers#rust#HandleRustErrors(bufnr(''), [
+  \   '',
+  \   'fn test(x: u8) -> u8 { x } fn main() { x(); }',
+  \   json_encode({
+  \     'message': {
+  \       'code': {
+  \         'code': 'E0061',
+  \         'explanation': 'Dummy explanation; not used'
+  \       },
+  \       'level': 'error',
+  \       'message': 'this function takes 1 parameter but 0 were supplied',
+  \       'spans': [
+  \         {
+  \           'byte_end': 20,
+  \           'byte_start': 0,
+  \           'column_end': 21,
+  \           'column_start': 1,
+  \           'file_name': 'src/noerrors/mod.rs',
+  \           'is_primary': v:false,
+  \           'label': 'defined here',
+  \           'line_end': 1,
+  \           'line_start': 1,
+  \         },
+  \         {
+  \           'byte_end': 45,
+  \           'byte_start': 39,
+  \           'column_end': 46,
+  \           'column_start': 40,
+  \           'file_name': '<anon>',
+  \           'is_primary': v:true,
+  \           'label': 'expected 1 parameter',
+  \           'line_end': 1,
+  \           'line_start': 1,
+  \         },
+  \       ]
+  \     },
+  \   }),
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'aborting due to previous error',
+  \       'spans': []
+  \     },
+  \   }),
+  \   json_encode({
+  \     'message': {
+  \       'code': v:null,
+  \       'level': 'error',
+  \       'message': 'For more information about this error, try `rustc --explain E0061`.',
+  \       'spans': []
+  \     },
+  \   }),
+  \ ])

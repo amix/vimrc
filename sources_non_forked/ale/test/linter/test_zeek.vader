@@ -1,0 +1,17 @@
+Before:
+  call ale#assert#SetUpLinterTest('zeek', 'zeek')
+
+  let b:command_tail = ' --parse-only %s'
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+  unlet! b:command_tail
+
+Execute(The default command should be correct):
+  AssertLinter 'zeek', ale#Escape('zeek') . b:command_tail
+
+Execute(The zeek executable should be configurable, and escaped properly):
+  let g:ale_zeek_zeek_executable = 'executable with spaces'
+
+  AssertLinter 'executable with spaces', ale#Escape('executable with spaces') . b:command_tail

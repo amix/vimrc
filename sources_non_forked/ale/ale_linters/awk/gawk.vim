@@ -9,8 +9,9 @@ function! ale_linters#awk#gawk#GetCommand(buffer) abort
     " gawk from attempting to execute the body of the script
     " it is linting.
     return '%e --source ' . ale#Escape('BEGIN { exit } END { exit 1 }')
+    \   . ' --lint'
     \   .  ale#Pad(ale#Var(a:buffer, 'awk_gawk_options'))
-    \   . ' -f %t --lint /dev/null'
+    \   . ' -f %t /dev/null'
 endfunction
 
 call ale#linter#Define('awk', {

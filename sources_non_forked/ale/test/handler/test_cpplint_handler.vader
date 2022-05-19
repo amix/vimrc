@@ -1,0 +1,29 @@
+Before:
+  runtime ale_linters/cpp/cpplint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(cpplint warnings from included files should be parsed correctly):
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'col': 0,
+  \     'text': 'Extra space after ( in function call',
+  \     'code': 'whitespace/parents',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 120,
+  \     'col': 0,
+  \     'text': 'At least two spaces is best between code and comments',
+  \     'code': 'whitespace/comments',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale#handlers#cpplint#HandleCppLintFormat(347, [
+  \   'test.cpp:5:  Extra space after ( in function call [whitespace/parents] [4]',
+  \   'keymap_keys.hpp:120:  At least two spaces is best between code and comments  [whitespace/comments] [2]',
+  \ ])

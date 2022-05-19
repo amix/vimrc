@@ -1,0 +1,26 @@
+Before:
+  Save g:ale_go_go111module
+  Save b:ale_go_go111module
+
+  let b:ale_go_go111module = ''
+
+  call ale#assert#SetUpLinterTest('go', 'gofmt')
+  call ale#test#SetFilename('../test-files/go/testfile2.go')
+
+After:
+  Restore
+
+  unlet! b:ale_go_go111module
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default gofmt command should be correct):
+  AssertLinter 'gofmt',
+  \ ale#Escape('gofmt') . ' -e %t'
+
+Execute(The gofmt command should support Go environment variables):
+  let b:ale_go_go111module = 'on'
+
+  AssertLinter 'gofmt',
+  \ ale#Env('GO111MODULE', 'on')
+  \ . ale#Escape('gofmt') . ' -e %t'

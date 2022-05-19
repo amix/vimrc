@@ -1,0 +1,39 @@
+Before:
+  runtime ale_linters/awk/gawk.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(gawk syntax errors should be parsed correctly):
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 0,
+  \     'text': "invalid char ''' in expression",
+  \     'code': 0,
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 5,
+  \     'col': 0,
+  \     'text': 'unterminated string',
+  \     'code': 0,
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 10,
+  \     'col': 0,
+  \     'text': "escape sequence `\u' treated as plain `u'",
+  \     'code': 0,
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale#handlers#gawk#HandleGawkFormat(347, [
+  \   "gawk: something.awk:1: BEGIN { system('touch aaaaaaaaa') }",
+  \   "gawk: something.awk:1:                ^ invalid char ''' in expression",
+  \   'gawk: something.awk:5: { x = "aaaaaaaaaaa',
+  \   'gawk: something.awk:5:       ^ unterminated string',
+  \   "gawk: something.awk:10: warning: escape sequence `\u' treated as plain `u'",
+  \ ])

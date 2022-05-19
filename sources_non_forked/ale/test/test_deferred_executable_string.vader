@@ -1,0 +1,46 @@
+Before:
+  Save g:ale_run_synchronously
+  Save g:ale_emulate_job_failure
+  Save g:ale_buffer_info
+
+  let g:ale_run_synchronously = 1
+  let g:ale_buffer_info = {}
+  let b:ale_history = []
+
+  call ale#linter#Reset()
+  call ale#assert#SetUpLinterTestCommands()
+  call ale#linter#Define('foobar', {
+  \ 'name': 'lint_file_linter',
+  \ 'callback': 'LintFileCallback',
+  \ 'executable': {b -> ale#command#Run(b, 'echo', {-> ale#command#Run(b, 'echo', {-> 'foo'})})},
+  \ 'command': 'echo',
+  \ 'read_buffer': 0,
+  \})
+
+After:
+  Restore
+
+  call ale#assert#TearDownLinterTest()
+
+Given foobar (Some imaginary filetype):
+Execute(It should be possible to compute an executable to check based on the result of commands):
+  AssertLinter 'foo', 'echo'
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ [{'status': 0, 'job_id': 'executable', 'command': 'foo'}],
+  \ filter(copy(b:ale_history), 'v:val.job_id is# ''executable''')
+
+Execute(It handle the deferred command failing):
+  let g:ale_emulate_job_failure = 1
+
+  AssertLinter 0, 'echo'
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ [],
+  \ filter(copy(b:ale_history), 'v:val.job_id is# ''executable''')

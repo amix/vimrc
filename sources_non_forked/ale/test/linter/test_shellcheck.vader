@@ -1,0 +1,106 @@
+Before:
+  call ale#assert#SetUpLinterTest('sh', 'shellcheck')
+  call ale#test#SetFilename('test.sh')
+
+  let b:suffix = ' -f gcc -'
+
+After:
+  unlet! b:is_bash
+  unlet! b:suffix
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default shellcheck command should be correct):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'shellcheck', ale#Escape('shellcheck') . b:suffix
+
+Execute(The option disabling changing directories should work):
+  let g:ale_sh_shellcheck_change_directory = 0
+
+  AssertLinterCwd ''
+  AssertLinter 'shellcheck', ale#Escape('shellcheck') . b:suffix
+
+Execute(The shellcheck command should accept options):
+  let b:ale_sh_shellcheck_options = '--foobar'
+
+  AssertLinter 'shellcheck', ale#Escape('shellcheck') . ' --foobar' . b:suffix
+
+Execute(The shellcheck command should accept options and exclusions):
+  let b:ale_sh_shellcheck_options = '--foobar'
+  let b:ale_sh_shellcheck_exclusions = 'foo,bar'
+
+  AssertLinter 'shellcheck',
+  \ ale#Escape('shellcheck') . ' --foobar -e foo,bar' . b:suffix
+
+Execute(The shellcheck command should include the dialect):
+  let b:is_bash = 1
+
+  AssertLinter 'shellcheck', ale#Escape('shellcheck') . ' -s bash' . b:suffix
+
+Execute(The shellcheck command should use ale_sh_shellcheck_dialect):
+  let b:ale_sh_shellcheck_dialect = 'ksh93'
+
+  AssertLinter 'shellcheck', ale#Escape('shellcheck') . ' -s ksh93' . b:suffix
+
+Execute(The shellcheck command should allow unspecified dialect):
+  let b:ale_sh_shellcheck_dialect = ''
+
+  AssertLinter 'shellcheck', ale#Escape('shellcheck') . b:suffix
+
+Execute(The shellcheck command should include the dialect before options and exclusions):
+  let b:is_bash = 1
+  let b:ale_sh_shellcheck_options = '--foobar'
+  let b:ale_sh_shellcheck_exclusions = 'foo,bar'
+
+  AssertLinter 'shellcheck', ale#Escape('shellcheck')
+  \   . ' -s bash --foobar -e foo,bar'
+  \   . b:suffix
+
+Execute(The -x option should be added when the version is new enough):
+  AssertLinter 'shellcheck', [
+  \ ale#Escape('shellcheck') . ' --version',
+  \ ale#Escape('shellcheck') . b:suffix,
+  \]
+
+  GivenCommandOutput [
+  \ 'ShellCheck - shell script analysis tool',
+  \ 'version: 0.4.4',
+  \ 'license: GNU General Public License, version 3',
+  \ 'website: http://www.shellcheck.net',
+  \]
+  AssertLinter 'shellcheck', [
+  \ ale#Escape('shellcheck') . ' --version',
+  \ ale#Escape('shellcheck') . ' -x' . b:suffix,
+  \]
+
+  " We should cache the version check
+  GivenCommandOutput []
+  AssertLinter 'shellcheck', [
+  \ ale#Escape('shellcheck') . ' -x' . b:suffix,
+  \]
+
+Execute(The -x option should not be added when the version is too old):
+  GivenCommandOutput [
+  \ 'ShellCheck - shell script analysis tool',
+  \ 'version: 0.3.9',
+  \ 'license: GNU General Public License, version 3',
+  \ 'website: http://www.shellcheck.net',
+  \]
+  AssertLinter 'shellcheck', [
+  \ ale#Escape('shellcheck') . ' --version',
+  \ ale#Escape('shellcheck') . b:suffix,
+  \]
+
+Execute(The version check shouldn't be run again for old versions):
+  GivenCommandOutput [
+  \ 'ShellCheck - shell script analysis tool',
+  \ 'version: 0.3.9',
+  \ 'license: GNU General Public License, version 3',
+  \ 'website: http://www.shellcheck.net',
+  \]
+  AssertLinter 'shellcheck', [
+  \ ale#Escape('shellcheck') . ' --version',
+  \ ale#Escape('shellcheck') . b:suffix,
+  \]
+  AssertLinter 'shellcheck', [
+  \ ale#Escape('shellcheck') . b:suffix,
+  \]

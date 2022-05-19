@@ -1,0 +1,26 @@
+Before:
+  call ale#assert#SetUpLinterTest('eruby', 'erblint')
+  call ale#test#SetFilename('dummy.html.erb')
+
+  let g:ale_eruby_erblint_executable = 'erblint'
+  let g:ale_eruby_erblint_options = ''
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should default to erblint):
+  AssertLinter 'erblint', ale#Escape('erblint')
+  \   . ' --format json  --stdin %s'
+
+Execute(Should be able to set a custom executable):
+  let g:ale_eruby_erblint_executable = 'bin/erblint'
+
+  AssertLinter 'bin/erblint' , ale#Escape('bin/erblint')
+  \   . ' --format json  --stdin %s'
+
+Execute(Setting bundle appends 'exec erblint'):
+  let g:ale_eruby_erblint_executable = 'path to/bundle'
+
+  AssertLinter 'path to/bundle', ale#Escape('path to/bundle')
+  \   . ' exec erblint'
+  \   . ' --format json  --stdin %s'

@@ -1,0 +1,30 @@
+Before:
+  Save g:ale_go_go111module
+
+  call ale#assert#SetUpLinterTest('go', 'golint')
+
+After:
+  Restore
+
+  unlet! b:ale_go_go111module
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default golint command should be correct):
+  AssertLinter 'golint', ale#Escape('golint') . ' %t'
+
+Execute(The golint executable should be configurable):
+  let b:ale_go_golint_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' %t'
+
+Execute(The golint options should be configurable):
+  let b:ale_go_golint_options = '--foo'
+
+  AssertLinter 'golint', ale#Escape('golint') . ' --foo %t'
+
+Execute(The golint command should support Go environment variables):
+  let b:ale_go_go111module = 'on'
+
+  AssertLinter 'golint',
+  \ ale#Env('GO111MODULE', 'on') . ale#Escape('golint') . ' %t'

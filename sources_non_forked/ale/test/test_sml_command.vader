@@ -1,0 +1,45 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(smlnj finds CM file if it exists):
+  call ale#test#SetFilename('test-files/smlnj/cm/foo.sml')
+
+  AssertEqual
+  \ ale#test#GetFilename('test-files/smlnj/cm/sources.cm'),
+  \ ale#handlers#sml#GetCmFile(bufnr('%'))
+
+Execute(smlnj finds CM file by searching upwards):
+  call ale#test#SetFilename('test-files/smlnj/cm/path/to/bar.sml')
+
+  AssertEqual
+  \ ale#test#GetFilename('test-files/smlnj/cm/sources.cm'),
+  \ ale#handlers#sml#GetCmFile(bufnr('%'))
+
+Execute(smlnj returns '' when no CM file found):
+  call ale#test#SetFilename('test-files/smlnj/file/qux.sml')
+
+  AssertEqual '', ale#handlers#sml#GetCmFile(bufnr('%'))
+
+Execute(CM-project mode enabled when CM file found):
+  call ale#test#SetFilename('test-files/smlnj/cm/foo.sml')
+
+  AssertEqual 'sml', ale#handlers#sml#GetExecutableSmlnjCm(bufnr('%'))
+
+Execute(single-file mode disabled when CM file found):
+  call ale#test#SetFilename('test-files/smlnj/cm/foo.sml')
+
+  AssertEqual '', ale#handlers#sml#GetExecutableSmlnjFile(bufnr('%'))
+
+Execute(CM-project mode disabled when CM file not found):
+  call ale#test#SetFilename('test-files/smlnj/file/qux.sml')
+
+  AssertEqual '', ale#handlers#sml#GetExecutableSmlnjCm(bufnr('%'))
+
+Execute(single-file mode enabled when CM file found):
+  call ale#test#SetFilename('test-files/smlnj/file/qux.sml')
+
+  AssertEqual 'sml', ale#handlers#sml#GetExecutableSmlnjFile(bufnr('%'))

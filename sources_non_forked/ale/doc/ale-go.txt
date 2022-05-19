@@ -39,7 +39,6 @@ g:ale_go_go111module                                     *g:ale_go_go111module*
   golang tools.
 
 
-
 ===============================================================================
 bingo                                                            *ale-go-bingo*
 
@@ -56,6 +55,11 @@ g:ale_go_bingo_options                                 *g:ale_go_bingo_options*
   Type: |String|
   Default: `''`
 
+
+===============================================================================
+cspell                                                          *ale-go-cspell*
+
+See |ale-cspell-options|
 
 ===============================================================================
 gobuild                                                        *ale-go-gobuild*
@@ -78,6 +82,24 @@ g:ale_go_gofmt_options                                 *g:ale_go_gofmt_options*
   Default: `''`
 
   This variable can be set to pass additional options to the gofmt fixer.
+
+
+===============================================================================
+gofumpt                                                        *ale-go-gofumpt*
+
+g:ale_go_gofumpt_executable                       *g:ale_go_gofumpt_executable*
+                                                  *b:ale_go_gofumpt_executable*
+  Type: |String|
+  Default: `'gofumpt'`
+
+  Executable to run to use as the gofumpt fixer.
+
+g:ale_go_gofumpt_options                             *g:ale_go_gofumpt_options*
+                                                     *b:ale_go_gofumpt_options*
+  Type: |String|
+  Default: `''`
+
+  Options to pass to the gofumpt fixer.
 
 
 ===============================================================================
@@ -133,6 +155,7 @@ g:ale_go_langserver_options                       *g:ale_go_langserver_options*
   `-gocodecompletion` option is ignored because it is handled automatically
   by the |g:ale_completion_enabled| variable.
 
+
 ===============================================================================
 golines                                                        *ale-go-golines*
 
@@ -148,8 +171,9 @@ g:ale_go_golines_options                             *g:ale_go_golines_options*
   Type: |String|
   Default: ''
 
-  Additional options passed to the golines command. By default golines has 
+  Additional options passed to the golines command. By default golines has
   --max-length=100 (lines above 100 characters will be wrapped)
+
 
 ===============================================================================
 golint                                                          *ale-go-golint*
@@ -330,7 +354,7 @@ g:ale_go_staticcheck_options                     *g:ale_go_staticcheck_options*
 g:ale_go_staticcheck_lint_package           *g:ale_go_staticcheck_lint_package*
                                             *b:ale_go_staticcheck_lint_package*
   Type: |Number|
-  Default: `0`
+  Default: `1`
 
   When set to `1`, the whole Go package will be checked instead of only the
   current file.

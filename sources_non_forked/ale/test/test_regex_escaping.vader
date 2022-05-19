@@ -1,0 +1,4 @@
+Execute(ale#util#EscapePCRE should escape strings for PCRE or RE2 appropriately):
+  AssertEqual '\\\^\$\*\+\?\.\(\)\|\{\}\[\]', ale#util#EscapePCRE('\^$*+?.()|{}[]')
+  AssertEqual 'abcABC09', ale#util#EscapePCRE('abcABC09')
+  AssertEqual '/', ale#util#EscapePCRE('/')

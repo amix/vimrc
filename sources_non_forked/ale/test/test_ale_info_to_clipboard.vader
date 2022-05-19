@@ -1,0 +1,15 @@
+After:
+  unlet! g:output
+
+Execute(ALEInfoToClipboard should that clipboard support is required):
+  " When run in the Docker image, there's no clipboard support, so this test
+  " will actually run.
+  if !has('clipboard')
+    let g:output = ''
+
+    redir => g:output
+      :ALEInfoToClipboard
+    redir END
+
+    AssertEqual 'clipboard not available. Try :ALEInfoToFile instead.', join(split(g:output))
+  endif

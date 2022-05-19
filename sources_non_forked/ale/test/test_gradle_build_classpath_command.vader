@@ -1,0 +1,52 @@
+Before:
+  Save $PATH
+  Save $PATHEXT
+
+  let $PATHEXT = '.'
+
+  call ale#test#SetDirectory('/testplugin/test')
+  runtime ale_linters/kotlin/kotlinc.vim
+
+  let g:command_tail = ' -I ' . ale#Escape(ale#gradle#GetInitPath())
+  \   . ' -q printClasspath'
+
+  let g:gradle_init_path = ale#path#Simplify(g:dir . '../../autoload/ale/gradle/init.gradle')
+
+After:
+  Restore
+
+  unlet! g:gradle_init_path
+  unlet! g:command_tail
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(Should return 'gradlew' command if project includes gradle wapper):
+  call ale#test#SetFilename('test-files/gradle/wrapped-project/src/main/kotlin/dummy.kt')
+
+  AssertEqual
+  \ [
+  \   ale#path#Simplify(g:dir . '/test-files/gradle/wrapped-project'),
+  \   ale#Escape(ale#path#Simplify(g:dir . '/test-files/gradle/wrapped-project/gradlew'))
+  \   . g:command_tail,
+  \ ],
+  \ ale#gradle#BuildClasspathCommand(bufnr(''))
+
+Execute(Should return 'gradle' command if project does not include gradle wapper):
+  call ale#test#SetFilename('test-files/gradle/unwrapped-project/src/main/kotlin/dummy.kt')
+  let $PATH .= (has('win32') ? ';' : ':')
+  \ . ale#path#Simplify(g:dir . '/test-files/gradle')
+
+  AssertEqual
+  \ [
+  \   ale#path#Simplify(g:dir . '/test-files/gradle/unwrapped-project'),
+  \   ale#Escape('gradle') . g:command_tail
+  \ ],
+  \ ale#gradle#BuildClasspathCommand(bufnr(''))
+
+Execute(Should return empty string if gradle cannot be executed):
+  call ale#test#SetFilename('test-files/gradle/non-gradle-project/src/main/kotlin/dummy.kt')
+
+  AssertEqual
+  \ ['', ''],
+  \ ale#gradle#BuildClasspathCommand(bufnr(''))

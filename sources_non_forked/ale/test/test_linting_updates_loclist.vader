@@ -1,0 +1,96 @@
+Before:
+  Save g:ale_echo_cursor
+  Save g:ale_set_highlights
+  Save g:ale_set_loclist
+  Save g:ale_set_quickfix
+  Save g:ale_set_signs
+  Save g:ale_run_synchronously
+  Save g:ale_set_lists_synchronously
+  Save g:ale_buffer_info
+  Save g:ale_sign_offset
+
+  " We want to check that sign IDs are set for this test.
+  let g:ale_set_signs = 1
+  let g:ale_set_loclist = 1
+  let g:ale_sign_offset = 2000000
+  " Disable features we don't need for these tests.
+  let g:ale_set_quickfix = 0
+  let g:ale_set_highlights = 0
+  let g:ale_echo_cursor = 0
+
+  let g:ale_run_synchronously = 1
+  let g:ale_set_lists_synchronously = 1
+  let g:ale_buffer_info = {}
+
+  function! TestCallback(buffer, output)
+    return [
+    \ {
+    \   'lnum': 1,
+    \   'type': 'W',
+    \   'col': 10,
+    \   'text': 'Infix operators must be spaced. [Warning/space-infix-ops]',
+    \ },
+    \ {
+    \   'lnum': 2,
+    \   'type': 'E',
+    \   'col': 10,
+    \   'text': 'Missing semicolon. [Error/semi]',
+    \ }
+    \]
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd': 'true',
+  \ 'command': 'true',
+  \ 'read_buffer': 0,
+  \})
+
+  sign unplace *
+
+  call ale#engine#Cleanup(bufnr(''))
+
+After:
+  Restore
+
+  delfunction TestCallback
+
+  call ale#linter#Reset()
+
+  sign unplace *
+
+Given foobar (Some JavaScript with problems):
+  var y = 3+3;
+  var y = 3
+
+Execute(The loclist should be updated after linting is done):
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'linter_name': 'testlinter',
+  \     'nr': -1,
+  \     'type': 'W',
+  \     'col': 10,
+  \     'text': 'Infix operators must be spaced. [Warning/space-infix-ops]',
+  \     'sign_id': 2000001,
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'bufnr': bufnr('%'),
+  \     'vcol': 0,
+  \     'linter_name': 'testlinter',
+  \     'nr': -1,
+  \     'type': 'E',
+  \     'col': 10,
+  \     'text': 'Missing semicolon. [Error/semi]',
+  \     'sign_id': 2000002,
+  \   }
+  \ ],
+  \ get(get(g:ale_buffer_info, bufnr('%'), {}), 'loclist', [])

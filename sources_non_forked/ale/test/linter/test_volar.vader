@@ -1,0 +1,27 @@
+Before:
+    call ale#assert#SetUpLinterTest('vue', 'volar')
+
+    let g:tsserver_path = ''
+    let g:actual_path = ''
+    let g:init_opts = {}
+
+After:
+    call ale#assert#TearDownLinterTest()
+
+    unlet g:tsserver_path
+    unlet g:actual_path
+    unlet g:init_opts
+
+Execute(Assert Volar LSP for Vue Project):
+    call ale#test#SetFilename('../test-files/volar/src/App.vue')
+
+    AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/volar')
+
+Execute(Assert proper tsserverlibrary for Volar LSP):
+    call ale#test#SetFilename('../test-files/volar/src/App.vue')
+
+    let g:init_opts = ale_linters#vue#volar#GetInitializationOptions(bufnr(''))
+    let g:tsserver_path = init_opts.typescript.serverPath
+    let g:actual_path = ale#path#Simplify(g:dir . '/../test-files/volar/node_modules/typescript/lib/tsserverlibrary.js')
+
+    AssertEqual g:tsserver_path, g:actual_path

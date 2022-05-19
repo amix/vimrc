@@ -1,0 +1,403 @@
+Before:
+  Save g:ale_disable_lsp
+
+After:
+  Restore
+
+  unlet! b:ale_disable_lsp
+
+Execute(GetList should ignore some invalid values):
+  AssertEqual [], ale#engine#ignore#GetList('', 'foo')
+  AssertEqual [], ale#engine#ignore#GetList('', 0)
+  AssertEqual [], ale#engine#ignore#GetList('', v:null)
+
+Execute(GetList should handle Lists):
+  AssertEqual ['foo', 'bar'], ale#engine#ignore#GetList('', ['foo', 'bar'])
+
+Execute(GetList should handle Dictionaries):
+  AssertEqual
+  \ ['linter1', 'linter2'],
+  \ uniq(sort(ale#engine#ignore#GetList('x.y.z', {
+  \   'x': ['linter1'],
+  \   'abc': ['linter3'],
+  \   'z': ['linter2'],
+  \ })))
+
+Execute(Exclude should ignore some invalid values):
+  AssertEqual
+  \ [
+  \   {'name': 'linter1', 'aliases': []},
+  \   {'name': 'linter2', 'aliases': ['alias1']},
+  \   {'name': 'linter3', 'aliases': []},
+  \ ],
+  \ ale#engine#ignore#Exclude(
+  \   'foo.bar',
+  \   [
+  \     {'name': 'linter1', 'aliases': []},
+  \     {'name': 'linter2', 'aliases': ['alias1']},
+  \     {'name': 'linter3', 'aliases': []},
+  \   ],
+  \   'foo',
+  \   0,
+  \ )
+  AssertEqual
+  \ [
+  \   {'name': 'linter1', 'aliases': []},
+  \   {'name': 'linter2', 'aliases': ['alias1']},
+  \   {'name': 'linter3', 'aliases': []},
+  \ ],
+  \ ale#engine#ignore#Exclude(
+  \   'foo.bar',
+  \   [
+  \     {'name': 'linter1', 'aliases': []},
+  \     {'name': 'linter2', 'aliases': ['alias1']},
+  \     {'name': 'linter3', 'aliases': []},
+  \   ],
+  \   0,
+  \   0,
+  \ )
+  AssertEqual
+  \ [
+  \   {'name': 'linter1', 'aliases': []},
+  \   {'name': 'linter2', 'aliases': ['alias1']},
+  \   {'name': 'linter3', 'aliases': []},
+  \ ],
+  \ ale#engine#ignore#Exclude(
+  \   'foo.bar',
+  \   [
+  \     {'name': 'linter1', 'aliases': []},
+  \     {'name': 'linter2', 'aliases': ['alias1']},
+  \     {'name': 'linter3', 'aliases': []},
+  \   ],
+  \   v:null,
+  \   0,
+  \ )
+
+Execute(Exclude should handle Lists):
+  AssertEqual
+  \ [
+  \   {'name': 'linter3', 'aliases': []},
+  \ ],
+  \ ale#engine#ignore#Exclude(
+  \   'foo.bar',
+  \   [
+  \     {'name': 'linter1', 'aliases': []},
+  \     {'name': 'linter2', 'aliases': ['alias1']},
+  \     {'name': 'linter3', 'aliases': []},
+  \   ],
+  \   ['linter1', 'alias1'],
+  \   0,
+  \ )
+
+Execute(Exclude should handle Dictionaries):
+  AssertEqual
+  \ [
+  \   {'name': 'linter3', 'aliases': []},
+  \ ],
+  \ ale#engine#ignore#Exclude(
+  \   'foo.bar',
+  \   [
+  \     {'name': 'linter1', 'aliases': []},
+  \     {'name': 'linter2', 'aliases': ['alias1']},
+  \     {'name': 'linter3', 'aliases': []},
+  \   ],
+  \   {'foo': ['linter1'], 'bar': ['alias1']},
+  \   0,
+  \ )
+
+Execute(Exclude should filter LSP linters when g:ale_disable_lsp is set to 1):
+  AssertEqual
+  \ [
+  \   {'name': 'linter1', 'aliases': [], 'lsp': ''},
+  \   {'name': 'linter2', 'aliases': []},
+  \ ],
+  \ ale#engine#ignore#Exclude(
+  \   'foo',
+  \   [
+  \       {'name': 'linter1', 'aliases': [], 'lsp': ''},
+  \       {'name': 'linter2', 'aliases': []},
+  \       {'name': 'linter3', 'aliases': [], 'lsp': 'stdio'},
+  \   ],
+  \   [],
+  \   1,
+  \ )
+
+Execute(Exclude should filter LSP linters when b:ale_disable_lsp is set to 1):
+  AssertEqual
+  \ [
+  \   {'name': 'linter1', 'aliases': [], 'lsp': ''},
+  \   {'name': 'linter2', 'aliases': []},
+  \ ],
+  \ ale#engine#ignore#Exclude(
+  \   'foo',
+  \   [
+  \       {'name': 'linter1', 'aliases': [], 'lsp': ''},
+  \       {'name': 'linter2', 'aliases': []},
+  \       {'name': 'linter3', 'aliases': [], 'lsp': 'stdio'},
+  \   ],
+  \   [],
+  \   1,
+  \ )
+
+Before:
+  Save g:ale_linters_ignore
+  Save g:ale_buffer_info
+  Save g:ale_disable_lsp
+
+  let g:ale_disable_lsp = 0
+
+  let g:linters = []
+  let g:loclist = []
+  let g:run_linters_called = 0
+
+  runtime autoload/ale/engine.vim
+
+  " Mock the engine function so we can set it up.
+  function! ale#engine#RunLinters(buffer, linters, should_lint_file) abort
+    let g:linters = a:linters
+    let g:run_linters_called = 1
+  endfunction
+
+  function! ale#engine#HandleLoclist(linter_name, buffer, loclist, from_other_source) abort
+    let g:loclist = a:loclist
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'true',
+  \ 'command': has('win32') ? 'echo' : 'true',
+  \})
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  Restore
+
+  unlet! b:ale_linted
+  unlet! b:ale_linters_ignore
+  unlet! b:ale_quitting
+  unlet! b:ale_save_event_fired
+  unlet! b:ale_disable_lsp
+  unlet! g:linters
+  unlet! g:loclist
+  unlet! g:lsp_message
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+  call ale#lsp_linter#ClearLSPData()
+  runtime autoload/ale/engine.vim
+
+Given foobar(An empty file):
+Execute(Global ignore lists should be applied for linters):
+  " We have to set up buffer info so RunLinters is called.
+  let g:ale_buffer_info = {bufnr(''): {}}
+
+  ALELint
+  Assert g:run_linters_called, "The mock callback wasn't called"
+  AssertEqual ['testlinter'], map(g:linters, 'v:val.name')
+
+  let g:ale_linters_ignore = ['testlinter']
+  ALELint
+  AssertEqual [], g:linters
+
+Execute(buffer ignore lists should be applied for linters):
+  " We have to set up buffer info so RunLinters is called.
+  let g:ale_buffer_info = {bufnr(''): {}}
+
+  ALELint
+  Assert g:run_linters_called, "The mock callback wasn't called"
+  AssertEqual ['testlinter'], map(g:linters, 'v:val.name')
+
+  let b:ale_linters_ignore = ['testlinter']
+  ALELint
+  AssertEqual [], g:linters
+
+Execute(Buffer ignore lists should be applied for tsserver):
+  call ale#test#SetFilename('filename.ts')
+  call ale#engine#InitBufferInfo(bufnr(''))
+
+  let g:lsp_message = {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'syntaxDiag',
+  \ 'body': {
+  \   'file': g:dir . '/filename.ts',
+  \   'diagnostics':[
+  \     {
+  \       'start': {
+  \         'line':2,
+  \         'offset':14,
+  \       },
+  \       'end': {
+  \         'line':2,
+  \         'offset':15,
+  \       },
+  \       'text': ''','' expected.',
+  \       "code":1005
+  \     },
+  \   ],
+  \ },
+  \}
+
+  call ale#lsp_linter#HandleLSPResponse(347, g:lsp_message)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 14,
+  \     'nr': 1005,
+  \     'code': '1005',
+  \     'type': 'E',
+  \     'end_col': 14,
+  \     'end_lnum': 2,
+  \     'text': ''','' expected.',
+  \   },
+  \ ],
+  \ g:loclist
+
+  let g:loclist = []
+  let b:ale_linters_ignore = ['tsserver']
+  call ale#lsp_linter#HandleLSPResponse(347, g:lsp_message)
+
+  AssertEqual [], g:loclist
+
+Execute(Buffer ignore lists should be applied for LSP linters):
+  call ale#test#SetFilename('filename.py')
+  call ale#engine#InitBufferInfo(bufnr(''))
+  call ale#lsp_linter#SetLSPLinterMap({'347': 'lsplinter'})
+
+  let g:lsp_message = {
+  \ 'jsonrpc': '2.0',
+  \ 'method': 'textDocument/publishDiagnostics',
+  \ 'params': {
+  \   'uri': ale#path#ToFileURI(expand('%:p')),
+  \   'diagnostics': [
+  \     {
+  \       'severity': 1,
+  \       'message': 'x',
+  \       'range': {
+  \         'start': {'line': 0, 'character': 9},
+  \         'end': {'line': 0, 'character': 9},
+  \       },
+  \     }
+  \   ],
+  \ },
+  \}
+
+  call ale#lsp_linter#HandleLSPResponse(347, g:lsp_message)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 10,
+  \     'type': 'E',
+  \     'end_col': 9,
+  \     'end_lnum': 1,
+  \     'text': 'x',
+  \   }
+  \ ],
+  \ g:loclist
+
+  let b:ale_linters_ignore = ['lsplinter']
+  let g:loclist = []
+
+  call ale#lsp_linter#HandleLSPResponse(347, g:lsp_message)
+
+  AssertEqual [], g:loclist
+
+Execute(ale_disable_lsp should be applied for tsserver):
+  call ale#test#SetFilename('filename.ts')
+  call ale#engine#InitBufferInfo(bufnr(''))
+
+  let g:lsp_message = {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'syntaxDiag',
+  \ 'body': {
+  \   'file': g:dir . '/filename.ts',
+  \   'diagnostics':[
+  \     {
+  \       'start': {
+  \         'line':2,
+  \         'offset':14,
+  \       },
+  \       'end': {
+  \         'line':2,
+  \         'offset':15,
+  \       },
+  \       'text': ''','' expected.',
+  \       "code":1005
+  \     },
+  \   ],
+  \ },
+  \}
+
+  call ale#lsp_linter#HandleLSPResponse(347, g:lsp_message)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 14,
+  \     'nr': 1005,
+  \     'code': '1005',
+  \     'type': 'E',
+  \     'end_col': 14,
+  \     'end_lnum': 2,
+  \     'text': ''','' expected.',
+  \   },
+  \ ],
+  \ g:loclist
+
+  let g:loclist = []
+  let b:ale_disable_lsp = 1
+  call ale#lsp_linter#HandleLSPResponse(347, g:lsp_message)
+
+  AssertEqual [], g:loclist
+
+Execute(ale_disable_lsp should be applied for LSP linters):
+  call ale#test#SetFilename('filename.py')
+  call ale#engine#InitBufferInfo(bufnr(''))
+  call ale#lsp_linter#SetLSPLinterMap({'347': 'lsplinter'})
+
+  let g:lsp_message = {
+  \ 'jsonrpc': '2.0',
+  \ 'method': 'textDocument/publishDiagnostics',
+  \ 'params': {
+  \   'uri': ale#path#ToFileURI(expand('%:p')),
+  \   'diagnostics': [
+  \     {
+  \       'severity': 1,
+  \       'message': 'x',
+  \       'range': {
+  \         'start': {'line': 0, 'character': 9},
+  \         'end': {'line': 0, 'character': 9},
+  \       },
+  \     }
+  \   ],
+  \ },
+  \}
+
+  call ale#lsp_linter#HandleLSPResponse(347, g:lsp_message)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 10,
+  \     'type': 'E',
+  \     'end_col': 9,
+  \     'end_lnum': 1,
+  \     'text': 'x',
+  \   }
+  \ ],
+  \ g:loclist
+
+  let b:ale_disable_lsp = 1
+  let g:loclist = []
+
+  call ale#lsp_linter#HandleLSPResponse(347, g:lsp_message)
+
+  AssertEqual [], g:loclist

@@ -1,0 +1,28 @@
+Before:
+  call ale#assert#SetUpFixerTest('proto', 'protolint')
+  call ale#test#SetFilename('test.proto')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The default command should be correct):
+  AssertFixer
+  \ {
+  \   'command': ale#Escape('protolint')
+  \     . ' -fix'
+  \     . ' %t',
+  \   'read_temporary_file': 1,
+  \ }
+
+Execute(The callback should include any additional options):
+  let b:ale_proto_protolint_executable = '/tmp/protolint'
+  let b:ale_proto_protolint_config = '/tmp/protolint.yaml'
+
+  AssertFixer
+  \ {
+  \   'command': ale#Escape('/tmp/protolint')
+  \     . ' -config_path=' . ale#Escape('/tmp/protolint.yaml')
+  \     . ' -fix'
+  \     . ' %t',
+  \   'read_temporary_file': 1,
+  \ }

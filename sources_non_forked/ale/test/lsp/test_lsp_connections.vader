@@ -1,0 +1,227 @@
+Before:
+  let g:ale_lsp_next_message_id = 1
+
+After:
+  if exists('b:conn') && has_key(b:conn, 'id')
+    call ale#lsp#RemoveConnectionWithID(b:conn.id)
+  endif
+
+  unlet! b:data
+  unlet! b:conn
+
+Execute(GetNextMessageID() should increment appropriately):
+  " We should get the initial ID, and increment a bit.
+  AssertEqual 1, ale#lsp#GetNextMessageID()
+  AssertEqual 2, ale#lsp#GetNextMessageID()
+  AssertEqual 3, ale#lsp#GetNextMessageID()
+
+  " Set the maximum ID.
+  let g:ale_lsp_next_message_id = 9223372036854775807
+
+  " When we hit the maximum ID, the next ID afterwards should be 1.
+  AssertEqual 9223372036854775807, ale#lsp#GetNextMessageID()
+  AssertEqual 1, ale#lsp#GetNextMessageID()
+
+Execute(ale#lsp#CreateMessageData() should create an appropriate message):
+    " NeoVim outputs JSON with spaces, so the output is a little different.
+    if has('nvim')
+      " 79 is the size in bytes for UTF-8, not the number of characters.
+      AssertEqual
+      \ [
+      \   1,
+      \   "Content-Length: 79\r\n\r\n"
+      \   . '{"method": "someMethod", "jsonrpc": "2.0", "id": 1, "params": {"foo": "barÜ"}}',
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'someMethod', {'foo': 'barÜ'}])
+      " Check again to ensure that we use the next ID.
+      AssertEqual
+      \ [
+      \   2,
+      \   "Content-Length: 79\r\n\r\n"
+      \   . '{"method": "someMethod", "jsonrpc": "2.0", "id": 2, "params": {"foo": "barÜ"}}',
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'someMethod', {'foo': 'barÜ'}])
+    else
+      AssertEqual
+      \ [
+      \   1,
+      \   "Content-Length: 71\r\n\r\n"
+      \   . '{"method":"someMethod","jsonrpc":"2.0","id":1,"params":{"foo":"barÜ"}}',
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'someMethod', {'foo': 'barÜ'}])
+      AssertEqual
+      \ [
+      \   2,
+      \   "Content-Length: 71\r\n\r\n"
+      \   . '{"method":"someMethod","jsonrpc":"2.0","id":2,"params":{"foo":"barÜ"}}',
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'someMethod', {'foo': 'barÜ'}])
+    endif
+
+Execute(ale#lsp#CreateMessageData() should create messages without params):
+    if has('nvim')
+      AssertEqual
+      \ [
+      \   1,
+      \   "Content-Length: 56\r\n\r\n"
+      \   . '{"method": "someOtherMethod", "jsonrpc": "2.0", "id": 1}',
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'someOtherMethod'])
+    else
+      AssertEqual
+      \ [
+      \   1,
+      \   "Content-Length: 51\r\n\r\n"
+      \   . '{"method":"someOtherMethod","jsonrpc":"2.0","id":1}',
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'someOtherMethod'])
+    endif
+
+Execute(ale#lsp#CreateMessageData() should create notifications):
+    if has('nvim')
+      AssertEqual
+      \ [
+      \   0,
+      \   "Content-Length: 48\r\n\r\n"
+      \   . '{"method": "someNotification", "jsonrpc": "2.0"}',
+      \ ],
+      \ ale#lsp#CreateMessageData([1, 'someNotification'])
+      AssertEqual
+      \ [
+      \   0,
+      \   "Content-Length: 74\r\n\r\n"
+      \   . '{"method": "someNotification", "jsonrpc": "2.0", "params": {"foo": "bar"}}',
+      \ ],
+      \ ale#lsp#CreateMessageData([1, 'someNotification', {'foo': 'bar'}])
+    else
+      AssertEqual
+      \ [
+      \   0,
+      \   "Content-Length: 45\r\n\r\n"
+      \   . '{"method":"someNotification","jsonrpc":"2.0"}',
+      \ ],
+      \ ale#lsp#CreateMessageData([1, 'someNotification'])
+      AssertEqual
+      \ [
+      \   0,
+      \   "Content-Length: 68\r\n\r\n"
+      \   . '{"method":"someNotification","jsonrpc":"2.0","params":{"foo":"bar"}}',
+      \ ],
+      \ ale#lsp#CreateMessageData([1, 'someNotification', {'foo': 'bar'}])
+    endif
+
+Execute(ale#lsp#CreateMessageData() should create tsserver notification messages):
+    if has('nvim')
+      AssertEqual
+      \ [
+      \   0,
+      \   '{"seq": null, "type": "request", "command": "someNotification"}'
+      \   . "\n",
+      \ ],
+      \ ale#lsp#CreateMessageData([1, 'ts@someNotification'])
+      AssertEqual
+      \ [
+      \   0,
+      \   '{"seq": null, "arguments": {"foo": "bar"}, "type": "request", "command": "someNotification"}'
+      \   . "\n",
+      \ ],
+      \ ale#lsp#CreateMessageData([1, 'ts@someNotification', {'foo': 'bar'}])
+    else
+      AssertEqual
+      \ [
+      \   0,
+      \   '{"seq":null,"type":"request","command":"someNotification"}'
+      \   . "\n",
+      \ ],
+      \ ale#lsp#CreateMessageData([1, 'ts@someNotification'])
+      AssertEqual
+      \ [
+      \   0,
+      \   '{"seq":null,"arguments":{"foo":"bar"},"type":"request","command":"someNotification"}'
+      \   . "\n",
+      \ ],
+      \ ale#lsp#CreateMessageData([1, 'ts@someNotification', {'foo': 'bar'}])
+    endif
+
+Execute(ale#lsp#CreateMessageData() should create tsserver messages expecting responses):
+    if has('nvim')
+      AssertEqual
+      \ [
+      \   1,
+      \   '{"seq": 1, "type": "request", "command": "someMessage"}'
+      \   . "\n",
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'ts@someMessage'])
+      AssertEqual
+      \ [
+      \   2,
+      \   '{"seq": 2, "arguments": {"foo": "bar"}, "type": "request", "command": "someMessage"}'
+      \   . "\n",
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'ts@someMessage', {'foo': 'bar'}])
+    else
+      AssertEqual
+      \ [
+      \   1,
+      \   '{"seq":1,"type":"request","command":"someMessage"}'
+      \   . "\n",
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'ts@someMessage'])
+      AssertEqual
+      \ [
+      \   2,
+      \   '{"seq":2,"arguments":{"foo":"bar"},"type":"request","command":"someMessage"}'
+      \   . "\n",
+      \ ],
+      \ ale#lsp#CreateMessageData([0, 'ts@someMessage', {'foo': 'bar'}])
+    endif
+
+Execute(ale#lsp#ReadMessageData() should read single whole messages):
+  AssertEqual
+  \  ['', [{'id': 2, 'jsonrpc': '2.0', 'result': {'foo': 'barÜ'}}]],
+  \ ale#lsp#ReadMessageData(
+  \   "Content-Length: 49\r\n\r\n"
+  \   . '{"id":2,"jsonrpc":"2.0","result":{"foo":"barÜ"}}'
+  \ )
+
+Execute(ale#lsp#ReadMessageData() should ignore other headers):
+  AssertEqual
+  \  ['', [{'id': 2, 'jsonrpc': '2.0', 'result': {'foo': 'barÜ'}}]],
+  \ ale#lsp#ReadMessageData(
+  \   "First-Header: 49\r\n"
+  \   . "Content-Length: 49\r\n"
+  \   . "Other-Header: 49\r\n"
+  \   . "\r\n"
+  \   . '{"id":2,"jsonrpc":"2.0","result":{"foo":"barÜ"}}'
+  \ )
+
+Execute(ale#lsp#ReadMessageData() should handle partial messages):
+  let b:data = "Content-Length: 49\r\n\r\n" . '{"id":2,"jsonrpc":"2.0","result":'
+
+  AssertEqual [b:data, []], ale#lsp#ReadMessageData(b:data)
+
+Execute(ale#lsp#ReadMessageData() should handle multiple messages):
+  AssertEqual
+  \  ['', [
+  \   {'id': 2, 'jsonrpc': '2.0', 'result': {'foo': 'barÜ'}},
+  \   {'id': 2, 'jsonrpc': '2.0', 'result': {'foo123': 'barÜ'}},
+  \ ]],
+  \ ale#lsp#ReadMessageData(
+  \   "Content-Length: 49\r\n\r\n"
+  \   . '{"id":2,"jsonrpc":"2.0","result":{"foo":"barÜ"}}'
+  \   . "Content-Length: 52\r\n\r\n"
+  \   . '{"id":2,"jsonrpc":"2.0","result":{"foo123":"barÜ"}}'
+  \ )
+
+Execute(ale#lsp#ReadMessageData() should handle a message with part of a second message):
+  let b:data = "Content-Length: 52\r\n\r\n" . '{"id":2,"jsonrpc":"2.'
+
+  AssertEqual
+  \  [b:data, [
+  \   {'id': 2, 'jsonrpc': '2.0', 'result': {'foo': 'barÜ'}},
+  \ ]],
+  \ ale#lsp#ReadMessageData(
+  \   "Content-Length: 49\r\n\r\n"
+  \   . '{"id":2,"jsonrpc":"2.0","result":{"foo":"barÜ"}}'
+  \   . b:data
+  \ )

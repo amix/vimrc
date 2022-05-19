@@ -1,0 +1,63 @@
+Before:
+    runtime ale_linters/thrift/thrift.vim
+
+After:
+    call ale#linter#Reset()
+
+Execute(The thrift handler should handle basic warnings and errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 17,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'text': 'The "byte" type is a compatibility alias for "i8". Use i8" to emphasize the signedness of this type.',
+  \   },
+  \   {
+  \     'lnum': 20,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'text': 'Could not find include file include.thrift',
+  \   },
+  \   {
+  \     'lnum': 83,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'Enum FOO is already defined!',
+  \   },
+  \ ],
+  \ ale_linters#thrift#thrift#Handle(1, [
+  \   '[WARNING:/path/filename.thrift:17] The "byte" type is a compatibility alias for "i8". Use i8" to emphasize the signedness of this type.',
+  \   '[WARNING:/path/filename.thrift:20] Could not find include file include.thrift',
+  \   '[FAILURE:/path/filename.thrift:83] Enum FOO is already defined!',
+  \ ])
+
+Execute(The thrift handler should handle multiline errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 75,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'This integer is too big: "11111111114213213453243"',
+  \   },
+  \   {
+  \     'lnum': 76,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'Implicit field keys are deprecated and not allowed with -strict',
+  \   },
+  \   {
+  \     'lnum': 77,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': "Unknown error (last token was ';')",
+  \   },
+  \ ],
+  \ ale_linters#thrift#thrift#Handle(1, [
+  \   "[ERROR:/path/filename.thrift:75] (last token was '11111111114213213453243')",
+  \   'This integer is too big: "11111111114213213453243"',
+  \   "[ERROR:/path/filename.thrift:76] (last token was ';')",
+  \   'Implicit field keys are deprecated and not allowed with -strict',
+  \   "[ERROR:/path/filename.thrift:77] (last token was ';')",
+  \ ])

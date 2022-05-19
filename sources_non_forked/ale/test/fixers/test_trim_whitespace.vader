@@ -1,0 +1,28 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(Should delete all whitespace at the end of different lines):
+  AssertEqual
+  \ [
+  \   'def foo():',
+  \   '    some_variable = this_is_a_longer_function(',
+  \   'first_argument,',
+  \   ' second_argument,',
+  \   ' third_with_function_call(',
+  \   'foo,',
+  \   ' bar,',
+  \   '))',
+  \ ],
+  \ ale#fixers#generic#TrimWhitespace(bufnr(''), [
+  \   'def foo():',     
+  \   '    some_variable = this_is_a_longer_function(', 
+  \   'first_argument,',  
+  \   ' second_argument,',   
+  \   ' third_with_function_call(',      
+  \   'foo,', 
+  \   ' bar,',   
+  \   '))',              
+  \ ])

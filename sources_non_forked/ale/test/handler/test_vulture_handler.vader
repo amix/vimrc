@@ -1,0 +1,92 @@
+Before:
+  runtime ale_linters/python/vulture.vim
+
+  call ale#test#SetDirectory('/testplugin/test/handler')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+  silent file something_else.py
+
+Execute(Basic vulture check with relative path in result should be handled):
+  call ale#test#SetFilename('something_else.py')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 34,
+  \     'text': 'unused variable ''foo'' (60% confidence)',
+  \     'type': 'W',
+  \     'filename': ale#path#Simplify(g:dir . '/something_else.py'),
+  \   },
+  \ ],
+  \ ale_linters#python#vulture#Handle(bufnr(''), [
+  \   './something_else.py:34: unused variable ''foo'' (60% confidence)',
+  \ ])
+
+Execute(Basic vulture check with absolute path in result should be handled):
+  call ale#test#SetFilename('something_else.py')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 34,
+  \     'text': 'unused variable ''foo'' (60% confidence)',
+  \     'type': 'W',
+  \     'filename': ale#path#Simplify(g:dir . '/something_else.py'),
+  \   },
+  \ ],
+  \ ale_linters#python#vulture#Handle(bufnr(''), [
+  \   ale#path#Simplify(g:dir . '/something_else.py') . ':34: unused variable ''foo'' (60% confidence)',
+  \ ])
+
+Execute(Vulture check for two files should be handled):
+  call ale#test#SetFilename('something_else.py')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 34,
+  \     'text': 'unused variable ''foo'' (60% confidence)',
+  \     'type': 'W',
+  \     'filename': ale#path#Simplify(g:dir . '/something_else.py'),
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'text': 'unused variable ''bar'' (60% confidence)',
+  \     'type': 'W',
+  \     'filename': ale#path#Simplify(g:dir . '/second_one.py'),
+  \   },
+  \ ],
+  \ ale_linters#python#vulture#Handle(bufnr(''), [
+  \   './something_else.py:34: unused variable ''foo'' (60% confidence)',
+  \   './second_one.py:12: unused variable ''bar'' (60% confidence)',
+  \ ])
+
+
+Execute(Vulture exception should be handled):
+  call ale#test#SetFilename('something_else.py')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'text': 'BaddestException: Everything gone wrong (See :ALEDetail)',
+  \     'detail': join([
+  \       'Traceback (most recent call last):',
+  \       '  File "/usr/lib/python3.6/site-packages/vulture/__init__.py", line 13, in <module>',
+  \       '    from .core import stuff',
+  \       'BaddestException: Everything gone wrong',
+  \     ], "\n"),
+  \   }
+  \ ],
+  \ ale_linters#python#vulture#Handle(bufnr(''), [
+  \   'Traceback (most recent call last):',
+  \   '  File "/usr/lib/python3.6/site-packages/vulture/__init__.py", line 13, in <module>',
+  \   '    from .core import stuff',
+  \   'BaddestException: Everything gone wrong',
+  \ ])
+
+Execute(The vulture handler should handle empty output):
+  AssertEqual
+  \ [],
+  \ ale_linters#python#vulture#Handle(bufnr(''), [])

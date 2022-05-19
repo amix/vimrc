@@ -1,0 +1,27 @@
+Before:
+  call ale#assert#SetUpFixerTest('go', 'gofumpt')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The gofumpt callback should return the correct default values):
+  AssertFixer {
+  \    'read_temporary_file': 1,
+  \    'command': ale#Escape('gofumpt') . ' -w -- %t'
+  \}
+
+Execute(The gofumpt callback should allow custom gofumpt executables):
+  let g:ale_go_gofumpt_executable = 'foo/bar'
+
+  AssertFixer {
+  \    'read_temporary_file': 1,
+  \    'command': ale#Escape('foo/bar') . ' -w -- %t'
+  \}
+
+Execute(The gofumpt callback should allow custom gofumpt options):
+  let g:ale_go_gofumpt_options = '--foobar'
+
+  AssertFixer {
+  \    'read_temporary_file': 1,
+  \    'command': ale#Escape('gofumpt') . ' --foobar -w -- %t'
+  \}

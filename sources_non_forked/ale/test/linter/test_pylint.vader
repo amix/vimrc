@@ -1,0 +1,96 @@
+Before:
+  Save g:ale_python_auto_pipenv
+
+  let g:ale_python_auto_pipenv = 0
+
+  call ale#assert#SetUpLinterTest('python', 'pylint')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+  let b:command_tail = ' --output-format text --msg-template="{path}:{line}:{column}: {msg_id} ({symbol}) {msg}" --reports n %s'
+
+  GivenCommandOutput ['pylint 2.3.0']
+
+After:
+  unlet! b:bin_dir
+  unlet! b:executable
+  unlet! b:command_tail
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The pylint callbacks should return the correct default values):
+  AssertLinterCwd expand('%:p:h')
+  AssertLinter 'pylint', ale#Escape('pylint') . b:command_tail
+
+Execute(Pylint should run with the --from-stdin in new enough versions):
+  GivenCommandOutput ['pylint 2.4.0']
+
+  AssertLinterCwd expand('%:p:h')
+  AssertLinter 'pylint', ale#Escape('pylint') . b:command_tail[:-3] . '--from-stdin %s'
+
+Execute(The option for disabling changing directories should work):
+  let g:ale_python_pylint_change_directory = 0
+
+  AssertLinterCwd ''
+  AssertLinter 'pylint', ale#Escape('pylint') . b:command_tail
+
+Execute(The pylint executable should be configurable, and escaped properly):
+  let g:ale_python_pylint_executable = 'executable with spaces'
+
+  AssertLinter 'executable with spaces', ale#Escape('executable with spaces') . b:command_tail
+
+Execute(The pylint command callback should let you set options):
+  let g:ale_python_pylint_options = '--some-option'
+
+  AssertLinter 'pylint', ale#Escape('pylint') . ' --some-option' . b:command_tail
+
+Execute(The pylint callbacks shouldn't detect virtualenv directories where they don't exist):
+  call ale#test#SetFilename('../test-files/python/no_virtualenv/subdir/foo/bar.py')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/no_virtualenv/subdir')
+  AssertLinter 'pylint', ale#Escape('pylint') . b:command_tail
+
+Execute(The pylint callbacks should detect virtualenv directories):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/pylint'
+  \)
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/subdir')
+  AssertLinter b:executable, ale#Escape(b:executable) . b:command_tail
+
+Execute(You should able able to use the global pylint instead):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  let g:ale_python_pylint_use_global = 1
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/subdir')
+  AssertLinter 'pylint', ale#Escape('pylint') . b:command_tail
+
+Execute(Setting executable to 'pipenv' appends 'run pylint'):
+  let g:ale_python_pylint_executable = 'path/to/pipenv'
+  let g:ale_python_pylint_use_global = 1
+
+  AssertLinter 'path/to/pipenv', ale#Escape('path/to/pipenv') . ' run pylint'
+  \   . ' --output-format text --msg-template="{path}:{line}:{column}: {msg_id} ({symbol}) {msg}" --reports n %s'
+
+Execute(Pipenv is detected when python_pylint_auto_pipenv is set):
+  let g:ale_python_pylint_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinterCwd expand('%:p:h')
+  AssertLinter 'pipenv', ale#Escape('pipenv') . ' run pylint'
+  \   . ' --output-format text --msg-template="{path}:{line}:{column}: {msg_id} ({symbol}) {msg}" --reports n %s'
+
+Execute(Setting executable to 'poetry' appends 'run pylint'):
+  let g:ale_python_pylint_executable = 'path/to/poetry'
+  let g:ale_python_pylint_use_global = 1
+
+  AssertLinter 'path/to/poetry', ale#Escape('path/to/poetry') . ' run pylint'
+  \   . ' --output-format text --msg-template="{path}:{line}:{column}: {msg_id} ({symbol}) {msg}" --reports n %s'
+
+Execute(poetry is detected when python_pylint_auto_poetry is set):
+  let g:ale_python_pylint_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinterCwd expand('%:p:h')
+  AssertLinter 'poetry', ale#Escape('poetry') . ' run pylint'
+  \   . ' --output-format text --msg-template="{path}:{line}:{column}: {msg_id} ({symbol}) {msg}" --reports n %s'

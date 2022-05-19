@@ -1,0 +1,20 @@
+Before:
+  call ale#assert#SetUpLinterTest('robot', 'rflint')
+  let b:rflint_format = ' --format'
+  \ . ' "{filename}:{severity}:{linenumber}:{char}:{rulename}:{message}" %s'
+
+After:
+  call ale#assert#TearDownLinterTest()
+  unlet! b:rflint_format
+
+Execute(The rflint command callback should return default string):
+  AssertLinter 'rflint',
+  \ 'rflint'
+  \ . b:rflint_format
+
+Execute(The rflint executable should be configurable):
+  let g:ale_robot_rflint_executable = '~/.local/bin/rflint'
+
+  AssertLinter '~/.local/bin/rflint',
+  \ '~/.local/bin/rflint'
+  \ . b:rflint_format

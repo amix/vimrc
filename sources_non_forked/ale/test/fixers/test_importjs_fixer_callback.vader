@@ -1,0 +1,35 @@
+Before:
+  Save g:ale_javascript_importjs_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_javascript_importjs_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+  call ale#test#SetFilename('../test-files/javascript/test.js')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The importjs callback should return 0 when the executable isn't executable):
+  AssertEqual
+  \ 0,
+  \ ale#fixers#importjs#Fix(bufnr(''))
+
+Execute(The importjs callback should run the command when the executable test passes):
+  let g:ale_javascript_importjs_executable = has('win32') ? 'cmd' : 'echo'
+
+  AssertEqual
+  \ {
+  \   'process_with': 'ale#fixers#importjs#ProcessOutput',
+  \   'command': ale#Escape(g:ale_javascript_importjs_executable) . ' fix %s'
+  \ },
+  \ ale#fixers#importjs#Fix(bufnr(''))
+
+Execute(The ProcessOutput callback should return the expected output):
+  let g:testOutput = '{"messages":[],"fileContent":"one\ntwo","unresolvedImports":{}}'
+
+  AssertEqual
+  \ ['one', 'two'],
+  \ ale#fixers#importjs#ProcessOutput(bufnr(''), g:testOutput)

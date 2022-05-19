@@ -1,0 +1,299 @@
+Before:
+  runtime ale_linters/elm/make.vim
+
+After:
+  unlet! g:config_error_lines
+
+  call ale#linter#Reset()
+
+
+" Elm 0.19
+
+Execute(The elm-make handler should parse Elm 0.19 general problems correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': "error details\n\nstyled details"
+  \   }
+  \ ],
+  \ ale_linters#elm#make#Handle(347, [
+  \   json_encode({
+  \     'type': 'error',
+  \     'path': ale#util#Tempname() . '/Module.elm',
+  \     'title': 'UNKNOWN IMPORT',
+  \     'message': ["error details\n\n", { 'string': 'styled details' }]
+  \   }),
+  \ ])
+
+Execute(The elm-make handler should parse Elm 0.19 compilation errors correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 404,
+  \     'col': 1,
+  \     'end_lnum': 408,
+  \     'end_col': 18,
+  \     'type': 'E',
+  \     'text': "error details 1\n\nstyled details"
+  \   },
+  \   {
+  \     'lnum': 406,
+  \     'col': 5,
+  \     'end_lnum': 407,
+  \     'end_col': 17,
+  \     'type': 'E',
+  \     'text': 'error details 2',
+  \   },
+  \   {
+  \     'lnum': 406,
+  \     'col': 5,
+  \     'end_lnum': 406,
+  \     'end_col': 93,
+  \     'type': 'E',
+  \     'text': 'error details 3',
+  \   },
+  \ ],
+  \ ale_linters#elm#make#Handle(347, [
+  \   json_encode({
+  \      'type': 'compile-errors',
+  \      'errors': [
+  \        {
+  \          'path': ale#util#Tempname() . '/Module.elm',
+  \          'problems': [
+  \            {
+  \              'title': 'TYPE MISMATCH',
+  \              'message': ["error details 1\n\n", { 'string': 'styled details' }],
+  \              'region': { 'start': { 'line': 404, 'column': 1 }, 'end': { 'line': 408, 'column': 18 } }
+  \            },
+  \            {
+  \              'title': 'TYPE MISMATCH',
+  \              'message': ['error details 2'],
+  \              'region': { 'start': {'line': 406, 'column': 5}, 'end': {'line': 407, 'column': 17 } }
+  \            },
+  \            {
+  \              'title': 'TYPE MISMATCH',
+  \              'message': ['error details 3'],
+  \              'region': { 'start': { 'line': 406, 'column': 5}, 'end': {'line': 406, 'column': 93 } }
+  \            }
+  \          ]
+  \        }
+  \      ]
+  \    }),
+  \ ])
+
+Execute(The elm-make handler should handle errors in Elm 0.19 imported modules):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': "src/Module.elm - error details\n\nstyled details",
+  \     'detail': "src/Module.elm ----------\n\nerror details\n\nstyled details"
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': "Elm - error details\n\nstyled details",
+  \     'detail': "Elm ----------\n\nerror details\n\nstyled details"
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': "src/Module.elm:404 - error details\n\nstyled details",
+  \     'detail': "src/Module.elm:404 ----------\n\nerror details\n\nstyled details"
+  \   },
+  \ ],
+  \ ale_linters#elm#make#Handle(347, [
+  \   json_encode({
+  \      'type': 'error',
+  \      'path': 'src/Module.elm',
+  \      'title': 'UNKNOWN IMPORT',
+  \      'message': ["error details\n\n", { 'string': 'styled details' }]
+  \    }),
+  \   json_encode({
+  \      'type': 'error',
+  \      'path': v:null,
+  \      'title': 'UNKNOWN IMPORT',
+  \      'message': ["error details\n\n", { 'string': 'styled details' }]
+  \    }),
+  \   json_encode({
+  \      'type': 'compile-errors',
+  \      'errors': [
+  \        {
+  \          'path': 'src/Module.elm',
+  \          'problems': [
+  \            {
+  \              'title': 'TYPE MISMATCH',
+  \              'message': ["error details\n\n", { 'string': 'styled details' }],
+  \              'region': { 'start': { 'line': 404, 'column': 1 }, 'end': { 'line': 408, 'column': 18 } }
+  \            }
+  \          ]
+  \        }
+  \      ]
+  \    }),
+  \ ])
+
+
+" Elm 0.18
+
+Execute(The elm-make handler should parse Elm 0.18 compilation errors correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 33,
+  \     'col': 1,
+  \     'end_lnum': 33,
+  \     'end_col': 19,
+  \     'type': 'W',
+  \     'text': 'warning overview',
+  \     'detail': "warning overview\n\nwarning details",
+  \   },
+  \   {
+  \     'lnum': 404,
+  \     'col': 1,
+  \     'end_lnum': 408,
+  \     'end_col': 18,
+  \     'type': 'E',
+  \     'text': 'error overview 1',
+  \     'detail': "error overview 1\n\nerror details 1",
+  \   },
+  \   {
+  \     'lnum': 406,
+  \     'col': 5,
+  \     'end_lnum': 407,
+  \     'end_col': 17,
+  \     'type': 'E',
+  \     'text': 'error overview 2',
+  \     'detail': "error overview 2\n\nerror details 2",
+  \   },
+  \   {
+  \     'lnum': 406,
+  \     'col': 5,
+  \     'end_lnum': 406,
+  \     'end_col': 93,
+  \     'type': 'E',
+  \     'text': 'error overview 3',
+  \     'detail': "error overview 3\n\nerror details 3",
+  \   },
+  \ ],
+  \ ale_linters#elm#make#Handle(347, [
+  \   json_encode([
+  \      {
+  \         'tag': 'unused import',
+  \         'overview': 'warning overview',
+  \         'details': 'warning details',
+  \         'region': {'start': { 'line': 33, 'column': 1 }, 'end': { 'line': 33, 'column': 19 } },
+  \         'type': 'warning',
+  \         'file': ale#util#Tempname() . '/Module.elm',
+  \      }
+  \    ]),
+  \   json_encode([
+  \      {
+  \        'tag': 'TYPE MISMATCH',
+  \        'overview': 'error overview 1',
+  \        'subregion': { 'start': { 'line': 406, 'column': 5 }, 'end': { 'line': 408, 'column': 18 } },
+  \        'details': 'error details 1',
+  \        'region': { 'start': { 'line': 404, 'column': 1 }, 'end': { 'line': 408, 'column': 18 } },
+  \        'type': 'error',
+  \        'file': ale#util#Tempname() . '/Module.elm',
+  \      },
+  \      {
+  \        'tag': 'TYPE MISMATCH',
+  \        'overview': 'error overview 2',
+  \        'subregion': { 'start': { 'line': 407, 'column': 12 }, 'end': { 'line': 407, 'column': 17 } },
+  \        'details': 'error details 2',
+  \        'region': { 'start': { 'line': 406, 'column': 5}, 'end': { 'line': 407, 'column': 17 } },
+  \        'type':'error',
+  \        'file': ale#util#Tempname() . '/Module.elm',
+  \      },
+  \      {
+  \        'tag': 'TYPE MISMATCH',
+  \        'overview': 'error overview 3',
+  \        'subregion': { 'start': { 'line': 406, 'column': 88 }, 'end': { 'line': 406, 'column': 93 } },
+  \        'details': 'error details 3',
+  \        'region': { 'start': { 'line': 406, 'column': 5 }, 'end': { 'line': 406, 'column': 93 } },
+  \        'type':'error',
+  \        'file': ale#util#Tempname() . '/Module.elm',
+  \      }
+  \    ]),
+  \ ])
+
+Execute(The elm-make handler should handle errors in Elm 0.18 imported modules):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': 'src/Module.elm:33 - error overview',
+  \     'detail': "src/Module.elm:33 ----------\n\nerror overview\n\nerror details"
+  \   }
+  \ ],
+  \ ale_linters#elm#make#Handle(347, [
+  \   json_encode([
+  \      {
+  \         'tag': 'unused import',
+  \         'overview': 'warning overview',
+  \         'details': 'warning details',
+  \         'region': {'start': { 'line': 33, 'column': 1 }, 'end': { 'line': 33, 'column': 19 } },
+  \         'type': 'warning',
+  \         'file': 'src/Module.elm',
+  \      },
+  \      {
+  \         'tag': 'type error',
+  \         'overview': 'error overview',
+  \         'details': 'error details',
+  \         'region': {'start': { 'line': 33, 'column': 1 }, 'end': { 'line': 33, 'column': 19 } },
+  \         'type': 'error',
+  \         'file': 'src/Module.elm',
+  \      }
+  \    ]),
+  \ ])
+
+" Generic
+
+Execute(The elm-make handler should put an error on the first line if a line cannot be parsed):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 404,
+  \     'col': 1,
+  \     'end_lnum': 408,
+  \     'end_col': 18,
+  \     'type': 'E',
+  \     'text': "error details 1\n\nstyled details"
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': 'Not JSON',
+  \     'detail': "Not JSON\nAlso not JSON",
+  \   },
+  \ ],
+  \ ale_linters#elm#make#Handle(347, [
+  \   json_encode({
+  \      'type': 'compile-errors',
+  \      'errors': [
+  \        {
+  \          'path': ale#util#Tempname() . '/Module.elm',
+  \          'problems': [
+  \            {
+  \              'title': 'TYPE MISMATCH',
+  \              'message': ["error details 1\n\n", { 'string': 'styled details' }],
+  \              'region': { 'start': { 'line': 404, 'column': 1 }, 'end': { 'line': 408, 'column': 18 } }
+  \            }
+  \          ]
+  \        }
+  \      ]
+  \    }),
+  \    'Not JSON',
+  \    'Also not JSON',
+  \ ])
+
+Execute(The elm-make handler should ignore success lines):
+  AssertEqual
+  \ [],
+  \ ale_linters#elm#make#Handle(347, [
+  \    'Successfully generated /dev/null',
+  \ ])

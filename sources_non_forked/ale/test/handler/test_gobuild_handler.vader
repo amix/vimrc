@@ -1,0 +1,45 @@
+Before:
+  runtime ale_linters/go/gobuild.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute (The gobuild handler should handle names with spaces):
+  " We can't test Windows paths with the path resovling on Linux, but we can
+  " test the regex.
+  AssertEqual
+  \ [
+  \   [
+  \     'C:\something\file with spaces.go',
+  \     '27',
+  \     '',
+  \     'missing argument for Printf("%s"): format reads arg 2, have only 1 args',
+  \   ],
+  \   [
+  \     'C:\something\file with spaces.go',
+  \     '5',
+  \     '2',
+  \     'expected declaration, found ''STRING'' "log"',
+  \   ],
+  \ ],
+  \ map(ale_linters#go#gobuild#GetMatches([
+  \   'C:\something\file with spaces.go:27: missing argument for Printf("%s"): format reads arg 2, have only 1 args',
+  \   'C:\something\file with spaces.go:5:2: expected declaration, found ''STRING'' "log"',
+  \ ]), 'v:val[1:4]')
+
+Execute (The gobuild handler should handle relative paths correctly):
+  call ale#test#SetFilename('app/test.go')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 27,
+  \     'col': 0,
+  \     'text': 'missing argument for Printf("%s"): format reads arg 2, have only 1 args',
+  \     'type': 'E',
+  \     'filename': ale#path#Simplify(expand('%:p:h') . '/test.go'),
+  \   },
+  \ ],
+  \ ale_linters#go#gobuild#Handler(bufnr(''), [
+  \   'test.go:27: missing argument for Printf("%s"): format reads arg 2, have only 1 args',
+  \ ])

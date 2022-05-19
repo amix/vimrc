@@ -1,0 +1,30 @@
+Execute(clang errors from included files should be parsed correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'filename': './b.h',
+  \     'type': 'E',
+  \     'text': 'expected identifier or ''(''',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'text': 'Error found in header. See :ALEDetail',
+  \     'detail': join([
+  \       'In file included from <stdin>:3:',
+  \       'In file included from ./a.h:1:',
+  \       './b.h:1:1: error: expected identifier or ''(''',
+  \       '{{{',
+  \       '^',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormatWithIncludes(347, [
+  \   'In file included from <stdin>:3:',
+  \   'In file included from ./a.h:1:',
+  \   './b.h:1:1: error: expected identifier or ''(''',
+  \   '{{{',
+  \   '^',
+  \   '1 error generated.',
+  \ ])

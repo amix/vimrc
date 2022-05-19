@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('verilog', 'xvlog')
+
+After:
+  unlet! b:command_tail
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'xvlog', ale#Escape('xvlog') . '  %t'
+
+  let b:ale_verilog_xvlog_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . '  %t'
+
+Execute(The options should be configurable):
+  let b:ale_verilog_xvlog_options = '--something'
+
+  AssertLinter 'xvlog', ale#Escape('xvlog') . '  --something %t'

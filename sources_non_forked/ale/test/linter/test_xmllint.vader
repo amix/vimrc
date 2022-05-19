@@ -1,0 +1,20 @@
+Before:
+  call ale#assert#SetUpLinterTest('xml', 'xmllint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The xml xmllint command callback should return the correct default string):
+  AssertLinter 'xmllint', ale#Escape('xmllint') . ' --noout -'
+
+Execute(The xml xmllint command callback should let you set options):
+  let g:ale_xml_xmllint_options = '--xinclude --postvalid'
+
+  AssertLinter 'xmllint',
+  \ ale#Escape('xmllint') . ' --xinclude --postvalid --noout -'
+
+Execute(The xmllint executable should be configurable):
+  let g:ale_xml_xmllint_executable = '~/.local/bin/xmllint'
+
+  AssertLinter '~/.local/bin/xmllint',
+  \ ale#Escape('~/.local/bin/xmllint') . ' --noout -'

@@ -1,0 +1,62 @@
+Before:
+  call ale#assert#SetUpLinterTest('erlang', 'erlc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct.):
+    let g:cmd = ale_linters#erlang#erlc#GetCommand(bufnr(''))
+    let g:regex = 'erlc.\+-o.\+%t'
+    let g:matched = match(g:cmd, g:regex)
+
+    " match returns -1 if not found
+    AssertNotEqual
+    \   g:matched,
+    \   -1,
+    \   'Command error: expected [' . g:cmd . '] to match [' . g:regex . ']'
+
+Execute(The command should accept configured executable.):
+    let b:ale_erlang_erlc_executable = '/usr/bin/erlc'
+    let g:cmd = ale_linters#erlang#erlc#GetCommand(bufnr(''))
+    let g:regex = '/usr/bin/erlc.\+-o.\+%t'
+    let g:matched = match(g:cmd, g:regex)
+
+    " match returns -1 if not found
+    AssertNotEqual
+    \   g:matched,
+    \   -1,
+    \   'Command error: expected [' . g:cmd . '] to match [' . g:regex . ']'
+
+Execute(The command should accept configured options.):
+    let b:ale_erlang_erlc_options = '-I include'
+    let g:cmd = ale_linters#erlang#erlc#GetCommand(bufnr(''))
+    let g:regex = 'erlc.\+-o.\+-I include.\+%t'
+    let g:matched = match(g:cmd, g:regex)
+
+    " match returns -1 if not found
+    AssertNotEqual
+    \   g:matched,
+    \   -1,
+    \   'Command error: expected [' . g:cmd . '] to match [' . g:regex . ']'
+
+Execute(Linter should recognize OTP23 format.):
+    let g:lines = ["t.erl:6: only association operators '=>' are allowed in map construction"]
+    let g:output_text = ale_linters#erlang#erlc#Handle(bufnr(''), g:lines)[0].text
+
+    let g:expected = "only association operators '=>' are allowed in map construction"
+    AssertEqual
+    \   g:output_text,
+    \   g:expected,
+    \   'Command error: expected [' . g:output_text . '] to match [' . g:expected . ']'
+
+Execute(Linter should recognize OTP24 format.):
+    let g:lines = ["t.erl:6:16: only association operators '=>' are allowed in map construction",
+    \              "%    6|   #{ a => A, b := B }.",
+    \              "%     |                ^"]
+    let g:output_text = ale_linters#erlang#erlc#Handle(bufnr(''), g:lines)[0].text
+
+    let g:expected = "only association operators '=>' are allowed in map construction"
+    AssertEqual
+    \   g:output_text,
+    \   g:expected,
+    \   'Command error: expected [' . g:output_text . '] to match [' . g:expected . ']'

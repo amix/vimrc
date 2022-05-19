@@ -1,0 +1,34 @@
+Before:
+  call ale#assert#SetUpLinterTest('vim', 'vint')
+  let b:common_flags = (has('nvim') ? ' --enable-neovim' : '')
+  \ . ' -f "{file_path}:{line_number}:{column_number}: {severity}: {policy_name} - {description} (see {reference})"'
+
+After:
+  unlet! b:common_flags
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'vint', [
+  \ ale#Escape('vint') .' --version',
+  \ ale#Escape('vint') .' -s --no-color' . b:common_flags . ' %t',
+  \]
+
+Execute(The executable should be configurable):
+  let g:ale_vim_vint_executable = 'foobar'
+
+  AssertLinter 'foobar', [
+  \ ale#Escape('foobar') .' --version',
+  \ ale#Escape('foobar') .' -s --no-color' . b:common_flags . ' %t',
+  \]
+
+Execute(The --no-color flag should not be used for older Vint versions):
+  GivenCommandOutput ['v0.3.5']
+
+  AssertLinter 'vint', ale#Escape('vint') .' -s' . b:common_flags . ' %t'
+
+Execute(--stdin-display-name should be used in newer versions):
+  GivenCommandOutput ['v0.4.0']
+
+  AssertLinter 'vint', ale#Escape('vint') .' -s --no-color' . b:common_flags
+  \ . ' --stdin-display-name %s -'

@@ -1,0 +1,28 @@
+Before:
+  runtime ale_linters/swift/appleswiftformat.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The appleswiftformat handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 4,
+  \     'col': 21,
+  \     'type': 'W',
+  \     'code': 'DoNotUseSemicolons',
+  \     'text': 'remove '';'' and move the next statement to the new line',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 12,
+  \     'type': 'W',
+  \     'code': 'Spacing',
+  \     'text': 'remove 1 space'
+  \   },
+  \ ],
+  \ ale_linters#swift#appleswiftformat#Handle(bufnr(''), [
+  \   'Sources/main.swift:4:21: warning: [DoNotUseSemicolons] remove '';'' and move the next statement to the new line',
+  \   'Sources/main.swift:3:12: warning: [Spacing] remove 1 space',
+  \ ])

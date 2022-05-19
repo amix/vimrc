@@ -1,0 +1,22 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+  runtime ale_linters/puppet/languageserver.vim
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(old-style module should find its root correctly):
+  call ale#test#SetFilename('test-files/puppet/old-style-module/manifests/init.pp')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/puppet/old-style-module'),
+  \ ale_linters#puppet#languageserver#GetProjectRoot(bufnr(''))
+
+Execute(new-style module should find its root correctly):
+  call ale#test#SetFilename('test-files/puppet/new-style-module/lib/puppet/types/exampletype.rb')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/puppet/new-style-module'),
+  \ ale_linters#puppet#languageserver#GetProjectRoot(bufnr(''))

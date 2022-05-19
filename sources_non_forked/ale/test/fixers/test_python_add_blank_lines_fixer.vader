@@ -1,0 +1,167 @@
+Before:
+  Save g:ale_fixers
+
+After:
+  Restore
+
+Given python(Some Python without blank lines):
+  def foo():
+      """ This is a simple test docstring """
+      return 1
+
+
+  def bar():
+      '''This is another simple test docstring'''
+      return 1
+      return 4
+
+
+  def bar():
+      """
+      This is a multi-line
+      docstring
+      """
+
+      if x:
+          pass
+          for l in x:
+              pass
+          for l in x:
+              pass
+              break
+              continue
+      elif x:
+          pass
+          while x:
+              pass
+          while x:
+              pass
+      else:
+          pass
+      if x:
+          pass
+      elif x:
+          pass
+      else:
+          pass
+
+Execute(Blank lines should be added appropriately):
+  let g:ale_fixers = {'python': ['add_blank_lines_for_python_control_statements']}
+  ALEFix
+
+Expect python(Newlines should be added):
+  def foo():
+      """ This is a simple test docstring """
+
+      return 1
+
+
+  def bar():
+      '''This is another simple test docstring'''
+
+      return 1
+
+      return 4
+
+
+  def bar():
+      """
+      This is a multi-line
+      docstring
+      """
+
+      if x:
+          pass
+
+          for l in x:
+              pass
+
+          for l in x:
+              pass
+
+              break
+
+              continue
+      elif x:
+          pass
+
+          while x:
+              pass
+
+          while x:
+              pass
+      else:
+          pass
+
+      if x:
+          pass
+      elif x:
+          pass
+      else:
+          pass
+
+Given python(A file with a main block):
+  import os
+
+
+  def main():
+      print('hello')
+
+
+  if __name__ == '__main__':
+      main()
+
+Execute(Fix the file):
+  let g:ale_fixers = {'python': ['add_blank_lines_for_python_control_statements']}
+  ALEFix
+
+Expect python(extra newlines shouldn't be added to the main block):
+  import os
+
+
+  def main():
+      print('hello')
+
+
+  if __name__ == '__main__':
+      main()
+
+
+Given python(A file with variables/docstring that start with a control statement):
+  def some():
+      """
+      This is a docstring that contains an
+      break control statement and also contains a
+      return something funny.
+      """
+
+      continue_some_var = True
+      forward_something = False
+
+      if (
+          continue_some_var and
+          forwarded_something
+      ):
+          return True
+
+
+Execute(Fix the file):
+  let g:ale_fixers = {'python': ['add_blank_lines_for_python_control_statements']}
+  ALEFix
+
+Expect python(Extra new lines are not added to the file):
+  def some():
+      """
+      This is a docstring that contains an
+      break control statement and also contains a
+      return something funny.
+      """
+
+      continue_some_var = True
+      forward_something = False
+
+      if (
+          continue_some_var and
+          forwarded_something
+      ):
+          return True

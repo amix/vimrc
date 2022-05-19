@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('jsonnet', 'jsonnetfmt')
+  call ale#test#SetFilename('../jsonnet_files/testfile.jsonnet')
+
+After:
+  Restore
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default jsonnetfmt command should be correct):
+  AssertLinter 'jsonnetfmt',
+  \ ale#Escape('jsonnetfmt') . ' %t'
+
+Execute(jsonnetfmt command and options should be customizable):
+  let g:ale_jsonnet_jsonnetfmt_executable = 'jsonnet'
+  let g:ale_jsonnet_jsonnetfmt_options = 'fmt'
+
+  AssertLinter 'jsonnet',
+  \ ale#Escape('jsonnet') . ' fmt %t'

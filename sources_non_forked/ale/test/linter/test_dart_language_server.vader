@@ -1,0 +1,8 @@
+Before:
+  call ale#assert#SetUpLinterTest('dart', 'language_server')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'dart_language_server', ale#Escape('dart_language_server')

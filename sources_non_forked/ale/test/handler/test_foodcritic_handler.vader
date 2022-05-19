@@ -1,0 +1,44 @@
+Before:
+  runtime ale_linters/chef/foodcritic.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Basic warnings should be handled):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'code': 'CINK001',
+  \     'type': 'W',
+  \     'text': 'Missing CHANGELOG in markdown format',
+  \     'filename': '/foo/bar/CHANGELOG.md',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'code': 'FC011',
+  \     'type': 'W',
+  \     'text': 'Missing README in markdown format',
+  \     'filename': '/foo/bar/README.md',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'code': 'FC031',
+  \     'type': 'W',
+  \     'text': 'Cookbook without metadata.rb file',
+  \     'filename': '/foo/bar/metadata.rb',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'code': 'FC071',
+  \     'type': 'W',
+  \     'text': 'Missing LICENSE file',
+  \     'filename': '/foo/bar/LICENSE',
+  \   },
+  \ ],
+  \ ale_linters#chef#foodcritic#Handle(bufnr(''), [
+  \   'CINK001: Missing CHANGELOG in markdown format: /foo/bar/CHANGELOG.md:1',
+  \   'FC011: Missing README in markdown format: /foo/bar/README.md:1',
+  \   'FC031: Cookbook without metadata.rb file: /foo/bar/metadata.rb:1',
+  \   'FC071: Missing LICENSE file: /foo/bar/LICENSE:1',
+  \ ])

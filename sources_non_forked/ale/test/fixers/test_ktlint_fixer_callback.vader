@@ -1,0 +1,42 @@
+Before:
+  Save g:ale_kotlin_ktlint_executable
+  Save g:ale_kotlin_ktlint_options
+  Save g:ale_kotlin_ktlint_rulesets
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_kotlin_ktlint_executable = 'xxxinvalid'
+  let g:ale_kotlin_ktlint_options = ''
+  let g:ale_kotlin_ktlint_rulesets = []
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The ktlint callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/kotlin/testfile.kt')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --stdin'
+  \     . ' --format',
+  \ },
+  \ ale#fixers#ktlint#Fix(bufnr(''))
+
+Execute(The ktlint callback should include custom ktlint options):
+  let g:ale_kotlin_ktlint_options = "--android"
+  let g:ale_kotlin_ktlint_rulesets = ['/path/to/custom/ruleset.jar']
+  call ale#test#SetFilename('../test-files/kotlin/testfile.kt')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' ' . g:ale_kotlin_ktlint_options
+  \     . ' --ruleset /path/to/custom/ruleset.jar'
+  \     . ' --stdin'
+  \     . ' --format',
+  \ },
+  \ ale#fixers#ktlint#Fix(bufnr(''))

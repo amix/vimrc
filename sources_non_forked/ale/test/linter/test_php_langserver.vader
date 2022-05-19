@@ -1,0 +1,32 @@
+Before:
+  call ale#assert#SetUpLinterTest('php', 'langserver')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default executable path should be correct):
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLinter 'php-language-server.php',
+  \ 'php ' . ale#Escape('php-language-server.php')
+
+Execute(Vendor executables should be detected):
+  call ale#test#SetFilename('../test-files/php/test.php')
+
+  AssertLinter
+  \ ale#path#Simplify(g:dir . '/../test-files/php/vendor/bin/php-language-server.php'),
+  \ 'php ' . ale#Escape(ale#path#Simplify(
+  \   g:dir
+  \   . '/../test-files/php/vendor/bin/php-language-server.php'
+  \ ))
+
+Execute(The project path should be correct for .git directories):
+  call ale#test#SetFilename('../test-files/php/with-git/test.php')
+  silent! call mkdir('../test-files/php/with-git/.git')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/php/with-git')
+
+Execute(The project path should be correct for composer.json file):
+  call ale#test#SetFilename('../test-files/php/with-composer/test.php')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/php/with-composer')

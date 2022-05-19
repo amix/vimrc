@@ -1,0 +1,17 @@
+Before:
+  call ale#assert#SetUpLinterTest('haskell', 'hlint')
+
+  let b:base_opts = '--color=never --json -'
+
+After:
+  unlet! b:base_opts
+  call ale#assert#TearDownLinterTest()
+
+Execute(executable should be configurable):
+  AssertLinter 'hlint', ale#Escape('hlint') . '  ' . b:base_opts
+  let b:ale_haskell_hlint_executable = 'myHlint'
+  AssertLinter 'myHlint', ale#Escape('myHlint') . '  ' . b:base_opts
+
+Execute(should accept options):
+  let b:ale_haskell_hlint_options= '-h myhlintfile.yaml'
+  AssertLinter 'hlint', ale#Escape('hlint') . ' -h myhlintfile.yaml ' . b:base_opts

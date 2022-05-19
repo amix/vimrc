@@ -1,0 +1,492 @@
+Before:
+  Save g:ale_run_synchronously
+
+  let g:ale_run_synchronously = 1
+  unlet! g:ale_run_synchronously_callbacks
+  unlet! g:ale_run_synchronously_emulate_commands
+
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/engine.vim
+  runtime autoload/ale/job.vim
+  runtime autoload/ale/socket.vim
+
+  let g:job_map = {}
+  let g:emulate_job_failure = 0
+  let g:next_job_id = 1
+  let g:lsp_started = 0
+
+  let g:socket_map = {}
+  let g:emulate_socket_failure = 0
+  let g:next_channel_id = 0
+
+  let g:message_buffer = ''
+  let g:calls = []
+
+  function! ale#engine#IsExecutable(buffer, executable) abort
+    return !empty(a:executable)
+  endfunction
+
+  function! ale#job#HasOpenChannel(job_id) abort
+    return has_key(g:job_map, a:job_id)
+  endfunction
+
+  function! ale#job#Stop(job_id) abort
+    if has_key(g:job_map, a:job_id)
+      call remove(g:job_map, a:job_id)
+    endif
+  endfunction
+
+  function! ale#job#Start(command, options) abort
+    if g:emulate_job_failure
+      return 0
+    endif
+
+    let l:job_id = g:next_job_id
+    let g:next_job_id += 1
+    let g:job_map[l:job_id] = [a:command, a:options]
+
+    return l:job_id
+  endfunction
+
+  function! ale#job#SendRaw(job_id, data) abort
+    let g:message_buffer .= a:data
+  endfunction
+
+  function! ale#socket#IsOpen(channel_id) abort
+    return has_key(g:socket_map, a:channel_id)
+  endfunction
+
+  function! ale#socket#Close(channel_id) abort
+    if has_key(g:socket_map, a:channel_id)
+      call remove(g:socket_map, a:channel_id)
+    endif
+  endfunction
+
+  function! ale#socket#Open(address, options) abort
+    if g:emulate_socket_failure
+      return -1
+    endif
+
+    let l:channel_id = g:next_channel_id
+    let g:next_channel_id += 1
+    let g:socket_map[l:channel_id] = [a:address, a:options]
+
+    return l:channel_id
+  endfunction
+
+  function! ale#socket#Send(channel_id, data) abort
+    let g:message_buffer .= a:data
+  endfunction
+
+  function! PopMessages() abort
+    let l:message_list = []
+
+    for l:line in split(g:message_buffer, '\(\r\|\n\|Content-Length\)\+')
+      if l:line[:0] is '{'
+        let l:data = json_decode(l:line)
+
+        call add(l:message_list, l:data)
+      endif
+    endfor
+
+    let g:message_buffer = ''
+
+    return l:message_list
+  endfunction
+
+  function! SendMessage(message) abort
+    let l:conn_id = keys(ale#lsp#GetConnections())[0]
+    let l:body = json_encode(a:message)
+    let l:data = 'Content-Length: ' . strlen(l:body) . "\r\n\r\n" . l:body
+
+    call ale#lsp#HandleMessage(l:conn_id, l:data)
+  endfunction
+
+  function! Start(buffer) abort
+    let l:linter = values(ale#linter#GetLintersLoaded())[0][0]
+
+    return ale#lsp_linter#StartLSP(
+    \ a:buffer,
+    \ l:linter,
+    \ {linter, details -> add(g:calls, [linter.name, details])},
+    \)
+  endfunction
+
+  function! AssertInitSuccess(linter_name, conn_prefix, language, root, command, buffer) abort
+    let l:messages = PopMessages()
+
+    if a:linter_name is# 'tsserver'
+      AssertEqual
+      \ [
+      \   {
+      \     'seq': v:null,
+      \     'arguments': {
+      \       'file': expand('#' . a:buffer . ':p'),
+      \     },
+      \     'type': 'request',
+      \     'command': 'open',
+      \   },
+      \ ],
+      \ l:messages
+    else
+      AssertEqual
+      \ [
+      \   {
+      \     'method': 'initialize',
+      \     'jsonrpc': '2.0',
+      \     'id': 1,
+      \     'params': {
+      \       'initializationOptions': {},
+      \       'rootUri': ale#path#ToFileURI(a:root),
+      \       'rootPath': a:root,
+      \       'processId': getpid(),
+      \       'capabilities': {
+      \         'workspace': {
+      \           'applyEdit': v:false,
+      \           'didChangeConfiguration': {
+      \             'dynamicRegistration': v:false,
+      \           },
+      \           'symbol': {
+      \             'dynamicRegistration': v:false,
+      \           },
+      \           'workspaceFolders': v:false,
+      \           'configuration': v:false,
+      \         },
+      \         'textDocument': {
+      \           'synchronization': {
+      \             'dynamicRegistration': v:false,
+      \             'willSave': v:false,
+      \             'willSaveWaitUntil': v:false,
+      \             'didSave': v:true,
+      \           },
+      \           'completion': {
+      \             'dynamicRegistration': v:false,
+      \             'completionItem': {
+      \               'snippetSupport': v:false,
+      \               'commitCharactersSupport': v:false,
+      \               'documentationFormat': ['plaintext'],
+      \               'deprecatedSupport': v:false,
+      \               'preselectSupport': v:false,
+      \             },
+      \             'contextSupport': v:false,
+      \           },
+      \           'hover': {
+      \             'dynamicRegistration': v:false,
+      \             'contentFormat': ['plaintext'],
+      \           },
+      \           'references': {
+      \             'dynamicRegistration': v:false,
+      \           },
+      \           'documentSymbol': {
+      \             'dynamicRegistration': v:false,
+      \             'hierarchicalDocumentSymbolSupport': v:false,
+      \           },
+      \           'definition': {
+      \             'dynamicRegistration': v:false,
+      \             'linkSupport': v:false,
+      \           },
+      \           'typeDefinition': {
+      \             'dynamicRegistration': v:false,
+      \           },
+      \           'implementation': {
+      \             'dynamicRegistration': v:false,
+      \             'linkSupport': v:false,
+      \           },
+      \           'publishDiagnostics': {
+      \             'relatedInformation': v:true,
+      \           },
+      \           'codeAction': {
+      \             'dynamicRegistration': v:false,
+      \             'codeActionLiteralSupport': {
+      \                  'codeActionKind': {
+      \                      'valueSet': []
+      \                  }
+      \              }
+      \           },
+      \           'rename': {
+      \             'dynamicRegistration': v:false,
+      \           },
+      \         },
+      \       },
+      \     },
+      \   },
+      \ ],
+      \ l:messages
+
+      call SendMessage({
+      \ 'jsonrpc': '2.0',
+      \ 'id': 1,
+      \ 'result': {
+      \   'capabilities': {
+      \     'renameProvider': v:true,
+      \     'executeCommandProvider': {
+      \       'commands': [],
+      \     },
+      \     'hoverProvider': v:true,
+      \     'documentSymbolProvider': v:true,
+      \     'documentRangeFormattingProvider': v:true,
+      \     'codeLensProvider': {
+      \       'resolveProvider': v:false
+      \     },
+      \     'referencesProvider': v:true,
+      \     'textDocumentSync': 2,
+      \     'documentFormattingProvider': v:true,
+      \     'codeActionProvider': v:true,
+      \     'signatureHelpProvider': {
+      \       'triggerCharacters': ['(', ','],
+      \     },
+      \     'completionProvider': {
+      \       'triggerCharacters': ['.'],
+      \       'resolveProvider': v:false
+      \     },
+      \     'definitionProvider': v:true,
+      \     'experimental': {},
+      \     'documentHighlightProvider': v:true,
+      \     'workspaceSymbolProvider': v:true,
+      \   },
+      \ },
+      \})
+
+      let l:messages = PopMessages()
+
+      AssertEqual
+      \ [
+      \   {
+      \     'method': 'initialized',
+      \     'jsonrpc': '2.0',
+      \     'params': {},
+      \   },
+      \   {
+      \     'method': 'textDocument/didOpen',
+      \     'jsonrpc': '2.0',
+      \     'params': {
+      \       'textDocument': {
+      \         'uri': ale#path#ToFileURI(expand('#' . a:buffer . ':p')),
+      \         'version': ale#lsp#message#GetNextVersionID() - 1,
+      \         'languageId': a:language,
+      \         'text': "\n",
+      \       },
+      \     },
+      \   },
+      \ ],
+      \ l:messages
+    endif
+
+    AssertEqual
+    \ [
+    \   [
+    \     a:linter_name,
+    \     {
+    \       'connection_id': a:conn_prefix . ':' . a:root,
+    \       'project_root': a:root,
+    \       'buffer': a:buffer,
+    \       'command': !empty(a:command) ? ale#job#PrepareCommand(a:buffer, a:command) : '',
+    \     },
+    \   ],
+    \ ],
+    \ g:calls
+  endfunction
+
+  function! AssertInitFailure() abort
+    let l:messages = PopMessages()
+
+    AssertEqual [], l:messages
+    AssertEqual [], g:calls
+  endfunction
+
+  call ale#linter#Reset()
+
+After:
+  Restore
+
+  call ale#linter#Reset()
+  call ale#lsp#ResetConnections()
+
+  unlet! g:ale_run_synchronously_callbacks
+  unlet! g:job_map
+  unlet! g:emulate_job_failure
+  unlet! g:next_job_id
+  unlet! g:lsp_started
+
+  unlet! g:socket_map
+  unlet! g:emulate_socket_failure
+  unlet! g:next_channel_id
+
+  unlet! g:message_buffer
+  unlet! g:calls
+
+  augroup VaderTest
+    autocmd!
+  augroup END
+
+  augroup! VaderTest
+
+  delfunction PopMessages
+  delfunction Start
+  delfunction AssertInitSuccess
+  delfunction AssertInitFailure
+
+  runtime autoload/ale/engine.vim
+  runtime autoload/ale/job.vim
+  runtime autoload/ale/socket.vim
+
+Execute(tsserver should be started correctly):
+  runtime ale_linters/typescript/tsserver.vim
+
+  Assert Start(bufnr(''))
+  call AssertInitSuccess('tsserver', 'tsserver', '', '', ale#Escape('tsserver'), bufnr(''))
+
+Execute(tsserver failures should be handled appropriately):
+  runtime ale_linters/typescript/tsserver.vim
+
+  let g:emulate_job_failure = 1
+
+  Assert !Start(bufnr(''))
+  call AssertInitFailure()
+
+Execute(LSP jobs should start correctly):
+  call ale#linter#Define('foobar', {
+  \   'name': 'foo',
+  \   'lsp': 'stdio',
+  \   'executable': 'foo',
+  \   'command': 'foo',
+  \   'project_root': '/foo/bar',
+  \   'initialization_options': {},
+  \})
+
+  Assert Start(bufnr(''))
+  call AssertInitSuccess('foo', 'foo', 'foobar', '/foo/bar', 'foo', bufnr(''))
+
+Execute(LSP job failures should be handled):
+  call ale#linter#Define('foobar', {
+  \   'name': 'foo',
+  \   'lsp': 'stdio',
+  \   'executable': 'foo',
+  \   'command': 'foo',
+  \   'project_root': '/foo/bar',
+  \   'initialization_options': {},
+  \})
+
+  let g:emulate_job_failure = 1
+
+  Assert !Start(bufnr(''))
+  call AssertInitFailure()
+
+Execute(LSP TCP connections should start correctly):
+  call ale#linter#Define('foobar', {
+  \   'name': 'foo',
+  \   'lsp': 'socket',
+  \   'address': 'foo',
+  \   'project_root': '/foo/bar',
+  \   'initialization_options': {},
+  \})
+
+  Assert Start(bufnr(''))
+  call AssertInitSuccess('foo', 'foo', 'foobar', '/foo/bar', '', bufnr(''))
+
+Execute(LSP TCP connection failures should be handled):
+  call ale#linter#Define('foobar', {
+  \   'name': 'foo',
+  \   'lsp': 'socket',
+  \   'address': 'foo',
+  \   'project_root': '/foo/bar',
+  \   'initialization_options': {},
+  \})
+
+  let g:emulate_socket_failure = 1
+
+  Assert !Start(bufnr(''))
+  call AssertInitFailure()
+
+Execute(Deferred executables should be handled correctly):
+  call ale#linter#Define('foobar', {
+  \   'name': 'foo',
+  \   'lsp': 'stdio',
+  \   'executable': {b -> ale#command#Run(b, 'echo', {-> 'foo'})},
+  \   'command': '%e -c',
+  \   'project_root': '/foo/bar',
+  \   'initialization_options': {},
+  \})
+
+  Assert Start(bufnr(''))
+  call ale#test#FlushJobs()
+  call AssertInitSuccess('foo', 'foo', 'foobar', '/foo/bar', ale#Escape('foo') . ' -c', bufnr(''))
+
+Execute(Deferred commands should be handled correctly):
+  call ale#linter#Define('foobar', {
+  \   'name': 'foo',
+  \   'lsp': 'stdio',
+  \   'executable': 'foo',
+  \   'command': {b -> ale#command#Run(b, 'echo', {-> '%e -c'})},
+  \   'project_root': '/foo/bar',
+  \   'initialization_options': {},
+  \})
+
+  Assert Start(bufnr(''))
+  call ale#test#FlushJobs()
+  call AssertInitSuccess('foo', 'foo', 'foobar', '/foo/bar', ale#Escape('foo') . ' -c', bufnr(''))
+
+Execute(Deferred addresses should be handled correctly):
+  call ale#linter#Define('foobar', {
+  \   'name': 'foo',
+  \   'lsp': 'socket',
+  \   'address': {b -> ale#command#Run(b, 'echo', {-> 'localhost:1234'})},
+  \   'project_root': '/foo/bar',
+  \   'initialization_options': {},
+  \})
+
+  Assert Start(bufnr(''))
+  call ale#test#FlushJobs()
+  call AssertInitSuccess('foo', 'localhost:1234', 'foobar', '/foo/bar', '', bufnr(''))
+
+Execute(Servers that have crashed should be restarted):
+  call ale#lsp#Register('foo', '/foo/bar', {})
+  call extend(ale#lsp#GetConnections()['foo:/foo/bar'], {'initialized': 1})
+
+  " Starting the program again should reset initialized to `0`.
+  call ale#lsp#StartProgram('foo:/foo/bar', 'foobar', 'foobar --start')
+
+  AssertEqual 0, ale#lsp#GetConnections()['foo:/foo/bar']['initialized']
+  AssertEqual ['initialize'], map(PopMessages(), 'v:val[''method'']')
+
+Execute(Current LSP buffer should receive ALELSPStarted):
+  call ale#linter#Define('foobar', {
+  \   'name': 'foo',
+  \   'lsp': 'socket',
+  \   'address': 'foo',
+  \   'project_root': '/foo/bar',
+  \   'initialization_options': {},
+  \})
+
+  augroup VaderTest
+    autocmd!
+    autocmd User ALELSPStarted let g:lsp_started = 1
+  augroup END
+
+  Assert Start(bufnr(''))
+  call AssertInitSuccess('foo', 'foo', 'foobar', '/foo/bar', '', bufnr(''))
+  AssertEqual g:lsp_started, 1
+
+Execute(Target LSP buffer should receive ALELSPStarted):
+  call ale#linter#Define('foobar', {
+  \   'name': 'foo',
+  \   'lsp': 'socket',
+  \   'address': 'foo',
+  \   'project_root': '/foo/bar',
+  \   'initialization_options': {},
+  \})
+
+  augroup VaderTest
+    autocmd!
+    autocmd User ALELSPStarted let g:lsp_started = 1
+  augroup END
+
+  let buffer = bufnr('')
+
+  enew!
+  Assert Start(buffer)
+  call AssertInitSuccess('foo', 'foo', 'foobar', '/foo/bar', '', buffer)
+  execute 'buffer' . buffer
+
+  AssertEqual g:lsp_started, 1

@@ -1,0 +1,19 @@
+Before:
+  runtime ale_linters/systemd/systemd_analyze.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The systemd-analyze handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 9,
+  \     'col': 1,
+  \     'type': 'W',
+  \     'text': 'Unknown key name ''Wat'' in section ''Service'', ignoring.',
+  \   },
+  \ ],
+  \ ale_linters#systemd#systemd_analyze#Handle(bufnr(''), [
+  \   '/home/user/.config/systemd/user/foo.service:9: Unknown key name ''Wat'' in section ''Service'', ignoring.',
+  \ ])

@@ -1,0 +1,13 @@
+Before:
+  call ale#assert#SetUpLinterTest('scala', 'fsc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Given scala(An empty Scala file):
+Execute(The default executable and command should be correct):
+  AssertLinter 'fsc', ale#Escape('fsc') . ' -Ystop-after:parser %t'
+
+Given scala.sbt(An empty SBT file):
+Execute(fsc should not be run for sbt files):
+  AssertLinterNotExecuted

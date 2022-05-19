@@ -1,0 +1,307 @@
+Before:
+  Save g:ale_completion_delay
+  Save g:ale_completion_max_suggestions
+  Save g:ale_completion_info
+  Save &l:omnifunc
+  Save &l:completeopt
+
+  let g:ale_completion_enabled = 1
+
+  call ale#test#SetDirectory('/testplugin/test/completion')
+  call ale#test#SetFilename('dummy.txt')
+
+  runtime autoload/ale/lsp.vim
+
+  let g:message_list = []
+  let g:capability_checked = ''
+  let g:conn_id = v:null
+  let g:Callback = ''
+  let g:init_callback_list = []
+
+  function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
+    let g:conn_id = ale#lsp#Register('executable', '/foo/bar', {})
+    call ale#lsp#MarkDocumentAsOpen(g:conn_id, a:buffer)
+
+    let l:details = {
+    \ 'command': 'foobar',
+    \ 'buffer': a:buffer,
+    \ 'connection_id': g:conn_id,
+    \ 'project_root': '/foo/bar',
+    \}
+
+    call add(g:init_callback_list, {-> a:Callback(a:linter, l:details)})
+  endfunction
+
+  " Pretend we're in insert mode for most tests.
+  function! ale#util#Mode(...) abort
+    return 'i'
+  endfunction
+
+  function! ale#lsp#HasCapability(conn_id, capability) abort
+    let g:capability_checked = a:capability
+
+    return 1
+  endfunction
+
+  function! ale#lsp#RegisterCallback(conn_id, callback) abort
+    let g:Callback = a:callback
+  endfunction
+
+  " Replace the Send function for LSP, so we can monitor calls to it.
+  function! ale#lsp#Send(conn_id, message) abort
+    call add(g:message_list, a:message)
+
+    return 1
+  endfunction
+
+After:
+  Restore
+
+  if g:conn_id isnot v:null
+    call ale#lsp#RemoveConnectionWithID(g:conn_id)
+  endif
+
+  unlet! g:message_list
+  unlet! g:capability_checked
+  unlet! g:init_callback_list
+  unlet! g:conn_id
+  unlet! g:Callback
+  unlet! b:ale_old_omnifunc
+  unlet! b:ale_old_completeopt
+  unlet! b:ale_completion_info
+  unlet! b:ale_complete_done_time
+  unlet! b:ale_linters
+  unlet! b:ale_tsserver_completion_names
+
+  " Reset the function.
+  function! ale#util#Mode(...) abort
+    return call('mode', a:000)
+  endfunction
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+  " Stop any timers we left behind.
+  " This stops the tests from failing randomly.
+  call ale#completion#StopTimer()
+
+  runtime autoload/ale/completion.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/lsp_linter.vim
+
+Given typescript(Some typescript file):
+  foo
+  somelongerline
+  bazxyzxyzxyz
+
+Execute(The right message should be sent for the initial tsserver request):
+  runtime ale_linters/typescript/tsserver.vim
+  let b:ale_linters = ['tsserver']
+  " The cursor position needs to match what was saved before.
+  call setpos('.', [bufnr(''), 1, 3, 0])
+
+  call ale#completion#GetCompletions('ale-automatic')
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual 1, len(g:init_callback_list)
+  call map(g:init_callback_list, 'v:val()')
+
+  AssertEqual 'completion', g:capability_checked
+
+  " We should send the right callback.
+  AssertEqual
+  \ 'function(''ale#completion#HandleTSServerResponse'')',
+  \ string(g:Callback)
+  " We should send the right message.
+  AssertEqual
+  \ [[0, 'ts@completions', {
+  \  'file': expand('%:p'),
+  \  'line': 1,
+  \  'offset': 3,
+  \  'prefix': 'fo',
+  \  'includeExternalModuleExports': g:ale_completion_autoimport,
+  \ }]],
+  \ g:message_list
+  " We should set up the completion info correctly.
+  AssertEqual
+  \ {
+  \   'line_length': 3,
+  \   'conn_id': g:conn_id,
+  \   'column': 3,
+  \   'request_id': 1,
+  \   'line': 1,
+  \   'prefix': 'fo',
+  \   'source': 'ale-automatic',
+  \ },
+  \ get(b:, 'ale_completion_info', {})
+
+Execute(The right message sent to the tsserver LSP when the first completion message is received):
+  " The cursor position needs to match what was saved before.
+  call setpos('.', [bufnr(''), 1, 1, 0])
+  let b:ale_completion_info = {
+  \ 'conn_id': 123,
+  \ 'prefix': 'f',
+  \ 'request_id': 4,
+  \ 'line': 1,
+  \ 'column': 1,
+  \}
+  " We should only show up to this many suggestions.
+  let g:ale_completion_max_suggestions = 3
+
+  " Handle the response for completions.
+  call ale#completion#HandleTSServerResponse(123, {
+  \ 'request_seq': 4,
+  \ 'command': 'completions',
+  \ 'body': [
+  \   {'name': 'Baz'},
+  \   {'name': 'dingDong'},
+  \   {'name': 'Foo', 'source': '/path/to/foo.ts'},
+  \   {'name': 'FooBar'},
+  \   {'name': 'frazzle'},
+  \   {'name': 'FFS'},
+  \ ],
+  \})
+
+  " We should save the names we got in the buffer, as TSServer doesn't return
+  " details for every name.
+  AssertEqual [{
+  \  'word': 'Foo',
+  \  'source': '/path/to/foo.ts',
+  \ }, {
+  \  'word': 'FooBar',
+  \  'source': '',
+  \ }, {
+  \  'word': 'frazzle',
+  \  'source': '',
+  \}],
+  \ get(b:, 'ale_tsserver_completion_names', [])
+
+  " The entry details messages should have been sent.
+  AssertEqual
+  \ [[
+  \   0,
+  \   'ts@completionEntryDetails',
+  \   {
+  \     'file': expand('%:p'),
+  \     'entryNames': [{
+  \          'name': 'Foo',
+  \          'source': '/path/to/foo.ts',
+  \         }, {
+  \          'name': 'FooBar',
+  \         }, {
+  \          'name': 'frazzle',
+  \     }],
+  \     'offset': 1,
+  \     'line': 1,
+  \   },
+  \ ]],
+  \ g:message_list
+
+Given python(Some Python file):
+  foo
+  somelongerline
+  bazxyzxyzxyz
+
+Execute(The right message should be sent for the initial LSP request):
+  runtime ale_linters/python/pylsp.vim
+  let b:ale_linters = ['pylsp']
+  " The cursor position needs to match what was saved before.
+  call setpos('.', [bufnr(''), 1, 5, 0])
+
+  call ale#completion#GetCompletions('ale-automatic')
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual 1, len(g:init_callback_list)
+  call map(g:init_callback_list, 'v:val()')
+
+  AssertEqual 'completion', g:capability_checked
+
+  " We should send the right callback.
+  AssertEqual
+  \ 'function(''ale#completion#HandleLSPResponse'')',
+  \ string(g:Callback)
+  " We should send the right message.
+  " The character index needs to be at most the index of the last character on
+  " the line, or integration with pylsp will be broken.
+  "
+  " We need to send the message for changing the document first.
+  AssertEqual
+  \ [
+  \   [1, 'textDocument/didChange', {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(expand('%:p')),
+  \         'version': g:ale_lsp_next_version_id - 1,
+  \     },
+  \     'contentChanges': [{'text': join(getline(1, '$'), "\n") . "\n"}]
+  \   }],
+  \   [0, 'textDocument/completion', {
+  \   'textDocument': {'uri': ale#path#ToFileURI(expand('%:p'))},
+  \   'position': {'line': 0, 'character': 2},
+  \   }],
+  \ ],
+  \ g:message_list
+  " We should set up the completion info correctly.
+  AssertEqual
+  \ {
+  \   'line_length': 3,
+  \   'conn_id': g:conn_id,
+  \   'column': 3,
+  \   'request_id': 1,
+  \   'line': 1,
+  \   'prefix': 'fo',
+  \   'source': 'ale-automatic',
+  \   'completion_filter': 'ale#completion#python#CompletionItemFilter',
+  \ },
+  \ get(b:, 'ale_completion_info', {})
+
+Execute(Two completion requests shouldn't be sent in a row):
+  call ale#linter#PreventLoading('python')
+  call ale#linter#Define('python', {
+  \   'name': 'foo',
+  \   'lsp': 'stdio',
+  \   'executable': 'foo',
+  \   'command': 'foo',
+  \   'project_root': {-> '/foo/bar'},
+  \})
+  call ale#linter#Define('python', {
+  \   'name': 'bar',
+  \   'lsp': 'stdio',
+  \   'executable': 'foo',
+  \   'command': 'foo',
+  \   'project_root': {-> '/foo/bar'},
+  \})
+  let b:ale_linters = ['foo', 'bar']
+
+  " The cursor position needs to match what was saved before.
+  call setpos('.', [bufnr(''), 1, 5, 0])
+
+  call ale#completion#GetCompletions('ale-automatic')
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual 2, len(g:init_callback_list)
+  call map(g:init_callback_list, 'v:val()')
+
+  AssertEqual 'completion', g:capability_checked
+
+  " We should only send one completion message for two LSP servers.
+  AssertEqual
+  \ [
+  \   [1, 'textDocument/didChange', {
+  \     'textDocument': {
+  \         'uri': ale#path#ToFileURI(expand('%:p')),
+  \         'version': g:ale_lsp_next_version_id - 1,
+  \     },
+  \     'contentChanges': [{'text': join(getline(1, '$'), "\n") . "\n"}]
+  \   }],
+  \   [0, 'textDocument/completion', {
+  \   'textDocument': {'uri': ale#path#ToFileURI(expand('%:p'))},
+  \   'position': {'line': 0, 'character': 2},
+  \   }],
+  \ ],
+  \ g:message_list

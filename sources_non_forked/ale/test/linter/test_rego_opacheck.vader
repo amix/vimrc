@@ -1,0 +1,16 @@
+
+" Based upon :help ale-development
+Before:
+  call ale#assert#SetUpLinterTest('rego', 'opacheck')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'opa',
+  \ ale#Escape('opa') . ' check %s --format json '
+
+Execute(The default command should be overriden):
+  let b:ale_rego_opacheck_executable = '/bin/other/opa'
+  AssertLinter '/bin/other/opa',
+  \ ale#Escape('/bin/other/opa') . ' check %s --format json '

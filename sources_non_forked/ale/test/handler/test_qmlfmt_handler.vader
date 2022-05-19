@@ -1,0 +1,19 @@
+Before:
+  runtime ale_linters/qml/qmlfmt.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The qmlfmt handler should parse error messages correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 22,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'Expected token ''}''.'
+  \   }
+  \ ],
+  \ ale_linters#qml#qmlfmt#Handle(1, [
+  \   'Error:22:1: Expected token ''}''.'
+  \ ])

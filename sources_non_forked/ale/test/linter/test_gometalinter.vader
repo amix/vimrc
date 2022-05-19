@@ -1,0 +1,49 @@
+Before:
+  Save g:ale_go_go111module
+
+  call ale#assert#SetUpLinterTest('go', 'gometalinter')
+  call ale#test#SetFilename('test.go')
+
+After:
+  Restore
+
+  unlet! b:ale_go_go111module
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The gometalinter defaults should be correct):
+  AssertLinterCwd '%s:h',
+  AssertLinter 'gometalinter',
+  \ ale#Escape('gometalinter')
+  \   . ' --include=' . ale#Escape(ale#util#EscapePCRE(expand('%' . ':t')))
+  \   . ' .'
+
+Execute(The gometalinter callback should use a configured executable):
+  let b:ale_go_gometalinter_executable = 'something else'
+
+  AssertLinter 'something else',
+  \ ale#Escape('something else')
+  \   . ' --include=' . ale#Escape(ale#util#EscapePCRE(expand('%' . ':t')))
+  \   . ' .'
+
+Execute(The gometalinter callback should use configured options):
+  let b:ale_go_gometalinter_options = '--foobar'
+
+  AssertLinter 'gometalinter',
+  \ ale#Escape('gometalinter')
+  \   . ' --include=' . ale#Escape(ale#util#EscapePCRE(expand('%' . ':t')))
+  \   . ' --foobar' . ' .'
+
+Execute(The gometalinter should use configured environment variables):
+  let b:ale_go_go111module = 'off'
+
+  AssertLinter 'gometalinter',
+  \ ale#Env('GO111MODULE', 'off')
+  \   . ale#Escape('gometalinter')
+  \   . ' --include=' . ale#Escape(ale#util#EscapePCRE(expand('%' . ':t')))
+  \   . ' .'
+
+Execute(The gometalinter `lint_package` option should use the correct command):
+  let b:ale_go_gometalinter_lint_package = 1
+
+  AssertLinter 'gometalinter', ale#Escape('gometalinter') . ' .'

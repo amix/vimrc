@@ -1,0 +1,20 @@
+Before:
+  runtime ale_linters/perl/perlcritic.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The Perl::Critic handler should create all issues as warnings):
+  AssertEqual
+  \  [
+  \    {
+  \      'lnum': '21',
+  \      'col': '17',
+  \      'text': 'Regular expression without "/m" flag',
+  \      'type': 'W',
+  \    }
+  \  ],
+  \  ale_linters#perl#perlcritic#Handle(99, [
+  \      '21:17 Regular expression without "/m" flag'
+  \  ])
+

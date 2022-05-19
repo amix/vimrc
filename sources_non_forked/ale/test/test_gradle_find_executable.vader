@@ -1,0 +1,37 @@
+Before:
+  Save $PATH
+  Save $PATHEXT
+
+  " Count the gradle executable without .exe as executable on Windows
+  let $PATHEXT = '.'
+
+  call ale#test#SetDirectory('/testplugin/test')
+  runtime ale_linters/kotlin/kotlinc.vim
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(Should return 'gradlew' if found in parent directory):
+  call ale#test#SetFilename('test-files/gradle/wrapped-project/src/main/kotlin/dummy.kt')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/gradle/wrapped-project/gradlew'),
+  \ ale#gradle#FindExecutable(bufnr(''))
+
+Execute(Should return 'gradle' if 'gradlew' not found in parent directory):
+  call ale#test#SetFilename('test-files/gradle/unwrapped-project/src/main/kotlin/dummy.kt')
+  let $PATH .= (has('win32') ? ';': ':') . ale#path#Simplify(g:dir . '/test-files/gradle')
+
+  AssertEqual
+  \ 'gradle',
+  \ ale#gradle#FindExecutable(bufnr(''))
+
+Execute(Should return empty string if 'gradlew' not in parent directory and gradle not in path):
+  call ale#test#SetFilename('test-files/gradle/unwrapped-project/src/main/kotlin/dummy.kt')
+
+  AssertEqual
+  \ '',
+  \ ale#gradle#FindExecutable(bufnr(''))

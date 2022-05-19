@@ -1,0 +1,53 @@
+Before:
+  runtime! ale_linters/scala/scalastyle.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The scalastyle handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 190,
+  \     'text': 'Missing or badly formed ScalaDoc: Missing @param str',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 200,
+  \     'col': 34,
+  \     'text': 'There should be a space before the plus (+) sign',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 200,
+  \     'col': 1,
+  \     'text': 'There should be a space before the plus (+) sign',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#scala#scalastyle#Handle(347, [
+  \    'Starting scalastyle',
+  \    'start file /home/test/Doop.scala',
+  \    'warning file=/home/test/Doop.scala message=Missing or badly formed ScalaDoc: Missing @param str line=190',
+  \    'error file=/home/test/Doop.scala message=There should be a space before the plus (+) sign line=200 column=33',
+  \    'error file=/home/test/Doop.scala message=There should be a space before the plus (+) sign line=200 column=0',
+  \    'end file /home/test/Doop.scala',
+  \    'Processed 1 file(s)',
+  \    'Found 0 errors',
+  \    'Found 3 warnings',
+  \    'Finished in 934 ms',
+  \ ])
+
+Execute(The scalastyle linter should complain when there is no configuration file):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'text': '(See :help ale-scala-scalastyle) No scalastyle configuration file was found.',
+  \   },
+  \ ],
+  \ ale_linters#scala#scalastyle#Handle(347, [
+  \   'scalastyle 1.0.0',
+  \   'Usage: scalastyle [options] <source directory>',
+  \   ' -c, --config FILE               configuration file (required)',
+  \ ])

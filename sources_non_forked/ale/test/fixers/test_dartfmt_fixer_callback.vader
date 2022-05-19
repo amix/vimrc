@@ -1,0 +1,40 @@
+Before:
+  Save g:ale_dart_dartfmt_executable
+  Save g:ale_dart_dartfmt_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_dart_dartfmt_executable = 'xxxinvalid'
+  let g:ale_dart_dartfmt_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The dartfmt callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/dart/testfile.dart')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -w'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#dartfmt#Fix(bufnr(''))
+
+Execute(The dartfmt callback should include custom dartfmt options):
+  let g:ale_dart_dartfmt_options = "-l 80"
+  call ale#test#SetFilename('../test-files/dart/testfile.dart')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -w'
+  \     . ' ' . g:ale_dart_dartfmt_options
+  \     . ' %t',
+  \ },
+  \ ale#fixers#dartfmt#Fix(bufnr(''))

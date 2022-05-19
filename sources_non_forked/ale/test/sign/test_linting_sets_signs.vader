@@ -1,0 +1,76 @@
+Given foobar (Some imaginary filetype):
+  var y = 3+3;
+  var y = 3
+
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_echo_cursor
+  Save g:ale_run_synchronously
+  Save g:ale_set_highlights
+  Save g:ale_set_loclist
+  Save g:ale_set_quickfix
+  Save g:ale_set_signs
+  Save g:ale_command_wrapper
+
+  let g:ale_command_wrapper = ''
+  let g:ale_buffer_info = {}
+  let g:ale_run_synchronously = 1
+  unlet! g:ale_run_synchronously_callbacks
+  let g:ale_set_signs = 1
+  " Disable features we don't need for these tests.
+  let g:ale_set_quickfix = 0
+  let g:ale_set_loclist = 0
+  let g:ale_set_highlights = 0
+  let g:ale_echo_cursor = 0
+
+  call ale#sign#Clear()
+
+  function! TestCallback(buffer, output)
+    return [
+    \ {'lnum': 1, 'text': 'foo', 'type': 'W'},
+    \ {'lnum': 2, 'text': 'foo', 'type': 'E'},
+    \]
+  endfunction
+
+  function! CollectSigns()
+    redir => l:output
+      if has('nvim-0.4.2') || has('patch-8.1.614')
+        silent exec 'sign place group=ale'
+      else
+        silent exec 'sign place'
+      endif
+    redir END
+
+    let l:actual_sign_list = []
+
+    for l:line in split(l:output, "\n")
+      let l:match = matchlist(l:line, ale#sign#ParsePattern())
+
+      if len(l:match) > 0
+        call add(l:actual_sign_list, [l:match[1], l:match[3]])
+      endif
+    endfor
+
+    return l:actual_sign_list
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': has('win32') ? 'echo foo bar' : '/bin/sh -c ''echo foo bar''',
+  \})
+
+After:
+  delfunction TestCallback
+  delfunction CollectSigns
+
+  unlet! g:ale_run_synchronously_callbacks
+  call ale#sign#Clear()
+  call ale#linter#Reset()
+
+Execute(The signs should be updated after linting is done):
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual [['1', 'ALEWarningSign'], ['2', 'ALEErrorSign']], CollectSigns()

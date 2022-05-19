@@ -1,0 +1,153 @@
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_set_signs
+  Save g:ale_set_quickfix
+  Save g:ale_set_loclist
+  Save g:ale_set_highlights
+  Save g:ale_echo_cursor
+
+  let g:ale_buffer_info = {}
+  let g:ale_run_synchronously = 1
+  let g:ale_set_lists_synchronously = 1
+  let g:ale_set_signs = 0
+  let g:ale_set_quickfix = 0
+  let g:ale_set_loclist = 1
+  let g:ale_set_highlights = 0
+  let g:ale_echo_cursor = 0
+
+  function! TestCallback(buffer, output)
+    return []
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': has('win32') ? 'echo foo bar' : '/bin/sh -c ''echo foo bar''',
+  \})
+
+After:
+  Restore
+
+  unlet! b:ale_linters
+  unlet! g:want_results_signaled
+  unlet! g:want_results_buffer_value
+  unlet! g:lint_pre_signaled
+  unlet! g:ale_run_synchronously
+  unlet! g:ale_set_lists_synchronously
+
+  delfunction TestCallback
+
+  augroup VaderTest
+    autocmd!
+  augroup END
+
+  augroup! VaderTest
+
+  call ale#linter#Reset()
+  call setloclist(0, [])
+
+Given foobar (Some imaginary filetype):
+Execute(StartChecking should mark a buffer as being actively checked):
+  Assert !ale#engine#IsCheckingBuffer(bufnr(''))
+
+  call ale#other_source#StartChecking(bufnr(''), 'other-source-linter')
+
+  Assert ale#engine#IsCheckingBuffer(bufnr(''))
+
+Execute(ShowResults sould make a buffer inactive):
+  call ale#other_source#StartChecking(bufnr(''), 'other-source-linter')
+  call ale#other_source#StartChecking(bufnr(''), 'second-other-source-linter')
+
+  call ale#other_source#ShowResults(bufnr(''), 'other-source-linter', [])
+
+  Assert ale#engine#IsCheckingBuffer(bufnr(''))
+
+  call ale#other_source#ShowResults(bufnr(''), 'second-other-source-linter', [])
+
+  Assert !ale#engine#IsCheckingBuffer(bufnr(''))
+
+Execute(ShowResults should show results at any time):
+  call ale#other_source#ShowResults(bufnr(''), 'other-source-linter', [
+  \ {'text': 'xyz', 'lnum': 1},
+  \])
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 0,
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': -1,
+  \     'type': 'E',
+  \     'pattern': '',
+  \     'text': 'xyz',
+  \   },
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+  call ale#other_source#ShowResults(bufnr(''), 'other-source-linter', [])
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(A regular lint cycle shouldn't clear results from other sources):
+  call ale#other_source#ShowResults(bufnr(''), 'other-source-linter', [
+  \ {'text': 'xyz', 'lnum': 1},
+  \])
+  ALELint
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 0,
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': -1,
+  \     'type': 'E',
+  \     'pattern': '',
+  \     'text': 'xyz',
+  \   },
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(ALEWantResults should be signaled when a buffer is checked):
+  augroup VaderTest
+    autocmd!
+    autocmd User ALEWantResults let g:want_results_signaled = 1
+    autocmd User ALELintPre let g:lint_pre_signaled = 1
+  augroup END
+
+  " Even when all linters are disabled, we should send the signal.
+  let b:ale_linters = []
+  ALELint
+
+  Assert get(g:, 'want_results_signaled')
+  Assert !get(g:, 'lint_pre_signaled')
+
+Execute(ALEWantResults should set a variable indicating which buffer is being checked):
+  augroup VaderTest
+    autocmd!
+    autocmd User ALEWantResults let g:want_results_buffer_value = g:ale_want_results_buffer
+  augroup END
+
+  let b:ale_linters = []
+  ALELint
+
+  AssertEqual bufnr(''), g:want_results_buffer_value
+
+Execute(ALEWantResults should lead to an ALELintPre signal if another source responds):
+  augroup VaderTest
+    autocmd!
+    autocmd User ALEWantResults call ale#other_source#StartChecking(bufnr(''), 'other-source-linter')
+    autocmd User ALELintPre let g:lint_pre_signaled = 1
+  augroup END
+
+  " Even when all linters are disabled, we should send the signal.
+  let b:ale_linters = []
+  ALELint
+
+  Assert get(g:, 'lint_pre_signaled')

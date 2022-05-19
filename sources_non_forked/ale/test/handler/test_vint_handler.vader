@@ -1,0 +1,65 @@
+Before:
+  runtime ale_linters/vim/vint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The vint handler should parse error messages correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'filename': 'gcc.vim',
+  \     'text': 'Use scriptencoding when multibyte char exists (see :help :script encoding)',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 17,
+  \     'filename': 'gcc.vim',
+  \     'end_col': 18,
+  \     'text': 'Use robust operators ''==#'' or ''==?'' instead of ''=='' (see Google VimScript Style Guide (Matching))',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 8,
+  \     'filename': 'gcc.vim',
+  \     'end_col': 15,
+  \     'text': 'Make the scope explicit like ''l:filename'' (see Anti-pattern of vimrc (Scope of identifier))',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 8,
+  \     'filename': 'gcc.vim',
+  \     'end_col': 15,
+  \     'text': 'Undefined variable: filename (see :help E738)',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 8,
+  \     'col': 11,
+  \     'filename': 'gcc.vim',
+  \     'end_col': 16,
+  \     'text': 'E128: Function name must start with a capital or contain a colon: foobar (see ynkdir/vim-vimlparser)',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 9,
+  \     'col': 12,
+  \     'filename': 'gcc.vim',
+  \     'end_col': 13,
+  \     'text': 'Use robust operators ''=~#'' or ''=~?'' instead of ''=~'' (see Google VimScript Style Guide (Matching))',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#vim#vint#Handle(bufnr(''), [
+  \   'gcc.vim:1:1: warning: Use scriptencoding when multibyte char exists (see :help :script encoding)',
+  \   'gcc.vim:3:17: warning: Use robust operators `==#` or `==?` instead of `==` (see Google VimScript Style Guide (Matching))',
+  \   'gcc.vim:3:8: style_problem: Make the scope explicit like `l:filename` (see Anti-pattern of vimrc (Scope of identifier))',
+  \   'gcc.vim:7:8: warning: Undefined variable: filename (see :help E738)',
+  \   'gcc.vim:8:11: error: E128: Function name must start with a capital or contain a colon: foobar (see ynkdir/vim-vimlparser)',
+  \   'gcc.vim:9:12: warning: Use robust operators `=~#` or `=~?` instead of `=~` (see Google VimScript Style Guide (Matching))',
+  \ ])

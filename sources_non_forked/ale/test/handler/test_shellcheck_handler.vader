@@ -1,0 +1,43 @@
+Before:
+  runtime ale_linters/shell/shellcheck.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The shellcheck handler should handle basic errors or warnings):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'type': 'W',
+  \     'text': 'In POSIX sh, ''let'' is not supported.',
+  \     'code': 'SC2039',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 3,
+  \     'type': 'E',
+  \     'text': 'Don''t put spaces around the = in assignments.',
+  \     'code': 'SC1068',
+  \   },
+  \ ],
+  \ ale#handlers#shellcheck#Handle(bufnr(''), [
+  \   '-:2:1: warning: In POSIX sh, ''let'' is not supported. [SC2039]',
+  \   '-:2:3: error: Don''t put spaces around the = in assignments. [SC1068]',
+  \ ])
+
+Execute(The shellcheck handler should handle notes):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'col': 3,
+  \     'type': 'I',
+  \     'text': 'Double quote to prevent globbing and word splitting.',
+  \     'code': 'SC2086',
+  \   },
+  \ ],
+  \ ale#handlers#shellcheck#Handle(bufnr(''), [
+  \   '-:3:3: note: Double quote to prevent globbing and word splitting. [SC2086]',
+  \ ])

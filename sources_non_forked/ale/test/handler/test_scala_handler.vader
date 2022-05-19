@@ -1,0 +1,32 @@
+After:
+  call ale#linter#Reset()
+
+Execute(The handler should return an empty list with empty input):
+  AssertEqual [], ale#handlers#scala#HandleScalacLintFormat(bufnr(''), [])
+
+Execute(The handler should correctly parse error messages):
+  AssertEqual 
+  \ [
+  \   { 
+  \     'lnum': 4,
+  \     'col':  8,
+  \     'text': ''':'' expected but identifier found.',
+  \     'type': 'E'
+  \   },
+  \   {
+  \     'lnum': 6,
+  \     'col':  2,
+  \     'text': 'identifier expected but eof found.',
+  \     'type': 'E'
+  \   }
+  \ ],
+  \ ale#handlers#scala#HandleScalacLintFormat(bufnr(''),
+  \ [
+  \ "hi.scala:4: error: ':' expected but identifier found.",
+  \ "  Some stupid scala code",
+  \ "       ^",
+  \ "hi.scala:6: error: identifier expected but eof found.",
+  \ ")",
+  \ " ^",
+  \ "two errors found",
+  \ ])

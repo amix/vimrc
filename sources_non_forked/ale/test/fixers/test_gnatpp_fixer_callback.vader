@@ -1,0 +1,28 @@
+Before:
+  call ale#assert#SetUpFixerTest('ada', 'gnatpp')
+
+After:
+  " Reset fixers, variables, etc.
+  "
+  " Vader's 'Restore' command will be called here.
+  call ale#assert#TearDownFixerTest()
+
+Execute(The default command should be correct):
+  call ale#test#SetFilename('../test-files/ada/testfile.adb')
+
+  AssertFixer
+  \ {
+  \   'command': ale#Escape(g:ale_ada_gnatpp_executable) .' %t',
+  \   'read_temporary_file': 1,
+  \ }
+
+Execute(The version check should be correct):
+  call ale#test#SetFilename('../test-files/ada/testfile.adb')
+  let g:ale_ada_gnatpp_options = '--no-alignment'
+
+  AssertFixer
+  \ {
+  \   'command': ale#Escape(g:ale_ada_gnatpp_executable)
+  \     . ' --no-alignment %t',
+  \   'read_temporary_file': 1,
+  \ }

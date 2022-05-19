@@ -1,0 +1,47 @@
+Before:
+  runtime ale_linters/verilog/vlog.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The vlog handler should parse old-style lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 7,
+  \     'type': 'W',
+  \     'text': '(vlog-2623) Undefined variable: C.',
+  \     'filename': 'add.v'
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': '(vlog-13294) Identifier must be declared with a port mode: C.',
+  \     'filename': 'file.v'
+  \   },
+  \ ],
+  \ ale_linters#verilog#vlog#Handle(bufnr(''), [
+  \   '** Warning: add.v(7): (vlog-2623) Undefined variable: C.',
+  \   '** Error: file.v(1): (vlog-13294) Identifier must be declared with a port mode: C.',
+  \ ])
+
+Execute(The vlog handler should parse new-style lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 7,
+  \     'type': 'W',
+  \     'text': '(vlog-2623) Undefined variable: C.',
+  \     'filename': 'add.v'
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': '(vlog-13294) Identifier must be declared with a port mode: C.',
+  \     'filename': 'file.v'
+  \   },
+  \ ],
+  \ ale_linters#verilog#vlog#Handle(bufnr(''), [
+  \   '** Warning: (vlog-2623) add.v(7): Undefined variable: C.',
+  \   '** Error: (vlog-13294) file.v(1): Identifier must be declared with a port mode: C.',
+  \ ])

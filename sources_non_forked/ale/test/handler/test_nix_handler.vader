@@ -1,0 +1,91 @@
+Before:
+  runtime ale_linters/nix/nix.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The nix handler should parse nix-instantiate error messages correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 3,
+  \     'type': 'E',
+  \     'text': "syntax error, unexpected ']', expecting ';'",
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 5,
+  \     'type': 'E',
+  \     'text': "undefined variable 'foo'",
+  \   },
+  \
+  \ ],
+  \ ale_linters#nix#nix#Handle(bufnr(''), [
+  \   "@nix {\"line\":6,\"column\":3,\"raw_msg\":\"syntax error, unexpected ']', expecting ';'\"}",
+  \   "@nix {\"line\":3,\"column\":5,\"raw_msg\":\"undefined variable 'foo'\"}",
+  \   "@nix {\"unrelated\":\"message\"}"
+  \ ])
+
+Execute(The nix handler should parse message from old nix-instantiate correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 23,
+  \     'col': 14,
+  \     'text': 'error: syntax error, unexpected IN',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 12,
+  \     'text': 'error: syntax error, unexpected ''='', expecting '';''',
+  \     'type': 'E',
+  \   },
+  \
+  \ ],
+  \ ale_linters#nix#nix#Handle(47, [
+  \   'This line should be ignored',
+  \   'error: syntax error, unexpected IN, at /path/to/filename.nix:23:14',
+  \   'error: syntax error, unexpected ''='', expecting '';'', at /path/to/filename.nix:3:12',
+  \ ])
+
+Execute(The nix command should not add 'log-format' option for nix version 2.3):
+  AssertEqual
+  \ 'nix-instantiate --parse -',
+  \ ale_linters#nix#nix#Command('', ['nix-instantiate (Nix) 2.3.0'], '')
+
+Execute(The nix command should add 'log-format' option for nix version 2.4):
+  AssertEqual
+  \ 'nix-instantiate --log-format internal-json --parse -',
+  \ ale_linters#nix#nix#Command('', ['nix-instantiate (Nix) 2.4.1'], '')
+
+Execute(The nix command should add 'log-format' option for nix version 2.5):
+  AssertEqual
+  \ 'nix-instantiate --log-format internal-json --parse -',
+  \ ale_linters#nix#nix#Command('', ['nix-instantiate (Nix) 2.5.0pre20211206_d1aaa7e'], '')
+
+Execute(The nix command should add 'log-format' option for nix version 2.6):
+  AssertEqual
+  \ 'nix-instantiate --log-format internal-json --parse -',
+  \ ale_linters#nix#nix#Command('', ['nix-instantiate (Nix) 2.6.0pre20211206_ignored'], '')
+
+Execute(The nix command should add 'log-format' option for nix version 2.7):
+  AssertEqual
+  \ 'nix-instantiate --log-format internal-json --parse -',
+  \ ale_linters#nix#nix#Command('', ['nix-instantiate (Nix) 2.7.0pre20211206_ignored'], '')
+
+Execute(The nix command should add 'log-format' option for nix version 2.8):
+  AssertEqual
+  \ 'nix-instantiate --log-format internal-json --parse -',
+  \ ale_linters#nix#nix#Command('', ['nix-instantiate (Nix) 2.8.0pre20211206_ignored'], '')
+
+Execute(The nix command should add 'log-format' option for nix version 2.9):
+  AssertEqual
+  \ 'nix-instantiate --log-format internal-json --parse -',
+  \ ale_linters#nix#nix#Command('', ['nix-instantiate (Nix) 2.9.0pre20211206_ignored'], '')
+
+Execute(The nix command should add 'log-format' option for nix version 3.0):
+  AssertEqual
+  \ 'nix-instantiate --log-format internal-json --parse -',
+  \ ale_linters#nix#nix#Command('', ['nix-instantiate (Nix) 3.0.0pre20211206_ignored'], '')

@@ -1,0 +1,93 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/handler')
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(Basic errors should be handled by cppcheck):
+  call ale#test#SetFilename('test.cpp')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 974,
+  \     'col' : 6,
+  \     'type': 'E',
+  \     'sub_type': '',
+  \     'text': 'Array ''n[3]'' accessed at index 3, which is out of bounds.',
+  \     'code': 'arrayIndexOutOfBounds'
+  \   },
+  \   {
+  \     'lnum': 1185,
+  \     'col' : 10,
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \     'text': 'The scope of the variable ''indxStr'' can be reduced.',
+  \     'code': 'variableScope'
+  \   },
+  \ ],
+  \ ale#handlers#cppcheck#HandleCppCheckFormat(bufnr(''), [
+  \ 'test.cpp:974:6: error: Array ''n[3]'' accessed at index 3, which is out of bounds. [arrayIndexOutOfBounds]\',
+  \ '    n[3]=3;',
+  \ '     ^',
+  \ 'test.cpp:1185:10: style: The scope of the variable ''indxStr'' can be reduced. [variableScope]\',
+  \ '    char indxStr[16];',
+  \ '         ^',
+  \ ])
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 974,
+  \     'col' : 1,
+  \     'type': 'E',
+  \     'sub_type': '',
+  \     'text': 'inconclusive Array ''n[3]'' accessed at index 3, which is out of bounds.',
+  \     'code': 'arrayIndexOutOfBounds'
+  \   },
+  \   {
+  \     'lnum': 1185,
+  \     'col' : 1,
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \     'text': 'The scope of the variable ''indxStr'' can be reduced.',
+  \     'code': 'variableScope'
+  \   },
+  \ ],
+  \ ale#handlers#cppcheck#HandleCppCheckFormat(bufnr(''), [
+  \ 'test.cpp:974:{column}: error:inconclusive Array ''n[3]'' accessed at index 3, which is out of bounds. [arrayIndexOutOfBounds]\',
+  \ '    n[3]=3;',
+  \ '     ^',
+  \ 'test.cpp:1185:{column}: style:{inconclusive:inconclusive} The scope of the variable ''indxStr'' can be reduced. [variableScope]\',
+  \ '    char indxStr[16];',
+  \ '         ^',
+  \ ])
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col' : 16,
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \     'text': 'misra violation (use --rule-texts=<file> to get proper output)',
+  \     'code': 'misra-c2012-2.7'
+  \   },
+  \ ],
+  \ ale#handlers#cppcheck#HandleCppCheckFormat(bufnr(''), [
+  \ 'test.cpp:1:16: style: misra violation (use --rule-texts=<file> to get proper output) [misra-c2012-2.7]\',
+  \ 'void test( int parm ) {}',
+  \ '               ^',
+  \ ])
+
+Execute(Problems from other files should be ignored by cppcheck):
+  call ale#test#SetFilename('test.cpp')
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale#handlers#cppcheck#HandleCppCheckFormat(bufnr(''), [
+  \ 'bar.cpp:974:6: error: Array ''n[3]'' accessed at index 3, which is out of bounds. [arrayIndexOutOfBounds]\',
+  \ '    n[3]=3;',
+  \ '     ^',
+  \ ])

@@ -1,0 +1,884 @@
+Before:
+  Save g:ale_fixers
+  Save &shell
+  Save g:ale_enabled
+  Save g:ale_fix_on_save
+  Save g:ale_lint_on_save
+  Save g:ale_echo_cursor
+  Save g:ale_command_wrapper
+  Save g:ale_filename_mappings
+
+  silent! cd /testplugin/test/fix
+
+  unlet! b:ale_lint_on_save
+  let g:ale_enabled = 0
+  let g:ale_echo_cursor = 0
+  let g:ale_command_wrapper = ''
+  let g:ale_run_synchronously = 1
+  let g:ale_set_lists_synchronously = 1
+  let g:ale_fix_buffer_data = {}
+  let g:ale_fixers = {
+  \ 'testft': [],
+  \}
+  let g:ale_filename_mappings = {}
+
+  let g:pre_success = 0
+  let g:post_success = 0
+  augroup VaderTest
+    autocmd!
+    autocmd User ALEFixPre let g:pre_success = 1
+    autocmd User ALEFixPost let g:post_success = 1
+  augroup END
+
+  if !has('win32')
+    let &shell = '/bin/bash'
+  endif
+
+  call ale#test#SetDirectory('/testplugin/test')
+  call ale#test#SetFilename('test.txt')
+  call ale#linter#PreventLoading('testft')
+
+  function AddCarets(buffer, lines) abort
+    " map() is applied to the original lines here.
+    " This way, we can ensure that defensive copies are made.
+    return map(a:lines, '''^'' . v:val')
+  endfunction
+
+  function Capitalize(buffer, lines) abort
+    return map(a:lines, 'toupper(v:val)')
+  endfunction
+
+  function DoNothing(buffer, lines) abort
+    return 0
+  endfunction
+
+  function CatLine(buffer, lines) abort
+    return {'command': 'cat - <(echo d)'}
+  endfunction
+
+  function CatLineOneArg(buffer) abort
+    return {'command': 'cat - <(echo d)'}
+  endfunction
+
+  function CatLineDeferred(buffer, lines) abort
+    return ale#command#Run(a:buffer, 'echo', {
+    \ -> ale#command#Run(a:buffer, 'echo', {-> {'command': 'cat - <(echo d)'}})
+    \})
+  endfunction
+
+  function ReplaceWithTempFile(buffer, lines) abort
+    return {'command': 'echo x > %t', 'read_temporary_file': 1}
+  endfunction
+
+  function CatWithTempFile(buffer, lines) abort
+    return {'command': 'cat %t <(echo d)'}
+  endfunction
+
+  function EchoFilename(buffer, lines) abort
+    return {'command': 'echo %s'}
+  endfunction
+
+  function RemoveLastLine(buffer, lines) abort
+    return ['a', 'b']
+  endfunction
+
+  function RemoveLastLineOneArg(buffer) abort
+    return ['a', 'b']
+  endfunction
+
+  function! TestCallback(buffer, output)
+    return [{'lnum': 1, 'col': 1, 'text': 'xxx'}]
+  endfunction
+
+  " echo will output a single blank line, and we should ingore it.
+  function! IgnoredEmptyOutput(buffer, output)
+    return {'command': has('win32') ? 'echo(' : 'echo'}
+  endfunction
+
+  function! EchoLineNoPipe(buffer, output)
+    return {'command': 'echo new line', 'read_buffer': 0}
+  endfunction
+
+  function! SetUpLinters()
+    call ale#linter#Define('testft', {
+    \ 'name': 'testlinter',
+    \ 'callback': 'TestCallback',
+    \ 'executable': 'true',
+    \ 'command': 'true',
+    \})
+  endfunction
+
+  function GetLastMessage()
+    redir => l:output
+      silent mess
+    redir END
+
+    let l:lines = split(l:output, "\n")
+
+    return empty(l:lines) ? '' : l:lines[-1]
+  endfunction
+
+  function! FixWithJSONPostProcessing(buffer) abort
+    let l:ProcessWith = 'JSONPostProcessor'
+
+    " Test with lambdas where support is available.
+    if has('lambda')
+      let l:ProcessWith = {buffer, output -> JSONPostProcessor(buffer, output)}
+    endif
+
+    " Escaping needs to be handled specially for CMD on Windows.
+    let l:json_string = has('win32')
+    \ ? '{"output":["x","y","z"]}'
+    \ : ale#Escape('{"output": ["x", "y", "z"]}')
+
+    return {
+    \ 'command': 'echo ' . l:json_string,
+    \ 'read_buffer': 0,
+    \ 'process_with': l:ProcessWith,
+    \}
+  endfunction
+
+  function! JSONPostProcessor(buffer, output) abort
+    return json_decode(a:output[0]).output
+  endfunction
+
+After:
+  Restore
+  unlet! g:test_filename
+  unlet! g:ale_run_synchronously
+  unlet! g:ale_set_lists_synchronously
+  unlet! g:ale_run_synchronously_callbacks
+  unlet! g:ale_emulate_job_failure
+  unlet! b:ale_fixers
+  unlet! b:ale_lint_on_save
+  unlet! b:ale_fix_on_save
+  unlet! b:ale_quitting
+  delfunction AddCarets
+  delfunction Capitalize
+  delfunction DoNothing
+  delfunction CatLine
+  delfunction CatLineOneArg
+  delfunction CatLineDeferred
+  delfunction ReplaceWithTempFile
+  delfunction CatWithTempFile
+  delfunction EchoFilename
+  delfunction RemoveLastLine
+  delfunction RemoveLastLineOneArg
+  delfunction TestCallback
+  delfunction SetUpLinters
+  delfunction GetLastMessage
+  delfunction IgnoredEmptyOutput
+  delfunction EchoLineNoPipe
+  delfunction FixWithJSONPostProcessing
+  delfunction JSONPostProcessor
+
+  augroup VaderTest
+    autocmd!
+  augroup END
+
+  augroup! VaderTest
+
+  call ale#test#RestoreDirectory()
+
+  call ale#fix#registry#ResetToDefaults()
+  call ale#linter#Reset()
+
+  setlocal buftype=nofile
+
+  if exists('g:test_filename') && filereadable(g:test_filename)
+    call delete(g:test_filename)
+  endif
+
+  call setloclist(0, [])
+
+  let g:ale_fix_buffer_data = {}
+
+  " Clear the messages between tests.
+  echomsg ''
+
+  if !exists('g:ale_command_wrapper')
+    let g:ale_command_wrapper = ''
+  endif
+
+Given testft (A file with three lines):
+  a
+  b
+  c
+
+Execute(ALEFix should complain when there are no functions to call):
+  ALEFix
+  call ale#test#FlushJobs()
+  AssertEqual 'No fixers have been defined. Try :ALEFixSuggest', GetLastMessage()
+
+Execute(ALEFix should not complain when the command is run with a bang):
+  echom 'none'
+
+  ALEFix!
+  call ale#test#FlushJobs()
+  AssertEqual 'none', GetLastMessage()
+
+Execute(ALEFix should apply simple functions):
+  let g:ale_fixers.testft = ['AddCarets']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(The first function should be used):
+  ^a
+  ^b
+  ^c
+
+Execute(Should apply filename mpapings):
+  " The command echos %s, and we'll map the current path so we can check
+  " that ALEFix applies filename mappings, end-to-end.
+  let g:ale_filename_mappings = {
+  \ 'echo_filename': [
+  \   [expand('%:p:h') . '/', '/some/fake/path/'],
+  \ ],
+  \}
+
+  call ale#fix#registry#Add('echo_filename', 'EchoFilename', [], 'echo filename')
+  let g:ale_fixers.testft = ['echo_filename']
+  ALEFix
+  call ale#test#FlushJobs()
+  " Remote trailing whitespace from the line.
+  call setline(1, substitute(getline(1), '[ \r]\+$', '', ''))
+
+Expect(The mapped filename should be printed):
+  /some/fake/path/test.txt
+
+Execute(ALEFix should apply simple functions in a chain):
+  let g:ale_fixers.testft = ['AddCarets', 'Capitalize']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(Both functions should be used):
+  ^A
+  ^B
+  ^C
+
+Execute(ALEFix should allow 0 to be returned to skip functions):
+  let g:ale_fixers.testft = ['DoNothing', 'Capitalize']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(Only the second function should be applied):
+  A
+  B
+  C
+
+Execute(The * fixers shouldn't be used if an empty list is set for fixers):
+  let g:ale_fixers.testft = []
+  let g:ale_fixers['*'] = ['Capitalize']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(Nothing should be changed):
+  a
+  b
+  c
+
+Execute(* fixers should be used if no filetype is matched):
+  let g:ale_fixers = {'*': ['Capitalize']}
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(The file should be changed):
+  A
+  B
+  C
+
+Execute(ALEFix should allow commands to be run):
+  if has('win32')
+    " Just skip this test on Windows, we can't run it.
+    call setline(1, ['a', 'b', 'c', 'd'])
+  else
+    let g:ale_fixers.testft = ['CatLine']
+    ALEFix
+    call ale#test#FlushJobs()
+  endif
+
+Expect(An extra line should be added):
+  a
+  b
+  c
+  d
+
+Execute(ALEFix should use fixers passed in commandline when provided):
+  let g:ale_fixers.testft = ['RemoveLastLine']
+  ALEFix AddCarets Capitalize
+  call ale#test#FlushJobs()
+
+Expect(Only fixers passed via command line should be run):
+  ^A
+  ^B
+  ^C
+
+Execute(ALEFix should allow temporary files to be read):
+  if has('win32')
+    " Just skip this test on Windows, we can't run it.
+    call setline(1, ['x'])
+    2,3d
+  else
+    let g:ale_fixers.testft = ['ReplaceWithTempFile']
+    ALEFix
+    call ale#test#FlushJobs()
+  endif
+
+Expect(The line we wrote to the temporary file should be used here):
+  x
+
+Execute(ALEFix should not read the temporary file when the option is not set):
+  if has('win32')
+    " Just skip this test on Windows, we can't run it.
+    call setline(1, ['a', 'b', 'c', 'd'])
+  else
+    let g:ale_fixers.testft = ['CatWithTempFile']
+    ALEFix
+    call ale#test#FlushJobs()
+  endif
+
+Expect(An extra line should be added):
+  a
+  b
+  c
+  d
+
+Execute(ALEFix should allow jobs and simple functions to be combined):
+  if has('win32')
+    " Just skip this test on Windows, we can't run it.
+    call setline(1, ['X'])
+    2,3d
+  else
+    let g:ale_fixers.testft = ['ReplaceWithTempFile', 'Capitalize']
+    ALEFix
+    call ale#test#FlushJobs()
+  endif
+
+Expect(The lines from the temporary file should be modified):
+  X
+
+Execute(ALEFix should send lines modified by functions to jobs):
+  if has('win32')
+    " Just skip this test on Windows, we can't run it.
+    call setline(1, ['A', 'B', 'C', 'd'])
+  else
+    let g:ale_fixers.testft = ['Capitalize', 'CatLine']
+    ALEFix
+    call ale#test#FlushJobs()
+  endif
+
+Expect(The lines should first be modified by the function, then the job):
+  A
+  B
+  C
+  d
+
+Execute(ALEFix should skip commands when jobs fail to run):
+  let g:ale_emulate_job_failure = 1
+  let g:ale_fixers.testft = ['CatLine', 'Capitalize']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(Only the second function should be applied):
+  A
+  B
+  C
+
+Execute(ALEFix should handle strings for selecting a single function):
+  let g:ale_fixers.testft = 'AddCarets'
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(The first function should be used):
+  ^a
+  ^b
+  ^c
+
+Execute(ALEFix should use functions from the registry):
+  call ale#fix#registry#Add('add_carets', 'AddCarets', [], 'Add some carets')
+  let g:ale_fixers.testft = ['add_carets']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(The registry function should be used):
+  ^a
+  ^b
+  ^c
+
+Execute(ALEFix should be able to remove the last line for files):
+  let g:ale_fixers.testft = ['RemoveLastLine']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(There should be only two lines):
+  a
+  b
+
+Execute(ALEFix should accept funcrefs):
+  let g:ale_fixers.testft = [function('RemoveLastLine')]
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(There should be only two lines):
+  a
+  b
+
+Execute(ALEFix should accept lambdas):
+  if has('nvim')
+    " NeoVim 0.1.7 can't interpret lambdas correctly, so just set the lines
+    " to make the test pass.
+    call setline(1, ['a', 'b', 'c', 'd'])
+  else
+    let g:ale_fixers.testft = [{buffer, lines -> lines + ['d']}]
+    ALEFix
+    call ale#test#FlushJobs()
+  endif
+
+Expect(There should be an extra line):
+  a
+  b
+  c
+  d
+
+Execute(ALEFix should user buffer-local fixer settings):
+  let g:ale_fixers.testft = ['AddCarets', 'Capitalize']
+  let b:ale_fixers = {'testft': ['RemoveLastLine']}
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(There should be only two lines):
+  a
+  b
+
+Execute(ALEFix should allow Lists to be used for buffer-local fixer settings):
+  let g:ale_fixers.testft = ['AddCarets', 'Capitalize']
+  let b:ale_fixers = ['RemoveLastLine']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(There should be only two lines):
+  a
+  b
+
+Given testft (A file with three lines):
+  a
+  b
+  c
+
+Execute(ALEFix should fix files on the save event):
+  let g:ale_fix_on_save = 1
+  let g:ale_lint_on_save = 1
+  let g:ale_enabled = 1
+
+  let g:test_filename = tempname()
+  execute 'noautocmd silent file ' . fnameescape(g:test_filename)
+  call writefile(getline(1, '$'), g:test_filename)
+
+  let g:ale_fixers.testft = ['Capitalize']
+
+  " We have to set the buftype to empty so the file will be written.
+  setlocal buftype=
+
+  call SetUpLinters()
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  " We should save the file.
+  AssertEqual ['A', 'B', 'C'], readfile(g:test_filename)
+  Assert !&modified, 'The file was marked as ''modified'''
+
+  if !has('win32')
+    " We should have run the linter.
+    AssertEqual [{
+    \   'bufnr': bufnr('%'),
+    \   'lnum': 1,
+    \   'vcol': 0,
+    \   'col': 1,
+    \   'text': 'xxx',
+    \   'type': 'E',
+    \   'nr': -1,
+    \   'pattern': '',
+    \   'valid': 1,
+    \}], ale#test#GetLoclistWithoutNewerKeys()
+  endif
+
+Expect(The buffer should be modified):
+  A
+  B
+  C
+
+Given testft (A file with three lines):
+  a
+  b
+  c
+
+Execute(ALEFix should run the linters with b:ale_lint_on_save = 1):
+  let g:ale_fix_on_save = 0
+  let b:ale_fix_on_save = 1
+  let g:ale_lint_on_save = 1
+  let g:ale_enabled = 1
+
+  let g:test_filename = tempname()
+  execute 'noautocmd silent file ' . fnameescape(g:test_filename)
+  call writefile(getline(1, '$'), g:test_filename)
+
+  let g:ale_fixers.testft = ['Capitalize']
+
+  " We have to set the buftype to empty so the file will be written.
+  setlocal buftype=
+
+  call SetUpLinters()
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  " We should save the file.
+  AssertEqual ['A', 'B', 'C'], readfile(g:test_filename)
+  Assert !&modified, 'The file was marked as ''modified'''
+
+  if !has('win32')
+    " We should have run the linter.
+    AssertEqual [{
+    \   'bufnr': bufnr('%'),
+    \   'lnum': 1,
+    \   'vcol': 0,
+    \   'col': 1,
+    \   'text': 'xxx',
+    \   'type': 'E',
+    \   'nr': -1,
+    \   'pattern': '',
+    \   'valid': 1,
+    \}], ale#test#GetLoclistWithoutNewerKeys()
+  endif
+
+Expect(The buffer should be modified):
+  A
+  B
+  C
+
+Execute(ALEFix should not fix files on :wq):
+  let g:ale_fix_on_save = 1
+  let g:ale_lint_on_save = 1
+  let g:ale_enabled = 1
+
+  let g:test_filename = tempname()
+  execute 'noautocmd silent file ' . fnameescape(g:test_filename)
+  call writefile(getline(1, '$'), g:test_filename)
+
+  let g:ale_fixers.testft = ['Capitalize']
+
+  " We have to set the buftype to empty so the file will be written.
+  setlocal buftype=
+
+  call ale#events#QuitEvent(bufnr(''))
+
+  call SetUpLinters()
+  call ale#events#SaveEvent(bufnr(''))
+
+  " We should save the file.
+  AssertEqual ['a', 'b', 'c'], readfile(g:test_filename)
+  Assert &modified, 'The was not marked as ''modified'''
+
+  " We should not run the linter.
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+
+Expect(The buffer should not be modified):
+  a
+  b
+  c
+
+Given testft (A file with three lines):
+  a
+  b
+  c
+
+Execute(ALEFix should still lint with no linters to be applied):
+  let g:ale_fix_on_save = 1
+  let g:ale_lint_on_save = 1
+  let g:ale_enabled = 1
+
+  let g:test_filename = tempname()
+  execute 'noautocmd silent file ' . fnameescape(g:test_filename)
+
+  let g:ale_fixers.testft = []
+
+  call SetUpLinters()
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  Assert !filereadable(g:test_filename), 'The file should not have been saved'
+
+  if !has('win32')
+    " We have run the linter.
+    AssertEqual [{
+    \   'bufnr': bufnr('%'),
+    \   'lnum': 1,
+    \   'vcol': 0,
+    \   'col': 1,
+    \   'text': 'xxx',
+    \   'type': 'E',
+    \   'nr': -1,
+    \   'pattern': '',
+    \   'valid': 1,
+    \}], ale#test#GetLoclistWithoutNewerKeys()
+  endif
+
+Expect(The buffer should be the same):
+  a
+  b
+  c
+
+Execute(ALEFix should still lint when nothing was fixed on save):
+  let g:ale_fix_on_save = 1
+  let g:ale_lint_on_save = 1
+  let g:ale_enabled = 1
+
+  let g:test_filename = tempname()
+  execute 'noautocmd silent file ' . fnameescape(g:test_filename)
+
+  let g:ale_fixers.testft = ['DoNothing']
+
+  call SetUpLinters()
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  Assert !filereadable(g:test_filename), 'The file should not have been saved'
+
+  if !has('win32')
+    " We should have run the linter.
+    AssertEqual [{
+    \   'bufnr': bufnr('%'),
+    \   'lnum': 1,
+    \   'vcol': 0,
+    \   'col': 1,
+    \   'text': 'xxx',
+    \   'type': 'E',
+    \   'nr': -1,
+    \   'pattern': '',
+    \   'valid': 1,
+    \}], ale#test#GetLoclistWithoutNewerKeys()
+  endif
+
+Expect(The buffer should be the same):
+  a
+  b
+  c
+
+Execute(ALEFix should not lint the buffer on save if linting on save is disabled globally):
+  let g:ale_fix_on_save = 1
+  let g:ale_lint_on_save = 0
+  let g:ale_enabled = 1
+
+  let g:test_filename = tempname()
+  execute 'noautocmd silent file ' . fnameescape(g:test_filename)
+
+  let g:ale_fixers.testft = ['DoNothing']
+
+  call SetUpLinters()
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  Assert !filereadable(g:test_filename), 'The file should not have been saved'
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+
+Expect(The buffer should be the same):
+  a
+  b
+  c
+
+Execute(ALEFix should not lint the buffer on save if linting on save is disabled locally):
+  let g:ale_fix_on_save = 1
+  let b:ale_lint_on_save = 0
+  let g:ale_enabled = 1
+
+  let g:test_filename = tempname()
+  execute 'noautocmd silent file ' . fnameescape(g:test_filename)
+
+  let g:ale_fixers.testft = ['DoNothing']
+
+  call SetUpLinters()
+  call ale#events#SaveEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  Assert !filereadable(g:test_filename), 'The file should not have been saved'
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+
+Expect(The buffer should be the same):
+  a
+  b
+  c
+
+Given testft (A file with three lines):
+  a
+  b
+  c
+
+Execute(ale#fix#InitBufferData() should set up the correct data):
+  let g:test_filename = tempname()
+  execute 'noautocmd silent file ' . fnameescape(g:test_filename)
+
+  call ale#fix#InitBufferData(bufnr(''), 'save_file')
+
+  AssertEqual {
+  \ bufnr(''): {
+  \   'temporary_directory_list': [],
+  \   'done': 0,
+  \   'lines_before': ['a', 'b', 'c'],
+  \   'should_save': 1,
+  \   'ignore_file_changed_errors': 0,
+  \ },
+  \}, g:ale_fix_buffer_data
+
+  call ale#fix#InitBufferData(bufnr(''), '!')
+
+  AssertEqual {
+  \ bufnr(''): {
+  \   'temporary_directory_list': [],
+  \   'done': 0,
+  \   'lines_before': ['a', 'b', 'c'],
+  \   'should_save': 0,
+  \   'ignore_file_changed_errors': 1,
+  \ },
+  \}, g:ale_fix_buffer_data
+
+Execute(ALEFix simple functions should be able to accept one argument, the buffer):
+  let g:ale_fixers.testft = ['RemoveLastLineOneArg']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(There should be only two lines):
+  a
+  b
+
+Execute(ALEFix should modify a buffer that is not modifiable, if it becomes modifiable later):
+  let g:ale_fixers.testft = ['RemoveLastLineOneArg']
+
+  set nomodifiable
+  ALEFix
+  call ale#test#FlushJobs()
+  set modifiable
+  call ale#fix#ApplyQueuedFixes(bufnr(''))
+
+Expect(There should be only two lines):
+  a
+  b
+
+Execute(b:ale_fix_on_save = 1 should override g:ale_fix_on_save = 0):
+  let g:ale_fix_on_save = 0
+  let b:ale_fix_on_save = 1
+
+  let g:ale_fixers.testft = ['RemoveLastLineOneArg']
+  call ale#events#SaveEvent(bufnr(''))
+
+Expect(There should be only two lines):
+  a
+  b
+
+Execute(b:ale_fix_on_save = 0 should override g:ale_fix_on_save = 1):
+  let g:ale_fix_on_save = 1
+  let b:ale_fix_on_save = 0
+
+  let g:ale_fixers.testft = ['RemoveLastLineOneArg']
+  call ale#events#SaveEvent(bufnr(''))
+
+Expect(The lines should be the same):
+  a
+  b
+  c
+
+Execute(ALEFix functions returning jobs should be able to accept one argument):
+  if has('win32')
+    " Just skip this test on Windows, we can't run it.
+    call setline(1, ['a', 'b', 'c', 'd'])
+  else
+    let g:ale_fixers.testft = ['CatLine']
+    ALEFix
+    call ale#test#FlushJobs()
+  endif
+
+Expect(An extra line should be added):
+  a
+  b
+  c
+  d
+
+Execute(ALE should print a message telling you something isn't a valid fixer when you type some nonsense):
+  let g:ale_fixers.testft = ['CatLine', 'invalidname']
+  ALEFix
+  call ale#test#FlushJobs()
+
+  AssertEqual 'There is no fixer named `invalidname`. Check :ALEFixSuggest', GetLastMessage()
+
+Execute(ALE should complain about invalid fixers with minuses in the name):
+  let g:ale_fixers.testft = ['foo-bar']
+  ALEFix
+  call ale#test#FlushJobs()
+
+  AssertEqual 'There is no fixer named `foo-bar`. Check :ALEFixSuggest', GetLastMessage()
+
+Execute(ALE should tolerate valid fixers with minuses in the name):
+  let g:ale_fixers.testft = ['prettier-standard']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Execute(Empty output should be ignored):
+  let g:ale_fixers.testft = ['IgnoredEmptyOutput']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(The lines should be the same):
+  a
+  b
+  c
+
+Execute(A temporary file shouldn't be piped into the command when disabled):
+  let g:ale_fixers.testft = ['EchoLineNoPipe']
+  ALEFix
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ string(ale#job#PrepareCommand(bufnr(''), 'echo new line')),
+  \ string(ale#history#Get(bufnr(''))[-1].command)
+
+  " Remove trailing whitespace for Windows.
+  if has('win32')
+    %s/[[:space:]]*$//g
+  endif
+
+Expect(The new line should be used):
+  new line
+
+Execute(Post-processing should work):
+  let g:ale_fixers.testft = ['FixWithJSONPostProcessing']
+  ALEFix
+  call ale#test#FlushJobs()
+
+Expect(The lines in the JSON should be used):
+  x
+  y
+  z
+
+Execute(ALEFix should apply autocmds):
+  let g:ale_fixers.testft = ['AddCarets']
+  ALEFix
+  call ale#test#FlushJobs()
+
+  AssertEqual g:pre_success, 1
+  AssertEqual g:post_success, 1
+
+Execute(ALEFix should support ale#command#Run):
+  if has('win32')
+    " Just skip this test on Windows, we can't run it.
+    call setline(1, ['a', 'b', 'c', 'd'])
+  else
+    let g:ale_fixers.testft = ['CatLineDeferred']
+    ALEFix
+    call ale#test#FlushJobs()
+  endif
+
+Expect(The extra line should be added):
+  a
+  b
+  c
+  d

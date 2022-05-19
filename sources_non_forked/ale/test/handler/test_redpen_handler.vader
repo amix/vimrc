@@ -1,0 +1,98 @@
+Before:
+  runtime! ale_linters/markdown/redpen.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(redpen handler should handle errors output):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 10,
+  \     'end_lnum': 1,
+  \     'end_col': 15,
+  \     'text': 'Found possibly misspelled word "plugin".',
+  \     'type': 'W',
+  \     'code': 'Spelling',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'text': 'Found possibly misspelled word "NeoVim".',
+  \     'type': 'W',
+  \     'code': 'Spelling',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 35,
+  \     'end_lnum': 1,
+  \     'end_col': 55,
+  \     'text': 'Found possibly misspelled word "コードチェック".',
+  \     'type': 'W',
+  \     'code': 'Spelling',
+  \   },
+  \ ],
+  \ ale#handlers#redpen#HandleRedpenOutput(bufnr(''), [
+  \   '[',
+  \   '  {',
+  \   '    "document": "test.md",',
+  \   '    "errors": [',
+  \   '      {',
+  \   '        "sentence": "ALE is a plugin for providing linting in NeoVim and Vim 8 while you edit your text files.",',
+  \   '        "endPosition": {',
+  \   '          "offset": 15,',
+  \   '          "lineNum": 1',
+  \   '        },',
+  \   '        "validator": "Spelling",',
+  \   '        "lineNum": 1,',
+  \   '        "sentenceStartColumnNum": 0,',
+  \   '        "message": "Found possibly misspelled word \"plugin\".",',
+  \   '        "startPosition": {',
+  \   '          "offset": 9,',
+  \   '          "lineNum": 1',
+  \   '        }',
+  \   '      },',
+  \   '      {',
+  \   '        "sentence": "ALE is a plugin for providing linting in NeoVim and Vim 8 while you edit your text files.",',
+  \   '        "validator": "Spelling",',
+  \   '        "lineNum": 1,',
+  \   '        "sentenceStartColumnNum": 0,',
+  \   '        "message": "Found possibly misspelled word \"NeoVim\"."',
+  \   '      },',
+  \   '      {',
+  \   '        "sentence": "ALEはNeoVimとVim8で非同期のコードチェックを実現するプラグインです。",',
+  \   '        "endPosition": {',
+  \   '          "offset": 27,',
+  \   '          "lineNum": 1',
+  \   '        },',
+  \   '        "validator": "Spelling",',
+  \   '        "lineNum": 1,',
+  \   '        "sentenceStartColumnNum": 0,',
+  \   '        "message": "Found possibly misspelled word \"コードチェック\".",',
+  \   '        "startPosition": {',
+  \   '          "offset": 20,',
+  \   '          "lineNum": 1',
+  \   '        }',
+  \   '      }',
+  \   '    ]',
+  \   '  }',
+  \   ']',
+  \ ])
+
+Execute(The redpen handler should handle an empty error list):
+  AssertEqual
+  \ [],
+  \ ale#handlers#redpen#HandleRedpenOutput(bufnr(''), [
+  \   '[',
+  \   '  {',
+  \   '    "document": "test.md",',
+  \   '    "errors": []',
+  \   '  }',
+  \   ']',
+  \ ])
+
+Execute(The redpen handler should handle totally empty output):
+  AssertEqual
+  \ [],
+  \ ale#handlers#redpen#HandleRedpenOutput(bufnr(''), [])

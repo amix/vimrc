@@ -1,0 +1,24 @@
+Before:
+  runtime ale_linters/vhdl/xvhdl.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The xvhdl handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 17,
+  \     'type': 'E',
+  \     'text': '[VRFC 10-91] aresetn is not declared '
+  \   },
+  \   {
+  \     'lnum': 128,
+  \     'type': 'E',
+  \     'text': '[VRFC 10-91] m_axis_tx_tdata is not declared '
+  \   },
+  \ ],
+  \ ale_linters#vhdl#xvhdl#Handle(bufnr(''), [
+  \   'ERROR: [VRFC 10-91] aresetn is not declared [/path/to/file.vhd:17]',
+  \   'ERROR: [VRFC 10-91] m_axis_tx_tdata is not declared [/home/user/tx_data.vhd:128]',
+  \ ])

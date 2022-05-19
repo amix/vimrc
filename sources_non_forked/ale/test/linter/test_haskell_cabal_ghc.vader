@@ -1,0 +1,13 @@
+Before:
+  call ale#assert#SetUpLinterTest('haskell', 'cabal_ghc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The options should be used in the command):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'cabal', 'cabal exec -- ghc -fno-code -v0 %t'
+
+  let b:ale_haskell_cabal_ghc_options = 'foobar'
+
+  AssertLinter 'cabal', 'cabal exec -- ghc foobar %t'

@@ -1,0 +1,31 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+  unlet! b:ale_javascript_standard_executable
+  unlet! b:ale_javascript_standard_options
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(The executable path should be correct):
+  call ale#test#SetFilename('../test-files/eslint/react-app/subdir/testfile.js')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/eslint/react-app/node_modules/standard/bin/cmd.js'))
+  \     . ' --fix --stdin < %s > %t',
+  \ },
+  \ ale#fixers#standard#Fix(bufnr(''))
+
+Execute(Custom options should be supported):
+  let b:ale_javascript_standard_use_global = 1
+  let b:ale_javascript_standard_options = '--foo-bar'
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('standard') . ' --foo-bar --fix --stdin < %s > %t',
+  \ },
+  \ ale#fixers#standard#Fix(bufnr(''))

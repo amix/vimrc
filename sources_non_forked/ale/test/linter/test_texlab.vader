@@ -1,0 +1,35 @@
+Before:
+  call ale#assert#SetUpLinterTest('tex', 'texlab')
+  
+  Save &filetype
+  let &filetype = 'tex'
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The language string should be correct):
+  AssertLSPLanguage 'tex'
+
+Execute(The default executable path should be correct):
+  AssertLinter 'texlab', ale#Escape('texlab')
+
+Execute(The project root should be detected correctly):
+  call ale#test#SetFilename('../test-files/tex/sample1.tex')
+  silent! call mkdir('../test-files/tex/.git')
+  
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/tex')
+
+Execute(The executable should be configurable):
+  let b:ale_tex_texlab_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar')
+
+Execute(The options should be configurable):
+  let b:ale_tex_texlab_options = '-v'
+
+  AssertLinter 'texlab', ale#Escape('texlab') . ' ' . b:ale_tex_texlab_options
+
+Execute(Should accpet configuration settings):
+  AssertLSPConfig {}
+  let b:ale_tex_texlab_config = {'build':{'onSave':v:true}}
+  AssertLSPConfig {'build':{'onSave':v:true}}

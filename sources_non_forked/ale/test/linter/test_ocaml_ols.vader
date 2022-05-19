@@ -1,0 +1,41 @@
+Before:
+  call ale#assert#SetUpLinterTest('ocaml', 'ols')
+
+  Save &filetype
+  let &filetype = 'ocaml'
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The language string should be correct):
+  AssertLSPLanguage 'ocaml'
+
+Execute(The default executable should be correct):
+  AssertLinter 'ocaml-language-server',
+  \ ale#Escape('ocaml-language-server') . ' --stdio'
+
+Execute(The project root should be detected correctly):
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/ols/file.ml')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/ols')
+
+Execute(The local executable should be used when available):
+  call ale#test#SetFilename('../test-files/ols/file.ml')
+
+  AssertLinter ale#path#Simplify(g:dir . '/../test-files/ols/node_modules/.bin/ocaml-language-server'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/ols/node_modules/.bin/ocaml-language-server')) . ' --stdio'
+
+Execute(The gloabl executable should always be used when use_global is set):
+  let g:ale_ocaml_ols_use_global = 1
+  call ale#test#SetFilename('../test-files/ols/file.ml')
+
+  AssertLinter 'ocaml-language-server',
+  \ ale#Escape('ocaml-language-server') . ' --stdio'
+
+Execute(The executable should be configurable):
+  let g:ale_ocaml_ols_executable = 'foobar'
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' --stdio'

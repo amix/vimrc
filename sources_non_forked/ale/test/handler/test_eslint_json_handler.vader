@@ -1,0 +1,376 @@
+Before:
+  Save g:ale_javascript_eslint_suppress_eslintignore
+  Save g:ale_javascript_eslint_suppress_missing_config
+  Save g:ale_warn_about_trailing_whitespace
+  Save g:ale_warn_about_trailing_blank_lines
+
+  let g:ale_javascript_eslint_suppress_eslintignore = 0
+  let g:ale_javascript_eslint_suppress_missing_config = 0
+  let g:ale_warn_about_trailing_whitespace = 1
+  let g:ale_warn_about_trailing_blank_lines = 1
+  unlet! b:ale_warn_about_trailing_whitespace
+  unlet! b:ale_warn_about_trailing_blank_lines
+
+After:
+  Restore
+
+  unlet! b:ale_javascript_eslint_suppress_eslintignore
+  unlet! b:ale_javascript_eslint_suppress_missing_config
+  unlet! b:ale_warn_about_trailing_whitespace
+  unlet! b:ale_warn_about_trailing_blank_lines
+  unlet! g:config_error_lines
+
+Execute(The eslint handler should parse json correctly):
+  call ale#test#SetFilename('foo.js')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'end_lnum': 1,
+  \     'col': 7,
+  \     'end_col': 14,
+  \     'text': '''variable'' is assigned a value but never used.',
+  \     'code': 'no-unused-vars',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 5,
+  \     'col': 15,
+  \     'text': 'Missing semicolon.',
+  \     'code': 'semi',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'end_lnum': 7,
+  \     'col': 7,
+  \     'end_col': 14,
+  \     'text': '''variable'' is already defined.',
+  \     'code': 'no-redeclare',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \ '[{"filePath":"foo.js","messages":[{"ruleId":"no-unused-vars","severity":1,"message":"''variable'' is assigned a value but never used.","line":1,"column":7,"nodeType":"Identifier","endLine":1,"endColumn":15},{"ruleId":"semi","severity":1,"message":"Missing semicolon.","line":5,"column":15,"nodeType":"ExpressionStatement","fix":{"range":[46,46],"text":";"}},{"ruleId":"no-redeclare","severity":2,"message":"''variable'' is already defined.","line":7,"column":7,"nodeType":"Identifier","endLine":7,"endColumn":15}],"errorCount":1,"warningCount":3,"fixableErrorCount":0,"fixableWarningCount":1,"source":"const variable = {\n    a: 3\n};\n\nconsole.log(1)\n\nclass variable {\n}\n"}]'
+  \ ])
+
+Execute(The eslint handler should suppress deprecation warnings):
+  call ale#test#SetFilename('foo.js')
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 9,
+  \     'text': 'Parsing error: Unexpected token Controller',
+  \     'type': 'E',
+  \   }
+  \ ],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \ '[{"filePath":"foo.js","messages":[{"ruleId":null,"fatal":true,"severity":2 ,"message":"Parsing error: Unexpected token Controller","line":1,"column":9}],"errorCount":1,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount": 0,"source":"i:mport Controller from \"@ember/controller\";\nimport listViewControllerMixin from \"elearning/mixins/list-view-controller\";\nimport { inject as service } from \"@ember/service\";\n\nexport default Controller.extend(listViewControllerMixin(), {\n  modelName: \"notification\",\n  intl: service(),\n\n  flatpickrLocale: computed(\"intl.locale\", function() {\n    return this.intl.locale.firstObject.split(\"-\")[0];\n  })\n});\n"}]', '(node:616989) [ESLINT_LEGACY_OBJECT_REST_SPREAD] DeprecationWarning: The ''parserOptions.ecmaFeatures.experimentalObjectRestSpread'' option is deprecated. Use ''parser Options.ecmaVersion'' instead. (found in "node_modules/eslint-plugin-ember/lib/config/base.js")]'
+  \ ])
+
+Execute(The eslint handler should print a message about a missing configuration file):
+  let g:config_error_lines = [
+  \   '',
+  \   'Oops! Something went wrong! :(',
+  \   '',
+  \   'ESLint couldn''t find a configuration file. To set up a configuration file for this project, please run:',
+  \   '    eslint --init',
+  \   '',
+  \   'ESLint looked for configuration files in /some/path/or/other and its ancestors.',
+  \   '',
+  \   'If you think you already have a configuration file or if you need more help, please stop by the ESLint chat room: https://gitter.im/eslint/eslint',
+  \   '',
+  \ ]
+
+  AssertEqual
+  \ [{
+  \   'lnum': 1,
+  \   'text': 'eslint configuration error (type :ALEDetail for more information)',
+  \   'detail': join(g:config_error_lines, "\n"),
+  \ }],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), g:config_error_lines[:])
+
+Execute(The eslint handler should allow the missing config error to be suppressed):
+  let b:ale_javascript_eslint_suppress_missing_config = 1
+  let g:config_error_lines = [
+  \   '',
+  \   'Oops! Something went wrong! :(',
+  \   '',
+  \   'ESLint couldn''t find a configuration file. To set up a configuration file for this project, please run:',
+  \   '    eslint --init',
+  \   '',
+  \   'ESLint looked for configuration files in /some/path/or/other and its ancestors.',
+  \   '',
+  \   'If you think you already have a configuration file or if you need more help, please stop by the ESLint chat room: https://gitter.im/eslint/eslint',
+  \   '',
+  \ ]
+
+  AssertEqual
+  \ [],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), g:config_error_lines[:])
+
+Execute(The eslint handler should print a message for config parsing errors):
+  let g:config_error_lines = [
+  \ 'Cannot read config file: /some/path/or/other/.eslintrc.js',
+  \ 'Error: Unexpected token <<',
+  \ '/some/path/or/other/.eslintrc.js:1',
+  \ '(function (exports, require, module, __filename, __dirname) { <<<>>>',
+  \ '                                                              ^^',
+  \ 'SyntaxError: Unexpected token <<',
+  \ '    at Object.exports.runInThisContext (vm.js:76:16)',
+  \ '    at Module._compile (module.js:528:28)',
+  \ '    at Object.Module._extensions..js (module.js:565:10)',
+  \ '    at Module.load (module.js:473:32)',
+  \ '    at tryModuleLoad (module.js:432:12)',
+  \ '    at Function.Module._load (module.js:424:3)',
+  \ '    at Module.require (module.js:483:17)',
+  \ '    at require (internal/module.js:20:19)',
+  \ '    at module.exports (/usr/local/lib/node_modules/eslint/node_modules/require-uncached/index.js:14:12)',
+  \ '    at loadJSConfigFile (/usr/local/lib/node_modules/eslint/lib/config/config-file.js:160:16)',
+  \]
+
+  AssertEqual
+  \ [{
+  \   'lnum': 1,
+  \   'text': 'eslint configuration error (type :ALEDetail for more information)',
+  \   'detail': join(g:config_error_lines, "\n"),
+  \ }],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), g:config_error_lines[:])
+
+Execute(Suppressing missing configs shouldn't suppress parsing errors):
+  let b:ale_javascript_eslint_suppress_missing_config = 1
+  let g:config_error_lines = [
+  \ 'Cannot read config file: /some/path/or/other/.eslintrc.js',
+  \ 'Error: Unexpected token <<',
+  \ '/some/path/or/other/.eslintrc.js:1',
+  \ '(function (exports, require, module, __filename, __dirname) { <<<>>>',
+  \ '                                                              ^^',
+  \ 'SyntaxError: Unexpected token <<',
+  \ '    at Object.exports.runInThisContext (vm.js:76:16)',
+  \ '    at Module._compile (module.js:528:28)',
+  \ '    at Object.Module._extensions..js (module.js:565:10)',
+  \ '    at Module.load (module.js:473:32)',
+  \ '    at tryModuleLoad (module.js:432:12)',
+  \ '    at Function.Module._load (module.js:424:3)',
+  \ '    at Module.require (module.js:483:17)',
+  \ '    at require (internal/module.js:20:19)',
+  \ '    at module.exports (/usr/local/lib/node_modules/eslint/node_modules/require-uncached/index.js:14:12)',
+  \ '    at loadJSConfigFile (/usr/local/lib/node_modules/eslint/lib/config/config-file.js:160:16)',
+  \]
+
+  AssertEqual
+  \ [{
+  \   'lnum': 1,
+  \   'text': 'eslint configuration error (type :ALEDetail for more information)',
+  \   'detail': join(g:config_error_lines, "\n"),
+  \ }],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), g:config_error_lines[:])
+
+Execute(The eslint handler should print a message for invalid configuration settings):
+  let g:config_error_lines = [
+  \ '/home/w0rp/git/wazoku/wazoku-spotlight/.eslintrc.js:',
+  \ ' Configuration for rule "indent" is invalid:',
+  \ ' Value "off" is the wrong type.',
+  \ '',
+  \ 'Error: /home/w0rp/git/wazoku/wazoku-spotlight/.eslintrc.js:',
+  \ ' Configuration for rule "indent" is invalid:',
+  \ ' Value "off" is the wrong type.',
+  \ '',
+  \ '    at validateRuleOptions (/usr/local/lib/node_modules/eslint/lib/config/config-validator.js:115:15)',
+  \ '    at /usr/local/lib/node_modules/eslint/lib/config/config-validator.js:162:13',
+  \ '    at Array.forEach (native)',
+  \ '    at Object.validate (/usr/local/lib/node_modules/eslint/lib/config/config-validator.js:161:35)',
+  \ '    at Object.load (/usr/local/lib/node_modules/eslint/lib/config/config-file.js:522:19)',
+  \ '    at loadConfig (/usr/local/lib/node_modules/eslint/lib/config.js:63:33)',
+  \ '    at getLocalConfig (/usr/local/lib/node_modules/eslint/lib/config.js:130:29)',
+  \ '    at Config.getConfig (/usr/local/lib/node_modules/eslint/lib/config.js:256:22)',
+  \ '    at processText (/usr/local/lib/node_modules/eslint/lib/cli-engine.js:224:33)',
+  \ '    at CLIEngine.executeOnText (/usr/local/lib/node_modules/eslint/lib/cli-engine.js:756:26)',
+  \]
+
+  AssertEqual
+  \ [{
+  \   'lnum': 1,
+  \   'text': 'eslint configuration error (type :ALEDetail for more information)',
+  \   'detail': join(g:config_error_lines, "\n"),
+  \ }],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), g:config_error_lines[:])
+
+Execute(Suppressing missing configs shouldn't suppress invalid config errors):
+  let b:ale_javascript_eslint_suppress_missing_config = 1
+  let g:config_error_lines = [
+  \ '/home/w0rp/git/wazoku/wazoku-spotlight/.eslintrc.js:',
+  \ ' Configuration for rule "indent" is invalid:',
+  \ ' Value "off" is the wrong type.',
+  \ '',
+  \ 'Error: /home/w0rp/git/wazoku/wazoku-spotlight/.eslintrc.js:',
+  \ ' Configuration for rule "indent" is invalid:',
+  \ ' Value "off" is the wrong type.',
+  \ '',
+  \ '    at validateRuleOptions (/usr/local/lib/node_modules/eslint/lib/config/config-validator.js:115:15)',
+  \ '    at /usr/local/lib/node_modules/eslint/lib/config/config-validator.js:162:13',
+  \ '    at Array.forEach (native)',
+  \ '    at Object.validate (/usr/local/lib/node_modules/eslint/lib/config/config-validator.js:161:35)',
+  \ '    at Object.load (/usr/local/lib/node_modules/eslint/lib/config/config-file.js:522:19)',
+  \ '    at loadConfig (/usr/local/lib/node_modules/eslint/lib/config.js:63:33)',
+  \ '    at getLocalConfig (/usr/local/lib/node_modules/eslint/lib/config.js:130:29)',
+  \ '    at Config.getConfig (/usr/local/lib/node_modules/eslint/lib/config.js:256:22)',
+  \ '    at processText (/usr/local/lib/node_modules/eslint/lib/cli-engine.js:224:33)',
+  \ '    at CLIEngine.executeOnText (/usr/local/lib/node_modules/eslint/lib/cli-engine.js:756:26)',
+  \]
+
+  AssertEqual
+  \ [{
+  \   'lnum': 1,
+  \   'text': 'eslint configuration error (type :ALEDetail for more information)',
+  \   'detail': join(g:config_error_lines, "\n"),
+  \ }],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), g:config_error_lines[:])
+
+Execute(The eslint handler should print a message when import is not used in a module):
+  let g:config_error_lines = [
+  \ 'ImportDeclaration should appear when the mode is ES6 and in the module context.',
+  \ 'AssertionError: ImportDeclaration should appear when the mode is ES6 and in the module context.',
+  \ '    at Referencer.ImportDeclaration (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint-scope/lib/referencer.js:597:9)',
+  \ '    at Referencer.Visitor.visit (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/esrecurse/esrecurse.js:122:34)',
+  \ '    at Referencer.Visitor.visitChildren (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/esrecurse/esrecurse.js:101:38)',
+  \ '    at Referencer.Program (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint-scope/lib/referencer.js:449:14)',
+  \ '    at Referencer.Visitor.visit (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/esrecurse/esrecurse.js:122:34)',
+  \ '    at Object.analyze (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint-scope/lib/index.js:138:16)',
+  \ '    at EventEmitter.module.exports.api.verify (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint/lib/eslint.js:887:40)',
+  \ '    at processText (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint/lib/cli-engine.js:278:31)',
+  \ '    at CLIEngine.executeOnText (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint/lib/cli-engine.js:734:26)',
+  \ '    at Object.execute (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint/lib/cli.js:171:42)   ',
+  \]
+
+  AssertEqual
+  \ [{
+  \   'lnum': 1,
+  \   'text': 'eslint configuration error (type :ALEDetail for more information)',
+  \   'detail': join(g:config_error_lines, "\n"),
+  \ }],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), g:config_error_lines[:])
+
+Execute(Suppressing missing configs shouldn't suppress module import errors):
+  let b:ale_javascript_eslint_suppress_missing_config = 1
+  let g:config_error_lines = [
+  \ 'ImportDeclaration should appear when the mode is ES6 and in the module context.',
+  \ 'AssertionError: ImportDeclaration should appear when the mode is ES6 and in the module context.',
+  \ '    at Referencer.ImportDeclaration (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint-scope/lib/referencer.js:597:9)',
+  \ '    at Referencer.Visitor.visit (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/esrecurse/esrecurse.js:122:34)',
+  \ '    at Referencer.Visitor.visitChildren (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/esrecurse/esrecurse.js:101:38)',
+  \ '    at Referencer.Program (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint-scope/lib/referencer.js:449:14)',
+  \ '    at Referencer.Visitor.visit (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/esrecurse/esrecurse.js:122:34)',
+  \ '    at Object.analyze (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint-scope/lib/index.js:138:16)',
+  \ '    at EventEmitter.module.exports.api.verify (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint/lib/eslint.js:887:40)',
+  \ '    at processText (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint/lib/cli-engine.js:278:31)',
+  \ '    at CLIEngine.executeOnText (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint/lib/cli-engine.js:734:26)',
+  \ '    at Object.execute (/home/w0rp/git/wazoku/wazoku-spotlight/spotlight/static/node_modules/eslint/lib/cli.js:171:42)   ',
+  \]
+
+  AssertEqual
+  \ [{
+  \   'lnum': 1,
+  \   'text': 'eslint configuration error (type :ALEDetail for more information)',
+  \   'detail': join(g:config_error_lines, "\n"),
+  \ }],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), g:config_error_lines[:])
+
+Execute(The eslint handler should hint about using typescript-eslint-parser):
+  call ale#test#SetFilename('foo.ts')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'text': 'Parsing error (You may need configure typescript-eslint-parser): The keyword ''interface'' is reserved',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \ '[{"filePath":"foo.ts","messages":[{"ruleId":null,"fatal":true,"severity":2,"message":"Parsing error: The keyword ''interface'' is reserved","line":2,"column":1}],"errorCount":1,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"source":"\ninterface test {}\n"}]',
+  \ ])
+
+Execute(eslint should warn about ignored files by default):
+  AssertEqual
+  \ [{
+  \    'lnum': 0,
+  \    'type': 'W',
+  \    'text': 'File ignored because of a matching ignore pattern. Use "--no-ignore" to override.'
+  \ }],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \  '[{"filePath":"/path/to/some/ignored/file.js","messages":[{"fatal":false,"severity":1,"message":"File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override."}],"errorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0}]',
+  \ ])
+
+  AssertEqual
+  \ [{
+  \    'lnum': 0,
+  \    'type': 'W',
+  \    'text': 'File ignored by default. Use "--ignore-pattern ''!node_modules/*''" to override.',
+  \ }],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \  '[{"filePath":"/path/to/some/ignored/file.js","messages":[{"fatal":false,"severity":1,"message":"File ignored by default. Use \"--ignore-pattern ''!node_modules/*''\" to override."}],"errorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0}]',
+  \ ])
+
+Execute(eslint should not warn about ignored files when explicitly disabled):
+  let g:ale_javascript_eslint_suppress_eslintignore = 1
+
+  AssertEqual
+  \ [],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \  '[{"filePath":"/path/to/some/ignored/file.js","messages":[{"fatal":false,"severity":1,"message":"File ignored because of a matching ignore pattern. Use \"--no-ignore\" to override."}],"errorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0}]',
+  \ ])
+
+  AssertEqual
+  \ [],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \  '[{"filePath":"/path/to/some/ignored/file.js","messages":[{"fatal":false,"severity":1,"message":"File ignored by default. Use \"--ignore-pattern ''!node_modules/*''\" to override."}],"errorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0}]',
+  \ ])
+
+Execute(Failing to connect to eslint_d should be handled correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'text': 'Could not connect to eslint_d. Try updating eslint_d or killing it.',
+  \   },
+  \ ],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \  'Could not connect',
+  \ ])
+
+Execute(Disabling warnings about trailing spaces should work):
+  call ale#test#SetFilename('foo.js')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 16,
+  \     'code': 'no-trailing-spaces',
+  \     'type': 'W',
+  \     'text': 'Trailing spaces not allowed.',
+  \   },
+  \ ],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \ '[{"filePath":"foo.js","messages":[{"ruleId":"no-trailing-spaces","severity":1,"message":"Trailing spaces not allowed.","line":2,"column":16,"nodeType":"Program","fix":{"range":[16,17],"text":""}}],"errorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":1,"source":"\nconsole.log(1); \n"}]'
+  \ ])
+
+  let g:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \ '[{"filePath":"foo.js","messages":[{"ruleId":"no-trailing-spaces","severity":1,"message":"Trailing spaces not allowed.","line":2,"column":16,"nodeType":"Program","fix":{"range":[16,17],"text":""}}],"errorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":1,"source":"\nconsole.log(1); \n"}]'
+  \ ])
+
+  let g:ale_warn_about_trailing_whitespace = 1
+  let b:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [],
+  \ ale#handlers#eslint#HandleJSON(bufnr(''), [
+  \ '[{"filePath":"foo.js","messages":[{"ruleId":"no-trailing-spaces","severity":1,"message":"Trailing spaces not allowed.","line":2,"column":16,"nodeType":"Program","fix":{"range":[16,17],"text":""}}],"errorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":1,"source":"\nconsole.log(1); \n"}]'
+  \ ])

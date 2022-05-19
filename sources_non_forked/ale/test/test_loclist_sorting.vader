@@ -1,0 +1,43 @@
+Execute(loclist item should be sorted):
+  AssertEqual [
+  \   {'bufnr': -1, 'filename': 'b', 'lnum': 4, 'col': 2},
+  \   {'bufnr': -1, 'filename': 'b', 'lnum': 5, 'col': 2},
+  \   {'bufnr': -1, 'filename': 'c', 'lnum': 3, 'col': 2},
+  \   {'bufnr': 1, 'lnum': 2, 'col': 10},
+  \   {'bufnr': 1, 'lnum': 3, 'col': 2},
+  \   {'bufnr': 1, 'lnum': 5, 'col': 4},
+  \   {'bufnr': 1, 'lnum': 5, 'col': 5},
+  \   {'bufnr': 2, 'lnum': 1, 'col': 2},
+  \   {'bufnr': 2, 'lnum': 1, 'col': 5},
+  \   {'bufnr': 2, 'lnum': 5, 'col': 5},
+  \   {'bufnr': 3, 'lnum': 1, 'col': 1},
+  \ ],
+  \ sort([
+  \   {'bufnr': 3, 'lnum': 1, 'col': 1},
+  \   {'bufnr': -1, 'filename': 'b', 'lnum': 5, 'col': 2},
+  \   {'bufnr': 1, 'lnum': 5, 'col': 5},
+  \   {'bufnr': 2, 'lnum': 5, 'col': 5},
+  \   {'bufnr': -1, 'filename': 'b', 'lnum': 4, 'col': 2},
+  \   {'bufnr': 1, 'lnum': 5, 'col': 4},
+  \   {'bufnr': 1, 'lnum': 2, 'col': 10},
+  \   {'bufnr': 2, 'lnum': 1, 'col': 5},
+  \   {'bufnr': 1, 'lnum': 3, 'col': 2},
+  \   {'bufnr': 2, 'lnum': 1, 'col': 2},
+  \   {'bufnr': -1, 'filename': 'c', 'lnum': 3, 'col': 2},
+  \], 'ale#util#LocItemCompare')
+
+Execute(Items should be sorted in by their problem priority when they lie on the same column):
+  AssertEqual [
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'W', 'sub_type': 'style'},
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'E', 'sub_type': 'style'},
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'I'},
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'W'},
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'E'},
+  \ ],
+  \ sort([
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'E'},
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'I'},
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'W'},
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'E', 'sub_type': 'style'},
+  \   {'bufnr': 1, 'lnum': 1, 'col': 1, 'type': 'W', 'sub_type': 'style'},
+  \], 'ale#util#LocItemCompare')

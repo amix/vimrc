@@ -1,0 +1,43 @@
+Before:
+  call ale#assert#SetUpLinterTest('elixir', 'credo')
+  call ale#test#SetFilename('../test-files/elixir/mix_project/lib/app.ex')
+
+
+After:
+  unlet! g:ale_elixir_credo_strict
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(Builds credo command with normal project):
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elixir/mix_project')
+  AssertLinter 'mix',
+  \ 'mix help credo && mix credo suggest --format=flycheck --read-from-stdin %s'
+
+Execute(Builds credo command with umbrella project):
+  call ale#test#SetFilename('../test-files/elixir/umbrella_project/apps/mix_project/lib/app.ex')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elixir/umbrella_project')
+  AssertLinter 'mix',
+  \ 'mix help credo && mix credo suggest --format=flycheck --read-from-stdin %s'
+
+Execute(Builds credo command with --strict mode when set to 1):
+  let g:ale_elixir_credo_strict = 1
+
+  AssertLinter 'mix',
+  \ 'mix help credo && mix credo --strict --format=flycheck --read-from-stdin %s'
+
+Execute(Builds credo command with suggest mode by default):
+  AssertLinter 'mix',
+  \ 'mix help credo && mix credo suggest --format=flycheck --read-from-stdin %s'
+
+Execute(Builds credo command with suggest mode when set to 0):
+  let g:ale_elixir_credo_strict = 0
+
+  AssertLinter 'mix',
+  \ 'mix help credo && mix credo suggest --format=flycheck --read-from-stdin %s'
+
+Execute(Builds credo command with a custom config file):
+  let g:ale_elixir_credo_config_file = '/home/user/custom_credo.exs'
+
+  AssertLinter 'mix',
+  \ 'mix help credo && mix credo suggest --config-file /home/user/custom_credo.exs --format=flycheck --read-from-stdin %s'

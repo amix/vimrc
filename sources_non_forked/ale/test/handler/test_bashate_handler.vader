@@ -1,0 +1,36 @@
+Before:
+  runtime ale_linters/sh/bashate.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The bashate handler should handle basic errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 777,
+  \     'col': 1,
+  \     'text': 'E003 Indent not multiple of 4',
+  \   },
+  \   {
+  \     'lnum': 783,
+  \     'col': 1,
+  \     'text': 'E020 Function declaration not in format ^function name {$',
+  \   },
+  \   {
+  \     'lnum': 786,
+  \     'col': 1,
+  \     'text': 'E010 The "do" should be on same line as for',
+  \   },
+  \   {
+  \     'lnum': 791,
+  \     'col': 1,
+  \     'text': 'E006 Line too long',
+  \   },
+  \ ],
+  \ ale_linters#sh#bashate#Handle(bufnr(''), [
+  \   'run:777:1: E003 Indent not multiple of 4',
+  \   'run:783:1: E020 Function declaration not in format ^function name {$',
+  \   'run:786:1: E010 The "do" should be on same line as for',
+  \   'run:791:1: E006 Line too long',
+  \ ])

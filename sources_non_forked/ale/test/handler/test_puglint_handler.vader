@@ -1,0 +1,45 @@
+Before:
+  runtime ale_linters/pug/puglint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Regular errors should be handled):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 5,
+  \     'type': 'E',
+  \     'text': 'Static attribute "class" must be written as class literal',
+  \   },
+  \ ],
+  \ ale_linters#pug#puglint#Handle(0, [
+  \   '/tmp/vwYwsJA/233/test.pug:1:5 Static attribute "class" must be written as class literal',
+  \ ])
+
+Execute(syntax errors in the configuration file should be handled):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'text': 'puglint configuration error (type :ALEDetail for more information)',
+  \     'detail': join(
+  \       [
+  \         'undefined:2',
+  \         '  disallowClassAttributeWithStaticValue: true',
+  \         '  ^',
+  \         'SyntaxError: Unexpected token d in JSON at position 4',
+  \         '    at JSON.parse (<anonymous>)',
+  \       ],
+  \       "\n"
+  \     ),
+  \   },
+  \ ],
+  \ ale_linters#pug#puglint#Handle(0, [
+  \   'undefined:2',
+  \   '  disallowClassAttributeWithStaticValue: true',
+  \   '  ^',
+  \   'SyntaxError: Unexpected token d in JSON at position 4',
+  \   '    at JSON.parse (<anonymous>)',
+  \ ])

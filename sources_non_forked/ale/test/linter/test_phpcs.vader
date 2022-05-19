@@ -1,0 +1,42 @@
+Before:
+  call ale#assert#SetUpLinterTest('php', 'phpcs')
+
+After:
+  unlet! g:executable
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The local phpcs executable should be used):
+  call ale#test#SetFilename('../test-files/phpcs/project-with-phpcs/foo/test.php')
+
+  let g:executable = ale#path#Simplify(g:dir . '/../test-files/phpcs/project-with-phpcs/vendor/bin/phpcs')
+
+  AssertLinterCwd '%s:h'
+  AssertLinter g:executable, ale#Escape(g:executable)
+  \ . ' -s --report=emacs --stdin-path=%s'
+
+Execute(use_global should override local executable detection):
+  let g:ale_php_phpcs_use_global = 1
+
+  call ale#test#SetFilename('../test-files/phpcs/project-with-phpcs/foo/test.php')
+
+  AssertLinter 'phpcs', ale#Escape('phpcs')
+  \ . ' -s --report=emacs --stdin-path=%s'
+
+Execute(Projects without local executables should use the global one):
+  call ale#test#SetFilename('../test-files/phpcs/project-without-phpcs/foo/test.php')
+
+  AssertLinter 'phpcs', ale#Escape('phpcs')
+  \ . ' -s --report=emacs --stdin-path=%s'
+
+Execute(User provided options should be used):
+  let g:ale_php_phpcs_options = '--my-user-provided-option my-value'
+
+  AssertLinter 'phpcs', ale#Escape('phpcs')
+  \ . ' -s --report=emacs --stdin-path=%s --my-user-provided-option my-value'
+
+Execute(The _standard option should be used):
+  let g:ale_php_phpcs_standard = 'foobar'
+
+  AssertLinter 'phpcs', ale#Escape('phpcs')
+  \ . ' -s --report=emacs --stdin-path=%s --standard=' . ale#Escape('foobar')

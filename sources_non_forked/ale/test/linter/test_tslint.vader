@@ -1,0 +1,23 @@
+Before:
+  call ale#assert#SetUpLinterTest('typescript', 'tslint')
+  call ale#test#SetFilename('test.ts')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default tslint command should be correct):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'tslint', ale#Escape('tslint') . ' --format json %t'
+
+Execute(The rules directory option should be included if set):
+  let b:ale_typescript_tslint_rules_dir = '/foo/bar'
+
+  AssertLinter 'tslint',
+  \ ale#Escape('tslint') . ' --format json'
+  \   . ' -r ' . ale#Escape('/foo/bar')
+  \   . ' %t'
+
+Execute(The executable should be configurable and escaped):
+  let b:ale_typescript_tslint_executable = 'foo bar'
+
+  AssertLinter 'foo bar', ale#Escape('foo bar') . ' --format json %t'

@@ -1,0 +1,163 @@
+Execute (ale#util#GetMatches should return matches for many lines):
+  AssertEqual
+  \ [
+  \   [
+  \     '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \     '47',
+  \     '14',
+  \     'Missing trailing comma.',
+  \     'Warning/comma-dangle',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \   ],
+  \   [
+  \     '/path/to/some-filename.js:56:41: Missing semicolon. [Error/semi]',
+  \     '56',
+  \     '41',
+  \     'Missing semicolon.',
+  \     'Error/semi',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \   ],
+  \ ],
+  \ ale#util#GetMatches(
+  \   [
+  \     '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \     '/path/to/some-filename.js:56:41: Missing semicolon. [Error/semi]',
+  \   ],
+  \   [
+  \     '^.*:\(\d\+\):\(\d\+\): \(.\+\) \[\(.\+\)\]$',
+  \   ]
+  \ )
+
+Execute (ale#util#GetMatches should accept a string for a single pattern):
+  AssertEqual
+  \ [
+  \   [
+  \     '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \     '47',
+  \     '14',
+  \     'Missing trailing comma.',
+  \     'Warning/comma-dangle',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \   ],
+  \   [
+  \     '/path/to/some-filename.js:56:41: Missing semicolon. [Error/semi]',
+  \     '56',
+  \     '41',
+  \     'Missing semicolon.',
+  \     'Error/semi',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \   ],
+  \ ],
+  \ ale#util#GetMatches(
+  \   [
+  \     '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \     '/path/to/some-filename.js:56:41: Missing semicolon. [Error/semi]',
+  \   ],
+  \   '^.*:\(\d\+\):\(\d\+\): \(.\+\) \[\(.\+\)\]$'
+  \ )
+
+Execute (ale#util#MapMatches should map matches):
+  AssertEqual
+  \ [
+  \   '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \   '/path/to/some-filename.js:56:41: Missing semicolon. [Error/semi]',
+  \ ],
+  \ ale#util#MapMatches(
+  \   [
+  \     '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \     '/path/to/some-filename.js:56:41: Missing semicolon. [Error/semi]',
+  \   ],
+  \   '^.*:\(\d\+\):\(\d\+\): \(.\+\) \[\(.\+\)\]$',
+  \   {match -> match[0]}
+  \ )
+
+Execute (ale#util#GetMatches should accept a single line as a string):
+  AssertEqual
+  \ [
+  \   [
+  \     '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \     '47',
+  \     '14',
+  \     'Missing trailing comma.',
+  \     'Warning/comma-dangle',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \   ],
+  \ ],
+  \ ale#util#GetMatches(
+  \   '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \   [
+  \     '^.*:\(\d\+\):\(\d\+\): \(.\+\) \[\(.\+\)\]$',
+  \   ]
+  \ )
+
+Execute (ale#util#GetMatches should match multiple patterns correctly):
+  AssertEqual
+  \ [
+  \   [
+  \     '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \     '47',
+  \     '14',
+  \     'Missing trailing comma.',
+  \     'Warning/comma-dangle',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \   ],
+  \   [
+  \     '/path/to/some-filename.js:56:41: Missing semicolon. [Error/semi]',
+  \     '56',
+  \     '41',
+  \     'Missing semicolon.',
+  \     'Error/semi',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \   ],
+  \   [
+  \     '/path/to/some-filename.js:13:3: Parsing error: Unexpected token',
+  \     '13',
+  \     '3',
+  \     'Parsing error: Unexpected token',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \     '',
+  \   ],
+  \ ],
+  \ ale#util#GetMatches(
+  \   [
+  \     '/path/to/some-filename.js:47:14: Missing trailing comma. [Warning/comma-dangle]',
+  \     '/path/to/some-filename.js:56:41: Missing semicolon. [Error/semi]',
+  \     '/path/to/some-filename.js:13:3: Parsing error: Unexpected token',
+  \   ],
+  \   [
+  \     '^.*:\(\d\+\):\(\d\+\): \(.\+\) \[\(.\+\)\]$',
+  \     '^.*:\(\d\+\):\(\d\+\): \(.\+\)$',
+  \   ]
+  \ )

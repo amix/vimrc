@@ -1,0 +1,29 @@
+Execute(FuzzyJSONDecode should return the default for empty Lists):
+  AssertEqual [], ale#util#FuzzyJSONDecode([], [])
+  AssertEqual {}, ale#util#FuzzyJSONDecode([], {})
+
+Execute(FuzzyJSONDecode should return the default for empty Strings):
+  AssertEqual [], ale#util#FuzzyJSONDecode('', [])
+  AssertEqual {}, ale#util#FuzzyJSONDecode('', {})
+
+Execute(FuzzyJSONDecode should return the default value for ['']):
+  AssertEqual [], ale#util#FuzzyJSONDecode([''], [])
+  AssertEqual {}, ale#util#FuzzyJSONDecode([''], {})
+
+Execute(FuzzyJSONDecode should return the default value for only whitespace lines):
+  AssertEqual [], ale#util#FuzzyJSONDecode(['', "\n"], [])
+  AssertEqual {}, ale#util#FuzzyJSONDecode(['', "\n"], {})
+
+Execute(FuzzyJSONDecode should return the default for Lists with invalid JSON):
+  AssertEqual [], ale#util#FuzzyJSONDecode(['x'], [])
+  AssertEqual {}, ale#util#FuzzyJSONDecode(['x'], {})
+
+Execute(FuzzyJSONDecode should return the default for Strings with invalid JSON):
+  AssertEqual [], ale#util#FuzzyJSONDecode('x', [])
+  AssertEqual {}, ale#util#FuzzyJSONDecode('x', {})
+
+Execute(FuzzyJSONDecode should return the JSON from the JSON string):
+  AssertEqual {'x': 3}, ale#util#FuzzyJSONDecode('{"x": 3}', [])
+  AssertEqual {'x': 3}, ale#util#FuzzyJSONDecode('{"x": 3}', {})
+  AssertEqual {'x': 3}, ale#util#FuzzyJSONDecode(['{"x"', ': 3}'], [])
+  AssertEqual {'x': 3}, ale#util#FuzzyJSONDecode(['{"x"', ': 3}'], {})

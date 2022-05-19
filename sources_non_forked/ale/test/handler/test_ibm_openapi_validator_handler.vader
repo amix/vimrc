@@ -1,0 +1,49 @@
+Before:
+  runtime! ale_linters/openapi/ibm_validator.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Problems should be parsed correctly for openapi-ibm-validator):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 54,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'Items with a description must have content in it.',
+  \   },
+  \   {
+  \     'lnum': 24,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'text': 'Operations must have a non-empty `operationId`.',
+  \   },
+  \   {
+  \     'lnum': 40,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'text': 'operationIds must follow case convention: lower_snake_case',
+  \   },
+  \ ],
+  \ ale_linters#openapi#ibm_validator#Handle(bufnr(''), [
+  \   '',
+  \   '[Warning] No .validaterc file found. The validator will run in default mode.',
+  \   'To configure the validator, create a .validaterc file.',
+  \   '',
+  \   'errors',
+  \   '',
+  \   '  Message :   Items with a description must have content in it.',
+  \   '  Path    :   paths./settings.patch.description',
+  \   '  Line    :   54',
+  \   '',
+  \   'warnings',
+  \   '',
+  \   '  Message :   Operations must have a non-empty `operationId`.',
+  \   '  Path    :   paths./stats.get.operationId',
+  \   '  Line    :   24',
+  \   '',
+  \   '  Message :   operationIds must follow case convention: lower_snake_case',
+  \   '  Path    :   paths./settings.get.operationId',
+  \   '  Line    :   40'
+  \ ])

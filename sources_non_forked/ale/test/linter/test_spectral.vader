@@ -1,0 +1,31 @@
+Before:
+  call ale#assert#SetUpLinterTest('yaml', 'spectral')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The yaml spectral command callback should return the correct default string):
+  AssertLinter 'spectral', ale#Escape('spectral') . ' lint --ignore-unknown-format -q -f text %t'
+
+Execute(The yaml spectral command callback should be configurable):
+  let g:ale_yaml_spectral_executable = '~/.local/bin/spectral'
+
+  AssertLinter '~/.local/bin/spectral',
+  \ ale#Escape('~/.local/bin/spectral')
+  \   . ' lint --ignore-unknown-format -q -f text %t'
+
+Execute(The yaml spectral command callback should allow a global installation to be used):
+  let g:ale_yaml_spectral_executable = '/usr/local/bin/spectral'
+  let g:ale_yaml_spectral_use_global = 1
+
+  AssertLinter '/usr/local/bin/spectral',
+  \ ale#Escape('/usr/local/bin/spectral')
+  \   . ' lint --ignore-unknown-format -q -f text %t'
+
+Execute(The yaml spectral command callback should allow a local installation to be used):
+  call ale#test#SetFilename('../test-files/spectral/openapi.yaml')
+
+  AssertLinter
+  \ ale#path#Simplify(g:dir . '/../test-files/spectral/node_modules/.bin/spectral'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/spectral/node_modules/.bin/spectral'))
+  \   . ' lint --ignore-unknown-format -q -f text %t'

@@ -1,0 +1,47 @@
+Before:
+  call ale#assert#SetUpLinterTest('c', 'clangd')
+
+  Save b:ale_c_clangd_options
+  Save b:ale_c_build_dir
+  Save b:ale_c_build_dir_names
+  Save b:ale_c_parse_compile_commands
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The language string should be correct):
+  AssertLSPLanguage 'c'
+
+Execute(The default executable should be correct):
+  AssertLinter 'clangd', ale#Escape('clangd')
+
+Execute(The project root should be detected correctly):
+  call ale#test#SetFilename(tempname() . '/dummy.c')
+
+  AssertLSPProject ''
+
+  call ale#test#SetFilename('../test-files/clangd/with_compile_commands/dummy.c')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/clangd/with_compile_commands')
+
+Execute(The executable should be configurable):
+  let g:ale_c_clangd_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar')
+
+Execute(The options should be configurable):
+  let b:ale_c_clangd_options = '-compile-commands-dir=foo'
+
+  AssertLinter 'clangd', ale#Escape('clangd') . ' ' . b:ale_c_clangd_options
+
+Execute(The compile command database should be detected correctly):
+  call ale#test#SetFilename('../test-files/clangd/with_build_dir/dummy_src/dummy.c')
+
+  let b:ale_c_clangd_options = ''
+  let b:ale_c_build_dir = ''
+  let b:ale_c_build_dir_names = ['unusual_build_dir_name']
+  let b:ale_c_parse_compile_commands = 1
+
+  AssertLinter 'clangd', ale#Escape('clangd')
+  \  . ' -compile-commands-dir='
+  \  . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/clangd/with_build_dir/unusual_build_dir_name'))

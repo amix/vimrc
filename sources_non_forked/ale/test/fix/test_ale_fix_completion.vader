@@ -1,0 +1,23 @@
+Execute (List of available fixers is empty):
+  call ale#fix#registry#Clear()
+
+Then (List of applicable fixers for python file is empty):
+  AssertEqual [], ale#fix#registry#GetApplicableFixers('python')
+
+Execute (Add ruby fixer):
+  call ale#fix#registry#Add('ruby_fixer', 'fixer_fun', ['ruby'], 'ruby fixer')
+
+Then (List of applicable fixers for python file is still empty):
+  AssertEqual [], ale#fix#registry#GetApplicableFixers('python')
+
+Execute (Add generic fixer):
+  call ale#fix#registry#Add('generic_fixer', 'fixer_fun', [], 'generic fixer')
+
+Then (Generic fixer should be returned as applicable for python file):
+  AssertEqual ['generic_fixer'], ale#fix#registry#GetApplicableFixers('python')
+
+Execute (Add python fixer):
+  call ale#fix#registry#Add('python_fixer', 'fixer_func', ['python'], 'python fixer')
+
+Then (List of fixers should contain both generic and python fixers):
+  AssertEqual ['generic_fixer', 'python_fixer'], ale#fix#registry#GetApplicableFixers('python')

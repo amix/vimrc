@@ -1,0 +1,80 @@
+Before:
+  runtime! ale_linters/haskell/hlint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The hlint handler should parse items correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 4,
+  \     'end_lnum': 3,
+  \     'end_col': 2,
+  \     'text': 'Error: Do something. Found: [Char] Why not: String',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 4,
+  \     'end_lnum': 7,
+  \     'end_col': 2,
+  \     'text': 'Warning: Do something. Found: [Char] Why not: String',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 73,
+  \     'col': 25,
+  \     'end_lnum': 73,
+  \     'end_col': 31,
+  \     'text': 'Suggestion: Use String. Found: [Char] Why not: String',
+  \     'type': 'I',
+  \   },
+  \ ],
+  \ ale_linters#haskell#hlint#Handle(bufnr(''), [json_encode([
+  \   {
+  \     'module': 'Main',
+  \     'decl': 'foo',
+  \     'severity': 'Error',
+  \     'hint': 'Do something',
+  \     'file': '-',
+  \     'startLine': 1,
+  \     'startColumn': 4,
+  \     'endLine': 3,
+  \     'endColumn': 2,
+  \     'from': '[Char]',
+  \     'to': 'String',
+  \   },
+  \   {
+  \     'module': 'Main',
+  \     'decl': 'foo',
+  \     'severity': 'Warning',
+  \     'hint': 'Do something',
+  \     'file': '-',
+  \     'startLine': 2,
+  \     'startColumn': 4,
+  \     'endLine': 7,
+  \     'endColumn': 2,
+  \     'from': '[Char]',
+  \     'to': 'String',
+  \   },
+  \   {
+  \     'module': 'Main',
+  \     'decl': 'myFocusedBorderColor',
+  \     'severity': 'Suggestion',
+  \     'hint': 'Use String',
+  \     'file': '-',
+  \     'startLine': 73,
+  \     'startColumn': 25,
+  \     'endLine': 73,
+  \     'endColumn': 31,
+  \     'from': '[Char]',
+  \     'to': 'String',
+  \   },
+  \ ])])
+
+Execute(The hlint handler should handle empty output):
+  AssertEqual
+  \ [],
+  \ ale_linters#haskell#hlint#Handle(bufnr(''), [])

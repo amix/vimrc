@@ -1,0 +1,90 @@
+" NOTE: We use the 'b:' forms below to ensure that we're properly using
+" ale#Var()
+
+Given dockerfile:
+  #
+
+Before:
+  Save g:ale_dockerfile_hadolint_use_docker
+  Save g:ale_dockerfile_hadolint_docker_image
+  silent! unlet g:ale_dockerfile_hadolint_use_docker
+  silent! unlet g:ale_dockerfile_hadolint_docker_image
+
+  " enable loading inside test container
+  silent! cd /testplugin
+  source ale_linters/dockerfile/hadolint.vim
+
+
+After:
+  Restore
+  silent! unlet b:ale_dockerfile_hadolint_use_docker
+  silent! unlet b:ale_dockerfile_hadolint_docker_image
+
+
+Execute(linter honors ..._use_docker correctly):
+
+  " default: never
+  AssertEqual
+  \ 'hadolint',
+  \ ale_linters#dockerfile#hadolint#GetExecutable(bufnr(''))
+
+  " explicit never
+  let b:ale_dockerfile_hadolint_use_docker = 'never'
+  AssertEqual
+  \ 'hadolint',
+  \ ale_linters#dockerfile#hadolint#GetExecutable(bufnr(''))
+
+  let b:ale_dockerfile_hadolint_use_docker = 'always'
+  AssertEqual
+  \ 'docker',
+  \ ale_linters#dockerfile#hadolint#GetExecutable(bufnr(''))
+
+  " hadolint if present, otherwise docker
+  let command = 'docker'
+  if executable('hadolint')
+    let command = 'hadolint'
+  endif
+
+  let b:ale_dockerfile_hadolint_use_docker = 'yes'
+  AssertEqual
+  \ command,
+  \ ale_linters#dockerfile#hadolint#GetExecutable(bufnr(''))
+
+
+Execute(command is correct when using docker):
+  let b:ale_dockerfile_hadolint_use_docker = 'always'
+
+  AssertEqual
+  \ "docker run --rm -i hadolint/hadolint hadolint --no-color -",
+  \ ale_linters#dockerfile#hadolint#GetCommand(bufnr(''))
+
+
+Execute(command is correct when not docker):
+  let b:ale_dockerfile_hadolint_use_docker = 'never'
+
+  AssertEqual
+  \ "hadolint --no-color -",
+  \ ale_linters#dockerfile#hadolint#GetCommand(bufnr(''))
+
+Execute(test warnings from hadolint):
+  AssertEqual
+  \ [{'lnum': 10, 'col': 0, 'type': 'W', 'code': 'DL3007', 'text': 'DL3007: Using latest is prone to errors', 'detail': "DL3007 ( https://github.com/hadolint/hadolint/wiki/DL3007 )\n\nUsing latest is prone to errors"}],
+  \ ale_linters#dockerfile#hadolint#Handle(bufnr(''), [
+  \ '-:10 DL3007 warning: Using latest is prone to errors',
+  \ ])
+
+Execute(test warnings from shellcheck):
+  AssertEqual
+  \ [{'lnum': 3, 'col': 0, 'type': 'W', 'code': 'SC2154', 'text': 'SC2154: bar is referenced but not assigned.', 'detail': "SC2154 ( https://github.com/koalaman/shellcheck/wiki/SC2154 )\n\nbar is referenced but not assigned."}],
+  \ ale_linters#dockerfile#hadolint#Handle(bufnr(''), [
+  \ '-:3 SC2154 warning: bar is referenced but not assigned.',
+  \ ])
+
+Execute(test errors from dockerfile parser):
+  AssertEqual
+  \ [{'lnum': 3, 'col': 4, 'type': 'E', 'text': 'unexpected "A" expecting at least one space after ''RUN''', 'detail': 'hadolint could not parse the file because of a syntax error.'}],
+  \ ale_linters#dockerfile#hadolint#Handle(bufnr(''), [
+  \ "/dev/stdin:3:4 unexpected \"A\" expecting at least one space after 'RUN'",
+  \ ])
+
+" fin...

@@ -1,0 +1,14 @@
+Before:
+  call ale#fix#registry#Clear()
+  call ale#test#SetFilename('test.js')
+  call ale#fix#registry#Add('prettier', '', ['javascript'], 'prettier')
+  call ale#fix#registry#Add('eslint', '', ['javascript'], 'eslint')
+  setfiletype javascript
+
+Execute(completeFixers returns all of the applicable fixers without an arglead):
+  AssertEqual ['eslint', 'prettier'],
+  \ ale#fix#registry#CompleteFixers('', 'ALEFix ', 7)
+
+Execute(completeFixers returns all of the applicable fixers without an arglead):
+  AssertEqual ['prettier'],
+  \ ale#fix#registry#CompleteFixers('pre', 'ALEFix ', 10)

@@ -1,0 +1,18 @@
+Before:
+  runtime ale_linters/verilog/xvlog.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The xvlog handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'type': 'E',
+  \     'text': '[VRFC 10-1412] syntax error near output '
+  \   },
+  \ ],
+  \ ale_linters#verilog#xvlog#Handle(bufnr(''), [
+  \   'ERROR: [VRFC 10-1412] syntax error near output [/path/to/file.v:5]',
+  \ ])

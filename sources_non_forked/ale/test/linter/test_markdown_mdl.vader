@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('markdown', 'mdl')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'mdl', ale#Escape('mdl') . ' -j'
+
+Execute(The executable and options should be configurable):
+  let g:ale_markdown_mdl_executable = 'foo bar'
+  let g:ale_markdown_mdl_options = '--wat'
+
+  AssertLinter 'foo bar', ale#Escape('foo bar') . ' -j --wat'
+
+Execute(Setting bundle appends 'exec mdl'):
+  let g:ale_markdown_mdl_executable = 'path to/bundle'
+
+  AssertLinter 'path to/bundle', ale#Escape('path to/bundle') . ' exec mdl -j'

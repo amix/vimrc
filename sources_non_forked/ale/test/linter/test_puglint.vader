@@ -1,0 +1,48 @@
+Before:
+  call ale#assert#SetUpLinterTest('pug', 'puglint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(puglint should detect local executables and package.json):
+  call ale#test#SetFilename('../test-files/puglint/test.pug')
+
+  AssertLinter
+  \ ale#path#Simplify(g:dir . '/../test-files/puglint/node_modules/.bin/pug-lint'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/puglint/node_modules/.bin/pug-lint'))
+  \   . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/puglint/package.json'))
+  \   . ' -r inline %t'
+
+Execute(puglint should use global executables if configured):
+  let g:ale_pug_puglint_use_global = 1
+
+  call ale#test#SetFilename('../test-files/puglint/test.pug')
+
+  AssertLinter 'pug-lint',
+  \ ale#Escape('pug-lint')
+  \   . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/puglint/package.json'))
+  \   . ' -r inline %t'
+
+Execute(puglint should detect .pug-lintrc):
+  call ale#test#SetFilename('../test-files/puglint/puglint_rc_dir/subdir/test.pug')
+
+  AssertLinter ale#path#Simplify(g:dir . '/../test-files/puglint/node_modules/.bin/pug-lint'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/puglint/node_modules/.bin/pug-lint'))
+  \   . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/puglint/puglint_rc_dir/.pug-lintrc'))
+  \   . ' -r inline %t'
+
+Execute(puglint should detect .pug-lintrc.js):
+  call ale#test#SetFilename('../test-files/puglint/puglint_rc_js_dir/subdir/test.pug')
+
+  AssertLinter ale#path#Simplify(g:dir . '/../test-files/puglint/node_modules/.bin/pug-lint'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/puglint/node_modules/.bin/pug-lint'))
+  \   . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/puglint/puglint_rc_js_dir/.pug-lintrc.js'))
+  \   . ' -r inline %t'
+
+Execute(puglint should detect .pug-lintrc.json):
+  call ale#test#SetFilename('../test-files/puglint/puglint_rc_json_dir/subdir/test.pug')
+
+  AssertLinter ale#path#Simplify(g:dir . '/../test-files/puglint/node_modules/.bin/pug-lint'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/puglint/node_modules/.bin/pug-lint'))
+  \   . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/puglint/puglint_rc_json_dir/.pug-lintrc.json'))
+  \   . ' -r inline %t'

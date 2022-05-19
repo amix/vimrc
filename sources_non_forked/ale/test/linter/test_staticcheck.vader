@@ -1,0 +1,49 @@
+Before:
+  Save g:ale_go_go111module
+  Save $GOPATH
+
+  let $GOPATH = '/non/existent/directory'
+
+  call ale#assert#SetUpLinterTest('go', 'staticcheck')
+  call ale#test#SetFilename('test.go')
+
+After:
+  unlet! b:ale_go_go111module
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The staticcheck callback should return the right defaults):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'staticcheck', ale#Escape('staticcheck') . ' .'
+
+Execute(staticcheck should be found in GOPATH):
+  " This is a directory with a fake executable
+  let $GOPATH = ale#test#GetFilename('../test-files/go/gopath')
+
+  AssertLinter
+  \ ale#test#GetFilename('../test-files/go/gopath/bin/staticcheck'),
+  \ ale#Escape(ale#test#GetFilename('../test-files/go/gopath/bin/staticcheck'))
+  \   . ' .'
+
+Execute(The staticcheck callback should use configured options):
+  let b:ale_go_staticcheck_options = '-test'
+
+  AssertLinter 'staticcheck', ale#Escape('staticcheck') . ' -test .'
+
+Execute(Unset the staticcheck `lint_package` option should use the correct command):
+  let b:ale_go_staticcheck_lint_package = 0
+
+  AssertLinterCwd '%s:h'
+  AssertLinter 'staticcheck', ale#Escape('staticcheck') . ' %s:t'
+
+Execute(The staticcheck callback should use the `GO111MODULE` option if set):
+  let b:ale_go_go111module = 'off'
+
+  AssertLinter 'staticcheck',
+  \ ale#Env('GO111MODULE', 'off') . ale#Escape('staticcheck') . ' .'
+
+  " Test with lint_package option set
+  let b:ale_go_staticcheck_lint_package = 0
+
+  AssertLinter 'staticcheck',
+  \ ale#Env('GO111MODULE', 'off') . ale#Escape('staticcheck') . ' %s:t'

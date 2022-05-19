@@ -1,0 +1,47 @@
+Before:
+  call ale#linter#Reset()
+
+  unlet! b:ale_linters
+  unlet! b:ale_completion_info
+  unlet! b:ale_completion_result
+
+After:
+  call ale#linter#Reset()
+
+  unlet! b:ale_linters
+  unlet! b:ale_completion_info
+  unlet! b:ale_completion_result
+
+Execute(ale#completion#GetCompletionResult() should return v:null when there are no results):
+  AssertEqual v:null, ale#completion#GetCompletionResult()
+
+Execute(ale#completion#GetCompletionResult() should return a result computed previously):
+  let b:ale_completion_result = [1]
+
+  AssertEqual [1], ale#completion#GetCompletionResult()
+
+Execute(ale#completion#GetCompletionPosition() should return 0 when there is no completion information):
+  AssertEqual 0, ale#completion#GetCompletionPosition()
+
+Given python(Some Python file):
+  foo bar
+
+Execute(ale#completion#GetCompletionPosition() should return the position in the file when information is available):
+  let b:ale_completion_info = {'line': 1, 'column': 6}
+
+  " This is the first character of 'bar'
+  AssertEqual 4, ale#completion#GetCompletionPosition()
+
+Execute(ale#completion#GetCompletionPositionForDeoplete() should return the position on the given input string):
+  " This is the first character of 'bar'
+  AssertEqual 4, ale#completion#GetCompletionPositionForDeoplete('foo bar')
+
+Execute(ale#completion#CanProvideCompletions should return 0 when no completion sources are available):
+  let b:ale_linters = ['flake8']
+  AssertEqual 0, ale#completion#CanProvideCompletions()
+
+Execute(ale#completion#CanProvideCompletions should return 1 when at least one completion source is available):
+  runtime ale_linters/python/pylsp.vim
+  let b:ale_linters = ['pylsp']
+
+  AssertEqual 1, ale#completion#CanProvideCompletions()

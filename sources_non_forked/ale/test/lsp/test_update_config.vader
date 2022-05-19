@@ -1,0 +1,21 @@
+Before:
+  runtime autoload/ale/lsp.vim
+
+  let g:conn_id = ale#lsp#Register('executable', '/foo/bar', {})
+
+  " Stub out this function, so we test updating configs.
+  function! ale#lsp#Send(conn_id, message) abort
+  endfunction
+
+After:
+  Restore
+
+  unlet! g:conn_id
+
+  runtime autoload/ale/lsp.vim
+
+Execute(Only send updates when the configuration dictionary changes):
+  AssertEqual 0, ale#lsp#UpdateConfig(g:conn_id, bufnr(''), {})
+  AssertEqual 1, ale#lsp#UpdateConfig(g:conn_id, bufnr(''), {'a': 1})
+  AssertEqual 0, ale#lsp#UpdateConfig(g:conn_id, bufnr(''), {'a': 1})
+  AssertEqual 1, ale#lsp#UpdateConfig(g:conn_id, bufnr(''), {})

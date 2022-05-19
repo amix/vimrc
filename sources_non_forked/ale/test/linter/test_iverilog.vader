@@ -1,0 +1,14 @@
+Before:
+  call ale#assert#SetUpLinterTest('verilog', 'iverilog')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default iverilog command should be correct):
+  AssertLinter 'iverilog', 'iverilog -t null -Wall  %t'
+
+Execute(iverilog options should be configurable):
+  " Additional args for the linter
+  let g:ale_verilog_iverilog_options = '-y.'
+
+  AssertLinter 'iverilog', 'iverilog -t null -Wall -y. %t'

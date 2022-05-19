@@ -1,0 +1,15 @@
+Before:
+  call ale#assert#SetUpLinterTest('desktop', 'desktop_file_validate')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'desktop-file-validate',
+  \ ale#Escape('desktop-file-validate') . ' %t'
+
+Execute(Extra options should work):
+  let b:ale_desktop_desktop_file_validate_options = '--warn-kde'
+
+  AssertLinter 'desktop-file-validate',
+  \ ale#Escape('desktop-file-validate') . ' --warn-kde %t'

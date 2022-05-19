@@ -1,0 +1,41 @@
+Before:
+  runtime ale_linters/d/dmd.vim
+  call ale#test#SetDirectory('/testplugin/test/dmd')
+  call ale#test#SetFilename('test.d')
+
+After:
+  call ale#linter#Reset()
+  call ale#test#RestoreDirectory()
+
+Execute(Basic errors should be handled by dmd):
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': ale#path#Simplify(g:dir . '/test.d'),
+  \     'lnum': '5',
+  \     'col' : '8',
+  \     'type': 'E',
+  \     'text': 'module weak_reference is in file ''dstruct/weak_reference.d'' which cannot be read'
+  \   },
+  \   {
+  \     'filename': ale#path#Simplify(g:dir . '/test.d'),
+  \     'lnum': '20',
+  \     'col' : '10',
+  \     'type': 'W',
+  \     'text': 'function test.thisoldfunc is deprecated'
+  \   },
+  \   {
+  \     'filename': ale#path#Simplify(g:dir . '/foo.d'),
+  \     'lnum': '230',
+  \     'col' : '9',
+  \     'type': 'W',
+  \     'text': 'statement is not reachable'
+  \   }
+  \ ],
+  \ ale_linters#d#dmd#Handle(bufnr(''), [
+  \ 'test.d(5,8): Error: module weak_reference is in file ''dstruct/weak_reference.d'' which cannot be read',
+  \ 'import path[0] = source',
+  \ 'import path[1] = /usr/include/dlang/dmd',
+  \ ale#path#Simplify(g:dir . '/test.d') . '(20,10): Deprecation: function test.thisoldfunc is deprecated',
+  \ 'foo.d(230,9): Warning: statement is not reachable',
+  \ ])

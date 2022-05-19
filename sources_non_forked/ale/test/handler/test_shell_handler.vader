@@ -1,0 +1,177 @@
+Before:
+  runtime ale_linters/sh/shell.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The shell handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 13,
+  \     'text': 'syntax error near unexpected token d',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'text': 'line 42: line 36:',
+  \   },
+  \   {
+  \     'lnum': 11,
+  \     'text': 'Syntax error: "(" unexpected',
+  \   },
+  \   {
+  \     'lnum': 95,
+  \     'text': 'parse error near `out=$(( $1 / 1024. )...',
+  \   },
+  \   {
+  \     'lnum': 22,
+  \     'text': ':11: :33: :44:',
+  \   },
+  \   {
+  \     'lnum': 9,
+  \     'text': '`done'' unexpected',
+  \   },
+  \ ],
+  \ ale_linters#sh#shell#Handle(347, [
+  \   'bash: line 13: syntax error near unexpected token d',
+  \   'bash: line 7: line 42: line 36:',
+  \   'sh: 11: Syntax error: "(" unexpected',
+  \   'qfm:95: parse error near `out=$(( $1 / 1024. )...',
+  \   'qfm:22: :11: :33: :44:',
+  \   'foo.sh: syntax error at line 9: `done'' unexpected',
+  \ ])
+
+Execute(The shell handler should parse Simplified Chinese lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 0,
+  \     'text': '未预期的符号“done”附近有语法错误',
+  \   },
+  \   {
+  \     'lnum': 90,
+  \     'text': '寻找匹配的“"”时遇到了未预期的文件结束符',
+  \   },
+  \   {
+  \     'lnum': 111,
+  \     'text': '语法错误: 未预期的文件结尾',
+  \   },
+  \   {
+  \     'lnum': 22,
+  \     'text': ':11: :33: :44:',
+  \   },
+  \ ],
+  \ ale_linters#sh#shell#Handle(347, [
+  \   '/tmp/nvimWL5sOL/2/a.sh:行0: 未预期的符号“done”附近有语法错误',
+  \   '/tmp/nvimWL5sOL/2/a.sh:行90: 寻找匹配的“"”时遇到了未预期的文件结束符',
+  \   '/tmp/nvimWL5sOL/2/a.sh:行111: 语法错误: 未预期的文件结尾',
+  \   '/tmp/nvimWL5sOL/2/a.sh:行22: :11: :33: :44:',
+  \ ])
+
+Execute(The shell handler should parse Traditional Chinese lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 0,
+  \     'text': '未預期的字組「(」附近有語法錯誤',
+  \   },
+  \   {
+  \     'lnum': 90,
+  \     'text': '尋找匹配的「"」時遇到了未預期的檔案結束符',
+  \   },
+  \   {
+  \     'lnum': 111,
+  \     'text': '語法錯誤: 未預期的檔案結尾',
+  \   },
+  \   {
+  \     'lnum': 22,
+  \     'text': ':11: :33: :44:',
+  \   },
+  \ ],
+  \ ale_linters#sh#shell#Handle(347, [
+  \   '/tmp/nvimWL5sOL/2/a.sh: 列 0: 未預期的字組「(」附近有語法錯誤',
+  \   '/tmp/nvimWL5sOL/2/a.sh: 列 90: 尋找匹配的「"」時遇到了未預期的檔案結束符',
+  \   '/tmp/nvimWL5sOL/2/a.sh: 列 111: 語法錯誤: 未預期的檔案結尾',
+  \   '/tmp/nvimWL5sOL/2/a.sh: 列 22: :11: :33: :44:',
+  \ ])
+
+Execute(The shell handler should parse Japanese lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 0,
+  \     'text': "予期しないトークン `(' 周辺に構文エラーがあります",
+  \   },
+  \   {
+  \     'lnum': 90,
+  \     'text': "予期しないトークン `done' 周辺に構文エラーがあります",
+  \   },
+  \   {
+  \     'lnum': 111,
+  \     'text': "対応する `\"' を探索中に予期しないファイル終了 (EOF) です",
+  \   },
+  \   {
+  \     'lnum': 22,
+  \     'text': ':11: :33: :44:',
+  \   },
+  \ ],
+  \ ale_linters#sh#shell#Handle(347, [
+  \   "/tmp/nvimWL5sOL/2/a.sh: 行 0: 予期しないトークン `(' 周辺に構文エラーがあります",
+  \   "/tmp/nvimWL5sOL/2/a.sh: 行 90: 予期しないトークン `done' 周辺に構文エラーがあります",
+  \   "/tmp/nvimWL5sOL/2/a.sh: 行 111: 対応する `\"' を探索中に予期しないファイル終了 (EOF) です",
+  \   "/tmp/nvimWL5sOL/2/a.sh: 行 22: :11: :33: :44:",
+  \ ])
+
+Execute(The shell handler should parse Greek lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 0,
+  \     'text': 'συντακτικό σφάλμα κοντά στο μη αναμενόμενο σύμβολο «done»',
+  \   },
+  \   {
+  \     'lnum': 90,
+  \     'text': 'syntax error: μη αναμενόμενο τέλος αρχείου',
+  \   },
+  \   {
+  \     'lnum': 111,
+  \     'text': 'μη αναμενόμενο EOF κατά την αναζήτηση «"»',
+  \   },
+  \   {
+  \     'lnum': 22,
+  \     'text': ':11: :33: :44:',
+  \   },
+  \ ],
+  \ ale_linters#sh#shell#Handle(347, [
+  \   '/tmp/nvimWL5sOL/2/a.sh: γραμμή 0: συντακτικό σφάλμα κοντά στο μη αναμενόμενο σύμβολο «done»',
+  \   '/tmp/nvimWL5sOL/2/a.sh: γραμμή 90: syntax error: μη αναμενόμενο τέλος αρχείου',
+  \   '/tmp/nvimWL5sOL/2/a.sh: γραμμή 111: μη αναμενόμενο EOF κατά την αναζήτηση «"»',
+  \   "/tmp/nvimWL5sOL/2/a.sh: γραμμή 22: :11: :33: :44:",
+  \ ])
+
+Execute(The shell handler should parse Russian lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 0,
+  \     'text': 'синтаксическая ошибка рядом с неожиданным маркером «done»',
+  \   },
+  \   {
+  \     'lnum': 90,
+  \     'text': 'синтаксическая ошибка: неожиданный конец файла',
+  \   },
+  \   {
+  \     'lnum': 111,
+  \     'text': 'неожиданный конец файла во время поиска «"»',
+  \   },
+  \   {
+  \     'lnum': 22,
+  \     'text': ':11: :33: :44:',
+  \   },
+  \ ],
+  \ ale_linters#sh#shell#Handle(347, [
+  \   '/tmp/nvimWL5sOL/2/a.sh: строка 0: синтаксическая ошибка рядом с неожиданным маркером «done»',
+  \   '/tmp/nvimWL5sOL/2/a.sh: строка 90: синтаксическая ошибка: неожиданный конец файла',
+  \   '/tmp/nvimWL5sOL/2/a.sh: строка 111: неожиданный конец файла во время поиска «"»',
+  \   '/tmp/nvimWL5sOL/2/a.sh: строка 22: :11: :33: :44:',
+  \ ])

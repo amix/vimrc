@@ -1,0 +1,337 @@
+Before:
+  call ale#assert#SetUpFixerTest('javascript', 'prettier')
+  Save g:ale_command_wrapper
+
+  let g:ale_command_wrapper = ''
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The prettier callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/prettier/testfile.js')
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' %t'
+  \     . ' --write',
+  \ }
+
+Execute(The --config option should not be set automatically):
+  let g:ale_javascript_prettier_use_local_config = 1
+  call ale#test#SetFilename('../test-files/prettier/with_config/testfile.js')
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' %t'
+  \     . ' --write',
+  \ }
+
+Execute(The prettier callback should include custom prettier options):
+  let g:ale_javascript_prettier_options = '--no-semi'
+  call ale#test#SetFilename('../test-files/prettier/with_config/testfile.js')
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' %t'
+  \     . ' --no-semi'
+  \     . ' --write',
+  \ }
+
+Execute(The version check should be correct):
+  call ale#test#SetFilename('../test-files/prettier/testfile.js')
+
+  AssertFixer [
+  \ ale#Escape('prettier') . ' --version',
+  \ {'read_temporary_file': 1, 'command': ale#Escape('prettier') . ' %t --write'}
+  \]
+
+Execute(--stdin-filepath should be used when prettier is new enough):
+  let g:ale_javascript_prettier_options = '--no-semi'
+  call ale#test#SetFilename('../test-files/prettier/with_config/testfile.js')
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --no-semi'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(The version number should be cached):
+  call ale#test#SetFilename('../test-files/prettier/with_config/testfile.js')
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+  GivenCommandOutput []
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser to `babylon` by default, < 1.16.0):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=javascript
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser babylon'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser to `babel` by default, >= 1.16.0):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=javascript
+
+  GivenCommandOutput ['1.16.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser babel'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, TypeScript):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=typescript
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser typescript'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, CSS):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=css
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser css'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, LESS):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=less
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser less'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, SCSS):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=scss
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser scss'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, JSON):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=json
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser json'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, JSON5):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=json5
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser json5'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, GraphQL):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=graphql
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser graphql'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, Markdown):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=markdown
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser markdown'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, Vue):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=vue
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser vue'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, YAML):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=yaml
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser yaml'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, HTML):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=html
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser html'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on filetype, Ruby):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=ruby
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser ruby'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser based on first filetype of multiple filetypes):
+  call ale#test#SetFilename('../test-files/prettier/testfile')
+
+  set filetype=css.scss
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser css'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Should set --parser for experimental language, Handlebars):
+  call ale#test#SetFilename('../test-files/prettier/testfile.hbs')
+
+  set filetype=html.handlebars
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --parser glimmer'
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(Changes to directory where .prettierignore is found):
+  call ale#test#SetFilename('../test-files/prettier/with_prettierignore/src/testfile.js')
+
+  GivenCommandOutput ['1.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': expand('%:p:h:h'),
+  \   'command': ale#Escape(g:ale_javascript_prettier_executable)
+  \     . ' --stdin-filepath %s --stdin',
+  \ }
+
+Execute(The prettier_d post-processor should permit regular JavaScript content):
+  AssertEqual
+  \ [
+  \   'const x = ''Error: foo''',
+  \   'const y = 3',
+  \ ],
+  \ ale#fixers#prettier#ProcessPrettierDOutput(bufnr(''), [
+  \   'const x = ''Error: foo''',
+  \   'const y = 3',
+  \ ])
+
+Execute(The prettier_d post-processor should handle error messages correctly):
+  AssertEqual
+  \ [],
+  \ ale#fixers#prettier#ProcessPrettierDOutput(bufnr(''), [
+  \   'SyntaxError: Unexpected token, expected "," (36:28)',
+  \ ])

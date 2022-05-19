@@ -1,0 +1,315 @@
+Before:
+  Save g:ale_typescript_tslint_ignore_empty_files
+
+  unlet! g:ale_typescript_tslint_ignore_empty_files
+  unlet! b:ale_typescript_tslint_ignore_empty_files
+
+  runtime ale_linters/typescript/tslint.vim
+
+  call ale#test#SetDirectory('/testplugin/test/handler')
+
+After:
+  Restore
+
+  unlet! b:ale_typescript_tslint_ignore_empty_files
+  unlet! b:relative_to_root
+  unlet! b:tempname_suffix
+  unlet! b:relative_tempname
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(The tslint handler should parse lines correctly):
+  call ale#test#SetFilename('app/test.ts')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 15,
+  \     'filename': ale#path#Simplify(expand('%:p:h') . '/test.ts'),
+  \     'end_lnum': 1,
+  \     'type': 'E',
+  \     'end_col': 15,
+  \     'text': 'Missing semicolon',
+  \     'code': 'semicolon',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 8,
+  \     'filename': ale#path#Simplify(expand('%:p:h') . '/test.ts'),
+  \     'end_lnum': 3,
+  \     'type': 'W',
+  \     'end_col': 12,
+  \     'text': 'Something else',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 8,
+  \     'filename': ale#path#Simplify(expand('%:p:h') . '/something-else.ts'),
+  \     'end_lnum': 3,
+  \     'type': 'W',
+  \     'end_col': 12,
+  \     'text': 'Something else',
+  \     'code': 'something',
+  \   },
+  \   {
+  \     'lnum': 31,
+  \     'col': 9,
+  \     'filename': ale#path#Simplify(expand('%:p:h') . '/test.ts'),
+  \     'end_lnum': 31,
+  \     'type': 'E',
+  \     'end_col': 20,
+  \     'text': 'Calls to console.log are not allowed.',
+  \     'code': 'no-console',
+  \   },
+  \ ] ,
+  \ ale_linters#typescript#tslint#Handle(bufnr(''), [json_encode([
+  \   {
+  \     'endPosition': {
+  \       'character': 14,
+  \       'line': 0,
+  \       'position': 1000
+  \     },
+  \     'failure': 'Missing semicolon',
+  \     'fix': {
+  \       'innerLength': 0,
+  \       'innerStart': 14,
+  \       'innerText': ';'
+  \     },
+  \     'name': 'test.ts',
+  \     'ruleName': 'semicolon',
+  \     'ruleSeverity': 'ERROR',
+  \     'startPosition': {
+  \       'character': 14,
+  \       'line': 0,
+  \       'position': 1000
+  \     }
+  \   },
+  \   {
+  \     'endPosition': {
+  \       'character': 11,
+  \       'line': 2,
+  \       'position': 1000
+  \     },
+  \     'failure': 'Something else',
+  \     'fix': {
+  \       'innerLength': 0,
+  \       'innerStart': 14,
+  \       'innerText': ';'
+  \     },
+  \     'name': 'test.ts',
+  \     'ruleSeverity': 'WARNING',
+  \     'startPosition': {
+  \       'character': 7,
+  \       'line': 1,
+  \       'position': 1000
+  \     }
+  \   },
+  \   {
+  \     'endPosition': {
+  \       'character': 11,
+  \       'line': 2,
+  \       'position': 22
+  \     },
+  \     'failure': 'Something else',
+  \     'fix': {
+  \       'innerLength': 0,
+  \       'innerStart': 14,
+  \       'innerText': ';'
+  \     },
+  \     'name': 'something-else.ts',
+  \     'ruleName': 'something',
+  \     'ruleSeverity': 'WARNING',
+  \     'startPosition': {
+  \       'character': 7,
+  \       'line': 1,
+  \       'position': 14
+  \     }
+  \   },
+  \   {
+  \     "endPosition": {
+  \       "character": 19,
+  \       "line": 30,
+  \       "position": 14590
+  \     },
+  \     "failure": "Calls to console.log are not allowed.",
+  \     'name': 'test.ts',
+  \     "ruleName": "no-console",
+  \     "startPosition": {
+  \       "character": 8,
+  \       "line": 30,
+  \       "position": 14579
+  \     }
+  \   },
+  \])])
+
+Execute(The tslint handler should handle empty output):
+  AssertEqual
+  \ [],
+  \ ale_linters#typescript#tslint#Handle(bufnr(''), [])
+
+Execute(The tslint handler report errors for empty files by default):
+  call ale#test#SetFilename('app/test.ts')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'filename': ale#path#Simplify(expand('%:p:h') . '/test.ts'),
+  \     'end_lnum': 2,
+  \     'type': 'E',
+  \     'end_col': 1,
+  \     'text': 'Consecutive blank lines are forbidden',
+  \     'code': 'no-consecutive-blank-lines',
+  \   },
+  \ ],
+  \ ale_linters#typescript#tslint#Handle(bufnr(''), [json_encode([{
+  \   'endPosition': {
+  \     'character': 0,
+  \     'line': 1,
+  \     'position': 1
+  \   },
+  \   'failure': 'Consecutive blank lines are forbidden',
+  \   'fix': [{
+  \     'innerStart': 0,
+  \     'innerLength': 1,
+  \     'innerText': ''
+  \   }],
+  \   'name': 'test.ts',
+  \   'ruleName': 'no-consecutive-blank-lines',
+  \   'ruleSeverity': 'ERROR',
+  \   'startPosition': {
+  \     'character': 0,
+  \     'line': 1,
+  \     'position': 1
+  \   }
+  \ }])])
+
+Execute(The tslint handler should not report errors for empty files when the ignore option is on):
+  let b:ale_typescript_tslint_ignore_empty_files = 1
+  call ale#test#SetFilename('app/test.ts')
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale_linters#typescript#tslint#Handle(bufnr(''), [json_encode([{
+  \   'endPosition': {
+  \     'character': 0,
+  \     'line': 1,
+  \     'position': 1
+  \   },
+  \   'failure': 'Consecutive blank lines are forbidden',
+  \   'fix': [{
+  \     'innerStart': 0,
+  \     'innerLength': 1,
+  \     'innerText': ''
+  \   }],
+  \   'name': 'test.ts',
+  \   'ruleName': 'no-consecutive-blank-lines',
+  \   'ruleSeverity': 'ERROR',
+  \   'startPosition': {
+  \     'character': 0,
+  \     'line': 1,
+  \     'position': 1
+  \   }
+  \ }])])
+
+Given typescript(A file with extra blank lines):
+  const x = 3
+
+
+  const y = 4
+
+Execute(The tslint handler should report errors when the ignore option is on, but the file is not empty):
+  let b:ale_typescript_tslint_ignore_empty_files = 1
+  call ale#test#SetFilename('app/test.ts')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'filename': ale#path#Simplify(expand('%:p:h') . '/test.ts'),
+  \     'end_lnum': 2,
+  \     'type': 'E',
+  \     'end_col': 1,
+  \     'text': 'Consecutive blank lines are forbidden',
+  \     'code': 'no-consecutive-blank-lines',
+  \   },
+  \ ],
+  \ ale_linters#typescript#tslint#Handle(bufnr(''), [json_encode([{
+  \   'endPosition': {
+  \     'character': 0,
+  \     'line': 1,
+  \     'position': 1
+  \   },
+  \   'failure': 'Consecutive blank lines are forbidden',
+  \   'fix': [{
+  \     'innerStart': 0,
+  \     'innerLength': 1,
+  \     'innerText': ''
+  \   }],
+  \   'name': 'test.ts',
+  \   'ruleName': 'no-consecutive-blank-lines',
+  \   'ruleSeverity': 'ERROR',
+  \   'startPosition': {
+  \     'character': 0,
+  \     'line': 1,
+  \     'position': 1
+  \   }
+  \ }])])
+
+Execute(The tslint handler should not report no-implicit-dependencies errors):
+  call ale#test#SetFilename('app/test.ts')
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale_linters#typescript#tslint#Handle(bufnr(''), [json_encode([{
+  \   'endPosition': {
+  \     'character': 0,
+  \     'line': 1,
+  \     'position': 1
+  \   },
+  \   'failure': 'this is ignored',
+  \   'name': 'test.ts',
+  \   'ruleName': 'no-implicit-dependencies',
+  \   'ruleSeverity': 'ERROR',
+  \   'startPosition': {
+  \     'character': 0,
+  \     'line': 1,
+  \     'position': 1
+  \   },
+  \ }])])
+
+Execute(The tslint handler should set filename keys for temporary files):
+  " The temporay filename below is hacked into being a relative path so we can
+  " test that we resolve the temporary filename first.
+  let b:relative_to_root = substitute(expand('%:p'), '\v[^/\\]*([/\\])[^/\\]*', '../', 'g')
+  let b:tempname_suffix = substitute(tempname(), '^\v([A-Z]:)?[/\\]', '', '')
+  let b:relative_tempname = substitute(b:relative_to_root . b:tempname_suffix, '\\', '/', 'g')
+
+  AssertEqual
+  \ [
+  \   {'lnum': 47, 'col': 1, 'code': 'curly', 'end_lnum': 47, 'type': 'E', 'end_col': 26, 'text': 'if statements must be braced'},
+  \ ],
+  \ ale_linters#typescript#tslint#Handle(bufnr(''), [json_encode([
+  \   {
+  \     'endPosition': {
+  \       'character':25,
+  \       'line':46,
+  \       'position':1383,
+  \     },
+  \     'failure': 'if statements must be braced',
+  \     'name': b:relative_tempname,
+  \     'ruleName': 'curly',
+  \     'ruleSeverity':'ERROR',
+  \     'startPosition': {
+  \       'character':0,
+  \       'line':46,
+  \       'position':1358,
+  \     }
+  \   },
+  \ ])])

@@ -1,0 +1,147 @@
+Before:
+  Save g:ale_lint_on_save
+  Save g:ale_enabled
+  Save g:ale_linters
+  Save g:ale_run_synchronously
+  Save g:ale_disable_lsp
+
+  call ale#test#SetDirectory('/testplugin/test/completion')
+  call ale#test#SetFilename('dummy.txt')
+
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/lsp_linter.vim
+
+  let g:ale_disable_lsp = 0
+  unlet! b:ale_disable_lsp
+  let g:ale_lint_on_save = 1
+  let b:ale_enabled = 1
+  let g:ale_lsp_next_message_id = 1
+  let g:ale_run_synchronously = 1
+  let g:conn_id = v:null
+  let g:message_list = []
+
+  function! LanguageCallback() abort
+    return 'foobar'
+  endfunction
+
+  function! ProjectRootCallback() abort
+    return expand('.')
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'dummy_linter',
+  \ 'lsp': 'stdio',
+  \ 'command': 'cat - > /dev/null',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'language': function('LanguageCallback'),
+  \ 'project_root': function('ProjectRootCallback'),
+  \ })
+  let g:ale_linters = {'foobar': ['dummy_linter']}
+
+  function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
+    let g:conn_id = ale#lsp#Register('executable', '/foo/bar', {})
+    call ale#lsp#MarkDocumentAsOpen(g:conn_id, a:buffer)
+    let l:details = {
+    \ 'command': 'foobar',
+    \ 'buffer': a:buffer,
+    \ 'connection_id': g:conn_id,
+    \ 'project_root': '/foo/bar',
+    \}
+
+    call a:Callback(a:linter, l:details)
+
+    return 1
+  endfunction
+
+  " Replace the Send function for LSP, so we can monitor calls to it.
+  function! ale#lsp#Send(conn_id, message) abort
+    call add(g:message_list, a:message)
+  endfunction
+
+After:
+  Restore
+
+  if g:conn_id isnot v:null
+    call ale#lsp#RemoveConnectionWithID(g:conn_id)
+  endif
+
+  unlet! b:ale_enabled
+  unlet! b:ale_linters
+  unlet! g:message_list
+  unlet! b:ale_save_event_fired
+
+  delfunction LanguageCallback
+  delfunction ProjectRootCallback
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+  " Stop any timers we left behind.
+  " This stops the tests from failing randomly.
+  call ale#completion#StopTimer()
+
+  runtime autoload/ale/completion.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/lsp_linter.vim
+
+Given foobar (Some imaginary filetype):
+  <contents>
+
+Execute(Server should be notified on save):
+  call ale#events#SaveEvent(bufnr(''))
+
+  AssertEqual
+  \ [
+  \   [1, 'textDocument/didChange', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \       'version': g:ale_lsp_next_version_id - 1,
+  \     },
+  \     'contentChanges': [{'text': join(getline(1, '$'), "\n") . "\n"}],
+  \   }],
+  \ ],
+  \ g:message_list
+
+Execute(Server should be notified on save with didSave is supported by server):
+
+  " Replace has capability function to simulate didSave server capability
+  function! ale#lsp#HasCapability(conn_id, capability) abort
+      if a:capability == 'did_save'
+          return 1
+      endif
+      return 0
+  endfunction
+
+  call ale#events#SaveEvent(bufnr(''))
+
+  AssertEqual
+  \ [
+  \   [1, 'textDocument/didChange', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \       'version': g:ale_lsp_next_version_id - 1,
+  \     },
+  \     'contentChanges': [{'text': join(getline(1, '$'), "\n") . "\n"}],
+  \   }],
+  \   [1, 'textDocument/didSave', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \     },
+  \   }],
+  \ ],
+  \ g:message_list
+
+Execute(Server should be notified on change):
+  call ale#events#FileChangedEvent(bufnr(''))
+
+  AssertEqual
+  \ [
+  \   [1, 'textDocument/didChange', {
+  \     'textDocument': {
+  \       'uri': ale#path#ToFileURI(expand('%:p')),
+  \       'version': g:ale_lsp_next_version_id - 1,
+  \     },
+  \     'contentChanges': [{'text': join(getline(1, '$'), "\n") . "\n"}],
+  \   }],
+  \ ],
+  \ g:message_list

@@ -1,0 +1,141 @@
+Before:
+  Save g:ale_python_mypy_ignore_invalid_syntax
+  Save g:ale_python_mypy_show_notes
+
+  unlet! g:ale_python_mypy_show_notes
+  unlet! g:ale_python_mypy_ignore_invalid_syntax
+
+  runtime ale_linters/python/mypy.vim
+
+  call ale#test#SetDirectory('/testplugin/test/handler')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(The mypy handler should parse lines correctly):
+  call ale#test#SetFilename('__init__.py')
+
+  let g:ale_python_mypy_show_notes = 0
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 768,
+  \     'col': 38,
+  \     'filename': ale#path#Simplify(g:dir . '/baz.py'),
+  \     'type': 'E',
+  \     'text': 'Cannot determine type of ''SOME_SYMBOL''',
+  \   },
+  \   {
+  \     'lnum': 821,
+  \     'col': 38,
+  \     'filename': ale#path#Simplify(g:dir . '/baz.py'),
+  \     'type': 'E',
+  \     'text': 'Cannot determine type of ''SOME_SYMBOL''',
+  \   },
+  \   {
+  \     'lnum': 38,
+  \     'col': 44,
+  \     'filename': ale#path#Simplify(g:dir . '/other.py'),
+  \     'type': 'E',
+  \     'text': 'Cannot determine type of ''ANOTHER_SYMBOL''',
+  \   },
+  \   {
+  \     'lnum': 15,
+  \     'col': 3,
+  \     'filename': ale#path#Simplify(g:dir . '/__init__.py'),
+  \     'type': 'E',
+  \     'text': 'Argument 1 to "somefunc" has incompatible type "int"; expected "str"'
+  \   },
+  \   {
+  \     'lnum': 72,
+  \     'col': 1,
+  \     'filename': ale#path#Simplify(g:dir . '/__init__.py'),
+  \     'type': 'W',
+  \     'text': 'Some warning',
+  \   },
+  \ ],
+  \ ale_linters#python#mypy#Handle(bufnr(''), [
+  \ 'baz.py: note: In class "SomeClass":',
+  \ 'baz.py:768:38: error: Cannot determine type of ''SOME_SYMBOL''',
+  \ 'baz.py: note: In class "AnotherClass":',
+  \ 'baz.py:821:38: error: Cannot determine type of ''SOME_SYMBOL''',
+  \ '__init__.py:92: note: In module imported here:',
+  \ 'other.py: note: In class "YetAnotherClass":',
+  \ 'other.py:38:44: error: Cannot determine type of ''ANOTHER_SYMBOL''',
+  \ '__init__.py: note: At top level:',
+  \ '__init__.py:15:3: error: Argument 1 to "somefunc" has incompatible type "int"; expected "str"',
+  \ 'another_module/bar.py:14: note: In module imported here,',
+  \ 'another_module/__init__.py:16: note: ... from here,',
+  \ '__init__.py:72:1: warning: Some warning',
+  \ ])
+
+Execute(The mypy handler should show notes if enabled):
+  call ale#test#SetFilename('__init__.py')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 72,
+  \     'col': 1,
+  \     'filename': ale#path#Simplify(g:dir . '/__init__.py'),
+  \     'type': 'I',
+  \     'text': 'A note',
+  \   },
+  \ ],
+  \ ale_linters#python#mypy#Handle(bufnr(''), [
+  \   '__init__.py:72:1: note: A note',
+  \ ])
+
+  let g:ale_python_mypy_show_notes = 0
+
+  AssertEqual
+  \ [],
+  \ ale_linters#python#mypy#Handle(bufnr(''), [
+  \   '__init__.py:72:1: note: A note',
+  \ ])
+
+Execute(The mypy handler should handle Windows names with spaces):
+  " This test works on Unix, where this is seen as a single filename
+  silent file C:\\something\\with\ spaces.py
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 4,
+  \     'col': 0,
+  \     'filename': ale#path#Simplify('C:\something\with spaces.py'),
+  \     'type': 'E',
+  \     'text': 'No library stub file for module ''django.db''',
+  \   },
+  \ ],
+  \ ale_linters#python#mypy#Handle(bufnr(''), [
+  \   'C:\something\with spaces.py:4: error: No library stub file for module ''django.db''',
+  \ ])
+
+Execute(The mypy syntax errors shouldn't be ignored by default):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 4,
+  \     'col': 0,
+  \     'filename': ale#path#Simplify(g:dir . '/foo.py'),
+  \     'type': 'E',
+  \     'text': 'invalid syntax',
+  \   },
+  \ ],
+  \ ale_linters#python#mypy#Handle(bufnr(''), [
+  \   'foo.py:4: error: invalid syntax',
+  \ ])
+
+Execute(The mypy syntax errors should be ignored when the option is on):
+  let g:ale_python_mypy_ignore_invalid_syntax = 1
+
+  AssertEqual
+  \ [],
+  \ ale_linters#python#mypy#Handle(bufnr(''), [
+  \   'foo.py:4: error: invalid syntax',
+  \ ])

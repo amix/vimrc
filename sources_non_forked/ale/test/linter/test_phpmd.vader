@@ -1,0 +1,12 @@
+Before:
+  call ale#assert#SetUpLinterTest('php', 'phpmd')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Custom executables should be used for the executable and command):
+  let g:ale_php_phpmd_executable = 'phpmd_test'
+
+  AssertLinter 'phpmd_test',
+  \ ale#Escape('phpmd_test')
+  \ . ' %s text cleancode,codesize,controversial,design,naming,unusedcode --ignore-violations-on-exit %t'

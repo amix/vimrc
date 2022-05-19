@@ -18,26 +18,6 @@ elseif has('textprop') && has('popupwin')
     let s:has_virt_text = 1
 endif
 
-if !hlexists('ALEVirtualTextError')
-    highlight link ALEVirtualTextError ALEError
-endif
-
-if !hlexists('ALEVirtualTextStyleError')
-    highlight link ALEVirtualTextStyleError ALEVirtualTextError
-endif
-
-if !hlexists('ALEVirtualTextWarning')
-    highlight link ALEVirtualTextWarning ALEWarning
-endif
-
-if !hlexists('ALEVirtualTextStyleWarning')
-    highlight link ALEVirtualTextStyleWarning ALEVirtualTextWarning
-endif
-
-if !hlexists('ALEVirtualTextInfo')
-    highlight link ALEVirtualTextInfo ALEVirtualTextWarning
-endif
-
 function! ale#virtualtext#Clear() abort
     if !s:has_virt_text
         return

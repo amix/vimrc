@@ -1,0 +1,24 @@
+Before:
+  let g:ale_some_variable = 'abc'
+
+After:
+  unlet! g:ale_some_variable
+  unlet! b:undefined_variable_name
+
+Execute(ale#Var should return global variables):
+  AssertEqual 'abc', ale#Var(bufnr(''), 'some_variable')
+
+Execute(ale#Var should return buffer overrides):
+  let b:ale_some_variable = 'def'
+
+  AssertEqual 'def', ale#Var(bufnr(''), 'some_variable')
+
+Execute(ale#Var should return buffer overrides for buffer numbers as strings):
+  let b:ale_some_variable = 'def'
+
+  AssertEqual 'def', ale#Var(string(bufnr('')), 'some_variable')
+
+Execute(ale#Var should throw exceptions for undefined variables):
+  let b:undefined_variable_name = 'def'
+
+  AssertThrows call ale#Var(bufnr(''), 'undefined_variable_name')

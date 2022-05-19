@@ -1,0 +1,216 @@
+Before:
+  runtime autoload/ale/lsp.vim
+
+  let g:message_list = []
+  let b:conn = {
+  \ 'id': 1,
+  \ 'is_tsserver': 0,
+  \ 'data': '',
+  \ 'root': '/foo/bar',
+  \ 'open_documents': {},
+  \ 'initialized': 0,
+  \ 'init_request_id': 0,
+  \ 'init_options': {},
+  \ 'config': {},
+  \ 'callback_list': [],
+  \ 'message_queue': [],
+  \ 'init_queue': [],
+  \ 'capabilities': {
+  \   'hover': 0,
+  \   'rename': 0,
+  \   'references': 0,
+  \   'completion': 0,
+  \   'completion_trigger_characters': [],
+  \   'definition': 0,
+  \   'symbol_search': 0,
+  \   'code_actions': 0,
+  \ },
+  \}
+
+  function! ale#lsp#Send(conn_id, message) abort
+    call add(g:message_list, a:message)
+
+    return 42
+  endfunction
+
+After:
+  unlet! b:conn
+  unlet! g:message_list
+
+  runtime autoload/ale/lsp.vim
+
+Execute(Messages with no method and capabilities should initialize projects):
+  call ale#lsp#HandleInitResponse(b:conn, {
+  \ 'result': {'capabilities': {}},
+  \})
+
+  AssertEqual 1, b:conn.initialized
+  AssertEqual [[1, 'initialized', {}]], g:message_list
+
+Execute(Other messages should not initialize projects):
+  call ale#lsp#HandleInitResponse(b:conn, {'method': 'lolwat'})
+
+  AssertEqual 0, b:conn.initialized
+  AssertEqual [], g:message_list
+
+  call ale#lsp#HandleInitResponse(b:conn, {'result': {'x': {}}})
+
+  AssertEqual 0, b:conn.initialized
+  AssertEqual [], g:message_list
+
+Execute(Capabilities should bet set up correctly):
+  call ale#lsp#HandleInitResponse(b:conn, {
+  \ 'jsonrpc': '2.0',
+  \ 'id': 1,
+  \ 'result': {
+  \   'capabilities': {
+  \     'renameProvider': v:true,
+  \     'executeCommandProvider': {
+  \       'commands': [],
+  \     },
+  \     'hoverProvider': v:true,
+  \     'documentSymbolProvider': v:true,
+  \     'documentRangeFormattingProvider': v:true,
+  \     'codeLensProvider': {
+  \       'resolveProvider': v:false
+  \     },
+  \     'referencesProvider': v:true,
+  \     'textDocumentSync': 2,
+  \     'documentFormattingProvider': v:true,
+  \     'codeActionProvider': v:true,
+  \     'signatureHelpProvider': {
+  \       'triggerCharacters': ['(', ','],
+  \     },
+  \     'completionProvider': {
+  \       'triggerCharacters': ['.'],
+  \       'resolveProvider': v:false
+  \     },
+  \     'definitionProvider': v:true,
+  \     'experimental': {},
+  \     'documentHighlightProvider': v:true,
+  \     'workspaceSymbolProvider': v:true
+  \   },
+  \ },
+  \})
+
+  AssertEqual 1, b:conn.initialized
+  AssertEqual
+  \ {
+  \   'completion_trigger_characters': ['.'],
+  \   'completion': 1,
+  \   'references': 1,
+  \   'hover': 1,
+  \   'definition': 1,
+  \   'symbol_search': 1,
+  \   'rename': 1,
+  \   'code_actions': 1,
+  \ },
+  \ b:conn.capabilities
+  AssertEqual [[1, 'initialized', {}]], g:message_list
+
+Execute(Disabled capabilities should be recognised correctly):
+  call ale#lsp#HandleInitResponse(b:conn, {
+  \ 'jsonrpc': '2.0',
+  \ 'id': 1,
+  \ 'result': {
+  \   'capabilities': {
+  \     'renameProvider': v:false,
+  \     'executeCommandProvider': {
+  \       'commands': [],
+  \     },
+  \     'hoverProvider': v:false,
+  \     'documentSymbolProvider': v:true,
+  \     'documentRangeFormattingProvider': v:true,
+  \     'codeLensProvider': {
+  \       'resolveProvider': v:false
+  \     },
+  \     'referencesProvider': v:false,
+  \     'textDocumentSync': 2,
+  \     'documentFormattingProvider': v:true,
+  \     'codeActionProvider': v:false,
+  \     'signatureHelpProvider': {
+  \       'triggerCharacters': ['(', ','],
+  \     },
+  \     'definitionProvider': v:false,
+  \     'experimental': {},
+  \     'documentHighlightProvider': v:true,
+  \   },
+  \ },
+  \})
+
+  AssertEqual 1, b:conn.initialized
+  AssertEqual
+  \ {
+  \   'completion_trigger_characters': [],
+  \   'completion': 0,
+  \   'references': 0,
+  \   'hover': 0,
+  \   'definition': 0,
+  \   'symbol_search': 0,
+  \   'rename': 0,
+  \   'code_actions': 0,
+  \ },
+  \ b:conn.capabilities
+  AssertEqual [[1, 'initialized', {}]], g:message_list
+
+Execute(Capabilities should be enabled when send as Dictionaries):
+  call ale#lsp#HandleInitResponse(b:conn, {
+  \ 'jsonrpc': '2.0',
+  \ 'id': 1,
+  \ 'result': {
+  \   'capabilities': {
+  \     'renameProvider': {},
+  \     'executeCommandProvider': {
+  \       'commands': [],
+  \     },
+  \     'hoverProvider': {},
+  \     'documentSymbolProvider': v:true,
+  \     'documentRangeFormattingProvider': v:true,
+  \     'codeLensProvider': {
+  \       'resolveProvider': v:false
+  \     },
+  \     'completionProvider': {
+  \       'triggerCharacters': ['.'],
+  \       'resolveProvider': v:false
+  \     },
+  \     'referencesProvider': {},
+  \     'textDocumentSync': 2,
+  \     'documentFormattingProvider': v:true,
+  \     'codeActionProvider': v:true,
+  \     'signatureHelpProvider': {
+  \       'triggerCharacters': ['(', ','],
+  \     },
+  \     'definitionProvider': {},
+  \     'typeDefinitionProvider': {},
+  \     'implementationProvider': {},
+  \     'experimental': {},
+  \     'documentHighlightProvider': v:true,
+  \     'workspaceSymbolProvider': {}
+  \   },
+  \ },
+  \})
+
+  AssertEqual 1, b:conn.initialized
+  AssertEqual
+  \ {
+  \   'completion_trigger_characters': ['.'],
+  \   'completion': 1,
+  \   'references': 1,
+  \   'hover': 1,
+  \   'definition': 1,
+  \   'typeDefinition': 1,
+  \   'implementation': 1,
+  \   'symbol_search': 1,
+  \   'rename': 1,
+  \   'code_actions': 1,
+  \ },
+  \ b:conn.capabilities
+  AssertEqual [[1, 'initialized', {}]], g:message_list
+
+Execute(Results that are not dictionaries should be handled correctly):
+  call ale#lsp#HandleInitResponse(b:conn, {
+  \ 'jsonrpc': '2.0',
+  \ 'id': 1,
+  \ 'result': v:null,
+  \})
+  AssertEqual [], g:message_list

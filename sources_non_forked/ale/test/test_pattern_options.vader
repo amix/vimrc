@@ -1,0 +1,107 @@
+Before:
+  Save g:ale_pattern_options
+  Save g:ale_pattern_options_enabled
+  Save b:ale_quitting
+  Save b:ale_original_filetype
+  Save &filetype
+
+  unlet! b:ale_file_changed
+
+  let g:ale_pattern_options_enabled = 1
+  let g:ale_pattern_options = {}
+
+  let b:ale_enabled = 0
+  let b:some_option = 0
+
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  Restore
+
+  unlet! b:ale_enabled
+  unlet! b:some_option
+
+  call ale#test#RestoreDirectory()
+
+Execute(The pattern options function should work when there are no patterns):
+  call ale#test#SetFilename('foobar.js')
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+Execute(Buffer variables should be set when filename patterns match):
+  let g:ale_pattern_options = {
+  \ 'baz.*\.js': {
+  \   'ale_enabled': 1,
+  \   'some_option': 347,
+  \   '&filetype': 'pattern_option_set_filetype',
+  \ },
+  \}
+
+  call ale#test#SetFilename('foobar.js')
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  AssertEqual 0, b:ale_enabled
+  AssertEqual 0, b:some_option
+
+  call ale#test#SetFilename('bazboz.js')
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  AssertEqual 1, b:ale_enabled
+  AssertEqual 347, b:some_option
+  AssertEqual 'pattern_option_set_filetype', &filetype
+
+Execute(Multiple pattern matches should be applied):
+  let g:ale_pattern_options = {
+  \ 'foo': {
+  \   'some_option': 666,
+  \ },
+  \ 'bar': {
+  \   'ale_enabled': 1,
+  \   'some_option': 123,
+  \ },
+  \ 'notmatched': {
+  \   'some_option': 489,
+  \   'ale_enabled': 0,
+  \ },
+  \}
+
+  call ale#test#SetFilename('foobar.js')
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  AssertEqual 1, b:ale_enabled
+  AssertEqual 666, b:some_option
+
+Execute(Patterns should not be applied when the setting is disabled):
+  let g:ale_pattern_options_enabled = 0
+  let g:ale_pattern_options = {'foo': {'some_option': 666}}
+
+  call ale#test#SetFilename('foobar.js')
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  AssertEqual 0, b:some_option
+
+" This test is important for making sure we update the sorted items.
+Execute(Patterns should be applied after the Dictionary changes):
+  call ale#test#SetFilename('foobar.js')
+
+  let g:ale_pattern_options = {}
+
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  AssertEqual 0, b:some_option
+
+  let g:ale_pattern_options['foo'] = {'some_option': 666}
+
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  AssertEqual 666, b:some_option
+
+Execute(SetOptions should tolerate settings being unset):
+  " This might happen if ALE is loaded in a weird way, so tolerate it.
+  unlet! g:ale_pattern_options
+  unlet! g:ale_pattern_options_enabled
+
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+
+  let g:ale_pattern_options_enabled = 1
+
+  call ale#events#ReadOrEnterEvent(bufnr(''))

@@ -1,0 +1,36 @@
+Before:
+  Save g:ale_cmake_cmakeformat_executable
+  Save g:ale_cmake_cmakeformat_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_cmake_cmakeformat_executable = 'xxxinvalid'
+  let g:ale_cmake_cmakeformat_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The cmakeformat callback should return the correct default values):
+  call ale#test#SetFilename('../cmake_files/CMakeList.txt')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -'
+  \ },
+  \ ale#fixers#cmakeformat#Fix(bufnr(''))
+
+Execute(The cmakeformat callback should include custom cmakeformat options):
+  let g:ale_cmake_cmakeformat_options = "-r '(a) -> a'"
+  call ale#test#SetFilename('../cmake_files/CMakeList.txt')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' ' . g:ale_cmake_cmakeformat_options
+  \     . ' -',
+  \ },
+  \ ale#fixers#cmakeformat#Fix(bufnr(''))

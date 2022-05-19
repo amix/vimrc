@@ -1,0 +1,34 @@
+Before:
+  call ale#assert#SetUpLinterTest('r', 'lintr')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default lintr command should be correct):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'Rscript',
+  \   'Rscript --no-save --no-restore --no-site-file --no-init-file -e '
+  \   . ale#Escape('suppressPackageStartupMessages(library(lintr));'
+  \   .            'lint(cache = FALSE, commandArgs(TRUE), '
+  \   .            'with_defaults())')
+  \   . ' %t'
+
+Execute(The lintr options should be configurable):
+  let b:ale_r_lintr_options = 'with_defaults(object_usage_linter = NULL)'
+
+  AssertLinter 'Rscript',
+  \   'Rscript --no-save --no-restore --no-site-file --no-init-file -e '
+  \   . ale#Escape('suppressPackageStartupMessages(library(lintr));'
+  \   .            'lint(cache = FALSE, commandArgs(TRUE), '
+  \   .            'with_defaults(object_usage_linter = NULL))')
+  \   . ' %t'
+
+Execute(If the lint_package flag is set, lintr::lint_package should be called):
+  let b:ale_r_lintr_lint_package = 1
+
+  AssertLinter 'Rscript',
+  \   'Rscript --no-save --no-restore --no-site-file --no-init-file -e '
+  \   . ale#Escape('suppressPackageStartupMessages(library(lintr));'
+  \   .            'lint_package(cache = FALSE, '
+  \   .            'linters = with_defaults())')
+  \   . ' %t'

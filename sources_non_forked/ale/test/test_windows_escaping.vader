@@ -1,0 +1,42 @@
+Before:
+  Save &shell
+  let &shell = 'cmd.exe'
+
+After:
+  Restore
+
+Execute(ale#Escape for cmd.exe should allow not escape paths without special characters):
+  AssertEqual 'C:', ale#Escape('C:')
+  AssertEqual 'C:\', ale#Escape('C:\')
+  AssertEqual 'python', ale#Escape('python')
+  AssertEqual 'C:\foo\bar', ale#Escape('C:\foo\bar')
+  AssertEqual '/bar/baz', ale#Escape('/bar/baz')
+  AssertEqual 'nul', ale#Escape('nul')
+  AssertEqual '''foo''', ale#Escape('''foo''')
+
+Execute(ale#Escape for cmd.exe should escape Windows paths with spaces appropriately):
+  AssertEqual '"C:\foo bar\baz"', ale#Escape('C:\foo bar\baz')
+  AssertEqual '"^foo bar^"', ale#Escape('^foo bar^')
+  AssertEqual '"&foo bar&"', ale#Escape('&foo bar&')
+  AssertEqual '"|foo bar|"', ale#Escape('|foo bar|')
+  AssertEqual '"<foo bar<"', ale#Escape('<foo bar<')
+  AssertEqual '">foo bar>"', ale#Escape('>foo bar>')
+  AssertEqual '"^foo bar^"', ale#Escape('^foo bar^')
+  AssertEqual '"''foo'' ''bar''"', ale#Escape('''foo'' ''bar''')
+
+Execute(ale#Escape for cmd.exe should use caret escapes on special characters):
+  AssertEqual '^^foo^^', ale#Escape('^foo^')
+  AssertEqual '^&foo^&', ale#Escape('&foo&')
+  AssertEqual '^|foo^|', ale#Escape('|foo|')
+  AssertEqual '^<foo^<', ale#Escape('<foo<')
+  AssertEqual '^>foo^>', ale#Escape('>foo>')
+  AssertEqual '^^foo^^', ale#Escape('^foo^')
+  AssertEqual '''foo''^^''bar''', ale#Escape('''foo''^''bar''')
+
+Execute(ale#Escape for cmd.exe should escape percent characters):
+  AssertEqual '%%foo%%', ale#Escape('%foo%')
+  AssertEqual 'C:\foo%%\bar\baz%%', ale#Escape('C:\foo%\bar\baz%')
+  AssertEqual '"C:\foo bar%%\baz%%"', ale#Escape('C:\foo bar%\baz%')
+  AssertEqual '^^%%foo%%', ale#Escape('^%foo%')
+  AssertEqual '"^%%foo%% %%bar%%"', ale#Escape('^%foo% %bar%')
+  AssertEqual '"^%%foo%% %%bar%% """""', ale#Escape('^%foo% %bar% ""')

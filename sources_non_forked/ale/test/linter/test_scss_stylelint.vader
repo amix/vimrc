@@ -1,0 +1,33 @@
+Before:
+  call ale#assert#SetUpLinterTest('scss', 'stylelint')
+  unlet! b:executable
+
+After:
+  unlet! b:executable
+  call ale#assert#TearDownLinterTest()
+
+Execute(node_modules directories should be discovered):
+  call ale#test#SetFilename('../test-files/stylelint/nested/testfile.scss')
+
+  let b:executable = ale#path#Simplify(
+  \   g:dir
+  \   . '/../test-files/stylelint/node_modules/.bin/stylelint'
+  \)
+
+  AssertLinter b:executable, ale#Escape(b:executable) . '  --stdin-filename %s'
+
+Execute(The global override should work):
+  let b:ale_scss_stylelint_executable = 'foobar'
+  let b:ale_scss_stylelint_use_global = 1
+
+  call ale#test#SetFilename('../test-files/stylelint/nested/testfile.scss')
+
+  AssertLinter 'foobar', ale#Escape('foobar') . '  --stdin-filename %s'
+
+Execute(Extra options should be configurable):
+  call ale#test#SetFilename('../test-files/dummy')
+
+  let b:ale_scss_stylelint_options = '--configFile ''/absolute/path/to/file'''
+
+  AssertLinter 'stylelint',
+  \ ale#Escape('stylelint') . '  --configFile ''/absolute/path/to/file'' --stdin-filename %s'

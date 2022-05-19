@@ -1,0 +1,21 @@
+Before:
+  call ale#assert#SetUpLinterTest('thrift', 'thriftcheck')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'thriftcheck', ale#Escape('thriftcheck')
+  \ . ' --stdin-filename %s %t'
+
+Execute(The executable should be configurable):
+  let b:ale_thrift_thriftcheck_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar')
+  \ . ' --stdin-filename %s %t'
+
+Execute(The string of options should be configurable):
+  let b:ale_thrift_thriftcheck_options = '--errors-only'
+
+  AssertLinter 'thriftcheck', ale#Escape('thriftcheck')
+  \ . ' --errors-only --stdin-filename %s %t'

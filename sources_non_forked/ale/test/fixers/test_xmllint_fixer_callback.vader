@@ -1,0 +1,46 @@
+Before:
+  Save g:ale_xml_xmllint_executable
+  Save g:ale_xml_xmllint_indentsize
+  Save g:ale_xml_xmllint_options
+
+  let g:ale_xml_xmllint_executable = '/path/to/xmllint'
+  let g:ale_xml_xmllint_indentsize = ''
+  let g:ale_xml_xmllint_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+Execute(The xmllint callback should return the correct default command):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/xmllint')
+  \     . ' --format '
+  \     . ale#Escape(bufname(bufnr('')))
+  \ },
+  \ ale#fixers#xmllint#Fix(bufnr(''))
+
+Execute(The xmllint callback should include the XMLLINT_INDENT variable):
+  let g:ale_xml_xmllint_indentsize = 2
+
+  AssertEqual
+  \ {
+  \   'command': ale#Env('XMLLINT_INDENT', '  ')
+  \     . ale#Escape('/path/to/xmllint')
+  \     . ' --format '
+  \     . ale#Escape(bufname(bufnr('')))
+  \ },
+  \ ale#fixers#xmllint#Fix(bufnr(''))
+
+Execute(The xmllint callback should include additional options):
+  let g:ale_xml_xmllint_options = '--nonet'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/xmllint')
+  \     . ' --format '
+  \     . ale#Escape(bufname(bufnr('')))
+  \     . ' --nonet'
+  \ },
+  \ ale#fixers#xmllint#Fix(bufnr(''))

@@ -1,0 +1,90 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'bandit')
+  let b:bandit_flags = ' --format custom '
+  \   . '--msg-template "{line}:{test_id}:{severity}:{msg}" '
+
+After:
+  call ale#assert#TearDownLinterTest()
+  unlet! b:bandit_flags
+
+Execute(The bandit command callback should return default string):
+  AssertLinter 'bandit',
+  \ ale#Escape('bandit')
+  \ . b:bandit_flags
+  \ . ' -'
+
+Execute(The bandit command callback should allow options):
+  let g:ale_python_bandit_options = '--configfile bandit.yaml'
+
+  AssertLinter 'bandit',
+  \ ale#Escape('bandit')
+  \ . b:bandit_flags
+  \ . ' --configfile bandit.yaml -'
+
+Execute(The bandit executable should be configurable):
+  let g:ale_python_bandit_executable = '~/.local/bin/bandit'
+
+  AssertLinter '~/.local/bin/bandit',
+  \ ale#Escape('~/.local/bin/bandit')
+  \ . b:bandit_flags
+  \ . ' -'
+
+Execute(Setting executable to 'pipenv' appends 'run bandit'):
+  let g:ale_python_bandit_executable = 'path/to/pipenv'
+
+  AssertLinter 'path/to/pipenv',
+  \ ale#Escape('path/to/pipenv')
+  \ . ' run bandit'
+  \ . b:bandit_flags
+  \ . ' -'
+
+Execute(Pipenv is detected when python_bandit_auto_pipenv is set):
+  let g:ale_python_bandit_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinter 'pipenv',
+  \ ale#Escape('pipenv')
+  \ . ' run bandit'
+  \ . b:bandit_flags
+  \ . ' -'
+
+Execute(Setting executable to 'poetry' appends 'run bandit'):
+  let g:ale_python_bandit_executable = 'path/to/poetry'
+
+  AssertLinter 'path/to/poetry',
+  \ ale#Escape('path/to/poetry')
+  \ . ' run bandit'
+  \ . b:bandit_flags
+  \ . ' -'
+
+Execute(Poetry is detected when python_bandit_auto_poetry is set):
+  let g:ale_python_bandit_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinter 'poetry',
+  \ ale#Escape('poetry')
+  \ . ' run bandit'
+  \ . b:bandit_flags
+  \ . ' -'
+
+Execute(The bandit command callback should add .bandit by default):
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_bandit/namespace/foo/bar.py')
+
+  let b:config_path = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_bandit/.bandit'
+  \)
+
+  AssertLinter 'bandit',
+  \ ale#Escape('bandit')
+  \ . ' --ini ' . ale#Escape(b:config_path)
+  \ . b:bandit_flags
+  \ . ' -'
+
+Execute(The bandit command callback should support not using .bandit):
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_bandit/subdir/foo/bar.py')
+  let g:ale_python_bandit_use_config = 0
+
+  AssertLinter 'bandit',
+  \ ale#Escape('bandit')
+  \ . b:bandit_flags
+  \ . ' -'

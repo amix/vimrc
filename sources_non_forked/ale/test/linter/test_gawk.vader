@@ -1,0 +1,25 @@
+Before:
+  call ale#assert#SetUpLinterTest('awk', 'gawk')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'gawk',
+  \ ale#Escape('gawk') . ' --source ' . ale#Escape('BEGIN { exit } END { exit 1 }')
+  \   . ' --lint -f %t /dev/null'
+
+Execute(The executable should be configurable):
+  let b:ale_awk_gawk_executable = '/other/gawk'
+
+  AssertLinter '/other/gawk',
+  \ ale#Escape('/other/gawk') . ' --source ' . ale#Escape('BEGIN { exit } END { exit 1 }')
+  \   . ' --lint -f %t /dev/null'
+
+Execute(The options should be configurable):
+  let b:ale_awk_gawk_executable = 'gawk'
+  let b:ale_awk_gawk_options = '--lint=no-ext'
+
+  AssertLinter 'gawk',
+  \ ale#Escape('gawk') . ' --source ' . ale#Escape('BEGIN { exit } END { exit 1 }')
+  \   . ' --lint --lint=no-ext -f %t /dev/null'

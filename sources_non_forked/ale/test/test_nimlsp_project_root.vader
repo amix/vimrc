@@ -1,0 +1,19 @@
+Before:
+  runtime ale_linters/nim/nimlsp.vim
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  if isdirectory(g:dir . '/.git')
+    call delete(g:dir . '/.git', 'd')
+  endif
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+
+Execute(Detect root of nim project with .git/ correctly):
+  call ale#test#SetFilename('test-files/nim/with-git/src/source.nim')
+  call mkdir(g:dir . '/.git')
+  AssertEqual
+  \ ale#path#Simplify(g:dir),
+  \ ale_linters#nim#nimlsp#GetProjectRoot(bufnr(''))

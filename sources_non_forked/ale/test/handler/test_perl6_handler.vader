@@ -1,0 +1,277 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/handler')
+
+  runtime ale_linters/perl6/perl6.vim
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(The Perl6 linter should handle empty output):
+  call ale#test#SetFilename('bar.pl6')
+
+  AssertEqual [], ale_linters#perl6#perl6#Handle(bufnr(''), [])
+
+Execute(The Perl6 linter should complain about undeclared variables):
+  call ale#test#SetFilename('bar.pl6')
+
+  AssertEqual
+  \ [
+  \   {
+  \    'lnum': '6',
+  \    'text': 'Variable ''$tes'' is not declared. Did you mean any of these? $res $test ',
+  \    'type': 'E',
+  \    'col': '',
+  \    'end_lnum': '',
+  \    'code': 'X::Undeclared',
+  \   }
+  \ ],
+  \ ale_linters#perl6#perl6#Handle(bufnr(''), [
+  \ '{
+  \   "X::Undeclared" : {
+  \     "highexpect" : [ ],
+  \     "is-compile-time" : 1,
+  \     "modules" : [ ],
+  \     "column" : null,
+  \     "pos" : 18,
+  \     "symbol" : "$tes",
+  \     "filename" : "bar.pl6",
+  \     "what" : "Variable",
+  \     "pre" : "my $test = 0; say ",
+  \     "post" : "$tes",
+  \     "suggestions" : [
+  \       "$res",
+  \       "$test"
+  \     ],
+  \     "line" : 6,
+  \     "message" : "Variable ''$tes'' is not declared. Did you mean any of these?\n    $res\n    $test\n"
+  \   }
+  \ }'
+  \ ])
+
+Execute(The Perl6 linter should complain about Comp::AdHoc errors):
+  call ale#test#SetFilename('bar.pl6')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': '3',
+  \     'type': 'E',
+  \     'text': 'is repr(...) trait needs a parameter',
+  \     'col': '',
+  \     'end_lnum': '',
+  \     'code': 'X::Comp::AdHoc',
+  \   }
+  \ ],
+  \ ale_linters#perl6#perl6#Handle(bufnr(''), [
+  \ '{
+  \   "X::Comp::AdHoc" : {
+  \     "pre" : "class test is repr",
+  \     "message" : "is repr(...) trait needs a parameter",
+  \     "line" : 3,
+  \     "post" : " {}",
+  \     "is-compile-time" : true,
+  \     "pos" : 19,
+  \     "highexpect" : [ ],
+  \     "payload" : "is repr(...) trait needs a parameter",
+  \     "filename" : "bar.pl6",
+  \     "column" : null,
+  \     "modules" : [ ]
+  \   }
+  \ }'
+  \])
+
+Execute(The Perl6 linter should be able to extract a line number from an error message):
+  call ale#test#SetFilename('bar.pl6')
+
+  AssertEqual
+  \ [
+  \   {
+  \    'lnum': '3',
+  \    'text': 'Could not find Module::Does::not::exist at line 3 in: /usr/share/perl6/site /usr/share/perl6/vendor /usr/share/perl6 CompUnit::Repository::AbsolutePath<94023691448416> CompUnit::Repository::NQP<94023670532736> CompUnit::Repository::Perl5<94023670532776>',
+  \    'col': '',
+  \    'type': 'E',
+  \    'end_lnum': '',
+  \    'code': 'X::CompUnit::UnsatisfiedDependency',
+  \   }
+  \ ],
+  \ ale_linters#perl6#perl6#Handle(bufnr(''), [
+  \ '{
+  \   "X::CompUnit::UnsatisfiedDependency" : {
+  \   "message" : "Could not find Module::Does::not::exist at line 3 in:\n    /usr/share/perl6/site\n    /usr/share/perl6/vendor\n    /usr/share/perl6\n    CompUnit::Repository::AbsolutePath<94023691448416>\n    CompUnit::Repository::NQP<94023670532736>\n    CompUnit::Repository::Perl5<94023670532776>",
+  \   "specification" : "Module::Does::not::exist"
+  \   }
+  \ }'
+  \ ])
+
+Execute(The Perl6 linter should be able to differentiate between warnings and errors):
+  call ale#test#SetFilename('bar.pl6')
+
+  AssertEqual
+  \ [
+  \   {
+  \    'lnum': '1',
+  \    'col': '',
+  \    'code': 'X::Syntax::Regex::Unterminated',
+  \    'end_lnum': '',
+  \    'type': 'E',
+  \    'text': 'Regex not terminated.',
+  \   },
+  \   {
+  \    'lnum': '1',
+  \    'col': '',
+  \    'code': 'X::Comp::AdHoc',
+  \    'end_lnum': '',
+  \    'type': 'W',
+  \    'text': 'Space is not significant here; please use quotes or :s (:sigspace) modifier (or, to suppress this warning, omit the space, or otherwise change the spacing)',
+  \   }
+  \ ],
+  \ ale_linters#perl6#perl6#Handle(bufnr(''), [
+  \ '{
+  \   "X::Comp::Group" : {
+  \     "message" : "Regex not terminated.\nUnable to parse regex; couldn''t find final ''/''\nSpace is not significant here; please use quotes or :s (:sigspace) modifier (or, to suppress this warning, omit the space, or otherwise change the spacing)",
+  \     "panic" : "Unable to parse regex; couldn''t find final ''/''",
+  \     "sorrows" : [
+  \       {
+  \         "X::Syntax::Regex::Unterminated" : {
+  \           "highexpect" : [
+  \             "infix stopper"
+  \           ],
+  \           "pos" : 6,
+  \           "is-compile-time" : 1,
+  \           "modules" : [ ],
+  \           "post" : "<EOL>",
+  \           "message" : "Regex not terminated.",
+  \           "line" : 1,
+  \           "filename" : "bar.pl6",
+  \           "column" : null,
+  \           "pre" : "/win 3"
+  \         }
+  \       }
+  \     ],
+  \     "worries" : [
+  \       {
+  \         "X::Comp::AdHoc" : {
+  \           "filename" : "bar.pl6",
+  \           "line" : 1,
+  \           "column" : null,
+  \           "pre" : "/win",
+  \           "highexpect" : [ ],
+  \           "payload" : "Space is not significant here; please use quotes or :s (:sigspace) modifier (or, to suppress this warning, omit the space, or otherwise change the spacing)",
+  \           "post" : " 3",
+  \           "message" : "Space is not significant here; please use quotes or :s (:sigspace) modifier (or, to suppress this warning, omit the space, or otherwise change the spacing)",
+  \           "modules" : [ ],
+  \           "is-compile-time" : true,
+  \           "pos" : 4
+  \         }
+  \       }
+  \     ]
+  \   }
+  \ }'
+  \])
+
+Execute(The Perl6 linter should gracefully handle non-JSON messages):
+  call ale#test#SetFilename('bar.pl6')
+
+  AssertEqual
+  \ [
+  \   {
+  \    'lnum': '1',
+  \    'text': 'Received output in the default Perl6 error format. See :ALEDetail for details',
+  \    'type': 'W',
+  \    'detail': join([
+  \    'Potential difficulties:',
+  \    '    Redeclaration of symbol ''$_''',
+  \    '    at /home/travis/perl6-error-fail/insanity-test.pl6:1',
+  \    '    ------>  sub foo($_) {.say}; my $_<HERE> = 1; .&foo;',
+  \    '    Space is not significant here; please use quotes or :s (:sigspace) modifier (or, to suppress this warning, omit the space, or otherwise change the spacing)',
+  \    '    at /home/travis/perl6-error-fail/insanity-test.pl6:4',
+  \    '    ------> /win<HERE> 3/',
+  \    'Syntax OK',], "\n")
+  \   }
+  \ ],
+  \ ale_linters#perl6#perl6#Handle(bufnr(''), [
+  \   'Potential difficulties:',
+  \   '    Redeclaration of symbol ''$_''',
+  \   '    at /home/travis/perl6-error-fail/insanity-test.pl6:1',
+  \   '    ------>  sub foo($_) {.say}; my $_<HERE> = 1; .&foo;',
+  \   '    Space is not significant here; please use quotes or :s (:sigspace) modifier (or, to suppress this warning, omit the space, or otherwise change the spacing)',
+  \   '    at /home/travis/perl6-error-fail/insanity-test.pl6:4',
+  \   '    ------> /win<HERE> 3/',
+  \   'Syntax OK'
+  \ ])
+
+Execute(The Perl6 linter should gracefully handle messages without a line number):
+  call ale#test#SetFilename('bar.pl6')
+
+  AssertEqual
+  \ [
+  \    {
+  \     'lnum': '1',
+  \     'end_lnum': '',
+  \     'text': 'Cannot find method ''has_compile_time_value'' on object of type NQPMu',
+  \     'type': 'E',
+  \     'col' : '',
+  \     'code': 'X::AdHoc',
+  \    }
+  \ ],
+  \ ale_linters#perl6#perl6#Handle(bufnr(''), [
+  \   '{',
+  \     '"X::AdHoc" : {',
+  \       '"message" : "Cannot find method ''has_compile_time_value'' on object of type NQPMu",',
+  \       '"payload" : "Cannot find method ''has_compile_time_value'' on object of type NQPMu"',
+  \      '}',
+  \    '}',
+  \ ])
+
+Execute(The Perl6 linter should not include errors from a known separate file):
+  call ale#test#SetFilename('bar.pl6')
+
+  AssertEqual
+  \ [],
+  \ ale_linters#perl6#perl6#Handle(bufnr(''), [
+  \ '{
+  \   "X::Undeclared" : {
+  \     "highexpect" : [ ],
+  \     "is-compile-time" : 1,
+  \     "modules" : [ ],
+  \     "column" : null,
+  \     "pos" : 18,
+  \     "symbol" : "$tes",
+  \     "filename" : "foo.pl6",
+  \     "what" : "Variable",
+  \     "pre" : "my $test = 0; say ",
+  \     "post" : "$tes",
+  \     "suggestions" : [
+  \       "$res",
+  \       "$test"
+  \     ],
+  \     "line" : 6,
+  \     "message" : "Variable ''$tes'' is not declared. Did you mean any of these?\n    $res\n    $test\n"
+  \   }
+  \ }'
+  \ ])
+
+Execute(The Perl6 linter should not ignore errors without a filename):
+  call ale#test#SetFilename('bar.pl6')
+
+  AssertEqual
+  \ [
+  \    {
+  \     'lnum': '3',
+  \     'end_lnum': '',
+  \     'text': 'Cannot find method ''has_compile_time_value'' on object of type NQPMu',
+  \     'type': 'E',
+  \     'col' : '',
+  \     'code': 'X::AdHoc',
+  \    }
+  \ ],
+  \ ale_linters#perl6#perl6#Handle(bufnr(''), [
+  \   '{',
+  \     '"X::AdHoc" : {',
+  \       '"line" : 3,',
+  \       '"message" : "Cannot find method ''has_compile_time_value'' on object of type NQPMu",',
+  \       '"payload" : "Cannot find method ''has_compile_time_value'' on object of type NQPMu"',
+  \      '}',
+  \    '}',
+  \ ])

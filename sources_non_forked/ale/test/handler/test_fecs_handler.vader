@@ -1,0 +1,35 @@
+Before:
+  runtime autoload/ale/handlers/fecs.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(fecs should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 20,
+  \     'col': 25,
+  \     'text': 'Unexpected console statement.',
+  \     'code': 'no-console',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 24,
+  \     'col': 36,
+  \     'text': 'Missing radix parameter.',
+  \     'code': 'radix',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 25,
+  \     'col': 6,
+  \     'text': 'Missing static property value.',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale#handlers#fecs#Handle(347, [
+  \   'fecs  WARN → line 20, col 25: Unexpected console statement.     (no-console)',
+  \   'fecs ERROR → line 24, col 36: Missing radix parameter.  (radix)',
+  \   'fecs ERROR → line 25, col 6: Missing static property value.',
+  \ ])

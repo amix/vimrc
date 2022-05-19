@@ -1,0 +1,28 @@
+Before:
+  runtime! ale/handlers/actionlint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Problems should be parsed correctly for actionlint):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': '"jobs" section is missing in workflow',
+  \     'code': 'syntax-check',
+  \   },
+  \   {
+  \     'lnum': 56,
+  \     'col': 23,
+  \     'type': 'E',
+  \     'text': 'property "unknown_input" is not defined in object type {input7: bool; input0: any; input1: any; input2: string; input3: any; input4: any; input5: number; input6: number}',
+  \     'code': 'expression',
+  \   },
+  \ ],
+  \ ale#handlers#actionlint#Handle(bufnr(''), [
+  \   '.codecov.yaml:2:1: "jobs" section is missing in workflow [syntax-check]',
+  \   'workflow_call_event.yaml:56:23: property "unknown_input" is not defined in object type {input7: bool; input0: any; input1: any; input2: string; input3: any; input4: any; input5: number; input6: number} [expression]',
+  \ ])

@@ -1,0 +1,157 @@
+Before:
+  Save g:ale_statusline_format
+  Save g:ale_buffer_info
+
+  let g:ale_buffer_info = {}
+
+  " A function for conveniently creating expected count objects.
+  function! Counts(data) abort
+    let l:res = {
+    \   '0': 0,
+    \   '1': 0,
+    \   'error': 0,
+    \   'warning': 0,
+    \   'info': 0,
+    \   'style_error': 0,
+    \   'style_warning': 0,
+    \   'total': 0,
+    \}
+
+    for l:key in keys(a:data)
+      let l:res[l:key] = a:data[l:key]
+    endfor
+
+    let l:res[0] = l:res.error + l:res.style_error
+    let l:res[1] = l:res.warning + l:res.style_warning + l:res.info
+    let l:res.total = l:res[0] + l:res[1]
+
+    return l:res
+  endfunction
+
+  " A test simplified loclist that will be used for some of the
+  " tests in this module.
+  let g:test_buffer_info = {
+  \ bufnr(''): {
+  \   'loclist': [
+  \     {'bufnr': bufnr('') - 1, 'type': 'E'},
+  \     {'bufnr': bufnr('') - 1, 'type': 'E', 'sub_type': 'style'},
+  \     {'bufnr': bufnr('') - 1, 'type': 'W'},
+  \     {'bufnr': bufnr('') - 1, 'type': 'W', 'sub_type': 'style'},
+  \     {'bufnr': bufnr('') - 1, 'type': 'I'},
+  \     {'bufnr': bufnr(''), 'type': 'E'},
+  \     {'bufnr': bufnr(''), 'type': 'E', 'sub_type': 'style'},
+  \     {'bufnr': bufnr(''), 'type': 'E', 'sub_type': 'style'},
+  \     {'bufnr': bufnr(''), 'type': 'W'},
+  \     {'bufnr': bufnr(''), 'type': 'W'},
+  \     {'bufnr': bufnr(''), 'type': 'W'},
+  \     {'bufnr': bufnr(''), 'type': 'W', 'sub_type': 'style'},
+  \     {'bufnr': bufnr(''), 'type': 'W', 'sub_type': 'style'},
+  \     {'bufnr': bufnr(''), 'type': 'W', 'sub_type': 'style'},
+  \     {'bufnr': bufnr(''), 'type': 'W', 'sub_type': 'style'},
+  \     {'bufnr': bufnr(''), 'type': 'I'},
+  \     {'bufnr': bufnr(''), 'type': 'I'},
+  \     {'bufnr': bufnr(''), 'type': 'I'},
+  \     {'bufnr': bufnr(''), 'type': 'I'},
+  \     {'bufnr': bufnr(''), 'type': 'I'},
+  \     {'bufnr': bufnr('') + 1, 'type': 'E'},
+  \     {'bufnr': bufnr('') + 1, 'type': 'E', 'sub_type': 'style'},
+  \     {'bufnr': bufnr('') + 1, 'type': 'W'},
+  \     {'bufnr': bufnr('') + 1, 'type': 'W', 'sub_type': 'style'},
+  \     {'bufnr': bufnr('') + 1, 'type': 'I'},
+  \   ],
+  \ },
+  \}
+After:
+  Restore
+
+  delfunction Counts
+  unlet g:test_buffer_info
+
+Execute (Count should be 0 when data is empty):
+  AssertEqual Counts({}), ale#statusline#Count(bufnr(''))
+
+Execute (FirstProblem should be 0 when data is empty):
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'error')
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'warning')
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'style_error')
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'style_warning')
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'info')
+
+Execute (Count should read data from the cache):
+  let g:ale_buffer_info = {'44': {'count': Counts({'error': 1, 'warning': 2})}}
+  AssertEqual Counts({'error': 1, 'warning': 2}), ale#statusline#Count(44)
+
+Execute (FirstProblem should read data from the cache):
+  let g:ale_buffer_info = 
+    \{"44": 
+        \{'count': 0,
+         \'first_problems':
+              \{'error': {'lnum': 3},
+              \'warning': {'lnum': 44},
+              \'style_error': {'lnum': 22},
+              \'style_warning': {'lnum': 223},
+              \'info': {'lnum': 2}
+           \} 
+        \}
+    \}
+  AssertEqual {'lnum': 3}, ale#statusline#FirstProblem(44, 'error')
+  AssertEqual {'lnum': 44}, ale#statusline#FirstProblem(44, 'warning')
+  AssertEqual {'lnum': 223}, ale#statusline#FirstProblem(44, 'style_warning')
+  AssertEqual {'lnum': 22}, ale#statusline#FirstProblem(44, 'style_error')
+  AssertEqual {'lnum': 2}, ale#statusline#FirstProblem(44, 'info')
+
+Execute (The count should be correct after an update):
+  let g:ale_buffer_info = {'44': {}}
+  call ale#statusline#Update(44, [])
+  AssertEqual Counts({}), ale#statusline#Count(44)
+
+Execute (FirstProblem should be correct after an update):
+  let g:ale_buffer_info = {'44': {}}
+  call ale#statusline#Update(44, [])
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'error')
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'warning')
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'style_error')
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'style_warning')
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'info')
+
+Execute (Count should match the loclist):
+  let g:ale_buffer_info = g:test_buffer_info
+  AssertEqual {
+  \ 'error': 1,
+  \ 'style_error': 2,
+  \ 'warning': 3,
+  \ 'style_warning': 4,
+  \ 'info': 5,
+  \ '0': 3,
+  \ '1': 12,
+  \ 'total': 15,
+  \}, ale#statusline#Count(bufnr(''))
+
+Execute (FirstProblem should pull the first matching value from the loclist):
+  let g:ale_buffer_info = g:test_buffer_info
+  AssertEqual {'bufnr': bufnr(''), 'type': 'E'}, ale#statusline#FirstProblem(bufnr(''), 'error')
+  AssertEqual {'bufnr': bufnr(''), 'type': 'W'}, ale#statusline#FirstProblem(bufnr(''), 'warning')
+  AssertEqual {'bufnr': bufnr(''), 'type': 'E', 'sub_type': 'style'}, ale#statusline#FirstProblem(bufnr(''), 'style_error')
+  AssertEqual {'bufnr': bufnr(''), 'type': 'W', 'sub_type': 'style'}, ale#statusline#FirstProblem(bufnr(''), 'style_warning')
+  AssertEqual {'bufnr': bufnr(''), 'type': 'I'}, ale#statusline#FirstProblem(bufnr(''), 'info')
+
+Execute (Output should be empty for non-existent buffer):
+  let g:ale_buffer_info = g:test_buffer_info
+  AssertEqual Counts({}), ale#statusline#Count(9001)
+  AssertEqual {}, ale#statusline#FirstProblem(9001, 'error')
+  AssertEqual {}, ale#statusline#FirstProblem(9001, 'warning')
+  AssertEqual {}, ale#statusline#FirstProblem(9001, 'style_error')
+  AssertEqual {}, ale#statusline#FirstProblem(9001, 'style_warning')
+  AssertEqual {}, ale#statusline#FirstProblem(9001, 'info')
+
+Execute(ale#statusline#Update shouldn't blow up when globals are undefined):
+  unlet! g:ale_statusline_format
+  call ale#statusline#Update(1, [])
+
+Execute(ale#statusline#Count should return 0 counts when globals are undefined):
+  unlet! g:ale_statusline_format
+  AssertEqual Counts({}), ale#statusline#Count(1)
+
+Execute(FirstProblem should return an empty dict when globals are undefined):
+  unlet! g:ale_statusline_format
+  AssertEqual {}, ale#statusline#FirstProblem(bufnr(''), 'info')

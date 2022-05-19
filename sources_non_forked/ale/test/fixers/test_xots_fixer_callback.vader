@@ -1,0 +1,45 @@
+Before:
+  call ale#assert#SetUpFixerTest('typescript', 'xo')
+  runtime autoload/ale/handlers/xo.vim
+  set filetype=typescript
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The xo callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/xo/monorepo/packages/a/index.ts')
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/xo/monorepo/node_modules/xo/cli.js'))
+  \     . ' --fix %t',
+  \ }
+
+Execute(The xo callback should include custom xo options):
+  let g:ale_typescript_xo_options = '--space'
+  call ale#test#SetFilename('../test-files/xo/monorepo/packages/a/index.ts')
+
+  AssertFixer
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/xo/monorepo/node_modules/xo/cli.js'))
+  \     . ' --fix %t'
+  \     . ' --space',
+  \ }
+
+Execute(--stdin should be used when xo is new enough):
+  let g:ale_typescript_xo_options = '--space'
+  call ale#test#SetFilename('../test-files/xo/monorepo/packages/a/index.ts')
+
+  GivenCommandOutput ['0.30.0']
+  AssertFixer
+  \ {
+  \   'command': (has('win32') ? 'node.exe ' : '')
+  \     . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/xo/monorepo/node_modules/xo/cli.js'))
+  \     . ' --stdin --stdin-filename %s'
+  \     . ' --fix'
+  \     . ' --space',
+  \ }

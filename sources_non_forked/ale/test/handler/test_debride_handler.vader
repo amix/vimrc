@@ -1,0 +1,27 @@
+Before:
+  runtime ale_linters/ruby/debride.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The debride linter parses output correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'text': 'Possible unused method: image_tags',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'text': 'Possible unused method: not_deleted',
+  \     'type': 'W',
+  \   }
+  \ ],
+  \ ale_linters#ruby#debride#HandleOutput(0, [
+  \   'These methods MIGHT not be called:',
+  \   '',
+  \   'Image',
+  \   '  image_tags                          app/models/image.rb:2',
+  \   '  not_deleted                         app/models/image.rb:7'
+  \])

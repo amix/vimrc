@@ -1,0 +1,32 @@
+Before:
+  call ale#assert#SetUpLinterTest('markdown', 'vale')
+  call ale#test#SetFilename('dummy.md')
+
+  let g:ale_markdown_vale_executable = 'vale'
+  let g:ale_markdown_vale_input_file = '%t'
+  let g:ale_markdown_vale_options = ''
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should default to vale):
+  AssertLinter 'vale', ale#Escape('vale')
+  \   . ' --output=JSON  %t'
+
+Execute(Should be able to set a custom executable):
+  let g:ale_markdown_vale_executable = 'bin/vale'
+
+  AssertLinter 'bin/vale' , ale#Escape('bin/vale')
+  \   . ' --output=JSON  %t'
+
+Execute(Should be able to set custom options):
+  let g:ale_markdown_vale_options = '--foo --bar'
+
+  AssertLinter 'vale', ale#Escape('vale')
+  \   . ' --output=JSON --foo --bar %t'
+
+Execute(Should be able to set a custom input file):
+  let g:ale_markdown_vale_input_file = '%s'
+
+  AssertLinter 'vale', ale#Escape('vale')
+  \   . ' --output=JSON  %s'

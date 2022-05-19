@@ -1,0 +1,47 @@
+Before:
+  Save g:ale_python_autoimport_executable
+  Save g:ale_python_autoimport_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_python_autoimport_executable = 'xxxinvalid'
+  let g:ale_python_autoimport_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  Restore
+
+  unlet! b:bin_dir
+
+  call ale#test#RestoreDirectory()
+
+Execute(The autoimport callback should return the correct default values):
+  AssertEqual
+  \ 0,
+  \ ale#fixers#autoimport#Fix(bufnr(''))
+
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  AssertEqual
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/autoimport')) . ' -',
+  \ },
+  \ ale#fixers#autoimport#Fix(bufnr(''))
+
+Execute(The autoimport callback should respect custom options):
+  let g:ale_python_autoimport_options = '--multi-line=3 --trailing-comma'
+
+  AssertEqual
+  \ 0,
+  \ ale#fixers#autoimport#Fix(bufnr(''))
+
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  AssertEqual
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/autoimport'))
+  \     . ' --multi-line=3 --trailing-comma -',
+  \ },
+  \ ale#fixers#autoimport#Fix(bufnr(''))

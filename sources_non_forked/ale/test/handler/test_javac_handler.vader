@@ -1,0 +1,97 @@
+Before:
+  runtime ale_linters/java/javac.vim
+
+  call ale#test#SetDirectory('/testplugin/test')
+  call ale#test#SetFilename('dummy.java')
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(The javac handler should handle cannot find symbol errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': ale#path#Simplify('/tmp/vLPr4Q5/33/foo.java'),
+  \     'lnum': 1,
+  \     'text': 'error: some error',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'filename': ale#path#Simplify('/tmp/vLPr4Q5/33/foo.java'),
+  \     'lnum': 2,
+  \     'col': 5,
+  \     'text': 'error: cannot find symbol: BadName',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'filename': ale#path#Simplify('/tmp/vLPr4Q5/33/foo.java'),
+  \     'lnum': 34,
+  \     'col': 5,
+  \     'text': 'error: cannot find symbol: BadName2',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'filename': ale#path#Simplify('/tmp/vLPr4Q5/33/foo.java'),
+  \     'lnum': 37,
+  \     'text': 'warning: some warning',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'filename': ale#path#Simplify('/tmp/vLPr4Q5/33/foo.java'),
+  \     'lnum': 42,
+  \     'col': 11,
+  \     'text': 'error: cannot find symbol: bar()',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'filename': ale#path#Simplify('/tmp/vLPr4Q5/33/foo.java'),
+  \     'lnum': 58,
+  \     'col': 19,
+  \     'text': 'error: incompatible types: Bar cannot be converted to Foo',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#java#javac#Handle(bufnr(''), [
+  \   '/tmp/vLPr4Q5/33/foo.java:1: error: some error',
+  \   '/tmp/vLPr4Q5/33/foo.java:2: error: cannot find symbol',
+  \   '    BadName foo() {',
+  \   '    ^',
+  \   '  symbol:   class BadName',
+  \   '  location: class Bar',
+  \   '/tmp/vLPr4Q5/33/foo.java:34: error: cannot find symbol',
+  \   '    BadName2 foo() {',
+  \   '    ^',
+  \   '  symbol:   class BadName2',
+  \   '  location: class Bar',
+  \   '/tmp/vLPr4Q5/33/foo.java:37: warning: some warning',
+  \   '/tmp/vLPr4Q5/33/foo.java:42: error: cannot find symbol',
+  \   '      this.bar();',
+  \   '          ^',
+  \   '  symbol: method bar()',
+  \   '/tmp/vLPr4Q5/33/foo.java:58: error: incompatible types: Bar cannot be converted to Foo',
+  \   '      this.setFoo(bar);',
+  \   '                  ^',
+  \   '6 errors',
+  \ ])
+
+Execute(The javac handler should resolve files from different directories):
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': ale#path#Simplify(g:dir . '/Foo.java'),
+  \     'lnum': 1,
+  \     'text': 'error: some error',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'filename': ale#path#Simplify(g:dir . '/Bar.java'),
+  \     'lnum': 1,
+  \     'text': 'error: some error',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#java#javac#Handle(bufnr(''), [
+  \   './Foo.java:1: error: some error',
+  \   './Bar.java:1: error: some error',
+  \ ])

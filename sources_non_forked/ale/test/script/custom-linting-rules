@@ -1,0 +1,166 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+
+# This Bash script implements custom sanity checks for scripts beyond what
+# Vint covers, which are easy to check with regex.
+
+# A flag for automatically fixing some errors.
+FIX_ERRORS=0
+RETURN_CODE=0
+
+function print_help() {
+    echo "Usage: test/script/custom-linting-rules [--fix] [DIRECTORY]" 1>&2
+    echo 1>&2
+    echo "  -h, --help    Print this help text" 1>&2
+    echo "      --fix     Automatically fix some errors" 1>&2
+    exit 1
+}
+
+while [ $# -ne 0 ]; do
+    case $1 in
+    -h) ;& --help)
+        print_help
+    ;;
+    --fix)
+        FIX_ERRORS=1
+        shift
+    ;;
+    --)
+        shift
+        break
+    ;;
+    -?*)
+        echo "Invalid argument: $1" 1>&2
+        exit 1
+    ;;
+    *)
+        break
+    ;;
+    esac
+done
+
+if [ $# -eq 0 ] || [ -z "$1" ]; then
+    print_help
+fi
+
+shopt -s globstar
+
+directories=("$@")
+
+check_errors() {
+    regex="$1"
+    message="$2"
+    include_arg=''
+    exclude_arg=''
+
+    if [ $# -gt 2 ]; then
+        include_arg="--include $3"
+    fi
+
+    if [ $# -gt 3 ]; then
+        shift
+        shift
+        shift
+
+        while (( "$#" )); do
+          exclude_arg="$exclude_arg --exclude $1"
+          shift
+        done
+    fi
+
+    for directory in "${directories[@]}"; do
+        # shellcheck disable=SC2086
+        while read -r; do
+            line=$(cut -d ":" -f2 <<< "$REPLY")
+
+            if ((line > 1)); then
+                line=$((line - 1))
+                file=$(cut -d ":" -f1 <<< "$REPLY")
+
+                if sed -n "${line},${line}p" $file | grep -q '^ *" *no-custom-checks$'; then
+                    continue
+                fi
+            fi
+
+            RETURN_CODE=1
+            echo "$REPLY $message"
+        done < <(grep -H -n "$regex" $include_arg $exclude_arg "$directory"/**/*.vim \
+            | grep -v 'no-custom-checks' \
+            | grep -o '^[^:]\+:[0-9]\+' \
+            | sed 's:^\./::')
+    done
+}
+
+if (( FIX_ERRORS )); then
+    for directory in "${directories[@]}"; do
+        sed -i "s/^\(function.*)\) *$/\1 abort/" "$directory"/**/*.vim
+        sed -i "s/shellescape(/ale#Escape(/" "$directory"/**/*.vim
+        sed -i 's/==#/is#/g' "$directory"/**/*.vim
+        sed -i 's/==?/is?/g' "$directory"/**/*.vim
+        sed -i 's/!=#/isnot#/g' "$directory"/**/*.vim
+        sed -i 's/!=?/isnot?/g' "$directory"/**/*.vim
+        # Improving type checks.
+        sed -i $'s/\\(==.\\?\\|is\\) type([\'"]\+)/is v:t_string/g' "$directory"/**/*.vim
+        sed -i 's/\(==.\?\|is\) type([0-9]\+)/is v:t_number/g' "$directory"/**/*.vim
+        sed -i 's/\(==.\?\|is\) type(\[\])/is v:t_list/g' "$directory"/**/*.vim
+        sed -i 's/\(==.\?\|is\) type({})/is v:t_dict/g' "$directory"/**/*.vim
+        sed -i 's/\(==.\?\|is\) type(function([^)]\+))/is v:t_func/g' "$directory"/**/*.vim
+        sed -i $'s/\\(!=.\\?\\|isnot\\) type([\'"]\+)/isnot v:t_string/g' "$directory"/**/*.vim
+        sed -i 's/\(!=.\?\|isnot\) type([0-9]\+)/isnot v:t_number/g' "$directory"/**/*.vim
+        sed -i 's/\(!=.\?\|isnot\) type(\[\])/isnot v:t_list/g' "$directory"/**/*.vim
+        sed -i 's/\(!=.\?\|isnot\) type({})/isnot v:t_dict/g' "$directory"/**/*.vim
+        sed -i 's/\(!=.\?\|isnot\) type(function([^)]\+))/isnot v:t_func/g' "$directory"/**/*.vim
+    done
+fi
+
+# The arguments are: regex, explanation, [filename_filter], [list, of, exclusions]
+check_errors \
+    '^function.*) *$' \
+    'Function without abort keyword (See :help except-compat)'
+check_errors '^function[^!]' 'function without !'
+check_errors ' \+$' 'Trailing whitespace'
+check_errors '^ * end\?i\? *$' 'Write endif, not en, end, or endi'
+check_errors '^  [^ ]' 'Use four spaces, not two spaces'
+check_errors $'\t' 'Use four spaces, not tabs'
+# This check should prevent people from using a particular inconsistent name.
+check_errors 'let g:ale_\w\+_\w\+_args =' 'Name your option g:ale_<filetype>_<lintername>_options instead'
+check_errors 'shellescape(' 'Use ale#Escape instead of shellescape'
+check_errors 'simplify(' 'Use ale#path#Simplify instead of simplify'
+check_errors 'tempname(' 'Use ale#util#Tempname instead of tempname'
+check_errors 'getcurpos(' "Use getpos('.') instead of getcurpos() if you don't need curswant, to avoid a bug that changes curswant"
+check_errors "expand(['\"]%" "Use expand('#' . a:buffer . '...') instead. You might get a filename for the wrong buffer."
+check_errors 'getcwd()' "Do not use getcwd(), as it could run from the wrong buffer. Use expand('#' . a:buffer . ':p:h') instead."
+check_errors '==#' "Use 'is#' instead of '==#'. 0 ==# 'foobar' is true"
+check_errors '==?' "Use 'is?' instead of '==?'. 0 ==? 'foobar' is true"
+check_errors '!=#' "Use 'isnot#' instead of '!=#'. 0 !=# 'foobar' is false"
+check_errors '!=?' "Use 'isnot?' instead of '!=?'. 0 !=? 'foobar' is false"
+check_errors '^ *:\?echo' "Stray echo line. Ignore with \" no-custom-checks if needed"
+check_errors '^ *:\?redir' 'User execute() instead of redir'
+# Exclusions for grandfathered-in exceptions
+exclusions="clojure/clj_kondo.vim elixir/elixir_ls.vim go/golangci_lint.vim swift/swiftformat.vim"
+# shellcheck disable=SC2086
+check_errors $'name.:.*\'[a-z_]*[^a-z_0-9][a-z_0-9]*\',$' 'Use snake_case names for linters' '*/ale_linters/*' $exclusions
+# Checks for improving type checks.
+check_errors $'\\(==.\\?\\|is\\) type([\'"]\+)' "Use 'is v:t_string' instead"
+check_errors '\(==.\?\|is\) type([0-9]\+)' "Use 'is v:t_number' instead"
+check_errors '\(==.\?\|is\) type(\[\])' "Use 'is v:t_list' instead"
+check_errors '\(==.\?\|is\) type({})' "Use 'is v:t_dict' instead"
+check_errors '\(==.\?\|is\) type(function([^)]\+))' "Use 'is v:t_func' instead"
+check_errors $'\\(!=.\\?\\|isnot\\) type([\'"]\+)' "Use 'isnot v:t_string' instead"
+check_errors '\(!=.\?\|isnot\) type([0-9]\+)' "Use 'isnot v:t_number' instead"
+check_errors '\(!=.\?\|isnot\) type(\[\])' "Use 'isnot v:t_list' instead"
+check_errors '\(!=.\?\|isnot\) type({})' "Use 'isnot v:t_dict' instead"
+check_errors '\(!=.\?\|isnot\) type(function([^)]\+))' "Use 'isnot v:t_func' instead"
+
+# Run a Python script to find lines that require padding around them.  For
+# users without Python installed, we'll skip these checks. GitHub Actions will
+# run the script.
+if command -v python > /dev/null; then
+    if ! test/script/block-padding-checker "$directory"/**/*.vim; then
+        RETURN_CODE=1
+    fi
+fi
+
+exit $RETURN_CODE

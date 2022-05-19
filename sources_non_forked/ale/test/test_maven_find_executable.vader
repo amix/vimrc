@@ -1,0 +1,46 @@
+Before:
+  Save $PATH
+  Save $PATHEXT
+
+  " Count the maven executable without .exe as executable on Windows
+  let $PATHEXT = '.'
+
+  call ale#test#SetDirectory('/testplugin/test')
+  runtime ale_linters/java/javac.vim
+  let g:expected_wrapper = ''
+  if has('unix')
+    let g:expected_wrapper = 'mvnw'
+  else
+    let g:expected_wrapper = 'mvnw.cmd'
+  endif
+
+After:
+  Restore
+
+  unlet! g:expected_wrapper
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(Should return 'mvnw' if found in parent directory):
+  call ale#test#SetFilename('test-files/maven/maven-java-project/module1/src/main/java/dummy1.java')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/maven/maven-java-project/module1/' . g:expected_wrapper),
+  \ ale#maven#FindExecutable(bufnr(''))
+
+Execute(Should return 'mvn' if 'mvnw' not found in parent directory):
+  call ale#test#SetFilename('test-files/maven/maven-java-project/module2/src/main/java/dummy2.java')
+  let $PATH .= (has('win32') ? ';' : ':')
+  \ . ale#path#Simplify(g:dir . '/test-files/maven')
+
+  AssertEqual
+  \ 'mvn',
+  \ ale#maven#FindExecutable(bufnr(''))
+
+Execute(Should return empty string if 'mvnw' not in parent directory and mvn not in path):
+  call ale#test#SetFilename('mvn-test-files/java-maven-project/module2/src/main/java/dummy2.java')
+
+  AssertEqual
+  \ '',
+  \ ale#gradle#FindExecutable(bufnr(''))

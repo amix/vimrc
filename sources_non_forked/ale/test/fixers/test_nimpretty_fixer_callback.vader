@@ -1,0 +1,23 @@
+Before:
+  call ale#assert#SetUpFixerTest('nim', 'nimpretty')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The nimpretty callback should return the correct default values):
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('nimpretty') . ' %t --maxLineLen:80'
+  \ },
+  \ ale#fixers#nimpretty#Fix(bufnr(''))
+
+Execute(The nimpretty callback should include any additional options):
+  let g:ale_nim_nimpretty_options = '--some-option'
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('nimpretty') . ' %t --some-option'
+  \ },
+  \ ale#fixers#nimpretty#Fix(bufnr(''))

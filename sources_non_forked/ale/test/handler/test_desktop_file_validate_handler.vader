@@ -1,0 +1,26 @@
+Before:
+  runtime ale_linters/desktop/desktop_file_validate.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The desktop-file-validate handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'type': 'W',
+  \     'text': 'key "TerminalOptions" in group "Desktop Entry" is deprecated',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'action "new-private-window" is defined, but there is no matching "Desktop Action new-private-window" group',
+  \   },
+  \ ],
+  \ ale_linters#desktop#desktop_file_validate#Handle(bufnr(''), [
+  \   'foo.desktop: warning: key "TerminalOptions" in group "Desktop Entry" is deprecated',
+  \   'foo.desktop: error: action "new-private-window" is defined, but there is no matching "Desktop Action new-private-window" group',
+  \ ])

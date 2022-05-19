@@ -1,0 +1,34 @@
+Before:
+  runtime! ale_linters/sql/sqlint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The sqlint handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'col': 1,
+  \     'text': 'syntax error at or near "WIBBLE"',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 47,
+  \     'col': 11,
+  \     'text': 'unterminated quoted string at or near "''',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 50,
+  \     'col': 12,
+  \     'text': 'some warning at end of input',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#sql#sqlint#Handle(347, [
+  \   'This line should be ignored completely',
+  \   'stdin:3:1:ERROR syntax error at or near "WIBBLE"',
+  \   'stdin:47:11:ERROR unterminated quoted string at or near "''',
+  \   'stdin:50:12:WARNING some warning at end of input',
+  \ ])

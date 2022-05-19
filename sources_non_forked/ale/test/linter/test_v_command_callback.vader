@@ -1,0 +1,25 @@
+Before:
+  Save g:ale_v_v_executable
+
+  call ale#assert#SetUpLinterTest('v', 'v')
+
+  GivenCommandOutput ['/foo/bar', '/foo/baz']
+
+After:
+  Restore
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'v', 'v . -o /tmp/vim-ale-v'
+
+Execute(Extra options should be supported):
+  let g:ale_v_v_options = '--foo-bar'
+
+  AssertLinter 'v', 'v --foo-bar . -o /tmp/vim-ale-v'
+
+  let g:ale_v_vbuild_options = ''
+
+Execute(The executable should be configurable):
+  let g:ale_v_v_executable = 'foobar'
+
+  AssertLinter 'foobar', 'foobar . -o /tmp/vim-ale-v'

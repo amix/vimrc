@@ -1,0 +1,18 @@
+Before:
+  call ale#assert#SetUpLinterTest('cucumber', 'cucumber')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Should require the nearest features dir, if one is found):
+  call ale#test#SetFilename('../test-files/cucumber/features/cuke.feature')
+
+  AssertLinter 'cucumber',
+  \ 'cucumber --dry-run --quiet --strict --format=json '
+  \ . '-r ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/cucumber/features/')) . ' %t'
+
+Execute(Should require nothing if no features dir is found):
+  call ale#test#SetFilename('something/without/a/features/dir')
+
+  AssertLinter 'cucumber',
+  \ 'cucumber --dry-run --quiet --strict --format=json  %t'

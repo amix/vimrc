@@ -1,0 +1,63 @@
+Before:
+  call ale#assert#SetUpLinterTest('elm', 'make')
+
+After:
+  unlet! g:executable
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(should get valid executable with default params):
+  call ale#test#SetFilename('../test-files/elm/newapp/src/Main.elm')
+
+  let g:executable = ale#path#Simplify(g:dir . '/../test-files/elm/newapp/node_modules/.bin/elm')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elm/newapp')
+  AssertLinter g:executable,
+  \ ale#Escape(g:executable) . ' make --report=json --output=/dev/null %t'
+
+Execute(should get elm-test executable for test code with elm >= 0.19):
+  call ale#test#SetFilename('../test-files/elm/newapp/tests/TestSuite.elm')
+
+  let g:executable = ale#path#Simplify(g:dir . '/../test-files/elm/newapp/node_modules/.bin/elm-test')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elm/newapp')
+  AssertLinter g:executable,
+  \ ale#Escape(g:executable) . ' make --report=json --output=/dev/null --compiler '
+  \ . ale#path#Simplify(g:dir . '/../test-files/elm/newapp/node_modules/.bin/elm') . ' %t'
+
+Execute(should fallback to elm executable with elm >= 0.19):
+  call ale#test#SetFilename('../test-files/elm/newapp-notests/tests/TestMain.elm')
+
+  let g:executable = ale#path#Simplify(g:dir . '/../test-files/elm/newapp-notests/node_modules/.bin/elm')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elm/newapp-notests')
+  AssertLinter g:executable,
+  \ ale#Escape(g:executable) . ' make --report=json --output=/dev/null %t'
+
+Execute(should get plain elm executable for test code with elm < 0.19):
+  call ale#test#SetFilename('../test-files/elm/oldapp/tests/TestSuite.elm')
+
+  let g:executable = ale#path#Simplify(g:dir . '/../test-files/elm/oldapp/node_modules/.bin/elm')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elm/oldapp')
+  AssertLinter g:executable,
+  \ ale#Escape(g:executable) . ' make --report=json --output=/dev/null %t'
+
+Execute(should get valid executable with 'use_global' params):
+  let g:ale_elm_make_use_global = 1
+
+  call ale#test#SetFilename('../test-files/elm/newapp/src/Main.elm')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elm/newapp')
+  AssertLinter 'elm',
+  \ ale#Escape('elm') . ' make --report=json --output=/dev/null %t'
+
+Execute(should get valid executable with 'use_global' and 'executable' params):
+  let g:ale_elm_make_executable = 'other-elm'
+  let g:ale_elm_make_use_global = 1
+
+  call ale#test#SetFilename('../test-files/elm/newapp/src/Main.elm')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elm/newapp')
+  AssertLinter 'other-elm',
+  \ ale#Escape('other-elm') . ' make --report=json --output=/dev/null %t'

@@ -1,0 +1,66 @@
+Before:
+  Save $TMPDIR
+
+  " Set TMPDIR so the temporary file checks work.
+  let $TMPDIR = '/tmp'
+
+  runtime ale_linters/idris/idris.vim
+
+After:
+  Restore
+
+  call ale#linter#Reset()
+
+Execute(The idris handler should parse messages that reference a single column):
+  if has('win32')
+    call ale#test#SetFilename($TEMP . '\foo.idr')
+  else
+    call ale#test#SetFilename('/tmp/foo.idr')
+  endif
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 4,
+  \     'col': 5,
+  \     'type': 'E',
+  \     'text': 'When checking right hand side of main with expected type IO () When checking an application of function Prelude.Monad.>>=: Type mismatch between IO () (Type of putStrLn _) and _ -> _ (Is putStrLn _ applied to too many arguments?) Specifically: Type mismatch between IO and \uv => _ -> uv'
+  \   }
+  \ ],
+  \ ale_linters#idris#idris#Handle(bufnr(''), [
+  \   expand('%:p') . ':4:5:',
+  \   'When checking right hand side of main with expected type',
+  \   '        IO ()',
+  \   '',
+  \   'When checking an application of function Prelude.Monad.>>=:',
+  \   '        Type mismatch between',
+  \   '                IO () (Type of putStrLn _)',
+  \   '        and',
+  \   '                _ -> _ (Is putStrLn _ applied to too many arguments?)',
+  \   '',
+  \   '        Specifically:',
+  \   '                Type mismatch between',
+  \   '                        IO',
+  \   '                and',
+  \   '                        \uv => _ -> uv',
+  \ ])
+
+Execute(The idris handler should parse messages that reference a column range):
+  call ale#test#SetFilename('/tmp/foo.idr')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 11,
+  \     'col': 11,
+  \     'type': 'E',
+  \     'text': 'When checking right hand side of Main.case block in main at /tmp/foo.idr:10:10 with expected type IO () Last statement in do block must be an expression'
+  \   }
+  \ ],
+  \ ale_linters#idris#idris#Handle(bufnr(''), [
+  \   expand('%:p') . ':11:11-13:',
+  \   'When checking right hand side of Main.case block in main at /tmp/foo.idr:10:10 with expected type',
+  \   '        IO ()',
+  \   '',
+  \   'Last statement in do block must be an expression',
+  \ ])

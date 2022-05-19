@@ -1,0 +1,181 @@
+Execute(HandleCSSLintFormat should handle CSS errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'Expected RBRACE at line 2, col 1.',
+  \     'code': 'errors',
+  \   },
+  \   {
+  \    'lnum': 2,
+  \    'col': 5,
+  \    'type': 'W',
+  \    'text': 'Expected ... but found ''wat''.',
+  \    'code': 'known-properties',
+  \   },
+  \ ],
+  \ ale#handlers#css#HandleCSSLintFormat(42, [
+  \   'something.css: line 2, col 1, Error - Expected RBRACE at line 2, col 1. (errors)',
+  \   'something.css: line 2, col 5, Warning - Expected ... but found ''wat''. (known-properties)',
+  \ ])
+
+Execute(HandleCSSLintFormat should handle CSS errors without groups):
+  AssertEqual
+  \ [
+  \   {
+  \    'lnum': 7,
+  \    'col': 3,
+  \    'type': 'W',
+  \    'text': 'Unknown property ''fill''.',
+  \   },
+  \   {
+  \    'lnum': 8,
+  \    'col': 3,
+  \    'type': 'W',
+  \    'text': 'Unknown property ''fill-opacity''.',
+  \   },
+  \ ],
+  \ ale#handlers#css#HandleCSSLintFormat(42, [
+  \   'something.css: line 7, col 3, Warning - Unknown property ''fill''.',
+  \   'something.css: line 8, col 3, Warning - Unknown property ''fill-opacity''.',
+  \ ])
+
+Execute (HandleGCCFormat should handle the correct lines of output):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 8,
+  \     'col': 5,
+  \     'type': 'W',
+  \     'text': 'conversion lacks type at end of format [-Wformat=]',
+  \   },
+  \   {
+  \     'lnum': 10,
+  \     'col': 27,
+  \     'type': 'E',
+  \     'text': 'invalid operands to binary - (have ''int'' and ''char *'')',
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormat(42, [
+  \   '<stdin>:8:5: warning: conversion lacks type at end of format [-Wformat=]',
+  \   '<stdin>:10:27: error: invalid operands to binary - (have ‘int’ and ‘char *’)',
+  \ ])
+
+Execute (HandleGCCFormat should replace Unicode quotes):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 8,
+  \     'col': 5,
+  \     'type': 'W',
+  \     'text': "'''' \"\"",
+  \   },
+  \ ],
+  \ ale#handlers#gcc#HandleGCCFormat(42, ['<stdin>:8:5: warning: `´‘’ “”'])
+
+Execute (HandleUnixFormatAsError should handle some example lines of output):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 27,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'missing argument for Printf("%s"): format reads arg 2, have only 1 args',
+  \   },
+  \   {
+  \     'lnum': 53,
+  \     'col': 10,
+  \     'type': 'E',
+  \     'text': 'if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary)',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': '".b" is not a valid class name.  Class names must begin with "-", "_" or a letter and can only contain "_", "-", a-z and 0-9.',
+  \   },
+  \ ],
+  \ ale#handlers#unix#HandleAsError(42, [
+  \   'file.go:27: missing argument for Printf("%s"): format reads arg 2, have only 1 args',
+  \   'file.go:53:10: if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary)',
+  \   'test.pug:1:1 ".b" is not a valid class name.  Class names must begin with "-", "_" or a letter and can only contain "_", "-", a-z and 0-9.',
+  \ ])
+
+Execute (HandleUnixFormatAsError should handle lines with no space after the colon):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 27,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'foo',
+  \   },
+  \   {
+  \     'lnum': 53,
+  \     'col': 10,
+  \     'type': 'E',
+  \     'text': 'bar',
+  \   },
+  \ ],
+  \ ale#handlers#unix#HandleAsError(42, [
+  \   'some_file.xyz:27:foo',
+  \   'some_file.xyz:53:10:bar',
+  \ ])
+
+Execute (HandleUnixFormatAsError should handle names with spaces):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 13,
+  \     'col': 90,
+  \     'type': 'E',
+  \     'text': 'leonard.exclamation.30ppm More than 30 ppm of exclamations. Keep them under control.',
+  \   },
+  \ ],
+  \ ale#handlers#unix#HandleAsError(42, [
+  \   '/Users/rrj/Notes/Astro/Taurus December SM.txt:13:90: leonard.exclamation.30ppm More than 30 ppm of exclamations. Keep them under control.',
+  \ ])
+
+Execute (HandleUnixFormatAsWarning should handle some example lines of output):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 27,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'text': 'missing argument for Printf("%s"): format reads arg 2, have only 1 args',
+  \   },
+  \   {
+  \     'lnum': 53,
+  \     'col': 10,
+  \     'type': 'W',
+  \     'text': 'if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary)',
+  \   },
+  \ ],
+  \ ale#handlers#unix#HandleAsWarning(42, [
+  \   'file.go:27: missing argument for Printf("%s"): format reads arg 2, have only 1 args',
+  \   'file.go:53:10: if block ends with a return statement, so drop this else and outdent its block (move short variable declaration to its own line if necessary)',
+  \ ])
+
+Execute (Unix format functions should handle Windows paths):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 27,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'foo',
+  \   },
+  \   {
+  \     'lnum': 53,
+  \     'col': 10,
+  \     'type': 'E',
+  \     'text': 'foo',
+  \   },
+  \ ],
+  \ ale#handlers#unix#HandleAsError(42, [
+  \   'C:\Users\w0rp\AppData\Local\Temp\Xyz123.go:27: foo',
+  \   'C:\Users\w0rp\AppData\Local\Temp\Xyz123.go:53:10: foo',
+  \ ])

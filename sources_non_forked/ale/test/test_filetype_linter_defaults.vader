@@ -1,0 +1,137 @@
+Before:
+  Save g:ale_linters
+  Save g:ale_linters_explicit
+
+  let g:ale_linters_explicit = 0
+  let g:ale_linters = {}
+
+  function! GetLinterNames(filetype) abort
+    return sort(map(ale#linter#Get(a:filetype), 'v:val.name'))
+  endfunction
+
+After:
+  Restore
+
+  call ale#linter#Reset()
+
+Execute(The defaults for the apkbuild filetype should be correct):
+  AssertEqual ['apkbuild_lint', 'secfixes_check'], GetLinterNames('apkbuild')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('apkbuild')
+
+Execute(The defaults for the csh filetype should be correct):
+  AssertEqual ['shell'], GetLinterNames('csh')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('csh')
+
+Execute(The defaults for the elixir filetype should be correct):
+  AssertEqual ['credo', 'dialyxir', 'dogma'], GetLinterNames('elixir')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('elixir')
+
+Execute(The defaults for the go filetype should be correct):
+  AssertEqual ['gofmt', 'golint', 'gopls', 'govet'], GetLinterNames('go')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('go')
+
+Execute(The defaults for the hack filetype should be correct):
+  AssertEqual ['hack'], GetLinterNames('hack')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('hack')
+
+Execute(The defaults for the help filetype should be correct):
+  AssertEqual [], GetLinterNames('help')
+
+Execute(The defaults for the inko filetype should be correct):
+  AssertEqual ['inko'], GetLinterNames('inko')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('inko')
+
+Execute(The defaults for the json filetype should be correct):
+  AssertEqual ['jsonlint', 'spectral', 'vscodejson'], GetLinterNames('json')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('json')
+
+Execute(The defaults for the json5 filetype should be correct):
+  AssertEqual [], GetLinterNames('json5')
+
+Execute(The defaults for the jsonc filetype should be correct):
+  AssertEqual [], GetLinterNames('jsonc')
+
+Execute(The defaults for the perl filetype should be correct):
+  AssertEqual ['perlcritic'], GetLinterNames('perl')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('perl')
+
+Execute(The defaults for the perl6 filetype should be correct):
+  AssertEqual [], GetLinterNames('perl6')
+
+Execute(The defaults for the python filetype should be correct):
+  AssertEqual ['flake8', 'mypy', 'pylint', 'pyright'], GetLinterNames('python')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('python')
+
+Execute(The defaults for the rust filetype should be correct):
+  AssertEqual ['cargo', 'rls'], GetLinterNames('rust')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('rust')
+
+Execute(The defaults for the spec filetype should be correct):
+  AssertEqual [], GetLinterNames('spec')
+
+Execute(The defaults for the text filetype should be correct):
+  AssertEqual [], GetLinterNames('text')
+
+Execute(The defaults for the vue filetype should be correct):
+  AssertEqual ['eslint', 'vls'], GetLinterNames('vue')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('vue')
+
+Execute(The defaults for the zsh filetype should be correct):
+  AssertEqual ['shell'], GetLinterNames('zsh')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('zsh')
+
+Execute(The defaults for the verilog filetype should be correct):
+  " This filetype isn't configured with default, so we can test loading all
+  " available linters with this.
+  AssertEqual ['hdl-checker', 'iverilog', 'verilator', 'vlog', 'xvlog', 'yosys'], GetLinterNames('verilog')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('verilog')
+
+Execute(The defaults for the vader filetype should be correct):
+  AssertEqual ['vimls'], GetLinterNames('vader')
+
+  let g:ale_linters_explicit = 1
+
+  AssertEqual [], GetLinterNames('vader')
+
+Execute(Default aliases for React should be defined):
+  AssertEqual ['javascript', 'jsx'], ale#linter#ResolveFiletype('javascriptreact')
+  AssertEqual ['typescript', 'tsx'], ale#linter#ResolveFiletype('typescriptreact')

@@ -9,9 +9,21 @@ function! ale_linters#rust#analyzer#GetCommand(buffer) abort
 endfunction
 
 function! ale_linters#rust#analyzer#GetProjectRoot(buffer) abort
+    " Try to find nearest Cargo.toml for cargo projects
     let l:cargo_file = ale#path#FindNearestFile(a:buffer, 'Cargo.toml')
 
-    return !empty(l:cargo_file) ? fnamemodify(l:cargo_file, ':h') : ''
+    if !empty(l:cargo_file)
+        return fnamemodify(l:cargo_file, ':h')
+    endif
+
+    " Try to find nearest rust-project.json for non-cargo projects
+    let l:rust_project = ale#path#FindNearestFile(a:buffer, 'rust-project.json')
+
+    if !empty(l:rust_project)
+        return fnamemodify(l:rust_project, ':h')
+    endif
+
+    return ''
 endfunction
 
 call ale#linter#Define('rust', {

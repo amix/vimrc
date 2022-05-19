@@ -1,0 +1,43 @@
+Before:
+  call ale#assert#SetUpLinterTest('haml', 'hamllint')
+
+  let g:default_command = 'haml-lint %t'
+
+After:
+  unlet! b:conf
+  unlet! b:conf_hamllint
+  unlet! b:conf_rubocop
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'haml-lint', 'haml-lint %t'
+
+Execute(The command should have the .rubocop.yml prepended as an env var if one exists):
+  call ale#test#SetFilename('../test-files/hamllint/rubocop-yml/subdir/file.haml')
+  let b:conf = ale#path#Simplify(g:dir . '/../test-files/hamllint/rubocop-yml/.rubocop.yml')
+
+  AssertLinter 'haml-lint',
+  \ ale#Env('HAML_LINT_RUBOCOP_CONF', b:conf) .  'haml-lint %t'
+
+Execute(The command should have the nearest .haml-lint.yml set as --config if it exists):
+  call ale#test#SetFilename('../test-files/hamllint/haml-lint-yml/subdir/file.haml')
+  let b:conf = ale#path#Simplify(g:dir . '/../test-files/hamllint/haml-lint-yml/.haml-lint.yml')
+
+  AssertLinter 'haml-lint',
+  \ 'haml-lint --config ' . ale#Escape(b:conf) . ' %t',
+
+Execute(The command should include a .rubocop.yml and a .haml-lint if both are found):
+  call ale#test#SetFilename('../test-files/hamllint/haml-lint-and-rubocop/subdir/file.haml')
+  let b:conf_hamllint = ale#path#Simplify(g:dir . '/../test-files/hamllint/haml-lint-and-rubocop/.haml-lint.yml')
+  let b:conf_rubocop = ale#path#Simplify(g:dir . '/../test-files/hamllint/haml-lint-and-rubocop/.rubocop.yml')
+
+  AssertLinter 'haml-lint',
+  \ ale#Env('HAML_LINT_RUBOCOP_CONF', b:conf_rubocop)
+  \   .  'haml-lint --config ' . ale#Escape(b:conf_hamllint) .  ' %t'
+
+Execute(The executable can be overridden):
+  let b:ale_haml_hamllint_executable = 'bin/haml-lint'
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLinter 'bin/haml-lint', 'bin/haml-lint %t'

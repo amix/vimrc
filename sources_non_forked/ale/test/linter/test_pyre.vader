@@ -1,0 +1,67 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'pyre')
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  unlet! b:bin_dir
+  unlet! b:executable
+  call ale#assert#TearDownLinterTest()
+
+Execute(The pyre command callback should return default string):
+  AssertLinter 'pyre',  ale#Escape('pyre') . ' persistent'
+
+Execute(The pyre executable should be configurable):
+  let g:ale_python_pyre_executable = '~/.local/bin/pyre'
+
+  AssertLinter '~/.local/bin/pyre',
+  \ ale#Escape('~/.local/bin/pyre') . ' persistent'
+
+Execute(The pyre executable should be run from the virtualenv path):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/pyre'
+  \)
+
+  AssertLinter b:executable, ale#Escape(b:executable) . ' persistent'
+
+Execute(You should be able to override the pyre virtualenv lookup):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let g:ale_python_pyre_use_global = 1
+
+  AssertLinter 'pyre', ale#Escape('pyre') . ' persistent'
+
+Execute(Setting executable to 'pipenv' appends 'run pyre'):
+  let g:ale_python_pyre_executable = 'path/to/pipenv'
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLinter 'path/to/pipenv',
+  \ ale#Escape('path/to/pipenv') . ' run pyre persistent'
+
+Execute(Pipenv is detected when python_pyre_auto_pipenv is set):
+  let g:ale_python_pyre_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinter 'pipenv',
+  \ ale#Escape('pipenv') . ' run pyre persistent'
+
+Execute(Setting executable to 'poetry' appends 'run pyre'):
+  let g:ale_python_pyre_executable = 'path/to/poetry'
+
+  AssertLinter 'path/to/poetry',
+  \ ale#Escape('path/to/poetry') . ' run pyre persistent'
+
+Execute(Poetry is detected when python_pyre_auto_poetry is set):
+  let g:ale_python_pyre_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinter 'poetry',
+  \ ale#Escape('poetry') . ' run pyre persistent'
+
+Execute(The FindProjectRoot should detect the project root directory for namespace package via .pyre_configuration.local):
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/pyre_configuration_dir/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/pyre_configuration_dir'),
+  \ ale#python#FindProjectRoot(bufnr(''))

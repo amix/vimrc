@@ -1,0 +1,38 @@
+Before:
+  runtime ale_linters/ruby/ruby.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The ruby handler should parse lines correctly and add the column if it can):
+  " Point Error
+  " Warning
+  " Line Error
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 13,
+  \     'type': 'E',
+  \     'text': 'syntax error, unexpected '';'''
+  \   },
+  \   {
+  \     'lnum': 9,
+  \     'col': 0,
+  \     'type': 'W',
+  \     'text': 'warning: statement not reached'
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'col': 0,
+  \     'type': 'E',
+  \     'text': 'syntax error, unexpected end-of-input, expecting keyword_end'
+  \   }
+  \ ],
+  \ ale#handlers#ruby#HandleSyntaxErrors(255, [
+  \ "test.rb:6: syntax error, unexpected ';'",
+  \ "        t = ;",
+  \ "             ^",
+  \ "test.rb:9: warning: statement not reached",
+  \ "test.rb:12: syntax error, unexpected end-of-input, expecting keyword_end",
+  \ ])

@@ -1,0 +1,34 @@
+Before:
+  Save g:ale_ocaml_ocp_indent_executable
+  Save g:ale_ocaml_ocpindent_options
+
+  " Use an invalid global executable
+  let g:ale_ocaml_ocp_indent_executable = 'xxxinvalid'
+  let g:ale_ocaml_ocp_indent_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The ocp_indent callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/ocaml/ocp_inden_testfile.re')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \ },
+  \ ale#fixers#ocp_indent#Fix(bufnr(''))
+
+Execute(The ocp_indent callback should include custom ocp_indent options):
+  let g:ale_ocaml_ocp_indent_config = "base=4, type=4"
+  call ale#test#SetFilename('../test-files/ocaml/ocp_inden_testfile.re')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --config=' . ale#Escape(g:ale_ocaml_ocp_indent_config)
+  \ },
+  \ ale#fixers#ocp_indent#Fix(bufnr(''))

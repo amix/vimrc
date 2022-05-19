@@ -1,0 +1,62 @@
+Before:
+  Save g:ale_php_cs_fixer_executable
+  Save g:ale_php_cs_fixer_options
+  let g:ale_php_cs_fixer_executable = 'php-cs-fixer'
+  let g:ale_php_cs_fixer_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+
+Execute(project with php-cs-fixer should use local by default):
+  call ale#test#SetFilename('../test-files/php/project-with-php-cs-fixer/test.php')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/php/project-with-php-cs-fixer/vendor/bin/php-cs-fixer'),
+  \ ale#fixers#php_cs_fixer#GetExecutable(bufnr(''))
+
+Execute(use-global should override local detection):
+  let g:ale_php_cs_fixer_use_global = 1
+  call ale#test#SetFilename('../test-files/php/project-with-php-cs-fixer/test.php')
+
+  AssertEqual
+  \ 'php-cs-fixer',
+  \ ale#fixers#php_cs_fixer#GetExecutable(bufnr(''))
+
+Execute(project without php-cs-fixer should use global):
+  call ale#test#SetFilename('../test-files/php/project-without-php-cs-fixer/test.php')
+
+  AssertEqual
+  \ 'php-cs-fixer',
+  \ ale#fixers#php_cs_fixer#GetExecutable(bufnr(''))
+
+
+
+
+Execute(The php-cs-fixer callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/php/project-without-php-cs-fixer/foo/test.php')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('php-cs-fixer')
+  \      . ' ' . g:ale_php_cs_fixer_options
+  \      . ' fix %t'
+  \ },
+  \ ale#fixers#php_cs_fixer#Fix(bufnr(''))
+
+Execute(The php-cs-fixer callback should include custom php-cs-fixer options):
+  let g:ale_php_cs_fixer_options = '--config="$HOME/.php_cs"'
+  call ale#test#SetFilename('../test-files/php/project-without-php-cs-fixer/test.php')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_php_cs_fixer_executable)
+  \     . ' --config="$HOME/.php_cs" fix %t',
+  \   'read_temporary_file': 1,
+  \ },
+  \ ale#fixers#php_cs_fixer#Fix(bufnr(''))

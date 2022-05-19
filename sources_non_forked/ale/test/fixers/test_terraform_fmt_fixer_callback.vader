@@ -1,0 +1,34 @@
+Before:
+  Save g:ale_terraform_fmt_executable
+  Save g:ale_terraform_fmt_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_terraform_fmt_executable = 'xxxinvalid'
+  let g:ale_terraform_fmt_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The terraform fmt callback should return the correct default values):
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid') . ' fmt -',
+  \ },
+  \ ale#fixers#terraform#Fix(bufnr(''))
+
+Execute(The terraform fmt callback should include custom options):
+  let g:ale_terraform_fmt_options = "-list=true"
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' fmt'
+  \     . ' ' . g:ale_terraform_fmt_options
+  \     . ' -',
+  \ },
+  \ ale#fixers#terraform#Fix(bufnr(''))

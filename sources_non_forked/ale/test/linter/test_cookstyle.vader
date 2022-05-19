@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('chef', 'cookstyle')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'cookstyle', ale#Escape('cookstyle') . ' --force-exclusion --format json --stdin  %s'
+
+Execute(The executable path should be configurable):
+  let b:ale_chef_cookstyle_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' --force-exclusion --format json --stdin  %s'
+
+Execute(The linter options should be configurable):
+  let b:ale_chef_cookstyle_options = '--parallel'
+
+  AssertLinter 'cookstyle', ale#Escape('cookstyle') . ' --parallel --force-exclusion --format json --stdin  %s'
+

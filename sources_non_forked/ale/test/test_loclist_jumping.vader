@@ -1,0 +1,121 @@
+Before:
+  let g:ale_buffer_info = {
+  \ bufnr(''): {
+  \   'loclist': [
+  \     {'type': 'E', 'bufnr': bufnr('') - 1, 'lnum': 3, 'col': 2},
+  \     {'type': 'E', 'bufnr': bufnr(''), 'lnum': 1, 'col': 2},
+  \     {'type': 'E', 'bufnr': bufnr(''), 'lnum': 1, 'col': 3},
+  \     {'type': 'W', 'sub_type': 'style', 'bufnr': bufnr(''), 'lnum': 2, 'col': 1},
+  \     {'type': 'E', 'bufnr': bufnr(''), 'lnum': 2, 'col': 2},
+  \     {'type': 'W', 'sub_type': 'style', 'bufnr': bufnr(''), 'lnum': 2, 'col': 3},
+  \     {'type': 'W', 'bufnr': bufnr(''), 'lnum': 2, 'col': 6},
+  \     {'type': 'E', 'bufnr': bufnr(''), 'lnum': 2, 'col': 700},
+  \     {'type': 'E', 'bufnr': bufnr('') + 1, 'lnum': 3, 'col': 2},
+  \   ],
+  \ },
+  \}
+
+  function! TestJump(position, wrap, filter, subtype_filter, pos)
+    call cursor(a:pos)
+
+    if type(a:position) == type(0)
+      call ale#loclist_jumping#JumpToIndex(a:position)
+    else
+      call ale#loclist_jumping#Jump(a:position, a:wrap, a:filter,
+      \                             a:subtype_filter)
+    endif
+
+    return getcurpos()[1:2]
+  endfunction
+
+After:
+  let g:ale_buffer_info = {}
+  delfunction TestJump
+
+Given foobar (Some imaginary filetype):
+  12345678
+  12345678
+
+Execute(loclist jumping should jump correctly when not wrapping):
+  AssertEqual [2, 1], TestJump('before', 0, 'any', 'any', [2, 2])
+  AssertEqual [1, 3], TestJump('before', 0, 'any', 'any', [2, 1])
+  AssertEqual [2, 3], TestJump('after', 0, 'any', 'any', [2, 2])
+  AssertEqual [2, 1], TestJump('after', 0, 'any', 'any', [1, 3])
+  AssertEqual [2, 6], TestJump('after', 0, 'any', 'any', [2, 4])
+  AssertEqual [2, 8], TestJump('after', 0, 'any', 'any', [2, 6])
+
+Execute(loclist jumping should jump correctly when wrapping):
+  AssertEqual [2, 1], TestJump('before', 1, 'any', 'any', [2, 2])
+  AssertEqual [1, 3], TestJump('before', 1, 'any', 'any', [2, 1])
+  AssertEqual [2, 3], TestJump('after', 1, 'any', 'any', [2, 2])
+  AssertEqual [2, 1], TestJump('after', 1, 'any', 'any', [1, 3])
+  AssertEqual [2, 6], TestJump('after', 1, 'any', 'any', [2, 4])
+
+  AssertEqual [1, 2], TestJump('after', 1, 'any', 'any', [2, 8])
+  AssertEqual [2, 8], TestJump('before', 1, 'any', 'any', [1, 2])
+
+Execute(loclist jumping should jump correctly with warning filters):
+  AssertEqual [2, 1], TestJump('after', 0, 'W', 'any', [1, 2])
+  AssertEqual [2, 6], TestJump('after', 0, 'W', 'any', [2, 3])
+  AssertEqual [2, 1], TestJump('after', 1, 'W', 'any', [2, 6])
+
+Execute(loclist jumping should jump correctly with error filters):
+  AssertEqual [1, 2], TestJump('after', 1, 'E', 'any', [2, 700])
+  AssertEqual [2, 2], TestJump('before', 0, 'E', 'any', [2, 700])
+  AssertEqual [2, 2], TestJump('after', 1, 'E', 'any', [1, 3])
+
+Execute(loclist jumping should jump correctly with sub type filters):
+  AssertEqual [2, 3], TestJump('after', 0, 'any', 'style', [2, 1])
+  AssertEqual [2, 2], TestJump('after', 0, 'any', '', [1, 3])
+  AssertEqual [2, 1], TestJump('after', 1, 'any', 'style', [2, 6])
+
+Execute(loclist jumping not jump when the loclist is empty):
+  let g:ale_buffer_info[bufnr('%')].loclist = []
+
+  AssertEqual [1, 6], TestJump('before', 0, 'any', 'any', [1, 6])
+  AssertEqual [1, 6], TestJump('before', 1, 'any', 'any', [1, 6])
+  AssertEqual [1, 6], TestJump('after', 0, 'any', 'any', [1, 6])
+  AssertEqual [1, 6], TestJump('after', 1, 'any', 'any', [1, 6])
+
+Execute(We should be able to jump to the last item):
+  AssertEqual [2, 8], TestJump(-1, 0, 'any', 'any', [1, 6])
+
+Execute(We shouldn't move when jumping to the last item where there are none):
+  let g:ale_buffer_info[bufnr('%')].loclist = []
+
+  AssertEqual [1, 6], TestJump(-1, 0, 'any', 'any', [1, 6])
+
+Execute(We should be able to jump to the first item):
+  AssertEqual [1, 2], TestJump(0, 0, 'any', 'any', [1, 6])
+
+Execute(We shouldn't move when jumping to the first item where there are none):
+  let g:ale_buffer_info[bufnr('%')].loclist = []
+
+  AssertEqual [1, 6], TestJump(0, 0, 'any', 'any', [1, 6])
+
+Execute(We should be able to jump when the error line is blank):
+  " Add a blank line at the end.
+  call setline(1, getline('.', '$') + [''])
+  " Add a problem on the blank line.
+  call add(g:ale_buffer_info[bufnr('%')].loclist, {'type': 'E', 'bufnr': bufnr(''), 'lnum': 3, 'col': 1})
+
+  AssertEqual 0, len(getline(3))
+  AssertEqual [2, 8], TestJump('before', 0, 'any', 'any', [3, 1])
+  AssertEqual [2, 8], TestJump('before', 1, 'any', 'any', [3, 1])
+  AssertEqual [3, 1], TestJump('after', 0, 'any', 'any', [3, 1])
+  AssertEqual [1, 2], TestJump('after', 1, 'any', 'any', [3, 1])
+
+Execute(ALE should jump to column 1 instead of 0):
+  let g:ale_buffer_info = {
+  \ bufnr(''): {
+  \   'loclist': [
+  \     {'type': 'E', 'bufnr': bufnr(''), 'lnum': 1, 'col': 5},
+  \     {'type': 'E', 'bufnr': bufnr(''), 'lnum': 2, 'col': 0},
+  \   ],
+  \ },
+  \}
+
+  AssertEqual [2, 1], TestJump('after', 1, 'any', 'any', [1, 5])
+  AssertEqual [1, 5], TestJump('after', 1, 'any', 'any', [2, 1])
+  AssertEqual [2, 1], TestJump('before', 1, 'any', 'any', [1, 5])
+  AssertEqual [1, 5], TestJump('before', 1, 'any', 'any', [2, 1])

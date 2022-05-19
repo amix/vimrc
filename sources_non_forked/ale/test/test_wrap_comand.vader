@@ -1,0 +1,48 @@
+Before:
+  Save g:ale_command_wrapper
+
+  let g:ale_command_wrapper = ''
+
+  function! TestCommand(expected_part, input) abort
+    let l:expected = has('win32')
+    \ ? 'cmd /s/c "' . a:expected_part . '"'
+    \ : split(&shell) + split(&shellcmdflag) + [a:expected_part]
+
+    AssertEqual l:expected, ale#job#PrepareCommand(bufnr(''), a:input)
+  endfunction
+
+After:
+  Restore
+
+  unlet! b:ale_command_wrapper
+
+  delfunction TestCommand
+
+Execute(The command wrapper should work with a nice command):
+  let b:ale_command_wrapper = 'nice -n 5'
+
+  call TestCommand('nice -n 5 foo bar', 'foo bar')
+
+Execute(The command wrapper should work with a nice command with an explicit marker):
+  let b:ale_command_wrapper = 'nice -n 5 %*'
+
+  call TestCommand('nice -n 5 foo bar', 'foo bar')
+
+Execute(Wrappers with spread arguments in the middle should be suppported):
+  let b:ale_command_wrapper = 'wrap %* --'
+
+  call TestCommand('wrap foo bar --', 'foo bar')
+
+Execute(Wrappers with the command as one argument should be supported):
+  let b:ale_command_wrapper = 'wrap -c %@ -x'
+
+  call TestCommand('wrap -c ' . ale#Escape('foo bar') . ' -x', 'foo bar')
+
+Execute(&& and ; should be moved to the front):
+  let b:ale_command_wrapper = 'wrap -c %@ -x'
+
+  call TestCommand('foo && bar; wrap -c ' . ale#Escape('baz') . ' -x', 'foo && bar;baz')
+
+  let b:ale_command_wrapper = 'nice -n 5'
+
+  call TestCommand('foo && bar; nice -n 5 baz -z', 'foo && bar;baz -z')

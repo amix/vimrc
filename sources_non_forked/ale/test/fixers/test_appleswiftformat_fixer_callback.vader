@@ -1,0 +1,47 @@
+Before:
+  call ale#assert#SetUpFixerTest('swift', 'apple-swift-format')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The swiftformat callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/swift/dummy.swift')
+  let g:ale_swift_appleswiftformat_executable = 'xxxinvalid'
+  let g:ale_swift_appleswiftformat_use_swiftpm = 0
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_swift_appleswiftformat_executable)
+  \     . ' format --in-place %t',
+  \ },
+  \ ale#fixers#appleswiftformat#Fix(bufnr(''))
+
+Execute(The swiftformat callback should return the correct default values and located configuration):
+  call ale#test#SetDirectory('/testplugin/test/test-files/swift/swift-package-project-with-config')
+  call ale#test#SetFilename('src/folder/dummy.swift')
+
+  let g:ale_swift_appleswiftformat_executable = 'xxxinvalid'
+  let g:ale_swift_appleswiftformat_use_swiftpm = 0
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_swift_appleswiftformat_executable)
+  \     . ' format --in-place %t --configuration ' . glob(g:dir . '/.swift-format'),
+  \ },
+  \ ale#fixers#appleswiftformat#Fix(bufnr(''))
+
+  call ale#test#RestoreDirectory()
+
+Execute(The swiftformat callback should use swiftpm is use_swiftpm is set to 1):
+  call ale#test#SetFilename('../test-files/swift/swift-package-project/src/folder/dummy.swift')
+  let g:ale_swift_appleswiftformat_use_swiftpm = 1
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('swift')
+  \     . ' run swift-format format --in-place %t',
+  \ },
+  \ ale#fixers#appleswiftformat#Fix(bufnr(''))

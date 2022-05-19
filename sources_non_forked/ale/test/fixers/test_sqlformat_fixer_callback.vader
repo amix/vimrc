@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_sql_sqlformat_executable
+  Save g:ale_sql_sqlformat_options
+
+After:
+  Restore
+
+Execute(The sqlformat callback should return the correct default values):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('sqlformat') . ' -'
+  \ },
+  \ ale#fixers#sqlformat#Fix(bufnr(''))
+
+Execute(The sqlformat executable and options should be configurable):
+  let g:ale_sql_sqlformat_executable = '/path/to/sqlformat'
+  let g:ale_sql_sqlformat_options = '-a'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/sqlformat')
+  \ . ' -a -'
+  \ },
+  \ ale#fixers#sqlformat#Fix(bufnr(''))

@@ -1,0 +1,98 @@
+Before:
+  Save g:ale_buffer_info
+  Save &filetype
+  Save g:ale_set_lists_synchronously
+
+  let g:ale_set_lists_synchronously = 1
+
+  " Set up items in other buffers which should set in this one.
+  let g:ale_buffer_info = {}
+  call ale#engine#InitBufferInfo(bufnr('') + 1)
+  let g:ale_buffer_info[bufnr('') + 1].loclist =
+  \ ale#engine#FixLocList(bufnr('') + 1, 'linter_one', 0, [
+  \   {'lnum': 1, 'filename': expand('%:p'), 'text': 'foo'},
+  \   {'lnum': 2, 'filename': expand('%:p'), 'text': 'bar'},
+  \   {'lnum': 2, 'text': 'ignore this one'},
+  \ ])
+  call ale#engine#InitBufferInfo(bufnr('') + 2)
+  let g:ale_buffer_info[bufnr('') + 2].loclist =
+  \ ale#engine#FixLocList(bufnr('') + 2, 'linter_one', 0, [
+  \   {'lnum': 1, 'filename': expand('%:p'), 'text': 'foo'},
+  \   {'lnum': 3, 'filename': expand('%:p'), 'text': 'baz'},
+  \   {'lnum': 5, 'text': 'ignore this one'},
+  \ ])
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'linter_one',
+  \ 'callback': 'WhoCares',
+  \ 'executable': 'echo',
+  \ 'command': 'sleep 1000',
+  \ 'lint_file': 1,
+  \})
+
+After:
+  call ale#engine#Cleanup(bufnr(''))
+  Restore
+  call ale#linter#Reset()
+
+  " Items and markers, etc.
+  call setloclist(0, [])
+  call clearmatches()
+  call ale#sign#Clear()
+
+Given foobar(A file with some lines):
+  foo
+  bar
+  baz
+
+Execute(Problems found from previously opened buffers should be set when linting for the first time):
+  call ale#engine#RunLinters(bufnr(''), ale#linter#Get(&filetype), 0)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 0,
+  \     'filename': expand('%:p'),
+  \     'linter_name': 'linter_one',
+  \     'nr': -1,
+  \     'type': 'E',
+  \     'vcol': 0,
+  \     'text': 'foo',
+  \     'sign_id': 1000001,
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'bufnr': bufnr(''),
+  \     'col': 0,
+  \     'filename': expand('%:p'),
+  \     'linter_name': 'linter_one',
+  \     'nr': -1,
+  \     'type': 'E',
+  \     'vcol': 0,
+  \     'text': 'bar',
+  \     'sign_id': 1000002,
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'bufnr': bufnr(''),
+  \     'col': 0,
+  \     'filename': expand('%:p'),
+  \     'linter_name': 'linter_one',
+  \     'nr': -1,
+  \     'type': 'E',
+  \     'vcol': 0,
+  \     'text': 'baz',
+  \     'sign_id': 1000003,
+  \   },
+  \ ],
+  \ g:ale_buffer_info[bufnr('')].loclist
+
+  AssertEqual
+  \ [
+  \   {'lnum': 1, 'bufnr': bufnr(''), 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'pattern': '', 'text': 'foo'},
+  \   {'lnum': 2, 'bufnr': bufnr(''), 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'pattern': '', 'text': 'bar'},
+  \   {'lnum': 3, 'bufnr': bufnr(''), 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'pattern': '', 'text': 'baz'},
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()

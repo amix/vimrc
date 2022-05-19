@@ -1,0 +1,54 @@
+Before:
+  runtime ale_linters/inko/inko.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The inko handler should parse errors correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': ale#path#Simplify('/tmp/foo.inko'),
+  \     'lnum': 4,
+  \     'col': 5,
+  \     'text': 'this is an error',
+  \     'type': 'E',
+  \   }
+  \ ],
+  \ ale#handlers#inko#Handle(bufnr(''), [
+  \ '[',
+  \ '  {',
+  \ '    "file": "/tmp/foo.inko",',
+  \ '    "line": 4,',
+  \ '    "column": 5,',
+  \ '    "message": "this is an error",',
+  \ '    "level": "error"',
+  \ '  }',
+  \ ']'
+  \ ])
+
+Execute(The inko handler should parse warnings correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': ale#path#Simplify('/tmp/foo.inko'),
+  \     'lnum': 4,
+  \     'col': 5,
+  \     'text': 'this is a warning',
+  \     'type': 'W',
+  \   }
+  \ ],
+  \ ale#handlers#inko#Handle(bufnr(''), [
+  \ '[',
+  \ '  {',
+  \ '    "file": "/tmp/foo.inko",',
+  \ '    "line": 4,',
+  \ '    "column": 5,',
+  \ '    "message": "this is a warning",',
+  \ '    "level": "warning"',
+  \ '  }',
+  \ ']'
+  \ ])
+
+Execute(The inko handler should handle empty output):
+  AssertEqual [], ale#handlers#inko#Handle(bufnr(''), [])

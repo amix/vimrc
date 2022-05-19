@@ -1,0 +1,689 @@
+Before:
+  Save g:ale_c_parse_makefile
+  Save g:ale_c_always_make
+  Save b:ale_c_always_make
+
+  call ale#test#SetDirectory('/testplugin/test')
+
+  let g:ale_c_parse_makefile = 1
+  let g:ale_c_always_make = 1
+  let b:ale_c_always_make = 1
+
+  function SplitAndParse(path_prefix, command) abort
+    let l:args = ale#c#ShellSplit(a:command)
+
+    return ale#c#ParseCFlags(a:path_prefix, 0, l:args)
+  endfunction
+
+After:
+  delfunction SplitAndParse
+
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The make command should be correct):
+  call ale#test#SetFilename('test-files/c/makefile_project/subdir/file.c')
+
+  AssertEqual
+  \ [
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   'make -n --always-make',
+  \ ],
+  \ ale#c#GetMakeCommand(bufnr(''))
+
+  " You should be able to disable --always-make for a buffer.
+  let b:ale_c_always_make = 0
+
+  AssertEqual
+  \ [
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   'make -n',
+  \ ],
+  \ ale#c#GetMakeCommand(bufnr(''))
+
+Execute(Should recognize GNUmakefile as a makefile):
+  call ale#test#SetFilename('test-files/c/gnumakefile_project/file.c')
+
+  AssertEqual
+  \ [
+  \   ale#path#Simplify(g:dir. '/test-files/c/gnumakefile_project'),
+  \   'make -n --always-make',
+  \ ],
+  \ ale#c#GetMakeCommand(bufnr(''))
+
+Execute(The CFlags parser should be able to parse include directives):
+  call ale#test#SetFilename('test-files/c/makefile_project/subdir/file.c')
+
+  AssertEqual
+  \ '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir')),
+  \ ale#c#ParseCFlagsFromMakeOutput(bufnr(''), ['gcc -Isubdir -c file.c'])
+
+  AssertEqual
+  \ '-isystem ' . ale#Escape('/usr/include/dir'),
+  \ ale#c#ParseCFlagsFromMakeOutput(bufnr(''), ['gcc -isystem /usr/include/dir -c file.c'])
+
+Execute(ParseCFlags should ignore -c and -o):
+  call ale#test#SetFilename('test-files/c/makefile_project/subdir/file.c')
+
+  AssertEqual
+  \ '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir')),
+  \ ale#c#ParseCFlagsFromMakeOutput(bufnr(''), ['gcc -Isubdir -c file.c -o a.out'])
+
+Execute(The CFlags parser should be able to parse macro directives):
+  call ale#test#SetFilename('test-files/c/makefile_project/subdir/file.c')
+
+  AssertEqual
+  \ '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir'))
+  \   . ' -DTEST=1',
+  \ ale#c#ParseCFlagsFromMakeOutput(bufnr(''), ['gcc -Isubdir -DTEST=1 -c file.c'])
+
+Execute(The CFlags parser should be able to parse macro directives with spaces):
+  call ale#test#SetFilename('test-files/c/makefile_project/subdir/file.c')
+
+  AssertEqual
+  \ '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir'))
+  \   . ' -DTEST=$(( 2 * 4 ))',
+  \ ale#c#ParseCFlagsFromMakeOutput(bufnr(''), ['gcc -Isubdir -DTEST=$(( 2 * 4 )) -c file.c'])
+
+Execute(The CFlags parser should be able to parse shell directives with spaces):
+  call ale#test#SetFilename('test-files/c/makefile_project/subdir/file.c')
+
+  AssertEqual
+  \ '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir'))
+  \   .  ' -DTEST=`date +%s`',
+  \ ale#c#ParseCFlagsFromMakeOutput(bufnr(''), ['gcc -Isubdir -DTEST=`date +%s` -c file.c'])
+
+Execute(ParseCFlags should be able to parse flags with relative paths):
+  AssertEqual
+  \ '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/kernel/include'))
+  \   . ' -DTEST=`date +%s`',
+  \ SplitAndParse(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   'gcc -Isubdir  '
+  \     .  '-I'. ale#path#Simplify('kernel/include')
+  \     .  ' -DTEST=`date +%s` -c file.c'
+  \ )
+
+Execute(We should handle paths with spaces in double quotes):
+  AssertEqual
+  \ '-Dgoal=9'
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/dir with spaces'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/kernel/include'))
+  \   . ' -DTEST=`date +%s`',
+  \ SplitAndParse(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   'gcc -Dgoal=9 -Tlinkerfile.ld blabla -Isubdir '
+  \     . '-I"dir with spaces"' . ' -I'. ale#path#Simplify('kernel/include')
+  \     . ' -DTEST=`date +%s` -c file.c'
+  \ )
+
+Execute(ParseCFlags should handle paths with spaces in single quotes):
+  AssertEqual
+  \ '-Dgoal=9'
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/dir with spaces'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/kernel/include'))
+  \   . ' -DTEST=`date +%s`',
+  \ SplitAndParse(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   'gcc -Dgoal=9 -Tlinkerfile.ld blabla -Isubdir '
+  \     . '-I''dir with spaces''' . ' -I'. ale#path#Simplify('kernel/include')
+  \     . ' -DTEST=`date +%s` -c file.c'
+  \ )
+
+Execute(ParseCFlags should handle paths with minuses):
+  AssertEqual
+  \ '-Dgoal=9'
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/dir with spaces'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/dir-with-dash'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/kernel/include'))
+  \   . ' -DTEST=`date +%s`',
+  \ SplitAndParse(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   'gcc -Dgoal=9 -Tlinkerfile.ld blabla -Isubdir '
+  \     . '-I''dir with spaces''' . ' -Idir-with-dash'
+  \     . ' -I'. ale#path#Simplify('kernel/include')
+  \     . ' -DTEST=`date +%s` -c file.c'
+  \ )
+
+Execute(We should handle -D with minuses):
+  AssertEqual
+  \ '-Dgoal=9'
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir'))
+  \   . ' -Dmacro-with-dash'
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/dir with spaces'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/dir-with-dash'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/kernel/include'))
+  \   . ' -DTEST=`date +%s`',
+  \ SplitAndParse(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   'gcc -Dgoal=9 -Tlinkerfile.ld blabla -Isubdir '
+  \     . '-Dmacro-with-dash '
+  \     . '-I''dir with spaces''' . ' -Idir-with-dash'
+  \     . ' -I'. ale#path#Simplify('kernel/include')
+  \     . ' -DTEST=`date +%s` -c file.c'
+  \ )
+
+Execute(We should handle flags at the end of the line):
+  AssertEqual
+  \ '-Dgoal=9'
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/subdir'))
+  \   . ' -Dmacro-with-dash'
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/dir with spaces'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/dir-with-dash'))
+  \   . ' ' . '-I' . ' ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/kernel/include')),
+  \ SplitAndParse(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   'gcc -Dgoal=9 -Tlinkerfile.ld blabla -Isubdir '
+  \     . '-Dmacro-with-dash '
+  \     . '-I''dir with spaces''' . ' -Idir-with-dash'
+  \     . ' -I'. ale#path#Simplify('kernel/include')
+  \ )
+
+Execute(FlagsFromCompileCommands should tolerate empty values):
+  AssertEqual '', ale#c#FlagsFromCompileCommands(bufnr(''), '')
+
+Execute(ParseCompileCommandsFlags should tolerate empty values):
+  AssertEqual '', ale#c#ParseCompileCommandsFlags(bufnr(''), {}, {})
+
+Execute(ParseCompileCommandsFlags should parse some basic flags):
+  silent noautocmd execute 'file! ' . fnameescape(ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'))
+
+  " We should read the absolute path filename entry, not the other ones.
+  AssertEqual
+  \ '-I ' . ale#Escape(ale#path#Simplify('/usr/include/xmms2')),
+  \ ale#c#ParseCompileCommandsFlags(
+  \   bufnr(''),
+  \   {
+  \     ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'): [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/xmms2')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \       },
+  \     ],
+  \     "xmms2-mpris.c": [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/ignoreme')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \       },
+  \     ],
+  \   },
+  \   {
+  \     ale#path#Simplify('/foo/bar/xmms2-mpris/src'): [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris/src'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/ignoreme')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': 'other.c',
+  \       },
+  \     ],
+  \     "src": [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/ignoreme')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': ale#path#Simplify((has('win32') ? 'C:' : '') . '/foo/bar/xmms2-mpris/src/xmms2-other.c'),
+  \       },
+  \     ],
+  \   },
+  \ )
+
+Execute(ParseCompileCommandsFlags should fall back to files with the same name):
+  silent noautocmd execute 'file! ' . fnameescape(ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'))
+
+  " We should prefer the basename file flags, not the base dirname flags.
+  AssertEqual
+  \ '-I ' . ale#Escape(ale#path#Simplify('/usr/include/xmms2')),
+  \ ale#c#ParseCompileCommandsFlags(
+  \   bufnr(''),
+  \   {
+  \     "xmms2-mpris.c": [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/xmms2')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \       },
+  \     ],
+  \   },
+  \   {
+  \     "src": [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/ignoreme')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': ale#path#Simplify((has('win32') ? 'C:' : '') . '/foo/bar/xmms2-mpris/src/xmms2-other.c'),
+  \       },
+  \     ],
+  \   },
+  \ )
+
+Execute(ParseCompileCommandsFlags should parse flags for exact directory matches):
+  silent noautocmd execute 'file! ' . fnameescape(ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'))
+
+  " We should ues the exact directory flags, not the file basename flags.
+  AssertEqual
+  \ '-I ' . ale#Escape(ale#path#Simplify('/usr/include/xmms2')),
+  \ ale#c#ParseCompileCommandsFlags(
+  \   bufnr(''),
+  \   {
+  \     "xmms2-mpris.c": [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/ignoreme')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \       },
+  \     ],
+  \   },
+  \   {
+  \     ale#path#Simplify('/foo/bar/xmms2-mpris/src'): [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris/src'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/xmms2')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': 'other.c',
+  \       },
+  \     ],
+  \     "src": [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/ignoreme')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': ale#path#Simplify((has('win32') ? 'C:' : '') . '/foo/bar/xmms2-mpris/src/xmms2-other.c'),
+  \       },
+  \     ],
+  \   },
+  \ )
+
+Execute(ParseCompileCommandsFlags should fall back to files in the same directory):
+  silent noautocmd execute 'file! ' . fnameescape(ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'))
+
+  AssertEqual
+  \ '-I ' . ale#Escape(ale#path#Simplify('/usr/include/xmms2')),
+  \ ale#c#ParseCompileCommandsFlags(
+  \   bufnr(''),
+  \   {},
+  \   {
+  \     "src": [
+  \       {
+  \         'directory': ale#path#Simplify('/foo/bar/xmms2-mpris'),
+  \         'command': '/usr/bin/cc  -I' . ale#path#Simplify('/usr/include/xmms2')
+  \           . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \           . '   -c ' . ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'),
+  \         'file': ale#path#Simplify((has('win32') ? 'C:' : '') . '/foo/bar/xmms2-mpris/src/xmms2-other.c'),
+  \       },
+  \     ],
+  \   },
+  \ )
+
+Execute(ParseCompileCommandsFlags should tolerate items without commands):
+  silent noautocmd execute 'file! ' . fnameescape(ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.c'))
+
+  AssertEqual
+  \ '',
+  \ ale#c#ParseCompileCommandsFlags(
+  \   bufnr(''),
+  \   {
+  \     "xmms2-mpris.c": [
+  \       {
+  \         'directory': '/foo/bar/xmms2-mpris',
+  \         'file': '/foo/bar/xmms2-mpris/src/xmms2-mpris.c',
+  \       },
+  \     ],
+  \   },
+  \   {},
+  \ )
+
+Execute(ParseCompileCommandsFlags should take commands from matching .c files for .h files):
+  silent noautocmd execute 'file! ' . fnameescape(ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.h'))
+
+  AssertEqual
+  \ '-I ' . ale#Escape('/usr/include/xmms2'),
+  \ ale#c#ParseCompileCommandsFlags(
+  \   bufnr(''),
+  \   {
+  \     'xmms2-mpris.c': [
+  \       {
+  \         'directory': '/foo/bar/xmms2-mpris',
+  \         'file': (has('win32') ? 'C:' : '') . '/foo/bar/xmms2-mpris/src/xmms2-mpris.c',
+  \         'command': '/usr/bin/cc  -I' . '/usr/include/xmms2'
+  \         . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \         . '   -c ' . '/foo/bar/xmms2-mpris/src/xmms2-mpris.c',
+  \       },
+  \     ],
+  \   },
+  \   {},
+  \ )
+
+Execute(ParseCompileCommandsFlags should take commands from matching .cpp files for .hpp files):
+  silent noautocmd execute 'file! ' . fnameescape(ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.hpp'))
+
+  AssertEqual
+  \ '-I ' . ale#Escape('/usr/include/xmms2'),
+  \ ale#c#ParseCompileCommandsFlags(
+  \   bufnr(''),
+  \   {
+  \     'xmms2-mpris.cpp': [
+  \       {
+  \         'directory': '/foo/bar/xmms2-mpris',
+  \         'file': (has('win32') ? 'C:' : '') . '/foo/bar/xmms2-mpris/src/xmms2-mpris.cpp',
+  \         'command': '/usr/bin/cc  -I' . '/usr/include/xmms2'
+  \         . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \         . '   -c ' . '/foo/bar/xmms2-mpris/src/xmms2-mpris.cpp',
+  \       },
+  \     ],
+  \   },
+  \   {
+  \   },
+  \ )
+
+Execute(ParseCompileCommandsFlags should take commands from matching .cpp files for .h files):
+  silent noautocmd execute 'file! ' . fnameescape(ale#path#Simplify('/foo/bar/xmms2-mpris/src/xmms2-mpris.h'))
+
+  AssertEqual
+  \ '-I ' . ale#Escape('/usr/include/xmms2'),
+  \ ale#c#ParseCompileCommandsFlags(
+  \   bufnr(''),
+  \   {
+  \     'xmms2-mpris.cpp': [
+  \       {
+  \         'directory': '/foo/bar/xmms2-mpris',
+  \         'file': (has('win32') ? 'C:' : '') . '/foo/bar/xmms2-mpris/src/xmms2-mpris.cpp',
+  \         'command': '/usr/bin/cc  -I' . '/usr/include/xmms2'
+  \         . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \         . '   -c ' . '/foo/bar/xmms2-mpris/src/xmms2-mpris.cpp',
+  \       },
+  \     ],
+  \   },
+  \   {
+  \   },
+  \ )
+
+Execute(ParseCompileCommandsFlags should not take commands from .c files for .h files with different names):
+  silent noautocmd execute 'file! ' . fnameescape(ale#path#Simplify('/foo/bar/xmms2-mpris/src/other.h'))
+
+  AssertEqual
+  \ '',
+  \ ale#c#ParseCompileCommandsFlags(
+  \   bufnr(''),
+  \   {
+  \     'xmms2-mpris.c': [
+  \       {
+  \         'directory': '/foo/bar/xmms2-mpris',
+  \         'file': (has('win32') ? 'C:' : '') . '/foo/bar/xmms2-mpris/src/xmms2-mpris.c',
+  \         'command': '/usr/bin/cc  -I' . '/usr/include/xmms2'
+  \         . '    -o CMakeFiles/xmms2-mpris.dir/src/xmms2-mpris.c.o'
+  \         . '   -c ' . '/foo/bar/xmms2-mpris/src/xmms2-mpris.c',
+  \       },
+  \     ],
+  \   },
+  \   {
+  \   },
+  \ )
+
+Execute(ShellSplit should not merge flags):
+  AssertEqual
+  \ [
+  \   'gcc',
+  \   '-Dgoal=9',
+  \   '-Tlinkerfile.ld',
+  \   'blabla',
+  \   '-Isubdir',
+  \   'subdir/somedep1.o',
+  \   'subdir/somedep2.o',
+  \   '-I''dir with spaces''',
+  \   '-Idir-with-dash',
+  \   'subdir/somedep3.o',
+  \   'subdir/somedep4.o',
+  \   '-I' . ale#path#Simplify('kernel/include'),
+  \   'subdir/somedep5.o',
+  \   'subdir/somedep6.o',
+  \ ],
+  \ ale#c#ShellSplit(
+  \   'gcc -Dgoal=9 -Tlinkerfile.ld blabla -Isubdir '
+  \     . 'subdir/somedep1.o ' . 'subdir/somedep2.o '
+  \     . '-I''dir with spaces''' . ' -Idir-with-dash '
+  \     . 'subdir/somedep3.o ' . 'subdir/somedep4.o '
+  \     . ' -I'. ale#path#Simplify('kernel/include') . ' '
+  \     . 'subdir/somedep5.o ' . 'subdir/somedep6.o'
+  \ )
+
+Execute(ShellSplit should handle parenthesis and quotes):
+  AssertEqual
+  \ [
+  \   'gcc',
+  \   '-Dgoal=9',
+  \   '-Tlinkerfile.ld',
+  \   'blabla',
+  \   '-Dtest1="('' '')"',
+  \   'file1.o',
+  \   '-Dtest2=''(` `)''',
+  \   'file2.o',
+  \   '-Dtest3=`(" ")`',
+  \   'file3.o',
+  \ ] ,
+  \ ale#c#ShellSplit(
+  \   'gcc -Dgoal=9 -Tlinkerfile.ld blabla '
+  \     . '-Dtest1="('' '')" file1.o '
+  \     . '-Dtest2=''(` `)'' file2.o '
+  \     . '-Dtest3=`(" ")` file3.o'
+  \ )
+
+Execute(We should include several important flags):
+  AssertEqual
+  \ '-I ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/inc'))
+  \ . ' -I ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/include'))
+  \ . ' -iquote ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/incquote'))
+  \ . ' -isystem ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/incsystem'))
+  \ . ' -idirafter ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/incafter'))
+  \ . ' -iframework ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/incframework'))
+  \ . ' -include file.h'
+  \ . ' -imacros macros.h'
+  \ . ' -Dmacro="value"'
+  \ . ' -DGoal=9'
+  \ . ' -D macro2'
+  \ . ' -D macro3="value"'
+  \ . ' -Bbdir'
+  \ . ' -B bdir2'
+  \ . ' -iprefix prefix -iwithprefix prefix2 -iwithprefixbefore prefix3'
+  \ . ' -isysroot sysroot --sysroot=test --no-sysroot-suffix -imultilib multidir'
+  \ . ' -Wsome-warning -std=c89 -pedantic -pedantic-errors -ansi'
+  \ . ' -foption -O2 -C -CC -trigraphs -nostdinc -nostdinc++'
+  \ . ' -iplugindir=dir -march=native -w',
+  \ ale#c#ParseCFlags(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   0,
+  \   [
+  \     'gcc',
+  \     '-Iinc',
+  \     '-I',
+  \     'include',
+  \     '-iquote',
+  \     'incquote',
+  \     '-isystem',
+  \     'incsystem',
+  \     '-idirafter',
+  \     'incafter',
+  \     '-iframework',
+  \     'incframework',
+  \     '-include',
+  \     'file.h',
+  \     '-imacros',
+  \     'macros.h',
+  \     '-Dmacro="value"',
+  \     '-DGoal=9',
+  \     '-D',
+  \     'macro2',
+  \     '-D',
+  \     'macro3="value"',
+  \     '-Bbdir',
+  \     '-B',
+  \     'bdir2',
+  \     '-iprefix',
+  \     'prefix',
+  \     '-iwithprefix',
+  \     'prefix2',
+  \     '-iwithprefixbefore',
+  \     'prefix3',
+  \     '-isysroot',
+  \     'sysroot',
+  \     '--sysroot=test',
+  \     '--no-sysroot-suffix',
+  \     '-imultilib',
+  \     'multidir',
+  \     '-Wsome-warning',
+  \     '-std=c89',
+  \     '-pedantic',
+  \     '-pedantic-errors',
+  \     '-ansi',
+  \     '-foption',
+  \     '-O2',
+  \     '-C',
+  \     '-CC',
+  \     '-trigraphs',
+  \     '-nostdinc',
+  \     '-nostdinc++',
+  \     '-iplugindir=dir',
+  \     '-march=native',
+  \     '-w',
+  \   ],
+  \ )
+
+Execute(We should quote the flags we need to quote):
+  AssertEqual
+  \ '-I ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/inc'))
+  \ . ' -I ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/include'))
+  \ . ' -iquote ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/incquote'))
+  \ . ' -isystem ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/incsystem'))
+  \ . ' -idirafter ' . ale#Escape(ale#path#Simplify(g:dir. '/test-files/c/makefile_project/incafter'))
+  \ . ' -iframework ' . ale#Escape(ale#path#Simplify(g:dir . '/test-files/c/makefile_project/incframework'))
+  \ . ' -include file.h'
+  \ . ' -imacros macros.h'
+  \ . ' ' . ale#Escape('-Dmacro="value"')
+  \ . ' -DGoal=9'
+  \ . ' -D macro2'
+  \ . ' -D ' . ale#Escape('macro3="value"')
+  \ . ' -Bbdir'
+  \ . ' -B bdir2'
+  \ . ' -iprefix prefix -iwithprefix prefix2 -iwithprefixbefore prefix3'
+  \ . ' -isysroot sysroot --sysroot=test'
+  \ . ' ' . ale#Escape('--sysroot="quoted"')
+  \ . ' ' . ale#Escape('--sysroot=foo bar')
+  \ . ' --no-sysroot-suffix -imultilib multidir'
+  \ . ' -Wsome-warning -std=c89 -pedantic -pedantic-errors -ansi'
+  \ . ' -foption -O2 -C -CC -trigraphs -nostdinc -nostdinc++'
+  \ . ' -iplugindir=dir -march=native -w',
+  \ ale#c#ParseCFlags(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   1,
+  \   [
+  \     'gcc',
+  \     '-Iinc',
+  \     '-I',
+  \     'include',
+  \     '-iquote',
+  \     'incquote',
+  \     '-isystem',
+  \     'incsystem',
+  \     '-idirafter',
+  \     'incafter',
+  \     '-iframework',
+  \     'incframework',
+  \     '-include',
+  \     'file.h',
+  \     '-imacros',
+  \     'macros.h',
+  \     '-Dmacro="value"',
+  \     '-DGoal=9',
+  \     '-D',
+  \     'macro2',
+  \     '-D',
+  \     'macro3="value"',
+  \     '-Bbdir',
+  \     '-B',
+  \     'bdir2',
+  \     '-iprefix',
+  \     'prefix',
+  \     '-iwithprefix',
+  \     'prefix2',
+  \     '-iwithprefixbefore',
+  \     'prefix3',
+  \     '-isysroot',
+  \     'sysroot',
+  \     '--sysroot=test',
+  \     '--sysroot="quoted"',
+  \     '--sysroot=foo bar',
+  \     '--no-sysroot-suffix',
+  \     '-imultilib',
+  \     'multidir',
+  \     '-Wsome-warning',
+  \     '-std=c89',
+  \     '-pedantic',
+  \     '-pedantic-errors',
+  \     '-ansi',
+  \     '-foption',
+  \     '-O2',
+  \     '-C',
+  \     '-CC',
+  \     '-trigraphs',
+  \     '-nostdinc',
+  \     '-nostdinc++',
+  \     '-iplugindir=dir',
+  \     '-march=native',
+  \     '-w',
+  \   ],
+  \ )
+
+Execute(We should exclude other flags that cause problems):
+  AssertEqual
+  \ '',
+  \ ale#c#ParseCFlags(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   0,
+  \   [
+  \     'gcc',
+  \     '-Wl,option',
+  \     '-Wa,option',
+  \     '-Wp,option',
+  \     '-c',
+  \     'filename.c',
+  \     'somelib.a',
+  \     '-fdump-file=name',
+  \     '-fdiagnostics-arg',
+  \     '-fno-show-column',
+  \     '-fstack-usage',
+  \     '-Tlinkerfile.ld',
+  \   ],
+  \ )
+
+Execute(We should expand @file in CFlags):
+  AssertEqual
+  \ '-DARGS1 -DARGS2 -O2',
+  \ ale#c#ParseCFlags(
+  \   ale#path#Simplify(g:dir. '/test-files/c/makefile_project'),
+  \   0,
+  \   [
+  \     'gcc',
+  \     '-g',
+  \     '@./args',
+  \     '-O2',
+  \   ],
+  \ )

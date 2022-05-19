@@ -1,0 +1,13 @@
+Before:
+  call ale#assert#SetUpLinterTest('cmake', 'cmake_lint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'cmake-lint', ale#Escape('cmake-lint') . '  %t'
+
+Execute(The executable should be configurable):
+  let g:ale_cmake_cmake_lint_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . '  %t'

@@ -1,0 +1,51 @@
+Before:
+  call ale#assert#SetUpLinterTest('html', 'htmlhint')
+  call ale#test#SetFilename('../test-files/htmlhint/test.html')
+
+  let g:node_executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/htmlhint/node_modules/.bin/htmlhint'
+  \)
+  let g:config_path = ale#path#Simplify(
+  \ g:dir . '/../test-files/htmlhint/with_config/.htmlhintrc'
+  \)
+
+After:
+  unlet! g:node_executable
+  unlet! g:config_path
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter g:node_executable,
+  \ ale#Escape(g:node_executable) . ' --format=unix %t'
+
+Execute(The global executable should be uesd if the option is set):
+  let g:ale_html_htmlhint_executable = 'foo'
+  let g:ale_html_htmlhint_use_global = 1
+
+  AssertLinter 'foo', ale#Escape('foo') . ' --format=unix %t',
+
+" This is so old configurations which might include this still work.
+Execute(--format=unix should be removed from the options if added):
+  let g:ale_html_htmlhint_options = '--format=unix'
+
+  AssertLinter g:node_executable,
+  \ ale#Escape(g:node_executable) . ' --format=unix %t'
+
+Execute(The configuration file should be automatically detected):
+  call ale#test#SetFilename('../test-files/htmlhint/with_config/test.html')
+
+  AssertLinter g:node_executable,
+  \ ale#Escape(g:node_executable)
+  \   . '  --config ' . ale#Escape(g:config_path)
+  \   . ' --format=unix %t'
+
+" This is so old configurations which might include the config will work.
+Execute(The configuration file should be configurable through the options variable):
+  call ale#test#SetFilename('../test-files/htmlhint/with_config/test.html')
+  let g:ale_html_htmlhint_options = '--config=/foo/bar/.htmlhintrc'
+
+  AssertLinter g:node_executable,
+  \ ale#Escape(g:node_executable)
+  \   . ' --config=/foo/bar/.htmlhintrc'
+  \   . ' --format=unix %t'

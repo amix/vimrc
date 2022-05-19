@@ -1,0 +1,736 @@
+Before:
+  Save g:ale_completion_autoimport
+  Save g:ale_completion_max_suggestions
+
+  let g:ale_completion_max_suggestions = 50
+
+After:
+  Restore
+
+  unlet! b:ale_completion_info
+
+Execute(Should handle Rust completion results correctly):
+  let g:ale_completion_autoimport = 0
+
+  AssertEqual
+  \ [
+  \   {'word': 'new', 'dup': 0, 'menu': 'pub fn new() -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'with_capacity', 'dup': 0, 'menu': 'pub fn with_capacity(capacity: usize) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_utf8', 'dup': 0, 'menu': 'pub fn from_utf8(vec: Vec<u8>) -> Result<String, FromUtf8Error>', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_utf8_lossy', 'dup': 0, 'menu': 'pub fn from_utf8_lossy<''a>(v: &''a [u8]) -> Cow<''a, str>', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_utf16', 'dup': 0, 'menu': 'pub fn from_utf16(v: &[u16]) -> Result<String, FromUtf16Error>', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_utf16_lossy', 'dup': 0, 'menu': 'pub fn from_utf16_lossy(v: &[u16]) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_raw_parts', 'dup': 0, 'menu': 'pub unsafe fn from_raw_parts(buf: *mut u8, length: usize, capacity: usize) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_utf8_unchecked', 'dup': 0, 'menu': 'pub unsafe fn from_utf8_unchecked(bytes: Vec<u8>) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_iter', 'dup': 0, 'menu': 'fn from_iter<I: IntoIterator<Item = char>>(iter: I) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_iter', 'dup': 0, 'menu': 'fn from_iter<I: IntoIterator<Item = &''a char>>(iter: I) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_iter', 'dup': 0, 'menu': 'fn from_iter<I: IntoIterator<Item = &''a str>>(iter: I) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_iter', 'dup': 0, 'menu': 'fn from_iter<I: IntoIterator<Item = String>>(iter: I) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_iter', 'dup': 0, 'menu': 'fn from_iter<I: IntoIterator<Item = Cow<''a, str>>>(iter: I) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Searcher', 'dup': 0, 'menu': 'type Searcher = <&''b str as Pattern<''a>>::Searcher;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'default', 'dup': 0, 'menu': 'fn default() -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Output', 'dup': 0, 'menu': 'type Output = String;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Output', 'dup': 0, 'menu': 'type Output = str;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Output', 'dup': 0, 'menu': 'type Output = str;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Output', 'dup': 0, 'menu': 'type Output = str;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Output', 'dup': 0, 'menu': 'type Output = str;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Output', 'dup': 0, 'menu': 'type Output = str;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Output', 'dup': 0, 'menu': 'type Output = str;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Target', 'dup': 0, 'menu': 'type Target = str;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'Err', 'dup': 0, 'menu': 'type Err = ParseError;', 'info': '', 'kind': 't', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from_str', 'dup': 0, 'menu': 'fn from_str(s: &str) -> Result<String, ParseError>', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from', 'dup': 0, 'menu': 'fn from(s: &''a str) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from', 'dup': 0, 'menu': 'fn from(s: Box<str>) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'from', 'dup': 0, 'menu': 'fn from(s: Cow<''a, str>) -> String', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'to_vec', 'dup': 0, 'menu': 'pub fn to_vec(&self) -> Vec<T> where T: Clone,', 'info': '', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \],
+  \ ale#completion#ParseLSPCompletions({
+  \   "jsonrpc":"2.0",
+  \   "id":65,
+  \   "result":[
+  \     {
+  \       "label":"new",
+  \       "kind":3,
+  \       "detail":"pub fn new() -> String"
+  \     },
+  \     {
+  \       "label":"with_capacity",
+  \       "kind":3,
+  \       "detail":"pub fn with_capacity(capacity: usize) -> String"
+  \     },
+  \     {
+  \       "label":"from_utf8",
+  \       "kind":3,
+  \       "detail":"pub fn from_utf8(vec: Vec<u8>) -> Result<String, FromUtf8Error>"
+  \     },
+  \     {
+  \       "label":"from_utf8_lossy",
+  \       "kind":3,
+  \       "detail":"pub fn from_utf8_lossy<'a>(v: &'a [u8]) -> Cow<'a, str>"
+  \     },
+  \     {
+  \       "label":"from_utf16",
+  \       "kind":3,
+  \       "detail":"pub fn from_utf16(v: &[u16]) -> Result<String, FromUtf16Error>"
+  \     },
+  \     {
+  \       "label":"from_utf16_lossy",
+  \       "kind":3,
+  \       "detail":"pub fn from_utf16_lossy(v: &[u16]) -> String"
+  \     },
+  \     {
+  \       "label":"from_raw_parts",
+  \       "kind":3,
+  \       "detail":"pub unsafe fn from_raw_parts(buf: *mut u8, length: usize, capacity: usize) -> String"
+  \     },
+  \     {
+  \       "label":"from_utf8_unchecked",
+  \       "kind":3,
+  \       "detail":"pub unsafe fn from_utf8_unchecked(bytes: Vec<u8>) -> String"
+  \     },
+  \     {
+  \       "label":"from_iter",
+  \       "kind":3,
+  \       "detail":"fn from_iter<I: IntoIterator<Item = char>>(iter: I) -> String"
+  \     },
+  \     {
+  \       "label":"from_iter",
+  \       "kind":3,
+  \       "detail":"fn from_iter<I: IntoIterator<Item = &'a char>>(iter: I) -> String"
+  \     },
+  \     {
+  \       "label":"from_iter",
+  \       "kind":3,
+  \       "detail":"fn from_iter<I: IntoIterator<Item = &'a str>>(iter: I) -> String"
+  \     },
+  \     {
+  \       "label":"from_iter",
+  \       "kind":3,
+  \       "detail":"fn from_iter<I: IntoIterator<Item = String>>(iter: I) -> String"
+  \     },
+  \     {
+  \       "label":"from_iter",
+  \       "kind":3,
+  \       "detail":"fn from_iter<I: IntoIterator<Item = Cow<'a, str>>>(iter: I) -> String"
+  \     },
+  \     {
+  \       "label":"Searcher",
+  \       "kind":8,
+  \       "detail":"type Searcher = <&'b str as Pattern<'a>>::Searcher;"
+  \     },
+  \     {
+  \       "label":"default",
+  \       "kind":3,
+  \       "detail":"fn default() -> String"
+  \     },
+  \     {
+  \       "label":"Output",
+  \       "kind":8,
+  \       "detail":"type Output = String;"
+  \     },
+  \     {
+  \       "label":"Output",
+  \       "kind":8,
+  \       "detail":"type Output = str;"
+  \     },
+  \     {
+  \       "label":"Output",
+  \       "kind":8,
+  \       "detail":"type Output = str;"
+  \     },
+  \     {
+  \       "label":"Output",
+  \       "kind":8,
+  \       "detail":"type Output = str;"
+  \     },
+  \     {
+  \       "label":"Output",
+  \       "kind":8,
+  \       "detail":"type Output = str;"
+  \     },
+  \     {
+  \       "label":"Output",
+  \       "kind":8,
+  \       "detail":"type Output = str;"
+  \     },
+  \     {
+  \       "label":"Output",
+  \       "kind":8,
+  \       "detail":"type Output = str;"
+  \     },
+  \     {
+  \       "label":"Target",
+  \       "kind":8,
+  \       "detail":"type Target = str;"
+  \     },
+  \     {
+  \       "label":"Err",
+  \       "kind":8,
+  \       "detail":"type Err = ParseError;"
+  \     },
+  \     {
+  \       "label":"from_str",
+  \       "kind":3,
+  \       "detail":"fn from_str(s: &str) -> Result<String, ParseError>"
+  \     },
+  \     {
+  \       "label":"from",
+  \       "kind":3,
+  \       "detail":"fn from(s: &'a str) -> String"
+  \     },
+  \     {
+  \       "label":"from",
+  \       "kind":3,
+  \       "detail":"fn from(s: Box<str>) -> String"
+  \     },
+  \     {
+  \       "label":"from",
+  \       "kind":3,
+  \       "detail":"fn from(s: Cow<'a, str>) -> String"
+  \     },
+  \     {
+  \       "label":"to_vec",
+  \       "kind":3,
+  \       "detail":"pub fn to_vec(&self) -> Vec<T>\nwhere\n        T: Clone,"
+  \     }
+  \   ]
+  \ })
+
+Execute(Should handle Python completion results correctly):
+  let g:ale_completion_autoimport = 0
+  let b:ale_completion_info = {
+  \ 'completion_filter': 'ale#completion#python#CompletionItemFilter',
+  \}
+
+  AssertEqual
+  \ [
+  \   {'word': 'what', 'dup': 0, 'menu': 'example-python-project.bar.Bar', 'info': "what()\n\n", 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \ ],
+  \ ale#completion#ParseLSPCompletions({
+  \    "jsonrpc":"2.0",
+  \    "id":6,
+  \    "result":{
+  \       "isIncomplete":v:false,
+  \       "items":[
+  \          {
+  \             "label":"what()",
+  \             "kind":3,
+  \             "detail":"example-python-project.bar.Bar",
+  \             "documentation":"what()\n\n",
+  \             "sortText":"awhat",
+  \             "insertText":"what"
+  \          },
+  \          {
+  \             "label":"__class__",
+  \             "kind":7,
+  \             "detail":"object",
+  \             "documentation":"type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type",
+  \             "sortText":"z__class__",
+  \             "insertText":"__class__"
+  \          },
+  \          {
+  \             "label":"__delattr__(name)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Implement delattr(self, name).",
+  \             "sortText":"z__delattr__",
+  \             "insertText":"__delattr__"
+  \          },
+  \          {
+  \             "label":"__dir__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"__dir__() -> list\ndefault dir() implementation",
+  \             "sortText":"z__dir__",
+  \             "insertText":"__dir__"
+  \          },
+  \          {
+  \             "label":"__doc__",
+  \             "kind":18,
+  \             "detail":"object",
+  \             "documentation":"str(object='') -> str\nstr(bytes_or_buffer[, encoding[, errors]]) -> str\n\nCreate a new string object from the given object. If encoding or\nerrors is specified, then the object must expose a data buffer\nthat will be decoded using the given encoding and error handler.\nOtherwise, returns the result of object.__str__() (if defined)\nor repr(object).\nencoding defaults to sys.getdefaultencoding().\nerrors defaults to 'strict'.",
+  \             "sortText":"z__doc__",
+  \             "insertText":"__doc__"
+  \          },
+  \          {
+  \             "label":"__eq__(value)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return self==value.",
+  \             "sortText":"z__eq__",
+  \             "insertText":"__eq__"
+  \          },
+  \          {
+  \             "label":"__format__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"default object formatter",
+  \             "sortText":"z__format__",
+  \             "insertText":"__format__"
+  \          },
+  \          {
+  \             "label":"__ge__(value)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return self>=value.",
+  \             "sortText":"z__ge__",
+  \             "insertText":"__ge__"
+  \          },
+  \          {
+  \             "label":"__getattribute__(name)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return getattr(self, name).",
+  \             "sortText":"z__getattribute__",
+  \             "insertText":"__getattribute__"
+  \          },
+  \          {
+  \             "label":"__gt__(value)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return self>value.",
+  \             "sortText":"z__gt__",
+  \             "insertText":"__gt__"
+  \          },
+  \          {
+  \             "label":"__hash__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return hash(self).",
+  \             "sortText":"z__hash__",
+  \             "insertText":"__hash__"
+  \          },
+  \          {
+  \             "label":"__init__(args, kwargs)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Initialize self.\u00a0\u00a0See help(type(self)) for accurate signature.",
+  \             "sortText":"z__init__",
+  \             "insertText":"__init__"
+  \          },
+  \          {
+  \             "label":"__init_subclass__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"This method is called when a class is subclassed.\n\nThe default implementation does nothing. It may be\noverridden to extend subclasses.",
+  \             "sortText":"z__init_subclass__",
+  \             "insertText":"__init_subclass__"
+  \          },
+  \          {
+  \             "label":"__le__(value)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return self<=value.",
+  \             "sortText":"z__le__",
+  \             "insertText":"__le__"
+  \          },
+  \          {
+  \             "label":"__lt__(value)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return self<value.",
+  \             "sortText":"z__lt__",
+  \             "insertText":"__lt__"
+  \          },
+  \          {
+  \             "label":"__ne__(value)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return self!=value.",
+  \             "sortText":"z__ne__",
+  \             "insertText":"__ne__"
+  \          },
+  \          {
+  \             "label":"__new__(kwargs)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Create and return a new object.\u00a0\u00a0See help(type) for accurate signature.",
+  \             "sortText":"z__new__",
+  \             "insertText":"__new__"
+  \          },
+  \          {
+  \             "label":"__reduce__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"helper for pickle",
+  \             "sortText":"z__reduce__",
+  \             "insertText":"__reduce__"
+  \          },
+  \          {
+  \             "label":"__reduce_ex__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"helper for pickle",
+  \             "sortText":"z__reduce_ex__",
+  \             "insertText":"__reduce_ex__"
+  \          },
+  \          {
+  \             "label":"__repr__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return repr(self).",
+  \             "sortText":"z__repr__",
+  \             "insertText":"__repr__"
+  \          },
+  \          {
+  \             "label":"__setattr__(name, value)",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Implement setattr(self, name, value).",
+  \             "sortText":"z__setattr__",
+  \             "insertText":"__setattr__"
+  \          },
+  \          {
+  \             "label":"__sizeof__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"__sizeof__() -> int\nsize of object in memory, in bytes",
+  \             "sortText":"z__sizeof__",
+  \             "insertText":"__sizeof__"
+  \          },
+  \          {
+  \             "label":"__str__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Return str(self).",
+  \             "sortText":"z__str__",
+  \             "insertText":"__str__"
+  \          },
+  \          {
+  \             "label":"__subclasshook__()",
+  \             "kind":3,
+  \             "detail":"object",
+  \             "documentation":"Abstract classes can override this to customize issubclass().\n\nThis is invoked early on by abc.ABCMeta.__subclasscheck__().\nIt should return True, False or NotImplemented.\u00a0\u00a0If it returns\nNotImplemented, the normal algorithm is used.\u00a0\u00a0Otherwise, it\noverrides the normal algorithm (and the outcome is cached).",
+  \             "sortText":"z__subclasshook__",
+  \             "insertText":"__subclasshook__"
+  \          }
+  \       ]
+  \    }
+  \ })
+
+Execute(Should handle extra Python completion results correctly):
+  let g:ale_completion_autoimport = 0
+
+  let b:ale_completion_info = {
+  \ 'completion_filter': 'ale#completion#python#CompletionItemFilter',
+  \ 'prefix': 'mig',
+  \}
+
+  AssertEqual
+  \ [
+  \   {'word': 'migrations', 'dup': 0, 'menu': 'xxx', 'info': 'migrations', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \   {'word': 'MigEngine', 'dup': 0, 'menu': 'xxx', 'info': 'mig engine', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \ ],
+  \ ale#completion#ParseLSPCompletions({
+  \   'jsonrpc': '2.0',
+  \   'id': 6,
+  \   'result': {
+  \     'isIncomplete': v:false,
+  \     'items': [
+  \       {
+  \         'label': 'migrations',
+  \         'kind': 3,
+  \         'detail': 'xxx',
+  \         'documentation': 'migrations',
+  \       },
+  \       {
+  \         'label': 'MigEngine',
+  \         'kind': 3,
+  \         'detail': 'xxx',
+  \         'documentation': 'mig engine',
+  \       },
+  \       {
+  \         'label': 'ignore me',
+  \         'kind': 3,
+  \         'detail': 'nope',
+  \         'documentation': 'nope',
+  \       },
+  \     ]
+  \   }
+  \ })
+
+Execute(Should handle missing keys):
+  let g:ale_completion_autoimport = 0
+
+  AssertEqual
+  \ [
+  \   {'word': 'x', 'dup': 0, 'menu': '', 'info': '', 'kind': 'v', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \ ],
+  \ ale#completion#ParseLSPCompletions({
+  \   'jsonrpc': '2.0',
+  \   'id': 6,
+  \   'result': {
+  \     'isIncomplete': v:false,
+  \     'items': [
+  \       {
+  \         'label': 'x',
+  \       },
+  \     ]
+  \   }
+  \ })
+
+Execute(Should handle documentation in the markdown format):
+  let g:ale_completion_autoimport = 0
+
+  AssertEqual
+  \ [
+  \   {'word': 'migrations', 'dup': 0, 'menu': 'xxx', 'info': 'Markdown documentation', 'kind': 'f', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \ ],
+  \ ale#completion#ParseLSPCompletions({
+  \   'jsonrpc': '2.0',
+  \   'id': 6,
+  \   'result': {
+  \     'isIncomplete': v:false,
+  \     'items': [
+  \       {
+  \         'label': 'migrations',
+  \         'kind': 3,
+  \         'detail': 'xxx',
+  \         'documentation': {
+  \           'kind': 'markdown',
+  \           'value': 'Markdown documentation',
+  \         },
+  \       },
+  \     ],
+  \   },
+  \ })
+
+Execute(Should handle completion messages with textEdit objects):
+  let g:ale_completion_autoimport = 0
+
+  AssertEqual
+  \ [
+  \   {'word': 'next_callback', 'dup': 0, 'menu': 'PlayTimeCallback', 'info': '', 'kind': 'v', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \ ],
+  \ ale#completion#ParseLSPCompletions({
+  \   'id': 226,
+  \   'jsonrpc': '2.0',
+  \   'result': {
+  \     'isIncomplete': v:false,
+  \     'items': [
+  \       {
+  \         'detail': 'PlayTimeCallback',
+  \         'filterText': 'next_callback',
+  \         'insertText': 'ignoreme',
+  \         'insertTextFormat': 1,
+  \         'kind': 6,
+  \         'label': ' next_callback',
+  \         'sortText': '3ee19999next_callback',
+  \         'textEdit': {
+  \           'newText': 'next_callback',
+  \           'range': {
+  \             'end': {'character': 13, 'line': 12},
+  \             'start': {'character': 4, 'line': 12},
+  \           },
+  \         },
+  \       },
+  \     ],
+  \   },
+  \ })
+
+Execute(Should handle completion messages with textEdit objects and no insertTextFormat key):
+  let g:ale_completion_autoimport = 0
+
+  AssertEqual
+  \ [
+  \   {'word': 'next_callback', 'dup': 0, 'menu': 'PlayTimeCallback', 'info': '', 'kind': 'v', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \ ],
+  \ ale#completion#ParseLSPCompletions({
+  \   'id': 226,
+  \   'jsonrpc': '2.0',
+  \   'result': {
+  \     'isIncomplete': v:false,
+  \     'items': [
+  \       {
+  \         'detail': 'PlayTimeCallback',
+  \         'filterText': 'next_callback',
+  \         'insertText': 'ignoreme',
+  \         'kind': 6,
+  \         'label': ' next_callback',
+  \         'sortText': '3ee19999next_callback',
+  \         'textEdit': {
+  \           'newText': 'next_callback',
+  \           'range': {
+  \             'end': {'character': 13, 'line': 12},
+  \             'start': {'character': 4, 'line': 12},
+  \           },
+  \         },
+  \       },
+  \     ],
+  \   },
+  \ })
+
+Execute(Should handle completion messages with the deprecated insertText attribute):
+  let g:ale_completion_autoimport = 0
+
+  AssertEqual
+  \ [
+  \   {'word': 'next_callback', 'dup': 0, 'menu': 'PlayTimeCallback', 'info': '', 'kind': 'v', 'icase': 1, 'user_data': json_encode({'_ale_completion_item': 1})},
+  \ ],
+  \ ale#completion#ParseLSPCompletions({
+  \   'id': 226,
+  \   'jsonrpc': '2.0',
+  \   'result': {
+  \     'isIncomplete': v:false,
+  \     'items': [
+  \       {
+  \         'detail': 'PlayTimeCallback',
+  \         'filterText': 'next_callback',
+  \         'insertText': 'next_callback',
+  \         'insertTextFormat': 1,
+  \         'kind': 6,
+  \         'label': ' next_callback',
+  \         'sortText': '3ee19999next_callback',
+  \       },
+  \     ],
+  \   },
+  \ })
+
+Execute(Should handle completion messages with additionalTextEdits when ale_completion_autoimport is turned on):
+  let g:ale_completion_autoimport = 1
+
+  AssertEqual
+  \ [
+  \   {
+  \     'word': 'next_callback',
+  \     'dup': 1,
+  \     'menu': 'PlayTimeCallback',
+  \     'info': '',
+  \     'kind': 'v',
+  \     'icase': 1,
+  \     'user_data': json_encode({
+  \       '_ale_completion_item': 1,
+  \       'code_actions': [
+  \         {
+  \           'description': 'completion',
+  \           'changes': [
+  \             {
+  \               'fileName': expand('#' . bufnr('') . ':p'),
+  \               'textChanges': [
+  \                 {
+  \                   'start': {
+  \                     'line': 11,
+  \                     'offset': 2,
+  \                   },
+  \                   'end': {
+  \                     'line': 13,
+  \                     'offset': 4,
+  \                   },
+  \                   'newText': 'from "module" import next_callback',
+  \                 },
+  \               ],
+  \             },
+  \           ],
+  \         },
+  \       ],
+  \     }),
+  \   },
+  \ ],
+  \ ale#completion#ParseLSPCompletions({
+  \   'id': 226,
+  \   'jsonrpc': '2.0',
+  \   'result': {
+  \     'isIncomplete': v:false,
+  \     'items': [
+  \       {
+  \         'detail': 'PlayTimeCallback',
+  \         'filterText': 'next_callback',
+  \         'insertText': 'next_callback',
+  \         'insertTextFormat': 1,
+  \         'kind': 6,
+  \         'label': ' next_callback',
+  \         'sortText': '3ee19999next_callback',
+  \         'additionalTextEdits': [
+  \           {
+  \             'range': {
+  \               'start': {
+  \                 'line': 10,
+  \                 'character': 1,
+  \               },
+  \               'end': {
+  \                 'line': 12,
+  \                 'character': 3,
+  \               },
+  \             },
+  \             'newText': 'from "module" import next_callback',
+  \           },
+  \         ],
+  \       },
+  \     ],
+  \   },
+  \ })
+
+Execute(Should not handle completion messages with additionalTextEdits when ale_completion_autoimport is turned off):
+  let g:ale_completion_autoimport = 0
+  let b:ale_completion_info = {'line': 30}
+
+  AssertEqual
+  \ [],
+  \ ale#completion#ParseLSPCompletions({
+  \   'id': 226,
+  \   'jsonrpc': '2.0',
+  \   'result': {
+  \     'isIncomplete': v:false,
+  \     'items': [
+  \       {
+  \         'detail': 'PlayTimeCallback',
+  \         'filterText': 'next_callback',
+  \         'insertText': 'next_callback',
+  \         'insertTextFormat': 1,
+  \         'kind': 6,
+  \         'label': ' next_callback',
+  \         'sortText': '3ee19999next_callback',
+  \         'additionalTextEdits': [
+  \           {
+  \             'range': {
+  \               'start': {
+  \                 'line': 10,
+  \                 'character': 1,
+  \               },
+  \               'end': {
+  \                 'line': 12,
+  \                 'character': 3,
+  \               },
+  \             },
+  \             'newText': 'from "module" import next_callback',
+  \           },
+  \         ],
+  \       },
+  \     ],
+  \   },
+  \ })
+
+Execute(Should still handle completion messages with empty additionalTextEdits with ale_completion_autoimport turned off):
+  let g:ale_completion_autoimport = 0
+
+  AssertEqual
+  \ [
+  \   {
+  \     'word': 'next_callback',
+  \     'dup': 0,
+  \     'menu': 'PlayTimeCallback',
+  \     'info': '',
+  \     'kind': 'v',
+  \     'icase': 1,
+  \     'user_data': json_encode({'_ale_completion_item': 1}),
+  \   }
+  \ ],
+  \ ale#completion#ParseLSPCompletions({
+  \   'id': 226,
+  \   'jsonrpc': '2.0',
+  \   'result': {
+  \     'isIncomplete': v:false,
+  \     'items': [
+  \       {
+  \         'detail': 'PlayTimeCallback',
+  \         'filterText': 'next_callback',
+  \         'insertText': 'next_callback',
+  \         'insertTextFormat': 1,
+  \         'kind': 6,
+  \         'label': ' next_callback',
+  \         'sortText': '3ee19999next_callback',
+  \         'additionalTextEdits': [],
+  \       },
+  \     ],
+  \   },
+  \ })

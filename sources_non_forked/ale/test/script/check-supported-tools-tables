@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+
+# This script compares the table of supported tools in both supported-tools.md
+# (for GitHub) and doc/ale-supported-languages-and-tools.txt (for vim), so we
+# can complain if they don't match up.
+
+doc_file="$(mktemp -t doc.XXXXXXXX)"
+doc_sorted_file="$(mktemp -t doc-sorted.XXXXXXXX)"
+readme_file="$(mktemp -t readme.XXXXXXXX)"
+
+while read -r; do
+    if [[ "$REPLY" =~ ^! ]]; then
+        language="${REPLY/!/}"
+    else
+        echo "$language - $REPLY"
+    fi
+done < <(
+    grep '^\*\|^  *\*' doc/ale-supported-languages-and-tools.txt \
+    | sed -e '1,2d' \
+    | sed 's/^\* */!/' \
+    | sed -E 's/^ *\* *|!!|\^|\(.*\)|`//g' \
+    | sed 's/ *$//'
+) > "$doc_file"
+
+while read -r; do
+    if [[ "$REPLY" =~ ^! ]]; then
+        language="${REPLY/!/}"
+    else
+        echo "$language - $REPLY"
+    fi
+done < <(
+    grep '^\*\|^  *\*' supported-tools.md \
+    | sed 's/^\* */!/' \
+    | sed -E 's/^ *\* *|:floppy_disk:|:warning:|\(.*\)|\[|\].*|-n flag//g' \
+    | sed 's/ *$//'
+) > "$readme_file"
+
+exit_code=0
+
+# Sort the tools ignoring case, and complain when things are out of order.
+LC_ALL=en_US.UTF-8 sort -f -k1,2 "$doc_file" -o "$doc_sorted_file"
+
+diff -U0 "$doc_sorted_file" "$doc_file" || exit_code=$?
+
+if ((exit_code)); then
+    echo
+    echo "The supported tools list isn't sorted properly"
+    echo
+fi
+
+diff -U0 "$readme_file" "$doc_file" || exit_code=$?
+
+rm "$doc_file"
+rm "$doc_sorted_file"
+rm "$readme_file"
+
+exit "$exit_code"

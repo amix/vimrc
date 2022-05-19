@@ -1,0 +1,178 @@
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_disable_lsp
+  Save g:ale_lsp_suggestions
+
+  let g:ale_disable_lsp = 0
+  let g:ale_lsp_suggestions = 1
+  unlet! b:ale_disable_lsp
+
+  function! CreateError(type, message) abort
+    let l:diagnostics = []
+
+    if !empty(a:message)
+      let l:diagnostics = [{
+      \ 'start': {'line': 1, 'offset': 1},
+      \ 'end': {'line': 1, 'offset':1},
+      \ 'text': a:message,
+      \ 'code': 1005,
+      \}]
+    endif
+
+    return {
+    \ 'seq': 0,
+    \ 'type': 'event',
+    \ 'event': a:type,
+    \ 'body': {'file': expand('%:p'), 'diagnostics': l:diagnostics},
+    \}
+  endfunction
+
+  function! CreateLoclist(message) abort
+    let l:list = []
+
+    if !empty(a:message)
+      let l:list = [{
+      \ 'lnum': 1,
+      \ 'col': 1,
+      \ 'end_lnum': 1,
+      \ 'end_col': 1,
+      \ 'text': a:message,
+      \}]
+    endif
+
+    return l:list
+  endfunction
+
+  call ale#test#SetDirectory('/testplugin/test')
+  call ale#test#SetFilename('filename.ts')
+
+  runtime autoload/ale/engine.vim
+
+  let g:ale_buffer_info = {bufnr(''): {'loclist': [], 'active_linter_list': []}}
+  let g:ale_handle_loclist_called = 0
+
+  function! ale#engine#HandleLoclist(linter_name, buffer, loclist, from_other_source) abort
+    let g:ale_handle_loclist_called = 1
+  endfunction
+
+After:
+  Restore
+
+  delfunction CreateError
+  delfunction CreateLoclist
+
+  call ale#test#RestoreDirectory()
+
+  runtime autoload/ale/engine.vim
+
+Execute(An initial empty list of syntax errors should be ignored):
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('syntaxDiag', ''))
+
+  Assert !g:ale_handle_loclist_called
+
+Execute(An initial list of syntax errors should be handled):
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('syntaxDiag', 'x'))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(Subsequent empty lists should be ignored):
+  let g:ale_buffer_info[bufnr('')].syntax_loclist = []
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('syntaxDiag', ''))
+
+  Assert !g:ale_handle_loclist_called
+
+Execute(Empty then non-empty syntax errors should be handled):
+  let g:ale_buffer_info[bufnr('')].syntax_loclist = []
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('syntaxDiag', 'x'))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(Non-empty then empty syntax errors should be handled):
+  let g:ale_buffer_info[bufnr('')].syntax_loclist = CreateLoclist('x')
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('syntaxDiag', ''))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(Non-empty then non-empty syntax errors should be handled):
+  let g:ale_buffer_info[bufnr('')].syntax_loclist = CreateLoclist('x')
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('syntaxDiag', 'x'))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(An initial empty list of semantic errors should be ignored):
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('semanticDiag', ''))
+
+  Assert !g:ale_handle_loclist_called
+
+Execute(An initial list of semantic errors should be handled):
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('semanticDiag', 'x'))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(Subsequent empty lists should be ignored - semantic):
+  let g:ale_buffer_info[bufnr('')].semantic_loclist = []
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('semanticDiag', ''))
+
+  Assert !g:ale_handle_loclist_called
+
+Execute(Empty then non-empty semantic errors should be handled):
+  let g:ale_buffer_info[bufnr('')].semantic_loclist = []
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('semanticDiag', 'x'))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(Non-empty then empty semantic errors should be handled):
+  let g:ale_buffer_info[bufnr('')].semantic_loclist = CreateLoclist('x')
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('semanticDiag', ''))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(Non-empty then non-empty semantic errors should be handled):
+  let g:ale_buffer_info[bufnr('')].semantic_loclist = CreateLoclist('x')
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('semanticDiag', 'x'))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(Subsequent empty lists should be ignored - suggestion):
+  let g:ale_buffer_info[bufnr('')].suggestion_loclist = []
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('suggestionDiag', ''))
+
+  Assert !g:ale_handle_loclist_called
+
+Execute(You should be able to disable suggestions):
+  let g:ale_lsp_suggestions = 0
+  let g:ale_buffer_info[bufnr('')].suggestion_loclist = []
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('suggestionDiag', 'x'))
+
+  Assert !g:ale_handle_loclist_called
+
+Execute(Empty then non-empty suggestion messages should be handled):
+  let g:ale_buffer_info[bufnr('')].suggestion_loclist = []
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('suggestionDiag', 'x'))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(Non-empty then empt suggestion messages should be handled):
+  let g:ale_buffer_info[bufnr('')].suggestion_loclist = CreateLoclist('x')
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('suggestionDiag', ''))
+
+  Assert g:ale_handle_loclist_called
+
+Execute(Non-empty then non-empty suggestion messages should be handled):
+  let g:ale_buffer_info[bufnr('')].suggestion_loclist = CreateLoclist('x')
+
+  call ale#lsp_linter#HandleLSPResponse(1, CreateError('suggestionDiag', 'x'))
+
+  Assert g:ale_handle_loclist_called

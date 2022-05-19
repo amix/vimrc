@@ -1,0 +1,163 @@
+Before:
+  Save g:ale_warn_about_trailing_whitespace
+
+  let g:ale_warn_about_trailing_whitespace = 1
+
+  runtime ale_linters/python/prospector.vim
+
+After:
+  Restore
+
+  call ale#linter#Reset()
+
+  silent file something_else.py
+
+Execute(Basic prospector errors should be handle):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 20,
+  \     'col': 1,
+  \     'text': 'Trailing whitespace',
+  \     'code': '(pylint) trailing-whitespace',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'text': 'Missing module docstring',
+  \     'code': '(pylint) missing-docstring',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'text': 'Missing function docstring',
+  \     'code': '(pylint) missing-docstring',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 5,
+  \     'text': '''break'' not properly in loop',
+  \     'code': '(pylint) not-in-loop',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 5,
+  \     'text': 'Unreachable code',
+  \     'code': '(pylint) unreachable',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 33,
+  \     'text': 'No exception type(s) specified',
+  \     'code': '(pylint) bare-except',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#python#prospector#Handle(bufnr(''), [
+  \ '{',
+  \ '  "messages": [',
+  \ '    {',
+  \ '      "source": "pylint",',
+  \ '      "code": "trailing-whitespace",',
+  \ '      "message": "Trailing whitespace",',
+  \ '      "location": {',
+  \ '        "character": 0,',
+  \ '        "line": 20',
+  \ '      }',
+  \ '    },',
+  \ '    {',
+  \ '      "source": "pylint",',
+  \ '      "code": "missing-docstring",',
+  \ '      "message": "Missing module docstring",',
+  \ '      "location": {',
+  \ '        "character": 0,',
+  \ '        "line": 1',
+  \ '      }',
+  \ '    },',
+  \ '    {',
+  \ '      "source": "pylint",',
+  \ '      "code": "missing-docstring",',
+  \ '      "message": "Missing function docstring",',
+  \ '      "location": {',
+  \ '        "character": 0,',
+  \ '        "line": 2',
+  \ '      }',
+  \ '    },',
+  \ '    {',
+  \ '      "source": "pylint",',
+  \ '      "code": "not-in-loop",',
+  \ '      "message": "''break'' not properly in loop",',
+  \ '      "location": {',
+  \ '        "character": 4,',
+  \ '        "line": 3',
+  \ '      }',
+  \ '    },',
+  \ '    {',
+  \ '      "source": "pylint",',
+  \ '      "code": "unreachable",',
+  \ '      "message": "Unreachable code",',
+  \ '      "location": {',
+  \ '        "character": 4,',
+  \ '        "line": 4',
+  \ '      }',
+  \ '    },',
+  \ '    {',
+  \ '      "source": "pylint",',
+  \ '      "code": "bare-except",',
+  \ '      "message": "No exception type(s) specified",',
+  \ '      "location": {',
+  \ '        "character": 32,',
+  \ '        "line": 7',
+  \ '      }',
+  \ '    }',
+  \ '  ]',
+  \ '}',
+  \ ])
+
+Execute(Ignoring trailing whitespace messages should work):
+  let g:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'text': 'Missing module docstring',
+  \     'code': '(pylint) missing-docstring',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#python#prospector#Handle(bufnr(''), [
+  \ '{',
+  \ '  "messages": [',
+  \ '    {',
+  \ '      "source": "pylint",',
+  \ '      "code": "trailing-whitespace",',
+  \ '      "message": "Trailing whitespace",',
+  \ '      "location": {',
+  \ '        "character": 0,',
+  \ '        "line": 4',
+  \ '      }',
+  \ '    },',
+  \ '    {',
+  \ '      "source": "pylint",',
+  \ '      "code": "missing-docstring",',
+  \ '      "message": "Missing module docstring",',
+  \ '      "location": {',
+  \ '        "character": 0,',
+  \ '        "line": 1',
+  \ '      }',
+  \ '    }',
+  \ '  ]',
+  \ '}',
+  \ ])
+
+Execute(The prospector handler should handle empty output):
+  AssertEqual
+  \ [],
+  \ ale_linters#python#prospector#Handle(bufnr(''), [])

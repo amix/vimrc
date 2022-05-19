@@ -1,0 +1,13 @@
+Execute(ale#path#Dirname should return empty strings should be returned for empty values):
+  AssertEqual '', ale#path#Dirname('')
+  AssertEqual '', ale#path#Dirname(0)
+  AssertEqual '', ale#path#Dirname(v:null)
+
+Execute(ale#path#Dirname should return the dirname of paths):
+  AssertEqual '/foo', ale#path#Dirname('/foo/bar')
+  AssertEqual '/foo', ale#path#Dirname('/foo/bar/')
+
+  if has('win32')
+    AssertEqual 'C:\foo', ale#path#Dirname('C:\foo\bar')
+    AssertEqual 'C:\foo', ale#path#Dirname('C:\foo\bar\')
+  endif

@@ -1,0 +1,87 @@
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_enabled
+  Save g:ale_set_balloons
+
+  let g:ale_set_balloons = 1
+
+  let g:ale_buffer_info[bufnr('')] = {'loclist': [
+  \ {
+  \   'bufnr': bufnr('%'),
+  \   'lnum': 1,
+  \   'col': 10,
+  \   'linter_name': 'eslint',
+  \   'type': 'W',
+  \   'text': 'Ignore me.',
+  \ },
+  \ {
+  \   'bufnr': bufnr(''),
+  \   'lnum': 1,
+  \   'col': 10,
+  \   'text': 'Missing semicolon. (semi)',
+  \   'type': 'E',
+  \ },
+  \ {
+  \   'bufnr': bufnr(''),
+  \   'lnum': 2,
+  \   'col': 10,
+  \   'text': 'Infix operators must be spaced. (space-infix-ops)'
+  \ },
+  \ {
+  \   'bufnr': bufnr(''),
+  \   'lnum': 2,
+  \   'col': 15,
+  \   'text': 'Missing radix parameter (radix)'
+  \ },
+  \]}
+
+After:
+  Restore
+
+  unlet! b:ale_enabled
+  unlet! b:ale_set_balloons
+
+Execute(Balloon messages should be shown for the correct lines):
+  AssertEqual
+  \ 'Missing semicolon. (semi)',
+  \ ale#balloon#MessageForPos(bufnr(''), 1, 1)
+
+Execute(Balloon messages should be shown for earlier columns):
+  AssertEqual
+  \ 'Infix operators must be spaced. (space-infix-ops)',
+  \ ale#balloon#MessageForPos(bufnr(''), 2, 1)
+
+Execute(Balloon messages should be shown for later columns):
+  AssertEqual
+  \ 'Missing radix parameter (radix)',
+  \ ale#balloon#MessageForPos(bufnr(''), 2, 16)
+
+Execute(Balloon messages should be disabled if ALE is disabled globally):
+  let g:ale_enabled = 0
+  " Enabling the buffer should not make a difference.
+  let b:ale_enabled = 1
+
+  AssertEqual '', ale#balloon#MessageForPos(bufnr(''), 1, 1)
+
+Execute(Balloon messages should be disabled if ALE is disabled for a buffer):
+  let b:ale_enabled = 0
+
+  AssertEqual '', ale#balloon#MessageForPos(bufnr(''), 1, 1)
+
+Execute(Balloon messages should be disabled if the global setting is off):
+  let g:ale_set_balloons = 0
+
+  AssertEqual '', ale#balloon#MessageForPos(bufnr(''), 1, 1)
+
+Execute(Balloon messages should be disabled if the buffer setting is off):
+  let b:ale_set_balloons = 0
+
+  AssertEqual '', ale#balloon#MessageForPos(bufnr(''), 1, 1)
+
+Execute(The balloon buffer setting should override the global one):
+  let g:ale_set_balloons = 0
+  let b:ale_set_balloons = 1
+
+  AssertEqual
+  \ 'Missing semicolon. (semi)',
+  \ ale#balloon#MessageForPos(bufnr(''), 1, 1)

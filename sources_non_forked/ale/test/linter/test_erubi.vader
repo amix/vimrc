@@ -1,0 +1,32 @@
+Before:
+  call ale#assert#SetUpLinterTest('eruby', 'erubi')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should not contain any filter code by default):
+  call ale#test#SetFilename('../test-files/ruby/not_a_rails_app/file.rb')
+
+  AssertLinter 'ruby', [
+  \ 'ruby -r erubi/capture_end -e ' . ale#Escape('""'),
+  \ 'ruby -r erubi/capture_end -e ' . ale#Escape('puts Erubi::CaptureEndEngine.new($stdin.read).src') . '< %t | ruby -c',
+  \]
+
+Execute(Executable should filter invalid eRuby when inside a Rails project):
+  call ale#test#SetFilename('../test-files/ruby/valid_rails_app/app/views/my_great_view.html.erb')
+
+  AssertLinter 'ruby', [
+  \ 'ruby -r erubi/capture_end -e ' . ale#Escape('""'),
+  \ 'ruby -r erubi/capture_end -e ' . ale#Escape('puts Erubi::CaptureEndEngine.new($stdin.read.gsub(%{<%=},%{<%}), nil, %{-}).src') . '< %t | ruby -c',
+  \]
+
+Execute(Command should be blank if the first command in the chain returns output):
+  GivenCommandOutput [
+  \ "/usr/lib/ruby/2.3.0/rubygems/core_ext/kernel_require.rb:55:in `require': cannot load such file -- erubi/capture_end (LoadError)",
+  \ "        from /usr/lib/ruby/2.3.0/rubygems/core_ext/kernel_require.rb:55:in `require'",
+  \]
+
+  AssertLinter 'ruby', [
+  \ 'ruby -r erubi/capture_end -e ' . ale#Escape('""'),
+  \ '',
+  \]

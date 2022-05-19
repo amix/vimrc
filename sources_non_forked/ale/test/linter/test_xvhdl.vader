@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('vhdl', 'xvhdl')
+
+After:
+  unlet! b:command_tail
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'xvhdl', ale#Escape('xvhdl') . '  --2008 %t'
+
+  let b:ale_vhdl_xvhdl_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . '  --2008 %t'
+
+Execute(The options should be configurable):
+  let b:ale_vhdl_xvhdl_options = '--something'
+
+  AssertLinter 'xvhdl', ale#Escape('xvhdl') . '  --something %t'

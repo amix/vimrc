@@ -1,0 +1,42 @@
+Before:
+  call ale#assert#SetUpLinterTest('swift', 'appleswiftformat')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Should use default command when use_swiftpm is not set):
+  call ale#test#SetFilename('../test-files/swift/non-swift-package-project/src/folder/dummy.swift')
+
+  let g:ale_swift_appleswiftformat_executable = 'swift-format'
+  let g:ale_swift_appleswiftformat_use_swiftpm = 0
+
+  AssertLinter 'swift-format', ale#Escape('swift-format') . ' lint %t'
+
+Execute(Should use default command and available configuration when use_swiftpm is not set):
+  call ale#test#SetDirectory('/testplugin/test/test-files/swift/swift-package-project-with-config')
+  call ale#test#SetFilename('src/folder/dummy.swift')
+
+  let g:ale_swift_appleswiftformat_executable = 'swift-format'
+  let g:ale_swift_appleswiftformat_use_swiftpm = 0
+
+  AssertLinter 'swift-format',
+  \ ale#Escape('swift-format') . ' lint %t ' . '--configuration '
+  \   . glob(g:dir . '/.swift-format')
+
+  call ale#test#RestoreDirectory()
+
+Execute(Should use swift run when use_swiftpm is set to 1):
+  call ale#test#SetFilename('../test-files/swift/swift-package-project/src/folder/dummy.swift')
+
+  let g:ale_swift_appleswiftformat_use_swiftpm = 1
+
+  AssertLinter 'swift', ale#Escape('swift') . ' run swift-format lint %t'
+
+Execute(Should use the provided global executable):
+  call ale#test#SetFilename('../test-files/swift/swift-package-project/src/folder/dummy.swift')
+
+  let g:ale_swift_appleswiftformat_executable = '/path/to/custom/swift-format'
+  let g:ale_swift_appleswiftformat_use_swiftpm = 0
+
+  AssertLinter '/path/to/custom/swift-format',
+  \ ale#Escape('/path/to/custom/swift-format') . ' lint %t'

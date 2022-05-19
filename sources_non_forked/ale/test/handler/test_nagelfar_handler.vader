@@ -1,0 +1,174 @@
+Before:
+  runtime ale_linters/tcl/nagelfar.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The nagelfar handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'type': 'W',
+  \     'text': 'Found constant "bepa" which is also a variable.'
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'type': 'E',
+  \     'text': 'Unknown variable "cep"'
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'type': 'W',
+  \     'text': 'Unknown command "se"'
+  \   },
+  \   {
+  \     'lnum': 8,
+  \     'type': 'E',
+  \     'text': 'Unknown variable "epa"'
+  \   },
+  \   {
+  \     'lnum': 10,
+  \     'type': 'E',
+  \     'text': 'Unknown variable "depa"'
+  \   },
+  \   {
+  \     'lnum': 10,
+  \     'type': 'W',
+  \     'text': 'Suspicious variable name "$depa"'
+  \   },
+  \   {
+  \     'lnum': 11,
+  \     'type': 'W',
+  \     'text': 'Suspicious variable name "$cepa"'
+  \   },
+  \   {
+  \     'lnum': 13,
+  \     'type': 'E',
+  \     'text': 'Wrong number of arguments (3) to "set"'
+  \   },
+  \   {
+  \     'lnum': 13,
+  \     'type': 'W',
+  \     'text': 'Found constant "bepa" which is also a variable.'
+  \   },
+  \   {
+  \     'lnum': 13,
+  \     'type': 'W',
+  \     'text': 'Found constant "cepa" which is also a variable.'
+  \   },
+  \   {
+  \     'lnum': 18,
+  \     'type': 'E',
+  \     'text': 'Badly formed if statement'
+  \   },
+  \   {
+  \     'lnum': 24,
+  \     'type': 'E',
+  \     'text': 'Unknown subcommand "gurka" to "info"'
+  \   },
+  \   {
+  \     'lnum': 31,
+  \     'type': 'W',
+  \     'text': 'Switch pattern starting with #. This could be a bad comment.'
+  \   },
+  \   {
+  \     'lnum': 31,
+  \     'type': 'W',
+  \     'text': 'Unknown command "This"'
+  \   },
+  \   {
+  \     'lnum': 31,
+  \     'type': 'W',
+  \     'text': 'Unknown command "bad"'
+  \   },
+  \   {
+  \     'lnum': 34,
+  \     'type': 'W',
+  \     'text': 'Unknown command "miffo"'
+  \   },
+  \   {
+  \     'lnum': 55,
+  \     'type': 'W',
+  \     'text': 'Suspicious variable name "$bepa"'
+  \   },
+  \   {
+  \     'lnum': 56,
+  \     'type': 'W',
+  \     'text': 'Suspicious variable name "$apa"'
+  \   },
+  \   {
+  \     'lnum': 61,
+  \     'type': 'E',
+  \     'text': 'Could not complete statement.'
+  \   },
+  \   {
+  \     'lnum': 67,
+  \     'type': 'E',
+  \     'text': 'Could not complete statement.'
+  \   },
+  \   {
+  \     'lnum': 70,
+  \     'type': 'E',
+  \     'text': 'Wrong number of arguments (4) to "proc"'
+  \   },
+  \   {
+  \     'lnum': 72,
+  \     'type': 'E',
+  \     'text': 'Wrong number of arguments (1) to "if"'
+  \   },
+  \   {
+  \     'lnum': 75,
+  \     'type': 'E',
+  \     'text': 'Unbalanced close brace found'
+  \   },
+  \   {
+  \     'lnum': 82,
+  \     'type': 'E',
+  \     'text': 'Unbalanced close brace found'
+  \   },
+  \   {
+  \     'lnum': 88,
+  \     'type': 'E',
+  \     'text': 'Could not complete statement.'
+  \   },
+  \   {
+  \     'lnum': 90,
+  \     'type': 'E',
+  \     'text': 'Wrong number of arguments (1) to "if"'
+  \   },
+  \   {
+  \     'lnum': 93,
+  \     'type': 'W',
+  \     'text': 'Close brace not aligned with line 90 (4 0)'
+  \   },
+  \ ],
+  \ ale_linters#tcl#nagelfar#Handle(bufnr(''), [
+  \   'Line   5: W Found constant "bepa" which is also a variable.',
+  \   'Line   7: E Unknown variable "cep"',
+  \   'Line   7: W Unknown command "se"',
+  \   'Line   8: E Unknown variable "epa"',
+  \   'Line  10: E Unknown variable "depa"',
+  \   'Line  10: N Suspicious variable name "$depa"',
+  \   'Line  11: N Suspicious variable name "$cepa"',
+  \   'Line  13: E Wrong number of arguments (3) to "set"',
+  \   'Line  13: W Found constant "bepa" which is also a variable.',
+  \   'Line  13: W Found constant "cepa" which is also a variable.',
+  \   'Line  18: E Badly formed if statement',
+  \   'Line  24: E Unknown subcommand "gurka" to "info"',
+  \   'Line  31: W Switch pattern starting with #. This could be a bad comment.',
+  \   'Line  31: W Unknown command "This"',
+  \   'Line  31: W Unknown command "bad"',
+  \   'Line  34: W Unknown command "miffo"',
+  \   'Line  55: N Suspicious variable name "$bepa"',
+  \   'Line  56: N Suspicious variable name "$apa"',
+  \   'Line  61: E Could not complete statement.',
+  \   'Line  67: E Could not complete statement.',
+  \   'Line  70: E Wrong number of arguments (4) to "proc"',
+  \   'Line  72: E Wrong number of arguments (1) to "if"',
+  \   'Line  75: E Unbalanced close brace found',
+  \   'Line  82: E Unbalanced close brace found',
+  \   'Line  88: E Could not complete statement.',
+  \   'Line  90: E Wrong number of arguments (1) to "if"',
+  \   'Line  93: N Close brace not aligned with line 90 (4 0)',
+  \ ])

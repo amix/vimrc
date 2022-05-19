@@ -1,0 +1,36 @@
+Before:
+  runtime ale_linters/vhdl/vcom.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The vcom handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 218,
+  \     'type': 'W',
+  \     'text': '(vcom-1236) Shared variables must be of a protected type.'
+  \   },
+  \   {
+  \     'lnum': 73,
+  \     'type': 'E',
+  \     'text': '(vcom-1136) Unknown identifier "aresetn".'
+  \   },
+  \   {
+  \     'lnum': 73,
+  \     'type': 'E',
+  \     'text': 'Bad resolution function (STD_LOGIC) for type (error).'
+  \   },
+  \   {
+  \     'lnum': 73,
+  \     'type': 'E',
+  \     'text': 'near ":": (vcom-1576) expecting ";" or ")".'
+  \   },
+  \ ],
+  \ ale_linters#vhdl#vcom#Handle(bufnr(''), [
+  \   '** Warning: ../path/to/file.vhd(218): (vcom-1236) Shared variables must be of a protected type.',
+  \   '** Error: tb_file.vhd(73): (vcom-1136) Unknown identifier "aresetn".',
+  \   '** Error: tb_file.vhd(73): Bad resolution function (STD_LOGIC) for type (error).',
+  \   '** Error: tb_file.vhd(73): near ":": (vcom-1576) expecting ";" or ")".',
+  \ ])

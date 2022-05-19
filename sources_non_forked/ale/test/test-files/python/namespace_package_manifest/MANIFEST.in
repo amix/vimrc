@@ -1,0 +1,3 @@
+include README.md
+include *.ini *.cfg *.txt
+include requirements/*.txt

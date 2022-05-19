@@ -1,0 +1,112 @@
+Before:
+  runtime ale_linters/dockerfile/dockerfile_lint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The dockerfile_lint handler should handle broken JSON):
+  AssertEqual
+  \ [],
+  \ ale_linters#dockerfile#dockerfile_lint#Handle(bufnr(''), ["{asdf"])
+
+Execute(The dockerfile_lint handler should handle an empty string response):
+  AssertEqual
+  \ [],
+  \ ale_linters#dockerfile#dockerfile_lint#Handle(bufnr(''), [])
+
+Execute(The dockerfile_lint handler should handle an empty result, even if it shouldn't happen):
+  AssertEqual
+  \ [],
+  \ ale_linters#dockerfile#dockerfile_lint#Handle(bufnr(''), ["{}"])
+
+Execute(The dockerfile_lint handler should handle a normal example):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': -1,
+  \     'type': 'E',
+  \     'text': "Required LABEL name/key 'Name' is not defined",
+  \     'detail': "Required LABEL name/key 'Name' is not defined\n\nhttp://docs.projectatomic.io/container-best-practices/#_recommended_labels_for_your_project",
+  \   },
+  \   {
+  \     'lnum': -1,
+  \     'type': 'E',
+  \     'text': "Required LABEL name/key 'Version' is not defined",
+  \     'detail': "Required LABEL name/key 'Version' is not defined\n\nhttp://docs.projectatomic.io/container-best-practices/#_recommended_labels_for_your_project",
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'type': 'I',
+  \     'text': "the MAINTAINER command is deprecated",
+  \     'detail': "the MAINTAINER command is deprecated\n\nMAINTAINER is deprecated in favor of using LABEL since Docker v1.13.0\n\nhttps://github.com/docker/cli/blob/master/docs/deprecated.md#maintainer-in-dockerfile",
+  \   },
+  \   {
+  \     'lnum': -1,
+  \     'type': 'I',
+  \     'text': "There is no 'CMD' instruction",
+  \     'detail': "There is no 'CMD' instruction\n\nhttps://docs.docker.com/engine/reference/builder/#cmd",
+  \   },
+  \ ],
+  \ ale_linters#dockerfile#dockerfile_lint#Handle(bufnr(''), [
+  \  '{',
+  \  '  "error": {',
+  \  '    "count": 2,',
+  \  '    "data": [',
+  \  '      {',
+  \  "        \"message\": \"Required LABEL name/key 'Name' is not defined\",",
+  \  '        "line": -1,',
+  \  '        "level": "error",',
+  \  '        "lineContent": "",',
+  \  '        "reference_url": [',
+  \  '          "http://docs.projectatomic.io/container-best-practices/#",',
+  \  '          "_recommended_labels_for_your_project"',
+  \  '        ]',
+  \  '      },',
+  \  '      {',
+  \  "        \"message\": \"Required LABEL name/key 'Version' is not defined\",",
+  \  '        "line": -1,',
+  \  '        "level": "error",',
+  \  '        "lineContent": "",',
+  \  '        "reference_url": [',
+  \  '          "http://docs.projectatomic.io/container-best-practices/#",',
+  \  '          "_recommended_labels_for_your_project"',
+  \  '        ]',
+  \  '      }',
+  \  '    ]',
+  \  '  },',
+  \  '  "warn": {',
+  \  '    "count": 0,',
+  \  '    "data": []',
+  \  '  },',
+  \  '  "info": {',
+  \  '    "count": 2,',
+  \  '    "data": [',
+  \  '      {',
+  \  '        "label": "maintainer_deprecated",',
+  \  '        "regex": {},',
+  \  '        "level": "info",',
+  \  '        "message": "the MAINTAINER command is deprecated",',
+  \  '        "description": "MAINTAINER is deprecated in favor of using LABEL since Docker v1.13.0",',
+  \  '        "reference_url": [',
+  \  '          "https://github.com/docker/cli/blob/master/docs/deprecated.md",',
+  \  '          "#maintainer-in-dockerfile"',
+  \  '        ],',
+  \  '        "lineContent": "MAINTAINER Alexander Olofsson <ace@haxalot.com>",',
+  \  '        "line": 3',
+  \  '      },',
+  \  '      {',
+  \  '        "instruction": "CMD",',
+  \  '        "count": 1,',
+  \  '        "level": "info",',
+  \  "        \"message\": \"There is no 'CMD' instruction\",",
+  \  '        "description": "None",',
+  \  '        "reference_url": [',
+  \  '          "https://docs.docker.com/engine/reference/builder/",',
+  \  '          "#cmd"',
+  \  '        ]',
+  \  '      }',
+  \  '    ]',
+  \  '  },',
+  \  '  "summary": []',
+  \  '}',
+  \ ])

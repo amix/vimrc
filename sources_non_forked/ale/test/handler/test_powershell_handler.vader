@@ -1,0 +1,109 @@
+Before:
+  runtime ale_linters/powershell/powershell.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The powershell handler should process syntax errors from parsing a powershell script):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 8,
+  \     'col': 29,
+  \     'type': 'E',
+  \     'text': 'Missing closing ''}'' in statement block or type definition.',
+  \     'code': 'ParseException',
+  \   },
+  \ ],
+  \ ale_linters#powershell#powershell#Handle(bufnr(''), [
+  \ "At line:8 char:29",
+  \ "+ Invoke-Command -ScriptBlock {",
+  \ "+                             ~",
+  \ "Missing closing '}' in statement block or type definition.",
+  \ "At /home/harrisj/tester.ps1:5 char:5",
+  \ "+     [void]$ExecutionContext.InvokeCommand.NewScriptBlock($Contents);",
+  \ "+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+  \ "+ CategoryInfo          : NotSpecified: (:) [], ParseException",
+  \ "+ FullyQualifiedErrorId : ParseException"
+  \ ])
+
+Execute(The powershell handler should process multiple syntax errors from parsing a powershell script):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 11,
+  \     'col': 31,
+  \     'type': 'E',
+  \     'text': 'The string is missing the terminator: ".',
+  \     'code': 'ParseException'
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 16,
+  \     'type': 'E',
+  \     'text': 'Missing closing ''}'' in statement block or type definition.',
+  \     'code': 'ParseException'
+  \   },
+  \ ],
+  \ ale_linters#powershell#powershell#Handle(bufnr(''), [
+  \ 'At line:11 char:31',
+  \ '+         write-verbose ''deleted''',
+  \ '+                               ~',
+  \ 'The string is missing the terminator: ".',
+  \ 'At line:3 char:16',
+  \ '+ invoke-command {',
+  \ '+                ~',
+  \ 'Missing closing ''}'' in statement block or type definition.',
+  \ 'At /var/folders/qv/15ybvt050v9cgwrm7c95x4r4zc4qsg/T/vwhzIc8/1/script.ps1:1 char:150',
+  \ '+ ... ontents);   [void]$ExecutionContext.InvokeCommand.NewScriptBlock($Con ...',
+  \ '+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
+  \ '+ CategoryInfo          : NotSpecified: (:) [], ParseException',
+  \ '+ FullyQualifiedErrorId : ParseException'
+  \ ])
+Execute(The powershell handler should process unexecpected token that contains a newline character):
+  AssertEqual
+  \ [
+  \    {
+  \      'lnum': 2,
+  \      'col': 8,
+  \      'type': 'E',
+  \      'text': 'The string is missing the terminator: ".',
+  \      'code': 'ParseException'
+  \    },
+  \    {
+  \      'lnum': 2,
+  \      'col': 8,
+  \      'type': 'E',
+  \      'text': 'Unexpected token ''"',
+  \      'code': 'ParseException'
+  \    },
+  \    {
+  \      'lnum': 1,
+  \      'col': 1,
+  \      'type': 'E',
+  \      'text': 'Missing closing ''}'' in statement block or type definition.',
+  \      'code': 'ParseException'
+  \    }
+  \ ],
+  \ ale_linters#powershell#powershell#Handle(bufnr(''), [
+  \ 'At line:2 char:8',
+  \ '+     "" "',
+  \ '+        ~',
+  \ 'The string is missing the terminator: ".',
+  \ 'At line:2 char:8',
+  \ '+     "" "',
+  \ '+        ~',
+  \ 'Unexpected token ''"',
+  \ '',
+  \ '    }'' in expression or statement.',
+  \ '',
+  \ 'At line:1 char:1',
+  \ '+ {',
+  \ '+ ~',
+  \ 'Missing closing ''}'' in statement block or type definition.',
+  \ 'At C:\Users\jpharris\AppData\Local\Temp\VIAA777.tmp\script.ps1:1 char:150',
+  \ '+ ... ontents);   [void]$ExecutionContext.InvokeCommand.NewScriptBlock($Con ...',
+  \ '+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
+  \ '    + CategoryInfo          : NotSpecified: (:) [], ParseException',
+  \ '    + FullyQualifiedErrorId : ParseException'
+  \ ])

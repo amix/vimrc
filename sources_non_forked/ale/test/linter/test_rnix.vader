@@ -1,0 +1,12 @@
+" Author: jD91mZM2 <me@krake.one>
+" Description: Tests for rnix-lsp language client
+Before:
+  call ale#assert#SetUpLinterTest('nix', 'rnix_lsp')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(should start rnix-lsp):
+  AssertLSPLanguage 'nix'
+  AssertLSPOptions {}
+  AssertLSPProject ale#path#Simplify('.')

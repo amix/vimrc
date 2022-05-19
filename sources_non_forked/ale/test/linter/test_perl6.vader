@@ -1,0 +1,14 @@
+Before:
+  call ale#assert#SetUpLinterTest('perl6', 'perl6')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default Perl6 command callback should be correct):
+  AssertLinter 'perl6', 'perl6' . ' -c -Ilib %t'
+
+Execute(Overriding the executable and command should work):
+  let b:ale_perl6_perl6_executable = 'foobar'
+  let b:ale_perl6_perl6_options = '-w'
+
+  AssertLinter 'foobar', 'foobar' . ' -w %t'

@@ -1,0 +1,50 @@
+Before:
+  Save g:ale_json_fixjson_executable
+  Save g:ale_json_fixjson_options
+
+  let g:ale_json_fixjson_executable = '/path/to/fixjson'
+  let g:ale_json_fixjson_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+Execute(The fixjson callback should return the correct default command):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/fixjson')
+  \     . ' --stdin-filename '
+  \     . ale#Escape(bufname(bufnr('')))
+  \ },
+  \ ale#fixers#fixjson#Fix(bufnr(''))
+
+Execute(The fixjson callback should set the buffer name as file name):
+  call ale#test#SetFilename('../test-files/json/testfile.json')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/fixjson')
+  \     . ' --stdin-filename '
+  \     . ale#Escape(bufname(bufnr('')))
+  \ },
+  \ ale#fixers#fixjson#Fix(bufnr(''))
+
+  AssertNotEqual
+  \ stridx(
+  \   ale#fixers#fixjson#Fix(bufnr('')).command,
+  \   'testfile.json',
+  \ ),
+  \ -1
+
+Execute(The fixjson callback should include additional options):
+  let g:ale_json_fixjson_options = '-i 2'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/fixjson')
+  \     . ' --stdin-filename '
+  \     . ale#Escape(bufname(bufnr('')))
+  \     . ' -i 2'
+  \ },
+  \ ale#fixers#fixjson#Fix(bufnr(''))

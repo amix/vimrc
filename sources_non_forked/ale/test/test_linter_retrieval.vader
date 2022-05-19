@@ -1,0 +1,190 @@
+Before:
+  Save g:ale_linters
+  Save g:ale_linter_aliases
+
+  let g:testlinter1 = {'name': 'testlinter1', 'executable': 'testlinter1', 'command': 'testlinter1', 'callback': 'testCB1', 'output_stream': 'stdout', 'read_buffer': 1, 'lint_file': 0, 'aliases': [], 'lsp': ''}
+  let g:testlinter2 = {'name': 'testlinter2', 'executable': 'testlinter2', 'command': 'testlinter2', 'callback': 'testCB2', 'output_stream': 'stdout', 'read_buffer': 0, 'lint_file': 1, 'aliases': [], 'lsp': ''}
+  call ale#linter#Reset()
+  call ale#linter#PreventLoading('testft')
+  call ale#linter#PreventLoading('javascript')
+  call ale#linter#PreventLoading('typescript')
+
+After:
+  Restore
+
+  unlet! g:testlinter1
+  unlet! g:testlinter2
+  unlet! b:ale_linters
+  unlet! b:ale_linter_aliases
+  call ale#linter#Reset()
+
+Execute (You should be able to get a defined linter):
+  call ale#linter#Define('testft', g:testlinter1)
+  AssertEqual [g:testlinter1], ale#linter#Get('testft')
+
+Execute (You should be able get select a single linter):
+  call ale#linter#Define('testft', g:testlinter1)
+  call ale#linter#Define('testft', g:testlinter2)
+  let g:ale_linters = {'testft': ['testlinter1']}
+
+  AssertEqual [g:testlinter1], ale#linter#Get('testft')
+
+Execute (You should be able to select a linter by an alias):
+  let g:testlinter1.aliases = ['foo', 'linter1alias']
+
+  call ale#linter#Define('testft', g:testlinter1)
+  call ale#linter#Define('testft', g:testlinter2)
+  let g:ale_linters = {'testft': ['linter1alias']}
+
+  AssertEqual [g:testlinter1], ale#linter#Get('testft')
+
+Execute (You should be able to select linters with a buffer option):
+  call ale#linter#Define('testft', g:testlinter1)
+  call ale#linter#Define('testft', g:testlinter2)
+  let g:ale_linters = {'testft': ['testlinter1', 'testlinter2']}
+  let b:ale_linters = {'testft': ['testlinter1']}
+
+  AssertEqual [g:testlinter1], ale#linter#Get('testft')
+
+Execute (b:ale_linters should work when set to a List):
+  call ale#linter#Define('testft', g:testlinter1)
+  call ale#linter#Define('testft', g:testlinter2)
+  let g:ale_linters = {'testft': ['testlinter1', 'testlinter2']}
+  let b:ale_linters = ['testlinter1']
+
+  AssertEqual [g:testlinter1], ale#linter#Get('testft')
+
+Execute (b:ale_linters should disable all linters when set to an empty List):
+  call ale#linter#Define('testft', g:testlinter1)
+  call ale#linter#Define('testft', g:testlinter2)
+  let g:ale_linters = {'testft': ['testlinter1', 'testlinter2']}
+  let b:ale_linters = []
+
+  AssertEqual [], ale#linter#Get('testft')
+
+Execute (b:ale_linters should enable all available linters when set to 'all'):
+  call ale#linter#Define('testft', g:testlinter1)
+  call ale#linter#Define('testft', g:testlinter2)
+  let g:ale_linters = {'testft': ['testlinter1']}
+  let b:ale_linters = 'all'
+
+  AssertEqual [g:testlinter1, g:testlinter2], ale#linter#Get('testft')
+
+Execute (Buffer settings shouldn't completely replace global settings):
+  call ale#linter#Define('testft', g:testlinter1)
+  call ale#linter#Define('testft', g:testlinter2)
+  let g:ale_linters = {'testft': ['testlinter1']}
+  let b:ale_linters = {'testft2': ['testlinter1', 'testlinter2']}
+
+  AssertEqual [g:testlinter1], ale#linter#Get('testft')
+
+Execute (You should be able to alias linters from one filetype to another):
+  call ale#linter#Define('testft1', g:testlinter1)
+  let g:ale_linter_aliases = {'testft2': 'testft1'}
+
+  AssertEqual [g:testlinter1], ale#linter#Get('testft2')
+
+Execute (You should be able to filter aliased linters):
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft1', g:testlinter2)
+  let g:ale_linters = {'testft1': ['testlinter1'], 'testft2': ['testlinter2']}
+  let g:ale_linter_aliases = {'testft2': 'testft1'}
+
+  AssertEqual [g:testlinter1], ale#linter#Get('testft1')
+  AssertEqual [g:testlinter2], ale#linter#Get('testft2')
+
+Execute (Dot-separated filetypes should be handled correctly):
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft2', g:testlinter2)
+
+  AssertEqual [g:testlinter1, g:testlinter2], ale#linter#Get('testft1.testft2')
+
+Execute (Linters for multiple aliases should be loaded):
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft2', g:testlinter2)
+  let ale_linter_aliases = {'testft3': ['testft1', 'testft2']}
+
+  AssertEqual [g:testlinter1, g:testlinter2], ale#linter#Get('testft3')
+
+Execute (You should be able to alias filetypes to themselves and another):
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft2', g:testlinter2)
+  let ale_linter_aliases = {'testft1': ['testft1', 'testft2']}
+
+  AssertEqual [g:testlinter1, g:testlinter2], ale#linter#Get('testft1')
+
+Execute (Buffer-local overrides for aliases should be used):
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft2', g:testlinter2)
+  let g:ale_linter_aliases = {'testft1': ['testft2']}
+  let b:ale_linter_aliases = {'testft1': ['testft1', 'testft2']}
+
+  AssertEqual [g:testlinter1, g:testlinter2], ale#linter#Get('testft1')
+
+Execute (The local alias option shouldn't completely replace the global one):
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft2', g:testlinter2)
+  let g:ale_linter_aliases = {'testft1': ['testft1', 'testft2']}
+  " This is a key set for a different filetype.
+  " We should look for a key in this Dictionary first, and then check the
+  " global Dictionary.
+  let b:ale_linter_aliases = {'testft3': ['testft1']}
+
+  AssertEqual [g:testlinter1, g:testlinter2], ale#linter#Get('testft1')
+
+Execute (Lists should be accepted for local aliases):
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft2', g:testlinter2)
+  let g:ale_linter_aliases = {'testft1': ['testft1', 'testft2']}
+  " We should load the testft2 linters for this buffer, with no duplicates.
+  let b:ale_linter_aliases = ['testft2']
+
+  AssertEqual [g:testlinter2], ale#linter#Get('anything.else')
+
+Execute (Strings should be accepted for local aliases):
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft2', g:testlinter2)
+  let g:ale_linter_aliases = {'testft1': ['testft1', 'testft2']}
+  " We should load the testft2 linters for this buffer, with no duplicates.
+  let b:ale_linter_aliases = 'testft2'
+
+  AssertEqual [g:testlinter2], ale#linter#Get('anything.else')
+
+Execute (Buffer-local overrides for aliases should be used):
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft2', g:testlinter2)
+  let g:ale_linter_aliases = {'testft1': ['testft2']}
+  let b:ale_linter_aliases = {'testft1': ['testft1', 'testft2']}
+
+  AssertEqual [g:testlinter1, g:testlinter2], ale#linter#Get('testft1')
+
+Execute (Linters new linters with the same name should replace old ones):
+  let g:testlinter1.name = g:testlinter2.name
+
+  call ale#linter#Define('testft1', g:testlinter1)
+  call ale#linter#Define('testft1', g:testlinter2)
+
+  AssertEqual [g:testlinter2], ale#linter#GetAll(['testft1'])
+
+Execute (Linters should be loaded from disk appropriately):
+  call ale#linter#Reset()
+  AssertEqual [{'name': 'testlinter', 'output_stream': 'stdout', 'executable': 'testlinter', 'command': 'testlinter', 'callback': 'testCB', 'read_buffer': 1, 'lint_file': 0, 'aliases': [], 'lsp': ''}], ale#linter#Get('testft')
+
+
+Execute (Linters for later filetypes should replace the former ones):
+  call ale#linter#Define('javascript', {
+  \   'name': 'eslint',
+  \   'executable': 'y',
+  \   'command': 'y',
+  \   'callback': 'y',
+  \})
+  call ale#linter#Define('typescript', {
+  \   'name': 'eslint',
+  \   'executable': 'x',
+  \   'command': 'x',
+  \   'callback': 'x',
+  \})
+
+  AssertEqual [
+  \ {'output_stream': 'stdout', 'lint_file': 0, 'read_buffer': 1, 'name': 'eslint', 'executable': 'x', 'lsp': '', 'aliases': [], 'command': 'x', 'callback': 'x'}
+  \], ale#linter#Get('javascript.typescript')

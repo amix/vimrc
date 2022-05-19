@@ -1,0 +1,12 @@
+Before:
+  call ale#assert#SetUpLinterTest('nim', 'nimlsp')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(It does not set nim sources by default):
+  AssertLinter 'nimlsp', ale#Escape('nimlsp')
+
+Execute(Sets nimlsp and escapes sources from g:ale_nim_nimlsp_nim_sources):
+  let g:ale_nim_nimlsp_nim_sources = '/path/to /Nim'
+  AssertLinter 'nimlsp', ale#Escape('nimlsp') . ' ' . ale#Escape('/path/to /Nim')

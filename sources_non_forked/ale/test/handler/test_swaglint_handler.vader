@@ -1,0 +1,68 @@
+Before:
+  runtime ale_linters/yaml/swaglint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The swaglint handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'text': 'Missing required property: info',
+  \     'code': 'sway_object_missing_required_property',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 6,
+  \     'col': 9,
+  \     'text': 'Not a valid response definition',
+  \     'code': 'sway_one_of_missing',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 11,
+  \     'text': 'Missing required property: description',
+  \     'code': 'sway_object_missing_required_property',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 11,
+  \     'text': 'Missing required property: $ref',
+  \     'code': 'sway_object_missing_required_property',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 10,
+  \     'text': 'Expected type string but found type integer',
+  \     'code': 'sway_invalid_type',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 10,
+  \     'text': 'No enum match for: 2',
+  \     'code': 'sway_enum_mismatch',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 14,
+  \     'col': 3,
+  \     'text': 'Definition is not used: #/definitions/Foo',
+  \     'code': 'sway_unused_definition',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#yaml#swaglint#Handle(347, [
+  \   'swagger.yaml: error @ 1:1 - Missing required property: info (sway_object_missing_required_property)',
+  \   'swagger.yaml: error @ 6:9 - Not a valid response definition (sway_one_of_missing)',
+  \   'swagger.yaml: error @ 7:11 - Missing required property: description (sway_object_missing_required_property)',
+  \   'swagger.yaml: error @ 7:11 - Missing required property: $ref (sway_object_missing_required_property)',
+  \   'swagger.yaml: error @ 1:10 - Expected type string but found type integer (sway_invalid_type)',
+  \   'swagger.yaml: error @ 1:10 - No enum match for: 2 (sway_enum_mismatch)',
+  \   'swagger.yaml: warning @ 14:3 - Definition is not used: #/definitions/Foo (sway_unused_definition)',
+  \ ])

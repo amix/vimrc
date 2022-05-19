@@ -1,0 +1,42 @@
+Before:
+  runtime ale_linters/python/bandit.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The bandit handler for Python should parse input correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 2,
+  \     'code': 'B404',
+  \     'type': 'I',
+  \     'text': 'Consider possible security implications associated with subprocess module.',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 4,
+  \     'code': 'B305',
+  \     'type': 'W',
+  \     'text': 'Use of insecure cipher mode cryptography.hazmat.primitives.ciphers.modes.ECB.',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 6,
+  \     'code': 'B609',
+  \     'type': 'E',
+  \     'text': 'Possible wildcard injection in call: subprocess.Popen',
+  \   },
+  \ ],
+  \ ale_linters#python#bandit#Handle(0, [
+  \   '[main]  INFO    profile include tests: None',
+  \   '[main]  INFO    profile exclude tests: None',
+  \   '[main]  INFO    cli include tests: None',
+  \   '[main]  INFO    cli exclude tests: None',
+  \   '[main]  INFO    running on Python 3.7.2',
+  \   '[node_visitor]  INFO    Unable to find qualified name for module: <stdin>',
+  \   '2:B404:LOW:Consider possible security implications associated with subprocess module.',
+  \   '4:B305:MEDIUM:Use of insecure cipher mode cryptography.hazmat.primitives.ciphers.modes.ECB.',
+  \   '6:B609:HIGH:Possible wildcard injection in call: subprocess.Popen',
+  \ ])

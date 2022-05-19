@@ -77,7 +77,8 @@ function! ale#fix#ApplyFixes(buffer, output) abort
             call remove(g:ale_fix_buffer_data, a:buffer)
 
             if !l:data.ignore_file_changed_errors
-                execute 'echoerr ''The file was changed before fixing finished'''
+                " no-custom-checks
+                echoerr 'The file was changed before fixing finished'
             endif
 
             return
@@ -358,7 +359,8 @@ function! ale#fix#Fix(buffer, fixing_flag, ...) abort
             \   'There is no fixer named `%s`. Check :ALEFixSuggest',
             \   l:function_name,
             \)
-            execute 'echom l:echo_message'
+            " no-custom-checks
+            echom l:echo_message
         endif
 
         return 0
@@ -366,7 +368,8 @@ function! ale#fix#Fix(buffer, fixing_flag, ...) abort
 
     if empty(l:callback_list)
         if a:fixing_flag is# ''
-            execute 'echom ''No fixers have been defined. Try :ALEFixSuggest'''
+            " no-custom-checks
+            echom 'No fixers have been defined. Try :ALEFixSuggest'
         endif
 
         return 0

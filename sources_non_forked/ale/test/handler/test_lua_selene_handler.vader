@@ -1,0 +1,38 @@
+Before:
+  runtime ale_linters/lua/selene.vim
+
+After:
+  Restore
+  call ale#linter#Reset()
+
+Execute(The selene handler for Lua should parse input correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'end_lnum': 2,
+  \     'col': 1,
+  \     'end_col': 3,
+  \     'text': 'empty if block',
+  \     'code': 'empty_if',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'end_lnum': 1,
+  \     'col': 4,
+  \     'end_col': 11,
+  \     'text': 'comparing things to nan directly is not allowed',
+  \     'code': 'compare_nan',
+  \     'type': 'E',
+  \     'detail': "comparing things to nan directly is not allowed\n\ntry: `x ~= x` instead"
+  \   },
+  \ ],
+  \ ale_linters#lua#selene#Handle(0, [
+  \   '{"severity":"Warning","code":"empty_if","message":"empty if block","primary_label":{"span":{"start":0,"start_line":0,"start_column":0,"end":20,"end_line":1,"end_column":3},"message":""},"notes":[],"secondary_labels":[]}',
+  \   '{"severity":"Error","code":"compare_nan","message":"comparing things to nan directly is not allowed","primary_label":{"span":{"start":3,"start_line":0,"start_column":3,"end":11,"end_line":0,"end_column":11},"message":""},"notes":["try: `x ~= x` instead"],"secondary_labels":[]}',
+  \   'Results:',
+  \   '1 errors',
+  \   '1 warnings',
+  \   '0 parse errors',
+  \ ])

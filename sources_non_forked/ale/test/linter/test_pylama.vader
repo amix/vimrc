@@ -1,0 +1,88 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'pylama')
+  call ale#test#SetFilename('test.py')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+  let b:command_tail = ' %s'
+
+After:
+  unlet! b:bin_dir
+  unlet! b:executable
+  unlet! b:command_tail
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default pylama command should be correct):
+  AssertLinterCwd ale#path#Simplify(g:dir)
+  AssertLinter 'pylama', ale#Escape('pylama') . b:command_tail
+
+Execute(The option for disabling changing directories should work):
+  let g:ale_python_pylama_change_directory = 0
+
+  AssertLinterCwd ''
+  AssertLinter 'pylama', ale#Escape('pylama') . b:command_tail
+
+Execute(The pylama executable should be configurable, and escaped properly):
+  let g:ale_python_pylama_executable = 'executable with spaces'
+
+  AssertLinterCwd ale#path#Simplify(g:dir)
+  AssertLinter 'executable with spaces',
+  \ ale#Escape('executable with spaces') . b:command_tail
+
+Execute(The pylama command callback should let you set options):
+  let g:ale_python_pylama_options = '--some-option'
+
+  AssertLinterCwd ale#path#Simplify(g:dir)
+  AssertLinter 'pylama', ale#Escape('pylama') . ' --some-option' . b:command_tail
+
+Execute(The pylama command callback should switch directories to the detected project root):
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/no_virtualenv/subdir/foo/bar.py')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/no_virtualenv/subdir')
+  AssertLinter 'pylama', ale#Escape('pylama') . b:command_tail
+
+Execute(The pylama command callback shouldn't detect virtualenv directories where they don't exist):
+  call ale#test#SetFilename('../test-files/python/no_virtualenv/subdir/foo/bar.py')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/no_virtualenv/subdir')
+  AssertLinter 'pylama', ale#Escape('pylama') . b:command_tail
+
+Execute(The pylama command callback should detect virtualenv directories and switch to the project root):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/pylama'
+  \)
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/subdir')
+  AssertLinter b:executable, ale#Escape(b:executable) . b:command_tail
+
+Execute(You should able able to use the global pylama instead):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  let g:ale_python_pylama_use_global = 1
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/subdir')
+  AssertLinter 'pylama', ale#Escape('pylama') . b:command_tail
+
+Execute(Setting executable to 'pipenv' appends 'run pylama'):
+  let g:ale_python_pylama_executable = 'path/to/pipenv'
+
+  AssertLinter 'path/to/pipenv',
+  \ ale#Escape('path/to/pipenv') . ' run pylama' . b:command_tail
+
+Execute(Pipenv is detected when python_pylama_auto_pipenv is set):
+  let g:ale_python_pylama_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinter 'pipenv', ale#Escape('pipenv') . ' run pylama' . b:command_tail
+
+Execute(Setting executable to 'poetry' appends 'run pylama'):
+  let g:ale_python_pylama_executable = 'path/to/poetry'
+
+  AssertLinter 'path/to/poetry',
+  \ ale#Escape('path/to/poetry') . ' run pylama' . b:command_tail
+
+Execute(poetry is detected when python_pylama_auto_poetry is set):
+  let g:ale_python_pylama_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinter 'poetry', ale#Escape('poetry') . ' run pylama' . b:command_tail

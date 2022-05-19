@@ -1,0 +1,49 @@
+Before:
+  call ale#assert#SetUpLinterTest('ruby', 'reek')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The reek callbacks should return the correct default values):
+  GivenCommandOutput ['reek 5.0.0']
+  AssertLinter 'reek', [
+  \ ale#Escape('reek') . ' --version',
+  \ ale#Escape('reek') . ' -f json --no-progress --no-color --force-exclusion --stdin-filename %s',
+  \]
+
+  " Try with older versions.
+  call ale#semver#ResetVersionCache()
+
+  GivenCommandOutput ['reek 4.8.2']
+  AssertLinter 'reek', [
+  \ ale#Escape('reek') . ' --version',
+  \ ale#Escape('reek') . ' -f json --no-progress --no-color --force-exclusion',
+  \]
+
+Execute(Setting bundle appends 'exec reek'):
+  let g:ale_ruby_reek_executable = 'bundle'
+
+  GivenCommandOutput ['reek 5.0.0']
+  AssertLinter 'bundle', ale#Escape('bundle')
+  \ . ' exec reek'
+  \ . ' -f json --no-progress --no-color --force-exclusion --stdin-filename %s',
+
+  " Try with older versions.
+  call ale#semver#ResetVersionCache()
+
+  GivenCommandOutput ['reek 4.8.2']
+  AssertLinter 'bundle', ale#Escape('bundle')
+  \ . ' exec reek'
+  \ . ' -f json --no-progress --no-color --force-exclusion'
+
+Execute(The reek version check should be cached):
+  GivenCommandOutput ['reek 5.0.0']
+  AssertLinter 'reek', [
+  \ ale#Escape('reek') . ' --version',
+  \ ale#Escape('reek') . ' -f json --no-progress --no-color --force-exclusion --stdin-filename %s',
+  \]
+
+  GivenCommandOutput []
+  AssertLinter 'reek', [
+  \ ale#Escape('reek') . ' -f json --no-progress --no-color --force-exclusion --stdin-filename %s',
+  \]

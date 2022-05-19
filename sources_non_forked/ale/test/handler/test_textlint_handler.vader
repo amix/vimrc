@@ -1,0 +1,41 @@
+Before:
+  runtime! ale_linters/markdown/textlint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(textlint handler should handle errors output):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 16,
+  \     'col': 50,
+  \     'text': 'Found possibly misspelled word "NeoVim".',
+  \     'type': 'W',
+  \     'code': 'preset-japanese/no-doubled-joshi',
+  \   },
+  \ ],
+  \ ale#handlers#textlint#HandleTextlintOutput(bufnr(''), [
+  \   '[',
+  \   '  {',
+  \   '    "filePath": "test.md",',
+  \   '    "messages": [',
+  \   '      {',
+  \   '        "type": "lint",',
+  \   '        "ruleId": "preset-japanese/no-doubled-joshi",',
+  \   '        "index": 1332,',
+  \   '        "line": 16,',
+  \   '        "column": 50,',
+  \   '        "severity": 2,',
+  \   '        "message": "Found possibly misspelled word \"NeoVim\"."',
+  \   '      }',
+  \   '    ]',
+  \   '  }',
+  \   ']',
+  \ ])
+
+Execute(textlint handler should no error output):
+  AssertEqual
+  \ [],
+  \ ale#handlers#textlint#HandleTextlintOutput(bufnr(''), [
+  \ ])

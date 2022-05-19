@@ -1,0 +1,20 @@
+Before:
+  call ale#assert#SetUpLinterTest('inko', 'inko')
+  call ale#test#SetFilename('../test-files/inko/test.inko')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default executable path should be correct):
+  AssertLinter 'inko', ale#Escape('inko') . ' build --check --format=json %s'
+
+Execute(The inko callback should include tests/ for test paths):
+  call ale#engine#Cleanup(bufnr(''))
+  noautocmd e! ../test-files/inko/tests/test/test_foo.inko
+  call ale#engine#InitBufferInfo(bufnr(''))
+
+  AssertLinter 'inko',
+  \ ale#Escape('inko')
+  \   . ' build --check --format=json --include '
+  \   . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/inko/tests/'))
+  \   . ' %s'

@@ -1,0 +1,172 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+  call ale#test#SetFilename('dummy.txt')
+
+  let g:old_filename = expand('%:p')
+  let g:Callback = ''
+  let g:expr_list = []
+  let g:message_list = []
+  let g:handle_code_action_called = 0
+  let g:code_actions = []
+  let g:options = {}
+  let g:capability_checked = ''
+  let g:conn_id = v:null
+  let g:InitCallback = v:null
+
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/organize_imports.vim
+  runtime autoload/ale/code_action.vim
+
+  function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
+    let g:conn_id = ale#lsp#Register('executable', '/foo/bar', {})
+    call ale#lsp#MarkDocumentAsOpen(g:conn_id, a:buffer)
+
+    if a:linter.lsp is# 'tsserver'
+        call ale#lsp#MarkConnectionAsTsserver(g:conn_id)
+    endif
+
+    let l:details = {
+    \ 'command': 'foobar',
+    \ 'buffer': a:buffer,
+    \ 'connection_id': g:conn_id,
+    \ 'project_root': '/foo/bar',
+    \}
+
+    let g:InitCallback = {-> ale#lsp_linter#OnInit(a:linter, l:details, a:Callback)}
+  endfunction
+
+  function! ale#lsp#HasCapability(conn_id, capability) abort
+    let g:capability_checked = a:capability
+
+    return 1
+  endfunction
+
+  function! ale#lsp#RegisterCallback(conn_id, callback) abort
+    let g:Callback = a:callback
+  endfunction
+
+  function! ale#lsp#Send(conn_id, message) abort
+    call add(g:message_list, a:message)
+
+    return 42
+  endfunction
+
+  function! ale#util#Execute(expr) abort
+    call add(g:expr_list, a:expr)
+  endfunction
+
+  function! ale#code_action#HandleCodeAction(code_action, options) abort
+    let g:handle_code_action_called = 1
+    AssertEqual !&hidden, get(a:options, 'should_save')
+    call add(g:code_actions, a:code_action)
+  endfunction
+
+After:
+  if g:conn_id isnot v:null
+    call ale#lsp#RemoveConnectionWithID(g:conn_id)
+  endif
+
+  call ale#references#SetMap({})
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+  unlet! g:capability_checked
+  unlet! g:InitCallback
+  unlet! g:old_filename
+  unlet! g:conn_id
+  unlet! g:Callback
+  unlet! g:message_list
+  unlet! g:expr_list
+  unlet! b:ale_linters
+  unlet! g:options
+  unlet! g:code_actions
+  unlet! g:handle_code_action_called
+
+  runtime autoload/ale/lsp_linter.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/organize_imports.vim
+  runtime autoload/ale/code_action.vim
+
+Execute(Other messages for the tsserver handler should be ignored):
+  call ale#organize_imports#HandleTSServerResponse(1, {'command': 'foo'})
+  AssertEqual g:handle_code_action_called, 0
+
+Execute(Failed organizeImports responses should be handled correctly):
+  call ale#organize_imports#HandleTSServerResponse(
+  \ 1,
+  \ {'command': 'organizeImports', 'request_seq': 3}
+  \)
+  AssertEqual g:handle_code_action_called, 0
+
+Execute(Code actions from tsserver should be handled):
+  call ale#organize_imports#HandleTSServerResponse(1, {
+  \ 'command': 'organizeImports',
+  \ 'request_seq': 3,
+  \ 'success': v:true,
+  \ 'body': [],
+  \})
+  AssertEqual g:handle_code_action_called, 1
+  AssertEqual [{
+  \   'description': 'Organize Imports',
+  \   'changes': [],
+  \}], g:code_actions
+
+Given typescript(Some typescript file):
+  foo
+  somelongerline
+  bazxyzxyzxyz
+
+Execute(tsserver organize imports requests should be sent):
+  call ale#linter#Reset()
+  runtime ale_linters/typescript/tsserver.vim
+
+  ALEOrganizeImports
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual type(function('type')), type(g:InitCallback)
+  call g:InitCallback()
+
+  AssertEqual
+  \ 'function(''ale#organize_imports#HandleTSServerResponse'')',
+  \ string(g:Callback)
+
+  AssertEqual
+  \ [
+  \   ale#lsp#tsserver_message#Change(bufnr('')),
+  \   [0, 'ts@organizeImports', {
+  \     'scope': {
+  \         'type': 'file',
+  \         'args': {
+  \             'file': expand('%:p'),
+  \         },
+  \     },
+  \   }]
+  \ ],
+  \ g:message_list
+
+Given python(Some Python file):
+  foo
+  somelongerline
+  bazxyzxyzxyz
+
+Execute(Should result in error message):
+  call ale#linter#Reset()
+  runtime ale_linters/python/pylsp.vim
+  let b:ale_linters = ['pylsp']
+
+  ALEOrganizeImports
+
+  " We shouldn't register the callback yet.
+  AssertEqual '''''', string(g:Callback)
+
+  AssertEqual type(function('type')), type(g:InitCallback)
+  call g:InitCallback()
+
+  AssertEqual [
+  \  'echom ''OrganizeImports currently only works with tsserver''',
+  \], g:expr_list

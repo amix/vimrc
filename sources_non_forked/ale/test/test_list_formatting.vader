@@ -1,0 +1,188 @@
+Before:
+  Save g:ale_set_loclist
+  Save g:ale_set_quickfix
+  Save g:ale_loclist_msg_format
+  Save g:ale_open_list
+  Save g:ale_buffer_info
+  Save g:ale_set_lists_synchronously
+
+  let g:ale_set_lists_synchronously = 1
+  let g:ale_loclist_msg_format = '%code: %%s'
+  let g:ale_open_list = 0
+  let g:loclist = []
+  let g:ale_buffer_info = {bufnr(''): {'loclist': g:loclist}}
+
+  function! AddItem(data) abort
+    let l:item = {
+    \ 'bufnr': bufnr(''),
+    \ 'lnum': 1,
+    \ 'col': 1,
+    \ 'type': 'E',
+    \ 'linter_name': 'some_linter',
+    \}
+
+    call add(g:loclist, extend(l:item, a:data))
+  endfunction
+
+After:
+  Restore
+
+  unlet! g:loclist
+  unlet! b:ale_loclist_msg_format
+
+  delfunction AddItem
+
+  call setloclist(0, [])
+  call setqflist([])
+
+Execute(Formatting with codes should work for the loclist):
+  call AddItem({'text': "nocode\r"})
+  call ale#list#SetLists(bufnr(''), g:loclist)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 1,
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': 0,
+  \     'type': 'E',
+  \     'pattern': '',
+  \     'text': 'nocode',
+  \   },
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+  call remove(g:loclist, 0)
+  call AddItem({'text': 'withcode', 'code': 'E123'})
+  call ale#list#SetLists(bufnr(''), g:loclist)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 1,
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': 0,
+  \     'type': 'E',
+  \     'pattern': '',
+  \     'text': 'E123: withcode',
+  \   },
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(Formatting with codes should work for the quickfix list):
+  let g:ale_set_loclist = 0
+  let g:ale_set_quickfix = 1
+
+  call AddItem({'text': "nocode\r"})
+  call ale#list#SetLists(bufnr(''), g:loclist)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 1,
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': 0,
+  \     'type': 'E',
+  \     'pattern': '',
+  \     'text': 'nocode',
+  \   },
+  \ ],
+  \ ale#test#GetQflistWithoutNewerKeys()
+
+  call remove(g:loclist, 0)
+  call AddItem({'text': 'withcode', 'code': 'E123'})
+  call ale#list#SetLists(bufnr(''), g:loclist)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 1,
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': 0,
+  \     'type': 'E',
+  \     'pattern': '',
+  \     'text': 'E123: withcode',
+  \   },
+  \ ],
+  \ ale#test#GetQflistWithoutNewerKeys()
+
+Execute(Formatting with the linter name should work for the loclist):
+  let g:ale_loclist_msg_format = '(%linter%) %s'
+
+  call AddItem({'text': 'whatever'})
+  call ale#list#SetLists(bufnr(''), g:loclist)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 1,
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': 0,
+  \     'type': 'E',
+  \     'pattern': '',
+  \     'text': '(some_linter) whatever',
+  \   },
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(Formatting with the linter name should work for the quickfix list):
+  let g:ale_loclist_msg_format = '(%linter%) %s'
+  let g:ale_set_loclist = 0
+  let g:ale_set_quickfix = 1
+
+  call AddItem({'text': 'whatever'})
+  call ale#list#SetLists(bufnr(''), g:loclist)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 1,
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': 0,
+  \     'type': 'E',
+  \     'pattern': '',
+  \     'text': '(some_linter) whatever',
+  \   },
+  \ ],
+  \ ale#test#GetQflistWithoutNewerKeys()
+
+Execute(The buffer loclist format option should take precedence):
+  let g:ale_loclist_msg_format = '(%linter%) %s'
+  let b:ale_loclist_msg_format = 'FOO %s'
+
+  call AddItem({'text': 'whatever'})
+  call ale#list#SetLists(bufnr(''), g:loclist)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 1,
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': 0,
+  \     'type': 'E',
+  \     'pattern': '',
+  \     'text': 'FOO whatever',
+  \   },
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()

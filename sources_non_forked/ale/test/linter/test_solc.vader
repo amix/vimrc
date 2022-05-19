@@ -1,0 +1,13 @@
+Before:
+  call ale#assert#SetUpLinterTest('solidity', 'solc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'solc', 'solc %s'
+
+Execute(The options should be configurable):
+  let g:ale_solidity_solc_options = '--foobar'
+
+  AssertLinter 'solc', 'solc --foobar %s'

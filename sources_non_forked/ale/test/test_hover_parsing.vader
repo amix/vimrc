@@ -1,0 +1,173 @@
+Execute(Invalid results should be handled):
+  AssertEqual [[], []], ale#hover#ParseLSPResult(0)
+  AssertEqual [[], []], ale#hover#ParseLSPResult([0])
+  AssertEqual [[], []], ale#hover#ParseLSPResult('')
+  AssertEqual [[], []], ale#hover#ParseLSPResult({})
+  AssertEqual [[], []], ale#hover#ParseLSPResult([{}])
+  AssertEqual [[], []], ale#hover#ParseLSPResult([''])
+  AssertEqual [[], []], ale#hover#ParseLSPResult({'value': ''})
+  AssertEqual [[], []], ale#hover#ParseLSPResult([{'value': ''}])
+  AssertEqual [[], []], ale#hover#ParseLSPResult({'kind': 'markdown'})
+  AssertEqual [[], []], ale#hover#ParseLSPResult({'kind': 'plaintext'})
+  AssertEqual [[], []], ale#hover#ParseLSPResult({'kind': 'x', 'value': 'xxx'})
+
+Execute(A string with a code fence should be handled):
+  AssertEqual
+  \ [
+  \   [
+  \     'unlet! b:current_syntax',
+  \     'syntax include @ALE_hover_python syntax/python.vim',
+  \     'syntax region ALE_hover_1 start=/\%1l/ end=/\%3l/ contains=@ALE_hover_python',
+  \   ],
+  \   [
+  \     'def foo():',
+  \     '    pass',
+  \   ],
+  \ ],
+  \ ale#hover#ParseLSPResult(join([
+  \   '```python',
+  \   'def foo():',
+  \   '    pass',
+  \   '```',
+  \ ], "\n"))
+
+  AssertEqual
+  \ [
+  \   [
+  \     'unlet! b:current_syntax',
+  \     'syntax include @ALE_hover_python syntax/python.vim',
+  \     'unlet! b:current_syntax',
+  \     'syntax include @ALE_hover_typescript syntax/typescript.vim',
+  \     'syntax region ALE_hover_1 start=/\%1l/ end=/\%3l/ contains=@ALE_hover_python',
+  \     'syntax region ALE_hover_2 start=/\%5l/ end=/\%8l/ contains=@ALE_hover_python',
+  \     'syntax region ALE_hover_3 start=/\%8l/ end=/\%10l/ contains=@ALE_hover_typescript',
+  \   ],
+  \   [
+  \     'def foo():',
+  \     '    pass',
+  \     '',
+  \     'middle line',
+  \     '',
+  \     'def bar():',
+  \     '    pass',
+  \     '',
+  \     'const baz = () => undefined',
+  \   ],
+  \ ],
+  \ ale#hover#ParseLSPResult(join([
+  \   '```python',
+  \   'def foo():',
+  \   '    pass',
+  \   '```',
+  \   'middle line',
+  \   '```python',
+  \   'def bar():',
+  \   '    pass',
+  \   '```',
+  \   '```typescript',
+  \   'const baz = () => undefined',
+  \   '```',
+  \ ], "\n"))
+
+Execute(Multiple strings with fences should be handled):
+  AssertEqual
+  \ [
+  \   [
+  \     'unlet! b:current_syntax',
+  \     'syntax include @ALE_hover_python syntax/python.vim',
+  \     'unlet! b:current_syntax',
+  \     'syntax include @ALE_hover_typescript syntax/typescript.vim',
+  \     'syntax region ALE_hover_1 start=/\%1l/ end=/\%3l/ contains=@ALE_hover_python',
+  \     'syntax region ALE_hover_2 start=/\%5l/ end=/\%8l/ contains=@ALE_hover_python',
+  \     'syntax region ALE_hover_3 start=/\%8l/ end=/\%10l/ contains=@ALE_hover_typescript',
+  \   ],
+  \   [
+  \     'def foo():',
+  \     '    pass',
+  \     '',
+  \     'middle line',
+  \     '',
+  \     'def bar():',
+  \     '    pass',
+  \     '',
+  \     'const baz = () => undefined',
+  \   ],
+  \ ],
+  \ ale#hover#ParseLSPResult([
+  \   join([
+  \     '```python',
+  \     'def foo():',
+  \     '    pass',
+  \     '```',
+  \   ], "\n"),
+  \   join([
+  \     'middle line',
+  \     '```python',
+  \     'def bar():',
+  \     '    pass',
+  \     '```',
+  \     '```typescript',
+  \     'const baz = () => undefined',
+  \     '```',
+  \   ], "\n"),
+  \ ])
+
+Execute(Objects with kinds should be handled):
+  AssertEqual
+  \ [
+  \   [
+  \     'unlet! b:current_syntax',
+  \     'syntax include @ALE_hover_python syntax/python.vim',
+  \     'syntax region ALE_hover_1 start=/\%1l/ end=/\%3l/ contains=@ALE_hover_python',
+  \   ],
+  \   [
+  \     'def foo():',
+  \     '    pass',
+  \     '',
+  \     '```typescript',
+  \     'const baz = () => undefined',
+  \     '```',
+  \   ],
+  \ ],
+  \ ale#hover#ParseLSPResult([
+  \   {
+  \     'kind': 'markdown',
+  \     'value': join([
+  \       '```python',
+  \       'def foo():',
+  \       '    pass',
+  \       '```',
+  \     ], "\n"),
+  \   },
+  \   {
+  \     'kind': 'plaintext',
+  \     'value': join([
+  \       '```typescript',
+  \       'const baz = () => undefined',
+  \       '```',
+  \     ], "\n"),
+  \   },
+  \ ])
+
+Execute(Simple markdown formatting should be handled):
+  AssertEqual
+  \ [
+  \   [
+  \     'unlet! b:current_syntax',
+  \     'syntax include @ALE_hover_python syntax/python.vim',
+  \     'syntax region ALE_hover_1 start=/\%1l/ end=/\%3l/ contains=@ALE_hover_python',
+  \   ],
+  \   [
+  \     'def foo():',
+  \     '    pass',
+  \     '',
+  \     'formatted _ line _',
+  \   ],
+  \ ],
+  \ ale#hover#ParseLSPResult(join([
+  \   '```python',
+  \   'def foo():',
+  \   '    pass',
+  \   '```',
+  \   'formatted \_ line \_',
+  \ ], "\n"))

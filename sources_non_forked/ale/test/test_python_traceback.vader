@@ -1,0 +1,79 @@
+Execute(ale#python#HandleTraceback returns empty List for empty lines):
+  AssertEqual
+  \  [],
+  \  ale#python#HandleTraceback([], 10)
+
+Execute(ale#python#HandleTraceback returns traceback, when present):
+  AssertEqual
+  \  [{
+  \    'lnum': 1,
+  \    'text': 'Exception: Example error (See :ALEDetail)',
+  \    'detail': join([
+  \      'Traceback (most recent call last):',
+  \      '  File "./example.py", line 5, in <module>',
+  \      '    raise Exception(''Example message'')',
+  \      'Exception: Example error',
+  \    ], "\n"),
+  \  }],
+  \  ale#python#HandleTraceback([
+  \    'Traceback (most recent call last):',
+  \    '  File "./example.py", line 5, in <module>',
+  \    '    raise Exception(''Example message'')',
+  \    'Exception: Example error',
+  \  ], 1)
+
+" SyntaxError has extra output lines about the source
+Execute(ale#python#HandleTraceback returns SyntaxError traceback):
+  AssertEqual
+  \  [{
+  \    'lnum': 1,
+  \    'text': 'SyntaxError: invalid syntax (See :ALEDetail)',
+  \    'detail': join([
+  \      'Traceback (most recent call last):',
+  \      '  File "<string>", line 1, in <module>',
+  \      '  File "example.py", line 5',
+  \      '    +',
+  \      '    ^',
+  \      'SyntaxError: invalid syntax',
+  \    ], "\n"),
+  \  }],
+  \  ale#python#HandleTraceback([
+  \    'Traceback (most recent call last):',
+  \    '  File "<string>", line 1, in <module>',
+  \    '  File "example.py", line 5',
+  \    '    +',
+  \    '    ^',
+  \    'SyntaxError: invalid syntax',
+  \  ], 1)
+
+Execute(ale#python#HandleTraceback ignores traceback after line limit):
+  AssertEqual
+  \  [],
+  \  ale#python#HandleTraceback([
+  \    '',
+  \    'Traceback (most recent call last):',
+  \    '  File "./example.py", line 5, in <module>',
+  \    '    raise Exception(''Example message'')',
+  \    'Exception: Example error',
+  \  ], 1)
+
+Execute(ale#python#HandleTraceback doesn't include later lines in detail):
+  AssertEqual
+  \  [{
+  \    'lnum': 1,
+  \    'text': 'Exception: Example error (See :ALEDetail)',
+  \    'detail': join([
+  \      'Traceback (most recent call last):',
+  \      '  File "./example.py", line 5, in <module>',
+  \      '    raise Exception(''Example message'')',
+  \      'Exception: Example error',
+  \    ], "\n"),
+  \  }],
+  \  ale#python#HandleTraceback([
+  \    'Traceback (most recent call last):',
+  \    '  File "./example.py", line 5, in <module>',
+  \    '    raise Exception(''Example message'')',
+  \    'Exception: Example error',
+  \    'file:1:2: Style issue',
+  \    'file:3:4: Non-style issue',
+  \  ], 1)

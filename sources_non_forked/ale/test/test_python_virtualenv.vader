@@ -1,0 +1,12 @@
+Before:
+  Save $VIRTUAL_ENV
+  let $VIRTUAL_ENV = "/opt/example/"
+
+After:
+  Restore
+
+Execute(ale#python#FindVirtualenv falls back to $VIRTUAL_ENV when no directories match):
+  AssertEqual
+  \  ale#python#FindVirtualenv(bufnr('%')),
+  \  '/opt/example/',
+  \  'Expected VIRTUAL_ENV environment variable to be used, but it was not'

@@ -1,0 +1,35 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+  runtime ale_linters/java/javac.vim
+
+After:
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(Should return current directory if called on the project root):
+  call ale#test#SetFilename('test-files/ant/ant-project/Main.java')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/ant/ant-project'),
+  \ ale#ant#FindProjectRoot(bufnr(''))
+
+Execute(Should return root directory if called on a deeply nested source file):
+  call ale#test#SetFilename('test-files/ant/ant-project/src/several/namespace/layers/A.java')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/ant/ant-project'),
+  \ ale#ant#FindProjectRoot(bufnr(''))
+
+Execute(Should return empty string if called on a non-ant project):
+  call ale#test#SetFilename('test-files/ant/non-ant-project/Main.java')
+
+  AssertEqual
+  \ '',
+  \ ale#ant#FindProjectRoot(bufnr(''))
+
+Execute(Should return empty string if called on a file in a non-ant project):
+  call ale#test#SetFilename('test-files/ant/non-ant-project/several/namespace/layers/A.java')
+
+  AssertEqual
+  \ '',
+  \ ale#ant#FindProjectRoot(bufnr(''))

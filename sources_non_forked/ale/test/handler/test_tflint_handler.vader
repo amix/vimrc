@@ -1,0 +1,99 @@
+Before:
+  runtime! ale_linters/terraform/tflint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The tflint handler should parse items correctly for pre 0.11):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 12,
+  \     'text': 'be warned, traveller',
+  \     'code': 'aws_db_instance_readable_password',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 9,
+  \     'text': 'error message',
+  \     'code': 'aws_elasticache_cluster_invalid_type',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 5,
+  \     'text': 'just so ya know',
+  \     'code': 'aws_instance_not_specified_iam_profile',
+  \     'type': 'I',
+  \   },
+  \ ],
+  \ ale_linters#terraform#tflint#Handle(123, [
+  \ '[ { "detector": "aws_db_instance_readable_password", "type": "WARNING", "message": "be warned, traveller", "line": 12, "file": "github.com/wata727/example-module/aws_db_instance.tf", "link": "https://github.com/wata727/tflint/blob/master/docs/aws_db_instance_readable_password.md" }, { "detector": "aws_elasticache_cluster_invalid_type", "type": "ERROR", "message": "error message", "line": 9, "file": "github.com/wata727/example-module/aws_elasticache_cluster.tf", "link": "https://github.com/wata727/tflint/blob/master/docs/aws_elasticache_cluster_invalid_type.md" }, { "detector": "aws_instance_not_specified_iam_profile", "type": "NOTICE", "message": "just so ya know", "line": 5, "file": "github.com/wata727/example-module/aws_instance.tf", "link": "https://github.com/wata727/tflint/blob/master/docs/aws_instance_not_specified_iam_profile.md" } ]'
+  \ ])
+
+Execute(The tflint handler should parse items correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': 'github.com/wata727/example-module/aws_instance.tf',
+  \     'lnum': 1,
+  \     'col': 30,
+  \     'end_lnum': 2,
+  \     'end_col': 1,
+  \     'text': 'A block definition must have block content delimited by "{" and "}", starting on the same line as the block header.',
+  \     'code': 'Invalid block definition',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'filename': 'github.com/wata727/example-module/aws_instance.tf',
+  \     'lnum': 2,
+  \     'col': 3,
+  \     'end_lnum': 2,
+  \     'end_col': 6,
+  \     'text': 'An argument named "ami" is not expected here.',
+  \     'code': 'Unsupported argument',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'filename': 'github.com/wata727/example-module/aws_instance.tf',
+  \     'lnum': 3,
+  \     'col': 3,
+  \     'end_lnum': 1,
+  \     'end_col': 6,
+  \     'text': 'An argument named "instance_type" is not expected here.',
+  \     'code': 'Unsupported argument',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'filename': 'github.com/wata727/example-module/aws_db_instance.tf',
+  \     'lnum': 12,
+  \     'col': 11,
+  \     'end_lnum': 12,
+  \     'end_col': 21,
+  \     'text': 'be warned, traveller',
+  \     'code': 'aws_db_instance_readable_password',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'filename': 'github.com/wata727/example-module/aws_elasticache_cluster.tf',
+  \     'lnum': 9,
+  \     'col': 29,
+  \     'end_lnum': 9,
+  \     'end_col': 29,
+  \     'text': 'error message',
+  \     'code': 'aws_elasticache_cluster_invalid_type',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'filename': 'github.com/wata727/example-module/aws_instance.tf',
+  \     'lnum': 5,
+  \     'col': 15,
+  \     'end_lnum': 5,
+  \     'end_col': 25,
+  \     'text': 'just so ya know',
+  \     'code': 'aws_instance_not_specified_iam_profile',
+  \     'type': 'I',
+  \   },
+  \ ],
+  \ ale_linters#terraform#tflint#Handle(123, [
+  \ '{"issues":[{"rule":{"name":"aws_db_instance_readable_password","severity":"WARNING","link":"https://github.com/wata727/tflint/blob/master/docs/aws_db_instance_readable_password.md"},"message":"be warned, traveller","range":{"filename":"github.com/wata727/example-module/aws_db_instance.tf","start":{"line":12,"column":11},"end":{"line":12,"column":21},"callers":[]}},{"rule":{"name":"aws_elasticache_cluster_invalid_type","severity":"ERROR","link":"https://github.com/wata727/tflint/blob/master/docs/aws_elasticache_cluster_invalid_type.md"},"message":"error message","range":{"filename":"github.com/wata727/example-module/aws_elasticache_cluster.tf","start":{"line":9,"column":29},"end":{"line":9,"column":29},"callers":[]}},{"rule":{"name":"aws_instance_not_specified_iam_profile","severity":"NOTICE","link":"https://github.com/wata727/tflint/blob/master/docs/aws_instance_not_specified_iam_profile.md"},"message":"just so ya know","range":{"filename":"github.com/wata727/example-module/aws_instance.tf","start":{"line":5,"column":15},"end":{"line":5,"column":25},"callers":[]}}],"errors":[{"message":"github.com/wata727/example-module/aws_instance.tf:1,30-2,1: Invalid block definition; A block definition must have block content delimited by \"{\" and \"}\", starting on the same line as the block header."},{"message":"github.com/wata727/example-module/aws_instance.tf:2,3-6: Unsupported argument; An argument named \"ami\" is not expected here."},{"message":"github.com/wata727/example-module/aws_instance.tf:3,3-16: Unsupported argument; An argument named \"instance_type\" is not expected here."}]}'
+  \ ])

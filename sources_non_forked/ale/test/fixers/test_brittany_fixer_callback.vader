@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_haskell_brittany_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_haskell_brittany_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The brittany callback should return the correct default values):
+  call ale#test#SetFilename('../haskell_files/testfile.hs')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --write-mode inplace'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#brittany#Fix(bufnr(''))

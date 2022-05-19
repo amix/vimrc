@@ -1,0 +1,23 @@
+Before:
+  Save g:ale_haskell_floskell_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_haskell_floskell_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The floskell callback should return the correct default values):
+  call ale#test#SetFilename('../haskell_files/testfile.hs')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' %t',
+  \ },
+  \ ale#fixers#floskell#Fix(bufnr(''))

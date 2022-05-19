@@ -1,0 +1,145 @@
+#!/usr/bin/env python
+"""
+This script checks for missing or forbidden blank lines before or after
+particular Vim commands. This script ensures that VimL scripts are padded
+correctly, so they are easier to read.
+"""
+
+import sys
+import re
+
+INDENTATION_RE = re.compile(r'^ *')
+COMMENT_LINE_RE = re.compile(r'^ *"')
+COMMAND_RE = re.compile(r'^ *([a-zA-Z\\]+)')
+OPERATOR_END_RE = re.compile(r'(&&|\|\||\+|-|\*\| /)$')
+
+START_BLOCKS = set(['if', 'for', 'while', 'try', 'function'])
+END_BLOCKS = set(['endif', 'endfor', 'endwhile', 'endtry', 'endfunction'])
+MIDDLE_BLOCKS = set(['else', 'elseif', 'catch', 'finally'])
+TERMINATORS = set(['return', 'throw'])
+
+WHITESPACE_BEFORE_SET = START_BLOCKS | TERMINATORS
+WHITESPACE_FORBIDDEN_BEFORE_SET = END_BLOCKS | MIDDLE_BLOCKS
+WHITESPACE_AFTER_SET = END_BLOCKS
+WHITESPACE_FORBIDDEN_AFTER_SET = START_BLOCKS | MIDDLE_BLOCKS
+SAME_INDENTATION_SET = set(['\\'])
+
+
+def remove_comment_lines(line_iter):
+    for line_number, line in enumerate(line_iter, 1):
+        if not COMMENT_LINE_RE.match(line):
+            yield (line_number, line)
+
+
+def check_lines(line_iter):
+    previous_indentation_level = None
+    previous_command = None
+    previous_line_blank = False
+
+    for line_number, line in remove_comment_lines(line_iter):
+        if len(line) == 0:
+            # Check for commands where we shouldn't have blank lines after
+            # them, like `else` or the start of blocks like `function`.
+            if (
+                previous_command is not None
+                and previous_command in WHITESPACE_FORBIDDEN_AFTER_SET
+            ):
+                yield (
+                    line_number,
+                    'Blank line forbidden after `%s`' % (previous_command,)
+                )
+
+            previous_line_blank = True
+            previous_command = None
+        else:
+            indentation_level = INDENTATION_RE.match(line).end()
+            command_match = COMMAND_RE.match(line)
+
+            if command_match:
+                command = command_match.group(1)
+
+                if (
+                    command in SAME_INDENTATION_SET
+                    and previous_indentation_level is not None
+                    and indentation_level != previous_indentation_level
+                ):
+                    yield (
+                        line_number,
+                        'Line continuation should match previous indentation'
+                    )
+
+                if (
+                    previous_indentation_level is not None
+                    and indentation_level != previous_indentation_level
+                    and abs(indentation_level - previous_indentation_level) != 4  # noqa
+                ):
+                    yield (
+                        line_number,
+                        'Indentation should be 4 spaces'
+                    )
+
+                # Check for commands requiring blank lines before them, if they
+                # aren't at the start of a block.
+                if (
+                    command in WHITESPACE_BEFORE_SET
+                    and previous_indentation_level is not None
+                    and indentation_level == previous_indentation_level
+                    and previous_line_blank is False
+                ):
+                    yield (
+                        line_number,
+                        'Blank line required before `%s`' % (command,)
+                    )
+
+                # Check for commands where we shouldn't have blank lines before
+                # them, like `else` or the end of blocks like `endfunction`.
+                if (
+                    command in WHITESPACE_FORBIDDEN_BEFORE_SET
+                    and previous_line_blank is True
+                ):
+                    yield (
+                        line_number - 1,
+                        'Blank line forbidden before `%s`' % (command,)
+                    )
+
+                # Check for commands requiring blank lines after them, if they
+                # aren't at the end of a block.
+                if (
+                    previous_command is not None
+                    and previous_command in WHITESPACE_AFTER_SET
+                    and previous_indentation_level is not None
+                    and indentation_level == previous_indentation_level
+                    and previous_line_blank is False
+                ):
+                    yield (
+                        line_number - 1,
+                        'Blank line required after `%s`' % (command,)
+                    )
+
+                previous_command = command
+                previous_line_blank = False
+                previous_indentation_level = indentation_level
+
+            if OPERATOR_END_RE.search(line):
+                yield (
+                    line_number,
+                    'Put operators at the start of lines instead'
+                )
+
+
+def main():
+    status = 0
+
+    for filename in sys.argv[1:]:
+        with open(filename) as vim_file:
+            line_iter = (line.rstrip() for line in vim_file)
+
+            for line_number, message in check_lines(line_iter):
+                print('%s:%d %s' % (filename, line_number, message))
+                status = 1
+
+    sys.exit(status)
+
+
+if __name__ == "__main__":
+    main()

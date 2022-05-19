@@ -1,0 +1,77 @@
+Before:
+  Save g:ale_set_loclist
+  Save g:ale_set_quickfix
+  Save g:ale_buffer_info
+  Save g:ale_set_lists_synchronously
+
+  let g:ale_buffer_info = {}
+  let g:ale_set_loclist = 0
+  let g:ale_set_quickfix = 0
+  let g:ale_set_lists_synchronously = 1
+
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  Restore
+
+  call setloclist(0, [])
+  call setqflist([])
+
+  call ale#test#RestoreDirectory()
+
+Execute(The loclist titles should be set appropriately):
+  silent noautocmd file foo
+
+  let g:ale_set_loclist = 1
+
+  call ale#list#SetLists(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'lnum': 5, 'col': 5, 'text': 'x', 'type': 'E'},
+  \])
+
+  AssertEqual [{
+  \ 'lnum': 5,
+  \ 'bufnr': bufnr(''),
+  \ 'col': 5,
+  \ 'text': 'x',
+  \ 'valid': 1,
+  \ 'vcol': 0,
+  \ 'nr': 0,
+  \ 'type': 'E',
+  \ 'pattern': '',
+  \}], ale#test#GetLoclistWithoutNewerKeys()
+
+  if !has('nvim')
+    AssertEqual
+    \ {'title': ale#path#Simplify(getcwd() . '/foo')},
+    \ getloclist(0, {'title': ''})
+  endif
+
+Execute(The quickfix titles should be set appropriately):
+  silent noautocmd file foo
+
+  let g:ale_set_quickfix = 1
+
+  let g:ale_buffer_info[bufnr('')] = {
+  \ 'loclist': [{'bufnr': bufnr(''), 'lnum': 5, 'col': 5, 'text': 'x', 'type': 'E'}],
+  \}
+
+  call ale#list#SetLists(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'lnum': 5, 'col': 5, 'text': 'x', 'type': 'E'},
+  \])
+  AssertEqual [{
+  \ 'lnum': 5,
+  \ 'bufnr': bufnr(''),
+  \ 'col': 5,
+  \ 'text': 'x',
+  \ 'valid': 1,
+  \ 'vcol': 0,
+  \ 'nr': 0,
+  \ 'type': 'E',
+  \ 'pattern': '',
+  \}], ale#test#GetQflistWithoutNewerKeys()
+
+  if !has('nvim')
+    AssertEqual
+    \ {'title': ale#path#Simplify(getcwd() . '/foo')},
+    \ getqflist({'title': ''})
+  endif

@@ -1,0 +1,21 @@
+Before:
+  Save g:ale_kotlin_ktlint_rulesets
+
+  let g:ale_kotlin_ktlint_rulesets = []
+
+After:
+  Restore
+
+Execute(The ktlint handler method GetRulesets should properly parse custom rulesets):
+  let g:ale_kotlin_ktlint_rulesets = ['/path/to/custom/ruleset.jar', '/path/to/other/ruleset.jar']
+
+  AssertEqual
+  \ '--ruleset /path/to/custom/ruleset.jar --ruleset /path/to/other/ruleset.jar',
+  \ ale#handlers#ktlint#GetRulesets(bufnr(''))
+
+Execute(The ktlint handler method GetRulesets should return an empty string when no rulesets have been configured):
+  let g:ale_kotlin_ktlint_rulesets = []
+
+  AssertEqual
+  \ '',
+  \ ale#handlers#ktlint#GetRulesets(bufnr(''))

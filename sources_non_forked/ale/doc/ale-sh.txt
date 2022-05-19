@@ -26,6 +26,12 @@ g:ale_sh_bashate_options                             *g:ale_sh_bashate_options*
 <
 
 ===============================================================================
+cspell                                                          *ale-sh-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
 sh-language-server                                     *ale-sh-language-server*
 
 g:ale_sh_language_server_executable        *g:ale_sh_language_server_executable*

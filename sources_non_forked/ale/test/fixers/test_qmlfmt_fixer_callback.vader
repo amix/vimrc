@@ -1,0 +1,12 @@
+Before:
+  Save g:ale_qml_qmlfmt_executable
+
+After:
+  Restore
+
+Execute(The qmlfmt fixer should use the options you set):
+  let g:ale_qml_qmlfmt_executable = 'foo-exe'
+
+  AssertEqual
+  \ {'command': ale#Escape('foo-exe')},
+  \ ale#fixers#qmlfmt#Fix(bufnr(''))

@@ -1,0 +1,21 @@
+Execute(The pony handler should handle ponyc output):
+  call ale#test#SetFilename('foo.pony')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'filename': '/home/projects/Wombat.pony',
+  \     'lnum': 22,
+  \     'type': 'E',
+  \     'col': 30,
+  \     'text': 'can''t lookup private fields from outside the type',
+  \   },
+  \ ],
+  \ ale#handlers#pony#HandlePonycFormat(bufnr(''), [
+  \ 'Building builtin -> /usr/lib/pony/0.21.3/packages/builtin',
+  \ 'Building . -> /home/projects',
+  \ 'Error:',
+  \ '/home/projects/Wombat.pony:22:30: can''t lookup private fields from outside the type',
+  \ '                env.out.print(defaultWombat._hunger_level)',
+  \ '                                           ^',
+  \ ])

@@ -1,0 +1,24 @@
+Before:
+  call ale#assert#SetUpLinterTest('proto', 'protolint')
+  call ale#test#SetFilename('test.proto')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'protolint',
+  \ ale#Escape('protolint')
+  \ . ' lint'
+  \ . ' -reporter=unix'
+  \ . ' %s'
+
+Execute(The callback should include any additional options):
+  let b:ale_proto_protolint_executable = '/tmp/protolint'
+  let b:ale_proto_protolint_config = '/tmp/protolint.yaml'
+
+  AssertLinter '/tmp/protolint',
+  \ ale#Escape('/tmp/protolint')
+  \ . ' lint'
+  \ . ' -config_path=' . ale#Escape('/tmp/protolint.yaml')
+  \ . ' -reporter=unix'
+  \ . ' %s'

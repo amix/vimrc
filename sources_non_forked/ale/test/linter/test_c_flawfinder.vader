@@ -1,0 +1,24 @@
+Before:
+  call ale#assert#SetUpLinterTest('c', 'flawfinder')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The flawfinder command should be correct):
+  AssertLinter 'flawfinder', ale#Escape('flawfinder') . ' -CDQS --minlevel=1 %t'
+
+Execute(The minlevel of flawfinder should be configurable):
+  let b:ale_c_flawfinder_minlevel = 8
+
+  AssertLinter 'flawfinder', ale#Escape('flawfinder') . ' -CDQS --minlevel=8 %t'
+
+Execute(Additional flawfinder options should be configurable):
+  let b:ale_c_flawfinder_options = '--foobar'
+
+  AssertLinter 'flawfinder',
+  \ ale#Escape('flawfinder') . ' -CDQS --foobar --minlevel=1 %t'
+
+Execute(The flawfinder exectable should be configurable):
+  let b:ale_c_flawfinder_executable = 'foo/bar'
+
+  AssertLinter 'foo/bar', ale#Escape('foo/bar') . ' -CDQS --minlevel=1 %t'

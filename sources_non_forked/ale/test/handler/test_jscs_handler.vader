@@ -1,0 +1,39 @@
+Before:
+  runtime ale_linters/javascript/jscs.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(jscs should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 7,
+  \     'text': 'Variable declarations should use `let` or `const` not `var`',
+  \     'code': 'disallowVar',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 21,
+  \     'text': 'Illegal trailing whitespace',
+  \     'code': 'disallowTrailingWhitespace',
+  \   },
+  \   {
+  \     'lnum': 5,
+  \     'col': 9,
+  \     'text': 'Variable `hello` is not used',
+  \     'code': 'disallowUnusedVariables',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'text': 'Expected indentation of 1 characters',
+  \   },
+  \ ],
+  \ ale_linters#javascript#jscs#Handle(347, [
+  \   'foobar.js: line 1, col 7, disallowVar: Variable declarations should use `let` or `const` not `var`',
+  \   'foobar.js: line 3, col 21, disallowTrailingWhitespace: Illegal trailing whitespace',
+  \   'foobar.js: line 5, col 9, disallowUnusedVariables: Variable `hello` is not used',
+  \   'foobar.js: line 2, col 1, Expected indentation of 1 characters',
+  \ ])

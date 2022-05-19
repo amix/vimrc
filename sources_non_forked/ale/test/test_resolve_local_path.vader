@@ -1,0 +1,17 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(We should be able to find the local version of a file):
+  call ale#test#SetFilename('test-files/top/middle/bottom/dummy.txt')
+
+  AssertEqual
+  \ ale#path#Simplify(expand('%:p:h:h:h:h:h') . '/test-files/top/example.ini'),
+  \ ale#path#ResolveLocalPath(bufnr('%'), 'example.ini', '/global/config.ini')
+
+Execute(We shouldn't find anything for files which don't match):
+  AssertEqual
+  \ '/global/config.ini',
+  \ ale#path#ResolveLocalPath(bufnr('%'), 'missing.ini', '/global/config.ini')

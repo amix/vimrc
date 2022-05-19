@@ -25,3 +25,19 @@ function! ale#uri#Decode(value) abort
     \   'g'
     \)
 endfunction
+
+let s:uri_handlers = {
+\   'jdt': {
+\       'OpenURILink': function('ale#uri#jdt#OpenJDTLink'),
+\   }
+\}
+
+function! ale#uri#GetURIHandler(uri) abort
+    for l:scheme in keys(s:uri_handlers)
+        if a:uri =~# '^'.l:scheme.'://'
+            return s:uri_handlers[scheme]
+        endif
+    endfor
+
+    return v:null
+endfunction

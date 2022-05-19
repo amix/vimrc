@@ -1,0 +1,38 @@
+Before:
+  Save g:ale_ruby_sorbet_executable
+  Save g:ale_ruby_sorbet_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_ruby_sorbet_executable = 'xxxinvalid'
+  let g:ale_ruby_sorbet_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The sorbet callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/ruby/dummy.rb')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_ruby_sorbet_executable)
+  \     . ' tc --autocorrect --file %t',
+  \ },
+  \ ale#fixers#sorbet#Fix(bufnr(''))
+
+Execute(The sorbet callback should include custom sorbet options):
+  let g:ale_ruby_sorbet_options = '--enable-experimental-lsp-hover'
+  call ale#test#SetFilename('../test-files/ruby/with_config/dummy.rb')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape(g:ale_ruby_sorbet_executable)
+  \     . ' tc --enable-experimental-lsp-hover'
+  \     . ' --autocorrect --file %t',
+  \ },
+  \ ale#fixers#sorbet#Fix(bufnr(''))

@@ -1,0 +1,309 @@
+Before:
+  Save g:ale_completion_tsserver_remove_warnings
+
+  let g:ale_completion_tsserver_remove_warnings = 0
+
+After:
+  Restore
+
+  unlet! b:ale_tsserver_completion_names
+
+Execute(TypeScript completions responses should be parsed correctly):
+  AssertEqual [],
+  \ ale#completion#ParseTSServerCompletions({
+  \ 'body': [],
+  \})
+  AssertEqual
+  \ [
+  \   {
+  \     'word': 'foo',
+  \     'source': '/path/to/foo.ts',
+  \   },
+  \   {
+  \     'word': 'bar',
+  \     'source': '',
+  \   },
+  \   {
+  \     'word': 'baz',
+  \     'source': '',
+  \   }
+  \ ],
+  \ ale#completion#ParseTSServerCompletions({
+  \ 'body': [
+  \   {'name': 'foo', 'source': '/path/to/foo.ts'},
+  \   {'name': 'bar'},
+  \   {'name': 'baz'},
+  \ ],
+  \})
+
+Execute(TypeScript completions responses should include warnings):
+  AssertEqual
+  \ [
+  \   {
+  \     'word': 'foo',
+  \     'source': '/path/to/foo.ts',
+  \   },
+  \   {
+  \     'word': 'bar',
+  \     'source': '',
+  \   },
+  \   {
+  \     'word': 'baz',
+  \     'source': '',
+  \   }
+  \ ],
+  \ ale#completion#ParseTSServerCompletions({
+  \ 'body': [
+  \   {'name': 'foo', 'source': '/path/to/foo.ts'},
+  \   {'name': 'bar', 'kind': 'warning'},
+  \   {'name': 'baz'},
+  \ ],
+  \})
+
+Execute(TypeScript completions responses should not include warnings if excluded):
+  let g:ale_completion_tsserver_remove_warnings = 1
+  AssertEqual
+  \ [
+  \   {
+  \     'word': 'foo',
+  \     'source': '/path/to/foo.ts',
+  \   },
+  \   {
+  \     'word': 'baz',
+  \     'source': '',
+  \   }
+  \ ],
+  \ ale#completion#ParseTSServerCompletions({
+  \ 'body': [
+  \   {'name': 'foo', 'source': '/path/to/foo.ts'},
+  \   {'name': 'bar', 'kind': 'warning'},
+  \   {'name': 'baz'},
+  \ ],
+  \})
+
+Execute(TypeScript completion details responses should be parsed correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'word': 'abc',
+  \     'menu': '(property) Foo.abc: number',
+  \     'info': '',
+  \     'kind': 'v',
+  \     'icase': 1,
+  \     'user_data': json_encode({'_ale_completion_item': 1}),
+  \     'dup': g:ale_completion_autoimport,
+  \   },
+  \   {
+  \     'word': 'def',
+  \     'menu': '(property) Foo.def: number',
+  \     'info': 'foo bar baz',
+  \     'kind': 'v',
+  \     'icase': 1,
+  \     'user_data': json_encode({'_ale_completion_item': 1}),
+  \     'dup': g:ale_completion_autoimport,
+  \   },
+  \   {
+  \     'word': 'ghi',
+  \     'menu': '(class) Foo',
+  \     'info': '',
+  \     'kind': 'v',
+  \     'icase': 1,
+  \     'user_data': json_encode({'_ale_completion_item': 1}),
+  \     'dup': g:ale_completion_autoimport,
+  \   },
+  \ ],
+  \ ale#completion#ParseTSServerCompletionEntryDetails({
+  \ 'body': [
+  \   {
+  \     'name': 'abc',
+  \     'kind': 'parameterName',
+  \     'displayParts': [
+  \       {'text': '('},
+  \       {'text': 'property'},
+  \       {'text': ')'},
+  \       {'text': ' '},
+  \       {'text': 'Foo'},
+  \       {'text': '.'},
+  \       {'text': 'abc'},
+  \       {'text': ':'},
+  \       {'text': ' '},
+  \       {'text': 'number'},
+  \     ],
+  \   },
+  \   {
+  \     'name': 'def',
+  \     'kind': 'parameterName',
+  \     'displayParts': [
+  \       {'text': '('},
+  \       {'text': 'property'},
+  \       {'text': ')'},
+  \       {'text': ' '},
+  \       {'text': 'Foo'},
+  \       {'text': '.'},
+  \       {'text': 'def'},
+  \       {'text': ':'},
+  \       {'text': ' '},
+  \       {'text': 'number'},
+  \     ],
+  \     'documentation': [
+  \       {'text': 'foo'},
+  \       {'text': ' '},
+  \       {'text': 'bar'},
+  \       {'text': ' '},
+  \       {'text': 'baz'},
+  \     ],
+  \   },
+  \   {
+  \     'name': 'ghi',
+  \     'kind': 'className',
+  \     'displayParts': [
+  \       {'text': '('},
+  \       {'text': 'class'},
+  \       {'text': ')'},
+  \       {'text': ' '},
+  \       {'text': 'Foo'},
+  \     ],
+  \   },
+  \ ],
+  \})
+
+Execute(Entries without details should be included in the responses):
+  let b:ale_tsserver_completion_names = [{
+  \  'word': 'xyz',
+  \  'source': '/path/to/xyz.ts',
+  \ }]
+
+  AssertEqual
+  \ [
+  \   {
+  \     'word': 'abc',
+  \     'menu': 'import { def } from "./Foo"; (property) Foo.abc: number',
+  \     'info': '',
+  \     'kind': 'v',
+  \     'icase': 1,
+  \     'user_data': json_encode({
+  \         '_ale_completion_item': 1,
+  \         'code_actions': [{
+  \             'description': 'import { def } from "./Foo";',
+  \             'changes': [],
+  \         }],
+  \     }),
+  \     'dup': g:ale_completion_autoimport,
+  \   },
+  \   {
+  \     'word': 'def',
+  \     'menu': '(property) Foo.def: number',
+  \     'info': 'foo bar baz',
+  \     'kind': 'v',
+  \     'icase': 1,
+  \     'user_data': json_encode({'_ale_completion_item': 1}),
+  \     'dup': g:ale_completion_autoimport,
+  \   },
+  \   {
+  \     'word': 'xyz',
+  \     'menu': '',
+  \     'info': '',
+  \     'kind': 'v',
+  \     'user_data': json_encode({'_ale_completion_item': 1}),
+  \     'icase': 1,
+  \   },
+  \ ],
+  \ ale#completion#ParseTSServerCompletionEntryDetails({
+  \ 'body': [
+  \   {
+  \     'name': 'abc',
+  \     'kind': 'parameterName',
+  \     'displayParts': [
+  \       {'text': '('},
+  \       {'text': 'property'},
+  \       {'text': ')'},
+  \       {'text': ' '},
+  \       {'text': 'Foo'},
+  \       {'text': '.'},
+  \       {'text': 'abc'},
+  \       {'text': ':'},
+  \       {'text': ' '},
+  \       {'text': 'number'},
+  \     ],
+  \     'codeActions': [{
+  \        'description': 'import { def } from "./Foo";',
+  \        'changes': [],
+  \     }],
+  \   },
+  \   {
+  \     'name': 'def',
+  \     'kind': 'parameterName',
+  \     'displayParts': [
+  \       {'text': '('},
+  \       {'text': 'property'},
+  \       {'text': ')'},
+  \       {'text': ' '},
+  \       {'text': 'Foo'},
+  \       {'text': '.'},
+  \       {'text': 'def'},
+  \       {'text': ':'},
+  \       {'text': ' '},
+  \       {'text': 'number'},
+  \     ],
+  \     'documentation': [
+  \       {'text': 'foo'},
+  \       {'text': ' '},
+  \       {'text': 'bar'},
+  \       {'text': ' '},
+  \       {'text': 'baz'},
+  \     ],
+  \   },
+  \ ],
+  \})
+
+Execute(Default imports should be handled correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'word': 'abcd',
+  \     'menu': 'Import default ''abcd'' from module "./foo" (alias) const abcd: 3',
+  \     'info': '',
+  \     'kind': 't',
+  \     'icase': 1,
+  \     'user_data': json_encode({
+  \         '_ale_completion_item': 1,
+  \         'code_actions': [{
+  \             'description': 'Import default ''abcd'' from module "./foo"',
+  \             'changes': [],
+  \         }],
+  \     }),
+  \     'dup': g:ale_completion_autoimport,
+  \   },
+  \ ],
+  \ ale#completion#ParseTSServerCompletionEntryDetails({
+  \   'body': [
+  \     {
+  \       'name': 'default',
+  \       'kind': 'alias',
+  \       'displayParts': [
+  \         {'kind': 'punctuation', 'text': '('},
+  \         {'kind': 'text', 'text': 'alias'},
+  \         {'kind': 'punctuation', 'text': ')'},
+  \         {'kind': 'space', 'text': ' '},
+  \         {'kind': 'keyword', 'text': 'const'},
+  \         {'kind': 'space', 'text': ' '},
+  \         {'kind': 'localName', 'text': 'abcd'},
+  \         {'kind': 'punctuation', 'text': ':'},
+  \         {'kind': 'space', 'text': ' '},
+  \         {'kind': 'stringLiteral', 'text': '3'},
+  \         {'kind': 'lineBreak', 'text': '^@'},
+  \         {'kind': 'keyword', 'text': 'export'},
+  \         {'kind': 'space', 'text': ' '},
+  \         {'kind': 'keyword', 'text': 'default'},
+  \         {'kind': 'space', 'text': ' '},
+  \         {'kind': 'aliasName', 'text': 'abcd'}
+  \       ],
+  \       'codeActions': [
+  \         {
+  \           'description': 'Import default ''abcd'' from module "./foo"',
+  \           'changes': [],
+  \         },
+  \       ],
+  \     },
+  \   ],
+  \ })

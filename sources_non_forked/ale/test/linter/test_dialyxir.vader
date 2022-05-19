@@ -1,0 +1,16 @@
+Before:
+  call ale#assert#SetUpLinterTest('elixir', 'dialyxir')
+  call ale#test#SetFilename('../test-files/elixir/mix_project/lib/app.ex')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Builds dialyxir command with a normal project):
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elixir/mix_project')
+  AssertLinter 'mix', 'mix help dialyzer && mix dialyzer'
+
+Execute(Builds dialyxir command with an umbrella project):
+  call ale#test#SetFilename('../test-files/elixir/umbrella_project/apps/mix_project/lib/app.ex')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/elixir/umbrella_project')
+  AssertLinter 'mix', 'mix help dialyzer && mix dialyzer'

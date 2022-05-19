@@ -1,0 +1,29 @@
+Before:
+    augroup TestFiletypeGroup
+        autocmd!
+        autocmd BufEnter,BufRead *.x setf xfiletype
+        autocmd BufEnter,BufRead *.y set filetype=yfiletype
+        autocmd BufEnter,BufRead *.z setlocal filetype=zfiletype
+        autocmd BufEnter,BufRead *.jsx set filetype=javascript.jsx
+    augroup END
+
+After:
+  unlet! g:map
+  augroup TestFiletypeGroup
+      autocmd!
+  augroup END
+  augroup! TestFiletypeGroup
+
+Execute(ALE should parse autocmd filetypes correctly):
+  let g:map = ale#filetypes#LoadExtensionMap()
+
+  AssertEqual '.x', g:map['xfiletype']
+  AssertEqual '.y', g:map['yfiletype']
+  AssertEqual '.z', g:map['zfiletype']
+  AssertEqual '.jsx', g:map['javascript.jsx']
+
+Execute(ALE should guess file extensions appropriately):
+  " The whole string should be used, if there's a match.
+  AssertEqual '.jsx', ale#filetypes#GuessExtension('javascript.jsx')
+  " The first part should be used.
+  AssertEqual '.x', ale#filetypes#GuessExtension('xfiletype.yfiletype')

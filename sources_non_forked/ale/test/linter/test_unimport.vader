@@ -1,0 +1,71 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'unimport')
+  call ale#test#SetFilename('test.py')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  unlet! b:executable
+  unlet! b:bin_dir
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The unimport callbacks should return the correct default values):
+  AssertLinter 'unimport', ale#Escape('unimport') . ' --check %t'
+
+Execute(The unimport executable should be configurable, and escaped properly):
+  let b:ale_python_unimport_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' --check %t'
+
+Execute(The unimport command callback should let you set options):
+  let b:ale_python_unimport_options = '--gitignore'
+
+  AssertLinter 'unimport', ale#Escape('unimport') . ' --gitignore --check %t'
+
+Execute(The unimport command should switch directories to the detected project root):
+  call ale#test#SetFilename('../test-files/python/no_virtualenv/subdir/foo/bar.py')
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/python/no_virtualenv/subdir')
+  AssertLinter 'unimport', ale#Escape('unimport') . ' --check %t'
+
+Execute(The unimport callbacks should detect virtualenv directories and switch to the project root):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/unimport'
+  \)
+
+  AssertLinter b:executable, ale#Escape(b:executable) . ' --check %t'
+
+Execute(You should able able to use the global unimport instead):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+  let g:ale_python_unimport_use_global = 1
+
+  AssertLinter 'unimport', ale#Escape('unimport') . ' --check %t'
+
+Execute(Setting executable to 'pipenv' appends 'run unimport'):
+  let g:ale_python_unimport_executable = 'path/to/pipenv'
+
+  AssertLinterCwd expand('#' . bufnr('') . ':p:h')
+  AssertLinter 'path/to/pipenv', ale#Escape('path/to/pipenv') . ' run unimport --check %t'
+
+Execute(Pipenv is detected when python_unimport_auto_pipenv is set):
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+  let g:ale_python_unimport_auto_pipenv = 1
+
+  AssertLinterCwd expand('#' . bufnr('') . ':p:h')
+  AssertLinter 'pipenv', ale#Escape('pipenv') . ' run unimport --check %t'
+
+Execute(Setting executable to 'poetry' appends 'run unimport'):
+  let g:ale_python_unimport_executable = 'path/to/poetry'
+
+  AssertLinterCwd expand('#' . bufnr('') . ':p:h')
+  AssertLinter 'path/to/poetry', ale#Escape('path/to/poetry') . ' run unimport --check %t'
+
+Execute(Poetry is detected when python_unimport_auto_poetry is set):
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+  let g:ale_python_unimport_auto_poetry = 1
+
+  AssertLinterCwd expand('#' . bufnr('') . ':p:h')
+  AssertLinter 'poetry', ale#Escape('poetry') . ' run unimport --check %t'

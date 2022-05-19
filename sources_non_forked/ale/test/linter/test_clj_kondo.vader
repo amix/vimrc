@@ -1,0 +1,15 @@
+Before:
+  call ale#assert#SetUpLinterTest('clojure', 'clj_kondo')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'clj-kondo', 'clj-kondo'
+  \   . ' --cache --lint %t'
+
+Execute(Extra options should be supported):
+  let g:ale_clojure_clj_kondo_options = '--config ./clj-kondo/config.edn'
+
+  AssertLinter 'clj-kondo', 'clj-kondo'
+  \   . ' --config ./clj-kondo/config.edn --lint %t'

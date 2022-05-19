@@ -1,0 +1,22 @@
+Before:
+  call ale#assert#SetUpLinterTest('ink', 'ls')
+  set ft=ink
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(should set correct defaults):
+  AssertLinter 'ink-language-server', ale#Escape('ink-language-server') . ' --stdio'
+
+Execute(should set correct LSP values):
+  call ale#test#SetFilename('../test-files/ink/story/main.ink')
+
+  AssertLSPLanguage 'ink'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/ink/story')
+
+Execute(should accept configuration settings):
+  AssertLSPConfig {}
+  let b:ale_ink_ls_initialization_options = {'ink': {'runThroughMono': v:true}}
+  AssertLSPOptions {'ink': {'runThroughMono': v:true}}

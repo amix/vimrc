@@ -1,0 +1,79 @@
+Before:
+  let g:ale_deno_importMap = 'import_map.json'
+  let g:ale_deno_unstable = 0
+  let g:ale_deno_executable = 'deno'
+  let g:ale_deno_lsp_project_root = ''
+
+  runtime autoload/ale/handlers/deno.vim
+  call ale#assert#SetUpLinterTest('javascript', 'deno')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Should set deno lsp for JavaScript projects using stable Deno API):
+  AssertLSPOptions {
+  \   'enable': v:true,
+  \   'lint': v:true,
+  \   'unstable': v:false,
+  \   'importMap': ''
+  \}
+
+Execute(Should set deno lsp using unstable Deno API if enabled by user):
+  let g:ale_deno_unstable = 1
+
+  AssertLSPOptions {
+  \   'enable': v:true,
+  \   'lint': v:true,
+  \   'unstable': v:true,
+  \   'importMap': ''
+  \}
+
+Execute(Should set the default importMap filepath):
+  call ale#test#SetFilename('../test-files/javascript_deno/main.js')
+
+  AssertLSPOptions {
+  \   'enable': v:true,
+  \   'lint': v:true,
+  \   'unstable': v:false,
+  \   'importMap': ale#path#Simplify(g:dir . '/../test-files/javascript_deno/import_map.json')
+  \}
+
+Execute(Should set the importMap filepath from user defined importMap):
+  let g:ale_deno_importMap = 'custom_import_map.json'
+  call ale#test#SetFilename('../test-files/javascript_deno/main.js')
+
+  AssertLSPOptions {
+  \   'enable': v:true,
+  \   'lint': v:true,
+  \   'unstable': v:false,
+  \   'importMap': ale#path#Simplify(g:dir . '/../test-files/javascript_deno/custom_import_map.json')
+  \}
+
+Execute(Should set the importMap filepath from user defined importMap with unstable API):
+  let g:ale_deno_importMap = 'custom_import_map.json'
+  let g:ale_deno_unstable = 1
+  call ale#test#SetFilename('../test-files/javascript_deno/main.js')
+
+  AssertLSPOptions {
+  \   'enable': v:true,
+  \   'lint': v:true,
+  \   'unstable': v:true,
+  \   'importMap': ale#path#Simplify(g:dir . '/../test-files/javascript_deno/custom_import_map.json')
+  \}
+
+Execute(Should find project root containing tsconfig.json):
+  call ale#test#SetFilename('../test-files/javascript_deno/main.js')
+
+  AssertLSPLanguage 'javascript'
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/javascript_deno')
+
+Execute(Should use user-specified project root):
+  let g:ale_deno_lsp_project_root = '/'
+
+  call ale#test#SetFilename('../test-files/javascript_deno/main.js')
+
+  AssertLSPLanguage 'javascript'
+  AssertLSPProject '/'
+
+Execute(Check Deno LSP command):
+  AssertLinter 'deno', ale#Escape('deno') . ' lsp'

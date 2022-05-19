@@ -1,0 +1,95 @@
+Before:
+  runtime ale_linters/ansible/ansible_lint.vim
+  call ale#test#SetFilename('test_playbook.yml')
+
+  let b:ale_warn_about_trailing_whitespace = 1
+
+After:
+  unlet! b:ale_warn_about_trailing_whitespace
+  call ale#linter#Reset()
+
+Execute(The ansible-lint handler for version group <5 should handle basic errors):
+  AssertEqual
+  \ [
+  \   {
+  \    'lnum': 35,
+  \    'col': 0,
+  \    'type': 'E',
+  \    'text': 'Trailing whitespace',
+  \    'code': 'EANSIBLE0002',
+  \   },
+  \ ],
+  \ ale_linters#ansible#ansible_lint#Handle(bufnr(''), [4, 1, 2], [
+  \ fnamemodify(tempname(), ':h') . '/test_playbook.yml:35: [EANSIBLE0002] Trailing whitespace',
+  \ ])
+
+Execute(The ansible-lint handler for version group <5 should supress trailing whitespace output when the option is used):
+  let b:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale_linters#ansible#ansible_lint#Handle(bufnr(''), [4, 1, 2], [
+  \ fnamemodify(tempname(), ':h') . '/test_playbook.yml:35: [EANSIBLE0002] Trailing whitespace',
+  \ ])
+
+
+Execute(The ansible-lint handler for version group >=5 should handle basic errors):
+  AssertEqual
+  \ [
+  \   {
+  \    'lnum': 35,
+  \    'col': 0,
+  \    'type': 'E',
+  \    'text': 'File permissions unset or incorrect',
+  \    'code': 'risky-file-permissions',
+  \   },
+  \ ],
+  \ ale_linters#ansible#ansible_lint#Handle(bufnr(''), [5, 1, 2], [
+  \ fnamemodify(tempname(), ':h') . '/test_playbook.yml:35: [risky-file-permissions] [VERY_HIGH] File permissions unset or incorrect',
+  \ ])
+
+Before:
+  runtime ale_linters/ansible/ansible_lint.vim
+  call ale#test#SetFilename('test playbook.yml')
+
+After:
+  call ale#linter#Reset()
+
+Execute (The ansible-lint handler for version group <5 should handle names with spaces):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'col': 6,
+  \     'type': 'E',
+  \     'text': 'indentation is not a multiple of four',
+  \     'code': 'E111',
+  \   },
+  \ ],
+  \ ale_linters#ansible#ansible_lint#Handle(bufnr(''), [4, 1, 2], [
+  \ fnamemodify(tempname(), ':h') . '/test playbook.yml:6:6: E111 indentation is not a multiple of four',
+  \ ])
+
+Execute (The ansible-lint handler for version group >=5 should handle names with spaces):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'col': 148,
+  \     'type': 'E',
+  \     'text': "'var' is not a valid attribute for a Play",
+  \     'code': 'syntax-check',
+  \   },
+  \ ],
+  \ ale_linters#ansible#ansible_lint#Handle(bufnr(''), [5, 1, 2], [
+  \ fnamemodify(tempname(), ':h') . "/test playbook.yml:3:148: [syntax-check] [VERY_HIGH] 'var' is not a valid attribute for a Play",
+  \ ])
+
+Execute (The ansible-lint handler should ignore errors from other files):
+  AssertEqual
+  \ [
+  \ ],
+  \ ale_linters#ansible#ansible_lint#Handle(bufnr(''), [5, 1, 2], [
+  \   '/foo/bar/roles/test_playbook.yml:6: [command-instead-of-module] [VERY_LOW] curl used in place of get_url or uri module',
+  \ ])

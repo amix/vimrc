@@ -1,4 +1,4 @@
-" Author: medains <https://github.com/medains>, ardis <https://github.com/ardisdreelath>
+" Author: medains <https://github.com/medains>, ardis <https://github.com/ardisdreelath>, Arizard <https://github.com/Arizard>
 " Description: phpstan for PHP files
 
 " Set to change the ruleset
@@ -6,6 +6,7 @@ let g:ale_php_phpstan_executable = get(g:, 'ale_php_phpstan_executable', 'phpsta
 let g:ale_php_phpstan_level = get(g:, 'ale_php_phpstan_level', '')
 let g:ale_php_phpstan_configuration = get(g:, 'ale_php_phpstan_configuration', '')
 let g:ale_php_phpstan_autoload = get(g:, 'ale_php_phpstan_autoload', '')
+let g:ale_php_phpstan_memory_limit = get(g:, 'ale_php_phpstan_memory_limit', '')
 call ale#Set('php_phpstan_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#php#phpstan#GetCommand(buffer, version) abort
@@ -17,6 +18,11 @@ function! ale_linters#php#phpstan#GetCommand(buffer, version) abort
     let l:autoload = ale#Var(a:buffer, 'php_phpstan_autoload')
     let l:autoload_option = !empty(l:autoload)
     \   ? ' -a ' . ale#Escape(l:autoload)
+    \   : ''
+
+    let l:memory_limit = ale#Var(a:buffer, 'php_phpstan_memory_limit')
+    let l:memory_limit_option = !empty(l:memory_limit)
+    \   ? ' --memory-limit ' . ale#Escape(l:memory_limit)
     \   : ''
 
     let l:level =  ale#Var(a:buffer, 'php_phpstan_level')
@@ -41,6 +47,7 @@ function! ale_linters#php#phpstan#GetCommand(buffer, version) abort
     \   . l:configuration_option
     \   . l:autoload_option
     \   . l:level_option
+    \   . l:memory_limit_option
     \   . ' %s'
 endfunction
 

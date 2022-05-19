@@ -1,0 +1,93 @@
+Before:
+  runtime ale_linters/php/php.vim
+
+After:
+  call ale#linter#Reset()
+
+Given (Some invalid lines of PHP):
+  [foo;]
+  class Foo { / }
+  $foo)
+  ['foo' 'bar']
+  function count() {}
+
+Execute(The php handler should calculate column numbers):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 5,
+  \     'end_col': 5,
+  \     'text': "syntax error, unexpected ';', expecting ']'",
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 13,
+  \     'end_col': 13,
+  \     'text': "syntax error, unexpected '/', expecting function (T_FUNCTION) or const (T_CONST)",
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 5,
+  \     'end_col': 5,
+  \     'text': "syntax error, unexpected ')'",
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 8,
+  \     'end_col': 12,
+  \     'text': "syntax error, unexpected ''bar'' (T_CONSTANT_ENCAPSED_STRING), expecting ']'",
+  \   },
+  \ ],
+  \ ale_linters#php#php#Handle(347, [
+  \   "This line should be ignored completely",
+  \   "Parse error:  syntax error, unexpected ';', expecting ']' in - on line 1",
+  \   "Parse error:  syntax error, unexpected '/', expecting function (T_FUNCTION) or const (T_CONST) in - on line 2",
+  \   "Parse error:  syntax error, unexpected ')' in - on line 3",
+  \   "Parse error:  syntax error, unexpected ''bar'' (T_CONSTANT_ENCAPSED_STRING), expecting ']' in - on line 4",
+  \ ])
+
+Execute (The php handler should ignore lines starting with 'PHP Parse error'):
+  AssertEqual
+  \ [],
+  \ ale_linters#php#php#Handle(347, [
+  \   "PHP Parse error:  syntax error, This line should be ignored completely in - on line 1",
+  \ ])
+
+Execute (The php handler should handle lines containing 'Standard input code'):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 47,
+  \     'col': 0,
+  \     'text': "Invalid numeric literal",
+  \   },
+  \ ],
+  \ ale_linters#php#php#Handle(347, [
+  \   "Parse error: Invalid numeric literal in Standard input code on line 47",
+  \ ])
+Execute (The php handler should parse lines without column indication):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'col': 0,
+  \     'text': "Cannot redeclare count()",
+  \   },
+  \   {
+  \     'lnum': 21,
+  \     'col': 0,
+  \     'text': "syntax error, unexpected end of file",
+  \   },
+  \   {
+  \     'lnum': 47,
+  \     'col': 0,
+  \     'text': "Invalid numeric literal",
+  \   },
+  \ ],
+  \ ale_linters#php#php#Handle(347, [
+  \   "This line should be ignored completely",
+  \   "Fatal error:  Cannot redeclare count() in - on line 5",
+  \   "Parse error:  syntax error, unexpected end of file in - on line 21",
+  \   "Parse error: Invalid numeric literal in - on line 47",
+  \ ])

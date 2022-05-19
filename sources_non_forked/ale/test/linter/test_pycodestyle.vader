@@ -1,0 +1,46 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'pycodestyle')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The pycodestyle command callback should return default string):
+  AssertLinter 'pycodestyle', ale#Escape('pycodestyle') . '  -'
+
+Execute(The pycodestyle command callback should allow options):
+  let g:ale_python_pycodestyle_options = '--exclude=test*.py'
+
+  AssertLinter 'pycodestyle',
+  \ ale#Escape('pycodestyle') . ' --exclude=test*.py -'
+
+Execute(The pycodestyle executable should be configurable):
+  let g:ale_python_pycodestyle_executable = '~/.local/bin/pycodestyle'
+
+  AssertLinter '~/.local/bin/pycodestyle',
+  \ ale#Escape('~/.local/bin/pycodestyle') . '  -'
+
+Execute(Setting executable to 'pipenv' appends 'run pycodestyle'):
+  let g:ale_python_pycodestyle_executable = 'path/to/pipenv'
+
+  AssertLinter 'path/to/pipenv',
+  \ ale#Escape('path/to/pipenv') . ' run pycodestyle  -'
+
+Execute(Pipenv is detected when python_pycodestyle_auto_pipenv is set):
+  let g:ale_python_pycodestyle_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinter 'pipenv',
+  \ ale#Escape('pipenv') . ' run pycodestyle  -'
+
+Execute(Setting executable to 'poetry' appends 'run pycodestyle'):
+  let g:ale_python_pycodestyle_executable = 'path/to/poetry'
+
+  AssertLinter 'path/to/poetry',
+  \ ale#Escape('path/to/poetry') . ' run pycodestyle  -'
+
+Execute(Poetry is detected when python_pycodestyle_auto_poetry is set):
+  let g:ale_python_pycodestyle_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinter 'poetry',
+  \ ale#Escape('poetry') . ' run pycodestyle  -'

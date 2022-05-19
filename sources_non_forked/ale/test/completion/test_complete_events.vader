@@ -1,0 +1,35 @@
+Before:
+  let g:complete_post_triggered = 0
+
+  augroup VaderTest
+    autocmd!
+    autocmd User ALECompletePost let g:complete_post_triggered = 1
+  augroup END
+
+After:
+  unlet! b:ale_completion_info
+  unlet! g:complete_post_triggered
+
+  augroup VaderTest
+    autocmd!
+  augroup END
+
+  augroup! VaderTest
+
+Execute(ALECompletePost should not be triggered when completion is cancelled):
+  call ale#completion#HandleUserData({})
+
+  Assert !g:complete_post_triggered
+
+Execute(ALECompletePost should not be triggered when tools other than ALE insert completions):
+  call ale#completion#HandleUserData({'user_data': ''})
+  call ale#completion#HandleUserData({'user_data': '{}'})
+
+  Assert !g:complete_post_triggered
+
+Execute(ALECompletePost should be triggered when ALE inserts completions):
+  call ale#completion#HandleUserData({
+  \ 'user_data': json_encode({'_ale_completion_item': 1}),
+  \})
+
+  Assert g:complete_post_triggered

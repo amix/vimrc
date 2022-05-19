@@ -1,0 +1,270 @@
+#!/usr/bin/env bash
+
+# Author: w0rp <devw0rp@gmail.com>
+#
+# This script runs tests for the ALE project. Run `./run-tests --help` for
+# options, or read the output below.
+#
+
+image=denseanalysis/ale
+
+# Create docker image tag based on Dockerfile contents
+if [ -n "$(command -v md5)" ]; then
+    image_tag=$(md5 -q Dockerfile)
+else
+    image_tag=$(md5sum Dockerfile | cut -d' ' -f1)
+fi
+git_version=$(git describe --always --tags)
+
+# Used in all test scripts for running the selected Docker image.
+DOCKER_RUN_IMAGE="$image:$image_tag"
+export DOCKER_RUN_IMAGE
+
+tests='test/*.vader test/*/*.vader test/*/*/*.vader test/*/*/*.vader'
+# These flags are forwarded to the script for running Vader tests.
+verbose_flag=''
+quiet_flag=''
+run_neovim_02_tests=1
+run_neovim_06_tests=1
+run_vim_80_tests=1
+run_vim_82_tests=1
+run_linters=1
+
+while [ $# -ne 0 ]; do
+    case $1 in
+    -v)
+        verbose_flag='-v'
+        shift
+    ;;
+    -q)
+        quiet_flag='-q'
+        shift
+    ;;
+    --build-image)
+        run_vim_80_tests=0
+        run_vim_82_tests=0
+        run_neovim_02_tests=0
+        run_neovim_06_tests=0
+        run_linters=0
+        shift
+    ;;
+    --neovim-only)
+        run_vim_80_tests=0
+        run_vim_82_tests=0
+        run_linters=0
+        shift
+    ;;
+    --neovim-02-only)
+        run_neovim_06_tests=0
+        run_vim_80_tests=0
+        run_vim_82_tests=0
+        run_linters=0
+        shift
+    ;;
+    --neovim-06-only)
+        run_neovim_02_tests=0
+        run_vim_80_tests=0
+        run_vim_82_tests=0
+        run_linters=0
+        shift
+    ;;
+    --vim-only)
+        run_neovim_02_tests=0
+        run_neovim_06_tests=0
+        run_linters=0
+        shift
+    ;;
+    --vim-80-only)
+        run_neovim_02_tests=0
+        run_neovim_06_tests=0
+        run_vim_82_tests=0
+        run_linters=0
+        shift
+    ;;
+    --vim-82-only)
+        run_neovim_02_tests=0
+        run_neovim_06_tests=0
+        run_vim_80_tests=0
+        run_linters=0
+        shift
+    ;;
+    --linters-only)
+        run_vim_80_tests=0
+        run_vim_82_tests=0
+        run_neovim_02_tests=0
+        run_neovim_06_tests=0
+        shift
+    ;;
+    --fast)
+        run_vim_80_tests=0
+        run_vim_82_tests=0
+        run_neovim_02_tests=0
+        run_neovim_06_tests=1
+        shift
+    ;;
+    --help)
+        echo 'Usage: ./run-tests [OPTION]... [FILE]...'
+        echo
+        echo 'Filenames can be given as arguments to run a subset of tests.'
+        echo 'For example: ./run-tests test/test_ale_var.vader'
+        echo
+        echo 'Options:'
+        echo '  -v                Enable verbose output'
+        echo '  -q                Hide output for successful tests'
+        echo '  --build-image     Run docker image build only.'
+        echo '  --neovim-only     Run tests only for NeoVim'
+        echo '  --neovim-02-only  Run tests only for NeoVim 0.2'
+        echo '  --neovim-06-only  Run tests only for NeoVim 0.6'
+        echo '  --vim-only        Run tests only for Vim'
+        echo '  --vim-80-only     Run tests only for Vim 8.0'
+        echo '  --vim-82-only     Run tests only for Vim 8.2'
+        echo '  --linters-only    Run only Vint and custom checks'
+        echo '  --fast            Run only the fastest Vim and custom checks'
+        echo '  --help            Show this help text'
+        echo '  --                Stop parsing options after this'
+        exit 0
+    ;;
+    --)
+        shift
+        break
+    ;;
+    -?*)
+        echo "Invalid argument: $1" 1>&2
+        exit 1
+    ;;
+    *)
+        break
+    ;;
+    esac
+done
+
+# Allow tests to be passed as arguments.
+if [ $# -ne 0 ]; then
+    # This doesn't perfectly handle work splitting, but none of our files
+    # have spaces in the names.
+    tests="$*"
+
+    # Don't run other tools when targeting tests.
+    run_linters=0
+fi
+
+# Delete .swp files in the test directory, which cause Vim 8 to hang.
+find test -name '*.swp' -delete
+
+# Check if docker un image is available locally
+has_image=$(docker images --quiet "${image}:${image_tag}" | wc -l)
+
+if [ "$has_image" -eq 0 ]
+then
+
+  echo "Downloading run image ${image}:${image_tag}"
+  docker pull "${image}:${image_tag}" &> /dev/null
+
+  if [ $? -eq 1 ]
+  then
+    echo "Could not pull image ${image}:${image_tag}"
+    echo "Building run image ${image}:${image_tag}"
+    docker build --build-arg GIT_VERSION="$git_version" -t "${image}:${image_tag}" .
+    docker tag "${image}:${image_tag}" "${image}:latest"
+
+    if [[ -z "${DOCKER_HUB_USER:-}" || -z "${DOCKER_HUB_PASS:-}" ]]
+    then
+      echo "Docker Hub credentials not set, skip push"
+    else
+      echo "Push ${image}:${image_tag} to Docker Hub"
+      echo "$DOCKER_HUB_PASS" | docker login -u "$DOCKER_HUB_USER" --password-stdin
+      docker push "${image}:${image_tag}"
+    fi
+  fi
+else
+  echo "Docker run image ${image}:${image_tag} ready"
+fi
+
+set -e
+set -u
+
+docker tag "${image}:${image_tag}" "${image}:latest"
+
+output_dir=$(mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir')
+
+trap '{ rm -rf "$output_dir"; }' EXIT
+
+file_number=0
+pid_list=''
+
+# Used for killing tests when you kill the script.
+cancel_tests() {
+    set +e
+
+    if [ -n "$pid_list" ]; then
+        for pid in $pid_list; do
+            kill "$pid"
+            wait "$pid"
+        done
+    fi
+
+    # shellcheck disable=SC2046
+    docker kill $(docker ps -a -q --filter ancestor="$image" --format='{{.ID}}') &> /dev/null
+
+    if [ -d "$output_dir" ]; then
+        rm -rf "$output_dir"
+    fi
+
+    echo
+    exit 1
+}
+
+trap cancel_tests INT TERM
+
+for vim in $(docker run --rm "$DOCKER_RUN_IMAGE" ls /vim-build/bin | grep '^neovim\|^vim' ); do
+    if ( [[ $vim =~ ^vim-v8.0 ]] && ((run_vim_80_tests)) ) \
+    || ( [[ $vim =~ ^vim-v8.2 ]] && ((run_vim_82_tests)) ) \
+    || ( [[ $vim =~ ^neovim-v0.2 ]] && ((run_neovim_02_tests)) ) \
+    || ( [[ $vim =~ ^neovim-v0.6 ]] && ((run_neovim_06_tests)) ); then
+        echo "Starting Vim: $vim..."
+        file_number=$((file_number+1))
+        test/script/run-vader-tests $quiet_flag $verbose_flag "$vim" "$tests" \
+            > "$output_dir/$file_number" 2>&1 &
+        pid_list="$pid_list $!"
+    fi
+done
+
+if ((run_linters)); then
+    echo "Starting Vint..."
+    file_number=$((file_number+1))
+    test/script/run-vint > "$output_dir/$file_number" 2>&1 &
+    pid_list="$pid_list $!"
+
+    echo "Starting Custom checks..."
+    file_number=$((file_number+1))
+    test/script/custom-checks &> "$output_dir/$file_number" 2>&1 &
+    pid_list="$pid_list $!"
+fi
+
+echo
+
+failed=0
+index=0
+
+for pid in $pid_list; do
+    this_failed=0
+    index=$((index+1))
+
+    if ! wait "$pid"; then
+        failed=1
+        this_failed=1
+    fi
+
+    # Hide output for things that passed if -q is set.
+    if [ "$quiet_flag" != '-q' ] || ((this_failed)); then
+        cat "$output_dir/$index"
+    fi
+done
+
+if ((failed)); then
+    echo 'Something went wrong!'
+else
+    echo 'All tests passed!'
+fi
+
+exit $failed

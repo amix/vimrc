@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_puppet_puppetlint_executable
+  Save g:ale_puppet_puppetlint_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_puppet_puppetlint_executable = 'xxxinvalid'
+  let g:ale_puppet_puppetlint_options = '--invalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The puppetlint callback should return the correct default values):
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/puppet/dummy.pp')
+
+  AssertEqual
+  \ {'read_temporary_file': 1,
+  \  'command': ale#Escape(g:ale_puppet_puppetlint_executable)
+  \      . ' ' . g:ale_puppet_puppetlint_options
+  \      . ' --fix %t' },
+  \ ale#fixers#puppetlint#Fix(bufnr(''))

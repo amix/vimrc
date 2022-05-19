@@ -1,0 +1,25 @@
+Before:
+  Save b:ale_elm_format_executable
+  Save b:ale_elm_format_options
+
+  let b:ale_elm_format_executable = 'erlfmt'
+  let b:ale_elm_format_options = ''
+
+After:
+  Restore
+
+Execute(The erlfmt command should handle empty options):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('erlfmt') . ' %s'
+  \ },
+  \ ale#fixers#erlfmt#Fix(bufnr(''))
+
+Execute(The erlfmt command should handle custom options):
+  let b:ale_erlang_erlfmt_options = '--insert-pragma'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('erlfmt') . ' --insert-pragma %s'
+  \ },
+  \ ale#fixers#erlfmt#Fix(bufnr(''))

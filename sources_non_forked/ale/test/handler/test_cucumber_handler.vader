@@ -1,0 +1,18 @@
+Before:
+  runtime ale_linters/cucumber/cucumber.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The cucumber handler parses JSON correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 13,
+  \     'code': 'E',
+  \     'text': 'Undefined step'
+  \   }
+  \ ],
+  \ ale_linters#cucumber#cucumber#Handle(bufnr(''), [
+  \   '[{"elements": [{"steps": [{"result": {"status": "undefined"},"match": {"location": "features/cuke.feature:13"},"line": 13,"name": "Something undefined","keyword": "Given "},{"result": {"status": "skipped"},"match": {"location": "/var/lib/gems/2.3.0/gems/cucumber-3.1.0/lib/cucumber/step_match.rb:103"},"line": 14,"name": "I visit the profile page for Alice","keyword": "When "}],"type": "scenario","line": 12,"description": "","name": "Another scenario","keyword": "Scenario","id": "a-user-can-view-another-users-profile;another-scenario"}],"line": 1,"description": "","name": "A user can view another users profile","keyword": "Feature","id": "a-user-can-view-another-users-profile","uri": "features/cuke.feature"}]'
+  \ ])

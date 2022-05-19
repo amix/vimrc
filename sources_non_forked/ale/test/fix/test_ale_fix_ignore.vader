@@ -1,0 +1,110 @@
+Before:
+  Save g:ale_fixers
+  Save g:ale_fix_on_save
+  Save g:ale_fix_on_save_ignore
+
+  let g:ale_fix_on_save = 1
+  let g:ale_fixers = {'abc': ['a', 'b'], 'xyz': ['c', 'd']}
+  unlet! b:ale_fixers
+  unlet! b:ale_fix_on_save_ignore
+
+  function FixerA(buffer, lines) abort
+    return a:lines + ['a']
+  endfunction
+
+  function FixerB(buffer, lines) abort
+    return a:lines + ['b']
+  endfunction
+
+  function FixerC(buffer, lines) abort
+    return a:lines + ['c']
+  endfunction
+
+  function FixerD(buffer, lines) abort
+    return a:lines + ['d']
+  endfunction
+
+  set filetype=abc.xyz
+  let g:test_filename = tempname()
+  execute 'noautocmd silent file ' . fnameescape(g:test_filename)
+
+  call ale#fix#registry#Add('a', 'FixerA', ['abc'], '')
+  call ale#fix#registry#Add('b', 'FixerB', ['abc'], '')
+  call ale#fix#registry#Add('c', 'FixerC', ['xyz'], '')
+  call ale#fix#registry#Add('d', 'FixerD', ['xyz'], '')
+
+After:
+  Restore
+
+  if exists('g:test_filename') && filereadable(g:test_filename)
+    call delete(g:test_filename)
+  endif
+
+  unlet! b:ale_fixers
+  unlet! b:ale_fix_on_save_ignore
+  unlet! g:test_filename
+
+  delfunction FixerA
+  delfunction FixerB
+  delfunction FixerC
+  delfunction FixerD
+
+  call ale#fix#registry#ResetToDefaults()
+
+Given abc.xyz (An empty file):
+Execute(Ignoring with a filetype in a global Dictionary should work):
+  let g:ale_fix_on_save_ignore = {'abc': ['b'], 'xyz': ['c']}
+
+  call ale#events#SaveEvent(bufnr(''))
+
+  AssertEqual ['', 'a', 'd'], getline(1, '$')
+
+Execute(Ignoring with a filetype in a global List should work):
+  let g:ale_fix_on_save_ignore = ['b', 'c']
+
+  call ale#events#SaveEvent(bufnr(''))
+
+  AssertEqual ['', 'a', 'd'], getline(1, '$')
+
+Execute(Ignoring with a filetype in a local Dictionary should work):
+  let g:ale_fix_on_save_ignore = {'abc': ['b'], 'xyz': ['c']}
+  " The local Dictionary should entirely replace the global one.
+  let b:ale_fix_on_save_ignore = {'abc': ['b']}
+
+  call ale#events#SaveEvent(bufnr(''))
+
+  AssertEqual ['', 'a', 'c', 'd'], getline(1, '$')
+
+Execute(Ignoring with a filetype in a local List should work):
+  let g:ale_fix_on_save_ignore = {'abc': ['b'], 'xyz': ['c']}
+  " The local List should entirely replace the global Dictionary.
+  let b:ale_fix_on_save_ignore = ['b']
+
+  call ale#events#SaveEvent(bufnr(''))
+
+  AssertEqual ['', 'a', 'c', 'd'], getline(1, '$')
+
+Execute(Ignoring functions by reference with a Dictionary should work):
+  let g:ale_fixers = {
+  \ 'abc': [function('FixerA'), function('FixerB')],
+  \ 'xyz': [function('FixerC'), function('FixerD')],
+  \}
+  let b:ale_fix_on_save_ignore = {
+  \ 'abc': [function('FixerB')],
+  \ 'xyz': [function('FixerC')],
+  \}
+
+  call ale#events#SaveEvent(bufnr(''))
+
+  AssertEqual ['', 'a', 'd'], getline(1, '$')
+
+Execute(Ignoring functions by reference with a List should work):
+  let g:ale_fixers = {
+  \ 'abc': [function('FixerA'), function('FixerB')],
+  \ 'xyz': [function('FixerC'), function('FixerD')],
+  \}
+  let b:ale_fix_on_save_ignore = [function('FixerB'), function('FixerC')]
+
+  call ale#events#SaveEvent(bufnr(''))
+
+  AssertEqual ['', 'a', 'd'], getline(1, '$')

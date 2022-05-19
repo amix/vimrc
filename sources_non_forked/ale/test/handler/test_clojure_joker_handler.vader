@@ -1,0 +1,75 @@
+Before:
+  runtime ale_linters/clojure/joker.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(the clojure joker handler should be able to handle errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 123,
+  \     'col': 44,
+  \     'type': 'E',
+  \     'text': 'Read error: Unexpected )',
+  \   },
+  \ ],
+  \ ale_linters#clojure#joker#HandleJokerFormat(0, [
+  \   'test.clj:123:44: Read error: Unexpected )',
+  \ ])
+
+Execute(the clojure joker handler should be able to handle warnings):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 654,
+  \     'col': 321,
+  \     'type': 'W',
+  \     'text': 'Parse warning: let form with empty body',
+  \   }
+  \ ],
+  \ ale_linters#clojure#joker#HandleJokerFormat(0, [
+  \   'test.clj:654:321: Parse warning: let form with empty body'
+  \ ])
+
+Execute(the clojure joker handler should be able to handle exceptions):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 123,
+  \     'col': 321,
+  \     'type': 'E',
+  \     'text': 'Exception: something horrible happen',
+  \   }
+  \ ],
+  \ ale_linters#clojure#joker#HandleJokerFormat(0, [
+  \   'test.clj:123:321: Exception: something horrible happen'
+  \ ])
+
+Execute(the clojure joker handler should be able to handle errors from stdin):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 16,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'Read error: Unexpected )',
+  \   },
+  \ ],
+  \ ale_linters#clojure#joker#HandleJokerFormat(0, [
+  \   '<stdin>:16:1: Read error: Unexpected )',
+  \ ])
+
+Execute(the clojure joker handler should be able to handle windows files):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 123,
+  \     'col': 44,
+  \     'type': 'E',
+  \     'text': 'Read error: Unexpected )',
+  \   }
+  \ ],
+  \ ale_linters#clojure#joker#HandleJokerFormat(0, [
+  \   'C:\my\operating\system\is\silly\core.clj:123:44: Read error: Unexpected )',
+  \ ])

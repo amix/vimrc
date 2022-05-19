@@ -1,0 +1,25 @@
+Before:
+  Save g:ale_html_tidy_executable
+
+  let g:ale_html_tidy_executable = '../test-files/tidy/tidy'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The tidy callback should return 0 if tidy not found):
+  let g:ale_html_tidy_executable = 'xxxinvalidpath'
+  AssertEqual
+  \ 0,
+  \ ale#fixers#tidy#Fix(bufnr(''))
+
+Execute(The tidy callback should return the correct default command):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('../test-files/tidy/tidy')
+  \     . ' -q --tidy-mark no --show-errors 0 --show-warnings 0'
+  \ },
+  \ ale#fixers#tidy#Fix(bufnr(''))

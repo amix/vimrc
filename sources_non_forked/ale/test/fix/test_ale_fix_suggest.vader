@@ -1,0 +1,102 @@
+Before:
+  call ale#fix#registry#Clear()
+
+  let g:buffer = bufnr('')
+
+  function GetSuggestions()
+    silent ALEFixSuggest
+
+    if bufnr('') != g:buffer
+      let l:lines = getline(1, '$')
+    else
+      let l:lines = []
+    endif
+
+    return l:lines
+  endfunction
+
+After:
+  if bufnr('') != g:buffer
+    :q!
+  endif
+
+  unlet! g:buffer
+
+  call ale#fix#registry#ResetToDefaults()
+  delfunction GetSuggestions
+
+Execute(ALEFixSuggest should return something sensible with no suggestions):
+  AssertEqual
+  \ [
+  \   'There is nothing in the registry to suggest.',
+  \   '',
+  \   'Press q to close this window',
+  \ ],
+  \ GetSuggestions()
+
+Execute(ALEFixSuggest should set the appropriate settings):
+  silent ALEFixSuggest
+
+  AssertEqual 'ale-fix-suggest', &filetype
+  Assert !&modified, 'The buffer was marked as modified'
+  Assert !&modifiable, 'The buffer was modifiable'
+
+Execute(ALEFixSuggest output should be correct for only generic handlers):
+  call ale#fix#registry#Add('zed', 'XYZ', [], 'Zedify things.')
+  call ale#fix#registry#Add('alpha', 'XYZ', [], 'Alpha things.')
+
+  AssertEqual
+  \ [
+  \   'Try the following generic fixers:',
+  \   '',
+  \   '''alpha'' - Alpha things.',
+  \   '''zed'' - Zedify things.',
+  \   '',
+  \   'See :help ale-fix-configuration',
+  \   '',
+  \   'Press q to close this window',
+  \ ],
+  \ GetSuggestions()
+
+Execute(ALEFixSuggest output should be correct for only filetype handlers):
+  let &filetype = 'testft2.testft'
+
+  call ale#fix#registry#Add('zed', 'XYZ', ['testft2'], 'Zedify things.')
+  call ale#fix#registry#Add('alpha', 'XYZ', ['testft'], 'Alpha things.')
+
+  AssertEqual
+  \ [
+  \   'Try the following fixers appropriate for the filetype:',
+  \   '',
+  \   '''alpha'' - Alpha things.',
+  \   '''zed'' - Zedify things.',
+  \   '',
+  \   'See :help ale-fix-configuration',
+  \   '',
+  \   'Press q to close this window',
+  \ ],
+  \ GetSuggestions()
+
+Execute(ALEFixSuggest should suggest filetype and generic handlers):
+  let &filetype = 'testft2.testft'
+
+  call ale#fix#registry#Add('zed', 'XYZ', ['testft2'], 'Zedify things.', ['foobar'])
+  call ale#fix#registry#Add('alpha', 'XYZ', ['testft'], 'Alpha things.')
+  call ale#fix#registry#Add('generic', 'XYZ', [], 'Generic things.')
+
+  AssertEqual
+  \ [
+  \   'Try the following fixers appropriate for the filetype:',
+  \   '',
+  \   '''alpha'' - Alpha things.',
+  \   '''zed'', ''foobar'' - Zedify things.',
+  \   '',
+  \   'Try the following generic fixers:',
+  \   '',
+  \   '''generic'' - Generic things.',
+  \   '',
+  \   'See :help ale-fix-configuration',
+  \   '',
+  \   'Press q to close this window',
+  \ ],
+  \ GetSuggestions()

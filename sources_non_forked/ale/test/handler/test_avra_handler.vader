@@ -1,0 +1,24 @@
+Before:
+  runtime ale_linters/avra/avra.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The avra handler should parse errors correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'text': "Unknown device: atmega3228p",
+  \     'type': 'E'
+  \   },
+  \   {
+  \     'lnum': 12,
+  \     'text': "Unknown directive: .EQ",
+  \     'type': 'E'
+  \   }
+  \ ],
+  \ ale_linters#avra#avra#Handle(bufnr(''), [
+  \   "main.asm(3) : Error   : Unknown device: atmega3228p",
+  \   "main.asm(12) : Error   : Unknown directive: .EQ"
+  \ ])

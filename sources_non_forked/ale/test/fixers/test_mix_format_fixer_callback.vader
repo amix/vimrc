@@ -1,0 +1,36 @@
+Before:
+  Save g:ale_elixir_mix_executable
+  Save g:ale_elixir_mix_format_options
+
+  let g:ale_elixir_mix_executable = 'xxxinvalid'
+  let g:ale_elixir_mix_format_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The mix_format callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/elixir/testfile.ex')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' format %t',
+  \ },
+  \ ale#fixers#mix_format#Fix(bufnr(''))
+
+Execute(The mix_format callback should include the correct format options):
+  let g:ale_elixir_mix_format_options = 'invalid_options'
+  call ale#test#SetFilename('../test-files/elixir/testfile.ex')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' format invalid_options %t',
+  \ },
+  \ ale#fixers#mix_format#Fix(bufnr(''))

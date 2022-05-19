@@ -1,0 +1,48 @@
+Execute(ale#path#Upwards should return the correct path components):
+  if has('unix')
+    " Absolute paths should include / on the end.
+    AssertEqual
+    \ ['/foo/bar/baz', '/foo/bar', '/foo', '/'],
+    \ ale#path#Upwards('/foo/bar/baz')
+    AssertEqual
+    \ ['/foo/bar/baz', '/foo/bar', '/foo', '/'],
+    \ ale#path#Upwards('/foo/bar/baz///')
+    " Relative paths do not.
+    AssertEqual
+    \ ['foo/bar/baz', 'foo/bar', 'foo'],
+    \ ale#path#Upwards('foo/bar/baz')
+    AssertEqual
+    \ ['foo2/bar', 'foo2'],
+    \ ale#path#Upwards('foo//..////foo2////bar')
+    " Expect an empty List for empty strings.
+    AssertEqual [], ale#path#Upwards('')
+  endif
+
+  if has('win32')
+    AssertEqual
+    \ ['C:\foo\bar\baz', 'C:\foo\bar', 'C:\foo', 'C:\'],
+    \ ale#path#Upwards('C:\foo\bar\baz')
+    AssertEqual
+    \ ['C:\foo\bar\baz', 'C:\foo\bar', 'C:\foo', 'C:\'],
+    \ ale#path#Upwards('C:\foo\bar\baz\\\')
+    AssertEqual
+    \ ['/foo\bar\baz', '/foo\bar', '/foo', '/'],
+    \ ale#path#Upwards('/foo/bar/baz')
+    AssertEqual
+    \ ['foo\bar\baz', 'foo\bar', 'foo'],
+    \ ale#path#Upwards('foo/bar/baz')
+    AssertEqual
+    \ ['foo\bar\baz', 'foo\bar', 'foo'],
+    \ ale#path#Upwards('foo\bar\baz')
+    " simplify() is used internally, and should sort out \ paths when actually
+    " running Windows, which we can't test here.
+    AssertEqual
+    \ ['foo2\bar', 'foo2'],
+    \ ale#path#Upwards('foo//..///foo2////bar')
+    " Expect an empty List for empty strings.
+    AssertEqual [], ale#path#Upwards('')
+    " Paths starting with // return /
+    AssertEqual
+    \ ['/foo2\bar', '/foo2', '/'],
+    \ ale#path#Upwards('//foo//..///foo2////bar')
+  endif

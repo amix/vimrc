@@ -1,0 +1,22 @@
+Before:
+  Save g:ale_dhall_executable
+  Save g:ale_dhall_options
+
+  " Use an invalid global executable, so we don’t match it.
+  let g:ale_dhall_executable = 'odd-dhall'
+  let g:ale_dhall_options = '--ascii'
+
+  call ale#assert#SetUpFixerTest('dhall', 'dhall-format')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The dhall-format callback should return the correct options):
+  call ale#test#SetFilename('../dhall_files/testfile.dhall')
+
+  AssertFixer
+  \ {
+  \   'command': ale#Escape('odd-dhall')
+  \       . ' --ascii'
+  \       . ' format'
+  \ }

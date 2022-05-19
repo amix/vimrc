@@ -1,0 +1,62 @@
+Before:
+  Save g:ale_filename_mappings
+  Save b:ale_filename_mappings
+
+  let g:ale_filename_mappings = {}
+  unlet! b:ale_filename_mappings
+
+After:
+  Restore
+
+Execute(ale#GetFilenameMappings should return the correct mappings for given linters/fixers):
+  let g:ale_filename_mappings = {'a': [['foo', 'bar']], 'b': [['baz', 'foo']]}
+
+  AssertEqual [['foo', 'bar']], ale#GetFilenameMappings(bufnr(''), 'a')
+  AssertEqual [['baz', 'foo']], ale#GetFilenameMappings(bufnr(''), 'b')
+  AssertEqual [], ale#GetFilenameMappings(bufnr(''), 'c')
+
+  let b:ale_filename_mappings = {'b': [['abc', 'xyz']]}
+
+  AssertEqual [], ale#GetFilenameMappings(bufnr(''), 'a')
+  AssertEqual [['abc', 'xyz']], ale#GetFilenameMappings(bufnr(''), 'b')
+  AssertEqual [], ale#GetFilenameMappings(bufnr(''), 'c')
+
+Execute(ale#GetFilenameMappings should return Lists set for use with all tools):
+  let g:ale_filename_mappings = [['foo', 'bar']]
+
+  AssertEqual [['foo', 'bar']], ale#GetFilenameMappings(bufnr(''), 'a')
+  AssertEqual [['foo', 'bar']], ale#GetFilenameMappings(bufnr(''), '')
+  AssertEqual [['foo', 'bar']], ale#GetFilenameMappings(bufnr(''), v:null)
+
+  let b:ale_filename_mappings = [['abc', 'xyz']]
+
+  AssertEqual [['abc', 'xyz']], ale#GetFilenameMappings(bufnr(''), 'a')
+  AssertEqual [['abc', 'xyz']], ale#GetFilenameMappings(bufnr(''), '')
+  AssertEqual [['abc', 'xyz']], ale#GetFilenameMappings(bufnr(''), v:null)
+
+Execute(ale#GetFilenameMappings should let you use * as a fallback):
+  let g:ale_filename_mappings = {'a': [['foo', 'bar']], '*': [['abc', 'xyz']]}
+
+  AssertEqual [['foo', 'bar']], ale#GetFilenameMappings(bufnr(''), 'a')
+  AssertEqual [['abc', 'xyz']], ale#GetFilenameMappings(bufnr(''), 'b')
+  AssertEqual [['abc', 'xyz']], ale#GetFilenameMappings(bufnr(''), '')
+  AssertEqual [['abc', 'xyz']], ale#GetFilenameMappings(bufnr(''), v:null)
+
+Execute(ale#filename_mapping#Invert should invert filename mappings):
+  AssertEqual
+  \ [['b', 'a'], ['y', 'x']],
+  \ ale#filename_mapping#Invert([['a', 'b'], ['x', 'y']])
+  \
+Execute(ale#filename_mapping#Map return the filename as-is if there are no mappings):
+  AssertEqual
+  \ '/foo//bar',
+  \ ale#filename_mapping#Map('/foo//bar', [['/bar', '/data/']])
+
+Execute(ale#filename_mapping#Map should map filenames):
+  AssertEqual
+  \ '/data/bar',
+  \ ale#filename_mapping#Map('/foo//bar', [
+  \   ['/data/', '/baz/'],
+  \   ['/foo/', '/data/'],
+  \   ['/foo/', '/xyz/'],
+  \ ])

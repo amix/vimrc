@@ -1,0 +1,96 @@
+Before:
+  Save &shell
+  Save &shellcmdflag
+  Save g:ale_shell
+  Save g:ale_shell_arguments
+
+  Save b:ale_shell
+  Save b:ale_shell_arguments
+
+  unlet! b:ale_shell
+  unlet! b:ale_shell_arguments
+
+  unlet! g:ale_shell
+  unlet! g:ale_shell_arguments
+
+After:
+  Restore
+
+Execute(sh should be used when the shell is fish):
+  if !has('win32')
+    " Set something else, so we will replace that too.
+    let &shellcmdflag = '-f'
+    let &shell = 'fish'
+
+    AssertEqual ['/bin/sh', '-c', 'foobar'], ale#job#PrepareCommand(bufnr(''), 'foobar')
+
+    let &shell = '/usr/bin/fish'
+
+    AssertEqual ['/bin/sh', '-c', 'foobar'], ale#job#PrepareCommand(bufnr(''), 'foobar')
+
+    let &shell = '/usr/local/bin/fish'
+
+    AssertEqual ['/bin/sh', '-c', 'foobar'], ale#job#PrepareCommand(bufnr(''), 'foobar')
+  endif
+
+Execute(sh should be used when the shell is powershell):
+  if !has('win32')
+    " Set something else, so we will replace that too.
+    let &shellcmdflag = '-f'
+    let &shell = 'pwsh'
+
+    AssertEqual ['/bin/sh', '-c', 'foobar'], ale#job#PrepareCommand(bufnr(''), 'foobar')
+
+    let &shell = '/usr/bin/pwsh'
+
+    AssertEqual ['/bin/sh', '-c', 'foobar'], ale#job#PrepareCommand(bufnr(''), 'foobar')
+
+    let &shell = '/usr/local/bin/pwsh'
+
+    AssertEqual ['/bin/sh', '-c', 'foobar'], ale#job#PrepareCommand(bufnr(''), 'foobar')
+  endif
+
+Execute(Other shells should be used when set):
+  if !has('win32')
+    let &shell = '/bin/bash'
+    let &shellcmdflag = '-c'
+    let g:ale_shell = &shell
+
+    AssertEqual ['/bin/bash', '-c', 'foobar'], ale#job#PrepareCommand(bufnr(''), 'foobar')
+  endif
+
+Execute(cmd /s/c as a string should be used on Windows):
+  if has('win32')
+    let &shell = 'who cares'
+    let &shellcmdflag = 'whatever'
+
+    AssertEqual 'cmd /s/c "foobar"', ale#job#PrepareCommand(bufnr(''), 'foobar')
+  endif
+
+Execute(Setting g:ale_shell should cause ale#job#PrepareCommand to use set shell):
+  let g:ale_shell = '/foo/bar'
+
+  if has('win32')
+    AssertEqual ['/foo/bar', '/c', 'foobar'], ale#job#PrepareCommand(bufnr(''), "foobar")
+  else
+    AssertEqual ['/foo/bar', '-c', 'foobar'], ale#job#PrepareCommand(bufnr(''), "foobar")
+  endif
+
+  let g:ale_shell_arguments = '-x'
+
+  AssertEqual ['/foo/bar', '-x', 'foobar'], ale#job#PrepareCommand(bufnr(''), "foobar")
+
+Execute(Setting b:ale_shell should cause ale#job#PrepareCommand to use set shell):
+  let g:ale_shell = '/wrong/foo/bar'
+  let b:ale_shell = '/foo/bar'
+
+  if has('win32')
+    AssertEqual ['/foo/bar', '/c', 'foobar'], ale#job#PrepareCommand(bufnr(''), "foobar")
+  else
+    AssertEqual ['/foo/bar', '-c', 'foobar'], ale#job#PrepareCommand(bufnr(''), "foobar")
+  endif
+
+  let g:ale_shell_arguments = '--verbose -x'
+  let b:ale_shell_arguments = '-x'
+
+  AssertEqual ['/foo/bar', '-x', 'foobar'], ale#job#PrepareCommand(bufnr(''), "foobar")

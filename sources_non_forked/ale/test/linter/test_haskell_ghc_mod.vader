@@ -1,0 +1,10 @@
+Before:
+  call ale#assert#SetUpLinterTest('haskell', 'ghc_mod')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Default should use ghc-mod):
+  AssertLinter
+  \ 'ghc-mod',
+  \ ale#Escape('ghc-mod') . ' --map-file %s=%t check %s'

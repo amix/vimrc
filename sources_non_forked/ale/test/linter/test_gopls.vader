@@ -1,0 +1,96 @@
+Before:
+  Save g:ale_go_go111module
+  Save $GOPATH
+
+  let $GOPATH = '/non/existent/directory'
+
+  call ale#assert#SetUpLinterTest('go', 'gopls')
+
+After:
+  if isdirectory(g:dir . '/.git')
+    call delete(g:dir . '/.git', 'd')
+  endif
+
+  unlet! b:ale_go_go111module
+  unlet! b:ale_go_go111module
+  unlet! b:ale_completion_enabled
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'gopls', ale#Escape('gopls') . ' --mode stdio'
+
+Execute(The executable should be configurable):
+  let b:ale_go_gopls_executable = 'boo'
+
+  AssertLinter 'boo', ale#Escape('boo') . ' --mode stdio'
+
+Execute(gopls should be found in GOPATH):
+  " This is a directory with a fake executable
+  let $GOPATH = ale#test#GetFilename('../test-files/go/gopath')
+
+  AssertLinter
+  \ ale#test#GetFilename('../test-files/go/gopath/bin/gopls'),
+  \ ale#Escape(ale#test#GetFilename('../test-files/go/gopath/bin/gopls'))
+  \   . ' --mode stdio'
+
+Execute(Global settings should be preferre for gopls if use_global = 1):
+  " This is a directory with a fake executable
+  let $GOPATH = ale#test#GetFilename('../test-files/go/gopath')
+  let b:ale_go_gopls_executable = 'boo'
+  let b:ale_go_gopls_use_global = 1
+
+  AssertLinter 'boo', ale#Escape('boo') . ' --mode stdio'
+
+Execute(Settings options should work):
+  call ale#test#SetFilename('../test-files/go/go1/prj1/file.go')
+  " let b:ale_completion_enabled = 1
+  let b:ale_go_gopls_options = ''
+
+  AssertLinter 'gopls',
+  \ ale#Escape('gopls') . ''
+
+  let b:ale_go_gopls_options = '--mode stdio --trace'
+
+  AssertLinter 'gopls',
+  \ ale#Escape('gopls') . ' --mode stdio --trace'
+
+  let b:ale_go_gopls_init_options = {'ui.diagnostic.analyses': {'composites': v:false}}
+  AssertLSPOptions {'ui.diagnostic.analyses': {'composites': v:false}}
+
+Execute(Go environment variables should be passed on):
+  let b:ale_go_go111module = 'off'
+
+  AssertLinter 'gopls',
+  \ ale#Env('GO111MODULE', 'off') . ale#Escape('gopls') . ' --mode stdio'
+
+Execute(Project directories should be detected based on 'go.mod' being present):
+  call ale#test#SetFilename('../test-files/go/test.go')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/go')
+
+Execute(Project directories with .git should be detected):
+  call ale#test#SetFilename('test.go')
+
+  if !isdirectory(g:dir . '/.git')
+    call mkdir(g:dir . '/.git')
+  endif
+
+  AssertLSPProject g:dir
+
+Execute('go.mod' should be ignored if modules are off):
+  call ale#test#SetFilename('../test-files/go/test.go')
+
+  let b:ale_go_go111module = 'off'
+  let b:parent_dir = ale#path#Simplify(g:dir . '/..')
+  let b:git_dir = b:parent_dir . '/.git'
+
+  if !isdirectory(b:git_dir)
+    call mkdir(b:git_dir)
+  endif
+
+  AssertLSPProject b:parent_dir
+
+  call delete(b:git_dir, 'd')
+  unlet! b:parent_dir
+  unlet! b:git_dir

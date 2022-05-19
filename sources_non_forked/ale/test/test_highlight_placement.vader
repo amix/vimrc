@@ -1,0 +1,465 @@
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_echo_cursor
+  Save g:ale_enabled
+  Save g:ale_run_synchronously
+  Save g:ale_set_highlights
+  Save g:ale_set_loclist
+  Save g:ale_set_quickfix
+  Save g:ale_set_signs
+  Save g:ale_exclude_highlights
+  Save b:ale_exclude_highlights
+
+  runtime autoload/ale/virtualtext.vim
+  runtime autoload/ale/highlight.vim
+
+  let g:ale_run_synchronously = 1
+  unlet! g:ale_run_synchronously_callbacks
+  let g:ale_set_highlights = 1
+  let g:ale_set_signs = 1
+  let g:ale_buffer_info = {}
+
+  " Disable features we don't need for these tests.
+  let g:ale_set_quickfix = 0
+  let g:ale_set_loclist = 0
+  let g:ale_echo_cursor = 0
+  let g:ale_exclude_highlights = []
+  let b:ale_exclude_highlights = []
+
+  function! GenerateResults(buffer, output)
+    return [
+    \ {
+    \   'lnum': 1,
+    \   'col': 1,
+    \   'type': 'E',
+    \   'text': 'foo',
+    \ },
+    \ {
+    \   'lnum': 2,
+    \   'col': 1,
+    \   'type': 'W',
+    \   'text': 'bar',
+    \ },
+    \ {
+    \   'lnum': 3,
+    \   'col': 5,
+    \   'type': 'E',
+    \   'text': 'wat',
+    \ },
+    \]
+  endfunction
+
+  let g:has_nvim_highlight = exists('*nvim_buf_add_highlight') && exists('*nvim_buf_clear_namespace')
+  let g:nvim_highlight_matches = {}
+
+  function! ale#highlight#nvim_buf_clear_namespace(buffer, ns_id, line_start, line_end) abort
+    if a:line_end != -1
+      throw 'nvim api behavior not supported'
+    endif
+
+    let l:matches = get(g:nvim_highlight_matches, a:buffer, [])
+    call filter(
+    \ l:matches,
+    \ {_, val -> val.pos1[0] < (a:line_start + 1) },
+    \)
+  endfunction
+
+  function! ale#highlight#nvim_buf_add_highlight(buffer, ns_id, hl_group, line, col_start, col_end) abort
+    if a:col_end == -1
+      throw 'nvim api behavior not supported'
+    endif
+
+    let l:matches = get(g:nvim_highlight_matches, a:buffer, [])
+    let g:nvim_highlight_matches[a:buffer] = l:matches
+
+    let l:new_match = {
+    \ 'group': a:hl_group,
+    \ 'priority': 10,
+    \ 'pos1': [a:line + 1, a:col_start + 1, a:col_end - a:col_start],
+    \}
+
+    call add(l:matches, l:new_match)
+    " sort by line number to emulate getmatches faithfully
+    call sort(l:matches, {m1, m2 -> m1.pos1[0] - m2.pos1[0]})
+  endfunction
+
+  " We don't care what the IDs are, just that we have some matches.
+  " The IDs are generated.
+  function! GetMatchesWithoutIDs() abort
+    if g:has_nvim_highlight
+      return get(g:nvim_highlight_matches, bufnr(''), [])
+    else
+      let l:list = getmatches()
+
+      for l:item in l:list
+        call remove(l:item, 'id')
+      endfor
+
+      return l:list
+    endif
+  endfunction
+
+  function! GetLinkedGroup(grp) abort
+    return synIDattr(synIDtrans(hlID(a:grp)), 'name')
+  endfunction
+
+  call ale#linter#Define('testft', {
+  \ 'name': 'x',
+  \ 'executable': has('win32') ? 'cmd': 'echo',
+  \ 'command': has('win32') ? 'echo' : '/bin/sh -c ''echo''',
+  \ 'callback': 'GenerateResults',
+  \})
+  highlight link SomeOtherGroup SpellBad
+
+After:
+  Restore
+
+  unlet! g:ale_run_synchronously_callbacks
+  unlet! g:items
+  unlet! b:ale_enabled
+  unlet! g:has_nvim_highlight
+  unlet! g:nvim_highlight_matches
+
+  delfunction GenerateResults
+  call ale#linter#Reset()
+  call clearmatches()
+  call ale#sign#Clear()
+  if has('textprop') && has('popupwin')
+    call prop_type_delete('ale')
+  endif
+  highlight clear SomeOtherGroup
+
+  runtime autoload/ale/highlight.vim
+
+Given testft(A Javscript file with warnings/errors):
+  foo
+  bar
+  baz wat
+  line four
+
+" Autoloading virtualtext.vim first should still properly initialize hl-groups
+Execute(Loading virtualtext first does not break highlight groups):
+  AssertEqual
+  \ "SpellBad",
+  \ GetLinkedGroup("ALEError")
+  AssertEqual
+  \ "SpellCap",
+  \ GetLinkedGroup("ALEWarning")
+
+Execute(Highlights should be set when a linter runs):
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ [
+  \   {'group': 'ALEError', 'priority': 10, 'pos1': [1, 1, 1]},
+  \   {'group': 'ALEWarning', 'priority': 10, 'pos1': [2, 1, 1]},
+  \   {'group': 'ALEError', 'priority': 10, 'pos1': [3, 5, 1]}
+  \ ],
+  \ GetMatchesWithoutIDs()
+
+" This test is important for preventing ALE from showing highlights for
+" the wrong files.
+Execute(Highlights set by ALE should be removed when buffer cleanup is done):
+  call ale#engine#InitBufferInfo(bufnr('%'))
+
+  call ale#highlight#SetHighlights(bufnr('%'), [
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 3, 'col': 2},
+  \])
+
+  if !g:has_nvim_highlight
+    " This check doesn't work with the new API, for some reason.
+    AssertEqual
+    \ [{'group': 'ALEError', 'priority': 10, 'pos1': [3, 2, 1]}],
+    \ GetMatchesWithoutIDs()
+  endif
+
+  call ale#engine#Cleanup(bufnr('%'))
+
+  AssertEqual [], GetMatchesWithoutIDs()
+
+Execute(Highlights should be cleared when buffers are hidden):
+  call ale#engine#InitBufferInfo(bufnr('%'))
+  " The second item should be ignored, as it has no column infomration.
+  let g:ale_buffer_info[bufnr('%')].loclist =  [
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 3, 'col': 2},
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 4, 'col': 0},
+  \]
+  call ale#highlight#SetHighlights(
+  \ bufnr('%'),
+  \ g:ale_buffer_info[bufnr('%')].loclist
+  \)
+
+  AssertEqual 1, len(GetMatchesWithoutIDs()), 'The highlights weren''t initially set!'
+
+  call ale#highlight#BufferHidden(bufnr('%'))
+
+  AssertEqual 0, len(GetMatchesWithoutIDs()), 'The highlights weren''t cleared!'
+
+  call ale#highlight#UpdateHighlights()
+
+  AssertEqual 1, len(GetMatchesWithoutIDs()), 'The highlights weren''t set again!'
+
+Execute(Only ALE highlights should be restored when buffers are restored):
+  call ale#engine#InitBufferInfo(bufnr('%'))
+  let g:ale_buffer_info[bufnr('%')].loclist =  [
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 3, 'col': 2},
+  \]
+  call ale#highlight#SetHighlights(
+  \ bufnr('%'),
+  \ g:ale_buffer_info[bufnr('%')].loclist
+  \)
+
+  call matchaddpos('SomeOtherGroup', [[1, 1, 1]])
+
+  " We should have both highlights.
+  if g:has_nvim_highlight
+    " When the newer NeoVim API is used, we don't have to worry about
+    " other highlights, namespacing is available.
+    AssertEqual
+    \ [
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [3, 2, 1]},
+    \ ],
+    \ GetMatchesWithoutIDs()
+  else
+    AssertEqual
+    \ [
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [3, 2, 1]},
+    \   {'group': 'SomeOtherGroup', 'priority': 10, 'pos1': [1, 1, 1]},
+    \ ],
+    \ sort(GetMatchesWithoutIDs(), {m1, m2 -> m1.group < m2.group ? -1 : 1})
+  endif
+
+  call ale#highlight#BufferHidden(bufnr('%'))
+
+  " We should remove our highlight, but not the other one.
+  if g:has_nvim_highlight
+    AssertEqual [], GetMatchesWithoutIDs()
+  else
+    AssertEqual
+    \ [
+    \   {'group': 'SomeOtherGroup', 'priority': 10, 'pos1': [1, 1, 1]}
+    \ ],
+    \ GetMatchesWithoutIDs()
+  endif
+
+  call ale#highlight#UpdateHighlights()
+
+  " Our highlight should apper again.
+  if g:has_nvim_highlight
+    AssertEqual
+    \ [
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [3, 2, 1]},
+    \ ],
+    \ GetMatchesWithoutIDs()
+  else
+    AssertEqual
+    \ [
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [3, 2, 1]},
+    \   {'group': 'SomeOtherGroup', 'priority': 10, 'pos1': [1, 1, 1]},
+    \ ],
+    \ sort(GetMatchesWithoutIDs(), {m1, m2 -> m1.group < m2.group ? -1 : 1})
+  endif
+
+Execute(Higlight end columns should set an appropriate size):
+  call ale#highlight#SetHighlights(bufnr('%'), [
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 3, 'col': 2, 'end_col': 5},
+  \ {'bufnr': bufnr('%'), 'type': 'W', 'lnum': 4, 'col': 1, 'end_col': 5},
+  \])
+
+  AssertEqual
+  \ [
+  \   {'group': 'ALEError', 'priority': 10, 'pos1': [3, 2, 4]},
+  \   {'group': 'ALEWarning', 'priority': 10, 'pos1': [4, 1, 5]},
+  \ ],
+  \ GetMatchesWithoutIDs()
+
+Execute(Higlight end columns should set an appropriate size):
+  call ale#highlight#SetHighlights(bufnr('%'), [
+  \ {'bufnr': bufnr('%') - 1, 'type': 'E', 'lnum': 1, 'col': 1},
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 1, 'col': 1},
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 2, 'col': 1},
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'sub_type': 'style', 'lnum': 3, 'col': 1},
+  \ {'bufnr': bufnr('%'), 'type': 'W', 'lnum': 4, 'col': 1},
+  \ {'bufnr': bufnr('%'), 'type': 'W', 'lnum': 5, 'col': 1},
+  \ {'bufnr': bufnr('%'), 'type': 'W', 'sub_type': 'style', 'lnum': 6, 'col': 1},
+  \ {'bufnr': bufnr('%'), 'type': 'I', 'lnum': 7, 'col': 1},
+  \ {'bufnr': bufnr('%') + 1, 'type': 'E', 'lnum': 1, 'col': 1},
+  \])
+
+  AssertEqual
+  \ [
+  \   {'group': 'ALEError', 'priority': 10, 'pos1': [1, 1, 1]},
+  \   {'group': 'ALEError', 'priority': 10, 'pos1': [2, 1, 1]},
+  \   {'group': 'ALEStyleError', 'priority': 10, 'pos1': [3, 1, 1]},
+  \   {'group': 'ALEWarning', 'priority': 10, 'pos1': [4, 1, 1]},
+  \   {'group': 'ALEWarning', 'priority': 10, 'pos1': [5, 1, 1]},
+  \   {'group': 'ALEStyleWarning', 'priority': 10, 'pos1': [6, 1, 1]},
+  \   {'group': 'ALEInfo', 'priority': 10, 'pos1': [7, 1, 1]},
+  \ ],
+  \ GetMatchesWithoutIDs()
+
+Execute(Highlighting should support errors spanning many lines):
+  let g:items = [
+  \ {'bufnr': bufnr(''), 'type': 'E', 'lnum': 1, 'col': 1, 'end_lnum': 10, 'end_col': 3},
+  \]
+
+  call ale#highlight#SetHighlights(bufnr(''), g:items)
+
+  if g:has_nvim_highlight
+    " The newer NeoVim highlight API produces different output.
+    AssertEqual
+    \ [
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [1, 1, 1073741824]},
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [2, 1, 1073741824]},
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [3, 1, 1073741824]},
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [4, 1, 1073741824]},
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [5, 1, 1073741824]},
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [6, 1, 1073741824]},
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [7, 1, 1073741824]},
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [8, 1, 1073741824]},
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [9, 1, 1073741824]},
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [10, 1, 3]},
+    \ ],
+    \ GetMatchesWithoutIDs()
+  else
+    " We should set 2 highlights for the item, as we can only add 8 at a time.
+    AssertEqual
+    \ [
+    \   {
+    \     'group': 'ALEError', 'priority': 10, 'pos1': [1, 1, 1073741824],
+    \     'pos2': [2], 'pos3': [3], 'pos4': [4], 'pos5': [5], 'pos6': [6],
+    \     'pos7': [7], 'pos8': [8],
+    \   },
+    \   {
+    \     'group': 'ALEError', 'priority': 10,
+    \     'pos1': [9], 'pos2': [10, 1, 3]
+    \   },
+    \ ],
+    \ GetMatchesWithoutIDs()
+  endif
+
+Execute(Highlights should always be cleared when the buffer highlight list is empty):
+  if g:has_nvim_highlight
+    " The newer API uses namespacing. We'll emulate it here.
+    call ale#highlight#nvim_buf_add_highlight(
+    \ bufnr(''),
+    \ 1,
+    \ 'ALEError',
+    \ 0,
+    \ 0,
+    \ 1,
+    \)
+
+    AssertEqual
+    \ [{'group': 'ALEError', 'priority': 10, 'pos1': [1, 1, 1]}],
+    \ GetMatchesWithoutIDs()
+  else
+    " Add our highlights and something else.
+    call matchaddpos('ALEError', [[1, 1, 1]])
+    call matchaddpos('SomeOtherGroup', [[1, 1, 1]])
+
+    AssertEqual
+    \ [
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [1, 1, 1]},
+    \   {'group': 'SomeOtherGroup', 'priority': 10, 'pos1': [1, 1, 1]},
+    \ ],
+    \ GetMatchesWithoutIDs()
+  endif
+
+
+  " Set the List we use for holding highlights for buffers.
+  let b:ale_highlight_items = []
+
+  " Call the function for updating the highlights called when buffers
+  " are entered, or when problems are presented.
+  call ale#highlight#UpdateHighlights()
+
+  " Check that we remove our highlights.
+  if g:has_nvim_highlight
+    AssertEqual [], GetMatchesWithoutIDs()
+  else
+    AssertEqual
+    \ [{'group': 'SomeOtherGroup', 'priority': 10, 'pos1': [1, 1, 1]}],
+    \ GetMatchesWithoutIDs()
+  endif
+
+Execute(Highlights should be hidden when excluded):
+  let b:ale_exclude_highlights = ['ig.*ore', 'nope']
+
+  call ale#highlight#SetHighlights(bufnr('%'), [
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 1, 'col': 1, 'text': 'hello'},
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 2, 'col': 1, 'text': 'ignore'},
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 3, 'col': 1, 'text': 'nope'},
+  \ {'bufnr': bufnr('%'), 'type': 'E', 'lnum': 4, 'col': 1, 'text': 'world'},
+  \])
+
+  AssertEqual
+  \ [
+  \   {'group': 'ALEError', 'priority': 10, 'pos1': [1, 1, 1]},
+  \   {'group': 'ALEError', 'priority': 10, 'pos1': [4, 1, 1]},
+  \ ],
+  \ GetMatchesWithoutIDs()
+
+Execute(Highlights should be cleared when ALE is disabled):
+  let g:ale_enabled = 1
+  call ale#highlight#SetHighlights(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'type': 'E', 'lnum': 1, 'col': 1, 'end_lnum': 10, 'end_col': 3},
+  \])
+
+  let g:ale_enabled = 0
+  call ale#highlight#UpdateHighlights()
+
+  AssertEqual [], GetMatchesWithoutIDs()
+
+  let g:ale_enabled = 1
+  call ale#highlight#SetHighlights(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'type': 'E', 'lnum': 1, 'col': 1, 'end_lnum': 10, 'end_col': 3},
+  \])
+
+  let b:ale_enabled = 0
+  call ale#highlight#UpdateHighlights()
+
+  AssertEqual [], GetMatchesWithoutIDs()
+
+Execute(Line highlights should be set when signs are disabled):
+  " This will mess with your settings, but it needs to be tested.
+  " We need to match highlights case-insenstive when removing them.
+  hi link aleerrorline spellbad
+
+  let g:ale_set_signs = 0
+
+  call ale#highlight#SetHighlights(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'type': 'E', 'lnum': 1, 'col': 1},
+  \ {'bufnr': bufnr(''), 'type': 'W', 'lnum': 2, 'col': 1},
+  \ {'bufnr': bufnr(''), 'type': 'I', 'lnum': 3, 'col': 1},
+  \])
+
+  if g:has_nvim_highlight
+    " The output is different with the newer NeoVIM highlight API.
+    AssertEqual
+    \ [
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [1, 1, 1]},
+    \   {'group': 'ALEErrorLine', 'priority': 10, 'pos1': [1, 1, 1073741824]},
+    \   {'group': 'ALEWarning', 'priority': 10, 'pos1': [2, 1, 1]},
+    \   {'group': 'ALEWarningLine', 'priority': 10, 'pos1': [2, 1, 1073741824]},
+    \   {'group': 'ALEInfo', 'priority': 10, 'pos1': [3, 1, 1]},
+    \   {'group': 'ALEInfoLine', 'priority': 10, 'pos1': [3, 1, 1073741824]}
+    \ ],
+    \ GetMatchesWithoutIDs()
+  else
+    AssertEqual
+    \ [
+    \   {'group': 'ALEError', 'priority': 10, 'pos1': [1, 1, 1]},
+    \   {'group': 'ALEWarning', 'priority': 10, 'pos1': [2, 1, 1]},
+    \   {'group': 'ALEInfo', 'priority': 10, 'pos1': [3, 1, 1]},
+    \   {'group': 'aleerrorline', 'priority': 10, 'pos1': [1]},
+    \   {'group': 'ALEWarningLine', 'priority': 10, 'pos1': [2]},
+    \   {'group': 'ALEInfoLine', 'priority': 10, 'pos1': [3]},
+    \ ],
+    \ GetMatchesWithoutIDs()
+  endif
+
+  " All of the highlights should be removed.
+  call ale#highlight#RemoveHighlights()
+  AssertEqual [], GetMatchesWithoutIDs()

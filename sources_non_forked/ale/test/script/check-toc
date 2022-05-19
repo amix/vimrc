@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+
+# This script checks that the table of contents for the supported tools is
+# sorted, and that the table matches the files.
+
+toc_section_start_line="$(
+    grep -m1 -n '^7\..*\*ale-other-integration-options\*' doc/ale.txt \
+    | sed 's/\([0-9]*\).*/\1/' \
+)"
+toc_start_offset="$( \
+    tail -n +"$toc_section_start_line" doc/ale.txt \
+    | grep -m1 -n '^  .*\.\.\.' \
+    | sed 's/\([0-9]*\).*/\1/' \
+)"
+# shellcheck disable=SC2003
+toc_start_line="$(expr "$toc_section_start_line" + "$toc_start_offset" - 1)"
+toc_section_size="$( \
+    tail -n +"$toc_start_line" doc/ale.txt \
+    | grep -m1 -n '^===*$' \
+    | sed 's/\([0-9]*\).*/\1/' \
+)"
+# shellcheck disable=SC2003
+toc_end_line="$(expr "$toc_start_line" + "$toc_section_size" - 4)"
+
+toc_file="$(mktemp -t table-of-contents.XXXXXXXX)"
+heading_file="$(mktemp -t headings.XXXXXXXX)"
+tagged_toc_file="$(mktemp -t ale.txt.XXXXXXXX)"
+sorted_toc_file="$(mktemp -t sorted-ale.txt.XXXXXXXX)"
+
+sed -n "$toc_start_line,$toc_end_line"p doc/ale.txt \
+    | sed 's/^  \( *[^.][^.]*\)\.\.*|\(..*\)|/\1, \2/' \
+    > "$toc_file"
+
+# Get all of the doc files in a natural sorted order.
+doc_files="$(/usr/bin/env ls -1v doc | grep '^ale-' | sed 's/^/doc\//' | paste -sd ' ' -)"
+
+# shellcheck disable=SC2086
+grep -h '\*ale-.*-options\|^[a-z].*\*ale-.*\*$' $doc_files \
+    | sed 's/^/  /' \
+    | sed 's/ALE Shell Integration/ALE sh Integration/' \
+    | sed 's/ALE BibTeX Integration/ALE bib Integration/' \
+    | sed 's/  ALE \(.*\) Integration/\1/' \
+    | sed 's/ *\*\(..*\)\*$/, \1/' \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed 's/objective-c/objc/' \
+    | sed 's/c++/cpp/' \
+    > "$heading_file"
+
+exit_code=0
+in_section=0
+section_index=0
+
+# Prefix numbers to table of contents entries so that sections aren't mixed up
+# with sub-sections when they are sorted.
+while read -r; do
+    if [[ "$REPLY" =~ ^\  ]]; then
+        if ! ((in_section)); then
+            let section_index='section_index + 1'
+            in_section=1
+        fi
+    else
+        if ((in_section)); then
+            let section_index='section_index + 1'
+            in_section=0
+        fi
+    fi
+
+    echo "$section_index $REPLY" >> "$tagged_toc_file"
+done < "$toc_file"
+
+# Sort the sections and sub-sections and remove the tags.
+sort -sn "$tagged_toc_file" | sed 's/[0-9][0-9]* //' > "$sorted_toc_file"
+
+echo 'Check for bad ToC sorting:'
+echo
+diff -U2 "$sorted_toc_file" "$toc_file" || exit_code=$?
+
+echo 'Check for mismatched ToC and headings:'
+echo
+diff -U3 "$toc_file" "$heading_file" || exit_code=$?
+
+rm "$toc_file"
+rm "$heading_file"
+rm "$tagged_toc_file"
+rm "$sorted_toc_file"
+
+exit "$exit_code"

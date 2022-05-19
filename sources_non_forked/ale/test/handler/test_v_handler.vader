@@ -1,0 +1,54 @@
+Before:
+  runtime ale_linters/v/v.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute (The v handler should correctly parse error messages):
+  AssertEqual
+  \ [{
+  \   'lnum': 4,
+  \   'col': 3,
+  \   'filename': ale#path#GetAbsPath(expand('%:p:h'), 'const ants.v'),
+  \   'type': 'W',
+  \   'end_col': 14,
+  \   'text': 'const names cannot contain uppercase letters, use snake_case instead'
+  \ },
+  \ {
+  \   'lnum': 4,
+  \   'col': 8,
+  \   'filename': ale#path#GetAbsPath(expand('%:p:h'), 'main.v'),
+  \   'type': 'W',
+  \   'end_col': 10,
+  \   'text': 'module "os" is imported but never used'
+  \ },
+  \ {
+  \   'lnum': 20,
+  \   'col': 10,
+  \   'filename': ale#path#GetAbsPath(expand('%:p:h'), 'main.v'),
+  \   'type': 'E',
+  \   'end_col': 18,
+  \   'text': 'undefined ident: `win_widt`'
+  \ }],
+  \ ale_linters#v#v#Handler('', [
+  \   './const ants.v:4:3: warning: const names cannot contain uppercase letters, use snake_case instead',
+  \   '    2 |',
+  \   '    3 | const (',
+  \   '    4 |   BUTTON_TEXT = "OK"',
+  \   '      |   ~~~~~~~~~~~',
+  \   '    5 | )',
+  \   './main.v:4:8: warning: module "os" is imported but never used',
+  \   '    2 |',
+  \   '    3 | import ui',
+  \   '    4 | import os',
+  \   '      |        ~~',
+  \   '    5 |',
+  \   '    6 | const (',
+  \   './main.v:20:10: error: undefined ident: `win_widt`',
+  \   '   18 |     mut app := &App{}',
+  \   '   19 |     app.window = ui.window({',
+  \   '   20 |         width: win_widt',
+  \   '      |                ~~~~~~~~',
+  \   '   21 |         height: win_height',
+  \   '   22 |         title: "Counter"',
+  \ ])

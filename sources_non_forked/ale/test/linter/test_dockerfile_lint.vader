@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('dockerfile', 'dockerfile_lint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'dockerfile_lint', ale#Escape('dockerfile_lint') . ' -p -j -f %t'
+
+Execute(The executable should be configurable):
+  let b:ale_dockerfile_dockerfile_lint_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' -p -j -f %t'
+
+Execute(The options should be configurable):
+  let b:ale_dockerfile_dockerfile_lint_options = '-r additional.yaml'
+
+  AssertLinter 'dockerfile_lint', ale#Escape('dockerfile_lint') . ' -r additional.yaml -p -j -f %t'
+

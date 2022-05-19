@@ -1,0 +1,66 @@
+Before:
+  runtime ale_linters/terraform/checkov.vim
+  call ale#test#SetFilename('main.tf')
+
+After:
+  call ale#linter#Reset()
+
+Execute(The JSON output of checkov should be handled correctly):
+  AssertEqual
+  \ [
+  \   {
+  \         'filename': '/main.tf',
+  \         'lnum': 22,
+  \         'end_lnum': 27,
+  \         'text': 'Enable VPC Flow Logs and Intranode Visibility [CKV_GCP_61]',
+  \         'detail': "CKV_GCP_61: Enable VPC Flow Logs and Intranode Visibility\n" .
+  \                   'For more information, see: https://docs.bridgecrew.io/docs/enable-vpc-flow-logs-and-intranode-visibility',
+  \         'type': 'W',
+  \   }
+  \ ],
+  \ ale_linters#terraform#checkov#Handle(bufnr(''), [
+  \'{',
+  \'    "check_type": "terraform",',
+  \'    "results": {',
+  \'        "failed_checks": [',
+  \'            {',
+  \'                "check_id": "CKV_GCP_61",',
+  \'                "bc_check_id": "BC_GCP_KUBERNETES_18",',
+  \'                "check_name": "Enable VPC Flow Logs and Intranode Visibility",',
+  \'                "check_result": {',
+  \'                    "result": "FAILED",',
+  \'                    "evaluated_keys": [',
+  \'                        "enable_intranode_visibility"',
+  \'                    ]',
+  \'                },',
+  \'                "file_path": "/main.tf",',
+  \'                "repo_file_path": "/main.tf",',
+  \'                "file_line_range": [',
+  \'                    22,',
+  \'                    27',
+  \'                ],',
+  \'                "resource": "google_container_cluster.cluster-name",',
+  \'                "evaluations": null,',
+  \'                "check_class": "checkov.terraform.checks.resource.gcp.GKEEnableVPCFlowLogs",',
+  \'                "entity_tags": null,',
+  \'                "resource_address": null,',
+  \'                "guideline": "https://docs.bridgecrew.io/docs/enable-vpc-flow-logs-and-intranode-visibility"',
+  \'            }',
+  \'        ]',
+  \'    }',
+  \'}'
+  \ ])
+
+Execute(Handle output for no findings correctly):
+  AssertEqual
+  \ [],
+  \ ale_linters#terraform#checkov#Handle(bufnr(''), [
+  \'{',
+  \'    "passed": 0,',
+  \'    "failed": 0,',
+  \'    "skipped": 0,',
+  \'    "parsing_errors": 0,',
+  \'    "resource_count": 0,',
+  \'    "checkov_version": "2.0.632"',
+  \'}'
+  \])

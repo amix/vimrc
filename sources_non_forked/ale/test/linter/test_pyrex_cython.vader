@@ -1,0 +1,30 @@
+Before:
+  call ale#assert#SetUpLinterTest('pyrex', 'cython')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default cython command should be correct):
+  AssertLinter 'cython', ale#Escape('cython')
+  \   . ' --working %s:h'
+  \   . ' --include-dir %s:h'
+  \   . ' --warning-extra'
+  \   . ' --output-file ' . g:ale#util#nul_file . ' %t'
+
+Execute(The cython executable should be configurable):
+  let b:ale_pyrex_cython_executable = 'cython_foobar'
+
+  AssertLinter 'cython_foobar', ale#Escape('cython_foobar')
+  \   . ' --working %s:h'
+  \   . ' --include-dir %s:h'
+  \   . ' --warning-extra'
+  \   . ' --output-file ' . g:ale#util#nul_file . ' %t'
+
+Execute(Additional cython options should be configurable):
+  let b:ale_pyrex_cython_options = '--foobar'
+
+  AssertLinter 'cython', ale#Escape('cython')
+  \   . ' --working %s:h'
+  \   . ' --include-dir %s:h'
+  \   . ' --foobar'
+  \   . ' --output-file ' . g:ale#util#nul_file . ' %t'

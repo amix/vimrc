@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_haskell_stylish_haskell_executable
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_haskell_stylish_haskell_executable = 'xxxinvalid'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The stylish-haskell callback should return the correct default values):
+  call ale#test#SetFilename('../haskell_files/testfile.hs')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --inplace'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#stylish_haskell#Fix(bufnr(''))

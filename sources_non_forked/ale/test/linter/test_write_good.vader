@@ -1,0 +1,55 @@
+Before:
+  " This is just one example of a language using the linter.
+  call ale#assert#SetUpLinterTest('markdown', 'writegood')
+
+  " The options are shared between many languages.
+  Save g:ale_writegood_options
+  Save g:ale_writegood_executable
+  Save g:ale_writegood_use_global
+
+  unlet! g:ale_writegood_options
+  unlet! g:ale_writegood_executable
+  unlet! g:ale_writegood_use_global
+
+  call ale#test#SetFilename('testfile.txt')
+  call ale#handlers#writegood#ResetOptions()
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The global executable should be used when the local one cannot be found):
+  AssertLinter
+  \ 'write-good',
+  \ ale#Escape('write-good') . ' %t',
+
+Execute(The options should be used in the command):
+  let g:ale_writegood_options = '--foo --bar'
+
+  AssertLinter
+  \ 'write-good',
+  \ ale#Escape('write-good') . ' --foo --bar %t',
+
+Execute(Should use the node_modules/.bin executable, if available):
+  call ale#test#SetFilename('../test-files/write-good/node-modules/test.txt')
+
+  AssertLinter
+  \ ale#path#Simplify(g:dir . '/../test-files/write-good/node-modules/node_modules/.bin/write-good'),
+  \ ale#Escape(ale#path#Simplify(g:dir . '/../test-files/write-good/node-modules/node_modules/.bin/write-good'))
+  \   . ' %t',
+
+Execute(Should use the node_modules/write-good executable, if available):
+  call ale#test#SetFilename('../test-files/write-good/node-modules-2/test.txt')
+
+  AssertLinter
+  \ ale#path#Simplify(g:dir . '/../test-files/write-good/node-modules-2/node_modules/write-good/bin/write-good.js'),
+  \   (has('win32') ? 'node.exe ' : '')
+  \   . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/write-good/node-modules-2/node_modules/write-good/bin/write-good.js'))
+  \   . ' %t',
+
+Execute(Should let users configure a global executable and override local paths):
+  call ale#test#SetFilename('../test-files/write-good/node-modules-2/test.txt')
+
+  let g:ale_writegood_executable = 'foo-bar'
+  let g:ale_writegood_use_global = 1
+
+  AssertLinter 'foo-bar', ale#Escape('foo-bar') . ' %t'

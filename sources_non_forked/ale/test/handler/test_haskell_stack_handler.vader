@@ -1,0 +1,7 @@
+Before:
+  runtime ale/handlers/haskell_stack.vim
+
+Execute(Escape stack should correctly identify a stack exec command):
+  AssertEqual
+  \ ale#Escape('stack') . ' exec ' . ale#Escape('hlint') . ' --',
+  \ ale#handlers#haskell_stack#EscapeExecutable('stack', 'hlint')

@@ -1,0 +1,177 @@
+Execute(The ghc handler should handle hdevtools output):
+  call ale#test#SetFilename('foo.hs')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 147,
+  \     'type': 'W',
+  \     'col': 62,
+  \     'text': '• Couldnt match type ‘a -> T.Text’ with ‘T.Text’ Expected type: [T.Text]',
+  \     'detail': join([
+  \       '• Couldnt match type ‘a -> T.Text’ with ‘T.Text’',
+  \       '  Expected type: [T.Text]',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale#handlers#haskell#HandleGHCFormat(bufnr(''), [
+  \ 'foo.hs:147:62: warning:',
+  \ '• Couldnt match type ‘a -> T.Text’ with ‘T.Text’',
+  \ '  Expected type: [T.Text]',
+  \ ])
+
+Execute(The ghc handler should handle ghc 8 output):
+  call ale#test#SetFilename('src/Appoint/Lib.hs')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 6,
+  \     'type': 'E',
+  \     'col': 1,
+  \     'text': 'Failed to load interface for ‘GitHub.Data’ Use -v to see a list of the files searched for.',
+  \     'detail': join([
+  \       '    Failed to load interface for ‘GitHub.Data’',
+  \       '    Use -v to see a list of the files searched for.',
+  \     ], "\n"),
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'type': 'W',
+  \     'col': 1,
+  \     'text': 'Failed to load interface for ‘GitHub.Endpoints.PullRequests’ Use -v to see a list of the files searched for.',
+  \     'detail': join([
+  \       '    Failed to load interface for ‘GitHub.Endpoints.PullRequests’',
+  \       '    Use -v to see a list of the files searched for.',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale#handlers#haskell#HandleGHCFormat(bufnr(''), [
+  \ '',
+  \ ale#path#Simplify('src/Appoint/Lib.hs') . ':6:1: error:',
+  \ '    Failed to load interface for ‘GitHub.Data’',
+  \ '    Use -v to see a list of the files searched for.',
+  \ '',
+  \ ale#path#Simplify('src/Appoint/Lib.hs') . ':7:1: warning:',
+  \ '    Failed to load interface for ‘GitHub.Endpoints.PullRequests’',
+  \ '    Use -v to see a list of the files searched for.',
+  \ ])
+
+Execute(The ghc handler should handle ghc 7 output):
+  call ale#test#SetFilename('src/Main.hs')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 168,
+  \     'type': 'E',
+  \     'col': 1,
+  \     'text': 'parse error (possibly incorrect indentation or mismatched brackets)',
+  \     'detail': join([
+  \       '    parse error (possibly incorrect indentation or mismatched brackets)',
+  \     ], "\n"),
+  \   },
+  \   {
+  \     'lnum': 84,
+  \     'col': 1,
+  \     'type': 'W',
+  \     'text': 'Top-level binding with no type signature: myLayout :: Choose Tall (Choose (Mirror Tall) Full) a',
+  \     'detail': join([
+  \       '    Top-level binding with no type signature:',
+  \       '    myLayout :: Choose Tall (Choose (Mirror Tall) Full) a',
+  \     ], "\n"),
+  \   },
+  \   {
+  \     'lnum': 94,
+  \     'col': 5,
+  \     'type': 'E',
+  \     'text': 'Some other error',
+  \     'detail': join([
+  \       '  Some other error',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale#handlers#haskell#HandleGHCFormat(bufnr(''), [
+  \ ale#path#Simplify('src/Main.hs') . ':168:1:',
+  \ '    parse error (possibly incorrect indentation or mismatched brackets)',
+  \ ale#path#Simplify('src/Main.hs') . ':84:1:Warning:',
+  \ '    Top-level binding with no type signature:',
+  \ '    myLayout :: Choose Tall (Choose (Mirror Tall) Full) a',
+  \ ale#path#Simplify('src/Main.hs') . ':94:5:Error:',
+  \ '  Some other error',
+  \ ])
+
+Execute(The ghc handler should handle stack 1.5.1 output):
+  call ale#test#SetFilename('src/Main.hs')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 160,
+  \     'col': 14,
+  \     'type': 'E',
+  \     'text': '• Expecting one fewer arguments to ‘Exp’ Expected kind ‘k0 -> *’, but ‘Exp’ has kind ‘*’ • In the type ‘Exp a’ | 160 | pattern F :: Exp a |              ^^^^^',
+  \     'detail': join([
+  \       '        • Expecting one fewer arguments to ‘Exp’',
+  \       '          Expected kind ‘k0 -> *’, but ‘Exp’ has kind ‘*’',
+  \       '        • In the type ‘Exp a’',
+  \       '        |',
+  \       '    160 | pattern F :: Exp a',
+  \       '        |              ^^^^^',
+  \     ], "\n"),
+  \   },
+  \ ],
+  \ ale#handlers#haskell#HandleGHCFormat(bufnr(''), [
+  \   '    ' . ale#path#Simplify('src/Main.hs') . ':160:14: error:',
+  \   '        • Expecting one fewer arguments to ‘Exp’',
+  \   '          Expected kind ‘k0 -> *’, but ‘Exp’ has kind ‘*’',
+  \   '        • In the type ‘Exp a’',
+  \   '        |',
+  \   '    160 | pattern F :: Exp a',
+  \   '        |              ^^^^^',
+  \ ])
+
+Execute(The ghc handler should handle ghc panic):
+  let g:detail = [
+    \      '[15 of 15] Compiling SizedTypes.List',
+    \      'ghc: panic! (the ''impossible'' happened)',
+    \      '  (GHC version 8.10.3:',
+    \      '	src/SizedTypes/List.hs:(46,19)-(50,0) Specified type does not refine Haskell type for `SizedTypes.List.out` (Plugged Init types new)',
+    \      '                                      The Liquid type',
+    \      '                                      .',
+    \      '                                          GHC.Types.Int -> (SizedTypes.List.List a) -> (_, (SizedTypes.List.List a))',
+    \      '                                      .',
+    \      '                                      is inconsistent with the Haskell type',
+    \      '                                      .',
+    \      '                                          forall p a ->',
+    \      'p -> SizedTypes.List.List a -> (a, SizedTypes.List.List a)',
+    \      '                                      .',
+    \      '                                      defined at src/SizedTypes/List.hs:52:1-3',
+    \      '                                      .',
+    \      '                                      Specifically, the Liquid component',
+    \      '                                      .',
+    \      '                                          {VV##0 : GHC.Types.Int | VV##0 >= 0}',
+    \      '                                      .',
+    \      '                                      is inconsistent with the Haskell component',
+    \      '                                      .',
+    \      '                                          p',
+    \      '                                      .',
+    \      '                                      ',
+    \      '                                      HINT: Use the hole ''_'' instead of the mismatched component (in the Liquid specification)',
+    \      '',
+    \      'Please report this as a GHC bug:  https://www.haskell.org/ghc/reportabug',
+    \      '',
+    \      ''
+  \ ]
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': 'ghc panic!',
+  \     'detail': join(g:detail[1:-3], "\n"),
+  \   },
+  \ ],
+  \ ale#handlers#haskell#HandleGHCFormat(bufnr(''), g:detail)
+  unlet g:detail

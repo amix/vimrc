@@ -1,0 +1,54 @@
+Execute(The alex handler should handle the example from the alex README):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 5,
+  \     'end_lnum': 1,
+  \     'end_col': 13,
+  \     'type': 'W',
+  \     'text': '`boogeyman` may be insensitive, use `boogey` instead (retext-equality)',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 42,
+  \     'end_lnum': 1,
+  \     'end_col': 47,
+  \     'type': 'W',
+  \     'text': '`master` / `slaves` may be insensitive, use `primary` / `replica` instead (retext-equality)',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 69,
+  \     'end_lnum': 1,
+  \     'end_col': 74,
+  \     'type': 'W',
+  \     'text': 'Don’t use “slaves”, it’s profane (retext-profanities)',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 52,
+  \     'end_lnum': 2,
+  \     'end_col': 53,
+  \     'type': 'W',
+  \     'text': '`he` may be insensitive, use `they`, `it` instead (retext-equality)',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 61,
+  \     'end_lnum': 2,
+  \     'end_col': 67,
+  \     'type': 'W',
+  \     'text': '`cripple` may be insensitive, use `person with a limp` instead (retext-equality)',
+  \   },
+  \ ],
+  \ ale#handlers#alex#Handle(bufnr(''), [
+  \ 'example.md',
+  \ '   1:5-1:14  warning  `boogeyman` may be insensitive, use `boogey` instead                       boogeyman-boogeywoman  retext-equality',
+  \ '  1:42-1:48  warning  `master` / `slaves` may be insensitive, use `primary` / `replica` instead  master-slave           retext-equality',
+  \ '  1:69-1:75  warning  Don’t use “slaves”, it’s profane                                           slaves                 retext-profanities',
+  \ '  2:52-2:54  warning  `he` may be insensitive, use `they`, `it` instead                          he-she                 retext-equality',
+  \ '  2:61-2:68  warning  `cripple` may be insensitive, use `person with a limp` instead             cripple                retext-equality',
+  \ '',
+  \ '⚠ 5 warnings',
+  \ ])

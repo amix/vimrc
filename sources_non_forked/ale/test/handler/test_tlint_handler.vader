@@ -1,0 +1,34 @@
+Before:
+  runtime ale_linters/php/tlint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The tlint handler should calculate line numbers):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': '5', 
+  \     'col': 0, 
+  \     'sub_type': 
+  \     'style',
+  \     'type': 'W',
+  \     'text': ['! There should be no unused imports.', 'There should be no unused imports.', '', '', '', '', '', '', '', '']
+  \   },
+  \   {
+  \     'lnum': '15', 
+  \     'col': 0, 
+  \     'sub_type': 
+  \     'style',
+  \     'type': 'W',
+  \     'text': ['! There should be no method visibility in test methods.', 'There should be no method visibility in test methods.', '', '', '', '', '', '', '', '']
+  \   },
+  \ ],
+  \ ale_linters#php#tlint#Handle(347, [
+  \   "Lints for /Users/jose/Code/Tighten/tester/tests/Unit/ExampleTest.php",
+  \   "============",
+  \   "! There should be no unused imports.",
+  \   "5 : `use Illuminate\Foundation\Testing\RefreshDatabase;`",
+  \   "! There should be no method visibility in test methods.",
+  \   "15 : `    public function testBasicTest()`",
+  \ ])

@@ -1,0 +1,70 @@
+Before:
+  call ale#assert#SetUpFixerTest('python', 'isort')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+  unlet! g:dir
+  unlet! b:bin_dir
+
+Execute(The isort callback should return the correct default values):
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  " --filename option exists only after 5.7.0
+  GivenCommandOutput ['VERSION 5.7.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/isort')) . ' --filename %s' . ' -',
+  \ }
+
+Execute(The isort callback should respect custom options):
+  let g:ale_python_isort_options = '--multi-line=3 --trailing-comma'
+
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  " --filename option exists only after 5.7.0
+  GivenCommandOutput ['VERSION 5.7.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/isort'))
+  \     . ' --filename %s' . ' --multi-line=3 --trailing-comma -',
+  \ }
+
+Execute(Pipenv is detected when python_isort_auto_pipenv is set):
+  let g:ale_python_isort_auto_pipenv = 1
+
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  GivenCommandOutput ['VERSION 5.7.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape('pipenv') . ' run isort' . ' --filename %s' . ' -'
+  \ }
+
+Execute(Poetry is detected when python_isort_auto_poetry is set):
+  let g:ale_python_isort_auto_poetry = 1
+
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  GivenCommandOutput ['VERSION 5.7.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape('poetry') . ' run isort' . ' --filename %s' . ' -'
+  \ }
+
+Execute(The isort callback should not use --filename for older versions):
+  silent execute 'file ' . fnameescape(g:dir . '/../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  " --filename option exists only after 5.7.0
+  GivenCommandOutput ['VERSION 5.6.0']
+  AssertFixer
+  \ {
+  \   'cwd': '%s:h',
+  \   'command': ale#Escape(ale#path#Simplify(g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/isort')) . ' -',
+  \ }

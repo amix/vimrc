@@ -1,0 +1,22 @@
+Before:
+  runtime ale_linters/chef/cookstyle.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Basic warnings should be handled):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 58,
+  \     'col': 24,
+  \     'code': 'Style/UnneededInterpolation',
+  \     'type': 'W',
+  \     'end_col': 40,
+  \     'text': 'Style/UnneededInterpolation: Prefer `to_s` over string interpolation.',
+  \   }
+  \ ],
+  \ ale_linters#chef#cookstyle#Handle(bufnr(''), [
+  \   '{"metadata":{"rubocop_version":"0.62.0","ruby_engine":"ruby","ruby_version":"2.6.0","ruby_patchlevel":"0","ruby_platform":"x86_64-linux"},"files":[{"path":"recipes/default.rb","offenses":[{"severity":"convention","message":"Style/UnneededInterpolation: Prefer `to_s` over string interpolation.","cop_name":"Style/UnneededInterpolation","corrected":false,"location":{"start_line":58,"start_column":24,"last_line":58,"last_column":40,"length":17,"line":58,"column":24}}]}],"summary":{"offense_count":1,"target_file_count":1,"inspected_file_count":1}}'
+  \ ])
+

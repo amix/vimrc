@@ -1,0 +1,96 @@
+Before:
+  Save g:ale_c_astyle_executable
+  Save g:ale_c_astyle_project_options
+  Save g:ale_cpp_astyle_project_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_c_astyle_executable = 'xxxinvalid'
+  let g:ale_cpp_astyle_executable = 'invalidpp'
+  let g:ale_c_astyle_project_options = ''
+  let g:ale_cpp_astyle_project_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The astyle callback should return the correct default values):
+  " Because this file doesn't exist, no astylrc config
+  " exists near it. Therefore, project_options is empty.
+  call ale#test#SetFilename('../c_files/testfile.c')
+  let targetfile = bufname(bufnr('%'))
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_c_astyle_executable)
+  \     . ' --stdin=' . ale#Escape(targetfile)
+  \ },
+  \ ale#fixers#astyle#Fix(bufnr(''))
+
+Execute(The astyle callback should support cpp files):
+  " Because this file doesn't exist, no astylrc config
+  " exists near it. Therefore, project_options is empty.
+  call ale#test#SetFilename('../cpp_files/dummy.cpp')
+  set filetype=cpp " The test fails without this
+  let targetfile = bufname(bufnr('%'))
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_cpp_astyle_executable)
+  \     . ' --stdin=' . ale#Escape(targetfile)
+  \ },
+  \ ale#fixers#astyle#Fix(bufnr(''))
+
+Execute(The astyle callback should support cpp files with option file set):
+  call ale#test#SetFilename('../cpp_files/dummy.cpp')
+  let g:ale_cpp_astyle_project_options = '.astylerc_cpp'
+  let targetfile = bufname(bufnr('%'))
+  set filetype=cpp " The test fails without this
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('invalidpp')
+  \     . ' --project=' . g:ale_cpp_astyle_project_options
+  \     . ' --stdin=' . ale#Escape(targetfile)
+  \ },
+  \ ale#fixers#astyle#Fix(bufnr(''))
+
+Execute(The astyle callback should return the correct default values with a specified option file):
+  call ale#test#SetFilename('../c_files/testfile.c')
+  let g:ale_c_astyle_project_options = '.astylerc_c'
+  let targetfile = bufname(bufnr('%'))
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --project=' . g:ale_c_astyle_project_options
+  \     . ' --stdin=' . ale#Escape(targetfile)
+  \ },
+  \ ale#fixers#astyle#Fix(bufnr(''))
+
+Execute(The astyle callback should find nearest default option file _astylrc):
+  call ale#test#SetFilename('../test-files/c/makefile_project/subdir/file.c')
+  let targetfile = bufname(bufnr('%'))
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --project=_astylerc'
+  \     . ' --stdin=' . ale#Escape(targetfile)
+  \ },
+  \ ale#fixers#astyle#Fix(bufnr(''))
+
+Execute(The astyle callback should find .astylrc in the same directory as src):
+  call ale#test#SetFilename('../test-files/cpp/dummy.cpp')
+  set filetype=cpp " The test fails without this
+  let targetfile = bufname(bufnr('%'))
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('invalidpp')
+  \     . ' --project=.astylerc'
+  \     . ' --stdin=' . ale#Escape(targetfile)
+  \ },
+  \ ale#fixers#astyle#Fix(bufnr(''))

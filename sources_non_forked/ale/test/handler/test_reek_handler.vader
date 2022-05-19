@@ -1,0 +1,81 @@
+Before:
+  runtime ale_linters/ruby/reek.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The reek handler should parse JSON correctly, with only context enabled):
+  let g:ale_ruby_reek_show_context = 1
+  let g:ale_ruby_reek_show_wiki_link = 0
+
+  AssertEqual
+  \ [
+  \     {
+  \         'lnum': 12,
+  \         'text': 'Context#method violates rule number one',
+  \         'code': 'Rule1',
+  \         'type': 'W',
+  \     },
+  \     {
+  \         'lnum': 34,
+  \         'text': 'Context#method violates rule number two',
+  \         'code': 'Rule2',
+  \         'type': 'W',
+  \     },
+  \     {
+  \         'lnum': 56,
+  \         'text': 'Context#method violates rule number two',
+  \         'code': 'Rule2',
+  \         'type': 'W',
+  \     },
+  \ ],
+  \ ale_linters#ruby#reek#Handle(347, [
+  \     '[{"context":"Context#method","lines":[12],"message":"violates rule number one","smell_type":"Rule1","source":"/home/user/file.rb","parameter":"bad parameter","wiki_link":"https://example.com/Rule1.md"},{"context":"Context#method","lines":[34, 56],"message":"violates rule number two","smell_type":"Rule2","source":"/home/user/file.rb","name":"bad code","count":2,"wiki_link":"https://example.com/Rule1.md"}]'
+  \ ])
+
+Execute(The reek handler should parse JSON correctly, with no context or wiki links):
+  let g:ale_ruby_reek_show_context = 0
+  let g:ale_ruby_reek_show_wiki_link = 0
+
+  AssertEqual
+  \ [
+  \     {
+  \         'lnum': 12,
+  \         'text': 'violates rule number one',
+  \         'code': 'Rule1',
+  \         'type': 'W',
+  \     },
+  \ ],
+  \ ale_linters#ruby#reek#Handle(347, [
+  \     '[{"context":"Context#method","lines":[12],"message":"violates rule number one","smell_type":"Rule1","source":"/home/user/file.rb","parameter":"bad parameter","wiki_link":"https://example.com/Rule1.md"}]'
+  \ ])
+
+Execute(The reek handler should parse JSON correctly, with both context and wiki links):
+  let g:ale_ruby_reek_show_context = 1
+  let g:ale_ruby_reek_show_wiki_link = 1
+
+  AssertEqual
+  \ [
+  \     {
+  \         'lnum': 12,
+  \         'text': 'Context#method violates rule number one [https://example.com/Rule1.md]',
+  \         'code': 'Rule1',
+  \         'type': 'W',
+  \     },
+  \ ],
+  \ ale_linters#ruby#reek#Handle(347, [
+  \     '[{"context":"Context#method","lines":[12],"message":"violates rule number one","smell_type":"Rule1","source":"/home/user/file.rb","parameter":"bad parameter","wiki_link":"https://example.com/Rule1.md"}]'
+  \ ])
+
+Execute(The reek handler should parse JSON correctly when there is no output from reek):
+  AssertEqual
+  \ [],
+  \ ale_linters#ruby#reek#Handle(347, [
+  \ ])
+
+Execute(The reek handler should handle garbage output):
+  AssertEqual
+  \ [],
+  \ ale_linters#ruby#reek#Handle(347, [
+  \   'No such command in 2.4.1 of ruby',
+  \ ])

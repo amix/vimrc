@@ -1,0 +1,17 @@
+Before:
+  Save g:ale_jshint_config_loc
+
+  unlet! g:ale_jshint_config_loc
+
+  call ale#assert#SetUpLinterTest('javascript', 'jshint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'jshint', ale#Escape('jshint') . ' --reporter unix --extract auto --filename %s -'
+
+Execute(Setting a config location should add the config parameter):
+  let g:ale_jshint_config_loc = '/some/file'
+
+  AssertLinter 'jshint', ale#Escape('jshint') . ' --reporter unix --extract auto --config ' . ale#Escape('/some/file') . ' --filename %s -'

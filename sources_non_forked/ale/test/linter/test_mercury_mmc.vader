@@ -1,0 +1,22 @@
+Before:
+  call ale#assert#SetUpLinterTest('mercury', 'mmc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'mmc',
+  \ ale#Escape('mmc') . ' --errorcheck-only --make --output-compile-error-lines 100 %s:t:r'
+
+Execute(The executable should be configurable):
+  let b:ale_mercury_mmc_executable = 'foo'
+
+  AssertLinter 'foo',
+  \ ale#Escape('foo') . ' --errorcheck-only --make --output-compile-error-lines 100 %s:t:r'
+
+Execute(The options should be configurable):
+  let b:ale_mercury_mmc_options = '--bar'
+
+  AssertLinter 'mmc',
+  \ ale#Escape('mmc') . ' --errorcheck-only --bar %s:t:r'

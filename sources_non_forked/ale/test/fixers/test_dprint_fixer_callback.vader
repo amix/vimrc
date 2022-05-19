@@ -1,0 +1,44 @@
+Before:
+  call ale#assert#SetUpFixerTest('typescript', 'dprint')
+  call ale#test#SetFilename('../test-files/dprint/blank.ts')
+  let g:ale_dprint_executable_override = 0
+  let g:ale_dprint_executable = 'dprint'
+  let g:ale_dprint_config = ''
+
+After:
+  Restore
+  call ale#assert#TearDownFixerTest()
+
+Execute(The dprint callback should return 0 for a non-existent executable):
+  let g:ale_dprint_executable = 'foo'
+  AssertFixer 0
+
+Execute(The dprint callback should return the correct default values):
+  let g:ale_dprint_executable_override = 1
+  AssertFixer {
+  \   'command': ale#Escape('dprint')
+  \     . ' fmt '
+  \     . ' --stdin %s'
+  \ }
+
+Execute(The dprint callback should include config):
+  let g:ale_dprint_executable_override = 1
+  let g:ale_dprint_config = 'dprint.json'
+
+  AssertFixer {
+  \   'command': ale#Escape('dprint')
+  \     . ' fmt '
+  \     . ' -c '
+  \     . ale#Escape((has('win32') ? 'C:\testplugin\test\test-files\dprint\dprint.json' : '/testplugin/test/test-files/dprint/dprint.json'))
+  \     . ' --stdin %s'
+  \ }
+
+Execute(The dprint callback should include custom options):
+  let g:ale_dprint_executable_override = 1
+  let g:ale_dprint_options = '--verbose'
+
+  AssertFixer {
+  \   'command': ale#Escape('dprint')
+  \     . ' fmt '
+  \     . '--verbose' . ' --stdin %s'
+  \ }

@@ -1,0 +1,77 @@
+Before:
+  Save g:ale_c_parse_makefile
+  let g:ale_c_parse_makefile = 0
+
+  call ale#assert#SetUpLinterTest('c', 'clangtidy')
+  call ale#test#SetFilename('test.c')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The clangtidy command default should be correct):
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy') . ' %s'
+
+Execute(You should be able to remove the -checks option for clang-tidy):
+  let b:ale_c_clangtidy_checks = []
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy') . ' %s'
+
+Execute(You should be able to set other checks for clang-tidy):
+  let b:ale_c_clangtidy_checks = ['-*', 'clang-analyzer-*']
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy')
+  \   . ' -checks=' . ale#Escape('-*,clang-analyzer-*') . ' %s'
+
+Execute(You should be able to manually set compiler flags for clang-tidy):
+  let b:ale_c_clangtidy_checks = ['*']
+  let b:ale_c_clangtidy_options = '-Wall'
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy') . ' -checks=' . ale#Escape('*') . ' %s -- -Wall'
+
+Execute(You should be able to manually set flags for clang-tidy):
+  let b:ale_c_clangtidy_extra_options = '-config='
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy') . ' ' . ale#Escape('-config=') . ' %s'
+
+Execute(The build directory should be configurable):
+  let b:ale_c_clangtidy_checks = ['*']
+  let b:ale_c_build_dir = '/foo/bar'
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy')
+  \   . ' -checks=' . ale#Escape('*') . ' %s'
+  \   . ' -p ' . ale#Escape('/foo/bar')
+
+Execute(The build directory setting should override the options):
+  let b:ale_c_clangtidy_checks = ['*']
+  let b:ale_c_build_dir = '/foo/bar'
+  let b:ale_c_clangtidy_options = '-Wall'
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy')
+  \   . ' -checks=' . ale#Escape('*') . ' %s'
+  \   . ' -p ' . ale#Escape('/foo/bar')
+
+Execute(The build directory should be used for header files):
+  call ale#test#SetFilename('test.h')
+
+  let b:ale_c_clangtidy_checks = ['*']
+  let b:ale_c_build_dir = '/foo/bar'
+  let b:ale_c_clangtidy_options = '-Wall'
+
+  AssertLinter 'clang-tidy',
+  \ ale#Escape('clang-tidy')
+  \   . ' -checks=' . ale#Escape('*') . ' %s'
+  \   . ' -p ' . ale#Escape('/foo/bar')
+
+Execute(The executable should be configurable):
+  let b:ale_c_clangtidy_checks = ['*']
+  let b:ale_c_clangtidy_executable = 'foobar'
+
+  AssertLinter 'foobar',
+  \ ale#Escape('foobar') . ' -checks=' . ale#Escape('*') . ' %s'

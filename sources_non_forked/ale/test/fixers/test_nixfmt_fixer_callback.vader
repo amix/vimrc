@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_nix_nixfmt_executable
+  Save g:ale_nix_nixfmt_options
+
+After:
+  Restore
+
+Execute(The nixfmt callback should return the correct default values):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('nixfmt')
+  \ },
+  \ ale#fixers#nixfmt#Fix(bufnr(''))
+
+Execute(The nixfmt executable and options should be configurable):
+  let g:ale_nix_nixfmt_executable = '/path/to/nixfmt'
+  let g:ale_nix_nixfmt_options = '--help'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/nixfmt')
+  \     . ' --help',
+  \ },
+  \ ale#fixers#nixfmt#Fix(bufnr(''))

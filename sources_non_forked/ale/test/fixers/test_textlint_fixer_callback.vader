@@ -1,0 +1,42 @@
+Before:
+  Save g:ale_textlint_executable
+  Save g:ale_textlint_options
+  Save g:ale_textlint_use_global
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_textlint_executable = 'xxxinvalid'
+  let g:ale_textlint_options = ''
+  let g:ale_textlint_use_global = 0
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The textlint callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/markdown/testfile.md')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --fix'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#textlint#Fix(bufnr(''))
+
+Execute(The textlint callback should include custom textlint options):
+  let g:ale_textlint_options = "--quiet"
+  call ale#test#SetFilename('../test-files/markdown/testfile.md')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --fix'
+  \     . ' ' . g:ale_textlint_options
+  \     . ' %t',
+  \ },
+  \ ale#fixers#textlint#Fix(bufnr(''))

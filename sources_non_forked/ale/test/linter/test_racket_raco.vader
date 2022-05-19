@@ -1,0 +1,10 @@
+Before:
+  call ale#assert#SetUpLinterTest('racket', 'raco')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command and executable should be correct):
+  AssertLinter 'raco', 'raco expand %s'
+
+

@@ -1,0 +1,30 @@
+Before:
+  Save g:ale_go_go111module
+
+  call ale#assert#SetUpLinterTest('go', 'revive')
+
+After:
+  Restore
+
+  unlet! b:ale_go_go111module
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default revive command should be correct):
+  AssertLinter 'revive', ale#Escape('revive') . ' %t'
+
+Execute(The revive executable should be configurable):
+  let b:ale_go_revive_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' %t'
+
+Execute(The revive options should be configurable):
+  let b:ale_go_revive_options = '--foo'
+
+  AssertLinter 'revive', ale#Escape('revive') . ' --foo %t'
+
+Execute(The revive command should support Go environment variables):
+  let b:ale_go_go111module = 'on'
+
+  AssertLinter 'revive',
+  \ ale#Env('GO111MODULE', 'on') . ale#Escape('revive') . ' %t'

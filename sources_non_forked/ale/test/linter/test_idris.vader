@@ -1,0 +1,21 @@
+Before:
+  call ale#assert#SetUpLinterTest('idris', 'idris')
+
+After:
+  unlet! b:command_tail
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be used in the command):
+  AssertLinter 'idris',
+  \ ale#Escape('idris') . ' --total --warnpartial --warnreach --warnipkg --check %s'
+
+  let b:ale_idris_idris_executable = 'foobar'
+
+  AssertLinter 'foobar',
+  \ ale#Escape('foobar') . ' --total --warnpartial --warnreach --warnipkg --check %s'
+
+Execute(The options should be configurable):
+  let b:ale_idris_idris_options = '--something'
+
+  AssertLinter 'idris', ale#Escape('idris') . ' --something --check %s'

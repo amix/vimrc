@@ -1,0 +1,135 @@
+Before:
+  Save g:ale_warn_about_trailing_whitespace
+
+  let g:ale_warn_about_trailing_whitespace = 1
+
+  runtime ale_linters/python/pylint.vim
+
+After:
+  Restore
+
+  call ale#linter#Reset()
+
+  silent file something_else.py
+
+Execute(Basic pylint errors should be handle):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 4,
+  \     'col': 1,
+  \     'text': 'Trailing whitespace',
+  \     'code': 'trailing-whitespace',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'text': 'Missing module docstring',
+  \     'code': 'missing-docstring',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'col': 1,
+  \     'text': 'Missing function docstring',
+  \     'code': 'missing-docstring',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 5,
+  \     'text': '''break'' not properly in loop',
+  \     'code': 'not-in-loop',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 5,
+  \     'text': 'Unreachable code',
+  \     'code': 'unreachable',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 33,
+  \     'text': 'No exception type(s) specified',
+  \     'code': 'bare-except',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#python#pylint#Handle(bufnr(''), [
+  \ 'No config file found, using default configuration',
+  \ '************* Module test',
+  \ 'test.py:4:0: C0303 (trailing-whitespace) Trailing whitespace',
+  \ 'test.py:1:0: C0111 (missing-docstring) Missing module docstring',
+  \ 'test.py:2:0: C0111 (missing-docstring) Missing function docstring',
+  \ 'test.py:3:4: E0103 (not-in-loop) ''break'' not properly in loop',
+  \ 'test.py:4:4: W0101 (unreachable) Unreachable code',
+  \ 'test.py:7:32: W0702 (bare-except) No exception type(s) specified',
+  \ '',
+  \ '------------------------------------------------------------------',
+  \ 'Your code has been rated at 0.00/10 (previous run: 2.50/10, -2.50)',
+  \ ])
+
+Execute(Ignoring trailing whitespace messages should work):
+  let g:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'text': 'Missing module docstring',
+  \     'code': 'missing-docstring',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#python#pylint#Handle(bufnr(''), [
+  \ 'No config file found, using default configuration',
+  \ '************* Module test',
+  \ 'test.py:4:0: C0303 (trailing-whitespace) Trailing whitespace',
+  \ 'test.py:1:0: C0111 (missing-docstring) Missing module docstring',
+  \ '',
+  \ '------------------------------------------------------------------',
+  \ 'Your code has been rated at 0.00/10 (previous run: 2.50/10, -2.50)',
+  \ ])
+
+Execute(The pylint handler should parse Windows filenames):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 13,
+  \     'col': 6,
+  \     'text': 'Undefined variable ''x''',
+  \     'code': 'undefined-variable',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#python#pylint#Handle(bufnr(''), [
+  \   '************* Module test',
+  \   'D:\acm\github\vim\tools\test.py:13:5: E0602 (undefined-variable) Undefined variable ''x''',
+  \   '',
+  \   '------------------------------------------------------------------',
+  \   'Your code has been rated at 5.83/10 (previous run: 5.83/10, +0.00)',
+  \ ])
+
+Execute(Use msg_id):
+  let g:ale_python_pylint_use_msg_id = 1
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 13,
+  \     'col': 6,
+  \     'text': 'Undefined variable ''x''',
+  \     'code': 'E0602',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#python#pylint#Handle(bufnr(''), [
+  \   '************* Module test',
+  \   'D:\acm\github\vim\tools\test.py:13:5: E0602 (undefined-variable) Undefined variable ''x''',
+  \   '',
+  \   '------------------------------------------------------------------',
+  \   'Your code has been rated at 5.83/10 (previous run: 5.83/10, +0.00)',
+  \ ])

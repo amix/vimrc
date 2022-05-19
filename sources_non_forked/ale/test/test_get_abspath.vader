@@ -1,0 +1,29 @@
+Execute(Relative paths should be resolved correctly):
+  AssertEqual
+  \ has('win32') ? '\foo\bar\baz\whatever.txt' : '/foo/bar/baz/whatever.txt',
+  \ ale#path#GetAbsPath('/foo/bar/xyz', '../baz/whatever.txt')
+  AssertEqual
+  \ has('win32') ? '\foo\bar\xyz\whatever.txt' : '/foo/bar/xyz/whatever.txt',
+  \ ale#path#GetAbsPath('/foo/bar/xyz', './whatever.txt')
+  AssertEqual
+  \ has('win32') ? '\foo\bar\xyz\whatever.txt' : '/foo/bar/xyz/whatever.txt',
+  \ ale#path#GetAbsPath('/foo/bar/xyz', 'whatever.txt')
+
+  if has('win32')
+    AssertEqual
+    \ 'C:\foo\bar\baz\whatever.txt',
+    \ ale#path#GetAbsPath('C:\foo\bar\baz\xyz', '../whatever.txt')
+  endif
+
+Execute(Absolute paths should be resolved correctly):
+  AssertEqual
+  \ has('win32') ? '\ding\dong' : '/ding/dong',
+  \ ale#path#GetAbsPath('/foo/bar/xyz', '/ding/dong')
+
+  AssertEqual
+  \ has('win32') ? '\ding\dong' : '/ding/dong',
+  \ ale#path#GetAbsPath('/foo/bar/xyz', '//ding/dong')
+
+  if has('win32')
+    AssertEqual '\ding', ale#path#GetAbsPath('/foo/bar/xyz', '\\ding')
+  endif

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+
+exit_code=0
+docker_flags=(--rm -v "$PWD:/testplugin" -v "$PWD/test:/home" -w /testplugin "$DOCKER_RUN_IMAGE")
+
+echo '========================================'
+echo 'Running Vint to lint our code'
+echo '========================================'
+echo 'Vint warnings/errors follow:'
+echo
+
+set -o pipefail
+docker run -a stdout "${docker_flags[@]}" vint -s . || exit_code=$?
+set +o pipefail
+echo
+
+exit $exit_code

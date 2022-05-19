@@ -287,6 +287,21 @@ g:ale_cpp_cpplint_options                           *g:ale_cpp_cpplint_options*
 
   This variable can be changed to modify flags given to cpplint.
 
+g:ale_c_cpplint_executable                         *g:ale_c_cpplint_executable*
+                                                   *b:ale_c_cpplint_executable*
+  Type: |String|
+  Default: `'cpplint'`
+
+  This variable can be changed to use a different executable for cpplint.
+
+
+g:ale_c_cpplint_options                               *g:ale_c_cpplint_options*
+                                                      *b:ale_c_cpplint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to cpplint.
+
 
 ===============================================================================
 cquery                                                         *ale-cpp-cquery*
@@ -306,6 +321,12 @@ g:ale_cpp_cquery_cache_directory             *g:ale_cpp_cquery_cache_directory*
 
   This variable can be changed to decide which directory cquery uses for its
   cache.
+
+
+===============================================================================
+cspell                                                         *ale-cpp-cspell*
+
+See |ale-cspell-options|
 
 
 ===============================================================================

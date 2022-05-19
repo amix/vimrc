@@ -1,0 +1,20 @@
+Before:
+  call ale#assert#SetUpLinterTest('crystal', 'ameba')
+  call ale#test#SetFilename('dummy.cr')
+
+  let g:ale_crystal_ameba_executable = 'bin/ameba'
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should default to bin/ameba):
+  AssertLinter 'bin/ameba', ale#Escape('bin/ameba')
+  \   . ' --format json '
+  \   . ale#Escape(ale#path#Simplify(g:dir . '/dummy.cr'))
+
+Execute(Should be able to set a custom executable):
+  let g:ale_crystal_ameba_executable = 'ameba'
+
+  AssertLinter 'ameba' , ale#Escape('ameba')
+  \   . ' --format json '
+  \   . ale#Escape(ale#path#Simplify(g:dir . '/dummy.cr'))

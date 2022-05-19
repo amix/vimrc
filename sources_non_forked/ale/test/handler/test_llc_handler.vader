@@ -1,0 +1,58 @@
+Before:
+  runtime! ale_linters/llvm/llc.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(llc handler should parse errors output for STDIN):
+  AssertEqual
+  \ [
+  \   {
+  \      'lnum': 10,
+  \      'col': 7,
+  \      'text': "error: value doesn't match function result type 'i32'",
+  \      'type': 'E',
+  \   },
+  \   {
+  \      'lnum': 10,
+  \      'col': 13,
+  \      'text': "error: use of undefined value '@foo'",
+  \      'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#llvm#llc#HandleErrors(bufnr(''), [
+  \   "llc: <stdin>:10:7: error: value doesn't match function result type 'i32'",
+  \   'ret i64 0',
+  \   '    ^',
+  \   '',
+  \   "llc: <stdin>:10:13: error: use of undefined value '@foo'",
+  \   'call void @foo(i64 %0)',
+  \   '          ^',
+  \ ])
+
+Execute(llc handler should parse errors output for some file):
+  call ale#test#SetFilename('test.ll')
+  AssertEqual
+  \ [
+  \   {
+  \      'lnum': 10,
+  \      'col': 7,
+  \      'text': "error: value doesn't match function result type 'i32'",
+  \      'type': 'E',
+  \   },
+  \   {
+  \      'lnum': 10,
+  \      'col': 13,
+  \      'text': "error: use of undefined value '@foo'",
+  \      'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#llvm#llc#HandleErrors(bufnr(''), [
+  \   "llc: /path/to/test.ll:10:7: error: value doesn't match function result type 'i32'",
+  \   'ret i64 0',
+  \   '    ^',
+  \   '',
+  \   "llc: /path/to/test.ll:10:13: error: use of undefined value '@foo'",
+  \   'call void @foo(i64 %0)',
+  \   '          ^',
+  \ ])

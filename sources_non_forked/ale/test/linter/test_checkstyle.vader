@@ -1,0 +1,72 @@
+Before:
+  call ale#assert#SetUpLinterTest('java', 'checkstyle')
+  call ale#test#SetFilename('dummy.java')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The checkstyle callback should return the correct default value):
+  AssertLinter 'checkstyle',
+  \ ale#Escape('checkstyle')
+  \ . ' -c ' . ale#Escape('/google_checks.xml')
+  \ . ' %s'
+
+Execute(The checkstyle executable should be configurable):
+  let b:ale_java_checkstyle_executable = 'foobar'
+
+  AssertLinter 'foobar',
+  \ ale#Escape('foobar')
+  \ . ' -c ' . ale#Escape('/google_checks.xml')
+  \ . ' %s'
+
+Execute(Custom options should be supported):
+  let b:ale_java_checkstyle_options = '--foobar -cp -classpath /path/to/checkstyle-8.7-all.jar'
+
+  AssertLinter 'checkstyle',
+  \ ale#Escape('checkstyle')
+  \ . ' --foobar -cp -classpath /path/to/checkstyle-8.7-all.jar'
+  \ . ' -c ' . ale#Escape('/google_checks.xml')
+  \ . ' %s'
+
+Execute(configuration files set in _config should be supported):
+  let b:ale_java_checkstyle_config = ale#path#Simplify(g:dir . '/../test-files/checkstyle/other_config.xml')
+
+  AssertLinter 'checkstyle',
+  \ ale#Escape('checkstyle')
+  \ . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/checkstyle/other_config.xml'))
+  \ . ' %s'
+
+Execute(configuration files set in _options should be preferred over _config):
+  let b:ale_java_checkstyle_config = '/foo.xml'
+  let b:ale_java_checkstyle_options = '-c /bar.xml'
+
+  AssertLinter 'checkstyle', ale#Escape('checkstyle') . ' -c /bar.xml %s'
+
+  let b:ale_java_checkstyle_options = '-x -c /bar.xml'
+
+  AssertLinter 'checkstyle', ale#Escape('checkstyle') . ' -x -c /bar.xml %s'
+
+Execute(google_checks.xml should be used by default):
+  call ale#test#SetFilename('../test-files/checkstyle/test.java')
+
+  AssertLinter 'checkstyle',
+  \ ale#Escape('checkstyle')
+  \ . ' -c ' . ale#Escape('/google_checks.xml')
+  \ . ' %s'
+
+Execute(Other relative paths should be supported):
+  let b:ale_java_checkstyle_config = '../test-files/checkstyle/other_config.xml'
+
+  AssertLinter 'checkstyle',
+  \ ale#Escape('checkstyle')
+  \ . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/checkstyle/other_config.xml'))
+  \ . ' %s'
+
+  call ale#test#SetFilename('../test-files/checkstyle/test.java')
+
+  let b:ale_java_checkstyle_config = 'other_config.xml'
+
+  AssertLinter 'checkstyle',
+  \ ale#Escape('checkstyle')
+  \ . ' -c ' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/checkstyle/other_config.xml'))
+  \ . ' %s'

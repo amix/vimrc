@@ -1,0 +1,78 @@
+Before:
+  Save &filetype
+  Save g:ale_buffer_info
+  Save g:ale_echo_cursor
+  Save g:ale_run_synchronously
+  Save g:ale_set_highlights
+  Save g:ale_set_loclist
+  Save g:ale_set_quickfix
+  Save g:ale_set_signs
+
+  let g:ale_buffer_info = {}
+
+  " Enable only the one feature we need.
+  let g:ale_set_signs = 0
+  let g:ale_set_quickfix = 0
+  let g:ale_set_loclist = 1
+  let g:ale_set_highlights = 0
+  let g:ale_echo_cursor = 0
+
+  let g:ale_run_synchronously = 1
+  unlet! g:ale_run_synchronously_callbacks
+  call setloclist(0, [])
+
+  noautocmd let &filetype = 'foobar'
+
+  function! TestCallback(buffer, output)
+    return [{'text': 'x', 'lnum': 1}]
+  endfunction
+
+  call ale#linter#PreventLoading('foobar')
+  call ale#linter#Define('foobar', {
+  \ 'name': 'buffer_linter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd': 'true',
+  \ 'command': 'true',
+  \ 'read_buffer': 0,
+  \})
+  call ale#linter#PreventLoading('foobar2')
+  call ale#linter#Define('foobar2', {
+  \ 'name': 'buffer_linter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd': 'true',
+  \ 'command': 'true',
+  \ 'read_buffer': 0,
+  \})
+
+After:
+  Restore
+
+  unlet! g:ale_run_synchronously_callbacks
+  delfunction TestCallback
+
+  call ale#linter#Reset()
+  call setloclist(0, [])
+
+Execute(Error should be removed when the filetype changes to something else we cannot check):
+  call ale#Queue(0)
+  call ale#test#FlushJobs()
+  sleep 1ms
+
+  AssertEqual 1, len(ale#test#GetLoclistWithoutNewerKeys())
+
+  noautocmd let &filetype = 'foobar2'
+
+  call ale#Queue(0)
+  call ale#test#FlushJobs()
+  sleep 1ms
+
+  " We should get some items from the second filetype.
+  AssertEqual 1, len(ale#test#GetLoclistWithoutNewerKeys())
+
+  noautocmd let &filetype = 'xxx'
+
+  call ale#Queue(0)
+  call ale#test#FlushJobs()
+  sleep 1ms
+
+  AssertEqual 0, len(ale#test#GetLoclistWithoutNewerKeys())

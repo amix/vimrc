@@ -1,0 +1,32 @@
+Before:
+  let g:exists = exists('$TMPDIR')
+  let g:old_value = $TMPDIR
+
+After:
+  if g:exists
+    let $TMPDIR = g:old_value
+  else
+    silent! unlet! $TMPDIR
+  endif
+
+  unlet! g:exists
+  unlet! g:old_value
+
+Execute(ale#util#Tempname shouldn't set $TMPDIR to an empty string if it isn't set):
+  " You can't run this test twice on old Vim versions.
+  if has('unix')
+    Assert ale#util#Tempname() =~# '^/tmp'
+    Assert !exists('$TMPDIR'), '$TMPDIR exists where it shouldn''t'
+  endif
+
+Execute(ale#util#Tempname shouldn't replace $TMPDIR and reset them to an empty string.):
+  if has('unix')
+    let $TMPDIR = ''
+    Assert ale#util#Tempname() =~# '^/tmp'
+
+    if !has('nvim')
+      Assert exists('$TMPDIR'), '$TMPDIR doesn''t exist where it should'
+    endif
+
+    AssertEqual '', $TMPDIR
+  endif

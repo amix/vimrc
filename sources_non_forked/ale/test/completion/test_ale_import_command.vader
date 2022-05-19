@@ -1,0 +1,562 @@
+Before:
+  Save g:ale_enabled
+  Save b:ale_enabled
+  Save g:ale_lint_on_text_changed
+  Save g:ale_completion_enabled
+  Save g:ale_completion_autoimport
+  Save g:ale_completion_max_suggestions
+  Save g:ale_linters
+  Save b:ale_linters
+
+  let g:ale_enabled = 0
+  let b:ale_enabled = 0
+  let g:ale_lint_on_text_changed = 'always'
+  let g:ale_completion_enabled = 0
+  let g:ale_completion_autoimport = 0
+  let g:ale_completion_max_suggestions = 50
+  let g:ale_linters = {'typescript': ['tsserver'], 'python': ['pyre']}
+  unlet! b:ale_linters
+
+  let g:server_started_value = 1
+  let g:request_id = 0
+  let g:LastCallback = v:null
+  let g:LastHandleCallback = v:null
+  let g:sent_message_list = []
+  let g:code_action_list = []
+  let g:execute_list = []
+  let g:ale_queue_call_list = []
+
+  runtime autoload/ale.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/code_action.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/lsp_linter.vim
+
+  function! ale#util#Execute(expr) abort
+    call add(g:execute_list, a:expr)
+  endfunction
+
+  function! ale#Queue(...) abort
+    call add(g:ale_queue_call_list, a:000)
+  endfunction
+
+  function! ale#lsp#RegisterCallback(id, Callback) abort
+    let g:LastHandleCallback = a:Callback
+  endfunction
+
+  function! ale#lsp#NotifyForChanges(id, buffer) abort
+  endfunction
+
+  function! ale#lsp#HasCapability(id, capability) abort
+    return 1
+  endfunction
+
+  function! ale#lsp#Send(id, message) abort
+    let g:request_id += 1
+
+    call add(g:sent_message_list, a:message)
+
+    return g:request_id
+  endfunction
+
+  function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
+    let g:LastCallback = a:Callback
+
+    return g:server_started_value
+  endfunction
+
+  function! ale#code_action#HandleCodeAction(code_action, options) abort
+    Assert !get(a:options, 'should_save')
+
+    call add(g:code_action_list, a:code_action)
+  endfunction
+
+  function GetLastMessage()
+    return get(g:execute_list, -1, '')
+  endfunction
+
+  function CheckLintStates(conn_id, message)
+    " Check that we request more linter results after adding completions.
+    AssertEqual [[0, '']], g:ale_queue_call_list
+
+    let g:ale_enabled = 0
+
+    let g:ale_queue_call_list = []
+    call g:LastHandleCallback(a:conn_id, a:message)
+    AssertEqual [], g:ale_queue_call_list
+
+    let g:ale_enabled = 1
+    let g:ale_lint_on_text_changed = 1
+
+    let g:ale_queue_call_list = []
+    call g:LastHandleCallback(a:conn_id, a:message)
+    AssertEqual [[0, '']], g:ale_queue_call_list
+
+    let g:ale_lint_on_text_changed = 'normal'
+
+    let g:ale_queue_call_list = []
+    call g:LastHandleCallback(a:conn_id, a:message)
+    AssertEqual [[0, '']], g:ale_queue_call_list
+
+    let g:ale_lint_on_text_changed = 'insert'
+
+    let g:ale_queue_call_list = []
+    call g:LastHandleCallback(a:conn_id, a:message)
+    AssertEqual [[0, '']], g:ale_queue_call_list
+
+    let g:ale_queue_call_list = []
+    let g:ale_lint_on_text_changed = 'never'
+
+    call g:LastHandleCallback(a:conn_id, a:message)
+    AssertEqual [], g:ale_queue_call_list
+
+    let g:ale_lint_on_text_changed = '0'
+
+    call g:LastHandleCallback(a:conn_id, a:message)
+    AssertEqual [], g:ale_queue_call_list
+
+    let g:ale_lint_on_text_changed = 0
+
+    call g:LastHandleCallback(a:conn_id, a:message)
+    AssertEqual [], g:ale_queue_call_list
+
+    let g:ale_lint_on_text_changed = 'xxx'
+
+    call g:LastHandleCallback(a:conn_id, a:message)
+    AssertEqual [], g:ale_queue_call_list
+  endfunction
+
+After:
+  call ale#linter#Reset()
+
+  Restore
+
+  delfunction GetLastMessage
+  delfunction CheckLintStates
+
+  unlet! g:LastCallback
+  unlet! g:LastHandleCallback
+  unlet! g:request_id
+  unlet! g:server_started_value
+  unlet! g:sent_message_list
+  unlet! g:code_action_list
+  unlet! g:ale_queue_call_list
+  unlet! g:execute_list
+  unlet! g:received_message
+  unlet! b:ale_old_omnifunc
+  unlet! b:ale_old_completeopt
+  unlet! b:ale_completion_info
+  unlet! b:ale_completion_result
+  unlet! b:ale_complete_done_time
+
+  runtime autoload/ale.vim
+  runtime autoload/ale/util.vim
+  runtime autoload/ale/code_action.vim
+  runtime autoload/ale/lsp.vim
+  runtime autoload/ale/lsp_linter.vim
+
+Given typescript(Some example TypeScript code):
+  let xyz = 123
+  let foo = missingword
+
+  let abc = 456
+
+Execute(ALEImport should complain when there's no word at the cursor):
+  call setpos('.', [bufnr(''), 3, 1, 0])
+  ALEImport
+
+  AssertEqual 'echom ''Nothing to complete at cursor!''', GetLastMessage()
+
+Execute(ALEImport should tell the user if no LSP is available):
+  let g:server_started_value = 0
+
+  call setpos('.', [bufnr(''), 2, 16, 0])
+  ALEImport
+
+  AssertEqual
+  \ 'echom ''No completion providers are available.''',
+  \ GetLastMessage()
+
+Execute(ALEImport should request imports correctly for tsserver):
+  call setpos('.', [bufnr(''), 2, 16, 0])
+
+  ALEImport
+
+  AssertEqual
+  \ {
+  \   'conn_id': 0,
+  \   'request_id': 0,
+  \   'source': 'ale-import',
+  \   'column': 21,
+  \   'line': 2,
+  \   'line_length': 21,
+  \   'prefix': 'missingword',
+  \   'additional_edits_only': 1,
+  \ },
+  \ b:ale_completion_info
+  Assert g:LastCallback isnot v:null
+
+  call g:LastCallback(ale#linter#Get(&filetype)[0], {
+  \ 'connection_id': 347,
+  \ 'buffer': bufnr(''),
+  \})
+
+  AssertEqual
+  \ {
+  \   'conn_id': 347,
+  \   'request_id': 1,
+  \   'source': 'ale-import',
+  \   'column': 21,
+  \   'line': 2,
+  \   'line_length': 21,
+  \   'prefix': 'missingword',
+  \   'additional_edits_only': 1,
+  \ },
+  \ b:ale_completion_info
+  Assert g:LastHandleCallback isnot v:null
+
+  call g:LastHandleCallback(347, {
+  \ 'request_seq': 1,
+  \ 'command': 'completions',
+  \ 'body': [
+  \   {'name': 'missingwordIgnoreMe'},
+  \   {'name': 'missingword'},
+  \ ],
+  \})
+
+  AssertEqual
+  \ [
+  \   [0, 'ts@completions', {
+  \     'file': expand('%:p'),
+  \     'includeExternalModuleExports': 1,
+  \     'offset': 21,
+  \     'line': 2,
+  \     'prefix': 'missingword',
+  \   }],
+  \   [0, 'ts@completionEntryDetails', {
+  \     'file': expand('%:p'),
+  \     'entryNames': [{'name': 'missingword'}],
+  \     'offset': 21,
+  \     'line': 2,
+  \   }]
+  \ ],
+  \ g:sent_message_list
+  AssertEqual 2, b:ale_completion_info.request_id
+
+  let g:ale_enabled = 1
+  let g:received_message = {
+  \ 'request_seq': 2,
+  \ 'command': 'completionEntryDetails',
+  \ 'body': [
+  \   {
+  \     'name': 'missingword',
+  \     'kind': 'className',
+  \     'displayParts': [],
+  \     'codeActions': [{
+  \        'description': 'import { missingword } from "./Something";',
+  \        'changes': [],
+  \     }],
+  \   },
+  \ ],
+  \}
+  call g:LastHandleCallback(347, g:received_message)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'description': 'import { missingword } from "./Something";',
+  \     'changes': [],
+  \   },
+  \ ],
+  \ g:code_action_list
+
+  call CheckLintStates(347, g:received_message)
+
+Execute(ALEImport should tell the user when no completions were found from tsserver):
+  call setpos('.', [bufnr(''), 2, 16, 0])
+
+  ALEImport
+
+  AssertEqual
+  \ {
+  \   'conn_id': 0,
+  \   'request_id': 0,
+  \   'source': 'ale-import',
+  \   'column': 21,
+  \   'line': 2,
+  \   'line_length': 21,
+  \   'prefix': 'missingword',
+  \   'additional_edits_only': 1,
+  \ },
+  \ b:ale_completion_info
+  Assert g:LastCallback isnot v:null
+
+  call g:LastCallback(ale#linter#Get(&filetype)[0], {
+  \ 'connection_id': 347,
+  \ 'buffer': bufnr(''),
+  \})
+
+  AssertEqual
+  \ {
+  \   'conn_id': 347,
+  \   'request_id': 1,
+  \   'source': 'ale-import',
+  \   'column': 21,
+  \   'line': 2,
+  \   'line_length': 21,
+  \   'prefix': 'missingword',
+  \   'additional_edits_only': 1,
+  \ },
+  \ b:ale_completion_info
+  Assert g:LastHandleCallback isnot v:null
+
+  call g:LastHandleCallback(347, {
+  \ 'request_seq': 1,
+  \ 'command': 'completions',
+  \ 'body': [
+  \   {'name': 'missingwordIgnoreMe'},
+  \ ],
+  \})
+
+  AssertEqual 'echom ''No possible imports found.''', GetLastMessage()
+
+Given python(Some example Python code):
+  xyz = 123
+  foo = missingword
+
+  abc = 456
+
+Execute(ALEImport should request imports correctly for language servers):
+  call setpos('.', [bufnr(''), 2, 12, 0])
+
+  ALEImport
+
+  AssertEqual
+  \ {
+  \   'conn_id': 0,
+  \   'request_id': 0,
+  \   'source': 'ale-import',
+  \   'column': 17,
+  \   'line': 2,
+  \   'line_length': 17,
+  \   'prefix': 'missingword',
+  \   'additional_edits_only': 1,
+  \ },
+  \ b:ale_completion_info
+  Assert g:LastCallback isnot v:null
+
+  call g:LastCallback(ale#linter#Get(&filetype)[0], {
+  \ 'connection_id': 347,
+  \ 'buffer': bufnr(''),
+  \})
+
+  AssertEqual
+  \ {
+  \   'conn_id': 347,
+  \   'request_id': 1,
+  \   'source': 'ale-import',
+  \   'column': 17,
+  \   'line': 2,
+  \   'line_length': 17,
+  \   'prefix': 'missingword',
+  \   'additional_edits_only': 1,
+  \   'completion_filter': 'ale#completion#python#CompletionItemFilter',
+  \ },
+  \ b:ale_completion_info
+  Assert g:LastHandleCallback isnot v:null
+
+  AssertEqual
+  \ [
+  \   [0, 'textDocument/completion', {
+  \     'textDocument': {'uri': ale#path#ToFileURI(expand('%:p'))},
+  \     'position': {'character': 16, 'line': 1}
+  \   }],
+  \ ],
+  \ g:sent_message_list
+  AssertEqual 1, b:ale_completion_info.request_id
+
+  let g:ale_enabled = 1
+  let g:received_message = {
+  \ 'id': 1,
+  \ 'jsonrpc': '2.0',
+  \ 'result': {
+  \   'isIncomplete': v:false,
+  \   'items': [
+  \     {
+  \       'detail': 'Some other word we should ignore',
+  \       'filterText': 'missingwordIgnoreMe',
+  \       'insertText': 'missingwordIgnoreMe',
+  \       'insertTextFormat': 1,
+  \       'kind': 6,
+  \       'label': ' missingwordIgnoreMe',
+  \       'sortText': '3ee19999missingword',
+  \       'additionalTextEdits': [
+  \         {
+  \           'range': {
+  \             'start': {'line': 1, 'character': 1},
+  \             'end': {'line': 2, 'character': 1},
+  \           },
+  \           'newText': 'from something import missingwordIgnoreMe',
+  \         },
+  \       ],
+  \     },
+  \     {
+  \       'detail': 'Some word without text edits',
+  \       'filterText': 'missingword',
+  \       'insertText': 'missingword',
+  \       'insertTextFormat': 1,
+  \       'kind': 6,
+  \       'label': ' missingword',
+  \       'sortText': '3ee19999missingword',
+  \     },
+  \     {
+  \       'detail': 'The word we should use',
+  \       'filterText': 'missingword',
+  \       'insertText': 'missingword',
+  \       'insertTextFormat': 1,
+  \       'kind': 6,
+  \       'label': ' missingword',
+  \       'sortText': '3ee19999missingword',
+  \       'additionalTextEdits': [
+  \         {
+  \           'range': {
+  \             'start': {'line': 1, 'character': 1},
+  \             'end': {'line': 2, 'character': 1},
+  \           },
+  \           'newText': 'from something import missingword',
+  \         },
+  \       ],
+  \     },
+  \     {
+  \       'detail': 'The other word we should not use',
+  \       'filterText': 'missingword',
+  \       'insertText': 'missingword',
+  \       'insertTextFormat': 1,
+  \       'kind': 6,
+  \       'label': ' missingword',
+  \       'sortText': '3ee19999missingword',
+  \       'additionalTextEdits': [
+  \         {
+  \           'range': {
+  \             'start': {'line': 1, 'character': 1},
+  \             'end': {'line': 2, 'character': 1},
+  \           },
+  \           'newText': 'from something_else import missingword',
+  \         },
+  \       ],
+  \     },
+  \   ],
+  \ },
+  \}
+  call g:LastHandleCallback(347, g:received_message)
+
+  AssertEqual
+  \ [
+  \   {
+  \     'description': 'completion',
+  \     'changes': [
+  \       {
+  \         'fileName': expand('%:p'),
+  \         'textChanges': [
+  \           {
+  \             'start': {'line': 2, 'offset': 2},
+  \             'end': {'line': 3, 'offset': 2},
+  \             'newText': 'from something import missingword',
+  \           },
+  \         ],
+  \       },
+  \     ],
+  \   },
+  \ ],
+  \ g:code_action_list
+
+  call CheckLintStates(347, g:received_message)
+
+Execute(ALEImport should tell the user when no completions were found from a language server):
+  call setpos('.', [bufnr(''), 2, 12, 0])
+
+  ALEImport
+
+  AssertEqual
+  \ {
+  \   'conn_id': 0,
+  \   'request_id': 0,
+  \   'source': 'ale-import',
+  \   'column': 17,
+  \   'line': 2,
+  \   'line_length': 17,
+  \   'prefix': 'missingword',
+  \   'additional_edits_only': 1,
+  \ },
+  \ b:ale_completion_info
+  Assert g:LastCallback isnot v:null
+
+  call g:LastCallback(ale#linter#Get(&filetype)[0], {
+  \ 'connection_id': 347,
+  \ 'buffer': bufnr(''),
+  \})
+
+  AssertEqual
+  \ {
+  \   'conn_id': 347,
+  \   'request_id': 1,
+  \   'source': 'ale-import',
+  \   'column': 17,
+  \   'line': 2,
+  \   'line_length': 17,
+  \   'prefix': 'missingword',
+  \   'additional_edits_only': 1,
+  \   'completion_filter': 'ale#completion#python#CompletionItemFilter',
+  \ },
+  \ b:ale_completion_info
+  Assert g:LastHandleCallback isnot v:null
+
+  AssertEqual
+  \ [
+  \   [0, 'textDocument/completion', {
+  \     'textDocument': {'uri': ale#path#ToFileURI(expand('%:p'))},
+  \     'position': {'character': 16, 'line': 1}
+  \   }],
+  \ ],
+  \ g:sent_message_list
+  AssertEqual 1, b:ale_completion_info.request_id
+
+  let g:received_message = {
+  \ 'id': 1,
+  \ 'jsonrpc': '2.0',
+  \ 'result': {
+  \   'isIncomplete': v:false,
+  \   'items': [
+  \     {
+  \       'detail': 'Some other word we should ignore',
+  \       'filterText': 'missingwordIgnoreMe',
+  \       'insertText': 'missingwordIgnoreMe',
+  \       'insertTextFormat': 1,
+  \       'kind': 6,
+  \       'label': ' missingwordIgnoreMe',
+  \       'sortText': '3ee19999missingword',
+  \       'additionalTextEdits': [
+  \         {
+  \           'range': {
+  \             'start': {'line': 1, 'character': 1},
+  \             'end': {'line': 2, 'character': 1},
+  \           },
+  \           'newText': 'from something import missingwordIgnoreMe',
+  \         },
+  \       ],
+  \     },
+  \     {
+  \       'detail': 'Some word without text edits',
+  \       'filterText': 'missingword',
+  \       'insertText': 'missingword',
+  \       'insertTextFormat': 1,
+  \       'kind': 6,
+  \       'label': ' missingword',
+  \       'sortText': '3ee19999missingword',
+  \     },
+  \   ],
+  \ },
+  \}
+  call g:LastHandleCallback(347, g:received_message)
+
+  AssertEqual 'echom ''No possible imports found.''', GetLastMessage()

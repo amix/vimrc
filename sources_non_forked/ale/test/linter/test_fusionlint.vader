@@ -1,0 +1,19 @@
+Before:
+  call ale#assert#SetUpLinterTest('fuse', 'fusionlint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The fuse fusionlint command callback should return the correct default string):
+  AssertLinter 'fusion-lint', ale#Escape('fusion-lint') . ' --filename %s -i'
+
+Execute(The fuse fusionlint command callback should let you set options):
+  let g:ale_fuse_fusionlint_options = '--example-option argument'
+
+  AssertLinter 'fusion-lint',
+  \ ale#Escape('fusion-lint') . ' --example-option argument --filename %s -i'
+
+Execute(The fusionlint executable should be configurable):
+  let g:ale_fuse_fusionlint_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' --filename %s -i'

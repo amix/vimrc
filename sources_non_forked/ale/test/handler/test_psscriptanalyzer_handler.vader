@@ -1,0 +1,42 @@
+Before:
+  runtime ale_linters/powershell/psscriptanalyzer.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The psscriptanalyzer handler should handle basic information or warnings):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'I',
+  \     'text': 'The cmdlet ''Get-GithubRepo'' does not have a help comment.',
+  \     'code': 'PSProvideCommentHelp',
+  \   },
+  \   {
+  \     'lnum': 9,
+  \     'type': 'W',
+  \     'text': '''%'' is an alias of ''ForEach-Object''. Alias can introduce possible problems and make scripts hard to maintain. Please consider changing alias to its full content.',
+  \     'code': 'PSAvoidUsingCmdletAliases',
+  \   },
+  \   {
+  \     'lnum': 23,
+  \     'type': 'E',
+  \     'text': 'The ComputerName parameter of a cmdlet should not be hardcoded as this will expose sensitive information about the system.',
+  \     'code': 'PSAvoidUsingComputerNameHardcoded',
+  \   },
+  \ ],
+  \ ale_linters#powershell#psscriptanalyzer#Handle(bufnr(''), [
+  \   '1',
+  \   'Information',
+  \   'The cmdlet ''Get-GithubRepo'' does not have a help comment.',
+  \   'PSProvideCommentHelp',
+  \   '9',
+  \   'Warning',
+  \   '''%'' is an alias of ''ForEach-Object''. Alias can introduce possible problems and make scripts hard to maintain. Please consider changing alias to its full content.',
+  \   'PSAvoidUsingCmdletAliases',
+  \   '23',
+  \   'Error',
+  \   'The ComputerName parameter of a cmdlet should not be hardcoded as this will expose sensitive information about the system.',
+  \   'PSAvoidUsingComputerNameHardcoded',
+  \ ])

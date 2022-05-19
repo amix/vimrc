@@ -1,0 +1,35 @@
+Before:
+  Save g:ale_lua_luafmt_executable
+  Save g:ale_lua_luafmt_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_lua_luafmt_executable = 'xxxinvalid'
+  let g:ale_lua_luafmt_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The luafmt callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/lua/testfile.lua')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid') . ' --stdin',
+  \ },
+  \ ale#fixers#luafmt#Fix(bufnr(''))
+
+Execute(The luafmt callback should include custom luafmt options):
+  let g:ale_lua_luafmt_options = "--skip-children"
+  call ale#test#SetFilename('../test-files/lua/testfile.lua')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' ' . g:ale_lua_luafmt_options
+  \     . ' --stdin',
+  \ },
+  \ ale#fixers#luafmt#Fix(bufnr(''))

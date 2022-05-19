@@ -1,0 +1,40 @@
+Before:
+  let g:pre_success = 0
+  let g:post_success = 0
+  let g:ale_run_synchronously = 1
+
+  unlet! b:ale_linted
+
+After:
+  let g:ale_run_synchronously = 0
+  let g:ale_buffer_info = {}
+
+  augroup VaderTest
+    autocmd!
+  augroup END
+
+  augroup! VaderTest
+
+Given testft(An empty file):
+Execute(Run a lint cycle, and check that a variable is set in the autocmd):
+  augroup VaderTest
+    autocmd!
+    autocmd User ALELintPre let g:pre_success = 1
+    autocmd User ALELintPost let g:post_success = 1
+  augroup END
+
+  call ale#Queue(0)
+
+  AssertEqual g:pre_success, 1
+  AssertEqual g:post_success, 1
+
+Execute(b:ale_linted should be increased after each lint cycle):
+  AssertEqual get(b:, 'ale_linted'), 0
+
+  call ale#Queue(0)
+
+  AssertEqual get(b:, 'ale_linted'), 1
+
+  call ale#Queue(0)
+
+  AssertEqual get(b:, 'ale_linted'), 2

@@ -1,0 +1,9 @@
+Before:
+  call ale#assert#SetUpLinterTest('graphql', 'gqlint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The linter should run from the directory of the file in the buffer):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'gqlint', 'gqlint --reporter=simple %t'

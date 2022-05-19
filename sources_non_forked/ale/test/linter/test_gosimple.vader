@@ -1,0 +1,19 @@
+Before:
+  Save g:ale_go_go111module
+
+  call ale#assert#SetUpLinterTest('go', 'gosimple')
+  call ale#test#SetFilename('../test-files/go/testfile2.go')
+
+After:
+  unlet! b:ale_go_go111module
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default gosimple command should be correct):
+  AssertLinterCwd '%s:h'
+  AssertLinter 'gosimple', 'gosimple .'
+
+Execute(The gosimple command should support Go environment variables):
+  let b:ale_go_go111module = 'on'
+
+  AssertLinter 'gosimple', ale#Env('GO111MODULE', 'on') . 'gosimple .'

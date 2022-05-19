@@ -1,0 +1,21 @@
+Before:
+  call ale#assert#SetUpLinterTest('reason', 'ls')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The linter should not be run by default):
+  AssertLinterNotExecuted
+
+Execute(The executable should be configurable):
+  let b:ale_reason_ls_executable = 'foobar'
+
+  AssertLinter 'foobar', ale#Escape('foobar')
+
+Execute(There should be no default project root):
+  AssertLSPProject ''
+
+Execute(The project root should be detected using bsconfig.json):
+  call ale#test#SetFilename('../test-files/reasonml/test.ml')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/reasonml')

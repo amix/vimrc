@@ -1,0 +1,29 @@
+Before:
+  Save g:ale_set_lists_synchronously
+  Save g:ale_open_list
+
+  let g:ale_set_lists_synchronously = 0
+
+After:
+  Restore
+
+  sleep 1ms
+  call setloclist(0, [])
+  lclose
+
+Execute(The SetLists function should work when run in a timer):
+  call ale#list#SetLists(bufnr(''), [
+  \ {'bufnr': bufnr(''), 'lnum': 5, 'col': 5, 'text': 'x', 'type': 'E'},
+  \])
+  sleep 1ms
+  AssertEqual [{
+  \ 'lnum': 5,
+  \ 'bufnr': bufnr(''),
+  \ 'col': 5,
+  \ 'text': 'x',
+  \ 'valid': 1,
+  \ 'vcol': 0,
+  \ 'nr': 0,
+  \ 'type': 'E',
+  \ 'pattern': '',
+  \}], ale#test#GetLoclistWithoutNewerKeys()

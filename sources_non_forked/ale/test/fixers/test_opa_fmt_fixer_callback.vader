@@ -1,0 +1,33 @@
+Before:
+  Save g:ale_opa_fmt_executable
+  Save g:ale_opa_fmt_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_opa_fmt_executable = 'xxxinvalid'
+  let g:ale_opa_fmt_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The opa fmt callback should return the correct default values):
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid') . ' fmt',
+  \ },
+  \ ale#fixers#opafmt#Fix(bufnr(''))
+
+Execute(The opa fmt callback should include custom options):
+  let g:ale_opa_fmt_options = "--list"
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' fmt'
+  \     . ' ' . g:ale_opa_fmt_options
+  \ },
+  \ ale#fixers#opafmt#Fix(bufnr(''))

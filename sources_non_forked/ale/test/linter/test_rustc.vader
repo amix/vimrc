@@ -1,0 +1,25 @@
+Before:
+  call ale#assert#SetUpLinterTest('rust', 'rustc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLinter 'rustc', 'rustc --error-format=json --emit=mir -o /dev/null -'
+
+Execute(The options should be configurable):
+  call ale#test#SetFilename('../test-files/dummy')
+
+  let b:ale_rust_rustc_options = '--foo'
+
+  AssertLinter 'rustc', 'rustc --error-format=json --foo -'
+
+Execute(Some default paths should be included when the project is a Cargo project):
+  call ale#test#SetFilename('../test-files/rust/cargo/testfile.rs')
+
+  AssertLinter 'rustc', 'rustc --error-format=json --emit=mir -o /dev/null'
+  \   . ' -L ' . ale#Escape(ale#path#GetAbsPath(g:dir,  '../test-files/rust/cargo/target/debug/deps'))
+  \   . ' -L ' . ale#Escape(ale#path#GetAbsPath(g:dir, '../test-files/rust/cargo/target/release/deps'))
+  \   . ' -'

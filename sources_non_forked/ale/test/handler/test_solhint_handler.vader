@@ -1,0 +1,84 @@
+Before:
+  runtime ale_linters/solidity/solhint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The solhint handler should parse linter error messages correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 17,
+  \     'text': 'Compiler version must be fixed',
+  \     'code': 'compiler-fixed',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 4,
+  \     'col': 8,
+  \     'text': 'Use double quotes for string literals',
+  \     'code': 'quotes',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 5,
+  \     'col': 8,
+  \     'text': 'Use double quotes for string literals',
+  \     'code': 'quotes',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 13,
+  \     'col': 3,
+  \     'text': 'Expected indentation of 4 spaces but found 2',
+  \     'code': 'indent',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 14,
+  \     'col': 3,
+  \     'text': 'Expected indentation of 4 spaces but found 2',
+  \     'code': 'indent',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 47,
+  \     'col': 3,
+  \     'text': 'Function order is incorrect, public function can not go after internal function.',
+  \     'code': 'func-order',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale#handlers#solhint#Handle(bufnr(''), [
+  \   'contracts/Bounty.sol: line 1, col 17, Warning - Compiler version must be fixed (compiler-fixed)',
+  \   'contracts/Bounty.sol: line 4, col 8, Error - Use double quotes for string literals (quotes)',
+  \   'contracts/Bounty.sol: line 5, col 8, Error - Use double quotes for string literals (quotes)',
+  \   'contracts/Bounty.sol: line 13, col 3, Error - Expected indentation of 4 spaces but found 2 (indent)',
+  \   'contracts/Bounty.sol: line 14, col 3, Error - Expected indentation of 4 spaces but found 2 (indent)',
+  \   'contracts/Bounty.sol: line 47, col 3, Error - Function order is incorrect, public function can not go after internal function. (func-order)',
+  \ ])
+
+
+Execute(The solhint handler should parse syntax error messages correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 30,
+  \     'col': 4,
+  \     'text': "missing ';' at 'uint248'",
+  \     'code': 'Parse error',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 203,
+  \     'col': 4,
+  \     'text': "no viable alternative at input '_loserStakeMultiplier}'",
+  \     'code': 'Parse error',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale#handlers#solhint#Handle(bufnr(''), [
+  \   "contracts/Bounty.sol: line 30, col 4, Error - Parse error: missing ';' at 'uint248'",
+  \   "contracts/Bounty.sol: line 203, col 4, Error - Parse error: no viable alternative at input '_loserStakeMultiplier}'",
+  \ ])

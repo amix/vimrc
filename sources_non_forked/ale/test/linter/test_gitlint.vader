@@ -1,0 +1,43 @@
+Before:
+  call ale#assert#SetUpLinterTest('gitcommit', 'gitlint')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+After:
+  unlet! b:bin_dir
+  unlet! b:executable
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(The gitlint callbacks should return the correct default values):
+  AssertLinter 'gitlint', ale#Escape('gitlint') . ' lint'
+
+Execute(The gitlint executable should be configurable, and escaped properly):
+  let g:ale_gitcommit_gitlint_executable = 'executable with spaces'
+
+  AssertLinter 'executable with spaces',
+  \ ale#Escape('executable with spaces') . ' lint'
+
+Execute(The gitlint command callback should let you set options):
+  let g:ale_gitcommit_gitlint_options = '--some-option'
+
+  AssertLinter 'gitlint', ale#Escape('gitlint') . ' --some-option lint'
+
+Execute(The gitlint callbacks shouldn't detect virtualenv directories where they don't exist):
+  call ale#test#SetFilename('../test-files/python/no_virtualenv/subdir/foo/COMMIT_EDITMSG')
+
+  AssertLinter 'gitlint', ale#Escape('gitlint') . ' lint'
+
+Execute(The gitlint callbacks should detect virtualenv directories):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/COMMIT_EDITMSG')
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/gitlint'
+  \)
+
+  AssertLinter b:executable, ale#Escape(b:executable) . ' lint'
+
+Execute(You should able able to use the global gitlint instead):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/COMMIT_EDITMSG')
+  let g:ale_gitcommit_gitlint_use_global = 1
+
+  AssertLinter 'gitlint', ale#Escape('gitlint') . ' lint'

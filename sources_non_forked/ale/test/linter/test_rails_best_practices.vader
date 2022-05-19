@@ -1,0 +1,42 @@
+Before:
+  call ale#assert#SetUpLinterTest('ruby', 'rails_best_practices')
+  call ale#test#SetFilename('../test-files/ruby/valid_rails_app/db/test.rb')
+
+  let b:args = '--silent -f json'
+  \ . ' --output-file ' . (has('win32') ? '%t' : '/dev/stdout')
+  let b:app_path = ale#path#Simplify(g:dir . '/../test-files/ruby/valid_rails_app')
+  let b:suffix = has('win32') ? '; type %t' : ''
+
+After:
+  unlet! b:args
+  unlet! b:app_path
+  unlet! b:suffix
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should default to rails_best_practices):
+  AssertLinter 'rails_best_practices', ale#Escape('rails_best_practices')
+  \   . ' ' . b:args
+  \   . ' ' . ale#Escape(b:app_path)
+  \   . b:suffix
+
+Execute(Should be able to set a custom executable):
+  let g:ale_ruby_rails_best_practices_executable = 'bin/rails_best_practices'
+
+  AssertLinter 'bin/rails_best_practices', ale#Escape('bin/rails_best_practices')
+  \   . ' ' . b:args
+  \   . ' ' . ale#Escape(b:app_path)
+  \   . b:suffix
+
+Execute(Setting bundle appends 'exec rails_best_practices'):
+  let g:ale_ruby_rails_best_practices_executable = 'path to/bundle'
+
+  AssertLinter 'path to/bundle', ale#Escape('path to/bundle')
+  \   . ' exec rails_best_practices'
+  \   . ' ' . b:args
+  \   . ' ' . ale#Escape(b:app_path)
+  \   . b:suffix
+
+Execute(Command callback should be empty when not in a valid Rails app):
+  call ale#test#SetFilename('../test-files/ruby/not_a_rails_app/test.rb')
+
+  AssertLinter 'rails_best_practices', ''

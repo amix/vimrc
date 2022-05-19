@@ -1,0 +1,63 @@
+Before:
+  call ale#assert#SetUpLinterTest('c', 'cppcheck')
+  let b:command_tail = ' -q --language=c --template=' . ale#Escape('{file}:{line}:{column}: {severity}:{inconclusive:inconclusive:} {message} [{id}]\\n{code}') . ' --enable=style -I' . ale#Escape(ale#path#Simplify(g:dir)) .' %t'
+
+After:
+  unlet! b:rel_file_path
+  unlet! b:command_tail
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'cppcheck', ale#Escape('cppcheck') . b:command_tail
+
+  let b:ale_c_cppcheck_executable = 'foobar'
+
+  AssertLinterCwd ''
+  AssertLinter 'foobar', ale#Escape('foobar') . b:command_tail
+
+Execute(cppcheck for C should detect compile_commands.json files):
+  let b:rel_file_path = '../test-files/cppcheck/one/foo.c'
+  call ale#test#SetFilename(b:rel_file_path)
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/cppcheck/one')
+  AssertLinter 'cppcheck', ale#Escape('cppcheck')
+  \   . ' -q --language=c'
+  \   . ' --template=' . ale#Escape('{file}:{line}:{column}: {severity}:{inconclusive:inconclusive:} {message} [{id}]\\n{code}')
+  \   . ' --project=' . ale#Escape('compile_commands.json')
+  \   . ' --file-filter=' . ale#Escape(ale#test#GetFilename(b:rel_file_path))
+  \   . ' --enable=style %t'
+
+Execute(cppcheck for C should detect compile_commands.json files in build directories):
+  let b:rel_file_path = '../test-files/cppcheck/with_build_dir/foo.c'
+  call ale#test#SetFilename(b:rel_file_path)
+
+  AssertLinterCwd ale#path#Simplify(g:dir . '/../test-files/cppcheck/with_build_dir')
+  AssertLinter 'cppcheck', ale#Escape('cppcheck')
+  \   . ' -q --language=c'
+  \   . ' --template=' . ale#Escape('{file}:{line}:{column}: {severity}:{inconclusive:inconclusive:} {message} [{id}]\\n{code}')
+  \   . ' --project=' . ale#Escape(ale#path#Simplify('build/compile_commands.json'))
+  \   . ' --file-filter=' . ale#Escape(ale#test#GetFilename(b:rel_file_path))
+  \   . ' --enable=style %t'
+
+Execute(cppcheck for C should include file dir if compile_commands.json file is not found):
+  call ale#test#SetFilename('../test-files/cppcheck/foo.c')
+
+  AssertLinter 'cppcheck',
+  \   ale#Escape('cppcheck')
+  \   . ' -q --language=c'
+  \   . ' --template=' . ale#Escape('{file}:{line}:{column}: {severity}:{inconclusive:inconclusive:} {message} [{id}]\\n{code}')
+  \   . ' --enable=style'
+  \   . ' -I' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/cppcheck'))
+  \   . ' %t'
+
+Execute(cppcheck for C header should include file dir and not use compile_commands.json):
+  call ale#test#SetFilename('../test-files/cppcheck/one/foo.h')
+
+  AssertLinter 'cppcheck',
+  \   ale#Escape('cppcheck')
+  \   . ' -q --language=c'
+  \   . ' --template=' . ale#Escape('{file}:{line}:{column}: {severity}:{inconclusive:inconclusive:} {message} [{id}]\\n{code}')
+  \   . '  -I' . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/cppcheck/one'))
+  \   . ' --suppress=unusedStructMember'
+  \   . ' --enable=style'
+  \   . ' %t'

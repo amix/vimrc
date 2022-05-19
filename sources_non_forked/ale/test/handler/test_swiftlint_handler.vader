@@ -1,0 +1,30 @@
+Before:
+  runtime ale_linters/swift/swiftlint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The swiftint handler should parse error messages correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 7,
+  \     'text': 'Operator Usage Whitespace Violation: Operators should be surrounded by a single whitespace when they are being used.',
+  \     'code': 'operator_usage_whitespace',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 11,
+  \     'text': 'Operator Usage Whitespace Violation: Operators should be surrounded by a single whitespace when they are being used.',
+  \     'code': 'operator_usage_whitespace',
+  \     'type': 'W',
+  \   },
+  \
+  \ ],
+  \ ale_linters#swift#swiftlint#Handle(bufnr(''), [
+  \   'This line should be ignored',
+  \   '<nopath>:1:7: warning: Operator Usage Whitespace Violation: Operators should be surrounded by a single whitespace when they are being used. (operator_usage_whitespace)',
+  \   '<nopath>:1:11: warning: Operator Usage Whitespace Violation: Operators should be surrounded by a single whitespace when they are being used. (operator_usage_whitespace)',
+  \ ])

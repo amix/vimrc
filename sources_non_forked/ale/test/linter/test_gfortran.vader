@@ -1,0 +1,24 @@
+Before:
+  call ale#assert#SetUpLinterTest('fortran', 'gcc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The fortran gcc command callback should return the correct default string):
+  AssertLinter 'gcc', ale#Escape('gcc') . ' -S -x f95 -fsyntax-only -ffree-form -Wall -'
+
+Execute(The fortran gcc command callback should let you set options):
+  let g:ale_fortran_gcc_options = '-Wotherthings'
+
+  AssertLinter 'gcc', ale#Escape('gcc') . ' -S -x f95 -fsyntax-only -ffree-form -Wotherthings -'
+
+Execute(The fortran gcc command callback should let you use -ffixed-form):
+  let g:ale_fortran_gcc_use_free_form = 0
+
+  AssertLinter 'gcc', ale#Escape('gcc') . ' -S -x f95 -fsyntax-only -ffixed-form -Wall -'
+
+Execute(The fortran executable should be configurable):
+  let g:ale_fortran_gcc_executable = 'gfortran'
+
+  AssertLinter 'gfortran',
+  \ ale#Escape('gfortran') . ' -S -x f95 -fsyntax-only -ffree-form -Wall -'

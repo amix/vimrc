@@ -1,0 +1,62 @@
+Before:
+  runtime! ale_linters/text/languagetool.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(languagetool handler should report 3 errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 3,
+  \     'col': 19,
+  \     'end_col': 20,
+  \     'text': 'This sentence does not start with an uppercase letter',
+  \     'type': 'W',
+  \     'code': 'UPPERCASE_SENTENCE_START',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 36,
+  \     'end_col': 42,
+  \     'text': "Did you mean 'to see'?",
+  \     'type': 'W',
+  \     'code': 'TOO_TO[1]',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 44,
+  \     'end_col': 45,
+  \     'text': "Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'",
+  \     'type': 'W',
+  \     'code': 'EN_A_VS_AN',
+  \   }
+  \ ],
+  \ ale#handlers#languagetool#HandleOutput(bufnr(''), [
+  \ '1.) Line 3, column 19, Rule ID: UPPERCASE_SENTENCE_START',
+  \ 'Message: This sentence does not start with an uppercase letter',
+  \ 'Suggestion: Or',
+  \ '...red phrases for details on potential errors. or use this text too see an few of of the probl...',
+  \ '                                                ^^                                             ',
+  \ '',
+  \ '2.) Line 3, column 36, Rule ID: TOO_TO[1]',
+  \ "Message: Did you mean 'to see'?",
+  \ 'Suggestion: to see',
+  \ '...etails on potential errors. or use this text too see an few of of the problems that LanguageTool ...',
+  \ '                                                ^^^^^^^                                             ',
+  \ '',
+  \ '3.) Line 3, column 44, Rule ID: EN_A_VS_AN',
+  \ "Message: Use 'a' instead of 'an' if the following word doesn't start with a vowel sound, e.g. 'a sentence', 'a university'",
+  \ 'Suggestion: a',
+  \ '...n potential errors. or use this text too see an few of of the problems that LanguageTool can...',
+  \ '                                               ^^                                             ',
+  \ 'Time: 2629ms for 8 sentences (3.0 sentences/sec)'
+  \ ])
+
+Execute(languagetool handler should report no errors on empty input):
+  AssertEqual
+  \ [],
+  \ ale#handlers#languagetool#HandleOutput(bufnr(''), [
+  \ '',
+  \ 'Time: 2629ms for 8 sentences (3.0 sentences/sec)'
+  \ ])

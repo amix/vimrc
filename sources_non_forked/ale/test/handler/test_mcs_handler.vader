@@ -1,0 +1,37 @@
+Before:
+  runtime ale_linters/cs/mcs.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The mcs handler should handle cannot find symbol errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 12,
+  \     'col' : 29,
+  \     'text': '; expected',
+  \     'code': 'CS1001',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 101,
+  \     'col': 0,
+  \     'text': 'Unexpected processor directive (no #if for this #endif)',
+  \     'code': 'CS1028',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 10,
+  \     'col': 12,
+  \     'text': 'some warning',
+  \     'code': 'CS0123',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#cs#mcs#Handle(347, [
+  \   'Tests.cs(12,29): error CS1001: ; expected',
+  \   'Tests.cs(101,0): error CS1028: Unexpected processor directive (no #if for this #endif)',
+  \   'Tests.cs(10,12): warning CS0123: some warning',
+  \   'Compilation failed: 2 error(s), 1 warnings',
+  \ ])

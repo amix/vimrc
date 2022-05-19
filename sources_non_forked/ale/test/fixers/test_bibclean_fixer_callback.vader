@@ -1,0 +1,30 @@
+Before:
+  Save g:ale_bib_bibclean_executable
+  Save g:ale_bib_bibclean_options
+
+  let g:ale_bib_bibclean_executable = 'xxxinvalid'
+  let g:ale_bib_bibclean_options = '-align-equals'
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+  call ale#test#RestoreDirectory()
+
+Execute(The bibclean callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/bib/dummy.bib')
+
+  AssertEqual
+  \ {'command': ale#Escape(g:ale_bib_bibclean_executable) . ' -align-equals'},
+  \ ale#fixers#bibclean#Fix(bufnr(''))
+
+Execute(The bibclean callback should include custom bibclean options):
+  let g:ale_bib_bibclean_options = '-author -check-values'
+  call ale#test#SetFilename('../test-files/bib/dummy.bib')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_bib_bibclean_executable) . ' -author -check-values'
+  \ },
+  \ ale#fixers#bibclean#Fix(bufnr(''))
+

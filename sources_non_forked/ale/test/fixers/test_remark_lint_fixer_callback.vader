@@ -1,0 +1,24 @@
+Before:
+  Save g:ale_markdown_remark_lint_executable
+  Save g:ale_markdown_remark_lint_options
+
+After:
+  Restore
+
+Execute(The remark callback should return the correct default values):
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('remark')
+  \ },
+  \ ale#fixers#remark_lint#Fix(bufnr(''))
+
+Execute(The remark executable and options should be configurable):
+  let g:ale_markdown_remark_lint_executable = '/path/to/remark'
+  let g:ale_markdown_remark_lint_options = '-h'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('/path/to/remark')
+  \     . ' -h',
+  \ },
+  \ ale#fixers#remark_lint#Fix(bufnr(''))

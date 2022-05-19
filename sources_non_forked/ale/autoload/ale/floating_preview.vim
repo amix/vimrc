@@ -7,7 +7,8 @@
 
 function! ale#floating_preview#Show(lines, ...) abort
     if !exists('*nvim_open_win') && !has('popupwin')
-        execute 'echom ''Floating windows not supported in this vim instance.'''
+        " no-custom-checks
+        echom 'Floating windows not supported in this vim instance.'
 
         return
     endif

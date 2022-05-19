@@ -1,0 +1,36 @@
+Before:
+  Save g:ale_tex_latexindent_executable
+  Save g:ale_tex_latexindent_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_tex_latexindent_executable = 'xxxinvalid'
+  let g:ale_tex_latexindent_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The latexindent callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/tex/testfile.tex')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -l'
+  \ },
+  \ ale#fixers#latexindent#Fix(bufnr(''))
+
+Execute(The latexindent callback should include custom gofmt options):
+  let g:ale_tex_latexindent_options = "-l '~/.indentconfig.yaml'"
+  call ale#test#SetFilename('../test-files/tex/testfile.tex')
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -l'
+  \     . ' ' . g:ale_tex_latexindent_options
+  \ },
+  \ ale#fixers#latexindent#Fix(bufnr(''))

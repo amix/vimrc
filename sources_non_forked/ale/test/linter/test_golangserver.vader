@@ -1,0 +1,76 @@
+Before:
+  Save $GOPATH
+  Save g:ale_completion_enabled
+  Save g:ale_go_go111module
+
+  let g:ale_completion_enabled = 0
+  let g:sep = has('win32') ? ';' : ':'
+
+  call ale#assert#SetUpLinterTest('go', 'langserver')
+  let $GOPATH = ale#path#Simplify(g:dir . '/../test-files/go/go1')
+  \ . g:sep
+  \ . ale#path#Simplify(g:dir . '/../test-files/go/go2')
+
+After:
+  Restore
+
+  unlet! b:ale_completion_enabled
+  unlet! b:ale_go_go111module
+  unlet! g:sep
+
+  call ale#assert#TearDownLinterTest()
+
+Execute(should set correct defaults):
+  AssertLinter 'go-langserver', ale#Escape('go-langserver')
+
+Execute(should configure go-langserver callback executable):
+  let b:ale_go_langserver_executable = 'boo'
+
+  AssertLinter 'boo', ale#Escape('boo')
+
+Execute(should set go-langserver options):
+  call ale#test#SetFilename('../test-files/go/go1/prj1/file.go')
+  let b:ale_completion_enabled = 1
+  let b:ale_go_langserver_options = ''
+
+  AssertLinter 'go-langserver',
+  \ ale#Escape('go-langserver') . ' -gocodecompletion'
+
+  let b:ale_go_langserver_options = '-trace'
+
+  AssertLinter 'go-langserver',
+  \ ale#Escape('go-langserver') . ' -gocodecompletion -trace'
+
+Execute(should ignore go-langserver -gocodecompletion option):
+  call ale#test#SetFilename('../test-files/go/go1/prj1/file.go')
+
+  let b:ale_go_langserver_options = '-trace -gocodecompletion'
+  let b:ale_completion_enabled = 1
+
+  AssertLinter 'go-langserver',
+  \ ale#Escape('go-langserver') . ' -gocodecompletion -trace'
+
+  let b:ale_completion_enabled = 0
+
+  AssertLinter 'go-langserver', ale#Escape('go-langserver') . ' -trace'
+
+Execute(should support Go environment variables):
+  let b:ale_go_go111module = 'on'
+
+  AssertLinter 'go-langserver',
+  \ ale#Env('GO111MODULE', 'on') . ale#Escape('go-langserver')
+
+Execute(should set go-langserver for go app1):
+  call ale#test#SetFilename('../test-files/go/go1/prj1/file.go')
+
+  AssertLSPLanguage 'go'
+  AssertLSPConfig {}
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/go/go1')
+
+Execute(should set go-langserver for go app2):
+  call ale#test#SetFilename('../test-files/go/go2/prj1/file.go')
+
+  AssertLSPLanguage 'go'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/go/go2')

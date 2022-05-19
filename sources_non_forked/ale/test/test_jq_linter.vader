@@ -1,0 +1,18 @@
+Before:
+  runtime ale_linters/json/jq.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute (Should parse error correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col':  9,
+  \     'text': 'Expected another array element',
+  \   }
+  \ ],
+  \ ale_linters#json#jq#Handle(0, [
+  \ 'parse error: Expected another array element at line 1, column 9'
+  \ ])

@@ -1,0 +1,45 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+  runtime ale_linters/json/jsonlint.vim
+
+After:
+  let g:ale_json_jsonlint_executable = 'jsonlint'
+  let g:ale_json_jsonlint_use_global = 0
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(local executable should be detected correctly):
+  call ale#test#SetFilename('test-files/jsonlint/app/src/app.json')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/jsonlint/app/node_modules/.bin/jsonlint'),
+  \ ale_linters#json#jsonlint#GetExecutable(bufnr(''))
+
+Execute(recursively executable should be detected correctly):
+  call ale#test#SetFilename('test-files/jsonlint/app-without-jsonlint/src/app.json')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/test-files/jsonlint/node_modules/jsonlint/lib/cli.js'),
+  \ ale_linters#json#jsonlint#GetExecutable(bufnr(''))
+
+Execute(use_global should override project executable):
+  let g:ale_json_jsonlint_use_global = 1
+
+  call ale#test#SetFilename('test-files/jsonlint/app/src/app.json')
+
+  AssertEqual
+  \ 'jsonlint',
+  \ ale_linters#json#jsonlint#GetExecutable(bufnr(''))
+
+Execute(manually defined should override default executable):
+  let g:ale_json_jsonlint_use_global = 1
+  let g:ale_json_jsonlint_executable = 'custom_jsonlint'
+
+  call ale#test#SetFilename('test-files/jsonlint/app/src/app.json')
+
+  AssertEqual
+  \ 'custom_jsonlint',
+  \ ale_linters#json#jsonlint#GetExecutable(bufnr(''))
+

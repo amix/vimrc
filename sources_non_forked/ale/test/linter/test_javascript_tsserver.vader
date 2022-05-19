@@ -1,0 +1,16 @@
+Before:
+  call ale#assert#SetUpLinterTest('javascript', 'tsserver')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'tsserver', ale#Escape('tsserver')
+
+Execute(should resolve correct path when nested 1):
+  call ale#test#SetFilename('../test-files/tsserver/src/level-1/level-2/file3.ts')
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/tsserver/src/level-1')
+
+Execute(should resolve correct path when nested 2):
+  call ale#test#SetFilename('../test-files/tsserver/src/file1.ts')
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/tsserver')

@@ -1,0 +1,88 @@
+Execute(The vale handler should handle broken JSON):
+  AssertEqual
+  \ [],
+  \ ale#handlers#vale#Handle(bufnr(''), ["{asdf"])
+
+Execute(The vale handler should handle am empty string response):
+  AssertEqual
+  \ [],
+  \ ale#handlers#vale#Handle(bufnr(''), [])
+
+Execute(The vale handler should handle an empty result):
+  AssertEqual
+  \ [],
+  \ ale#handlers#vale#Handle(bufnr(''), ["{}"])
+
+Execute(The vale handler should handle a normal example):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'col': 195,
+  \     'end_col': 201,
+  \     'type': 'W',
+  \     'text': "Consider removing 'usually'",
+  \     'code': 'vale.Hedging',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 1,
+  \     'end_col': 27,
+  \     'type': 'E',
+  \     'text': "'Documentation' is repeated!",
+  \     'code': 'vale.Repetition',
+  \   },
+  \   {
+  \     'lnum': 7,
+  \     'col': 1,
+  \     'end_col': 27,
+  \     'type': 'I',
+  \     'text': "'Documentation' is repeated!",
+  \     'code': 'vale.Repetition',
+  \   },
+  \ ],
+  \ ale#handlers#vale#Handle(bufnr(''), [
+  \   '{',
+  \   '  "/home/languitar/src/autosuspend/README.md": [',
+  \   '    {',
+  \   '      "Check": "vale.Hedging",',
+  \   '      "Description": "",',
+  \   '      "Line": 5,',
+  \   '      "Link": "",',
+  \   "      \"Message\": \"Consider removing 'usually'\",",
+  \   '      "Severity": "warning",',
+  \   '      "Span": [',
+  \   '        195,',
+  \   '        201',
+  \   '      ],',
+  \   '      "Hide": false',
+  \   '    },',
+  \   '    {',
+  \   '      "Check": "vale.Repetition",',
+  \   '      "Description": "",',
+  \   '      "Line": 7,',
+  \   '      "Link": "",',
+  \   "      \"Message\": \"'Documentation' is repeated!\",",
+  \   '      "Severity": "error",',
+  \   '      "Span": [',
+  \   '        1,',
+  \   '        27',
+  \   '      ],',
+  \   '      "Hide": false',
+  \   '    },',
+  \   '    {',
+  \   '      "Check": "vale.Repetition",',
+  \   '      "Description": "",',
+  \   '      "Line": 7,',
+  \   '      "Link": "",',
+  \   "      \"Message\": \"'Documentation' is repeated!\",",
+  \   '      "Severity": "suggestion",',
+  \   '      "Span": [',
+  \   '        1,',
+  \   '        27',
+  \   '      ],',
+  \   '      "Hide": false',
+  \   '    }',
+  \   '  ]',
+  \   '}',
+  \ ])

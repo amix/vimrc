@@ -1,0 +1,28 @@
+Before:
+    runtime ale_linters/thrift/thriftcheck.vim
+
+After:
+    call ale#linter#Reset()
+
+Execute(The thriftcheck handler should handle basic warnings and errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'type': 'E',
+  \     'text': '"py" namespace must match "^idl\\."',
+  \     'code': 'namespace.pattern',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 5,
+  \     'type': 'W',
+  \     'text': '64-bit integer constant -2147483649 may not work in all languages',
+  \     'code': 'int.64bit',
+  \   },
+  \ ],
+  \ ale_linters#thrift#thriftcheck#Handle(1, [
+  \   'file.thrift:1:1: error: "py" namespace must match "^idl\\." (namespace.pattern)',
+  \   'file.thrift:3:5: warning: 64-bit integer constant -2147483649 may not work in all languages (int.64bit)',
+  \ ])

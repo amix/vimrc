@@ -1,0 +1,21 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The styler callback should include custom styler options):
+  let g:ale_r_styler_options = "a_custom_option"
+
+  AssertEqual
+  \ {
+  \   'command': 'Rscript --vanilla -e '
+  \       . '"suppressPackageStartupMessages(library(styler));'
+  \       . 'style_file(commandArgs(TRUE), transformers = '
+  \       . 'a_custom_option)"'
+  \       . ' %t',
+  \   'read_temporary_file': 1,
+  \ },
+  \ ale#fixers#styler#Fix(bufnr(''))

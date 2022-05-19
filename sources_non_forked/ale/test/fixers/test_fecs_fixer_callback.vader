@@ -1,0 +1,24 @@
+Before:
+  call ale#assert#SetUpFixerTest('javascript', 'fecs')
+  runtime autoload/ale/handlers/fecs.vim
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The fecs fixer should respect to g:ale_javascript_fecs_executable):
+  let g:ale_javascript_fecs_executable = '../test-files/fecs/fecs'
+  let g:ale_javascript_fecs_use_global = 1
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape(g:ale_javascript_fecs_executable) . ' format --replace=true %t',
+  \   'read_temporary_file': 1,
+  \ },
+  \ ale#fixers#fecs#Fix(bufnr(''))
+
+Execute(The fecs fixer should return 0 when executable not found):
+  let g:ale_javascript_fecs_executable = 'fecs-invalid'
+  let g:ale_javascript_fecs_use_global = 1
+  AssertEqual
+  \ 0,
+  \ ale#fixers#fecs#Fix(bufnr(''))

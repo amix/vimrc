@@ -1,0 +1,26 @@
+Before:
+  runtime ale_linters/pyrex/cython.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The cython handler should handle warnings and errors):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 42,
+  \     'col': 7,
+  \     'text': 'some warning',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 777,
+  \     'col': 21,
+  \     'text': 'some error',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#pyrex#cython#Handle(347, [
+  \   'warning: file:42:7: some warning',
+  \   'file:777:21: some error',
+  \ ])

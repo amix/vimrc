@@ -1,0 +1,86 @@
+Before:
+  call ale#assert#SetUpLinterTest('vhdl', 'hdl_checker')
+
+  Save g:ale_hdl_checker_executable
+  Save g:ale_hdl_checker_config_file
+  Save g:ale_hdl_checker_options
+
+  let g:default_config_file = has('unix') ? '.hdl_checker.config' : '_hdl_checker.config'
+
+  runtime autoload/ale/handlers/hdl_checker.vim
+
+After:
+  Restore
+
+  call ale#assert#TearDownLinterTest()
+
+  unlet! g:default_config_file
+  unlet! g:call_count
+
+  runtime autoload/ale/handlers/hdl_checker.vim
+
+Execute(Get default initialization dict):
+  AssertEqual
+  \ {'project_file': g:default_config_file},
+  \ ale#handlers#hdl_checker#GetInitOptions(bufnr(''))
+
+Execute(Get custom initialization dict):
+  let g:ale_hdl_checker_config_file = 'some_file_name'
+
+  AssertEqual
+  \ {'project_file': 'some_file_name'},
+  \ ale#handlers#hdl_checker#GetInitOptions(bufnr(''))
+
+Execute(Get the checker command without extra user parameters):
+  AssertEqual
+  \ ale#Escape('hdl_checker') . ' --lsp',
+  \ ale#handlers#hdl_checker#GetCommand(bufnr(''))
+
+Execute(Get the checker command with user configured parameters):
+  let g:ale_hdl_checker_options = '--log-level DEBUG'
+
+  AssertEqual
+  \ ale#Escape('hdl_checker') . ' --lsp --log-level DEBUG',
+  \ ale#handlers#hdl_checker#GetCommand(bufnr(''))
+
+Execute(Customize executable):
+  let g:ale_hdl_checker_executable = '/some/other/path'
+  AssertEqual
+  \ ale#Escape('/some/other/path') . ' --lsp',
+  \ ale#handlers#hdl_checker#GetCommand(bufnr(''))
+
+Execute(Get project root based on .git):
+  call ale#test#SetFilename('../test-files/hdl_server/with_git/files/foo.vhd')
+  " Create .git file
+  silent! call mkdir(g:dir . '/../test-files/hdl_server/with_git/.git')
+  AssertNotEqual '', glob(g:dir . '/../test-files/hdl_server/with_git/.git')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/hdl_server/with_git'),
+  \ ale#handlers#hdl_checker#GetProjectRoot(bufnr(''))
+
+Execute(Get project root based on config file):
+  call ale#test#SetFilename('../test-files/hdl_server/with_config_file/foo.vhd')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/hdl_server/with_config_file'),
+  \ ale#handlers#hdl_checker#GetProjectRoot(bufnr(''))
+
+Execute(Return no project root if neither .git or config file are found):
+  let g:call_count = 0
+
+  " Mock this command to avoid the test to find ale's own .git folder
+  function! ale#handlers#hdl_checker#IsDotGit(path) abort
+    let g:call_count += 1
+    return 0
+  endfunction
+
+  call ale#test#SetFilename('../test-files/hdl_server/foo.vhd')
+
+  AssertEqual
+  \ '',
+  \ ale#handlers#hdl_checker#GetProjectRoot(bufnr(''))
+
+  AssertEqual g:call_count, 1
+
+  unlet! g:call_count

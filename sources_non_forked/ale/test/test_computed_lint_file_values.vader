@@ -1,0 +1,150 @@
+Before:
+  Save g:ale_enabled
+  Save g:ale_run_synchronously
+  Save g:ale_set_lists_synchronously
+  Save g:ale_buffer_info
+
+  let g:ale_enabled = 1
+  let g:ale_buffer_info = {}
+  let g:ale_run_synchronously = 1
+  let g:ale_set_lists_synchronously = 1
+
+  function! TestCallback(buffer, output)
+    " Windows adds extra spaces to the text from echo.
+    return [{
+    \ 'lnum': 2,
+    \ 'col': 3,
+    \ 'text': 'testlinter1',
+    \}]
+  endfunction
+  function! TestCallback2(buffer, output)
+    " Windows adds extra spaces to the text from echo.
+    return [{
+    \ 'lnum': 1,
+    \ 'col': 3,
+    \ 'text': 'testlinter2',
+    \}]
+  endfunction
+  function! TestCallback3(buffer, output)
+    " Windows adds extra spaces to the text from echo.
+    return [{
+    \ 'lnum': 3,
+    \ 'col': 3,
+    \ 'text': 'testlinter3',
+    \}]
+  endfunction
+
+  " These two linters computer their lint_file values after running commands.
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter1',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': has('win32') ? 'echo foo bar' : '/bin/sh -c ''echo foo bar''',
+  \ 'lint_file': {b -> ale#command#Run(b, 'echo', {-> 1})},
+  \})
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter2',
+  \ 'callback': 'TestCallback2',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': has('win32') ? 'echo foo bar' : '/bin/sh -c ''echo foo bar''',
+  \ 'lint_file': {b -> ale#command#Run(b, 'echo', {-> ale#command#Run(b, 'echo', {-> 1})})},
+  \})
+  " This one directly computes the result.
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter3',
+  \ 'callback': 'TestCallback3',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': has('win32') ? 'echo foo bar' : '/bin/sh -c ''echo foo bar''',
+  \ 'lint_file': {b -> 1},
+  \})
+
+  let g:filename = tempname()
+  call writefile([], g:filename)
+  call ale#test#SetFilename(g:filename)
+
+After:
+  delfunction TestCallback
+
+  call ale#engine#Cleanup(bufnr(''))
+  Restore
+  call ale#linter#Reset()
+
+  " Items and markers, etc.
+  call setloclist(0, [])
+  call clearmatches()
+  call ale#sign#Clear()
+
+  if filereadable(g:filename)
+    call delete(g:filename)
+  endif
+
+  unlet g:filename
+
+Given foobar(A file with some lines):
+  foo
+  bar
+  baz
+
+Execute(lint_file results where the result is eventually computed should be run):
+  call ale#Queue(0, 'lint_file')
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': bufnr('%'),
+  \     'lnum': 1,
+  \     'vcol': 0,
+  \     'col': 3,
+  \     'text': 'testlinter2',
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'pattern': '',
+  \     'valid': 1,
+  \   },
+  \   {
+  \     'bufnr': bufnr('%'),
+  \     'lnum': 2,
+  \     'vcol': 0,
+  \     'col': 3,
+  \     'text': 'testlinter1',
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'pattern': '',
+  \     'valid': 1,
+  \   },
+  \   {
+  \     'bufnr': bufnr('%'),
+  \     'lnum': 3,
+  \     'vcol': 0,
+  \     'col': 3,
+  \     'text': 'testlinter3',
+  \     'type': 'E',
+  \     'nr': -1,
+  \     'pattern': '',
+  \     'valid': 1,
+  \   },
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(Linters where lint_file eventually evaluates to 1 shouldn't be run if we don't want to run them):
+  call ale#Queue(0, '')
+  call ale#test#FlushJobs()
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(Keeping computed lint_file jobs running should work):
+  AssertEqual 'testlinter2', ale#linter#Get('foobar')[1].name
+
+  call ale#engine#InitBufferInfo(bufnr(''))
+
+  call ale#engine#MarkLinterActive(
+  \ g:ale_buffer_info[bufnr('')],
+  \ ale#linter#Get('foobar')[1]
+  \)
+  call ale#engine#RunLinters(bufnr(''), ale#linter#Get('foobar'), 0)
+
+  Assert !empty(g:ale_buffer_info[bufnr('')].active_linter_list),
+  \ 'The active linter list was empty'
+  Assert ale#engine#IsCheckingBuffer(bufnr('')),
+  \ 'The IsCheckingBuffer function returned 0'

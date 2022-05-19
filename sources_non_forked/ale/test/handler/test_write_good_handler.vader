@@ -1,0 +1,37 @@
+Execute(The write-good handler should handle the example from the write-good README):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 1,
+  \     'end_col': 2,
+  \     'type': 'W',
+  \     'text': '"So" adds no meaning',
+  \   },
+  \   {
+  \     'lnum': 1,
+  \     'col': 12,
+  \     'end_col': 21,
+  \     'type': 'W',
+  \     'text': '"was stolen" may be passive voice',
+  \   },
+  \   {
+  \     'lnum': 6,
+  \     'col': 2,
+  \     'end_col': 2,
+  \     'type': 'W',
+  \     'text': '"foo bar" bla',
+  \   },
+  \ ],
+  \ ale#handlers#writegood#Handle(bufnr(''), [
+  \ 'In /tmp/vBYivbZ/6/test.md',
+  \ '=============',
+  \ 'So the cat was stolen.',
+  \ '^^',
+  \ '"So" adds no meaning on line 1 at column 0',
+  \ '-------------',
+  \ 'So the cat was stolen.',
+  \ '           ^^^^^^^^^^',
+  \ '"was stolen" may be passive voice on line 1 at column 11',
+  \ '"foo bar" bla on line 6 at column 1',
+  \ ])

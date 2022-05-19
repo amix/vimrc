@@ -1,0 +1,24 @@
+Before:
+  runtime ale_linters/po/msgfmt.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Duplicate messages should be made easier to navigate):
+  AssertEqual
+  \ [
+  \   {'lnum': 14, 'col': 0, 'type': 'W', 'text': 'some other thing'},
+  \   {'lnum': 1746, 'col': 0, 'type': 'W', 'text': 'duplicate of message at line 262'},
+  \   {'lnum': 262, 'col': 0, 'type': 'W', 'text': 'first location of duplicate of message at line 1746'},
+  \   {'lnum': 666, 'col': 0, 'type': 'W', 'text': 'duplicate message definition...'},
+  \   {'lnum': 888, 'col': 0, 'type': 'W', 'text': 'some other thing'},
+  \   {'lnum': 999, 'col': 0, 'type': 'W', 'text': '...this is the location of the first definition'},
+  \ ],
+  \ ale_linters#po#msgfmt#Handle(bufnr(''), [
+  \   '/tmp/v6GMUFf/16/foo.po:14: some other thing',
+  \   '/tmp/v6GMUFf/16/foo.po:1746: duplicate message definition...',
+  \   '/tmp/v6GMUFf/16/foo.po:262: ...this is the location of the first definition',
+  \   '/tmp/v6GMUFf/16/foo.po:666: duplicate message definition...',
+  \   '/tmp/v6GMUFf/16/foo.po:888: some other thing',
+  \   '/tmp/v6GMUFf/16/foo.po:999: ...this is the location of the first definition',
+  \ ])

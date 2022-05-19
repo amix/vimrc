@@ -1,0 +1,238 @@
+Before:
+  function! CheckAutocmd(group)
+    call ale#events#Init()
+
+    redir => l:output
+      execute 'silent! autocmd ' . a:group
+    redir END
+
+    let l:matches = []
+    let l:header = ''
+    " Some event names have aliases, and NeoVim and Vim produce
+    " different output. The names are remapped to fix this.
+    let l:event_name_corrections = {
+    \ 'BufWrite': 'BufWritePre',
+    \ 'BufRead': 'BufReadPost',
+    \}
+
+    " autocmd commands are split across two lines in output, so we
+    " must merge the lines back into one simple line.
+    for l:line in split(l:output, "\n")
+      if l:line =~# '^ALE' && split(l:line)[0] ==# a:group
+        let l:header = split(l:line)[1]
+        let l:header = get(l:event_name_corrections, l:header, l:header)
+      elseif !empty(l:header)
+        " There's an extra line for buffer events, and we should only look
+        " for the one matching the current buffer.
+        if l:line =~# '<buffer=' . bufnr('') . '>'
+          let l:header .= ' <buffer>'
+        elseif l:line[:0] is# ' '
+          call add(l:matches, join(split(l:header . l:line)))
+        else
+          let l:header = ''
+        endif
+      endif
+    endfor
+
+    call sort(l:matches)
+
+    return l:matches
+  endfunction
+
+  Save g:ale_completion_enabled
+  Save g:ale_echo_cursor
+  Save g:ale_enabled
+  Save g:ale_fix_on_save
+  Save g:ale_lint_on_enter
+  Save g:ale_lint_on_filetype_changed
+  Save g:ale_lint_on_insert_leave
+  Save g:ale_lint_on_save
+  Save g:ale_lint_on_text_changed
+  Save g:ale_pattern_options_enabled
+  Save g:ale_hover_cursor
+
+  " Turn everything on by defaul for these tests.
+  let g:ale_completion_enabled = 1
+  let g:ale_echo_cursor = 1
+  let g:ale_enabled = 1
+  let g:ale_fix_on_save = 1
+  let g:ale_lint_on_enter = 1
+  let g:ale_lint_on_filetype_changed = 1
+  let g:ale_lint_on_insert_leave = 1
+  let g:ale_lint_on_save = 1
+  let g:ale_lint_on_text_changed = 1
+  let g:ale_pattern_options_enabled = 1
+  let g:ale_hover_cursor = 1
+
+After:
+  delfunction CheckAutocmd
+  Restore
+
+  if g:ale_completion_enabled
+    call ale#completion#Enable()
+  else
+    call ale#completion#Disable()
+  endif
+
+  call ale#events#Init()
+
+Execute (All events should be set up when everything is on):
+  let g:ale_echo_cursor = 1
+
+  AssertEqual
+  \ [
+  \   'BufEnter * call ale#events#ReadOrEnterEvent(str2nr(expand(''<abuf>'')))',
+  \   'BufReadPost * call ale#events#ReadOrEnterEvent(str2nr(expand(''<abuf>'')))',
+  \   'BufWinEnter * call ale#events#LintOnEnter(str2nr(expand(''<abuf>'')))',
+  \   'BufWritePost * call ale#events#SaveEvent(str2nr(expand(''<abuf>'')))',
+  \   'CursorHold * if exists(''*ale#engine#Cleanup'') | call ale#cursor#EchoCursorWarningWithDelay() | endif',
+  \   'CursorHold if exists(''*ale#lsp#Send'') | call ale#hover#ShowTruncatedMessageAtCursor() | endif',
+  \   'CursorMoved * if exists(''*ale#engine#Cleanup'') | call ale#cursor#EchoCursorWarningWithDelay() | endif',
+  \   'FileChangedShellPost * call ale#events#FileChangedEvent(str2nr(expand(''<abuf>'')))',
+  \   'FileType * call ale#events#FileTypeEvent( str2nr(expand(''<abuf>'')), expand(''<amatch>''))',
+  \   'InsertLeave * if ale#Var(str2nr(expand(''<abuf>'')), ''lint_on_insert_leave'') | call ale#Queue(0) | endif',
+  \   'InsertLeave if exists(''*ale#engine#Cleanup'') | call ale#cursor#EchoCursorWarning() | endif',
+  \   'TextChanged * call ale#Queue(ale#Var(str2nr(expand(''<abuf>'')), ''lint_delay''))',
+  \   'TextChangedI * call ale#Queue(ale#Var(str2nr(expand(''<abuf>'')), ''lint_delay''))',
+  \ ],
+  \ CheckAutocmd('ALEEvents')
+
+Execute (Only the required events should be bound even if various settings are off):
+  let g:ale_enabled = 1
+  let g:ale_completion_enabled = 0
+  let g:ale_echo_cursor = 0
+  let g:ale_fix_on_save = 0
+  let g:ale_lint_on_enter = 0
+  let g:ale_lint_on_filetype_changed = 0
+  let g:ale_lint_on_insert_leave = 0
+  let g:ale_lint_on_save = 0
+  let g:ale_lint_on_text_changed = 0
+  let g:ale_pattern_options_enabled = 0
+  let g:ale_hover_cursor = 0
+
+  AssertEqual
+  \ [
+  \   'BufEnter * call ale#events#ReadOrEnterEvent(str2nr(expand(''<abuf>'')))',
+  \   'BufReadPost * call ale#events#ReadOrEnterEvent(str2nr(expand(''<abuf>'')))',
+  \   'BufWritePost * call ale#events#SaveEvent(str2nr(expand(''<abuf>'')))',
+  \ ],
+  \ CheckAutocmd('ALEEvents')
+
+Execute (The cursor hoever event should be enabled with g:ale_hover_cursor = 1):
+  let g:ale_enabled = 1
+  let g:ale_completion_enabled = 0
+  let g:ale_echo_cursor = 0
+  let g:ale_fix_on_save = 0
+  let g:ale_lint_on_enter = 0
+  let g:ale_lint_on_filetype_changed = 0
+  let g:ale_lint_on_insert_leave = 0
+  let g:ale_lint_on_save = 0
+  let g:ale_lint_on_text_changed = 0
+  let g:ale_pattern_options_enabled = 0
+  let g:ale_hover_cursor = 1
+
+  AssertEqual
+  \ [
+  \   'BufEnter * call ale#events#ReadOrEnterEvent(str2nr(expand(''<abuf>'')))',
+  \   'BufReadPost * call ale#events#ReadOrEnterEvent(str2nr(expand(''<abuf>'')))',
+  \   'BufWritePost * call ale#events#SaveEvent(str2nr(expand(''<abuf>'')))',
+  \   'CursorHold * if exists(''*ale#lsp#Send'') | call ale#hover#ShowTruncatedMessageAtCursor() | endif',
+  \ ],
+  \ CheckAutocmd('ALEEvents')
+
+Execute (g:ale_lint_on_text_changed = 1 bind both events):
+  let g:ale_lint_on_text_changed = 1
+
+  AssertEqual
+  \ [
+  \   'TextChanged * call ale#Queue(ale#Var(str2nr(expand(''<abuf>'')), ''lint_delay''))',
+  \   'TextChangedI * call ale#Queue(ale#Var(str2nr(expand(''<abuf>'')), ''lint_delay''))',
+  \ ],
+  \ filter(CheckAutocmd('ALEEvents'), 'v:val =~ ''^TextChanged''')
+
+Execute (g:ale_lint_on_text_changed = 'always' should bind both events):
+  let g:ale_lint_on_text_changed = 'always'
+
+  AssertEqual
+  \ [
+  \   'TextChanged * call ale#Queue(ale#Var(str2nr(expand(''<abuf>'')), ''lint_delay''))',
+  \   'TextChangedI * call ale#Queue(ale#Var(str2nr(expand(''<abuf>'')), ''lint_delay''))',
+  \ ],
+  \ filter(CheckAutocmd('ALEEvents'), 'v:val =~ ''^TextChanged''')
+
+Execute (g:ale_lint_on_text_changed = 'normal' should bind only TextChanged):
+  let g:ale_lint_on_text_changed = 'normal'
+
+  AssertEqual
+  \ [
+  \   'TextChanged * call ale#Queue(ale#Var(str2nr(expand(''<abuf>'')), ''lint_delay''))',
+  \ ],
+  \ filter(CheckAutocmd('ALEEvents'), 'v:val =~ ''^TextChanged''')
+
+Execute (g:ale_lint_on_text_changed = 'insert' should bind only TextChangedI):
+  let g:ale_lint_on_text_changed = 'insert'
+
+  AssertEqual
+  \ [
+  \   'TextChangedI * call ale#Queue(ale#Var(str2nr(expand(''<abuf>'')), ''lint_delay''))',
+  \ ],
+  \ filter(CheckAutocmd('ALEEvents'), 'v:val =~ ''^TextChanged''')
+
+Execute (g:ale_lint_on_insert_leave = 1 should bind InsertLeave):
+  let g:ale_lint_on_insert_leave = 1
+  let g:ale_echo_cursor = 0
+
+  AssertEqual
+  \ [
+  \   'InsertLeave * if ale#Var(str2nr(expand(''<abuf>'')), ''lint_on_insert_leave'') | call ale#Queue(0) | endif',
+  \ ],
+  \ filter(CheckAutocmd('ALEEvents'), 'v:val =~ ''^InsertLeave''')
+
+Execute (g:ale_lint_on_filetype_changed = 1 should bind the FileType event):
+  let g:ale_lint_on_filetype_changed = 1
+
+  AssertEqual
+  \ [
+  \   'FileType * call ale#events#FileTypeEvent( '
+  \     . 'str2nr(expand(''<abuf>'')), '
+  \     . 'expand(''<amatch>'')'
+  \     . ')',
+  \ ],
+  \ filter(CheckAutocmd('ALEEvents'), 'v:val =~ ''\v^FileType''')
+
+Execute (ALECleanupGroup should include the right commands):
+  if exists('##VimSuspend')
+    AssertEqual [
+    \ 'BufDelete * if exists(''*ale#engine#Cleanup'') | call ale#engine#Cleanup(str2nr(expand(''<abuf>''))) | endif',
+    \ 'QuitPre * call ale#events#QuitEvent(str2nr(expand(''<abuf>'')))',
+    \ 'VimSuspend * if exists(''*ale#engine#CleanupEveryBuffer'') | call ale#engine#CleanupEveryBuffer() | endif',
+    \], CheckAutocmd('ALECleanupGroup')
+  else
+    AssertEqual [
+    \ 'BufDelete * if exists(''*ale#engine#Cleanup'') | call ale#engine#Cleanup(str2nr(expand(''<abuf>''))) | endif',
+    \ 'QuitPre * call ale#events#QuitEvent(str2nr(expand(''<abuf>'')))',
+    \], CheckAutocmd('ALECleanupGroup')
+  endif
+
+Execute(ALECompletionActions should always be set up):
+  AssertEqual [
+  \ 'CompleteDone * call ale#completion#HandleUserData(v:completed_item)',
+  \], CheckAutocmd('ALECompletionActions')
+
+Execute(Enabling completion should set up autocmd events correctly):
+  let g:ale_completion_enabled = 0
+  call ale#completion#Enable()
+
+  AssertEqual [
+  \ 'CompleteDone * call ale#completion#Done()',
+  \ 'TextChangedI * call ale#completion#Queue()',
+  \], CheckAutocmd('ALECompletionGroup')
+  AssertEqual 1, g:ale_completion_enabled
+
+Execute(Disabling completion should remove autocmd events correctly):
+  let g:ale_completion_enabled = 1
+  call ale#completion#Enable()
+  call ale#completion#Disable()
+
+  AssertEqual [], CheckAutocmd('ALECompletionGroup')
+  AssertEqual 0, g:ale_completion_enabled

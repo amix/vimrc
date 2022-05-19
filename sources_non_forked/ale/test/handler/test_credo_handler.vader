@@ -1,0 +1,53 @@
+Before:
+  runtime ale_linters/elixir/credo.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The credo handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 347,
+  \     'lnum': 1,
+  \     'col': 24,
+  \     'text': 'This code can be refactored',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'bufnr': 347,
+  \     'lnum': 1,
+  \     'col': 4,
+  \     'text': 'There is no whitespace around parentheses/brackets most of the time, but here there is.',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'bufnr': 347,
+  \     'lnum': 5,
+  \     'col': 21,
+  \     'text': 'TODO comment',
+  \     'type': 'I',
+  \   },
+  \   {
+  \     'bufnr': 347,
+  \     'lnum': 26,
+  \     'col': 0,
+  \     'text': 'If/else blocks should not have a negated condition in `if`.',
+  \     'type': 'I',
+  \   },
+  \   {
+  \     'bufnr': 347,
+  \     'lnum': 15,
+  \     'col': 1,
+  \     'text': 'Warning in the code',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#elixir#credo#Handle(347, [
+  \   'This line should be ignored completely',
+  \   'lib/my_code/test.ex:1:24: F: This code can be refactored',
+  \   'lib/filename.ex:1:4: C: There is no whitespace around parentheses/brackets most of the time, but here there is.',
+  \   'lib/my_code/test.ex:5:21: D: TODO comment',
+  \   'lib/phoenix/channel.ex:26: R: If/else blocks should not have a negated condition in `if`.',
+  \   'lib/my_code/test.ex:15:1: W: Warning in the code',
+  \ ])

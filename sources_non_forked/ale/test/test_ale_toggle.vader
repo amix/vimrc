@@ -1,0 +1,444 @@
+Before:
+  Save g:ale_buffer_info
+  Save g:ale_set_signs
+  Save g:ale_set_lists_synchronously
+  Save g:ale_run_synchronously
+  Save g:ale_pattern_options
+  Save g:ale_pattern_options_enabled
+  Save g:ale_set_balloons
+
+  let g:ale_set_signs = 1
+  let g:ale_set_lists_synchronously = 1
+  let g:ale_run_synchronously = 1
+  unlet! g:ale_run_synchronously_callbacks
+  let g:ale_pattern_options = {}
+  let g:ale_pattern_options_enabled = 1
+  let g:ale_set_balloons =
+  \   has('balloon_eval') && has('gui_running') ||
+  \   has('balloon_eval_term') && !has('gui_running')
+
+  unlet! b:ale_enabled
+
+  let g:ale_buffer_info = {}
+  let g:expected_loclist = [{
+  \ 'bufnr': bufnr('%'),
+  \ 'lnum': 2,
+  \ 'vcol': 0,
+  \ 'col': 3,
+  \ 'text': 'foo bar',
+  \ 'type': 'E',
+  \ 'nr': -1,
+  \ 'pattern': '',
+  \ 'valid': 1,
+  \}]
+  let g:expected_groups = [
+  \ 'ALECleanupGroup',
+  \ 'ALEEvents',
+  \ 'ALEHighlightBufferGroup',
+  \]
+  let g:has_nvim_highlight = exists('*nvim_buf_add_highlight') && exists('*nvim_buf_clear_namespace')
+
+  function! ToggleTestCallback(buffer, output)
+    return [{
+    \ 'bufnr': a:buffer,
+    \ 'lnum': 2,
+    \ 'vcol': 0,
+    \ 'col': 3,
+    \ 'text': 'foo bar',
+    \ 'type': 'E',
+    \ 'nr': -1,
+    \}]
+  endfunction
+
+  function! ParseAuGroups()
+    redir => l:output
+       silent exec 'autocmd'
+    redir end
+
+    let l:results = []
+
+    for l:line in split(l:output, "\n")
+      let l:match = matchlist(l:line, '^ALE[a-zA-Z]\+')
+
+      " We don't care about some groups here.
+      if !empty(l:match)
+      \&& l:match[0] !=# 'ALECompletionGroup'
+      \&& l:match[0] !=# 'ALEBufferFixGroup'
+      \&& l:match[0] !=# 'ALEPatternOptionsGroup'
+        call add(l:results, l:match[0])
+      endif
+    endfor
+
+    call uniq(sort(l:results))
+
+    return l:results
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'ToggleTestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'echo',
+  \ 'command': 'echo',
+  \ 'read_buffer': 0,
+  \})
+
+  call ale#sign#Clear()
+
+After:
+  Restore
+
+  unlet! g:ale_run_synchronously_callbacks
+  unlet! g:expected_loclist
+  unlet! g:expected_groups
+  unlet! b:ale_enabled
+  unlet! g:output
+  unlet! g:has_nvim_highlight
+
+  call ale#linter#Reset()
+
+  " Toggle ALE back on if we fail when it's disabled.
+  if !g:ale_enabled
+    ALEToggle
+  endif
+
+  delfunction ToggleTestCallback
+  delfunction ParseAuGroups
+
+  call setloclist(0, [])
+  call ale#sign#Clear()
+  call clearmatches()
+
+Given foobar (Some imaginary filetype):
+  foo
+  bar
+  baz
+
+Execute(ALEToggle should reset everything and then run again):
+  AssertEqual 'foobar', &filetype
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  " First check that everything is there...
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual [0, [[2, 1000001, 'ALEErrorSign']]], ale#sign#FindCurrentSigns(bufnr('%'))
+
+  " Only check the legacy matches if not using the new NeoVIM API.
+  if !g:has_nvim_highlight
+    AssertEqual
+    \ [{'group': 'ALEError', 'pos1': [2, 3, 1]}],
+    \ map(getmatches(), '{''group'': v:val.group, ''pos1'': v:val.pos1}')
+  endif
+
+  AssertEqual g:expected_groups, ParseAuGroups()
+  AssertEqual [{'lnum': 2, 'bufnr': bufnr(''), 'col': 3, 'linter_name': 'testlinter', 'vcol': 0, 'nr': -1, 'type': 'E', 'text': 'foo bar', 'sign_id': 1000001}], g:ale_buffer_info[bufnr('')].loclist
+
+  " Now Toggle ALE off.
+  ALEToggle
+
+  " Everything should be cleared.
+  Assert !has_key(g:ale_buffer_info, bufnr('')), 'The g:ale_buffer_info Dictionary was not removed'
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys(), 'The loclist was not cleared'
+  AssertEqual [0, []], ale#sign#FindCurrentSigns(bufnr('%')), 'The signs were not cleared'
+
+  if !g:has_nvim_highlight
+    AssertEqual [], getmatches(), 'The highlights were not cleared'
+  endif
+
+  AssertEqual g:expected_groups, ParseAuGroups()
+
+  " Toggle ALE on, everything should be set up and run again.
+  ALEToggle
+  call ale#test#FlushJobs()
+
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual [0, [[2, 1000001, 'ALEErrorSign']]], ale#sign#FindCurrentSigns(bufnr('%'))
+
+  if !g:has_nvim_highlight
+    AssertEqual
+    \ [{'group': 'ALEError', 'pos1': [2, 3, 1]}],
+    \ map(getmatches(), '{''group'': v:val.group, ''pos1'': v:val.pos1}')
+  endif
+
+  AssertEqual g:expected_groups, ParseAuGroups()
+  AssertEqual [{'lnum': 2, 'bufnr': bufnr(''), 'col': 3, 'linter_name': 'testlinter', 'vcol': 0, 'nr': -1, 'type': 'E', 'text': 'foo bar', 'sign_id': 1000001}], g:ale_buffer_info[bufnr('')].loclist
+
+Execute(ALEToggle should skip filename keys and preserve them):
+  AssertEqual 'foobar', &filetype
+
+  let g:ale_buffer_info['/foo/bar/baz.txt'] = {
+  \ 'job_list': [],
+  \ 'active_linter_list': [],
+  \ 'loclist': [],
+  \ 'temporary_file_list': [],
+  \ 'temporary_directory_list': [],
+  \ 'history': [],
+  \}
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  " Now Toggle ALE off.
+  ALEToggle
+
+  AssertEqual
+  \ {
+  \   'job_list': [],
+  \   'active_linter_list': [],
+  \   'loclist': [],
+  \   'temporary_file_list': [],
+  \   'temporary_directory_list': [],
+  \   'history': [],
+  \ },
+  \ get(g:ale_buffer_info, '/foo/bar/baz.txt', {})
+
+  " Toggle ALE on again.
+  ALEToggle
+  call ale#test#FlushJobs()
+
+  AssertEqual
+  \ {
+  \   'job_list': [],
+  \   'active_linter_list': [],
+  \   'loclist': [],
+  \   'temporary_file_list': [],
+  \   'temporary_directory_list': [],
+  \   'history': [],
+  \ },
+  \ get(g:ale_buffer_info, '/foo/bar/baz.txt', {})
+
+Execute(ALEDisable should reset everything and stay disabled):
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+
+  ALEDisable
+  call ale#test#FlushJobs()
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual 0, g:ale_enabled
+
+  ALEDisable
+  call ale#test#FlushJobs()
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual 0, g:ale_enabled
+
+Execute(ALEEnable should enable ALE and lint again):
+  let g:ale_enabled = 0
+
+  ALEEnable
+  call ale#test#FlushJobs()
+
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual 1, g:ale_enabled
+
+Execute(ALEReset should reset everything for a buffer):
+  AssertEqual 'foobar', &filetype
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  " First check that everything is there...
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual [0, [[2, 1000001, 'ALEErrorSign']]], ale#sign#FindCurrentSigns(bufnr('%'))
+
+  if !g:has_nvim_highlight
+    AssertEqual
+    \ [{'group': 'ALEError', 'pos1': [2, 3, 1]}],
+    \ map(getmatches(), '{''group'': v:val.group, ''pos1'': v:val.pos1}')
+  endif
+
+  AssertEqual [{'lnum': 2, 'bufnr': bufnr(''), 'col': 3, 'linter_name': 'testlinter', 'vcol': 0, 'nr': -1, 'type': 'E', 'text': 'foo bar', 'sign_id': 1000001}], g:ale_buffer_info[bufnr('')].loclist
+
+  " Now Toggle ALE off.
+  ALEReset
+  call ale#test#FlushJobs()
+
+  " Everything should be cleared.
+  Assert !has_key(g:ale_buffer_info, bufnr('')), 'The g:ale_buffer_info Dictionary was not removed'
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys(), 'The loclist was not cleared'
+  AssertEqual [0, []], ale#sign#FindCurrentSigns(bufnr('%')), 'The signs were not cleared'
+
+  if !g:has_nvim_highlight
+    AssertEqual [], getmatches(), 'The highlights were not cleared'
+  endif
+
+  AssertEqual 1, g:ale_enabled
+
+Execute(ALEToggleBuffer should reset everything and then run again):
+  AssertEqual 'foobar', &filetype
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  " First check that everything is there...
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual [0, [[2, 1000001, 'ALEErrorSign']]], ale#sign#FindCurrentSigns(bufnr('%'))
+
+  if !g:has_nvim_highlight
+    AssertEqual
+    \ [{'group': 'ALEError', 'pos1': [2, 3, 1]}],
+    \ map(getmatches(), '{''group'': v:val.group, ''pos1'': v:val.pos1}')
+  endif
+
+  AssertEqual [{'lnum': 2, 'bufnr': bufnr(''), 'col': 3, 'linter_name': 'testlinter', 'vcol': 0, 'nr': -1, 'type': 'E', 'text': 'foo bar', 'sign_id': 1000001}], g:ale_buffer_info[bufnr('')].loclist
+
+  " Now Toggle ALE off.
+  ALEToggleBuffer
+
+  " Everything should be cleared.
+  Assert !has_key(g:ale_buffer_info, bufnr('')), 'The g:ale_buffer_info Dictionary was not removed'
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys(), 'The loclist was not cleared'
+  AssertEqual [0, []], ale#sign#FindCurrentSigns(bufnr('%')), 'The signs were not cleared'
+
+  if !g:has_nvim_highlight
+    AssertEqual [], getmatches(), 'The highlights were not cleared'
+  endif
+
+  " Toggle ALE on, everything should be set up and run again.
+  ALEToggleBuffer
+  call ale#test#FlushJobs()
+
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual [0, [[2, 1000001, 'ALEErrorSign']]], ale#sign#FindCurrentSigns(bufnr('%'))
+
+  if !g:has_nvim_highlight
+    AssertEqual
+    \ [{'group': 'ALEError', 'pos1': [2, 3, 1]}],
+    \ map(getmatches(), '{''group'': v:val.group, ''pos1'': v:val.pos1}')
+  endif
+
+  AssertEqual g:expected_groups, ParseAuGroups()
+  AssertEqual [{'lnum': 2, 'bufnr': bufnr(''), 'col': 3, 'linter_name': 'testlinter', 'vcol': 0, 'nr': -1, 'type': 'E', 'text': 'foo bar', 'sign_id': 1000001}], g:ale_buffer_info[bufnr('')].loclist
+
+Execute(ALEDisableBuffer should reset everything and stay disabled):
+  ALELint
+  call ale#test#FlushJobs()
+
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+
+  ALEDisableBuffer
+  call ale#test#FlushJobs()
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual 0, b:ale_enabled
+
+Execute(ALEEnableBuffer should enable ALE and lint again):
+  let b:ale_enabled = 0
+
+  ALEEnableBuffer
+  call ale#test#FlushJobs()
+
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual 1, b:ale_enabled
+
+Execute(ALEEnableBuffer should complain when ALE is disabled globally):
+  let g:ale_enabled = 0
+  let b:ale_enabled = 0
+
+  redir => g:output
+    ALEEnableBuffer
+  redir END
+
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual 0, b:ale_enabled
+  AssertEqual 0, g:ale_enabled
+  AssertEqual
+  \ 'ALE cannot be enabled locally when disabled globally',
+  \ join(split(g:output))
+
+Execute(ALEResetBuffer should reset everything for a buffer):
+  AssertEqual 'foobar', &filetype
+
+  ALELint
+  call ale#test#FlushJobs()
+
+  " First check that everything is there...
+  AssertEqual g:expected_loclist, ale#test#GetLoclistWithoutNewerKeys()
+  AssertEqual [0, [[2, 1000001, 'ALEErrorSign']]], ale#sign#FindCurrentSigns(bufnr('%'))
+
+  if !g:has_nvim_highlight
+    AssertEqual
+    \ [{'group': 'ALEError', 'pos1': [2, 3, 1]}],
+    \ map(getmatches(), '{''group'': v:val.group, ''pos1'': v:val.pos1}')
+  endif
+
+  AssertEqual [{'lnum': 2, 'bufnr': bufnr(''), 'col': 3, 'linter_name': 'testlinter', 'vcol': 0, 'nr': -1, 'type': 'E', 'text': 'foo bar', 'sign_id': 1000001}], g:ale_buffer_info[bufnr('')].loclist
+
+  " Now Toggle ALE off.
+  ALEResetBuffer
+  call ale#test#FlushJobs()
+
+  " Everything should be cleared.
+  Assert !has_key(g:ale_buffer_info, bufnr('')), 'The g:ale_buffer_info Dictionary was not removed'
+  AssertEqual [], ale#test#GetLoclistWithoutNewerKeys(), 'The loclist was not cleared'
+  AssertEqual [0, []], ale#sign#FindCurrentSigns(bufnr('%')), 'The signs were not cleared'
+
+  if !g:has_nvim_highlight
+    AssertEqual [], getmatches(), 'The highlights were not cleared'
+  endif
+
+  AssertEqual 1, g:ale_enabled
+  AssertEqual 1, get(b:, 'ale_enabled', 1)
+
+Execute(Disabling ALE should disable balloons):
+  " These tests won't run in the console, but we can run them manually in GVim.
+  if has('balloon_eval') && has('gui_running')
+  \|| (has('balloon_eval_term') && !has('gui_running'))
+    call ale#linter#Reset()
+
+    " Enable balloons, so we can check the expr value.
+    call ale#balloon#Enable()
+
+    if has('balloon_eval') && has('gui_running')
+      AssertEqual 1, &ballooneval
+    else
+      AssertEqual 1, &balloonevalterm
+    endif
+
+    AssertEqual 'ale#balloon#Expr()', &balloonexpr
+
+    " Toggle ALE off.
+    ALEToggle
+
+    " The balloon settings should be reset.
+    if has('balloon_eval') && has('gui_running')
+      AssertEqual 0, &ballooneval
+    else
+      AssertEqual 0, &balloonevalterm
+    endif
+
+    AssertEqual '', &balloonexpr
+  endif
+
+Execute(Enabling ALE should enable balloons if the setting is on):
+  if has('balloon_eval') && has('gui_running')
+  \|| (has('balloon_eval_term') && !has('gui_running'))
+    call ale#linter#Reset()
+    call ale#balloon#Disable()
+    ALEDisable
+    let g:ale_set_balloons = 0
+    ALEEnable
+
+    if has('balloon_eval') && has('gui_running')
+      AssertEqual 0, &ballooneval
+    else
+      AssertEqual 0, &balloonevalterm
+    endif
+
+    AssertEqual '', &balloonexpr
+
+    ALEDisable
+    let g:ale_set_balloons = 1
+    ALEEnable
+
+    if has('balloon_eval') && has('gui_running')
+      AssertEqual 1, &ballooneval
+    else
+      AssertEqual 1, &balloonevalterm
+    endif
+
+    AssertEqual 'ale#balloon#Expr()', &balloonexpr
+  endif

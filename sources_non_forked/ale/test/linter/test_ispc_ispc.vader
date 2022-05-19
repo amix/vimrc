@@ -1,0 +1,20 @@
+Before:
+  call ale#assert#SetUpLinterTest('ispc', 'ispc')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The executable should be configurable):
+  AssertLinter 'ispc',
+  \ ale#Escape('ispc') . ' --nowrap %s'
+
+  let b:ale_ispc_ispc_executable = 'foo'
+
+  AssertLinter 'foo',
+  \ ale#Escape('foo') . ' --nowrap %s'
+
+Execute(The options should be configurable):
+  let g:ale_ispc_ispc_options = '--foo'
+
+  AssertLinter 'ispc',
+  \ ale#Escape('ispc') . ' --nowrap --foo' . ' %s'

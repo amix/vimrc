@@ -1,0 +1,428 @@
+Before:
+  Save g:ale_set_lists_synchronously
+  Save g:ale_buffer_info
+  Save g:ale_lsp_error_messages
+  Save g:ale_set_loclist
+  Save g:ale_set_signs
+  Save g:ale_set_quickfix
+  Save g:ale_set_highlights
+  Save g:ale_echo_cursor
+  Save g:ale_disable_lsp
+  Save g:ale_history_enabled
+  Save g:ale_history_log_output
+
+  let g:ale_disable_lsp = 0
+  let g:ale_set_lists_synchronously = 1
+  let g:ale_buffer_info = {}
+  let g:ale_set_loclist = 1
+  " Disable features we don't need for these tests.
+  let g:ale_set_signs = 0
+  let g:ale_set_quickfix = 0
+  let g:ale_set_highlights = 0
+  let g:ale_echo_cursor = 0
+  let g:ale_history_enabled = 1
+  let g:ale_history_log_output = 1
+
+  unlet! g:ale_lsp_error_messages
+  unlet! b:ale_linters
+  unlet! b:ale_disable_lsp
+
+  call ale#linter#Reset()
+  call ale#test#SetDirectory('/testplugin/test')
+  call setloclist(0, [])
+
+After:
+  Restore
+
+  unlet! b:ale_linters
+
+  call setloclist(0, [])
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+  call ale#lsp_linter#ClearLSPData()
+
+Given foobar(An empty file):
+Execute(tsserver syntax error responses should be handled correctly):
+  runtime ale_linters/typescript/tsserver.vim
+
+  if has('win32')
+    call ale#test#SetFilename('filename,[]^$.ts')
+  else
+    call ale#test#SetFilename('filename*?,{}[]^$.ts')
+  endif
+
+  call ale#engine#InitBufferInfo(bufnr(''))
+
+  if has('win32')
+    AssertEqual 'filename,[]^$.ts', expand('%:p:t')
+  else
+    AssertEqual 'filename*?,{}[]^$.ts', expand('%:p:t')
+  endif
+
+  " When we get syntax errors and no semantic errors, we should keep the
+  " syntax errors.
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'syntaxDiag',
+  \ 'body': {
+  \   'file': expand('%:p'),
+  \   'diagnostics':[
+  \     {
+  \       'start': {
+  \         'line':2,
+  \         'offset':14,
+  \       },
+  \       'end': {
+  \         'line':2,
+  \         'offset':15,
+  \       },
+  \       'text': ''','' expected.',
+  \       "code":1005
+  \     },
+  \   ],
+  \ },
+  \})
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'semanticDiag',
+  \ 'body': {
+  \   'file': expand('%:p'),
+  \   'diagnostics':[
+  \   ],
+  \ },
+  \})
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 14,
+  \     'vcol': 0,
+  \     'nr': 1005,
+  \     'type': 'E',
+  \     'text': '1005: '','' expected.',
+  \     'valid': 1,
+  \     'pattern': '',
+  \   },
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+  " After we get empty syntax errors, we should clear them.
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'syntaxDiag',
+  \ 'body': {
+  \   'file': expand('%:p'),
+  \   'diagnostics':[
+  \   ],
+  \ },
+  \})
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+  " Syntax errors on the project root should not populate the LocList.
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'syntaxDiag',
+  \ 'body': {
+  \   'file': g:dir,
+  \   'diagnostics':[
+  \     {
+  \       'start': {
+  \         'line':2,
+  \         'offset':14,
+  \       },
+  \       'end': {
+  \         'line':2,
+  \         'offset':15,
+  \       },
+  \       'text': ''','' expected.',
+  \       "code":1005
+  \     },
+  \   ],
+  \ },
+  \})
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(tsserver semantic error responses should be handled correctly):
+  runtime ale_linters/typescript/tsserver.vim
+
+  if has('win32')
+    call ale#test#SetFilename('filename,[]^$.ts')
+  else
+    call ale#test#SetFilename('filename*?,{}[]^$.ts')
+  endif
+
+  call ale#engine#InitBufferInfo(bufnr(''))
+
+  if has('win32')
+    AssertEqual 'filename,[]^$.ts', expand('%:p:t')
+  else
+    AssertEqual 'filename*?,{}[]^$.ts', expand('%:p:t')
+  endif
+
+  " When we get syntax errors and no semantic errors, we should keep the
+  " syntax errors.
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'syntaxDiag',
+  \ 'body': {
+  \   'file': expand('%:p'),
+  \   'diagnostics':[
+  \   ],
+  \ },
+  \})
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'semanticDiag',
+  \ 'body': {
+  \   'file': expand('%:p'),
+  \   'diagnostics':[
+  \     {
+  \       'start': {
+  \         'line':2,
+  \         'offset':14,
+  \       },
+  \       'end': {
+  \         'line':2,
+  \         'offset':15,
+  \       },
+  \       'text': 'Some semantic error',
+  \       "code":1005
+  \     },
+  \   ],
+  \ },
+  \})
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 14,
+  \     'vcol': 0,
+  \     'nr': 1005,
+  \     'type': 'E',
+  \     'text': '1005: Some semantic error',
+  \     'valid': 1,
+  \     'pattern': '',
+  \   },
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+  " After we get empty syntax errors, we should clear them.
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'semanticDiag',
+  \ 'body': {
+  \   'file': expand('%:p'),
+  \   'diagnostics':[
+  \   ],
+  \ },
+  \})
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+  " Semantic errors on the project root should not populate the LocList.
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'semanticDiag',
+  \ 'body': {
+  \   'file': g:dir,
+  \   'diagnostics':[
+  \     {
+  \       'start': {
+  \         'line':2,
+  \         'offset':14,
+  \       },
+  \       'end': {
+  \         'line':2,
+  \         'offset':15,
+  \       },
+  \       'text': 'Some semantic error',
+  \       "code":1005
+  \     },
+  \   ],
+  \ },
+  \})
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(tsserver errors should mark tsserver no longer active):
+  let b:ale_linters = ['tsserver']
+  runtime ale_linters/typescript/tsserver.vim
+  call ale#test#SetFilename('filename.ts')
+  call ale#engine#InitBufferInfo(bufnr(''))
+
+  let g:ale_buffer_info[bufnr('')].active_linter_list = ale#linter#Get('typescript')
+  Assert !empty(g:ale_buffer_info[bufnr('')].active_linter_list)
+
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'seq': 0,
+  \ 'type': 'event',
+  \ 'event': 'semanticDiag',
+  \ 'body': {
+  \   'file': g:dir . '/filename.ts',
+  \   'diagnostics':[],
+  \ },
+  \})
+
+  AssertEqual [], g:ale_buffer_info[bufnr('')].active_linter_list
+
+Execute(LSP diagnostics responses should be handled correctly):
+  let b:ale_linters = ['eclipselsp']
+  runtime ale_linters/java/eclipselsp.vim
+
+  if has('win32')
+    call ale#test#SetFilename('filename,[]^$.ts')
+  else
+    call ale#test#SetFilename('filename*?,{}[]^$.java')
+  endif
+
+  call ale#engine#InitBufferInfo(bufnr(''))
+  call ale#lsp_linter#SetLSPLinterMap({'1': 'eclipselsp'})
+
+  if has('win32')
+    AssertEqual 'filename,[]^$.ts', expand('%:p:t')
+  else
+    AssertEqual 'filename*?,{}[]^$.java', expand('%:p:t')
+  endif
+
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'jsonrpc':'2.0',
+  \ 'method':'textDocument/publishDiagnostics',
+  \ 'params': {
+  \     'uri': ale#path#ToFileURI(expand('%:p')),
+  \     'diagnostics': [
+  \        {
+  \          'range': {
+  \             'start': {
+  \               'line': 0,
+  \               'character':0
+  \             },
+  \             'end': {
+  \               'line': 0,
+  \               'character':0
+  \             }
+  \          },
+  \          'severity': 2,
+  \          'code': "",
+  \          'source': 'Java',
+  \          'message': 'Missing JRE 1-8'
+  \       }
+  \     ]
+  \  }
+  \})
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'bufnr': bufnr(''),
+  \     'col': 1,
+  \     'pattern': '',
+  \     'valid': 1,
+  \     'vcol': 0,
+  \     'nr': -1,
+  \     'type': 'W',
+  \     'text': 'Missing JRE 1-8'
+  \    }
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(LSP diagnostics responses on project root should not populate loclist):
+  let b:ale_linters = ['eclipselsp']
+  runtime ale_linters/java/eclipselsp.vim
+  call ale#test#SetFilename('filename.java')
+  call ale#engine#InitBufferInfo(bufnr(''))
+  call ale#lsp_linter#SetLSPLinterMap({'1': 'eclipselsp'})
+
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'jsonrpc':'2.0',
+  \ 'method':'textDocument/publishDiagnostics',
+  \ 'params': {
+  \     'uri':'file://' . g:dir,
+  \     'diagnostics': [
+  \        {
+  \          'range': {
+  \             'start': {
+  \               'line': 0,
+  \               'character':0
+  \             },
+  \             'end': {
+  \               'line': 0,
+  \               'character':0
+  \             }
+  \          },
+  \          'severity': 2,
+  \          'code': "",
+  \          'source': 'Java',
+  \          'message': 'Missing JRE 1-8'
+  \       }
+  \     ]
+  \  }
+  \})
+
+  AssertEqual
+  \ [
+  \ ],
+  \ ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(LSP errors should mark linters no longer active):
+  let b:ale_linters = ['pylsp']
+  runtime ale_linters/python/pylsp.vim
+  call ale#test#SetFilename('filename.py')
+  call ale#engine#InitBufferInfo(bufnr(''))
+  call ale#lsp_linter#SetLSPLinterMap({1: 'pylsp'})
+
+  let g:ale_buffer_info[bufnr('')].active_linter_list = ale#linter#Get('python')
+  Assert !empty(g:ale_buffer_info[bufnr('')].active_linter_list)
+
+  call ale#lsp_linter#HandleLSPResponse(1, {
+  \ 'method': 'textDocument/publishDiagnostics',
+  \ 'params': {
+  \   'uri': ale#path#ToFileURI(g:dir . '/filename.py'),
+  \   'diagnostics': [],
+  \ },
+  \})
+
+  AssertEqual [], g:ale_buffer_info[bufnr('')].active_linter_list
+
+Execute(LSP errors should be logged in the history):
+  call ale#lsp_linter#SetLSPLinterMap({'347': 'foobar'})
+  call ale#lsp_linter#HandleLSPResponse(347, {
+  \ 'jsonrpc': '2.0',
+  \ 'error': {
+  \   'code': -32602,
+  \   'message': 'xyz',
+  \   'data': {
+  \     'traceback': ['123', '456'],
+  \   },
+  \ },
+  \})
+
+  AssertEqual
+  \ {'foobar': ["xyz\n123\n456"]},
+  \ get(g:, 'ale_lsp_error_messages', {})

@@ -1,0 +1,41 @@
+Before:
+  Save g:ale_cs_dotnet_format_executable
+  Save g:ale_cs_dotnet_format_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_cs_dotnet_format_executable = 'xxxinvalid'
+  let g:ale_cs_dotnet_format_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The dotnet format callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/cs/testfile.cs')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' format'
+  \     . ' --folder --include %t "$(dirname %t)"',
+  \ },
+  \ ale#fixers#dotnet_format#Fix(bufnr(''))
+
+Execute(The dotnet format callback should include custom dotnet format options):
+  let g:ale_cs_dotnet_format_options = "-l 80"
+  call ale#test#SetFilename('../test-files/cs/testfile.cs')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' format'
+  \     . ' ' . g:ale_cs_dotnet_format_options
+  \     . ' --folder --include %t "$(dirname %t)"',
+  \ },
+  \ ale#fixers#dotnet_format#Fix(bufnr(''))
+

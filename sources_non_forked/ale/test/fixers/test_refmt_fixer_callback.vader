@@ -1,0 +1,41 @@
+Before:
+  Save g:ale_reasonml_refmt_executable
+  Save g:ale_reasonml_refmt_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_reasonml_refmt_executable = 'xxxinvalid'
+  let g:ale_reasonml_refmt_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The refmt callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/reasonml/testfile.re')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' --in-place'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#refmt#Fix(bufnr(''))
+
+Execute(The refmt callback should include custom refmt options):
+  let g:ale_reasonml_refmt_options = "-w 80"
+  call ale#test#SetFilename('../test-files/reasonml/testfile.re')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' ' . g:ale_reasonml_refmt_options
+  \     . ' --in-place'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#refmt#Fix(bufnr(''))
+

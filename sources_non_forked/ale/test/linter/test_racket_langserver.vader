@@ -1,0 +1,45 @@
+" Author: D. Ben Knoble <https://github.com/benknoble>
+" Description: Tests for racket-langserver lsp linter.
+Before:
+  call ale#assert#SetUpLinterTest('racket', 'langserver')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(command callback should return default string):
+  AssertLinter 'racket', ale#Escape('racket').' -l racket-langserver'
+
+Execute(should set racket-langserver for deep module 3):
+  call ale#test#SetFilename('../test-files/racket/many-inits/a/b/c/foo.rkt')
+  AssertLSPLanguage 'racket'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#test#GetFilename('../test-files/racket/many-inits')
+
+Execute(should set racket-langserver for deep module 2):
+  call ale#test#SetFilename('../test-files/racket/many-inits/a/b/foo.rkt')
+  AssertLSPLanguage 'racket'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#test#GetFilename('../test-files/racket/many-inits')
+
+Execute(should set racket-langserver for deep module 1):
+  call ale#test#SetFilename('../test-files/racket/many-inits/a/foo.rkt')
+  AssertLSPLanguage 'racket'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#test#GetFilename('../test-files/racket/many-inits')
+
+Execute(should set racket-langserver for top-level module):
+  call ale#test#SetFilename('../test-files/racket/many-inits/foo.rkt')
+  AssertLSPLanguage 'racket'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#test#GetFilename('../test-files/racket/many-inits')
+
+Execute(should set racket-langserver for non-package module or script):
+  call ale#test#SetFilename('../test-files/racket/simple-script/foo.rkt')
+  AssertLSPLanguage 'racket'
+  AssertLSPOptions {}
+  AssertLSPConfig {}
+  AssertLSPProject ale#test#GetFilename('../test-files/racket/simple-script')

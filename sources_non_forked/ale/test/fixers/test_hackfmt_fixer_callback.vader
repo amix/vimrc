@@ -1,0 +1,37 @@
+Before:
+  Save g:ale_hack_hackfmt_executable
+  Save g:ale_hack_hackfmt_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_hack_hackfmt_executable = 'xxxinvalid'
+  let g:ale_hack_hackfmt_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The hackfmt callback should return the correct default values):
+  call ale#test#SetFilename('../hack_files/testfile.hack')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -i %t',
+  \ },
+  \ ale#fixers#hackfmt#Fix(bufnr(''))
+
+Execute(The hackfmt callback should include custom hackfmt options):
+  let g:ale_hack_hackfmt_options = "--some-option"
+  call ale#test#SetFilename('../hack_files/testfile.hack')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' -i --some-option %t',
+  \ },
+  \ ale#fixers#hackfmt#Fix(bufnr(''))

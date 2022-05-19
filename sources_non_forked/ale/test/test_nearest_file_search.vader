@@ -1,0 +1,15 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(We should be able to find a configuration file further up):
+  call ale#test#SetFilename('test-files/top/middle/bottom/dummy.txt')
+
+  AssertEqual
+  \ ale#path#Simplify(expand('%:p:h:h:h:h:h') . '/test-files/top/example.ini'),
+  \ ale#path#FindNearestFile(bufnr('%'), 'example.ini')
+
+Execute(We shouldn't find anything for files which don't match):
+  AssertEqual '', ale#path#FindNearestFile(bufnr('%'), 'cantfindthis')

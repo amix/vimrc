@@ -1,0 +1,28 @@
+Before:
+  call ale#assert#SetUpLinterTest('terraform', 'tflint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'tflint', ale#Escape('tflint') . ' -f json'
+
+Execute(The default executable should be configurable):
+  let b:ale_terraform_tflint_executable = 'asdf'
+
+  AssertLinter 'asdf', ale#Escape('asdf') . ' -f json'
+
+Execute(Overriding options should work):
+  let g:ale_terraform_tflint_executable = 'fnord'
+  let g:ale_terraform_tflint_options = '--whatever'
+
+  AssertLinter 'fnord', ale#Escape('fnord') . ' --whatever -f json'
+
+Execute(Configuration files should be found):
+  call ale#test#SetFilename('../test-files/tflint/foo/bar.tf')
+
+  AssertLinter 'tflint',
+  \ ale#Escape('tflint')
+  \   . ' --config '
+  \   . ale#Escape(ale#path#Simplify(g:dir . '/../test-files/tflint/foo/.tflint.hcl'))
+  \   . ' -f json'

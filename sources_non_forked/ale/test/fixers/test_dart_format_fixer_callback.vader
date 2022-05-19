@@ -1,0 +1,40 @@
+Before:
+  Save g:ale_dart_format_executable
+  Save g:ale_dart_format_options
+
+  " Use an invalid global executable, so we don't match it.
+  let g:ale_dart_format_executable = 'xxxinvalid'
+  let g:ale_dart_format_options = ''
+
+  call ale#test#SetDirectory('/testplugin/test/fixers')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+
+Execute(The dart format callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/dart/testfile.dart')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' format'
+  \     . ' %t',
+  \ },
+  \ ale#fixers#dart_format#Fix(bufnr(''))
+
+Execute(The dart format callback should include custom dart format options):
+  let g:ale_dart_format_options = "-l 80"
+  call ale#test#SetFilename('../test-files/dart/testfile.dart')
+
+  AssertEqual
+  \ {
+  \   'read_temporary_file': 1,
+  \   'command': ale#Escape('xxxinvalid')
+  \     . ' format'
+  \     . ' ' . g:ale_dart_format_options
+  \     . ' %t',
+  \ },
+  \ ale#fixers#dart_format#Fix(bufnr(''))

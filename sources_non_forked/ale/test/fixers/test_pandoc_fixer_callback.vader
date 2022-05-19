@@ -1,0 +1,23 @@
+Before:
+  Save g:ale_markdown_pandoc_executable
+  Save g:ale_markdown_pandoc_options
+
+After:
+  Restore
+
+Execute(The pandoc callback should return 'pandoc' as default command):
+  setlocal noexpandtab
+  Assert
+  \ ale#fixers#pandoc#Fix(bufnr('')).command =~# '^' . ale#Escape('pandoc'),
+  \ "Default command name is expected to be 'pandoc'"
+
+Execute(The pandoc executable and options should be configurable):
+  let g:ale_markdown_pandoc_executable = 'foobar'
+  let g:ale_markdown_pandoc_options = '--some-option'
+
+  AssertEqual
+  \ {
+  \   'command': ale#Escape('foobar')
+  \     . ' --some-option',
+  \ },
+  \ ale#fixers#pandoc#Fix(bufnr(''))

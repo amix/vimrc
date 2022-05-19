@@ -1,0 +1,41 @@
+Before:
+  runtime ale_linters/cuda/nvcc.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The cuda nvcc handler should parse errors from multiple files for NVCC 8.0):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'type': 'E',
+  \     'text': 'this declaration has no storage class or type specifier',
+  \     'filename': has('win32')
+  \       ? 'C:\tmp\cudatest\test.cu'
+  \       : '/tmp/cudatest/test.cu',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'type': 'E',
+  \     'text': 'attribute "global" does not apply here',
+  \     'filename': has('win32')
+  \       ? 'C:\tmp\cudatest\common.h'
+  \       : '/tmp/cudatest/common.h',
+  \   },
+  \   {
+  \     'lnum': 2,
+  \     'type': 'E',
+  \     'text': 'expected a ";"',
+  \     'filename': has('win32')
+  \       ? 'C:\tmp\cudatest\common.h'
+  \       : '/tmp/cudatest/common.h',
+  \   },
+  \ ],
+  \ ale_linters#cuda#nvcc#HandleNVCCFormat(0, [
+  \   '/tmp/cudatest/test.cu(1): error: this declaration has no storage class or type specifier',
+  \   '/tmp/cudatest/common.h(2): error: attribute "global" does not apply here',
+  \   '/tmp/cudatest/common.h(2): error: expected a ";"',
+  \   'At end of source: warning: parsing restarts here after previous syntax error',
+  \   '3 errors detected in the compilation of "/tmp/tmpxft_00003a9f_00000000-7_test.cpp1.ii".',
+  \ ])

@@ -1,0 +1,16 @@
+Execute(The statix handler should handle statix output):
+  call ale#test#SetFilename('flake.nix')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 46,
+  \     'type': 'W',
+  \     'col': 13,
+  \     'code': '3',
+  \     'text': 'This assignment is better written with `inherit`'
+  \   },
+  \ ],
+  \ ale#handlers#statix#Handle(bufnr(''),
+  \   '<stdin>>46:13:W:3:This assignment is better written with `inherit`'
+  \)

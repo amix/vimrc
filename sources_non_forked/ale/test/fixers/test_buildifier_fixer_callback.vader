@@ -1,0 +1,29 @@
+Before:
+  let g:ale_bazel_buildifier_options = ''
+  call ale#assert#SetUpFixerTest('bzl', 'buildifier')
+
+After:
+  call ale#assert#TearDownFixerTest()
+
+Execute(The buildifier callback should return the correct default values):
+  call ale#test#SetFilename('../test-files/bazel/WORKSPACE')
+
+  AssertFixer
+  \ {
+  \   'command': ale#Escape(g:ale_bazel_buildifier_executable)
+  \     . ' -mode fix -lint fix -path '
+  \     . ale#Escape(ale#test#GetFilename('../test-files/bazel/WORKSPACE'))
+  \     . ' -'
+  \ }
+
+Execute(The buildifier callback should include any additional options):
+  call ale#test#SetFilename('../test-files/bazel/WORKSPACE')
+  let g:ale_bazel_buildifier_options = '--some-option'
+
+  AssertFixer
+  \ {
+  \   'command': ale#Escape(g:ale_bazel_buildifier_executable)
+  \     . ' -mode fix -lint fix -path '
+  \     . ale#Escape(ale#test#GetFilename('../test-files/bazel/WORKSPACE'))
+  \     . ' --some-option -'
+  \ }

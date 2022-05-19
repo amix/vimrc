@@ -391,8 +391,8 @@ function! s:OnReady(
             \               'character': l:nearest_error.col - 1,
             \           },
             \           'end': {
-            \               'line': l:nearest_error.end_lnum - 1,
-            \               'character': l:nearest_error.end_col,
+            \               'line': get(l:nearest_error, 'end_lnum', 1) - 1,
+            \               'character': get(l:nearest_error, 'end_col', 0)
             \           },
             \       },
             \   },
@@ -457,7 +457,7 @@ function! s:ExecuteGetCodeFix(linter, range, MenuCallback) abort
         let [l:end_line, l:end_column] = getpos("'>")[1:2]
     endif
 
-    let l:column = min([l:column, len(getline(l:line))])
+    let l:column = max([min([l:column, len(getline(l:line))]), 1])
     let l:end_column = min([l:end_column, len(getline(l:end_line))])
 
     let l:Callback = function(

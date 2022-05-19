@@ -1,0 +1,84 @@
+Before:
+  Save &filetype
+  Save g:ale_buffer_info
+  Save g:ale_lint_on_enter
+  Save g:ale_set_lists_synchronously
+
+  let g:buf = bufnr('')
+  let g:ale_lint_on_enter = 1
+  let g:ale_run_synchronously = 1
+  let g:ale_set_lists_synchronously = 1
+
+  function! TestCallback(buffer, output)
+    return [{
+    \ 'lnum': 1,
+    \ 'col': 3,
+    \ 'text': 'baz boz',
+    \}]
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': has('win32') ? 'cmd' : 'true',
+  \ 'command': has('win32') ? 'echo' : 'true',
+  \})
+
+After:
+  Restore
+  unlet! g:buf
+  let g:ale_run_synchronously = 0
+  delfunction TestCallback
+  call ale#linter#Reset()
+  call setloclist(0, [])
+
+Execute(The file changed event function should set b:ale_file_changed):
+  let g:ale_lint_on_enter = 0
+
+  if has('gui_running')
+    new
+  else
+    e test
+  endif
+
+  call ale#events#FileChangedEvent(g:buf)
+  close
+
+  " We should set the flag in the other buffer
+  AssertEqual 1, getbufvar(g:buf, 'ale_file_changed')
+
+Execute(The file changed event function should lint the current buffer when it has changed):
+  set filetype=foobar
+  call ale#events#FileChangedEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  AssertEqual [{
+  \   'bufnr': bufnr(''),
+  \   'lnum': 1,
+  \   'vcol': 0,
+  \   'col': 3,
+  \   'text': 'baz boz',
+  \   'type': 'E',
+  \   'nr': -1,
+  \   'pattern': '',
+  \   'valid': 1,
+  \ }], ale#test#GetLoclistWithoutNewerKeys()
+
+Execute(The buffer should be checked after entering it after the file has changed):
+  let b:ale_file_changed = 1
+
+  set filetype=foobar
+  call ale#events#ReadOrEnterEvent(bufnr(''))
+  call ale#test#FlushJobs()
+
+  AssertEqual [{
+  \   'bufnr': bufnr(''),
+  \   'lnum': 1,
+  \   'vcol': 0,
+  \   'col': 3,
+  \   'text': 'baz boz',
+  \   'type': 'E',
+  \   'nr': -1,
+  \   'pattern': '',
+  \   'valid': 1,
+  \ }], ale#test#GetLoclistWithoutNewerKeys()

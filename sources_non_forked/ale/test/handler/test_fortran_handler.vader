@@ -1,0 +1,95 @@
+Before:
+  runtime ale_linters/fortran/gcc.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The fortran handler should parse lines from GCC 4.1.2 correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 357,
+  \     'lnum': 4,
+  \     'col': 0,
+  \     'text': "Symbol ‘b’ at (1) has no IMPLICIT type",
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'bufnr': 357,
+  \     'lnum': 3,
+  \     'col': 0,
+  \     'text': "Symbol ‘a’ at (1) has no IMPLICIT type",
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#fortran#gcc#Handle(357, [
+  \   " In file :4",
+  \   "",
+  \   "write(*,*) b",
+  \   "           1",
+  \   "Error: Symbol ‘b’ at (1) has no IMPLICIT type",
+  \   " In file :3",
+  \   "",
+  \   "write(*,*) a",
+  \   "           1",
+  \   "Error: Symbol ‘a’ at (1) has no IMPLICIT type",
+  \ ])
+
+
+Execute(The fortran handler should parse lines from GCC 4.9.3 correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 357,
+  \     'lnum': 3,
+  \     'col': 12,
+  \     'text': "Symbol ‘a’ at (1) has no IMPLICIT type",
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'bufnr': 357,
+  \     'lnum': 4,
+  \     'col': 12,
+  \     'text': "Symbol ‘b’ at (1) has no IMPLICIT type",
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#fortran#gcc#Handle(357, [
+  \   ":3.12:",
+  \   "",
+  \   "write(*,*) a",
+  \   "           1",
+  \   "Error: Symbol ‘a’ at (1) has no IMPLICIT type",
+  \   ":4.12:",
+  \   "",
+  \   "write(*,*) b",
+  \   "           1",
+  \   "Error: Symbol ‘b’ at (1) has no IMPLICIT type",
+  \ ])
+
+Execute(The fortran handler should parse lines from GCC 6.3.1 correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 337,
+  \     'lnum': 3,
+  \     'col': 12,
+  \     'text': "Symbol ‘a’ at (1) has no IMPLICIT type",
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'bufnr': 337,
+  \     'lnum': 4,
+  \     'col': 12,
+  \     'text': "Symbol ‘b’ at (1) has no IMPLICIT type",
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#fortran#gcc#Handle(337, [
+  \   "<stdin>:3:12:",
+  \   "",
+  \   "Error: Symbol ‘a’ at (1) has no IMPLICIT type",
+  \   "<stdin>:4:12:",
+  \   "",
+  \   "Error: Symbol ‘b’ at (1) has no IMPLICIT type",
+  \ ])

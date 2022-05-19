@@ -1,0 +1,90 @@
+Before:
+  runtime ale_linters/ispc/ispc.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The ispc handler should parse input correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 33,
+  \     'col': 14,
+  \     'type': 'E',
+  \     'text': 'syntax error, unexpected ''int'', expecting '','' or '';''.',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 36,
+  \     'col': 5,
+  \     'type': 'E',
+  \     'text': 'syntax error, unexpected ''for''.',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 51,
+  \     'col': 9,
+  \     'type': 'E',
+  \     'text': '''foobar.h'' file not found',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 79,
+  \     'col': 52,
+  \     'type': 'W',
+  \     'text': 'Modulus operator with varying types is very inefficient.',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 85,
+  \     'col': 13,
+  \     'type': 'W',
+  \     'text': 'Undefined behavior: all program instances are writing to the same location!',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 93,
+  \     'col': 19,
+  \     'type': 'W',
+  \     'text': 'Gather required to load value.',
+  \   },
+  \   {
+  \     'bufnr': 0,
+  \     'lnum': 93,
+  \     'col': 9,
+  \     'type': 'W',
+  \     'text': 'Scatter required to store value.',
+  \   },
+  \ ],
+  \ ale_linters#ispc#ispc#Handle(0, [
+  \   'Warning: No output file or header file name specified. Program will be compiled and warnings/errors will be issued, but no output will be generated. ',
+  \   'Warning: No --target specified on command-line. Using default system target "avx2-i32x8".',
+  \   'mandelbrot.ispc:33:14: Error: syntax error, unexpected ''int'', expecting '','' or '';''.',
+  \   'static iline int mandel(float c_re, float c_im, int count) {',
+  \   '             ^^^',
+  \   '',
+  \   'mandelbrot.ispc:36:5: Error: syntax error, unexpected ''for''.',
+  \   '    for (i = 0; i < count; ++i) {',
+  \   '    ^^^',
+  \   '',
+  \   'mandelbrot.ispc:51:9: fatal error: ''foobar.h'' file not found',
+  \   '#include<foobar.h>',
+  \   '        ^~~~~~~~~~',
+  \   'mandelbrot.ispc:79:52: Performance Warning: Modulus operator with varying types is very inefficient.',
+  \   '                double x = x0 + i * (dx + epsilon*(k%2)*delta);',
+  \   '                                                   ^^^',
+  \   '',
+  \   'mandelbrot.ispc:85:13: Warning: Undefined behavior: all program instances are writing to the same location!',
+  \   '            output[index] = (NNN) / sample_size;',
+  \   '            ^^^^^^^^^^^^^',
+  \   '',
+  \   'mandelbrot.ispc:93:19: Performance Warning: Gather required to load value.',
+  \   '        A[i*8] *= A[i*8];',
+  \   '                  ^^^^^^',
+  \   '',
+  \   'mandelbrot.ispc:93:9: Performance Warning: Scatter required to store value.',
+  \   '        A[i*8] *= A[i*8];',
+  \   '        ^^^^^^',
+  \   '',
+  \ ])

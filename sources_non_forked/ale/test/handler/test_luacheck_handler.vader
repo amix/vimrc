@@ -1,0 +1,62 @@
+Before:
+  Save g:ale_warn_about_trailing_whitespace
+
+  let g:ale_warn_about_trailing_whitespace = 1
+
+  runtime ale_linters/lua/luacheck.vim
+
+After:
+  Restore
+  call ale#linter#Reset()
+
+Execute(The luacheck handler should parse lines correctly):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 8,
+  \     'text': 'line contains trailing whitespace',
+  \     'code': 'W612',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 5,
+  \     'text': 'unused loop variable ''k''',
+  \     'code': 'W213',
+  \     'type': 'W',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 19,
+  \     'text': 'accessing undefined variable ''x''',
+  \     'code': 'W113',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#lua#luacheck#Handle(347, [
+  \   '    /file/path/here.lua:1:8: (W612) line contains trailing whitespace',
+  \   '    /file/path/here.lua:3:5: (W213) unused loop variable ''k''',
+  \   '    /file/path/here.lua:3:19: (W113) accessing undefined variable ''x''',
+  \ ])
+
+Execute(The luacheck handler should respect the warn_about_trailing_whitespace option):
+  let g:ale_warn_about_trailing_whitespace = 0
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'col': 43,
+  \     'text': 'unused argument ''g''',
+  \     'code': 'W212',
+  \     'type': 'W',
+  \   }
+  \ ],
+  \ ale_linters#lua#luacheck#Handle(347, [
+  \   '/file/path/here.lua:15:97: (W614) trailing whitespace in a comment',
+  \   '/file/path/here.lua:16:60: (W612) line contains trailing whitespace',
+  \   '/file/path/here.lua:17:1: (W611) line contains only whitespace',
+  \   '/file/path/here.lua:27:57: (W613) trailing whitespace in a string',
+  \   '/file/path/here.lua:5:43: (W212) unused argument ''g''',
+  \ ])

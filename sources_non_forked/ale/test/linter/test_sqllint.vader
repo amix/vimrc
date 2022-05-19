@@ -1,0 +1,12 @@
+Before:
+  " Load the linter and set up a series of commands, reset linter variables,
+  " clear caches, etc.
+  "
+  " Vader's 'Save' command will be called here for linter variables.
+  call ale#assert#SetUpLinterTest('sql', 'sqllint')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default command should be correct):
+  AssertLinter 'sql-lint', ['sql-lint']

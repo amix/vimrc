@@ -1,0 +1,14 @@
+Before:
+  call ale#assert#SetUpLinterTest('perl', 'perl')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default Perl command callback should be correct):
+  AssertLinter 'perl', ale#Escape('perl') . ' -c -Mwarnings -Ilib %t'
+
+Execute(Overriding the executable and command should work):
+  let b:ale_perl_perl_executable = 'foobar'
+  let b:ale_perl_perl_options = '-w'
+
+  AssertLinter 'foobar', ale#Escape('foobar') . ' -w %t'

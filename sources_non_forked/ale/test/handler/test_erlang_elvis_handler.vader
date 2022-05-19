@@ -1,0 +1,40 @@
+Before:
+  runtime ale_linters/erlang/elvis.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(Warning messages should be handled):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 11,
+  \     'text': "Replace the 'if' expression on line 11 with a 'case' expression or function clauses.",
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \   },
+  \   {
+  \     'lnum': 20,
+  \     'text': 'Remove the debug call to io:format/1 on line 20.',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \   },
+  \ ],
+  \ ale_linters#erlang#elvis#Handle(bufnr(''), [
+  \   "src/foo.erl:11:no_if_expression:Replace the 'if' expression on line 11 with a 'case' expression or function clauses.",
+  \   'src/foo.erl:20:no_debug_call:Remove the debug call to io:format/1 on line 20.',
+  \ ])
+
+Execute(Line length message shouldn't contain the line itself):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 24,
+  \     'text': 'Line 24 is too long.',
+  \     'type': 'W',
+  \     'sub_type': 'style',
+  \   },
+  \ ],
+  \ ale_linters#erlang#elvis#Handle(bufnr(''), [
+  \   'src/foo.erl:24:line_length:Line 24 is too long:     io:format("Look ma, too long!"),.',
+  \ ])

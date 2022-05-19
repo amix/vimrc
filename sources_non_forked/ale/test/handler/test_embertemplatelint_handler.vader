@@ -1,0 +1,81 @@
+" Author: Adrian Zalewski <aazalewski@hotmail.com>
+Before:
+  runtime ale_linters/handlebars/embertemplatelint.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The ember-template-lint handler should parse lines correctly):
+  let input_lines = split('{
+  \ "/ember-project/app/templates/application.hbs": [
+  \   {
+  \     "moduleId": "app/templates/application",
+  \     "rule": "bare-strings",
+  \     "severity": 2,
+  \     "message": "Non-translated string used",
+  \     "line": 1,
+  \     "column": 10,
+  \     "source": " Bare String\n"
+  \   },
+  \   {
+  \     "moduleId": "app/templates/application",
+  \     "rule": "invalid-interactive",
+  \     "severity": 1,
+  \     "message": "Interaction added to non-interactive element",
+  \     "line": 3,
+  \     "column": 6,
+  \     "source": "<span {{action someAction}}></span>"
+  \   }
+  \ ]
+  \ }', '\n')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1,
+  \     'col': 10,
+  \     'text': 'bare-strings: Non-translated string used',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'lnum': 3,
+  \     'col': 6,
+  \     'text': 'invalid-interactive: Interaction added to non-interactive element',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#handlebars#embertemplatelint#Handle(347, input_lines)
+
+Execute(The ember-template-lint handler should handle template parsing error correctly):
+  let input_lines = split('{
+  \ "/ember-project/app/templates/application.hbs": [
+  \   {
+  \     "fatal": true,
+  \     "moduleId": "app/templates/application",
+  \     "message": "Parse error on line 5 ...",
+  \     "line": 5,
+  \     "column": 3,
+  \     "source": "Error: Parse error on line 5 ...",
+  \     "severity": 2
+  \   }
+  \ ]
+  \ }', '\n')
+
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 5,
+  \     'col': 3,
+  \     'text': 'Parse error on line 5 ...',
+  \     'type': 'E',
+  \   },
+  \ ],
+  \ ale_linters#handlebars#embertemplatelint#Handle(347, input_lines)
+
+Execute(The ember-template-lint handler should handle no lint errors/warnings):
+  AssertEqual
+  \ [],
+  \ ale_linters#handlebars#embertemplatelint#Handle(347, [])
+  AssertEqual
+  \ [],
+  \ ale_linters#handlebars#embertemplatelint#Handle(347, ['{}'])

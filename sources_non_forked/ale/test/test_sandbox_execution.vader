@@ -1,0 +1,103 @@
+Before:
+  function! TestCallback(buffer, output)
+    return [
+    \ {
+    \   'lnum': 1,
+    \   'bufnr': 1,
+    \   'vcol': 0,
+    \   'linter_name': 'testlinter',
+    \   'nr': -1,
+    \   'type': 'E',
+    \   'col': 1,
+    \   'text': 'Test Error',
+    \ },
+    \]
+  endfunction
+
+  call ale#linter#Define('foobar', {
+  \ 'name': 'testlinter',
+  \ 'callback': 'TestCallback',
+  \ 'executable': 'echo',
+  \ 'command': 'echo',
+  \})
+
+  let g:ale_buffer_info = {}
+
+After:
+  unlet! b:in_sandbox
+  unlet! b:result
+
+  delfunction TestCallback
+  call ale#linter#Reset()
+  let g:ale_buffer_info = {}
+
+
+Given foobar (Some imaginary filetype):
+  foo
+  bar
+  baz
+
+Execute(ale#util#InSandbox should return 1 when in a sandbox):
+  sandbox let b:in_sandbox = ale#util#InSandbox()
+
+  Assert b:in_sandbox, 'ale#util#InSandbox() returned 0 for a sandbox command'
+
+Execute(ALE shouldn't blow up when run from a sandbox):
+  AssertEqual 'foobar', &filetype
+
+  sandbox call ale#Queue(0)
+  sandbox call ale#Queue(1)
+
+Execute(ALE shouldn't blow up if file cleanup happens in a sandbox):
+  " Make a call to an engine function first, so the function will be defined
+  " before we make the sandbox call.
+  "
+  " You are not allowed to define any functions in the sandbox.
+  call ale#engine#InitBufferInfo(3)
+
+  let g:ale_buffer_info[3] = {
+  \ 'temporary_file_list': ['/tmp/foo'],
+  \ 'temporary_directory_list': ['/tmp/bar'],
+  \}
+  sandbox call ale#command#RemoveManagedFiles(3)
+
+  AssertEqual ['/tmp/foo'], g:ale_buffer_info[3].temporary_file_list
+  AssertEqual ['/tmp/bar'], g:ale_buffer_info[3].temporary_directory_list
+
+Execute(You shouldn't be able to define linters from the sandbox):
+  call ale#linter#Reset()
+  call ale#linter#PreventLoading('testft')
+
+  AssertThrows sandbox call ale#linter#Define('testft', {
+  \ 'name': 'testlinter',
+  \ 'output_stream': 'stdout',
+  \ 'executable': 'testlinter',
+  \ 'command': 'testlinter',
+  \ 'callback': 'testCB',
+  \})
+  AssertEqual 'Vim(let):E48: Not allowed in sandbox', g:vader_exception
+  AssertEqual [], ale#linter#GetAll(['testft'])
+
+Execute(You shouldn't be able to register fixers from the sandbox):
+  call ale#fix#registry#Clear()
+  AssertThrows sandbox call ale#fix#registry#Add('prettier', '', ['javascript'], 'prettier')
+  AssertEqual 'Vim(let):E48: Not allowed in sandbox', g:vader_exception
+  AssertEqual [], ale#fix#registry#CompleteFixers('', 'ALEFix ', 7)
+
+Execute(You shouldn't be able to get linters from the sandbox, to prevent tampering):
+  AssertThrows sandbox call ale#linter#GetLintersLoaded()
+  AssertEqual 'Vim(let):E48: Not allowed in sandbox', g:vader_exception
+
+  call ale#linter#Reset()
+
+  sandbox let b:result = ale#linter#GetAll(['testft'])
+
+  AssertEqual 0, len(b:result)
+
+  let b:result = ale#linter#GetAll(['testft'])
+
+  AssertEqual 1, len(b:result)
+
+  sandbox let b:result = ale#linter#GetAll(['testft'])
+
+  AssertEqual 0, len(b:result)

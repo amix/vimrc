@@ -1,0 +1,28 @@
+Before:
+  runtime ale_linters/bitbake/oelint_adv.vim
+
+After:
+  Restore
+
+  call ale#linter#Reset()
+
+Execute(The oelint_adv handler should handle warnings):
+  AssertEqual
+  \ [
+  \   {
+  \     'lnum': 1234,
+  \     'type': 'I',
+  \     'code': 'oelint.var.suggestedvar.BUGTRACKER',
+  \     'text': 'Variable ''BUGTRACKER'' should be set',
+  \   },
+  \   {
+  \     'lnum': 17,
+  \     'type': 'E',
+  \     'code': 'oelint.var.mandatoryvar.DESCRIPTION',
+  \     'text': 'Variable ''DESCRIPTION'' should be set',
+  \   },
+  \ ],
+  \ ale_linters#bitbake#oelint_adv#Handle(1, [
+  \   '/meta-x/recipes-y/example/example_1.0.bb:1234:info:oelint.var.suggestedvar.BUGTRACKER:Variable ''BUGTRACKER'' should be set',
+  \   '[31mexample2_1.1.bb:17:error:oelint.var.mandatoryvar.DESCRIPTION:Variable ''DESCRIPTION'' should be set[0m',
+  \ ])

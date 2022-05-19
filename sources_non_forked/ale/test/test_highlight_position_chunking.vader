@@ -1,0 +1,76 @@
+Execute(CreatePositions() should support single character matches):
+  AssertEqual [[[1, 5, 1]]], ale#highlight#CreatePositions(1, 5, 1, 5)
+  " When the end column is behind the start column, ignore it.
+  AssertEqual [[[2, 5, 1]]], ale#highlight#CreatePositions(2, 5, 1, 5)
+
+Execute(CreatePositions() should support multiple character matches on a single line):
+  AssertEqual [[[1, 5, 6]]], ale#highlight#CreatePositions(1, 5, 1, 10)
+  " When the end column is behind the start column, ignore it.
+  AssertEqual [[[2, 5, 6]]], ale#highlight#CreatePositions(2, 5, 1, 10)
+
+Execute(CreatePositions() should support character matches two lines):
+  AssertEqual [[[1, 5, 1073741824], [2, 1, 10]]], ale#highlight#CreatePositions(1, 5, 2, 10)
+
+Execute(CreatePositions() should support character matches across many lines):
+  " Test chunks from 1,3 to 1,17
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, [3, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 3, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, [4, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 4, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, [5, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 5, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, [6, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 6, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, [7, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 7, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, [8, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 8, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, 8],
+  \ [[9, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 9, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, 8],
+  \ [9, [10, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 10, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, 8],
+  \ [9, 10, [11, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 11, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, 8],
+  \ [9, 10, 11, [12, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 12, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, 8],
+  \ [9, 10, 11, 12, [13, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 13, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, 8],
+  \ [9, 10, 11, 12, 13, [14, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 14, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, 8],
+  \ [9, 10, 11, 12, 13, 14, [15, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 15, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, 8],
+  \ [9, 10, 11, 12, 13, 14, 15, [16, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 16, 10)
+  AssertEqual [
+  \ [[1, 5, 1073741824], 2, 3, 4, 5, 6, 7, 8],
+  \ [9, 10, 11, 12, 13, 14, 15, 16],
+  \ [[17, 1, 10]],
+  \], ale#highlight#CreatePositions(1, 5, 17, 10)
+  " Test another random sample at higher lines.
+  AssertEqual [
+  \ [[21, 8, 1073741824], 22, 23, 24, 25, 26, 27, 28],
+  \ [29, 30, 31, 32, 33, 34, 35, 36],
+  \ [[37, 1, 2]],
+  \], ale#highlight#CreatePositions(21, 8, 37, 2)

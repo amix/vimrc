@@ -1,0 +1,24 @@
+Before:
+  call ale#assert#SetUpLinterTest('bib', 'bibclean')
+
+  let g:ale_ruby_rubocop_executable = 'bibclean'
+  let g:ale_ruby_rubocop_options = ''
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(Executable should default to bibclean):
+  AssertLinter 'bibclean', ale#Escape('bibclean')
+  \   . ' -file-position '
+
+Execute(Should be able to set a custom executable):
+  let g:ale_bib_bibclean_executable = 'bin/bibclean'
+
+  AssertLinter 'bin/bibclean' , ale#Escape('bin/bibclean')
+  \   . ' -file-position '
+
+Execute(Should not include custom options):
+  let g:ale_bib_bibclean_options = '-no-prettryprint'
+
+  AssertLinter 'bibclean' , ale#Escape('bibclean')
+  \   . ' -file-position '

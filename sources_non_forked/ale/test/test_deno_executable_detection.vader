@@ -1,0 +1,20 @@
+Before:
+  Save g:ale_deno_executable
+  runtime autoload/ale/handlers/deno.vim
+
+After:
+  unlet! b:ale_deno_executable
+
+  call ale#linter#Reset()
+
+Execute(Default executable should be detected correctly):
+  AssertEqual
+  \ 'deno',
+  \ ale#handlers#deno#GetExecutable(bufnr(''))
+
+Execute(User specified executable should override default):
+  let g:ale_deno_executable = '/path/to/deno-bin'
+  AssertEqual
+  \ '/path/to/deno-bin',
+  \ ale#handlers#deno#GetExecutable(bufnr(''))
+

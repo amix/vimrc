@@ -1,0 +1,60 @@
+Before:
+  Save g:ale_html_stylelint_executable
+  Save g:ale_html_stylelint_use_global
+  Save g:ale_html_stylelint_options
+
+  unlet! b:executable
+
+  unlet! g:ale_html_stylelint_executable
+  unlet! g:ale_html_stylelint_use_global
+  unlet! g:ale_html_stylelint_options
+
+  call ale#test#SetDirectory('/testplugin/test/linter')
+  call ale#test#SetFilename('testfile.html')
+
+  runtime ale_linters/html/stylelint.vim
+
+After:
+  Restore
+
+  unlet! b:executable
+  unlet! b:ale_html_stylelint_executable
+  unlet! b:ale_html_stylelint_use_global
+  unlet! b:ale_html_stylelint_options
+
+  call ale#test#SetFilename('test.txt')
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(node_modules directories should be discovered):
+  call ale#test#SetFilename('../test-files/stylelint/nested/testfile.html')
+
+  let b:executable = ale#path#Simplify(
+  \   g:dir
+  \   . '/../test-files/stylelint/node_modules/.bin/stylelint'
+  \)
+
+  AssertEqual b:executable, ale_linters#html#stylelint#GetExecutable(bufnr(''))
+  AssertEqual
+  \ ale#Escape(b:executable) . ' --stdin-filename %s',
+  \ ale_linters#html#stylelint#GetCommand(bufnr(''))
+
+Execute(The global override should work):
+  let b:ale_html_stylelint_executable = 'foobar'
+  let b:ale_html_stylelint_use_global = 1
+
+  call ale#test#SetFilename('../test-files/stylelint/nested/testfile.html')
+
+  AssertEqual 'foobar', ale_linters#html#stylelint#GetExecutable(bufnr(''))
+  AssertEqual
+  \ ale#Escape('foobar') . ' --stdin-filename %s',
+  \ ale_linters#html#stylelint#GetCommand(bufnr(''))
+
+Execute(Extra options should be configurable):
+  let b:ale_html_stylelint_options = '--whatever'
+
+  AssertEqual 'stylelint', ale_linters#html#stylelint#GetExecutable(bufnr(''))
+  AssertEqual
+  \ ale#Escape('stylelint') . ' --whatever --stdin-filename %s',
+  \ ale_linters#html#stylelint#GetCommand(bufnr(''))

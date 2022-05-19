@@ -1,0 +1,203 @@
+Before:
+  call ale#assert#SetUpLinterTest('python', 'flakehell')
+
+  let b:bin_dir = has('win32') ? 'Scripts' : 'bin'
+
+  GivenCommandOutput ['0.8.0']
+
+After:
+  unlet! b:executable
+  unlet! b:bin_dir
+  call ale#assert#TearDownLinterTest()
+
+Execute(The flakehell callbacks should return the correct default values):
+  AssertLinter 'flakehell', [
+  \ ale#Escape('flakehell') . ' --version',
+  \ ale#Escape('flakehell') . ' lint --format=default --stdin-display-name %s -',
+  \]
+
+  " The version check should be cached.
+  GivenCommandOutput []
+  AssertLinter 'flakehell', [
+  \ ale#Escape('flakehell') . ' lint --format=default --stdin-display-name %s -',
+  \]
+
+Execute(The option for disabling changing directories should work):
+  let g:ale_python_flakehell_change_directory = 'off'
+
+  AssertLinterCwd ['', '']
+  call ale#semver#ResetVersionCache()
+  AssertLinter 'flakehell', [
+  \ ale#Escape('flakehell') . ' --version',
+  \ ale#Escape('flakehell') . ' lint --format=default --stdin-display-name %s -',
+  \]
+
+  let g:ale_python_flakehell_change_directory = 0
+
+  AssertLinterCwd ['']
+  AssertLinter 'flakehell', [
+  \ ale#Escape('flakehell') . ' lint --format=default --stdin-display-name %s -',
+  \]
+
+  " Invalid options should be considered the same as turning the setting off.
+  let g:ale_python_flakehell_change_directory = 'xxx'
+
+  AssertLinterCwd ['']
+  AssertLinter 'flakehell', [
+  \ ale#Escape('flakehell') . ' lint --format=default --stdin-display-name %s -',
+  \]
+
+Execute(The option for changing directory to project root should work):
+  call ale#test#SetFilename('../test-files/python/namespace_package_tox/namespace/foo/bar.py')
+
+  AssertLinterCwd ale#python#FindProjectRootIni(bufnr(''))
+  call ale#semver#ResetVersionCache()
+  AssertLinter 'flakehell', [
+  \ ale#Escape('flakehell') . ' --version',
+  \ ale#Escape('flakehell') . ' lint --format=default --stdin-display-name %s -',
+  \]
+
+Execute(The option for changing directory to file dir should work):
+  let g:ale_python_flakehell_change_directory = 'file'
+  call ale#test#SetFilename('../test-files/python/namespace_package_tox/namespace/foo/bar.py')
+
+  AssertLinter 'flakehell', [
+  \ ale#Escape('flakehell') . ' --version',
+  \ ale#Escape('flakehell') . ' lint --format=default --stdin-display-name %s -',
+  \]
+
+  let g:ale_python_flakehell_change_directory = 1
+
+  AssertLinter 'flakehell', [
+  \ ale#Escape('flakehell') . ' lint --format=default --stdin-display-name %s -',
+  \]
+
+Execute(The flakehell command callback should let you set options):
+  let g:ale_python_flakehell_options = '--some-option'
+
+  GivenCommandOutput ['0.8.0']
+  AssertLinter 'flakehell', [
+  \ ale#Escape('flakehell') . ' --version',
+  \ ale#Escape('flakehell') . ' lint --some-option'
+  \   . ' --format=default --stdin-display-name %s -',
+  \]
+
+Execute(You should be able to set a custom executable and it should be escaped):
+  let g:ale_python_flakehell_executable = 'executable with spaces'
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLinterCwd ['%s:h', '%s:h']
+  call ale#semver#ResetVersionCache()
+  AssertLinter 'executable with spaces', [
+  \ ale#Escape('executable with spaces') . ' --version',
+  \ ale#Escape('executable with spaces')
+  \   . ' lint'
+  \   . ' --format=default'
+  \   . ' --stdin-display-name %s -',
+  \]
+
+Execute(The flakehell callbacks should detect virtualenv directories):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let b:executable = ale#path#Simplify(
+  \ g:dir . '/../test-files/python/with_virtualenv/env/' . b:bin_dir . '/flakehell'
+  \)
+
+  AssertLinter b:executable, [
+  \ ale#Escape(b:executable) . ' --version',
+  \ ale#Escape(b:executable)
+  \   . ' lint'
+  \   . ' --format=default'
+  \   . ' --stdin-display-name %s -',
+  \]
+
+Execute(The FindProjectRoot should detect the project root directory for namespace package via Manifest.in):
+  call ale#test#SetFilename('../test-files/python/namespace_package_manifest/namespace/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/namespace_package_manifest'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+Execute(The FindProjectRoot should detect the project root directory for namespace package via setup.cf):
+  call ale#test#SetFilename('../test-files/python/namespace_package_setup/namespace/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/namespace_package_setup'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+Execute(The FindProjectRoot should detect the project root directory for namespace package via pytest.ini):
+  call ale#test#SetFilename('../test-files/python/namespace_package_pytest/namespace/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/namespace_package_pytest'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+Execute(The FindProjectRoot should detect the project root directory for namespace package via tox.ini):
+  call ale#test#SetFilename('../test-files/python/namespace_package_tox/namespace/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/namespace_package_tox'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+Execute(The FindProjectRoot should detect the project root directory for non-namespace package):
+  call ale#test#SetFilename('../test-files/python/no_virtualenv/subdir/foo/bar.py')
+
+  AssertEqual
+  \ ale#path#Simplify(g:dir . '/../test-files/python/no_virtualenv/subdir'),
+  \ ale#python#FindProjectRoot(bufnr(''))
+
+" Some users currently run flakehell this way, so we should support it.
+Execute(Using `python -m flakehell` should be supported for running flakehell):
+  call ale#test#SetFilename('../test-files/python/with_virtualenv/subdir/foo/bar.py')
+
+  let g:ale_python_flakehell_executable = 'python'
+  let g:ale_python_flakehell_options = '--some-option'
+
+  AssertLinter 'python', [
+  \ ale#Escape('python') . ' -m flakehell --version',
+  \ ale#Escape('python')
+  \   . ' -m flakehell lint --some-option --format=default --stdin-display-name %s -'
+  \]
+
+  call ale#semver#ResetVersionCache()
+
+  " Leading spaces shouldn't matter
+  let g:ale_python_flakehell_options = '   --some-option'
+
+  AssertLinter 'python', [
+  \ ale#Escape('python') . ' -m flakehell --version',
+  \ ale#Escape('python')
+  \   . ' -m flakehell lint    --some-option --format=default --stdin-display-name %s -'
+  \]
+
+Execute(Setting executable to 'pipenv' should append 'run flakehell'):
+  let g:ale_python_flakehell_executable = 'path/to/pipenv'
+
+  " FIXME: pipenv should check the version with flakehell.
+  GivenCommandOutput []
+  AssertLinter 'path/to/pipenv',
+  \ ale#Escape('path/to/pipenv') . ' run flakehell lint --format=default -'
+
+Execute(Pipenv is detected when python_flakehell_auto_pipenv is set):
+  let g:ale_python_flakehell_auto_pipenv = 1
+  call ale#test#SetFilename('../test-files/python/pipenv/whatever.py')
+
+  AssertLinterCwd ale#python#FindProjectRootIni(bufnr(''))
+  AssertLinter 'pipenv',
+  \ ale#Escape('pipenv') . ' run flakehell lint --format=default --stdin-display-name %s -'
+
+Execute(Setting executable to 'poetry' should append 'run flakehell'):
+  let g:ale_python_flakehell_executable = 'path/to/poetry'
+
+  " FIXME: poetry should check the version with flakehell.
+  GivenCommandOutput []
+  AssertLinter 'path/to/poetry',
+  \ ale#Escape('path/to/poetry') . ' run flakehell lint --format=default -'
+
+Execute(poetry is detected when python_flakehell_auto_poetry is set):
+  let g:ale_python_flakehell_auto_poetry = 1
+  call ale#test#SetFilename('../test-files/python/poetry/whatever.py')
+
+  AssertLinterCwd ale#python#FindProjectRootIni(bufnr(''))
+  AssertLinter 'poetry',
+  \ ale#Escape('poetry') . ' run flakehell lint --format=default --stdin-display-name %s -'

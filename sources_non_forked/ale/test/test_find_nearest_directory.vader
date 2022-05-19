@@ -1,0 +1,17 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+
+After:
+  call ale#test#RestoreDirectory()
+
+Execute(We should be able to find a directory some directory down):
+  call ale#test#SetFilename('test-files/top/middle/bottom/dummy.txt')
+
+  AssertEqual
+  \ ale#path#Simplify(expand('%:p:h:h:h:h:h') . '/test-files/top/ale-special-directory-name-dont-use-this-please/'),
+  \ ale#path#FindNearestDirectory(bufnr('%'), 'ale-special-directory-name-dont-use-this-please')
+
+Execute(We shouldn't find anything for files which don't match):
+  AssertEqual
+  \ '',
+  \ ale#path#FindNearestDirectory(bufnr('%'), 'ale-this-should-never-match-anything')

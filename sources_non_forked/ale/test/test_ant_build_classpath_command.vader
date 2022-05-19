@@ -1,0 +1,27 @@
+Before:
+  call ale#test#SetDirectory('/testplugin/test')
+  runtime ale_linters/java/javac.vim
+
+  Save $PATH
+  let $PATH = ale#path#Simplify(g:dir . '/test-files/ant/bin')
+
+After:
+  Restore
+
+  call ale#test#RestoreDirectory()
+  call ale#linter#Reset()
+
+Execute(Should return `cd '[dir]' && 'ant' classpath -S -q`):
+  call ale#test#SetFilename('test-files/ant/ant-project/Main.java')
+
+  AssertEqual
+  \ [
+  \   ale#path#Simplify(g:dir . '/test-files/ant/ant-project'),
+  \   ale#Escape('ant') . ' classpath' . ' -S' . ' -q',
+  \ ],
+  \ ale#ant#BuildClasspathCommand(bufnr(''))
+
+Execute(Should return empty string if ant cannot be executed):
+  call ale#test#SetFilename('test-files/ant/not-an-ant-project/Main.java')
+
+  AssertEqual ['', ''], ale#ant#BuildClasspathCommand(bufnr(''))

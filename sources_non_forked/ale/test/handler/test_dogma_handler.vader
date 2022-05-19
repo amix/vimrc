@@ -1,0 +1,30 @@
+Before:
+  runtime ale_linters/elixir/dogma.vim
+
+After:
+  call ale#linter#Reset()
+
+Execute(The dogma handler should parse lines correctly):
+
+  AssertEqual
+  \ [
+  \   {
+  \     'bufnr': 347,
+  \     'lnum': 18,
+  \     'col': 5,
+  \     'text': 'Some error',
+  \     'type': 'E',
+  \   },
+  \   {
+  \     'bufnr': 347,
+  \     'lnum': 19,
+  \     'col': 7,
+  \     'text': 'Some warning',
+  \     'type': 'W',
+  \   },
+  \ ],
+  \ ale_linters#elixir#dogma#Handle(347, [
+  \   'This line should be ignored completely',
+  \   'lib/filename.ex:18:5: C: Some error',
+  \   'lib/filename.ex:19:7: R: Some warning',
+  \ ])
