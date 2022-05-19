@@ -202,16 +202,4 @@ that allow you to jump to such markings.
 >
   let g:surround_insert_tail = "<++>"
 <
-ISSUES                                          *surround-issues*
-
-Vim could potentially get confused when deleting/changing occurs at the very
-end of the line.  Please report any repeatable instances of this.
-
-Do we need to use |inputsave()|/|inputrestore()| with the tag replacement?
-
-Indenting is handled haphazardly.  Need to decide the most appropriate
-behavior and implement it.  Right now one can do :let b:surround_indent = 1
-(or the global equivalent) to enable automatic re-indenting by Vim via |=|;
-should this be the default?
-
  vim:tw=78:ts=8:ft=help:norl:
