@@ -109,7 +109,7 @@ let g:multi_cursor_quit_key            = '<Esc>'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => surround.vim config
-" Annotate strings with gettext 
+" Annotate strings with gettext
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 vmap Si S(i_<esc>f)
 au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
@@ -119,25 +119,25 @@ au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
 " => lightline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ ['mode', 'paste'],
-      \             ['fugitive', 'readonly', 'filename', 'modified'] ],
-      \   'right': [ [ 'lineinfo' ], ['percent'] ]
-      \ },
-      \ 'component': {
-      \   'readonly': '%{&filetype=="help"?"":&readonly?"🔒":""}',
-      \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{exists("*FugitiveHead")?FugitiveHead():""}'
-      \ },
-      \ 'component_visible_condition': {
-      \   'readonly': '(&filetype!="help"&& &readonly)',
-      \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-      \   'fugitive': '(exists("*FugitiveHead") && ""!=FugitiveHead())'
-      \ },
-      \ 'separator': { 'left': ' ', 'right': ' ' },
-      \ 'subseparator': { 'left': ' ', 'right': ' ' }
-      \ }
+            \ 'colorscheme': 'wombat',
+            \ 'active': {
+                \   'left': [ ['mode', 'paste'],
+                \             ['fugitive', 'readonly', 'filename', 'modified'] ],
+                \   'right': [ [ 'lineinfo' ], ['percent'] ]
+                \ },
+                \ 'component': {
+                    \   'readonly': '%{&filetype=="help"?"":&readonly?"🔒":""}',
+                    \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
+                    \   'fugitive': '%{exists("*FugitiveHead")?FugitiveHead():""}'
+                    \ },
+                    \ 'component_visible_condition': {
+                        \   'readonly': '(&filetype!="help"&& &readonly)',
+                        \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
+                        \   'fugitive': '(exists("*FugitiveHead") && ""!=FugitiveHead())'
+                        \ },
+                        \ 'separator': { 'left': ' ', 'right': ' ' },
+                        \ 'subseparator': { 'left': ' ', 'right': ' ' }
+                        \ }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vimroom
@@ -152,10 +152,10 @@ nnoremap <silent> <leader>z :Goyo<cr>
 " => Ale (syntax checker and linter)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:ale_linters = {
-\   'javascript': ['eslint'],
-\   'python': ['flake8'],
-\   'go': ['go', 'golint', 'errcheck']
-\}
+            \   'javascript': ['eslint'],
+            \   'python': ['flake8'],
+            \   'go': ['go', 'golint', 'errcheck']
+            \}
 
 nmap <silent> <leader>a <Plug>(ale_next_wrap)
 
@@ -186,3 +186,26 @@ let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " Copy the link to the line of a Git repository to the clipboard
 nnoremap <leader>v :.GBrowse!<CR>
 xnoremap <leader>v :'<'>GBrowse!<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Coc.nvim
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+"inoremap <silent><expr> <TAB>
+""      \ pumvisible() ? "\<C-n>" :
+""      \ <SID>check_back_space() ? "\<TAB>" :
+""      \ coc#refresh()
+"inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remapped by other vim plugin
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+            \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Vim-autoformat
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:python3_host_prog="/usr/bin/python3"
+autocmd BufWrite *  :Autoformat
