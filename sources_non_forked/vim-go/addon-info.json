@@ -1,0 +1,6 @@
+{
+  "name": "vim-go",
+  "description": "Full featured Go (golang) support for Vim.",
+  "author": "Fatih Arslan <fatih@arslan.io>",
+  "repository" : {"type": "git", "url": "https://github.com/fatih/vim-go.git"}
+}

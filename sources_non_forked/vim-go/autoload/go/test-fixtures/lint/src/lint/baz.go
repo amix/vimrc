@@ -1,0 +1,3 @@
+package lint
+
+func baz() {}

@@ -1,0 +1,4 @@
+if err != nil {
+	t.Fatal(err)
+}
+{{++}}

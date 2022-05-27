@@ -1,0 +1,3 @@
+package problems
+
+func bar() {}

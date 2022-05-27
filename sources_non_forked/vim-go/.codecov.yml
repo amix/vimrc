@@ -1,0 +1,13 @@
+---
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1
+        base: auto
+    patch: off
+comment: false
+ignore:
+  - "!autoload/go/*.vim$"
+  - "autoload/go/*_test.vim$"

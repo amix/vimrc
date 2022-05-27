@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# Install and setup a Vim or Neovim for running tests.
+# This should work on both GitHub Actions and people's desktop computers, and
+# be 100% independent from any system installed Vim.
+#
+
+set -euC
+
+vimgodir=$(cd -P "$(dirname "$0")/.." > /dev/null && pwd)
+cd "$vimgodir"
+
+vim=${1:-}
+
+installdir="/tmp/vim-go-test/$1-install"
+
+# Make sure all Go tools and other dependencies are installed.
+echo "Installing Go binaries"
+export GOPATH=$installdir
+export GO111MODULE=on
+export PATH="${GOPATH}/bin:$PATH"
+"$vimgodir/scripts/run-vim" $vim +':silent :GoUpdateBinaries' +':qa'
+
+echo "Installing lint tools"
+(
+  mkdir -p "$installdir/share/vim/vimgo/pack/vim-go/start/"
+  cd "$installdir/share/vim/vimgo/pack/vim-go/start/"
+  [ -d "vim-vimhelplint" ] || git clone --depth 1 --quiet https://github.com/machakann/vim-vimhelplint
+  [ -d "vim-vimlparser" ]  || git clone --depth 1 --quiet https://github.com/ynkdir/vim-vimlparser
+  [ -d "vim-vimlint" ]     || git clone --depth 1 --quiet https://github.com/syngan/vim-vimlint
+)
+
+echo "vim-go tools installed to: $installdir/share/vim/vimgo/pack/vim-go/start"
+
+# vim:ts=2:sts=2:sw=2:et

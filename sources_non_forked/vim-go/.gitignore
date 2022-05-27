@@ -1,0 +1,11 @@
+*.pyc
+.DS_Store
+/.bash_history
+/.cache
+/.config
+/.coverage.covimerage
+/.local
+/.viminfo
+/coverage.xml
+/doc/tags
+/issues

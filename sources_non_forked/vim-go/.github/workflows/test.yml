@@ -1,0 +1,60 @@
+name: test
+on: [push, pull_request]
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-18.04
+    steps:
+    - name: set up python
+      uses: actions/setup-python@v2.1.4
+      with:
+        python-version: 3.6
+    - name: install vim-vint
+      run: |
+        python -m pip install --upgrade pip
+        pip install vim-vint pathlib
+    - name: checkout
+      uses: actions/checkout@v2.1.0
+    - name: install vim
+      run: $GITHUB_WORKSPACE/scripts/install-vim vim-8.2
+    - name: install tools
+      run: $GITHUB_WORKSPACE/scripts/install-tools vim-8.2
+    - name: lint
+      run: $GITHUB_WORKSPACE/scripts/lint vim-8.2
+  test:
+    name: test
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.17','1.18']
+        vim: ['vim-8.0', 'vim-8.2', 'nvim']
+    steps:
+    - name: setup Go
+      uses: actions/setup-go@v2.1.3
+      with:
+        go-version: ${{ matrix.go }}
+    - name: set up python
+      uses: actions/setup-python@v2.1.4
+      with:
+        python-version: 3.6
+    - name: install covimerage
+      run: |
+        python -m pip install --upgrade pip
+        pip install click==7.1.2 covimerage==0.2.1 codecov pathlib
+    - name: checkout
+      uses: actions/checkout@v2.1.0
+    - name: install vim
+      run: $GITHUB_WORKSPACE/scripts/install-vim ${{ matrix.vim }}
+    - name: install tools
+      run: $GITHUB_WORKSPACE/scripts/install-tools ${{ matrix.vim }}
+    - name: test
+      run: $GITHUB_WORKSPACE/scripts/test -c ${{ matrix.vim }}
+    - uses: codecov/codecov-action@v1
+      with:
+        # token is not required for public repos
+        #token: ${{ secrets.CODECOV_TOKEN }}
+        file: $GITHUB_WORKSPACE/coverage.xml
+        flags: unittests
+        name: vim-go
+        fail_ci_if_error: false
