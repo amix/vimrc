@@ -29,8 +29,8 @@ set guioptions-=L
 
 " Colorscheme
 autocmd vimenter * hi Normal guibg=NONE ctermbg=NONE " transparent bg
-"set background=dark
-let ayucolor="light"
+set background=dark
+"let ayucolor="light"
 colorscheme ayu
 
 

@@ -1,3 +1,15 @@
+# 2022-05-24
+
+- Add transition and annotation support for `workspace.applyEdits()`.
+- Add command `workspace.undo` and `workspace.redo`.
+- Remove configuration `coc.preferences.promptWorkspaceEdit`.
+- Remove command `CocAction` and `CocFix`.
+
+# 2022-05-22
+
+- Check for previous position when not able to find completion match.
+- Add `content` support to `window.showMenuPicker()`
+
 # 2022-05-17
 
 - Add `QuickPick` module.

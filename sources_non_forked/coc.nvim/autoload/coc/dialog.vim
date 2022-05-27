@@ -78,6 +78,10 @@ function! coc#dialog#create_cursor_float(winid, bufnr, lines, config) abort
     " helps to fix undo issue, don't know why.
     call feedkeys("\<C-g>u", 'n')
   endif
+  if mode ==# 's' && has('patch-8.2.4969') && !has('patch-8.2.4996')
+    echohl WarningMsg | echon 'Popup not created to avoid issue #10466 on vim >= 8.2.4969' | echohl None
+    return v:null
+  endif
   let dimension = coc#dialog#get_config_cursor(a:lines, a:config)
   if empty(dimension)
     return v:null
@@ -206,35 +210,51 @@ function! coc#dialog#create_menu(lines, config) abort
   let highlight = get(a:config, 'highlight', 'CocFloating')
   let borderhighlight = get(a:config, 'borderhighlight', [highlight])
   let relative = get(a:config, 'relative', 'cursor')
+  let lines = copy(a:lines)
+  let content = get(a:config, 'content', '')
+  let maxWidth = get(a:config, 'maxWidth', 80)
+  let highlights = get(a:config, 'highlights', [])
+  let contentCount = 0
+  if !empty(content)
+    let contentLines = coc#string#reflow(split(content, '\r\?\n'), maxWidth)
+    let contentCount = len(contentLines)
+    let lines = extend(contentLines, lines)
+    if !empty(highlights)
+      for item in highlights
+        let item['lnum'] = item['lnum'] + contentCount
+      endfor
+    endif
+  endif
   let opts = {
-    \ 'lines': a:lines,
+    \ 'lines': lines,
     \ 'highlight': highlight,
     \ 'title': get(a:config, 'title', ''),
     \ 'borderhighlight': borderhighlight,
-    \ 'maxWidth': get(a:config, 'maxWidth', 80),
+    \ 'maxWidth': maxWidth,
     \ 'maxHeight': get(a:config, 'maxHeight', 80),
     \ 'rounded': get(a:config, 'rounded', 0),
     \ 'border': [1, 1, 1, 1],
-    \ 'highlights': get(a:config, 'highlights', []),
+    \ 'highlights': highlights,
     \ 'relative': relative,
     \ }
   if relative ==# 'editor'
-    let dimension = coc#dialog#get_config_editor(a:lines, opts)
+    let dimension = coc#dialog#get_config_editor(lines, opts)
   else
-    let dimension = coc#dialog#get_config_cursor(a:lines, opts)
+    let dimension = coc#dialog#get_config_cursor(lines, opts)
   endif
   call extend(opts, dimension)
-  let res = coc#float#create_float_win(0, s:prompt_win_bufnr, opts)
-  if empty(res)
+  let ids = coc#float#create_float_win(0, s:prompt_win_bufnr, opts)
+  if empty(ids)
     return
   endif
-  let s:prompt_win_bufnr = res[1]
+  let s:prompt_win_bufnr = ids[1]
   call s:place_sign(s:prompt_win_bufnr, 1)
+  call coc#dialog#set_cursor(ids[0], ids[1], contentCount + 1)
   redraw
   if has('nvim')
-    call coc#float#nvim_scrollbar(res[0])
+    call coc#float#nvim_scrollbar(ids[0])
   endif
-  return res
+  return [ids[0], ids[1], contentCount]
 endfunction
 
 " Create dialog at center of screen

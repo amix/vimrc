@@ -358,11 +358,12 @@ function! s:funcs.buf_get_lines(bufnr, start, end, strict) abort
 endfunction
 
 function! s:funcs.buf_set_lines(bufnr, start, end, strict, ...) abort
-  if !bufloaded(a:bufnr)
+  let bufnr = a:bufnr == 0 ? bufnr('%') : a:bufnr
+  if !bufloaded(bufnr)
     return
   endif
   let replacement = get(a:, 1, [])
-  let lineCount = s:buf_line_count(a:bufnr)
+  let lineCount = s:buf_line_count(bufnr)
   let startLnum = a:start >= 0 ? a:start + 1 : lineCount + a:start + 2
   let end = a:end >= 0 ? a:end : lineCount + a:end + 1
   if end == lineCount + 1
@@ -371,11 +372,11 @@ function! s:funcs.buf_set_lines(bufnr, start, end, strict, ...) abort
   let delCount = end - (startLnum - 1)
   let changeBuffer = 0
   let curr = bufnr('%')
-  if a:bufnr != curr && !exists('*setbufline')
+  if bufnr != curr && !exists('*setbufline')
     let changeBuffer = 1
-    exe 'buffer '.a:bufnr
+    exe 'buffer '.bufnr
   endif
-  if a:bufnr == curr || changeBuffer
+  if bufnr == curr || changeBuffer
     " replace
     let storeView = winsaveview()
     if delCount == len(replacement)
@@ -405,18 +406,18 @@ function! s:funcs.buf_set_lines(bufnr, start, end, strict, ...) abort
     " replace
     if delCount == len(replacement)
       " 8.0.1039
-      call setbufline(a:bufnr, startLnum, replacement)
+      call setbufline(bufnr, startLnum, replacement)
     else
       if len(replacement)
         " 8.10037
-        call appendbufline(a:bufnr, startLnum - 1, replacement)
+        call appendbufline(bufnr, startLnum - 1, replacement)
       endif
       if delCount
         let start = startLnum + len(replacement)
         let saved_reg = @"
         let system_reg = @*
         "8.1.0039
-        silent call deletebufline(a:bufnr, start, start + delCount - 1)
+        silent call deletebufline(bufnr, start, start + delCount - 1)
         let @" = saved_reg
         let @* = system_reg
       endif

@@ -689,7 +689,7 @@ function! s:to_group(items) abort
 endfunction
 
 function! s:get_priority(key, hlGroup, priority) abort
-  if a:hlGroup ==# 'Search'
+  if a:hlGroup ==# 'CocSearch'
     return 999
   endif
   if strpart(a:key, 0, 10) !=# 'diagnostic'

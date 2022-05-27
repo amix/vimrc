@@ -1055,6 +1055,11 @@
       "maximum": 100,
       "description": "Winblend option of notification window, neovim only."
     },
+    "workspace.openResourceCommand": {
+      "type": "string",
+      "default": "tab drop",
+      "description": "Command to open files that not loaded, load files as hidden buffers when empty."
+    },
     "workspace.ignoredFiletypes": {
       "type": "array",
       "default": [],
@@ -1422,17 +1427,6 @@
       "default": "10MB",
       "description": "Maximum file size in bytes that coc.nvim should handle, default '10MB'"
     },
-    "coc.preferences.promptWorkspaceEdit": {
-      "type": "boolean",
-      "description": "Prompt confirm from user when apply workspace edit for unloaded files.",
-      "default": true
-    },
-    "coc.preferences.listOfWorkspaceEdit": {
-      "type": "string",
-      "default": "quickfix",
-      "description": "List should contains changed locations after workspace edit, default to vim's quickfix",
-      "enum": ["quickfix", "location", "none"]
-    },
     "coc.preferences.useQuickfixForLocations": {
       "type": "boolean",
       "description": "Use vim's quickfix list for jump locations,\n need restart on change.",
@@ -1466,11 +1460,6 @@
       "items": {
         "type": "string"
       }
-    },
-    "coc.preferences.enableFloatHighlight": {
-      "type": "boolean",
-      "description": "Enable highlight for floating window.",
-      "default": true
     },
     "coc.preferences.rootPatterns": {
       "type": "array",

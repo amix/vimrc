@@ -2,7 +2,7 @@ scriptencoding utf-8
 let s:root = expand('<sfile>:h:h:h')
 let s:is_win = has('win32') || has('win64')
 let s:is_vim = !has('nvim')
-let s:vim_api_version = 29
+let s:vim_api_version = 30
 
 function! coc#util#remote_fns(name)
   let fns = ['init', 'complete', 'should_complete', 'refresh', 'get_startcol', 'on_complete', 'on_enter']
@@ -135,8 +135,8 @@ function! coc#util#diagnostic_info(bufnr, checkInsert) abort
 endfunction
 
 function! coc#util#open_file(cmd, file)
-  let file = fnameescape(a:file)
-  execute a:cmd .' '.file
+  execute a:cmd .' '.fnameescape(fnamemodify(a:file, ':~:.'))
+  return bufnr('%')
 endfunction
 
 function! coc#util#job_command()
