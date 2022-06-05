@@ -1,0 +1,490 @@
+*paredit.txt*                   Paredit              Last Change: 05 Apr 2021
+
+Paredit Mode for Vim                                  *paredit* *slimv-paredit*
+                               Version 0.9.14
+
+The paredit.vim plugin performs structured editing of s-expressions used in
+the Lisp, Clojure, Scheme programming languages. It may come as part of Slimv
+but it is also distributed separately as a standalone plugin.
+
+|paredit-mode|               Paredit mode
+|paredit-keys|               Paredit keybindings
+|paredit-options|            Paredit options
+
+===============================================================================
+PAREDIT MODE                                                     *paredit-mode*
+                                                                  *parentheses*
+
+Paredit mode is a special editing mode that keeps all matched characters
+(parentheses, square and curly braces, double quotes) balanced, i.e. all opening
+characters have a matching closing character. Most text entering and erasing
+commands try to maintain the balanced state, so no single matched character is
+added or deleted, they are entered or removed in pairs.
+The function takes care of strings and comments, so no parenthesis and square
+bracket balancing is performed inside a string or comment.
+Please note that [] and {} pairs are not balanced for Lisp filetypes, only
+for Clojure and Scheme.
+
+The idea is taken from the paredit mode of Emacs, but not all paredit.el
+editing functions are implemented or behave exactly the same way as they do
+in Emacs.
+
+When you enter a '(' then a matching ')' is automatically inserted.
+If needed, spaces before and/or after the '()' pair are added.
+
+When you press ')' in insert mode then there's no need to insert a closing
+parenthesis mark (it is already there), so the cursor is simply advanced past
+the next closing parenthesis (then the next outer closing parenthesis, etc.).
+The result of this is however that when entering text with paredit mode
+you can use the same keystrokes as without paredit mode and you get the same
+result. Of course you can choose to not enter the closing parenthesis (as
+required without paredit mode), because it is already there.
+
+When you are trying to delete a ')' alone then it is not possible, the cursor
+is simply moved inside the list, where all regular characters can be deleted.
+When the list is finally empty: '()', then the deletion of the opening '('
+makes both parentheses erased at once, so the balanced state is maintained.
+
+All the above holds for [...] and "..." character pairs.
+
+When you are deleting multiple characters at once, e.g. deleting a whole line,
+or deleting till the end of the line, etc, then the deletion logic of a single
+character is iterated. This means that the whole line or the characters till
+the end of the line, etc are not necessarily deleted all. Depending on the
+number of open/close parentheses, square or curly braces, double quotes some
+of them might be kept in order to maintain the balanced state.
+For example if you press D in Normal mode to delete till the end of line
+between the a and b parameters of the following Clojure function definition:
+
+(defn myfunc [a b c] (+ a b c))
+               ^--- press D here
+
+then the closing ] as well as the last closing ) will not be deleted, because
+in the list you have an ( and a [ to be matched, so the result will be:
+
+(defn myfunc [a])
+
+If you are deleting multiple lines, then the above process is performed for
+all lines involved. If a line was not completely cleared, then it is joined
+with the next line and the process continues.
+
+
+Of course not all Vim commands are compatible with the paredit mode (e.g.
+you can yank and paste unbalanced code snippet, or comment out an asymmetrical
+part of the code), and there is also the possibility to edit the source code
+with paredit mode switched off or with another editor to make it unbalanced.
+When paredit mode detects that the underlying code is not balanced, then the
+paredit functionality is suspended until the top level form balance is fixed.
+As soon as all parens are matched, the paredit mode is automatically resumed.
+Paredit needs "syntax on" to identify the syntax elements of the underlying
+code, so if syntax is switched off, then paredit will not be suspended inside
+comments or strings.
+
+
+Slurpage and Barfage known from Emacs is also possible but in a different
+fashion: you don't move the symbols but move the opening or closing parenthesis
+over the symbol or a sub-list. This way you can move any symbol or sub-list
+into or out of the current list. It is not possible to move the parenthesis
+over its pair, so for example if you move the opening parenthesis to the right,
+then it will stop at the matched closing parenthesis.
+
+
+Paredit mode is set by default for .lisp, .cl, .clj, cljs, .scm and .rkt files,
+but it is possible to switch it off by putting the following statement in the
+.vimrc file:
+
+    let g:paredit_mode = 0
+
+You can enable paredit mode for other file types as well. Here is how to set
+it for Arc files in your .vimrc (assuming you have a filetype 'arc' defined):
+
+    au FileType arc call PareditInitBuffer()
+
+Paredit is part of Slimv, but it is also distributed separately as a standalone
+plugin. If you indend to use the SWANK client and/or Slimv's indentation and
+syntax functions, then please install the Slimv plugin. Otherwise you may want
+to install the Paredit plugin thus omitting other unnecessary files.
+
+
+===============================================================================
+PAREDIT KEYBINDINGS                                              *paredit-keys*
+
+Here follows a list of paredit keybindings:
+
+
+Insert Mode:
+
+    (              Inserts '()' and moves the cursor inside. Also adds leading
+                   or trailing spaces when needed.
+                   Inserts '(' when inside comment or string.
+
+    )              Moves the cursor to the next closing parenthesis mark of
+                   the current list. When pressed again then moves to the next
+                   outer closing parenthesis, etc, until the closing of the
+                   top level form is reached.
+                   Inserts ')' when inside comment or string.
+                   If |g:paredit_electric_return| is on then it also re-gathers
+                   electric returns when appropriate.
+
+    [              Inserts '[]' and moves the cursor inside. Also adds leading
+                   or trailing spaces when needed.
+                   Inserts '[' when inside comment or string.
+
+    ]              Moves the cursor to the next closing square bracket of the
+                   current list. When pressed again then moves to the next
+                   outer closing square bracket, etc, until the closing of the
+                   top level form is reached.
+                   Inserts ']' when inside comment or string.
+                   If |g:paredit_electric_return| is on then it also re-gathers
+                   electric returns when appropriate.
+
+    {              Inserts '{}' and moves the cursor inside. Also adds leading
+                   or trailing spaces when needed.
+                   Inserts '{' when inside comment or string.
+
+    }              Moves the cursor to the next closing curly brace of the
+                   current list. When pressed again then moves to the next
+                   outer closing curly brace, etc, until the closing of the
+                   top level form is reached.
+                   Inserts '}' when inside comment or string.
+                   If |g:paredit_electric_return| is on then it also re-gathers
+                   electric returns when appropriate.
+
+    "              When outside of string, inserts '""' and moves the cursor
+                   inside. When inside string then moves to the closing '"'.
+                   Inserts '"' when inside comment. Also insert '"' when inside
+                   string and preceded by a '\'.
+
+    <BS>           When about to delete a (, ), [, ], or " and there are other
+                   characters inside, then just skip it to the left. When
+                   about to delete the opening part of the matched character
+                   with nothing inside, then the whole empty list is removed.
+
+    <Del>          When about to delete a (, ), [, ], or " and there are other
+                   characters inside, then just skip it to the right. When
+                   about to delete the closing part of the matched character
+                   with nothing inside, then the whole empty list is removed.
+
+    <Enter>        If |g:paredit_electric_return| is on then insert an
+                   "electric return", i.e. create an empty line by inserting
+                   two newline characters.
+
+
+Normal Mode:
+
+    (              Finds opening '(' of the current list. Can be pressed
+                   repeatedly until the opening of the top level form reached.
+
+    )              Finds closing ')' of the current list. Can be pressed
+                   repeatedly until the closing of the top level form reached.
+
+    [[             Go to the start of current/previous defun.
+
+    ]]             Go to the start of next defun.
+
+    <Leader><      If standing on a delimiter (parenthesis or square bracket)
+                   then moves it to the left by slurping or barfing the
+                   s-expression to the left, depending on the direction of the
+                   delimiter:
+                   Pressing '<' when standing on a ')' makes the s-expression
+                   to the left of the ')' going out of the current list.
+                   Pressing '<' when standing on a '(' makes the s-expression
+                   to the left of the '(' coming into the current list.
+                   For example pressing <Leader>< at position marked with |:
+                       (aaa bbb|)        --->    (aaa|) bbb
+                       aaa |(bbb)        --->    |(aaa bbb)
+
+    <Leader>>      If standing on a delimiter (parenthesis or square bracket)
+                   then moves it to the right by slurping or barfing the
+                   s-expression to the right, depending on the direction of the
+                   delimiter:
+                   Pressing '>' when standing on a '(' makes the s-expression
+                   to the right of the '(' going out of the current list.
+                   Pressing '>' when standing on a ')' makes the s-expression
+                   to the right of the ')' coming into the current list.
+                   For example pressing <Leader>< at position marked with |:
+                       (aaa|) bbb        --->    (aaa bbb|)
+                       |(aaa bbb)        --->    aaa |(bbb)
+
+    <Leader>J      Join two subsequent lists or strings. The first one must end
+                   before the cursor, the second one must start after the
+                   cursor position.
+                   For example pressing <Leader>J at position marked with |:
+                       (aaa)| (bbb)      --->    (aaa |bbb)
+                       "aaa"| "bbb"      --->    "aaa |bbb"
+
+    <Leader>O      Split ("Open") current list or string at the cursor position.
+                   Opposite of Join. Key O is selected because for the original
+                   Vim mapping J and O are also kind of opposites.
+                   For example pressing <Leader>O at position marked with |:
+                       (aaa |bbb)        --->    (aaa) |(bbb)
+                       "aaa|bbb"         --->    "aaa" |"bbb"
+
+    <Leader>W      Wrap the current symbol in a pair of parentheses. The cursor
+    <Leader>w(     is then positioned on the opening parenthesis, as wrapping
+                   is usually done because one wants to call a function with
+                   the symbol as parameter, so by pressing "a" one can enter
+                   the function name right after the newly inserted "(".
+                   For example pressing <Leader>W at position marked with |:
+                       (aaa b|bb ccc)    --->    (aaa |(bbb) ccc)
+
+    <Leader>w[     Wrap the current symbol in a pair of square brackets,
+                   similarly to <Leader>W.
+                   For example pressing <Leader>w[ at position marked with |:
+                       (aaa b|bb ccc)    --->    (aaa |[bbb] ccc)
+
+    <Leader>w{     Wrap the current symbol in a pair of curly braces,
+                   similarly to <Leader>W.
+                   For example pressing <Leader>w{ at position marked with |:
+                       (aaa b|bb ccc)    --->    (aaa |{bbb} ccc)
+
+    <Leader>w"     Wrap the current symbol in a pair of double quotes,
+                   similarly to <Leader>W.
+                   For example pressing <Leader>w" at position marked with |:
+                       (aaa b|bb ccc)    --->    (aaa "bbb|" ccc)
+
+    <Leader>S      Splice the current list into the containing list, i.e.
+                   remove the opening and closing parens. Opposite of wrap.
+                   For example pressing <Leader>S at position marked with |:
+                       (aaa (b|bb ccc) ddd)  --->    (aaa |bbb ccc ddd)
+
+    <Leader><Up>   Splice the current list into the containing list by deleting
+                   everything backward from the cursor position up to the
+                   opening paren.
+                   For example pressing <Leader><Up> at position marked with |:
+                       (aaa (bbb |ccc) ddd)  --->    (aaa |ccc ddd)
+
+    <Leader><Down> Splice the current list into the containing list by deleting
+                   everything forward from the cursor position up to the
+                   closing paren.
+                   For example pressing <Leader><Down> at position marked with |:
+                       (aaa (bbb| ccc) ddd)  --->    (aaa |bbb ddd)
+
+    <Leader>I      Raise the current symbol, i.e. replace the current list with
+                   the current symbol by deleting everything else (except the
+                   symbol) in the list, including the enclosing pair of parens.
+                   For example pressing <Leader>I at position marked with |:
+                       (aaa (b|bb ccc) ddd)  --->    (aaa |bbb ddd)
+
+    x  or  <Del>   When about to delete a (, ), [, ], or " and there are other
+                   characters inside, then just skip it to the right. When
+                   about to delete the closing part of the matched character
+                   with nothing inside, then the whole empty list is removed.
+                   When preceded by a <count> value then delete this many
+                   characters.
+
+    X              When about to delete a (, ), [, ], or " and there are other
+                   characters inside, then just skip it to the left. When
+                   about to delete the opening part of the matched character
+                   with nothing inside, then the whole empty list is removed.
+
+    D              Keep deleting characters towards the end of line,
+                   maintaining the balanced state, i.e. keep the number of
+                   opening and closing parens the same.
+
+    C              Same as 'D' but go to insert mode at the end.
+
+    s              Same as 'x' but go to insert mode at the end.
+
+    dd             Delete whole line by keeping the balanced state, i.e.
+                   keep the number of opening and closing parens the same.
+                   When preceded by a <count> value then delete this many
+                   lines.
+
+    cc             Same as 'dd' but go to insert mode at the end.
+
+    d{motion}      Delete text till {motion}. Keeps text balanced, so if the
+                   surrounded text contains unpaired matched characters then
+                   they are not removed.
+
+    c{motion}      Delete text till {motion} and start insert mode. Keeps text
+                   balanced just like d{motion}.
+
+    p              Put the text after the cursor with all unbalanced matched
+                   characters removed.
+
+    P              Put the text before the cursor with all unbalanced matched
+                   characters removed.
+
+
+Visual Mode:
+
+    (              Finds opening '(' of the current list and selects the whole
+                   list. Can be pressed repeatedly until the top level form
+                   selected.
+
+    )              Finds closing ')' of the current list and selects the whole
+                   list. Can be pressed repeatedly until the top level form
+                   selected.
+
+    d              Delete the current visual selection. Keeps text balanced,
+    x              so the the selection contains unpaired matched characters
+    <Del>          then they are not removed.
+
+    c              Delete the current visual selection and start insert mode.
+                   Keeps text balanced just like the 'd' command.
+
+    <Leader>W      Wrap the current visual selection in a pair of parentheses.
+    <Leader>w(     The visual selection is kept.
+
+    <Leader>w[     Wrap the current visual selection in a pair of square
+                   brackets. The visual selection is kept.
+
+    <Leader>w{     Wrap the current visual selection in a pair of curly braces.
+                   The visual selection is kept.
+
+    <Leader>w"     Wrap the current visual selection in a pair of double
+                   quotes. The visual selection is kept.
+
+
+Please note that if variable |g:paredit_shortmaps| is nonzero then the
+following normal mode mappings don't get a <Leader> prefix, they are mapped
+to existing (but infrequently used) Vim functions and instead the original Vim
+functions are mapped with the <Leader> prefix:
+
+                   <, >, J, O, W, S
+
+
+Vim has many built-in mappings for manipulating s-expressions. Here follows a
+list of useful commands, these are not defined by paredit.vim, they are
+available even when paredit mode is switched off.
+
+    %              Find the matching pair of the parenthesis the cursor is
+                   standing on.
+
+    d%             Delete till the matching parenthesis. Normally it is used
+                   when the cursor is standing on a parenthesis (works with
+                   square or curly braces as well). If not standing on a
+                   parenthesis then deletes left till the first opening paren,
+                   so this command may also be used to delete an s-expression
+                   that is right before the cursor.
+
+    daw            Delete a word. Can be used to delete a list element, the
+                   cursor may be placed anywhere in the element.
+
+    da(            Delete the innermost s-expression. The cursor may be placed
+                   anywhere inside the s-expression.
+
+    di(            Same as da( but does not delete the enclosing parens.
+
+
+===============================================================================
+PAREDIT OPTIONS                                               *paredit-options*
+
+|g:paredit_disable_clojure|  If defined, paredit is disabled for clojure files.
+
+|g:paredit_disable_ftindent| If defined, filetype indent files are not loaded.
+
+|g:paredit_disable_ftplugin| If defined, filetype plugins are not loaded.
+
+|g:paredit_disable_hy|       If defined, paredit is disabled for hy files.
+
+|g:paredit_disable_lisp|     If defined, paredit is disabled for lisp files.
+
+|g:paredit_disable_scheme|   If defined, paredit is disabled for scheme files.
+
+|g:paredit_disable_shen|     If defined, paredit is disabled for shen files.
+
+|g:paredit_disable_janet|    If defined, paredit is disabled for janet files.
+
+|g:paredit_electric_return|  If nonzero, electric return feature is enabled.
+
+|g:paredit_map_func|         Specifies a function to be used for defining
+                             custom keybindings for Paredit
+
+|g:paredit_unmap_func|       Specifies a function to be used for removing
+                             custom keybindings for Paredit
+
+|g:paredit_smartjump|        If nonzero, '(' and ')' also target square brackets
+                             and curly braces when editing Clojure or Scheme.
+
+|g:paredit_leader|           Custom <Leader> setting for Paredit.
+
+|g:paredit_matchlines|       Number of lines to look backward and forward
+                             when checking if the current form is balanced.
+
+|g:paredit_mode|             If nonzero, paredit mode is switched on.
+
+|g:paredit_shortmaps|        If nonzero, paredit is remapping some one-letter
+                             Vim commands that are not frequently used.
+
+
+                                                    *g:paredit_disable_clojure*
+                                                       *g:paredit_disable_lisp*
+                                                     *g:paredit_disable_scheme*
+                                                       *g:paredit_disable_shen*
+                                                      *g:paredit_disable_janet*
+If defined then paredit is disabled for the given file type. Useful to use
+a different plugin for a specific file type, but keep using paredit for the
+others.
+
+                                                   *g:paredit_disable_ftindent*
+                                                   *g:paredit_disable_ftplugin*
+If defined then filetype indent files or plugins are not loaded. By default
+paredit triggers 'filetype plugin on' and 'filetype indent on', these options
+disable the corresponding feature.
+
+                                                    *g:paredit_electric_return*
+                                                                      *newline*
+                                                              *carriage-return*
+If nonzero then "electric return" feature is enabled. This means that when an
+<Enter> is pressed before a closing paren in insert mode, paredit will actually
+insert two newlines creating an empty line. The extra newline is consumed at
+pressing the next closing paren. This feature allows linewise editing of the
+subform entered in the next (empty) line.
+In other words <Enter> "opens" parenthetical expressions while editing, ')'
+"closes" them.
+Please note that electric return is disabled for the REPL buffer if Slimv
+option |g:slimv_repl_simple_eval| is nonzero. In this case <Enter> is used
+to send the command line to the swank server for evaluation.
+
+Please find a video demonstration of the electric return feature here:
+https://kovisoft.github.io/slimv-tutorial/openparen.gif
+
+                                                           *g:paredit_map_func*
+This option specifies a function to be used for defining custom keybindings
+for Paredit. The function takes no argument and returns no value.
+By default function 'PareditMapKeys' is called.
+
+                                                         *g:paredit_unmap_func*
+This option specifies a function to be used for removing custom keybindings
+for Paredit. The function takes no argument and returns no value.
+By default function 'PareditUnmapKeys' is called.
+
+                                                          *g:paredit_smartjump*
+If nonzero, this option changes the behavior of '(' and ')' in normal and visual
+modes when editing Clojure or Scheme. Rather than jumping to nearest open or close
+parenthesis, instead the cursor will jump to the nearest '(', '[', or '{' if
+you press '(', and it will jump to the nearest ')', ']', or '}' if you press
+')'. This option makes it much easier to navigate nested Clojure data
+structures. It does nothing if the filetype is not clojure or Scheme.
+
+                                                             *g:paredit_leader*
+This option allows a custom <Leader> setting for the Paredit keybindings.
+By default it has the same value as |mapleader|. If neither g:paredit_leader
+nor mapleader are defined then the default <Leader> is "," in Paredit.
+Example:
+    let g:paredit_leader = '\'
+If this is set in the .vimrc then Wrap will be mapped to \W instead of ,W.
+
+There is a separate |g:slimv_leader| option for the general Slimv keybindings.
+
+                                                         *g:paredit_matchlines*
+Number of lines to look backward and forward when checking if the current
+top level form is balanced in paredit mode. Default is 100.
+
+                                                               *g:paredit_mode*
+If nonzero then paredit mode is switched on, i.e. the plugin tries to keep the
+balanced state of parens. This is the default behaviour.
+
+                                                          *g:paredit_shortmaps*
+If nonzero, paredit is remapping some one-letter normal mode Vim commands that
+are not frequently used. These are <, >, J, O, W, S. The original function of
+these maps then can be reached via <Leader> (which is the "," character
+by default in Paredit).
+Otherwise these paredit functions can be reached via <Leader> maintaining the
+original functions of these keys.
+
+
+===============================================================================
+vim:tw=80:et:wrap:ft=help:norl:
