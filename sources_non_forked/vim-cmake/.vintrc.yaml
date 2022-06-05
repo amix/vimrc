@@ -1,0 +1,11 @@
+cmdargs:
+  verbose: true
+  severity: style_problem
+  stat: true
+  color: true
+  env:
+    neovim: true
+
+policies:
+  ProhibitImplicitScopeVariable:
+    enabled: true

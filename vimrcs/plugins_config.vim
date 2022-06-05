@@ -208,7 +208,7 @@ inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
 " => Vim-autoformat
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:python3_host_prog="/usr/bin/python3"
-autocmd BufWrite *  :Autoformat
+"autocmd BufWrite *  :Autoformat
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Rainbow Parentheses

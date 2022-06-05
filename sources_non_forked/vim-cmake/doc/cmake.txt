@@ -1,0 +1,351 @@
+*cmake.txt*	Vim/Neovim plugin for working with CMake projects
+*cmake* *vim-cmake*
+
+Maintainer:	Carlo Delle Donne <https://github.com/cdelledonne>
+Version:	0.7.1
+
+==============================================================================
+CONTENTS						*cmake-contents*
+
+1. Intro .............................................. |cmake-intro|
+2. Usage .............................................. |cmake-usage|
+3. Commands ........................................... |cmake-commands|
+   3.1 Generating a project build system .............. |cmake-generate|
+   3.2 Building and installing a project .............. |cmake-build|
+   3.3 Switch between build configurations............. |cmake-switch|
+   3.4 Opening and closing the CMake console .......... |cmake-console|
+   3.5 Stopping the running command ................... |cmake-stop|
+4. Mappings ........................................... |cmake-mappings|
+   4.1 Global <Plug> mappings ......................... |cmake-plug-mappings|
+   4.2 CMake console window key mappings .............. |cmake-key-mappings|
+5. Events ............................................. |cmake-events|
+6. Quickfix list ...................................... |cmake-quickfix|
+7. Configuration ...................................... |cmake-configuration|
+8. Contributing ....................................... |cmake-contributing|
+9. License ............................................ |cmake-license|
+
+==============================================================================
+INTRO							*cmake-intro*
+
+Vim-CMake is a plugin for building CMake projects inside of Vim/Neovim, with a
+nice visual feedback.
+
+Features~
+
+- Visual experience, shows CMake output in a console-like window
+- Slick management of build configurations
+- Autocompletion for build targets and build configurations
+- Quickfix list population after each build
+- Airline/statusline status information, including current build configuration
+- Plug-and-play, but configurable
+- Written in Vimscript
+
+Requirements~
+
+- Vim with `+terminal`, or Neovim >= 0.5
+- Under Windows, only Neovim is supported at the moment
+
+==============================================================================
+USAGE							*cmake-usage*
+
+Run |:CMakeGenerate| from the top-level CMake source directory to generate a
+build system for the project.  Then, run |:CMakeBuild| to build the project.
+The built files will end up in the binary directory (out-of-source build).  To
+switch between build configurations, run |:CMakeSwitch| {config}.
+
+With Vim-CMake, you can easily manage build configurations (Debug, Release,
+etc.), build specific targets and control build options, and fix errors using
+Vim's |quickfix| feature.  Read on for a detailed explanation of commands,
+mappings and configuration options.
+
+==============================================================================
+COMMANDS						*cmake-commands*
+
+Vim-CMake defines a small set of CMake-related commands.
+
+------------------------------------------------------------------------------
+							*cmake-generate*
+Generating a project build system~
+							*:CMakeGenerate*
+:CMakeGenerate[!] [config] [opts]
+			Generate project build system for a CMake project.  If
+			[!] is supplied, the existing build system is removed
+			before generating a new one.  [config] specifies the
+			build configuration to generate.  [opts] are passed
+			directly to CMake.
+
+By default, the build system is generated for the build configuration
+specified by `g:cmake_default_config` (see |cmake-configuration|).  For
+instance, if the default build configuration is "Debug", `cmake` will be
+passed `-D CMAKE_BUILD_TYPE=Debug`, and the build system will be generated in
+`Debug/`, relative to `g:cmake_build_dir_location` (see
+|cmake-configuration|).  That will result in the following `cmake` command:
+>
+	cmake -D CMAKE_BUILD_TYPE=Debug [...] \
+		-S <project_root> -B <build_dir_location>/Debug
+<
+To generate a build system for another configuration, e.g., "Release", run
+>
+	:CMakeGenerate Release [...]
+<
+which will result in the following `cmake` command:
+>
+	cmake -D CMAKE_BUILD_TYPE=Release [...] \
+		-S <project_root> -B <build_dir_location>/Release
+<
+To generate a build system for a configuration, while passing a different
+`CMAKE_BUILD_TYPE` to `cmake`, run
+>
+	:CMakeGenerate SomeConfigName -D CMAKE_BUILD_TYPE=Release [...]
+<
+which will result in the following `cmake` command:
+>
+	cmake -D CMAKE_BUILD_TYPE=Release [...] \
+		-S <project_root> -B <build_dir_location>/SomeConfigName
+<
+Use |:CMakeSwitch| to switch between build configurations.
+
+							*:CMakeClean*
+:CMakeClean		Remove project build system relative to the current
+			build configuration.
+
+------------------------------------------------------------------------------
+							*cmake-build*
+Building and installing a project~
+							*:CMakeBuild*
+:CMakeBuild[!] [opts] [target] [-- [nativeopts]]
+			Build a project using the generated build system
+			from the current build configuration, and populate a
+			quickfix list (see |cmake-quickfix|).  If [!] is
+			supplied, the existing build files are cleaned (using
+			CMake's `--clean-first` option) before building the
+			project.  [opts] are passed directly to CMake.
+			[target] is the target to build instead of the default
+			target.  [nativeopts] are passed directly to the
+			native tool.
+
+For instance, to build the target `mytarget` using a maximum of 4 processes
+and passing the `VERBOSE=1` option to the native tool, run
+>
+	:CMakeBuild --parallel 4 mytarget -- VERBOSE=1
+<
+Vim-CMake provides autocompletion for build targets.  Just press <TAB> at any
+point after `:CMakeBuild` in the command line to trigger autocompletion, e.g.
+>
+	:CMakeBuild --parallel 4 <TAB>
+<
+							*:CMakeInstall*
+:CMakeInstall		Install a project from the current build
+			configuration.
+
+------------------------------------------------------------------------------
+							*cmake-switch*
+Switching between build configurations~
+							*:CMakeSwitch*
+:CMakeSwitch {config}   Switch to build configuration {config}.  The build
+			configuration must exist, that is, there has to be a
+			project build system (for instance generated with
+			|:CMakeGenerate|) in the directory {config}.
+
+For instance, to switch to an existing configuration called "Release", run
+>
+	:CMakeSwitch Release
+<
+The default build configuration on start-up is specified by
+`g:cmake_default_config` (see |cmake-configuration|).  Use |:CMakeGenerate| to
+generate a build configuration.
+
+Vim-CMake provides autocompletion for existing build configurations.  Press
+<TAB> after `:CMakeSwitch` in the command line to trigger autocompletion.
+
+------------------------------------------------------------------------------
+							*cmake-console*
+Opening and closing the CMake console~
+							*:CMakeOpen*
+:CMakeOpen		Open the CMake console window.
+
+							*:CMakeClose*
+:CMakeClose		Close the CMake console window.
+
+------------------------------------------------------------------------------
+							*cmake-stop*
+Stopping the running command~
+							*:CMakeStop*
+:CMakeStop		Stop the command that is currently running in the
+			Vim-CMake console.  Stopping a command does not
+			trigger the associated events (see |cmake-events|).
+
+==============================================================================
+MAPPINGS						*cmake-mappings*
+
+In addition to commands, Vim-CMake defines some global <Plug> mappings and
+some key mappings specific to the CMake console window.
+
+------------------------------------------------------------------------------
+							*cmake-plug-mappings*
+Global <Plug> mappings~
+
+<Plug>(CMakeGenerate)	Equivalent to `:CMakeGenerate`.
+
+<Plug>(CMakeClean)	Equivalent to `:CMakeClean`.
+
+<Plug>(CMakeBuild)	Equivalent to `:CMakeBuild`.
+
+<Plug>(CMakeBuildTarget)
+			Inserts `:CMakeBuild` in the command line, and leaves
+			the cursor there.
+
+<Plug>(CMakeInstall)	Equivalent to `:CMakeInstall`.
+
+<Plug>(CMakeSwitch)	Inserts `:CMakeSwitch` in the command line, and leaves
+			the cursor there.
+
+<Plug>(CMakeOpen)	Equivalent to `:CMakeOpen`.
+
+<Plug>(CMakeClose)	Equivalent to `:CMakeClose`.
+
+<Plug>(CMakeStop)	Equivalent to `:CMakeStop`.
+
+Example usage of the <Plug> mappings:
+>
+	nmap <leader>cg <Plug>(CMakeGenerate)
+	nmap <leader>cb <Plug>(CMakeBuild)
+	nmap <leader>ci <Plug>(CMakeInstall)
+	nmap <leader>cs <Plug>(CMakeSwitch)
+	nmap <leader>cq <Plug>(CMakeClose)
+<
+------------------------------------------------------------------------------
+							*cmake-key-mappings*
+CMake console window key mappings~
+
+cg			Run `:CMakeGenerate`.
+
+cb			Run `:CMakeBuild`.
+
+ci			Run `:CMakeInstall`.
+
+cq			Close the CMake console window.
+
+<C-C>			Stop the running command.
+
+==============================================================================
+EVENTS							*cmake-events*
+
+To customize the behaviour after a `:CMakeBuild` command has finished, Vim-CMake
+defines some user events.
+
+`CMakeBuildFailed`	Triggered after a build has failed
+`CMakeBuildSucceeded`	Triggered after a build has succeeded
+
+Example usage of `CMakeBuildFailed` to jump to the first error
+>
+	let g:cmake_jump_on_error = 0 " We do not want to focus the console
+	augroup vim-cmake-group
+	autocmd User CMakeBuildFailed :cfirst
+	augroup END
+<
+Example usage of `CMakeBuildSucceeded` to close the Vim-CMake console
+>
+	augroup vim-cmake-group
+	autocmd! User CMakeBuildSucceeded CMakeClose
+	augroup END
+<
+==============================================================================
+QUICKFIX LIST						*cmake-quickfix*
+
+After each build (e.g. run with |:CMakeBuild|), Vim-CMake populates a quickfix
+list to speedup the edit-compile-run cycle, similarly to when running |:make|
+in Vim/Neovim.  Upon an unsuccessful build, just use the standard quickfix
+commands to open the list of errors (e.g. |:copen|) and jump between errors
+(e.g. |:cfirst|, |:cnext|).
+
+Build errors are parsed using 'errorformat'.
+
+==============================================================================
+CONFIGURATION						*cmake-configuration*
+
+Vim-CMake has sensible defaults, but aims to be configurable.  A list of
+configuration options, with default values, follows.
+
+g:cmake_command (default: `'cmake'`)
+			Name (or full path) of the CMake executable.
+
+g:cmake_default_config (default: `'Debug'`)
+			Default build configuration on start-up.
+
+g:cmake_build_dir_location (default: `'.'`)
+			Location of the build directory, relative to the
+			project root.  Each build configuration creates a
+			build directory at this location.
+
+g:cmake_generate_options (default: `[]`)
+			List of options to pass to CMake by default when
+			running |:CMakeGenerate|.
+
+g:cmake_build_options (default: `[]`)
+			List of options to pass to CMake by default when
+			running |:CMakeBuild|.
+
+g:cmake_native_build_options (default: `[]`)
+			List of options to pass to the native tool by default
+			when running |:CMakeBuild|.
+
+g:cmake_console_size (default: `15`)
+			Size of the CMake console window.
+
+g:cmake_console_position (default: `'botright'`)
+			Command modifier to use when opening the CMake console
+			window (see |:botright|).
+
+g:cmake_console_echo_cmd (default: `1`)
+			Echo running command in the Vim-CMake console, before
+			showing the output for the command itself.
+
+g:cmake_jump (default: `0`)
+			Whether to jump to the CMake console window when
+			running a `:CMake` command.
+
+g:cmake_jump_on_completion (default: `0`)
+			Whether to jump to the CMake console window when a
+			`:CMake` command completes.
+
+g:cmake_jump_on_error (default: `1`)
+			Whether to jump to the CMake console window when a
+			`:CMake` command returns an error.
+
+g:cmake_link_compile_commands (default: `0`)
+			Whether to create a symlink in the CMake source
+			directory to the `compile_commands.json` file.  If
+			this is enabled, the CMake configuration options
+			`CMAKE_EXPORT_COMPILE_COMMANDS` will be set to `ON`
+			(unless explicitly set to something else in the
+			command-line arguments to `:CMakeGenerate`).  NOTE:
+			under MS-Windows, creating symlinks only work if the
+			"Developer mode" is enabled, or if running the console
+			as an administrator.
+
+g:cmake_root_markers (default: `['.git', '.svn']`)
+			List of file/directory names used to locate the
+			project root.  When Vim-CMake is loaded, it looks for
+			the project root starting from the CWD.
+
+g:cmake_log_file (default: `''`)
+			Path to a file where to store the log of Vim-CMake.
+			An empty value disables logging.
+
+==============================================================================
+CONTRIBUTING						*cmake-contributing*
+
+Feedback and feature requests are appreciated.  Bug reports and pull requests
+are very welcome.  Check the Contributing Guidelines for how to write a
+feature request, post an issue or submit a pull request:
+
+https://github.com/cdelledonne/vim-cmake/blob/master/CONTRIBUTING.md
+
+==============================================================================
+LICENSE							*cmake-license*
+
+MIT license.  Copyright (c) 2020-2022 Carlo Delle Donne.
+
+------------------------------------------------------------------------------
+vim:tw=78:ts=8:noet:ft=help:norl:

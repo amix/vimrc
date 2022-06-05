@@ -1,0 +1,21 @@
+version: 2.1
+
+jobs:
+  lint:
+    docker:
+      - image: circleci/python:latest
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: Lint
+          command: |
+            pip install vim-vint
+            vint .
+
+workflows:
+  lint:
+    jobs:
+      - lint
