@@ -335,9 +335,9 @@ function! s:Enable(initialize)
     else
       autocmd DirChanged        * call s:Autocmd('DirChanged', get(v:event, 'cwd', ''))
       autocmd TermOpen          * call s:Autocmd('TermOpen', +expand('<abuf>'))
-      autocmd CursorMoved       * call coc#float#nvim_refresh_scrollbar(win_getid())
       autocmd WinEnter          * call coc#float#nvim_win_enter(win_getid())
     endif
+    autocmd CursorMoved         list:///* call coc#list#select(bufnr('%'), line('.'))
     if exists('##WinClosed')
       autocmd WinClosed         * call coc#float#on_close(+expand('<amatch>'))
       autocmd WinClosed         * call coc#notify#on_close(+expand('<amatch>'))
@@ -425,6 +425,8 @@ function! s:Hi() abort
   hi default link CocHintHighlight       CocUnderline
   hi default link CocDeprecatedHighlight CocStrikeThrough
   hi default link CocUnusedHighlight     CocFadeOut
+  hi default link CocListLine            CursorLine
+  hi default link CocListSearch          CocSearch
   hi default link CocListMode            ModeMsg
   hi default link CocListPath            Comment
   hi default link CocHighlightText       CursorColumn
@@ -484,6 +486,9 @@ function! s:Hi() abort
   endif
   if !exists('*sign_getdefined') || empty(sign_getdefined('CocCurrentLine'))
     sign define CocCurrentLine linehl=CocMenuSel
+  endif
+  if !exists('*sign_getdefined') || empty(sign_getdefined('CocListCurrent'))
+    sign define CocListCurrent linehl=CocListLine
   endif
   if !exists('*sign_getdefined') || empty(sign_getdefined('CocTreeSelected'))
     sign define CocTreeSelected linehl=CocTreeSelected

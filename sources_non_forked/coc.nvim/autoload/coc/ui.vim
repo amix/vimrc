@@ -1,6 +1,8 @@
 let s:is_vim = !has('nvim')
 let s:is_win = has('win32') || has('win64')
 let s:is_mac = has('mac')
+let s:sign_api = exists('*sign_getplaced') && exists('*sign_place')
+let s:sign_groups = []
 
 function! coc#ui#quickpick(title, items, cb) abort
   if exists('*popup_menu')
@@ -373,4 +375,52 @@ function! coc#ui#safe_rename(bufnr, oldPath, newPath, write) abort
   call winrestview(view)
   call win_gotoid(winid)
   return bufnr
+endfunction
+
+function! coc#ui#sign_unplace() abort
+  if exists('*sign_unplace')
+    for group in s:sign_groups
+      call sign_unplace(group)
+    endfor
+  endif
+endfunction
+
+function! coc#ui#update_signs(bufnr, group, signs) abort
+  if !s:sign_api || !bufloaded(a:bufnr)
+    return
+  endif
+  if len(a:signs)
+    call add(s:sign_groups, a:group)
+  endif
+  let current = get(get(sign_getplaced(a:bufnr, {'group': a:group}), 0, {}), 'signs', [])
+  let exists = []
+  let unplaceList = []
+  for item in current
+    let index = 0
+    let placed = 0
+    for def in a:signs
+      if def['name'] ==# item['name'] && def['lnum'] == item['lnum']
+        let placed = 1
+        call add(exists, index)
+        break
+      endif
+      let index = index + 1
+    endfor
+    if !placed
+      call add(unplaceList, item['id'])
+    endif
+  endfor
+  for idx in range(0, len(a:signs) - 1)
+    if index(exists, idx) == -1
+      let def = a:signs[idx]
+      let opts = {'lnum': def['lnum']}
+      if has_key(def, 'priority')
+        let opts['priority'] = def['priority']
+      endif
+      call sign_place(0, a:group, def['name'], a:bufnr, opts)
+    endif
+  endfor
+  for id in unplaceList
+    call sign_unplace(a:group, {'buffer': a:bufnr, 'id': id})
+  endfor
 endfunction

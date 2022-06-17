@@ -1,0 +1,1258 @@
+*coc-config.txt*				NodeJS client for Vim & Neovim.
+
+CONTENTS
+
+Http 						|coc-config-http|
+Completion 					|coc-config-suggest|
+Document highlight 				|coc-config-documentHighlight|
+Colors 						|coc-config-colors|
+Links 						|coc-config-links|
+Diagnostics 					|coc-config-diagnostic|
+Signature 					|coc-config-signature|
+Cursors 					|coc-config-cursors|
+Refactor 					|coc-config-refactor|
+Hover 						|coc-config-hvoer|
+Dialog 						|coc-config-dialog|
+Notification 					|coc-config-notification|
+CodeLens 					|coc-config-codelens|
+Workspace 					|coc-config-workspace|
+List 						|coc-config-list|
+Preferences 					|coc-config-preferences|
+Semantic tokens 				|coc-config-semanticTokens|
+Tree 						|coc-config-tree|
+Outline 					|coc-config-outline|
+Call Hierarchy 					|coc-config-callHierarchy|
+Npm 						|coc-config-npm|
+Float 						|coc-config-float|
+Language server 				|coc-config-languageserver|
+
+==============================================================================
+BUILTIN CONFIGURATIONS 					*coc-config*
+
+Builtin configurations of coc.nvim, it's recommended to use `coc-json`
+extension for completion and validation support.
+
+------------------------------------------------------------------------------
+Http request~
+							*coc-config-http*
+"http.proxy"						*coc-config-http-proxy*
+
+	HTTP proxy URI, used for extensions that send request, default: `""`
+
+"http.proxyStrictSSL"					*coc-config-http-proxyStrictSSL*
+
+	Controls whether the proxy server certificate should be verified
+	against the list of supplied CAs, default: `true`
+
+"http.proxyAuthorization"				*coc-config-http-proxyAuthorization*
+
+	The value to send as the `Proxy-Authorization` header for every
+	network request.
+
+"http.proxyCA"						*coc-config-http-proxyCA*
+
+	CA (file) to use as Certificate Authority.
+
+------------------------------------------------------------------------------
+Completion related~
+							*coc-config-suggest*
+"suggest.selection"					*coc-config-suggest-selection*
+
+	Controls how suggestions are pre-selected when showing the suggest
+	list. Default: "none".
+
+	Could be "none", "recentlyUsed" and "recentlyUsedByPrefix".
+
+	Note: the selected item would be moved to first place when
+	"suggest.enablePreselect" is not enabled.
+
+"suggest.enablePreselect"				*coc-config-suggest-enablePreselect*
+
+	Enable preselect feature on Neovim, default: `false`
+
+"suggest.labelMaxLength"				*coc-config-suggest-labelMaxLength*
+
+	Maximum length of label shown in 'pum', default: `200`
+
+"suggest.enablePreview"					*coc-config-suggest-enablePreview*
+
+	Add preview option to 'completeopt', default: `false`
+
+"suggest.floatEnable"					*coc-config-suggest-floatEnable*
+
+	Enable floating window for documentation when possible, default: `true`
+
+"suggest.floatConfig"					*coc-config-suggest-floatConfig*
+
+	Configuration of floating window/popup, see |coc-config-float|.
+	Excludes properties: "title", "close" and "maxHeight".
+
+"suggest.detailMaxLength"				*coc-config-suggest-detailMaxLength*
+
+	Max length of detail that will be shown in popup menu, default: `100`
+
+"suggest.detailField"					*coc-config-suggest-detailField*
+
+	Where to add the detail in complete item when it's less than max
+	length, default: `"preview"` when floating documentation is enabled.
+
+	Valid options: ["abbr", "menu", "preview"]
+
+"suggest.autoTrigger"					*coc-config-suggest-autoTrigger*
+
+	How should completion be triggered, default: `"always"`
+
+	Valid options: ["always", "trigger", "none"]
+
+	- `always`: trigger suggest on word characters and trigger
+	  characters.
+	- `trigger`: trigger suggest on trigger characters only.
+	- `none`: no auto trigger at all.
+
+"suggest.languageSourcePriority"			*coc-config-suggest-languageSourcePriority*
+
+	Priority of language sources, default: `99`
+
+"suggest.disableKind"					*coc-config-suggest-disableKind*
+
+	Remove kind field from Vim complete item, default: `false`
+
+"suggest.disableMenu"					*coc-config-suggest-disableMenu*
+
+	Remove menu field from Vim complete item, default: `false`
+
+"suggest.snippetIndicator"				*coc-config-suggest-snippetIndicator*
+
+	The character used in completion item abbreviation to indicate it
+	expands as code snippet, default: `"~"`
+
+"suggest.maxCompleteItemCount"				*coc-config-suggest-maxCompleteItemCount*
+
+	Maximum number of complete items shown in Vim, default: `50`
+
+"suggest.preferCompleteThanJumpPlaceholder"		*coc-config-suggest-preferCompleteThanJumpPlaceholder*
+
+	Confirm completion instead of jump to next placeholder when completion
+	activates, default: `false`
+
+"suggest.snippetsSupport"				*coc-config-suggest-snippetsSupport*
+
+	Enable snippets expands expand on confirm completion. When set to
+	`false` coc.nvim would set language client option:
+	`CompletionClientCapabilities.completionItem.snippetSupport` to
+	`false` as well.
+
+	Note: the language server may still send completion items with
+	snippets when falsy.
+
+"suggest.fixInsertedWord"				*coc-config-suggest-fixInsertedWord*
+
+	Inserted word replaces the next one, default: `true`
+
+"suggest.localityBonus"					*coc-config-suggest-localityBonus*
+
+	Boost suggestions that appear closer to the cursor position,
+	default: `true`
+
+"suggest.triggerAfterInsertEnter"			*coc-config-suggest-triggerAfterInsertEnter*
+
+	Trigger completion after |InsertEnter|. Requires "suggest.autoTrigger"
+	to be set, default: `false`
+
+"suggest.timeout"					*coc-config-suggest-timeout*
+
+	Timeout for completion (unit: milliseconds), default: `5000`
+
+"suggest.minTriggerInputLength"				*coc-config-suggest-minTriggerInputLength*
+
+	Number of characters in the current word after which the completion
+	triggers, default: `1`
+
+"suggest.triggerCompletionWait"				*coc-config-suggest-triggerCompletionWait*
+
+	Delay between typing the trigger character and completion start which
+	initiates server synchronization, default: `0`
+
+"suggest.acceptSuggestionOnCommitCharacter"		*coc-config-suggest-acceptSuggestionOnCommitCharacter*
+
+	The server provides a set of commit characters: these characters can
+	trigger completion item acceptance. This also inserts commit character
+	after the completion item text. Requires `CompleteChanged` event to work,
+	default: `false`
+
+"suggest.noselect"					*coc-config-suggest-noselect*
+
+	Prevent Vim from selecting the first item on completion start,
+	default: `true`
+
+"suggest.keepCompleteopt"				*coc-config-suggest-keepCompleteopt*
+
+	When enabled, 'completeopt' is not overridden during completion. Won't
+	work if 'completeopt' doesn't includes 'noinsert' and 'noselect' which
+	are required by auto completion, default: `false`
+
+"suggest.lowPrioritySourceLimit"			*coc-config-suggest-lowPrioritySourceLimit*
+
+	Max items count for source priority lower than `90`.
+
+"suggest.highPrioritySourceLimit"			*coc-config-suggest-highPrioritySourceLimit*
+
+	Max items count for source priority bigger than or equal to `90`.
+
+"suggest.disableMenuShortcut"				*coc-config-suggest-disableMenuShortcut*
+
+	Disable shortcut of completion source in menu, default: `false`
+
+"suggest.removeDuplicateItems"				*coc-config-suggest-removeDuplicateItems*
+
+	Remove completion items with duplicated word for all sources, snippet
+	items are excluded, default: `false`
+
+"suggest.defaultSortMethod"				*coc-config-suggest-defaultSortMethod*
+
+	Default sorting behavior for suggested completion items, default:
+	`length`
+
+"suggest.invalidInsertCharacters"			*coc-config-suggest-invalidInsertCharacters*
+
+	Invalid character for strip valid word when inserting text of complete
+	item, default: ` ,(,<,{,[,\r,\n`
+
+"suggest.asciiCharactersOnly"				*coc-config-suggest-asciiCharactersOnly*
+
+	Trigger suggest with ASCII characters only, default: `false`
+
+"suggest.completionItemKindLabels"			*coc-config-suggest-completionItemKindLabels*
+
+	Set custom labels to completion item kinds, default: `{}`.
+
+	Example configuration: with https://nerdfonts.com:  >
+
+	  "suggest.completionItemKindLabels": {
+		"keyword": "\uf1de",
+		"variable": "\ue79b",
+		"value": "\uf89f",
+		"operator": "\u03a8",
+		"constructor": "\uf0ad",
+		"function": "\u0192",
+		"reference": "\ufa46",
+		"constant": "\uf8fe",
+		"method": "\uf09a",
+		"struct": "\ufb44",
+		"class": "\uf0e8",
+		"interface": "\uf417",
+		"text": "\ue612",
+		"enum": "\uf435",
+		"enumMember": "\uf02b",
+		"module": "\uf40d",
+		"color": "\ue22b",
+		"property": "\ue624",
+		"field": "\uf9be",
+		"unit": "\uf475",
+		"event": "\ufacd",
+		"file": "\uf723",
+		"folder": "\uf114",
+		"snippet": "\ue60b",
+		"typeParameter": "\uf728",
+		"default": "\uf29c"
+	}
+<
+------------------------------------------------------------------------------
+Document highlight~
+							*coc-config-documentHighlight*
+"documentHighlight.priority"				*coc-config-documentHighlight-priority*
+
+	Match priority used by document highlight, see ':h matchadd'.
+	Default `-1`
+
+"documentHighlight.timeout"				*coc-config-documentHighlight-timeout*
+
+	Timeout for document highlight, in milliseconds.
+	Default `500`
+
+------------------------------------------------------------------------------
+Colors highlight~
+							*coc-config-colors*
+"colors.filetypes"					*coc-config-colors-filetypes*
+
+	Filetypes that should enable colors highlight feature.
+	Use `*` for all filetypes.
+
+	Default: `[]`
+
+------------------------------------------------------------------------------
+Links~
+							*coc-config-links*
+"links.tooltip"						*coc-config-links-tooltip*
+
+	Show tooltip of link under cursor on CursorHold, neovim only.
+	Default: `false`
+
+------------------------------------------------------------------------------
+Diagnostics~
+							*coc-config-diagnostic*
+"diagnostic.enable"					*coc-config-diagnostic-enable*
+
+	Display diagnostics, default: `true`
+
+"diagnostic.autoRefresh"				*coc-config-diagnostic-autoRefresh*
+
+	Enable automatically refresh diagnostics, use
+	|CocAction('diagnosticRefresh')| action to refresh diagnostics when it's
+	disabled, default: `true`
+
+"diagnostic.refreshOnInsertMode"			*coc-config-diagnostic-refreshOnInsertMode*
+
+	Refresh diagnostics when in insert mode, default: `false`
+
+"diagnostic.displayByAle"				*coc-config-diagnostic-displayByAle*
+
+	Use ALE for displaying diagnostics. This will disable coc.nvim for
+	displaying diagnostics. Restart to make changes take the effect,
+	default: `false`
+
+"diagnostic.level"					*coc-config-diagnostic-level*
+
+	Filter diagnostics by severity level (affect both UI and diagnostic
+	list), default: `"hint"`
+
+	Valid options: ["hint", "information", "warning", "error"]
+
+"diagnostic.highlighLimit"				*coc-config-diagnostic-highlighLimit*
+
+	Limit count for highlighted diagnostics, too many diagnostic
+	highlights could make vim stop responding.
+
+	Default: `1000`
+
+"diagnostic.highlightPriority"				*coc-config-diagnostic-highlightPriority*
+
+	Priority for diagnostic highlights, works on vim8 and neovim >= 0.6.0
+
+	Default: `4096`
+
+"diagnostic.enableSign"					*coc-config-diagnostic-enableSign*
+
+	Enable signs for diagnostics, default: `true`
+
+"diagnostic.signLevel"					*coc-config-diagnostic-signLevel*
+
+	Filter diagnostics in sign column, default: `null`.
+
+"diagnostic.signPriority"				*coc-config-diagnostic-signPriority*
+
+	Priority of diagnostic sign, default to `10`, check |sign-priority|.
+
+"diagnostic.errorSign"					*coc-config-diagnostic-errorSign*
+
+	Sign of error diagnostics shown in the 'signcolumn', default: `">>"`
+
+"diagnostic.warningSign"				*coc-config-diagnostic-warningSign*
+
+	Sign of warning diagnostics shown in the 'signcolumn', default: `"⚠"`
+
+"diagnostic.infoSign"					*coc-config-diagnostic-infoSign*
+
+	Sign of info diagnostics shown in the 'signcolumn', default: `">>"`
+
+"diagnostic.hintSign"					*coc-config-diagnostic-hintSign*
+
+	Sign of hint diagnostics shown in the 'signcolumn', default: `">>"`
+
+
+"diagnostic.enableHighlightLineNumber"			*coc-config-diagnostic-enableHighlightLineNumber*
+
+	Enable highlighting line numbers for diagnostics, only works with
+	neovim and `diagnostic.enableSign` is true.
+
+	default: `true`
+
+"diagnostic.locationlistUpdate"				*coc-config-diagnostic-locationlistUpdate*
+
+	Update locationlist on diagnostics change, only works with
+	locationlist opened by :CocDiagnostics command and first window of
+	associated buffer.
+
+	default: `true`
+
+"diagnostic.locationlistLevel"				*coc-config-diagnostic-locationlistLevel*
+
+	Filter diagnostics in locationlist, default: `null`.
+
+"diagnostic.enableMessage"				*coc-config-diagnostic-enableMessage*
+
+	When to enable show messages of diagnostics.
+
+	Valid options: ["always","jump","never"], always means including
+	cursor hold and after jump to another diagnostic.
+
+	default: `"always"`
+
+"diagnostic.messageLevel"				*coc-config-diagnostic-messageLevel*
+
+	Filter diagnostic message in float window/popup, default: `null`.
+
+"diagnostic.checkCurrentLine"				*coc-config-diagnostic-checkCurrentLine*
+
+	Show all diagnostics of the current line if none of them are at the
+	current position, default: `false`
+
+"diagnostic.messageDelay"				*coc-config-diagnostic-messageDelay*
+
+	How long to wait (in milliseconds) before displaying the diagnostic
+	message with echo or float.
+
+	Default: `200`
+
+"diagnostic.messageTarget"				*coc-config-diagnostic-messageTarget*
+
+	Diagnostic message target, default: `"float"`
+
+	Valid options: ["echo", "float"]
+
+"diagnostic.format"					*coc-config-diagnostic-format*
+
+	Define the diagnostic message format.
+	Available parts: source, code, severity, message
+
+	Default: `[%source%code] [%severity] %message`
+
+"diagnostic.floatConfig"				*coc-config-diagnostic-floatConfig*
+
+	Configuration of floating window/popup, see |coc-config-float|.
+
+"diagnostic.filetypeMap"				*coc-config-diagnostic-filetypeMap*
+
+	A map between buffer filetype and the filetype assigned to diagnostics
+	in float window. To syntax highlight diagnostics with their parent
+	buffer type use `"default": "bufferType"`, default: `{}`
+
+"diagnostic.virtualText"				*coc-config-diagnostic-virtualText*
+
+	Use Neovim virtual text to display diagnostics, default: `false`
+
+"diagnostic.virtualTextLevel"				*coc-config-diagnostic-virtualTextLevel*
+
+	Filter diagnostic message in virtual text by level, default: `null`
+
+"diagnostic.virtualTextWinCol"				*coc-config-diagnostic-virtualTextWinCol*
+
+	Window column number to align virtual text, default: `null`
+
+"diagnostic.virtualTextCurrentLineOnly"			*coc-config-diagnostic-virtualTextCurrentLineOnly*
+
+	Only show virtualText diagnostic on current cursor line, default:
+	`true`
+
+"diagnostic.virtualTextPrefix"				*coc-config-diagnostic-virtualTextPrefix*
+
+	The prefix added for virtual text diagnostics, default: `" "`
+
+"diagnostic.virtualTextLines"				*coc-config-diagnostic-virtualTextLines*
+
+	The number of non-empty lines from a diagnostic to display, default: `3`
+
+"diagnostic.virtualTextLineSeparator"			*coc-config-diagnostic-virtualTextLineSeparator*
+
+	The text that will mark a line end from the diagnostic message,
+	default: `" \\ "`
+
+"diagnostic.separateRelatedInformationAsDiagnostics"	*coc-config-diagnostic-separateRelatedInformationAsDiagnostics*
+
+	Separate related information as diagnostics, default: `false`
+
+------------------------------------------------------------------------------
+Signature~
+							*coc-config-signature*
+"signature.enable"					*coc-config-signature-enable*
+
+	Enable signature help when trigger character typed. Requires service
+	restart on change, default: `true`
+
+"signature.floatConfig"					*coc-config-signature-floatConfig*
+
+	Configuration of floating window/popup for signature documents, see
+	|coc-config-float|.
+
+"signature.triggerSignatureWait"			*coc-config-signature-triggerSignatureWait*
+
+	Timeout for signature request trigger (milliseconds), default: `500`.
+	Change to higher value for slow Language Servers.
+
+"signature.target"					*coc-config-signature-target*
+
+	Target of signature help, use `"float"` when possible by default.
+
+	Valid options: ["float", "echo"]
+
+"signature.preferShownAbove"				*coc-config-signature-preferShownAbove*
+
+	Show signature help's floating window above cursor when possible.
+	Requires restart on change, default: `true`
+
+"signature.hideOnTextChange"				*coc-config-signature-hideOnTextChange*
+
+	Hide signature help's floating window when text changed. Requires
+	restart on change, default: `false`
+
+------------------------------------------------------------------------------
+Multiple cursors~
+							*coc-config-cursors*
+"cursors.cancelKey"					*coc-config-cursors-cancelKey*
+
+	Key used for cancel cursors session, default: `<esc>`
+
+"cursors.nextKey"					*coc-config-cursors-nextKey*
+
+	Key used for jump to next cursors position. , default: `<C-n>`
+
+"cursors.previousKey" 					*coc-config-cursors-previousKey*
+
+	Key used for jump to previous cursors position, default: `<C-p>`
+
+"cursors.wrapscan"					*coc-config-cursors-wrapscan*
+
+	Searches wrap around the first or last cursors range, default: `true`
+
+------------------------------------------------------------------------------
+Refactor buffer~
+							*coc-config-refactor*
+"refactor.saveToFile"					*coc-config-refactor-saveToFile*
+
+	Save changed buffer to file when write refactor buffer with ':noa wa'
+	command. set to false if you want save buffer by yourself.
+
+"refactor.openCommand"					*coc-config-refactor-openCommand*
+
+	Open command for refactor window, default: `vsplit`
+
+"refactor.beforeContext"				*coc-config-refactor-beforeContext*
+
+	Print num lines of leading context before each match, default: `3`
+
+"refactor.afterContext"					*coc-config-refactor-afterContext*
+
+	Print num lines of trailing context after each match, default: `3`
+
+"refactor.showMenu"					*coc-config-refactor-showMenu*
+
+	Refactor buffer local mapping to bring up menu for this chunk,
+	default: `<Tab>`
+
+------------------------------------------------------------------------------
+Hover~
+							*coc-config-hover*
+"hover.target"						*coc-config-hover-target*
+
+	Target to show hover information, default is floating window when
+	possible.
+
+	Valid options: ["preview", "echo", "float"]
+
+"hover.previewMaxHeight"				*coc-config-hover-previewMaxHeight*
+
+	Max height of preview window for hover, default: `12`
+
+"hover.floatConfig"					*coc-config-hover-floatConfig*
+
+	Configuration of floating window/popup for hover documents, see
+	|coc-config-float|.
+
+"hover.autoHide"					*coc-config-hover-autoHide*
+
+	Automatically hide hover float window on CursorMove or InsertEnter,
+	default `true`.
+
+------------------------------------------------------------------------------
+Dialog~
+							*coc-config-dialog*
+"dialog.maxWidth"					*coc-config-dialog-maxWidth*
+
+	Maximum width of dialog window.
+
+"dialog.maxHeight"					*coc-config-dialog-maxHeight*
+
+	Maximum height of dialog window.
+
+"dialog.rounded" 					*coc-config-dialog-rounded*
+
+	Use rounded border for dialog window, default `true`.
+
+"dialog.confirmKey"					*coc-config-dialog-confirmKey*
+
+	Confirm key for confirm selection used by menu and picker, you can
+	always use <esc> to cancel, default to `<cr>`.
+
+"dialog.pickerButtons"					*coc-config-dialog-pickerButtons*
+
+	Show buttons for picker dialog window/popup, default `true`.
+
+"dialog.pickerButtonShortcut"				*coc-config-dialog-pickerButtonShortcut*
+
+	Show shortcut in buttons of picker dialog window/popup, used when
+	dialog.pickerButtons is true, default `true`.
+
+"dialog.floatHighlight"					*coc-config-dialog-floatHighlight*
+
+	Highlight group for dialog window/popup, default to 'CocFloating'.
+
+"dialog.floatBorderHighlight"				*coc-config-dialog-floatBorderHighlight*
+
+	Highlight group for border of dialog window/popup, default to
+	'CocFloating'.
+
+"dialog.shortcutHighlight"				*coc-config-dialog-shortcutHighlight*
+
+	Highlight group for shortcut character in menu dialog, default to
+	'MoreMsg'
+
+------------------------------------------------------------------------------
+Notification~
+							*coc-config-notification*
+
+"notification.preferMenuPicker"  			*coc-config-notification-preferMenuPicker*
+
+	Use menu picker for message notifications with actions, default
+	`false`.
+
+"notification.maxWidth"					*coc-config-notification-maxWidth*
+
+	Maximum content width of notification dialog, default to `60`.
+
+"notification.maxHeight"				*coc-config-notification-maxHeight*
+
+	Maximum content height of notification dialog, default to `10`.
+
+"notification.disabledProgressSources"			*coc-config-notification-disabledProgressSources*
+
+	Sources that should be disabled for message progress, use "*" to
+	disable all message only progress notifications, default to `[]`
+
+	Source name could be extension id or `language-client-{id}`.
+
+"notification.minProgressWidth" 			*coc-config-notification-minProgressWidth*
+
+	Minimal with of progress notification.
+
+"notification.highlightGroup"				*coc-config-notification-highlightGroup*
+
+	Highlight group of notification dialog, default to `CocFloating`.
+
+"notification.winblend" 				*coc-config-notification-winblend*
+
+	Winblend option of notification window, neovim only, default `30`.
+
+"notification.border" 					*coc-config-notification-border*
+
+	Enable rounded border for notification windows, default `true`.
+
+"notification.timeout" 					*coc-config-notification-timeout*
+
+	Timeout for auto close notifications, in miniseconds, default `10000`.
+
+"notification.marginRight" 				*coc-config-notification-marginRight*
+
+	Margin right to the right of editor window, default `10`.
+
+"notification.focusable" 				*coc-config-notification-focusable*
+
+	Enable focus by user actions (wincmds, mouse events), neovim only,
+	default `true`.
+
+------------------------------------------------------------------------------
+CodeLens~
+							*coc-config-codelens*
+"codeLens.enable"					*coc-config-codeLens-enable*
+
+	Enable `codeLens` feature. Requires Neovim with virtual text feature,
+	default: `false`.
+
+"codeLens.position"					*coc-config-codeLens-position*
+
+	Position of codeLens, works on nvim >= 0.6.0, valid options
+	["top", "eol", "right_align"], default: `top`.
+
+"codeLens.separator"					*coc-config-codeLens-separator*
+
+	Separator text for `codeLens` in virtual text, default: `""`.
+
+"codeLens.subseparator"					*coc-config-codeLens-subseparator*
+
+	Subseparator text for multiple codelens in virtual text, default: `" "`
+
+------------------------------------------------------------------------------
+Workspace related~
+							*coc-config-workspace*
+"workspace.openOutputCommand" 				*coc-config-workspace-openOutputCommand*
+
+	Command used to open output channel, default: `vs`
+
+"workspace.openResourceCommand" 			*coc-config-workspace-openResourceCommand*
+
+	Command to open files that not loaded, default: `tab drop`
+
+"workspace.ignoredFiletypes				*coc-config-workspace-ignoredFiletypes*
+
+	Filetypes to ignore for workspace folder resolution, default: `[]`
+
+	Note: This is the filetype after mapping by `g:coc_filetype_map`.
+
+"workspace.ignoredFolders"				*coc-config-workspace-ignoredFolders*
+
+	List of folders that should not be resolved as workspace folder.
+	Environment variables and minimatch patterns can be used.
+
+	Default: ["$HOME"]
+
+"workspace.bottomUpFiletypes"				*coc-config-workspace-bottomUpFiletypes*
+
+	Filetypes that should have workspace folder resolved from base
+	directory of file, or `["*"]` for any filetype.
+
+	Default: []
+
+"workspace.workspaceFolderCheckCwd"			*coc-config-workspace-workspaceFolderCheckCwd*
+
+	Whether the cwd directory should be checked first when resolving
+	workspace folder of current buffer.
+
+	Default: `true`
+
+"workspace.workspaceFolderFallbackCwd"			*coc-config-workspace-workspaceFolderFallbackCwd*
+
+	Use current working directory as workspace folder when no root
+	patterns resolved.
+
+	Default: `true`
+
+------------------------------------------------------------------------------
+List~
+							*coc-config-list*
+"list.indicator"					*coc-config-list-indicator*
+
+	The character used as first character in prompt line, default: `">"`
+
+"list.alignColumns"					*coc-config-list-alignColumns*
+
+	Whether to align lists in columns, default: `false`
+
+"list.menuAction"					*coc-config-list-menuAction*
+
+	Use menu picker instead of confirm() for choose action.
+	Default: `false`
+
+"list.height"						*coc-config-list-height*
+
+	Height of split list window, default: `10`
+
+"list.signOffset"					*coc-config-list-signOffset*
+
+	Sign offset of list, should be different from other plugins, default:
+	`900`
+
+"list.selectedSignText"					*coc-config-list-selectedSignText*
+
+	Sign text for selected lines, default: `"*"`
+
+"list.limitLines"					*coc-config-list-limitLines*
+
+	Limit lines shown in the list buffer, no limit by default, default: `null`
+
+"list.maxPreviewHeight"					*coc-config-list-maxPreviewHeight*
+
+	Max height for preview window of list, default: `12`
+
+"list.previewHighlightGroup"				*coc-config-list-previewHighlightGroup*
+
+	Highlight group used for highlighting the range in preview window,
+	default: `"Search"`
+
+"list.previewToplineStyle"				*coc-config-list-previewToplineStyle*
+
+	Topline style for list previews
+	default: `"offset"`
+	Valid options: ["offset","middle"]
+
+"list.previewToplineOffset"				*coc-config-list-previewToplineOffset*
+
+	Topline offset for list previews
+	default: `3`
+
+"list.nextKeymap"					*coc-config-list-nextKeymap*
+
+	Key for selecting next line in the insert mode, default: `"<C-j>"`
+
+"list.previousKeymap"					*coc-config-list-previousKeymap*
+
+	Key for selecting previous line in the insert mode, default: `"<C-k>"`
+
+"list.extendedSearchMode"				*coc-config-list-extendedSearchMode*
+
+	Enable extended search mode which allows multiple search patterns
+	delimited by whitespace, default: `true`
+
+"list.normalMappings"					*coc-config-list-normalMappings*
+
+	Custom key mappings in the normal mode, default: `{}`
+
+"list.insertMappings"					*coc-config-list-insertMappings*
+
+	Custom key mappings in the insert mode, default: `{}`
+
+"list.interactiveDebounceTime"				*coc-config-list-interactiveDebounceTime*
+
+	Debounce time for input change on interactive mode, default: `100`
+
+"list.previewSplitRight"				*coc-config-list-previewSplitRight*
+
+	Use vsplit for preview window, default: `false`
+
+"list.source.symbols.excludes"				*coc-config-list-source-symbols-excludes*
+
+	Patterns of minimatch for filepath to exclude from symbols list,
+	default: `[]`
+
+"list.source.outline.ctagsFilestypes"			*coc-config-list-source-outline-ctagsFilestypes*
+
+	Filetypes that should use `ctags` for outline instead of language server,
+	default: `[]`
+
+
+"list.source.diagnostics.pathFormat"			*coc-config-list-source-diagnostics-pathFormat*
+
+	Decide how the filepath is shown in the list.
+
+	Valid options: ["full", "short", "filename", "hidden"].
+
+	default: `"full"`
+
+"list.source.diagnostics.includeCode"			*coc-config-list-source-diagnostics-includeCode*
+
+	Whether to show the diagnostic code in the list.
+
+	default: `true`
+
+------------------------------------------------------------------------------
+Preferences~
+							*coc-config-preferences*
+"coc.preferences.enableLinkedEditing"			*coc-preferences-enableLinkedEditing*
+
+	Enable linked editing support, default: `false`
+
+"coc.preferences.enableMessageDialog"			*coc-preferences-enableMessageDialog*
+
+	Enable messages shown in notification dialog, default: `false`
+
+"coc.preferences.maxFileSize"				*coc-preferences-maxFileSize*
+
+	Maximum file size in bytes that coc.nvim should handle, default: `'10MB'`
+
+"coc.preferences.useQuickfixForLocations"		*coc-preferences-useQuickfixForLocations*
+
+	Use Vim's quickfix list for jump locations. Requires restart on change,
+	default: `false`
+
+"coc.preferences.extensionUpdateCheck"			*coc-preferences-extensionUpdateCheck*
+
+	Interval for checking extension updates, default: `"never"`
+
+	Valid options: ["daily","weekly","never"]
+
+"coc.preferences.snippetHighlight"			*coc-preferences-snippetHighlight*
+
+	Use highlight group 'CocSnippetVisual' to highlight placeholders with
+	same index of current one.
+
+	default: `false`
+
+"coc.preferences.snippetStatusText"			*coc-preferences-snippetStatusText*
+
+	Text shown in 'statusline' to indicate snippet session is activate.
+	Check |coc-status| for statusline integration.
+
+	Default: `"SNIP"`
+
+"coc.preferences.currentFunctionSymbolAutoUpdate"	*coc-preferences-currentFunctionSymbolAutoUpdate*
+
+	Automatically update the value of `b:coc_current_function` on `CursorHold`
+	event, default: `false`
+
+"coc.preferences.formatOnSaveFiletypes"			*coc-preferences-formatOnSaveFiletypes*
+
+	Filetypes for which formatting triggers when saving, default: `[]`
+
+	The operation only format the document by one format provider that
+	have highest priority, timeout is 500ms to avoid vim blocked for too
+	long time.
+
+	Note: This is the filetype after mapping by `g:coc_filetype_map`.
+
+	Note since vim's autocmd not nested by default, coc.nvim may not
+	receive latest code when you're using other vim plugin to format
+	document at the same time.
+
+"coc.preferences.rootPatterns"				*coc-preferences-rootPatterns*
+
+	Root patterns to resolve `workspaceFolder` from parent folders of opened
+	files, resolved from up to down, default:
+	`[".git",".hg",".projections.json"]`
+
+"coc.preferences.watchmanPath"				*coc-preferences-watchmanPath*
+
+	Executable path for https://facebook.github.io/watchman/, detected
+	from $PATH by default, default: `null`
+
+"coc.preferences.jumpCommand"				*coc-preferences-jumpCommand*
+
+	Command used for location jump performed for goto definition, goto
+	references etc, default: `"edit"`
+
+	Valid options: ["edit", "split", "vsplit", "tabe", "drop", "tab drop"]
+
+"coc.preferences.messageLevel"				*coc-preferences-messageLevel*
+
+	Message level for filter echoed messages default: `"more"`
+
+	Valid options: ["more", "warning", "error"]
+
+"coc.preferences.bracketEnterImprove"			*coc-preferences-bracketEnterImprove*
+
+	Improve handling of pressing enter inside brackets (`<> {} [] ()`) by
+	create a new empty line in the middle, the indent is calculated by vim,
+	checkout |indentexpr| for details.
+
+	Works with |coc#on_enter()|, default: `true`
+
+"coc.preferences.formatOnType"				*coc-preferences-formatOnType*
+
+	Set to true to enable format on type, default: `false`
+
+"coc.preferences.formatOnTypeFiletypes"			*coc-preferences-formatOnTypeFiletypes*
+
+	Filetypes that should run format on typing specific characters,
+	default: `[]`, requires `onTypeEdit` provider |CocHasProvider|.
+
+	Note: takes effect when `coc.preferences.formatOnType` set `true`.
+	Note: Use filetypes after mapped by `g:coc_filetype_map`.
+
+"coc.preferences.floatActions"				*coc-preferences-floatActions*
+
+	Set to false to disable float/popup support for actions menu.
+	Default: `true`
+
+"coc.preferences.promptInput"				*coc-preferences-promptInput*
+
+	Use prompt buffer in float window for user input.
+	Default: `true`
+
+"coc.preferences.enableMarkdown"			*coc-preferences-enableMarkdown*
+
+	Tell the language server that markdown text format is supported,
+	note that you may have additional escaped characters for markdown
+	text.
+
+"coc.preferences.silentAutoupdate"			*coc-preferences-silentAutoupdate*
+
+	Not open split window with update status when performing auto update.
+
+"coc.preferences.willSaveHandlerTimeout"		*coc-preferences-willSaveHandlerTimeout*
+
+	Will save handler timeout, default: `500`
+
+"coc.preferences.renameFillCurrent"			*coc-preferences-renameFillCurrent*
+
+	Disable to stop Refactor-Rename float/popup window from populating
+	with old name in the New Name field.
+	Default: `true`
+
+------------------------------------------------------------------------------
+Semantic tokens~
+							*coc-config-semanticTokens*
+"semanticTokens.filetypes"				*coc-config-semanticTokens-filetypes*
+
+	Filetypes that should enable semantic tokens highlight feature. Use
+	`["*"]` for all filetypes, default: `[]`
+
+	Note: semantic tokens highlight requires nvim >= 0.5.0 and vim >=
+	8.1.0579 to work.
+
+"semanticTokens.highlightPriority"			*coc-config-semanticTokens-highlightPriority*
+
+	Priority for semantic tokens highlight, default `2048`
+
+"semanticTokens.incrementTypes"				*coc-config-semanticTokens-incrementTypes*
+
+	Semantic token types that should increase highlight when insert at
+	the start and end position of token.
+
+	Default: `['variable', 'string']`
+
+"semanticTokens.combinedModifiers"			*coc-config-semanticTokens-combinedModifiers*
+
+	Semantic token modifiers that should combine with syntax highlights.
+
+	Default: `['deprecated']`
+
+------------------------------------------------------------------------------
+Tree~
+							*coc-config-tree*
+"tree.closedIcon"					*coc-config-tree-closedIcon*
+
+	Closed icon of tree view, use '' to make it look better when you
+	have patched font, default: '+'.
+
+"tree.openedIcon"					*coc-config-tree-openedIcon*
+
+	Opened icon of tree view, use '' to make it look better when you
+	have patched font, default: '-'
+
+"tree.key.toggleSelection"				*coc-config-tree-key-toggleSelection*
+
+	Trigger key to select/unselect item, default: <space>
+
+"tree.key.toggle"					*coc-config-tree-key-toggle*
+
+	Trigger key to toggle expand state of tree node, default: 't'
+
+"tree.key.actions"					*coc-config-tree-key-actions*
+
+	Trigger key to invoke actions, default: <tab>
+
+"tree.key.collapseAll"					*coc-config-tree-key-collapseAll*
+
+	Trigger key to collapse all tree node, default: 'M'
+
+"tree.key.invoke"					*coc-config-tree-key-invoke*
+
+	Trigger key to invoke default command of current node or selection,
+	default: <cr>
+
+"tree.key.close"					*coc-config-tree-key-close*
+
+	Trigger key to dispose the tree and close tree window, default: <esc>
+
+"tree.key.activeFilter"					*coc-config-tree-key-activeFilter*
+
+	Trigger key active filter, only works when tree view support filter,
+	default: 'f'
+
+"tree.key.selectNext"					*coc-config-tree-key-selectNext*
+
+	Trigger key to select next item during filter, default <C-j>
+
+"tree.key.selectPrevious"				*coc-config-tree-key-selectPrevious*
+
+	Trigger key to select previous item during filter, default <C-k>
+
+------------------------------------------------------------------------------
+Outline~
+							*coc-config-outline*
+"outline.splitCommand"					*coc-config-outline-splitCommand*
+
+	Window split command used by outline, default 'botright 30vs'
+
+"outline.followCursor"					*coc-config-outline-followCursor*
+
+	Reveal item in outline tree on cursor hold, default `true`
+
+"outline.keepWindow"					*coc-config-outline-keepWindow*
+
+	Jump back to original window after outline is shown, default `false`
+
+"outline.autoWidth"					*coc-config-outline-autoWidth*
+
+	Automatically increase window width to avoid wrapped lines, default
+	`true`, use |g:coc_max_treeview_width| to change maximum width.
+
+"outline.sortBy"					*coc-config-outline-sortBy*
+
+	Sort method for symbols, available options: 'position', 'name' and
+	'category'. Default: 'category'.
+
+"outline.switchSortKey"					*coc-config-outline-switchSortKey*
+
+	The key used to switch sort method for symbols provider of current
+	tree view. Default <C-s>
+
+"outline.expandLevel"					*coc-config-outline-expandLevel*
+
+	Default expand level of tree nodes, default `1`
+
+"outline.checkBufferSwitch"				*coc-config-outline-checkBufferSwitch*
+
+	Recreate outline view after changed to another buffer on current tab.
+	Default `true`
+
+"outline.showLineNumber"				*coc-config-outline-showLineNumber*
+
+	Show line number of document symbols.
+	Default `true`
+
+"outline.detailAsDescription"				*coc-config-outline-detailAsDescription*
+
+	Show detail as description aside with label.
+	Default: `true`
+
+"outline.codeActionKinds"				*coc-config-outline-codeActionKinds*
+
+	Filter code actions in actions menu by kinds.
+	Default: ['', 'quickfix', 'refactor', 'source']
+
+------------------------------------------------------------------------------
+Call hierarchy~
+							*coc-config-callHierarchy*
+"callHierarchy.openCommand"				*coc-config-callHierarchy-openCommand*
+
+	Open command for callHierarchy tree view, default to 'edit'.
+
+"callHierarchy.splitCommand"				*coc-config-callHierarchy-splitCommand*
+
+	Window split command used by callHierarchy tree view.
+
+"callHierarchy.enableTooltip"				*coc-config-callHierarchy-enableTooltip*
+
+	Enable tooltip to show relative filepath of call hierarchy.
+	Default: `true`
+
+------------------------------------------------------------------------------
+Npm~
+							*coc-config-npm*
+"npm.binPath"						*coc-config-npm-binPath*
+
+	Command or full path of npm or yarn executable for install/update
+	extensions, default: `npm`
+
+------------------------------------------------------------------------------
+Float configuration~
+							*coc-config-float*
+
+Used by `suggest.floatConfig`, `diagnostic.floatConfig`,
+`signature.floatConfig` and `hover.floatConfig`, following properties are
+supported:
+
+	- "border": Change to `true` to enable border.
+	- "rounded": Use rounded borders when border is `true`.
+	- "highlight": Background highlight group of float window.
+	- "title": Title used by float window.
+	- "borderhighlight": Border highlight group of float window.
+	- "close": Set to true to draw close icon.
+	- "maxWidth": Maximum width of float window, contains border.
+	- "maxHeight": Maximum height of float window, contains border.
+	- "winblend": Set 'winblend' option of window, neovim only.
+	- "focusable": Set to false to make window not focusable, neovim only.
+	- "shadow": Set to true to enable shadow, neovim only.
+
+------------------------------------------------------------------------------
+Languageserver~
+							*coc-config-languageserver*
+
+	Dictionary of Language Servers, key is the ID of corresponding server,
+	and value is configuration of languageserver. Default: `{}`
+
+	Properties of languageserver configuration:
+
+	- "enable": Change to `false` to disable that languageserver.
+
+	- "filetypes": Supported filetypes, add * in array for all filetypes.
+	  Note: it's required for start the languageserver, please make sure
+	  your filetype is expected by `:CocCommand document.echoFiletype` command
+
+	- "additionalSchemes": Additional uri schemes, default schemes
+	  including file & untitled.
+	  Note: you have to setup vim provide content for custom uri as well.
+
+	- "cwd": Working directory used to start languageserver, vim's cwd is
+	  used by default.
+
+	- "env": Environment variables for child process.
+
+	- "settings": Settings for languageserver, received on server
+	  initialization.
+
+	- "trace.server": Trace level of communication between server and
+	  client that showed with output channel.
+
+	- "stdioEncoding": Encoding used for stdio of child process.
+
+	- "initializationOptions": Initialization options passed to
+	  languageserver (it's deprecated)
+
+	- "rootPatterns": Root patterns used to resolve rootPath from current
+	  file.
+
+	- "requireRootPattern": If true, doesn't start server when root
+	  pattern not found.
+
+	- "ignoredRootPaths": Absolute root paths that language server should
+	  not use as rootPath, higher priority than rootPatterns.
+
+	- "disableDynamicRegister": Disable dynamic registerCapability feature
+	  for this languageserver to avoid duplicated feature regstration.
+
+	- "disableSnippetCompletion": Disable snippet completion feature for
+	  this languageserver.
+
+	- "disabledFeatures": Disable features for this languageserver,
+	  valid keys:
+>
+	  ["completion", "configuration", "workspaceFolders", "diagnostics",
+	  "willSave", "willSaveUntil", "didSaveTextDocument",
+	  "fileSystemWatcher", "hover", "signatureHelp", "definition",
+	  "references", "documentHighlight", "documentSymbol",
+	  "workspaceSymbol", "codeAction", "codeLens", "formatting",
+	  "documentFormatting", "documentRangeFormatting",
+	  "documentOnTypeFormatting", "rename", "documentLink",
+	  "executeCommand", "pullConfiguration", "typeDefinition",
+	  "implementation", "declaration", "color", "foldingRange",
+	  "selectionRange", "progress", "callHierarchy", "linkedEditing",
+	  "fileEvents", "semanticTokens"]
+<
+	- "formatterPriority": Priority of this languageserver's formatter.
+
+	- "revealOutputChannelOn": Configure message level to show the output
+	  channel buffer.
+
+	- "progressOnInitialization": Enable progress report on languageserver
+	  initialize.
+
+Language server start with command:~
+
+	Additional fields can be used for a command languageserver:
+
+	- "command": Executable program name in $PATH or absolute path of
+	  executable used for start languageserver.
+
+	- "args": Command line arguments of command.
+
+	- "detached": Detach language server when is true.
+
+	- "shell": Use shell for server process, default: `false`
+
+Language server start with module:~
+
+	Additional fields can be used for a languageserver started by node
+	module:
+
+	- "module": Absolute filepath of javascript file.
+
+	- "args": Extra arguments used on fork javascript module.
+
+	- "runtime": Absolute path of node runtime, node runtime of coc.nvim
+	  is used by default.
+
+	- "execArgv": Argv passed to node on fork, normally used for
+	  debugging, example: `["--nolazy", "--inspect-brk=6045"]`
+
+	- "transport": Transport kind used by server, could be 'ipc', 'stdio',
+	  'socket' and 'pipe'. 'ipc' is used by default (recommended).
+
+	- "transportPort": Port number used when transport is 'socket'.
+
+Language server use initialized socket server:~
+
+	- "port": Port number of socket server.
+
+	- "host": Host of socket server, default to `127.0.0.1`.
+
+==============================================================================
+vim:tw=78:nosta:noet:ts=8:sts=0:ft=help:noet:fen:

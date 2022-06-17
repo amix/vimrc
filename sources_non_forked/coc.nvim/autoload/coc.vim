@@ -218,6 +218,9 @@ function! coc#do_notify(id, method, result)
 endfunction
 
 function! coc#complete_indent() abort
+  if has('patch-8.2.3100')
+    return 0
+  endif
   let curpos = getcurpos()
   let indent_len = len(matchstr(getline('.'), '^\s*'))
   let startofline = &startofline

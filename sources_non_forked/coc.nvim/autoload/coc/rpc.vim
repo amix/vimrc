@@ -78,6 +78,7 @@ function! coc#rpc#restart()
     call coc#rpc#start_server()
   else
     call coc#highlight#clear_all()
+    call coc#ui#sign_unplace()
     call coc#float#close_all()
     call coc#rpc#request('detach', [])
     sleep 100m

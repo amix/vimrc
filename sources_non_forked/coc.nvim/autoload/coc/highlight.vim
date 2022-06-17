@@ -2,7 +2,6 @@ scriptencoding utf-8
 let s:is_vim = !has('nvim')
 let s:clear_match_by_window = has('nvim-0.6.0') || has('patch-8.1.1084')
 let s:set_extmark = has('nvim') && exists('*nvim_buf_set_extmark')
-let s:del_extmark = has('nvim') && exists('*nvim_buf_del_extmark')
 let s:prop_offset = get(g:, 'coc_text_prop_offset', 1000)
 let s:namespace_map = {}
 let s:ns_id = 1
@@ -82,46 +81,43 @@ function! coc#highlight#update_highlights(bufnr, key, highlights, ...) abort
     endif
     let current = coc#highlight#get_highlights(bufnr, a:key, start, endLnum)
     let currIndex = 0
-    let clearLnums = []
     if !empty(current)
       for [lnum, items] in s:to_group(current)
         let indexes = []
         let currIndexes = range(0, len(items) - 1)
-        "call coc#rpc#notify('Log', ['items:', lnum, items])
+        let removeIndexes = []
         while currIndex != total
           let hi = a:highlights[currIndex]
           if hi['lnum'] == lnum
+            let findIndex = -1
             for idx in currIndexes
               let item = items[idx]
               if hi['hlGroup'] ==# item[0] && hi['colStart'] == item[2] && hi['colEnd'] == item[3]
                 call add(indexes, currIndex)
-                call filter(currIndexes, 'v:val != '.idx)
+                let findIndex = idx
                 break
               elseif item[2] > hi['colStart']
                 break
               endif
             endfor
+            if findIndex != -1
+              call filter(currIndexes, 'v:val != '.findIndex)
+            endif
           elseif hi['lnum'] > lnum
             break
           endif
           let currIndex = currIndex + 1
         endwhile
-        if !empty(currIndexes)
-          if s:del_extmark
-            for idx in currIndexes
-              call nvim_buf_del_extmark(bufnr, ns, items[idx][4])
-            endfor
-            call extend(exists, indexes)
+        for idx in currIndexes
+          if s:is_vim
+            call prop_remove({'bufnr': bufnr, 'id': items[idx][4]})
           else
-            call add(clearLnums, lnum)
+            call nvim_buf_del_extmark(bufnr, ns, items[idx][4])
           endif
-        else
-          " all highlights of current line exists, not clear.
-          call extend(exists, indexes)
-        endif
+        endfor
+        call extend(exists, indexes)
       endfor
     endif
-    call coc#highlight#clear(bufnr, a:key, clearLnums)
   else
     call coc#highlight#clear_highlight(bufnr, a:key, start, end)
   endif
@@ -131,19 +127,19 @@ function! coc#highlight#update_highlights(bufnr, key, highlights, ...) abort
   endif
   for idx in indexes
     let hi = a:highlights[idx]
-    let opts = {}
+    let opts = {
+        \ 'combine': get(hi, 'combine', 0),
+        \ 'start_incl': get(hi, 'start_incl', 0),
+        \ 'end_incl': get(hi, 'end_incl', 0),
+        \ }
     if type(priority) == 0
       let opts['priority'] = s:get_priority(a:key, hi['hlGroup'], priority)
     endif
-    for key in ['combine', 'start_incl', 'end_incl']
-      if has_key(hi, key)
-        let opts[key] = hi[key]
-      endif
-    endfor
     call coc#highlight#add_highlight(bufnr, ns, hi['hlGroup'], hi['lnum'], hi['colStart'], hi['colEnd'], opts)
   endfor
 endfunction
 
+" Get list of highlights by range or all buffer.
 " 0 based line, start_col and end_col
 " 0 based start & end line, end inclusive.
 function! coc#highlight#get_highlights(bufnr, key, ...) abort
@@ -158,17 +154,21 @@ function! coc#highlight#get_highlights(bufnr, key, ...) abort
   let res = []
   let ns = s:namespace_map[a:key]
   if exists('*prop_list')
-    " Could filter by end_lnum and ids
+    let types = coc#api#get_types(ns)
+    if empty(types)
+      return res
+    endif
+    " Could filter by end_lnum and types
     if has('patch-8.2.3652')
       let endLnum = end == -1 ? -1 : end + 1
-      for prop in prop_list(start + 1, {'bufnr': a:bufnr, 'ids': [s:prop_offset + ns], 'end_lnum': endLnum})
+      for prop in prop_list(start + 1, {'bufnr': a:bufnr, 'types': types, 'end_lnum': endLnum})
         if prop['start'] == 0 || prop['end'] == 0
           " multi line textprop are not supported, simply ignore it
           continue
         endif
         let startCol = prop['col'] - 1
         let endCol = startCol + prop['length']
-        call add(res, [s:prop_type_hlgroup(prop['type']), prop['lnum'] - 1, startCol, endCol])
+        call add(res, [s:prop_type_hlgroup(prop['type']), prop['lnum'] - 1, startCol, endCol, prop['id']])
       endfor
     else
       if end == -1
@@ -176,16 +176,15 @@ function! coc#highlight#get_highlights(bufnr, key, ...) abort
       else
         let end = end + 1
       endif
-      let id = s:prop_offset + ns
       for line in range(start + 1, end)
         for prop in prop_list(line, {'bufnr': a:bufnr})
-          if prop['id'] != id || prop['start'] == 0 || prop['end'] == 0
+          if index(types, prop['type']) == -1 || prop['start'] == 0 || prop['end'] == 0
             " multi line textprop are not supported, simply ignore it
             continue
           endif
           let startCol = prop['col'] - 1
           let endCol = startCol + prop['length']
-          call add(res, [s:prop_type_hlgroup(prop['type']), line - 1, startCol, endCol])
+          call add(res, [s:prop_type_hlgroup(prop['type']), line - 1, startCol, endCol, prop['id']])
         endfor
       endfor
     endif
@@ -237,7 +236,7 @@ endfunction
 
 " Clear highlights by 0 based line numbers.
 function! coc#highlight#clear(bufnr, key, lnums) abort
-  if !bufloaded(a:bufnr)
+  if !bufloaded(a:bufnr) || empty(a:lnums)
     return
   endif
   let ns = coc#highlight#create_namespace(a:key)
@@ -245,7 +244,7 @@ function! coc#highlight#clear(bufnr, key, lnums) abort
     if has('nvim')
       call nvim_buf_clear_namespace(a:bufnr, ns, lnum, lnum + 1)
     else
-      call coc#api#call('buf_clear_namespace', [a:bufnr, ns, lnum, lnum + 1])
+      call coc#api#exec('buf_clear_namespace', [a:bufnr, ns, lnum, lnum + 1])
     endif
   endfor
   " clear highlights in invalid line.
@@ -261,7 +260,11 @@ function! coc#highlight#del_markers(bufnr, key, ids) abort
   endif
   let ns = coc#highlight#create_namespace(a:key)
   for id in a:ids
-    call nvim_buf_del_extmark(a:bufnr, ns, id)
+    if s:is_vim
+      call prop_remove({'bufnr': a:bufnr, 'id': id})
+    else
+      call nvim_buf_del_extmark(a:bufnr, ns, id)
+    endif
   endfor
 endfunction
 
@@ -323,7 +326,7 @@ function! coc#highlight#add_highlight(bufnr, src_id, hl_group, line, col_start, 
       call nvim_buf_add_highlight(a:bufnr, a:src_id, a:hl_group, a:line, a:col_start, a:col_end)
     endif
   else
-    call coc#api#call('buf_add_highlight', [a:bufnr, a:src_id, a:hl_group, a:line, a:col_start, a:col_end, opts])
+    call coc#api#exec('buf_add_highlight', [a:bufnr, a:src_id, a:hl_group, a:line, a:col_start, a:col_end, opts])
   endif
 endfunction
 
@@ -336,7 +339,7 @@ function! coc#highlight#clear_highlight(bufnr, key, start_line, end_line) abort
   if has('nvim')
     call nvim_buf_clear_namespace(a:bufnr, src_id, a:start_line, a:end_line)
   else
-    call coc#api#call('buf_clear_namespace', [a:bufnr, src_id, a:start_line, a:end_line])
+    call coc#api#exec('buf_clear_namespace', [a:bufnr, src_id, a:start_line, a:end_line])
   endif
 endfunction
 
@@ -354,6 +357,9 @@ endfunction
 "   endLine: number
 " }
 function! coc#highlight#add_highlights(winid, codes, highlights) abort
+  if get(g:, 'coc_node_env', '') ==# 'test'
+    call setwinvar(a:winid, 'highlights', a:highlights)
+  endif
   " clear highlights
   call coc#compat#execute(a:winid, 'syntax clear')
   let bufnr = winbufnr(a:winid)
@@ -595,7 +601,7 @@ function! coc#highlight#clear_all() abort
       if has('nvim')
         call nvim_buf_clear_namespace(bufnr, src_id, 0, -1)
       else
-        call coc#api#call('buf_clear_namespace', [bufnr, src_id, 0, -1])
+        call coc#api#exec('buf_clear_namespace', [bufnr, src_id, 0, -1])
       endif
     endfor
   endfor
@@ -622,10 +628,7 @@ function! coc#highlight#get_syntax_name(lnum, col)
 endfunction
 
 function! s:prop_type_hlgroup(type) abort
-  if strpart(a:type, 0, 12) ==# 'CocHighlight'
-    return strpart(a:type, 12)
-  endif
-  return get(prop_type_get(a:type), 'highlight', '')
+  return substitute(a:type, '_\d\+$', '', '')
 endfunction
 
 function! s:update_highlights_timer(bufnr, changedtick, key, priority, groups, idx) abort

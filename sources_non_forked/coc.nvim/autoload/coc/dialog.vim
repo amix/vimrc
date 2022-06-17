@@ -74,7 +74,7 @@ function! coc#dialog#create_cursor_float(winid, bufnr, lines, config) abort
   if index(modes, mode) == -1
     return v:null
   endif
-  if has('nvim') && mode ==# 'i'
+  if !s:is_vim && !has('nvim-0.5.0') && mode ==# 'i'
     " helps to fix undo issue, don't know why.
     call feedkeys("\<C-g>u", 'n')
   endif
@@ -676,5 +676,7 @@ endfunction
 
 function! s:place_sign(bufnr, line) abort
   call sign_unplace(s:sign_group, { 'buffer': a:bufnr })
-  call sign_place(6, s:sign_group, 'CocCurrentLine', a:bufnr, {'lnum': a:line})
+  if a:line > 0
+    call sign_place(6, s:sign_group, 'CocCurrentLine', a:bufnr, {'lnum': a:line})
+  endif
 endfunction

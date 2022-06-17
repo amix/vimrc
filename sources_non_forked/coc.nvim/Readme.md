@@ -285,7 +285,7 @@ nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 - [Create coc.nvim extension to improve Vim experience](https://medium.com/@chemzqm/create-coc-nvim-extension-to-improve-vim-experience-4461df269173)
 - [How to write a coc.nvim extension (and why)](https://samroeca.com/coc-plugin.html)
 
-## Trouble shooting
+## Troubleshooting
 
 Try these steps when you have problem with coc.nvim.
 
@@ -603,7 +603,7 @@ Try these steps when you have problem with coc.nvim.
     <td align="center"><a href="https://github.com/minefuto"><img src="https://avatars.githubusercontent.com/u/46558834?v=4?s=50" width="50px;" alt=""/><br /><sub><b>minefuto</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=minefuto" title="Code">💻</a></td>
     <td align="center"><a href="https://twitter.com/robokomy"><img src="https://avatars.githubusercontent.com/u/20733354?v=4?s=50" width="50px;" alt=""/><br /><sub><b>miyanokomiya</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=miyanokomiya" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/miyaviee"><img src="https://avatars.githubusercontent.com/u/15247561?v=4?s=50" width="50px;" alt=""/><br /><sub><b>miyaviee</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=miyaviee" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/monkoose"><img src="https://avatars.githubusercontent.com/u/6261276?v=4?s=50" width="50px;" alt=""/><br /><sub><b>monkoose</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=monkoose" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/monkoose"><img src="https://avatars.githubusercontent.com/u/6261276?v=4?s=50" width="50px;" alt=""/><br /><sub><b>monkoose</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=monkoose" title="Code">💻</a> <a href="https://github.com/neoclide/coc.nvim/issues?q=author%3Amonkoose" title="Bug reports">🐛</a></td>
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/mujx"><img src="https://avatars.githubusercontent.com/u/6430350?v=4?s=50" width="50px;" alt=""/><br /><sub><b>mujx</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=mujx" title="Code">💻</a></td>
@@ -622,6 +622,9 @@ Try these steps when you have problem with coc.nvim.
     <td align="center"><a href="https://github.com/typicode"><img src="https://avatars.githubusercontent.com/u/5502029?v=4?s=50" width="50px;" alt=""/><br /><sub><b>typicode</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=typicode" title="Code">💻</a></td>
     <td align="center"><a href="https://limingfei56.github.io/"><img src="https://avatars.githubusercontent.com/u/8553407?v=4?s=50" width="50px;" alt=""/><br /><sub><b>李鸣飞</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=LiMingFei56" title="Code">💻</a></td>
     <td align="center"><a href="https://bandism.net/"><img src="https://avatars.githubusercontent.com/u/22633385?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Ikko Ashimine</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=eltociear" title="Documentation">📖</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/rammiah"><img src="https://avatars.githubusercontent.com/u/26727562?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Rammiah</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/issues?q=author%3Arammiah" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
