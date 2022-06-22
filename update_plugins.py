@@ -9,7 +9,7 @@ except ImportError:
 import re
 import shutil
 import tempfile
-import urllib
+import urllib.request
 import zipfile
 from os import path
 
