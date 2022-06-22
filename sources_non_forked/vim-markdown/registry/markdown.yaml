@@ -1,9 +1,0 @@
-addon: markdown
-description: "Markdown syntax highlighting"
-files:
-  - ftdetect/markdown.vim
-  - ftplugin/markdown.vim
-  - syntax/markdown.vim
-  - after/ftplugin/markdown.vim
-  - indent/markdown.vim
-  - doc/vim-markdown.txt

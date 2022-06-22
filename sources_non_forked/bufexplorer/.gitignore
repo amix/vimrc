@@ -1,6 +1,0 @@
-# Ignore generated tags
-/doc/tags
-dist.bat
-*.zip
-tags
-*.sw[a-p]
