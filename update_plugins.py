@@ -11,6 +11,7 @@ import shutil
 import tempfile
 import urllib.request
 import zipfile
+from io import BytesIO
 from os import path
 
 # --- Globals ----------------------------------------------
@@ -75,7 +76,7 @@ def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     # Download and extract file in temp dir
     with urllib.request.urlopen(zip_path) as req:
         with open(temp_zip_path, "wb") as f:
-            f.write(req.read())
+            f.write(BytesIO(req.read()))
             zip_f = zipfile.ZipFile(temp_zip_path)
             zip_f.extractall(temp_dir)
             content_disp = req.headers.get("Content-Disposition")
