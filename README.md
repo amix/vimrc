@@ -69,16 +69,8 @@ Just do a git rebase!
 
 ```sh
 cd ~/.vim_runtime
-git reset --hard
-git clean -d --force
 git pull --rebase
 python update_plugins.py  # use python3 if python is unavailable
-```
-
-NOTE: If you get `ModuleNotFoundError: No module named 'requests'`, you must first install the `requests` python module using `pip`, `pip3`, or `easy_install`.
-
-```sh
-pip install requests
 ```
 
 ## Some screenshots
