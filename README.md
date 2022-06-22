@@ -70,7 +70,7 @@ Just do a git rebase!
 ```sh
 cd ~/.vim_runtime
 git pull --rebase
-python update_plugins.py  # use python3 if python is unavailable
+python update_plugins.py || python3 update_plugins.py  # use python3 if python is unavailable
 ```
 
 ## Some screenshots
