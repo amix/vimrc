@@ -1,0 +1,16 @@
+*.map
+.cache
+lib/extensions
+lib/__tests__
+plugin
+autoload
+rplugin
+src
+.github
+build
+coverage
+data
+tslint.json
+tsconfig.json
+.zip
+.DS_Store

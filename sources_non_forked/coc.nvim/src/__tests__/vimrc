@@ -1,0 +1,64 @@
+set nocompatible
+
+set hidden
+set noswapfile
+set nobackup
+set completeopt=menuone,noinsert,noselect
+set tabstop=2
+set cmdheight=2
+set shiftwidth=2
+set updatetime=300
+set expandtab
+set noshowmode
+set shortmess=aFtW
+set noruler
+
+let s:dir = expand('<sfile>:h')
+let s:root = expand('<sfile>:h:h:h')
+let g:coc_node_env = 'test'
+
+let g:coc_vim_commands = [{
+  \ "id": "config",
+  \ "cmd": "edit coc-settings.json"
+  \ }]
+
+autocmd BufNewFile,BufRead *.ts  set filetype=typescript
+
+execute 'set runtimepath+='.s:root
+
+" Float window id on current tab.
+function! GetFloatWin() abort
+  if has('nvim')
+    for i in range(1, winnr('$'))
+      let id = win_getid(i)
+      let config = nvim_win_get_config(id)
+      if (!empty(config) && config['focusable'] == v:true && !empty(config['relative']))
+        if !getwinvar(id, 'button', 0)
+          return id
+        endif
+      endif
+    endfor
+  else
+    let ids = popup_list()
+    return get(filter(ids, 'get(popup_getpos(v:val),"visible",0)'), 0, 0)
+  endif
+  return 0
+endfunction
+
+" float/popup relative to current cursor position
+function! GetFloatCursorRelative(winid) abort
+  if !coc#float#valid(a:winid)
+    return v:null
+  endif
+  let winid = win_getid()
+  if winid == a:winid
+    return v:null
+  endif
+  let [cursorLine, cursorCol] = coc#cursor#screen_pos()
+  if has('nvim')
+    let [row, col] = nvim_win_get_position(a:winid)
+    return {'row' : row - cursorLine, 'col' : col - cursorCol}
+  endif
+  let pos = popup_getpos(a:winid)
+  return {'row' : pos['line'] - cursorLine - 1, 'col' : pos['col'] - cursorCol - 1}
+endfunction

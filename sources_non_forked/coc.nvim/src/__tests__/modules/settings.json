@@ -1,0 +1,12 @@
+{
+  "foo.bar": 1,
+  "bar.foo": 2,
+  "schema": {
+    "https://example.com": "*.yaml"
+  },
+  "servers": {
+    "c": {
+      "trace.server": "verbose"
+    }
+  }
+}

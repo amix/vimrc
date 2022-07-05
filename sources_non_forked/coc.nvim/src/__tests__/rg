@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+// black:30 red:31 green:32
+
+let content = `\x1b[30mmodules/cursors.test.ts\x1b[m
+\x1b[32m218\x1b[m-    let doc = await setup()
+\x1b[32m219\x1b[m-    await nvim.call('cursor', [1, 4])
+\x1b[32m220\x1b[m:    await nvim.input('\x1b[31mabc\x1b[m')
+\x1b[32m221\x1b[m-    await helper.wait(30)
+\x1b[32m222\x1b[m-    doc.forceSync()
+\x1b[32m223\x1b[m-    await helper.wait(100)
+\x1b[32m224\x1b[m-    let lines = await nvim.call('getline', [1, '$'])
+\x1b[32m225\x1b[m:    expect(lines).toEqual(['\x1b[31mabc\x1b[m fooabc fooabc', 'barabc barabc'])
+\x1b[32m226\x1b[m-  })
+\x1b[32m227\x1b[m-
+--
+\x1b[32m32\x1b[m-    expect(rangeCount()).toBe(5)
+\x1b[32m33\x1b[m-    let lines = await nvim.call('getline', [1, '$'])
+\x1b[32m34\x1b[m:    expect(lines).toEqual(['\x1b[31mabc\x1b[m fooabc fooabc', 'barabc barabc'])
+\x1b[32m35\x1b[m-  })
+\x1b[32m36\x1b[m-
+
+\x1b[30mmodules/position.test.ts\x1b[m
+\x1b[32m42\x1b[m-  test('getChangedPosition #1', () => {
+\x1b[32m43\x1b[m-    let pos = Position.create(0, 0)
+\x1b[32m44\x1b[m:    let edit = TextEdit.insert(pos, '\x1b[31mabc\x1b[m')
+\x1b[32m45\x1b[m-    let res = getChangedPosition(pos, edit)
+\x1b[32m46\x1b[m-    expect(res).toEqual({ line: 0, character: 3 })
+`
+
+let idx = process.argv.findIndex(s => s == '--sleep')
+if (idx !== -1) {
+  let ms = process.argv[idx + 1]
+  setTimeout(() => {
+    process.stdout.write(content)
+  }, ms)
+} else {
+  process.stdout.write(content)
+}

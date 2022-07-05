@@ -1,0 +1,33 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "engines": {
+    "coc": "^0.0.46"
+  },
+  "contributes": {
+    "rootPatterns": [
+      {
+        "filetype": "javascript",
+        "patterns": [
+          "package.json",
+          "jsconfig.json"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "title": "Test",
+        "command": "test.run"
+      }
+    ],
+    "configuration": {
+      "properties": {
+        "test.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable test"
+        }
+      }
+    }
+  }
+}

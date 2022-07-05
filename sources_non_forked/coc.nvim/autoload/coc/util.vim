@@ -182,14 +182,10 @@ function! coc#util#jump(cmd, filepath, ...) abort
     else
       exec 'drop '.fnameescape(file)
     endif
-  elseif a:cmd == 'edit'
-    if bufloaded(file)
-      exe 'b '.bufnr(file)
-    else
-      exe a:cmd.' '.fnameescape(file)
-    endif
+  elseif a:cmd == 'edit' && bufloaded(file)
+    exe 'b '.bufnr(file)
   else
-    exe a:cmd.' '.fnameescape(file)
+    call s:safer_open(a:cmd, file)
   endif
   if !empty(get(a:, 1, []))
     let line = getline(a:1[0] + 1)
@@ -205,6 +201,43 @@ function! coc#util#jump(cmd, filepath, ...) abort
   endif
   if s:is_vim
     redraw
+  endif
+endfunction
+
+function! s:safer_open(cmd, file) abort
+  " How to support :pedit and :drop?
+  let is_supported_cmd = index(["edit", "split", "vsplit", "tabe"], a:cmd) >= 0
+
+  " Special handling should be limited to URI.
+  let looks_like_uri = match(a:file, "^.*://") >= 0
+
+  if looks_like_uri && is_supported_cmd && has('win32') && has('nvim')
+    if bufloaded(a:file)
+      let buf = bufnr(a:file)
+      " Do not reload existing buffer
+      let reload_buffer = v:false
+    else
+      " Workaround a bug for Win32 paths (works in Neovim only).
+      "
+      " reference:
+      " - https://github.com/vim/vim/issues/541
+      " - https://github.com/neoclide/coc-java/issues/82
+      let buf = nvim_create_buf(v:true, v:false)
+      " Ignore swap file error occuring when, for example, file is a URI.
+      silent! call nvim_buf_set_name(buf, a:file)
+      let reload_buffer = v:true
+    endif
+    if a:cmd != 'edit'
+      " Open split, tab, etc. by a:cmd.
+      exe a:cmd
+    endif
+    " Set filename and reload file (or URI) contents by :edit.
+    exe 'keepjumps buffer ' . buf
+    if reload_buffer
+      exe 'keepjumps edit'
+    endif
+  else
+    exe a:cmd.' '.fnameescape(a:file)
   endif
 endfunction
 
