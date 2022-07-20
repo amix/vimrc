@@ -292,9 +292,8 @@ function! coc#notify#close(winid) abort
   endif
   call coc#window#set_var(a:winid, 'closing', 1)
   call s:cancel(a:winid)
-  let winblend = coc#window#get_var(a:winid, 'winblend', 0)
-  let curr = s:is_vim ? {'row': row} : {'winblend': winblend}
-  let dest = s:is_vim ? {'row': row + 1} : {'winblend': winblend == 0 ? 0 : 60}
+  let curr = s:is_vim ? {'row': row} : {'winblend': coc#window#get_var(a:winid, 'winblend', 30)}
+  let dest = s:is_vim ? {'row': row + 1} : {'winblend': 60}
   call s:animate(a:winid, curr, dest, 0, 1)
 endfunction
 

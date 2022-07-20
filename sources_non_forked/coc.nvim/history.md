@@ -1,7 +1,3 @@
-# 2022-06-14
-
-- Add highlight groups `CocListLine` and `CocListSearch`.
-
 # 2022-06-11
 
 - Add configuration "notification.disabledProgressSources"
