@@ -182,14 +182,10 @@ function! coc#util#jump(cmd, filepath, ...) abort
     else
       exec 'drop '.fnameescape(file)
     endif
-  elseif a:cmd == 'edit'
-    if bufloaded(file)
-      exe 'b '.bufnr(file)
-    else
-      exe a:cmd.' '.fnameescape(file)
-    endif
+  elseif a:cmd == 'edit' && bufloaded(file)
+    exe 'b '.bufnr(file)
   else
-    exe a:cmd.' '.fnameescape(file)
+    call s:safer_open(a:cmd, file)
   endif
   if !empty(get(a:, 1, []))
     let line = getline(a:1[0] + 1)
@@ -205,6 +201,32 @@ function! coc#util#jump(cmd, filepath, ...) abort
   endif
   if s:is_vim
     redraw
+  endif
+endfunction
+
+function! s:safer_open(cmd, file) abort
+  " How to support :pedit and :drop?
+  let is_supported_cmd = index(["edit", "split", "vsplit", "tabe"], a:cmd) >= 0
+
+  " Use special handling only for URI.
+  let looks_like_uri = match(a:file, "^.*://") >= 0
+
+  if looks_like_uri && is_supported_cmd && has('win32') && exists('*bufadd')
+    " Workaround a bug for Win32 paths.
+    "
+    " reference:
+    " - https://github.com/vim/vim/issues/541
+    " - https://github.com/neoclide/coc-java/issues/82
+    " - https://github.com/vim-jp/issues/issues/6
+    let buf = bufadd(a:file)
+    if a:cmd != 'edit'
+      " Open split, tab, etc. by a:cmd.
+      exe a:cmd
+    endif
+    " Set current buffer to the file
+    exe 'keepjumps buffer ' . buf
+  else
+    exe a:cmd.' '.fnameescape(a:file)
   endif
 endfunction
 

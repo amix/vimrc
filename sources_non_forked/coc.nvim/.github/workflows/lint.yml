@@ -1,0 +1,35 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint:
+    if: github.event.pull_request.draft == false
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.4.0
+        with:
+          cache: "yarn"
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check Types by TSC
+        run: yarn lint:typecheck
+
+      - name: Lint ESLint
+        run: yarn lint
+
+      - name: Check Lock File Changes
+        run: yarn && echo "Listing changed files:" && git diff --name-only --exit-code && echo "No files changed during lint."
