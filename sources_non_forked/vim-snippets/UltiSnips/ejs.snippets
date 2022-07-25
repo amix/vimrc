@@ -1,0 +1,10 @@
+snippet for "ejs for loop" b
+<% for (let ${1:i = 0}; ${2:i<arr.length}; ${3:i++}) { %>
+	${0:body}
+<% } %>
+endsnippet
+snippet forE "ejs for Each loop" b
+<% ${1:array}.forEach((${2:single var}) => { %>
+	${0:body}
+<% }) %>
+endsnippet

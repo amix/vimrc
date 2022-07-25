@@ -1,7 +1,7 @@
 " ============================================================================
 " CLASS: TreeFileNode
 "
-" This class is the parent of the "TreeDirNode" class and is the "Component"
+" This class is the parent of the TreeDirNode class and is the 'Component'
 " part of the composite design pattern between the NERDTree node classes.
 " ============================================================================
 
@@ -42,7 +42,7 @@ function! s:TreeFileNode.cacheParent()
     if empty(self.parent)
         let parentPath = self.path.getParent()
         if parentPath.equals(self.path)
-            throw "NERDTree.CannotCacheParentError: already at root"
+            throw 'NERDTree.CannotCacheParentError: already at root'
         endif
         let self.parent = s:TreeFileNode.New(parentPath, self.getNerdtree())
     endif
@@ -195,7 +195,7 @@ endfunction
 " FUNCTION: TreeFileNode.isRoot() {{{1
 function! s:TreeFileNode.isRoot()
     if !g:NERDTree.ExistsForBuf()
-        throw "NERDTree.NoTreeError: No tree exists for the current buffer"
+        throw 'NERDTree.NoTreeError: No tree exists for the current buffer'
     endif
 
     return self.equals(self.getNerdtree().root)
@@ -246,6 +246,12 @@ function! s:TreeFileNode.openInNewTab(options)
     call self.open(extend({'where': 't'}, a:options))
 endfunction
 
+" FUNCTION: TreeFileNode.openExplorer()
+function! s:TreeFileNode.openExplorer()
+    execute 'wincmd p'
+    execute 'edit '.self.path.getParent().str({'format':'Edit'})
+endfunction
+
 " FUNCTION: TreeFileNode.putCursorHere(isJump, recurseUpward){{{1
 " Places the cursor on the line number this node is rendered on
 "
@@ -259,7 +265,7 @@ function! s:TreeFileNode.putCursorHere(isJump, recurseUpward)
         if a:isJump
             mark '
         endif
-        call cursor(ln, col("."))
+        call cursor(ln, col('.'))
     else
         if a:recurseUpward
             let node = self
@@ -311,17 +317,13 @@ endfunction
 " child nodes are rendered only)
 " for each depth in the tree
 function! s:TreeFileNode._renderToString(depth, drawText)
-    let output = ""
+    let output = ''
     if a:drawText ==# 1
 
         let treeParts = repeat('  ', a:depth - 1)
-
-        if !self.path.isDirectory
-            let treeParts = treeParts . '  '
-        endif
+        let treeParts .= (self.path.isDirectory || g:NERDTreeDirArrowExpandable ==# '' ? '' : '  ')
 
         let line = treeParts . self.displayString()
-
         let output = output . line . "\n"
     endif
 

@@ -31,9 +31,6 @@ snippet cs "case"
 	case ${1:value}:
 		${0:${VISUAL}}
 
-snippet c "const"
-	const ${1:NAME} = ${0:0}
-
 snippet co "constants with iota"
 	const (
 		${1:NAME1} = iota
@@ -52,9 +49,6 @@ snippet dfr "defer recover"
 			${0:${VISUAL}}
 		}
 	}()
-
-snippet i "int"
-	int
 
 snippet im "import"
 	import (
@@ -135,7 +129,7 @@ snippet fum "method"
 	}
 	${0}
 
-snippet fumh "http handler function on reciever"
+snippet fumh "http handler function on receiver"
 	func (${1:receiver} ${2:type}) ${3:funcName}(${4:w} http.ResponseWriter, ${5:r} *http.Request) {
 		${0:${VISUAL}}
 	}
@@ -228,6 +222,23 @@ snippet test "test function"
 		${0:${VISUAL}}
 	}
 
+snippet testt "table test function"
+	func Test${1:name}(t *testing.T) {
+		tests := []struct {
+			name string
+		}{
+			{
+				name: "${2:test name}",
+			},
+		}
+
+		for _, test := range tests {
+			t.Run(test.name, func(t *testing.T) {
+				${0:${VISUAL}}
+			})
+		}
+	}
+
 snippet bench "benchmark function"
 	func Benchmark${1:name}(b *testing.B) {
 		for i := 0; i < b.N; i++ {
@@ -263,7 +274,7 @@ snippet ja "Marshalable json alias"
 	}
 
 
-snippet errwr "Error handling with errors.Wrap"
+snippet errwr "Error handling with fmt.Errorf"
 	if ${1}err != nil {
-		return errors.Wrap(err, "${2}")
+		return fmt.Errorf("${2} %w", err)
 	}

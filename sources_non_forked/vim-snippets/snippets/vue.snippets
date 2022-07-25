@@ -118,7 +118,7 @@ snippet vfilter
 snippet vfor
 	<div v-for="${1:item} in ${2:items}" :key="$1.id">
 		{{ $1 }}
-	</div
+	</div>
 
 snippet vgetters
 	getters: {
@@ -176,3 +176,14 @@ snippet vstore
 			${1:key}: ${2:value}
 		}
 	});
+
+
+# vue-i18n snippets https://github.com/kazupon/vue-i18n
+
+snippet trans
+	$t('$1')
+
+# Translation with parameter
+snippet transc
+	$t('$1', { $2: $3 })
+

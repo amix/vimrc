@@ -203,7 +203,7 @@ function! s:goyo_on(dim)
   endif
 
   " vim-signify
-  let t:goyo_disabled_signify = exists('b:sy') && b:sy.active
+  let t:goyo_disabled_signify = !empty(getbufvar(bufnr(''), 'sy'))
   if t:goyo_disabled_signify
     SignifyToggle
   endif
@@ -260,7 +260,7 @@ function! s:goyo_on(dim)
 
   augroup goyo
     autocmd!
-    autocmd TabLeave    *        call s:goyo_off()
+    autocmd TabLeave    * nested call s:goyo_off()
     autocmd VimResized  *        call s:resize_pads()
     autocmd ColorScheme *        call s:tranquilize()
     autocmd BufWinEnter *        call s:hide_linenr() | call s:hide_statusline()

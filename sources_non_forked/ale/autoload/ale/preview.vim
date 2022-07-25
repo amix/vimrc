@@ -1,6 +1,22 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: Preview windows for showing whatever information in.
 
+if !has_key(s:, 'last_list')
+    let s:last_list = []
+endif
+
+if !has_key(s:, 'last_options')
+    let s:last_options = {}
+endif
+
+function! ale#preview#SetLastSelection(item_list, options) abort
+    let s:last_list = a:item_list
+    let s:last_options = {
+    \   'open_in': get(a:options, 'open_in', 'current-buffer'),
+    \   'use_relative_paths': get(a:options, 'use_relative_paths', 0),
+    \}
+endfunction
+
 " Open a preview window and show some lines in it.
 " A second argument can be passed as a Dictionary with options. They are...
 "
@@ -22,6 +38,10 @@ function! ale#preview#Show(lines, ...) abort
     setlocal nomodifiable
     setlocal readonly
     let &l:filetype = get(l:options, 'filetype', 'ale-preview')
+
+    for l:command in get(l:options, 'commands', [])
+        call execute(l:command)
+    endfor
 
     if get(l:options, 'stay_here')
         wincmd p
@@ -67,32 +87,51 @@ function! ale#preview#ShowSelection(item_list, ...) abort
 
     call ale#preview#Show(l:lines, {'filetype': 'ale-preview-selection'})
     let b:ale_preview_item_list = a:item_list
+    let b:ale_preview_item_open_in = get(l:options, 'open_in', 'current-buffer')
+
+    " Jump to an index for a previous selection, if set.
+    if has_key(l:options, 'jump_to_index')
+        let l:pos = getpos('.')
+        let l:pos[1] = l:options.jump_to_index + 1
+        call setpos('.', l:pos)
+    endif
+
+    " Remember preview state, so we can repeat it later.
+    call ale#preview#SetLastSelection(a:item_list, l:options)
 endfunction
 
-function! s:Open(open_in_tab) abort
+function! ale#preview#RepeatSelection() abort
+    if !empty(s:last_list)
+        call ale#preview#ShowSelection(s:last_list, s:last_options)
+    endif
+endfunction
+
+function! s:Open(open_in) abort
     let l:item_list = get(b:, 'ale_preview_item_list', [])
-    let l:item = get(l:item_list, getpos('.')[1] - 1, {})
+    let l:index = getpos('.')[1] - 1
+    let l:item = get(l:item_list, l:index, {})
 
     if empty(l:item)
         return
     endif
 
-    if !a:open_in_tab
-        :q!
-    endif
+    " Remember an index to jump to when repeating a selection.
+    let s:last_options.jump_to_index = l:index
+
+    :q!
 
     call ale#util#Open(
     \   l:item.filename,
     \   l:item.line,
     \   l:item.column,
-    \   {'open_in_tab': a:open_in_tab},
+    \   {'open_in': a:open_in},
     \)
 endfunction
 
-function! ale#preview#OpenSelectionInBuffer() abort
-    call s:Open(0)
+function! ale#preview#OpenSelection() abort
+    call s:Open(b:ale_preview_item_open_in)
 endfunction
 
 function! ale#preview#OpenSelectionInTab() abort
-    call s:Open(1)
+    call s:Open('tab')
 endfunction

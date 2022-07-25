@@ -5,7 +5,7 @@ call ale#Set('swift_swiftlint_executable', 'swiftlint')
 call ale#Set('swift_swiftlint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#swift#swiftlint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'swift_swiftlint', [
+    return ale#path#FindExecutable(a:buffer, 'swift_swiftlint', [
     \ 'Pods/SwiftLint/swiftlint',
     \ 'ios/Pods/SwiftLint/swiftlint',
     \ 'swiftlint',

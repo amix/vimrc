@@ -31,7 +31,7 @@ Naturally, `/opt/vim_runtime` can be any directory, as long as all the users spe
 
 ## Fonts
 
-I recommend using [IBM Plex Mono font](https://github.com/IBM/plex) (it's an open-source and awesome font that can make your code beautiful). The Awesome vimrc is already setup to try to use it.
+I recommend using [IBM Plex Mono font](https://github.com/IBM/plex) (it's an open-source and awesome font that can make your code look beautiful). The Awesome vimrc is already setup to try to use it.
 
 Some other fonts that Awesome will try to use:
 
@@ -63,8 +63,14 @@ If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: 
 Just do a git rebase!
 
     cd ~/.vim_runtime
+    git reset --hard
+    git clean -d --force
     git pull --rebase
+    python update_plugins.py  # use python3 if python is unavailable
 
+NOTE: If you get `ModuleNotFoundError: No module named 'requests'`, you must first install the `requests` python module using `pip`, `pip3`, or `easy_install`.
+
+    pip install requests
 
 ## Some screenshots
 
@@ -72,11 +78,7 @@ Colors when editing a Python file:
 
 ![Screenshot 1](https://dnp4pehkvoo6n.cloudfront.net/07583008e4da885801657e8781777844/as/Python%20editing.png)
 
-Opening recently opened files with the [mru.vim](https://github.com/vim-scripts/mru.vim) plugin:
-
-![Screenshot 2](https://dnp4pehkvoo6n.cloudfront.net/1d49a88f9bd5d013c025bb1e1272a7d8/as/MRU%20plugin.png)
-
-[NERD Tree](https://github.com/scrooloose/nerdtree) plugin in a terminal window:
+[NERD Tree](https://github.com/preservim/nerdtree) plugin in a terminal window:
 ![Screenshot 3](https://dnp4pehkvoo6n.cloudfront.net/ae719203166585d64728f28398f4b1b7/as/Terminal%20usage.png)
 
 Distraction free mode using [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2):
@@ -90,12 +92,11 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [fzf.vim](https://github.com/junegunn/fzf.vim)
 * [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2): 
 * [lightline.vim](https://github.com/itchyny/lightline.vim): A light and configurable statusline/tabline for Vim
-* [NERD Tree](https://github.com/scrooloose/nerdtree): A tree explorer plugin for vim
-* [mru.vim](https://github.com/vim-scripts/mru.vim): Plugin to manage Most Recently Used (MRU) files. This plugin can be opened with `<leader+f>`
+* [NERD Tree](https://github.com/preservim/nerdtree): A tree explorer plugin for vim
 * [open_file_under_cursor.vim](https://github.com/amix/open_file_under_cursor.vim): Open file under cursor when pressing `gf`
 * [pathogen.vim](https://github.com/tpope/vim-pathogen): Manage your vim runtimepath 
 * [snipmate.vim](https://github.com/garbas/vim-snipmate): snipmate.vim aims to be a concise vim script that implements some of TextMate's snippets features in Vim
-* [ale](https://github.com/w0rp/ale): Syntax and lint checking for vim (async)
+* [ale](https://github.com/dense-analysis/ale): Syntax and lint checking for vim (ALE requires NeoVim >= 0.2.0 or Vim 8 with +timers +job +channel)
 * [vim-commentary](https://github.com/tpope/vim-commentary): Comment stuff out.  Use `gcc` to comment out a line (takes a count), `gc` to comment out the target of a motion. `gcu` uncomments a set of adjacent commented lines.
 * [vim-expand-region](https://github.com/terryma/vim-expand-region): Allows you to visually select increasingly larger regions of text using the same key combination
 * [vim-fugitive](https://github.com/tpope/vim-fugitive): A Git wrapper so awesome, it should be illegal
@@ -103,6 +104,9 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [vim-multiple-cursors](https://github.com/terryma/vim-multiple-cursors): Sublime Text style multiple selections for Vim, CTRL+N is remapped to CTRL+S (due to YankRing)
 * [vim-yankstack](https://github.com/maxbrunsfeld/vim-yankstack): Maintains a history of previous yanks, changes and deletes
 * [vim-zenroom2](https://github.com/amix/vim-zenroom2) Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room
+* [gist-vim](https://github.com/mattn/gist-vim) Easily create gists from Vim using the `:Gist` command
+* [vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides) Is a plugin for visually displaying indent levels in Vim
+* [editorconfig-vim](https://github.com/editorconfig/editorconfig-vim) EditorConfig helps maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs.
 
 ### Invcluded after fork
 
@@ -117,6 +121,7 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 ## Included color schemes
 
 * [peaksea](https://github.com/vim-scripts/peaksea): The default
+* [dracula](https://github.com/dracula/vim)
 * [vim-colors-solarized](https://github.com/altercation/vim-colors-solarized)
 * [vim-irblack](https://github.com/wgibbs/vim-irblack)
 * [mayansmoke](https://github.com/vim-scripts/mayansmoke)
@@ -128,9 +133,13 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [vim-coffee-script](https://github.com/kchmck/vim-coffee-script)
 * [vim-less](https://github.com/groenewege/vim-less)
 * [vim-bundle-mako](https://github.com/sophacles/vim-bundle-mako)
-* [vim-markdown](https://github.com/tpope/vim-markdown)
+* [vim-markdown](https://github.com/plasticboy/vim-markdown)
 * [nginx.vim](https://github.com/vim-scripts/nginx.vim): Highlights configuration files for nginx
-* [vim-go](https://github.com/fatih/vim-go)
+* [rust.vim](https://github.com/rust-lang/rust.vim)
+* [vim-ruby](https://github.com/vim-ruby/vim-ruby)
+* [typescript-vim](https://github.com/leafgarland/typescript-vim)
+* [vim-javascript](https://github.com/pangloss/vim-javascript)
+* [vim-python-pep8-indent](https://github.com/Vimjas/vim-python-pep8-indent)
 
 
 ## How to include your own stuff?
@@ -145,6 +154,13 @@ You can also install your plugins, for instance, via pathogen you can install [v
 
 	cd ~/.vim_runtime
 	git clone git://github.com/tpope/vim-rails.git my_plugins/vim-rails
+
+You can also install plugins without any plugin manager (vim 8+ required):  
+	Add `packloadall` to your .vimrc file  
+	Create pack plugin directory:  
+	`mkdir -p ~/.vim/pack/plugins/start`  
+	Clone the plugin that you want in that directory, for example:  
+	`git clone --depth=1 git://github.com/maxmellon/vim-jsx-pretty  ~/.vim/pack/plugins/vim-jsx-pretty`
 
 
 ## Key Mappings
@@ -176,7 +192,6 @@ Open [fzf.vim](https://github.com/junegunn/fzf.vim) `:Files` plugin to quickly f
 
     map <leader>z :Goyo<cr>
 
-
 ### Normal mode mappings
 
 Fast saving of a buffer (`<leader>w`):
@@ -186,7 +201,7 @@ Fast saving of a buffer (`<leader>w`):
 Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
 	
 	map <space> /
-	map <c-space> ?
+	map <C-space> ?
 	map <silent> <leader><cr> :noh<cr>
 
 Disable highlights when you press `<leader><cr>`:
@@ -217,7 +232,7 @@ Useful mappings for managing tabs:
 	
 	" Opens a new tab with the current buffer's path
 	" Super useful when editing files in the same directory
-	map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
+	map <leader>te :tabedit <C-r>=expand("%:p:h")<cr>/
 	
 Switch [CWD](http://vim.wikia.com/wiki/Set_working_directory_to_the_current_file) to the directory of the open buffer:
 	
@@ -258,7 +273,7 @@ Surround the visual selection in parenthesis/brackets/etc.:
     vnoremap $3 <esc>`>a}<esc>`<i{<esc>
     vnoremap $$ <esc>`>a"<esc>`<i"<esc>
     vnoremap $q <esc>`>a'<esc>`<i'<esc>
-    vnoremap $e <esc>`>a"<esc>`<i"<esc>
+    vnoremap $e <esc>`>a`<esc>`<i`<esc>
 
 
 ### Insert mode mappings
@@ -275,7 +290,7 @@ Quickly insert parenthesis/brackets/etc.:
 
 Insert the current date and time (useful for timestamps):
 
-    iab xdate <c-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
+    iab xdate <C-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
 
 
 ### Command line mappings
@@ -298,6 +313,82 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
     :W 
 
 
+### Plugin related mappings
+
+Open [bufexplorer](https://github.com/vim-scripts/bufexplorer.zip) to see and manage the current buffers (`<leader>o`):
+    
+    map <leader>o :BufExplorer<cr>
+
+Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a file or a buffer (`<leader>j` or `<ctrl>f`):
+
+    " Quickly find and open a file in the CWD
+    let g:ctrlp_map = '<C-f>'
+
+    " Quickly find and open a recently opened file
+    map <leader>f :MRU<CR>
+
+    " Quickly find and open a buffer
+    map <leader>b :CtrlPBuffer<cr>
+
+[NERD Tree](https://github.com/preservim/nerdtree) mappings:
+
+    map <leader>nn :NERDTreeToggle<cr>
+    map <leader>nb :NERDTreeFromBookmark 
+    map <leader>nf :NERDTreeFind<cr>
+
+[goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2) lets you only focus on one thing at a time. It removes all the distractions and centers the content. It has a special look when editing Markdown, reStructuredText and textfiles. It only has one mapping. (`<leader>z`)
+
+    map <leader>z :Goyo<cr>
+
+[vim-multiple-cursors](https://github.com/terryma/vim-multiple-cursors) mappings to manage multiple cursors at once:
+
+    let g:multi_cursor_start_word_key      = '<C-s>'
+    let g:multi_cursor_select_all_word_key = '<A-s>'
+    let g:multi_cursor_start_key           = 'g<C-s>'
+    let g:multi_cursor_select_all_key      = 'g<A-s>'
+    let g:multi_cursor_next_key            = '<C-s>'
+    let g:multi_cursor_prev_key            = '<C-p>'
+    let g:multi_cursor_skip_key            = '<C-x>'
+    let g:multi_cursor_quit_key            = '<Esc>'
+
+[vim-yankstack](https://github.com/maxbrunsfeld/vim-yankstack) mappings to manage the kill-ring (clipboard):
+
+    nmap <C-p> <Plug>yankstack_substitute_older_paste
+    nmap <C-n> <Plug>yankstack_substitute_newer_paste
+
+[ctrl-p](https://github.com/ctrlpvim/ctrlp.vim) mappings to easily find and open a file, buffer, etc.:
+
+    let g:ctrlp_map = '<C-f>'
+    map <leader>j :CtrlP<cr>
+    map <C-b> :CtrlPBuffer<cr>
+
+[vim-snipmate](https://github.com/garbas/vim-snipmate) mappings to autocomplete via snippets:
+
+    ino <C-j> <C-r>=snipMate#TriggerSnippet()<cr>
+    snor <C-j> <esc>i<right><C-r>=snipMate#TriggerSnippet()<cr>
+
+[vim-surround](https://github.com/tpope/vim-surround) mappings to easily surround a string with `_()` gettext annotation:
+
+    vmap Si S(i_<esc>f)
+    au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
+
+[ale](https://github.com/dense-analysis/ale) to easily go to the next Ale syntax/lint error:
+
+    nmap <silent> <leader>a <Plug>(ale_next_wrap)
+
+[vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides) the default mapping to toggle the plugin is (`<leader>ig`)
+
+    You can also use the following commands inside Vim:
+    :IndentGuidesEnable
+    :IndentGuidesDisable
+    :IndentGuidesToggle
+
+[vim-fugitive](https://github.com/tpope/vim-fugitive) to copy the link to the line of a Git repository to the clipboard:
+
+    nnoremap <leader>v :.GBrowse!<CR>
+    xnoremap <leader>v :'<'>GBrowse!<CR>
+
+
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
 
@@ -310,6 +401,13 @@ Shortcuts using `<leader>` instead of special characters:
     map <leader>sa zg
     map <leader>s? z=
 
+### Running Code
+To run code directly from vim, press `F5`. The currently open code will execute without you having to type anything.
+
+Can be used to execute code written in C, C++, Java, Python, Go, Octave, Bash scripts and HTML. To edit how you want your code to be executed, make changes in the file 
+```
+~/.vim_runtime/vimrcs/extended.vim
+```
 
 ### Cope
 Query `:help cope` if you are unsure what cope is. It's super useful!
@@ -335,3 +433,11 @@ Cope mappings:
 Just do following:
 * Remove `~/.vim_runtime`
 * Remove any lines that reference `.vim_runtime` in your `~/.vimrc`
+
+
+## Looking for a remote-first job?
+
+Maintaining this Vim configuration isn't my day job. Daily I am the founder/CEO of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
+
+PS: Using Vim isn't a requirement 😄
+

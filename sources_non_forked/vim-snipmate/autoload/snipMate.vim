@@ -42,7 +42,7 @@ function! snipMate#expandSnip(snip, version, col) abort
 
 	" Open any folds snippet expands into
 	if &foldenable
-		silent! exec lnum . ',' . (lnum + len(snipLines) - 1) . 'foldopen'
+		silent! exec lnum . 'foldopen!'
 	endif
 
 	aug snipmate_changes
@@ -583,7 +583,22 @@ function! snipMate#TriggerSnippet(...) abort
 			call feedkeys(SuperTabKey) | return ''
 		endif
 		call feedkeys("\<esc>a", 'n') " Close completion menu
-		call feedkeys("\<tab>") | return ''
+		" Once we've dismissed the completion menu, we have to cause this
+		" function to be executed over again, so that we actually get the
+		" snippet triggered. (Simply continuing to execute fails because
+		" we have to finish this function before the results of feedkeys take
+		" effect and dismiss the completion menu. Recursing also fails for
+		" similar reasons.)
+		if a:0 == 0
+			" Would be nice to have a more robust solution than manually
+			" branching on the arguments. I tried to do something like:
+			" call call(function('snipMate#TriggerSnippet'), a:000)
+			" But I couldn't quite get it working. Maybe somebody else with
+			" better vimscript skills can find a way to make it work, though?
+			call feedkeys("\<Plug>snipMateNextOrTrigger") | return ''
+		else
+			call feedkeys("\<Plug>snipMateTrigger") | return ''
+		endif
 	endif
 
 	if exists('b:snip_state') && a:0 == 0 " Jump only if no arguments

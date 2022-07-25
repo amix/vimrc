@@ -276,7 +276,7 @@ snippet htmll "HTML basic structure with the lang attribute" b
 <html lang="${1:es}">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>${2:`!p snip.rv = snip.basename.replace('-', ' ').capitalize()`}</title>
 	</head>
 	<body>
@@ -331,6 +331,10 @@ endsnippet
 
 snippet mailto "HTML <a mailto: >" w
 <a href="mailto:${1:joe@example.com}?subject=${2:feedback}">${3:email me}</a>
+endsnippet
+
+snippet tel "HTML <a tel: >" w
+<a href="tel:+${1:XX1234567890}">${2:call me}</a>
 endsnippet
 
 snippet main "<main>"

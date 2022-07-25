@@ -1,11 +1,12 @@
-sudo: false
+os: linux
+dist: bionic
 language: ruby
 
 addons:
   apt:
     packages:
       - vim-gtk
+      - xvfb
 
-before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+script:
+  - xvfb-run bundle exec rake

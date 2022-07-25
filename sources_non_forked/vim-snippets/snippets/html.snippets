@@ -175,7 +175,7 @@ snippet aside#
 		${0}
 	</aside>
 snippet audio
-	<audio src="${1}>${0}</audio>
+	<audio src="${1}">${0}</audio>
 snippet b
 	<b>${0}</b>
 snippet base
@@ -399,7 +399,7 @@ snippet h6#
 	<h6 id="${1}">${0}</h6>
 snippet head
 	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta charset="utf-8">
 
 		<title>${1:`substitute(vim_snippets#Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
 		${0}
@@ -449,7 +449,7 @@ snippet html5
 	</html>
 snippet html5l
 	<!DOCTYPE html>
-	<html lang="${1:es}">
+	<html lang="${1:en}">
 		<head>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width">
@@ -609,7 +609,9 @@ snippet meta:d
 snippet meta:compat
 	<meta http-equiv="X-UA-Compatible" content="IE=${1:7,8,edge}">
 snippet meta:refresh
-	<meta http-equiv="refresh" content="text/html;charset=UTF-8">
+	<meta http-equiv="refresh" content="3;url=${0}">
+snippet meta:utf5
+	<meta charset="utf-8">
 snippet meta:utf
 	<meta http-equiv="content-type" content="text/html;charset=UTF-8">
 snippet meter
@@ -709,7 +711,7 @@ snippet samp
 		${0}
 	</samp>
 snippet script
-	<script charset="utf-8">
+	<script>
 		${0}
 	</script>
 snippet scripts

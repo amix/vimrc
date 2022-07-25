@@ -3,6 +3,15 @@ ALE JSON Integration                                         *ale-json-options*
 
 
 ===============================================================================
+eslint                                                        *ale-json-eslint*
+
+The `eslint` linter for JSON uses the JavaScript options for `eslint`; see:
+|ale-javascript-eslint|.
+
+You will need a JSON ESLint plugin installed for this to work.
+
+
+===============================================================================
 fixjson                                                      *ale-json-fixjson*
 
 fixjson is a JSON file fixer/formatter for humans using (relaxed) JSON5.
@@ -99,6 +108,38 @@ g:ale_json_jq_filters                                   *g:ale_json_jq_filters*
 prettier                                                    *ale-json-prettier*
 
 See |ale-javascript-prettier| for information about the available options.
+
+
+===============================================================================
+spectral                                                    *ale-json-spectral*
+
+Website: https://github.com/stoplightio/spectral
+
+Installation
+-------------------------------------------------------------------------------
+
+Install spectral either globally or locally: >
+
+  npm install @stoplight/spectral -g  # global
+  npm install @stoplight/spectral     # local
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_json_spectral_executable                 *g:ale_json_spectral_executable*
+                                               *b:ale_json_spectral_executable*
+  Type: |String|
+  Default: `'spectral'`
+
+  This variable can be set to change the path to spectral.
+
+g:ale_json_spectral_use_global                 *g:ale_json_spectral_use_global*
+                                               *b:ale_json_spectral_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
 
 
 ===============================================================================

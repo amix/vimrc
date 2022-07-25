@@ -28,7 +28,7 @@ function! ale#lsp#response#ReadDiagnostics(response) abort
     for l:diagnostic in a:response.params.diagnostics
         let l:severity = get(l:diagnostic, 'severity', 0)
         let l:loclist_item = {
-        \   'text': l:diagnostic.message,
+        \   'text': substitute(l:diagnostic.message, '\(\r\n\|\n\|\r\)', ' ', 'g'),
         \   'type': 'E',
         \   'lnum': l:diagnostic.range.start.line + 1,
         \   'col': l:diagnostic.range.start.character + 1,
@@ -56,6 +56,7 @@ function! ale#lsp#response#ReadDiagnostics(response) abort
         endif
 
         if has_key(l:diagnostic, 'relatedInformation')
+        \ && l:diagnostic.relatedInformation isnot v:null
             let l:related = deepcopy(l:diagnostic.relatedInformation)
             call map(l:related, {key, val ->
             \   ale#path#FromURI(val.location.uri) .
@@ -90,7 +91,7 @@ function! ale#lsp#response#ReadTSServerDiagnostics(response) abort
         \   'lnum': l:diagnostic.start.line,
         \   'col': l:diagnostic.start.offset,
         \   'end_lnum': l:diagnostic.end.line,
-        \   'end_col': l:diagnostic.end.offset,
+        \   'end_col': l:diagnostic.end.offset - 1,
         \}
 
         if has_key(l:diagnostic, 'code')

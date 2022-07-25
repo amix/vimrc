@@ -1,3 +1,5 @@
+let g:ale_default_navigation = get(g:, 'ale_default_navigation', 'buffer')
+
 let s:references_map = {}
 
 " Used to get the references map in tests.
@@ -49,13 +51,15 @@ function! ale#references#HandleLSPResponse(conn_id, response) abort
         let l:result = get(a:response, 'result', [])
         let l:item_list = []
 
-        for l:response_item in l:result
-            call add(l:item_list, {
-            \ 'filename': ale#path#FromURI(l:response_item.uri),
-            \ 'line': l:response_item.range.start.line + 1,
-            \ 'column': l:response_item.range.start.character + 1,
-            \})
-        endfor
+        if type(l:result) is v:t_list
+            for l:response_item in l:result
+                call add(l:item_list, {
+                \ 'filename': ale#path#FromURI(l:response_item.uri),
+                \ 'line': l:response_item.range.start.line + 1,
+                \ 'column': l:response_item.range.start.character + 1,
+                \})
+            endfor
+        endif
 
         if empty(l:item_list)
             call ale#util#Execute('echom ''No references found.''')
@@ -97,7 +101,8 @@ function! s:OnReady(line, column, options, linter, lsp_details) abort
     let l:request_id = ale#lsp#Send(l:id, l:message)
 
     let s:references_map[l:request_id] = {
-    \ 'use_relative_paths': has_key(a:options, 'use_relative_paths') ? a:options.use_relative_paths : 0
+    \ 'use_relative_paths': has_key(a:options, 'use_relative_paths') ? a:options.use_relative_paths : 0,
+    \ 'open_in': get(a:options, 'open_in', 'current-buffer'),
     \}
 endfunction
 
@@ -108,8 +113,22 @@ function! ale#references#Find(...) abort
         for l:option in a:000
             if l:option is? '-relative'
                 let l:options.use_relative_paths = 1
+            elseif l:option is? '-tab'
+                let l:options.open_in = 'tab'
+            elseif l:option is? '-split'
+                let l:options.open_in = 'split'
+            elseif l:option is? '-vsplit'
+                let l:options.open_in = 'vsplit'
             endif
         endfor
+    endif
+
+    if !has_key(l:options, 'open_in')
+        let l:default_navigation = ale#Var(bufnr(''), 'default_navigation')
+
+        if index(['tab', 'split', 'vsplit'], l:default_navigation) >= 0
+            let l:options.open_in = l:default_navigation
+        endif
     endif
 
     let l:buffer = bufnr('')

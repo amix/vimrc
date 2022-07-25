@@ -1,7 +1,7 @@
-let s:chain_results = []
+let s:command_output = []
 
-function! ale#assert#WithChainResults(...) abort
-    let s:chain_results = a:000
+function! ale#assert#GivenCommandOutput(...) abort
+    let s:command_output = a:000
 endfunction
 
 function! s:GetLinter() abort
@@ -19,6 +19,69 @@ function! s:GetLinter() abort
     return l:filetype_linters[0]
 endfunction
 
+function! s:FormatExe(command, executable) abort
+    return substitute(a:command, '%e', '\=ale#Escape(a:executable)', 'g')
+endfunction
+
+function! s:ProcessDeferredCommands(initial_result) abort
+    let l:result = a:initial_result
+    let l:command_index = 0
+    let l:command = []
+
+    while ale#command#IsDeferred(l:result)
+        call add(l:command, s:FormatExe(l:result.command, l:result.executable))
+
+        if get(g:, 'ale_run_synchronously_emulate_commands')
+            " Don't run commands, but simulate the results.
+            let l:Callback = g:ale_run_synchronously_callbacks[0]
+            let l:output = get(s:command_output, l:command_index, [])
+            call l:Callback(0, l:output)
+            unlet g:ale_run_synchronously_callbacks
+
+            let l:command_index += 1
+        else
+            " Run the commands in the shell, synchronously.
+            call ale#test#FlushJobs()
+        endif
+
+        let l:result = l:result.value
+    endwhile
+
+    call add(l:command, l:result)
+
+    return l:command
+endfunction
+
+function! s:ProcessDeferredCwds(initial_command, initial_cwd) abort
+    let l:result = a:initial_command
+    let l:last_cwd = v:null
+    let l:command_index = 0
+    let l:cwd_list = []
+
+    while ale#command#IsDeferred(l:result)
+        call add(l:cwd_list, l:result.cwd)
+
+        if get(g:, 'ale_run_synchronously_emulate_commands')
+            " Don't run commands, but simulate the results.
+            let l:Callback = g:ale_run_synchronously_callbacks[0]
+            let l:output = get(s:command_output, l:command_index, [])
+            call l:Callback(0, l:output)
+            unlet g:ale_run_synchronously_callbacks
+
+            let l:command_index += 1
+        else
+            " Run the commands in the shell, synchronously.
+            call ale#test#FlushJobs()
+        endif
+
+        let l:result = l:result.value
+    endwhile
+
+    call add(l:cwd_list, a:initial_cwd is v:null ? l:last_cwd : a:initial_cwd)
+
+    return l:cwd_list
+endfunction
+
 " Load the currently loaded linter for a test case, and check that the command
 " matches the given string.
 function! ale#assert#Linter(expected_executable, expected_command) abort
@@ -31,47 +94,20 @@ function! ale#assert#Linter(expected_executable, expected_command) abort
         let l:executable = l:executable.value
     endwhile
 
-    if has_key(l:linter, 'command_chain')
-        let l:callbacks = map(copy(l:linter.command_chain), 'v:val.callback')
+    let l:command = s:ProcessDeferredCommands(
+    \   ale#linter#GetCommand(l:buffer, l:linter),
+    \)
 
-        " If the expected command is a string, just check the last one.
-        if type(a:expected_command) is v:t_string
-            if len(l:callbacks) is 1
-                let l:command = call(l:callbacks[0], [l:buffer])
-            else
-                let l:input = get(s:chain_results, len(l:callbacks) - 2, [])
-                let l:command = call(l:callbacks[-1], [l:buffer, l:input])
-            endif
-        else
-            let l:command = []
-            let l:chain_index = 0
-
-            for l:Callback in l:callbacks
-                if l:chain_index is 0
-                    call add(l:command, call(l:Callback, [l:buffer]))
-                else
-                    let l:input = get(s:chain_results, l:chain_index - 1, [])
-                    call add(l:command, call(l:Callback, [l:buffer, l:input]))
-                endif
-
-                let l:chain_index += 1
-            endfor
-        endif
-    else
-        let l:command = ale#linter#GetCommand(l:buffer, l:linter)
-
-        while ale#command#IsDeferred(l:command)
-            call ale#test#FlushJobs()
-            let l:command = l:command.value
-        endwhile
+    if type(a:expected_command) isnot v:t_list
+        let l:command = l:command[-1]
     endif
 
     if type(l:command) is v:t_string
         " Replace %e with the escaped executable, so tests keep passing after
         " linters are changed to use %e.
-        let l:command = substitute(l:command, '%e', '\=ale#Escape(l:executable)', 'g')
+        let l:command = s:FormatExe(l:command, l:executable)
     elseif type(l:command) is v:t_list
-        call map(l:command, 'substitute(v:val, ''%e'', ''\=ale#Escape(l:executable)'', ''g'')')
+        call map(l:command, 's:FormatExe(v:val, l:executable)')
     endif
 
     AssertEqual
@@ -79,12 +115,75 @@ function! ale#assert#Linter(expected_executable, expected_command) abort
     \   [l:executable, l:command]
 endfunction
 
+function! ale#assert#LinterCwd(expected_cwd) abort
+    let l:buffer = bufnr('')
+    let l:linter = s:GetLinter()
+
+    let l:initial_cwd = ale#linter#GetCwd(l:buffer, l:linter)
+    call ale#command#SetCwd(l:buffer, l:initial_cwd)
+
+    let l:cwd = s:ProcessDeferredCwds(
+    \   ale#linter#GetCommand(l:buffer, l:linter),
+    \   l:initial_cwd,
+    \)
+
+    call ale#command#ResetCwd(l:buffer)
+
+    if type(a:expected_cwd) isnot v:t_list
+        let l:cwd = l:cwd[-1]
+    endif
+
+    AssertEqual a:expected_cwd, l:cwd
+endfunction
+
+function! ale#assert#FixerCwd(expected_cwd) abort
+    let l:buffer = bufnr('')
+    let l:cwd = s:ProcessDeferredCwds(s:FixerFunction(l:buffer), v:null)
+
+    if type(a:expected_cwd) isnot v:t_list
+        let l:cwd = l:cwd[-1]
+    endif
+
+    AssertEqual a:expected_cwd, l:cwd
+endfunction
+
+function! ale#assert#Fixer(expected_result) abort
+    let l:buffer = bufnr('')
+    let l:result = s:ProcessDeferredCommands(s:FixerFunction(l:buffer))
+
+    if type(a:expected_result) isnot v:t_list
+        let l:result = l:result[-1]
+    endif
+
+    AssertEqual a:expected_result, l:result
+endfunction
+
+function! ale#assert#FixerNotExecuted() abort
+    let l:buffer = bufnr('')
+    let l:result = s:ProcessDeferredCommands(s:FixerFunction(l:buffer))[-1]
+
+    Assert empty(l:result), "The fixer will be executed when it shouldn't be"
+endfunction
+
 function! ale#assert#LinterNotExecuted() abort
     let l:buffer = bufnr('')
     let l:linter = s:GetLinter()
     let l:executable = ale#linter#GetExecutable(l:buffer, l:linter)
+    let l:executed = 1
 
-    Assert empty(l:executable), "The linter will be executed when it shouldn't be"
+    if !empty(l:executable)
+        let l:command = ale#linter#GetCommand(l:buffer, l:linter)
+
+        if type(l:command) is v:t_list
+            let l:command = l:command[-1]
+        endif
+
+        let l:executed = !empty(l:command)
+    else
+        let l:executed = 0
+    endif
+
+    Assert !l:executed, "The linter will be executed when it shouldn't be"
 endfunction
 
 function! ale#assert#LSPOptions(expected_options) abort
@@ -106,7 +205,7 @@ endfunction
 function! ale#assert#LSPLanguage(expected_language) abort
     let l:buffer = bufnr('')
     let l:linter = s:GetLinter()
-    let l:language = ale#util#GetFunction(l:linter.language_callback)(l:buffer)
+    let l:language = ale#linter#GetLanguage(l:buffer, l:linter)
 
     AssertEqual a:expected_language, l:language
 endfunction
@@ -128,7 +227,8 @@ function! ale#assert#LSPAddress(expected_address) abort
 endfunction
 
 function! ale#assert#SetUpLinterTestCommands() abort
-    command! -nargs=+ WithChainResults :call ale#assert#WithChainResults(<args>)
+    command! -nargs=+ GivenCommandOutput :call ale#assert#GivenCommandOutput(<args>)
+    command! -nargs=+ AssertLinterCwd :call ale#assert#LinterCwd(<args>)
     command! -nargs=+ AssertLinter :call ale#assert#Linter(<args>)
     command! -nargs=0 AssertLinterNotExecuted :call ale#assert#LinterNotExecuted()
     command! -nargs=+ AssertLSPOptions :call ale#assert#LSPOptions(<args>)
@@ -136,6 +236,37 @@ function! ale#assert#SetUpLinterTestCommands() abort
     command! -nargs=+ AssertLSPLanguage :call ale#assert#LSPLanguage(<args>)
     command! -nargs=+ AssertLSPProject :call ale#assert#LSPProject(<args>)
     command! -nargs=+ AssertLSPAddress :call ale#assert#LSPAddress(<args>)
+endfunction
+
+function! ale#assert#SetUpFixerTestCommands() abort
+    command! -nargs=+ GivenCommandOutput :call ale#assert#GivenCommandOutput(<args>)
+    command! -nargs=+ AssertFixerCwd :call ale#assert#FixerCwd(<args>)
+    command! -nargs=+ AssertFixer :call ale#assert#Fixer(<args>)
+    command! -nargs=0 AssertFixerNotExecuted :call ale#assert#FixerNotExecuted()
+endfunction
+
+function! ale#assert#ResetVariables(filetype, name, ...) abort
+    " If the suffix of the option names format is different, an additional
+    " argument can be used for that instead.
+    if a:0 > 1
+        throw 'Too many arguments'
+    endif
+
+    let l:option_suffix = get(a:000, 0, a:name)
+    let l:prefix = 'ale_' . a:filetype . '_'
+    \   . substitute(l:option_suffix, '-', '_', 'g')
+    let l:filter_expr = 'v:val[: len(l:prefix) - 1] is# l:prefix'
+
+    " Save and clear linter variables.
+    " We'll load the runtime file to reset them to defaults.
+    for l:key in filter(keys(g:), l:filter_expr)
+        execute 'Save g:' . l:key
+        unlet g:[l:key]
+    endfor
+
+    for l:key in filter(keys(b:), l:filter_expr)
+        unlet b:[l:key]
+    endfor
 endfunction
 
 " A dummy function for making sure this module is loaded.
@@ -147,46 +278,44 @@ function! ale#assert#SetUpLinterTest(filetype, name) abort
     call ale#linter#Reset()
     call ale#linter#PreventLoading(a:filetype)
 
-    let l:prefix = 'ale_' . a:filetype . '_' . a:name
-    let b:filter_expr = 'v:val[: len(l:prefix) - 1] is# l:prefix'
+    Save g:ale_root
+    let g:ale_root = {}
 
-    Save g:ale_lsp_root
-    let g:ale_lsp_root = {}
+    Save b:ale_root
+    unlet! b:ale_root
 
-    Save b:ale_lsp_root
-    unlet! b:ale_lsp_root
+    call ale#assert#ResetVariables(a:filetype, a:name)
 
     Save g:ale_c_build_dir
     unlet! g:ale_c_build_dir
-
-    " Save and clear linter variables.
-    " We'll load the runtime file to reset them to defaults.
-    for l:key in filter(keys(g:), b:filter_expr)
-        execute 'Save g:' . l:key
-        unlet g:[l:key]
-    endfor
-
     unlet! b:ale_c_build_dir
-
-    for l:key in filter(keys(b:), b:filter_expr)
-        unlet b:[l:key]
-    endfor
 
     execute 'runtime ale_linters/' . a:filetype . '/' . a:name . '.vim'
 
     if !exists('g:dir')
-        call ale#test#SetDirectory('/testplugin/test/command_callback')
+        call ale#test#SetDirectory('/testplugin/test/linter')
     endif
 
     call ale#assert#SetUpLinterTestCommands()
+
+    let g:ale_run_synchronously = 1
+    let g:ale_run_synchronously_emulate_commands = 1
 endfunction
 
 function! ale#assert#TearDownLinterTest() abort
     unlet! g:ale_create_dummy_temporary_file
-    let s:chain_results = []
+    unlet! g:ale_run_synchronously
+    unlet! g:ale_run_synchronously_callbacks
+    unlet! g:ale_run_synchronously_emulate_commands
+    unlet! g:ale_run_synchronously_command_results
+    let s:command_output = []
 
-    if exists(':WithChainResults')
-        delcommand WithChainResults
+    if exists(':GivenCommandOutput')
+        delcommand GivenCommandOutput
+    endif
+
+    if exists(':AssertLinterCwd')
+        delcommand AssertLinterCwd
     endif
 
     if exists(':AssertLinter')
@@ -227,5 +356,69 @@ function! ale#assert#TearDownLinterTest() abort
 
     if exists('*ale#semver#ResetVersionCache')
         call ale#semver#ResetVersionCache()
+    endif
+endfunction
+
+function! ale#assert#SetUpFixerTest(filetype, name, ...) abort
+    " If the suffix of the option names format is different, an additional
+    " argument can be used for that instead.
+    if a:0 > 1
+        throw 'Too many arguments'
+    endif
+
+    " Set up a marker so ALE doesn't create real random temporary filenames.
+    let g:ale_create_dummy_temporary_file = 1
+
+    let l:function_name = ale#fix#registry#GetFunc(a:name)
+    let s:FixerFunction = function(l:function_name)
+
+    let l:option_suffix = get(a:000, 0, a:name)
+    call ale#assert#ResetVariables(a:filetype, a:name, l:option_suffix)
+
+    execute 'runtime autoload/ale/fixers/' . substitute(a:name, '-', '_', 'g') . '.vim'
+
+    if !exists('g:dir')
+        call ale#test#SetDirectory('/testplugin/test/fixers')
+    endif
+
+    call ale#assert#SetUpFixerTestCommands()
+
+    let g:ale_run_synchronously = 1
+    let g:ale_run_synchronously_emulate_commands = 1
+endfunction
+
+function! ale#assert#TearDownFixerTest() abort
+    unlet! g:ale_create_dummy_temporary_file
+    unlet! g:ale_run_synchronously
+    unlet! g:ale_run_synchronously_callbacks
+    unlet! g:ale_run_synchronously_emulate_commands
+    unlet! g:ale_run_synchronously_command_results
+    let s:command_output = []
+    unlet! s:FixerFunction
+
+    if exists('g:dir')
+        call ale#test#RestoreDirectory()
+    endif
+
+    Restore
+
+    if exists('*ale#semver#ResetVersionCache')
+        call ale#semver#ResetVersionCache()
+    endif
+
+    if exists(':GivenCommandOutput')
+        delcommand GivenCommandOutput
+    endif
+
+    if exists(':AssertFixerCwd')
+        delcommand AssertFixerCwd
+    endif
+
+    if exists(':AssertFixer')
+        delcommand AssertFixer
+    endif
+
+    if exists(':AssertFixerNotExecuted')
+        delcommand AssertFixerNotExecuted
     endif
 endfunction

@@ -5,7 +5,7 @@ snippet ex
 	module.exports = ${1};
 # require
 snippet re
-	${1:const} ${2} = require('${3:module_name}');
+	const ${1} = require('${2:module_name}');
 # EventEmitter
 snippet on
 	on('${1:event_name}', function(${2:stream}) {

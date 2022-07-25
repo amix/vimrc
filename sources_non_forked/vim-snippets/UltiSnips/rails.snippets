@@ -69,7 +69,7 @@ endsnippet
 
 # FIXME: handling literal bracket pair inside of nested tab groups?
 snippet tcr "Create references column"
-t.references :${1:taggable}${2:, polymorphic ${3:{ :default: '${4:Photo}' \}}}
+t.references :${1:taggable}${2:, polymorphic: ${3:{ default: '${4:Photo}' }}}
 $0
 endsnippet
 
@@ -597,7 +597,7 @@ endsnippet
 
 snippet rest "respond_to"
 respond_to do |wants|
-	wants.${1:html}${2: { $0 \}}
+	wants.${1:html}${2: { $0 }}
 end
 endsnippet
 
@@ -655,7 +655,7 @@ t.$0
 endsnippet
 
 snippet t. "t.references (tcr)"
-t.references :${1:taggable}${2:, polymorphic ${3:{ :default: '${4:Photo}' \}}}
+t.references :${1:taggable}${2:, polymorphic: ${3:{ default: '${4:Photo}' }}}
 t.$0
 endsnippet
 
@@ -780,7 +780,7 @@ verify only: [:$1], session: :user, params: :id, redirect_to {:action: '${2:inde
 endsnippet
 
 snippet wants "wants_format"
-wants.${1:js|json|html}${2: { $0 \}}
+wants.${1:js|json|html}${2: { $0 }}
 endsnippet
 
 snippet xdelete "xhr delete"

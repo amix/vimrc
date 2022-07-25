@@ -1,0 +1,105 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+REPO = "alonid/vim-testbed"
+TAG = "10-rust.vim"
+IMAGE = "%s:%s" % (REPO, TAG)
+
+class Error(Exception):
+    pass
+
+def system(cmd, capture=False, ok_fail=False):
+    if capture:
+        f = os.popen(cmd)
+        d = f.read()
+        return d
+
+    res = os.system(cmd)
+    if res != 0:
+        if ok_fail:
+            return res
+
+        raise Error("Error executing: %s" % (cmd, ))
+    return 0
+
+def root():
+    return os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+def prep():
+    d = os.path.join(root(), "test")
+    for i in [".cargo", ".rustup", ".multirust"]:
+        l = os.path.join(d, i)
+        if not os.path.lexists(l):
+            os.symlink("/rust/" + i, l)
+
+    l = os.path.join(root(), "test/.vimrc")
+    if not os.path.lexists(l):
+        os.symlink("vimrc", l)
+
+    if not os.path.exists(os.path.join(d, ".profile")):
+        f = open(os.path.join(d, ".profile"), "w")
+        f.write('export PATH="$HOME/.cargo/bin:$PATH"\n')
+        f.close()
+
+def docker_run(cmd, interactive=False, ok_fail=False):
+    prep()
+    d = root()
+    params = "-v %s:/testplugin -v %s/test:/home/vimtest" % (d, d)
+    params += " -e HOME=/home/vimtest"
+    if not interactive:
+        params += " -a stderr"
+    params += " -e VADER_OUTPUT_FILE=/dev/stderr"
+    params += " -u %s" % (os.getuid(), )
+    params += " -w /testplugin"
+    if interactive:
+        interactive_str = "-it"
+    else:
+        interactive_str = ""
+    return system("docker run %s --rm %s %s %s" % (interactive_str, params, IMAGE, cmd),
+            ok_fail=ok_fail)
+
+def image_exists():
+    r = system("docker images -q %s" % (IMAGE, ), capture=True)
+    return len(r.strip().splitlines()) >= 1
+
+def tests_on_docker():
+    res = docker_run("bash -lc 'python /home/vimtest/run-tests inside-docker'", ok_fail=True)
+    if res == 0:
+        print("Tests OK")
+    else:
+        print("Tests Failed")
+        sys.exit(1)
+
+def inside_docker():
+    res = system("/vim-build/bin/vim80 --not-a-term '+Vader! test/*.vader'", ok_fail=True)
+    if res != 0:
+        sys.exit(1)
+
+def run_with_vimrc(vimrc):
+    res = system("vim -u %s --not-a-term '+Vader! test/*.vader'" % (vimrc, ), ok_fail=True)
+    if res != 0:
+        sys.exit(1)
+
+def main():
+    if sys.argv[1:] == ["inside-docker"]:
+        inside_docker()
+        return
+
+    if sys.argv[1:2] == ["run-with-vimrc"]:
+        run_with_vimrc(sys.argv[2])
+        return
+
+    if not image_exists():
+        print("Need to take image from remote")
+        system("docker pull %s" % (IMAGE, ))
+
+    if "-i" in sys.argv[1:]:
+        docker_run("bash -l", interactive=True)
+        return
+
+    tests_on_docker()
+
+if __name__ == "__main__":
+    main()

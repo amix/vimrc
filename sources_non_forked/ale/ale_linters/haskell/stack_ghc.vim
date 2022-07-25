@@ -15,6 +15,7 @@ call ale#linter#Define('haskell', {
 \   'aliases': ['stack-ghc'],
 \   'output_stream': 'stderr',
 \   'executable': function('ale#handlers#haskell#GetStackExecutable'),
+\   'cwd': '%s:h',
 \   'command': function('ale_linters#haskell#stack_ghc#GetCommand'),
 \   'callback': 'ale#handlers#haskell#HandleGHCFormat',
 \})

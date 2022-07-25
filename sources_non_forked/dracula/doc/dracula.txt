@@ -1,0 +1,164 @@
+*dracula.txt*           For Vim version 8               Last change: 2021 Oct 22
+*dracula* *vim-dracula*
+
+                    |\                          ,,       ~
+                     \\          _              ||   _   ~
+                    / \\ ,._-_  < \,  _-_ \\ \\ ||  < \, ~
+                   || ||  ||    /-|| ||   || || ||  /-|| ~
+                   || ||  ||   (( || ||   || || || (( || ~
+                    \\/   \\,   \/\\ \\,/ \\/\\ \\  \/\\ ~
+
+                             A dark theme for vim
+
+==============================================================================
+CONTENTS                                                      *dracula-contents*
+
+    1. Intro ................................................... |dracula-intro|
+    2. Usage ................................................... |dracula-usage|
+    3. Configuration ................................... |dracula-configuration|
+    4. Personal Customization .......................... |dracula-customization|
+    5. License ............................................... |dracula-license|
+    6. Bugs ..................................................... |dracula-bugs|
+    7. Contributing ..................................... |dracula-contributing|
+    8. Credits ............................................... |dracula-credits|
+
+==============================================================================
+INTRO                                                            *dracula-intro*
+
+Dracula is a vim plugin that contains
+
+    - a dark colorscheme for vim
+    - a similarly-themed colorscheme for the vim plugin airline
+        (https://github.com/vim-airline/vim-airline)
+
+==============================================================================
+USAGE                                                            *dracula-usage*
+
+Install it with your favorite plugin manager, and then >
+    colorscheme dracula
+in your vimrc! See also |dracula_runtimepath|.
+
+If you are an airline user, you can also do >
+    let g:airline_theme='dracula'
+to have airline use Dracula.
+
+                                                           *dracula_runtimepath*
+
+Note that dracula must be in your 'runtimepath' for this command to work
+properly: Version 2.0 introduced autoload functionality for part of the
+plugin, which doesn't work without 'runtimepath' properly set.
+
+For users of Vim 8's |packages| feature, it suffices to put >
+    packadd! dracula
+    colorscheme dracula
+in your vimrc. {name} Should be replaced by the directory you put the code in.
+For example, if you use ~/.vim/pack/themes/start/my-dracula-theme, you would
+do >
+    packadd! my-dracula-theme
+
+For users of other plugin managers, consult your documentation
+to make sure you put dracula on the 'runtimepath' before loading it.
+
+==============================================================================
+CONFIGURATION                                            *dracula-configuration*
+
+There are a couple of variables used by Dracula that you might want to adjust
+depending on your terminal's capabilities.
+
+Default values are shown.
+
+------------------------------------------------------------------------------
+In the following section, `1` signifies `on` and `0` signifies `off`.
+
+* *g:dracula_bold*
+Include bold attributes in highlighting >
+    let g:dracula_bold = 1
+
+* *g:dracula_italic*
+Include italic attributes in highlighting >
+    let g:dracula_italic = 1
+
+* *g:dracula_underline*
+Include underline attributes in highlighting >
+    let g:dracula_underline = 1
+
+* *g:dracula_undercurl*
+Include undercurl attributes in highlighting (only if underline enabled) >
+    let g:dracula_undercurl = 1
+
+* *g:dracula_full_special_attrs_support*
+Explicitly declare full support for special attributes. By default it is 1
+for graphical applications and 0 for terminals and terminal emulators.  On
+terminal emulators, set to 1 to allow underline/undercurl highlights without
+changing the foreground color. >
+    let g:dracula_full_special_attrs_support = 1
+
+* *g:dracula_inverse*
+Include inverse attributes in highlighting >
+    let g:dracula_inverse = 1
+
+* *g:dracula_colorterm*
+Include background fill colors >
+   let g:dracula_colorterm = 1
+
+==============================================================================
+CUSTOMIZATION                                            *dracula-customization*
+
+Like all colorschemes, Dracula is easy to customize with |autocmd|. Make use
+of the |ColorScheme| event as in the following examples.
+
+It would be a good idea to put all of your personal changes in an |augroup|,
+which you can do with the following code: >
+    augroup dracula_customization
+      au!
+      " autocmds...
+    augroup END
+>
+
+- To add underline styling to |hl-CursorLine|, you can use the following: >
+    autocmd ColorScheme dracula hi CursorLine cterm=underline term=underline
+<
+==============================================================================
+LICENSE                                                        *dracula-license*
+
+MIT License. Copyright © 2016 Dracula Theme.
+Full text available at
+https://github.com/dracula/vim/blob/master/LICENSE
+
+==============================================================================
+BUGS                                                              *dracula-bugs*
+
+At the time of this writing, no major bugs have been found.
+
+If you find one and wish to report it, you can do so at
+https://github.com/dracula/vim/issues
+
+==============================================================================
+CONTRIBUTING                                              *dracula-contributing*
+
+Want to submit a new feature, bugfix, or hack on Dracula?
+Submit pull requests to
+https://github.com/dracula/vim/pulls
+
+Existing code determines style guidelines.
+
+==============================================================================
+CREDITS                                                        *dracula-credits*
+
+Proudly built by the Dracula Theme organization
+https://github.com/dracula
+
+Dracula for other applications available at
+https://draculatheme.com
+
+Further information available at
+https://draculatheme.com/vim
+
+Maintained by:
+- Derek S. (https://github.com/dsifford)
+- D. Ben Knoble (https://github.com/benknoble)
+
+Git repository:
+https://github.com/dracula/vim
+
+ vim:tw=78:ts=8:ft=help:norl:

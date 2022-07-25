@@ -1234,7 +1234,7 @@ function! s:wait_for_user_input(mode)
   "   imap jj JJ
   "   imap jjj JJJ
   " will always trigger the 'jj' mapping
-  if s:from_mode ==# 'i' && mapcheck(s:char, "i") != ""
+  if s:from_mode ==# 'i' && mapcheck(s:char, "i") != "" && g:multi_cursor_support_imap
     let map_dict = {}
     let s_time = s:get_time_in_ms()
     while 1
@@ -1285,7 +1285,7 @@ function! s:wait_for_user_input(mode)
   call s:start_latency_measure()
 
   " Clears any echoes we might've added
-  normal! :<Esc>
+  normal! :
 
   " add chars to s:char if it start like a special/quit key
   let is_special_key = 0

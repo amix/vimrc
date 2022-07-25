@@ -39,7 +39,7 @@ endfunction
 call ale#linter#Define('markdown', {
 \   'name': 'remark_lint',
 \   'aliases': ['remark-lint'],
-\   'executable': {b -> ale#node#FindExecutable(b, 'markdown_remark_lint', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'markdown_remark_lint', [
 \       'node_modules/.bin/remark',
 \   ])},
 \   'command': function('ale_linters#markdown#remark_lint#GetCommand'),

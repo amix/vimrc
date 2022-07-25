@@ -1,8 +1,8 @@
 " @Author:      Tom Link (mailto:micathom AT gmail com?subject=[vim])
 " @Website:     https://github.com/tomtom
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Last Change: 2015-11-13
-" @Revision:    59
+" @Last Change: 2018-02-08
+" @Revision:    69
 
 " :nodoc:
 TLet g:tlib#qfl#world = {
@@ -29,7 +29,10 @@ TLet g:tlib#qfl#world = {
 
 function! tlib#qfl#FormatQFLE(qfe) dict abort "{{{3
     let filename = tlib#qfl#QfeFilename(a:qfe)
-    if get(self, 'qfl_short_filename', '')
+    let short_filename = get(self, 'qfl_short_filename', '')
+    if short_filename ==# 'basename'
+        let filename = matchstr(filename, '[^\\/]\+$')
+    elseif !empty(short_filename)
         let filename = pathshorten(filename)
     endif
     return printf("%s|%d| %s", filename, a:qfe.lnum, get(a:qfe, "text"))
@@ -119,11 +122,11 @@ endf
 
 
 function! tlib#qfl#AgentEditQFE(world, selected, ...) "{{{3
-    TVarArg ['cmd_edit', ''], ['cmd_buffer', '']
+    TVarArg ['cmd_edit', ''], ['cmd_buffer', ''], ['set_origin', 1]
     " TVarArg ['cmd_edit', 'edit'], ['cmd_buffer', 'buffer']
     " TLogVAR a:selected
     if empty(a:selected)
-        call a:world.RestoreOrigin()
+        " call a:world.RestoreOrigin()
         " call a:world.ResetSelected()
     else
         call a:world.RestoreOrigin()
@@ -148,11 +151,13 @@ function! tlib#qfl#AgentEditQFE(world, selected, ...) "{{{3
                     " TLogDBG bufname('%')
                     " TLogVAR &filetype
                     call tlib#buffer#ViewLine(qfe.lnum)
-                    " call a:world.SetOrigin()
                     " exec back
                 endif
             endif
         endfor
+        if set_origin
+            call a:world.SetOrigin()
+        endif
     endif
     return a:world
 endf 
@@ -161,7 +166,7 @@ endf
 function! tlib#qfl#AgentPreviewQFE(world, selected) "{{{3
     " TLogVAR a:selected
     let back = a:world.SwitchWindow('win')
-    call tlib#qfl#AgentEditQFE(a:world, a:selected[0:0])
+    call tlib#qfl#AgentEditQFE(a:world, a:selected[0:0], '', '', 0)
     exec back
     redraw
     let a:world.state = 'redisplay'
@@ -170,14 +175,12 @@ endf
 
 
 function! tlib#qfl#AgentGotoQFE(world, selected) "{{{3
+    let world = a:world
     if !empty(a:selected)
-        if a:world.win_wnr != winnr()
-            let world = tlib#agent#Suspend(a:world, a:selected)
-            exec a:world.win_wnr .'wincmd w'
-        endif
-        call tlib#qfl#AgentEditQFE(a:world, a:selected[0:0])
+        let world = tlib#agent#Suspend(world, a:selected)
+        call tlib#qfl#AgentEditQFE(world, a:selected[0:0])
     endif
-    return a:world
+    return world
 endf
 
 
@@ -201,7 +204,7 @@ function! tlib#qfl#RunCmdOnSelected(world, selected, cmd, ...) "{{{3
     " TLogVAR a:cmd
     for entry in a:selected
         " TLogVAR entry, a:world.GetBaseItem(entry)
-        call tlib#qfl#AgentEditQFE(a:world, [entry])
+        call tlib#qfl#AgentEditQFE(a:world, [entry], '', '', 0)
         " TLogDBG bufname('%')
         exec a:cmd
         " let item = a:world.data[a:world.GetBaseIdx(entry - 1)]

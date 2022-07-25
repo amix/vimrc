@@ -6,7 +6,7 @@ call ale#Set('swift_swiftformat_use_global', get(g:, 'ale_use_global_executables
 call ale#Set('swift_swiftformat_options', '')
 
 function! ale#fixers#swiftformat#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'swift_swiftformat', [
+    return ale#path#FindExecutable(a:buffer, 'swift_swiftformat', [
     \   'Pods/SwiftFormat/CommandLineTool/swiftformat',
     \   'ios/Pods/SwiftFormat/CommandLineTool/swiftformat',
     \   'swiftformat',

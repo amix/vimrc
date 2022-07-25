@@ -6,7 +6,7 @@ call ale#Set('ruby_ruby_executable', 'ruby')
 call ale#linter#Define('ruby', {
 \   'name': 'ruby',
 \   'executable': {b -> ale#Var(b, 'ruby_ruby_executable')},
-\   'command': '%e -w -c -T1 %t',
+\   'command': '%e -w -c %t',
 \   'output_stream': 'stderr',
 \   'callback': 'ale#handlers#ruby#HandleSyntaxErrors',
 \})

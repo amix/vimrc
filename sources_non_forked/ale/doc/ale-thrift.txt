@@ -43,4 +43,23 @@ g:ale_thrift_thrift_options                       *g:ale_thrift_thrift_options*
   arguments that are passed to the thrift compiler.
 
 ===============================================================================
+thriftcheck                                            *ale-thrift-thriftcheck*
+
+g:ale_thrift_thriftcheck_executable       *g:ale_thrift_thriftcheck_executable*
+                                          *b:ale_thrift_thriftcheck_executable*
+  Type: |String|
+  Default: `'thriftcheck'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_thrift_thriftcheck_options             *g:ale_thrift_thriftcheck_options*
+                                             *b:ale_thrift_thriftcheck_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to customize the additional command-line
+  arguments that are passed to thriftcheck.
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

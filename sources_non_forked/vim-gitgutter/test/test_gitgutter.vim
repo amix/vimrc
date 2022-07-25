@@ -6,29 +6,40 @@ let s:bufnr       = bufnr('')
 " Helpers
 "
 
-function s:signs(filename)
-  redir => signs
-    silent execute 'sign place'
-  redir END
+" Ignores unexpected keys in actual.
+function s:assert_list_of_dicts(expected, actual)
+  if empty(a:expected)
+    call assert_equal([], a:actual)
+    return
+  endif
 
-  let signs = split(signs, '\n')
+  let expected_keys = keys(a:expected[0])
 
-  " filter out signs for this test file
-  " assumes a:filename's signs are last set listed
-  let i = index(signs, 'Signs for '.a:filename.':')
-  let signs = (i > -1 ? signs[i+1:] : [])
+  for dict in a:actual
+    for k in keys(dict)
+      if index(expected_keys, k) == -1
+        call remove(dict, k)
+      endif
+    endfor
+  endfor
 
-  call map(signs, {_, v -> substitute(v, '    ', '', '')})
-
-  return signs
+  call assert_equal(a:expected, a:actual)
 endfunction
 
-function s:git_diff()
-  return split(system('git diff -U0 fixture.txt'), '\n')
+" Ignores unexpected keys.
+"
+" expected - list of signs
+function s:assert_signs(expected, filename)
+  let actual = sign_getplaced(a:filename, {'group': 'gitgutter'})[0].signs
+  call s:assert_list_of_dicts(a:expected, actual)
 endfunction
 
-function s:git_diff_staged()
-  return split(system('git diff -U0 --staged fixture.txt'), '\n')
+function s:git_diff(...)
+  return split(system('git diff -U0 '.(a:0 ? a:1 : 'fixture.txt')), '\n')
+endfunction
+
+function s:git_diff_staged(...)
+  return split(system('git diff -U0 --staged '.(a:0 ? a:1 : 'fixture.txt')), '\n')
 endfunction
 
 function s:trigger_gitgutter()
@@ -44,11 +55,16 @@ function SetUp()
   call system("git init ".s:test_repo.
         \ " && cd ".s:test_repo.
         \ " && cp ../fixture.txt .".
+        \ " && cp ../fixture_dos.txt .".
         \ " && git add . && git commit -m 'initial'".
         \ " && git config diff.mnemonicPrefix false")
   execute ':cd' s:test_repo
   edit! fixture.txt
   call gitgutter#sign#reset()
+
+  " FIXME why won't vim autoload the file?
+  execute 'source' '../../autoload/gitgutter/diff_highlight.vim'
+  execute 'source' '../../autoload/gitgutter/fold.vim'
 endfunction
 
 function TearDown()
@@ -71,8 +87,8 @@ function Test_add_lines()
   normal ggo*
   call s:trigger_gitgutter()
 
-  let expected = ["line=2  id=3000  name=GitGutterLineAdded"]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 2, 'name': 'GitGutterLineAdded', 'group': 'gitgutter', 'priority': 10}]
+  call s:assert_signs(expected, 'fixture.txt')
 endfunction
 
 
@@ -83,8 +99,8 @@ function Test_add_lines_fish()
   normal ggo*
   call s:trigger_gitgutter()
 
-  let expected = ["line=2  id=3000  name=GitGutterLineAdded"]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 2, 'name': 'GitGutterLineAdded'}]
+  call s:assert_signs(expected, 'fixture.txt')
 
   let &shell = _shell
 endfunction
@@ -94,8 +110,8 @@ function Test_modify_lines()
   normal ggi*
   call s:trigger_gitgutter()
 
-  let expected = ["line=1  id=3000  name=GitGutterLineModified"]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 1, 'name': 'GitGutterLineModified'}]
+  call s:assert_signs(expected, 'fixture.txt')
 endfunction
 
 
@@ -103,8 +119,8 @@ function Test_remove_lines()
   execute '5d'
   call s:trigger_gitgutter()
 
-  let expected = ["line=4  id=3000  name=GitGutterLineRemoved"]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 4, 'name': 'GitGutterLineRemoved'}]
+  call s:assert_signs(expected, 'fixture.txt')
 endfunction
 
 
@@ -112,8 +128,20 @@ function Test_remove_first_lines()
   execute '1d'
   call s:trigger_gitgutter()
 
-  let expected = ["line=1  id=3000  name=GitGutterLineRemovedFirstLine"]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 1, 'name': 'GitGutterLineRemovedFirstLine'}]
+  call s:assert_signs(expected, 'fixture.txt')
+endfunction
+
+
+function Test_priority()
+  let g:gitgutter_sign_priority = 5
+
+  execute '1d'
+  call s:trigger_gitgutter()
+
+  call s:assert_signs([{'priority': 5}], 'fixture.txt')
+
+  let g:gitgutter_sign_priority = 10
 endfunction
 
 
@@ -122,8 +150,8 @@ function Test_overlapping_hunks()
   execute '1d'
   call s:trigger_gitgutter()
 
-  let expected = ["line=1  id=3000  name=GitGutterLineRemovedAboveAndBelow"]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 1, 'name': 'GitGutterLineRemovedAboveAndBelow'}]
+  call s:assert_signs(expected, 'fixture.txt')
 endfunction
 
 
@@ -132,8 +160,8 @@ function Test_edit_file_with_same_name_as_a_branch()
   call system('git checkout -b fixture.txt')
   call s:trigger_gitgutter()
 
-  let expected = ["line=5  id=3000  name=GitGutterLineModified"]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 5, 'name': 'GitGutterLineModified'}]
+  call s:assert_signs(expected, 'fixture.txt')
 endfunction
 
 
@@ -144,8 +172,8 @@ function Test_file_added_to_git()
   normal ihello
   call s:trigger_gitgutter()
 
-  let expected = ["line=1  id=3000  name=GitGutterLineAdded"]
-  call assert_equal(expected, s:signs('fileAddedToGit.tmp'))
+  let expected = [{'lnum': 1, 'name': 'GitGutterLineAdded'}]
+  call s:assert_signs(expected, 'fileAddedToGit.tmp')
 endfunction
 
 
@@ -156,10 +184,10 @@ function Test_filename_with_equals()
   call s:trigger_gitgutter()
 
   let expected = [
-        \ 'line=1  id=3000  name=GitGutterLineAdded',
-        \ 'line=2  id=3001  name=GitGutterLineAdded'
+        \ {'lnum': 1, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 2, 'name': 'GitGutterLineAdded'}
         \ ]
-  call assert_equal(expected, s:signs('=fixture=.txt'))
+  call s:assert_signs(expected, '=fixture=.txt')
 endfunction
 
 
@@ -170,10 +198,10 @@ function Test_filename_with_square_brackets()
   call s:trigger_gitgutter()
 
   let expected = [
-        \ 'line=1  id=3000  name=GitGutterLineAdded',
-        \ 'line=2  id=3001  name=GitGutterLineAdded'
+        \ {'lnum': 1, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 2, 'name': 'GitGutterLineAdded'}
         \ ]
-  call assert_equal(expected, s:signs('fix[tu]re.txt'))
+  call s:assert_signs(expected, 'fix[tu]re.txt')
 endfunction
 
 
@@ -184,10 +212,10 @@ function Test_filename_leading_dash()
   call s:trigger_gitgutter()
 
   let expected = [
-        \ 'line=1  id=3000  name=GitGutterLineAdded',
-        \ 'line=2  id=3001  name=GitGutterLineAdded'
+        \ {'lnum': 1, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 2, 'name': 'GitGutterLineAdded'}
         \ ]
-  call assert_equal(expected, s:signs('-fixture.txt'))
+  call s:assert_signs(expected, '-fixture.txt')
 endfunction
 
 
@@ -198,10 +226,10 @@ function Test_filename_umlaut()
   call s:trigger_gitgutter()
 
   let expected = [
-        \ 'line=1  id=3000  name=GitGutterLineAdded',
-        \ 'line=2  id=3001  name=GitGutterLineAdded'
+        \ {'lnum': 1, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 2, 'name': 'GitGutterLineAdded'}
         \ ]
-  call assert_equal(expected, s:signs('fixtüre.txt'))
+  call s:assert_signs(expected, 'fixtüre.txt')
 endfunction
 
 
@@ -213,8 +241,8 @@ function Test_follow_symlink()
   6d
   call s:trigger_gitgutter()
 
-  let expected = ['line=5  id=3000  name=GitGutterLineRemoved']
-  call assert_equal(expected, s:signs('symlink'))
+  let expected = [{'lnum': 5, 'name': 'GitGutterLineRemoved'}]
+  call s:assert_signs(expected, 'symlink')
 endfunction
 
 
@@ -255,7 +283,7 @@ endfunction
 
 
 function Test_no_modifications()
-  call assert_equal([], s:signs('fixture.txt'))
+  call s:assert_signs([], 'fixture.txt')
 endfunction
 
 
@@ -265,8 +293,8 @@ function Test_orphaned_signs()
   6d
   call s:trigger_gitgutter()
 
-  let expected = ['line=6  id=3001  name=GitGutterLineAdded']
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 6, 'name': 'GitGutterLineAdded'}]
+  call s:assert_signs(expected, 'fixture.txt')
 endfunction
 
 
@@ -275,7 +303,7 @@ function Test_untracked_file_outside_repo()
   call system('touch '.tmp)
   execute 'edit '.tmp
 
-  call assert_equal([], s:signs(tmp))
+  call s:assert_signs([], tmp)
 endfunction
 
 
@@ -286,7 +314,7 @@ function Test_untracked_file_within_repo()
   normal ggo*
   call s:trigger_gitgutter()
 
-  call assert_equal([], s:signs(tmp))
+  call s:assert_signs([], tmp)
   call assert_equal(-2, b:gitgutter.path)
 
   call system('rm '.tmp)
@@ -300,26 +328,54 @@ function Test_untracked_file_square_brackets_within_repo()
   normal ggo*
   call s:trigger_gitgutter()
 
-  call assert_equal([], s:signs(tmp))
+  call s:assert_signs([], tmp)
 
   call system('rm '.tmp)
 endfunction
 
 
 function Test_hunk_outside_noop()
-  normal 5G
+  5
   GitGutterStageHunk
 
-  call assert_equal([], s:signs('fixture.txt'))
+  call s:assert_signs([], 'fixture.txt')
   call assert_equal([], s:git_diff())
   call assert_equal([], s:git_diff_staged())
 
   GitGutterUndoHunk
 
-  call assert_equal([], s:signs('fixture.txt'))
+  call s:assert_signs([], 'fixture.txt')
   call assert_equal([], s:git_diff())
   call assert_equal([], s:git_diff_staged())
 endfunction
+
+
+function Test_preview()
+  normal 5Gi*
+  GitGutterPreviewHunk
+
+  wincmd P
+  call assert_equal(2, line('$'))
+  call assert_equal('-e', getline(1))
+  call assert_equal('+*e', getline(2))
+  wincmd p
+endfunction
+
+
+function Test_preview_dos()
+  edit! fixture_dos.txt
+
+  normal 5Gi*
+  GitGutterPreviewHunk
+
+  wincmd P
+  call assert_equal(2, line('$'))
+  call assert_equal('-e', getline(1))
+  call assert_equal('+*e', getline(2))
+  wincmd p
+endfunction
+
+
 
 
 function Test_hunk_stage()
@@ -332,7 +388,7 @@ function Test_hunk_stage()
   call assert_equal('foo', &shell)
   let &shell = _shell
 
-  call assert_equal([], s:signs('fixture.txt'))
+  call s:assert_signs([], 'fixture.txt')
 
   " Buffer is unsaved
   let expected = [
@@ -372,11 +428,11 @@ function Test_hunk_stage_nearby_hunk()
   GitGutterStageHunk
 
   let expected = [
-        \ 'line=3  id=3000  name=GitGutterLineAdded',
-        \ 'line=4  id=3001  name=GitGutterLineAdded',
-        \ 'line=5  id=3002  name=GitGutterLineAdded'
+        \ {'lnum': 3, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 4, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 5, 'name': 'GitGutterLineAdded'}
         \ ]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  call s:assert_signs(expected, 'fixture.txt')
 
   " Buffer is unsaved
   let expected = [
@@ -417,6 +473,203 @@ function Test_hunk_stage_nearby_hunk()
 endfunction
 
 
+function Test_hunk_stage_partial_visual_added()
+  call append(5, ['A','B','C','D'])
+  execute "normal 7GVj:GitGutterStageHunk\<CR>"
+
+  let expected = [
+        \ {'lnum': 6, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 9, 'name': 'GitGutterLineAdded'},
+        \ ]
+  call s:assert_signs(expected, 'fixture.txt')
+
+  let expected = [
+        \ 'diff --git a/fixture.txt b/fixture.txt',
+        \ 'index 8a7026e..f5c6aff 100644',
+        \ '--- a/fixture.txt',
+        \ '+++ b/fixture.txt',
+        \ '@@ -6,2 +5,0 @@ e',
+        \ '-B',
+        \ '-C',
+        \ ]
+  call assert_equal(expected, s:git_diff())
+
+  let expected = [
+        \ 'diff --git a/fixture.txt b/fixture.txt',
+        \ 'index f5c6aff..8a7026e 100644',
+        \ '--- a/fixture.txt',
+        \ '+++ b/fixture.txt',
+        \ '@@ -5,0 +6,2 @@ e',
+        \ '+B',
+        \ '+C',
+        \ ]
+  call assert_equal(expected, s:git_diff_staged())
+endfunction
+
+
+function Test_hunk_stage_partial_cmd_added()
+  call append(5, ['A','B','C','D'])
+  6
+  7,8GitGutterStageHunk
+
+  let expected = [
+        \ {'lnum': 6, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 9, 'name': 'GitGutterLineAdded'},
+        \ ]
+  call s:assert_signs(expected, 'fixture.txt')
+
+  let expected = [
+        \ 'diff --git a/fixture.txt b/fixture.txt',
+        \ 'index 8a7026e..f5c6aff 100644',
+        \ '--- a/fixture.txt',
+        \ '+++ b/fixture.txt',
+        \ '@@ -6,2 +5,0 @@ e',
+        \ '-B',
+        \ '-C',
+        \ ]
+  call assert_equal(expected, s:git_diff())
+
+  let expected = [
+        \ 'diff --git a/fixture.txt b/fixture.txt',
+        \ 'index f5c6aff..8a7026e 100644',
+        \ '--- a/fixture.txt',
+        \ '+++ b/fixture.txt',
+        \ '@@ -5,0 +6,2 @@ e',
+        \ '+B',
+        \ '+C',
+        \ ]
+  call assert_equal(expected, s:git_diff_staged())
+endfunction
+
+
+function Test_hunk_stage_partial_preview_added()
+  call append(5, ['A','B','C','D'])
+  6
+  GitGutterPreviewHunk
+  wincmd P
+
+  " remove C and A so we stage B and D
+  3delete
+  1delete
+
+  GitGutterStageHunk
+  write
+
+  let expected = [
+        \ {'lnum': 6, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 8, 'name': 'GitGutterLineAdded'},
+        \ ]
+  call s:assert_signs(expected, 'fixture.txt')
+
+  let expected = [
+        \ 'diff --git a/fixture.txt b/fixture.txt',
+        \ 'index 975852f..3dd23a3 100644',
+        \ '--- a/fixture.txt',
+        \ '+++ b/fixture.txt',
+        \ '@@ -5,0 +6 @@ e',
+        \ '+A',
+        \ '@@ -6,0 +8 @@ B',
+        \ '+C',
+        \ ]
+  call assert_equal(expected, s:git_diff())
+
+  let expected = [
+        \ 'diff --git a/fixture.txt b/fixture.txt',
+        \ 'index f5c6aff..975852f 100644',
+        \ '--- a/fixture.txt',
+        \ '+++ b/fixture.txt',
+        \ '@@ -5,0 +6,2 @@ e',
+        \ '+B',
+        \ '+D',
+        \ ]
+  call assert_equal(expected, s:git_diff_staged())
+endfunction
+
+
+function Test_hunk_stage_preview_write()
+  call append(5, ['A','B','C','D'])
+  6
+  GitGutterPreviewHunk
+  wincmd P
+
+  " preview window
+  call feedkeys(":w\<CR>", 'tx')
+  " original window
+  write
+
+  call s:assert_signs([], 'fixture.txt')
+
+  call assert_equal([], s:git_diff())
+
+  let expected = [
+        \ 'diff --git a/fixture.txt b/fixture.txt',
+        \ 'index f5c6aff..3dd23a3 100644',
+        \ '--- a/fixture.txt',
+        \ '+++ b/fixture.txt',
+        \ '@@ -5,0 +6,4 @@ e',
+        \ '+A',
+        \ '+B',
+        \ '+C',
+        \ '+D',
+        \ ]
+  call assert_equal(expected, s:git_diff_staged())
+endfunction
+
+
+function Test_hunk_stage_partial_preview_added_removed()
+  4,5delete
+  call append(3, ['A','B','C','D'])
+  4
+  GitGutterPreviewHunk
+  wincmd P
+
+  " -d
+  " -e
+  " +A
+  " +B
+  " +C
+  " +D
+
+  " remove D and d so they do not get staged
+  6delete
+  1delete
+
+  GitGutterStageHunk
+  write
+
+  let expected = [
+        \ {'lnum': 3, 'name': 'GitGutterLineRemoved'},
+        \ {'lnum': 7, 'name': 'GitGutterLineAdded'},
+        \ ]
+  call s:assert_signs(expected, 'fixture.txt')
+
+  let expected = [
+        \ 'diff --git a/fixture.txt b/fixture.txt',
+        \ 'index 9a19589..e63fb0a 100644',
+        \ '--- a/fixture.txt',
+        \ '+++ b/fixture.txt',
+        \ '@@ -4 +3,0 @@ c',
+        \ '-d',
+        \ '@@ -7,0 +7 @@ C',
+        \ '+D',
+        \ ]
+  call assert_equal(expected, s:git_diff())
+
+  let expected = [
+        \ 'diff --git a/fixture.txt b/fixture.txt',
+        \ 'index f5c6aff..9a19589 100644',
+        \ '--- a/fixture.txt',
+        \ '+++ b/fixture.txt',
+        \ '@@ -5 +5,3 @@ d',
+        \ '-e',
+        \ '+A',
+        \ '+B',
+        \ '+C',
+        \ ]
+  call assert_equal(expected, s:git_diff_staged())
+endfunction
+
+
 function Test_hunk_undo()
   let _shell = &shell
   set shell=foo
@@ -427,9 +680,23 @@ function Test_hunk_undo()
   call assert_equal('foo', &shell)
   let &shell = _shell
 
-  call assert_equal([], s:signs('fixture.txt'))
+  call s:assert_signs([], 'fixture.txt')
   call assert_equal([], s:git_diff())
   call assert_equal([], s:git_diff_staged())
+  call assert_equal('e', getline(5))
+endfunction
+
+
+function Test_hunk_undo_dos()
+  edit! fixture_dos.txt
+
+  normal 5Gi*
+  GitGutterUndoHunk
+
+  call s:assert_signs([], 'fixture_dos.txt')
+  call assert_equal([], s:git_diff('fixture_dos.txt'))
+  call assert_equal([], s:git_diff_staged('fixture_dos.txt'))
+  call assert_equal('e', getline(5))
 endfunction
 
 
@@ -442,11 +709,11 @@ function Test_undo_nearby_hunk()
   call s:trigger_gitgutter()
 
   let expected = [
-        \ 'line=3  id=3000  name=GitGutterLineAdded',
-        \ 'line=4  id=3001  name=GitGutterLineAdded',
-        \ 'line=5  id=3002  name=GitGutterLineAdded'
+        \ {'lnum': 3, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 4, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 5, 'name': 'GitGutterLineAdded'}
         \ ]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  call s:assert_signs(expected, 'fixture.txt')
 
   call assert_equal([], s:git_diff())
 
@@ -485,10 +752,8 @@ function Test_overlapping_hunk_op()
   GitGutterUndoHunk
   call s:trigger_gitgutter()
 
-  let expected = [
-        \ 'line=2  id=3000  name=GitGutterLineRemoved',
-        \ ]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 2, 'name': 'GitGutterLineRemoved'}]
+  call s:assert_signs(expected, 'fixture.txt')
 
   " Undo lower
 
@@ -499,10 +764,8 @@ function Test_overlapping_hunk_op()
   GitGutterUndoHunk
   call s:trigger_gitgutter()
 
-  let expected = [
-        \ 'line=1  id=3000  name=GitGutterLineRemovedFirstLine',
-        \ ]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 1, 'name': 'GitGutterLineRemovedFirstLine'}]
+  call s:assert_signs(expected, 'fixture.txt')
 endfunction
 
 
@@ -512,8 +775,8 @@ function Test_write_option()
   normal ggo*
   call s:trigger_gitgutter()
 
-  let expected = ["line=2  id=3000  name=GitGutterLineAdded"]
-  call assert_equal(expected, s:signs('fixture.txt'))
+  let expected = [{'lnum': 2, 'name': 'GitGutterLineAdded'}]
+  call s:assert_signs(expected, 'fixture.txt')
 
   set write
 endfunction
@@ -525,7 +788,7 @@ function Test_inner_text_object()
   normal dic
   call s:trigger_gitgutter()
 
-  call assert_equal([], s:signs('fixture.txt'))
+  call s:assert_signs([], 'fixture.txt')
   call assert_equal(readfile('fixture.txt'), getline(1,'$'))
 
   " Excludes trailing lines
@@ -543,7 +806,7 @@ function Test_around_text_object()
   normal dac
   call s:trigger_gitgutter()
 
-  call assert_equal([], s:signs('fixture.txt'))
+  call s:assert_signs([], 'fixture.txt')
   call assert_equal(readfile('fixture.txt'), getline(1,'$'))
 
   " Includes trailing lines
@@ -646,7 +909,7 @@ function Test_encoding()
 
   call s:trigger_gitgutter()
 
-  call assert_equal([], s:signs('cp932.txt'))
+  call s:assert_signs([], 'cp932.txt')
 endfunction
 
 
@@ -656,7 +919,7 @@ function Test_empty_file()
   edit empty.txt
 
   call s:trigger_gitgutter()
-  call assert_equal([], s:signs('empty.txt'))
+  call s:assert_signs([], 'empty.txt')
 
 
   " File consisting only of a newline
@@ -664,7 +927,7 @@ function Test_empty_file()
   edit newline.txt
 
   call s:trigger_gitgutter()
-  call assert_equal([], s:signs('newline.txt'))
+  call s:assert_signs([], 'newline.txt')
 
 
   " 1 line file without newline
@@ -674,7 +937,192 @@ function Test_empty_file()
   edit! oneline.txt
 
   call s:trigger_gitgutter()
-  call assert_equal([], s:signs('oneline.txt'))
+  call s:assert_signs([], 'oneline.txt')
 
   set eol fixeol
+endfunction
+
+
+function Test_quickfix()
+  call setline(5, ['A', 'B'])
+  call setline(9, ['C', 'D'])
+  write
+  let bufnr1 = bufnr('')
+
+  edit fixture_dos.txt
+  call setline(2, ['A', 'B'])
+  write
+  let bufnr2 = bufnr('')
+
+  GitGutterQuickFix
+
+  let expected = [
+        \ {'lnum': 5, 'bufnr': bufnr1, 'text': '-e'},
+        \ {'lnum': 9, 'bufnr': bufnr1, 'text': '-i'},
+        \ {'lnum': 2, 'bufnr': bufnr2, 'text': "-b\r"}
+        \ ]
+
+  call s:assert_list_of_dicts(expected, getqflist())
+
+  GitGutterQuickFixCurrentFile
+
+  let expected = [
+        \ {'lnum': 2, 'bufnr': bufnr(''), 'text': "-b\r"},
+        \ ]
+
+  call s:assert_list_of_dicts(expected, getqflist())
+endfunction
+
+
+function Test_common_prefix()
+  " zero length
+  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('', 'foo'))
+  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('foo', ''))
+  " nothing in common
+  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+pqrst'))
+  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('abcde', 'pqrst'))
+  " something in common
+  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+abcpq'))
+  call assert_equal(2, gitgutter#diff_highlight#common_prefix('abcde', 'abcpq'))
+  call assert_equal(0, gitgutter#diff_highlight#common_prefix('abc', 'apq'))
+  " everything in common
+  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+abcde'))
+  call assert_equal(4, gitgutter#diff_highlight#common_prefix('abcde', 'abcde'))
+  " different lengths
+  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+abx'))
+  call assert_equal(1, gitgutter#diff_highlight#common_prefix('abcde', 'abx'))
+  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abx',   '+abcde'))
+  call assert_equal(1, gitgutter#diff_highlight#common_prefix('abx',   'abcde'))
+  call assert_equal(-1, gitgutter#diff_highlight#common_prefix('-abcde', '+abc'))
+  call assert_equal(2, gitgutter#diff_highlight#common_prefix('abcde', 'abc'))
+endfunction
+
+
+function Test_common_suffix()
+  " nothing in common
+  call assert_equal([6,6], gitgutter#diff_highlight#common_suffix('-abcde', '+pqrst', 0))
+  " something in common
+  call assert_equal([3,3], gitgutter#diff_highlight#common_suffix('-abcde', '+pqcde', 0))
+  " everything in common
+  call assert_equal([5,5], gitgutter#diff_highlight#common_suffix('-abcde', '+abcde', 5))
+  " different lengths
+  call assert_equal([4,2], gitgutter#diff_highlight#common_suffix('-abcde', '+xde', 0))
+  call assert_equal([2,4], gitgutter#diff_highlight#common_suffix('-xde',   '+abcde', 0))
+endfunction
+
+
+" Note the order of lists within the overall returned list does not matter.
+function Test_diff_highlight()
+  " Ignores mismatched number of added and removed lines.
+  call assert_equal([], gitgutter#diff_highlight#process(['-foo']))
+  call assert_equal([], gitgutter#diff_highlight#process(['+foo']))
+  call assert_equal([], gitgutter#diff_highlight#process(['-foo','-bar','+baz']))
+
+  " everything changed
+  let hunk = ['-foo', '+cat']
+  let expected = []
+  call assert_equal(expected, gitgutter#diff_highlight#process(hunk))
+
+  " change in middle
+  let hunk = ['-foo bar baz', '+foo zip baz']
+  let expected = [[1, '-', 6, 8], [2, '+', 6, 8]]
+  call assert_equal(expected, gitgutter#diff_highlight#process(hunk))
+
+  " change at start
+  let hunk = ['-foo bar baz', '+zip bar baz']
+  let expected = [[1, '-', 2, 4], [2, '+', 2, 4]]
+  call assert_equal(expected, gitgutter#diff_highlight#process(hunk))
+
+  " change at end
+  let hunk = ['-foo bar baz', '+foo bar zip']
+  let expected = [[1, '-', 10, 12], [2, '+', 10, 12]]
+  call assert_equal(expected, gitgutter#diff_highlight#process(hunk))
+
+  " removed in middle
+  let hunk = ['-foo bar baz', '+foo baz']
+  let expected = [[1, '-', 8, 11]]
+  call assert_equal(expected, gitgutter#diff_highlight#process(hunk))
+
+  " added in middle
+  let hunk = ['-foo baz', '+foo bar baz']
+  let expected = [[2, '+', 8, 11]]
+  call assert_equal(expected, gitgutter#diff_highlight#process(hunk))
+
+  " two insertions at start
+  let hunk = ['-foo bar baz', '+(foo) bar baz']
+  let expected = [[2, '+', 2, 2], [2, '+', 6, 6]]
+  call assert_equal(expected, gitgutter#diff_highlight#process(hunk))
+
+  " two insertions in middle
+  let hunk = ['-foo bar baz', '+foo (bar) baz']
+  let expected = [[2, '+', 6, 6], [2, '+', 10, 10]]
+  call assert_equal(expected, gitgutter#diff_highlight#process(hunk))
+
+  " two insertions at end
+  let hunk = ['-foo bar baz', '+foo bar (baz)']
+  let expected = [[2, '+', 10, 10], [2, '+', 14, 14]]
+  call assert_equal(expected, gitgutter#diff_highlight#process(hunk))
+
+  " singular insertion
+  let hunk = ['-The cat in the hat.', '+The furry cat in the hat.']
+  call assert_equal([[2, '+', 6, 11]], gitgutter#diff_highlight#process(hunk))
+
+  " singular deletion
+  let hunk = ['-The cat in the hat.', '+The cat.']
+  call assert_equal([[1, '-', 9, 19]], gitgutter#diff_highlight#process(hunk))
+
+  " two insertions
+  let hunk = ['-The cat in the hat.', '+The furry cat in the teal hat.']
+  call assert_equal([[2, '+', 6, 11], [2, '+', 22, 26]], gitgutter#diff_highlight#process(hunk))
+
+  " two deletions
+  let hunk = ['-The furry cat in the teal hat.', '+The cat in the hat.']
+  call assert_equal([[1, '-', 6, 11], [1, '-', 22, 26]], gitgutter#diff_highlight#process(hunk))
+
+  " two edits
+  let hunk = ['-The cat in the hat.', '+The ox in the box.']
+  call assert_equal([[1, '-', 6, 8], [2, '+', 6, 7], [1, '-', 17, 19], [2, '+', 16, 18]], gitgutter#diff_highlight#process(hunk))
+
+  " Requires s:gap_between_regions = 2 to pass.
+  " let hunk = ['-foo: bar.zap', '+foo: quux(bar)']
+  " call assert_equal([[2, '+', 7, 11], [1, '-', 10, 13], [2, '+', 15, 15]], gitgutter#diff_highlight#process(hunk))
+
+  let hunk = ['-gross_value: transaction.unexplained_amount', '+gross_value: amount(transaction)']
+  call assert_equal([[2, '+', 15, 21], [1, '-', 26, 44], [2, '+', 33, 33]], gitgutter#diff_highlight#process(hunk))
+
+  let hunk = ['-gem "contact_sport", "~> 1.0.2"', '+gem ("contact_sport"), "~> 1.2"']
+  call assert_equal([[2, '+', 6, 6], [2, '+', 22, 22], [1, '-', 28, 29]], gitgutter#diff_highlight#process(hunk))
+endfunction
+
+
+function Test_lcs()
+  call assert_equal('', gitgutter#diff_highlight#lcs('', 'foo'))
+  call assert_equal('', gitgutter#diff_highlight#lcs('foo', ''))
+  call assert_equal('bar', gitgutter#diff_highlight#lcs('foobarbaz', 'bbart'))
+  call assert_equal('transaction', gitgutter#diff_highlight#lcs('transaction.unexplained_amount', 'amount(transaction)'))
+endfunction
+
+
+function Test_split()
+  call assert_equal(['foo', 'baz'], gitgutter#diff_highlight#split('foobarbaz', 'bar'))
+  call assert_equal(['', 'barbaz'], gitgutter#diff_highlight#split('foobarbaz', 'foo'))
+  call assert_equal(['foobar', ''], gitgutter#diff_highlight#split('foobarbaz', 'baz'))
+  call assert_equal(['1', '2'], gitgutter#diff_highlight#split('1~2', '~'))
+endfunction
+
+
+function Test_foldtext()
+  8d
+  call s:trigger_gitgutter()
+  call assert_equal(0, gitgutter#fold#is_changed())
+
+  let v:foldstart = 5
+  let v:foldend = 9
+  call assert_equal(1, gitgutter#fold#is_changed())
+  call assert_equal('+-  5 lines (*): e', gitgutter#fold#foldtext())
+
+  let v:foldstart = 1
+  let v:foldend = 3
+  call assert_equal(0, gitgutter#fold#is_changed())
+  call assert_equal('+-  3 lines: a', gitgutter#fold#foldtext())
 endfunction

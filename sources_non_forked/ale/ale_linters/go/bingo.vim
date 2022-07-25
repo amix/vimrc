@@ -5,11 +5,13 @@ call ale#Set('go_bingo_executable', 'bingo')
 call ale#Set('go_bingo_options', '--mode stdio')
 
 function! ale_linters#go#bingo#GetCommand(buffer) abort
-    return '%e' . ale#Pad(ale#Var(a:buffer, 'go_bingo_options'))
+    return ale#go#EnvString(a:buffer) . '%e' . ale#Pad(ale#Var(a:buffer, 'go_bingo_options'))
 endfunction
 
 function! ale_linters#go#bingo#FindProjectRoot(buffer) abort
-    let l:project_root = ale#path#FindNearestFile(a:buffer, 'go.mod')
+    let l:go_modules_off = ale#Var(a:buffer, 'go_go111module') is# 'off'
+    let l:project_root = l:go_modules_off ?
+    \ '' : ale#path#FindNearestFile(a:buffer, 'go.mod')
     let l:mods = ':h'
 
     if empty(l:project_root)

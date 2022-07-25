@@ -5,9 +5,17 @@
 " Strings used for severity in the echoed message
 let g:ale_echo_msg_error_str = get(g:, 'ale_echo_msg_error_str', 'Error')
 let g:ale_echo_msg_info_str = get(g:, 'ale_echo_msg_info_str', 'Info')
+let g:ale_echo_msg_log_str = get(g:, 'ale_echo_msg_log_str', 'Log')
 let g:ale_echo_msg_warning_str = get(g:, 'ale_echo_msg_warning_str', 'Warning')
 " Ignoring linters, for disabling some, or ignoring LSP diagnostics.
 let g:ale_linters_ignore = get(g:, 'ale_linters_ignore', {})
+let g:ale_disable_lsp = get(g:, 'ale_disable_lsp', 0)
+
+" LSP window/showMessage format
+let g:ale_lsp_show_message_format = get(g:, 'ale_lsp_show_message_format', '%severity%:%linter%: %s')
+" Valid values mimic LSP definitions (error, warning and information; log is
+" never shown)
+let g:ale_lsp_show_message_severity = get(g:, 'ale_lsp_show_message_severity', 'error')
 
 let s:lint_timer = -1
 let s:getcmdwintype_exists = exists('*getcmdwintype')
@@ -39,6 +47,11 @@ function! ale#ShouldDoNothing(buffer) abort
 
     " Do nothing when there's no filetype.
     if l:filetype is# ''
+        return 1
+    endif
+
+    " Do nothing for diff buffers.
+    if getbufvar(a:buffer, '&diff')
         return 1
     endif
 
@@ -87,12 +100,7 @@ function! s:Lint(buffer, should_lint_file, timer_id) abort
     " Use the filetype from the buffer
     let l:filetype = getbufvar(a:buffer, '&filetype')
     let l:linters = ale#linter#Get(l:filetype)
-
-    " Apply ignore lists for linters only if needed.
-    let l:ignore_config = ale#Var(a:buffer, 'linters_ignore')
-    let l:linters = !empty(l:ignore_config)
-    \   ? ale#engine#ignore#Exclude(l:filetype, l:linters, l:ignore_config)
-    \   : l:linters
+    let l:linters = ale#linter#RemoveIgnored(a:buffer, l:filetype, l:linters)
 
     " Tell other sources that they can start checking the buffer now.
     let g:ale_want_results_buffer = a:buffer
@@ -149,12 +157,19 @@ function! ale#Queue(delay, ...) abort
     endif
 endfunction
 
-let g:ale_has_override = get(g:, 'ale_has_override', {})
+let s:current_ale_version = [3, 1, 0]
 
-" Call has(), but check a global Dictionary so we can force flags on or off
-" for testing purposes.
+" A function used to check for ALE features in files outside of the project.
 function! ale#Has(feature) abort
-    return get(g:ale_has_override, a:feature, has(a:feature))
+    let l:match = matchlist(a:feature, '\c\v^ale-(\d+)\.(\d+)(\.(\d+))?$')
+
+    if !empty(l:match)
+        let l:version = [l:match[1] + 0, l:match[2] + 0, l:match[4] + 0]
+
+        return ale#semver#GTE(s:current_ale_version, l:version)
+    endif
+
+    return 0
 endfunction
 
 " Given a buffer number and a variable name, look for that variable in the
@@ -237,11 +252,33 @@ function! ale#GetLocItemMessage(item, format_string) abort
 
     " Replace special markers with certain information.
     " \=l:variable is used to avoid escaping issues.
+    let l:msg = substitute(l:msg, '\v\%([^\%]*)code([^\%]*)\%', l:code_repl, 'g')
     let l:msg = substitute(l:msg, '\V%severity%', '\=l:severity', 'g')
     let l:msg = substitute(l:msg, '\V%linter%', '\=l:linter_name', 'g')
-    let l:msg = substitute(l:msg, '\v\%([^\%]*)code([^\%]*)\%', l:code_repl, 'g')
     " Replace %s with the text.
     let l:msg = substitute(l:msg, '\V%s', '\=a:item.text', 'g')
+    " Windows may insert carriage return line endings (^M), strip these characters.
+    let l:msg = substitute(l:msg, '\r', '', 'g')
 
     return l:msg
+endfunction
+
+" Given a buffer and a linter or fixer name, return an Array of two-item
+" Arrays describing how to map filenames to and from the local to foreign file
+" systems.
+function! ale#GetFilenameMappings(buffer, name) abort
+    let l:linter_mappings = ale#Var(a:buffer, 'filename_mappings')
+
+    if type(l:linter_mappings) is v:t_list
+        return l:linter_mappings
+    endif
+
+    let l:name = a:name
+
+    if !has_key(l:linter_mappings, l:name)
+        " Use * as a default setting for all tools.
+        let l:name = '*'
+    endif
+
+    return get(l:linter_mappings, l:name, [])
 endfunction

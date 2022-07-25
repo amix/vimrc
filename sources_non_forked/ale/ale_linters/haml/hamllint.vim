@@ -19,7 +19,7 @@ function! ale_linters#haml#hamllint#GetCommand(buffer) abort
     " See https://github.com/brigade/haml-lint/blob/master/lib/haml_lint/linter/rubocop.rb#L89
     "     HamlLint::Linter::RuboCop#rubocop_flags
     if !empty(l:rubocop_config_file_path)
-        if ale#Has('win32')
+        if has('win32')
             let l:prefix = 'set HAML_LINT_RUBOCOP_CONF=' . ale#Escape(l:rubocop_config_file_path) . ' &&'
         else
             let l:prefix = 'HAML_LINT_RUBOCOP_CONF=' . ale#Escape(l:rubocop_config_file_path)

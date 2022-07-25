@@ -3,15 +3,15 @@
 
 function! ale#fixers#eslint#Fix(buffer) abort
     let l:executable = ale#handlers#eslint#GetExecutable(a:buffer)
+    let l:command = ale#node#Executable(a:buffer, l:executable)
+    \   . ' --version'
 
-    let l:command = ale#semver#HasVersion(l:executable)
-    \   ? ''
-    \   : ale#node#Executable(a:buffer, l:executable) . ' --version'
-
-    return {
-    \   'command': l:command,
-    \   'chain_with': 'ale#fixers#eslint#ApplyFixForVersion',
-    \}
+    return ale#semver#RunWithVersionCheck(
+    \   a:buffer,
+    \   l:executable,
+    \   l:command,
+    \   function('ale#fixers#eslint#ApplyFixForVersion'),
+    \)
 endfunction
 
 function! ale#fixers#eslint#ProcessFixDryRunOutput(buffer, output) abort
@@ -33,37 +33,50 @@ function! ale#fixers#eslint#ProcessEslintDOutput(buffer, output) abort
     return a:output
 endfunction
 
-function! ale#fixers#eslint#ApplyFixForVersion(buffer, version_output) abort
+function! ale#fixers#eslint#ApplyFixForVersion(buffer, version) abort
     let l:executable = ale#handlers#eslint#GetExecutable(a:buffer)
-    let l:version = ale#semver#GetVersion(l:executable, a:version_output)
+    let l:options = ale#Var(a:buffer, 'javascript_eslint_options')
 
-    let l:config = ale#handlers#eslint#FindConfig(a:buffer)
+    " Use the configuration file from the options, if configured.
+    if l:options =~# '\v(^| )-c|(^| )--config'
+        let l:config = ''
+        let l:has_config = 1
+    else
+        let l:config = ale#handlers#eslint#FindConfig(a:buffer)
+        let l:has_config = !empty(l:config)
+    endif
 
-    if empty(l:config)
+    if !l:has_config
         return 0
     endif
 
     " Use --fix-to-stdout with eslint_d
-    if l:executable =~# 'eslint_d$' && ale#semver#GTE(l:version, [3, 19, 0])
+    if l:executable =~# 'eslint_d$' && ale#semver#GTE(a:version, [3, 19, 0])
         return {
+        \   'cwd': ale#handlers#eslint#GetCwd(a:buffer),
         \   'command': ale#node#Executable(a:buffer, l:executable)
+        \       . ale#Pad(l:options)
         \       . ' --stdin-filename %s --stdin --fix-to-stdout',
         \   'process_with': 'ale#fixers#eslint#ProcessEslintDOutput',
         \}
     endif
 
     " 4.9.0 is the first version with --fix-dry-run
-    if ale#semver#GTE(l:version, [4, 9, 0])
+    if ale#semver#GTE(a:version, [4, 9, 0])
         return {
+        \   'cwd': ale#handlers#eslint#GetCwd(a:buffer),
         \   'command': ale#node#Executable(a:buffer, l:executable)
+        \       . ale#Pad(l:options)
         \       . ' --stdin-filename %s --stdin --fix-dry-run --format=json',
         \   'process_with': 'ale#fixers#eslint#ProcessFixDryRunOutput',
         \}
     endif
 
     return {
+    \   'cwd': ale#handlers#eslint#GetCwd(a:buffer),
     \   'command': ale#node#Executable(a:buffer, l:executable)
-    \       . ' -c ' . ale#Escape(l:config)
+    \       . ale#Pad(l:options)
+    \       . (!empty(l:config) ? ' -c ' . ale#Escape(l:config) : '')
     \       . ' --fix %t',
     \   'read_temporary_file': 1,
     \}

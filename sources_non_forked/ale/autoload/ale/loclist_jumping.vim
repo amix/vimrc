@@ -111,7 +111,7 @@ function! ale#loclist_jumping#Jump(direction, ...) abort
 
     if !empty(l:nearest)
         normal! m`
-        call cursor(l:nearest)
+        call cursor([l:nearest[0], max([l:nearest[1], 1])])
     endif
 endfunction
 

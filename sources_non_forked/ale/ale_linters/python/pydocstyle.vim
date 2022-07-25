@@ -5,6 +5,7 @@ call ale#Set('python_pydocstyle_executable', 'pydocstyle')
 call ale#Set('python_pydocstyle_options', '')
 call ale#Set('python_pydocstyle_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('python_pydocstyle_auto_pipenv', 0)
+call ale#Set('python_pydocstyle_auto_poetry', 0)
 
 function! ale_linters#python#pydocstyle#GetExecutable(buffer) abort
     if (ale#Var(a:buffer, 'python_auto_pipenv') || ale#Var(a:buffer, 'python_pydocstyle_auto_pipenv'))
@@ -12,21 +13,23 @@ function! ale_linters#python#pydocstyle#GetExecutable(buffer) abort
         return 'pipenv'
     endif
 
+    if (ale#Var(a:buffer, 'python_auto_poetry') || ale#Var(a:buffer, 'python_pydocstyle_auto_poetry'))
+    \ && ale#python#PoetryPresent(a:buffer)
+        return 'poetry'
+    endif
+
     return ale#python#FindExecutable(a:buffer, 'python_pydocstyle', ['pydocstyle'])
 endfunction
 
 function! ale_linters#python#pydocstyle#GetCommand(buffer) abort
-    let l:dir = fnamemodify(bufname(a:buffer), ':p:h')
     let l:executable = ale_linters#python#pydocstyle#GetExecutable(a:buffer)
-
-    let l:exec_args = l:executable =~? 'pipenv$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
     \   ? ' run pydocstyle'
     \   : ''
 
-    return ale#path#CdString(l:dir)
-    \   . ale#Escape(l:executable) . l:exec_args
-    \   . ' ' . ale#Var(a:buffer, 'python_pydocstyle_options')
-    \   . ' ' . ale#Escape(fnamemodify(bufname(a:buffer), ':p:t'))
+    return ale#Escape(l:executable) . l:exec_args
+    \   . ale#Pad(ale#Var(a:buffer, 'python_pydocstyle_options'))
+    \   . ' %s:t'
 endfunction
 
 function! ale_linters#python#pydocstyle#Handle(buffer, lines) abort
@@ -68,6 +71,7 @@ endfunction
 call ale#linter#Define('python', {
 \   'name': 'pydocstyle',
 \   'executable': function('ale_linters#python#pydocstyle#GetExecutable'),
+\   'cwd': '%s:h',
 \   'command': function('ale_linters#python#pydocstyle#GetCommand'),
 \   'callback': 'ale_linters#python#pydocstyle#Handle',
 \})

@@ -10,7 +10,7 @@ $VIM -u NONE -U NONE -N                      \
   --cmd 'source ../plugin/gitgutter.vim'     \
   -S runner.vim                              \
   test_*.vim                                 \
-  $*
+  "$@"
 
 cat messages.log
 

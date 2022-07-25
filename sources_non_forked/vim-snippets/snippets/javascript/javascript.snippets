@@ -5,8 +5,13 @@ snippet proto
 		${0:${VISUAL}}
 	};
 # Function
-snippet fun
+snippet fun "function"
 	function ${1:function_name}(${2}) {
+		${0:${VISUAL}}
+	}
+# Asynchronous Function
+snippet asf "async function"
+	async function ${1:function_name}(${2}) {
 		${0:${VISUAL}}
 	}
 # Anonymous Function
@@ -94,11 +99,11 @@ snippet terr
 snippet ret
 	return ${0:result};
 snippet for "for (...) {...}"
-	for (var ${1:i} = 0, ${2:len} = ${3:Things.length}; $1 < $2; $1++) {
+	for (let ${1:i} = 0, ${2:len} = ${3:Things.length}; $1 < $2; $1++) {
 		${0:${VISUAL}}
 	}
 snippet forr "reversed for (...) {...}"
-	for (var ${2:i} = ${1:Things.length} - 1; $2 >= 0; $2--) {
+	for (let ${2:i} = ${1:Things.length} - 1; $2 >= 0; $2--) {
 		${0:${VISUAL}}
 	}
 snippet wh "(condition) { ... }"
@@ -111,7 +116,7 @@ snippet do "do { ... } while (condition)"
 	} while (${1:/* condition */});
 # For in loop
 snippet fori
-	for (var ${1:prop} in ${2:object}) {
+	for (let ${1:prop} in ${2:object}) {
 		${0:$2[$1]}
 	}
 # Objects
@@ -202,8 +207,6 @@ snippet @par
 	@param {${1:type}} ${2:name} ${0:description}
 snippet @ret
 	@return {${1:type}} ${0:description}
-# JSON
-
 # JSON.parse
 snippet jsonp
 	JSON.parse(${0:jstr});
@@ -272,10 +275,85 @@ snippet cprof "console.profile"
 	console.profileEnd();
 snippet ctable "console.table"
 	console.table(${1:"${2:value}"});
+snippet clstr "console.log stringified"
+	console.log(JSON.stringify(${0}, null, 2));
 # Misc
-# 'use strict';
 snippet us
 	'use strict';
 # setTimeout function
 snippet timeout
 	setTimeout(function () {${0}}${2}, ${1:10});
+snippet const
+	const ${1} = ${0};
+snippet constn
+	const ${1} = new ${0};
+snippet let
+	let ${1} = ${0};
+snippet im "import xyz from 'xyz'"
+	import ${1} from '${2:$1}';
+snippet imas "import * as xyz from 'xyz'"
+	import * as ${1} from '${2:$1}';
+snippet imm "import { member } from 'xyz'"
+	import { ${1} } from '${2}';
+snippet cla
+	class ${1} {
+		${0:${VISUAL}}
+	}
+snippet clax
+	class ${1} extends ${2} {
+		${0:${VISUAL}}
+	}
+snippet clac
+	class ${1} {
+		constructor(${2}) {
+			${0:${VISUAL}}
+		}
+	}
+snippet foro "for (const prop of object}) { ... }"
+	for (const ${1:prop} of ${2:object}) {
+		${0:$1}
+	}
+snippet forl "for (let prop of object}) { ... }"
+	for (let ${1:prop} of ${2:object}) {
+		${0:$1}
+	}
+snippet fun*
+	function* ${1:function_name}(${2}) {
+		${0:${VISUAL}}
+	}
+snippet c=>
+	const ${1:function_name} = (${2}) => {
+		${0:${VISUAL}}
+	}
+snippet ca=>
+	const ${1:function_name} = async (${2}) => {
+		${0:${VISUAL}}
+	}
+snippet caf
+	const ${1:function_name} = (${2}) => {
+		${0:${VISUAL}}
+	}
+snippet casf
+	const ${1:function_name} = async (${2}) => {
+		${0:${VISUAL}}
+	}
+snippet =>
+	(${1}) => {
+		${0:${VISUAL}}
+	}
+snippet af "() =>"
+	(${1}) => ${0:${VISUAL}}
+snippet afb "() => {}"
+	(${1}) => {
+		${0:${VISUAL}}
+	}
+snippet sym
+	const ${1} = Symbol('${0}');
+snippet ed
+	export default ${0}
+snippet ${
+	${${1}}${0}
+snippet as "async"
+	async ${0}
+snippet aw "await"
+	await ${0:${VISUAL}}

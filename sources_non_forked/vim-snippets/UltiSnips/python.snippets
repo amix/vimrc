@@ -5,8 +5,23 @@ priority -50
 ###########################################################################
 
 #! header
-snippet #! "Shebang header for python scripts" b
+snippet #! "#!/usr/bin/env python" b
 #!/usr/bin/env python
+$0
+endsnippet
+
+snippet #!2 "#!/usr/bin/env python2" b
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+$0
+endsnippet
+
+snippet #!3 "#!/usr/bin/env python3" b
+#!/usr/bin/env python3
+$0
+endsnippet
+
+snippet "^# ?[uU][tT][fF]-?8" "# encoding: UTF-8" r
 # -*- coding: utf-8 -*-
 $0
 endsnippet
@@ -51,7 +66,9 @@ DOUBLE_QUOTES = '"'
 class Arg(object):
 	def __init__(self, arg):
 		self.arg = arg
-		self.name = arg.split('=')[0].strip()
+		name_and_type = arg.split('=')[0].split(':')
+		self.name = name_and_type[0].strip()
+		self.type = name_and_type[1].strip() if len(name_and_type) == 2 else None
 
 	def __str__(self):
 		return self.name
@@ -62,9 +79,28 @@ class Arg(object):
 	def is_kwarg(self):
 		return '=' in self.arg
 
+	def is_vararg(self):
+		return '*' in self.name
+
 
 def get_args(arglist):
-	args = [Arg(arg) for arg in arglist.split(',') if arg]
+	args = []
+	n = len(arglist)
+	i = 0
+	while i < n:
+		l_bracket = 0
+		start = i
+		while i < n and (l_bracket > 0 or arglist[i] != ','):
+			if arglist[i] == '[':
+				l_bracket += 1
+			elif arglist[i] == ']' and l_bracket > 0:
+				l_bracket -= 1
+			i += 1
+		arg = arglist[start:i]
+		if arg:
+			args.append(Arg(arg))
+		i += 1
+
 	args = [arg for arg in args if arg.name != 'self']
 
 	return args
@@ -129,7 +165,7 @@ def format_arg(arg, style):
 	elif style == NORMAL:
 		return ":%s: TODO" % arg
 	elif style == GOOGLE:
-		return "%s (TODO): TODO" % arg
+		return "%s (%s): TODO" % (arg, arg.type or "TODO")
 	elif style == JEDI:
 		return ":type %s: TODO" % arg
 	elif style == NUMPY:
@@ -211,7 +247,7 @@ def write_init_body(args, parents, snip):
 	if parents:
 		snip.rv += '\n' + snip.mkline('', indent='')
 
-	for arg in args:
+	for arg in filter(lambda arg: not arg.is_vararg(), args):
 		snip += "self._%s = %s" % (arg, arg)
 
 
@@ -262,7 +298,7 @@ class ${1:MyClass}(${2:object}):
 	`!p snip.rv = triple_quotes(snip)`${3:Docstring for $1. }`!p snip.rv = triple_quotes(snip)`
 
 	def __init__(self$4):
-		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined1.}`!p
+		`!p snip.rv = triple_quotes(snip)`${5:TODO: to be defined.}`!p
 snip.rv = ""
 snip >> 2
 
@@ -488,8 +524,8 @@ def __coerce__(self, other):
 	${25:pass}
 endsnippet
 
-snippet deff
-def ${1:fname}(`!p snip.rv = vim.eval('indent(".") ? "self" : ""')`$2):
+snippet deff "function or class method"
+def ${1:fname}(`!p snip.rv = "self, " if snip.indent else ""`$2):
 	$0
 endsnippet
 

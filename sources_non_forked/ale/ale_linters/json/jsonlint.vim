@@ -4,7 +4,7 @@ call ale#Set('json_jsonlint_executable', 'jsonlint')
 call ale#Set('json_jsonlint_use_global', get(g:, 'ale_use_global_executables', 0))
 
 function! ale_linters#json#jsonlint#GetExecutable(buffer) abort
-    return ale#node#FindExecutable(a:buffer, 'json_jsonlint', [
+    return ale#path#FindExecutable(a:buffer, 'json_jsonlint', [
     \   'node_modules/.bin/jsonlint',
     \   'node_modules/jsonlint/lib/cli.js',
     \])

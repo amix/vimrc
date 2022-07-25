@@ -37,12 +37,16 @@ function! ale#lsp#Register(executable_or_address, project, init_options) abort
         \   'init_queue': [],
         \   'capabilities': {
         \       'hover': 0,
+        \       'rename': 0,
         \       'references': 0,
         \       'completion': 0,
         \       'completion_trigger_characters': [],
         \       'definition': 0,
         \       'typeDefinition': 0,
         \       'symbol_search': 0,
+        \       'code_actions': 0,
+        \       'did_save': 0,
+        \       'includeText': 0,
         \   },
         \}
     endif
@@ -63,6 +67,9 @@ endfunction
 
 " Used only in tests.
 function! ale#lsp#GetConnections() abort
+    " This command will throw from the sandbox.
+    let &l:equalprg=&l:equalprg
+
     return s:connections
 endfunction
 
@@ -195,8 +202,32 @@ function! s:UpdateCapabilities(conn, capabilities) abort
         let a:conn.capabilities.hover = 1
     endif
 
+    if type(get(a:capabilities, 'hoverProvider')) is v:t_dict
+        let a:conn.capabilities.hover = 1
+    endif
+
     if get(a:capabilities, 'referencesProvider') is v:true
         let a:conn.capabilities.references = 1
+    endif
+
+    if type(get(a:capabilities, 'referencesProvider')) is v:t_dict
+        let a:conn.capabilities.references = 1
+    endif
+
+    if get(a:capabilities, 'renameProvider') is v:true
+        let a:conn.capabilities.rename = 1
+    endif
+
+    if type(get(a:capabilities, 'renameProvider')) is v:t_dict
+        let a:conn.capabilities.rename = 1
+    endif
+
+    if get(a:capabilities, 'codeActionProvider') is v:true
+        let a:conn.capabilities.code_actions = 1
+    endif
+
+    if type(get(a:capabilities, 'codeActionProvider')) is v:t_dict
+        let a:conn.capabilities.code_actions = 1
     endif
 
     if !empty(get(a:capabilities, 'completionProvider'))
@@ -215,12 +246,42 @@ function! s:UpdateCapabilities(conn, capabilities) abort
         let a:conn.capabilities.definition = 1
     endif
 
+    if type(get(a:capabilities, 'definitionProvider')) is v:t_dict
+        let a:conn.capabilities.definition = 1
+    endif
+
     if get(a:capabilities, 'typeDefinitionProvider') is v:true
+        let a:conn.capabilities.typeDefinition = 1
+    endif
+
+    if type(get(a:capabilities, 'typeDefinitionProvider')) is v:t_dict
         let a:conn.capabilities.typeDefinition = 1
     endif
 
     if get(a:capabilities, 'workspaceSymbolProvider') is v:true
         let a:conn.capabilities.symbol_search = 1
+    endif
+
+    if type(get(a:capabilities, 'workspaceSymbolProvider')) is v:t_dict
+        let a:conn.capabilities.symbol_search = 1
+    endif
+
+    if type(get(a:capabilities, 'textDocumentSync')) is v:t_dict
+        let l:syncOptions = get(a:capabilities, 'textDocumentSync')
+
+        if get(l:syncOptions, 'save') is v:true
+            let a:conn.capabilities.did_save = 1
+        endif
+
+        if type(get(l:syncOptions, 'save')) is v:t_dict
+            let a:conn.capabilities.did_save = 1
+
+            let l:saveOptions = get(l:syncOptions, 'save')
+
+            if get(l:saveOptions, 'includeText') is v:true
+                let a:conn.capabilities.includeText = 1
+            endif
+        endif
     endif
 endfunction
 
@@ -316,12 +377,77 @@ function! ale#lsp#MarkConnectionAsTsserver(conn_id) abort
     let l:conn.capabilities.completion = 1
     let l:conn.capabilities.completion_trigger_characters = ['.']
     let l:conn.capabilities.definition = 1
+    let l:conn.capabilities.typeDefinition = 1
     let l:conn.capabilities.symbol_search = 1
+    let l:conn.capabilities.rename = 1
+    let l:conn.capabilities.code_actions = 1
 endfunction
 
 function! s:SendInitMessage(conn) abort
     let [l:init_id, l:init_data] = ale#lsp#CreateMessageData(
-    \   ale#lsp#message#Initialize(a:conn.root, a:conn.init_options),
+    \   ale#lsp#message#Initialize(
+    \       a:conn.root,
+    \       a:conn.init_options,
+    \       {
+    \           'workspace': {
+    \               'applyEdit': v:false,
+    \               'didChangeConfiguration': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'symbol': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'workspaceFolders': v:false,
+    \               'configuration': v:false,
+    \           },
+    \           'textDocument': {
+    \               'synchronization': {
+    \                   'dynamicRegistration': v:false,
+    \                   'willSave': v:false,
+    \                   'willSaveWaitUntil': v:false,
+    \                   'didSave': v:true,
+    \               },
+    \               'completion': {
+    \                   'dynamicRegistration': v:false,
+    \                   'completionItem': {
+    \                       'snippetSupport': v:false,
+    \                       'commitCharactersSupport': v:false,
+    \                       'documentationFormat': ['plaintext'],
+    \                       'deprecatedSupport': v:false,
+    \                       'preselectSupport': v:false,
+    \                   },
+    \                   'contextSupport': v:false,
+    \               },
+    \               'hover': {
+    \                   'dynamicRegistration': v:false,
+    \                   'contentFormat': ['plaintext'],
+    \               },
+    \               'references': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'documentSymbol': {
+    \                   'dynamicRegistration': v:false,
+    \                   'hierarchicalDocumentSymbolSupport': v:false,
+    \               },
+    \               'definition': {
+    \                   'dynamicRegistration': v:false,
+    \                   'linkSupport': v:false,
+    \               },
+    \               'typeDefinition': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'publishDiagnostics': {
+    \                   'relatedInformation': v:true,
+    \               },
+    \               'codeAction': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \               'rename': {
+    \                   'dynamicRegistration': v:false,
+    \               },
+    \           },
+    \       },
+    \   ),
     \)
     let a:conn.init_request_id = l:init_id
     call s:SendMessageData(a:conn, l:init_data)
@@ -357,6 +483,7 @@ function! ale#lsp#StartProgram(conn_id, executable, command) abort
     endif
 
     if l:started && !l:conn.is_tsserver
+        let l:conn.initialized = 0
         call s:SendInitMessage(l:conn)
     endif
 
@@ -482,6 +609,35 @@ function! ale#lsp#OpenDocument(conn_id, buffer, language_id) abort
     endif
 
     return l:opened
+endfunction
+
+" Notify LSP servers or tsserver that a document is closed, if opened before.
+" If a document is closed, 1 will be returned, otherwise 0 will be returned.
+"
+" Only the buffer number is required here. A message will be sent to every
+" language server that was notified previously of the document being opened.
+function! ale#lsp#CloseDocument(buffer) abort
+    let l:closed = 0
+
+    " The connection keys are sorted so the messages are easier to test, and
+    " so messages are sent in a consistent order.
+    for l:conn_id in sort(keys(s:connections))
+        let l:conn = s:connections[l:conn_id]
+
+        if l:conn.initialized && has_key(l:conn.open_documents, a:buffer)
+            if l:conn.is_tsserver
+                let l:message = ale#lsp#tsserver_message#Close(a:buffer)
+            else
+                let l:message = ale#lsp#message#DidClose(a:buffer)
+            endif
+
+            call ale#lsp#Send(l:conn_id, l:message)
+            call remove(l:conn.open_documents, a:buffer)
+            let l:closed = 1
+        endif
+    endfor
+
+    return l:closed
 endfunction
 
 " Notify LSP servers or tsserver that a document has changed, if needed.

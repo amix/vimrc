@@ -1,7 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    121
+" @Revision:    148
 
 
 " :def: function! tlib#string#RemoveBackslashes(text, ?chars=' ')
@@ -22,11 +22,21 @@ function! tlib#string#Chomp(string, ...) "{{{3
 endf
 
 
-function! tlib#string#Format(template, dict) "{{{3
-    let parts = split(a:template, '\ze%\({.\{-}}\|.\)')
+" Format a template string. Placeholders have the format "%{NAME}". A 
+" "%" can be inserted as "%%".
+"
+" Examples:
+"   echo tlib#string#Format("foo %{bar} foo", {'bar': 123}, ?prefix='%')
+"   => foo 123 foo
+function! tlib#string#Format(template, dict, ...) "{{{3
+    let prefix = a:0 >= 1 ? a:1 : '%'
+    let pesc = prefix . prefix
+    let prx = tlib#rx#Escape(prefix)
+    let parts = split(a:template, '\ze'. prx .'\({.\{-}}\|.\)')
+    let partrx = '^'. prx .'\({\(.\{-}\)}\|\(.\)\)\(.*\)$'
     let out = []
     for part in parts
-        let ml   = matchlist(part, '^%\({\(.\{-}\)}\|\(.\)\)\(.*\)$')
+        let ml   = matchlist(part, partrx)
         if empty(ml)
             let rest = part
         else
@@ -34,8 +44,8 @@ function! tlib#string#Format(template, dict) "{{{3
             let rest = ml[4]
             if has_key(a:dict, var)
                 call add(out, a:dict[var])
-            elseif var == '%%'
-                call add(out, '%')
+            elseif var ==# pesc
+                call add(out, prefix)
             else
                 call add(out, ml[1])
             endif
@@ -155,4 +165,44 @@ function! tlib#string#SplitCommaList(text, ...) abort "{{{3
     let parts = map(parts, 'substitute(v:val, ''\\\(.\)'', ''\1'', ''g'')')
     return parts
 endf
+
+
+function! tlib#string#Input(...) abort "{{{3
+    TVarArg ['text', ''], ['completion', '']
+    call inputsave()
+    let rv = call(function('input'), a:000)
+    call inputrestore()
+    return rv
+endf
+
+
+" :display: tlib#string#MatchAll(string, sep_regexp, ?item_regexp='') abort
+function! tlib#string#MatchAll(string, regexp, ...) abort "{{{3
+    let eregexp = a:0 >= 1 ? a:1 : ''
+    Tlibtrace 'tlib', a:string, a:regexp, eregexp
+    let ms = []
+    if a:regexp =~ '\\ze'
+        let regexp1 = substitute(a:regexp, '\\ze.*$', '', '')
+    else
+        let regexp1 = a:regexp
+    endif
+    for m in split(a:string, '\ze'. regexp1)
+        let m1 = matchstr(m, !empty(eregexp) ? eregexp : a:regexp)
+        Tlibtrace 'tlib', m, m1
+        if !empty(m1)
+            call add(ms, m1)
+        endif
+    endfor
+    return ms
+endf
+
+if exists('*strcharpart')
+    function! tlib#string#Strcharpart(...) abort "{{{3
+        return call(function('strcharpart'), a:000)
+    endf
+else
+    function! tlib#string#Strcharpart(...) abort "{{{3
+        return call(function('strpart'), a:000)
+    endf
+endif
 

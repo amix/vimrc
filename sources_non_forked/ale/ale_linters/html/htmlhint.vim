@@ -24,7 +24,7 @@ endfunction
 
 call ale#linter#Define('html', {
 \   'name': 'htmlhint',
-\   'executable': {b -> ale#node#FindExecutable(b, 'html_htmlhint', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'html_htmlhint', [
 \       'node_modules/.bin/htmlhint',
 \   ])},
 \   'command': function('ale_linters#html#htmlhint#GetCommand'),

@@ -12,6 +12,18 @@ g:ale_haskell_brittany_executable           *g:ale_haskell_brittany_executable*
 
   This variable can be changed to use a different executable for brittany.
 
+
+===============================================================================
+floskell                                                 *ale-haskell-floskell*
+
+g:ale_haskell_floskell_executable           *g:ale_haskell_floskell_executable*
+                                            *b:ale_haskell_floskell_executable*
+  Type: |String|
+  Default: `'floskell'`
+
+  This variable can be changed to use a different executable for floskell.
+
+
 ===============================================================================
 ghc                                                           *ale-haskell-ghc*
 
@@ -21,6 +33,7 @@ g:ale_haskell_ghc_options                           *g:ale_haskell_ghc_options*
   Default: `'-fno-code -v0'`
 
   This variable can be changed to modify flags given to ghc.
+
 
 ===============================================================================
 ghc-mod                                                   *ale-haskell-ghc-mod*
@@ -32,6 +45,7 @@ g:ale_haskell_ghc_mod_executable             *g:ale_haskell_ghc_mod_executable*
 
   This variable can be changed to use a different executable for ghc-mod.
 
+
 ===============================================================================
 cabal-ghc                                               *ale-haskell-cabal-ghc*
 
@@ -42,6 +56,7 @@ g:ale_haskell_cabal_ghc_options               *g:ale_haskell_cabal_ghc_options*
 
   This variable can be changed to modify flags given to ghc through cabal
   exec.
+
 
 ===============================================================================
 hdevtools                                               *ale-haskell-hdevtools*
@@ -77,6 +92,18 @@ g:ale_haskell_hfmt_executable                   *g:ale_haskell_hfmt_executable*
 
   This variable can be changed to use a different executable for hfmt.
 
+
+===============================================================================
+hindent                                                   *ale-haskell-hindent*
+
+g:ale_haskell_hindent_executable             *g:ale_haskell_hindent_executable*
+                                             *b:ale_haskell_hindent_executable*
+  Type: |String|
+  Default: `'hindent'`
+
+  This variable can be changed to use a different executable for hindent.
+
+
 ===============================================================================
 hlint                                                       *ale-haskell-hlint*
 
@@ -96,6 +123,19 @@ g:ale_haskell_hlint_options                       g:ale_haskell_hlint_options
   This variable can be used to pass extra options to the underlying hlint
   executable.
 
+
+===============================================================================
+hls                                                           *ale-haskell-hls*
+
+g:ale_haskell_hls_executable                     *g:ale_haskell_hls_executable*
+                                                 *b:ale_haskell_his_executable*
+  Type: |String|
+  Default: `'haskell-language-server-wrapper'`
+
+  This variable can be changed to use a different executable for the haskell
+  language server.
+
+
 ===============================================================================
 stack-build                                           *ale-haskell-stack-build*
 
@@ -106,6 +146,7 @@ g:ale_haskell_stack_build_options           *g:ale_haskell_stack_build_options*
 
   We default to using `'--fast'`. Since Stack generates binaries, your
   programs will be slower unless you separately rebuild them outside of ALE.
+
 
 ===============================================================================
 stack-ghc                                               *ale-haskell-stack-ghc*
@@ -118,6 +159,7 @@ g:ale_haskell_stack_ghc_options               *g:ale_haskell_stack_ghc_options*
   This variable can be changed to modify flags given to ghc through `stack
   ghc`
 
+
 ===============================================================================
 stylish-haskell                                   *ale-haskell-stylish-haskell*
 
@@ -129,6 +171,7 @@ g:ale_haskell_stylish_haskell_executable
 
   This variable can be changed to use a different executable for stylish-haskell.
 
+
 ===============================================================================
 hie                                                           *ale-haskell-hie*
 
@@ -139,6 +182,27 @@ g:ale_haskell_hie_executable                     *g:ale_haskell_hie_executable*
 
   This variable can be changed to use a different executable for the haskell
   ide engine. i.e. `'hie-wrapper'`
+
+
+===============================================================================
+ormolu                                                     *ale-haskell-ormolu*
+
+g:ale_haskell_ormolu_executable               *g:ale_haskell_ormolu_executable*
+                                              *b:ale_haskell_ormolu_executable*
+  Type: |String|
+  Default: `'ormolu'`
+
+  This variable can be changed to use a different executable for ormolu.
+
+
+g:ale_haskell_ormolu_options                     *g:ale_haskell_ormolu_options*
+                                                 *b:ale_haskell_ormolu_options*
+  Type: String
+  Default: ''
+
+  This variable can be used to pass extra options to the underlying ormolu
+  executable.
+
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

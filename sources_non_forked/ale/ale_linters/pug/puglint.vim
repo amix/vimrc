@@ -31,12 +31,26 @@ function! ale_linters#pug#puglint#GetCommand(buffer) abort
     \   . ' -r inline %t'
 endfunction
 
+function! ale_linters#pug#puglint#Handle(buffer, lines) abort
+    for l:line in a:lines[:10]
+        if l:line =~# '^SyntaxError: '
+            return [{
+            \   'lnum': 1,
+            \   'text': 'puglint configuration error (type :ALEDetail for more information)',
+            \   'detail': join(a:lines, "\n"),
+            \}]
+        endif
+    endfor
+
+    return ale#handlers#unix#HandleAsError(a:buffer, a:lines)
+endfunction
+
 call ale#linter#Define('pug', {
 \   'name': 'puglint',
-\   'executable': {b -> ale#node#FindExecutable(b, 'pug_puglint', [
+\   'executable': {b -> ale#path#FindExecutable(b, 'pug_puglint', [
 \       'node_modules/.bin/pug-lint',
 \   ])},
 \   'output_stream': 'stderr',
 \   'command': function('ale_linters#pug#puglint#GetCommand'),
-\   'callback': 'ale#handlers#unix#HandleAsError',
+\   'callback': 'ale_linters#pug#puglint#Handle',
 \})

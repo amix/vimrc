@@ -85,16 +85,15 @@ snippet adefm
 
 # New Property
 snippet property
-	def ${1:foo}():
-		doc = "${2:The $1 property.}"
-		def fget(self):
-			${3:return self._$1}
-		def fset(self, value):
-			${4:self._$1 = value}
-		def fdel(self):
-			${0:del self._$1}
-		return locals()
-	$1 = property(**$1())
+	@property
+	def ${1:foo}(self) -> ${2:type}:
+		"""${3:doc}"""
+		return self._${1:foo}
+
+	@${1:foo}.setter
+	def ${1:foo}(self, value: ${2:type}):
+		self._${1:foo} = value
+
 # Ifs
 snippet if
 	if ${1:condition}:
@@ -123,6 +122,8 @@ snippet ret
 	return ${0}
 snippet .
 	self.
+snippet sa self.attribute = attribute
+	self.${1:attribute} = $1
 snippet try Try/Except
 	try:
 		${1:${VISUAL}}
@@ -182,6 +183,10 @@ snippet ptpython
 # python console debugger (pudb)
 snippet pudb
 	__import__('pudb').set_trace()
+# python console debugger remote (pudb)
+snippet pudbr
+	from pudb.remote import set_trace
+	set_trace()
 # pdb in nosetests
 snippet nosetrace
 	__import__('nose').tools.set_trace()
@@ -235,7 +240,7 @@ snippet addsp
 snippet addarg
 	parser.add_argument("${0:short_arg}", "${1:long_arg}", default=${2:None}, help="${3:Help text}")
 snippet addnarg
-	parser.add_argument("${0:arg}", nargs="${1:*}", default"${2:None}, help="${3:Help text}")
+	parser.add_argument("${0:arg}", nargs="${1:*}", default=${2:None}, help="${3:Help text}")
 snippet addaarg
 	parser.add_argument("${0:arg}", "${1:long_arg}", action="${2:store_true}", default=${3:False}, help="${4:Help text}")
 snippet pargs

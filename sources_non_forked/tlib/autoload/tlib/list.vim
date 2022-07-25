@@ -3,18 +3,18 @@
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
 " @Created:     2007-06-30.
-" @Last Change: 2015-10-21.
-" @Revision:    61
+" @Last Change: 2017-03-26.
+" @Revision:    71
 
 
 """ List related functions {{{1
 " For the following functions please see ../../test/tlib.vim for examples.
 
-" :def: function! tlib#list#Inject(list, initial_value, funcref)
+" :def: function! tlib#list#Inject(list, initial_value, funcref) abort
 " EXAMPLES: >
 "   echo tlib#list#Inject([1,2,3], 0, function('Add')
 "   => 6
-function! tlib#list#Inject(list, value, Function) "{{{3
+function! tlib#list#Inject(list, value, Function) abort "{{{3
     if empty(a:list)
         return a:value
     else
@@ -29,7 +29,7 @@ endf
 " EXAMPLES: >
 "   tlib#list#Compact([0,1,2,3,[], {}, ""])
 "   => [1,2,3]
-function! tlib#list#Compact(list) "{{{3
+function! tlib#list#Compact(list) abort "{{{3
     return filter(copy(a:list), '!empty(v:val)')
 endf
 
@@ -37,7 +37,7 @@ endf
 " EXAMPLES: >
 "   tlib#list#Flatten([0,[1,2,[3,""]]])
 "   => [0,1,2,3,""]
-function! tlib#list#Flatten(list) "{{{3
+function! tlib#list#Flatten(list) abort "{{{3
     let acc = []
     for e in a:list
         if type(e) == 3
@@ -51,27 +51,27 @@ function! tlib#list#Flatten(list) "{{{3
 endf
 
 
-" :def: function! tlib#list#FindAll(list, filter, ?process_expr="")
+" :def: function! tlib#list#FindAll(list, filter, ?process_expr="") abort
 " Basically the same as filter()
 "
 " EXAMPLES: >
 "   tlib#list#FindAll([1,2,3], 'v:val >= 2')
 "   => [2, 3]
-function! tlib#list#FindAll(list, filter, ...) "{{{3
+function! tlib#list#FindAll(list, filter, ...) abort "{{{3
     let rv   = filter(copy(a:list), a:filter)
-    if a:0 >= 1 && a:1 != ''
+    if a:0 >= 1 && !empty(a:1)
         let rv = map(rv, a:1)
     endif
     return rv
 endf
 
 
-" :def: function! tlib#list#Find(list, filter, ?default="", ?process_expr="")
+" :def: function! tlib#list#Find(list, filter, ?default="", ?process_expr="") abort
 "
 " EXAMPLES: >
 "   tlib#list#Find([1,2,3], 'v:val >= 2')
 "   => 2
-function! tlib#list#Find(list, filter, ...) "{{{3
+function! tlib#list#Find(list, filter, ...) abort "{{{3
     let default = a:0 >= 1 ? a:1 : ''
     let expr    = a:0 >= 2 ? a:2 : ''
     return get(tlib#list#FindAll(a:list, a:filter, expr), 0, default)
@@ -81,7 +81,7 @@ endf
 " EXAMPLES: >
 "   tlib#list#Any([1,2,3], 'v:val >= 2')
 "   => 1
-function! tlib#list#Any(list, expr) "{{{3
+function! tlib#list#Any(list, expr) abort "{{{3
     return !empty(tlib#list#FindAll(a:list, a:expr))
 endf
 
@@ -89,7 +89,7 @@ endf
 " EXAMPLES: >
 "   tlib#list#All([1,2,3], 'v:val >= 2')
 "   => 0
-function! tlib#list#All(list, expr) "{{{3
+function! tlib#list#All(list, expr) abort "{{{3
     return len(tlib#list#FindAll(a:list, a:expr)) == len(a:list)
 endf
 
@@ -97,7 +97,7 @@ endf
 " EXAMPLES: >
 "   tlib#list#Remove([1,2,1,2], 2)
 "   => [1,1,2]
-function! tlib#list#Remove(list, element) "{{{3
+function! tlib#list#Remove(list, element) abort "{{{3
     let idx = index(a:list, a:element)
     if idx != -1
         call remove(a:list, idx)
@@ -109,17 +109,17 @@ endf
 " EXAMPLES: >
 "   tlib#list#RemoveAll([1,2,1,2], 2)
 "   => [1,1]
-function! tlib#list#RemoveAll(list, element) "{{{3
+function! tlib#list#RemoveAll(list, element) abort "{{{3
     call filter(a:list, 'v:val != a:element')
     return a:list
 endf
 
 
-" :def: function! tlib#list#Zip(lists, ?default='')
+" :def: function! tlib#list#Zip(lists, ?default='') abort
 " EXAMPLES: >
 "   tlib#list#Zip([[1,2,3], [4,5,6]])
 "   => [[1,4], [2,5], [3,6]]
-function! tlib#list#Zip(lists, ...) "{{{3
+function! tlib#list#Zip(lists, ...) abort "{{{3
     TVarArg 'default'
     let lists = copy(a:lists)
     let max   = 0
@@ -133,24 +133,30 @@ function! tlib#list#Zip(lists, ...) "{{{3
     return map(range(0, max - 1), 's:GetNthElement(v:val, lists, default)')
 endf
 
-function! s:GetNthElement(n, lists, default) "{{{3
+function! s:GetNthElement(n, lists, default) abort "{{{3
     " TLogVAR a:n, a:lists, a:default
     return map(copy(a:lists), 'get(v:val, a:n, a:default)')
 endf
 
 
-function! tlib#list#Uniq(list, ...) "{{{3
+function! tlib#list#Uniq(list, ...) abort "{{{3
     " TLogVAR a:list
     TVarArg ['get_value', ''], ['remove_empty', 0]
     if remove_empty
         call filter(a:list, 'type(v:val) == 0 || !empty(v:val)')
     endif
     " CREDITS: Based on syntastic#util#unique(list) by scrooloose
+    let emptystring = 0
     let seen = {}
     let uniques = []
     if empty(get_value)
         for e in a:list
-            if !has_key(seen, e)
+            if empty(e)
+                if !emptystring
+                    let emptystring = 1
+                    call add(uniques, e)
+                endif
+            elseif !has_key(seen, e)
                 let seen[e] = 1
                 call add(uniques, e)
             endif
@@ -159,18 +165,23 @@ function! tlib#list#Uniq(list, ...) "{{{3
     else
         for e in a:list
             let v = eval(printf(get_value, string(e)))
-            if !has_key(seen, v)
+            if empty(v)
+                if !emptystring
+                    let emptystring = 1
+                    call add(uniques, v)
+                endif
+            elseif !has_key(seen, v)
                 let seen[v] = 1
-                call add(uniques, e)
+                call add(uniques, v)
             endif
-            unlet e
+            unlet e v
         endfor
     endif
     return uniques
 endf
 
 
-function! tlib#list#ToDictionary(list, default, ...) "{{{3
+function! tlib#list#ToDictionary(list, default, ...) abort "{{{3
     TVarArg ['generator', '']
     let dict = {}
     for item in a:list

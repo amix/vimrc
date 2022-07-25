@@ -16,5 +16,11 @@ function! ale#java#FindProjectRoot(buffer) abort
         return fnamemodify(l:maven_pom_file, ':h')
     endif
 
+    let l:ant_root = ale#ant#FindProjectRoot(a:buffer)
+
+    if !empty(l:ant_root)
+        return l:ant_root
+    endif
+
     return ''
 endfunction

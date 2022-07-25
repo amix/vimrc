@@ -1,7 +1,7 @@
 " @Author:      Tom Link (micathom AT gmail com?subject=[vim])
 " @Website:     http://www.vim.org/account/profile.php?user_id=4037
 " @License:     GPL (see http://www.gnu.org/licenses/gpl.txt)
-" @Revision:    30
+" @Revision:    34
 
 
 " Define a variable called NAME if yet undefined.
@@ -52,10 +52,17 @@ endf
 function! tlib#var#Get(var, namespace, ...) "{{{3
     let var_ = substitute(a:var, '#', '_', 'g')
     for namespace in split(a:namespace, '\zs')
-        let vname = namespace == 'g' ? a:var : var_
+        let vname = namespace ==# 'g' ? a:var : var_
         let var = namespace .':'. vname
         if exists(var)
             return {var}
+        elseif namespace ==# 'g'
+            try
+                let val = {var}
+            catch /^Vim\%((\a\+)\)\=:E\(121\|15\)/
+                continue
+            endtry
+            return val
         endif
     endfor
     return a:0 >= 1 ? a:1 : ''

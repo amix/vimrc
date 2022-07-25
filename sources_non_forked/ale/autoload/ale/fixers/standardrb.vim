@@ -9,15 +9,15 @@ function! ale#fixers#standardrb#GetCommand(buffer) abort
     let l:config = ale#path#FindNearestFile(a:buffer, '.standard.yml')
     let l:options = ale#Var(a:buffer, 'ruby_standardrb_options')
 
-    return ale#handlers#ruby#EscapeExecutable(l:executable, 'standardrb')
+    return ale#ruby#EscapeExecutable(l:executable, 'standardrb')
     \   . (!empty(l:config) ? ' --config ' . ale#Escape(l:config) : '')
     \   . (!empty(l:options) ? ' ' . l:options : '')
-    \   . ' --fix --force-exclusion %t'
+    \   . ' --fix --force-exclusion --stdin %s'
 endfunction
 
 function! ale#fixers#standardrb#Fix(buffer) abort
     return {
     \   'command': ale#fixers#standardrb#GetCommand(a:buffer),
-    \   'read_temporary_file': 1,
+    \   'process_with': 'ale#fixers#rubocop#PostProcess'
     \}
 endfunction

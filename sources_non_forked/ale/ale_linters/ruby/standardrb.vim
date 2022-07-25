@@ -8,10 +8,10 @@ call ale#Set('ruby_standardrb_options', '')
 function! ale_linters#ruby#standardrb#GetCommand(buffer) abort
     let l:executable = ale#Var(a:buffer, 'ruby_standardrb_executable')
 
-    return ale#handlers#ruby#EscapeExecutable(l:executable, 'standardrb')
+    return ale#ruby#EscapeExecutable(l:executable, 'standardrb')
     \   . ' --format json --force-exclusion '
     \   . ale#Var(a:buffer, 'ruby_standardrb_options')
-    \   . ' --stdin ' . ale#Escape(expand('#' . a:buffer . ':p'))
+    \   . ' --stdin %s'
 endfunction
 
 " standardrb is based on RuboCop so the callback is the same

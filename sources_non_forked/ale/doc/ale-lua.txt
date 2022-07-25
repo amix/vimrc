@@ -2,6 +2,24 @@
 ALE Lua Integration                                           *ale-lua-options*
 
 ===============================================================================
+lua-format                                                 *ale-lua-lua-format*
+
+g:ale_lua_lua_format_executable               *g:ale_lua_lua_format_executable*
+                                              *b:ale_lua_lua_format_executable*
+  Type: |String|
+  Default: `'lua-format'`
+
+  This variable can be changed to change the path to lua-format.
+
+g:ale_lua_lua_format_options                     *g:ale_lua_lua_format_options*
+                                                 *b:ale_lua_lua_format_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to lua-format.
+
+
+===============================================================================
 luac                                                             *ale-lua-luac*
 
 g:ale_lua_luac_executable                           *g:ale_lua_luac_executable*
@@ -28,6 +46,42 @@ g:ale_lua_luacheck_options                         *g:ale_lua_luacheck_options*
   Default: `''`
 
   This variable can be set to pass additional options to luacheck.
+
+
+===============================================================================
+luafmt                                                         *ale-lua-luafmt*
+
+g:ale_lua_luafmt_executable                       *g:ale_lua_luafmt_executable*
+                                                  *b:ale_lua_luafmt_executable*
+  Type: |String|
+  Default: `'luafmt'`
+
+  This variable can be set to use a different executable for luafmt.
+
+g:ale_lua_luafmt_options                             *g:ale_lua_luafmt_options*
+                                                     *b:ale_lua_luafmt_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the luafmt fixer.
+
+
+===============================================================================
+stylua                                                         *ale-lua-stylua*
+
+g:ale_lua_stylua_executable                       *g:ale_lua_stylua_executable*
+                                                  *b:ale_lua_stylua_executable*
+  Type: |String|
+  Default: `'stylua'`
+
+  This variable can be set to use a different executable for stylua.
+
+g:ale_lua_stylua_options                             *g:ale_lua_stylua_options*
+                                                     *b:ale_lua_stylua_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the stylua fixer.
 
 
 ===============================================================================

@@ -12,14 +12,15 @@ function! ale_linters#cpp#clangcheck#GetCommand(buffer) abort
     let l:build_dir = ale#Var(a:buffer, 'c_build_dir')
 
     if empty(l:build_dir)
-        let l:build_dir = ale#path#Dirname(ale#c#FindCompileCommands(a:buffer))
+        let [l:root, l:json_file] = ale#c#FindCompileCommands(a:buffer)
+        let l:build_dir = ale#path#Dirname(l:json_file)
     endif
 
     " The extra arguments in the command are used to prevent .plist files from
     " being generated. These are only added if no build directory can be
     " detected.
     return '%e -analyze %s'
-    \   . (empty(l:build_dir) ? ' -extra-arg -Xclang -extra-arg -analyzer-output=text' : '')
+    \   . (empty(l:build_dir) ? ' --extra-arg=-Xclang --extra-arg=-analyzer-output=text --extra-arg=-fno-color-diagnostics': '')
     \   . ale#Pad(l:user_options)
     \   . (!empty(l:build_dir) ? ' -p ' . ale#Escape(l:build_dir) : '')
 endfunction

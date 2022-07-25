@@ -215,7 +215,6 @@ function! s:SubComplete(A,L,P)
 endfunction
 
 function! s:Complete(A,L,P)
-  let g:L = a:L
   " Vim bug: :Abolish -<Tab> calls this function with a:A equal to 0
   if a:A =~# '^[^/?-]' && type(a:A) != type(0)
     return join(s:words(),"\n")
@@ -285,7 +284,7 @@ function! s:parse_subvert(bang,line1,line2,count,args)
   else
     let args = a:args
   endif
-  let separator = matchstr(args,'^.')
+  let separator = '\v((\\)@<!(\\\\)*\\)@<!' . matchstr(args,'^.')
   let split = split(args,separator,1)[1:]
   if a:count || split == [""]
     return s:parse_substitute(a:bang,a:line1,a:line2,a:count,split)
@@ -314,7 +313,6 @@ function! s:normalize_options(flags)
     let opts = {}
     let flags = a:flags
   endif
-  let g:op1 = copy(opts)
   if flags =~# 'w'
     let opts.boundaries = 2
   elseif flags =~# 'v'
@@ -324,7 +322,6 @@ function! s:normalize_options(flags)
   endif
   let opts.case = (flags !~# 'I' ? get(opts,'case',1) : 0)
   let opts.flags = substitute(flags,'\C[avIiw]','','g')
-  let g:op2 = copy(opts)
   return opts
 endfunction
 
@@ -402,6 +399,8 @@ function! s:grep_command(args,bang,flags,word)
   let dict = s:create_dictionary(a:word,"",opts)
   if &grepprg == "internal"
     let lhs = "'".s:pattern(dict,opts.boundaries)."'"
+  elseif &grepprg =~# '^rg\|^ag'
+    let lhs = "'".s:egrep_pattern(dict,opts.boundaries)."'"
   else
     let lhs = "-E '".s:egrep_pattern(dict,opts.boundaries)."'"
   endif
@@ -591,6 +590,7 @@ function! s:coerce(type) abort
     let regbody = getreg('"')
     let regtype = getregtype('"')
     let c = v:count1
+    let begin = getcurpos()
     while c > 0
       let c -= 1
       if a:type ==# 'line'
@@ -603,9 +603,6 @@ function! s:coerce(type) abort
       silent exe 'normal!' move.'y'
       let word = @@
       let @@ = s:send(g:Abolish.Coercions,s:transformation,word)
-      if !exists('begin')
-        let begin = getpos("'[")
-      endif
       if word !=# @@
         let changed = 1
         exe 'normal!' move.'p'
@@ -621,8 +618,8 @@ function! s:coerce(type) abort
 endfunction
 
 nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
-nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
-nnoremap <expr> <plug>(abolish-coerce-word) <sid>coerce(nr2char(getchar())).'iw'
+vnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
+nnoremap <expr> <plug>(abolish-coerce-word) <SID>coerce(nr2char(getchar())).'iw'
 
 " }}}1
 

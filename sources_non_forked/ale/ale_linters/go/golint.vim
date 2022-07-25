@@ -7,7 +7,7 @@ call ale#Set('go_golint_options', '')
 function! ale_linters#go#golint#GetCommand(buffer) abort
     let l:options = ale#Var(a:buffer, 'go_golint_options')
 
-    return '%e'
+    return ale#go#EnvString(a:buffer) . '%e'
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . ' %t'
 endfunction

@@ -6,7 +6,7 @@ call ale#Set('elixir_elixir_ls_config', {})
 
 function! ale_linters#elixir#elixir_ls#GetExecutable(buffer) abort
     let l:dir = ale#path#Simplify(ale#Var(a:buffer, 'elixir_elixir_ls_release'))
-    let l:cmd = ale#Has('win32') ? '\language_server.bat' : '/language_server.sh'
+    let l:cmd = has('win32') ? '\language_server.bat' : '/language_server.sh'
 
     return l:dir . l:cmd
 endfunction

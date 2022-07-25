@@ -21,17 +21,16 @@ This is code block
 foobar
 
 Execute (fold level # in code block):
-  AssertEqual foldlevel(1), 0, '# Title'
-  AssertEqual foldlevel(3), 1, '## Chapter 1'
-  AssertEqual foldlevel(7), 1, '# This is just a comment'
-  AssertEqual foldlevel(8), 1, '```'
-  AssertEqual foldlevel(10), 1, '## Chapter 2'
-  AssertEqual foldlevel(12), 1, 'foobar'
+  AssertEqual foldlevel(1), 1, '# Title'
+  AssertEqual foldlevel(3), 2, '## Chapter 1'
+  AssertEqual foldlevel(7), 2, '# This is just a comment'
+  AssertEqual foldlevel(8), 2, '```'
+  AssertEqual foldlevel(10), 2, '## Chapter 2'
+  AssertEqual foldlevel(12), 2, 'foobar'
 
 Execute (fold text of chapters):
   let b:width = winwidth(0)
   let b:hyphen = repeat('-', b:width - 18 > 2 ? b:width - 18 : b:width - 9 > 0 ? 3 : 2)
-  AssertEqual foldtextresult(3), strpart('## Chapter 1', 0, b:width - 9) . ' ' . b:hyphen . ' 6'
   AssertEqual foldtextresult(10), strpart('## Chapter 2', 0, b:width - 9) . ' ' . b:hyphen . ' 2'
 
 Given markdown;
@@ -59,7 +58,7 @@ foobar
 Execute (fold any preamble):
   AssertEqual foldlevel(1), 1, 'Headline'
   AssertEqual foldlevel(3), 1, 'foobar'
-  AssertEqual foldlevel(5), 0, '# Title'
+  AssertEqual foldlevel(5), 1, '# Title'
 
 Given markdown;
 ---

@@ -2,6 +2,7 @@
 " Description: languagetool for markdown files
 "
 call ale#Set('languagetool_executable', 'languagetool')
+call ale#Set('languagetool_options', '--autoDetect')
 
 function! ale#handlers#languagetool#GetExecutable(buffer) abort
     return ale#Var(a:buffer, 'languagetool_executable')
@@ -9,8 +10,10 @@ endfunction
 
 function! ale#handlers#languagetool#GetCommand(buffer) abort
     let l:executable = ale#handlers#languagetool#GetExecutable(a:buffer)
+    let l:options = ale#Var(a:buffer, 'languagetool_options')
 
-    return ale#Escape(l:executable) . ' --autoDetect %s'
+    return ale#Escape(l:executable)
+    \ . (empty(l:options) ? '' : ' ' . l:options) . ' %s'
 endfunction
 
 function! ale#handlers#languagetool#HandleOutput(buffer, lines) abort

@@ -1,0 +1,24 @@
+Given rust (Some Rust code):
+  fn main() {
+      println!("Hello World\n")
+  }
+
+Execute (RustInfo - call it to see that it works):
+  redir => m
+  silent RustInfo
+  redir END
+  Log m
+
+Execute (RustEmitAsm - see that we actually get assembly output):
+  silent! w test.rs
+  silent! e! test.rs
+  redir => m
+  silent! RustEmitAsm
+  redir END
+  AssertEqual 'asm', &filetype
+  normal! ggVGy:q<CR>
+  AssertEqual 1,(@" =~# '\V.section')
+  bd
+  call delete('test.rs')
+
+# TODO: a lot more tests

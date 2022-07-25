@@ -1,6 +1,28 @@
 ===============================================================================
 ALE YAML Integration                                         *ale-yaml-options*
 
+
+===============================================================================
+circleci                                                    *ale-yaml-circleci*
+
+Website: https://circleci.com/docs/2.0/local-cli
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Follow the instructions on the website, and make sure to test that you can
+validate configuration files with: >
+
+  circleci config validate - < .circleci/config.yml
+<
+
+As long as the validator runs correctly, you should be able to see errors when
+you save the configuration file. The validator doesn't run as you type because
+it sends network requests, and running too often would overload the circleci
+servers.
+
+
 ===============================================================================
 prettier                                                    *ale-yaml-prettier*
 
@@ -15,7 +37,40 @@ Install prettier either globally or locally: >
   npm install prettier -g  # global
   npm install prettier     # local
 <
-  
+
+===============================================================================
+spectral                                                    *ale-yaml-spectral*
+
+Website: https://github.com/stoplightio/spectral
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install spectral either globally or locally: >
+
+  npm install @stoplight/spectral -g  # global
+  npm install @stoplight/spectral     # local
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_spectral_executable                 *g:ale_yaml_spectral_executable*
+                                               *b:ale_yaml_spectral_executable*
+  Type: |String|
+  Default: `'spectral'`
+
+  This variable can be set to change the path to spectral.
+
+g:ale_yaml_spectral_use_global                 *g:ale_yaml_spectral_use_global*
+                                               *b:ale_yaml_spectral_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
 ===============================================================================
 swaglint                                                    *ale-yaml-swaglint*
 
@@ -45,6 +100,45 @@ g:ale_yaml_swaglint_executable                 *g:ale_yaml_swaglint_executable*
 g:ale_yaml_swaglint_use_global                 *g:ale_yaml_swaglint_use_global*
                                                *b:ale_yaml_swaglint_use_global*
   Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+yamlfix                                                      *ale-yaml-yamlfix*
+
+Website: https://lyz-code.github.io/yamlfix
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install yamlfix: >
+
+  pip install yamlfix
+<
+
+Options
+-------------------------------------------------------------------------------
+g:ale_yaml_yamlfix_executable                   *g:ale_yaml_yamlfix_executable*
+                                                *b:ale_yaml_yamlfix_executable*
+  Type: |String|
+  Default: `'yamlfix'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_yaml_yamlfix_options                         *g:ale_yaml_yamlfix_options*
+                                                   *b:ale_yaml_yamlfix_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to yamlfix.
+
+g:ale_yaml_yamlfix_use_global                   *g:ale_yaml_yamlfix_use_global*
+                                                *b:ale_yaml_yamlfix_use_global*
+  Type: |Number|
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|

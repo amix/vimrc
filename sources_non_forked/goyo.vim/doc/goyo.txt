@@ -1,4 +1,4 @@
-goyo.txt	goyo	Last change: April 2 2017
+*goyo.txt*	goyo	Last change: April 2 2017
 GOYO - TABLE OF CONTENTS                                         *goyo* *goyo-toc*
 ==============================================================================
 
@@ -31,8 +31,6 @@ INSTALLATION                                                 *goyo-installation*
 ==============================================================================
 
 Use your favorite plugin manager.
-
-                                                                  *:PlugInstall*
 
  - {vim-plug}{3}
    1. Add `Plug 'junegunn/goyo.vim'` to .vimrc

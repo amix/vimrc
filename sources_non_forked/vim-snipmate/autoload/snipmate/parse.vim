@@ -182,7 +182,7 @@ function! s:parser_text(till) dict abort
                 if var[0] is# 'VISUAL'
                     let lines = s:visual_placeholder(var, self.indent)
                     " Remove trailing newline. See #245
-                    if lines[-1] == '' && self.next == "\n"
+                    if lines[-1] =~ '^\s*$' && self.next == "\n"
                         call remove(lines, -1)
                     endif
                 elseif var[0] >= 0

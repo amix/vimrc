@@ -1,0 +1,472 @@
+# Port of Shopify Liquid Template Snippets
+# https://marketplace.visualstudio.com/items?itemName=killalau.vscode-liquid-snippets
+
+snippet if
+	{% if ${1:condition} %}
+		${0:${VISUAL}}
+	{% endif %}
+snippet else
+	{% else %}
+snippet elsif
+	{% elsif ${1:condition} %}
+snippet ifelse
+	{% if ${1:condition} %}
+		${2}
+	{% else %}
+		${0}
+	{% endif %}
+snippet unless
+	{% unless ${1:condition} %}
+		${0:${VISUAL}}
+	{% endunless %}
+snippet case
+	{% case ${1:variable} %}
+		{% when ${2:condition} %}
+			${3}
+		{% else %}
+			${0}
+	{% endcase %}
+snippet when
+	{% when ${1:condition} %}
+		${0:${VISUAL}}
+snippet cycle
+	{% cycle '${1:odd}', '${2:even}' %}
+snippet cyclegroup
+	{% cycle '${1:group name}': '${2:odd}', '${3:even}' %}
+snippet for
+	{% for ${1:item} in ${2:collection} %}
+		${0}
+	{% endfor %}
+snippet limit
+	limit: ${1:5}
+snippet offset
+	offset: ${1:0}
+snippet reversed
+	reversed
+snippet break
+	{% break %}
+snippet continue
+	{% continue %}
+snippet tablerow
+	{% tablerow ${1:item} in ${2:collection} cols: ${3:2} %}
+		${0}
+	{% endtablerow %}
+snippet assign
+	{% assign ${1:variable} = ${0:value} %}
+snippet increment
+	{% increment ${0:variable} %}
+snippet decrement
+	{% decrement ${0:variable} %}
+snippet capture
+	{% capture ${1:variable} %}${0}{% endcapture %}
+snippet include
+	{% include '${0:snippet}' %}
+snippet includewith
+	{% include '${1:snippet}', ${2:variable}: ${0:value} %}
+snippet render
+	{% render '${0:snippet}' %}
+snippet renderwith
+	{% render '${1:snippet}', ${2:variable}: ${0:value} %}
+snippet section
+	{% section '${1:snippet}' %}
+snippet raw
+	{% raw %}${0}{% endraw %}
+snippet layout
+	{% layout '${1:layout}' %}
+snippet layoutnone
+	{% layout none %}
+snippet paginate
+	{% paginate ${1:collection.products} by ${2:12} %}
+		{% for ${3:product} in $1 %}
+			${0}
+		{% endfor %}
+	{% endpaginate %}
+snippet schema
+	{% schema %}
+		{
+			${0}
+		}
+	{% endschema %}
+snippet stylesheet
+	{% stylesheet %}
+		${0}
+	{% endstylesheet %}
+snippet stylesheet_scss
+	{% stylesheet '${1:scss}' %}
+		${0}
+	{% endstylesheet %}
+snippet javascript
+	{% javascript %}
+		${0}
+	{% endjavascript %}
+snippet comment-
+	{%- comment -%}${0:${VISUAL}}{%- endcomment -%}
+snippet if-
+	{%- if ${1:condition} -%}
+		${0:${VISUAL}}
+	{%- endif -%}
+snippet else-
+	{%- else -%}
+snippet elsif-
+	{%- elsif ${1:condition} -%}
+snippet ifelse-
+	{%- if ${1:condition} -%}
+		${2}
+	{%- else -%}
+		${0}
+	{%- endif -%}
+snippet unless-
+	{%- unless ${1:condition} -%}
+		${0:${VISUAL}}
+	{%- endunless -%}
+snippet case-
+	{%- case ${1:variable} -%}
+		{%- when ${2:condition} -%}
+			${3}
+		{%- else -%}
+			${0}
+	{%- endcase -%}
+snippet when-
+	{%- when ${1:condition} -%}
+		${0:${VISUAL}}
+snippet cycle-
+	{%- cycle '${1:odd}', '${2:even}' -%}
+snippet cyclegroup-
+	{%- cycle '${1:group name}': '${2:odd}', '${3:even}' -%}
+snippet for-
+	{%- for ${1:item} in ${2:collection} -%}
+		${0}
+	{%- endfor -%}
+snippet continue-
+	{%- continue -%}
+snippet tablerow-
+	{%- tablerow ${1:item} in ${2:collection} cols: ${3:2} -%}
+		${0}
+	{%- endtablerow -%}
+snippet assign-
+	{%- assign ${1:variable} = ${0:value} -%}
+snippet capture-
+	{%- capture ${1:variable} -%}${0}{%- endcapture -%}
+snippet include-
+	{%- include '${0:snippet}' -%}
+snippet includewith-
+	{%- include '${1:snippet}', ${2:variable}: ${0:value} -%}
+snippet render-
+	{%- render '${0:snippet}' -%}
+snippet renderwith-
+	{%- render '${1:snippet}', ${2:variable}: ${0:value} -%}
+snippet section-
+	{%- section '${1:snippet}' -%}
+snippet layout-
+	{%- layout '${1:layout}' -%}
+snippet layoutnone-
+	{%- layout none -%}
+snippet paginate-
+	{%- paginate ${1:collection.products} by ${2:12} -%}
+		{%- for ${3:product} in $1 -%}
+			${0}
+		{%- endfor -%}
+	{%- endpaginate -%}
+snippet join
+	| join: '${1:, }'
+snippet first
+	| first
+snippet last
+	| last
+snippet concat
+	| concat: ${1:array}
+snippet map
+	| map: '${1:key}'
+snippet reverse
+	| reverse
+snippet size
+	| size
+snippet sort
+	| sort: '${1:key}'
+snippet uniq
+	| uniq
+snippet img_tag
+	| img_tag
+snippet img_tag_param
+	| img_tag: '${1:alt}', '${2:class}'
+snippet script_tag
+	| script_tag
+snippet stylesheet_tag
+	| stylesheet_tag
+snippet abs
+	| abs
+snippet ceil
+	| ceil
+snippet divided_by
+	| divided_by: ${1:2}
+snippet floor
+	| floor
+snippet minus
+	| minus: ${1:1}
+snippet plus
+	| plus: ${1:1}
+snippet round
+	| round: ${1:0}
+snippet times
+	| times: ${1:1}
+snippet modulo
+	| modulo: ${1:2}
+snippet money
+	| money
+snippet money_with_currency
+	| money_with_currency
+snippet money_without_trailing_zeros
+	| money_without_trailing_zeros
+snippet money_without_currency
+	| money_without_currency
+snippet append
+	| append: '${1:string}'
+snippet camelcase
+	| camelcase
+snippet capitalize
+	| capitalize
+snippet downcase
+	| downcase
+snippet escape
+	| escape
+snippet handleize
+	| handleize
+snippet md5
+	| md5
+snippet newline_to_br
+	| newline_to_br
+snippet pluralize
+	| pluralize: '${1:item}', '${2:items}'
+snippet prepend
+	| prepend: '${1:string}'
+snippet remove
+	| remove: '${1:string}'
+snippet remove_first
+	| remove_first: '${1:string}'
+snippet replace
+	| replace: '${1:target}', '${2:replace}'
+snippet replace_first
+	| replace_first: '${1:target}', '${2:replace}'
+snippet slice
+	| slice: ${1:0}, ${2:5}
+snippet slice_single
+	| slice: ${1:at}
+snippet split
+	| split: '${1:,}'
+snippet strip
+	| strip
+snippet lstrip
+	| lstrip
+snippet rstrip
+	| rstrip
+snippet strip_html
+	| strip_html
+snippet strip_newlines
+	| strip_newlines
+snippet truncate
+	| truncate: ${1:20}, '${2:...}'
+snippet truncatewords
+	| truncatewords: ${1:5}, '${2:...}'
+snippet upcase
+	| upcase
+snippet url_encode
+	| url_encode
+snippet url_escape
+	| url_escape
+snippet url_param_escape
+	| url_param_escape
+snippet asset_url
+	| asset_url
+snippet asset_img_url
+	| asset_img_url: '${1:medium}'
+snippet img_url
+	| img_url: '${1:medium}'
+snippet _schema
+	{% schema %}
+		{
+			"name": "${1}",
+			"class": "${2}",
+			"settings": [
+				${0}
+			]
+		}
+	{% endschema %}
+snippet _blocks
+	"blocks": [
+		{
+			"type": "${1}",
+			"name": "${2}",
+			"settings": [
+				${0}
+			]
+		}
+	]
+snippet _text
+	{
+		"type": "text",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "${3}",
+		"info": "${4}",
+		"placeholder": "${0}"
+	}
+snippet _textarea
+	{
+		"type": "textarea",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "${3}",
+		"info": "${4}",
+		"placeholder": "${0}"
+	}
+snippet _image_picker
+	{
+		"type": "image_picker",
+		"id": "${1}",
+		"label": "${0}"
+	}
+snippet _radio
+	{
+		"type": "radio",
+		"id": "${1}",
+		"label": "${2}",
+		"options": [
+			{ "value": "${5}", "label": "${0}" }
+		],
+		"default": "${3}",
+		"info": "${4}"
+	}
+snippet _select
+	{
+		"type": "select",
+		"id": "${1}",
+		"label": "${2}",
+		"options": [
+			{
+				"group": "${5}",
+				"value": "${6}",
+				"label": "${0}"
+			}
+		],
+		"default": "${3}",
+		"info": "${4}"
+	}
+snippet _checkbox
+	{
+		"type": "checkbox",
+		"id": "${1}",
+		"label": "${2}",
+		"default": ${3:true},
+		"info": "${0}"
+	}
+snippet _range
+	{
+		"type": "range",
+		"id": "${1}",
+		"min": ${2},
+		"max": ${3},
+		"step": ${4},
+		"unit": "${5}",
+		"label": "${6}",
+		"default": ${0}
+	}
+snippet _color
+	{
+		"type": "color",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "${3}",
+		"info": "${0}"
+	}
+snippet _font
+	{
+		"type": "font_picker",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${3}",
+		"default": "${0:helvetica_n4}"
+	}
+snippet _collection
+	{
+		"type": "collection",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _product
+	{
+		"type": "product",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _blog
+	{
+		"type": "blog",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _page
+	{
+		"type": "page",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _link_list
+	{
+		"type": "link_list",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _url
+	{
+		"type": "url",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _video
+	{
+		"type": "video_url",
+		"id": "${1}",
+		"label": "${2}",
+		"accept": ["youtube", "vimeo"${0}],
+		"default": "${3}",
+		"info": "${4}",
+		"placeholder": "${5}"
+	}
+snippet _richtext
+	{
+		"type": "richtext",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "<p>${0}</p>"
+	}
+snippet _html
+	{
+		"type": "html",
+		"id": "${1}",
+		"label": "${2}",
+		"default": "<div>${0}</div>"
+	}
+snippet _article
+	{
+		"type": "article",
+		"id": "${1}",
+		"label": "${2}",
+		"info": "${0}"
+	}
+snippet _header
+	{
+		"type": "header",
+		"content": "${1}",
+		"info": "${0}"
+	}
+snippet _paragraph
+	{
+		"type": "paragraph",
+		"content": "${0}"
+	}

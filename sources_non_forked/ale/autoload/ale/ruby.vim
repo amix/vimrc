@@ -1,7 +1,7 @@
 " Author: Eddie Lebow https://github.com/elebow
 " Description: Functions for integrating with Ruby tools
 
-" Find the nearest dir contining "app", "db", and "config", and assume it is
+" Find the nearest dir containing "app", "db", and "config", and assume it is
 " the root of a Rails app.
 function! ale#ruby#FindRailsRoot(buffer) abort
     for l:name in ['app', 'config', 'db']
@@ -74,3 +74,10 @@ function! ale#ruby#HandleRubocopOutput(buffer, lines) abort
     return l:output
 endfunction
 
+function! ale#ruby#EscapeExecutable(executable, bundle_exec) abort
+    let l:exec_args = a:executable =~? 'bundle'
+    \   ? ' exec ' . a:bundle_exec
+    \   : ''
+
+    return ale#Escape(a:executable) . l:exec_args
+endfunction
