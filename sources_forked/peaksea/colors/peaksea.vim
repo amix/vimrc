@@ -205,18 +205,11 @@ if &background=='light'
     " NOTE THIS IS IN THE WARM SECTION
     if v:version >= 700
       if has('spell')
-        if 0
-          " ctermsp is not supported in Vim7, we ignore it.
-          hi SpellBad	cterm=undercurl	ctermbg=NONE	ctermfg=130
-          hi SpellCap	cterm=undercurl	ctermbg=NONE	ctermfg=25
-          hi SpellRare	cterm=undercurl	ctermbg=NONE	ctermfg=133
-          hi SpellLocal	cterm=undercurl	ctermbg=NONE	ctermfg=23
-        else
-          hi SpellBad	cterm=undercurl	ctermbg=NONE	ctermfg=NONE
-          hi SpellCap	cterm=undercurl	ctermbg=NONE	ctermfg=NONE
-          hi SpellRare	cterm=undercurl	ctermbg=NONE	ctermfg=NONE
-          hi SpellLocal	cterm=undercurl	ctermbg=NONE	ctermfg=NONE
-        endif
+        " ctermsp is not supported in Vim7, we ignore it.
+        hi SpellBad	cterm=undercurl	ctermbg=NONE	ctermfg=130
+        hi SpellCap	cterm=undercurl	ctermbg=NONE	ctermfg=25
+        hi SpellRare	cterm=undercurl	ctermbg=NONE	ctermfg=133
+        hi SpellLocal	cterm=undercurl	ctermbg=NONE	ctermfg=23
       endif
       hi Pmenu		ctermfg=fg	ctermbg=182
       hi PmenuSel	ctermfg=255	ctermbg=95	cterm=NONE
@@ -540,17 +533,10 @@ elseif &background=='dark'
     if v:version >= 700
       if has('spell')
         " the ctermsp= is not supported in Vim 7 we simply ignored
-        if 0
-          hi SpellBad	cterm=undercurl	ctermbg=NONE	ctermfg=209
-          hi SpellCap	cterm=undercurl	ctermbg=NONE	ctermfg=69
-          hi SpellRare	cterm=undercurl	ctermbg=NONE	ctermfg=219
-          hi SpellLocal	cterm=undercurl	ctermbg=NONE	ctermfg=153
-        else
-          hi SpellBad	cterm=undercurl	ctermbg=NONE	ctermfg=NONE
-          hi SpellCap	cterm=undercurl	ctermbg=NONE	ctermfg=NONE
-          hi SpellRare	cterm=undercurl	ctermbg=NONE	ctermfg=NONE
-          hi SpellLocal	cterm=undercurl	ctermbg=NONE	ctermfg=NONE
-        endif
+        hi SpellBad	cterm=undercurl	ctermbg=NONE	ctermfg=209
+        hi SpellCap	cterm=undercurl	ctermbg=NONE	ctermfg=69
+        hi SpellRare	cterm=undercurl	ctermbg=NONE	ctermfg=219
+        hi SpellLocal	cterm=undercurl	ctermbg=NONE	ctermfg=153
       endif
 
       hi Pmenu		ctermfg=White	ctermbg=DarkGrey
