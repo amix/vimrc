@@ -21,7 +21,13 @@ function! ale_linters#terraform#terraform#GetType(severity) abort
 endfunction
 
 function! ale_linters#terraform#terraform#GetDetail(error) abort
-    return get(a:error, 'detail', get(a:error, 'summary', ''))
+    let l:detail = get(a:error, 'detail', '')
+
+    if strlen(l:detail) > 0
+        return l:detail
+    else
+        return get(a:error, 'summary', '')
+    endif
 endfunction
 
 function! ale_linters#terraform#terraform#Handle(buffer, lines) abort

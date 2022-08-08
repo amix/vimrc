@@ -11,10 +11,7 @@ function! ale_linters#html#angular#GetProjectRoot(buffer) abort
 endfunction
 
 function! ale_linters#html#angular#GetExecutable(buffer) abort
-    return ale#path#FindExecutable(a:buffer, 'html_angular', [
-    \   'node_modules/@angular/language-server/bin/ngserver',
-    \   'node_modules/@angular/language-server/index.js',
-    \])
+    return 'node'
 endfunction
 
 function! ale_linters#html#angular#GetCommand(buffer) abort
@@ -34,9 +31,16 @@ function! ale_linters#html#angular#GetCommand(buffer) abort
     \   fnamemodify(l:language_service_dir, ':h:h')
     \   . '/typescript'
     \)
-    let l:executable = ale_linters#html#angular#GetExecutable(a:buffer)
+    let l:script = ale#path#FindExecutable(a:buffer, 'html_angular', [
+    \   'node_modules/@angular/language-server/bin/ngserver',
+    \   'node_modules/@angular/language-server/index.js',
+    \])
 
-    return ale#node#Executable(a:buffer, l:executable)
+    if !filereadable(l:script)
+        return ''
+    endif
+
+    return ale#Escape('node') . ' ' . ale#Escape(l:script)
     \ . ' --ngProbeLocations ' . ale#Escape(l:language_service_dir)
     \ . ' --tsProbeLocations ' . ale#Escape(l:typescript_dir)
     \ . ' --stdio'

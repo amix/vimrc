@@ -42,6 +42,12 @@ g:ale_java_checkstyle_options                   *g:ale_java_checkstyle_options*
 
 
 ===============================================================================
+cspell                                                        *ale-java-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
 javac                                                          *ale-java-javac*
 
 g:ale_java_javac_classpath                         *g:ale_java_javac_classpath*
@@ -90,7 +96,6 @@ List type:
     \ 'target/generated-sources/source/querydsl/main'
   \ ]
 <
-
 
 ===============================================================================
 google-java-format                                *ale-java-google-java-format*
@@ -190,6 +195,7 @@ The Java language server will look for the dependencies you specify in
 `externalDependencies` array in your Maven and Gradle caches ~/.m2 and
 ~/.gradle.
 
+
 ===============================================================================
 eclipselsp                                                *ale-java-eclipselsp*
 
@@ -218,8 +224,9 @@ g:ale_java_eclipselsp_path                         *g:ale_java_eclipselsp_path*
   Default: `'$HOME/eclipse.jdt.ls'`
 
   Absolute path to the location of the eclipse.jdt.ls repository folder. Or if
-  you have VSCode extension installed the absolute path to the VSCode extensions
-  folder (e.g. $HOME/.vscode/extensions/redhat.java-0.4x.0 in Linux).
+  you have VSCode extension installed the absolute path to the VSCode
+  extensions folder (e.g. $HOME/.vscode/extensions/redhat.java-0.4x.0 in
+  Linux).
 
 
 g:ale_java_eclipselsp_executable                *g:ale_java_eclipse_executable*
@@ -261,7 +268,8 @@ g:ale_java_eclipselsp_javaagent               *g:ale_java_eclipselsp_javaagent*
   Default: `''`
 
   A variable to add java agent for annotation processing such as Lombok.
-  If you have multiple java agent files, use space to separate them. For example:
+  If you have multiple java agent files, use space to separate them.
+  For example:
 >
   let g:ale_java_eclipselsp_javaagent='/eclipse/lombok.jar /eclipse/jacoco.jar'
 <

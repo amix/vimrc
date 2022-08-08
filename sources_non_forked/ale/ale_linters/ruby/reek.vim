@@ -19,6 +19,10 @@ function! ale_linters#ruby#reek#GetCommand(buffer, version) abort
     \   . l:display_name_args
 endfunction
 
+function! s:GetDocumentationLink(error) abort
+    return get(a:error, 'documentation_link', get(a:error, 'wiki_link', ''))
+endfunction
+
 function! s:BuildText(buffer, error) abort
     let l:parts = []
 
@@ -29,7 +33,7 @@ function! s:BuildText(buffer, error) abort
     call add(l:parts, a:error.message)
 
     if ale#Var(a:buffer, 'ruby_reek_show_wiki_link')
-        call add(l:parts, '[' . a:error.wiki_link . ']')
+        call add(l:parts, '[' . s:GetDocumentationLink(a:error) . ']')
     endif
 
     return join(l:parts, ' ')

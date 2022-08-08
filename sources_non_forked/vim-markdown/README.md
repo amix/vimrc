@@ -1,6 +1,7 @@
 # Vim Markdown
 
-[![Build Status](https://travis-ci.org/plasticboy/vim-markdown.svg)](https://travis-ci.org/plasticboy/vim-markdown)
+[![Vint](https://github.com/preservim/vim-markdown/workflows/Vint/badge.svg)](https://github.com/preservim/vim-markdown/actions?workflow=Vint)
+[![Vader](https://github.com/preservim/vim-markdown/workflows/Vader/badge.svg)](https://github.com/preservim/vim-markdown/actions?workflow=Vader)
 
 Syntax highlighting, matching rules and mappings for [the original Markdown](http://daringfireball.net/projects/markdown/) and extensions.
 
@@ -18,7 +19,7 @@ If you use [Vundle](https://github.com/gmarik/vundle), add the following lines t
 
 ```vim
 Plugin 'godlygeek/tabular'
-Plugin 'plasticboy/vim-markdown'
+Plugin 'preservim/vim-markdown'
 ```
 
 The `tabular` plugin must come *before* `vim-markdown`.
@@ -34,19 +35,19 @@ If you use [Pathogen](https://github.com/tpope/vim-pathogen), do this:
 
 ```sh
 cd ~/.vim/bundle
-git clone https://github.com/plasticboy/vim-markdown.git
+git clone https://github.com/preservim/vim-markdown.git
 ```
 
 To install without Pathogen using the Debian [vim-addon-manager](http://packages.qa.debian.org/v/vim-addon-manager.html), do this:
 
 ```sh
-git clone https://github.com/plasticboy/vim-markdown.git
+git clone https://github.com/preservim/vim-markdown.git
 cd vim-markdown
 sudo make install
 vim-addon-manager install markdown
 ```
 
-If you are not using any package manager, download the [tarball](https://github.com/plasticboy/vim-markdown/archive/master.tar.gz) and do this:
+If you are not using any package manager, download the [tarball](https://github.com/preservim/vim-markdown/archive/master.tar.gz) and do this:
 
 ```sh
 cd ~/.vim
@@ -370,19 +371,19 @@ The following work on normal and visual modes:
 
     Known limitation: does not work for links that span multiple lines.
 
--   `ge`: open the link under the cursor in Vim for editing. Useful for relative markdown links. `<Plug>Markdown_EditUrlUnderCursor`
+-   `ge`: open the link under the cursor in Vim for editing. Useful for relative markdown links. Falls back to `gf` with force editing, if not on a markdown link. `<Plug>Markdown_EditUrlUnderCursor`
 
     The rules for the cursor position are the same as the `gx` command.
 
 -   `]]`: go to next header. `<Plug>Markdown_MoveToNextHeader`
 
--   `[[`: go to previous header. Contrast with `]c`. `<Plug>Markdown_MoveToPreviousHeader`
+-   `[[`: go to previous header. Contrast with `]h`. `<Plug>Markdown_MoveToPreviousHeader`
 
 -   `][`: go to next sibling header if any. `<Plug>Markdown_MoveToNextSiblingHeader`
 
 -   `[]`: go to previous sibling header if any. `<Plug>Markdown_MoveToPreviousSiblingHeader`
 
--   `]c`: go to Current header. `<Plug>Markdown_MoveToCurHeader`
+-   `]h`: go to Current header. `<Plug>Markdown_MoveToCurHeader`
 
 -   `]u`: go to parent header (Up). `<Plug>Markdown_MoveToParentHeader`
 
@@ -443,7 +444,7 @@ The following requires `:filetype plugin on`.
 
 The main contributors of vim-markdown are:
 
-- **Ben Williams** (A.K.A. **plasticboy**). The original developer of vim-markdown. [Homepage](http://plasticboy.com/).
+- **Ben Williams** (A.K.A. **@plasticboy**). The original developer of vim-markdown. [Homepage](http://plasticboy.com/).
 
 If you feel that your name should be on this list, please make a pull request listing your contributions.
 

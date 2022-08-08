@@ -7,6 +7,18 @@ Integration Information
 
   Currently, the only supported linter for zig is zls.
 
+
+===============================================================================
+zigfmt                                                         *ale-zig-zigfmt*
+
+g:ale_zig_zigfmt_executable                       *g:ale_zig_zigfmt_executable*
+                                                  *b:ale_zig_zigfmt_executable*
+  Type: |String|
+  Default: `'zig'`
+
+  The executable that will be run for the `zig fmt` fixer.
+
+
 ===============================================================================
 zls                                                               *ale-zig-zls*
 

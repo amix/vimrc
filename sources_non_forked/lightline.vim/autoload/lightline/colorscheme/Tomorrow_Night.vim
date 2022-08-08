@@ -2,8 +2,9 @@
 " Filename: autoload/lightline/colorscheme/Tomorrow_Night.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2013/09/07 12:23:38.
+" Last Change: 2022/03/15 23:57:43.
 " =============================================================================
+
 let s:base3 = '#c5c8c6'
 let s:base2 = '#bababa'
 let s:base1 = '#a0a0a0'

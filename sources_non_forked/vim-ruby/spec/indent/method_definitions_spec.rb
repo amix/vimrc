@@ -70,6 +70,10 @@ describe "Indenting" do
         def foo(
           bar
         ) = puts(bar)
+
+        # Reference: https://github.com/vim-ruby/vim-ruby/issues/450
+        def self.foo = puts(bar)
+        def bar.foo = puts(baz)
       end
     EOF
   end

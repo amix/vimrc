@@ -63,26 +63,35 @@ function! ale#handlers#sml#Handle(buffer, lines) abort
         let l:match2 = matchlist(l:line, l:pattern2)
 
         if len(l:match2) != 0
-            call add(l:out, {
-            \   'filename': l:match2[1],
+            if l:match2[1] =~# 'stdIn$'
+                let l:loc = {'bufnr': a:buffer}
+            else
+                let l:loc = {'filename': l:match2[1]}
+            endif
+
+            call add(l:out, extend(l:loc, {
             \   'lnum': l:match2[2] + 0,
             \   'col' : l:match2[3] - 1,
             \   'text': l:match2[4],
             \   'type': l:match2[4] =~# '^Warning' ? 'W' : 'E',
-            \})
-
+            \}))
             continue
         endif
 
         let l:match = matchlist(l:line, l:pattern)
 
         if len(l:match) != 0
-            call add(l:out, {
-            \   'filename': l:match[1],
+            if l:match[1] =~# 'stdIn$'
+                let l:loc = {'bufnr': a:buffer}
+            else
+                let l:loc = {'filename': l:match[1]}
+            endif
+
+            call add(l:out, extend(l:loc, {
             \   'lnum': l:match[2] + 0,
             \   'text': l:match[3] . ': ' . l:match[4],
             \   'type': l:match[3] is# 'error' ? 'E' : 'W',
-            \})
+            \}))
             continue
         endif
     endfor

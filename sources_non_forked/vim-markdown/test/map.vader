@@ -146,8 +146,8 @@ Given markdown;
 
 b
 
-Execute (]c):
+Execute (]h):
   normal! 3G
   AssertEqual line('.'), 3
-  normal ]c
+  normal ]h
   AssertEqual line('.'), 1

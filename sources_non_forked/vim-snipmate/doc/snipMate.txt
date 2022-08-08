@@ -242,7 +242,8 @@ snippets: >
 
 where <scope> is a scope or 'filetype' or 'syntax', <name> is an arbitrary
 name, <trigger> is the trigger for a snippet, and <description> is
-a description used for |SnipMate-multisnip|.
+a description used for |SnipMate-multisnip|. Snippets in the `_` scope (for
+example `.../snippets/_.snippets`) are loaded for all filetypes.
 
 A .snippet file defines a single snippet with the trigger (and description)
 determined by the filename. The entire contents of the file are used as the
@@ -585,11 +586,13 @@ CHANGELOG                                                 *SnipMate-changelog*
 0.89 - 2016-05-29
 -----------------
 
-* Various regex updates to legacy parser Addition of double bang syntax to
-* completely remove a snippet from lookup Group various SnipMate autocommands
-* Support setting 'shiftwidth' to 0 Parser now operates linewise, adding some
-* flexibility Mirror substitutions are more literal Mirror length is
-* calculated correctly when substitutions occur
+* Various regex updates to legacy parser
+* Addition of double bang syntax to completely remove a snippet from lookup
+* Group various SnipMate autocommands
+* Support setting 'shiftwidth' to 0
+* Parser now operates linewise, adding some flexibility
+* Mirror substitutions are more literal
+* Mirror length is calculated correctly when substitutions occur
 
 0.88 - 2015-04-04
 -----------------

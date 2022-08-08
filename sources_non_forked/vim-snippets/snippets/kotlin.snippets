@@ -6,6 +6,11 @@ snippet pfun
 	private fun ${1:name}(${2}): ${3:String} {
 		${4}
 	}
+snippet main
+	@JvmStatic
+	fun main(args: Array<String>) {
+		${0}
+	}
 snippet ret
 	return ${0}
 snippet whe

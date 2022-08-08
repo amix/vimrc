@@ -240,23 +240,8 @@ Set this to 1 if you want CtrlP to scan for dotfiles and dotdirs: >
 Note: does not apply when a command defined with |g:ctrlp_user_command| is
 being used.
 
-                                                           *'ctrlp-wildignore'*
-You can use Vim's |'wildignore'| to exclude files and directories from the
-results.
-Examples: >
-  " Excluding version control directories
-  set wildignore+=*/.git/*,*/.hg/*,*/.svn/*        " Linux/MacOSX
-  set wildignore+=*\\.git\\*,*\\.hg\\*,*\\.svn\\*  " Windows ('noshellslash')
-<
-Note #1: the `*/` in front of each directory glob is required.
-
-Note #2: |wildignore| influences the result of |expand()|, |globpath()| and
-|glob()| which many plugins use to find stuff on the system (e.g. VCS related
-plugins look for .git/, .hg/,... some other plugins look for external *.exe
-tools on Windows). So be a little mindful of what you put in your |wildignore|.
-
                                                       *'g:ctrlp_custom_ignore'*
-In addition to |'wildignore'| and |g:ctrlp_show_hidden|, use this for files
+In addition to |g:ctrlp_show_hidden|, use this for files
 and directories you want only CtrlP to not show. Use regexp to specify the
 patterns: >
   let g:ctrlp_custom_ignore = ''
@@ -275,8 +260,7 @@ Examples: >
     \ 'func': 'some#custom#match_function'
     \ }
 <
-Note #1: by default, |wildignore| and |g:ctrlp_custom_ignore| only apply when
-|globpath()| is used to scan for files, thus these options do not apply when a
+Note #1: |g:ctrlp_custom_ignore| does not apply when a
 command defined with |g:ctrlp_user_command| is being used.
 
 Note #2: when changing the option's variable type, remember to |:unlet| it
@@ -287,6 +271,9 @@ a function that can be called from CtrlP. An |autoload| function name is
 recommended here. The function must take 2 parameters, the item to match and
 its type. The type will be "dir", "file", or "link". The function must return
 1 if the item should be ignored, 0 otherwise.
+
+Note #4: when |g:ctrlp_use_readdir| is set to 0, you can also use Vim's |'wildignore'| 
+to exclude files and directories.
 
                                                           *'g:ctrlp_max_files'*
 The maximum number of files to scan, set to 0 for no limit: >
@@ -846,12 +833,30 @@ Example: >
                                                        *'g:ctrlp_brief_prompt'*
 When this is set to 1, the <bs> on empty prompt exit CtrlP.
 
+                                                        *'g:ctrlp_use_readdir'*
+Unlike kien/ctrlp.vim, ctrlpvim/ctrlp.vim uses readdir() instead of globpath()
+for speed. Set this option to 0 if you want to revert to the original
+behavior.
+Example: >
+  let g:ctrlp_use_readdir = 0
+<
                                                           *ctrlp-default-value*
 Otherwise, you can use below to change default value.
 Example: >
   let g:ctrlp_path_nolim = 1
 
 This is possible to change no-limit mode for match type "path".
+
+                                                          *ctrlp_compare_lim*
+If your search directory has more number of files than this limit, no sorting
+will be performed for the first readout. You can improve CtrlP performance by
+setting this to a proper value, but no sorting on the first readout can reduce
+the quality of fuzzy finding results.
+Example:
+  let g:ctrlp_compare_lim = 100
+
+Set the value to 0 for unlimited sorting. Default is 0.  
+
 
 ===============================================================================
 COMMANDS                                                       *ctrlp-commands*

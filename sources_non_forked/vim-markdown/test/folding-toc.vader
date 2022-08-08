@@ -2,6 +2,7 @@
 
 Before:
   source ../after/ftplugin/markdown.vim
+  setlocal foldtext=foldtext()
 
 After:
   setlocal foldexpr=0

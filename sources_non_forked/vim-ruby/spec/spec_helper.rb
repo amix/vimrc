@@ -35,6 +35,19 @@ Vimrunner::RSpec.configure do |config|
     expect(IO.read(filename)).to eq string
   end
 
+  def assert_correct_indent_in_insert(extension='rb', content, input, result)
+    filename = "test.#{extension}"
+
+    IO.write filename, content
+
+    vim.edit filename
+    vim.normal 'Go'
+    vim.feedkeys input
+    vim.write
+
+    expect(IO.read(filename)).to eq result
+  end
+
   def assert_correct_highlighting(extension='rb', string, patterns, group)
     filename = "test.#{extension}"
 

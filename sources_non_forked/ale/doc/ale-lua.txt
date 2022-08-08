@@ -1,6 +1,13 @@
 ===============================================================================
 ALE Lua Integration                                           *ale-lua-options*
 
+
+===============================================================================
+cspell                                                         *ale-lua-cspell*
+
+See |ale-cspell-options|
+
+
 ===============================================================================
 lua-format                                                 *ale-lua-lua-format*
 
@@ -10,6 +17,7 @@ g:ale_lua_lua_format_executable               *g:ale_lua_lua_format_executable*
   Default: `'lua-format'`
 
   This variable can be changed to change the path to lua-format.
+
 
 g:ale_lua_lua_format_options                     *g:ale_lua_lua_format_options*
                                                  *b:ale_lua_lua_format_options*
@@ -28,6 +36,7 @@ g:ale_lua_luac_executable                           *g:ale_lua_luac_executable*
   Default: `'luac'`
 
   This variable can be changed to change the path to luac.
+
 
 ===============================================================================
 luacheck                                                     *ale-lua-luacheck*
@@ -58,12 +67,32 @@ g:ale_lua_luafmt_executable                       *g:ale_lua_luafmt_executable*
 
   This variable can be set to use a different executable for luafmt.
 
+
 g:ale_lua_luafmt_options                             *g:ale_lua_luafmt_options*
                                                      *b:ale_lua_luafmt_options*
   Type: |String|
   Default: `''`
 
   This variable can be set to pass additional options to the luafmt fixer.
+
+
+===============================================================================
+selene                                                         *ale-lua-selene*
+
+g:ale_lua_selene_executable                       *g:ale_lua_selene_executable*
+                                                  *b:ale_lua_selene_executable*
+  Type: |String|
+  Default: `'selene'`
+
+  This variable can be set to use a different executable for selene.
+
+
+g:ale_lua_selene_options                             *g:ale_lua_selene_options*
+                                                     *b:ale_lua_selene_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to selene.
 
 
 ===============================================================================
@@ -75,6 +104,7 @@ g:ale_lua_stylua_executable                       *g:ale_lua_stylua_executable*
   Default: `'stylua'`
 
   This variable can be set to use a different executable for stylua.
+
 
 g:ale_lua_stylua_options                             *g:ale_lua_stylua_options*
                                                      *b:ale_lua_stylua_options*

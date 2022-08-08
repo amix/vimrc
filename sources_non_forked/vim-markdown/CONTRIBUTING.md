@@ -46,7 +46,7 @@ All new features must have unit tests.
 
 Issues are tracked within GitHub.
 
-When reporting issues, your report is more effective if you include a minimal example file that reproduces the problem. Try to trim out as much as possible, until you have the smallest possible file that still reproduces the issue. Paste the example inline into your issue report, quoted using four spaces at the beginning of each line, like this example from issue [#189](https://github.com/plasticboy/vim-markdown/issues/189):
+When reporting issues, your report is more effective if you include a minimal example file that reproduces the problem. Try to trim out as much as possible, until you have the smallest possible file that still reproduces the issue. Paste the example inline into your issue report, quoted using four spaces at the beginning of each line, like this example from issue [#189](https://github.com/preservim/vim-markdown/issues/189):
 
 ```
 Minimal example:

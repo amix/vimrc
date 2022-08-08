@@ -4,6 +4,7 @@
 
 call ale#Set('tex_texlab_executable', 'texlab')
 call ale#Set('tex_texlab_options', '')
+call ale#Set('tex_texlab_config', {})
 
 function! ale_linters#tex#texlab#GetProjectRoot(buffer) abort
     let l:git_path = ale#path#FindNearestDirectory(a:buffer, '.git')
@@ -21,4 +22,5 @@ call ale#linter#Define('tex', {
 \   'executable': {b -> ale#Var(b, 'tex_texlab_executable')},
 \   'command': function('ale_linters#tex#texlab#GetCommand'),
 \   'project_root': function('ale_linters#tex#texlab#GetProjectRoot'),
+\   'lsp_config': {b -> ale#Var(b, 'tex_texlab_config')},
 \})

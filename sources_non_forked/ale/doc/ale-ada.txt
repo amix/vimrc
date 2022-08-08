@@ -3,6 +3,11 @@ ALE Ada Integration                                           *ale-ada-options*
 
 
 ===============================================================================
+cspell                                                         *ale-ada-cspell*
+
+See |ale-cspell-options|
+
+===============================================================================
 gcc                                                               *ale-ada-gcc*
 
 g:ale_ada_gcc_executable                             *g:ale_ada_gcc_executable*

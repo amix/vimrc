@@ -274,22 +274,6 @@ snippet sl
 	end
 snippet sha1
 	Digest::SHA1.hexdigest(${0:string})
-snippet sweeper
-	class ${1:ModelClassName}Sweeper < ActionController::Caching::Sweeper
-		observe $1
-
-		def after_save(${0:model_class_name})
-			expire_cache($2)
-		end
-
-		def after_destroy($2)
-			expire_cache($2)
-		end
-
-		def expire_cache($2)
-			expire_page
-		end
-	end
 snippet va validates_associated
 	validates_associated :${0:attribute}
 snippet va validates .., acceptance: true

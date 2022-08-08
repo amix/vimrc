@@ -21,6 +21,13 @@ g:ale_ruby_brakeman_options                       *g:ale_ruby_brakeman_options*
 
   The contents of this variable will be passed through to brakeman.
 
+
+===============================================================================
+cspell                                                        *ale-ruby-cspell*
+
+See |ale-cspell-options|
+
+
 ===============================================================================
 debride                                                      *ale-ruby-debride*
 
@@ -211,8 +218,6 @@ g:ale_ruby_standardrb_options                   *g:ale_ruby_standardrb_options*
 
   This variable can be changed to modify flags given to standardrb.
 
-
-===============================================================================
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

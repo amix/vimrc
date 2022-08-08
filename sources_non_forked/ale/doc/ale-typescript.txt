@@ -3,6 +3,12 @@ ALE TypeScript Integration                             *ale-typescript-options*
 
 
 ===============================================================================
+cspell                                                  *ale-typescript-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
 deno                                                      *ale-typescript-deno*
 
 Starting from version 1.6.0, Deno comes with its own language server. Earlier
@@ -27,6 +33,7 @@ g:ale_deno_lsp_project_root                       *g:ale_deno_lsp_project_root*
   3. Use the directory of the current buffer (if the buffer was opened from
      a file).
 
+
 g:ale_deno_unstable                                       *g:ale_deno_unstable*
                                                           *b:ale_deno_unstable*
   Type: |Number|
@@ -34,12 +41,20 @@ g:ale_deno_unstable                                       *g:ale_deno_unstable*
 
   Enable or disable unstable Deno features and APIs.
 
-g:ale_deno_importMap                                       *g:ale_deno_importMap*
-                                                          *b:ale_deno_importMap*
+
+g:ale_deno_importMap                                     *g:ale_deno_importMap*
+                                                         *b:ale_deno_importMap*
   Type: |String|
   Default: `'import_map.json'`
 
   Specify the import map filename to load url maps in a deno project.
+
+
+===============================================================================
+dprint                                                  *ale-typescript-dprint*
+
+See |ale-dprint-options| and https://dprint.dev/plugins/typescript
+
 
 ===============================================================================
 eslint                                                  *ale-typescript-eslint*

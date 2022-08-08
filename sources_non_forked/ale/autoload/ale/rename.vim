@@ -84,7 +84,8 @@ function! ale#rename#HandleTSServerResponse(conn_id, response) abort
     \       'changes': l:changes,
     \   },
     \   {
-    \       'should_save': 1,
+    \       'conn_id': a:conn_id,
+    \       'should_save': !&hidden,
     \   },
     \)
 endfunction
@@ -116,7 +117,8 @@ function! ale#rename#HandleLSPResponse(conn_id, response) abort
         \       'changes': l:changes,
         \   },
         \   {
-        \       'should_save': 1,
+        \       'conn_id': a:conn_id,
+        \       'should_save': !&hidden,
         \   },
         \)
     endif

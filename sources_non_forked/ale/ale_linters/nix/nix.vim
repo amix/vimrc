@@ -5,7 +5,7 @@
 function! ale_linters#nix#nix#Command(buffer, output, meta) abort
     let l:version = a:output[0][22:]
 
-    if l:version =~# '^\(2.4\|3\).*'
+    if l:version =~# '^\(2.[4-9]\|3\).*'
         return 'nix-instantiate --log-format internal-json --parse -'
     else
         return 'nix-instantiate --parse -'

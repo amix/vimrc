@@ -343,6 +343,18 @@ write_init_body(args, t[2], snip)
 endsnippet
 
 
+snippet dcl "dataclass" b
+@dataclass
+class ${1:MyClass}:
+	`!p snip.rv = triple_quotes(snip)`${2:Docstring for $1. }`!p snip.rv = triple_quotes(snip)`
+	${3:var_1}: ${4:int}
+	${5:var_2}: ${6:float} = ${7:0}
+
+	def ${8:total}(self): -> $6:
+		return ${0:self.$3 * self.$5}
+endsnippet
+
+
 snippet contain "methods for emulating a container type" b
 def __len__(self):
 	${1:pass}
@@ -603,9 +615,9 @@ $1 = property(**$1(), doc=$1.__doc__)
 endsnippet
 
 
-####################
-# If / Else / Elif #
-####################
+############################
+# If / Else / Elif / Match #
+############################
 snippet if "If" b
 if ${1:condition}:
 	${2:${VISUAL:pass}}
@@ -625,6 +637,22 @@ elif ${3:condition}:
 	${4:pass}
 else:
 	${5:pass}
+endsnippet
+
+snippet match "Structural pattern matching" b
+match ${1:expression}:
+	case ${2:pattern_1}:
+		${3:pass}
+	case ${4:pattern_2}:
+		${0:pass}
+endsnippet
+
+snippet matchw "Pattern matching with wildcard" b
+match ${1:expression}:
+	case ${2:pattern_1}:
+		${3:pass}
+	case _:
+		${0:pass}
 endsnippet
 
 

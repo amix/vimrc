@@ -187,10 +187,16 @@ function! ale#job#PrepareCommand(buffer, command) abort
     \ : a:command
 
     " If a custom shell is specified, use that.
-    if exists('g:ale_shell')
-        let l:shell_arguments = get(g:, 'ale_shell_arguments', &shellcmdflag)
+    if exists('b:ale_shell')
+        let l:ale_shell = b:ale_shell
+    elseif exists('g:ale_shell')
+        let l:ale_shell = g:ale_shell
+    endif
 
-        return split(g:ale_shell) + split(l:shell_arguments) + [l:command]
+    if exists('l:ale_shell')
+        let l:shell_arguments = get(b:, 'ale_shell_arguments', get(g:, 'ale_shell_arguments', &shellcmdflag))
+
+        return split(l:ale_shell) + split(l:shell_arguments) + [l:command]
     endif
 
     if has('win32')
@@ -244,10 +250,16 @@ function! ale#job#Start(command, options) abort
 
         if has_key(a:options, 'out_cb')
             let l:job_options.out_cb = function('s:VimOutputCallback')
+        else
+            " prevent buffering of output and excessive polling in case close_cb is set
+            let l:job_options.out_cb = {->0}
         endif
 
         if has_key(a:options, 'err_cb')
             let l:job_options.err_cb = function('s:VimErrorCallback')
+        else
+            " prevent buffering of output and excessive polling in case close_cb is set
+            let l:job_options.err_cb = {->0}
         endif
 
         if has_key(a:options, 'exit_cb')

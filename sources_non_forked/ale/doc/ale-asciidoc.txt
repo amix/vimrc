@@ -3,6 +3,12 @@ ALE AsciiDoc Integration                                 *ale-asciidoc-options*
 
 
 ===============================================================================
+cspell                                                    *ale-asciidoc-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
 write-good                                            *ale-asciidoc-write-good*
 
 See |ale-write-good-options|

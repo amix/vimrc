@@ -4,6 +4,7 @@
 "              <devildead13@gmail.com>).  It search more project root files.
 "
 call ale#Set('haskell_hls_executable', 'haskell-language-server-wrapper')
+call ale#Set('haskell_hls_config', {})
 
 function! ale_linters#haskell#hls#FindRootFile(buffer) abort
     let l:serach_root_files = [
@@ -60,4 +61,5 @@ call ale#linter#Define('haskell', {
 \   'command': function('ale_linters#haskell#hls#GetCommand'),
 \   'executable': {b -> ale#Var(b, 'haskell_hls_executable')},
 \   'project_root': function('ale_linters#haskell#hls#GetProjectRoot'),
+\   'lsp_config': {b -> ale#Var(b, 'haskell_hls_config')},
 \})

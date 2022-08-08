@@ -29,6 +29,11 @@ g:ale_html_angular_use_global                   *g:ale_html_angular_use_global*
 
 
 ===============================================================================
+cspell                                                        *ale-html-cspell*
+
+See |ale-cspell-options|
+
+===============================================================================
 fecs                                                            *ale-html-fecs*
 
 `fecs` options for HTML are the same as the options for JavaScript, and both
@@ -158,6 +163,19 @@ g:ale_html_tidy_use_global                             *g:html_tidy_use_global*
 
   See |ale-integrations-local-executables|
 
+
+===============================================================================
+vscodehtml                                                    *ale-html-vscode*
+
+Website: https://github.com/hrsh7th/vscode-langservers-extracted
+
+Installation
+-------------------------------------------------------------------------------
+
+Install VSCode html language server either globally or locally: >
+
+  npm install -g vscode-langservers-extracted
+<
 
 ===============================================================================
 write-good                                                *ale-html-write-good*

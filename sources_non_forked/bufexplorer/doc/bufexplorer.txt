@@ -1,7 +1,7 @@
-*bufexplorer.txt*              Buffer Explorer       Last Change: 08 Dec 2018
+*bufexplorer.txt*              Buffer Explorer       Last Change: 02 May 2022
 
 Buffer Explorer                                *buffer-explorer* *bufexplorer*
-                                Version 7.4.21
+                                Version 7.4.24
 
 Plugin for easily exploring (or browsing) Vim|:buffers|.
 
@@ -263,6 +263,17 @@ The default is 1.
 ===============================================================================
 CHANGE LOG                                              *bufexplorer-changelog*
 
+7.4.23   January 23, 2022
+	- Merged in changes from benoit-pierre that fixes an error thrown when vim
+      is in read-only mode.
+	- Merged in changes from tartansandal that implements the use of an
+      independent variable to track window splitting since s:splitMode != ''
+      no longer implies that a split was triggered.
+7.4.22   January 5,2022
+    - Merged in change from nadean that fixed an issue that if you use either
+      split mode, you could no longer use the regular non-split mode.  This was
+      because the split mode set s:splitMode and that variable was never reset
+      to "" to allow you run without split mode.
 7.4.21   December 8, 2018
     - Merged in changes from adelarsq that introduced ryanoasis/vim-devicons
       support.  If the global g:loaded_webdevicons has been set, bufexplorer
@@ -774,7 +785,7 @@ won't list names.
 ===============================================================================
 COPYRIGHT                                               *bufexplorer-copyright*
 
-Copyright (c) 2001-2017, Jeff Lanzarotta
+Copyright (c) 2001-2022, Jeff Lanzarotta
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
