@@ -48,8 +48,16 @@ endfunc
 
 func! Test_GoTestCompilerError() abort
   let expected = [
-        \ {'lnum': 6, 'bufnr': 6, 'col': 22, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'syntax error: unexpected newline, expecting comma or )'}
+        \ {'lnum': 6, 'bufnr': 6, 'col': 22, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'syntax error: unexpected newline in argument list; possibly missing comma or )'}
       \ ]
+  let [l:goversion, l:err] = go#util#Exec(['go', 'env', 'GOVERSION'])
+  let l:goversion = split(l:goversion, "\n")[0]
+  if l:goversion < 'go1.19'
+    let expected = [
+          \ {'lnum': 6, 'bufnr': 6, 'col': 22, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'syntax error: unexpected newline, expecting comma or )'}
+        \ ]
+  endif
+
   call s:test('compilerror/compilerror_test.go', expected)
 endfunc
 

@@ -1,4 +1,4 @@
-FROM golang:1.18.1
+FROM golang:1.19.0
 
 RUN apt-get update -y --allow-insecure-repositories && \
   apt-get install -y build-essential curl git libncurses5-dev python3-pip && \

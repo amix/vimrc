@@ -298,7 +298,21 @@ endfunction
 " Shelljoin returns a shell-safe string representation of arglist. The
 " {special} argument of shellescape() may optionally be passed.
 function! go#util#Shelljoin(arglist, ...) abort
+  " Preserve original shell. This needs to be kept in sync with how s:system
+  " sets shell.
+  let l:shell = &shell
+
   try
+    if !go#util#IsWin() && executable('/bin/sh')
+        set shell=/bin/sh
+    endif
+
+    if go#util#IsWin()
+      if executable($COMSPEC)
+        let &shell = $COMSPEC
+      endif
+    endif
+
     let ssl_save = &shellslash
     set noshellslash
     if a:0
@@ -307,19 +321,11 @@ function! go#util#Shelljoin(arglist, ...) abort
 
     return join(map(copy(a:arglist), 'shellescape(v:val)'), ' ')
   finally
+    " Restore original values
     let &shellslash = ssl_save
+    let &shell = l:shell
   endtry
 endfunction
-
-fu! go#util#Shellescape(arg)
-  try
-    let ssl_save = &shellslash
-    set noshellslash
-    return shellescape(a:arg)
-  finally
-    let &shellslash = ssl_save
-  endtry
-endf
 
 " Shelllist returns a shell-safe representation of the items in the given
 " arglist. The {special} argument of shellescape() may optionally be passed.
@@ -328,9 +334,9 @@ function! go#util#Shelllist(arglist, ...) abort
     let ssl_save = &shellslash
     set noshellslash
     if a:0
-      return map(copy(a:arglist), 'shellescape(v:val, ' . a:1 . ')')
+      return map(copy(a:arglist), 'go#util#Shelljoin(v:val, ' . a:1 . ')')
     endif
-    return map(copy(a:arglist), 'shellescape(v:val)')
+    return map(copy(a:arglist), 'go#util#Shelljoin(v:val)')
   finally
     let &shellslash = ssl_save
   endtry
