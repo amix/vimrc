@@ -3,7 +3,7 @@ GEM
   specs:
     coderay (1.1.1)
     diff-lcs (1.2.5)
-    diffy (3.2.0)
+    diffy (3.4.1)
     method_source (0.8.2)
     parallel (1.12.1)
     parallel_tests (2.21.2)

@@ -213,11 +213,7 @@ endif
 " So we create a tmp file here and then remove it afterwards
 if !exists('g:formatdef_xo_javascript')
     function! g:BuildXOLocalCmd()
-        let l:xo_js_tmp_file = fnameescape(tempname().".js")
-        let content = getline('1', '$')
-        call writefile(content, l:xo_js_tmp_file)
-        return "xo --fix ".l:xo_js_tmp_file." 1> /dev/null; exit_code=$?
-                    \ cat ".l:xo_js_tmp_file."; rm -f ".l:xo_js_tmp_file."; exit $exit_code"
+        return "npx xo --fix --stdin --stdin-filename ".bufname('%')
     endfunction
     let g:formatdef_xo_javascript = "g:BuildXOLocalCmd()"
 endif
@@ -310,7 +306,7 @@ if !exists('g:formatdef_eslint_local')
         let l:eslint_tmp_file = g:BuildESLintTmpFile(l:path, l:ext)
         let content = getline('1', '$')
         call writefile(content, l:eslint_tmp_file)
-        return l:prog." -c ".l:cfg." --fix ".l:eslint_tmp_file." 1> /dev/null; exit_code=$?
+        return l:prog." -c ".l:cfg." --fix ".l:eslint_tmp_file." 1> /dev/null; exit_code=$?;
                     \ cat ".l:eslint_tmp_file."; rm -f ".l:eslint_tmp_file."; exit $exit_code"
     endfunction
     let g:formatdef_eslint_local = "g:BuildESLintLocalCmd()"

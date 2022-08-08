@@ -34,7 +34,7 @@ let g:python3_host_prog="/path/to/python/executable/"
 Put this in your `.vimrc`.
 
 ```vim
-Plugin 'Chiel92/vim-autoformat'
+Plugin 'vim-autoformat/vim-autoformat'
 ```
 
 Then restart vim and run `:PluginInstall`. Alternatively, you could run `:source $MYVIMRC`

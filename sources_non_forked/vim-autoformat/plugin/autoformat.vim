@@ -250,9 +250,8 @@ stdoutdata, stderrdata = p.communicate(text)
 formattername = vim.eval('b:formatters[s:index]')
 if stderrdata:
     if verbose > 0:
-        print('Formatter {} has errors: {}'.format(formattername, stderrdata))
-    vim.command('return 1')
-elif p.returncode > 0:
+        print('Formatter {} stderr: {}'.format(formattername, stderrdata))
+if p.returncode > 0:
     if verbose > 0:
         print('Formatter {} gives nonzero returncode: {}'.format(formattername, p.returncode))
     vim.command('return 1')
@@ -311,8 +310,8 @@ else:
     formattername = vim.eval('b:formatters[s:index]')
     if stderrdata:
         if verbose > 0:
-            print('Formatter {} has errors: {}'.format(formattername, stderrdata))
-    elif p.returncode > 0:
+            print('Formatter {} stderr: {}'.format(formattername, stderrdata))
+    if p.returncode > 0:
         if verbose > 0:
             print('Formatter {} gives nonzero returncode: {}'.format(formattername, p.returncode))
     elif not stdoutdata:
