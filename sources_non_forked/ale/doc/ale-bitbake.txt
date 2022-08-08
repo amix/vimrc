@@ -1,0 +1,31 @@
+===============================================================================
+ALE BitBake Integration                                   *ale-bitbake-options*
+
+
+===============================================================================
+oelint-adv                                             *ale-bitbake-oelint_adv*
+
+g:ale_bitbake_oelint_adv_executable       *g:ale_bitbake_oelint_adv_executable*
+
+  Type: |String|
+  Default: `'oelint-adv'`
+
+  This variable can be changed to use a different executable for oelint-adv.
+
+g:ale_bitbake_oelint_adv_options             *g:ale_bitbake_oelint_adv_options*
+
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to oelint-adv.
+
+  g:ale_bitbake_oelint_adv_config             *g:ale_bitbake_oelint_adv_config*
+
+  Type: |String|
+  Default: `'.oelint.cfg'`
+
+  This variable can be set to use a different config file.
+
+
+===============================================================================
+vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

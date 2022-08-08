@@ -1,0 +1,15 @@
+===============================================================================
+ALE Cairo Integration                                       *ale-cairo-options*
+
+
+===============================================================================
+starknet                                                   *ale-cairo-starknet*
+
+g:ale_cairo_starknet_executable               *g:ale_cairo_starknet_executable*
+                                              *b:ale_cairo_starknet_executable*
+
+  Default: `'starknet-compile'`
+
+  Overrides the starknet-compile binary after installing the cairo-language.
+
+  For more information read 'https://starknet.io/docs/quickstart.html'
