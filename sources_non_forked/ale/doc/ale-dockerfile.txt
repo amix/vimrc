@@ -26,6 +26,12 @@ g:ale_dockerfile_dockerfile_lint_options
 
 
 ===============================================================================
+dprint                                                  *ale-dockerfile-dprint*
+
+See |ale-dprint-options| and https://dprint.dev/plugins/dockerfile
+
+
+===============================================================================
 hadolint                                              *ale-dockerfile-hadolint*
 
   hadolint can be found at: https://github.com/hadolint/hadolint

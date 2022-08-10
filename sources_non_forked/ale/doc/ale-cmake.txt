@@ -22,6 +22,25 @@ g:ale_cmake_cmakelint_options                   *g:ale_cmake_cmakelint_options*
 
 
 ===============================================================================
+cmake-lint                                                *ale-cmake-cmake-lint*
+
+g:ale_cmake_cmake_lint_executable            *g:ale_cmake_cmake_lint_executable*
+                                             *b:ale_cmake_cmake_lint_executable*
+  Type: |String|
+  Default: `'cmake-lint'`
+
+  This variable can be set to change the path the cmake-lint.
+
+
+g:ale_cmake_cmake_lint_options                  *g:ale_cmake_cmake_lint_options*
+                                                *b:ale_cmake_cmake_lint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to cmake-lint.
+
+
+===============================================================================
 cmake-format                                            *ale-cmake-cmakeformat*
 
 g:ale_cmake_cmakeformat_executable         *g:ale_cmake_cmakeformat_executable*

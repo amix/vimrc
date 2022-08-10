@@ -5,7 +5,6 @@ ALE Elixir Integration                                     *ale-elixir-options*
 ===============================================================================
 mix                                                            *ale-elixir-mix*
 
-
 The `mix` linter is disabled by default, as it can be too expensive to run.
 See `:help g:ale_linters`
 
@@ -18,6 +17,7 @@ g:ale_elixir_mix_options                             *g:ale_elixir_mix_options*
 
   This variable can be changed to specify the mix executable.
 
+
 ===============================================================================
 mix_format                                              *ale-elixir-mix-format*
 
@@ -29,6 +29,7 @@ g:ale_elixir_mix_format_options               *g:ale_elixir_mix_format_options*
 
   This variable can be changed to specify the mix options passed to the
   mix_format fixer
+
 
 ===============================================================================
 dialyxir                                                  *ale-elixir-dialyxir*
@@ -44,6 +45,7 @@ configured on your project's `mix.exs`.
 
 See https://github.com/jeremyjh/dialyxir#with-explaining-stuff for more
 information.
+
 
 ===============================================================================
 elixir-ls                                                *ale-elixir-elixir-ls*
@@ -72,6 +74,8 @@ g:ale_elixir_elixir_ls_config                   *g:ale_elixir_elixir_ls_config*
     \ }
 <
   Consult the ElixirLS documentation for more information about settings.
+
+
 ===============================================================================
 credo                                                        *ale-elixir-credo*
 
@@ -79,18 +83,26 @@ Credo (https://github.com/rrrene/credo)
 
 g:ale_elixir_credo_strict                           *g:ale_elixir_credo_strict*
 
-  Type: Integer
-  Default: 0
+  Type: |Integer|
+  Default: `0`
 
   Tells credo to run in strict mode or suggest mode.  Set variable to 1 to
   enable --strict mode.
 
-g:ale_elixir_credo_config_file                 g:ale_elixir_credo_config_file
 
-  Type: String
-  Default: ''
+g:ale_elixir_credo_config_file                 *g:ale_elixir_credo_config_file*
+
+  Type: |String|
+  Default: `''`
 
   Tells credo to use a custom configuration file.
+
+
+===============================================================================
+cspell                                                      *ale-elixir-cspell*
+
+See |ale-cspell-options|
+
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -10,12 +10,21 @@ let g:ale_echo_msg_format = get(g:, 'ale_echo_msg_format', '%code: %%s')
 
 let s:cursor_timer = -1
 
+" A wrapper for echon so we can test messages we echo in Vader tests.
+function! ale#cursor#Echom(message) abort
+    " no-custom-checks
+    exec "norm! :echom a:message\n"
+endfunction
+
 function! ale#cursor#TruncatedEcho(original_message) abort
     let l:message = a:original_message
     " Change tabs to spaces.
     let l:message = substitute(l:message, "\t", ' ', 'g')
     " Remove any newlines in the message.
     let l:message = substitute(l:message, "\n", '', 'g')
+    " Convert indentation groups into single spaces for better legibility when
+    " put on a single line
+    let l:message = substitute(l:message, ' \+', ' ', 'g')
 
     " We need to remember the setting for shortmess and reset it again.
     let l:shortmess_options = &l:shortmess
@@ -27,7 +36,7 @@ function! ale#cursor#TruncatedEcho(original_message) abort
         silent! setlocal shortmess+=T
 
         try
-            exec "norm! :echomsg l:message\n"
+            call ale#cursor#Echom(l:message)
         catch /^Vim\%((\a\+)\)\=:E523/
             " Fallback into manual truncate (#1987)
             let l:winwidth = winwidth(0)
@@ -87,7 +96,9 @@ function! ale#cursor#EchoCursorWarning(...) abort
         elseif get(l:info, 'echoed')
             " We'll only clear the echoed message when moving off errors once,
             " so we don't continually clear the echo line.
-            execute 'echo'
+            "
+            " no-custom-checks
+            echo
             let l:info.echoed = 0
         endif
     endif
@@ -150,7 +161,8 @@ function! s:ShowCursorDetailForItem(loc, options) abort
 
         " Clear the echo message if we manually displayed details.
         if !l:stay_here
-            execute 'echo'
+            " no-custom-checks
+            echo
         endif
     endif
 endfunction

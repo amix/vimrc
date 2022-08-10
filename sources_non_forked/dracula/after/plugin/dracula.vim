@@ -99,5 +99,43 @@ if exists('g:loaded_nvim_treesitter')
   hi! link TSTagAttribute DraculaGreenItalic
 endif
 " }}}
+" nvim-cmp: {{{
+" A completion engine plugin for neovim written in Lua.
+" https://github.com/hrsh7th/nvim-cmp
+if exists('g:loaded_cmp')
+  hi! link CmpItemAbbrDeprecated DraculaError
+
+  hi! link CmpItemAbbrMatch DraculaCyan
+  hi! link CmpItemAbbrMatchFuzzy DraculaCyan
+
+  hi! link CmpItemKindText DraculaFg
+  hi! link CmpItemKindMethod Function
+  hi! link CmpItemKindFunction Function
+  hi! link CmpItemKindConstructor DraculaCyan
+  hi! link CmpItemKindField DraculaOrange
+  hi! link CmpItemKindVariable DraculaPurpleItalic
+  hi! link CmpItemKindClass DraculaCyan
+  hi! link CmpItemKindInterface DraculaCyan
+  hi! link CmpItemKindModule DraculaYellow
+  hi! link CmpItemKindProperty DraculaPink
+  hi! link CmpItemKindUnit DraculaFg
+  hi! link CmpItemKindValue DraculaYellow
+  hi! link CmpItemKindEnum DraculaPink
+  hi! link CmpItemKindKeyword DraculaPink
+  hi! link CmpItemKindSnippet DraculaFg
+  hi! link CmpItemKindColor DraculaYellow
+  hi! link CmpItemKindFile DraculaYellow
+  hi! link CmpItemKindReference DraculaOrange
+  hi! link CmpItemKindFolder DraculaYellow
+  hi! link CmpItemKindEnumMember DraculaPurple
+  hi! link CmpItemKindConstant DraculaPurple
+  hi! link CmpItemKindStruct DraculaPink
+  hi! link CmpItemKindEvent DraculaFg
+  hi! link CmpItemKindOperator DraculaPink
+  hi! link CmpItemKindTypeParameter DraculaCyan
+
+  hi! link CmpItemMenu Comment
+endif
+" }}}
 
 " vim: fdm=marker ts=2 sts=2 sw=2 fdl=0:

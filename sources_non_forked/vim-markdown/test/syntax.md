@@ -31,7 +31,7 @@ end
 [a]( b
 "c" )
 
-a (`a`) b. Fix: <https://github.com/plasticboy/vim-markdown/issues/113>
+a (`a`) b. Fix: <https://github.com/preservim/vim-markdown/issues/113>
 
 Escaped:
 

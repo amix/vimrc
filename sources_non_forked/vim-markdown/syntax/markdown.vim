@@ -7,7 +7,7 @@
 
 
 " Read the HTML syntax to start with
-if version < 600
+if v:version < 600
   so <sfile>:p:h/html.vim
 else
   runtime! syntax/html.vim
@@ -17,14 +17,14 @@ else
   endif
 endif
 
-if version < 600
+if v:version < 600
   syntax clear
-elseif exists("b:current_syntax")
+elseif exists('b:current_syntax')
   finish
 endif
 
 " don't use standard HiLink, it will not work with included syntax files
-if version < 508
+if v:version < 508
   command! -nargs=+ HtmlHiLink hi link <args>
 else
   command! -nargs=+ HtmlHiLink hi def link <args>
@@ -178,7 +178,7 @@ HtmlHiLink mkdLinkDefTarget mkdURL
 HtmlHiLink mkdLinkTitle     htmlString
 HtmlHiLink mkdDelimiter     Delimiter
 
-let b:current_syntax = "mkd"
+let b:current_syntax = 'mkd'
 
 delcommand HtmlHiLink
 " vim: ts=8

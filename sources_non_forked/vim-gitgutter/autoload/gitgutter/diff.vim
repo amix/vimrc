@@ -77,6 +77,10 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     throw 'gitgutter not tracked'
   endif
 
+  if gitgutter#utility#repo_path(a:bufnr, 0) == -3
+    throw 'gitgutter assume unchanged'
+  endif
+
   " Wrap compound commands in parentheses to make Windows happy.
   " bash doesn't mind the parentheses.
   let cmd = '('

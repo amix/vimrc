@@ -102,6 +102,8 @@ USAGE                                                 *:Gist* *vim-gist-usage*
 
     :Gist -l
     :Gist --list
+    :Gist -l -n 100
+    :Gist --list --per-page 100
 <
 - List gists from user "mattn". >
 
@@ -200,6 +202,10 @@ If you want to open gist with current editing buffers: >
 If you want to open gist list/buffer as vertical split: >
 
     let g:gist_list_vsplit = 1
+
+If you want to list more than 30 gists per page (maximum is 100):
+
+    let g:gist_per_page_limit = 100
 
 If you want to modify filetype for the file on github, or add mapping of
 filetype/file-extension: >

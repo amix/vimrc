@@ -3,7 +3,7 @@
 " Version:      1.3
 " GetLatestVimScripts: 3695 1 :AutoInstall: commentary.vim
 
-if exists("g:loaded_commentary") || v:version < 700
+if exists("g:loaded_commentary") || v:version < 703
   finish
 endif
 let g:loaded_commentary = 1
@@ -115,9 +115,6 @@ if !hasmapto('<Plug>Commentary') || maparg('gc','n') ==# ''
   nmap gc  <Plug>Commentary
   omap gc  <Plug>Commentary
   nmap gcc <Plug>CommentaryLine
-  if maparg('c','n') ==# '' && !exists('v:operator')
-    nmap cgc <Plug>ChangeCommentary
-  endif
   nmap gcu <Plug>Commentary<Plug>Commentary
 endif
 

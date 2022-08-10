@@ -11,8 +11,9 @@ endfunction
 
 function! ale#handlers#alex#CreateCommandCallback(flags) abort
     return {b -> ale#node#Executable(b, ale#handlers#alex#GetExecutable(b))
-    \            . ' %s '
-    \            . a:flags}
+    \            . ' --stdin '
+    \            . a:flags
+    \}
 endfunction
 
 function! ale#handlers#alex#Handle(buffer, lines) abort
@@ -38,6 +39,7 @@ endfunction
 " Define a linter for a specific filetype. Accept flags to adapt to the filetype.
 "    no flags  treat input as markdown
 "    --html    treat input as HTML
+"    --mdx     treat input as MDX
 "    --text    treat input as plaintext
 function! ale#handlers#alex#DefineLinter(filetype, flags) abort
     call ale#Set('alex_executable', 'alex')
@@ -49,6 +51,5 @@ function! ale#handlers#alex#DefineLinter(filetype, flags) abort
     \   'command': ale#handlers#alex#CreateCommandCallback(a:flags),
     \   'output_stream': 'stderr',
     \   'callback': 'ale#handlers#alex#Handle',
-    \   'lint_file': 1,
     \})
 endfunction

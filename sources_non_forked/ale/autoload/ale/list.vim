@@ -36,12 +36,22 @@ function! ale#list#IsQuickfixOpen() abort
 endfunction
 
 " Check if we should open the list, based on the save event being fired, and
-" that setting being on, or the setting just being set to `1`.
-function! s:ShouldOpen(buffer) abort
+" that setting being on, or that the error count is at least as high as the
+" setting when set to an integer value.
+function! s:ShouldOpen(buffer, loclist_len) abort
     let l:val = ale#Var(a:buffer, 'open_list')
     let l:saved = getbufvar(a:buffer, 'ale_save_event_fired', 0)
 
-    return l:val is 1 || (l:val is# 'on_save' && l:saved)
+    return l:val > 0 ? a:loclist_len >= l:val : l:val is# 'on_save' && l:saved
+endfunction
+
+" Check if we should close the list, based on the save event being fired, and
+" that setting being on, or the setting just being set to an integer value.
+function! s:ShouldClose(buffer) abort
+    let l:val = ale#Var(a:buffer, 'open_list')
+    let l:saved = getbufvar(a:buffer, 'ale_save_event_fired', 0)
+
+    return !((l:val >= 1) || (l:val is# 'on_save' && l:saved))
 endfunction
 
 function! s:Deduplicate(list) abort
@@ -122,9 +132,9 @@ function! s:SetListsImpl(timer_id, buffer, loclist) abort
 
     " Open a window to show the problems if we need to.
     "
-    " We'll check if the current buffer's List is not empty here, so the
-    " window will only be opened if the current buffer has problems.
-    if s:ShouldOpen(a:buffer) && !empty(a:loclist)
+    " ShouldOpen() checks if the current buffer has enough problems to be
+    " opened.
+    if s:ShouldOpen(a:buffer, len(a:loclist))
         let l:winnr = winnr()
         let l:mode = mode()
 
@@ -212,8 +222,25 @@ function! ale#list#SetLists(buffer, loclist) abort
     endif
 endfunction
 
+function! ale#list#ForcePopulateErrorList(populate_quickfix) abort
+    let l:quickfix_bak = g:ale_set_quickfix
+    let g:ale_set_quickfix = a:populate_quickfix
+    let l:loclist_bak = g:ale_set_loclist
+    let g:ale_set_loclist = !a:populate_quickfix
+    let l:open_list_bak = g:ale_open_list
+    let g:ale_open_list = 1
+
+    let l:buffer = bufnr('')
+    let l:loclist = get(g:ale_buffer_info, l:buffer, {'loclist': []}).loclist
+    call s:SetListsImpl(-1, l:buffer, l:loclist)
+
+    let g:ale_open_list = l:open_list_bak
+    let g:ale_set_loclist = l:loclist_bak
+    let g:ale_set_quickfix = l:quickfix_bak
+endfunction
+
 function! s:CloseWindowIfNeeded(buffer) abort
-    if ale#Var(a:buffer, 'keep_list_window_open') || !s:ShouldOpen(a:buffer)
+    if ale#Var(a:buffer, 'keep_list_window_open') || s:ShouldClose(a:buffer)
         return
     endif
 

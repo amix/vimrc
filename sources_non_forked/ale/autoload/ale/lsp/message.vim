@@ -35,7 +35,7 @@ function! ale#lsp#message#Initialize(root_path, options, capabilities) abort
     \   'rootPath': a:root_path,
     \   'capabilities': a:capabilities,
     \   'initializationOptions': a:options,
-    \   'rootUri': ale#path#ToURI(a:root_path),
+    \   'rootUri': ale#util#ToURI(a:root_path),
     \}]
 endfunction
 
@@ -56,7 +56,7 @@ function! ale#lsp#message#DidOpen(buffer, language_id) abort
 
     return [1, 'textDocument/didOpen', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \       'languageId': a:language_id,
     \       'version': ale#lsp#message#GetNextVersionID(),
     \       'text': join(l:lines, "\n") . "\n",
@@ -70,21 +70,21 @@ function! ale#lsp#message#DidChange(buffer) abort
     " For changes, we simply send the full text of the document to the server.
     return [1, 'textDocument/didChange', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \       'version': ale#lsp#message#GetNextVersionID(),
     \   },
     \   'contentChanges': [{'text': join(l:lines, "\n") . "\n"}]
     \}]
 endfunction
 
-function! ale#lsp#message#DidSave(buffer, includeText) abort
+function! ale#lsp#message#DidSave(buffer, include_text) abort
     let l:response = [1, 'textDocument/didSave', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \}]
 
-    if a:includeText
+    if a:include_text
         let l:response[2].textDocument.version = ale#lsp#message#GetNextVersionID()
         let l:response[2].text = ale#util#GetBufferContents(a:buffer)
     endif
@@ -95,7 +95,7 @@ endfunction
 function! ale#lsp#message#DidClose(buffer) abort
     return [1, 'textDocument/didClose', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \}]
 endfunction
@@ -106,7 +106,7 @@ let s:COMPLETION_TRIGGER_CHARACTER = 2
 function! ale#lsp#message#Completion(buffer, line, column, trigger_character) abort
     let l:message = [0, 'textDocument/completion', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \   'position': {'line': a:line - 1, 'character': a:column - 1},
     \}]
@@ -124,7 +124,7 @@ endfunction
 function! ale#lsp#message#Definition(buffer, line, column) abort
     return [0, 'textDocument/definition', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \   'position': {'line': a:line - 1, 'character': a:column - 1},
     \}]
@@ -133,7 +133,16 @@ endfunction
 function! ale#lsp#message#TypeDefinition(buffer, line, column) abort
     return [0, 'textDocument/typeDefinition', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
+    \   },
+    \   'position': {'line': a:line - 1, 'character': a:column - 1},
+    \}]
+endfunction
+
+function! ale#lsp#message#Implementation(buffer, line, column) abort
+    return [0, 'textDocument/implementation', {
+    \   'textDocument': {
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \   'position': {'line': a:line - 1, 'character': a:column - 1},
     \}]
@@ -142,7 +151,7 @@ endfunction
 function! ale#lsp#message#References(buffer, line, column) abort
     return [0, 'textDocument/references', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \   'position': {'line': a:line - 1, 'character': a:column - 1},
     \   'context': {'includeDeclaration': v:false},
@@ -158,7 +167,7 @@ endfunction
 function! ale#lsp#message#Hover(buffer, line, column) abort
     return [0, 'textDocument/hover', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \   'position': {'line': a:line - 1, 'character': a:column - 1},
     \}]
@@ -173,7 +182,7 @@ endfunction
 function! ale#lsp#message#Rename(buffer, line, column, new_name) abort
     return [0, 'textDocument/rename', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \   'position': {'line': a:line - 1, 'character': a:column - 1},
     \   'newName': a:new_name,
@@ -183,7 +192,7 @@ endfunction
 function! ale#lsp#message#CodeAction(buffer, line, column, end_line, end_column, diagnostics) abort
     return [0, 'textDocument/codeAction', {
     \   'textDocument': {
-    \       'uri': ale#path#ToURI(expand('#' . a:buffer . ':p')),
+    \       'uri': ale#util#ToURI(expand('#' . a:buffer . ':p')),
     \   },
     \   'range': {
     \       'start': {'line': a:line - 1, 'character': a:column - 1},

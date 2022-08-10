@@ -4,7 +4,7 @@
 " URL:			https://github.com/vim-ruby/vim-ruby
 " Release Coordinator:	Doug Kearns <dougkearns@gmail.com>
 
-if &syntax !~# '\<eruby\>' || get(b:, 'current_syntax') =~# '\<eruby\>'
+if exists("b:current_syntax")
   finish
 endif
 
@@ -18,8 +18,6 @@ endif
 
 if &filetype =~ '^eruby\.'
   let b:eruby_subtype = matchstr(&filetype,'^eruby\.\zs\w\+')
-elseif &filetype =~ '^.*\.eruby\>'
-  let b:eruby_subtype = matchstr(&filetype,'^.\{-\}\ze\.eruby\>')
 elseif !exists("b:eruby_subtype") && main_syntax == 'eruby'
   let s:lines = getline(1)."\n".getline(2)."\n".getline(3)."\n".getline(4)."\n".getline(5)."\n".getline("$")
   let b:eruby_subtype = matchstr(s:lines,'eruby_subtype=\zs\w\+')
@@ -53,10 +51,10 @@ if !b:eruby_nest_level
   let b:eruby_nest_level = 1
 endif
 
-if get(b:, 'eruby_subtype', '') !~# '^\%(eruby\)\=$' && &syntax =~# '^eruby\>'
+if exists("b:eruby_subtype") && b:eruby_subtype != '' && b:eruby_subtype !=? 'eruby'
   exe "runtime! syntax/".b:eruby_subtype.".vim"
+  unlet! b:current_syntax
 endif
-unlet! b:current_syntax
 syn include @rubyTop syntax/ruby.vim
 
 syn cluster erubyRegions contains=erubyOneLiner,erubyBlock,erubyExpression,erubyComment
@@ -71,7 +69,7 @@ exe 'syn region  erubyComment    matchgroup=erubyDelimiter start="<%\{1,'.b:erub
 hi def link erubyDelimiter		PreProc
 hi def link erubyComment		Comment
 
-let b:current_syntax = matchstr(&syntax, '^.*\<eruby\>')
+let b:current_syntax = 'eruby'
 
 if main_syntax == 'eruby'
   unlet main_syntax

@@ -3,6 +3,12 @@ ALE Scala Integration                                       *ale-scala-options*
 
 
 ===============================================================================
+cspell                                                       *ale-scala-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
 metals                                                       *ale-scala-metals*
 
 `metals` requires either an SBT project, a Mill project, or a running Bloop

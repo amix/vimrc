@@ -24,9 +24,22 @@ To this: >
 <
 
 ===============================================================================
+cspell                                                  *ale-javascript-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
 deno                                                      *ale-javascript-deno*
 
 Check the docs over at |ale-typescript-deno|.
+
+
+===============================================================================
+dprint                                                  *ale-javascript-dprint*
+
+See |ale-dprint-options| and https://dprint.dev/plugins/typescript
+
 
 ===============================================================================
 eslint                                                  *ale-javascript-eslint*

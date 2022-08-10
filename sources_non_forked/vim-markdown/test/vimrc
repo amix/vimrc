@@ -1,16 +1,17 @@
 set nocompatible
-set rtp+=../
-set rtp+=../build/tabular/
-set rtp+=../build/vim-toml/
-set rtp+=../build/vim-json/
-set rtp+=../build/vader.vim/
-set rtp-=~/.vim
-set rtp-=~/.vim/after
+
 let $LANG='en_US'
+
+filetype off
+set runtimepath+=../
+set runtimepath+=../build/tabular/
+set runtimepath+=../build/vim-toml/
+set runtimepath+=../build/vim-json/
+set runtimepath+=../build/vader.vim/
 filetype on
-filetype plugin on
-filetype indent on
-syntax on
+
+filetype plugin indent on
+syntax enable
 
 function! Markdown_GetScriptID(fname) abort
     let l:snlist = ''
@@ -24,6 +25,7 @@ function! Markdown_GetScriptID(fname) abort
         endif
     endfor
 endfunction
+
 function! Markdown_GetFunc(fname, funcname) abort
     return function('<SNR>' . Markdown_GetScriptID(a:fname) . '_' . a:funcname)
 endfunction

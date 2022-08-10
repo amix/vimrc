@@ -2,8 +2,9 @@
 " Filename: autoload/lightline/colorscheme/jellybeans.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2013/09/07 12:21:04.
+" Last Change: 2022/03/15 23:59:15.
 " =============================================================================
+
 let s:base03 = [ '#151513', 233 ]
 let s:base02 = [ '#30302c', 236 ]
 let s:base01 = [ '#4e4e43', 239 ]

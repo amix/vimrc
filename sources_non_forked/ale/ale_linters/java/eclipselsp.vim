@@ -192,4 +192,9 @@ call ale#linter#Define('java', {
 \   'command': function('ale_linters#java#eclipselsp#RunWithVersionCheck'),
 \   'language': 'java',
 \   'project_root': function('ale#java#FindProjectRoot'),
+\   'initialization_options': {
+\     'extendedClientCapabilities': {
+\       'classFileContentsSupport': v:true
+\     }
+\   }
 \})

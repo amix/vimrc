@@ -2,7 +2,7 @@
 " Filename: autoload/lightline/colorscheme/molokai.vim
 " Author: challsted
 " License: MIT License
-" Last Change: 2020/02/15 20:57:45.
+" Last Change: 2022/03/15 23:58:40.
 " =============================================================================
 
 let s:black = [ '#232526', 233 ]
@@ -16,7 +16,6 @@ let s:red = [ '#ff0000', 160 ]
 let s:yellow = [ '#e6db74', 229 ]
 
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
-
 let s:p.normal.left = [ [ s:black, s:cyan ], [ s:orange, s:black ] ]
 let s:p.normal.middle = [ [ s:orange, s:black ] ]
 let s:p.normal.right = [ [ s:pink, s:black ], [ s:black, s:pink ] ]

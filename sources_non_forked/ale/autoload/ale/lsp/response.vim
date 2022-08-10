@@ -59,7 +59,7 @@ function! ale#lsp#response#ReadDiagnostics(response) abort
         \ && l:diagnostic.relatedInformation isnot v:null
             let l:related = deepcopy(l:diagnostic.relatedInformation)
             call map(l:related, {key, val ->
-            \   ale#path#FromURI(val.location.uri) .
+            \   ale#util#ToResource(val.location.uri) .
             \   ':' . (val.location.range.start.line + 1) .
             \   ':' . (val.location.range.start.character + 1) .
             \   ":\n\t" . val.message

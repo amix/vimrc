@@ -2,8 +2,9 @@
 " Filename: autoload/lightline/colorscheme/Tomorrow_Night_Eighties.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2013/09/07 14:14:14.
+" Last Change: 2022/03/15 23:57:56.
 " =============================================================================
+
 let s:base3 = '#cccccc'
 let s:base23 = '#bbbbbb'
 let s:base2 = '#aaaaaa'

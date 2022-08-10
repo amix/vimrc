@@ -3,6 +3,26 @@ ALE OCaml Integration                                       *ale-ocaml-options*
 
 
 ===============================================================================
+dune                                                           *ale-ocaml-dune*
+
+  Dune is a build system for OCaml projects. The `dune format` command is
+  supported for automatically formatting `dune` and `dune-project` files.
+
+g:ale_ocaml_dune_executable                       *g:ale_ocaml_dune_executable*
+                                                  *b:ale_ocaml_dune_executable*
+  Type: |String|
+  Default: `'dune'`
+
+  This variable can be set to pass the path to dune.
+
+g:ale_ocaml_dune_options                             *g:ale_ocaml_dune_options*
+                                                     *b:ale_ocaml_dune_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the dune fixer.
+
+===============================================================================
 merlin                                                       *ale-ocaml-merlin*
 
   To use merlin linter for OCaml source code you need to make sure Merlin for

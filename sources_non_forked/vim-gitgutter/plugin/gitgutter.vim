@@ -24,9 +24,22 @@ endfunction
 let g:gitgutter_preview_win_location = get(g:, 'gitgutter_preview_win_location', 'bo')
 if exists('*nvim_open_win')
   let g:gitgutter_preview_win_floating = get(g:, 'gitgutter_preview_win_floating', 1)
+  let g:gitgutter_floating_window_options = get(g:, 'gitgutter_floating_window_options', {
+        \ 'relative': 'cursor',
+        \ 'row': 1,
+        \ 'col': 0,
+        \ 'width': 42,
+        \ 'height': &previewheight,
+        \ 'style': 'minimal'
+        \ })
 else
   let default = exists('&previewpopup') ? !empty(&previewpopup) : 0
   let g:gitgutter_preview_win_floating = get(g:, 'gitgutter_preview_win_floating', default)
+  let g:gitgutter_floating_window_options = get(g:, 'gitgutter_floating_window_options', {
+        \ 'line': 'cursor+1',
+        \ 'col': 'cursor',
+        \ 'moved': 'any'
+        \ })
 endif
 let g:gitgutter_enabled = get(g:, 'gitgutter_enabled', 1)
 if exists('*sign_unplace')
@@ -120,6 +133,8 @@ command! -bar GitGutterBufferToggle  call gitgutter#buffer_toggle()
 
 command! -bar GitGutterQuickFix call gitgutter#quickfix(0)
 command! -bar GitGutterQuickFixCurrentFile call gitgutter#quickfix(1)
+
+command! -bar GitGutterDiffOrig call gitgutter#difforig()
 
 " }}}
 
@@ -248,6 +263,10 @@ function! GitGutterCursorHold(timer)
   execute 'doautocmd' s:nomodeline 'gitgutter CursorHold'
 endfunction
 
+function! s:next_tick(cmd)
+  call timer_start(1, {-> execute(a:cmd)})
+endfunction
+
 " Autocommands {{{
 
 augroup gitgutter
@@ -264,9 +283,9 @@ augroup gitgutter
 
   autocmd CursorHold,CursorHoldI * call gitgutter#process_buffer(bufnr(''), 0)
   if exists('*timer_start') && has('lambda')
-    autocmd FileChangedShellPost * call timer_start(1, {-> gitgutter#process_buffer(bufnr(''), 1)})
+    autocmd FileChangedShellPost * call s:next_tick("call gitgutter#process_buffer(+".expand('<abuf>').", 1)")
   else
-    autocmd FileChangedShellPost * call gitgutter#process_buffer(bufnr(''), 1)
+    autocmd FileChangedShellPost * call gitgutter#process_buffer(+expand('<abuf>'), 1)
   endif
 
   " Ensure that all buffers are processed when opening vim with multiple files, e.g.:

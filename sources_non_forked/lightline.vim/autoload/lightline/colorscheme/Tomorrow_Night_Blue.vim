@@ -2,8 +2,9 @@
 " Filename: autoload/lightline/colorscheme/Tomorrow_Night_Blue.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2013/09/07 14:13:21.
+" Last Change: 2022/03/15 23:57:49.
 " =============================================================================
+
 let s:base3 = '#ffffff'
 let s:base23 = '#ffffff'
 let s:base2 = '#ffffff'
@@ -21,7 +22,6 @@ let s:green = '#d1f1a9'
 let s:cyan = '#99ffff'
 let s:blue = '#bbdaff'
 let s:magenta = '#ebbbff'
-
 
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 let s:p.normal.left = [ [ s:base023, s:blue ], [ s:base3, s:base01 ] ]

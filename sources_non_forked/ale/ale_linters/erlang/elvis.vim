@@ -12,6 +12,7 @@ function! ale_linters#erlang#elvis#Handle(buffer, lines) abort
         \   'lnum': str2nr(l:match[1]),
         \   'text': s:AbbreviateMessage(l:match[2]),
         \   'type': 'W',
+        \   'sub_type': 'style',
         \})
     endfor
 

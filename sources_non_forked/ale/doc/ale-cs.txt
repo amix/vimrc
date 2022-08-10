@@ -91,6 +91,12 @@ g:ale_cs_csc_assemblies                               *g:ale_cs_csc_assemblies*
 <
 
 ===============================================================================
+cspell                                                          *ale-cs-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
 dotnet-format                                            *ale-cs-dotnet-format*
 
 Installation

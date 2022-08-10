@@ -46,7 +46,7 @@ function! ale#hover#HandleTSServerResponse(conn_id, response) abort
                 call balloon_show(a:response.body.displayString)
             elseif get(l:options, 'truncated_echo', 0)
                 if !empty(a:response.body.displayString)
-                    call ale#cursor#TruncatedEcho(split(a:response.body.displayString, "\n")[0])
+                    call ale#cursor#TruncatedEcho(a:response.body.displayString)
                 endif
             elseif g:ale_hover_to_floating_preview || g:ale_floating_preview
                 call ale#floating_preview#Show(split(a:response.body.displayString, "\n"), {
@@ -231,7 +231,11 @@ function! ale#hover#HandleLSPResponse(conn_id, response) abort
             \&& (l:set_balloons is 1 || l:set_balloons is# 'hover')
                 call balloon_show(join(l:lines, "\n"))
             elseif get(l:options, 'truncated_echo', 0)
-                call ale#cursor#TruncatedEcho(l:lines[0])
+                if type(l:lines[0]) is# v:t_list
+                    call ale#cursor#TruncatedEcho(join(l:lines[0], '\n'))
+                else
+                    call ale#cursor#TruncatedEcho(l:lines[0])
+                endif
             elseif g:ale_hover_to_floating_preview || g:ale_floating_preview
                 call ale#floating_preview#Show(l:lines, {
                 \   'filetype': 'ale-preview.message',

@@ -347,6 +347,12 @@ function! ale#engine#FixLocList(buffer, linter_name, from_other_source, loclist)
 
         if has_key(l:old_item, 'end_lnum')
             let l:item.end_lnum = str2nr(l:old_item.end_lnum)
+
+            " When the error ends after the end of the file, put it at the
+            " end. This is only done for the current buffer.
+            if l:item.bufnr == a:buffer && l:item.end_lnum > l:last_line_number
+                let l:item.end_lnum = l:last_line_number
+            endif
         endif
 
         if has_key(l:old_item, 'sub_type')

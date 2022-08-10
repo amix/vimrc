@@ -33,4 +33,15 @@ describe "Syntax highlighting" do
       def foo bar:; end
     EOF
   end
+
+  specify "endless def does not start a method region" do
+    assert_correct_highlighting <<~'EOF', 'end', ''
+      def foo = bar
+      end
+    EOF
+    assert_correct_highlighting <<~'EOF', 'end', ''
+      def foo (a, b) = bar
+      end
+    EOF
+  end
 end

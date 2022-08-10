@@ -87,6 +87,10 @@ For the latest version please see https://github.com/mattn/vim-gist.
 
         :Gist -l mattn
 
+- Specify the number of gists listed:
+
+        :Gist -l -n 100
+
 - List everyone's gists.
 
         :Gist -la
@@ -187,6 +191,10 @@ If you want to use on GitHub Enterprise:
 You need to either set global git config:
 
 	$ git config --global github.user Username
+
+If you want to list more than 30 gists per page (maximum is 100):
+
+    let g:gist_per_page_limit = 100
 
 ## License:
 

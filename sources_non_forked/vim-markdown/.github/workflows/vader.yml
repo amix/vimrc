@@ -1,0 +1,31 @@
+name: Vader
+on: [push, pull_request]
+jobs:
+  vader:
+    name: vader
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        vimFlavor: ["vim", "nvim"]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Enable Universe package repository
+      run: |
+        sudo add-apt-repository universe
+        sudo apt-get update
+    - name: Install ${{ matrix.vimFlavor }}
+      run: |
+        sudo apt-get install ${{ matrix.vimFlavor == 'nvim' && 'neovim' || 'vim' }}
+    - name: Review versions
+      run: |
+        ${{ matrix.vimFlavor }} --version
+    - name: Fetch Vader and other dependencies
+      run: |
+        make build/tabular build/vim-toml build/vim-json build/vader.vim
+    - name: Run test suite
+      run: |
+        cd test
+        ${{ matrix.vimFlavor == 'nvim' && 'nvim --headless' || 'vim -N' }} \
+          -u vimrc "+Vader! *"

@@ -94,7 +94,7 @@ endfunction
 "
 function! s:MoveToCurHeader()
     let l:lineNum = s:GetHeaderLineNum()
-    if l:lineNum != 0
+    if l:lineNum !=# 0
         call cursor(l:lineNum, 1)
     else
         echo 'outside any header'
@@ -147,7 +147,7 @@ function! s:GetHeaderLevel(...)
         let l:line = a:1
     endif
     let l:linenum = s:GetHeaderLineNum(l:line)
-    if l:linenum != 0
+    if l:linenum !=# 0
         return s:GetLevelOfHeaderAtLine(l:linenum)
     else
         return 0
@@ -161,13 +161,13 @@ function! s:GetHeaderList()
     let l:fenced_block = 0
     let l:front_matter = 0
     let l:header_list = []
-    let l:vim_markdown_frontmatter = get(g:, "vim_markdown_frontmatter", 0)
+    let l:vim_markdown_frontmatter = get(g:, 'vim_markdown_frontmatter', 0)
     for i in range(1, line('$'))
         let l:lineraw = getline(i)
         let l:l1 = getline(i+1)
-        let l:line = substitute(l:lineraw, "#", "\\\#", "g")
+        let l:line = substitute(l:lineraw, '#', "\\\#", 'g')
         " exclude lines in fenced code blocks
-        if l:line =~ '````*' || l:line =~ '\~\~\~\~*'
+        if l:line =~# '````*' || l:line =~# '\~\~\~\~*'
             if l:fenced_block == 0
                 let l:fenced_block = 1
             elseif l:fenced_block == 1
@@ -176,24 +176,24 @@ function! s:GetHeaderList()
         " exclude lines in frontmatters
         elseif l:vim_markdown_frontmatter == 1
             if l:front_matter == 1
-                if l:line == '---'
+                if l:line ==# '---'
                     let l:front_matter = 0
                 endif
             elseif i == 1
-                if l:line == '---'
+                if l:line ==# '---'
                     let l:front_matter = 1
                 endif
             endif
         endif
         " match line against header regex
-        if join(getline(i, i + 1), "\n") =~ s:headersRegexp && l:line =~ '^\S'
+        if join(getline(i, i + 1), "\n") =~# s:headersRegexp && l:line =~# '^\S'
             let l:is_header = 1
         else
             let l:is_header = 0
         endif
-        if l:is_header == 1 && l:fenced_block == 0 && l:front_matter == 0
+        if l:is_header ==# 1 && l:fenced_block ==# 0 && l:front_matter ==# 0
             " remove hashes from atx headers
-            if match(l:line, "^#") > -1
+            if match(l:line, '^#') > -1
                 let l:line = substitute(l:line, '\v^#*[ ]*', '', '')
                 let l:line = substitute(l:line, '\v[ ]*#*$', '', '')
             endif
@@ -361,11 +361,11 @@ function! s:Toc(...)
     let l:header_list = s:GetHeaderList()
     let l:indented_header_list = []
     if len(l:header_list) == 0
-        echom "Toc: No headers."
+        echom 'Toc: No headers.'
         return
     endif
     let l:header_max_len = 0
-    let l:vim_markdown_toc_autofit = get(g:, "vim_markdown_toc_autofit", 0)
+    let l:vim_markdown_toc_autofit = get(g:, 'vim_markdown_toc_autofit', 0)
     for h in l:header_list
         " set header number of the cursor position
         if l:cursor_header == 0
@@ -438,7 +438,7 @@ function! s:InsertToc(format, ...)
     let l:toc = []
     let l:header_list = s:GetHeaderList()
     if len(l:header_list) == 0
-        echom "InsertToc: No headers."
+        echom 'InsertToc: No headers.'
         return
     endif
 
@@ -550,7 +550,7 @@ function! s:TableFormat()
     " Move colons for alignment to left or right side of the cell.
     execute 's/:\( \+\)|/\1:|/e' . l:flags
     execute 's/|\( \+\):/|:\1/e' . l:flags
-    execute 's/ /-/' . l:flags
+    execute 's/|:\?\zs[ -]\+\ze:\?|/\=repeat("-", len(submatch(0)))/' . l:flags
     call setpos('.', l:pos)
 endfunction
 
@@ -653,7 +653,7 @@ endfunction
 "
 function! s:OpenUrlUnderCursor()
     let l:url = s:Markdown_GetUrlForPosition(line('.'), col('.'))
-    if l:url != ''
+    if l:url !=# ''
         call s:VersionAwareNetrwBrowseX(l:url)
     else
         echomsg 'The cursor is not on a link.'
@@ -664,8 +664,24 @@ endfunction
 " script while this function is running. We must not replace it.
 if !exists('*s:EditUrlUnderCursor')
     function s:EditUrlUnderCursor()
+        let l:editmethod = ''
+        " determine how to open the linked file (split, tab, etc)
+        if exists('g:vim_markdown_edit_url_in')
+          if g:vim_markdown_edit_url_in ==# 'tab'
+            let l:editmethod = 'tabnew'
+          elseif g:vim_markdown_edit_url_in ==# 'vsplit'
+            let l:editmethod = 'vsp'
+          elseif g:vim_markdown_edit_url_in ==# 'hsplit'
+            let l:editmethod = 'sp'
+          else
+            let l:editmethod = 'edit'
+          endif
+        else
+          " default to current buffer
+          let l:editmethod = 'edit'
+        endif
         let l:url = s:Markdown_GetUrlForPosition(line('.'), col('.'))
-        if l:url != ''
+        if l:url !=# ''
             if get(g:, 'vim_markdown_autowrite', 0)
                 write
             endif
@@ -675,14 +691,14 @@ if !exists('*s:EditUrlUnderCursor')
                 if len(l:parts) == 2
                     let [l:url, l:anchor] = parts
                     let l:anchorexpr = get(g:, 'vim_markdown_anchorexpr', '')
-                    if l:anchorexpr != ''
+                    if l:anchorexpr !=# ''
                         let l:anchor = eval(substitute(
                             \ l:anchorexpr, 'v:anchor',
                             \ escape('"'.l:anchor.'"', '"'), ''))
                     endif
                 endif
             endif
-            if l:url != ''
+            if l:url !=# ''
                 let l:ext = ''
                 if get(g:, 'vim_markdown_no_extensions_in_markdown', 0)
                     " use another file extension if preferred
@@ -693,29 +709,13 @@ if !exists('*s:EditUrlUnderCursor')
                     endif
                 endif
                 let l:url = fnameescape(fnamemodify(expand('%:h').'/'.l:url.l:ext, ':.'))
-                let l:editmethod = ''
-                " determine how to open the linked file (split, tab, etc)
-                if exists('g:vim_markdown_edit_url_in')
-                  if g:vim_markdown_edit_url_in == 'tab'
-                    let l:editmethod = 'tabnew'
-                  elseif g:vim_markdown_edit_url_in == 'vsplit'
-                    let l:editmethod = 'vsp'
-                  elseif g:vim_markdown_edit_url_in == 'hsplit'
-                    let l:editmethod = 'sp'
-                  else
-                    let l:editmethod = 'edit'
-                  endif
-                else
-                  " default to current buffer
-                  let l:editmethod = 'edit'
-                endif
                 execute l:editmethod l:url
             endif
-            if l:anchor != ''
+            if l:anchor !=# ''
                 silent! execute '/'.l:anchor
             endif
         else
-            echomsg 'The cursor is not on a link.'
+            execute l:editmethod . ' <cfile>'
         endif
     endfunction
 endif
@@ -750,7 +750,7 @@ if !get(g:, 'vim_markdown_no_default_key_mappings', 0)
     call <sid>MapNotHasmapto('][', 'Markdown_MoveToNextSiblingHeader')
     call <sid>MapNotHasmapto('[]', 'Markdown_MoveToPreviousSiblingHeader')
     call <sid>MapNotHasmapto(']u', 'Markdown_MoveToParentHeader')
-    call <sid>MapNotHasmapto(']c', 'Markdown_MoveToCurHeader')
+    call <sid>MapNotHasmapto(']h', 'Markdown_MoveToCurHeader')
     call <sid>MapNotHasmapto('gx', 'Markdown_OpenUrlUnderCursor')
     call <sid>MapNotHasmapto('ge', 'Markdown_EditUrlUnderCursor')
 endif
@@ -770,8 +770,8 @@ command! -buffer -nargs=? InsertNToc call s:InsertToc('numbers', <args>)
 if exists('g:vim_markdown_fenced_languages')
     let s:filetype_dict = {}
     for s:filetype in g:vim_markdown_fenced_languages
-        let key = matchstr(s:filetype, "[^=]*")
-        let val = matchstr(s:filetype, "[^=]*$")
+        let key = matchstr(s:filetype, '[^=]*')
+        let val = matchstr(s:filetype, '[^=]*$')
         let s:filetype_dict[key] = val
     endfor
 else
@@ -788,8 +788,8 @@ function! s:MarkdownHighlightSources(force)
     " Look for code blocks in the current file
     let filetypes = {}
     for line in getline(1, '$')
-        let ft = matchstr(line, '```\s*\zs[0-9A-Za-z_+-]*\ze.*')
-        if !empty(ft) && ft !~ '^\d*$' | let filetypes[ft] = 1 | endif
+        let ft = matchstr(line, '\(`\{3,}\|\~\{3,}\)\s*\zs[0-9A-Za-z_+-]*\ze.*')
+        if !empty(ft) && ft !~# '^\d*$' | let filetypes[ft] = 1 | endif
     endfor
     if !exists('b:mkd_known_filetypes')
         let b:mkd_known_filetypes = {}
@@ -812,15 +812,17 @@ function! s:MarkdownHighlightSources(force)
             else
                 let filetype = ft
             endif
-            let group = 'mkdSnippet' . toupper(substitute(filetype, "[+-]", "_", "g"))
+            let group = 'mkdSnippet' . toupper(substitute(filetype, '[+-]', '_', 'g'))
             if !has_key(b:mkd_included_filetypes, filetype)
                 let include = s:SyntaxInclude(filetype)
                 let b:mkd_included_filetypes[filetype] = 1
             else
                 let include = '@' . toupper(filetype)
             endif
-            let command = 'syntax region %s matchgroup=%s start="^\s*```\s*%s.*$" matchgroup=%s end="\s*```$" keepend contains=%s%s'
-            execute printf(command, group, startgroup, ft, endgroup, include, has('conceal') && get(g:, 'vim_markdown_conceal', 1) && get(g:, 'vim_markdown_conceal_code_blocks', 1) ? ' concealends' : '')
+            let command_backtick = 'syntax region %s matchgroup=%s start="^\s*`\{3,}\s*%s.*$" matchgroup=%s end="\s*`\{3,}$" keepend contains=%s%s'
+            let command_tilde    = 'syntax region %s matchgroup=%s start="^\s*\~\{3,}\s*%s.*$" matchgroup=%s end="\s*\~\{3,}$" keepend contains=%s%s'
+            execute printf(command_backtick, group, startgroup, ft, endgroup, include, has('conceal') && get(g:, 'vim_markdown_conceal', 1) && get(g:, 'vim_markdown_conceal_code_blocks', 1) ? ' concealends' : '')
+            execute printf(command_tilde,    group, startgroup, ft, endgroup, include, has('conceal') && get(g:, 'vim_markdown_conceal', 1) && get(g:, 'vim_markdown_conceal_code_blocks', 1) ? ' concealends' : '')
             execute printf('syntax cluster mkdNonListItem add=%s', group)
 
             let b:mkd_known_filetypes[ft] = 1
@@ -854,13 +856,17 @@ endfunction
 
 
 function! s:MarkdownRefreshSyntax(force)
-    if &filetype =~ 'markdown' && line('$') > 1
+    " Use != to compare &syntax's value to use the same logic run on
+    " $VIMRUNTIME/syntax/synload.vim.
+    "
+    " vint: next-line -ProhibitEqualTildeOperator
+    if &filetype =~# 'markdown' && line('$') > 1 && &syntax != 'OFF'
         call s:MarkdownHighlightSources(a:force)
     endif
 endfunction
 
 function! s:MarkdownClearSyntaxVariables()
-    if &filetype =~ 'markdown'
+    if &filetype =~# 'markdown'
         unlet! b:mkd_included_filetypes
     endif
 endfunction

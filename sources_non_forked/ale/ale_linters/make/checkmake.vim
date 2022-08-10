@@ -20,6 +20,6 @@ endfunction
 call ale#linter#Define('make', {
 \   'name': 'checkmake',
 \   'executable': 'checkmake',
-\   'command': 'checkmake %s --format="{{.LineNumber}}:{{.Rule}}:{{.Violation}}"',
+\   'command': 'checkmake %s --format="{{.LineNumber}}:{{.Rule}}:{{.Violation}}{{\"\r\n\"}}"',
 \   'callback': 'ale_linters#make#checkmake#Handle',
 \})

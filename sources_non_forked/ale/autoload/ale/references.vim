@@ -16,6 +16,23 @@ function! ale#references#ClearLSPData() abort
     let s:references_map = {}
 endfunction
 
+function! ale#references#FormatTSResponseItem(response_item, options) abort
+    if get(a:options, 'open_in') is# 'quickfix'
+        return {
+        \ 'filename': a:response_item.file,
+        \ 'lnum': a:response_item.start.line,
+        \ 'col': a:response_item.start.offset,
+        \}
+    else
+        return {
+        \ 'filename': a:response_item.file,
+        \ 'line': a:response_item.start.line,
+        \ 'column': a:response_item.start.offset,
+        \ 'match': substitute(a:response_item.lineText, '^\s*\(.\{-}\)\s*$', '\1', ''),
+        \}
+    endif
+endfunction
+
 function! ale#references#HandleTSServerResponse(conn_id, response) abort
     if get(a:response, 'command', '') is# 'references'
     \&& has_key(s:references_map, a:response.request_seq)
@@ -25,20 +42,40 @@ function! ale#references#HandleTSServerResponse(conn_id, response) abort
             let l:item_list = []
 
             for l:response_item in a:response.body.refs
-                call add(l:item_list, {
-                \ 'filename': l:response_item.file,
-                \ 'line': l:response_item.start.line,
-                \ 'column': l:response_item.start.offset,
-                \ 'match': substitute(l:response_item.lineText, '^\s*\(.\{-}\)\s*$', '\1', ''),
-                \})
+                call add(
+                \ l:item_list,
+                \ ale#references#FormatTSResponseItem(l:response_item, l:options)
+                \)
             endfor
 
             if empty(l:item_list)
                 call ale#util#Execute('echom ''No references found.''')
             else
-                call ale#preview#ShowSelection(l:item_list, l:options)
+                if get(l:options, 'open_in') is# 'quickfix'
+                    call setqflist([], 'r')
+                    call setqflist(l:item_list, 'a')
+                    call ale#util#Execute('cc 1')
+                else
+                    call ale#preview#ShowSelection(l:item_list, l:options)
+                endif
             endif
         endif
+    endif
+endfunction
+
+function! ale#references#FormatLSPResponseItem(response_item, options) abort
+    if get(a:options, 'open_in') is# 'quickfix'
+        return {
+        \ 'filename': ale#util#ToResource(a:response_item.uri),
+        \ 'lnum': a:response_item.range.start.line + 1,
+        \ 'col': a:response_item.range.start.character + 1,
+        \}
+    else
+        return {
+        \ 'filename': ale#util#ToResource(a:response_item.uri),
+        \ 'line': a:response_item.range.start.line + 1,
+        \ 'column': a:response_item.range.start.character + 1,
+        \}
     endif
 endfunction
 
@@ -53,18 +90,22 @@ function! ale#references#HandleLSPResponse(conn_id, response) abort
 
         if type(l:result) is v:t_list
             for l:response_item in l:result
-                call add(l:item_list, {
-                \ 'filename': ale#path#FromURI(l:response_item.uri),
-                \ 'line': l:response_item.range.start.line + 1,
-                \ 'column': l:response_item.range.start.character + 1,
-                \})
+                call add(l:item_list,
+                \ ale#references#FormatLSPResponseItem(l:response_item, l:options)
+                \)
             endfor
         endif
 
         if empty(l:item_list)
             call ale#util#Execute('echom ''No references found.''')
         else
-            call ale#preview#ShowSelection(l:item_list, l:options)
+            if get(l:options, 'open_in') is# 'quickfix'
+                call setqflist([], 'r')
+                call setqflist(l:item_list, 'a')
+                call ale#util#Execute('cc 1')
+            else
+                call ale#preview#ShowSelection(l:item_list, l:options)
+            endif
         endif
     endif
 endfunction
@@ -119,6 +160,8 @@ function! ale#references#Find(...) abort
                 let l:options.open_in = 'split'
             elseif l:option is? '-vsplit'
                 let l:options.open_in = 'vsplit'
+            elseif l:option is? '-quickfix'
+                let l:options.open_in = 'quickfix'
             endif
         endfor
     endif

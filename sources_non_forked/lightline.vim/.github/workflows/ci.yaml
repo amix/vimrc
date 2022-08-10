@@ -21,12 +21,13 @@ jobs:
         - v7.3
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Checkout vim-themis
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: thinca/vim-themis
         path: vim-themis
+        ref: v1.6.0
     - name: Setup Vim
       uses: rhysd/action-setup-vim@v1
       id: vim

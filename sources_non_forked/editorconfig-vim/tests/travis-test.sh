@@ -11,6 +11,17 @@ if [[ ( ! "${TEST_WHICH:-}" ) && "${1:-}" ]]; then
     export TEST_WHICH="$1"
 fi
 
+if [[ ! "${TEST_WHICH:-}" ]]; then
+    cat <<EOT
+Usage: $0 \$WHICH
+  or:  TEST_WHICH=\$WHICH $0
+Run automated tests of editorconfig-vim
+
+\$WHICH can be "core" or "plugin".
+EOT
+    exit 2
+fi
+
 if [[ "$TEST_WHICH" = 'plugin' ]]; then       # test plugin
 
     # If not running from Travis, do what Travis would have

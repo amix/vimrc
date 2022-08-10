@@ -62,7 +62,8 @@ let s:global_variable_list = [
 \]
 
 function! s:Echo(message) abort
-    execute 'echo a:message'
+    " no-custom-checks
+    echo a:message
 endfunction
 
 function! s:GetLinterVariables(filetype, exclude_linter_names) abort

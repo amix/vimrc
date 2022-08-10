@@ -72,6 +72,14 @@ function! ale#lsp#tsserver_message#TypeDefinition(buffer, line, column) abort
     \}]
 endfunction
 
+function! ale#lsp#tsserver_message#Implementation(buffer, line, column) abort
+    return [0, 'ts@implementation', {
+    \   'line': a:line,
+    \   'offset': a:column,
+    \   'file': expand('#' . a:buffer . ':p'),
+    \}]
+endfunction
+
 function! ale#lsp#tsserver_message#References(buffer, line, column) abort
     return [0, 'ts@references', {
     \   'line': a:line,
@@ -98,6 +106,14 @@ function! ale#lsp#tsserver_message#Rename(
     \       'findInComments': a:find_in_comments,
     \       'findInStrings': a:find_in_strings,
     \   }
+    \}]
+endfunction
+
+function! ale#lsp#tsserver_message#GetEditsForFileRename(
+\ oldFilePath, newFilePath) abort
+    return [0, 'ts@getEditsForFileRename', {
+    \   'oldFilePath': a:oldFilePath,
+    \   'newFilePath': a:newFilePath,
     \}]
 endfunction
 

@@ -323,7 +323,7 @@ function! s:insert(...) " {{{1
   let cb_save = &clipboard
   set clipboard-=unnamed clipboard-=unnamedplus
   let reg_save = @@
-  call setreg('"',"\r",'v')
+  call setreg('"',"\032",'v')
   call s:wrapreg('"',char,"",linemode)
   " If line mode is used and the surrounding consists solely of a suffix,
   " remove the initial newline.  This fits a use case of mine but is a
@@ -354,19 +354,21 @@ function! s:insert(...) " {{{1
     call s:reindent()
   endif
   norm! `]
-  call search('\r','bW')
+  call search("\032",'bW')
   let @@ = reg_save
   let &clipboard = cb_save
   return "\<Del>"
 endfunction " }}}1
 
-function! s:reindent() " {{{1
-  if exists("b:surround_indent") ? b:surround_indent : (!exists("g:surround_indent") || g:surround_indent)
+function! s:reindent() abort " {{{1
+  if get(b:, 'surround_indent', get(g:, 'surround_indent', 1)) && (!empty(&equalprg) || !empty(&indentexpr) || &cindent || &smartindent || &lisp)
     silent norm! '[=']
   endif
 endfunction " }}}1
 
 function! s:dosurround(...) " {{{1
+  let sol_save = &startofline
+  set startofline
   let scount = v:count1
   let char = (a:0 ? a:1 : s:inputtarget())
   let spc = ""
@@ -388,6 +390,9 @@ function! s:dosurround(...) " {{{1
   if a:0 > 1
     let newchar = a:2
     if newchar == "\<Esc>" || newchar == "\<C-C>" || newchar == ""
+      if !sol_save
+        set nostartofline
+      endif
       return s:beep()
     endif
   endif
@@ -414,6 +419,9 @@ function! s:dosurround(...) " {{{1
   if keeper == ""
     call setreg('"',original,otype)
     let &clipboard = cb_save
+    if !sol_save
+      set nostartofline
+    endif
     return ""
   endif
   let oldline = getline('.')
@@ -477,6 +485,9 @@ function! s:dosurround(...) " {{{1
     silent! call repeat#set("\<Plug>Dsurround".char,scount)
   else
     silent! call repeat#set("\<Plug>C".(a:0 > 2 && a:3 ? "S" : "s")."urround".char.newchar.s:input,scount)
+  endif
+  if !sol_save
+    set nostartofline
   endif
 endfunction " }}}1
 

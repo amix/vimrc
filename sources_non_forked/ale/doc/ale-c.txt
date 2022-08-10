@@ -353,6 +353,12 @@ cache.
 
 
 ===============================================================================
+cspell                                                           *ale-c-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
 flawfinder                                                   *ale-c-flawfinder*
 
 g:ale_c_flawfinder_executable                   *g:ale_c_flawfinder_executable*

@@ -73,7 +73,11 @@ endif
 " Return vim code to jump back to the original window.
 function! tlib#win#SetById(win_id) "{{{3
     if a:win_id != g:tlib#win#null_id
-        let win_id = tlib#win#GetID()
+        if g:tlib#win#use_winid
+            let win_id = tlib#win#GetID()
+        else
+            let win_id = tlib#win#GetID().win_id
+        endif
         call tlib#win#GotoID(a:win_id)
         return printf('call tlib#win#GotoID(%s)', win_id)
         " " TLogVAR a:winnr

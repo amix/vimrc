@@ -29,7 +29,7 @@ function! ale_linters#python#pydocstyle#GetCommand(buffer) abort
 
     return ale#Escape(l:executable) . l:exec_args
     \   . ale#Pad(ale#Var(a:buffer, 'python_pydocstyle_options'))
-    \   . ' %s:t'
+    \   . ' %s'
 endfunction
 
 function! ale_linters#python#pydocstyle#Handle(buffer, lines) abort
