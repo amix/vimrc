@@ -14,38 +14,22 @@
 
 ---
 
-<img alt="Gif" src="https://user-images.githubusercontent.com/251450/55285193-400a9000-53b9-11e9-8cff-ffe4983c5947.gif" width="60%" />
+<img alt="Gif" src="https://alfs.chigua.cn/dianyou/data/platform/default/20220801/2022-08-01%2002-14-03.2022-08-01%2002_15_16.gif" width="60%" />
 
-_True snippet and additional text editing support_
+_Custom popup menu with snippet support_
 
 ## Why?
 
-- 🚀 **Fast**: [instant increment completion](https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources), increment buffer sync using buffer update events.
+- 🚀 **Fast**: separated NodeJS process that not block your vim most of the time.
 - 💎 **Reliable**: typed language, tested with CI.
-- 🌟 **Featured**: [full LSP support](https://github.com/neoclide/coc.nvim/wiki/Language-servers#supported-features)
+- 🌟 **Featured**: all LSP 3.16 features are supported, see `:h coc-lsp`.
 - ❤️ **Flexible**: [configured like VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-the-configuration-file), [extensions work like in VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions)
-
-**Gold Sponsors**
-
-<a href="https://opencollective.com/cocnvim#platinum-sponsors">
-  <img src="https://opencollective.com/cocnvim/tiers/gold-sponsors.svg?avatarHeight=36&width=600">
-</a>
-
-**Silver Sponsors**
-
-<a href="https://opencollective.com/cocnvim#platinum-sponsors">
-  <img src="https://opencollective.com/cocnvim/tiers/silver-sponsors.svg?avatarHeight=36&width=600">
-</a>
-
-**Bronze Sponsors**
-
-<a href="https://opencollective.com/cocnvim#platinum-sponsors">
-  <img src="https://opencollective.com/cocnvim/tiers/bronze-sponsors.svg?avatarHeight=36&width=600">
-</a>
 
 ## Quick Start
 
-Install [nodejs](https://nodejs.org/en/download/) >= 12.12:
+Make sure use vim >= 8.1.1719 or neovim >= 0.4.0.
+
+Install [nodejs](https://nodejs.org/en/download/) >= 14.14:
 
 ```bash
 curl -sL install-node.vercel.app/lts | bash
@@ -110,44 +94,31 @@ possible to avoid conflict with your other plugins.
 command like`:verbose imap <tab>` to make sure that your keymap has taken effect.
 
 ```vim
-" Set internal encoding of vim, not needed on neovim, since coc.nvim using some
-" unicode characters in the file autoload/float.vim
-set encoding=utf-8
-
-" TextEdit might fail if hidden is not set.
-set hidden
-
 " Some servers have issues with backup files, see #649.
 set nobackup
 set nowritebackup
-
-" Give more space for displaying messages.
-set cmdheight=2
 
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
 set updatetime=300
 
-" Don't pass messages to |ins-completion-menu|.
-set shortmess+=c
-
 " Always show the signcolumn, otherwise it would shift the text each time
 " diagnostics appear/become resolved.
-if has("nvim-0.5.0") || has("patch-8.1.1564")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
-else
-  set signcolumn=yes
-endif
+set signcolumn=yes
 
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ CheckBackspace() ? "\<TAB>" :
+      \ coc#pum#visible() ? coc#pum#next(1):
+      \ CheckBackspace() ? "\<Tab>" :
       \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice.
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 function! CheckBackspace() abort
   let col = col('.') - 1
@@ -160,11 +131,6 @@ if has('nvim')
 else
   inoremap <silent><expr> <c-@> coc#refresh()
 endif
-
-" Make <CR> auto-select the first completion item and notify coc.nvim to
-" format on enter, <cr> could be remapped by other vim plugin
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
@@ -625,6 +591,10 @@ Try these steps when you have problem with coc.nvim.
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/rammiah"><img src="https://avatars.githubusercontent.com/u/26727562?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Rammiah</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/issues?q=author%3Arammiah" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://keybase.io/lambdalisue"><img src="https://avatars.githubusercontent.com/u/546312?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Alisue</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/issues?q=author%3Alambdalisue" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://bigshans.github.io"><img src="https://avatars.githubusercontent.com/u/26884666?v=4?s=50" width="50px;" alt=""/><br /><sub><b>bigshans</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=bigshans" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/rob-3"><img src="https://avatars.githubusercontent.com/u/24816247?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Robert Boyd III</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/issues?q=author%3Arob-3" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://creasty.com"><img src="https://avatars.githubusercontent.com/u/1695538?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Yuki Iwanaga</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=creasty" title="Code">💻</a></td>
   </tr>
 </table>
 

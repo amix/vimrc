@@ -98,13 +98,7 @@ function! coc#compat#matchaddpos(group, pos, priority, winid) abort
         call matchaddpos(a:group, a:pos, a:priority, -1, {'window': a:winid})
       endif
     else
-      if has('nvim-0.4.0')
-        call matchaddpos(a:group, a:pos, a:priority, -1, {'window': a:winid})
-      elseif exists('*nvim_set_current_win')
-        noa call nvim_set_current_win(a:winid)
-        call matchaddpos(a:group, a:pos, a:priority, -1)
-        noa call nvim_set_current_win(curr)
-      endif
+      call matchaddpos(a:group, a:pos, a:priority, -1, {'window': a:winid})
     endif
   endif
 endfunction
@@ -129,25 +123,9 @@ endfunction
 
 " hlGroup, pos, priority
 function! coc#compat#matchaddgroups(winid, groups) abort
-  " add by winid
-  if has('patch-8.1.0218') || has('nvim-0.4.0')
-    for group in a:groups
-      call matchaddpos(group['hlGroup'], [group['pos']], group['priority'], -1, {'window': a:winid})
-    endfor
-    return
-  endif
-  let curr = win_getid()
-  if curr == a:winid
-    for group in a:groups
-      call matchaddpos(group['hlGroup'], [group['pos']], group['priority'], -1)
-    endfor
-  elseif exists('*nvim_set_current_win')
-    noa call nvim_set_current_win(a:winid)
-    for group in a:groups
-      call matchaddpos(group['hlGroup'], [group['pos']], group['priority'], -1)
-    endfor
-    noa call nvim_set_current_win(curr)
-  endif
+  for group in a:groups
+    call matchaddpos(group['hlGroup'], [group['pos']], group['priority'], -1, {'window': a:winid})
+  endfor
 endfunction
 
 function! coc#compat#del_var(name) abort

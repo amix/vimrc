@@ -22,6 +22,13 @@ function! coc#window#tabnr(winid) abort
   endif
 endfunction
 
+function! coc#window#get_cursor(winid) abort
+  if exists('*nvim_win_get_cursor')
+    return nvim_win_get_cursor(a:winid)
+  endif
+  return coc#api#exec('win_get_cursor', [a:winid])
+endfunction
+
 " Check if winid visible on current tabpage
 function! coc#window#visible(winid) abort
   if s:is_vim

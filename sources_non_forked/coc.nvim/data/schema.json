@@ -127,6 +127,10 @@
               "progress",
               "callHierarchy",
               "linkedEditing",
+              "inlayHint",
+              "inlineValue",
+              "typeHierarchy",
+              "pullDiagnostic",
               "fileEvents",
               "semanticTokens"
             ]
@@ -385,39 +389,62 @@
       "default": "npm",
       "description": "Command or absolute path to npm or yarn."
     },
+    "suggest.noselect": {
+      "type": "boolean",
+      "description": "Not make vim select first item on completion start",
+      "default": false
+    },
+    "suggest.formatItems": {
+      "type": "array",
+      "items": {
+        "enum": ["abbr", "menu", "kind", "shortcut"]
+      },
+      "contains": {
+        "enum": ["abbr"]
+      },
+      "uniqueItems": true,
+      "description": "Items shown in popup menu in order.",
+      "default": ["abbr", "menu", "kind", "shortcut"]
+    },
     "suggest.selection": {
       "type": "string",
-      "default": "none",
+      "default": "first",
       "description": "Controls how suggestions are pre-selected when showing the suggest list.",
-      "enum": ["none", "recentlyUsed", "recentlyUsedByPrefix"]
+      "enum": ["first", "recentlyUsed", "recentlyUsedByPrefix"]
     },
     "suggest.enablePreselect": {
       "type": "boolean",
-      "description": "Enable preselect feature of LSP, only works on neovim, required for suggest.selection config.",
-      "default": false
-    },
-    "suggest.enablePreview": {
-      "type": "boolean",
-      "description": "Add preview option to completeopt, default: false.",
-      "default": false
-    },
-    "suggest.floatEnable": {
-      "type": "boolean",
-      "description": "Enable floating window for documentation when possible.",
+      "description": "Enable preselect feature of LSP, works when suggest.noselect is false.",
       "default": true
     },
     "suggest.floatConfig": {
       "type": "object",
-      "description": "Configure style of documentation window for complete item.",
+      "description": "Configure style of popup menu and documentation window of completion.",
       "allOf": [{ "$ref": "#/definitions/float" }],
       "additionalProperties": false,
       "properties": {
         "border": {},
+        "rounded": {},
         "highlight": {},
         "borderhighlight": {},
         "maxWidth": {},
         "winblend": {},
-        "focusable": {},
+        "shadow": {}
+      }
+    },
+    "suggest.pumFloatConfig": {
+      "type": ["object", "null"],
+      "description": "Configure style of popup menu, suggest.floatConfig is used when not specified.",
+      "allOf": [{ "$ref": "#/definitions/float" }],
+      "additionalProperties": false,
+      "default": null,
+      "properties": {
+        "border": {},
+        "rounded": {},
+        "highlight": {},
+        "borderhighlight": {},
+        "maxWidth": {},
+        "winblend": {},
         "shadow": {}
       }
     },
@@ -435,7 +462,7 @@
       "type": "string",
       "default": "preview",
       "description": "Where to show the detail text of CompleteItem from LS.",
-      "enum": ["abbr", "menu", "preview"]
+      "enum": ["abbr", "preview"]
     },
     "suggest.autoTrigger": {
       "type": "string",
@@ -447,21 +474,6 @@
       "type": "number",
       "default": 99,
       "description": "Priority of language sources."
-    },
-    "suggest.disableKind": {
-      "type": "boolean",
-      "description": "Remove kind field from vim complete item.",
-      "default": false
-    },
-    "suggest.disableMenu": {
-      "type": "boolean",
-      "description": "Remove menu field from vim complete item.",
-      "default": false
-    },
-    "suggest.disableMenuShortcut": {
-      "type": "boolean",
-      "description": "Disable shortcut of completion source in menu.",
-      "default": false
     },
     "suggest.snippetIndicator": {
       "type": "string",
@@ -516,16 +528,6 @@
       "type": "boolean",
       "default": false,
       "description": "Controls whether suggestions should be accepted on commit characters. For example, in JavaScript, the semi-colon (`;`) can be a commit character that accepts a suggestion and types that character. Requires CompleteChanged event to work."
-    },
-    "suggest.noselect": {
-      "type": "boolean",
-      "description": "Not make vim select first item on completion start",
-      "default": true
-    },
-    "suggest.keepCompleteopt": {
-      "type": "boolean",
-      "description": "When enabled, completeopt is not overridden, auto completion will be disabled if completeopt doesn't have noinsert and noselect.",
-      "default": false
     },
     "suggest.lowPrioritySourceLimit": {
       "type": "integer",
@@ -609,6 +611,11 @@
       },
       "description": "Regexps to ignore when trigger suggest",
       "default": []
+    },
+    "suggest.virtualText": {
+      "type": "boolean",
+      "description": "Show virtual text for insert word of selected item, works on neovim >= 0.5.0",
+      "default": false
     },
     "documentHighlight.priority": {
       "type": "number",
@@ -1040,11 +1047,6 @@
       "type": "integer",
       "default": 10,
       "description": "Maximum content height of notification dialog."
-    },
-    "notification.preferMenuPicker": {
-      "type": "boolean",
-      "default": false,
-      "description": "Use menu picker for message notification with actions."
     },
     "notification.disabledProgressSources": {
       "type": "array",

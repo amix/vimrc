@@ -56,36 +56,50 @@ Http request~
 ------------------------------------------------------------------------------
 Completion related~
 							*coc-config-suggest*
+"suggest.noselect"					*coc-config-suggest-noselect*
+
+	Avoid select complete item on completion start, default: `false`.
+
+	Note: default changed to `false` on coc.nvim 0.0.82 to provide preselect
+	item.
+
 "suggest.selection"					*coc-config-suggest-selection*
 
 	Controls how suggestions are pre-selected when showing the suggest
-	list. Default: "none".
+	list. Default: "recentlyUsed".
 
-	Could be "none", "recentlyUsed" and "recentlyUsedByPrefix".
+	Could be "first", "recentlyUsed" and "recentlyUsedByPrefix".
 
-	Note: the selected item would be moved to first place when
-	"suggest.enablePreselect" is not enabled.
+"suggest.formatItems" 					*coc-config-suggest-formatItems*
 
-"suggest.enablePreselect"				*coc-config-suggest-enablePreselect*
+	Items shown in popup menu in order.
+	Default to : `["abbr", "menu", "kind", "shortcut"]`
 
-	Enable preselect feature on Neovim, default: `false`
+"suggest.enablePreselect" 				*coc-config-suggest-enablePreselect*
+
+	Enable preselect feature of LSP, works when "suggest.noselect" is false.
+	Default: `true`.
 
 "suggest.labelMaxLength"				*coc-config-suggest-labelMaxLength*
 
-	Maximum length of label shown in 'pum', default: `200`
-
-"suggest.enablePreview"					*coc-config-suggest-enablePreview*
-
-	Add preview option to 'completeopt', default: `false`
-
-"suggest.floatEnable"					*coc-config-suggest-floatEnable*
-
-	Enable floating window for documentation when possible, default: `true`
+	Maximum length of label shown in popup menu, default: `200`
 
 "suggest.floatConfig"					*coc-config-suggest-floatConfig*
 
-	Configuration of floating window/popup, see |coc-config-float|.
-	Excludes properties: "title", "close" and "maxHeight".
+	Configure style of popup menu and documentation window for completion,
+	see |coc-config-float|.
+
+	Note: some properties not work, including: "title", "focusable",
+	"close" and "maxHeight" (use 'pumheight' option for maximum height of
+	popup menu).
+
+	Note: "maxWidth" not works for popup menu, use
+	|coc-config-suggest-detailMaxLength| instead.
+
+"suggest.pumFloatConfig"				*coc-config-suggest-pumFloatConfig*
+
+	Configure style of popup menu, suggest.floatConfig is used when not
+	specified.  Default: `null`.
 
 "suggest.detailMaxLength"				*coc-config-suggest-detailMaxLength*
 
@@ -113,18 +127,10 @@ Completion related~
 
 	Priority of language sources, default: `99`
 
-"suggest.disableKind"					*coc-config-suggest-disableKind*
-
-	Remove kind field from Vim complete item, default: `false`
-
-"suggest.disableMenu"					*coc-config-suggest-disableMenu*
-
-	Remove menu field from Vim complete item, default: `false`
-
 "suggest.snippetIndicator"				*coc-config-suggest-snippetIndicator*
 
 	The character used in completion item abbreviation to indicate it
-	expands as code snippet, default: `"~"`
+	expands as code snippet, default: `~`.
 
 "suggest.maxCompleteItemCount"				*coc-config-suggest-maxCompleteItemCount*
 
@@ -180,17 +186,6 @@ Completion related~
 	after the completion item text. Requires `CompleteChanged` event to work,
 	default: `false`
 
-"suggest.noselect"					*coc-config-suggest-noselect*
-
-	Prevent Vim from selecting the first item on completion start,
-	default: `true`
-
-"suggest.keepCompleteopt"				*coc-config-suggest-keepCompleteopt*
-
-	When enabled, 'completeopt' is not overridden during completion. Won't
-	work if 'completeopt' doesn't includes 'noinsert' and 'noselect' which
-	are required by auto completion, default: `false`
-
 "suggest.lowPrioritySourceLimit"			*coc-config-suggest-lowPrioritySourceLimit*
 
 	Max items count for source priority lower than `90`.
@@ -198,10 +193,6 @@ Completion related~
 "suggest.highPrioritySourceLimit"			*coc-config-suggest-highPrioritySourceLimit*
 
 	Max items count for source priority bigger than or equal to `90`.
-
-"suggest.disableMenuShortcut"				*coc-config-suggest-disableMenuShortcut*
-
-	Disable shortcut of completion source in menu, default: `false`
 
 "suggest.removeDuplicateItems"				*coc-config-suggest-removeDuplicateItems*
 
@@ -221,6 +212,16 @@ Completion related~
 "suggest.asciiCharactersOnly"				*coc-config-suggest-asciiCharactersOnly*
 
 	Trigger suggest with ASCII characters only, default: `false`
+
+"suggest.ignoreRegexps"					*coc-config-suggest-ignoreRegexps*
+
+	Array of regexps, when input matched one of them, not trigger
+	completion, default: `[]`
+
+"suggest.virtualText" 					*coc-config-suggest-virtualText*
+
+	Show virtual text for insert word of selected item, works on neovim >=
+	0.5.0, default: `false`
 
 "suggest.completionItemKindLabels"			*coc-config-suggest-completionItemKindLabels*
 
@@ -610,11 +611,6 @@ Dialog~
 Notification~
 							*coc-config-notification*
 
-"notification.preferMenuPicker"  			*coc-config-notification-preferMenuPicker*
-
-	Use menu picker for message notifications with actions, default
-	`false`.
-
 "notification.maxWidth"					*coc-config-notification-maxWidth*
 
 	Maximum content width of notification dialog, default to `60`.
@@ -743,7 +739,7 @@ List~
 
 "list.height"						*coc-config-list-height*
 
-	Height of split list window, default: `10`
+	Height of list window (when splited), default: `10`
 
 "list.signOffset"					*coc-config-list-signOffset*
 
@@ -1170,7 +1166,8 @@ Languageserver~
 	  initialization.
 
 	- "trace.server": Trace level of communication between server and
-	  client that showed with output channel.
+	  client that showed with output channel, open output channel by
+	  command `:CocCommand workspace.showOutput`
 
 	- "stdioEncoding": Encoding used for stdio of child process.
 

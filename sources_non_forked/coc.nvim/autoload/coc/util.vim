@@ -2,7 +2,7 @@ scriptencoding utf-8
 let s:root = expand('<sfile>:h:h:h')
 let s:is_win = has('win32') || has('win64')
 let s:is_vim = !has('nvim')
-let s:vim_api_version = 30
+let s:vim_api_version = 31
 
 function! coc#util#remote_fns(name)
   let fns = ['init', 'complete', 'should_complete', 'refresh', 'get_startcol', 'on_complete', 'on_enter']
@@ -15,6 +15,19 @@ function! coc#util#remote_fns(name)
   return res
 endfunction
 
+function! coc#util#merge_winhl(curr, hls) abort
+  let highlightMap = {}
+  for parts in map(split(a:curr, ','), 'split(v:val, ":")')
+    if len(parts) == 2
+      let highlightMap[parts[0]] = parts[1]
+    endif
+  endfor
+  for item in a:hls
+    let highlightMap[item[0]] = item[1]
+  endfor
+  return join(map(items(highlightMap), 'v:val[0].":".v:val[1]'), ',')
+endfunction
+
 function! coc#util#do_complete(name, opt, cb) abort
   let handler = 'coc#source#'.a:name.'#complete'
   let l:Cb = {res -> a:cb(v:null, res)}
@@ -24,9 +37,9 @@ endfunction
 
 function! coc#util#suggest_variables(bufnr) abort
   return {
-      \ 'coc_suggest_disable': getbufvar(a:bufnr, 'coc_suggest_disable', 0),
-      \ 'coc_disabled_sources': getbufvar(a:bufnr, 'coc_disabled_sources', []),
-      \ 'coc_suggest_blacklist': getbufvar(a:bufnr, 'coc_suggest_blacklist', []),
+      \ 'disable': getbufvar(a:bufnr, 'coc_suggest_disable', 0),
+      \ 'disabled_sources': getbufvar(a:bufnr, 'coc_disabled_sources', []),
+      \ 'blacklist': getbufvar(a:bufnr, 'coc_suggest_blacklist', []),
       \ }
 endfunction
 
@@ -282,7 +295,7 @@ function! coc#util#vim_info()
         \ 'filetypeMap': get(g:, 'coc_filetype_map', {}),
         \ 'version': coc#util#version(),
         \ 'completeOpt': &completeopt,
-        \ 'pumevent': exists('##MenuPopupChanged') || exists('##CompleteChanged'),
+        \ 'pumevent': 1,
         \ 'isVim': has('nvim') ? v:false : v:true,
         \ 'isCygwin': has('win32unix') ? v:true : v:false,
         \ 'isMacvim': has('gui_macvim') ? v:true : v:false,
@@ -294,10 +307,12 @@ function! coc#util#vim_info()
         \ 'locationlist': get(g:,'coc_enable_locationlist', 1),
         \ 'progpath': v:progpath,
         \ 'guicursor': &guicursor,
+        \ 'pumwidth': exists('&pumwidth') ? &pumwidth : 15,
         \ 'tabCount': tabpagenr('$'),
         \ 'updateHighlight': has('nvim-0.5.0') || has('patch-8.1.1719') ? v:true : v:false,
         \ 'vimCommands': get(g:, 'coc_vim_commands', []),
         \ 'sign': exists('*sign_place') && exists('*sign_unplace'),
+        \ 'ambiguousIsNarrow': &ambiwidth ==# 'single' ? v:true : v:false,
         \ 'textprop': has('textprop') && has('patch-8.1.1719') && !has('nvim') ? v:true : v:false,
         \ 'dialog': has('nvim-0.4.0') || has('patch-8.2.0750') ? v:true : v:false,
         \ 'semanticHighlights': coc#util#semantic_hlgroups()

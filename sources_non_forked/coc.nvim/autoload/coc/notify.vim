@@ -166,7 +166,7 @@ function! coc#notify#create(lines, config) abort
     let height = height + 1
   endif
   if !empty(actions)
-    let before = width - strwidth(actionText)
+    let before = max([width - strwidth(actionText), 0])
     let lines = lines + [repeat(' ', before).actionText]
     let height = height + 1
     call s:add_action_highlights(before, height - 1, highlights, actions)

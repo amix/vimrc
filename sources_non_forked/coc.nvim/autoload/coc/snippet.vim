@@ -105,8 +105,8 @@ function! coc#snippet#disable()
 endfunction
 
 function! coc#snippet#select(start, end, text) abort
-  if pumvisible()
-    call coc#_cancel()
+  if coc#pum#visible()
+    call coc#pum#close()
   endif
   if mode() == 's'
     call feedkeys("\<Esc>", 'in')
@@ -134,8 +134,8 @@ function! coc#snippet#move(position) abort
   let m = mode()
   if m == 's'
     call feedkeys("\<Esc>", 'in')
-  elseif pumvisible()
-    call coc#_cancel()
+  elseif coc#pum#visible()
+    call coc#pum#close()
   endif
   let pos = coc#snippet#to_cursor(a:position)
   call cursor(pos)

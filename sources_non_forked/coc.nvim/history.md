@@ -1,3 +1,22 @@
+# 2022-08-07
+
+- Add configuration 'suggest.pumFloatConfig'.
+
+# 2022-08-04
+
+- Make diagnostic float window with the same background as CocFloating.
+
+# 2022-08-03
+
+- Add highlight group 'CocFloatingDividingLine'.
+
+# 2022-08-01
+
+- Use custom popup menu, #3862.
+- Use "first" instead of "none" for configuration `suggest.selection`.
+- Make "first" default for `suggest.selection`, like VSCode.
+- Add default blue color for hlgroup `CocMenuSel`.
+
 # 2022-06-14
 
 - Add highlight groups `CocListLine` and `CocListSearch`.

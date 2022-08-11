@@ -307,7 +307,7 @@ endfunction
 function! coc#highlight#add_highlight(bufnr, src_id, hl_group, line, col_start, col_end, ...) abort
   let opts = get(a:, 1, {})
   let priority = get(opts, 'priority', v:null)
-  if has('nvim')
+  if !s:is_vim
     if s:set_extmark && a:src_id != -1
       " get(opts, 'start_incl', 0) ? v:true : v:false,
       try
@@ -369,7 +369,9 @@ function! coc#highlight#add_highlights(winid, codes, highlights) abort
   endif
   if !empty(a:highlights)
     for item in a:highlights
-      call coc#highlight#add_highlight(bufnr, -1, item['hlGroup'], item['lnum'], item['colStart'], item['colEnd'])
+      let hlGroup = item['hlGroup']
+      let opts = hlGroup =~# 'Search$' ? {'priority': 999, 'combine': 1} : {}
+      call coc#highlight#add_highlight(bufnr, -1, hlGroup, item['lnum'], item['colStart'], item['colEnd'])
     endfor
   endif
 endfunction
@@ -421,7 +423,7 @@ function! coc#highlight#compose_hlgroup(fgGroup, bgGroup) abort
   if a:fgGroup ==# a:bgGroup
     return a:fgGroup
   endif
-  if hlexists(hlGroup)
+  if hlexists(hlGroup) && match(execute('hi '.hlGroup, 'silent!'), 'cleared') == -1
     return hlGroup
   endif
   let fgId = synIDtrans(hlID(a:fgGroup))

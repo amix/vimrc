@@ -4,66 +4,70 @@ let s:root = expand('<sfile>:h:h:h')
 let s:prompt_win_bufnr = 0
 let s:list_win_bufnr = 0
 let s:prompt_win_width = get(g:, 'coc_prompt_win_width', 32)
-let s:float_supported = exists('*nvim_open_win') || has('patch-8.1.1719')
 let s:frames = ['·  ', '·· ', '···', ' ··', '  ·', '   ']
 let s:sign_group = 'PopUpCocDialog'
+let s:detail_bufnr = 0
 
 " Float window aside pum
-function! coc#dialog#create_pum_float(winid, bufnr, lines, config) abort
-  if !pumvisible() || !s:float_supported
-    return v:null
+function! coc#dialog#create_pum_float(lines, config) abort
+  let winid = coc#float#get_float_by_kind('pumdetail')
+  if empty(a:lines) || !coc#pum#visible()
+    if winid
+      call coc#float#close(winid)
+    endif
+    return
   endif
-  let pumbounding = a:config['pumbounding']
-  let pw = pumbounding['width'] + get(pumbounding, 'scrollbar', 0)
+  let pumbounding = coc#pum#info()
+  let border = get(a:config, 'border', [])
+  let pw = pumbounding['width'] + (pumbounding['border'] ? 0 : get(pumbounding, 'scrollbar', 0))
   let rp = &columns - pumbounding['col'] - pw
   let showRight = pumbounding['col'] > rp ? 0 : 1
   let maxWidth = showRight ? coc#math#min(rp - 1, a:config['maxWidth']) : coc#math#min(pumbounding['col'] - 1, a:config['maxWidth'])
-  let border = get(a:config, 'border', [])
   let bh = get(border, 0 ,0) + get(border, 2, 0)
   let maxHeight = &lines - pumbounding['row'] - &cmdheight - 1 - bh
   if maxWidth <= 2 || maxHeight < 1
     return v:null
   endif
-  let ch = 0
   let width = 0
   for line in a:lines
     let dw = max([1, strdisplaywidth(line)])
     let width = max([width, dw + 2])
-    let ch += float2nr(ceil(str2float(string(dw))/(maxWidth - 2)))
   endfor
   let width = float2nr(coc#math#min(maxWidth, width))
+  let ch = coc#string#content_height(a:lines, width - 2)
   let height = float2nr(coc#math#min(maxHeight, ch))
   let lines = map(a:lines, {_, s -> s =~# '^─' ? repeat('─', width - 2 + (s:is_vim && ch > height ? -1 : 0)) : s})
   let opts = {
         \ 'lines': lines,
         \ 'highlights': get(a:config, 'highlights', []),
         \ 'relative': 'editor',
-        \ 'col': showRight ? pumbounding['col'] + pw : pumbounding['col'] - width - 1,
+        \ 'col': showRight ? pumbounding['col'] + pw : pumbounding['col'] - width,
         \ 'row': pumbounding['row'],
         \ 'height': height,
         \ 'width': width - 2 + (s:is_vim && ch > height ? -1 : 0),
+        \ 'scrollinside': showRight ? 0 : 1,
         \ 'codes': get(a:config, 'codes', []),
         \ }
-  for key in ['border', 'highlight', 'borderhighlight', 'winblend', 'focusable', 'shadow']
+  for key in ['border', 'highlight', 'borderhighlight', 'winblend', 'focusable', 'shadow', 'rounded']
     if has_key(a:config, key)
       let opts[key] = a:config[key]
     endif
   endfor
-  call s:close_auto_hide_wins(a:winid)
-  let res = coc#float#create_float_win(a:winid, a:bufnr, opts)
-  if empty(res)
-    return v:null
+  call s:close_auto_hide_wins(winid)
+  let result = coc#float#create_float_win(winid, s:detail_bufnr, opts)
+  if empty(result)
+    return
   endif
-  call setwinvar(res[0], 'kind', 'pum')
-  if has('nvim')
-    call coc#float#nvim_scrollbar(res[0])
+  let s:detail_bufnr = result[1]
+  call setwinvar(result[0], 'kind', 'pumdetail')
+  if !s:is_vim
+    call coc#float#nvim_scrollbar(result[0])
   endif
-  return res
 endfunction
 
 " Float window below/above cursor
 function! coc#dialog#create_cursor_float(winid, bufnr, lines, config) abort
-  if !s:float_supported || coc#prompt#activated()
+  if coc#prompt#activated()
     return v:null
   endif
   let pumAlignTop = get(a:config, 'pumAlignTop', 0)
@@ -86,7 +90,7 @@ function! coc#dialog#create_cursor_float(winid, bufnr, lines, config) abort
   if empty(dimension)
     return v:null
   endif
-  if pumvisible() && ((pumAlignTop && dimension['row'] <0)|| (!pumAlignTop && dimension['row'] > 0))
+  if coc#pum#visible() && ((pumAlignTop && dimension['row'] <0)|| (!pumAlignTop && dimension['row'] > 0))
     return v:null
   endif
   let width = dimension['width']
@@ -248,7 +252,6 @@ function! coc#dialog#create_menu(lines, config) abort
     return
   endif
   let s:prompt_win_bufnr = ids[1]
-  call s:place_sign(s:prompt_win_bufnr, 1)
   call coc#dialog#set_cursor(ids[0], ids[1], contentCount + 1)
   redraw
   if has('nvim')
@@ -284,7 +287,7 @@ function! coc#dialog#create_dialog(lines, config) abort
     return
   endif
   if get(a:config, 'cursorline', 0)
-    call s:place_sign(bufnr, 1)
+    call coc#dialog#place_sign(bufnr, 1)
   endif
   if has('nvim')
     redraw
@@ -324,7 +327,7 @@ function! coc#dialog#prompt_confirm(title, cb) abort
           \ 'focusable': v:false,
           \ 'relative': 'editor',
           \ 'highlight': 'Normal',
-          \ 'borderhighlight': ['MoreMsg'],
+          \ 'borderhighlight': 'MoreMsg',
           \ 'style': 'minimal',
           \ 'lines': [text],
           \ })
@@ -425,14 +428,13 @@ function! coc#dialog#get_config_cursor(lines, config) abort
     return v:null
   endif
   let maxHeight = coc#math#min(get(a:config, 'maxHeight', vh), vh)
-  let ch = 0
   let width = coc#math#min(40, strdisplaywidth(title)) + 3
   for line in a:lines
     let dw = max([1, strdisplaywidth(line)])
     let width = max([width, dw + 2])
-    let ch += float2nr(ceil(str2float(string(dw))/(maxWidth - 2)))
   endfor
   let width = coc#math#min(maxWidth, width)
+  let ch = coc#string#content_height(a:lines, width - 2)
   let [lineIdx, colIdx] = coc#cursor#screen_pos()
   " How much we should move left
   let offsetX = coc#math#min(get(a:config, 'offsetX', 0), colIdx)
@@ -590,7 +592,14 @@ function! coc#dialog#set_cursor(winid, bufnr, line) abort
   else
     call nvim_win_set_cursor(a:winid, [a:line, 0])
   endif
-  call s:place_sign(a:bufnr, a:line)
+  call coc#dialog#place_sign(a:bufnr, a:line)
+endfunction
+
+function! coc#dialog#place_sign(bufnr, line) abort
+  call sign_unplace(s:sign_group, { 'buffer': a:bufnr })
+  if a:line > 0
+    call sign_place(6, s:sign_group, 'CocCurrentLine', a:bufnr, {'lnum': a:line})
+  endif
 endfunction
 
 " Could be center(with optional marginTop) or cursor
@@ -671,12 +680,5 @@ function! s:change_loading_buf(bufnr, idx) abort
     call coc#highlight#add_highlight(a:bufnr, -1, 'CocNotificationProgress', 0, 0, -1)
     let idx = a:idx == len(s:frames) - 1 ? 0 : a:idx + 1
     call timer_start(100, { -> s:change_loading_buf(a:bufnr, idx)})
-  endif
-endfunction
-
-function! s:place_sign(bufnr, line) abort
-  call sign_unplace(s:sign_group, { 'buffer': a:bufnr })
-  if a:line > 0
-    call sign_place(6, s:sign_group, 'CocCurrentLine', a:bufnr, {'lnum': a:line})
   endif
 endfunction

@@ -121,23 +121,23 @@ au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
 let g:lightline = {
             \ 'colorscheme': 'wombat',
             \ 'active': {
-                \   'left': [ ['mode', 'paste'],
-                \             ['fugitive', 'readonly', 'filename', 'modified'] ],
-                \   'right': [ [ 'lineinfo' ], ['percent'] ]
-                \ },
-                \ 'component': {
-                    \   'readonly': '%{&filetype=="help"?"":&readonly?"🔒":""}',
-                    \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-                    \   'fugitive': '%{exists("*FugitiveHead")?FugitiveHead():""}'
-                    \ },
-                    \ 'component_visible_condition': {
-                        \   'readonly': '(&filetype!="help"&& &readonly)',
-                        \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-                        \   'fugitive': '(exists("*FugitiveHead") && ""!=FugitiveHead())'
-                        \ },
-                        \ 'separator': { 'left': ' ', 'right': ' ' },
-                        \ 'subseparator': { 'left': ' ', 'right': ' ' }
-                        \ }
+            \   'left': [ ['mode', 'paste'],
+            \             ['fugitive', 'readonly', 'filename', 'modified'] ],
+            \   'right': [ [ 'lineinfo' ], ['percent'] ]
+            \ },
+            \ 'component': {
+            \   'readonly': '%{&filetype=="help"?"":&readonly?"🔒":""}',
+            \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
+            \   'fugitive': '%{exists("*FugitiveHead")?FugitiveHead():""}'
+            \ },
+            \ 'component_visible_condition': {
+            \   'readonly': '(&filetype!="help"&& &readonly)',
+            \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
+            \   'fugitive': '(exists("*FugitiveHead") && ""!=FugitiveHead())'
+            \ },
+            \ 'separator': { 'left': ' ', 'right': ' ' },
+            \ 'subseparator': { 'left': ' ', 'right': ' ' }
+            \ }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vimroom
@@ -213,26 +213,5 @@ autocmd BufWrite *  :Autoformat
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Rainbow Parentheses
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:rbpt_colorpairs = [
-            \ ['brown',       'RoyalBlue3'],
-            \ ['Darkblue',    'SeaGreen3'],
-            \ ['darkgray',    'DarkOrchid3'],
-            \ ['darkgreen',   'firebrick3'],
-            \ ['darkcyan',    'RoyalBlue3'],
-            \ ['darkred',     'SeaGreen3'],
-            \ ['darkmagenta', 'DarkOrchid3'],
-            \ ['brown',       'firebrick3'],
-            \ ['gray',        'RoyalBlue3'],
-            \ ['black',       'SeaGreen3'],
-            \ ['darkmagenta', 'DarkOrchid3'],
-            \ ['Darkblue',    'firebrick3'],
-            \ ['darkgreen',   'RoyalBlue3'],
-            \ ['darkcyan',    'SeaGreen3'],
-            \ ['darkred',     'DarkOrchid3'],
-            \ ['red',         'firebrick3'],
-            \ ]
 
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
+let g:rainbow_active = 1

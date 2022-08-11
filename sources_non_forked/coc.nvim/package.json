@@ -1,6 +1,6 @@
 {
   "name": "coc.nvim-release",
-  "version": "0.0.81",
+  "version": "0.0.82",
   "description": "LSP based intellisense engine for neovim & vim8.",
   "engines": {
     "node": ">=12.12.0"

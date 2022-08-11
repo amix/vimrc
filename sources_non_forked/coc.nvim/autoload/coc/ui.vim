@@ -4,6 +4,25 @@ let s:is_mac = has('mac')
 let s:sign_api = exists('*sign_getplaced') && exists('*sign_place')
 let s:sign_groups = []
 
+" Check <Tab> and <CR>
+function! coc#ui#check_pum_keymappings() abort
+  for key in ['<cr>', '<tab>', '<c-y>']
+    let lhs = maparg(key, 'i')
+    if lhs =~# '\<pumvisible()' && lhs !~# '\<coc#pum#visible()'
+      let lines = [
+            \ 'coc.nvim switched to custom popup menu from 0.0.82',
+            \ 'you have to change key-mapping of '.key.' to make it work.',
+            \ 'checkout current key-mapping by ":verbose imap '.key.'"',
+            \ 'checkout documentation by ":h coc-completion"']
+      call coc#notify#create(lines, {
+            \ 'borderhighlight': 'CocInfoSign',
+            \ 'timeout': 30000,
+            \ 'kind': 'warning',
+            \ })
+    endif
+  endfor
+endfunction
+
 function! coc#ui#quickpick(title, items, cb) abort
   if exists('*popup_menu')
     function! s:QuickpickHandler(id, result) closure
@@ -249,22 +268,25 @@ function! coc#ui#set_lines(bufnr, changedtick, original, replacement, start, end
   if !empty(a:col)
     let delta = col('.') - a:col
   endif
-  if getbufvar(a:bufnr, 'changedtick') != a:changedtick && bufnr('%') == a:bufnr
+  if getbufvar(a:bufnr, 'changedtick') > a:changedtick && bufnr('%') == a:bufnr
     " try apply current line change
     let lnum = line('.')
-    let idx = a:start - lnum + 1
-    let previous = get(a:original, idx, 0)
-    if type(previous) == 1
-      let content = getline('.')
-      if previous !=# content
-        let diff = coc#string#diff(content, previous, col('.'))
-        let changed = get(a:replacement, idx, 0)
-        if type(changed) == 1 && strcharpart(previous, 0, diff['end']) ==# strcharpart(changed, 0, diff['end'])
-          let applied = coc#string#apply(changed, diff)
-          let replacement = copy(a:replacement)
-          let replacement[idx] = applied
-          call coc#compat#buf_set_lines(a:bufnr, a:start, a:end, replacement)
-          return
+    " change for current line
+    if a:end - a:start == 1 && a:end == lnum && len(a:replacement) == 1
+      let idx = a:start - lnum + 1
+      let previous = get(a:original, idx, 0)
+      if type(previous) == 1
+        let content = getline('.')
+        if previous !=# content
+          let diff = coc#string#diff(content, previous, col('.'))
+          let changed = get(a:replacement, idx, 0)
+          if type(changed) == 1 && strcharpart(previous, 0, diff['end']) ==# strcharpart(changed, 0, diff['end'])
+            let applied = coc#string#apply(changed, diff)
+            let replacement = copy(a:replacement)
+            let replacement[idx] = applied
+            call coc#compat#buf_set_lines(a:bufnr, a:start, a:end, replacement)
+            return
+          endif
         endif
       endif
     endif
@@ -340,11 +362,7 @@ function! coc#ui#rename_file(oldPath, newPath, write) abort
     execute 'keepalt tab drop '.fnameescape(bufname(bufnr))
     let winid = win_getid()
   endif
-  if exists('*nvim_buf_set_name')
-    call nvim_buf_set_name(bufnr, bufname)
-  else
-    call coc#compat#execute(winid, 'file '.fnameescape(bufname), 'silent')
-  endif
+  call coc#compat#execute(winid, 'keepalt file '.fnameescape(bufname), 'silent')
   call coc#compat#execute(winid, 'doautocmd BufEnter')
   if a:write
     call coc#compat#execute(winid, 'noa write!', 'silent')

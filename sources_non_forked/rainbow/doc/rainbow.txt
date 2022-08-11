@@ -1,0 +1,18 @@
+Rainbow Parentheses Improved                                     *rainbow*
+==========================================================================
+
+Commands:                                               *rainbow-commands*
+--------------------------------------------------------------------------
+
+*RainbowToggle*     ---  toggle this plugin on/off
+*RainbowToggleOn*   ---  toggle this plugin on
+*RainbowToggleOff*  ---  toggle this plugin off
+
+Configurations:                                           *rainbow-config*
+--------------------------------------------------------------------------
+
+*g:rainbow_active*  ---  1 to auto enable this plugin
+                         0 to enable it later via :RainbowToggle
+*g:rainbow_conf*    ---  https://github.com/luochen1990/rainbow#configure
+
+vim:tw=78:ts=8:ft=help:norl:

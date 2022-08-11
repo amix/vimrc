@@ -294,6 +294,7 @@ function! s:get_topline(config, lnum, winid) abort
 endfunction
 
 function! s:set_preview_options(winid) abort
+  call setwinvar(a:winid, '&foldmethod', 'manual')
   call setwinvar(a:winid, '&signcolumn', 'no')
   call setwinvar(a:winid, '&number', 1)
   call setwinvar(a:winid, '&cursorline', 0)

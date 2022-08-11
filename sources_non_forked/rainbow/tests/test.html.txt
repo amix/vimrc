@@ -1,0 +1,8 @@
+<html>
+  <div>
+    <img />
+    (1 + (2 + 3))
+  </div>
+</html>
+
+<!-- vim: set ft=html.txt : -->

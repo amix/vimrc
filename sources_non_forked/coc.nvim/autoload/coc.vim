@@ -9,7 +9,6 @@ let s:is_vim = !has('nvim')
 let s:error_sign = get(g:, 'coc_status_error_sign', has('mac') ? '❌ ' : 'E')
 let s:warning_sign = get(g:, 'coc_status_warning_sign', has('mac') ? '⚠️ ' : 'W')
 let s:select_api = exists('*nvim_select_popupmenu_item')
-let s:complete_info_api = exists('*complete_info')
 let s:callbacks = {}
 let s:hide_pum = has('nvim-0.6.1') || has('patch-8.2.3389')
 
@@ -33,10 +32,6 @@ function! coc#add_command(id, cmd, ...)
   call coc#rpc#notify('addCommand', [config])
 endfunction
 
-function! coc#refresh() abort
-  return "\<c-r>=coc#start()\<CR>"
-endfunction
-
 function! coc#on_enter()
   call coc#rpc#notify('CocAutocmd', ['Enter', bufnr('%')])
   return ''
@@ -46,7 +41,6 @@ function! coc#_insert_key(method, key, ...) abort
   let prefix = ''
   if get(a:, 1, 1)
     if pumvisible()
-      let g:coc_hide_pum = 1
       if s:hide_pum
         let prefix = "\<C-x>\<C-z>"
       else
@@ -86,77 +80,12 @@ function! coc#_do_complete(start, items, preselect, changedtick)
         \ 'preselect': a:preselect
         \}
   if mode() =~# 'i'
-    if s:is_vim
-      " when the completeopt has longest, the input would be removed sometimes when not use feedkeys!
-      call feedkeys("\<Plug>CocRefresh", 'i')
-    else
-      call coc#_complete()
-    endif
-  endif
-endfunction
-
-function! coc#_select_confirm() abort
-  if !exists('*complete_info')
-    throw 'coc#_select_confirm requires complete_info function to work'
-  endif
-  let selected = complete_info()['selected']
-  if selected != -1
-    return "\<C-y>"
-  elseif pumvisible()
-    return "\<down>\<C-y>"
-  endif
-  return ''
-endfunction
-
-function! coc#_selected()
-  if !pumvisible() | return 0 | endif
-  return coc#rpc#request('hasSelected', [])
-endfunction
-
-" Deprecated
-function! coc#_hide() abort
-  if pumvisible()
-    call feedkeys("\<C-e>", 'in')
+    call coc#_complete()
   endif
 endfunction
 
 function! coc#_cancel(...)
-  " hack for close pum
-  " Use of <C-e> could cause bad insert when cursor just moved.
-  let g:coc#_context = {'start': 0, 'preselect': -1,'candidates': []}
-  if pumvisible()
-    let g:coc_hide_pum = 1
-    if get(a:, 1, 0)
-      " Avoid delayed CompleteDone cancel new completion
-      let g:coc_disable_complete_done = 1
-    endif
-    if s:hide_pum
-      call feedkeys("\<C-x>\<C-z>", 'in')
-    else
-      let g:coc_disable_space_report = 1
-      call feedkeys("\<space>\<bs>", 'in')
-    endif
-  endif
-  for winid in coc#float#get_float_win_list()
-    if getwinvar(winid, 'kind', '') ==# 'pum'
-      call coc#float#close(winid)
-    endif
-  endfor
-  let opt = get(a:, 2, '')
-  if !empty(opt)
-    execute 'noa set completeopt='.opt
-  endif
-endfunction
-
-function! coc#_select() abort
-  if !pumvisible() | return | endif
-  call feedkeys("\<C-y>", 'in')
-endfunction
-
-function! coc#start(...)
-  let opt = coc#util#get_complete_option()
-  call CocActionAsync('startCompletion', extend(opt, get(a:, 1, {})))
-  return ''
+  call coc#pum#close()
 endfunction
 
 " used for statusline
@@ -217,10 +146,22 @@ function! coc#do_notify(id, method, result)
   endif
 endfunction
 
+function! coc#start(...)
+  let opt = coc#util#get_complete_option()
+  call CocActionAsync('startCompletion', extend(opt, get(a:, 1, {})))
+  return ''
+endfunction
+
+function! coc#refresh() abort
+  return "\<c-r>=coc#start()\<CR>"
+endfunction
+
+function! coc#_select_confirm() abort
+  call timer_start(10, { -> coc#pum#select_confirm()})
+  return s:is_vim || has('nvim-0.5.0') ? "\<Ignore>" : "\<space>\<bs>" 
+endfunction
+
 function! coc#complete_indent() abort
-  if has('patch-8.2.3100')
-    return 0
-  endif
   let curpos = getcurpos()
   let indent_len = len(matchstr(getline('.'), '^\s*'))
   let startofline = &startofline
@@ -234,11 +175,9 @@ function! coc#complete_indent() abort
   let curpos[2] += shift
   let curpos[4] += shift
   call cursor(curpos[1:])
-  if shift != 0
+   if shift != 0
     if s:is_vim
-      doautocmd TextChangedP
+      call timer_start(0, { -> execute('redraw')})
     endif
-    return 1
   endif
-  return 0
 endfunction
