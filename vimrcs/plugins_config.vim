@@ -193,17 +193,16 @@ xnoremap <leader>v :'<'>GBrowse!<CR>
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
-"inoremap <silent><expr> <TAB>
-""      \ pumvisible() ? "\<C-n>" :
-""      \ <SID>check_back_space() ? "\<TAB>" :
-""      \ coc#refresh()
-"inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <silent><expr> <TAB>
+            \ coc#pum#visible() ? coc#pum#next(1):
+            \ CheckBackspace() ? "\<Tab>" :
+            \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
-" Make <CR> auto-select the first completion item and notify coc.nvim to
-" format on enter, <cr> could be remapped by other vim plugin
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-            \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice.
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+            \: "\<C-g>u\<CR>\<cr>=coc#on_enter()\<CR>"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vim-autoformat
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -213,5 +212,4 @@ autocmd BufWrite *  :Autoformat
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Rainbow Parentheses
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 let g:rainbow_active = 1
