@@ -330,6 +330,10 @@ fu! s:Open()
 endf
 
 fu! s:Close()
+	if has('patch-9.0.0115') && exists('s:cmdheight')
+		let &cmdheight = s:cmdheight
+		unlet s:cmdheight
+	en
 	cal s:async_glob_abort(0)
 	cal s:buffunc(0)
 	if winnr('$') == 1
@@ -2844,6 +2848,11 @@ fu! ctrlp#init(type, ...)
 	let shouldExitSingle = index(s:opensingle, curName[0])>=0 || index(s:opensingle, curName[1])>=0
 	if shouldExitSingle && s:ExitIfSingleCandidate()
 		retu 0
+	en
+
+	if has('patch-9.0.0115') && &cmdheight == 0
+		let s:cmdheight = &cmdheight
+		set cmdheight=1
 	en
 	cal s:BuildPrompt(1)
 	if s:keyloop | cal s:KeyLoop() | en

@@ -250,10 +250,16 @@ function! ale#job#Start(command, options) abort
 
         if has_key(a:options, 'out_cb')
             let l:job_options.out_cb = function('s:VimOutputCallback')
+        else
+            " prevent buffering of output and excessive polling in case close_cb is set
+            let l:job_options.out_cb = {->0}
         endif
 
         if has_key(a:options, 'err_cb')
             let l:job_options.err_cb = function('s:VimErrorCallback')
+        else
+            " prevent buffering of output and excessive polling in case close_cb is set
+            let l:job_options.err_cb = {->0}
         endif
 
         if has_key(a:options, 'exit_cb')

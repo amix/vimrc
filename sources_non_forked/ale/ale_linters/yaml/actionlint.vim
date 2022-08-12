@@ -1,6 +1,7 @@
 " Author: bretello <bretello@distruzione.org>
 
 call ale#Set('yaml_actionlint_executable', 'actionlint')
+call ale#Set('yaml_actionlint_options', '')
 
 call ale#linter#Define('yaml', {
 \   'name': 'actionlint',

@@ -134,7 +134,7 @@ g:ale_haskell_hlint_options                       g:ale_haskell_hlint_options
 hls                                                           *ale-haskell-hls*
 
 g:ale_haskell_hls_executable                     *g:ale_haskell_hls_executable*
-                                                 *b:ale_haskell_his_executable*
+                                                 *b:ale_haskell_hls_executable*
   Type: |String|
   Default: `'haskell-language-server-wrapper'`
 

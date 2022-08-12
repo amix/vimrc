@@ -32,6 +32,20 @@ g:ale_yaml_actionlint_executable             *g:ale_yaml_actionlint_executable*
 
   This variable can be set to change the path to actionlint.
 
+g:ale_yaml_actionlint_options                   *g:ale_yaml_actionlint_options*
+                                                *b:ale_yaml_actionlint_options*
+
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to add extra options to actionlint executable.
+
+  For example, to disable running `shellcheck` and `pyflakes` external commands,
+  you may want to set:
+>
+  let g:ale_yaml_actionlint_options = '-shellcheck= -pyflakes='
+<
+  Please note that passing `-format` as option is not supported at the moment.
 
 ===============================================================================
 circleci                                                    *ale-yaml-circleci*

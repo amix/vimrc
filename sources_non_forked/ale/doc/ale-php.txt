@@ -273,6 +273,33 @@ g:ale_php_php_executable                             *g:ale_php_php_executable*
 
 
 ===============================================================================
+pint                                                             *ale-php-pint*
+
+g:ale_php_pint_executable                           *g:ale_php_pint_executable*
+                                                    *b:ale_php_pint_executable*
+  Type: |String|
+  Default: `'pint'`
+
+  This variable sets the executable used for pint.
+
+
+g:ale_php_pint_options                                 *g:ale_php_pint_options*
+                                                       *b:ale_php_pint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to pint.
+
+
+g:ale_php_pint_use_global                           *g:ale_php_pint_use_global*
+                                                    *b:ale_php_pint_use_global*
+  Type: |Boolean|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 tlint                                                           *ale-php-tlint*
 
 g:ale_php_tlint_executable                         *g:ale_php_tlint_executable*

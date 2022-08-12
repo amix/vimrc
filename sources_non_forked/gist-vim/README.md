@@ -2,7 +2,7 @@
 
 This is a vimscript for creating gists (http://gist.github.com).
 
-For the latest version please see https://github.com/mattn/vim-gist.
+For the latest version please see https://github.com/mattn/gist-vim.
 
 ## Usage:
 
@@ -87,10 +87,6 @@ For the latest version please see https://github.com/mattn/vim-gist.
 
         :Gist -l mattn
 
-- Specify the number of gists listed:
-
-        :Gist -l -n 100
-
 - List everyone's gists.
 
         :Gist -la
@@ -107,14 +103,14 @@ For the latest version please see https://github.com/mattn/vim-gist.
 
 - Useful mappings on the gist-listing buffer:
     - Both `o` or `Enter` open the gist file in a new buffer, and close the
-      vim-gist listing one.
+      gist-vim listing one.
     - `b` opens the gist file in a browser; this is necessary because
       `Shift-Enter` (as was originally) only works for GUI vim.
     - `y` copies the contents of the selected gist to the clipboard, and
-      closes the vim-gist buffer.
+      closes the gist-vim buffer.
     - `p` pastes the contents of the selected gist to the buffer from where
-      vim-gist was called, and closes the vim-gist buffer.
-    - Hitting `Escape` or `Tab` at the vim-gist buffer closes it.
+      gist-vim was called, and closes the gist-vim buffer.
+    - Hitting `Escape` or `Tab` at the gist-vim buffer closes it.
 
 - Gist listing has fixed-length columns now, more amenable to eye inspection.
   Every line on the gist-listing buffer contains the gist id, name and
@@ -192,10 +188,6 @@ You need to either set global git config:
 
 	$ git config --global github.user Username
 
-If you want to list more than 30 gists per page (maximum is 100):
-
-    let g:gist_per_page_limit = 100
-
 ## License:
 
     Copyright 2010 by Yasuhiro Matsumoto
@@ -245,7 +237,7 @@ If you want to use latest one:
 Add the following lines to your `.vimrc`.
 
     Bundle 'mattn/webapi-vim'
-    Bundle 'mattn/vim-gist'
+    Bundle 'mattn/gist-vim'
 
 Now restart Vim and run `:BundleInstall`.
 
@@ -253,7 +245,7 @@ Now restart Vim and run `:BundleInstall`.
 
 Add the following line to your `.vimrc`.
 
-    NeoBundle 'mattn/vim-gist', {'depends': 'mattn/webapi-vim'}
+    NeoBundle 'mattn/gist-vim', {'depends': 'mattn/webapi-vim'}
 
 ## Requirements:
 
@@ -270,15 +262,15 @@ First, you need to set your GitHub username in git's global configuration:
 
     $ git config --global github.user <username>
 
-Then vim-gist will ask for your password in order to create an access
-token. If you have two-factor authentication enabled, vim-gist will also
+Then gist-vim will ask for your password in order to create an access
+token. If you have two-factor authentication enabled, gist-vim will also
 prompt you to enter the two-factor key you receive.
 
 NOTE:
 If you want you can set it directly to `g:github_user` and `g:gist_token`.
 
 Whichever type of authentication you use, your GitHub password will not be
-stored, only a OAuth access token produced specifically for vim-gist. The
+stored, only a OAuth access token produced specifically for gist-vim. The
 token is stored in `~/.gist-vim`. If you stop using the plugin, you can
 easily remove this file. To revoke the associated  GitHub token, go to the
 list of ["Authorized applications" on GitHub's "Account Settings"

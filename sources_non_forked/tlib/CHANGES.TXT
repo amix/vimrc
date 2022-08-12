@@ -907,3 +907,13 @@ version: "1.23"
   MD5 checksum: c4d6e018cbbd3b286a9b1648b748c1f3
 version: "1.23"
 
+version: '1.28'
+  - Remove unnecessary executable flags from files
+  - Merge pull request #28 from gbence/master
+  - Fix error E1208 raised by vim >=8.2.3141
+  - Merge pull request #30 from stac47/fix_for_vim_8_2_3141
+  - Fix win_id format mismatch on vim7 or bellow
+  - Merge pull request #37 from moodoofish/master
+  - tlib#number#ConvertBase: support base > 36
+  SHA256 checksum: 666e632a1ebacebf6e774cdf5c541418343ce1a3949268685ebcb60e480b9f1d
+

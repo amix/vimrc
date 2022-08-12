@@ -104,6 +104,8 @@ formatting.
   * [flawfinder](https://www.dwheeler.com/flawfinder/)
   * [gcc](https://gcc.gnu.org/)
   * [uncrustify](https://github.com/uncrustify/uncrustify)
+* Cairo
+  * [starknet](https://starknet.io/docs)
 * Chef
   * [cookstyle](https://docs.chef.io/cookstyle.html)
   * [foodcritic](http://www.foodcritic.io/) :floppy_disk:
@@ -393,6 +395,7 @@ formatting.
   * [clangd](https://clang.llvm.org/extra/clangd.html)
   * [uncrustify](https://github.com/uncrustify/uncrustify)
 * OCaml
+  * [dune](https://dune.build/)
   * [merlin](https://github.com/the-lambda-church/merlin) see `:help ale-ocaml-merlin` for configuration instructions
   * [ocamlformat](https://github.com/ocaml-ppx/ocamlformat)
   * [ocamllsp](https://github.com/ocaml/ocaml-lsp)
@@ -402,6 +405,8 @@ formatting.
   * [ibm_validator](https://github.com/IBM/openapi-validator)
   * [prettier](https://github.com/prettier/prettier)
   * [yamllint](https://yamllint.readthedocs.io/)
+* OpenSCAD
+  * [SCA2D](https://gitlab.com/bath_open_instrumentation_group/sca2d) :floppy_disk:
 * Packer (HCL)
   * [packer-fmt-fixer](https://github.com/hashicorp/packer)
 * Pascal
@@ -420,12 +425,13 @@ formatting.
   * [langserver](https://github.com/felixfbecker/php-language-server)
   * [phan](https://github.com/phan/phan) see `:help ale-php-phan` to instructions
   * [php -l](https://secure.php.net/)
-  * [php-cs-fixer](http://cs.sensiolabs.org/)
+  * [php-cs-fixer](https://cs.symfony.com)
   * [phpactor](https://github.com/phpactor/phpactor)
   * [phpcbf](https://github.com/squizlabs/PHP_CodeSniffer)
   * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer)
   * [phpmd](https://phpmd.org)
   * [phpstan](https://github.com/phpstan/phpstan)
+  * [pint](https://github.com/laravel/pint) :beer:
   * [psalm](https://getpsalm.org) :floppy_disk:
   * [tlint](https://github.com/tightenco/tlint)
 * PO
@@ -475,6 +481,7 @@ formatting.
   * [pycodestyle](https://github.com/PyCQA/pycodestyle) :warning:
   * [pydocstyle](https://www.pydocstyle.org/) :warning:
   * [pyflakes](https://github.com/PyCQA/pyflakes)
+  * [pyflyby](https://github.com/deshaw/pyflyby) :warning:
   * [pylama](https://github.com/klen/pylama) :floppy_disk:
   * [pylint](https://www.pylint.org/) :floppy_disk:
   * [pylsp](https://github.com/python-lsp/python-lsp-server) :warning:

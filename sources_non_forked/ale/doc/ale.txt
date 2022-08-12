@@ -676,7 +676,8 @@ Hover information can be displayed in the preview window instead by setting
 
 When using Neovim or Vim with |popupwin|, if |g:ale_hover_to_floating_preview|
 or |g:ale_floating_preview| is set to 1, the hover information will show in a
-floating window. And |g:ale_floating_window_border| for the border setting.
+floating window. The borders of the floating preview window can be customized
+by setting |g:ale_floating_window_border|.
 
 For Vim 8.1+ terminals, mouse hovering is disabled by default. Enabling
 |balloonexpr| commands in terminals can cause scrolling issues in terminals,
@@ -1236,14 +1237,19 @@ g:ale_floating_preview                                 *g:ale_floating_preview*
 g:ale_floating_window_border                       *g:ale_floating_window_border*
 
   Type: |List|
-  Default: `['|', '-', '+', '+', '+', '+']`
+  Default: `['|', '-', '+', '+', '+', '+', '|', '-']`
 
   When set to `[]`, window borders are disabled. The elements in the list set
-  the horizontal, top, top-left, top-right, bottom-right and bottom-left
-  border characters, respectively.
+	the the characters for the left side, top, top-left corner, top-right
+	corner, bottom-right corner, bottom-left corner, right side, and bottom of
+	the floating window, respectively.
 
   If the terminal supports Unicode, you might try setting the value to
-  ` ['│', '─', '╭', '╮', '╯', '╰']`, to make it look nicer.
+  ` ['│', '─', '╭', '╮', '╯', '╰', '│', '─']`, to make it look nicer.
+
+  NOTE: For compatibility with previous versions, if the list does not have
+	elements for the right side and bottom, the left side and top will be used
+	instead.
 
 
 g:ale_history_enabled                                   *g:ale_history_enabled*
@@ -2769,6 +2775,8 @@ documented in additional help files.
     cspell................................|ale-c-cspell|
     flawfinder............................|ale-c-flawfinder|
     uncrustify............................|ale-c-uncrustify|
+  cairo...................................|ale-cairo-options|
+    starknet..............................|ale-cairo-starknet|
   chef....................................|ale-chef-options|
     cookstyle.............................|ale-chef-cookstyle|
     foodcritic............................|ale-chef-foodcritic|
@@ -3033,6 +3041,7 @@ documented in additional help files.
     clangd................................|ale-objcpp-clangd|
     uncrustify............................|ale-objcpp-uncrustify|
   ocaml...................................|ale-ocaml-options|
+    dune..................................|ale-ocaml-dune|
     merlin................................|ale-ocaml-merlin|
     ocamllsp..............................|ale-ocaml-ocamllsp|
     ols...................................|ale-ocaml-ols|
@@ -3042,6 +3051,8 @@ documented in additional help files.
     ibm_validator.........................|ale-openapi-ibm-validator|
     prettier..............................|ale-openapi-prettier|
     yamllint..............................|ale-openapi-yamllint|
+  openscad................................|ale-openscad-options|
+    sca2d.................................|ale-openscad-sca2d|
   packer..................................|ale-packer-options|
     packer-fmt-fixer......................|ale-packer-fmt-fixer|
   pascal..................................|ale-pascal-options|
@@ -3065,6 +3076,7 @@ documented in additional help files.
     psalm.................................|ale-php-psalm|
     php-cs-fixer..........................|ale-php-php-cs-fixer|
     php...................................|ale-php-php|
+    pint..................................|ale-php-pint|
     tlint.................................|ale-php-tlint|
     intelephense..........................|ale-php-intelephense|
   po......................................|ale-po-options|
@@ -3111,6 +3123,7 @@ documented in additional help files.
     pycodestyle...........................|ale-python-pycodestyle|
     pydocstyle............................|ale-python-pydocstyle|
     pyflakes..............................|ale-python-pyflakes|
+    pyflyby...............................|ale-python-pyflyby|
     pylama................................|ale-python-pylama|
     pylint................................|ale-python-pylint|
     pylsp.................................|ale-python-pylsp|

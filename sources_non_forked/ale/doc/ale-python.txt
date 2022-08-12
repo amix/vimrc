@@ -268,8 +268,8 @@ g:ale_python_flake8_change_directory     *g:ale_python_flake8_change_directory*
   Default: `'project'`
 
   If set to `project`, ALE will switch to the project root before checking file.
-  If set to `file`, ALE will switch to directory the Python file being
-  checked with `flake8` is in before checking it.
+  If set to `file`, ALE will first switch to the directory containing the
+  Python file being checked with `flake8` before checking it.
   You can turn it off with `off` option if you want to control the directory
   Python is executed from yourself.
 
@@ -701,6 +701,52 @@ g:ale_python_pyflakes_auto_pipenv           *g:ale_python_pyflakes_auto_pipenv*
 
 g:ale_python_pyflakes_auto_poetry           *g:ale_python_pyflakes_auto_poetry*
                                             *b:ale_python_pyflakes_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
+pyflyby                                                    *ale-python-pyflyby*
+
+g:ale_python_pyflyby_executable               *g:ale_python_pyflyby_executable*
+                                              *b:ale_python_pyflyby_executable*
+  Type: |String|
+  Default: `'tidy-imports'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_pyflyby_options                     *g:ale_python_pyflyby_options*
+                                                 *b:ale_python_pyflyby_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the pyflyby
+  tidy-imports invocation.
+
+
+g:ale_python_pyflyby_use_global               *g:ale_python_pyflyby_use_global*
+                                              *b:ale_python_pyflyby_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_pyflyby_auto_pipenv             *g:ale_python_pyflyby_auto_pipenv*
+                                             *b:ale_python_pyflyby_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pyflyby_auto_poetry             *g:ale_python_pyflyby_auto_poetry*
+                                             *b:ale_python_pyflyby_auto_poetry*
   Type: |Number|
   Default: `0`
 

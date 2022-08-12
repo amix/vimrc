@@ -95,6 +95,8 @@ Notes:
   * `flawfinder`
   * `gcc` (`cc`)
   * `uncrustify`
+* Cairo
+  * `starknet`
 * Chef
   * `cookstyle`
   * `foodcritic`!!
@@ -384,6 +386,7 @@ Notes:
   * `clangd`
   * `uncrustify`
 * OCaml
+  * `dune`
   * `merlin` (see |ale-ocaml-merlin|)
   * `ocamlformat`
   * `ocamllsp`
@@ -393,6 +396,8 @@ Notes:
   * `ibm_validator`
   * `prettier`
   * `yamllint`
+* OpenSCAD
+  * `SCA2D`
 * Packer
   * `packer-fmt-fixer`
 * Pascal
@@ -417,6 +422,7 @@ Notes:
   * `phpcs`
   * `phpmd`
   * `phpstan`
+  * `pint`
   * `psalm`!!
   * `tlint`
 * PO
@@ -466,6 +472,7 @@ Notes:
   * `pycodestyle`
   * `pydocstyle`
   * `pyflakes`
+  * `pyflyby`
   * `pylama`!!
   * `pylint`!!
   * `pylsp`

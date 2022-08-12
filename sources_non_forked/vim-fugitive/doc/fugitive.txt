@@ -157,6 +157,9 @@ plus |:grep|.
                                                 *:Gpedit*
 :Gpedit [object]        |:pedit| a |fugitive-object|.
 
+                                                *:Gdrop*
+:Gdrop [object]         |:drop| a |fugitive-object|.
+
                                                 *:Gread* *fugitive-:Gr*
 :Gread [object]         Empty the buffer and |:read| a |fugitive-object|.
                         When the argument is omitted, this is similar to
@@ -164,12 +167,6 @@ plus |:grep|.
                         file, but without writing anything to disk.
 
 :{range}Gread [object]  |:read| in a |fugitive-object| after {range}.
-
-                                                *:Gread!* *fugitive-:Gr!*
-:Gread! [args]          Empty the buffer and |:read| the output of a Git
-                        command.  For example, :Gread! show HEAD:%.
-
-:{range}Gread! [args]   |:read| the output of a Git command after {range}.
 
                                                 *:Gwrite* *fugitive-:Gw*
 :Gwrite                 Write to the current file's path and stage the results.
@@ -718,7 +715,7 @@ version.
 
                                                 *User_Fugitive*
 Fugitive used to support `:autocmd User Fugitive` to run an autocommand after
-loading any buffer belonging to a Git repository, but this is being phased
+loading any buffer belonging to a Git repository, but this has been phased
 out.  Instead, one can leverage regular autocommand events like |BufNewFile|
 and |BufReadPost|, and check !empty(FugitiveGitDir()) to confirm Fugitive has
 found a repository.  See also |fugitive-autocommands| for other, more
