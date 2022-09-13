@@ -27,12 +27,16 @@ function! coc#snippet#_select_mappings()
   snoremap <c-r> <c-g>"_c<c-r>
 endfunction
 
-function! coc#snippet#show_choices(lnum, col, len, values) abort
+function! coc#snippet#cursor(lnum, col) abort
   let m = mode()
-  call cursor(a:lnum, a:col + a:len)
+  call cursor(a:lnum, a:col)
   if m !=# 'i'
     call feedkeys("\<Esc>i", 'in')
   endif
+endfunction
+
+function! coc#snippet#show_choices(lnum, col, len, values) abort
+  call coc#snippet#cursor(a:lnum, a:col + a:len)
   let changedtick = b:changedtick
   call timer_start(20, { -> coc#_do_complete(a:col - 1, a:values, 0, changedtick)})
   redraw

@@ -3,22 +3,21 @@ let s:is_win = has('win32') || has('win64')
 let s:is_mac = has('mac')
 let s:sign_api = exists('*sign_getplaced') && exists('*sign_place')
 let s:sign_groups = []
+let s:outline_preview_bufnr = 0
 
 " Check <Tab> and <CR>
 function! coc#ui#check_pum_keymappings() abort
-  for key in ['<cr>', '<tab>', '<c-y>']
-    let lhs = maparg(key, 'i')
-    if lhs =~# '\<pumvisible()' && lhs !~# '\<coc#pum#visible()'
-      let lines = [
-            \ 'coc.nvim switched to custom popup menu from 0.0.82',
-            \ 'you have to change key-mapping of '.key.' to make it work.',
-            \ 'checkout current key-mapping by ":verbose imap '.key.'"',
-            \ 'checkout documentation by ":h coc-completion"']
-      call coc#notify#create(lines, {
-            \ 'borderhighlight': 'CocInfoSign',
-            \ 'timeout': 30000,
-            \ 'kind': 'warning',
-            \ })
+  for key in ['<cr>', '<tab>', '<c-y>', '<s-tab>']
+    let arg = maparg(key, 'i', 0, 1)
+    if get(arg, 'expr', 0)
+      let rhs = get(arg, 'rhs', '')
+      if rhs =~# '\<pumvisible()' && rhs !~# '\<coc#pum#visible()'
+        let rhs = substitute(rhs, '\Cpumvisible()', 'coc#pum#visible()', 'g')
+        let rhs = substitute(rhs, '\c"\\<C-n>"', 'coc#pum#next(1)', '')
+        let rhs = substitute(rhs, '\c"\\<C-p>"', 'coc#pum#prev(1)', '')
+        let rhs = substitute(rhs, '\c"\\<C-y>"', 'coc#pum#confirm()', '')
+        execute 'inoremap <silent><nowait><expr> '.arg['lhs'].' '.rhs
+      endif
     endif
   endfor
 endfunction
@@ -407,38 +406,66 @@ function! coc#ui#update_signs(bufnr, group, signs) abort
   if !s:sign_api || !bufloaded(a:bufnr)
     return
   endif
-  if len(a:signs)
-    call add(s:sign_groups, a:group)
+  call sign_unplace(a:group, {'buffer': a:bufnr})
+  for def in a:signs
+    let opts = {'lnum': def['lnum']}
+    if has_key(def, 'priority')
+      let opts['priority'] = def['priority']
+    endif
+    call sign_place(0, a:group, def['name'], a:bufnr, opts)
+  endfor
+endfunction
+
+function! coc#ui#outline_preview(config) abort
+  let view_id = get(w:, 'cocViewId', '')
+  if view_id !=# 'OUTLINE'
+    return
   endif
-  let current = get(get(sign_getplaced(a:bufnr, {'group': a:group}), 0, {}), 'signs', [])
-  let exists = []
-  let unplaceList = []
-  for item in current
-    let index = 0
-    let placed = 0
-    for def in a:signs
-      if def['name'] ==# item['name'] && def['lnum'] == item['lnum']
-        let placed = 1
-        call add(exists, index)
-        break
-      endif
-      let index = index + 1
-    endfor
-    if !placed
-      call add(unplaceList, item['id'])
-    endif
-  endfor
-  for idx in range(0, len(a:signs) - 1)
-    if index(exists, idx) == -1
-      let def = a:signs[idx]
-      let opts = {'lnum': def['lnum']}
-      if has_key(def, 'priority')
-        let opts['priority'] = def['priority']
-      endif
-      call sign_place(0, a:group, def['name'], a:bufnr, opts)
-    endif
-  endfor
-  for id in unplaceList
-    call sign_unplace(a:group, {'buffer': a:bufnr, 'id': id})
-  endfor
+  let wininfo = get(getwininfo(win_getid()), 0, v:null)
+  if empty(wininfo)
+    return
+  endif
+  let border = get(a:config, 'border', v:true)
+  let th = &lines - &cmdheight - 2
+  let range = a:config['range']
+  let height = min([range['end']['line'] - range['start']['line'] + 1, th - 4])
+  let to_left = &columns - wininfo['wincol'] - wininfo['width'] < wininfo['wincol']
+  let start_lnum = range['start']['line'] + 1
+  let end_lnum = range['end']['line'] + 1 - start_lnum > &lines ? start_lnum + &lines : range['end']['line'] + 1
+  let lines = getbufline(a:config['bufnr'], start_lnum, end_lnum)
+  let content_width = max(map(copy(lines), 'strdisplaywidth(v:val)'))
+  let width = min([content_width, a:config['maxWidth'], to_left ? wininfo['wincol'] - 3 : &columns - wininfo['wincol'] - wininfo['width']])
+  let filetype = getbufvar(a:config['bufnr'], '&filetype')
+  let cursor_row = coc#cursor#screen_pos()[0]
+  let config = {
+      \ 'relative': 'editor',
+      \ 'row': cursor_row - 1 + height < th ? cursor_row - (border ? 1 : 0) : th - height - (border ? 1 : -1),
+      \ 'col': to_left ? wininfo['wincol'] - 4 - width : wininfo['wincol'] + wininfo['width'],
+      \ 'width': width,
+      \ 'height': height,
+      \ 'lines': lines,
+      \ 'border': border ? [1,1,1,1] : v:null,
+      \ 'rounded': get(a:config, 'rounded', 1) ? 1 : 0,
+      \ 'winblend': a:config['winblend'],
+      \ 'highlight': a:config['highlight'],
+      \ 'borderhighlight': a:config['borderhighlight'],
+      \ }
+  let winid = coc#float#get_float_by_kind('outline-preview')
+  let result = coc#float#create_float_win(winid, s:outline_preview_bufnr, config)
+  if empty(result)
+    return v:null
+  endif
+  call setwinvar(result[0], 'kind', 'outline-preview')
+  let s:outline_preview_bufnr = result[1]
+  if !empty(filetype)
+    call coc#compat#execute(result[0], 'setfiletype '.filetype)
+  endif
+  return result[1]
+endfunction
+
+function! coc#ui#outline_close_preview() abort
+  let winid = coc#float#get_float_by_kind('outline-preview')
+  if winid
+    call coc#float#close(winid)
+  endif
 endfunction

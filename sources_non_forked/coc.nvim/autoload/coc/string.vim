@@ -39,33 +39,35 @@ function! coc#string#reflow(lines, width) abort
   return empty(lines) ? [''] : lines
 endfunction
 
+" Used when 'wrap' and 'linebreak' is enabled
 function! coc#string#content_height(lines, width) abort
   let len = 0
+  let pattern = empty(&breakat) ? '.\zs' : '['.substitute(&breakat, '\([\[\]]\)', '\\\1', 'g').']\zs'
   for line in a:lines
     if strwidth(line) <= a:width
-      let len = len + 1
+      let len += 1
     else
       let currlen = 0
-      for part in split(line, '\<\|\>\|\ze\s')
-        let w = strwidth(part)
-        if currlen + w >= a:width
-          if currlen + w == a:width
-            let len = len + 1
-            let currlen = 0
-          else
-            let len = len + (a:width + w)/a:width
-            let currlen = w%a:width
+      for part in split(line, pattern)
+        let wl = strwidth(part)
+        if currlen == 0 && wl > 0
+          let len += 1
+        endif
+        let delta = currlen + wl - a:width
+        if delta >= 0
+          let len = len + (delta > 0)
+          let currlen = delta == 0 ? 0 : wl
+          if wl >= a:width
+            let currlen = wl%a:width
+            let len += float2nr(ceil(wl/(a:width + 0.0))) - (currlen == 0)
           endif
         else
-          let currlen = currlen + w
+          let currlen = currlen + wl
         endif
       endfor
-      if currlen > 0
-        let len = len + 1
-      endif
     endif
   endfor
-  return len == 0 ? 1 : len
+  return len
 endfunction
 
 " get change between two lines

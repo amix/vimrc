@@ -20,7 +20,7 @@ _Custom popup menu with snippet support_
 
 ## Why?
 
-- 🚀 **Fast**: separated NodeJS process that not block your vim most of the time.
+- 🚀 **Fast**: separated NodeJS process that does not block your vim most of the time.
 - 💎 **Reliable**: typed language, tested with CI.
 - 🌟 **Featured**: all LSP 3.16 features are supported, see `:h coc-lsp`.
 - ❤️ **Flexible**: [configured like VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-the-configuration-file), [extensions work like in VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions)
@@ -107,10 +107,12 @@ set updatetime=300
 set signcolumn=yes
 
 " Use tab for trigger completion with characters ahead and navigate.
+" NOTE: There's always complete item selected by default, you may want to enable
+" no select by `"suggest.noselect": true` in your configuration file.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
 inoremap <silent><expr> <TAB>
-      \ coc#pum#visible() ? coc#pum#next(1):
+      \ coc#pum#visible() ? coc#pum#next(1) :
       \ CheckBackspace() ? "\<Tab>" :
       \ coc#refresh()
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
@@ -319,6 +321,10 @@ Try these steps when you have problem with coc.nvim.
 <a href="https://opencollective.com/cocnvim/backer/43/website?requireActive=false" target="_blank"><img src="https://opencollective.com/cocnvim/backer/43/avatar.svg?requireActive=false"></a>
 <a href="https://opencollective.com/cocnvim/backer/44/website?requireActive=false" target="_blank"><img src="https://opencollective.com/cocnvim/backer/44/avatar.svg?requireActive=false"></a>
 <a href="https://opencollective.com/cocnvim/backer/45/website?requireActive=false" target="_blank"><img src="https://opencollective.com/cocnvim/backer/45/avatar.svg?requireActive=false"></a>
+<a href="https://opencollective.com/cocnvim/backer/46/website?requireActive=false" target="_blank"><img src="https://opencollective.com/cocnvim/backer/46/avatar.svg?requireActive=false"></a>
+<a href="https://opencollective.com/cocnvim/backer/47/website?requireActive=false" target="_blank"><img src="https://opencollective.com/cocnvim/backer/47/avatar.svg?requireActive=false"></a>
+<a href="https://opencollective.com/cocnvim/backer/48/website?requireActive=false" target="_blank"><img src="https://opencollective.com/cocnvim/backer/48/avatar.svg?requireActive=false"></a>
+<a href="https://opencollective.com/cocnvim/backer/49/website?requireActive=false" target="_blank"><img src="https://opencollective.com/cocnvim/backer/49/avatar.svg?requireActive=false"></a>
 
 <a href="https://opencollective.com/cocnvim#backer" target="_blank"><img src="https://images.opencollective.com/static/images/become_backer.svg"></a>
 
@@ -595,6 +601,13 @@ Try these steps when you have problem with coc.nvim.
     <td align="center"><a href="http://bigshans.github.io"><img src="https://avatars.githubusercontent.com/u/26884666?v=4?s=50" width="50px;" alt=""/><br /><sub><b>bigshans</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=bigshans" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/rob-3"><img src="https://avatars.githubusercontent.com/u/24816247?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Robert Boyd III</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/issues?q=author%3Arob-3" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://creasty.com"><img src="https://avatars.githubusercontent.com/u/1695538?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Yuki Iwanaga</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=creasty" title="Code">💻</a></td>
+    <td align="center"><a href="https://www.dosk.win/"><img src="https://avatars.githubusercontent.com/u/2389889?v=4?s=50" width="50px;" alt=""/><br /><sub><b>SpringHack</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/issues?q=author%3Aspringhack" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://git.lmburns.com"><img src="https://avatars.githubusercontent.com/u/44355502?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Lucas Burns</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=lmburns" title="Documentation">📖</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://qiqi.boy.im"><img src="https://avatars.githubusercontent.com/u/3774036?v=4?s=50" width="50px;" alt=""/><br /><sub><b>qiqiboy</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=qiqiboy" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/timsu92"><img src="https://avatars.githubusercontent.com/u/33785401?v=4?s=50" width="50px;" alt=""/><br /><sub><b>timsu92</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=timsu92" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://sartak.org"><img src="https://avatars.githubusercontent.com/u/45430?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Shawn M Moore</b></sub></a><br /><a href="https://github.com/neoclide/coc.nvim/commits?author=sartak" title="Code">💻</a></td>
   </tr>
 </table>
 

@@ -129,12 +129,43 @@ endfunction
 
 function! s:on_stderr(name, msgs)
   if get(g:, 'coc_vim_leaving', 0) | return | endif
-  if get(g:, 'coc_disable_uncaught_error', 0) | return | endif
   let data = filter(copy(a:msgs), '!empty(v:val)')
   if empty(data) | return | endif
   let client = a:name ==# 'coc' ? '[coc.nvim]' : '['.a:name.']'
   let data[0] = client.': '.data[0]
+  if a:name ==# 'coc' && len(filter(copy(data), 'v:val =~# "SyntaxError: Unexpected token"'))
+    call coc#client#check_version()
+  endif
+  if get(g:, 'coc_disable_uncaught_error', 0) | return | endif
   call coc#ui#echo_messages('Error', data)
+endfunction
+
+function! coc#client#check_version() abort
+  if (has_key(g:, 'coc_node_path'))
+    let node = expand(g:coc_node_path)
+  else
+    let node = $COC_NODE_PATH == '' ? 'node' : $COC_NODE_PATH
+  endif
+  let output = system(node . ' --version')
+  let msgs = []
+  if v:shell_error
+    let msgs = ['Unexpected result from node --version'] + split(output, '\n')
+  else
+    let ms = matchlist(output, 'v\(\d\+\).\(\d\+\).\(\d\+\)')
+    if empty(ms)
+      let msgs = ['Unable to detect version of node, make sure your node executable is http://nodejs.org/']
+    elseif str2nr(ms[1]) < 14 || (str2nr(ms[1]) == 14 && str2nr(ms[2]) < 14)
+      let msgs = ['Current Node.js version '.trim(output).' < 14.14.0 ', 'Please upgrade your node.js']
+    endif
+  endif
+  if !empty(msgs)
+    call coc#notify#create(msgs, {
+          \ 'borderhighlight': 'CocErrorSign',
+          \ 'highlight': 'Normal',
+          \ 'timeout': 50000,
+          \ 'kind': 'error',
+          \ })
+  endif
 endfunction
 
 function! s:on_exit(name, code) abort

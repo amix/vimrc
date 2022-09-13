@@ -282,12 +282,14 @@ function! s:funcs.buf_add_highlight(bufnr, srcId, hlGroup, line, colStart, colEn
     let srcId = a:srcId
   endif
   let bufnr = a:bufnr == 0 ? bufnr('%') : a:bufnr
-  let type = a:hlGroup.'_'.srcId
+  let type = srcId == -1 ? a:hlGroup : a:hlGroup.'_'.srcId
   let types = get(s:id_types, srcId, [])
   if index(types, type) == -1
     call add(types, type)
     let s:id_types[srcId] = types
-    call prop_type_add(type, extend({'highlight': a:hlGroup}, get(a:, 1, {})))
+    if empty(prop_type_get(type))
+      call prop_type_add(type, extend({'highlight': a:hlGroup}, get(a:, 1, {})))
+    endif
   endif
   let end = a:colEnd == -1 ? strlen(getbufline(bufnr, a:line + 1)[0]) + 1 : a:colEnd + 1
   if end < a:colStart + 1
@@ -646,6 +648,22 @@ endfunction
 
 function! coc#api#get_types(srcId) abort
   return get(s:id_types, a:srcId, [])
+endfunction
+
+function! coc#api#get_id_types() abort
+  return s:id_types
+endfunction
+
+function! coc#api#create_type(srcId, hlGroup, opts) abort
+  let type = a:hlGroup.'_'.a:srcId
+  let types = get(s:id_types, a:srcId, [])
+  if index(types, type) == -1
+    call add(types, type)
+    let s:id_types[a:srcId] = types
+    let combine = get(a:opts, 'hl_mode', 'combine') ==# 'combine'
+    call prop_type_add(type, {'highlight': a:hlGroup, 'combine': combine})
+  endif
+  return type
 endfunction
 
 function! coc#api#func_names() abort

@@ -145,7 +145,7 @@ function! coc#dialog#create_prompt_win(title, default, opts) abort
   let bufnr = res[1]
   if has('nvim')
     let s:prompt_win_bufnr = res[1]
-    execute 'sign unplace 6 buffer='.s:prompt_win_bufnr
+    call sign_unplace(s:sign_group, { 'buffer': s:prompt_win_bufnr })
     call nvim_set_current_win(winid)
     inoremap <buffer> <C-a> <Home>
     inoremap <buffer><expr><C-e> pumvisible() ? "\<C-e>" : "\<End>"
@@ -312,66 +312,49 @@ function! coc#dialog#prompt_confirm(title, cb) abort
     endtry
     return
   endif
-  if has('nvim-0.4.0')
-    let text = ' '. a:title . ' (y/n)? '
-    let maxWidth = coc#math#min(78, &columns - 2)
-    let width = coc#math#min(maxWidth, strdisplaywidth(text))
-    let maxHeight = &lines - &cmdheight - 1
-    let height = coc#math#min(maxHeight, float2nr(ceil(str2float(string(strdisplaywidth(text)))/width)))
-    let arr =  coc#float#create_float_win(0, s:prompt_win_bufnr, {
-          \ 'col': &columns/2 - width/2 - 1,
-          \ 'row': maxHeight/2 - height/2 - 1,
-          \ 'width': width,
-          \ 'height': height,
-          \ 'border': [1,1,1,1],
-          \ 'focusable': v:false,
-          \ 'relative': 'editor',
-          \ 'highlight': 'Normal',
-          \ 'borderhighlight': 'MoreMsg',
-          \ 'style': 'minimal',
-          \ 'lines': [text],
-          \ })
-    if empty(arr)
-      call a:cb('Window create failed!')
-      return
-    endif
-    let winid = arr[0]
-    let s:prompt_win_bufnr = arr[1]
-    let res = 0
-    redraw
-    " same result as vim
-    while 1
-      let key = nr2char(getchar())
-      if key == "\<C-c>"
-        let res = -1
-        break
-      elseif key == "\<esc>" || key == 'n' || key == 'N'
-        let res = 0
-        break
-      elseif key == 'y' || key == 'Y'
-        let res = 1
-        break
-      endif
-    endw
-    call coc#float#close(winid)
-    call a:cb(v:null, res)
-    " use relative editor since neovim doesn't support center position
-  elseif exists('*confirm')
-    let choice = confirm(a:title, "&Yes\n&No")
-    call a:cb(v:null, choice == 1)
-  else
-    echohl MoreMsg
-    echom a:title.' (y/n)'
-    echohl None
-    let confirm = nr2char(getchar())
-    redraw!
-    if !(confirm ==? "y" || confirm ==? "\r")
-      echohl Moremsg | echo 'Cancelled.' | echohl None
-      return 0
-      call a:cb(v:null, 0)
-    end
-    call a:cb(v:null, 1)
+  let text = ' '. a:title . ' (y/n)? '
+  let maxWidth = coc#math#min(78, &columns - 2)
+  let width = coc#math#min(maxWidth, strdisplaywidth(text))
+  let maxHeight = &lines - &cmdheight - 1
+  let height = coc#math#min(maxHeight, float2nr(ceil(str2float(string(strdisplaywidth(text)))/width)))
+  let arr =  coc#float#create_float_win(0, s:prompt_win_bufnr, {
+        \ 'col': &columns/2 - width/2 - 1,
+        \ 'row': maxHeight/2 - height/2 - 1,
+        \ 'width': width,
+        \ 'height': height,
+        \ 'border': [1,1,1,1],
+        \ 'focusable': v:false,
+        \ 'relative': 'editor',
+        \ 'highlight': 'Normal',
+        \ 'borderhighlight': 'MoreMsg',
+        \ 'style': 'minimal',
+        \ 'lines': [text],
+        \ })
+  if empty(arr)
+    call a:cb('Window create failed!')
+    return
   endif
+  let winid = arr[0]
+  let s:prompt_win_bufnr = arr[1]
+  call sign_unplace(s:sign_group, { 'buffer': s:prompt_win_bufnr })
+  let res = 0
+  redraw
+  " same result as vim
+  while 1
+    let key = nr2char(getchar())
+    if key == "\<C-c>"
+      let res = -1
+      break
+    elseif key == "\<esc>" || key == 'n' || key == 'N'
+      let res = 0
+      break
+    elseif key == 'y' || key == 'Y'
+      let res = 1
+      break
+    endif
+  endw
+  call coc#float#close(winid)
+  call a:cb(v:null, res)
 endfunction
 
 function! coc#dialog#get_config_editor(lines, config) abort
@@ -469,7 +452,7 @@ function! coc#dialog#change_border_hl(winid, hlgroup) abort
   else
     let winid = coc#float#get_related(a:winid, 'border')
     if winid > 0
-      call setwinvar(winid, '&winhl', 'Normal:'.a:hlgroup.',NormalNC:'.a:hlgroup)
+      call setwinvar(winid, '&winhl', 'Normal:'.a:hlgroup)
     endif
   endif
 endfunction

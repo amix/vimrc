@@ -154,7 +154,7 @@ function! coc#float#create_float_win(winid, bufnr, config) abort
       let config = s:convert_config_nvim(a:config, 0)
       let hlgroup = get(a:config, 'highlight', 'CocFloating')
       let current = getwinvar(a:winid, '&winhl', '')
-      let winhl = coc#util#merge_winhl(current, [['Normal', hlgroup], ['NormalNC', hlgroup], ['FoldColumn', hlgroup]])
+      let winhl = coc#util#merge_winhl(current, [['Normal', hlgroup], ['FoldColumn', hlgroup], ['Search', '']])
       if winhl !=# current
         call setwinvar(a:winid, '&winhl', winhl)
       endif
@@ -190,6 +190,8 @@ function! coc#float#create_float_win(winid, bufnr, config) abort
           \ 'border': border,
           \ 'callback': { -> coc#float#on_close(winid)},
           \ 'borderhighlight': [s:get_borderhighlight(a:config)],
+          \ 'scrollbarhighlight': 'CocFloatSbar',
+          \ 'thumbhighlight': 'CocFloatThumb',
           \ }
     let winid = popup_create(bufnr, opts)
     if !s:popup_list_api
@@ -277,11 +279,11 @@ function! coc#float#nvim_border_win(config, borderchars, winid, border, title, h
   endif
   if winid
     call nvim_win_set_config(winid, opt)
-    call setwinvar(winid, '&winhl', 'Normal:'.a:hlgroup.',NormalNC:'.a:hlgroup.',Search:')
+    call setwinvar(winid, '&winhl', 'Normal:'.a:hlgroup.',Search:')
   else
     noa let winid = nvim_open_win(bufnr, 0, opt)
     call setwinvar(winid, 'delta', -1)
-    let winhl = 'Normal:'.a:hlgroup.',NormalNC:'.a:hlgroup.',Search:'
+    let winhl = 'Normal:'.a:hlgroup.',Search:'
     call s:nvim_add_related(winid, a:winid, 'border', winhl, a:related)
   endif
 endfunction
@@ -306,7 +308,7 @@ function! coc#float#nvim_close_btn(config, winid, border, hlgroup, related) abor
   else
     let bufnr = coc#float#create_buf(0, ['X'])
     noa let winid = nvim_open_win(bufnr, 0, config)
-    let winhl = 'Normal:'.a:hlgroup.',NormalNC:'.a:hlgroup
+    let winhl = 'Normal:'.a:hlgroup.',Search:'
     call s:nvim_add_related(winid, a:winid, 'close', winhl, a:related)
   endif
 endfunction
@@ -511,9 +513,9 @@ function! coc#float#nvim_scrollbar(winid) abort
   call nvim_buf_clear_namespace(sbuf, -1, 0, -1)
   for idx in range(0, height - 1)
     if idx >= start && idx < start + thumb_height
-      call nvim_buf_add_highlight(sbuf, -1, 'PmenuThumb', idx, 0, 1)
+      call nvim_buf_add_highlight(sbuf, -1, 'CocFloatThumb', idx, 0, 1)
     else
-      call nvim_buf_add_highlight(sbuf, -1, 'PmenuSbar', idx, 0, 1)
+      call nvim_buf_add_highlight(sbuf, -1, 'CocFloatSbar', idx, 0, 1)
     endif
   endfor
 endfunction
@@ -610,8 +612,8 @@ function! coc#float#scrollable(winid) abort
   endif
   if s:is_vim
     let pos = popup_getpos(a:winid)
-    if get(popup_getoptions(a:winid), 'scrollbar', 0)
-      return get(pos, 'scrollbar', 0)
+    if get(pos, 'scrollbar', 0)
+      return 1
     endif
     let ch = coc#float#content_height(bufnr, pos['core_width'], getwinvar(a:winid, '&wrap'))
     return ch > pos['core_height']
@@ -685,15 +687,10 @@ function! coc#float#content_height(bufnr, width, wrap) abort
     return 0
   endif
   if !a:wrap
-    return has('nvim') ? nvim_buf_line_count(a:bufnr) : len(getbufline(a:bufnr, 1, '$'))
+    return coc#compat#buf_line_count(a:bufnr)
   endif
   let lines = has('nvim') ? nvim_buf_get_lines(a:bufnr, 0, -1, 0) : getbufline(a:bufnr, 1, '$')
-  let total = 0
-  for line in lines
-    let dw = max([1, strdisplaywidth(line)])
-    let total += float2nr(ceil(str2float(string(dw))/a:width))
-  endfor
-  return total
+  return coc#string#content_height(lines, a:width)
 endfunction
 
 function! coc#float#nvim_refresh_scrollbar(winid) abort
@@ -1312,7 +1309,7 @@ endfunction
 function! s:set_float_defaults(winid, config) abort
   if !s:is_vim
     let hlgroup = get(a:config, 'highlight', 'CocFloating')
-    call setwinvar(a:winid, '&winhl', 'Normal:'.hlgroup.',NormalNC:'.hlgroup.',FoldColumn:'.hlgroup.',Search:')
+    call setwinvar(a:winid, '&winhl', 'Normal:'.hlgroup.',FoldColumn:'.hlgroup.',Search:')
     call setwinvar(a:winid, 'border', get(a:config, 'border', []))
     call setwinvar(a:winid, 'scrollinside', get(a:config, 'scrollinside', 0))
     if !get(a:config, 'nopad', 0)
@@ -1356,7 +1353,7 @@ function! s:nvim_add_related(winid, target, kind, winhl, related) abort
   endif
   " minimal not work
   if !has('nvim-0.4.3')
-    call setwinvar(a:winid, '&colorcolumn', 0)
+    call setwinvar(a:winid, '&colorcolumn', '')
     call setwinvar(a:winid, '&number', 0)
     call setwinvar(a:winid, '&relativenumber', 0)
     call setwinvar(a:winid, '&foldcolumn', 0)

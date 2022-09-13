@@ -8,6 +8,7 @@ let s:ns_id = 1
 let s:diagnostic_hlgroups = ['CocErrorHighlight', 'CocWarningHighlight', 'CocInfoHighlight', 'CocHintHighlight', 'CocDeprecatedHighlight', 'CocUnusedHighlight']
 " Maximum count to highlight each time.
 let g:coc_highlight_maximum_count = get(g:, 'coc_highlight_maximum_count', 100)
+let s:term = &termguicolors == 0 && !has('gui_running')
 
 if has('nvim-0.5.0') && s:clear_match_by_window == 0
   try
@@ -417,17 +418,9 @@ function! coc#highlight#highlight_lines(winid, blocks) abort
   endif
 endfunction
 
-" Compose hlGroups with foreground and background colors.
-function! coc#highlight#compose_hlgroup(fgGroup, bgGroup) abort
-  let hlGroup = 'Fg'.a:fgGroup.'Bg'.a:bgGroup
-  if a:fgGroup ==# a:bgGroup
-    return a:fgGroup
-  endif
-  if hlexists(hlGroup) && match(execute('hi '.hlGroup, 'silent!'), 'cleared') == -1
-    return hlGroup
-  endif
-  let fgId = synIDtrans(hlID(a:fgGroup))
-  let bgId = synIDtrans(hlID(a:bgGroup))
+function! coc#highlight#compose(fg, bg) abort
+  let fgId = synIDtrans(hlID(a:fg))
+  let bgId = synIDtrans(hlID(a:bg))
   let isGuiReversed = synIDattr(fgId, 'reverse', 'gui') !=# '1' || synIDattr(bgId, 'reverse', 'gui') !=# '1'
   let guifg = isGuiReversed ? synIDattr(fgId, 'fg', 'gui') : synIDattr(fgId, 'bg', 'gui')
   let guibg = isGuiReversed ? synIDattr(bgId, 'bg', 'gui') : synIDattr(bgId, 'fg', 'gui')
@@ -437,7 +430,7 @@ function! coc#highlight#compose_hlgroup(fgGroup, bgGroup) abort
   let bold = synIDattr(fgId, 'bold') ==# '1'
   let italic = synIDattr(fgId, 'italic') ==# '1'
   let underline = synIDattr(fgId, 'underline') ==# '1'
-  let cmd = 'silent hi ' . hlGroup
+  let cmd = ''
   if !empty(guifg)
     let cmd .= ' guifg=' . guifg
   endif
@@ -461,11 +454,86 @@ function! coc#highlight#compose_hlgroup(fgGroup, bgGroup) abort
   elseif underline
     let cmd .= ' cterm=underline gui=underline'
   endif
-  if cmd ==# 'silent hi ' . hlGroup
+  return cmd
+endfunction
+
+" Compose hlGroups with foreground and background colors.
+function! coc#highlight#compose_hlgroup(fgGroup, bgGroup) abort
+  let hlGroup = 'Fg'.a:fgGroup.'Bg'.a:bgGroup
+  if a:fgGroup ==# a:bgGroup
+    return a:fgGroup
+  endif
+  if hlexists(hlGroup) && match(execute('hi '.hlGroup, 'silent!'), 'cleared') == -1
+    return hlGroup
+  endif
+  let cmd = coc#highlight#compose(a:fgGroup, a:bgGroup)
+  if empty(cmd)
       return 'Normal'
   endif
-  execute cmd
+  execute 'silent hi ' . hlGroup . cmd
   return hlGroup
+endfunction
+
+" hlGroup id, key => 'fg' | 'bg', kind => 'cterm' | 'gui'
+function! coc#highlight#get_color(id, key, kind) abort
+  if synIDattr(a:id, 'reverse', a:kind) !=# '1'
+    return synIDattr(a:id, a:key, a:kind)
+  endif
+  return  synIDattr(a:id, a:key ==# 'bg' ? 'fg' : 'bg', a:kind)
+endfunction
+
+function! coc#highlight#get_hl_command(id, key, cterm, gui) abort
+  let cterm = coc#highlight#get_color(a:id, a:key, 'cterm')
+  let gui = coc#highlight#get_color(a:id, a:key, 'gui')
+  let cmd = ' cterm'.a:key.'=' . (empty(cterm) ? a:cterm : cterm)
+  let cmd .= ' gui'.a:key.'=' . (empty(gui) ? a:gui : gui)
+  return cmd
+endfunction
+
+function! coc#highlight#reversed(id) abort
+  let gui = has('gui_running') || &termguicolors == 1
+  if synIDattr(synIDtrans(a:id), 'reverse', gui ? 'gui' : 'cterm') == '1'
+    return 1
+  endif
+  return 0
+endfunction
+
+function! coc#highlight#get_contrast(group1, group2) abort
+  let bg1 = coc#highlight#get_hex_color(synIDtrans(hlID(a:group1)), 'bg', '#000000')
+  let bg2 = coc#highlight#get_hex_color(synIDtrans(hlID(a:group2)), 'bg', '#000000')
+  return coc#color#hex_contrast(bg1, bg2)
+endfunction
+
+" Darken or lighten background
+function! coc#highlight#create_bg_command(group, amount) abort
+  let id = synIDtrans(hlID(a:group))
+  let bg = coc#highlight#get_hex_color(id, 'bg', &background ==# 'dark' ? '#282828' : '#fefefe')
+  let hex = a:amount > 0 ? coc#color#darken(bg, a:amount) : coc#color#lighten(bg, -a:amount)
+  return 'ctermbg=' . coc#color#rgb2term(strpart(hex, 1)).' guibg=' . hex
+endfunction
+
+function! coc#highlight#get_hex_color(id, kind, fallback) abort
+  let attr = coc#highlight#get_color(a:id, a:kind, s:term ? 'cterm' : 'gui')
+  let hex = s:to_hex_color(attr, s:term)
+  if empty(hex) && !s:term
+    let attr = coc#highlight#get_color(a:id, a:kind, 'cterm')
+    let hex = s:to_hex_color(attr, 1)
+  endif
+  return empty(hex) ? a:fallback : hex
+endfunction
+
+function! s:to_hex_color(color, term) abort
+  if empty(a:color)
+    return ''
+  endif
+  if a:color =~# '^#\x\+$'
+    return a:color
+  endif
+  if a:term && a:color =~# '^\d\+$'
+    return coc#color#term2rgb(a:color)
+  endif
+  let hex = coc#color#nameToHex(tolower(a:color), a:term)
+  return empty(hex) ? '' : hex
 endfunction
 
 " add matches for winid, use 0 for current window.
@@ -694,6 +762,9 @@ function! s:to_group(items) abort
 endfunction
 
 function! s:get_priority(key, hlGroup, priority) abort
+  if a:hlGroup ==# 'CocListSearch'
+    return 2048
+  endif
   if a:hlGroup ==# 'CocSearch'
     return 999
   endif

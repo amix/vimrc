@@ -1,3 +1,110 @@
+# 2022-09-12
+
+- All configurations are now scoped #4185
+- No `onDidChangeConfiguration` event fired when workspace folder changed.
+- Deprecated configuration `suggest.detailMaxLength`, use `suggest.labelMaxLength` instead.
+- Deprecated configuration `inlayHint.filetypes`, use `inlayHint.enable` with scoped languages instead.
+- Deprecated configuration `semanticTokens.filetypes`, use `semanticTokens.enable` with scoped languages instead.
+- Use `workspaceFolderValue` instead of `workspaceValue` for `ConfigurationInspect` returned by `WorkspaceConfiguration.inspect()`.
+
+# 2022-09-04
+
+- Add configuration "snippet.choicesMenuPicker".
+
+# 2022-09-03
+
+- Send "WinClosed" event to node client.
+- Add `onDidFilterStateChange` and `onDidCursorMoved` to `TreeView`.
+- Support `autoPreview` for outline.
+
+# 2022-09-02
+
+- Support `diagnostic.virtualTextFormat`.
+- Add command `workspace.writeHeapSnapshot`.
+
+# 2022-09-01
+
+- Add configuration "suggest.asciiMatch"
+- Support `b:coc_force_attach`.
+
+# 2022-08-31
+
+- Add configuration "suggest.reversePumAboveCursor".
+- Use `DiagnosticSign*` highlight groups when possible.
+- Use `DiagnosticUnderline*` highlight groups when possible.
+
+# 2022-08-30
+
+- Export `LineBuilder` class.
+
+# 2022-08-29
+
+- Fix semanticTokens highlights unexpected cleared
+- Fix range of `doQuickfix` action.
+- Check reverse of `CocFloating`, use `border` and `Normal` highlight when reversed.
+- Make `CocInlayHint` use background of `SignColumn`.
+- Add command `document.toggleInlayHint`.
+
+# 2022-08-28
+
+- Make `CocMenuSel` use background of `PmenuSel`.
+- Snippet related configuration changed (old configuration still works until next release)
+  - "coc.preferences.snippetStatusText" -> "snippet.statusText"
+  - "coc.preferences.snippetHighlight" -> "snippet.highlight"
+  - "coc.preferences.nextPlaceholderOnDelete" -> "snippet.nextPlaceholderOnDelete"
+- Add configuration `"list.smartCase"`
+- Add configurations for inlay hint
+  - "inlayHint.refreshOnInsertMode"
+  - "inlayHint.enableParameter"
+  - "inlayHint.typeSeparator"
+  - "inlayHint.parameterSeparator"
+  - "inlayHint.subSeparator"
+
+# 2022-08-27
+
+- Avoid use `EasyMotion#is_active`, use autocmd to disable linting.
+- Show message when call hierarchy provider not found or bad position.
+
+# 2022-08-26
+
+- Remove `completeOpt` from `workspace.env`.
+- Add configuration `"diagnostic.virtualTextAlign"`.
+- Add warning when required features not compiled with vim.
+- Not echo error for semanticTokens request (log only).
+- Merge results form providers when possible.
+
+# 2022-08-24
+
+- Virtual text of suggest on vim9.
+- Virtual text of diagnostics on vim9.
+- Add configuration `inlayHint.filetypes`.
+- Inlay hint support on vim9.
+
+# 2022-08-23
+
+- Retry semanticTokens request on server cancel (LSP 3.17).
+- `RelativePattern` support for `workspace.createFileSystemWatcher()`.
+- `relativePatternSupport` for `DidChangeWatchedFiles` (LSP 3.17).
+- Not echo error on `doComplete()`.
+
+# 2022-08-21
+
+- Added `window.createFloatFactory()`, deprecated `FloatFactory` class.
+- Support `labelDetails` field of `CompleteItem`(LSP 3.17).
+- Added `triggerKind` to `CodeActionContext`, export `CodeActionTriggerKind`.
+
+# 2022-08-20
+
+- Support pull diagnostics `:h coc-pullDiagnostics`.
+- Break change: avoid extension overwrite builtin configuration defaults.
+- Change default value of configuration "diagnostic.format".
+- 'line' changes to 'currline' for `CocAction('codeAction')`.
+- Check NodeJS version on syntax error.
+
+# 2022-08-10
+
+- Change "notification.highlightGroup" default to "Normal".
+
 # 2022-08-07
 
 - Add configuration 'suggest.pumFloatConfig'.
@@ -481,7 +588,7 @@
 - **Break change** logic for resolve workspace folder changed.
 - Add `Task` module.
 - Add `getCurrentFunctionSymbol` action.
-- Add `list.source.outline.ctagsFilestypes` setting.
+- Add `list.source.outline.ctagsFiletypes` setting.
 - Add `suggest.disableMenu` and `suggest.disableMenu` settings.
 - Add `equal` support for complete items.
 - Add support for do action with visual select lines of list.

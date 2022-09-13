@@ -192,6 +192,7 @@ function! coc#list#preview(lines, config) abort
     let filetype = get(s:filetype_map, extname, '')
   endif
   let range = get(a:config, 'range', v:null)
+  let targetRange = get(a:config, 'targetRange', v:null)
   let hlGroup = get(a:config, 'hlGroup', 'Search')
   let lnum = get(a:config, 'lnum', 1)
   let position = get(a:config, 'position', 'below')
@@ -261,7 +262,13 @@ function! coc#list#preview(lines, config) abort
     call coc#compat#execute(winid, 'nnoremap <silent><nowait><buffer> <esc> :call CocActionAsync("listCancel")<CR>')
   endif
   if !empty(range)
-    call sign_place(1, 'CocCursorLine', 'CocCurrentLine', bufnr, {'lnum': lnum})
+    if !empty(targetRange)
+      for lnum in range(targetRange['start']['line'] + 1, targetRange['end']['line'] + 1)
+        call sign_place(0, 'CocCursorLine', 'CocListCurrent', bufnr, {'lnum': lnum})
+      endfor
+    else
+      call sign_place(0, 'CocCursorLine', 'CocCurrentLine', bufnr, {'lnum': lnum})
+    endif
     call coc#highlight#match_ranges(winid, bufnr, [range], hlGroup, 10)
   endif
 endfunction

@@ -31,6 +31,14 @@ function! s:checkVersion() abort
         echom "Note that some features may behave incorrectly."
         echohl None
         sleep 2
+      elseif !has('nvim') && (!has('job') || !has('popupwin') || !has('textprop'))
+        echohl WarningMsg
+        echom "coc.nvim requires job, popupwin and textprop features of vim, consider recompile your vim."
+        echom "You can add this to your vimrc to avoid this message:"
+        echom "    let g:coc_disable_startup_warning = 1"
+        echom "Note that some features may behave incorrectly."
+        echohl None
+        sleep 2
       endif
     endif
   endif
@@ -231,6 +239,15 @@ function! s:AddAnsiGroups() abort
   endtry
 endfunction
 
+function! s:CreateHighlight(group, fg, bg) abort
+  let cmd = coc#highlight#compose(a:fg, a:bg)
+  if !empty(trim(cmd))
+    exe 'hi default '.a:group.' '.cmd
+  else
+    exe 'hi default link '.a:group.' '.a:fg
+  endif
+endfunction
+
 function! s:CursorRangeFromSelected(type, ...) abort
   " add range by operator
   call coc#rpc#request('cursorsSelect', [bufnr('%'), 'operator', a:type])
@@ -284,11 +301,25 @@ function! s:HandleWinScrolled(winid) abort
   call s:Autocmd('WinScrolled', a:winid)
 endfunction
 
+function! s:HandleWinClosed(winid) abort
+  call coc#float#on_close(a:winid)
+  call coc#notify#on_close(a:winid)
+  call s:Autocmd('WinClosed', a:winid)
+endfunction
+
 function! s:SyncAutocmd(...)
   if !get(g:, 'coc_workspace_initialized', 0)
     return
   endif
   call coc#rpc#request('CocAutocmd', a:000)
+endfunction
+
+function! s:CheckHighlight() abort
+  let fgId = synIDtrans(hlID('CocSelectedText'))
+  let guifg = synIDattr(fgId, 'fg', 'gui')
+  if empty(guifg)
+    call s:Highlight()
+  endif
 endfunction
 
 function! s:Enable(initialize)
@@ -304,6 +335,11 @@ function! s:Enable(initialize)
       autocmd VimEnter            * call coc#rpc#notify('VimEnter', [])
     elseif get(g:, 'coc_start_at_startup', 1)
       autocmd VimEnter            * call coc#rpc#start_server()
+    endif
+    if v:vim_did_enter
+      call s:CheckHighlight()
+    else
+      autocmd VimEnter            * call timer_start(0, { -> s:CheckHighlight()})
     endif
     if s:is_vim
       if exists('##DirChanged')
@@ -323,8 +359,7 @@ function! s:Enable(initialize)
     autocmd CursorMoved         list:///* call coc#list#select(bufnr('%'), line('.'))
     autocmd CursorHold          * call coc#float#check_related()
     if exists('##WinClosed')
-      autocmd WinClosed         * call coc#float#on_close(+expand('<amatch>'))
-      autocmd WinClosed         * call coc#notify#on_close(+expand('<amatch>'))
+      autocmd WinClosed         * call s:HandleWinClosed(+expand('<amatch>'))
     elseif exists('##TabEnter')
       autocmd TabEnter          * call coc#notify#reflow()
     endif
@@ -363,7 +398,7 @@ function! s:Enable(initialize)
     autocmd VimLeavePre         * call s:Autocmd('VimLeavePre')
     autocmd BufReadCmd,FileReadCmd,SourceCmd list://* call coc#list#setup(expand('<amatch>'))
     autocmd BufWriteCmd __coc_refactor__* :call coc#rpc#notify('saveRefactor', [+expand('<abuf>')])
-    autocmd ColorScheme * call s:Hi()
+    autocmd ColorScheme * call s:Highlight()
   augroup end
   if a:initialize == 0
      call coc#rpc#request('attach', [])
@@ -373,37 +408,38 @@ function! s:Enable(initialize)
   endif
 endfunction
 
-function! s:FgColor(hlGroup) abort
-  let fgId = synIDtrans(hlID(a:hlGroup))
-  let ctermfg = synIDattr(fgId, 'reverse', 'cterm') ==# '1' ? synIDattr(fgId, 'bg', 'cterm') : synIDattr(fgId, 'fg', 'cterm')
-  let guifg = synIDattr(fgId, 'reverse', 'gui') ==# '1'  ? synIDattr(fgId, 'bg', 'gui') : synIDattr(fgId, 'fg', 'gui')
-  let cmd = ' ctermfg=' . (empty(ctermfg) ? '223' : ctermfg)
-  let cmd .= ' guifg=' . (empty(guifg) ? '#ebdbb2' : guifg)
-  return cmd
-endfunction
-
-function! s:Hi() abort
-  hi default CocErrorSign     ctermfg=Red     guifg=#ff0000 guibg=NONE
-  hi default CocWarningSign   ctermfg=Brown   guifg=#ff922b guibg=NONE
-  hi default CocInfoSign      ctermfg=Yellow  guifg=#fab005 guibg=NONE
-  hi default CocHintSign      ctermfg=Blue    guifg=#15aabf guibg=NONE
+function! s:Highlight() abort
   hi default CocSelectedText  ctermfg=Red     guifg=#fb4934 guibg=NONE
   hi default CocCodeLens      ctermfg=Gray    guifg=#999999 guibg=NONE
-  hi default CocUnderline     term=underline cterm=underline gui=underline
+  hi default CocUnderline     term=underline cterm=underline gui=underline guisp=#ebdbb2
   hi default CocBold          term=bold cterm=bold gui=bold
   hi default CocItalic        term=italic cterm=italic gui=italic
   hi default CocStrikeThrough term=strikethrough cterm=strikethrough gui=strikethrough
   hi default CocMarkdownLink  ctermfg=Blue    guifg=#15aabf guibg=NONE
   hi default CocDisabled      guifg=#999999   ctermfg=gray
   hi default CocSearch        ctermfg=Blue    guifg=#15aabf guibg=NONE
-  hi default CocMenuSel       ctermbg=237 guibg=#13354A
+  if coc#highlight#get_contrast('Normal', has('nvim') ? 'NormalFloat' : 'Pmenu') > 2.0
+    exe 'hi default CocFloating '.coc#highlight#create_bg_command('Normal', &background ==# 'dark' ? -0.4 : 0.1)
+    exe 'hi default CocMenuSel '.coc#highlight#create_bg_command('Normal', &background ==# 'dark' ? -0.2 : 0.05)
+    exe 'hi default CocFloatThumb '.coc#highlight#create_bg_command('Normal', &background ==# 'dark' ? -0.3 : 0.2)
+    exe 'hi default CocFloatSbar '.coc#highlight#create_bg_command('Normal', &background ==# 'dark' ? -0.5 : 0.3)
+  else
+    exe 'hi default link CocFloating '.(has('nvim') ? 'NormalFloat' : 'Pmenu')
+    if coc#highlight#get_contrast('CocFloating', 'PmenuSel') > 2.0
+      if &background ==# 'dark'
+        hi default CocMenuSel ctermbg=237 guibg=#13354A
+      else
+        exe 'hi default CocMenuSel '.coc#highlight#create_bg_command('CocFloating', &background ==# 'dark' ? -0.2 : 0.05)
+      endif
+    else
+      exe 'hi default CocMenuSel '.coc#highlight#get_hl_command(synIDtrans(hlID('PmenuSel')), 'bg', '237', '#13354A')
+    endif
+    hi default link CocFloatThumb        PmenuThumb
+    hi default link CocFloatSbar         PmenuSbar
+  endif
   hi default link CocFadeOut             Conceal
   hi default link CocMarkdownCode        markdownCode
   hi default link CocMarkdownHeader      markdownH1
-  hi default link CocErrorHighlight      CocUnderline
-  hi default link CocWarningHighlight    CocUnderline
-  hi default link CocInfoHighlight       CocUnderline
-  hi default link CocHintHighlight       CocUnderline
   hi default link CocDeprecatedHighlight CocStrikeThrough
   hi default link CocUnusedHighlight     CocFadeOut
   hi default link CocListLine            CursorLine
@@ -416,7 +452,6 @@ function! s:Hi() abort
   hi default link CocLinkedEditing       CocCursorRange
   hi default link CocHighlightRead       CocHighlightText
   hi default link CocHighlightWrite      CocHighlightText
-  hi default link CocInlayHint           CocHintSign
   " Notification
   hi default CocNotificationProgress  ctermfg=Blue    guifg=#15aabf guibg=NONE
   hi default link CocNotificationButton  CocUnderline
@@ -435,16 +470,12 @@ function! s:Hi() abort
   hi default link CocSymbolDefault       MoreMsg
   "Pum
   hi default link CocPumSearch           CocSearch
+  hi default link CocPumDetail           Comment
   hi default link CocPumMenu             CocFloating
   hi default link CocPumShortcut         Comment
   hi default link CocPumDeprecated       CocStrikeThrough
-  hi default CocPumVirtualText      ctermfg=239 guifg=#504945
+  hi default link CocPumVirtualText      NonText
 
-  if has('nvim')
-    hi default link CocFloating NormalFloat
-  else
-    hi default link CocFloating Pmenu
-  endif
   hi default link CocFloatDividingLine NonText
   if !exists('*sign_getdefined') || empty(sign_getdefined('CocCurrentLine'))
     sign define CocCurrentLine linehl=CocMenuSel
@@ -459,27 +490,37 @@ function! s:Hi() abort
     hi default CocCursorTransparent gui=strikethrough blend=100
   endif
 
-  if has('nvim')
-    let names = ['Error', 'Warning', 'Info', 'Hint']
-    for name in names
-      let suffix = name ==# 'Warning' ? 'Warn' : name
-      if hlexists('DiagnosticVirtualText'.suffix)
-        exe 'hi default link Coc'.name.'VirtualText DiagnosticVirtualText'.suffix
-      else
-        exe 'hi default link Coc'.name.'VirtualText Coc'.name.'Sign'
-      endif
-      if hlexists('Diagnostic'.suffix)
-        exe 'hi default link Coc'.name.'Float Diagnostic'.suffix
-      else
-        exe 'hi default link Coc'.name.'Float '.coc#highlight#compose_hlgroup('Coc'.name.'Sign', 'CocFloating')
-      endif
-    endfor
-  else
-    execute 'hi default link CocErrorFloat '.coc#highlight#compose_hlgroup('CocErrorSign', 'CocFloating')
-    execute 'hi default link CocWarningFloat '.coc#highlight#compose_hlgroup('CocWarningSign', 'CocFloating')
-    execute 'hi default link CocInfoFloat '.coc#highlight#compose_hlgroup('CocInfoSign', 'CocFloating')
-    execute 'hi default link CocHintFloat '.coc#highlight#compose_hlgroup('CocHintSign', 'CocFloating')
-  endif
+  let sign_colors = {
+      \ 'Error': ['Red', '#ff0000'],
+      \ 'Warn': ['Brown', '#ff922b'],
+      \ 'Info': ['Yellow', '#fab005'],
+      \ 'Hint': ['Blue', '#15aabf']
+      \ }
+  for name in ['Error', 'Warning', 'Info', 'Hint']
+    let suffix = name ==# 'Warning' ? 'Warn' : name
+    if hlexists('DiagnosticUnderline'.suffix)
+      exe 'hi default link Coc'.name.'Highlight DiagnosticUnderline'.suffix
+    else
+      exe 'hi default link Coc'.name.'Highlight CocUnderline'
+    endif
+    if hlexists('DiagnosticSign'.suffix)
+      exe 'hi default link Coc'.name.'Sign DiagnosticSign'.suffix
+    else
+      exe 'hi default Coc'.name.'Sign ctermfg='.sign_colors[suffix][0].' guifg='.sign_colors[suffix][1]
+    endif
+    if hlexists('DiagnosticVirtualText'.suffix)
+      exe 'hi default link Coc'.name.'VirtualText DiagnosticVirtualText'.suffix
+    else
+      call s:CreateHighlight('Coc'.name.'VirtualText', 'Coc'.name.'Sign', 'Normal')
+    endif
+    if hlexists('Diagnostic'.suffix)
+      exe 'hi default link Coc'.name.'Float Diagnostic'.suffix
+    else
+      call s:CreateHighlight('Coc'.name.'Float', 'Coc'.name.'Sign', 'CocFloating')
+    endif
+  endfor
+
+  call s:CreateHighlight('CocInlayHint', 'CocHintSign', 'SignColumn')
   call s:AddAnsiGroups()
 
   if get(g:, 'coc_default_semantic_highlight_groups', 1)
@@ -555,7 +596,7 @@ function! s:Hi() abort
   for [key, value] in items(symbolMap)
     let hlGroup = hlexists(value[0]) ? value[0] : get(value, 1, 'CocSymbolDefault')
     if hlexists(hlGroup)
-      execute 'hi default CocSymbol'.key.' '.s:FgColor(hlGroup)
+      execute 'hi default CocSymbol'.key.' '.coc#highlight#get_hl_command(synIDtrans(hlID(hlGroup)), 'fg', '223', '#ebdbb2')
     endif
   endfor
 endfunction
@@ -629,8 +670,8 @@ command! -nargs=0 CocUpdate       :call coc#util#update_extensions(1)
 command! -nargs=0 -bar CocUpdateSync   :call coc#util#update_extensions()
 command! -nargs=* -bar -complete=custom,s:InstallOptions CocInstall   :call coc#util#install_extension([<f-args>])
 
+call s:Highlight()
 call s:Enable(1)
-call s:Hi()
 
 " Default key-mappings for completion
 if empty(mapcheck('<C-n>', 'i'))
@@ -666,7 +707,7 @@ vnoremap <silent> <Plug>(coc-format-selected)       :<C-u>call       CocActionAs
 vnoremap <silent> <Plug>(coc-codeaction-selected)   :<C-u>call       CocActionAsync('codeAction',         visualmode())<CR>
 nnoremap <Plug>(coc-codeaction-selected)   :<C-u>set        operatorfunc=<SID>CodeActionFromSelected<CR>g@
 nnoremap <Plug>(coc-codeaction)            :<C-u>call       CocActionAsync('codeAction',         '')<CR>
-nnoremap <Plug>(coc-codeaction-line)       :<C-u>call       CocActionAsync('codeAction',         'line')<CR>
+nnoremap <Plug>(coc-codeaction-line)       :<C-u>call       CocActionAsync('codeAction',         'currline')<CR>
 nnoremap <Plug>(coc-codeaction-cursor)     :<C-u>call       CocActionAsync('codeAction',         'cursor')<CR>
 nnoremap <silent> <Plug>(coc-rename)                :<C-u>call       CocActionAsync('rename')<CR>
 nnoremap <silent> <Plug>(coc-format-selected)       :<C-u>set        operatorfunc=<SID>FormatFromSelected<CR>g@
