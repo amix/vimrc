@@ -2,7 +2,7 @@
 " Description: Volar Language Server integration for ALE adopted from
 "              nvim-lspconfig and volar/packages/shared/src/types.ts
 
-call ale#Set('vue_volar_executable', 'volar-server')
+call ale#Set('vue_volar_executable', 'vue-language-server')
 call ale#Set('vue_volar_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('vue_volar_init_options', {
 \   'documentFeatures': {
@@ -73,7 +73,7 @@ call ale#linter#Define('vue', {
 \   'name': 'volar',
 \   'language': 'vue',
 \   'lsp': 'stdio',
-\   'executable': {b -> ale#path#FindExecutable(b, 'vue_volar', ['node_modules/.bin/volar-server'])},
+\   'executable': {b -> ale#path#FindExecutable(b, 'vue_volar', ['node_modules/.bin/vue-language-server'])},
 \   'command': '%e --stdio',
 \   'project_root': function('ale_linters#vue#volar#GetProjectRoot'),
 \   'initialization_options': function('ale_linters#vue#volar#GetInitializationOptions'),

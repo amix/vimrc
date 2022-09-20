@@ -203,6 +203,10 @@ function! ale#engine#SetResults(buffer, loclist) abort
         call ale#highlight#SetHighlights(a:buffer, a:loclist)
     endif
 
+    if g:ale_virtualtext_cursor == 2
+        call ale#virtualtext#SetTexts(a:buffer, a:loclist)
+    endif
+
     if l:linting_is_done
         if g:ale_echo_cursor
             " Try and echo the warning now.
@@ -210,7 +214,7 @@ function! ale#engine#SetResults(buffer, loclist) abort
             call ale#cursor#EchoCursorWarning()
         endif
 
-        if g:ale_virtualtext_cursor
+        if g:ale_virtualtext_cursor == 1
             " Try and show the warning now.
             " This will only do something meaningful if we're in normal mode.
             call ale#virtualtext#ShowCursorWarning()

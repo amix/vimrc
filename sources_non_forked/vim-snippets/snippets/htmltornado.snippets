@@ -24,11 +24,11 @@ snippet for
 snippet from
 	{% from ${1:x} import ${0:y} %}
 snippet if
-	{% if ${1:condition} %}
+	{% if $1 %}
 	  ${0}
 	{% end %}
 snippet eif
-	{% elif ${0:condition} %}
+	{% elif $0 %}
 snippet el
 	{% else %}
 snippet import
@@ -50,6 +50,6 @@ snippet try
 	  ${0}
 	{% end %}
 snippet wh
-	{% while ${1:condition} %}
+	{% while $1 %}
 	  ${0}
 	{% end %}

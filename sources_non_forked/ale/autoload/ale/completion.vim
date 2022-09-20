@@ -139,7 +139,7 @@ let s:should_complete_map = {
 " Regular expressions for finding the start column to replace with completion.
 let s:omni_start_map = {
 \   '<default>': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$',
-\   'racket': '\k\+',
+\   'racket': '\k\+$',
 \}
 
 " A map of exact characters for triggering LSP completions. Do not forget to

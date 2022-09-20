@@ -398,11 +398,6 @@ if !exists("b:ruby_no_expensive") && !exists("ruby_no_expensive")
 
   SynFold 'for' syn region rubyRepeatExpression start="\<for\>" start="\%(\%(^\|\.\.\.\=\|[{:,;([<>~\*/%&^|+=-]\|\%(\<\%(\h\|[^\x00-\x7F]\)\%(\w\|[^\x00-\x7F]\)*\)\@<![!?]\)\s*\)\@<=\<\%(until\|while\)\>" matchgroup=rubyRepeat skip="\<end:" end="\<end\>" contains=ALLBUT,@rubyNotTop nextgroup=rubyOptionalDoLine
 
-  if !exists("ruby_minlines")
-    let ruby_minlines = 500
-  endif
-  exe "syn sync minlines=" . ruby_minlines
-
 else
   syn match rubyControl "\<def\>"    nextgroup=rubyMethodDeclaration skipwhite skipnl
   syn match rubyControl "\<class\>"  nextgroup=rubyClassDeclaration  skipwhite skipnl
@@ -410,6 +405,11 @@ else
   syn match rubyControl "\<\%(case\|begin\|do\|for\|if\|unless\|while\|until\|else\|elsif\|rescue\|ensure\|then\|when\|end\)\>"
   syn match rubyKeyword "\<\%(alias\|undef\)\>"
 endif
+
+if !exists("ruby_minlines")
+  let ruby_minlines = 500
+endif
+exe "syn sync minlines=" . ruby_minlines
 
 " Special Methods {{{1
 if !exists("ruby_no_special_methods")

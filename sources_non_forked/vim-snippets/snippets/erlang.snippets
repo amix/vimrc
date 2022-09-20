@@ -17,7 +17,7 @@ snippet dt
 	erlang:display({${1}, ${0}}),
 # define directive
 snippet def
-	-define(${1:macro}, ${2:body}).
+	-define(${1:macro}, $2).
 # export directive
 snippet exp
 	-export([${1:function}/${0:arity}]).
@@ -44,17 +44,17 @@ snippet undef
 snippet if
 	if
 		${1:guard} ->
-			${0:body}
+			$0
 	end
 # case expression
 snippet case
 	case ${1:expression} of
 		${2:pattern} ->
-			${0:body};
+			$0;
 	end
 # anonymous function
 snippet fun
-	fun (${1:Parameters}) -> ${2:body} end
+	fun (${1:Parameters}) -> $2 end
 # try...catch
 snippet try
 	try
@@ -65,10 +65,10 @@ snippet try
 snippet rcv "Receive Expression"
 	receive
 	${1:	${2:pattern}${3: when ${4:guard}} ->
-			${5:body}}
+			$5
 	${6:after
 		${7:expression} ->
-			${8:body}}
+			$8
 	end
 # record directive
 snippet rec

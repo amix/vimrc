@@ -339,6 +339,10 @@ function! ale#hover#ShowTruncatedMessageAtCursor() abort
     let l:buffer = bufnr('')
     let l:pos = getpos('.')[0:2]
 
+    if !getbufvar(l:buffer, 'ale_enabled', 1)
+        return
+    endif
+
     if l:pos != s:last_pos
         let s:last_pos = l:pos
         let [l:info, l:loc] = ale#util#FindItemAtCursor(l:buffer)

@@ -62,8 +62,8 @@ snippet ife "if (condition) { ... } else { ... }"
 		${2}
 	}
 # tertiary conditional
-snippet ter
-	${1:/* condition */} ? ${2:/* if true */} : ${0:/* if false */}
+snippet ter Ternary: `condition ? true : false`
+	$1 ? $2: $0
 # switch
 snippet switch
 	switch (${1:expression}) {
@@ -107,13 +107,17 @@ snippet forr "reversed for (...) {...}"
 		${0:${VISUAL}}
 	}
 snippet wh "(condition) { ... }"
-	while (${1:/* condition */}) {
+	while (${1:true}) {
+		${0:${VISUAL}}
+	}
+snippet wht "(true) { ... }"
+	while (true) {
 		${0:${VISUAL}}
 	}
 snippet do "do { ... } while (condition)"
 	do {
 		${0:${VISUAL}}
-	} while (${1:/* condition */});
+	} while ($1);
 # For in loop
 snippet fori
 	for (let ${1:prop} in ${2:object}) {

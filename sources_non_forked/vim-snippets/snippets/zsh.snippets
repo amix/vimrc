@@ -1,19 +1,21 @@
 # #!/bin/zsh
+extends bash
+
 snippet #!
-	#!/bin/zsh
+	#!/usr/bin/env zsh
 
 snippet if
-	if ${1:condition}; then
+	if $1; then
 		${0:${VISUAL}}
 	fi
 snippet ife
-	if ${1:condition}; then
+	if $1; then
 		${2:${VISUAL}}
 	else
 		${0:# statements}
 	fi
 snippet eif
-	elif ${1:condition}; then
+	elif $1; then
 		${0:${VISUAL}}
 snippet for
 	for (( ${2:i} = 0; $2 < ${1:count}; $2++ )); do
@@ -28,11 +30,11 @@ snippet fore
 		${0:${VISUAL}}
 	done
 snippet wh
-	while ${1:condition}; do
+	while $1; do
 		${0:${VISUAL}}
 	done
 snippet until
-	until ${1:condition}; do
+	until $1; do
 		${0:${VISUAL}}
 	done
 snippet repeat

@@ -144,7 +144,7 @@ snippet yrp
 #----------------Yii Model-----------------------------
 #Yii Model count
 snippet ycountm
-	${1:ModelName}::model()->count(${2:condition}, array('${3:key}'=>${0:value}));
+	${1:ModelName}::model()->count($2, array('${3:key}'=>${0:value}));
 
 #Yii Model countBySql
 snippet ycountbs
@@ -152,35 +152,35 @@ snippet ycountbs
 
 #Yii Model updateAll
 snippet yupdatea
-	${1:ModelName}::model()->updateAll(${2:array('attributes')}, ${3:condition},array('${4:key}'=>${0:value}));
+	${1:ModelName}::model()->updateAll(${2:array('attributes')}, $3,array('${4:key}'=>${0:value}));
 
 #Yii Model updateByPk
 snippet yupdatebp
-	${1:ModelName}::model()->updateByPk(${2:pk}, ${3:array('attributes')}, ${4:condition},array('${5:key}'=>${0:value}));
+	${1:ModelName}::model()->updateByPk(${2:pk}, ${3:array('attributes')}, $4,array('${5:key}'=>${0:value}));
 
 #Yii Model deleteAll
 snippet ydela
-	${1:ModelName}::model()->deleteAll(${2:condition},array('${3:key}'=>${0:value}));
+	${1:ModelName}::model()->deleteAll($2,array('${3:key}'=>${0:value}));
 
 #Yii Model deleteByPk
 snippet ydelbp
-	${1:ModelName}::model()->deleteByPk(${2:pk}, ${3:condition}, array('${4:key}'=>${0:value}));
+	${1:ModelName}::model()->deleteByPk(${2:pk}, $3, array('${4:key}'=>${0:value}));
 
 #Yii Model find
 snippet yfind
-	${1:ModelName}::model()->find(${2:condition},array('${3:key}'=>${0:value}));
+	${1:ModelName}::model()->find($2,array('${3:key}'=>${0:value}));
 
 #Yii Model findAll
 snippet yfinda
-	${1:ModelName}::model()->findAll(${2:condition},array('${3:key}'=>${0:value}));
+	${1:ModelName}::model()->findAll($2,array('${3:key}'=>${0:value}));
 
 #Yii Model findByPk
 snippet yfindbp
-	${1:ModelName}::model()->findByPk(${2:pk}, ${3:condition}, array('${4:key}'=>${0:value}));
+	${1:ModelName}::model()->findByPk(${2:pk}, $3, array('${4:key}'=>${0:value}));
 
 #Yii Model findAllByPk
 snippet yfindabp
-	${1:ModelName}::model()->findAllByPk(${2:pk}, ${3:condition},array('${4:key}'=>${0:value}));
+	${1:ModelName}::model()->findAllByPk(${2:pk}, $3,array('${4:key}'=>${0:value}));
 
 #Yii Model findBySql
 snippet yfindbs
@@ -188,11 +188,11 @@ snippet yfindbs
 
 #Yii Model findAllByAttributes
 snippet yfindaba
-	${1:ModelName}::model()->findAllByAttributes(array('${2:attributeName}'=>${3:attributeValue}), ${4:condition}, array('${5:key}'=>${0:value}));
+	${1:ModelName}::model()->findAllByAttributes(array('${2:attributeName}'=>${3:attributeValue}), $4, array('${5:key}'=>${0:value}));
 
 #Yii Model exists
 snippet yexists
-	${1:ModelName}::model()->exists(${2:condition}, array('${3:key}'=>${0:value}));
+	${1:ModelName}::model()->exists($2, array('${3:key}'=>${0:value}));
 
 #Yii Create model class
 snippet ymodel

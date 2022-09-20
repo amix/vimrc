@@ -1,12 +1,12 @@
 snippet req require
 	require "${1}"
 snippet case
-	case ${1:object}
-	when ${2:condition}
+	case $1
+	when $2
 		${0}
 	end
 snippet when
-	when ${1:condition}
+	when $1
 		${0}
 snippet def
 	def ${1:method_name}
@@ -17,17 +17,17 @@ snippet pdef
 		${0}
 	end
 snippet if
-	if ${1:condition}
+	if $1
 		${0:${VISUAL}}
 	end
 snippet ife
-	if ${1:condition}
+	if $1
 		${2:${VISUAL}}
 	else
 		${0}
 	end
 snippet wh
-	while ${1:condition}
+	while $1
 		${0:${VISUAL}}
 	end
 snippet cla class .. end

@@ -142,9 +142,9 @@ snippet ae
 snippet aae
 	assertArrayEquals("${1:Failure message}", ${2:expecteds}, ${3:actuals});
 snippet af
-	assertFalse("${1:Failure message}", ${2:condition});
+	assertFalse("${1:Failure message}", $2);
 snippet at
-	assertTrue("${1:Failure message}", ${2:condition});
+	assertTrue("${1:Failure message}", $2);
 snippet an
 	assertNull("${1:Failure message}", ${2:object});
 snippet ann
@@ -211,7 +211,9 @@ snippet enfor
 snippet for
 	for (${1}; ${2}; ${3}) ${0}
 snippet wh
-	while (${1}) ${0}
+	while (${1:true}) ${0}
+snippet wht
+	while (true) ${0}
 ##
 ## Main method
 snippet psvm

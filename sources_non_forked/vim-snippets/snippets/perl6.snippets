@@ -33,7 +33,7 @@ snippet eif
 	}
 # Conditional One-line
 snippet xif
-	${1:expression} if ${2:condition};
+	${1} if $2;
 # Unless conditional
 snippet unless
 	unless ${1} {
@@ -41,14 +41,14 @@ snippet unless
 	}
 # Unless conditional One-line
 snippet xunless
-	${1:expression} unless ${2:condition};
+	${1} unless $2;
 # Ternary conditional
 snippet tc
-	${1:condition} ?? ${2:value-if-true} !! ${3:value-if-false};
+	$1 ?? ${2:value-if-true} !! ${3:value-if-false};
 # given - when (perl6 switch)
 snippet switch
 	given ${1:$var} {
-	  when ${2:condition} {
+	  when $2 {
 		  ${3:# code block ...}
 	  }
 	  ${4}

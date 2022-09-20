@@ -2,37 +2,37 @@
 snippet forindo
 	for ${1:name} in ${2:array}
 		do ($1) ->
-			${0:// body}
+			$0
 # Array comprehension
 snippet fora
 	for ${1:name} in ${2:array}
-		${0:# body...}
+		$0
 # Object comprehension
 snippet foro
 	for ${1:key}, ${2:value} of ${3:object}
-		${0:# body...}
+		$0
 # Range comprehension (inclusive)
 snippet forr
 	for ${1:name} in [${2:start}..${3:finish}]
-		${0:# body...}
+		$0
 snippet forrb
 	for ${1:name} in [${2:start}..${3:finish}] by ${4:step}
-		${0:# body...}
+		$0
 # Range comprehension (exclusive)
 snippet forrex
 	for ${1:name} in [${2:start}...${3:finish}]
-		${0:# body...}
+		$0
 snippet forrexb
 	for ${1:name} in [${2:start}...${3:finish}] by ${4:step}
-		${0:# body...}
+		$0
 # Function
 snippet fun
 	(${1:args}) ->
-		${0:# body...}
+		$0
 # Function (bound)
 snippet bfun
 	(${1:args}) =>
-		${0:# body...}
+		$0
 # Class
 snippet cla class ..
 	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
@@ -54,29 +54,29 @@ snippet cla class .. extends .. constructor: ..
 		${0}
 # If
 snippet if
-	if ${1:condition}
+	if $1
 		${0:${VISUAL}}
 # If __ Else
 snippet ife
-	if ${1:condition}
+	if $1
 		${2:${VISUAL}}
 	else
-		${0:# body...}
+		${0}
 # Else if
 snippet eif
-	else if ${1:condition}
+	else if $1
 		${0:${VISUAL}}
 # Ternary If
-snippet ifte
-	if ${1:condition} then ${2:value} else ${0:other}
+snippet ifte Ternary
+	if $1 then $2 else $0
 # Unless
-snippet unl
-	${1:action} unless ${0:condition}
+snippet unl Unless
+	$1 unless $0
 # Switch
 snippet swi
 	switch ${1:object}
 		when ${2:value}
-			${0:# body...}
+			$0
 
 # Log
 snippet log

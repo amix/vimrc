@@ -14,8 +14,8 @@ function! s:DisablePostamble() abort
         call ale#highlight#UpdateHighlights()
     endif
 
-    if g:ale_virtualtext_cursor
-        call ale#virtualtext#Clear()
+    if g:ale_virtualtext_cursor == 1
+        call ale#virtualtext#Clear(bufnr(''))
     endif
 endfunction
 

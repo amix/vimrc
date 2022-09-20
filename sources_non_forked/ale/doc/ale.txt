@@ -1234,6 +1234,29 @@ g:ale_floating_preview                                 *g:ale_floating_preview*
   |g:ale_detail_to_floating_preview| to `1`.
 
 
+g:ale_floating_preview_popup_opts             *g:ale_floating_preview_popup_opts*
+
+  Type: |String| or |Dictionary|
+  Default: `''`
+
+  Either a dictionary of options or the string name of a function that returns a
+  dictionary of options. This will be used as an argument to |popup_create| for
+  Vim users or |nvim_open_win| for NeoVim users. Note that in either case, the
+  resulting dictionary is merged with ALE defaults rather than expliciting overriding
+  them. This only takes effect if |g:ale_floating_preview| is enabled.
+
+  NOTE: for Vim users see |popup_create-arguments|, for NeoVim users see
+  |nvim_open_win| for argument details
+
+  For example, to enhance popups with a title: >
+
+  function! CustomOpts() abort {
+    let [l:info, l:loc] = ale#util#FindItemAtCursor(bufnr(''))
+    return {'title': ' ALE: ' . (l:loc.linter_name) . ' '}
+  endfunction
+<
+
+
 g:ale_floating_window_border                       *g:ale_floating_window_border*
 
   Type: |List|
@@ -2274,6 +2297,9 @@ g:ale_virtualtext_cursor                             *g:ale_virtualtext_cursor*
   column nearest to the cursor when the cursor is resting on a line which
   contains a warning or error. This option can be set to `0` to disable this
   behavior.
+  When this option is set to `2`, then all warnings will be shown for the
+  whole buffer, regardless of if the cursor is currently positioned in that
+  line.
 
   Messages are only displayed after a short delay. See |g:ale_virtualtext_delay|.
 
@@ -2761,6 +2787,8 @@ documented in additional help files.
     buildifier............................|ale-bazel-buildifier|
   bib.....................................|ale-bib-options|
     bibclean..............................|ale-bib-bibclean|
+  bicep...................................|ale-bicep-options|
+    bicep.................................|ale-bicep-bicep|
   bitbake.................................|ale-bitbake-options|
     oelint-adv............................|ale-bitbake-oelint_adv|
   c.......................................|ale-c-options|
@@ -3167,6 +3195,7 @@ documented in additional help files.
     solargraph............................|ale-ruby-solargraph|
     sorbet................................|ale-ruby-sorbet|
     standardrb............................|ale-ruby-standardrb|
+    syntax_tree...........................|ale-ruby-syntax_tree|
   rust....................................|ale-rust-options|
     analyzer..............................|ale-rust-analyzer|
     cargo.................................|ale-rust-cargo|
@@ -3302,6 +3331,7 @@ documented in additional help files.
     yaml-language-server..................|ale-yaml-language-server|
     yamlfix...............................|ale-yaml-yamlfix|
     yamllint..............................|ale-yaml-yamllint|
+    gitlablint............................|ale-yaml-gitlablint|
   yang....................................|ale-yang-options|
     yang-lsp..............................|ale-yang-lsp|
   zeek....................................|ale-zeek-options|

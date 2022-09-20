@@ -99,7 +99,7 @@ snippet ci_db-select
 snippet ci_db-from
 	$this->db->from("${1:table}");${2}
 snippet ci_db-join
-	$this->db->join("${1:table}", "${2:condition}", "${3:type}");${4}
+	$this->db->join("${1:table}", "$2", "${3:type}");${4}
 snippet ci_db-where
 	$this->db->where("${1:key}", "${2:value}");${3}
 snippet ci_db-or_where

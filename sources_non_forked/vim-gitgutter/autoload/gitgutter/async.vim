@@ -1,8 +1,8 @@
 let s:available = has('nvim') || (
       \   has('job') && (
-      \     (has('patch-7-4-1826') && !has('gui_running')) ||
-      \     (has('patch-7-4-1850') &&  has('gui_running')) ||
-      \     (has('patch-7-4-1832') &&  has('gui_macvim'))
+      \     (has('patch-7.4.1826') && !has('gui_running')) ||
+      \     (has('patch-7.4.1850') &&  has('gui_running')) ||
+      \     (has('patch-7.4.1832') &&  has('gui_macvim'))
       \   )
       \ )
 

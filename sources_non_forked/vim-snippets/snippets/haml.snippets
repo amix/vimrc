@@ -26,12 +26,12 @@ snippet mt
 snippet mts
 	= mail_to ${1:email_address}, ${2:name}, :subject => ${3}, :body => ${4}
 snippet ife
-	- if ${1:condition}
+	- if $1
 		${2:${VISUAL}}
 	- else
 		${0}
 snippet ifp
-	- if ${1:condition}.presence?
+	- if $1.presence?
 		${0:${VISUAL}}
 snippet ntc
 	= number_to_currency(${1})

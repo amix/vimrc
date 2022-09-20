@@ -27,6 +27,12 @@ snippets by typing the name of a snippet hitting the expansion mapping.
   snippets/*
 - [github.com/Shougo/neosnippet](https://github.com/Shougo/neosnippet.vim):
   VimL, supports snippets/* with some configuration.
+- [github.com/dcampos/nvim-snippy](https://github.com/dcampos/nvim-snippy):
+  Lua, supports snippets/* with some configuration.
+- [github.com/L3MON4D3/LuaSnip](https://github.com/L3MON4D3/LuaSnip):
+  Lua, supports snippets/* with some configuration.
+  Also supports redefining snippets without changing the priority, unlike
+  nvim-snippy.
 - [github.com/drmingdrmer/xptemplate](https://github.com/drmingdrmer/xptemplate):
   Totally different syntax, does not read snippets contained in this file, but
   it is also very powerful. It does not support vim-snippets (just listing it
@@ -45,6 +51,9 @@ its fast and has the most features.
 If you have VimL only (vim without python support) your best option is using
 [garbas/vim-snipmate](https://github.com/garbas/vim-snipmate) and cope with the
 minor bugs found in the engine.
+
+If you use Neovim and prefer Lua plugins,
+[L3MON4D3/LuaSnip](https://github.com/L3MON4D3/LuaSnip) is the best option.
 
 **Q**: Should snipMate be deprecated in favour of UltiSnips?
 

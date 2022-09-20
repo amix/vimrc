@@ -13,15 +13,15 @@ snippet fun
 	@function ${1:name}(${2:args})
 		${0}
 snippet if
-	@if ${1:condition}
+	@if $1
 		${0:${VISUAL}}
 snippet ife
-	@if ${1:condition}
+	@if $1
 		${2:${VISUAL}}
 	@else
 		${0}
 snippet eif
-	@else if ${1:condition}
+	@else if $1
 		${0:${VISUAL}}
 snippet for
 	@for ${1:$i} from ${2:1} through ${3:3}

@@ -30,6 +30,11 @@ endglobal
 ###########################################################################
 #                            TextMate Snippets                            #
 ###########################################################################
+snippet ponce "#pragma once include guard"
+#pragma once
+
+endsnippet
+
 snippet main
 int main(int argc, char *argv[])
 {
@@ -65,6 +70,14 @@ namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`}
 {
 	${VISUAL}$0
 }${1/.+/ \/* /m}$1${1/.+/ *\/ /m}
+endsnippet
+
+snippet nsa "namespace alias"
+namespace ${1:alias} = ${2:namespace};
+endsnippet
+
+snippet using "using directive/using declaration/type alias"
+using ${1:namespace}`!p snip.rv = ' ' if t[1] == 'namespace' else ' = ' if t[1] != '' else ''`${2:name};
 endsnippet
 
 snippet readfile "read file (readF)"

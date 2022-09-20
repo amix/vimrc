@@ -19,7 +19,7 @@ snippet def
 
 # if
 snippet if
-	if (${1:/* condition */}) {
+	if ($1) {
 		${0:${VISUAL}}
 	}
 # else
@@ -29,12 +29,12 @@ snippet el
 	}
 # else if
 snippet elif
-	else if (${1:/* condition */}) {
+	else if ($1) {
 		${2}
 	}
 # ifi
 snippet ifi
-	if (${1:/* condition */}) ${2};
+	if ($1) ${2};
 
 # switch
 snippet switch
@@ -63,14 +63,14 @@ snippet forr
 	}
 # while
 snippet wh
-	while (${1:/* condition */}) {
+	while ($1) {
 		${2}
 	}
 # do... while
 snippet do
 	do {
 		${2}
-	} while (${1:/* condition */});
+	} while ($1);
 ##
 ## Functions
 # function definition

@@ -50,6 +50,8 @@ if !exists("no_plugin_maps") && !exists("no_flake8_maps")
     endif
 endif
 
+command! Flake :call flake8#Flake8()
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
