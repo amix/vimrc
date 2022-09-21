@@ -1,0 +1,6 @@
+[submodule "jedi"]
+	path = pythonx/jedi
+	url = https://github.com/davidhalter/jedi.git
+[submodule "pythonx/parso"]
+	path = pythonx/parso
+	url = https://github.com/davidhalter/parso.git

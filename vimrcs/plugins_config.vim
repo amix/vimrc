@@ -186,3 +186,14 @@ let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " Copy the link to the line of a Git repository to the clipboard
 nnoremap <leader>v :.GBrowse!<CR>
 xnoremap <leader>v :'<'>GBrowse!<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => jedi-vim
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:jedi#auto_vim_configuration = 0
+let g:jedi#goto_assignments_command = "<leader>a"
+let g:jedi#usages_command = "<leader>u"
+let g:jedi#completions_command = "<C-Space>"
+let g:jedi#rename_command = "<leader>r"
+let g:jedi#popup_on_dot = 0
