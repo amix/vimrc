@@ -1,8 +1,0 @@
-*~
-*.sw?
-*.py[cod]
-.ropeproject
-doc/tags
-.pytest-cache
-build
-.coverage*
