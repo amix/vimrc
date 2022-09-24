@@ -1,0 +1,31 @@
+dist: bionic
+language: python
+python: 3.8
+env:
+  - ENV=test
+  - ENV=check
+  - ENV=test_coverage
+install:
+  - |
+    if [ "$ENV" = "test" ]; then
+      pip install pytest
+    elif [ "$ENV" = "test_coverage" ]; then
+      sudo add-apt-repository ppa:neovim-ppa/stable -y
+      sudo apt-get update -q
+      sudo apt-get install neovim -y
+
+      pip install pynvim pytest-cov
+      pip list
+      nvim --version
+    else
+      vim --version
+    fi
+script:
+  - make --keep-going "$ENV" BUILD_VIRTUAL_ENV=$VIRTUAL_ENV
+
+after_script:
+  - |
+    if [ "$ENV" = "test_coverage" ]; then
+      coverage xml
+      travis_retry bash <(curl -s https://codecov.io/bash) -X fix -f coverage.xml -F py${TRAVIS_PYTHON_VERSION//./}
+    fi
