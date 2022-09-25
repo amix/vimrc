@@ -11,7 +11,7 @@ snippet source
 
 # conditionals
 snippet if
-	if (${1:condition}) {
+	if ($1) {
 		${0}
 	}
 snippet el
@@ -19,14 +19,18 @@ snippet el
 		${0}
 	}
 snippet ei
-	else if (${1:condition}) {
+	else if ($1) {
 		${0}
 	}
 
 # loops
 snippet wh
-	while(${1}) {
-		${2}
+	while(${1:true}) {
+		${0}
+	}
+snippet wht
+	while(true) {
+		${0}
 	}
 snippet for
 	for (${1:item} in ${2:list}) {

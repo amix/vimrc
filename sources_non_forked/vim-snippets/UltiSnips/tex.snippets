@@ -454,27 +454,6 @@ snippet docls "Document Class" bA
 \documentclass{$1}$0
 endsnippet
 
-snippet tmplt "Template"
-\documentclass{article}
-
-\usepackage{import}
-\usepackage{pdfpages}
-\usepackage{transparent}
-\usepackage{xcolor}
-$1
-
-\newcommand{\incfig}[2][1]{%
-		\def\svgwidth{#1\columnwidth}
-		\import{./figures/}{#2.pdf_tex}
-}
-$2
-\pdfsuppresswarningpagegroup=1
-
-\begin{document}
-		$0
-\end{document}
-endsnippet
-
 
 #########
 # OTHER #

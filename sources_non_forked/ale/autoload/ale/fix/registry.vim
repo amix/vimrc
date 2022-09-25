@@ -221,6 +221,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['swift'],
 \       'description': 'Apply SwiftFormat to a file.',
 \   },
+\   'syntax_tree': {
+\       'function': 'ale#fixers#syntax_tree#Fix',
+\       'suggested_filetypes': ['ruby'],
+\       'description': 'Fix ruby files with stree write',
+\   },
 \   'apple-swift-format': {
 \       'function': 'ale#fixers#appleswiftformat#Fix',
 \       'suggested_filetypes': ['swift'],

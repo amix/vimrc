@@ -1,16 +1,16 @@
 snippet if
-	If ${1:condition} Then
+	If $1 Then
 		${0:; True code}
 	EndIf
 snippet el
 	Else
 		${0}
 snippet eif
-	ElseIf ${1:condition} Then
+	ElseIf $1 Then
 		${0:; True code}
 # If/Else block
 snippet ife
-	If ${1:condition} Then
+	If $1 Then
 		${2:; True code}
 	Else
 		${0:; Else code}
@@ -26,7 +26,7 @@ snippet ifelif
 	EndIf
 # Switch block
 snippet switch
-	Switch (${1:condition})
+	Switch ($1)
 	Case ${2:case1}:
 		${3:; Case 1 code}
 	Case Else:
@@ -34,7 +34,7 @@ snippet switch
 	EndSwitch
 # Select block
 snippet select
-	Select (${1:condition})
+	Select ($1)
 	Case ${2:case1}:
 		${3:; Case 1 code}
 	Case Else:
@@ -42,7 +42,7 @@ snippet select
 	EndSelect
 # While loop
 snippet wh
-	While (${1:condition})
+	While ($1)
 		${0:; code...}
 	WEnd
 # For loop

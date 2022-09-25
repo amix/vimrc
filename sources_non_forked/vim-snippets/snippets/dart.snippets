@@ -61,15 +61,15 @@ snippet fore
 	  ${0}
 	}
 snippet wh
-	while (${1:/* condition */}) {
+	while ($1) {
 	  ${0}
 	}
 snippet dowh
 	do {
 	  ${0}
-	} while (${0:/* condition */});
+	} while ($0);
 snippet as
-	assert(${0:/* condition */});
+	assert($0);
 snippet try
 	try {
 	  ${0:${VISUAL}}

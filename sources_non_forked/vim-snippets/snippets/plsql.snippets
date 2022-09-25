@@ -8,7 +8,7 @@ snippet ps
 snippet pb
 	create or replace package body ${1:name}
 	as
-		${0:-- body}
+		$0
 	end; -- end of package body $1;
 # package procedure spec
 snippet pps
@@ -18,7 +18,7 @@ snippet ppb
 	procedure ${1:name}(${2:args})
 	as
 	begin
-		${0:-- body}
+		$0
 	end $2;
 # package function spec
 snippet pfs
@@ -31,7 +31,7 @@ snippet pfb
 	as
 		l_res	$3;
 	begin
-		${0:-- body};
+		$0;
 		return l_res;
 	end $1;
 # snow errors

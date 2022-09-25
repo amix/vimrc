@@ -42,7 +42,7 @@ volar                                                           *ale-vue-volar*
 g:ale_vue_volar_executable                         *g:ale_vue_volar_executable*
                                                    *b:ale_vue_volar_executable*
   Type: |String|
-  Default: `'volar-server'`
+  Default: `'vue-language-server'`
 
   See |ale-integrations-local-executables|
 

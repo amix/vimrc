@@ -1,6 +1,7 @@
 " Author: Jan-Grimo Sobez <jan-grimo.sobez@phys.chem.ethz.ch>
 " Author: Kevin Clark <kevin.clark@gmail.com>
 " Author: D. Ben Knoble <ben.knoble+github@gmail.com>
+" Author: Shaun Duncan <shaun.duncan@gmail.com>
 " Description: Floating preview window for showing whatever information in.
 
 " Precondition: exists('*nvim_open_win') || has('popupwin')
@@ -133,15 +134,18 @@ function! s:NvimPrepareWindowContent(lines) abort
 endfunction
 
 function! s:NvimCreate(options) abort
+    let l:popup_opts = extend({
+    \    'relative': 'cursor',
+    \    'row': 1,
+    \    'col': 0,
+    \    'width': 42,
+    \    'height': 4,
+    \    'style': 'minimal'
+    \ }, s:GetPopupOpts())
+
     let l:buffer = nvim_create_buf(v:false, v:false)
-    let l:winid = nvim_open_win(l:buffer, v:false, {
-    \ 'relative': 'cursor',
-    \ 'row': 1,
-    \ 'col': 0,
-    \ 'width': 42,
-    \ 'height': 4,
-    \ 'style': 'minimal'
-    \ })
+    let l:winid = nvim_open_win(l:buffer, v:false, l:popup_opts)
+
     call nvim_buf_set_option(l:buffer, 'buftype', 'acwrite')
     call nvim_buf_set_option(l:buffer, 'bufhidden', 'delete')
     call nvim_buf_set_option(l:buffer, 'swapfile', v:false)
@@ -151,7 +155,8 @@ function! s:NvimCreate(options) abort
 endfunction
 
 function! s:VimCreate(options) abort
-    let l:popup_id = popup_create([], {
+    " default options
+    let l:popup_opts = extend({
     \    'line': 'cursor+1',
     \    'col': 'cursor',
     \    'drag': v:true,
@@ -170,7 +175,9 @@ function! s:VimCreate(options) abort
     \        get(g:ale_floating_window_border, 5, '+'),
     \    ],
     \    'moved': 'any',
-    \    })
+    \ }, s:GetPopupOpts())
+
+    let l:popup_id = popup_create([], l:popup_opts)
     call setbufvar(winbufnr(l:popup_id), '&filetype', get(a:options, 'filetype', 'ale-preview'))
     let w:preview = {'id': l:popup_id}
 endfunction
@@ -203,4 +210,22 @@ function! s:VimClose() abort
 
     call popup_close(w:preview['id'])
     unlet w:preview
+endfunction
+
+" get either the results of a function callback or dictionary for popup overrides
+function! s:GetPopupOpts() abort
+    if exists('g:ale_floating_preview_popup_opts')
+        let l:ref = g:ale_floating_preview_popup_opts
+
+        if type(l:ref) is# v:t_dict
+            return l:ref
+        elseif type(l:ref) is# v:t_string
+            try
+                return function(l:ref)()
+            catch /E700/
+            endtry
+        endif
+    endif
+
+    return {}
 endfunction

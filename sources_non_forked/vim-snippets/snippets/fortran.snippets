@@ -64,7 +64,7 @@ snippet intent
 snippet /
 	(/ $1 /) ${2:,&} ${0}
 snippet if
-	if (${1:condition}) then
+	if ($1) then
 		${0}
 	end if
 snippet case
@@ -78,7 +78,7 @@ snippet do
 		${0}
 	end do
 snippet dow
-	do while (${1:condition})
+	do while ($1)
 		$2
 	end do
 snippet sub

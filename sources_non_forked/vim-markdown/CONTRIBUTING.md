@@ -34,7 +34,7 @@ There are many flavors of markdown, each one with an unique feature set. This pl
 
 ## Style
 
-When choosing between multiple valid Markdown syntaxes, the default behavior must be that specified at: <http://www.cirosantilli.com/markdown-styleguide>
+When choosing between multiple valid Markdown syntaxes, the default behavior must be that specified at: <https://cirosantilli.com/markdown-style-guide>
 
 If you wish to have a behavior that differs from that style guide, add an option to turn it on or off, and leave it off by default.
 

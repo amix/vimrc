@@ -114,7 +114,7 @@ snippet forr
 	}
 # If Condition
 snippet if
-	if (${1:/* condition */}) {
+	if ($1) {
 		${0:${VISUAL}}
 	}
 snippet el
@@ -122,8 +122,8 @@ snippet el
 		${0:${VISUAL}}
 	}
 # Ternary conditional
-snippet t
-	${1:/* condition */} ? ${2:a} : ${0:b}
+snippet t Ternary: `condition ? true : false`
+	$1 ? $2 : $0
 snippet fun
 	function ${1:function_name}(${2})${3}
 	{
@@ -150,4 +150,3 @@ snippet FlxSprite
 			}
 		}
 	}
-

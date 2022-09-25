@@ -81,7 +81,7 @@ snippet print
 snippet reduce
 	(reduce ${1:(fn [p n] ${3})} ${2})
 snippet when
-	(when ${1:test} ${0:body})
+	(when ${1:test} $0)
 snippet when-let
 	(when-let [${1:result} ${2:test}]
-		${0:body})
+		$0)

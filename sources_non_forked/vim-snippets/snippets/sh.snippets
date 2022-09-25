@@ -1,9 +1,9 @@
-# Shebang. Executing bash via /usr/bin/env makes scripts more portable.
+# Shebang
 snippet #!
-	#!/usr/bin/env sh
+	#!/bin/sh
 
 snippet s#!
-	#!/usr/bin/env sh
+	#!/bin/sh
 	set -eu
 
 snippet safe
@@ -18,11 +18,11 @@ snippet sbash
 	IFS=$'\n\t'
 
 snippet if
-	if [[ ${1:condition} ]]; then
+	if [ $1 ]; then
 		${0:${VISUAL}}
 	fi
 snippet elif
-	elif [[ ${1:condition} ]]; then
+	elif [ $1 ]; then
 		${0:${VISUAL}}
 snippet for
 	for (( ${2:i} = 0; $2 < ${1:count}; $2++ )); do
@@ -33,11 +33,15 @@ snippet fori
 		${0:${VISUAL}}
 	done
 snippet wh
-	while [[ ${1:condition} ]]; do
+	while [ $1 ]; do
+		${0:${VISUAL}}
+	done
+snippet wht
+	while true; do
 		${0:${VISUAL}}
 	done
 snippet until
-	until [[ ${1:condition} ]]; do
+	until [ $1 ]; do
 		${0:${VISUAL}}
 	done
 snippet case
@@ -97,10 +101,10 @@ snippet root
 
 snippet fun-sh
 	${1:function_name}() {
-		${0:#function_body}
+		$0
 	}
 
 snippet fun
 	function ${1:function_name}() {
-		${0:#function_body}
+		$0
 	}

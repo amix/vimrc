@@ -689,6 +689,9 @@ augroup fugitive
         \ if FugitiveIsGitDir(expand('<amatch>:p:h')) |
         \   let b:git_dir = s:Slash(expand('<amatch>:p:h')) |
         \   exe fugitive#BufReadStatus(v:cmdbang) |
+        \   echohl WarningMSG |
+        \   echo "fugitive: Direct editing of .git/" . expand('%:t') . " is deprecated" |
+        \   echohl NONE |
         \ elseif filereadable(expand('<amatch>')) |
         \   silent doautocmd BufReadPre |
         \   keepalt noautocmd read <amatch> |

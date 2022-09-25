@@ -1,0 +1,139 @@
+# snippets for smarty3
+
+extends html
+extends javascript
+extends css
+
+# https://www.smarty.net/docs/en/language.function.if.tpl
+snippet if "{if cond} ... {/if}"
+	{if ${1}}
+		${0:${VISUAL}}
+	{/if}
+
+snippet ifn "{if !cond} ... {/if}"
+	{if ${1}}
+		${0:${VISUAL}}
+	{/if}
+
+snippet ife "{if cond} ... {else} ... {/if}"
+	{if ${1}}
+		${0:${VISUAL}}
+	{else}
+		${2}
+	{/if}
+
+snippet eif "{elseif cond} ... {/if}"
+	{elseif ${1}}
+		${0:${VISUAL}}
+	{/if}
+
+snippet el "{else} ... {/if}"
+	{else}
+		${1}
+	{/if}
+
+# https://www.smarty.net/docs/en/language.function.for.tpl
+snippet for "The {for} tag is used to create simple loops."
+	{for $${1:var}=${2:start} to ${3:end}${4: step ${5}}${6: max=${7}}}
+		${0:${VISUAL}}
+	{/for}
+
+snippet forelse "The {for}{forelse} tag is used to create simple loops."
+	{for $${1:var}=${2:start} to ${3:end}${4: step ${5}}${6: max=${7}}}
+		${0:${VISUAL}}
+	{forelse}
+		${8}
+	{/for}
+
+# https://www.smarty.net/docs/en/language.function.foreach.tpl
+snippet foreach "{foreach} is used for looping over arrays of data."
+	{foreach $${1:array_variable} as $${2:var_or_key}${3: => $${4:itemvar}}}
+		${0:${VISUAL}}
+	{/foreach}
+
+snippet foreach2 "[Smarty2] {foreach} is used for looping over arrays of data."
+	{foreach from=$${1:collection} item='${2}'${3: key='${4}'}${5: name='${6}'}}
+		${0:${VISUAL}}
+	{/foreach}
+
+snippet foreachelse "{foreach} is used for looping over arrays of data."
+	{foreach $${1:array_variable} as $${2:var_or_key}${3: => $${4:itemvar}}}
+		${0:${VISUAL}}
+	{foreachelse}
+		${5}
+	{/foreach}
+
+snippet wh "{while} loops in Smarty have much the same flexibility as PHP while statements, with a few added features for the template engine. Every {while} must be paired with a matching {/while}. All PHP conditionals and functions are recognized, such as ||, or, &&, and, is_array(), etc."
+	{while ${1}}
+		${0:${VISUAL}}
+	{/while}
+
+
+
+# https://www.smarty.net/docs/en/language.function.append.tpl
+#snippet append implemented in UltiSnips format
+
+# https://www.smarty.net/docs/en/language.function.assign.tpl
+#snippet assign implemented in UltiSnips format
+
+# https://www.smarty.net/docs/en/language.function.block.tpl
+snippet block "{block} is used to define a named area of template source for template inheritance."
+	{block name='${1}'}
+		${0:${VISUAL}}
+	{/block}
+
+# https://www.smarty.net/docs/en/language.function.call.tpl
+snippet call "{call} is used to call a template function defined by the {function} tag just like a plugin function."
+	{call name=${1}${2: assign=${3}}${4: variables}}
+
+# https://www.smarty.net/docs/en/language.function.capture.tpl
+snippet capture "{capture} is used to collect the output of the template between the tags into a variable instead of displaying it. Any content between {capture name='foo'} and {/capture} is collected into the variable specified in the name attribute. "
+	{capture name='${1}'${2: assign='${3}' }${4: append='${5:array_variable}'}}
+		${0:${VISUAL}}
+	{/capture}
+
+# https://www.smarty.net/docs/en/language.function.config.load.tpl
+#snippet config_load implemented in UltiSnips format
+
+# https://www.smarty.net/docs/en/language.function.extends.tpl
+snippet extends "{extends} tags are used in child templates in template inheritance for extending parent templates."
+	{extends file='${1}'}
+
+# https://www.smarty.net/docs/en/language.function.function.tpl
+snippet function "{function} is used to create functions within a template and call them just like a plugin function. Instead of writing a plugin that generates presentational content, keeping it in the template is often a more manageable choice. It also simplifies data traversal, such as deeply nested menus."
+	{function name='${1}' ${2:variables}}
+		${0:${VISUAL}}
+	{/function}
+
+# https://www.smarty.net/docs/en/language.function.include.tpl
+#snippet include implemented in UltiSnips format
+
+# https://www.smarty.net/docs/en/language.function.literal.tpl
+snippet literal "{literal} tags allow a block of data to be taken literally. This is typically used around Javascript or stylesheet blocks where {curly braces} would interfere with the template delimiter syntax"
+	{literal}
+		${0:${VISUAL}}
+	{/literal}
+
+# https://www.smarty.net/docs/en/language.function.nocache.tpl
+snippet nocache "{nocache} is used to disable caching of a template section. Every {nocache} must be paired with a matching {/nocache}."
+	{nocache}
+		${0:${VISUAL}}
+	{/nocache}
+
+# https://www.smarty.net/docs/en/language.function.section.tpl
+snippet section "A {section} is for looping over sequentially indexed arrays of data, unlike {foreach} which is used to loop over a single associative array. Every {section} tag must be paired with a closing {/section} tag."
+	{section name='${1}'${2: loop='${3}'}${4: start=${5}}${6: step=${7}}${8: max=${9}}${10: show=${11}}}
+		${0:${VISUAL}}
+	{/section}
+
+# https://www.smarty.net/docs/en/language.function.setfilter.tpl
+snippet setfilter "The {setfilter}...{/setfilter} block tag allows the definition of template instance's variable filters."
+	{setfilter ${1:filters}}
+		${0:${VISUAL}}
+	{/setfilter}
+
+# https://www.smarty.net/docs/en/language.function.strip.tpl
+snippet strip "Anything within {strip}{/strip} tags are stripped of the extra spaces or carriage returns at the beginnings and ends of the lines before they are displayed. This way you can keep your templates readable, and not worry about extra white space causing problems."
+	{strip}
+		${0:${VISUAL}}
+	{/strip}

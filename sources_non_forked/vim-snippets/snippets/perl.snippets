@@ -40,7 +40,7 @@ snippet eif
 	}
 # Conditional One-line
 snippet xif
-	${1:expression} if ${2:condition};
+	$1 if $0;
 # Unless conditional
 snippet unless
 	unless (${1}) {
@@ -48,7 +48,7 @@ snippet unless
 	}
 # Unless conditional One-line
 snippet xunless
-	${1:expression} unless ${2:condition};
+	$1 unless $0;
 # Try/Except
 snippet eval
 	local $@;
@@ -65,7 +65,7 @@ snippet wh
 	}
 # While Loop One-line
 snippet xwh
-	${1:expression} while ${2:condition};
+	$1 while $0;
 # C-style For Loop
 snippet cfor
 	for (my $${2:var} = 0; $$2 < ${1:count}; $$2${3:++}) {
@@ -73,7 +73,7 @@ snippet cfor
 	}
 # For loop one-line
 snippet xfor
-	${1:expression} for @${2:array};
+	$1 for @$0;
 # Foreach Loop
 snippet for
 	foreach my $${1:x} (@${2:array}) {
@@ -81,7 +81,7 @@ snippet for
 	}
 # Foreach Loop One-line
 snippet fore
-	${1:expression} foreach @${2:array};
+	$1 foreach @$0;
 # Package
 snippet package
 	package ${1:`expand('%:p:s?.*lib/??:r:gs?/?::?')`};

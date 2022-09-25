@@ -43,13 +43,13 @@ snippet enum
 
 # PowerShell if..then
 snippet if
-	if (${1:condition}) {
-		${2:statement}
+	if ($1) {
+		$0
 	}
 
 # PowerShell if..else
 snippet ife
-	if ( ${1:condition} ) {
+	if ( $1 ) {
 		${2}
 	}
 	else {
@@ -58,8 +58,8 @@ snippet ife
 
 # PowerShell While Loop
 snippet while
-	while (${1:condition}) {
-		${2:statement}
+	while ($1) {
+		$0
 	}
 
 # PowerShell Filter..Sort
@@ -69,7 +69,7 @@ snippet filtersort
 # PowerShell foreach
 snippet foreach
 	foreach ( $${1:iterator} in $${2:collection} ) {
-		${3:statement}
+		$0
 	}
 
 # PowerShell export-csv

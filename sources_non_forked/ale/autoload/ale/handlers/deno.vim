@@ -29,6 +29,8 @@ function! ale#handlers#deno#GetProjectRoot(buffer) abort
     endif
 
     let l:possible_project_roots = [
+    \   'deno.json',
+    \   'deno.jsonc',
     \   'tsconfig.json',
     \   '.git',
     \   bufname(a:buffer),

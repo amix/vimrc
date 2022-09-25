@@ -18,7 +18,8 @@ syntax region jsDocTypeRecord   contained start=/{/ end=/}/ contains=jsDocTypeRe
 syntax region jsDocTypeRecord   contained start=/\[/ end=/\]/ contains=jsDocTypeRecord extend
 syntax region jsDocTypeNoParam  contained start="{" end="}" oneline
 syntax match  jsDocTypeNoParam  contained "\%(#\|\"\|\w\|\.\|:\|\/\)\+"
-syntax match  jsDocParam        contained "\%(#\|\$\|-\|'\|\"\|{.\{-}}\|\w\|\.\|:\|\/\|\[.\{-}]\|=\)\+"
+syntax match  jsDocParam        contained "\%(#\|\$\|-\|'\|\"\|{.\{-}}\|\w\|\~\|\.\|:\|\/\|\[.\{-}]\|=\)\+"
+
 syntax region jsDocSeeTag       contained matchgroup=jsDocSeeTag start="{" end="}" contains=jsDocTags
 
 if version >= 508 || !exists("did_javascript_syn_inits")

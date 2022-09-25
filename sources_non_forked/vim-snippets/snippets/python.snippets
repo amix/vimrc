@@ -28,14 +28,14 @@ snippet sk "skip unittests" b
 	@unittest.skip(${1:skip_reason})
 
 snippet wh
-	while ${1:condition}:
+	while $1:
 		${0:${VISUAL}}
 
 # dowh - does the same as do...while in other languages
 snippet dowh
 	while True:
 		${1}
-		if ${0:condition}:
+		if $0:
 			break
 
 snippet with
@@ -115,13 +115,13 @@ snippet property
 
 # Ifs
 snippet if
-	if ${1:condition}:
+	if $1:
 		${0:${VISUAL}}
 snippet el
 	else:
 		${0:${VISUAL}}
 snippet ei
-	elif ${1:condition}:
+	elif $1:
 		${0:${VISUAL}}
 
 # Match
@@ -508,3 +508,16 @@ snippet numeric "methods for emulating a numeric type" b
 	def __coerce__(self, other):
 		${25:pass}
 
+# Printing
+snippet pr
+	print($0)
+snippet prs
+	print("$0")
+snippet prf
+	print(f"$0")
+snippet fpr
+	print($0, file=${1:sys.stderr})
+snippet fprs
+	print("$0", file=${1:sys.stderr})
+snippet fprf
+	print(f"$0", file=${1:sys.stderr})

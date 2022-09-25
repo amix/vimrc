@@ -1,0 +1,28 @@
+# snippets for smarty3
+
+extends html
+extends javascript
+extends css
+
+
+
+
+# https://www.smarty.net/docs/en/language.function.append.tpl
+snippet append "{append} is used for creating or appending template variable arrays during the execution of a template."
+{append var='${1}' value='${2}'${3: index='${4|first,last|}'}${5: scope='${6|parent,root,global|}'}}
+endsnippet
+
+# https://www.smarty.net/docs/en/language.function.assign.tpl
+snippet assign "{assign} is used for assigning template variables during the execution of a template."
+{assign var='${1}' value='${2}'${3: scope='${4|parent,root,global|}'}}
+endsnippet
+
+# https://www.smarty.net/docs/en/language.function.config.load.tpl
+snippet config_load "config_load"
+{config_load file='${1}'${2: section='${3}'}${4: scope='${5|local,parent,global|}'}}
+endsnippet
+
+# https://www.smarty.net/docs/en/language.function.include.tpl
+snippet include "{include} tags are used for including other templates in the current template. Any variables available in the current template are also available within the included template."
+{include file='${1}'${2: assign='${3}'}${4: cache_lifetime=${5}}${6: compile_id='${7}'}${8: cache_id='${9}'}${10: scope='${11|parent,root,global|}'}${12: variables}}
+endsnippet

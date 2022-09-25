@@ -61,6 +61,8 @@ formatting.
   * [buildifier](https://github.com/bazelbuild/buildtools)
 * BibTeX
   * [bibclean](http://ftp.math.utah.edu/pub/bibclean/)
+* Bicep
+  * [bicep](https://github.com/Azure/bicep)
 * BitBake
   * [oelint-adv](https://github.com/priv-kweihmann/oelint-adv)
 * Bourne Shell
@@ -538,6 +540,7 @@ formatting.
   * [solargraph](https://solargraph.org)
   * [sorbet](https://github.com/sorbet/sorbet)
   * [standardrb](https://github.com/testdouble/standard)
+  * [syntax_tree](https://github.com/ruby-syntax-tree/syntax_tree)
 * Rust
   * [cargo](https://github.com/rust-lang/cargo) :floppy_disk: (see `:help ale-integration-rust` for configuration instructions)
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
@@ -673,6 +676,7 @@ formatting.
 * YAML
   * [actionlint](https://github.com/rhysd/actionlint) :warning:
   * [circleci](https://circleci.com/docs/2.0/local-cli) :floppy_disk: :warning:
+  * [gitlablint](https://github.com/elijah-roberts/gitlab-lint)
   * [prettier](https://github.com/prettier/prettier)
   * [spectral](https://github.com/stoplightio/spectral)
   * [swaglint](https://github.com/byCedric/swaglint) :warning:

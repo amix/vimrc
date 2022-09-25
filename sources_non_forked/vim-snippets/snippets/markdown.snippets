@@ -67,17 +67,21 @@ snippet <*
 	<`@*`>
 snippet <c
 	<`@+`>
-snippet **
-	**${1:bold}**
-snippet __
-	__${1:bold}__
-snippet ===
+snippet ** Bold
+	**$0**
+snippet __ Bold
+	__$0__
+snippet --- Front matter
+	---
+	$0
+	---
+snippet ====
 	`repeat('=', strlen(getline(line('.') - 3)))`
 
 	${0}
 snippet -
 	-   ${0}
-snippet ---
+snippet ----
 	`repeat('-', strlen(getline(line('.') - 3)))`
 
 	${0}
@@ -142,3 +146,11 @@ snippet pullquote
 	{% pullquote %}
 	${1:text} {" ${2:quote} "} ${0:text}
 	{% endpullquote %}
+
+# Definition lists
+snippet : Definition list
+	$1
+	: $0
+snippet :: Alternate definition list
+	$1
+	  - $0

@@ -86,7 +86,7 @@ snippet =?:
 snippet ?:
 	${1:true} ? ${2:a} : ${0}
 snippet t "$retVal = (condition) ? a : b"
-	$${1:retVal} = (${2:condition}) ? ${3:a} : ${4:b};
+	$${1:retVal} = ($2) ? ${3:a} : ${4:b};
 # Predefined variables
 snippet C
 	$_COOKIE['${1:variable}']
@@ -283,7 +283,7 @@ snippet def "define('VARIABLE_NAME', 'definition')"
 snippet def?
 	${1}defined('${2}')
 snippet wh "while (condition) { ... }"
-	while (${1:/* condition */}) {
+	while ($1) {
 		${0:${VISUAL}}
 	}
 snippet do "do { ... } while (condition)"

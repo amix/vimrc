@@ -6,6 +6,27 @@ snippet dcl \documentclass{}
 #documentclass with options
 snippet dclo \documentclass[]{}
 	\\documentclass[${1:options}]{${2:class}} ${0}
+
+snippet tmplt "Template"
+	\\documentclass{${1:article}}
+
+	\\usepackage{import}
+	\\usepackage{pdfpages}
+	\\usepackage{transparent}
+	\\usepackage{xcolor}
+	$2
+	
+	\\newcommand{\incfig}[2][1]{%
+		    \def\svgwidth{#1\columnwidth}
+		    \import{./figures/}{#2.pdf_tex}
+	}
+	$3
+	\\pdfsuppresswarningpagegroup=1
+	
+	\\begin{document}
+		    $0
+	\\end{document}
+
 #newcommand
 snippet nc \newcommand
 	\\newcommand{\\${1:cmd}}[${2:opt}]{${3:realcmd}} ${0}
