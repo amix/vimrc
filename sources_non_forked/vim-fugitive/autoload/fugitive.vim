@@ -1598,20 +1598,11 @@ function! fugitive#repo(...) abort
 endfunction
 
 function! s:repo_dir(...) dict abort
-  if !a:0
-    return self.git_dir
-  endif
-  throw 'fugitive: fugitive#repo().dir("...") has been replaced by FugitiveFind(".git/...")'
+  throw 'fugitive: fugitive#repo().dir() has been replaced by FugitiveGitDir()'
 endfunction
 
 function! s:repo_tree(...) dict abort
-  let tree = s:Tree(self.git_dir)
-  if empty(tree)
-    throw 'fugitive: no work tree'
-  elseif !a:0
-    return tree
-  endif
-  throw 'fugitive: fugitive#repo().tree("...") has been replaced by FugitiveFind(":(top)...")'
+  throw 'fugitive: fugitive#repo().tree() has been replaced by FugitiveFind(":/")'
 endfunction
 
 function! s:repo_bare() dict abort
@@ -1637,11 +1628,11 @@ function! s:repo_git_command(...) dict abort
 endfunction
 
 function! s:repo_git_chomp(...) dict abort
-  silent return substitute(system(fugitive#ShellCommand(a:000, self.git_dir)), '\n$', '', '')
+  throw 'fugitive: fugitive#repo().git_chomp(...) has been replaced by FugitiveExecute(...).stdout'
 endfunction
 
 function! s:repo_git_chomp_in_tree(...) dict abort
-  return call(self.git_chomp, a:000, self)
+  throw 'fugitive: fugitive#repo().git_chomp_in_tree(...) has been replaced by FugitiveExecute(...).stdout'
 endfunction
 
 function! s:repo_rev_parse(rev) dict abort
@@ -1651,7 +1642,7 @@ endfunction
 call s:add_methods('repo',['git_command','git_chomp','git_chomp_in_tree','rev_parse'])
 
 function! s:repo_config(name) dict abort
-  return FugitiveConfigGet(a:name, self.git_dir)
+  throw 'fugitive: fugitive#repo().config(...) has been replaced by FugitiveConfigGet(...)'
 endfunction
 
 call s:add_methods('repo',['config'])
@@ -2397,7 +2388,7 @@ function! s:GlobComplete(lead, pattern, ...) abort
   if a:lead ==# '/'
     return []
   else
-    let results = glob(substitute(a:lead . a:pattern, '[\{}]', '\\&', 'g'), a:0 ? a:1 : 0, 1)
+    let results = glob(a:lead . a:pattern, a:0 ? a:1 : 0, 1)
   endif
   call map(results, 'v:val !~# "/$" && isdirectory(v:val) ? v:val."/" : v:val')
   call map(results, 'v:val[ strlen(a:lead) : -1 ]')
@@ -7205,9 +7196,9 @@ function! s:BlameMaps(is_ftplugin) abort
   call s:Map('n', 'o',    ':<C-U>exe <SID>BlameCommit("split")<CR>', '<silent>', ft)
   call s:Map('n', 'O',    ':<C-U>exe <SID>BlameCommit("tabedit")<CR>', '<silent>', ft)
   call s:Map('n', 'p',    ':<C-U>exe <SID>BlameCommit("pedit")<CR>', '<silent>', ft)
-  exe s:Map('n', '.',    ":<C-U> <C-R>=substitute(<SID>BlameCommitFileLnum()[0],'^$','@','')<CR><Home>", '', ft)
-  exe s:Map('n', '(',    "-", '', ft)
-  exe s:Map('n', ')',    "+", '', ft)
+  call s:Map('n', '.',    ":<C-U> <C-R>=substitute(<SID>BlameCommitFileLnum()[0],'^$','@','')<CR><Home>", ft)
+  call s:Map('n', '(',    "-", ft)
+  call s:Map('n', ')',    "+", ft)
   call s:Map('n', 'A',    ":<C-u>exe 'vertical resize '.(<SID>linechars('.\\{-\\}\\ze [0-9:/+-][0-9:/+ -]* \\d\\+)')+1+v:count)<CR>", '<silent>', ft)
   call s:Map('n', 'C',    ":<C-u>exe 'vertical resize '.(<SID>linechars('^\\S\\+')+1+v:count)<CR>", '<silent>', ft)
   call s:Map('n', 'D',    ":<C-u>exe 'vertical resize '.(<SID>linechars('.\\{-\\}\\ze\\d\\ze\\s\\+\\d\\+)')+1-v:count)<CR>", '<silent>', ft)
