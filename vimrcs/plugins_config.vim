@@ -175,6 +175,10 @@ let g:ale_lint_on_enter = 0
 " => Git gutter (Git diff)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:gitgutter_enabled=1
+set updatetime=100
+highlight! link SignColumn LineNr
+autocmd ColorScheme * highlight! link SignColumn LineNr
+set signcolumn=yes
 nnoremap <silent> <leader>d :GitGutterToggle<cr>
 
 
