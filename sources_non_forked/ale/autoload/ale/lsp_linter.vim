@@ -141,10 +141,6 @@ function! s:HandleLSPErrorMessage(linter_name, response) abort
         return
     endif
 
-    call ale#lsp_linter#AddErrorMessage(a:linter_name, l:message)
-endfunction
-
-function! ale#lsp_linter#AddErrorMessage(linter_name, message) abort
     " This global variable is set here so we don't load the debugging.vim file
     " until someone uses :ALEInfo.
     let g:ale_lsp_error_messages = get(g:, 'ale_lsp_error_messages', {})
@@ -153,7 +149,7 @@ function! ale#lsp_linter#AddErrorMessage(linter_name, message) abort
         let g:ale_lsp_error_messages[a:linter_name] = []
     endif
 
-    call add(g:ale_lsp_error_messages[a:linter_name], a:message)
+    call add(g:ale_lsp_error_messages[a:linter_name], l:message)
 endfunction
 
 function! ale#lsp_linter#HandleLSPResponse(conn_id, response) abort
@@ -434,8 +430,6 @@ function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
     if empty(l:root) && a:linter.lsp isnot# 'tsserver'
         " If there's no project root, then we can't check files with LSP,
         " unless we are using tsserver, which doesn't use project roots.
-        call ale#lsp_linter#AddErrorMessage(a:linter.name, "Failed to find project root, language server wont't start.")
-
         return 0
     endif
 

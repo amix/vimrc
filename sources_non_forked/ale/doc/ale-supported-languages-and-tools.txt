@@ -52,8 +52,6 @@ Notes:
   * `buildifier`
 * BibTeX
   * `bibclean`
-* Bicep
-  * `bicep`
 * BitBake
   * `oelint-adv`
 * Bourne Shell
@@ -531,7 +529,6 @@ Notes:
   * `solargraph`
   * `sorbet`
   * `standardrb`
-  * `syntax_tree`
 * Rust
   * `cargo`!!
   * `cspell`
@@ -667,7 +664,6 @@ Notes:
 * YAML
   * `actionlint`
   * `circleci`!!
-  * `gitlablint`
   * `prettier`
   * `spectral`
   * `swaglint`

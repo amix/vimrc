@@ -4,23 +4,23 @@ snippet main
 	int main(int argc, char *argv[])
 	{
 		${0}
+		return 0;
 	}
 # main(void)
 snippet mainn
 	int main(void)
 	{
 		${0}
+		return 0;
 	}
 ##
 ## Preprocessor
 # #include <...>
 snippet inc
 	#include <${1:stdio}.h>
-	$0
 # #include "..."
 snippet Inc
 	#include "${1:`vim_snippets#Filename("$1.h")`}"
-	$0
 # ifndef...define...endif
 snippet ndef
 	#ifndef $1
@@ -86,8 +86,8 @@ snippet elif
 snippet ifi
 	if (${1:true}) ${0};
 # ternary
-snippet t Ternary: `condition ? true : false`
-	$1 ? $2 : $0
+snippet t
+	${1:/* condition */} ? ${2:a} : ${3:b}
 # switch
 snippet switch
 	switch (${1:/* variable */}) {
@@ -111,8 +111,6 @@ snippet case
 		${3:break;}
 snippet ret
 	return ${0};
-snippet ex
-	exit($0);
 ##
 ## Loops
 # for
@@ -127,18 +125,14 @@ snippet forr
 	}
 # while
 snippet wh
-	while (${1:1}) {
-		${0:${VISUAL}}
-	}
-snippet wht
-	while (true) {
+	while (${1:/* condition */}) {
 		${0:${VISUAL}}
 	}
 # do... while
 snippet do
 	do {
 		${0:${VISUAL}}
-	} while ($1);
+	} while (${1:/* condition */});
 ##
 ## Functions
 # function definition
@@ -283,14 +277,6 @@ snippet prf
 	printf("${1:} = %f\n", $1);
 snippet prx
 	printf("${1:} = %${2}\n", $1);
-snippet warn
-	warn("${1:%s}"$0);
-snippet warnx
-	warnx("${1:%s}"$0);
-snippet err
-	err(${1:1}, "${2:%s}"$0);
-snippet errx
-	errx(${1:1}, "${2:%s}"$0);
 # getopt
 snippet getopt
 	int choice;
@@ -351,7 +337,7 @@ snippet getopt
 
 ## Assertions
 snippet asr
-	assert($1);
+	assert(${1:condition});
 
 snippet anl
 	assert(${1:ptr} != NULL);
