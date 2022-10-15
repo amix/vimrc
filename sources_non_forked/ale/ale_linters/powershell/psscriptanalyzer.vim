@@ -13,7 +13,7 @@ function! ale_linters#powershell#psscriptanalyzer#GetExecutable(buffer) abort
     return ale#Var(a:buffer, 'powershell_psscriptanalyzer_executable')
 endfunction
 
-" Run Invoke-ScriptAnalyzer and output each linting message as 4 seperate lines
+" Run Invoke-ScriptAnalyzer and output each linting message as 4 separate lines
 " for each parsing
 function! ale_linters#powershell#psscriptanalyzer#GetCommand(buffer) abort
     let l:exclude_option = ale#Var(

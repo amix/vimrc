@@ -23,9 +23,9 @@ The awesome version includes a lot of great plugins, configurations and color sc
 To install for multiple users, the repository needs to be cloned to a location accessible for all the intended users.
 
 	git clone --depth=1 https://github.com/amix/vimrc.git /opt/vim_runtime
-	sh ~/.vim_runtime/install_awesome_parameterized.sh /opt/vim_runtime user0 user1 user2
-	# to install for all users with home directories
-	sh ~/.vim_runtime/install_awesome_parameterized.sh /opt/vim_runtime --all
+	sh /opt/vim_runtime/install_awesome_parameterized.sh /opt/vim_runtime user0 user1 user2
+	# to install for all users with home directories, note that root will not be included
+	sh /opt/vim_runtime/install_awesome_parameterized.sh /opt/vim_runtime --all
 	
 Naturally, `/opt/vim_runtime` can be any directory, as long as all the users specified have read access.
 
@@ -172,7 +172,6 @@ Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
 	
 	map <space> /
 	map <C-space> ?
-	map <silent> <leader><cr> :noh<cr>
 
 Disable highlights when you press `<leader><cr>`:
 	
@@ -202,7 +201,7 @@ Useful mappings for managing tabs:
 	
 	" Opens a new tab with the current buffer's path
 	" Super useful when editing files in the same directory
-	map <leader>te :tabedit <C-r>=expand("%:p:h")<cr>/
+	map <leader>te :tabedit <C-r>=escape(expand("%:p:h"), " ")<cr>/
 	
 Switch [CWD](http://vim.wikia.com/wiki/Set_working_directory_to_the_current_file) to the directory of the open buffer:
 	
