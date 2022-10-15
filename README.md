@@ -358,6 +358,13 @@ Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a fil
     nnoremap <leader>v :.GBrowse!<CR>
     xnoremap <leader>v :'<'>GBrowse!<CR>
 
+[jedi-vim](https://github.com/davidhalter/jedi-vim) specific mappings (can be used to browse through Python code quickly):
+
+    let g:jedi#goto_assignments_command = "<leader>a"
+    let g:jedi#usages_command = "<leader>u"
+    let g:jedi#completions_command = "<C-Space>"
+    let g:jedi#rename_command = "<leader>r"
+
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
