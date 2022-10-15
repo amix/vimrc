@@ -185,7 +185,7 @@ let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Copy the link to the line of a Git repository to the clipboard
 nnoremap <leader>v :.GBrowse!<CR>
-xnoremap <leader>v :'<'>GBrowse!<CR>
+xnoremap <leader>v :GBrowse!<CR>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
