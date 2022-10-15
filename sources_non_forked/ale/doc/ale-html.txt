@@ -45,12 +45,28 @@ See: |ale-javascript-fecs|.
 ===============================================================================
 html-beautify                                               *ale-html-beautify*
 
+g:ale_html_beautify_executable                 *g:ale_html_beautify_executable*
+                                               *b:ale_html_beautify_executable*
+  Type: |String|
+  Default: `'html-beautify'`
+
+  See |ale-integrations-local-executables|
+
+
 g:ale_html_beautify_options                       *g:ale_html_beautify_options*
                                                   *b:ale_html_beautify_options*
   Type: |String|
   Default: `''`
 
   This variable can be changed to modify flags given to html-beautify.
+
+
+g:ale_html_beautify_use_global                 *g:ale_html_beautify_use_global*
+                                               *b:ale_html_beautify_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
 
 
 ===============================================================================
@@ -78,7 +94,6 @@ g:ale_html_htmlhint_use_global                 *g:ale_html_htmlhint_use_global*
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
-
 
 
 ===============================================================================

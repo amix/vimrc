@@ -47,6 +47,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['bzl'],
 \       'description': 'Format BUILD and .bzl files with buildifier.',
 \   },
+\   'css-beautify': {
+\       'function': 'ale#fixers#css_beautify#Fix',
+\       'suggested_filetypes': ['css'],
+\       'description': 'Format CSS using css-beautify from js-beautify.',
+\    },
 \   'deno': {
 \       'function': 'ale#fixers#deno#Fix',
 \       'suggested_filetypes': ['typescript'],
@@ -514,7 +519,7 @@ let s:default_registry = {
 \   'html-beautify': {
 \       'function': 'ale#fixers#html_beautify#Fix',
 \       'suggested_filetypes': ['html', 'htmldjango'],
-\       'description': 'Fix HTML files with html-beautify.',
+\       'description': 'Fix HTML files with html-beautify from js-beautify.',
 \   },
 \   'lua-format': {
 \       'function': 'ale#fixers#lua_format#Fix',
@@ -528,7 +533,7 @@ let s:default_registry = {
 \   },
 \   'dprint': {
 \       'function': 'ale#fixers#dprint#Fix',
-\       'suggested_filetypes': ['javascript', 'typescript', 'json', 'markdown'],
+\       'suggested_filetypes': ['dockerfile', 'javascript', 'json', 'markdown', 'toml', 'typescript'],
 \       'description': 'Pluggable and configurable code formatting platform',
 \   },
 \   'stylua': {

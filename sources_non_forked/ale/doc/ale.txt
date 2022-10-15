@@ -2841,6 +2841,7 @@ documented in additional help files.
     uncrustify............................|ale-cs-uncrustify|
   css.....................................|ale-css-options|
     cspell................................|ale-css-cspell|
+    css-beautify..........................|ale-css-css-beautify|
     fecs..................................|ale-css-fecs|
     prettier..............................|ale-css-prettier|
     stylelint.............................|ale-css-stylelint|
@@ -3260,6 +3261,7 @@ documented in additional help files.
     terraform-ls..........................|ale-terraform-terraform-ls|
     terraform-lsp.........................|ale-terraform-terraform-lsp|
     tflint................................|ale-terraform-tflint|
+    tfsec.................................|ale-terraform-tfsec|
   tex.....................................|ale-tex-options|
     chktex................................|ale-tex-chktex|
     cspell................................|ale-tex-cspell|

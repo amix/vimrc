@@ -26,7 +26,7 @@ function! ale_linters#bicep#bicep#Command(buffer) abort
     \   . l:nullfile
     \   . ' '
     \   . l:options
-    \   . ' %t'
+    \   . ' %s'
 endfunction
 
 function! ale_linters#bicep#bicep#Handle(buffer, lines) abort
@@ -60,4 +60,5 @@ call ale#linter#Define('bicep', {
 \   'command': function('ale_linters#bicep#bicep#Command'),
 \   'callback': 'ale_linters#bicep#bicep#Handle',
 \   'output_stream': 'both',
+\   'lint_file': 1,
 \})
