@@ -172,7 +172,6 @@ Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
 	
 	map <space> /
 	map <C-space> ?
-	map <silent> <leader><cr> :noh<cr>
 
 Disable highlights when you press `<leader><cr>`:
 	
