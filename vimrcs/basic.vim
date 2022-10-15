@@ -134,6 +134,9 @@ set foldcolumn=1
 " Enable syntax highlighting
 syntax enable
 
+" Set regular expression engine automatically
+set regexpengine=0
+
 " Enable 256 colors palette in Gnome Terminal
 if $COLORTERM == 'gnome-terminal'
     set t_Co=256
