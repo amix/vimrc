@@ -149,12 +149,11 @@ You can also install your plugins, for instance, via pathogen you can install [v
 	cd ~/.vim_runtime
 	git clone git://github.com/tpope/vim-rails.git my_plugins/vim-rails
 
-You can also install plugins without any plugin manager (vim 8+ required):  
-	Add `packloadall` to your .vimrc file  
-	Create pack plugin directory:  
-	`mkdir -p ~/.vim/pack/plugins/start`  
-	Clone the plugin that you want in that directory, for example:  
-	`git clone --depth=1 git://github.com/maxmellon/vim-jsx-pretty  ~/.vim/pack/plugins/vim-jsx-pretty`
+You can also install plugins without any plugin manager (vim 8+ required):
+
+* Add `packloadall` to your `.vimrc` file
+* Create pack plugin directory: `mkdir -p ~/.vim_runtime/pack/plugins/start`
+* Clone the plugin that you want in that directory, for example: `git clone --depth=1 git://github.com/maxmellon/vim-jsx-pretty  ~/.vim_runtime/pack/plugins/start/vim-jsx-pretty`
 
 
 ## Key Mappings
