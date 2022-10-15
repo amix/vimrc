@@ -152,9 +152,9 @@ You can also install your plugins, for instance, via pathogen you can install [v
 You can also install plugins without any plugin manager (vim 8+ required):
 
 * Add `packloadall` to your `.vimrc` file
-* Create pack plugin directory:
+* Create pack plugin directory:\
 `mkdir -p ~/.vim_runtime/pack/plugins/start`
-* Clone the plugin that you want in that directory, for example:
+* Clone the plugin that you want in that directory, for example:\
 `git clone --depth=1 git://github.com/maxmellon/vim-jsx-pretty  ~/.vim_runtime/pack/plugins/start/vim-jsx-pretty`
 
 
