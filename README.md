@@ -60,17 +60,9 @@ If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: 
 
 ## How to update to latest version?
 
-Just do a git rebase!
-
     cd ~/.vim_runtime
-    git reset --hard
-    git clean -d --force
-    git pull --rebase
-    python update_plugins.py  # use python3 if python is unavailable
-
-NOTE: If you get `ModuleNotFoundError: No module named 'requests'`, you must first install the `requests` python module using `pip`, `pip3`, or `easy_install`.
-
-    pip install requests
+    git pull
+    python update_plugins.py || python3 update_plugins.py  # use python3 if python is unavailable
 
 ## Some screenshots
 
