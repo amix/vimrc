@@ -176,16 +176,8 @@ let g:ale_lint_on_enter = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:gitgutter_enabled=1
 set updatetime=50
-highlight! link SignColumn LineNr
 autocmd ColorScheme * highlight! link SignColumn LineNr
 set signcolumn=yes
-let g:gitgutter_override_sign_column_highlight=0
-highlight clear SignColumn
-highlight GitGutterAdd ctermfg=2
-highlight GitGutterChange ctermfg=3
-highlight GitGutterDelete ctermfg=1
-highlight GitGutterChangeDelete ctermfg=4
-nnoremap <silent> <leader>d :GitGutterToggle<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
