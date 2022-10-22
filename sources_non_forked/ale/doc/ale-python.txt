@@ -46,6 +46,8 @@ ALE will look for configuration files with the following filenames. >
   pylama.ini
   pylintrc
   .pylintrc
+  pyrightconfig.json
+  pyrightconfig.toml
   Pipfile
   Pipfile.lock
   poetry.lock

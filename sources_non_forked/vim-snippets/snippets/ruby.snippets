@@ -199,18 +199,18 @@ snippet defds
 snippet am
 	alias_method :${1:new_name}, :${0:old_name}
 snippet app
-	if __FILE__ == $PROGRAM_NAME
+	if __FILE__ == \$PROGRAM_NAME
 		${0}
 	end
 # usage_if()
 snippet usai
 	if ARGV.${1}
-		abort "Usage: #{$PROGRAM_NAME} ${2:ARGS_GO_HERE}"${0}
+		abort "Usage: #{\$PROGRAM_NAME} ${2:ARGS_GO_HERE}"${0}
 	end
 # usage_unless()
 snippet usau
 	unless ARGV.${1}
-		abort "Usage: #{$PROGRAM_NAME} ${2:ARGS_GO_HERE}"${0}
+		abort "Usage: #{\$PROGRAM_NAME} ${2:ARGS_GO_HERE}"${0}
 	end
 snippet array
 	Array.new(${1:10}) { |${2:i}| ${0} }
@@ -439,7 +439,7 @@ snippet optp
 	options = { ${0:default: 'args'} }
 
 	ARGV.options do |opts|
-		opts.banner = "Usage: #{File.basename($PROGRAM_NAME)}"
+		opts.banner = "Usage: #{File.basename(\$PROGRAM_NAME)}"
 	end
 snippet opt
 	opts.on('-${1:o}', '--${2:long-option-name}', ${3:String}, '${4:Option description.}') do |${5:opt}|

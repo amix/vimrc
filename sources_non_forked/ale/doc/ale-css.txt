@@ -9,6 +9,33 @@ See |ale-cspell-options|
 
 
 ===============================================================================
+css-beautify                                             *ale-css-css-beautify*
+
+g:ale_css_css_beautify_executable           *g:ale_css_css_beautify_executable*
+                                            *b:ale_css_css_beautify_executable*
+  Type: |String|
+  Default: `'css-beautify'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_css_css_beautify_options                 *g:ale_css_css_beautify_options*
+                                               *b:ale_css_css_beautify_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to css-beautify.
+
+
+g:ale_css_css_beautify_use_global           *g:ale_css_css_beautify_use_global*
+                                            *b:ale_css_css_beautify_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
 fecs                                                             *ale-css-fecs*
 
 `fecs` options for CSS is the same as the options for JavaScript, and both of

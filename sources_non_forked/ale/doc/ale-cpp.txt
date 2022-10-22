@@ -62,7 +62,42 @@ g:ale_cpp_cc_options                                     *g:ale_cpp_cc_options*
   Type: |String|
   Default: `'-std=c++14 -Wall'`
 
-  This variable can be change to modify flags given to the C++ compiler.
+  This variable can be changed to modify flags given to the C++ compiler.
+
+
+g:ale_cpp_cc_use_header_lang_flag           *g:ale_cpp_cc_use_header_lang_flag*
+                                            *b:ale_cpp_cc_use_header_lang_flag*
+  Type: |Number|
+  Default: `-1`
+
+  By default, ALE will use `'-x c++-header'` instead of `'-x c++'` for header
+  files when using Clang.
+
+  This variable can be changed to manually activate or deactivate this flag
+  for header files.
+
+  - When set to `-1`, the default beviour is used, `'-x c++-header'` is used with
+    Clang and `'-x c++'` is used with other compilers.
+  - When set to `0`, the flag is deactivated, `'-x c++'` is always used
+    independently of the compiler.
+  - When set to `1`, the flag is activated, `'-x c++-header'` is always used
+    independently of the compiler.
+
+  Gcc does not support `'-x c++-header'` when using `'-'` as input filename,
+  which is what ALE does. This why, by default, ALE only uses `'-x c++-header'`
+  with Clang.
+
+
+g:ale_cpp_cc_header_exts                             *g:ale_cpp_cc_header_exts*
+                                                     *b:ale_cpp_cc_header_exts*
+  Type: |List|
+  Default: `['h', 'hpp']`
+
+  This variable can be changed to modify the list of extensions of the files
+  considered as header files.
+
+  This variable is only used when `'-x c++-header'` is used instead of `'-x c++'`,
+  see |ale_cpp_cc_use_header_lang_flag|.
 
 
 ===============================================================================
