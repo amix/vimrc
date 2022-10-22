@@ -33,6 +33,8 @@ function! ale#python#FindProjectRootIni(buffer) abort
         \|| filereadable(l:path . '/pylama.ini')
         \|| filereadable(l:path . '/pylintrc')
         \|| filereadable(l:path . '/.pylintrc')
+        \|| filereadable(l:path . '/pyrightconfig.json')
+        \|| filereadable(l:path . '/pyrightconfig.toml')
         \|| filereadable(l:path . '/Pipfile')
         \|| filereadable(l:path . '/Pipfile.lock')
         \|| filereadable(l:path . '/poetry.lock')

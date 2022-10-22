@@ -115,5 +115,24 @@ g:ale_terraform_tflint_options                 *g:ale_terraform_tflint_options*
 
 
 ===============================================================================
+tfsec                                                     *ale-terraform-tfsec*
+
+g:ale_terraform_tfsec_executable             *g:ale_terraform_tfsec_executable*
+                                             *b:ale_terraform_tfsec_executable*
+
+  Type: |String|
+  Default: `'tfsec'`
+
+  This variable can be changed to use a different executable for tfsec.
+
+g:ale_terraform_tfsec_options                   *g:ale_terraform_tfsec_options*
+                                                *b:ale_terraform_tfsec_options*
+
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to pass custom CLI flags to tfsec.
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
 

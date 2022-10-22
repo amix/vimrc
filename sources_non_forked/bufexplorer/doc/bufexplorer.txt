@@ -1,7 +1,7 @@
-*bufexplorer.txt*              Buffer Explorer       Last Change: 02 May 2022
+*bufexplorer.txt*              Buffer Explorer       Last Change: 20 Sept 2022
 
 Buffer Explorer                                *buffer-explorer* *bufexplorer*
-                                Version 7.4.24
+                                Version 7.4.25
 
 Plugin for easily exploring (or browsing) Vim|:buffers|.
 
@@ -263,10 +263,21 @@ The default is 1.
 ===============================================================================
 CHANGE LOG                                              *bufexplorer-changelog*
 
+7.4.25   September 20, 2022
+     What's Changed
+     - Fix MRU sort order after loading vim session by @mmrwoods in
+       https://github.com/jlanzarotta/bufexplorer/pull/107
+     New Contributors
+     - @mmrwoods made their first contribution in
+       https://github.com/jlanzarotta/bufexplorer/pull/107
+     Full Changelog
+       https://github.com/jlanzarotta/bufexplorer/compare/v7.4.24...v.7.4.25
+7.4.24   May 03, 2022
+      Updated copyright notice.
 7.4.23   January 23, 2022
-	- Merged in changes from benoit-pierre that fixes an error thrown when vim
+      Merged in changes from benoit-pierre that fixes an error thrown when vim
       is in read-only mode.
-	- Merged in changes from tartansandal that implements the use of an
+      Merged in changes from tartansandal that implements the use of an
       independent variable to track window splitting since s:splitMode != ''
       no longer implies that a split was triggered.
 7.4.22   January 5,2022

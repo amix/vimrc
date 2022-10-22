@@ -120,6 +120,7 @@ Notes:
 * CSS
   * `VSCode CSS language server`
   * `cspell`
+  * `css-beautify`
   * `csslint`
   * `fecs`
   * `prettier`
@@ -596,6 +597,7 @@ Notes:
   * `terraform-ls`
   * `terraform-lsp`
   * `tflint`
+  * `tfsec`
 * Texinfo
   * `alex`
   * `cspell`
