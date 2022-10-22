@@ -6,8 +6,6 @@
 # vim's `"*` register---i.e., the contents of the
 # system clipboard---to insert text.
 
-extends markdown
-
 # Insert Title Block
 snippet %%
 	% ${1:`Filename('', 'title')`}
@@ -22,12 +20,70 @@ snippet %%*
 
 	${4}
 
+# Insert Definition List
+snippet ::
+	${1:term}
+	  ~  ${2:definition}
+
+# Underline with `=`s or `-`s
+snippet ===
+	`repeat('=', strlen(getline(line(".") - 1)))`
+	
+	${1}
+snippet ---
+	`repeat('-', strlen(getline(line(".") - 1)))`
+	
+	${1}
+
+# Links and their kin
+# -------------------
+#
+# (These don't play very well with delimitMate)
+#
+
+snippet [
+	[${1:link}](http://${2:url} "${3:title}")${4}
+snippet [*
+	[${1:link}](${2:`@*`} "${3:title}")${4}
+
+snippet [:
+	[${1:id}]: http://${2:url} "${3:title}"
+snippet [:*
+	[${1:id}]: ${2:`@*`} "${3:title}"
+
+snippet [@
+	[${1:link}](mailto:${2:email})${3}
+snippet [@*
+	[${1:link}](mailto:${2:`@*`})${3}
+
+snippet [:@
+	[${1:id}]: mailto:${2:email} "${3:title}"
+snippet [:@*
+	[${1:id}]: mailto:${2:`@*`} "${3:title}"
+
+snippet ![
+	![${1:alt}](${2:url} "${3:title}")${4}
+snippet ![*
+	![${1:alt}](${2:`@*`} "${3:title}")${4}
+
+snippet ![:
+	![${1:id}]: ${2:url} "${3:title}"
+snippet ![:*
+	![${1:id}]: ${2:`@*`} "${3:title}"
+
+snippet [^:
+	[^${1:id}]: ${2:note}
+snippet [^:*
+	[^${1:id}]: ${2:`@*`}
+
+#
+
 # library()
 snippet req
 	require(${1:}, quietly = TRUE)
 # If Condition
 snippet if
-	if ( $1 )
+	if ( ${1:condition} )
 	{
 		${2:}
 	}
@@ -51,7 +107,7 @@ snippet fun
 snippet re
 	repeat{
 	  ${2:}
-	  if($1) break
+	  if(${1:condition}) break
 	}
 
 # matrix

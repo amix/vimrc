@@ -54,24 +54,24 @@ snippet cla class .. extends .. constructor: ..
 		${5}
 # If
 snippet if
-	if $1
+	if ${1:condition}
 		${2}
 # If __ Else
 snippet ife
-	if $1
+	if ${1:condition}
 		${2}
 	else
 		${3}
 # Else if
 snippet elif
-	else if $1
+	else if ${1:condition}
 		${2}
 # Ternary If
 snippet ifte
-	if $1 then $2 else $0
+	if ${1:condition} then ${2:value} else ${3:other}
 # Unless
 snippet unl
-	$1 unless $0
+	${1:action} unless ${2:condition}
 # Switch
 snippet swi
 	switch ${1:object}
