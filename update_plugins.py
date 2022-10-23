@@ -11,6 +11,7 @@ import shutil
 import tempfile
 import urllib.request
 import zipfile
+from distutils.dir_util import copy_tree
 from io import BytesIO
 from os import path
 
@@ -68,8 +69,8 @@ jedi-vim https://github.com/davidhalter/jedi-vim
 
 GITHUB_ZIP = "%s/archive/master.zip"
 
-SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked")
-
+FALLBACK_SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked")
+SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked_cache")
 
 def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     # Download and extract file in temp dir
@@ -104,6 +105,9 @@ def update(plugin):
 
 if __name__ == "__main__":
     temp_directory = tempfile.mkdtemp()
+
+    if not path.isdir(SOURCE_DIR):
+        copy_tree(FALLBACK_SOURCE_DIR, SOURCE_DIR)
 
     try:
         if futures:
