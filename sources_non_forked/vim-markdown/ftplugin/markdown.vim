@@ -546,7 +546,7 @@ function! s:TableFormat()
     let l:flags = (&gdefault ? '' : 'g')
     execute 's/\(:\@<!-:\@!\|[^|:-]\)//e' . l:flags
     execute 's/--/-/e' . l:flags
-    Tabularize /|
+    Tabularize /\(\\\)\@<!|
     " Move colons for alignment to left or right side of the cell.
     execute 's/:\( \+\)|/\1:|/e' . l:flags
     execute 's/|\( \+\):/|:\1/e' . l:flags

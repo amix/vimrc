@@ -160,3 +160,10 @@ if extcore
   )
   test_instance vim
 end
+
+# Test the vim core with latin1 encoding
+(lambda do
+  puts 'Testing with express vim_core mode'
+  vim = create_vim("set encoding=latin1")
+  test_instance vim
+end).call

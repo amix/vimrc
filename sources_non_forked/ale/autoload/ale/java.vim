@@ -1,7 +1,7 @@
 " Author: Horacio Sanson https://github.com/hsanson
 " Description: Functions for integrating with Java tools
 
-" Find the nearest dir contining a gradle or pom file and asume it
+" Find the nearest dir contining a gradle or pom file and assume it
 " the root of a java app.
 function! ale#java#FindProjectRoot(buffer) abort
     let l:gradle_root = ale#gradle#FindProjectRoot(a:buffer)

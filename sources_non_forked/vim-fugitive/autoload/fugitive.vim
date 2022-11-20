@@ -470,7 +470,7 @@ function! s:GitCmd() abort
       let string = strpart(string, len(arg))
       let arg = substitute(arg, '^\s\+', '', '')
       let arg = substitute(arg,
-            \ '\(' . dquote . '''\%(''''\|[^'']\)*''\|\\[' . s:fnameescape . ']\|^\\[>+-]\|!\d*\)\|' . s:expand,
+            \ '\(' . dquote . '''\%(''''\|[^'']\)*''\|\\[' . s:fnameescape . ']\|^\\[>+-]\|' . s:commit_expand . '\)\|' . s:expand,
             \ '\=submatch(0)[0] ==# "\\" ? submatch(0)[1] : submatch(0)[1:-2]', 'g')
       call add(list, arg)
     endwhile
@@ -1958,6 +1958,7 @@ endfunction
 let s:var = '\%(<\%(cword\|cWORD\|cexpr\|cfile\|sfile\|slnum\|afile\|abuf\|amatch' . (has('clientserver') ? '\|client' : '') . '\)>\|%\|#<\=\d\+\|##\=\)'
 let s:flag = '\%(:[p8~.htre]\|:g\=s\(.\).\{-\}\1.\{-\}\1\)'
 let s:expand = '\%(\(' . s:var . '\)\(' . s:flag . '*\)\(:S\)\=\)'
+let s:commit_expand = '!\\\@!#\=\d*\|!%'
 
 function! s:BufName(var) abort
   if a:var ==# '%'
@@ -1978,8 +1979,8 @@ function! s:ExpandVar(other, var, flags, esc, ...) abort
     return substitute(a:other[1:-2], "''", "'", "g")
   elseif a:other =~# '^"'
     return substitute(a:other[1:-2], '""', '"', "g")
-  elseif a:other =~# '^!'
-    let buffer = s:BufName(len(a:other) > 1 ? '#'. a:other[1:-1] : '%')
+  elseif a:other =~# '^[!`]'
+    let buffer = s:BufName(a:other =~# '[0-9#]' ? '#' . matchstr(a:other, '\d\+') : '%')
     let owner = s:Owner(buffer)
     return len(owner) ? owner : '@'
   elseif a:other =~# '^\~[~.]$'
@@ -2033,7 +2034,11 @@ function! s:ExpandVar(other, var, flags, esc, ...) abort
   return join(files, "\1")
 endfunction
 
-let s:fnameescape = " \t\n*?[{`$\\%#'\"|!<"
+if has('win32')
+  let s:fnameescape = " \t\n*?`%#'\"|!<"
+else
+  let s:fnameescape = " \t\n*?[{`$\\%#'\"|!<"
+endif
 
 function! s:Expand(rev, ...) abort
   if a:rev =~# '^>' && s:Slash(@%) =~# '^fugitive://' && empty(s:DirCommitFile(@%)[1])
@@ -2060,13 +2065,13 @@ function! s:Expand(rev, ...) abort
     let file = a:rev
   endif
   return substitute(file,
-        \ '\(\\[' . s:fnameescape . ']\|^\\[>+-]\|!\d*\|^\~[~.]\)\|' . s:expand,
+        \ '\(\\[' . s:fnameescape . ']\|^\\[>+-]\|' . s:commit_expand . '\|^\~[~.]\)\|' . s:expand,
         \ '\=tr(s:ExpandVar(submatch(1),submatch(2),submatch(3),"", a:0 ? a:1 : getcwd()), "\1", " ")', 'g')
 endfunction
 
 function! fugitive#Expand(object) abort
   return substitute(a:object,
-        \ '\(\\[' . s:fnameescape . ']\|^\\[>+-]\|!\d*\|^\~[~.]\)\|' . s:expand,
+        \ '\(\\[' . s:fnameescape . ']\|^\\[>+-]\|' . s:commit_expand . '\|^\~[~.]\)\|' . s:expand,
         \ '\=tr(s:ExpandVar(submatch(1),submatch(2),submatch(3),submatch(5)), "\1", " ")', 'g')
 endfunction
 
@@ -2087,7 +2092,7 @@ function! s:SplitExpandChain(string, ...) abort
             \ '\=s:DotRelative(s:Slash(simplify(getcwd() . "/" . submatch(0))), cwd)', '')
     endif
     let arg = substitute(arg,
-          \ '\(' . dquote . '''\%(''''\|[^'']\)*''\|\\[' . s:fnameescape . ']\|^\\[>+-]\|!\d*\|^\~[~]\|^\~\w*\|\$\w\+\)\|' . s:expand,
+          \ '\(' . dquote . '''\%(''''\|[^'']\)*''\|\\[' . s:fnameescape . ']\|^\\[>+-]\|' . s:commit_expand . '\|^\~[~]\|^\~\w*\|\$\w\+\)\|' . s:expand,
           \ '\=s:ExpandVar(submatch(1),submatch(2),submatch(3),submatch(5), cwd)', 'g')
     call extend(list, split(arg, "\1", 1))
     if arg ==# '--'

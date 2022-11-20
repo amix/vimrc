@@ -26,7 +26,7 @@ function! ale_linters#cpp#clangtidy#GetCommand(buffer, output) abort
 
         " Tell clang-tidy a .h header with a C++ filetype in Vim is a C++ file
         " only when compile-commands.json file is not there. Adding these
-        " flags makes clang-tidy completely ignore compile commmands.
+        " flags makes clang-tidy completely ignore compile commands.
         if expand('#' . a:buffer) =~# '\.h$'
             let l:options .= !empty(l:options) ? ' -x c++' : '-x c++'
         endif

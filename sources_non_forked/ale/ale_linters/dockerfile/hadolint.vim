@@ -3,6 +3,7 @@
 " always, yes, never
 call ale#Set('dockerfile_hadolint_use_docker', 'never')
 call ale#Set('dockerfile_hadolint_docker_image', 'hadolint/hadolint')
+call ale#Set('dockerfile_hadolint_options', '')
 
 function! ale_linters#dockerfile#hadolint#Handle(buffer, lines) abort
     " Matches patterns line the following:
@@ -102,7 +103,7 @@ endfunction
 
 function! ale_linters#dockerfile#hadolint#GetCommand(buffer) abort
     let l:command = ale_linters#dockerfile#hadolint#GetExecutable(a:buffer)
-    let l:opts = '--no-color -'
+    let l:opts = ale#Var(a:buffer, 'dockerfile_hadolint_options') . ' --no-color -'
 
     if l:command is# 'docker'
         return printf('docker run --rm -i %s hadolint %s',

@@ -570,6 +570,11 @@ let s:default_registry = {
 \       'function': 'ale#fixers#zigfmt#Fix',
 \       'suggested_filetypes': ['zig'],
 \       'description': 'Official formatter for Zig',
+\   },
+\   'raco_fmt': {
+\       'function': 'ale#fixers#raco_fmt#Fix',
+\       'suggested_filetypes': ['racket'],
+\       'description': 'Fix Racket files with raco fmt.',
 \   }
 \}
 

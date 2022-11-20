@@ -25,7 +25,7 @@ buf-format                                                *ale-proto-buf-format*
 g:ale_proto_buf_format_executable           *g:ale_proto_buf_format_executable*
 
   Type: |String|
-  Default: 'buf'
+  Default: `'buf'`
 
   This variable can be changed to modify the executable used for buf.
 
@@ -39,7 +39,7 @@ buf-lint                                                    *ale-proto-buf-lint*
 g:ale_proto_buf_lint_executable               *g:ale_proto_buf_lint_executable*
 
   Type: |String|
-  Default: 'buf'
+  Default: `'buf'`
 
   This variable can be changed to modify the executable used for buf.
 
@@ -80,7 +80,7 @@ protolint                                                   *ale-proto-protolint
 g:ale_proto_protolint_executable             *g:ale_proto_protolint_executable*
 
   Type: |String|
-  Default: 'protolint'
+  Default: `'protolint'`
 
   This variable can be changed to modify the executable used for protolint.
 

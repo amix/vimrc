@@ -97,6 +97,10 @@ if !exists('g:dracula_colorterm')
   let g:dracula_colorterm = 1
 endif
 
+if !exists('g:dracula_high_contrast_diff')
+  let g:dracula_high_contrast_diff = 0
+endif
+
 "}}}2
 " Script Helpers: {{{2
 
@@ -197,7 +201,12 @@ call s:h('DraculaBoundary', s:comment, s:bgdark)
 call s:h('DraculaWinSeparator', s:comment, s:bgdark)
 call s:h('DraculaLink', s:cyan, s:none, [s:attrs.underline])
 
-call s:h('DraculaDiffChange', s:orange, s:none)
+if g:dracula_high_contrast_diff
+  call s:h('DraculaDiffChange', s:yellow, s:purple)
+else
+  call s:h('DraculaDiffChange', s:orange, s:none)
+endif
+
 call s:h('DraculaDiffText', s:bg, s:orange)
 call s:h('DraculaDiffDelete', s:red, s:bgdark)
 

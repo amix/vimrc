@@ -13,7 +13,7 @@ function! ale_linters#tex#lacheck#Handle(buffer, lines) abort
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         " lacheck follows `\input{}` commands. If the cwd is not the same as the
-        " file in the buffer then it will fail to find the inputed items. We do not
+        " file in the buffer then it will fail to find the inputted items. We do not
         " want warnings from those items anyway
         if !empty(matchstr(l:match[3], '^Could not open ".\+"$'))
             continue

@@ -29,7 +29,7 @@ g:ale_deno_lsp_project_root                       *g:ale_deno_lsp_project_root*
   executing the following steps in the given order:
 
   1. Find an ancestor directory containing a tsconfig.json.
-  2. Find an ancestory directory containing a .git folder.
+  2. Find an ancestor directory containing a .git folder.
   3. Use the directory of the current buffer (if the buffer was opened from
      a file).
 

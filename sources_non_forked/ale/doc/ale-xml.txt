@@ -24,7 +24,7 @@ g:ale_xml_xmllint_options                           *g:ale_xml_xmllint_options*
 g:ale_xml_xmllint_indentsize                     *g:ale_xml_xmllint_indentsize*
                                                  *b:ale_xml_xmllint_indentsize*
   Type: |Number|
-  Default: 2
+  Default: `2`
 
   This variable can be sent to specify the amount of spaces used for
   indentation.

@@ -750,7 +750,7 @@ g:airline#extensions#ale#enabled             *g:airline#extensions#ale#enabled*
 g:ale_cache_executable_check_failures   *g:ale_cache_executable_check_failures*
 
   Type: |Number|
-  Default: undefined
+  Default: not set
 
   When set to `1`, ALE will cache failing executable checks for linters. By
   default, only executable checks which succeed will be cached.
@@ -864,7 +864,7 @@ g:ale_completion_enabled                             *g:ale_completion_enabled*
                                     *g:ale_completion_tsserver_remove_warnings*
 g:ale_completion_tsserver_remove_warnings
 
-  Type: Number
+  Type: |Number|
   Default: `0`
 
   When this option is set to `0`, ALE will return all completion items,
@@ -874,7 +874,7 @@ g:ale_completion_tsserver_remove_warnings
 
 g:ale_completion_autoimport                       *g:ale_completion_autoimport*
 
-  Type: Number
+  Type: |Number|
   Default: `1`
 
   When this option is set to `1`, ALE will try to automatically import
@@ -1836,7 +1836,7 @@ g:ale_max_signs                                               *g:ale_max_signs*
 g:ale_maximum_file_size                               *g:ale_maximum_file_size*
                                                       *b:ale_maximum_file_size*
   Type: |Number|
-  Default: undefined
+  Default: not set
 
   A maximum file size in bytes for ALE to check. If set to any positive
   number, ALE will skip checking files larger than the given size.
@@ -1879,7 +1879,7 @@ g:ale_open_list                                               *g:ale_open_list*
 g:ale_pattern_options                                   *g:ale_pattern_options*
 
   Type: |Dictionary|
-  Default: undefined
+  Default: not set
 
   This option maps regular expression patterns to |Dictionary| values for
   buffer variables. This option can be set to automatically configure
@@ -1908,7 +1908,7 @@ g:ale_pattern_options                                   *g:ale_pattern_options*
 g:ale_pattern_options_enabled                   *g:ale_pattern_options_enabled*
 
   Type: |Number|
-  Default: undefined
+  Default: not set
 
   This option can be used for disabling pattern options. If set to `0`, ALE
   will not set buffer variables per |g:ale_pattern_options|.
@@ -1954,7 +1954,7 @@ g:ale_root                                                         *g:ale_root*
                                                                    *b:ale_root*
 
   Type: |Dictionary| or |String|
-  Default: {}
+  Default: `{}`
 
   This option is used to determine the project root for a linter. If the value
   is a |Dictionary|, it maps a linter to either a |String| containing the
@@ -2006,7 +2006,7 @@ g:ale_set_balloons                                         *g:ale_set_balloons*
 g:ale_set_balloons_legacy_echo                 *g:ale_set_balloons_legacy_echo*
                                                *b:ale_set_balloons_legacy_echo*
   Type: |Number|
-  Default: undefined
+  Default: not set
 
   If set to `1`, moving your mouse over documents in Vim will make ALE ask
   `tsserver` or `LSP` servers for information about the symbol where the mouse
@@ -2240,10 +2240,10 @@ g:ale_sign_highlight_linenrs                     *g:ale_sign_highlight_linenrs*
 
 g:ale_update_tagstack                                   *g:ale_update_tagstack*
                                                         *b:ale_update_tagstack*
- Type: |Number|
- Default: `1`
+  Type: |Number|
+  Default: `1`
 
- This option can be set to disable updating Vim's |tagstack| automatically.
+  This option can be set to disable updating Vim's |tagstack| automatically.
 
 
 g:ale_type_map                                                 *g:ale_type_map*
@@ -2885,6 +2885,7 @@ documented in additional help files.
   erlang..................................|ale-erlang-options|
     dialyzer..............................|ale-erlang-dialyzer|
     elvis.................................|ale-erlang-elvis|
+    erlang_ls.............................|ale-erlang-erlang_ls|
     erlc..................................|ale-erlang-erlc|
     erlfmt................................|ale-erlang-erlfmt|
     syntaxerl.............................|ale-erlang-syntaxerl|
@@ -3036,6 +3037,8 @@ documented in additional help files.
     luafmt................................|ale-lua-luafmt|
     selene................................|ale-lua-selene|
     stylua................................|ale-lua-stylua|
+  make....................................|ale-make-options|
+    checkmake.............................|ale-make-checkmake|
   markdown................................|ale-markdown-options|
     cspell................................|ale-markdown-cspell|
     dprint................................|ale-markdown-dprint|
@@ -3159,6 +3162,7 @@ documented in additional help files.
     pyre..................................|ale-python-pyre|
     pyright...............................|ale-python-pyright|
     reorder-python-imports................|ale-python-reorder_python_imports|
+    ruff..................................|ale-python-ruff|
     unimport..............................|ale-python-unimport|
     vulture...............................|ale-python-vulture|
     yapf..................................|ale-python-yapf|
@@ -4558,7 +4562,7 @@ ALEFixPost                                                 *ALEFixPost-autocmd*
   These |User| autocommands are triggered before and after every lint or fix
   cycle. They can be used to update statuslines, send notifications, etc.
   The autocmd commands are run with |:silent|, so |:unsilent| is required for
-  echoing messges.
+  echoing messages.
 
   For example to change the color of the statusline while the linter is
   running:
@@ -4591,7 +4595,7 @@ ALEJobStarted                                           *ALEJobStarted-autocmd*
 ALELSPStarted                                           *ALELSPStarted-autocmd*
                                                                 *ALELSPStarted*
 
-  This |User| autocommand is trigged immediately after an LSP connection is
+  This |User| autocommand is triggered immediately after an LSP connection is
   successfully initialized. This provides a way to perform any additional
   initialization work, such as setting up buffer-level mappings.
 

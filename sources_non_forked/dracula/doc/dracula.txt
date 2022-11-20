@@ -93,6 +93,11 @@ terminal emulators, set to 1 to allow underline/undercurl highlights without
 changing the foreground color. >
     let g:dracula_full_special_attrs_support = 1
 
+* *g:dracula_high_contrast_diff*
+Use high-contrast color when in diff mode. By default it is disabled, set to
+1 to enable it.
+   let g:dracula_high_contrast_diff = 1
+
 * *g:dracula_inverse*
 Include inverse attributes in highlighting >
     let g:dracula_inverse = 1

@@ -261,8 +261,8 @@ g:ale_rust_ignore_error_codes                   *g:ale_rust_ignore_error_codes*
 
 g:ale_rust_ignore_secondary_spans           *g:ale_rust_ignore_secondary_spans*
                                             *b:ale_rust_ignore_secondary_spans*
-  Type: Number
-  Default: 0
+  Type: |Number|
+  Default: `0`
 
   When set to 1, instructs the Rust error reporting to ignore secondary spans.
   The problem with secondary spans is that they sometimes appear in error

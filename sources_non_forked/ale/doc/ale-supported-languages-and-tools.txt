@@ -178,6 +178,7 @@ Notes:
   * `SyntaxErl`
   * `dialyzer`!!
   * `elvis`!!
+  * `erlang_ls`
   * `erlc`
   * `erlfmt`
 * Fish
@@ -482,6 +483,7 @@ Notes:
   * `pyre`
   * `pyright`
   * `reorder-python-imports`
+  * ruff
   * `unimport`
   * `vulture`!!
   * `yapf`
@@ -495,6 +497,7 @@ Notes:
 * Racket
   * `racket-langserver`
   * `raco`
+  * `raco_fmt`
 * Re:VIEW
   * `redpen`
 * ReasonML

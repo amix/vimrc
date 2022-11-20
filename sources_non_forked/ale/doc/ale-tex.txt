@@ -33,7 +33,7 @@ lacheck                                                       *ale-tex-lacheck*
 g:ale_lacheck_executable                             *g:ale_lacheck_executable*
                                                      *b:ale_lacheck_executable*
   Type: |String|
-  Default: '`lacheck`'
+  Default: `'lacheck'`
 
   This variable can be changed to change the path to lacheck.
 

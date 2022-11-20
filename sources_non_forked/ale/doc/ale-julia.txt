@@ -11,7 +11,7 @@ g:ale_julia_executable                                 *g:ale_julia_executable*
                                                        *b:ale_julia_executable*
 
   Type: |String|
-  Default: 'julia'
+  Default: `'julia'`
 
   Path to the julia exetuable.
 

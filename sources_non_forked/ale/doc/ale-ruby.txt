@@ -7,7 +7,7 @@ brakeman                                                    *ale-ruby-brakeman*
 
 g:ale_ruby_brakeman_executable                 *g:ale_ruby_brakeman_executable*
                                                *b:ale_ruby_brakeman_executable*
-  Type: String
+  Type: |String|
   Default: `'brakeman'`
 
   Override the invoked brakeman binary. Set this to `'bundle'` to invoke
@@ -33,7 +33,7 @@ debride                                                      *ale-ruby-debride*
 
 g:ale_ruby_debride_executable                   *g:ale_ruby_debride_executable*
                                                 *b:ale_ruby_debride_executable*
-  Type: String
+  Type: |String|
   Default: `'debride'`
 
   Override the invoked debride binary. Set this to `'bundle'` to invoke
@@ -60,7 +60,7 @@ rails_best_practices                            *ale-ruby-rails_best_practices*
 g:ale_ruby_rails_best_practices_executable
                                    *g:ale_ruby_rails_best_practices_executable*
                                    *b:ale_ruby_rails_best_practices_executable*
-  Type: String
+  Type: |String|
   Default: `'rails_best_practices'`
 
   Override the invoked rails_best_practices binary. Set this to `'bundle'` to
@@ -81,7 +81,7 @@ reek                                                            *ale-ruby-reek*
 
 g:ale_ruby_reek_executable                         *g:ale_ruby_reek_executable*
                                                    *b:ale_ruby_reek_executable*
-  Type: String
+  Type: |String|
   Default: `'reek'`
 
   Override the invoked reek binary. Set this to `'bundle'` to invoke
@@ -91,7 +91,7 @@ g:ale_ruby_reek_executable                         *g:ale_ruby_reek_executable*
 g:ale_ruby_reek_show_context                     *g:ale_ruby_reek_show_context*
                                                  *b:ale_ruby_reek_show_context*
   Type: |Number|
-  Default: 0
+  Default: `0`
 
   Controls whether context is included in the linter message. Defaults to off
   because context is usually obvious while viewing a file.
@@ -100,7 +100,7 @@ g:ale_ruby_reek_show_context                     *g:ale_ruby_reek_show_context*
 g:ale_ruby_reek_show_wiki_link                 *g:ale_ruby_reek_show_wiki_link*
                                                *b:ale_ruby_reek_show_wiki_link*
   Type: |Number|
-  Default: 0
+  Default: `0`
 
   Controls whether linter messages contain a link to an explanatory wiki page
   for the type of code smell. Defaults to off to improve readability.
@@ -111,7 +111,7 @@ rubocop                                                      *ale-ruby-rubocop*
 
 g:ale_ruby_rubocop_executable                   *g:ale_ruby_rubocop_executable*
                                                 *b:ale_ruby_rubocop_executable*
-  Type: String
+  Type: |String|
   Default: `'rubocop'`
 
   Override the invoked rubocop binary. Set this to `'bundle'` to invoke
@@ -128,7 +128,7 @@ g:ale_ruby_rubocop_options                         *g:ale_ruby_rubocop_options*
 
 g:ale_ruby_rubocop_auto_correct_all       *g:ale_ruby_rubocop_auto_correct_all*
                                           *b:ale_ruby_rubocop_auto_correct_all*
-  Type: Number
+  Type: |Number|
   Default: `0`
 
   This variable can be changed to make rubocop to correct all offenses (unsafe).
@@ -139,7 +139,7 @@ ruby                                                            *ale-ruby-ruby*
 
 g:ale_ruby_ruby_executable                         *g:ale_ruby_ruby_executable*
                                                    *b:ale_ruby_ruby_executable*
-  Type: String
+  Type: |String|
   Default: `'ruby'`
 
   This variable can be changed to use a different executable for ruby.
@@ -150,7 +150,7 @@ rufo                                                            *ale-ruby-rufo*
 
 g:ale_ruby_rufo_executable                         *g:ale_ruby_rufo_executable*
                                                    *b:ale_ruby_rufo_executable*
-  Type: String
+  Type: |String|
   Default: `'rufo'`
 
   Override the invoked rufo binary. This is useful for running rufo from
@@ -162,7 +162,7 @@ solargraph                                                *ale-ruby-solargraph*
 
 g:ale_ruby_solargraph_executable             *g:ale_ruby_solargraph_executable*
                                              *b:ale_ruby_solargraph_executable*
-  Type: String
+  Type: |String|
   Default: `'solargraph'`
 
   Override the invoked solargraph binary. This is useful for running solargraph
@@ -174,7 +174,7 @@ sorbet                                                        *ale-ruby-sorbet*
 
 g:ale_ruby_sorbet_executable                     *g:ale_ruby_sorbet_executable*
                                                  *b:ale_ruby_sorbet_executable*
-  Type: String
+  Type: |String|
   Default: `'srb'`
 
   Override the invoked sorbet binary. Set this to `'bundle'` to invoke
@@ -204,7 +204,7 @@ standardrb                                                *ale-ruby-standardrb*
 
 g:ale_ruby_standardrb_executable             *g:ale_ruby_standardrb_executable*
                                              *b:ale_ruby_standardrb_executable*
-  Type: String
+  Type: |String|
   Default: `'standardrb'`
 
   Override the invoked standardrb binary. Set this to `'bundle'` to invoke
@@ -224,7 +224,7 @@ syntax_tree                                              *ale-ruby-syntax_tree*
 
 g:ale_ruby_syntax_tree_executable           *g:ale_ruby_syntax_tree_executable*
                                             *b:ale_ruby_syntax_tree_executable*
-  Type: String
+  Type: |String|
   Default: `'stree'`
 
   Override the invoked SyntaxTree binary. Set this to `'bundle'` to invoke

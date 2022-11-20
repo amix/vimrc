@@ -48,7 +48,7 @@ g:ale_purescript_tidy_use_global             *g:ale_purescript_tidy_use_global*
 
 g:ale_purescript_tidy_options                   *g:ale_purescript_tidy_options*
                                                 *b:ale_purescript_tidy_options*
-  Type: String
+  Type: |String|
   Default: `''`
 
   This variable can be set to pass in additional option to the 'purs-tidy'

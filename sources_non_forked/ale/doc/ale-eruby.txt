@@ -39,7 +39,7 @@ ruumba                                                       *ale-eruby-ruumba*
 
 g:ale_eruby_ruumba_executable                   *g:ale_eruby_ruumba_executable*
                                                 *b:ale_eruby_ruumba_executable*
-  Type: String
+  Type: |String|
   Default: `'ruumba`
 
   Override the invoked ruumba binary. This is useful for running ruumba

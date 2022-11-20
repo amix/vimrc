@@ -130,6 +130,7 @@ let s:should_complete_map = {
 \   '<default>': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$',
 \   'clojure': s:lisp_regex,
 \   'lisp': s:lisp_regex,
+\   'racket': '\k\+$',
 \   'typescript': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$|''$|"$',
 \   'rust': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$|::$',
 \   'cpp': '\v[a-zA-Z$_][a-zA-Z$_0-9]*$|\.$|::$|-\>$',
