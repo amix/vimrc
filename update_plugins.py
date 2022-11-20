@@ -7,12 +7,13 @@ except ImportError:
         futures = None
 
 import re
-import zipfile
 import shutil
 import tempfile
-import requests
-
+import zipfile
+from distutils.dir_util import copy_tree
 from os import path
+
+import requests
 
 # --- Globals ----------------------------------------------
 PLUGINS = """
@@ -67,7 +68,8 @@ dracula https://github.com/dracula/vim
 
 GITHUB_ZIP = "%s/archive/master.zip"
 
-SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked")
+FALLBACK_SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked")
+SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked_cache")
 
 
 def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
@@ -107,6 +109,9 @@ def update(plugin):
 
 if __name__ == "__main__":
     temp_directory = tempfile.mkdtemp()
+
+    if not path.isdir(SOURCE_DIR):
+        copy_tree(FALLBACK_SOURCE_DIR, SOURCE_DIR)
 
     try:
         if futures:
