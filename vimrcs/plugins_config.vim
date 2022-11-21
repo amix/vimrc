@@ -10,6 +10,9 @@
 """"""""""""""""""""""""""""""
 let s:vim_runtime = expand('<sfile>:p:h')."/.."
 call pathogen#infect(s:vim_runtime.'/sources_forked/{}')
+if !isdirectory(s:vim_runtime.'/sources_non_forked_cache')
+      call system("cp -r " . s:vim_runtime.'/sources_non_forked' . " " . s:vim_runtime.'/sources_non_forked_cache')
+endif
 call pathogen#infect(s:vim_runtime.'/sources_non_forked_cache/{}')
 call pathogen#infect(s:vim_runtime.'/my_plugins/{}')
 call pathogen#helptags()
