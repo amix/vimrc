@@ -1,5 +1,5 @@
 temp_dirs/undodir/*
-sources_non_forked_cache/*
+sources_non_forked_cache/
 temp_dirs/yankring_history_v2.txt
 sources_forked/yankring/doc/tags
 my_plugins/
